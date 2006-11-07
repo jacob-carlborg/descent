@@ -1,0 +1,8 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Tests
+Bundle-SymbolicName: descent.tests
+Bundle-Version: 1.0.0
+Bundle-Localization: plugin
+Require-Bundle: descent.core,
+ org.junit

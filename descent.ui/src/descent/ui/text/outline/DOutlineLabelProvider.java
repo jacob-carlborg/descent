@@ -1,0 +1,614 @@
+package descent.ui.text.outline;
+
+import org.eclipse.jface.viewers.LabelProvider;
+import org.eclipse.swt.graphics.Image;
+
+import descent.core.dom.IAggregateDeclaration;
+import descent.core.dom.IAliasDeclaration;
+import descent.core.dom.IArgument;
+import descent.core.dom.IArrayType;
+import descent.core.dom.IAssociativeArrayType;
+import descent.core.dom.IConditionAssignment;
+import descent.core.dom.IConditionalDeclaration;
+import descent.core.dom.IDElement;
+import descent.core.dom.IDebugDeclaration;
+import descent.core.dom.IDelegateType;
+import descent.core.dom.IEnumDeclaration;
+import descent.core.dom.IEnumMember;
+import descent.core.dom.IFunctionDeclaration;
+import descent.core.dom.IIdentifierType;
+import descent.core.dom.IImport;
+import descent.core.dom.IImportDeclaration;
+import descent.core.dom.ILinkDeclaration;
+import descent.core.dom.IMixinDeclaration;
+import descent.core.dom.IModifier;
+import descent.core.dom.IModuleDeclaration;
+import descent.core.dom.IName;
+import descent.core.dom.IPointerType;
+import descent.core.dom.IPragmaDeclaration;
+import descent.core.dom.ISelectiveImport;
+import descent.core.dom.IStaticArrayType;
+import descent.core.dom.ITemplateAliasParameter;
+import descent.core.dom.ITemplateDeclaration;
+import descent.core.dom.ITemplateInstanceType;
+import descent.core.dom.ITemplateParameter;
+import descent.core.dom.ITemplateTypeParameter;
+import descent.core.dom.IType;
+import descent.core.dom.ITypedefDeclaration;
+import descent.core.dom.ITypeofType;
+import descent.core.dom.IVariableDeclaration;
+import descent.core.dom.IVersionDeclaration;
+import descent.ui.DescentUI;
+import descent.ui.IImages;
+
+public class DOutlineLabelProvider extends LabelProvider {
+	
+	private Image moduleImage;
+	private Image importsImage;
+	private Image importImage;
+	private Image classImage;
+	private Image enumImage;
+	private Image interfaceImage;
+	private Image structImage;
+	private Image unionImage;
+	private Image templateImage;
+	private Image invariantImage;
+	private Image unittestImage;
+	private Image typedefImage;
+	private Image aliasImage;
+	private Image linkImage;
+	private Image versionImage;
+	private Image debugImage;
+	private Image functionPublicImage;
+	private Image functionPackageImage;
+	private Image functionProtectedImage;
+	private Image functionPrivateImage;
+	private Image ctorPublicImage;
+	private Image ctorPackageImage;
+	private Image ctorProtectedImage;
+	private Image ctorPrivateImage;
+	private Image dtorPublicImage;
+	private Image dtorPackageImage;
+	private Image dtorProtectedImage;
+	private Image dtorPrivateImage;
+	private Image fieldPublicImage;
+	private Image fieldPackageImage;
+	private Image fieldProtectedImage;
+	private Image fieldPrivateImage;
+	
+	public DOutlineLabelProvider() {
+		this.moduleImage = DescentUI.getImageDescriptor(IImages.MODULE).createImage();
+		this.importsImage = DescentUI.getImageDescriptor(IImages.IMPORTS).createImage();
+		this.importImage = DescentUI.getImageDescriptor(IImages.IMPORT).createImage();
+		this.classImage = DescentUI.getImageDescriptor(IImages.CLASS).createImage();
+		this.enumImage = DescentUI.getImageDescriptor(IImages.ENUM).createImage();
+		this.interfaceImage = DescentUI.getImageDescriptor(IImages.INTERFACE).createImage();
+		this.structImage = DescentUI.getImageDescriptor(IImages.STRUCT).createImage();
+		this.unionImage = DescentUI.getImageDescriptor(IImages.UNION).createImage();
+		this.templateImage = DescentUI.getImageDescriptor(IImages.TEMPLATE).createImage();
+		this.invariantImage = DescentUI.getImageDescriptor(IImages.INVARIANT).createImage();
+		this.unittestImage = DescentUI.getImageDescriptor(IImages.UNIT_TEST).createImage();
+		this.typedefImage = DescentUI.getImageDescriptor(IImages.TYPEDEF).createImage();
+		this.aliasImage = DescentUI.getImageDescriptor(IImages.ALIAS).createImage();
+		this.linkImage = DescentUI.getImageDescriptor(IImages.LINK).createImage();
+		this.versionImage = DescentUI.getImageDescriptor(IImages.VERSION).createImage();
+		this.debugImage = DescentUI.getImageDescriptor(IImages.DEBUG).createImage();
+		this.functionPublicImage = DescentUI.getImageDescriptor(IImages.FUNCTION_PUBLIC).createImage();
+		this.functionPackageImage = DescentUI.getImageDescriptor(IImages.FUNCTION_PACKAGE).createImage();
+		this.functionProtectedImage = DescentUI.getImageDescriptor(IImages.FUNCTION_PROTECTED).createImage();
+		this.functionPrivateImage = DescentUI.getImageDescriptor(IImages.FUNCTION_PRIVATE).createImage();
+		this.fieldPublicImage = DescentUI.getImageDescriptor(IImages.FIELD_PUBLIC).createImage();
+		this.fieldPackageImage = DescentUI.getImageDescriptor(IImages.FIELD_PACKAGE).createImage();
+		this.fieldProtectedImage = DescentUI.getImageDescriptor(IImages.FIELD_PROTECTED).createImage();
+		this.fieldPrivateImage = DescentUI.getImageDescriptor(IImages.FIELD_PRIVATE).createImage();
+		this.ctorPublicImage = DescentUI.getImageDescriptor(IImages.CONSTUCTOR_PUBLIC).createImage();
+		this.ctorPackageImage = DescentUI.getImageDescriptor(IImages.CONSTUCTOR_PACKAGE).createImage();
+		this.ctorProtectedImage = DescentUI.getImageDescriptor(IImages.CONSTUCTOR_PROTECTED).createImage();
+		this.ctorPrivateImage = DescentUI.getImageDescriptor(IImages.CONSTUCTOR_PRIVATE).createImage();
+		this.dtorPublicImage = DescentUI.getImageDescriptor(IImages.DESTUCTOR_PUBLIC).createImage();
+		this.dtorPackageImage = DescentUI.getImageDescriptor(IImages.DESTUCTOR_PACKAGE).createImage();
+		this.dtorProtectedImage = DescentUI.getImageDescriptor(IImages.DESTUCTOR_PROTECTED).createImage();
+		this.dtorPrivateImage = DescentUI.getImageDescriptor(IImages.DESTUCTOR_PRIVATE).createImage();
+	}
+	
+	@Override
+	public String getText(Object element) {
+		IDElement e = (IDElement) element;
+		IName name;
+		StringBuilder s;
+		IDElement[] templateArguments;
+		
+		switch(e.getElementType()) {
+		case IDElement.MODULE_DECLARATION:
+			return ((IModuleDeclaration) element).getQualifiedName().toString();
+		case IDElement.IMPORT_DECLARATION:
+			IImportDeclaration importDeclaration = (IImportDeclaration) element;
+			return getImportText(importDeclaration);
+		case IDElement.AGGREGATE_DECLARATION:
+			IAggregateDeclaration aggregateDeclaration = (IAggregateDeclaration) element;
+			s = new StringBuilder();
+			name = aggregateDeclaration.getName();
+			if (name != null) s.append(name.toString());
+			if (aggregateDeclaration.isTemplate()) {
+				appendTemplateParameters(s, aggregateDeclaration.getTemplateParameters());
+			}
+			return s.toString();
+		case IDElement.FUNCTION_DECLARATION:
+			IFunctionDeclaration f = (IFunctionDeclaration) e;
+			s = new StringBuilder();
+			switch(f.getFunctionDeclarationType()) {
+			case IFunctionDeclaration.FUNCTION:
+				s.append(f.getName() == null ? "" : f.getName().toString());
+				break;
+			case IFunctionDeclaration.CONSTRUCTOR:
+			case IFunctionDeclaration.STATIC_CONSTRUCTOR:
+				s.append("this");
+				break;
+			case IFunctionDeclaration.DESTRUCTOR:
+			case IFunctionDeclaration.STATIC_DESTRUCTOR:
+				s.append("~this");
+				break;
+			case IFunctionDeclaration.NEW:
+				s.append("new");
+				break;
+			case IFunctionDeclaration.DELETE:
+				s.append("delete");
+				break;
+			}
+			if (f.isTemplate()) {
+				appendTemplateParameters(s, f.getTemplateParameters());
+			}
+			appendArguments(s, f.getArguments());
+			return s.toString();
+		case IDElement.ENUM_DECLARATION:
+			name = ((IEnumDeclaration) element).getName();
+			return name == null ? "" : name.toString();
+		case IDElement.ENUM_MEMBER:
+			return ((IEnumMember) element).getName().toString();
+		case IDElement.INVARIANT_DECLARATION:
+			return "invariant";
+		case IDElement.UNITTEST_DECLARATION:
+			return "unit test";
+		case IDElement.VARIABLE_DECLARATION:
+			IVariableDeclaration var = (IVariableDeclaration) element;
+			name = var.getName();
+			s = new StringBuilder();
+			if (name != null) s.append(name.toString());
+			if (var.getType() != null) {
+				s.append(" : ");
+				appendType(s, var.getType());
+			}
+			return s.toString();
+		case IDElement.TYPEDEF_DECLARATION:
+			ITypedefDeclaration td = (ITypedefDeclaration) element;
+			name = td.getName();
+			s = new StringBuilder();
+			if (name != null) s.append(name.toString());
+			s.append(" : ");
+			appendType(s, td.getType());
+			return s.toString();
+		case IDElement.ALIAS_DECLARATION:
+			IAliasDeclaration al = (IAliasDeclaration) element;
+			name = al.getName();
+			s = new StringBuilder();
+			if (name != null) s.append(name.toString());
+			s.append(" : ");
+			appendType(s, al.getType());
+			return s.toString();
+		case IDElement.TEMPLATE_DECLARATION:
+			ITemplateDeclaration t = (ITemplateDeclaration) element;
+			name = t.getName();
+			s = new StringBuilder();
+			if (name != null) s.append(name.toString());
+			appendTemplateParameters(s, t.getTemplateParameters());
+			return s.toString();
+		case IDElement.LINK_DECLARATION:
+			ILinkDeclaration link = (ILinkDeclaration) element;
+			switch(link.getLinkage()) {
+			case ILinkDeclaration.LINKAGE_C: return "C";
+			case ILinkDeclaration.LINKAGE_CPP: return "Cpp";
+			case ILinkDeclaration.LINKAGE_D: return "D";
+			case ILinkDeclaration.LINKAGE_WINDOWS: return "Windows";
+			case ILinkDeclaration.LINKAGE_PASCAL: return "Pascal";
+			}
+			break;
+		case IDElement.CONDITIONAL_DECLARATION:
+			IConditionalDeclaration c = (IConditionalDeclaration) element;
+			switch(c.getConditionalDeclarationType()) {
+			case IConditionalDeclaration.CONDITIONAL_DEBUG:
+				IDebugDeclaration d = (IDebugDeclaration) element;
+				name = d.getDebug();
+				return name == null ? "" : name.toString();
+			case IConditionalDeclaration.CONDITIONAL_VERSION:
+				IVersionDeclaration v = (IVersionDeclaration) element;
+				name = v.getVersion();
+				return name == null ? "" : name.toString();
+			case IConditionalDeclaration.CONDITIONAL_STATIC_IF:
+				return "static if"; // TODO
+			}
+			break;
+		case IDElement.CONDITION_ASSIGNMENT:
+			IConditionAssignment va = (IConditionAssignment) element;
+			s = new StringBuilder();
+			switch(va.getConditionAssignmentType()) {
+			case IConditionAssignment.CONDITION_DEBUG:
+				s.append("debug");
+				break;
+			case IConditionAssignment.CONDITION_VERSION:
+				s.append("version");
+				break;
+			}
+			s.append(" = ");
+			if (va.getValue() != null) {
+				s.append(va.getValue().toString());
+			}
+			return s.toString();
+		case IDElement.PRAGMA_DECLARATION:
+			IPragmaDeclaration pd = (IPragmaDeclaration) element;
+			return pd.getIdentifier() == null ? "" : pd.getIdentifier().toString();
+		case IDElement.MIXIN_DECLARATION:
+			IMixinDeclaration mix = (IMixinDeclaration) element;
+			s = new StringBuilder();
+			if (mix.getName() != null) {
+				s.append(mix.getName());
+			}
+			templateArguments = mix.getTemplateArguments();
+			if (templateArguments.length > 0) {
+				s.append("!(");
+				appendElements(s, templateArguments);
+				s.append(")");
+			}
+			return s.toString();
+		case IImaginaryElements.IMPORTS:
+			 return "import declarations";
+		case IImaginaryElements.ELSE:
+			return "else";
+		case IDElement.TYPE:
+			s = new StringBuilder();
+			appendType(s, (IType) element);
+			return s.toString();
+		}
+		return super.getText(element);
+	}
+	
+	
+
+	@Override
+	public Image getImage(Object element) {
+		IDElement e = (IDElement) element;
+		int m;
+		
+		switch(e.getElementType()) {
+		case IDElement.MODULE_DECLARATION:
+			return moduleImage;
+		case IDElement.IMPORT_DECLARATION:
+			return importImage;
+		case IDElement.AGGREGATE_DECLARATION:
+			IAggregateDeclaration a = (IAggregateDeclaration) element;
+			switch(a.getAggregateDeclarationType()) {
+			case IAggregateDeclaration.CLASS_DECLARATION:
+				return classImage;
+			case IAggregateDeclaration.INTERFACE_DECLARATION:
+				return interfaceImage;
+			case IAggregateDeclaration.STRUCT_DECLARATION:
+				return structImage;
+			case IAggregateDeclaration.UNION_DECLARATION:
+				return unionImage;
+			}
+		case IDElement.FUNCTION_DECLARATION:
+			IFunctionDeclaration func = (IFunctionDeclaration) element;
+			m = func.getModifiers();
+			switch(func.getFunctionDeclarationType()) {
+			case IFunctionDeclaration.FUNCTION:
+			case IFunctionDeclaration.NEW:
+			case IFunctionDeclaration.DELETE:
+				if ((m & IModifier.PRIVATE) > 0) {
+					return functionPrivateImage;
+				} else if ((m & IModifier.PROTECTED) > 0) {
+					return functionProtectedImage;
+				} else if ((m & IModifier.PACKAGE) > 0) {
+					return functionPackageImage;
+				} else if ((m & IModifier.EXPORT) > 0) {
+					// TODO
+				}
+				return functionPublicImage;
+			case IFunctionDeclaration.CONSTRUCTOR:
+			case IFunctionDeclaration.STATIC_CONSTRUCTOR:
+				if ((m & IModifier.PRIVATE) > 0) {
+					return ctorPrivateImage;
+				} else if ((m & IModifier.PROTECTED) > 0) {
+					return ctorProtectedImage;
+				} else if ((m & IModifier.PACKAGE) > 0) {
+					return ctorPackageImage;
+				} else if ((m & IModifier.EXPORT) > 0) {
+					// TODO
+				}
+				return ctorPublicImage;
+			case IFunctionDeclaration.DESTRUCTOR:
+			case IFunctionDeclaration.STATIC_DESTRUCTOR:
+				if ((m & IModifier.PRIVATE) > 0) {
+					return dtorPrivateImage;
+				} else if ((m & IModifier.PROTECTED) > 0) {
+					return dtorProtectedImage;
+				} else if ((m & IModifier.PACKAGE) > 0) {
+					return dtorPackageImage;
+				} else if ((m & IModifier.EXPORT) > 0) {
+					// TODO
+				}
+				return dtorPublicImage;
+			}
+		case IDElement.ENUM_DECLARATION:
+			return enumImage;
+		case IDElement.ENUM_MEMBER:
+			return fieldPublicImage;
+		case IDElement.INVARIANT_DECLARATION:
+			return invariantImage;
+		case IDElement.UNITTEST_DECLARATION:
+			return unittestImage;
+		case IDElement.VARIABLE_DECLARATION:
+			m = ((IVariableDeclaration) element).getModifiers();
+			if ((m & IModifier.PRIVATE) > 0) {
+				return fieldPrivateImage;
+			} else if ((m & IModifier.PROTECTED) > 0) {
+				return fieldProtectedImage;
+			} else if ((m & IModifier.PACKAGE) > 0) {
+				return fieldPackageImage;
+			} else if ((m & IModifier.EXPORT) > 0) {
+				// TODO:
+				return fieldPublicImage;
+			}
+			return fieldPublicImage;
+		case IDElement.TYPEDEF_DECLARATION:
+			return typedefImage;
+		case IDElement.ALIAS_DECLARATION:
+			return aliasImage;
+		case IDElement.TEMPLATE_DECLARATION:
+			return templateImage;
+		case IDElement.LINK_DECLARATION:
+			return linkImage;
+		case IDElement.CONDITIONAL_DECLARATION:
+			IConditionalDeclaration c = (IConditionalDeclaration) element;
+			switch(c.getConditionalDeclarationType()) {
+			case IConditionalDeclaration.CONDITIONAL_DEBUG:
+				return debugImage;
+			case IConditionalDeclaration.CONDITIONAL_VERSION:
+				return versionImage;
+			}
+			break;
+		case IDElement.CONDITION_ASSIGNMENT:
+			IConditionAssignment va = (IConditionAssignment) element;
+			switch(va.getConditionAssignmentType()) {
+			case IConditionAssignment.CONDITION_DEBUG:
+				return debugImage;
+			case IConditionAssignment.CONDITION_VERSION:
+				return versionImage;
+			}
+		case IImaginaryElements.IMPORTS:
+			return importsImage;
+		}
+		return super.getImage(element);
+	}
+	
+	private String getImportText(IImportDeclaration impDecl) {
+		StringBuilder builder = new StringBuilder();
+		for(IImport imp : impDecl.getImports()) {
+			if (imp.getAlias() == null) {
+				builder.append(imp.getQualifiedName());
+			} else {
+				builder.append(imp.getAlias());
+				builder.append(" = ");
+				builder.append(imp.getQualifiedName());
+			}
+			if (imp.getSelectiveImports().length > 0) {
+				builder.append(": ");
+				for(ISelectiveImport sel : imp.getSelectiveImports()) {
+					if (sel.getAlias() == null) {
+						builder.append(sel.getName());
+					} else {
+						builder.append(sel.getAlias());
+						builder.append(" = ");
+						builder.append(sel.getName());
+					}
+					builder.append(", ");
+				}
+			} else {
+				builder.append(", ");
+			}
+		}
+		
+		if (builder.length() > 2) {
+			builder.delete(builder.length() - 2, builder.length());
+		}
+		
+		return builder.toString();
+	}
+	
+	private void appendTemplateParameters(StringBuilder s, ITemplateParameter[] templateParameters) {
+		s.append('(');
+		
+		int i = 0;
+		for(ITemplateParameter p : templateParameters) {
+			switch(p.getTemplateParameterType()) {
+			case ITemplateParameter.TEMPLATE_PARAMETER_TYPE:
+				ITemplateTypeParameter ttp = (ITemplateTypeParameter) p;
+				s.append(ttp.getName().toString());
+				if (ttp.getSpecificType() != null) {
+					s.append(" : ");
+					appendType(s, ttp.getSpecificType());
+				}
+				if (ttp.getDefaultType() != null) {
+					s.append(" = ");
+					appendType(s, ttp.getDefaultType());
+				}
+				break;
+			case ITemplateParameter.TEMPLATE_PARAMETER_ALIAS:
+				ITemplateAliasParameter tap = (ITemplateAliasParameter) p;
+				s.append("alias ");
+				s.append(tap.getName().toString());
+				if (tap.getSpecificType() != null) {
+					s.append(" : ");
+					appendType(s, tap.getSpecificType());
+				}
+				if (tap.getDefaultType() != null) {
+					s.append(" = ");
+					appendType(s, tap.getDefaultType());
+				}
+				break;
+			}
+			if (i != templateParameters.length - 1) {
+				s.append(", ");
+			}
+			i++;
+		}
+			
+		s.append(')');
+	}
+	
+	private void appendElements(StringBuilder s, IDElement[] templateArguments) {
+		for(int i = 0; i < templateArguments.length; i++) {
+			s.append(getText(templateArguments[i]));
+			if (i != templateArguments.length - 1) {
+				s.append(", ");
+			}
+		}
+	}
+	
+	private void appendArguments(StringBuilder s, IArgument[] arguments) {
+		s.append('(');
+		for(int i = 0; i < arguments.length; i++) {
+			switch(arguments[i].getKind()) {
+			case IArgument.OUT: s.append("out "); break;
+			case IArgument.INOUT: s.append("inout "); break;
+			case IArgument.LAZY: s.append("lazy "); break;
+			}
+			appendType(s, arguments[i].getType());
+			if (i != arguments.length - 1) {
+				s.append(", ");
+			}
+		}
+		s.append(')');
+	}
+	
+	private void appendType(StringBuilder s, IType type) {
+		switch(type.getTypeType()) {
+		case IType.TYPE_BASIC:
+			s.append(type);
+			break;
+		case IType.TYPE_POINTER:
+			IPointerType pointer = (IPointerType) type;
+			appendType(s, pointer.getInnerType());
+			s.append('*');
+			break;
+		case IType.TYPE_ARRAY:
+			IArrayType array = (IArrayType) type;
+			appendType(s, array.getInnerType());
+			s.append('[');
+			switch(array.getArrayTypeType()) {
+			case IArrayType.ASSOCIATIVE_ARRAY:
+				IAssociativeArrayType assoc = (IAssociativeArrayType) array;
+				appendType(s, assoc.getKeyType());
+				break;
+			case IArrayType.STATIC_ARRAY:
+				IStaticArrayType st = (IStaticArrayType) array;
+				s.append(st.getDimension().toString());
+				break;
+			}
+			s.append(']');
+			break;
+		case IType.TYPE_TEMPLATE_INSTANCE:
+			ITemplateInstanceType ti = (ITemplateInstanceType) type;
+			s.append(ti.getShortName());
+			s.append("!(");
+			appendElements(s, ti.getTemplateArguments());
+			s.append(")");
+			break;
+		case IType.TYPE_IDENTIFIER:
+			IIdentifierType it = (IIdentifierType) type;
+			s.append(it.getShortName());
+			break;
+		case IType.TYPE_DELEGATE:
+		case IType.TYPE_POINTER_TO_FUNCTION:
+			IDelegateType dt = (IDelegateType) type;
+			appendType(s, dt.getReturnType());
+			s.append(' ');
+			if (type.getTypeType() == IType.TYPE_DELEGATE) {
+				s.append("delegate");
+			} else {
+				s.append("function");
+			}
+			appendArguments(s, dt.getArguments());
+			break;
+		case IType.TYPE_TYPEOF:
+			ITypeofType tt = (ITypeofType) type;
+			s.append("typeof(");
+			s.append(tt.getExpression());
+			s.append(")");
+			break;
+		default:
+			s.append(type.toString());
+			break;
+		}
+	}
+	
+	@Override
+	public void dispose() {
+		moduleImage.dispose();
+		importsImage.dispose();
+		importImage.dispose();		
+		classImage.dispose();
+		interfaceImage.dispose();
+		enumImage.dispose();
+		structImage.dispose();
+		unionImage.dispose();
+		templateImage.dispose();
+		invariantImage.dispose();
+		unittestImage.dispose();
+		typedefImage.dispose();
+		aliasImage.dispose();
+		linkImage.dispose();
+		versionImage.dispose();
+		debugImage.dispose();
+		functionPublicImage.dispose();
+		functionPackageImage.dispose();
+		functionProtectedImage.dispose();
+		functionPrivateImage.dispose();
+		ctorPublicImage.dispose();
+		ctorPackageImage.dispose();
+		ctorProtectedImage.dispose();
+		ctorPrivateImage.dispose();
+		dtorPublicImage.dispose();
+		dtorPackageImage.dispose();
+		dtorProtectedImage.dispose();
+		dtorPrivateImage.dispose();
+		
+		moduleImage = null;
+		importsImage = null;
+		importImage = null;		
+		classImage = null;
+		interfaceImage = null;
+		enumImage = null;
+		structImage = null;
+		unionImage = null;
+		templateImage = null;
+		invariantImage = null;
+		unittestImage = null;
+		typedefImage = null;
+		aliasImage = null;
+		linkImage = null;
+		versionImage = null;
+		debugImage = null;
+		functionPublicImage = null;
+		functionPackageImage = null;
+		functionProtectedImage = null;
+		functionPrivateImage = null;
+		ctorPublicImage = null;
+		ctorPackageImage = null;
+		ctorProtectedImage = null;
+		ctorPrivateImage = null;
+		dtorPublicImage = null;
+		dtorPackageImage = null;
+		dtorProtectedImage = null;
+		dtorPrivateImage = null;
+	}
+
+}

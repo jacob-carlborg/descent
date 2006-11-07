@@ -1,0 +1,33 @@
+package descent.internal.core.dom;
+
+import descent.core.dom.IDElementVisitor;
+import descent.core.dom.IExpression;
+import descent.core.dom.IExpressionInitializer;
+
+public class ExpInitializer extends Initializer implements IExpressionInitializer {
+
+	public Expression e;
+
+	public ExpInitializer(Loc loc, Expression e) {
+		this.e = e;
+		this.start = e.start;
+		this.length = e.length;
+	}
+	
+	public IExpression getExpression() {
+		return e;
+	}
+	
+	public int getInitializerType() {
+		return EXPRESSION_INITIALIZER;
+	}
+	
+	public void accept(IDElementVisitor visitor) {
+		boolean children = visitor.visit(this);
+		if (children) {
+			acceptChild(visitor, e);
+		}
+		visitor.endVisit(this);
+	}
+
+}

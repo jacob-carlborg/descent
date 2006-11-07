@@ -1,0 +1,119 @@
+package descent.ui.wizards;
+
+import java.net.URI;
+
+import org.eclipse.core.filesystem.URIUtil;
+import org.eclipse.core.resources.ICommand;
+import org.eclipse.core.resources.IFolder;
+import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IProjectDescription;
+import org.eclipse.core.resources.IWorkspace;
+import org.eclipse.core.resources.IWorkspaceRoot;
+import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.wizard.Wizard;
+import org.eclipse.ui.INewWizard;
+import org.eclipse.ui.IWorkbench;
+
+import descent.ui.DescentUI;
+
+public class DProjectWizard extends Wizard implements INewWizard {
+	
+	private DProjectWizardPage page;
+	
+	public DProjectWizard() {
+		setWindowTitle("New D Project");
+	}
+	
+	@Override
+	public void addPages() {
+		page = new DProjectWizardPage();
+		addPage(page);
+	}
+	
+	public void init(IWorkbench workbench, IStructuredSelection selection) {
+	}
+
+	@Override
+	public boolean performFinish() {
+		String name = page.getName();
+		IPath location = page.getLocation();
+		URI locationURI = URIUtil.toURI(location);
+		
+		if (locationURI != null && ResourcesPlugin.getWorkspace().getRoot().getLocationURI().equals(locationURI)) {
+			locationURI = null;
+		}
+		
+		try {
+			IWorkspace workspace = ResourcesPlugin.getWorkspace();
+			IWorkspaceRoot root = workspace.getRoot();
+			
+			IProject project = root.getProject(name);
+			
+			IProjectDescription description = workspace.newProjectDescription(name);
+			if (!page.isUseDefaultLocation()) { 
+				description.setLocationURI(locationURI);
+			}
+			
+			project.create(description, null);
+			
+			if (!project.isOpen()) {
+				project.open(null);
+			}
+			
+			// Add nature
+			description = project.getDescription();
+			
+			String[] natures = description.getNatureIds();
+			String[] newNatures = new String[natures.length + 1];
+			System.arraycopy(natures, 0, newNatures, 0, natures.length);
+			newNatures[natures.length] = DescentUI.NATURE_ID;
+			
+			IStatus status = workspace.validateNatureSet(natures);
+			// check the status and decide what to do
+			if (status.getCode() != IStatus.OK) {
+			  	throw new CoreException(new Status(IStatus.ERROR, DescentUI.PLUGIN_ID, 1, "Error", null));
+			}
+			
+			description.setNatureIds(newNatures);
+			
+			// Add builder
+			ICommand[] commands = description.getBuildSpec();
+			boolean found = false;
+
+			for (int i = 0; i < commands.length; ++i) {
+				if (commands[i].getBuilderName().equals(DescentUI.BUILDER_ID)) {
+					found = true;
+					break;
+				}
+			}
+			if (!found) {
+				// add builder to project
+				ICommand command = description.newCommand();
+				command.setBuilderName(DescentUI.BUILDER_ID);
+				ICommand[] newCommands = new ICommand[commands.length + 1];
+
+				// Add it before other builders.
+				System.arraycopy(commands, 0, newCommands, 1, commands.length);
+				newCommands[0] = command;
+				description.setBuildSpec(newCommands);
+			}
+			
+			project.setDescription(description, null);
+			
+			IFolder srcFolder = project.getFolder("src");
+			if (!srcFolder.exists()) {
+				srcFolder.create(true, false, null);
+			}			
+		} catch (CoreException e) {
+			DescentUI.log(e);
+		}
+		
+		return true;
+	}
+
+}

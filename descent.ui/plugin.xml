@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.2"?>
+<plugin>
+
+   <extension
+         point="org.eclipse.ui.editors">
+      <editor
+            name="D Editor"
+            extensions="d"
+            icon="icons/d.gif"
+            contributorClass="org.eclipse.ui.texteditor.BasicTextEditorActionContributor"
+            class="descent.ui.text.DEditor"
+            id="descent.ui.text.DEditor">
+      </editor>
+   </extension>
+   <extension
+         point="org.eclipse.ui.decorators">
+      <decorator
+            class="descent.ui.text.outline.DOutlineLightweightLabelDecorator"
+            id="descent.ui.outline.decorator"
+            label="D Outline Decorator"
+            lightweight="true"
+            location="TOP_RIGHT"
+            state="true">
+         <enablement>
+            <objectClass name="descent.core.dom.IDElement"/>
+         </enablement>
+      </decorator>
+   </extension>
+   <extension
+         point="org.eclipse.ui.newWizards">
+      <category
+            id="descent.ui.d"
+            name="D"/>
+      <wizard
+            category="descent.ui.d"
+            class="descent.ui.wizards.DProjectWizard"
+            icon="icons/dproject.gif"
+            id="descent.ui.wizards.DProjectWizard"
+            name="D Project"
+            project="true"/>
+   </extension>
+   <extension
+         point="org.eclipse.ui.preferencePages">
+      <page
+            class="descent.ui.preferences.DCompilerPreferencePage"
+            id="descent.ui.preferecens.DCompilerPreferencePage"
+            name="D Compiler"/>
+   </extension>
+   <extension
+         id="dnature"
+         name="D Project Nature"
+         point="org.eclipse.core.resources.natures">
+      <runtime>
+         <run class="descent.ui.project.DProjectNature"/>
+      </runtime>
+   </extension>
+   <extension
+         point="org.eclipse.ui.ide.projectNatureImages">
+      <image
+            icon="icons/d_ovr.gif"
+            id="descent.ui.dProjectNatureImage"
+            natureId="descent.ui.dnature"/>
+   </extension>
+   <extension
+         id="dbuilder"
+         name="D Project Builder"
+         point="org.eclipse.core.resources.builders">
+      <builder >
+         <run class="descent.ui.builders.DProjectBuilder"/>
+      </builder>
+   </extension>
+
+</plugin>

@@ -1,0 +1,34 @@
+package descent.internal.core.dom;
+
+import java.util.List;
+
+import descent.core.dom.IDElementVisitor;
+import descent.core.dom.IImport;
+import descent.core.dom.IImportDeclaration;
+
+public class ImportDeclaration extends AbstractElement implements IImportDeclaration {
+	
+	public List<IImport> imports;
+
+	public IImport[] getImports() {
+		if (imports == null) return new IImport[0];
+		// TODO: optimize?
+		for(IImport imp : imports) {
+			((AbstractElement) imp).modifiers = this.modifiers;
+		}
+		return imports.toArray(new IImport[imports.size()]);
+	}
+	
+	public int getElementType() {
+		return IMPORT_DECLARATION;
+	}
+	
+	public void accept(IDElementVisitor visitor) {
+		boolean children = visitor.visit(this);
+		if (children) {
+			acceptChildren(visitor, imports);
+		}
+		visitor.endVisit(this);
+	}
+
+}

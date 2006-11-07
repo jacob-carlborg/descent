@@ -1,0 +1,24 @@
+package descent.core.dom;
+
+/**
+ * A unittest declaration:
+ * 
+ * <pre>
+ * unittest {
+ * 
+ * }
+ * </pre>
+ */
+public interface IUnitTestDeclaration extends IDElement {
+	
+	/**
+	 * Returns the "unittest" part of this declaration.
+	 */
+	IName getName();
+	
+	/**
+	 * Returns the statement present in the unittest.
+	 */
+	IStatement getStatement();
+
+}
