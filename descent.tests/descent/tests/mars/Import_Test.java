@@ -20,6 +20,7 @@ public class Import_Test extends Parser_Test {
 		
 		IImportDeclaration impDecl = (IImportDeclaration) declDefs[0];
 		assertEquals(IDElement.IMPORT_DECLARATION, impDecl.getElementType());
+		assertFalse(impDecl.isStatic());
 		assertPosition(impDecl, 1, 9);
 		
 		IImport[] imps = impDecl.getImports();
@@ -150,6 +151,33 @@ public class Import_Test extends Parser_Test {
 		assertPosition(sel.getAlias(), 14, 6);
 		
 		assertVisitor(impDecl, 6);
+	}
+	
+	public void testStaticImport() throws Exception {
+		String s = " static import a;";
+		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
+		
+		IDElement[] declDefs = unit.getDeclarationDefinitions();
+		assertEquals(1, declDefs.length);
+		
+		IImportDeclaration impDecl = (IImportDeclaration) declDefs[0];
+		assertEquals(IDElement.IMPORT_DECLARATION, impDecl.getElementType());
+		assertTrue(impDecl.isStatic());
+		assertPosition(impDecl, 1, s.length() - 1);
+		
+		IImport[] imps = impDecl.getImports();
+		assertEquals(1, imps.length);
+		
+		IImport imp = imps[0];
+		assertEquals(IDElement.IMPORT, imp.getElementType());
+		assertPosition(imp, 15, 1);
+		
+		IQualifiedName qName = imp.getQualifiedName();
+		assertEquals(IDElement.QUALIFIED_NAME, qName.getElementType());
+		assertEquals("a", qName.toString());
+		assertPosition(qName, 15, 1);
+		
+		assertVisitor(impDecl, 3);
 	}
 
 }

@@ -325,6 +325,10 @@ public class Parser extends Lexer {
 					break;
 				} else if (token.value == TOKimport) {
 					s = parseImport(decldefs, true);
+					ImportDeclaration id = (ImportDeclaration) decldefs.get(decldefs.size() -1);
+					id.isStatic = true;
+					id.length += id.start - staticToken.ptr;
+					id.start = staticToken.ptr;
 				} else {
 					stc = STCstatic;
 					// goto Lstc2;
@@ -333,8 +337,10 @@ public class Parser extends Lexer {
 					stc = ((Integer) tempObj[1]);
 					s = (AbstractElement) tempObj[2];
 				}
-				s.start = staticToken.ptr;
-				s.length = prevToken.ptr + prevToken.len - s.start;
+				if (s != null) {
+					s.start = staticToken.ptr;
+					s.length = prevToken.ptr + prevToken.len - s.start;
+				}
 				break;
 
 			case TOKconst:
@@ -635,6 +641,7 @@ public class Parser extends Lexer {
 		    Initializer init = parseInitializer();
 		    VarDeclaration v = new VarDeclaration(loc, null, ident, init);
 		    v.storage_class = stc;
+		    v.modifiers = STC.getModifiers(stc);
 		    Dsymbol s = v;
 		    if (token.value != TOKsemicolon) {
 		    	problem("Semicolon expected following auto declaration", IProblem.SEVERITY_ERROR, IProblem.SEMICOLON_EXPECTED, token.ptr, token.len);
@@ -5711,6 +5718,8 @@ public class Parser extends Lexer {
 					arguments.add(arg);
 					if (token.value == endtok)
 						break;
+					if (token.value == TOKeof) 
+						return arguments;
 					check(TOKcomma);
 				}
 			}

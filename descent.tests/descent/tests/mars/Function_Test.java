@@ -224,6 +224,17 @@ public class Function_Test extends Parser_Test {
 		assertVisitor(func, 19);
 	}
 	
+	public void testFunctionWithOneArgument() {
+		String s = " void func(int a) { }";
+		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
+		IDElement[] declDefs = unit.getDeclarationDefinitions();
+		
+		IFunctionDeclaration func = (IFunctionDeclaration) declDefs[0];
+		
+		IArgument[] args = func.getArguments();
+		assertEquals(1, args.length);
+	}
+	
 	public void testConstructorWithArguments() {
 		String s = "      this(int a = 2, in char b, out bool c, inout float d, lazy double e) { }";
 		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);

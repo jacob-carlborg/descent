@@ -9,5 +9,10 @@ public interface IImportDeclaration extends IDElement, IModifiersContainer {
 	 * Returns the imports of this declaration.
 	 */
 	IImport[] getImports();
+	
+	/**
+	 * Determines if this import declaration is static.
+	 */
+	boolean isStatic();
 
 }

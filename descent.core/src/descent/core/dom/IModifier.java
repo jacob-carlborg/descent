@@ -1,5 +1,9 @@
 package descent.core.dom;
 
+/**
+ * A list of modifiers. They are combined by logical "or" to form
+ * combined modifiers.
+ */
 public interface IModifier {
 	
 	int NONE = 0;

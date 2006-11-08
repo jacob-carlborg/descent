@@ -4,6 +4,7 @@ import descent.core.dom.IArrayType;
 import descent.core.dom.ICompilationUnit;
 import descent.core.dom.IDelegateType;
 import descent.core.dom.IDElement;
+import descent.core.dom.IModifier;
 import descent.core.dom.ITemplateInstanceType;
 import descent.core.dom.IType;
 import descent.core.dom.IVariableDeclaration;
@@ -148,6 +149,56 @@ public class VariableDeclaration_Test extends Parser_Test {
 		IVariableDeclaration var = (IVariableDeclaration) declDefs[0];
 		assertEquals(IDElement.VARIABLE_DECLARATION, var.getElementType());
 		assertNull(var.getType());
+		assertTrue((var.getModifiers() & IModifier.AUTO) != 0);
+	}
+	
+	public void testStatic() {
+		String s = " static x = 1;";
+		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
+		IDElement[] declDefs = unit.getDeclarationDefinitions();
+		assertEquals(1, declDefs.length);
+		
+		IVariableDeclaration var = (IVariableDeclaration) declDefs[0];
+		assertEquals(IDElement.VARIABLE_DECLARATION, var.getElementType());
+		assertNull(var.getType());
+		assertTrue((var.getModifiers() & IModifier.STATIC) != 0);
+	}
+	
+	public void testExtern() {
+		String s = " extern x = 1;";
+		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
+		IDElement[] declDefs = unit.getDeclarationDefinitions();
+		assertEquals(1, declDefs.length);
+		
+		IVariableDeclaration var = (IVariableDeclaration) declDefs[0];
+		assertEquals(IDElement.VARIABLE_DECLARATION, var.getElementType());
+		assertNull(var.getType());
+		assertTrue((var.getModifiers() & IModifier.EXTERN) != 0);
+	}
+	
+	public void testStaticAndOther() {
+		Object[][] modifiers = {
+				{ "const", IModifier.CONST },
+				{ "final", IModifier.FINAL },	
+				{ "auto", IModifier.AUTO },
+				{ "override", IModifier.OVERRIDE },
+				{ "abstract", IModifier.ABSTRACT },
+				{ "synchronized", IModifier.SYNCHRONIZED },
+				{ "deprecated", IModifier.DEPRECATED },
+		};
+		
+		for(Object[] modifier : modifiers) {
+			String s = " static " + modifier[0] + " x = 1;";
+			ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
+			IDElement[] declDefs = unit.getDeclarationDefinitions();
+			assertEquals(1, declDefs.length);
+			
+			IVariableDeclaration var = (IVariableDeclaration) declDefs[0];
+			assertEquals(IDElement.VARIABLE_DECLARATION, var.getElementType());
+			assertNull(var.getType());
+			assertTrue((var.getModifiers() & IModifier.STATIC) != 0);
+			assertTrue((var.getModifiers() & ((Integer) modifier[1])) != 0);
+		}
 	}
 	
 	public void testTemplate() {

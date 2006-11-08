@@ -512,6 +512,46 @@ public class Problems_Test extends TestCase {
 		assertEquals(5, p.getLength());
 	}
 	
+	public void test_PRAGMA_IDENTIFIER_EXPECTED() {
+		IProblem p = getProblem("pragma(2);");
+		  
+		assertEquals(IProblem.IDENTIFIER_EXPECTED, p.getId());
+		assertEquals(7, p.getOffset());
+		assertEquals(1, p.getLength());
+	}
+	
+	public void test_PRAGMA_CHECK_SINGLE_PARAMETER_NOT_RPAREN() {
+		IProblem p = getProblem("pragma(msg(;");
+		  
+		assertEquals(IProblem.FOUND_SOMETHING_WHEN_EXPECTING_SOMETHING, p.getId());
+		assertEquals(10, p.getOffset());
+		assertEquals(1, p.getLength());
+	}
+	
+	public void test_PRAGMA_CHECK_SINGLE_PARAMETER_NOT_RPAREN_OUT_OF_MEMORY_BUG() {
+		IProblem[] p = getProblems("pragma(msg,(;", 2);
+		  
+		assertEquals(IProblem.EXPRESSION_EXPECTED, p[0].getId());
+		assertEquals(12, p[0].getOffset());
+		assertEquals(1, p[0].getLength());
+	}
+	
+	public void test_ENUM_DECLARATION_IS_INVALID() {
+		IProblem p = getProblem(" enum {");
+		  
+		assertEquals(IProblem.ENUM_DECLARATION_IS_INVALID, p.getId());
+		assertEquals(1, p.getOffset());
+		assertEquals(4, p.getLength());
+	}
+	
+	public void test_MEMBERS_OF_TEMPLATE_DECLARATION_EXPECTED() {
+		IProblem[] p = getProblems(" template T() int", 3);
+		  
+		assertEquals(IProblem.MEMBERS_EXPECTED, p[0].getId());
+		assertEquals(14, p[0].getOffset());
+		assertEquals(3, p[0].getLength());
+	}
+	
 	private IProblem getProblem(String s) {
 		ParserFacade facade = new ParserFacade();
 		ICompilationUnit unit = facade.parseCompilationUnit(s);

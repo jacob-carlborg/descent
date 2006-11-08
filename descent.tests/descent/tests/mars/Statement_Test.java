@@ -2,8 +2,10 @@ package descent.tests.mars;
 
 import descent.core.dom.IArgument;
 import descent.core.dom.IBreakStatement;
+import descent.core.dom.ICompilationUnit;
 import descent.core.dom.IConditionalStatement;
 import descent.core.dom.IContinueStatement;
+import descent.core.dom.IDElement;
 import descent.core.dom.IDebugStatement;
 import descent.core.dom.IDoWhileStatement;
 import descent.core.dom.IExpression;
@@ -18,6 +20,7 @@ import descent.core.dom.IOnScopeStatement;
 import descent.core.dom.IPragmaStatement;
 import descent.core.dom.IReturnStatement;
 import descent.core.dom.IStatement;
+import descent.core.dom.IStaticAssert;
 import descent.core.dom.IStaticAssertStatement;
 import descent.core.dom.IStaticIfStatement;
 import descent.core.dom.ISwitchStatement;
@@ -162,11 +165,27 @@ public class Statement_Test extends Parser_Test {
 		assertVisitor(stm, 3);
 	}
 	
-	public void testStaticAssert() {
+	public void testStaticAssertStatement() {
 		String s = " static assert(1, true);";
 		IStaticAssertStatement stm = (IStaticAssertStatement) new ParserFacade().parseStatement(s);
 		
 		assertEquals(IStatement.STATEMENT_STATIC_ASSERT, stm.getStatementType());
+		assertPosition(stm, 1, 23);
+		
+		assertEquals("1", stm.getExpression().toString());
+		assertEquals("true", stm.getMessage().toString());
+		
+		assertVisitor(stm, 3);
+	}
+	
+	public void testStaticAssertDeclaration() {
+		String s = " static assert(1, true);";
+		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
+		
+		assertEquals(1, unit.getDeclarationDefinitions().length);
+		
+		IStaticAssert stm = (IStaticAssert) unit.getDeclarationDefinitions()[0];
+		assertEquals(IDElement.STATIC_ASSERT, stm.getElementType());
 		assertPosition(stm, 1, 23);
 		
 		assertEquals("1", stm.getExpression().toString());
@@ -195,8 +214,14 @@ public class Statement_Test extends Parser_Test {
 		
 		assertEquals(IStatement.STATEMENT_FOR, stm.getStatementType());
 		assertPosition(stm, 1, s.length() - 1);
+	}
+	
+	public void testForEmpty() {
+		String s = " for(;;) { }";
+		IForStatement stm = (IForStatement) new ParserFacade().parseStatement(s);
 		
-		// TODO: assertVisitor(stm, 2);
+		assertEquals(IStatement.STATEMENT_FOR, stm.getStatementType());
+		assertPosition(stm, 1, s.length() - 1);
 	}
 	
 	public void testForeach() {

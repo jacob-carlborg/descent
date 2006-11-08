@@ -9,6 +9,7 @@ import descent.core.dom.IImportDeclaration;
 public class ImportDeclaration extends AbstractElement implements IImportDeclaration {
 	
 	public List<IImport> imports;
+	public boolean isStatic;
 
 	public IImport[] getImports() {
 		if (imports == null) return new IImport[0];
@@ -21,6 +22,10 @@ public class ImportDeclaration extends AbstractElement implements IImportDeclara
 	
 	public int getElementType() {
 		return IMPORT_DECLARATION;
+	}
+	
+	public boolean isStatic() {
+		return isStatic;
 	}
 	
 	public void accept(IDElementVisitor visitor) {

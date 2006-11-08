@@ -1,8 +1,10 @@
 package descent.internal.core.dom;
 
 import descent.core.dom.IDElementVisitor;
+import descent.core.dom.IExpression;
+import descent.core.dom.IStaticAssert;
 
-public class StaticAssert extends Dsymbol {
+public class StaticAssert extends Dsymbol implements IStaticAssert {
 	
 	public Expression exp;
 	public Expression msg;
@@ -13,13 +15,26 @@ public class StaticAssert extends Dsymbol {
 	}
 
 	public int getElementType() {
-//		 TODO Auto-generated method stub
-		return -1;
+		return STATIC_ASSERT;
+	}
+	
+	public IExpression getExpression() {
+		return exp;
+	}
+
+	public IExpression getMessage() {
+		return msg;
 	}
 	
 	public void accept(IDElementVisitor visitor) {
-		// TODO Auto-generated method stub
-		
+		boolean children = visitor.visit(this);
+		if (children) {
+			acceptChild(visitor, exp);
+			acceptChild(visitor, msg);
+		}
+		visitor.endVisit(this);
 	}
+
+	
 
 }

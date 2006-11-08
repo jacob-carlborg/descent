@@ -204,6 +204,12 @@ public interface IDElement {
 	int CATCH = 33;
 	
 	/**
+	 * Constant representing a static assert.
+	 * A D element with this type can be safely cast to <code>IStaticAssert</code>. 
+	 */
+	int STATIC_ASSERT = 33;
+	
+	/**
 	 * Returns the offset in the source code where this element
 	 * is located.
 	 */
