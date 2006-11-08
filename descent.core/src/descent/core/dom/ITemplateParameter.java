@@ -24,6 +24,12 @@ public interface ITemplateParameter extends IDElement {
 	int TEMPLATE_PARAMETER_ALIAS = 3;
 	
 	/**
+	 * Constant representing a tuple template parameter.
+	 * A template parameter with this type can be safely cast to <code>ITemplateTupleParameter</code>. 
+	 */
+	int TEMPLATE_PARAMETER_TUPLE = 4;
+	
+	/**
 	 * Returns the type of this template parameter. Check the constants in
 	 * this interace.
 	 */

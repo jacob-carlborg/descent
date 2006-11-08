@@ -1420,6 +1420,9 @@ public class Parser extends Lexer {
 
 		// Get array of TemplateParameters
 		if (token.value != TOKrparen) {
+			
+			boolean variadic = false;
+			
 			while (true) {
 				TemplateParameter tp;
 				Identifier tp_ident = null;
@@ -1431,6 +1434,12 @@ public class Parser extends Lexer {
 				Token t;
 
 				Token firstToken = new Token(token);
+				
+			    if (variadic)
+			    {	
+			    	error("Variadic template parameter must be last one");
+			    	variadic = false;
+			    }
 
 				// Get TemplateParameter
 
@@ -1482,7 +1491,15 @@ public class Parser extends Lexer {
 						tp_defaulttype = parseDeclarator(tp_defaulttype, null);
 					}
 					tp = new TemplateTypeParameter(loc, tp_ident, tp_spectype,
-							tp_defaulttype);
+									tp_defaulttype);
+				}
+			    else if (token.value == TOKidentifier && t.value == TOKdotdotdot)
+			    {	// ident...
+					variadic = true;
+					tp_ident = new Identifier(token);
+					nextToken();
+					nextToken();
+					tp = new TemplateTupleParameter(loc, tp_ident);
 				} else { // ValueParameter
 					tp_valtype = parseBasicType();
 

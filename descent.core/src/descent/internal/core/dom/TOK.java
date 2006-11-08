@@ -82,7 +82,7 @@ public enum TOK {
 	// Leaf operators
 	TOKidentifier,	TOKstring,
 	TOKthis("this"),	TOKsuper("super"),
-	TOKhalt,
+	TOKhalt,	TOKtuple,
 
 	// Basic types
 	TOKvoid,
