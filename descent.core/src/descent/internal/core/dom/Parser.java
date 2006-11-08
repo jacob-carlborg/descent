@@ -1422,9 +1422,9 @@ public class Parser extends Lexer {
 		if (token.value != TOKrparen) {
 			
 			boolean variadic = false;
+			TemplateParameter tp = null;
 			
 			while (true) {
-				TemplateParameter tp;
 				Identifier tp_ident = null;
 				Type tp_spectype = null;
 				Type tp_valtype = null;
@@ -1437,7 +1437,9 @@ public class Parser extends Lexer {
 				
 			    if (variadic)
 			    {	
-			    	error("Variadic template parameter must be last one");
+			    	problem("Variadic template parameter must be last one", IProblem.SEVERITY_ERROR, IProblem.VARIADIC_TEMPLATE_PARAMETER_MUST_BE_LAST_ONE, 
+			    			tp.start, 
+			    			tp.length);
 			    	variadic = false;
 			    }
 

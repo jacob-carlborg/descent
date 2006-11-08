@@ -504,6 +504,14 @@ public class Problems_Test extends TestCase {
 		assertEquals(5, p.getLength());
 	}
 	
+	public void test_VARIADIC_TEMPLATE_PARAMETER_MUST_BE_LAST_ONE() {
+		IProblem p = getProblem("template Foo(T ..., U) { }");
+		  
+		assertEquals(IProblem.VARIADIC_TEMPLATE_PARAMETER_MUST_BE_LAST_ONE, p.getId());
+		assertEquals(13, p.getOffset());
+		assertEquals(5, p.getLength());
+	}
+	
 	private IProblem getProblem(String s) {
 		ParserFacade facade = new ParserFacade();
 		ICompilationUnit unit = facade.parseCompilationUnit(s);
