@@ -8,14 +8,26 @@ import descent.internal.core.dom.ParserFacade;
 public class Link_Test extends Parser_Test {
 	
 	public void test() {
-		String s = " extern(C) { }";
-		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
-		IDElement[] declDefs = unit.getDeclarationDefinitions();
+		Object[][] links = {
+				{ "D", ILinkDeclaration.LINKAGE_D  },
+				{ "C", ILinkDeclaration.LINKAGE_C  },
+				{ "C++", ILinkDeclaration.LINKAGE_CPP  },
+				{ "Windows", ILinkDeclaration.LINKAGE_WINDOWS  },
+				{ "Pascal", ILinkDeclaration.LINKAGE_PASCAL },
+				
+		};
 		
-		ILinkDeclaration link = (ILinkDeclaration) declDefs[0];
-		assertEquals(IDElement.LINK_DECLARATION, link.getElementType());
-		
-		assertPosition(link, 1, s.length() - 1);
+		for(Object[] linkX : links) {
+			String s = " extern(" + linkX[0] + ") { }";
+			ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
+			IDElement[] declDefs = unit.getDeclarationDefinitions();
+			
+			ILinkDeclaration link = (ILinkDeclaration) declDefs[0];
+			assertEquals(IDElement.LINK_DECLARATION, link.getElementType());
+			assertEquals(linkX[1], link.getLinkage());
+			
+			assertPosition(link, 1, s.length() - 1);
+		}
 	}
 
 }

@@ -28,6 +28,7 @@ public interface IProblem {
 	int INVALID_PRAGMA_SYNTAX = 17;
 	int UNRECOGNIZED_CHARACTER_ENTITY = 18;
 	int UNTERMINATED_NAMED_ENTITY = 19;
+	int UNDEFINED_ESCAPE_SEQUENCE = 20;
 	
 	int ENUM_MEMBER_EXPECTED = 108;
 	int ENUM_DECLARATION_IS_INVALID = 109;
@@ -82,7 +83,6 @@ public interface IProblem {
 	
 	int PROPERTY_CANNOT_BE_REDEFINED = 1001;
 	int STRUCTS_UNIONS_CANT_BE_ABSTRACT = 1002;
-	
 	
 	/**
 	 * A unique identifier of the problem, listed

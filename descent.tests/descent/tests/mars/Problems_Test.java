@@ -52,6 +52,14 @@ public class Problems_Test extends TestCase {
 		  
 		  assertEquals(IProblem.UNDEFINED_ESCAPE_HEX_SEQUENCE, p.getId());
 		  assertEquals(13, p.getOffset());
+		  assertEquals(3, p.getLength());
+	}
+	
+	public void test_UNDEFINED_ESCAPE_SEQUENCE() {
+		  IProblem p = getProblem(" char[] c = \"\\T\";");
+		  
+		  assertEquals(IProblem.UNDEFINED_ESCAPE_SEQUENCE, p.getId());
+		  assertEquals(13, p.getOffset());
 		  assertEquals(2, p.getLength());
 	}
 	
@@ -61,10 +69,22 @@ public class Problems_Test extends TestCase {
 		  assertEquals(IProblem.UNTERMINATED_STRING_CONSTANT, p[0].getId());
 		  assertEquals(12, p[0].getOffset());
 		  assertEquals(7, p[0].getLength());
+	}
+	
+	public void test_UNTERMINATED_STRING_CONSTANT_WYSIWYG() {
+		  IProblem[] p = getProblems(" char[] c = `hola ;", 2);
 		  
-		  assertEquals(IProblem.SEMICOLON_EXPECTED, p[1].getId());
-		  assertEquals(1, p[1].getOffset());
-		  assertEquals(18, p[1].getLength());
+		  assertEquals(IProblem.UNTERMINATED_STRING_CONSTANT, p[0].getId());
+		  assertEquals(12, p[0].getOffset());
+		  assertEquals(7, p[0].getLength());
+	}
+	
+	public void test_UNTERMINATED_STRING_CONSTANT_HEX() {
+		  IProblem[] p = getProblems(" char[] c = x\"ABCD ;", 3);
+		  
+		  assertEquals(IProblem.UNTERMINATED_STRING_CONSTANT, p[1].getId());
+		  assertEquals(12, p[1].getOffset());
+		  assertEquals(8, p[1].getLength());
 	}
 	
 	public void test_ODD_NUMBER_OF_CHARACTERS_IN_HEX_STRING() {
@@ -550,6 +570,14 @@ public class Problems_Test extends TestCase {
 		assertEquals(IProblem.MEMBERS_EXPECTED, p[0].getId());
 		assertEquals(14, p[0].getOffset());
 		assertEquals(3, p[0].getLength());
+	}
+
+	public void test_SEMICOLON_EXPECTED_FOLLOWING_AUTO_DECLARATION() {
+		  IProblem[] p = getProblems(" auto x = 2 2", 2);
+		  
+		  assertEquals(IProblem.SEMICOLON_EXPECTED, p[0].getId());
+		  assertEquals(12, p[0].getOffset());
+		  assertEquals(1, p[0].getLength());
 	}
 	
 	private IProblem getProblem(String s) {

@@ -1026,7 +1026,7 @@ public class Lexer implements IProblemCollector {
 			    c = v;
 			}
 			else {
-				problem("Undefined escape hex sequence \\" + c, IProblem.SEVERITY_ERROR, IProblem.UNDEFINED_ESCAPE_HEX_SEQUENCE, startOfNumber, p - startOfNumber);
+				problem("Undefined escape hex sequence", IProblem.SEVERITY_ERROR, IProblem.UNDEFINED_ESCAPE_HEX_SEQUENCE, startOfNumber, p - startOfNumber + 1);
 			}
 			break;
 
@@ -1077,7 +1077,7 @@ public class Lexer implements IProblemCollector {
 			    c = v;
 			}
 			else {
-				problem("undefined escape hex sequence \\" + (char) c, IProblem.SEVERITY_ERROR, IProblem.UNDEFINED_ESCAPE_HEX_SEQUENCE, p - 1, 2);
+				problem("Undefined escape sequence", IProblem.SEVERITY_ERROR, IProblem.UNDEFINED_ESCAPE_SEQUENCE, p - 1, 2);
 			}
 			break;
 	    }
@@ -1107,7 +1107,7 @@ public class Lexer implements IProblemCollector {
 
 		    case 0:
 		    case 0x1A: {
-		    	problem("Unterminated string constant", IProblem.SEVERITY_ERROR, IProblem.UNTERMINATED_STRING_CONSTANT, token.ptr, p - token.ptr);
+		    	problem("Unterminated string constant", IProblem.SEVERITY_ERROR, IProblem.UNTERMINATED_STRING_CONSTANT, token.ptr, p - token.ptr - 1);
 				t.ustring = "";
 				t.len = 0;
 				t.postfix = 0;
@@ -1169,7 +1169,7 @@ public class Lexer implements IProblemCollector {
 
 		    case 0:
 		    case 0x1A: {
-		    	problem("Unterminated string constant", IProblem.SEVERITY_ERROR, IProblem.UNTERMINATED_STRING_CONSTANT, token.ptr, p - token.ptr);
+		    	problem("Unterminated string constant", IProblem.SEVERITY_ERROR, IProblem.UNTERMINATED_STRING_CONSTANT, token.ptr, p - token.ptr - 1);
 				t.ustring = "";
 				t.len = 0;
 				t.postfix = 0;

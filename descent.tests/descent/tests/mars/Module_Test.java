@@ -56,5 +56,25 @@ public class Module_Test extends Parser_Test {
 		
 		assertPosition(md, 1, 36);
 	}
+	
+	public void testSkipFirstLine() {
+		String s = "#! something, I don't mind\n module a; ";
+		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
+		IModuleDeclaration md = unit.getModuleDeclaration();
+		
+		assertNotNull(md);
+		
+		s = "#! something, I don't mind\r module a; ";
+		unit = new ParserFacade().parseCompilationUnit(s);
+		md = unit.getModuleDeclaration();
+		
+		assertNotNull(md);
+		
+		s = "#! something, I don't mind\r\n module a; ";
+		unit = new ParserFacade().parseCompilationUnit(s);
+		md = unit.getModuleDeclaration();
+		
+		assertNotNull(md);
+	}
 
 }
