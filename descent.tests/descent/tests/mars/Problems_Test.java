@@ -580,6 +580,22 @@ public class Problems_Test extends TestCase {
 		  assertEquals(1, p[0].getLength());
 	}
 	
+	public void test_IFTYPE_DECPRECATED() {
+		  IProblem p = getProblem(" iftype(x) { }");
+		  
+		  assertEquals(IProblem.IFTYPE_DEPRECATED, p.getId());
+		  assertEquals(1, p.getOffset());
+		  assertEquals(6, p.getLength());
+	}
+	
+	public void test_INVALID_IFTYPE_SYNTAX() {
+		  IProblem p[] = getProblems(" iftype int", 3);
+		  
+		  assertEquals(IProblem.INVALID_IFTYPE_SYNTAX, p[0].getId());
+		  assertEquals(8, p[0].getOffset());
+		  assertEquals(3, p[0].getLength());
+	}
+	
 	private IProblem getProblem(String s) {
 		ParserFacade facade = new ParserFacade();
 		ICompilationUnit unit = facade.parseCompilationUnit(s);

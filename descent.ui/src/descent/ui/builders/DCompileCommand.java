@@ -89,8 +89,9 @@ public class DCompileCommand {
 		}
 		if (files != null) {
 			for(String file : files) {
-				s.append(' ');
+				s.append(" \"");
 				s.append(file);
+				s.append("\"");
 			}
 		}
 		

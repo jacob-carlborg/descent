@@ -566,12 +566,16 @@ public class Parser extends Lexer {
 				break;
 
 			case TOKiftype:
+				saveToken = new Token(token);
+				
 				condition = parseIftypeCondition();
 				// goto Lcondition;
 				tempObj = parseDeclDefs_Lcondition(condition);
 				a = (List<IDElement>) tempObj[0];
 				aelse = (List<IDElement>) tempObj[1];
 				s = (AbstractElement) tempObj[2];
+				s.start = saveToken.ptr;
+				s.length = prevToken.ptr + prevToken.len - s.start;
 				break;
 
 			case TOKsemicolon: // empty declaration
@@ -864,9 +868,9 @@ public class Parser extends Lexer {
 			problem("(type identifier : specialization) expected following iftype", IProblem.SEVERITY_ERROR, IProblem.INVALID_IFTYPE_SYNTAX, token.ptr, token.len);
 			return null;
 		}
-		Condition condition = new IftypeCondition(loc, targ, ident, tok, tspec);
+		Condition condition = new IftypeCondition(loc, targ, ident[0], tok, tspec);
 
-		problem("iftype(condition) is deprecated, use static if (is(condition))", IProblem.SEVERITY_ERROR, IProblem.IFTYPE_DEPRECATED, firstToken.ptr, prevToken.ptr + prevToken.len - firstToken.ptr);
+		problem("iftype(condition) is deprecated, use static if (is(condition))", IProblem.SEVERITY_WARNING, IProblem.IFTYPE_DEPRECATED, firstToken.ptr, firstToken.len);
 
 		return condition;
 	}

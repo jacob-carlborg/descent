@@ -62,6 +62,7 @@ public class DKeywordRule extends WordRule {
 		this.addWord("idouble", token);
 		this.addWord("if", token);
 		this.addWord("ifloat", token);
+		this.addWord("iftype", token);
 		this.addWord("import", token);
 		this.addWord("in", token);
 		this.addWord("inout", token);

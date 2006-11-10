@@ -4,6 +4,7 @@ import descent.core.dom.ICompilationUnit;
 import descent.core.dom.IConditionalDeclaration;
 import descent.core.dom.IDebugDeclaration;
 import descent.core.dom.IDElement;
+import descent.core.dom.IIftypeDeclaration;
 import descent.core.dom.IStaticIfDeclaration;
 import descent.core.dom.IConditionAssignment;
 import descent.core.dom.IVersionDeclaration;
@@ -128,6 +129,79 @@ public class Condition_Test extends Parser_Test {
 		assertEquals("some", v.getValue().toString());
 		assertPosition(v.getValue(), 9, 4);
 		assertPosition(v, 1, s.length() - 1);
+	}
+	
+	public void testIftypeNone() {
+		String s = " iftype(x) { }";
+		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
+		IDElement[] declDefs = unit.getDeclarationDefinitions();
+		assertEquals(1, declDefs.length);
+		
+		IIftypeDeclaration d = (IIftypeDeclaration) declDefs[0];
+		assertEquals(IDElement.CONDITIONAL_DECLARATION, d.getElementType());
+		assertEquals(IConditionalDeclaration.CONDITIONAL_IFTYPE, d.getConditionalDeclarationType());
+		
+		assertEquals(IIftypeDeclaration.IFTYPE_NONE, d.getIftypeCondition());
+		assertEquals("x", d.getTestType().toString());
+		assertNull(d.getIdentifier());
+		assertNull(d.getMatchingType());
+		
+		assertPosition(d, 1, s.length() - 1);
+	}
+	
+	public void testIftypeEquals() {
+		String s = " iftype(x == y) { }";
+		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
+		IDElement[] declDefs = unit.getDeclarationDefinitions();
+		assertEquals(1, declDefs.length);
+		
+		IIftypeDeclaration d = (IIftypeDeclaration) declDefs[0];
+		assertEquals(IDElement.CONDITIONAL_DECLARATION, d.getElementType());
+		assertEquals(IConditionalDeclaration.CONDITIONAL_IFTYPE, d.getConditionalDeclarationType());
+		
+		assertEquals(IIftypeDeclaration.IFTYPE_EQUALS, d.getIftypeCondition());
+		assertEquals("x", d.getTestType().toString());
+		assertNull(d.getIdentifier());
+		assertEquals("y", d.getMatchingType().toString());
+		
+		assertPosition(d, 1, s.length() - 1);
+	}
+	
+	public void testIftypeExtends() {
+		String s = " iftype(x : y) { }";
+		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
+		IDElement[] declDefs = unit.getDeclarationDefinitions();
+		assertEquals(1, declDefs.length);
+		
+		IIftypeDeclaration d = (IIftypeDeclaration) declDefs[0];
+		assertEquals(IDElement.CONDITIONAL_DECLARATION, d.getElementType());
+		assertEquals(IConditionalDeclaration.CONDITIONAL_IFTYPE, d.getConditionalDeclarationType());
+		
+		assertEquals(IIftypeDeclaration.IFTYPE_EXTENDS, d.getIftypeCondition());
+		assertEquals("x", d.getTestType().toString());
+		assertNull(d.getIdentifier());
+		assertEquals("y", d.getMatchingType().toString());
+		
+		assertPosition(d, 1, s.length() - 1);
+	}
+	
+	public void testIftypeWithIdentifier() {
+		String s = " iftype(int x : y) { }";
+		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
+		IDElement[] declDefs = unit.getDeclarationDefinitions();
+		assertEquals(1, declDefs.length);
+		
+		IIftypeDeclaration d = (IIftypeDeclaration) declDefs[0];
+		assertEquals(IDElement.CONDITIONAL_DECLARATION, d.getElementType());
+		assertEquals(IConditionalDeclaration.CONDITIONAL_IFTYPE, d.getConditionalDeclarationType());
+		
+		assertEquals(IIftypeDeclaration.IFTYPE_EXTENDS, d.getIftypeCondition());
+		assertEquals("int", d.getTestType().toString());
+		assertEquals("x", d.getIdentifier().toString());
+		assertPosition(d.getIdentifier(), 12, 1);
+		assertEquals("y", d.getMatchingType().toString());
+		
+		assertPosition(d, 1, s.length() - 1);
 	}
 	
 }

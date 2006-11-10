@@ -5,10 +5,12 @@ import java.util.List;
 import descent.core.dom.IDebugDeclaration;
 import descent.core.dom.IDElement;
 import descent.core.dom.IDElementVisitor;
+import descent.core.dom.IIftypeDeclaration;
 import descent.core.dom.IName;
+import descent.core.dom.IType;
 import descent.core.dom.IVersionDeclaration;
 
-public class ConditionalDeclaration extends Dsymbol implements IVersionDeclaration, IDebugDeclaration {
+public class ConditionalDeclaration extends Dsymbol implements IVersionDeclaration, IDebugDeclaration, IIftypeDeclaration {
 	
 	public Condition condition;
 	public List<IDElement> a;
@@ -28,6 +30,7 @@ public class ConditionalDeclaration extends Dsymbol implements IVersionDeclarati
 		switch(this.condition.getConditionType()) {
 		case Condition.DEBUG: return CONDITIONAL_DEBUG;
 		case Condition.VERSION: return CONDITIONAL_VERSION;
+		case Condition.IFTYPE: return CONDITIONAL_IFTYPE;
 		}
 		return 0;
 	}
@@ -38,6 +41,22 @@ public class ConditionalDeclaration extends Dsymbol implements IVersionDeclarati
 	
 	public IName getDebug() {
 		return ((DebugCondition) condition).id;
+	}
+	
+	public IName getIdentifier() {
+		return ((IftypeCondition) condition).ident;
+	}
+	
+	public int getIftypeCondition() {
+		return ((IftypeCondition) condition).getIftypeCondition();
+	}
+	
+	public IType getTestType() {
+		return ((IftypeCondition) condition).targ;
+	}
+	
+	public IType getMatchingType() {
+		return ((IftypeCondition) condition).tspec;
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -61,6 +80,11 @@ public class ConditionalDeclaration extends Dsymbol implements IVersionDeclarati
 				break;
 			case Condition.VERSION:
 				acceptChild(visitor, ((VersionCondition) condition).id); 
+				break;
+			case Condition.IFTYPE:
+				acceptChild(visitor, ((IftypeCondition) condition).ident);
+				acceptChild(visitor, ((IftypeCondition) condition).targ);
+				acceptChild(visitor, ((IftypeCondition) condition).tspec);
 				break;
 			}
 			acceptChildren(visitor, a);

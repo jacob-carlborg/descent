@@ -24,6 +24,12 @@ public interface IConditionalDeclaration extends IDElement {
 	int CONDITIONAL_STATIC_IF = 3;
 	
 	/**
+	 * Constant representing the deprecated iftype declaration.
+	 * A conditional declaration with this type can be safely cast to <code>IIftypeDeclaration</code>. 
+	 */
+	int CONDITIONAL_IFTYPE = 4;
+	
+	/**
 	 * Returns whether this declaration is debug, version or
 	 * static if. Check the constants defined in this interface.
 	 */
