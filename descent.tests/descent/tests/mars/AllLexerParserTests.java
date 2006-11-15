@@ -10,11 +10,13 @@ public class AllLexerParserTests {
 				"Test for org.asterite.deditor.tests.mars");
 		//$JUnit-BEGIN$
 		suite.addTestSuite(Import_Test.class);
+		suite.addTestSuite(Pragma_Test.class);
 		suite.addTestSuite(Problems_Test.class);
 		suite.addTestSuite(Class_Test.class);
-		suite.addTestSuite(Expression_Test.class);
 		suite.addTestSuite(Typedef_Test.class);
+		suite.addTestSuite(Expression_Test.class);
 		suite.addTestSuite(Interface_Test.class);
+		suite.addTestSuite(Mixin_Test.class);
 		suite.addTestSuite(Function_Test.class);
 		suite.addTestSuite(Type_Test.class);
 		suite.addTestSuite(Module_Test.class);
@@ -31,10 +33,8 @@ public class AllLexerParserTests {
 		suite.addTestSuite(Alias_Test.class);
 		suite.addTestSuite(Lexer_Test.class);
 		suite.addTestSuite(Enum_Test.class);
-		suite.addTestSuite(Statement_Test.class);
 		suite.addTestSuite(Union_Test.class);
-		suite.addTestSuite(Pragma_Test.class);
-		suite.addTestSuite(Mixin_Test.class);
+		suite.addTestSuite(Statement_Test.class);
 		//$JUnit-END$
 		return suite;
 	}

@@ -5,6 +5,7 @@ import java.util.List;
 import descent.core.dom.ICompilationUnit;
 import descent.core.dom.IDElement;
 import descent.core.dom.IExpression;
+import descent.core.dom.IInitializer;
 import descent.core.dom.IParser;
 import descent.core.dom.IStatement;
 
@@ -37,6 +38,11 @@ public class ParserFacade implements IParser {
 	public IStatement parseStatement(String source) {
 		Parser parser = new Parser(source);
 		return parser.parseStatement(0);
+	}
+	
+	public IInitializer parseInitializer(String source) {
+		Parser parser = new Parser(source);
+		return parser.parseInitializer();
 	}
 
 }

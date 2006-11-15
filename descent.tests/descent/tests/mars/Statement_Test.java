@@ -1,5 +1,6 @@
 package descent.tests.mars;
 
+import descent.core.dom.IAggregateDeclaration;
 import descent.core.dom.IArgument;
 import descent.core.dom.IBreakStatement;
 import descent.core.dom.ICompilationUnit;
@@ -7,7 +8,9 @@ import descent.core.dom.IConditionalStatement;
 import descent.core.dom.IContinueStatement;
 import descent.core.dom.IDElement;
 import descent.core.dom.IDebugStatement;
+import descent.core.dom.IDeclarationStatement;
 import descent.core.dom.IDoWhileStatement;
+import descent.core.dom.IEnumDeclaration;
 import descent.core.dom.IExpression;
 import descent.core.dom.IExpressionStatement;
 import descent.core.dom.IForStatement;
@@ -16,6 +19,8 @@ import descent.core.dom.IGotoCaseStatement;
 import descent.core.dom.IGotoStatement;
 import descent.core.dom.IIfStatement;
 import descent.core.dom.ILabelStatement;
+import descent.core.dom.IMixinDeclaration;
+import descent.core.dom.IModifier;
 import descent.core.dom.IOnScopeStatement;
 import descent.core.dom.IPragmaStatement;
 import descent.core.dom.IReturnStatement;
@@ -27,6 +32,8 @@ import descent.core.dom.ISwitchStatement;
 import descent.core.dom.ISynchronizedStatement;
 import descent.core.dom.IThrowStatement;
 import descent.core.dom.ITryStatement;
+import descent.core.dom.IType;
+import descent.core.dom.IVariableDeclaration;
 import descent.core.dom.IVersionStatement;
 import descent.core.dom.IVolatileStatement;
 import descent.core.dom.IWhileStatement;
@@ -442,6 +449,47 @@ public class Statement_Test extends Parser_Test {
 		assertPosition(stm, 1, s.length() - 1);
 		
 		assertEquals("release", stm.getVersion().toString());
+	}
+	
+	public void testStaticExtern() {
+		String s = " static extern int x;";
+		IDeclarationStatement stm = (IDeclarationStatement) new ParserFacade().parseStatement(s);
+		
+		IVariableDeclaration var = (IVariableDeclaration) stm.getDeclaration();
+		
+		assertTrue((var.getModifiers() & IModifier.EXTERN) != 0);
+	}
+	
+	public void testTypeof() {
+		String s = " typeof(2) x;";
+		IDeclarationStatement stm = (IDeclarationStatement) new ParserFacade().parseStatement(s);
+		
+		IVariableDeclaration var = (IVariableDeclaration) stm.getDeclaration();
+		assertEquals(IType.TYPE_TYPEOF, var.getType().getTypeType());
+	}
+	
+	public void testAggregate() {
+		String s = " class X { };";
+		IDeclarationStatement stm = (IDeclarationStatement) new ParserFacade().parseStatement(s);
+		
+		IAggregateDeclaration var = (IAggregateDeclaration) stm.getDeclaration();
+		assertEquals(IAggregateDeclaration.CLASS_DECLARATION, var.getAggregateDeclarationType());
+	}
+	
+	public void testEnum() {
+		String s = " enum X { a };";
+		IDeclarationStatement stm = (IDeclarationStatement) new ParserFacade().parseStatement(s);
+		
+		IEnumDeclaration var = (IEnumDeclaration) stm.getDeclaration();
+		assertNotNull(var);
+	}
+	
+	public void testMixin() {
+		String s = " mixin X x;";
+		IDeclarationStatement stm = (IDeclarationStatement) new ParserFacade().parseStatement(s);
+		
+		IMixinDeclaration var = (IMixinDeclaration) stm.getDeclaration();
+		assertNotNull(var);
 	}
 
 }

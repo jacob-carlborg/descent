@@ -1,6 +1,7 @@
 package descent.tests.mars;
 
 import descent.core.dom.IArrayType;
+import descent.core.dom.IAssociativeArrayType;
 import descent.core.dom.ICompilationUnit;
 import descent.core.dom.IDelegateType;
 import descent.core.dom.IDElement;
@@ -201,6 +202,46 @@ public class VariableDeclaration_Test extends Parser_Test {
 		}
 	}
 	
+	public void testOther() {
+		Object[][] modifiers = {
+				{ "const", IModifier.CONST },
+				{ "final", IModifier.FINAL },	
+				{ "auto", IModifier.AUTO },
+				{ "override", IModifier.OVERRIDE },
+				{ "abstract", IModifier.ABSTRACT },
+				{ "synchronized", IModifier.SYNCHRONIZED },
+				{ "deprecated", IModifier.DEPRECATED },
+		};
+		
+		for(Object[] modifier : modifiers) {
+			String s = " alias " + modifier[0] + " x = 1;";
+			ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
+			IDElement[] declDefs = unit.getDeclarationDefinitions();
+			assertEquals(1, declDefs.length);
+			
+			IVariableDeclaration var = (IVariableDeclaration) declDefs[0];
+			assertEquals(IDElement.VARIABLE_DECLARATION, var.getElementType());
+			assertNull(var.getType());
+			assertTrue((var.getModifiers() & ((Integer) modifier[1])) != 0);
+		}
+	}
+	
+	public void testAssociativeArray() {
+		String s = " char x[int] = 1;";
+		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
+		IDElement[] declDefs = unit.getDeclarationDefinitions();
+		assertEquals(1, declDefs.length);
+		
+		IVariableDeclaration var = (IVariableDeclaration) declDefs[0];
+		assertEquals(IDElement.VARIABLE_DECLARATION, var.getElementType());
+		
+		IAssociativeArrayType type = (IAssociativeArrayType) var.getType();
+		assertEquals(IType.TYPE_ARRAY, type.getTypeType());
+		assertEquals(IArrayType.ASSOCIATIVE_ARRAY, type.getArrayTypeType());
+		assertEquals("char", type.getInnerType().toString());
+		assertEquals("int", type.getKeyType().toString());
+	}
+	
 	public void testTemplate() {
 		String s = " a.b.Temp!(int) x = 1;";
 		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
@@ -234,6 +275,26 @@ public class VariableDeclaration_Test extends Parser_Test {
 		assertEquals(IType.TYPE_TEMPLATE_INSTANCE, type.getTypeType());
 		ITemplateInstanceType ti = (ITemplateInstanceType) type;
 		assertEquals("Temp", ti.getName().toString());
+		assertEquals("Temp", ti.getShortName());
+		
+		IDElement[] args = ti.getTemplateArguments();
+		assertEquals(1, args.length);
+		assertEquals("int", args[0].toString());
+	}
+	
+	public void testTemplate3() {
+		String s = " .Temp!(int) x = 1;";
+		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
+		IDElement[] declDefs = unit.getDeclarationDefinitions();
+		assertEquals(1, declDefs.length);
+		
+		IVariableDeclaration var = (IVariableDeclaration) declDefs[0];
+		assertEquals(IDElement.VARIABLE_DECLARATION, var.getElementType());
+		
+		IType type = var.getType();
+		assertEquals(IType.TYPE_TEMPLATE_INSTANCE, type.getTypeType());
+		ITemplateInstanceType ti = (ITemplateInstanceType) type;
+		assertEquals(".Temp", ti.getName().toString());
 		assertEquals("Temp", ti.getShortName());
 		
 		IDElement[] args = ti.getTemplateArguments();

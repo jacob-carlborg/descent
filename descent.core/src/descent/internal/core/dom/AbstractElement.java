@@ -59,7 +59,7 @@ public abstract class AbstractElement implements IDElement {
 		
 		for(int i = 0; i < children.length; i++) {
 			if (children[i] instanceof IDElement) {
-				children[i].accept(visitor);
+				acceptChild(visitor, children[i]);
 			}
 		}
 	}
@@ -74,7 +74,7 @@ public abstract class AbstractElement implements IDElement {
 		
 		for(int i = 0; i < children.size(); i++) {
 			if (children.get(i) instanceof IDElement) {
-				children.get(i).accept(visitor);
+				acceptChild(visitor, children.get(i));
 			}
 		}
 	}

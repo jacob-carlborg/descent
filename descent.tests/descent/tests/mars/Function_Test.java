@@ -295,5 +295,54 @@ public class Function_Test extends Parser_Test {
 		assertEquals(1, func.getArguments().length);
 		assertTrue(func.isVariadic());
 	}
+	
+	public void testFunctionBody() {
+		String s = " void func() body { }";
+		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
+		IDElement[] declDefs = unit.getDeclarationDefinitions();
+		assertEquals(1, declDefs.length);
+		
+		IFunctionDeclaration func = (IFunctionDeclaration) declDefs[0];
+		assertNotNull(func.getBody());
+		assertEquals(0, func.getArguments().length);
+		assertPosition(func, 1, s.length() - 1);
+	}
+	
+	public void testFunctionIn() {
+		String s = " void func() in { } { }";
+		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
+		IDElement[] declDefs = unit.getDeclarationDefinitions();
+		assertEquals(1, declDefs.length);
+		
+		IFunctionDeclaration func = (IFunctionDeclaration) declDefs[0];
+		assertNotNull(func.getIn());
+		assertPosition(func, 1, s.length() - 1);
+	}
+	
+	public void testFunctionOut() {
+		String s = " void func() out { } { }";
+		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
+		IDElement[] declDefs = unit.getDeclarationDefinitions();
+		assertEquals(1, declDefs.length);
+		
+		IFunctionDeclaration func = (IFunctionDeclaration) declDefs[0];
+		assertNotNull(func.getOut());
+		assertNull(func.getOutName());
+		assertPosition(func, 1, s.length() - 1);
+	}
+	
+	public void testFunctionOutName() {
+		String s = " void func() out(bla) { } { }";
+		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
+		IDElement[] declDefs = unit.getDeclarationDefinitions();
+		assertEquals(1, declDefs.length);
+		
+		IFunctionDeclaration func = (IFunctionDeclaration) declDefs[0];
+		assertNotNull(func.getOut());
+		assertEquals("bla", func.getOutName().toString());
+		assertPosition(func.getOut(), 22, 3);
+		assertPosition(func.getOutName(), 17, 3);
+		assertPosition(func, 1, s.length() - 1);
+	}
 
 }

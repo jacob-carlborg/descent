@@ -14,10 +14,16 @@ public interface IInitializer extends IDElement {
 	// TODO
 	int VOID_INITIALIZER = 2;
 	
-	// TODO
+	/**
+	 * Constant representing an array intializer.
+	 * A D element with this type can be safely cast to <code>IArrayInitializer</code>. 
+	 */
 	int ARRAY_INITIALIZER = 3;
 	
-	// TODO
+	/**
+	 * Constant representing a struct intializer.
+	 * A D element with this type can be safely cast to <code>IStructInitializer</code>. 
+	 */
 	int STRUCT_INITIALIZER = 4;
 	
 	/**

@@ -7,5 +7,7 @@ public interface IParser {
 	IExpression parseExpression(String source);
 	
 	IStatement parseStatement(String source);
+	
+	IInitializer parseInitializer(String source);
 
 }

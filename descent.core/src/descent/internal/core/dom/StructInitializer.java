@@ -1,16 +1,34 @@
 package descent.internal.core.dom;
 
-import descent.core.dom.IDElementVisitor;
+import java.util.ArrayList;
+import java.util.List;
 
-public class StructInitializer extends Initializer {
+import descent.core.dom.IDElementVisitor;
+import descent.core.dom.IInitializer;
+import descent.core.dom.IName;
+import descent.core.dom.IStructInitializer;
+
+public class StructInitializer extends Initializer implements IStructInitializer {
+	
+	private List<Identifier> ids;
+	private List<Initializer> values;
 
 	public StructInitializer(Loc loc) {
-		// TODO Auto-generated constructor stub
+		this.ids = new ArrayList<Identifier>();
+		this.values = new ArrayList<Initializer>();
 	}
 
 	public void addInit(Identifier id, Initializer value) {
-		// TODO Auto-generated method stub
-		
+		this.ids.add(id);
+		this.values.add(value);
+	}
+	
+	public IName[] getNames() {
+		return ids.toArray(new IName[ids.size()]);
+	}
+	
+	public IInitializer[] getValues() {
+		return values.toArray(new IInitializer[values.size()]);
 	}
 	
 	public int getInitializerType() {
@@ -18,8 +36,12 @@ public class StructInitializer extends Initializer {
 	}
 	
 	public void accept(IDElementVisitor visitor) {
-		// TODO Auto-generated method stub
-		
+		boolean children = visitor.visit(this);
+		if (children) { 
+			acceptChildren(visitor, ids);
+			acceptChildren(visitor, values);
+		}
+		visitor.endVisit(this);
 	}
 
 }

@@ -20,6 +20,11 @@ public interface IMixinDeclaration extends IDElement {
 	IQualifiedName getType();
 	
 	/**
+	 * Returns the typeof type (TODO: what the hell in the world is this?)
+	 */
+	ITypeofType getTypeofType();
+	
+	/**
 	 * Returns the template arguments of the mixin.
 	 */
 	IDElement[] getTemplateArguments();

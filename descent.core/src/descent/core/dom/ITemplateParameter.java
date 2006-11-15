@@ -7,7 +7,7 @@ public interface ITemplateParameter extends IDElement {
 	
 	/**
 	 * Constant representing a value template parameter.
-	 * TODO 
+	 * A template parameter with this type can be safely cast to <code>ITemplateValueParameter</code>.
 	 */
 	int TEMPLATE_PARAMETER_VALUE = 1;
 	

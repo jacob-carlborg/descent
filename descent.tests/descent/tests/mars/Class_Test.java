@@ -88,5 +88,16 @@ public class Class_Test extends Parser_Test {
 		
 		assertVisitor(c, 5);
 	}
+	
+	public void testClassAlias() {
+		String s = " alias class Clazz { int x; }";
+		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
+		IDElement[] declDefs = unit.getDeclarationDefinitions();
+		assertEquals(1, declDefs.length);
+		
+		IAggregateDeclaration c = (IAggregateDeclaration) declDefs[0];
+		
+		assertEquals(1, c.getDeclarationDefinitions().length);
+	}
 
 }

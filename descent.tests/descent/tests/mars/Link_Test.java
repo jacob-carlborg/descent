@@ -9,6 +9,7 @@ public class Link_Test extends Parser_Test {
 	
 	public void test() {
 		Object[][] links = {
+				{ "", ILinkDeclaration.LINKAGE_D  },
 				{ "D", ILinkDeclaration.LINKAGE_D  },
 				{ "C", ILinkDeclaration.LINKAGE_C  },
 				{ "C++", ILinkDeclaration.LINKAGE_CPP  },

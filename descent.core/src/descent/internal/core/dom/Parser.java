@@ -1520,7 +1520,7 @@ public class Parser extends Lexer {
 					tp_valtype = parseDeclarator(tp_valtype, pointer2_tp_ident);
 					tp_ident = pointer2_tp_ident[0];
 					if (tp_ident == null) {
-						problem("No identifier for template value parameter", IProblem.SEVERITY_ERROR, IProblem.NO_IDENTIFIER_FOR_TEMPLATE_VALUE_PARAMETER, tp_valtype.start, tp_valtype.length);
+						problem("No identifier for template value parameter", IProblem.SEVERITY_ERROR, IProblem.IDENTIFIER_EXPECTED, t.ptr, t.len);
 						// goto Lerr;
 						return null;
 					}
@@ -1599,7 +1599,7 @@ public class Parser extends Lexer {
 	@SuppressWarnings("unchecked")
 	private Dsymbol parseMixin() {
 		TemplateMixin tm;
-		Identifier id;
+		Identifier id = null;
 		TypeTypeof tqual;
 		List<IDElement> tiargs;
 		List<Identifier> idents;
@@ -1612,6 +1612,7 @@ public class Parser extends Lexer {
 		tqual = null;
 		if (token.value == TOKdot) {
 			id = new Identifier(Id.empty, TOKidentifier);
+			id.start = token.ptr;
 		} else {
 			if (token.value == TOKtypeof) {
 				Expression exp;
@@ -1873,11 +1874,11 @@ public class Parser extends Lexer {
 	}
 	
 	private Type parseBasicType() {
-		Type t;
-		Identifier id;
-		TypeQualified tid;
-		TemplateInstance tempinst;
-
+		Type t = null;
+		Identifier id = null;
+		TypeQualified tid = null;
+		TemplateInstance tempinst = null;
+		
 		// printf("parseBasicType()\n");
 		switch (token.value) {
 		// CASE_BASIC_TYPES_X(t):
@@ -1920,25 +1921,17 @@ public class Parser extends Lexer {
 				
 				tid = new TypeInstance(loc, tempinst);
 				// goto Lident2;
-				while (token.value == TOKdot) {
-					nextToken();
-					if (token.value != TOKidentifier) {
-						problem("Identifier expected", IProblem.SEVERITY_ERROR,
-								IProblem.IDENTIFIER_EXPECTED, token.ptr,
-								token.len);
-						break;
-					}
-					id = new Identifier(token);
-					nextToken();
-					if (token.value == TOKnot) {
-						nextToken();
-						tempinst = new TemplateInstance(loc, id);
-						tempinst.tiargs = parseTemplateArgumentList();
-						tid.addIdent((Identifier) tempinst);
-					} else
-						tid.addIdent(id);
+				{
+				Identifier[] p_id = { id };
+				TemplateInstance[] p_tempinst = { tempinst };
+				TypeQualified[] p_tid = { tid };
+				Type[] p_t = { t };
+				parseBasicType_Lident2(p_id, p_tempinst, p_tid, p_t);
+				id = p_id[0];
+				tempinst = p_tempinst[0];
+				tid = p_tid[0];
+				t = p_t[0];
 				}
-				t = tid;
 				break;
 
 			}
@@ -1946,49 +1939,34 @@ public class Parser extends Lexer {
 			tid = new TypeIdentifier(loc, id);
 			tid.start = prevToken.ptr;
 			// Lident2:
-			while (token.value == TOKdot) {
-				nextToken();
-				if (token.value != TOKidentifier) {
-					problem("Identifier expected", IProblem.SEVERITY_ERROR,
-							IProblem.IDENTIFIER_EXPECTED, token.ptr, token.len);
-					break;
-				}
-				id = token.ident;
-				nextToken();
-				if (token.value == TOKnot) {
-					nextToken();
-					tempinst = new TemplateInstance(loc, id);
-					tempinst.tiargs = parseTemplateArgumentList();
-					tid.addIdent((Identifier) tempinst);
-				} else
-					tid.addIdent(id);
+			{
+			Identifier[] p_id = { id };
+			TemplateInstance[] p_tempinst = { tempinst };
+			TypeQualified[] p_tid = { tid };
+			Type[] p_t = { t };
+			parseBasicType_Lident2(p_id, p_tempinst, p_tid, p_t);
+			id = p_id[0];
+			tempinst = p_tempinst[0];
+			tid = p_tid[0];
+			t = p_t[0];
 			}
-			tid.length = prevToken.ptr + prevToken.len - tid.start;
-			t = tid;
 			break;
 
 		case TOKdot:
 			id = new Identifier(Id.empty, TOKidentifier);
 			// goto Lident;
 			tid = new TypeIdentifier(loc, id);
-			while (token.value == TOKdot) {
-				nextToken();
-				if (token.value != TOKidentifier) {
-					problem("Identifier expected", IProblem.SEVERITY_ERROR,
-							IProblem.IDENTIFIER_EXPECTED, token.ptr, token.len);
-					break;
-				}
-				id = token.ident;
-				nextToken();
-				if (token.value == TOKnot) {
-					nextToken();
-					tempinst = new TemplateInstance(loc, id);
-					tempinst.tiargs = parseTemplateArgumentList();
-					tid.addIdent((Identifier) tempinst);
-				} else
-					tid.addIdent(id);
+			{
+			Identifier[] p_id = { id };
+			TemplateInstance[] p_tempinst = { tempinst };
+			TypeQualified[] p_tid = { tid };
+			Type[] p_t = { t };
+			parseBasicType_Lident2(p_id, p_tempinst, p_tid, p_t);
+			id = p_id[0];
+			tempinst = p_tempinst[0];
+			tid = p_tid[0];
+			t = p_t[0];
 			}
-			t = tid;
 			break;
 
 		case TOKtypeof: {
@@ -2001,26 +1979,19 @@ public class Parser extends Lexer {
 			check(TOKrparen);
 			tid = new TypeTypeof(loc, exp);
 			tid.start = start;
+			
 			// goto Lident2;
-			while (token.value == TOKdot) {
-				nextToken();
-				if (token.value != TOKidentifier) {
-					problem("Identifier expected", IProblem.SEVERITY_ERROR,
-							IProblem.IDENTIFIER_EXPECTED, token.ptr, token.len);
-					break;
-				}
-				id = token.ident;
-				nextToken();
-				if (token.value == TOKnot) {
-					nextToken();
-					tempinst = new TemplateInstance(loc, id);
-					tempinst.tiargs = parseTemplateArgumentList();
-					tid.addIdent((Identifier) tempinst);
-				} else
-					tid.addIdent(id);
+			{
+			Identifier[] p_id = { id };
+			TemplateInstance[] p_tempinst = { tempinst };
+			TypeQualified[] p_tid = { tid };
+			Type[] p_t = { t };
+			parseBasicType_Lident2(p_id, p_tempinst, p_tid, p_t);
+			id = p_id[0];
+			tempinst = p_tempinst[0];
+			tid = p_tid[0];
+			t = p_t[0];
 			}
-			tid.length = prevToken.ptr + prevToken.len - tid.start;
-			t = tid;
 			break;
 		}
 
@@ -2033,97 +2004,115 @@ public class Parser extends Lexer {
 		return t;
 	}
 	
+	private void parseBasicType_Lident2(Identifier[] id, TemplateInstance[] tempinst, TypeQualified[] tid, Type[] t) {
+		while (token.value == TOKdot) {
+			nextToken();
+			if (token.value != TOKidentifier) {
+				problem("Identifier expected", IProblem.SEVERITY_ERROR,
+						IProblem.IDENTIFIER_EXPECTED, token.ptr, token.len);
+				break;
+			}
+			id[0] = new Identifier(token);
+			nextToken();
+			if (token.value == TOKnot) {
+				nextToken();
+				tempinst[0] = new TemplateInstance(loc, id[0]);
+				tempinst[0].tiargs = parseTemplateArgumentList();
+				tid[0].addIdent((Identifier) tempinst[0]);
+			} else
+				tid[0].addIdent(id[0]);
+		}
+		tid[0].length = prevToken.ptr + prevToken.len - tid[0].start;
+		t[0] = tid[0];
+	}
+	
 	private Type parseBasicType2(Type t) {
 		Type ts;
-	    Type ta;
-	    Type subType;
+		Type ta;
+		Type subType;
 
-	    //printf("parseBasicType2()\n");
-	    while (true)
-	    {
-		switch (token.value)
-		{
-		    case TOKmul:
-		    	subType = t;
+		// printf("parseBasicType2()\n");
+		while (true) {
+			switch (token.value) {
+			case TOKmul:
+				subType = t;
 				t = new TypePointer(t);
 				t.start = subType.start;
 				t.length = token.ptr + token.len - t.start;
 				nextToken();
 				continue;
 
-		    case TOKlbracket:
-		    	if (LTORARRAYDECL) {
+			case TOKlbracket:
+				if (LTORARRAYDECL) {
 					// Handle []. Make sure things like
-					//     int[3][1] a;
+					// int[3][1] a;
 					// is (array[1] of array[3] of int)
 					nextToken();
-					if (token.value == TOKrbracket)
-					{
+					if (token.value == TOKrbracket) {
 						subType = t;
-					    t = new TypeDArray(t);			// []
-					    t.start = subType.start;
+						t = new TypeDArray(t); // []
+						t.start = subType.start;
 						t.length = token.ptr + token.len - t.start;
-					    nextToken();
-					}
-					else if (isDeclaration(token, 0, TOKrbracket, null))
-					{   // It's an associative array declaration
+						nextToken();
+					} else if (isDeclaration(token, 0, TOKrbracket, null)) { // It's
+																				// an
+																				// associative
+																				// array
+																				// declaration
 						subType = t;
-					    Type index;
-		
-					    //printf("it's an associative array\n");
-					    index = parseBasicType();
-					    index = parseDeclarator(index, null);	// [ type ]
-					    t = new TypeAArray(t, index);
-					    t.start = subType.start;
-					    t.length = token.ptr + token.len - t.start;
-					    check(TOKrbracket);
-					}
-					else
-					{
+						Type index;
+
+						// printf("it's an associative array\n");
+						index = parseBasicType();
+						index = parseDeclarator(index, null); // [ type ]
+						t = new TypeAArray(t, index);
+						t.start = subType.start;
+						t.length = token.ptr + token.len - t.start;
+						check(TOKrbracket);
+					} else {
 						subType = t;
-						
-					    //printf("it's [expression]\n");
-					    Expression e = parseExpression();		// [ expression ]
-					    t = new TypeSArray(t,e);
-					    t.start = subType.start;
-					    t.length = token.ptr + token.len - t.start;
-					    check(TOKrbracket);
+
+						// printf("it's [expression]\n");
+						Expression e = parseExpression(); // [ expression ]
+						t = new TypeSArray(t, e);
+						t.start = subType.start;
+						t.length = token.ptr + token.len - t.start;
+						check(TOKrbracket);
 					}
 					continue;
-		    	} else {
+				} else {
 					// Handle []. Make sure things like
-					//     int[3][1] a;
+					// int[3][1] a;
 					// is (array[3] of array[1] of int)
 					ts = t;
-					while (token.value == TOKlbracket)
-					{
-					    nextToken();
-					    if (token.value == TOKrbracket)
-					    {
-						ta = new TypeDArray(t);			// []
+					while (token.value == TOKlbracket) {
 						nextToken();
-					    }
-					    else if (isDeclaration(token, 0, TOKrbracket, null))
-					    {   // It's an associative array declaration
-						Type index;
-		
-						//printf("it's an associative array\n");
-						index = parseBasicType();
-						index = parseDeclarator(index, null);	// [ type ]
-						check(TOKrbracket);
-						ta = new TypeAArray(t, index);
-					    }
-					    else
-					    {
-						//printf("it's [expression]\n");
-						Expression e = parseExpression();	// [ expression ]
-						ta = new TypeSArray(t,e);
-						check(TOKrbracket);
-					    }
-					    
-					    if (ts != t) {
+						if (token.value == TOKrbracket) {
+							ta = new TypeDArray(t); // []
+							nextToken();
+						} else if (isDeclaration(token, 0, TOKrbracket, null)) { // It's
+																					// an
+																					// associative
+																					// array
+																					// declaration
+							Type index;
+
+							// printf("it's an associative array\n");
+							index = parseBasicType();
+							index = parseDeclarator(index, null); // [ type ]
+							check(TOKrbracket);
+							ta = new TypeAArray(t, index);
+						} else {
+							// printf("it's [expression]\n");
+							Expression e = parseExpression(); // [ expression
+																// ]
+							ta = new TypeSArray(t, e);
+							check(TOKrbracket);
+						}
+
+						if (ts != t) {
 							Type pt = ts;
-							while(pt.next != t) {
+							while (pt.next != t) {
 								pt = pt.next;
 							}
 							pt.next = ta;
@@ -2133,45 +2122,43 @@ public class Parser extends Lexer {
 					}
 					t = ts;
 					continue;
-		    	}
+				}
 
-		    case TOKdelegate:
-		    case TOKfunction:
-		    {	// Handle delegate declaration:
-			//	t delegate(parameter list)
-			//	t function(parameter list)
-			List<Argument> arguments;
-			int varargs = 0;
-			TOK save = token.value;
+			case TOKdelegate:
+			case TOKfunction: { // Handle delegate declaration:
+				// t delegate(parameter list)
+				// t function(parameter list)
+				List<Argument> arguments;
+				int varargs = 0;
+				TOK save = token.value;
 
-			nextToken();
-			
-			int[] pointer2_varargs = { varargs };
-			arguments = parseParameters(pointer2_varargs);
-			varargs = pointer2_varargs[0];
-			
-			int saveStart = t.start;
-			
-			t = new TypeFunction(arguments, t, varargs, linkage);
-			if (save == TOKdelegate) {
-			    t = new TypeDelegate(t);
+				nextToken();
+
+				int[] pointer2_varargs = { varargs };
+				arguments = parseParameters(pointer2_varargs);
+				varargs = pointer2_varargs[0];
+
+				int saveStart = t.start;
+
+				t = new TypeFunction(arguments, t, varargs, linkage);
+				if (save == TOKdelegate) {
+					t = new TypeDelegate(t);
+				} else {
+					TypePointer tp = new TypePointer(t);
+					t = tp; // pointer to function
+				}
+				t.start = saveStart;
+				t.length = prevToken.ptr + prevToken.len - t.start;
+				continue;
 			}
-			else {
-				TypePointer tp = new TypePointer(t);
-			    t = tp;	// pointer to function
-			}
-			t.start = saveStart;
-			t.length = prevToken.ptr + prevToken.len - t.start;
-			continue;
-		    }
 
-		    default:
-			ts = t;
+			default:
+				ts = t;
+				break;
+			}
 			break;
 		}
-		break;
-	    }
-	    return ts;
+		return ts;
 	}
 	
 	private Type parseDeclarator(Type targ, Identifier[] ident) {
@@ -2386,6 +2373,7 @@ public class Parser extends Lexer {
 			Initializer init = parseInitializer();
 			VarDeclaration v = new VarDeclaration(loc, null, ident, init);
 			v.storage_class = storage_class;
+			v.modifiers = STC.getModifiers(storage_class);
 			a.add(v);
 			if (token.value == TOKsemicolon) {
 				nextToken();
@@ -2401,6 +2389,7 @@ public class Parser extends Lexer {
 
 			s = (AggregateDeclaration) parseAggregate();
 			s.storage_class |= storage_class;
+			s.modifiers = STC.getModifiers(storage_class);
 			a.add(s);
 			addComment(s, comment, commentStart);
 			return a;
@@ -2526,6 +2515,7 @@ public class Parser extends Lexer {
 				v = new VarDeclaration(loc, t, ident, init);
 				v.start = nextVarStart;
 				v.storage_class = storage_class;
+				v.modifiers = STC.getModifiers(storage_class);
 				a.add(v);
 				switch (token.value) {
 				case TOKsemicolon:
@@ -2628,7 +2618,7 @@ public class Parser extends Lexer {
 						problem("Identifier following 'out' expected", IProblem.SEVERITY_ERROR, IProblem.IDENTIFIER_EXPECTED,
 								token.ptr, token.len);
 					}
-					f.outId = token.ident;
+					f.outId = new Identifier(token);
 					nextToken();
 					check(TOKrparen);
 				}
@@ -2645,7 +2635,7 @@ public class Parser extends Lexer {
 		linkage = linksave;
 	}
 	
-	private Initializer parseInitializer() {
+	public Initializer parseInitializer() {
 		StructInitializer is;
 		ArrayInitializer ia;
 		ExpInitializer ie;
@@ -2655,6 +2645,8 @@ public class Parser extends Lexer {
 		int comma;
 		Loc loc = new Loc(this.loc);
 		Token t;
+		
+		Token saveToken = new Token(token);
 
 		switch (token.value) {
 		case TOKlcurly:
@@ -2671,7 +2663,7 @@ public class Parser extends Lexer {
 					}
 					t = peek(token);
 					if (t.value == TOKcolon) {
-						id = token.ident;
+						id = new Identifier(token);
 						nextToken();
 						nextToken(); // skip over ':'
 					} else {
@@ -2688,6 +2680,8 @@ public class Parser extends Lexer {
 					continue;
 
 				case TOKrcurly: // allow trailing comma's
+					is.start = saveToken.ptr;
+					is.length = token.ptr + token.len - is.start;
 					nextToken();
 					break;
 
@@ -2699,6 +2693,7 @@ public class Parser extends Lexer {
 				}
 				break;
 			}
+			
 			return is;
 
 		case TOKlbracket:
@@ -2748,7 +2743,9 @@ public class Parser extends Lexer {
 					continue;
 
 				case TOKrbracket: // allow trailing comma's
-					nextToken();
+					ia.start = saveToken.ptr;
+					ia.length = token.ptr + token.len - ia.start;
+					nextToken();					
 					break;
 
 				case TOKeof:
@@ -2782,7 +2779,7 @@ public class Parser extends Lexer {
 	
 	@SuppressWarnings("unchecked") 
 	public Statement parseStatement(int flags) {
-		Statement s;
+		Statement s = null;
 		Token t;
 		Condition condition;
 		Statement ifbody;
@@ -2819,31 +2816,9 @@ public class Parser extends Lexer {
 		case TOKtypeof:
 			if (isDeclaration(token, 2, TOKreserved, null)) {
 				// goto Ldeclaration;
-				List a;
-
-				a = parseDeclarations();
-				if (a.size() > 1) {
-					List<Statement> as = new ArrayList<Statement>(a.size());
-					for (int i = 0; i < a.size(); i++) {
-						Dsymbol d = (Dsymbol) a.get(i);
-						s = new DeclarationStatement(loc, d);
-						s.start = d.start;
-						s.length = d.length;
-						as.add(s);
-					}
-					s = new CompoundStatement(loc, as);
-				} else if (a.size() == 1) {
-					Dsymbol d = (Dsymbol) a.get(0);
-					s = new DeclarationStatement(loc, d);
-					s.start = d.start;
-					s.length = d.length;
-				} else {
-					assert (false);
-					s = null;
-				}
-				if ((flags & PSscope) != 0) {
-					s = new ScopeStatement(loc, s);
-				}
+				Statement[] ps = { s };
+				parseStatement_Ldeclaration(ps, flags);
+				s = ps[0];
 				break;
 			} else {
 				// goto Lexp;
@@ -2933,31 +2908,9 @@ public class Parser extends Lexer {
 				break;
 			}
 			// goto Ldeclaration;
-			List a;
-
-			a = parseDeclarations();
-			if (a.size() > 1) {
-				List<Statement> as = new ArrayList<Statement>(a.size());
-				for (int i = 0; i < a.size(); i++) {
-					Dsymbol d = (Dsymbol) a.get(i);
-					s = new DeclarationStatement(loc, d);
-					s.start = d.start;
-					s.length = d.length;
-					as.add(s);
-				}
-				s = new CompoundStatement(loc, as);
-			} else if (a.size() == 1) {
-				Dsymbol d = (Dsymbol) a.get(0);
-				s = new DeclarationStatement(loc, d);
-				s.start = d.start;
-				s.length = d.length;
-			} else {
-				assert (false);
-				s = null;
-			}
-			if ((flags & PSscope) != 0) {
-				s = new ScopeStatement(loc, s);
-			}
+			Statement[] ps = { s };
+			parseStatement_Ldeclaration(ps, flags);
+			s = ps[0];
 			break;
 		}
 
@@ -2993,31 +2946,9 @@ public class Parser extends Lexer {
 			// case TOKtypeof:
 			// Ldeclaration:
 		{
-			List a;
-
-			a = parseDeclarations();
-			if (a.size() > 1) {
-				List<Statement> as = new ArrayList<Statement>(a.size());
-				for (int i = 0; i < a.size(); i++) {
-					Dsymbol d = (Dsymbol) a.get(i);
-					s = new DeclarationStatement(loc, d);
-					s.start = d.start;
-					s.length = d.length;
-					as.add(s);
-				}
-				s = new CompoundStatement(loc, as);
-			} else if (a.size() == 1) {
-				Dsymbol d = (Dsymbol) a.get(0);
-				s = new DeclarationStatement(loc, d);
-				s.start = d.start;
-				s.length = d.length;
-			} else {
-				assert (false);
-				s = null;
-			}
-			if ((flags & PSscope) != 0) {
-				s = new ScopeStatement(loc, s);
-			}
+			Statement[] ps = { s };
+			parseStatement_Ldeclaration(ps, flags);
+			s = ps[0];
 			break;
 		}
 
@@ -3869,6 +3800,34 @@ public class Parser extends Lexer {
 		}
 
 		return s;
+	}
+	
+	private void parseStatement_Ldeclaration(Statement[] s, int flags) {
+		List a;
+
+		a = parseDeclarations();
+		if (a.size() > 1) {
+			List<Statement> as = new ArrayList<Statement>(a.size());
+			for (int i = 0; i < a.size(); i++) {
+				Dsymbol d = (Dsymbol) a.get(i);
+				s[0] = new DeclarationStatement(loc, d);
+				s[0].start = d.start;
+				s[0].length = d.length;
+				as.add(s[0]);
+			}
+			s[0] = new CompoundStatement(loc, as);
+		} else if (a.size() == 1) {
+			Dsymbol d = (Dsymbol) a.get(0);
+			s[0] = new DeclarationStatement(loc, d);
+			s[0].start = d.start;
+			s[0].length = d.length;
+		} else {
+			assert (false);
+			s[0] = null;
+		}
+		if ((flags & PSscope) != 0) {
+			s[0] = new ScopeStatement(loc, s[0]);
+		}
 	}
 	
 	private void check(TOK value) {

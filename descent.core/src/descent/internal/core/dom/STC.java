@@ -27,13 +27,32 @@ public final class STC {
     
     public static int fromToken(TOK tok) {
     	switch(tok) {
-    	case TOKconst: return STCconst;
-    	case TOKfinal: return STCfinal;
-    	case TOKauto: return STCauto;
-    	case TOKoverride: return STCoverride;
-    	case TOKabstract: return STCabstract;
-    	case TOKsynchronized: return STCsynchronized;
-    	case TOKdeprecated: return STCdeprecated;
+    	case TOKstatic:
+			return STCstatic;
+		case TOKextern:
+			return STCextern;
+		case TOKconst:
+			return STCconst;
+		case TOKfinal:
+			return STCfinal;
+		case TOKabstract:
+			return STCabstract;
+		case TOKoverride:
+			return STCoverride;
+		case TOKauto:
+			return STCauto;
+		case TOKsynchronized:
+			return STCsynchronized;
+		case TOKdeprecated:
+			return STCdeprecated;
+		case TOKin:
+			return STCin;
+		case TOKout:
+			return STCout;
+		case TOKlazy:
+			return STClazy;
+		case TOKforeach:
+			return STCforeach;
     	}
     	return STCundefined;
     }

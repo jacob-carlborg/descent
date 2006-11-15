@@ -9,6 +9,7 @@ import descent.core.dom.ITemplateDeclaration;
 import descent.core.dom.ITemplateParameter;
 import descent.core.dom.ITemplateTupleParameter;
 import descent.core.dom.ITemplateTypeParameter;
+import descent.core.dom.ITemplateValueParameter;
 import descent.core.dom.IType;
 import descent.internal.core.dom.ParserFacade;
 
@@ -110,6 +111,27 @@ public class Template_Test extends Parser_Test {
 		assertEquals("T", param.getName().toString());
 		assertPosition(param, 15, 5);
 		assertPosition(param.getName(), 15, 1);
+	}
+	
+	public void testParametersValue() {
+		String s = " template Temp(int T : 2 = 3) { }";
+		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
+		IDElement[] declDefs = unit.getDeclarationDefinitions();
+		
+		ITemplateDeclaration t = (ITemplateDeclaration) declDefs[0];
+		
+		ITemplateParameter[] tp = t.getTemplateParameters();
+		assertEquals(1, tp.length);
+		
+		ITemplateValueParameter param = (ITemplateValueParameter) tp[0];
+		assertEquals(ITemplateParameter.TEMPLATE_PARAMETER_VALUE, param.getTemplateParameterType());
+		assertEquals("T", param.getName().toString());
+		assertPosition(param, 15, 13);
+		assertPosition(param.getName(), 19, 1);
+		
+		assertEquals("int", param.getType().toString());
+		assertEquals("2", param.getSpecificValue().toString());
+		assertEquals("3", param.getDefaultValue().toString());
 	}
 	
 	public void testAggregate() {
