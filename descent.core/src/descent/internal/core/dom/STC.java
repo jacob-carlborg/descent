@@ -24,6 +24,7 @@ public final class STC {
     public static final int STCvariadic     = 0x10000;		// variadic function argument
     public static final int STCctorinit     = 0x20000;		// can only be set inside constructor
     public static final int STCtemplateparameter = 0x40000;	// template parameter
+    public static final int STCscope = 0x80000;	// RAII
     
     public static int fromToken(TOK tok) {
     	switch(tok) {
@@ -53,6 +54,8 @@ public final class STC {
 			return STClazy;
 		case TOKforeach:
 			return STCforeach;
+		case TOKscope:
+			return STCscope;
     	}
     	return STCundefined;
     }
@@ -68,6 +71,7 @@ public final class STC {
     	if ((stc & STCauto) != 0) r |= IModifier.AUTO;
     	if ((stc & STCsynchronized) != 0) r |= IModifier.SYNCHRONIZED;
     	if ((stc & STCdeprecated) != 0) r |= IModifier.DEPRECATED;
+    	if ((stc & STCscope) != 0) r |= IModifier.SCOPE;
     	return r;
     }
 

@@ -346,6 +346,7 @@ public class Parser extends Lexer {
 			case TOKconst:
 			case TOKfinal:
 			case TOKauto:
+			case TOKscope:
 			case TOKoverride:
 			case TOKabstract:
 			case TOKsynchronized:
@@ -623,6 +624,7 @@ public class Parser extends Lexer {
 			    case TOKconst:	  stc |= STCconst; nextToken(); break;
 			    case TOKfinal:	  stc |= STCfinal; nextToken(); break;
 			    case TOKauto:	  stc |= STCauto; nextToken(); break;
+			    case TOKscope:	  stc |= STC.STCscope; nextToken(); break;
 			    case TOKoverride:	  stc |= STCoverride; nextToken(); break;
 			    case TOKabstract:	  stc |= STCabstract; nextToken(); break;
 			    case TOKsynchronized: stc |= STCsynchronized; nextToken(); break;
@@ -1432,7 +1434,7 @@ public class Parser extends Lexer {
 		// Get array of TemplateParameters
 		if (token.value != TOKrparen) {
 			
-			boolean variadic = false;
+			boolean isvariadic = false;
 			TemplateParameter tp = null;
 			
 			while (true) {
@@ -1445,14 +1447,6 @@ public class Parser extends Lexer {
 				Token t;
 
 				Token firstToken = new Token(token);
-				
-			    if (variadic)
-			    {	
-			    	problem("Variadic template parameter must be last one", IProblem.SEVERITY_ERROR, IProblem.VARIADIC_TEMPLATE_PARAMETER_MUST_BE_LAST_ONE, 
-			    			tp.start, 
-			    			tp.length);
-			    	variadic = false;
-			    }
 
 				// Get TemplateParameter
 
@@ -1508,7 +1502,12 @@ public class Parser extends Lexer {
 				}
 			    else if (token.value == TOKidentifier && t.value == TOKdotdotdot)
 			    {	// ident...
-					variadic = true;
+			    	if (isvariadic) {
+			    		problem("Variadic template parameter must be last one", IProblem.SEVERITY_ERROR, IProblem.VARIADIC_TEMPLATE_PARAMETER_MUST_BE_LAST_ONE, 
+				    			token.ptr, 
+				    			t.ptr + t.len - token.ptr);
+			    	}
+					isvariadic = true;
 					tp_ident = new Identifier(token);
 					nextToken();
 					nextToken();
@@ -2073,10 +2072,22 @@ public class Parser extends Lexer {
 						subType = t;
 
 						// printf("it's [expression]\n");
+						inBrackets++;
 						Expression e = parseExpression(); // [ expression ]
-						t = new TypeSArray(t, e);
+					    if (token.value == TOKslice) {
+							Expression e2;
+
+							nextToken();
+							e2 = parseExpression(); // [ exp .. exp ]
+							t = new TypeSlice(t, e, e2);
+						} else {
+							t = new TypeSArray(t, e);
+						}
 						t.start = subType.start;
 						t.length = token.ptr + token.len - t.start;
+						
+						inBrackets--;
+						
 						check(TOKrbracket);
 					}
 					continue;
@@ -2327,6 +2338,7 @@ public class Parser extends Lexer {
 			case TOKstatic:
 			case TOKfinal:
 			case TOKauto:
+			case TOKscope:
 			case TOKoverride:
 			case TOKabstract:
 			case TOKsynchronized:
@@ -3262,6 +3274,15 @@ public class Parser extends Lexer {
 		}
 
 		case TOKscope:
+		    if (peek(token).value != TOKlparen) {
+		    	// goto Ldeclaration
+		    	// scope used as storage class
+				Statement[] ps = { s };
+				parseStatement_Ldeclaration(ps, flags);
+				s = ps[0];
+				break;
+		    }
+			
 			Token saveToken = new Token(token);
 			
 			nextToken();
@@ -4147,13 +4168,28 @@ public class Parser extends Lexer {
 				{
 					t = pointer2_t[0];
 				    // [ expression ]
-				    if (!isExpression(pointer2_t))
+				    // [ expression .. expression ]
+				    if (!isExpression(pointer2_t)) {
+				    	t = pointer2_t[0];
 				    	return false;
-				    
+				    }
 				    t = pointer2_t[0];
 				    
-				    if (t.value != TOKrbracket)
-					return false;
+				    if (t.value == TOKslice)
+				    {	
+				    	t = peek(t);
+				    	pointer2_t[0] = t;
+						if (!isExpression(pointer2_t)) {
+							t = pointer2_t[0];
+						    return false;
+					    }
+						t = pointer2_t[0];
+					}
+				    
+				    if (t.value != TOKrbracket) {
+				    	return false;
+				    }
+				    
 				    t = peek(t);
 				}
 				
@@ -4848,7 +4884,8 @@ public class Parser extends Lexer {
 				 token.value == TOKenum ||
 				 token.value == TOKinterface ||
 				 token.value == TOKfunction ||
-				 token.value == TOKdelegate))
+				 token.value == TOKdelegate ||
+				 token.value == TOK.TOKreturn))
 			    {
 				tok2 = token.value;
 				nextToken();

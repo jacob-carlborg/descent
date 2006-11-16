@@ -581,11 +581,11 @@ public class Problems_Test extends TestCase {
 	}
 	
 	public void test_VARIADIC_TEMPLATE_PARAMETER_MUST_BE_LAST_ONE() {
-		IProblem p = getProblem("template Foo(T ..., U) { }");
+		IProblem p = getProblem("template Foo(T ..., U, V ...) { }");
 		  
 		assertEquals(IProblem.VARIADIC_TEMPLATE_PARAMETER_MUST_BE_LAST_ONE, p.getId());
 		assertEquals(IProblem.SEVERITY_ERROR, p.getSeverity());
-		assertEquals(13, p.getOffset());
+		assertEquals(23, p.getOffset());
 		assertEquals(5, p.getLength());
 	}
 	

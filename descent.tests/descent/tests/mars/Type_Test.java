@@ -4,14 +4,14 @@ import descent.core.dom.IArrayType;
 import descent.core.dom.IAssociativeArrayType;
 import descent.core.dom.IBasicType;
 import descent.core.dom.ICompilationUnit;
-import descent.core.dom.IDelegateType;
 import descent.core.dom.IDElement;
-import descent.core.dom.IFunctionDeclaration;
+import descent.core.dom.IDelegateType;
 import descent.core.dom.IIdentifierType;
 import descent.core.dom.IPointerType;
 import descent.core.dom.IStaticArrayType;
 import descent.core.dom.IType;
 import descent.core.dom.ITypeofType;
+import descent.core.dom.IVariableDeclaration;
 import descent.internal.core.dom.ParserFacade;
 
 public class Type_Test extends Parser_Test {
@@ -162,13 +162,13 @@ public class Type_Test extends Parser_Test {
 	}
 	
 	private IType getType(String type) {
-		String s = " " + type + " func(){}";
+		String s = " " + type + " x;";
 		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
 		IDElement[] declDefs = unit.getDeclarationDefinitions();
 		assertEquals(1, declDefs.length);
 		
-		IFunctionDeclaration func = (IFunctionDeclaration) declDefs[0];
-		return func.getReturnType();
+		IVariableDeclaration var = (IVariableDeclaration) declDefs[0];
+		return var.getType();
 	}
 
 }

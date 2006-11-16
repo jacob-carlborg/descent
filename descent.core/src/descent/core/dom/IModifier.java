@@ -22,5 +22,6 @@ public interface IModifier {
 	int DEPRECATED = 0x1000;
 	int EXTERN = 0x2000;
 	int CONST =  0x4000;
+	int SCOPE =  0x8000;
 
 }
