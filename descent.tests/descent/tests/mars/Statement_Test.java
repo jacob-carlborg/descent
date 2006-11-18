@@ -273,6 +273,25 @@ public class Statement_Test extends Parser_Test {
 		assertTrue(stm.isReverse());
 	}
 	
+	public void testForeachWithDeclaration() {
+		String s = " foreach(int x; y) { }";
+		IForeachStatement stm = (IForeachStatement) new ParserFacade().parseStatement(s);
+		
+		assertEquals(IStatement.STATEMENT_FOREACH, stm.getStatementType());
+		assertPosition(stm, 1, s.length() - 1);
+		
+		assertFalse(stm.isReverse());
+		
+		IArgument[] args = stm.getArguments();
+		assertEquals(1, args.length);
+		
+		assertPosition(args[0], 9, 5);
+		assertEquals(IArgument.IN, args[0].getKind());
+		assertEquals("x", args[0].getName().toString());
+		assertEquals("int", args[0].getType().toString());
+		assertPosition(args[0].getName(), 13, 1);
+	}
+	
 	public void testVolatile() {
 		String s = " volatile int x = 2;";
 		IVolatileStatement stm = (IVolatileStatement) new ParserFacade().parseStatement(s);
@@ -337,13 +356,39 @@ public class Statement_Test extends Parser_Test {
 	}
 	
 	public void testOnScope() {
-		String s = " scope(exit) x = 2;";
-		IOnScopeStatement stm = (IOnScopeStatement) new ParserFacade().parseStatement(s);
+		Object[][] objs = {
+				{ "exit", IOnScopeStatement.ON_SCOPE_EXIT },
+				{ "failure", IOnScopeStatement.ON_SCOPE_FAILURE },
+				{ "success", IOnScopeStatement.ON_SCOPE_SUCCESS },
+		};
 		
-		assertEquals(IStatement.STATEMENT_ON_SCOPE, stm.getStatementType());
-		assertPosition(stm, 1, s.length() - 1);
+		for(Object[] obj : objs) {
+			String s = " scope(" + obj[0] + ") x = 2;";
+			IOnScopeStatement stm = (IOnScopeStatement) new ParserFacade().parseStatement(s);
+			
+			assertEquals(IStatement.STATEMENT_ON_SCOPE, stm.getStatementType());
+			assertPosition(stm, 1, s.length() - 1);
+			
+			assertEquals(obj[1], stm.getOnScopeType());
+		}
+	}
+	
+	public void testOnScope2() {
+		Object[][] objs = {
+				{ "exit", IOnScopeStatement.ON_SCOPE_EXIT },
+				{ "failure", IOnScopeStatement.ON_SCOPE_FAILURE },
+				{ "success", IOnScopeStatement.ON_SCOPE_SUCCESS },
+		};
 		
-		assertEquals(IOnScopeStatement.ON_SCOPE_EXIT, stm.getOnScopeType());
+		for(Object[] obj : objs) {
+			String s = " on_scope_" + obj[0] + " { }";
+			IOnScopeStatement stm = (IOnScopeStatement) new ParserFacade().parseStatement(s);
+			
+			assertEquals(IStatement.STATEMENT_ON_SCOPE, stm.getStatementType());
+			assertPosition(stm, 1, s.length() - 1);
+			
+			assertEquals(obj[1], stm.getOnScopeType());
+		}
 	}
 	
 	public void testGoto() {
@@ -407,6 +452,37 @@ public class Statement_Test extends Parser_Test {
 		assertPosition(stm.getArgument(), 5, 6);
 	}
 	
+	public void testIfDeclaration() {
+		String s = " if (int x = 1) { } else { }";
+		IIfStatement stm = (IIfStatement) new ParserFacade().parseStatement(s);
+		
+		assertEquals(IStatement.STATEMENT_IF, stm.getStatementType());
+		assertPosition(stm, 1, s.length() - 1);
+		
+		assertEquals("1", stm.getCondition().toString());
+		
+		IArgument argument = stm.getArgument();
+		assertNotNull(argument);
+		assertEquals("x", argument.getName().toString());
+		assertEquals("int", argument.getType().toString());
+		assertPosition(argument, 5, 5);
+	}
+	
+	public void testIfDeprecated() {
+		String s = " if (a; b) { } else { }";
+		IIfStatement stm = (IIfStatement) new ParserFacade().parseStatement(s);
+		
+		assertEquals(IStatement.STATEMENT_IF, stm.getStatementType());
+		assertPosition(stm, 1, s.length() - 1);
+		
+		assertEquals("b", stm.getCondition().toString());
+		
+		IArgument argument = stm.getArgument();
+		assertNotNull(argument);
+		assertEquals("a", argument.getName().toString());
+		assertPosition(argument, 5, 1);
+	}
+	
 	public void testStaticIf() {
 		String s = " static if (1) { } else { }";
 		IStaticIfStatement stm = (IStaticIfStatement) new ParserFacade().parseStatement(s);
@@ -419,7 +495,7 @@ public class Statement_Test extends Parser_Test {
 	}
 	
 	public void testDebug1() {
-		String s = " debug { }";
+		String s = " debug { } else { }";
 		IDebugStatement stm = (IDebugStatement) new ParserFacade().parseStatement(s);
 		
 		assertEquals(IStatement.STATEMENT_CONDITIONAL, stm.getStatementType());
@@ -441,7 +517,7 @@ public class Statement_Test extends Parser_Test {
 	}
 	
 	public void testVersion() {
-		String s = " version(release) { }";
+		String s = " version(release) { } else { }";
 		IVersionStatement stm = (IVersionStatement) new ParserFacade().parseStatement(s);
 		
 		assertEquals(IStatement.STATEMENT_CONDITIONAL, stm.getStatementType());
@@ -490,6 +566,15 @@ public class Statement_Test extends Parser_Test {
 		
 		IMixinDeclaration var = (IMixinDeclaration) stm.getDeclaration();
 		assertNotNull(var);
+	}
+	
+	public void testScope() {
+		String s = " scope x;";
+		IDeclarationStatement stm = (IDeclarationStatement) new ParserFacade().parseStatement(s);
+		
+		IVariableDeclaration var = (IVariableDeclaration) stm.getDeclaration();
+		assertNotNull(var);
+		assertTrue((var.getModifiers() & IModifier.SCOPE) != 0);
 	}
 
 }

@@ -186,6 +186,7 @@ public class VariableDeclaration_Test extends Parser_Test {
 				{ "abstract", IModifier.ABSTRACT },
 				{ "synchronized", IModifier.SYNCHRONIZED },
 				{ "deprecated", IModifier.DEPRECATED },
+				{ "scope", IModifier.SCOPE },
 		};
 		
 		for(Object[] modifier : modifiers) {

@@ -3164,6 +3164,8 @@ public class Parser extends Lexer {
 				}
 				// Larg:
 				a = new Argument(inout, at, ai, null);
+				a.start = argumentStart.ptr;
+				a.length = prevToken.ptr + prevToken.len - a.start;
 				arguments.add(a);
 				if (token.value == TOKcomma) {
 					nextToken();
@@ -3240,21 +3242,27 @@ public class Parser extends Lexer {
 					Identifier[] pointer2_ai = { ai };
 					at = parseDeclarator(tb, pointer2_ai);
 					ai = pointer2_ai[0];
-					check(TOKassign);
+					
 					arg = new Argument(In, at, ai, null);
 					arg.start = argToken.ptr;
 					arg.length = prevToken.ptr + prevToken.len - arg.start;
+					
+					check(TOKassign);					
 				}
 
 				// Check for " ident;"
 				else if (token.value == TOKidentifier) {
 					Token t2 = peek(token);
 					if (t2.value == TOKcomma || t2.value == TOKsemicolon) {
-						arg = new Argument(In, null, token.ident, null);
+						arg = new Argument(In, null, new Identifier(token), null);
+						arg.start = argToken.ptr;
+						arg.length = token.ptr + token.len - arg.start;
+						
 						nextToken();
 						nextToken();
+						
 						// if (!global.params.useDeprecated)
-						problem("if (v; e) is deprecated, use if (auto v = e)", IProblem.SEVERITY_ERROR, IProblem.DEPRECATED_IF_AUTO, token.ptr, token.len);
+						problem("if (v; e) is deprecated, use if (auto v = e)", IProblem.SEVERITY_ERROR, IProblem.DEPRECATED_IF_AUTO, argToken.ptr, token.ptr + token.len - argToken.ptr);
 					}
 				}
 			}

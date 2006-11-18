@@ -31,7 +31,7 @@ public class Expression_Test extends Parser_Test {
 		
 		assertEquals(IExpression.EXPRESSION_THIS, expr.getExpressionType());
 		assertEquals("this", expr.toString());
-		assertPosition(expr, 1, 4);
+		assertPosition(expr, 1, s.length() - 1);
 		
 		assertVisitor(expr, 1);
 	}
@@ -42,7 +42,7 @@ public class Expression_Test extends Parser_Test {
 		
 		assertEquals(IExpression.EXPRESSION_SUPER, expr.getExpressionType());
 		assertEquals("super", expr.toString());
-		assertPosition(expr, 1, 5);
+		assertPosition(expr, 1, s.length() - 1);
 		
 		assertVisitor(expr, 1);
 	}
@@ -53,7 +53,7 @@ public class Expression_Test extends Parser_Test {
 		
 		assertEquals(IExpression.EXPRESSION_NULL, expr.getExpressionType());
 		assertEquals("null", expr.toString());
-		assertPosition(expr, 1, 4);
+		assertPosition(expr, 1, s.length() - 1);
 		
 		assertVisitor(expr, 1);
 	}
@@ -64,7 +64,7 @@ public class Expression_Test extends Parser_Test {
 		
 		assertEquals(IExpression.EXPRESSION_TRUE, expr.getExpressionType());
 		assertEquals("true", expr.toString());
-		assertPosition(expr, 1, 4);
+		assertPosition(expr, 1, s.length() - 1);
 		
 		assertVisitor(expr, 1);
 	}
@@ -75,7 +75,7 @@ public class Expression_Test extends Parser_Test {
 		
 		assertEquals(IExpression.EXPRESSION_FALSE, expr.getExpressionType());
 		assertEquals("false", expr.toString());
-		assertPosition(expr, 1, 5);
+		assertPosition(expr, 1, s.length() - 1);
 		
 		assertVisitor(expr, 1);
 	}
@@ -87,7 +87,7 @@ public class Expression_Test extends Parser_Test {
 		assertEquals(IExpression.EXPRESSION_STRING, expr.getExpressionType());
 		assertEquals("hola", expr.getString());
 		assertEquals(0, expr.getPostfix());
-		assertPosition(expr, 1, 6);
+		assertPosition(expr, 1, s.length() - 1);
 		
 		assertVisitor(expr, 1);
 	}
@@ -99,7 +99,7 @@ public class Expression_Test extends Parser_Test {
 		assertEquals(IExpression.EXPRESSION_STRING, expr.getExpressionType());
 		assertEquals("holachau", expr.getString());
 		assertEquals(0, expr.getPostfix());
-		assertPosition(expr, 1, 13);
+		assertPosition(expr, 1, s.length() - 1);
 	}
 	
 	public void testStringPostfix() {
@@ -109,7 +109,7 @@ public class Expression_Test extends Parser_Test {
 		assertEquals(IExpression.EXPRESSION_STRING, expr.getExpressionType());
 		assertEquals("hola", expr.getString());
 		assertEquals('c', expr.getPostfix());
-		assertPosition(expr, 1, 7);
+		assertPosition(expr, 1, s.length() - 1);
 	}
 	
 	public void testStringHex() {
@@ -117,7 +117,7 @@ public class Expression_Test extends Parser_Test {
 		IStringExpression expr = (IStringExpression) new ParserFacade().parseExpression(s);
 		
 		assertEquals(IExpression.EXPRESSION_STRING, expr.getExpressionType());
-		assertPosition(expr, 1, 7);
+		assertPosition(expr, 1, s.length() - 1);
 	}
 	
 	public void testInt32() {
@@ -126,7 +126,7 @@ public class Expression_Test extends Parser_Test {
 		
 		assertEquals(IExpression.EXPRESSION_INTEGER, expr.getExpressionType());
 		assertEquals(1234, expr.getValue());
-		assertPosition(expr, 1, 4);
+		assertPosition(expr, 1, s.length() - 1);
 		
 		assertVisitor(expr, 1);
 	}
@@ -137,7 +137,49 @@ public class Expression_Test extends Parser_Test {
 		
 		assertEquals(IExpression.EXPRESSION_INTEGER, expr.getExpressionType());
 		assertEquals(1234, expr.getValue());
-		assertPosition(expr, 1, 5);
+		assertPosition(expr, 1, s.length() - 1);
+	}
+	
+	public void testInt64() {
+		String s = " 1234L";
+		IIntegerExpression expr = (IIntegerExpression) new ParserFacade().parseExpression(s);
+		
+		assertEquals(IExpression.EXPRESSION_INTEGER, expr.getExpressionType());
+		assertEquals(1234, expr.getValue());
+		assertPosition(expr, 1, s.length() - 1);
+	}
+	
+	public void testUInt64() {
+		String s = " 1234Lu";
+		IIntegerExpression expr = (IIntegerExpression) new ParserFacade().parseExpression(s);
+		
+		assertEquals(IExpression.EXPRESSION_INTEGER, expr.getExpressionType());
+		assertEquals(1234, expr.getValue());
+		assertPosition(expr, 1, s.length() - 1);
+	}
+	
+	public void testFloat32() {
+		String s = " 1.2f";
+		IExpression expr = (IExpression) new ParserFacade().parseExpression(s);
+		
+		assertEquals(IExpression.EXPRESSION_REAL, expr.getExpressionType());
+		assertPosition(expr, 1, s.length() - 1);
+	}
+	
+	public void testFloat64() {
+		String s = " 1.2";
+		IExpression expr = (IExpression) new ParserFacade().parseExpression(s);
+		
+		assertEquals(IExpression.EXPRESSION_REAL, expr.getExpressionType());
+		assertPosition(expr, 1, s.length() - 1);
+	}
+	
+	public void testFloat80() {
+		String s = " 1.2L";
+		IExpression expr = (IExpression) new ParserFacade().parseExpression(s);
+		
+		assertEquals(IExpression.EXPRESSION_REAL, expr.getExpressionType());
+		assertPosition(expr, 1, s.length() - 1);
 	}
 	
 	public void testReal() {
@@ -145,17 +187,41 @@ public class Expression_Test extends Parser_Test {
 		IExpression expr = (IExpression) new ParserFacade().parseExpression(s);
 		
 		assertEquals(IExpression.EXPRESSION_REAL, expr.getExpressionType());
-		assertPosition(expr, 1, 3);
+		assertPosition(expr, 1, s.length() - 1);
 		
 		assertVisitor(expr, 1);
 	}
 	
-	public void testImaginary() {
+	public void testImaginary32() {
+		String s = " 1.2fi";
+		IExpression expr = (IExpression) new ParserFacade().parseExpression(s);
+		
+		assertEquals(IExpression.EXPRESSION_REAL, expr.getExpressionType());
+		assertPosition(expr, 1, s.length() - 1);
+	}
+	
+	public void testImaginary64() {
 		String s = " 1.2i";
 		IExpression expr = (IExpression) new ParserFacade().parseExpression(s);
 		
 		assertEquals(IExpression.EXPRESSION_REAL, expr.getExpressionType());
-		assertPosition(expr, 1, 4);
+		assertPosition(expr, 1, s.length() - 1);
+	}
+	
+	public void testImaginary80() {
+		String s = " 1.2Li";
+		IExpression expr = (IExpression) new ParserFacade().parseExpression(s);
+		
+		assertEquals(IExpression.EXPRESSION_REAL, expr.getExpressionType());
+		assertPosition(expr, 1, s.length() - 1);
+	}
+	
+	public void testChar() {
+		String s = " 'c'";
+		IExpression expr = (IExpression) new ParserFacade().parseExpression(s);
+		
+		assertEquals(IExpression.EXPRESSION_INTEGER, expr.getExpressionType());
+		assertPosition(expr, 1, s.length() - 1);
 	}
 	
 	public void testAssert() {
@@ -165,7 +231,7 @@ public class Expression_Test extends Parser_Test {
 		assertEquals(IExpression.EXPRESSION_ASSERT, expr.getExpressionType());
 		assertEquals(IExpression.EXPRESSION_FALSE, expr.getExpression().getExpressionType());
 		assertNull(expr.getMessage());
-		assertPosition(expr, 1, 13);
+		assertPosition(expr, 1, s.length() - 1);
 		
 		assertVisitor(expr, 2);
 	}
@@ -177,7 +243,7 @@ public class Expression_Test extends Parser_Test {
 		assertEquals(IExpression.EXPRESSION_ASSERT, expr.getExpressionType());
 		assertEquals(IExpression.EXPRESSION_FALSE, expr.getExpression().getExpressionType());
 		assertEquals(IExpression.EXPRESSION_TRUE, expr.getMessage().getExpressionType());
-		assertPosition(expr, 1, 19);
+		assertPosition(expr, 1, s.length() - 1);
 		
 		assertVisitor(expr, 3);
 	}
@@ -188,7 +254,7 @@ public class Expression_Test extends Parser_Test {
 		
 		assertEquals(IExpression.EXPRESSION_PARENTHESIZED, expr.getExpressionType());
 		assertEquals(IExpression.EXPRESSION_FALSE, expr.getExpression().getExpressionType());
-		assertPosition(expr, 1, 9);
+		assertPosition(expr, 1, s.length() - 1);
 		
 		assertVisitor(expr, 2);
 	}

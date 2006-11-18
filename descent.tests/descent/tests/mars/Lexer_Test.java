@@ -149,6 +149,10 @@ public class Lexer_Test extends TestCase {
 		assertToken(" 6.3Li", TOK.TOKimaginary80v, 1, 5);
 	}
 	
+	public void testChar() {
+		assertToken(" 'c'", TOK.TOKcharv, 1, 3);
+	}
+	
 	public void testComments() {
 		assertBlockCommentToken(" /**hola a todos */ /** ble */  hol", "hola a todos\n\nble", 1, 29);
 		assertBlockCommentToken(" ///hola\n hol", "hola", 1, 7);

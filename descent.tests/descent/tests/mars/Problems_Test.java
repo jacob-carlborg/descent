@@ -796,6 +796,87 @@ public class Problems_Test extends TestCase {
 		assertEquals(1, p[0].getLength());
 	}
 	
+	public void test_EQUALS_EXPECTED_IN_IF_AUTO() {
+		IProblem[] p = getProblems(" void x() { if (auto i) { } }", 2);
+		  
+		assertEquals(IProblem.EQUALS_EXPECTED, p[0].getId());
+		assertEquals(IProblem.SEVERITY_ERROR, p[0].getSeverity());
+		assertEquals(21, p[0].getOffset());
+		assertEquals(1, p[0].getLength());
+	}
+	
+	public void test_IDENTIFIER_EXPECTED_IN_IF_AUTO() {
+		IProblem[] p = getProblems(" void x() { if (auto = ) { } }", 2);
+		  
+		assertEquals(IProblem.IDENTIFIER_EXPECTED, p[0].getId());
+		assertEquals(IProblem.SEVERITY_ERROR, p[0].getSeverity());
+		assertEquals(21, p[0].getOffset());
+		assertEquals(1, p[0].getLength());
+	}
+	
+	public void test_DEPRECATED_IF_AUTO() {
+		IProblem[] p = getProblems(" void x() { if (a; b) { } }", 1);
+		  
+		assertEquals(IProblem.DEPRECATED_IF_AUTO, p[0].getId());
+		assertEquals(IProblem.SEVERITY_ERROR, p[0].getSeverity());
+		assertEquals(16, p[0].getOffset());
+		assertEquals(4, p[0].getLength());
+	}
+	
+	public void test_SCOPE_IDENTIFIER_EXPECTED() {
+		IProblem[] p = getProblems(" void x() { scope(); }", 1);
+		  
+		assertEquals(IProblem.IDENTIFIER_EXPECTED, p[0].getId());
+		assertEquals(IProblem.SEVERITY_ERROR, p[0].getSeverity());
+		assertEquals(18, p[0].getOffset());
+		assertEquals(1, p[0].getLength());
+	}
+	
+	public void test_INVALID_SCOPE_IDENTIFIER() {
+		IProblem[] p = getProblems(" void x() { scope(bla) { } }", 1);
+		  
+		assertEquals(IProblem.INVALID_SCOPE_IDENTIFIER, p[0].getId());
+		assertEquals(IProblem.SEVERITY_ERROR, p[0].getSeverity());
+		assertEquals(18, p[0].getOffset());
+		assertEquals(3, p[0].getLength());
+	}
+	
+	public void test_ON_SCOPE_DEPRECATED() {
+		IProblem[] p = getProblems(" void bla() { on_scope_exit { } }", 1);
+		  
+		assertEquals(IProblem.ON_SCOPE_DEPRECATED, p[0].getId());
+		assertEquals(IProblem.SEVERITY_ERROR, p[0].getSeverity());
+		assertEquals(14, p[0].getOffset());
+		assertEquals(13, p[0].getLength());
+	}
+	
+	public void test_STATEMENT_PRAGMA_IDENTIFIER_EXPECTED() {
+		IProblem[] p = getProblems(" void bla() { pragma(2) { } }", 2);
+		  
+		assertEquals(IProblem.IDENTIFIER_EXPECTED, p[0].getId());
+		assertEquals(IProblem.SEVERITY_ERROR, p[0].getSeverity());
+		assertEquals(21, p[0].getOffset());
+		assertEquals(1, p[0].getLength());
+	}
+	
+	public void test_IDENTIFIER_EXPECTED_FOLLOWING_GOTO() {
+		IProblem[] p = getProblems(" void bla() { goto 2; }", 2);
+		  
+		assertEquals(IProblem.IDENTIFIER_EXPECTED, p[0].getId());
+		assertEquals(IProblem.SEVERITY_ERROR, p[0].getSeverity());
+		assertEquals(19, p[0].getOffset());
+		assertEquals(1, p[0].getLength());
+	}
+	
+	public void test_CATCH_OR_FINALLY_EXPECTED() {
+		IProblem[] p = getProblems(" void bla() { try { } }", 1);
+		  
+		assertEquals(IProblem.CATCH_OR_FINALLY_EXPECTED, p[0].getId());
+		assertEquals(IProblem.SEVERITY_ERROR, p[0].getSeverity());
+		assertEquals(20, p[0].getOffset());
+		assertEquals(1, p[0].getLength());
+	}
+	
 	private IProblem getProblem(String s) {
 		ParserFacade facade = new ParserFacade();
 		ICompilationUnit unit = facade.parseCompilationUnit(s);

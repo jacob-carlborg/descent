@@ -1348,9 +1348,11 @@ public class Lexer implements IProblemCollector {
 			else
 			    tk = TOKdcharv;
 		    }
-		    t.numberValue = c;
 		    break;
 	    }
+	    
+	    t.numberValue = c;
+	    t.len = p - t.ptr + 1;
 
 	    if (input[p] != '\'')
 	    {	
