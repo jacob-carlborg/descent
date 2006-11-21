@@ -4839,7 +4839,7 @@ public class Parser extends Lexer {
 			    	nextToken();
 			    	break;
 			    }
-			    e = new TypeDotIdExp(loc, t, token.ident);
+			    e = new TypeDotIdExp(loc, t, new Identifier(token));
 			    nextToken();
 			    break;
 		    }
@@ -4863,60 +4863,57 @@ public class Parser extends Lexer {
 		}
 
 		case TOKis:
-		{   Type targ = null;
-		    Identifier ident = null;
-		    Type tspec = null;
-		    TOK tok = TOKreserved;
-		    TOK tok2 = TOKreserved;
-		    Loc loc2 = new Loc(this.loc);
+		{
+			Type targ = null;
+			Identifier ident = null;
+			Type tspec = null;
+			TOK tok = TOKreserved;
+			Token token2 = new Token();
+			token2.value = TOKreserved;
+			Loc loc2 = new Loc(this.loc);
 
-		    nextToken();
-		    if (token.value == TOKlparen)
-		    {
 			nextToken();
-			targ = parseBasicType();
-			
-			Identifier[] pointer2_ident = { ident };
-			targ = parseDeclarator(targ, pointer2_ident);
-			ident = pointer2_ident[0];
-			
-			if (token.value == TOKcolon || token.value == TOKequal)
-			{
-			    tok = token.value;
-			    nextToken();
-			    if (tok == TOKequal &&
-				(token.value == TOKtypedef ||
-				 token.value == TOKstruct ||
-				 token.value == TOKunion ||
-				 token.value == TOKclass ||
-				 token.value == TOKenum ||
-				 token.value == TOKinterface ||
-				 token.value == TOKfunction ||
-				 token.value == TOKdelegate ||
-				 token.value == TOK.TOKreturn))
-			    {
-				tok2 = token.value;
+			if (token.value == TOKlparen) {
 				nextToken();
-			    }
-			    else
-			    {
-				tspec = parseBasicType();
-				tspec = parseDeclarator(tspec, null);
-			    }
-			}
-			check(TOKrparen);
-		    }
-		    else
-		    {   
-		    	problem("(type identifier : specialization) expected following is", IProblem.SEVERITY_ERROR, IProblem.INVALID_IFTYPE_SYNTAX, token.ptr, token.len);
+				targ = parseBasicType();
+
+				Identifier[] pointer2_ident = { ident };
+				targ = parseDeclarator(targ, pointer2_ident);
+				ident = pointer2_ident[0];
+
+				if (token.value == TOKcolon || token.value == TOKequal) {
+					tok = token.value;
+					nextToken();
+					if (tok == TOKequal
+							&& (token.value == TOKtypedef
+									|| token.value == TOKstruct
+									|| token.value == TOKunion
+									|| token.value == TOKclass
+									|| token.value == TOKenum
+									|| token.value == TOKinterface
+									|| token.value == TOKfunction
+									|| token.value == TOKdelegate || token.value == TOK.TOKreturn)) {
+						token2 = new Token(token);
+						nextToken();
+					} else {
+						tspec = parseBasicType();
+						tspec = parseDeclarator(tspec, null);
+					}
+				}
+				check(TOKrparen);
+			} else {
+				problem(
+						"(type identifier : specialization) expected following is",
+						IProblem.SEVERITY_ERROR,
+						IProblem.INVALID_IFTYPE_SYNTAX, token.ptr, token.len);
 				// goto Lerr;
-		    	// Anything for e, as long as it's not NULL
-		    	e = new IntegerExp(loc2, 0, Type.tint32);
-		    	nextToken();
-		    	break;
-		    }
-		    e = new IftypeExp(loc2, targ, ident, tok, tspec, tok2);
-		    break;
+				// Anything for e, as long as it's not NULL
+				e = new IntegerExp(loc2, 0, Type.tint32);
+				nextToken();
+				break;
+			}
+			e = new IftypeExp(loc2, targ, ident, tok, tspec, token2);
+			break;
 		}
 
 		case TOKassert: {
@@ -4939,56 +4936,29 @@ public class Parser extends Lexer {
 		}
 
 		case TOKlparen:
-		    if (peekPastParen(token).value == TOKlcurly)
-		    {	// (arguments) { statements... }
-		    	save = TOKdelegate;
+		    if (peekPastParen(token).value == TOKlcurly) { // (arguments) {
+															// statements... }
+				save = TOKdelegate;
 				// goto case_delegate;
-		    	/* function type(parameters) { body }
-			     * delegate type(parameters) { body }
-			     */
-			    List<Argument> arguments;
-			    int varargs = 0;
-			    FuncLiteralDeclaration fd;
-			    Type t2;
-
-			    if (token.value == TOKlcurly)
-			    {
-				t2 = null;
-				arguments = new ArrayList<Argument>();
-			    }
-			    else
-			    {
-				if (token.value == TOKlparen)
-				    t2 = null;
-				else
 				{
-				    t2 = parseBasicType();
-				    t2 = parseBasicType2(t2);	// function return type
+				Expression[] pe = { e };
+				parsePrimaryExp_case_delegate(pe, save);
+				e = pe[0];
 				}
-				
-				int[] pointer2_varargs = { varargs };
-				arguments = parseParameters(pointer2_varargs);
-				varargs = pointer2_varargs[0];
-				
-			    }
-			    t2 = new TypeFunction(arguments, t2, varargs, linkage);
-			    fd = new FuncLiteralDeclaration(loc, 0, t2, save, null);
-			    parseContracts(fd);
-			    e = new FuncExp(loc, fd);
-			    break;
-		    }
-		    // ( expression )
-		    int start = token.ptr;
-		    nextToken();
-		    e = parseExpression();
-		    
-		    int end = token.ptr + token.len;
-		    check(TOKrparen);
-		    
-		    e = new ParenthesizedExpression(e);
-		    e.start = start;
-		    e.length = end - start;
-		    break;
+				break;
+			}
+			// ( expression )
+			int start = token.ptr;
+			nextToken();
+			e = parseExpression();
+
+			int end = token.ptr + token.len;
+			check(TOKrparen);
+
+			e = new ParenthesizedExpression(e);
+			e.start = start;
+			e.length = end - start;
+			break;
 
 		case TOKlbracket:
 		{   List<Expression> elements = parseArguments();
@@ -4999,82 +4969,26 @@ public class Parser extends Lexer {
 		
 		case TOKlcurly:
 		    // { statements... }
-		    save = TOKdelegate;
-		    // goto case_delegate;
-		    /* function type(parameters) { body }
-		     * delegate type(parameters) { body }
-		     */
-		    List<Argument> arguments;
-		    int varargs = 0;
-		    FuncLiteralDeclaration fd;
-		    Type t2;
-
-		    if (token.value == TOKlcurly)
-		    {
-			t2 = null;
-			arguments = new ArrayList<Argument>();
-		    }
-		    else
-		    {
-			if (token.value == TOKlparen)
-			    t2 = null;
-			else
+			save = TOKdelegate;
+			// goto case_delegate;
 			{
-			    t2 = parseBasicType();
-			    t2 = parseBasicType2(t2);	// function return type
+			Expression[] pe = { e };
+			parsePrimaryExp_case_delegate(pe, save);
+			e = pe[0];
 			}
-			
-			int[] pointer2_varargs = { varargs };
-			arguments = parseParameters(pointer2_varargs);
-			varargs = pointer2_varargs[0];
-			
-		    }
-		    t2 = new TypeFunction(arguments, t2, varargs, linkage);
-		    fd = new FuncLiteralDeclaration(loc, 0, t2, save, null);
-		    parseContracts(fd);
-		    e = new FuncExp(loc, fd);
-		    break;
+			break;
 
 		case TOKfunction:
 		case TOKdelegate:
 		    save = token.value;
-		    nextToken();
-		// case_delegate:
-		{
-		    /* function type(parameters) { body }
-		     * delegate type(parameters) { body }
-		     */
-		    arguments = null;
-		    varargs = 0;
-		    fd = null;
-		    t2 = null;
-
-		    if (token.value == TOKlcurly)
-		    {
-			t2 = null;
-			arguments = new ArrayList<Argument>();
-		    }
-		    else
-		    {
-			if (token.value == TOKlparen)
-			    t2 = null;
-			else
+			nextToken();
+			// case_delegate:
 			{
-			    t2 = parseBasicType();
-			    t2 = parseBasicType2(t2);	// function return type
+				Expression[] pe = { e };
+				parsePrimaryExp_case_delegate(pe, save);
+				e = pe[0];
+				break;
 			}
-			
-			int[] pointer2_varargs = { varargs };
-			arguments = parseParameters(pointer2_varargs);
-			varargs = pointer2_varargs[0];
-			
-		    }
-		    t2 = new TypeFunction(arguments, t2, varargs, linkage);
-		    fd = new FuncLiteralDeclaration(loc, 0, t2, save, null);
-		    parseContracts(fd);
-		    e = new FuncExp(loc, fd);
-		    break;
-		}
 
 		default:
 			problem("Expression expected", IProblem.SEVERITY_ERROR, IProblem.EXPRESSION_EXPECTED, token.ptr, token.len);
@@ -5371,6 +5285,34 @@ public class Parser extends Lexer {
 		e.length = prevToken.ptr + prevToken.len - e.start;
 
 		return e;
+	}
+	
+	private void parsePrimaryExp_case_delegate(Expression[] e, TOK save) {
+		List<Argument> arguments;
+		int varargs = 0;
+		FuncLiteralDeclaration fd;
+		Type t2;
+
+		if (token.value == TOKlcurly) {
+			t2 = null;
+			arguments = new ArrayList<Argument>();
+		} else {
+			if (token.value == TOKlparen)
+				t2 = null;
+			else {
+				t2 = parseBasicType();
+				t2 = parseBasicType2(t2); // function return type
+			}
+
+			int[] pointer2_varargs = { varargs };
+			arguments = parseParameters(pointer2_varargs);
+			varargs = pointer2_varargs[0];
+
+		}
+		t2 = new TypeFunction(arguments, t2, varargs, linkage);
+		fd = new FuncLiteralDeclaration(loc, 0, t2, save, null);
+		parseContracts(fd);
+		e[0] = new FuncExp(loc, fd);
 	}
 	
 	private Expression parseMulExp()
@@ -5739,13 +5681,12 @@ public class Parser extends Lexer {
 	@SuppressWarnings("unchecked")
 	private Expression parseNewExp(Expression thisexp) {
 		Type t;
-		List<Expression> newargs;
+		List<Expression> newargs = null;
 		List<Expression> arguments = null;
 		Expression e;
 		Loc loc = new Loc(this.loc);
 
 		nextToken();
-		newargs = null;
 		if (token.value == TOKlparen) {
 			newargs = parseArguments();
 		}

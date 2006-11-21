@@ -7,19 +7,25 @@ import descent.core.dom.IBinaryExpression;
 import descent.core.dom.ICallExpression;
 import descent.core.dom.ICastExpression;
 import descent.core.dom.IConditionExpression;
+import descent.core.dom.IDElement;
 import descent.core.dom.IDeleteExpression;
 import descent.core.dom.IDotIdExpression;
-import descent.core.dom.IDElement;
 import descent.core.dom.IExpression;
+import descent.core.dom.IFunctionExpression;
 import descent.core.dom.IIntegerExpression;
+import descent.core.dom.IIftypeExpression;
+import descent.core.dom.INewAnonymousClassExpression;
 import descent.core.dom.INewExpression;
 import descent.core.dom.IParenthesizedExpression;
 import descent.core.dom.IScopeExpression;
 import descent.core.dom.ISliceExpression;
 import descent.core.dom.IStringExpression;
+import descent.core.dom.IStrongType;
 import descent.core.dom.IType;
 import descent.core.dom.ITypeDotIdentifierExpression;
 import descent.core.dom.ITypeExpression;
+import descent.core.dom.ITypeidExpression;
+import descent.core.dom.ITypeofType;
 import descent.core.dom.IUnaryExpression;
 import descent.internal.core.dom.ParserFacade;
 
@@ -272,8 +278,11 @@ public class Expression_Test extends Parser_Test {
 				{ ">>>", IBinaryExpression.UNSIGNED_SHIFT_RIGHT },
 				{ "<", IBinaryExpression.CMP },
 				{ "in", IBinaryExpression.IN },
+				{ "is", IBinaryExpression.IDENTITY },
+				{ "!is", IBinaryExpression.NOT_IDENTITY },
 				{ "==", IBinaryExpression.EQUAL },
 				{ "===", IBinaryExpression.IDENTITY },
+				{ "!==", IBinaryExpression.NOT_IDENTITY },
 				{ "&", IBinaryExpression.AND },
 				{ "^", IBinaryExpression.XOR },
 				{ "|", IBinaryExpression.OR },
@@ -507,13 +516,31 @@ public class Expression_Test extends Parser_Test {
 		assertPosition(expr, 1, s.length() - 1);
 	}
 	
-	public void testType() {
-		String s = " typeof(int)";
+	public void testTypeof() {
+		String s = " typeof(3)";
 		ITypeExpression expr = (ITypeExpression) new ParserFacade().parseExpression(s);
 		assertEquals(IExpression.EXPRESSION_TYPE, expr.getExpressionType());
 		
 		assertEquals(IType.TYPE_TYPEOF, expr.getType().getTypeType());
 		assertPosition(expr, 1, s.length() - 1);
+		
+		ITypeofType typeof = (ITypeofType) expr.getType();
+		assertEquals("3", typeof.getExpression().toString());
+	}
+	
+	public void testTypeofDotId() {
+		String s = " typeof(3).length";
+		ITypeDotIdentifierExpression expr = (ITypeDotIdentifierExpression) new ParserFacade().parseExpression(s);
+		assertEquals(IExpression.EXPRESSION_TYPE_DOT_IDENTIFIER, expr.getExpressionType());
+		
+		assertEquals(IType.TYPE_TYPEOF, expr.getType().getTypeType());
+		assertPosition(expr, 1, s.length() - 1);
+		
+		ITypeofType typeof = (ITypeofType) expr.getType();
+		assertEquals("3", typeof.getExpression().toString());
+		
+		assertEquals("length", expr.getProperty().toString());
+		assertPosition(expr.getProperty(), 11, 6);
 	}
 	
 	public void testDotId() {
@@ -541,6 +568,141 @@ public class Expression_Test extends Parser_Test {
 		
 		assertEquals("bla", expr.getName().toString());
 		assertPosition(expr.getName(), 5, 3);
+	}
+	
+	public void testTypeid() {
+		String s = " typeid(int)";
+		ITypeidExpression expr = (ITypeidExpression) new ParserFacade().parseExpression(s);
+		
+		assertEquals(IExpression.EXPRESSION_TYPEID, expr.getExpressionType());
+		assertPosition(expr, 1, s.length() - 1);
+		
+		assertEquals("int", expr.getType().toString());
+	}
+	
+	public void testIftype() {
+		String s = " is(x : float)";
+		IIftypeExpression expr = (IIftypeExpression) new ParserFacade().parseExpression(s);
+		
+		assertEquals(IExpression.EXPRESSION_IFTYPE, expr.getExpressionType());
+		assertPosition(expr, 1, s.length() - 1);
+		
+		assertEquals("x", expr.getType().toString());
+		assertEquals("float", expr.getSpecialization().toString());
+		assertNull(expr.getIdentifier());
+	}
+	
+	public void testIftypeWithId() {
+		String s = " is(int x : float)";
+		IIftypeExpression expr = (IIftypeExpression) new ParserFacade().parseExpression(s);
+		
+		assertEquals(IExpression.EXPRESSION_IFTYPE, expr.getExpressionType());
+		assertPosition(expr, 1, s.length() - 1);
+		
+		assertEquals("int", expr.getType().toString());
+		assertEquals("float", expr.getSpecialization().toString());
+		
+		assertEquals("x", expr.getIdentifier().toString());
+		assertPosition(expr.getIdentifier(), 8, 1);
+	}
+	
+	public void testIftypeWithType() {
+		Object[][] objs = {
+				{ "typedef", IStrongType.TYPEDEF },
+				{ "struct", IStrongType.STRUCT },
+				{ "union", IStrongType.UNION },
+				{ "interface", IStrongType.INTERFACE },
+				{ "function", IStrongType.FUNCTION },
+				{ "delegate", IStrongType.DELEGATE },
+				{ "return", IStrongType.RETURN },
+		};
+		
+		for(Object[] pair : objs) {
+			String s = " is(x == " + pair[0] + ")";
+			IIftypeExpression expr = (IIftypeExpression) new ParserFacade().parseExpression(s);
+			
+			assertEquals(IExpression.EXPRESSION_IFTYPE, expr.getExpressionType());
+			assertPosition(expr, 1, s.length() - 1);
+			
+			assertEquals("x", expr.getType().toString());
+			assertNull(expr.getSpecialization());
+			
+			assertEquals(pair[1], expr.getStrongType().getStrongTypeType());
+			assertPosition(expr.getStrongType(), 9, ((String) pair[0]).length());
+		}
+	}
+	
+	public void testFunctionLiteralEmpty() {
+		String s = " () { }";
+		IFunctionExpression expr = (IFunctionExpression) new ParserFacade().parseExpression(s);
+		
+		assertEquals(IExpression.EXPRESSION_FUNCTION, expr.getExpressionType());
+		assertPosition(expr, 1, s.length() - 1);
+		
+		assertEquals(0, expr.getArguments().length);
+		assertPosition(expr.getBody(), 4, 3);
+	}
+	
+	public void testFunctionLiteralWithParams() {
+		String s = " (int x) { }";
+		IFunctionExpression expr = (IFunctionExpression) new ParserFacade().parseExpression(s);
+		
+		assertEquals(1, expr.getArguments().length);
+		assertEquals("int", expr.getArguments()[0].getType().toString());
+	}
+	
+	public void testFunctionLiteralWithoutParameters() {
+		String s = " { }";
+		IFunctionExpression expr = (IFunctionExpression) new ParserFacade().parseExpression(s);
+		
+		assertPosition(expr, 1, s.length() - 1);
+		
+		assertEquals(0, expr.getArguments().length);
+	}
+	
+	public void testFunctionLiteralDelegate() {
+		String s = " delegate { }";
+		IFunctionExpression expr = (IFunctionExpression) new ParserFacade().parseExpression(s);
+		
+		assertPosition(expr, 1, s.length() - 1);
+		
+		assertEquals(0, expr.getArguments().length);
+	}
+	
+	public void testAnnonymousClass() {
+		String s = " new class { }";
+		INewAnonymousClassExpression expr = (INewAnonymousClassExpression) new ParserFacade().parseExpression(s);
+		
+		assertEquals(IExpression.EXPRESSION_NEW_ANONYMOUS_CLASS, expr.getExpressionType());
+		assertPosition(expr, 1, s.length() - 1);
+		
+		assertEquals(0, expr.getCallArguments().length);
+		assertEquals(0, expr.getConstructorArguments().length);
+		assertEquals(0, expr.getBaseClasses().length);
+	}
+	
+	public void testAnnonymousClass2() {
+		String s = " new (1, 2) class (int a, int b) { }";
+		INewAnonymousClassExpression expr = (INewAnonymousClassExpression) new ParserFacade().parseExpression(s);
+		
+		assertEquals(IExpression.EXPRESSION_NEW_ANONYMOUS_CLASS, expr.getExpressionType());
+		assertPosition(expr, 1, s.length() - 1);
+		
+		assertEquals(2, expr.getCallArguments().length);
+		assertEquals(2, expr.getConstructorArguments().length);
+		assertEquals(0, expr.getBaseClasses().length);
+	}
+	
+	public void testAnnonymousClass3() {
+		String s = " new class A, B { }";
+		INewAnonymousClassExpression expr = (INewAnonymousClassExpression) new ParserFacade().parseExpression(s);
+		
+		assertEquals(IExpression.EXPRESSION_NEW_ANONYMOUS_CLASS, expr.getExpressionType());
+		assertPosition(expr, 1, s.length() - 1);
+		
+		assertEquals(0, expr.getCallArguments().length);
+		assertEquals(0, expr.getConstructorArguments().length);
+		assertEquals(2, expr.getBaseClasses().length);
 	}
 
 }

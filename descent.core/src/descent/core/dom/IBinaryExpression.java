@@ -37,6 +37,7 @@ public interface IBinaryExpression extends IExpression {
 	int UNSIGNED_SHIFT_RIGHT_ASSIGN = 40;
 	int CAT_ASSIGN = 41;
 	int COMMA = 44;
+	int NOT_IDENTITY = 45;
 	
 	/**
 	 * Returns the type of this binary expression. Check the constants

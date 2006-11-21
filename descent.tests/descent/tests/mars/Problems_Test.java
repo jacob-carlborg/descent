@@ -877,6 +877,24 @@ public class Problems_Test extends TestCase {
 		assertEquals(1, p[0].getLength());
 	}
 	
+	public void test_TYPE_DOT_ID_EXPECTED() {
+		IProblem[] p = getProblems(" void bla() { int a = typeof(1).;; }", 1);
+		  
+		assertEquals(IProblem.IDENTIFIER_EXPECTED, p[0].getId());
+		assertEquals(IProblem.SEVERITY_ERROR, p[0].getSeverity());
+		assertEquals(32, p[0].getOffset());
+		assertEquals(1, p[0].getLength());
+	}
+	
+	public void test_INVALID_IFTYPE_SYNTAX_2() {
+		IProblem[] p = getProblems(" void bla() { int a = is ; ; }", 1);
+		  
+		assertEquals(IProblem.INVALID_IFTYPE_SYNTAX, p[0].getId());
+		assertEquals(IProblem.SEVERITY_ERROR, p[0].getSeverity());
+		assertEquals(25, p[0].getOffset());
+		assertEquals(1, p[0].getLength());
+	}
+	
 	private IProblem getProblem(String s) {
 		ParserFacade facade = new ParserFacade();
 		ICompilationUnit unit = facade.parseCompilationUnit(s);

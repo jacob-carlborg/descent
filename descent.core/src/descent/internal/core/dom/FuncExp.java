@@ -1,9 +1,49 @@
 package descent.internal.core.dom;
 
-public class FuncExp extends Expression {
+import descent.core.dom.IArgument;
+import descent.core.dom.IDElementVisitor;
+import descent.core.dom.IFunctionExpression;
+import descent.core.dom.IName;
+import descent.core.dom.IStatement;
+
+public class FuncExp extends Expression implements IFunctionExpression {
+
+	private final FuncLiteralDeclaration fd;
 
 	public FuncExp(Loc loc, FuncLiteralDeclaration fd) {
-		// TODO Auto-generated constructor stub
+		this.fd = fd;
+	}
+	
+	public int getExpressionType() {
+		return EXPRESSION_FUNCTION;
+	}
+
+	public IArgument[] getArguments() {
+		return fd.getArguments();
+	}
+
+	public IStatement getBody() {
+		return fd.getBody();
+	}
+
+	public IStatement getIn() {
+		return fd.getIn();
+	}
+
+	public IStatement getOut() {
+		return fd.getOut();
+	}
+
+	public IName getOutName() {
+		return fd.getOutName();
+	}
+
+	public boolean isVariadic() {
+		return fd.isVariadic();
+	}
+	
+	public void accept(IDElementVisitor visitor) {
+		fd.accept(visitor);
 	}
 
 }

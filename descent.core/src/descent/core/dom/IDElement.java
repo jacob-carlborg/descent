@@ -210,6 +210,12 @@ public interface IDElement {
 	int STATIC_ASSERT = 33;
 	
 	/**
+	 * Constant representing a strong type.
+	 * A D element with this type can be safely cast to <code>IStrongType</code>. 
+	 */
+	int STRONG_TYPE = 34;
+	
+	/**
 	 * Returns the offset in the source code where this element
 	 * is located.
 	 */

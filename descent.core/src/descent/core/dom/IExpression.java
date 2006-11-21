@@ -154,6 +154,30 @@ public interface IExpression extends IDElement {
 	 * An expression with this type can be safely cast to <code>IDotIdExpression</code>. 
 	 */
 	int EXPRESSION_DOT_ID = 26;
+
+	/**
+	 * Constant representing a typeid expression.
+	 * An expression with this type can be safely cast to <code>ITypeidExpression</code>. 
+	 */
+	int EXPRESSION_TYPEID = 27;
+
+	/**
+	 * Constant representing an is expression.
+	 * An expression with this type can be safely cast to <code>IIsExpression</code>. 
+	 */
+	int EXPRESSION_IFTYPE = 28;
+	
+	/**
+	 * Constant representing a new anonymous class expression.
+	 * An expression with this type can be safely cast to <code>INewAnonymousClassExpression</code>. 
+	 */
+	int EXPRESSION_NEW_ANONYMOUS_CLASS = 29;
+	
+	/**
+	 * Constant representing a function expression.
+	 * An expression with this type can be safely cast to <code>IFunctionExpression</code>. 
+	 */
+	int EXPRESSION_FUNCTION = 20;
 	
 	/**
 	 * Returns the type of this expression. Check the constants
