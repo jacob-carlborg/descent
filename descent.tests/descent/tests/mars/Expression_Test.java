@@ -4,6 +4,7 @@ import java.math.BigInteger;
 
 import descent.core.dom.IArrayExpression;
 import descent.core.dom.IArrayLiteralExpression;
+import descent.core.dom.IArrayType;
 import descent.core.dom.IAssertExpression;
 import descent.core.dom.IBinaryExpression;
 import descent.core.dom.ICallExpression;
@@ -493,6 +494,19 @@ public class Expression_Test extends Parser_Test {
 		assertPosition(expr, 1, s.length() - 1);
 	}
 	
+	public void testSliceEmpty() {
+		String s = " bla[]";
+		ISliceExpression expr = (ISliceExpression) new ParserFacade().parseExpression(s);
+		assertEquals(IExpression.EXPRESSION_SLICE, expr.getExpressionType());
+		
+		assertEquals("bla", expr.getExpression().toString());
+		
+		assertNull(expr.getFrom());
+		assertNull(expr.getTo());
+		
+		assertPosition(expr, 1, s.length() - 1);
+	}
+	
 	public void testDolar() {
 		String s = " $";
 		IExpression expr = (IExpression) new ParserFacade().parseExpression(s);
@@ -708,6 +722,34 @@ public class Expression_Test extends Parser_Test {
 		assertEquals(0, expr.getCallArguments().length);
 		assertEquals(0, expr.getConstructorArguments().length);
 		assertEquals(2, expr.getBaseClasses().length);
+	}
+	
+	public void testNewDynamicArray1() {
+		String s = " new int[size]";
+		INewExpression expr = (INewExpression) new ParserFacade().parseExpression(s);
+		
+		assertEquals(IExpression.EXPRESSION_NEW, expr.getExpressionType());
+		assertPosition(expr, 1, s.length() - 1);
+		
+		IArrayType array = (IArrayType) expr.getType();
+		assertEquals(IArrayType.DYNAMIC_ARRAY, array.getArrayTypeType());
+		assertEquals(1, expr.getArguments().length);
+		assertEquals("size", expr.getArguments()[0].toString());
+		assertPosition(expr.getArguments()[0], 9, 4);
+	}
+	
+	public void testNewDynamicArray2() {
+		String s = " new int[3]";
+		INewExpression expr = (INewExpression) new ParserFacade().parseExpression(s);
+		
+		assertEquals(IExpression.EXPRESSION_NEW, expr.getExpressionType());
+		assertPosition(expr, 1, s.length() - 1);
+		
+		IArrayType array = (IArrayType) expr.getType();
+		assertEquals(IArrayType.DYNAMIC_ARRAY, array.getArrayTypeType());
+		assertEquals(1, expr.getArguments().length);
+		assertEquals("3", expr.getArguments()[0].toString());
+		assertPosition(expr.getArguments()[0], 9, 1);
 	}
 
 }

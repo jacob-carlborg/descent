@@ -5741,7 +5741,7 @@ public class Parser extends Lexer {
 				arguments.add(e2);
 				t = new TypeDArray(t.next);
 			} else {
-				error("need size of rightmost array, not type %s", index);
+				problem("Need size of rightmost array", IProblem.SEVERITY_ERROR, IProblem.NEED_SIZE_OF_RIGHTMOST_ARRAY, index.start, index.length);
 				return new NullExp(loc);
 			}
 		} else if (t.ty == Tsarray) {

@@ -1115,6 +1115,51 @@ public class Problems_Test extends TestCase {
 		assertEquals(25, p[0].getOffset());
 		assertEquals(1, p[0].getLength());
 	}
+	
+	public void test_NEED_SIZE_OF_RIGHTMOST_ARRAY() {
+		IProblem[] p = getProblems(" int[char] a = new int[char];", 1);
+
+		assertEquals(IProblem.NEED_SIZE_OF_RIGHTMOST_ARRAY, p[0].getId());
+		assertEquals(IProblem.SEVERITY_ERROR, p[0].getSeverity());
+		assertEquals(23, p[0].getOffset());
+		assertEquals(4, p[0].getLength());
+	}
+	
+	public void test_C_STYLE_CAST_ILLEGAL() {
+		IProblem[] p = getProblems(" int a = (int) 2;", 1);
+
+		assertEquals(IProblem.C_STYLE_CAST_ILLEGAL, p[0].getId());
+		assertEquals(IProblem.SEVERITY_ERROR, p[0].getSeverity());
+		assertEquals(9, p[0].getOffset());
+		assertEquals(7, p[0].getLength());
+	}
+	
+	public void test_IDENTIFIER_EXPECTED() {
+		IProblem[] p = getProblems(" int a = (int).;", 1);
+
+		assertEquals(IProblem.IDENTIFIER_EXPECTED, p[0].getId());
+		assertEquals(IProblem.SEVERITY_ERROR, p[0].getSeverity());
+		assertEquals(15, p[0].getOffset());
+		assertEquals(1, p[0].getLength());
+	}
+	
+	public void test_CLASS_MEMBERS_EXPECTED() {
+		IProblem[] p = getProblems(" int a = new class { ", 2);
+
+		assertEquals(IProblem.MEMBERS_EXPECTED, p[0].getId());
+		assertEquals(IProblem.SEVERITY_ERROR, p[0].getSeverity());
+		assertEquals(21, p[0].getOffset());
+		assertEquals(0, p[0].getLength());
+	}
+	
+	public void test_CLASS_MEMBERS_EXPECTED_2() {
+		IProblem[] p = getProblems(" int a = new class A 2; ", 3);
+
+		assertEquals(IProblem.MEMBERS_EXPECTED, p[0].getId());
+		assertEquals(IProblem.SEVERITY_ERROR, p[0].getSeverity());
+		assertEquals(21, p[0].getOffset());
+		assertEquals(1, p[0].getLength());
+	}
 
 	private IProblem getProblem(String s) {
 		ParserFacade facade = new ParserFacade();

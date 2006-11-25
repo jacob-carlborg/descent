@@ -10,8 +10,11 @@ public class ExpInitializer extends Initializer implements IExpressionInitialize
 
 	public ExpInitializer(Loc loc, Expression e) {
 		this.e = e;
-		this.start = e.start;
-		this.length = e.length;
+		if (e != null)
+		{		
+			this.start = e.start;
+			this.length = e.length;
+		}	
 	}
 	
 	public IExpression getExpression() {

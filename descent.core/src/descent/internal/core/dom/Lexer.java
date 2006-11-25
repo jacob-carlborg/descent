@@ -101,11 +101,6 @@ public class Lexer implements IProblemCollector {
 	    }
 	}
 	
-	public void error(String format, Object ... o) {
-		// TODO
-		System.out.println(format);
-	}
-	
 	public void problem(String message, int severity, int id, int offset, int length) {
 		problems.add(new Problem(message, severity, id, offset, length));
 	}
