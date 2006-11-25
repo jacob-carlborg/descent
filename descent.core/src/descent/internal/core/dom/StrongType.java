@@ -13,6 +13,7 @@ public class StrongType extends AbstractElement implements IStrongType {
 		case TOKstruct: strongType = STRUCT; break;
 		case TOKunion: strongType = UNION; break;
 		case TOKclass: strongType = CLASS; break;
+		case TOKsuper: strongType = SUPER; break;
 		case TOKenum: strongType = ENUM; break;
 		case TOKinterface: strongType = INTERFACE; break;
 		case TOKfunction: strongType = FUNCTION; break;

@@ -14,6 +14,7 @@ public interface IStrongType extends IDElement {
 	int FUNCTION = 7;
 	int DELEGATE = 8;
 	int RETURN = 9;
+	int SUPER = 10;
 	
 	/**
 	 * Returns one of the constants defined in this interface.

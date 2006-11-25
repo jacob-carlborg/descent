@@ -24,6 +24,7 @@ import descent.core.dom.IModifier;
 import descent.core.dom.IOnScopeStatement;
 import descent.core.dom.IPragmaStatement;
 import descent.core.dom.IReturnStatement;
+import descent.core.dom.IScopeStatement;
 import descent.core.dom.IStatement;
 import descent.core.dom.IStaticAssert;
 import descent.core.dom.IStaticAssertStatement;
@@ -217,10 +218,12 @@ public class Statement_Test extends Parser_Test {
 	
 	public void testFor() {
 		String s = " for(int i = 0; i < 10; i++) { }";
-		IForStatement stm = (IForStatement) new ParserFacade().parseStatement(s);
+		IScopeStatement scope = (IScopeStatement) new ParserFacade().parseStatement(s);
+		IForStatement stm = (IForStatement) scope.getStatement();
 		
 		assertEquals(IStatement.STATEMENT_FOR, stm.getStatementType());
 		assertPosition(stm, 1, s.length() - 1);
+		assertPosition(scope, 1, s.length() - 1);
 	}
 	
 	public void testForEmpty() {

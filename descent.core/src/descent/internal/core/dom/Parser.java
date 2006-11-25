@@ -3099,10 +3099,15 @@ public class Parser extends Lexer {
 				increment = parseExpression();
 				check(TOKrparen);
 			}
-			body = parseStatement(0);
+			body = parseStatement(PSscope);
 			s = new ForStatement(loc, init, condition2, increment, body);
 			s.start = saveToken.ptr;
 			s.length = prevToken.ptr + prevToken.len - s.start;
+			if (init != null) {
+				s = new ScopeStatement(loc, s);
+				s.start = saveToken.ptr;
+				s.length = prevToken.ptr + prevToken.len - s.start;
+			}
 			break;
 		}
 
@@ -4890,6 +4895,7 @@ public class Parser extends Lexer {
 									|| token.value == TOKstruct
 									|| token.value == TOKunion
 									|| token.value == TOKclass
+									|| token.value == TOK.TOKsuper
 									|| token.value == TOKenum
 									|| token.value == TOKinterface
 									|| token.value == TOKfunction
