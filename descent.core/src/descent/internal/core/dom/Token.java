@@ -1,5 +1,7 @@
 package descent.internal.core.dom;
 
+import java.math.BigInteger;
+
 
 public class Token {
 	
@@ -17,7 +19,7 @@ public class Token {
 	public int len; // The length of the token
 	public int postfix;
 	
-	public long numberValue; // Numeric value of the token, see if it is needed
+	public BigInteger numberValue; // Numeric value of the token, see if it is needed
 	
 	public Identifier ident;
 	

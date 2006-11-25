@@ -77,7 +77,7 @@ public class Utf {
 	    return null;
 	}
 	
-	public static boolean isValidDchar(int c) {
+	public static boolean isValidDchar(long c) {
 		 return c < 0xD800 ||
 			(c > 0xDFFF && c <= 0x10FFFF && c != 0xFFFE && c != 0xFFFF);
 	}

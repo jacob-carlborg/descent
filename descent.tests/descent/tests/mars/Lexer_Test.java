@@ -1,5 +1,7 @@
 package descent.tests.mars;
 
+import java.math.BigInteger;
+
 import junit.framework.TestCase;
 import descent.internal.core.dom.Lexer;
 import descent.internal.core.dom.TOK;
@@ -176,7 +178,7 @@ public class Lexer_Test extends TestCase {
 	private void assertInt32Token(String s, int value, int start, int len) {
 		Lexer lexer = new Lexer(s);
 		assertEquals(TOK.TOKint32v, lexer.nextToken());
-		assertEquals(value, lexer.token.numberValue);
+		assertEquals(BigInteger.valueOf(value), lexer.token.numberValue);
 		assertEquals(start, lexer.token.ptr);
 		assertEquals(len, lexer.token.len);
 	}
@@ -184,7 +186,7 @@ public class Lexer_Test extends TestCase {
 	private void assertUns32Token(String s, int value, int start, int len) {
 		Lexer lexer = new Lexer(s);
 		assertEquals(TOK.TOKuns32v, lexer.nextToken());
-		assertEquals(value, lexer.token.numberValue);
+		assertEquals(BigInteger.valueOf(value), lexer.token.numberValue);
 		assertEquals(start, lexer.token.ptr);
 		assertEquals(len, lexer.token.len);
 	}
@@ -192,7 +194,7 @@ public class Lexer_Test extends TestCase {
 	private void assertInt64Token(String s, int value, int start, int len) {
 		Lexer lexer = new Lexer(s);
 		assertEquals(TOK.TOKint64v, lexer.nextToken());
-		assertEquals(value, lexer.token.numberValue);
+		assertEquals(BigInteger.valueOf(value), lexer.token.numberValue);
 		assertEquals(start, lexer.token.ptr);
 		assertEquals(len, lexer.token.len);
 	}

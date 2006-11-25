@@ -2,6 +2,7 @@ package descent.internal.core.dom;
 
 import static descent.internal.core.dom.TOK.*;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
@@ -12,6 +13,12 @@ import descent.core.dom.IProblemCollector;
 
 public class Lexer implements IProblemCollector {
 	
+	public final static BigInteger X_FFFFFFFFFFFFFFFF =     new BigInteger("FFFFFFFFFFFFFFFF", 16);
+	public final static BigInteger X_8000000000000000 =         new BigInteger("8000000000000000", 16);
+	public final static BigInteger X_FFFFFFFF00000000  =       new BigInteger("FFFFFFFF00000000", 16);
+	public final static BigInteger X_80000000 =                 new BigInteger("80000000", 16);
+	public final static BigInteger X_FFFFFFFF80000000 =     new BigInteger("FFFFFFFF80000000", 16);
+	                                                                       
 	public final static int LS = 0x2028;
 	public final static int PS = 0x2029;
 	
@@ -172,6 +179,8 @@ public class Lexer implements IProblemCollector {
 	 * Placed here because of commonality with Lexer functionality.
 	 */
 
+	/*
+	TODO: not used yet
 	public boolean isValidIdentifier(String p)
 	{
 	    int len;
@@ -200,6 +209,7 @@ public class Lexer implements IProblemCollector {
 		}
 		return true;
 	}
+	*/
 	
 	public void scan(Token t) {
 		int lastLine = loc.linnum;
@@ -858,7 +868,8 @@ public class Lexer implements IProblemCollector {
 		    {	char c = input[p];
 
 			if ((c & 0x80) != 0)
-			{   int u = decodeUTF();
+			{   
+				int u = decodeUTF();
 
 			    // Check for start of unicode identifier
 			    if (UniAlpha.isUniAlpha(u)) {
@@ -997,36 +1008,44 @@ public class Lexer implements IProblemCollector {
 				ndigits = 2;
 			p++;
 			c = input[p];
-			if (Chars.ishex(c))
-			{   int v;
+			if (Chars.ishex(c)) {
+				long v;
 
-			    n = 0;
-			    v = 0;
-			    while (true)
-			    {
-				if (Chars.isdigit(c))
-				    c -= '0';
-				else if (Chars.islower(c))
-				    c -= 'a' - 10;
-				else
-				    c -= 'A' - 10;
-				v = v * 16 + c;
-				c = input[++p];
-				if (++n == ndigits)
-				    break;
-				if (!Chars.ishex(c))
-				{   
-					problem("Escape hex sequence has " + n + " digits instead of " + ndigits, IProblem.SEVERITY_ERROR, IProblem.INCORRECT_NUMBER_OF_HEX_DIGITS_IN_ESCAPE_SEQUENCE, startOfNumber, p - startOfNumber);
-				    break;
+				n = 0;
+				v = 0;
+				while (true) {
+					if (Chars.isdigit(c))
+						c -= '0';
+					else if (Chars.islower(c))
+						c -= 'a' - 10;
+					else
+						c -= 'A' - 10;
+					v = v * 16 + c;
+					c = input[++p];
+					if (++n == ndigits)
+						break;
+					if (!Chars.ishex(c)) {
+						problem(
+								"Escape hex sequence has " + n
+										+ " digits instead of " + ndigits,
+								IProblem.SEVERITY_ERROR,
+								IProblem.INCORRECT_NUMBER_OF_HEX_DIGITS_IN_ESCAPE_SEQUENCE,
+								startOfNumber, p - startOfNumber);
+						break;
+					}
 				}
-			    }
-			    if (ndigits != 2 && !Utf.isValidDchar(v)) {
-			    	problem("Invalid UTF character: \\U " + Integer.toHexString(v), IProblem.SEVERITY_ERROR, IProblem.INVALID_UTF_CHARACTER, p - 1, 1);
-			    }
-			    c = v;
-			}
-			else {
-				problem("Undefined escape hex sequence", IProblem.SEVERITY_ERROR, IProblem.UNDEFINED_ESCAPE_HEX_SEQUENCE, startOfNumber, p - startOfNumber + 1);
+				if (ndigits != 2 && !Utf.isValidDchar(v)) {
+					problem(
+							"Invalid UTF character: \\U" + Long.toHexString(v),
+							IProblem.SEVERITY_ERROR,
+							IProblem.INVALID_UTF_CHARACTER, startOfNumber, p - startOfNumber);
+				}
+				c = (int) v;
+			} else {
+				problem("Undefined escape hex sequence",
+						IProblem.SEVERITY_ERROR,
+						IProblem.UNDEFINED_ESCAPE_HEX_SEQUENCE, startOfNumber,
+						p - startOfNumber + 1);
 			}
 			break;
 
@@ -1306,18 +1325,18 @@ public class Lexer implements IProblemCollector {
 		    switch (input[p])
 		    {
 			case 'u':
-			    t.numberValue = escapeSequence();
+			    t.numberValue = BigInteger.valueOf(escapeSequence());
 			    tk = TOKwcharv;
 			    break;
 
 			case 'U':
 			case '&':
-			    t.numberValue = escapeSequence();
+			    t.numberValue = BigInteger.valueOf(escapeSequence());
 			    tk = TOKdcharv;
 			    break;
 
 			default:
-			    t.numberValue = escapeSequence();
+			    t.numberValue = BigInteger.valueOf(escapeSequence());
 			    break;
 		    }
 		    break;
@@ -1351,7 +1370,7 @@ public class Lexer implements IProblemCollector {
 		    break;
 	    }
 	    
-	    t.numberValue = c;
+	    t.numberValue = BigInteger.valueOf(c);
 	    t.len = p - t.ptr + 1;
 
 	    if (input[p] != '\'')
@@ -1424,579 +1443,525 @@ public class Lexer implements IProblemCollector {
 	private TOK number(Token t) {
 		
 		// We use a state machine to collect numbers
-	    STATE state;
-	    
-	    int flags = FLAGS_decimal;
+		STATE state;
 
-	    @SuppressWarnings("unused")
+		int flags = FLAGS_decimal;
+
+		@SuppressWarnings("unused")
 		int i;
-	    @SuppressWarnings("unused")
+		@SuppressWarnings("unused")
 		int base;
-	    int c;
-	    int start;
-	    TOK result;
+		int c;
+		int start;
+		TOK result;
 
-	    //printf("Lexer::number()\n");
-	    state = STATE.STATE_initial;
-	    base = 0;
-	    stringbuffer.reset();
-	    start = p;
-	    
-	    goto_done:
-	    while (true)
-	    {
-		c = input[p];
-		switch (state)
-		{
-		    case STATE_initial:		// opening state
-			if (c == '0')
-			    state = STATE.STATE_0;
-			else
-			    state = STATE.STATE_decimal;
-			break;
+		// printf("Lexer::number()\n");
+		state = STATE.STATE_initial;
+		base = 0;
+		stringbuffer.reset();
+		start = p;
 
-		    case STATE_0:
-			flags = (flags & ~FLAGS_decimal);
-			switch (c)
-			{
-	// #if ZEROH
-	/*
-			    case 'H':			// 0h
-			    case 'h':
-				goto hexh;
-	*/
-	// #endif
-			    case 'X':
-			    case 'x':
-				state = STATE.STATE_hex0;
+	goto_done: 
+		while (true) {
+			c = input[p];
+			switch (state) {
+			case STATE_initial: // opening state
+				if (c == '0')
+					state = STATE.STATE_0;
+				else
+					state = STATE.STATE_decimal;
 				break;
 
-			    case '.':
-				if (input[p + 1] == '.')	// .. is a separate token
+			case STATE_0:
+				flags = (flags & ~FLAGS_decimal);
+				switch (c) {
+				// #if ZEROH
+				/*
+				 * case 'H': // 0h case 'h': goto hexh;
+				 */
+				// #endif
+				case 'X':
+				case 'x':
+					state = STATE.STATE_hex0;
+					break;
+
+				case '.':
+					if (input[p + 1] == '.') // .. is a separate token
+						break goto_done;
+				case 'i':
+				case 'f':
+				case 'F':
+					p = start;
+					return inreal(t);
+					// #if ZEROH
+					/*
+					 * case 'E': case 'e': goto case_hex;
+					 */
+					// #endif
+				case 'B':
+				case 'b':
+					state = STATE.STATE_binary0;
+					break;
+
+				case '0':
+				case '1':
+				case '2':
+				case '3':
+				case '4':
+				case '5':
+				case '6':
+				case '7':
+					state = STATE.STATE_octal;
+					break;
+
+				// #if ZEROH
+				/*
+				 * case '8': case '9': case 'A': case 'C': case 'D': case 'F':
+				 * case 'a': case 'c': case 'd': case 'f': case_hex: state =
+				 * STATE.STATE_hexh; break;
+				 */
+				// #endif
+				case '_':
+					state = STATE.STATE_octal;
+					p++;
+					continue;
+
+				default:
 					break goto_done;
-			    case 'i':
-			    case 'f':
-			    case 'F':
-			    	p = start;
-					return inreal(t);
-	// #if ZEROH
-	/*
-			    case 'E':
-			    case 'e':
-				goto case_hex;
-	*/
-	// #endif
-			    case 'B':
-			    case 'b':
-				state = STATE.STATE_binary0;
+				}
 				break;
 
-			    case '0': case '1': case '2': case '3':
-			    case '4': case '5': case '6': case '7':
-				state = STATE.STATE_octal;
+			case STATE_decimal: // reading decimal number
+				if (!Chars.isdigit(c)) {
+					// #if ZEROH
+					/*
+					 * if (Chars.ishex(c) || c == 'H' || c == 'h' ) goto hexh;
+					 */
+					// #endif
+					if (c == '_') // ignore embedded _
+					{
+						p++;
+						continue;
+					}
+					if (c == '.' && input[p + 1] != '.') {
+						p = start;
+						return inreal(t);
+					} else if (c == 'i' || c == 'f' || c == 'F' || c == 'e'
+							|| c == 'E') {
+						// It's a real number. Back up and rescan as a real
+						p = start;
+						return inreal(t);
+					}
+					break goto_done;
+				}
 				break;
 
-	// #if ZEROH
-	/*
-			    case '8': case '9': case 'A':
-			    case 'C': case 'D': case 'F':
-			    case 'a': case 'c': case 'd': case 'f':
-			    case_hex:
-				state = STATE.STATE_hexh;
+			case STATE_hex0: // reading hex number
+			case STATE_hex:
+				if (!Chars.ishex(c)) {
+					if (c == '_') // ignore embedded _
+					{
+						p++;
+						continue;
+					}
+					if (c == '.' && input[p + 1] != '.') {
+						p = start;
+						return inreal(t);
+					}
+					if (c == 'P' || c == 'p' || c == 'i') {
+						p = start;
+						return inreal(t);
+					}
+					if (state == STATE.STATE_hex0) {
+						problem("Hex digit expected, not " + (char) c,
+								IProblem.SEVERITY_ERROR,
+								IProblem.HEX_DIGIT_EXPECTED, p, 1);
+					}
+					break goto_done;
+				}
+				state = STATE.STATE_hex;
 				break;
-	*/
-	// #endif
-			    case '_':
-				state = STATE.STATE_octal;
-				p++;
-				continue;
 
-			    default:
-			    	break goto_done;
-			}
-			break;
-
-		    case STATE_decimal:		// reading decimal number
-			if (!Chars.isdigit(c))
-			{
-	// #if ZEROH
-	/*
-			    if (Chars.ishex(c)
-				|| c == 'H' || c == 'h'
-			       )
-				goto hexh;
-	*/
-	// #endif
-			    if (c == '_')		// ignore embedded _
-			    {	p++;
-				continue;
-			    }
-			    if (c == '.' && input[p + 1] != '.') {
-			    	p = start;
-					return inreal(t);
-			    }
-			    else if (c == 'i' || c == 'f' || c == 'F' ||
-				     c == 'e' || c == 'E')
-			    {
-			    	// It's a real number. Back up and rescan as a real
-				p = start;
-				return inreal(t);
-			    }
-			    break goto_done;
-			}
-			break;
-
-		    case STATE_hex0:		// reading hex number
-		    case STATE_hex:
-			if (!Chars.ishex(c))
-			{
-			    if (c == '_')		// ignore embedded _
-			    {	p++;
-				continue;
-			    }
-			    if (c == '.' && input[p + 1] != '.') {
-			    	p = start;
-					return inreal(t);
-			    }
-			    if (c == 'P' || c == 'p' || c == 'i') {
-			    	p = start;
-					return inreal(t);
-			    }
-			    if (state == STATE.STATE_hex0) {
-			    	problem("Hex digit expected, not " + (char) c, IProblem.SEVERITY_ERROR, IProblem.HEX_DIGIT_EXPECTED, p, 1);
-			    }
-			    break goto_done;
-			}
-			state = STATE.STATE_hex;
-			break;
-
-	// #if ZEROH
-	/*
-		    hexh:
-			state = STATE.STATE_hexh;
-		    case STATE_hexh:		// parse numbers like 0FFh
-			if (!Chars.ishex(c))
-			{
-			    if (c == 'H' || c == 'h')
-			    {
-				p++;
-				base = 16;
-				break goto_done;
-			    }
-			    else
-			    {
-				// Check for something like 1E3 or 0E24
-				if (memchr((char *)stringbuffer.data, 'E', stringbuffer.offset) ||
-				    memchr((char *)stringbuffer.data, 'e', stringbuffer.offset))
-				    goto real;
-				error("Hex digit expected, not '%c'", c);
-				break goto_done;
-			    }
-			}
-			break;
-	*/
-	// #endif
-
-		    case STATE_octal:		// reading octal number
-		    case STATE_octale:		// reading octal number with non-octal digits
-			if (!Chars.isoctal(c))
-			{
-	// #if ZEROH
-	/*
-			    if (Chars.ishex(c)
-				|| c == 'H' || c == 'h'
-			       )
-				goto hexh;
-	*/
-	// #endif
-			    if (c == '_')		// ignore embedded _
-			    {	p++;
-				continue;
-			    }
-			    if (c == '.' && input[p + 1] != '.') {
-			    	p = start;
-					return inreal(t);
-			    }
-			    if (c == 'i') {
-			    	p = start;
-					return inreal(t);
-			    }
-			    if (Chars.isdigit(c))
-			    {
-				state = STATE.STATE_octale;
-			    }
-			    else
-			    	break goto_done;
-			}
-			break;
-
-		    case STATE_binary0:		// starting binary number
-		    case STATE_binary:		// reading binary number
-			if (c != '0' && c != '1')
-			{
-	// #if ZEROH
-	/*
-			    if (Chars.ishex(c)
-				|| c == 'H' || c == 'h'
-			       )
-				goto hexh;
-	*/
-	// #endif
-			    if (c == '_')		// ignore embedded _
-			    {	p++;
-				continue;
-			    }
-			    if (state == STATE.STATE_binary0)
-			    {
-			    	problem("Binary digit expected", IProblem.SEVERITY_ERROR, IProblem.BINARY_DIGIT_EXPECTED, p, 1);
-			    	state = STATE.STATE_error;
+			// #if ZEROH
+			/*
+			 * hexh: state = STATE.STATE_hexh; case STATE_hexh: // parse numbers
+			 * like 0FFh if (!Chars.ishex(c)) { if (c == 'H' || c == 'h') { p++;
+			 * base = 16; break goto_done; } else { // Check for something like
+			 * 1E3 or 0E24 if (memchr((char *)stringbuffer.data, 'E',
+			 * stringbuffer.offset) || memchr((char *)stringbuffer.data, 'e',
+			 * stringbuffer.offset)) goto real; error("Hex digit expected, not
+			 * '%c'", c); break goto_done; } } break;
+			 */
+			// #endif
+			case STATE_octal: // reading octal number
+			case STATE_octale: // reading octal number with non-octal digits
+				if (!Chars.isoctal(c)) {
+					// #if ZEROH
+					/*
+					 * if (Chars.ishex(c) || c == 'H' || c == 'h' ) goto hexh;
+					 */
+					// #endif
+					if (c == '_') // ignore embedded _
+					{
+						p++;
+						continue;
+					}
+					if (c == '.' && input[p + 1] != '.') {
+						p = start;
+						return inreal(t);
+					}
+					if (c == 'i') {
+						p = start;
+						return inreal(t);
+					}
+					if (Chars.isdigit(c)) {
+						state = STATE.STATE_octale;
+					} else
+						break goto_done;
+				}
 				break;
-			    }
-			    else
-			    	break goto_done;
+
+			case STATE_binary0: // starting binary number
+			case STATE_binary: // reading binary number
+				if (c != '0' && c != '1') {
+					// #if ZEROH
+					/*
+					 * if (Chars.ishex(c) || c == 'H' || c == 'h' ) goto hexh;
+					 */
+					// #endif
+					if (c == '_') // ignore embedded _
+					{
+						p++;
+						continue;
+					}
+					if (state == STATE.STATE_binary0) {
+						problem("Binary digit expected",
+								IProblem.SEVERITY_ERROR,
+								IProblem.BINARY_DIGIT_EXPECTED, p, 1);
+						state = STATE.STATE_error;
+						break;
+					} else
+						break goto_done;
+				}
+				state = STATE.STATE_binary;
+				break;
+
+			case STATE_error: // for error recovery
+				if (!Chars.isdigit(c)) // scan until non-digit
+					break goto_done;
+				break;
+
+			default:
+				throw new IllegalStateException("Can't happen");
 			}
-			state = STATE.STATE_binary;
-			break;
-
-		    case STATE_error:		// for error recovery
-			if (!Chars.isdigit(c))	// scan until non-digit
-				break goto_done;
-			break;
-
-		    default:
-		    	throw new IllegalStateException("Can't happen");
-		}
-		stringbuffer.writeByte(c);
-		p++;
-	    }
-	    if (state == STATE.STATE_octale) {
-	    	problem("Octal digit expected", IProblem.SEVERITY_ERROR, IProblem.OCTAL_DIGIT_EXPECTED, p, 1);	    	
-	    }
-
-	    // uinteger_t n;			// unsigned >=64 bit integer type
-	    long n;			// unsigned >=64 bit integer type
-
-	    if (stringbuffer.data.length() == 2 && (state == STATE.STATE_decimal || state == STATE.STATE_0))
-		n = stringbuffer.data.charAt(0) - '0';
-	    else
-	    {
-		// Convert string to integer
-	// #if __DMC__
-	    /*
-		errno = 0;
-		n = strtoull((char *)stringbuffer.data,NULL,base);
-		if (errno == ERANGE)
-		    error("integer overflow");
-		*/
-	// #else
-		// Not everybody implements strtoull()
-	    char[] buffdata = new char[stringbuffer.data.length() + 2];
-        stringbuffer.data.getChars(0, stringbuffer.data.length(), buffdata, 0);
-	    	
-	    int p = 0;
-		int r = 10, d;
-
-		if (buffdata[p] == '0')
-		{
-		    if (buffdata[p + 1] == 'x' || buffdata[p + 1] == 'X') {
-		    	p += 2; r = 16;
-		    }
-		    else if (buffdata[p + 1] == 'b' || buffdata[p + 1] == 'B') {
-		    	p += 2; r = 2;
-		    }
-		    else if (Chars.isdigit(buffdata[p + 1])) {
-		    	p += 1; r = 8;
-		    }
-		}
-
-		n = 0;
-		while (true)
-		{
-		    if (buffdata[p] >= '0' && buffdata[p] <= '9')
-			d = buffdata[p] - '0';
-		    else if (buffdata[p] >= 'a' && buffdata[p] <= 'z')
-			d = buffdata[p] - 'a' + 10;
-		    else if (buffdata[p] >= 'A' && buffdata[p] <= 'Z')
-			d = buffdata[p] - 'A' + 10;
-		    else
-			break;
-		    if (d >= r)
-			break;
-		    if (n * r + d < n)
-		    {
-			error ("integer overflow");
-			break;
-		    }
-
-		    n = n * r + d;
-		    p++;
-		}
-	// #endif
-		// XXX: 
-		/*
-		if (n > 0xFFFFFFFFFFFFFFFFL)	// if n needs more than 64 bits
-		    error("integer overflow");
-		*/
-	    }
-
-	    // Parse trailing 'u', 'U', 'l' or 'L' in any combination
-	    while (true)
-	    {    char f;
-
-		switch (input[p])
-		{   case 'U':
-		    case 'u':
-			f = FLAGS_unsigned;
+			stringbuffer.writeByte(c);
 			p++;
-			if ((flags & f) != 0)
-			    error("unrecognized token");
-			flags = (flags | f);
-			continue;
+		}
+		
+		if (state == STATE.STATE_octale) {
+			problem("Octal digit expected", IProblem.SEVERITY_ERROR,
+					IProblem.OCTAL_DIGIT_EXPECTED, p - 1, 1);
+		}
 
-		    case 'l':
-		    	// if (!global.params.useDeprecated)
-			    problem("'l' suffix is deprecated, use 'L' instead", IProblem.SEVERITY_ERROR, IProblem.L_SUFFIX_DEPRECATED, p, 1);
-		    case 'L':
-			f = FLAGS_long;
-			p++;
-			if ((flags & f) != 0)
-			    error("unrecognized token");
-			flags = (flags | f);
-			continue;
-		    default:
+		// uinteger_t n; // unsigned >=64 bit integer type
+		BigInteger n; // unsigned >=64 bit integer type
+		boolean integerOverflow = false;
+
+		if (stringbuffer.data.length() == 2
+				&& (state == STATE.STATE_decimal || state == STATE.STATE_0))
+			n = new BigInteger(String.valueOf(stringbuffer.data.charAt(0) - '0'));
+		else {
+			// Convert string to integer
+			// Ary sais: changed to use BigInteger 
+			int p = 0;
+			int r = 10;
+			
+			if (stringbuffer.data.charAt(0) == '0' && stringbuffer.data.length() > 1) {
+				if (stringbuffer.data.charAt(1) == 'x' || stringbuffer.data.charAt(1) == 'X') {
+					p = 2;
+					r = 16;
+				} else if (stringbuffer.data.charAt(1) == 'b' || stringbuffer.data.charAt(1) == 'B') {
+					p = 2;
+					r = 2;
+				} else if (Chars.isdigit(stringbuffer.data.charAt(1))) {
+					p = 1;
+					r = 8;
+				}
+			}
+			
+			try {
+				n = new BigInteger(stringbuffer.data.substring(p), r);
+			} catch (NumberFormatException ex) {
+				n = BigInteger.ZERO;
+			}
+			if (n.compareTo(X_FFFFFFFFFFFFFFFF) > 0) {
+				integerOverflow = true;
+			}
+		}
+
+		// Parse trailing 'u', 'U', 'l' or 'L' in any combination
+		while (true) {
+			char f;
+
+			switch (input[p]) {
+			case 'U':
+			case 'u':
+				f = FLAGS_unsigned;
+				p++;
+				if ((flags & f) != 0) {
+					problem("Unrecognized token",
+							IProblem.SEVERITY_ERROR, IProblem.UNRECOGNIZED_TOKEN,
+							p - 1, 1);
+				}
+				flags = (flags | f);
+				continue;
+
+			case 'l':
+				// if (!global.params.useDeprecated)
+				problem("'l' suffix is deprecated, use 'L' instead",
+						IProblem.SEVERITY_ERROR, IProblem.L_SUFFIX_DEPRECATED,
+						p, 1);
+			case 'L':
+				f = FLAGS_long;
+				p++;
+				if ((flags & f) != 0) {
+					problem("Unrecognized token",
+							IProblem.SEVERITY_ERROR, IProblem.UNRECOGNIZED_TOKEN,
+							p - 1, 1);
+				}
+				flags = (flags | f);
+				continue;
+			default:
+				break;
+			}
 			break;
 		}
-		break;
-	    }
 
-	    switch (flags)
-	    {
+		if (integerOverflow) {
+			problem("Integer overflow", IProblem.SEVERITY_ERROR,
+					IProblem.INTEGER_OVERFLOW, t.ptr, p - start);
+		}
+
+		switch (flags) {
 		case 0:
-		    /* Octal or Hexadecimal constant.
-		     * First that fits: int, uint, long, ulong
-		     */
-		    if ((n & 0x8000000000000000L) != 0)
-			    result = TOKuns64v;
-		    else if ((n & 0xFFFFFFFF00000000L) != 0)
-			    result = TOKint64v;
-		    else if ((n & 0x80000000) != 0)
-			    result = TOKuns32v;
-		    else
-			    result = TOKint32v;
-		    break;
+			/*
+			 * Octal or Hexadecimal constant. First that fits: int, uint, long,
+			 * ulong
+			 */
+			if (n.and(X_8000000000000000).compareTo(BigInteger.ZERO) != 0)
+				result = TOKuns64v;
+			else if (n.and(X_FFFFFFFF00000000).compareTo(BigInteger.ZERO) != 0)
+				result = TOKint64v;
+			else if (n.and(X_80000000).compareTo(BigInteger.ZERO) != 0)
+				result = TOKuns32v;
+			else
+				result = TOKint32v;
+			break;
 
 		case FLAGS_decimal:
-		    /* First that fits: int, long, long long
-		     */
-		    if ((n & 0x8000000000000000L) != 0)
-		    {	    error("signed integer overflow");
-			    result = TOKuns64v;
-		    }
-		    else if ((n & 0xFFFFFFFF80000000L) != 0)
-			    result = TOKint64v;
-		    else
-			    result = TOKint32v;
-		    break;
+			/*
+			 * First that fits: int, long, long long
+			 */
+			if (n.and(X_8000000000000000).compareTo(BigInteger.ZERO) != 0) {
+				problem("Signed integer overflow", IProblem.SEVERITY_ERROR,
+						IProblem.SIGNED_INTEGER_OVERFLOW, start, p - start);
+				result = TOKuns64v;
+			} else if (n.and(X_FFFFFFFF80000000).compareTo(BigInteger.ZERO) != 0)
+				result = TOKint64v;
+			else
+				result = TOKint32v;
+			break;
 
 		case FLAGS_unsigned:
 		case FLAGS_decimal | FLAGS_unsigned:
-		    /* First that fits: uint, ulong
-		     */
-		    if ((n & 0xFFFFFFFF00000000L) != 0)
-			    result = TOKuns64v;
-		    else
-			    result = TOKuns32v;
-		    break;
+			/*
+			 * First that fits: uint, ulong
+			 */
+			if (n.and(X_FFFFFFFF00000000).compareTo(BigInteger.ZERO) != 0)
+				result = TOKuns64v;
+			else
+				result = TOKuns32v;
+			break;
 
 		case FLAGS_decimal | FLAGS_long:
-		    if ((n & 0x8000000000000000L) != 0)
-		    {	    error("signed integer overflow");
-			    result = TOKuns64v;
-		    }
-		    else
-			    result = TOKint64v;
-		    break;
+			if (n.and(X_8000000000000000).compareTo(BigInteger.ZERO) != 0) {
+				problem("Signed integer overflow", IProblem.SEVERITY_ERROR,
+						IProblem.SIGNED_INTEGER_OVERFLOW, start, p - start);
+				result = TOKuns64v;
+			} else
+				result = TOKint64v;
+			break;
 
 		case FLAGS_long:
-		    if ((n & 0x8000000000000000L) != 0)
-			    result = TOKuns64v;
-		    else
-			    result = TOKint64v;
-		    break;
+			if (n.and(X_8000000000000000).compareTo(BigInteger.ZERO) != 0)
+				result = TOKuns64v;
+			else
+				result = TOKint64v;
+			break;
 
 		case FLAGS_unsigned | FLAGS_long:
 		case FLAGS_decimal | FLAGS_unsigned | FLAGS_long:
-		    result = TOKuns64v;
-		    break;
+			result = TOKuns64v;
+			break;
 
 		default:
 			throw new IllegalStateException("Can't happen");
-	    }
-	    t.numberValue = n;
-	    return result;
+		}
+		t.numberValue = n;
+		return result;
 	}
 	
 	private TOK inreal(Token t) {
 		int dblstate;
-	    int c;
-	    char hex;			// is this a hexadecimal-floating-constant?
-	    TOK result;
+		int c;
+		int hex; // is this a hexadecimal-floating-constant?
+		TOK result;
 
-	    //printf("Lexer::inreal()\n");
-	    stringbuffer.reset();
-	    dblstate = 0;
-	    hex = 0;
-	goto_done:
-	    while (true)
-	    {
-		// Get next char from input
-		c = input[p++];
-		//printf("dblstate = %d, c = '%c'\n", dblstate, c);
-		boolean writeByte = true;
-		inner_while:
-		while (true)
-		{
-		    switch (dblstate)
-		    {
-			case 0:			// opening state
-			    if (c == '0')
-				dblstate = 9;
-			    else if (c == '.')
-				dblstate = 3;
-			    else
-				dblstate = 1;
-			    break;
+		// printf("Lexer::inreal()\n");
+		stringbuffer.reset();
+		dblstate = 0;
+		hex = 0;
+	goto_done: 
+		while (true) {
+			// Get next char from input
+			c = input[p++];
+			// printf("dblstate = %d, c = '%c'\n", dblstate, c);
+			boolean writeByte = true;
+		inner_while: 
+			while (true) {
+				switch (dblstate) {
+				case 0: // opening state
+					if (c == '0')
+						dblstate = 9;
+					else if (c == '.')
+						dblstate = 3;
+					else
+						dblstate = 1;
+					break;
 
-			case 9:
-			    dblstate = 1;
-			    if (c == 'X' || c == 'x')
-			    {	hex++;
-				break;
-			    }
-			case 1:			// digits to left of .
-			case 3:			// digits to right of .
-			case 7:			// continuing exponent digits
-			    if (!Chars.isdigit(c) && !(hex != 0 && Chars.ishex(c)))
-			    {
-				if (c == '_') {
-					writeByte = false;
-					break inner_while; // ignore embedded '_'
+				case 9:
+					dblstate = 1;
+					if (c == 'X' || c == 'x') {
+						hex++;
+						break;
+					}
+				case 1: // digits to left of .
+				case 3: // digits to right of .
+				case 7: // continuing exponent digits
+					if (!Chars.isdigit(c) && !(hex != 0 && Chars.ishex(c))) {
+						if (c == '_') {
+							writeByte = false;
+							break inner_while; // ignore embedded '_'
+						}
+						dblstate++;
+						continue;
+					}
+					break;
+
+				case 2: // no more digits to left of .
+					if (c == '.') {
+						dblstate++;
+						break;
+					}
+				case 4: // no more digits to right of .
+					if ((c == 'E' || c == 'e') || hex != 0
+							&& (c == 'P' || c == 'p')) {
+						dblstate = 5;
+						hex = 0; // exponent is always decimal
+						break;
+					}
+					if (hex != 0) {
+						problem("Binary-exponent-part required",
+								IProblem.SEVERITY_ERROR,
+								IProblem.BINARY_EXPONENT_PART_REQUIRED, p - 1, 1);
+					}
+					break goto_done;
+
+				case 5: // looking immediately to right of E
+					dblstate++;
+					if (c == '-' || c == '+')
+						break;
+				case 6: // 1st exponent digit expected
+					if (!Chars.isdigit(c)) {
+						problem("Exponent expected", IProblem.SEVERITY_ERROR,
+								IProblem.EXPONENT_EXPECTED, p - 1, 1);
+					}
+					dblstate++;
+					break;
+
+				case 8: // past end of exponent digits
+					break goto_done;
 				}
-				dblstate++;
-				continue;
-			    }
-			    break;
-
-			case 2:			// no more digits to left of .
-			    if (c == '.')
-			    {   dblstate++;
 				break;
-			    }
-			case 4:			// no more digits to right of .
-			    if ((c == 'E' || c == 'e') ||
-				hex != 0 && (c == 'P' || c == 'p'))
-			    {   dblstate = 5;
-				hex = 0;	// exponent is always decimal
-				break;
-			    }
-			    if (hex != 0) {
-			    	error("binary-exponent-part required");
-			    }
-			    break goto_done;
-
-			case 5:			// looking immediately to right of E
-			    dblstate++;
-			    if (c == '-' || c == '+')
-				break;
-			case 6:			// 1st exponent digit expected
-			    if (!Chars.isdigit(c))
-				error("exponent expected");
-			    dblstate++;
-			    break;
-
-			case 8:			// past end of exponent digits
-				break goto_done;
-		    }
-		    break;
+			}
+			if (writeByte) {
+				stringbuffer.writeByte(c);
+			}
 		}
-		if (writeByte) {
-			stringbuffer.writeByte(c);
-		}
-	    }
-	    p--;
+		p--;
 
-	/* TODO:
-	#if _WIN32 && __DMC__
-	    char *save = __locale_decpoint;
-	    __locale_decpoint = ".";
-	#endif
-	#ifdef IN_GCC
-	    t->float80value = real_t::parse((char *)stringbuffer.data, real_t::LongDouble);
-	#else
-	    t->float80value = strtold((char *)stringbuffer.data, NULL);
-	#endif
-	    errno = 0;
-	*/
-	    switch (input[p])
-	    {
+		/*
+		 * TODO: #if _WIN32 && __DMC__ char *save = __locale_decpoint;
+		 * __locale_decpoint = "."; #endif #ifdef IN_GCC t->float80value =
+		 * real_t::parse((char *)stringbuffer.data, real_t::LongDouble); #else
+		 * t->float80value = strtold((char *)stringbuffer.data, NULL); #endif
+		 * errno = 0;
+		 */
+		switch (input[p]) {
 		case 'F':
 		case 'f':
-	/* TODO:
-	#ifdef IN_GCC
-		    real_t::parse((char *)stringbuffer.data, real_t::Float);
-	#else
-		    strtof((char *)stringbuffer.data, NULL);
-	#endif
-	*/
-		    result = TOKfloat32v;
-		    p++;
-		    break;
+			/*
+			 * TODO: #ifdef IN_GCC real_t::parse((char *)stringbuffer.data,
+			 * real_t::Float); #else strtof((char *)stringbuffer.data, NULL);
+			 * #endif
+			 */
+			result = TOKfloat32v;
+			p++;
+			break;
 
 		default:
-	/* TODO:
-	#ifdef IN_GCC
-		    real_t::parse((char *)stringbuffer.data, real_t::Double);
-	#else	    
-		    strtod((char *)stringbuffer.data, NULL);
-	#endif
-	*/
-		    result = TOKfloat64v;
-		    break;
+			/*
+			 * TODO: #ifdef IN_GCC real_t::parse((char *)stringbuffer.data,
+			 * real_t::Double); #else strtod((char *)stringbuffer.data, NULL);
+			 * #endif
+			 */
+			result = TOKfloat64v;
+			break;
 
 		case 'l':
-		    // if (!global.params.useDeprecated)
-			error("'l' suffix is deprecated, use 'L' instead");
+			// if (!global.params.useDeprecated)
+			problem("'l' suffix is deprecated, use 'L' instead",
+					IProblem.SEVERITY_ERROR, IProblem.L_SUFFIX_DEPRECATED,
+					p, 1);
 		case 'L':
-		    result = TOKfloat80v;
-		    p++;
-		    break;
-	    }
-	    if (input[p] == 'i' || input[p] == 'I')
-	    {
-	    	if (input[p] == 'I')
-		    error("'I' suffix is deprecated, use 'i' instead");
-		p++;
-		switch (result)
-		{
-		    case TOKfloat32v:
-			result = TOKimaginary32v;
-			break;
-		    case TOKfloat64v:
-			result = TOKimaginary64v;
-			break;
-		    case TOKfloat80v:
-			result = TOKimaginary80v;
+			result = TOKfloat80v;
+			p++;
 			break;
 		}
-	    }
-	/* TODO:
-	#if _WIN32 && __DMC__
-	    __locale_decpoint = save;
-	#endif
-	    if (errno == ERANGE)
-		error("number is not representable");
-	*/
-	    return result;
+		if (input[p] == 'i' || input[p] == 'I') {
+			if (input[p] == 'I') {
+				problem("'I' suffix is deprecated, use 'i' instead",
+						IProblem.SEVERITY_ERROR, IProblem.I_SUFFIX_DEPRECATED,
+						p, 1);
+			}
+			p++;
+			switch (result) {
+			case TOKfloat32v:
+				result = TOKimaginary32v;
+				break;
+			case TOKfloat64v:
+				result = TOKimaginary64v;
+				break;
+			case TOKfloat80v:
+				result = TOKimaginary80v;
+				break;
+			}
+		}
+		/*
+		 * TODO: #if _WIN32 && __DMC__ __locale_decpoint = save; #endif if
+		 * (errno == ERANGE) error("number is not representable");
+		 */
+		return result;
 	}
 	
 	private void pragma() {
@@ -2017,7 +1982,7 @@ public class Lexer implements IProblemCollector {
 
 	    scan(tok);
 	    if (tok.value == TOKint32v || tok.value == TOKint64v)
-	    	linnum = (int) (tok.numberValue - 1);
+	    	linnum = tok.numberValue.intValue() - 1;
 	    else {
 	    	problem("#line integer [\"filespec\"]\\n expected", IProblem.SEVERITY_ERROR, IProblem.INVALID_PRAGMA_SYNTAX, firstToken.ptr, tok.ptr + tok.len - firstToken.ptr);
 	    	return;
@@ -2065,7 +2030,12 @@ public class Lexer implements IProblemCollector {
 					&& input[p + 7] == '_')
 			{
 			    p += 8;
-			    filespec = loc.filename != null ? loc.filename : mod.ident.toString();
+			    if (mod.ident == null) {
+			    	filespec = "TODO: this is not done in Descent... yet";
+			    	// TODO
+			    } else {
+			    	filespec = loc != null && loc.filename != null ? loc.filename : mod.ident.toString();
+			    }
 			}
 			continue;
 
@@ -2143,7 +2113,7 @@ public class Lexer implements IProblemCollector {
 	    p += idx[0] - 1;
 	    if (msg != null)
 	    {
-	    error(msg);
+	    	problem(msg, IProblem.SEVERITY_ERROR, IProblem.INVALID_UTF_8_SEQUENCE, p, 1);
 	    }
 	    return u[0];
 	}

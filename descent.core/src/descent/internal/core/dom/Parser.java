@@ -86,6 +86,7 @@ import static descent.internal.core.dom.TY.Taarray;
 import static descent.internal.core.dom.TY.Tfunction;
 import static descent.internal.core.dom.TY.Tsarray;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -435,7 +436,7 @@ public class Parser extends Lexer {
 				if (token.value == TOKlparen) {
 					nextToken();
 					if (token.value == TOKint32v)
-						n = token.numberValue;
+						n = token.numberValue.intValue();
 					else {
 						problem("Integer expected", IProblem.SEVERITY_ERROR, IProblem.INTEGER_EXPECTED, token.ptr, token.len);
 						n = 1;
@@ -772,7 +773,7 @@ public class Parser extends Lexer {
 				id = new Identifier(token);
 			} else if (token.value == TOKint32v) {
 				idToken = new Token(token);
-				level = token.numberValue;
+				level = token.numberValue.intValue();
 			} else {
 				problem("Identifier or integer expected", IProblem.SEVERITY_ERROR, IProblem.IDENTIFIER_OR_INTEGER_EXPECTED, token.ptr, token.len);
 			}
@@ -803,7 +804,7 @@ public class Parser extends Lexer {
 				id = new Identifier(token);
 			} else if (token.value == TOKint32v) {
 				idToken = new Token(token);
-				level = token.numberValue;
+				level = token.numberValue.intValue();
 			} else {
 				problem("Identifier or integer expected", IProblem.SEVERITY_ERROR, IProblem.IDENTIFIER_OR_INTEGER_EXPECTED, token.ptr, token.len);
 			}
@@ -4727,14 +4728,14 @@ public class Parser extends Lexer {
 		    break;
 
 		case TOKtrue:
-		    e = new IntegerExp(loc, 1, Type.tbool);
+		    e = new IntegerExp(loc, BigInteger.ONE, Type.tbool);
 		    e.start = token.ptr;
 		    e.length = token.len;
 		    nextToken();
 		    break;
 
 		case TOKfalse:
-		    e = new IntegerExp(loc, 0, Type.tbool);
+		    e = new IntegerExp(loc, BigInteger.ZERO, Type.tbool);
 		    e.start = token.ptr;
 		    e.length = token.len;
 		    nextToken();
@@ -4809,7 +4810,7 @@ public class Parser extends Lexer {
 			    	problem("Identifier expected", IProblem.SEVERITY_ERROR, IProblem.IDENTIFIER_EXPECTED, token.ptr, token.len);
 			    	// goto Lerr;
 		    		// Anything for e, as long as it's not NULL
-		    		e = new IntegerExp(loc, 0, Type.tint32);
+		    		e = new IntegerExp(loc, BigInteger.ZERO, Type.tint32);
 		    		nextToken();
 		    		break;
 			    }
@@ -4835,7 +4836,7 @@ public class Parser extends Lexer {
 			    	problem("Identifier expected", IProblem.SEVERITY_ERROR, IProblem.IDENTIFIER_EXPECTED, token.ptr, token.len);
 					// goto Lerr;
 			    	// Anything for e, as long as it's not NULL
-			    	e = new IntegerExp(loc, 0, Type.tint32);
+			    	e = new IntegerExp(loc, BigInteger.ZERO, Type.tint32);
 			    	nextToken();
 			    	break;
 			    }
@@ -4908,7 +4909,7 @@ public class Parser extends Lexer {
 						IProblem.INVALID_IFTYPE_SYNTAX, token.ptr, token.len);
 				// goto Lerr;
 				// Anything for e, as long as it's not NULL
-				e = new IntegerExp(loc2, 0, Type.tint32);
+				e = new IntegerExp(loc2, BigInteger.ZERO, Type.tint32);
 				nextToken();
 				break;
 			}
@@ -4994,7 +4995,7 @@ public class Parser extends Lexer {
 			problem("Expression expected", IProblem.SEVERITY_ERROR, IProblem.EXPRESSION_EXPECTED, token.ptr, token.len);
 		// Lerr:
 		    // Anything for e, as long as it's not NULL
-		    e = new IntegerExp(loc, 0, Type.tint32);
+		    e = new IntegerExp(loc, BigInteger.ZERO, Type.tint32);
 		    nextToken();
 		    break;
 	    }
@@ -5108,14 +5109,14 @@ public class Parser extends Lexer {
 		case TOKplusplus:
 			nextToken();
 			e = parseUnaryExp();
-			e = new AddAssignExp(loc, e, new IntegerExp(loc, 1, Type.tint32),
+			e = new AddAssignExp(loc, e, new IntegerExp(loc, BigInteger.ONE, Type.tint32),
 					true);
 			break;
 
 		case TOKminusminus:
 			nextToken();
 			e = parseUnaryExp();
-			e = new MinAssignExp(loc, e, new IntegerExp(loc, 1, Type.tint32),
+			e = new MinAssignExp(loc, e, new IntegerExp(loc, BigInteger.ONE, Type.tint32),
 					true);
 			break;
 

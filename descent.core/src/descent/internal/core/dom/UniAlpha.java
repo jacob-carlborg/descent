@@ -277,7 +277,10 @@ public class UniAlpha {
 			return true;
 	    }
 	    
-	    throw new IllegalStateException("should have been in table");
+	    return false;
+	    
+	    // TODO: fix me
+	    // throw new IllegalStateException("should have been in table");
 	}
 
 }

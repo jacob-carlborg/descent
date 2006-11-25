@@ -303,4 +303,17 @@ public class VariableDeclaration_Test extends Parser_Test {
 		assertEquals("int", args[0].toString());
 	}
 	
+	public void testUnicode() {
+		String s = " int épa = 1;";
+		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
+		IDElement[] declDefs = unit.getDeclarationDefinitions();
+		assertEquals(1, declDefs.length);
+		
+		IVariableDeclaration var = (IVariableDeclaration) declDefs[0];
+		assertEquals(IDElement.VARIABLE_DECLARATION, var.getElementType());
+		
+		assertPosition(var.getName(), 5, 3);
+		assertEquals("épa", var.getName().toString());
+	}
+	
 }

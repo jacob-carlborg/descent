@@ -1,5 +1,7 @@
 package descent.tests.mars;
 
+import java.math.BigInteger;
+
 import descent.core.dom.IArrayExpression;
 import descent.core.dom.IArrayLiteralExpression;
 import descent.core.dom.IAssertExpression;
@@ -12,8 +14,8 @@ import descent.core.dom.IDeleteExpression;
 import descent.core.dom.IDotIdExpression;
 import descent.core.dom.IExpression;
 import descent.core.dom.IFunctionExpression;
-import descent.core.dom.IIntegerExpression;
 import descent.core.dom.IIftypeExpression;
+import descent.core.dom.IIntegerExpression;
 import descent.core.dom.INewAnonymousClassExpression;
 import descent.core.dom.INewExpression;
 import descent.core.dom.IParenthesizedExpression;
@@ -131,7 +133,7 @@ public class Expression_Test extends Parser_Test {
 		IIntegerExpression expr = (IIntegerExpression) new ParserFacade().parseExpression(s);
 		
 		assertEquals(IExpression.EXPRESSION_INTEGER, expr.getExpressionType());
-		assertEquals(1234, expr.getValue());
+		assertEquals(new BigInteger("1234"), expr.getValue());
 		assertPosition(expr, 1, s.length() - 1);
 		
 		assertVisitor(expr, 1);
@@ -142,7 +144,7 @@ public class Expression_Test extends Parser_Test {
 		IIntegerExpression expr = (IIntegerExpression) new ParserFacade().parseExpression(s);
 		
 		assertEquals(IExpression.EXPRESSION_INTEGER, expr.getExpressionType());
-		assertEquals(1234, expr.getValue());
+		assertEquals(new BigInteger("1234"), expr.getValue());
 		assertPosition(expr, 1, s.length() - 1);
 	}
 	
@@ -151,7 +153,7 @@ public class Expression_Test extends Parser_Test {
 		IIntegerExpression expr = (IIntegerExpression) new ParserFacade().parseExpression(s);
 		
 		assertEquals(IExpression.EXPRESSION_INTEGER, expr.getExpressionType());
-		assertEquals(1234, expr.getValue());
+		assertEquals(new BigInteger("1234"), expr.getValue());
 		assertPosition(expr, 1, s.length() - 1);
 	}
 	
@@ -160,7 +162,7 @@ public class Expression_Test extends Parser_Test {
 		IIntegerExpression expr = (IIntegerExpression) new ParserFacade().parseExpression(s);
 		
 		assertEquals(IExpression.EXPRESSION_INTEGER, expr.getExpressionType());
-		assertEquals(1234, expr.getValue());
+		assertEquals(new BigInteger("1234"), expr.getValue());
 		assertPosition(expr, 1, s.length() - 1);
 	}
 	

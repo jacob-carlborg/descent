@@ -1,5 +1,7 @@
 package descent.tests.mars;
 
+import java.math.BigInteger;
+
 import descent.core.dom.ICompilationUnit;
 import descent.core.dom.IDElement;
 import descent.core.dom.IEnumDeclaration;
@@ -47,7 +49,7 @@ public class Enum_Test extends Parser_Test {
 		
 		em = e.getMembers()[1];
 		assertEquals("y", em.getName().toString());
-		assertEquals(1, ((IIntegerExpression) em.getValue()).getValue());
+		assertEquals(BigInteger.ONE, ((IIntegerExpression) em.getValue()).getValue());
 		assertPosition(em, 14, 5);
 		
 		em = e.getMembers()[2];

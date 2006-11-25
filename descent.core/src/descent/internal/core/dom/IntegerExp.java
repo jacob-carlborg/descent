@@ -1,22 +1,24 @@
 package descent.internal.core.dom;
 
+import java.math.BigInteger;
+
 import descent.core.dom.IIntegerExpression;
 
 public class IntegerExp extends Expression implements IIntegerExpression {
 	
 	private int expressionType;
-	private long number;
+	private BigInteger number;
 	
-	public IntegerExp(Loc loc, long number, Type type) {
+	public IntegerExp(Loc loc, BigInteger number, Type type) {
 		if (type == Type.tbool) {
-			expressionType = number == 0 ? EXPRESSION_FALSE : EXPRESSION_TRUE;
+			expressionType = number.compareTo(BigInteger.ZERO) == 0 ? EXPRESSION_FALSE : EXPRESSION_TRUE;
 		} else {
 			expressionType = EXPRESSION_INTEGER;
 		}
 		this.number = number;
 	}
 	
-	public long getValue() {
+	public BigInteger getValue() {
 		return number;
 	}
 	
