@@ -3,7 +3,7 @@ package descent.core.dom;
 /**
  * Represents an element in the D model.
  */
-public interface IDElement {
+public interface IElement {
 	
 	/**
 	 * Constant representing a compilation unit (a source file).

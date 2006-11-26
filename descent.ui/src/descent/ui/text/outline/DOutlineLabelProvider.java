@@ -10,7 +10,7 @@ import descent.core.dom.IArgument;
 import descent.core.dom.IArrayType;
 import descent.core.dom.IAssociativeArrayType;
 import descent.core.dom.IConditionAssignment;
-import descent.core.dom.IDElement;
+import descent.core.dom.IElement;
 import descent.core.dom.IDebugDeclaration;
 import descent.core.dom.IDelegateType;
 import descent.core.dom.IEnumDeclaration;
@@ -112,18 +112,18 @@ public class DOutlineLabelProvider extends LabelProvider {
 	
 	@Override
 	public String getText(Object element) {
-		IDElement e = (IDElement) element;
+		IElement e = (IElement) element;
 		IName name;
 		StringBuilder s;
-		IDElement[] templateArguments;
+		IElement[] templateArguments;
 		
 		switch(e.getElementType()) {
-		case IDElement.MODULE_DECLARATION:
+		case IElement.MODULE_DECLARATION:
 			return ((IModuleDeclaration) element).getQualifiedName().toString();
-		case IDElement.IMPORT_DECLARATION:
+		case IElement.IMPORT_DECLARATION:
 			IImportDeclaration importDeclaration = (IImportDeclaration) element;
 			return getImportText(importDeclaration);
-		case IDElement.AGGREGATE_DECLARATION:
+		case IElement.AGGREGATE_DECLARATION:
 			IAggregateDeclaration aggregateDeclaration = (IAggregateDeclaration) element;
 			s = new StringBuilder();
 			name = aggregateDeclaration.getName();
@@ -132,7 +132,7 @@ public class DOutlineLabelProvider extends LabelProvider {
 				appendTemplateParameters(s, aggregateDeclaration.getTemplateParameters());
 			}
 			return s.toString();
-		case IDElement.FUNCTION_DECLARATION:
+		case IElement.FUNCTION_DECLARATION:
 			IFunctionDeclaration f = (IFunctionDeclaration) e;
 			s = new StringBuilder();
 			switch(f.getFunctionDeclarationType()) {
@@ -159,16 +159,16 @@ public class DOutlineLabelProvider extends LabelProvider {
 			}
 			appendArguments(s, f.getArguments());
 			return s.toString();
-		case IDElement.ENUM_DECLARATION:
+		case IElement.ENUM_DECLARATION:
 			name = ((IEnumDeclaration) element).getName();
 			return name == null ? "" : name.toString();
-		case IDElement.ENUM_MEMBER:
+		case IElement.ENUM_MEMBER:
 			return ((IEnumMember) element).getName().toString();
-		case IDElement.INVARIANT_DECLARATION:
+		case IElement.INVARIANT_DECLARATION:
 			return "invariant";
-		case IDElement.UNITTEST_DECLARATION:
+		case IElement.UNITTEST_DECLARATION:
 			return "unit test";
-		case IDElement.VARIABLE_DECLARATION:
+		case IElement.VARIABLE_DECLARATION:
 			IVariableDeclaration var = (IVariableDeclaration) element;
 			name = var.getName();
 			s = new StringBuilder();
@@ -178,7 +178,7 @@ public class DOutlineLabelProvider extends LabelProvider {
 				appendType(s, var.getType());
 			}
 			return s.toString();
-		case IDElement.TYPEDEF_DECLARATION:
+		case IElement.TYPEDEF_DECLARATION:
 			ITypedefDeclaration td = (ITypedefDeclaration) element;
 			name = td.getName();
 			s = new StringBuilder();
@@ -186,7 +186,7 @@ public class DOutlineLabelProvider extends LabelProvider {
 			s.append(" : ");
 			appendType(s, td.getType());
 			return s.toString();
-		case IDElement.ALIAS_DECLARATION:
+		case IElement.ALIAS_DECLARATION:
 			IAliasDeclaration al = (IAliasDeclaration) element;
 			name = al.getName();
 			s = new StringBuilder();
@@ -194,14 +194,14 @@ public class DOutlineLabelProvider extends LabelProvider {
 			s.append(" : ");
 			appendType(s, al.getType());
 			return s.toString();
-		case IDElement.TEMPLATE_DECLARATION:
+		case IElement.TEMPLATE_DECLARATION:
 			ITemplateDeclaration t = (ITemplateDeclaration) element;
 			name = t.getName();
 			s = new StringBuilder();
 			if (name != null) s.append(name.toString());
 			appendTemplateParameters(s, t.getTemplateParameters());
 			return s.toString();
-		case IDElement.LINK_DECLARATION:
+		case IElement.LINK_DECLARATION:
 			ILinkDeclaration link = (ILinkDeclaration) element;
 			switch(link.getLinkage()) {
 			case ILinkDeclaration.LINKAGE_C: return "C";
@@ -211,15 +211,15 @@ public class DOutlineLabelProvider extends LabelProvider {
 			case ILinkDeclaration.LINKAGE_PASCAL: return "Pascal";
 			}
 			break;
-		case IDElement.VERSION_DECLARATION:
+		case IElement.VERSION_DECLARATION:
 			IVersionDeclaration v = (IVersionDeclaration) element;
 			name = v.getVersion();
 			return name == null ? "" : name.toString();
-		case IDElement.DEBUG_DECLARATION:
+		case IElement.DEBUG_DECLARATION:
 			IDebugDeclaration d = (IDebugDeclaration) element;
 			name = d.getDebug();
 			return name == null ? "" : name.toString();
-		case IDElement.CONDITION_ASSIGNMENT:
+		case IElement.CONDITION_ASSIGNMENT:
 			IConditionAssignment va = (IConditionAssignment) element;
 			s = new StringBuilder();
 			switch(va.getConditionAssignmentType()) {
@@ -235,10 +235,10 @@ public class DOutlineLabelProvider extends LabelProvider {
 				s.append(va.getValue().toString());
 			}
 			return s.toString();
-		case IDElement.PRAGMA_DECLARATION:
+		case IElement.PRAGMA_DECLARATION:
 			IPragmaDeclaration pd = (IPragmaDeclaration) element;
 			return pd.getIdentifier() == null ? "" : pd.getIdentifier().toString();
-		case IDElement.MIXIN_DECLARATION:
+		case IElement.MIXIN_DECLARATION:
 			IMixinDeclaration mix = (IMixinDeclaration) element;
 			s = new StringBuilder();
 			if (mix.getName() != null) {
@@ -270,15 +270,15 @@ public class DOutlineLabelProvider extends LabelProvider {
 
 	@Override
 	public Image getImage(Object element) {
-		IDElement e = (IDElement) element;
+		IElement e = (IElement) element;
 		int m;
 		
 		switch(e.getElementType()) {
-		case IDElement.MODULE_DECLARATION:
+		case IElement.MODULE_DECLARATION:
 			return moduleImage;
-		case IDElement.IMPORT_DECLARATION:
+		case IElement.IMPORT_DECLARATION:
 			return importImage;
-		case IDElement.AGGREGATE_DECLARATION:
+		case IElement.AGGREGATE_DECLARATION:
 			IAggregateDeclaration a = (IAggregateDeclaration) element;
 			switch(a.getAggregateDeclarationType()) {
 			case IAggregateDeclaration.CLASS_DECLARATION:
@@ -290,7 +290,7 @@ public class DOutlineLabelProvider extends LabelProvider {
 			case IAggregateDeclaration.UNION_DECLARATION:
 				return unionImage;
 			}
-		case IDElement.FUNCTION_DECLARATION:
+		case IElement.FUNCTION_DECLARATION:
 			IFunctionDeclaration func = (IFunctionDeclaration) element;
 			m = func.getModifiers();
 			switch(func.getFunctionDeclarationType()) {
@@ -332,15 +332,15 @@ public class DOutlineLabelProvider extends LabelProvider {
 				}
 				return dtorPublicImage;
 			}
-		case IDElement.ENUM_DECLARATION:
+		case IElement.ENUM_DECLARATION:
 			return enumImage;
-		case IDElement.ENUM_MEMBER:
+		case IElement.ENUM_MEMBER:
 			return fieldPublicImage;
-		case IDElement.INVARIANT_DECLARATION:
+		case IElement.INVARIANT_DECLARATION:
 			return invariantImage;
-		case IDElement.UNITTEST_DECLARATION:
+		case IElement.UNITTEST_DECLARATION:
 			return unittestImage;
-		case IDElement.VARIABLE_DECLARATION:
+		case IElement.VARIABLE_DECLARATION:
 			m = ((IVariableDeclaration) element).getModifiers();
 			if ((m & IModifier.PRIVATE) > 0) {
 				return fieldPrivateImage;
@@ -353,19 +353,19 @@ public class DOutlineLabelProvider extends LabelProvider {
 				return fieldPublicImage;
 			}
 			return fieldPublicImage;
-		case IDElement.TYPEDEF_DECLARATION:
+		case IElement.TYPEDEF_DECLARATION:
 			return typedefImage;
-		case IDElement.ALIAS_DECLARATION:
+		case IElement.ALIAS_DECLARATION:
 			return aliasImage;
-		case IDElement.TEMPLATE_DECLARATION:
+		case IElement.TEMPLATE_DECLARATION:
 			return templateImage;
-		case IDElement.LINK_DECLARATION:
+		case IElement.LINK_DECLARATION:
 			return linkImage;
-		case IDElement.DEBUG_DECLARATION:
+		case IElement.DEBUG_DECLARATION:
 			return debugImage;
-		case IDElement.VERSION_DECLARATION:
+		case IElement.VERSION_DECLARATION:
 			return versionImage;
-		case IDElement.CONDITION_ASSIGNMENT:
+		case IElement.CONDITION_ASSIGNMENT:
 			IConditionAssignment va = (IConditionAssignment) element;
 			switch(va.getConditionAssignmentType()) {
 			case IConditionAssignment.CONDITION_DEBUG:
@@ -454,7 +454,7 @@ public class DOutlineLabelProvider extends LabelProvider {
 		s.append(')');
 	}
 	
-	private void appendElements(StringBuilder s, IDElement[] templateArguments) {
+	private void appendElements(StringBuilder s, IElement[] templateArguments) {
 		for(int i = 0; i < templateArguments.length; i++) {
 			s.append(getText(templateArguments[i]));
 			if (i != templateArguments.length - 1) {

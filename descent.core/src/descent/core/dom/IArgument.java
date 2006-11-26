@@ -7,7 +7,7 @@ package descent.core.dom;
  * [ | in | out | inout | lazy ] type name [ = defaultValue ]
  * </pre>
  */
-public interface IArgument extends IDElement {
+public interface IArgument extends IElement {
 	
 	/** The argument is in */
 	int IN = 1;

@@ -10,7 +10,7 @@ import org.eclipse.ui.texteditor.AbstractDecoratedTextEditor;
 import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
 
 import descent.core.dom.ICompilationUnit;
-import descent.core.dom.IDElement;
+import descent.core.dom.IElement;
 import descent.ui.text.outline.DEditorContentOutlinePage;
 
 public class DEditor extends AbstractDecoratedTextEditor {
@@ -18,7 +18,7 @@ public class DEditor extends AbstractDecoratedTextEditor {
 	private ColorManager colorManager;
 	private DEditorContentOutlinePage outlinePage;
 	private DReconcilingStrategy reconcilingStrategy;
-	private IDElement currentOutlineElement;
+	private IElement currentOutlineElement;
 
 	public DEditor() {
 		super();
@@ -69,7 +69,7 @@ public class DEditor extends AbstractDecoratedTextEditor {
 	
 	/**
 	 * Returns the outline element under the cursor.	 */
-	public IDElement getOutlineElement() {
+	public IElement getOutlineElement() {
 		return currentOutlineElement;
 	}
 	
@@ -144,7 +144,7 @@ public class DEditor extends AbstractDecoratedTextEditor {
 	 * Highlights a range for an element in this editor. If the
 	 * element has comments, the comments are also highlighted.
 	 */
-	public void highlightRangeForElement(IDElement element, boolean moveCursor) {
+	public void highlightRangeForElement(IElement element, boolean moveCursor) {
 		setHighlightRange(element.getStartPosition(), element.getLength(), moveCursor);
 	}
 	

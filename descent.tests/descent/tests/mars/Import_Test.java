@@ -1,7 +1,7 @@
 package descent.tests.mars;
 
 import descent.core.dom.ICompilationUnit;
-import descent.core.dom.IDElement;
+import descent.core.dom.IElement;
 import descent.core.dom.IImport;
 import descent.core.dom.IImportDeclaration;
 import descent.core.dom.IName;
@@ -15,11 +15,11 @@ public class Import_Test extends Parser_Test {
 		String s = " import a; ";
 		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
 		
-		IDElement[] declDefs = unit.getDeclarationDefinitions();
+		IElement[] declDefs = unit.getDeclarationDefinitions();
 		assertEquals(1, declDefs.length);
 		
 		IImportDeclaration impDecl = (IImportDeclaration) declDefs[0];
-		assertEquals(IDElement.IMPORT_DECLARATION, impDecl.getElementType());
+		assertEquals(IElement.IMPORT_DECLARATION, impDecl.getElementType());
 		assertFalse(impDecl.isStatic());
 		assertPosition(impDecl, 1, 9);
 		
@@ -27,11 +27,11 @@ public class Import_Test extends Parser_Test {
 		assertEquals(1, imps.length);
 		
 		IImport imp = imps[0];
-		assertEquals(IDElement.IMPORT, imp.getElementType());
+		assertEquals(IElement.IMPORT, imp.getElementType());
 		assertPosition(imp, 8, 1);
 		
 		IQualifiedName qName = imp.getQualifiedName();
-		assertEquals(IDElement.QUALIFIED_NAME, qName.getElementType());
+		assertEquals(IElement.QUALIFIED_NAME, qName.getElementType());
 		assertEquals("a", qName.toString());
 		assertPosition(qName, 8, 1);
 		
@@ -42,7 +42,7 @@ public class Import_Test extends Parser_Test {
 		String s = " import uno.dos.tres; ";
 		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
 		
-		IDElement[] declDefs = unit.getDeclarationDefinitions();
+		IElement[] declDefs = unit.getDeclarationDefinitions();
 		assertEquals(1, declDefs.length);
 		
 		IImportDeclaration impDecl = (IImportDeclaration) declDefs[0];
@@ -65,7 +65,7 @@ public class Import_Test extends Parser_Test {
 		String s = " import mAlias = uno.dos.tres; ";
 		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
 		
-		IDElement[] declDefs = unit.getDeclarationDefinitions();
+		IElement[] declDefs = unit.getDeclarationDefinitions();
 		assertEquals(1, declDefs.length);
 		
 		IImportDeclaration impDecl = (IImportDeclaration) declDefs[0];
@@ -92,7 +92,7 @@ public class Import_Test extends Parser_Test {
 		String s = " import uno : dos; ";
 		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
 		
-		IDElement[] declDefs = unit.getDeclarationDefinitions();
+		IElement[] declDefs = unit.getDeclarationDefinitions();
 		assertEquals(1, declDefs.length);
 		
 		IImportDeclaration impDecl = (IImportDeclaration) declDefs[0];
@@ -112,7 +112,7 @@ public class Import_Test extends Parser_Test {
 		assertEquals(1, sels.length);
 		
 		ISelectiveImport sel = sels[0];
-		assertEquals(IDElement.SELECTIVE_IMPORT, sel.getElementType());
+		assertEquals(IElement.SELECTIVE_IMPORT, sel.getElementType());
 		assertEquals("dos", sel.getName().toString());
 		assertPosition(sel.getName(), 14, 3);
 		assertNull(sel.getAlias());
@@ -124,7 +124,7 @@ public class Import_Test extends Parser_Test {
 		String s = " import uno : mAlias = dos; ";
 		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
 		
-		IDElement[] declDefs = unit.getDeclarationDefinitions();
+		IElement[] declDefs = unit.getDeclarationDefinitions();
 		assertEquals(1, declDefs.length);
 		
 		IImportDeclaration impDecl = (IImportDeclaration) declDefs[0];
@@ -157,11 +157,11 @@ public class Import_Test extends Parser_Test {
 		String s = " static import a;";
 		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
 		
-		IDElement[] declDefs = unit.getDeclarationDefinitions();
+		IElement[] declDefs = unit.getDeclarationDefinitions();
 		assertEquals(1, declDefs.length);
 		
 		IImportDeclaration impDecl = (IImportDeclaration) declDefs[0];
-		assertEquals(IDElement.IMPORT_DECLARATION, impDecl.getElementType());
+		assertEquals(IElement.IMPORT_DECLARATION, impDecl.getElementType());
 		assertTrue(impDecl.isStatic());
 		assertPosition(impDecl, 1, s.length() - 1);
 		
@@ -169,11 +169,11 @@ public class Import_Test extends Parser_Test {
 		assertEquals(1, imps.length);
 		
 		IImport imp = imps[0];
-		assertEquals(IDElement.IMPORT, imp.getElementType());
+		assertEquals(IElement.IMPORT, imp.getElementType());
 		assertPosition(imp, 15, 1);
 		
 		IQualifiedName qName = imp.getQualifiedName();
-		assertEquals(IDElement.QUALIFIED_NAME, qName.getElementType());
+		assertEquals(IElement.QUALIFIED_NAME, qName.getElementType());
 		assertEquals("a", qName.toString());
 		assertPosition(qName, 15, 1);
 		

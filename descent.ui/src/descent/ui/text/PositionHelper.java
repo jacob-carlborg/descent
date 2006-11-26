@@ -5,7 +5,7 @@ import org.eclipse.jface.text.Position;
 import descent.core.dom.IAggregateDeclaration;
 import descent.core.dom.IAliasDeclaration;
 import descent.core.dom.IConditionAssignment;
-import descent.core.dom.IDElement;
+import descent.core.dom.IElement;
 import descent.core.dom.IDebugDeclaration;
 import descent.core.dom.IEnumDeclaration;
 import descent.core.dom.IEnumMember;
@@ -28,84 +28,84 @@ public class PositionHelper {
 	 * For example, if the element is a IModuleDeclaration, it returns
 	 * it's qualified name.
 	 */
-	public static Position getElementOfInterest(IDElement element) {
+	public static Position getElementOfInterest(IElement element) {
 		IName name;
 		
 		switch(element.getElementType()) {
-		case IDElement.MODULE_DECLARATION:
+		case IElement.MODULE_DECLARATION:
 			IModuleDeclaration md = (IModuleDeclaration) element;
 			name = md.getQualifiedName();
 			if (name != null) element = name;
 			break;
-		case IDElement.AGGREGATE_DECLARATION:
+		case IElement.AGGREGATE_DECLARATION:
 			IAggregateDeclaration aggr = (IAggregateDeclaration) element;
 			name = aggr.getName();
 			if (name != null) element = name;
 			break;
-		case IDElement.FUNCTION_DECLARATION:
+		case IElement.FUNCTION_DECLARATION:
 			IFunctionDeclaration func = (IFunctionDeclaration) element;
 			name = func.getName();
 			if (name != null) element = name;
 			break;
-		case IDElement.ENUM_DECLARATION:
+		case IElement.ENUM_DECLARATION:
 			IEnumDeclaration e = (IEnumDeclaration) element;
 			name = e.getName();
 			if (name != null) element = name;
 			break;
-		case IDElement.ENUM_MEMBER:
+		case IElement.ENUM_MEMBER:
 			IEnumMember em = (IEnumMember) element;
 			name = em.getName();
 			if (name != null) element = name;
 			break;
-		case IDElement.VARIABLE_DECLARATION:
+		case IElement.VARIABLE_DECLARATION:
 			IVariableDeclaration var = (IVariableDeclaration) element;
 			name = var.getName();
 			if (name != null) element = name;
 			break;
-		case IDElement.TYPEDEF_DECLARATION:
+		case IElement.TYPEDEF_DECLARATION:
 			ITypedefDeclaration td = (ITypedefDeclaration) element;
 			name = td.getName();
 			if (name != null) element = name;
 			break;
-		case IDElement.UNITTEST_DECLARATION:
+		case IElement.UNITTEST_DECLARATION:
 			IUnitTestDeclaration u = (IUnitTestDeclaration) element;
 			name = u.getName();
 			if (name != null) element = name;
 			break;
-		case IDElement.INVARIANT_DECLARATION:
+		case IElement.INVARIANT_DECLARATION:
 			IInvariantDeclaration inv = (IInvariantDeclaration) element;
 			name = inv.getName();
 			if (name != null) element = name;
 			break;
-		case IDElement.TEMPLATE_DECLARATION:
+		case IElement.TEMPLATE_DECLARATION:
 			ITemplateDeclaration t = (ITemplateDeclaration) element;
 			name = t.getName();
 			if (name != null) element = name;
 			break;
-		case IDElement.ALIAS_DECLARATION:
+		case IElement.ALIAS_DECLARATION:
 			IAliasDeclaration a = (IAliasDeclaration) element;
 			name = a.getName();
 			if (name != null) element = name;
 			break;
-		case IDElement.VERSION_DECLARATION:
+		case IElement.VERSION_DECLARATION:
 			name = ((IVersionDeclaration) element).getVersion();
 			if (name != null) element = name;
 			break;
-		case IDElement.DEBUG_DECLARATION:
+		case IElement.DEBUG_DECLARATION:
 			name = ((IDebugDeclaration) element).getDebug();
 			if (name != null) element = name;
 			break;
-		case IDElement.CONDITION_ASSIGNMENT:
+		case IElement.CONDITION_ASSIGNMENT:
 			IConditionAssignment va = (IConditionAssignment) element;
 			name = va.getValue();
 			if (name != null) element = name;
 			break;
-		case IDElement.PRAGMA_DECLARATION:
+		case IElement.PRAGMA_DECLARATION:
 			IPragmaDeclaration pd = (IPragmaDeclaration) element;
 			name = pd.getIdentifier();
 			if (name != null) element = name;
 			break;
-		case IDElement.MIXIN_DECLARATION:
+		case IElement.MIXIN_DECLARATION:
 			IMixinDeclaration mix = (IMixinDeclaration) element;
 			name = mix.getName();
 			if (name != null) element = name;

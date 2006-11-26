@@ -4,7 +4,7 @@ import descent.core.dom.IArrayType;
 import descent.core.dom.IAssociativeArrayType;
 import descent.core.dom.IBasicType;
 import descent.core.dom.ICompilationUnit;
-import descent.core.dom.IDElement;
+import descent.core.dom.IElement;
 import descent.core.dom.IDelegateType;
 import descent.core.dom.IIdentifierType;
 import descent.core.dom.IPointerType;
@@ -161,7 +161,7 @@ public class Type_Test extends Parser_Test {
 	private IType getType(String type) {
 		String s = " " + type + " x;";
 		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
-		IDElement[] declDefs = unit.getDeclarationDefinitions();
+		IElement[] declDefs = unit.getDeclarationDefinitions();
 		assertEquals(1, declDefs.length);
 		
 		IVariableDeclaration var = (IVariableDeclaration) declDefs[0];

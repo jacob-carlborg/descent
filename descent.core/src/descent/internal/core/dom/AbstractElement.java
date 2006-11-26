@@ -2,13 +2,13 @@ package descent.internal.core.dom;
 
 import java.util.List;
 
-import descent.core.dom.IDElement;
+import descent.core.dom.IElement;
 import descent.core.dom.IDElementVisitor;
 import descent.core.dom.IDeclaration;
 
-public abstract class AbstractElement implements IDElement {
+public abstract class AbstractElement implements IElement {
 	
-	public final static IDElement[] NO_ELEMENTS = new IDElement[0];
+	public final static IElement[] NO_ELEMENTS = new IElement[0];
 	public final static IDeclaration[] NO_DECLARATIONS = new IDeclaration[0];
 	
 	public String comments;
@@ -44,7 +44,7 @@ public abstract class AbstractElement implements IDElement {
 	 * Accepts the visitor on the child. If child is null,
 	 * nothing happens.
 	 */
-	protected void acceptChild(IDElementVisitor visitor, IDElement child) {
+	protected void acceptChild(IDElementVisitor visitor, IElement child) {
 		if (child == null)
 			return;
 		
@@ -55,12 +55,12 @@ public abstract class AbstractElement implements IDElement {
 	 * Accepts the visitor on the children. If children is null,
 	 * nothing happens.
 	 */
-	protected void acceptChildren(IDElementVisitor visitor, IDElement[] children) {
+	protected void acceptChildren(IDElementVisitor visitor, IElement[] children) {
 		if (children == null)
 			return;
 		
 		for(int i = 0; i < children.length; i++) {
-			if (children[i] instanceof IDElement) {
+			if (children[i] instanceof IElement) {
 				acceptChild(visitor, children[i]);
 			}
 		}
@@ -70,12 +70,12 @@ public abstract class AbstractElement implements IDElement {
 	 * Accepts the visitor on the children. If children is null,
 	 * nothing happens.
 	 */
-	protected void acceptChildren(IDElementVisitor visitor, List<? extends IDElement> children) {
+	protected void acceptChildren(IDElementVisitor visitor, List<? extends IElement> children) {
 		if (children == null)
 			return;
 		
 		for(int i = 0; i < children.size(); i++) {
-			if (children.get(i) instanceof IDElement) {
+			if (children.get(i) instanceof IElement) {
 				acceptChild(visitor, children.get(i));
 			}
 		}

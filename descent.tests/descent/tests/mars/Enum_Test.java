@@ -3,7 +3,7 @@ package descent.tests.mars;
 import java.math.BigInteger;
 
 import descent.core.dom.ICompilationUnit;
-import descent.core.dom.IDElement;
+import descent.core.dom.IElement;
 import descent.core.dom.IEnumDeclaration;
 import descent.core.dom.IEnumMember;
 import descent.core.dom.IIntegerExpression;
@@ -14,11 +14,11 @@ public class Enum_Test extends Parser_Test {
 	public void testEnumClosed() {
 		String s = " enum En;";
 		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
-		IDElement[] declDefs = unit.getDeclarationDefinitions();
+		IElement[] declDefs = unit.getDeclarationDefinitions();
 		assertEquals(1, declDefs.length);
 		
 		IEnumDeclaration e = (IEnumDeclaration) declDefs[0];
-		assertEquals(IDElement.ENUM_DECLARATION, e.getElementType());
+		assertEquals(IElement.ENUM_DECLARATION, e.getElementType());
 		assertPosition(e, 1, 8);
 		assertPosition(e.getName(), 6, 2);
 		assertEquals("En", e.getName().toString());
@@ -30,7 +30,7 @@ public class Enum_Test extends Parser_Test {
 	public void testEnumSimple() {
 		String s = " enum En { x, y = 1, z }";
 		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
-		IDElement[] declDefs = unit.getDeclarationDefinitions();
+		IElement[] declDefs = unit.getDeclarationDefinitions();
 		assertEquals(1, declDefs.length);
 		
 		IEnumDeclaration e = (IEnumDeclaration) declDefs[0];
@@ -42,7 +42,7 @@ public class Enum_Test extends Parser_Test {
 		IEnumMember em;
 		
 		em = e.getMembers()[0];
-		assertEquals(IDElement.ENUM_MEMBER, em.getElementType());
+		assertEquals(IElement.ENUM_MEMBER, em.getElementType());
 		assertEquals("x", em.getName().toString());
 		assertNull(em.getValue());
 		assertPosition(em, 11, 1);
@@ -63,7 +63,7 @@ public class Enum_Test extends Parser_Test {
 	public void testEnumNameless() {
 		String s = " enum { x }";
 		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
-		IDElement[] declDefs = unit.getDeclarationDefinitions();
+		IElement[] declDefs = unit.getDeclarationDefinitions();
 		assertEquals(1, declDefs.length);
 		
 		IEnumDeclaration e = (IEnumDeclaration) declDefs[0];
@@ -76,7 +76,7 @@ public class Enum_Test extends Parser_Test {
 	public void testEnumWithBaseType() {
 		String s = " enum En : int;";
 		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
-		IDElement[] declDefs = unit.getDeclarationDefinitions();
+		IElement[] declDefs = unit.getDeclarationDefinitions();
 		assertEquals(1, declDefs.length);
 		
 		IEnumDeclaration e = (IEnumDeclaration) declDefs[0];
@@ -92,7 +92,7 @@ public class Enum_Test extends Parser_Test {
 	public void testEnumNamelessWithBaseType() {
 		String s = " enum : int { x }";
 		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
-		IDElement[] declDefs = unit.getDeclarationDefinitions();
+		IElement[] declDefs = unit.getDeclarationDefinitions();
 		assertEquals(1, declDefs.length);
 		
 		IEnumDeclaration e = (IEnumDeclaration) declDefs[0];
@@ -103,7 +103,7 @@ public class Enum_Test extends Parser_Test {
 	public void testEnumWithComments() {
 		String s = " /** hola */ enum En;";
 		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
-		IDElement[] declDefs = unit.getDeclarationDefinitions();
+		IElement[] declDefs = unit.getDeclarationDefinitions();
 		assertEquals(1, declDefs.length);
 		
 		IEnumDeclaration e = (IEnumDeclaration) declDefs[0];

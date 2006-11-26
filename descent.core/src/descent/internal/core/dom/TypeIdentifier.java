@@ -1,6 +1,6 @@
 package descent.internal.core.dom;
 
-import descent.core.dom.IDElement;
+import descent.core.dom.IElement;
 import descent.core.dom.IDElementVisitor;
 import descent.core.dom.IIdentifierType;
 import descent.core.dom.IQualifiedName;
@@ -52,7 +52,7 @@ public class TypeIdentifier extends TypeQualified implements IIdentifierType, IT
 		}
 	}
 	
-	public IDElement[] getTemplateArguments() {
+	public IElement[] getTemplateArguments() {
 		return ((TemplateInstance) idents.get(idents.size() - 1)).getTemplateArguments();
 	}
 	

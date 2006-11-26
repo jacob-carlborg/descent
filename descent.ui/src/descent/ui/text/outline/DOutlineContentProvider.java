@@ -11,7 +11,7 @@ import descent.core.dom.IAggregateDeclaration;
 import descent.core.dom.IAlignDeclaration;
 import descent.core.dom.ICompilationUnit;
 import descent.core.dom.IConditionalDeclaration;
-import descent.core.dom.IDElement;
+import descent.core.dom.IElement;
 import descent.core.dom.IDElementVisitor;
 import descent.core.dom.IEnumDeclaration;
 import descent.core.dom.IImportDeclaration;
@@ -41,9 +41,9 @@ public class DOutlineContentProvider implements ITreeContentProvider {
 		}
 		
 		List<Object> list;
-		IDElement e = (IDElement) parentElement;
+		IElement e = (IElement) parentElement;
 		switch(e.getElementType()) {
-		case IDElement.COMPILATION_UNIT:
+		case IElement.COMPILATION_UNIT:
 			list = new ArrayList<Object>();
 			
 			IModuleDeclaration module = compilationUnit.getModuleDeclaration();
@@ -54,32 +54,32 @@ public class DOutlineContentProvider implements ITreeContentProvider {
 			addDeclDefs(list, compilationUnit.getDeclarationDefinitions());
 			
 			return list.toArray();
-		case IDElement.AGGREGATE_DECLARATION:
+		case IElement.AGGREGATE_DECLARATION:
 			list = new ArrayList<Object>();
 			addDeclDefs(list, ((IAggregateDeclaration) e).getDeclarationDefinitions());
 			return list.toArray();
-		case IDElement.TEMPLATE_DECLARATION:
+		case IElement.TEMPLATE_DECLARATION:
 			list = new ArrayList<Object>();
 			addDeclDefs(list, ((ITemplateDeclaration) e).getDeclarationDefinitions());
 			return list.toArray();
-		case IDElement.ENUM_DECLARATION:
+		case IElement.ENUM_DECLARATION:
 			return ((IEnumDeclaration) e).getMembers();
-		case IDElement.LINK_DECLARATION:
+		case IElement.LINK_DECLARATION:
 			list = new ArrayList<Object>();
 			addDeclDefs(list, ((ILinkDeclaration) e).getDeclarationDefinitions());
 			return list.toArray();
-		case IDElement.VERSION_DECLARATION:
-		case IDElement.DEBUG_DECLARATION:
-		case IDElement.STATIC_IF_DECLARATION:
+		case IElement.VERSION_DECLARATION:
+		case IElement.DEBUG_DECLARATION:
+		case IElement.STATIC_IF_DECLARATION:
 			IConditionalDeclaration c = (IConditionalDeclaration) e;
 			list = new ArrayList<Object>();
 			addDeclDefs(list, c.getIfTrueDeclarationDefinitions());
-			IDElement[] ifFalse = c.getIfFalseDeclarationDefinitions();
+			IElement[] ifFalse = c.getIfFalseDeclarationDefinitions();
 			if (ifFalse.length > 0) {
 				list.add(new Else(ifFalse));
 			}
 			return list.toArray();
-		case IDElement.PRAGMA_DECLARATION:
+		case IElement.PRAGMA_DECLARATION:
 			list = new ArrayList<Object>();
 			addDeclDefs(list, ((IPragmaDeclaration) e).getDeclarationDefinitions());
 			return list.toArray();
@@ -91,20 +91,20 @@ public class DOutlineContentProvider implements ITreeContentProvider {
 		return new Object[0];
 	}
 	
-	private void addDeclDefs(List<Object> list, IDElement[] declDefs) {
+	private void addDeclDefs(List<Object> list, IElement[] declDefs) {
 		List<IImportDeclaration> importDeclarations = null;
-		for(IDElement elem : declDefs) {
+		for(IElement elem : declDefs) {
 			switch(elem.getElementType()) {
-			case IDElement.PROTECTION_DECLARATION:
+			case IElement.PROTECTION_DECLARATION:
 				addDeclDefs(list, ((IProtectionDeclaration) elem).getDeclarationDefinitions());
 				break;
-			case IDElement.STORAGE_CLASS_DECLARATION:
+			case IElement.STORAGE_CLASS_DECLARATION:
 				addDeclDefs(list, ((IStorageClassDeclaration) elem).getDeclarationDefinitions());
 				break;
-			case IDElement.ALIGN_DECLARATION:
+			case IElement.ALIGN_DECLARATION:
 				addDeclDefs(list, ((IAlignDeclaration) elem).getDeclarationDefinitions());
 				break;
-			case IDElement.IMPORT_DECLARATION:
+			case IElement.IMPORT_DECLARATION:
 				if (importDeclarations == null) {
 					importDeclarations = new ArrayList<IImportDeclaration>();
 				}
@@ -132,28 +132,28 @@ public class DOutlineContentProvider implements ITreeContentProvider {
 		
 		if (element == null) return false;
 		
-		IDElement e = (IDElement) element;
+		IElement e = (IElement) element;
 		switch(e.getElementType()) {
-		case IDElement.COMPILATION_UNIT:
+		case IElement.COMPILATION_UNIT:
 			if (compilationUnit.getModuleDeclaration() != null) {
 				return true;
 			}
 			if (compilationUnit.getDeclarationDefinitions().length > 0) {
 				return true;
 			}
-		case IDElement.AGGREGATE_DECLARATION:
+		case IElement.AGGREGATE_DECLARATION:
 			return ((IAggregateDeclaration) e).getDeclarationDefinitions().length > 0;
-		case IDElement.ENUM_DECLARATION:
+		case IElement.ENUM_DECLARATION:
 			return ((IEnumDeclaration) e).getMembers().length > 0;
-		case IDElement.LINK_DECLARATION:
+		case IElement.LINK_DECLARATION:
 			return ((ILinkDeclaration) e).getDeclarationDefinitions().length > 0;
-		case IDElement.VERSION_DECLARATION:
-		case IDElement.DEBUG_DECLARATION:
-		case IDElement.STATIC_IF_DECLARATION:
+		case IElement.VERSION_DECLARATION:
+		case IElement.DEBUG_DECLARATION:
+		case IElement.STATIC_IF_DECLARATION:
 			IConditionalDeclaration v = (IConditionalDeclaration) e;
 			return v.getIfTrueDeclarationDefinitions().length > 0 ||
 				v.getIfFalseDeclarationDefinitions().length > 0;
-		case IDElement.PRAGMA_DECLARATION:
+		case IElement.PRAGMA_DECLARATION:
 			return ((IPragmaDeclaration) e).getDeclarationDefinitions().length > 0;
 		case IImaginaryElements.IMPORTS:
 		case IImaginaryElements.ELSE:
@@ -173,7 +173,7 @@ public class DOutlineContentProvider implements ITreeContentProvider {
 		input = (IEditorInput) newInput;
 	}
 	
-	class Imports implements IDElement {
+	class Imports implements IElement {
 		
 		private IImportDeclaration[] imports;
 
@@ -197,11 +197,11 @@ public class DOutlineContentProvider implements ITreeContentProvider {
 		
 	}
 	
-	class Else implements IDElement {
+	class Else implements IElement {
 		
-		private IDElement[] declDefs;
+		private IElement[] declDefs;
 		
-		public Else(IDElement[] declDefs) {
+		public Else(IElement[] declDefs) {
 			this.declDefs = declDefs;
 		}
 

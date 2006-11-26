@@ -21,6 +21,6 @@ public interface ITemplateInstanceType extends IType {
 	/**
 	 * Returns the arguments of the template instance.
 	 */
-	IDElement[] getTemplateArguments();
+	IElement[] getTemplateArguments();
 
 }

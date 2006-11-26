@@ -1,6 +1,6 @@
 package descent.internal.core.dom;
 
-import descent.core.dom.IDElement;
+import descent.core.dom.IElement;
 import descent.core.dom.IQualifiedName;
 import descent.core.dom.ITemplateInstanceType;
 
@@ -18,7 +18,7 @@ public class TypeInstance extends TypeQualified implements ITemplateInstanceType
 		return TEMPLATE_INSTANCE_TYPE;
 	}
 	
-	public IDElement[] getTemplateArguments() {
+	public IElement[] getTemplateArguments() {
 		return tempinst.getTemplateArguments();
 	}
 	

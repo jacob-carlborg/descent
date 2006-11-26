@@ -3,7 +3,7 @@ package descent.core.dom;
 /**
  * A strong type of the language.
  */
-public interface IStrongType extends IDElement {
+public interface IStrongType extends IElement {
 	
 	int TYPEDEF = 1;
 	int STRUCT = 2;

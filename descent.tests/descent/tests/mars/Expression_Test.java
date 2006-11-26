@@ -10,7 +10,7 @@ import descent.core.dom.IBinaryExpression;
 import descent.core.dom.ICallExpression;
 import descent.core.dom.ICastExpression;
 import descent.core.dom.IConditionExpression;
-import descent.core.dom.IDElement;
+import descent.core.dom.IElement;
 import descent.core.dom.IDeleteExpression;
 import descent.core.dom.IDotIdentifierExpression;
 import descent.core.dom.IExpression;
@@ -426,7 +426,7 @@ public class Expression_Test extends Parser_Test {
 		assertEquals("some", expr.getName().toString());
 		assertPosition(expr.getName(), 1, 4);
 		
-		IDElement[] arguments = expr.getArguments();
+		IElement[] arguments = expr.getArguments();
 		assertEquals(2, arguments.length);
 		
 		assertEquals("int", arguments[0].toString());

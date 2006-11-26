@@ -1,7 +1,7 @@
 package descent.tests.mars;
 
 import descent.core.dom.ICompilationUnit;
-import descent.core.dom.IDElement;
+import descent.core.dom.IElement;
 import descent.core.dom.IMixinDeclaration;
 import descent.internal.core.dom.ParserFacade;
 
@@ -10,18 +10,18 @@ public class Mixin_Test extends Parser_Test {
 	public void testOne() {
 		String s = " mixin Foo!(int, real) m;";
 		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
-		IDElement[] declDefs = unit.getDeclarationDefinitions();
+		IElement[] declDefs = unit.getDeclarationDefinitions();
 		assertEquals(1, declDefs.length);
 		
 		IMixinDeclaration m = (IMixinDeclaration) declDefs[0];
-		assertEquals(IDElement.MIXIN_DECLARATION, m.getElementType());
+		assertEquals(IElement.MIXIN_DECLARATION, m.getElementType());
 		
 		assertEquals("m", m.getName().toString());
 		assertPosition(m.getName(), s.length() - 2, 1);
 		
 		assertPosition(m, 1, s.length() - 1);
 		
-		IDElement[] args = m.getTemplateArguments();
+		IElement[] args = m.getTemplateArguments();
 		assertEquals(2, args.length);
 		assertEquals("int", args[0].toString());
 		assertEquals("real", args[1].toString());
@@ -33,11 +33,11 @@ public class Mixin_Test extends Parser_Test {
 	public void testTwo() {
 		String s = " mixin a.b.Foo!(int, real) m;";
 		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
-		IDElement[] declDefs = unit.getDeclarationDefinitions();
+		IElement[] declDefs = unit.getDeclarationDefinitions();
 		assertEquals(1, declDefs.length);
 		
 		IMixinDeclaration m = (IMixinDeclaration) declDefs[0];
-		assertEquals(IDElement.MIXIN_DECLARATION, m.getElementType());
+		assertEquals(IElement.MIXIN_DECLARATION, m.getElementType());
 		
 		assertEquals("m", m.getName().toString());
 		assertPosition(m.getName(), s.length() - 2, 1);
@@ -51,11 +51,11 @@ public class Mixin_Test extends Parser_Test {
 	public void testDot() {
 		String s = " mixin .Foo!(int, real) m;";
 		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
-		IDElement[] declDefs = unit.getDeclarationDefinitions();
+		IElement[] declDefs = unit.getDeclarationDefinitions();
 		assertEquals(1, declDefs.length);
 		
 		IMixinDeclaration m = (IMixinDeclaration) declDefs[0];
-		assertEquals(IDElement.MIXIN_DECLARATION, m.getElementType());
+		assertEquals(IElement.MIXIN_DECLARATION, m.getElementType());
 		
 		assertEquals("m", m.getName().toString());
 		assertPosition(m.getName(), s.length() - 2, 1);
@@ -69,11 +69,11 @@ public class Mixin_Test extends Parser_Test {
 	public void testTypeof() {
 		String s = " mixin typeof(2).Foo!(int, real) m;";
 		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
-		IDElement[] declDefs = unit.getDeclarationDefinitions();
+		IElement[] declDefs = unit.getDeclarationDefinitions();
 		assertEquals(1, declDefs.length);
 		
 		IMixinDeclaration m = (IMixinDeclaration) declDefs[0];
-		assertEquals(IDElement.MIXIN_DECLARATION, m.getElementType());
+		assertEquals(IElement.MIXIN_DECLARATION, m.getElementType());
 		
 		assertEquals("m", m.getName().toString());
 		assertPosition(m.getName(), s.length() - 2, 1);
@@ -89,13 +89,13 @@ public class Mixin_Test extends Parser_Test {
 	public void testExpressionParameter() {
 		String s = " mixin Foo!(2) m;";
 		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
-		IDElement[] declDefs = unit.getDeclarationDefinitions();
+		IElement[] declDefs = unit.getDeclarationDefinitions();
 		assertEquals(1, declDefs.length);
 		
 		IMixinDeclaration m = (IMixinDeclaration) declDefs[0];
-		assertEquals(IDElement.MIXIN_DECLARATION, m.getElementType());
+		assertEquals(IElement.MIXIN_DECLARATION, m.getElementType());
 		
-		IDElement[] params = m.getTemplateArguments();
+		IElement[] params = m.getTemplateArguments();
 		assertEquals(1, params.length);
 		assertEquals("2", params[0].toString());
 	}
@@ -103,11 +103,11 @@ public class Mixin_Test extends Parser_Test {
 	public void testWithoutNot() {
 		String s = " mixin Foo m;";
 		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
-		IDElement[] declDefs = unit.getDeclarationDefinitions();
+		IElement[] declDefs = unit.getDeclarationDefinitions();
 		assertEquals(1, declDefs.length);
 		
 		IMixinDeclaration m = (IMixinDeclaration) declDefs[0];
-		assertEquals(IDElement.MIXIN_DECLARATION, m.getElementType());
+		assertEquals(IElement.MIXIN_DECLARATION, m.getElementType());
 		
 		assertEquals("m", m.getName().toString());
 		assertPosition(m.getName(), s.length() - 2, 1);
@@ -124,11 +124,11 @@ public class Mixin_Test extends Parser_Test {
 	public void testDotAfterTemplate() {
 		String s = " mixin Foo!().bar m;";
 		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
-		IDElement[] declDefs = unit.getDeclarationDefinitions();
+		IElement[] declDefs = unit.getDeclarationDefinitions();
 		assertEquals(1, declDefs.length);
 		
 		IMixinDeclaration m = (IMixinDeclaration) declDefs[0];
-		assertEquals(IDElement.MIXIN_DECLARATION, m.getElementType());
+		assertEquals(IElement.MIXIN_DECLARATION, m.getElementType());
 		
 		assertEquals("m", m.getName().toString());
 		assertPosition(m.getName(), s.length() - 2, 1);

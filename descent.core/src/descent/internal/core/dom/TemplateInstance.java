@@ -2,11 +2,11 @@ package descent.internal.core.dom;
 
 import java.util.List;
 
-import descent.core.dom.IDElement;
+import descent.core.dom.IElement;
 
 public class TemplateInstance extends Identifier {
 
-	public List<IDElement> tiargs;
+	public List<IElement> tiargs;
 
 	public TemplateInstance(Loc loc, Identifier id) {
 		super(id.string, id.value);
@@ -14,11 +14,11 @@ public class TemplateInstance extends Identifier {
 		this.length = id.length;
 	}
 	
-	public IDElement[] getTemplateArguments() {
+	public IElement[] getTemplateArguments() {
 		if (tiargs == null) {
 			return AbstractElement.NO_ELEMENTS;
 		} else {
-			return tiargs.toArray(new IDElement[tiargs.size()]);
+			return tiargs.toArray(new IElement[tiargs.size()]);
 		}
 	}
 

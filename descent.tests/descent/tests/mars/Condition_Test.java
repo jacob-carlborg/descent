@@ -3,7 +3,7 @@ package descent.tests.mars;
 import descent.core.dom.ICompilationUnit;
 import descent.core.dom.IConditionalDeclaration;
 import descent.core.dom.IDebugDeclaration;
-import descent.core.dom.IDElement;
+import descent.core.dom.IElement;
 import descent.core.dom.IIftypeDeclaration;
 import descent.core.dom.IStaticIfDeclaration;
 import descent.core.dom.IConditionAssignment;
@@ -15,7 +15,7 @@ public class Condition_Test extends Parser_Test {
 	public void testVersionString() {
 		String s = " version(linux) { }";
 		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
-		IDElement[] declDefs = unit.getDeclarationDefinitions();
+		IElement[] declDefs = unit.getDeclarationDefinitions();
 		assertEquals(1, declDefs.length);
 		
 		IVersionDeclaration version = (IVersionDeclaration) declDefs[0];
@@ -28,7 +28,7 @@ public class Condition_Test extends Parser_Test {
 	public void testVersionNumber() {
 		String s = " version(1) { }";
 		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
-		IDElement[] declDefs = unit.getDeclarationDefinitions();
+		IElement[] declDefs = unit.getDeclarationDefinitions();
 		assertEquals(1, declDefs.length);
 		
 		IVersionDeclaration version = (IVersionDeclaration) declDefs[0];
@@ -41,7 +41,7 @@ public class Condition_Test extends Parser_Test {
 	public void testVersionElse() {
 		String s = " version(Windows) { } else { }";
 		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
-		IDElement[] declDefs = unit.getDeclarationDefinitions();
+		IElement[] declDefs = unit.getDeclarationDefinitions();
 		assertEquals(1, declDefs.length);
 		
 		IVersionDeclaration version = (IVersionDeclaration) declDefs[0];
@@ -51,7 +51,7 @@ public class Condition_Test extends Parser_Test {
 	public void testDebug() {
 		String s = " debug(bla) { int x; } else { }";
 		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
-		IDElement[] declDefs = unit.getDeclarationDefinitions();
+		IElement[] declDefs = unit.getDeclarationDefinitions();
 		assertEquals(1, declDefs.length);
 		
 		IDebugDeclaration d = (IDebugDeclaration) declDefs[0];
@@ -65,7 +65,7 @@ public class Condition_Test extends Parser_Test {
 	public void testStaticIf() {
 		String s = " static if(true) { int x; } else { }";
 		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
-		IDElement[] declDefs = unit.getDeclarationDefinitions();
+		IElement[] declDefs = unit.getDeclarationDefinitions();
 		assertEquals(1, declDefs.length);
 		
 		IStaticIfDeclaration d = (IStaticIfDeclaration) declDefs[0];
@@ -78,11 +78,11 @@ public class Condition_Test extends Parser_Test {
 	public void testVersionAssign() {
 		String s = " version = 2;";
 		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
-		IDElement[] declDefs = unit.getDeclarationDefinitions();
+		IElement[] declDefs = unit.getDeclarationDefinitions();
 		assertEquals(1, declDefs.length);
 		
 		IConditionAssignment v = (IConditionAssignment) declDefs[0];
-		assertEquals(IDElement.CONDITION_ASSIGNMENT, v.getElementType());
+		assertEquals(IElement.CONDITION_ASSIGNMENT, v.getElementType());
 		assertEquals(IConditionAssignment.CONDITION_VERSION, v.getConditionAssignmentType());
 		assertEquals("2", v.getValue().toString());
 		assertPosition(v.getValue(), 11, 1);
@@ -92,11 +92,11 @@ public class Condition_Test extends Parser_Test {
 	public void testVersionAssign2() {
 		String s = " version = some;";
 		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
-		IDElement[] declDefs = unit.getDeclarationDefinitions();
+		IElement[] declDefs = unit.getDeclarationDefinitions();
 		assertEquals(1, declDefs.length);
 		
 		IConditionAssignment v = (IConditionAssignment) declDefs[0];
-		assertEquals(IDElement.CONDITION_ASSIGNMENT, v.getElementType());
+		assertEquals(IElement.CONDITION_ASSIGNMENT, v.getElementType());
 		assertEquals("some", v.getValue().toString());
 		assertPosition(v.getValue(), 11, 4);
 		assertPosition(v, 1, s.length() - 1);
@@ -105,11 +105,11 @@ public class Condition_Test extends Parser_Test {
 	public void testDebugAssign() {
 		String s = " debug = 2;";
 		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
-		IDElement[] declDefs = unit.getDeclarationDefinitions();
+		IElement[] declDefs = unit.getDeclarationDefinitions();
 		assertEquals(1, declDefs.length);
 		
 		IConditionAssignment v = (IConditionAssignment) declDefs[0];
-		assertEquals(IDElement.CONDITION_ASSIGNMENT, v.getElementType());
+		assertEquals(IElement.CONDITION_ASSIGNMENT, v.getElementType());
 		assertEquals(IConditionAssignment.CONDITION_DEBUG, v.getConditionAssignmentType());
 		assertEquals("2", v.getValue().toString());
 		assertPosition(v.getValue(), 9, 1);
@@ -119,11 +119,11 @@ public class Condition_Test extends Parser_Test {
 	public void testDebugAssign2() {
 		String s = " debug = some;";
 		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
-		IDElement[] declDefs = unit.getDeclarationDefinitions();
+		IElement[] declDefs = unit.getDeclarationDefinitions();
 		assertEquals(1, declDefs.length);
 		
 		IConditionAssignment v = (IConditionAssignment) declDefs[0];
-		assertEquals(IDElement.CONDITION_ASSIGNMENT, v.getElementType());
+		assertEquals(IElement.CONDITION_ASSIGNMENT, v.getElementType());
 		assertEquals("some", v.getValue().toString());
 		assertPosition(v.getValue(), 9, 4);
 		assertPosition(v, 1, s.length() - 1);
@@ -132,7 +132,7 @@ public class Condition_Test extends Parser_Test {
 	public void testIftypeNone() {
 		String s = " iftype(x) { }";
 		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
-		IDElement[] declDefs = unit.getDeclarationDefinitions();
+		IElement[] declDefs = unit.getDeclarationDefinitions();
 		assertEquals(1, declDefs.length);
 		
 		IIftypeDeclaration d = (IIftypeDeclaration) declDefs[0];
@@ -149,7 +149,7 @@ public class Condition_Test extends Parser_Test {
 	public void testIftypeEquals() {
 		String s = " iftype(x == y) { }";
 		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
-		IDElement[] declDefs = unit.getDeclarationDefinitions();
+		IElement[] declDefs = unit.getDeclarationDefinitions();
 		assertEquals(1, declDefs.length);
 		
 		IIftypeDeclaration d = (IIftypeDeclaration) declDefs[0];
@@ -166,7 +166,7 @@ public class Condition_Test extends Parser_Test {
 	public void testIftypeExtends() {
 		String s = " iftype(x : y) { }";
 		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
-		IDElement[] declDefs = unit.getDeclarationDefinitions();
+		IElement[] declDefs = unit.getDeclarationDefinitions();
 		assertEquals(1, declDefs.length);
 		
 		IIftypeDeclaration d = (IIftypeDeclaration) declDefs[0];
@@ -183,7 +183,7 @@ public class Condition_Test extends Parser_Test {
 	public void testIftypeWithIdentifier() {
 		String s = " iftype(int x : y) { }";
 		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
-		IDElement[] declDefs = unit.getDeclarationDefinitions();
+		IElement[] declDefs = unit.getDeclarationDefinitions();
 		assertEquals(1, declDefs.length);
 		
 		IIftypeDeclaration d = (IIftypeDeclaration) declDefs[0];

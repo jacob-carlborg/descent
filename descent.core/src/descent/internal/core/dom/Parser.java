@@ -91,7 +91,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import descent.core.dom.IBaseClass;
-import descent.core.dom.IDElement;
+import descent.core.dom.IElement;
 import descent.core.dom.IDeclaration;
 import descent.core.dom.IEnumMember;
 import descent.core.dom.IImport;
@@ -417,7 +417,7 @@ public class Parser extends Lexer {
 						s.modifiers |= protection;
 					} else {
 						s = new ProtDeclaration(prot, a);
-						for(IDElement elem : a) {
+						for(IElement elem : a) {
 							((AbstractElement) elem).modifiers |= protection;
 						}
 					}
@@ -1086,7 +1086,7 @@ public class Parser extends Lexer {
 					hasdefault = true;
 				} else {
 					if (hasdefault) {
-						IDElement e = ai != null ? ai : at;
+						IElement e = ai != null ? ai : at;
 						problem("Default argument expected", IProblem.SEVERITY_ERROR, IProblem.DEFAULT_ARGUMENT_EXPECTED, e.getStartPosition(), e.getLength());
 					}
 				}
@@ -1602,7 +1602,7 @@ public class Parser extends Lexer {
 		TemplateMixin tm;
 		Identifier id = null;
 		TypeTypeof tqual;
-		List<IDElement> tiargs;
+		List<IElement> tiargs;
 		List<Identifier> idents;
 		
 		Token firstToken = new Token(token);
@@ -1691,9 +1691,9 @@ public class Parser extends Lexer {
 	}
 	
 	@SuppressWarnings("unchecked")
-	private List<IDElement> parseTemplateArgumentList() {
+	private List<IElement> parseTemplateArgumentList() {
 		// printf("Parser::parseTemplateArgumentList()\n");
-	    List<IDElement> tiargs = new ArrayList<IDElement>();
+	    List<IElement> tiargs = new ArrayList<IElement>();
 	    if (token.value != TOKlparen)
 	    {   
 	    	problem("!(TemplateArgumentList) expected following TemplateIdentifier", IProblem.SEVERITY_ERROR, IProblem.TEMPLATE_ARGUMENT_LIST_EXPECTED, token.ptr, token.len);

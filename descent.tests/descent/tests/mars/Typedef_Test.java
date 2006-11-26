@@ -1,7 +1,7 @@
 package descent.tests.mars;
 
 import descent.core.dom.ICompilationUnit;
-import descent.core.dom.IDElement;
+import descent.core.dom.IElement;
 import descent.core.dom.IInitializer;
 import descent.core.dom.IType;
 import descent.core.dom.ITypedefDeclaration;
@@ -12,7 +12,7 @@ public class Typedef_Test extends Parser_Test {
 	public void testOne() {
 		String s = " typedef int Bla;";
 		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
-		IDElement[] declDefs = unit.getDeclarationDefinitions();
+		IElement[] declDefs = unit.getDeclarationDefinitions();
 		assertEquals(1, declDefs.length);
 		
 		ITypedefDeclaration t = (ITypedefDeclaration) declDefs[0];
@@ -29,7 +29,7 @@ public class Typedef_Test extends Parser_Test {
 	public void testInitializer() {
 		String s = " typedef int Bla = 1;";
 		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
-		IDElement[] declDefs = unit.getDeclarationDefinitions();
+		IElement[] declDefs = unit.getDeclarationDefinitions();
 		assertEquals(1, declDefs.length);
 		
 		ITypedefDeclaration t = (ITypedefDeclaration) declDefs[0];
@@ -49,7 +49,7 @@ public class Typedef_Test extends Parser_Test {
 	public void testMany() {
 		String s = " typedef int Bla, Ble;";
 		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
-		IDElement[] declDefs = unit.getDeclarationDefinitions();
+		IElement[] declDefs = unit.getDeclarationDefinitions();
 		assertEquals(2, declDefs.length);
 		
 		ITypedefDeclaration t;

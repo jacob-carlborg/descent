@@ -2,7 +2,7 @@ package descent.internal.core.dom;
 
 import java.util.List;
 
-import descent.core.dom.IDElement;
+import descent.core.dom.IElement;
 import descent.core.dom.IDElementVisitor;
 import descent.core.dom.IMixinDeclaration;
 import descent.core.dom.IName;
@@ -13,14 +13,14 @@ public class TemplateMixin extends Dsymbol implements IMixinDeclaration {
 
 	private QualifiedName qName;
 	private TypeTypeof tqual;
-	private IDElement[] tiargs;
+	private IElement[] tiargs;
 
-	public TemplateMixin(Loc loc, Identifier id, TypeTypeof tqual, List<Identifier> idents, List<IDElement> tiargs) {
+	public TemplateMixin(Loc loc, Identifier id, TypeTypeof tqual, List<Identifier> idents, List<IElement> tiargs) {
 		this.ident = id;
 		this.tqual = tqual;
 		this.qName = new QualifiedName(idents);
 		if (tiargs != null) {
-			this.tiargs = tiargs.toArray(new IDElement[tiargs.size()]);
+			this.tiargs = tiargs.toArray(new IElement[tiargs.size()]);
 		}
 	}
 	
@@ -40,7 +40,7 @@ public class TemplateMixin extends Dsymbol implements IMixinDeclaration {
 		return tqual;
 	}
 	
-	public IDElement[] getTemplateArguments() {
+	public IElement[] getTemplateArguments() {
 		if (tiargs == null) return AbstractElement.NO_ELEMENTS; 
 		return tiargs;
 	}

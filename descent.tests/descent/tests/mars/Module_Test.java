@@ -1,7 +1,7 @@
 package descent.tests.mars;
 
 import descent.core.dom.ICompilationUnit;
-import descent.core.dom.IDElement;
+import descent.core.dom.IElement;
 import descent.core.dom.IModuleDeclaration;
 import descent.core.dom.IQualifiedName;
 import descent.internal.core.dom.ParserFacade;
@@ -15,7 +15,7 @@ public class Module_Test extends Parser_Test {
 		
 		assertNotNull(md);
 		assertPosition(md, 1, 9);
-		assertEquals(IDElement.MODULE_DECLARATION, md.getElementType());
+		assertEquals(IElement.MODULE_DECLARATION, md.getElementType());
 		
 		IQualifiedName qName = md.getQualifiedName();
 		assertEquals("a", qName.toString());

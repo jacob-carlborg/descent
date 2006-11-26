@@ -16,12 +16,12 @@ public interface IDElementVisitor {
 	 * @param element the element to visit
 	 * @return true if children element should be visited
 	 */
-	boolean visit(IDElement element);
+	boolean visit(IElement element);
 	
 	/**
 	 * Ends the visit to the element.
 	 * @param element the element to visit
 	 */
-	void endVisit(IDElement element);
+	void endVisit(IElement element);
 
 }

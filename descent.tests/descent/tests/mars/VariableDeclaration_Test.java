@@ -4,7 +4,7 @@ import descent.core.dom.IArrayType;
 import descent.core.dom.IAssociativeArrayType;
 import descent.core.dom.ICompilationUnit;
 import descent.core.dom.IDelegateType;
-import descent.core.dom.IDElement;
+import descent.core.dom.IElement;
 import descent.core.dom.IModifier;
 import descent.core.dom.ITemplateInstanceType;
 import descent.core.dom.IType;
@@ -16,11 +16,11 @@ public class VariableDeclaration_Test extends Parser_Test {
 	public void testOne() {
 		String s = " int x;";
 		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
-		IDElement[] declDefs = unit.getDeclarationDefinitions();
+		IElement[] declDefs = unit.getDeclarationDefinitions();
 		assertEquals(1, declDefs.length);
 		
 		IVariableDeclaration var = (IVariableDeclaration) declDefs[0];
-		assertEquals(IDElement.VARIABLE_DECLARATION, var.getElementType());
+		assertEquals(IElement.VARIABLE_DECLARATION, var.getElementType());
 		assertEquals("x", var.getName().toString());
 		assertPosition(var.getName(), 5, 1);
 		assertEquals("int", var.getType().toString());
@@ -32,7 +32,7 @@ public class VariableDeclaration_Test extends Parser_Test {
 	public void testTwo() {
 		String s = " int x, y;";
 		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
-		IDElement[] declDefs = unit.getDeclarationDefinitions();
+		IElement[] declDefs = unit.getDeclarationDefinitions();
 		assertEquals(2, declDefs.length);
 		
 		IVariableDeclaration var;
@@ -53,7 +53,7 @@ public class VariableDeclaration_Test extends Parser_Test {
 	public void testComments() {
 		String s = " /** hola */ int x;";
 		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
-		IDElement[] declDefs = unit.getDeclarationDefinitions();
+		IElement[] declDefs = unit.getDeclarationDefinitions();
 		assertEquals(1, declDefs.length);
 		
 		IVariableDeclaration var = (IVariableDeclaration) declDefs[0];
@@ -64,11 +64,11 @@ public class VariableDeclaration_Test extends Parser_Test {
 	public void testCStyle() {
 		String s = " int x[3];";
 		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
-		IDElement[] declDefs = unit.getDeclarationDefinitions();
+		IElement[] declDefs = unit.getDeclarationDefinitions();
 		assertEquals(1, declDefs.length);
 		
 		IVariableDeclaration var = (IVariableDeclaration) declDefs[0];
-		assertEquals(IDElement.VARIABLE_DECLARATION, var.getElementType());
+		assertEquals(IElement.VARIABLE_DECLARATION, var.getElementType());
 		assertEquals("x", var.getName().toString());
 		assertPosition(var.getName(), 5, 1);
 		assertEquals("int[3]", var.getType().toString());
@@ -78,11 +78,11 @@ public class VariableDeclaration_Test extends Parser_Test {
 	public void testCStyle2() {
 		String s = " int x[3][5];";
 		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
-		IDElement[] declDefs = unit.getDeclarationDefinitions();
+		IElement[] declDefs = unit.getDeclarationDefinitions();
 		assertEquals(1, declDefs.length);
 		
 		IVariableDeclaration var = (IVariableDeclaration) declDefs[0];
-		assertEquals(IDElement.VARIABLE_DECLARATION, var.getElementType());
+		assertEquals(IElement.VARIABLE_DECLARATION, var.getElementType());
 		assertEquals("x", var.getName().toString());
 		assertPosition(var.getName(), 5, 1);
 		assertEquals("int[3][5]", var.getType().toString());
@@ -92,11 +92,11 @@ public class VariableDeclaration_Test extends Parser_Test {
 	public void testCStyle3() {
 		String s = " int (*x[5])[3];";
 		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
-		IDElement[] declDefs = unit.getDeclarationDefinitions();
+		IElement[] declDefs = unit.getDeclarationDefinitions();
 		assertEquals(1, declDefs.length);
 		
 		IVariableDeclaration var = (IVariableDeclaration) declDefs[0];
-		assertEquals(IDElement.VARIABLE_DECLARATION, var.getElementType());
+		assertEquals(IElement.VARIABLE_DECLARATION, var.getElementType());
 		assertEquals("x", var.getName().toString());
 		assertPosition(var.getName(), 7, 1);
 		assertEquals("int[3]*[5]", var.getType().toString());
@@ -106,11 +106,11 @@ public class VariableDeclaration_Test extends Parser_Test {
 	public void testCStyle5() {
 		String s = " int (*x)(char);";
 		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
-		IDElement[] declDefs = unit.getDeclarationDefinitions();
+		IElement[] declDefs = unit.getDeclarationDefinitions();
 		assertEquals(1, declDefs.length);
 		
 		IVariableDeclaration var = (IVariableDeclaration) declDefs[0];
-		assertEquals(IDElement.VARIABLE_DECLARATION, var.getElementType());
+		assertEquals(IElement.VARIABLE_DECLARATION, var.getElementType());
 		assertEquals("x", var.getName().toString());
 		assertPosition(var.getName(), 7, 1);
 		assertEquals(IType.POINTER_TO_FUNCTION_TYPE, var.getType().getElementType());
@@ -124,11 +124,11 @@ public class VariableDeclaration_Test extends Parser_Test {
 	public void testCStyle6() {
 		String s = " int (*[] x)(char);";
 		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
-		IDElement[] declDefs = unit.getDeclarationDefinitions();
+		IElement[] declDefs = unit.getDeclarationDefinitions();
 		assertEquals(1, declDefs.length);
 		
 		IVariableDeclaration var = (IVariableDeclaration) declDefs[0];
-		assertEquals(IDElement.VARIABLE_DECLARATION, var.getElementType());
+		assertEquals(IElement.VARIABLE_DECLARATION, var.getElementType());
 		assertEquals("x", var.getName().toString());
 		assertPosition(var.getName(), 10, 1);
 		assertEquals(IType.DYNAMIC_ARRAY_TYPE, var.getType().getElementType());
@@ -144,11 +144,11 @@ public class VariableDeclaration_Test extends Parser_Test {
 	public void testAuto() {
 		String s = " auto x = 1;";
 		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
-		IDElement[] declDefs = unit.getDeclarationDefinitions();
+		IElement[] declDefs = unit.getDeclarationDefinitions();
 		assertEquals(1, declDefs.length);
 		
 		IVariableDeclaration var = (IVariableDeclaration) declDefs[0];
-		assertEquals(IDElement.VARIABLE_DECLARATION, var.getElementType());
+		assertEquals(IElement.VARIABLE_DECLARATION, var.getElementType());
 		assertNull(var.getType());
 		assertTrue((var.getModifiers() & IModifier.AUTO) != 0);
 	}
@@ -156,11 +156,11 @@ public class VariableDeclaration_Test extends Parser_Test {
 	public void testStatic() {
 		String s = " static x = 1;";
 		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
-		IDElement[] declDefs = unit.getDeclarationDefinitions();
+		IElement[] declDefs = unit.getDeclarationDefinitions();
 		assertEquals(1, declDefs.length);
 		
 		IVariableDeclaration var = (IVariableDeclaration) declDefs[0];
-		assertEquals(IDElement.VARIABLE_DECLARATION, var.getElementType());
+		assertEquals(IElement.VARIABLE_DECLARATION, var.getElementType());
 		assertNull(var.getType());
 		assertTrue((var.getModifiers() & IModifier.STATIC) != 0);
 	}
@@ -168,11 +168,11 @@ public class VariableDeclaration_Test extends Parser_Test {
 	public void testExtern() {
 		String s = " extern x = 1;";
 		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
-		IDElement[] declDefs = unit.getDeclarationDefinitions();
+		IElement[] declDefs = unit.getDeclarationDefinitions();
 		assertEquals(1, declDefs.length);
 		
 		IVariableDeclaration var = (IVariableDeclaration) declDefs[0];
-		assertEquals(IDElement.VARIABLE_DECLARATION, var.getElementType());
+		assertEquals(IElement.VARIABLE_DECLARATION, var.getElementType());
 		assertNull(var.getType());
 		assertTrue((var.getModifiers() & IModifier.EXTERN) != 0);
 	}
@@ -192,11 +192,11 @@ public class VariableDeclaration_Test extends Parser_Test {
 		for(Object[] modifier : modifiers) {
 			String s = " static " + modifier[0] + " x = 1;";
 			ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
-			IDElement[] declDefs = unit.getDeclarationDefinitions();
+			IElement[] declDefs = unit.getDeclarationDefinitions();
 			assertEquals(1, declDefs.length);
 			
 			IVariableDeclaration var = (IVariableDeclaration) declDefs[0];
-			assertEquals(IDElement.VARIABLE_DECLARATION, var.getElementType());
+			assertEquals(IElement.VARIABLE_DECLARATION, var.getElementType());
 			assertNull(var.getType());
 			assertTrue((var.getModifiers() & IModifier.STATIC) != 0);
 			assertTrue((var.getModifiers() & ((Integer) modifier[1])) != 0);
@@ -217,11 +217,11 @@ public class VariableDeclaration_Test extends Parser_Test {
 		for(Object[] modifier : modifiers) {
 			String s = " alias " + modifier[0] + " x = 1;";
 			ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
-			IDElement[] declDefs = unit.getDeclarationDefinitions();
+			IElement[] declDefs = unit.getDeclarationDefinitions();
 			assertEquals(1, declDefs.length);
 			
 			IVariableDeclaration var = (IVariableDeclaration) declDefs[0];
-			assertEquals(IDElement.VARIABLE_DECLARATION, var.getElementType());
+			assertEquals(IElement.VARIABLE_DECLARATION, var.getElementType());
 			assertNull(var.getType());
 			assertTrue((var.getModifiers() & ((Integer) modifier[1])) != 0);
 		}
@@ -230,11 +230,11 @@ public class VariableDeclaration_Test extends Parser_Test {
 	public void testAssociativeArray() {
 		String s = " char x[int] = 1;";
 		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
-		IDElement[] declDefs = unit.getDeclarationDefinitions();
+		IElement[] declDefs = unit.getDeclarationDefinitions();
 		assertEquals(1, declDefs.length);
 		
 		IVariableDeclaration var = (IVariableDeclaration) declDefs[0];
-		assertEquals(IDElement.VARIABLE_DECLARATION, var.getElementType());
+		assertEquals(IElement.VARIABLE_DECLARATION, var.getElementType());
 		
 		IAssociativeArrayType type = (IAssociativeArrayType) var.getType();
 		assertEquals(IArrayType.ASSOCIATIVE_ARRAY_TYPE, type.getElementType());
@@ -245,11 +245,11 @@ public class VariableDeclaration_Test extends Parser_Test {
 	public void testTemplate() {
 		String s = " a.b.Temp!(int) x = 1;";
 		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
-		IDElement[] declDefs = unit.getDeclarationDefinitions();
+		IElement[] declDefs = unit.getDeclarationDefinitions();
 		assertEquals(1, declDefs.length);
 		
 		IVariableDeclaration var = (IVariableDeclaration) declDefs[0];
-		assertEquals(IDElement.VARIABLE_DECLARATION, var.getElementType());
+		assertEquals(IElement.VARIABLE_DECLARATION, var.getElementType());
 		
 		IType type = var.getType();
 		assertEquals(IType.TEMPLATE_INSTANCE_TYPE, type.getElementType());
@@ -257,7 +257,7 @@ public class VariableDeclaration_Test extends Parser_Test {
 		assertEquals("a.b.Temp", ti.getName().toString());
 		assertEquals("Temp", ti.getShortName());
 		
-		IDElement[] args = ti.getTemplateArguments();
+		IElement[] args = ti.getTemplateArguments();
 		assertEquals(1, args.length);
 		assertEquals("int", args[0].toString());
 	}
@@ -265,11 +265,11 @@ public class VariableDeclaration_Test extends Parser_Test {
 	public void testTemplate2() {
 		String s = " Temp!(int) x = 1;";
 		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
-		IDElement[] declDefs = unit.getDeclarationDefinitions();
+		IElement[] declDefs = unit.getDeclarationDefinitions();
 		assertEquals(1, declDefs.length);
 		
 		IVariableDeclaration var = (IVariableDeclaration) declDefs[0];
-		assertEquals(IDElement.VARIABLE_DECLARATION, var.getElementType());
+		assertEquals(IElement.VARIABLE_DECLARATION, var.getElementType());
 		
 		IType type = var.getType();
 		assertEquals(IType.TEMPLATE_INSTANCE_TYPE, type.getElementType());
@@ -277,7 +277,7 @@ public class VariableDeclaration_Test extends Parser_Test {
 		assertEquals("Temp", ti.getName().toString());
 		assertEquals("Temp", ti.getShortName());
 		
-		IDElement[] args = ti.getTemplateArguments();
+		IElement[] args = ti.getTemplateArguments();
 		assertEquals(1, args.length);
 		assertEquals("int", args[0].toString());
 	}
@@ -285,11 +285,11 @@ public class VariableDeclaration_Test extends Parser_Test {
 	public void testTemplate3() {
 		String s = " .Temp!(int) x = 1;";
 		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
-		IDElement[] declDefs = unit.getDeclarationDefinitions();
+		IElement[] declDefs = unit.getDeclarationDefinitions();
 		assertEquals(1, declDefs.length);
 		
 		IVariableDeclaration var = (IVariableDeclaration) declDefs[0];
-		assertEquals(IDElement.VARIABLE_DECLARATION, var.getElementType());
+		assertEquals(IElement.VARIABLE_DECLARATION, var.getElementType());
 		
 		IType type = var.getType();
 		assertEquals(IType.TEMPLATE_INSTANCE_TYPE, type.getElementType());
@@ -297,7 +297,7 @@ public class VariableDeclaration_Test extends Parser_Test {
 		assertEquals(".Temp", ti.getName().toString());
 		assertEquals("Temp", ti.getShortName());
 		
-		IDElement[] args = ti.getTemplateArguments();
+		IElement[] args = ti.getTemplateArguments();
 		assertEquals(1, args.length);
 		assertEquals("int", args[0].toString());
 	}
@@ -305,11 +305,11 @@ public class VariableDeclaration_Test extends Parser_Test {
 	public void testUnicode() {
 		String s = " int épa = 1;";
 		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
-		IDElement[] declDefs = unit.getDeclarationDefinitions();
+		IElement[] declDefs = unit.getDeclarationDefinitions();
 		assertEquals(1, declDefs.length);
 		
 		IVariableDeclaration var = (IVariableDeclaration) declDefs[0];
-		assertEquals(IDElement.VARIABLE_DECLARATION, var.getElementType());
+		assertEquals(IElement.VARIABLE_DECLARATION, var.getElementType());
 		
 		assertPosition(var.getName(), 5, 3);
 		assertEquals("épa", var.getName().toString());

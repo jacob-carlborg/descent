@@ -5,7 +5,7 @@ package descent.core.dom;
  * 
  * @see IImport
  */
-public interface ISelectiveImport extends IDElement {
+public interface ISelectiveImport extends IElement {
 	
 	/**
 	 * Returns the name of this selective import.

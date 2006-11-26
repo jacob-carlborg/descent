@@ -3,7 +3,7 @@ package descent.core.dom;
 /**
  * Represents an entire source file.
  */
-public interface ICompilationUnit extends IDElement {
+public interface ICompilationUnit extends IElement {
 	
 	/**
 	 * Returns the module declaration in this source file, if any,

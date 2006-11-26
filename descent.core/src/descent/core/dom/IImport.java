@@ -12,7 +12,7 @@ package descent.core.dom;
  *               selective import
  * </pre>
  */
-public interface IImport extends IDElement, IModifiersContainer {
+public interface IImport extends IElement, IModifiersContainer {
 	
 	/**
 	 * Returns the qualified name to import.

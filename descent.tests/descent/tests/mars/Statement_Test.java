@@ -6,7 +6,7 @@ import descent.core.dom.IBreakStatement;
 import descent.core.dom.ICompilationUnit;
 import descent.core.dom.IConditionalStatement;
 import descent.core.dom.IContinueStatement;
-import descent.core.dom.IDElement;
+import descent.core.dom.IElement;
 import descent.core.dom.IDebugStatement;
 import descent.core.dom.IDeclarationStatement;
 import descent.core.dom.IDoWhileStatement;
@@ -193,7 +193,7 @@ public class Statement_Test extends Parser_Test {
 		assertEquals(1, unit.getDeclarationDefinitions().length);
 		
 		IStaticAssertDeclaration stm = (IStaticAssertDeclaration) unit.getDeclarationDefinitions()[0];
-		assertEquals(IDElement.STATIC_ASSERT, stm.getElementType());
+		assertEquals(IElement.STATIC_ASSERT, stm.getElementType());
 		assertPosition(stm, 1, 23);
 		
 		assertEquals("1", stm.getExpression().toString());

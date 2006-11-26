@@ -1,7 +1,7 @@
 package descent.tests.mars;
 
 import descent.core.dom.ICompilationUnit;
-import descent.core.dom.IDElement;
+import descent.core.dom.IElement;
 import descent.core.dom.ILinkDeclaration;
 import descent.internal.core.dom.ParserFacade;
 
@@ -21,10 +21,10 @@ public class Link_Test extends Parser_Test {
 		for(Object[] linkX : links) {
 			String s = " extern(" + linkX[0] + ") { }";
 			ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
-			IDElement[] declDefs = unit.getDeclarationDefinitions();
+			IElement[] declDefs = unit.getDeclarationDefinitions();
 			
 			ILinkDeclaration link = (ILinkDeclaration) declDefs[0];
-			assertEquals(IDElement.LINK_DECLARATION, link.getElementType());
+			assertEquals(IElement.LINK_DECLARATION, link.getElementType());
 			assertEquals(linkX[1], link.getLinkage());
 			
 			assertPosition(link, 1, s.length() - 1);
