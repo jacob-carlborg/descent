@@ -1,6 +1,6 @@
 package descent.internal.core.dom;
 
-import descent.core.dom.IDElementVisitor;
+import descent.core.dom.ElementVisitor;
 import descent.core.dom.IType;
 import descent.core.dom.ITypeExpression;
 
@@ -20,7 +20,7 @@ public class TypeExp extends Expression implements ITypeExpression {
 		return TYPE_EXPRESSION;
 	}
 	
-	public void accept(IDElementVisitor visitor) {
+	public void accept0(ElementVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
 			acceptChild(visitor, t);

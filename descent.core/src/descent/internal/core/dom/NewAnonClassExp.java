@@ -3,7 +3,7 @@ package descent.internal.core.dom;
 import java.util.List;
 
 import descent.core.dom.IBaseClass;
-import descent.core.dom.IDElementVisitor;
+import descent.core.dom.ElementVisitor;
 import descent.core.dom.IDeclaration;
 import descent.core.dom.IExpression;
 import descent.core.dom.INewAnonymousClassExpression;
@@ -48,7 +48,7 @@ public class NewAnonClassExp extends Expression implements INewAnonymousClassExp
 		return cd.getDeclarationDefinitions();
 	}
 	
-	public void accept(IDElementVisitor visitor) {
+	public void accept0(ElementVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
 			acceptChildren(visitor, newargs);

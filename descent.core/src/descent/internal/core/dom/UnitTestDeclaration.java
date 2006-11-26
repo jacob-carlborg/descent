@@ -1,6 +1,6 @@
 package descent.internal.core.dom;
 
-import descent.core.dom.IDElementVisitor;
+import descent.core.dom.ElementVisitor;
 import descent.core.dom.IName;
 import descent.core.dom.IStatement;
 import descent.core.dom.IUnitTestDeclaration;
@@ -25,7 +25,7 @@ public class UnitTestDeclaration extends Dsymbol implements IUnitTestDeclaration
 		return UNITTEST_DECLARATION;
 	}
 	
-	public void accept(IDElementVisitor visitor) {
+	public void accept0(ElementVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
 			acceptChild(visitor, fbody);

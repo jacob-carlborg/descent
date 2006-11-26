@@ -2,7 +2,7 @@ package descent.internal.core.dom;
 
 import java.util.List;
 
-import descent.core.dom.IDElementVisitor;
+import descent.core.dom.ElementVisitor;
 import descent.core.dom.IDebugDeclaration;
 import descent.core.dom.IDeclaration;
 import descent.core.dom.IIftypeDeclaration;
@@ -67,26 +67,39 @@ public class ConditionalDeclaration extends Dsymbol implements IVersionDeclarati
 		return aelse.toArray(new IDeclaration[aelse.size()]);
 	}
 	
-	public void accept(IDElementVisitor visitor) {
-		boolean children = visitor.visit(this);
-		if (children) {
-			switch(this.condition.getConditionType()) {
-			case Condition.DEBUG: 
+	public void accept0(ElementVisitor visitor) {
+		boolean children;
+		switch(this.condition.getConditionType()) {
+		case Condition.DEBUG: 
+			children = visitor.visit((IDebugDeclaration) this);
+			if (children) {
 				acceptChild(visitor, ((DebugCondition) condition).id); 
-				break;
-			case Condition.VERSION:
+				acceptChildren(visitor, a);
+				acceptChildren(visitor, aelse);
+			}
+			visitor.endVisit((IDebugDeclaration) this);
+			break;
+		case Condition.VERSION:
+			children = visitor.visit((IVersionDeclaration) this);
+			if (children) {
 				acceptChild(visitor, ((VersionCondition) condition).id); 
-				break;
-			case Condition.IFTYPE:
+				acceptChildren(visitor, a);
+				acceptChildren(visitor, aelse);
+			}
+			visitor.endVisit((IVersionDeclaration) this);
+			break;
+		case Condition.IFTYPE:
+			children = visitor.visit((IIftypeDeclaration) this);
+			if (children) {
 				acceptChild(visitor, ((IftypeCondition) condition).ident);
 				acceptChild(visitor, ((IftypeCondition) condition).targ);
-				acceptChild(visitor, ((IftypeCondition) condition).tspec);
-				break;
+				acceptChild(visitor, ((IftypeCondition) condition).tspec); 
+				acceptChildren(visitor, a);
+				acceptChildren(visitor, aelse);
 			}
-			acceptChildren(visitor, a);
-			acceptChildren(visitor, aelse);
+			visitor.endVisit((IIftypeDeclaration) this);
+			break;
 		}
-		visitor.endVisit(this);
 	}
 
 }

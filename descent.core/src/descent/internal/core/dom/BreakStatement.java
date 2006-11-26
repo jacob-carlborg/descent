@@ -1,7 +1,7 @@
 package descent.internal.core.dom;
 
 import descent.core.dom.IBreakStatement;
-import descent.core.dom.IDElementVisitor;
+import descent.core.dom.ElementVisitor;
 import descent.core.dom.IName;
 
 public class BreakStatement extends Statement implements IBreakStatement {
@@ -20,7 +20,7 @@ public class BreakStatement extends Statement implements IBreakStatement {
 		return BREAK_STATEMENT;
 	}
 	
-	public void accept(IDElementVisitor visitor) {
+	public void accept0(ElementVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
 			acceptChild(visitor, id);

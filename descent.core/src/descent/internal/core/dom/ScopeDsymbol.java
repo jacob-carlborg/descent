@@ -2,7 +2,7 @@ package descent.internal.core.dom;
 
 import java.util.List;
 
-import descent.core.dom.IDElementVisitor;
+import descent.core.dom.ElementVisitor;
 
 
 public class ScopeDsymbol extends Dsymbol {
@@ -10,7 +10,7 @@ public class ScopeDsymbol extends Dsymbol {
 	public DsymbolTable symtab;
 	List members;		// all Dsymbol's in this scope
 
-	public void accept(IDElementVisitor visitor) {
+	public void accept0(ElementVisitor visitor) {
 	}
 
 	public int getElementType() {

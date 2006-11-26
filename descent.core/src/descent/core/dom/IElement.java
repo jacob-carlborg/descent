@@ -165,7 +165,7 @@ public interface IElement {
 	 * Constant representing a catch clause.
 	 * A D element with this type can be safely cast to <code>ICatch</code>. 
 	 */
-	int CATCH = 33;
+	int CATCH_CLAUSE = 33;
 	
 	/**
 	 * Constant representing a static assert.
@@ -174,33 +174,38 @@ public interface IElement {
 	int STATIC_ASSERT = 33;
 	
 	/**
-	 * Constant representing a strong type.
-	 * A D element with this type can be safely cast to <code>IStrongType</code>. 
+	 * Constant representing a type specialization.
+	 * A D element with this type can be safely cast to <code>ITypeSpecialization</code>. 
 	 */
-	int STRONG_TYPE = 34;
+	int TYPE_SPECIALIZATION = 34;
 	
 	/**
 	 * Constant representing a this expression.
+	 * A D element with this type can be safely cast to <code>IThisExpression</code>.
 	 */
 	int THIS_EXPRESSION = 35;
 	
 	/**
 	 * Constant representing a super expression.
+	 * A D element with this type can be safely cast to <code>ISuperExpression</code>.
 	 */
 	int SUPER_EXPRESSION = 36;
 	
 	/**
 	 * Constant representing a null expression.
+	 * A D element with this type can be safely cast to <code>INullExpression</code>.
 	 */
 	int NULL_EXPRESSION = 37;
 	
 	/**
 	 * Constant representing a true expression.
+	 * A D element with this type can be safely cast to <code>ITrueExpression</code>.
 	 */
 	int TRUE_EXPRESSION = 38;
 	
 	/**
 	 * Constant representing a false expression.
+	 * A D element with this type can be safely cast to <code>IFalseExpression</code>.
 	 */
 	int FALSE_EXPRESSION = 39;
 	
@@ -218,7 +223,7 @@ public interface IElement {
 	
 	/**
 	 * Constant representing a real expression.
-	 * TODO: An expression with this type can be safely cast to <code>IStringExpression</code>. 
+	 * An expression with this type can be safely cast to <code>IRealExpression</code>. 
 	 */
 	int REAL_EXPRESSION = 42;
 	
@@ -247,8 +252,8 @@ public interface IElement {
 	int CONDITION_EXPRESSION = 46;
 	
 	/**
-	 * Constant representing an identifier expression. <code>toString()</code>
-	 * returns the string of the identifier.
+	 * Constant representing an identifier expression.
+	 * An expression with this type can be safely cast to <code>IIdentifierExpression</code>.
 	 */
 	int IDENTIFIER_EXPRESSION = 47;
 	
@@ -307,7 +312,8 @@ public interface IElement {
 	int SLICE_EXPRESSION = 56;
 	
 	/**
-	 * Constant representing a dollar expression. 
+	 * Constant representing a dollar expression.
+	 * An expression with this type can be safely cast to <code>IDollaryExpression</code>.
 	 */
 	int DOLAR_EXPRESSION = 57;
 	
@@ -339,7 +345,7 @@ public interface IElement {
 	 * Constant representing an is expression.
 	 * An expression with this type can be safely cast to <code>IIsExpression</code>. 
 	 */
-	int IFTYPE_EXPRESSION = 62;
+	int IS_EXPRESSION = 62;
 	
 	/**
 	 * Constant representing a new anonymous class expression.
@@ -499,7 +505,7 @@ public interface IElement {
 	
 	/**
 	 * Constant representing a scope statement.
-	 * A D element with this type can be safely cast to <code>IScopeStatement</code>. 
+	 * A D element with this type can be safely cast to <code>IOnScopeStatement</code>. 
 	 */
 	int ON_SCOPE_STATEMENT = 89;
 	
@@ -510,7 +516,8 @@ public interface IElement {
 	int GOTO_STATEMENT = 90;
 	
 	/**
-	 * Constant representing a goto default statement. 
+	 * Constant representing a goto default statement.
+	 * A D element with this type can be safely cast to <code>IGotoDefaultStatement</code>.
 	 */
 	int GOTO_DEFAULT_STATEMENT = 91;
 	
@@ -588,7 +595,7 @@ public interface IElement {
 	
 	/**
 	 * Constant representing a dynamic array.
-	 * A D element with this type can be safely cast to <code>IArrayType</code>.
+	 * A D element with this type can be safely cast to <code>IDynamicArrayType</code>.
 	 */
 	int DYNAMIC_ARRAY_TYPE = 107;
 	
@@ -612,6 +619,7 @@ public interface IElement {
 	
 	/**
 	 * Constant representing a void intializer.
+	 * A D element with this type can be safely cast to <code>IVoidInitializer</code>.
 	 */
 	int VOID_INITIALIZER = 111;
 	
@@ -629,43 +637,43 @@ public interface IElement {
 	
 	/**
 	 * Constant representing a debug declaration.
-	 * A conditional declaration with this type can be safely cast to <code>IDebugDeclaration</code>. 
+	 * A D element with this type can be safely cast to <code>IDebugDeclaration</code>. 
 	 */
 	int DEBUG_DECLARATION = 114;
 	
 	/**
 	 * Constant representing a version declaration.
-	 * A conditional declaration with this type can be safely cast to <code>IVersionDeclaration</code>. 
+	 * A D element with this type can be safely cast to <code>IVersionDeclaration</code>. 
 	 */
 	int VERSION_DECLARATION = 115;
 	
 	/**
 	 * Constant representing a static if declaration.
-	 * A conditional declaration with this type can be safely cast to <code>IStaticIfDeclaration</code>. 
+	 * A D element with this type can be safely cast to <code>IStaticIfDeclaration</code>. 
 	 */
 	int STATIC_IF_DECLARATION = 116;
 	
 	/**
 	 * Constant representing the deprecated iftype declaration.
-	 * A conditional declaration with this type can be safely cast to <code>IIftypeDeclaration</code>. 
+	 * A D element with this type can be safely cast to <code>IIftypeDeclaration</code>. 
 	 */
 	int IFTYPE_DECLARATION = 117;
 	
 	/**
 	 * Constant representing a debug statement.
-	 * A conditional statement with this type can be safely cast to <code>IDebugStatement</code>. 
+	 * A D element with this type can be safely cast to <code>IDebugStatement</code>. 
 	 */
 	int DEBUG_STATEMENT = 118;
 	
 	/**
 	 * Constant representing a version statement.
-	 * A conditional statement with tis type can be safely cast to <code>IVersionStatement</code>. 
+	 * A D element with tis type can be safely cast to <code>IVersionStatement</code>. 
 	 */
 	int VERSION_STATEMENT = 119;
 	
 	/**
 	 * Constant representing a static if statement.
-	 * A conditional statement with this type can be safely cast to <code>IStaticIfStatement</code>. 
+	 * A D element with this type can be safely cast to <code>IStaticIfStatement</code>. 
 	 */
 	int STATIC_IF_STATEMENT = 120;
 	
@@ -690,6 +698,6 @@ public interface IElement {
 	 * Accepts a visitor down the element hierarchy.
 	 * @param visitor a visitor
 	 */
-	void accept(IDElementVisitor visitor);
+	void accept(ElementVisitor visitor);
 
 }

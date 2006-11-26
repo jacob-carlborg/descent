@@ -1,5 +1,6 @@
 package descent.internal.core.dom;
 
+import descent.core.dom.ElementVisitor;
 import descent.core.dom.IStringExpression;
 
 public class StringExp extends Expression implements IStringExpression {
@@ -22,6 +23,12 @@ public class StringExp extends Expression implements IStringExpression {
 	
 	public int getElementType() {
 		return STRING_EXPRESSION;
+	}
+	
+	@Override
+	public void accept0(ElementVisitor visitor) {
+		visitor.visit(this);
+		visitor.endVisit(this);
 	}
 
 }

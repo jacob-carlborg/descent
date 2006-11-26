@@ -3,7 +3,7 @@ package descent.internal.core.dom;
 import java.util.List;
 
 import descent.core.dom.ICompoundStatement;
-import descent.core.dom.IDElementVisitor;
+import descent.core.dom.ElementVisitor;
 import descent.core.dom.IStatement;
 
 public class CompoundStatement extends Statement implements ICompoundStatement {
@@ -23,7 +23,7 @@ public class CompoundStatement extends Statement implements ICompoundStatement {
 		return COMPOUND_STATEMENT;
 	}
 	
-	public void accept(IDElementVisitor visitor) {
+	public void accept0(ElementVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
 			acceptChildren(visitor, as);

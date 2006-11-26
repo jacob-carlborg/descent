@@ -1,7 +1,7 @@
 package descent.internal.core.dom;
 
 import descent.core.dom.ICastExpression;
-import descent.core.dom.IDElementVisitor;
+import descent.core.dom.ElementVisitor;
 import descent.core.dom.IExpression;
 import descent.core.dom.IType;
 
@@ -27,7 +27,7 @@ public class CastExp extends Expression implements ICastExpression {
 		return CAST_EXPRESSION;
 	}
 	
-	public void accept(IDElementVisitor visitor) {
+	public void accept0(ElementVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
 			acceptChild(visitor, t);

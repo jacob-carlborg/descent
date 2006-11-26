@@ -3,7 +3,7 @@ package descent.internal.core.dom;
 import java.util.ArrayList;
 import java.util.List;
 
-import descent.core.dom.IDElementVisitor;
+import descent.core.dom.ElementVisitor;
 import descent.core.dom.IExpression;
 import descent.core.dom.IStaticArrayType;
 
@@ -37,7 +37,7 @@ public class TypeSArray extends TypeArray implements IStaticArrayType {
 	}
 	
 	@Override
-	public void accept(IDElementVisitor visitor) {
+	public void accept0(ElementVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
 			acceptChild(visitor, dim);

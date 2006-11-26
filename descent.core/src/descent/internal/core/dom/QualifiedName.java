@@ -2,7 +2,7 @@ package descent.internal.core.dom;
 
 import java.util.List;
 
-import descent.core.dom.IDElementVisitor;
+import descent.core.dom.ElementVisitor;
 import descent.core.dom.IQualifiedName;
 
 public class QualifiedName extends AbstractElement implements IQualifiedName  {
@@ -65,7 +65,7 @@ public class QualifiedName extends AbstractElement implements IQualifiedName  {
 		return QUALIFIED_NAME;
 	}
 
-	public void accept(IDElementVisitor visitor) {
+	public void accept0(ElementVisitor visitor) {
 		visitor.visit(this);
 		visitor.endVisit(this);
 	}

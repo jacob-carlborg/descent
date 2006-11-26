@@ -1,6 +1,7 @@
 package descent.internal.core.dom;
 
-import descent.core.dom.IDElementVisitor;
+import descent.core.dom.ElementVisitor;
+import descent.core.dom.IBinaryExpression;
 import descent.core.dom.IExpression;
 import descent.core.dom.IUnaryExpression;
 
@@ -34,15 +35,21 @@ public class AddAssignExp extends BinaryExpression implements IUnaryExpression {
 	}
 	
 	@Override
-	public void accept(IDElementVisitor visitor) {
-		boolean children = visitor.visit(this);
-		if (children) {
-			acceptChild(visitor, e1);
-			if (!isUnary) {
+	public void accept0(ElementVisitor visitor) {
+		if (isUnary) {
+			boolean children = visitor.visit((IUnaryExpression) this);
+			if (children) {
+				acceptChild(visitor, e1);
+			}
+			visitor.endVisit((IUnaryExpression) this);
+		} else {
+			boolean children = visitor.visit((IBinaryExpression) this);
+			if (children) {
+				acceptChild(visitor, e1);
 				acceptChild(visitor, e2);
 			}
+			visitor.endVisit((IBinaryExpression) this);
 		}
-		visitor.endVisit(this);
 	}
 
 }

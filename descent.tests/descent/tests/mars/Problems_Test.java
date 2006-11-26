@@ -58,7 +58,7 @@ public class Problems_Test extends TestCase {
 	}
 
 	public void test_INVALID_UTF_8_SEQUENCE_4() {
-		IProblem[] p = getProblems("/*€*/", 1);
+		IProblem[] p = getProblems("/*€*/ int a = 2;", 1);
 
 		assertEquals(IProblem.INVALID_UTF_8_SEQUENCE, p[0].getId());
 		assertEquals(IProblem.SEVERITY_ERROR, p[0].getSeverity());

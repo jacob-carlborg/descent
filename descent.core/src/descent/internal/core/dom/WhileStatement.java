@@ -1,6 +1,6 @@
 package descent.internal.core.dom;
 
-import descent.core.dom.IDElementVisitor;
+import descent.core.dom.ElementVisitor;
 import descent.core.dom.IExpression;
 import descent.core.dom.IStatement;
 import descent.core.dom.IWhileStatement;
@@ -27,7 +27,7 @@ public class WhileStatement extends Statement implements IWhileStatement {
 		return WHILE_STATEMENT;
 	}
 	
-	public void accept(IDElementVisitor visitor) {
+	public void accept0(ElementVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
 			acceptChild(visitor, expr);

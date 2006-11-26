@@ -1,9 +1,8 @@
 package descent.core.dom;
 
 /**
- * A scope statement.
- * 
- * TODO: what is this?
+ * A scope statement is a statement that introduces
+ * a new scope.
  */
 public interface IScopeStatement extends IStatement {
 	

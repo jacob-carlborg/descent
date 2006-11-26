@@ -127,7 +127,7 @@ public class Statement_Test extends Parser_Test {
 		assertEquals("somex", stm.getReturnValue().toString());
 		assertPosition(stm.getReturnValue(), 8, 5);
 		
-		assertVisitor(stm, 2);
+		assertVisitor(stm, 3);
 	}
 	
 	public void testWhile() {
@@ -261,7 +261,7 @@ public class Statement_Test extends Parser_Test {
 		assertEquals("c", args[2].getName().toString());
 		assertPosition(args[2].getName(), 21, 1);
 		
-		assertVisitor(stm, 9);
+		assertVisitor(stm, 10);
 	}
 	
 	public void testForeachReverse() {

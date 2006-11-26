@@ -23,7 +23,7 @@
             location="TOP_RIGHT"
             state="true">
          <enablement>
-            <objectClass name="descent.core.dom.IDElement"/>
+            <objectClass name="descent.core.dom.IElement"/>
          </enablement>
       </decorator>
    </extension>

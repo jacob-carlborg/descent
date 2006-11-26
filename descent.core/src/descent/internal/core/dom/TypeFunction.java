@@ -2,6 +2,7 @@ package descent.internal.core.dom;
 
 import java.util.List;
 
+import descent.core.dom.ElementVisitor;
 import descent.core.dom.IArgument;
 import descent.core.dom.IType;
 
@@ -25,6 +26,12 @@ public class TypeFunction extends Type {
 	public int getElementType() {
 		// TODO
 		return 0;
+	}
+	
+	@Override
+	void accept0(ElementVisitor visitor) {
+		// TODO Auto-generated method stub
+		
 	}
 	
 	public IArgument[] getArguments() {

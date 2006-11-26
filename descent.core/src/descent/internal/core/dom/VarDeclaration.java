@@ -1,6 +1,6 @@
 package descent.internal.core.dom;
 
-import descent.core.dom.IDElementVisitor;
+import descent.core.dom.ElementVisitor;
 import descent.core.dom.IInitializer;
 import descent.core.dom.IName;
 import descent.core.dom.IType;
@@ -33,7 +33,7 @@ public class VarDeclaration extends Declaration implements IVariableDeclaration 
 		return init;
 	}
 	
-	public void accept(IDElementVisitor visitor) {
+	public void accept0(ElementVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
 			acceptChild(visitor, type);

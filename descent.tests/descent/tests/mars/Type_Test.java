@@ -4,8 +4,9 @@ import descent.core.dom.IArrayType;
 import descent.core.dom.IAssociativeArrayType;
 import descent.core.dom.IBasicType;
 import descent.core.dom.ICompilationUnit;
-import descent.core.dom.IElement;
 import descent.core.dom.IDelegateType;
+import descent.core.dom.IDynamicArrayType;
+import descent.core.dom.IElement;
 import descent.core.dom.IIdentifierType;
 import descent.core.dom.IPointerType;
 import descent.core.dom.IStaticArrayType;
@@ -62,7 +63,7 @@ public class Type_Test extends Parser_Test {
 	}
 	
 	public void testDynamicArrayType() {
-		IArrayType type = (IArrayType) getType("int []");
+		IDynamicArrayType type = (IDynamicArrayType) getType("int []");
 		assertEquals(IArrayType.DYNAMIC_ARRAY_TYPE, type.getElementType());
 		assertEquals("int[]", type.toString());
 		assertPosition(type, 1, 6);

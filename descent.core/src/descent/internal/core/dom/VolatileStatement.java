@@ -1,6 +1,6 @@
 package descent.internal.core.dom;
 
-import descent.core.dom.IDElementVisitor;
+import descent.core.dom.ElementVisitor;
 import descent.core.dom.IStatement;
 import descent.core.dom.IVolatileStatement;
 
@@ -20,7 +20,7 @@ public class VolatileStatement extends Statement implements IVolatileStatement {
 		return VOLATILE_STATEMENT;
 	}
 	
-	public void accept(IDElementVisitor visitor) {
+	public void accept0(ElementVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
 			acceptChild(visitor, s);

@@ -1,7 +1,7 @@
 package descent.internal.core.dom;
 
 import descent.core.dom.IContinueStatement;
-import descent.core.dom.IDElementVisitor;
+import descent.core.dom.ElementVisitor;
 import descent.core.dom.IName;
 
 public class ContinueStatement extends Statement implements IContinueStatement {
@@ -20,7 +20,7 @@ public class ContinueStatement extends Statement implements IContinueStatement {
 		return CONTINUE_STATEMENT;
 	}
 	
-	public void accept(IDElementVisitor visitor) {
+	public void accept0(ElementVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
 			acceptChild(visitor, id);

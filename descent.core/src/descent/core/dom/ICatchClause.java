@@ -7,7 +7,7 @@ package descent.core.dom;
  * catch([type name]) { (handler) }
  * </pre>
  */
-public interface ICatch extends IElement {
+public interface ICatchClause extends IElement {
 	
 	/**
 	 * Returns the type to catch. May be <code>null</code>.

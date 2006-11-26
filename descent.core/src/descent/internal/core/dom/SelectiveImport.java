@@ -1,6 +1,6 @@
 package descent.internal.core.dom;
 
-import descent.core.dom.IDElementVisitor;
+import descent.core.dom.ElementVisitor;
 import descent.core.dom.IName;
 import descent.core.dom.ISelectiveImport;
 
@@ -26,7 +26,7 @@ public class SelectiveImport extends AbstractElement implements ISelectiveImport
 		return SELECTIVE_IMPORT;
 	}
 	
-	public void accept(IDElementVisitor visitor) {
+	public void accept0(ElementVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
 			acceptChild(visitor, name);

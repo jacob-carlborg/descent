@@ -1,7 +1,7 @@
 package descent.internal.core.dom;
 
 import descent.core.dom.IArgument;
-import descent.core.dom.IDElementVisitor;
+import descent.core.dom.ElementVisitor;
 import descent.core.dom.IFunctionExpression;
 import descent.core.dom.IName;
 import descent.core.dom.IStatement;
@@ -42,7 +42,7 @@ public class FuncExp extends Expression implements IFunctionExpression {
 		return fd.isVariadic();
 	}
 	
-	public void accept(IDElementVisitor visitor) {
+	public void accept0(ElementVisitor visitor) {
 		fd.accept(visitor);
 	}
 

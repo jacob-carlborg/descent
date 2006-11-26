@@ -1,7 +1,7 @@
 package descent.internal.core.dom;
 
 import descent.core.dom.IElement;
-import descent.core.dom.IDElementVisitor;
+import descent.core.dom.ElementVisitor;
 import descent.core.dom.IIdentifierType;
 import descent.core.dom.IQualifiedName;
 import descent.core.dom.ITemplateInstanceType;
@@ -68,14 +68,20 @@ public class TypeIdentifier extends TypeQualified implements IIdentifierType, IT
 	}
 	
 	@Override
-	public void accept(IDElementVisitor visitor) {
-		boolean children = visitor.visit(this);
-		if (children) {
-			if (isTemplate()) {
+	public void accept0(ElementVisitor visitor) {
+		switch(getElementType()) {
+		case IDENTIFIER_TYPE:
+			visitor.visit((IIdentifierType) this);
+			visitor.endVisit((IIdentifierType) this);
+			break;
+		case TEMPLATE_INSTANCE_TYPE:
+			boolean children = visitor.visit((ITemplateInstanceType) this);
+			if (children) {
 				acceptChildren(visitor, getTemplateArguments());
 			}
+			visitor.endVisit((ITemplateInstanceType) this);
+			break;
 		}
-		visitor.endVisit(this);
 	}
 	
 	@Override

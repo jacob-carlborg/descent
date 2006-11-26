@@ -2,18 +2,17 @@ package descent.internal.core.dom;
 
 import java.util.List;
 
-import descent.core.dom.IDElementVisitor;
+import descent.core.dom.ElementVisitor;
 import descent.core.dom.IModuleDeclaration;
 import descent.core.dom.IQualifiedName;
 
-public class ModuleDeclaration extends AbstractElement implements IModuleDeclaration {
+public class ModuleDeclaration extends Declaration implements IModuleDeclaration {
 	
-	public Identifier id;
 	public List<Identifier> packages;
 	public QualifiedName qName;
 
 	public ModuleDeclaration(List<Identifier> packages, Identifier id) {
-		this.id = id;
+		super(id);
 		this.packages = packages;
 		this.qName = new QualifiedName(packages, id);
 	}
@@ -26,7 +25,7 @@ public class ModuleDeclaration extends AbstractElement implements IModuleDeclara
 		return MODULE_DECLARATION;
 	}
 	
-	public void accept(IDElementVisitor visitor) {
+	public void accept0(ElementVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
 			acceptChild(visitor, qName);

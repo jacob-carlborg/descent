@@ -1,7 +1,7 @@
 package descent.internal.core.dom;
 
 import descent.core.dom.IBinaryExpression;
-import descent.core.dom.IDElementVisitor;
+import descent.core.dom.ElementVisitor;
 import descent.core.dom.IExpression;
 
 public abstract class BinaryExpression extends Expression implements IBinaryExpression {
@@ -29,7 +29,7 @@ public abstract class BinaryExpression extends Expression implements IBinaryExpr
 		return e2;
 	}
 	
-	public void accept(IDElementVisitor visitor) {
+	public void accept0(ElementVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
 			acceptChild(visitor, e1);

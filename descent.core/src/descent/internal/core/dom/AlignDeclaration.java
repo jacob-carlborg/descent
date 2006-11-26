@@ -3,7 +3,7 @@ package descent.internal.core.dom;
 import java.util.List;
 
 import descent.core.dom.IAlignDeclaration;
-import descent.core.dom.IDElementVisitor;
+import descent.core.dom.ElementVisitor;
 import descent.core.dom.IDeclaration;
 
 public class AlignDeclaration extends Dsymbol implements IAlignDeclaration {
@@ -31,7 +31,7 @@ public class AlignDeclaration extends Dsymbol implements IAlignDeclaration {
 		return ALIGN_DECLARATION;
 	}
 	
-	public void accept(IDElementVisitor visitor) {
+	public void accept0(ElementVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
 			acceptChildren(visitor, declDefs);

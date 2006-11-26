@@ -3,7 +3,7 @@ package descent.internal.core.dom;
 import java.util.List;
 
 import descent.core.dom.IArgument;
-import descent.core.dom.IDElementVisitor;
+import descent.core.dom.ElementVisitor;
 import descent.core.dom.IExpression;
 import descent.core.dom.IForeachStatement;
 import descent.core.dom.IStatement;
@@ -42,7 +42,7 @@ public class ForeachStatement extends Statement implements IForeachStatement {
 		return FOREACH_STATEMENT;
 	}
 	
-	public void accept(IDElementVisitor visitor) {
+	public void accept0(ElementVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
 			acceptChildren(visitor, arguments);

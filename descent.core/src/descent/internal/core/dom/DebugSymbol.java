@@ -1,7 +1,7 @@
 package descent.internal.core.dom;
 
 import descent.core.dom.IConditionAssignment;
-import descent.core.dom.IDElementVisitor;
+import descent.core.dom.ElementVisitor;
 import descent.core.dom.IName;
 
 public class DebugSymbol extends Dsymbol implements IConditionAssignment {
@@ -24,7 +24,7 @@ public class DebugSymbol extends Dsymbol implements IConditionAssignment {
 		return CONDITION_DEBUG;
 	}
 	
-	public void accept(IDElementVisitor visitor) {
+	public void accept0(ElementVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
 			acceptChild(visitor, ident);

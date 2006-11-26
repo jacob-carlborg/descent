@@ -1,7 +1,7 @@
 package descent.internal.core.dom;
 
 import descent.core.dom.IDotIdentifierExpression;
-import descent.core.dom.IDElementVisitor;
+import descent.core.dom.ElementVisitor;
 import descent.core.dom.IExpression;
 import descent.core.dom.IName;
 
@@ -32,7 +32,7 @@ public class DotIdExp extends Expression implements IDotIdentifierExpression {
 		return DOT_IDENTIFIER_EXPRESSION;
 	}
 	
-	public void accept(IDElementVisitor visitor) {
+	public void accept0(ElementVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
 			acceptChild(visitor, e);

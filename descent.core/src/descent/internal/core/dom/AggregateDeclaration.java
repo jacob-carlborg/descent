@@ -2,9 +2,9 @@ package descent.internal.core.dom;
 
 import java.util.List;
 
+import descent.core.dom.ElementVisitor;
 import descent.core.dom.IAggregateDeclaration;
 import descent.core.dom.IBaseClass;
-import descent.core.dom.IDElementVisitor;
 import descent.core.dom.IDeclaration;
 import descent.core.dom.IName;
 import descent.core.dom.ITemplateParameter;
@@ -53,7 +53,7 @@ public abstract class AggregateDeclaration extends ScopeDsymbol implements IAggr
 	}
 	
 	@SuppressWarnings("unchecked")
-	public void accept(IDElementVisitor visitor) {
+	public void accept0(ElementVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
 			acceptChild(visitor, ident);

@@ -27,7 +27,7 @@ public interface ITryStatement extends IStatement {
 	/**
 	 * Returns the catches of the try statement.
 	 */
-	ICatch[] getCatches();
+	ICatchClause[] getCatches();
 	
 	/**
 	 * Returns the finally statement, if any, or null.

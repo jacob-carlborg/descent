@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import descent.core.dom.IArrayInitializer;
-import descent.core.dom.IDElementVisitor;
+import descent.core.dom.ElementVisitor;
 import descent.core.dom.IExpression;
 import descent.core.dom.IInitializer;
 
@@ -35,7 +35,7 @@ public class ArrayInitializer extends Initializer implements IArrayInitializer {
 		return ARRAY_INITIALIZER;
 	}
 	
-	public void accept(IDElementVisitor visitor) {
+	public void accept0(ElementVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) { 
 			acceptChildren(visitor, exps);

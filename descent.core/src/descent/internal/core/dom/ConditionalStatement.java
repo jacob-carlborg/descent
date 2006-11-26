@@ -1,7 +1,7 @@
 package descent.internal.core.dom;
 
 import descent.core.dom.IDebugStatement;
-import descent.core.dom.IDElementVisitor;
+import descent.core.dom.ElementVisitor;
 import descent.core.dom.IExpression;
 import descent.core.dom.IName;
 import descent.core.dom.IStatement;
@@ -49,24 +49,40 @@ public class ConditionalStatement extends Statement implements IStaticIfStatemen
 		return ((VersionCondition) condition).id;
 	}
 	
-	public void accept(IDElementVisitor visitor) {
-		boolean children = visitor.visit(this);
-		if (children) {
-			switch(this.condition.getConditionType()) {
-			case Condition.DEBUG: 
+	@Override
+	public void accept0(ElementVisitor visitor) {
+		boolean children;
+		switch(this.condition.getConditionType()) {
+		case Condition.DEBUG: 
+			children = visitor.visit((IDebugStatement) this);
+			if (children) {
 				acceptChild(visitor, ((DebugCondition) condition).id); 
-				break;
-			case Condition.VERSION:
-				acceptChild(visitor, ((VersionCondition) condition).id); 
-				break;
-			case Condition.STATIC_IF:
-				acceptChild(visitor, ((StaticIfCondition) condition).exp); 
-				break;
+				acceptChild(visitor, ifbody);
+				acceptChild(visitor, elsebody);
 			}
-			acceptChild(visitor, ifbody);
-			acceptChild(visitor, elsebody);
+			visitor.endVisit((IDebugStatement) this);
+			break;
+		case Condition.VERSION:
+			children = visitor.visit((IVersionStatement) this);
+			if (children) {
+				acceptChild(visitor, ((VersionCondition) condition).id);
+				acceptChild(visitor, ifbody);
+				acceptChild(visitor, elsebody);
+			}
+			visitor.endVisit((IVersionStatement) this);
+			break;
+		case Condition.STATIC_IF:
+			children = visitor.visit((IStaticIfStatement) this);
+			if (children) {
+				acceptChild(visitor, ((StaticIfCondition) condition).exp);
+				acceptChild(visitor, ifbody);
+				acceptChild(visitor, elsebody);
+			}
+			visitor.endVisit((IStaticIfStatement) this);
+			break;
 		}
-		visitor.endVisit(this);
+		
+		
 	}
 	
 

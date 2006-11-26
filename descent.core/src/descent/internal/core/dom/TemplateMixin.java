@@ -3,7 +3,7 @@ package descent.internal.core.dom;
 import java.util.List;
 
 import descent.core.dom.IElement;
-import descent.core.dom.IDElementVisitor;
+import descent.core.dom.ElementVisitor;
 import descent.core.dom.IMixinDeclaration;
 import descent.core.dom.IName;
 import descent.core.dom.IQualifiedName;
@@ -45,7 +45,7 @@ public class TemplateMixin extends Dsymbol implements IMixinDeclaration {
 		return tiargs;
 	}
 	
-	public void accept(IDElementVisitor visitor) {
+	public void accept0(ElementVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
 			acceptChild(visitor, tqual);

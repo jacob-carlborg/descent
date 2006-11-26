@@ -1,6 +1,9 @@
 package descent.internal.core.dom;
 
-public class NullExp extends Expression {
+import descent.core.dom.ElementVisitor;
+import descent.core.dom.INullExpression;
+
+public class NullExp extends Expression implements INullExpression {
 
 	public NullExp(Loc loc) {
 		// TODO Auto-generated constructor stub
@@ -8,6 +11,12 @@ public class NullExp extends Expression {
 	
 	public int getElementType() {
 		return NULL_EXPRESSION;
+	}
+	
+	@Override
+	public void accept0(ElementVisitor visitor) {
+		visitor.visit(this);
+		visitor.endVisit(this);
 	}
 	
 	@Override

@@ -7,12 +7,12 @@ import descent.core.dom.IAggregateDeclaration;
 import descent.core.dom.IAliasDeclaration;
 import descent.core.dom.IAliasTemplateParameter;
 import descent.core.dom.IArgument;
-import descent.core.dom.IArrayType;
 import descent.core.dom.IAssociativeArrayType;
 import descent.core.dom.IConditionAssignment;
-import descent.core.dom.IElement;
 import descent.core.dom.IDebugDeclaration;
 import descent.core.dom.IDelegateType;
+import descent.core.dom.IDynamicArrayType;
+import descent.core.dom.IElement;
 import descent.core.dom.IEnumDeclaration;
 import descent.core.dom.IEnumMember;
 import descent.core.dom.IFunctionDeclaration;
@@ -490,7 +490,7 @@ public class DOutlineLabelProvider extends LabelProvider {
 			s.append('*');
 			break;
 		case IType.DYNAMIC_ARRAY_TYPE: {
-			IArrayType array = (IArrayType) type;
+			IDynamicArrayType array = (IDynamicArrayType) type;
 			appendType(s, array.getInnerType());
 			s.append("[]");
 			break;

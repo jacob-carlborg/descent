@@ -20,7 +20,7 @@ public class ParserFacade implements IParser {
 		parser.mod.length = source.length();
 		
 		if (parser.mod.md != null) {
-			parser.mod.ident = parser.mod.md.id;
+			parser.mod.ident = parser.mod.md.ident;
 		}
 		
 		//parser.mod.semantic(null, parser);

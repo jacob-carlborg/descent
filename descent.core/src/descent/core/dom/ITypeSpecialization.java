@@ -1,9 +1,9 @@
 package descent.core.dom;
 
 /**
- * A strong type of the language.
+ * A type specialization of an is statement.
  */
-public interface IStrongType extends IElement {
+public interface ITypeSpecialization extends IElement {
 	
 	int TYPEDEF = 1;
 	int STRUCT = 2;
@@ -19,6 +19,6 @@ public interface IStrongType extends IElement {
 	/**
 	 * Returns one of the constants defined in this interface.
 	 */
-	int getStrongTypeType();
+	int getKeyword();
 
 }

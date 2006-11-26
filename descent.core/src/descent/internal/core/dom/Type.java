@@ -1,6 +1,5 @@
 package descent.internal.core.dom;
 
-import descent.core.dom.IDElementVisitor;
 import descent.core.dom.IType;
 
 
@@ -71,10 +70,6 @@ public abstract class Type extends AbstractElement implements IType {
 		}
 		
 		return null;
-	}
-
-	public void accept(IDElementVisitor visitor) {
-		// TODO Auto-generated method stub
 	}
 
 	public int getTypeType() {

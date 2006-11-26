@@ -10,12 +10,14 @@ import descent.core.dom.IBinaryExpression;
 import descent.core.dom.ICallExpression;
 import descent.core.dom.ICastExpression;
 import descent.core.dom.IConditionExpression;
-import descent.core.dom.IElement;
 import descent.core.dom.IDeleteExpression;
 import descent.core.dom.IDotIdentifierExpression;
+import descent.core.dom.IDynamicArrayType;
+import descent.core.dom.IElement;
 import descent.core.dom.IExpression;
 import descent.core.dom.IFunctionExpression;
-import descent.core.dom.IIftypeExpression;
+import descent.core.dom.IIdentifierExpression;
+import descent.core.dom.IIsExpression;
 import descent.core.dom.IIntegerExpression;
 import descent.core.dom.INewAnonymousClassExpression;
 import descent.core.dom.INewExpression;
@@ -23,7 +25,7 @@ import descent.core.dom.IParenthesizedExpression;
 import descent.core.dom.IScopeExpression;
 import descent.core.dom.ISliceExpression;
 import descent.core.dom.IStringExpression;
-import descent.core.dom.IStrongType;
+import descent.core.dom.ITypeSpecialization;
 import descent.core.dom.IType;
 import descent.core.dom.ITypeDotIdentifierExpression;
 import descent.core.dom.ITypeExpression;
@@ -398,9 +400,9 @@ public class Expression_Test extends Parser_Test {
 		assertEquals(IExpression.DELETE_EXPRESSION, expr.getElementType());
 		assertPosition(expr, 1, 11);
 		
-		assertEquals("some", expr.getExpression().toString());
+		assertEquals("some", ((IIdentifierExpression) expr.getExpression()).getIdentifier().toString());
 		
-		assertVisitor(expr, 2);
+		assertVisitor(expr, 3);
 	}
 	
 	public void testCast() {
@@ -454,7 +456,7 @@ public class Expression_Test extends Parser_Test {
 		IArrayExpression expr = (IArrayExpression) new ParserFacade().parseExpression(s);
 		assertEquals(IExpression.ARRAY_EXPRESSION, expr.getElementType());
 		
-		assertEquals("bla", expr.getExpression().toString());
+		assertEquals("bla", ((IIdentifierExpression) expr.getExpression()).getIdentifier().toString());
 		
 		IExpression[] args = expr.getArguments();
 		assertEquals(3, args.length);
@@ -598,9 +600,9 @@ public class Expression_Test extends Parser_Test {
 	
 	public void testIftype() {
 		String s = " is(x : float)";
-		IIftypeExpression expr = (IIftypeExpression) new ParserFacade().parseExpression(s);
+		IIsExpression expr = (IIsExpression) new ParserFacade().parseExpression(s);
 		
-		assertEquals(IExpression.IFTYPE_EXPRESSION, expr.getElementType());
+		assertEquals(IExpression.IS_EXPRESSION, expr.getElementType());
 		assertPosition(expr, 1, s.length() - 1);
 		
 		assertEquals("x", expr.getType().toString());
@@ -610,9 +612,9 @@ public class Expression_Test extends Parser_Test {
 	
 	public void testIftypeWithId() {
 		String s = " is(int x : float)";
-		IIftypeExpression expr = (IIftypeExpression) new ParserFacade().parseExpression(s);
+		IIsExpression expr = (IIsExpression) new ParserFacade().parseExpression(s);
 		
-		assertEquals(IExpression.IFTYPE_EXPRESSION, expr.getElementType());
+		assertEquals(IExpression.IS_EXPRESSION, expr.getElementType());
 		assertPosition(expr, 1, s.length() - 1);
 		
 		assertEquals("int", expr.getType().toString());
@@ -624,30 +626,30 @@ public class Expression_Test extends Parser_Test {
 	
 	public void testIftypeWithType() {
 		Object[][] objs = {
-				{ "typedef", IStrongType.TYPEDEF },
-				{ "struct", IStrongType.STRUCT },
-				{ "union", IStrongType.UNION },
-				{ "class", IStrongType.CLASS },
-				{ "super", IStrongType.SUPER },
-				{ "enum", IStrongType.ENUM },
-				{ "interface", IStrongType.INTERFACE },
-				{ "function", IStrongType.FUNCTION },
-				{ "delegate", IStrongType.DELEGATE },
-				{ "return", IStrongType.RETURN },
+				{ "typedef", ITypeSpecialization.TYPEDEF },
+				{ "struct", ITypeSpecialization.STRUCT },
+				{ "union", ITypeSpecialization.UNION },
+				{ "class", ITypeSpecialization.CLASS },
+				{ "super", ITypeSpecialization.SUPER },
+				{ "enum", ITypeSpecialization.ENUM },
+				{ "interface", ITypeSpecialization.INTERFACE },
+				{ "function", ITypeSpecialization.FUNCTION },
+				{ "delegate", ITypeSpecialization.DELEGATE },
+				{ "return", ITypeSpecialization.RETURN },
 		};
 		
 		for(Object[] pair : objs) {
 			String s = " is(x == " + pair[0] + ")";
-			IIftypeExpression expr = (IIftypeExpression) new ParserFacade().parseExpression(s);
+			IIsExpression expr = (IIsExpression) new ParserFacade().parseExpression(s);
 			
-			assertEquals(IExpression.IFTYPE_EXPRESSION, expr.getElementType());
+			assertEquals(IExpression.IS_EXPRESSION, expr.getElementType());
 			assertPosition(expr, 1, s.length() - 1);
 			
 			assertEquals("x", expr.getType().toString());
 			assertNull(expr.getSpecialization());
 			
-			assertEquals(pair[1], expr.getStrongType().getStrongTypeType());
-			assertPosition(expr.getStrongType(), 9, ((String) pair[0]).length());
+			assertEquals(pair[1], expr.getTypeSpecialization().getKeyword());
+			assertPosition(expr.getTypeSpecialization(), 9, ((String) pair[0]).length());
 		}
 	}
 	
@@ -731,7 +733,7 @@ public class Expression_Test extends Parser_Test {
 		assertEquals(IExpression.NEW_EXPRESSION, expr.getElementType());
 		assertPosition(expr, 1, s.length() - 1);
 		
-		IArrayType array = (IArrayType) expr.getType();
+		IDynamicArrayType array = (IDynamicArrayType) expr.getType();
 		assertEquals(IArrayType.DYNAMIC_ARRAY_TYPE, array.getElementType());
 		assertEquals(1, expr.getArguments().length);
 		assertEquals("size", expr.getArguments()[0].toString());
@@ -745,7 +747,7 @@ public class Expression_Test extends Parser_Test {
 		assertEquals(IExpression.NEW_EXPRESSION, expr.getElementType());
 		assertPosition(expr, 1, s.length() - 1);
 		
-		IArrayType array = (IArrayType) expr.getType();
+		IDynamicArrayType array = (IDynamicArrayType) expr.getType();
 		assertEquals(IArrayType.DYNAMIC_ARRAY_TYPE, array.getElementType());
 		assertEquals(1, expr.getArguments().length);
 		assertEquals("3", expr.getArguments()[0].toString());

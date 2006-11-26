@@ -1,20 +1,20 @@
 package descent.tests.mars;
 
 import descent.core.dom.IElement;
-import descent.core.dom.IDElementVisitor;
+import descent.core.dom.ElementVisitor;
 
-public class CounterVisitor implements IDElementVisitor {
+public class CounterVisitor extends ElementVisitor  {
 	
 	public int enter;
 	public int exit;
 	
-	public boolean visit(IElement element) {
-		//System.out.println(element);
+	@Override
+	public void preVisit(IElement node) {
 		enter++;
-		return true;
 	}
-
-	public void endVisit(IElement element) {
+	
+	@Override
+	public void postVisit(IElement node) {
 		exit++;
 	}
 

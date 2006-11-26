@@ -1,7 +1,7 @@
 package descent.internal.core.dom;
 
 import descent.core.dom.IAsmStatement;
-import descent.core.dom.IDElementVisitor;
+import descent.core.dom.ElementVisitor;
 
 public class AsmStatement extends Statement implements IAsmStatement {
 
@@ -9,7 +9,7 @@ public class AsmStatement extends Statement implements IAsmStatement {
 		// TODO Auto-generated constructor stub
 	}
 	
-	public void accept(IDElementVisitor visitor) {
+	public void accept0(ElementVisitor visitor) {
 		visitor.visit(this);
 		visitor.endVisit(this);
 	}

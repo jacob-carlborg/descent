@@ -3,7 +3,7 @@ package descent.internal.core.dom;
 import java.util.List;
 
 import descent.core.dom.IArrayLiteralExpression;
-import descent.core.dom.IDElementVisitor;
+import descent.core.dom.ElementVisitor;
 import descent.core.dom.IExpression;
 
 public class ArrayLiteralExp extends Expression implements IArrayLiteralExpression {
@@ -22,7 +22,7 @@ public class ArrayLiteralExp extends Expression implements IArrayLiteralExpressi
 		return ARRAY_LITERAL_EXPRESSION;
 	}
 	
-	public void accept(IDElementVisitor visitor) {
+	public void accept0(ElementVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
 			acceptChildren(visitor, args);

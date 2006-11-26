@@ -1,6 +1,6 @@
 package descent.internal.core.dom;
 
-import descent.core.dom.IDElementVisitor;
+import descent.core.dom.ElementVisitor;
 import descent.core.dom.IExpression;
 import descent.core.dom.IName;
 import descent.core.dom.IValueTemplateParameter;
@@ -40,7 +40,7 @@ public class TemplateValueParameter extends TemplateParameter implements IValueT
 		return tp_defaultvalue;
 	}
 
-	public void accept(IDElementVisitor visitor) {
+	public void accept0(ElementVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
 			acceptChild(visitor, tp_valtype);

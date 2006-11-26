@@ -3,7 +3,7 @@ package descent.internal.core.dom;
 import java.util.ArrayList;
 import java.util.List;
 
-import descent.core.dom.IDElementVisitor;
+import descent.core.dom.ElementVisitor;
 import descent.core.dom.IInitializer;
 import descent.core.dom.IName;
 import descent.core.dom.IStructInitializer;
@@ -35,7 +35,7 @@ public class StructInitializer extends Initializer implements IStructInitializer
 		return STRUCT_INITIALIZER;
 	}
 	
-	public void accept(IDElementVisitor visitor) {
+	public void accept0(ElementVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) { 
 			acceptChildren(visitor, ids);

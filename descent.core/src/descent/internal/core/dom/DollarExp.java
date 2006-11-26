@@ -1,6 +1,9 @@
 package descent.internal.core.dom;
 
-public class DollarExp extends Expression {
+import descent.core.dom.ElementVisitor;
+import descent.core.dom.IDollarExpression;
+
+public class DollarExp extends Expression implements IDollarExpression {
 
 	public DollarExp(Loc loc) {
 		// TODO Auto-generated constructor stub
@@ -8,6 +11,12 @@ public class DollarExp extends Expression {
 	
 	public int getElementType() {
 		return DOLAR_EXPRESSION;
+	}
+	
+	@Override
+	void accept0(ElementVisitor visitor) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

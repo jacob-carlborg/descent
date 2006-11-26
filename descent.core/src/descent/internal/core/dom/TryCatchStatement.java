@@ -2,8 +2,8 @@ package descent.internal.core.dom;
 
 import java.util.List;
 
-import descent.core.dom.ICatch;
-import descent.core.dom.IDElementVisitor;
+import descent.core.dom.ICatchClause;
+import descent.core.dom.ElementVisitor;
 import descent.core.dom.IStatement;
 import descent.core.dom.ITryStatement;
 
@@ -21,8 +21,8 @@ public class TryCatchStatement extends Statement implements ITryStatement {
 		return body;
 	}
 	
-	public ICatch[] getCatches() {
-		return catches.toArray(new ICatch[catches.size()]);
+	public ICatchClause[] getCatches() {
+		return catches.toArray(new ICatchClause[catches.size()]);
 	}
 	
 	public IStatement getFinally() {
@@ -33,7 +33,7 @@ public class TryCatchStatement extends Statement implements ITryStatement {
 		return TRY_STATEMENT;
 	}
 	
-	public void accept(IDElementVisitor visitor) {
+	public void accept0(ElementVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
 			acceptChild(visitor, body);
