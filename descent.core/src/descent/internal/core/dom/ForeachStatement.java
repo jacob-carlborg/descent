@@ -38,8 +38,8 @@ public class ForeachStatement extends Statement implements IForeachStatement {
 		return reverse;
 	}
 	
-	public int getStatementType() {
-		return STATEMENT_FOREACH;
+	public int getElementType() {
+		return FOREACH_STATEMENT;
 	}
 	
 	public void accept(IDElementVisitor visitor) {

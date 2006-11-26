@@ -3,23 +3,23 @@ package descent.internal.core.dom;
 import java.util.List;
 
 import descent.core.dom.IAlignDeclaration;
-import descent.core.dom.IDElement;
 import descent.core.dom.IDElementVisitor;
+import descent.core.dom.IDeclaration;
 
 public class AlignDeclaration extends Dsymbol implements IAlignDeclaration {
 	
-	public IDElement[] declDefs;
+	public IDeclaration[] declDefs;
 	public long n;
 
-	public AlignDeclaration(long n, List<IDElement> a) {
+	public AlignDeclaration(long n, List<IDeclaration> a) {
 		this.n = n;
 		if (a != null) {
-			this.declDefs = a.toArray(new IDElement[a.size()]);
+			this.declDefs = a.toArray(new IDeclaration[a.size()]);
 		}
 	}
 	
-	public IDElement[] getDeclarationDefinitions() {
-		if (declDefs == null) return AbstractElement.NO_ELEMENTS;
+	public IDeclaration[] getDeclarationDefinitions() {
+		if (declDefs == null) return AbstractElement.NO_DECLARATIONS;
 		return declDefs;
 	}
 	

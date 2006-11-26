@@ -23,8 +23,8 @@ public class CaseStatement extends Statement implements ICaseStatement {
 		return s;
 	}
 	
-	public int getStatementType() {
-		return STATEMENT_CASE;
+	public int getElementType() {
+		return CASE_STATEMENT;
 	}
 	
 	public void accept(IDElementVisitor visitor) {

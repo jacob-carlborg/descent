@@ -6,5 +6,10 @@ public class TypeSlice extends Type {
 		// TODO Auto-generated constructor stub
 		super(null, null);
 	}
+	
+	public int getElementType() {
+		// TODO
+		return 0;
+	}
 
 }

@@ -23,8 +23,8 @@ public class WhileStatement extends Statement implements IWhileStatement {
 		return body;
 	}
 	
-	public int getStatementType() {
-		return STATEMENT_WHILE;
+	public int getElementType() {
+		return WHILE_STATEMENT;
 	}
 	
 	public void accept(IDElementVisitor visitor) {

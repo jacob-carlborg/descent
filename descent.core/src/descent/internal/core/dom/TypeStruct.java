@@ -9,5 +9,10 @@ public class TypeStruct extends Type {
 		
 		this.sym = sym;
 	}
+	
+	public int getElementType() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
 
 }

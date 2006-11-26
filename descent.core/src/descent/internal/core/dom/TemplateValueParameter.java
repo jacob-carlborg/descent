@@ -3,10 +3,10 @@ package descent.internal.core.dom;
 import descent.core.dom.IDElementVisitor;
 import descent.core.dom.IExpression;
 import descent.core.dom.IName;
-import descent.core.dom.ITemplateValueParameter;
+import descent.core.dom.IValueTemplateParameter;
 import descent.core.dom.IType;
 
-public class TemplateValueParameter extends TemplateParameter implements ITemplateValueParameter {
+public class TemplateValueParameter extends TemplateParameter implements IValueTemplateParameter {
 
 	private final Identifier id;
 	private final Type tp_valtype;
@@ -20,8 +20,8 @@ public class TemplateValueParameter extends TemplateParameter implements ITempla
 		this.tp_defaultvalue = tp_defaultvalue;
 	}
 	
-	public int getTemplateParameterType() {
-		return TEMPLATE_PARAMETER_VALUE;
+	public int getElementType() {
+		return VALUE_TEMPLATE_PARAMETER;
 	}
 	
 	public IName getName() {

@@ -23,8 +23,8 @@ public class WithStatement extends Statement implements IWithStatement {
 		return body;
 	}
 	
-	public int getStatementType() {
-		return STATEMENT_WITH;
+	public int getElementType() {
+		return WITH_STATEMENT;
 	}
 	
 	public void accept(IDElementVisitor visitor) {

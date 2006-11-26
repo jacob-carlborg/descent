@@ -27,8 +27,8 @@ public class OnScopeStatement extends Statement implements IOnScopeStatement  {
 		throw new IllegalStateException("Can't happen");
 	}
 	
-	public int getStatementType() {
-		return STATEMENT_ON_SCOPE;
+	public int getElementType() {
+		return ON_SCOPE_STATEMENT;
 	}
 	
 	public void accept(IDElementVisitor visitor) {

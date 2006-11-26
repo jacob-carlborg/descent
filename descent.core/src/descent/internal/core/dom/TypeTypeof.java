@@ -13,9 +13,8 @@ public class TypeTypeof extends TypeQualified implements ITypeofType {
 		this.exp = exp;
 	}
 	
-	@Override
-	public int getTypeType() {
-		return TYPE_TYPEOF;
+	public int getElementType() {
+		return TYPEOF_TYPE;
 	}
 	
 	public IExpression getExpression() {

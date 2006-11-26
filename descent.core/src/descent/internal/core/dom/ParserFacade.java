@@ -3,7 +3,7 @@ package descent.internal.core.dom;
 import java.util.List;
 
 import descent.core.dom.ICompilationUnit;
-import descent.core.dom.IDElement;
+import descent.core.dom.IDeclaration;
 import descent.core.dom.IExpression;
 import descent.core.dom.IInitializer;
 import descent.core.dom.IParser;
@@ -13,7 +13,7 @@ public class ParserFacade implements IParser {
 	
 	public ICompilationUnit parseCompilationUnit(String source) {
 		Parser parser = new Parser(source);
-		List<IDElement> declDefs = parser.parseModule();
+		List<IDeclaration> declDefs = parser.parseModule();
 		
 		parser.mod.members = declDefs;
 		parser.mod.start = 0;

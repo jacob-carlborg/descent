@@ -6,8 +6,8 @@ public class NullExp extends Expression {
 		// TODO Auto-generated constructor stub
 	}
 	
-	public int getExpressionType() {
-		return EXPRESSION_NULL;
+	public int getElementType() {
+		return NULL_EXPRESSION;
 	}
 	
 	@Override

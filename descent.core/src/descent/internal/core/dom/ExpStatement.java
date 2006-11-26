@@ -12,8 +12,8 @@ public class ExpStatement extends Statement implements IExpressionStatement {
 		this.exp = exp;
 	}
 	
-	public int getStatementType() {
-		return STATEMENT_EXPRESSION;
+	public int getElementType() {
+		return EXPRESSION_STATEMENT;
 	}
 	
 	public IExpression getExpression() {

@@ -12,8 +12,8 @@ public class GotoStatement extends Statement implements IGotoStatement {
 		this.ident = ident;
 	}
 	
-	public int getStatementType() {
-		return STATEMENT_GOTO;
+	public int getElementType() {
+		return GOTO_STATEMENT;
 	}
 	
 	public IName getLabel() {

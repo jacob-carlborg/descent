@@ -3,8 +3,8 @@ package descent.internal.core.dom;
 import java.util.List;
 
 import descent.core.dom.ICompilationUnit;
-import descent.core.dom.IDElement;
 import descent.core.dom.IDElementVisitor;
+import descent.core.dom.IDeclaration;
 import descent.core.dom.IModuleDeclaration;
 import descent.core.dom.IProblem;
 
@@ -18,9 +18,9 @@ public class Module extends ScopeDsymbol implements ICompilationUnit {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public IDElement[] getDeclarationDefinitions() {
-		if (members == null) return AbstractElement.NO_ELEMENTS;
-		return (IDElement[]) members.toArray(new IDElement[members.size()]);
+	public IDeclaration[] getDeclarationDefinitions() {
+		if (members == null) return AbstractElement.NO_DECLARATIONS;
+		return (IDeclaration[]) members.toArray(new IDeclaration[members.size()]);
 	}
 	
 	public IProblem[] getProblems() {

@@ -20,8 +20,8 @@ public class IfStatement extends Statement implements IIfStatement {
 		this.elsebody = elsebody;
 	}
 	
-	public int getStatementType() {
-		return STATEMENT_IF;
+	public int getElementType() {
+		return IF_STATEMENT;
 	}
 	
 	public IArgument getArgument() {

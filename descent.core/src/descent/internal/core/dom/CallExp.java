@@ -24,8 +24,8 @@ public class CallExp extends Expression implements ICallExpression {
 		return e;
 	}
 	
-	public int getExpressionType() {
-		return EXPRESSION_CALL;
+	public int getElementType() {
+		return CALL_EXPRESSION;
 	}
 	
 	public void accept(IDElementVisitor visitor) {

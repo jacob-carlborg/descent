@@ -16,8 +16,8 @@ public class ReturnStatement extends Statement implements IReturnStatement {
 		return exp;
 	}
 	
-	public int getStatementType() {
-		return STATEMENT_RETURN;
+	public int getElementType() {
+		return RETURN_STATEMENT;
 	}
 	
 	public void accept(IDElementVisitor visitor) {

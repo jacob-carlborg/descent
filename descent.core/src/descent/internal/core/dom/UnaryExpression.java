@@ -16,8 +16,8 @@ public abstract class UnaryExpression extends Expression implements IUnaryExpres
 		return exp;
 	}
 	
-	public int getExpressionType() {
-		return EXPRESSION_UNARY;
+	public int getElementType() {
+		return UNARY_EXPRESSION;
 	}
 	
 	@Override

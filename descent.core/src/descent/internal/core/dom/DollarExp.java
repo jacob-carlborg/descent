@@ -6,8 +6,8 @@ public class DollarExp extends Expression {
 		// TODO Auto-generated constructor stub
 	}
 	
-	public int getExpressionType() {
-		return EXPRESSION_DOLAR;
+	public int getElementType() {
+		return DOLAR_EXPRESSION;
 	}
 
 }

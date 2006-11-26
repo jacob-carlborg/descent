@@ -16,8 +16,8 @@ public class TypeExp extends Expression implements ITypeExpression {
 		return t;
 	}
 	
-	public int getExpressionType() {
-		return EXPRESSION_TYPE;
+	public int getElementType() {
+		return TYPE_EXPRESSION;
 	}
 	
 	public void accept(IDElementVisitor visitor) {

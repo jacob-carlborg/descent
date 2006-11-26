@@ -55,7 +55,9 @@ public class DDomUtil {
 			case IDElement.TYPEDEF_DECLARATION:
 			case IDElement.ALIAS_DECLARATION:
 			case IDElement.TEMPLATE_DECLARATION:
-			case IDElement.CONDITIONAL_DECLARATION:
+			case IDElement.VERSION_DECLARATION:
+			case IDElement.DEBUG_DECLARATION:
+			case IDElement.STATIC_IF_DECLARATION:
 			case IDElement.LINK_DECLARATION:
 			case IDElement.CONDITION_ASSIGNMENT:
 			case IDElement.PRAGMA_DECLARATION:
@@ -66,7 +68,7 @@ public class DDomUtil {
 		}
 		
 		private boolean isInBounds(IDElement element) {
-			int off = element.getOffset();
+			int off = element.getStartPosition();
 			return off <= offset && off + element.getLength() >= offset;
 		}
 		

@@ -16,8 +16,8 @@ public class TypeSArray extends TypeArray implements IStaticArrayType {
 		this.dim = dim;
 	}
 	
-	public int getArrayTypeType() {
-		return STATIC_ARRAY;
+	public int getElementType() {
+		return STATIC_ARRAY_TYPE;
 	}
 	
 	public IExpression getDimension() {

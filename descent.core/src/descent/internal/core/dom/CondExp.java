@@ -30,8 +30,8 @@ public class CondExp extends Expression implements IConditionExpression {
 		return f;
 	}
 	
-	public int getExpressionType() {
-		return EXPRESSION_CONDITION;
+	public int getElementType() {
+		return CONDITION_EXPRESSION;
 	}
 	
 	public void accept(IDElementVisitor visitor) {

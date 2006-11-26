@@ -7,6 +7,16 @@ package descent.core.dom;
  * static assert(expr, message);
  * </pre>
  */
-public interface IStaticAssertStatement extends IStatement, IStaticAssert {
+public interface IStaticAssertStatement extends IStatement {
+	
+	/**
+	 * Returns the expression to assert.
+	 */
+	IExpression getExpression();
+	
+	/**
+	 * Returns the message in case the assert doesn't hold.
+	 */
+	IExpression getMessage();
 
 }

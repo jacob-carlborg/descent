@@ -12,9 +12,8 @@ public class TypePointer extends Type implements IPointerType, IDelegateType {
 		super(TY.Tpointer, t);
 	}
 	
-	@Override
-	public int getTypeType() {
-		return next instanceof TypeFunction ? TYPE_POINTER_TO_FUNCTION : TYPE_POINTER;
+	public int getElementType() {
+		return next instanceof TypeFunction ? POINTER_TO_FUNCTION_TYPE : POINTER_TYPE;
 	}
 	
 	public IType getInnerType() {

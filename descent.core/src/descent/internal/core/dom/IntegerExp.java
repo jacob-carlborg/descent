@@ -11,9 +11,9 @@ public class IntegerExp extends Expression implements IIntegerExpression {
 	
 	public IntegerExp(Loc loc, BigInteger number, Type type) {
 		if (type == Type.tbool) {
-			expressionType = number.compareTo(BigInteger.ZERO) == 0 ? EXPRESSION_FALSE : EXPRESSION_TRUE;
+			expressionType = number.compareTo(BigInteger.ZERO) == 0 ? FALSE_EXPRESSION : TRUE_EXPRESSION;
 		} else {
-			expressionType = EXPRESSION_INTEGER;
+			expressionType = INTEGER_EXPRESSION;
 		}
 		this.number = number;
 	}
@@ -22,15 +22,15 @@ public class IntegerExp extends Expression implements IIntegerExpression {
 		return number;
 	}
 	
-	public int getExpressionType() {
+	public int getElementType() {
 		return expressionType;
 	}
 	
 	@Override
 	public String toString() {
 		switch(expressionType) {
-		case EXPRESSION_TRUE: return "true";
-		case EXPRESSION_FALSE: return "false";
+		case TRUE_EXPRESSION: return "true";
+		case FALSE_EXPRESSION: return "false";
 		default /* case EXPRESSION_INTEGER */: return String.valueOf(number);
 		}
 	}

@@ -7,7 +7,7 @@ package descent.core.dom;
  * <p>Note that if the aggregate is templated (i.e. <code>foo(T)(...) { }</code>) the parser
  * dosen't generate a template declaration: instead, it makes this class templated.</p>
  */
-public interface IFunctionDeclaration extends IDElement, IModifiersContainer {
+public interface IFunctionDeclaration extends IDeclaration, IModifiersContainer {
 	
 	int FUNCTION = 1;
 	int CONSTRUCTOR = 2;

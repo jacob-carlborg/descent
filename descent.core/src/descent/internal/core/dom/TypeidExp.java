@@ -16,8 +16,8 @@ public class TypeidExp extends Expression implements ITypeidExpression {
 		return type;
 	}
 	
-	public int getExpressionType() {
-		return EXPRESSION_TYPEID;
+	public int getElementType() {
+		return TYPEID_EXPRESSION;
 	}
 	
 	public void accept(IDElementVisitor visitor) {

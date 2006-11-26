@@ -14,8 +14,8 @@ public class AssertExp extends Expression implements IAssertExpression {
 		this.msg = msg;
 	}
 	
-	public int getExpressionType() {
-		return EXPRESSION_ASSERT;
+	public int getElementType() {
+		return ASSERT_EXPRESSION;
 	}
 	
 	public IExpression getExpression() {

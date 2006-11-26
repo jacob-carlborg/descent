@@ -18,8 +18,8 @@ public class ArrayLiteralExp extends Expression implements IArrayLiteralExpressi
 		return args;
 	}
 	
-	public int getExpressionType() {
-		return EXPRESSION_ARRAY_LITERAL;
+	public int getElementType() {
+		return ARRAY_LITERAL_EXPRESSION;
 	}
 	
 	public void accept(IDElementVisitor visitor) {

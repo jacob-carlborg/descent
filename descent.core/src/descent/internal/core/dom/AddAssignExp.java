@@ -17,9 +17,8 @@ public class AddAssignExp extends BinaryExpression implements IUnaryExpression {
 		this.isUnary = isUnary;
 	}
 	
-	@Override
-	public int getExpressionType() {
-		return isUnary ? EXPRESSION_UNARY : EXPRESSION_BINARY;
+	public int getElementType() {
+		return isUnary ? UNARY_EXPRESSION : BINARY_EXPRESSION;
 	}
 	
 	public int getBinaryExpressionType() {

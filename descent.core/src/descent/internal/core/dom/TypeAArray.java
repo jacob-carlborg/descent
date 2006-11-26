@@ -14,8 +14,8 @@ public class TypeAArray extends TypeArray implements IAssociativeArrayType {
 		this.index = index;
 	}
 	
-	public int getArrayTypeType() {
-		return ASSOCIATIVE_ARRAY;
+	public int getElementType() {
+		return ASSOCIATIVE_ARRAY_TYPE;
 	}
 	
 	public IType getKeyType() {

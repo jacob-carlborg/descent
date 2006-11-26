@@ -11,14 +11,5 @@ public abstract class Expression extends AbstractElement implements IExpression 
 		visitor.visit(this);
 		visitor.endVisit(this);
 	}
-	
-	public int getElementType() {
-		return EXPRESSION;
-	}
-	
-	public int getExpressionType() {
-		// TODO
-		return -1;
-	}
 
 }

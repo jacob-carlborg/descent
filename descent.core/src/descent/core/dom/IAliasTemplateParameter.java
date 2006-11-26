@@ -7,12 +7,7 @@ package descent.core.dom;
  * alias name : specificType = defaultType
  * </pre>
  */
-public interface ITemplateAliasParameter extends ITemplateParameter {
-	
-	/**
-	 * Returns the name of the parameter.
-	 */
-	IName getName();
+public interface IAliasTemplateParameter extends ITemplateParameter {
 	
 	/**
 	 * Returns the specific type, if any, or null.

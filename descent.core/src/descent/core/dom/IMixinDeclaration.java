@@ -7,7 +7,7 @@ package descent.core.dom;
  * mixin foo.bar!(arg1, arg2, ..., argN) name;
  * </pre>
  */
-public interface IMixinDeclaration extends IDElement {
+public interface IMixinDeclaration extends IDeclaration {
 	
 	/**
 	 * Returns the name of the mixin.

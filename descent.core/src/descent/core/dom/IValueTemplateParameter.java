@@ -7,12 +7,7 @@ package descent.core.dom;
  * type name : specificValue = defaultValue
  * </pre>
  */
-public interface ITemplateValueParameter extends ITemplateParameter {
-	
-	/**
-	 * Returns the name of this parameter.
-	 */
-	IName getName();
+public interface IValueTemplateParameter extends ITemplateParameter {
 	
 	/**
 	 * Returns the type of this parameter.

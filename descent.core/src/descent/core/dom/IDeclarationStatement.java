@@ -8,6 +8,6 @@ public interface IDeclarationStatement extends IStatement {
 	/**
 	 * Returns the declaration.
 	 */
-	IDElement getDeclaration();
+	IDeclaration getDeclaration();
 
 }

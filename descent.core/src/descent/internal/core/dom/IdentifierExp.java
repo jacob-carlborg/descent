@@ -10,8 +10,8 @@ public class IdentifierExp extends Expression {
 		this.length = id.length;
 	}
 	
-	public int getExpressionType() {
-		return EXPRESSION_IDENTIFIER;
+	public int getElementType() {
+		return IDENTIFIER_EXPRESSION;
 	}
 	
 	@Override

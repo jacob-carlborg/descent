@@ -2,10 +2,10 @@ package descent.internal.core.dom;
 
 import descent.core.dom.IDElementVisitor;
 import descent.core.dom.IName;
-import descent.core.dom.ITemplateAliasParameter;
+import descent.core.dom.IAliasTemplateParameter;
 import descent.core.dom.IType;
 
-public class TemplateAliasParameter extends TemplateParameter implements ITemplateAliasParameter {
+public class TemplateAliasParameter extends TemplateParameter implements IAliasTemplateParameter {
 
 	private final Identifier tp_ident;
 	private final Type tp_spectype;
@@ -17,8 +17,8 @@ public class TemplateAliasParameter extends TemplateParameter implements ITempla
 		this.tp_defaulttype = tp_defaulttype;
 	}
 	
-	public int getTemplateParameterType() {
-		return TEMPLATE_PARAMETER_ALIAS;
+	public int getElementType() {
+		return ALIAS_TEMPLATE_PARAMETER;
 	}
 	
 	public IName getName() {

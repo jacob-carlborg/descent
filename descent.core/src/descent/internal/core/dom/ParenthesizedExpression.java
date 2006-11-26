@@ -12,8 +12,8 @@ public class ParenthesizedExpression extends Expression implements IParenthesize
 		this.e = e;
 	}
 	
-	public int getExpressionType() {
-		return EXPRESSION_PARENTHESIZED;
+	public int getElementType() {
+		return PARENTHESIZED_EXPRESSION;
 	}
 
 	public IExpression getExpression() {

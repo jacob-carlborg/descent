@@ -3,7 +3,7 @@ package descent.core.dom;
 /**
  * An enum declaration.
  */
-public interface IEnumDeclaration extends IDElement {
+public interface IEnumDeclaration extends IDeclaration {
 	
 	/**
 	 * Returns the name of this enum. May be <code>null</code>

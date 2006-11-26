@@ -4,10 +4,12 @@ import java.util.List;
 
 import descent.core.dom.IDElement;
 import descent.core.dom.IDElementVisitor;
+import descent.core.dom.IDeclaration;
 
 public abstract class AbstractElement implements IDElement {
 	
 	public final static IDElement[] NO_ELEMENTS = new IDElement[0];
+	public final static IDeclaration[] NO_DECLARATIONS = new IDeclaration[0];
 	
 	public String comments;
 	public int start;
@@ -22,7 +24,7 @@ public abstract class AbstractElement implements IDElement {
 		}
 	}
 	
-	public int getOffset() {
+	public int getStartPosition() {
 		return start;
 	}
 	

@@ -14,7 +14,7 @@ public interface ICompilationUnit extends IDElement {
 	/**
 	 * Returns the declarations present in this compilation unit.
 	 */
-	IDElement[] getDeclarationDefinitions();
+	IDeclaration[] getDeclarationDefinitions();
 	
 	/**
 	 * Returns problems detected while parsing this source file.

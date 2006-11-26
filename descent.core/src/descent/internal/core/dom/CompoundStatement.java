@@ -19,8 +19,8 @@ public class CompoundStatement extends Statement implements ICompoundStatement {
 		return this.as.toArray(new IStatement[as.size()]);
 	}
 	
-	public int getStatementType() {
-		return STATEMENT_COMPOUND;
+	public int getElementType() {
+		return COMPOUND_STATEMENT;
 	}
 	
 	public void accept(IDElementVisitor visitor) {

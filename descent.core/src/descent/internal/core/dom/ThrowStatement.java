@@ -16,8 +16,8 @@ public class ThrowStatement extends Statement implements IThrowStatement {
 		return exp;
 	}
 	
-	public int getStatementType() {
-		return STATEMENT_THROW;
+	public int getElementType() {
+		return THROW_STATEMENT;
 	}
 	
 	public void accept(IDElementVisitor visitor) {

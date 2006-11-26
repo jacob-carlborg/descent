@@ -16,8 +16,8 @@ public class ContinueStatement extends Statement implements IContinueStatement {
 		return id;
 	}
 	
-	public int getStatementType() {
-		return STATEMENT_CONTINUE;
+	public int getElementType() {
+		return CONTINUE_STATEMENT;
 	}
 	
 	public void accept(IDElementVisitor visitor) {

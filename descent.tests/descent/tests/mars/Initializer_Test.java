@@ -1,7 +1,6 @@
 package descent.tests.mars;
 
 import descent.core.dom.IArrayInitializer;
-import descent.core.dom.IDElement;
 import descent.core.dom.IExpression;
 import descent.core.dom.IExpressionInitializer;
 import descent.core.dom.IInitializer;
@@ -14,8 +13,7 @@ public class Initializer_Test extends Parser_Test {
 	public void testVoid() {
 		String s = " void;";
 		IInitializer init = new ParserFacade().parseInitializer(s);
-		assertEquals(IDElement.INITIALIZER, init.getElementType());
-		assertEquals(IInitializer.VOID_INITIALIZER, init.getInitializerType());
+		assertEquals(IInitializer.VOID_INITIALIZER, init.getElementType());
 		assertPosition(init, 1, 4);
 		
 		assertVisitor(init, 1);
@@ -24,7 +22,7 @@ public class Initializer_Test extends Parser_Test {
 	public void testExpression() {
 		String s = " 1;";
 		IExpressionInitializer init = (IExpressionInitializer) new ParserFacade().parseInitializer(s);
-		assertEquals(IInitializer.EXPRESSION_INITIALIZER, init.getInitializerType());
+		assertEquals(IInitializer.EXPRESSION_INITIALIZER, init.getElementType());
 		assertEquals("1", init.getExpression().toString());
 		assertPosition(init, 1, 1);
 		
@@ -34,7 +32,7 @@ public class Initializer_Test extends Parser_Test {
 	public void testStructEmpty() {
 		String s = " { };";
 		IStructInitializer init = (IStructInitializer) new ParserFacade().parseInitializer(s);
-		assertEquals(IInitializer.STRUCT_INITIALIZER, init.getInitializerType());
+		assertEquals(IInitializer.STRUCT_INITIALIZER, init.getElementType());
 		assertPosition(init, 1, 3);
 		
 		assertEquals(0, init.getNames().length);
@@ -44,7 +42,7 @@ public class Initializer_Test extends Parser_Test {
 	public void testStructInitializers() {
 		String s = " { a = 2, b = 3 };";
 		IStructInitializer init = (IStructInitializer) new ParserFacade().parseInitializer(s);
-		assertEquals(IInitializer.STRUCT_INITIALIZER, init.getInitializerType());
+		assertEquals(IInitializer.STRUCT_INITIALIZER, init.getElementType());
 		assertPosition(init, 1, s.length() - 2);
 		
 		IName[] names = init.getNames();
@@ -59,14 +57,14 @@ public class Initializer_Test extends Parser_Test {
 		assertPosition(values[0], 3, 5);
 		assertPosition(values[1], 10, 5);
 		
-		assertEquals(IInitializer.EXPRESSION_INITIALIZER, values[0].getInitializerType());
-		assertEquals(IInitializer.EXPRESSION_INITIALIZER, values[1].getInitializerType());
+		assertEquals(IInitializer.EXPRESSION_INITIALIZER, values[0].getElementType());
+		assertEquals(IInitializer.EXPRESSION_INITIALIZER, values[1].getElementType());
 	}
 	
 	public void testStructInitializers2() {
 		String s = " { a : b = 2 };";
 		IStructInitializer init = (IStructInitializer) new ParserFacade().parseInitializer(s);
-		assertEquals(IInitializer.STRUCT_INITIALIZER, init.getInitializerType());
+		assertEquals(IInitializer.STRUCT_INITIALIZER, init.getElementType());
 		assertPosition(init, 1, s.length() - 2);
 		
 		IName[] names = init.getNames();
@@ -79,7 +77,7 @@ public class Initializer_Test extends Parser_Test {
 	public void testStructInitializers3() {
 		String s = " { 2 };";
 		IStructInitializer init = (IStructInitializer) new ParserFacade().parseInitializer(s);
-		assertEquals(IInitializer.STRUCT_INITIALIZER, init.getInitializerType());
+		assertEquals(IInitializer.STRUCT_INITIALIZER, init.getElementType());
 		assertPosition(init, 1, s.length() - 2);
 		
 		IName[] names = init.getNames();
@@ -87,20 +85,20 @@ public class Initializer_Test extends Parser_Test {
 		assertNull(names[0]);
 		
 		IInitializer[] values = init.getValues();
-		assertEquals(IInitializer.EXPRESSION_INITIALIZER, values[0].getInitializerType());
+		assertEquals(IInitializer.EXPRESSION_INITIALIZER, values[0].getElementType());
 	}
 	
 	public void testArray() {
 		String s = " [ ];";
 		IArrayInitializer init = (IArrayInitializer) new ParserFacade().parseInitializer(s);
-		assertEquals(IInitializer.ARRAY_INITIALIZER, init.getInitializerType());
+		assertEquals(IInitializer.ARRAY_INITIALIZER, init.getElementType());
 		assertPosition(init, 1, s.length() - 2);
 	}
 	
 	public void testArrayInitializers() {
 		String s = " [ 1, 2, 3 ];";
 		IArrayInitializer init = (IArrayInitializer) new ParserFacade().parseInitializer(s);
-		assertEquals(IInitializer.ARRAY_INITIALIZER, init.getInitializerType());
+		assertEquals(IInitializer.ARRAY_INITIALIZER, init.getElementType());
 		assertPosition(init, 1, s.length() - 2);
 		
 		IExpression[] exps = init.getLengths();
@@ -123,7 +121,7 @@ public class Initializer_Test extends Parser_Test {
 	public void testArrayInitializers2() {
 		String s = " [ 2 : 1 ];";
 		IArrayInitializer init = (IArrayInitializer) new ParserFacade().parseInitializer(s);
-		assertEquals(IInitializer.ARRAY_INITIALIZER, init.getInitializerType());
+		assertEquals(IInitializer.ARRAY_INITIALIZER, init.getElementType());
 		assertPosition(init, 1, s.length() - 2);
 		
 		IExpression[] exps = init.getLengths();
@@ -145,7 +143,7 @@ public class Initializer_Test extends Parser_Test {
 	public void testArrayInitializersNested() {
 		String s = " [ [ 1 ] ];";
 		IArrayInitializer init = (IArrayInitializer) new ParserFacade().parseInitializer(s);
-		assertEquals(IInitializer.ARRAY_INITIALIZER, init.getInitializerType());
+		assertEquals(IInitializer.ARRAY_INITIALIZER, init.getElementType());
 		assertPosition(init, 1, s.length() - 2);
 		
 		IExpression[] exps = init.getLengths();

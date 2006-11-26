@@ -17,8 +17,8 @@ public abstract class BinaryExpression extends Expression implements IBinaryExpr
 		this.length = e2.start + e2.length - this.start;
 	}
 	
-	public int getExpressionType() {
-		return EXPRESSION_BINARY;
+	public int getElementType() {
+		return BINARY_EXPRESSION;
 	}
 	
 	public IExpression getLeftExpression() {

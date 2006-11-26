@@ -3,7 +3,7 @@ package descent.core.dom;
 /**
  * Represents a conditional debug or version assignment.
  */
-public interface IConditionAssignment extends IDElement {
+public interface IConditionAssignment extends IDeclaration {
 	
 	/**
 	 * A constant representing a debug assignment.

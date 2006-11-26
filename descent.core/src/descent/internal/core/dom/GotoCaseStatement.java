@@ -12,8 +12,8 @@ public class GotoCaseStatement extends Statement implements IGotoCaseStatement {
 		this.exp = exp;
 	}
 	
-	public int getStatementType() {
-		return STATEMENT_GOTO_CASE;
+	public int getElementType() {
+		return GOTO_CASE_STATEMENT;
 	}
 	
 	public IExpression getCase() {

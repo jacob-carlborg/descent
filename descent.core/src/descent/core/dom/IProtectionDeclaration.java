@@ -10,13 +10,13 @@ package descent.core.dom;
  * 
  * where "prot" is "public", for example.
  */
-public interface IProtectionDeclaration extends IDElement {
+public interface IProtectionDeclaration extends IDeclaration {
 	
 	/**
 	 * Returns the declaration definitions contained in this
 	 * declaration.
 	 */
-	IDElement[] getDeclarationDefinitions();
+	IDeclaration[] getDeclarationDefinitions();
 	
 	/**
 	 * Returns the protection level.

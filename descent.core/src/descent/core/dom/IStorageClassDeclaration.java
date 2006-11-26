@@ -10,11 +10,11 @@ package descent.core.dom;
  * 
  * where storage is "static", for example.
  */
-public interface IStorageClassDeclaration extends IDElement {
+public interface IStorageClassDeclaration extends IDeclaration {
 	
 	/**
 	 * Returns the declaration definitions contained in this declaration.
 	 */
-	IDElement[] getDeclarationDefinitions();
+	IDeclaration[] getDeclarationDefinitions();
 
 }

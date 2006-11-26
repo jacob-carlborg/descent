@@ -2,9 +2,9 @@ package descent.internal.core.dom;
 
 import descent.core.dom.IDElementVisitor;
 import descent.core.dom.IName;
-import descent.core.dom.ITemplateTupleParameter;
+import descent.core.dom.ITupleTemplateParameter;
 
-public class TemplateTupleParameter extends TemplateParameter implements ITemplateTupleParameter {
+public class TemplateTupleParameter extends TemplateParameter implements ITupleTemplateParameter {
 
 	private final Identifier ident;
 
@@ -16,8 +16,8 @@ public class TemplateTupleParameter extends TemplateParameter implements ITempla
 		return ident;
 	}
 
-	public int getTemplateParameterType() {
-		return TEMPLATE_PARAMETER_TUPLE;
+	public int getElementType() {
+		return TUPLE_TEMPLATE_PARAMETER;
 	}
 
 	public void accept(IDElementVisitor visitor) {

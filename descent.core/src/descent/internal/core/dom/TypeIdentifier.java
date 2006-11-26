@@ -16,15 +16,14 @@ public class TypeIdentifier extends TypeQualified implements IIdentifierType, IT
 		this.ident = ident;
 	}
 	
-	@Override
-	public int getTypeType() {
+	public int getElementType() {
 		if (idents.size() == 0) {
-			return TYPE_IDENTIFIER;
+			return IDENTIFIER_TYPE;
 		} else {
 			if (idents.get(idents.size() - 1) instanceof TemplateInstance) {
-				return TYPE_TEMPLATE_INSTANCE;
+				return TEMPLATE_INSTANCE_TYPE;
 			} else {
-				return TYPE_IDENTIFIER;
+				return IDENTIFIER_TYPE;
 			}
 		}
 	}

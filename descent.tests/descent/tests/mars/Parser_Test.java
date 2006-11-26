@@ -6,7 +6,7 @@ import descent.core.dom.IDElement;
 public class Parser_Test extends TestCase {
 	
 	protected void assertPosition(IDElement elem, int start, int length) {
-		assertEquals(start, elem.getOffset());
+		assertEquals(start, elem.getStartPosition());
 		assertEquals(length, elem.getLength());
 	}
 	

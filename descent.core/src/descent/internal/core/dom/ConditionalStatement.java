@@ -32,15 +32,11 @@ public class ConditionalStatement extends Statement implements IStaticIfStatemen
 		return elsebody;
 	}
 	
-	public int getStatementType() {
-		return STATEMENT_CONDITIONAL;
-	}
-	
-	public int getConditionalStatementType() {
+	public int getElementType() {
 		switch(this.condition.getConditionType()) {
-		case Condition.DEBUG: return CONDITIONAL_DEBUG;
-		case Condition.VERSION: return CONDITIONAL_VERSION;
-		case Condition.STATIC_IF: return CONDITIONAL_STATIC_IF;
+		case Condition.DEBUG: return DEBUG_STATEMENT;
+		case Condition.VERSION: return VERSION_STATEMENT;
+		case Condition.STATIC_IF: return STATIC_IF_STATEMENT;
 		}
 		return 0;
 	}

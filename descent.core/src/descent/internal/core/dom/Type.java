@@ -4,7 +4,7 @@ import descent.core.dom.IDElementVisitor;
 import descent.core.dom.IType;
 
 
-public class Type extends AbstractElement implements IType {
+public abstract class Type extends AbstractElement implements IType {
 
 	public static Type tvoid = new TypeBasic(TY.Tvoid);
 	public static Type tint8 = new TypeBasic(TY.Tint8);
@@ -75,10 +75,6 @@ public class Type extends AbstractElement implements IType {
 
 	public void accept(IDElementVisitor visitor) {
 		// TODO Auto-generated method stub
-	}
-
-	public int getElementType() {
-		return TYPE;
 	}
 
 	public int getTypeType() {

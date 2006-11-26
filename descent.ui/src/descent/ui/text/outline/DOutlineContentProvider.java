@@ -68,7 +68,9 @@ public class DOutlineContentProvider implements ITreeContentProvider {
 			list = new ArrayList<Object>();
 			addDeclDefs(list, ((ILinkDeclaration) e).getDeclarationDefinitions());
 			return list.toArray();
-		case IDElement.CONDITIONAL_DECLARATION:
+		case IDElement.VERSION_DECLARATION:
+		case IDElement.DEBUG_DECLARATION:
+		case IDElement.STATIC_IF_DECLARATION:
 			IConditionalDeclaration c = (IConditionalDeclaration) e;
 			list = new ArrayList<Object>();
 			addDeclDefs(list, c.getIfTrueDeclarationDefinitions());
@@ -145,7 +147,9 @@ public class DOutlineContentProvider implements ITreeContentProvider {
 			return ((IEnumDeclaration) e).getMembers().length > 0;
 		case IDElement.LINK_DECLARATION:
 			return ((ILinkDeclaration) e).getDeclarationDefinitions().length > 0;
-		case IDElement.CONDITIONAL_DECLARATION:
+		case IDElement.VERSION_DECLARATION:
+		case IDElement.DEBUG_DECLARATION:
+		case IDElement.STATIC_IF_DECLARATION:
 			IConditionalDeclaration v = (IConditionalDeclaration) e;
 			return v.getIfTrueDeclarationDefinitions().length > 0 ||
 				v.getIfFalseDeclarationDefinitions().length > 0;
@@ -185,8 +189,8 @@ public class DOutlineContentProvider implements ITreeContentProvider {
 			return 0;
 		}
 
-		public int getOffset() {
-			return imports[0].getOffset();
+		public int getStartPosition() {
+			return imports[0].getStartPosition();
 		}
 		
 		public void accept(IDElementVisitor visitor) { }
@@ -209,8 +213,8 @@ public class DOutlineContentProvider implements ITreeContentProvider {
 			return 0;
 		}
 
-		public int getOffset() {
-			return declDefs[0].getOffset();
+		public int getStartPosition() {
+			return declDefs[0].getStartPosition();
 		}
 		
 		public void accept(IDElementVisitor visitor) { }

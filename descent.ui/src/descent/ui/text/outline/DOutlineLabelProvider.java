@@ -5,11 +5,11 @@ import org.eclipse.swt.graphics.Image;
 
 import descent.core.dom.IAggregateDeclaration;
 import descent.core.dom.IAliasDeclaration;
+import descent.core.dom.IAliasTemplateParameter;
 import descent.core.dom.IArgument;
 import descent.core.dom.IArrayType;
 import descent.core.dom.IAssociativeArrayType;
 import descent.core.dom.IConditionAssignment;
-import descent.core.dom.IConditionalDeclaration;
 import descent.core.dom.IDElement;
 import descent.core.dom.IDebugDeclaration;
 import descent.core.dom.IDelegateType;
@@ -28,12 +28,11 @@ import descent.core.dom.IPointerType;
 import descent.core.dom.IPragmaDeclaration;
 import descent.core.dom.ISelectiveImport;
 import descent.core.dom.IStaticArrayType;
-import descent.core.dom.ITemplateAliasParameter;
 import descent.core.dom.ITemplateDeclaration;
 import descent.core.dom.ITemplateInstanceType;
 import descent.core.dom.ITemplateParameter;
-import descent.core.dom.ITemplateTypeParameter;
 import descent.core.dom.IType;
+import descent.core.dom.ITypeTemplateParameter;
 import descent.core.dom.ITypedefDeclaration;
 import descent.core.dom.ITypeofType;
 import descent.core.dom.IVariableDeclaration;
@@ -212,21 +211,14 @@ public class DOutlineLabelProvider extends LabelProvider {
 			case ILinkDeclaration.LINKAGE_PASCAL: return "Pascal";
 			}
 			break;
-		case IDElement.CONDITIONAL_DECLARATION:
-			IConditionalDeclaration c = (IConditionalDeclaration) element;
-			switch(c.getConditionalDeclarationType()) {
-			case IConditionalDeclaration.CONDITIONAL_DEBUG:
-				IDebugDeclaration d = (IDebugDeclaration) element;
-				name = d.getDebug();
-				return name == null ? "" : name.toString();
-			case IConditionalDeclaration.CONDITIONAL_VERSION:
-				IVersionDeclaration v = (IVersionDeclaration) element;
-				name = v.getVersion();
-				return name == null ? "" : name.toString();
-			case IConditionalDeclaration.CONDITIONAL_STATIC_IF:
-				return "static if"; // TODO
-			}
-			break;
+		case IDElement.VERSION_DECLARATION:
+			IVersionDeclaration v = (IVersionDeclaration) element;
+			name = v.getVersion();
+			return name == null ? "" : name.toString();
+		case IDElement.DEBUG_DECLARATION:
+			IDebugDeclaration d = (IDebugDeclaration) element;
+			name = d.getDebug();
+			return name == null ? "" : name.toString();
 		case IDElement.CONDITION_ASSIGNMENT:
 			IConditionAssignment va = (IConditionAssignment) element;
 			s = new StringBuilder();
@@ -263,11 +255,14 @@ public class DOutlineLabelProvider extends LabelProvider {
 			 return "import declarations";
 		case IImaginaryElements.ELSE:
 			return "else";
-		case IDElement.TYPE:
+		}
+		
+		if (element instanceof IType) {
 			s = new StringBuilder();
 			appendType(s, (IType) element);
 			return s.toString();
 		}
+		
 		return super.getText(element);
 	}
 	
@@ -366,15 +361,10 @@ public class DOutlineLabelProvider extends LabelProvider {
 			return templateImage;
 		case IDElement.LINK_DECLARATION:
 			return linkImage;
-		case IDElement.CONDITIONAL_DECLARATION:
-			IConditionalDeclaration c = (IConditionalDeclaration) element;
-			switch(c.getConditionalDeclarationType()) {
-			case IConditionalDeclaration.CONDITIONAL_DEBUG:
-				return debugImage;
-			case IConditionalDeclaration.CONDITIONAL_VERSION:
-				return versionImage;
-			}
-			break;
+		case IDElement.DEBUG_DECLARATION:
+			return debugImage;
+		case IDElement.VERSION_DECLARATION:
+			return versionImage;
 		case IDElement.CONDITION_ASSIGNMENT:
 			IConditionAssignment va = (IConditionAssignment) element;
 			switch(va.getConditionAssignmentType()) {
@@ -428,9 +418,9 @@ public class DOutlineLabelProvider extends LabelProvider {
 		
 		int i = 0;
 		for(ITemplateParameter p : templateParameters) {
-			switch(p.getTemplateParameterType()) {
-			case ITemplateParameter.TEMPLATE_PARAMETER_TYPE:
-				ITemplateTypeParameter ttp = (ITemplateTypeParameter) p;
+			switch(p.getElementType()) {
+			case ITemplateParameter.TYPE_TEMPLATE_PARAMETER:
+				ITypeTemplateParameter ttp = (ITypeTemplateParameter) p;
 				s.append(ttp.getName().toString());
 				if (ttp.getSpecificType() != null) {
 					s.append(" : ");
@@ -441,8 +431,8 @@ public class DOutlineLabelProvider extends LabelProvider {
 					appendType(s, ttp.getDefaultType());
 				}
 				break;
-			case ITemplateParameter.TEMPLATE_PARAMETER_ALIAS:
-				ITemplateAliasParameter tap = (ITemplateAliasParameter) p;
+			case ITemplateParameter.ALIAS_TEMPLATE_PARAMETER:
+				IAliasTemplateParameter tap = (IAliasTemplateParameter) p;
 				s.append("alias ");
 				s.append(tap.getName().toString());
 				if (tap.getSpecificType() != null) {
@@ -490,55 +480,60 @@ public class DOutlineLabelProvider extends LabelProvider {
 	}
 	
 	private void appendType(StringBuilder s, IType type) {
-		switch(type.getTypeType()) {
-		case IType.TYPE_BASIC:
+		switch(type.getElementType()) {
+		case IType.BASIC_TYPE:
 			s.append(type);
 			break;
-		case IType.TYPE_POINTER:
+		case IType.POINTER_TYPE:
 			IPointerType pointer = (IPointerType) type;
 			appendType(s, pointer.getInnerType());
 			s.append('*');
 			break;
-		case IType.TYPE_ARRAY:
+		case IType.DYNAMIC_ARRAY_TYPE: {
 			IArrayType array = (IArrayType) type;
 			appendType(s, array.getInnerType());
+			s.append("[]");
+			break;
+		}
+		case IType.STATIC_ARRAY_TYPE: {
+			IStaticArrayType array = (IStaticArrayType) type;
+			appendType(s, array.getInnerType());
 			s.append('[');
-			switch(array.getArrayTypeType()) {
-			case IArrayType.ASSOCIATIVE_ARRAY:
-				IAssociativeArrayType assoc = (IAssociativeArrayType) array;
-				appendType(s, assoc.getKeyType());
-				break;
-			case IArrayType.STATIC_ARRAY:
-				IStaticArrayType st = (IStaticArrayType) array;
-				s.append(st.getDimension().toString());
-				break;
-			}
+			s.append(array.getDimension().toString());
 			s.append(']');
 			break;
-		case IType.TYPE_TEMPLATE_INSTANCE:
+		}
+		case IType.ASSOCIATIVE_ARRAY_TYPE:
+			IAssociativeArrayType array = (IAssociativeArrayType) type;
+			appendType(s, array.getInnerType());
+			s.append('[');
+			appendType(s, array.getKeyType());
+			s.append(']');
+			break;
+		case IType.TEMPLATE_INSTANCE_TYPE:
 			ITemplateInstanceType ti = (ITemplateInstanceType) type;
 			s.append(ti.getShortName());
 			s.append("!(");
 			appendElements(s, ti.getTemplateArguments());
 			s.append(")");
 			break;
-		case IType.TYPE_IDENTIFIER:
+		case IType.IDENTIFIER_TYPE:
 			IIdentifierType it = (IIdentifierType) type;
 			s.append(it.getShortName());
 			break;
-		case IType.TYPE_DELEGATE:
-		case IType.TYPE_POINTER_TO_FUNCTION:
+		case IType.DELEGATE_TYPE:
+		case IType.POINTER_TO_FUNCTION_TYPE:
 			IDelegateType dt = (IDelegateType) type;
 			appendType(s, dt.getReturnType());
 			s.append(' ');
-			if (type.getTypeType() == IType.TYPE_DELEGATE) {
+			if (type.getElementType() == IType.DELEGATE_TYPE) {
 				s.append("delegate");
 			} else {
 				s.append("function");
 			}
 			appendArguments(s, dt.getArguments());
 			break;
-		case IType.TYPE_TYPEOF:
+		case IType.TYPEOF_TYPE:
 			ITypeofType tt = (ITypeofType) type;
 			s.append("typeof(");
 			s.append(tt.getExpression());

@@ -6,8 +6,8 @@ public class SuperExp extends Expression {
 		// TODO Auto-generated constructor stub
 	}
 	
-	public int getExpressionType() {
-		return EXPRESSION_SUPER;
+	public int getElementType() {
+		return SUPER_EXPRESSION;
 	}
 	
 	@Override

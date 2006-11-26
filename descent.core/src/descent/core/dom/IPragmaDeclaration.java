@@ -7,7 +7,7 @@ package descent.core.dom;
  * pragma(name, arg1, arg2, ..., argN) { }
  * </pre>
  */
-public interface IPragmaDeclaration extends IDElement {
+public interface IPragmaDeclaration extends IDeclaration {
 	
 	/**
 	 * Returns the name of the pragma.
@@ -23,6 +23,6 @@ public interface IPragmaDeclaration extends IDElement {
 	 * Returns the declaration definitions contained in this
 	 * pragma declaration.
 	 */
-	IDElement[] getDeclarationDefinitions();
+	IDeclaration[] getDeclarationDefinitions();
 
 }

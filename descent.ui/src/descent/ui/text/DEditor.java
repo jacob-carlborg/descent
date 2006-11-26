@@ -145,7 +145,7 @@ public class DEditor extends AbstractDecoratedTextEditor {
 	 * element has comments, the comments are also highlighted.
 	 */
 	public void highlightRangeForElement(IDElement element, boolean moveCursor) {
-		setHighlightRange(element.getOffset(), element.getLength(), moveCursor);
+		setHighlightRange(element.getStartPosition(), element.getLength(), moveCursor);
 	}
 	
 	public Object getAdapter(Class required) {

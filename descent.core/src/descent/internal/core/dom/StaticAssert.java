@@ -2,9 +2,9 @@ package descent.internal.core.dom;
 
 import descent.core.dom.IDElementVisitor;
 import descent.core.dom.IExpression;
-import descent.core.dom.IStaticAssert;
+import descent.core.dom.IStaticAssertDeclaration;
 
-public class StaticAssert extends Dsymbol implements IStaticAssert {
+public class StaticAssert extends Dsymbol implements IStaticAssertDeclaration {
 	
 	public Expression exp;
 	public Expression msg;

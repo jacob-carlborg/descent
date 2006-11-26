@@ -8,6 +8,6 @@ public interface INewAnonymousClassExpression extends IExpression {
 	
 	IBaseClass[] getBaseClasses();
 	
-	IDElement[] getDeclarationDefinitions();
+	IDeclaration[] getDeclarationDefinitions();
 
 }

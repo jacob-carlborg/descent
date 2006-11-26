@@ -8,7 +8,7 @@ public class VoidInitializer extends Initializer {
 		// TODO Auto-generated constructor stub
 	}
 	
-	public int getInitializerType() {
+	public int getElementType() {
 		return VOID_INITIALIZER;
 	}
 	

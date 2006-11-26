@@ -8,8 +8,8 @@ public class GotoDefaultStatement extends Statement {
 		// TODO Auto-generated constructor stub
 	}
 	
-	public int getStatementType() {
-		return STATEMENT_GOTO_DEFAULT;
+	public int getElementType() {
+		return GOTO_DEFAULT_STATEMENT;
 	}
 	
 	public void accept(IDElementVisitor visitor) {

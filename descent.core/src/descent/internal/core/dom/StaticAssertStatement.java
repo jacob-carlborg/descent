@@ -20,8 +20,8 @@ public class StaticAssertStatement extends Statement implements IStaticAssertSta
 		return staticAssert.msg;
 	}
 	
-	public int getStatementType() {
-		return STATEMENT_STATIC_ASSERT;
+	public int getElementType() {
+		return STATIC_ASSERT_STATEMENT;
 	}
 	
 	public void accept(IDElementVisitor visitor) {

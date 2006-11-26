@@ -25,8 +25,8 @@ public class NewExp extends Expression implements INewExpression {
 		return arguments;
 	}
 	
-	public int getExpressionType() {
-		return EXPRESSION_NEW;
+	public int getElementType() {
+		return NEW_EXPRESSION;
 	}
 	
 	public void accept(IDElementVisitor visitor) {

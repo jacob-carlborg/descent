@@ -20,8 +20,8 @@ public class StringExp extends Expression implements IStringExpression {
 		return (char) postfix;
 	}
 	
-	public int getExpressionType() {
-		return EXPRESSION_STRING;
+	public int getElementType() {
+		return STRING_EXPRESSION;
 	}
 
 }

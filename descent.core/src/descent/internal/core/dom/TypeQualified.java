@@ -5,7 +5,7 @@ import java.util.List;
 
 import descent.core.dom.IQualifiedName;
 
-public class TypeQualified extends Type {
+public abstract class TypeQualified extends Type {
 	
 	public List<Identifier> idents;
 	public QualifiedName qName;
@@ -25,6 +25,5 @@ public class TypeQualified extends Type {
 		}
 		return qName;
 	}
-
 
 }

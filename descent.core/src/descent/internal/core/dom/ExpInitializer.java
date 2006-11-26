@@ -21,7 +21,7 @@ public class ExpInitializer extends Initializer implements IExpressionInitialize
 		return e;
 	}
 	
-	public int getInitializerType() {
+	public int getElementType() {
 		return EXPRESSION_INITIALIZER;
 	}
 	

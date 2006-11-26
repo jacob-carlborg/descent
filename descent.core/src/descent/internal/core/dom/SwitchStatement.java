@@ -23,8 +23,8 @@ public class SwitchStatement extends Statement implements ISwitchStatement {
 		return body;
 	}
 	
-	public int getStatementType() {
-		return STATEMENT_SWITCH;
+	public int getElementType() {
+		return SWITCH_STATEMENT;
 	}
 	
 	public void accept(IDElementVisitor visitor) {

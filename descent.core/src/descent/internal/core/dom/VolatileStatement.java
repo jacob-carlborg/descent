@@ -16,8 +16,8 @@ public class VolatileStatement extends Statement implements IVolatileStatement {
 		return s;
 	}
 	
-	public int getStatementType() {
-		return STATEMENT_VOLATILE;
+	public int getElementType() {
+		return VOLATILE_STATEMENT;
 	}
 	
 	public void accept(IDElementVisitor visitor) {

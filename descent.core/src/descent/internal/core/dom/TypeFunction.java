@@ -22,6 +22,11 @@ public class TypeFunction extends Type {
 		return this.next;
 	}
 	
+	public int getElementType() {
+		// TODO
+		return 0;
+	}
+	
 	public IArgument[] getArguments() {
 		if (arguments == null) return new IArgument[0];
 		return arguments.toArray(new IArgument[arguments.size()]);

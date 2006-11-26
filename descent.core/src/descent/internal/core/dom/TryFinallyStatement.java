@@ -15,8 +15,8 @@ public class TryFinallyStatement extends Statement implements ITryStatement {
 		this.finalbody = finalbody;
 	}
 	
-	public int getStatementType() {
-		return STATEMENT_TRY;
+	public int getElementType() {
+		return TRY_STATEMENT;
 	}
 	
 	public ICatch[] getCatches() {

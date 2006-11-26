@@ -3,7 +3,7 @@ package descent.core.dom;
 /**
  * A variable declaration.
  */
-public interface IVariableDeclaration extends IDElement, IModifiersContainer, ICommented {
+public interface IVariableDeclaration extends IDeclaration, IModifiersContainer, ICommented {
 	
 	/**
 	 * Returns the type of the variable. Note that multiple variables

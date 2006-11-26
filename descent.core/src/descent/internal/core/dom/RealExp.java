@@ -8,8 +8,8 @@ public class RealExp extends Expression {
 		// TODO Auto-generated constructor stub
 	}
 	
-	public int getExpressionType() {
-		return EXPRESSION_REAL;
+	public int getElementType() {
+		return REAL_EXPRESSION;
 	}
 
 }

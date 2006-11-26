@@ -2,24 +2,24 @@ package descent.internal.core.dom;
 
 import java.util.List;
 
-import descent.core.dom.IDElement;
 import descent.core.dom.IDElementVisitor;
+import descent.core.dom.IDeclaration;
 import descent.core.dom.IProtectionDeclaration;
 
 public class ProtDeclaration extends Dsymbol implements IProtectionDeclaration {
 	
 	public PROT prot;
-	public IDElement[] declDefs;
+	public IDeclaration[] declDefs;
 
-	public ProtDeclaration(PROT prot, List<IDElement> declDefs) {
+	public ProtDeclaration(PROT prot, List<IDeclaration> declDefs) {
 		this.prot = prot;
 		if (declDefs != null) {
-			this.declDefs = declDefs.toArray(new IDElement[declDefs.size()]);
+			this.declDefs = declDefs.toArray(new IDeclaration[declDefs.size()]);
 		}
 	}
 	
-	public IDElement[] getDeclarationDefinitions() {
-		if (declDefs == null) return AbstractElement.NO_ELEMENTS;
+	public IDeclaration[] getDeclarationDefinitions() {
+		if (declDefs == null) return AbstractElement.NO_DECLARATIONS;
 		return declDefs;
 	}
 	

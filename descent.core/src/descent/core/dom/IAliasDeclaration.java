@@ -7,7 +7,7 @@ package descent.core.dom;
  * alias type name;
  * </pre>
  */
-public interface IAliasDeclaration extends IDElement, IModifiersContainer {
+public interface IAliasDeclaration extends IDeclaration, IModifiersContainer {
 	
 	/**
 	 * The name of the alias.

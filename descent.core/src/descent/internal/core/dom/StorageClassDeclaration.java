@@ -2,24 +2,24 @@ package descent.internal.core.dom;
 
 import java.util.List;
 
-import descent.core.dom.IDElement;
 import descent.core.dom.IDElementVisitor;
+import descent.core.dom.IDeclaration;
 import descent.core.dom.IStorageClassDeclaration;
 
 public class StorageClassDeclaration extends Dsymbol implements IStorageClassDeclaration {
 	
 	public int stc;
-	public IDElement[] decl;
+	public IDeclaration[] decl;
 
-	public StorageClassDeclaration(int stc, List<IDElement> declDefs) {
+	public StorageClassDeclaration(int stc, List<IDeclaration> declDefs) {
 		this.stc = stc;
 		if (declDefs != null) {
-			this.decl = declDefs.toArray(new IDElement[declDefs.size()]);
+			this.decl = declDefs.toArray(new IDeclaration[declDefs.size()]);
 		}
 	}
 	
-	public IDElement[] getDeclarationDefinitions() {
-		if (decl == null) return AbstractElement.NO_ELEMENTS;
+	public IDeclaration[] getDeclarationDefinitions() {
+		if (decl == null) return AbstractElement.NO_DECLARATIONS;
 		return decl;
 	}
 	

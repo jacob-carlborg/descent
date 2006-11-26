@@ -6,7 +6,7 @@ package descent.core.dom;
  * <p>Note that if the aggregate is templated (i.e. <code>class Foo(T) { }</code>) the parser
  * dosen't generate a template declaration: instead, it makes this class templated.</p>
  */
-public interface IAggregateDeclaration extends IDElement, IModifiersContainer, ICommented {
+public interface IAggregateDeclaration extends IDeclaration, IModifiersContainer, ICommented {
 	
 	/**
 	 * Constant representing a class declaration. 
@@ -50,7 +50,7 @@ public interface IAggregateDeclaration extends IDElement, IModifiersContainer, I
 	 * Returns the declaration definitions contained in this aggregate.
 	 * May be empty but never <code>null</null>.
 	 */
-	IDElement[] getDeclarationDefinitions();
+	IDeclaration[] getDeclarationDefinitions();
 	
 	/**
 	 * Determines if this aggregate is templated.

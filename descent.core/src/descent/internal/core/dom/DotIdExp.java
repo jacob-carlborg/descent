@@ -1,11 +1,11 @@
 package descent.internal.core.dom;
 
-import descent.core.dom.IDotIdExpression;
+import descent.core.dom.IDotIdentifierExpression;
 import descent.core.dom.IDElementVisitor;
 import descent.core.dom.IExpression;
 import descent.core.dom.IName;
 
-public class DotIdExp extends Expression implements IDotIdExpression {
+public class DotIdExp extends Expression implements IDotIdentifierExpression {
 
 	private final Expression e;
 	private final Identifier id;
@@ -16,7 +16,7 @@ public class DotIdExp extends Expression implements IDotIdExpression {
 	}
 	
 	public IExpression getExpression() {
-		if (e.getExpressionType() == IExpression.EXPRESSION_IDENTIFIER) {
+		if (e.getElementType() == IExpression.IDENTIFIER_EXPRESSION) {
 			// .id
 			String s = e.toString();
 			if (s.length() == 0) return null;
@@ -28,8 +28,8 @@ public class DotIdExp extends Expression implements IDotIdExpression {
 		return id;
 	}
 	
-	public int getExpressionType() {
-		return EXPRESSION_DOT_ID;
+	public int getElementType() {
+		return DOT_IDENTIFIER_EXPRESSION;
 	}
 	
 	public void accept(IDElementVisitor visitor) {

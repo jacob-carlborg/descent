@@ -5,7 +5,6 @@ import org.eclipse.jface.text.Position;
 import descent.core.dom.IAggregateDeclaration;
 import descent.core.dom.IAliasDeclaration;
 import descent.core.dom.IConditionAssignment;
-import descent.core.dom.IConditionalDeclaration;
 import descent.core.dom.IDElement;
 import descent.core.dom.IDebugDeclaration;
 import descent.core.dom.IEnumDeclaration;
@@ -88,17 +87,12 @@ public class PositionHelper {
 			name = a.getName();
 			if (name != null) element = name;
 			break;
-		case IDElement.CONDITIONAL_DECLARATION:
-			IConditionalDeclaration c = (IConditionalDeclaration) element;
-			switch(c.getConditionalDeclarationType()) {
-			case IConditionalDeclaration.CONDITIONAL_VERSION:
-				name = ((IVersionDeclaration) c).getVersion();
-				break;
-			case IConditionalDeclaration.CONDITIONAL_DEBUG:
-				name = ((IDebugDeclaration) c).getDebug();
-				break;
-			default: name = null;
-			}
+		case IDElement.VERSION_DECLARATION:
+			name = ((IVersionDeclaration) element).getVersion();
+			if (name != null) element = name;
+			break;
+		case IDElement.DEBUG_DECLARATION:
+			name = ((IDebugDeclaration) element).getDebug();
 			if (name != null) element = name;
 			break;
 		case IDElement.CONDITION_ASSIGNMENT:
@@ -117,7 +111,7 @@ public class PositionHelper {
 			if (name != null) element = name;
 			break;
 		}
-		return new Position(element.getOffset(), element.getLength());
+		return new Position(element.getStartPosition(), element.getLength());
 	}
 
 }

@@ -9,7 +9,7 @@ package descent.core.dom;
  * }
  * </pre>
  */
-public interface IUnitTestDeclaration extends IDElement {
+public interface IUnitTestDeclaration extends IDeclaration {
 	
 	/**
 	 * Returns the "unittest" part of this declaration.

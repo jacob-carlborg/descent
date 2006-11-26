@@ -16,8 +16,8 @@ public class BreakStatement extends Statement implements IBreakStatement {
 		return id;
 	}
 	
-	public int getStatementType() {
-		return STATEMENT_BREAK;
+	public int getElementType() {
+		return BREAK_STATEMENT;
 	}
 	
 	public void accept(IDElementVisitor visitor) {

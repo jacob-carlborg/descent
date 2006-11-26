@@ -4,8 +4,8 @@ import java.util.List;
 
 import descent.core.dom.IAggregateDeclaration;
 import descent.core.dom.IBaseClass;
-import descent.core.dom.IDElement;
 import descent.core.dom.IDElementVisitor;
+import descent.core.dom.IDeclaration;
 import descent.core.dom.IName;
 import descent.core.dom.ITemplateParameter;
 
@@ -47,9 +47,9 @@ public abstract class AggregateDeclaration extends ScopeDsymbol implements IAggr
 	}
 	
 	@SuppressWarnings("unchecked")
-	public IDElement[] getDeclarationDefinitions() {
-		if (members == null) return AbstractElement.NO_ELEMENTS;
-		return (IDElement[]) members.toArray(new IDElement[members.size()]);
+	public IDeclaration[] getDeclarationDefinitions() {
+		if (members == null) return AbstractElement.NO_DECLARATIONS;
+		return (IDeclaration[]) members.toArray(new IDeclaration[members.size()]);
 	}
 	
 	@SuppressWarnings("unchecked")

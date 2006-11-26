@@ -7,7 +7,7 @@ package descent.core.dom;
  * invariant { }
  * </pre>
  */
-public interface IInvariantDeclaration extends IDElement {
+public interface IInvariantDeclaration extends IDeclaration {
 	
 	/**
 	 * Returns the "invariant" part.

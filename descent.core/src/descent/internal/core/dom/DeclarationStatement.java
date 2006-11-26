@@ -1,8 +1,8 @@
 package descent.internal.core.dom;
 
-import descent.core.dom.IDeclarationStatement;
-import descent.core.dom.IDElement;
 import descent.core.dom.IDElementVisitor;
+import descent.core.dom.IDeclaration;
+import descent.core.dom.IDeclarationStatement;
 
 public class DeclarationStatement extends Statement implements IDeclarationStatement {
 
@@ -12,12 +12,12 @@ public class DeclarationStatement extends Statement implements IDeclarationState
 		this.d = d;
 	}
 	
-	public int getStatementType() {
-		return STATEMENT_DECLARATION;
+	public int getElementType() {
+		return DECLARATION_STATEMENT;
 	}
 	
-	public IDElement getDeclaration() {
-		return d;
+	public IDeclaration getDeclaration() {
+		return (IDeclaration) d;
 	}
 	
 	public void accept(IDElementVisitor visitor) {

@@ -38,8 +38,8 @@ public class IftypeExp extends Expression implements IIftypeExpression {
 		return strongType;
 	}
 	
-	public int getExpressionType() {
-		return EXPRESSION_IFTYPE;
+	public int getElementType() {
+		return IFTYPE_EXPRESSION;
 	}
 	
 	@Override

@@ -23,8 +23,8 @@ public class DoStatement extends Statement implements IDoWhileStatement {
 		return body;
 	}
 	
-	public int getStatementType() {
-		return STATEMENT_DO_WHILE;
+	public int getElementType() {
+		return DO_WHILE_STATEMENT;
 	}
 	
 	public void accept(IDElementVisitor visitor) {

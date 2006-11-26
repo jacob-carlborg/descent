@@ -3,8 +3,8 @@ package descent.internal.core.dom;
 import java.util.List;
 
 import descent.core.dom.IBaseClass;
-import descent.core.dom.IDElement;
 import descent.core.dom.IDElementVisitor;
+import descent.core.dom.IDeclaration;
 import descent.core.dom.IExpression;
 import descent.core.dom.INewAnonymousClassExpression;
 
@@ -28,8 +28,8 @@ public class NewAnonClassExp extends Expression implements INewAnonymousClassExp
 		this.cd = cd;
 	}
 	
-	public int getExpressionType() {
-		return EXPRESSION_NEW_ANONYMOUS_CLASS;
+	public int getElementType() {
+		return NEW_ANONYMOUS_CLASS_EXPRESSION;
 	}
 	
 	public IExpression[] getCallArguments() {
@@ -44,7 +44,7 @@ public class NewAnonClassExp extends Expression implements INewAnonymousClassExp
 		return cd.getBaseClasses();
 	}
 	
-	public IDElement[] getDeclarationDefinitions() {
+	public IDeclaration[] getDeclarationDefinitions() {
 		return cd.getDeclarationDefinitions();
 	}
 	

@@ -92,6 +92,7 @@ import java.util.List;
 
 import descent.core.dom.IBaseClass;
 import descent.core.dom.IDElement;
+import descent.core.dom.IDeclaration;
 import descent.core.dom.IEnumMember;
 import descent.core.dom.IImport;
 import descent.core.dom.IProblem;
@@ -127,8 +128,8 @@ public class Parser extends Lexer {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public List<IDElement> parseModule() {
-	    List<IDElement> decldefs = new ArrayList<IDElement>();
+	public List<IDeclaration> parseModule() {
+	    List<IDeclaration> decldefs = new ArrayList<IDeclaration>();
 
 		// ModuleDeclation leads off
 		if (token.value == TOKmodule) {
@@ -189,13 +190,13 @@ public class Parser extends Lexer {
 	}
 
 	@SuppressWarnings("unchecked")
-	private List<IDElement> parseDeclDefs(boolean once) {
+	private List<IDeclaration> parseDeclDefs(boolean once) {
 		Object[] tempObj;
 
 		AbstractElement s;
-		List<IDElement> decldefs;
-		List<IDElement> a = new ArrayList<IDElement>();
-		List<IDElement> aelse;
+		List<IDeclaration> decldefs;
+		List<IDeclaration> a = new ArrayList<IDeclaration>();
+		List<IDeclaration> aelse;
 		PROT prot;
 		int stc;
 		Condition condition;
@@ -206,7 +207,7 @@ public class Parser extends Lexer {
 		boolean[] isSingle = new boolean[1];
 
 		// printf("Parser::parseDeclDefs()\n");
-		decldefs = new ArrayList<IDElement>();
+		decldefs = new ArrayList<IDeclaration>();
 		do {
 			comment = token.blockComment;
 			commentStart = token.blockCommentPtr;
@@ -334,7 +335,7 @@ public class Parser extends Lexer {
 					stc = STCstatic;
 					// goto Lstc2;
 					tempObj = parseDeclDefs_Lstc2(stc, a, isSingle);
-					a = (List<IDElement>) tempObj[0];
+					a = (List<IDeclaration>) tempObj[0];
 					stc = ((Integer) tempObj[1]);
 					s = (AbstractElement) tempObj[2];
 				}
@@ -367,7 +368,7 @@ public class Parser extends Lexer {
 						s = (AbstractElement) a.get(0);
 						s.modifiers |= mod;
 					} else {
-						for(IDElement elem : (List<IDElement>) a) {
+						for(IDeclaration elem : a) {
 							((AbstractElement) elem).modifiers |= mod;
 						}
 					}
@@ -416,7 +417,7 @@ public class Parser extends Lexer {
 						s.modifiers |= protection;
 					} else {
 						s = new ProtDeclaration(prot, a);
-						for(IDElement elem : (List<IDElement>) a) {
+						for(IDElement elem : a) {
 							((AbstractElement) elem).modifiers |= protection;
 						}
 					}
@@ -573,8 +574,8 @@ public class Parser extends Lexer {
 				condition = parseIftypeCondition();
 				// goto Lcondition;
 				tempObj = parseDeclDefs_Lcondition(condition);
-				a = (List<IDElement>) tempObj[0];
-				aelse = (List<IDElement>) tempObj[1];
+				a = (List<IDeclaration>) tempObj[0];
+				aelse = (List<IDeclaration>) tempObj[1];
 				s = (AbstractElement) tempObj[2];
 				s.start = saveToken.ptr;
 				s.length = prevToken.ptr + prevToken.len - s.start;
@@ -590,7 +591,7 @@ public class Parser extends Lexer {
 				continue;
 			}
 			if (s != null) {
-				decldefs.add(s);
+				decldefs.add((IDeclaration) s);
 				addComment(s, comment, commentStart);
 			}
 		} while (!once);
@@ -606,8 +607,8 @@ public class Parser extends Lexer {
 	
 	// a, aelse, s
 	private Object[] parseDeclDefs_Lcondition(Condition condition) {
-		List<IDElement> a = parseBlock();
-		List<IDElement> aelse = null;
+		List<IDeclaration> a = parseBlock();
+		List<IDeclaration> aelse = null;
 		if (token.value == TOKelse)
 		{   nextToken();
 		    aelse = parseBlock();
@@ -617,7 +618,7 @@ public class Parser extends Lexer {
 	}
 	
 	// a, stc, s
-	private Object[] parseDeclDefs_Lstc2(int stc, List<IDElement> a, boolean[] isSingle) {
+	private Object[] parseDeclDefs_Lstc2(int stc, List<IDeclaration> a, boolean[] isSingle) {
 		boolean repeat = true;
 		while(repeat) {
 			switch (token.value)
@@ -667,12 +668,12 @@ public class Parser extends Lexer {
 		}
 	}
 	
-	private List<IDElement> parseBlock() {
+	private List<IDeclaration> parseBlock() {
 		return parseBlock(new boolean[1]);
 	}
 	
-	private List<IDElement> parseBlock(boolean[] isSingle) {
-		List<IDElement> a = null;
+	private List<IDeclaration> parseBlock(boolean[] isSingle) {
+		List<IDeclaration> a = null;
 	    // Dsymbol s; // <-- not used
 
 	    //printf("parseBlock()\n");
@@ -1086,7 +1087,7 @@ public class Parser extends Lexer {
 				} else {
 					if (hasdefault) {
 						IDElement e = ai != null ? ai : at;
-						problem("Default argument expected", IProblem.SEVERITY_ERROR, IProblem.DEFAULT_ARGUMENT_EXPECTED, e.getOffset(), e.getLength());
+						problem("Default argument expected", IProblem.SEVERITY_ERROR, IProblem.DEFAULT_ARGUMENT_EXPECTED, e.getStartPosition(), e.getLength());
 					}
 				}
 				if (token.value == TOKdotdotdot) { 
@@ -1242,7 +1243,7 @@ public class Parser extends Lexer {
 					if (baseclasses != null &&  baseclasses.size() > 0) {
 						IBaseClass last = baseclasses.get(baseclasses.size() - 1);
 						problem("Members expected", IProblem.SEVERITY_ERROR, IProblem.MEMBERS_EXPECTED,
-								last.getOffset(), last.getLength());
+								last.getStartPosition(), last.getLength());
 					}
 				}
 			}
@@ -1374,7 +1375,7 @@ public class Parser extends Lexer {
 		TemplateDeclaration tempdecl;
 	    Identifier id;
 	    List<TemplateParameter> tpl;
-	    List<IDElement> decldefs;
+	    List<IDeclaration> decldefs;
 	    Loc loc = new Loc(this.loc);
 
 	    Token firstToken = new Token(token);
@@ -1731,7 +1732,7 @@ public class Parser extends Lexer {
 	    return tiargs;
 	}
 	
-	private Import parseImport(List<IDElement> decldefs, boolean isstatic) {
+	private Import parseImport(List<IDeclaration> decldefs, boolean isstatic) {
 		ImportDeclaration importDeclaration = new ImportDeclaration();
 		importDeclaration.start = token.ptr;
 		importDeclaration.imports = new ArrayList<IImport>();
@@ -2304,7 +2305,7 @@ public class Parser extends Lexer {
 	}
 	
 	@SuppressWarnings("unchecked")
-	private List<IDElement> parseDeclarations() {
+	private List<IDeclaration> parseDeclarations() {
 		int storage_class;
 		int stc;
 		Type ts;
@@ -2435,7 +2436,7 @@ public class Parser extends Lexer {
 						ident.start, ident.length);
 			}
 			if (ident == null) {
-				problem("No identifier for declarator", IProblem.SEVERITY_ERROR, IProblem.NO_IDENTIFIER_FOR_DECLARATION, t.getOffset(), t.getLength());
+				problem("No identifier for declarator", IProblem.SEVERITY_ERROR, IProblem.NO_IDENTIFIER_FOR_DECLARATION, t.getStartPosition(), t.getLength());
 			}
 
 			if (tok == TOKtypedef || tok == TOKalias) {
@@ -2570,7 +2571,7 @@ public class Parser extends Lexer {
 			case TOKlcurly:
 				if (f.frequire != null || f.fensure != null) {
 					problem("Missing body { ... } after in or out", IProblem.SEVERITY_ERROR, IProblem.MISSING_BODY_AFTER_IN_OR_OUT,
-							f.getName().getOffset(), f.getName().getLength());
+							f.getName().getStartPosition(), f.getName().getLength());
 				}
 				f.fbody = parseStatement(PSsemi);
 				f.endloc = endloc;
@@ -2586,7 +2587,7 @@ public class Parser extends Lexer {
 			case TOKsemicolon:
 				if (f.frequire != null || f.fensure != null) {
 					problem("Missing body { ... } after in or out", IProblem.SEVERITY_ERROR, IProblem.MISSING_BODY_AFTER_IN_OR_OUT,
-							f.getName().getOffset(), f.getName().getLength());
+							f.getName().getStartPosition(), f.getName().getLength());
 				}
 				f.length = token.ptr + token.len - f.start;
 				nextToken();

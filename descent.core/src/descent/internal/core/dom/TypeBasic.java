@@ -9,9 +9,8 @@ public class TypeBasic extends Type implements IBasicType {
 		super(ty, null);
 	}
 	
-	@Override
-	public int getTypeType() {
-		return TYPE_BASIC;
+	public int getElementType() {
+		return BASIC_TYPE;
 	}
 	
 	public int getBasicTypeKind() {

@@ -7,7 +7,7 @@ package descent.core.dom;
  * extern(linkage) { }
  * </pre>
  */
-public interface ILinkDeclaration extends IDElement {
+public interface ILinkDeclaration extends IDeclaration {
 	
 	int LINKAGE_D = 1;
 	int LINKAGE_C = 2;
@@ -24,6 +24,6 @@ public interface ILinkDeclaration extends IDElement {
 	/**
 	 * Returns the declarations in this linkage.
 	 */
-	IDElement[] getDeclarationDefinitions();
+	IDeclaration[] getDeclarationDefinitions();
 
 }

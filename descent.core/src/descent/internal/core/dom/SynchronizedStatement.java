@@ -23,8 +23,8 @@ public class SynchronizedStatement extends Statement implements ISynchronizedSta
 		return body;
 	}
 	
-	public int getStatementType() {
-		return STATEMENT_SYNCHRONIZED;
+	public int getElementType() {
+		return SYNCHRONIZED_STATEMENT;
 	}
 	
 	public void accept(IDElementVisitor visitor) {

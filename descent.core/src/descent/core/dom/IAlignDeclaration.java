@@ -8,7 +8,7 @@ package descent.core.dom;
  * </pre>
  *
  */
-public interface IAlignDeclaration extends IDElement {
+public interface IAlignDeclaration extends IDeclaration {
 	
 	/**
 	 * Returns the align.
@@ -18,6 +18,6 @@ public interface IAlignDeclaration extends IDElement {
 	/**
 	 * Returns the declaration definitions contained in this declaration.
 	 */
-	IDElement[] getDeclarationDefinitions();
+	IDeclaration[] getDeclarationDefinitions();
 
 }

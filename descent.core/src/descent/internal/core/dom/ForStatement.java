@@ -35,8 +35,8 @@ public class ForStatement extends Statement implements IForStatement {
 		return body;
 	}
 	
-	public int getStatementType() {
-		return STATEMENT_FOR;
+	public int getElementType() {
+		return FOR_STATEMENT;
 	}
 	
 	public void accept(IDElementVisitor visitor) {

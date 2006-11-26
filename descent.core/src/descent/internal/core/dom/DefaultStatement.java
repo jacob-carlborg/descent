@@ -12,8 +12,8 @@ public class DefaultStatement extends Statement implements IDefaultStatement {
 		this.s = s;
 	}
 	
-	public int getStatementType() {
-		return STATEMENT_DEFAULT;
+	public int getElementType() {
+		return DEFAULT_STATEMENT;
 	}
 	
 	public IStatement getStatement() {

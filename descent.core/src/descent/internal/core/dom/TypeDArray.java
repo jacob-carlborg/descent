@@ -8,6 +8,10 @@ public class TypeDArray extends TypeArray {
 		super(TY.Tarray, t);
 	}
 	
+	public int getElementType() {
+		return DYNAMIC_ARRAY_TYPE;
+	}
+	
 	@Override
 	public String toString() {
 		return next.toString() + "[]";

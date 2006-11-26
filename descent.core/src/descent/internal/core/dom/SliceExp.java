@@ -28,8 +28,8 @@ public class SliceExp extends Expression implements ISliceExpression {
 		return to;
 	}
 	
-	public int getExpressionType() {
-		return EXPRESSION_SLICE;
+	public int getElementType() {
+		return SLICE_EXPRESSION;
 	}
 	
 	public void accept(IDElementVisitor visitor) {

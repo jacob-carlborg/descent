@@ -24,8 +24,8 @@ public class ArrayExp extends Expression implements IArrayExpression {
 		return e;
 	}
 	
-	public int getExpressionType() {
-		return EXPRESSION_ARRAY;
+	public int getElementType() {
+		return ARRAY_EXPRESSION;
 	}
 	
 	public void accept(IDElementVisitor visitor) {

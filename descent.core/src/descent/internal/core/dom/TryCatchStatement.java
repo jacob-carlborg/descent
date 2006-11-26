@@ -29,8 +29,8 @@ public class TryCatchStatement extends Statement implements ITryStatement {
 		return null;
 	}
 	
-	public int getStatementType() {
-		return STATEMENT_TRY;
+	public int getElementType() {
+		return TRY_STATEMENT;
 	}
 	
 	public void accept(IDElementVisitor visitor) {

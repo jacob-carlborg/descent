@@ -23,8 +23,8 @@ public class LabelStatement extends Statement implements ILabelStatement {
 		return s;
 	}
 	
-	public int getStatementType() {
-		return STATEMENT_LABEL;
+	public int getElementType() {
+		return LABEL_STATEMENT;
 	}
 	
 	public void accept(IDElementVisitor visitor) {

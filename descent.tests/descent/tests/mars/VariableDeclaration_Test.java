@@ -113,7 +113,7 @@ public class VariableDeclaration_Test extends Parser_Test {
 		assertEquals(IDElement.VARIABLE_DECLARATION, var.getElementType());
 		assertEquals("x", var.getName().toString());
 		assertPosition(var.getName(), 7, 1);
-		assertEquals(IType.TYPE_POINTER_TO_FUNCTION, var.getType().getTypeType());
+		assertEquals(IType.POINTER_TO_FUNCTION_TYPE, var.getType().getElementType());
 		assertPosition(var, 1, 15);
 		
 		IDelegateType del = (IDelegateType) var.getType();
@@ -131,11 +131,11 @@ public class VariableDeclaration_Test extends Parser_Test {
 		assertEquals(IDElement.VARIABLE_DECLARATION, var.getElementType());
 		assertEquals("x", var.getName().toString());
 		assertPosition(var.getName(), 10, 1);
-		assertEquals(IType.TYPE_ARRAY, var.getType().getTypeType());
+		assertEquals(IType.DYNAMIC_ARRAY_TYPE, var.getType().getElementType());
 		assertPosition(var, 1, 18);
 		
 		IArrayType array = (IArrayType) var.getType();
-		assertEquals(IType.TYPE_POINTER_TO_FUNCTION, array.getInnerType().getTypeType());
+		assertEquals(IType.POINTER_TO_FUNCTION_TYPE, array.getInnerType().getElementType());
 		IDelegateType del = (IDelegateType) array.getInnerType();
 		assertEquals("char", del.getArguments()[0].getType().toString());
 		assertEquals("int", del.getReturnType().toString());
@@ -237,8 +237,7 @@ public class VariableDeclaration_Test extends Parser_Test {
 		assertEquals(IDElement.VARIABLE_DECLARATION, var.getElementType());
 		
 		IAssociativeArrayType type = (IAssociativeArrayType) var.getType();
-		assertEquals(IType.TYPE_ARRAY, type.getTypeType());
-		assertEquals(IArrayType.ASSOCIATIVE_ARRAY, type.getArrayTypeType());
+		assertEquals(IArrayType.ASSOCIATIVE_ARRAY_TYPE, type.getElementType());
 		assertEquals("char", type.getInnerType().toString());
 		assertEquals("int", type.getKeyType().toString());
 	}
@@ -253,7 +252,7 @@ public class VariableDeclaration_Test extends Parser_Test {
 		assertEquals(IDElement.VARIABLE_DECLARATION, var.getElementType());
 		
 		IType type = var.getType();
-		assertEquals(IType.TYPE_TEMPLATE_INSTANCE, type.getTypeType());
+		assertEquals(IType.TEMPLATE_INSTANCE_TYPE, type.getElementType());
 		ITemplateInstanceType ti = (ITemplateInstanceType) type;
 		assertEquals("a.b.Temp", ti.getName().toString());
 		assertEquals("Temp", ti.getShortName());
@@ -273,7 +272,7 @@ public class VariableDeclaration_Test extends Parser_Test {
 		assertEquals(IDElement.VARIABLE_DECLARATION, var.getElementType());
 		
 		IType type = var.getType();
-		assertEquals(IType.TYPE_TEMPLATE_INSTANCE, type.getTypeType());
+		assertEquals(IType.TEMPLATE_INSTANCE_TYPE, type.getElementType());
 		ITemplateInstanceType ti = (ITemplateInstanceType) type;
 		assertEquals("Temp", ti.getName().toString());
 		assertEquals("Temp", ti.getShortName());
@@ -293,7 +292,7 @@ public class VariableDeclaration_Test extends Parser_Test {
 		assertEquals(IDElement.VARIABLE_DECLARATION, var.getElementType());
 		
 		IType type = var.getType();
-		assertEquals(IType.TYPE_TEMPLATE_INSTANCE, type.getTypeType());
+		assertEquals(IType.TEMPLATE_INSTANCE_TYPE, type.getElementType());
 		ITemplateInstanceType ti = (ITemplateInstanceType) type;
 		assertEquals(".Temp", ti.getName().toString());
 		assertEquals("Temp", ti.getShortName());

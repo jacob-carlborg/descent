@@ -4,12 +4,12 @@ import descent.core.dom.IAggregateDeclaration;
 import descent.core.dom.ICompilationUnit;
 import descent.core.dom.IDElement;
 import descent.core.dom.IFunctionDeclaration;
-import descent.core.dom.ITemplateAliasParameter;
+import descent.core.dom.IAliasTemplateParameter;
 import descent.core.dom.ITemplateDeclaration;
 import descent.core.dom.ITemplateParameter;
-import descent.core.dom.ITemplateTupleParameter;
-import descent.core.dom.ITemplateTypeParameter;
-import descent.core.dom.ITemplateValueParameter;
+import descent.core.dom.ITupleTemplateParameter;
+import descent.core.dom.ITypeTemplateParameter;
+import descent.core.dom.IValueTemplateParameter;
 import descent.core.dom.IType;
 import descent.internal.core.dom.ParserFacade;
 
@@ -56,38 +56,38 @@ public class Template_Test extends Parser_Test {
 		ITemplateParameter[] tp = t.getTemplateParameters();
 		assertEquals(5, tp.length);
 		
-		ITemplateTypeParameter ttp;
+		ITypeTemplateParameter ttp;
 		
-		assertEquals(ITemplateParameter.TEMPLATE_PARAMETER_TYPE, tp[0].getTemplateParameterType());
-		ttp = (ITemplateTypeParameter) tp[0];		
+		assertEquals(ITemplateParameter.TYPE_TEMPLATE_PARAMETER, tp[0].getElementType());
+		ttp = (ITypeTemplateParameter) tp[0];		
 		assertEquals("T", ttp.getName().toString());
 		assertPosition(ttp, 15, 1);
 		assertNull(ttp.getSpecificType());
 		assertNull(ttp.getDefaultType());
 		
-		assertEquals(ITemplateParameter.TEMPLATE_PARAMETER_TYPE, tp[1].getTemplateParameterType());
-		ttp = (ITemplateTypeParameter) tp[1];		
+		assertEquals(ITemplateParameter.TYPE_TEMPLATE_PARAMETER, tp[1].getElementType());
+		ttp = (ITypeTemplateParameter) tp[1];		
 		assertEquals("U", ttp.getName().toString());
 		assertPosition(ttp, 18, 6);
-		assertEquals(IType.TYPE_POINTER, ttp.getSpecificType().getTypeType());
+		assertEquals(IType.POINTER_TYPE, ttp.getSpecificType().getElementType());
 		assertNull(ttp.getDefaultType());
 		
-		assertEquals(ITemplateParameter.TEMPLATE_PARAMETER_TYPE, tp[2].getTemplateParameterType());
-		ttp = (ITemplateTypeParameter) tp[2];		
+		assertEquals(ITemplateParameter.TYPE_TEMPLATE_PARAMETER, tp[2].getElementType());
+		ttp = (ITypeTemplateParameter) tp[2];		
 		assertEquals("V", ttp.getName().toString());
 		assertPosition(ttp, 26, 7);
-		assertEquals(IType.TYPE_BASIC, ttp.getSpecificType().getTypeType());
+		assertEquals(IType.BASIC_TYPE, ttp.getSpecificType().getElementType());
 		assertNull(ttp.getDefaultType());
 		
-		assertEquals(ITemplateParameter.TEMPLATE_PARAMETER_TYPE, tp[3].getTemplateParameterType());
-		ttp = (ITemplateTypeParameter) tp[3];		
+		assertEquals(ITemplateParameter.TYPE_TEMPLATE_PARAMETER, tp[3].getElementType());
+		ttp = (ITypeTemplateParameter) tp[3];		
 		assertEquals("W", ttp.getName().toString());
 		assertPosition(ttp, 35, 7);
 		assertNull(ttp.getSpecificType());
-		assertEquals(IType.TYPE_BASIC, ttp.getDefaultType().getTypeType());
+		assertEquals(IType.BASIC_TYPE, ttp.getDefaultType().getElementType());
 		
-		assertEquals(ITemplateParameter.TEMPLATE_PARAMETER_ALIAS, tp[4].getTemplateParameterType());
-		ITemplateAliasParameter tap = (ITemplateAliasParameter) tp[4];		
+		assertEquals(ITemplateParameter.ALIAS_TEMPLATE_PARAMETER, tp[4].getElementType());
+		IAliasTemplateParameter tap = (IAliasTemplateParameter) tp[4];		
 		assertEquals("A", tap.getName().toString());
 		assertPosition(tap, 44, 15);
 		assertEquals("B", tap.getSpecificType().toString());
@@ -106,8 +106,8 @@ public class Template_Test extends Parser_Test {
 		ITemplateParameter[] tp = t.getTemplateParameters();
 		assertEquals(1, tp.length);
 		
-		ITemplateTupleParameter param = (ITemplateTupleParameter) tp[0];
-		assertEquals(ITemplateParameter.TEMPLATE_PARAMETER_TUPLE, param.getTemplateParameterType());
+		ITupleTemplateParameter param = (ITupleTemplateParameter) tp[0];
+		assertEquals(ITemplateParameter.TUPLE_TEMPLATE_PARAMETER, param.getElementType());
 		assertEquals("T", param.getName().toString());
 		assertPosition(param, 15, 5);
 		assertPosition(param.getName(), 15, 1);
@@ -123,8 +123,8 @@ public class Template_Test extends Parser_Test {
 		ITemplateParameter[] tp = t.getTemplateParameters();
 		assertEquals(1, tp.length);
 		
-		ITemplateValueParameter param = (ITemplateValueParameter) tp[0];
-		assertEquals(ITemplateParameter.TEMPLATE_PARAMETER_VALUE, param.getTemplateParameterType());
+		IValueTemplateParameter param = (IValueTemplateParameter) tp[0];
+		assertEquals(ITemplateParameter.VALUE_TEMPLATE_PARAMETER, param.getElementType());
 		assertEquals("T", param.getName().toString());
 		assertPosition(param, 15, 13);
 		assertPosition(param.getName(), 19, 1);

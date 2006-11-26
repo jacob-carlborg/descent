@@ -16,8 +16,8 @@ public class DeleteExp extends Expression implements IDeleteExpression {
 		return e;
 	}
 	
-	public int getExpressionType() {
-		return EXPRESSION_DELETE;
+	public int getElementType() {
+		return DELETE_EXPRESSION;
 	}
 	
 	public void accept(IDElementVisitor visitor) {

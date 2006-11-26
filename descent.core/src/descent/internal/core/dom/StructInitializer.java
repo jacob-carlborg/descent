@@ -31,7 +31,7 @@ public class StructInitializer extends Initializer implements IStructInitializer
 		return values.toArray(new IInitializer[values.size()]);
 	}
 	
-	public int getInitializerType() {
+	public int getElementType() {
 		return STRUCT_INITIALIZER;
 	}
 	

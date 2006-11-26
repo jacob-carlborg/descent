@@ -7,7 +7,7 @@ package descent.core.dom;
  * module foo.bar;
  * </pre>
  */
-public interface IModuleDeclaration extends IDElement, ICommented {
+public interface IModuleDeclaration extends IDeclaration, ICommented {
 	
 	/**
 	 * Returns the qualified name of the module.

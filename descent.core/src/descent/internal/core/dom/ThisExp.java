@@ -6,8 +6,8 @@ public class ThisExp extends Expression {
 		// TODO Auto-generated constructor stub
 	}
 	
-	public int getExpressionType() {
-		return EXPRESSION_THIS;
+	public int getElementType() {
+		return THIS_EXPRESSION;
 	}
 	
 	@Override

@@ -2,18 +2,18 @@ package descent.internal.core.dom;
 
 import java.util.List;
 
-import descent.core.dom.IDElement;
 import descent.core.dom.IDElementVisitor;
+import descent.core.dom.IDeclaration;
 import descent.core.dom.ILinkDeclaration;
 
 public class LinkDeclaration extends Dsymbol implements ILinkDeclaration {
 
 	private int linkage;
-	private IDElement[] declDefs;
+	private IDeclaration[] declDefs;
 
-	public LinkDeclaration(LINK linkage, List<IDElement> declDefs) {
+	public LinkDeclaration(LINK linkage, List<IDeclaration> declDefs) {
 		if (declDefs != null) {
-			this.declDefs = declDefs.toArray(new IDElement[declDefs.size()]);
+			this.declDefs = declDefs.toArray(new IDeclaration[declDefs.size()]);
 		}
 		this.linkage = linkage.getLinkage();
 	}
@@ -26,8 +26,8 @@ public class LinkDeclaration extends Dsymbol implements ILinkDeclaration {
 		return linkage;
 	}
 	
-	public IDElement[] getDeclarationDefinitions() {
-		if (declDefs == null) return AbstractElement.NO_ELEMENTS;
+	public IDeclaration[] getDeclarationDefinitions() {
+		if (declDefs == null) return AbstractElement.NO_DECLARATIONS;
 		return declDefs;
 	}
 	

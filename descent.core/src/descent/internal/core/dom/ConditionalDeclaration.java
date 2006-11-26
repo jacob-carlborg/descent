@@ -2,9 +2,9 @@ package descent.internal.core.dom;
 
 import java.util.List;
 
-import descent.core.dom.IDebugDeclaration;
-import descent.core.dom.IDElement;
 import descent.core.dom.IDElementVisitor;
+import descent.core.dom.IDebugDeclaration;
+import descent.core.dom.IDeclaration;
 import descent.core.dom.IIftypeDeclaration;
 import descent.core.dom.IName;
 import descent.core.dom.IType;
@@ -13,24 +13,20 @@ import descent.core.dom.IVersionDeclaration;
 public class ConditionalDeclaration extends Dsymbol implements IVersionDeclaration, IDebugDeclaration, IIftypeDeclaration {
 	
 	public Condition condition;
-	public List<IDElement> a;
-	public List<IDElement> aelse;
+	public List<IDeclaration> a;
+	public List<IDeclaration> aelse;
 
-	public ConditionalDeclaration(Condition condition, List<IDElement> a, List<IDElement> aelse) {
+	public ConditionalDeclaration(Condition condition, List<IDeclaration> a, List<IDeclaration> aelse) {
 		this.condition = condition;
 		this.a = a;
 		this.aelse = aelse;
 	}
 	
 	public int getElementType() {
-		return CONDITIONAL_DECLARATION;
-	}
-	
-	public int getConditionalDeclarationType() {
 		switch(this.condition.getConditionType()) {
-		case Condition.DEBUG: return CONDITIONAL_DEBUG;
-		case Condition.VERSION: return CONDITIONAL_VERSION;
-		case Condition.IFTYPE: return CONDITIONAL_IFTYPE;
+		case Condition.DEBUG: return DEBUG_DECLARATION;
+		case Condition.VERSION: return VERSION_DECLARATION;
+		case Condition.IFTYPE: return IFTYPE_DECLARATION;
 		}
 		return 0;
 	}
@@ -60,15 +56,15 @@ public class ConditionalDeclaration extends Dsymbol implements IVersionDeclarati
 	}
 	
 	@SuppressWarnings("unchecked")
-	public IDElement[] getIfTrueDeclarationDefinitions() {
-		if (a == null) return AbstractElement.NO_ELEMENTS;
-		return a.toArray(new IDElement[a.size()]);
+	public IDeclaration[] getIfTrueDeclarationDefinitions() {
+		if (a == null) return AbstractElement.NO_DECLARATIONS;
+		return a.toArray(new IDeclaration[a.size()]);
 	}
 	
 	@SuppressWarnings("unchecked")
-	public IDElement[] getIfFalseDeclarationDefinitions() {
-		if (aelse == null) return AbstractElement.NO_ELEMENTS;
-		return aelse.toArray(new IDElement[aelse.size()]);
+	public IDeclaration[] getIfFalseDeclarationDefinitions() {
+		if (aelse == null) return AbstractElement.NO_DECLARATIONS;
+		return aelse.toArray(new IDeclaration[aelse.size()]);
 	}
 	
 	public void accept(IDElementVisitor visitor) {

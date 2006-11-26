@@ -25,8 +25,8 @@ public class TypeDotIdExp extends Expression implements ITypeDotIdentifierExpres
 		return t;
 	}
 	
-	public int getExpressionType() {
-		return EXPRESSION_TYPE_DOT_IDENTIFIER;
+	public int getElementType() {
+		return TYPE_DOT_IDENTIFIER_EXPRESSION;
 	}
 	
 	@Override

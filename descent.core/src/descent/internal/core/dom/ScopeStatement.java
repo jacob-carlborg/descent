@@ -16,8 +16,8 @@ public class ScopeStatement extends Statement implements IScopeStatement {
 		return s;
 	}
 	
-	public int getStatementType() {
-		return STATEMENT_SCOPE;
+	public int getElementType() {
+		return SCOPE_STATEMENT;
 	}
 	
 	public void accept(IDElementVisitor visitor) {

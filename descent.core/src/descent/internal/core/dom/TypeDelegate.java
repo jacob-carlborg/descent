@@ -19,9 +19,8 @@ public class TypeDelegate extends Type implements IDelegateType {
 		return ((TypeFunction) next).getArguments();
 	}
 	
-	@Override
-	public int getTypeType() {
-		return TYPE_DELEGATE;
+	public int getElementType() {
+		return DELEGATE_TYPE;
 	}
 	
 	@Override

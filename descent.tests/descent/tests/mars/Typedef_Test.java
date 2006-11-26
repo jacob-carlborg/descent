@@ -40,7 +40,7 @@ public class Typedef_Test extends Parser_Test {
 		assertEquals("Bla", t.getName().toString());
 		assertPosition(t.getName(), 13, 3);
 		
-		assertEquals(IInitializer.EXPRESSION_INITIALIZER, t.getInitializer().getInitializerType());
+		assertEquals(IInitializer.EXPRESSION_INITIALIZER, t.getInitializer().getElementType());
 		assertPosition(t.getInitializer(), 19, 1);
 		
 		assertVisitor(t, 5);

@@ -31,7 +31,7 @@ public class ArrayInitializer extends Initializer implements IArrayInitializer {
 		return values.toArray(new IInitializer[values.size()]);
 	}
 	
-	public int getInitializerType() {
+	public int getElementType() {
 		return ARRAY_INITIALIZER;
 	}
 	

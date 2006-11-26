@@ -7,7 +7,7 @@ package descent.core.dom;
  * expr.name
  * </pre>
  */
-public interface IDotIdExpression extends IExpression {
+public interface IDotIdentifierExpression extends IExpression {
 	
 	/**
 	 * Returns the expression. May be <code>null</code>.

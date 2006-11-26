@@ -3,7 +3,7 @@ package descent.core.dom;
 /**
  * A template delcaration:
  */
-public interface ITemplateDeclaration extends IDElement {
+public interface ITemplateDeclaration extends IDeclaration {
 	
 	/**
 	 * Returns the name of the template.
@@ -19,6 +19,6 @@ public interface ITemplateDeclaration extends IDElement {
 	 * Returns the declaration definitions contained in
 	 * this template.
 	 */
-	IDElement[] getDeclarationDefinitions();
+	IDeclaration[] getDeclarationDefinitions();
 
 }

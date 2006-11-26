@@ -23,8 +23,8 @@ public class CastExp extends Expression implements ICastExpression {
 		return e;
 	}
 	
-	public int getExpressionType() {
-		return EXPRESSION_CAST;
+	public int getElementType() {
+		return CAST_EXPRESSION;
 	}
 	
 	public void accept(IDElementVisitor visitor) {
