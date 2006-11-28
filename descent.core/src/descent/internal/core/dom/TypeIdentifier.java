@@ -11,8 +11,8 @@ public class TypeIdentifier extends TypeQualified implements IIdentifierType, IT
 	public Identifier ident;
 	public QualifiedName qName;
 
-	public TypeIdentifier(Loc loc, Identifier ident) {
-		super(TY.Tident, loc);
+	public TypeIdentifier(Identifier ident) {
+		super(TY.Tident);
 		this.ident = ident;
 	}
 	
@@ -58,11 +58,11 @@ public class TypeIdentifier extends TypeQualified implements IIdentifierType, IT
 	
 	@Override
 	public Expression toExpression() {
-		Expression e = new IdentifierExp(null, ident);
+		Expression e = new IdentifierExp(ident);
 	    for (int i = 0; i < idents.size(); i++)
 	    {
 	    	Identifier id = (Identifier) idents.get(i);
-	    	e = new DotIdExp(null, e, id);	
+	    	e = new DotIdExp(e, id);	
 	    }
 	    return e;
 	}

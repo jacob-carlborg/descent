@@ -4,7 +4,7 @@ import java.util.List;
 
 public class InterfaceDeclaration extends AggregateDeclaration {
 
-	public InterfaceDeclaration(Loc loc, Identifier id, List<BaseClass> baseclasses) {
+	public InterfaceDeclaration(Identifier id, List<BaseClass> baseclasses) {
 		super(id, baseclasses);
 	}
 

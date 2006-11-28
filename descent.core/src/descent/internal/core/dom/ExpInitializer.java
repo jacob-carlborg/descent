@@ -8,7 +8,7 @@ public class ExpInitializer extends Initializer implements IExpressionInitialize
 
 	public Expression e;
 
-	public ExpInitializer(Loc loc, Expression e) {
+	public ExpInitializer(Expression e) {
 		this.e = e;
 		if (e != null)
 		{		

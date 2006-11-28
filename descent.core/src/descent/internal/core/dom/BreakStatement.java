@@ -8,7 +8,7 @@ public class BreakStatement extends Statement implements IBreakStatement {
 	
 	public Identifier id;
 
-	public BreakStatement(Loc loc, Identifier ident) {
+	public BreakStatement(Identifier ident) {
 		this.id = ident;
 	}
 	

@@ -11,7 +11,7 @@ public class CallExp extends Expression implements ICallExpression {
 	Expression e;
 	Expression[] args;
 
-	public CallExp(Loc loc, Expression e, List<Expression> arguments) {
+	public CallExp(Expression e, List<Expression> arguments) {
 		this.e = e;
 		this.args = arguments.toArray(new Expression[arguments.size()]);
 	}

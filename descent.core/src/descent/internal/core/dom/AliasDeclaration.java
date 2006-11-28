@@ -9,7 +9,7 @@ public class AliasDeclaration extends Declaration implements IAliasDeclaration {
 	
 	public Type type;
 
-	public AliasDeclaration(Loc loc, Identifier ident, Type type) {
+	public AliasDeclaration(Identifier ident, Type type) {
 		super(ident);
 		this.type = type;
 	}

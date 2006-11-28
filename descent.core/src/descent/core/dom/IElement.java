@@ -678,6 +678,12 @@ public interface IElement {
 	int STATIC_IF_STATEMENT = 120;
 	
 	/**
+	 * Constant representing a slice type.
+	 * A D element with this type can be safely cast to <code>ISliceType</code>. 
+	 */
+	int SLICE_TYPE = 109;
+	
+	/**
 	 * Returns the start position in the source code where this element
 	 * is located.
 	 */

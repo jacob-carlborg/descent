@@ -1,23 +1,46 @@
 package descent.internal.core.dom;
 
 import descent.core.dom.ElementVisitor;
+import descent.core.dom.IExpression;
+import descent.core.dom.ISliceType;
+import descent.core.dom.IType;
 
-public class TypeSlice extends Type {
+public class TypeSlice extends Type implements ISliceType {
 
-	public TypeSlice(Type t, Expression e2, Expression e3) {
-		// TODO Auto-generated constructor stub
-		super(null, null);
+	private Expression from;
+	private Expression to;
+
+	public TypeSlice(Type t, Expression from, Expression to) {
+		super(TY.Tslice, t);
+		this.from = from;
+		this.to = to;
 	}
 	
 	public int getElementType() {
-		// TODO
-		return 0;
+		return SLICE_TYPE;
+	}
+	
+	public IType getInnerType() {
+		return next;
+	}
+	
+	public IExpression getFrom() {
+		return from;
+	}
+	
+	public IExpression getTo() {
+		return to;
 	}
 	
 	@Override
 	void accept0(ElementVisitor visitor) {
-		// TODO Auto-generated method stub
-		
+		boolean children = visitor.visit(this);
+		if (children) {
+			acceptChild(visitor, next);
+			acceptChild(visitor, from);
+			acceptChild(visitor, to);
+		}
+		visitor.endVisit(this);
 	}
 
 }

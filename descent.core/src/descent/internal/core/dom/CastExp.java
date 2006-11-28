@@ -10,7 +10,7 @@ public class CastExp extends Expression implements ICastExpression {
 	private final Expression e;
 	private final Type t;
 
-	public CastExp(Loc loc, Expression e, Type t) {
+	public CastExp(Expression e, Type t) {
 		this.e = e;
 		this.t = t;
 	}

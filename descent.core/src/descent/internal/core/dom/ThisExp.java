@@ -5,8 +5,8 @@ import descent.core.dom.IThisExpression;
 
 public class ThisExp extends Expression implements IThisExpression {
 
-	public ThisExp(Loc loc) {
-		// TODO Auto-generated constructor stub
+	public ThisExp() {
+		
 	}
 	
 	public int getElementType() {

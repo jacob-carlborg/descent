@@ -8,7 +8,7 @@ public class TypeExp extends Expression implements ITypeExpression {
 
 	private final Type t;
 
-	public TypeExp(Loc loc, Type t) {
+	public TypeExp(Type t) {
 		this.t = t;
 	}
 	

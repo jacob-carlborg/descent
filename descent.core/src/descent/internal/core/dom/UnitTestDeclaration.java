@@ -9,7 +9,7 @@ public class UnitTestDeclaration extends Dsymbol implements IUnitTestDeclaration
 
 	public Statement fbody;
 
-	public UnitTestDeclaration(Loc loc, Loc loc2) {
+	public UnitTestDeclaration() {
 		this.ident = new Identifier("unittest", TOK.TOKidentifier);
 	}
 	

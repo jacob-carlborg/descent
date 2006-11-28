@@ -5,7 +5,7 @@ import descent.core.dom.ElementVisitor;
 
 public class AsmStatement extends Statement implements IAsmStatement {
 
-	public AsmStatement(Loc loc, Token toklist) {
+	public AsmStatement(Token toklist) {
 		// TODO Auto-generated constructor stub
 	}
 	

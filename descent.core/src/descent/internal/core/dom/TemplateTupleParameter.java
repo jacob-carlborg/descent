@@ -8,7 +8,7 @@ public class TemplateTupleParameter extends TemplateParameter implements ITupleT
 
 	private final Identifier ident;
 
-	public TemplateTupleParameter(Loc loc, Identifier ident) {
+	public TemplateTupleParameter(Identifier ident) {
 		this.ident = ident;
 	}
 	

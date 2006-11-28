@@ -11,7 +11,7 @@ public class TemplateTypeParameter extends TemplateParameter implements ITypeTem
 	private final Type tp_spectype;
 	private final Type tp_defaulttype;
 
-	public TemplateTypeParameter(Loc loc, Identifier ident, Type tp_spectype, Type tp_defaulttype) {
+	public TemplateTypeParameter(Identifier ident, Type tp_spectype, Type tp_defaulttype) {
 		this.ident = ident;
 		this.tp_spectype = tp_spectype;
 		this.tp_defaulttype = tp_defaulttype;

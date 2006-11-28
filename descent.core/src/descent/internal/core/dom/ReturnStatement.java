@@ -8,7 +8,7 @@ public class ReturnStatement extends Statement implements IReturnStatement {
 	
 	public Expression exp;
 
-	public ReturnStatement(Loc loc, Expression exp) {
+	public ReturnStatement(Expression exp) {
 		this.exp = exp;
 	}
 

@@ -13,7 +13,7 @@ public class ArrayInitializer extends Initializer implements IArrayInitializer {
 	private List<Expression> exps;
 	private List<Initializer> values;
 
-	public ArrayInitializer(Loc loc) {
+	public ArrayInitializer() {
 		this.exps = new ArrayList<Expression>();
 		this.values = new ArrayList<Initializer>();
 	}

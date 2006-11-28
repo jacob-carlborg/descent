@@ -10,7 +10,7 @@ public class TypeDotIdExp extends Expression implements ITypeDotIdentifierExpres
 	private final Type t;
 	private final Identifier ident;
 
-	public TypeDotIdExp(Loc loc, Type t, Identifier ident) {
+	public TypeDotIdExp(Type t, Identifier ident) {
 		this.t = t;
 		this.ident = ident;
 		this.start = t.start;

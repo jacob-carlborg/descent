@@ -10,7 +10,7 @@ public class SynchronizedStatement extends Statement implements ISynchronizedSta
 	private final Expression exp;
 	private final Statement body;
 
-	public SynchronizedStatement(Loc loc, Expression exp, Statement body) {
+	public SynchronizedStatement(Expression exp, Statement body) {
 		this.exp = exp;
 		this.body = body;
 	}

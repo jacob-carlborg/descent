@@ -8,7 +8,7 @@ public class GotoStatement extends Statement implements IGotoStatement {
 
 	private final Identifier ident;
 
-	public GotoStatement(Loc loc, Identifier ident) {
+	public GotoStatement(Identifier ident) {
 		this.ident = ident;
 	}
 	

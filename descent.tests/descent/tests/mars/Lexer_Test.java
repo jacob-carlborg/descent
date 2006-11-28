@@ -153,6 +153,10 @@ public class Lexer_Test extends TestCase {
 	
 	public void testChar() {
 		assertToken(" 'c'", TOK.TOKcharv, 1, 3);
+		assertToken(" '\\n'", TOK.TOKcharv, 1, 4);
+		assertToken(" '\\1234'", TOK.TOKcharv, 1, 6);
+		assertToken(" '\\u1234'", TOK.TOKwcharv, 1, 8);
+		assertToken(" '\\U12345678'", TOK.TOKdcharv, 1, 12);
 	}
 	
 	public void testComments() {

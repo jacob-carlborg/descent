@@ -8,7 +8,7 @@ public class DefaultStatement extends Statement implements IDefaultStatement {
 
 	private final Statement s;
 
-	public DefaultStatement(Loc loc, Statement s) {
+	public DefaultStatement(Statement s) {
 		this.s = s;
 	}
 	

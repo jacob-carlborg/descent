@@ -4,7 +4,7 @@ public class IdentityExp extends BinaryExpression {
 
 	private final TOK value;
 
-	public IdentityExp(TOK value, Loc loc, Expression e, Expression e2) {
+	public IdentityExp(TOK value, Expression e, Expression e2) {
 		super(e, e2);
 		this.value = value;
 	}

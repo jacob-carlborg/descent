@@ -4,9 +4,9 @@ import descent.core.dom.IName;
 
 public class StaticCtorDeclaration extends FuncDeclaration {
 	
-	public StaticCtorDeclaration(Loc loc, int i) {
+	public StaticCtorDeclaration() {
 		// TODO Auto-generated constructor stub
-		super(loc, i, null, 0, null);
+		super(null, 0, null);
 		this.ident = new Identifier("this", TOK.TOKidentifier);
 	}
 	

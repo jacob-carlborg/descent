@@ -14,7 +14,7 @@ public class NewAnonClassExp extends Expression implements INewAnonymousClassExp
 	private IExpression[] newargs;
 	private IExpression[] arguments;
 
-	public NewAnonClassExp(Loc loc, Expression thisexp, List<Expression> newargs, ClassDeclaration cd, List<Expression> arguments) {
+	public NewAnonClassExp(Expression thisexp, List<Expression> newargs, ClassDeclaration cd, List<Expression> arguments) {
 		if (newargs == null) {
 			this.newargs = new IExpression[0];
 		} else {

@@ -10,8 +10,8 @@ public class TypeInstance extends TypeQualified implements ITemplateInstanceType
 	public TemplateInstance tempinst;
 	public QualifiedName qName;
 
-	public TypeInstance(Loc loc, TemplateInstance tempinst) {
-		super(TY.Tinstance, loc);
+	public TypeInstance(TemplateInstance tempinst) {
+		super(TY.Tinstance);
 		this.tempinst = tempinst;
 	}
 	

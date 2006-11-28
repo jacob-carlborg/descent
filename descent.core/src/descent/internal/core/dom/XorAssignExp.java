@@ -2,7 +2,7 @@ package descent.internal.core.dom;
 
 public class XorAssignExp extends BinaryExpression {
 
-	public XorAssignExp(Loc loc, Expression e, Expression exp) {
+	public XorAssignExp(Expression e, Expression exp) {
 		super(e, exp);
 	}
 	

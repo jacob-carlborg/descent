@@ -8,7 +8,7 @@ public class StringExp extends Expression implements IStringExpression {
 	private String s;
 	private int postfix;
 
-	public StringExp(Loc loc, String s, int len, int postfix) {
+	public StringExp(String s, int len, int postfix) {
 		this.s = s;
 		this.postfix = postfix;
 	}

@@ -2,7 +2,7 @@ package descent.internal.core.dom;
 
 public class NotExp extends UnaryExpression {
 
-	public NotExp(Loc loc, Expression e) {
+	public NotExp(Expression e) {
 		super(e);
 	}
 	

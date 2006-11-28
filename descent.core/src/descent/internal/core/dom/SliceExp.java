@@ -10,7 +10,7 @@ public class SliceExp extends Expression implements ISliceExpression {
 	private final Expression from;
 	private final Expression to;
 
-	public SliceExp(Loc loc, Expression e, Expression from, Expression to) {
+	public SliceExp(Expression e, Expression from, Expression to) {
 		this.e = e;
 		this.from = from;
 		this.to = to;

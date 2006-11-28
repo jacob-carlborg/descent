@@ -13,12 +13,11 @@ public class FuncDeclaration extends Declaration implements IFunctionDeclaration
 	public Statement frequire;
 	public Statement fensure;
 	public Statement fbody;
-	public Loc endloc;
 	public Identifier outId;
 	public TypeFunction type;
 	public ITemplateParameter[] templateParameters;
 
-	public FuncDeclaration(Loc loc, int endloc, Identifier ident, int storage_class, Type type) {
+	public FuncDeclaration(Identifier ident, int storage_class, Type type) {
 		super(ident);
 		this.type = (TypeFunction) type;
 	}

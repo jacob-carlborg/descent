@@ -2,7 +2,7 @@ package descent.internal.core.dom;
 
 public class ShlExp extends BinaryExpression {
 
-	public ShlExp(Loc loc, Expression e, Expression e2) {
+	public ShlExp(Expression e, Expression e2) {
 		super(e, e2);
 	}
 	

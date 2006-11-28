@@ -8,7 +8,7 @@ public class ThrowStatement extends Statement implements IThrowStatement {
 
 	private final Expression exp;
 
-	public ThrowStatement(Loc loc, Expression exp) {
+	public ThrowStatement(Expression exp) {
 		this.exp = exp;
 	}
 	

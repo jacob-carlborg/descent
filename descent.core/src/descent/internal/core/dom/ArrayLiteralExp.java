@@ -10,7 +10,7 @@ public class ArrayLiteralExp extends Expression implements IArrayLiteralExpressi
 
 	Expression[] args;
 
-	public ArrayLiteralExp(Loc loc, List<Expression> elements) {
+	public ArrayLiteralExp(List<Expression> elements) {
 		this.args = elements.toArray(new Expression[elements.size()]);
 	}
 	

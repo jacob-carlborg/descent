@@ -26,7 +26,7 @@ public class Lexer implements IProblemCollector {
 	public OutBuffer stringbuffer = new OutBuffer();
 	public Token freelist;
 	
-	public Loc loc;
+	public int linnum;
 	
 	public Module mod = new Module();
 	public int base;
@@ -55,7 +55,7 @@ public class Lexer implements IProblemCollector {
 		// Make input larger and add zeros, to avoid comparing
 		input = new char[endoffset - base + 5];
 		source.getChars(base, source.length(), input, 0);
-		this.loc = new Loc(1);
+		this.linnum = 1;
 		this.base = base;
 		this.end = base + endoffset;
 		this.p = base + begoffset;
@@ -97,7 +97,7 @@ public class Lexer implements IProblemCollector {
 			    }
 			    break;
 			}
-	    	loc.linnum = 2;
+	    	linnum = 2;
 	    }
 	}
 	
@@ -207,8 +207,8 @@ public class Lexer implements IProblemCollector {
 	*/
 	
 	public void scan(Token t) {
-		int lastLine = loc.linnum;
-	    int linnum;
+		int lastLine = this.linnum;
+	    int linnum = this.linnum;
 	    
 	    t.blockComment = null;
 	    t.lineComment = null;
@@ -234,12 +234,12 @@ public class Lexer implements IProblemCollector {
 		    case '\r':
 			p++;
 			if (input[p] != '\n')			// if CR stands by itself
-			    loc.linnum++;
+			    linnum++;
 			continue;			// skip white space
 
 		    case '\n':
 			p++;
-			loc.linnum++;
+			linnum++;
 			continue;			// skip white space
 
 		    case '0':  	case '1':   case '2':   case '3':   case '4':
@@ -353,7 +353,7 @@ public class Lexer implements IProblemCollector {
 
 			    case '*':
 				p++;
-				linnum = loc.linnum;
+				linnum = this.linnum;
 				while (true)
 				{
 				    while (true)
@@ -364,14 +364,14 @@ public class Lexer implements IProblemCollector {
 						break;
 
 					    case '\n':
-						loc.linnum++;
+						linnum++;
 						p++;
 						continue;
 
 					    case '\r':
 						p++;
 						if (input[p] != '\n')
-						    loc.linnum++;
+						    linnum++;
 						continue;
 
 					    case 0:
@@ -385,7 +385,7 @@ public class Lexer implements IProblemCollector {
 						if ((c & 0x80) != 0)
 						{   int u = decodeUTF();
 						    if (u == PS || u == LS)
-							loc.linnum++;
+							linnum++;
 						}
 						p++;
 						continue;
@@ -408,7 +408,7 @@ public class Lexer implements IProblemCollector {
 				continue;
 
 			    case '/':		// do // style comments
-				linnum = loc.linnum;
+				linnum = this.linnum;
 				while (true)
 				{   char c = input[++p];
 				    switch (c)
@@ -449,7 +449,7 @@ public class Lexer implements IProblemCollector {
 				if (commentToken)
 				{
 				    p++;
-				    loc.linnum++;
+				    linnum++;
 				    t.value = TOKcomment;
 				    return;
 				}
@@ -457,13 +457,13 @@ public class Lexer implements IProblemCollector {
 				    getDocComment(t, lastLine == linnum);
 
 				p++;
-				loc.linnum++;
+				linnum++;
 				continue;
 
 			    case '+':
 			    {	int nest;
 
-				linnum = loc.linnum;
+				linnum = this.linnum;
 				p++;
 				nest = 1;
 				while (true)
@@ -492,11 +492,11 @@ public class Lexer implements IProblemCollector {
 					case '\r':
 					    p++;
 					    if (input[p] != '\n')
-						loc.linnum++;
+						linnum++;
 					    continue;
 
 					case '\n':
-					    loc.linnum++;
+					    linnum++;
 					    p++;
 					    continue;
 
@@ -511,7 +511,7 @@ public class Lexer implements IProblemCollector {
 					    if ((c & 0x80) != 0)
 					    {   int u = decodeUTF();
 						if (u == PS || u == LS)
-						    loc.linnum++;
+						    linnum++;
 					    }
 					    p++;
 					    continue;
@@ -874,7 +874,7 @@ public class Lexer implements IProblemCollector {
 
 			    if (u == PS || u == LS)
 			    {
-				loc.linnum++;
+				linnum++;
 				p++;
 				continue;
 			    }
@@ -940,7 +940,7 @@ public class Lexer implements IProblemCollector {
 		    else if (mod && id == Id::LINE)
 		    {
 			t->value = TOKint64v;
-			t->uns64value = loc.linnum;
+			t->uns64value = linnum;
 		    }
 		    else if (id == Id::DATE)
 		    {
@@ -1109,14 +1109,14 @@ public class Lexer implements IProblemCollector {
 		switch (c)
 		{
 		    case '\n':
-			loc.linnum++;
+			linnum++;
 			break;
 
 		    case '\r':
 			if (input[p] == '\n')
 			    continue;	// ignore
 			c = '\n';	// treat EndOfLine as \n character
-			loc.linnum++;
+			linnum++;
 			break;
 
 		    case 0:
@@ -1145,7 +1145,7 @@ public class Lexer implements IProblemCollector {
 			    int u = decodeUTF();
 			    p++;
 			    if (u == PS || u == LS)
-				loc.linnum++;
+				linnum++;
 			    stringbuffer.writeUTF8(u);
 			    continue;
 			}
@@ -1178,7 +1178,7 @@ public class Lexer implements IProblemCollector {
 			    continue;			// ignore
 			// Treat isolated '\r' as if it were a '\n'
 		    case '\n':
-			loc.linnum++;
+			linnum++;
 			continue;
 
 		    case 0:
@@ -1213,7 +1213,7 @@ public class Lexer implements IProblemCollector {
 			    int u = decodeUTF();
 			    p++;
 			    if (u == PS || u == LS)
-				loc.linnum++;
+				linnum++;
 			    else {
 			    	problem("Non-hex character: " + (char) u, IProblem.SEVERITY_ERROR, IProblem.NON_HEX_CHARACTER, p - 1, 1);
 			    }
@@ -1261,14 +1261,14 @@ public class Lexer implements IProblemCollector {
 			break;
 
 		    case '\n':
-			loc.linnum++;
+			linnum++;
 			break;
 
 		    case '\r':
 			if (input[p] == '\n')
 			    continue;	// ignore
 			c = '\n';	// treat EndOfLine as \n character
-			loc.linnum++;
+			linnum++;
 			break;
 
 		    case '"':
@@ -1295,7 +1295,7 @@ public class Lexer implements IProblemCollector {
 			    c = decodeUTF();
 			    if (c == LS || c == PS)
 			    {	c = '\n';
-				loc.linnum++;
+				linnum++;
 			    }
 			    p++;
 			    stringbuffer.writeUTF8(c);
@@ -1337,7 +1337,7 @@ public class Lexer implements IProblemCollector {
 		    break;
 
 		case '\n':
-		    loc.linnum++;
+		    linnum++;
 		case '\r':
 		case 0:
 		case 0x1A:
@@ -1353,7 +1353,7 @@ public class Lexer implements IProblemCollector {
 			c = decodeUTF();
 			p++;
 			if (c == LS || c == PS) {
-				loc.linnum++;
+				linnum++;
 				problem("Unterminated character constant", IProblem.SEVERITY_ERROR, IProblem.UNTERMINATED_CHARACTER_CONSTANT, token.ptr, p - token.ptr);
 				return tk;
 			}
@@ -1964,10 +1964,6 @@ public class Lexer implements IProblemCollector {
 		Token tok = new Token();
 	    int linnum;
 	    String filespec = null;
-	    Loc loc = null;
-	    try {
-	    	this.loc.clone();
-	    } catch (CloneNotSupportedException e) { }
 
 	    scan(tok);
 	    if (tok.value != TOKidentifier || !tok.ident.string.equals(Id.line)) {
@@ -1990,18 +1986,20 @@ public class Lexer implements IProblemCollector {
 		    case 0:
 		    case 0x1A:
 		    case '\n':
-			this.loc.linnum = linnum;
-			if (filespec != null)
-			    this.loc.filename = filespec;
+			this.linnum = linnum;
+			// TODO
+			//if (filespec != null)
+			//    this.loc.filename = filespec;
 			return;
 
 		    case '\r':
 			p++;
 			if (input[p] != '\n')
 			{   p--;
-				this.loc.linnum = linnum;
-				if (filespec != null)
-				    this.loc.filename = filespec;
+				this.linnum = linnum;
+				// TODO
+				//if (filespec != null)
+				//    this.loc.filename = filespec;
 				return;
 			}
 			continue;
@@ -2029,7 +2027,8 @@ public class Lexer implements IProblemCollector {
 			    	filespec = "TODO: this is not done in Descent... yet";
 			    	// TODO
 			    } else {
-			    	filespec = loc != null && loc.filename != null ? loc.filename : mod.ident.toString();
+			    	// TODO
+			    	// filespec = loc != null && loc.filename != null ? loc.filename : mod.ident.toString();
 			    }
 			}
 			continue;
@@ -2080,9 +2079,10 @@ public class Lexer implements IProblemCollector {
 			if ((input[p] & 0x80) != 0)
 			{   int u = decodeUTF();
 			    if (u == PS || u == LS) {
-			    	this.loc.linnum = linnum;
-					if (filespec != null)
-					    this.loc.filename = filespec;
+			    	this.linnum = linnum;
+			    	// TODO:
+					//if (filespec != null)
+					//    this.loc.filename = filespec;
 					return;
 			    }
 			}

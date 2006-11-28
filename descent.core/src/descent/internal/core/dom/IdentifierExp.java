@@ -8,7 +8,7 @@ public class IdentifierExp extends Expression implements IIdentifierExpression {
 	
 	public Identifier id;
 
-	public IdentifierExp(Loc loc, Identifier id) {
+	public IdentifierExp(Identifier id) {
 		this.id = id;
 		this.start = id.start;
 		this.length = id.length;

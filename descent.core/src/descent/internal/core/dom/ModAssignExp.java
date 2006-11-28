@@ -2,7 +2,7 @@ package descent.internal.core.dom;
 
 public class ModAssignExp extends BinaryExpression {
 
-	public ModAssignExp(Loc loc, Expression e, Expression exp) {
+	public ModAssignExp(Expression e, Expression exp) {
 		super(e, exp);
 	}
 	

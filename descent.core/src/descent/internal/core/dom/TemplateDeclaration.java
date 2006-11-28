@@ -8,13 +8,13 @@ import descent.core.dom.IName;
 import descent.core.dom.ITemplateDeclaration;
 import descent.core.dom.ITemplateParameter;
 
-public class TemplateDeclaration extends Dsymbol implements ITemplateDeclaration {
+public class TemplateDeclaration extends Declaration implements ITemplateDeclaration {
 	
 	private ITemplateParameter[] tpl;
 	private IDeclaration[] declDefs;
 
-	public TemplateDeclaration(Loc loc, Identifier id, List<TemplateParameter> tpl, List<IDeclaration> decldefs) {
-		this.ident = id;
+	public TemplateDeclaration(Identifier id, List<TemplateParameter> tpl, List<IDeclaration> decldefs) {
+		super(id);
 		this.tpl = tpl.toArray(new ITemplateParameter[tpl.size()]);
 		if (decldefs != null) {
 			this.declDefs = decldefs.toArray(new IDeclaration[decldefs.size()]);

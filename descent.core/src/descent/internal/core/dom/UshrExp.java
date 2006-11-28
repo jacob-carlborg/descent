@@ -2,7 +2,7 @@ package descent.internal.core.dom;
 
 public class UshrExp extends BinaryExpression {
 
-	public UshrExp(Loc loc, Expression e, Expression e2) {
+	public UshrExp(Expression e, Expression e2) {
 		super(e, e2);
 	}
 	

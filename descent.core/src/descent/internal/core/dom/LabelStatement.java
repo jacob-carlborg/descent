@@ -10,7 +10,7 @@ public class LabelStatement extends Statement implements ILabelStatement {
 	public Identifier ident;
 	public Statement s;
 
-	public LabelStatement(Loc loc, Identifier ident, Statement s) {
+	public LabelStatement(Identifier ident, Statement s) {
 		this.ident = ident;
 		this.s = s;
 	}

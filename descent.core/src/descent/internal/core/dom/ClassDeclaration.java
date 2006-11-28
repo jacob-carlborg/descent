@@ -4,7 +4,7 @@ import java.util.List;
 
 public class ClassDeclaration extends AggregateDeclaration {
 	
-	public ClassDeclaration(Loc loc, Identifier id, List<BaseClass> baseClasses) {
+	public ClassDeclaration(Identifier id, List<BaseClass> baseClasses) {
 		super(id, baseClasses);
 	}
 	

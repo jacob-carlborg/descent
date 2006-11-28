@@ -8,7 +8,7 @@ public class DeleteExp extends Expression implements IDeleteExpression {
 
 	private final Expression e;
 
-	public DeleteExp(Loc loc, Expression e) {
+	public DeleteExp(Expression e) {
 		this.e = e;
 	}
 	

@@ -13,7 +13,7 @@ public class TemplateValueParameter extends TemplateParameter implements IValueT
 	private final Expression tp_specvalue;
 	private final Expression tp_defaultvalue;
 
-	public TemplateValueParameter(Loc loc, Identifier id, Type tp_valtype, Expression tp_specvalue, Expression tp_defaultvalue) {
+	public TemplateValueParameter(Identifier id, Type tp_valtype, Expression tp_specvalue, Expression tp_defaultvalue) {
 		this.id = id;
 		this.tp_valtype = tp_valtype;
 		this.tp_specvalue = tp_specvalue;

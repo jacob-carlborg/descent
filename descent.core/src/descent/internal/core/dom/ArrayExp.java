@@ -11,7 +11,7 @@ public class ArrayExp extends Expression implements IArrayExpression {
 	Expression e;
 	Expression[] args;
 
-	public ArrayExp(Loc loc, Expression e, List<Expression> arguments) {
+	public ArrayExp(Expression e, List<Expression> arguments) {
 		this.e = e;
 		this.args = arguments.toArray(new Expression[arguments.size()]);
 	}

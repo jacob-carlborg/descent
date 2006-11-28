@@ -13,7 +13,7 @@ public class PragmaDeclaration extends Dsymbol implements IPragmaDeclaration {
 	private IExpression[] expressions;
 	private IDeclaration[] declDefs;
 
-	public PragmaDeclaration(Loc loc, Identifier ident, List<Expression> args, List<IDeclaration> a) {
+	public PragmaDeclaration(Identifier ident, List<Expression> args, List<IDeclaration> a) {
 		this.ident = ident;
 		if (args != null) {
 			expressions = args.toArray(new IExpression[args.size()]);

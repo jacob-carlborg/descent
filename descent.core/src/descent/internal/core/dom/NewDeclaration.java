@@ -9,8 +9,8 @@ public class NewDeclaration extends FuncDeclaration {
 	public int varargs;
 	private IArgument[] arguments;
 
-	public NewDeclaration(Loc loc, int endloc, List<Argument> arguments, int varargs) {
-		super(loc, endloc, new Identifier(Id.classNew, TOK.TOKidentifier), STC.STCstatic, null);
+	public NewDeclaration(List<Argument> arguments, int varargs) {
+		super(new Identifier(Id.classNew, TOK.TOKidentifier), STC.STCstatic, null);
 		
 		if (arguments == null) {
 			this.arguments = new IArgument[0];

@@ -2,7 +2,7 @@ package descent.internal.core.dom;
 
 public class DivAssignExp extends BinaryExpression {
 
-	public DivAssignExp(Loc loc, Expression e, Expression e2) {
+	public DivAssignExp(Expression e, Expression e2) {
 		super(e, e2);
 	}
 	

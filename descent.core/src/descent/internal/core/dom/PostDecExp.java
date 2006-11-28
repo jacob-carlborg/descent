@@ -2,7 +2,7 @@ package descent.internal.core.dom;
 
 public class PostDecExp extends UnaryExpression {
 
-	public PostDecExp(Loc loc, Expression e) {
+	public PostDecExp(Expression e) {
 		super(e);
 	}
 	

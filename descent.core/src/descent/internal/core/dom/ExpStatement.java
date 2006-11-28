@@ -8,7 +8,7 @@ public class ExpStatement extends Statement implements IExpressionStatement {
 	
 	private Expression exp;
 
-	public ExpStatement(Loc loc, Expression exp) {
+	public ExpStatement(Expression exp) {
 		this.exp = exp;
 	}
 	

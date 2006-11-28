@@ -13,7 +13,7 @@ public class IftypeExp extends Expression implements IIsExpression {
 	private Identifier ident;
 	private TypeSpecialization typeSpecialization;
 
-	public IftypeExp(Loc loc, Type targ, Identifier ident, TOK tok, Type tspec, Token token2) {
+	public IftypeExp(Type targ, Identifier ident, TOK tok, Type tspec, Token token2) {
 		this.targ = targ;
 		this.ident = ident;
 		this.tspec = tspec;

@@ -8,7 +8,7 @@ public class DebugSymbol extends Dsymbol implements IConditionAssignment {
 
 	public Identifier ident;
 
-	public DebugSymbol(Loc loc, Identifier ident) {
+	public DebugSymbol(Identifier ident) {
 		this.ident = ident;
 	}
 

@@ -9,7 +9,7 @@ public class IftypeCondition extends Condition {
 	public TOK tok;
 	public Type tspec;
 
-	public IftypeCondition(Loc loc, Type targ, Identifier ident, TOK tok, Type tspec) {
+	public IftypeCondition(Type targ, Identifier ident, TOK tok, Type tspec) {
 		this.targ = targ;
 		this.ident = ident;
 		this.tok = tok;

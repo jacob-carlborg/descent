@@ -15,7 +15,7 @@ public class ForeachStatement extends Statement implements IForeachStatement {
 	private Statement body;
 	private boolean reverse;
 
-	public ForeachStatement(Loc loc, TOK op, List<Argument> arguments, Expression aggr, Statement body) {
+	public ForeachStatement(TOK op, List<Argument> arguments, Expression aggr, Statement body) {
 		this.body = body;
 		this.arguments = arguments.toArray(new IArgument[arguments.size()]);
 		this.aggr = aggr;

@@ -5,8 +5,8 @@ import descent.core.dom.IVoidInitializer;
 
 public class VoidInitializer extends Initializer implements IVoidInitializer {
 
-	public VoidInitializer(Loc loc) {
-		// TODO Auto-generated constructor stub
+	public VoidInitializer() {
+		
 	}
 	
 	public int getElementType() {

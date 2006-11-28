@@ -14,7 +14,7 @@ public class ConditionalStatement extends Statement implements IStaticIfStatemen
 	private final Statement ifbody;
 	private final Statement elsebody;
 
-	public ConditionalStatement(Loc loc, Condition condition, Statement ifbody, Statement elsebody) {
+	public ConditionalStatement(Condition condition, Statement ifbody, Statement elsebody) {
 		this.condition = condition;
 		this.ifbody = ifbody;
 		this.elsebody = elsebody;

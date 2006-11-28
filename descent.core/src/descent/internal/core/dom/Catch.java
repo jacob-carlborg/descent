@@ -12,7 +12,7 @@ public class Catch extends AbstractElement implements ICatchClause {
 	private final Identifier id;
 	private final Statement handler;
 
-	public Catch(Loc loc, Type t, Identifier id, Statement handler) {
+	public Catch(Type t, Identifier id, Statement handler) {
 		this.t = t;
 		this.id = id;
 		this.handler = handler;

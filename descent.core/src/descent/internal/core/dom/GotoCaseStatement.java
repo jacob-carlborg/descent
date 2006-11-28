@@ -8,7 +8,7 @@ public class GotoCaseStatement extends Statement implements IGotoCaseStatement {
 
 	private final Expression exp;
 
-	public GotoCaseStatement(Loc loc, Expression exp) {
+	public GotoCaseStatement(Expression exp) {
 		this.exp = exp;
 	}
 	

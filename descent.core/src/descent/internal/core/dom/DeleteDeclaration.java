@@ -8,8 +8,8 @@ public class DeleteDeclaration extends FuncDeclaration {
 	
 	private IArgument[] arguments;
 
-	public DeleteDeclaration(Loc loc, int endloc, List<Argument> arguments) {
-		super(loc, endloc, new Identifier(Id.classDelete, TOK.TOKidentifier), STC.STCstatic, null);
+	public DeleteDeclaration(List<Argument> arguments) {
+		super(new Identifier(Id.classDelete, TOK.TOKidentifier), STC.STCstatic, null);
 		
 		if (arguments == null) {
 			this.arguments = new IArgument[0];

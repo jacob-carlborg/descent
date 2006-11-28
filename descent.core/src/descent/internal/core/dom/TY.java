@@ -46,6 +46,8 @@ public enum TY {
     Terror,
     Tinstance,
     Ttypeof,
+    Ttuple,
+    Tslice,
     TMAX
 
 }

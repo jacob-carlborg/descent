@@ -8,7 +8,7 @@ public class TemplateInstance extends Identifier {
 
 	public List<IElement> tiargs;
 
-	public TemplateInstance(Loc loc, Identifier id) {
+	public TemplateInstance(Identifier id) {
 		super(id.string, id.value);
 		this.start = id.start;
 		this.length = id.length;

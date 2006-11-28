@@ -8,7 +8,7 @@ public class VersionSymbol extends Dsymbol implements IConditionAssignment {
 
 	public Identifier ident;
 
-	public VersionSymbol(Loc loc, Identifier ident) {
+	public VersionSymbol(Identifier ident) {
 		this.ident = ident;
 	}
 

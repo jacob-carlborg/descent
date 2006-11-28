@@ -10,7 +10,7 @@ public abstract class TypeQualified extends Type {
 	public List<Identifier> idents;
 	public QualifiedName qName;
 	
-	public TypeQualified(TY ty, Loc loc) {
+	public TypeQualified(TY ty) {
 		super(ty, null);
 		this.idents = new ArrayList<Identifier>();
 	}

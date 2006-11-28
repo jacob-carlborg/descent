@@ -10,7 +10,7 @@ public class CaseStatement extends Statement implements ICaseStatement {
 	private final Expression exp;
 	private final Statement s;
 
-	public CaseStatement(Loc loc, Expression exp, Statement s) {
+	public CaseStatement(Expression exp, Statement s) {
 		this.exp = exp;
 		this.s = s;
 	}

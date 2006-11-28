@@ -5,8 +5,7 @@ import descent.core.dom.IDollarExpression;
 
 public class DollarExp extends Expression implements IDollarExpression {
 
-	public DollarExp(Loc loc) {
-		// TODO Auto-generated constructor stub
+	public DollarExp() {
 	}
 	
 	public int getElementType() {
@@ -15,8 +14,8 @@ public class DollarExp extends Expression implements IDollarExpression {
 	
 	@Override
 	void accept0(ElementVisitor visitor) {
-		// TODO Auto-generated method stub
-		
+		visitor.visit(this);
+		visitor.endVisit(this);
 	}
 
 }

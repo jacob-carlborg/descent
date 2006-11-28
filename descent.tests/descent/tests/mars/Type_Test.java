@@ -9,6 +9,7 @@ import descent.core.dom.IDynamicArrayType;
 import descent.core.dom.IElement;
 import descent.core.dom.IIdentifierType;
 import descent.core.dom.IPointerType;
+import descent.core.dom.ISliceType;
 import descent.core.dom.IStaticArrayType;
 import descent.core.dom.IType;
 import descent.core.dom.ITypeofType;
@@ -157,6 +158,14 @@ public class Type_Test extends Parser_Test {
 		assertEquals("1", type.getExpression().toString());
 		assertPosition(type, 1, 13);
 		// TODO
+	}
+	
+	public void testTypeSlice() {
+		ISliceType type = (ISliceType) getType("int[1 .. 2]");
+		assertPosition(type, 1, 11);
+		assertEquals("int", type.getInnerType().toString());
+		assertEquals("1", type.getFrom().toString());
+		assertEquals("2", type.getTo().toString());
 	}
 	
 	private IType getType(String type) {

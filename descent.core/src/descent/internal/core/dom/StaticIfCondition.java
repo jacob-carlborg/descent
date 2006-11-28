@@ -4,7 +4,7 @@ public class StaticIfCondition extends Condition {
 
 	public Expression exp;
 
-	public StaticIfCondition(Loc loc, Expression exp) {
+	public StaticIfCondition(Expression exp) {
 		this.exp = exp;
 	}
 	

@@ -5,7 +5,7 @@ import descent.core.dom.INullExpression;
 
 public class NullExp extends Expression implements INullExpression {
 
-	public NullExp(Loc loc) {
+	public NullExp() {
 		// TODO Auto-generated constructor stub
 	}
 	

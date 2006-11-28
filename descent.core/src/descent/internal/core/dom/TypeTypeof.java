@@ -8,8 +8,8 @@ public class TypeTypeof extends TypeQualified implements ITypeofType {
 	
 	public Expression exp;
 
-	public TypeTypeof(Loc loc, Expression exp) {
-		super(TY.Ttypeof, loc);
+	public TypeTypeof(Expression exp) {
+		super(TY.Ttypeof);
 		this.exp = exp;
 	}
 	

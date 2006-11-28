@@ -5,8 +5,8 @@ import descent.core.dom.ISuperExpression;
 
 public class SuperExp extends Expression implements ISuperExpression {
 
-	public SuperExp(Loc loc) {
-		// TODO Auto-generated constructor stub
+	public SuperExp() {
+		
 	}
 	
 	public int getElementType() {

@@ -10,7 +10,7 @@ public class FuncExp extends Expression implements IFunctionExpression {
 
 	private final FuncLiteralDeclaration fd;
 
-	public FuncExp(Loc loc, FuncLiteralDeclaration fd) {
+	public FuncExp(FuncLiteralDeclaration fd) {
 		this.fd = fd;
 	}
 	

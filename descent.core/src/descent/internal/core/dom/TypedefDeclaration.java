@@ -11,7 +11,7 @@ public class TypedefDeclaration extends Declaration implements ITypedefDeclarati
 	public Type type;
 	public Initializer init;
 
-	public TypedefDeclaration(Loc loc, Identifier ident, Type type, Initializer init) {
+	public TypedefDeclaration(Identifier ident, Type type, Initializer init) {
 		super(ident);
 		this.type = type;
 		this.init = init;

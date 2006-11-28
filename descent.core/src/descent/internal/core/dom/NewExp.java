@@ -12,7 +12,7 @@ public class NewExp extends Expression implements INewExpression {
 	private IExpression[] arguments;
 	private Type type;
 
-	public NewExp(Loc loc, Expression thisexp, List<Expression> newargs, Type t, List<Expression> arguments) {
+	public NewExp(Expression thisexp, List<Expression> newargs, Type t, List<Expression> arguments) {
 		this.type = t;
 		this.arguments = arguments == null ? new IExpression[0] : arguments.toArray(new IExpression[arguments.size()]);
 	}

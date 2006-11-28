@@ -13,7 +13,7 @@ public class IfStatement extends Statement implements IIfStatement {
 	private final Statement ifbody;
 	private final Statement elsebody;
 
-	public IfStatement(Loc loc, Argument arg, Expression expr, Statement ifbody, Statement elsebody) {
+	public IfStatement(Argument arg, Expression expr, Statement ifbody, Statement elsebody) {
 		this.arg = arg;
 		this.expr = expr;
 		this.ifbody = ifbody;

@@ -13,7 +13,7 @@ public class StructInitializer extends Initializer implements IStructInitializer
 	private List<Identifier> ids;
 	private List<Initializer> values;
 
-	public StructInitializer(Loc loc) {
+	public StructInitializer() {
 		this.ids = new ArrayList<Identifier>();
 		this.values = new ArrayList<Initializer>();
 	}

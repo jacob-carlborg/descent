@@ -9,7 +9,7 @@ public class InvariantDeclaration extends Dsymbol implements IInvariantDeclarati
 
 	public Statement fbody;
 
-	public InvariantDeclaration(Loc loc, int i) {
+	public InvariantDeclaration() {
 		this.ident = new Identifier("invariant", TOK.TOKinvariant);
 	}
 	

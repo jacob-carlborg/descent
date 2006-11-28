@@ -10,7 +10,7 @@ public class TryFinallyStatement extends Statement implements ITryStatement {
 	private final Statement s;
 	private final Statement finalbody;
 
-	public TryFinallyStatement(Loc loc, Statement s, Statement finalbody) {
+	public TryFinallyStatement(Statement s, Statement finalbody) {
 		this.s = s;
 		this.finalbody = finalbody;
 	}

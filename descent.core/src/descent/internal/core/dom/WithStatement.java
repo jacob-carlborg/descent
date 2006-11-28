@@ -10,7 +10,7 @@ public class WithStatement extends Statement implements IWithStatement {
 	public Expression exp;
 	public Statement body;
 
-	public WithStatement(Loc loc, Expression exp, Statement body) {
+	public WithStatement(Expression exp, Statement body) {
 		this.exp = exp;
 		this.body = body;
 	}

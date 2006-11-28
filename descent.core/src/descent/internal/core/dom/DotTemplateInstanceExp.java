@@ -4,7 +4,7 @@ import descent.core.dom.ElementVisitor;
 
 public class DotTemplateInstanceExp extends Expression {
 
-	public DotTemplateInstanceExp(Loc loc, Expression e, TemplateInstance tempinst) {
+	public DotTemplateInstanceExp(Expression e, TemplateInstance tempinst) {
 		// TODO Auto-generated constructor stub
 	}
 	

@@ -8,7 +8,7 @@ public class ContinueStatement extends Statement implements IContinueStatement {
 	
 	public Identifier id;
 
-	public ContinueStatement(Loc loc, Identifier ident) {
+	public ContinueStatement(Identifier ident) {
 		this.id = ident;
 	}
 	

@@ -9,8 +9,8 @@ public class CtorDeclaration extends FuncDeclaration {
 	public int varargs;
 	private IArgument[] arguments;
 
-	public CtorDeclaration(Loc loc, int endloc, List<Argument> arguments, int varargs) {
-		super(loc, endloc, new Identifier(Id.ctor, TOK.TOKidentifier), STC.STCundefined, null);
+	public CtorDeclaration(List<Argument> arguments, int varargs) {
+		super(new Identifier(Id.ctor, TOK.TOKidentifier), STC.STCundefined, null);
 		
 		this.arguments = arguments.toArray(new IArgument[arguments.size()]);
 		

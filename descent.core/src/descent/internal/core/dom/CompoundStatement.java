@@ -10,7 +10,7 @@ public class CompoundStatement extends Statement implements ICompoundStatement {
 
 	private final List<Statement> as;
 
-	public CompoundStatement(Loc loc, List<Statement> as) {
+	public CompoundStatement(List<Statement> as) {
 		this.as = as;
 	}
 	

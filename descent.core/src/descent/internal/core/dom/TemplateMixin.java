@@ -9,14 +9,14 @@ import descent.core.dom.IName;
 import descent.core.dom.IQualifiedName;
 import descent.core.dom.ITypeofType;
 
-public class TemplateMixin extends Dsymbol implements IMixinDeclaration {
+public class TemplateMixin extends Declaration implements IMixinDeclaration {
 
 	private QualifiedName qName;
 	private TypeTypeof tqual;
 	private IElement[] tiargs;
 
-	public TemplateMixin(Loc loc, Identifier id, TypeTypeof tqual, List<Identifier> idents, List<IElement> tiargs) {
-		this.ident = id;
+	public TemplateMixin(Identifier id, TypeTypeof tqual, List<Identifier> idents, List<IElement> tiargs) {
+		super(id);
 		this.tqual = tqual;
 		this.qName = new QualifiedName(idents);
 		if (tiargs != null) {

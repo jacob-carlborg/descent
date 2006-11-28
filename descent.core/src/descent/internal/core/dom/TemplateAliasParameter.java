@@ -11,7 +11,7 @@ public class TemplateAliasParameter extends TemplateParameter implements IAliasT
 	private final Type tp_spectype;
 	private final Type tp_defaulttype;
 
-	public TemplateAliasParameter(Loc loc, Identifier tp_ident, Type tp_spectype, Type tp_defaulttype) {
+	public TemplateAliasParameter(Identifier tp_ident, Type tp_spectype, Type tp_defaulttype) {
 		this.tp_ident = tp_ident;
 		this.tp_spectype = tp_spectype;
 		this.tp_defaulttype = tp_defaulttype;

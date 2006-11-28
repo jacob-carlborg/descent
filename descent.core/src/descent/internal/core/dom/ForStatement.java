@@ -12,7 +12,7 @@ public class ForStatement extends Statement implements IForStatement {
 	private final Expression increment;
 	private final Statement body;
 
-	public ForStatement(Loc loc, Statement init, Expression condition, Expression increment, Statement body) {
+	public ForStatement(Statement init, Expression condition, Expression increment, Statement body) {
 		this.init = init;
 		this.condition = condition;
 		this.increment = increment;

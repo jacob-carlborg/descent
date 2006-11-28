@@ -2,7 +2,7 @@ package descent.internal.core.dom;
 
 public class AddrExp extends UnaryExpression {
 	
-	public AddrExp(Loc loc, Expression e) {
+	public AddrExp(Expression e) {
 		super(e);
 	}
 	

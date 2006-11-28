@@ -10,7 +10,7 @@ public class WhileStatement extends Statement implements IWhileStatement {
 	public Expression expr;
 	public Statement body;
 
-	public WhileStatement(Loc loc, Expression expr, Statement body) {
+	public WhileStatement(Expression expr, Statement body) {
 		this.expr = expr;
 		this.body = body;
 	}

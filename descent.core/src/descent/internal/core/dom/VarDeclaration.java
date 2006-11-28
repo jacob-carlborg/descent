@@ -11,7 +11,7 @@ public class VarDeclaration extends Declaration implements IVariableDeclaration 
 	public Type type;
 	public Initializer init;
 
-	public VarDeclaration(Loc loc, Type type, Identifier ident, Initializer init) {
+	public VarDeclaration(Type type, Identifier ident, Initializer init) {
 		super(ident);
 		this.type = type;
 		this.init = init;

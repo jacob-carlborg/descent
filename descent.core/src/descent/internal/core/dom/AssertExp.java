@@ -9,7 +9,7 @@ public class AssertExp extends Expression implements IAssertExpression {
 	private Expression e;
 	private Expression msg;
 
-	public AssertExp(Loc loc, Expression e, Expression msg) {
+	public AssertExp(Expression e, Expression msg) {
 		this.e = e;
 		this.msg = msg;
 	}

@@ -8,7 +8,7 @@ public class DeclarationStatement extends Statement implements IDeclarationState
 
 	private final Dsymbol d;
 
-	public DeclarationStatement(Loc loc, Dsymbol d) {
+	public DeclarationStatement(Dsymbol d) {
 		this.d = d;
 	}
 	

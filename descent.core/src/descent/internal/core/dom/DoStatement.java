@@ -10,7 +10,7 @@ public class DoStatement extends Statement implements IDoWhileStatement {
 	public Expression expr;
 	public Statement body;
 
-	public DoStatement(Loc loc, Statement body, Expression expr) {
+	public DoStatement(Statement body, Expression expr) {
 		this.expr = expr;
 		this.body = body;
 	}

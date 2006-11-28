@@ -31,7 +31,7 @@ public class TypeSArray extends TypeArray implements IStaticArrayType {
 	    {	
 	    	List<Expression> arguments = new ArrayList<Expression>();
 	    	arguments.add(dim);
-	    	e = new ArrayExp(dim.loc, e, arguments);
+	    	e = new ArrayExp(e, arguments);
 	    }
 	    return e;
 	}

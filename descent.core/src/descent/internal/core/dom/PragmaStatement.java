@@ -14,7 +14,7 @@ public class PragmaStatement extends Statement implements IPragmaStatement {
 	private IExpression[] expressions;
 	private IStatement body;
 
-	public PragmaStatement(Loc loc, Identifier ident, List<Expression> args, Statement body) {
+	public PragmaStatement(Identifier ident, List<Expression> args, Statement body) {
 		this.ident = ident;
 		if (args != null) {
 			expressions = args.toArray(new IExpression[args.size()]);

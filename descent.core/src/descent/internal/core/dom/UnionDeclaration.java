@@ -3,7 +3,7 @@ package descent.internal.core.dom;
 
 public class UnionDeclaration extends AggregateDeclaration {
 
-	public UnionDeclaration(Loc loc, Identifier id) {
+	public UnionDeclaration(Identifier id) {
 		super(id, null);
 	}
 	

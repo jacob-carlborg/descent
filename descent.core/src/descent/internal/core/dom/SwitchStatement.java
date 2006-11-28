@@ -10,7 +10,7 @@ public class SwitchStatement extends Statement implements ISwitchStatement {
 	private final Expression expr;
 	private final Statement body;
 
-	public SwitchStatement(Loc loc, Expression expr, Statement body) {
+	public SwitchStatement(Expression expr, Statement body) {
 		this.expr = expr;
 		this.body = body;
 	}

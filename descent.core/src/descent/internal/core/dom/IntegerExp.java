@@ -12,7 +12,7 @@ public class IntegerExp extends Expression implements IIntegerExpression, IFalse
 	private int expressionType;
 	private BigInteger number;
 	
-	public IntegerExp(Loc loc, BigInteger number, Type type) {
+	public IntegerExp(BigInteger number, Type type) {
 		if (type == Type.tbool) {
 			expressionType = number.compareTo(BigInteger.ZERO) == 0 ? FALSE_EXPRESSION : TRUE_EXPRESSION;
 		} else {

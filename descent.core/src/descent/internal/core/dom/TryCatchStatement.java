@@ -12,7 +12,7 @@ public class TryCatchStatement extends Statement implements ITryStatement {
 	private final Statement body;
 	private final List<Catch> catches;
 
-	public TryCatchStatement(Loc loc, Statement body, List<Catch> catches) {
+	public TryCatchStatement(Statement body, List<Catch> catches) {
 		this.body = body;
 		this.catches = catches;
 	}

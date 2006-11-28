@@ -10,7 +10,7 @@ public class DotIdExp extends Expression implements IDotIdentifierExpression {
 	private final Expression e;
 	private final Identifier id;
 
-	public DotIdExp(Loc loc, Expression e, Identifier id) {
+	public DotIdExp(Expression e, Identifier id) {
 		this.e = e;
 		this.id = id;
 	}

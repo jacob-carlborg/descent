@@ -9,11 +9,11 @@ public class MinAssignExp extends BinaryExpression implements IUnaryExpression {
 
 	private final boolean isUnary;
 
-	public MinAssignExp(Loc loc, Expression e, Expression exp) {
-		this(loc, e, exp, false);
+	public MinAssignExp(Expression e, Expression exp) {
+		this(e, exp, false);
 	}
 	
-	public MinAssignExp(Loc loc, Expression e, Expression exp, boolean isUnary) {
+	public MinAssignExp(Expression e, Expression exp, boolean isUnary) {
 		super(e, exp);
 		this.isUnary = isUnary;
 	}

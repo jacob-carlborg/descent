@@ -5,7 +5,7 @@ import descent.core.dom.IGotoDefaultStatement;
 
 public class GotoDefaultStatement extends Statement implements IGotoDefaultStatement {
 
-	public GotoDefaultStatement(Loc loc) {
+	public GotoDefaultStatement() {
 		// TODO Auto-generated constructor stub
 	}
 	

@@ -8,7 +8,7 @@ public class TypeidExp extends Expression implements ITypeidExpression {
 
 	private final Type type;
 
-	public TypeidExp(Loc loc, Type type) {
+	public TypeidExp(Type type) {
 		this.type = type;
 	}
 	
