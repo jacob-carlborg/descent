@@ -1,4 +1,4 @@
-package descent.core.dom;
+package descent.core.compiler;
 
 /**
  * A problem found while compiling or building a model
@@ -47,7 +47,7 @@ public interface IProblem {
 	int NO_IDENTIFIER_FOR_DECLARATION = 105;
 	int NO_IDENTIFIER_FOR_DECLARATOR = 106;
 	int ALIAS_CANNOT_HAVE_INITIALIZER = 107;
-	int C_STYLE_CAST_ILLEGAL = 108; // TODO
+	int C_STYLE_CAST_ILLEGAL = 108;
 	int UNRECOGNIZED_DECLARATION = 109;
 	int INTEGER_EXPECTED = 110;
 	int MATCHING_CURLY_EXPECTED = 112;

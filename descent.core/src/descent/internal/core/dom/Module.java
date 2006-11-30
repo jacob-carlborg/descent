@@ -2,11 +2,11 @@ package descent.internal.core.dom;
 
 import java.util.List;
 
+import descent.core.compiler.IProblem;
 import descent.core.dom.ICompilationUnit;
 import descent.core.dom.ElementVisitor;
 import descent.core.dom.IDeclaration;
 import descent.core.dom.IModuleDeclaration;
-import descent.core.dom.IProblem;
 
 public class Module extends ScopeDsymbol implements ICompilationUnit {
 	

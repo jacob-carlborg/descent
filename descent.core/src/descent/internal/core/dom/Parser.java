@@ -90,12 +90,12 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
+import descent.core.compiler.IProblem;
 import descent.core.dom.IBaseClass;
 import descent.core.dom.IElement;
 import descent.core.dom.IDeclaration;
 import descent.core.dom.IEnumMember;
 import descent.core.dom.IImport;
-import descent.core.dom.IProblem;
 import descent.core.dom.ITemplateParameter;
 
 public class Parser extends Lexer {

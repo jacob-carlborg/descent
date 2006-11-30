@@ -13,9 +13,9 @@ import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IFileEditorInput;
 
 import descent.core.DescentCore;
+import descent.core.compiler.IProblem;
 import descent.core.dom.ICompilationUnit;
 import descent.core.dom.IParser;
-import descent.core.dom.IProblem;
 import descent.ui.DescentUI;
 
 /**

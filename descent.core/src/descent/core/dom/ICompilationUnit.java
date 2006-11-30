@@ -1,5 +1,7 @@
 package descent.core.dom;
 
+import descent.core.compiler.IProblem;
+
 /**
  * Represents an entire source file.
  */

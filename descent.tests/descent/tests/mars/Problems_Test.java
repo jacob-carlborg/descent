@@ -1,8 +1,8 @@
 package descent.tests.mars;
 
 import junit.framework.TestCase;
+import descent.core.compiler.IProblem;
 import descent.core.dom.ICompilationUnit;
-import descent.core.dom.IProblem;
 import descent.internal.core.dom.ParserFacade;
 
 public class Problems_Test extends TestCase {
