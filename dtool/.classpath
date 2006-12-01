@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="DGrammar"/>
+	<classpathentry kind="src" path="src-descent"/>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="D:/devel/ANTLR/antlr-3.0b4/lib/antlr-3.0b4.jar" sourcepath="D:/devel/ANTLR/antlr-3.0b4/src"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>
