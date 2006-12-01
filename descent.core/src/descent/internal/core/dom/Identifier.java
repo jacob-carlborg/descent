@@ -1,9 +1,9 @@
 package descent.internal.core.dom;
 
-import descent.core.dom.ElementVisitor;
-import descent.core.dom.IName;
+import descent.core.dom.ASTVisitor;
+import descent.core.dom.ISimpleName;
 
-public class Identifier extends ASTNode implements IName {
+public class Identifier extends ASTNode implements ISimpleName {
 	
 	public String string;
 	public TOK value;
@@ -20,18 +20,23 @@ public class Identifier extends ASTNode implements IName {
 		this.length = token.len;
 	}
 	
-	@Override
-	public String toString() {
+	public String getIdentifier() {
 		return string;
 	}
 
-	public void accept0(ElementVisitor visitor) {
+	public void accept0(ASTVisitor visitor) {
 		visitor.visit(this);
 		visitor.endVisit(this);
 	}
 
 	public int getElementType() {
-		return NAME;
+		return SIMPLE_NAME;
+	}
+	
+	// TODO Descent remove
+	@Override
+	public String toString() {
+		return string;
 	}
 
 }

@@ -12,7 +12,7 @@ public interface IInvariantDeclaration extends IDeclaration {
 	/**
 	 * Returns the "invariant" part.
 	 */
-	IName getName();
+	ISimpleName getName();
 	
 	/**
 	 * Returns the statement of the invariant.

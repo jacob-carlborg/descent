@@ -3,9 +3,9 @@ package descent.internal.core.dom;
 import java.util.ArrayList;
 import java.util.List;
 
-import descent.core.dom.ElementVisitor;
+import descent.core.dom.ASTVisitor;
 import descent.core.dom.IInitializer;
-import descent.core.dom.IName;
+import descent.core.dom.ISimpleName;
 import descent.core.dom.IStructInitializer;
 
 public class StructInitializer extends Initializer implements IStructInitializer {
@@ -23,8 +23,8 @@ public class StructInitializer extends Initializer implements IStructInitializer
 		this.values.add(value);
 	}
 	
-	public IName[] getNames() {
-		return ids.toArray(new IName[ids.size()]);
+	public ISimpleName[] getNames() {
+		return ids.toArray(new ISimpleName[ids.size()]);
 	}
 	
 	public IInitializer[] getValues() {
@@ -35,7 +35,7 @@ public class StructInitializer extends Initializer implements IStructInitializer
 		return STRUCT_INITIALIZER;
 	}
 	
-	public void accept0(ElementVisitor visitor) {
+	public void accept0(ASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) { 
 			acceptChildren(visitor, ids);

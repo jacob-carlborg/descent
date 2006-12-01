@@ -2,9 +2,9 @@ package descent.internal.core.dom;
 
 import java.util.List;
 
-import descent.core.dom.ElementVisitor;
+import descent.core.dom.ASTVisitor;
 import descent.core.dom.IDeclaration;
-import descent.core.dom.IName;
+import descent.core.dom.ISimpleName;
 import descent.core.dom.ITemplateDeclaration;
 import descent.core.dom.ITemplateParameter;
 
@@ -21,7 +21,7 @@ public class TemplateDeclaration extends Declaration implements ITemplateDeclara
 		}
 	}
 	
-	public IName getName() {
+	public ISimpleName getName() {
 		return ident;
 	}
 	
@@ -38,7 +38,7 @@ public class TemplateDeclaration extends Declaration implements ITemplateDeclara
 		return TEMPLATE_DECLARATION;
 	}
 	
-	public void accept0(ElementVisitor visitor) {
+	public void accept0(ASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
 			acceptChild(visitor, ident);

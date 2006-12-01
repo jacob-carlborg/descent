@@ -1,9 +1,9 @@
 package descent.internal.core.dom;
 
 import descent.core.dom.IDebugStatement;
-import descent.core.dom.ElementVisitor;
+import descent.core.dom.ASTVisitor;
 import descent.core.dom.IExpression;
-import descent.core.dom.IName;
+import descent.core.dom.ISimpleName;
 import descent.core.dom.IStatement;
 import descent.core.dom.IStaticIfStatement;
 import descent.core.dom.IVersionStatement;
@@ -41,16 +41,16 @@ public class ConditionalStatement extends Statement implements IStaticIfStatemen
 		return 0;
 	}
 	
-	public IName getDebug() {
+	public ISimpleName getDebug() {
 		return ((DebugCondition) condition).id;
 	}
 	
-	public IName getVersion() {
+	public ISimpleName getVersion() {
 		return ((VersionCondition) condition).id;
 	}
 	
 	@Override
-	public void accept0(ElementVisitor visitor) {
+	public void accept0(ASTVisitor visitor) {
 		boolean children;
 		switch(this.condition.getConditionType()) {
 		case Condition.DEBUG: 

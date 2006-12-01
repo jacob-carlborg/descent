@@ -1,8 +1,8 @@
 package descent.internal.core.dom;
 
-import descent.core.dom.ElementVisitor;
+import descent.core.dom.ASTVisitor;
 import descent.core.dom.IGotoStatement;
-import descent.core.dom.IName;
+import descent.core.dom.ISimpleName;
 
 public class GotoStatement extends Statement implements IGotoStatement {
 
@@ -16,11 +16,11 @@ public class GotoStatement extends Statement implements IGotoStatement {
 		return GOTO_STATEMENT;
 	}
 	
-	public IName getLabel() {
+	public ISimpleName getLabel() {
 		return ident;
 	}
 	
-	public void accept0(ElementVisitor visitor) {
+	public void accept0(ASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
 			acceptChild(visitor, ident);

@@ -1,7 +1,7 @@
 package descent.internal.core.dom;
 
 import descent.core.dom.IElement;
-import descent.core.dom.ElementVisitor;
+import descent.core.dom.ASTVisitor;
 import descent.core.dom.IIdentifierType;
 import descent.core.dom.IQualifiedName;
 import descent.core.dom.ITemplateInstanceType;
@@ -9,7 +9,7 @@ import descent.core.dom.ITemplateInstanceType;
 public class TypeIdentifier extends TypeQualified implements IIdentifierType, ITemplateInstanceType {
 
 	public Identifier ident;
-	public QualifiedName qName;
+	public QualifiedNameBak qName;
 
 	public TypeIdentifier(Identifier ident) {
 		super(TY.Tident);
@@ -39,7 +39,7 @@ public class TypeIdentifier extends TypeQualified implements IIdentifierType, IT
 	@Override
 	public IQualifiedName getName() {
 		if (qName == null) {
-			qName = new QualifiedName(ident, idents);
+			qName = new QualifiedNameBak(ident, idents);
 		}
 		return qName;
 	}
@@ -68,7 +68,7 @@ public class TypeIdentifier extends TypeQualified implements IIdentifierType, IT
 	}
 	
 	@Override
-	public void accept0(ElementVisitor visitor) {
+	public void accept0(ASTVisitor visitor) {
 		switch(getElementType()) {
 		case IDENTIFIER_TYPE:
 			visitor.visit((IIdentifierType) this);

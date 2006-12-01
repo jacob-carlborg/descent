@@ -2,10 +2,10 @@ package descent.internal.core.dom;
 
 import java.util.List;
 
-import descent.core.dom.ElementVisitor;
+import descent.core.dom.ASTVisitor;
 import descent.core.dom.IDeclaration;
 import descent.core.dom.IExpression;
-import descent.core.dom.IName;
+import descent.core.dom.ISimpleName;
 import descent.core.dom.IPragmaDeclaration;
 
 public class PragmaDeclaration extends Dsymbol implements IPragmaDeclaration {
@@ -31,7 +31,7 @@ public class PragmaDeclaration extends Dsymbol implements IPragmaDeclaration {
 		return declDefs == null ? ASTNode.NO_DECLARATIONS: declDefs;
 	}
 
-	public IName getIdentifier() {
+	public ISimpleName getIdentifier() {
 		return ident;
 	}
 	
@@ -39,7 +39,7 @@ public class PragmaDeclaration extends Dsymbol implements IPragmaDeclaration {
 		return PRAGMA_DECLARATION;
 	}
 	
-	public void accept0(ElementVisitor visitor) {
+	public void accept0(ASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
 			acceptChild(visitor, ident);

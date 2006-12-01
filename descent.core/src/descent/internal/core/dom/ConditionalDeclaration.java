@@ -2,11 +2,11 @@ package descent.internal.core.dom;
 
 import java.util.List;
 
-import descent.core.dom.ElementVisitor;
+import descent.core.dom.ASTVisitor;
 import descent.core.dom.IDebugDeclaration;
 import descent.core.dom.IDeclaration;
 import descent.core.dom.IIftypeDeclaration;
-import descent.core.dom.IName;
+import descent.core.dom.ISimpleName;
 import descent.core.dom.IType;
 import descent.core.dom.IVersionDeclaration;
 
@@ -31,15 +31,15 @@ public class ConditionalDeclaration extends Dsymbol implements IVersionDeclarati
 		return 0;
 	}
 	
-	public IName getVersion() {
+	public ISimpleName getVersion() {
 		return ((VersionCondition) condition).id;
 	}
 	
-	public IName getDebug() {
+	public ISimpleName getDebug() {
 		return ((DebugCondition) condition).id;
 	}
 	
-	public IName getIdentifier() {
+	public ISimpleName getIdentifier() {
 		return ((IftypeCondition) condition).ident;
 	}
 	
@@ -67,7 +67,7 @@ public class ConditionalDeclaration extends Dsymbol implements IVersionDeclarati
 		return aelse.toArray(new IDeclaration[aelse.size()]);
 	}
 	
-	public void accept0(ElementVisitor visitor) {
+	public void accept0(ASTVisitor visitor) {
 		boolean children;
 		switch(this.condition.getConditionType()) {
 		case Condition.DEBUG: 

@@ -14,7 +14,7 @@ public interface IVariableDeclaration extends IDeclaration, IModifiersContainer,
 	/**
 	 * Returns the name of the variable.
 	 */
-	IName getName();
+	ISimpleName getName();
 	
 	/**
 	 * Returns the initializer of the variable, if any, or null.

@@ -21,7 +21,7 @@ public interface IArgument extends IElement {
 	/**
 	 * Returns the name of this argument.
 	 */
-	IName getName();
+	ISimpleName getName();
 	
 	/**
 	 * Returns the type of this argument.

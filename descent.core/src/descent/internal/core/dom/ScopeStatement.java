@@ -1,6 +1,6 @@
 package descent.internal.core.dom;
 
-import descent.core.dom.ElementVisitor;
+import descent.core.dom.ASTVisitor;
 import descent.core.dom.IScopeStatement;
 import descent.core.dom.IStatement;
 
@@ -20,7 +20,7 @@ public class ScopeStatement extends Statement implements IScopeStatement {
 		return SCOPE_STATEMENT;
 	}
 	
-	public void accept0(ElementVisitor visitor) {
+	public void accept0(ASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
 			acceptChild(visitor, s);

@@ -2,7 +2,7 @@ package descent.internal.core.dom;
 
 import java.util.List;
 
-import descent.core.dom.ElementVisitor;
+import descent.core.dom.ASTVisitor;
 import descent.core.dom.IArgument;
 import descent.core.dom.IType;
 
@@ -29,7 +29,7 @@ public class TypeFunction extends Type {
 	}
 	
 	@Override
-	void accept0(ElementVisitor visitor) {
+	void accept0(ASTVisitor visitor) {
 		// TODO Auto-generated method stub
 		
 	}

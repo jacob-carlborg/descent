@@ -8,7 +8,7 @@ public interface ITemplateDeclaration extends IDeclaration {
 	/**
 	 * Returns the name of the template.
 	 */
-	IName getName();
+	ISimpleName getName();
 	
 	/**
 	 * Returns the template parameters.

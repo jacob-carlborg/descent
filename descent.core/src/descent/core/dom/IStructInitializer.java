@@ -12,7 +12,7 @@ public interface IStructInitializer extends IInitializer {
 	/**
 	 * Returns the names. Some may be <code>null</code>.
 	 */
-	IName[] getNames();
+	ISimpleName[] getNames();
 	
 	/**
 	 * Returns the values assigned to the names. Some

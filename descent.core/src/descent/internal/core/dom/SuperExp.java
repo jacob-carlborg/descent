@@ -1,6 +1,6 @@
 package descent.internal.core.dom;
 
-import descent.core.dom.ElementVisitor;
+import descent.core.dom.ASTVisitor;
 import descent.core.dom.ISuperExpression;
 
 public class SuperExp extends Expression implements ISuperExpression {
@@ -19,7 +19,7 @@ public class SuperExp extends Expression implements ISuperExpression {
 	}
 	
 	@Override
-	public void accept0(ElementVisitor visitor) {
+	public void accept0(ASTVisitor visitor) {
 		visitor.visit(this);
 		visitor.endVisit(this);
 	}

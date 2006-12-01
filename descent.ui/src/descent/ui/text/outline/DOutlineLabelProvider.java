@@ -23,7 +23,7 @@ import descent.core.dom.ILinkDeclaration;
 import descent.core.dom.IMixinDeclaration;
 import descent.core.dom.IModifier;
 import descent.core.dom.IModuleDeclaration;
-import descent.core.dom.IName;
+import descent.core.dom.ISimpleName;
 import descent.core.dom.IPointerType;
 import descent.core.dom.IPragmaDeclaration;
 import descent.core.dom.ISelectiveImport;
@@ -113,7 +113,7 @@ public class DOutlineLabelProvider extends LabelProvider {
 	@Override
 	public String getText(Object element) {
 		IElement e = (IElement) element;
-		IName name;
+		ISimpleName name;
 		StringBuilder s;
 		IElement[] templateArguments;
 		

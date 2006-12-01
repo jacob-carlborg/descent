@@ -2,10 +2,10 @@ package descent.internal.core.dom;
 
 import java.util.List;
 
-import descent.core.dom.ElementVisitor;
+import descent.core.dom.ASTVisitor;
 import descent.core.dom.IEnumDeclaration;
 import descent.core.dom.IEnumMember;
-import descent.core.dom.IName;
+import descent.core.dom.ISimpleName;
 import descent.core.dom.IType;
 
 public class EnumDeclaration extends Dsymbol implements IEnumDeclaration {
@@ -18,7 +18,7 @@ public class EnumDeclaration extends Dsymbol implements IEnumDeclaration {
 		this.type = type;
 	}
 	
-	public IName getName() {
+	public ISimpleName getName() {
 		return ident;
 	}
 	
@@ -35,7 +35,7 @@ public class EnumDeclaration extends Dsymbol implements IEnumDeclaration {
 		return members.toArray(new IEnumMember[members.size()]);
 	}
 	
-	public void accept0(ElementVisitor visitor) {
+	public void accept0(ASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
 			acceptChild(visitor, ident);

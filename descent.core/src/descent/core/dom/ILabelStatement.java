@@ -12,7 +12,7 @@ public interface ILabelStatement extends IStatement {
 	/**
 	 * Returns the name of the label.
 	 */
-	IName getName();
+	ISimpleName getName();
 	
 	/**
 	 * Returns the statement.

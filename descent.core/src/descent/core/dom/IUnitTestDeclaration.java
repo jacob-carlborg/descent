@@ -14,7 +14,7 @@ public interface IUnitTestDeclaration extends IDeclaration {
 	/**
 	 * Returns the "unittest" part of this declaration.
 	 */
-	IName getName();
+	ISimpleName getName();
 	
 	/**
 	 * Returns the statement present in the unittest.

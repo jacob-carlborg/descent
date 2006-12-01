@@ -8,6 +8,6 @@ public interface IVersionDeclaration extends IConditionalDeclaration {
 	/**
 	 * Returns the version identifier or number.
 	 */
-	IName getVersion();	
+	ISimpleName getVersion();	
 
 }

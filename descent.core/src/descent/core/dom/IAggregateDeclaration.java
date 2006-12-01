@@ -38,7 +38,7 @@ public interface IAggregateDeclaration extends IDeclaration, IModifiersContainer
 	 * Returns the name of this aggregate. May be <code>null</code> if this
 	 * is annonymous.
 	 */
-	IName getName();
+	ISimpleName getName();
 	
 	/**
 	 * Returns the base classes of this aggregate. May be empty but

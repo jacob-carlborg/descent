@@ -1,7 +1,7 @@
 package descent.internal.core.dom;
 
 import descent.core.dom.IArgument;
-import descent.core.dom.ElementVisitor;
+import descent.core.dom.ASTVisitor;
 import descent.core.dom.IExpression;
 import descent.core.dom.IIfStatement;
 import descent.core.dom.IStatement;
@@ -40,7 +40,7 @@ public class IfStatement extends Statement implements IIfStatement {
 		return elsebody;
 	}
 	
-	public void accept0(ElementVisitor visitor) {
+	public void accept0(ASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
 			acceptChild(visitor, arg);

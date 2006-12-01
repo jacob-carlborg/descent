@@ -39,7 +39,7 @@ public interface IElement {
 	 * Constant representing a name.
 	 * A D element with this type can be safely cast to <code>IName</code>. 
 	 */
-	int NAME = 6;
+	int SIMPLE_NAME = 6;
 	
 	/**
 	 * Constant representing a qualified name.
@@ -704,6 +704,6 @@ public interface IElement {
 	 * Accepts a visitor down the element hierarchy.
 	 * @param visitor a visitor
 	 */
-	void accept(ElementVisitor visitor);
+	void accept(ASTVisitor visitor);
 
 }

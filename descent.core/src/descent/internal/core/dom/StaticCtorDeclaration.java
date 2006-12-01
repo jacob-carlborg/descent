@@ -1,6 +1,6 @@
 package descent.internal.core.dom;
 
-import descent.core.dom.IName;
+import descent.core.dom.ISimpleName;
 
 public class StaticCtorDeclaration extends FuncDeclaration {
 	
@@ -11,7 +11,7 @@ public class StaticCtorDeclaration extends FuncDeclaration {
 	}
 	
 	@Override
-	public IName getName() {
+	public ISimpleName getName() {
 		return ident;
 	}
 	

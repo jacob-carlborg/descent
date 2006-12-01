@@ -1,7 +1,7 @@
 package descent.internal.core.dom;
 
-import descent.core.dom.ElementVisitor;
-import descent.core.dom.IName;
+import descent.core.dom.ASTVisitor;
+import descent.core.dom.ISimpleName;
 import descent.core.dom.IStatement;
 import descent.core.dom.IUnitTestDeclaration;
 
@@ -13,7 +13,7 @@ public class UnitTestDeclaration extends Dsymbol implements IUnitTestDeclaration
 		this.ident = new Identifier("unittest", TOK.TOKidentifier);
 	}
 	
-	public IName getName() {
+	public ISimpleName getName() {
 		return ident;
 	}
 	
@@ -25,7 +25,7 @@ public class UnitTestDeclaration extends Dsymbol implements IUnitTestDeclaration
 		return UNITTEST_DECLARATION;
 	}
 	
-	public void accept0(ElementVisitor visitor) {
+	public void accept0(ASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
 			acceptChild(visitor, fbody);

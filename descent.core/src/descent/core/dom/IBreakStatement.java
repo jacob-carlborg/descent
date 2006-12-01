@@ -14,6 +14,6 @@ public interface IBreakStatement extends IStatement {
 	/**
 	 * Returns the label, if any, or <code>null</code>.
 	 */
-	IName getLabel();
+	ISimpleName getLabel();
 
 }

@@ -1,7 +1,7 @@
 package descent.internal.core.dom;
 
-import descent.core.dom.ElementVisitor;
-import descent.core.dom.IName;
+import descent.core.dom.ASTVisitor;
+import descent.core.dom.ISimpleName;
 import descent.core.dom.ITupleTemplateParameter;
 
 public class TemplateTupleParameter extends TemplateParameter implements ITupleTemplateParameter {
@@ -12,7 +12,7 @@ public class TemplateTupleParameter extends TemplateParameter implements ITupleT
 		this.ident = ident;
 	}
 	
-	public IName getName() {
+	public ISimpleName getName() {
 		return ident;
 	}
 
@@ -20,7 +20,7 @@ public class TemplateTupleParameter extends TemplateParameter implements ITupleT
 		return TUPLE_TEMPLATE_PARAMETER;
 	}
 
-	public void accept0(ElementVisitor visitor) {
+	public void accept0(ASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
 			acceptChild(visitor, ident);

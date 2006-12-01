@@ -12,7 +12,7 @@ import descent.core.dom.IAlignDeclaration;
 import descent.core.dom.ICompilationUnit;
 import descent.core.dom.IConditionalDeclaration;
 import descent.core.dom.IElement;
-import descent.core.dom.ElementVisitor;
+import descent.core.dom.ASTVisitor;
 import descent.core.dom.IEnumDeclaration;
 import descent.core.dom.IImportDeclaration;
 import descent.core.dom.ILinkDeclaration;
@@ -193,7 +193,7 @@ public class DOutlineContentProvider implements ITreeContentProvider {
 			return imports[0].getStartPosition();
 		}
 		
-		public void accept(ElementVisitor visitor) { }
+		public void accept(ASTVisitor visitor) { }
 		
 	}
 	
@@ -217,7 +217,7 @@ public class DOutlineContentProvider implements ITreeContentProvider {
 			return declDefs[0].getStartPosition();
 		}
 		
-		public void accept(ElementVisitor visitor) { }
+		public void accept(ASTVisitor visitor) { }
 		
 	}
 	

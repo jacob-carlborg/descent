@@ -2,7 +2,7 @@ package descent.internal.core.dom;
 
 import descent.core.dom.IArgument;
 import descent.core.dom.IDelegateType;
-import descent.core.dom.ElementVisitor;
+import descent.core.dom.ASTVisitor;
 import descent.core.dom.IPointerType;
 import descent.core.dom.IType;
 
@@ -29,7 +29,7 @@ public class TypePointer extends Type implements IPointerType, IDelegateType {
 	}
 	
 	@Override
-	public void accept0(ElementVisitor visitor) {
+	public void accept0(ASTVisitor visitor) {
 		boolean children;
 		switch(getElementType()) {
 		case POINTER_TO_FUNCTION_TYPE:

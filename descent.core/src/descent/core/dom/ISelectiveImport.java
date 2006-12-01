@@ -10,11 +10,11 @@ public interface ISelectiveImport extends IElement {
 	/**
 	 * Returns the name of this selective import.
 	 */
-	IName getName();
+	ISimpleName getName();
 	
 	/**
 	 * Returns the alias of this selective import.
 	 */
-	IName getAlias();
+	ISimpleName getAlias();
 
 }

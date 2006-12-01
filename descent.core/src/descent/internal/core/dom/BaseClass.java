@@ -1,7 +1,7 @@
 package descent.internal.core.dom;
 
 import descent.core.dom.IBaseClass;
-import descent.core.dom.ElementVisitor;
+import descent.core.dom.ASTVisitor;
 import descent.core.dom.IType;
 
 public class BaseClass extends ASTNode implements IBaseClass {
@@ -26,7 +26,7 @@ public class BaseClass extends ASTNode implements IBaseClass {
 		return type;
 	}
 	
-	public void accept0(ElementVisitor visitor) {
+	public void accept0(ASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
 			acceptChild(visitor, type);

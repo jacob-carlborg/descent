@@ -35,6 +35,6 @@ public interface IFunctionExpression extends IExpression {
 	/**
 	 * Returns the name of the out clase of the function, if any, or <code>null</code>.
 	 */
-	IName getOutName();
+	ISimpleName getOutName();
 
 }

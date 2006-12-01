@@ -1,6 +1,6 @@
 package descent.internal.core.dom;
 
-import descent.core.dom.ElementVisitor;
+import descent.core.dom.ASTVisitor;
 import descent.core.dom.IStringExpression;
 
 public class StringExp extends Expression implements IStringExpression {
@@ -26,7 +26,7 @@ public class StringExp extends Expression implements IStringExpression {
 	}
 	
 	@Override
-	public void accept0(ElementVisitor visitor) {
+	public void accept0(ASTVisitor visitor) {
 		visitor.visit(this);
 		visitor.endVisit(this);
 	}

@@ -3,22 +3,22 @@ package descent.internal.core.dom;
 import java.util.List;
 
 import descent.core.dom.IElement;
-import descent.core.dom.ElementVisitor;
+import descent.core.dom.ASTVisitor;
 import descent.core.dom.IMixinDeclaration;
-import descent.core.dom.IName;
+import descent.core.dom.ISimpleName;
 import descent.core.dom.IQualifiedName;
 import descent.core.dom.ITypeofType;
 
 public class TemplateMixin extends Declaration implements IMixinDeclaration {
 
-	private QualifiedName qName;
+	private QualifiedNameBak qName;
 	private TypeTypeof tqual;
 	private IElement[] tiargs;
 
 	public TemplateMixin(Identifier id, TypeTypeof tqual, List<Identifier> idents, List<IElement> tiargs) {
 		super(id);
 		this.tqual = tqual;
-		this.qName = new QualifiedName(idents);
+		this.qName = new QualifiedNameBak(idents);
 		if (tiargs != null) {
 			this.tiargs = tiargs.toArray(new IElement[tiargs.size()]);
 		}
@@ -28,7 +28,7 @@ public class TemplateMixin extends Declaration implements IMixinDeclaration {
 		return MIXIN_DECLARATION;
 	}
 	
-	public IName getName() {
+	public ISimpleName getName() {
 		return ident;
 	}
 	
@@ -45,7 +45,7 @@ public class TemplateMixin extends Declaration implements IMixinDeclaration {
 		return tiargs;
 	}
 	
-	public void accept0(ElementVisitor visitor) {
+	public void accept0(ASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
 			acceptChild(visitor, tqual);

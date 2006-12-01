@@ -1,7 +1,7 @@
 package descent.internal.core.dom;
 
-import descent.core.dom.ElementVisitor;
-import descent.core.dom.IName;
+import descent.core.dom.ASTVisitor;
+import descent.core.dom.ISimpleName;
 import descent.core.dom.IConditionAssignment;
 
 public class VersionSymbol extends Dsymbol implements IConditionAssignment {
@@ -12,7 +12,7 @@ public class VersionSymbol extends Dsymbol implements IConditionAssignment {
 		this.ident = ident;
 	}
 
-	public IName getValue() {
+	public ISimpleName getValue() {
 		return ident;
 	}
 	
@@ -24,7 +24,7 @@ public class VersionSymbol extends Dsymbol implements IConditionAssignment {
 		return CONDITION_VERSION;
 	}
 	
-	public void accept0(ElementVisitor visitor) {
+	public void accept0(ASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
 			acceptChild(visitor, ident);

@@ -4,7 +4,7 @@ import java.io.File;
 import java.util.Set;
 import java.util.TreeSet;
 
-class ElementVisitorGenerator {
+class ASTVisitorGenerator {
 	
 	private static Set<String> excludeList;
 	

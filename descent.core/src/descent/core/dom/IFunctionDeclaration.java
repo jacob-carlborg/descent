@@ -28,7 +28,7 @@ public interface IFunctionDeclaration extends IDeclaration, IModifiersContainer 
 	 * the name is "this", for destructors is "~this", for new is "new"
 	 * and for delete is "delete".
 	 */
-	IName getName();
+	ISimpleName getName();
 	
 	/**
 	 * Returns the return type of this function. May be <code>null</code>
@@ -74,6 +74,6 @@ public interface IFunctionDeclaration extends IDeclaration, IModifiersContainer 
 	/**
 	 * Returns the name of the out clase of the function, if any, or <code>null</code>.
 	 */
-	IName getOutName();
+	ISimpleName getOutName();
 
 }

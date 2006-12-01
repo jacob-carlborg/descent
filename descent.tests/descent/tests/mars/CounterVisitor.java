@@ -1,9 +1,9 @@
 package descent.tests.mars;
 
 import descent.core.dom.IElement;
-import descent.core.dom.ElementVisitor;
+import descent.core.dom.ASTVisitor;
 
-public class CounterVisitor extends ElementVisitor  {
+public class CounterVisitor extends ASTVisitor  {
 	
 	public int enter;
 	public int exit;

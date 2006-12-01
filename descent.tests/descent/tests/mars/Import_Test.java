@@ -4,7 +4,7 @@ import descent.core.dom.ICompilationUnit;
 import descent.core.dom.IElement;
 import descent.core.dom.IImport;
 import descent.core.dom.IImportDeclaration;
-import descent.core.dom.IName;
+import descent.core.dom.ISimpleName;
 import descent.core.dom.IQualifiedName;
 import descent.core.dom.ISelectiveImport;
 import descent.internal.core.dom.ParserFacade;
@@ -81,7 +81,7 @@ public class Import_Test extends Parser_Test {
 		assertEquals("uno.dos.tres", qName.toString());
 		assertPosition(qName, 17, 12);
 		
-		IName alias = imp.getAlias();
+		ISimpleName alias = imp.getAlias();
 		assertEquals("mAlias", alias.toString());
 		assertPosition(alias, 8, 6);
 		

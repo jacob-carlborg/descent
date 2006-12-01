@@ -1,9 +1,9 @@
 package descent.internal.core.dom;
 
 import descent.core.dom.IArgument;
-import descent.core.dom.ElementVisitor;
+import descent.core.dom.ASTVisitor;
 import descent.core.dom.IFunctionExpression;
-import descent.core.dom.IName;
+import descent.core.dom.ISimpleName;
 import descent.core.dom.IStatement;
 
 public class FuncExp extends Expression implements IFunctionExpression {
@@ -34,7 +34,7 @@ public class FuncExp extends Expression implements IFunctionExpression {
 		return fd.getOut();
 	}
 
-	public IName getOutName() {
+	public ISimpleName getOutName() {
 		return fd.getOutName();
 	}
 
@@ -42,7 +42,7 @@ public class FuncExp extends Expression implements IFunctionExpression {
 		return fd.isVariadic();
 	}
 	
-	public void accept0(ElementVisitor visitor) {
+	public void accept0(ASTVisitor visitor) {
 		fd.accept(visitor);
 	}
 

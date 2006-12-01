@@ -5,7 +5,7 @@ import descent.core.dom.IBaseClass;
 import descent.core.dom.ICompilationUnit;
 import descent.core.dom.IElement;
 import descent.core.dom.IModifier;
-import descent.core.dom.IName;
+import descent.core.dom.ISimpleName;
 import descent.internal.core.dom.ParserFacade;
 
 public class Interface_Test extends Parser_Test {
@@ -21,8 +21,8 @@ public class Interface_Test extends Parser_Test {
 		assertEquals(IAggregateDeclaration.INTERFACE_DECLARATION, c.getAggregateDeclarationType());
 		assertPosition(c, 1, 19);
 		
-		IName name = c.getName();
-		assertEquals(IElement.NAME, name.getElementType());
+		ISimpleName name = c.getName();
+		assertEquals(IElement.SIMPLE_NAME, name.getElementType());
 		assertEquals("Clazz", name.toString());
 		assertPosition(name, 11, 5);
 		

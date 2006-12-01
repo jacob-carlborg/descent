@@ -1,6 +1,6 @@
 package descent.internal.core.dom;
 
-import descent.core.dom.ElementVisitor;
+import descent.core.dom.ASTVisitor;
 import descent.core.dom.ITypeSpecialization;
 
 public class TypeSpecialization extends ASTNode implements ITypeSpecialization {
@@ -24,7 +24,7 @@ public class TypeSpecialization extends ASTNode implements ITypeSpecialization {
 		this.length = token.len;
 	}
 
-	public void accept0(ElementVisitor visitor) {
+	public void accept0(ASTVisitor visitor) {
 		visitor.visit(this);
 		visitor.endVisit(this);
 	}

@@ -1,7 +1,7 @@
 package descent.internal.core.dom;
 
-import descent.core.dom.ElementVisitor;
-import descent.core.dom.IName;
+import descent.core.dom.ASTVisitor;
+import descent.core.dom.ISimpleName;
 import descent.core.dom.ISelectiveImport;
 
 public class SelectiveImport extends ASTNode implements ISelectiveImport {
@@ -14,11 +14,11 @@ public class SelectiveImport extends ASTNode implements ISelectiveImport {
 		this.alias = alias;
 	}
 	
-	public IName getAlias() {
+	public ISimpleName getAlias() {
 		return alias;
 	}
 
-	public IName getName() {
+	public ISimpleName getName() {
 		return name;
 	}
 	
@@ -26,7 +26,7 @@ public class SelectiveImport extends ASTNode implements ISelectiveImport {
 		return SELECTIVE_IMPORT;
 	}
 	
-	public void accept0(ElementVisitor visitor) {
+	public void accept0(ASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
 			acceptChild(visitor, name);

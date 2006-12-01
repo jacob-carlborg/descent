@@ -1,6 +1,6 @@
 package descent.internal.core.dom;
 
-import descent.core.dom.ElementVisitor;
+import descent.core.dom.ASTVisitor;
 import descent.core.dom.IExpression;
 import descent.core.dom.IStatement;
 import descent.core.dom.IWithStatement;
@@ -27,7 +27,7 @@ public class WithStatement extends Statement implements IWithStatement {
 		return WITH_STATEMENT;
 	}
 	
-	public void accept0(ElementVisitor visitor) {
+	public void accept0(ASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
 			acceptChild(visitor, exp);

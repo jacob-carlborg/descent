@@ -22,7 +22,7 @@ public interface IImport extends IElement, IModifiersContainer {
 	/**
 	 * Returns the alias of the import, if any, or <code>null</code>.
 	 */
-	IName getAlias();
+	ISimpleName getAlias();
 	
 	/**
 	 * Returns the selective imports to import from the qualified name. May

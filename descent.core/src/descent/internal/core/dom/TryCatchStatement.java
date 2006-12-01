@@ -3,7 +3,7 @@ package descent.internal.core.dom;
 import java.util.List;
 
 import descent.core.dom.ICatchClause;
-import descent.core.dom.ElementVisitor;
+import descent.core.dom.ASTVisitor;
 import descent.core.dom.IStatement;
 import descent.core.dom.ITryStatement;
 
@@ -33,7 +33,7 @@ public class TryCatchStatement extends Statement implements ITryStatement {
 		return TRY_STATEMENT;
 	}
 	
-	public void accept0(ElementVisitor visitor) {
+	public void accept0(ASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
 			acceptChild(visitor, body);

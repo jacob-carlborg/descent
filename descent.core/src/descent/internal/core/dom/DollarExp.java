@@ -1,6 +1,6 @@
 package descent.internal.core.dom;
 
-import descent.core.dom.ElementVisitor;
+import descent.core.dom.ASTVisitor;
 import descent.core.dom.IDollarExpression;
 
 public class DollarExp extends Expression implements IDollarExpression {
@@ -13,7 +13,7 @@ public class DollarExp extends Expression implements IDollarExpression {
 	}
 	
 	@Override
-	void accept0(ElementVisitor visitor) {
+	void accept0(ASTVisitor visitor) {
 		visitor.visit(this);
 		visitor.endVisit(this);
 	}

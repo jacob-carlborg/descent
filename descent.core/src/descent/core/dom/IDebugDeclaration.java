@@ -8,6 +8,6 @@ public interface IDebugDeclaration extends IConditionalDeclaration {
 	/**
 	 * Returns the debug lever or identifier.
 	 */
-	IName getDebug();
+	ISimpleName getDebug();
 
 }

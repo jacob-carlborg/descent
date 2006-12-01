@@ -1,9 +1,9 @@
 package descent.internal.core.dom;
 
 import descent.core.dom.IArgument;
-import descent.core.dom.ElementVisitor;
+import descent.core.dom.ASTVisitor;
 import descent.core.dom.IFunctionDeclaration;
-import descent.core.dom.IName;
+import descent.core.dom.ISimpleName;
 import descent.core.dom.IStatement;
 import descent.core.dom.ITemplateParameter;
 import descent.core.dom.IType;
@@ -22,7 +22,7 @@ public class FuncDeclaration extends Declaration implements IFunctionDeclaration
 		this.type = (TypeFunction) type;
 	}
 	
-	public IName getName() {
+	public ISimpleName getName() {
 		return ident;
 	}
 	
@@ -67,11 +67,11 @@ public class FuncDeclaration extends Declaration implements IFunctionDeclaration
 		return fensure;
 	}
 	
-	public IName getOutName() {
+	public ISimpleName getOutName() {
 		return outId;
 	}
 	
-	public void accept0(ElementVisitor visitor) {
+	public void accept0(ASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
 			acceptChild(visitor, getReturnType());

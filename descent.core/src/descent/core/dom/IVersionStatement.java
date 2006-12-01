@@ -15,6 +15,6 @@ public interface IVersionStatement extends IConditionalStatement {
 	/**
 	 * Returns the version number or identifier.
 	 */
-	IName getVersion();
+	ISimpleName getVersion();
 
 }

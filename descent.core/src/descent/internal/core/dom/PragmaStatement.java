@@ -2,9 +2,9 @@ package descent.internal.core.dom;
 
 import java.util.List;
 
-import descent.core.dom.ElementVisitor;
+import descent.core.dom.ASTVisitor;
 import descent.core.dom.IExpression;
-import descent.core.dom.IName;
+import descent.core.dom.ISimpleName;
 import descent.core.dom.IPragmaStatement;
 import descent.core.dom.IStatement;
 
@@ -22,7 +22,7 @@ public class PragmaStatement extends Statement implements IPragmaStatement {
 		this.body = body;
 	}
 	
-	public IName getIdentifier() {
+	public ISimpleName getIdentifier() {
 		return ident;
 	}
 	
@@ -38,7 +38,7 @@ public class PragmaStatement extends Statement implements IPragmaStatement {
 		return PRAGMA_STATEMENT;
 	}
 	
-	public void accept0(ElementVisitor visitor) {
+	public void accept0(ASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
 			acceptChild(visitor, ident);

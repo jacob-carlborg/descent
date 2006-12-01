@@ -1,6 +1,6 @@
 package descent.internal.core.dom;
 
-import descent.core.dom.ElementVisitor;
+import descent.core.dom.ASTVisitor;
 import descent.core.dom.IOnScopeStatement;
 import descent.core.dom.IStatement;
 
@@ -31,7 +31,7 @@ public class OnScopeStatement extends Statement implements IOnScopeStatement  {
 		return ON_SCOPE_STATEMENT;
 	}
 	
-	public void accept0(ElementVisitor visitor) {
+	public void accept0(ASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
 			acceptChild(visitor, st);

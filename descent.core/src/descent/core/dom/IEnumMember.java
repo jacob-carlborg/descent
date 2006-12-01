@@ -8,7 +8,7 @@ public interface IEnumMember extends IElement {
 	/**
 	 * The name of this member.
 	 */
-	IName getName();
+	ISimpleName getName();
 	
 	/**
 	 * The value declared for this member, or <code>null</code>.

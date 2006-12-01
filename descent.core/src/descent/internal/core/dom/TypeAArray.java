@@ -1,7 +1,7 @@
 package descent.internal.core.dom;
 
 import descent.core.dom.IAssociativeArrayType;
-import descent.core.dom.ElementVisitor;
+import descent.core.dom.ASTVisitor;
 import descent.core.dom.IType;
 
 // asociative array
@@ -28,7 +28,7 @@ public class TypeAArray extends TypeArray implements IAssociativeArrayType {
 	}
 	
 	@Override
-	public void accept0(ElementVisitor visitor) {
+	public void accept0(ASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
 			acceptChild(visitor, index);

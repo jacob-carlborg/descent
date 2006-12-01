@@ -8,6 +8,6 @@ public interface ITemplateParameter extends IElement {
 	/**
 	 * Returns the name of this parameter.
 	 */
-	IName getName();
+	ISimpleName getName();
 
 }

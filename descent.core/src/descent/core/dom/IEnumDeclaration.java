@@ -9,7 +9,7 @@ public interface IEnumDeclaration extends IDeclaration {
 	 * Returns the name of this enum. May be <code>null</code>
 	 * if this enum is annonymous.
 	 */
-	IName getName();
+	ISimpleName getName();
 	
 	/**
 	 * Returns the base type of this enum. May be <code>null</code>.

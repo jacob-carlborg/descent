@@ -14,7 +14,7 @@ public interface ITypedefDeclaration extends IDeclaration, IModifiersContainer {
 	/**
 	 * Returns the name of the typedef.
 	 */
-	IName getName();
+	ISimpleName getName();
 	
 	/**
 	 * Returns the type maked a typedef.

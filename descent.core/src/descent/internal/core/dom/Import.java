@@ -3,9 +3,9 @@ package descent.internal.core.dom;
 import java.util.ArrayList;
 import java.util.List;
 
-import descent.core.dom.ElementVisitor;
+import descent.core.dom.ASTVisitor;
 import descent.core.dom.IImport;
-import descent.core.dom.IName;
+import descent.core.dom.ISimpleName;
 import descent.core.dom.IQualifiedName;
 import descent.core.dom.ISelectiveImport;
 
@@ -13,13 +13,13 @@ public class Import extends Dsymbol implements IImport {
 	
 	public List<Identifier> packages;
 	public List<ISelectiveImport> selectiveImports;
-	public QualifiedName qName;
+	public QualifiedNameBak qName;
 	public Identifier alias;
 
 	public Import(List<Identifier> packages, Identifier id, Identifier aliasid, boolean isstatic) {
 		this.ident = id;
 		this.packages = packages;
-		this.qName = new QualifiedName(packages, id);
+		this.qName = new QualifiedNameBak(packages, id);
 		this.alias = aliasid;
 	}
 
@@ -34,7 +34,7 @@ public class Import extends Dsymbol implements IImport {
 		return qName;
 	}
 	
-	public IName getAlias() {
+	public ISimpleName getAlias() {
 		return alias;
 	}
 	
@@ -47,7 +47,7 @@ public class Import extends Dsymbol implements IImport {
 		return IMPORT;
 	}
 	
-	public void accept0(ElementVisitor visitor) {
+	public void accept0(ASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
 			acceptChild(visitor, alias);

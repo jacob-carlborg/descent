@@ -1,9 +1,9 @@
 package descent.internal.core.dom;
 
 import descent.core.dom.IArgument;
-import descent.core.dom.ElementVisitor;
+import descent.core.dom.ASTVisitor;
 import descent.core.dom.IExpression;
-import descent.core.dom.IName;
+import descent.core.dom.ISimpleName;
 import descent.core.dom.IType;
 
 public class Argument extends ASTNode implements IArgument {
@@ -20,7 +20,7 @@ public class Argument extends ASTNode implements IArgument {
 		this.defaultValue = defaultValue;
 	}
 	
-	public IName getName() {
+	public ISimpleName getName() {
 		return id;
 	}
 	
@@ -41,7 +41,7 @@ public class Argument extends ASTNode implements IArgument {
 		} 
 	}
 
-	public void accept0(ElementVisitor visitor) {
+	public void accept0(ASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
 			acceptChild(visitor, type);

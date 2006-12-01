@@ -40,7 +40,7 @@ package descent.core.dom;
  * 
  * @see descent.core.IElement#accept(ElementVisitor)
  */
-public abstract class ElementVisitor {
+public abstract class ASTVisitor {
 
 	/**
 	 * Visits the given AST node prior to the type-specific visit.
@@ -1752,7 +1752,7 @@ public abstract class ElementVisitor {
 	 * visited, and <code>false</code> if the children of this node should
 	 * be skipped
 	 */
-	public boolean visit(IName node) {
+	public boolean visit(ISimpleName node) {
 		return true;
 	}
 
@@ -1764,7 +1764,7 @@ public abstract class ElementVisitor {
 	 * 
 	 * @param node the node to visit
 	 */
-	public void endVisit(IName node) {
+	public void endVisit(ISimpleName node) {
 
 	}
 	/**

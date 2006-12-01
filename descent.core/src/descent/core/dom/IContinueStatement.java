@@ -14,6 +14,6 @@ public interface IContinueStatement extends IStatement {
 	/**
 	 * Returns the label to continue to, if any, or <code>null</code>.
 	 */
-	IName getLabel();
+	ISimpleName getLabel();
 
 }

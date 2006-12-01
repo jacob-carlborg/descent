@@ -1,8 +1,8 @@
 package descent.internal.core.dom;
 
 import descent.core.dom.IElement;
-import descent.core.dom.ElementVisitor;
-import descent.core.dom.IName;
+import descent.core.dom.ASTVisitor;
+import descent.core.dom.ISimpleName;
 import descent.core.dom.IScopeExpression;
 
 public class ScopeExp extends Expression implements IScopeExpression {
@@ -17,7 +17,7 @@ public class ScopeExp extends Expression implements IScopeExpression {
 		return SCOPE_EXPRESSION;
 	}
 	
-	public IName getName() {
+	public ISimpleName getName() {
 		return tempinst;
 	}
 	
@@ -26,7 +26,7 @@ public class ScopeExp extends Expression implements IScopeExpression {
 	}
 	
 	@Override
-	public void accept0(ElementVisitor visitor) {
+	public void accept0(ASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
 			acceptChild(visitor, tempinst);

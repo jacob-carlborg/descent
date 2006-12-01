@@ -1,6 +1,6 @@
 package descent.internal.core.dom;
 
-import descent.core.dom.ElementVisitor;
+import descent.core.dom.ASTVisitor;
 
 public class TypeStruct extends Type {
 	
@@ -18,7 +18,7 @@ public class TypeStruct extends Type {
 	}
 	
 	@Override
-	void accept0(ElementVisitor visitor) {
+	void accept0(ASTVisitor visitor) {
 		// TODO Auto-generated method stub
 		
 	}

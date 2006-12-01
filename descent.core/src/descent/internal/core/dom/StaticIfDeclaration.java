@@ -2,7 +2,7 @@ package descent.internal.core.dom;
 
 import java.util.List;
 
-import descent.core.dom.ElementVisitor;
+import descent.core.dom.ASTVisitor;
 import descent.core.dom.IDeclaration;
 import descent.core.dom.IExpression;
 import descent.core.dom.IStaticIfDeclaration;
@@ -39,7 +39,7 @@ public class StaticIfDeclaration extends Dsymbol implements IStaticIfDeclaration
 		return aelse.toArray(new IDeclaration[aelse.size()]);
 	}
 	
-	public void accept0(ElementVisitor visitor) {
+	public void accept0(ASTVisitor visitor) {
 		// TODO Auto-generated method stub
 		
 	}

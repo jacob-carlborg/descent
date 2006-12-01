@@ -12,7 +12,7 @@ public interface IPragmaDeclaration extends IDeclaration {
 	/**
 	 * Returns the name of the pragma.
 	 */
-	IName getIdentifier();
+	ISimpleName getIdentifier();
 	
 	/**
 	 * Returns the arguments of the pragma.

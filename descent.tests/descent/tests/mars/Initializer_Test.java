@@ -4,7 +4,7 @@ import descent.core.dom.IArrayInitializer;
 import descent.core.dom.IExpression;
 import descent.core.dom.IExpressionInitializer;
 import descent.core.dom.IInitializer;
-import descent.core.dom.IName;
+import descent.core.dom.ISimpleName;
 import descent.core.dom.IStructInitializer;
 import descent.internal.core.dom.ParserFacade;
 
@@ -45,7 +45,7 @@ public class Initializer_Test extends Parser_Test {
 		assertEquals(IInitializer.STRUCT_INITIALIZER, init.getElementType());
 		assertPosition(init, 1, s.length() - 2);
 		
-		IName[] names = init.getNames();
+		ISimpleName[] names = init.getNames();
 		assertEquals(2, names.length);
 		
 		assertNull(names[0]);
@@ -67,7 +67,7 @@ public class Initializer_Test extends Parser_Test {
 		assertEquals(IInitializer.STRUCT_INITIALIZER, init.getElementType());
 		assertPosition(init, 1, s.length() - 2);
 		
-		IName[] names = init.getNames();
+		ISimpleName[] names = init.getNames();
 		assertEquals(1, names.length);
 		
 		assertEquals("a", names[0].toString());
@@ -80,7 +80,7 @@ public class Initializer_Test extends Parser_Test {
 		assertEquals(IInitializer.STRUCT_INITIALIZER, init.getElementType());
 		assertPosition(init, 1, s.length() - 2);
 		
-		IName[] names = init.getNames();
+		ISimpleName[] names = init.getNames();
 		assertEquals(1, names.length);
 		assertNull(names[0]);
 		

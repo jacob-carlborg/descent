@@ -25,6 +25,6 @@ public interface IIftypeDeclaration extends IConditionalDeclaration {
 	
 	IType getMatchingType();
 	
-	IName getIdentifier();
+	ISimpleName getIdentifier();
 
 }

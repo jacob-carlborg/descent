@@ -1,6 +1,6 @@
 package descent.internal.core.dom;
 
-import descent.core.dom.ElementVisitor;
+import descent.core.dom.ASTVisitor;
 import descent.core.dom.IBinaryExpression;
 import descent.core.dom.IExpression;
 
@@ -51,7 +51,7 @@ public class BinaryExpression extends Expression implements IBinaryExpression {
 		this.rightOperand = rightOperand;
 	}
 	
-	public void accept0(ElementVisitor visitor) {
+	public void accept0(ASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
 			acceptChild(visitor, leftOperand);

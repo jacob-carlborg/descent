@@ -9,7 +9,7 @@ package descent.core.dom;
  */
 public interface IIsExpression extends IExpression {
 	
-	IName getIdentifier();
+	ISimpleName getIdentifier();
 	
 	IType getType();
 	

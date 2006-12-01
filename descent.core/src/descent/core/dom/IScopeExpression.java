@@ -14,7 +14,7 @@ public interface IScopeExpression extends IExpression {
 	/**
 	 * Returns the name.
 	 */
-	IName getName();
+	ISimpleName getName();
 	
 	/**
 	 * Returns the arguments.

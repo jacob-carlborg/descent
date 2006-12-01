@@ -24,6 +24,6 @@ public interface IConditionAssignment extends IDeclaration {
 	/**
 	 * The value to assign.
 	 */
-	IName getValue();
+	ISimpleName getValue();
 
 }

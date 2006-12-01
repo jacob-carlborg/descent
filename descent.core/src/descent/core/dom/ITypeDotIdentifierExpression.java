@@ -17,6 +17,6 @@ public interface ITypeDotIdentifierExpression extends IExpression {
 	/**
 	 * Returns the property.
 	 */
-	IName getProperty();
+	ISimpleName getProperty();
 
 }

@@ -12,7 +12,7 @@ public interface IMixinDeclaration extends IDeclaration {
 	/**
 	 * Returns the name of the mixin.
 	 */
-	IName getName();
+	ISimpleName getName();
 	
 	/**
 	 * Returns the qualified name of the mixin.

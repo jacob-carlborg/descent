@@ -8,7 +8,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import descent.core.dom.ElementVisitor;
+import descent.core.dom.ASTVisitor;
 import descent.core.dom.IDeclaration;
 import descent.core.dom.IElement;
 
@@ -839,7 +839,7 @@ public abstract class ASTNode implements IElement {
 	 * @return unmodifiable list of structural property descriptors
 	 * (element type: <code>StructuralPropertyDescriptor</code>)
 	 */
-	static List reapPropertyList(List propertyList) {
+	static List reapPropertyList(List<StructuralPropertyDescriptor> propertyList) {
 		propertyList.remove(0); // remove nodeClass
 		// compact
 		ArrayList a = new ArrayList(propertyList.size());
@@ -1569,7 +1569,7 @@ public abstract class ASTNode implements IElement {
 	 * @param visitor the visitor object
 	 * @exception IllegalArgumentException if the visitor is null
 	 */
-	public final void accept(ElementVisitor visitor) {
+	public final void accept(ASTVisitor visitor) {
 		if (visitor == null) {
 			throw new IllegalArgumentException();
 		}
@@ -1604,13 +1604,13 @@ public abstract class ASTNode implements IElement {
 	 * 
 	 * @param visitor the visitor object
 	 */
-	abstract void accept0(ElementVisitor visitor);
+	abstract void accept0(ASTVisitor visitor);
 	
 	/**
 	 * Accepts the visitor on the child. If child is null,
 	 * nothing happens.
 	 */
-	protected void acceptChild(ElementVisitor visitor, IElement child) {
+	protected void acceptChild(ASTVisitor visitor, IElement child) {
 		if (child == null)
 			return;
 		
@@ -1630,7 +1630,7 @@ public abstract class ASTNode implements IElement {
 	 * @param children the child AST node to dispatch too, or <code>null</code>
 	 *    if none
 	 */
-	final void acceptChildren(ElementVisitor visitor, ASTNode.NodeList children) {
+	final void acceptChildren(ASTVisitor visitor, ASTNode.NodeList children) {
 		// use a cursor to keep track of where we are up to
 		// (the list may be changing under foot)
 		NodeList.Cursor cursor = children.newCursor();
@@ -1784,7 +1784,7 @@ public abstract class ASTNode implements IElement {
 	 * nothing happens.
 	 * TODO Descent remove
 	 */
-	protected void acceptChildren(ElementVisitor visitor, IElement[] children) {
+	protected void acceptChildren(ASTVisitor visitor, IElement[] children) {
 		if (children == null)
 			return;
 		
@@ -1800,7 +1800,7 @@ public abstract class ASTNode implements IElement {
 	 * nothing happens.
 	 * TODO Descent remove
 	 */
-	protected void acceptChildren(ElementVisitor visitor, List<? extends IElement> children) {
+	protected void acceptChildren(ASTVisitor visitor, List<? extends IElement> children) {
 		if (children == null)
 			return;
 		

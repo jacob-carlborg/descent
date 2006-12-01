@@ -1,7 +1,7 @@
 package descent.internal.core.dom;
 
-import descent.core.dom.ElementVisitor;
-import descent.core.dom.IName;
+import descent.core.dom.ASTVisitor;
+import descent.core.dom.ISimpleName;
 import descent.core.dom.IAliasTemplateParameter;
 import descent.core.dom.IType;
 
@@ -21,7 +21,7 @@ public class TemplateAliasParameter extends TemplateParameter implements IAliasT
 		return ALIAS_TEMPLATE_PARAMETER;
 	}
 	
-	public IName getName() {
+	public ISimpleName getName() {
 		return tp_ident;
 	}	
 
@@ -33,7 +33,7 @@ public class TemplateAliasParameter extends TemplateParameter implements IAliasT
 		return tp_defaulttype;
 	}
 
-	public void accept0(ElementVisitor visitor) {
+	public void accept0(ASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
 			acceptChild(visitor, tp_ident);

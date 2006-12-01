@@ -3,7 +3,7 @@ package descent.internal.core.dom;
 import java.util.List;
 
 import descent.core.dom.ICallExpression;
-import descent.core.dom.ElementVisitor;
+import descent.core.dom.ASTVisitor;
 import descent.core.dom.IExpression;
 
 public class CallExp extends Expression implements ICallExpression {
@@ -28,7 +28,7 @@ public class CallExp extends Expression implements ICallExpression {
 		return CALL_EXPRESSION;
 	}
 	
-	public void accept0(ElementVisitor visitor) {
+	public void accept0(ASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
 			acceptChild(visitor, e);

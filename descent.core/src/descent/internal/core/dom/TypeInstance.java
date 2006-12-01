@@ -1,6 +1,6 @@
 package descent.internal.core.dom;
 
-import descent.core.dom.ElementVisitor;
+import descent.core.dom.ASTVisitor;
 import descent.core.dom.IElement;
 import descent.core.dom.IQualifiedName;
 import descent.core.dom.ITemplateInstanceType;
@@ -8,7 +8,7 @@ import descent.core.dom.ITemplateInstanceType;
 public class TypeInstance extends TypeQualified implements ITemplateInstanceType {
 	
 	public TemplateInstance tempinst;
-	public QualifiedName qName;
+	public QualifiedNameBak qName;
 
 	public TypeInstance(TemplateInstance tempinst) {
 		super(TY.Tinstance);
@@ -30,13 +30,13 @@ public class TypeInstance extends TypeQualified implements ITemplateInstanceType
 	@Override
 	public IQualifiedName getName() {
 		if (qName == null) {
-			qName = new QualifiedName(tempinst);
+			qName = new QualifiedNameBak(tempinst);
 		}
 		return qName;
 	}
 	
 	@Override
-	public void accept0(ElementVisitor visitor) {
+	public void accept0(ASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
 			acceptChild(visitor, qName);

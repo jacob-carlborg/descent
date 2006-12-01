@@ -1,8 +1,8 @@
 package descent.internal.core.dom;
 
-import descent.core.dom.ElementVisitor;
+import descent.core.dom.ASTVisitor;
 import descent.core.dom.IInitializer;
-import descent.core.dom.IName;
+import descent.core.dom.ISimpleName;
 import descent.core.dom.IType;
 import descent.core.dom.ITypedefDeclaration;
 
@@ -17,7 +17,7 @@ public class TypedefDeclaration extends Declaration implements ITypedefDeclarati
 		this.init = init;
 	}
 	
-	public IName getName() {
+	public ISimpleName getName() {
 		return ident;
 	}
 	
@@ -33,7 +33,7 @@ public class TypedefDeclaration extends Declaration implements ITypedefDeclarati
 		return TYPEDEF_DECLARATION;
 	}
 	
-	public void accept0(ElementVisitor visitor) {
+	public void accept0(ASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
 			acceptChild(visitor, ident);

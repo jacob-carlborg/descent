@@ -3,7 +3,7 @@ package descent.ui.text;
 import descent.core.dom.ICompilationUnit;
 import descent.core.dom.IDeclaration;
 import descent.core.dom.IElement;
-import descent.core.dom.ElementVisitor;
+import descent.core.dom.ASTVisitor;
 
 public class DDomUtil {
 	
@@ -21,7 +21,7 @@ public class DDomUtil {
 	}
 	
 	// TODO: fix to make it a real visitor
-	private static class FindOutlineElementVisitor extends ElementVisitor {
+	private static class FindOutlineElementVisitor extends ASTVisitor {
 		
 		public IElement theElement = null;
 		

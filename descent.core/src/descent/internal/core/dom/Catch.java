@@ -1,8 +1,8 @@
 package descent.internal.core.dom;
 
 import descent.core.dom.ICatchClause;
-import descent.core.dom.ElementVisitor;
-import descent.core.dom.IName;
+import descent.core.dom.ASTVisitor;
+import descent.core.dom.ISimpleName;
 import descent.core.dom.IStatement;
 import descent.core.dom.IType;
 
@@ -26,7 +26,7 @@ public class Catch extends ASTNode implements ICatchClause {
 		return t;
 	}
 	
-	public IName getName() {
+	public ISimpleName getName() {
 		return id;
 	}
 	
@@ -34,7 +34,7 @@ public class Catch extends ASTNode implements ICatchClause {
 		return handler;
 	}
 
-	public void accept0(ElementVisitor visitor) {
+	public void accept0(ASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
 			acceptChild(visitor, t);

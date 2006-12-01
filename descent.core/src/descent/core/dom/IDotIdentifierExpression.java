@@ -17,6 +17,6 @@ public interface IDotIdentifierExpression extends IExpression {
 	/**
 	 * Returns the name.
 	 */
-	IName getName();
+	ISimpleName getName();
 
 }

@@ -8,7 +8,7 @@ import descent.core.dom.IQualifiedName;
 public abstract class TypeQualified extends Type {
 	
 	public List<Identifier> idents;
-	public QualifiedName qName;
+	public QualifiedNameBak qName;
 	
 	public TypeQualified(TY ty) {
 		super(ty, null);
@@ -21,7 +21,7 @@ public abstract class TypeQualified extends Type {
 	
 	public IQualifiedName getName() {
 		if (qName == null) {
-			this.qName = new QualifiedName(idents);
+			this.qName = new QualifiedNameBak(idents);
 		}
 		return qName;
 	}

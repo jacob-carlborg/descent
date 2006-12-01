@@ -17,7 +17,7 @@ public interface ICatchClause extends IElement {
 	/**
 	 * Returns the name assigned to the type to catch. May be <code>null</code>. 
 	 */
-	IName getName();
+	ISimpleName getName();
 	
 	/**
 	 * Returns the statement to handle the exception.

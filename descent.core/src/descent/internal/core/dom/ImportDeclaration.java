@@ -2,7 +2,7 @@ package descent.internal.core.dom;
 
 import java.util.List;
 
-import descent.core.dom.ElementVisitor;
+import descent.core.dom.ASTVisitor;
 import descent.core.dom.IImport;
 import descent.core.dom.IImportDeclaration;
 
@@ -28,7 +28,7 @@ public class ImportDeclaration extends ASTNode implements IImportDeclaration {
 		return isStatic;
 	}
 	
-	public void accept0(ElementVisitor visitor) {
+	public void accept0(ASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
 			acceptChildren(visitor, imports);

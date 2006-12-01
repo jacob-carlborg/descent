@@ -4,7 +4,7 @@ import java.util.List;
 
 import descent.core.compiler.IProblem;
 import descent.core.dom.ICompilationUnit;
-import descent.core.dom.ElementVisitor;
+import descent.core.dom.ASTVisitor;
 import descent.core.dom.IDeclaration;
 import descent.core.dom.IModuleDeclaration;
 
@@ -33,7 +33,7 @@ public class Module extends ScopeDsymbol implements ICompilationUnit {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public void accept0(ElementVisitor visitor) {
+	public void accept0(ASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
 			acceptChild(visitor, md);

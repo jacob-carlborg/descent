@@ -12,6 +12,6 @@ public interface IGotoStatement extends IStatement {
 	/**
 	 * Returns the label where to go to.
 	 */
-	IName getLabel();
+	ISimpleName getLabel();
 
 }

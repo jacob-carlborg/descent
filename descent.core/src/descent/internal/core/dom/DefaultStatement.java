@@ -1,7 +1,7 @@
 package descent.internal.core.dom;
 
 import descent.core.dom.IDefaultStatement;
-import descent.core.dom.ElementVisitor;
+import descent.core.dom.ASTVisitor;
 import descent.core.dom.IStatement;
 
 public class DefaultStatement extends Statement implements IDefaultStatement {
@@ -20,7 +20,7 @@ public class DefaultStatement extends Statement implements IDefaultStatement {
 		return s;
 	}
 	
-	public void accept0(ElementVisitor visitor) {
+	public void accept0(ASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
 			acceptChild(visitor, s);
