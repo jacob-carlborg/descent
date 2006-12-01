@@ -15,7 +15,7 @@ import dtool.formater.CodeFormatter;
 public class Main {
 	
     public static void main(String[] args) throws Exception {
-		System.out.println("=== DTool ===");
+		System.out.println("======== DTool ========");
 
 		try {
 			Project.newTestProject();
@@ -54,10 +54,10 @@ public class Main {
 			System.exit(1);
 		}
 		
-		System.out.println("== Descent AST Tree: ==");
+		System.out.println("====== Descent AST Tree: ======");
 		cu.cumodule.accept(new ASTPrinter(false));
 		
-		System.out.println("== Neo AST Tree: ==");
+		System.out.println("====== Neo AST Tree: ======");
 		cu.adaptDOM();
 		cu.cumodule.accept(new ASTPrinter(false, false));
 		
