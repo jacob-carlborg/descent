@@ -19,8 +19,8 @@ public class BinaryExpression extends Expression implements IBinaryExpression {
 		this.leftOperand = e1;
 		this.rightOperand = e2;
 		
-		this.start = e1.start;
-		this.length = e2.start + e2.length - this.start;
+		this.startPosition = e1.startPosition;
+		this.length = e2.startPosition + e2.length - this.startPosition;
 	}
 	
 	public int getElementType() {

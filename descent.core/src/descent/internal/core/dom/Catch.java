@@ -6,7 +6,7 @@ import descent.core.dom.IName;
 import descent.core.dom.IStatement;
 import descent.core.dom.IType;
 
-public class Catch extends AbstractElement implements ICatchClause {
+public class Catch extends ASTNode implements ICatchClause {
 
 	private final Type t;
 	private final Identifier id;

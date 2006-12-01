@@ -19,7 +19,7 @@ public class Module extends ScopeDsymbol implements ICompilationUnit {
 	
 	@SuppressWarnings("unchecked")
 	public IDeclaration[] getDeclarationDefinitions() {
-		if (members == null) return AbstractElement.NO_DECLARATIONS;
+		if (members == null) return ASTNode.NO_DECLARATIONS;
 		return (IDeclaration[]) members.toArray(new IDeclaration[members.size()]);
 	}
 	

@@ -3,7 +3,7 @@ package descent.internal.core.dom;
 import descent.core.dom.ElementVisitor;
 import descent.core.dom.ITypeSpecialization;
 
-public class TypeSpecialization extends AbstractElement implements ITypeSpecialization {
+public class TypeSpecialization extends ASTNode implements ITypeSpecialization {
 	
 	private int keyword;
 
@@ -20,7 +20,7 @@ public class TypeSpecialization extends AbstractElement implements ITypeSpeciali
 		case TOKdelegate: keyword = DELEGATE; break;
 		case TOKreturn: keyword = RETURN; break;
 		}
-		this.start = token.ptr;
+		this.startPosition = token.ptr;
 		this.length = token.len;
 	}
 

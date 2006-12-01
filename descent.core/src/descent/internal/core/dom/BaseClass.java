@@ -4,7 +4,7 @@ import descent.core.dom.IBaseClass;
 import descent.core.dom.ElementVisitor;
 import descent.core.dom.IType;
 
-public class BaseClass extends AbstractElement implements IBaseClass {
+public class BaseClass extends ASTNode implements IBaseClass {
 	
 	private int prot;
 	private final Type type;

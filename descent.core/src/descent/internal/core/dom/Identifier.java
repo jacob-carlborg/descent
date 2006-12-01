@@ -3,7 +3,7 @@ package descent.internal.core.dom;
 import descent.core.dom.ElementVisitor;
 import descent.core.dom.IName;
 
-public class Identifier extends AbstractElement implements IName {
+public class Identifier extends ASTNode implements IName {
 	
 	public String string;
 	public TOK value;
@@ -16,7 +16,7 @@ public class Identifier extends AbstractElement implements IName {
 	public Identifier(Token token) {
 		this.string = token.ident.string;
 		this.value = token.value;
-		this.start = token.ptr;
+		this.startPosition = token.ptr;
 		this.length = token.len;
 	}
 	

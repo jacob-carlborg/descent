@@ -19,7 +19,7 @@ public class StorageClassDeclaration extends Dsymbol implements IStorageClassDec
 	}
 	
 	public IDeclaration[] getDeclarationDefinitions() {
-		if (decl == null) return AbstractElement.NO_DECLARATIONS;
+		if (decl == null) return ASTNode.NO_DECLARATIONS;
 		return decl;
 	}
 	

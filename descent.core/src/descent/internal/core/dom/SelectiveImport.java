@@ -4,7 +4,7 @@ import descent.core.dom.ElementVisitor;
 import descent.core.dom.IName;
 import descent.core.dom.ISelectiveImport;
 
-public class SelectiveImport extends AbstractElement implements ISelectiveImport {
+public class SelectiveImport extends ASTNode implements ISelectiveImport {
 	
 	public Identifier name;
 	public Identifier alias;

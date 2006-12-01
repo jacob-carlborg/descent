@@ -19,7 +19,7 @@ public class AlignDeclaration extends Dsymbol implements IAlignDeclaration {
 	}
 	
 	public IDeclaration[] getDeclarationDefinitions() {
-		if (declDefs == null) return AbstractElement.NO_DECLARATIONS;
+		if (declDefs == null) return ASTNode.NO_DECLARATIONS;
 		return declDefs;
 	}
 	

@@ -57,13 +57,13 @@ public class ConditionalDeclaration extends Dsymbol implements IVersionDeclarati
 	
 	@SuppressWarnings("unchecked")
 	public IDeclaration[] getIfTrueDeclarationDefinitions() {
-		if (a == null) return AbstractElement.NO_DECLARATIONS;
+		if (a == null) return ASTNode.NO_DECLARATIONS;
 		return a.toArray(new IDeclaration[a.size()]);
 	}
 	
 	@SuppressWarnings("unchecked")
 	public IDeclaration[] getIfFalseDeclarationDefinitions() {
-		if (aelse == null) return AbstractElement.NO_DECLARATIONS;
+		if (aelse == null) return ASTNode.NO_DECLARATIONS;
 		return aelse.toArray(new IDeclaration[aelse.size()]);
 	}
 	

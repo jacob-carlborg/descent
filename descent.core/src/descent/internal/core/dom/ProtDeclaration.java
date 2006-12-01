@@ -19,7 +19,7 @@ public class ProtDeclaration extends Dsymbol implements IProtectionDeclaration {
 	}
 	
 	public IDeclaration[] getDeclarationDefinitions() {
-		if (declDefs == null) return AbstractElement.NO_DECLARATIONS;
+		if (declDefs == null) return ASTNode.NO_DECLARATIONS;
 		return declDefs;
 	}
 	

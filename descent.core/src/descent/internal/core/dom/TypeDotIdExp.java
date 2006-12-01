@@ -13,8 +13,8 @@ public class TypeDotIdExp extends Expression implements ITypeDotIdentifierExpres
 	public TypeDotIdExp(Type t, Identifier ident) {
 		this.t = t;
 		this.ident = ident;
-		this.start = t.start;
-		this.length = ident.start + ident.length - this.start;
+		this.startPosition = t.startPosition;
+		this.length = ident.startPosition + ident.length - this.startPosition;
 	}
 
 	public IName getProperty() {

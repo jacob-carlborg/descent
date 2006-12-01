@@ -10,7 +10,7 @@ public class IdentifierExp extends Expression implements IIdentifierExpression {
 
 	public IdentifierExp(Identifier id) {
 		this.id = id;
-		this.start = id.start;
+		this.startPosition = id.startPosition;
 		this.length = id.length;
 	}
 	

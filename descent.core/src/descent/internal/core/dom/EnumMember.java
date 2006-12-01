@@ -12,11 +12,11 @@ public class EnumMember extends Dsymbol implements IEnumMember {
 	public EnumMember(Identifier id, Expression value) {
 		this.ident = id;
 		this.value = value;
-		this.start = id.start;
+		this.startPosition = id.startPosition;
 		if (value == null) {
 			this.length = this.ident.length;
 		} else {
-			this.length = value.start + value.length - this.start;
+			this.length = value.startPosition + value.length - this.startPosition;
 		}
 	}
 	

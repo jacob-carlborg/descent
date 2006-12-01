@@ -5,20 +5,20 @@ import java.util.List;
 import descent.core.dom.ElementVisitor;
 import descent.core.dom.IQualifiedName;
 
-public class QualifiedName extends AbstractElement implements IQualifiedName  {
+public class QualifiedName extends ASTNode implements IQualifiedName  {
 	
 	private String name;
 	
 	public QualifiedName(Identifier id) {
 		this.name = id.string;
-		this.start = id.start;
+		this.startPosition = id.startPosition;
 		this.length = id.length;
 	}
 	
 	public QualifiedName(List<Identifier> ids) {
-		this.start = ids.get(0).start;
+		this.startPosition = ids.get(0).startPosition;
 		Identifier last = ids.get(ids.size() - 1);
-		this.length = last.start + last.length - this.start; 
+		this.length = last.startPosition + last.length - this.startPosition; 
 		StringBuilder sb = new StringBuilder();
 		for(int i = 0; i < ids.size(); i++) {
 			sb.append(ids.get(i).string);
@@ -30,7 +30,7 @@ public class QualifiedName extends AbstractElement implements IQualifiedName  {
 	}
 	
 	public QualifiedName(Identifier id, List<Identifier> ids) {
-		this.start = id.start;
+		this.startPosition = id.startPosition;
 		StringBuilder sb = new StringBuilder();
 		sb.append(id);
 
@@ -39,7 +39,7 @@ public class QualifiedName extends AbstractElement implements IQualifiedName  {
 			sb.append(idx.string);
 		}
 		Identifier last = ids.get(ids.size() - 1);
-		this.length = last.start + last.length - this.start;
+		this.length = last.startPosition + last.length - this.startPosition;
 
 		name = sb.toString();
 	}
@@ -47,18 +47,18 @@ public class QualifiedName extends AbstractElement implements IQualifiedName  {
 	public QualifiedName(List<Identifier> packages, Identifier id) {
 		StringBuilder sb = new StringBuilder();
 		if (packages != null) {
-			this.start = packages.get(0).start;
+			this.startPosition = packages.get(0).startPosition;
 			for(Identifier idx : packages) {
 				sb.append(idx.string);
 				sb.append('.');
 			}
 		} else {
-			this.start = id.start;
+			this.startPosition = id.startPosition;
 		}
 		sb.append(id.string);
 		name = sb.toString();
 		
-		this.length = id.start + id.length - this.start;
+		this.length = id.startPosition + id.length - this.startPosition;
 	}
 	
 	public int getElementType() {

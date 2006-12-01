@@ -6,7 +6,7 @@ import descent.core.dom.IExpression;
 import descent.core.dom.IName;
 import descent.core.dom.IType;
 
-public class Argument extends AbstractElement implements IArgument {
+public class Argument extends ASTNode implements IArgument {
 	
 	public Identifier id;
 	public Type type;

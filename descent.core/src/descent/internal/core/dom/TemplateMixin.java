@@ -41,7 +41,7 @@ public class TemplateMixin extends Declaration implements IMixinDeclaration {
 	}
 	
 	public IElement[] getTemplateArguments() {
-		if (tiargs == null) return AbstractElement.NO_ELEMENTS; 
+		if (tiargs == null) return ASTNode.NO_ELEMENTS; 
 		return tiargs;
 	}
 	

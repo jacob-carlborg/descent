@@ -10,13 +10,13 @@ public class TemplateInstance extends Identifier {
 
 	public TemplateInstance(Identifier id) {
 		super(id.string, id.value);
-		this.start = id.start;
+		this.startPosition = id.startPosition;
 		this.length = id.length;
 	}
 	
 	public IElement[] getTemplateArguments() {
 		if (tiargs == null) {
-			return AbstractElement.NO_ELEMENTS;
+			return ASTNode.NO_ELEMENTS;
 		} else {
 			return tiargs.toArray(new IElement[tiargs.size()]);
 		}

@@ -3,7 +3,7 @@ package descent.internal.core.dom;
 import descent.core.dom.IType;
 
 
-public abstract class Type extends AbstractElement implements IType {
+public abstract class Type extends ASTNode implements IType {
 
 	public static Type tvoid = new TypeBasic(TY.Tvoid);
 	public static Type tint8 = new TypeBasic(TY.Tint8);

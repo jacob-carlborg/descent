@@ -12,7 +12,7 @@ public class ExpInitializer extends Initializer implements IExpressionInitialize
 		this.e = e;
 		if (e != null)
 		{		
-			this.start = e.start;
+			this.startPosition = e.startPosition;
 			this.length = e.length;
 		}	
 	}

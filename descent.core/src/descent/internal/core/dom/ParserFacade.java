@@ -16,7 +16,7 @@ public class ParserFacade implements IParser {
 		List<IDeclaration> declDefs = parser.parseModule();
 		
 		parser.mod.members = declDefs;
-		parser.mod.start = 0;
+		parser.mod.startPosition = 0;
 		parser.mod.length = source.length();
 		
 		if (parser.mod.md != null) {

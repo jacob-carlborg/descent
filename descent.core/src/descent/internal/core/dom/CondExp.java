@@ -14,8 +14,8 @@ public class CondExp extends Expression implements IConditionExpression {
 		this.cond = cond;
 		this.t = t;
 		this.f = f;
-		this.start = cond.start;
-		this.length = f.start + f.length - this.start;
+		this.startPosition = cond.startPosition;
+		this.length = f.startPosition + f.length - this.startPosition;
 	}
 	
 	public IExpression getCondition() {

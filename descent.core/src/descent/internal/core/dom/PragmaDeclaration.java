@@ -28,7 +28,7 @@ public class PragmaDeclaration extends Dsymbol implements IPragmaDeclaration {
 	}
 
 	public IDeclaration[] getDeclarationDefinitions() {
-		return declDefs == null ? AbstractElement.NO_DECLARATIONS: declDefs;
+		return declDefs == null ? ASTNode.NO_DECLARATIONS: declDefs;
 	}
 
 	public IName getIdentifier() {
