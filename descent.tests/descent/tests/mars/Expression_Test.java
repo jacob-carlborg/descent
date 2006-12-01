@@ -17,18 +17,18 @@ import descent.core.dom.IElement;
 import descent.core.dom.IExpression;
 import descent.core.dom.IFunctionExpression;
 import descent.core.dom.IIdentifierExpression;
-import descent.core.dom.IIsExpression;
 import descent.core.dom.IIntegerExpression;
+import descent.core.dom.IIsExpression;
 import descent.core.dom.INewAnonymousClassExpression;
 import descent.core.dom.INewExpression;
 import descent.core.dom.IParenthesizedExpression;
 import descent.core.dom.IScopeExpression;
 import descent.core.dom.ISliceExpression;
 import descent.core.dom.IStringExpression;
-import descent.core.dom.ITypeSpecialization;
 import descent.core.dom.IType;
 import descent.core.dom.ITypeDotIdentifierExpression;
 import descent.core.dom.ITypeExpression;
+import descent.core.dom.ITypeSpecialization;
 import descent.core.dom.ITypeidExpression;
 import descent.core.dom.ITypeofType;
 import descent.core.dom.IUnaryExpression;
@@ -271,42 +271,53 @@ public class Expression_Test extends Parser_Test {
 	}
 	
 	public void testBinary() {
-		Object[][] objs = { 
-				{ "*", IBinaryExpression.MUL },
-				{ "/", IBinaryExpression.DIV },
-				{ "%", IBinaryExpression.MOD },
-				{ "+", IBinaryExpression.ADD },
-				{ "-", IBinaryExpression.MIN },
-				{ "~", IBinaryExpression.CAT },
-				{ ">>", IBinaryExpression.SHIFT_RIGHT },
-				{ "<<", IBinaryExpression.SHIFT_LEFT },
-				{ ">>>", IBinaryExpression.UNSIGNED_SHIFT_RIGHT },
-				{ "<", IBinaryExpression.CMP },
-				{ "in", IBinaryExpression.IN },
-				{ "is", IBinaryExpression.IDENTITY },
-				{ "!is", IBinaryExpression.NOT_IDENTITY },
-				{ "==", IBinaryExpression.EQUAL },
-				{ "===", IBinaryExpression.IDENTITY },
-				{ "!==", IBinaryExpression.NOT_IDENTITY },
-				{ "&", IBinaryExpression.AND },
-				{ "^", IBinaryExpression.XOR },
-				{ "|", IBinaryExpression.OR },
-				{ "&&", IBinaryExpression.AND_AND },
-				{ "||", IBinaryExpression.OR_OR },
-				{ "=", IBinaryExpression.ASSIGN },
-				{ "+=", IBinaryExpression.ADD_ASSIGN },
-				{ "-=", IBinaryExpression.MIN_ASSIGN },
-				{ "*=", IBinaryExpression.MUL_ASSIGN },
-				{ "/=", IBinaryExpression.DIV_ASSIGN },
-				{ "%=", IBinaryExpression.MOD_ASSIGN },
-				{ "&=", IBinaryExpression.AND_ASSIGN },
-				{ "|=", IBinaryExpression.OR_ASSIGN },
-				{ "^=", IBinaryExpression.XOR_ASSIGN },
-				{ "<<=", IBinaryExpression.SHIFT_LEFT_ASSIGN },
-				{ ">>=", IBinaryExpression.SHIFT_RIGHT_ASSIGN },
-				{ ">>>=", IBinaryExpression.UNSIGNED_SHIFT_RIGHT_ASSIGN },
-				{ "~=", IBinaryExpression.CAT_ASSIGN },
-				{ ",", IBinaryExpression.COMMA },
+		Object[][] objs = {
+				{ "*", IBinaryExpression.Operator.TIMES },
+				{ "/", IBinaryExpression.Operator.DIVIDE },
+				{ "%", IBinaryExpression.Operator.REMAINDER },
+				{ "+", IBinaryExpression.Operator.PLUS },
+				{ "-", IBinaryExpression.Operator.MINUS },
+				{ "~", IBinaryExpression.Operator.CONCATENATE },
+				{ ">>", IBinaryExpression.Operator.RIGHT_SHIFT_SIGNED },
+				{ "<<", IBinaryExpression.Operator.LEFT_SHIFT },
+				{ ">>>", IBinaryExpression.Operator.RIGHT_SHIFT_UNSIGNED },
+				{ "in", IBinaryExpression.Operator.IN },
+				{ "is", IBinaryExpression.Operator.IS },
+				{ "!is", IBinaryExpression.Operator.NOT_IS },
+				{ "==", IBinaryExpression.Operator.EQUALS },
+				{ "!=", IBinaryExpression.Operator.NOT_EQUALS },
+				{ "&", IBinaryExpression.Operator.AND },
+				{ "^", IBinaryExpression.Operator.XOR },
+				{ "|", IBinaryExpression.Operator.OR },
+				{ "&&", IBinaryExpression.Operator.AND_AND },
+				{ "||", IBinaryExpression.Operator.OR_OR },
+				{ "=", IBinaryExpression.Operator.ASSIGN },
+				{ "+=", IBinaryExpression.Operator.PLUS_ASSIGN },
+				{ "-=", IBinaryExpression.Operator.MINUS_ASSIGN },
+				{ "*=", IBinaryExpression.Operator.TIMES_ASSIGN },
+				{ "/=", IBinaryExpression.Operator.DIVIDE_ASSIGN },
+				{ "%=", IBinaryExpression.Operator.REMAINDER_ASSIGN },
+				{ "&=", IBinaryExpression.Operator.AND_ASSIGN },
+				{ "|=", IBinaryExpression.Operator.OR_ASSIGN },
+				{ "^=", IBinaryExpression.Operator.XOR_ASSIGN },
+				{ "<<=", IBinaryExpression.Operator.LEFT_SHIFT_ASSIGN },
+				{ ">>=", IBinaryExpression.Operator.RIGHT_SHIFT_SIGNED_ASSIGN },
+				{ ">>>=", IBinaryExpression.Operator.RIGHT_SHIFT_UNSIGNED_ASSIGN },
+				{ "~=", IBinaryExpression.Operator.CONCATENATE_ASSIGN },
+				{ ",", IBinaryExpression.Operator.COMMA },
+				{ "<", IBinaryExpression.Operator.LESS },
+				{ "<=", IBinaryExpression.Operator.LESS_EQUALS },
+				{ ">", IBinaryExpression.Operator.GREATER },
+				{ ">=", IBinaryExpression.Operator.GREATER_EQUALS },
+				{ "!<>=", IBinaryExpression.Operator.NOT_LESS_GREATER_EQUALS },
+				{ "<>", IBinaryExpression.Operator.LESS_GREATER },
+				{ "<>=", IBinaryExpression.Operator.LESS_GREATER_EQUALS },
+				{ "!<=", IBinaryExpression.Operator.NOT_LESS_EQUALS },
+				{ "!<", IBinaryExpression.Operator.NOT_LESS },
+				{ "!>=", IBinaryExpression.Operator.NOT_GREATER_EQUALS },
+				{ "!>", IBinaryExpression.Operator.NOT_GREATER },
+				{ "<>=", IBinaryExpression.Operator.LESS_GREATER_EQUALS },
+				{ "!<>", IBinaryExpression.Operator.NOT_LESS_GREATER },
 			};
 		
 		for(Object[] pair : objs) {
@@ -314,9 +325,31 @@ public class Expression_Test extends Parser_Test {
 			IBinaryExpression expr = (IBinaryExpression) new ParserFacade().parseExpression(s);
 			
 			assertEquals(IExpression.BINARY_EXPRESSION, expr.getElementType());
-			assertEquals(pair[1], expr.getBinaryExpressionType());
-			assertEquals(IExpression.INTEGER_EXPRESSION, expr.getLeftExpression().getElementType());
-			assertEquals(IExpression.REAL_EXPRESSION, expr.getRightExpression().getElementType());
+			assertEquals(pair[1], expr.getOperator());
+			assertEquals(pair[0], pair[1].toString());
+			assertEquals(IExpression.INTEGER_EXPRESSION, expr.getLeftOperand().getElementType());
+			assertEquals(IExpression.REAL_EXPRESSION, expr.getRightOperand().getElementType());
+			assertPosition(expr, 1, 6 + ((String) pair[0]).length());
+			
+			assertVisitor(expr, 3);
+		}
+	}
+	
+	public void testBinary2() {
+		Object[][] objs = { 
+				{ "===", IBinaryExpression.Operator.IS, "is" },
+				{ "!==", IBinaryExpression.Operator.NOT_IS, "!is" },
+			};
+		
+		for(Object[] pair : objs) {
+			String s = " 1 " + pair[0] + " 1.0";
+			IBinaryExpression expr = (IBinaryExpression) new ParserFacade().parseExpression(s);
+			
+			assertEquals(IExpression.BINARY_EXPRESSION, expr.getElementType());
+			assertEquals(pair[1], expr.getOperator());
+			assertEquals(pair[2], pair[1].toString());
+			assertEquals(IExpression.INTEGER_EXPRESSION, expr.getLeftOperand().getElementType());
+			assertEquals(IExpression.REAL_EXPRESSION, expr.getRightOperand().getElementType());
 			assertPosition(expr, 1, 6 + ((String) pair[0]).length());
 			
 			assertVisitor(expr, 3);
@@ -325,14 +358,14 @@ public class Expression_Test extends Parser_Test {
 	
 	public void testUnary() {
 		Object[][] objs = { 
-				{ "&", IUnaryExpression.ADDRESS },
-				{ "++", IUnaryExpression.PRE_INCREMENT },
-				{ "--", IUnaryExpression.PRE_DECREMENT },
-				{ "*", IUnaryExpression.POINTER },
-				{ "-", IUnaryExpression.NEGATIVE },
-				{ "+", IUnaryExpression.POSITIVE },
-				{ "!", IUnaryExpression.NOT },
-				{ "~", IUnaryExpression.INVERT },
+				{ "&", IUnaryExpression.Operator.ADDRESS },
+				{ "++", IUnaryExpression.Operator.PRE_INCREMENT },
+				{ "--", IUnaryExpression.Operator.PRE_DECREMENT },
+				{ "*", IUnaryExpression.Operator.POINTER },
+				{ "-", IUnaryExpression.Operator.NEGATIVE },
+				{ "+", IUnaryExpression.Operator.POSITIVE },
+				{ "!", IUnaryExpression.Operator.NOT },
+				{ "~", IUnaryExpression.Operator.INVERT },
 			};
 		
 		for(Object[] pair : objs) {
@@ -340,7 +373,7 @@ public class Expression_Test extends Parser_Test {
 			IUnaryExpression expr = (IUnaryExpression) new ParserFacade().parseExpression(s);
 			
 			assertEquals(IExpression.UNARY_EXPRESSION, expr.getElementType());
-			assertEquals(pair[1], expr.getUnaryExpressionType());
+			assertEquals(pair[1], expr.getOperator());
 			assertEquals(IExpression.INTEGER_EXPRESSION, expr.getInnerExpression().getElementType());
 			assertPosition(expr, 1, 1 + ((String) pair[0]).length());
 			
@@ -350,8 +383,8 @@ public class Expression_Test extends Parser_Test {
 	
 	public void testUnary2() {
 		Object[][] objs = { 
-				{ "++", IUnaryExpression.POST_INCREMENT },
-				{ "--", IUnaryExpression.POST_DECREMENT },
+				{ "++", IUnaryExpression.Operator.POST_INCREMENT },
+				{ "--", IUnaryExpression.Operator.POST_DECREMENT },
 			};
 		
 		for(Object[] pair : objs) {
@@ -359,7 +392,7 @@ public class Expression_Test extends Parser_Test {
 			IUnaryExpression expr = (IUnaryExpression) new ParserFacade().parseExpression(s);
 			
 			assertEquals(IExpression.UNARY_EXPRESSION, expr.getElementType());
-			assertEquals(pair[1], expr.getUnaryExpressionType());
+			assertEquals(pair[1], expr.getOperator());
 			assertEquals(IExpression.INTEGER_EXPRESSION, expr.getInnerExpression().getElementType());
 			assertPosition(expr, 1, 1 + ((String) pair[0]).length());
 			

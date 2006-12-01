@@ -92,11 +92,13 @@ import java.util.List;
 
 import descent.core.compiler.IProblem;
 import descent.core.dom.IBaseClass;
+import descent.core.dom.IBinaryExpression;
 import descent.core.dom.IElement;
 import descent.core.dom.IDeclaration;
 import descent.core.dom.IEnumMember;
 import descent.core.dom.IImport;
 import descent.core.dom.ITemplateParameter;
+import descent.core.dom.IUnaryExpression;
 
 public class Parser extends Lexer {
 	
@@ -5012,11 +5014,11 @@ public class Parser extends Lexer {
 				break;
 
 			case TOKplusplus:
-				e = new PostIncExp(e);
+				e = new UnaryExpression(e, IUnaryExpression.Operator.POST_INCREMENT);
 				break;
 
 			case TOKminusminus:
-				e = new PostDecExp(e);
+				e = new UnaryExpression(e, IUnaryExpression.Operator.POST_DECREMENT);
 				break;
 
 			case TOKlparen:
@@ -5080,51 +5082,49 @@ public class Parser extends Lexer {
 		case TOKand:
 			nextToken();
 			e = parseUnaryExp();
-			e = new AddrExp(e);
+			e = new UnaryExpression(e, IUnaryExpression.Operator.ADDRESS);
 			break;
 
 		case TOKplusplus:
 			nextToken();
 			e = parseUnaryExp();
-			e = new AddAssignExp(e, new IntegerExp(BigInteger.ONE, Type.tint32),
-					true);
+			e = new UnaryExpression(e, IUnaryExpression.Operator.PRE_INCREMENT);
 			break;
 
 		case TOKminusminus:
 			nextToken();
 			e = parseUnaryExp();
-			e = new MinAssignExp(e, new IntegerExp(BigInteger.ONE, Type.tint32),
-					true);
+			e = new UnaryExpression(e, IUnaryExpression.Operator.PRE_DECREMENT);
 			break;
 
 		case TOKmul:
 			nextToken();
 			e = parseUnaryExp();
-			e = new PtrExp(e);
+			e = new UnaryExpression(e, IUnaryExpression.Operator.POINTER);
 			break;
 
 		case TOKmin:
 			nextToken();
 			e = parseUnaryExp();
-			e = new NegExp(e);
+			e = new UnaryExpression(e, IUnaryExpression.Operator.NEGATIVE);
 			break;
 
 		case TOKadd:
 			nextToken();
 			e = parseUnaryExp();
-			e = new UAddExp(e);
+			e = new UnaryExpression(e, IUnaryExpression.Operator.POSITIVE);
 			break;
 
 		case TOKnot:
 			nextToken();
 			e = parseUnaryExp();
-			e = new NotExp(e);
+			e = new UnaryExpression(e, IUnaryExpression.Operator.NOT);
 			break;
 
 		case TOKtilde:
 			nextToken();
 			e = parseUnaryExp();
-			e = new ComExp(e);
+			e = new UnaryExpression(e, IUnaryExpression.Operator.INVERT);
 			break;
 
 		case TOKdelete:
@@ -5302,9 +5302,9 @@ public class Parser extends Lexer {
 	    {
 		switch (token.value)
 		{
-		    case TOKmul: nextToken(); e2 = parseUnaryExp(); e = new MulExp(e,e2); continue;
-		    case TOKdiv:   nextToken(); e2 = parseUnaryExp(); e = new DivExp(e,e2); continue;
-		    case TOKmod:  nextToken(); e2 = parseUnaryExp(); e = new ModExp(e,e2); continue;
+		    case TOKmul: nextToken(); e2 = parseUnaryExp(); e = new BinaryExpression(e,e2,IBinaryExpression.Operator.TIMES); continue;
+		    case TOKdiv:   nextToken(); e2 = parseUnaryExp(); e = new BinaryExpression(e,e2,IBinaryExpression.Operator.DIVIDE); continue;
+		    case TOKmod:  nextToken(); e2 = parseUnaryExp(); e = new BinaryExpression(e,e2,IBinaryExpression.Operator.REMAINDER); continue;
 
 		    default:
 			break;
@@ -5323,9 +5323,9 @@ public class Parser extends Lexer {
 	    {
 		switch (token.value)
 		{
-		    case TOKadd:    nextToken(); e2 = parseMulExp(); e = new AddExp(e,e2); continue;
-		    case TOKmin:    nextToken(); e2 = parseMulExp(); e = new MinExp(e,e2); continue;
-		    case TOKtilde:  nextToken(); e2 = parseMulExp(); e = new CatExp(e,e2); continue;
+		    case TOKadd:    nextToken(); e2 = parseMulExp(); e = new BinaryExpression(e,e2,IBinaryExpression.Operator.PLUS); continue;
+		    case TOKmin:    nextToken(); e2 = parseMulExp(); e = new BinaryExpression(e,e2,IBinaryExpression.Operator.MINUS); continue;
+		    case TOKtilde:  nextToken(); e2 = parseMulExp(); e = new BinaryExpression(e,e2,IBinaryExpression.Operator.CONCATENATE); continue;
 
 		    default:
 			break;
@@ -5344,9 +5344,9 @@ public class Parser extends Lexer {
 	    {
 		switch (token.value)
 		{
-		    case TOKshl:  nextToken(); e2 = parseAddExp(); e = new ShlExp(e,e2);  continue;
-		    case TOKshr:  nextToken(); e2 = parseAddExp(); e = new ShrExp(e,e2);  continue;
-		    case TOKushr: nextToken(); e2 = parseAddExp(); e = new UshrExp(e,e2); continue;
+		    case TOKshl:  nextToken(); e2 = parseAddExp(); e = new BinaryExpression(e,e2,IBinaryExpression.Operator.LEFT_SHIFT);  continue;
+		    case TOKshr:  nextToken(); e2 = parseAddExp(); e = new BinaryExpression(e,e2,IBinaryExpression.Operator.RIGHT_SHIFT_SIGNED);  continue;
+		    case TOKushr: nextToken(); e2 = parseAddExp(); e = new BinaryExpression(e,e2,IBinaryExpression.Operator.RIGHT_SHIFT_UNSIGNED); continue;
 
 		    default:
 			break;
@@ -5359,36 +5359,25 @@ public class Parser extends Lexer {
 	private Expression parseRelExp()
 	{   Expression e;
 	    Expression e2;
-	    TOK op;
 
 	    e = parseShiftExp();
 	    while (true)
 	    {
 		switch (token.value)
 		{
-		    case TOKlt:
-		    case TOKle:
-		    case TOKgt:
-		    case TOKge:
-		    case TOKunord:
-		    case TOKlg:
-		    case TOKleg:
-		    case TOKule:
-		    case TOKul:
-		    case TOKuge:
-		    case TOKug:
-		    case TOKue:
-			op = token.value;
-			nextToken();
-			e2 = parseShiftExp();
-			e = new CmpExp(op, e, e2);
-			continue;
-
-		    case TOKin:
-			nextToken();
-			e2 = parseShiftExp();
-			e = new InExp(e, e2);
-			continue;
+		    case TOKlt: nextToken(); e2 = parseShiftExp(); e = new BinaryExpression(e,e2,IBinaryExpression.Operator.LESS); continue;
+		    case TOKle: nextToken(); e2 = parseShiftExp(); e = new BinaryExpression(e,e2,IBinaryExpression.Operator.LESS_EQUALS); continue;
+		    case TOKgt: nextToken(); e2 = parseShiftExp(); e = new BinaryExpression(e,e2,IBinaryExpression.Operator.GREATER); continue;
+		    case TOKge: nextToken(); e2 = parseShiftExp(); e = new BinaryExpression(e,e2,IBinaryExpression.Operator.GREATER_EQUALS); continue;
+		    case TOKunord: nextToken(); e2 = parseShiftExp(); e = new BinaryExpression(e,e2,IBinaryExpression.Operator.NOT_LESS_GREATER_EQUALS); continue;
+		    case TOKlg: nextToken(); e2 = parseShiftExp(); e = new BinaryExpression(e,e2,IBinaryExpression.Operator.LESS_GREATER); continue;
+		    case TOKleg: nextToken(); e2 = parseShiftExp(); e = new BinaryExpression(e,e2,IBinaryExpression.Operator.LESS_GREATER_EQUALS); continue;
+		    case TOKule: nextToken(); e2 = parseShiftExp(); e = new BinaryExpression(e,e2,IBinaryExpression.Operator.NOT_GREATER); continue;
+		    case TOKul: nextToken(); e2 = parseShiftExp(); e = new BinaryExpression(e,e2,IBinaryExpression.Operator.NOT_GREATER_EQUALS); continue;
+		    case TOKuge: nextToken(); e2 = parseShiftExp(); e = new BinaryExpression(e,e2,IBinaryExpression.Operator.NOT_LESS); continue;
+		    case TOKug: nextToken(); e2 = parseShiftExp(); e = new BinaryExpression(e,e2,IBinaryExpression.Operator.NOT_LESS_EQUALS); continue;
+		    case TOKue: nextToken(); e2 = parseShiftExp(); e = new BinaryExpression(e,e2,IBinaryExpression.Operator.NOT_LESS_GREATER); continue;
+		    case TOKin: nextToken(); e2 = parseShiftExp(); e = new BinaryExpression(e,e2,IBinaryExpression.Operator.IN); continue;
 
 		    default:
 			break;
@@ -5410,11 +5399,16 @@ public class Parser extends Lexer {
 		switch (value)
 		{
 		    case TOKequal:
+		    	nextToken();
+				e2 = parseRelExp();
+				e = new BinaryExpression(e,e2,IBinaryExpression.Operator.EQUALS);
+				continue;
+
 		    case TOKnotequal:
-			nextToken();
-			e2 = parseRelExp();
-			e = new EqualExp(value, e, e2);
-			continue;
+				nextToken();
+				e2 = parseRelExp();
+				e = new BinaryExpression(e,e2,IBinaryExpression.Operator.NOT_EQUALS);
+				continue;
 
 		    case TOKidentity:
 			//if (!global.params.useDeprecated)
@@ -5423,7 +5417,7 @@ public class Parser extends Lexer {
 			//goto L1;
 			nextToken();
 			e2 = parseRelExp();
-			e = new IdentityExp(value, e, e2);
+			e = new BinaryExpression(e,e2,IBinaryExpression.Operator.IS);
 			continue;
 
 		    case TOKnotidentity:
@@ -5433,7 +5427,7 @@ public class Parser extends Lexer {
 			//goto L1;
 			nextToken();
 			e2 = parseRelExp();
-			e = new IdentityExp(value, e, e2);
+			e = new BinaryExpression(e,e2,IBinaryExpression.Operator.NOT_IS);
 			continue;
 
 		    case TOKis:
@@ -5441,7 +5435,7 @@ public class Parser extends Lexer {
 			//goto L1;
 			nextToken();
 			e2 = parseRelExp();
-			e = new IdentityExp(value, e, e2);
+			e = new BinaryExpression(e,e2,IBinaryExpression.Operator.IS);
 			continue;
 
 		    case TOKnot:
@@ -5454,7 +5448,7 @@ public class Parser extends Lexer {
 			//goto L1;
 			nextToken();
 			e2 = parseRelExp();
-			e = new IdentityExp(value, e, e2);
+			e = new BinaryExpression(e,e2,IBinaryExpression.Operator.NOT_IS);
 			continue;
 
 		    // L1:
@@ -5479,7 +5473,7 @@ public class Parser extends Lexer {
 		while (token.value == TOKand) {
 			nextToken();
 			e2 = parseEqualExp();
-			e = new AndExp(e, e2);
+			e = new BinaryExpression(e,e2,IBinaryExpression.Operator.AND);
 		}
 		return e;
 	}
@@ -5492,7 +5486,7 @@ public class Parser extends Lexer {
 		while (token.value == TOKxor) {
 			nextToken();
 			e2 = parseAndExp();
-			e = new XorExp(e, e2);
+			e = new BinaryExpression(e,e2,IBinaryExpression.Operator.XOR);
 		}
 		return e;
 	}
@@ -5505,7 +5499,7 @@ public class Parser extends Lexer {
 		while (token.value == TOKor) {
 			nextToken();
 			e2 = parseXorExp();
-			e = new OrExp(e, e2);
+			e = new BinaryExpression(e,e2,IBinaryExpression.Operator.OR);
 		}
 		return e;
 	}
@@ -5518,7 +5512,7 @@ public class Parser extends Lexer {
 		while (token.value == TOKandand) {
 			nextToken();
 			e2 = parseOrExp();
-			e = new AndAndExp(e, e2);
+			e = new BinaryExpression(e,e2,IBinaryExpression.Operator.AND_AND);
 		}
 		return e;
 	}
@@ -5531,7 +5525,7 @@ public class Parser extends Lexer {
 		while (token.value == TOKoror) {
 			nextToken();
 			e2 = parseAndAndExp();
-			e = new OrOrExp(e, e2);
+			e = new BinaryExpression(e,e2,IBinaryExpression.Operator.OR_OR);
 		}
 		return e;
 	}
@@ -5561,19 +5555,19 @@ public class Parser extends Lexer {
 	    {
 		switch (token.value)
 		{
-		case TOKassign:  nextToken(); e2 = parseAssignExp(); e = new AssignExp(e,e2); continue;
-		case TOKaddass:  nextToken(); e2 = parseAssignExp(); e = new AddAssignExp(e,e2); continue;
-		case TOKminass:  nextToken(); e2 = parseAssignExp(); e = new MinAssignExp(e,e2); continue;
-		case TOKmulass:  nextToken(); e2 = parseAssignExp(); e = new MulAssignExp(e,e2); continue;
-		case TOKdivass:  nextToken(); e2 = parseAssignExp(); e = new DivAssignExp(e,e2); continue;
-		case TOKmodass:  nextToken(); e2 = parseAssignExp(); e = new ModAssignExp(e,e2); continue;
-		case TOKandass:  nextToken(); e2 = parseAssignExp(); e = new AndAssignExp(e,e2); continue;
-		case TOKorass:  nextToken(); e2 = parseAssignExp(); e = new OrAssignExp(e,e2); continue;
-		case TOKxorass:  nextToken(); e2 = parseAssignExp(); e = new XorAssignExp(e,e2); continue;
-		case TOKshlass:  nextToken(); e2 = parseAssignExp(); e = new ShlAssignExp(e,e2); continue;
-		case TOKshrass:  nextToken(); e2 = parseAssignExp(); e = new ShrAssignExp(e,e2); continue;
-		case TOKushrass:  nextToken(); e2 = parseAssignExp(); e = new UshrAssignExp(e,e2); continue;
-		case TOKcatass:  nextToken(); e2 = parseAssignExp(); e = new CatAssignExp(e,e2); continue;
+		case TOKassign:  nextToken(); e2 = parseAssignExp(); e = new BinaryExpression(e,e2,IBinaryExpression.Operator.ASSIGN); continue;
+		case TOKaddass:  nextToken(); e2 = parseAssignExp(); e = new BinaryExpression(e,e2,IBinaryExpression.Operator.PLUS_ASSIGN); continue;
+		case TOKminass:  nextToken(); e2 = parseAssignExp(); e = new BinaryExpression(e,e2,IBinaryExpression.Operator.MINUS_ASSIGN); continue;
+		case TOKmulass:  nextToken(); e2 = parseAssignExp(); e = new BinaryExpression(e,e2,IBinaryExpression.Operator.TIMES_ASSIGN); continue;
+		case TOKdivass:  nextToken(); e2 = parseAssignExp(); e = new BinaryExpression(e,e2,IBinaryExpression.Operator.DIVIDE_ASSIGN); continue;
+		case TOKmodass:  nextToken(); e2 = parseAssignExp(); e = new BinaryExpression(e,e2,IBinaryExpression.Operator.REMAINDER_ASSIGN); continue;
+		case TOKandass:  nextToken(); e2 = parseAssignExp(); e = new BinaryExpression(e,e2,IBinaryExpression.Operator.AND_ASSIGN); continue;
+		case TOKorass:  nextToken(); e2 = parseAssignExp(); e = new BinaryExpression(e,e2,IBinaryExpression.Operator.OR_ASSIGN); continue;
+		case TOKxorass:  nextToken(); e2 = parseAssignExp(); e = new BinaryExpression(e,e2,IBinaryExpression.Operator.XOR_ASSIGN); continue;
+		case TOKshlass:  nextToken(); e2 = parseAssignExp(); e = new BinaryExpression(e,e2,IBinaryExpression.Operator.LEFT_SHIFT_ASSIGN); continue;
+		case TOKshrass:  nextToken(); e2 = parseAssignExp(); e = new BinaryExpression(e,e2,IBinaryExpression.Operator.RIGHT_SHIFT_SIGNED_ASSIGN); continue;
+		case TOKushrass:  nextToken(); e2 = parseAssignExp(); e = new BinaryExpression(e,e2,IBinaryExpression.Operator.RIGHT_SHIFT_UNSIGNED_ASSIGN); continue;
+		case TOKcatass:  nextToken(); e2 = parseAssignExp(); e = new BinaryExpression(e,e2,IBinaryExpression.Operator.CONCATENATE_ASSIGN); continue;
 	    default:
 			break;
 		}
@@ -5591,7 +5585,7 @@ public class Parser extends Lexer {
 		while (token.value == TOKcomma) {
 			nextToken();
 			e2 = parseAssignExp();
-			e = new CommaExp(e, e2);
+			e = new BinaryExpression(e,e2,IBinaryExpression.Operator.COMMA);
 		}
 		return e;
 	}

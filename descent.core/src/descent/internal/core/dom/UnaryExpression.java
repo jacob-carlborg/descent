@@ -4,9 +4,15 @@ import descent.core.dom.ElementVisitor;
 import descent.core.dom.IExpression;
 import descent.core.dom.IUnaryExpression;
 
-public abstract class UnaryExpression extends Expression implements IUnaryExpression {
+public class UnaryExpression extends Expression implements IUnaryExpression {
 	
-	private final Expression exp;
+	private Operator operator;
+	private Expression exp;
+	
+	public UnaryExpression(Expression exp, Operator operator) {
+		this.exp = exp;
+		this.operator = operator;
+	}
 
 	public UnaryExpression(Expression exp) {
 		this.exp = exp;
@@ -18,6 +24,10 @@ public abstract class UnaryExpression extends Expression implements IUnaryExpres
 	
 	public int getElementType() {
 		return UNARY_EXPRESSION;
+	}
+	
+	public Operator getOperator() {
+		return operator;
 	}
 	
 	@Override

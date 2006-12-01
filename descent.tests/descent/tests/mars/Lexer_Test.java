@@ -65,6 +65,7 @@ public class Lexer_Test extends TestCase {
 		assertToken(" !=", TOK.TOKnotequal, 1, 2);
 		assertToken(" !<", TOK.TOKuge, 1, 2);
 		assertToken(" !>", TOK.TOKule, 1 ,2);
+		assertToken(" <>=", TOK.TOKleg, 1 ,3);
 		assertToken(" !==", TOK.TOKnotidentity, 1, 3);
 		assertToken(" !<>", TOK.TOKue, 1, 3);
 		assertToken(" !<=", TOK.TOKug, 1, 3);

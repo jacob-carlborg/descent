@@ -54,7 +54,7 @@ public enum TOK {
 
 	// NCEG floating point compares
 	// !<>=     <>    <>=    !>     !>=   !<     !<=   !<>
-	TOKunord,TOKlg,TOKleg,TOKule,TOKul,TOKuge,TOKug,TOKue,
+	TOKunord("!<>="),TOKlg,TOKleg,TOKule,TOKul,TOKuge,TOKug,TOKue,
 
 	TOKshl("<<"),		TOKshr(">>"),
 	TOKshlass("<<="),	TOKshrass(">>="),
