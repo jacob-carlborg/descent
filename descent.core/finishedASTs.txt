@@ -3,10 +3,14 @@ AssertExpression
 Argument (fix type)
 BooleanLiteral
 BreakStatement
+CaseStatement
 ContinueStatement
+DefaultStatement
 DeleteExpression
 DollarLiteral
+ExpressionStatement
 GotoStatement
+GotoCaseStatement
 InfixExpression
 NullLiteral
 StaticAssert

@@ -98,4 +98,24 @@ public class ASTMatcher {
 		return false;
 	}
 
+	public boolean match(CaseStatement statement, Object other) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	public boolean match(DefaultStatement statement, Object other) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	public boolean match(ExpressionStatement statement, Object other) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	public boolean match(GotoCaseStatement statement, Object other) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
 }

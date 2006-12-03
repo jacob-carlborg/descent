@@ -143,7 +143,7 @@ public class VolatileStatement extends Statement implements IVolatileStatement {
 			synchronized (this) {
 				if (this.body == null) {
 					preLazyInit();
-					this.body = new CompoundStatement(this.ast);
+					this.body = new Block(this.ast);
 					postLazyInit(this.body, BODY_PROPERTY);
 				}
 			}

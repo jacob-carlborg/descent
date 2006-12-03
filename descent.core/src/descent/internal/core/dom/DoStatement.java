@@ -207,7 +207,7 @@ public class DoStatement extends Statement implements IDoWhileStatement {
 			synchronized (this) {
 				if (this.body == null) {
 					preLazyInit();
-					this.body = new CompoundStatement(this.ast);
+					this.body = new Block(this.ast);
 					postLazyInit(this.body, BODY_PROPERTY);
 				}
 			}

@@ -4,7 +4,7 @@ package descent.core.dom;
  * A goto case statement:
  * 
  * <pre>
- * goto case;
+ * goto case expression;
  * </pre>
  */
 public interface IGotoCaseStatement extends IStatement {
@@ -12,6 +12,6 @@ public interface IGotoCaseStatement extends IStatement {
 	/**
 	 * Returns the case to go.
 	 */
-	IExpression getCase();
+	IExpression getLabel();
 
 }

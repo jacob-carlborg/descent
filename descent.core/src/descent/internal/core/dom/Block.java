@@ -6,15 +6,15 @@ import descent.core.dom.ICompoundStatement;
 import descent.core.dom.ASTVisitor;
 import descent.core.dom.IStatement;
 
-public class CompoundStatement extends Statement implements ICompoundStatement {
+public class Block extends Statement implements ICompoundStatement {
 
 	private List<Statement> as;
 	
-	CompoundStatement(AST ast) {
+	Block(AST ast) {
 		super(ast);
 	}
 
-	public CompoundStatement(List<Statement> as) {
+	public Block(List<Statement> as) {
 		this.as = as;
 	}
 	

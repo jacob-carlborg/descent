@@ -4,29 +4,27 @@ import java.util.ArrayList;
 import java.util.List;
 
 import descent.core.dom.ASTVisitor;
-import descent.core.dom.IWithStatement;
+import descent.core.dom.IExpressionStatement;
 
 /**
- * With statement AST node type.
- *
+ * Expression statement AST node type.
+ * <p>
+ * This kind of node is used to convert an expression (<code>Expression</code>)
+ * into a statement (<code>Statement</code>) by wrapping it.
+ * </p>
  * <pre>
- * WithStatement:
- *    <b>with</b> <b>(</b> Expression <b>)</b> Statement
+ * ExpressionStatement:
+ *    Expression <b>;</b>
  * </pre>
  */
-public class WithStatement extends Statement implements IWithStatement {
+public class ExpressionStatement extends Statement implements IExpressionStatement {
 	
 	/**
 	 * The "expression" structural property of this node type.
+	 * @since 3.0
 	 */
 	public static final ChildPropertyDescriptor EXPRESSION_PROPERTY = 
-		new ChildPropertyDescriptor(WithStatement.class, "expression", Expression.class, MANDATORY, CYCLE_RISK); //$NON-NLS-1$
-
-	/**
-	 * The "body" structural property of this node type.
-	 */
-	public static final ChildPropertyDescriptor BODY_PROPERTY = 
-		new ChildPropertyDescriptor(WithStatement.class, "body", Statement.class, MANDATORY, CYCLE_RISK); //$NON-NLS-1$
+		new ChildPropertyDescriptor(ExpressionStatement.class, "expression", Expression.class, MANDATORY, CYCLE_RISK); //$NON-NLS-1$
 
 	/**
 	 * A list of property descriptors (element type: 
@@ -36,11 +34,10 @@ public class WithStatement extends Statement implements IWithStatement {
 	private static final List PROPERTY_DESCRIPTORS;
 	
 	static {
-		List propertyList = new ArrayList(3);
-		createPropertyList(WithStatement.class, propertyList);
-		addProperty(EXPRESSION_PROPERTY, propertyList);
-		addProperty(BODY_PROPERTY, propertyList);
-		PROPERTY_DESCRIPTORS = reapPropertyList(propertyList);
+		List properyList = new ArrayList(2);
+		createPropertyList(ExpressionStatement.class, properyList);
+		addProperty(EXPRESSION_PROPERTY, properyList);
+		PROPERTY_DESCRIPTORS = reapPropertyList(properyList);
 	}
 
 	/**
@@ -59,31 +56,25 @@ public class WithStatement extends Statement implements IWithStatement {
 	}
 			
 	/**
-	 * The expression; lazily initialized; defaults to an unspecified, but 
-	 * legal, expression.
+	 * The expression; lazily initialized; defaults to a unspecified, but legal,
+	 * expression.
 	 */
 	private Expression expression = null;
 
 	/**
-	 * The body statement; lazily initialized; defaults to an empty block 
-	 * statement.
-	 */
-	private Statement body = null;
-	
-	/**
-	 * Creates a new unparented with statement node owned by the given 
-	 * AST. By default, the expresssion is unspecified, but legal, and
-	 * the body statement is an empty block.
+	 * Creates a new unparented expression statement node owned by the given 
+	 * AST. By default, the expression statement is unspecified, but legal,
+	 * method invocation expression.
 	 * <p>
 	 * N.B. This constructor is package-private.
 	 * </p>
 	 * 
 	 * @param ast the AST that is to own this node
 	 */
-	WithStatement(AST ast) {
+	ExpressionStatement(AST ast) {
 		super(ast);
 	}
-	
+
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
 	 */
@@ -103,37 +94,28 @@ public class WithStatement extends Statement implements IWithStatement {
 				return null;
 			}
 		}
-		if (property == BODY_PROPERTY) {
-			if (get) {
-				return getBody();
-			} else {
-				setBody((Statement) child);
-				return null;
-			}
-		}
 		// allow default implementation to flag the error
 		return super.internalGetSetChildProperty(property, get, child);
 	}
-	
+
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
 	 * TODO make it package
 	 */
 	public final int getNodeType0() {
-		return WITH_STATEMENT;
+		return EXPRESSION_STATEMENT;
 	}
 
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
 	 */
 	ASTNode clone0(AST target) {
-		WithStatement result = new WithStatement(target);
+		ExpressionStatement result = new ExpressionStatement(target);
 		result.setSourceRange(this.getStartPosition(), this.getLength());
 		result.setExpression((Expression) getExpression().clone(target));
-		result.setBody((Statement) getBody().clone(target));
 		return result;
 	}
-
+	
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
 	 */
@@ -148,15 +130,13 @@ public class WithStatement extends Statement implements IWithStatement {
 	void accept0(ASTVisitor visitor) {
 		boolean visitChildren = visitor.visit(this);
 		if (visitChildren) {
-			// visit children in normal left to right reading order
 			acceptChild(visitor, getExpression());
-			acceptChild(visitor, getBody());
 		}
 		visitor.endVisit(this);
 	}
 	
 	/**
-	 * Returns the expression of this with statement.
+	 * Returns the expression of this expression statement.
 	 * 
 	 * @return the expression node
 	 */ 
@@ -166,6 +146,7 @@ public class WithStatement extends Statement implements IWithStatement {
 			synchronized (this) {
 				if (this.expression == null) {
 					preLazyInit();
+					// TODO: correct to MethodInvocation
 					this.expression = new SimpleName(this.ast);
 					postLazyInit(this.expression, EXPRESSION_PROPERTY);
 				}
@@ -173,11 +154,11 @@ public class WithStatement extends Statement implements IWithStatement {
 		}
 		return this.expression;
 	}
-	
+		
 	/**
-	 * Sets the expression of this with statement.
+	 * Sets the expression of this expression statement.
 	 * 
-	 * @param expression the expression node
+	 * @param expression the new expression node
 	 * @exception IllegalArgumentException if:
 	 * <ul>
 	 * <li>the node belongs to a different AST</li>
@@ -194,52 +175,12 @@ public class WithStatement extends Statement implements IWithStatement {
 		this.expression = expression;
 		postReplaceChild(oldChild, expression, EXPRESSION_PROPERTY);
 	}
-
-	/**
-	 * Returns the body of this with statement.
-	 * 
-	 * @return the body statement node
-	 */ 
-	public Statement getBody() {
-		if (this.body == null) {
-			// lazy init must be thread-safe for readers
-			synchronized (this) {
-				if (this.body == null) {
-					preLazyInit();
-					this.body = new Block(this.ast);
-					postLazyInit(this.body, BODY_PROPERTY);
-				}
-			}
-		}
-		return this.body;
-	}
-	
-	/**
-	 * Sets the body of this with statement.
-	 * 
-	 * @param statement the body statement node
-	 * @exception IllegalArgumentException if:
-	 * <ul>
-	 * <li>the node belongs to a different AST</li>
-	 * <li>the node already has a parent</li>
-	 * <li>a cycle in would be created</li>
-	 * </ul>
-	 */ 
-	public void setBody(Statement statement) {
-		if (statement == null) {
-			throw new IllegalArgumentException();
-		}
-		ASTNode oldChild = this.body;
-		preReplaceChild(oldChild, statement, BODY_PROPERTY);
-		this.body = statement;
-		postReplaceChild(oldChild, statement, BODY_PROPERTY);
-	}
 	
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
 	 */
 	int memSize() {
-		return super.memSize() + 2 * 4;
+		return super.memSize() + 1 * 4;
 	}
 	
 	/* (omit javadoc for this method)
@@ -248,14 +189,12 @@ public class WithStatement extends Statement implements IWithStatement {
 	int treeSize() {
 		return
 			memSize()
-			+ (this.expression == null ? 0 : getExpression().treeSize())
-			+ (this.body == null ? 0 : getBody().treeSize());
+			+ (this.expression == null ? 0 : getExpression().treeSize());
 	}
 
 	// TODO Descent remove
-	public WithStatement(Expression exp, Statement body) {
+	public ExpressionStatement(Expression exp) {
 		this.expression = exp;
-		this.body = body;
 	}
 
 }

@@ -2877,7 +2877,7 @@ public class Parser extends Lexer {
 
 				exp = parseExpression();
 				check(TOKsemicolon, "statement");
-				s = new ExpStatement(exp);
+				s = new ExpressionStatement(exp);
 				break;
 			}
 			// break;
@@ -2923,7 +2923,7 @@ public class Parser extends Lexer {
 			exp = parseExpression();
 			Token semiToken = new Token(token);
 			check(TOKsemicolon, "statement");
-			s = new ExpStatement(exp);
+			s = new ExpressionStatement(exp);
 			s.startPosition = exp.startPosition;
 			s.length = semiToken.ptr + semiToken.len - s.startPosition;
 			break;
@@ -3051,7 +3051,7 @@ public class Parser extends Lexer {
 				}
 				statements.add(parseStatement(PSsemi | PScurlyscope));
 			}
-			s = new CompoundStatement(statements);
+			s = new Block(statements);
 			if ((flags & (PSscope | PScurlyscope)) != 0) {
 				s = new ScopeStatement(s);
 			}
@@ -3084,7 +3084,7 @@ public class Parser extends Lexer {
 				problem("Use '{ }' for an empty statement, not a ';'", IProblem.SEVERITY_ERROR, IProblem.USE_BRACES_FOR_AN_EMPTY_STATEMENT, token.ptr, token.len);
 			}
 			nextToken();
-			s = new ExpStatement(null);
+			s = new ExpressionStatement((Expression) null);
 			break;
 
 		case TOKdo: {
@@ -3521,7 +3521,7 @@ public class Parser extends Lexer {
 					&& token.value != TOKrcurly) {
 				statements.add(parseStatement(PSsemi | PScurlyscope));
 			}
-			s = new CompoundStatement(statements);
+			s = new Block(statements);
 			s = new ScopeStatement(s);
 
 			// Keep cases in order by building the case statements backwards
@@ -3545,7 +3545,7 @@ public class Parser extends Lexer {
 					&& token.value != TOKrcurly) {
 				statements.add(parseStatement(PSsemi | PScurlyscope));
 			}
-			s = new CompoundStatement(statements);
+			s = new Block(statements);
 			s.startPosition = saveToken.ptr;
 			s.length = prevToken.ptr + prevToken.len - s.startPosition;
 			
@@ -3847,7 +3847,7 @@ public class Parser extends Lexer {
 				}
 				break;
 			}
-			s = new CompoundStatement(statements);
+			s = new Block(statements);
 			s.startPosition = saveToken.ptr;
 			s.length = token.ptr + token.len - s.startPosition;
 			nextToken();
@@ -3884,7 +3884,7 @@ public class Parser extends Lexer {
 				s[0].length = d.length;
 				as.add(s[0]);
 			}
-			s[0] = new CompoundStatement(as);
+			s[0] = new Block(as);
 		} else if (a.size() == 1) {
 			Dsymbol d = (Dsymbol) a.get(0);
 			s[0] = new DeclarationStatement(d);

@@ -12,6 +12,6 @@ public interface IDefaultStatement extends IStatement {
 	/**
 	 * Returns the statement.
 	 */
-	IStatement getStatement();	
+	IStatement getBody();	
 
 }
