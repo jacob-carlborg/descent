@@ -1,5 +1,6 @@
 package descent.tests.mars;
 
+import descent.core.dom.IComment;
 import descent.core.dom.ICompilationUnit;
 import descent.core.dom.IElement;
 import descent.core.dom.IModuleDeclaration;
@@ -43,18 +44,24 @@ public class Module_Test extends Parser_Test {
 		String s = " /** hola */ module pepe; ";
 		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
 		IModuleDeclaration md = unit.getModuleDeclaration();
-		assertEquals("hola", md.getComments());
 		
-		assertPosition(md, 1, 24);
+		IComment[] comments = md.getComments();
+		assertEquals(1, comments.length);
+		
+		assertEquals("/** hola */", comments[0].getComment());
+		
+		assertPosition(md, 13, 12);
 	}
 	
-	public void testModuleDeclarationWithMultipleComments1() {
+	public void testModuleDeclarationWithMultipleComments() {
 		String s = " /** hola */ /** chau */ module pepe; ";
 		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
 		IModuleDeclaration md = unit.getModuleDeclaration();
-		assertEquals("hola\n\nchau", md.getComments());
 		
-		assertPosition(md, 1, 36);
+		IComment[] comments = md.getComments();
+		assertEquals(2, comments.length);
+		
+		assertPosition(md, 25, 12);
 	}
 	
 	public void testSkipFirstLine() {

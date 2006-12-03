@@ -9,6 +9,8 @@ import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.texteditor.AbstractDecoratedTextEditor;
 import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
 
+import descent.core.dom.IComment;
+import descent.core.dom.ICommented;
 import descent.core.dom.ICompilationUnit;
 import descent.core.dom.IElement;
 import descent.ui.text.outline.DEditorContentOutlinePage;
@@ -145,7 +147,18 @@ public class DEditor extends AbstractDecoratedTextEditor {
 	 * element has comments, the comments are also highlighted.
 	 */
 	public void highlightRangeForElement(IElement element, boolean moveCursor) {
-		setHighlightRange(element.getStartPosition(), element.getLength(), moveCursor);
+		if (element instanceof ICommented) {
+			ICommented commented = (ICommented) element;
+			int start = element.getStartPosition();
+			for(IComment comment : commented.getComments()) {
+				if (comment.getStartPosition() < start) {
+					start = comment.getStartPosition();
+				}
+			}
+			setHighlightRange(start, element.getStartPosition() + element.getLength() - start, moveCursor);
+		} else {
+			setHighlightRange(element.getStartPosition(), element.getLength(), moveCursor);
+		}
 	}
 	
 	public Object getAdapter(Class required) {

@@ -2,6 +2,7 @@ package descent.tests.mars;
 
 import descent.core.dom.IAggregateDeclaration;
 import descent.core.dom.IBaseClass;
+import descent.core.dom.IComment;
 import descent.core.dom.ICompilationUnit;
 import descent.core.dom.IElement;
 import descent.core.dom.IModifier;
@@ -71,9 +72,29 @@ public class Class_Test extends Parser_Test {
 		assertEquals(1, declDefs.length);
 		
 		IAggregateDeclaration c = (IAggregateDeclaration) declDefs[0];
-		assertPosition(c, 1, 24);
+		assertPosition(c, 13, 12);
 		
-		assertEquals("hola", c.getComments());
+		IComment[] comments = c.getComments();
+		assertEquals(1, comments.length);
+		assertEquals("/** hola */", comments[0].getComment());
+	}
+	
+	public void testDontCarryComments() {
+		String s = " /** hola */ class A; class B;";
+		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
+		IElement[] declDefs = unit.getDeclarationDefinitions();
+		assertEquals(2, declDefs.length);
+		
+		IAggregateDeclaration c;
+		IComment[] comments;
+		
+		c = (IAggregateDeclaration) declDefs[0];
+		comments = c.getComments();
+		assertEquals(1, comments.length);
+		
+		c = (IAggregateDeclaration) declDefs[1];
+		comments = c.getComments();
+		assertEquals(0, comments.length);
 	}
 	
 	public void testWithMembers() {

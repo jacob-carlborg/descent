@@ -243,7 +243,7 @@ public interface IElement {
 	 * Constant representing a binary expression.
 	 * An expression with this type can be safely cast to <code>IBinaryExpression</code>. 
 	 */
-	int BINARY_EXPRESSION = 45;
+	int INFIX_EXPRESSION = 45;
 	
 	/**
 	 * Constant representing a condition expression.
@@ -682,6 +682,12 @@ public interface IElement {
 	 * A D element with this type can be safely cast to <code>ISliceType</code>. 
 	 */
 	int SLICE_TYPE = 109;
+	
+	/**
+	 * Constant representing a comment.
+	 * A D element with this type can be safely cast to <code>IComment</code>. 
+	 */
+	int COMMENT = 110;
 	
 	/**
 	 * Returns the start position in the source code where this element

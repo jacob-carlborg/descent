@@ -3,6 +3,7 @@ package descent.tests.mars;
 import java.math.BigInteger;
 
 import junit.framework.TestCase;
+import descent.internal.core.dom.Comment;
 import descent.internal.core.dom.Lexer;
 import descent.internal.core.dom.TOK;
 
@@ -161,10 +162,15 @@ public class Lexer_Test extends TestCase {
 	}
 	
 	public void testComments() {
-		assertBlockCommentToken(" /**hola a todos */ /** ble */  hol", "hola a todos\n\nble", 1, 29);
-		assertBlockCommentToken(" ///hola\n hol", "hola", 1, 7);
+		assertComment(" //hola\n", "//hola", 1, 6, TOK.TOKlinecomment);
+		assertComment(" ///hola\n", "///hola", 1, 7, TOK.TOKdoclinecomment);
+		assertComment(" /*hola*/", "/*hola*/", 1, 8, TOK.TOKblockcomment);
+		assertComment(" /**hola*/", "/**hola*/", 1, 9, TOK.TOKdocblockcomment);
+		assertComment(" /+hola+/", "/+hola+/", 1, 8, TOK.TOKpluscomment);
+		assertComment(" /++hola+/", "/++hola+/", 1, 9, TOK.TOKdocpluscomment);
+		assertComment(" /++ /+ hola +/ +/", "/++ /+ hola +/ +/", 1, 17, TOK.TOKdocpluscomment);
 	}
-	
+
 	private void assertToken(String s, TOK t, int start, int len) {
 		Lexer lexer = new Lexer(s);
 		assertEquals(t, lexer.nextToken());
@@ -175,7 +181,7 @@ public class Lexer_Test extends TestCase {
 	private void assertStringToken(String s, String value, int start, int len) {
 		Lexer lexer = new Lexer(s);
 		assertEquals(TOK.TOKstring, lexer.nextToken());
-		assertEquals(value, lexer.token.ustring);
+		assertEquals(value, lexer.token.string);
 		assertEquals(start, lexer.token.ptr);
 		assertEquals(len, lexer.token.len);
 	}
@@ -204,12 +210,14 @@ public class Lexer_Test extends TestCase {
 		assertEquals(len, lexer.token.len);
 	}
 	
-	private void assertBlockCommentToken(String s, String value, int start, int len) {
-		Lexer lexer = new Lexer(s);
+	private void assertComment(String string, String comment, int start, int len, TOK tok) {
+		Lexer lexer = new Lexer(string);
 		lexer.nextToken();
-		assertEquals(value, lexer.token.blockComment);
-		assertEquals(start, lexer.token.blockCommentPtr);
-		assertEquals(len, lexer.token.blockCommentLength);
+		Comment com = lexer.comments.get(lexer.comments.size() - 1);
+		assertEquals(comment, com.string);
+		assertEquals(start, com.startPosition);
+		assertEquals(len, com.length);
+		assertEquals(tok, com.tok);
 	}
 
 }

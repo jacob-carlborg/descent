@@ -10,7 +10,7 @@ class ASTVisitorGenerator {
 	
 	static {
 		excludeList = new TreeSet<String>();
-		excludeList.add("ElementVisitor");
+		excludeList.add("ASTVisitor");
 		excludeList.add("IArrayType");
 		excludeList.add("ICommented");
 		excludeList.add("IDeclaration");
@@ -70,9 +70,9 @@ class ASTVisitorGenerator {
 		sb.append(" * Subclasses may reimplement this method as needed.</li>\n");
 		sb.append(" * </ul>\n");
 		sb.append(" * \n");
-		sb.append(" * @see descent.core.IElement#accept(ElementVisitor)\n");
+		sb.append(" * @see descent.core.dom.ASTNode#accept(ASTVisitor)\n");
 		sb.append(" */\n");
-		sb.append("public abstract class ElementVisitor {\n");
+		sb.append("public abstract class ASTVisitor {\n");
 		sb.append("\n");
 		sb.append("\t/**\n");
 		sb.append("\t * Visits the given AST node prior to the type-specific visit.\n");

@@ -1,6 +1,7 @@
 package descent.tests.mars;
 
 import descent.core.dom.IAggregateDeclaration;
+import descent.core.dom.IComment;
 import descent.core.dom.ICompilationUnit;
 import descent.core.dom.IElement;
 import descent.core.dom.ISimpleName;
@@ -44,7 +45,11 @@ public class Struct_Test extends Parser_Test {
 		assertEquals(1, declDefs.length);
 		
 		IAggregateDeclaration c = (IAggregateDeclaration) declDefs[0];
-		assertPosition(c, 1, 25);
+		assertPosition(c, 13, 13);
+		
+		IComment[] comments = c.getComments();
+		assertEquals(1, comments.length);
+		assertEquals("/** hola */", comments[0].getComment());
 	}
 
 }

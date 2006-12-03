@@ -39,10 +39,11 @@ public class Lexer implements IProblemCollector {
 	public boolean anyToken;
 	public boolean commentToken;
 	
+	public List<Comment> comments;
 	public List<IProblem> problems;
     
     public Lexer(String source) {
-    	this(source, 0, 0, source.length(), true, false);
+    	this(source, 0, 0, source.length(), true, true);
     }
 	
 	public Lexer(String source, int base, int begoffset, 
@@ -50,6 +51,7 @@ public class Lexer implements IProblemCollector {
 		
 		initKeywords();
 		
+		this.comments = new ArrayList<Comment>();
 		this.problems = new ArrayList<IProblem>();
 		
 		// Make input larger and add zeros, to avoid comparing
@@ -210,8 +212,6 @@ public class Lexer implements IProblemCollector {
 		int lastLine = this.linnum;
 	    int linnum = this.linnum;
 	    
-	    t.blockComment = null;
-	    t.lineComment = null;
 	    while (true)
 	    {
 		t.ptr = p;
@@ -316,7 +316,7 @@ public class Lexer implements IProblemCollector {
 			    stringbuffer.writeUTF8(c);
 			} while (input[p] == '\\');
 				t.len = p - t.ptr;
-				t.ustring = stringbuffer.data.toString();
+				t.string = stringbuffer.data.toString();
 				t.postfix = 0;
 				t.value = TOKstring;
 				return;
@@ -396,15 +396,14 @@ public class Lexer implements IProblemCollector {
 				    if (input[p - 2] == '*' && p - 3 != t.ptr)
 					break;
 				}
-				if (commentToken)
-				{
-				    t.value = TOKcomment;
-				    return;
-				}
-				else if (doDocComment && input[t.ptr + 2] == '*' && p - 4 != t.ptr)
-				{   // if /** but not /**/
-				    getDocComment(t, lastLine == linnum);
-				}
+				
+				Comment comment = new Comment();
+				comment.tok = (input[t.ptr + 2] == '*' && p - 4 != t.ptr) ? TOKdocblockcomment : TOKblockcomment;
+				comment.startPosition = t.ptr;
+				comment.length = p - t.ptr;
+				comment.string = new String(input, comment.startPosition, comment.length);
+				comments.add(comment);
+				
 				continue;
 
 			    case '/':		// do // style comments
@@ -423,17 +422,16 @@ public class Lexer implements IProblemCollector {
 
 					case 0:
 					case 0x1A:
-					    if (commentToken)
-					    {
+						comment = new Comment();
+						comment.tok = input[t.ptr + 2] == '/' ? TOKdoclinecomment : TOKlinecomment;
+						comment.startPosition = t.ptr;
+						comment.length = p - t.ptr;
+						comment.string = new String(input, comment.startPosition, comment.length);
+						comments.add(comment);
+						
 						p = end;
-						t.value = TOKcomment;
+						t.value = TOKeof;
 						return;
-					    }
-					    if (doDocComment && input[t.ptr + 2] == '/')
-						getDocComment(t, lastLine == linnum);
-					    p = end;
-					    t.value = TOKeof;
-					    return;
 
 					default:
 					    if ((c & 0x80) != 0)
@@ -445,17 +443,14 @@ public class Lexer implements IProblemCollector {
 				    }
 				    break;
 				}
-
-				if (commentToken)
-				{
-				    p++;
-				    linnum++;
-				    t.value = TOKcomment;
-				    return;
-				}
-				if (doDocComment && input[t.ptr + 2] == '/')
-				    getDocComment(t, lastLine == linnum);
-
+				
+				comment = new Comment();
+				comment.tok = input[t.ptr + 2] == '/' ? TOKdoclinecomment : TOKlinecomment;
+				comment.startPosition = t.ptr;
+				comment.length = p - t.ptr;
+				comment.string = new String(input, comment.startPosition, comment.length);
+				comments.add(comment);
+				
 				p++;
 				linnum++;
 				continue;
@@ -518,15 +513,13 @@ public class Lexer implements IProblemCollector {
 				    }
 				    break;
 				}
-				if (commentToken)
-				{
-				    t.value = TOKcomment;
-				    return;
-				}
-				if (doDocComment && input[t.ptr + 2] == '+' && p - 4 != t.ptr)
-				{   // if /++ but not /++/
-				    getDocComment(t, lastLine == linnum);
-				}
+				
+				comment = new Comment();
+				comment.tok = (input[t.ptr + 2] == '+' && p - 4 != t.ptr) ? TOKdocpluscomment : TOKpluscomment;
+				comment.startPosition = t.ptr;
+				comment.length = p - t.ptr;
+				comment.string = new String(input, comment.startPosition, comment.length);
+				comments.add(comment);
 				continue;
 			    }
 			}
@@ -1122,7 +1115,7 @@ public class Lexer implements IProblemCollector {
 		    case 0:
 		    case 0x1A: {
 		    	problem("Unterminated string constant", IProblem.SEVERITY_ERROR, IProblem.UNTERMINATED_STRING_CONSTANT, token.ptr, p - token.ptr - 1);
-				t.ustring = "";
+				t.string = "";
 				t.len = 0;
 				t.postfix = 0;
 				return TOKstring;
@@ -1133,7 +1126,7 @@ public class Lexer implements IProblemCollector {
 			if (c == tc)
 			{
 			    t.len = stringbuffer.data.length();
-			    t.ustring = stringbuffer.data.toString();
+			    t.string = stringbuffer.data.toString();
 			    stringPostfix(t);
 			    return TOKstring;
 			}
@@ -1184,7 +1177,7 @@ public class Lexer implements IProblemCollector {
 		    case 0:
 		    case 0x1A: {
 		    	problem("Unterminated string constant", IProblem.SEVERITY_ERROR, IProblem.UNTERMINATED_STRING_CONSTANT, token.ptr, p - token.ptr - 1);
-				t.ustring = "";
+				t.string = "";
 				t.len = 0;
 				t.postfix = 0;
 				return TOKstring;
@@ -1197,7 +1190,7 @@ public class Lexer implements IProblemCollector {
 			    stringbuffer.writeByte(v);
 			}
 			t.len = stringbuffer.data.length();
-			t.ustring = stringbuffer.data.toString();
+			t.string = stringbuffer.data.toString();
 			stringPostfix(t);
 			return TOKstring;
 
@@ -1273,7 +1266,7 @@ public class Lexer implements IProblemCollector {
 
 		    case '"':
 			t.len = stringbuffer.data.length();
-			t.ustring = stringbuffer.data.toString();
+			t.string = stringbuffer.data.toString();
 			stringPostfix(t);
 			return TOKstring;
 
@@ -1282,7 +1275,7 @@ public class Lexer implements IProblemCollector {
 				p--;
 				problem("Unterminated string constant", IProblem.SEVERITY_ERROR, IProblem.UNTERMINATED_STRING_CONSTANT, token.ptr, p - token.ptr);
 				
-				t.ustring = "";
+				t.string = "";
 				t.len = 0;
 				t.postfix = 0;
 				return TOKstring;
@@ -2113,6 +2106,7 @@ public class Lexer implements IProblemCollector {
 	    return u[0];
 	}
 	
+	/*
 	private void getDocComment(Token t, boolean lineComment) {
 		OutBuffer buf = new OutBuffer();
 	    char ct = input[t.ptr + 2];
@@ -2123,16 +2117,12 @@ public class Lexer implements IProblemCollector {
 	    if (ct == '*' || ct == '+')
 		qend -= 2;
 
-	    /* Scan over initial row of ****'s or ++++'s or ////'s
-	     */
 	    for (; q < qend; q++)
 	    {
 		if (input[q] != ct)
 		    break;
 	    }
 
-	    /* Remove trailing row of ****'s or ++++'s
-	     */
 	    if (ct != '/')
 	    {
 		for (; q < qend; qend--)
@@ -2152,8 +2142,6 @@ public class Lexer implements IProblemCollector {
 		    case '+':
 			if (linestart != 0 && c == ct)
 			{   linestart = 0;
-			    /* Trim preceding whitespace up to preceding \n
-			     */
 			    while (buf.data.length() > 0 && (buf.data.charAt(buf.data.length() - 1) == ' ' || buf.data.charAt(buf.data.length() - 1) == '\t'))
 				buf.data.deleteCharAt(buf.data.length() - 1);
 			    continue;
@@ -2171,8 +2159,6 @@ public class Lexer implements IProblemCollector {
 				c = '\n';		// replace all newlines with \n
 				linestart = 1;
 
-				/* Trim trailing whitespace
-				 */
 				while (buf.data.length() > 0 && (buf.data.charAt(buf.data.length() - 1) == ' ' || buf.data.charAt(buf.data.length() - 1) == '\t'))
 					buf.data.deleteCharAt(buf.data.length() - 1);
 				break;
@@ -2188,8 +2174,6 @@ public class Lexer implements IProblemCollector {
 				c = '\n';		// replace all newlines with \n
 				linestart = 1;
 
-				/* Trim trailing whitespace
-				 */
 				while (buf.data.length() > 0 && (buf.data.charAt(buf.data.length() - 1) == ' ' || buf.data.charAt(buf.data.length() - 1) == '\t'))
 					buf.data.deleteCharAt(buf.data.length() - 1);
 				break;
@@ -2201,8 +2185,6 @@ public class Lexer implements IProblemCollector {
 		    case '\n':
 			linestart = 1;
 
-			/* Trim trailing whitespace
-			 */
 			while (buf.data.length() > 0 && (buf.data.charAt(buf.data.length() - 1) == ' ' || buf.data.charAt(buf.data.length() - 1) == '\t'))
 				buf.data.deleteCharAt(buf.data.length() - 1);
 
@@ -2228,13 +2210,13 @@ public class Lexer implements IProblemCollector {
 	    		buf.reset();
 	    	}
 	    } else {
-	    	if (t.blockComment != null) {
+	    	if (t.ustring != null) {
 	    		t.blockCommentLength = p - 1;
-	    		t.blockComment = combineComments(t.blockComment, buf.data.toString());
+	    		t.comment = combineComments(t.comment, buf.data.toString());
 	    	} else {
 	    		t.blockCommentPtr = t.ptr;
 	    		t.blockCommentLength = p - 1;
-	    		t.blockComment = buf.data.toString().trim();
+	    		t.comment = buf.data.toString().trim();
 	    		buf.reset();
 	    	}
 	    }
@@ -2252,6 +2234,7 @@ public class Lexer implements IProblemCollector {
 		return sb.toString();
 	}
 	
+	
 	public Identifier idPool(String s) {
 	    Identifier id;
 	    StringValue sv;
@@ -2265,6 +2248,7 @@ public class Lexer implements IProblemCollector {
 	    }
 	    return id;
 	}
+	*/
 	
 	private static Map<String, TOK> keywords;
 	

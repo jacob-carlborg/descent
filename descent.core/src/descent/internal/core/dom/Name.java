@@ -25,7 +25,7 @@ package descent.internal.core.dom;
  * 
  * @since 2.0
  */
-public abstract class Name extends ASTNode /* TODO JDT implements IDocElement */ {
+public abstract class Name extends Expression /* TODO JDT implements IDocElement */ {
 	
 	/**
 	 * Approximate base size of an expression node instance in bytes, 

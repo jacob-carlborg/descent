@@ -2,6 +2,7 @@ package descent.tests.mars;
 
 import descent.core.dom.IArrayType;
 import descent.core.dom.IAssociativeArrayType;
+import descent.core.dom.IComment;
 import descent.core.dom.ICompilationUnit;
 import descent.core.dom.IDelegateType;
 import descent.core.dom.IElement;
@@ -57,8 +58,11 @@ public class VariableDeclaration_Test extends Parser_Test {
 		assertEquals(1, declDefs.length);
 		
 		IVariableDeclaration var = (IVariableDeclaration) declDefs[0];
-		assertEquals("hola", var.getComments());
-		assertPosition(var, 1, 18);
+		assertPosition(var, 13, 6);
+		
+		IComment[] comments = var.getComments();
+		assertEquals(1, comments.length);
+		assertEquals("/** hola */", comments[0].getComment());
 	}
 	
 	public void testCStyle() {

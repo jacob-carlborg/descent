@@ -2,6 +2,7 @@ package descent.tests.mars;
 
 import java.math.BigInteger;
 
+import descent.core.dom.IComment;
 import descent.core.dom.ICompilationUnit;
 import descent.core.dom.IElement;
 import descent.core.dom.IEnumDeclaration;
@@ -107,7 +108,11 @@ public class Enum_Test extends Parser_Test {
 		assertEquals(1, declDefs.length);
 		
 		IEnumDeclaration e = (IEnumDeclaration) declDefs[0];
-		assertPosition(e, 1, 20);
+		assertPosition(e, 13, 8);
+		
+		IComment[] comments = e.getComments();
+		assertEquals(1, comments.length);
+		assertEquals("/** hola */", comments[0].getComment());
 	}
 
 }

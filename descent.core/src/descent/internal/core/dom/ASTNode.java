@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 import descent.core.dom.ASTVisitor;
+import descent.core.dom.IComment;
 import descent.core.dom.IDeclaration;
 import descent.core.dom.IElement;
 
@@ -17,7 +18,7 @@ public abstract class ASTNode implements IElement {
 	public final static IElement[] NO_ELEMENTS = new IElement[0];
 	public final static IDeclaration[] NO_DECLARATIONS = new IDeclaration[0];
 	
-	public String comments;
+	public List<Comment> comments;
 	
 	/**
 	 * Owning AST.
@@ -1551,6 +1552,7 @@ public abstract class ASTNode implements IElement {
 		return modifiers;
 	}
 	
+	/*
 	public void addComment(String string, int blockCommentStart) {
 		comments = string;
 		if (blockCommentStart != -1) {
@@ -1558,9 +1560,13 @@ public abstract class ASTNode implements IElement {
 			this.startPosition = blockCommentStart;
 		}
 	}
+	*/
 	
-	public String getComments() {
-		return comments;
+	public IComment[] getComments() {
+		if (comments == null) {
+			return new IComment[0];
+		}		
+		return comments.toArray(new IComment[comments.size()]);
 	}
 	
 	/**

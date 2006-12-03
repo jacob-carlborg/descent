@@ -41,7 +41,8 @@ public enum TOK {
 	TOKpragma,	TOKdsymbol,
 	TOKtypeid,	TOKuadd,
 	TOKiftype,	TOKremove,
-	TOKnewanonclass, TOKcomment,
+	TOKnewanonclass, 
+	TOKlinecomment, TOKdoclinecomment, TOKblockcomment, TOKdocblockcomment, TOKpluscomment, TOKdocpluscomment,
 	TOKarrayliteral,
 
 	// Operators

@@ -2,6 +2,7 @@ package descent.tests.mars;
 
 import descent.core.dom.IAggregateDeclaration;
 import descent.core.dom.IBaseClass;
+import descent.core.dom.IComment;
 import descent.core.dom.ICompilationUnit;
 import descent.core.dom.IElement;
 import descent.core.dom.IModifier;
@@ -62,7 +63,11 @@ public class Interface_Test extends Parser_Test {
 		assertEquals(1, declDefs.length);
 		
 		IAggregateDeclaration c = (IAggregateDeclaration) declDefs[0];
-		assertPosition(c, 1, 28);
+		assertPosition(c, 13, 16);
+		
+		IComment[] comments = c.getComments();
+		assertEquals(1, comments.length);
+		assertEquals("/** hola */", comments[0].getComment());
 	}
 
 }

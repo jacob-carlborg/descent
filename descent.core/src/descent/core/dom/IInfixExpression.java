@@ -1,11 +1,13 @@
 package descent.core.dom;
 
+import descent.internal.core.dom.Expression;
+
 
 
 /**
  * A binary expression.
  */
-public interface IBinaryExpression extends IExpression {
+public interface IInfixExpression extends IExpression {
 	
 	/**
  	 * Binary operators.
@@ -195,22 +197,22 @@ public interface IBinaryExpression extends IExpression {
 	/**
 	 * Returns the left operand of this binary expression.
 	 */
-	IExpression getLeftOperand();
+	Expression getLeftOperand();
 	
 	/**
 	 * Sets the left operand of this binary expression.
 	 */
-	void setLefOperand(IExpression leftOperand);	
+	void setLeftOperand(Expression leftOperand);	
 	
 	/**
 	 * Returns the expression positioned at the right of the
 	 * binary operator.
 	 */
-	IExpression getRightOperand();
+	Expression getRightOperand();
 	
 	/**
 	 * Sets the right operand of this binary expression.
 	 */
-	void setRightOperand(IExpression rightOperand);	
+	void setRightOperand(Expression rightOperand);	
 
 }
