@@ -14,7 +14,7 @@ public interface IDoWhileStatement extends IStatement {
 	/**
 	 * Returns the condition.
 	 */
-	IExpression getCondition();
+	IExpression getExpression();
 	
 	/**
 	 * Returns the body.

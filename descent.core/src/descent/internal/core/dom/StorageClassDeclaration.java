@@ -23,7 +23,7 @@ public class StorageClassDeclaration extends Dsymbol implements IStorageClassDec
 		return decl;
 	}
 	
-	public int getElementType() {
+	public int getNodeType0() {
 		return STORAGE_CLASS_DECLARATION;
 	}
 	

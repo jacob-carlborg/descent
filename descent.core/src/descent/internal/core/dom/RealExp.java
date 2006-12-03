@@ -11,7 +11,7 @@ public class RealExp extends Expression implements IRealExpression {
 		// TODO Auto-generated constructor stub
 	}
 	
-	public int getElementType() {
+	public int getNodeType0() {
 		return REAL_EXPRESSION;
 	}
 	

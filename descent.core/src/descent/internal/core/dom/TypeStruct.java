@@ -12,7 +12,7 @@ public class TypeStruct extends Type {
 		this.sym = sym;
 	}
 	
-	public int getElementType() {
+	public int getNodeType0() {
 		// TODO Auto-generated method stub
 		return 0;
 	}

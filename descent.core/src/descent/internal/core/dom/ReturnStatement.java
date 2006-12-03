@@ -16,7 +16,7 @@ public class ReturnStatement extends Statement implements IReturnStatement {
 		return exp;
 	}
 	
-	public int getElementType() {
+	public int getNodeType0() {
 		return RETURN_STATEMENT;
 	}
 	

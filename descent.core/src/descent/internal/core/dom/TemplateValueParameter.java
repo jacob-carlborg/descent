@@ -20,7 +20,7 @@ public class TemplateValueParameter extends TemplateParameter implements IValueT
 		this.tp_defaultvalue = tp_defaultvalue;
 	}
 	
-	public int getElementType() {
+	public int getNodeType0() {
 		return VALUE_TEMPLATE_PARAMETER;
 	}
 	

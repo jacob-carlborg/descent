@@ -1,5 +1,17 @@
+ArrayAccess
+AssertExpression
 Argument (fix type)
+BooleanLiteral
+BreakStatement
+ContinueStatement
+DeleteExpression
+DollarLiteral
+GotoStatement
 InfixExpression
+NullLiteral
+StaticAssert
+SuperLiteral
+ThisLiteral
 Volatile
 WhileStatement
 WithStatement

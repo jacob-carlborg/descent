@@ -22,7 +22,7 @@ public class AliasDeclaration extends Declaration implements IAliasDeclaration {
 		return type;
 	}
 	
-	public int getElementType() {
+	public int getNodeType0() {
 		return ALIAS_DECLARATION;
 	}
 	

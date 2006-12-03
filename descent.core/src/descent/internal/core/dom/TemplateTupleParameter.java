@@ -16,7 +16,7 @@ public class TemplateTupleParameter extends TemplateParameter implements ITupleT
 		return ident;
 	}
 
-	public int getElementType() {
+	public int getNodeType0() {
 		return TUPLE_TEMPLATE_PARAMETER;
 	}
 

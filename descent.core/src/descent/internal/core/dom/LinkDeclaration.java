@@ -18,7 +18,7 @@ public class LinkDeclaration extends Dsymbol implements ILinkDeclaration {
 		this.linkage = linkage.getLinkage();
 	}
 	
-	public int getElementType() {
+	public int getNodeType0() {
 		return LINK_DECLARATION;
 	}
 	

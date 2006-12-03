@@ -32,7 +32,7 @@ public class ConditionalStatement extends Statement implements IStaticIfStatemen
 		return elsebody;
 	}
 	
-	public int getElementType() {
+	public int getNodeType0() {
 		switch(this.condition.getConditionType()) {
 		case Condition.DEBUG: return DEBUG_STATEMENT;
 		case Condition.VERSION: return VERSION_STATEMENT;

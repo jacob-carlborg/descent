@@ -21,7 +21,7 @@ public class InvariantDeclaration extends Dsymbol implements IInvariantDeclarati
 		return fbody;
 	}
 	
-	public int getElementType() {
+	public int getNodeType0() {
 		return INVARIANT_DECLARATION;
 	}
 	

@@ -23,7 +23,7 @@ public class SwitchStatement extends Statement implements ISwitchStatement {
 		return body;
 	}
 	
-	public int getElementType() {
+	public int getNodeType0() {
 		return SWITCH_STATEMENT;
 	}
 	

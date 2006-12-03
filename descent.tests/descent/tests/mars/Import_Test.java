@@ -19,7 +19,7 @@ public class Import_Test extends Parser_Test {
 		assertEquals(1, declDefs.length);
 		
 		IImportDeclaration impDecl = (IImportDeclaration) declDefs[0];
-		assertEquals(IElement.IMPORT_DECLARATION, impDecl.getElementType());
+		assertEquals(IElement.IMPORT_DECLARATION, impDecl.getNodeType0());
 		assertFalse(impDecl.isStatic());
 		assertPosition(impDecl, 1, 9);
 		
@@ -27,11 +27,11 @@ public class Import_Test extends Parser_Test {
 		assertEquals(1, imps.length);
 		
 		IImport imp = imps[0];
-		assertEquals(IElement.IMPORT, imp.getElementType());
+		assertEquals(IElement.IMPORT, imp.getNodeType0());
 		assertPosition(imp, 8, 1);
 		
 		IQualifiedName qName = imp.getQualifiedName();
-		assertEquals(IElement.QUALIFIED_NAME, qName.getElementType());
+		assertEquals(IElement.QUALIFIED_NAME, qName.getNodeType0());
 		assertEquals("a", qName.toString());
 		assertPosition(qName, 8, 1);
 		
@@ -112,7 +112,7 @@ public class Import_Test extends Parser_Test {
 		assertEquals(1, sels.length);
 		
 		ISelectiveImport sel = sels[0];
-		assertEquals(IElement.SELECTIVE_IMPORT, sel.getElementType());
+		assertEquals(IElement.SELECTIVE_IMPORT, sel.getNodeType0());
 		assertEquals("dos", sel.getName().toString());
 		assertPosition(sel.getName(), 14, 3);
 		assertNull(sel.getAlias());
@@ -161,7 +161,7 @@ public class Import_Test extends Parser_Test {
 		assertEquals(1, declDefs.length);
 		
 		IImportDeclaration impDecl = (IImportDeclaration) declDefs[0];
-		assertEquals(IElement.IMPORT_DECLARATION, impDecl.getElementType());
+		assertEquals(IElement.IMPORT_DECLARATION, impDecl.getNodeType0());
 		assertTrue(impDecl.isStatic());
 		assertPosition(impDecl, 1, s.length() - 1);
 		
@@ -169,11 +169,11 @@ public class Import_Test extends Parser_Test {
 		assertEquals(1, imps.length);
 		
 		IImport imp = imps[0];
-		assertEquals(IElement.IMPORT, imp.getElementType());
+		assertEquals(IElement.IMPORT, imp.getNodeType0());
 		assertPosition(imp, 15, 1);
 		
 		IQualifiedName qName = imp.getQualifiedName();
-		assertEquals(IElement.QUALIFIED_NAME, qName.getElementType());
+		assertEquals(IElement.QUALIFIED_NAME, qName.getNodeType0());
 		assertEquals("a", qName.toString());
 		assertPosition(qName, 15, 1);
 		

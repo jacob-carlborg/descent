@@ -26,7 +26,7 @@ public class EnumDeclaration extends Dsymbol implements IEnumDeclaration {
 		return type;
 	}
 	
-	public int getElementType() {
+	public int getNodeType0() {
 		return ENUM_DECLARATION;
 	}
 

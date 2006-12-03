@@ -28,7 +28,7 @@ public class Module extends ScopeDsymbol implements ICompilationUnit {
 		return problems.toArray(new IProblem[0]);
 	}
 	
-	public int getElementType() {
+	public int getNodeType0() {
 		return COMPILATION_UNIT;
 	}
 	

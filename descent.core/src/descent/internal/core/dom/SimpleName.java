@@ -118,8 +118,9 @@ public class SimpleName extends Name implements ISimpleName {
 
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
+	 * TODO make it package
 	 */
-	final int getNodeType0() {
+	public final int getNodeType0() {
 		return SIMPLE_NAME;
 	}
 
@@ -311,9 +312,6 @@ public class SimpleName extends Name implements ISimpleName {
 	}
 	
 	// TODO Descent remove
-	public int getElementType() {
-		return SIMPLE_NAME;
-	}
 	
 	public SimpleName(Token token) {
 		super(AST.newAST(AST.JLS3));

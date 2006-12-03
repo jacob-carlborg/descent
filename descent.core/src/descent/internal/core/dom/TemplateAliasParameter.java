@@ -17,7 +17,7 @@ public class TemplateAliasParameter extends TemplateParameter implements IAliasT
 		this.tp_defaulttype = tp_defaulttype;
 	}
 	
-	public int getElementType() {
+	public int getNodeType0() {
 		return ALIAS_TEMPLATE_PARAMETER;
 	}
 	

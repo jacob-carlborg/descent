@@ -20,7 +20,7 @@ public class IfStatement extends Statement implements IIfStatement {
 		this.elsebody = elsebody;
 	}
 	
-	public int getElementType() {
+	public int getNodeType0() {
 		return IF_STATEMENT;
 	}
 	

@@ -28,7 +28,7 @@ public class SliceExp extends Expression implements ISliceExpression {
 		return to;
 	}
 	
-	public int getElementType() {
+	public int getNodeType0() {
 		return SLICE_EXPRESSION;
 	}
 	

@@ -8,7 +8,7 @@ public class DotTemplateInstanceExp extends Expression {
 		// TODO Auto-generated constructor stub
 	}
 	
-	public int getElementType() {
+	public int getNodeType0() {
 		// TODO Auto-generated method stub
 		return 0;
 	}

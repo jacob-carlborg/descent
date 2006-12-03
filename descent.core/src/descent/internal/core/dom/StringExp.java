@@ -21,7 +21,7 @@ public class StringExp extends Expression implements IStringExpression {
 		return (char) postfix;
 	}
 	
-	public int getElementType() {
+	public int getNodeType0() {
 		return STRING_EXPRESSION;
 	}
 	

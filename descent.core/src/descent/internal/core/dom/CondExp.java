@@ -30,7 +30,7 @@ public class CondExp extends Expression implements IConditionExpression {
 		return f;
 	}
 	
-	public int getElementType() {
+	public int getNodeType0() {
 		return CONDITION_EXPRESSION;
 	}
 	

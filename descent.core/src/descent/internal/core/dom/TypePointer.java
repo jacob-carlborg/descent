@@ -12,7 +12,7 @@ public class TypePointer extends Type implements IPointerType, IDelegateType {
 		super(TY.Tpointer, t);
 	}
 	
-	public int getElementType() {
+	public int getNodeType0() {
 		return next instanceof TypeFunction ? POINTER_TO_FUNCTION_TYPE : POINTER_TYPE;
 	}
 	
@@ -31,7 +31,7 @@ public class TypePointer extends Type implements IPointerType, IDelegateType {
 	@Override
 	public void accept0(ASTVisitor visitor) {
 		boolean children;
-		switch(getElementType()) {
+		switch(getNodeType0()) {
 		case POINTER_TO_FUNCTION_TYPE:
 			children = visitor.visit((IDelegateType) this);
 			if (children) {

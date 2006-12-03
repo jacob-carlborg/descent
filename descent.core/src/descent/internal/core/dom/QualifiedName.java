@@ -138,8 +138,9 @@ public class QualifiedName extends Name implements IQualifiedName {
 	
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
+	 * TODO make it package
 	 */
-	final int getNodeType0() {
+	public final int getNodeType0() {
 		return QUALIFIED_NAME;
 	}
 
@@ -280,11 +281,6 @@ public class QualifiedName extends Name implements IQualifiedName {
 			memSize()
 			+ (this.name == null ? 0 : getName().treeSize())
 			+ (this.qualifier == null ? 0 : getQualifier().treeSize());
-	}
-	
-	// TODO Descent remove
-	public int getElementType() {
-		return QUALIFIED_NAME;
 	}
 	
 }

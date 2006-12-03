@@ -18,12 +18,12 @@ public class Class_Test extends Parser_Test {
 		assertEquals(1, declDefs.length);
 		
 		IAggregateDeclaration c = (IAggregateDeclaration) declDefs[0];
-		assertEquals(IElement.AGGREGATE_DECLARATION, c.getElementType());
+		assertEquals(IElement.AGGREGATE_DECLARATION, c.getNodeType0());
 		assertEquals(IAggregateDeclaration.CLASS_DECLARATION, c.getAggregateDeclarationType());
 		assertPosition(c, 1, 15);
 		
 		ISimpleName name = c.getName();
-		assertEquals(IElement.SIMPLE_NAME, name.getElementType());
+		assertEquals(IElement.SIMPLE_NAME, name.getNodeType0());
 		assertEquals("Clazz", name.toString());
 		assertPosition(name, 7, 5);
 		
@@ -52,7 +52,7 @@ public class Class_Test extends Parser_Test {
 		IBaseClass[] bs = c.getBaseClasses();
 		assertEquals(5, bs.length);
 		
-		assertEquals(IElement.BASE_CLASS, bs[0].getElementType());
+		assertEquals(IElement.BASE_CLASS, bs[0].getNodeType0());
 		assertEquals(IModifier.PUBLIC, bs[0].getModifiers());
 		assertEquals(IModifier.PRIVATE, bs[1].getModifiers());
 		assertEquals(IModifier.PACKAGE, bs[2].getModifiers());

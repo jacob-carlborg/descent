@@ -16,7 +16,7 @@ public class ScopeStatement extends Statement implements IScopeStatement {
 		return s;
 	}
 	
-	public int getElementType() {
+	public int getNodeType0() {
 		return SCOPE_STATEMENT;
 	}
 	

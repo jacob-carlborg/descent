@@ -27,7 +27,7 @@ public class AlignDeclaration extends Dsymbol implements IAlignDeclaration {
 		return n;
 	}
 	
-	public int getElementType() {
+	public int getNodeType0() {
 		return ALIGN_DECLARATION;
 	}
 	

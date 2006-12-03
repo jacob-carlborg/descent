@@ -29,7 +29,7 @@ public class TypeSpecialization extends ASTNode implements ITypeSpecialization {
 		visitor.endVisit(this);
 	}
 
-	public int getElementType() {
+	public int getNodeType0() {
 		return TYPE_SPECIALIZATION;
 	}
 

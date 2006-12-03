@@ -23,7 +23,7 @@ public class CaseStatement extends Statement implements ICaseStatement {
 		return s;
 	}
 	
-	public int getElementType() {
+	public int getNodeType0() {
 		return CASE_STATEMENT;
 	}
 	

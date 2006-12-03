@@ -6,5 +6,13 @@ public abstract class Dsymbol extends ASTNode implements IElement {
 
 	public Identifier ident;
 	public Dsymbol parent;
+	
+	public Dsymbol() {
+		
+	}
+	
+	public Dsymbol(AST ast) {
+		super(ast);
+	}
 
 }

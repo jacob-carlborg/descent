@@ -16,12 +16,12 @@ public class Union_Test extends Parser_Test {
 		assertEquals(1, declDefs.length);
 		
 		IAggregateDeclaration c = (IAggregateDeclaration) declDefs[0];
-		assertEquals(IElement.AGGREGATE_DECLARATION, c.getElementType());
+		assertEquals(IElement.AGGREGATE_DECLARATION, c.getNodeType0());
 		assertEquals(IAggregateDeclaration.UNION_DECLARATION, c.getAggregateDeclarationType());
 		assertPosition(c, 1, 15);
 		
 		ISimpleName name = c.getName();
-		assertEquals(IElement.SIMPLE_NAME, name.getElementType());
+		assertEquals(IElement.SIMPLE_NAME, name.getNodeType0());
 		assertEquals("Clazz", name.toString());
 		assertPosition(name, 7, 5);
 		

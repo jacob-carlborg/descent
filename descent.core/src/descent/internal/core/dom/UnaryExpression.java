@@ -22,7 +22,7 @@ public class UnaryExpression extends Expression implements IUnaryExpression {
 		return exp;
 	}
 	
-	public int getElementType() {
+	public int getNodeType0() {
 		return UNARY_EXPRESSION;
 	}
 	

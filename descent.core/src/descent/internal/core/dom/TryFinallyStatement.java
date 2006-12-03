@@ -15,7 +15,7 @@ public class TryFinallyStatement extends Statement implements ITryStatement {
 		this.finalbody = finalbody;
 	}
 	
-	public int getElementType() {
+	public int getNodeType0() {
 		return TRY_STATEMENT;
 	}
 	

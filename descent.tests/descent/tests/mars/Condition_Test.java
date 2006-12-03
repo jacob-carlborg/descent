@@ -55,7 +55,7 @@ public class Condition_Test extends Parser_Test {
 		assertEquals(1, declDefs.length);
 		
 		IDebugDeclaration d = (IDebugDeclaration) declDefs[0];
-		assertEquals(IConditionalDeclaration.DEBUG_DECLARATION, d.getElementType());
+		assertEquals(IConditionalDeclaration.DEBUG_DECLARATION, d.getNodeType0());
 		assertPosition(d, 1, s.length() - 1);
 		
 		assertEquals("bla", d.getDebug().toString());
@@ -69,7 +69,7 @@ public class Condition_Test extends Parser_Test {
 		assertEquals(1, declDefs.length);
 		
 		IStaticIfDeclaration d = (IStaticIfDeclaration) declDefs[0];
-		assertEquals(IConditionalDeclaration.STATIC_IF_DECLARATION, d.getElementType());
+		assertEquals(IConditionalDeclaration.STATIC_IF_DECLARATION, d.getNodeType0());
 		assertPosition(d, 1, s.length() - 1);
 		
 		assertEquals("true", d.getCondition().toString());
@@ -82,7 +82,7 @@ public class Condition_Test extends Parser_Test {
 		assertEquals(1, declDefs.length);
 		
 		IConditionAssignment v = (IConditionAssignment) declDefs[0];
-		assertEquals(IElement.CONDITION_ASSIGNMENT, v.getElementType());
+		assertEquals(IElement.CONDITION_ASSIGNMENT, v.getNodeType0());
 		assertEquals(IConditionAssignment.CONDITION_VERSION, v.getConditionAssignmentType());
 		assertEquals("2", v.getValue().toString());
 		assertPosition(v.getValue(), 11, 1);
@@ -96,7 +96,7 @@ public class Condition_Test extends Parser_Test {
 		assertEquals(1, declDefs.length);
 		
 		IConditionAssignment v = (IConditionAssignment) declDefs[0];
-		assertEquals(IElement.CONDITION_ASSIGNMENT, v.getElementType());
+		assertEquals(IElement.CONDITION_ASSIGNMENT, v.getNodeType0());
 		assertEquals("some", v.getValue().toString());
 		assertPosition(v.getValue(), 11, 4);
 		assertPosition(v, 1, s.length() - 1);
@@ -109,7 +109,7 @@ public class Condition_Test extends Parser_Test {
 		assertEquals(1, declDefs.length);
 		
 		IConditionAssignment v = (IConditionAssignment) declDefs[0];
-		assertEquals(IElement.CONDITION_ASSIGNMENT, v.getElementType());
+		assertEquals(IElement.CONDITION_ASSIGNMENT, v.getNodeType0());
 		assertEquals(IConditionAssignment.CONDITION_DEBUG, v.getConditionAssignmentType());
 		assertEquals("2", v.getValue().toString());
 		assertPosition(v.getValue(), 9, 1);
@@ -123,7 +123,7 @@ public class Condition_Test extends Parser_Test {
 		assertEquals(1, declDefs.length);
 		
 		IConditionAssignment v = (IConditionAssignment) declDefs[0];
-		assertEquals(IElement.CONDITION_ASSIGNMENT, v.getElementType());
+		assertEquals(IElement.CONDITION_ASSIGNMENT, v.getNodeType0());
 		assertEquals("some", v.getValue().toString());
 		assertPosition(v.getValue(), 9, 4);
 		assertPosition(v, 1, s.length() - 1);
@@ -136,7 +136,7 @@ public class Condition_Test extends Parser_Test {
 		assertEquals(1, declDefs.length);
 		
 		IIftypeDeclaration d = (IIftypeDeclaration) declDefs[0];
-		assertEquals(IConditionalDeclaration.IFTYPE_DECLARATION, d.getElementType());
+		assertEquals(IConditionalDeclaration.IFTYPE_DECLARATION, d.getNodeType0());
 		
 		assertEquals(IIftypeDeclaration.IFTYPE_NONE, d.getIftypeCondition());
 		assertEquals("x", d.getTestType().toString());
@@ -153,7 +153,7 @@ public class Condition_Test extends Parser_Test {
 		assertEquals(1, declDefs.length);
 		
 		IIftypeDeclaration d = (IIftypeDeclaration) declDefs[0];
-		assertEquals(IConditionalDeclaration.IFTYPE_DECLARATION, d.getElementType());
+		assertEquals(IConditionalDeclaration.IFTYPE_DECLARATION, d.getNodeType0());
 		
 		assertEquals(IIftypeDeclaration.IFTYPE_EQUALS, d.getIftypeCondition());
 		assertEquals("x", d.getTestType().toString());
@@ -170,7 +170,7 @@ public class Condition_Test extends Parser_Test {
 		assertEquals(1, declDefs.length);
 		
 		IIftypeDeclaration d = (IIftypeDeclaration) declDefs[0];
-		assertEquals(IConditionalDeclaration.IFTYPE_DECLARATION, d.getElementType());
+		assertEquals(IConditionalDeclaration.IFTYPE_DECLARATION, d.getNodeType0());
 		
 		assertEquals(IIftypeDeclaration.IFTYPE_EXTENDS, d.getIftypeCondition());
 		assertEquals("x", d.getTestType().toString());
@@ -187,7 +187,7 @@ public class Condition_Test extends Parser_Test {
 		assertEquals(1, declDefs.length);
 		
 		IIftypeDeclaration d = (IIftypeDeclaration) declDefs[0];
-		assertEquals(IConditionalDeclaration.IFTYPE_DECLARATION, d.getElementType());
+		assertEquals(IConditionalDeclaration.IFTYPE_DECLARATION, d.getNodeType0());
 		
 		assertEquals(IIftypeDeclaration.IFTYPE_EXTENDS, d.getIftypeCondition());
 		assertEquals("int", d.getTestType().toString());

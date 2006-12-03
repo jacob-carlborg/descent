@@ -19,7 +19,7 @@ public class TypeDelegate extends Type implements IDelegateType {
 		return ((TypeFunction) next).getArguments();
 	}
 	
-	public int getElementType() {
+	public int getNodeType0() {
 		return DELEGATE_TYPE;
 	}
 	

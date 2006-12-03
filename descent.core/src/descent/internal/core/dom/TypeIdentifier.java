@@ -16,7 +16,7 @@ public class TypeIdentifier extends TypeQualified implements IIdentifierType, IT
 		this.ident = ident;
 	}
 	
-	public int getElementType() {
+	public int getNodeType0() {
 		if (idents.size() == 0) {
 			return IDENTIFIER_TYPE;
 		} else {
@@ -58,7 +58,7 @@ public class TypeIdentifier extends TypeQualified implements IIdentifierType, IT
 	
 	@Override
 	public Expression toExpression() {
-		Expression e = new IdentifierExp(ident);
+		Expression e = new SimpleName(ident);
 	    for (int i = 0; i < idents.size(); i++)
 	    {
 	    	Identifier id = (Identifier) idents.get(i);
@@ -69,7 +69,7 @@ public class TypeIdentifier extends TypeQualified implements IIdentifierType, IT
 	
 	@Override
 	public void accept0(ASTVisitor visitor) {
-		switch(getElementType()) {
+		switch(getNodeType0()) {
 		case IDENTIFIER_TYPE:
 			visitor.visit((IIdentifierType) this);
 			visitor.endVisit((IIdentifierType) this);

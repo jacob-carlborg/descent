@@ -149,8 +149,9 @@ public class Argument extends ASTNode implements IArgument {
 	
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
+	 * TODO make it package
 	 */
-	final int getNodeType0() {
+	public final int getNodeType0() {
 		return ARGUMENT;
 	}
 	
@@ -367,10 +368,6 @@ public class Argument extends ASTNode implements IArgument {
 		case INOUT: return IArgument.INOUT;
 		default /* case Lazy */: return IArgument.LAZY;
 		} 
-	}
-
-	public int getElementType() {
-		return ARGUMENT;
 	}
 
 }

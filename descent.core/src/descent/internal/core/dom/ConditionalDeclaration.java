@@ -22,7 +22,7 @@ public class ConditionalDeclaration extends Dsymbol implements IVersionDeclarati
 		this.aelse = aelse;
 	}
 	
-	public int getElementType() {
+	public int getNodeType0() {
 		switch(this.condition.getConditionType()) {
 		case Condition.DEBUG: return DEBUG_DECLARATION;
 		case Condition.VERSION: return VERSION_DECLARATION;

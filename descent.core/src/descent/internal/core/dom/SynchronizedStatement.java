@@ -23,7 +23,7 @@ public class SynchronizedStatement extends Statement implements ISynchronizedSta
 		return body;
 	}
 	
-	public int getElementType() {
+	public int getNodeType0() {
 		return SYNCHRONIZED_STATEMENT;
 	}
 	

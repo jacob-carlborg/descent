@@ -14,7 +14,7 @@ public class FuncExp extends Expression implements IFunctionExpression {
 		this.fd = fd;
 	}
 	
-	public int getElementType() {
+	public int getNodeType0() {
 		return FUNCTION_EXPRESSION;
 	}
 

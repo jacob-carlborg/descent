@@ -16,7 +16,7 @@ public class VersionSymbol extends Dsymbol implements IConditionAssignment {
 		return ident;
 	}
 	
-	public int getElementType() {
+	public int getNodeType0() {
 		return CONDITION_ASSIGNMENT;
 	}
 	

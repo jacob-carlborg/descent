@@ -14,7 +14,7 @@ public class Comment extends ASTNode implements IComment  {
 		visitor.endVisit(this);
 	}
 	
-	public int getElementType() {
+	public int getNodeType0() {
 		return COMMENT;
 	}
 	

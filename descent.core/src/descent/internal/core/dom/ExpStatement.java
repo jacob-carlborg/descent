@@ -12,7 +12,7 @@ public class ExpStatement extends Statement implements IExpressionStatement {
 		this.exp = exp;
 	}
 	
-	public int getElementType() {
+	public int getNodeType0() {
 		return EXPRESSION_STATEMENT;
 	}
 	

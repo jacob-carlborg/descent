@@ -14,7 +14,7 @@ public class Mixin_Test extends Parser_Test {
 		assertEquals(1, declDefs.length);
 		
 		IMixinDeclaration m = (IMixinDeclaration) declDefs[0];
-		assertEquals(IElement.MIXIN_DECLARATION, m.getElementType());
+		assertEquals(IElement.MIXIN_DECLARATION, m.getNodeType0());
 		
 		assertEquals("m", m.getName().toString());
 		assertPosition(m.getName(), s.length() - 2, 1);
@@ -37,7 +37,7 @@ public class Mixin_Test extends Parser_Test {
 		assertEquals(1, declDefs.length);
 		
 		IMixinDeclaration m = (IMixinDeclaration) declDefs[0];
-		assertEquals(IElement.MIXIN_DECLARATION, m.getElementType());
+		assertEquals(IElement.MIXIN_DECLARATION, m.getNodeType0());
 		
 		assertEquals("m", m.getName().toString());
 		assertPosition(m.getName(), s.length() - 2, 1);
@@ -55,7 +55,7 @@ public class Mixin_Test extends Parser_Test {
 		assertEquals(1, declDefs.length);
 		
 		IMixinDeclaration m = (IMixinDeclaration) declDefs[0];
-		assertEquals(IElement.MIXIN_DECLARATION, m.getElementType());
+		assertEquals(IElement.MIXIN_DECLARATION, m.getNodeType0());
 		
 		assertEquals("m", m.getName().toString());
 		assertPosition(m.getName(), s.length() - 2, 1);
@@ -73,7 +73,7 @@ public class Mixin_Test extends Parser_Test {
 		assertEquals(1, declDefs.length);
 		
 		IMixinDeclaration m = (IMixinDeclaration) declDefs[0];
-		assertEquals(IElement.MIXIN_DECLARATION, m.getElementType());
+		assertEquals(IElement.MIXIN_DECLARATION, m.getNodeType0());
 		
 		assertEquals("m", m.getName().toString());
 		assertPosition(m.getName(), s.length() - 2, 1);
@@ -93,7 +93,7 @@ public class Mixin_Test extends Parser_Test {
 		assertEquals(1, declDefs.length);
 		
 		IMixinDeclaration m = (IMixinDeclaration) declDefs[0];
-		assertEquals(IElement.MIXIN_DECLARATION, m.getElementType());
+		assertEquals(IElement.MIXIN_DECLARATION, m.getNodeType0());
 		
 		IElement[] params = m.getTemplateArguments();
 		assertEquals(1, params.length);
@@ -107,7 +107,7 @@ public class Mixin_Test extends Parser_Test {
 		assertEquals(1, declDefs.length);
 		
 		IMixinDeclaration m = (IMixinDeclaration) declDefs[0];
-		assertEquals(IElement.MIXIN_DECLARATION, m.getElementType());
+		assertEquals(IElement.MIXIN_DECLARATION, m.getNodeType0());
 		
 		assertEquals("m", m.getName().toString());
 		assertPosition(m.getName(), s.length() - 2, 1);
@@ -128,7 +128,7 @@ public class Mixin_Test extends Parser_Test {
 		assertEquals(1, declDefs.length);
 		
 		IMixinDeclaration m = (IMixinDeclaration) declDefs[0];
-		assertEquals(IElement.MIXIN_DECLARATION, m.getElementType());
+		assertEquals(IElement.MIXIN_DECLARATION, m.getNodeType0());
 		
 		assertEquals("m", m.getName().toString());
 		assertPosition(m.getName(), s.length() - 2, 1);

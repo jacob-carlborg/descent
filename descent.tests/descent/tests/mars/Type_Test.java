@@ -45,7 +45,7 @@ public class Type_Test extends Parser_Test {
 		for(Object[] tri : objs) {
 			IBasicType type = (IBasicType) getType(tri[0].toString());
 			assertEquals(tri[0].toString(), type.toString());
-			assertEquals(IType.BASIC_TYPE, type.getElementType());
+			assertEquals(IType.BASIC_TYPE, type.getNodeType0());
 			assertEquals(tri[1], type.getBasicTypeKind());
 			assertPosition(type, 1, (Integer) tri[2]);
 			
@@ -55,7 +55,7 @@ public class Type_Test extends Parser_Test {
 	
 	public void testPointerType() {
 		IPointerType type = (IPointerType) getType("int *");
-		assertEquals(IType.POINTER_TYPE, type.getElementType());
+		assertEquals(IType.POINTER_TYPE, type.getNodeType0());
 		assertEquals("int*", type.toString());
 		assertPosition(type, 1, 5);
 		assertPosition(type.getInnerType(), 1, 3);
@@ -65,7 +65,7 @@ public class Type_Test extends Parser_Test {
 	
 	public void testDynamicArrayType() {
 		IDynamicArrayType type = (IDynamicArrayType) getType("int []");
-		assertEquals(IArrayType.DYNAMIC_ARRAY_TYPE, type.getElementType());
+		assertEquals(IArrayType.DYNAMIC_ARRAY_TYPE, type.getNodeType0());
 		assertEquals("int[]", type.toString());
 		assertPosition(type, 1, 6);
 		assertPosition(type.getInnerType(), 1, 3);
@@ -75,7 +75,7 @@ public class Type_Test extends Parser_Test {
 	
 	public void testStaticArrayType() {
 		IStaticArrayType type = (IStaticArrayType) getType("int [3]");
-		assertEquals(IArrayType.STATIC_ARRAY_TYPE, type.getElementType());
+		assertEquals(IArrayType.STATIC_ARRAY_TYPE, type.getNodeType0());
 		assertEquals("int[3]", type.toString());
 		assertEquals("3", type.getDimension().toString());
 		assertPosition(type, 1, 7);
@@ -86,7 +86,7 @@ public class Type_Test extends Parser_Test {
 	
 	public void testAssociativeArrayType() {
 		IAssociativeArrayType type = (IAssociativeArrayType) getType("int [char]");
-		assertEquals(IArrayType.ASSOCIATIVE_ARRAY_TYPE, type.getElementType());
+		assertEquals(IArrayType.ASSOCIATIVE_ARRAY_TYPE, type.getNodeType0());
 		assertEquals("int[char]", type.toString());
 		assertEquals("char", type.getKeyType().toString());
 		assertPosition(type, 1, 10);
@@ -97,7 +97,7 @@ public class Type_Test extends Parser_Test {
 	
 	public void testIdentifierTypeSingle() {
 		IIdentifierType type = (IIdentifierType) getType("Clazz");
-		assertEquals(IType.IDENTIFIER_TYPE, type.getElementType());
+		assertEquals(IType.IDENTIFIER_TYPE, type.getNodeType0());
 		assertEquals("Clazz", type.toString());
 		assertEquals("Clazz", type.getShortName());
 		assertPosition(type, 1, 5);
@@ -107,7 +107,7 @@ public class Type_Test extends Parser_Test {
 	
 	public void testIdentifierTypeMany() {
 		IIdentifierType type = (IIdentifierType) getType("mod.bla.Clazz");
-		assertEquals(IType.IDENTIFIER_TYPE, type.getElementType());
+		assertEquals(IType.IDENTIFIER_TYPE, type.getNodeType0());
 		assertEquals("mod.bla.Clazz", type.toString());
 		assertEquals("Clazz", type.getShortName());
 		assertPosition(type, 1, 13);
@@ -117,7 +117,7 @@ public class Type_Test extends Parser_Test {
 	
 	public void testDelegateType() {
 		IDelegateType type = (IDelegateType) getType("int delegate(char, bool)");
-		assertEquals(IType.DELEGATE_TYPE, type.getElementType());
+		assertEquals(IType.DELEGATE_TYPE, type.getNodeType0());
 		assertEquals("int", type.getReturnType().toString());
 		assertPosition(type.getReturnType(), 1, 3);
 		assertEquals(2, type.getArguments().length);
@@ -130,7 +130,7 @@ public class Type_Test extends Parser_Test {
 	
 	public void testPointerToFunction() {
 		IDelegateType type = (IDelegateType) getType("int function(char, bool)");
-		assertEquals(IType.POINTER_TO_FUNCTION_TYPE, type.getElementType());
+		assertEquals(IType.POINTER_TO_FUNCTION_TYPE, type.getNodeType0());
 		assertEquals("int", type.getReturnType().toString());
 		assertPosition(type.getReturnType(), 1, 3);
 		assertEquals(2, type.getArguments().length);

@@ -17,7 +17,7 @@ public class TemplateTypeParameter extends TemplateParameter implements ITypeTem
 		this.tp_defaulttype = tp_defaulttype;
 	}
 	
-	public int getElementType() {
+	public int getNodeType0() {
 		return TYPE_TEMPLATE_PARAMETER;
 	}
 	

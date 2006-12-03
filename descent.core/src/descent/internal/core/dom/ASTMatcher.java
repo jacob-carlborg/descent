@@ -33,4 +33,69 @@ public class ASTMatcher {
 		return false;
 	}
 
+	public boolean match(ArrayAccess access, Object other) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	public boolean match(AssertExpression expression, Object other) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	public boolean match(ContinueStatement statement, Object other) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	public boolean match(BreakStatement statement, Object other) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	public boolean match(NullLiteral literal, Object other) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	public boolean match(BooleanLiteral literal, Object other) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	public boolean match(DollarLiteral literal, Object other) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	public boolean match(SuperLiteral literal, Object other) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	public boolean match(ThisLiteral literal, Object other) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	public boolean match(StaticAssert assert1, Object other) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	public boolean match(DeleteExpression expression, Object other) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	public boolean match(DoStatement statement, Object other) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	public boolean match(GotoStatement statement, Object other) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
 }

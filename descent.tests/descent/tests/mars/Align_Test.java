@@ -16,7 +16,7 @@ public class Align_Test extends Parser_Test {
 		IAlignDeclaration align;
 		
 		align = (IAlignDeclaration) declDefs[0];
-		assertEquals(IElement.ALIGN_DECLARATION, align.getElementType());
+		assertEquals(IElement.ALIGN_DECLARATION, align.getNodeType0());
 		assertEquals(4, align.getAlign());
 		
 		assertEquals(1, align.getDeclarationDefinitions().length);
@@ -32,7 +32,7 @@ public class Align_Test extends Parser_Test {
 		IAlignDeclaration align;
 		
 		align = (IAlignDeclaration) declDefs[0];
-		assertEquals(IElement.ALIGN_DECLARATION, align.getElementType());
+		assertEquals(IElement.ALIGN_DECLARATION, align.getNodeType0());
 		assertEquals(global.structalign, align.getAlign());
 		
 		assertEquals(1, align.getDeclarationDefinitions().length);

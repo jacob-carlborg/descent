@@ -13,7 +13,7 @@ public class ScopeExp extends Expression implements IScopeExpression {
 		this.tempinst = tempinst;
 	}
 	
-	public int getElementType() {
+	public int getNodeType0() {
 		return SCOPE_EXPRESSION;
 	}
 	

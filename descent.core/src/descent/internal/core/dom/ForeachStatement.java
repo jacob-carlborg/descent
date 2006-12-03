@@ -38,7 +38,7 @@ public class ForeachStatement extends Statement implements IForeachStatement {
 		return reverse;
 	}
 	
-	public int getElementType() {
+	public int getNodeType0() {
 		return FOREACH_STATEMENT;
 	}
 	

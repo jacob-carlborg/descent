@@ -22,7 +22,7 @@ public class Template_Test extends Parser_Test {
 		assertEquals(1, declDefs.length);
 		
 		ITemplateDeclaration t = (ITemplateDeclaration) declDefs[0];
-		assertEquals(IElement.TEMPLATE_DECLARATION, t.getElementType());
+		assertEquals(IElement.TEMPLATE_DECLARATION, t.getNodeType0());
 		assertPosition(t, 1, 19);
 		
 		assertEquals("Temp", t.getName().toString());
@@ -58,35 +58,35 @@ public class Template_Test extends Parser_Test {
 		
 		ITypeTemplateParameter ttp;
 		
-		assertEquals(ITemplateParameter.TYPE_TEMPLATE_PARAMETER, tp[0].getElementType());
+		assertEquals(ITemplateParameter.TYPE_TEMPLATE_PARAMETER, tp[0].getNodeType0());
 		ttp = (ITypeTemplateParameter) tp[0];		
 		assertEquals("T", ttp.getName().toString());
 		assertPosition(ttp, 15, 1);
 		assertNull(ttp.getSpecificType());
 		assertNull(ttp.getDefaultType());
 		
-		assertEquals(ITemplateParameter.TYPE_TEMPLATE_PARAMETER, tp[1].getElementType());
+		assertEquals(ITemplateParameter.TYPE_TEMPLATE_PARAMETER, tp[1].getNodeType0());
 		ttp = (ITypeTemplateParameter) tp[1];		
 		assertEquals("U", ttp.getName().toString());
 		assertPosition(ttp, 18, 6);
-		assertEquals(IType.POINTER_TYPE, ttp.getSpecificType().getElementType());
+		assertEquals(IType.POINTER_TYPE, ttp.getSpecificType().getNodeType0());
 		assertNull(ttp.getDefaultType());
 		
-		assertEquals(ITemplateParameter.TYPE_TEMPLATE_PARAMETER, tp[2].getElementType());
+		assertEquals(ITemplateParameter.TYPE_TEMPLATE_PARAMETER, tp[2].getNodeType0());
 		ttp = (ITypeTemplateParameter) tp[2];		
 		assertEquals("V", ttp.getName().toString());
 		assertPosition(ttp, 26, 7);
-		assertEquals(IType.BASIC_TYPE, ttp.getSpecificType().getElementType());
+		assertEquals(IType.BASIC_TYPE, ttp.getSpecificType().getNodeType0());
 		assertNull(ttp.getDefaultType());
 		
-		assertEquals(ITemplateParameter.TYPE_TEMPLATE_PARAMETER, tp[3].getElementType());
+		assertEquals(ITemplateParameter.TYPE_TEMPLATE_PARAMETER, tp[3].getNodeType0());
 		ttp = (ITypeTemplateParameter) tp[3];		
 		assertEquals("W", ttp.getName().toString());
 		assertPosition(ttp, 35, 7);
 		assertNull(ttp.getSpecificType());
-		assertEquals(IType.BASIC_TYPE, ttp.getDefaultType().getElementType());
+		assertEquals(IType.BASIC_TYPE, ttp.getDefaultType().getNodeType0());
 		
-		assertEquals(ITemplateParameter.ALIAS_TEMPLATE_PARAMETER, tp[4].getElementType());
+		assertEquals(ITemplateParameter.ALIAS_TEMPLATE_PARAMETER, tp[4].getNodeType0());
 		IAliasTemplateParameter tap = (IAliasTemplateParameter) tp[4];		
 		assertEquals("A", tap.getName().toString());
 		assertPosition(tap, 44, 15);
@@ -107,7 +107,7 @@ public class Template_Test extends Parser_Test {
 		assertEquals(1, tp.length);
 		
 		ITupleTemplateParameter param = (ITupleTemplateParameter) tp[0];
-		assertEquals(ITemplateParameter.TUPLE_TEMPLATE_PARAMETER, param.getElementType());
+		assertEquals(ITemplateParameter.TUPLE_TEMPLATE_PARAMETER, param.getNodeType0());
 		assertEquals("T", param.getName().toString());
 		assertPosition(param, 15, 5);
 		assertPosition(param.getName(), 15, 1);
@@ -124,7 +124,7 @@ public class Template_Test extends Parser_Test {
 		assertEquals(1, tp.length);
 		
 		IValueTemplateParameter param = (IValueTemplateParameter) tp[0];
-		assertEquals(ITemplateParameter.VALUE_TEMPLATE_PARAMETER, param.getElementType());
+		assertEquals(ITemplateParameter.VALUE_TEMPLATE_PARAMETER, param.getNodeType0());
 		assertEquals("T", param.getName().toString());
 		assertPosition(param, 15, 13);
 		assertPosition(param.getName(), 19, 1);

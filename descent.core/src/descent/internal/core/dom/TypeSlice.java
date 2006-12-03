@@ -16,7 +16,7 @@ public class TypeSlice extends Type implements ISliceType {
 		this.to = to;
 	}
 	
-	public int getElementType() {
+	public int getNodeType0() {
 		return SLICE_TYPE;
 	}
 	

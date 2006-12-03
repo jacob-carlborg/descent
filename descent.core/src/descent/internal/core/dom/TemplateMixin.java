@@ -24,7 +24,7 @@ public class TemplateMixin extends Declaration implements IMixinDeclaration {
 		}
 	}
 	
-	public int getElementType() {
+	public int getNodeType0() {
 		return MIXIN_DECLARATION;
 	}
 	

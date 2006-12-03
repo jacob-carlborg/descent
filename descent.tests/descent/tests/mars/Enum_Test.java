@@ -19,7 +19,7 @@ public class Enum_Test extends Parser_Test {
 		assertEquals(1, declDefs.length);
 		
 		IEnumDeclaration e = (IEnumDeclaration) declDefs[0];
-		assertEquals(IElement.ENUM_DECLARATION, e.getElementType());
+		assertEquals(IElement.ENUM_DECLARATION, e.getNodeType0());
 		assertPosition(e, 1, 8);
 		assertPosition(e.getName(), 6, 2);
 		assertEquals("En", e.getName().toString());
@@ -43,7 +43,7 @@ public class Enum_Test extends Parser_Test {
 		IEnumMember em;
 		
 		em = e.getMembers()[0];
-		assertEquals(IElement.ENUM_MEMBER, em.getElementType());
+		assertEquals(IElement.ENUM_MEMBER, em.getNodeType0());
 		assertEquals("x", em.getName().toString());
 		assertNull(em.getValue());
 		assertPosition(em, 11, 1);

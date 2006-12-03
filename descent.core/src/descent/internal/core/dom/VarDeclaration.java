@@ -17,7 +17,7 @@ public class VarDeclaration extends Declaration implements IVariableDeclaration 
 		this.init = init;
 	}
 	
-	public int getElementType() {
+	public int getNodeType0() {
 		return VARIABLE_DECLARATION;
 	}
 	

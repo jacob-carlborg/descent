@@ -13,7 +13,7 @@ public class ScopeDsymbol extends Dsymbol {
 	public void accept0(ASTVisitor visitor) {
 	}
 
-	public int getElementType() {
+	public int getNodeType0() {
 		return 0;
 	}
 

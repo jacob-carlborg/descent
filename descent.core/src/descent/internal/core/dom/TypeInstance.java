@@ -15,7 +15,7 @@ public class TypeInstance extends TypeQualified implements ITemplateInstanceType
 		this.tempinst = tempinst;
 	}
 	
-	public int getElementType() {
+	public int getNodeType0() {
 		return TEMPLATE_INSTANCE_TYPE;
 	}
 	

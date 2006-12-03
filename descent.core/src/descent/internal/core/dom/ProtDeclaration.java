@@ -23,7 +23,7 @@ public class ProtDeclaration extends Dsymbol implements IProtectionDeclaration {
 		return declDefs;
 	}
 	
-	public int getElementType() {
+	public int getNodeType0() {
 		return PROTECTION_DECLARATION;
 	}
 	

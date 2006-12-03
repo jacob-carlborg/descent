@@ -35,7 +35,7 @@ public class PragmaDeclaration extends Dsymbol implements IPragmaDeclaration {
 		return ident;
 	}
 	
-	public int getElementType() {
+	public int getNodeType0() {
 		return PRAGMA_DECLARATION;
 	}
 	

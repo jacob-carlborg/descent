@@ -12,7 +12,7 @@ public class GotoCaseStatement extends Statement implements IGotoCaseStatement {
 		this.exp = exp;
 	}
 	
-	public int getElementType() {
+	public int getNodeType0() {
 		return GOTO_CASE_STATEMENT;
 	}
 	

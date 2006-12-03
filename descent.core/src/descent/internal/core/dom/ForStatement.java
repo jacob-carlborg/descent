@@ -35,7 +35,7 @@ public class ForStatement extends Statement implements IForStatement {
 		return body;
 	}
 	
-	public int getElementType() {
+	public int getNodeType0() {
 		return FOR_STATEMENT;
 	}
 	

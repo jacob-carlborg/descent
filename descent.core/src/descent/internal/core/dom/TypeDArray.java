@@ -9,7 +9,7 @@ public class TypeDArray extends TypeArray implements IDynamicArrayType {
 		super(TY.Tarray, t);
 	}
 	
-	public int getElementType() {
+	public int getNodeType0() {
 		return DYNAMIC_ARRAY_TYPE;
 	}
 	

@@ -29,7 +29,7 @@ public class TryCatchStatement extends Statement implements ITryStatement {
 		return null;
 	}
 	
-	public int getElementType() {
+	public int getNodeType0() {
 		return TRY_STATEMENT;
 	}
 	

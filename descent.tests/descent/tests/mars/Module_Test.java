@@ -16,7 +16,7 @@ public class Module_Test extends Parser_Test {
 		
 		assertNotNull(md);
 		assertPosition(md, 1, 9);
-		assertEquals(IElement.MODULE_DECLARATION, md.getElementType());
+		assertEquals(IElement.MODULE_DECLARATION, md.getNodeType0());
 		
 		IQualifiedName qName = md.getQualifiedName();
 		assertEquals("a", qName.toString());

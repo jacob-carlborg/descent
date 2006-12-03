@@ -31,7 +31,7 @@ public class PositionHelper {
 	public static Position getElementOfInterest(IElement element) {
 		IName name;
 		
-		switch(element.getElementType()) {
+		switch(element.getNodeType0()) {
 		case IElement.MODULE_DECLARATION:
 			IModuleDeclaration md = (IModuleDeclaration) element;
 			name = md.getQualifiedName();

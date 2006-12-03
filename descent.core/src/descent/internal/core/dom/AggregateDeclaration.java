@@ -57,7 +57,7 @@ public abstract class AggregateDeclaration extends ScopeDsymbol implements IAggr
 		visitor.endVisit(this);
 	}
 	
-	public int getElementType() {
+	public int getNodeType0() {
 		return AGGREGATE_DECLARATION;
 	}
 

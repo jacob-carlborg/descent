@@ -23,7 +23,7 @@ public class TypeFunction extends Type {
 		return this.next;
 	}
 	
-	public int getElementType() {
+	public int getNodeType0() {
 		// TODO
 		return 0;
 	}

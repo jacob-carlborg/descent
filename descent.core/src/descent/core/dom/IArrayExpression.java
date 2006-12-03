@@ -1,5 +1,9 @@
 package descent.core.dom;
 
+import java.util.List;
+
+import descent.internal.core.dom.Expression;
+
 /**
  * An array expression:
  * 
@@ -12,11 +16,11 @@ public interface IArrayExpression extends IExpression {
 	/**
 	 * Returns the expression on which the array is operating.
 	 */
-	IExpression getExpression();
+	IExpression getArray();
 	
 	/**
 	 * Returns the arguments of the array.
 	 */
-	IExpression[] getArguments();
+	List<Expression> indexes();
 
 }

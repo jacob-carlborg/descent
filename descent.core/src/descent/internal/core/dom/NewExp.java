@@ -25,7 +25,7 @@ public class NewExp extends Expression implements INewExpression {
 		return arguments;
 	}
 	
-	public int getElementType() {
+	public int getNodeType0() {
 		return NEW_EXPRESSION;
 	}
 	

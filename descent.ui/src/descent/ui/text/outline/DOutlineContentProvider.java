@@ -42,7 +42,7 @@ public class DOutlineContentProvider implements ITreeContentProvider {
 		
 		List<Object> list;
 		IElement e = (IElement) parentElement;
-		switch(e.getElementType()) {
+		switch(e.getNodeType0()) {
 		case IElement.COMPILATION_UNIT:
 			list = new ArrayList<Object>();
 			
@@ -94,7 +94,7 @@ public class DOutlineContentProvider implements ITreeContentProvider {
 	private void addDeclDefs(List<Object> list, IElement[] declDefs) {
 		List<IImportDeclaration> importDeclarations = null;
 		for(IElement elem : declDefs) {
-			switch(elem.getElementType()) {
+			switch(elem.getNodeType0()) {
 			case IElement.PROTECTION_DECLARATION:
 				addDeclDefs(list, ((IProtectionDeclaration) elem).getDeclarationDefinitions());
 				break;
@@ -133,7 +133,7 @@ public class DOutlineContentProvider implements ITreeContentProvider {
 		if (element == null) return false;
 		
 		IElement e = (IElement) element;
-		switch(e.getElementType()) {
+		switch(e.getNodeType0()) {
 		case IElement.COMPILATION_UNIT:
 			if (compilationUnit.getModuleDeclaration() != null) {
 				return true;
@@ -181,7 +181,7 @@ public class DOutlineContentProvider implements ITreeContentProvider {
 			this.imports = imports;
 		}
 
-		public int getElementType() {
+		public int getNodeType0() {
 			return IImaginaryElements.IMPORTS;
 		}
 
@@ -205,7 +205,7 @@ public class DOutlineContentProvider implements ITreeContentProvider {
 			this.declDefs = declDefs;
 		}
 
-		public int getElementType() {
+		public int getNodeType0() {
 			return IImaginaryElements.ELSE;
 		}
 

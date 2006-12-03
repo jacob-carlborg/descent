@@ -29,7 +29,7 @@ public class Identifier extends ASTNode implements ISimpleName {
 		visitor.endVisit(this);
 	}
 
-	public int getElementType() {
+	public int getNodeType0() {
 		return SIMPLE_NAME;
 	}
 	

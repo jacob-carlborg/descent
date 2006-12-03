@@ -157,8 +157,9 @@ public class InfixExpression extends Expression implements IInfixExpression {
 
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
+	 * TODO make it package
 	 */
-	final int getNodeType0() {
+	public final int getNodeType0() {
 		return INFIX_EXPRESSION;
 	}
 
@@ -315,10 +316,6 @@ public class InfixExpression extends Expression implements IInfixExpression {
 			memSize()
 			+ (this.leftOperand == null ? 0 : getLeftOperand().treeSize())
 			+ (this.rightOperand == null ? 0 : getRightOperand().treeSize());
-	}
-	
-	public int getElementType() {
-		return INFIX_EXPRESSION;
 	}
 
 }

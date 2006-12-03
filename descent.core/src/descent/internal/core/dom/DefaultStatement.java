@@ -12,7 +12,7 @@ public class DefaultStatement extends Statement implements IDefaultStatement {
 		this.s = s;
 	}
 	
-	public int getElementType() {
+	public int getNodeType0() {
 		return DEFAULT_STATEMENT;
 	}
 	

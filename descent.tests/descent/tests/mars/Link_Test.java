@@ -24,7 +24,7 @@ public class Link_Test extends Parser_Test {
 			IElement[] declDefs = unit.getDeclarationDefinitions();
 			
 			ILinkDeclaration link = (ILinkDeclaration) declDefs[0];
-			assertEquals(IElement.LINK_DECLARATION, link.getElementType());
+			assertEquals(IElement.LINK_DECLARATION, link.getNodeType0());
 			assertEquals(linkX[1], link.getLinkage());
 			
 			assertPosition(link, 1, s.length() - 1);

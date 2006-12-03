@@ -9,7 +9,7 @@ public class GotoDefaultStatement extends Statement implements IGotoDefaultState
 		// TODO Auto-generated constructor stub
 	}
 	
-	public int getElementType() {
+	public int getNodeType0() {
 		return GOTO_DEFAULT_STATEMENT;
 	}
 	

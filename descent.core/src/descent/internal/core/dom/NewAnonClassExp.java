@@ -28,7 +28,7 @@ public class NewAnonClassExp extends Expression implements INewAnonymousClassExp
 		this.cd = cd;
 	}
 	
-	public int getElementType() {
+	public int getNodeType0() {
 		return NEW_ANONYMOUS_CLASS_EXPRESSION;
 	}
 	

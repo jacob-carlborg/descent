@@ -119,8 +119,9 @@ public class WhileStatement extends Statement implements IWhileStatement {
 	
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
+	 * TODO make it package
 	 */
-	final int getNodeType0() {
+	public final int getNodeType0() {
 		return WHILE_STATEMENT;
 	}
 
@@ -257,10 +258,6 @@ public class WhileStatement extends Statement implements IWhileStatement {
 	public WhileStatement(Expression expr, Statement body) {
 		this.expression = expr;
 		this.body = body;
-	}
-	
-	public int getElementType() {
-		return WHILE_STATEMENT;
 	}
 
 }

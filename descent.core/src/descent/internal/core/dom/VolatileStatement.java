@@ -96,8 +96,9 @@ public class VolatileStatement extends Statement implements IVolatileStatement {
 	
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
+	 * TODO make it package
 	 */
-	final int getNodeType0() {
+	public final int getNodeType0() {
 		return VOLATILE_STATEMENT;
 	}
 
@@ -189,10 +190,6 @@ public class VolatileStatement extends Statement implements IVolatileStatement {
 
 	public VolatileStatement(Statement body) {
 		this.body = body;
-	}
-	
-	public int getElementType() {
-		return VOLATILE_STATEMENT;
 	}
 
 }

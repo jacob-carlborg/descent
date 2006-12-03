@@ -38,7 +38,7 @@ public class IftypeExp extends Expression implements IIsExpression {
 		return typeSpecialization;
 	}
 	
-	public int getElementType() {
+	public int getNodeType0() {
 		return IS_EXPRESSION;
 	}
 	

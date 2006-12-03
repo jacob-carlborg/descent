@@ -27,7 +27,7 @@ public class OnScopeStatement extends Statement implements IOnScopeStatement  {
 		throw new IllegalStateException("Can't happen");
 	}
 	
-	public int getElementType() {
+	public int getNodeType0() {
 		return ON_SCOPE_STATEMENT;
 	}
 	

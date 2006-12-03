@@ -61,7 +61,7 @@ public class QualifiedNameBak extends ASTNode implements IQualifiedName  {
 		this.length = id.startPosition + id.length - this.startPosition;
 	}
 	
-	public int getElementType() {
+	public int getNodeType0() {
 		return QUALIFIED_NAME;
 	}
 

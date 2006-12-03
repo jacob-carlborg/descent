@@ -21,7 +21,7 @@ public class VariableDeclaration_Test extends Parser_Test {
 		assertEquals(1, declDefs.length);
 		
 		IVariableDeclaration var = (IVariableDeclaration) declDefs[0];
-		assertEquals(IElement.VARIABLE_DECLARATION, var.getElementType());
+		assertEquals(IElement.VARIABLE_DECLARATION, var.getNodeType0());
 		assertEquals("x", var.getName().toString());
 		assertPosition(var.getName(), 5, 1);
 		assertEquals("int", var.getType().toString());
@@ -72,7 +72,7 @@ public class VariableDeclaration_Test extends Parser_Test {
 		assertEquals(1, declDefs.length);
 		
 		IVariableDeclaration var = (IVariableDeclaration) declDefs[0];
-		assertEquals(IElement.VARIABLE_DECLARATION, var.getElementType());
+		assertEquals(IElement.VARIABLE_DECLARATION, var.getNodeType0());
 		assertEquals("x", var.getName().toString());
 		assertPosition(var.getName(), 5, 1);
 		assertEquals("int[3]", var.getType().toString());
@@ -86,7 +86,7 @@ public class VariableDeclaration_Test extends Parser_Test {
 		assertEquals(1, declDefs.length);
 		
 		IVariableDeclaration var = (IVariableDeclaration) declDefs[0];
-		assertEquals(IElement.VARIABLE_DECLARATION, var.getElementType());
+		assertEquals(IElement.VARIABLE_DECLARATION, var.getNodeType0());
 		assertEquals("x", var.getName().toString());
 		assertPosition(var.getName(), 5, 1);
 		assertEquals("int[3][5]", var.getType().toString());
@@ -100,7 +100,7 @@ public class VariableDeclaration_Test extends Parser_Test {
 		assertEquals(1, declDefs.length);
 		
 		IVariableDeclaration var = (IVariableDeclaration) declDefs[0];
-		assertEquals(IElement.VARIABLE_DECLARATION, var.getElementType());
+		assertEquals(IElement.VARIABLE_DECLARATION, var.getNodeType0());
 		assertEquals("x", var.getName().toString());
 		assertPosition(var.getName(), 7, 1);
 		assertEquals("int[3]*[5]", var.getType().toString());
@@ -114,10 +114,10 @@ public class VariableDeclaration_Test extends Parser_Test {
 		assertEquals(1, declDefs.length);
 		
 		IVariableDeclaration var = (IVariableDeclaration) declDefs[0];
-		assertEquals(IElement.VARIABLE_DECLARATION, var.getElementType());
+		assertEquals(IElement.VARIABLE_DECLARATION, var.getNodeType0());
 		assertEquals("x", var.getName().toString());
 		assertPosition(var.getName(), 7, 1);
-		assertEquals(IType.POINTER_TO_FUNCTION_TYPE, var.getType().getElementType());
+		assertEquals(IType.POINTER_TO_FUNCTION_TYPE, var.getType().getNodeType0());
 		assertPosition(var, 1, 15);
 		
 		IDelegateType del = (IDelegateType) var.getType();
@@ -132,14 +132,14 @@ public class VariableDeclaration_Test extends Parser_Test {
 		assertEquals(1, declDefs.length);
 		
 		IVariableDeclaration var = (IVariableDeclaration) declDefs[0];
-		assertEquals(IElement.VARIABLE_DECLARATION, var.getElementType());
+		assertEquals(IElement.VARIABLE_DECLARATION, var.getNodeType0());
 		assertEquals("x", var.getName().toString());
 		assertPosition(var.getName(), 10, 1);
-		assertEquals(IType.DYNAMIC_ARRAY_TYPE, var.getType().getElementType());
+		assertEquals(IType.DYNAMIC_ARRAY_TYPE, var.getType().getNodeType0());
 		assertPosition(var, 1, 18);
 		
 		IArrayType array = (IArrayType) var.getType();
-		assertEquals(IType.POINTER_TO_FUNCTION_TYPE, array.getInnerType().getElementType());
+		assertEquals(IType.POINTER_TO_FUNCTION_TYPE, array.getInnerType().getNodeType0());
 		IDelegateType del = (IDelegateType) array.getInnerType();
 		assertEquals("char", del.getArguments()[0].getType().toString());
 		assertEquals("int", del.getReturnType().toString());
@@ -152,7 +152,7 @@ public class VariableDeclaration_Test extends Parser_Test {
 		assertEquals(1, declDefs.length);
 		
 		IVariableDeclaration var = (IVariableDeclaration) declDefs[0];
-		assertEquals(IElement.VARIABLE_DECLARATION, var.getElementType());
+		assertEquals(IElement.VARIABLE_DECLARATION, var.getNodeType0());
 		assertNull(var.getType());
 		assertTrue((var.getModifiers() & IModifier.AUTO) != 0);
 	}
@@ -164,7 +164,7 @@ public class VariableDeclaration_Test extends Parser_Test {
 		assertEquals(1, declDefs.length);
 		
 		IVariableDeclaration var = (IVariableDeclaration) declDefs[0];
-		assertEquals(IElement.VARIABLE_DECLARATION, var.getElementType());
+		assertEquals(IElement.VARIABLE_DECLARATION, var.getNodeType0());
 		assertNull(var.getType());
 		assertTrue((var.getModifiers() & IModifier.STATIC) != 0);
 	}
@@ -176,7 +176,7 @@ public class VariableDeclaration_Test extends Parser_Test {
 		assertEquals(1, declDefs.length);
 		
 		IVariableDeclaration var = (IVariableDeclaration) declDefs[0];
-		assertEquals(IElement.VARIABLE_DECLARATION, var.getElementType());
+		assertEquals(IElement.VARIABLE_DECLARATION, var.getNodeType0());
 		assertNull(var.getType());
 		assertTrue((var.getModifiers() & IModifier.EXTERN) != 0);
 	}
@@ -200,7 +200,7 @@ public class VariableDeclaration_Test extends Parser_Test {
 			assertEquals(1, declDefs.length);
 			
 			IVariableDeclaration var = (IVariableDeclaration) declDefs[0];
-			assertEquals(IElement.VARIABLE_DECLARATION, var.getElementType());
+			assertEquals(IElement.VARIABLE_DECLARATION, var.getNodeType0());
 			assertNull(var.getType());
 			assertTrue((var.getModifiers() & IModifier.STATIC) != 0);
 			assertTrue((var.getModifiers() & ((Integer) modifier[1])) != 0);
@@ -225,7 +225,7 @@ public class VariableDeclaration_Test extends Parser_Test {
 			assertEquals(1, declDefs.length);
 			
 			IVariableDeclaration var = (IVariableDeclaration) declDefs[0];
-			assertEquals(IElement.VARIABLE_DECLARATION, var.getElementType());
+			assertEquals(IElement.VARIABLE_DECLARATION, var.getNodeType0());
 			assertNull(var.getType());
 			assertTrue((var.getModifiers() & ((Integer) modifier[1])) != 0);
 		}
@@ -238,10 +238,10 @@ public class VariableDeclaration_Test extends Parser_Test {
 		assertEquals(1, declDefs.length);
 		
 		IVariableDeclaration var = (IVariableDeclaration) declDefs[0];
-		assertEquals(IElement.VARIABLE_DECLARATION, var.getElementType());
+		assertEquals(IElement.VARIABLE_DECLARATION, var.getNodeType0());
 		
 		IAssociativeArrayType type = (IAssociativeArrayType) var.getType();
-		assertEquals(IArrayType.ASSOCIATIVE_ARRAY_TYPE, type.getElementType());
+		assertEquals(IArrayType.ASSOCIATIVE_ARRAY_TYPE, type.getNodeType0());
 		assertEquals("char", type.getInnerType().toString());
 		assertEquals("int", type.getKeyType().toString());
 	}
@@ -253,10 +253,10 @@ public class VariableDeclaration_Test extends Parser_Test {
 		assertEquals(1, declDefs.length);
 		
 		IVariableDeclaration var = (IVariableDeclaration) declDefs[0];
-		assertEquals(IElement.VARIABLE_DECLARATION, var.getElementType());
+		assertEquals(IElement.VARIABLE_DECLARATION, var.getNodeType0());
 		
 		IType type = var.getType();
-		assertEquals(IType.TEMPLATE_INSTANCE_TYPE, type.getElementType());
+		assertEquals(IType.TEMPLATE_INSTANCE_TYPE, type.getNodeType0());
 		ITemplateInstanceType ti = (ITemplateInstanceType) type;
 		assertEquals("a.b.Temp", ti.getName().toString());
 		assertEquals("Temp", ti.getShortName());
@@ -273,10 +273,10 @@ public class VariableDeclaration_Test extends Parser_Test {
 		assertEquals(1, declDefs.length);
 		
 		IVariableDeclaration var = (IVariableDeclaration) declDefs[0];
-		assertEquals(IElement.VARIABLE_DECLARATION, var.getElementType());
+		assertEquals(IElement.VARIABLE_DECLARATION, var.getNodeType0());
 		
 		IType type = var.getType();
-		assertEquals(IType.TEMPLATE_INSTANCE_TYPE, type.getElementType());
+		assertEquals(IType.TEMPLATE_INSTANCE_TYPE, type.getNodeType0());
 		ITemplateInstanceType ti = (ITemplateInstanceType) type;
 		assertEquals("Temp", ti.getName().toString());
 		assertEquals("Temp", ti.getShortName());
@@ -293,10 +293,10 @@ public class VariableDeclaration_Test extends Parser_Test {
 		assertEquals(1, declDefs.length);
 		
 		IVariableDeclaration var = (IVariableDeclaration) declDefs[0];
-		assertEquals(IElement.VARIABLE_DECLARATION, var.getElementType());
+		assertEquals(IElement.VARIABLE_DECLARATION, var.getNodeType0());
 		
 		IType type = var.getType();
-		assertEquals(IType.TEMPLATE_INSTANCE_TYPE, type.getElementType());
+		assertEquals(IType.TEMPLATE_INSTANCE_TYPE, type.getNodeType0());
 		ITemplateInstanceType ti = (ITemplateInstanceType) type;
 		assertEquals(".Temp", ti.getName().toString());
 		assertEquals("Temp", ti.getShortName());

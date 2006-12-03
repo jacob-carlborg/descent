@@ -15,7 +15,7 @@ public class Pragma_Test extends Parser_Test {
 		assertEquals(1, declDefs.length);
 		
 		IPragmaDeclaration p = (IPragmaDeclaration) declDefs[0];
-		assertEquals(IElement.PRAGMA_DECLARATION, p.getElementType());
+		assertEquals(IElement.PRAGMA_DECLARATION, p.getNodeType0());
 		
 		assertPosition(p, 1, s.length() - 1);
 		

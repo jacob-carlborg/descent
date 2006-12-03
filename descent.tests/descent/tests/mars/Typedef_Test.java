@@ -16,7 +16,7 @@ public class Typedef_Test extends Parser_Test {
 		assertEquals(1, declDefs.length);
 		
 		ITypedefDeclaration t = (ITypedefDeclaration) declDefs[0];
-		assertEquals(IType.TYPEDEF_DECLARATION, t.getElementType());
+		assertEquals(IType.TYPEDEF_DECLARATION, t.getNodeType0());
 		assertPosition(t, 1, 16);
 		
 		assertEquals("int", t.getType().toString());
@@ -33,14 +33,14 @@ public class Typedef_Test extends Parser_Test {
 		assertEquals(1, declDefs.length);
 		
 		ITypedefDeclaration t = (ITypedefDeclaration) declDefs[0];
-		assertEquals(IType.TYPEDEF_DECLARATION, t.getElementType());
+		assertEquals(IType.TYPEDEF_DECLARATION, t.getNodeType0());
 		assertPosition(t, 1, 20);
 		
 		assertEquals("int", t.getType().toString());
 		assertEquals("Bla", t.getName().toString());
 		assertPosition(t.getName(), 13, 3);
 		
-		assertEquals(IInitializer.EXPRESSION_INITIALIZER, t.getInitializer().getElementType());
+		assertEquals(IInitializer.EXPRESSION_INITIALIZER, t.getInitializer().getNodeType0());
 		assertPosition(t.getInitializer(), 19, 1);
 		
 		assertVisitor(t, 5);

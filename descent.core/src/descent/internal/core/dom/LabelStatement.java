@@ -23,7 +23,7 @@ public class LabelStatement extends Statement implements ILabelStatement {
 		return s;
 	}
 	
-	public int getElementType() {
+	public int getNodeType0() {
 		return LABEL_STATEMENT;
 	}
 	

@@ -22,7 +22,7 @@ public class SelectiveImport extends ASTNode implements ISelectiveImport {
 		return name;
 	}
 	
-	public int getElementType() {
+	public int getNodeType0() {
 		return SELECTIVE_IMPORT;
 	}
 	

@@ -18,7 +18,7 @@ public class ArrayLiteralExp extends Expression implements IArrayLiteralExpressi
 		return args;
 	}
 	
-	public int getElementType() {
+	public int getNodeType0() {
 		return ARRAY_LITERAL_EXPRESSION;
 	}
 	

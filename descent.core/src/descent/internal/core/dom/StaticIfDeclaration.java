@@ -23,7 +23,7 @@ public class StaticIfDeclaration extends Dsymbol implements IStaticIfDeclaration
 		return ((StaticIfCondition) condition).exp;
 	}
 
-	public int getElementType() {
+	public int getNodeType0() {
 		return STATIC_IF_DECLARATION;
 	}
 

@@ -16,7 +16,7 @@ public class DotIdExp extends Expression implements IDotIdentifierExpression {
 	}
 	
 	public IExpression getExpression() {
-		if (e.getElementType() == IExpression.IDENTIFIER_EXPRESSION) {
+		if (e.getNodeType0() == IExpression.SIMPLE_NAME) {
 			// .id
 			String s = e.toString();
 			if (s.length() == 0) return null;
@@ -28,7 +28,7 @@ public class DotIdExp extends Expression implements IDotIdentifierExpression {
 		return id;
 	}
 	
-	public int getElementType() {
+	public int getNodeType0() {
 		return DOT_IDENTIFIER_EXPRESSION;
 	}
 	

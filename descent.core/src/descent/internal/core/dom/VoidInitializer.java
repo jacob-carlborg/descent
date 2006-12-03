@@ -9,7 +9,7 @@ public class VoidInitializer extends Initializer implements IVoidInitializer {
 		
 	}
 	
-	public int getElementType() {
+	public int getNodeType0() {
 		return VOID_INITIALIZER;
 	}
 	

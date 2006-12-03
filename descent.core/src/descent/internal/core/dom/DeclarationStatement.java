@@ -12,7 +12,7 @@ public class DeclarationStatement extends Statement implements IDeclarationState
 		this.d = d;
 	}
 	
-	public int getElementType() {
+	public int getNodeType0() {
 		return DECLARATION_STATEMENT;
 	}
 	

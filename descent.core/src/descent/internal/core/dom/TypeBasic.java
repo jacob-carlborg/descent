@@ -9,7 +9,7 @@ public class TypeBasic extends Type implements IBasicType {
 		super(ty, null);
 	}
 	
-	public int getElementType() {
+	public int getNodeType0() {
 		return BASIC_TYPE;
 	}
 	

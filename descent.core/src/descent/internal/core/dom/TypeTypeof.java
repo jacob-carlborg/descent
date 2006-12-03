@@ -13,7 +13,7 @@ public class TypeTypeof extends TypeQualified implements ITypeofType {
 		this.exp = exp;
 	}
 	
-	public int getElementType() {
+	public int getNodeType0() {
 		return TYPEOF_TYPE;
 	}
 	

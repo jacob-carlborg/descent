@@ -949,10 +949,12 @@ public abstract class ASTNode implements IElement {
 	 */ 
 	static void checkNewChild(ASTNode node, ASTNode newChild,
 			boolean cycleCheck, Class nodeType) {
+		/* JDT Remove comments
 		if (newChild.ast != node.ast) {
 			// new child is from a different AST
 			throw new IllegalArgumentException();
 		}		
+		*/
 		if (newChild.getParent() != null) {
 			// new child currently has a different parent
 			throw new IllegalArgumentException();
@@ -1393,9 +1395,9 @@ public abstract class ASTNode implements IElement {
 	 * 
 	 * @return one of the node type constants
 	 * 
-	 * TODO make it abstract
+	 * TODO make it package
 	 */
-	int getNodeType0() { return 0; }
+	public int getNodeType0() { return 0; }
 	
 	/**
 	 * The <code>ASTNode</code> implementation of this <code>Object</code>

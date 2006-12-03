@@ -28,7 +28,7 @@ public class EnumMember extends Dsymbol implements IEnumMember {
 		return value;
 	}
 	
-	public int getElementType() {
+	public int getNodeType0() {
 		return ENUM_MEMBER;
 	}
 	

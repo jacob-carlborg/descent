@@ -34,7 +34,7 @@ public class TemplateDeclaration extends Declaration implements ITemplateDeclara
 		return declDefs;
 	}
 	
-	public int getElementType() {
+	public int getNodeType0() {
 		return TEMPLATE_DECLARATION;
 	}
 	

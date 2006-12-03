@@ -16,7 +16,7 @@ public class TypeSArray extends TypeArray implements IStaticArrayType {
 		this.dim = dim;
 	}
 	
-	public int getElementType() {
+	public int getNodeType0() {
 		return STATIC_ARRAY_TYPE;
 	}
 	
@@ -31,7 +31,7 @@ public class TypeSArray extends TypeArray implements IStaticArrayType {
 	    {	
 	    	List<Expression> arguments = new ArrayList<Expression>();
 	    	arguments.add(dim);
-	    	e = new ArrayExp(e, arguments);
+	    	e = new ArrayAccess(e, arguments);
 	    }
 	    return e;
 	}

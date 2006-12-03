@@ -43,7 +43,7 @@ public class Import extends Dsymbol implements IImport {
 		return selectiveImports.toArray(new ISelectiveImport[selectiveImports.size()]);
 	}
 	
-	public int getElementType() {
+	public int getNodeType0() {
 		return IMPORT;
 	}
 	

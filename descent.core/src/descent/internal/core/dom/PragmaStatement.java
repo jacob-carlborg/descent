@@ -34,7 +34,7 @@ public class PragmaStatement extends Statement implements IPragmaStatement {
 		return body;
 	}
 	
-	public int getElementType() {
+	public int getNodeType0() {
 		return PRAGMA_STATEMENT;
 	}
 	

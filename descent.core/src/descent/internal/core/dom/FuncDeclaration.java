@@ -47,7 +47,7 @@ public class FuncDeclaration extends Declaration implements IFunctionDeclaration
 		return templateParameters;
 	}
 	
-	public int getElementType() {
+	public int getNodeType0() {
 		return FUNCTION_DECLARATION;
 	}
 	

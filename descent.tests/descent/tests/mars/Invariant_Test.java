@@ -13,7 +13,7 @@ public class Invariant_Test extends Parser_Test {
 		IElement[] declDefs = unit.getDeclarationDefinitions();
 		
 		IInvariantDeclaration inv = (IInvariantDeclaration) declDefs[0];
-		assertEquals(IElement.INVARIANT_DECLARATION, inv.getElementType());
+		assertEquals(IElement.INVARIANT_DECLARATION, inv.getNodeType0());
 		assertPosition(inv, 1, 13);
 		
 		assertVisitor(inv, 2);

@@ -23,7 +23,7 @@ public class CompoundStatement extends Statement implements ICompoundStatement {
 		return this.as.toArray(new IStatement[as.size()]);
 	}
 	
-	public int getElementType() {
+	public int getNodeType0() {
 		return COMPOUND_STATEMENT;
 	}
 	

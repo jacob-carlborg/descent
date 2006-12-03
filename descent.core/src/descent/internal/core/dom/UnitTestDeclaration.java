@@ -21,7 +21,7 @@ public class UnitTestDeclaration extends Dsymbol implements IUnitTestDeclaration
 		return fbody;
 	}
 	
-	public int getElementType() {
+	public int getNodeType0() {
 		return UNITTEST_DECLARATION;
 	}
 	

@@ -16,7 +16,7 @@ public class ThrowStatement extends Statement implements IThrowStatement {
 		return exp;
 	}
 	
-	public int getElementType() {
+	public int getNodeType0() {
 		return THROW_STATEMENT;
 	}
 	

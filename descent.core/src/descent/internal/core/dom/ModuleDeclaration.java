@@ -21,7 +21,7 @@ public class ModuleDeclaration extends Declaration implements IModuleDeclaration
 		return qName;
 	}
 	
-	public int getElementType() {
+	public int getNodeType0() {
 		return MODULE_DECLARATION;
 	}
 	

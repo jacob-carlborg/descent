@@ -14,7 +14,7 @@ public class AsmStatement extends Statement implements IAsmStatement {
 		visitor.endVisit(this);
 	}
 
-	public int getElementType() {
+	public int getNodeType0() {
 		return ASM_STATEMENT;
 	}
 

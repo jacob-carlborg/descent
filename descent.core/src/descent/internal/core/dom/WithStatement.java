@@ -117,8 +117,9 @@ public class WithStatement extends Statement implements IWithStatement {
 	
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
+	 * TODO make it package
 	 */
-	final int getNodeType0() {
+	public final int getNodeType0() {
 		return WITH_STATEMENT;
 	}
 
@@ -255,10 +256,6 @@ public class WithStatement extends Statement implements IWithStatement {
 	public WithStatement(Expression exp, Statement body) {
 		this.expression = exp;
 		this.body = body;
-	}
-	
-	public int getElementType() {
-		return WITH_STATEMENT;
 	}
 
 }

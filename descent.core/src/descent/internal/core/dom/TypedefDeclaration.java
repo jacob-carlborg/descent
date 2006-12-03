@@ -29,7 +29,7 @@ public class TypedefDeclaration extends Declaration implements ITypedefDeclarati
 		return init;
 	}
 	
-	public int getElementType() {
+	public int getNodeType0() {
 		return TYPEDEF_DECLARATION;
 	}
 	

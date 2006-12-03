@@ -18,7 +18,7 @@ public class Catch extends ASTNode implements ICatchClause {
 		this.handler = handler;
 	}
 	
-	public int getElementType() {
+	public int getNodeType0() {
 		return CATCH_CLAUSE;
 	}
 	

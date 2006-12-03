@@ -16,12 +16,12 @@ public class Struct_Test extends Parser_Test {
 		assertEquals(1, declDefs.length);
 		
 		IAggregateDeclaration c = (IAggregateDeclaration) declDefs[0];
-		assertEquals(IElement.AGGREGATE_DECLARATION, c.getElementType());
+		assertEquals(IElement.AGGREGATE_DECLARATION, c.getNodeType0());
 		assertEquals(IAggregateDeclaration.STRUCT_DECLARATION, c.getAggregateDeclarationType());
 		assertPosition(c, 1, 16);
 		
 		ISimpleName name = c.getName();
-		assertEquals(IElement.SIMPLE_NAME, name.getElementType());
+		assertEquals(IElement.SIMPLE_NAME, name.getNodeType0());
 		assertEquals("Clazz", name.toString());
 		assertPosition(name, 8, 5);
 		

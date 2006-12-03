@@ -183,25 +183,25 @@ public interface IElement {
 	 * Constant representing a this expression.
 	 * A D element with this type can be safely cast to <code>IThisExpression</code>.
 	 */
-	int THIS_EXPRESSION = 35;
+	int THIS_LITERAL = 35;
 	
 	/**
 	 * Constant representing a super expression.
 	 * A D element with this type can be safely cast to <code>ISuperExpression</code>.
 	 */
-	int SUPER_EXPRESSION = 36;
+	int SUPER_LITERAL = 36;
 	
 	/**
 	 * Constant representing a null expression.
 	 * A D element with this type can be safely cast to <code>INullExpression</code>.
 	 */
-	int NULL_EXPRESSION = 37;
+	int NULL_LITERAL = 37;
 	
 	/**
-	 * Constant representing a true expression.
-	 * A D element with this type can be safely cast to <code>ITrueExpression</code>.
+	 * Constant representing a boolean literal.
+	 * A D element with this type can be safely cast to <code>IBooleanLiteral</code>.
 	 */
-	int TRUE_EXPRESSION = 38;
+	int BOOLEAN_LITERAL = 38;
 	
 	/**
 	 * Constant representing a false expression.
@@ -252,12 +252,6 @@ public interface IElement {
 	int CONDITION_EXPRESSION = 46;
 	
 	/**
-	 * Constant representing an identifier expression.
-	 * An expression with this type can be safely cast to <code>IIdentifierExpression</code>.
-	 */
-	int IDENTIFIER_EXPRESSION = 47;
-	
-	/**
 	 * Constant representing a type dot identifier expression.
 	 * An expression with this type can be safely cast to <code>ITypeDotIdentifierExpression</code>. 
 	 */
@@ -297,7 +291,7 @@ public interface IElement {
 	 * Constant representing an array expression.
 	 * An expression with this type can be safely cast to <code>IArrayExpression</code>. 
 	 */
-	int ARRAY_EXPRESSION = 54;
+	int ARRAY_ACCESS = 54;
 	
 	/**
 	 * Constant representing an array literal expression.
@@ -315,7 +309,7 @@ public interface IElement {
 	 * Constant representing a dollar expression.
 	 * An expression with this type can be safely cast to <code>IDollaryExpression</code>.
 	 */
-	int DOLAR_EXPRESSION = 57;
+	int DOLLAR_LITERAL = 57;
 	
 	/**
 	 * Constant representing a call expression.
@@ -423,7 +417,7 @@ public interface IElement {
 	 * Constant representing a do while statement.
 	 * A D element with this type can be safely cast to <code>IDoWhileStatement</code>. 
 	 */
-	int DO_WHILE_STATEMENT = 75;
+	int DO_STATEMENT = 75;
 	
 	/**
 	 * Constant representing a label statement.
@@ -704,7 +698,7 @@ public interface IElement {
 	 * Returns one of this interface constants, telling to
 	 * which class one can cast safely.
 	 */
-	int getElementType();
+	int getNodeType0();
 	
 	/**
 	 * Accepts a visitor down the element hierarchy.

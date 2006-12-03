@@ -20,7 +20,7 @@ public class ImportDeclaration extends ASTNode implements IImportDeclaration {
 		return imports.toArray(new IImport[imports.size()]);
 	}
 	
-	public int getElementType() {
+	public int getNodeType0() {
 		return IMPORT_DECLARATION;
 	}
 	

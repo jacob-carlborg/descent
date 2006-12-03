@@ -3589,7 +3589,7 @@ public class Parser extends Lexer {
 			} else
 				ident = null;
 			check(TOKsemicolon, "break statement");
-			BreakStatement bs = new BreakStatement(ident);
+			BreakStatement bs = new BreakStatement(new SimpleName(ident));
 			bs.startPosition = saveToken.ptr;
 			bs.length = prevToken.ptr + prevToken.len - bs.startPosition;
 			s = bs;
@@ -3607,7 +3607,7 @@ public class Parser extends Lexer {
 			} else
 				ident = null;
 			check(TOKsemicolon, "continue statement");
-			ContinueStatement cs = new ContinueStatement(ident);
+			ContinueStatement cs = new ContinueStatement(new SimpleName(ident));
 			cs.startPosition = saveToken.ptr;
 			cs.length = prevToken.ptr + prevToken.len - cs.startPosition;
 			s = cs;
@@ -3638,7 +3638,7 @@ public class Parser extends Lexer {
 					ident = new Identifier(token);
 					nextToken();
 				}
-				s = new GotoStatement(ident);
+				s = new GotoStatement(new SimpleName(ident));
 			}
 			check(TOKsemicolon, "goto statement");
 			s.startPosition = saveToken.ptr;
@@ -4660,31 +4660,31 @@ public class Parser extends Lexer {
 			e = new ScopeExp(tempinst);
 		    }
 		    else
-			e = new IdentifierExp(id);
+			e = new SimpleName(id);
 		    break;
 
 		case TOKdollar:
 		    if (inBrackets == 0) {
 		    	problem("'$' is valid only inside [] of index or slice", IProblem.SEVERITY_ERROR, IProblem.DOLLAR_INVALID_OUTSIDE_BRACKETS, token.ptr, token.len);
 		    }
-		    e = new DollarExp();
+		    e = new DollarLiteral();
 		    nextToken();
 		    break;
 
 		case TOKdot:
 		    // Signal global scope '.' operator with "" identifier
-		    e = new IdentifierExp(new Identifier(Id.empty, TOKidentifier));
+		    e = new SimpleName(new Identifier(Id.empty, TOKidentifier));
 		    break;
 
 		case TOKthis:
-		    e = new ThisExp();
+		    e = new ThisLiteral();
 		    e.startPosition = token.ptr;
 		    e.length = token.len;
 		    nextToken();
 		    break;
 
 		case TOKsuper:
-		    e = new SuperExp();
+		    e = new SuperLiteral();
 		    e.startPosition = token.ptr;
 		    e.length = token.len;
 		    nextToken();
@@ -4761,21 +4761,21 @@ public class Parser extends Lexer {
 		    break;
 
 		case TOKnull:
-		    e = new NullExp();
+		    e = new NullLiteral();
 		    e.startPosition = token.ptr;
 		    e.length = token.len;
 		    nextToken();
 		    break;
 
 		case TOKtrue:
-		    e = new IntegerExp(BigInteger.ONE, Type.tbool);
+		    e = new BooleanLiteral(true);
 		    e.startPosition = token.ptr;
 		    e.length = token.len;
 		    nextToken();
 		    break;
 
 		case TOKfalse:
-		    e = new IntegerExp(BigInteger.ZERO, Type.tbool);
+			e = new BooleanLiteral(false);
 		    e.startPosition = token.ptr;
 		    e.length = token.len;
 		    nextToken();
@@ -4970,7 +4970,7 @@ public class Parser extends Lexer {
 			}
 			int end = token.ptr + token.len;
 			check(TOKrparen);
-			e = new AssertExp(e, msg);
+			e = new AssertExpression(e, msg);
 			e.startPosition = start;
 			e.length = end - start;
 			break;
@@ -5115,7 +5115,7 @@ public class Parser extends Lexer {
 								check(TOKcomma);
 							}
 						}
-						e = new ArrayExp(e, arguments);
+						e = new ArrayAccess(e, arguments);
 					}
 					check(TOKrbracket);
 					inBrackets--;
@@ -5187,7 +5187,7 @@ public class Parser extends Lexer {
 		case TOKdelete:
 			nextToken();
 			e = parseUnaryExp();
-			e = new DeleteExp(e);
+			e = new DeleteExpression(e);
 			break;
 
 		case TOKnew:
@@ -5739,7 +5739,7 @@ public class Parser extends Lexer {
 				t = new TypeDArray(t.next);
 			} else {
 				problem("Need size of rightmost array", IProblem.SEVERITY_ERROR, IProblem.NEED_SIZE_OF_RIGHTMOST_ARRAY, index.startPosition, index.length);
-				return new NullExp();
+				return new NullLiteral();
 			}
 		} else if (t.ty == Tsarray) {
 			TypeSArray tsa = (TypeSArray) t;

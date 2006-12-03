@@ -13,22 +13,22 @@ public class StaticAssertStatement extends Statement implements IStaticAssertSta
 	}
 
 	public IExpression getExpression() {
-		return staticAssert.exp;
+		return staticAssert.getExpression();
 	}
 
 	public IExpression getMessage() {
-		return staticAssert.msg;
+		return staticAssert.getMessage();
 	}
 	
-	public int getElementType() {
+	public int getNodeType0() {
 		return STATIC_ASSERT_STATEMENT;
 	}
 	
 	public void accept0(ASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
-			acceptChild(visitor, staticAssert.exp);
-			acceptChild(visitor, staticAssert.msg);
+			acceptChild(visitor, staticAssert.getExpression());
+			acceptChild(visitor, staticAssert.getMessage());
 		}
 		visitor.endVisit(this);
 	}

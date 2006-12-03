@@ -117,7 +117,7 @@ public class DOutlineLabelProvider extends LabelProvider {
 		StringBuilder s;
 		IElement[] templateArguments;
 		
-		switch(e.getElementType()) {
+		switch(e.getNodeType0()) {
 		case IElement.MODULE_DECLARATION:
 			return ((IModuleDeclaration) element).getQualifiedName().toString();
 		case IElement.IMPORT_DECLARATION:
@@ -273,7 +273,7 @@ public class DOutlineLabelProvider extends LabelProvider {
 		IElement e = (IElement) element;
 		int m;
 		
-		switch(e.getElementType()) {
+		switch(e.getNodeType0()) {
 		case IElement.MODULE_DECLARATION:
 			return moduleImage;
 		case IElement.IMPORT_DECLARATION:
@@ -418,7 +418,7 @@ public class DOutlineLabelProvider extends LabelProvider {
 		
 		int i = 0;
 		for(ITemplateParameter p : templateParameters) {
-			switch(p.getElementType()) {
+			switch(p.getNodeType0()) {
 			case ITemplateParameter.TYPE_TEMPLATE_PARAMETER:
 				ITypeTemplateParameter ttp = (ITypeTemplateParameter) p;
 				s.append(ttp.getName().toString());
@@ -480,7 +480,7 @@ public class DOutlineLabelProvider extends LabelProvider {
 	}
 	
 	private void appendType(StringBuilder s, IType type) {
-		switch(type.getElementType()) {
+		switch(type.getNodeType0()) {
 		case IType.BASIC_TYPE:
 			s.append(type);
 			break;
@@ -526,7 +526,7 @@ public class DOutlineLabelProvider extends LabelProvider {
 			IDelegateType dt = (IDelegateType) type;
 			appendType(s, dt.getReturnType());
 			s.append(' ');
-			if (type.getElementType() == IType.DELEGATE_TYPE) {
+			if (type.getNodeType0() == IType.DELEGATE_TYPE) {
 				s.append("delegate");
 			} else {
 				s.append("function");

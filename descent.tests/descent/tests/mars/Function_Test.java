@@ -15,7 +15,7 @@ public class Function_Test extends Parser_Test {
 		assertEquals(1, declDefs.length);
 		
 		IFunctionDeclaration f = (IFunctionDeclaration) declDefs[0];
-		assertEquals(IElement.FUNCTION_DECLARATION, f.getElementType());
+		assertEquals(IElement.FUNCTION_DECLARATION, f.getNodeType0());
 		assertEquals(IFunctionDeclaration.CONSTRUCTOR, f.getFunctionDeclarationType());
 		assertNull(f.getReturnType());
 		assertEquals(0, f.getArguments().length);
@@ -35,7 +35,7 @@ public class Function_Test extends Parser_Test {
 		assertEquals(1, declDefs.length);
 		
 		IFunctionDeclaration f = (IFunctionDeclaration) declDefs[0];
-		assertEquals(IElement.FUNCTION_DECLARATION, f.getElementType());
+		assertEquals(IElement.FUNCTION_DECLARATION, f.getNodeType0());
 		assertEquals(IFunctionDeclaration.CONSTRUCTOR, f.getFunctionDeclarationType());
 		
 		assertPosition(f, 1, 7);
@@ -48,7 +48,7 @@ public class Function_Test extends Parser_Test {
 		assertEquals(1, declDefs.length);
 		
 		IFunctionDeclaration f = (IFunctionDeclaration) declDefs[0];
-		assertEquals(IElement.FUNCTION_DECLARATION, f.getElementType());
+		assertEquals(IElement.FUNCTION_DECLARATION, f.getNodeType0());
 		assertEquals(IFunctionDeclaration.DESTRUCTOR, f.getFunctionDeclarationType());
 		assertNull(f.getReturnType());
 		assertEquals(0, f.getArguments().length);
@@ -68,7 +68,7 @@ public class Function_Test extends Parser_Test {
 		assertEquals(1, declDefs.length);
 		
 		IFunctionDeclaration f = (IFunctionDeclaration) declDefs[0];
-		assertEquals(IElement.FUNCTION_DECLARATION, f.getElementType());
+		assertEquals(IElement.FUNCTION_DECLARATION, f.getNodeType0());
 		assertEquals(IFunctionDeclaration.DESTRUCTOR, f.getFunctionDeclarationType());
 		assertNull(f.getReturnType());
 		
@@ -82,7 +82,7 @@ public class Function_Test extends Parser_Test {
 		assertEquals(1, declDefs.length);
 		
 		IFunctionDeclaration f = (IFunctionDeclaration) declDefs[0];
-		assertEquals(IElement.FUNCTION_DECLARATION, f.getElementType());
+		assertEquals(IElement.FUNCTION_DECLARATION, f.getNodeType0());
 		assertEquals(IFunctionDeclaration.STATIC_CONSTRUCTOR, f.getFunctionDeclarationType());
 		assertNull(f.getReturnType());
 		assertEquals(0, f.getArguments().length);
@@ -102,7 +102,7 @@ public class Function_Test extends Parser_Test {
 		assertEquals(1, declDefs.length);
 		
 		IFunctionDeclaration f = (IFunctionDeclaration) declDefs[0];
-		assertEquals(IElement.FUNCTION_DECLARATION, f.getElementType());
+		assertEquals(IElement.FUNCTION_DECLARATION, f.getNodeType0());
 		assertEquals(IFunctionDeclaration.STATIC_DESTRUCTOR, f.getFunctionDeclarationType());
 		assertNull(f.getReturnType());
 		assertEquals(0, f.getArguments().length);
@@ -122,7 +122,7 @@ public class Function_Test extends Parser_Test {
 		assertEquals(1, declDefs.length);
 		
 		IFunctionDeclaration f = (IFunctionDeclaration) declDefs[0];
-		assertEquals(IElement.FUNCTION_DECLARATION, f.getElementType());
+		assertEquals(IElement.FUNCTION_DECLARATION, f.getNodeType0());
 		assertEquals(IFunctionDeclaration.NEW, f.getFunctionDeclarationType());
 		assertNull(f.getReturnType());
 		assertEquals(0, f.getArguments().length);
@@ -142,7 +142,7 @@ public class Function_Test extends Parser_Test {
 		assertEquals(1, declDefs.length);
 		
 		IFunctionDeclaration f = (IFunctionDeclaration) declDefs[0];
-		assertEquals(IElement.FUNCTION_DECLARATION, f.getElementType());
+		assertEquals(IElement.FUNCTION_DECLARATION, f.getNodeType0());
 		assertEquals(IFunctionDeclaration.DELETE, f.getFunctionDeclarationType());
 		assertNull(f.getReturnType());
 		assertEquals(0, f.getArguments().length);
@@ -162,7 +162,7 @@ public class Function_Test extends Parser_Test {
 		assertEquals(1, declDefs.length);
 		
 		IFunctionDeclaration func = (IFunctionDeclaration) declDefs[0];
-		assertEquals(IElement.FUNCTION_DECLARATION, func.getElementType());
+		assertEquals(IElement.FUNCTION_DECLARATION, func.getNodeType0());
 		assertEquals(IFunctionDeclaration.FUNCTION, func.getFunctionDeclarationType());
 
 		assertEquals("void", func.getReturnType().toString());
@@ -196,7 +196,7 @@ public class Function_Test extends Parser_Test {
 		assertEquals(5, args.length);
 		
 		assertPosition(args[0], 11, 5);
-		assertEquals(IElement.ARGUMENT, args[0].getElementType());
+		assertEquals(IElement.ARGUMENT, args[0].getNodeType0());
 		assertEquals("a", args[0].getName().toString());
 		assertEquals("int", args[0].getType().toString());
 		assertEquals(IArgument.IN, args[0].getKind());

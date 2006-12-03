@@ -18,7 +18,7 @@ public class BaseClass extends ASTNode implements IBaseClass {
 		return prot;
 	}
 
-	public int getElementType() {
+	public int getNodeType0() {
 		return BASE_CLASS;
 	}
 	

@@ -12,7 +12,7 @@ public class ParenthesizedExpression extends Expression implements IParenthesize
 		this.e = e;
 	}
 	
-	public int getElementType() {
+	public int getNodeType0() {
 		return PARENTHESIZED_EXPRESSION;
 	}
 
