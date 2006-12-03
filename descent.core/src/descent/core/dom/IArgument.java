@@ -1,5 +1,7 @@
 package descent.core.dom;
 
+import descent.internal.core.dom.Argument;
+
 /**
  * An argument to a function or something else:
  * 
@@ -8,26 +10,6 @@ package descent.core.dom;
  * </pre>
  */
 public interface IArgument extends IElement {
-	
-	/** The argument is in */
-	int IN = 1;
-	/** The argument is out */
-	int OUT = 2;
-	/** The argument is inout */
-	int INOUT = 3;
-	/** The argument is lazy */
-	int LAZY = 4;
-	
-	/**
-	 * The passage mode of the argument.
-	 * TODO: comment better
-	 */
-	public enum PassageMode {
-		IN,
-		OUT,
-		INOUT,
-		LAZY
-	}
 	
 	/**
 	 * Returns the name of this argument.
@@ -46,9 +28,8 @@ public interface IArgument extends IElement {
 	IExpression getDefaultValue();
 	
 	/**
-	 * Returns the kind of this argument: in, out, inout or lazy.
-	 * Check this interface constants.
+	 * Returns the passage mode.
 	 */
-	int getKind();
+	Argument.PassageMode getPassageMode();
 
 }

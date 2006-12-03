@@ -4,6 +4,7 @@ import descent.core.dom.IArgument;
 import descent.core.dom.ICompilationUnit;
 import descent.core.dom.IElement;
 import descent.core.dom.IFunctionDeclaration;
+import descent.internal.core.dom.Argument;
 import descent.internal.core.dom.ParserFacade;
 
 public class Function_Test extends Parser_Test {
@@ -199,27 +200,27 @@ public class Function_Test extends Parser_Test {
 		assertEquals(IElement.ARGUMENT, args[0].getNodeType0());
 		assertEquals("a", args[0].getName().toString());
 		assertEquals("int", args[0].getType().toString());
-		assertEquals(IArgument.IN, args[0].getKind());
+		assertEquals(Argument.PassageMode.IN, args[0].getPassageMode());
 		
 		assertPosition(args[1], 18, 9);
 		assertEquals("b", args[1].getName().toString());
 		assertEquals("char", args[1].getType().toString());
-		assertEquals(IArgument.IN, args[1].getKind());
+		assertEquals(Argument.PassageMode.IN, args[1].getPassageMode());
 		
 		assertPosition(args[2], 29, 10);
 		assertEquals("c", args[2].getName().toString());
 		assertEquals("bool", args[2].getType().toString());
-		assertEquals(IArgument.OUT, args[2].getKind());
+		assertEquals(Argument.PassageMode.OUT, args[2].getPassageMode());
 		
 		assertPosition(args[3], 41, 13);
 		assertEquals("d", args[3].getName().toString());
 		assertEquals("float", args[3].getType().toString());
-		assertEquals(IArgument.INOUT, args[3].getKind());
+		assertEquals(Argument.PassageMode.INOUT, args[3].getPassageMode());
 		
 		assertPosition(args[4], 56, 13);
 		assertEquals("e", args[4].getName().toString());
 		assertEquals("double", args[4].getType().toString());
-		assertEquals(IArgument.LAZY, args[4].getKind());
+		assertEquals(Argument.PassageMode.LAZY, args[4].getPassageMode());
 	}
 	
 	public void testFunctionWithOneArgument() {
@@ -249,28 +250,28 @@ public class Function_Test extends Parser_Test {
 		assertPosition(args[0], 11, 9);
 		assertEquals("a", args[0].getName().toString());
 		assertEquals("int", args[0].getType().toString());
-		assertEquals(IArgument.IN, args[0].getKind());
+		assertEquals(Argument.PassageMode.IN, args[0].getPassageMode());
 		assertEquals("2", args[0].getDefaultValue().toString());
 		
 		assertPosition(args[1], 22, 9);
 		assertEquals("b", args[1].getName().toString());
 		assertEquals("char", args[1].getType().toString());
-		assertEquals(IArgument.IN, args[1].getKind());
+		assertEquals(Argument.PassageMode.IN, args[1].getPassageMode());
 		
 		assertPosition(args[2], 33, 10);
 		assertEquals("c", args[2].getName().toString());
 		assertEquals("bool", args[2].getType().toString());
-		assertEquals(IArgument.OUT, args[2].getKind());
+		assertEquals(Argument.PassageMode.OUT, args[2].getPassageMode());
 		
 		assertPosition(args[3], 45, 13);
 		assertEquals("d", args[3].getName().toString());
 		assertEquals("float", args[3].getType().toString());
-		assertEquals(IArgument.INOUT, args[3].getKind());
+		assertEquals(Argument.PassageMode.INOUT, args[3].getPassageMode());
 		
 		assertPosition(args[4], 60, 13);
 		assertEquals("e", args[4].getName().toString());
 		assertEquals("double", args[4].getType().toString());
-		assertEquals(IArgument.LAZY, args[4].getKind());
+		assertEquals(Argument.PassageMode.LAZY, args[4].getPassageMode());
 	}
 	
 	public void testFunctionVariadic() {

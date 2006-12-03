@@ -23,10 +23,10 @@ import descent.core.dom.ILinkDeclaration;
 import descent.core.dom.IMixinDeclaration;
 import descent.core.dom.IModifier;
 import descent.core.dom.IModuleDeclaration;
-import descent.core.dom.ISimpleName;
 import descent.core.dom.IPointerType;
 import descent.core.dom.IPragmaDeclaration;
 import descent.core.dom.ISelectiveImport;
+import descent.core.dom.ISimpleName;
 import descent.core.dom.IStaticArrayType;
 import descent.core.dom.ITemplateDeclaration;
 import descent.core.dom.ITemplateInstanceType;
@@ -37,6 +37,7 @@ import descent.core.dom.ITypedefDeclaration;
 import descent.core.dom.ITypeofType;
 import descent.core.dom.IVariableDeclaration;
 import descent.core.dom.IVersionDeclaration;
+import descent.internal.core.dom.Argument;
 import descent.ui.DescentUI;
 import descent.ui.IImages;
 
@@ -466,10 +467,10 @@ public class DOutlineLabelProvider extends LabelProvider {
 	private void appendArguments(StringBuilder s, IArgument[] arguments) {
 		s.append('(');
 		for(int i = 0; i < arguments.length; i++) {
-			switch(arguments[i].getKind()) {
-			case IArgument.OUT: s.append("out "); break;
-			case IArgument.INOUT: s.append("inout "); break;
-			case IArgument.LAZY: s.append("lazy "); break;
+			switch(arguments[i].getPassageMode()) {
+			case OUT: s.append("out "); break;
+			case INOUT: s.append("inout "); break;
+			case LAZY: s.append("lazy "); break;
 			}
 			appendType(s, arguments[i].getType());
 			if (i != arguments.length - 1) {

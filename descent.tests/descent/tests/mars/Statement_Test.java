@@ -39,6 +39,7 @@ import descent.core.dom.IVersionStatement;
 import descent.core.dom.IVolatileStatement;
 import descent.core.dom.IWhileStatement;
 import descent.core.dom.IWithStatement;
+import descent.internal.core.dom.Argument;
 import descent.internal.core.dom.ParserFacade;
 
 public class Statement_Test extends Parser_Test {
@@ -239,17 +240,17 @@ public class Statement_Test extends Parser_Test {
 		assertEquals(3, args.length);
 		
 		assertPosition(args[0], 9, 7);
-		assertEquals(IArgument.INOUT, args[0].getKind());
+		assertEquals(Argument.PassageMode.INOUT, args[0].getPassageMode());
 		assertEquals("a", args[0].getName().toString());
 		assertPosition(args[0].getName(), 15, 1);
 		
 		assertPosition(args[1], 18, 1);
-		assertEquals(IArgument.IN, args[1].getKind());
+		assertEquals(Argument.PassageMode.IN, args[1].getPassageMode());
 		assertEquals("b", args[1].getName().toString());
 		assertPosition(args[1].getName(), 18, 1);
 		
 		assertPosition(args[2], 21, 1);
-		assertEquals(IArgument.IN, args[2].getKind());
+		assertEquals(Argument.PassageMode.IN, args[2].getPassageMode());
 		assertEquals("c", args[2].getName().toString());
 		assertPosition(args[2].getName(), 21, 1);
 	}
@@ -279,7 +280,7 @@ public class Statement_Test extends Parser_Test {
 		assertEquals(1, args.length);
 		
 		assertPosition(args[0], 9, 5);
-		assertEquals(IArgument.IN, args[0].getKind());
+		assertEquals(Argument.PassageMode.IN, args[0].getPassageMode());
 		assertEquals("x", args[0].getName().toString());
 		assertEquals("int", args[0].getType().toString());
 		assertPosition(args[0].getName(), 13, 1);

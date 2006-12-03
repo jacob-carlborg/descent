@@ -18,10 +18,25 @@ import descent.core.dom.IArgument;
 public class Argument extends ASTNode implements IArgument {
 	
 	/**
+	 * The passage mode of the argument.
+	 * TODO: comment better
+	 */
+	public static enum PassageMode {
+		/** "in" passage mode */
+		IN,
+		/** "out" passage mode */
+		OUT,
+		/** "inout" passage mode */
+		INOUT,
+		/** "lazy" passage mode */
+		LAZY
+	}
+
+	/**
 	 * The "passage mode" structural property of this node type.
 	 */
 	public static final SimplePropertyDescriptor PASSAGE_MODE_PROPERTY = 
-		new SimplePropertyDescriptor(Argument.class, "passageMode", PassageMode.class, MANDATORY); //$NON-NLS-1$
+		new SimplePropertyDescriptor(Argument.class, "passageMode", Argument.PassageMode.class, MANDATORY); //$NON-NLS-1$
 	
 	/**
 	 * The "type" structural property of this node type.
@@ -74,7 +89,7 @@ public class Argument extends ASTNode implements IArgument {
 	}
 	
 	// TODO comment better
-	public PassageMode passageMode = PassageMode.IN;
+	public Argument.PassageMode passageMode = Argument.PassageMode.IN;
 	public Type type;
 	public SimpleName argumentName;	
 	public Expression defaultValue;
@@ -107,7 +122,7 @@ public class Argument extends ASTNode implements IArgument {
 			if (get) {
 				return getPassageMode();
 			} else {
-				setPassageMode((PassageMode) value);
+				setPassageMode((Argument.PassageMode) value);
 				return null;
 			}
 		}
@@ -194,7 +209,7 @@ public class Argument extends ASTNode implements IArgument {
 	 * Returns the passage mode of this argument.
 	 * @return the passage mode node
 	 */
-	public PassageMode getPassageMode() {
+	public Argument.PassageMode getPassageMode() {
 		return passageMode;
 	}
 	
@@ -204,7 +219,7 @@ public class Argument extends ASTNode implements IArgument {
 	 * @param passageMode the passage mode
 	 * @exception IllegalArgumentException if the argument is incorrect
 	 */ 
-	public void setPassageMode(PassageMode passageMode) {
+	public void setPassageMode(Argument.PassageMode passageMode) {
 		if (passageMode == null) {
 			throw new IllegalArgumentException();
 		}
@@ -353,21 +368,12 @@ public class Argument extends ASTNode implements IArgument {
 	}
 
 	// TODO Descent remove
-	public Argument(PassageMode passageMode, Type type, SimpleName name, Expression defaultValue) {
+	public Argument(Argument.PassageMode passageMode, Type type, SimpleName name, Expression defaultValue) {
 		super(AST.newAST(AST.JLS3));
 		this.argumentName = name;
 		this.type = type;
 		this.passageMode = passageMode;
 		this.defaultValue = defaultValue;
-	}
-	
-	public int getKind() {
-		switch(passageMode) {
-		case IN: return IArgument.IN;
-		case OUT: return IArgument.OUT;
-		case INOUT: return IArgument.INOUT;
-		default /* case Lazy */: return IArgument.LAZY;
-		} 
 	}
 
 }
