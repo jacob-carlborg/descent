@@ -220,8 +220,6 @@ public class Function_Test extends Parser_Test {
 		assertEquals("e", args[4].getName().toString());
 		assertEquals("double", args[4].getType().toString());
 		assertEquals(IArgument.LAZY, args[4].getKind());
-		
-		assertVisitor(func, 19);
 	}
 	
 	public void testFunctionWithOneArgument() {

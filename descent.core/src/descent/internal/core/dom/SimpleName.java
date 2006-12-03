@@ -315,5 +315,26 @@ public class SimpleName extends Name implements ISimpleName {
 		return SIMPLE_NAME;
 	}
 	
+	public SimpleName(Token token) {
+		super(AST.newAST(AST.JLS3));
+		this.identifier = token.ident.string;
+		this.startPosition = token.ptr;
+		this.length = token.len;
+	}
+	
+	public SimpleName(Identifier id) {
+		super(AST.newAST(AST.JLS3));
+		if (id != null) {
+			this.identifier = id.string;
+			this.startPosition = id.startPosition;
+			this.length = id.length;
+		}
+	}
+	
+	@Override
+	public String toString() {
+		return identifier;
+	}
+	
 }
 

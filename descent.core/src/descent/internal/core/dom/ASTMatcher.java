@@ -28,4 +28,9 @@ public class ASTMatcher {
 		return false;
 	}
 
+	public boolean match(Argument argument, Object other) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
 }

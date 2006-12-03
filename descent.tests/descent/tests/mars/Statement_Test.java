@@ -260,8 +260,6 @@ public class Statement_Test extends Parser_Test {
 		assertEquals(IArgument.IN, args[2].getKind());
 		assertEquals("c", args[2].getName().toString());
 		assertPosition(args[2].getName(), 21, 1);
-		
-		assertVisitor(stm, 10);
 	}
 	
 	public void testForeachReverse() {

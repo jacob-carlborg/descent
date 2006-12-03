@@ -1105,12 +1105,12 @@ public class Parser extends Lexer {
 						problem("Variadic argument cannot be out or inout", IProblem.SEVERITY_ERROR, IProblem.VARIADIC_ARGUMENT_CANNOT_BE_OUT_OR_INOUT, inoutToken.ptr, inoutToken.len);
 					}
 					varargs = 2;
-					a = new Argument(inout, at, ai, ae);
+					a = new Argument(inout, at, new SimpleName(ai), ae);
 					arguments.add(a);
 					nextToken();
 					break;
 				}
-				a = new Argument(inout, at, ai, ae);
+				a = new Argument(inout, at, new SimpleName(ai), ae);
 				a.startPosition = firstToken.ptr;
 				a.length = prevToken.ptr + prevToken.len - a.startPosition;
 				arguments.add(a);
@@ -3188,7 +3188,7 @@ public class Parser extends Lexer {
 						at = null; // infer argument type
 						nextToken();
 						// goto Larg;
-						a = new Argument(inout, at, ai, null);
+						a = new Argument(inout, at, new SimpleName(ai), null);
 						a.startPosition = argumentStart.ptr;
 						a.length = prevToken.ptr + prevToken.len - a.startPosition;
 						arguments.add(a);
@@ -3208,7 +3208,7 @@ public class Parser extends Lexer {
 					problem("No identifier for declarator", IProblem.SEVERITY_ERROR, IProblem.NO_IDENTIFIER_FOR_DECLARATOR, at.startPosition, at.length);
 				}
 				// Larg:
-				a = new Argument(inout, at, ai, null);
+				a = new Argument(inout, at, new SimpleName(ai), null);
 				a.startPosition = argumentStart.ptr;
 				a.length = prevToken.ptr + prevToken.len - a.startPosition;
 				arguments.add(a);
@@ -3247,7 +3247,7 @@ public class Parser extends Lexer {
 				if (token.value == TOKidentifier) {
 					Token t2 = peek(token);
 					if (t2.value == TOKassign) {
-						arg = new Argument(IArgument.PassageMode.IN, null, new Identifier(token), null);
+						arg = new Argument(IArgument.PassageMode.IN, null, new SimpleName(token), null);
 						arg.startPosition = autoToken.ptr;
 						arg.length = token.ptr + token.len - arg.startPosition;
 						nextToken();
@@ -3288,7 +3288,7 @@ public class Parser extends Lexer {
 					at = parseDeclarator(tb, pointer2_ai);
 					ai = pointer2_ai[0];
 					
-					arg = new Argument(IArgument.PassageMode.IN, at, ai, null);
+					arg = new Argument(IArgument.PassageMode.IN, at, new SimpleName(ai), null);
 					arg.startPosition = argToken.ptr;
 					arg.length = prevToken.ptr + prevToken.len - arg.startPosition;
 					
@@ -3299,7 +3299,7 @@ public class Parser extends Lexer {
 				else if (token.value == TOKidentifier) {
 					Token t2 = peek(token);
 					if (t2.value == TOKcomma || t2.value == TOKsemicolon) {
-						arg = new Argument(IArgument.PassageMode.IN, null, new Identifier(token), null);
+						arg = new Argument(IArgument.PassageMode.IN, null, new SimpleName(token), null);
 						arg.startPosition = argToken.ptr;
 						arg.length = token.ptr + token.len - arg.startPosition;
 						

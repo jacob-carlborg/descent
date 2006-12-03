@@ -126,8 +126,6 @@ public class Type_Test extends Parser_Test {
 		assertEquals("bool", type.getArguments()[1].getType().toString());
 		assertPosition(type.getArguments()[1], 20, 4);
 		assertPosition(type, 1, 24);
-		
-		assertVisitor(type, 6);
 	}
 	
 	public void testPointerToFunction() {
@@ -141,8 +139,6 @@ public class Type_Test extends Parser_Test {
 		assertEquals("bool", type.getArguments()[1].getType().toString());
 		assertPosition(type.getArguments()[1], 20, 4);
 		assertPosition(type, 1, 24);
-		
-		assertVisitor(type, 6);
 	}
 	
 	public void testTypeof() {
