@@ -24,7 +24,7 @@ public class IntegerExp extends Expression implements IIntegerExpression {
 	}
 	
 	public int getNodeType0() {
-		return expressionType;
+		return INTEGER_EXPRESSION;
 	}
 	
 	@Override

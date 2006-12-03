@@ -118,4 +118,19 @@ public class ASTMatcher {
 		return false;
 	}
 
+	public boolean match(Block block, Object other) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	public boolean match(DebugStatement statement, Object other) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	public boolean match(VersionStatement statement, Object other) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
 }

@@ -1,9 +1,8 @@
 package descent.internal.core.dom;
 
-import descent.core.dom.IDebugStatement;
 import descent.core.dom.ASTVisitor;
+import descent.core.dom.IDebugStatement;
 import descent.core.dom.IExpression;
-import descent.core.dom.ISimpleName;
 import descent.core.dom.IStatement;
 import descent.core.dom.IStaticIfStatement;
 import descent.core.dom.IVersionStatement;
@@ -24,11 +23,11 @@ public class ConditionalStatement extends Statement implements IStaticIfStatemen
 		return ((StaticIfCondition) condition).exp;
 	}
 	
-	public IStatement getThen() {
+	public IStatement getBody() {
 		return ifbody;
 	}
 	
-	public IStatement getElse() {
+	public IStatement getElseBody() {
 		return elsebody;
 	}
 	
@@ -41,12 +40,8 @@ public class ConditionalStatement extends Statement implements IStaticIfStatemen
 		return 0;
 	}
 	
-	public ISimpleName getDebug() {
-		return ((DebugCondition) condition).id;
-	}
-	
-	public ISimpleName getVersion() {
-		return ((VersionCondition) condition).id;
+	public String getName() {
+		return null;
 	}
 	
 	@Override

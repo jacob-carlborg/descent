@@ -2953,7 +2953,7 @@ public class Parser extends Lexer {
 					nextToken();
 					elsebody = parseStatement(PSsemi);
 				}
-				s = new ConditionalStatement(condition, ifbody, elsebody);
+				s = new StaticIfStatement(condition, ifbody, elsebody);
 				s.startPosition = saveToken.ptr;
 				s.length = prevToken.ptr + prevToken.len - s.startPosition;
 				break;
@@ -3399,7 +3399,11 @@ public class Parser extends Lexer {
 				nextToken();
 				elsebody = parseStatement(PSsemi);
 			}
-			s = new ConditionalStatement(condition, ifbody, elsebody);
+			if (((DebugCondition)condition).id == null) {
+				s = new DebugStatement(null, ifbody, elsebody);
+			} else {
+				s = new DebugStatement(((DebugCondition)condition).id.string, ifbody, elsebody);
+			}
 			s.startPosition = saveToken.ptr;
 			s.length = prevToken.ptr + prevToken.len - s.startPosition;
 			break;
@@ -3416,7 +3420,11 @@ public class Parser extends Lexer {
 				nextToken();
 				elsebody = parseStatement(PSsemi);
 			}
-			s = new ConditionalStatement(condition, ifbody, elsebody);
+			if (((VersionCondition)condition).id == null) {
+				s = new VersionStatement(null, ifbody, elsebody);
+			} else {
+				s = new VersionStatement(((VersionCondition)condition).id.string, ifbody, elsebody);
+			}
 			s.startPosition = saveToken.ptr;
 			s.length = prevToken.ptr + prevToken.len - s.startPosition;
 			break;

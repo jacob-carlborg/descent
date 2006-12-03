@@ -8,12 +8,12 @@ public interface IConditionalStatement extends IStatement {
 	/**
 	 * Returns the statement to execute in the "then" part.
 	 */
-	IStatement getThen();
+	IStatement getBody();
 	
 	/**
 	 * Returns the statement to execute in the "else" part, if any,
 	 * or <code>null</code>.
 	 */
-	IStatement getElse();
+	IStatement getElseBody();
 
 }

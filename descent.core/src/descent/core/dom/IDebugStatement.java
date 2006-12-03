@@ -15,6 +15,6 @@ public interface IDebugStatement extends IConditionalStatement {
 	/**
 	 * Returns the debug level or identifier.
 	 */
-	ISimpleName getDebug();
+	String getName();
 
 }

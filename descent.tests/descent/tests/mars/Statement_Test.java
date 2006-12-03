@@ -494,7 +494,7 @@ public class Statement_Test extends Parser_Test {
 		assertEquals(IConditionalStatement.DEBUG_STATEMENT, stm.getNodeType0());
 		assertPosition(stm, 1, s.length() - 1);
 		
-		assertNull(stm.getDebug());
+		assertNull(stm.getName());
 	}
 	
 	public void testDebug2() {
@@ -504,7 +504,7 @@ public class Statement_Test extends Parser_Test {
 		assertEquals(IConditionalStatement.DEBUG_STATEMENT, stm.getNodeType0());
 		assertPosition(stm, 1, s.length() - 1);
 		
-		assertEquals("1", stm.getDebug().toString());
+		assertEquals("1", stm.getName().toString());
 	}
 	
 	public void testVersion() {
@@ -514,7 +514,7 @@ public class Statement_Test extends Parser_Test {
 		assertEquals(IConditionalStatement.VERSION_STATEMENT, stm.getNodeType0());
 		assertPosition(stm, 1, s.length() - 1);
 		
-		assertEquals("release", stm.getVersion().toString());
+		assertEquals("release", stm.getName().toString());
 	}
 	
 	public void testStaticExtern() {

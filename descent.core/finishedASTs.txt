@@ -1,11 +1,13 @@
 ArrayAccess
 AssertExpression
 Argument (fix type)
+Block
 BooleanLiteral
 BreakStatement
 CaseStatement
 ContinueStatement
 DefaultStatement
+DebugStatement
 DeleteExpression
 DollarLiteral
 ExpressionStatement
@@ -16,6 +18,7 @@ NullLiteral
 StaticAssert
 SuperLiteral
 ThisLiteral
+VersionStatement
 Volatile
 WhileStatement
 WithStatement
