@@ -19,6 +19,6 @@ public interface IWithStatement extends IStatement {
 	/**
 	 * Returns the statement used as a body.
 	 */
-	IStatement getStatement();
+	IStatement getBody();
 
 }

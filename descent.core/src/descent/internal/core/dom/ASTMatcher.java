@@ -8,4 +8,24 @@ public class ASTMatcher {
 		return false;
 	}
 
+	public boolean match(WithStatement statement, Object other) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	public boolean match(WhileStatement statement, Object other) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	public boolean match(VolatileStatement statement, Object other) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	public boolean match(SimpleName name, Object other) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
 }

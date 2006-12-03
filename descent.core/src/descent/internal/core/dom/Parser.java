@@ -1,9 +1,5 @@
 package descent.internal.core.dom;
 
-import static descent.internal.core.dom.InOut.In;
-import static descent.internal.core.dom.InOut.InOut;
-import static descent.internal.core.dom.InOut.Lazy;
-import static descent.internal.core.dom.InOut.Out;
 import static descent.internal.core.dom.LINK.LINKc;
 import static descent.internal.core.dom.LINK.LINKcpp;
 import static descent.internal.core.dom.LINK.LINKd;
@@ -91,12 +87,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import descent.core.compiler.IProblem;
+import descent.core.dom.IArgument;
 import descent.core.dom.IBaseClass;
-import descent.core.dom.IInfixExpression;
-import descent.core.dom.IElement;
 import descent.core.dom.IDeclaration;
+import descent.core.dom.IElement;
 import descent.core.dom.IEnumMember;
 import descent.core.dom.IImport;
+import descent.core.dom.IInfixExpression;
 import descent.core.dom.ITemplateParameter;
 import descent.core.dom.IUnaryExpression;
 
@@ -1046,13 +1043,13 @@ public class Parser extends Lexer {
 			Identifier ai;
 			Type at;
 			Argument a;
-			InOut inout;
+			IArgument.PassageMode inout;
 			Expression ae;
 			
 			Token firstToken = new Token(token);
 			
 			ai = null;
-			inout = In; // parameter is "in" by default
+			inout = IArgument.PassageMode.IN; // parameter is "in" by default
 			
 			if (token.value == TOKrparen) {
 				break;
@@ -1065,19 +1062,19 @@ public class Parser extends Lexer {
 				
 				switch(token.value) {
 					case TOKin:
-						inout = In;
+						inout = IArgument.PassageMode.IN;
 						nextToken();
 						break;
 					case TOKout:
-						inout = Out;
+						inout = IArgument.PassageMode.OUT;
 						nextToken();
 						break;
 					case TOKinout:
-						inout = InOut;
+						inout = IArgument.PassageMode.INOUT;
 						nextToken();
 						break;
 					case TOKlazy:
-						inout = Lazy;
+						inout = IArgument.PassageMode.LAZY;
 						nextToken();
 						break;
 				}
@@ -1104,7 +1101,7 @@ public class Parser extends Lexer {
 					/*
 					 * This is: at ai ...
 					 */
-					if (inout == Out || inout == InOut) {
+					if (inout == IArgument.PassageMode.OUT || inout == IArgument.PassageMode.INOUT) {
 						problem("Variadic argument cannot be out or inout", IProblem.SEVERITY_ERROR, IProblem.VARIADIC_ARGUMENT_CANNOT_BE_OUT_OR_INOUT, inoutToken.ptr, inoutToken.len);
 					}
 					varargs = 2;
@@ -2410,7 +2407,7 @@ public class Parser extends Lexer {
 			AggregateDeclaration s;
 
 			s = (AggregateDeclaration) parseAggregate();
-			s.storage_class |= storage_class;
+			// TODO CHECK DMD s.storage_class |= storage_class;
 			s.modifiers = STC.getModifiers(storage_class);
 			a.add(s);
 			s.comments = lastComments;
@@ -2670,11 +2667,43 @@ public class Parser extends Lexer {
 		Initializer value;
 		int comma;
 		Token t;
+		int braces = 0;
 		
 		Token saveToken = new Token(token);
 
 		switch (token.value) {
 		case TOKlcurly:
+		    /* Scan ahead to see if it is a struct initializer or
+		     * a function literal.
+		     * If it contains a ';', it is a function literal.
+		     * Treat { } as a struct initializer.
+		     */
+		    braces = 1;
+			for (t = peek(token); true; t = peek(t)) {
+				switch (t.value) {
+				case TOKsemicolon:
+				case TOKreturn:
+					// goto Lexpression;
+					e = parseAssignExp();
+					ie = new ExpInitializer(e);
+					return ie;
+
+				case TOKlcurly:
+					braces++;
+					continue;
+
+				case TOKrcurly:
+					if (--braces == 0) {
+						break;
+					}
+					continue;
+
+				default:
+					continue;
+				}
+				break;
+			}
+			
 			is = new StructInitializer();
 			nextToken();
 			comma = 0;
@@ -3142,14 +3171,14 @@ public class Parser extends Lexer {
 				Type tb;
 				Identifier ai = null;
 				Type at;
-				InOut inout;
+				IArgument.PassageMode inout;
 				Argument a;
 				
 				Token argumentStart = new Token(token);
 
-				inout = In;
+				inout = IArgument.PassageMode.IN;
 				if (token.value == TOKinout) {
-					inout = InOut;
+					inout = IArgument.PassageMode.INOUT;
 					nextToken();
 				}
 				if (token.value == TOKidentifier) {
@@ -3218,7 +3247,7 @@ public class Parser extends Lexer {
 				if (token.value == TOKidentifier) {
 					Token t2 = peek(token);
 					if (t2.value == TOKassign) {
-						arg = new Argument(In, null, new Identifier(token), null);
+						arg = new Argument(IArgument.PassageMode.IN, null, new Identifier(token), null);
 						arg.startPosition = autoToken.ptr;
 						arg.length = token.ptr + token.len - arg.startPosition;
 						nextToken();
@@ -3259,7 +3288,7 @@ public class Parser extends Lexer {
 					at = parseDeclarator(tb, pointer2_ai);
 					ai = pointer2_ai[0];
 					
-					arg = new Argument(In, at, ai, null);
+					arg = new Argument(IArgument.PassageMode.IN, at, ai, null);
 					arg.startPosition = argToken.ptr;
 					arg.length = prevToken.ptr + prevToken.len - arg.startPosition;
 					
@@ -3270,7 +3299,7 @@ public class Parser extends Lexer {
 				else if (token.value == TOKidentifier) {
 					Token t2 = peek(token);
 					if (t2.value == TOKcomma || t2.value == TOKsemicolon) {
-						arg = new Argument(In, null, new Identifier(token), null);
+						arg = new Argument(IArgument.PassageMode.IN, null, new Identifier(token), null);
 						arg.startPosition = argToken.ptr;
 						arg.length = token.ptr + token.len - arg.startPosition;
 						
@@ -5440,8 +5469,8 @@ public class Parser extends Lexer {
 
 		    case TOKidentity:
 			//if (!global.params.useDeprecated)
-		    	problem("'===' is deprecated, use 'is' instead", IProblem.SEVERITY_ERROR,
-		    			IProblem.THREE_EQUALS_IS_DEPRECATED, token.ptr, token.len);
+		    	problem("'===' is no longer legal, use 'is' instead", IProblem.SEVERITY_ERROR,
+		    			IProblem.THREE_EQUALS_IS_NO_LONGER_LEGAL, token.ptr, token.len);
 			//goto L1;
 			nextToken();
 			e2 = parseRelExp();
@@ -5450,8 +5479,8 @@ public class Parser extends Lexer {
 
 		    case TOKnotidentity:
 			//if (!global.params.useDeprecated)
-		    	problem("'!==' is deprecated, use 'is' instead", IProblem.SEVERITY_ERROR,
-		    			IProblem.NOT_TWO_EQUALS_IS_DEPRECATED, token.ptr, token.len);
+		    	problem("'!==' is no longer legal, use 'is' instead", IProblem.SEVERITY_ERROR,
+		    			IProblem.NOT_TWO_EQUALS_IS_NO_LONGER_LEGAL, token.ptr, token.len);
 			//goto L1;
 			nextToken();
 			e2 = parseRelExp();

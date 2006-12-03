@@ -12,6 +12,6 @@ public interface IVolatileStatement extends IStatement {
 	/**
 	 * Returns the statement that is volatile.
 	 */
-	IStatement getStatement();
+	IStatement getBody();
 
 }

@@ -547,7 +547,7 @@ public class Problems_Test extends TestCase {
 	public void test_THREE_EQUALS_IS_DEPRECATED() {
 		IProblem p = getProblem(" bool x = 1 === 2;");
 
-		assertEquals(IProblem.THREE_EQUALS_IS_DEPRECATED, p.getId());
+		assertEquals(IProblem.THREE_EQUALS_IS_NO_LONGER_LEGAL, p.getId());
 		assertEquals(IProblem.SEVERITY_ERROR, p.getSeverity());
 		assertEquals(12, p.getOffset());
 		assertEquals(3, p.getLength());

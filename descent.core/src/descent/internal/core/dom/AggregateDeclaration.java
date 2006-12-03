@@ -11,15 +11,8 @@ import descent.core.dom.ITemplateParameter;
 
 public abstract class AggregateDeclaration extends ScopeDsymbol implements IAggregateDeclaration {
 
-	public Type type;
-	public Scope scope;
-	public Type handle;
-	public int structalign;
-	public PROT protection;
-	
 	public IBaseClass[] baseClasses;
 	public ITemplateParameter[] templateParameters;
-	public int storage_class;
 	
 	public AggregateDeclaration(Identifier id, List<BaseClass> baseClasses) {
 		this.ident = id;

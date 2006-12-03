@@ -19,6 +19,17 @@ public interface IArgument extends IElement {
 	int LAZY = 4;
 	
 	/**
+	 * The passage mode of the argument.
+	 * TODO: comment better
+	 */
+	public enum PassageMode {
+		IN,
+		OUT,
+		INOUT,
+		LAZY
+	}
+	
+	/**
 	 * Returns the name of this argument.
 	 */
 	ISimpleName getName();

@@ -1513,6 +1513,14 @@ public class Lexer implements IProblemCollector {
 					state = STATE.STATE_octal;
 					p++;
 					continue;
+					
+			    case 'L':
+					if (input[p + 1] == 'i') {
+					    //goto real;
+						p = start;
+						return inreal(t);
+					}
+					break goto_done;
 
 				default:
 					break goto_done;
@@ -1536,10 +1544,16 @@ public class Lexer implements IProblemCollector {
 						return inreal(t);
 					} else if (c == 'i' || c == 'f' || c == 'F' || c == 'e'
 							|| c == 'E') {
+						// real:
 						// It's a real number. Back up and rescan as a real
 						p = start;
 						return inreal(t);
+					} else if (c == 'L' && input[p + 1] == 'i') {
+						// goto real;
+						p = start;
+						return inreal(t);
 					}
+
 					break goto_done;
 				}
 				break;

@@ -137,7 +137,7 @@ public class Statement_Test extends Parser_Test {
 		assertEquals(IStatement.WHILE_STATEMENT, stm.getElementType());
 		assertPosition(stm, 1, 15);
 		
-		assertEquals("true", stm.getCondition().toString());
+		assertEquals("true", stm.getExpression().toString());
 		
 		assertPosition(stm.getBody(), 13, 3);
 		
@@ -209,7 +209,7 @@ public class Statement_Test extends Parser_Test {
 		assertEquals(IStatement.WITH_STATEMENT, stm.getElementType());
 		assertPosition(stm, 1, 14);
 		
-		assertPosition(stm.getStatement(), 12, 3);
+		assertPosition(stm.getBody(), 12, 3);
 		
 		assertEquals("true", stm.getExpression().toString());
 		

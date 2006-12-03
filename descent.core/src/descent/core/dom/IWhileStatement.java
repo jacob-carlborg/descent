@@ -14,7 +14,7 @@ public interface IWhileStatement extends IStatement {
 	/**
 	 * Returns the condition.
 	 */
-	IExpression getCondition();
+	IExpression getExpression();
 	
 	/**
 	 * Returns the body of the while statement.

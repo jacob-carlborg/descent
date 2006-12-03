@@ -8,7 +8,11 @@ import descent.core.dom.IStatement;
 
 public class CompoundStatement extends Statement implements ICompoundStatement {
 
-	private final List<Statement> as;
+	private List<Statement> as;
+	
+	CompoundStatement(AST ast) {
+		super(ast);
+	}
 
 	public CompoundStatement(List<Statement> as) {
 		this.as = as;
