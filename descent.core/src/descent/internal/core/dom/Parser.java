@@ -1177,7 +1177,7 @@ public class Parser extends Lexer {
 						value = parseAssignExp();
 					}
 					
-					em = new EnumMember(ident, value);
+					em = new EnumMember(new SimpleName(ident), value);
 					e.members.add(em);
 					if (token.value == TOKrcurly) {
 						;

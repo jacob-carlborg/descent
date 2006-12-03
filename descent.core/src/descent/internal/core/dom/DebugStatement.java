@@ -287,6 +287,23 @@ public class DebugStatement extends Statement implements IDebugStatement {
 		this.elseBody = statement;
 		postReplaceChild(oldChild, statement, ELSE_BODY_PROPERTY);
 	}
+	
+	/* (omit javadoc for this method)
+	 * Method declared on ASTNode.
+	 */
+	int memSize() {
+		return super.memSize() + 2 * 4;
+	}
+	
+	/* (omit javadoc for this method)
+	 * Method declared on ASTNode.
+	 */
+	int treeSize() {
+		return
+			memSize()
+			+ (this.body == null ? 0 : getBody().treeSize())
+			+ (this.elseBody == null ? 0 : getElseBody().treeSize());
+	}
 
 	public DebugStatement(String name, Statement body, Statement elseBody) {
 		this.name = name;

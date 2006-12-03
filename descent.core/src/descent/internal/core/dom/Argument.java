@@ -321,7 +321,7 @@ public class Argument extends ASTNode implements IArgument {
 				if (this.defaultValue == null) {
 					preLazyInit();
 					this.defaultValue = new SimpleName(this.ast);
-					postLazyInit(this.defaultValue, NAME_PROPERTY);
+					postLazyInit(this.defaultValue, DEFAULT_VALUE_PROPERTY);
 				}
 			}
 		}

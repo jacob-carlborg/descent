@@ -133,4 +133,9 @@ public class ASTMatcher {
 		return false;
 	}
 
+	public boolean match(EnumMember member, Object other) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
 }
