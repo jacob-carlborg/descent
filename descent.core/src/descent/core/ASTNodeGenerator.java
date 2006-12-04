@@ -7,14 +7,13 @@ public class ASTNodeGenerator {
 	
 	public static void main(String[] args) {
 		
-		String description = "catch clause";
+		String description = "base class";
 		String clazz = toMethod(description);
 		String nodeType = toProperty(description);
 
 		Member[] members = {
-			Member.child("type", "Type", NO_CYCLE_RISK),
-			Member.child("name", "SimpleName", NO_CYCLE_RISK),
-			Member.childMandatory("body", "Statement", CYCLE_RISK, "Block"),
+				Member.simple("modifier flags", "int"),
+				Member.childMandatory("type", "Type", NO_CYCLE_RISK, "Type.tint32"),				
 		};
 		
 		StringBuilder sb = new StringBuilder();
@@ -452,7 +451,7 @@ public class ASTNodeGenerator {
 				sb.append("safeSubtreeMatch(node.get" + member.method + "(), o.get" + member.method + "())\n");
 				break;
 			case LIST:
-				sb.append("&& safeSubtreeListMatch(node." + member.method + "(), o." + member.method + "())\n");
+				sb.append("safeSubtreeListMatch(node." + member.method + "(), o." + member.method + "())\n");
 				break;
 			}
 			
