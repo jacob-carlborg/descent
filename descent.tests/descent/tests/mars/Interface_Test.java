@@ -7,6 +7,7 @@ import descent.core.dom.ICompilationUnit;
 import descent.core.dom.IElement;
 import descent.core.dom.IModifier;
 import descent.core.dom.ISimpleName;
+import descent.internal.core.dom.AggregateDeclaration;
 import descent.internal.core.dom.ParserFacade;
 
 public class Interface_Test extends Parser_Test {
@@ -19,7 +20,7 @@ public class Interface_Test extends Parser_Test {
 		
 		IAggregateDeclaration c = (IAggregateDeclaration) declDefs[0];
 		assertEquals(IElement.AGGREGATE_DECLARATION, c.getNodeType0());
-		assertEquals(IAggregateDeclaration.INTERFACE_DECLARATION, c.getAggregateDeclarationType());
+		assertEquals(AggregateDeclaration.Kind.INTERFACE, c.getKind());
 		assertPosition(c, 1, 19);
 		
 		ISimpleName name = c.getName();
@@ -27,7 +28,7 @@ public class Interface_Test extends Parser_Test {
 		assertEquals("Clazz", name.toString());
 		assertPosition(name, 11, 5);
 		
-		assertEquals(0, c.getBaseClasses().length);
+		assertEquals(0, c.baseClasses().size());
 	}
 	
 	public void testSemicolon() {
@@ -45,15 +46,15 @@ public class Interface_Test extends Parser_Test {
 		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
 		IElement[] declDefs = unit.getDeclarationDefinitions();
 		IAggregateDeclaration c = (IAggregateDeclaration) declDefs[0];
-		IBaseClass[] bs = c.getBaseClasses();
+		IBaseClass[] bs = c.baseClasses().toArray(new IBaseClass[c.baseClasses().size()]);
 		assertEquals(5, bs.length);
 		
 		assertEquals(IElement.BASE_CLASS, bs[0].getNodeType0());
-		assertEquals(IModifier.PUBLIC, bs[0].getModifiers());
-		assertEquals(IModifier.PRIVATE, bs[1].getModifiers());
-		assertEquals(IModifier.PACKAGE, bs[2].getModifiers());
-		assertEquals(IModifier.PROTECTED, bs[3].getModifiers());
-		assertEquals(IModifier.PUBLIC, bs[4].getModifiers());
+		assertEquals(IModifier.PUBLIC, bs[0].getModifierFlags());
+		assertEquals(IModifier.PRIVATE, bs[1].getModifierFlags());
+		assertEquals(IModifier.PACKAGE, bs[2].getModifierFlags());
+		assertEquals(IModifier.PROTECTED, bs[3].getModifierFlags());
+		assertEquals(IModifier.PUBLIC, bs[4].getModifierFlags());
 	}
 	
 	public void testWithComments() {

@@ -497,16 +497,6 @@ public class Problems_Test extends TestCase {
 		assertEquals(1, p.getLength());
 	}
 
-	public void test_CURLIES_EXPECTED_FOLLOWING_AGGREGATE_DECLARATION_1() {
-		IProblem[] p = getProblems(" class ", 2);
-
-		assertEquals(IProblem.CURLIES_EXPECTED_FOLLOWING_AGGREGATE_DECLARATION,
-				p[1].getId());
-		assertEquals(IProblem.SEVERITY_ERROR, p[1].getSeverity());
-		assertEquals(1, p[1].getOffset());
-		assertEquals(5, p[1].getLength());
-	}
-
 	public void test_CURLIES_EXPECTED_FOLLOWING_AGGREGATE_DECLARATION_2() {
 		IProblem p = getProblem(" class Ble ");
 

@@ -5,7 +5,7 @@ import descent.core.dom.ISimpleName;
 import descent.core.dom.IStatement;
 import descent.core.dom.IUnitTestDeclaration;
 
-public class UnitTestDeclaration extends Dsymbol implements IUnitTestDeclaration {
+public class UnitTestDeclaration extends Declaration implements IUnitTestDeclaration {
 
 	public Statement fbody;
 

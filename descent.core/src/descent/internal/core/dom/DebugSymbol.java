@@ -4,7 +4,7 @@ import descent.core.dom.IConditionAssignment;
 import descent.core.dom.ASTVisitor;
 import descent.core.dom.ISimpleName;
 
-public class DebugSymbol extends Dsymbol implements IConditionAssignment {
+public class DebugSymbol extends Declaration implements IConditionAssignment {
 
 	public Identifier ident;
 

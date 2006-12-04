@@ -6,12 +6,12 @@ import descent.core.dom.ASTVisitor;
 import descent.core.dom.IDeclaration;
 import descent.core.dom.IStorageClassDeclaration;
 
-public class StorageClassDeclaration extends Dsymbol implements IStorageClassDeclaration {
+public class StorageClassDeclaration extends Declaration implements IStorageClassDeclaration {
 	
 	public int stc;
 	public IDeclaration[] decl;
 
-	public StorageClassDeclaration(int stc, List<IDeclaration> declDefs) {
+	public StorageClassDeclaration(int stc, List<Declaration> declDefs) {
 		this.stc = stc;
 		if (declDefs != null) {
 			this.decl = declDefs.toArray(new IDeclaration[declDefs.size()]);

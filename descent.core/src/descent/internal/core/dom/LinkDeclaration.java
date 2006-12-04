@@ -6,12 +6,12 @@ import descent.core.dom.ASTVisitor;
 import descent.core.dom.IDeclaration;
 import descent.core.dom.ILinkDeclaration;
 
-public class LinkDeclaration extends Dsymbol implements ILinkDeclaration {
+public class LinkDeclaration extends Declaration implements ILinkDeclaration {
 
 	private int linkage;
 	private IDeclaration[] declDefs;
 
-	public LinkDeclaration(LINK linkage, List<IDeclaration> declDefs) {
+	public LinkDeclaration(LINK linkage, List<Declaration> declDefs) {
 		if (declDefs != null) {
 			this.declDefs = declDefs.toArray(new IDeclaration[declDefs.size()]);
 		}

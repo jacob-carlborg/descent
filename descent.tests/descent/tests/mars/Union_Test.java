@@ -5,6 +5,7 @@ import descent.core.dom.IComment;
 import descent.core.dom.ICompilationUnit;
 import descent.core.dom.IElement;
 import descent.core.dom.ISimpleName;
+import descent.internal.core.dom.AggregateDeclaration;
 import descent.internal.core.dom.ParserFacade;
 
 public class Union_Test extends Parser_Test {
@@ -17,7 +18,7 @@ public class Union_Test extends Parser_Test {
 		
 		IAggregateDeclaration c = (IAggregateDeclaration) declDefs[0];
 		assertEquals(IElement.AGGREGATE_DECLARATION, c.getNodeType0());
-		assertEquals(IAggregateDeclaration.UNION_DECLARATION, c.getAggregateDeclarationType());
+		assertEquals(AggregateDeclaration.Kind.UNION, c.getKind());
 		assertPosition(c, 1, 15);
 		
 		ISimpleName name = c.getName();
@@ -25,7 +26,7 @@ public class Union_Test extends Parser_Test {
 		assertEquals("Clazz", name.toString());
 		assertPosition(name, 7, 5);
 		
-		assertEquals(0, c.getBaseClasses().length);
+		assertEquals(0, c.baseClasses().size());
 	}
 	
 	public void testSemicolon() {

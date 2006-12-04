@@ -6,9 +6,9 @@ import descent.core.dom.IDeclarationStatement;
 
 public class DeclarationStatement extends Statement implements IDeclarationStatement {
 
-	private final Dsymbol d;
+	private final ASTNode d;
 
-	public DeclarationStatement(Dsymbol d) {
+	public DeclarationStatement(ASTNode d) {
 		this.d = d;
 	}
 	

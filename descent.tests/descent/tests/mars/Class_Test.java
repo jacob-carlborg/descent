@@ -1,12 +1,15 @@
 package descent.tests.mars;
 
+import java.util.List;
+
 import descent.core.dom.IAggregateDeclaration;
-import descent.core.dom.IBaseClass;
 import descent.core.dom.IComment;
 import descent.core.dom.ICompilationUnit;
 import descent.core.dom.IElement;
 import descent.core.dom.IModifier;
 import descent.core.dom.ISimpleName;
+import descent.internal.core.dom.AggregateDeclaration;
+import descent.internal.core.dom.BaseClass;
 import descent.internal.core.dom.ParserFacade;
 
 public class Class_Test extends Parser_Test {
@@ -19,7 +22,7 @@ public class Class_Test extends Parser_Test {
 		
 		IAggregateDeclaration c = (IAggregateDeclaration) declDefs[0];
 		assertEquals(IElement.AGGREGATE_DECLARATION, c.getNodeType0());
-		assertEquals(IAggregateDeclaration.CLASS_DECLARATION, c.getAggregateDeclarationType());
+		assertEquals(AggregateDeclaration.Kind.CLASS, c.getKind());
 		assertPosition(c, 1, 15);
 		
 		ISimpleName name = c.getName();
@@ -27,9 +30,9 @@ public class Class_Test extends Parser_Test {
 		assertEquals("Clazz", name.toString());
 		assertPosition(name, 7, 5);
 		
-		assertEquals(0, c.getBaseClasses().length);
+		assertEquals(0, c.baseClasses().size());
 		
-		assertFalse(c.isTemplate());
+		assertTrue(c.templateParameters().size() == 0);
 		
 		assertVisitor(c, 2);
 	}
@@ -49,18 +52,18 @@ public class Class_Test extends Parser_Test {
 		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
 		IElement[] declDefs = unit.getDeclarationDefinitions();
 		IAggregateDeclaration c = (IAggregateDeclaration) declDefs[0];
-		IBaseClass[] bs = c.getBaseClasses();
-		assertEquals(5, bs.length);
+		List<BaseClass> bs = c.baseClasses();
+		assertEquals(5, bs.size());
 		
-		assertEquals(IElement.BASE_CLASS, bs[0].getNodeType0());
-		assertEquals(IModifier.PUBLIC, bs[0].getModifiers());
-		assertEquals(IModifier.PRIVATE, bs[1].getModifiers());
-		assertEquals(IModifier.PACKAGE, bs[2].getModifiers());
-		assertEquals(IModifier.PROTECTED, bs[3].getModifiers());
-		assertEquals(IModifier.PUBLIC, bs[4].getModifiers());
+		assertEquals(IElement.BASE_CLASS, bs.get(0).getNodeType0());
+		assertEquals(IModifier.PUBLIC, bs.get(0).getModifierFlags());
+		assertEquals(IModifier.PRIVATE, bs.get(1).getModifierFlags());
+		assertEquals(IModifier.PACKAGE, bs.get(2).getModifierFlags());
+		assertEquals(IModifier.PROTECTED, bs.get(3).getModifierFlags());
+		assertEquals(IModifier.PUBLIC, bs.get(4).getModifierFlags());
 		
-		assertEquals("None", bs[0].getType().toString());
-		assertPosition(bs[0].getType(), 15, 4);
+		assertEquals("None", bs.get(0).getType().toString());
+		assertPosition(bs.get(0).getType(), 15, 4);
 		
 		assertVisitor(c, 12);
 	}
@@ -105,7 +108,7 @@ public class Class_Test extends Parser_Test {
 		
 		IAggregateDeclaration c = (IAggregateDeclaration) declDefs[0];
 		
-		assertEquals(1, c.getDeclarationDefinitions().length);
+		assertEquals(1, c.declarations().size());
 		
 		assertVisitor(c, 5);
 	}
@@ -118,7 +121,7 @@ public class Class_Test extends Parser_Test {
 		
 		IAggregateDeclaration c = (IAggregateDeclaration) declDefs[0];
 		
-		assertEquals(1, c.getDeclarationDefinitions().length);
+		assertEquals(1, c.declarations().size());
 	}
 
 }

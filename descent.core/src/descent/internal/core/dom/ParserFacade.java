@@ -13,7 +13,7 @@ public class ParserFacade implements IParser {
 	
 	public ICompilationUnit parseCompilationUnit(String source) {
 		Parser parser = new Parser(source);
-		List<IDeclaration> declDefs = parser.parseModule();
+		List<Declaration> declDefs = parser.parseModule();
 		
 		parser.mod.members = declDefs;
 		parser.mod.startPosition = 0;

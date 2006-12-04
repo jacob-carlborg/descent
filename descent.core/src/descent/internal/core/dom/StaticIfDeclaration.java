@@ -7,13 +7,13 @@ import descent.core.dom.IDeclaration;
 import descent.core.dom.IExpression;
 import descent.core.dom.IStaticIfDeclaration;
 
-public class StaticIfDeclaration extends Dsymbol implements IStaticIfDeclaration {
+public class StaticIfDeclaration extends Declaration implements IStaticIfDeclaration {
 	
 	public Condition condition;
-	public List<IDeclaration> a;
-	public List<IDeclaration> aelse;
+	public List<Declaration> a;
+	public List<Declaration> aelse;
 
-	public StaticIfDeclaration(Condition condition, List<IDeclaration> a, List<IDeclaration> aelse) {
+	public StaticIfDeclaration(Condition condition, List<Declaration> a, List<Declaration> aelse) {
 		this.condition = condition;
 		this.a = a;
 		this.aelse = aelse;

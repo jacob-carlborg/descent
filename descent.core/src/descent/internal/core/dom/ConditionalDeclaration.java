@@ -10,13 +10,13 @@ import descent.core.dom.ISimpleName;
 import descent.core.dom.IType;
 import descent.core.dom.IVersionDeclaration;
 
-public class ConditionalDeclaration extends Dsymbol implements IVersionDeclaration, IDebugDeclaration, IIftypeDeclaration {
+public class ConditionalDeclaration extends Declaration implements IVersionDeclaration, IDebugDeclaration, IIftypeDeclaration {
 	
 	public Condition condition;
-	public List<IDeclaration> a;
-	public List<IDeclaration> aelse;
+	public List<Declaration> a;
+	public List<Declaration> aelse;
 
-	public ConditionalDeclaration(Condition condition, List<IDeclaration> a, List<IDeclaration> aelse) {
+	public ConditionalDeclaration(Condition condition, List<Declaration> a, List<Declaration> aelse) {
 		this.condition = condition;
 		this.a = a;
 		this.aelse = aelse;

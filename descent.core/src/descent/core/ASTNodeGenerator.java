@@ -7,13 +7,14 @@ public class ASTNodeGenerator {
 	
 	public static void main(String[] args) {
 		
-		String description = "do statement";
+		String description = "align declaration";
 		String clazz = toMethod(description);
 		String nodeType = toProperty(description);
 
 		Member[] members = {
-				Member.childMandatory("expression", "Expression", CYCLE_RISK, "SimpleName"),
-				Member.childMandatory("body", "Statement", CYCLE_RISK, "Block"),
+				Member.simple("modifier flags", "int"),
+				Member.simpleMandatory("align", "int", "1"),
+				Member.list("declarations", "Declaration", CYCLE_RISK),
 		};
 		
 		StringBuilder sb = new StringBuilder();
@@ -114,13 +115,13 @@ public class ASTNodeGenerator {
 		sb.append("}\n");
 		sb.append("\n");
 		
-		if (hasSimple(members)) {
+		if (hasSimpleObject(members)) {
 			sb.append("/* (omit javadoc for this method)\n");
 			sb.append(" * Method declared on ASTNode.\n");
 			sb.append(" */\n");
 			sb.append("final Object internalGetSetObjectProperty(SimplePropertyDescriptor property, boolean get, Object value) {\n");
 			for(Member member : members) {
-				if (member.type != SIMPLE) continue;
+				if (member.type != SIMPLE || "int".equals(member.clazz) || "boolean".equals(member.clazz)) continue;
 				
 				sb.append("	if (property == " + member.property + "_PROPERTY) {\n");
 				sb.append("		if (get) {\n");
@@ -133,6 +134,52 @@ public class ASTNodeGenerator {
 			}
 			sb.append("	// allow default implementation to flag the error\n");
 			sb.append("	return super.internalGetSetObjectProperty(property, get, value);\n");
+			sb.append("}\n");
+			sb.append("\n");
+		}
+		
+		if (hasSimpleInt(members)) {
+			sb.append("/* (omit javadoc for this method)\n");
+			sb.append(" * Method declared on ASTNode.\n");
+			sb.append(" */\n");
+			sb.append("final int internalGetSetIntProperty(SimplePropertyDescriptor property, boolean get, int value) {\n");
+			for(Member member : members) {
+				if (member.type != SIMPLE || !member.clazz.equals("int")) continue;
+				
+				sb.append("	if (property == " + member.property + "_PROPERTY) {\n");
+				sb.append("		if (get) {\n");
+				sb.append("			return get" + member.method + "();\n");
+				sb.append("		} else {\n");
+				sb.append("			set" + member.method + "(value);\n");
+				sb.append("			return 0;\n");
+				sb.append("		}\n");
+				sb.append("	}\n");
+			}
+			sb.append("	// allow default implementation to flag the error\n");
+			sb.append("	return super.internalGetSetIntProperty(property, get, value);\n");
+			sb.append("}\n");
+			sb.append("\n");
+		}
+		
+		if (hasSimpleBoolean(members)) {
+			sb.append("/* (omit javadoc for this method)\n");
+			sb.append(" * Method declared on ASTNode.\n");
+			sb.append(" */\n");
+			sb.append("final internalGetSetBooleanProperty(SimplePropertyDescriptor property, boolean get, boolean value) {\n");
+			for(Member member : members) {
+				if (member.type != SIMPLE || !member.clazz.equals("boolean")) continue;
+				
+				sb.append("	if (property == " + member.property + "_PROPERTY) {\n");
+				sb.append("		if (get) {\n");
+				sb.append("			return get" + member.method + "();\n");
+				sb.append("		} else {\n");
+				sb.append("			set" + member.method + "(value);\n");
+				sb.append("			return false;\n");
+				sb.append("		}\n");
+				sb.append("	}\n");
+			}
+			sb.append("	// allow default implementation to flag the error\n");
+			sb.append("	return super.internalGetSetBooleanProperty(property, get, value);\n");
 			sb.append("}\n");
 			sb.append("\n");
 		}
@@ -367,8 +414,19 @@ public class ASTNodeGenerator {
 		System.out.print(sb);			
 	}
 	
-	public static boolean hasSimple(Member[] members) {
-		return has(members, SIMPLE);
+	public static boolean hasSimpleBoolean(Member[] members) {
+		return has(members, SIMPLE, "boolean");
+	}
+	
+	public static boolean hasSimpleInt(Member[] members) {
+		return has(members, SIMPLE, "int");
+	}
+	
+	public static boolean hasSimpleObject(Member[] members) {
+		for(Member member : members) {
+			if (member.type == SIMPLE && !member.clazz.equals("int") && !member.clazz.equals("boolean")) return true;
+		}
+		return false;
 	}
 	
 	public static boolean hasChild(Member[] members) {
@@ -382,6 +440,13 @@ public class ASTNodeGenerator {
 	public static boolean has(Member[] members, int type) {
 		for(Member member : members) {
 			if (member.type == type) return true;
+		}
+		return false;
+	}
+	
+	public static boolean has(Member[] members, int type, String match) {
+		for(Member member : members) {
+			if (member.type == type && member.clazz.equals(match)) return true;
 		}
 		return false;
 	}
@@ -461,7 +526,7 @@ public class ASTNodeGenerator {
 			return member;
 		}
 		
-		public static Member list(String property, String name, String description, String clazz, String method, boolean cycleRisk) {
+		public static Member list(String description, String clazz, boolean cycleRisk) {
 			Member member = new Member();
 			member.type = LIST;
 			member.property = toProperty(description);

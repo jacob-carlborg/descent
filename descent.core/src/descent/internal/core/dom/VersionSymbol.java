@@ -4,7 +4,7 @@ import descent.core.dom.ASTVisitor;
 import descent.core.dom.ISimpleName;
 import descent.core.dom.IConditionAssignment;
 
-public class VersionSymbol extends Dsymbol implements IConditionAssignment {
+public class VersionSymbol extends Declaration implements IConditionAssignment {
 
 	public Identifier ident;
 

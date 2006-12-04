@@ -22,6 +22,6 @@ public interface IProtectionDeclaration extends IDeclaration {
 	 * Returns the protection level.
 	 * @see IModifier
 	 */
-	int getModifiers();
+	int getModifierFlags();
 
 }

@@ -1,5 +1,7 @@
 package descent.ui.text.outline;
 
+import java.util.List;
+
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.graphics.Image;
 
@@ -37,7 +39,7 @@ import descent.core.dom.ITypedefDeclaration;
 import descent.core.dom.ITypeofType;
 import descent.core.dom.IVariableDeclaration;
 import descent.core.dom.IVersionDeclaration;
-import descent.internal.core.dom.Argument;
+import descent.internal.core.dom.TemplateParameter;
 import descent.ui.DescentUI;
 import descent.ui.IImages;
 
@@ -129,8 +131,8 @@ public class DOutlineLabelProvider extends LabelProvider {
 			s = new StringBuilder();
 			name = aggregateDeclaration.getName();
 			if (name != null) s.append(name.toString());
-			if (aggregateDeclaration.isTemplate()) {
-				appendTemplateParameters(s, aggregateDeclaration.getTemplateParameters());
+			if (!aggregateDeclaration.templateParameters().isEmpty()) {
+				appendTemplateParameters(s, aggregateDeclaration.templateParameters());
 			}
 			return s.toString();
 		case IElement.FUNCTION_DECLARATION:
@@ -281,19 +283,19 @@ public class DOutlineLabelProvider extends LabelProvider {
 			return importImage;
 		case IElement.AGGREGATE_DECLARATION:
 			IAggregateDeclaration a = (IAggregateDeclaration) element;
-			switch(a.getAggregateDeclarationType()) {
-			case IAggregateDeclaration.CLASS_DECLARATION:
+			switch(a.getKind()) {
+			case CLASS:
 				return classImage;
-			case IAggregateDeclaration.INTERFACE_DECLARATION:
+			case INTERFACE:
 				return interfaceImage;
-			case IAggregateDeclaration.STRUCT_DECLARATION:
+			case STRUCT:
 				return structImage;
-			case IAggregateDeclaration.UNION_DECLARATION:
+			case UNION:
 				return unionImage;
 			}
 		case IElement.FUNCTION_DECLARATION:
 			IFunctionDeclaration func = (IFunctionDeclaration) element;
-			m = func.getModifiers();
+			m = func.getModifierFlags();
 			switch(func.getFunctionDeclarationType()) {
 			case IFunctionDeclaration.FUNCTION:
 			case IFunctionDeclaration.NEW:
@@ -342,7 +344,7 @@ public class DOutlineLabelProvider extends LabelProvider {
 		case IElement.UNITTEST_DECLARATION:
 			return unittestImage;
 		case IElement.VARIABLE_DECLARATION:
-			m = ((IVariableDeclaration) element).getModifiers();
+			m = ((IVariableDeclaration) element).getModifierFlags();
 			if ((m & IModifier.PRIVATE) > 0) {
 				return fieldPrivateImage;
 			} else if ((m & IModifier.PROTECTED) > 0) {
@@ -414,8 +416,9 @@ public class DOutlineLabelProvider extends LabelProvider {
 		return builder.toString();
 	}
 	
+	// TODO remove duplicated code
 	private void appendTemplateParameters(StringBuilder s, ITemplateParameter[] templateParameters) {
-		s.append('(');
+s.append('(');
 		
 		int i = 0;
 		for(ITemplateParameter p : templateParameters) {
@@ -447,6 +450,47 @@ public class DOutlineLabelProvider extends LabelProvider {
 				break;
 			}
 			if (i != templateParameters.length - 1) {
+				s.append(", ");
+			}
+			i++;
+		}
+			
+		s.append(')');
+	}
+	
+	private void appendTemplateParameters(StringBuilder s, List<TemplateParameter> templateParameters) {
+		s.append('(');
+		
+		int i = 0;
+		for(ITemplateParameter p : templateParameters) {
+			switch(p.getNodeType0()) {
+			case ITemplateParameter.TYPE_TEMPLATE_PARAMETER:
+				ITypeTemplateParameter ttp = (ITypeTemplateParameter) p;
+				s.append(ttp.getName().toString());
+				if (ttp.getSpecificType() != null) {
+					s.append(" : ");
+					appendType(s, ttp.getSpecificType());
+				}
+				if (ttp.getDefaultType() != null) {
+					s.append(" = ");
+					appendType(s, ttp.getDefaultType());
+				}
+				break;
+			case ITemplateParameter.ALIAS_TEMPLATE_PARAMETER:
+				IAliasTemplateParameter tap = (IAliasTemplateParameter) p;
+				s.append("alias ");
+				s.append(tap.getName().toString());
+				if (tap.getSpecificType() != null) {
+					s.append(" : ");
+					appendType(s, tap.getSpecificType());
+				}
+				if (tap.getDefaultType() != null) {
+					s.append(" = ");
+					appendType(s, tap.getDefaultType());
+				}
+				break;
+			}
+			if (i != templateParameters.size() - 1) {
 				s.append(", ");
 			}
 			i++;

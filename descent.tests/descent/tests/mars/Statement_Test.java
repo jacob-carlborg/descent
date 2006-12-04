@@ -39,6 +39,7 @@ import descent.core.dom.IVersionStatement;
 import descent.core.dom.IVolatileStatement;
 import descent.core.dom.IWhileStatement;
 import descent.core.dom.IWithStatement;
+import descent.internal.core.dom.AggregateDeclaration;
 import descent.internal.core.dom.Argument;
 import descent.internal.core.dom.ParserFacade;
 
@@ -523,7 +524,7 @@ public class Statement_Test extends Parser_Test {
 		
 		IVariableDeclaration var = (IVariableDeclaration) stm.getDeclaration();
 		
-		assertTrue((var.getModifiers() & IModifier.EXTERN) != 0);
+		assertTrue((var.getModifierFlags() & IModifier.EXTERN) != 0);
 	}
 	
 	public void testTypeof() {
@@ -538,8 +539,8 @@ public class Statement_Test extends Parser_Test {
 		String s = " class X { };";
 		IDeclarationStatement stm = (IDeclarationStatement) new ParserFacade().parseStatement(s);
 		
-		IAggregateDeclaration var = (IAggregateDeclaration) stm.getDeclaration();
-		assertEquals(IAggregateDeclaration.CLASS_DECLARATION, var.getAggregateDeclarationType());
+		IAggregateDeclaration ad = (IAggregateDeclaration) stm.getDeclaration();
+		assertEquals(AggregateDeclaration.Kind.CLASS, ad.getKind());
 	}
 	
 	public void testEnum() {
@@ -564,7 +565,7 @@ public class Statement_Test extends Parser_Test {
 		
 		IVariableDeclaration var = (IVariableDeclaration) stm.getDeclaration();
 		assertNotNull(var);
-		assertTrue((var.getModifiers() & IModifier.SCOPE) != 0);
+		assertTrue((var.getModifierFlags() & IModifier.SCOPE) != 0);
 	}
 
 }

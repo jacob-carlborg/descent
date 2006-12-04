@@ -7,12 +7,12 @@ import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.ui.IEditorInput;
 
+import descent.core.dom.ASTVisitor;
 import descent.core.dom.IAggregateDeclaration;
 import descent.core.dom.IAlignDeclaration;
 import descent.core.dom.ICompilationUnit;
 import descent.core.dom.IConditionalDeclaration;
 import descent.core.dom.IElement;
-import descent.core.dom.ASTVisitor;
 import descent.core.dom.IEnumDeclaration;
 import descent.core.dom.IImportDeclaration;
 import descent.core.dom.ILinkDeclaration;
@@ -56,7 +56,7 @@ public class DOutlineContentProvider implements ITreeContentProvider {
 			return list.toArray();
 		case IElement.AGGREGATE_DECLARATION:
 			list = new ArrayList<Object>();
-			addDeclDefs(list, ((IAggregateDeclaration) e).getDeclarationDefinitions());
+			addDeclDefs(list, ((IAggregateDeclaration) e).declarations());
 			return list.toArray();
 		case IElement.TEMPLATE_DECLARATION:
 			list = new ArrayList<Object>();
@@ -91,6 +91,36 @@ public class DOutlineContentProvider implements ITreeContentProvider {
 		return new Object[0];
 	}
 	
+	private void addDeclDefs(List<Object> list, List<? extends IElement> declDefs) {
+		List<IImportDeclaration> importDeclarations = null;
+		for(IElement elem : declDefs) {
+			switch(elem.getNodeType0()) {
+			case IElement.PROTECTION_DECLARATION:
+				addDeclDefs(list, ((IProtectionDeclaration) elem).getDeclarationDefinitions());
+				break;
+			case IElement.STORAGE_CLASS_DECLARATION:
+				addDeclDefs(list, ((IStorageClassDeclaration) elem).getDeclarationDefinitions());
+				break;
+			case IElement.ALIGN_DECLARATION:
+				addDeclDefs(list, ((IAlignDeclaration) elem).declarations());
+				break;
+			case IElement.IMPORT_DECLARATION:
+				if (importDeclarations == null) {
+					importDeclarations = new ArrayList<IImportDeclaration>();
+				}
+				importDeclarations.add((IImportDeclaration) elem);
+				break;
+			default:
+				list.add(elem);
+				break;
+			}
+		}
+		if (importDeclarations != null) {
+			list.add(new Imports(importDeclarations.toArray(new IImportDeclaration[importDeclarations.size()])));
+		}
+	}
+	
+	// TODO remove duplicate
 	private void addDeclDefs(List<Object> list, IElement[] declDefs) {
 		List<IImportDeclaration> importDeclarations = null;
 		for(IElement elem : declDefs) {
@@ -102,7 +132,7 @@ public class DOutlineContentProvider implements ITreeContentProvider {
 				addDeclDefs(list, ((IStorageClassDeclaration) elem).getDeclarationDefinitions());
 				break;
 			case IElement.ALIGN_DECLARATION:
-				addDeclDefs(list, ((IAlignDeclaration) elem).getDeclarationDefinitions());
+				addDeclDefs(list, ((IAlignDeclaration) elem).declarations());
 				break;
 			case IElement.IMPORT_DECLARATION:
 				if (importDeclarations == null) {
@@ -142,7 +172,7 @@ public class DOutlineContentProvider implements ITreeContentProvider {
 				return true;
 			}
 		case IElement.AGGREGATE_DECLARATION:
-			return ((IAggregateDeclaration) e).getDeclarationDefinitions().length > 0;
+			return ((IAggregateDeclaration) e).declarations().size() > 0;
 		case IElement.ENUM_DECLARATION:
 			return ((IEnumDeclaration) e).getMembers().length > 0;
 		case IElement.LINK_DECLARATION:

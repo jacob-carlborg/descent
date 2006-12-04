@@ -15,6 +15,11 @@ import descent.core.dom.IElement;
 
 public abstract class ASTNode implements IElement {
 	
+	// TODO Descent remove
+	ASTNode() {
+		this(AST.newAST(AST.JLS3));
+	}
+	
 	public final static IElement[] NO_ELEMENTS = new IElement[0];
 	public final static IDeclaration[] NO_DECLARATIONS = new IDeclaration[0];
 	
@@ -476,11 +481,6 @@ public abstract class ASTNode implements IElement {
 		}
 	}
 	
-	// TODO Descent remove
-	ASTNode() {
-		this.ast = null;
-	}
-	
 	/**
 	 * Creates a new AST node owned by the given AST. Once established,
 	 * the relationship between an AST node and its owning AST does not change
@@ -500,8 +500,10 @@ public abstract class ASTNode implements IElement {
 		}
 		
 		this.ast = ast;
-		setNodeType(getNodeType0());
-		setFlags(ast.getDefaultNodeFlag());
+		// TODO Descent uncomment
+		// setNodeType(getNodeType0());
+		// setFlags(ast.getDefaultNodeFlag());
+		
 		// setFlags calls modifying();
 	}
 	
@@ -1548,10 +1550,10 @@ public abstract class ASTNode implements IElement {
 	 */
 	ASTNode clone0(AST target) { return null; }
 	
-	public int modifiers;
+	public int modifierFlags;
 	
-	public int getModifiers() {
-		return modifiers;
+	public int getModifierFlags() {
+		return modifierFlags;
 	}
 	
 	/*

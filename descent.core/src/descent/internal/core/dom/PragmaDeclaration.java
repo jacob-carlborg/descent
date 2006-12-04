@@ -8,12 +8,12 @@ import descent.core.dom.IExpression;
 import descent.core.dom.ISimpleName;
 import descent.core.dom.IPragmaDeclaration;
 
-public class PragmaDeclaration extends Dsymbol implements IPragmaDeclaration {
+public class PragmaDeclaration extends Declaration implements IPragmaDeclaration {
 	
 	private IExpression[] expressions;
 	private IDeclaration[] declDefs;
 
-	public PragmaDeclaration(Identifier ident, List<Expression> args, List<IDeclaration> a) {
+	public PragmaDeclaration(Identifier ident, List<Expression> args, List<Declaration> a) {
 		this.ident = ident;
 		if (args != null) {
 			expressions = args.toArray(new IExpression[args.size()]);

@@ -17,6 +17,8 @@ public class TypeIdentifier extends TypeQualified implements IIdentifierType, IT
 	}
 	
 	public int getNodeType0() {
+		// TODO Descent remove
+		if (idents == null) return IDENTIFIER_TYPE;
 		if (idents.size() == 0) {
 			return IDENTIFIER_TYPE;
 		} else {

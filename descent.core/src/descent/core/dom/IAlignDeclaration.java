@@ -1,5 +1,9 @@
 package descent.core.dom;
 
+import java.util.List;
+
+import descent.internal.core.dom.Declaration;
+
 /**
  * An align declaration:
  * 
@@ -13,11 +17,11 @@ public interface IAlignDeclaration extends IDeclaration {
 	/**
 	 * Returns the align.
 	 */
-	long getAlign();
+	int getAlign();
 	
 	/**
 	 * Returns the declaration definitions contained in this declaration.
 	 */
-	IDeclaration[] getDeclarationDefinitions();
+	List<Declaration> declarations();
 
 }

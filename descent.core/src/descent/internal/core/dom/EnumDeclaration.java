@@ -8,7 +8,7 @@ import descent.core.dom.IEnumMember;
 import descent.core.dom.ISimpleName;
 import descent.core.dom.IType;
 
-public class EnumDeclaration extends Dsymbol implements IEnumDeclaration {
+public class EnumDeclaration extends Declaration implements IEnumDeclaration {
 
 	public List<IEnumMember> members;
 	public Type type;

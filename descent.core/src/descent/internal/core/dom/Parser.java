@@ -88,7 +88,6 @@ import java.util.List;
 
 import descent.core.compiler.IProblem;
 import descent.core.dom.IBaseClass;
-import descent.core.dom.IDeclaration;
 import descent.core.dom.IElement;
 import descent.core.dom.IEnumMember;
 import descent.core.dom.IImport;
@@ -142,8 +141,8 @@ public class Parser extends Lexer {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public List<IDeclaration> parseModule() {
-	    List<IDeclaration> decldefs = new ArrayList<IDeclaration>();
+	public List<Declaration> parseModule() {
+	    List<Declaration> decldefs = new ArrayList<Declaration>();
 	    
 	    List<Comment> moduleDocComments = getLastDocComments();
 
@@ -207,13 +206,13 @@ public class Parser extends Lexer {
 	}
 
 	@SuppressWarnings("unchecked")
-	private List<IDeclaration> parseDeclDefs(boolean once) {
+	private List<Declaration> parseDeclDefs(boolean once) {
 		Object[] tempObj;
 
 		ASTNode s;
-		List<IDeclaration> decldefs;
-		List<IDeclaration> a = new ArrayList<IDeclaration>();
-		List<IDeclaration> aelse;
+		List<Declaration> decldefs;
+		List<Declaration> a = new ArrayList<Declaration>();
+		List<Declaration> aelse;
 		PROT prot;
 		int stc;
 		Condition condition;
@@ -222,7 +221,7 @@ public class Parser extends Lexer {
 		boolean[] isSingle = new boolean[1];
 		
 		// printf("Parser::parseDeclDefs()\n");
-		decldefs = new ArrayList<IDeclaration>();
+		decldefs = new ArrayList<Declaration>();
 		do {
 			List<Comment> lastComments = getLastDocComments();
 			
@@ -350,7 +349,7 @@ public class Parser extends Lexer {
 					stc = STCstatic;
 					// goto Lstc2;
 					tempObj = parseDeclDefs_Lstc2(stc, a, isSingle);
-					a = (List<IDeclaration>) tempObj[0];
+					a = (List<Declaration>) tempObj[0];
 					stc = ((Integer) tempObj[1]);
 					s = (ASTNode) tempObj[2];
 				}
@@ -381,10 +380,10 @@ public class Parser extends Lexer {
 				if (a != null && a.size() == 1) {
 					if (isSingle[0]) {
 						s = (ASTNode) a.get(0);
-						s.modifiers |= mod;
+						s.modifierFlags |= mod;
 					} else {
-						for(IDeclaration elem : a) {
-							((ASTNode) elem).modifiers |= mod;
+						for(Declaration elem : a) {
+							elem.modifierFlags |= mod;
 						}
 					}
 				}
@@ -429,11 +428,11 @@ public class Parser extends Lexer {
 				if (a != null && a.size() > 0) {
 					if (isSingle[0]) {
 						s = (ASTNode) a.get(0);
-						s.modifiers |= protection;
+						s.modifierFlags |= protection;
 					} else {
 						s = new ProtDeclaration(prot, a);
 						for(IElement elem : a) {
-							((ASTNode) elem).modifiers |= protection;
+							((ASTNode) elem).modifierFlags |= protection;
 						}
 					}
 				} else {
@@ -463,7 +462,7 @@ public class Parser extends Lexer {
 					n = global.structalign; // default
 
 				a = parseBlock();
-				s = new AlignDeclaration(n, a);
+				s = new AlignDeclaration((int) n, a);
 				s.startPosition = saveToken.ptr;
 				s.length = prevToken.ptr + prevToken.len - s.startPosition;
 				break;
@@ -589,8 +588,8 @@ public class Parser extends Lexer {
 				condition = parseIftypeCondition();
 				// goto Lcondition;
 				tempObj = parseDeclDefs_Lcondition(condition);
-				a = (List<IDeclaration>) tempObj[0];
-				aelse = (List<IDeclaration>) tempObj[1];
+				a = (List<Declaration>) tempObj[0];
+				aelse = (List<Declaration>) tempObj[1];
 				s = (ASTNode) tempObj[2];
 				s.startPosition = saveToken.ptr;
 				s.length = prevToken.ptr + prevToken.len - s.startPosition;
@@ -606,7 +605,7 @@ public class Parser extends Lexer {
 				continue;
 			}
 			if (s != null) {
-				decldefs.add((IDeclaration) s);
+				decldefs.add((Declaration) s);
 				s.comments = lastComments;
 				adjustLastDocComment();
 			}
@@ -623,8 +622,8 @@ public class Parser extends Lexer {
 	
 	// a, aelse, s
 	private Object[] parseDeclDefs_Lcondition(Condition condition) {
-		List<IDeclaration> a = parseBlock();
-		List<IDeclaration> aelse = null;
+		List<Declaration> a = parseBlock();
+		List<Declaration> aelse = null;
 		if (token.value == TOKelse)
 		{   nextToken();
 		    aelse = parseBlock();
@@ -634,7 +633,7 @@ public class Parser extends Lexer {
 	}
 	
 	// a, stc, s
-	private Object[] parseDeclDefs_Lstc2(int stc, List<IDeclaration> a, boolean[] isSingle) {
+	private Object[] parseDeclDefs_Lstc2(int stc, List<Declaration> a, boolean[] isSingle) {
 		boolean repeat = true;
 		while(repeat) {
 			switch (token.value)
@@ -665,7 +664,7 @@ public class Parser extends Lexer {
 		    Initializer init = parseInitializer();
 		    VarDeclaration v = new VarDeclaration(null, ident, init);
 		    v.storage_class = stc;
-		    v.modifiers = STC.getModifiers(stc);
+		    v.modifierFlags = STC.getModifiers(stc);
 		    Dsymbol s = v;
 		    if (token.value != TOKsemicolon) {
 		    	problem("Semicolon expected following auto declaration", IProblem.SEVERITY_ERROR, IProblem.SEMICOLON_EXPECTED, token.ptr, token.len);
@@ -684,12 +683,12 @@ public class Parser extends Lexer {
 		}
 	}
 	
-	private List<IDeclaration> parseBlock() {
+	private List<Declaration> parseBlock() {
 		return parseBlock(new boolean[1]);
 	}
 	
-	private List<IDeclaration> parseBlock(boolean[] isSingle) {
-		List<IDeclaration> a = null;
+	private List<Declaration> parseBlock(boolean[] isSingle) {
+		List<Declaration> a = null;
 	    // Dsymbol s; // <-- not used
 
 	    //printf("parseBlock()\n");
@@ -1204,7 +1203,7 @@ public class Parser extends Lexer {
 	}
 	
 	@SuppressWarnings("unchecked")
-	private Dsymbol parseAggregate() {
+	private AggregateDeclaration parseAggregate() {
 		AggregateDeclaration a = null;
 		int anon = 0;
 		TOK tok;
@@ -1253,9 +1252,9 @@ public class Parser extends Lexer {
 			}
 
 			if (tok == TOKclass) {
-				a = new ClassDeclaration(id, baseclasses);
+				a = new AggregateDeclaration(AggregateDeclaration.Kind.CLASS, new SimpleName(id), baseclasses);
 			} else {
-				a = new InterfaceDeclaration(id, baseclasses);
+				a = new AggregateDeclaration(AggregateDeclaration.Kind.INTERFACE, new SimpleName(id), baseclasses);
 			}
 			a.startPosition = firstToken.ptr;
 			break;
@@ -1263,7 +1262,7 @@ public class Parser extends Lexer {
 
 		case TOKstruct:
 			//if (id != null) {
-				a = new StructDeclaration(id);
+				a = new AggregateDeclaration(AggregateDeclaration.Kind.STRUCT, new SimpleName(id));
 				a.startPosition = firstToken.ptr;
 			//} else {
 			//	anon = 1;
@@ -1272,7 +1271,7 @@ public class Parser extends Lexer {
 
 		case TOKunion:
 			//if (id != null) {
-				a = new UnionDeclaration(id);
+				a = new AggregateDeclaration(AggregateDeclaration.Kind.UNION, new SimpleName(id));
 				a.startPosition = firstToken.ptr;
 			//} else {
 			//	anon = 2;
@@ -1309,21 +1308,21 @@ public class Parser extends Lexer {
 				 */
 				//return new AnonDeclaration(loc, anon - 1, decl);
 			} else {
-				a.members = decl;
+				a.declarations().addAll(decl);
 			}
 		} else {
-			if (a.ident == null) {
+			if (a.getName() == null) {
 				problem("{ } expected following aggregate declaration", IProblem.SEVERITY_ERROR, IProblem.CURLIES_EXPECTED_FOLLOWING_AGGREGATE_DECLARATION,
 						firstToken.ptr, firstToken.len);
 			} else {
 				problem("{ } expected following aggregate declaration", IProblem.SEVERITY_ERROR, IProblem.CURLIES_EXPECTED_FOLLOWING_AGGREGATE_DECLARATION,
-						firstToken.ptr, a.ident.startPosition + a.ident.length - firstToken.ptr);
+						firstToken.ptr, a.getName().getStartPosition() + a.getName().getLength() - firstToken.ptr);
 			}
-			a = new StructDeclaration(null);
+			a = new AggregateDeclaration(AggregateDeclaration.Kind.STRUCT, null);
 		}
 
 		if (tpl != null) {
-			a.templateParameters = tpl.toArray(new ITemplateParameter[tpl.size()]);
+			a.templateParameters().addAll(tpl);
 			/*
 			List decldefs;
 			TemplateDeclaration tempdecl;
@@ -1379,7 +1378,7 @@ public class Parser extends Lexer {
 		TemplateDeclaration tempdecl;
 	    Identifier id;
 	    List<TemplateParameter> tpl;
-	    List<IDeclaration> decldefs;
+	    List<Declaration> decldefs;
 
 	    Token firstToken = new Token(token);
 	    nextToken();
@@ -1735,7 +1734,7 @@ public class Parser extends Lexer {
 	    return tiargs;
 	}
 	
-	private Import parseImport(List<IDeclaration> decldefs, boolean isstatic) {
+	private Import parseImport(List<Declaration> decldefs, boolean isstatic) {
 		ImportDeclaration importDeclaration = new ImportDeclaration();
 		importDeclaration.startPosition = token.ptr;
 		importDeclaration.imports = new ArrayList<IImport>();
@@ -2307,7 +2306,7 @@ public class Parser extends Lexer {
 	}
 	
 	@SuppressWarnings("unchecked")
-	private List<IDeclaration> parseDeclarations() {
+	private List<Declaration> parseDeclarations() {
 		int storage_class;
 		int stc;
 		Type ts;
@@ -2389,7 +2388,7 @@ public class Parser extends Lexer {
 			Initializer init = parseInitializer();
 			VarDeclaration v = new VarDeclaration(null, ident, init);
 			v.storage_class = storage_class;
-			v.modifiers = STC.getModifiers(storage_class);
+			v.modifierFlags = STC.getModifiers(storage_class);
 			a.add(v);
 			if (token.value == TOKsemicolon) {
 				nextToken();
@@ -2406,7 +2405,7 @@ public class Parser extends Lexer {
 
 			s = (AggregateDeclaration) parseAggregate();
 			// TODO CHECK DMD s.storage_class |= storage_class;
-			s.modifiers = STC.getModifiers(storage_class);
+			s.modifierFlags = STC.getModifiers(storage_class);
 			a.add(s);
 			s.comments = lastComments;
 			adjustLastDocComment();
@@ -2461,7 +2460,7 @@ public class Parser extends Lexer {
 					if (init != null) {
 						problem("Alias cannot have initializer", IProblem.SEVERITY_ERROR, IProblem.ALIAS_CANNOT_HAVE_INITIALIZER, tokAssign.ptr, init.startPosition + init.length - tokAssign.ptr);
 					}
-					AliasDeclaration al = new AliasDeclaration(ident, t);
+					AliasDeclaration al = new AliasDeclaration(new SimpleName(ident), t);
 					al.startPosition = nextTypdefOrAliasStart;
 					v = al;
 				}
@@ -2536,7 +2535,7 @@ public class Parser extends Lexer {
 				v = new VarDeclaration(t, ident, init);
 				v.startPosition = nextVarStart;
 				v.storage_class = storage_class;
-				v.modifiers = STC.getModifiers(storage_class);
+				v.modifierFlags = STC.getModifiers(storage_class);
 				a.add(v);
 				switch (token.value) {
 				case TOKsemicolon:
@@ -3007,7 +3006,7 @@ public class Parser extends Lexer {
 		case TOKunion:
 		case TOKclass:
 		case TOKinterface: {
-			Dsymbol d;
+			AggregateDeclaration d;
 
 			d = parseAggregate();
 			s = new DeclarationStatement(d);
@@ -5010,7 +5009,7 @@ public class Parser extends Lexer {
 		case TOKlbracket:
 		{   List<Expression> elements = parseArguments();
 
-		    e = new ArrayLiteralExp(elements);
+		    e = new ArrayLiteral(elements);
 		    break;
 		}
 		
@@ -5712,11 +5711,11 @@ public class Parser extends Lexer {
 				baseclasses = parseBaseClasses();
 
 			Identifier id = null;
-			ClassDeclaration cd = new ClassDeclaration(id, baseclasses);
+			AggregateDeclaration cd = new AggregateDeclaration(AggregateDeclaration.Kind.CLASS, new SimpleName(id), baseclasses);
 
 			if (token.value != TOKlcurly) {
 				problem("{ members } expected for anonymous class", IProblem.SEVERITY_ERROR, IProblem.MEMBERS_EXPECTED, token.ptr, token.len);
-				cd.members = null;
+				cd.declarations().clear();
 			} else {
 				nextToken();
 				List decl = parseDeclDefs(false);
@@ -5724,7 +5723,7 @@ public class Parser extends Lexer {
 					problem("class member expected", IProblem.SEVERITY_ERROR, IProblem.MEMBERS_EXPECTED, token.ptr, token.len);
 				}
 				nextToken();
-				cd.members = decl;
+				cd.declarations().addAll(decl);
 			}
 
 			e = new NewAnonClassExp(thisexp, newargs, cd, arguments);

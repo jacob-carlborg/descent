@@ -39,7 +39,7 @@ public class Modifier_Test extends Parser_Test {
 		IElement[] declDefs = unit.getDeclarationDefinitions();
 		
 		IAggregateDeclaration agg = (IAggregateDeclaration) declDefs[0];
-		assertEquals(IModifier.NONE, agg.getModifiers());
+		assertEquals(IModifier.NONE, agg.getModifierFlags());
 	}
 	
 	public void testSomeModifiersAsJava() {
@@ -57,7 +57,7 @@ public class Modifier_Test extends Parser_Test {
 			IElement[] declDefs = unit.getDeclarationDefinitions();
 			
 			IAggregateDeclaration agg = (IAggregateDeclaration) declDefs[0];
-			assertEquals(pair[1], agg.getModifiers());
+			assertEquals(pair[1], agg.getModifierFlags());
 		}
 	}
 	
@@ -89,7 +89,7 @@ public class Modifier_Test extends Parser_Test {
 			IProtectionDeclaration prot = (IProtectionDeclaration) declDefs[0];
 			
 			IAggregateDeclaration agg = (IAggregateDeclaration) prot.getDeclarationDefinitions()[0];
-			assertEquals(pair[1], agg.getModifiers());
+			assertEquals(pair[1], agg.getModifierFlags());
 		}
 	}
 	
@@ -110,7 +110,7 @@ public class Modifier_Test extends Parser_Test {
 			IProtectionDeclaration prot = (IProtectionDeclaration) declDefs[0];
 			
 			IAggregateDeclaration agg = (IAggregateDeclaration) prot.getDeclarationDefinitions()[0];
-			assertEquals(pair[1], agg.getModifiers());
+			assertEquals(pair[1], agg.getModifierFlags());
 		}
 	}
 	
@@ -124,11 +124,11 @@ public class Modifier_Test extends Parser_Test {
 		
 		prot = (IProtectionDeclaration) declDefs[0];
 		agg = (IAggregateDeclaration) prot.getDeclarationDefinitions()[0];
-		assertEquals(IModifier.PUBLIC, agg.getModifiers());
+		assertEquals(IModifier.PUBLIC, agg.getModifierFlags());
 		
 		prot = (IProtectionDeclaration) prot.getDeclarationDefinitions()[1];
 		agg = (IAggregateDeclaration) prot.getDeclarationDefinitions()[0];
-		assertEquals(IModifier.PRIVATE, agg.getModifiers());
+		assertEquals(IModifier.PRIVATE, agg.getModifierFlags());
 	}
 	
 	public void testAbstract() {
@@ -137,7 +137,7 @@ public class Modifier_Test extends Parser_Test {
 		IElement[] declDefs = unit.getDeclarationDefinitions();
 		
 		IAggregateDeclaration agg = (IAggregateDeclaration) declDefs[0];
-		assertEquals(IModifier.ABSTRACT, agg.getModifiers());
+		assertEquals(IModifier.ABSTRACT, agg.getModifierFlags());
 	}
 	
 	public void testAbstract2() {
@@ -149,7 +149,7 @@ public class Modifier_Test extends Parser_Test {
 		assertEquals(1, sto.getDeclarationDefinitions().length);
 		
 		IAggregateDeclaration agg = (IAggregateDeclaration) sto.getDeclarationDefinitions()[0];
-		assertEquals(IModifier.ABSTRACT, agg.getModifiers());
+		assertEquals(IModifier.ABSTRACT, agg.getModifierFlags());
 	}
 	
 	public void testOnImport() {
@@ -158,9 +158,9 @@ public class Modifier_Test extends Parser_Test {
 		IElement[] declDefs = unit.getDeclarationDefinitions();
 		
 		IImportDeclaration decl = (IImportDeclaration) declDefs[0];
-		assertEquals(IModifier.PRIVATE, decl.getModifiers());
+		assertEquals(IModifier.PRIVATE, decl.getModifierFlags());
 		IImport imp = decl.getImports()[0];
-		assertEquals(IModifier.PRIVATE, imp.getModifiers());
+		assertEquals(IModifier.PRIVATE, imp.getModifierFlags());
 	}
 	
 	public void testOnVar1() {
@@ -169,7 +169,7 @@ public class Modifier_Test extends Parser_Test {
 		IElement[] declDefs = unit.getDeclarationDefinitions();
 		
 		IVariableDeclaration var = (IVariableDeclaration) declDefs[0];
-		assertEquals(IModifier.PRIVATE, var.getModifiers());
+		assertEquals(IModifier.PRIVATE, var.getModifierFlags());
 	}
 	
 	public void testOnVar2() {
@@ -178,7 +178,7 @@ public class Modifier_Test extends Parser_Test {
 		IElement[] declDefs = unit.getDeclarationDefinitions();
 		
 		IVariableDeclaration var = (IVariableDeclaration) declDefs[0];
-		assertEquals(IModifier.CONST, var.getModifiers());
+		assertEquals(IModifier.CONST, var.getModifierFlags());
 	}
 	
 	public void testOnTypedef() {
@@ -187,7 +187,7 @@ public class Modifier_Test extends Parser_Test {
 		IElement[] declDefs = unit.getDeclarationDefinitions();
 		
 		ITypedefDeclaration var = (ITypedefDeclaration) declDefs[0];
-		assertEquals(IModifier.CONST, var.getModifiers());
+		assertEquals(IModifier.CONST, var.getModifierFlags());
 	}
 
 }

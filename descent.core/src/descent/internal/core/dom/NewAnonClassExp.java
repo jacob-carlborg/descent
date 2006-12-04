@@ -10,11 +10,11 @@ import descent.core.dom.INewAnonymousClassExpression;
 
 public class NewAnonClassExp extends Expression implements INewAnonymousClassExpression {
 
-	private ClassDeclaration cd;
+	private AggregateDeclaration ad;
 	private IExpression[] newargs;
 	private IExpression[] arguments;
 
-	public NewAnonClassExp(Expression thisexp, List<Expression> newargs, ClassDeclaration cd, List<Expression> arguments) {
+	public NewAnonClassExp(Expression thisexp, List<Expression> newargs, AggregateDeclaration cd, List<Expression> arguments) {
 		if (newargs == null) {
 			this.newargs = new IExpression[0];
 		} else {
@@ -25,7 +25,7 @@ public class NewAnonClassExp extends Expression implements INewAnonymousClassExp
 		} else {
 			this.arguments = arguments.toArray(new IExpression[arguments.size()]);
 		}
-		this.cd = cd;
+		this.ad = cd;
 	}
 	
 	public int getNodeType0() {
@@ -41,11 +41,11 @@ public class NewAnonClassExp extends Expression implements INewAnonymousClassExp
 	}
 	
 	public IBaseClass[] getBaseClasses() {
-		return cd.getBaseClasses();
+		return ad.baseClasses().toArray(new IBaseClass[ad.baseClasses().size()]);
 	}
 	
 	public IDeclaration[] getDeclarationDefinitions() {
-		return cd.getDeclarationDefinitions();
+		return ad.declarations().toArray(new IDeclaration[ad.declarations().size()]);
 	}
 	
 	public void accept0(ASTVisitor visitor) {
@@ -53,8 +53,8 @@ public class NewAnonClassExp extends Expression implements INewAnonymousClassExp
 		if (children) {
 			acceptChildren(visitor, newargs);
 			acceptChildren(visitor, arguments);
-			acceptChildren(visitor, cd.getBaseClasses());
-			acceptChildren(visitor, cd.getDeclarationDefinitions());
+			acceptChildren(visitor, ad.baseClasses());
+			acceptChildren(visitor, ad.declarations());
 		}
 		visitor.visit(this);
 	}

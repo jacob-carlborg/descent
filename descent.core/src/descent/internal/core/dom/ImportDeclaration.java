@@ -6,7 +6,7 @@ import descent.core.dom.ASTVisitor;
 import descent.core.dom.IImport;
 import descent.core.dom.IImportDeclaration;
 
-public class ImportDeclaration extends ASTNode implements IImportDeclaration {
+public class ImportDeclaration extends Declaration implements IImportDeclaration {
 	
 	public List<IImport> imports;
 	public boolean isStatic;
@@ -15,7 +15,7 @@ public class ImportDeclaration extends ASTNode implements IImportDeclaration {
 		if (imports == null) return new IImport[0];
 		// TODO: optimize?
 		for(IImport imp : imports) {
-			((ASTNode) imp).modifiers = this.modifiers;
+			((ASTNode) imp).modifierFlags = this.modifierFlags;
 		}
 		return imports.toArray(new IImport[imports.size()]);
 	}

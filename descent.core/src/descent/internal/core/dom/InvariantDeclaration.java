@@ -5,7 +5,7 @@ import descent.core.dom.IInvariantDeclaration;
 import descent.core.dom.ISimpleName;
 import descent.core.dom.IStatement;
 
-public class InvariantDeclaration extends Dsymbol implements IInvariantDeclaration {
+public class InvariantDeclaration extends Declaration implements IInvariantDeclaration {
 
 	public Statement fbody;
 

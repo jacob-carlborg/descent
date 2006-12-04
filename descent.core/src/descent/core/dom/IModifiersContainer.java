@@ -9,6 +9,6 @@ public interface IModifiersContainer {
 	 * Returns the modifiers.
 	 * @see IModifier
 	 */
-	int getModifiers();
+	int getModifierFlags();
 
 }

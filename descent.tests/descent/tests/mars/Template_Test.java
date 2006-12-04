@@ -141,8 +141,8 @@ public class Template_Test extends Parser_Test {
 		assertEquals(1, declDefs.length);
 		
 		IAggregateDeclaration c = (IAggregateDeclaration) declDefs[0];
-		assertTrue(c.isTemplate());
-		assertEquals(1, c.getTemplateParameters().length);
+		assertFalse(c.templateParameters().isEmpty());
+		assertEquals(1, c.templateParameters().size());
 		
 		assertVisitor(c, 4);
 	}

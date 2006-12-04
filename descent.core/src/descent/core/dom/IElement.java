@@ -297,7 +297,7 @@ public interface IElement {
 	 * Constant representing an array literal expression.
 	 * An expression with this type can be safely cast to <code>IArrayLiteralExpression</code>. 
 	 */
-	int ARRAY_LITERAL_EXPRESSION = 55;
+	int ARRAY_LITERAL = 55;
 	
 	/**
 	 * Constant representing a slice expression.

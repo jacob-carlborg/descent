@@ -1,6 +1,10 @@
+AggregateDeclaration (fix type lazy init)
+AliasDeclaration (fix type lazy init)
+AlignDeclaration
 ArrayAccess
 AssertExpression
 Argument (fix type)
+BaseClass (fix type lazy init)
 Block
 BooleanLiteral
 BreakStatement

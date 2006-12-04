@@ -14,7 +14,7 @@ import descent.core.dom.IStaticAssertDeclaration;
  *    <b>static assert</b> <b>(</b> Expression [ , Expression ] <b>)</b>
  * </pre>
  */
-public class StaticAssert extends Dsymbol implements IStaticAssertDeclaration {
+public class StaticAssert extends Declaration implements IStaticAssertDeclaration {
 	
 	/**
 	 * The "expression" structural property of this node type.

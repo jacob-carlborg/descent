@@ -19,7 +19,7 @@ public class Align_Test extends Parser_Test {
 		assertEquals(IElement.ALIGN_DECLARATION, align.getNodeType0());
 		assertEquals(4, align.getAlign());
 		
-		assertEquals(1, align.getDeclarationDefinitions().length);
+		assertEquals(1, align.declarations().size());
 		
 		assertVisitor(align, 3);
 	}
@@ -35,7 +35,7 @@ public class Align_Test extends Parser_Test {
 		assertEquals(IElement.ALIGN_DECLARATION, align.getNodeType0());
 		assertEquals(global.structalign, align.getAlign());
 		
-		assertEquals(1, align.getDeclarationDefinitions().length);
+		assertEquals(1, align.declarations().size());
 		
 		assertVisitor(align, 3);
 	}

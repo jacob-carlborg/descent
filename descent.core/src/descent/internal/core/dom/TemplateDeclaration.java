@@ -13,7 +13,7 @@ public class TemplateDeclaration extends Declaration implements ITemplateDeclara
 	private ITemplateParameter[] tpl;
 	private IDeclaration[] declDefs;
 
-	public TemplateDeclaration(Identifier id, List<TemplateParameter> tpl, List<IDeclaration> decldefs) {
+	public TemplateDeclaration(Identifier id, List<TemplateParameter> tpl, List<Declaration> decldefs) {
 		super(id);
 		this.tpl = tpl.toArray(new ITemplateParameter[tpl.size()]);
 		if (decldefs != null) {

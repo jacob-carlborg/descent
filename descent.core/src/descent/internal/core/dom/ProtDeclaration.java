@@ -6,12 +6,12 @@ import descent.core.dom.ASTVisitor;
 import descent.core.dom.IDeclaration;
 import descent.core.dom.IProtectionDeclaration;
 
-public class ProtDeclaration extends Dsymbol implements IProtectionDeclaration {
+public class ProtDeclaration extends Declaration implements IProtectionDeclaration {
 	
 	public PROT prot;
 	public IDeclaration[] declDefs;
 
-	public ProtDeclaration(PROT prot, List<IDeclaration> declDefs) {
+	public ProtDeclaration(PROT prot, List<Declaration> declDefs) {
 		this.prot = prot;
 		if (declDefs != null) {
 			this.declDefs = declDefs.toArray(new IDeclaration[declDefs.size()]);

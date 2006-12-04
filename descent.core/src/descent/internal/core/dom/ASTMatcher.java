@@ -143,4 +143,29 @@ public class ASTMatcher {
 		return false;
 	}
 
+	public boolean match(AggregateDeclaration declaration, Object other) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	public boolean match(AliasDeclaration declaration, Object other) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	public boolean match(ArrayLiteral literal, Object other) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	public boolean match(BaseClass class1, Object other) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	public boolean match(AlignDeclaration declaration, Object other) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
 }
