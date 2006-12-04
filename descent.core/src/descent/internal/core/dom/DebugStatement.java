@@ -18,34 +18,31 @@ public class DebugStatement extends Statement implements IDebugStatement {
 	
 	/**
 	 * The "name" structural property of this node type.
-	 * @since 3.0
 	 */
-	public static final SimplePropertyDescriptor NAME_PROPERTY = 
+	public static final SimplePropertyDescriptor NAME_PROPERTY =
 		new SimplePropertyDescriptor(DebugStatement.class, "name", String.class, OPTIONAL); //$NON-NLS-1$
-	
+
 	/**
 	 * The "body" structural property of this node type.
-	 * @since 3.0
 	 */
-	public static final ChildPropertyDescriptor BODY_PROPERTY = 
+	public static final ChildPropertyDescriptor BODY_PROPERTY =
 		new ChildPropertyDescriptor(DebugStatement.class, "body", Statement.class, MANDATORY, CYCLE_RISK); //$NON-NLS-1$
-	
+
 	/**
 	 * The "elseBody" structural property of this node type.
-	 * @since 3.0
 	 */
-	public static final ChildPropertyDescriptor ELSE_BODY_PROPERTY = 
+	public static final ChildPropertyDescriptor ELSE_BODY_PROPERTY =
 		new ChildPropertyDescriptor(DebugStatement.class, "elseBody", Statement.class, OPTIONAL, CYCLE_RISK); //$NON-NLS-1$
-	
+
 	/**
 	 * A list of property descriptors (element type: 
 	 * {@link StructuralPropertyDescriptor}),
 	 * or null if uninitialized.
 	 */
 	private static final List PROPERTY_DESCRIPTORS;
-	
+
 	static {
-		List properyList = new ArrayList(2);
+		List properyList = new ArrayList(3);
 		createPropertyList(DebugStatement.class, properyList);
 		addProperty(NAME_PROPERTY, properyList);
 		addProperty(BODY_PROPERTY, properyList);
@@ -67,28 +64,26 @@ public class DebugStatement extends Statement implements IDebugStatement {
 	public static List propertyDescriptors(int apiLevel) {
 		return PROPERTY_DESCRIPTORS;
 	}
-	
+
 	/**
-	 * The name, or <code>null</code> if none; none by default.
+	 * The name.
 	 */
-	private String name = null;
-	
+	private String name;
+
 	/**
-	 * The body statement; lazily initialized; defaults to an empty block 
-	 * statement.
+	 * The body.
 	 */
-	private Statement body = null;
-	
+	private Statement body;
+
 	/**
-	 * The else body statement; lazily initialized; defaults to an empty block 
-	 * statement.
+	 * The elseBody.
 	 */
-	private Statement elseBody = null;
-	
+	private Statement elseBody;
+
+
 	/**
 	 * Creates a new unparented debug statement node owned by the given 
-	 * AST. By default, the name is unspecified, but legal, and
-	 * the body and else body statements are empty blocks.
+	 * AST.
 	 * <p>
 	 * N.B. This constructor is package-private.
 	 * </p>
@@ -98,14 +93,14 @@ public class DebugStatement extends Statement implements IDebugStatement {
 	DebugStatement(AST ast) {
 		super(ast);
 	}
-	
+
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
 	 */
 	final List internalStructuralPropertiesForType(int apiLevel) {
 		return propertyDescriptors(apiLevel);
 	}
-	
+
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
 	 */
@@ -121,7 +116,7 @@ public class DebugStatement extends Statement implements IDebugStatement {
 		// allow default implementation to flag the error
 		return super.internalGetSetObjectProperty(property, get, value);
 	}
-	
+
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
 	 */
@@ -145,7 +140,7 @@ public class DebugStatement extends Statement implements IDebugStatement {
 		// allow default implementation to flag the error
 		return super.internalGetSetChildProperty(property, get, child);
 	}
-	
+
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
 	 * TODO make it package
@@ -162,7 +157,7 @@ public class DebugStatement extends Statement implements IDebugStatement {
 		result.setSourceRange(this.getStartPosition(), this.getLength());
 		result.setName(getName());
 		result.setBody((Statement) getBody().clone(target));
-		result.setElseBody((Statement) getElseBody().clone(target));
+	result.setElseBody((Statement) ASTNode.copySubtree(target, getElseBody()));
 		return result;
 	}
 
@@ -186,7 +181,7 @@ public class DebugStatement extends Statement implements IDebugStatement {
 		}
 		visitor.endVisit(this);
 	}
-	
+
 	/**
 	 * Returns the name of this debug statement.
 	 * 
@@ -203,15 +198,18 @@ public class DebugStatement extends Statement implements IDebugStatement {
 	 * @exception IllegalArgumentException if the argument is incorrect
 	 */ 
 	public void setName(String name) {
+		if (name == null) {
+			throw new IllegalArgumentException();
+		}
 		preValueChange(NAME_PROPERTY);
 		this.name = name;
 		postValueChange(NAME_PROPERTY);
 	}
-	
+
 	/**
 	 * Returns the body of this debug statement.
 	 * 
-	 * @return the body statement node
+	 * @return the body
 	 */ 
 	public Statement getBody() {
 		if (this.body == null) {
@@ -226,11 +224,11 @@ public class DebugStatement extends Statement implements IDebugStatement {
 		}
 		return this.body;
 	}
-	
+
 	/**
 	 * Sets the body of this debug statement.
 	 * 
-	 * @param statement the body statement node
+	 * @param body the body
 	 * @exception IllegalArgumentException if:
 	 * <ul>
 	 * <li>the node belongs to a different AST</li>
@@ -238,39 +236,29 @@ public class DebugStatement extends Statement implements IDebugStatement {
 	 * <li>a cycle in would be created</li>
 	 * </ul>
 	 */ 
-	public void setBody(Statement statement) {
-		if (statement == null) {
+	public void setBody(Statement body) {
+		if (body == null) {
 			throw new IllegalArgumentException();
 		}
 		ASTNode oldChild = this.body;
-		preReplaceChild(oldChild, statement, BODY_PROPERTY);
-		this.body = statement;
-		postReplaceChild(oldChild, statement, BODY_PROPERTY);
+		preReplaceChild(oldChild, body, BODY_PROPERTY);
+		this.body = body;
+		postReplaceChild(oldChild, body, BODY_PROPERTY);
 	}
-	
+
 	/**
 	 * Returns the else body of this debug statement.
 	 * 
-	 * @return the else body statement node
+	 * @return the else body
 	 */ 
 	public Statement getElseBody() {
-		if (this.elseBody == null) {
-			// lazy init must be thread-safe for readers
-			synchronized (this) {
-				if (this.elseBody == null) {
-					preLazyInit();
-					this.elseBody = new Block(this.ast);
-					postLazyInit(this.elseBody, ELSE_BODY_PROPERTY);
-				}
-			}
-		}
 		return this.elseBody;
 	}
-	
+
 	/**
 	 * Sets the else body of this debug statement.
 	 * 
-	 * @param statement the else body statement node
+	 * @param elseBody the else body
 	 * @exception IllegalArgumentException if:
 	 * <ul>
 	 * <li>the node belongs to a different AST</li>
@@ -278,23 +266,23 @@ public class DebugStatement extends Statement implements IDebugStatement {
 	 * <li>a cycle in would be created</li>
 	 * </ul>
 	 */ 
-	public void setElseBody(Statement statement) {
-		if (statement == null) {
+	public void setElseBody(Statement elseBody) {
+		if (elseBody == null) {
 			throw new IllegalArgumentException();
 		}
 		ASTNode oldChild = this.elseBody;
-		preReplaceChild(oldChild, statement, ELSE_BODY_PROPERTY);
-		this.elseBody = statement;
-		postReplaceChild(oldChild, statement, ELSE_BODY_PROPERTY);
+		preReplaceChild(oldChild, elseBody, ELSE_BODY_PROPERTY);
+		this.elseBody = elseBody;
+		postReplaceChild(oldChild, elseBody, ELSE_BODY_PROPERTY);
 	}
-	
+
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
 	 */
 	int memSize() {
-		return super.memSize() + 2 * 4;
+		return BASE_NODE_SIZE + 3 * 4;
 	}
-	
+
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
 	 */
@@ -302,7 +290,8 @@ public class DebugStatement extends Statement implements IDebugStatement {
 		return
 			memSize()
 			+ (this.body == null ? 0 : getBody().treeSize())
-			+ (this.elseBody == null ? 0 : getElseBody().treeSize());
+			+ (this.elseBody == null ? 0 : getElseBody().treeSize())
+	;
 	}
 
 	public DebugStatement(String name, Statement body, Statement elseBody) {

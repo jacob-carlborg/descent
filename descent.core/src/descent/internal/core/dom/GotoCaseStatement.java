@@ -18,9 +18,8 @@ public class GotoCaseStatement extends Statement implements IGotoCaseStatement {
 
 	/**
 	 * The "label" structural property of this node type.
-	 * @since 3.0
 	 */
-	public static final ChildPropertyDescriptor LABEL_PROPERTY = 
+	public static final ChildPropertyDescriptor LABEL_PROPERTY =
 		new ChildPropertyDescriptor(GotoCaseStatement.class, "label", Expression.class, MANDATORY, NO_CYCLE_RISK); //$NON-NLS-1$
 
 	/**
@@ -29,9 +28,9 @@ public class GotoCaseStatement extends Statement implements IGotoCaseStatement {
 	 * or null if uninitialized.
 	 */
 	private static final List PROPERTY_DESCRIPTORS;
-	
+
 	static {
-		List properyList = new ArrayList(2);
+		List properyList = new ArrayList(1);
 		createPropertyList(GotoCaseStatement.class, properyList);
 		addProperty(LABEL_PROPERTY, properyList);
 		PROPERTY_DESCRIPTORS = reapPropertyList(properyList);
@@ -51,15 +50,16 @@ public class GotoCaseStatement extends Statement implements IGotoCaseStatement {
 	public static List propertyDescriptors(int apiLevel) {
 		return PROPERTY_DESCRIPTORS;
 	}
-			
+
 	/**
-	 * The label, or <code>null</code> if none; none by default.
+	 * The label.
 	 */
-	private Expression label = null;
+	private Expression label;
+
 
 	/**
 	 * Creates a new unparented goto case statement node owned by the given 
-	 * AST. By default, the goto case statement has no label.
+	 * AST.
 	 * <p>
 	 * N.B. This constructor is package-private.
 	 * </p>
@@ -76,7 +76,7 @@ public class GotoCaseStatement extends Statement implements IGotoCaseStatement {
 	final List internalStructuralPropertiesForType(int apiLevel) {
 		return propertyDescriptors(apiLevel);
 	}
-	
+
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
 	 */
@@ -92,7 +92,7 @@ public class GotoCaseStatement extends Statement implements IGotoCaseStatement {
 		// allow default implementation to flag the error
 		return super.internalGetSetChildProperty(property, get, child);
 	}
-	
+
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
 	 * TODO make it package
@@ -107,7 +107,7 @@ public class GotoCaseStatement extends Statement implements IGotoCaseStatement {
 	ASTNode clone0(AST target) {
 		GotoCaseStatement result = new GotoCaseStatement(target);
 		result.setSourceRange(this.getStartPosition(), this.getLength());
-		result.setLabel((Expression) ASTNode.copySubtree(target, getLabel()));
+		result.setLabel((Expression) getLabel().clone(target));
 		return result;
 	}
 
@@ -125,53 +125,67 @@ public class GotoCaseStatement extends Statement implements IGotoCaseStatement {
 	void accept0(ASTVisitor visitor) {
 		boolean visitChildren = visitor.visit(this);
 		if (visitChildren) {
+			// visit children in normal left to right reading order
 			acceptChild(visitor, getLabel());
 		}
 		visitor.endVisit(this);
 	}
-	
+
 	/**
-	 * Returns the label of this break statement, or <code>null</code> if
-	 * there is none.
+	 * Returns the label of this goto case statement.
 	 * 
-	 * @return the label, or <code>null</code> if there is none
+	 * @return the label
 	 */ 
 	public Expression getLabel() {
+		if (this.label == null) {
+			// lazy init must be thread-safe for readers
+			synchronized (this) {
+				if (this.label == null) {
+					preLazyInit();
+					this.label = new SimpleName(this.ast);
+					postLazyInit(this.label, LABEL_PROPERTY);
+				}
+			}
+		}
 		return this.label;
 	}
-	
+
 	/**
-	 * Sets or clears the label of this goto case statement.
+	 * Sets the label of this goto case statement.
 	 * 
-	 * @param label the label, or <code>null</code> if 
-	 *    there is none
+	 * @param label the label
 	 * @exception IllegalArgumentException if:
 	 * <ul>
 	 * <li>the node belongs to a different AST</li>
 	 * <li>the node already has a parent</li>
+	 * <li>a cycle in would be created</li>
 	 * </ul>
 	 */ 
 	public void setLabel(Expression label) {
+		if (label == null) {
+			throw new IllegalArgumentException();
+		}
 		ASTNode oldChild = this.label;
 		preReplaceChild(oldChild, label, LABEL_PROPERTY);
 		this.label = label;
 		postReplaceChild(oldChild, label, LABEL_PROPERTY);
 	}
-	
+
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
 	 */
 	int memSize() {
-		return super.memSize() + 1 * 4;
+		return BASE_NODE_SIZE + 1 * 4;
 	}
-	
+
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
 	 */
 	int treeSize() {
 		return
 			memSize()
-			+ (this.label == null ? 0 : getLabel().treeSize());
+			+ (this.label == null ? 0 : getLabel().treeSize())
+	;
 	}
 
 	// TODO Descent remove

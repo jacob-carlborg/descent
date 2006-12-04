@@ -31,7 +31,7 @@ public class BooleanLiteral extends Expression implements IBooleanLiteral {
 	/**
 	 * The "booleanValue" structural property of this node type.
 	 */
-	public static final SimplePropertyDescriptor BOOLEAN_VALUE_PROPERTY = 
+	public static final SimplePropertyDescriptor BOOLEAN_VALUE_PROPERTY =
 		new SimplePropertyDescriptor(BooleanLiteral.class, "booleanValue", boolean.class, MANDATORY); //$NON-NLS-1$
 	
 	/**

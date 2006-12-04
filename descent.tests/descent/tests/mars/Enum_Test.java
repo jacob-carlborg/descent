@@ -45,7 +45,7 @@ public class Enum_Test extends Parser_Test {
 		em = e.getMembers()[0];
 		assertEquals(IElement.ENUM_MEMBER, em.getNodeType0());
 		assertEquals("x", em.getName().toString());
-		assertEquals("MISSING", em.getValue().toString());
+		assertNull(em.getValue());
 		assertPosition(em, 11, 1);
 		
 		em = e.getMembers()[1];
@@ -55,7 +55,7 @@ public class Enum_Test extends Parser_Test {
 		
 		em = e.getMembers()[2];
 		assertEquals("z", em.getName().toString());
-		assertEquals("MISSING", em.getValue().toString());
+		assertNull(em.getValue());
 		assertPosition(em, 21, 1);
 	}
 	

@@ -10,6 +10,7 @@ DefaultStatement
 DebugStatement
 DeleteExpression
 DollarLiteral
+DoStatement
 EnumMember
 ExpressionStatement
 ForStatement
@@ -21,6 +22,6 @@ StaticAssert
 SuperLiteral
 ThisLiteral
 VersionStatement
-Volatile
+VolatileStatement
 WhileStatement
 WithStatement

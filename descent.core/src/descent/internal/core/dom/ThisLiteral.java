@@ -17,11 +17,11 @@ public class ThisLiteral extends Expression implements ISuperExpression {
 	 * or null if uninitialized.
 	 */
 	private static final List PROPERTY_DESCRIPTORS;
-	
+
 	static {
-		List propertyList = new ArrayList(1);
-		createPropertyList(NullLiteral.class, propertyList);
-		PROPERTY_DESCRIPTORS = reapPropertyList(propertyList);
+		List properyList = new ArrayList(0);
+		createPropertyList(ThisLiteral.class, properyList);
+		PROPERTY_DESCRIPTORS = reapPropertyList(properyList);
 	}
 
 	/**
@@ -38,9 +38,11 @@ public class ThisLiteral extends Expression implements ISuperExpression {
 	public static List propertyDescriptors(int apiLevel) {
 		return PROPERTY_DESCRIPTORS;
 	}
-			
+
+
 	/**
-	 * Creates a new unparented this literal node owned by the given AST.
+	 * Creates a new unparented this literal node owned by the given 
+	 * AST.
 	 * <p>
 	 * N.B. This constructor is package-private.
 	 * </p>
@@ -57,7 +59,7 @@ public class ThisLiteral extends Expression implements ISuperExpression {
 	final List internalStructuralPropertiesForType(int apiLevel) {
 		return propertyDescriptors(apiLevel);
 	}
-	
+
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
 	 * TODO make it package
@@ -70,7 +72,7 @@ public class ThisLiteral extends Expression implements ISuperExpression {
 	 * Method declared on ASTNode.
 	 */
 	ASTNode clone0(AST target) {
-		NullLiteral result = new NullLiteral(target);
+		ThisLiteral result = new ThisLiteral(target);
 		result.setSourceRange(this.getStartPosition(), this.getLength());
 		return result;
 	}
@@ -87,22 +89,27 @@ public class ThisLiteral extends Expression implements ISuperExpression {
 	 * Method declared on ASTNode.
 	 */
 	void accept0(ASTVisitor visitor) {
-		visitor.visit(this);
+		boolean visitChildren = visitor.visit(this);
+		if (visitChildren) {
+			// visit children in normal left to right reading order
+		}
 		visitor.endVisit(this);
 	}
-	
+
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
 	 */
 	int memSize() {
-		return BASE_NODE_SIZE;
+		return BASE_NODE_SIZE + 0 * 4;
 	}
-	
+
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
 	 */
 	int treeSize() {
-		return memSize();
+		return
+			memSize()
+	;
 	}
 
 	// TODO Descent remove

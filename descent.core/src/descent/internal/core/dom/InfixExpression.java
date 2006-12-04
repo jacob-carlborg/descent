@@ -479,7 +479,7 @@ public class InfixExpression extends Expression implements IInfixExpression {
 	 */
 	int memSize() {
 		// treat Operator as free
-		return BASE_NODE_SIZE + 4 * 4;
+		return BASE_NODE_SIZE + 3 * 4;
 	}
 	
 	/* (omit javadoc for this method)

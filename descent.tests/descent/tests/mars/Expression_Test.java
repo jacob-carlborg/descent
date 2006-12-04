@@ -17,7 +17,6 @@ import descent.core.dom.IDynamicArrayType;
 import descent.core.dom.IElement;
 import descent.core.dom.IExpression;
 import descent.core.dom.IFunctionExpression;
-import descent.core.dom.IIdentifierExpression;
 import descent.core.dom.IInfixExpression;
 import descent.core.dom.IIntegerExpression;
 import descent.core.dom.IIsExpression;

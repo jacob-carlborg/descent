@@ -18,9 +18,8 @@ public class BreakStatement extends Statement implements IBreakStatement {
 	
 	/**
 	 * The "label" structural property of this node type.
-	 * @since 3.0
 	 */
-	public static final ChildPropertyDescriptor LABEL_PROPERTY = 
+	public static final ChildPropertyDescriptor LABEL_PROPERTY =
 		new ChildPropertyDescriptor(BreakStatement.class, "label", SimpleName.class, OPTIONAL, NO_CYCLE_RISK); //$NON-NLS-1$
 
 	/**
@@ -29,9 +28,9 @@ public class BreakStatement extends Statement implements IBreakStatement {
 	 * or null if uninitialized.
 	 */
 	private static final List PROPERTY_DESCRIPTORS;
-	
+
 	static {
-		List properyList = new ArrayList(2);
+		List properyList = new ArrayList(1);
 		createPropertyList(BreakStatement.class, properyList);
 		addProperty(LABEL_PROPERTY, properyList);
 		PROPERTY_DESCRIPTORS = reapPropertyList(properyList);
@@ -51,15 +50,16 @@ public class BreakStatement extends Statement implements IBreakStatement {
 	public static List propertyDescriptors(int apiLevel) {
 		return PROPERTY_DESCRIPTORS;
 	}
-			
+
 	/**
-	 * The label, or <code>null</code> if none; none by default.
+	 * The label.
 	 */
-	private SimpleName optionalLabel = null;
+	private SimpleName label = null;
+
 
 	/**
 	 * Creates a new unparented break statement node owned by the given 
-	 * AST. By default, the break statement has no label.
+	 * AST.
 	 * <p>
 	 * N.B. This constructor is package-private.
 	 * </p>
@@ -76,7 +76,7 @@ public class BreakStatement extends Statement implements IBreakStatement {
 	final List internalStructuralPropertiesForType(int apiLevel) {
 		return propertyDescriptors(apiLevel);
 	}
-	
+
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
 	 */
@@ -92,7 +92,7 @@ public class BreakStatement extends Statement implements IBreakStatement {
 		// allow default implementation to flag the error
 		return super.internalGetSetChildProperty(property, get, child);
 	}
-	
+
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
 	 * TODO make it package
@@ -107,7 +107,7 @@ public class BreakStatement extends Statement implements IBreakStatement {
 	ASTNode clone0(AST target) {
 		BreakStatement result = new BreakStatement(target);
 		result.setSourceRange(this.getStartPosition(), this.getLength());
-		result.setLabel((SimpleName) ASTNode.copySubtree(target, getLabel()));
+	result.setLabel((SimpleName) ASTNode.copySubtree(target, getLabel()));
 		return result;
 	}
 
@@ -125,58 +125,62 @@ public class BreakStatement extends Statement implements IBreakStatement {
 	void accept0(ASTVisitor visitor) {
 		boolean visitChildren = visitor.visit(this);
 		if (visitChildren) {
+			// visit children in normal left to right reading order
 			acceptChild(visitor, getLabel());
 		}
 		visitor.endVisit(this);
 	}
-	
+
 	/**
-	 * Returns the label of this break statement, or <code>null</code> if
-	 * there is none.
+	 * Returns the label of this break statement.
 	 * 
-	 * @return the label, or <code>null</code> if there is none
+	 * @return the label
 	 */ 
 	public SimpleName getLabel() {
-		return this.optionalLabel;
+		return this.label;
 	}
-	
+
 	/**
-	 * Sets or clears the label of this break statement.
+	 * Sets the label of this break statement.
 	 * 
-	 * @param label the label, or <code>null</code> if 
-	 *    there is none
+	 * @param label the label
 	 * @exception IllegalArgumentException if:
 	 * <ul>
 	 * <li>the node belongs to a different AST</li>
 	 * <li>the node already has a parent</li>
+	 * <li>a cycle in would be created</li>
 	 * </ul>
 	 */ 
 	public void setLabel(SimpleName label) {
-		ASTNode oldChild = this.optionalLabel;
+		if (label == null) {
+			throw new IllegalArgumentException();
+		}
+		ASTNode oldChild = this.label;
 		preReplaceChild(oldChild, label, LABEL_PROPERTY);
-		this.optionalLabel = label;
+		this.label = label;
 		postReplaceChild(oldChild, label, LABEL_PROPERTY);
 	}
-	
+
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
 	 */
 	int memSize() {
-		return super.memSize() + 1 * 4;
+		return BASE_NODE_SIZE + 1 * 4;
 	}
-	
+
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
 	 */
 	int treeSize() {
 		return
 			memSize()
-			+ (this.optionalLabel == null ? 0 : getLabel().treeSize());
+			+ (this.label == null ? 0 : getLabel().treeSize())
+	;
 	}
 
 	// TODO Descent remove
-	public BreakStatement(SimpleName optionalLabel) {
-		this.optionalLabel = optionalLabel;
+	public BreakStatement(SimpleName label) {
+		this.label = label;
 	}
 
 }

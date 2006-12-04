@@ -23,28 +23,25 @@ public class ForStatement extends Statement implements IForStatement {
 	/**
 	 * The "initializer" structural property of this node type.
 	 */
-	public static final ChildPropertyDescriptor INITIALIZER_PROPERTY = 
-		new ChildPropertyDescriptor(ForStatement.class, "initializers", Statement.class, OPTIONAL, CYCLE_RISK); //$NON-NLS-1$
+	public static final ChildPropertyDescriptor INITIALIZER_PROPERTY =
+		new ChildPropertyDescriptor(ForStatement.class, "initializer", Statement.class, OPTIONAL, CYCLE_RISK); //$NON-NLS-1$
 
 	/**
 	 * The "condition" structural property of this node type.
-	 * @since 3.0
 	 */
-	public static final ChildPropertyDescriptor CONDITION_PROPERTY = 
-		new ChildPropertyDescriptor(ForStatement.class, "expression", Expression.class, OPTIONAL, CYCLE_RISK); //$NON-NLS-1$
+	public static final ChildPropertyDescriptor CONDITION_PROPERTY =
+		new ChildPropertyDescriptor(ForStatement.class, "condition", Expression.class, OPTIONAL, CYCLE_RISK); //$NON-NLS-1$
 
 	/**
 	 * The "increment" structural property of this node type.
-	 * @since 3.0
 	 */
-	public static final ChildPropertyDescriptor INCREMENT_PROPERTY = 
+	public static final ChildPropertyDescriptor INCREMENT_PROPERTY =
 		new ChildPropertyDescriptor(ForStatement.class, "increment", Expression.class, OPTIONAL, CYCLE_RISK); //$NON-NLS-1$
 
 	/**
 	 * The "body" structural property of this node type.
-	 * @since 3.0
 	 */
-	public static final ChildPropertyDescriptor BODY_PROPERTY = 
+	public static final ChildPropertyDescriptor BODY_PROPERTY =
 		new ChildPropertyDescriptor(ForStatement.class, "body", Statement.class, MANDATORY, CYCLE_RISK); //$NON-NLS-1$
 
 	/**
@@ -53,9 +50,9 @@ public class ForStatement extends Statement implements IForStatement {
 	 * or null if uninitialized.
 	 */
 	private static final List PROPERTY_DESCRIPTORS;
-	
+
 	static {
-		List properyList = new ArrayList(5);
+		List properyList = new ArrayList(4);
 		createPropertyList(ForStatement.class, properyList);
 		addProperty(INITIALIZER_PROPERTY, properyList);
 		addProperty(CONDITION_PROPERTY, properyList);
@@ -79,23 +76,47 @@ public class ForStatement extends Statement implements IForStatement {
 		return PROPERTY_DESCRIPTORS;
 	}
 
-	// TODO comment
-	private Statement initializer = null;
-	private Expression condition = null;
-	private Expression increment = null;
-	private Statement body = null;
-	
 	/**
-	 * Creates a new AST node for a for statement owned by the given AST. 
-	 * By default, there are no initializers, no condition expression, 
-	 * no updaters, and the body is an empty block.
+	 * The initializer.
+	 */
+	private Statement initializer;
+
+	/**
+	 * The condition.
+	 */
+	private Expression condition;
+
+	/**
+	 * The increment.
+	 */
+	private Expression increment;
+
+	/**
+	 * The body.
+	 */
+	private Statement body;
+
+
+	/**
+	 * Creates a new unparented for statement node owned by the given 
+	 * AST.
+	 * <p>
+	 * N.B. This constructor is package-private.
+	 * </p>
 	 * 
 	 * @param ast the AST that is to own this node
 	 */
 	ForStatement(AST ast) {
 		super(ast);
 	}
-	
+
+	/* (omit javadoc for this method)
+	 * Method declared on ASTNode.
+	 */
+	final List internalStructuralPropertiesForType(int apiLevel) {
+		return propertyDescriptors(apiLevel);
+	}
+
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
 	 */
@@ -135,7 +156,7 @@ public class ForStatement extends Statement implements IForStatement {
 		// allow default implementation to flag the error
 		return super.internalGetSetChildProperty(property, get, child);
 	}
-	
+
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
 	 * TODO make it package
@@ -150,9 +171,9 @@ public class ForStatement extends Statement implements IForStatement {
 	ASTNode clone0(AST target) {
 		ForStatement result = new ForStatement(target);
 		result.setSourceRange(this.getStartPosition(), this.getLength());
-		result.setInitializer((Statement) getInitializer().clone(target));
-		result.setCondition((Expression) getCondition().clone(target));
-		result.setIncrement((Expression) getIncrement().clone(target));
+	result.setInitializer((Statement) ASTNode.copySubtree(target, getInitializer()));
+	result.setCondition((Expression) ASTNode.copySubtree(target, getCondition()));
+	result.setIncrement((Expression) ASTNode.copySubtree(target, getIncrement()));
 		result.setBody((Statement) getBody().clone(target));
 		return result;
 	}
@@ -179,30 +200,20 @@ public class ForStatement extends Statement implements IForStatement {
 		}
 		visitor.endVisit(this);
 	}
-	
+
 	/**
-	 * Returns the expression of this for statement.
+	 * Returns the initializer of this for statement.
 	 * 
-	 * @return the expression node
+	 * @return the initializer
 	 */ 
 	public Statement getInitializer() {
-		if (this.initializer == null) {
-			// lazy init must be thread-safe for readers
-			synchronized (this) {
-				if (this.initializer == null) {
-					preLazyInit();
-					this.initializer = new Block(this.ast);
-					postLazyInit(this.initializer, INITIALIZER_PROPERTY);
-				}
-			}
-		}
 		return this.initializer;
 	}
-	
+
 	/**
-	 * Sets the expression of this for statement.
+	 * Sets the initializer of this for statement.
 	 * 
-	 * @param expression the expression node
+	 * @param initializer the initializer
 	 * @exception IllegalArgumentException if:
 	 * <ul>
 	 * <li>the node belongs to a different AST</li>
@@ -219,30 +230,20 @@ public class ForStatement extends Statement implements IForStatement {
 		this.initializer = initializer;
 		postReplaceChild(oldChild, initializer, INITIALIZER_PROPERTY);
 	}
-	
+
 	/**
-	 * Returns the expression of this for statement.
+	 * Returns the condition of this for statement.
 	 * 
-	 * @return the expression node
+	 * @return the condition
 	 */ 
 	public Expression getCondition() {
-		if (this.condition == null) {
-			// lazy init must be thread-safe for readers
-			synchronized (this) {
-				if (this.condition == null) {
-					preLazyInit();
-					this.condition = new SimpleName(this.ast);
-					postLazyInit(this.condition, CONDITION_PROPERTY);
-				}
-			}
-		}
 		return this.condition;
 	}
-	
+
 	/**
-	 * Sets the expression of this for statement.
+	 * Sets the condition of this for statement.
 	 * 
-	 * @param condition the expression node
+	 * @param condition the condition
 	 * @exception IllegalArgumentException if:
 	 * <ul>
 	 * <li>the node belongs to a different AST</li>
@@ -259,30 +260,20 @@ public class ForStatement extends Statement implements IForStatement {
 		this.condition = condition;
 		postReplaceChild(oldChild, condition, CONDITION_PROPERTY);
 	}
-	
+
 	/**
-	 * Returns the expression of this for statement.
+	 * Returns the increment of this for statement.
 	 * 
-	 * @return the expression node
+	 * @return the increment
 	 */ 
 	public Expression getIncrement() {
-		if (this.increment == null) {
-			// lazy init must be thread-safe for readers
-			synchronized (this) {
-				if (this.increment == null) {
-					preLazyInit();
-					this.increment = new SimpleName(this.ast);
-					postLazyInit(this.increment, INCREMENT_PROPERTY);
-				}
-			}
-		}
 		return this.increment;
 	}
-	
+
 	/**
-	 * Sets the expression of this for statement.
+	 * Sets the increment of this for statement.
 	 * 
-	 * @param increment the expression node
+	 * @param increment the increment
 	 * @exception IllegalArgumentException if:
 	 * <ul>
 	 * <li>the node belongs to a different AST</li>
@@ -299,11 +290,11 @@ public class ForStatement extends Statement implements IForStatement {
 		this.increment = increment;
 		postReplaceChild(oldChild, increment, INCREMENT_PROPERTY);
 	}
-	
+
 	/**
 	 * Returns the body of this for statement.
 	 * 
-	 * @return the body statement node
+	 * @return the body
 	 */ 
 	public Statement getBody() {
 		if (this.body == null) {
@@ -318,11 +309,11 @@ public class ForStatement extends Statement implements IForStatement {
 		}
 		return this.body;
 	}
-	
+
 	/**
 	 * Sets the body of this for statement.
 	 * 
-	 * @param statement the body statement node
+	 * @param body the body
 	 * @exception IllegalArgumentException if:
 	 * <ul>
 	 * <li>the node belongs to a different AST</li>
@@ -330,23 +321,23 @@ public class ForStatement extends Statement implements IForStatement {
 	 * <li>a cycle in would be created</li>
 	 * </ul>
 	 */ 
-	public void setBody(Statement statement) {
-		if (statement == null) {
+	public void setBody(Statement body) {
+		if (body == null) {
 			throw new IllegalArgumentException();
 		}
 		ASTNode oldChild = this.body;
-		preReplaceChild(oldChild, statement, BODY_PROPERTY);
-		this.body = statement;
-		postReplaceChild(oldChild, statement, BODY_PROPERTY);
+		preReplaceChild(oldChild, body, BODY_PROPERTY);
+		this.body = body;
+		postReplaceChild(oldChild, body, BODY_PROPERTY);
 	}
-	
+
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
 	 */
 	int memSize() {
-		return super.memSize() + 4 * 4;
+		return BASE_NODE_SIZE + 4 * 4;
 	}
-	
+
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
 	 */
@@ -356,7 +347,8 @@ public class ForStatement extends Statement implements IForStatement {
 			+ (this.initializer == null ? 0 : getInitializer().treeSize())
 			+ (this.condition == null ? 0 : getCondition().treeSize())
 			+ (this.increment == null ? 0 : getIncrement().treeSize())
-			+ (this.body == null ? 0 : getBody().treeSize());
+			+ (this.body == null ? 0 : getBody().treeSize())
+	;
 	}
 
 	public ForStatement(Statement init, Expression condition, Expression increment, Statement body) {

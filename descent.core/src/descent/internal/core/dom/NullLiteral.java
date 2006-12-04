@@ -18,11 +18,11 @@ public class NullLiteral extends Expression implements INullExpression {
 	 * or null if uninitialized.
 	 */
 	private static final List PROPERTY_DESCRIPTORS;
-	
+
 	static {
-		List propertyList = new ArrayList(1);
-		createPropertyList(NullLiteral.class, propertyList);
-		PROPERTY_DESCRIPTORS = reapPropertyList(propertyList);
+		List properyList = new ArrayList(0);
+		createPropertyList(NullLiteral.class, properyList);
+		PROPERTY_DESCRIPTORS = reapPropertyList(properyList);
 	}
 
 	/**
@@ -39,9 +39,11 @@ public class NullLiteral extends Expression implements INullExpression {
 	public static List propertyDescriptors(int apiLevel) {
 		return PROPERTY_DESCRIPTORS;
 	}
-			
+
+
 	/**
-	 * Creates a new unparented null literal node owned by the given AST.
+	 * Creates a new unparented null literal node owned by the given 
+	 * AST.
 	 * <p>
 	 * N.B. This constructor is package-private.
 	 * </p>
@@ -58,7 +60,7 @@ public class NullLiteral extends Expression implements INullExpression {
 	final List internalStructuralPropertiesForType(int apiLevel) {
 		return propertyDescriptors(apiLevel);
 	}
-	
+
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
 	 * TODO make it package
@@ -88,22 +90,27 @@ public class NullLiteral extends Expression implements INullExpression {
 	 * Method declared on ASTNode.
 	 */
 	void accept0(ASTVisitor visitor) {
-		visitor.visit(this);
+		boolean visitChildren = visitor.visit(this);
+		if (visitChildren) {
+			// visit children in normal left to right reading order
+		}
 		visitor.endVisit(this);
 	}
-	
+
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
 	 */
 	int memSize() {
-		return BASE_NODE_SIZE;
+		return BASE_NODE_SIZE + 0 * 4;
 	}
-	
+
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
 	 */
 	int treeSize() {
-		return memSize();
+		return
+			memSize()
+	;
 	}
 
 	// TODO Descent remove

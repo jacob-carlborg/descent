@@ -477,7 +477,7 @@ public interface IElement {
 	 * Constant representing a compound statement.
 	 * A D element with this type can be safely cast to <code>ICompoundStatement</code>. 
 	 */
-	int COMPOUND_STATEMENT = 85;
+	int BLOCK = 85;
 	
 	/**
 	 * Constant representing a try statement.

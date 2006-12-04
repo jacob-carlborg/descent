@@ -19,28 +19,28 @@ public class EnumMember extends ASTNode implements IEnumMember {
 	/**
 	 * The "name" structural property of this node type.
 	 */
-	public static final ChildPropertyDescriptor NAME_PROPERTY = 
+	public static final ChildPropertyDescriptor NAME_PROPERTY =
 		new ChildPropertyDescriptor(EnumMember.class, "name", SimpleName.class, MANDATORY, NO_CYCLE_RISK); //$NON-NLS-1$
-	
+
 	/**
 	 * The "value" structural property of this node type.
 	 */
-	public static final ChildPropertyDescriptor VALUE_PROPERTY = 
+	public static final ChildPropertyDescriptor VALUE_PROPERTY =
 		new ChildPropertyDescriptor(EnumMember.class, "value", Expression.class, OPTIONAL, NO_CYCLE_RISK); //$NON-NLS-1$
-	
+
 	/**
 	 * A list of property descriptors (element type: 
 	 * {@link StructuralPropertyDescriptor}),
 	 * or null if uninitialized.
 	 */
 	private static final List PROPERTY_DESCRIPTORS;
-	
+
 	static {
-		List propertyList = new ArrayList(3);
-		createPropertyList(EnumMember.class, propertyList);
-		addProperty(NAME_PROPERTY, propertyList);
-		addProperty(VALUE_PROPERTY, propertyList);
-		PROPERTY_DESCRIPTORS = reapPropertyList(propertyList);
+		List properyList = new ArrayList(2);
+		createPropertyList(EnumMember.class, properyList);
+		addProperty(NAME_PROPERTY, properyList);
+		addProperty(VALUE_PROPERTY, properyList);
+		PROPERTY_DESCRIPTORS = reapPropertyList(properyList);
 	}
 
 	/**
@@ -57,13 +57,21 @@ public class EnumMember extends ASTNode implements IEnumMember {
 	public static List propertyDescriptors(int apiLevel) {
 		return PROPERTY_DESCRIPTORS;
 	}
-	
-	private SimpleName name = null;
-	private Expression value = null;
-	
+
+	/**
+	 * The name.
+	 */
+	private SimpleName name;
+
+	/**
+	 * The value.
+	 */
+	private Expression value;
+
+
 	/**
 	 * Creates a new unparented enum member node owned by the given 
-	 * AST. By default, TODO.
+	 * AST.
 	 * <p>
 	 * N.B. This constructor is package-private.
 	 * </p>
@@ -73,7 +81,7 @@ public class EnumMember extends ASTNode implements IEnumMember {
 	EnumMember(AST ast) {
 		super(ast);
 	}
-	
+
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
 	 */
@@ -104,7 +112,7 @@ public class EnumMember extends ASTNode implements IEnumMember {
 		// allow default implementation to flag the error
 		return super.internalGetSetChildProperty(property, get, child);
 	}
-	
+
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
 	 * TODO make it package
@@ -112,7 +120,7 @@ public class EnumMember extends ASTNode implements IEnumMember {
 	public final int getNodeType0() {
 		return ENUM_MEMBER;
 	}
-	
+
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
 	 */
@@ -120,10 +128,10 @@ public class EnumMember extends ASTNode implements IEnumMember {
 		EnumMember result = new EnumMember(target);
 		result.setSourceRange(this.getStartPosition(), this.getLength());
 		result.setName((SimpleName) getName().clone(target));
-		result.setValue((Expression) ASTNode.copySubtree(target, getValue()));
+	result.setValue((Expression) ASTNode.copySubtree(target, getValue()));
 		return result;
 	}
-	
+
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
 	 */
@@ -131,7 +139,7 @@ public class EnumMember extends ASTNode implements IEnumMember {
 		// dispatch to correct overloaded match method
 		return matcher.match(this, other);
 	}
-	
+
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
 	 */
@@ -144,11 +152,11 @@ public class EnumMember extends ASTNode implements IEnumMember {
 		}
 		visitor.endVisit(this);
 	}
-	
+
 	/**
-	 * Returns the name of this argument.
+	 * Returns the name of this enum member.
 	 * 
-	 * @return the simple name node
+	 * @return the name
 	 */ 
 	public SimpleName getName() {
 		if (this.name == null) {
@@ -163,11 +171,11 @@ public class EnumMember extends ASTNode implements IEnumMember {
 		}
 		return this.name;
 	}
-	
+
 	/**
-	 * Sets the name of this argument.
+	 * Sets the name of this enum member.
 	 * 
-	 * @param argumentName the name node
+	 * @param name the name
 	 * @exception IllegalArgumentException if:
 	 * <ul>
 	 * <li>the node belongs to a different AST</li>
@@ -175,39 +183,29 @@ public class EnumMember extends ASTNode implements IEnumMember {
 	 * <li>a cycle in would be created</li>
 	 * </ul>
 	 */ 
-	public void setName(SimpleName argumentName) {
-		if (argumentName == null) {
+	public void setName(SimpleName name) {
+		if (name == null) {
 			throw new IllegalArgumentException();
 		}
 		ASTNode oldChild = this.name;
-		preReplaceChild(oldChild, argumentName, NAME_PROPERTY);
-		this.name = argumentName;
-		postReplaceChild(oldChild, argumentName, NAME_PROPERTY);
+		preReplaceChild(oldChild, name, NAME_PROPERTY);
+		this.name = name;
+		postReplaceChild(oldChild, name, NAME_PROPERTY);
 	}
-	
+
 	/**
-	 * Returns the default value of this argument.
+	 * Returns the value of this enum member.
 	 * 
-	 * @return the expression node
+	 * @return the value
 	 */ 
 	public Expression getValue() {
-		if (this.value == null) {
-			// lazy init must be thread-safe for readers
-			synchronized (this) {
-				if (this.value == null) {
-					preLazyInit();
-					this.value = new SimpleName(this.ast);
-					postLazyInit(this.value, VALUE_PROPERTY);
-				}
-			}
-		}
 		return this.value;
 	}
-	
+
 	/**
-	 * Sets the value of this argument.
+	 * Sets the value of this enum member.
 	 * 
-	 * @param value the expression node
+	 * @param value the value
 	 * @exception IllegalArgumentException if:
 	 * <ul>
 	 * <li>the node belongs to a different AST</li>
@@ -224,14 +222,14 @@ public class EnumMember extends ASTNode implements IEnumMember {
 		this.value = value;
 		postReplaceChild(oldChild, value, VALUE_PROPERTY);
 	}
-	
+
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
 	 */
 	int memSize() {
-		return super.memSize() + 2 * 4;
+		return BASE_NODE_SIZE + 2 * 4;
 	}
-	
+
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
 	 */
@@ -239,7 +237,8 @@ public class EnumMember extends ASTNode implements IEnumMember {
 		return
 			memSize()
 			+ (this.name == null ? 0 : getName().treeSize())
-			+ (this.value == null ? 0 : getValue().treeSize());
+			+ (this.value == null ? 0 : getValue().treeSize())
+	;
 	}
 
 	// TODO descent remove

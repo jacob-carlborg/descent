@@ -18,25 +18,24 @@ public class VolatileStatement extends Statement implements IVolatileStatement {
 
 	/**
 	 * The "body" structural property of this node type.
-	 * @since 3.0
 	 */
-	public static final ChildPropertyDescriptor BODY_PROPERTY = 
+	public static final ChildPropertyDescriptor BODY_PROPERTY =
 		new ChildPropertyDescriptor(VolatileStatement.class, "body", Statement.class, MANDATORY, CYCLE_RISK); //$NON-NLS-1$
-	
+
 	/**
 	 * A list of property descriptors (element type: 
 	 * {@link StructuralPropertyDescriptor}),
 	 * or null if uninitialized.
 	 */
 	private static final List PROPERTY_DESCRIPTORS;
-	
+
 	static {
-		List propertyList = new ArrayList(3);
-		createPropertyList(VolatileStatement.class, propertyList);
-		addProperty(BODY_PROPERTY, propertyList);
-		PROPERTY_DESCRIPTORS = reapPropertyList(propertyList);
+		List properyList = new ArrayList(1);
+		createPropertyList(VolatileStatement.class, properyList);
+		addProperty(BODY_PROPERTY, properyList);
+		PROPERTY_DESCRIPTORS = reapPropertyList(properyList);
 	}
-	
+
 	/**
 	 * Returns a list of structural property descriptors for this node type.
 	 * Clients must not modify the result.
@@ -51,16 +50,16 @@ public class VolatileStatement extends Statement implements IVolatileStatement {
 	public static List propertyDescriptors(int apiLevel) {
 		return PROPERTY_DESCRIPTORS;
 	}
-	
+
 	/**
-	 * The body statement; lazily initialized; defaults to an empty block 
-	 * statement.
+	 * The body.
 	 */
-	private Statement body = null;	
-	
+	private Statement body;
+
+
 	/**
 	 * Creates a new unparented volatile statement node owned by the given 
-	 * AST. By default, the body statement is an empty block.
+	 * AST.
 	 * <p>
 	 * N.B. This constructor is package-private.
 	 * </p>
@@ -70,14 +69,14 @@ public class VolatileStatement extends Statement implements IVolatileStatement {
 	VolatileStatement(AST ast) {
 		super(ast);
 	}
-	
+
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
 	 */
 	final List internalStructuralPropertiesForType(int apiLevel) {
 		return propertyDescriptors(apiLevel);
 	}
-	
+
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
 	 */
@@ -93,7 +92,7 @@ public class VolatileStatement extends Statement implements IVolatileStatement {
 		// allow default implementation to flag the error
 		return super.internalGetSetChildProperty(property, get, child);
 	}
-	
+
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
 	 * TODO make it package
@@ -135,7 +134,7 @@ public class VolatileStatement extends Statement implements IVolatileStatement {
 	/**
 	 * Returns the body of this volatile statement.
 	 * 
-	 * @return the body statement node
+	 * @return the body
 	 */ 
 	public Statement getBody() {
 		if (this.body == null) {
@@ -150,11 +149,11 @@ public class VolatileStatement extends Statement implements IVolatileStatement {
 		}
 		return this.body;
 	}
-	
+
 	/**
 	 * Sets the body of this volatile statement.
 	 * 
-	 * @param statement the body statement node
+	 * @param body the body
 	 * @exception IllegalArgumentException if:
 	 * <ul>
 	 * <li>the node belongs to a different AST</li>
@@ -162,30 +161,31 @@ public class VolatileStatement extends Statement implements IVolatileStatement {
 	 * <li>a cycle in would be created</li>
 	 * </ul>
 	 */ 
-	public void setBody(Statement statement) {
-		if (statement == null) {
+	public void setBody(Statement body) {
+		if (body == null) {
 			throw new IllegalArgumentException();
 		}
 		ASTNode oldChild = this.body;
-		preReplaceChild(oldChild, statement, BODY_PROPERTY);
-		this.body = statement;
-		postReplaceChild(oldChild, statement, BODY_PROPERTY);
+		preReplaceChild(oldChild, body, BODY_PROPERTY);
+		this.body = body;
+		postReplaceChild(oldChild, body, BODY_PROPERTY);
 	}
-	
+
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
 	 */
 	int memSize() {
-		return super.memSize() + 2 * 4;
+		return BASE_NODE_SIZE + 1 * 4;
 	}
-	
+
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
 	 */
 	int treeSize() {
 		return
 			memSize()
-			+ (this.body == null ? 0 : getBody().treeSize());
+			+ (this.body == null ? 0 : getBody().treeSize())
+	;
 	}
 
 	public VolatileStatement(Statement body) {

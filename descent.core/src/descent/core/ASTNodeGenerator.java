@@ -1,106 +1,19 @@
 package descent.core;
 
+import java.util.StringTokenizer;
+
 
 public class ASTNodeGenerator {
 	
-	final static int SIMPLE = 1;
-	final static int CHILD = 2;
-	final static int LIST = 3;
-	
-	final static boolean MANDATORY = true;
-	final static boolean OPTIONAL = false;
-	final static boolean CYCLE_RISK = true;
-	final static boolean NO_CYCLE_RISK = false;
-	
-	static class Member {
-		
-		public int type;
-		public String property;
-		public String name;
-		public String description;
-		public String clazz;
-		public String method;
-		public boolean mandatory;
-		public boolean cycleRisk;
-		public String lazyInit;
-		
-		private Member() { }
-		
-		public static Member simple(String property, String name, String description, String clazz, String method, boolean mandatory) {
-			Member member = new Member();
-			member.type = SIMPLE;
-			member.property = property;
-			member.name = name;
-			member.description = description;
-			member.clazz = clazz;
-			member.method = method;
-			member.mandatory = mandatory;
-			return member;
-		}
-		
-		public static Member simple(String property, String name, String description, String clazz, String method, boolean mandatory, String lazyInit) {
-			Member member = new Member();
-			member.type = SIMPLE;
-			member.property = property;
-			member.name = name;
-			member.description = description;
-			member.clazz = clazz;
-			member.method = method;
-			member.mandatory = mandatory;
-			member.lazyInit = lazyInit;
-			return member;
-		}
-		
-		public static Member child(String property, String name, String description, String clazz, String method, boolean mandatory, boolean cycleRisk) {
-			Member member = new Member();
-			member.type = CHILD;
-			member.property = property;
-			member.name = name;
-			member.description = description;
-			member.clazz = clazz;
-			member.method = method;
-			member.mandatory = mandatory;
-			member.cycleRisk = cycleRisk;
-			return member;
-		}
-		
-		public static Member child(String property, String name, String description, String clazz, String method, boolean mandatory, boolean cycleRisk, String lazyInit) {
-			Member member = new Member();
-			member.type = CHILD;
-			member.property = property;
-			member.name = name;
-			member.description = description;
-			member.clazz = clazz;
-			member.method = method;
-			member.mandatory = mandatory;
-			member.cycleRisk = cycleRisk;
-			member.lazyInit = lazyInit;
-			return member;
-		}
-		
-		public static Member list(String property, String name, String description, String clazz, String method, boolean cycleRisk) {
-			Member member = new Member();
-			member.type = LIST;
-			member.property = property;
-			member.name = name;
-			member.description = description;
-			member.clazz = clazz;
-			member.method = method;
-			member.cycleRisk = cycleRisk;
-			return member;
-		}
-		
-	}
-	
 	public static void main(String[] args) {
 		
-		String description = "assert expression";
-		String clazz = "AssertExpression";
-		String nodeType = "ASSERT_EXPRESSION";
-		
+		String description = "do statement";
+		String clazz = toMethod(description);
+		String nodeType = toProperty(description);
+
 		Member[] members = {
-			Member.child("EXPRESSION", "expression", "expression", "Expression", "Expression", MANDATORY, CYCLE_RISK, "SimpleName"),
-			Member.child("MESSAGE", "message", "message", "Expression", "Message", OPTIONAL, CYCLE_RISK),
+				Member.childMandatory("expression", "Expression", CYCLE_RISK, "SimpleName"),
+				Member.childMandatory("body", "Statement", CYCLE_RISK, "Block"),
 		};
 		
 		StringBuilder sb = new StringBuilder();
@@ -167,13 +80,13 @@ public class ASTNodeGenerator {
 				sb.append(" * (element type: <code>" + member.clazz + "</code>).\n");
 				sb.append(" * Defaults to an empty list.\n");
 				sb.append(" */\n");
-				sb.append("private ASTNode.NodeList indexes =\n");
+				sb.append("private ASTNode.NodeList " + member.name + " =\n");
 				sb.append("	new ASTNode.NodeList(" + member.property + "_PROPERTY);\n");
 			} else {
 				sb.append("/**\n");
 				sb.append(" * The " + member.name + ".\n");
 				sb.append(" */\n");
-				sb.append("private " + member.clazz + " " + member.name + " = null;\n");
+				sb.append("private " + member.clazz + " " + member.name + ";\n");
 				sb.append("\n");
 			}
 		}
@@ -353,7 +266,7 @@ public class ASTNodeGenerator {
 				sb.append(" * @exception IllegalArgumentException if the argument is incorrect\n");
 				sb.append(" */ \n");
 				sb.append("public void set" + member.method + "(" + member.clazz + " " + member.name + ") {\n");
-				sb.append("	if (operator == null) {\n");
+				sb.append("	if (" + member.name + " == null) {\n");
 				sb.append("		throw new IllegalArgumentException();\n");
 				sb.append("	}\n");
 				sb.append("	preValueChange(" + member.property + "_PROPERTY);\n");
@@ -415,7 +328,7 @@ public class ASTNodeGenerator {
 				sb.append(" * @return the live list of " + description + "\n");
 				sb.append(" *    (element type: <code>" + member.clazz + "</code>)\n");
 				sb.append(" */ \n");
-				sb.append("public List<" + member.clazz + "> indexes() {\n");
+				sb.append("public List<" + member.clazz + "> " + member.method + "() {\n");
 				sb.append("	return this." + member.name + ";\n");
 				sb.append("}\n");
 				sb.append("\n");
@@ -473,5 +386,139 @@ public class ASTNodeGenerator {
 		return false;
 	}
 	
+	final static int SIMPLE = 1;
+	final static int CHILD = 2;
+	final static int LIST = 3;
+	
+	final static boolean MANDATORY = true;
+	final static boolean OPTIONAL = false;
+	final static boolean CYCLE_RISK = true;
+	final static boolean NO_CYCLE_RISK = false;
+	
+	static class Member {
+		
+		public int type;
+		public String property;
+		public String name;
+		public String description;
+		public String clazz;
+		public String method;
+		public boolean mandatory;
+		public boolean cycleRisk;
+		public String lazyInit;
+		
+		private Member() { }
+		
+		public static Member simple(String description, String clazz) {
+			Member member = new Member();
+			member.type = SIMPLE;
+			member.property = toProperty(description);
+			member.name = toName(description);
+			member.description = description;
+			member.clazz = clazz;
+			member.method = toMethod(description);
+			member.mandatory = OPTIONAL;
+			return member;
+		}
+		
+		public static Member simpleMandatory(String description, String clazz, String lazyInit) {
+			Member member = new Member();
+			member.type = SIMPLE;
+			member.property = toProperty(description);
+			member.name = toName(description);
+			member.description = description;
+			member.clazz = clazz;
+			member.method = toMethod(description);
+			member.mandatory = MANDATORY;
+			member.lazyInit = lazyInit;
+			return member;
+		}
+		
+		public static Member child(String description, String clazz, boolean cycleRisk) {
+			Member member = new Member();
+			member.type = CHILD;
+			member.property = toProperty(description);
+			member.name = toName(description);
+			member.description = description;
+			member.clazz = clazz;
+			member.method = toMethod(description);
+			member.mandatory = OPTIONAL;
+			member.cycleRisk = cycleRisk;
+			return member;
+		}
+		
+		public static Member childMandatory(String description, String clazz, boolean cycleRisk, String lazyInit) {
+			Member member = new Member();
+			member.type = CHILD;
+			member.property = toProperty(description);
+			member.name = toName(description);
+			member.description = description;
+			member.clazz = clazz;
+			member.method = toMethod(description);
+			member.mandatory = MANDATORY;
+			member.cycleRisk = cycleRisk;
+			member.lazyInit = lazyInit;
+			return member;
+		}
+		
+		public static Member list(String property, String name, String description, String clazz, String method, boolean cycleRisk) {
+			Member member = new Member();
+			member.type = LIST;
+			member.property = toProperty(description);
+			member.name = toName(description);
+			member.description = description;
+			member.clazz = clazz;
+			member.method = toName(description);
+			member.cycleRisk = cycleRisk;
+			return member;
+		}
+		
+	}
+	
+	private static String toProperty(String s) {
+		StringBuilder sb = new StringBuilder();
+		
+		StringTokenizer st = new StringTokenizer(s, " ");
+		String first = st.nextToken();
+		sb.append(first.toUpperCase());
+		while(st.hasMoreTokens()) {
+			sb.append("_");
+			sb.append(st.nextToken().toUpperCase());
+		}
+		
+		return sb.toString();
+	}
+	
+	private static String toName(String s) {
+		StringBuilder sb = new StringBuilder();
+		
+		StringTokenizer st = new StringTokenizer(s, " ");
+		String first = st.nextToken();
+		sb.append(first);
+		while(st.hasMoreTokens()) {
+			sb.append(toWord(st.nextToken()));
+		}
+		
+		return sb.toString();
+	}
+	
+	private static String toMethod(String s) {
+		StringBuilder sb = new StringBuilder();
+		
+		StringTokenizer st = new StringTokenizer(s, " ");
+		String first = st.nextToken();
+		sb.append(toWord(first));
+		while(st.hasMoreTokens()) {
+			sb.append(toWord(st.nextToken()));
+		}
+		
+		return sb.toString();
+	}
+	
+	private static String toWord(String s) {
+		if (s.length() == 0) return s;
+		if (s.length() == 1) return s.toUpperCase();
+		return Character.toUpperCase(s.charAt(0)) + s.substring(1);
+	}
 
 }

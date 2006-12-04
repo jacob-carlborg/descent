@@ -33,44 +33,44 @@ public class Argument extends ASTNode implements IArgument {
 	}
 
 	/**
-	 * The "passage mode" structural property of this node type.
+	 * The "passageMode" structural property of this node type.
 	 */
-	public static final SimplePropertyDescriptor PASSAGE_MODE_PROPERTY = 
-		new SimplePropertyDescriptor(Argument.class, "passageMode", Argument.PassageMode.class, MANDATORY); //$NON-NLS-1$
-	
+	public static final SimplePropertyDescriptor PASSAGE_MODE_PROPERTY =
+		new SimplePropertyDescriptor(Argument.class, "passageMode", PassageMode.class, MANDATORY); //$NON-NLS-1$
+
 	/**
 	 * The "type" structural property of this node type.
 	 */
-	public static final ChildPropertyDescriptor TYPE_PROPERTY = 
-		new ChildPropertyDescriptor(Argument.class, "type", Type.class, MANDATORY, NO_CYCLE_RISK); //$NON-NLS-1$
-	
+	public static final ChildPropertyDescriptor TYPE_PROPERTY =
+		new ChildPropertyDescriptor(Argument.class, "type", Type.class, MANDATORY, CYCLE_RISK); //$NON-NLS-1$
+
 	/**
 	 * The "name" structural property of this node type.
 	 */
-	public static final ChildPropertyDescriptor NAME_PROPERTY = 
+	public static final ChildPropertyDescriptor NAME_PROPERTY =
 		new ChildPropertyDescriptor(Argument.class, "name", SimpleName.class, MANDATORY, NO_CYCLE_RISK); //$NON-NLS-1$
-	
+
 	/**
 	 * The "defaultValue" structural property of this node type.
 	 */
-	public static final ChildPropertyDescriptor DEFAULT_VALUE_PROPERTY = 
-		new ChildPropertyDescriptor(Argument.class, "defaultValue", Expression.class, OPTIONAL, NO_CYCLE_RISK); //$NON-NLS-1$
-	
+	public static final ChildPropertyDescriptor DEFAULT_VALUE_PROPERTY =
+		new ChildPropertyDescriptor(Argument.class, "defaultValue", Expression.class, OPTIONAL, CYCLE_RISK); //$NON-NLS-1$
+
 	/**
 	 * A list of property descriptors (element type: 
 	 * {@link StructuralPropertyDescriptor}),
 	 * or null if uninitialized.
 	 */
 	private static final List PROPERTY_DESCRIPTORS;
-	
+
 	static {
-		List propertyList = new ArrayList(3);
-		createPropertyList(Argument.class, propertyList);
-		addProperty(PASSAGE_MODE_PROPERTY, propertyList);
-		addProperty(TYPE_PROPERTY, propertyList);
-		addProperty(NAME_PROPERTY, propertyList);
-		addProperty(DEFAULT_VALUE_PROPERTY, propertyList);
-		PROPERTY_DESCRIPTORS = reapPropertyList(propertyList);
+		List properyList = new ArrayList(4);
+		createPropertyList(Argument.class, properyList);
+		addProperty(PASSAGE_MODE_PROPERTY, properyList);
+		addProperty(TYPE_PROPERTY, properyList);
+		addProperty(NAME_PROPERTY, properyList);
+		addProperty(DEFAULT_VALUE_PROPERTY, properyList);
+		PROPERTY_DESCRIPTORS = reapPropertyList(properyList);
 	}
 
 	/**
@@ -87,16 +87,31 @@ public class Argument extends ASTNode implements IArgument {
 	public static List propertyDescriptors(int apiLevel) {
 		return PROPERTY_DESCRIPTORS;
 	}
-	
-	// TODO comment better
-	public Argument.PassageMode passageMode = Argument.PassageMode.IN;
-	public Type type;
-	public SimpleName argumentName;	
-	public Expression defaultValue;
-	
+
+	/**
+	 * The passageMode.
+	 */
+	private PassageMode passageMode = null;
+
+	/**
+	 * The type.
+	 */
+	private Type type = null;
+
+	/**
+	 * The name.
+	 */
+	private SimpleName name = null;
+
+	/**
+	 * The defaultValue.
+	 */
+	private Expression defaultValue = null;
+
+
 	/**
 	 * Creates a new unparented argument node owned by the given 
-	 * AST. By default, TODO.
+	 * AST.
 	 * <p>
 	 * N.B. This constructor is package-private.
 	 * </p>
@@ -106,14 +121,14 @@ public class Argument extends ASTNode implements IArgument {
 	Argument(AST ast) {
 		super(ast);
 	}
-	
+
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
 	 */
 	final List internalStructuralPropertiesForType(int apiLevel) {
 		return propertyDescriptors(apiLevel);
 	}
-	
+
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
 	 */
@@ -122,7 +137,7 @@ public class Argument extends ASTNode implements IArgument {
 			if (get) {
 				return getPassageMode();
 			} else {
-				setPassageMode((Argument.PassageMode) value);
+				setPassageMode((PassageMode) value);
 				return null;
 			}
 		}
@@ -161,7 +176,7 @@ public class Argument extends ASTNode implements IArgument {
 		// allow default implementation to flag the error
 		return super.internalGetSetChildProperty(property, get, child);
 	}
-	
+
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
 	 * TODO make it package
@@ -169,7 +184,7 @@ public class Argument extends ASTNode implements IArgument {
 	public final int getNodeType0() {
 		return ARGUMENT;
 	}
-	
+
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
 	 */
@@ -179,10 +194,10 @@ public class Argument extends ASTNode implements IArgument {
 		result.setPassageMode(getPassageMode());
 		result.setType((Type) getType().clone(target));
 		result.setName((SimpleName) getName().clone(target));
-		result.setDefaultValue((Expression) ASTNode.copySubtree(target, getDefaultValue()));
+	result.setDefaultValue((Expression) ASTNode.copySubtree(target, getDefaultValue()));
 		return result;
 	}
-	
+
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
 	 */
@@ -190,7 +205,7 @@ public class Argument extends ASTNode implements IArgument {
 		// dispatch to correct overloaded match method
 		return matcher.match(this, other);
 	}
-	
+
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
 	 */
@@ -204,22 +219,23 @@ public class Argument extends ASTNode implements IArgument {
 		}
 		visitor.endVisit(this);
 	}
-	
+
 	/**
 	 * Returns the passage mode of this argument.
-	 * @return the passage mode node
-	 */
-	public Argument.PassageMode getPassageMode() {
-		return passageMode;
+	 * 
+	 * @return the passage mode
+	 */ 
+	public PassageMode getPassageMode() {
+		return this.passageMode;
 	}
-	
+
 	/**
 	 * Sets the passage mode of this argument.
 	 * 
 	 * @param passageMode the passage mode
 	 * @exception IllegalArgumentException if the argument is incorrect
 	 */ 
-	public void setPassageMode(Argument.PassageMode passageMode) {
+	public void setPassageMode(PassageMode passageMode) {
 		if (passageMode == null) {
 			throw new IllegalArgumentException();
 		}
@@ -227,11 +243,11 @@ public class Argument extends ASTNode implements IArgument {
 		this.passageMode = passageMode;
 		postValueChange(PASSAGE_MODE_PROPERTY);
 	}
-	
+
 	/**
 	 * Returns the type of this argument.
 	 * 
-	 * @return the expression node
+	 * @return the type
 	 */ 
 	public Type getType() {
 		if (this.type == null) {
@@ -239,7 +255,7 @@ public class Argument extends ASTNode implements IArgument {
 			synchronized (this) {
 				if (this.type == null) {
 					preLazyInit();
-					// TODO correct
+					// TODO fixme
 					this.type = Type.tint32;
 					postLazyInit(this.type, TYPE_PROPERTY);
 				}
@@ -247,11 +263,11 @@ public class Argument extends ASTNode implements IArgument {
 		}
 		return this.type;
 	}
-	
+
 	/**
 	 * Sets the type of this argument.
 	 * 
-	 * @param type the type node
+	 * @param type the type
 	 * @exception IllegalArgumentException if:
 	 * <ul>
 	 * <li>the node belongs to a different AST</li>
@@ -268,30 +284,30 @@ public class Argument extends ASTNode implements IArgument {
 		this.type = type;
 		postReplaceChild(oldChild, type, TYPE_PROPERTY);
 	}
-	
+
 	/**
 	 * Returns the name of this argument.
 	 * 
-	 * @return the simple name node
+	 * @return the name
 	 */ 
 	public SimpleName getName() {
-		if (this.argumentName == null) {
+		if (this.name == null) {
 			// lazy init must be thread-safe for readers
 			synchronized (this) {
-				if (this.argumentName == null) {
+				if (this.name == null) {
 					preLazyInit();
-					this.argumentName = new SimpleName(this.ast);
-					postLazyInit(this.argumentName, NAME_PROPERTY);
+					this.name = new SimpleName(this.ast);
+					postLazyInit(this.name, NAME_PROPERTY);
 				}
 			}
 		}
-		return this.argumentName;
+		return this.name;
 	}
-	
+
 	/**
 	 * Sets the name of this argument.
 	 * 
-	 * @param argumentName the name node
+	 * @param name the name
 	 * @exception IllegalArgumentException if:
 	 * <ul>
 	 * <li>the node belongs to a different AST</li>
@@ -299,39 +315,29 @@ public class Argument extends ASTNode implements IArgument {
 	 * <li>a cycle in would be created</li>
 	 * </ul>
 	 */ 
-	public void setName(SimpleName argumentName) {
-		if (argumentName == null) {
+	public void setName(SimpleName name) {
+		if (name == null) {
 			throw new IllegalArgumentException();
 		}
-		ASTNode oldChild = this.argumentName;
-		preReplaceChild(oldChild, argumentName, NAME_PROPERTY);
-		this.argumentName = argumentName;
-		postReplaceChild(oldChild, argumentName, NAME_PROPERTY);
+		ASTNode oldChild = this.name;
+		preReplaceChild(oldChild, name, NAME_PROPERTY);
+		this.name = name;
+		postReplaceChild(oldChild, name, NAME_PROPERTY);
 	}
-	
+
 	/**
 	 * Returns the default value of this argument.
 	 * 
-	 * @return the expression node
+	 * @return the default value
 	 */ 
 	public Expression getDefaultValue() {
-		if (this.defaultValue == null) {
-			// lazy init must be thread-safe for readers
-			synchronized (this) {
-				if (this.defaultValue == null) {
-					preLazyInit();
-					this.defaultValue = new SimpleName(this.ast);
-					postLazyInit(this.defaultValue, DEFAULT_VALUE_PROPERTY);
-				}
-			}
-		}
 		return this.defaultValue;
 	}
-	
+
 	/**
 	 * Sets the default value of this argument.
 	 * 
-	 * @param defaultValue the expression node
+	 * @param defaultValue the default value
 	 * @exception IllegalArgumentException if:
 	 * <ul>
 	 * <li>the node belongs to a different AST</li>
@@ -348,14 +354,14 @@ public class Argument extends ASTNode implements IArgument {
 		this.defaultValue = defaultValue;
 		postReplaceChild(oldChild, defaultValue, DEFAULT_VALUE_PROPERTY);
 	}
-	
+
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
 	 */
 	int memSize() {
-		return super.memSize() + 3 * 4;
+		return BASE_NODE_SIZE + 4 * 4;
 	}
-	
+
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
 	 */
@@ -363,14 +369,15 @@ public class Argument extends ASTNode implements IArgument {
 		return
 			memSize()
 			+ (this.type == null ? 0 : getType().treeSize())
-			+ (this.argumentName == null ? 0 : getName().treeSize())
-			+ (this.defaultValue == null ? 0 : getDefaultValue().treeSize());
+			+ (this.name == null ? 0 : getName().treeSize())
+			+ (this.defaultValue == null ? 0 : getDefaultValue().treeSize())
+	;
 	}
 
 	// TODO Descent remove
 	public Argument(Argument.PassageMode passageMode, Type type, SimpleName name, Expression defaultValue) {
 		super(AST.newAST(AST.JLS3));
-		this.argumentName = name;
+		this.name = name;
 		this.type = type;
 		this.passageMode = passageMode;
 		this.defaultValue = defaultValue;

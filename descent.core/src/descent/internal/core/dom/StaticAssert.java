@@ -19,28 +19,28 @@ public class StaticAssert extends Dsymbol implements IStaticAssertDeclaration {
 	/**
 	 * The "expression" structural property of this node type.
 	 */
-	public static final ChildPropertyDescriptor EXPRESSION_PROPERTY = 
-		new ChildPropertyDescriptor(AssertExpression.class, "expression", Expression.class, MANDATORY, CYCLE_RISK); //$NON-NLS-1$
+	public static final ChildPropertyDescriptor EXPRESSION_PROPERTY =
+		new ChildPropertyDescriptor(StaticAssert.class, "expression", Expression.class, MANDATORY, CYCLE_RISK); //$NON-NLS-1$
 
 	/**
 	 * The "message" structural property of this node type.
 	 */
-	public static final ChildPropertyDescriptor MESSAGE_PROPERTY = 
-		new ChildPropertyDescriptor(AssertExpression.class, "message", Expression.class, OPTIONAL, CYCLE_RISK); //$NON-NLS-1$
-	
+	public static final ChildPropertyDescriptor MESSAGE_PROPERTY =
+		new ChildPropertyDescriptor(StaticAssert.class, "message", Expression.class, OPTIONAL, CYCLE_RISK); //$NON-NLS-1$
+
 	/**
 	 * A list of property descriptors (element type: 
 	 * {@link StructuralPropertyDescriptor}),
 	 * or null if uninitialized.
 	 */
 	private static final List PROPERTY_DESCRIPTORS;
-	
+
 	static {
-		List propertyList = new ArrayList(3);
-		createPropertyList(AssertExpression.class, propertyList);
-		addProperty(EXPRESSION_PROPERTY, propertyList);
-		addProperty(MESSAGE_PROPERTY, propertyList);
-		PROPERTY_DESCRIPTORS = reapPropertyList(propertyList);
+		List properyList = new ArrayList(2);
+		createPropertyList(StaticAssert.class, properyList);
+		addProperty(EXPRESSION_PROPERTY, properyList);
+		addProperty(MESSAGE_PROPERTY, properyList);
+		PROPERTY_DESCRIPTORS = reapPropertyList(properyList);
 	}
 
 	/**
@@ -57,22 +57,21 @@ public class StaticAssert extends Dsymbol implements IStaticAssertDeclaration {
 	public static List propertyDescriptors(int apiLevel) {
 		return PROPERTY_DESCRIPTORS;
 	}
-			
-	/**
-	 * The expression; lazily initialized; defaults to an unspecified, but 
-	 * legal, expression.
-	 */
-	private Expression expression = null;
 
 	/**
-	 * The message; lazily initialized; defaults to an unspecified, but 
-	 * legal, expression.
+	 * The expression.
 	 */
-	private Expression message = null;
-	
+	private Expression expression;
+
+	/**
+	 * The message.
+	 */
+	private Expression message;
+
+
 	/**
 	 * Creates a new unparented static assert node owned by the given 
-	 * AST. By default, the expresssion and message are unspecified, but legal.
+	 * AST.
 	 * <p>
 	 * N.B. This constructor is package-private.
 	 * </p>
@@ -82,14 +81,14 @@ public class StaticAssert extends Dsymbol implements IStaticAssertDeclaration {
 	StaticAssert(AST ast) {
 		super(ast);
 	}
-	
+
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
 	 */
 	final List internalStructuralPropertiesForType(int apiLevel) {
 		return propertyDescriptors(apiLevel);
 	}
-	
+
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
 	 */
@@ -113,7 +112,7 @@ public class StaticAssert extends Dsymbol implements IStaticAssertDeclaration {
 		// allow default implementation to flag the error
 		return super.internalGetSetChildProperty(property, get, child);
 	}
-	
+
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
 	 * TODO make it package
@@ -126,10 +125,10 @@ public class StaticAssert extends Dsymbol implements IStaticAssertDeclaration {
 	 * Method declared on ASTNode.
 	 */
 	ASTNode clone0(AST target) {
-		AssertExpression result = new AssertExpression(target);
+		StaticAssert result = new StaticAssert(target);
 		result.setSourceRange(this.getStartPosition(), this.getLength());
 		result.setExpression((Expression) getExpression().clone(target));
-		result.setMessage((Expression) getMessage().clone(target));
+	result.setMessage((Expression) ASTNode.copySubtree(target, getMessage()));
 		return result;
 	}
 
@@ -153,11 +152,11 @@ public class StaticAssert extends Dsymbol implements IStaticAssertDeclaration {
 		}
 		visitor.endVisit(this);
 	}
-	
+
 	/**
 	 * Returns the expression of this static assert.
 	 * 
-	 * @return the expression node
+	 * @return the expression
 	 */ 
 	public Expression getExpression() {
 		if (this.expression == null) {
@@ -172,11 +171,11 @@ public class StaticAssert extends Dsymbol implements IStaticAssertDeclaration {
 		}
 		return this.expression;
 	}
-	
+
 	/**
 	 * Sets the expression of this static assert.
 	 * 
-	 * @param expression the expression node
+	 * @param expression the expression
 	 * @exception IllegalArgumentException if:
 	 * <ul>
 	 * <li>the node belongs to a different AST</li>
@@ -197,26 +196,16 @@ public class StaticAssert extends Dsymbol implements IStaticAssertDeclaration {
 	/**
 	 * Returns the message of this static assert.
 	 * 
-	 * @return the expression node
+	 * @return the message
 	 */ 
 	public Expression getMessage() {
-		if (this.message == null) {
-			// lazy init must be thread-safe for readers
-			synchronized (this) {
-				if (this.message == null) {
-					preLazyInit();
-					this.message = new SimpleName(this.ast);
-					postLazyInit(this.message, MESSAGE_PROPERTY);
-				}
-			}
-		}
 		return this.message;
 	}
-	
+
 	/**
-	 * Sets the message of this with assert expression.
+	 * Sets the message of this static assert.
 	 * 
-	 * @param message the expression node
+	 * @param message the message
 	 * @exception IllegalArgumentException if:
 	 * <ul>
 	 * <li>the node belongs to a different AST</li>
@@ -228,19 +217,19 @@ public class StaticAssert extends Dsymbol implements IStaticAssertDeclaration {
 		if (message == null) {
 			throw new IllegalArgumentException();
 		}
-		ASTNode oldChild = this.expression;
+		ASTNode oldChild = this.message;
 		preReplaceChild(oldChild, message, MESSAGE_PROPERTY);
 		this.message = message;
 		postReplaceChild(oldChild, message, MESSAGE_PROPERTY);
 	}
-	
+
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
 	 */
 	int memSize() {
-		return super.memSize() + 2 * 4;
+		return BASE_NODE_SIZE + 2 * 4;
 	}
-	
+
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
 	 */
@@ -248,7 +237,8 @@ public class StaticAssert extends Dsymbol implements IStaticAssertDeclaration {
 		return
 			memSize()
 			+ (this.expression == null ? 0 : getExpression().treeSize())
-			+ (this.message == null ? 0 : getMessage().treeSize());
+			+ (this.message == null ? 0 : getMessage().treeSize())
+	;
 	}
 
 	// TODO Descent remove

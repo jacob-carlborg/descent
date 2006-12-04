@@ -21,9 +21,8 @@ public class ExpressionStatement extends Statement implements IExpressionStateme
 	
 	/**
 	 * The "expression" structural property of this node type.
-	 * @since 3.0
 	 */
-	public static final ChildPropertyDescriptor EXPRESSION_PROPERTY = 
+	public static final ChildPropertyDescriptor EXPRESSION_PROPERTY =
 		new ChildPropertyDescriptor(ExpressionStatement.class, "expression", Expression.class, MANDATORY, CYCLE_RISK); //$NON-NLS-1$
 
 	/**
@@ -32,9 +31,9 @@ public class ExpressionStatement extends Statement implements IExpressionStateme
 	 * or null if uninitialized.
 	 */
 	private static final List PROPERTY_DESCRIPTORS;
-	
+
 	static {
-		List properyList = new ArrayList(2);
+		List properyList = new ArrayList(1);
 		createPropertyList(ExpressionStatement.class, properyList);
 		addProperty(EXPRESSION_PROPERTY, properyList);
 		PROPERTY_DESCRIPTORS = reapPropertyList(properyList);
@@ -54,17 +53,16 @@ public class ExpressionStatement extends Statement implements IExpressionStateme
 	public static List propertyDescriptors(int apiLevel) {
 		return PROPERTY_DESCRIPTORS;
 	}
-			
+
 	/**
-	 * The expression; lazily initialized; defaults to a unspecified, but legal,
-	 * expression.
+	 * The expression.
 	 */
-	private Expression expression = null;
+	private Expression expression;
+
 
 	/**
 	 * Creates a new unparented expression statement node owned by the given 
-	 * AST. By default, the expression statement is unspecified, but legal,
-	 * method invocation expression.
+	 * AST.
 	 * <p>
 	 * N.B. This constructor is package-private.
 	 * </p>
@@ -81,7 +79,7 @@ public class ExpressionStatement extends Statement implements IExpressionStateme
 	final List internalStructuralPropertiesForType(int apiLevel) {
 		return propertyDescriptors(apiLevel);
 	}
-	
+
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
 	 */
@@ -115,7 +113,7 @@ public class ExpressionStatement extends Statement implements IExpressionStateme
 		result.setExpression((Expression) getExpression().clone(target));
 		return result;
 	}
-	
+
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
 	 */
@@ -130,15 +128,16 @@ public class ExpressionStatement extends Statement implements IExpressionStateme
 	void accept0(ASTVisitor visitor) {
 		boolean visitChildren = visitor.visit(this);
 		if (visitChildren) {
+			// visit children in normal left to right reading order
 			acceptChild(visitor, getExpression());
 		}
 		visitor.endVisit(this);
 	}
-	
+
 	/**
 	 * Returns the expression of this expression statement.
 	 * 
-	 * @return the expression node
+	 * @return the expression
 	 */ 
 	public Expression getExpression() {
 		if (this.expression == null) {
@@ -146,7 +145,6 @@ public class ExpressionStatement extends Statement implements IExpressionStateme
 			synchronized (this) {
 				if (this.expression == null) {
 					preLazyInit();
-					// TODO: correct to MethodInvocation
 					this.expression = new SimpleName(this.ast);
 					postLazyInit(this.expression, EXPRESSION_PROPERTY);
 				}
@@ -154,11 +152,11 @@ public class ExpressionStatement extends Statement implements IExpressionStateme
 		}
 		return this.expression;
 	}
-		
+
 	/**
 	 * Sets the expression of this expression statement.
 	 * 
-	 * @param expression the new expression node
+	 * @param expression the expression
 	 * @exception IllegalArgumentException if:
 	 * <ul>
 	 * <li>the node belongs to a different AST</li>
@@ -175,21 +173,22 @@ public class ExpressionStatement extends Statement implements IExpressionStateme
 		this.expression = expression;
 		postReplaceChild(oldChild, expression, EXPRESSION_PROPERTY);
 	}
-	
+
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
 	 */
 	int memSize() {
-		return super.memSize() + 1 * 4;
+		return BASE_NODE_SIZE + 1 * 4;
 	}
-	
+
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
 	 */
 	int treeSize() {
 		return
 			memSize()
-			+ (this.expression == null ? 0 : getExpression().treeSize());
+			+ (this.expression == null ? 0 : getExpression().treeSize())
+	;
 	}
 
 	// TODO Descent remove

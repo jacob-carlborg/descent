@@ -18,16 +18,14 @@ public class CaseStatement extends Statement implements ICaseStatement {
 
 	/**
 	 * The "expression" structural property of this node type.
-	 * @since 3.0
 	 */
-	public static final ChildPropertyDescriptor EXPRESSION_PROPERTY = 
+	public static final ChildPropertyDescriptor EXPRESSION_PROPERTY =
 		new ChildPropertyDescriptor(CaseStatement.class, "expression", Expression.class, MANDATORY, CYCLE_RISK); //$NON-NLS-1$
 
 	/**
 	 * The "body" structural property of this node type.
-	 * @since 3.0
 	 */
-	public static final ChildPropertyDescriptor BODY_PROPERTY = 
+	public static final ChildPropertyDescriptor BODY_PROPERTY =
 		new ChildPropertyDescriptor(CaseStatement.class, "body", Statement.class, MANDATORY, CYCLE_RISK); //$NON-NLS-1$
 
 	/**
@@ -36,13 +34,13 @@ public class CaseStatement extends Statement implements ICaseStatement {
 	 * or null if uninitialized.
 	 */
 	private static final List PROPERTY_DESCRIPTORS;
-	
+
 	static {
-		List propertyList = new ArrayList(3);
-		createPropertyList(CaseStatement.class, propertyList);
-		addProperty(EXPRESSION_PROPERTY, propertyList);
-		addProperty(BODY_PROPERTY, propertyList);
-		PROPERTY_DESCRIPTORS = reapPropertyList(propertyList);
+		List properyList = new ArrayList(2);
+		createPropertyList(CaseStatement.class, properyList);
+		addProperty(EXPRESSION_PROPERTY, properyList);
+		addProperty(BODY_PROPERTY, properyList);
+		PROPERTY_DESCRIPTORS = reapPropertyList(properyList);
 	}
 
 	/**
@@ -59,23 +57,21 @@ public class CaseStatement extends Statement implements ICaseStatement {
 	public static List propertyDescriptors(int apiLevel) {
 		return PROPERTY_DESCRIPTORS;
 	}
-			
-	/**
-	 * The expression; lazily initialized; defaults to an unspecified, but 
-	 * legal, expression.
-	 */
-	private Expression expression = null;
 
 	/**
-	 * The body statement; lazily initialized; defaults to an empty block 
-	 * statement.
+	 * The expression.
 	 */
-	private Statement body = null;
-	
+	private Expression expression;
+
+	/**
+	 * The body.
+	 */
+	private Statement body;
+
+
 	/**
 	 * Creates a new unparented case statement node owned by the given 
-	 * AST. By default, the expresssion is unspecified, but legal, and
-	 * the body statement is an empty block.
+	 * AST.
 	 * <p>
 	 * N.B. This constructor is package-private.
 	 * </p>
@@ -85,14 +81,14 @@ public class CaseStatement extends Statement implements ICaseStatement {
 	CaseStatement(AST ast) {
 		super(ast);
 	}
-	
+
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
 	 */
 	final List internalStructuralPropertiesForType(int apiLevel) {
 		return propertyDescriptors(apiLevel);
 	}
-	
+
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
 	 */
@@ -116,7 +112,7 @@ public class CaseStatement extends Statement implements ICaseStatement {
 		// allow default implementation to flag the error
 		return super.internalGetSetChildProperty(property, get, child);
 	}
-	
+
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
 	 * TODO make it package
@@ -156,11 +152,11 @@ public class CaseStatement extends Statement implements ICaseStatement {
 		}
 		visitor.endVisit(this);
 	}
-	
+
 	/**
 	 * Returns the expression of this case statement.
 	 * 
-	 * @return the expression node
+	 * @return the expression
 	 */ 
 	public Expression getExpression() {
 		if (this.expression == null) {
@@ -175,11 +171,11 @@ public class CaseStatement extends Statement implements ICaseStatement {
 		}
 		return this.expression;
 	}
-	
+
 	/**
 	 * Sets the expression of this case statement.
 	 * 
-	 * @param expression the expression node
+	 * @param expression the expression
 	 * @exception IllegalArgumentException if:
 	 * <ul>
 	 * <li>the node belongs to a different AST</li>
@@ -200,7 +196,7 @@ public class CaseStatement extends Statement implements ICaseStatement {
 	/**
 	 * Returns the body of this case statement.
 	 * 
-	 * @return the body statement node
+	 * @return the body
 	 */ 
 	public Statement getBody() {
 		if (this.body == null) {
@@ -215,11 +211,11 @@ public class CaseStatement extends Statement implements ICaseStatement {
 		}
 		return this.body;
 	}
-	
+
 	/**
 	 * Sets the body of this case statement.
 	 * 
-	 * @param statement the body statement node
+	 * @param body the body
 	 * @exception IllegalArgumentException if:
 	 * <ul>
 	 * <li>the node belongs to a different AST</li>
@@ -227,23 +223,23 @@ public class CaseStatement extends Statement implements ICaseStatement {
 	 * <li>a cycle in would be created</li>
 	 * </ul>
 	 */ 
-	public void setBody(Statement statement) {
-		if (statement == null) {
+	public void setBody(Statement body) {
+		if (body == null) {
 			throw new IllegalArgumentException();
 		}
 		ASTNode oldChild = this.body;
-		preReplaceChild(oldChild, statement, BODY_PROPERTY);
-		this.body = statement;
-		postReplaceChild(oldChild, statement, BODY_PROPERTY);
+		preReplaceChild(oldChild, body, BODY_PROPERTY);
+		this.body = body;
+		postReplaceChild(oldChild, body, BODY_PROPERTY);
 	}
-	
+
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
 	 */
 	int memSize() {
-		return super.memSize() + 2 * 4;
+		return BASE_NODE_SIZE + 2 * 4;
 	}
-	
+
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
 	 */
@@ -251,7 +247,8 @@ public class CaseStatement extends Statement implements ICaseStatement {
 		return
 			memSize()
 			+ (this.expression == null ? 0 : getExpression().treeSize())
-			+ (this.body == null ? 0 : getBody().treeSize());
+			+ (this.body == null ? 0 : getBody().treeSize())
+	;
 	}
 	
 	// TODO Descent remove
