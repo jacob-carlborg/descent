@@ -409,7 +409,58 @@ public class ASTNodeGenerator {
 			}
 		}
 		sb.append(";\n");
-		sb.append("}");
+		sb.append("}\n");
+		
+		sb.append("\n");
+		sb.append("===========================================================================\n");
+		sb.append("\n");
+		
+		sb.append("/**\n");
+		sb.append(" * Returns whether the given node and the other object match.\n");
+		sb.append(" * <p>\n");
+		sb.append(" * The default implementation provided by this class tests whether the\n");
+		sb.append(" * other object is a node of the same type with structurally isomorphic\n");
+		sb.append(" * child subtrees. Subclasses may override this method as needed.\n");
+		sb.append(" * </p>\n");
+		sb.append(" * \n");
+		sb.append(" * @param node the node\n");
+		sb.append(" * @param other the other object, or <code>null</code>\n");
+		sb.append(" * @return <code>true</code> if the subtree matches, or \n");
+		sb.append(" *   <code>false</code> if they do not match or the other object has a\n");
+		sb.append(" *   different node type or is <code>null</code>\n");
+		sb.append(" * @since 3.1\n");
+		sb.append(" */\n");
+		sb.append("public boolean match(" + clazz + " node, Object other) {\n");
+		sb.append("	if (!(other instanceof " + clazz + ")) {\n");
+		sb.append("		return false;\n");
+		sb.append("	}\n");
+		sb.append("	" + clazz + " o = (" + clazz + ") other;\n");
+		sb.append("	return (\n");
+		
+		boolean first = true;
+		for(Member member : members) {
+			sb.append("		");
+			if (!first) {
+				sb.append("&& ");
+			}
+			
+			switch(member.type) {
+			case SIMPLE:
+				sb.append("node.get" + member.method + "() == o.get" + member.method + "()\n");
+				break;
+			case CHILD:
+				sb.append("safeSubtreeMatch(node.get" + member.method + "(), o.get" + member.method + "())\n");
+				break;
+			case LIST:
+				sb.append("&& safeSubtreeListMatch(node." + member.method + "(), o." + member.method + "())\n");
+				break;
+			}
+			
+			first = false;
+		}
+		
+		sb.append("		);\n");
+		sb.append("}\n");
 		
 		System.out.print(sb);			
 	}
