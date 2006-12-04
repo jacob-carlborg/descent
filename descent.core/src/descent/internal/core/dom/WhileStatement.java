@@ -128,7 +128,7 @@ public class WhileStatement extends Statement implements IWhileStatement {
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
 	 */
-	ASTNode clone0(AST target) {
+	WhileStatement clone0(AST target) {
 		WhileStatement result = new WhileStatement(target);
 		result.setSourceRange(this.getStartPosition(), this.getLength());
 		result.setExpression((Expression) getExpression().clone(target));

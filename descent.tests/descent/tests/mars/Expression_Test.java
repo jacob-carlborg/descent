@@ -246,7 +246,7 @@ public class Expression_Test extends Parser_Test {
 		
 		assertEquals(IExpression.ASSERT_EXPRESSION, expr.getNodeType0());
 		assertEquals(IExpression.BOOLEAN_LITERAL, expr.getExpression().getNodeType0());
-		assertTrue(expr.getMessage().getClass() == SimpleName.class); // TODO: how to test this?
+		assertNull(expr.getMessage());
 		assertPosition(expr, 1, s.length() - 1);
 	}
 	

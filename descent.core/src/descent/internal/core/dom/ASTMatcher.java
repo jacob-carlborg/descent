@@ -138,4 +138,9 @@ public class ASTMatcher {
 		return false;
 	}
 
+	public boolean match(ForStatement statement, Object other) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
 }

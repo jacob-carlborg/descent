@@ -19,28 +19,28 @@ public class AssertExpression extends Expression implements IAssertExpression {
 	/**
 	 * The "expression" structural property of this node type.
 	 */
-	public static final ChildPropertyDescriptor EXPRESSION_PROPERTY = 
+	public static final ChildPropertyDescriptor EXPRESSION_PROPERTY =
 		new ChildPropertyDescriptor(AssertExpression.class, "expression", Expression.class, MANDATORY, CYCLE_RISK); //$NON-NLS-1$
 
 	/**
 	 * The "message" structural property of this node type.
 	 */
-	public static final ChildPropertyDescriptor MESSAGE_PROPERTY = 
+	public static final ChildPropertyDescriptor MESSAGE_PROPERTY =
 		new ChildPropertyDescriptor(AssertExpression.class, "message", Expression.class, OPTIONAL, CYCLE_RISK); //$NON-NLS-1$
-	
+
 	/**
 	 * A list of property descriptors (element type: 
 	 * {@link StructuralPropertyDescriptor}),
 	 * or null if uninitialized.
 	 */
 	private static final List PROPERTY_DESCRIPTORS;
-	
+
 	static {
-		List propertyList = new ArrayList(3);
-		createPropertyList(AssertExpression.class, propertyList);
-		addProperty(EXPRESSION_PROPERTY, propertyList);
-		addProperty(MESSAGE_PROPERTY, propertyList);
-		PROPERTY_DESCRIPTORS = reapPropertyList(propertyList);
+		List properyList = new ArrayList(2);
+		createPropertyList(AssertExpression.class, properyList);
+		addProperty(EXPRESSION_PROPERTY, properyList);
+		addProperty(MESSAGE_PROPERTY, properyList);
+		PROPERTY_DESCRIPTORS = reapPropertyList(properyList);
 	}
 
 	/**
@@ -57,22 +57,21 @@ public class AssertExpression extends Expression implements IAssertExpression {
 	public static List propertyDescriptors(int apiLevel) {
 		return PROPERTY_DESCRIPTORS;
 	}
-			
+
 	/**
-	 * The expression; lazily initialized; defaults to an unspecified, but 
-	 * legal, expression.
+	 * The expression.
 	 */
 	private Expression expression = null;
 
 	/**
-	 * The message; lazily initialized; defaults to an unspecified, but 
-	 * legal, expression.
+	 * The message.
 	 */
 	private Expression message = null;
-	
+
+
 	/**
 	 * Creates a new unparented assert expression node owned by the given 
-	 * AST. By default, the expresssion and message are unspecified, but legal.
+	 * AST.
 	 * <p>
 	 * N.B. This constructor is package-private.
 	 * </p>
@@ -82,14 +81,14 @@ public class AssertExpression extends Expression implements IAssertExpression {
 	AssertExpression(AST ast) {
 		super(ast);
 	}
-	
+
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
 	 */
 	final List internalStructuralPropertiesForType(int apiLevel) {
 		return propertyDescriptors(apiLevel);
 	}
-	
+
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
 	 */
@@ -113,7 +112,7 @@ public class AssertExpression extends Expression implements IAssertExpression {
 		// allow default implementation to flag the error
 		return super.internalGetSetChildProperty(property, get, child);
 	}
-	
+
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
 	 * TODO make it package
@@ -129,7 +128,7 @@ public class AssertExpression extends Expression implements IAssertExpression {
 		AssertExpression result = new AssertExpression(target);
 		result.setSourceRange(this.getStartPosition(), this.getLength());
 		result.setExpression((Expression) getExpression().clone(target));
-		result.setMessage((Expression) getMessage().clone(target));
+	result.setMessage((Expression) ASTNode.copySubtree(target, getMessage()));
 		return result;
 	}
 
@@ -153,11 +152,11 @@ public class AssertExpression extends Expression implements IAssertExpression {
 		}
 		visitor.endVisit(this);
 	}
-	
+
 	/**
 	 * Returns the expression of this assert expression.
 	 * 
-	 * @return the expression node
+	 * @return the expression
 	 */ 
 	public Expression getExpression() {
 		if (this.expression == null) {
@@ -172,11 +171,11 @@ public class AssertExpression extends Expression implements IAssertExpression {
 		}
 		return this.expression;
 	}
-	
+
 	/**
 	 * Sets the expression of this assert expression.
 	 * 
-	 * @param expression the expression node
+	 * @param expression the expression
 	 * @exception IllegalArgumentException if:
 	 * <ul>
 	 * <li>the node belongs to a different AST</li>
@@ -197,26 +196,16 @@ public class AssertExpression extends Expression implements IAssertExpression {
 	/**
 	 * Returns the message of this assert expression.
 	 * 
-	 * @return the expression node
+	 * @return the message
 	 */ 
 	public Expression getMessage() {
-		if (this.message == null) {
-			// lazy init must be thread-safe for readers
-			synchronized (this) {
-				if (this.message == null) {
-					preLazyInit();
-					this.message = new SimpleName(this.ast);
-					postLazyInit(this.message, MESSAGE_PROPERTY);
-				}
-			}
-		}
 		return this.message;
 	}
-	
+
 	/**
 	 * Sets the message of this assert expression.
 	 * 
-	 * @param message the expression node
+	 * @param message the message
 	 * @exception IllegalArgumentException if:
 	 * <ul>
 	 * <li>the node belongs to a different AST</li>
@@ -228,19 +217,19 @@ public class AssertExpression extends Expression implements IAssertExpression {
 		if (message == null) {
 			throw new IllegalArgumentException();
 		}
-		ASTNode oldChild = this.expression;
+		ASTNode oldChild = this.message;
 		preReplaceChild(oldChild, message, MESSAGE_PROPERTY);
 		this.message = message;
 		postReplaceChild(oldChild, message, MESSAGE_PROPERTY);
 	}
-	
+
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
 	 */
 	int memSize() {
-		return super.memSize() + 2 * 4;
+		return BASE_NODE_SIZE + 2 * 4;
 	}
-	
+
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
 	 */
@@ -248,7 +237,8 @@ public class AssertExpression extends Expression implements IAssertExpression {
 		return
 			memSize()
 			+ (this.expression == null ? 0 : getExpression().treeSize())
-			+ (this.message == null ? 0 : getMessage().treeSize());
+			+ (this.message == null ? 0 : getMessage().treeSize())
+	;
 	}
 
 	// TODO Descent remove

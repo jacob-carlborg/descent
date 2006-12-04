@@ -12,6 +12,7 @@ DeleteExpression
 DollarLiteral
 EnumMember
 ExpressionStatement
+ForStatement
 GotoStatement
 GotoCaseStatement
 InfixExpression

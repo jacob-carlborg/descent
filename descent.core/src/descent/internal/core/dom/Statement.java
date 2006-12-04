@@ -11,5 +11,5 @@ public abstract class Statement extends ASTNode implements IStatement {
 	Statement(AST ast) {
 		super(ast);
 	}
-
+	
 }
