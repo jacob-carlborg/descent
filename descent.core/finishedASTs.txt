@@ -12,6 +12,7 @@ CallExpression
 CastExpression
 CaseStatement
 CatchClause
+ConditionalExpression
 ContinueStatement
 DefaultStatement
 DebugStatement

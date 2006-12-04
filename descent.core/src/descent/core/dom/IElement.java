@@ -249,7 +249,7 @@ public interface IElement {
 	 * Constant representing a condition expression.
 	 * An expression with this type can be safely cast to <code>IConditionExpression</code>. 
 	 */
-	int CONDITION_EXPRESSION = 46;
+	int CONDITIONAL_EXPRESSION = 46;
 	
 	/**
 	 * Constant representing a type dot identifier expression.

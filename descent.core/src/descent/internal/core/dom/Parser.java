@@ -5603,7 +5603,7 @@ public class Parser extends Lexer {
 			e1 = parseExpression();
 			check(TOKcolon);
 			e2 = parseCondExp();
-			e = new CondExp(e, e1, e2);
+			e = new ConditionalExpression(e, e1, e2);
 		}
 		return e;
 	}

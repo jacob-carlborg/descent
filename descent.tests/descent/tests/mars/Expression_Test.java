@@ -406,10 +406,10 @@ public class Expression_Test extends Parser_Test {
 		String s = " 1 ? true : false";
 		IConditionExpression expr = (IConditionExpression) new ParserFacade().parseExpression(s);
 		
-		assertEquals(IExpression.CONDITION_EXPRESSION, expr.getNodeType0());
-		assertEquals(IExpression.INTEGER_EXPRESSION, expr.getCondition().getNodeType0());
-		assertEquals(IExpression.BOOLEAN_LITERAL, expr.getTrue().getNodeType0());
-		assertEquals(IExpression.BOOLEAN_LITERAL, expr.getFalse().getNodeType0());
+		assertEquals(IExpression.CONDITIONAL_EXPRESSION, expr.getNodeType0());
+		assertEquals(IExpression.INTEGER_EXPRESSION, expr.getExpression().getNodeType0());
+		assertEquals(IExpression.BOOLEAN_LITERAL, expr.getThenExpression().getNodeType0());
+		assertEquals(IExpression.BOOLEAN_LITERAL, expr.getElseExpression().getNodeType0());
 		assertPosition(expr, 1, 16);
 		
 		assertVisitor(expr, 4);
