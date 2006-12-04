@@ -7,14 +7,14 @@ public class ASTNodeGenerator {
 	
 	public static void main(String[] args) {
 		
-		String description = "align declaration";
+		String description = "catch clause";
 		String clazz = toMethod(description);
 		String nodeType = toProperty(description);
 
 		Member[] members = {
-				Member.simple("modifier flags", "int"),
-				Member.simpleMandatory("align", "int", "1"),
-				Member.list("declarations", "Declaration", CYCLE_RISK),
+			Member.child("type", "Type", NO_CYCLE_RISK),
+			Member.child("name", "SimpleName", NO_CYCLE_RISK),
+			Member.childMandatory("body", "Statement", CYCLE_RISK, "Block"),
 		};
 		
 		StringBuilder sb = new StringBuilder();

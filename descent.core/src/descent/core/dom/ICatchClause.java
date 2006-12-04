@@ -22,6 +22,6 @@ public interface ICatchClause extends IElement {
 	/**
 	 * Returns the statement to handle the exception.
 	 */
-	IStatement getHandler();
+	IStatement getBody();
 
 }

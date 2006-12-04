@@ -3701,7 +3701,7 @@ public class Parser extends Lexer {
 			body = parseStatement(PSscope);
 			while (token.value == TOKcatch) {
 				Statement handler;
-				Catch c;
+				CatchClause c;
 				Type t2;
 				Identifier id;
 				
@@ -3721,7 +3721,7 @@ public class Parser extends Lexer {
 					check(TOKrparen);
 				}
 				handler = parseStatement(0);
-				c = new Catch(t2, id, handler);
+				c = new CatchClause(t2, new SimpleName(id), handler);
 				c.startPosition = firstToken.ptr;
 				c.length = prevToken.ptr + prevToken.len - c.startPosition;
 				if (catches == null) {
@@ -5084,7 +5084,7 @@ public class Parser extends Lexer {
 				break;
 
 			case TOKlparen:
-				e = new CallExp(e, parseArguments());
+				e = new CallExpression(e, parseArguments());
 				continue;
 
 			case TOKlbracket: { // array dereferences:
@@ -5210,7 +5210,7 @@ public class Parser extends Lexer {
 			check(TOKrparen);
 
 			e = parseUnaryExp();
-			e = new CastExp(e, t);
+			e = new CastExpression(e, t);
 			break;
 		}
 
@@ -5304,7 +5304,7 @@ public class Parser extends Lexer {
 						nextToken();
 					} else {
 						e = parseUnaryExp();
-						e = new CastExp(e, t);
+						e = new CastExpression(e, t);
 						problem("C style cast illegal, use cast(...)", IProblem.SEVERITY_ERROR, IProblem.C_STYLE_CAST_ILLEGAL, firstToken.ptr, prevToken.ptr + prevToken.len - firstToken.ptr);
 					}
 					return e;

@@ -506,7 +506,7 @@ public class Expression_Test extends Parser_Test {
 		IArrayLiteralExpression expr = (IArrayLiteralExpression) new ParserFacade().parseExpression(s);
 		assertEquals(IExpression.ARRAY_LITERAL, expr.getNodeType0());
 		
-		IExpression[] args = expr.expressions().toArray(new IExpression[expr.expressions().size()]);
+		IExpression[] args = expr.arguments().toArray(new IExpression[expr.arguments().size()]);
 		assertEquals(3, args.length);
 		
 		assertEquals("1", args[0].toString());
@@ -557,7 +557,7 @@ public class Expression_Test extends Parser_Test {
 		
 		assertEquals("bla", expr.getExpression().toString());
 		
-		IExpression[] args = expr.getArguments();
+		IExpression[] args = expr.arguments().toArray(new IExpression[expr.arguments().size()]);
 		assertEquals(3, args.length);
 		
 		assertEquals("1", args[0].toString());

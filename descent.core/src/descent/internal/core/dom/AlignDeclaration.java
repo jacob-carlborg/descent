@@ -6,6 +6,16 @@ import java.util.List;
 import descent.core.dom.ASTVisitor;
 import descent.core.dom.IAlignDeclaration;
 
+/**
+ * Align declaration AST node type.
+ *
+ * <pre>
+ * AliasDeclaration:
+ *    <b>align</b> <b>(</b> int <b>)</b> ...
+ * </pre>
+ * 
+ * TODO comment correctly
+ */
 public class AlignDeclaration extends Declaration implements IAlignDeclaration {
 	
 	/**

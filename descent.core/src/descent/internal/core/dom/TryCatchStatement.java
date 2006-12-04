@@ -10,9 +10,9 @@ import descent.core.dom.ITryStatement;
 public class TryCatchStatement extends Statement implements ITryStatement {
 
 	private final Statement body;
-	private final List<Catch> catches;
+	private final List<CatchClause> catches;
 
-	public TryCatchStatement(Statement body, List<Catch> catches) {
+	public TryCatchStatement(Statement body, List<CatchClause> catches) {
 		this.body = body;
 		this.catches = catches;
 	}

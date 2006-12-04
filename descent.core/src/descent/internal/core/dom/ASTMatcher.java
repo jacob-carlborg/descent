@@ -168,4 +168,19 @@ public class ASTMatcher {
 		return false;
 	}
 
+	public boolean match(CallExpression expression, Object other) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	public boolean match(CastExpression expression, Object other) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	public boolean match(CatchClause clause, Object other) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
 }

@@ -4,35 +4,35 @@ import java.util.ArrayList;
 import java.util.List;
 
 import descent.core.dom.ASTVisitor;
-import descent.core.dom.IAliasDeclaration;
+import descent.core.dom.ICatchClause;
 
 /**
- * Alias declaration AST node type.
+ * Catch clause AST node type.
  *
  * <pre>
- * AliasDeclaration:
- *    <b>alias</b> Type Type <b>;</b>
+ * CatchClause:
+ *    <b>catch</b> [ <b>(</b> Type Name <b>)</b> ] Statement
  * </pre>
  */
-public class AliasDeclaration extends Declaration implements IAliasDeclaration {
-	
-	/**
-	 * The "modifierFlags" structural property of this node type.
-	 */
-	public static final SimplePropertyDescriptor MODIFIER_FLAGS_PROPERTY =
-		new SimplePropertyDescriptor(AliasDeclaration.class, "modifierFlags", int.class, OPTIONAL); //$NON-NLS-1$
-
-	/**
-	 * The "name" structural property of this node type.
-	 */
-	public static final ChildPropertyDescriptor NAME_PROPERTY =
-		new ChildPropertyDescriptor(AliasDeclaration.class, "name", SimpleName.class, MANDATORY, NO_CYCLE_RISK); //$NON-NLS-1$
+public class CatchClause extends ASTNode implements ICatchClause {
 
 	/**
 	 * The "type" structural property of this node type.
 	 */
 	public static final ChildPropertyDescriptor TYPE_PROPERTY =
-		new ChildPropertyDescriptor(AliasDeclaration.class, "type", Type.class, MANDATORY, NO_CYCLE_RISK); //$NON-NLS-1$
+		new ChildPropertyDescriptor(CatchClause.class, "type", Type.class, OPTIONAL, NO_CYCLE_RISK); //$NON-NLS-1$
+
+	/**
+	 * The "name" structural property of this node type.
+	 */
+	public static final ChildPropertyDescriptor NAME_PROPERTY =
+		new ChildPropertyDescriptor(CatchClause.class, "name", SimpleName.class, OPTIONAL, NO_CYCLE_RISK); //$NON-NLS-1$
+
+	/**
+	 * The "body" structural property of this node type.
+	 */
+	public static final ChildPropertyDescriptor BODY_PROPERTY =
+		new ChildPropertyDescriptor(CatchClause.class, "body", Statement.class, MANDATORY, CYCLE_RISK); //$NON-NLS-1$
 
 	/**
 	 * A list of property descriptors (element type: 
@@ -43,10 +43,10 @@ public class AliasDeclaration extends Declaration implements IAliasDeclaration {
 
 	static {
 		List properyList = new ArrayList(3);
-		createPropertyList(AliasDeclaration.class, properyList);
-		addProperty(MODIFIER_FLAGS_PROPERTY, properyList);
-		addProperty(NAME_PROPERTY, properyList);
+		createPropertyList(CatchClause.class, properyList);
 		addProperty(TYPE_PROPERTY, properyList);
+		addProperty(NAME_PROPERTY, properyList);
+		addProperty(BODY_PROPERTY, properyList);
 		PROPERTY_DESCRIPTORS = reapPropertyList(properyList);
 	}
 
@@ -66,10 +66,9 @@ public class AliasDeclaration extends Declaration implements IAliasDeclaration {
 	}
 
 	/**
-	 * The modifierFlags.
-	 * TODO uncomment
+	 * The type.
 	 */
-	// private int modifierFlags;
+	private Type type;
 
 	/**
 	 * The name.
@@ -77,13 +76,13 @@ public class AliasDeclaration extends Declaration implements IAliasDeclaration {
 	private SimpleName name;
 
 	/**
-	 * The type.
+	 * The body.
 	 */
-	private Type type;
+	private Statement body;
 
 
 	/**
-	 * Creates a new unparented alias declaration node owned by the given 
+	 * Creates a new unparented catch clause node owned by the given 
 	 * AST.
 	 * <p>
 	 * N.B. This constructor is package-private.
@@ -91,7 +90,7 @@ public class AliasDeclaration extends Declaration implements IAliasDeclaration {
 	 * 
 	 * @param ast the AST that is to own this node
 	 */
-	AliasDeclaration(AST ast) {
+	CatchClause(AST ast) {
 		super(ast);
 	}
 
@@ -105,23 +104,15 @@ public class AliasDeclaration extends Declaration implements IAliasDeclaration {
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
 	 */
-	final int internalGetSetIntProperty(SimplePropertyDescriptor property, boolean get, int value) {
-		if (property == MODIFIER_FLAGS_PROPERTY) {
+	final ASTNode internalGetSetChildProperty(ChildPropertyDescriptor property, boolean get, ASTNode child) {
+		if (property == TYPE_PROPERTY) {
 			if (get) {
-				return getModifierFlags();
+				return getType();
 			} else {
-				setModifierFlags(value);
-				return 0;
+				setType((Type) child);
+				return null;
 			}
 		}
-		// allow default implementation to flag the error
-		return super.internalGetSetIntProperty(property, get, value);
-	}
-
-	/* (omit javadoc for this method)
-	 * Method declared on ASTNode.
-	 */
-	final ASTNode internalGetSetChildProperty(ChildPropertyDescriptor property, boolean get, ASTNode child) {
 		if (property == NAME_PROPERTY) {
 			if (get) {
 				return getName();
@@ -130,11 +121,11 @@ public class AliasDeclaration extends Declaration implements IAliasDeclaration {
 				return null;
 			}
 		}
-		if (property == TYPE_PROPERTY) {
+		if (property == BODY_PROPERTY) {
 			if (get) {
-				return getType();
+				return getBody();
 			} else {
-				setType((Type) child);
+				setBody((Statement) child);
 				return null;
 			}
 		}
@@ -147,18 +138,18 @@ public class AliasDeclaration extends Declaration implements IAliasDeclaration {
 	 * TODO make it package
 	 */
 	public final int getNodeType0() {
-		return ALIAS_DECLARATION;
+		return CATCH_CLAUSE;
 	}
 
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
 	 */
 	ASTNode clone0(AST target) {
-		AliasDeclaration result = new AliasDeclaration(target);
+		CatchClause result = new CatchClause(target);
 		result.setSourceRange(this.getStartPosition(), this.getLength());
-		result.setModifierFlags(getModifierFlags());
-		result.setName((SimpleName) getName().clone(target));
-		result.setType((Type) getType().clone(target));
+	result.setType((Type) ASTNode.copySubtree(target, getType()));
+	result.setName((SimpleName) ASTNode.copySubtree(target, getName()));
+		result.setBody((Statement) getBody().clone(target));
 		return result;
 	}
 
@@ -177,54 +168,54 @@ public class AliasDeclaration extends Declaration implements IAliasDeclaration {
 		boolean visitChildren = visitor.visit(this);
 		if (visitChildren) {
 			// visit children in normal left to right reading order
-			acceptChild(visitor, getName());
 			acceptChild(visitor, getType());
+			acceptChild(visitor, getName());
+			acceptChild(visitor, getBody());
 		}
 		visitor.endVisit(this);
 	}
 
 	/**
-	 * Returns the modifier flags of this alias declaration.
+	 * Returns the type of this catch clause.
 	 * 
-	 * @return the modifier flags
+	 * @return the type
 	 */ 
-	public int getModifierFlags() {
-		return this.modifierFlags;
+	public Type getType() {
+		return this.type;
 	}
 
 	/**
-	 * Sets the modifier flags of this alias declaration.
+	 * Sets the type of this catch clause.
 	 * 
-	 * @param modifierFlags the modifier flags
-	 * @exception IllegalArgumentException if the argument is incorrect
+	 * @param type the type
+	 * @exception IllegalArgumentException if:
+	 * <ul>
+	 * <li>the node belongs to a different AST</li>
+	 * <li>the node already has a parent</li>
+	 * <li>a cycle in would be created</li>
+	 * </ul>
 	 */ 
-	public void setModifierFlags(int modifierFlags) {
-		preValueChange(MODIFIER_FLAGS_PROPERTY);
-		this.modifierFlags = modifierFlags;
-		postValueChange(MODIFIER_FLAGS_PROPERTY);
+	public void setType(Type type) {
+		if (type == null) {
+			throw new IllegalArgumentException();
+		}
+		ASTNode oldChild = this.type;
+		preReplaceChild(oldChild, type, TYPE_PROPERTY);
+		this.type = type;
+		postReplaceChild(oldChild, type, TYPE_PROPERTY);
 	}
 
 	/**
-	 * Returns the name of this alias declaration.
+	 * Returns the name of this catch clause.
 	 * 
 	 * @return the name
 	 */ 
 	public SimpleName getName() {
-		if (this.name == null) {
-			// lazy init must be thread-safe for readers
-			synchronized (this) {
-				if (this.name == null) {
-					preLazyInit();
-					this.name = new SimpleName(this.ast);
-					postLazyInit(this.name, NAME_PROPERTY);
-				}
-			}
-		}
 		return this.name;
 	}
 
 	/**
-	 * Sets the name of this alias declaration.
+	 * Sets the name of this catch clause.
 	 * 
 	 * @param name the name
 	 * @exception IllegalArgumentException if:
@@ -245,28 +236,28 @@ public class AliasDeclaration extends Declaration implements IAliasDeclaration {
 	}
 
 	/**
-	 * Returns the type of this alias declaration.
+	 * Returns the body of this catch clause.
 	 * 
-	 * @return the type
+	 * @return the body
 	 */ 
-	public Type getType() {
-		if (this.type == null) {
+	public Statement getBody() {
+		if (this.body == null) {
 			// lazy init must be thread-safe for readers
 			synchronized (this) {
-				if (this.type == null) {
+				if (this.body == null) {
 					preLazyInit();
-					this.type = Type.tint32;
-					postLazyInit(this.type, TYPE_PROPERTY);
+					this.body = new Block(this.ast);
+					postLazyInit(this.body, BODY_PROPERTY);
 				}
 			}
 		}
-		return this.type;
+		return this.body;
 	}
 
 	/**
-	 * Sets the type of this alias declaration.
+	 * Sets the body of this catch clause.
 	 * 
-	 * @param type the type
+	 * @param body the body
 	 * @exception IllegalArgumentException if:
 	 * <ul>
 	 * <li>the node belongs to a different AST</li>
@@ -274,14 +265,14 @@ public class AliasDeclaration extends Declaration implements IAliasDeclaration {
 	 * <li>a cycle in would be created</li>
 	 * </ul>
 	 */ 
-	public void setType(Type type) {
-		if (type == null) {
+	public void setBody(Statement body) {
+		if (body == null) {
 			throw new IllegalArgumentException();
 		}
-		ASTNode oldChild = this.type;
-		preReplaceChild(oldChild, type, TYPE_PROPERTY);
-		this.type = type;
-		postReplaceChild(oldChild, type, TYPE_PROPERTY);
+		ASTNode oldChild = this.body;
+		preReplaceChild(oldChild, body, BODY_PROPERTY);
+		this.body = body;
+		postReplaceChild(oldChild, body, BODY_PROPERTY);
 	}
 
 	/* (omit javadoc for this method)
@@ -297,14 +288,16 @@ public class AliasDeclaration extends Declaration implements IAliasDeclaration {
 	int treeSize() {
 		return
 			memSize()
-			+ (this.name == null ? 0 : getName().treeSize())
 			+ (this.type == null ? 0 : getType().treeSize())
+			+ (this.name == null ? 0 : getName().treeSize())
+			+ (this.body == null ? 0 : getBody().treeSize())
 	;
 	}
 
-	public AliasDeclaration(SimpleName name, Type type) {
-		this.name = name;
+	public CatchClause(Type type, SimpleName name, Statement body) {
 		this.type = type;
+		this.name = name;
+		this.body = body;
 	}
-
+	
 }

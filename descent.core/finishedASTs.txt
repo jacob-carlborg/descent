@@ -8,7 +8,10 @@ BaseClass (fix type lazy init)
 Block
 BooleanLiteral
 BreakStatement
+CallExpression
+CastExpression
 CaseStatement
+CatchClause
 ContinueStatement
 DefaultStatement
 DebugStatement

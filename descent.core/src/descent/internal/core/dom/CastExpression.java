@@ -4,35 +4,29 @@ import java.util.ArrayList;
 import java.util.List;
 
 import descent.core.dom.ASTVisitor;
-import descent.core.dom.IAliasDeclaration;
+import descent.core.dom.ICastExpression;
 
 /**
- * Alias declaration AST node type.
+ * Cast expression AST node type.
  *
  * <pre>
- * AliasDeclaration:
- *    <b>alias</b> Type Type <b>;</b>
+ * CastExpression:
+ *    <b>cast(</b> Type <b>)</b> Expression
  * </pre>
  */
-public class AliasDeclaration extends Declaration implements IAliasDeclaration {
-	
-	/**
-	 * The "modifierFlags" structural property of this node type.
-	 */
-	public static final SimplePropertyDescriptor MODIFIER_FLAGS_PROPERTY =
-		new SimplePropertyDescriptor(AliasDeclaration.class, "modifierFlags", int.class, OPTIONAL); //$NON-NLS-1$
+public class CastExpression extends Expression implements ICastExpression {
 
 	/**
-	 * The "name" structural property of this node type.
+	 * The "expression" structural property of this node type.
 	 */
-	public static final ChildPropertyDescriptor NAME_PROPERTY =
-		new ChildPropertyDescriptor(AliasDeclaration.class, "name", SimpleName.class, MANDATORY, NO_CYCLE_RISK); //$NON-NLS-1$
+	public static final ChildPropertyDescriptor EXPRESSION_PROPERTY =
+		new ChildPropertyDescriptor(CastExpression.class, "expression", Expression.class, MANDATORY, CYCLE_RISK); //$NON-NLS-1$
 
 	/**
 	 * The "type" structural property of this node type.
 	 */
 	public static final ChildPropertyDescriptor TYPE_PROPERTY =
-		new ChildPropertyDescriptor(AliasDeclaration.class, "type", Type.class, MANDATORY, NO_CYCLE_RISK); //$NON-NLS-1$
+		new ChildPropertyDescriptor(CastExpression.class, "type", Type.class, MANDATORY, CYCLE_RISK); //$NON-NLS-1$
 
 	/**
 	 * A list of property descriptors (element type: 
@@ -42,10 +36,9 @@ public class AliasDeclaration extends Declaration implements IAliasDeclaration {
 	private static final List PROPERTY_DESCRIPTORS;
 
 	static {
-		List properyList = new ArrayList(3);
-		createPropertyList(AliasDeclaration.class, properyList);
-		addProperty(MODIFIER_FLAGS_PROPERTY, properyList);
-		addProperty(NAME_PROPERTY, properyList);
+		List properyList = new ArrayList(2);
+		createPropertyList(CastExpression.class, properyList);
+		addProperty(EXPRESSION_PROPERTY, properyList);
 		addProperty(TYPE_PROPERTY, properyList);
 		PROPERTY_DESCRIPTORS = reapPropertyList(properyList);
 	}
@@ -66,15 +59,9 @@ public class AliasDeclaration extends Declaration implements IAliasDeclaration {
 	}
 
 	/**
-	 * The modifierFlags.
-	 * TODO uncomment
+	 * The expression.
 	 */
-	// private int modifierFlags;
-
-	/**
-	 * The name.
-	 */
-	private SimpleName name;
+	private Expression expression;
 
 	/**
 	 * The type.
@@ -83,7 +70,7 @@ public class AliasDeclaration extends Declaration implements IAliasDeclaration {
 
 
 	/**
-	 * Creates a new unparented alias declaration node owned by the given 
+	 * Creates a new unparented cast expression node owned by the given 
 	 * AST.
 	 * <p>
 	 * N.B. This constructor is package-private.
@@ -91,7 +78,7 @@ public class AliasDeclaration extends Declaration implements IAliasDeclaration {
 	 * 
 	 * @param ast the AST that is to own this node
 	 */
-	AliasDeclaration(AST ast) {
+	CastExpression(AST ast) {
 		super(ast);
 	}
 
@@ -105,28 +92,12 @@ public class AliasDeclaration extends Declaration implements IAliasDeclaration {
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
 	 */
-	final int internalGetSetIntProperty(SimplePropertyDescriptor property, boolean get, int value) {
-		if (property == MODIFIER_FLAGS_PROPERTY) {
-			if (get) {
-				return getModifierFlags();
-			} else {
-				setModifierFlags(value);
-				return 0;
-			}
-		}
-		// allow default implementation to flag the error
-		return super.internalGetSetIntProperty(property, get, value);
-	}
-
-	/* (omit javadoc for this method)
-	 * Method declared on ASTNode.
-	 */
 	final ASTNode internalGetSetChildProperty(ChildPropertyDescriptor property, boolean get, ASTNode child) {
-		if (property == NAME_PROPERTY) {
+		if (property == EXPRESSION_PROPERTY) {
 			if (get) {
-				return getName();
+				return getExpression();
 			} else {
-				setName((SimpleName) child);
+				setExpression((Expression) child);
 				return null;
 			}
 		}
@@ -147,17 +118,16 @@ public class AliasDeclaration extends Declaration implements IAliasDeclaration {
 	 * TODO make it package
 	 */
 	public final int getNodeType0() {
-		return ALIAS_DECLARATION;
+		return CAST_EXPRESSION;
 	}
 
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
 	 */
 	ASTNode clone0(AST target) {
-		AliasDeclaration result = new AliasDeclaration(target);
+		CastExpression result = new CastExpression(target);
 		result.setSourceRange(this.getStartPosition(), this.getLength());
-		result.setModifierFlags(getModifierFlags());
-		result.setName((SimpleName) getName().clone(target));
+		result.setExpression((Expression) getExpression().clone(target));
 		result.setType((Type) getType().clone(target));
 		return result;
 	}
@@ -177,56 +147,35 @@ public class AliasDeclaration extends Declaration implements IAliasDeclaration {
 		boolean visitChildren = visitor.visit(this);
 		if (visitChildren) {
 			// visit children in normal left to right reading order
-			acceptChild(visitor, getName());
+			acceptChild(visitor, getExpression());
 			acceptChild(visitor, getType());
 		}
 		visitor.endVisit(this);
 	}
 
 	/**
-	 * Returns the modifier flags of this alias declaration.
+	 * Returns the expression of this cast expression.
 	 * 
-	 * @return the modifier flags
+	 * @return the expression
 	 */ 
-	public int getModifierFlags() {
-		return this.modifierFlags;
-	}
-
-	/**
-	 * Sets the modifier flags of this alias declaration.
-	 * 
-	 * @param modifierFlags the modifier flags
-	 * @exception IllegalArgumentException if the argument is incorrect
-	 */ 
-	public void setModifierFlags(int modifierFlags) {
-		preValueChange(MODIFIER_FLAGS_PROPERTY);
-		this.modifierFlags = modifierFlags;
-		postValueChange(MODIFIER_FLAGS_PROPERTY);
-	}
-
-	/**
-	 * Returns the name of this alias declaration.
-	 * 
-	 * @return the name
-	 */ 
-	public SimpleName getName() {
-		if (this.name == null) {
+	public Expression getExpression() {
+		if (this.expression == null) {
 			// lazy init must be thread-safe for readers
 			synchronized (this) {
-				if (this.name == null) {
+				if (this.expression == null) {
 					preLazyInit();
-					this.name = new SimpleName(this.ast);
-					postLazyInit(this.name, NAME_PROPERTY);
+					this.expression = new SimpleName(this.ast);
+					postLazyInit(this.expression, EXPRESSION_PROPERTY);
 				}
 			}
 		}
-		return this.name;
+		return this.expression;
 	}
 
 	/**
-	 * Sets the name of this alias declaration.
+	 * Sets the expression of this cast expression.
 	 * 
-	 * @param name the name
+	 * @param expression the expression
 	 * @exception IllegalArgumentException if:
 	 * <ul>
 	 * <li>the node belongs to a different AST</li>
@@ -234,18 +183,18 @@ public class AliasDeclaration extends Declaration implements IAliasDeclaration {
 	 * <li>a cycle in would be created</li>
 	 * </ul>
 	 */ 
-	public void setName(SimpleName name) {
-		if (name == null) {
+	public void setExpression(Expression expression) {
+		if (expression == null) {
 			throw new IllegalArgumentException();
 		}
-		ASTNode oldChild = this.name;
-		preReplaceChild(oldChild, name, NAME_PROPERTY);
-		this.name = name;
-		postReplaceChild(oldChild, name, NAME_PROPERTY);
+		ASTNode oldChild = this.expression;
+		preReplaceChild(oldChild, expression, EXPRESSION_PROPERTY);
+		this.expression = expression;
+		postReplaceChild(oldChild, expression, EXPRESSION_PROPERTY);
 	}
 
 	/**
-	 * Returns the type of this alias declaration.
+	 * Returns the type of this cast expression.
 	 * 
 	 * @return the type
 	 */ 
@@ -264,7 +213,7 @@ public class AliasDeclaration extends Declaration implements IAliasDeclaration {
 	}
 
 	/**
-	 * Sets the type of this alias declaration.
+	 * Sets the type of this cast expression.
 	 * 
 	 * @param type the type
 	 * @exception IllegalArgumentException if:
@@ -288,7 +237,7 @@ public class AliasDeclaration extends Declaration implements IAliasDeclaration {
 	 * Method declared on ASTNode.
 	 */
 	int memSize() {
-		return BASE_NODE_SIZE + 3 * 4;
+		return BASE_NODE_SIZE + 2 * 4;
 	}
 
 	/* (omit javadoc for this method)
@@ -297,13 +246,13 @@ public class AliasDeclaration extends Declaration implements IAliasDeclaration {
 	int treeSize() {
 		return
 			memSize()
-			+ (this.name == null ? 0 : getName().treeSize())
+			+ (this.expression == null ? 0 : getExpression().treeSize())
 			+ (this.type == null ? 0 : getType().treeSize())
 	;
 	}
 
-	public AliasDeclaration(SimpleName name, Type type) {
-		this.name = name;
+	public CastExpression(Expression expression, Type type) {
+		this.expression = expression;
 		this.type = type;
 	}
 

@@ -1,5 +1,9 @@
 package descent.core.dom;
 
+import java.util.List;
+
+import descent.internal.core.dom.Expression;
+
 /**
  * A call expression:
  * 
@@ -18,6 +22,6 @@ public interface ICallExpression extends IExpression {
 	/**
 	 * Returns the arguments of the call.
 	 */
-	IExpression[] getArguments();
+	List<Expression> arguments();
 
 }

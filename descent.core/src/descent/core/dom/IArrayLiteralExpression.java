@@ -16,6 +16,6 @@ public interface IArrayLiteralExpression extends IExpression {
 	/**
 	 * Returns the arguments.
 	 */
-	List<Expression> expressions();
+	List<Expression> arguments();
 
 }
