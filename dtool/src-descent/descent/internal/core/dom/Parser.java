@@ -96,7 +96,7 @@ import descent.core.dom.IElement;
 import descent.core.dom.IEnumMember;
 import descent.core.dom.IImport;
 import descent.core.dom.IProblem;
-import descent.core.dom.ITemplateParameter;
+import descent.core.domX.ASTNode;
 import descent.core.domX.AbstractElement;
 
 public class Parser extends Lexer {
@@ -1075,7 +1075,7 @@ public class Parser extends Lexer {
 					hasdefault = true;
 				} else {
 					if (hasdefault) {
-						IElement e = ai != null ? ai : at;
+						ASTNode e = ai != null ? ai : at;
 						problem("Default argument expected", IProblem.SEVERITY_ERROR, IProblem.DEFAULT_ARGUMENT_EXPECTED, e.getStartPos(), e.getLength());
 					}
 				}
@@ -1229,7 +1229,7 @@ public class Parser extends Lexer {
 
 				if (token.value != TOKlcurly) {
 					if (baseclasses != null &&  baseclasses.size() > 0) {
-						IBaseClass last = baseclasses.get(baseclasses.size() - 1);
+						BaseClass last = baseclasses.get(baseclasses.size() - 1);
 						problem("Members expected", IProblem.SEVERITY_ERROR, IProblem.MEMBERS_EXPECTED,
 								last.getStartPos(), last.getLength());
 					}
@@ -1307,7 +1307,7 @@ public class Parser extends Lexer {
 		}
 
 		if (tpl != null) {
-			a.templateParameters = tpl.toArray(new ITemplateParameter[tpl.size()]);
+			a.templateParameters = tpl.toArray(new TemplateParameter[tpl.size()]);
 			/*
 			List decldefs;
 			TemplateDeclaration tempdecl;
@@ -2487,7 +2487,7 @@ public class Parser extends Lexer {
 				}
 				if (tpl != null) // it's a function template
 				{
-					f.templateParameters = tpl.toArray(new ITemplateParameter[tpl.size()]);
+					f.templateParameters = tpl.toArray(new TemplateParameter[tpl.size()]);
 					/*
 					List decldefs;
 					TemplateDeclaration tempdecl;

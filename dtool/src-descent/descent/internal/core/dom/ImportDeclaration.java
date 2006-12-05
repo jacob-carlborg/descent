@@ -7,8 +7,12 @@ import descent.core.dom.IImportDeclaration;
 import descent.core.domX.ASTVisitor;
 import descent.core.domX.AbstractElement;
 
-public class ImportDeclaration extends AbstractElement implements IImportDeclaration {
+public class ImportDeclaration extends Declaration implements IImportDeclaration {
 	
+	public ImportDeclaration() {
+		super(null);
+	}
+
 	public List<IImport> imports;
 	public boolean isStatic;
 

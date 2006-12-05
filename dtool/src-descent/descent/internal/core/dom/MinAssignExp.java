@@ -48,7 +48,7 @@ public class MinAssignExp extends BinaryExpression implements IUnaryExpression {
 				acceptChild(visitor, e1);
 				acceptChild(visitor, e2);
 			}
-			visitor.endVisit((IBinaryExpression) this);
+			visitor.endVisit((BinaryExpression) this);
 		}
 	}
 

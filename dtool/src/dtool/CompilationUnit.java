@@ -9,7 +9,9 @@ import descent.core.domX.ASTNode;
 import descent.core.domX.AbstractElement;
 import descent.internal.core.dom.ParserFacade;
 import dtool.descentadapter.DescentASTConverter;
-
+/**
+ * Similar to Module 
+ */
 public class CompilationUnit {
 	public FileReader fr;
 	public char[] source;

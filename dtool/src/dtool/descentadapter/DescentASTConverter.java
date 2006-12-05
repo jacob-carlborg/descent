@@ -1,42 +1,74 @@
 package dtool.descentadapter;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 
-import descent.core.dom.IElement;
 import descent.core.domX.ASTNode;
 import descent.core.domX.ASTVisitor;
 import descent.core.domX.AbstractElement;
-import descent.internal.core.dom.Import;
-import dtool.dom.ASTElement;
-import dtool.dom.DeclarationImport;
-import dtool.dom.DeclarationModule;
-import dtool.dom.DefinitionAggregate;
-import dtool.dom.Definition;
-import dtool.dom.DefinitionFunction;
-import dtool.dom.DefinitionVariable;
-import dtool.dom.EModifiers;
-import dtool.dom.EProtection;
-import dtool.dom.Module;
-import dtool.dom.UnconvertedElement;
+import descent.internal.core.dom.Type;
+import dtool.dom.*;
+import dtool.dom.Module.DeclarationModule;
+import dtool.dom.Entity.BasicEntity;
+import dtool.dom.EntityReference.AnyEntityReference;
+import dtool.dom.EntityReference.TypeEntityReference;
 
+/**
+ * Converts from DMD's AST to a proper DOM AST ("Neo AST")
+ */
 public class DescentASTConverter extends ASTVisitor {
 
-	ASTElement ret = null;
+	ASTNode ret = null;
+
+	public ASTNode convert(descent.core.domX.AbstractElement elem) {
+		elem.accept(this);
+		return ret;
+	}
 	
-	private ASTElement[] convertMany(IElement[] children) {
-		ASTElement[] rets = new ASTElement[children.length];
+	private ASTNode[] convertMany(Object[] children) {
+		ASTNode[] rets = new ASTNode[children.length];
+		convertMany(rets, children);
+		return rets;
+	}
+
+	@SuppressWarnings("unchecked")
+	private <T extends ASTNode> void convertMany(T[] rets, Object[] children) {
 		for(int i = 0; i < children.length; ++i) {
-			AbstractElement elem = (AbstractElement)children[i];
-			//System.out.println("Conv: "+ASTPrinter.trimmedElementName(elem));
+			ASTNode elem = (ASTNode) children[i];
 			elem.accept(this);
-			rets[i] = ret;
+			rets[i] = (T) ret;
+		}
+	}
+	
+	@SuppressWarnings("unchecked")
+	private <T extends ASTNode> void convertMany(T[] rets, List children) {
+		for (int i = 0; i < children.size(); ++i) {
+			ASTNode elem = (ASTNode) children.get(i);
+			elem.accept(this);
+			rets[i] = (T) ret;
+		}
+	}
+	
+	@SuppressWarnings("unchecked")
+	private <T extends ASTNode> List<T> convertMany(List<ASTNode> children) {
+		List<T> rets = new ArrayList<T>(children.size());
+		for (int i = 0; i < children.size(); ++i) {
+			ASTNode elem = (ASTNode) children.get(i);
+			elem.accept(this);
+			rets.add((T) ret);
 		}
 		return rets;
 	}
 	
-	private void baseAdapt(ASTElement newelem, AbstractElement elem) {
-		newelem.startPos = elem.startPos;
-		newelem.length = elem.length;
+	/* ---- Simple convertors ---- */
+	
+	private void baseAdapt(ASTElement newelem, ASTNode elem) {
+		newelem.startPos = elem.getStartPos();
+		newelem.length = elem.getLength();
 	}
 
 	private boolean endAdapt(ASTElement newelem) {
@@ -49,47 +81,33 @@ public class DescentASTConverter extends ASTVisitor {
 		baseAdapt(newelem, elem);
 
 		newelem.name = (elem.ident != null) ? elem.ident.string : null; 
-		newelem.modifiers = EModifiers.adaptFromDescent(elem.modifiers); 
-		newelem.protection = EProtection.adaptFromDescent(elem.modifiers); 
+		newelem.modifiers = Def_Modifiers.adaptFromDescent(elem.modifiers); 
+		newelem.protection = Def_EProtection.adaptFromDescent(elem.modifiers); 
 	}
-
-	public ASTNode convert(descent.core.domX.AbstractElement elem) {
-		elem.accept(this);
-		return ret;
-	}
-	
-	/*public Module adapt(descent.internal.core.dom.Module elem) {
-		return (Module) adapt(elem);
-	}*/
 	
 
 	/*  =======================================================  */
 
 	public boolean visit(ASTNode elem) {
-		// elem must be ASTElement (already converted)
-		return endAdapt((ASTElement) elem);
+		ret = elem;
+		return false;	
 	}
 	
-	public boolean visit(AbstractElement elem) {
-		UnconvertedElement newelem = new UnconvertedElement(elem);
-		baseAdapt(newelem, elem);
-		return endAdapt(newelem);
-	}
-
 	public boolean visit(descent.internal.core.dom.Module elem) {
 		Module newelem = new Module();
 		baseAdapt(newelem, elem);
-		newelem.name = (elem.ident != null) ? elem.ident.string : null; 
-		newelem.md = (DeclarationModule) convert(elem.md);
+		//newelem.name = (elem.ident != null) ? elem.ident.string : null; 
+		if(elem.md != null){
+			newelem.name = elem.ident.string; // If there is md there is this
+			newelem.md = new DeclarationModule();
+			baseAdapt(newelem.md, elem.md);
+			// XXX: Check this
+			newelem.md.moduleName = new SymbolReference(newelem.name);
+			//newelem.md.moduleName = new SymbolReference(elem.md.qName.toString());
+			newelem.md.packages = new SymbolReference[elem.md.packages.size()];
+			convertMany(newelem.md.packages, elem.md.packages.toArray());
+		}
 		newelem.members = convertMany(elem.getDeclarationDefinitions());
-		return endAdapt(newelem);
-	}
-	
-	public boolean visit(descent.internal.core.dom.ModuleDeclaration elem) {
-		DeclarationModule newelem = new DeclarationModule();
-		baseAdapt(newelem, elem);
-		newelem.packages = elem.packages;
-		newelem.qName = elem.qName;
 		return endAdapt(newelem);
 	}
 	
@@ -100,22 +118,59 @@ public class DescentASTConverter extends ASTVisitor {
 		return endAdapt(newelem);
 	}
 	
+	/* ---- Ent Core ---- */
+	public boolean visit(descent.internal.core.dom.Identifier elem) {
+		SymbolReference newelem = new SymbolReference(elem.string);
+		baseAdapt(newelem, elem);
+		return endAdapt(newelem);
+	}
+	
+	public boolean visit(descent.internal.core.dom.TypeIdentifier elem) {
+		BasicEntity newelem = new BasicEntity();
+		newelem.root = null; //FIXME root
+		newelem.ents = new SymbolReference[elem.idents.size()];
+		convertMany(newelem.ents, elem.idents);
+		
+		baseAdapt(newelem, elem);
+		return endAdapt(newelem);
+	}
+	public boolean visit(descent.internal.core.dom.TypeTypeof elem) {
+		BasicEntity newelem = new BasicEntity();
+		newelem.root = null; //FIXME
+		newelem.ents = new SymbolReference[elem.idents.size()];
+		convertMany(newelem.ents, elem.idents);
+		
+		baseAdapt(newelem, elem);
+		return endAdapt(newelem);
+	}
+	
 	/*  ---------  DEFINITIONS  --------  */
+
+	private void convertType(EntityReference entref, Type type) {
+		entref.entity = (Entity) convert(type);
+		baseAdapt(entref, type);
+	}
+	
+	public final boolean visit(descent.internal.core.dom.AliasDeclaration elem) {
+		DefinitionAlias newelem = new DefinitionAlias();
+		definitionAdapt(newelem, elem);
+		newelem.target = new AnyEntityReference();
+		convertType(newelem.target, elem.type);
+		return endAdapt(newelem);
+	}	
+	public boolean visit(descent.internal.core.dom.VarDeclaration elem) {
+		DefinitionVariable newelem = new DefinitionVariable();
+		definitionAdapt(newelem, elem);
+		newelem.type = new TypeEntityReference();
+		convertType(newelem.type, elem.type);
+		newelem.init = elem.init;
+		return endAdapt(newelem);
+	}	
 
 	public boolean visit(descent.internal.core.dom.AggregateDeclaration elem) {
 		DefinitionAggregate newelem = new DefinitionAggregate();
 		definitionAdapt(newelem, elem);
-		//newelem. = elem.;
-		newelem.type = elem.type;
 		newelem.members = elem.members;
-		return endAdapt(newelem);
-	}	
-
-	public boolean visit(descent.internal.core.dom.VarDeclaration elem) {
-		DefinitionVariable newelem = new DefinitionVariable();
-		definitionAdapt(newelem, elem);
-		newelem.type = elem.type;
-		newelem.init = elem.init;
 		return endAdapt(newelem);
 	}	
 

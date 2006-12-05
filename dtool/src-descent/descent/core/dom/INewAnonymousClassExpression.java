@@ -1,12 +1,16 @@
 package descent.core.dom;
 
+import descent.internal.core.dom.BaseClass;
+import descent.internal.core.dom.Declaration;
+import descent.internal.core.dom.Expression;
+
 public interface INewAnonymousClassExpression extends IExpression {
 	
-	IExpression[] getCallArguments();
+	Expression[] getCallArguments();
 	
-	IExpression[] getConstructorArguments();
+	Expression[] getConstructorArguments();
 	
-	IBaseClass[] getBaseClasses();
+	BaseClass[] getBaseClasses();
 	
 	IDeclaration[] getDeclarationDefinitions();
 

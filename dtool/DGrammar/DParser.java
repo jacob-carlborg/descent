@@ -1,4 +1,4 @@
-// $ANTLR 3.0b4 dee.g 2006-11-28 17:51:01
+// $ANTLR 3.0b4 dee.g 2006-12-01 16:11:12
  
 /* PHOENIX test code 7  */
 
@@ -601,9 +601,6 @@ public class DParser extends Parser {
                         throw nvae;
                     }
                     break;
-                case 45:
-                    alt6=2;
-                    break;
                 case EOF:
                 case IDENT:
                 case 41:
@@ -647,6 +644,9 @@ public class DParser extends Parser {
                 case 94:
                 case 95:
                     alt6=1;
+                    break;
+                case 45:
+                    alt6=2;
                     break;
                 default:
                     NoViableAltException nvae =
@@ -1075,11 +1075,11 @@ public class DParser extends Parser {
                 break;
             case 46:
                 int LA10_2 = input.LA(2);
-                if ( (LA10_2==EOF) ) {
-                    alt10=1;
-                }
-                else if ( (LA10_2==IDENT||(LA10_2>=41 && LA10_2<=42)||LA10_2==51||(LA10_2>=53 && LA10_2<=55)||(LA10_2>=58 && LA10_2<=79)||(LA10_2>=85 && LA10_2<=95)) ) {
+                if ( (LA10_2==IDENT||(LA10_2>=41 && LA10_2<=42)||LA10_2==51||(LA10_2>=53 && LA10_2<=55)||(LA10_2>=58 && LA10_2<=79)||(LA10_2>=85 && LA10_2<=95)) ) {
                     alt10=2;
+                }
+                else if ( (LA10_2==EOF) ) {
+                    alt10=1;
                 }
                 else {
                     NoViableAltException nvae =
@@ -1090,11 +1090,11 @@ public class DParser extends Parser {
                 break;
             case 47:
                 int LA10_3 = input.LA(2);
-                if ( (LA10_3==EOF) ) {
-                    alt10=1;
-                }
-                else if ( (LA10_3==IDENT||(LA10_3>=41 && LA10_3<=42)||LA10_3==51||(LA10_3>=53 && LA10_3<=55)||(LA10_3>=58 && LA10_3<=79)||(LA10_3>=85 && LA10_3<=95)) ) {
+                if ( (LA10_3==IDENT||(LA10_3>=41 && LA10_3<=42)||LA10_3==51||(LA10_3>=53 && LA10_3<=55)||(LA10_3>=58 && LA10_3<=79)||(LA10_3>=85 && LA10_3<=95)) ) {
                     alt10=2;
+                }
+                else if ( (LA10_3==EOF) ) {
+                    alt10=1;
                 }
                 else {
                     NoViableAltException nvae =
@@ -1120,11 +1120,11 @@ public class DParser extends Parser {
                 break;
             case 49:
                 int LA10_5 = input.LA(2);
-                if ( (LA10_5==IDENT||(LA10_5>=41 && LA10_5<=42)||LA10_5==51||(LA10_5>=53 && LA10_5<=55)||(LA10_5>=58 && LA10_5<=79)||(LA10_5>=85 && LA10_5<=95)) ) {
-                    alt10=2;
-                }
-                else if ( (LA10_5==EOF) ) {
+                if ( (LA10_5==EOF) ) {
                     alt10=1;
+                }
+                else if ( (LA10_5==IDENT||(LA10_5>=41 && LA10_5<=42)||LA10_5==51||(LA10_5>=53 && LA10_5<=55)||(LA10_5>=58 && LA10_5<=79)||(LA10_5>=85 && LA10_5<=95)) ) {
+                    alt10=2;
                 }
                 else {
                     NoViableAltException nvae =
@@ -1135,11 +1135,11 @@ public class DParser extends Parser {
                 break;
             case 50:
                 int LA10_6 = input.LA(2);
-                if ( (LA10_6==IDENT||(LA10_6>=41 && LA10_6<=42)||LA10_6==51||(LA10_6>=53 && LA10_6<=55)||(LA10_6>=58 && LA10_6<=79)||(LA10_6>=85 && LA10_6<=95)) ) {
-                    alt10=2;
-                }
-                else if ( (LA10_6==EOF) ) {
+                if ( (LA10_6==EOF) ) {
                     alt10=1;
+                }
+                else if ( (LA10_6==IDENT||(LA10_6>=41 && LA10_6<=42)||LA10_6==51||(LA10_6>=53 && LA10_6<=55)||(LA10_6>=58 && LA10_6<=79)||(LA10_6>=85 && LA10_6<=95)) ) {
+                    alt10=2;
                 }
                 else {
                     NoViableAltException nvae =
@@ -1608,7 +1608,13 @@ public class DParser extends Parser {
             int alt14=2;
             int LA14_0 = input.LA(1);
             if ( (LA14_0==53) ) {
-                alt14=1;
+                int LA14_1 = input.LA(2);
+                if ( (LA14_1==IDENT) ) {
+                    alt14=1;
+                }
+                else if ( (LA14_1==54) ) {
+                    alt14=1;
+                }
             }
             switch (alt14) {
                 case 1 :
@@ -1671,13 +1677,13 @@ public class DParser extends Parser {
         Object string_literal47_tree=null;
 
         try {
-            // dee.g:189:4: ( 'TEMPLATE INSTANCE' )
-            // dee.g:189:4: 'TEMPLATE INSTANCE'
+            // dee.g:188:20: ( 'TEMPLATE INSTANCE' )
+            // dee.g:188:20: 'TEMPLATE INSTANCE'
             {
             root_0 = (Object)adaptor.nil();
 
             string_literal47=(Token)input.LT(1);
-            match(input,54,FOLLOW_54_in_templateInstance1343); 
+            match(input,54,FOLLOW_54_in_templateInstance1342); 
             string_literal47_tree = (Object)adaptor.create(string_literal47);
             adaptor.addChild(root_0, string_literal47_tree);
 
@@ -1700,118 +1706,264 @@ public class DParser extends Parser {
     }
     // $ANTLR end templateInstance
 
-    public static class entityName_return extends ParserRuleReturnScope {
+    public static class entityRef_return extends ParserRuleReturnScope {
         Object tree;
         public Object getTree() { return tree; }
     };
 
-    // $ANTLR start entityName
-    // dee.g:192:1: entityName : ( '.' qname | qname | typeof ( '.' qname )? );
-    public entityName_return entityName() throws RecognitionException {   
-        entityName_return retval = new entityName_return();
+    // $ANTLR start entityRef
+    // dee.g:191:1: entityRef : ( typeRef | rootNameRef );
+    public entityRef_return entityRef() throws RecognitionException {   
+        entityRef_return retval = new entityRef_return();
         retval.start = input.LT(1);
 
         Object root_0 = null;
 
-        Token char_literal48=null;
-        Token char_literal52=null;
-        qname_return qname49 = null;
+        typeRef_return typeRef48 = null;
 
-        qname_return qname50 = null;
-
-        typeof_return typeof51 = null;
-
-        qname_return qname53 = null;
+        rootNameRef_return rootNameRef49 = null;
 
 
-        Object char_literal48_tree=null;
-        Object char_literal52_tree=null;
 
         try {
-            // dee.g:193:4: ( '.' qname | qname | typeof ( '.' qname )? )
-            int alt16=3;
+            // dee.g:192:4: ( typeRef | rootNameRef )
+            int alt15=2;
             switch ( input.LA(1) ) {
-            case 53:
-                alt16=1;
-                break;
-            case IDENT:
-            case 54:
-                alt16=2;
+            case 58:
+            case 59:
+            case 60:
+            case 61:
+            case 62:
+            case 63:
+            case 64:
+            case 65:
+            case 66:
+            case 67:
+            case 68:
+            case 69:
+            case 70:
+            case 71:
+            case 72:
+            case 73:
+            case 74:
+            case 75:
+            case 76:
+            case 77:
+            case 78:
+            case 79:
+                alt15=1;
                 break;
             case 55:
-                alt16=3;
+                int LA15_2 = input.LA(2);
+                if ( (LA15_2==56) ) {
+                    int LA15_6 = input.LA(3);
+                    if ( (LA15_6==100) ) {
+                        int LA15_9 = input.LA(4);
+                        if ( (LA15_9==57) ) {
+                            alt15=1;
+                        }
+                        else {
+                            NoViableAltException nvae =
+                                new NoViableAltException("191:1: entityRef : ( typeRef | rootNameRef );", 15, 9, input);
+
+                            throw nvae;
+                        }
+                    }
+                    else {
+                        NoViableAltException nvae =
+                            new NoViableAltException("191:1: entityRef : ( typeRef | rootNameRef );", 15, 6, input);
+
+                        throw nvae;
+                    }
+                }
+                else {
+                    NoViableAltException nvae =
+                        new NoViableAltException("191:1: entityRef : ( typeRef | rootNameRef );", 15, 2, input);
+
+                    throw nvae;
+                }
+                break;
+            case 53:
+                int LA15_3 = input.LA(2);
+                if ( (LA15_3==IDENT) ) {
+                    alt15=1;
+                }
+                else if ( (LA15_3==54) ) {
+                    alt15=1;
+                }
+                else {
+                    NoViableAltException nvae =
+                        new NoViableAltException("191:1: entityRef : ( typeRef | rootNameRef );", 15, 3, input);
+
+                    throw nvae;
+                }
+                break;
+            case IDENT:
+                alt15=1;
+                break;
+            case 54:
+                alt15=1;
                 break;
             default:
                 NoViableAltException nvae =
-                    new NoViableAltException("192:1: entityName : ( '.' qname | qname | typeof ( '.' qname )? );", 16, 0, input);
+                    new NoViableAltException("191:1: entityRef : ( typeRef | rootNameRef );", 15, 0, input);
 
                 throw nvae;
             }
 
-            switch (alt16) {
+            switch (alt15) {
                 case 1 :
-                    // dee.g:193:4: '.' qname
+                    // dee.g:192:4: typeRef
                     {
                     root_0 = (Object)adaptor.nil();
 
-                    char_literal48=(Token)input.LT(1);
-                    match(input,53,FOLLOW_53_in_entityName1355); 
-                    char_literal48_tree = (Object)adaptor.create(char_literal48);
-                    adaptor.addChild(root_0, char_literal48_tree);
-
-                    pushFollow(FOLLOW_qname_in_entityName1357);
-                    qname49=qname();
+                    pushFollow(FOLLOW_typeRef_in_entityRef1354);
+                    typeRef48=typeRef();
                     _fsp--;
 
-                    adaptor.addChild(root_0, qname49.tree);
+                    adaptor.addChild(root_0, typeRef48.tree);
 
                     }
                     break;
                 case 2 :
-                    // dee.g:194:5: qname
+                    // dee.g:193:4: rootNameRef
                     {
                     root_0 = (Object)adaptor.nil();
 
-                    pushFollow(FOLLOW_qname_in_entityName1363);
-                    qname50=qname();
+                    pushFollow(FOLLOW_rootNameRef_in_entityRef1359);
+                    rootNameRef49=rootNameRef();
                     _fsp--;
 
-                    adaptor.addChild(root_0, qname50.tree);
+                    adaptor.addChild(root_0, rootNameRef49.tree);
 
                     }
                     break;
-                case 3 :
-                    // dee.g:195:5: typeof ( '.' qname )?
+
+            }
+        }
+        catch (RecognitionException re) {
+            reportError(re);
+            recover(input,re);
+        }
+        finally {
+            retval.stop = input.LT(-1);
+
+                retval.tree = (Object)adaptor.rulePostProcessing(root_0);
+                adaptor.setTokenBoundaries(retval.tree, retval.start, retval.stop);
+
+        }
+        return retval;
+    }
+    // $ANTLR end entityRef
+
+    public static class rootNameRef_return extends ParserRuleReturnScope {
+        Object tree;
+        public Object getTree() { return tree; }
+    };
+
+    // $ANTLR start rootNameRef
+    // dee.g:195:1: rootNameRef : ( 'typeof' '(' expression ')' ( '.' qname )? | '.' qname | qname );
+    public rootNameRef_return rootNameRef() throws RecognitionException {   
+        rootNameRef_return retval = new rootNameRef_return();
+        retval.start = input.LT(1);
+
+        Object root_0 = null;
+
+        Token string_literal50=null;
+        Token char_literal51=null;
+        Token char_literal53=null;
+        Token char_literal54=null;
+        Token char_literal56=null;
+        expression_return expression52 = null;
+
+        qname_return qname55 = null;
+
+        qname_return qname57 = null;
+
+        qname_return qname58 = null;
+
+
+        Object string_literal50_tree=null;
+        Object char_literal51_tree=null;
+        Object char_literal53_tree=null;
+        Object char_literal54_tree=null;
+        Object char_literal56_tree=null;
+
+        try {
+            // dee.g:196:5: ( 'typeof' '(' expression ')' ( '.' qname )? | '.' qname | qname )
+            int alt17=3;
+            switch ( input.LA(1) ) {
+            case 55:
+                alt17=1;
+                break;
+            case 53:
+                alt17=2;
+                break;
+            case IDENT:
+            case 54:
+                alt17=3;
+                break;
+            default:
+                NoViableAltException nvae =
+                    new NoViableAltException("195:1: rootNameRef : ( 'typeof' '(' expression ')' ( '.' qname )? | '.' qname | qname );", 17, 0, input);
+
+                throw nvae;
+            }
+
+            switch (alt17) {
+                case 1 :
+                    // dee.g:196:5: 'typeof' '(' expression ')' ( '.' qname )?
                     {
                     root_0 = (Object)adaptor.nil();
 
-                    pushFollow(FOLLOW_typeof_in_entityName1369);
-                    typeof51=typeof();
+                    string_literal50=(Token)input.LT(1);
+                    match(input,55,FOLLOW_55_in_rootNameRef1369); 
+                    string_literal50_tree = (Object)adaptor.create(string_literal50);
+                    adaptor.addChild(root_0, string_literal50_tree);
+
+                    char_literal51=(Token)input.LT(1);
+                    match(input,56,FOLLOW_56_in_rootNameRef1371); 
+                    char_literal51_tree = (Object)adaptor.create(char_literal51);
+                    adaptor.addChild(root_0, char_literal51_tree);
+
+                    pushFollow(FOLLOW_expression_in_rootNameRef1373);
+                    expression52=expression();
                     _fsp--;
 
-                    adaptor.addChild(root_0, typeof51.tree);
-                    // dee.g:195:12: ( '.' qname )?
-                    int alt15=2;
-                    int LA15_0 = input.LA(1);
-                    if ( (LA15_0==53) ) {
-                        alt15=1;
+                    adaptor.addChild(root_0, expression52.tree);
+                    char_literal53=(Token)input.LT(1);
+                    match(input,57,FOLLOW_57_in_rootNameRef1375); 
+                    char_literal53_tree = (Object)adaptor.create(char_literal53);
+                    adaptor.addChild(root_0, char_literal53_tree);
+
+                    // dee.g:196:33: ( '.' qname )?
+                    int alt16=2;
+                    int LA16_0 = input.LA(1);
+                    if ( (LA16_0==53) ) {
+                        int LA16_1 = input.LA(2);
+                        if ( (LA16_1==IDENT) ) {
+                            alt16=1;
+                        }
+                        else if ( (LA16_1==54) ) {
+                            alt16=1;
+                        }
                     }
-                    switch (alt15) {
+                    switch (alt16) {
                         case 1 :
-                            // dee.g:195:13: '.' qname
+                            // dee.g:196:34: '.' qname
                             {
                             Object root_1 = (Object)adaptor.nil();
 
-                            char_literal52=(Token)input.LT(1);
-                            match(input,53,FOLLOW_53_in_entityName1372); 
-                            char_literal52_tree = (Object)adaptor.create(char_literal52);
-                            adaptor.addChild(root_1, char_literal52_tree);
+                            char_literal54=(Token)input.LT(1);
+                            match(input,53,FOLLOW_53_in_rootNameRef1378); 
+                            char_literal54_tree = (Object)adaptor.create(char_literal54);
+                            adaptor.addChild(root_1, char_literal54_tree);
 
-                            pushFollow(FOLLOW_qname_in_entityName1374);
-                            qname53=qname();
+                            pushFollow(FOLLOW_qname_in_rootNameRef1380);
+                            qname55=qname();
                             _fsp--;
 
-                            adaptor.addChild(root_1, qname53.tree);
+                            adaptor.addChild(root_1, qname55.tree);
 
                             adaptor.addChild(root_0, root_1);
 
@@ -1823,6 +1975,37 @@ public class DParser extends Parser {
 
                     }
                     break;
+                case 2 :
+                    // dee.g:197:4: '.' qname
+                    {
+                    root_0 = (Object)adaptor.nil();
+
+                    char_literal56=(Token)input.LT(1);
+                    match(input,53,FOLLOW_53_in_rootNameRef1388); 
+                    char_literal56_tree = (Object)adaptor.create(char_literal56);
+                    adaptor.addChild(root_0, char_literal56_tree);
+
+                    pushFollow(FOLLOW_qname_in_rootNameRef1390);
+                    qname57=qname();
+                    _fsp--;
+
+                    adaptor.addChild(root_0, qname57.tree);
+
+                    }
+                    break;
+                case 3 :
+                    // dee.g:198:5: qname
+                    {
+                    root_0 = (Object)adaptor.nil();
+
+                    pushFollow(FOLLOW_qname_in_rootNameRef1396);
+                    qname58=qname();
+                    _fsp--;
+
+                    adaptor.addChild(root_0, qname58.tree);
+
+                    }
+                    break;
 
             }
         }
@@ -1839,123 +2022,55 @@ public class DParser extends Parser {
         }
         return retval;
     }
-    // $ANTLR end entityName
+    // $ANTLR end rootNameRef
 
-    public static class typeof_return extends ParserRuleReturnScope {
+    public static class typeRef_return extends ParserRuleReturnScope {
         Object tree;
         public Object getTree() { return tree; }
     };
 
-    // $ANTLR start typeof
-    // dee.g:197:1: typeof : 'typeof' '(' expression ')' ;
-    public typeof_return typeof() throws RecognitionException {   
-        typeof_return retval = new typeof_return();
+    // $ANTLR start typeRef
+    // dee.g:201:1: typeRef : basicType ( modType )? ;
+    public typeRef_return typeRef() throws RecognitionException {   
+        typeRef_return retval = new typeRef_return();
         retval.start = input.LT(1);
 
         Object root_0 = null;
 
-        Token string_literal54=null;
-        Token char_literal55=null;
-        Token char_literal57=null;
-        expression_return expression56 = null;
+        basicType_return basicType59 = null;
 
-
-        Object string_literal54_tree=null;
-        Object char_literal55_tree=null;
-        Object char_literal57_tree=null;
-
-        try {
-            // dee.g:197:11: ( 'typeof' '(' expression ')' )
-            // dee.g:197:11: 'typeof' '(' expression ')'
-            {
-            root_0 = (Object)adaptor.nil();
-
-            string_literal54=(Token)input.LT(1);
-            match(input,55,FOLLOW_55_in_typeof1386); 
-            string_literal54_tree = (Object)adaptor.create(string_literal54);
-            adaptor.addChild(root_0, string_literal54_tree);
-
-            char_literal55=(Token)input.LT(1);
-            match(input,56,FOLLOW_56_in_typeof1388); 
-            char_literal55_tree = (Object)adaptor.create(char_literal55);
-            adaptor.addChild(root_0, char_literal55_tree);
-
-            pushFollow(FOLLOW_expression_in_typeof1390);
-            expression56=expression();
-            _fsp--;
-
-            adaptor.addChild(root_0, expression56.tree);
-            char_literal57=(Token)input.LT(1);
-            match(input,57,FOLLOW_57_in_typeof1392); 
-            char_literal57_tree = (Object)adaptor.create(char_literal57);
-            adaptor.addChild(root_0, char_literal57_tree);
-
-
-            }
-
-        }
-        catch (RecognitionException re) {
-            reportError(re);
-            recover(input,re);
-        }
-        finally {
-            retval.stop = input.LT(-1);
-
-                retval.tree = (Object)adaptor.rulePostProcessing(root_0);
-                adaptor.setTokenBoundaries(retval.tree, retval.start, retval.stop);
-
-        }
-        return retval;
-    }
-    // $ANTLR end typeof
-
-    public static class type_return extends ParserRuleReturnScope {
-        Object tree;
-        public Object getTree() { return tree; }
-    };
-
-    // $ANTLR start type
-    // dee.g:201:1: type : basicType ( modType )? ;
-    public type_return type() throws RecognitionException {   
-        type_return retval = new type_return();
-        retval.start = input.LT(1);
-
-        Object root_0 = null;
-
-        basicType_return basicType58 = null;
-
-        modType_return modType59 = null;
+        modType_return modType60 = null;
 
 
 
         try {
-            // dee.g:201:9: ( basicType ( modType )? )
-            // dee.g:201:9: basicType ( modType )?
+            // dee.g:201:12: ( basicType ( modType )? )
+            // dee.g:201:12: basicType ( modType )?
             {
             root_0 = (Object)adaptor.nil();
 
-            pushFollow(FOLLOW_basicType_in_type1405);
-            basicType58=basicType();
+            pushFollow(FOLLOW_basicType_in_typeRef1407);
+            basicType59=basicType();
             _fsp--;
 
-            adaptor.addChild(root_0, basicType58.tree);
-            // dee.g:201:19: ( modType )?
-            int alt17=2;
-            int LA17_0 = input.LA(1);
-            if ( (LA17_0==MULT||(LA17_0>=80 && LA17_0<=81)||(LA17_0>=83 && LA17_0<=84)) ) {
-                alt17=1;
+            adaptor.addChild(root_0, basicType59.tree);
+            // dee.g:201:22: ( modType )?
+            int alt18=2;
+            int LA18_0 = input.LA(1);
+            if ( (LA18_0==MULT||(LA18_0>=80 && LA18_0<=81)||(LA18_0>=83 && LA18_0<=84)) ) {
+                alt18=1;
             }
-            switch (alt17) {
+            switch (alt18) {
                 case 1 :
-                    // dee.g:201:19: modType
+                    // dee.g:201:22: modType
                     {
                     Object root_1 = (Object)adaptor.nil();
 
-                    pushFollow(FOLLOW_modType_in_type1407);
-                    modType59=modType();
+                    pushFollow(FOLLOW_modType_in_typeRef1409);
+                    modType60=modType();
                     _fsp--;
 
-                    adaptor.addChild(root_1, modType59.tree);
+                    adaptor.addChild(root_1, modType60.tree);
 
                     adaptor.addChild(root_0, root_1);
 
@@ -1981,7 +2096,7 @@ public class DParser extends Parser {
         }
         return retval;
     }
-    // $ANTLR end type
+    // $ANTLR end typeRef
 
     public static class basicType_return extends ParserRuleReturnScope {
         Object tree;
@@ -1989,59 +2104,59 @@ public class DParser extends Parser {
     };
 
     // $ANTLR start basicType
-    // dee.g:203:1: basicType : ( primitiveType | typeEntityName );
+    // dee.g:205:1: basicType : ( primitiveType | rootNameRef );
     public basicType_return basicType() throws RecognitionException {   
         basicType_return retval = new basicType_return();
         retval.start = input.LT(1);
 
         Object root_0 = null;
 
-        primitiveType_return primitiveType60 = null;
+        primitiveType_return primitiveType61 = null;
 
-        typeEntityName_return typeEntityName61 = null;
+        rootNameRef_return rootNameRef62 = null;
 
 
 
         try {
-            // dee.g:203:14: ( primitiveType | typeEntityName )
-            int alt18=2;
-            int LA18_0 = input.LA(1);
-            if ( ((LA18_0>=58 && LA18_0<=79)) ) {
-                alt18=1;
+            // dee.g:205:14: ( primitiveType | rootNameRef )
+            int alt19=2;
+            int LA19_0 = input.LA(1);
+            if ( ((LA19_0>=58 && LA19_0<=79)) ) {
+                alt19=1;
             }
-            else if ( (LA18_0==IDENT||(LA18_0>=53 && LA18_0<=55)) ) {
-                alt18=2;
+            else if ( (LA19_0==IDENT||(LA19_0>=53 && LA19_0<=55)) ) {
+                alt19=2;
             }
             else {
                 NoViableAltException nvae =
-                    new NoViableAltException("203:1: basicType : ( primitiveType | typeEntityName );", 18, 0, input);
+                    new NoViableAltException("205:1: basicType : ( primitiveType | rootNameRef );", 19, 0, input);
 
                 throw nvae;
             }
-            switch (alt18) {
+            switch (alt19) {
                 case 1 :
-                    // dee.g:203:14: primitiveType
+                    // dee.g:205:14: primitiveType
                     {
                     root_0 = (Object)adaptor.nil();
 
-                    pushFollow(FOLLOW_primitiveType_in_basicType1417);
-                    primitiveType60=primitiveType();
+                    pushFollow(FOLLOW_primitiveType_in_basicType1422);
+                    primitiveType61=primitiveType();
                     _fsp--;
 
-                    adaptor.addChild(root_0, primitiveType60.tree);
+                    adaptor.addChild(root_0, primitiveType61.tree);
 
                     }
                     break;
                 case 2 :
-                    // dee.g:203:30: typeEntityName
+                    // dee.g:205:30: rootNameRef
                     {
                     root_0 = (Object)adaptor.nil();
 
-                    pushFollow(FOLLOW_typeEntityName_in_basicType1421);
-                    typeEntityName61=typeEntityName();
+                    pushFollow(FOLLOW_rootNameRef_in_basicType1426);
+                    rootNameRef62=rootNameRef();
                     _fsp--;
 
-                    adaptor.addChild(root_0, typeEntityName61.tree);
+                    adaptor.addChild(root_0, rootNameRef62.tree);
 
                     }
                     break;
@@ -2069,33 +2184,33 @@ public class DParser extends Parser {
     };
 
     // $ANTLR start primitiveType
-    // dee.g:205:1: primitiveType : ('void'|'bool'|'byte'|'ubyte'|'short'|'ushort'|'int'|'uint'|'long'|'ulong'|'float'|'double'|'real'|'ifloat'|'idouble'|'ireal'|'cfloat'|'cdouble'|'creal'|'char'|'wchar'|'dchar');
+    // dee.g:207:1: primitiveType : ('void'|'bool'|'byte'|'ubyte'|'short'|'ushort'|'int'|'uint'|'long'|'ulong'|'float'|'double'|'real'|'ifloat'|'idouble'|'ireal'|'cfloat'|'cdouble'|'creal'|'char'|'wchar'|'dchar');
     public primitiveType_return primitiveType() throws RecognitionException {   
         primitiveType_return retval = new primitiveType_return();
         retval.start = input.LT(1);
 
         Object root_0 = null;
 
-        Token set62=null;
+        Token set63=null;
 
-        Object set62_tree=null;
+        Object set63_tree=null;
 
         try {
-            // dee.g:205:15: ( ('void'|'bool'|'byte'|'ubyte'|'short'|'ushort'|'int'|'uint'|'long'|'ulong'|'float'|'double'|'real'|'ifloat'|'idouble'|'ireal'|'cfloat'|'cdouble'|'creal'|'char'|'wchar'|'dchar'))
-            // dee.g:205:18: ('void'|'bool'|'byte'|'ubyte'|'short'|'ushort'|'int'|'uint'|'long'|'ulong'|'float'|'double'|'real'|'ifloat'|'idouble'|'ireal'|'cfloat'|'cdouble'|'creal'|'char'|'wchar'|'dchar')
+            // dee.g:207:15: ( ('void'|'bool'|'byte'|'ubyte'|'short'|'ushort'|'int'|'uint'|'long'|'ulong'|'float'|'double'|'real'|'ifloat'|'idouble'|'ireal'|'cfloat'|'cdouble'|'creal'|'char'|'wchar'|'dchar'))
+            // dee.g:207:18: ('void'|'bool'|'byte'|'ubyte'|'short'|'ushort'|'int'|'uint'|'long'|'ulong'|'float'|'double'|'real'|'ifloat'|'idouble'|'ireal'|'cfloat'|'cdouble'|'creal'|'char'|'wchar'|'dchar')
             {
             root_0 = (Object)adaptor.nil();
 
-            set62=(Token)input.LT(1);
+            set63=(Token)input.LT(1);
             if ( (input.LA(1)>=58 && input.LA(1)<=79) ) {
-                adaptor.addChild(root_0, adaptor.create(set62));
+                adaptor.addChild(root_0, adaptor.create(set63));
                 input.consume();
                 errorRecovery=false;
             }
             else {
                 MismatchedSetException mse =
                     new MismatchedSetException(null,input);
-                recoverFromMismatchedSet(input,mse,FOLLOW_set_in_primitiveType1431);    throw mse;
+                recoverFromMismatchedSet(input,mse,FOLLOW_set_in_primitiveType1436);    throw mse;
             }
 
 
@@ -2117,60 +2232,13 @@ public class DParser extends Parser {
     }
     // $ANTLR end primitiveType
 
-    public static class typeEntityName_return extends ParserRuleReturnScope {
-        Object tree;
-        public Object getTree() { return tree; }
-    };
-
-    // $ANTLR start typeEntityName
-    // dee.g:210:1: typeEntityName : entityName ;
-    public typeEntityName_return typeEntityName() throws RecognitionException {   
-        typeEntityName_return retval = new typeEntityName_return();
-        retval.start = input.LT(1);
-
-        Object root_0 = null;
-
-        entityName_return entityName63 = null;
-
-
-
-        try {
-            // dee.g:210:19: ( entityName )
-            // dee.g:210:19: entityName
-            {
-            root_0 = (Object)adaptor.nil();
-
-            pushFollow(FOLLOW_entityName_in_typeEntityName1494);
-            entityName63=entityName();
-            _fsp--;
-
-            adaptor.addChild(root_0, entityName63.tree);
-
-            }
-
-        }
-        catch (RecognitionException re) {
-            reportError(re);
-            recover(input,re);
-        }
-        finally {
-            retval.stop = input.LT(-1);
-
-                retval.tree = (Object)adaptor.rulePostProcessing(root_0);
-                adaptor.setTokenBoundaries(retval.tree, retval.start, retval.stop);
-
-        }
-        return retval;
-    }
-    // $ANTLR end typeEntityName
-
     public static class modType_return extends ParserRuleReturnScope {
         Object tree;
         public Object getTree() { return tree; }
     };
 
     // $ANTLR start modType
-    // dee.g:212:1: modType : ( '*' modType | '[]' modType | '[' expression ']' | '[' type ']' | 'delegate' parameters | 'function' parameters );
+    // dee.g:212:1: modType : ( '*' ( modType )? | '[]' ( modType )? | '[' expression ']' | '[' typeRef ']' | 'delegate' parameters | 'function' parameters );
     public modType_return modType() throws RecognitionException {   
         modType_return retval = new modType_return();
         retval.start = input.LT(1);
@@ -2191,7 +2259,7 @@ public class DParser extends Parser {
 
         expression_return expression69 = null;
 
-        type_return type72 = null;
+        typeRef_return typeRef72 = null;
 
         parameters_return parameters75 = null;
 
@@ -2208,77 +2276,117 @@ public class DParser extends Parser {
         Object string_literal76_tree=null;
 
         try {
-            // dee.g:213:4: ( '*' modType | '[]' modType | '[' expression ']' | '[' type ']' | 'delegate' parameters | 'function' parameters )
-            int alt19=6;
+            // dee.g:213:4: ( '*' ( modType )? | '[]' ( modType )? | '[' expression ']' | '[' typeRef ']' | 'delegate' parameters | 'function' parameters )
+            int alt22=6;
             switch ( input.LA(1) ) {
             case MULT:
-                alt19=1;
+                alt22=1;
                 break;
             case 80:
-                alt19=2;
+                alt22=2;
                 break;
             case 81:
-                int LA19_3 = input.LA(2);
-                if ( (LA19_3==IDENT||(LA19_3>=53 && LA19_3<=55)||(LA19_3>=58 && LA19_3<=79)) ) {
-                    alt19=4;
+                int LA22_3 = input.LA(2);
+                if ( (LA22_3==100) ) {
+                    alt22=3;
                 }
-                else if ( (LA19_3==100) ) {
-                    alt19=3;
+                else if ( (LA22_3==IDENT||(LA22_3>=53 && LA22_3<=55)||(LA22_3>=58 && LA22_3<=79)) ) {
+                    alt22=4;
                 }
                 else {
                     NoViableAltException nvae =
-                        new NoViableAltException("212:1: modType : ( '*' modType | '[]' modType | '[' expression ']' | '[' type ']' | 'delegate' parameters | 'function' parameters );", 19, 3, input);
+                        new NoViableAltException("212:1: modType : ( '*' ( modType )? | '[]' ( modType )? | '[' expression ']' | '[' typeRef ']' | 'delegate' parameters | 'function' parameters );", 22, 3, input);
 
                     throw nvae;
                 }
                 break;
             case 83:
-                alt19=5;
+                alt22=5;
                 break;
             case 84:
-                alt19=6;
+                alt22=6;
                 break;
             default:
                 NoViableAltException nvae =
-                    new NoViableAltException("212:1: modType : ( '*' modType | '[]' modType | '[' expression ']' | '[' type ']' | 'delegate' parameters | 'function' parameters );", 19, 0, input);
+                    new NoViableAltException("212:1: modType : ( '*' ( modType )? | '[]' ( modType )? | '[' expression ']' | '[' typeRef ']' | 'delegate' parameters | 'function' parameters );", 22, 0, input);
 
                 throw nvae;
             }
 
-            switch (alt19) {
+            switch (alt22) {
                 case 1 :
-                    // dee.g:213:4: '*' modType
+                    // dee.g:213:4: '*' ( modType )?
                     {
                     root_0 = (Object)adaptor.nil();
 
                     char_literal64=(Token)input.LT(1);
-                    match(input,MULT,FOLLOW_MULT_in_modType1504); 
+                    match(input,MULT,FOLLOW_MULT_in_modType1499); 
                     char_literal64_tree = (Object)adaptor.create(char_literal64);
                     adaptor.addChild(root_0, char_literal64_tree);
 
-                    pushFollow(FOLLOW_modType_in_modType1506);
-                    modType65=modType();
-                    _fsp--;
+                    // dee.g:213:8: ( modType )?
+                    int alt20=2;
+                    int LA20_0 = input.LA(1);
+                    if ( (LA20_0==MULT||(LA20_0>=80 && LA20_0<=81)||(LA20_0>=83 && LA20_0<=84)) ) {
+                        alt20=1;
+                    }
+                    switch (alt20) {
+                        case 1 :
+                            // dee.g:213:8: modType
+                            {
+                            Object root_1 = (Object)adaptor.nil();
 
-                    adaptor.addChild(root_0, modType65.tree);
+                            pushFollow(FOLLOW_modType_in_modType1501);
+                            modType65=modType();
+                            _fsp--;
+
+                            adaptor.addChild(root_1, modType65.tree);
+
+                            adaptor.addChild(root_0, root_1);
+
+                            }
+                            break;
+
+                    }
+
 
                     }
                     break;
                 case 2 :
-                    // dee.g:214:4: '[]' modType
+                    // dee.g:214:4: '[]' ( modType )?
                     {
                     root_0 = (Object)adaptor.nil();
 
                     string_literal66=(Token)input.LT(1);
-                    match(input,80,FOLLOW_80_in_modType1511); 
+                    match(input,80,FOLLOW_80_in_modType1507); 
                     string_literal66_tree = (Object)adaptor.create(string_literal66);
                     adaptor.addChild(root_0, string_literal66_tree);
 
-                    pushFollow(FOLLOW_modType_in_modType1513);
-                    modType67=modType();
-                    _fsp--;
+                    // dee.g:214:9: ( modType )?
+                    int alt21=2;
+                    int LA21_0 = input.LA(1);
+                    if ( (LA21_0==MULT||(LA21_0>=80 && LA21_0<=81)||(LA21_0>=83 && LA21_0<=84)) ) {
+                        alt21=1;
+                    }
+                    switch (alt21) {
+                        case 1 :
+                            // dee.g:214:9: modType
+                            {
+                            Object root_1 = (Object)adaptor.nil();
 
-                    adaptor.addChild(root_0, modType67.tree);
+                            pushFollow(FOLLOW_modType_in_modType1509);
+                            modType67=modType();
+                            _fsp--;
+
+                            adaptor.addChild(root_1, modType67.tree);
+
+                            adaptor.addChild(root_0, root_1);
+
+                            }
+                            break;
+
+                    }
+
 
                     }
                     break;
@@ -2288,17 +2396,17 @@ public class DParser extends Parser {
                     root_0 = (Object)adaptor.nil();
 
                     char_literal68=(Token)input.LT(1);
-                    match(input,81,FOLLOW_81_in_modType1519); 
+                    match(input,81,FOLLOW_81_in_modType1516); 
                     char_literal68_tree = (Object)adaptor.create(char_literal68);
                     adaptor.addChild(root_0, char_literal68_tree);
 
-                    pushFollow(FOLLOW_expression_in_modType1521);
+                    pushFollow(FOLLOW_expression_in_modType1518);
                     expression69=expression();
                     _fsp--;
 
                     adaptor.addChild(root_0, expression69.tree);
                     char_literal70=(Token)input.LT(1);
-                    match(input,82,FOLLOW_82_in_modType1523); 
+                    match(input,82,FOLLOW_82_in_modType1520); 
                     char_literal70_tree = (Object)adaptor.create(char_literal70);
                     adaptor.addChild(root_0, char_literal70_tree);
 
@@ -2306,22 +2414,22 @@ public class DParser extends Parser {
                     }
                     break;
                 case 4 :
-                    // dee.g:216:8: '[' type ']'
+                    // dee.g:216:8: '[' typeRef ']'
                     {
                     root_0 = (Object)adaptor.nil();
 
                     char_literal71=(Token)input.LT(1);
-                    match(input,81,FOLLOW_81_in_modType1532); 
+                    match(input,81,FOLLOW_81_in_modType1529); 
                     char_literal71_tree = (Object)adaptor.create(char_literal71);
                     adaptor.addChild(root_0, char_literal71_tree);
 
-                    pushFollow(FOLLOW_type_in_modType1534);
-                    type72=type();
+                    pushFollow(FOLLOW_typeRef_in_modType1531);
+                    typeRef72=typeRef();
                     _fsp--;
 
-                    adaptor.addChild(root_0, type72.tree);
+                    adaptor.addChild(root_0, typeRef72.tree);
                     char_literal73=(Token)input.LT(1);
-                    match(input,82,FOLLOW_82_in_modType1536); 
+                    match(input,82,FOLLOW_82_in_modType1533); 
                     char_literal73_tree = (Object)adaptor.create(char_literal73);
                     adaptor.addChild(root_0, char_literal73_tree);
 
@@ -2334,11 +2442,11 @@ public class DParser extends Parser {
                     root_0 = (Object)adaptor.nil();
 
                     string_literal74=(Token)input.LT(1);
-                    match(input,83,FOLLOW_83_in_modType1545); 
+                    match(input,83,FOLLOW_83_in_modType1542); 
                     string_literal74_tree = (Object)adaptor.create(string_literal74);
                     adaptor.addChild(root_0, string_literal74_tree);
 
-                    pushFollow(FOLLOW_parameters_in_modType1547);
+                    pushFollow(FOLLOW_parameters_in_modType1544);
                     parameters75=parameters();
                     _fsp--;
 
@@ -2352,11 +2460,11 @@ public class DParser extends Parser {
                     root_0 = (Object)adaptor.nil();
 
                     string_literal76=(Token)input.LT(1);
-                    match(input,84,FOLLOW_84_in_modType1556); 
+                    match(input,84,FOLLOW_84_in_modType1553); 
                     string_literal76_tree = (Object)adaptor.create(string_literal76);
                     adaptor.addChild(root_0, string_literal76_tree);
 
-                    pushFollow(FOLLOW_parameters_in_modType1558);
+                    pushFollow(FOLLOW_parameters_in_modType1555);
                     parameters77=parameters();
                     _fsp--;
 
@@ -2388,7 +2496,7 @@ public class DParser extends Parser {
     };
 
     // $ANTLR start exprEnt
-    // dee.g:222:1: exprEnt : ( primitiveType '.' qname | entityName );
+    // dee.g:222:1: exprEnt : ( basicType '.' qname | rootNameRef );
     public exprEnt_return exprEnt() throws RecognitionException {   
         exprEnt_return retval = new exprEnt_return();
         retval.start = input.LT(1);
@@ -2396,48 +2504,238 @@ public class DParser extends Parser {
         Object root_0 = null;
 
         Token char_literal79=null;
-        primitiveType_return primitiveType78 = null;
+        basicType_return basicType78 = null;
 
         qname_return qname80 = null;
 
-        entityName_return entityName81 = null;
+        rootNameRef_return rootNameRef81 = null;
 
 
         Object char_literal79_tree=null;
 
         try {
-            // dee.g:223:4: ( primitiveType '.' qname | entityName )
-            int alt20=2;
-            int LA20_0 = input.LA(1);
-            if ( ((LA20_0>=58 && LA20_0<=79)) ) {
-                alt20=1;
-            }
-            else if ( (LA20_0==IDENT||(LA20_0>=53 && LA20_0<=55)) ) {
-                alt20=2;
-            }
-            else {
+            // dee.g:223:4: ( basicType '.' qname | rootNameRef )
+            int alt23=2;
+            switch ( input.LA(1) ) {
+            case 58:
+            case 59:
+            case 60:
+            case 61:
+            case 62:
+            case 63:
+            case 64:
+            case 65:
+            case 66:
+            case 67:
+            case 68:
+            case 69:
+            case 70:
+            case 71:
+            case 72:
+            case 73:
+            case 74:
+            case 75:
+            case 76:
+            case 77:
+            case 78:
+            case 79:
+                alt23=1;
+                break;
+            case 55:
+                int LA23_2 = input.LA(2);
+                if ( (LA23_2==56) ) {
+                    int LA23_6 = input.LA(3);
+                    if ( (LA23_6==100) ) {
+                        int LA23_11 = input.LA(4);
+                        if ( (LA23_11==57) ) {
+                            int LA23_15 = input.LA(5);
+                            if ( (LA23_15==53) ) {
+                                int LA23_18 = input.LA(6);
+                                if ( (LA23_18==IDENT) ) {
+                                    alt23=1;
+                                }
+                                else if ( (LA23_18==54) ) {
+                                    alt23=1;
+                                }
+                                else {
+                                    NoViableAltException nvae =
+                                        new NoViableAltException("222:1: exprEnt : ( basicType '.' qname | rootNameRef );", 23, 18, input);
+
+                                    throw nvae;
+                                }
+                            }
+                            else if ( (LA23_15==EOF) ) {
+                                alt23=2;
+                            }
+                            else {
+                                NoViableAltException nvae =
+                                    new NoViableAltException("222:1: exprEnt : ( basicType '.' qname | rootNameRef );", 23, 15, input);
+
+                                throw nvae;
+                            }
+                        }
+                        else {
+                            NoViableAltException nvae =
+                                new NoViableAltException("222:1: exprEnt : ( basicType '.' qname | rootNameRef );", 23, 11, input);
+
+                            throw nvae;
+                        }
+                    }
+                    else {
+                        NoViableAltException nvae =
+                            new NoViableAltException("222:1: exprEnt : ( basicType '.' qname | rootNameRef );", 23, 6, input);
+
+                        throw nvae;
+                    }
+                }
+                else {
+                    NoViableAltException nvae =
+                        new NoViableAltException("222:1: exprEnt : ( basicType '.' qname | rootNameRef );", 23, 2, input);
+
+                    throw nvae;
+                }
+                break;
+            case 53:
+                int LA23_3 = input.LA(2);
+                if ( (LA23_3==IDENT) ) {
+                    int LA23_7 = input.LA(3);
+                    if ( (LA23_7==53) ) {
+                        int LA23_12 = input.LA(4);
+                        if ( (LA23_12==IDENT) ) {
+                            alt23=1;
+                        }
+                        else if ( (LA23_12==54) ) {
+                            alt23=1;
+                        }
+                        else {
+                            NoViableAltException nvae =
+                                new NoViableAltException("222:1: exprEnt : ( basicType '.' qname | rootNameRef );", 23, 12, input);
+
+                            throw nvae;
+                        }
+                    }
+                    else if ( (LA23_7==EOF) ) {
+                        alt23=2;
+                    }
+                    else {
+                        NoViableAltException nvae =
+                            new NoViableAltException("222:1: exprEnt : ( basicType '.' qname | rootNameRef );", 23, 7, input);
+
+                        throw nvae;
+                    }
+                }
+                else if ( (LA23_3==54) ) {
+                    int LA23_8 = input.LA(3);
+                    if ( (LA23_8==53) ) {
+                        int LA23_12 = input.LA(4);
+                        if ( (LA23_12==IDENT) ) {
+                            alt23=1;
+                        }
+                        else if ( (LA23_12==54) ) {
+                            alt23=1;
+                        }
+                        else {
+                            NoViableAltException nvae =
+                                new NoViableAltException("222:1: exprEnt : ( basicType '.' qname | rootNameRef );", 23, 12, input);
+
+                            throw nvae;
+                        }
+                    }
+                    else if ( (LA23_8==EOF) ) {
+                        alt23=2;
+                    }
+                    else {
+                        NoViableAltException nvae =
+                            new NoViableAltException("222:1: exprEnt : ( basicType '.' qname | rootNameRef );", 23, 8, input);
+
+                        throw nvae;
+                    }
+                }
+                else {
+                    NoViableAltException nvae =
+                        new NoViableAltException("222:1: exprEnt : ( basicType '.' qname | rootNameRef );", 23, 3, input);
+
+                    throw nvae;
+                }
+                break;
+            case IDENT:
+                int LA23_4 = input.LA(2);
+                if ( (LA23_4==53) ) {
+                    int LA23_9 = input.LA(3);
+                    if ( (LA23_9==IDENT) ) {
+                        alt23=1;
+                    }
+                    else if ( (LA23_9==54) ) {
+                        alt23=1;
+                    }
+                    else {
+                        NoViableAltException nvae =
+                            new NoViableAltException("222:1: exprEnt : ( basicType '.' qname | rootNameRef );", 23, 9, input);
+
+                        throw nvae;
+                    }
+                }
+                else if ( (LA23_4==EOF) ) {
+                    alt23=2;
+                }
+                else {
+                    NoViableAltException nvae =
+                        new NoViableAltException("222:1: exprEnt : ( basicType '.' qname | rootNameRef );", 23, 4, input);
+
+                    throw nvae;
+                }
+                break;
+            case 54:
+                int LA23_5 = input.LA(2);
+                if ( (LA23_5==53) ) {
+                    int LA23_9 = input.LA(3);
+                    if ( (LA23_9==IDENT) ) {
+                        alt23=1;
+                    }
+                    else if ( (LA23_9==54) ) {
+                        alt23=1;
+                    }
+                    else {
+                        NoViableAltException nvae =
+                            new NoViableAltException("222:1: exprEnt : ( basicType '.' qname | rootNameRef );", 23, 9, input);
+
+                        throw nvae;
+                    }
+                }
+                else if ( (LA23_5==EOF) ) {
+                    alt23=2;
+                }
+                else {
+                    NoViableAltException nvae =
+                        new NoViableAltException("222:1: exprEnt : ( basicType '.' qname | rootNameRef );", 23, 5, input);
+
+                    throw nvae;
+                }
+                break;
+            default:
                 NoViableAltException nvae =
-                    new NoViableAltException("222:1: exprEnt : ( primitiveType '.' qname | entityName );", 20, 0, input);
+                    new NoViableAltException("222:1: exprEnt : ( basicType '.' qname | rootNameRef );", 23, 0, input);
 
                 throw nvae;
             }
-            switch (alt20) {
+
+            switch (alt23) {
                 case 1 :
-                    // dee.g:223:4: primitiveType '.' qname
+                    // dee.g:223:4: basicType '.' qname
                     {
                     root_0 = (Object)adaptor.nil();
 
-                    pushFollow(FOLLOW_primitiveType_in_exprEnt1570);
-                    primitiveType78=primitiveType();
+                    pushFollow(FOLLOW_basicType_in_exprEnt1567);
+                    basicType78=basicType();
                     _fsp--;
 
-                    adaptor.addChild(root_0, primitiveType78.tree);
+                    adaptor.addChild(root_0, basicType78.tree);
                     char_literal79=(Token)input.LT(1);
-                    match(input,53,FOLLOW_53_in_exprEnt1572); 
+                    match(input,53,FOLLOW_53_in_exprEnt1569); 
                     char_literal79_tree = (Object)adaptor.create(char_literal79);
                     adaptor.addChild(root_0, char_literal79_tree);
 
-                    pushFollow(FOLLOW_qname_in_exprEnt1574);
+                    pushFollow(FOLLOW_qname_in_exprEnt1571);
                     qname80=qname();
                     _fsp--;
 
@@ -2446,15 +2744,15 @@ public class DParser extends Parser {
                     }
                     break;
                 case 2 :
-                    // dee.g:224:4: entityName
+                    // dee.g:224:4: rootNameRef
                     {
                     root_0 = (Object)adaptor.nil();
 
-                    pushFollow(FOLLOW_entityName_in_exprEnt1580);
-                    entityName81=entityName();
+                    pushFollow(FOLLOW_rootNameRef_in_exprEnt1577);
+                    rootNameRef81=rootNameRef();
                     _fsp--;
 
-                    adaptor.addChild(root_0, entityName81.tree);
+                    adaptor.addChild(root_0, rootNameRef81.tree);
 
                     }
                     break;
@@ -2482,7 +2780,7 @@ public class DParser extends Parser {
     };
 
     // $ANTLR start declaration
-    // dee.g:227:1: declaration : ( 'typedef' type IDENT ';' | 'alias' entityName IDENT ';' | varDeclaration );
+    // dee.g:227:1: declaration : ( 'typedef' typeRef IDENT ';' | 'alias' rootNameRef IDENT ';' | varDeclaration );
     public declaration_return declaration() throws RecognitionException {   
         declaration_return retval = new declaration_return();
         retval.start = input.LT(1);
@@ -2495,9 +2793,9 @@ public class DParser extends Parser {
         Token string_literal86=null;
         Token IDENT88=null;
         Token char_literal89=null;
-        type_return type83 = null;
+        typeRef_return typeRef83 = null;
 
-        entityName_return entityName87 = null;
+        rootNameRef_return rootNameRef87 = null;
 
         varDeclaration_return varDeclaration90 = null;
 
@@ -2510,14 +2808,14 @@ public class DParser extends Parser {
         Object char_literal89_tree=null;
 
         try {
-            // dee.g:230:4: ( 'typedef' type IDENT ';' | 'alias' entityName IDENT ';' | varDeclaration )
-            int alt21=3;
+            // dee.g:230:4: ( 'typedef' typeRef IDENT ';' | 'alias' rootNameRef IDENT ';' | varDeclaration )
+            int alt24=3;
             switch ( input.LA(1) ) {
             case 85:
-                alt21=1;
+                alt24=1;
                 break;
             case 86:
-                alt21=2;
+                alt24=2;
                 break;
             case IDENT:
             case 41:
@@ -2555,38 +2853,38 @@ public class DParser extends Parser {
             case 93:
             case 94:
             case 95:
-                alt21=3;
+                alt24=3;
                 break;
             default:
                 NoViableAltException nvae =
-                    new NoViableAltException("227:1: declaration : ( 'typedef' type IDENT ';' | 'alias' entityName IDENT ';' | varDeclaration );", 21, 0, input);
+                    new NoViableAltException("227:1: declaration : ( 'typedef' typeRef IDENT ';' | 'alias' rootNameRef IDENT ';' | varDeclaration );", 24, 0, input);
 
                 throw nvae;
             }
 
-            switch (alt21) {
+            switch (alt24) {
                 case 1 :
-                    // dee.g:230:4: 'typedef' type IDENT ';'
+                    // dee.g:230:4: 'typedef' typeRef IDENT ';'
                     {
                     root_0 = (Object)adaptor.nil();
 
                     string_literal82=(Token)input.LT(1);
-                    match(input,85,FOLLOW_85_in_declaration1594); 
+                    match(input,85,FOLLOW_85_in_declaration1591); 
                     string_literal82_tree = (Object)adaptor.create(string_literal82);
                     adaptor.addChild(root_0, string_literal82_tree);
 
-                    pushFollow(FOLLOW_type_in_declaration1596);
-                    type83=type();
+                    pushFollow(FOLLOW_typeRef_in_declaration1593);
+                    typeRef83=typeRef();
                     _fsp--;
 
-                    adaptor.addChild(root_0, type83.tree);
+                    adaptor.addChild(root_0, typeRef83.tree);
                     IDENT84=(Token)input.LT(1);
-                    match(input,IDENT,FOLLOW_IDENT_in_declaration1598); 
+                    match(input,IDENT,FOLLOW_IDENT_in_declaration1595); 
                     IDENT84_tree = (Object)adaptor.create(IDENT84);
                     adaptor.addChild(root_0, IDENT84_tree);
 
                     char_literal85=(Token)input.LT(1);
-                    match(input,40,FOLLOW_40_in_declaration1600); 
+                    match(input,40,FOLLOW_40_in_declaration1597); 
                     char_literal85_tree = (Object)adaptor.create(char_literal85);
                     adaptor.addChild(root_0, char_literal85_tree);
 
@@ -2594,27 +2892,27 @@ public class DParser extends Parser {
                     }
                     break;
                 case 2 :
-                    // dee.g:231:4: 'alias' entityName IDENT ';'
+                    // dee.g:231:4: 'alias' rootNameRef IDENT ';'
                     {
                     root_0 = (Object)adaptor.nil();
 
                     string_literal86=(Token)input.LT(1);
-                    match(input,86,FOLLOW_86_in_declaration1605); 
+                    match(input,86,FOLLOW_86_in_declaration1602); 
                     string_literal86_tree = (Object)adaptor.create(string_literal86);
                     adaptor.addChild(root_0, string_literal86_tree);
 
-                    pushFollow(FOLLOW_entityName_in_declaration1607);
-                    entityName87=entityName();
+                    pushFollow(FOLLOW_rootNameRef_in_declaration1604);
+                    rootNameRef87=rootNameRef();
                     _fsp--;
 
-                    adaptor.addChild(root_0, entityName87.tree);
+                    adaptor.addChild(root_0, rootNameRef87.tree);
                     IDENT88=(Token)input.LT(1);
-                    match(input,IDENT,FOLLOW_IDENT_in_declaration1609); 
+                    match(input,IDENT,FOLLOW_IDENT_in_declaration1606); 
                     IDENT88_tree = (Object)adaptor.create(IDENT88);
                     adaptor.addChild(root_0, IDENT88_tree);
 
                     char_literal89=(Token)input.LT(1);
-                    match(input,40,FOLLOW_40_in_declaration1611); 
+                    match(input,40,FOLLOW_40_in_declaration1608); 
                     char_literal89_tree = (Object)adaptor.create(char_literal89);
                     adaptor.addChild(root_0, char_literal89_tree);
 
@@ -2626,7 +2924,7 @@ public class DParser extends Parser {
                     {
                     root_0 = (Object)adaptor.nil();
 
-                    pushFollow(FOLLOW_varDeclaration_in_declaration1616);
+                    pushFollow(FOLLOW_varDeclaration_in_declaration1613);
                     varDeclaration90=varDeclaration();
                     _fsp--;
 
@@ -2680,17 +2978,17 @@ public class DParser extends Parser {
             root_0 = (Object)adaptor.nil();
 
             string_literal91=(Token)input.LT(1);
-            match(input,87,FOLLOW_87_in_autoDeclaration1628); 
+            match(input,87,FOLLOW_87_in_autoDeclaration1625); 
             string_literal91_tree = (Object)adaptor.create(string_literal91);
             adaptor.addChild(root_0, string_literal91_tree);
 
-            pushFollow(FOLLOW_identifierInitializerList_in_autoDeclaration1630);
+            pushFollow(FOLLOW_identifierInitializerList_in_autoDeclaration1627);
             identifierInitializerList92=identifierInitializerList();
             _fsp--;
 
             adaptor.addChild(root_0, identifierInitializerList92.tree);
             char_literal93=(Token)input.LT(1);
-            match(input,40,FOLLOW_40_in_autoDeclaration1632); 
+            match(input,40,FOLLOW_40_in_autoDeclaration1629); 
             char_literal93_tree = (Object)adaptor.create(char_literal93);
             adaptor.addChild(root_0, char_literal93_tree);
 
@@ -2745,7 +3043,7 @@ public class DParser extends Parser {
             else {
                 MismatchedSetException mse =
                     new MismatchedSetException(null,input);
-                recoverFromMismatchedSet(input,mse,FOLLOW_set_in_storageclass1643);    throw mse;
+                recoverFromMismatchedSet(input,mse,FOLLOW_set_in_storageclass1640);    throw mse;
             }
 
 
@@ -2793,38 +3091,38 @@ public class DParser extends Parser {
             root_0 = (Object)adaptor.nil();
 
             // dee.g:241:20: ( storageclass )*
-            loop22:
+            loop25:
             do {
-                int alt22=2;
-                int LA22_0 = input.LA(1);
-                if ( (LA22_0==87) ) {
-                    int LA22_2 = input.LA(2);
-                    if ( (LA22_2==IDENT) ) {
-                        int LA22_4 = input.LA(3);
-                        if ( (LA22_4==MULT||LA22_4==IDENT||LA22_4==53||(LA22_4>=80 && LA22_4<=81)||(LA22_4>=83 && LA22_4<=84)) ) {
-                            alt22=1;
+                int alt25=2;
+                int LA25_0 = input.LA(1);
+                if ( (LA25_0==87) ) {
+                    int LA25_2 = input.LA(2);
+                    if ( (LA25_2==41||(LA25_2>=53 && LA25_2<=55)||(LA25_2>=58 && LA25_2<=79)||(LA25_2>=87 && LA25_2<=95)) ) {
+                        alt25=1;
+                    }
+                    else if ( (LA25_2==IDENT) ) {
+                        int LA25_4 = input.LA(3);
+                        if ( (LA25_4==MULT||LA25_4==IDENT||LA25_4==53||(LA25_4>=80 && LA25_4<=81)||(LA25_4>=83 && LA25_4<=84)) ) {
+                            alt25=1;
                         }
 
 
                     }
-                    else if ( (LA22_2==41||(LA22_2>=53 && LA22_2<=55)||(LA22_2>=58 && LA22_2<=79)||(LA22_2>=87 && LA22_2<=95)) ) {
-                        alt22=1;
-                    }
 
 
                 }
-                else if ( (LA22_0==41||(LA22_0>=88 && LA22_0<=94)) ) {
-                    alt22=1;
+                else if ( (LA25_0==41||(LA25_0>=88 && LA25_0<=94)) ) {
+                    alt25=1;
                 }
 
 
-                switch (alt22) {
+                switch (alt25) {
             	case 1 :
             	    // dee.g:241:20: storageclass
             	    {
             	    Object root_1 = (Object)adaptor.nil();
 
-            	    pushFollow(FOLLOW_storageclass_in_varDeclaration1669);
+            	    pushFollow(FOLLOW_storageclass_in_varDeclaration1666);
             	    storageclass95=storageclass();
             	    _fsp--;
 
@@ -2836,11 +3134,11 @@ public class DParser extends Parser {
             	    break;
 
             	default :
-            	    break loop22;
+            	    break loop25;
                 }
             } while (true);
 
-            pushFollow(FOLLOW_actualVarDeclaration_in_varDeclaration1672);
+            pushFollow(FOLLOW_actualVarDeclaration_in_varDeclaration1669);
             actualVarDeclaration96=actualVarDeclaration();
             _fsp--;
 
@@ -2870,7 +3168,7 @@ public class DParser extends Parser {
     };
 
     // $ANTLR start actualVarDeclaration
-    // dee.g:243:1: actualVarDeclaration options {k=2; } : ( ( type identifierInitializerList ';' ) | ( mytype functionDeclarator functionBody ) | autoDeclaration );
+    // dee.g:243:1: actualVarDeclaration options {k=2; } : ( ( typeRef identifierInitializerList ';' ) | ( mytype functionDeclarator functionBody ) | autoDeclaration );
     public actualVarDeclaration_return actualVarDeclaration() throws RecognitionException {   
         actualVarDeclaration_return retval = new actualVarDeclaration_return();
         retval.start = input.LT(1);
@@ -2878,7 +3176,7 @@ public class DParser extends Parser {
         Object root_0 = null;
 
         Token char_literal99=null;
-        type_return type97 = null;
+        typeRef_return typeRef97 = null;
 
         identifierInitializerList_return identifierInitializerList98 = null;
 
@@ -2894,8 +3192,8 @@ public class DParser extends Parser {
         Object char_literal99_tree=null;
 
         try {
-            // dee.g:245:6: ( ( type identifierInitializerList ';' ) | ( mytype functionDeclarator functionBody ) | autoDeclaration )
-            int alt23=3;
+            // dee.g:245:6: ( ( typeRef identifierInitializerList ';' ) | ( mytype functionDeclarator functionBody ) | autoDeclaration )
+            int alt26=3;
             switch ( input.LA(1) ) {
             case IDENT:
             case 53:
@@ -2923,44 +3221,44 @@ public class DParser extends Parser {
             case 77:
             case 78:
             case 79:
-                alt23=1;
+                alt26=1;
                 break;
             case 95:
-                alt23=2;
+                alt26=2;
                 break;
             case 87:
-                alt23=3;
+                alt26=3;
                 break;
             default:
                 NoViableAltException nvae =
-                    new NoViableAltException("243:1: actualVarDeclaration options {k=2; } : ( ( type identifierInitializerList ';' ) | ( mytype functionDeclarator functionBody ) | autoDeclaration );", 23, 0, input);
+                    new NoViableAltException("243:1: actualVarDeclaration options {k=2; } : ( ( typeRef identifierInitializerList ';' ) | ( mytype functionDeclarator functionBody ) | autoDeclaration );", 26, 0, input);
 
                 throw nvae;
             }
 
-            switch (alt23) {
+            switch (alt26) {
                 case 1 :
-                    // dee.g:245:6: ( type identifierInitializerList ';' )
+                    // dee.g:245:6: ( typeRef identifierInitializerList ';' )
                     {
                     root_0 = (Object)adaptor.nil();
 
-                    // dee.g:245:6: ( type identifierInitializerList ';' )
-                    // dee.g:245:8: type identifierInitializerList ';'
+                    // dee.g:245:6: ( typeRef identifierInitializerList ';' )
+                    // dee.g:245:8: typeRef identifierInitializerList ';'
                     {
                     Object root_1 = (Object)adaptor.nil();
 
-                    pushFollow(FOLLOW_type_in_actualVarDeclaration1699);
-                    type97=type();
+                    pushFollow(FOLLOW_typeRef_in_actualVarDeclaration1696);
+                    typeRef97=typeRef();
                     _fsp--;
 
-                    adaptor.addChild(root_1, type97.tree);
-                    pushFollow(FOLLOW_identifierInitializerList_in_actualVarDeclaration1701);
+                    adaptor.addChild(root_1, typeRef97.tree);
+                    pushFollow(FOLLOW_identifierInitializerList_in_actualVarDeclaration1698);
                     identifierInitializerList98=identifierInitializerList();
                     _fsp--;
 
                     adaptor.addChild(root_1, identifierInitializerList98.tree);
                     char_literal99=(Token)input.LT(1);
-                    match(input,40,FOLLOW_40_in_actualVarDeclaration1703); 
+                    match(input,40,FOLLOW_40_in_actualVarDeclaration1700); 
                     char_literal99_tree = (Object)adaptor.create(char_literal99);
                     adaptor.addChild(root_1, char_literal99_tree);
 
@@ -2982,17 +3280,17 @@ public class DParser extends Parser {
                     {
                     Object root_1 = (Object)adaptor.nil();
 
-                    pushFollow(FOLLOW_mytype_in_actualVarDeclaration1715);
+                    pushFollow(FOLLOW_mytype_in_actualVarDeclaration1712);
                     mytype100=mytype();
                     _fsp--;
 
                     adaptor.addChild(root_1, mytype100.tree);
-                    pushFollow(FOLLOW_functionDeclarator_in_actualVarDeclaration1717);
+                    pushFollow(FOLLOW_functionDeclarator_in_actualVarDeclaration1714);
                     functionDeclarator101=functionDeclarator();
                     _fsp--;
 
                     adaptor.addChild(root_1, functionDeclarator101.tree);
-                    pushFollow(FOLLOW_functionBody_in_actualVarDeclaration1719);
+                    pushFollow(FOLLOW_functionBody_in_actualVarDeclaration1716);
                     functionBody102=functionBody();
                     _fsp--;
 
@@ -3010,7 +3308,7 @@ public class DParser extends Parser {
                     {
                     root_0 = (Object)adaptor.nil();
 
-                    pushFollow(FOLLOW_autoDeclaration_in_actualVarDeclaration1727);
+                    pushFollow(FOLLOW_autoDeclaration_in_actualVarDeclaration1724);
                     autoDeclaration103=autoDeclaration();
                     _fsp--;
 
@@ -3060,7 +3358,7 @@ public class DParser extends Parser {
             root_0 = (Object)adaptor.nil();
 
             string_literal104=(Token)input.LT(1);
-            match(input,95,FOLLOW_95_in_mytype1738); 
+            match(input,95,FOLLOW_95_in_mytype1735); 
             string_literal104_tree = (Object)adaptor.create(string_literal104);
             adaptor.addChild(root_0, string_literal104_tree);
 
@@ -3115,28 +3413,28 @@ public class DParser extends Parser {
             root_0 = (Object)adaptor.nil();
 
             IDENT105=(Token)input.LT(1);
-            match(input,IDENT,FOLLOW_IDENT_in_identifierInitializerList1752); 
+            match(input,IDENT,FOLLOW_IDENT_in_identifierInitializerList1749); 
             IDENT105_tree = (Object)adaptor.create(IDENT105);
             adaptor.addChild(root_0, IDENT105_tree);
 
             // dee.g:258:10: ( '=' initializer )?
-            int alt24=2;
-            int LA24_0 = input.LA(1);
-            if ( (LA24_0==44) ) {
-                alt24=1;
+            int alt27=2;
+            int LA27_0 = input.LA(1);
+            if ( (LA27_0==44) ) {
+                alt27=1;
             }
-            switch (alt24) {
+            switch (alt27) {
                 case 1 :
                     // dee.g:258:11: '=' initializer
                     {
                     Object root_1 = (Object)adaptor.nil();
 
                     char_literal106=(Token)input.LT(1);
-                    match(input,44,FOLLOW_44_in_identifierInitializerList1755); 
+                    match(input,44,FOLLOW_44_in_identifierInitializerList1752); 
                     char_literal106_tree = (Object)adaptor.create(char_literal106);
                     adaptor.addChild(root_1, char_literal106_tree);
 
-                    pushFollow(FOLLOW_initializer_in_identifierInitializerList1757);
+                    pushFollow(FOLLOW_initializer_in_identifierInitializerList1754);
                     initializer107=initializer();
                     _fsp--;
 
@@ -3150,23 +3448,23 @@ public class DParser extends Parser {
             }
 
             // dee.g:258:29: ( ',' identifierInitializerList )?
-            int alt25=2;
-            int LA25_0 = input.LA(1);
-            if ( (LA25_0==43) ) {
-                alt25=1;
+            int alt28=2;
+            int LA28_0 = input.LA(1);
+            if ( (LA28_0==43) ) {
+                alt28=1;
             }
-            switch (alt25) {
+            switch (alt28) {
                 case 1 :
                     // dee.g:258:30: ',' identifierInitializerList
                     {
                     Object root_1 = (Object)adaptor.nil();
 
                     char_literal108=(Token)input.LT(1);
-                    match(input,43,FOLLOW_43_in_identifierInitializerList1762); 
+                    match(input,43,FOLLOW_43_in_identifierInitializerList1759); 
                     char_literal108_tree = (Object)adaptor.create(char_literal108);
                     adaptor.addChild(root_1, char_literal108_tree);
 
-                    pushFollow(FOLLOW_identifierInitializerList_in_identifierInitializerList1764);
+                    pushFollow(FOLLOW_identifierInitializerList_in_identifierInitializerList1761);
                     identifierInitializerList109=identifierInitializerList();
                     _fsp--;
 
@@ -3204,7 +3502,7 @@ public class DParser extends Parser {
     };
 
     // $ANTLR start singleDeclaration
-    // dee.g:261:1: singleDeclaration : type IDENT ;
+    // dee.g:261:1: singleDeclaration : typeRef IDENT ;
     public singleDeclaration_return singleDeclaration() throws RecognitionException {   
         singleDeclaration_return retval = new singleDeclaration_return();
         retval.start = input.LT(1);
@@ -3212,24 +3510,24 @@ public class DParser extends Parser {
         Object root_0 = null;
 
         Token IDENT111=null;
-        type_return type110 = null;
+        typeRef_return typeRef110 = null;
 
 
         Object IDENT111_tree=null;
 
         try {
-            // dee.g:261:22: ( type IDENT )
-            // dee.g:261:22: type IDENT
+            // dee.g:261:22: ( typeRef IDENT )
+            // dee.g:261:22: typeRef IDENT
             {
             root_0 = (Object)adaptor.nil();
 
-            pushFollow(FOLLOW_type_in_singleDeclaration1777);
-            type110=type();
+            pushFollow(FOLLOW_typeRef_in_singleDeclaration1774);
+            typeRef110=typeRef();
             _fsp--;
 
-            adaptor.addChild(root_0, type110.tree);
+            adaptor.addChild(root_0, typeRef110.tree);
             IDENT111=(Token)input.LT(1);
-            match(input,IDENT,FOLLOW_IDENT_in_singleDeclaration1779); 
+            match(input,IDENT,FOLLOW_IDENT_in_singleDeclaration1776); 
             IDENT111_tree = (Object)adaptor.create(IDENT111);
             adaptor.addChild(root_0, IDENT111_tree);
 
@@ -3278,11 +3576,11 @@ public class DParser extends Parser {
             root_0 = (Object)adaptor.nil();
 
             IDENT112=(Token)input.LT(1);
-            match(input,IDENT,FOLLOW_IDENT_in_functionDeclarator1791); 
+            match(input,IDENT,FOLLOW_IDENT_in_functionDeclarator1788); 
             IDENT112_tree = (Object)adaptor.create(IDENT112);
             adaptor.addChild(root_0, IDENT112_tree);
 
-            pushFollow(FOLLOW_parameters_in_functionDeclarator1793);
+            pushFollow(FOLLOW_parameters_in_functionDeclarator1790);
             parameters113=parameters();
             _fsp--;
 
@@ -3334,17 +3632,17 @@ public class DParser extends Parser {
             root_0 = (Object)adaptor.nil();
 
             char_literal114=(Token)input.LT(1);
-            match(input,56,FOLLOW_56_in_parameters1802); 
+            match(input,56,FOLLOW_56_in_parameters1799); 
             char_literal114_tree = (Object)adaptor.create(char_literal114);
             adaptor.addChild(root_0, char_literal114_tree);
 
-            pushFollow(FOLLOW_parameterList_in_parameters1804);
+            pushFollow(FOLLOW_parameterList_in_parameters1801);
             parameterList115=parameterList();
             _fsp--;
 
             adaptor.addChild(root_0, parameterList115.tree);
             char_literal116=(Token)input.LT(1);
-            match(input,57,FOLLOW_57_in_parameters1806); 
+            match(input,57,FOLLOW_57_in_parameters1803); 
             char_literal116_tree = (Object)adaptor.create(char_literal116);
             adaptor.addChild(root_0, char_literal116_tree);
 
@@ -3394,29 +3692,29 @@ public class DParser extends Parser {
             {
             root_0 = (Object)adaptor.nil();
 
-            pushFollow(FOLLOW_parameter_in_parameterList1815);
+            pushFollow(FOLLOW_parameter_in_parameterList1812);
             parameter117=parameter();
             _fsp--;
 
             adaptor.addChild(root_0, parameter117.tree);
             // dee.g:270:27: ( ',' parameterList )?
-            int alt26=2;
-            int LA26_0 = input.LA(1);
-            if ( (LA26_0==43) ) {
-                alt26=1;
+            int alt29=2;
+            int LA29_0 = input.LA(1);
+            if ( (LA29_0==43) ) {
+                alt29=1;
             }
-            switch (alt26) {
+            switch (alt29) {
                 case 1 :
                     // dee.g:270:28: ',' parameterList
                     {
                     Object root_1 = (Object)adaptor.nil();
 
                     char_literal118=(Token)input.LT(1);
-                    match(input,43,FOLLOW_43_in_parameterList1818); 
+                    match(input,43,FOLLOW_43_in_parameterList1815); 
                     char_literal118_tree = (Object)adaptor.create(char_literal118);
                     adaptor.addChild(root_1, char_literal118_tree);
 
-                    pushFollow(FOLLOW_parameterList_in_parameterList1820);
+                    pushFollow(FOLLOW_parameterList_in_parameterList1817);
                     parameterList119=parameterList();
                     _fsp--;
 
@@ -3479,49 +3777,49 @@ public class DParser extends Parser {
 
         try {
             // dee.g:273:5: ( singleDeclaration ( '=' assignExpression )? | inout singleDeclaration ( '=' assignExpression )? )
-            int alt29=2;
-            int LA29_0 = input.LA(1);
-            if ( (LA29_0==IDENT||(LA29_0>=53 && LA29_0<=55)||(LA29_0>=58 && LA29_0<=79)) ) {
-                alt29=1;
+            int alt32=2;
+            int LA32_0 = input.LA(1);
+            if ( (LA32_0==IDENT||(LA32_0>=53 && LA32_0<=55)||(LA32_0>=58 && LA32_0<=79)) ) {
+                alt32=1;
             }
-            else if ( ((LA29_0>=96 && LA29_0<=99)) ) {
-                alt29=2;
+            else if ( ((LA32_0>=96 && LA32_0<=99)) ) {
+                alt32=2;
             }
             else {
                 NoViableAltException nvae =
-                    new NoViableAltException("272:1: parameter : ( singleDeclaration ( '=' assignExpression )? | inout singleDeclaration ( '=' assignExpression )? );", 29, 0, input);
+                    new NoViableAltException("272:1: parameter : ( singleDeclaration ( '=' assignExpression )? | inout singleDeclaration ( '=' assignExpression )? );", 32, 0, input);
 
                 throw nvae;
             }
-            switch (alt29) {
+            switch (alt32) {
                 case 1 :
                     // dee.g:273:5: singleDeclaration ( '=' assignExpression )?
                     {
                     root_0 = (Object)adaptor.nil();
 
-                    pushFollow(FOLLOW_singleDeclaration_in_parameter1834);
+                    pushFollow(FOLLOW_singleDeclaration_in_parameter1831);
                     singleDeclaration120=singleDeclaration();
                     _fsp--;
 
                     adaptor.addChild(root_0, singleDeclaration120.tree);
                     // dee.g:273:23: ( '=' assignExpression )?
-                    int alt27=2;
-                    int LA27_0 = input.LA(1);
-                    if ( (LA27_0==44) ) {
-                        alt27=1;
+                    int alt30=2;
+                    int LA30_0 = input.LA(1);
+                    if ( (LA30_0==44) ) {
+                        alt30=1;
                     }
-                    switch (alt27) {
+                    switch (alt30) {
                         case 1 :
                             // dee.g:273:24: '=' assignExpression
                             {
                             Object root_1 = (Object)adaptor.nil();
 
                             char_literal121=(Token)input.LT(1);
-                            match(input,44,FOLLOW_44_in_parameter1837); 
+                            match(input,44,FOLLOW_44_in_parameter1834); 
                             char_literal121_tree = (Object)adaptor.create(char_literal121);
                             adaptor.addChild(root_1, char_literal121_tree);
 
-                            pushFollow(FOLLOW_assignExpression_in_parameter1839);
+                            pushFollow(FOLLOW_assignExpression_in_parameter1836);
                             assignExpression122=assignExpression();
                             _fsp--;
 
@@ -3542,34 +3840,34 @@ public class DParser extends Parser {
                     {
                     root_0 = (Object)adaptor.nil();
 
-                    pushFollow(FOLLOW_inout_in_parameter1847);
+                    pushFollow(FOLLOW_inout_in_parameter1844);
                     inout123=inout();
                     _fsp--;
 
                     adaptor.addChild(root_0, inout123.tree);
-                    pushFollow(FOLLOW_singleDeclaration_in_parameter1849);
+                    pushFollow(FOLLOW_singleDeclaration_in_parameter1846);
                     singleDeclaration124=singleDeclaration();
                     _fsp--;
 
                     adaptor.addChild(root_0, singleDeclaration124.tree);
                     // dee.g:274:29: ( '=' assignExpression )?
-                    int alt28=2;
-                    int LA28_0 = input.LA(1);
-                    if ( (LA28_0==44) ) {
-                        alt28=1;
+                    int alt31=2;
+                    int LA31_0 = input.LA(1);
+                    if ( (LA31_0==44) ) {
+                        alt31=1;
                     }
-                    switch (alt28) {
+                    switch (alt31) {
                         case 1 :
                             // dee.g:274:30: '=' assignExpression
                             {
                             Object root_1 = (Object)adaptor.nil();
 
                             char_literal125=(Token)input.LT(1);
-                            match(input,44,FOLLOW_44_in_parameter1852); 
+                            match(input,44,FOLLOW_44_in_parameter1849); 
                             char_literal125_tree = (Object)adaptor.create(char_literal125);
                             adaptor.addChild(root_1, char_literal125_tree);
 
-                            pushFollow(FOLLOW_assignExpression_in_parameter1854);
+                            pushFollow(FOLLOW_assignExpression_in_parameter1851);
                             assignExpression126=assignExpression();
                             _fsp--;
 
@@ -3635,7 +3933,7 @@ public class DParser extends Parser {
             else {
                 MismatchedSetException mse =
                     new MismatchedSetException(null,input);
-                recoverFromMismatchedSet(input,mse,FOLLOW_set_in_inout1865);    throw mse;
+                recoverFromMismatchedSet(input,mse,FOLLOW_set_in_inout1862);    throw mse;
             }
 
 
@@ -3683,12 +3981,12 @@ public class DParser extends Parser {
             root_0 = (Object)adaptor.nil();
 
             char_literal128=(Token)input.LT(1);
-            match(input,51,FOLLOW_51_in_functionBody1881); 
+            match(input,51,FOLLOW_51_in_functionBody1878); 
             char_literal128_tree = (Object)adaptor.create(char_literal128);
             adaptor.addChild(root_0, char_literal128_tree);
 
             char_literal129=(Token)input.LT(1);
-            match(input,52,FOLLOW_52_in_functionBody1883); 
+            match(input,52,FOLLOW_52_in_functionBody1880); 
             char_literal129_tree = (Object)adaptor.create(char_literal129);
             adaptor.addChild(root_0, char_literal129_tree);
 
@@ -3736,28 +4034,28 @@ public class DParser extends Parser {
 
         try {
             // dee.g:288:4: ( 'void' | '=' ('*'|'+'|'-') assignExpression )
-            int alt30=2;
-            int LA30_0 = input.LA(1);
-            if ( (LA30_0==58) ) {
-                alt30=1;
+            int alt33=2;
+            int LA33_0 = input.LA(1);
+            if ( (LA33_0==58) ) {
+                alt33=1;
             }
-            else if ( (LA30_0==44) ) {
-                alt30=2;
+            else if ( (LA33_0==44) ) {
+                alt33=2;
             }
             else {
                 NoViableAltException nvae =
-                    new NoViableAltException("285:1: initializer : ( 'void' | '=' ('*'|'+'|'-') assignExpression );", 30, 0, input);
+                    new NoViableAltException("285:1: initializer : ( 'void' | '=' ('*'|'+'|'-') assignExpression );", 33, 0, input);
 
                 throw nvae;
             }
-            switch (alt30) {
+            switch (alt33) {
                 case 1 :
                     // dee.g:288:4: 'void'
                     {
                     root_0 = (Object)adaptor.nil();
 
                     string_literal130=(Token)input.LT(1);
-                    match(input,58,FOLLOW_58_in_initializer1900); 
+                    match(input,58,FOLLOW_58_in_initializer1897); 
                     string_literal130_tree = (Object)adaptor.create(string_literal130);
                     adaptor.addChild(root_0, string_literal130_tree);
 
@@ -3770,7 +4068,7 @@ public class DParser extends Parser {
                     root_0 = (Object)adaptor.nil();
 
                     char_literal131=(Token)input.LT(1);
-                    match(input,44,FOLLOW_44_in_initializer1909); 
+                    match(input,44,FOLLOW_44_in_initializer1906); 
                     char_literal131_tree = (Object)adaptor.create(char_literal131);
                     adaptor.addChild(root_0, char_literal131_tree);
 
@@ -3783,10 +4081,10 @@ public class DParser extends Parser {
                     else {
                         MismatchedSetException mse =
                             new MismatchedSetException(null,input);
-                        recoverFromMismatchedSet(input,mse,FOLLOW_set_in_initializer1912);    throw mse;
+                        recoverFromMismatchedSet(input,mse,FOLLOW_set_in_initializer1909);    throw mse;
                     }
 
-                    pushFollow(FOLLOW_assignExpression_in_initializer1919);
+                    pushFollow(FOLLOW_assignExpression_in_initializer1916);
                     assignExpression133=assignExpression();
                     _fsp--;
 
@@ -3836,7 +4134,7 @@ public class DParser extends Parser {
             root_0 = (Object)adaptor.nil();
 
             string_literal134=(Token)input.LT(1);
-            match(input,100,FOLLOW_100_in_expression1939); 
+            match(input,100,FOLLOW_100_in_expression1936); 
             string_literal134_tree = (Object)adaptor.create(string_literal134);
             adaptor.addChild(root_0, string_literal134_tree);
 
@@ -3883,7 +4181,7 @@ public class DParser extends Parser {
             root_0 = (Object)adaptor.nil();
 
             string_literal135=(Token)input.LT(1);
-            match(input,101,FOLLOW_101_in_assignExpression1952); 
+            match(input,101,FOLLOW_101_in_assignExpression1949); 
             string_literal135_tree = (Object)adaptor.create(string_literal135);
             adaptor.addChild(root_0, string_literal135_tree);
 
@@ -3955,94 +4253,94 @@ public class DParser extends Parser {
     public static final BitSet FOLLOW_templateInstance_in_qname1325 = new BitSet(new long[]{0x0020000000000002L});
     public static final BitSet FOLLOW_53_in_qname1329 = new BitSet(new long[]{0x0040000000002000L});
     public static final BitSet FOLLOW_qname_in_qname1331 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_54_in_templateInstance1343 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_53_in_entityName1355 = new BitSet(new long[]{0x0040000000002000L});
-    public static final BitSet FOLLOW_qname_in_entityName1357 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_qname_in_entityName1363 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_typeof_in_entityName1369 = new BitSet(new long[]{0x0020000000000002L});
-    public static final BitSet FOLLOW_53_in_entityName1372 = new BitSet(new long[]{0x0040000000002000L});
-    public static final BitSet FOLLOW_qname_in_entityName1374 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_55_in_typeof1386 = new BitSet(new long[]{0x0100000000000000L});
-    public static final BitSet FOLLOW_56_in_typeof1388 = new BitSet(new long[]{0x0000000000000000L,0x0000001000000000L});
-    public static final BitSet FOLLOW_expression_in_typeof1390 = new BitSet(new long[]{0x0200000000000000L});
-    public static final BitSet FOLLOW_57_in_typeof1392 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_basicType_in_type1405 = new BitSet(new long[]{0x0000000000000042L,0x00000000001B0000L});
-    public static final BitSet FOLLOW_modType_in_type1407 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_primitiveType_in_basicType1417 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_typeEntityName_in_basicType1421 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_set_in_primitiveType1431 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_entityName_in_typeEntityName1494 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_MULT_in_modType1504 = new BitSet(new long[]{0x0000000000000040L,0x00000000001B0000L});
-    public static final BitSet FOLLOW_modType_in_modType1506 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_80_in_modType1511 = new BitSet(new long[]{0x0000000000000040L,0x00000000001B0000L});
-    public static final BitSet FOLLOW_modType_in_modType1513 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_81_in_modType1519 = new BitSet(new long[]{0x0000000000000000L,0x0000001000000000L});
-    public static final BitSet FOLLOW_expression_in_modType1521 = new BitSet(new long[]{0x0000000000000000L,0x0000000000040000L});
-    public static final BitSet FOLLOW_82_in_modType1523 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_81_in_modType1532 = new BitSet(new long[]{0xFCE0000000002000L,0x000000000000FFFFL});
-    public static final BitSet FOLLOW_type_in_modType1534 = new BitSet(new long[]{0x0000000000000000L,0x0000000000040000L});
-    public static final BitSet FOLLOW_82_in_modType1536 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_83_in_modType1545 = new BitSet(new long[]{0x0100000000000000L});
-    public static final BitSet FOLLOW_parameters_in_modType1547 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_84_in_modType1556 = new BitSet(new long[]{0x0100000000000000L});
-    public static final BitSet FOLLOW_parameters_in_modType1558 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_primitiveType_in_exprEnt1570 = new BitSet(new long[]{0x0020000000000000L});
-    public static final BitSet FOLLOW_53_in_exprEnt1572 = new BitSet(new long[]{0x0040000000002000L});
-    public static final BitSet FOLLOW_qname_in_exprEnt1574 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_entityName_in_exprEnt1580 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_85_in_declaration1594 = new BitSet(new long[]{0xFCE0000000002000L,0x000000000000FFFFL});
-    public static final BitSet FOLLOW_type_in_declaration1596 = new BitSet(new long[]{0x0000000000002000L});
-    public static final BitSet FOLLOW_IDENT_in_declaration1598 = new BitSet(new long[]{0x0000010000000000L});
-    public static final BitSet FOLLOW_40_in_declaration1600 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_86_in_declaration1605 = new BitSet(new long[]{0x00E0000000002000L});
-    public static final BitSet FOLLOW_entityName_in_declaration1607 = new BitSet(new long[]{0x0000000000002000L});
-    public static final BitSet FOLLOW_IDENT_in_declaration1609 = new BitSet(new long[]{0x0000010000000000L});
-    public static final BitSet FOLLOW_40_in_declaration1611 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_varDeclaration_in_declaration1616 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_87_in_autoDeclaration1628 = new BitSet(new long[]{0x0000000000002000L});
-    public static final BitSet FOLLOW_identifierInitializerList_in_autoDeclaration1630 = new BitSet(new long[]{0x0000010000000000L});
-    public static final BitSet FOLLOW_40_in_autoDeclaration1632 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_set_in_storageclass1643 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_storageclass_in_varDeclaration1669 = new BitSet(new long[]{0xFCE0020000002000L,0x00000000FF80FFFFL});
-    public static final BitSet FOLLOW_actualVarDeclaration_in_varDeclaration1672 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_type_in_actualVarDeclaration1699 = new BitSet(new long[]{0x0000000000002000L});
-    public static final BitSet FOLLOW_identifierInitializerList_in_actualVarDeclaration1701 = new BitSet(new long[]{0x0000010000000000L});
-    public static final BitSet FOLLOW_40_in_actualVarDeclaration1703 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_mytype_in_actualVarDeclaration1715 = new BitSet(new long[]{0x0000000000002000L});
-    public static final BitSet FOLLOW_functionDeclarator_in_actualVarDeclaration1717 = new BitSet(new long[]{0x0008000000000000L});
-    public static final BitSet FOLLOW_functionBody_in_actualVarDeclaration1719 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_autoDeclaration_in_actualVarDeclaration1727 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_95_in_mytype1738 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_IDENT_in_identifierInitializerList1752 = new BitSet(new long[]{0x0000180000000002L});
-    public static final BitSet FOLLOW_44_in_identifierInitializerList1755 = new BitSet(new long[]{0x0400100000000000L});
-    public static final BitSet FOLLOW_initializer_in_identifierInitializerList1757 = new BitSet(new long[]{0x0000080000000002L});
-    public static final BitSet FOLLOW_43_in_identifierInitializerList1762 = new BitSet(new long[]{0x0000000000002000L});
-    public static final BitSet FOLLOW_identifierInitializerList_in_identifierInitializerList1764 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_type_in_singleDeclaration1777 = new BitSet(new long[]{0x0000000000002000L});
-    public static final BitSet FOLLOW_IDENT_in_singleDeclaration1779 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_IDENT_in_functionDeclarator1791 = new BitSet(new long[]{0x0100000000000000L});
-    public static final BitSet FOLLOW_parameters_in_functionDeclarator1793 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_56_in_parameters1802 = new BitSet(new long[]{0xFCE0000000002000L,0x0000000F0000FFFFL});
-    public static final BitSet FOLLOW_parameterList_in_parameters1804 = new BitSet(new long[]{0x0200000000000000L});
-    public static final BitSet FOLLOW_57_in_parameters1806 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_parameter_in_parameterList1815 = new BitSet(new long[]{0x0000080000000002L});
-    public static final BitSet FOLLOW_43_in_parameterList1818 = new BitSet(new long[]{0xFCE0000000002000L,0x0000000F0000FFFFL});
-    public static final BitSet FOLLOW_parameterList_in_parameterList1820 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_singleDeclaration_in_parameter1834 = new BitSet(new long[]{0x0000100000000002L});
-    public static final BitSet FOLLOW_44_in_parameter1837 = new BitSet(new long[]{0x0000000000000000L,0x0000002000000000L});
-    public static final BitSet FOLLOW_assignExpression_in_parameter1839 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_inout_in_parameter1847 = new BitSet(new long[]{0xFCE0000000002000L,0x000000000000FFFFL});
-    public static final BitSet FOLLOW_singleDeclaration_in_parameter1849 = new BitSet(new long[]{0x0000100000000002L});
-    public static final BitSet FOLLOW_44_in_parameter1852 = new BitSet(new long[]{0x0000000000000000L,0x0000002000000000L});
-    public static final BitSet FOLLOW_assignExpression_in_parameter1854 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_set_in_inout1865 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_51_in_functionBody1881 = new BitSet(new long[]{0x0010000000000000L});
-    public static final BitSet FOLLOW_52_in_functionBody1883 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_58_in_initializer1900 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_44_in_initializer1909 = new BitSet(new long[]{0x0000000000000070L});
-    public static final BitSet FOLLOW_set_in_initializer1912 = new BitSet(new long[]{0x0000000000000000L,0x0000002000000000L});
-    public static final BitSet FOLLOW_assignExpression_in_initializer1919 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_100_in_expression1939 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_101_in_assignExpression1952 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_54_in_templateInstance1342 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_typeRef_in_entityRef1354 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_rootNameRef_in_entityRef1359 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_55_in_rootNameRef1369 = new BitSet(new long[]{0x0100000000000000L});
+    public static final BitSet FOLLOW_56_in_rootNameRef1371 = new BitSet(new long[]{0x0000000000000000L,0x0000001000000000L});
+    public static final BitSet FOLLOW_expression_in_rootNameRef1373 = new BitSet(new long[]{0x0200000000000000L});
+    public static final BitSet FOLLOW_57_in_rootNameRef1375 = new BitSet(new long[]{0x0020000000000002L});
+    public static final BitSet FOLLOW_53_in_rootNameRef1378 = new BitSet(new long[]{0x0040000000002000L});
+    public static final BitSet FOLLOW_qname_in_rootNameRef1380 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_53_in_rootNameRef1388 = new BitSet(new long[]{0x0040000000002000L});
+    public static final BitSet FOLLOW_qname_in_rootNameRef1390 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_qname_in_rootNameRef1396 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_basicType_in_typeRef1407 = new BitSet(new long[]{0x0000000000000042L,0x00000000001B0000L});
+    public static final BitSet FOLLOW_modType_in_typeRef1409 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_primitiveType_in_basicType1422 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_rootNameRef_in_basicType1426 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_set_in_primitiveType1436 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_MULT_in_modType1499 = new BitSet(new long[]{0x0000000000000042L,0x00000000001B0000L});
+    public static final BitSet FOLLOW_modType_in_modType1501 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_80_in_modType1507 = new BitSet(new long[]{0x0000000000000042L,0x00000000001B0000L});
+    public static final BitSet FOLLOW_modType_in_modType1509 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_81_in_modType1516 = new BitSet(new long[]{0x0000000000000000L,0x0000001000000000L});
+    public static final BitSet FOLLOW_expression_in_modType1518 = new BitSet(new long[]{0x0000000000000000L,0x0000000000040000L});
+    public static final BitSet FOLLOW_82_in_modType1520 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_81_in_modType1529 = new BitSet(new long[]{0xFCE0000000002000L,0x000000000000FFFFL});
+    public static final BitSet FOLLOW_typeRef_in_modType1531 = new BitSet(new long[]{0x0000000000000000L,0x0000000000040000L});
+    public static final BitSet FOLLOW_82_in_modType1533 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_83_in_modType1542 = new BitSet(new long[]{0x0100000000000000L});
+    public static final BitSet FOLLOW_parameters_in_modType1544 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_84_in_modType1553 = new BitSet(new long[]{0x0100000000000000L});
+    public static final BitSet FOLLOW_parameters_in_modType1555 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_basicType_in_exprEnt1567 = new BitSet(new long[]{0x0020000000000000L});
+    public static final BitSet FOLLOW_53_in_exprEnt1569 = new BitSet(new long[]{0x0040000000002000L});
+    public static final BitSet FOLLOW_qname_in_exprEnt1571 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_rootNameRef_in_exprEnt1577 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_85_in_declaration1591 = new BitSet(new long[]{0xFCE0000000002000L,0x000000000000FFFFL});
+    public static final BitSet FOLLOW_typeRef_in_declaration1593 = new BitSet(new long[]{0x0000000000002000L});
+    public static final BitSet FOLLOW_IDENT_in_declaration1595 = new BitSet(new long[]{0x0000010000000000L});
+    public static final BitSet FOLLOW_40_in_declaration1597 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_86_in_declaration1602 = new BitSet(new long[]{0x00E0000000002000L});
+    public static final BitSet FOLLOW_rootNameRef_in_declaration1604 = new BitSet(new long[]{0x0000000000002000L});
+    public static final BitSet FOLLOW_IDENT_in_declaration1606 = new BitSet(new long[]{0x0000010000000000L});
+    public static final BitSet FOLLOW_40_in_declaration1608 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_varDeclaration_in_declaration1613 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_87_in_autoDeclaration1625 = new BitSet(new long[]{0x0000000000002000L});
+    public static final BitSet FOLLOW_identifierInitializerList_in_autoDeclaration1627 = new BitSet(new long[]{0x0000010000000000L});
+    public static final BitSet FOLLOW_40_in_autoDeclaration1629 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_set_in_storageclass1640 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_storageclass_in_varDeclaration1666 = new BitSet(new long[]{0xFCE0020000002000L,0x00000000FF80FFFFL});
+    public static final BitSet FOLLOW_actualVarDeclaration_in_varDeclaration1669 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_typeRef_in_actualVarDeclaration1696 = new BitSet(new long[]{0x0000000000002000L});
+    public static final BitSet FOLLOW_identifierInitializerList_in_actualVarDeclaration1698 = new BitSet(new long[]{0x0000010000000000L});
+    public static final BitSet FOLLOW_40_in_actualVarDeclaration1700 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_mytype_in_actualVarDeclaration1712 = new BitSet(new long[]{0x0000000000002000L});
+    public static final BitSet FOLLOW_functionDeclarator_in_actualVarDeclaration1714 = new BitSet(new long[]{0x0008000000000000L});
+    public static final BitSet FOLLOW_functionBody_in_actualVarDeclaration1716 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_autoDeclaration_in_actualVarDeclaration1724 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_95_in_mytype1735 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_IDENT_in_identifierInitializerList1749 = new BitSet(new long[]{0x0000180000000002L});
+    public static final BitSet FOLLOW_44_in_identifierInitializerList1752 = new BitSet(new long[]{0x0400100000000000L});
+    public static final BitSet FOLLOW_initializer_in_identifierInitializerList1754 = new BitSet(new long[]{0x0000080000000002L});
+    public static final BitSet FOLLOW_43_in_identifierInitializerList1759 = new BitSet(new long[]{0x0000000000002000L});
+    public static final BitSet FOLLOW_identifierInitializerList_in_identifierInitializerList1761 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_typeRef_in_singleDeclaration1774 = new BitSet(new long[]{0x0000000000002000L});
+    public static final BitSet FOLLOW_IDENT_in_singleDeclaration1776 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_IDENT_in_functionDeclarator1788 = new BitSet(new long[]{0x0100000000000000L});
+    public static final BitSet FOLLOW_parameters_in_functionDeclarator1790 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_56_in_parameters1799 = new BitSet(new long[]{0xFCE0000000002000L,0x0000000F0000FFFFL});
+    public static final BitSet FOLLOW_parameterList_in_parameters1801 = new BitSet(new long[]{0x0200000000000000L});
+    public static final BitSet FOLLOW_57_in_parameters1803 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_parameter_in_parameterList1812 = new BitSet(new long[]{0x0000080000000002L});
+    public static final BitSet FOLLOW_43_in_parameterList1815 = new BitSet(new long[]{0xFCE0000000002000L,0x0000000F0000FFFFL});
+    public static final BitSet FOLLOW_parameterList_in_parameterList1817 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_singleDeclaration_in_parameter1831 = new BitSet(new long[]{0x0000100000000002L});
+    public static final BitSet FOLLOW_44_in_parameter1834 = new BitSet(new long[]{0x0000000000000000L,0x0000002000000000L});
+    public static final BitSet FOLLOW_assignExpression_in_parameter1836 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_inout_in_parameter1844 = new BitSet(new long[]{0xFCE0000000002000L,0x000000000000FFFFL});
+    public static final BitSet FOLLOW_singleDeclaration_in_parameter1846 = new BitSet(new long[]{0x0000100000000002L});
+    public static final BitSet FOLLOW_44_in_parameter1849 = new BitSet(new long[]{0x0000000000000000L,0x0000002000000000L});
+    public static final BitSet FOLLOW_assignExpression_in_parameter1851 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_set_in_inout1862 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_51_in_functionBody1878 = new BitSet(new long[]{0x0010000000000000L});
+    public static final BitSet FOLLOW_52_in_functionBody1880 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_58_in_initializer1897 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_44_in_initializer1906 = new BitSet(new long[]{0x0000000000000070L});
+    public static final BitSet FOLLOW_set_in_initializer1909 = new BitSet(new long[]{0x0000000000000000L,0x0000002000000000L});
+    public static final BitSet FOLLOW_assignExpression_in_initializer1916 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_100_in_expression1936 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_101_in_assignExpression1949 = new BitSet(new long[]{0x0000000000000002L});
 
 }

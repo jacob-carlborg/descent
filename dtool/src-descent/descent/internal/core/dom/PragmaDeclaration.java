@@ -11,13 +11,13 @@ import descent.core.domX.AbstractElement;
 
 public class PragmaDeclaration extends Dsymbol implements IPragmaDeclaration {
 	
-	private IExpression[] expressions;
+	private Expression[] expressions;
 	private IDeclaration[] declDefs;
 
 	public PragmaDeclaration(Identifier ident, List<Expression> args, List<IDeclaration> a) {
 		this.ident = ident;
 		if (args != null) {
-			expressions = args.toArray(new IExpression[args.size()]);
+			expressions = args.toArray(new Expression[args.size()]);
 		}
 		if (a != null) {
 			a.toArray(new IDeclaration[a.size()]);
@@ -45,7 +45,7 @@ public class PragmaDeclaration extends Dsymbol implements IPragmaDeclaration {
 		if (children) {
 			acceptChild(visitor, ident);
 			acceptChildren(visitor, expressions);
-			acceptChildren(visitor, declDefs);
+			acceptChildren(visitor, (AbstractElement[])declDefs);
 		}
 		visitor.endVisit(this);
 	}

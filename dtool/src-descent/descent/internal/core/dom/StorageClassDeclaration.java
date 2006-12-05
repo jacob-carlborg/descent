@@ -31,7 +31,7 @@ public class StorageClassDeclaration extends Dsymbol implements IStorageClassDec
 	public void accept0(ASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
-			acceptChildren(visitor, decl);
+			acceptChildren(visitor, (AbstractElement[]) decl);
 		}
 		visitor.endVisit(this);
 	}

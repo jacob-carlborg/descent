@@ -11,11 +11,11 @@ public class TypeDelegate extends Type implements IDelegateType {
 		super(TY.Tdelegate, t);
 	}
 	
-	public IType getReturnType() {
+	public Type getReturnType() {
 		return ((TypeFunction) next).getReturnType();
 	}
 	
-	public IArgument[] getArguments() {
+	public Argument[] getArguments() {
 		return ((TypeFunction) next).getArguments();
 	}
 	

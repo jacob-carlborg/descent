@@ -2,7 +2,7 @@ package dtool.dom;
 
 import descent.core.dom.IModifier;
 
-public enum EProtection {
+public enum Def_EProtection {
 
 	PROTundefined,
     PROTnone,
@@ -12,7 +12,7 @@ public enum EProtection {
     PROTpublic,
     PROTexport;
 	
-	public static EProtection adaptFromDescent(descent.internal.core.dom.PROT prot) {
+	public static Def_EProtection adaptFromDescent(descent.internal.core.dom.PROT prot) {
 		//if(mod == null) return null;
 		switch(prot.getModifiers()) {
 		case descent.core.dom.IModifier.UNDEFINED: return PROTundefined; 
@@ -26,19 +26,19 @@ public enum EProtection {
 		}
 	}
 
-	public static EProtection adaptFromDescent(int modifiers) {
+	public static Def_EProtection adaptFromDescent(int modifiers) {
 
 		if(util.BitFields.countActiveFlags(modifiers, IModifier.protModifiers) < 1)
 			assert false;
 		
-    	if ((modifiers & IModifier.PUBLIC) != 0) return EProtection.PROTpublic;
-    	if ((modifiers & IModifier.PACKAGE) != 0) return EProtection.PROTpackage;
-    	if ((modifiers & IModifier.PRIVATE) != 0) return EProtection.PROTprivate;
-    	if ((modifiers & IModifier.PROTECTED) != 0) return EProtection.PROTprotected;
-    	if ((modifiers & IModifier.EXPORT) != 0) return EProtection.PROTexport;
-    	if ((modifiers & IModifier.UNDEFINED) != 0) return EProtection.PROTundefined;
+    	if ((modifiers & IModifier.PUBLIC) != 0) return Def_EProtection.PROTpublic;
+    	if ((modifiers & IModifier.PACKAGE) != 0) return Def_EProtection.PROTpackage;
+    	if ((modifiers & IModifier.PRIVATE) != 0) return Def_EProtection.PROTprivate;
+    	if ((modifiers & IModifier.PROTECTED) != 0) return Def_EProtection.PROTprotected;
+    	if ((modifiers & IModifier.EXPORT) != 0) return Def_EProtection.PROTexport;
+    	if ((modifiers & IModifier.UNDEFINED) != 0) return Def_EProtection.PROTundefined;
     	
-    	return EProtection.PROTnone;
+    	return Def_EProtection.PROTnone;
 	}	
 	
 	

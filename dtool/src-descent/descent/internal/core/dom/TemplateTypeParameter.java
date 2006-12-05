@@ -2,10 +2,9 @@ package descent.internal.core.dom;
 
 import descent.core.dom.IName;
 import descent.core.dom.IType;
-import descent.core.dom.ITypeTemplateParameter;
 import descent.core.domX.ASTVisitor;
 
-public class TemplateTypeParameter extends TemplateParameter implements ITypeTemplateParameter {
+public class TemplateTypeParameter extends TemplateParameter {
 
 	private final Identifier ident;
 	private final Type tp_spectype;

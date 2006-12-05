@@ -11,13 +11,13 @@ import descent.core.domX.ASTVisitor;
 public class PragmaStatement extends Statement implements IPragmaStatement {
 	
 	public Identifier ident;
-	private IExpression[] expressions;
-	private IStatement body;
+	private Expression[] expressions;
+	private Statement body;
 
 	public PragmaStatement(Identifier ident, List<Expression> args, Statement body) {
 		this.ident = ident;
 		if (args != null) {
-			expressions = args.toArray(new IExpression[args.size()]);
+			expressions = args.toArray(new Expression[args.size()]);
 		}
 		this.body = body;
 	}
@@ -30,7 +30,7 @@ public class PragmaStatement extends Statement implements IPragmaStatement {
 		return expressions == null ? new IExpression[0] : expressions;
 	}
 	
-	public IStatement getBody() {
+	public Statement getBody() {
 		return body;
 	}
 	

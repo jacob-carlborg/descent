@@ -2,7 +2,7 @@ package dtool.dom;
 
 import descent.internal.core.dom.TOK;
 
-public final class EModifiers {
+public final class Def_Modifiers {
 	
     public static final int MODnone    = 0;
     public static final int MODstatic	    = 1;

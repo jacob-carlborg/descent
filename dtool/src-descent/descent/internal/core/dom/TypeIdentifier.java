@@ -1,5 +1,7 @@
 package descent.internal.core.dom;
 
+import java.util.Collection;
+
 import descent.core.dom.IElement;
 import descent.core.dom.IIdentifierType;
 import descent.core.dom.IQualifiedName;
@@ -69,19 +71,31 @@ public class TypeIdentifier extends TypeQualified implements IIdentifierType, IT
 	
 	@Override
 	public void accept0(ASTVisitor visitor) {
-		switch(getElementType()) {
+		boolean children;
+		children = visitor.visit(this);
+		if (children) {
+			acceptChild(visitor, ident);
+			acceptChildren(visitor, idents);
+		}
+		visitor.endVisit(this);
+		
+		/*switch(getElementType()) {
 		case IDENTIFIER_TYPE:
-			visitor.visit((IIdentifierType) this);
+			children = visitor.visit((IIdentifierType) this);
+			if (children) {
+				acceptChild(visitor, ident);
+				acceptChildren(visitor, idents);
+			}
 			visitor.endVisit((IIdentifierType) this);
 			break;
 		case TEMPLATE_INSTANCE_TYPE:
-			boolean children = visitor.visit((ITemplateInstanceType) this);
+			children = visitor.visit((ITemplateInstanceType) this);
 			if (children) {
 				acceptChildren(visitor, getTemplateArguments());
 			}
 			visitor.endVisit((ITemplateInstanceType) this);
 			break;
-		}
+		}*/
 	}
 	
 	@Override
@@ -90,9 +104,10 @@ public class TypeIdentifier extends TypeQualified implements IIdentifierType, IT
 		sb.append(ident);
 		for(Identifier id : idents) {
 			sb.append('.');
-			sb.append(id.string);
+			sb.append(id.toString());
 		}
 		return sb.toString();
 	}
+
 
 }

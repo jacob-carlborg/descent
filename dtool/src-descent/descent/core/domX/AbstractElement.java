@@ -2,18 +2,19 @@ package descent.core.domX;
 
 import descent.core.dom.IDeclaration;
 import descent.core.dom.IElement;
+import descent.internal.core.dom.Declaration;
 
+/**
+ * The base AST node for DMD's AST 
+ * It's "neo AST" homologue is ASTElement
+ */
 public abstract class AbstractElement extends ASTNode {
 	
-	public final static IElement[] NO_ELEMENTS = new IElement[0];
+	public final static AbstractElement[] NO_ELEMENTS = new AbstractElement[0];
 	public final static IDeclaration[] NO_DECLARATIONS = new IDeclaration[0];
 	
 	public String comments;
 	public int modifiers;
-	
-	public int getStartPos() {
-		return startPos;
-	}
 	
 	public int getModifiers() {
 		return modifiers;
@@ -31,4 +32,9 @@ public abstract class AbstractElement extends ASTNode {
 		return comments;
 	}
 	
+	/**
+	 * Returns one of this interface constants, telling to
+	 * which class one can cast safely.
+	 */
+	public abstract int getElementType();
 }

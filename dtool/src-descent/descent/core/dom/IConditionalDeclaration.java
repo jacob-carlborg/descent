@@ -1,5 +1,7 @@
 package descent.core.dom;
 
+import descent.internal.core.dom.Declaration;
+
 /**
  * A conditional declaration may be a debug, version or static if.
  */

@@ -9,12 +9,12 @@ import descent.core.domX.ASTVisitor;
 
 public class NewExp extends Expression implements INewExpression {
 	
-	private IExpression[] arguments;
+	private Expression[] arguments;
 	private Type type;
 
 	public NewExp(Expression thisexp, List<Expression> newargs, Type t, List<Expression> arguments) {
 		this.type = t;
-		this.arguments = arguments == null ? new IExpression[0] : arguments.toArray(new IExpression[arguments.size()]);
+		this.arguments = arguments == null ? new Expression[0] : arguments.toArray(new Expression[arguments.size()]);
 	}
 	
 	public IType getType() {

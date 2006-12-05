@@ -14,14 +14,14 @@ public class TemplateMixin extends Declaration implements IMixinDeclaration {
 
 	private QualifiedName qName;
 	private TypeTypeof tqual;
-	private IElement[] tiargs;
+	private AbstractElement[] tiargs;
 
 	public TemplateMixin(Identifier id, TypeTypeof tqual, List<Identifier> idents, List<IElement> tiargs) {
 		super(id);
 		this.tqual = tqual;
 		this.qName = new QualifiedName(idents);
 		if (tiargs != null) {
-			this.tiargs = tiargs.toArray(new IElement[tiargs.size()]);
+			this.tiargs = tiargs.toArray(new AbstractElement[tiargs.size()]);
 		}
 	}
 	

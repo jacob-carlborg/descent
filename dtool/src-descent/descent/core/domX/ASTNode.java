@@ -4,7 +4,7 @@ import java.util.List;
 
 import descent.core.dom.IElement;
 
-public abstract class ASTNode implements IElement {
+public abstract class ASTNode implements IElement  {
 
 	/**
 	 * A character index into the original source string, 
@@ -95,8 +95,7 @@ public abstract class ASTNode implements IElement {
 	/**
 	 * Accepts the given visitor on a visit of the current node.
 	 */
-	public final void acceptChild(ASTVisitor visitor, IElement child) {
-		// FIXME: that IElement above is ASTNode
+	public final void acceptChild(ASTVisitor visitor, ASTNode child) {
 		if (child == null) {
 			return;
 		}
@@ -107,7 +106,7 @@ public abstract class ASTNode implements IElement {
 	 * Accepts the given visitor on a visit of the given list of
 	 * child nodes. 
 	 */
-	public final void acceptChildren(ASTVisitor visitor, Object[] children) {
+	public final void acceptChildren(ASTVisitor visitor, ASTNode[] children) {
 		// FIXME: that Object above is ASTNode
 		if (children == null)
 			return;

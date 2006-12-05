@@ -7,22 +7,22 @@ import descent.core.dom.IArgument;
 public class NewDeclaration extends FuncDeclaration {
 	
 	public int varargs;
-	private IArgument[] arguments;
+	private Argument[] arguments;
 
 	public NewDeclaration(List<Argument> arguments, int varargs) {
 		super(new Identifier(Id.classNew, TOK.TOKidentifier), STC.STCstatic, null);
 		
 		if (arguments == null) {
-			this.arguments = new IArgument[0];
+			this.arguments = new Argument[0];
 		} else {
-			this.arguments = arguments.toArray(new IArgument[arguments.size()]);
+			this.arguments = arguments.toArray(new Argument[arguments.size()]);
 		}
 		
 		this.varargs = varargs;
 		this.ident = new Identifier("new", TOK.TOKthis);
 	}
 	
-	public IArgument[] getArguments() {
+	public Argument[] getArguments() {
 		return arguments;
 	}
 	

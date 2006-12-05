@@ -1,12 +1,15 @@
 package dtool.dom;
 
+import descent.core.domX.ASTNode;
 import dtool.dom.ext.ASTNeoVisitor;
 
-
-public class Module extends Symbol {
+/**
+ * D Module
+ */
+public class Module extends SymbolDef {
 	
 	public DeclarationModule md;
-	public ASTElement[] members;
+	public ASTNode[] members; //FIXME
 	
 
 	public ArcheType getArcheType() {
@@ -22,5 +25,19 @@ public class Module extends Symbol {
 		visitor.endVisit(this);
 	}
 
+	public static class DeclarationModule extends ASTElement {
+
+		public SymbolReference[] packages;
+		public SymbolReference moduleName; // XXX: SymbolReference?
+
+		public void accept0(ASTNeoVisitor visitor) {
+			boolean children = visitor.visit(this);
+			if (children) {
+				acceptChildren(visitor, packages);
+				acceptChild(visitor, moduleName);
+			}
+			visitor.endVisit(this);
+		}
+	}
 
 }

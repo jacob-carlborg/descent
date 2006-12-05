@@ -4,7 +4,10 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Arrays;
-
+import java.util.Collection;
+/**
+ * Miscelleanous String utilities 
+ */
 public final class StringUtil {
 
 	public static char[] readBytesFromFile(File file) throws IOException {
@@ -70,5 +73,21 @@ public final class StringUtil {
 		else 
 			return str;
 	}	
+	
+	
+	
+	
+	public static String collToString(Collection coll, String sep) {
+		StringBuilder sb = new StringBuilder();
+		boolean first = true;
+		for(Object item : coll){
+			if(!first)
+				sb.append(sep);
+			else
+				first = false;
+			sb.append(item.toString());
+		}
+		return sb.toString();
+	}
 
 }

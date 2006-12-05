@@ -1,11 +1,11 @@
 package dtool.dom;
 
-
-
-public abstract class Definition extends Symbol {
+/**
+ * Abstract classe for all *free standing* definitions. TODO
+ */
+public abstract class Definition extends SymbolDef {
 	
 	public String comments;
-	public EProtection protection;
+	public Def_EProtection protection;
 	public int modifiers;
-
 }

@@ -7,23 +7,24 @@ import descent.core.dom.IDeclaration;
 import descent.core.dom.IExpression;
 import descent.core.dom.INewAnonymousClassExpression;
 import descent.core.domX.ASTVisitor;
+import descent.core.domX.AbstractElement;
 
 public class NewAnonClassExp extends Expression implements INewAnonymousClassExpression {
 
 	private ClassDeclaration cd;
-	private IExpression[] newargs;
-	private IExpression[] arguments;
+	private Expression[] newargs;
+	private Expression[] arguments;
 
 	public NewAnonClassExp(Expression thisexp, List<Expression> newargs, ClassDeclaration cd, List<Expression> arguments) {
 		if (newargs == null) {
-			this.newargs = new IExpression[0];
+			this.newargs = new Expression[0];
 		} else {
-			this.newargs = newargs.toArray(new IExpression[newargs.size()]);
+			this.newargs = newargs.toArray(new Expression[newargs.size()]);
 		}
 		if (arguments == null) {
-			this.arguments = new IExpression[0];
+			this.arguments = new Expression[0];
 		} else {
-			this.arguments = arguments.toArray(new IExpression[arguments.size()]);
+			this.arguments = arguments.toArray(new Expression[arguments.size()]);
 		}
 		this.cd = cd;
 	}
@@ -32,15 +33,15 @@ public class NewAnonClassExp extends Expression implements INewAnonymousClassExp
 		return NEW_ANONYMOUS_CLASS_EXPRESSION;
 	}
 	
-	public IExpression[] getCallArguments() {
+	public Expression[] getCallArguments() {
 		return newargs;
 	}
 	
-	public IExpression[] getConstructorArguments() {
+	public Expression[] getConstructorArguments() {
 		return arguments;
 	}
 	
-	public IBaseClass[] getBaseClasses() {
+	public BaseClass[] getBaseClasses() {
 		return cd.getBaseClasses();
 	}
 	
@@ -54,7 +55,7 @@ public class NewAnonClassExp extends Expression implements INewAnonymousClassExp
 			acceptChildren(visitor, newargs);
 			acceptChildren(visitor, arguments);
 			acceptChildren(visitor, cd.getBaseClasses());
-			acceptChildren(visitor, cd.getDeclarationDefinitions());
+			acceptChildren(visitor, (AbstractElement[]) cd.getDeclarationDefinitions());
 		}
 		visitor.visit(this);
 	}

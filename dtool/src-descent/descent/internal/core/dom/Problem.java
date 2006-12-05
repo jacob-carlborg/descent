@@ -36,6 +36,10 @@ public class Problem implements IProblem {
 
 	public int getSeverity() {
 		return severity;
-	}	
+	}
+	
+	public String toString() {
+		return "P" + severity + " ["+length+"+"+offset+"] "+ message;
+	}
 
 }

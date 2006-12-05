@@ -3,10 +3,9 @@ package descent.internal.core.dom;
 import descent.core.dom.IExpression;
 import descent.core.dom.IName;
 import descent.core.dom.IType;
-import descent.core.dom.IValueTemplateParameter;
 import descent.core.domX.ASTVisitor;
 
-public class TemplateValueParameter extends TemplateParameter implements IValueTemplateParameter {
+public class TemplateValueParameter extends TemplateParameter {
 
 	private final Identifier id;
 	private final Type tp_valtype;

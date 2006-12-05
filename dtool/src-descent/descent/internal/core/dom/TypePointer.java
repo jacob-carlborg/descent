@@ -20,11 +20,11 @@ public class TypePointer extends Type implements IPointerType, IDelegateType {
 		return next;
 	}
 	
-	public IType getReturnType() {
+	public Type getReturnType() {
 		return ((TypeFunction) next).getReturnType();
 	}
 	
-	public IArgument[] getArguments() {
+	public Argument[] getArguments() {
 		return ((TypeFunction) next).getArguments();
 	}
 	

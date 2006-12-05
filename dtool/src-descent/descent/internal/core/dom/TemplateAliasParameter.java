@@ -1,11 +1,10 @@
 package descent.internal.core.dom;
 
-import descent.core.dom.IAliasTemplateParameter;
 import descent.core.dom.IName;
 import descent.core.dom.IType;
 import descent.core.domX.ASTVisitor;
 
-public class TemplateAliasParameter extends TemplateParameter implements IAliasTemplateParameter {
+public class TemplateAliasParameter extends TemplateParameter {
 
 	private final Identifier tp_ident;
 	private final Type tp_spectype;

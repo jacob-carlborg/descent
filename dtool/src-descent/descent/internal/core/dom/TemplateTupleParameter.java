@@ -1,10 +1,9 @@
 package descent.internal.core.dom;
 
 import descent.core.dom.IName;
-import descent.core.dom.ITupleTemplateParameter;
 import descent.core.domX.ASTVisitor;
 
-public class TemplateTupleParameter extends TemplateParameter implements ITupleTemplateParameter {
+public class TemplateTupleParameter extends TemplateParameter {
 
 	private final Identifier ident;
 

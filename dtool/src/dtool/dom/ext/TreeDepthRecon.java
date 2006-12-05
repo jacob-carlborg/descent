@@ -3,7 +3,7 @@ package dtool.dom.ext;
 import descent.core.domX.ASTNode;
 
 
-public class TreeReconPatrol extends ASTNeoVisitor {
+public class TreeDepthRecon extends ASTNeoVisitor {
 	
 	public int depth;
 	private boolean findmaxdepth;
@@ -11,21 +11,21 @@ public class TreeReconPatrol extends ASTNeoVisitor {
 	private boolean findmindepth;
 	public int mindepth;
 	
-	public TreeReconPatrol() {
+	public TreeDepthRecon() {
 		this.depth = 0;
 		this.maxdepth = 0;
 		this.mindepth = Integer.MAX_VALUE;
 	}
 	
 	public static int findMaxDepth(ASTNode elem) {
-		TreeReconPatrol tdrp = new TreeReconPatrol();
+		TreeDepthRecon tdrp = new TreeDepthRecon();
 		tdrp.findmaxdepth = true;
 		elem.accept(tdrp);
 		return tdrp.maxdepth;
 	}
 
 	public static int findMinLeafDepth(ASTNode elem) {
-		TreeReconPatrol tdrp = new TreeReconPatrol();
+		TreeDepthRecon tdrp = new TreeDepthRecon();
 		tdrp.findmindepth = true;
 		elem.accept(tdrp);
 		return tdrp.mindepth;

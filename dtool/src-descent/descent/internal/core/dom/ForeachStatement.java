@@ -10,19 +10,19 @@ import descent.core.domX.ASTVisitor;
 
 public class ForeachStatement extends Statement implements IForeachStatement {
 	
-	private IArgument[] arguments;
+	private Argument[] arguments;
 	private Expression aggr;
 	private Statement body;
 	private boolean reverse;
 
 	public ForeachStatement(TOK op, List<Argument> arguments, Expression aggr, Statement body) {
 		this.body = body;
-		this.arguments = arguments.toArray(new IArgument[arguments.size()]);
+		this.arguments = arguments.toArray(new Argument[arguments.size()]);
 		this.aggr = aggr;
 		this.reverse = op == TOK.TOKforeach_reverse;
 	}
 	
-	public IArgument[] getArguments() {
+	public Argument[] getArguments() {
 		return arguments;
 	}
 	

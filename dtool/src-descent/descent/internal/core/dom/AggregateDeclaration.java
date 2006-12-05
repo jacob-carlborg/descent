@@ -6,7 +6,6 @@ import descent.core.dom.IAggregateDeclaration;
 import descent.core.dom.IBaseClass;
 import descent.core.dom.IDeclaration;
 import descent.core.dom.IName;
-import descent.core.dom.ITemplateParameter;
 import descent.core.domX.ASTVisitor;
 import descent.core.domX.AbstractElement;
 
@@ -18,20 +17,20 @@ public abstract class AggregateDeclaration extends ScopeDsymbol implements IAggr
 	public int structalign;
 	public PROT protection;
 	
-	public IBaseClass[] baseClasses;
-	public ITemplateParameter[] templateParameters;
+	public BaseClass[] baseClasses;
+	public TemplateParameter[] templateParameters;
 	public int storage_class;
 	
 	public AggregateDeclaration(Identifier id, List<BaseClass> baseClasses) {
 		this.ident = id;
 		if (baseClasses == null) {
-			this.baseClasses = new IBaseClass[0];
+			this.baseClasses = new BaseClass[0];
 		} else {
-			this.baseClasses = baseClasses.toArray(new IBaseClass[baseClasses.size()]);
+			this.baseClasses = baseClasses.toArray(new BaseClass[baseClasses.size()]);
 		}
 	}
 	
-	public IName getName() {
+	public Identifier getName() {
 		return ident;
 	}
 	
@@ -39,11 +38,11 @@ public abstract class AggregateDeclaration extends ScopeDsymbol implements IAggr
 		return templateParameters != null;
 	}
 	
-	public ITemplateParameter[] getTemplateParameters() {
+	public TemplateParameter[] getTemplateParameters() {
 		return templateParameters;
 	}
 	
-	public IBaseClass[] getBaseClasses() {
+	public BaseClass[] getBaseClasses() {
 		return baseClasses;
 	}
 	

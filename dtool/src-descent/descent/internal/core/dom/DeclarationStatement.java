@@ -1,6 +1,5 @@
 package descent.internal.core.dom;
 
-import descent.core.dom.IDeclaration;
 import descent.core.dom.IDeclarationStatement;
 import descent.core.domX.ASTVisitor;
 
@@ -16,8 +15,8 @@ public class DeclarationStatement extends Statement implements IDeclarationState
 		return DECLARATION_STATEMENT;
 	}
 	
-	public IDeclaration getDeclaration() {
-		return (IDeclaration) d;
+	public Declaration getDeclaration() {
+		return (Declaration) d;
 	}
 	
 	public void accept0(ASTVisitor visitor) {

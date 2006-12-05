@@ -4,6 +4,7 @@ import descent.core.dom.IElement;
 import descent.core.dom.IQualifiedName;
 import descent.core.dom.ITemplateInstanceType;
 import descent.core.domX.ASTVisitor;
+import descent.core.domX.AbstractElement;
 
 public class TypeInstance extends TypeQualified implements ITemplateInstanceType {
 	
@@ -19,7 +20,7 @@ public class TypeInstance extends TypeQualified implements ITemplateInstanceType
 		return TEMPLATE_INSTANCE_TYPE;
 	}
 	
-	public IElement[] getTemplateArguments() {
+	public AbstractElement[] getTemplateArguments() {
 		return tempinst.getTemplateArguments();
 	}
 	

@@ -1,5 +1,7 @@
 package descent.core.dom;
 
+import descent.internal.core.dom.TemplateParameter;
+
 /**
  * A generic function declaration. It can be a function, constructor, destructor,
  * static constructor, static destructor, new or delete functions.
@@ -54,7 +56,7 @@ public interface IFunctionDeclaration extends IDeclaration, IModifiersContainer 
 	/**
 	 * Returns the template parameters. Pre: isTemplate().
 	 */
-	ITemplateParameter[] getTemplateParameters();
+	TemplateParameter[] getTemplateParameters();
 	
 	/**
 	 * Returns the body of the function.

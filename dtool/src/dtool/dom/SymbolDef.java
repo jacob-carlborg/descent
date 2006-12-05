@@ -1,16 +1,17 @@
 package dtool.dom;
 
-
-
-public abstract class Symbol extends ASTElement {
+/**
+ * Abstract class for all AST elements that define a new symbol.
+ */
+public abstract class SymbolDef extends ASTElement {
 	
 	public String name;
 	//public EntArcheType archeType;
 	
-	public Symbol() {
+	public SymbolDef() {
 	}
 
-	public Symbol(String name) {
+	public SymbolDef(String name) {
 		this.name = name;
 	}
 	

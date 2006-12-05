@@ -11,7 +11,7 @@ public class StaticCtorDeclaration extends FuncDeclaration {
 	}
 	
 	@Override
-	public IName getName() {
+	public Identifier getName() {
 		return ident;
 	}
 	

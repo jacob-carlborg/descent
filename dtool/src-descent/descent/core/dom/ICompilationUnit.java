@@ -1,5 +1,7 @@
 package descent.core.dom;
 
+import descent.internal.core.dom.Declaration;
+
 /**
  * Represents an entire source file.
  */

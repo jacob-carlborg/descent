@@ -1,5 +1,8 @@
 package descent.core.dom;
 
+import descent.internal.core.dom.Declaration;
+import descent.internal.core.dom.TemplateParameter;
+
 /**
  * A template delcaration:
  */
@@ -13,7 +16,7 @@ public interface ITemplateDeclaration extends IDeclaration {
 	/**
 	 * Returns the template parameters.
 	 */
-	ITemplateParameter[] getTemplateParameters();
+	TemplateParameter[] getTemplateParameters();
 	
 	/**
 	 * Returns the declaration definitions contained in

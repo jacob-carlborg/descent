@@ -18,6 +18,7 @@ public class Main {
 		System.out.println("======== DTool ========");
 
 		try {
+			
 			Project.newTestProject();
 
 			testDescent(args);
@@ -50,7 +51,9 @@ public class Main {
 		
 		if(cu.problems.length > 0) {
 			System.out.println("== Problems: ==");
-			System.out.println(cu.problems);
+			for (int i = 0; i < cu.problems.length; i++) {
+				System.out.println(cu.problems[i].toString());
+			}
 			System.exit(1);
 		}
 		

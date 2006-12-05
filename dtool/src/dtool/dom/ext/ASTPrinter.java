@@ -2,18 +2,19 @@ package dtool.dom.ext;
 
 import descent.core.domX.ASTNode;
 import dtool.dom.ASTElement;
+import dtool.dom.Def_Modifiers;
 import dtool.dom.Definition;
-import dtool.dom.EModifiers;
-import dtool.dom.Symbol;
-import dtool.dom.UnconvertedElement;
+import dtool.dom.SymbolDef;
+import dtool.dom.SymbolReference;
 
 /**
- * Simple class for printing the AST in indented tree form
+ * Simple class for printing the AST in indented tree form.
+ * DMD AST nodes are printed with a "#" prefix.
  */
 public class ASTPrinter extends ASTNeoVisitor {
 	
-	public boolean collapseLeafs = true;
-	public boolean printUnconverted = true;
+	public boolean collapseLeafs = true; //Print leaf nodes in same line?
+	public boolean printUnconverted = true; //Print UncovertedElements?
 	
 	int indent;
 	boolean siblingsAreLeafs;
@@ -45,7 +46,7 @@ public class ASTPrinter extends ASTNeoVisitor {
 	}
 
 	private void printGenericElement(ASTNode element, String str) {
-		int maxdepth = TreeReconPatrol.findMaxDepth(element);
+		int maxdepth = collapseLeafs? TreeDepthRecon.findMaxDepth(element) : -1;
 
 		if(collapseLeafs && maxdepth == 1 && siblingsAreLeafs)
 			System.out.print("  ");
@@ -65,7 +66,7 @@ public class ASTPrinter extends ASTNeoVisitor {
 		indent++;
 	}
 	
-	/* ---------------------------------- */
+	/* ====================================================== */
 
 	public boolean visit(ASTNode element) {
 		printGenericElement(element, "#"+element.nodeToString() + "");
@@ -78,6 +79,12 @@ public class ASTPrinter extends ASTNeoVisitor {
 		return true;
 	}
 	
+	public boolean visit(descent.internal.core.dom.QualifiedName elem) {
+		printGenericElement(elem, "#"+elem.nodeToString() 
+				+ " " + elem.toString());
+		return true;
+	}	
+	
 	public boolean visit(descent.internal.core.dom.Dsymbol elem) {
 		printGenericElement(elem, "#"+elem.nodeToString() 
 				+ " " + ((elem.ident != null) ? elem.ident.string : "<null>"));
@@ -89,20 +96,26 @@ public class ASTPrinter extends ASTNeoVisitor {
 				+ " TYPE: " + elem.toString());
 		return true;
 	}	
+
+	public boolean visit(descent.internal.core.dom.TypeQualified elem) {
+		printGenericElement(elem, "#"+elem.nodeToString() 
+				+ " TYPE: " + elem.toString());
+		return true;
+	}
 	
+	/* ---------------- Neo ------------------ */
 	
 	public boolean visit(ASTElement element) {
 		printGenericElement(element, element.nodeToString() + "");
 		return true;
 	}
-
-	public boolean visit(UnconvertedElement element) {
-		printGenericElement(element, "!"+element.nodeToString()
-				+ " - "+ASTPrinter.trimmedElementName(element.unkelem));
-		return printUnconverted;
-	}
 	
-	public boolean visit(Symbol element) {
+	public boolean visit(SymbolDef element) {
+		printGenericElement(element, element.nodeToString() 
+				+ " " + element.name);
+		return true;
+	}
+	public boolean visit(SymbolReference element) {
 		printGenericElement(element, element.nodeToString() 
 				+ " " + element.name);
 		return true;
@@ -111,7 +124,7 @@ public class ASTPrinter extends ASTNeoVisitor {
 	public boolean visit(Definition element) {
 		printGenericElement(element, element.nodeToString() + " "
 				+ trailString(element.protection.toString(), " ")
-				+ trailString(EModifiers.toString(element.modifiers), " ")
+				+ trailString(Def_Modifiers.toString(element.modifiers), " ")
 				+ "=> " + element.name);
 		return true;
 	}
@@ -120,7 +133,7 @@ public class ASTPrinter extends ASTNeoVisitor {
 	/* ---------------------------------- */
 	
 	public void endVisit(ASTNode element) {
-		int maxdepth = TreeReconPatrol.findMaxDepth(element);
+		int maxdepth = TreeDepthRecon.findMaxDepth(element);
 		
 		if(collapseLeafs && maxdepth == 2) {
 			siblingsAreLeafs = false;

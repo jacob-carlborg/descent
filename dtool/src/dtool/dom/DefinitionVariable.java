@@ -1,15 +1,14 @@
 package dtool.dom;
 
-import descent.core.domX.ASTNode;
-import descent.internal.core.dom.Initializer;
-import descent.internal.core.dom.Type;
 import dtool.dom.ext.ASTNeoVisitor;
 
-
+/**
+ * A definition of a variable
+ */
 public class DefinitionVariable extends Definition {
 	
-	public Type type;
-	public Initializer init;
+	public EntityReference type;
+	public descent.internal.core.dom.Initializer init;
 	
 	@Override
 	public ArcheType getArcheType() {

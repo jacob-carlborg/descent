@@ -1,16 +1,11 @@
 package dtool.ANTLRparser;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 
 import org.antlr.runtime.Token;
 import org.antlr.runtime.tree.CommonTree;
-import org.antlr.runtime.tree.Tree;
 
-import dtool.parser.*;
-
-
-
+import dtool.parser.DParserLexer;
 
 public class Engine {
 

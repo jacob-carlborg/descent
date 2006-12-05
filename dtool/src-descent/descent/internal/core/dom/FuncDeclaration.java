@@ -4,7 +4,6 @@ import descent.core.dom.IArgument;
 import descent.core.dom.IFunctionDeclaration;
 import descent.core.dom.IName;
 import descent.core.dom.IStatement;
-import descent.core.dom.ITemplateParameter;
 import descent.core.dom.IType;
 import descent.core.domX.ASTVisitor;
 
@@ -15,23 +14,23 @@ public class FuncDeclaration extends Declaration implements IFunctionDeclaration
 	public Statement fbody;
 	public Identifier outId;
 	public TypeFunction type;
-	public ITemplateParameter[] templateParameters;
+	public TemplateParameter[] templateParameters;
 
 	public FuncDeclaration(Identifier ident, int storage_class, Type type) {
 		super(ident);
 		this.type = (TypeFunction) type;
 	}
 	
-	public IName getName() {
+	public Identifier getName() {
 		return ident;
 	}
 	
-	public IType getReturnType() {
+	public Type getReturnType() {
 		return type == null ? null : type.getReturnType();
 	}
 	
-	public IArgument[] getArguments() {
-		if (type == null) return new IArgument[0];
+	public Argument[] getArguments() {
+		if (type == null) return new Argument[0];
 		return type.getArguments();
 	}
 	
@@ -43,7 +42,7 @@ public class FuncDeclaration extends Declaration implements IFunctionDeclaration
 		return templateParameters != null;
 	}
 	
-	public ITemplateParameter[] getTemplateParameters() {
+	public TemplateParameter[] getTemplateParameters() {
 		return templateParameters;
 	}
 	

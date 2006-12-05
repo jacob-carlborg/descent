@@ -35,7 +35,7 @@ public class ProtDeclaration extends Dsymbol implements IProtectionDeclaration {
 	public void accept0(ASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
-			acceptChildren(visitor, declDefs);
+			acceptChildren(visitor, (AbstractElement[])declDefs);
 		}
 		visitor.endVisit(this);
 	}

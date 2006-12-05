@@ -1,16 +1,18 @@
 package dtool.dom;
 
-import descent.core.dom.ITemplateParameter;
-import descent.internal.core.dom.Identifier;
 import descent.internal.core.dom.Statement;
+import descent.internal.core.dom.TemplateParameter;
 import descent.internal.core.dom.TypeFunction;
 import dtool.dom.ext.ASTNeoVisitor;
 
+/**
+ * A definition of a function.
+ */
 
 public class DefinitionFunction extends Definition {
 
 	//public Identifier outId;
-	public ITemplateParameter[] templateParameters;	
+	public TemplateParameter[] templateParameters;	
 	public TypeFunction type;
 	public Statement frequire;
 	public Statement fbody;

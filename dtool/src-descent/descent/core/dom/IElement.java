@@ -685,27 +685,4 @@ public interface IElement {
 	 */
 	int SLICE_TYPE = 109;
 	
-	/**
-	 * Returns the start position in the source code where this element
-	 * is located.
-	 */
-	int getStartPos();
-	
-	/**
-	 * Returns the length in the source code of this element.
-	 */
-	int getLength();
-	
-	/**
-	 * Returns one of this interface constants, telling to
-	 * which class one can cast safely.
-	 */
-	int getElementType();
-	
-	/**
-	 * Accepts a visitor down the element hierarchy.
-	 * @param visitor a visitor
-	 */
-	void accept(ASTVisitor visitor);
-
 }

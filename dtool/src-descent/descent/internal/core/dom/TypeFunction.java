@@ -19,7 +19,7 @@ public class TypeFunction extends Type {
 		this.linkage = linkage;
 	}
 	
-	public IType getReturnType() {
+	public Type getReturnType() {
 		return this.next;
 	}
 	
@@ -34,9 +34,9 @@ public class TypeFunction extends Type {
 		
 	}
 	
-	public IArgument[] getArguments() {
-		if (arguments == null) return new IArgument[0];
-		return arguments.toArray(new IArgument[arguments.size()]);
+	public Argument[] getArguments() {
+		if (arguments == null) return new Argument[0];
+		return arguments.toArray(new Argument[arguments.size()]);
 	}
 
 }

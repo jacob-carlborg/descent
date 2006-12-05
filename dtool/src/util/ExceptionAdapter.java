@@ -4,10 +4,10 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 
 /**
- * To make checked exceptions less annoying.
- * From http://www.mindview.net/Etc/Discussions/CheckedExceptions
+ * Excepetion adapter to make checked exceptions less annoying. 
+ * Idea from Bruce Eckel's article:
+ * http://www.mindview.net/Etc/Discussions/CheckedExceptions
  */
-
 public class ExceptionAdapter extends RuntimeException {
 	private final String stackTrace;
 	public Exception originalException;

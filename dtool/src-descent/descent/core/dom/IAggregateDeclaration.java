@@ -1,5 +1,10 @@
 package descent.core.dom;
 
+import descent.internal.core.dom.BaseClass;
+import descent.internal.core.dom.Declaration;
+import descent.internal.core.dom.Identifier;
+import descent.internal.core.dom.TemplateParameter;
+
 /**
  * <p>Represents an aggregate declaration, such as a class, interface, struct or union.</p>
  * 
@@ -38,13 +43,13 @@ public interface IAggregateDeclaration extends IDeclaration, IModifiersContainer
 	 * Returns the name of this aggregate. May be <code>null</code> if this
 	 * is annonymous.
 	 */
-	IName getName();
+	Identifier getName();
 	
 	/**
 	 * Returns the base classes of this aggregate. May be empty but
 	 * never <code>null</code>.
 	 */
-	IBaseClass[] getBaseClasses();
+	BaseClass[] getBaseClasses();
 	
 	/**
 	 * Returns the declaration definitions contained in this aggregate.
@@ -60,6 +65,6 @@ public interface IAggregateDeclaration extends IDeclaration, IModifiersContainer
 	/**
 	 * Returns the template parameters. Pre: isTemplate().
 	 */
-	ITemplateParameter[] getTemplateParameters();
+	TemplateParameter[] getTemplateParameters();
 
 }

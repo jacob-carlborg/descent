@@ -185,50 +185,50 @@ declarationBlock
 
 qname: (IDENT | templateInstance) ('.' qname)? ;
 
-templateInstance
-	: 'TEMPLATE INSTANCE' //TODO
+templateInstance : 'TEMPLATE INSTANCE' //TODO
 	;
 
-entityName
-	: '.' qname
+entityRef
+	:	typeRef
+	|	rootNameRef;
+
+rootNameRef
+	:  'typeof' '(' expression ')' ('.' qname)? 
+	| '.' qname
 	|  qname
-	|  typeof ('.' qname)? ;
+	;
 
-typeof :  'typeof' '(' expression ')' ;
+typeRef :  basicType modType?;
 
-/*----*/
+/*-------*/
 
-type :  basicType modType?;
-
-basicType :  primitiveType | typeEntityName ;
+basicType :  primitiveType | rootNameRef ;
 
 primitiveType :  'void'
 	|'bool'|'byte'|'ubyte'|'short'|'ushort'|'int'|'uint'|'long'|'ulong'
     |'float'|'double'|'real'|'ifloat'|'idouble'|'ireal'|'cfloat'|'cdouble'|'creal'
     |'char'|'wchar'|'dchar';
 
-typeEntityName :  entityName ;
-
 modType
-	:	'*' modType
-	|	'[]' modType
+	:	'*' modType?
+	|	'[]' modType?
 	|  '[' expression ']'
-    |  '[' type ']'
+    |  '[' typeRef ']'
     |  'delegate' parameters
     |  'function' parameters
 	;
 
 
 exprEnt
-	: primitiveType '.' qname // These be properties
-	| entityName ;
+	: basicType '.' qname // These be properties
+	| rootNameRef ;
 
 
 /*** declarations ***/
 
 declaration
-	: 'typedef' type IDENT ';'
-	| 'alias' entityName IDENT ';'
+	: 'typedef' typeRef IDENT ';'
+	| 'alias' rootNameRef IDENT ';'
 	| varDeclaration ;
 
 /** auto **/
@@ -242,7 +242,7 @@ varDeclaration 	:  storageclass* actualVarDeclaration ;
 
 actualVarDeclaration options { k=2;}	:		
 //    | type declaratorInitializerList ';' //C declarators NOT SUPPORTED
-     ( type identifierInitializerList ';' )
+     ( typeRef identifierInitializerList ';' )
     | ( mytype functionDeclarator functionBody )
 //      type ((identifierInitializerList ';') | (functionDeclarator functionBody))
 	| autoDeclaration
@@ -258,7 +258,7 @@ identifierInitializerList
 	: IDENT ('=' initializer)? (',' identifierInitializerList)?
 	;
 
-singleDeclaration :  type IDENT;
+singleDeclaration :  typeRef IDENT;
 
 
 /*** function defs ***/
