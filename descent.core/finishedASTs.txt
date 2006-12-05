@@ -19,7 +19,9 @@ DebugStatement
 DeleteExpression
 DollarLiteral
 DoStatement
+EnumDeclaration
 EnumMember
+ExpressionInitializer
 ExpressionStatement
 ForStatement
 FunctionDeclaration

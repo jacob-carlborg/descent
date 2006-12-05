@@ -7,16 +7,12 @@ public class ASTNodeGenerator {
 	
 	public static void main(String[] args) {
 		
-		String description = "enum declaration";
+		String description = "expression initializer";
 		String clazz = toMethod(description);
 		String nodeType = toProperty(description);
 
 		Member[] members = {
-				Member.simple("modifier flags", "int"),
-				Member.child("name", "SimpleName", NO_CYCLE_RISK),
-				Member.child("baseType", "Type", NO_CYCLE_RISK),
-				Member.list("enumMembers", "EnumMember", NO_CYCLE_RISK),
-				
+				Member.childMandatory("expression", "Expression", CYCLE_RISK, "SimpleName"),
 		};
 		
 		StringBuilder sb = new StringBuilder();
