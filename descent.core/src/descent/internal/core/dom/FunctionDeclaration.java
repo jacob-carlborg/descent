@@ -6,6 +6,7 @@ import java.util.List;
 import descent.core.dom.ASTVisitor;
 import descent.core.dom.IFunctionDeclaration;
 
+// TODO comment 
 public class FunctionDeclaration extends Declaration implements IFunctionDeclaration {
 	
 	public enum Kind {
@@ -17,6 +18,12 @@ public class FunctionDeclaration extends Declaration implements IFunctionDeclara
 		NEW,
 		DELETE
 	}
+
+	/**
+	 * The "modifierFlags" structural property of this node type.
+	 */
+	public static final SimplePropertyDescriptor MODIFIER_FLAGS_PROPERTY =
+		new SimplePropertyDescriptor(FunctionDeclaration.class, "modifierFlags", int.class, OPTIONAL); //$NON-NLS-1$
 
 	/**
 	 * The "kind" structural property of this node type.
@@ -86,8 +93,9 @@ public class FunctionDeclaration extends Declaration implements IFunctionDeclara
 	private static final List PROPERTY_DESCRIPTORS;
 
 	static {
-		List properyList = new ArrayList(10);
+		List properyList = new ArrayList(11);
 		createPropertyList(FunctionDeclaration.class, properyList);
+		addProperty(MODIFIER_FLAGS_PROPERTY, properyList);
 		addProperty(KIND_PROPERTY, properyList);
 		addProperty(RETURN_TYPE_PROPERTY, properyList);
 		addProperty(NAME_PROPERTY, properyList);
@@ -117,9 +125,14 @@ public class FunctionDeclaration extends Declaration implements IFunctionDeclara
 	}
 
 	/**
+	 * The modifierFlags.
+	 */
+	private int modifierFlags;
+
+	/**
 	 * The kind.
 	 */
-	private Kind kind = Kind.FUNCTION;
+	private Kind kind;
 
 	/**
 	 * The returnType.
@@ -205,6 +218,22 @@ public class FunctionDeclaration extends Declaration implements IFunctionDeclara
 		}
 		// allow default implementation to flag the error
 		return super.internalGetSetObjectProperty(property, get, value);
+	}
+
+	/* (omit javadoc for this method)
+	 * Method declared on ASTNode.
+	 */
+	final int internalGetSetIntProperty(SimplePropertyDescriptor property, boolean get, int value) {
+		if (property == MODIFIER_FLAGS_PROPERTY) {
+			if (get) {
+				return getModifierFlags();
+			} else {
+				setModifierFlags(value);
+				return 0;
+			}
+		}
+		// allow default implementation to flag the error
+		return super.internalGetSetIntProperty(property, get, value);
 	}
 
 	/* (omit javadoc for this method)
@@ -307,6 +336,7 @@ public class FunctionDeclaration extends Declaration implements IFunctionDeclara
 	ASTNode clone0(AST target) {
 		FunctionDeclaration result = new FunctionDeclaration(target);
 		result.setSourceRange(this.getStartPosition(), this.getLength());
+		result.setModifierFlags(getModifierFlags());
 		result.setKind(getKind());
 		result.setReturnType((Type) getReturnType().clone(target));
 		result.setName((SimpleName) getName().clone(target));
@@ -345,6 +375,27 @@ public class FunctionDeclaration extends Declaration implements IFunctionDeclara
 			acceptChild(visitor, getBody());
 		}
 		visitor.endVisit(this);
+	}
+
+	/**
+	 * Returns the modifier flags of this function declaration.
+	 * 
+	 * @return the modifier flags
+	 */ 
+	public int getModifierFlags() {
+		return this.modifierFlags;
+	}
+
+	/**
+	 * Sets the modifier flags of this function declaration.
+	 * 
+	 * @param modifierFlags the modifier flags
+	 * @exception IllegalArgumentException if the argument is incorrect
+	 */ 
+	public void setModifierFlags(int modifierFlags) {
+		preValueChange(MODIFIER_FLAGS_PROPERTY);
+		this.modifierFlags = modifierFlags;
+		postValueChange(MODIFIER_FLAGS_PROPERTY);
 	}
 
 	/**
@@ -628,7 +679,7 @@ public class FunctionDeclaration extends Declaration implements IFunctionDeclara
 	 * Method declared on ASTNode.
 	 */
 	int memSize() {
-		return BASE_NODE_SIZE + 10 * 4;
+		return BASE_NODE_SIZE + 11 * 4;
 	}
 
 	/* (omit javadoc for this method)

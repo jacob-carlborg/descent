@@ -23,7 +23,7 @@ public class Enum_Test extends Parser_Test {
 		assertPosition(e, 1, 8);
 		assertPosition(e.getName(), 6, 2);
 		assertEquals("En", e.getName().toString());
-		assertEquals(0, e.getMembers().length);
+		assertEquals(0, e.enumMembers().size());
 		
 		assertVisitor(e, 2);
 	}
@@ -38,22 +38,22 @@ public class Enum_Test extends Parser_Test {
 		assertPosition(e, 1, 23);
 		assertPosition(e.getName(), 6, 2);
 		assertEquals("En", e.getName().toString());
-		assertEquals(3, e.getMembers().length);
+		assertEquals(3, e.enumMembers().size());
 		
 		IEnumMember em;
 		
-		em = e.getMembers()[0];
+		em = e.enumMembers().get(0);
 		assertEquals(IElement.ENUM_MEMBER, em.getNodeType0());
 		assertEquals("x", em.getName().toString());
 		assertNull(em.getValue());
 		assertPosition(em, 11, 1);
 		
-		em = e.getMembers()[1];
+		em = e.enumMembers().get(1);
 		assertEquals("y", em.getName().toString());
 		assertEquals(BigInteger.ONE, ((IIntegerExpression) em.getValue()).getValue());
 		assertPosition(em, 14, 5);
 		
-		em = e.getMembers()[2];
+		em = e.enumMembers().get(2);
 		assertEquals("z", em.getName().toString());
 		assertNull(em.getValue());
 		assertPosition(em, 21, 1);
@@ -81,7 +81,7 @@ public class Enum_Test extends Parser_Test {
 		assertPosition(e.getName(), 6, 2);
 		assertEquals("En", e.getName().toString());
 		assertEquals("int", e.getBaseType().toString());
-		assertEquals(0, e.getMembers().length);
+		assertEquals(0, e.enumMembers().size());
 		
 		assertVisitor(e, 3);
 	}

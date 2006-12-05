@@ -63,7 +63,7 @@ public class DOutlineContentProvider implements ITreeContentProvider {
 			addDeclDefs(list, ((ITemplateDeclaration) e).getDeclarationDefinitions());
 			return list.toArray();
 		case IElement.ENUM_DECLARATION:
-			return ((IEnumDeclaration) e).getMembers();
+			return ((IEnumDeclaration) e).enumMembers().toArray();
 		case IElement.LINK_DECLARATION:
 			list = new ArrayList<Object>();
 			addDeclDefs(list, ((ILinkDeclaration) e).getDeclarationDefinitions());
@@ -174,7 +174,7 @@ public class DOutlineContentProvider implements ITreeContentProvider {
 		case IElement.AGGREGATE_DECLARATION:
 			return ((IAggregateDeclaration) e).declarations().size() > 0;
 		case IElement.ENUM_DECLARATION:
-			return ((IEnumDeclaration) e).getMembers().length > 0;
+			return ((IEnumDeclaration) e).enumMembers().size() > 0;
 		case IElement.LINK_DECLARATION:
 			return ((ILinkDeclaration) e).getDeclarationDefinitions().length > 0;
 		case IElement.VERSION_DECLARATION:

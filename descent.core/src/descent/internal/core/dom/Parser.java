@@ -1168,7 +1168,7 @@ public class Parser extends Lexer {
 			t = null;
 		}
 
-		e = new EnumDeclaration(id, t);
+		e = new EnumDeclaration(id == null ? null : new SimpleName(id), t);
 		e.startPosition = enumToken.ptr;
 		
 		if (token.value == TOKsemicolon && id != null) {
@@ -1176,7 +1176,6 @@ public class Parser extends Lexer {
 			nextToken();			  
 		} else if (token.value == TOKlcurly) {
 			// printf("enum definition\n");
-			e.members = new ArrayList<IEnumMember>();
 			nextToken();
 			String comment = token.string;
 			while (token.value != TOKrcurly) {
@@ -1199,7 +1198,7 @@ public class Parser extends Lexer {
 					}
 					
 					em = new EnumMember(new SimpleName(ident), value);
-					e.members.add(em);
+					e.enumMembers().add(em);
 					if (token.value == TOKrcurly) {
 						;
 					} else {
@@ -2693,7 +2692,7 @@ public class Parser extends Lexer {
 	public Initializer parseInitializer() {
 		StructInitializer is;
 		ArrayInitializer ia;
-		ExpInitializer ie;
+		ExpressionInitializer ie;
 		Expression e;
 		Identifier id;
 		Initializer value;
@@ -2717,7 +2716,7 @@ public class Parser extends Lexer {
 				case TOKreturn:
 					// goto Lexpression;
 					e = parseAssignExp();
-					ie = new ExpInitializer(e);
+					ie = new ExpressionInitializer(e);
 					return ie;
 
 				case TOKlcurly:
@@ -2803,7 +2802,7 @@ public class Parser extends Lexer {
 						nextToken();
 						value = parseInitializer();
 					} else {
-						value = new ExpInitializer(e);
+						value = new ExpressionInitializer(e);
 						e = null;
 					}
 					ia.addInit(e, value);
@@ -2858,7 +2857,7 @@ public class Parser extends Lexer {
 		default:
 			// Lexpression:
 			e = parseAssignExp();
-			ie = new ExpInitializer(e);
+			ie = new ExpressionInitializer(e);
 			return ie;
 		}
 	}

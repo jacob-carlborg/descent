@@ -1,5 +1,9 @@
 package descent.core.dom;
 
+import java.util.List;
+
+import descent.internal.core.dom.EnumMember;
+
 /**
  * An enum declaration.
  */
@@ -19,6 +23,6 @@ public interface IEnumDeclaration extends IDeclaration, ICommented {
 	/**
 	 * Returns the members defined in this enum.
 	 */
-	IEnumMember[] getMembers();
+	List<EnumMember> enumMembers();
 
 }

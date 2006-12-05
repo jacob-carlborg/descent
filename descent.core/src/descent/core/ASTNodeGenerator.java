@@ -7,21 +7,15 @@ public class ASTNodeGenerator {
 	
 	public static void main(String[] args) {
 		
-		String description = "function declaration";
+		String description = "enum declaration";
 		String clazz = toMethod(description);
 		String nodeType = toProperty(description);
 
 		Member[] members = {
-				Member.simple("kind", "Kind"),
-				Member.childMandatory("return type", "Type", CYCLE_RISK, "Type.tvoid"),
-				Member.childMandatory("name", "SimpleName", NO_CYCLE_RISK, "SimpleName"),
-				Member.list("template parameters", "TemplateParameter", NO_CYCLE_RISK),
-				Member.list("arguments", "Argument", CYCLE_RISK),
-				Member.simple("variadic", "boolean"),
-				Member.child("precondition", "Statement", CYCLE_RISK),
-				Member.child("postcondition", "Statement", CYCLE_RISK),
-				Member.child("postconditionVariableName", "SimpleName", NO_CYCLE_RISK),
-				Member.childMandatory("body", "Statement", CYCLE_RISK, "Block"),
+				Member.simple("modifier flags", "int"),
+				Member.child("name", "SimpleName", NO_CYCLE_RISK),
+				Member.child("baseType", "Type", NO_CYCLE_RISK),
+				Member.list("enumMembers", "EnumMember", NO_CYCLE_RISK),
 				
 		};
 		
