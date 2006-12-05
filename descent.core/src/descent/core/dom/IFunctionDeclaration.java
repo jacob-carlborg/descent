@@ -1,5 +1,11 @@
 package descent.core.dom;
 
+import java.util.List;
+
+import descent.internal.core.dom.Argument;
+import descent.internal.core.dom.TemplateParameter;
+import descent.internal.core.dom.FunctionDeclaration.Kind;
+
 /**
  * A generic function declaration. It can be a function, constructor, destructor,
  * static constructor, static destructor, new or delete functions.
@@ -21,7 +27,7 @@ public interface IFunctionDeclaration extends IDeclaration, IModifiersContainer 
 	 * Returns the type of this function. Check the constants defined
 	 * in this interface.
 	 */
-	int getFunctionDeclarationType();
+	Kind getKind();
 	
 	/**
 	 * Returns the name of the function. Note that for constructors
@@ -39,7 +45,7 @@ public interface IFunctionDeclaration extends IDeclaration, IModifiersContainer 
 	/**
 	 * Returns the arguments of the function.
 	 */
-	IArgument[] getArguments();
+	List<Argument> arguments();
 
 	/**
 	 * Determines whether this function is variadic.
@@ -47,14 +53,9 @@ public interface IFunctionDeclaration extends IDeclaration, IModifiersContainer 
 	boolean isVariadic();
 	
 	/**
-	 * Determines whether this function is a template.
-	 */
-	boolean isTemplate();
-	
-	/**
 	 * Returns the template parameters. Pre: isTemplate().
 	 */
-	ITemplateParameter[] getTemplateParameters();
+	List<TemplateParameter> templateParameters();
 	
 	/**
 	 * Returns the body of the function.
@@ -64,16 +65,16 @@ public interface IFunctionDeclaration extends IDeclaration, IModifiersContainer 
 	/**
 	 * Returns the precondition of the function, if any, or <code>null</code>.
 	 */
-	IStatement getIn();
+	IStatement getPrecondition();
 	
 	/**
 	 * Returns the postcondition of the function, if any, or <code>null</code>.
 	 */
-	IStatement getOut();
+	IStatement getPostcondition();
 	
 	/**
 	 * Returns the name of the out clase of the function, if any, or <code>null</code>.
 	 */
-	ISimpleName getOutName();
+	ISimpleName getPostconditionVariableName();
 
 }

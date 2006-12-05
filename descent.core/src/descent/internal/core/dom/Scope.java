@@ -9,7 +9,7 @@ public class Scope {
     ScopeDsymbol scopesym;	// current symbol
     ScopeDsymbol sd;		// if in static if, and declaring new symbols,
 				// sd gets the addMember()
-    FuncDeclaration func;	// function we are in
+    FunctionDeclaration func;	// function we are in
     Dsymbol parent;		// parent to use
     LabelStatement slabel;	// enclosing labelled statement
     SwitchStatement sw;	// enclosing switch statement

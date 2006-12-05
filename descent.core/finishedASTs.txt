@@ -22,6 +22,7 @@ DoStatement
 EnumMember
 ExpressionStatement
 ForStatement
+FunctionDeclaration
 GotoStatement
 GotoCaseStatement
 InfixExpression

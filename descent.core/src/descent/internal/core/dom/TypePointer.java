@@ -25,7 +25,7 @@ public class TypePointer extends Type implements IPointerType, IDelegateType {
 	}
 	
 	public IArgument[] getArguments() {
-		return ((TypeFunction) next).getArguments();
+		return ((TypeFunction) next).getArguments().toArray(new IArgument[((TypeFunction) next).getArguments().size()]);
 	}
 	
 	@Override

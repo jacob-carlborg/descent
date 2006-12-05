@@ -154,8 +154,8 @@ public class Template_Test extends Parser_Test {
 		assertEquals(1, declDefs.length);
 		
 		IFunctionDeclaration f = (IFunctionDeclaration) declDefs[0];
-		assertTrue(f.isTemplate());
-		assertEquals(1, f.getTemplateParameters().length);
+		assertTrue(f.templateParameters().size() > 0);
+		assertEquals(1, f.templateParameters().size());
 	}
 
 }

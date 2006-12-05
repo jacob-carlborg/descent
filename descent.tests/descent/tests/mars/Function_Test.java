@@ -5,7 +5,9 @@ import descent.core.dom.ICompilationUnit;
 import descent.core.dom.IElement;
 import descent.core.dom.IFunctionDeclaration;
 import descent.internal.core.dom.Argument;
+import descent.internal.core.dom.FunctionDeclaration;
 import descent.internal.core.dom.ParserFacade;
+import descent.internal.core.dom.Type;
 
 public class Function_Test extends Parser_Test {
 	
@@ -17,16 +19,14 @@ public class Function_Test extends Parser_Test {
 		
 		IFunctionDeclaration f = (IFunctionDeclaration) declDefs[0];
 		assertEquals(IElement.FUNCTION_DECLARATION, f.getNodeType0());
-		assertEquals(IFunctionDeclaration.CONSTRUCTOR, f.getFunctionDeclarationType());
-		assertNull(f.getReturnType());
-		assertEquals(0, f.getArguments().length);
+		assertEquals(FunctionDeclaration.Kind.CONSTRUCTOR, f.getKind());
+		assertEquals(Type.tvoid, f.getReturnType());
+		assertEquals(0, f.arguments().size());
 		
 		assertEquals("this", f.getName().toString());
 		assertPosition(f.getName(), 1, 4);
 		
 		assertPosition(f, 1, 10);
-		
-		assertVisitor(f, 3);
 	}
 	
 	public void testEmptyConstructor() {
@@ -37,9 +37,7 @@ public class Function_Test extends Parser_Test {
 		
 		IFunctionDeclaration f = (IFunctionDeclaration) declDefs[0];
 		assertEquals(IElement.FUNCTION_DECLARATION, f.getNodeType0());
-		assertEquals(IFunctionDeclaration.CONSTRUCTOR, f.getFunctionDeclarationType());
-		
-		assertPosition(f, 1, 7);
+		assertEquals(FunctionDeclaration.Kind.CONSTRUCTOR, f.getKind());
 	}
 	
 	public void testDestructor() {
@@ -50,16 +48,14 @@ public class Function_Test extends Parser_Test {
 		
 		IFunctionDeclaration f = (IFunctionDeclaration) declDefs[0];
 		assertEquals(IElement.FUNCTION_DECLARATION, f.getNodeType0());
-		assertEquals(IFunctionDeclaration.DESTRUCTOR, f.getFunctionDeclarationType());
-		assertNull(f.getReturnType());
-		assertEquals(0, f.getArguments().length);
+		assertEquals(FunctionDeclaration.Kind.DESTRUCTOR, f.getKind());
+		assertEquals(Type.tvoid, f.getReturnType());
+		assertEquals(0, f.arguments().size());
 		
 		assertEquals("~this", f.getName().toString());
 		assertPosition(f.getName(), 1, 5);
 		
 		assertPosition(f, 1, 11);
-		
-		assertVisitor(f, 3);
 	}
 	
 	public void testEmptyDestructor() {
@@ -70,10 +66,8 @@ public class Function_Test extends Parser_Test {
 		
 		IFunctionDeclaration f = (IFunctionDeclaration) declDefs[0];
 		assertEquals(IElement.FUNCTION_DECLARATION, f.getNodeType0());
-		assertEquals(IFunctionDeclaration.DESTRUCTOR, f.getFunctionDeclarationType());
-		assertNull(f.getReturnType());
-		
-		assertPosition(f, 1, 8);
+		assertEquals(FunctionDeclaration.Kind.DESTRUCTOR, f.getKind());
+		assertEquals(Type.tvoid, f.getReturnType());
 	}
 	
 	public void testStaticConstructor() {
@@ -84,16 +78,14 @@ public class Function_Test extends Parser_Test {
 		
 		IFunctionDeclaration f = (IFunctionDeclaration) declDefs[0];
 		assertEquals(IElement.FUNCTION_DECLARATION, f.getNodeType0());
-		assertEquals(IFunctionDeclaration.STATIC_CONSTRUCTOR, f.getFunctionDeclarationType());
-		assertNull(f.getReturnType());
-		assertEquals(0, f.getArguments().length);
+		assertEquals(FunctionDeclaration.Kind.STATIC_CONSTRUCTOR, f.getKind());
+		assertEquals(Type.tvoid, f.getReturnType());
+		assertEquals(0, f.arguments().size());
 		
 		assertEquals("this", f.getName().toString());
 		assertPosition(f.getName(), 8, 4);
 		
 		assertPosition(f, 1, 17);
-		
-		assertVisitor(f, 3);
 	}
 	
 	public void testStaticDestructor() {
@@ -104,16 +96,14 @@ public class Function_Test extends Parser_Test {
 		
 		IFunctionDeclaration f = (IFunctionDeclaration) declDefs[0];
 		assertEquals(IElement.FUNCTION_DECLARATION, f.getNodeType0());
-		assertEquals(IFunctionDeclaration.STATIC_DESTRUCTOR, f.getFunctionDeclarationType());
-		assertNull(f.getReturnType());
-		assertEquals(0, f.getArguments().length);
+		assertEquals(FunctionDeclaration.Kind.STATIC_DESTRUCTOR, f.getKind());
+		assertEquals(Type.tvoid, f.getReturnType());
+		assertEquals(0, f.arguments().size());
 		
 		assertEquals("~this", f.getName().toString());
 		assertPosition(f.getName(), 8, 5);
 		
 		assertPosition(f, 1, 18);
-		
-		assertVisitor(f, 3);
 	}
 	
 	public void testNew() {
@@ -124,16 +114,14 @@ public class Function_Test extends Parser_Test {
 		
 		IFunctionDeclaration f = (IFunctionDeclaration) declDefs[0];
 		assertEquals(IElement.FUNCTION_DECLARATION, f.getNodeType0());
-		assertEquals(IFunctionDeclaration.NEW, f.getFunctionDeclarationType());
-		assertNull(f.getReturnType());
-		assertEquals(0, f.getArguments().length);
+		assertEquals(FunctionDeclaration.Kind.NEW, f.getKind());
+		assertEquals(Type.tvoid, f.getReturnType());
+		assertEquals(0, f.arguments().size());
 		
 		assertEquals("new", f.getName().toString());
 		assertPosition(f.getName(), 1, 3);
 		
 		assertPosition(f, 1, s.length() - 1);
-		
-		assertVisitor(f, 3);
 	}
 	
 	public void testDelete() {
@@ -144,16 +132,14 @@ public class Function_Test extends Parser_Test {
 		
 		IFunctionDeclaration f = (IFunctionDeclaration) declDefs[0];
 		assertEquals(IElement.FUNCTION_DECLARATION, f.getNodeType0());
-		assertEquals(IFunctionDeclaration.DELETE, f.getFunctionDeclarationType());
-		assertNull(f.getReturnType());
-		assertEquals(0, f.getArguments().length);
+		assertEquals(FunctionDeclaration.Kind.DELETE, f.getKind());
+		assertEquals(Type.tvoid, f.getReturnType());
+		assertEquals(0, f.arguments().size());
 		
 		assertEquals("delete", f.getName().toString());
 		assertPosition(f.getName(), 1, 6);
 		
 		assertPosition(f, 1, s.length() - 1);
-		
-		assertVisitor(f, 3);
 	}
 	
 	public void testFunctionWithoutArguments() {
@@ -164,12 +150,12 @@ public class Function_Test extends Parser_Test {
 		
 		IFunctionDeclaration func = (IFunctionDeclaration) declDefs[0];
 		assertEquals(IElement.FUNCTION_DECLARATION, func.getNodeType0());
-		assertEquals(IFunctionDeclaration.FUNCTION, func.getFunctionDeclarationType());
+		assertEquals(FunctionDeclaration.Kind.FUNCTION, func.getKind());
 
 		assertEquals("void", func.getReturnType().toString());
 		assertEquals("func", func.getName().toString());
 		assertPosition(func.getName(), 6, 4);
-		assertEquals(0, func.getArguments().length);
+		assertEquals(0, func.arguments().size());
 		assertPosition(func, 1, 15);
 	}
 	
@@ -193,7 +179,7 @@ public class Function_Test extends Parser_Test {
 		
 		assertFalse(func.isVariadic());
 		
-		IArgument[] args = func.getArguments();
+		IArgument[] args = func.arguments().toArray(new IArgument[func.arguments().size()]);
 		assertEquals(5, args.length);
 		
 		assertPosition(args[0], 11, 5);
@@ -230,8 +216,7 @@ public class Function_Test extends Parser_Test {
 		
 		IFunctionDeclaration func = (IFunctionDeclaration) declDefs[0];
 		
-		IArgument[] args = func.getArguments();
-		assertEquals(1, args.length);
+		assertEquals(1, func.arguments().size());
 	}
 	
 	public void testConstructorWithArguments() {
@@ -244,7 +229,7 @@ public class Function_Test extends Parser_Test {
 		
 		assertFalse(func.isVariadic());
 		
-		IArgument[] args = func.getArguments();
+		IArgument[] args = func.arguments().toArray(new IArgument[func.arguments().size()]);
 		assertEquals(5, args.length);
 		
 		assertPosition(args[0], 11, 9);
@@ -291,7 +276,7 @@ public class Function_Test extends Parser_Test {
 		assertEquals(1, declDefs.length);
 		
 		IFunctionDeclaration func = (IFunctionDeclaration) declDefs[0];
-		assertEquals(1, func.getArguments().length);
+		assertEquals(1, func.arguments().size());
 		assertTrue(func.isVariadic());
 	}
 	
@@ -303,7 +288,7 @@ public class Function_Test extends Parser_Test {
 		
 		IFunctionDeclaration func = (IFunctionDeclaration) declDefs[0];
 		assertNotNull(func.getBody());
-		assertEquals(0, func.getArguments().length);
+		assertEquals(0, func.arguments().size());
 		assertPosition(func, 1, s.length() - 1);
 	}
 	
@@ -314,7 +299,7 @@ public class Function_Test extends Parser_Test {
 		assertEquals(1, declDefs.length);
 		
 		IFunctionDeclaration func = (IFunctionDeclaration) declDefs[0];
-		assertNotNull(func.getIn());
+		assertNotNull(func.getPrecondition());
 		assertPosition(func, 1, s.length() - 1);
 	}
 	
@@ -325,8 +310,8 @@ public class Function_Test extends Parser_Test {
 		assertEquals(1, declDefs.length);
 		
 		IFunctionDeclaration func = (IFunctionDeclaration) declDefs[0];
-		assertNotNull(func.getOut());
-		assertNull(func.getOutName());
+		assertNotNull(func.getPostcondition());
+		assertNull(func.getPostconditionVariableName());
 		assertPosition(func, 1, s.length() - 1);
 	}
 	
@@ -337,10 +322,10 @@ public class Function_Test extends Parser_Test {
 		assertEquals(1, declDefs.length);
 		
 		IFunctionDeclaration func = (IFunctionDeclaration) declDefs[0];
-		assertNotNull(func.getOut());
-		assertEquals("bla", func.getOutName().toString());
-		assertPosition(func.getOut(), 22, 3);
-		assertPosition(func.getOutName(), 17, 3);
+		assertNotNull(func.getPostcondition());
+		assertEquals("bla", func.getPostconditionVariableName().toString());
+		assertPosition(func.getPostcondition(), 22, 3);
+		assertPosition(func.getPostconditionVariableName(), 17, 3);
 		assertPosition(func, 1, s.length() - 1);
 	}
 

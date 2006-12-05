@@ -106,6 +106,9 @@ public class Lexer implements IProblemCollector {
 	public void problem(String message, int severity, int id, int offset, int length) {
 		problems.add(new Problem(message, severity, id, offset, length));
 	}
+	public void problem(String message, int severity, int id, ASTNode node) {
+		problems.add(new Problem(message, severity, id, node.getStartPosition(), node.getLength()));
+	}
 	
 	public void collectProblem(IProblem problem) {
 		problems.add(problem);

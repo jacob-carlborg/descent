@@ -174,12 +174,12 @@ public class SimpleName extends Name implements ISimpleName {
 	 * @param identifier the identifier of this node
 	 * @exception IllegalArgumentException if the identifier is invalid
 	 */ 
-	/* TODO JDT
 	public void setIdentifier(String identifier) {
 		// update internalSetIdentifier if this is changed
 		if (identifier == null) {
 			throw new IllegalArgumentException();
 		}
+		/* TODO JDT
 		Scanner scanner = this.ast.scanner;
 		char[] source = identifier.toCharArray();
 		scanner.setSource(source);
@@ -200,11 +200,11 @@ public class SimpleName extends Name implements ISimpleName {
 		} catch(InvalidInputException e) {
 			throw new IllegalArgumentException();
 		}
+		*/
 		preValueChange(IDENTIFIER_PROPERTY);
 		this.identifier = identifier;
 		postValueChange(IDENTIFIER_PROPERTY);
 	}
-	*/
 
 	/* (omit javadoc for this method)
 	 * This method is a copy of setIdentifier(String) that doesn't do any validation.
@@ -332,6 +332,11 @@ public class SimpleName extends Name implements ISimpleName {
 	@Override
 	public String toString() {
 		return identifier;
+	}
+	
+	// TODO Descent remove
+	SimpleName() {
+		super(AST.newAST(AST.JLS3));
 	}
 	
 }

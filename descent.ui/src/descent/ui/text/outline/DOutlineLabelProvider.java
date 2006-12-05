@@ -39,6 +39,7 @@ import descent.core.dom.ITypedefDeclaration;
 import descent.core.dom.ITypeofType;
 import descent.core.dom.IVariableDeclaration;
 import descent.core.dom.IVersionDeclaration;
+import descent.internal.core.dom.Argument;
 import descent.internal.core.dom.TemplateParameter;
 import descent.ui.DescentUI;
 import descent.ui.IImages;
@@ -138,29 +139,29 @@ public class DOutlineLabelProvider extends LabelProvider {
 		case IElement.FUNCTION_DECLARATION:
 			IFunctionDeclaration f = (IFunctionDeclaration) e;
 			s = new StringBuilder();
-			switch(f.getFunctionDeclarationType()) {
-			case IFunctionDeclaration.FUNCTION:
+			switch(f.getKind()) {
+			case FUNCTION:
 				s.append(f.getName() == null ? "" : f.getName().toString());
 				break;
-			case IFunctionDeclaration.CONSTRUCTOR:
-			case IFunctionDeclaration.STATIC_CONSTRUCTOR:
+			case CONSTRUCTOR:
+			case STATIC_CONSTRUCTOR:
 				s.append("this");
 				break;
-			case IFunctionDeclaration.DESTRUCTOR:
-			case IFunctionDeclaration.STATIC_DESTRUCTOR:
+			case DESTRUCTOR:
+			case STATIC_DESTRUCTOR:
 				s.append("~this");
 				break;
-			case IFunctionDeclaration.NEW:
+			case NEW:
 				s.append("new");
 				break;
-			case IFunctionDeclaration.DELETE:
+			case DELETE:
 				s.append("delete");
 				break;
 			}
-			if (f.isTemplate()) {
-				appendTemplateParameters(s, f.getTemplateParameters());
+			if (!f.templateParameters().isEmpty()) {
+				appendTemplateParameters(s, f.templateParameters());
 			}
-			appendArguments(s, f.getArguments());
+			appendArguments(s, f.arguments());
 			return s.toString();
 		case IElement.ENUM_DECLARATION:
 			name = ((IEnumDeclaration) element).getName();
@@ -296,10 +297,10 @@ public class DOutlineLabelProvider extends LabelProvider {
 		case IElement.FUNCTION_DECLARATION:
 			IFunctionDeclaration func = (IFunctionDeclaration) element;
 			m = func.getModifierFlags();
-			switch(func.getFunctionDeclarationType()) {
-			case IFunctionDeclaration.FUNCTION:
-			case IFunctionDeclaration.NEW:
-			case IFunctionDeclaration.DELETE:
+			switch(func.getKind()) {
+			case FUNCTION:
+			case NEW:
+			case DELETE:
 				if ((m & IModifier.PRIVATE) > 0) {
 					return functionPrivateImage;
 				} else if ((m & IModifier.PROTECTED) > 0) {
@@ -310,8 +311,8 @@ public class DOutlineLabelProvider extends LabelProvider {
 					// TODO
 				}
 				return functionPublicImage;
-			case IFunctionDeclaration.CONSTRUCTOR:
-			case IFunctionDeclaration.STATIC_CONSTRUCTOR:
+			case CONSTRUCTOR:
+			case STATIC_CONSTRUCTOR:
 				if ((m & IModifier.PRIVATE) > 0) {
 					return ctorPrivateImage;
 				} else if ((m & IModifier.PROTECTED) > 0) {
@@ -322,8 +323,8 @@ public class DOutlineLabelProvider extends LabelProvider {
 					// TODO
 				}
 				return ctorPublicImage;
-			case IFunctionDeclaration.DESTRUCTOR:
-			case IFunctionDeclaration.STATIC_DESTRUCTOR:
+			case DESTRUCTOR:
+			case STATIC_DESTRUCTOR:
 				if ((m & IModifier.PRIVATE) > 0) {
 					return dtorPrivateImage;
 				} else if ((m & IModifier.PROTECTED) > 0) {
@@ -508,6 +509,24 @@ s.append('(');
 		}
 	}
 	
+	// TODO improve performance
+	private void appendArguments(StringBuilder s, List<Argument> arguments) {
+		s.append('(');
+		for(int i = 0; i < arguments.size(); i++) {
+			switch(arguments.get(i).getPassageMode()) {
+			case OUT: s.append("out "); break;
+			case INOUT: s.append("inout "); break;
+			case LAZY: s.append("lazy "); break;
+			}
+			appendType(s, arguments.get(i).getType());
+			if (i != arguments.size() - 1) {
+				s.append(", ");
+			}
+		}
+		s.append(')');
+	}
+	
+	// TODO remove duplicated code
 	private void appendArguments(StringBuilder s, IArgument[] arguments) {
 		s.append('(');
 		for(int i = 0; i < arguments.length; i++) {

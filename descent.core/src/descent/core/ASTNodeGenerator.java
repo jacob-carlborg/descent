@@ -7,13 +7,22 @@ public class ASTNodeGenerator {
 	
 	public static void main(String[] args) {
 		
-		String description = "base class";
+		String description = "function declaration";
 		String clazz = toMethod(description);
 		String nodeType = toProperty(description);
 
 		Member[] members = {
-				Member.simple("modifier flags", "int"),
-				Member.childMandatory("type", "Type", NO_CYCLE_RISK, "Type.tint32"),				
+				Member.simple("kind", "Kind"),
+				Member.childMandatory("return type", "Type", CYCLE_RISK, "Type.tvoid"),
+				Member.childMandatory("name", "SimpleName", NO_CYCLE_RISK, "SimpleName"),
+				Member.list("template parameters", "TemplateParameter", NO_CYCLE_RISK),
+				Member.list("arguments", "Argument", CYCLE_RISK),
+				Member.simple("variadic", "boolean"),
+				Member.child("precondition", "Statement", CYCLE_RISK),
+				Member.child("postcondition", "Statement", CYCLE_RISK),
+				Member.child("postconditionVariableName", "SimpleName", NO_CYCLE_RISK),
+				Member.childMandatory("body", "Statement", CYCLE_RISK, "Block"),
+				
 		};
 		
 		StringBuilder sb = new StringBuilder();
@@ -164,7 +173,7 @@ public class ASTNodeGenerator {
 			sb.append("/* (omit javadoc for this method)\n");
 			sb.append(" * Method declared on ASTNode.\n");
 			sb.append(" */\n");
-			sb.append("final internalGetSetBooleanProperty(SimplePropertyDescriptor property, boolean get, boolean value) {\n");
+			sb.append("final boolean internalGetSetBooleanProperty(SimplePropertyDescriptor property, boolean get, boolean value) {\n");
 			for(Member member : members) {
 				if (member.type != SIMPLE || !member.clazz.equals("boolean")) continue;
 				
@@ -427,7 +436,6 @@ public class ASTNodeGenerator {
 		sb.append(" * @return <code>true</code> if the subtree matches, or \n");
 		sb.append(" *   <code>false</code> if they do not match or the other object has a\n");
 		sb.append(" *   different node type or is <code>null</code>\n");
-		sb.append(" * @since 3.1\n");
 		sb.append(" */\n");
 		sb.append("public boolean match(" + clazz + " node, Object other) {\n");
 		sb.append("	if (!(other instanceof " + clazz + ")) {\n");

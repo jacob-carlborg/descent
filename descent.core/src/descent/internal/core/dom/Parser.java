@@ -91,7 +91,6 @@ import descent.core.dom.IBaseClass;
 import descent.core.dom.IElement;
 import descent.core.dom.IEnumMember;
 import descent.core.dom.IImport;
-import descent.core.dom.ITemplateParameter;
 import descent.core.dom.IUnaryExpression;
 
 public class Parser extends Lexer {
@@ -109,6 +108,8 @@ public class Parser extends Lexer {
 	int inBrackets;
 	
 	LINK linkage = LINK.LINKd;
+	
+	AST ast = AST.newAST(AST.JLS3);
 
 	public Parser(String source) {
 		super(source);
@@ -891,76 +892,88 @@ public class Parser extends Lexer {
 		return condition;
 	}
 	
-	private CtorDeclaration parseCtor() {
-		Token firstToken = new Token(token);
+	private FunctionDeclaration parseCtor() {
+		SimpleName name = new SimpleName(ast);
+		name.setSourceRange(token.ptr, token.len);
+		name.setIdentifier("this");
 		
-		CtorDeclaration f;
-	    List<Argument> arguments;
-	    int[] varargs = new int[1];
-
-	    nextToken();
-	    arguments = parseParameters(varargs);
-	    f = new CtorDeclaration(arguments, varargs[0]);
-	    f.startPosition = firstToken.ptr;
-	    f.ident.startPosition = firstToken.ptr;
-	    f.ident.length = firstToken.len;
-	    parseContracts(f);
-	    return f;
+		FunctionDeclaration constructor = new FunctionDeclaration(ast);
+		constructor.setSourceRange(token.ptr, 0);
+		constructor.setKind(FunctionDeclaration.Kind.CONSTRUCTOR);
+		constructor.setReturnType(Type.tvoid); // TODO fix
+		constructor.setName(name);
+				
+		nextToken();
+		int[] varargs = new int[1];
+		List<Argument> arguments = parseParameters(varargs);
+		
+		constructor.arguments().addAll(arguments);
+		constructor.setVariadic(varargs[0] != 0);
+	    parseContracts(constructor);
+	    return constructor;
 	}
 	
-	private DtorDeclaration parseDtor() {
+	private FunctionDeclaration parseDtor() {
 		Token firstToken = new Token(token);
+		nextToken();
+		Token secondToken = new Token(token);
 		
-		DtorDeclaration f;
-
-	    nextToken();
-	    Token secondToken = new Token(token);
-	    check(TOKthis);
+		check(TOKthis);
 	    check(TOKlparen);
 	    check(TOKrparen);
-
-	    f = new DtorDeclaration();
-	    f.startPosition = firstToken.ptr;
-	    f.ident.startPosition = firstToken.ptr;
-	    f.ident.length = secondToken.ptr + secondToken.len - firstToken.ptr;
-	    parseContracts(f);
-	    return f;
+		
+		SimpleName name = new SimpleName(ast);
+		name.setSourceRange(firstToken.ptr, secondToken.ptr + secondToken.len - firstToken.ptr);
+		name.setIdentifier("~this");
+		
+		FunctionDeclaration destructor = new FunctionDeclaration(ast);
+		destructor.setSourceRange(firstToken.ptr, 0);
+		destructor.setKind(FunctionDeclaration.Kind.DESTRUCTOR);
+		destructor.setReturnType(Type.tvoid); // TODO fix
+		destructor.setName(name);
+	    parseContracts(destructor);
+	    return destructor;
 	}
 	
-	private StaticCtorDeclaration parseStaticCtor() {
-		Token firstToken = new Token(token);
+	private FunctionDeclaration parseStaticCtor() {
+		SimpleName name = new SimpleName(ast);
+		name.setSourceRange(token.ptr, token.len);
+		name.setIdentifier("this");
 		
-		StaticCtorDeclaration f;
-
-	    nextToken();
+	    FunctionDeclaration staticConstructor = new FunctionDeclaration(ast);
+		staticConstructor.setSourceRange(token.ptr, 0);
+		staticConstructor.setKind(FunctionDeclaration.Kind.STATIC_CONSTRUCTOR);
+		staticConstructor.setReturnType(Type.tvoid); // TODO fix
+		staticConstructor.setName(name);
+		
+		nextToken();
 	    check(TOKlparen);
 	    check(TOKrparen);
-
-	    f = new StaticCtorDeclaration();
-	    f.startPosition = firstToken.ptr;
-	    f.ident.startPosition = firstToken.ptr;
-	    f.ident.length = firstToken.len;
-	    parseContracts(f);
-	    return f;
+		
+	    parseContracts(staticConstructor);
+	    return staticConstructor;
 	}
 	
-	private StaticDtorDeclaration parseStaticDtor() {
+	private FunctionDeclaration parseStaticDtor() {
 		Token firstToken = new Token(token);
+		nextToken();
+		Token secondToken = new Token(token);
 		
-		StaticDtorDeclaration f;
-
-	    nextToken();
-	    Token secondToken = new Token(token);
-	    check(TOKthis);
+		check(TOKthis);
 	    check(TOKlparen);
 	    check(TOKrparen);
-
-	    f = new StaticDtorDeclaration();
-	    f.startPosition = firstToken.ptr;
-	    f.ident.startPosition = firstToken.ptr;
-	    f.ident.length = secondToken.ptr + secondToken.len - firstToken.ptr;
-	    parseContracts(f);
-	    return f;
+	    
+	    SimpleName name = new SimpleName(ast);
+		name.setSourceRange(firstToken.ptr, secondToken.ptr + secondToken.len - firstToken.ptr);
+		name.setIdentifier("~this");
+		
+		FunctionDeclaration staticDestructor = new FunctionDeclaration(ast);
+		staticDestructor.setSourceRange(firstToken.ptr, 0);
+		staticDestructor.setKind(FunctionDeclaration.Kind.STATIC_DESTRUCTOR);
+		staticDestructor.setReturnType(Type.tvoid); // TODO fix
+		staticDestructor.setName(name);
+	    parseContracts(staticDestructor);
+	    return staticDestructor;
 	}
 	
 	private InvariantDeclaration parseInvariant() {
@@ -989,43 +1002,52 @@ public class Parser extends Lexer {
 	    return f;
 	}
 	
-	private NewDeclaration parseNew() {
-		Token firstToken = new Token(token);
+	private FunctionDeclaration parseNew() {
+		SimpleName name = new SimpleName(ast);
+		name.setSourceRange(token.ptr, token.len);
+		name.setIdentifier("new");
 		
-		NewDeclaration f;
-	    List<Argument> arguments;
-	    int[] varargs = new int[1];
-
-	    nextToken();
-	    arguments = parseParameters(varargs);
-	    f = new NewDeclaration(arguments, varargs[0]);
-	    f.startPosition = firstToken.ptr;
-	    f.ident.startPosition = firstToken.ptr;
-	    f.ident.length = firstToken.len;
-	    parseContracts(f);
-	    return f;
+		FunctionDeclaration newDeclaration = new FunctionDeclaration(ast);
+		newDeclaration.setSourceRange(token.ptr, 0);
+		newDeclaration.setKind(FunctionDeclaration.Kind.NEW);
+		newDeclaration.setReturnType(Type.tvoid); // TODO fix
+		newDeclaration.setName(name);
+				
+		nextToken();
+		int[] varargs = new int[1];
+		List<Argument> arguments = parseParameters(varargs);
+		
+		newDeclaration.arguments().addAll(arguments);
+		newDeclaration.setVariadic(varargs[0] != 0);
+	    parseContracts(newDeclaration);
+	    return newDeclaration;
 	}
 	
-	private DeleteDeclaration parseDelete() {
-		Token firstToken = new Token(token);
+	private FunctionDeclaration parseDelete() {
+		SimpleName name = new SimpleName(ast);
+		name.setSourceRange(token.ptr, token.len);
+		name.setIdentifier("delete");
 		
-		DeleteDeclaration f;
-	    List<Argument> arguments;
-	    int[] varargs = new int[1];
-
-	    nextToken();
-	    arguments = parseParameters(varargs);
-	    f = new DeleteDeclaration(arguments);
-	    f.startPosition = firstToken.ptr;
-	    f.ident.startPosition = firstToken.ptr;
-	    f.ident.length = firstToken.len;
-	    
-	    if (varargs[0] != 0) {
-	    	problem("... not allowed in delete function parameter list", IProblem.SEVERITY_ERROR, IProblem.VARIADIC_NOT_ALLOWED_IN_DELETE, f.ident.startPosition, f.ident.length);
+		FunctionDeclaration deleteDeclaration = new FunctionDeclaration(ast);
+		deleteDeclaration.setSourceRange(token.ptr, 0);
+		deleteDeclaration.setKind(FunctionDeclaration.Kind.DELETE);
+		deleteDeclaration.setReturnType(Type.tvoid); // TODO fix
+		deleteDeclaration.setName(name);
+				
+		nextToken();
+		int[] varargs = new int[1];
+		List<Argument> arguments = parseParameters(varargs);
+		
+		if (varargs[0] != 0) {
+	    	problem("... not allowed in delete function parameter list", 
+	    			IProblem.SEVERITY_ERROR, 
+	    			IProblem.VARIADIC_NOT_ALLOWED_IN_DELETE, 
+	    			deleteDeclaration.getName());
 	    }
-	    
-	    parseContracts(f);
-	    return f;
+		
+		deleteDeclaration.arguments().addAll(arguments);
+	    parseContracts(deleteDeclaration);
+	    return deleteDeclaration;
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -2154,7 +2176,7 @@ public class Parser extends Lexer {
 
 				int saveStart = t.startPosition;
 
-				t = new TypeFunction(arguments, t, varargs, linkage);
+				t = new TypeFunction(arguments, t, varargs != 0, linkage);
 				if (save == TOKdelegate) {
 					t = new TypeDelegate(t);
 				} else {
@@ -2282,7 +2304,7 @@ public class Parser extends Lexer {
 			arguments = parseParameters(pointer2_varargs);
 			varargs = pointer2_varargs[0];
 			
-			ta = new TypeFunction(arguments, t, varargs, linkage);
+			ta = new TypeFunction(arguments, t, varargs != 0, linkage);
 			ta.startPosition = t.startPosition;
 			ta.length = t.length;
 
@@ -2487,27 +2509,39 @@ public class Parser extends Lexer {
 					break;
 				}
 			} else if (t.ty == Tfunction) {
-				FuncDeclaration f;
-				Dsymbol s;
-
-				f = new FuncDeclaration(ident, storage_class, t);
-				f.startPosition = t.startPosition;
-				f.comments = lastComments;
-				adjustLastDocComment();
-				parseContracts(f);
-				f.length = prevToken.ptr + prevToken.len - f.startPosition;
+				TypeFunction typeFunction = (TypeFunction) t;
 				
-				addComment(f, null);
+				SimpleName name = new SimpleName(ast);
+				name.setSourceRange(ident.startPosition, ident.length);
+				name.setIdentifier(ident.string);
+				
+				FunctionDeclaration function = new FunctionDeclaration(ast);
+				function.setKind(FunctionDeclaration.Kind.FUNCTION);
+				function.setSourceRange(token.ptr, 0);
+				function.setName(name);
+				function.arguments().addAll(typeFunction.getArguments());
+				function.setVariadic(typeFunction.varargs);
+				function.setReturnType(typeFunction.getReturnType());
+
+				function.comments = lastComments;
+				adjustLastDocComment();
+				
+				function.startPosition = t.startPosition;
+				function.comments = lastComments;
+				
+				parseContracts(function);
+				
+				Dsymbol s;
 				if (link == linkage) {
-					s = f;
+					s = function;
 				} else {
 					List ax = new ArrayList();
-					ax.add(f);
+					ax.add(function);
 					s = new LinkDeclaration(link, ax);
 				}
 				if (tpl != null) // it's a function template
 				{
-					f.templateParameters = tpl.toArray(new ITemplateParameter[tpl.size()]);
+					function.templateParameters().addAll(tpl);
 					/*
 					List decldefs;
 					TemplateDeclaration tempdecl;
@@ -2563,7 +2597,7 @@ public class Parser extends Lexer {
 		return a;
 	}
 	
-	private void parseContracts(FuncDeclaration f) {
+	private void parseContracts(FunctionDeclaration f) {
 		// Type tb; // <-- not used
 		LINK linksave = linkage;
 
@@ -2577,21 +2611,22 @@ public class Parser extends Lexer {
 			// L1:
 			switch (token.value) {
 			case TOKlcurly:
-				if (f.frequire != null || f.fensure != null) {
+				if (f.getPrecondition() != null || f.getPostcondition() != null) {
 					problem("Missing body { ... } after in or out", IProblem.SEVERITY_ERROR, IProblem.MISSING_BODY_AFTER_IN_OR_OUT,
 							f.getName().getStartPosition(), f.getName().getLength());
 				}
-				f.fbody = parseStatement(PSsemi);
+				f.setBody(parseStatement(PSsemi));
 				f.length = prevToken.ptr + prevToken.len - f.startPosition;
 				break;
 
 			case TOKbody:
 				nextToken();
-				f.fbody = parseStatement(PScurly);
+				f.setBody(parseStatement(PScurly));
+				f.length = prevToken.ptr + prevToken.len - f.startPosition;
 				break;
 
 			case TOKsemicolon:
-				if (f.frequire != null || f.fensure != null) {
+				if (f.getPrecondition() != null || f.getPostcondition() != null) {
 					problem("Missing body { ... } after in or out", IProblem.SEVERITY_ERROR, IProblem.MISSING_BODY_AFTER_IN_OR_OUT,
 							f.getName().getStartPosition(), f.getName().getLength());
 				}
@@ -2613,20 +2648,20 @@ public class Parser extends Lexer {
 			 */
 
 			case TOKin:
-				if (f.frequire != null) {
+				if (f.getPrecondition() != null) {
 					problem("Redundant 'in' statement", IProblem.SEVERITY_ERROR, IProblem.REDUNDANT_IN_STATEMENT,
 							token.ptr, token.len);
 				}
 				nextToken();
 				
-				f.frequire = parseStatement(PScurly | PSscope);
+				f.setPrecondition(parseStatement(PScurly | PSscope));
 				repeat = true;
 				break;
 
 			case TOKout:
 				// parse: out (identifier) { statement }
 				
-				if (f.fensure != null) {
+				if (f.getPostcondition() != null) {
 					problem("Redundant 'out' statement", IProblem.SEVERITY_ERROR, IProblem.REDUNDANT_OUT_STATEMENT,
 							token.ptr, token.len);
 				}
@@ -2638,12 +2673,12 @@ public class Parser extends Lexer {
 						problem("Identifier following 'out' expected", IProblem.SEVERITY_ERROR, IProblem.IDENTIFIER_EXPECTED,
 								token.ptr, token.len);
 					}
-					f.outId = new Identifier(token);
+					f.setPostconditionVariableName(new SimpleName(new Identifier(token)));
 					nextToken();
 					check(TOKrparen);
 				}
 				
-				f.fensure = parseStatement(PScurly | PSscope);
+				f.setPostcondition(parseStatement(PScurly | PSscope));
 				repeat = true;
 				break;
 
@@ -5349,8 +5384,9 @@ public class Parser extends Lexer {
 			varargs = pointer2_varargs[0];
 
 		}
-		t2 = new TypeFunction(arguments, t2, varargs, linkage);
-		fd = new FuncLiteralDeclaration(t2, save, null);
+		t2 = new TypeFunction(arguments, t2, varargs != 0, linkage);
+		fd = new FuncLiteralDeclaration(ast);
+		fd.arguments().addAll(arguments);
 		parseContracts(fd);
 		e[0] = new FuncExp(fd);
 	}

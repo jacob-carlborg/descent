@@ -16,7 +16,7 @@ public class TypeDelegate extends Type implements IDelegateType {
 	}
 	
 	public IArgument[] getArguments() {
-		return ((TypeFunction) next).getArguments();
+		return ((TypeFunction) next).getArguments().toArray(new IArgument[((TypeFunction) next).getArguments().size()]);
 	}
 	
 	public int getNodeType0() {
