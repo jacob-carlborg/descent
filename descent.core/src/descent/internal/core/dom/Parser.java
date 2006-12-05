@@ -89,7 +89,6 @@ import java.util.List;
 import descent.core.compiler.IProblem;
 import descent.core.dom.IBaseClass;
 import descent.core.dom.IElement;
-import descent.core.dom.IEnumMember;
 import descent.core.dom.IImport;
 import descent.core.dom.IUnaryExpression;
 
@@ -985,7 +984,7 @@ public class Parser extends Lexer {
 
 	    f = new InvariantDeclaration();
 	    f.startPosition = prevToken.ptr;
-	    f.fbody = parseStatement(PScurly);
+	    f.setBody(parseStatement(PScurly));
 	    f.length = prevToken.ptr + prevToken.len - f.startPosition;
 	    return f;
 	}

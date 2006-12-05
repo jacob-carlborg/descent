@@ -73,9 +73,11 @@ public class PositionHelper {
 			if (name != null) element = name;
 			break;
 		case IElement.INVARIANT_DECLARATION:
+			/* TODO fixme
 			IInvariantDeclaration inv = (IInvariantDeclaration) element;
 			name = inv.getName();
 			if (name != null) element = name;
+			*/
 			break;
 		case IElement.TEMPLATE_DECLARATION:
 			ITemplateDeclaration t = (ITemplateDeclaration) element;
