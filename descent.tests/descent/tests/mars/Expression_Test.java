@@ -523,8 +523,8 @@ public class Expression_Test extends Parser_Test {
 		
 		assertEquals("bla", expr.getExpression().toString());
 		
-		assertEquals("1", expr.getFrom().toString());
-		assertEquals("3", expr.getTo().toString());
+		assertEquals("1", expr.getFromExpression().toString());
+		assertEquals("3", expr.getToExpression().toString());
 		
 		assertPosition(expr, 1, s.length() - 1);
 	}
@@ -536,8 +536,8 @@ public class Expression_Test extends Parser_Test {
 		
 		assertEquals("bla", expr.getExpression().toString());
 		
-		assertNull(expr.getFrom());
-		assertNull(expr.getTo());
+		assertNull(expr.getFromExpression());
+		assertNull(expr.getToExpression());
 		
 		assertPosition(expr, 1, s.length() - 1);
 	}

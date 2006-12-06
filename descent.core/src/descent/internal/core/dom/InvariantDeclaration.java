@@ -6,6 +6,14 @@ import java.util.List;
 import descent.core.dom.ASTVisitor;
 import descent.core.dom.IInvariantDeclaration;
 
+/**
+ * Invariant declaration AST node type.
+ *
+ * <pre>
+ * InvariantDeclaration:
+ *    <b>invariant</b> Statement
+ * </pre>
+ */
 public class InvariantDeclaration extends Declaration implements IInvariantDeclaration {
 
 	/**
@@ -178,10 +186,6 @@ public class InvariantDeclaration extends Declaration implements IInvariantDecla
 			memSize()
 			+ (this.body == null ? 0 : getBody().treeSize())
 	;
-	}
-
-	public InvariantDeclaration() {
-		this.ident = new Identifier("invariant", TOK.TOKinvariant);
 	}
 
 }

@@ -17,11 +17,11 @@ public interface ISliceExpression extends IExpression {
 	/**
 	 * Returns where to begin in the slice.
 	 */
-	IExpression getFrom();
+	IExpression getFromExpression();
 	
 	/**
 	 * Returns where to end the slice.
 	 */
-	IExpression getTo();
+	IExpression getToExpression();
 
 }

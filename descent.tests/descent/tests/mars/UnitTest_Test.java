@@ -13,7 +13,7 @@ public class UnitTest_Test extends Parser_Test {
 		IElement[] declDefs = unit.getDeclarationDefinitions();
 		
 		IUnitTestDeclaration inv = (IUnitTestDeclaration) declDefs[0];
-		assertEquals(IElement.UNITTEST_DECLARATION, inv.getNodeType0());
+		assertEquals(IElement.UNIT_TEST_DECLARATION, inv.getNodeType0());
 		assertPosition(inv, 1, 12);
 	}
 

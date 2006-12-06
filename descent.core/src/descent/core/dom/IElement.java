@@ -87,7 +87,7 @@ public interface IElement {
 	 * Constant representing a unittest declaration.
 	 * A D element with this type can be safely cast to <code>IUnitTestDeclaration</code>. 
 	 */
-	int UNITTEST_DECLARATION = 17;
+	int UNIT_TEST_DECLARATION = 17;
 	
 	/**
 	 * Constant representing an argument.

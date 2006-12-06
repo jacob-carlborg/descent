@@ -170,7 +170,7 @@ public class DOutlineLabelProvider extends LabelProvider {
 			return ((IEnumMember) element).getName().toString();
 		case IElement.INVARIANT_DECLARATION:
 			return "invariant";
-		case IElement.UNITTEST_DECLARATION:
+		case IElement.UNIT_TEST_DECLARATION:
 			return "unit test";
 		case IElement.VARIABLE_DECLARATION:
 			IVariableDeclaration var = (IVariableDeclaration) element;
@@ -342,7 +342,7 @@ public class DOutlineLabelProvider extends LabelProvider {
 			return fieldPublicImage;
 		case IElement.INVARIANT_DECLARATION:
 			return invariantImage;
-		case IElement.UNITTEST_DECLARATION:
+		case IElement.UNIT_TEST_DECLARATION:
 			return unittestImage;
 		case IElement.VARIABLE_DECLARATION:
 			m = ((IVariableDeclaration) element).getModifierFlags();

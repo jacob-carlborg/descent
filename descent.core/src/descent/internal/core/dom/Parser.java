@@ -975,29 +975,23 @@ public class Parser extends Lexer {
 	}
 	
 	private InvariantDeclaration parseInvariant() {
-		InvariantDeclaration f;
-
+		int start = token.ptr;
 	    nextToken();
-	    //check(TOKlparen);		// don't require ()
-	    //check(TOKrparen);
 
-	    f = new InvariantDeclaration();
-	    f.startPosition = prevToken.ptr;
-	    f.setBody(parseStatement(PScurly));
-	    f.length = prevToken.ptr + prevToken.len - f.startPosition;
-	    return f;
+	    InvariantDeclaration invariant = new InvariantDeclaration(ast);
+	    invariant.setBody(parseStatement(PScurly));
+	    invariant.setSourceRange(start, prevToken.ptr + prevToken.len - start);
+	    return invariant;
 	}
 	
 	private UnitTestDeclaration parseUnitTest() {
-		UnitTestDeclaration f;
-
-	    nextToken();
-
-	    f = new UnitTestDeclaration();
-	    f.startPosition = prevToken.ptr;
-	    f.fbody = parseStatement(PScurly);
-	    f.length = prevToken.ptr + prevToken.len - f.startPosition;
-	    return f;
+		int start = token.ptr;
+		nextToken();
+		
+		UnitTestDeclaration unitTest = new UnitTestDeclaration(ast);
+	    unitTest.setBody(parseStatement(PScurly));
+	    unitTest.setSourceRange(start, prevToken.ptr + prevToken.len - start);
+	    return unitTest;
 	}
 	
 	private FunctionDeclaration parseNew() {
@@ -5128,14 +5122,14 @@ public class Parser extends Lexer {
 				inBrackets++;
 				nextToken();
 				if (token.value == TOKrbracket) { // array[]
-					e = new SliceExp(e, null, null);
+					e = new SliceExpression(e, null, null);
 					nextToken();
 				} else {
 					index = parseAssignExp();
 					if (token.value == TOKslice) { // array[lwr .. upr]
 						nextToken();
 						upr = parseAssignExp();
-						e = new SliceExp(e, index, upr);
+						e = new SliceExpression(e, index, upr);
 					} else { // array[index, i2, i3, i4, ...]
 						List<Expression> arguments = new ArrayList<Expression>();
 						arguments.add(index);
@@ -5798,7 +5792,7 @@ public class Parser extends Lexer {
 		 * t = new TypeDArray(t); } else if (token.value == TOKlparen) arguments =
 		 * parseArguments(); #endif
 		 */
-		e = new NewExp(thisexp, newargs, t, arguments);
+		e = new NewExpression(thisexp, newargs, t, arguments);
 		return e;
 	}
 	

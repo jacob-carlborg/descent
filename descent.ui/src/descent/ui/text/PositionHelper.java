@@ -67,10 +67,12 @@ public class PositionHelper {
 			name = td.getName();
 			if (name != null) element = name;
 			break;
-		case IElement.UNITTEST_DECLARATION:
+		case IElement.UNIT_TEST_DECLARATION:
+			/* TODO fixme
 			IUnitTestDeclaration u = (IUnitTestDeclaration) element;
 			name = u.getName();
 			if (name != null) element = name;
+			*/
 			break;
 		case IElement.INVARIANT_DECLARATION:
 			/* TODO fixme

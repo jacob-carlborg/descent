@@ -12,13 +12,8 @@ package descent.core.dom;
 public interface IUnitTestDeclaration extends IDeclaration {
 	
 	/**
-	 * Returns the "unittest" part of this declaration.
-	 */
-	ISimpleName getName();
-	
-	/**
 	 * Returns the statement present in the unittest.
 	 */
-	IStatement getStatement();
+	IStatement getBody();
 
 }

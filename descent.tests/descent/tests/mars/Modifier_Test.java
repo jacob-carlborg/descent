@@ -159,8 +159,6 @@ public class Modifier_Test extends Parser_Test {
 		
 		IImportDeclaration decl = (IImportDeclaration) declDefs[0];
 		assertEquals(IModifier.PRIVATE, decl.getModifierFlags());
-		IImport imp = decl.imports().get(0);
-		assertEquals(IModifier.PRIVATE, imp.getModifierFlags());
 	}
 	
 	public void testOnVar1() {

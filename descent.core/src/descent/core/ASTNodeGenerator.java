@@ -7,11 +7,12 @@ public class ASTNodeGenerator {
 	
 	public static void main(String[] args) {
 		
-		String description = "void initializer";
+		String description = "parenthesized expression";
 		String clazz = toMethod(description);
 		String nodeType = toProperty(description);
 
 		Member[] members = {
+				Member.childMandatory("expression", "Expression", CYCLE_RISK, "SimpleName"),
 		};
 		
 		StringBuilder sb = new StringBuilder();
