@@ -7,12 +7,11 @@ public class ASTNodeGenerator {
 	
 	public static void main(String[] args) {
 		
-		String description = "invariant declaration";
+		String description = "void initializer";
 		String clazz = toMethod(description);
 		String nodeType = toProperty(description);
 
 		Member[] members = {
-				Member.childMandatory("body", "Statement", CYCLE_RISK, "Block"),
 		};
 		
 		StringBuilder sb = new StringBuilder();

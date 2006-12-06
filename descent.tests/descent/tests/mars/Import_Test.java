@@ -23,7 +23,7 @@ public class Import_Test extends Parser_Test {
 		assertFalse(impDecl.isStatic());
 		assertPosition(impDecl, 1, 9);
 		
-		IImport[] imps = impDecl.getImports();
+		IImport[] imps = impDecl.imports().toArray(new IImport[impDecl.imports().size()]);
 		assertEquals(1, imps.length);
 		
 		IImport imp = imps[0];
@@ -48,7 +48,7 @@ public class Import_Test extends Parser_Test {
 		IImportDeclaration impDecl = (IImportDeclaration) declDefs[0];
 		assertPosition(impDecl, 1, 20);
 		
-		IImport[] imps = impDecl.getImports();
+		IImport[] imps = impDecl.imports().toArray(new IImport[impDecl.imports().size()]);
 		assertEquals(1, imps.length);
 		
 		IImport imp = imps[0];
@@ -71,7 +71,7 @@ public class Import_Test extends Parser_Test {
 		IImportDeclaration impDecl = (IImportDeclaration) declDefs[0];
 		assertPosition(impDecl, 1, 29);
 		
-		IImport[] imps = impDecl.getImports();
+		IImport[] imps = impDecl.imports().toArray(new IImport[impDecl.imports().size()]);
 		assertEquals(1, imps.length);
 		
 		IImport imp = imps[0];
@@ -98,7 +98,7 @@ public class Import_Test extends Parser_Test {
 		IImportDeclaration impDecl = (IImportDeclaration) declDefs[0];
 		assertPosition(impDecl, 1, 17);
 		
-		IImport[] imps = impDecl.getImports();
+		IImport[] imps = impDecl.imports().toArray(new IImport[impDecl.imports().size()]);
 		assertEquals(1, imps.length);
 		
 		IImport imp = imps[0];
@@ -130,7 +130,7 @@ public class Import_Test extends Parser_Test {
 		IImportDeclaration impDecl = (IImportDeclaration) declDefs[0];
 		assertPosition(impDecl, 1, 26);
 		
-		IImport[] imps = impDecl.getImports();
+		IImport[] imps = impDecl.imports().toArray(new IImport[impDecl.imports().size()]);
 		assertEquals(1, imps.length);
 		
 		IImport imp = imps[0];
@@ -165,7 +165,7 @@ public class Import_Test extends Parser_Test {
 		assertTrue(impDecl.isStatic());
 		assertPosition(impDecl, 1, s.length() - 1);
 		
-		IImport[] imps = impDecl.getImports();
+		IImport[] imps = impDecl.imports().toArray(new IImport[impDecl.imports().size()]);
 		assertEquals(1, imps.length);
 		
 		IImport imp = imps[0];

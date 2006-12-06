@@ -385,7 +385,7 @@ public class DOutlineLabelProvider extends LabelProvider {
 	
 	private String getImportText(IImportDeclaration impDecl) {
 		StringBuilder builder = new StringBuilder();
-		for(IImport imp : impDecl.getImports()) {
+		for(IImport imp : impDecl.imports()) {
 			if (imp.getAlias() == null) {
 				builder.append(imp.getQualifiedName());
 			} else {

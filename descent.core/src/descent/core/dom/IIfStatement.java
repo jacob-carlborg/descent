@@ -21,16 +21,16 @@ public interface IIfStatement extends IStatement {
 	/**
 	 * Returns the condition.
 	 */
-	IExpression getCondition();
+	IExpression getExpression();
 	
 	/**
 	 * Returns the "then" statement.
 	 */
-	IStatement getThen();
+	IStatement getThenBody();
 	
 	/**
 	 * Returns the "else" statement, if any, or <code>null</code>.
 	 */
-	IStatement getElse();
+	IStatement getElseBody();
 
 }

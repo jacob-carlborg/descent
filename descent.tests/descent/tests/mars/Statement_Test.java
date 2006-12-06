@@ -161,10 +161,10 @@ public class Statement_Test extends Parser_Test {
 		assertEquals(IStatement.LABEL_STATEMENT, stm.getNodeType0());
 		assertPosition(stm, 1, 13);
 		
-		assertEquals("label", stm.getName().toString());
-		assertPosition(stm.getName(), 1, 5);
+		assertEquals("label", stm.getLabel().toString());
+		assertPosition(stm.getLabel(), 1, 5);
 		
-		assertPosition(stm.getStatement(), 8, 6);
+		assertPosition(stm.getBody(), 8, 6);
 	}
 	
 	public void testStaticAssertStatement() {
@@ -430,7 +430,7 @@ public class Statement_Test extends Parser_Test {
 		assertEquals(IStatement.IF_STATEMENT, stm.getNodeType0());
 		assertPosition(stm, 1, s.length() - 1);
 		
-		assertEquals("1", stm.getCondition().toString());
+		assertEquals("1", stm.getExpression().toString());
 		assertNull(stm.getArgument());
 	}
 	
@@ -441,7 +441,7 @@ public class Statement_Test extends Parser_Test {
 		assertEquals(IStatement.IF_STATEMENT, stm.getNodeType0());
 		assertPosition(stm, 1, s.length() - 1);
 		
-		assertEquals("1", stm.getCondition().toString());
+		assertEquals("1", stm.getExpression().toString());
 		assertNotNull(stm.getArgument());
 		assertEquals("x", stm.getArgument().getName().toString());
 		assertPosition(stm.getArgument(), 5, 6);
@@ -454,7 +454,7 @@ public class Statement_Test extends Parser_Test {
 		assertEquals(IStatement.IF_STATEMENT, stm.getNodeType0());
 		assertPosition(stm, 1, s.length() - 1);
 		
-		assertEquals("1", stm.getCondition().toString());
+		assertEquals("1", stm.getExpression().toString());
 		
 		IArgument argument = stm.getArgument();
 		assertNotNull(argument);
@@ -470,7 +470,7 @@ public class Statement_Test extends Parser_Test {
 		assertEquals(IStatement.IF_STATEMENT, stm.getNodeType0());
 		assertPosition(stm, 1, s.length() - 1);
 		
-		assertEquals("b", stm.getCondition().toString());
+		assertEquals("b", stm.getExpression().toString());
 		
 		IArgument argument = stm.getArgument();
 		assertNotNull(argument);

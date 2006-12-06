@@ -89,7 +89,6 @@ import java.util.List;
 import descent.core.compiler.IProblem;
 import descent.core.dom.IBaseClass;
 import descent.core.dom.IElement;
-import descent.core.dom.IImport;
 import descent.core.dom.IUnaryExpression;
 
 public class Parser extends Lexer {
@@ -342,7 +341,7 @@ public class Parser extends Lexer {
 				} else if (token.value == TOKimport) {
 					s = parseImport(decldefs, true);
 					ImportDeclaration id = (ImportDeclaration) decldefs.get(decldefs.size() -1);
-					id.isStatic = true;
+					id.setStatic(true);
 					id.length += id.startPosition - staticToken.ptr;
 					id.startPosition = staticToken.ptr;
 				} else {
@@ -1755,9 +1754,8 @@ public class Parser extends Lexer {
 	}
 	
 	private Import parseImport(List<Declaration> decldefs, boolean isstatic) {
-		ImportDeclaration importDeclaration = new ImportDeclaration();
+		ImportDeclaration importDeclaration = new ImportDeclaration(ast);
 		importDeclaration.startPosition = token.ptr;
-		importDeclaration.imports = new ArrayList<IImport>();
 		
 		Import s = null;
 	    Identifier id;
@@ -1823,7 +1821,7 @@ public class Parser extends Lexer {
 			s = new Import(a, token.ident, aliasid, isstatic);
 			s.startPosition = impStart;
 			
-			importDeclaration.imports.add(s);
+			importDeclaration.imports().add(s);
 	
 			/* Look for
 			 *	: alias=name, alias=name;
@@ -2846,7 +2844,7 @@ public class Parser extends Lexer {
 			t = peek(token);
 			if (t.value == TOKsemicolon) {
 				nextToken();
-				VoidInitializer init = new VoidInitializer();
+				VoidInitializer init = new VoidInitializer(ast);
 				init.startPosition = prevToken.ptr;
 				init.length = prevToken.len;
 				return init;
@@ -2889,7 +2887,7 @@ public class Parser extends Lexer {
 				nextToken();
 				nextToken();
 				Statement body = parseStatement(PSsemi);
-				s = new LabelStatement(ident, body);
+				s = new LabelStatement(new SimpleName(ident), body);
 				s.startPosition = ident.startPosition;
 				s.length = body.startPosition + body.length - s.startPosition;
 				break;
@@ -3861,7 +3859,7 @@ public class Parser extends Lexer {
 						toklist = null;
 						ptoklist[0] = toklist;
 						if (label == null) {
-							s = new LabelStatement(label, s);
+							s = new LabelStatement(new SimpleName(label), s);
 							label = null;
 						}
 						statements.add(s);
