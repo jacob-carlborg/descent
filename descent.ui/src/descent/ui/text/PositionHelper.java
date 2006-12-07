@@ -4,22 +4,21 @@ import org.eclipse.jface.text.Position;
 
 import descent.core.dom.IAggregateDeclaration;
 import descent.core.dom.IAliasDeclaration;
-import descent.core.dom.IConditionAssignment;
 import descent.core.dom.IDebugDeclaration;
 import descent.core.dom.IElement;
 import descent.core.dom.IEnumDeclaration;
 import descent.core.dom.IEnumMember;
 import descent.core.dom.IFunctionDeclaration;
-import descent.core.dom.IInvariantDeclaration;
 import descent.core.dom.IMixinDeclaration;
 import descent.core.dom.IModuleDeclaration;
 import descent.core.dom.IName;
 import descent.core.dom.IPragmaDeclaration;
 import descent.core.dom.ITemplateDeclaration;
 import descent.core.dom.ITypedefDeclaration;
-import descent.core.dom.IUnitTestDeclaration;
 import descent.core.dom.IVariableDeclaration;
 import descent.core.dom.IVersionDeclaration;
+import descent.internal.core.dom.DebugAssignment;
+import descent.internal.core.dom.VersionAssignment;
 
 public class PositionHelper {
 	
@@ -99,11 +98,14 @@ public class PositionHelper {
 			name = ((IDebugDeclaration) element).getDebug();
 			if (name != null) element = name;
 			break;
-		case IElement.CONDITION_ASSIGNMENT:
-			IConditionAssignment va = (IConditionAssignment) element;
-			name = va.getValue();
-			if (name != null) element = name;
+		case IElement.DEBUG_ASSIGNMENT:
+			DebugAssignment da = (DebugAssignment) element;
+			element = da.getVersion();
 			break;
+		case IElement.VERSION_ASSIGNMENT:
+			VersionAssignment va = (VersionAssignment) element;
+			element = va.getVersion();
+			break;			
 		case IElement.PRAGMA_DECLARATION:
 			IPragmaDeclaration pd = (IPragmaDeclaration) element;
 			name = pd.getIdentifier();

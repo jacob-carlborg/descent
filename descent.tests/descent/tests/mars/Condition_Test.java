@@ -6,9 +6,10 @@ import descent.core.dom.IDebugDeclaration;
 import descent.core.dom.IElement;
 import descent.core.dom.IIftypeDeclaration;
 import descent.core.dom.IStaticIfDeclaration;
-import descent.core.dom.IConditionAssignment;
 import descent.core.dom.IVersionDeclaration;
+import descent.internal.core.dom.DebugAssignment;
 import descent.internal.core.dom.ParserFacade;
+import descent.internal.core.dom.VersionAssignment;
 
 public class Condition_Test extends Parser_Test {
 	
@@ -81,12 +82,10 @@ public class Condition_Test extends Parser_Test {
 		IElement[] declDefs = unit.getDeclarationDefinitions();
 		assertEquals(1, declDefs.length);
 		
-		IConditionAssignment v = (IConditionAssignment) declDefs[0];
-		assertEquals(IElement.CONDITION_ASSIGNMENT, v.getNodeType0());
-		assertEquals(IConditionAssignment.CONDITION_VERSION, v.getConditionAssignmentType());
-		assertEquals("2", v.getValue().toString());
-		assertPosition(v.getValue(), 11, 1);
-		assertPosition(v, 1, s.length() - 1);
+		VersionAssignment va = (VersionAssignment) declDefs[0];
+		assertEquals("2", va.getVersion().getValue().toString());
+		assertPosition(va.getVersion(), 11, 1);
+		assertPosition(va, 1, s.length() - 1);
 	}
 	
 	public void testVersionAssign2() {
@@ -95,11 +94,10 @@ public class Condition_Test extends Parser_Test {
 		IElement[] declDefs = unit.getDeclarationDefinitions();
 		assertEquals(1, declDefs.length);
 		
-		IConditionAssignment v = (IConditionAssignment) declDefs[0];
-		assertEquals(IElement.CONDITION_ASSIGNMENT, v.getNodeType0());
-		assertEquals("some", v.getValue().toString());
-		assertPosition(v.getValue(), 11, 4);
-		assertPosition(v, 1, s.length() - 1);
+		VersionAssignment va = (VersionAssignment) declDefs[0];
+		assertEquals("some", va.getVersion().getValue().toString());
+		assertPosition(va.getVersion(), 11, 4);
+		assertPosition(va, 1, s.length() - 1);
 	}
 	
 	public void testDebugAssign() {
@@ -108,12 +106,10 @@ public class Condition_Test extends Parser_Test {
 		IElement[] declDefs = unit.getDeclarationDefinitions();
 		assertEquals(1, declDefs.length);
 		
-		IConditionAssignment v = (IConditionAssignment) declDefs[0];
-		assertEquals(IElement.CONDITION_ASSIGNMENT, v.getNodeType0());
-		assertEquals(IConditionAssignment.CONDITION_DEBUG, v.getConditionAssignmentType());
-		assertEquals("2", v.getValue().toString());
-		assertPosition(v.getValue(), 9, 1);
-		assertPosition(v, 1, s.length() - 1);
+		DebugAssignment da = (DebugAssignment) declDefs[0];
+		assertEquals("2", da.getVersion().getValue().toString());
+		assertPosition(da.getVersion(), 9, 1);
+		assertPosition(da, 1, s.length() - 1);
 	}
 	
 	public void testDebugAssign2() {
@@ -122,11 +118,10 @@ public class Condition_Test extends Parser_Test {
 		IElement[] declDefs = unit.getDeclarationDefinitions();
 		assertEquals(1, declDefs.length);
 		
-		IConditionAssignment v = (IConditionAssignment) declDefs[0];
-		assertEquals(IElement.CONDITION_ASSIGNMENT, v.getNodeType0());
-		assertEquals("some", v.getValue().toString());
-		assertPosition(v.getValue(), 9, 4);
-		assertPosition(v, 1, s.length() - 1);
+		DebugAssignment da = (DebugAssignment) declDefs[0];
+		assertEquals("some", da.getVersion().getValue().toString());
+		assertPosition(da.getVersion(), 9, 4);
+		assertPosition(da, 1, s.length() - 1);
 	}
 	
 	public void testIftypeNone() {

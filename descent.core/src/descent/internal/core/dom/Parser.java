@@ -507,12 +507,23 @@ public class Parser extends Lexer {
 				if (token.value == TOKassign) {
 					nextToken();
 					if (token.value == TOKidentifier) {
-						s = new DebugSymbol(new Identifier(token));
+						Version version = new Version(ast);
+						version.setValue(token.ident.string);
+						version.setSourceRange(token.ptr, token.len);
+						
+						DebugAssignment da = new DebugAssignment(ast);
+						da.setVersion(version);
+						
+						s = da;
 					} else if (token.value == TOKint32v) {
-						Identifier id = new Identifier(String.valueOf(token.numberValue), TOK.TOKidentifier);
-						id.startPosition = token.ptr;
-						id.length = token.len;
-						s = new DebugSymbol(id);
+						Version version = new Version(ast);
+						version.setValue(String.valueOf(token.numberValue));
+						version.setSourceRange(token.ptr, token.len);
+						
+						DebugAssignment da = new DebugAssignment(ast);
+						da.setVersion(version);
+						
+						s = da;
 					} else {
 						problem("Identifier or integer expected", IProblem.SEVERITY_ERROR, IProblem.IDENTIFIER_OR_INTEGER_EXPECTED, token.ptr, token.len);
 						s = null;
@@ -548,12 +559,23 @@ public class Parser extends Lexer {
 				if (token.value == TOKassign) {
 					nextToken();
 					if (token.value == TOKidentifier) {
-						s = new VersionSymbol(new Identifier(token));
+						Version version = new Version(ast);
+						version.setValue(token.ident.string);
+						version.setSourceRange(token.ptr, token.len);
+						
+						VersionAssignment va = new VersionAssignment(ast);
+						va.setVersion(version);
+						
+						s = va;
 					} else if (token.value == TOKint32v) {
-						Identifier id = new Identifier(String.valueOf(token.numberValue), TOK.TOKidentifier);
-						id.startPosition = token.ptr;
-						id.length = token.len;
-						s = new VersionSymbol(id);
+						Version version = new Version(ast);
+						version.setValue(String.valueOf(token.numberValue));
+						version.setSourceRange(token.ptr, token.len);
+						
+						VersionAssignment da = new VersionAssignment(ast);
+						da.setVersion(version);
+						
+						s = da;
 					} else {
 						problem("Identifier or integer expected", IProblem.SEVERITY_ERROR, IProblem.IDENTIFIER_OR_INTEGER_EXPECTED, token.ptr, token.len);
 						s = null;
@@ -2773,7 +2795,7 @@ public class Parser extends Lexer {
 			return is;
 
 		case TOKlbracket:
-			ia = new ArrayInitializer();
+			ia = new ArrayInitializer(ast);
 			nextToken();
 			comma = 0;
 			while (true) {
@@ -2796,7 +2818,15 @@ public class Parser extends Lexer {
 						value = new ExpressionInitializer(e);
 						e = null;
 					}
-					ia.addInit(e, value);
+					ArrayInitializerFragment fragment = new ArrayInitializerFragment(ast);
+					fragment.setInitializer(value);
+					if (e == null) {
+						fragment.setSourceRange(value.getStartPosition(), value.getLength());
+					} else {
+						fragment.setExpression(e);
+						fragment.setSourceRange(e.getStartPosition(), value.getStartPosition() + value.getLength() - e.getStartPosition());
+					}
+					ia.fragments().add(fragment);
 					comma = 1;
 					continue;
 
@@ -2809,7 +2839,12 @@ public class Parser extends Lexer {
 					}
 					
 					value = parseInitializer();
-					ia.addInit(null, value);
+					
+					fragment = new ArrayInitializerFragment(ast);
+					fragment.setSourceRange(value.getStartPosition(), value.getLength());
+					fragment.setInitializer(value);
+					
+					ia.fragments().add(fragment);
 					comma = 1;
 					continue;
 

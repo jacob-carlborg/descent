@@ -1,5 +1,9 @@
 package descent.core.dom;
 
+import java.util.List;
+
+import descent.internal.core.dom.ArrayInitializerFragment;
+
 /**
  * An array initializer:
  * 
@@ -9,14 +13,6 @@ package descent.core.dom;
  */
 public interface IArrayInitializer extends IInitializer {
 	
-	/**
-	 * Returns the lengths. Some may be <code>null</code>.
-	 */
-	IExpression[] getLengths();
-	
-	/**
-	 * Returns the values. Some may be <code>null</code>.
-	 */
-	IInitializer[] getValues();
+	List<ArrayInitializerFragment> fragments();
 
 }

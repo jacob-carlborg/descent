@@ -7,13 +7,12 @@ public class ASTNodeGenerator {
 	
 	public static void main(String[] args) {
 		
-		String description = "switch statement";
+		String description = "version assignment";
 		String clazz = toMethod(description);
 		String nodeType = toProperty(description);
 
 		Member[] members = {
-				Member.childMandatory("expression", "Expression", CYCLE_RISK, "SimpleName"),
-				Member.childMandatory("body", "Statement", CYCLE_RISK, "Block"),
+				Member.childMandatory("version", "Version", NO_CYCLE_RISK, "Version"),
 		};
 		
 		StringBuilder sb = new StringBuilder();

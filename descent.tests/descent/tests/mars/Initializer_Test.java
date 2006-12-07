@@ -1,11 +1,14 @@
 package descent.tests.mars;
 
+import java.util.List;
+
 import descent.core.dom.IArrayInitializer;
 import descent.core.dom.IExpression;
 import descent.core.dom.IExpressionInitializer;
 import descent.core.dom.IInitializer;
 import descent.core.dom.ISimpleName;
 import descent.core.dom.IStructInitializer;
+import descent.internal.core.dom.ArrayInitializerFragment;
 import descent.internal.core.dom.ParserFacade;
 
 public class Initializer_Test extends Parser_Test {
@@ -101,19 +104,18 @@ public class Initializer_Test extends Parser_Test {
 		assertEquals(IInitializer.ARRAY_INITIALIZER, init.getNodeType0());
 		assertPosition(init, 1, s.length() - 2);
 		
-		IExpression[] exps = init.getLengths();
-		assertEquals(3, exps.length);
+		List<ArrayInitializerFragment> fragments = init.fragments();
+		assertEquals(3, fragments.size());
 		
-		assertNull(exps[0]);
-		assertNull(exps[1]);
-		assertNull(exps[2]);
+		assertPosition(fragments.get(0), 3, 1);
 		
-		IInitializer[] values = init.getValues();
-		assertEquals(3, values.length);
+		assertNull(fragments.get(0).getExpression());
+		assertNull(fragments.get(1).getExpression());
+		assertNull(fragments.get(2).getExpression());
 		
-		assertPosition(values[0], 3, 1);
+		assertPosition(fragments.get(0).getInitializer(), 3, 1);
 		
-		IExpressionInitializer expInit = (IExpressionInitializer) values[0];
+		IExpressionInitializer expInit = (IExpressionInitializer) fragments.get(0).getInitializer();
 		IExpression exp = expInit.getExpression();
 		assertEquals("1", exp.toString());
 	}
@@ -124,18 +126,14 @@ public class Initializer_Test extends Parser_Test {
 		assertEquals(IInitializer.ARRAY_INITIALIZER, init.getNodeType0());
 		assertPosition(init, 1, s.length() - 2);
 		
-		IExpression[] exps = init.getLengths();
-		assertEquals(1, exps.length);
+		List<ArrayInitializerFragment> fragments = init.fragments();
+		assertEquals(1, fragments.size());
 		
-		assertEquals("2", exps[0].toString());
-		assertPosition(exps[0], 3, 1);
+		assertPosition(fragments.get(0).getExpression(), 3, 1);
 		
-		IInitializer[] values = init.getValues();
-		assertEquals(1, values.length);
+		assertPosition(fragments.get(0).getInitializer(), 7, 1);
 		
-		assertPosition(values[0], 7, 1);
-		
-		IExpressionInitializer expInit = (IExpressionInitializer) values[0];
+		IExpressionInitializer expInit = (IExpressionInitializer) fragments.get(0).getInitializer();
 		IExpression exp = expInit.getExpression();
 		assertEquals("1", exp.toString());
 	}
@@ -146,8 +144,7 @@ public class Initializer_Test extends Parser_Test {
 		assertEquals(IInitializer.ARRAY_INITIALIZER, init.getNodeType0());
 		assertPosition(init, 1, s.length() - 2);
 		
-		IExpression[] exps = init.getLengths();
-		assertEquals(1, exps.length);
+		assertEquals(1, init.fragments().size());
 	}
 
 }

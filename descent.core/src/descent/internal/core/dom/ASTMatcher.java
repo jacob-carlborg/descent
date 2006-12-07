@@ -267,6 +267,28 @@ public class ASTMatcher {
 		SimpleName o = (SimpleName) other;
 		return node.getIdentifier().equals(o.getIdentifier());
 	}
+	
+	/**
+	 * Returns whether the given node and the other object match.
+	 * <p>
+	 * The default implementation provided by this class tests whether the
+	 * other object is a node of the same type with structurally isomorphic
+	 * child subtrees. Subclasses may override this method as needed.
+	 * </p>
+	 * 
+	 * @param node the node
+	 * @param other the other object, or <code>null</code>
+	 * @return <code>true</code> if the subtree matches, or 
+	 *   <code>false</code> if they do not match or the other object has a
+	 *   different node type or is <code>null</code>
+	 */
+	public boolean match(Version node, Object other) {
+		if (!(other instanceof Version)) {
+			return false;
+		}
+		Version o = (Version) other;
+		return node.getValue().equals(o.getValue());
+	}
 
 	/**
 	 * Returns whether the given node and the other object match.
@@ -1434,6 +1456,103 @@ public class ASTMatcher {
 		return (
 			safeSubtreeMatch(node.getExpression(), o.getExpression())
 			&& safeSubtreeMatch(node.getBody(), o.getBody())
+			);
+	}
+	
+	/**
+	 * Returns whether the given node and the other object match.
+	 * <p>
+	 * The default implementation provided by this class tests whether the
+	 * other object is a node of the same type with structurally isomorphic
+	 * child subtrees. Subclasses may override this method as needed.
+	 * </p>
+	 * 
+	 * @param node the node
+	 * @param other the other object, or <code>null</code>
+	 * @return <code>true</code> if the subtree matches, or 
+	 *   <code>false</code> if they do not match or the other object has a
+	 *   different node type or is <code>null</code>
+	 */
+	public boolean match(ArrayInitializerFragment node, Object other) {
+		if (!(other instanceof ArrayInitializerFragment)) {
+			return false;
+		}
+		ArrayInitializerFragment o = (ArrayInitializerFragment) other;
+		return (
+			safeSubtreeMatch(node.getExpression(), o.getExpression())
+			&& safeSubtreeMatch(node.getInitializer(), o.getInitializer())
+			);
+	}
+	
+	/**
+	 * Returns whether the given node and the other object match.
+	 * <p>
+	 * The default implementation provided by this class tests whether the
+	 * other object is a node of the same type with structurally isomorphic
+	 * child subtrees. Subclasses may override this method as needed.
+	 * </p>
+	 * 
+	 * @param node the node
+	 * @param other the other object, or <code>null</code>
+	 * @return <code>true</code> if the subtree matches, or 
+	 *   <code>false</code> if they do not match or the other object has a
+	 *   different node type or is <code>null</code>
+	 */
+	public boolean match(ArrayInitializer node, Object other) {
+		if (!(other instanceof ArrayInitializer)) {
+			return false;
+		}
+		ArrayInitializer o = (ArrayInitializer) other;
+		return (
+			safeSubtreeListMatch(node.fragments(), o.fragments())
+			);
+	}
+	
+	/**
+	 * Returns whether the given node and the other object match.
+	 * <p>
+	 * The default implementation provided by this class tests whether the
+	 * other object is a node of the same type with structurally isomorphic
+	 * child subtrees. Subclasses may override this method as needed.
+	 * </p>
+	 * 
+	 * @param node the node
+	 * @param other the other object, or <code>null</code>
+	 * @return <code>true</code> if the subtree matches, or 
+	 *   <code>false</code> if they do not match or the other object has a
+	 *   different node type or is <code>null</code>
+	 */
+	public boolean match(DebugAssignment node, Object other) {
+		if (!(other instanceof DebugAssignment)) {
+			return false;
+		}
+		DebugAssignment o = (DebugAssignment) other;
+		return (
+			safeSubtreeMatch(node.getVersion(), o.getVersion())
+			);
+	}
+	
+	/**
+	 * Returns whether the given node and the other object match.
+	 * <p>
+	 * The default implementation provided by this class tests whether the
+	 * other object is a node of the same type with structurally isomorphic
+	 * child subtrees. Subclasses may override this method as needed.
+	 * </p>
+	 * 
+	 * @param node the node
+	 * @param other the other object, or <code>null</code>
+	 * @return <code>true</code> if the subtree matches, or 
+	 *   <code>false</code> if they do not match or the other object has a
+	 *   different node type or is <code>null</code>
+	 */
+	public boolean match(VersionAssignment node, Object other) {
+		if (!(other instanceof VersionAssignment)) {
+			return false;
+		}
+		VersionAssignment o = (VersionAssignment) other;
+		return (
+			safeSubtreeMatch(node.getVersion(), o.getVersion())
 			);
 	}
 

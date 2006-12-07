@@ -683,6 +683,12 @@ public interface IElement {
 	 */
 	int COMMENT = 110;
 	
+	int ARRAY_INITIALIZER_FRAGMENT = 111;
+	
+	int DEBUG_ASSIGNMENT = 112;
+	
+	int VERSION_ASSIGNMENT = 113;
+	
 	/**
 	 * Returns the start position in the source code where this element
 	 * is located.

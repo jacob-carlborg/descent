@@ -4,23 +4,23 @@ import java.util.ArrayList;
 import java.util.List;
 
 import descent.core.dom.ASTVisitor;
-import descent.core.dom.IArrayInitializer;
+import descent.core.dom.IDebugAssignment;
 
 /**
- * Array initializer AST node.
+ * Debug assignment AST node.
  * 
  * <pre>
- * ArrayInitializer:
- *    <b>[</b> [ ArrayInitializerFragment { <b>,</b> ArrayInitializerFragment } ] <b>]</b> 
+ * DebugAssignment:
+ *     <b>debug</b> <b>=</b> Version
  * </pre>
  */
-public class ArrayInitializer extends Initializer implements IArrayInitializer {
-	
+public class DebugAssignment extends Declaration implements IDebugAssignment {
+
 	/**
-	 * The "fragments" structural property of this node type.
+	 * The "version" structural property of this node type.
 	 */
-	public static final ChildListPropertyDescriptor FRAGMENTS_PROPERTY =
-		new ChildListPropertyDescriptor(ArrayInitializer.class, "fragments", ArrayInitializerFragment.class, CYCLE_RISK); //$NON-NLS-1$
+	public static final ChildPropertyDescriptor VERSION_PROPERTY =
+		new ChildPropertyDescriptor(DebugAssignment.class, "version", Version.class, MANDATORY, NO_CYCLE_RISK); //$NON-NLS-1$
 
 	/**
 	 * A list of property descriptors (element type: 
@@ -31,8 +31,8 @@ public class ArrayInitializer extends Initializer implements IArrayInitializer {
 
 	static {
 		List properyList = new ArrayList(1);
-		createPropertyList(ArrayInitializer.class, properyList);
-		addProperty(FRAGMENTS_PROPERTY, properyList);
+		createPropertyList(DebugAssignment.class, properyList);
+		addProperty(VERSION_PROPERTY, properyList);
 		PROPERTY_DESCRIPTORS = reapPropertyList(properyList);
 	}
 
@@ -52,15 +52,13 @@ public class ArrayInitializer extends Initializer implements IArrayInitializer {
 	}
 
 	/**
-	 * The fragments
-	 * (element type: <code>ArrayInitializerFragment</code>).
-	 * Defaults to an empty list.
+	 * The version.
 	 */
-	private ASTNode.NodeList fragments =
-		new ASTNode.NodeList(FRAGMENTS_PROPERTY);
+	private Version version;
+
 
 	/**
-	 * Creates a new unparented array initializer node owned by the given 
+	 * Creates a new unparented debug assignment node owned by the given 
 	 * AST.
 	 * <p>
 	 * N.B. This constructor is package-private.
@@ -68,7 +66,7 @@ public class ArrayInitializer extends Initializer implements IArrayInitializer {
 	 * 
 	 * @param ast the AST that is to own this node
 	 */
-	ArrayInitializer(AST ast) {
+	DebugAssignment(AST ast) {
 		super(ast);
 	}
 
@@ -82,12 +80,17 @@ public class ArrayInitializer extends Initializer implements IArrayInitializer {
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
 	 */
-	final List internalGetChildListProperty(ChildListPropertyDescriptor property) {
-		if (property == FRAGMENTS_PROPERTY) {
-			return fragments();
+	final ASTNode internalGetSetChildProperty(ChildPropertyDescriptor property, boolean get, ASTNode child) {
+		if (property == VERSION_PROPERTY) {
+			if (get) {
+				return getVersion();
+			} else {
+				setVersion((Version) child);
+				return null;
+			}
 		}
 		// allow default implementation to flag the error
-		return super.internalGetChildListProperty(property);
+		return super.internalGetSetChildProperty(property, get, child);
 	}
 
 	/* (omit javadoc for this method)
@@ -95,16 +98,16 @@ public class ArrayInitializer extends Initializer implements IArrayInitializer {
 	 * TODO make it package
 	 */
 	public final int getNodeType0() {
-		return ARRAY_INITIALIZER;
+		return DEBUG_ASSIGNMENT;
 	}
 
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
 	 */
 	ASTNode clone0(AST target) {
-		ArrayInitializer result = new ArrayInitializer(target);
+		DebugAssignment result = new DebugAssignment(target);
 		result.setSourceRange(this.getStartPosition(), this.getLength());
-		result.fragments.addAll(ASTNode.copySubtrees(target, fragments()));
+		result.setVersion((Version) getVersion().clone(target));
 		return result;
 	}
 
@@ -123,20 +126,49 @@ public class ArrayInitializer extends Initializer implements IArrayInitializer {
 		boolean visitChildren = visitor.visit(this);
 		if (visitChildren) {
 			// visit children in normal left to right reading order
-			acceptChildren(visitor, fragments());
+			acceptChild(visitor, getVersion());
 		}
 		visitor.endVisit(this);
 	}
 
 	/**
-	 * Returns the live ordered list of fragments for this
-	 * array initializer.
+	 * Returns the version of this debug assignment.
 	 * 
-	 * @return the live list of array initializer
-	 *    (element type: <code>ArrayInitializerFragment</code>)
+	 * @return the version
 	 */ 
-	public List<ArrayInitializerFragment> fragments() {
-		return this.fragments;
+	public Version getVersion() {
+		if (this.version == null) {
+			// lazy init must be thread-safe for readers
+			synchronized (this) {
+				if (this.version == null) {
+					preLazyInit();
+					this.version = new Version(this.ast);
+					postLazyInit(this.version, VERSION_PROPERTY);
+				}
+			}
+		}
+		return this.version;
+	}
+
+	/**
+	 * Sets the version of this debug assignment.
+	 * 
+	 * @param version the version
+	 * @exception IllegalArgumentException if:
+	 * <ul>
+	 * <li>the node belongs to a different AST</li>
+	 * <li>the node already has a parent</li>
+	 * <li>a cycle in would be created</li>
+	 * </ul>
+	 */ 
+	public void setVersion(Version version) {
+		if (version == null) {
+			throw new IllegalArgumentException();
+		}
+		ASTNode oldChild = this.version;
+		preReplaceChild(oldChild, version, VERSION_PROPERTY);
+		this.version = version;
+		postReplaceChild(oldChild, version, VERSION_PROPERTY);
 	}
 
 	/* (omit javadoc for this method)
@@ -152,7 +184,7 @@ public class ArrayInitializer extends Initializer implements IArrayInitializer {
 	int treeSize() {
 		return
 			memSize()
-			+ (this.fragments.listSize())
+			+ (this.version == null ? 0 : getVersion().treeSize())
 	;
 	}
 
