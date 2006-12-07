@@ -1635,7 +1635,7 @@ public class Parser extends Lexer {
 	*/
 	
 	@SuppressWarnings("unchecked")
-	private Dsymbol parseMixin() {
+	private Declaration parseMixin() {
 		TemplateMixin tm;
 		Identifier id = null;
 		TypeTypeof tqual;
@@ -3072,29 +3072,35 @@ public class Parser extends Lexer {
 			AggregateDeclaration d;
 
 			d = parseAggregate();
-			s = new DeclarationStatement(d);
-			s.startPosition = d.startPosition;
-			s.length = d.length;
+			
+			DeclarationStatement ds = new DeclarationStatement(ast);
+			ds.setDeclaration(d);
+			ds.setSourceRange(d.startPosition, d.length);
+			s = ds;
 			break;
 		}
 
 		case TOKenum: {
-			Dsymbol d;
+			Declaration d;
 
 			d = parseEnum();
-			s = new DeclarationStatement(d);
-			s.startPosition = d.startPosition;
-			s.length = d.length;
+			
+			DeclarationStatement ds = new DeclarationStatement(ast);
+			ds.setDeclaration(d);
+			ds.setSourceRange(d.startPosition, d.length);
+			s = ds;
 			break;
 		}
 
 		case TOKmixin: {
-			Dsymbol d;
+			Declaration d;
 			
 			d = parseMixin();
-			s = new DeclarationStatement(d);
-			s.startPosition = d.startPosition;
-			s.length = d.length;
+			
+			DeclarationStatement ds = new DeclarationStatement(ast);
+			ds.setDeclaration(d);
+			ds.setSourceRange(d.startPosition, d.length);
+			s = ds;
 			break;
 		}
 
@@ -3283,9 +3289,15 @@ public class Parser extends Lexer {
 			aggr = parseExpression();
 			check(TOKrparen);
 			body = parseStatement(0);
-			s = new ForeachStatement(op, arguments, aggr, body);
-			s.startPosition = saveToken.ptr;
-			s.length = prevToken.ptr + prevToken.len - s.startPosition;
+			
+			ForeachStatement fs = new ForeachStatement(ast);
+			fs.setSourceRange(saveToken.ptr, prevToken.ptr + prevToken.len - saveToken.ptr);
+			fs.setReverse(op == TOK.TOKforeach_reverse);
+			fs.setExpression(aggr);
+			fs.arguments().addAll(arguments);
+			fs.setBody(body);
+			
+			s = fs;
 			break;
 		}
 
@@ -3958,18 +3970,22 @@ public class Parser extends Lexer {
 		if (a.size() > 1) {
 			List<Statement> as = new ArrayList<Statement>(a.size());
 			for (int i = 0; i < a.size(); i++) {
-				Dsymbol d = (Dsymbol) a.get(i);
-				s[0] = new DeclarationStatement(d);
-				s[0].startPosition = d.startPosition;
-				s[0].length = d.length;
+				Declaration d = (Declaration) a.get(i);
+				
+				DeclarationStatement ds = new DeclarationStatement(ast);
+				ds.setDeclaration(d);
+				ds.setSourceRange(d.startPosition, d.length);
+				s[0] = ds;
 				as.add(s[0]);
 			}
 			s[0] = new Block(as);
 		} else if (a.size() == 1) {
-			Dsymbol d = (Dsymbol) a.get(0);
-			s[0] = new DeclarationStatement(d);
-			s[0].startPosition = d.startPosition;
-			s[0].length = d.length;
+			Declaration d = (Declaration) a.get(0);
+			
+			DeclarationStatement ds = new DeclarationStatement(ast);
+			ds.setDeclaration(d);
+			ds.setSourceRange(d.startPosition, d.length);
+			s[0] = ds;
 		} else {
 			assert (false);
 			s[0] = null;

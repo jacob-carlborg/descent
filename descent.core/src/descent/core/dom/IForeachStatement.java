@@ -1,5 +1,9 @@
 package descent.core.dom;
 
+import java.util.List;
+
+import descent.internal.core.dom.Argument;
+
 /**
  * A foreach statement:
  * 
@@ -14,12 +18,12 @@ public interface IForeachStatement extends IStatement {
 	/**
 	 * Returns the arguments.
 	 */
-	IArgument[] getArguments();
+	List<Argument> arguments();
 	
 	/**
 	 * Returns the iterable expression.
 	 */
-	IExpression getIterable();
+	IExpression getExpression();
 	
 	/**
 	 * Returns the body of this foreach.

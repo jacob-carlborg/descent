@@ -235,7 +235,7 @@ public class Statement_Test extends Parser_Test {
 		
 		assertFalse(stm.isReverse());
 		
-		IArgument[] args = stm.getArguments();
+		IArgument[] args = stm.arguments().toArray(new IArgument[stm.arguments().size()]);
 		assertEquals(3, args.length);
 		
 		assertPosition(args[0], 9, 7);
@@ -261,7 +261,7 @@ public class Statement_Test extends Parser_Test {
 		assertEquals(IStatement.FOREACH_STATEMENT, stm.getNodeType0());
 		assertPosition(stm, 1, s.length() - 1);
 		
-		assertEquals("x", stm.getIterable().toString());
+		assertEquals("x", stm.getExpression().toString());
 		
 		assertTrue(stm.isReverse());
 	}
@@ -275,7 +275,7 @@ public class Statement_Test extends Parser_Test {
 		
 		assertFalse(stm.isReverse());
 		
-		IArgument[] args = stm.getArguments();
+		IArgument[] args = stm.arguments().toArray(new IArgument[stm.arguments().size()]);
 		assertEquals(1, args.length);
 		
 		assertPosition(args[0], 9, 5);

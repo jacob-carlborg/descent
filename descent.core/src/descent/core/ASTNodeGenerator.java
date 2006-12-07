@@ -7,12 +7,15 @@ public class ASTNodeGenerator {
 	
 	public static void main(String[] args) {
 		
-		String description = "version assignment";
+		String description = "foreach statement";
 		String clazz = toMethod(description);
 		String nodeType = toProperty(description);
 
 		Member[] members = {
-				Member.childMandatory("version", "Version", NO_CYCLE_RISK, "Version"),
+				Member.simple("reverse", "boolean"),
+				Member.list("arguments", "Argument", NO_CYCLE_RISK),
+				Member.childMandatory("expression", "Expression", CYCLE_RISK, "SimpleName"),
+				Member.childMandatory("body", "Statement", CYCLE_RISK, "Block"),
 		};
 		
 		StringBuilder sb = new StringBuilder();

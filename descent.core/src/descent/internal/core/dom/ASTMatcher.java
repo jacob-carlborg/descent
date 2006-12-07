@@ -1555,5 +1555,56 @@ public class ASTMatcher {
 			safeSubtreeMatch(node.getVersion(), o.getVersion())
 			);
 	}
+	
+	/**
+	 * Returns whether the given node and the other object match.
+	 * <p>
+	 * The default implementation provided by this class tests whether the
+	 * other object is a node of the same type with structurally isomorphic
+	 * child subtrees. Subclasses may override this method as needed.
+	 * </p>
+	 * 
+	 * @param node the node
+	 * @param other the other object, or <code>null</code>
+	 * @return <code>true</code> if the subtree matches, or 
+	 *   <code>false</code> if they do not match or the other object has a
+	 *   different node type or is <code>null</code>
+	 */
+	public boolean match(DeclarationStatement node, Object other) {
+		if (!(other instanceof DeclarationStatement)) {
+			return false;
+		}
+		DeclarationStatement o = (DeclarationStatement) other;
+		return (
+			safeSubtreeMatch(node.getDeclaration(), o.getDeclaration())
+			);
+	}
+	
+	/**
+	 * Returns whether the given node and the other object match.
+	 * <p>
+	 * The default implementation provided by this class tests whether the
+	 * other object is a node of the same type with structurally isomorphic
+	 * child subtrees. Subclasses may override this method as needed.
+	 * </p>
+	 * 
+	 * @param node the node
+	 * @param other the other object, or <code>null</code>
+	 * @return <code>true</code> if the subtree matches, or 
+	 *   <code>false</code> if they do not match or the other object has a
+	 *   different node type or is <code>null</code>
+	 */
+	public boolean match(ForeachStatement node, Object other) {
+		if (!(other instanceof ForeachStatement)) {
+			return false;
+		}
+		ForeachStatement o = (ForeachStatement) other;
+		return (
+			node.isReverse() == o.isReverse()
+			&& safeSubtreeListMatch(node.arguments(), o.arguments())
+			&& safeSubtreeMatch(node.getExpression(), o.getExpression())
+			&& safeSubtreeMatch(node.getBody(), o.getBody())
+			);
+	}
 
 }

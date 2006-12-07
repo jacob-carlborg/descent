@@ -1,6 +1,8 @@
 package descent.internal.core.dom;
 
-public abstract class Declaration extends Dsymbol {
+import descent.core.dom.IDeclaration;
+
+public abstract class Declaration extends Dsymbol implements IDeclaration {
 
 	public int storage_class;
 	
