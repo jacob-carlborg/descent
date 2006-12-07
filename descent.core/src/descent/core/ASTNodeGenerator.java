@@ -7,12 +7,13 @@ public class ASTNodeGenerator {
 	
 	public static void main(String[] args) {
 		
-		String description = "parenthesized expression";
+		String description = "switch statement";
 		String clazz = toMethod(description);
 		String nodeType = toProperty(description);
 
 		Member[] members = {
 				Member.childMandatory("expression", "Expression", CYCLE_RISK, "SimpleName"),
+				Member.childMandatory("body", "Statement", CYCLE_RISK, "Block"),
 		};
 		
 		StringBuilder sb = new StringBuilder();
@@ -355,9 +356,11 @@ public class ASTNodeGenerator {
 				sb.append(" * </ul>\n");
 				sb.append(" */ \n");
 				sb.append("public void set" + member.method + "(" + member.clazz + " " + member.name + ") {\n");
-				sb.append("	if (" + member.name + " == null) {\n");
-				sb.append("		throw new IllegalArgumentException();\n");
-				sb.append("	}\n");
+				if (member.mandatory) {
+					sb.append("	if (" + member.name + " == null) {\n");
+					sb.append("		throw new IllegalArgumentException();\n");
+					sb.append("	}\n");
+				}
 				sb.append("	ASTNode oldChild = this." + member.name + ";\n");
 				sb.append("	preReplaceChild(oldChild, " + member.name + ", " + member.property + "_PROPERTY);\n");
 				sb.append("	this." + member.name + " = " + member.name + ";\n");
@@ -428,35 +431,39 @@ public class ASTNodeGenerator {
 		sb.append(" *   different node type or is <code>null</code>\n");
 		sb.append(" */\n");
 		sb.append("public boolean match(" + clazz + " node, Object other) {\n");
-		sb.append("	if (!(other instanceof " + clazz + ")) {\n");
-		sb.append("		return false;\n");
-		sb.append("	}\n");
-		sb.append("	" + clazz + " o = (" + clazz + ") other;\n");
-		sb.append("	return (\n");
-		
-		boolean first = true;
-		for(Member member : members) {
-			sb.append("		");
-			if (!first) {
-				sb.append("&& ");
+		if (members.length == 0) {
+			sb.append("	return other instanceof " + clazz + ";\n");
+		} else {
+			sb.append("	if (!(other instanceof " + clazz + ")) {\n");
+			sb.append("		return false;\n");
+			sb.append("	}\n");
+			sb.append("	" + clazz + " o = (" + clazz + ") other;\n");
+			sb.append("	return (\n");
+			
+			boolean first = true;
+			for(Member member : members) {
+				sb.append("		");
+				if (!first) {
+					sb.append("&& ");
+				}
+				
+				switch(member.type) {
+				case SIMPLE:
+					sb.append("node.get" + member.method + "() == o.get" + member.method + "()\n");
+					break;
+				case CHILD:
+					sb.append("safeSubtreeMatch(node.get" + member.method + "(), o.get" + member.method + "())\n");
+					break;
+				case LIST:
+					sb.append("safeSubtreeListMatch(node." + member.method + "(), o." + member.method + "())\n");
+					break;
+				}
+				
+				first = false;
 			}
 			
-			switch(member.type) {
-			case SIMPLE:
-				sb.append("node.get" + member.method + "() == o.get" + member.method + "()\n");
-				break;
-			case CHILD:
-				sb.append("safeSubtreeMatch(node.get" + member.method + "(), o.get" + member.method + "())\n");
-				break;
-			case LIST:
-				sb.append("safeSubtreeListMatch(node." + member.method + "(), o." + member.method + "())\n");
-				break;
-			}
-			
-			first = false;
+			sb.append("		);\n");
 		}
-		
-		sb.append("		);\n");
 		sb.append("}\n");
 		
 		System.out.print(sb);			

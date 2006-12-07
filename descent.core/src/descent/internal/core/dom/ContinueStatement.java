@@ -152,9 +152,6 @@ public class ContinueStatement extends Statement implements IContinueStatement {
 	 * </ul>
 	 */ 
 	public void setLabel(SimpleName label) {
-		if (label == null) {
-			throw new IllegalArgumentException();
-		}
 		ASTNode oldChild = this.label;
 		preReplaceChild(oldChild, label, LABEL_PROPERTY);
 		this.label = label;

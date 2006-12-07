@@ -110,7 +110,7 @@ public class Statement_Test extends Parser_Test {
 		assertEquals(IStatement.RETURN_STATEMENT, stm.getNodeType0());
 		assertPosition(stm, 1, 7);
 		
-		assertNull(stm.getReturnValue());
+		assertNull(stm.getExpression());
 		
 		assertVisitor(stm, 1);
 	}
@@ -122,8 +122,8 @@ public class Statement_Test extends Parser_Test {
 		assertEquals(IStatement.RETURN_STATEMENT, stm.getNodeType0());
 		assertPosition(stm, 1, 13);
 		
-		assertEquals("somex", stm.getReturnValue().toString());
-		assertPosition(stm.getReturnValue(), 8, 5);
+		assertEquals("somex", stm.getExpression().toString());
+		assertPosition(stm.getExpression(), 8, 5);
 	}
 	
 	public void testWhile() {
@@ -174,10 +174,8 @@ public class Statement_Test extends Parser_Test {
 		assertEquals(IStatement.STATIC_ASSERT_STATEMENT, stm.getNodeType0());
 		assertPosition(stm, 1, 23);
 		
-		assertEquals("1", stm.getExpression().toString());
-		assertEquals("true", stm.getMessage().toString());
-		
-		assertVisitor(stm, 3);
+		assertEquals("1", stm.getStaticAssert().getExpression().toString());
+		assertEquals("true", stm.getStaticAssert().getMessage().toString());
 	}
 	
 	public void testStaticAssertDeclaration() {

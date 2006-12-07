@@ -2962,9 +2962,12 @@ public class Parser extends Lexer {
 			t2 = peek(token);
 			if (t2.value == TOKassert) {
 				nextToken();
-				s = new StaticAssertStatement(parseStaticAssert());
-				s.startPosition = saveToken.ptr;
-				s.length = prevToken.ptr + prevToken.len - s.startPosition;
+				
+				StaticAssertStatement staticAssertStatement = new StaticAssertStatement(ast);
+				staticAssertStatement.setStaticAssert(parseStaticAssert());
+				staticAssertStatement.setSourceRange(saveToken.ptr, prevToken.ptr + prevToken.len - saveToken.ptr);
+				
+				s = staticAssertStatement;
 				break;
 			}
 			if (t2.value == TOKif) {
@@ -3528,9 +3531,13 @@ public class Parser extends Lexer {
 			condition2 = parseExpression();
 			check(TOKrparen);
 			body = parseStatement(PSscope);
-			s = new SwitchStatement(condition2, body);
-			s.startPosition = saveToken.ptr;
-			s.length = prevToken.ptr + prevToken.len - s.startPosition;
+			
+			SwitchStatement ss = new SwitchStatement(ast);
+			ss.setExpression(condition2);
+			ss.setBody(body);
+			ss.setSourceRange(saveToken.ptr, prevToken.ptr + prevToken.len - saveToken.ptr);
+			
+			s = ss;
 			break;
 		}
 
@@ -3602,9 +3609,12 @@ public class Parser extends Lexer {
 				exp = parseExpression();
 			}
 			check(TOKsemicolon, "return statement");
-			s = new ReturnStatement(exp);
-			s.startPosition = saveToken.ptr;
-			s.length = prevToken.ptr + prevToken.len - s.startPosition;
+			
+			ReturnStatement returnStatement = new ReturnStatement(ast);
+			returnStatement.setExpression(exp);
+			returnStatement.setSourceRange(saveToken.ptr, prevToken.ptr + prevToken.len - saveToken.ptr);
+			
+			s = returnStatement;
 			break;
 		}
 
@@ -3652,7 +3662,7 @@ public class Parser extends Lexer {
 			nextToken();
 			if (token.value == TOKdefault) {
 				nextToken();
-				s = new GotoDefaultStatement();
+				s = new GotoDefaultStatement(ast);
 			} else if (token.value == TOKcase) {
 				Expression exp = null;
 
@@ -3784,9 +3794,12 @@ public class Parser extends Lexer {
 			nextToken();
 			exp = parseExpression();
 			check(TOKsemicolon, "throw statement");
-			s = new ThrowStatement(exp);
-			s.startPosition = saveToken.ptr;
-			s.length = prevToken.ptr + prevToken.len - s.startPosition;
+			
+			ThrowStatement throwStatement = new ThrowStatement(ast);
+			throwStatement.setExpression(exp);
+			throwStatement.setSourceRange(saveToken.ptr, prevToken.ptr + prevToken.len - saveToken.ptr);
+			
+			s = throwStatement;
 			break;
 		}
 

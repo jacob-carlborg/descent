@@ -214,9 +214,6 @@ public class EnumMember extends ASTNode implements IEnumMember {
 	 * </ul>
 	 */ 
 	public void setValue(Expression value) {
-		if (value == null) {
-			throw new IllegalArgumentException();
-		}
 		ASTNode oldChild = this.value;
 		preReplaceChild(oldChild, value, VALUE_PROPERTY);
 		this.value = value;

@@ -243,9 +243,6 @@ public class EnumDeclaration extends Declaration implements IEnumDeclaration {
 	 * </ul>
 	 */ 
 	public void setName(SimpleName name) {
-		if (name == null) {
-			throw new IllegalArgumentException();
-		}
 		ASTNode oldChild = this.name;
 		preReplaceChild(oldChild, name, NAME_PROPERTY);
 		this.name = name;
@@ -273,9 +270,6 @@ public class EnumDeclaration extends Declaration implements IEnumDeclaration {
 	 * </ul>
 	 */ 
 	public void setBaseType(Type baseType) {
-		if (baseType == null) {
-			throw new IllegalArgumentException();
-		}
 		ASTNode oldChild = this.baseType;
 		preReplaceChild(oldChild, baseType, BASETYPE_PROPERTY);
 		this.baseType = baseType;

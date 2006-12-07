@@ -236,9 +236,6 @@ public class SliceExpression extends Expression implements ISliceExpression {
 	 * </ul>
 	 */ 
 	public void setFromExpression(Expression fromExpression) {
-		if (fromExpression == null) {
-			throw new IllegalArgumentException();
-		}
 		ASTNode oldChild = this.fromExpression;
 		preReplaceChild(oldChild, fromExpression, FROM_EXPRESSION_PROPERTY);
 		this.fromExpression = fromExpression;
@@ -266,9 +263,6 @@ public class SliceExpression extends Expression implements ISliceExpression {
 	 * </ul>
 	 */ 
 	public void setToExpression(Expression toExpression) {
-		if (toExpression == null) {
-			throw new IllegalArgumentException();
-		}
 		ASTNode oldChild = this.toExpression;
 		preReplaceChild(oldChild, toExpression, TO_EXPRESSION_PROPERTY);
 		this.toExpression = toExpression;

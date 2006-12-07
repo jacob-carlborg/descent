@@ -214,9 +214,6 @@ public class AssertExpression extends Expression implements IAssertExpression {
 	 * </ul>
 	 */ 
 	public void setMessage(Expression message) {
-		if (message == null) {
-			throw new IllegalArgumentException();
-		}
 		ASTNode oldChild = this.message;
 		preReplaceChild(oldChild, message, MESSAGE_PROPERTY);
 		this.message = message;

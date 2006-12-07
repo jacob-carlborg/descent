@@ -218,9 +218,6 @@ public class IfStatement extends Statement implements IIfStatement {
 	 * </ul>
 	 */ 
 	public void setArgument(Argument argument) {
-		if (argument == null) {
-			throw new IllegalArgumentException();
-		}
 		ASTNode oldChild = this.argument;
 		preReplaceChild(oldChild, argument, ARGUMENT_PROPERTY);
 		this.argument = argument;
@@ -328,9 +325,6 @@ public class IfStatement extends Statement implements IIfStatement {
 	 * </ul>
 	 */ 
 	public void setElseBody(Statement elseBody) {
-		if (elseBody == null) {
-			throw new IllegalArgumentException();
-		}
 		ASTNode oldChild = this.elseBody;
 		preReplaceChild(oldChild, elseBody, ELSEBODY_PROPERTY);
 		this.elseBody = elseBody;

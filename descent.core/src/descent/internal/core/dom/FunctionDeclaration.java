@@ -566,9 +566,6 @@ public class FunctionDeclaration extends Declaration implements IFunctionDeclara
 	 * </ul>
 	 */ 
 	public void setPrecondition(Statement precondition) {
-		if (precondition == null) {
-			throw new IllegalArgumentException();
-		}
 		ASTNode oldChild = this.precondition;
 		preReplaceChild(oldChild, precondition, PRECONDITION_PROPERTY);
 		this.precondition = precondition;
@@ -596,9 +593,6 @@ public class FunctionDeclaration extends Declaration implements IFunctionDeclara
 	 * </ul>
 	 */ 
 	public void setPostcondition(Statement postcondition) {
-		if (postcondition == null) {
-			throw new IllegalArgumentException();
-		}
 		ASTNode oldChild = this.postcondition;
 		preReplaceChild(oldChild, postcondition, POSTCONDITION_PROPERTY);
 		this.postcondition = postcondition;
@@ -626,9 +620,6 @@ public class FunctionDeclaration extends Declaration implements IFunctionDeclara
 	 * </ul>
 	 */ 
 	public void setPostconditionVariableName(SimpleName postconditionVariableName) {
-		if (postconditionVariableName == null) {
-			throw new IllegalArgumentException();
-		}
 		ASTNode oldChild = this.postconditionVariableName;
 		preReplaceChild(oldChild, postconditionVariableName, POSTCONDITIONVARIABLENAME_PROPERTY);
 		this.postconditionVariableName = postconditionVariableName;

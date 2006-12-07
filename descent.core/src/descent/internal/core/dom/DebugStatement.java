@@ -267,9 +267,6 @@ public class DebugStatement extends Statement implements IDebugStatement {
 	 * </ul>
 	 */ 
 	public void setElseBody(Statement elseBody) {
-		if (elseBody == null) {
-			throw new IllegalArgumentException();
-		}
 		ASTNode oldChild = this.elseBody;
 		preReplaceChild(oldChild, elseBody, ELSE_BODY_PROPERTY);
 		this.elseBody = elseBody;

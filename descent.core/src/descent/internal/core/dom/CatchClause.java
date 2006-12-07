@@ -196,9 +196,6 @@ public class CatchClause extends ASTNode implements ICatchClause {
 	 * </ul>
 	 */ 
 	public void setType(Type type) {
-		if (type == null) {
-			throw new IllegalArgumentException();
-		}
 		ASTNode oldChild = this.type;
 		preReplaceChild(oldChild, type, TYPE_PROPERTY);
 		this.type = type;
@@ -226,9 +223,6 @@ public class CatchClause extends ASTNode implements ICatchClause {
 	 * </ul>
 	 */ 
 	public void setName(SimpleName name) {
-		if (name == null) {
-			throw new IllegalArgumentException();
-		}
 		ASTNode oldChild = this.name;
 		preReplaceChild(oldChild, name, NAME_PROPERTY);
 		this.name = name;

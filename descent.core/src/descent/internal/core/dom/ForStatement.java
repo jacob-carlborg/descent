@@ -222,9 +222,6 @@ public class ForStatement extends Statement implements IForStatement {
 	 * </ul>
 	 */ 
 	public void setInitializer(Statement initializer) {
-		if (initializer == null) {
-			throw new IllegalArgumentException();
-		}
 		ASTNode oldChild = this.initializer;
 		preReplaceChild(oldChild, initializer, INITIALIZER_PROPERTY);
 		this.initializer = initializer;
@@ -252,9 +249,6 @@ public class ForStatement extends Statement implements IForStatement {
 	 * </ul>
 	 */ 
 	public void setCondition(Expression condition) {
-		if (condition == null) {
-			throw new IllegalArgumentException();
-		}
 		ASTNode oldChild = this.condition;
 		preReplaceChild(oldChild, condition, CONDITION_PROPERTY);
 		this.condition = condition;
@@ -282,9 +276,6 @@ public class ForStatement extends Statement implements IForStatement {
 	 * </ul>
 	 */ 
 	public void setIncrement(Expression increment) {
-		if (increment == null) {
-			throw new IllegalArgumentException();
-		}
 		ASTNode oldChild = this.increment;
 		preReplaceChild(oldChild, increment, INCREMENT_PROPERTY);
 		this.increment = increment;

@@ -1,5 +1,7 @@
 package descent.core.dom;
 
+import descent.internal.core.dom.StaticAssert;
+
 /**
  * A static assert statement:
  * 
@@ -9,14 +11,6 @@ package descent.core.dom;
  */
 public interface IStaticAssertStatement extends IStatement {
 	
-	/**
-	 * Returns the expression to assert.
-	 */
-	IExpression getExpression();
-	
-	/**
-	 * Returns the message in case the assert doesn't hold.
-	 */
-	IExpression getMessage();
+	StaticAssert getStaticAssert();
 
 }

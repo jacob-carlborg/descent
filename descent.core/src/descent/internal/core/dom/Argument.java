@@ -346,9 +346,6 @@ public class Argument extends ASTNode implements IArgument {
 	 * </ul>
 	 */ 
 	public void setDefaultValue(Expression defaultValue) {
-		if (defaultValue == null) {
-			throw new IllegalArgumentException();
-		}
 		ASTNode oldChild = this.defaultValue;
 		preReplaceChild(oldChild, defaultValue, DEFAULT_VALUE_PROPERTY);
 		this.defaultValue = defaultValue;

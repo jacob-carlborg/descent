@@ -348,9 +348,6 @@ public class AggregateDeclaration extends Declaration implements IAggregateDecla
 	 * </ul>
 	 */ 
 	public void setName(SimpleName name) {
-		if (name == null) {
-			throw new IllegalArgumentException();
-		}
 		ASTNode oldChild = this.name;
 		preReplaceChild(oldChild, name, NAME_PROPERTY);
 		this.name = name;
