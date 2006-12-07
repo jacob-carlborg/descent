@@ -3120,9 +3120,11 @@ public class Parser extends Lexer {
 				statements.add(parseStatement(PSsemi | PScurlyscope));
 			}
 			s = new Block(statements);
+			/*
 			if ((flags & (PSscope | PScurlyscope)) != 0) {
 				s = new ScopeStatement(s);
 			}
+			*/
 			s.startPosition = saveToken.ptr;
 			s.length = token.ptr + token.len - s.startPosition;
 			nextToken();
@@ -3208,11 +3210,13 @@ public class Parser extends Lexer {
 			s = new ForStatement(init, condition2, increment, body);
 			s.startPosition = saveToken.ptr;
 			s.length = prevToken.ptr + prevToken.len - s.startPosition;
+			/*
 			if (init != null) {
 				s = new ScopeStatement(s);
 				s.startPosition = saveToken.ptr;
 				s.length = prevToken.ptr + prevToken.len - s.startPosition;
 			}
+			*/
 			break;
 		}
 
@@ -3608,7 +3612,10 @@ public class Parser extends Lexer {
 				statements.add(parseStatement(PSsemi | PScurlyscope));
 			}
 			s = new Block(statements);
+			
+			/*
 			s = new ScopeStatement(s);
+			*/
 
 			// Keep cases in order by building the case statements backwards
 			for (int i = cases.size(); i != 0; i--) {
@@ -3635,9 +3642,11 @@ public class Parser extends Lexer {
 			s.startPosition = saveToken.ptr;
 			s.length = prevToken.ptr + prevToken.len - s.startPosition;
 			
+			/*
 			s = new ScopeStatement(s);
 			s.startPosition = saveToken.ptr;
 			s.length = prevToken.ptr + prevToken.len - s.startPosition;
+			*/
 			
 			s = new DefaultStatement(s);
 			s.startPosition = saveToken.ptr;
@@ -3990,9 +3999,11 @@ public class Parser extends Lexer {
 			assert (false);
 			s[0] = null;
 		}
+		/*
 		if ((flags & PSscope) != 0) {
 			s[0] = new ScopeStatement(s[0]);
 		}
+		*/
 	}
 	
 	private void check(TOK value) {

@@ -468,12 +468,6 @@ public interface IElement {
 	int CASE_STATEMENT = 83;
 	
 	/**
-	 * Constant representing a scope statement.
-	 * A D element with this type can be safely cast to <code>IScopeStatement</code>. 
-	 */
-	int SCOPE_STATEMENT = 84;
-	
-	/**
 	 * Constant representing a compound statement.
 	 * A D element with this type can be safely cast to <code>ICompoundStatement</code>. 
 	 */

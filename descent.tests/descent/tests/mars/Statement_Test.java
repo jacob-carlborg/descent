@@ -24,7 +24,6 @@ import descent.core.dom.IModifier;
 import descent.core.dom.IOnScopeStatement;
 import descent.core.dom.IPragmaStatement;
 import descent.core.dom.IReturnStatement;
-import descent.core.dom.IScopeStatement;
 import descent.core.dom.IStatement;
 import descent.core.dom.IStaticAssertDeclaration;
 import descent.core.dom.IStaticAssertStatement;
@@ -137,7 +136,7 @@ public class Statement_Test extends Parser_Test {
 		
 		assertPosition(stm.getBody(), 13, 3);
 		
-		assertVisitor(stm, 4);
+		assertVisitor(stm, 3);
 	}
 	
 	public void testDoWhile() {
@@ -151,7 +150,7 @@ public class Statement_Test extends Parser_Test {
 		
 		assertPosition(stm.getBody(), 4, 3);
 		
-		assertVisitor(stm, 4);
+		assertVisitor(stm, 3);
 	}
 	
 	public void testLabel() {
@@ -205,17 +204,15 @@ public class Statement_Test extends Parser_Test {
 		
 		assertEquals("true", stm.getExpression().toString());
 		
-		assertVisitor(stm, 4);
+		assertVisitor(stm, 3);
 	}
 	
 	public void testFor() {
 		String s = " for(int i = 0; i < 10; i++) { }";
-		IScopeStatement scope = (IScopeStatement) new ParserFacade().parseStatement(s);
-		IForStatement stm = (IForStatement) scope.getStatement();
+		IForStatement stm = (IForStatement) new ParserFacade().parseStatement(s);
 		
 		assertEquals(IStatement.FOR_STATEMENT, stm.getNodeType0());
 		assertPosition(stm, 1, s.length() - 1);
-		assertPosition(scope, 1, s.length() - 1);
 	}
 	
 	public void testForEmpty() {
