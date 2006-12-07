@@ -10,7 +10,6 @@ import descent.core.dom.IAliasDeclaration;
 import descent.core.dom.IAliasTemplateParameter;
 import descent.core.dom.IArgument;
 import descent.core.dom.IAssociativeArrayType;
-import descent.core.dom.IConditionAssignment;
 import descent.core.dom.IDebugDeclaration;
 import descent.core.dom.IDelegateType;
 import descent.core.dom.IDynamicArrayType;
@@ -40,7 +39,9 @@ import descent.core.dom.ITypeofType;
 import descent.core.dom.IVariableDeclaration;
 import descent.core.dom.IVersionDeclaration;
 import descent.internal.core.dom.Argument;
+import descent.internal.core.dom.DebugAssignment;
 import descent.internal.core.dom.TemplateParameter;
+import descent.internal.core.dom.VersionAssignment;
 import descent.ui.DescentUI;
 import descent.ui.IImages;
 
@@ -223,22 +224,12 @@ public class DOutlineLabelProvider extends LabelProvider {
 			IDebugDeclaration d = (IDebugDeclaration) element;
 			name = d.getDebug();
 			return name == null ? "" : name.toString();
-		case IElement.CONDITION_ASSIGNMENT:
-			IConditionAssignment va = (IConditionAssignment) element;
-			s = new StringBuilder();
-			switch(va.getConditionAssignmentType()) {
-			case IConditionAssignment.CONDITION_DEBUG:
-				s.append("debug");
-				break;
-			case IConditionAssignment.CONDITION_VERSION:
-				s.append("version");
-				break;
-			}
-			s.append(" = ");
-			if (va.getValue() != null) {
-				s.append(va.getValue().toString());
-			}
-			return s.toString();
+		case IElement.DEBUG_ASSIGNMENT:
+			DebugAssignment da = (DebugAssignment) element;
+			return "debug = " + da.getVersion().getValue();
+		case IElement.VERSION_ASSIGNMENT:
+			VersionAssignment va = (VersionAssignment) element;
+			return "version = " + va.getVersion().getValue();
 		case IElement.PRAGMA_DECLARATION:
 			IPragmaDeclaration pd = (IPragmaDeclaration) element;
 			return pd.getIdentifier() == null ? "" : pd.getIdentifier().toString();
@@ -370,13 +361,9 @@ public class DOutlineLabelProvider extends LabelProvider {
 		case IElement.VERSION_DECLARATION:
 			return versionImage;
 		case IElement.CONDITION_ASSIGNMENT:
-			IConditionAssignment va = (IConditionAssignment) element;
-			switch(va.getConditionAssignmentType()) {
-			case IConditionAssignment.CONDITION_DEBUG:
-				return debugImage;
-			case IConditionAssignment.CONDITION_VERSION:
-				return versionImage;
-			}
+			return debugImage;
+		case IElement.VERSION_ASSIGNMENT:
+			return versionImage;
 		case IImaginaryElements.IMPORTS:
 			return importsImage;
 		}
