@@ -33,7 +33,7 @@ public class PositionHelper {
 		switch(element.getNodeType0()) {
 		case IElement.MODULE_DECLARATION:
 			IModuleDeclaration md = (IModuleDeclaration) element;
-			name = md.getQualifiedName();
+			name = md.getName();
 			if (name != null) element = name;
 			break;
 		case IElement.AGGREGATE_DECLARATION:

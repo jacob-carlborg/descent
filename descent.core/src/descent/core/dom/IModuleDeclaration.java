@@ -1,5 +1,7 @@
 package descent.core.dom;
 
+import descent.internal.core.dom.Name;
+
 /**
  * A module declaration:
  * 
@@ -12,6 +14,6 @@ public interface IModuleDeclaration extends IDeclaration, ICommented {
 	/**
 	 * Returns the qualified name of the module.
 	 */
-	IQualifiedName getQualifiedName();
+	Name getName();
 
 }

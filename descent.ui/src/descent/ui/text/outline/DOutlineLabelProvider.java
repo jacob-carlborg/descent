@@ -124,7 +124,7 @@ public class DOutlineLabelProvider extends LabelProvider {
 		
 		switch(e.getNodeType0()) {
 		case IElement.MODULE_DECLARATION:
-			return ((IModuleDeclaration) element).getQualifiedName().toString();
+			return ((IModuleDeclaration) element).getName().toString();
 		case IElement.IMPORT_DECLARATION:
 			IImportDeclaration importDeclaration = (IImportDeclaration) element;
 			return getImportText(importDeclaration);

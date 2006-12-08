@@ -126,6 +126,21 @@ public class Parser extends Lexer {
 		lastDocCommentRead = comments.size();
 	}
 	
+	private SimpleName newSimpleNameForCurrentToken() {
+		SimpleName simpleName = new SimpleName(ast);
+		simpleName.setIdentifier(token.ident.string);
+		simpleName.setSourceRange(token.ptr, token.len);
+		return simpleName;
+	}
+	
+	private QualifiedName newQualifiedNameForCurrentToken(Name name) {
+		QualifiedName qualifiedName = new QualifiedName(ast);
+		qualifiedName.setQualifier(name);
+		qualifiedName.setName(newSimpleNameForCurrentToken());
+		qualifiedName.setSourceRange(name.getStartPosition(), token.ptr + token.len - name.getStartPosition());
+		return qualifiedName;
+	}
+	
 	private List<Comment> getLastDocComments() {
 		List<Comment> toReturn = new ArrayList<Comment>();
 		for(int i = comments.size() - 1; i >= lastDocCommentRead; i--) {
@@ -142,47 +157,46 @@ public class Parser extends Lexer {
 	@SuppressWarnings("unchecked")
 	public List<Declaration> parseModule() {
 	    List<Declaration> decldefs = new ArrayList<Declaration>();
-	    
 	    List<Comment> moduleDocComments = getLastDocComments();
 
 		// ModuleDeclation leads off
 		if (token.value == TOKmodule) {
-			Token moduleToken = new Token(token);
+			int start = token.ptr;
+			
+			Name name = null;
+			
+			md = new ModuleDeclaration(ast);
+			
 			nextToken();
 			if (token.value != TOKidentifier) {
-				
-				problem("Identifier expected following module", IProblem.SEVERITY_ERROR, IProblem.IDENTIFIER_EXPECTED, moduleToken.ptr, moduleToken.len);
+				problem("Identifier expected following module", IProblem.SEVERITY_ERROR, IProblem.IDENTIFIER_EXPECTED, token.ptr, token.len);
 				// goto Lerr;
 				return parseModule_LErr();
 			} else {
-				List<Identifier> a = null;
-				Identifier id;
-
-				int qNameStart = token.ptr;
-
-				id = new Identifier(token);
+				
+				name = newSimpleNameForCurrentToken();
+				
 				while (nextToken() == TOKdot) {
-					if (a == null)
-						a = new ArrayList<Identifier>();
-					a.add(id);
 					nextToken();
+					
 					if (token.value != TOKidentifier) {
-						problem("Identifier expected following package", IProblem.SEVERITY_ERROR, IProblem.IDENTIFIER_EXPECTED, qNameStart, token.ptr - qNameStart);
+						problem("Identifier expected following package", IProblem.SEVERITY_ERROR, IProblem.IDENTIFIER_EXPECTED, token.ptr, token.len);
 						return parseModule_LErr();
 					}
-					id = new Identifier(token);
+					
+					name = newQualifiedNameForCurrentToken(name);
 				}
 
-				md = new ModuleDeclaration(a, id);
-				md.startPosition = moduleToken.ptr;
-				md.length = token.ptr + token.len - md.startPosition;
-
+				md.setName(name);
+				md.setSourceRange(start, token.ptr + token.len - start);
 				mod.md = md;
 
 				if (token.value != TOKsemicolon) {
-					problem("';' expected following module declaration", IProblem.SEVERITY_ERROR, IProblem.SEMICOLON_EXPECTED, moduleToken.ptr, moduleToken.len);
+					problem("';' expected following module declaration", IProblem.SEVERITY_ERROR, IProblem.SEMICOLON_EXPECTED, token.ptr, token.len);
 				}
+				
 				nextToken();
+				
 				md.comments = moduleDocComments;
 				adjustLastDocComment();
 			}
@@ -1801,17 +1815,13 @@ public class Parser extends Lexer {
 							token.len);
 					break;
 				}
-
-				simpleName = new SimpleName(ast);
-				simpleName.setIdentifier(token.ident.string);
-				simpleName.setSourceRange(token.ptr, token.len);
-
-				name = simpleName;
+				
+				name = newSimpleNameForCurrentToken();
 
 				nextToken();
 
 				if (alias == null && token.value == TOKassign) {
-					alias = simpleName;
+					alias = (SimpleName) name;
 					// goto L1;
 					repeat = true;
 					break the_do;
@@ -1827,20 +1837,8 @@ public class Parser extends Lexer {
 										- name.getStartPosition());
 						break;
 					}
-
-					QualifiedName qName = new QualifiedName(ast);
-					qName.setQualifier(name);
-
-					simpleName = new SimpleName(ast);
-					simpleName.setIdentifier(token.ident.string);
-					simpleName.setSourceRange(token.ptr, token.len);
-
-					qName.setName(simpleName);
-					qName.setSourceRange(name.getStartPosition(), token.ptr
-							+ token.len - name.getStartPosition());
-
-					name = qName;
-
+					
+					name = newQualifiedNameForCurrentToken(name);
 					nextToken();
 				}
 
@@ -1868,10 +1866,8 @@ public class Parser extends Lexer {
 									dotToken.len);
 							break;
 						}
-
-						alias = new SimpleName(ast);
-						alias.setSourceRange(token.ptr, token.len);
-						alias.setIdentifier(token.ident.string);
+						
+						alias = newSimpleNameForCurrentToken();
 
 						nextToken();
 						if (token.value == TOKassign) {
@@ -1881,9 +1877,7 @@ public class Parser extends Lexer {
 								break;
 							}
 							
-							simpleName = new SimpleName(ast);
-							simpleName.setSourceRange(token.ptr, token.len);
-							simpleName.setIdentifier(token.ident.string);
+							simpleName = newSimpleNameForCurrentToken();
 							
 							selectiveImport.setAlias(alias);
 							selectiveImport.setName(simpleName);

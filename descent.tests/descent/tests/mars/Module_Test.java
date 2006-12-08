@@ -4,8 +4,9 @@ import descent.core.dom.IComment;
 import descent.core.dom.ICompilationUnit;
 import descent.core.dom.IElement;
 import descent.core.dom.IModuleDeclaration;
-import descent.core.dom.IQualifiedName;
 import descent.internal.core.dom.ParserFacade;
+import descent.internal.core.dom.QualifiedName;
+import descent.internal.core.dom.SimpleName;
 
 public class Module_Test extends Parser_Test {
 	
@@ -18,11 +19,9 @@ public class Module_Test extends Parser_Test {
 		assertPosition(md, 1, 9);
 		assertEquals(IElement.MODULE_DECLARATION, md.getNodeType0());
 		
-		IQualifiedName qName = md.getQualifiedName();
+		SimpleName qName = (SimpleName) md.getName();
 		assertEquals("a", qName.toString());
 		assertPosition(qName, 8, 1);
-		
-		assertVisitor(md, 2);
 	}
 	
 	public void testModuleDeclarationMany() {
@@ -33,11 +32,9 @@ public class Module_Test extends Parser_Test {
 		assertNotNull(md);
 		assertPosition(md, 1, 21);
 		
-		IQualifiedName qName = md.getQualifiedName();
-		assertEquals("hola.chau.uno", qName.toString());
+		QualifiedName qName = (QualifiedName) md.getName();
+		assertEquals("hola.chau.uno", qName.getFullyQualifiedName());
 		assertPosition(qName, 8, 13);
-		
-		assertVisitor(md, 2);
 	}
 	
 	public void testModuleDeclarationWithComments() {

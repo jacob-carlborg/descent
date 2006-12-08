@@ -11,6 +11,8 @@
 
 package descent.internal.core.dom;
 
+import descent.core.dom.IName;
+
 /**
  * Abstract base class for all AST nodes that represent names.
  * There are exactly two kinds of name: simple ones 
@@ -25,7 +27,7 @@ package descent.internal.core.dom;
  * 
  * @since 2.0
  */
-public abstract class Name extends Expression /* TODO JDT implements IDocElement */ {
+public abstract class Name extends Expression /* TODO JDT implements IDocElement */ implements IName {
 	
 	/**
 	 * Approximate base size of an expression node instance in bytes, 

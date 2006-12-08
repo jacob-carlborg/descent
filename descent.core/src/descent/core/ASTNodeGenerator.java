@@ -7,13 +7,12 @@ public class ASTNodeGenerator {
 	
 	public static void main(String[] args) {
 		
-		String description = "selective import";
+		String description = "module declaration";
 		String clazz = toMethod(description);
 		String nodeType = toProperty(description);
 
 		Member[] members = {
-				Member.child("alias", "SimpleName", NO_CYCLE_RISK),
-				Member.childMandatory("name", "SimpleName", NO_CYCLE_RISK, "SimpleName"),
+				Member.childMandatory("name", "Name", NO_CYCLE_RISK, "SimpleName"),
 		};
 		
 		StringBuilder sb = new StringBuilder();

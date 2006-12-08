@@ -358,17 +358,17 @@ public class Problems_Test extends TestCase {
 
 		assertEquals(IProblem.IDENTIFIER_EXPECTED, p.getId());
 		assertEquals(IProblem.SEVERITY_ERROR, p.getSeverity());
-		assertEquals(1, p.getOffset());
-		assertEquals(6, p.getLength());
+		assertEquals(8, p.getOffset());
+		assertEquals(1, p.getLength());
 	}
 
 	public void test_SEMICOLON_EXPECTED_FOLLOWING_MODULE_DECLARATION() {
-		IProblem p = getProblem(" module bla");
+		IProblem p = getProblem(" module bla 1");
 
 		assertEquals(IProblem.SEMICOLON_EXPECTED, p.getId());
 		assertEquals(IProblem.SEVERITY_ERROR, p.getSeverity());
-		assertEquals(1, p.getOffset());
-		assertEquals(6, p.getLength());
+		assertEquals(12, p.getOffset());
+		assertEquals(1, p.getLength());
 	}
 
 	public void test_IDENTIFIER_EXPECTED_FOLLOWING_PACKAGE_FOR_MODULE() {
@@ -376,8 +376,8 @@ public class Problems_Test extends TestCase {
 
 		assertEquals(IProblem.IDENTIFIER_EXPECTED, p.getId());
 		assertEquals(IProblem.SEVERITY_ERROR, p.getSeverity());
-		assertEquals(8, p.getOffset());
-		assertEquals(4, p.getLength());
+		assertEquals(12, p.getOffset());
+		assertEquals(1, p.getLength());
 	}
 
 	public void test_IDENTIFIER_EXPECTED_FOLLOWING_IMPORT() {
