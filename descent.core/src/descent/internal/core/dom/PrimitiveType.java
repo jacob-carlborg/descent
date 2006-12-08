@@ -6,10 +6,47 @@ import java.util.List;
 import descent.core.dom.ASTVisitor;
 import descent.core.dom.IBasicType;
 
-// TODO comment
+/**
+ * Primitive type nodes.
+ * <pre>
+ * PrimitiveType:
+ *    <b>void</b>
+ *    <b>byte</b>
+ *    <b>ubyte</b>
+ *    <b>short</b>
+ *    <b>ushort</b>
+ *    <b>int</b>
+ *    <b>uint</b>
+ *    <b>long</b>
+ *    <b>ulong</b>
+ *    <b>float</b>
+ *    <b>double</b>
+ *    <b>real</b>
+ *    <b>ifloat</b>
+ *    <b>idouble</b>
+ *    <b>ireal</b>
+ *    <b>complex32</b> TODO
+ *    <b>complex64</b> TODO
+ *    <b>complex80</b> TODO
+ *    <b>bit</b>
+ *    <b>bool</b>
+ *    <b>char</b>
+ *    <b>wchar</b>
+ *    <b>dchar</b>
+ * </pre>
+ * 
+ * <p>
+ * Note that due to the fact that AST nodes belong to a specific AST and
+ * have a specific parent, there needs to multiple instances of these
+ * nodes.
+ * </p>
+ */
 public class PrimitiveType extends Type implements IBasicType {
 	
-	// TODO comment
+	/**
+ 	 * Primitive type codes.
+	 * </pre>
+	 */
 	public static enum Code {
 		VOID("void"),
 		BYTE("byte"),
