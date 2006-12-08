@@ -1967,7 +1967,7 @@ public abstract class ASTVisitor {
 	 * visited, and <code>false</code> if the children of this node should
 	 * be skipped
 	 */
-	public boolean visit(IOnScopeStatement node) {
+	public boolean visit(IScopeStatement node) {
 		return true;
 	}
 
@@ -1979,7 +1979,7 @@ public abstract class ASTVisitor {
 	 * 
 	 * @param node the node to visit
 	 */
-	public void endVisit(IOnScopeStatement node) {
+	public void endVisit(IScopeStatement node) {
 
 	}
 	/**

@@ -3450,9 +3450,13 @@ public class Parser extends Lexer {
 				nextToken();
 				check(TOKrparen);
 				Statement st = parseStatement(PScurlyscope);
-				s = new OnScopeStatement(t2, st);
-				s.startPosition = saveToken.ptr;
-				s.length = prevToken.ptr + prevToken.len - s.startPosition;
+				
+				ScopeStatement scope = new ScopeStatement(ast);
+				scope.setSourceRange(saveToken.ptr, prevToken.ptr + prevToken.len - saveToken.ptr);
+				scope.setEvent(t2 == TOKon_scope_exit ? ScopeStatement.Event.EXIT : (t2 == TOKon_scope_failure ? ScopeStatement.Event.FAILURE : ScopeStatement.Event.SUCCESS));
+				scope.setBody(st);
+				
+				s = scope;
 				break;
 			}
 
@@ -3463,13 +3467,18 @@ public class Parser extends Lexer {
 			saveToken = new Token(token);
 			
 			TOK t2 = token.value;
+			
 			// if (!global.params.useDeprecated)
 			problem(token.toString() + " is deprecated, use scope", IProblem.SEVERITY_ERROR, IProblem.ON_SCOPE_DEPRECATED, token.ptr, token.len);
 			nextToken();
 			Statement st = parseStatement(PScurlyscope);
-			s = new OnScopeStatement(t2, st);
-			s.startPosition = saveToken.ptr;
-			s.length = prevToken.ptr + prevToken.len - s.startPosition;
+			
+			ScopeStatement scope = new ScopeStatement(ast);
+			scope.setSourceRange(saveToken.ptr, prevToken.ptr + prevToken.len - saveToken.ptr);
+			scope.setEvent(t2 == TOKon_scope_exit ? ScopeStatement.Event.EXIT : (t2 == TOKon_scope_failure ? ScopeStatement.Event.FAILURE : ScopeStatement.Event.SUCCESS));
+			scope.setBody(st);
+			
+			s = scope;
 			break;
 		}
 

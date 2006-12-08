@@ -21,9 +21,9 @@ import descent.core.dom.IIfStatement;
 import descent.core.dom.ILabelStatement;
 import descent.core.dom.IMixinDeclaration;
 import descent.core.dom.IModifier;
-import descent.core.dom.IOnScopeStatement;
 import descent.core.dom.IPragmaStatement;
 import descent.core.dom.IReturnStatement;
+import descent.core.dom.IScopeStatement;
 import descent.core.dom.IStatement;
 import descent.core.dom.IStaticAssertDeclaration;
 import descent.core.dom.IStaticAssertStatement;
@@ -41,6 +41,7 @@ import descent.core.dom.IWithStatement;
 import descent.internal.core.dom.AggregateDeclaration;
 import descent.internal.core.dom.Argument;
 import descent.internal.core.dom.ParserFacade;
+import descent.internal.core.dom.ScopeStatement;
 
 public class Statement_Test extends Parser_Test {
 	
@@ -347,37 +348,37 @@ public class Statement_Test extends Parser_Test {
 	
 	public void testOnScope() {
 		Object[][] objs = {
-				{ "exit", IOnScopeStatement.ON_SCOPE_EXIT },
-				{ "failure", IOnScopeStatement.ON_SCOPE_FAILURE },
-				{ "success", IOnScopeStatement.ON_SCOPE_SUCCESS },
+				{ "exit", ScopeStatement.Event.EXIT },
+				{ "failure", ScopeStatement.Event.FAILURE },
+				{ "success", ScopeStatement.Event.SUCCESS },
 		};
 		
 		for(Object[] obj : objs) {
 			String s = " scope(" + obj[0] + ") x = 2;";
-			IOnScopeStatement stm = (IOnScopeStatement) new ParserFacade().parseStatement(s);
+			IScopeStatement stm = (IScopeStatement) new ParserFacade().parseStatement(s);
 			
-			assertEquals(IStatement.ON_SCOPE_STATEMENT, stm.getNodeType0());
+			assertEquals(IStatement.SCOPE_STATEMENT, stm.getNodeType0());
 			assertPosition(stm, 1, s.length() - 1);
 			
-			assertEquals(obj[1], stm.getOnScopeType());
+			assertEquals(obj[1], stm.getEvent());
 		}
 	}
 	
 	public void testOnScope2() {
 		Object[][] objs = {
-				{ "exit", IOnScopeStatement.ON_SCOPE_EXIT },
-				{ "failure", IOnScopeStatement.ON_SCOPE_FAILURE },
-				{ "success", IOnScopeStatement.ON_SCOPE_SUCCESS },
+				{ "exit", ScopeStatement.Event.EXIT },
+				{ "failure", ScopeStatement.Event.FAILURE },
+				{ "success", ScopeStatement.Event.SUCCESS },
 		};
 		
 		for(Object[] obj : objs) {
 			String s = " on_scope_" + obj[0] + " { }";
-			IOnScopeStatement stm = (IOnScopeStatement) new ParserFacade().parseStatement(s);
+			IScopeStatement stm = (IScopeStatement) new ParserFacade().parseStatement(s);
 			
-			assertEquals(IStatement.ON_SCOPE_STATEMENT, stm.getNodeType0());
+			assertEquals(IStatement.SCOPE_STATEMENT, stm.getNodeType0());
 			assertPosition(stm, 1, s.length() - 1);
 			
-			assertEquals(obj[1], stm.getOnScopeType());
+			assertEquals(obj[1], stm.getEvent());
 		}
 	}
 	

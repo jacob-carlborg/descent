@@ -495,7 +495,7 @@ public interface IElement {
 	 * Constant representing a scope statement.
 	 * A D element with this type can be safely cast to <code>IOnScopeStatement</code>. 
 	 */
-	int ON_SCOPE_STATEMENT = 89;
+	int SCOPE_STATEMENT = 89;
 	
 	/**
 	 * Constant representing a goto statement.
