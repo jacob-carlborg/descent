@@ -7,15 +7,13 @@ public class ASTNodeGenerator {
 	
 	public static void main(String[] args) {
 		
-		String description = "foreach statement";
+		String description = "selective import";
 		String clazz = toMethod(description);
 		String nodeType = toProperty(description);
 
 		Member[] members = {
-				Member.simple("reverse", "boolean"),
-				Member.list("arguments", "Argument", NO_CYCLE_RISK),
-				Member.childMandatory("expression", "Expression", CYCLE_RISK, "SimpleName"),
-				Member.childMandatory("body", "Statement", CYCLE_RISK, "Block"),
+				Member.child("alias", "SimpleName", NO_CYCLE_RISK),
+				Member.childMandatory("name", "SimpleName", NO_CYCLE_RISK, "SimpleName"),
 		};
 		
 		StringBuilder sb = new StringBuilder();

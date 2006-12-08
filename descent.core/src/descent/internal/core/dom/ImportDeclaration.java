@@ -6,7 +6,14 @@ import java.util.List;
 import descent.core.dom.ASTVisitor;
 import descent.core.dom.IImportDeclaration;
 
-// TODO comment
+/**
+ * Import declaration AST node.
+ * 
+ * <pre>
+ * ImportDeclaration:
+ *    <b>import</b> Import { , Import } <b>;</b>
+ * </pre>
+ */
 public class ImportDeclaration extends Declaration implements IImportDeclaration {
 	
 	/**

@@ -374,15 +374,15 @@ public class DOutlineLabelProvider extends LabelProvider {
 		StringBuilder builder = new StringBuilder();
 		for(IImport imp : impDecl.imports()) {
 			if (imp.getAlias() == null) {
-				builder.append(imp.getQualifiedName());
+				builder.append(imp.getName());
 			} else {
 				builder.append(imp.getAlias());
 				builder.append(" = ");
-				builder.append(imp.getQualifiedName());
+				builder.append(imp.getName());
 			}
-			if (imp.getSelectiveImports().length > 0) {
+			if (imp.selectiveImports().size() > 0) {
 				builder.append(": ");
-				for(ISelectiveImport sel : imp.getSelectiveImports()) {
+				for(ISelectiveImport sel : imp.selectiveImports()) {
 					if (sel.getAlias() == null) {
 						builder.append(sel.getName());
 					} else {

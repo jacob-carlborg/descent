@@ -385,8 +385,8 @@ public class Problems_Test extends TestCase {
 
 		assertEquals(IProblem.IDENTIFIER_EXPECTED, p.getId());
 		assertEquals(IProblem.SEVERITY_ERROR, p.getSeverity());
-		assertEquals(1, p.getOffset());
-		assertEquals(6, p.getLength());
+		assertEquals(8, p.getOffset());
+		assertEquals(1, p.getLength());
 	}
 
 	public void test_IDENTIFIER_EXPECTED_FOLLOWING_PACKAGE_FOR_IMPORT() {
@@ -412,17 +412,17 @@ public class Problems_Test extends TestCase {
 
 		assertEquals(IProblem.IDENTIFIER_EXPECTED, p.getId());
 		assertEquals(IProblem.SEVERITY_ERROR, p.getSeverity());
-		assertEquals(20, p.getOffset());
-		assertEquals(4, p.getLength());
+		assertEquals(25, p.getOffset());
+		assertEquals(1, p.getLength());
 	}
 
 	public void test_SEMICOLON_EXPECTED_FOLLOWING_IMPORT_DECLARATION() {
-		IProblem p = getProblem(" import bla");
+		IProblem p = getProblem(" import bla 2");
 
 		assertEquals(IProblem.SEMICOLON_EXPECTED, p.getId());
 		assertEquals(IProblem.SEVERITY_ERROR, p.getSeverity());
-		assertEquals(1, p.getOffset());
-		assertEquals(6, p.getLength());
+		assertEquals(12, p.getOffset());
+		assertEquals(1, p.getLength());
 	}
 
 	public void test_ENUM_MEMBER_EXPECTED() {

@@ -1771,142 +1771,156 @@ public class Parser extends Lexer {
 	
 	private Import parseImport(List<Declaration> decldefs, boolean isstatic) {
 		ImportDeclaration importDeclaration = new ImportDeclaration(ast);
-		importDeclaration.startPosition = token.ptr;
+
+		Import theImport = null;
+		SimpleName alias = null;
+		SimpleName simpleName = null;
+		Name name = null;
+		int start = token.ptr;
+		int theImportStart = 0;
 		
-		Import s = null;
-	    Identifier id;
-	    Identifier aliasid = null;
-	    List<Identifier> a;
-	    
-	    int impStart = -1;
-	    int qNameStart = -1;
-	    int qNameEnd = -1;
-	    
-	    Token importToken = new Token(token);
-
-	    //printf("Parser::parseImport()\n");
-	    boolean repeat = true;
-	    while(repeat) {
-	    	repeat = false;
-		    the_do:
-		    do
-		    {
-		    	// L1:
-			nextToken();
-			
-			if (impStart == - 1) {
-				impStart = token.ptr;
-			}
-			
-			qNameStart = token.ptr;
-			
-			if (token.value != TOKidentifier)
-			{   
-				problem("Identifier expected following import", IProblem.SEVERITY_ERROR, IProblem.IDENTIFIER_EXPECTED, importToken.ptr, importToken.len);
-			    break;
-			}
-	
-			a = null;
-			id = new Identifier(token);
-			
-			qNameEnd = token.ptr + token.len;
-			
-			nextToken();
-			if (aliasid == null && token.value == TOKassign)
-			{
-			    aliasid = id;
-			    // goto L1;
-			    repeat = true;
-			    break the_do;
-			}
-			while (token.value == TOKdot)
-			{
-			    if (a == null)
-				a = new ArrayList<Identifier>();
-			    a.add(id);
-			    nextToken();
-			    if (token.value != TOKidentifier)
-			    {   
-			    	problem("Identifier expected following package", IProblem.SEVERITY_ERROR, IProblem.IDENTIFIER_EXPECTED, qNameStart, token.ptr - qNameStart);
-			    	break;
-			    }
-			    id = new Identifier(token);
-			    nextToken();
-			}
-	
-			s = new Import(a, token.ident, aliasid, isstatic);
-			s.startPosition = impStart;
-			
-			importDeclaration.imports().add(s);
-	
-			/* Look for
-			 *	: alias=name, alias=name;
-			 * syntax.
-			 */
-			if (token.value == TOKcolon)
-			{
-				Token dotToken = new Token(token);
-				
-				s.qName.startPosition = qNameStart;
-				s.qName.length = qNameEnd - qNameStart;
-				
-			    do
-			    {	Identifier name;
-				Identifier alias;
-	
+		boolean repeat = true;
+		while (repeat) {
+			repeat = false;
+		
+		// ---	
+		the_do:
+		// ---
+			do {
+				// L1:
 				nextToken();
 				
-				if (token.value != TOKidentifier)
-				{   
-					problem("Identifier expected following ':'", IProblem.SEVERITY_ERROR, IProblem.IDENTIFIER_EXPECTED, dotToken.ptr, dotToken.len);
-				    break;
+				if (alias == null) {
+					theImportStart = token.ptr;
 				}
-				alias = new Identifier(token);
-				
-				s.length = token.ptr + token.len - s.startPosition;
-				
-				nextToken();
-				if (token.value == TOKassign)
-				{
-				    nextToken();
-				    if (token.value != TOKidentifier)
-				    {   
-				    	problem("Identifier expected following " + alias + " = ", IProblem.SEVERITY_ERROR, IProblem.IDENTIFIER_EXPECTED, alias.startPosition, prevToken.ptr - alias.startPosition + prevToken.len);
-				    	break;
-				    }
-				    name = new Identifier(token);
-				    s.length = token.ptr + token.len - s.startPosition;
-				    nextToken();
-				}
-				else
-				{   name = alias;
-				    alias = null;
-				}
-				s.addAlias(name, alias);
-			    } while (token.value == TOKcomma);
-			    break;	// no comma-separated imports of this form
-			} else {
-				s.length = token.ptr - s.startPosition;
-				s.qName.startPosition = qNameStart;
-				s.qName.length = token.ptr - s.qName.startPosition;
-			}
-	
-			aliasid = null;
-		    } while (token.value == TOKcomma);
-	    }
-	    
-    	importDeclaration.length = token.ptr + token.len - importDeclaration.startPosition;
-    	decldefs.add(importDeclaration);
-	    
-	    if (token.value == TOKsemicolon)
-	 	nextToken();
-	    else
-	    {
-	    	problem("';' expected following import declaration", IProblem.SEVERITY_ERROR, IProblem.SEMICOLON_EXPECTED, importToken.ptr, importToken.len);
-	    	nextToken();
-	    }
 
-	    return null;
+				if (token.value != TOKidentifier) {
+					problem("Identifier expected following import",
+							IProblem.SEVERITY_ERROR,
+							IProblem.IDENTIFIER_EXPECTED, token.ptr,
+							token.len);
+					break;
+				}
+
+				simpleName = new SimpleName(ast);
+				simpleName.setIdentifier(token.ident.string);
+				simpleName.setSourceRange(token.ptr, token.len);
+
+				name = simpleName;
+
+				nextToken();
+
+				if (alias == null && token.value == TOKassign) {
+					alias = simpleName;
+					// goto L1;
+					repeat = true;
+					break the_do;
+				}
+
+				while (token.value == TOKdot) {
+					nextToken();
+					if (token.value != TOKidentifier) {
+						problem("Identifier expected following package",
+								IProblem.SEVERITY_ERROR,
+								IProblem.IDENTIFIER_EXPECTED, name
+										.getStartPosition(), token.ptr
+										- name.getStartPosition());
+						break;
+					}
+
+					QualifiedName qName = new QualifiedName(ast);
+					qName.setQualifier(name);
+
+					simpleName = new SimpleName(ast);
+					simpleName.setIdentifier(token.ident.string);
+					simpleName.setSourceRange(token.ptr, token.len);
+
+					qName.setName(simpleName);
+					qName.setSourceRange(name.getStartPosition(), token.ptr
+							+ token.len - name.getStartPosition());
+
+					name = qName;
+
+					nextToken();
+				}
+
+				theImport = new Import(ast);
+				theImport.setName(name);
+				theImport.setAlias(alias);
+
+				importDeclaration.imports().add(theImport);
+
+				/*
+				 * Look for : alias=name, alias=name; syntax.
+				 */
+				if (token.value == TOKcolon) {
+					Token dotToken = new Token(token);
+
+					do {
+						SelectiveImport selectiveImport = new SelectiveImport(ast);
+						
+						nextToken();
+
+						if (token.value != TOKidentifier) {
+							problem("Identifier expected following ':'",
+									IProblem.SEVERITY_ERROR,
+									IProblem.IDENTIFIER_EXPECTED, dotToken.ptr,
+									dotToken.len);
+							break;
+						}
+
+						alias = new SimpleName(ast);
+						alias.setSourceRange(token.ptr, token.len);
+						alias.setIdentifier(token.ident.string);
+
+						nextToken();
+						if (token.value == TOKassign) {
+							nextToken();
+							if (token.value != TOKidentifier) {
+								problem("Identifier expected", IProblem.SEVERITY_ERROR, IProblem.IDENTIFIER_EXPECTED, token.ptr, token.len);
+								break;
+							}
+							
+							simpleName = new SimpleName(ast);
+							simpleName.setSourceRange(token.ptr, token.len);
+							simpleName.setIdentifier(token.ident.string);
+							
+							selectiveImport.setAlias(alias);
+							selectiveImport.setName(simpleName);
+							selectiveImport.setSourceRange(alias.getStartPosition(), simpleName.getStartPosition() + simpleName.getLength() - alias.getStartPosition());
+							
+							nextToken();
+						} else {
+							selectiveImport.setName(alias);
+							selectiveImport.setSourceRange(alias.getStartPosition(), alias.getLength());
+						}
+						
+						theImport.setSourceRange(theImportStart, prevToken.ptr + prevToken.len - theImportStart);
+						theImport.selectiveImports().add(selectiveImport);
+					} while (token.value == TOKcomma);
+					break; // no comma-separated imports of this form
+				} else {
+					theImport.setSourceRange(theImportStart, prevToken.ptr + prevToken.len - theImportStart);
+				}
+
+				alias = null;
+			} while (token.value == TOKcomma);
+		}
+		
+		importDeclaration.setSourceRange(start, token.ptr + token.len - start);
+
+		if (token.value == TOKsemicolon) {
+			nextToken();
+		} else {
+			problem("';' expected following import declaration",
+					IProblem.SEVERITY_ERROR, IProblem.SEMICOLON_EXPECTED,
+					token.ptr, token.len);
+			nextToken();
+		}
+		
+		decldefs.add(importDeclaration);
+
+		return null;
 	}
 	
 	private Type parseBasicType() {
