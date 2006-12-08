@@ -19,11 +19,10 @@ public class Pragma_Test extends Parser_Test {
 		
 		assertPosition(p, 1, s.length() - 1);
 		
-		assertEquals("lib", p.getIdentifier().toString());
-		assertPosition(p.getIdentifier(), 8, 3);
+		assertEquals("lib", p.getName().toString());
+		assertPosition(p.getName(), 8, 3);
 		
-		IExpression[] args = p.getArguments();
-		assertEquals(3, args.length);
+		assertEquals(3, p.arguments().size());
 	}
 
 }

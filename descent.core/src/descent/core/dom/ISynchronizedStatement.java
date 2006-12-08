@@ -21,6 +21,6 @@ public interface ISynchronizedStatement extends IStatement {
 	/**
 	 * Returns the statement to synchronize.
 	 */
-	IStatement getStatement();
+	IStatement getBody();
 
 }

@@ -232,7 +232,7 @@ public class DOutlineLabelProvider extends LabelProvider {
 			return "version = " + va.getVersion().getValue();
 		case IElement.PRAGMA_DECLARATION:
 			IPragmaDeclaration pd = (IPragmaDeclaration) element;
-			return pd.getIdentifier() == null ? "" : pd.getIdentifier().toString();
+			return pd.getName() == null ? "" : pd.getName().toString();
 		case IElement.MIXIN_DECLARATION:
 			IMixinDeclaration mix = (IMixinDeclaration) element;
 			s = new StringBuilder();
@@ -542,13 +542,13 @@ s.append('(');
 			break;
 		case IType.DYNAMIC_ARRAY_TYPE: {
 			IDynamicArrayType array = (IDynamicArrayType) type;
-			appendType(s, array.getInnerType());
+			appendType(s, array.getComponentType());
 			s.append("[]");
 			break;
 		}
 		case IType.STATIC_ARRAY_TYPE: {
 			IStaticArrayType array = (IStaticArrayType) type;
-			appendType(s, array.getInnerType());
+			appendType(s, array.getComponentType());
 			s.append('[');
 			s.append(array.getDimension().toString());
 			s.append(']');
@@ -556,7 +556,7 @@ s.append('(');
 		}
 		case IType.ASSOCIATIVE_ARRAY_TYPE:
 			IAssociativeArrayType array = (IAssociativeArrayType) type;
-			appendType(s, array.getInnerType());
+			appendType(s, array.getComponentType());
 			s.append('[');
 			appendType(s, array.getKeyType());
 			s.append(']');

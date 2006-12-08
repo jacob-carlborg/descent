@@ -108,7 +108,7 @@ public class PositionHelper {
 			break;			
 		case IElement.PRAGMA_DECLARATION:
 			IPragmaDeclaration pd = (IPragmaDeclaration) element;
-			name = pd.getIdentifier();
+			name = pd.getName();
 			if (name != null) element = name;
 			break;
 		case IElement.MIXIN_DECLARATION:

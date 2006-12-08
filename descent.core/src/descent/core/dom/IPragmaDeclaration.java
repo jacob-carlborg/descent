@@ -1,5 +1,10 @@
 package descent.core.dom;
 
+import java.util.List;
+
+import descent.internal.core.dom.Declaration;
+import descent.internal.core.dom.Expression;
+
 /**
  * A pragma declaration:
  * 
@@ -12,17 +17,17 @@ public interface IPragmaDeclaration extends IDeclaration {
 	/**
 	 * Returns the name of the pragma.
 	 */
-	ISimpleName getIdentifier();
+	ISimpleName getName();
 	
 	/**
 	 * Returns the arguments of the pragma.
 	 */
-	IExpression[] getArguments();
+	List<Expression> arguments();
 	
 	/**
 	 * Returns the declaration definitions contained in this
 	 * pragma declaration.
 	 */
-	IDeclaration[] getDeclarationDefinitions();
+	List<Declaration> declarations();
 
 }

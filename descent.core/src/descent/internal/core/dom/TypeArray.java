@@ -9,7 +9,7 @@ public abstract class TypeArray extends DmdType implements IArrayType {
 		super(ty, next);
 	}
 	
-	public IType getInnerType() {
+	public IType getComponentType() {
 		return next;
 	}
 

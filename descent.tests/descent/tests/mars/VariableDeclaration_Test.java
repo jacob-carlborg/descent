@@ -139,8 +139,8 @@ public class VariableDeclaration_Test extends Parser_Test {
 		assertPosition(var, 1, 18);
 		
 		IArrayType array = (IArrayType) var.getType();
-		assertEquals(IType.POINTER_TO_FUNCTION_TYPE, array.getInnerType().getNodeType0());
-		IDelegateType del = (IDelegateType) array.getInnerType();
+		assertEquals(IType.POINTER_TO_FUNCTION_TYPE, array.getComponentType().getNodeType0());
+		IDelegateType del = (IDelegateType) array.getComponentType();
 		assertEquals("char", del.getArguments()[0].getType().toString());
 		assertEquals("int", del.getReturnType().toString());
 	}
@@ -242,7 +242,7 @@ public class VariableDeclaration_Test extends Parser_Test {
 		
 		IAssociativeArrayType type = (IAssociativeArrayType) var.getType();
 		assertEquals(IArrayType.ASSOCIATIVE_ARRAY_TYPE, type.getNodeType0());
-		assertEquals("char", type.getInnerType().toString());
+		assertEquals("char", type.getComponentType().toString());
 		assertEquals("int", type.getKeyType().toString());
 	}
 	

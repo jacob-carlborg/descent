@@ -81,7 +81,7 @@ public class DOutlineContentProvider implements ITreeContentProvider {
 			return list.toArray();
 		case IElement.PRAGMA_DECLARATION:
 			list = new ArrayList<Object>();
-			addDeclDefs(list, ((IPragmaDeclaration) e).getDeclarationDefinitions());
+			addDeclDefs(list, ((IPragmaDeclaration) e).declarations());
 			return list.toArray();
 		case IImaginaryElements.IMPORTS:
 			return ((Imports) e).imports;
@@ -184,7 +184,7 @@ public class DOutlineContentProvider implements ITreeContentProvider {
 			return v.getIfTrueDeclarationDefinitions().length > 0 ||
 				v.getIfFalseDeclarationDefinitions().length > 0;
 		case IElement.PRAGMA_DECLARATION:
-			return ((IPragmaDeclaration) e).getDeclarationDefinitions().length > 0;
+			return ((IPragmaDeclaration) e).declarations().size() > 0;
 		case IImaginaryElements.IMPORTS:
 		case IImaginaryElements.ELSE:
 			return true;

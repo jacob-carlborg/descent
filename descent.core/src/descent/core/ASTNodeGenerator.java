@@ -7,12 +7,13 @@ public class ASTNodeGenerator {
 	
 	public static void main(String[] args) {
 		
-		String description = "primitive type";
+		String description = "synchronized statement";
 		String clazz = toMethod(description);
 		String nodeType = toProperty(description);
 
 		Member[] members = {
-				Member.simple("primitiveTypeCode", "Code"),
+				Member.child("expression", "Expression", CYCLE_RISK),
+				Member.childMandatory("body", "Statement", CYCLE_RISK, "Block"),
 		};
 		
 		StringBuilder sb = new StringBuilder();

@@ -69,7 +69,7 @@ public class Type_Test extends Parser_Test {
 		assertEquals(IArrayType.DYNAMIC_ARRAY_TYPE, type.getNodeType0());
 		assertEquals("int[]", type.toString());
 		assertPosition(type, 1, 6);
-		assertPosition(type.getInnerType(), 1, 3);
+		assertPosition(type.getComponentType(), 1, 3);
 		
 		assertVisitor(type, 1);
 	}
@@ -80,7 +80,7 @@ public class Type_Test extends Parser_Test {
 		assertEquals("int[3]", type.toString());
 		assertEquals("3", type.getDimension().toString());
 		assertPosition(type, 1, 7);
-		assertPosition(type.getInnerType(), 1, 3);
+		assertPosition(type.getComponentType(), 1, 3);
 		
 		assertVisitor(type, 2);
 	}
@@ -91,7 +91,7 @@ public class Type_Test extends Parser_Test {
 		assertEquals("int[char]", type.toString());
 		assertEquals("char", type.getKeyType().toString());
 		assertPosition(type, 1, 10);
-		assertPosition(type.getInnerType(), 1, 3);
+		assertPosition(type.getComponentType(), 1, 3);
 		
 		assertVisitor(type, 2);
 	}

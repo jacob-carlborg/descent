@@ -415,8 +415,10 @@ public class Statement_Test extends Parser_Test {
 		assertEquals(IStatement.PRAGMA_STATEMENT, stm.getNodeType0());
 		assertPosition(stm, 1, s.length() - 1);
 		
-		assertEquals("lib", stm.getIdentifier().toString());
-		assertPosition(stm.getIdentifier(), 8, 3);
+		assertEquals("lib", stm.getName().toString());
+		assertPosition(stm.getName(), 8, 3);
+		
+		assertEquals(1, stm.arguments().size());
 	}
 	
 	public void testIf() {

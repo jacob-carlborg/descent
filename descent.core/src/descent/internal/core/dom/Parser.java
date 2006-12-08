@@ -508,9 +508,18 @@ public class Parser extends Lexer {
 				} else {
 					a = parseBlock();
 				}
-				s = new PragmaDeclaration(ident, args, a);
-				s.startPosition = saveToken.ptr;
-				s.length = prevToken.ptr + prevToken.len - s.startPosition;
+				
+				PragmaDeclaration pragmaDeclaration = new PragmaDeclaration(ast);
+				pragmaDeclaration.setName(new SimpleName(ident));
+				if (args != null) {
+					pragmaDeclaration.arguments().addAll(args);
+				}
+				if (a != null) {
+					pragmaDeclaration.declarations().addAll(a);
+				}
+				pragmaDeclaration.setSourceRange(saveToken.ptr, prevToken.ptr + prevToken.len - saveToken.ptr);
+				
+				s = pragmaDeclaration;
 				break;
 			}
 
@@ -3576,11 +3585,19 @@ public class Parser extends Lexer {
 			if (token.value == TOKsemicolon) {
 				nextToken();
 				body = null;
-			} else
+			} else {
 				body = parseStatement(PSsemi);
-			s = new PragmaStatement(ident, args, body);
-			s.startPosition = saveToken.ptr;
-			s.length = prevToken.ptr + prevToken.len - s.startPosition;
+			}
+			
+			PragmaStatement pragmaStatement = new PragmaStatement(ast);
+			pragmaStatement.setName(new SimpleName(ident));
+			if (args != null) {
+				pragmaStatement.arguments().addAll(args);
+			}
+			pragmaStatement.setBody(body);
+			pragmaStatement.setSourceRange(saveToken.ptr, prevToken.ptr + prevToken.len - saveToken.ptr);
+			
+			s = pragmaStatement;
 			break;
 		}
 
@@ -3769,9 +3786,13 @@ public class Parser extends Lexer {
 			} else
 				exp = null;
 			body = parseStatement(PSscope);
-			s = new SynchronizedStatement(exp, body);
-			s.startPosition = saveToken.ptr;
-			s.length = prevToken.ptr + prevToken.len - s.startPosition;
+			
+			SynchronizedStatement synchronizedStatement = new SynchronizedStatement(ast);
+			synchronizedStatement.setExpression(exp);
+			synchronizedStatement.setBody(body);
+			synchronizedStatement.setSourceRange(saveToken.ptr, prevToken.ptr + prevToken.len - saveToken.ptr);
+			
+			s = synchronizedStatement;
 			break;
 		}
 

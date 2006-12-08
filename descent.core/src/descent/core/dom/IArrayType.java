@@ -9,6 +9,6 @@ public interface IArrayType extends IType {
 	 * Returns the inner type of the array. This
 	 * is "innerType[...]".
 	 */
-	IType getInnerType();
+	IType getComponentType();
 
 }
