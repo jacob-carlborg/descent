@@ -7,7 +7,7 @@ import descent.core.dom.IRealExpression;
 
 public class RealExp extends Expression implements IRealExpression {
 
-	public RealExp(BigInteger numberValue, Type tfloat32) {
+	public RealExp(BigInteger numberValue, PrimitiveType.Code code) {
 		// TODO Auto-generated constructor stub
 	}
 	

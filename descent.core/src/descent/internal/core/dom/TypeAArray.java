@@ -7,9 +7,9 @@ import descent.core.dom.IType;
 // asociative array
 public class TypeAArray extends TypeArray implements IAssociativeArrayType {
 
-	public Type index;
+	public DmdType index;
 
-	public TypeAArray(Type t, Type index) {
+	public TypeAArray(DmdType t, DmdType index) {
 		super(TY.Taarray, t);
 		this.index = index;
 	}

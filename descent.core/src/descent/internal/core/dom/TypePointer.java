@@ -6,9 +6,9 @@ import descent.core.dom.ASTVisitor;
 import descent.core.dom.IPointerType;
 import descent.core.dom.IType;
 
-public class TypePointer extends Type implements IPointerType, IDelegateType {
+public class TypePointer extends DmdType implements IPointerType, IDelegateType {
 	
-	public TypePointer(Type t) {
+	public TypePointer(DmdType t) {
 		super(TY.Tpointer, t);
 	}
 	

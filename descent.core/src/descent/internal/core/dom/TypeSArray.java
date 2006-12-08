@@ -11,7 +11,7 @@ public class TypeSArray extends TypeArray implements IStaticArrayType {
 	
 	public Expression dim;
 
-	public TypeSArray(Type t, Expression dim) {
+	public TypeSArray(DmdType t, Expression dim) {
 		super(TY.Tsarray, t);
 		this.dim = dim;
 	}

@@ -35,7 +35,7 @@ public class FunctionDeclaration extends Declaration implements IFunctionDeclara
 	 * The "returnType" structural property of this node type.
 	 */
 	public static final ChildPropertyDescriptor RETURN_TYPE_PROPERTY =
-		new ChildPropertyDescriptor(FunctionDeclaration.class, "returnType", Type.class, MANDATORY, CYCLE_RISK); //$NON-NLS-1$
+		new ChildPropertyDescriptor(FunctionDeclaration.class, "returnType", DmdType.class, MANDATORY, CYCLE_RISK); //$NON-NLS-1$
 
 	/**
 	 * The "name" structural property of this node type.
@@ -137,7 +137,7 @@ public class FunctionDeclaration extends Declaration implements IFunctionDeclara
 	/**
 	 * The returnType.
 	 */
-	private Type returnType;
+	private DmdType returnType;
 
 	/**
 	 * The name.
@@ -260,7 +260,7 @@ public class FunctionDeclaration extends Declaration implements IFunctionDeclara
 			if (get) {
 				return getReturnType();
 			} else {
-				setReturnType((Type) child);
+				setReturnType((DmdType) child);
 				return null;
 			}
 		}
@@ -338,7 +338,7 @@ public class FunctionDeclaration extends Declaration implements IFunctionDeclara
 		result.setSourceRange(this.getStartPosition(), this.getLength());
 		result.setModifierFlags(getModifierFlags());
 		result.setKind(getKind());
-		result.setReturnType((Type) getReturnType().clone(target));
+		result.setReturnType((DmdType) getReturnType().clone(target));
 		result.setName((SimpleName) getName().clone(target));
 		result.templateParameters.addAll(ASTNode.copySubtrees(target, templateParameters()));
 		result.arguments.addAll(ASTNode.copySubtrees(target, arguments()));
@@ -427,13 +427,13 @@ public class FunctionDeclaration extends Declaration implements IFunctionDeclara
 	 * 
 	 * @return the return type
 	 */ 
-	public Type getReturnType() {
+	public DmdType getReturnType() {
 		if (this.returnType == null) {
 			// lazy init must be thread-safe for readers
 			synchronized (this) {
 				if (this.returnType == null) {
 					preLazyInit();
-					this.returnType = Type.tvoid;
+					this.returnType = new PrimitiveType(ast);
 					postLazyInit(this.returnType, RETURN_TYPE_PROPERTY);
 				}
 			}
@@ -452,7 +452,7 @@ public class FunctionDeclaration extends Declaration implements IFunctionDeclara
 	 * <li>a cycle in would be created</li>
 	 * </ul>
 	 */ 
-	public void setReturnType(Type returnType) {
+	public void setReturnType(DmdType returnType) {
 		if (returnType == null) {
 			throw new IllegalArgumentException();
 		}

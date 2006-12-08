@@ -8,10 +8,10 @@ import descent.core.dom.IType;
 public class TemplateAliasParameter extends TemplateParameter implements IAliasTemplateParameter {
 
 	private final Identifier tp_ident;
-	private final Type tp_spectype;
-	private final Type tp_defaulttype;
+	private final DmdType tp_spectype;
+	private final DmdType tp_defaulttype;
 
-	public TemplateAliasParameter(Identifier tp_ident, Type tp_spectype, Type tp_defaulttype) {
+	public TemplateAliasParameter(Identifier tp_ident, DmdType tp_spectype, DmdType tp_defaulttype) {
 		this.tp_ident = tp_ident;
 		this.tp_spectype = tp_spectype;
 		this.tp_defaulttype = tp_defaulttype;

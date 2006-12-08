@@ -42,7 +42,7 @@ public class Argument extends ASTNode implements IArgument {
 	 * The "type" structural property of this node type.
 	 */
 	public static final ChildPropertyDescriptor TYPE_PROPERTY =
-		new ChildPropertyDescriptor(Argument.class, "type", Type.class, MANDATORY, CYCLE_RISK); //$NON-NLS-1$
+		new ChildPropertyDescriptor(Argument.class, "type", DmdType.class, MANDATORY, CYCLE_RISK); //$NON-NLS-1$
 
 	/**
 	 * The "name" structural property of this node type.
@@ -96,7 +96,7 @@ public class Argument extends ASTNode implements IArgument {
 	/**
 	 * The type.
 	 */
-	private Type type = null;
+	private DmdType type = null;
 
 	/**
 	 * The name.
@@ -153,7 +153,7 @@ public class Argument extends ASTNode implements IArgument {
 			if (get) {
 				return getType();
 			} else {
-				setType((Type) child);
+				setType((DmdType) child);
 				return null;
 			}
 		}
@@ -192,7 +192,7 @@ public class Argument extends ASTNode implements IArgument {
 		Argument result = new Argument(target);
 		result.setSourceRange(this.getStartPosition(), this.getLength());
 		result.setPassageMode(getPassageMode());
-		result.setType((Type) getType().clone(target));
+		result.setType((DmdType) getType().clone(target));
 		result.setName((SimpleName) getName().clone(target));
 	result.setDefaultValue((Expression) ASTNode.copySubtree(target, getDefaultValue()));
 		return result;
@@ -249,14 +249,13 @@ public class Argument extends ASTNode implements IArgument {
 	 * 
 	 * @return the type
 	 */ 
-	public Type getType() {
+	public DmdType getType() {
 		if (this.type == null) {
 			// lazy init must be thread-safe for readers
 			synchronized (this) {
 				if (this.type == null) {
 					preLazyInit();
-					// TODO fixme
-					this.type = Type.tint32;
+					this.type = new PrimitiveType(ast);
 					postLazyInit(this.type, TYPE_PROPERTY);
 				}
 			}
@@ -275,7 +274,7 @@ public class Argument extends ASTNode implements IArgument {
 	 * <li>a cycle in would be created</li>
 	 * </ul>
 	 */ 
-	public void setType(Type type) {
+	public void setType(DmdType type) {
 		if (type == null) {
 			throw new IllegalArgumentException();
 		}
@@ -372,7 +371,7 @@ public class Argument extends ASTNode implements IArgument {
 	}
 
 	// TODO Descent remove
-	public Argument(Argument.PassageMode passageMode, Type type, SimpleName name, Expression defaultValue) {
+	public Argument(Argument.PassageMode passageMode, DmdType type, SimpleName name, Expression defaultValue) {
 		super(AST.newAST(AST.JLS3));
 		this.name = name;
 		this.type = type;

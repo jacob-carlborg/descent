@@ -532,7 +532,7 @@ s.append('(');
 	
 	private void appendType(StringBuilder s, IType type) {
 		switch(type.getNodeType0()) {
-		case IType.BASIC_TYPE:
+		case IType.PRIMITIVE_TYPE:
 			s.append(type);
 			break;
 		case IType.POINTER_TYPE:

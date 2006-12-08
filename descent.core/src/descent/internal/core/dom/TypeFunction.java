@@ -5,20 +5,20 @@ import java.util.List;
 
 import descent.core.dom.ASTVisitor;
 
-public class TypeFunction extends Type {
+public class TypeFunction extends DmdType {
 	
 	public List<Argument> arguments;
 	public boolean varargs;
 	public LINK linkage;
 
-	public TypeFunction(List<Argument> arguments, Type treturn, boolean varargs, LINK linkage) {
+	public TypeFunction(List<Argument> arguments, DmdType treturn, boolean varargs, LINK linkage) {
 		super(TY.Tfunction, treturn);
 		this.arguments = arguments;
 		this.varargs = varargs;
 		this.linkage = linkage;
 	}
 	
-	public Type getReturnType() {
+	public DmdType getReturnType() {
 		return this.next;
 	}
 	

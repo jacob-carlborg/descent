@@ -543,7 +543,7 @@ public interface IElement {
 	 * Constant representing a basic type.
 	 * A D element with this type can be safely cast to <code>IBasicType</code>. 
 	 */
-	int BASIC_TYPE = 98;
+	int PRIMITIVE_TYPE = 98;
 	
 	/**
 	 * Constant representing a pointer type.

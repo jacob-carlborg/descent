@@ -5,7 +5,7 @@ import java.util.List;
 
 import descent.core.dom.IQualifiedName;
 
-public abstract class TypeQualified extends Type {
+public abstract class TypeQualified extends DmdType {
 	
 	public List<Identifier> idents;
 	public QualifiedNameBak qName;

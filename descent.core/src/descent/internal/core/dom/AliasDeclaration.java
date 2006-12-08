@@ -32,7 +32,7 @@ public class AliasDeclaration extends Declaration implements IAliasDeclaration {
 	 * The "type" structural property of this node type.
 	 */
 	public static final ChildPropertyDescriptor TYPE_PROPERTY =
-		new ChildPropertyDescriptor(AliasDeclaration.class, "type", Type.class, MANDATORY, NO_CYCLE_RISK); //$NON-NLS-1$
+		new ChildPropertyDescriptor(AliasDeclaration.class, "type", DmdType.class, MANDATORY, NO_CYCLE_RISK); //$NON-NLS-1$
 
 	/**
 	 * A list of property descriptors (element type: 
@@ -79,7 +79,7 @@ public class AliasDeclaration extends Declaration implements IAliasDeclaration {
 	/**
 	 * The type.
 	 */
-	private Type type;
+	private DmdType type;
 
 
 	/**
@@ -134,7 +134,7 @@ public class AliasDeclaration extends Declaration implements IAliasDeclaration {
 			if (get) {
 				return getType();
 			} else {
-				setType((Type) child);
+				setType((DmdType) child);
 				return null;
 			}
 		}
@@ -158,7 +158,7 @@ public class AliasDeclaration extends Declaration implements IAliasDeclaration {
 		result.setSourceRange(this.getStartPosition(), this.getLength());
 		result.setModifierFlags(getModifierFlags());
 		result.setName((SimpleName) getName().clone(target));
-		result.setType((Type) getType().clone(target));
+		result.setType((DmdType) getType().clone(target));
 		return result;
 	}
 
@@ -249,13 +249,13 @@ public class AliasDeclaration extends Declaration implements IAliasDeclaration {
 	 * 
 	 * @return the type
 	 */ 
-	public Type getType() {
+	public DmdType getType() {
 		if (this.type == null) {
 			// lazy init must be thread-safe for readers
 			synchronized (this) {
 				if (this.type == null) {
 					preLazyInit();
-					this.type = Type.tint32;
+					this.type = new PrimitiveType(ast);
 					postLazyInit(this.type, TYPE_PROPERTY);
 				}
 			}
@@ -274,7 +274,7 @@ public class AliasDeclaration extends Declaration implements IAliasDeclaration {
 	 * <li>a cycle in would be created</li>
 	 * </ul>
 	 */ 
-	public void setType(Type type) {
+	public void setType(DmdType type) {
 		if (type == null) {
 			throw new IllegalArgumentException();
 		}
@@ -302,7 +302,7 @@ public class AliasDeclaration extends Declaration implements IAliasDeclaration {
 	;
 	}
 
-	public AliasDeclaration(SimpleName name, Type type) {
+	public AliasDeclaration(SimpleName name, DmdType type) {
 		this.name = name;
 		this.type = type;
 	}

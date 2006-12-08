@@ -4,12 +4,12 @@ import descent.core.dom.IIftypeDeclaration;
 
 public class IftypeCondition extends Condition {
 
-	public Type targ;
+	public DmdType targ;
 	public Identifier ident;
 	public TOK tok;
-	public Type tspec;
+	public DmdType tspec;
 
-	public IftypeCondition(Type targ, Identifier ident, TOK tok, Type tspec) {
+	public IftypeCondition(DmdType targ, Identifier ident, TOK tok, DmdType tspec) {
 		this.targ = targ;
 		this.ident = ident;
 		this.tok = tok;

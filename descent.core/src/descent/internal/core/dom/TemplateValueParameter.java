@@ -9,11 +9,11 @@ import descent.core.dom.IType;
 public class TemplateValueParameter extends TemplateParameter implements IValueTemplateParameter {
 
 	private final Identifier id;
-	private final Type tp_valtype;
+	private final DmdType tp_valtype;
 	private final Expression tp_specvalue;
 	private final Expression tp_defaultvalue;
 
-	public TemplateValueParameter(Identifier id, Type tp_valtype, Expression tp_specvalue, Expression tp_defaultvalue) {
+	public TemplateValueParameter(Identifier id, DmdType tp_valtype, Expression tp_specvalue, Expression tp_defaultvalue) {
 		this.id = id;
 		this.tp_valtype = tp_valtype;
 		this.tp_specvalue = tp_specvalue;

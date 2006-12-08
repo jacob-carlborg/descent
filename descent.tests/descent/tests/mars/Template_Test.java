@@ -76,7 +76,7 @@ public class Template_Test extends Parser_Test {
 		ttp = (ITypeTemplateParameter) tp[2];		
 		assertEquals("V", ttp.getName().toString());
 		assertPosition(ttp, 26, 7);
-		assertEquals(IType.BASIC_TYPE, ttp.getSpecificType().getNodeType0());
+		assertEquals(IType.PRIMITIVE_TYPE, ttp.getSpecificType().getNodeType0());
 		assertNull(ttp.getDefaultType());
 		
 		assertEquals(ITemplateParameter.TYPE_TEMPLATE_PARAMETER, tp[3].getNodeType0());
@@ -84,7 +84,7 @@ public class Template_Test extends Parser_Test {
 		assertEquals("W", ttp.getName().toString());
 		assertPosition(ttp, 35, 7);
 		assertNull(ttp.getSpecificType());
-		assertEquals(IType.BASIC_TYPE, ttp.getDefaultType().getNodeType0());
+		assertEquals(IType.PRIMITIVE_TYPE, ttp.getDefaultType().getNodeType0());
 		
 		assertEquals(ITemplateParameter.ALIAS_TEMPLATE_PARAMETER, tp[4].getNodeType0());
 		IAliasTemplateParameter tap = (IAliasTemplateParameter) tp[4];		

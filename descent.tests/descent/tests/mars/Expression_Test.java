@@ -422,7 +422,7 @@ public class Expression_Test extends Parser_Test {
 		assertEquals(IExpression.TYPE_DOT_IDENTIFIER_EXPRESSION, expr.getNodeType0());
 		assertPosition(expr, 1, 10);
 		
-		assertEquals(IType.BASIC_TYPE, expr.getType().getNodeType0());
+		assertEquals(IType.PRIMITIVE_TYPE, expr.getType().getNodeType0());
 		assertEquals("length", expr.getProperty().toString());
 		
 		assertVisitor(expr, 3);

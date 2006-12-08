@@ -15,38 +15,39 @@ import descent.core.dom.IType;
 import descent.core.dom.ITypeofType;
 import descent.core.dom.IVariableDeclaration;
 import descent.internal.core.dom.ParserFacade;
+import descent.internal.core.dom.PrimitiveType;
 
 public class Type_Test extends Parser_Test {
 	
 	public void testBasicTypes() {
 		Object[][] objs = {
-			{ "void", IBasicType.VOID, 4 },
-			{ "bit", IBasicType.BIT, 3 },
-			{ "bool", IBasicType.BOOL, 4 },
-			{ "byte", IBasicType.INT8, 4 },
-			{ "ubyte", IBasicType.UNS8, 5 },
-			{ "short", IBasicType.INT16, 5 },
-			{ "ushort", IBasicType.UNS16, 6 },
-			{ "int", IBasicType.INT32, 3 },
-			{ "uint", IBasicType.UNS32, 4 },
-			{ "long", IBasicType.INT64, 4 },
-			{ "ulong", IBasicType.UNS64, 5 },
-			{ "float", IBasicType.FLOAT32, 5 },
-			{ "double", IBasicType.FLOAT64, 6 },
-			{ "real", IBasicType.FLOAT80, 4 },
-			{ "ifloat", IBasicType.IMAGINARY32, 6 },
-			{ "idouble", IBasicType.IMAGINARY64, 7 },
-			{ "ireal", IBasicType.IMAGINARY80, 5 },
-			{ "char", IBasicType.CHAR, 4 },
-			{ "wchar", IBasicType.WCHAR, 5 },
-			{ "dchar", IBasicType.DCHAR, 5 },
+			{ "void", PrimitiveType.Code.VOID, 4 },
+			{ "bit", PrimitiveType.Code.BIT, 3 },
+			{ "bool", PrimitiveType.Code.BOOL, 4 },
+			{ "byte", PrimitiveType.Code.BYTE, 4 },
+			{ "ubyte", PrimitiveType.Code.UBYTE, 5 },
+			{ "short", PrimitiveType.Code.SHORT, 5 },
+			{ "ushort", PrimitiveType.Code.USHORT, 6 },
+			{ "int", PrimitiveType.Code.INT, 3 },
+			{ "uint", PrimitiveType.Code.UINT, 4 },
+			{ "long", PrimitiveType.Code.LONG, 4 },
+			{ "ulong", PrimitiveType.Code.ULONG, 5 },
+			{ "float", PrimitiveType.Code.FLOAT, 5 },
+			{ "double", PrimitiveType.Code.DOUBLE, 6 },
+			{ "real", PrimitiveType.Code.REAL, 4 },
+			{ "ifloat", PrimitiveType.Code.IFLOAT, 6 },
+			{ "idouble", PrimitiveType.Code.IDOUBLE, 7 },
+			{ "ireal", PrimitiveType.Code.IREAL, 5 },
+			{ "char", PrimitiveType.Code.CHAR, 4 },
+			{ "wchar", PrimitiveType.Code.WCHAR, 5 },
+			{ "dchar", PrimitiveType.Code.DCHAR, 5 },
 		};
 		
 		for(Object[] tri : objs) {
 			IBasicType type = (IBasicType) getType(tri[0].toString());
 			assertEquals(tri[0].toString(), type.toString());
-			assertEquals(IType.BASIC_TYPE, type.getNodeType0());
-			assertEquals(tri[1], type.getBasicTypeKind());
+			assertEquals(IType.PRIMITIVE_TYPE, type.getNodeType0());
+			assertEquals(tri[1], type.getPrimitiveTypeCode());
 			assertPosition(type, 1, (Integer) tri[2]);
 			
 			assertVisitor(type, 1);

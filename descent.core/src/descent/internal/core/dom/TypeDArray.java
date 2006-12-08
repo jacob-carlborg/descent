@@ -5,7 +5,7 @@ import descent.core.dom.IDynamicArrayType;
 
 public class TypeDArray extends TypeArray implements IDynamicArrayType {
 
-	public TypeDArray(Type t) {
+	public TypeDArray(DmdType t) {
 		super(TY.Tarray, t);
 	}
 	

@@ -5,9 +5,9 @@ import descent.core.dom.IDelegateType;
 import descent.core.dom.ASTVisitor;
 import descent.core.dom.IType;
 
-public class TypeDelegate extends Type implements IDelegateType {
+public class TypeDelegate extends DmdType implements IDelegateType {
 
-	public TypeDelegate(Type t) {
+	public TypeDelegate(DmdType t) {
 		super(TY.Tdelegate, t);
 	}
 	

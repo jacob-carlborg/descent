@@ -8,10 +8,10 @@ import descent.core.dom.ITypedefDeclaration;
 
 public class TypedefDeclaration extends Declaration implements ITypedefDeclaration {
 	
-	public Type type;
+	public DmdType type;
 	public Initializer init;
 
-	public TypedefDeclaration(Identifier ident, Type type, Initializer init) {
+	public TypedefDeclaration(Identifier ident, DmdType type, Initializer init) {
 		super(ident);
 		this.type = type;
 		this.init = init;

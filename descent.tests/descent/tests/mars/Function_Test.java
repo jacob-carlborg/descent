@@ -7,7 +7,8 @@ import descent.core.dom.IFunctionDeclaration;
 import descent.internal.core.dom.Argument;
 import descent.internal.core.dom.FunctionDeclaration;
 import descent.internal.core.dom.ParserFacade;
-import descent.internal.core.dom.Type;
+import descent.internal.core.dom.DmdType;
+import descent.internal.core.dom.PrimitiveType;
 
 public class Function_Test extends Parser_Test {
 	
@@ -20,7 +21,7 @@ public class Function_Test extends Parser_Test {
 		IFunctionDeclaration f = (IFunctionDeclaration) declDefs[0];
 		assertEquals(IElement.FUNCTION_DECLARATION, f.getNodeType0());
 		assertEquals(FunctionDeclaration.Kind.CONSTRUCTOR, f.getKind());
-		assertEquals(Type.tvoid, f.getReturnType());
+		assertEquals(PrimitiveType.Code.VOID, ((PrimitiveType) f.getReturnType()).getPrimitiveTypeCode());
 		assertEquals(0, f.arguments().size());
 		
 		assertEquals("this", f.getName().toString());
@@ -49,7 +50,7 @@ public class Function_Test extends Parser_Test {
 		IFunctionDeclaration f = (IFunctionDeclaration) declDefs[0];
 		assertEquals(IElement.FUNCTION_DECLARATION, f.getNodeType0());
 		assertEquals(FunctionDeclaration.Kind.DESTRUCTOR, f.getKind());
-		assertEquals(Type.tvoid, f.getReturnType());
+		assertEquals(PrimitiveType.Code.VOID, ((PrimitiveType) f.getReturnType()).getPrimitiveTypeCode());
 		assertEquals(0, f.arguments().size());
 		
 		assertEquals("~this", f.getName().toString());
@@ -67,7 +68,7 @@ public class Function_Test extends Parser_Test {
 		IFunctionDeclaration f = (IFunctionDeclaration) declDefs[0];
 		assertEquals(IElement.FUNCTION_DECLARATION, f.getNodeType0());
 		assertEquals(FunctionDeclaration.Kind.DESTRUCTOR, f.getKind());
-		assertEquals(Type.tvoid, f.getReturnType());
+		assertEquals(PrimitiveType.Code.VOID, ((PrimitiveType) f.getReturnType()).getPrimitiveTypeCode());
 	}
 	
 	public void testStaticConstructor() {
@@ -79,7 +80,7 @@ public class Function_Test extends Parser_Test {
 		IFunctionDeclaration f = (IFunctionDeclaration) declDefs[0];
 		assertEquals(IElement.FUNCTION_DECLARATION, f.getNodeType0());
 		assertEquals(FunctionDeclaration.Kind.STATIC_CONSTRUCTOR, f.getKind());
-		assertEquals(Type.tvoid, f.getReturnType());
+		assertEquals(PrimitiveType.Code.VOID, ((PrimitiveType) f.getReturnType()).getPrimitiveTypeCode());
 		assertEquals(0, f.arguments().size());
 		
 		assertEquals("this", f.getName().toString());
@@ -97,7 +98,7 @@ public class Function_Test extends Parser_Test {
 		IFunctionDeclaration f = (IFunctionDeclaration) declDefs[0];
 		assertEquals(IElement.FUNCTION_DECLARATION, f.getNodeType0());
 		assertEquals(FunctionDeclaration.Kind.STATIC_DESTRUCTOR, f.getKind());
-		assertEquals(Type.tvoid, f.getReturnType());
+		assertEquals(PrimitiveType.Code.VOID, ((PrimitiveType) f.getReturnType()).getPrimitiveTypeCode());
 		assertEquals(0, f.arguments().size());
 		
 		assertEquals("~this", f.getName().toString());
@@ -115,7 +116,7 @@ public class Function_Test extends Parser_Test {
 		IFunctionDeclaration f = (IFunctionDeclaration) declDefs[0];
 		assertEquals(IElement.FUNCTION_DECLARATION, f.getNodeType0());
 		assertEquals(FunctionDeclaration.Kind.NEW, f.getKind());
-		assertEquals(Type.tvoid, f.getReturnType());
+		assertEquals(PrimitiveType.Code.VOID, ((PrimitiveType) f.getReturnType()).getPrimitiveTypeCode());
 		assertEquals(0, f.arguments().size());
 		
 		assertEquals("new", f.getName().toString());
@@ -133,7 +134,7 @@ public class Function_Test extends Parser_Test {
 		IFunctionDeclaration f = (IFunctionDeclaration) declDefs[0];
 		assertEquals(IElement.FUNCTION_DECLARATION, f.getNodeType0());
 		assertEquals(FunctionDeclaration.Kind.DELETE, f.getKind());
-		assertEquals(Type.tvoid, f.getReturnType());
+		assertEquals(PrimitiveType.Code.VOID, ((PrimitiveType) f.getReturnType()).getPrimitiveTypeCode());
 		assertEquals(0, f.arguments().size());
 		
 		assertEquals("delete", f.getName().toString());

@@ -5,12 +5,12 @@ import descent.core.dom.IExpression;
 import descent.core.dom.ISliceType;
 import descent.core.dom.IType;
 
-public class TypeSlice extends Type implements ISliceType {
+public class TypeSlice extends DmdType implements ISliceType {
 
 	private Expression from;
 	private Expression to;
 
-	public TypeSlice(Type t, Expression from, Expression to) {
+	public TypeSlice(DmdType t, Expression from, Expression to) {
 		super(TY.Tslice, t);
 		this.from = from;
 		this.to = to;

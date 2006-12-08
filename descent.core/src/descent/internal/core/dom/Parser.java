@@ -896,9 +896,9 @@ public class Parser extends Lexer {
 	}
 	
 	private Condition parseIftypeCondition() {
-		Type targ;
+		DmdType targ;
 		Identifier[] ident = new Identifier[1];
-		Type tspec = null;
+		DmdType tspec = null;
 		TOK tok = TOKreserved;
 		
 		Token firstToken = new Token(token);
@@ -934,7 +934,6 @@ public class Parser extends Lexer {
 		FunctionDeclaration constructor = new FunctionDeclaration(ast);
 		constructor.setSourceRange(token.ptr, 0);
 		constructor.setKind(FunctionDeclaration.Kind.CONSTRUCTOR);
-		constructor.setReturnType(Type.tvoid); // TODO fix
 		constructor.setName(name);
 				
 		nextToken();
@@ -963,7 +962,6 @@ public class Parser extends Lexer {
 		FunctionDeclaration destructor = new FunctionDeclaration(ast);
 		destructor.setSourceRange(firstToken.ptr, 0);
 		destructor.setKind(FunctionDeclaration.Kind.DESTRUCTOR);
-		destructor.setReturnType(Type.tvoid); // TODO fix
 		destructor.setName(name);
 	    parseContracts(destructor);
 	    return destructor;
@@ -977,7 +975,6 @@ public class Parser extends Lexer {
 	    FunctionDeclaration staticConstructor = new FunctionDeclaration(ast);
 		staticConstructor.setSourceRange(token.ptr, 0);
 		staticConstructor.setKind(FunctionDeclaration.Kind.STATIC_CONSTRUCTOR);
-		staticConstructor.setReturnType(Type.tvoid); // TODO fix
 		staticConstructor.setName(name);
 		
 		nextToken();
@@ -1004,7 +1001,6 @@ public class Parser extends Lexer {
 		FunctionDeclaration staticDestructor = new FunctionDeclaration(ast);
 		staticDestructor.setSourceRange(firstToken.ptr, 0);
 		staticDestructor.setKind(FunctionDeclaration.Kind.STATIC_DESTRUCTOR);
-		staticDestructor.setReturnType(Type.tvoid); // TODO fix
 		staticDestructor.setName(name);
 	    parseContracts(staticDestructor);
 	    return staticDestructor;
@@ -1038,7 +1034,6 @@ public class Parser extends Lexer {
 		FunctionDeclaration newDeclaration = new FunctionDeclaration(ast);
 		newDeclaration.setSourceRange(token.ptr, 0);
 		newDeclaration.setKind(FunctionDeclaration.Kind.NEW);
-		newDeclaration.setReturnType(Type.tvoid); // TODO fix
 		newDeclaration.setName(name);
 				
 		nextToken();
@@ -1059,7 +1054,6 @@ public class Parser extends Lexer {
 		FunctionDeclaration deleteDeclaration = new FunctionDeclaration(ast);
 		deleteDeclaration.setSourceRange(token.ptr, 0);
 		deleteDeclaration.setKind(FunctionDeclaration.Kind.DELETE);
-		deleteDeclaration.setReturnType(Type.tvoid); // TODO fix
 		deleteDeclaration.setName(name);
 				
 		nextToken();
@@ -1086,9 +1080,9 @@ public class Parser extends Lexer {
 
 		check(TOKlparen);
 		while (true) {
-			Type tb;
+			DmdType tb;
 			Identifier ai;
-			Type at;
+			DmdType at;
 			Argument a;
 			Argument.PassageMode inout;
 			Expression ae;
@@ -1178,7 +1172,7 @@ public class Parser extends Lexer {
 
 		EnumDeclaration e;
 		Identifier id;
-		Type t;
+		DmdType t;
 		
 		// printf("Parser::parseEnum()\n");
 		nextToken();
@@ -1492,9 +1486,9 @@ public class Parser extends Lexer {
 			
 			while (true) {
 				Identifier tp_ident = null;
-				Type tp_spectype = null;
-				Type tp_valtype = null;
-				Type tp_defaulttype = null;
+				DmdType tp_spectype = null;
+				DmdType tp_valtype = null;
+				DmdType tp_defaulttype = null;
 				Expression tp_specvalue = null;
 				Expression tp_defaultvalue = null;
 				Token t;
@@ -1760,7 +1754,7 @@ public class Parser extends Lexer {
 		    // See if it is an Expression or a Type
 		    if (isDeclaration(token, 0, TOKreserved, null))
 		    {	// Type
-			Type ta;
+			DmdType ta;
 
 			// Get TemplateArgument
 			ta = parseBasicType();
@@ -1917,8 +1911,8 @@ public class Parser extends Lexer {
 		return null;
 	}
 	
-	private Type parseBasicType() {
-		Type t = null;
+	private DmdType parseBasicType() {
+		DmdType t = null;
 		Identifier id = null;
 		TypeQualified tid = null;
 		TemplateInstance tempinst = null;
@@ -1949,9 +1943,7 @@ public class Parser extends Lexer {
 		case TOKchar:
 		case TOKwchar:
 		case TOKdchar:
-			t = Type.fromTOK(token.value);
-			t.startPosition = token.ptr;
-			t.length = token.len;
+			t = newPrimitiveTypeFromCurrentToken(token);
 			nextToken();
 			break;
 
@@ -1969,7 +1961,7 @@ public class Parser extends Lexer {
 				Identifier[] p_id = { id };
 				TemplateInstance[] p_tempinst = { tempinst };
 				TypeQualified[] p_tid = { tid };
-				Type[] p_t = { t };
+				DmdType[] p_t = { t };
 				parseBasicType_Lident2(p_id, p_tempinst, p_tid, p_t);
 				id = p_id[0];
 				tempinst = p_tempinst[0];
@@ -1987,7 +1979,7 @@ public class Parser extends Lexer {
 			Identifier[] p_id = { id };
 			TemplateInstance[] p_tempinst = { tempinst };
 			TypeQualified[] p_tid = { tid };
-			Type[] p_t = { t };
+			DmdType[] p_t = { t };
 			parseBasicType_Lident2(p_id, p_tempinst, p_tid, p_t);
 			id = p_id[0];
 			tempinst = p_tempinst[0];
@@ -2004,7 +1996,7 @@ public class Parser extends Lexer {
 			Identifier[] p_id = { id };
 			TemplateInstance[] p_tempinst = { tempinst };
 			TypeQualified[] p_tid = { tid };
-			Type[] p_t = { t };
+			DmdType[] p_t = { t };
 			parseBasicType_Lident2(p_id, p_tempinst, p_tid, p_t);
 			id = p_id[0];
 			tempinst = p_tempinst[0];
@@ -2029,7 +2021,7 @@ public class Parser extends Lexer {
 			Identifier[] p_id = { id };
 			TemplateInstance[] p_tempinst = { tempinst };
 			TypeQualified[] p_tid = { tid };
-			Type[] p_t = { t };
+			DmdType[] p_t = { t };
 			parseBasicType_Lident2(p_id, p_tempinst, p_tid, p_t);
 			id = p_id[0];
 			tempinst = p_tempinst[0];
@@ -2042,13 +2034,17 @@ public class Parser extends Lexer {
 		default:
 			problem("Basic type expected", IProblem.SEVERITY_ERROR,
 					IProblem.BASIC_TYPE_EXPECTED, token.ptr, token.len);
-			t = Type.fromTOK(TOK.TOKint32);
+		
+			PrimitiveType pt = new PrimitiveType(ast);
+			pt.setPrimitiveTypeCode(PrimitiveType.Code.INT);
+		
+			t =  pt;
 			break;
 		}
 		return t;
 	}
 	
-	private void parseBasicType_Lident2(Identifier[] id, TemplateInstance[] tempinst, TypeQualified[] tid, Type[] t) {
+	private void parseBasicType_Lident2(Identifier[] id, TemplateInstance[] tempinst, TypeQualified[] tid, DmdType[] t) {
 		while (token.value == TOKdot) {
 			nextToken();
 			if (token.value != TOKidentifier) {
@@ -2070,10 +2066,10 @@ public class Parser extends Lexer {
 		t[0] = tid[0];
 	}
 	
-	private Type parseBasicType2(Type t) {
-		Type ts;
-		Type ta;
-		Type subType;
+	private DmdType parseBasicType2(DmdType t) {
+		DmdType ts;
+		DmdType ta;
+		DmdType subType;
 
 		// printf("parseBasicType2()\n");
 		while (true) {
@@ -2104,7 +2100,7 @@ public class Parser extends Lexer {
 																				// array
 																				// declaration
 						subType = t;
-						Type index;
+						DmdType index;
 
 						// printf("it's an associative array\n");
 						index = parseBasicType();
@@ -2151,7 +2147,7 @@ public class Parser extends Lexer {
 																					// associative
 																					// array
 																					// declaration
-							Type index;
+							DmdType index;
 
 							// printf("it's an associative array\n");
 							index = parseBasicType();
@@ -2167,7 +2163,7 @@ public class Parser extends Lexer {
 						}
 
 						if (ts != t) {
-							Type pt = ts;
+							DmdType pt = ts;
 							while (pt.next != t) {
 								pt = pt.next;
 							}
@@ -2217,13 +2213,13 @@ public class Parser extends Lexer {
 		return ts;
 	}
 	
-	private Type parseDeclarator(Type targ, Identifier[] ident) {
+	private DmdType parseDeclarator(DmdType targ, Identifier[] ident) {
 		return parseDeclarator(targ, ident, null, null);
 	}
 
-	private Type parseDeclarator(Type t, Identifier[] pident, List<TemplateParameter>[] tpl, int[] identStart) {
-		Type ts;
-	    Type ta;
+	private DmdType parseDeclarator(DmdType t, Identifier[] pident, List<TemplateParameter>[] tpl, int[] identStart) {
+		DmdType ts;
+	    DmdType ta;
 
 	    //printf("parseDeclarator(tpl = %p)\n", tpl);
 	    t = parseBasicType2(t);
@@ -2271,7 +2267,7 @@ public class Parser extends Lexer {
 			}
 			else if (isDeclaration(token, 0, TOKrbracket, null))
 			{   // It's an associative array declaration
-			    Type index;
+			    DmdType index;
 
 			    //printf("it's an associative array\n");
 			    index = parseBasicType();
@@ -2290,7 +2286,7 @@ public class Parser extends Lexer {
 			}
 			
 			if (ts != t) {
-				Type pt = ts;
+				DmdType pt = ts;
 				while(pt.next != t) {
 					pt = pt.next;
 				}
@@ -2329,7 +2325,7 @@ public class Parser extends Lexer {
 			ta.length = t.length;
 
 			if (ts != t) {
-				Type pt = ts;
+				DmdType pt = ts;
 				while(pt.next != t) {
 					pt = pt.next;
 				}
@@ -2351,9 +2347,9 @@ public class Parser extends Lexer {
 	private List<Declaration> parseDeclarations() {
 		int storage_class;
 		int stc;
-		Type ts;
-		Type t;
-		Type tfirst;
+		DmdType ts;
+		DmdType t;
+		DmdType tfirst;
 		Identifier ident;
 		List a;
 		TOK tok;
@@ -3246,9 +3242,9 @@ public class Parser extends Lexer {
 			arguments = new ArrayList();
 
 			while (true) {
-				Type tb;
+				DmdType tb;
 				Identifier ai = null;
-				Type at;
+				DmdType at;
 				Argument.PassageMode inout;
 				Argument a;
 				
@@ -3363,8 +3359,8 @@ public class Parser extends Lexer {
 			} else {
 				Token argToken = new Token(token);
 				if (isDeclaration(token, 2, TOKassign, null)) {
-					Type tb;
-					Type at;
+					DmdType tb;
+					DmdType at;
 					Identifier ai = null;
 
 					tb = parseBasicType();
@@ -3810,7 +3806,7 @@ public class Parser extends Lexer {
 			while (token.value == TOKcatch) {
 				Statement handler;
 				CatchClause c;
-				Type t2;
+				DmdType t2;
 				Identifier id;
 				
 				Token firstToken = new Token(token);
@@ -4763,7 +4759,7 @@ public class Parser extends Lexer {
 	
 	private Expression parsePrimaryExp()
 	{   Expression e = null;
-	    Type t;
+	    DmdType t;
 	    Identifier id;
 	    TOK save;
 
@@ -4813,70 +4809,70 @@ public class Parser extends Lexer {
 		    break;
 
 		case TOKint32v:
-		    e = new IntegerExp(token.numberValue, Type.tint32);
+		    e = new IntegerExp(token.numberValue, PrimitiveType.Code.INT);
 		    e.startPosition = token.ptr;
 		    e.length = token.len;
 		    nextToken();
 		    break;
 
 		case TOKuns32v:
-		    e = new IntegerExp(token.numberValue, Type.tuns32);
+		    e = new IntegerExp(token.numberValue, PrimitiveType.Code.UINT);
 		    e.startPosition = token.ptr;
 		    e.length = token.len;
 		    nextToken();
 		    break;
 
 		case TOKint64v:
-		    e = new IntegerExp(token.numberValue, Type.tint64);
+		    e = new IntegerExp(token.numberValue, PrimitiveType.Code.LONG);
 		    e.startPosition = token.ptr;
 		    e.length = token.len;
 		    nextToken();
 		    break;
 
 		case TOKuns64v:
-		    e = new IntegerExp(token.numberValue, Type.tuns64);
+		    e = new IntegerExp(token.numberValue, PrimitiveType.Code.ULONG);
 		    e.startPosition = token.ptr;
 		    e.length = token.len;
 		    nextToken();
 		    break;
 
 		case TOKfloat32v:
-		    e = new RealExp(token.numberValue, Type.tfloat32);
+		    e = new RealExp(token.numberValue, PrimitiveType.Code.FLOAT);
 		    e.startPosition = token.ptr;
 		    e.length = token.len;
 		    nextToken();
 		    break;
 
 		case TOKfloat64v:
-		    e = new RealExp(token.numberValue, Type.tfloat64);
+		    e = new RealExp(token.numberValue, PrimitiveType.Code.DOUBLE);
 		    e.startPosition = token.ptr;
 		    e.length = token.len;
 		    nextToken();
 		    break;
 
 		case TOKfloat80v:
-		    e = new RealExp(token.numberValue, Type.tfloat80);
+		    e = new RealExp(token.numberValue, PrimitiveType.Code.REAL);
 		    e.startPosition = token.ptr;
 		    e.length = token.len;
 		    nextToken();
 		    break;
 
 		case TOKimaginary32v:
-		    e = new RealExp(token.numberValue, Type.timaginary32);
+		    e = new RealExp(token.numberValue, PrimitiveType.Code.IFLOAT);
 		    e.startPosition = token.ptr;
 		    e.length = token.len;
 		    nextToken();
 		    break;
 
 		case TOKimaginary64v:
-		    e = new RealExp(token.numberValue, Type.timaginary64);
+		    e = new RealExp(token.numberValue, PrimitiveType.Code.IDOUBLE);
 		    e.startPosition = token.ptr;
 		    e.length = token.len;
 		    nextToken();
 		    break;
 
 		case TOKimaginary80v:
-		    e = new RealExp(token.numberValue, Type.timaginary80);
+		    e = new RealExp(token.numberValue, PrimitiveType.Code.IREAL);
 		    e.startPosition = token.ptr;
 		    e.length = token.len;
 		    nextToken();
@@ -4904,17 +4900,17 @@ public class Parser extends Lexer {
 		    break;
 
 		case TOKcharv:
-		    e = new IntegerExp(token.numberValue, Type.tchar);
+		    e = new IntegerExp(token.numberValue, PrimitiveType.Code.CHAR);
 		    nextToken();
 		    break;
 
 		case TOKwcharv:
-		    e = new IntegerExp(token.numberValue, Type.twchar);
+		    e = new IntegerExp(token.numberValue, PrimitiveType.Code.WCHAR);
 		    nextToken();
 		    break;
 
 		case TOKdcharv:
-		    e = new IntegerExp(token.numberValue, Type.tdchar);
+		    e = new IntegerExp(token.numberValue, PrimitiveType.Code.DCHAR);
 		    nextToken();
 		    break;
 
@@ -4961,9 +4957,7 @@ public class Parser extends Lexer {
 		case TOKimaginary80: case TOKcomplex32: case TOKcomplex64:
 		case TOKcomplex80: case TOKbit: case TOKbool:
 		case TOKchar: case TOKwchar: case TOKdchar:
-			t = Type.fromTOK(token.value);
-			t.startPosition = token.ptr;
-			t.length = token.len;
+			t = newPrimitiveTypeFromCurrentToken(token);
 			nextToken();
 			// L1:
 			    check(TOKdot, t.toString());
@@ -4972,7 +4966,7 @@ public class Parser extends Lexer {
 			    	problem("Identifier expected", IProblem.SEVERITY_ERROR, IProblem.IDENTIFIER_EXPECTED, token.ptr, token.len);
 			    	// goto Lerr;
 		    		// Anything for e, as long as it's not NULL
-		    		e = new IntegerExp(BigInteger.ZERO, Type.tint32);
+		    		e = new IntegerExp(BigInteger.ZERO, PrimitiveType.Code.INT);
 		    		nextToken();
 		    		break;
 			    }
@@ -4998,7 +4992,7 @@ public class Parser extends Lexer {
 			    	problem("Identifier expected", IProblem.SEVERITY_ERROR, IProblem.IDENTIFIER_EXPECTED, token.ptr, token.len);
 					// goto Lerr;
 			    	// Anything for e, as long as it's not NULL
-			    	e = new IntegerExp(BigInteger.ZERO, Type.tint32);
+			    	e = new IntegerExp(BigInteger.ZERO, PrimitiveType.Code.INT);
 			    	nextToken();
 			    	break;
 			    }
@@ -5014,7 +5008,7 @@ public class Parser extends Lexer {
 		}
 
 		case TOKtypeid:
-		{   Type t2;
+		{   DmdType t2;
 
 		    nextToken();
 		    check(TOKlparen, "typeid");
@@ -5027,9 +5021,9 @@ public class Parser extends Lexer {
 
 		case TOKis:
 		{
-			Type targ = null;
+			DmdType targ = null;
 			Identifier ident = null;
-			Type tspec = null;
+			DmdType tspec = null;
 			TOK tok = TOKreserved;
 			Token token2 = new Token();
 			token2.value = TOKreserved;
@@ -5071,7 +5065,7 @@ public class Parser extends Lexer {
 						IProblem.INVALID_IFTYPE_SYNTAX, token.ptr, token.len);
 				// goto Lerr;
 				// Anything for e, as long as it's not NULL
-				e = new IntegerExp(BigInteger.ZERO, Type.tint32);
+				e = new IntegerExp(BigInteger.ZERO, PrimitiveType.Code.INT);
 				nextToken();
 				break;
 			}
@@ -5157,7 +5151,7 @@ public class Parser extends Lexer {
 			problem("Expression expected", IProblem.SEVERITY_ERROR, IProblem.EXPRESSION_EXPECTED, token.ptr, token.len);
 		// Lerr:
 		    // Anything for e, as long as it's not NULL
-		    e = new IntegerExp(BigInteger.ZERO, Type.tint32);
+		    e = new IntegerExp(BigInteger.ZERO, PrimitiveType.Code.INT);
 		    nextToken();
 		    break;
 	    }
@@ -5318,7 +5312,7 @@ public class Parser extends Lexer {
 
 		case TOKcast: // cast(type) expression
 		{
-			Type t;
+			DmdType t;
 
 			nextToken();
 			check(TOKlparen);
@@ -5403,7 +5397,7 @@ public class Parser extends Lexer {
 				case TOKcomplex64:
 				case TOKcomplex80:
 				case TOKvoid: { // (type) una_exp
-					Type t;
+					DmdType t;
 
 					nextToken();
 					t = parseBasicType();
@@ -5448,7 +5442,7 @@ public class Parser extends Lexer {
 		List<Argument> arguments;
 		int varargs = 0;
 		FuncLiteralDeclaration fd;
-		Type t2;
+		DmdType t2;
 
 		if (token.value == TOKlcurly) {
 			t2 = null;
@@ -5808,7 +5802,7 @@ public class Parser extends Lexer {
 	
 	@SuppressWarnings("unchecked")
 	private Expression parseNewExp(Expression thisexp) {
-		Type t;
+		DmdType t;
 		List<Expression> newargs = null;
 		List<Expression> arguments = null;
 		Expression e;
@@ -5853,7 +5847,7 @@ public class Parser extends Lexer {
 		t = parseBasicType();
 		t = parseBasicType2(t);
 		if (t.ty == Taarray) {
-			Type index = ((TypeAArray) t).index;
+			DmdType index = ((TypeAArray) t).index;
 			
 			Expression e2 = index.toExpression();
 			if (e2 != null) {
@@ -5894,6 +5888,41 @@ public class Parser extends Lexer {
 
 	private void addComment(ASTNode s, String blockComment, int blockCommentStart) {
 		// TODO MARS s.addComment(combineComments(blockComment, token.lineComment), blockComment == null ? - 1 : blockCommentStart);
+	}
+	
+	public PrimitiveType newPrimitiveTypeFromCurrentToken(Token token) {
+		PrimitiveType type = new PrimitiveType(ast);
+		type.setSourceRange(token.ptr, token.len);
+		
+		switch(token.value) {
+			case TOKvoid:	 type.setPrimitiveTypeCode(PrimitiveType.Code.VOID); break;
+			case TOKint8:	 type.setPrimitiveTypeCode(PrimitiveType.Code.BYTE); break;
+			case TOKuns8:	 type.setPrimitiveTypeCode(PrimitiveType.Code.UBYTE); break;
+			case TOKint16:	 type.setPrimitiveTypeCode(PrimitiveType.Code.SHORT); break;
+			case TOKuns16:	 type.setPrimitiveTypeCode(PrimitiveType.Code.USHORT); break;
+			case TOKint32:	 type.setPrimitiveTypeCode(PrimitiveType.Code.INT); break;
+			case TOKuns32:	 type.setPrimitiveTypeCode(PrimitiveType.Code.UINT); break;
+			case TOKint64:	 type.setPrimitiveTypeCode(PrimitiveType.Code.LONG); break;
+			case TOKuns64:	 type.setPrimitiveTypeCode(PrimitiveType.Code.ULONG); break;
+			case TOKfloat32: type.setPrimitiveTypeCode(PrimitiveType.Code.FLOAT); break;
+			case TOKfloat64: type.setPrimitiveTypeCode(PrimitiveType.Code.DOUBLE); break;
+			case TOKfloat80: type.setPrimitiveTypeCode(PrimitiveType.Code.REAL); break;
+			case TOKimaginary32: type.setPrimitiveTypeCode(PrimitiveType.Code.IFLOAT); break;
+			case TOKimaginary64: type.setPrimitiveTypeCode(PrimitiveType.Code.IDOUBLE); break;
+			case TOKimaginary80: type.setPrimitiveTypeCode(PrimitiveType.Code.IREAL); break;
+			case TOKcomplex32: type.setPrimitiveTypeCode(PrimitiveType.Code.COMPLEX32); break;
+			case TOKcomplex64: type.setPrimitiveTypeCode(PrimitiveType.Code.COMPLEX64); break;
+			case TOKcomplex80: type.setPrimitiveTypeCode(PrimitiveType.Code.COMPLEX80); break;
+			case TOKbit:	 type.setPrimitiveTypeCode(PrimitiveType.Code.BIT); break;
+			case TOKbool:	 type.setPrimitiveTypeCode(PrimitiveType.Code.BOOL); break;
+			case TOKchar:	 type.setPrimitiveTypeCode(PrimitiveType.Code.CHAR); break;
+			case TOKwchar:	 type.setPrimitiveTypeCode(PrimitiveType.Code.WCHAR); break;
+			case TOKdchar:	 type.setPrimitiveTypeCode(PrimitiveType.Code.DCHAR); break;
+			default:
+				throw new IllegalStateException("Can't happen");
+		}
+		
+		return type;
 	}
 	
 }

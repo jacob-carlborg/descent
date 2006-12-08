@@ -10,8 +10,8 @@ public class IntegerExp extends Expression implements IIntegerExpression {
 	private int expressionType;
 	private BigInteger number;
 	
-	public IntegerExp(BigInteger number, Type type) {
-		if (type == Type.tbool) {
+	public IntegerExp(BigInteger number, PrimitiveType.Code code) {
+		if (code == PrimitiveType.Code.BOOL) {
 			expressionType = number.compareTo(BigInteger.ZERO) == 0 ? FALSE_EXPRESSION : BOOLEAN_LITERAL;
 		} else {
 			expressionType = INTEGER_EXPRESSION;

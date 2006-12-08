@@ -8,10 +8,10 @@ import descent.core.dom.IType;
 public class TemplateTypeParameter extends TemplateParameter implements ITypeTemplateParameter {
 
 	private final Identifier ident;
-	private final Type tp_spectype;
-	private final Type tp_defaulttype;
+	private final DmdType tp_spectype;
+	private final DmdType tp_defaulttype;
 
-	public TemplateTypeParameter(Identifier ident, Type tp_spectype, Type tp_defaulttype) {
+	public TemplateTypeParameter(Identifier ident, DmdType tp_spectype, DmdType tp_defaulttype) {
 		this.ident = ident;
 		this.tp_spectype = tp_spectype;
 		this.tp_defaulttype = tp_defaulttype;

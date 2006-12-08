@@ -10,9 +10,9 @@ import descent.core.dom.IType;
 public class NewExpression extends Expression implements INewExpression {
 	
 	private IExpression[] arguments;
-	private Type type;
+	private DmdType type;
 
-	public NewExpression(Expression thisexp, List<Expression> newargs, Type t, List<Expression> arguments) {
+	public NewExpression(Expression thisexp, List<Expression> newargs, DmdType t, List<Expression> arguments) {
 		this.type = t;
 		this.arguments = arguments == null ? new IExpression[0] : arguments.toArray(new IExpression[arguments.size()]);
 	}

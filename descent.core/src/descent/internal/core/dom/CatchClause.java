@@ -20,7 +20,7 @@ public class CatchClause extends ASTNode implements ICatchClause {
 	 * The "type" structural property of this node type.
 	 */
 	public static final ChildPropertyDescriptor TYPE_PROPERTY =
-		new ChildPropertyDescriptor(CatchClause.class, "type", Type.class, OPTIONAL, NO_CYCLE_RISK); //$NON-NLS-1$
+		new ChildPropertyDescriptor(CatchClause.class, "type", DmdType.class, OPTIONAL, NO_CYCLE_RISK); //$NON-NLS-1$
 
 	/**
 	 * The "name" structural property of this node type.
@@ -68,7 +68,7 @@ public class CatchClause extends ASTNode implements ICatchClause {
 	/**
 	 * The type.
 	 */
-	private Type type;
+	private DmdType type;
 
 	/**
 	 * The name.
@@ -109,7 +109,7 @@ public class CatchClause extends ASTNode implements ICatchClause {
 			if (get) {
 				return getType();
 			} else {
-				setType((Type) child);
+				setType((DmdType) child);
 				return null;
 			}
 		}
@@ -147,7 +147,7 @@ public class CatchClause extends ASTNode implements ICatchClause {
 	ASTNode clone0(AST target) {
 		CatchClause result = new CatchClause(target);
 		result.setSourceRange(this.getStartPosition(), this.getLength());
-	result.setType((Type) ASTNode.copySubtree(target, getType()));
+	result.setType((DmdType) ASTNode.copySubtree(target, getType()));
 	result.setName((SimpleName) ASTNode.copySubtree(target, getName()));
 		result.setBody((Statement) getBody().clone(target));
 		return result;
@@ -180,7 +180,7 @@ public class CatchClause extends ASTNode implements ICatchClause {
 	 * 
 	 * @return the type
 	 */ 
-	public Type getType() {
+	public DmdType getType() {
 		return this.type;
 	}
 
@@ -195,7 +195,7 @@ public class CatchClause extends ASTNode implements ICatchClause {
 	 * <li>a cycle in would be created</li>
 	 * </ul>
 	 */ 
-	public void setType(Type type) {
+	public void setType(DmdType type) {
 		ASTNode oldChild = this.type;
 		preReplaceChild(oldChild, type, TYPE_PROPERTY);
 		this.type = type;
@@ -288,7 +288,7 @@ public class CatchClause extends ASTNode implements ICatchClause {
 	;
 	}
 
-	public CatchClause(Type type, SimpleName name, Statement body) {
+	public CatchClause(DmdType type, SimpleName name, Statement body) {
 		this.type = type;
 		this.name = name;
 		this.body = body;
