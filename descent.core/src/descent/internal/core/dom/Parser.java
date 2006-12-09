@@ -1538,9 +1538,11 @@ public class Parser extends Lexer {
 		nextToken();
 	    }
 
-	    tempdecl = new TemplateDeclaration(id, tpl, decldefs);
-	    tempdecl.startPosition = firstToken.ptr;
-	    tempdecl.length = prevToken.ptr + prevToken.len - tempdecl.startPosition;
+	    tempdecl = new TemplateDeclaration(ast);
+	    tempdecl.setName(newSimpleNameForIdentifier(id));
+	    tempdecl.templateParameters().addAll(tpl);
+	    tempdecl.declarations().addAll(decldefs);
+	    tempdecl.setSourceRange(firstToken.ptr, prevToken.ptr + prevToken.len - firstToken.ptr);
 	    return tempdecl;
 
 	//Lerr:

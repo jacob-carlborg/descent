@@ -61,7 +61,7 @@ public class DOutlineContentProvider implements ITreeContentProvider {
 			return list.toArray();
 		case IElement.TEMPLATE_DECLARATION:
 			list = new ArrayList<Object>();
-			addDeclDefs(list, ((ITemplateDeclaration) e).getDeclarationDefinitions());
+			addDeclDefs(list, ((ITemplateDeclaration) e).declarations());
 			return list.toArray();
 		case IElement.ENUM_DECLARATION:
 			return ((IEnumDeclaration) e).enumMembers().toArray();

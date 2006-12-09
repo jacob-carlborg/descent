@@ -204,7 +204,7 @@ public class DOutlineLabelProvider extends LabelProvider {
 			name = t.getName();
 			s = new StringBuilder();
 			if (name != null) s.append(name.toString());
-			appendTemplateParameters(s, t.getTemplateParameters());
+			appendTemplateParameters(s, t.templateParameters());
 			return s.toString();
 		case IElement.LINK_DECLARATION:
 			ILinkDeclaration link = (ILinkDeclaration) element;

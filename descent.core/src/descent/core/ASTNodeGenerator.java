@@ -7,12 +7,15 @@ public class ASTNodeGenerator {
 	
 	public static void main(String[] args) {
 		
-		String description = "typeof type";
+		String description = "template declaration";
 		String clazz = toMethod(description);
 		String nodeType = toProperty(description);
 
 		Member[] members = {
-				Member.childMandatory("expression", "Expression", CYCLE_RISK, "SimpleName"),
+				Member.simple("modifier flags", "int"),
+				Member.childMandatory("name", "SimpleName", NO_CYCLE_RISK, "SimpleName"),
+				Member.list("templateParameters", "TemplateParameter", NO_CYCLE_RISK),
+				Member.list("declarations", "Declaration", CYCLE_RISK),
 		};
 		
 		StringBuilder sb = new StringBuilder();
