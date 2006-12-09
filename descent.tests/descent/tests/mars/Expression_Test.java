@@ -521,7 +521,7 @@ public class Expression_Test extends Parser_Test {
 		ISliceExpression expr = (ISliceExpression) new ParserFacade().parseExpression(s);
 		assertEquals(IExpression.SLICE_EXPRESSION, expr.getNodeType0());
 		
-		assertEquals("bla", expr.getExpression().toString());
+		assertEquals("bla", ((SimpleName) expr.getExpression()).getIdentifier());
 		
 		assertEquals("1", expr.getFromExpression().toString());
 		assertEquals("3", expr.getToExpression().toString());
@@ -534,7 +534,7 @@ public class Expression_Test extends Parser_Test {
 		ISliceExpression expr = (ISliceExpression) new ParserFacade().parseExpression(s);
 		assertEquals(IExpression.SLICE_EXPRESSION, expr.getNodeType0());
 		
-		assertEquals("bla", expr.getExpression().toString());
+		assertEquals("bla", ((SimpleName) expr.getExpression()).getIdentifier());
 		
 		assertNull(expr.getFromExpression());
 		assertNull(expr.getToExpression());
@@ -555,7 +555,7 @@ public class Expression_Test extends Parser_Test {
 		ICallExpression expr = (ICallExpression) new ParserFacade().parseExpression(s);
 		assertEquals(IExpression.CALL_EXPRESSION, expr.getNodeType0());
 		
-		assertEquals("bla", expr.getExpression().toString());
+		assertEquals("bla", ((SimpleName) expr.getExpression()).getIdentifier());
 		
 		IExpression[] args = expr.arguments().toArray(new IExpression[expr.arguments().size()]);
 		assertEquals(3, args.length);
@@ -603,7 +603,7 @@ public class Expression_Test extends Parser_Test {
 		
 		assertNull(expr.getExpression());
 		
-		assertEquals("bla", expr.getName().toString());
+		assertEquals("bla", ((SimpleName) expr.getName()).getIdentifier());
 		assertPosition(expr.getName(), 2, 3);
 	}
 	
@@ -614,10 +614,10 @@ public class Expression_Test extends Parser_Test {
 		assertEquals(IExpression.DOT_IDENTIFIER_EXPRESSION, expr.getNodeType0());
 		assertPosition(expr, 1, s.length() - 1);
 		
-		assertEquals("ble", expr.getExpression().toString());
+		assertEquals("ble", ((SimpleName) expr.getExpression()).getIdentifier());
 		assertPosition(expr.getExpression(), 1, 3);
 		
-		assertEquals("bla", expr.getName().toString());
+		assertEquals("bla", expr.getName().getIdentifier());
 		assertPosition(expr.getName(), 5, 3);
 	}
 	
@@ -769,7 +769,7 @@ public class Expression_Test extends Parser_Test {
 		IDynamicArrayType array = (IDynamicArrayType) expr.getType();
 		assertEquals(IArrayType.DYNAMIC_ARRAY_TYPE, array.getNodeType0());
 		assertEquals(1, expr.getArguments().length);
-		assertEquals("size", expr.getArguments()[0].toString());
+		assertEquals("size", ((SimpleName) expr.getArguments()[0]).getIdentifier());
 		assertPosition(expr.getArguments()[0], 9, 4);
 	}
 	

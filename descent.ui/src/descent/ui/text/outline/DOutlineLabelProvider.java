@@ -218,12 +218,10 @@ public class DOutlineLabelProvider extends LabelProvider {
 			break;
 		case IElement.VERSION_DECLARATION:
 			IVersionDeclaration v = (IVersionDeclaration) element;
-			name = v.getVersion();
-			return name == null ? "" : name.toString();
+			return v.getVersion() == null ? "" : v.getVersion().toString();
 		case IElement.DEBUG_DECLARATION:
 			IDebugDeclaration d = (IDebugDeclaration) element;
-			name = d.getDebug();
-			return name == null ? "" : name.toString();
+			return d.getVersion() == null ? "" : d.getVersion().toString();
 		case IElement.DEBUG_ASSIGNMENT:
 			DebugAssignment da = (DebugAssignment) element;
 			return "debug = " + da.getVersion().getValue();

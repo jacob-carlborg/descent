@@ -669,19 +669,25 @@ public interface IElement {
 	 * Constant representing a slice type.
 	 * A D element with this type can be safely cast to <code>ISliceType</code>. 
 	 */
-	int SLICE_TYPE = 109;
+	int SLICE_TYPE = 121;
 	
 	/**
 	 * Constant representing a comment.
 	 * A D element with this type can be safely cast to <code>IComment</code>. 
 	 */
-	int COMMENT = 110;
+	int COMMENT = 122;
 	
-	int ARRAY_INITIALIZER_FRAGMENT = 111;
+	int ARRAY_INITIALIZER_FRAGMENT = 123;
 	
-	int DEBUG_ASSIGNMENT = 112;
+	int DEBUG_ASSIGNMENT = 124;
 	
-	int VERSION_ASSIGNMENT = 113;
+	int VERSION_ASSIGNMENT = 125;
+	
+	/**
+	 * Constant representing the deprecated iftype declaration.
+	 * A D element with this type can be safely cast to <code>IIftypeDeclaration</code>. 
+	 */
+	int IFTYPE_STATEMENT = 126;
 	
 	/**
 	 * Returns the start position in the source code where this element

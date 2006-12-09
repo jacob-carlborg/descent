@@ -1,5 +1,7 @@
 package descent.core.dom;
 
+import descent.internal.core.dom.Version;
+
 /**
  * A debug statement:
  * 
@@ -15,6 +17,6 @@ public interface IDebugStatement extends IConditionalStatement {
 	/**
 	 * Returns the debug level or identifier.
 	 */
-	String getName();
+	Version getVersion();
 
 }

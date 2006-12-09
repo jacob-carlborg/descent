@@ -91,12 +91,12 @@ public class PositionHelper {
 			if (name != null) element = name;
 			break;
 		case IElement.VERSION_DECLARATION:
-			name = ((IVersionDeclaration) element).getVersion();
-			if (name != null) element = name;
+			if (((IVersionDeclaration) element).getVersion() != null) element = ((IVersionDeclaration) element).getVersion();
 			break;
 		case IElement.DEBUG_DECLARATION:
-			name = ((IDebugDeclaration) element).getDebug();
-			if (name != null) element = name;
+			if (((IDebugDeclaration) element).getVersion() != null) {
+				element = ((IDebugDeclaration) element).getVersion();
+			}
 			break;
 		case IElement.DEBUG_ASSIGNMENT:
 			DebugAssignment da = (DebugAssignment) element;

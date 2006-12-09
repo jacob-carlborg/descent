@@ -313,6 +313,7 @@ public class SimpleName extends Name implements ISimpleName {
 	
 	// TODO Descent remove
 	
+	/*
 	public SimpleName(Token token) {
 		super(AST.newAST(AST.JLS3));
 		this.identifier = token.ident.string;
@@ -322,11 +323,9 @@ public class SimpleName extends Name implements ISimpleName {
 	
 	public SimpleName(Identifier id) {
 		super(AST.newAST(AST.JLS3));
-		if (id != null) {
-			this.identifier = id.string;
-			this.startPosition = id.startPosition;
-			this.length = id.length;
-		}
+		this.identifier = id.string;
+		this.startPosition = id.startPosition;
+		this.length = id.length;
 	}
 	
 	@Override
@@ -338,6 +337,7 @@ public class SimpleName extends Name implements ISimpleName {
 	SimpleName() {
 		super(AST.newAST(AST.JLS3));
 	}
+	*/
 	
 }
 

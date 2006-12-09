@@ -1,13 +1,12 @@
 package descent.core.dom;
 
+import descent.internal.core.dom.IftypeDeclaration;
+import descent.internal.core.dom.Type;
+
 /**
  * A deprecated iftype declaration.
  */
 public interface IIftypeDeclaration extends IConditionalDeclaration {
-	
-	int IFTYPE_NONE = 0;
-	int IFTYPE_EQUALS = 1;
-	int IFTYPE_EXTENDS = 2;
 	
 	/**
 	 * Returns whether the condition is:
@@ -17,14 +16,12 @@ public interface IIftypeDeclaration extends IConditionalDeclaration {
 	 * <li><code>iftype(x : y)</code> (IFTYPE_EXTENDS)</li>
 	 * 
 	 */
-	int getIftypeCondition();
+	IftypeDeclaration.Kind getKind();
 	
-	// TODO: comments this three methods
+	Type getTestType();
 	
-	IType getTestType();
+	Type getMatchingType();
 	
-	IType getMatchingType();
-	
-	ISimpleName getIdentifier();
+	ISimpleName getName();
 
 }

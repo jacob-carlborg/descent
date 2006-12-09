@@ -4,35 +4,29 @@ import java.util.ArrayList;
 import java.util.List;
 
 import descent.core.dom.ASTVisitor;
-import descent.core.dom.IStaticIfStatement;
+import descent.core.dom.IDotIdentifierExpression;
 
 /**
- * Static if statement AST node type.
+ * Dot identifier expression AST node type.
  *
  * <pre>
- * StaticIfStatement:
- *    <b>static</b> <b>if</b> <b>(</b> Expression <b>)</b> Statement [ <b>else</b> Statement ]
+ * DotIdentifierExpression:
+ *    [ Expression ] <b>.</b> SimpleName
  * </pre>
  */
-public class StaticIfStatement extends Statement implements IStaticIfStatement {
-	
+public class DotIdentifierExpression extends Expression implements IDotIdentifierExpression {
+
 	/**
 	 * The "expression" structural property of this node type.
 	 */
 	public static final ChildPropertyDescriptor EXPRESSION_PROPERTY =
-		new ChildPropertyDescriptor(StaticIfStatement.class, "expression", Expression.class, MANDATORY, NO_CYCLE_RISK); //$NON-NLS-1$
+		new ChildPropertyDescriptor(DotIdentifierExpression.class, "expression", Expression.class, OPTIONAL, CYCLE_RISK); //$NON-NLS-1$
 
 	/**
-	 * The "thenBody" structural property of this node type.
+	 * The "name" structural property of this node type.
 	 */
-	public static final ChildPropertyDescriptor THENBODY_PROPERTY =
-		new ChildPropertyDescriptor(StaticIfStatement.class, "thenBody", Statement.class, MANDATORY, CYCLE_RISK); //$NON-NLS-1$
-
-	/**
-	 * The "elseBody" structural property of this node type.
-	 */
-	public static final ChildPropertyDescriptor ELSEBODY_PROPERTY =
-		new ChildPropertyDescriptor(StaticIfStatement.class, "elseBody", Statement.class, OPTIONAL, CYCLE_RISK); //$NON-NLS-1$
+	public static final ChildPropertyDescriptor NAME_PROPERTY =
+		new ChildPropertyDescriptor(DotIdentifierExpression.class, "name", SimpleName.class, MANDATORY, CYCLE_RISK); //$NON-NLS-1$
 
 	/**
 	 * A list of property descriptors (element type: 
@@ -42,11 +36,10 @@ public class StaticIfStatement extends Statement implements IStaticIfStatement {
 	private static final List PROPERTY_DESCRIPTORS;
 
 	static {
-		List properyList = new ArrayList(3);
-		createPropertyList(StaticIfStatement.class, properyList);
+		List properyList = new ArrayList(2);
+		createPropertyList(DotIdentifierExpression.class, properyList);
 		addProperty(EXPRESSION_PROPERTY, properyList);
-		addProperty(THENBODY_PROPERTY, properyList);
-		addProperty(ELSEBODY_PROPERTY, properyList);
+		addProperty(NAME_PROPERTY, properyList);
 		PROPERTY_DESCRIPTORS = reapPropertyList(properyList);
 	}
 
@@ -71,18 +64,13 @@ public class StaticIfStatement extends Statement implements IStaticIfStatement {
 	private Expression expression;
 
 	/**
-	 * The thenBody.
+	 * The name.
 	 */
-	private Statement thenBody;
-
-	/**
-	 * The elseBody.
-	 */
-	private Statement elseBody;
+	private SimpleName name;
 
 
 	/**
-	 * Creates a new unparented static if statement node owned by the given 
+	 * Creates a new unparented dot identifier expression node owned by the given 
 	 * AST.
 	 * <p>
 	 * N.B. This constructor is package-private.
@@ -90,7 +78,7 @@ public class StaticIfStatement extends Statement implements IStaticIfStatement {
 	 * 
 	 * @param ast the AST that is to own this node
 	 */
-	StaticIfStatement(AST ast) {
+	DotIdentifierExpression(AST ast) {
 		super(ast);
 	}
 
@@ -113,19 +101,11 @@ public class StaticIfStatement extends Statement implements IStaticIfStatement {
 				return null;
 			}
 		}
-		if (property == THENBODY_PROPERTY) {
+		if (property == NAME_PROPERTY) {
 			if (get) {
-				return getThenBody();
+				return getName();
 			} else {
-				setThenBody((Statement) child);
-				return null;
-			}
-		}
-		if (property == ELSEBODY_PROPERTY) {
-			if (get) {
-				return getElseBody();
-			} else {
-				setElseBody((Statement) child);
+				setName((SimpleName) child);
 				return null;
 			}
 		}
@@ -138,18 +118,17 @@ public class StaticIfStatement extends Statement implements IStaticIfStatement {
 	 * TODO make it package
 	 */
 	public final int getNodeType0() {
-		return STATIC_IF_STATEMENT;
+		return DOT_IDENTIFIER_EXPRESSION;
 	}
 
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
 	 */
 	ASTNode clone0(AST target) {
-		StaticIfStatement result = new StaticIfStatement(target);
+		DotIdentifierExpression result = new DotIdentifierExpression(target);
 		result.setSourceRange(this.getStartPosition(), this.getLength());
-		result.setExpression((Expression) getExpression().clone(target));
-		result.setThenBody((Statement) getThenBody().clone(target));
-	result.setElseBody((Statement) ASTNode.copySubtree(target, getElseBody()));
+	result.setExpression((Expression) ASTNode.copySubtree(target, getExpression()));
+		result.setName((SimpleName) getName().clone(target));
 		return result;
 	}
 
@@ -169,33 +148,22 @@ public class StaticIfStatement extends Statement implements IStaticIfStatement {
 		if (visitChildren) {
 			// visit children in normal left to right reading order
 			acceptChild(visitor, getExpression());
-			acceptChild(visitor, getThenBody());
-			acceptChild(visitor, getElseBody());
+			acceptChild(visitor, getName());
 		}
 		visitor.endVisit(this);
 	}
 
 	/**
-	 * Returns the expression of this static if statement.
+	 * Returns the expression of this dot identifier expression.
 	 * 
 	 * @return the expression
 	 */ 
 	public Expression getExpression() {
-		if (this.expression == null) {
-			// lazy init must be thread-safe for readers
-			synchronized (this) {
-				if (this.expression == null) {
-					preLazyInit();
-					this.expression = new SimpleName(this.ast);
-					postLazyInit(this.expression, EXPRESSION_PROPERTY);
-				}
-			}
-		}
 		return this.expression;
 	}
 
 	/**
-	 * Sets the expression of this static if statement.
+	 * Sets the expression of this dot identifier expression.
 	 * 
 	 * @param expression the expression
 	 * @exception IllegalArgumentException if:
@@ -206,9 +174,6 @@ public class StaticIfStatement extends Statement implements IStaticIfStatement {
 	 * </ul>
 	 */ 
 	public void setExpression(Expression expression) {
-		if (expression == null) {
-			throw new IllegalArgumentException();
-		}
 		ASTNode oldChild = this.expression;
 		preReplaceChild(oldChild, expression, EXPRESSION_PROPERTY);
 		this.expression = expression;
@@ -216,28 +181,28 @@ public class StaticIfStatement extends Statement implements IStaticIfStatement {
 	}
 
 	/**
-	 * Returns the thenBody of this static if statement.
+	 * Returns the name of this dot identifier expression.
 	 * 
-	 * @return the thenBody
+	 * @return the name
 	 */ 
-	public Statement getThenBody() {
-		if (this.thenBody == null) {
+	public SimpleName getName() {
+		if (this.name == null) {
 			// lazy init must be thread-safe for readers
 			synchronized (this) {
-				if (this.thenBody == null) {
+				if (this.name == null) {
 					preLazyInit();
-					this.thenBody = new Block(this.ast);
-					postLazyInit(this.thenBody, THENBODY_PROPERTY);
+					this.name = new SimpleName(this.ast);
+					postLazyInit(this.name, NAME_PROPERTY);
 				}
 			}
 		}
-		return this.thenBody;
+		return this.name;
 	}
 
 	/**
-	 * Sets the thenBody of this static if statement.
+	 * Sets the name of this dot identifier expression.
 	 * 
-	 * @param thenBody the thenBody
+	 * @param name the name
 	 * @exception IllegalArgumentException if:
 	 * <ul>
 	 * <li>the node belongs to a different AST</li>
@@ -245,48 +210,21 @@ public class StaticIfStatement extends Statement implements IStaticIfStatement {
 	 * <li>a cycle in would be created</li>
 	 * </ul>
 	 */ 
-	public void setThenBody(Statement thenBody) {
-		if (thenBody == null) {
+	public void setName(SimpleName name) {
+		if (name == null) {
 			throw new IllegalArgumentException();
 		}
-		ASTNode oldChild = this.thenBody;
-		preReplaceChild(oldChild, thenBody, THENBODY_PROPERTY);
-		this.thenBody = thenBody;
-		postReplaceChild(oldChild, thenBody, THENBODY_PROPERTY);
-	}
-
-	/**
-	 * Returns the elseBody of this static if statement.
-	 * 
-	 * @return the elseBody
-	 */ 
-	public Statement getElseBody() {
-		return this.elseBody;
-	}
-
-	/**
-	 * Sets the elseBody of this static if statement.
-	 * 
-	 * @param elseBody the elseBody
-	 * @exception IllegalArgumentException if:
-	 * <ul>
-	 * <li>the node belongs to a different AST</li>
-	 * <li>the node already has a parent</li>
-	 * <li>a cycle in would be created</li>
-	 * </ul>
-	 */ 
-	public void setElseBody(Statement elseBody) {
-		ASTNode oldChild = this.elseBody;
-		preReplaceChild(oldChild, elseBody, ELSEBODY_PROPERTY);
-		this.elseBody = elseBody;
-		postReplaceChild(oldChild, elseBody, ELSEBODY_PROPERTY);
+		ASTNode oldChild = this.name;
+		preReplaceChild(oldChild, name, NAME_PROPERTY);
+		this.name = name;
+		postReplaceChild(oldChild, name, NAME_PROPERTY);
 	}
 
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
 	 */
 	int memSize() {
-		return BASE_NODE_SIZE + 3 * 4;
+		return BASE_NODE_SIZE + 2 * 4;
 	}
 
 	/* (omit javadoc for this method)
@@ -296,8 +234,7 @@ public class StaticIfStatement extends Statement implements IStaticIfStatement {
 		return
 			memSize()
 			+ (this.expression == null ? 0 : getExpression().treeSize())
-			+ (this.thenBody == null ? 0 : getThenBody().treeSize())
-			+ (this.elseBody == null ? 0 : getElseBody().treeSize())
+			+ (this.name == null ? 0 : getName().treeSize())
 	;
 	}
 

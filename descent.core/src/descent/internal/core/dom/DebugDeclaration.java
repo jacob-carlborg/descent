@@ -4,35 +4,35 @@ import java.util.ArrayList;
 import java.util.List;
 
 import descent.core.dom.ASTVisitor;
-import descent.core.dom.IDebugStatement;
+import descent.core.dom.IDebugDeclaration;
 
 /**
- * Debug statement AST node type.
+ * Debug declaration AST node type.
  *
  * <pre>
- * DebugStatement:
- *    <b>debug</b> [ <b>(</b> Version <b>)</b> ] Statement [ <b>else</b> Statement ]
+ * DebugDeclaration:
+ *    <b>debug</b> [ <b>(</b> Version <b>)</b> ] { Declaration } [ <b>else</b> { Declaration } ]
  * </pre>
  */
-public class DebugStatement extends Statement implements IDebugStatement {
+public class DebugDeclaration extends Declaration implements IDebugDeclaration {
 	
 	/**
 	 * The "version" structural property of this node type.
 	 */
 	public static final ChildPropertyDescriptor VERSION_PROPERTY =
-		new ChildPropertyDescriptor(DebugStatement.class, "version", Version.class, OPTIONAL, NO_CYCLE_RISK); //$NON-NLS-1$
+		new ChildPropertyDescriptor(DebugDeclaration.class, "version", Version.class, OPTIONAL, NO_CYCLE_RISK); //$NON-NLS-1$
 
 	/**
-	 * The "thenBody" structural property of this node type.
+	 * The "thenDeclarations" structural property of this node type.
 	 */
-	public static final ChildPropertyDescriptor THEN_BODY_PROPERTY =
-		new ChildPropertyDescriptor(DebugStatement.class, "thenBody", Statement.class, MANDATORY, CYCLE_RISK); //$NON-NLS-1$
+	public static final ChildListPropertyDescriptor THEN_DECLARATIONS_PROPERTY =
+		new ChildListPropertyDescriptor(DebugDeclaration.class, "thenDeclarations", Declaration.class, CYCLE_RISK); //$NON-NLS-1$
 
 	/**
-	 * The "elseBody" structural property of this node type.
+	 * The "elseDeclarations" structural property of this node type.
 	 */
-	public static final ChildPropertyDescriptor ELSE_BODY_PROPERTY =
-		new ChildPropertyDescriptor(DebugStatement.class, "elseBody", Statement.class, OPTIONAL, CYCLE_RISK); //$NON-NLS-1$
+	public static final ChildListPropertyDescriptor ELSE_DECLARATIONS_PROPERTY =
+		new ChildListPropertyDescriptor(DebugDeclaration.class, "elseDeclarations", Declaration.class, CYCLE_RISK); //$NON-NLS-1$
 
 	/**
 	 * A list of property descriptors (element type: 
@@ -43,10 +43,10 @@ public class DebugStatement extends Statement implements IDebugStatement {
 
 	static {
 		List properyList = new ArrayList(3);
-		createPropertyList(DebugStatement.class, properyList);
+		createPropertyList(DebugDeclaration.class, properyList);
 		addProperty(VERSION_PROPERTY, properyList);
-		addProperty(THEN_BODY_PROPERTY, properyList);
-		addProperty(ELSE_BODY_PROPERTY, properyList);
+		addProperty(THEN_DECLARATIONS_PROPERTY, properyList);
+		addProperty(ELSE_DECLARATIONS_PROPERTY, properyList);
 		PROPERTY_DESCRIPTORS = reapPropertyList(properyList);
 	}
 
@@ -71,18 +71,22 @@ public class DebugStatement extends Statement implements IDebugStatement {
 	private Version version;
 
 	/**
-	 * The thenBody.
+	 * The then declarations
+	 * (element type: <code>Declaration</code>).
+	 * Defaults to an empty list.
 	 */
-	private Statement thenBody;
+	private ASTNode.NodeList thenDeclarations =
+		new ASTNode.NodeList(THEN_DECLARATIONS_PROPERTY);
+	/**
+	 * The else declarations
+	 * (element type: <code>Declaration</code>).
+	 * Defaults to an empty list.
+	 */
+	private ASTNode.NodeList elseDeclarations =
+		new ASTNode.NodeList(ELSE_DECLARATIONS_PROPERTY);
 
 	/**
-	 * The elseBody.
-	 */
-	private Statement elseBody;
-
-
-	/**
-	 * Creates a new unparented debug statement node owned by the given 
+	 * Creates a new unparented debug declaration node owned by the given 
 	 * AST.
 	 * <p>
 	 * N.B. This constructor is package-private.
@@ -90,7 +94,7 @@ public class DebugStatement extends Statement implements IDebugStatement {
 	 * 
 	 * @param ast the AST that is to own this node
 	 */
-	DebugStatement(AST ast) {
+	DebugDeclaration(AST ast) {
 		super(ast);
 	}
 
@@ -113,24 +117,22 @@ public class DebugStatement extends Statement implements IDebugStatement {
 				return null;
 			}
 		}
-		if (property == THEN_BODY_PROPERTY) {
-			if (get) {
-				return getThenBody();
-			} else {
-				setThenBody((Statement) child);
-				return null;
-			}
-		}
-		if (property == ELSE_BODY_PROPERTY) {
-			if (get) {
-				return getElseBody();
-			} else {
-				setElseBody((Statement) child);
-				return null;
-			}
-		}
 		// allow default implementation to flag the error
 		return super.internalGetSetChildProperty(property, get, child);
+	}
+
+	/* (omit javadoc for this method)
+	 * Method declared on ASTNode.
+	 */
+	final List internalGetChildListProperty(ChildListPropertyDescriptor property) {
+		if (property == THEN_DECLARATIONS_PROPERTY) {
+			return thenDeclarations();
+		}
+		if (property == ELSE_DECLARATIONS_PROPERTY) {
+			return elseDeclarations();
+		}
+		// allow default implementation to flag the error
+		return super.internalGetChildListProperty(property);
 	}
 
 	/* (omit javadoc for this method)
@@ -138,18 +140,18 @@ public class DebugStatement extends Statement implements IDebugStatement {
 	 * TODO make it package
 	 */
 	public final int getNodeType0() {
-		return DEBUG_STATEMENT;
+		return DEBUG_DECLARATION;
 	}
 
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
 	 */
 	ASTNode clone0(AST target) {
-		DebugStatement result = new DebugStatement(target);
+		DebugDeclaration result = new DebugDeclaration(target);
 		result.setSourceRange(this.getStartPosition(), this.getLength());
 	result.setVersion((Version) ASTNode.copySubtree(target, getVersion()));
-		result.setThenBody((Statement) getThenBody().clone(target));
-	result.setElseBody((Statement) ASTNode.copySubtree(target, getElseBody()));
+		result.thenDeclarations.addAll(ASTNode.copySubtrees(target, thenDeclarations()));
+		result.elseDeclarations.addAll(ASTNode.copySubtrees(target, elseDeclarations()));
 		return result;
 	}
 
@@ -169,14 +171,14 @@ public class DebugStatement extends Statement implements IDebugStatement {
 		if (visitChildren) {
 			// visit children in normal left to right reading order
 			acceptChild(visitor, getVersion());
-			acceptChild(visitor, getThenBody());
-			acceptChild(visitor, getElseBody());
+			acceptChildren(visitor, thenDeclarations());
+			acceptChildren(visitor, elseDeclarations());
 		}
 		visitor.endVisit(this);
 	}
 
 	/**
-	 * Returns the version of this debug statement.
+	 * Returns the version of this debug declaration.
 	 * 
 	 * @return the version
 	 */ 
@@ -185,7 +187,7 @@ public class DebugStatement extends Statement implements IDebugStatement {
 	}
 
 	/**
-	 * Sets the version of this debug statement.
+	 * Sets the version of this debug declaration.
 	 * 
 	 * @param version the version
 	 * @exception IllegalArgumentException if:
@@ -203,70 +205,25 @@ public class DebugStatement extends Statement implements IDebugStatement {
 	}
 
 	/**
-	 * Returns the then body of this debug statement.
+	 * Returns the live ordered list of then declarations for this
+	 * debug declaration.
 	 * 
-	 * @return the then body
+	 * @return the live list of debug declaration
+	 *    (element type: <code>Declaration</code>)
 	 */ 
-	public Statement getThenBody() {
-		if (this.thenBody == null) {
-			// lazy init must be thread-safe for readers
-			synchronized (this) {
-				if (this.thenBody == null) {
-					preLazyInit();
-					this.thenBody = new Block(this.ast);
-					postLazyInit(this.thenBody, THEN_BODY_PROPERTY);
-				}
-			}
-		}
-		return this.thenBody;
+	public List<Declaration> thenDeclarations() {
+		return this.thenDeclarations;
 	}
 
 	/**
-	 * Sets the then body of this debug statement.
+	 * Returns the live ordered list of else declarations for this
+	 * debug declaration.
 	 * 
-	 * @param thenBody the then body
-	 * @exception IllegalArgumentException if:
-	 * <ul>
-	 * <li>the node belongs to a different AST</li>
-	 * <li>the node already has a parent</li>
-	 * <li>a cycle in would be created</li>
-	 * </ul>
+	 * @return the live list of debug declaration
+	 *    (element type: <code>Declaration</code>)
 	 */ 
-	public void setThenBody(Statement thenBody) {
-		if (thenBody == null) {
-			throw new IllegalArgumentException();
-		}
-		ASTNode oldChild = this.thenBody;
-		preReplaceChild(oldChild, thenBody, THEN_BODY_PROPERTY);
-		this.thenBody = thenBody;
-		postReplaceChild(oldChild, thenBody, THEN_BODY_PROPERTY);
-	}
-
-	/**
-	 * Returns the else body of this debug statement.
-	 * 
-	 * @return the else body
-	 */ 
-	public Statement getElseBody() {
-		return this.elseBody;
-	}
-
-	/**
-	 * Sets the else body of this debug statement.
-	 * 
-	 * @param elseBody the else body
-	 * @exception IllegalArgumentException if:
-	 * <ul>
-	 * <li>the node belongs to a different AST</li>
-	 * <li>the node already has a parent</li>
-	 * <li>a cycle in would be created</li>
-	 * </ul>
-	 */ 
-	public void setElseBody(Statement elseBody) {
-		ASTNode oldChild = this.elseBody;
-		preReplaceChild(oldChild, elseBody, ELSE_BODY_PROPERTY);
-		this.elseBody = elseBody;
-		postReplaceChild(oldChild, elseBody, ELSE_BODY_PROPERTY);
+	public List<Declaration> elseDeclarations() {
+		return this.elseDeclarations;
 	}
 
 	/* (omit javadoc for this method)
@@ -283,8 +240,8 @@ public class DebugStatement extends Statement implements IDebugStatement {
 		return
 			memSize()
 			+ (this.version == null ? 0 : getVersion().treeSize())
-			+ (this.thenBody == null ? 0 : getThenBody().treeSize())
-			+ (this.elseBody == null ? 0 : getElseBody().treeSize())
+			+ (this.thenDeclarations.listSize())
+			+ (this.elseDeclarations.listSize())
 	;
 	}
 

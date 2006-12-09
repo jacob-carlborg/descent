@@ -7,13 +7,17 @@ public class ASTNodeGenerator {
 	
 	public static void main(String[] args) {
 		
-		String description = "synchronized statement";
+		String description = "iftype statement";
 		String clazz = toMethod(description);
 		String nodeType = toProperty(description);
 
 		Member[] members = {
-				Member.child("expression", "Expression", CYCLE_RISK),
-				Member.childMandatory("body", "Statement", CYCLE_RISK, "Block"),
+				Member.simple("kind", "Kind"),
+				Member.child("name", "SimpleName", NO_CYCLE_RISK),
+				Member.child("test type", "Type", NO_CYCLE_RISK),
+				Member.child("matching type", "Type", NO_CYCLE_RISK),
+				Member.childMandatory("then body", "Statement", CYCLE_RISK, "Block"),
+				Member.child("else body", "Statement", CYCLE_RISK),
 		};
 		
 		StringBuilder sb = new StringBuilder();

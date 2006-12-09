@@ -19,7 +19,7 @@ public class Pragma_Test extends Parser_Test {
 		
 		assertPosition(p, 1, s.length() - 1);
 		
-		assertEquals("lib", p.getName().toString());
+		assertEquals("lib", p.getName().getIdentifier());
 		assertPosition(p.getName(), 8, 3);
 		
 		assertEquals(3, p.arguments().size());

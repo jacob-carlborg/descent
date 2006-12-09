@@ -21,6 +21,7 @@ import descent.core.dom.IPragmaDeclaration;
 import descent.core.dom.IProtectionDeclaration;
 import descent.core.dom.IStorageClassDeclaration;
 import descent.core.dom.ITemplateDeclaration;
+import descent.internal.core.dom.Declaration;
 import descent.ui.text.DEditor;
 
 public class DOutlineContentProvider implements ITreeContentProvider {
@@ -73,10 +74,10 @@ public class DOutlineContentProvider implements ITreeContentProvider {
 		case IElement.STATIC_IF_DECLARATION:
 			IConditionalDeclaration c = (IConditionalDeclaration) e;
 			list = new ArrayList<Object>();
-			addDeclDefs(list, c.getIfTrueDeclarationDefinitions());
-			IElement[] ifFalse = c.getIfFalseDeclarationDefinitions();
-			if (ifFalse.length > 0) {
-				list.add(new Else(ifFalse));
+			addDeclDefs(list, c.thenDeclarations());
+			List<Declaration> ifFalse = c.elseDeclarations();
+			if (ifFalse.size() > 0) {
+				list.add(new Else(ifFalse.toArray(new Declaration[ifFalse.size()])));
 			}
 			return list.toArray();
 		case IElement.PRAGMA_DECLARATION:
@@ -181,8 +182,8 @@ public class DOutlineContentProvider implements ITreeContentProvider {
 		case IElement.DEBUG_DECLARATION:
 		case IElement.STATIC_IF_DECLARATION:
 			IConditionalDeclaration v = (IConditionalDeclaration) e;
-			return v.getIfTrueDeclarationDefinitions().length > 0 ||
-				v.getIfFalseDeclarationDefinitions().length > 0;
+			return v.thenDeclarations().size() > 0 ||
+				v.elseDeclarations().size() > 0;
 		case IElement.PRAGMA_DECLARATION:
 			return ((IPragmaDeclaration) e).declarations().size() > 0;
 		case IImaginaryElements.IMPORTS:

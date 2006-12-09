@@ -8,6 +8,7 @@ import descent.core.dom.IIftypeDeclaration;
 import descent.core.dom.IStaticIfDeclaration;
 import descent.core.dom.IVersionDeclaration;
 import descent.internal.core.dom.DebugAssignment;
+import descent.internal.core.dom.IftypeDeclaration;
 import descent.internal.core.dom.ParserFacade;
 import descent.internal.core.dom.VersionAssignment;
 
@@ -59,8 +60,8 @@ public class Condition_Test extends Parser_Test {
 		assertEquals(IConditionalDeclaration.DEBUG_DECLARATION, d.getNodeType0());
 		assertPosition(d, 1, s.length() - 1);
 		
-		assertEquals("bla", d.getDebug().toString());
-		assertPosition(d.getDebug(), 7, 3);
+		assertEquals("bla", d.getVersion().toString());
+		assertPosition(d.getVersion(), 7, 3);
 	}
 	
 	public void testStaticIf() {
@@ -73,7 +74,7 @@ public class Condition_Test extends Parser_Test {
 		assertEquals(IConditionalDeclaration.STATIC_IF_DECLARATION, d.getNodeType0());
 		assertPosition(d, 1, s.length() - 1);
 		
-		assertEquals("true", d.getCondition().toString());
+		assertEquals("true", d.getExpression().toString());
 	}
 	
 	public void testVersionAssign() {
@@ -133,9 +134,9 @@ public class Condition_Test extends Parser_Test {
 		IIftypeDeclaration d = (IIftypeDeclaration) declDefs[0];
 		assertEquals(IConditionalDeclaration.IFTYPE_DECLARATION, d.getNodeType0());
 		
-		assertEquals(IIftypeDeclaration.IFTYPE_NONE, d.getIftypeCondition());
+		assertEquals(IftypeDeclaration.Kind.NONE, d.getKind());
 		assertEquals("x", d.getTestType().toString());
-		assertNull(d.getIdentifier());
+		assertNull(d.getName());
 		assertNull(d.getMatchingType());
 		
 		assertPosition(d, 1, s.length() - 1);
@@ -150,9 +151,9 @@ public class Condition_Test extends Parser_Test {
 		IIftypeDeclaration d = (IIftypeDeclaration) declDefs[0];
 		assertEquals(IConditionalDeclaration.IFTYPE_DECLARATION, d.getNodeType0());
 		
-		assertEquals(IIftypeDeclaration.IFTYPE_EQUALS, d.getIftypeCondition());
+		assertEquals(IftypeDeclaration.Kind.EQUALS, d.getKind());
 		assertEquals("x", d.getTestType().toString());
-		assertNull(d.getIdentifier());
+		assertNull(d.getName());
 		assertEquals("y", d.getMatchingType().toString());
 		
 		assertPosition(d, 1, s.length() - 1);
@@ -167,9 +168,9 @@ public class Condition_Test extends Parser_Test {
 		IIftypeDeclaration d = (IIftypeDeclaration) declDefs[0];
 		assertEquals(IConditionalDeclaration.IFTYPE_DECLARATION, d.getNodeType0());
 		
-		assertEquals(IIftypeDeclaration.IFTYPE_EXTENDS, d.getIftypeCondition());
+		assertEquals(IftypeDeclaration.Kind.EXTENDS, d.getKind());
 		assertEquals("x", d.getTestType().toString());
-		assertNull(d.getIdentifier());
+		assertNull(d.getName());
 		assertEquals("y", d.getMatchingType().toString());
 		
 		assertPosition(d, 1, s.length() - 1);
@@ -184,10 +185,10 @@ public class Condition_Test extends Parser_Test {
 		IIftypeDeclaration d = (IIftypeDeclaration) declDefs[0];
 		assertEquals(IConditionalDeclaration.IFTYPE_DECLARATION, d.getNodeType0());
 		
-		assertEquals(IIftypeDeclaration.IFTYPE_EXTENDS, d.getIftypeCondition());
+		assertEquals(IftypeDeclaration.Kind.EXTENDS, d.getKind());
 		assertEquals("int", d.getTestType().toString());
-		assertEquals("x", d.getIdentifier().toString());
-		assertPosition(d.getIdentifier(), 12, 1);
+		assertEquals("x", d.getName().getIdentifier());
+		assertPosition(d.getName(), 12, 1);
 		assertEquals("y", d.getMatchingType().toString());
 		
 		assertPosition(d, 1, s.length() - 1);

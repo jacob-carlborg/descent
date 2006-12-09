@@ -3,7 +3,6 @@ package descent.internal.core.dom;
 import java.util.List;
 
 import descent.core.dom.ICompilationUnit;
-import descent.core.dom.IDeclaration;
 import descent.core.dom.IExpression;
 import descent.core.dom.IInitializer;
 import descent.core.dom.IParser;

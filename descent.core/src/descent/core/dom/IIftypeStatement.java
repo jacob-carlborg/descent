@@ -1,11 +1,10 @@
 package descent.core.dom;
 
+import descent.internal.core.dom.IftypeDeclaration;
+import descent.internal.core.dom.SimpleName;
+import descent.internal.core.dom.Type;
+
 public interface IIftypeStatement extends IConditionalStatement {
-	
-	int IFTYPE_NONE = 0;
-	int IFTYPE_EQUALS = 1;
-	int IFTYPE_EXTENDS = 2;
-	
 	/**
 	 * Returns whether the condition is:
 	 * <ul>
@@ -14,12 +13,12 @@ public interface IIftypeStatement extends IConditionalStatement {
 	 * <li><code>iftype(x : y)</code> (IFTYPE_EXTENDS)</li>
 	 * 
 	 */
-	int getIftypeCondition();
+	IftypeDeclaration.Kind getKind();
 	
-	IType getTestType();
+	Type getTestType();
 	
-	IType getMatchingType();
+	Type getMatchingType();
 	
-	ISimpleName getIdentifier();
+	SimpleName getName();
 
 }

@@ -3,7 +3,7 @@ package descent.internal.core.dom;
 import descent.core.dom.IType;
 
 
-public abstract class DmdType extends ASTNode implements IType {
+public abstract class DmdType extends Type implements IType {
 
 	public static StringTable stringtable = new StringTable();
 	public static char[] mangleChar;
@@ -14,6 +14,7 @@ public abstract class DmdType extends ASTNode implements IType {
 	public String deco;
 	
 	public DmdType(TY ty, DmdType next) {
+		super(AST.newAST(AST.JLS3));
 		this.ty = ty;
 		this.next = next;
 	}

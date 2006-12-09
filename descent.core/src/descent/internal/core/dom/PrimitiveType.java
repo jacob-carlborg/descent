@@ -41,7 +41,7 @@ import descent.core.dom.IBasicType;
  * nodes.
  * </p>
  */
-public class PrimitiveType extends Type implements IBasicType {
+public class PrimitiveType extends DmdType implements IBasicType {
 	
 	/**
  	 * Primitive type codes.

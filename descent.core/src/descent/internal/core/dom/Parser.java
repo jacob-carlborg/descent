@@ -133,6 +133,24 @@ public class Parser extends Lexer {
 		return simpleName;
 	}
 	
+	public SimpleName newSimpleNameForIdentifier(Identifier id) {
+		if (id == null) return null;
+		
+		SimpleName simpleName = new SimpleName(ast);
+		simpleName.setIdentifier(id.string);
+		simpleName.setSourceRange(id.startPosition, id.length);
+		return simpleName;
+	}
+	
+	public static SimpleName newSimpleNameForIdentifierWithAST(Identifier id, AST ast) {
+		if (id == null) return null;
+		
+		SimpleName simpleName = new SimpleName(ast);
+		simpleName.setIdentifier(id.string);
+		simpleName.setSourceRange(id.startPosition, id.length);
+		return simpleName;
+	}
+	
 	private QualifiedName newQualifiedNameForCurrentToken(Name name) {
 		QualifiedName qualifiedName = new QualifiedName(ast);
 		qualifiedName.setQualifier(name);
@@ -348,9 +366,18 @@ public class Parser extends Lexer {
 						nextToken();
 						aelse = parseBlock();
 					}
-					s = new StaticIfDeclaration(condition, a, aelse);
-					s.startPosition = staticToken.ptr;
-					s.length = prevToken.ptr + prevToken.len - s.startPosition;
+					
+					StaticIfDeclaration staticIf = new StaticIfDeclaration(ast);
+					if (((StaticIfCondition) condition).exp != null) {
+						staticIf.setExpression(((StaticIfCondition) condition).exp);
+					}
+					staticIf.thenDeclarations().addAll(a);
+					if (aelse != null) {
+						staticIf.elseDeclarations().addAll(aelse);
+					}
+					staticIf.setSourceRange(staticToken.ptr, prevToken.ptr + prevToken.len - staticToken.ptr);
+					
+					s = staticIf;
 					break;
 				} else if (token.value == TOKimport) {
 					s = parseImport(decldefs, true);
@@ -510,7 +537,7 @@ public class Parser extends Lexer {
 				}
 				
 				PragmaDeclaration pragmaDeclaration = new PragmaDeclaration(ast);
-				pragmaDeclaration.setName(new SimpleName(ident));
+				pragmaDeclaration.setName(newSimpleNameForIdentifier(ident));
 				if (args != null) {
 					pragmaDeclaration.arguments().addAll(args);
 				}
@@ -565,14 +592,26 @@ public class Parser extends Lexer {
 					break;
 				}
 
-				condition = parseDebugCondition();
-				// goto Lcondition;
-				tempObj = parseDeclDefs_Lcondition(condition);
-				a = (List) tempObj[0];
-				aelse = (List) tempObj[1];
-				s = (ASTNode) tempObj[2];
-				s.startPosition = saveToken.ptr;
-				s.length = prevToken.ptr + prevToken.len - s.startPosition;
+				DebugCondition debugCondition = parseDebugCondition();
+				
+				DebugDeclaration debugDeclaration = new DebugDeclaration(ast);
+				if (debugCondition.id != null) {
+					Version version = new Version(ast);
+					version.setValue(debugCondition.id.string);
+					version.setSourceRange(debugCondition.id.startPosition, debugCondition.id.length);
+					
+					debugDeclaration.setVersion(version);
+				}
+				
+				debugDeclaration.thenDeclarations().addAll(parseBlock());
+				if (token.value == TOKelse) {
+					nextToken();
+					debugDeclaration.elseDeclarations().addAll(parseBlock());
+				}
+				
+				debugDeclaration.setSourceRange(saveToken.ptr, prevToken.ptr + prevToken.len - saveToken.ptr);
+				
+				s = debugDeclaration;
 				break;
 
 			case TOKversion:
@@ -616,27 +655,51 @@ public class Parser extends Lexer {
 					
 					break;
 				}
-				condition = parseVersionCondition();
-				// goto Lcondition;
-				tempObj = parseDeclDefs_Lcondition(condition);
-				a = (List) tempObj[0];
-				aelse = (List) tempObj[1];
-				s = (ASTNode) tempObj[2];
-				s.startPosition = saveToken.ptr;
-				s.length = prevToken.ptr + prevToken.len - s.startPosition;
+				
+				VersionCondition versionCondition = parseVersionCondition();
+				
+				VersionDeclaration versionDeclaration = new VersionDeclaration(ast);
+				if (versionCondition.id != null) {
+					Version version = new Version(ast);
+					version.setValue(versionCondition.id.string);
+					version.setSourceRange(versionCondition.id.startPosition, versionCondition.id.length);
+					
+					versionDeclaration.setVersion(version);
+				}
+				
+				versionDeclaration.thenDeclarations().addAll(parseBlock());
+				if (token.value == TOKelse) {
+					nextToken();
+					versionDeclaration.elseDeclarations().addAll(parseBlock());
+				}
+				
+				versionDeclaration.setSourceRange(saveToken.ptr, prevToken.ptr + prevToken.len - saveToken.ptr);
+				
+				s = versionDeclaration;
 				break;
 
 			case TOKiftype:
 				saveToken = new Token(token);
 				
-				condition = parseIftypeCondition();
-				// goto Lcondition;
-				tempObj = parseDeclDefs_Lcondition(condition);
-				a = (List<Declaration>) tempObj[0];
-				aelse = (List<Declaration>) tempObj[1];
-				s = (ASTNode) tempObj[2];
-				s.startPosition = saveToken.ptr;
-				s.length = prevToken.ptr + prevToken.len - s.startPosition;
+				IftypeCondition iftypeCondition = parseIftypeCondition();
+				
+				IftypeDeclaration iftypeDeclaration = new IftypeDeclaration(ast);
+				if (iftypeCondition != null) {
+					iftypeDeclaration.setKind(iftypeCondition.getKind());
+					iftypeDeclaration.setName(newSimpleNameForIdentifier(iftypeCondition.ident));
+					iftypeDeclaration.setTestType(iftypeCondition.targ);
+					iftypeDeclaration.setMatchingType(iftypeCondition.tspec);
+				}
+				
+				iftypeDeclaration.thenDeclarations().addAll(parseBlock());
+				if (token.value == TOKelse) {
+					nextToken();
+					iftypeDeclaration.elseDeclarations().addAll(parseBlock());
+				}
+				
+				iftypeDeclaration.setSourceRange(saveToken.ptr, prevToken.ptr + prevToken.len - saveToken.ptr);
+				
+				s = iftypeDeclaration;
 				break;
 
 			case TOKsemicolon: // empty declaration
@@ -664,6 +727,7 @@ public class Parser extends Lexer {
 		return null;
 	}
 	
+	/*
 	// a, aelse, s
 	private Object[] parseDeclDefs_Lcondition(Condition condition) {
 		List<Declaration> a = parseBlock();
@@ -675,6 +739,7 @@ public class Parser extends Lexer {
 		Dsymbol s = new ConditionalDeclaration(condition, a, aelse);
 		return new Object[] { a, aelse, s };
 	}
+	*/
 	
 	// a, stc, s
 	private Object[] parseDeclDefs_Lstc2(int stc, List<Declaration> a, boolean[] isSingle) {
@@ -820,7 +885,7 @@ public class Parser extends Lexer {
 		return link;
 	}
 	
-	private Condition parseDebugCondition() {
+	private DebugCondition parseDebugCondition() {
 		DebugCondition c;
 		Identifier id = null;
 		Token idToken = null;
@@ -834,7 +899,10 @@ public class Parser extends Lexer {
 				idToken = new Token(token);
 				level = token.numberValue.intValue();
 			} else {
-				problem("Identifier or integer expected", IProblem.SEVERITY_ERROR, IProblem.IDENTIFIER_OR_INTEGER_EXPECTED, token.ptr, token.len);
+				problem("Identifier or integer expected",
+						IProblem.SEVERITY_ERROR,
+						IProblem.IDENTIFIER_OR_INTEGER_EXPECTED, token.ptr,
+						token.len);
 			}
 			nextToken();
 			check(TOKrparen);
@@ -850,11 +918,11 @@ public class Parser extends Lexer {
 		return c;
 	}
 	
-	private Condition parseVersionCondition() {
-		Condition c;
+	private VersionCondition parseVersionCondition() {
+		VersionCondition c;
 		long level = 1;
 		Identifier id = null;
-		
+
 		Token idToken = null;
 
 		if (token.value == TOKlparen) {
@@ -865,51 +933,50 @@ public class Parser extends Lexer {
 				idToken = new Token(token);
 				level = token.numberValue.intValue();
 			} else {
-				problem("Identifier or integer expected", IProblem.SEVERITY_ERROR, IProblem.IDENTIFIER_OR_INTEGER_EXPECTED, token.ptr, token.len);
+				problem("Identifier or integer expected",
+						IProblem.SEVERITY_ERROR,
+						IProblem.IDENTIFIER_OR_INTEGER_EXPECTED, token.ptr,
+						token.len);
 			}
 			nextToken();
 			check(TOKrparen);
 		} else {
-			problem("(condition) expected following version", IProblem.SEVERITY_ERROR, IProblem.CONDITION_EXPECTED_FOLLOWING_VERSION, token.ptr, token.len);
+			problem("(condition) expected following version",
+					IProblem.SEVERITY_ERROR,
+					IProblem.CONDITION_EXPECTED_FOLLOWING_VERSION, token.ptr,
+					token.len);
 		}
-		VersionCondition vc = new VersionCondition(mod, level, id);
+		c = new VersionCondition(mod, level, id);
 		if (id == null && idToken != null) {
-			vc.id = new Identifier(String.valueOf(level), TOK.TOKint32);
-			vc.id.startPosition = idToken.ptr;
-			vc.id.length = idToken.len;
+			c.id = new Identifier(String.valueOf(level), TOK.TOKint32);
+			c.id.startPosition = idToken.ptr;
+			c.id.length = idToken.len;
 		}
-		c = vc;
 		return c;
 	}
 	
-	private Condition parseStaticIfCondition() {
+	private StaticIfCondition parseStaticIfCondition() {
 		Expression exp;
-	    Condition condition;
-	    // List aif; // <-- not used
-	    // List aelse; // <-- not used
-
-	    nextToken();
-	    if (token.value == TOKlparen)
-	    {
 		nextToken();
-		exp = parseAssignExp();
-		check(TOKrparen);
-	    }
-	    else
-	    {   
-	    	problem("(expression) expected following version", IProblem.SEVERITY_ERROR, IProblem.EXPRESSION_EXPECTED, token.ptr, token.len);
-	    	exp = null;
-	    }
-	    condition = new StaticIfCondition(exp);
-	    return condition;
+		if (token.value == TOKlparen) {
+			nextToken();
+			exp = parseAssignExp();
+			check(TOKrparen);
+		} else {
+			problem("(expression) expected following version",
+					IProblem.SEVERITY_ERROR, IProblem.EXPRESSION_EXPECTED,
+					token.ptr, token.len);
+			exp = null;
+		}
+		return new StaticIfCondition(exp);
 	}
 	
-	private Condition parseIftypeCondition() {
+	private IftypeCondition parseIftypeCondition() {
 		DmdType targ;
 		Identifier[] ident = new Identifier[1];
 		DmdType tspec = null;
 		TOK tok = TOKreserved;
-		
+
 		Token firstToken = new Token(token);
 
 		nextToken();
@@ -925,14 +992,19 @@ public class Parser extends Lexer {
 			}
 			check(TOKrparen);
 		} else {
-			problem("(type identifier : specialization) expected following iftype", IProblem.SEVERITY_ERROR, IProblem.INVALID_IFTYPE_SYNTAX, token.ptr, token.len);
+			problem(
+					"(type identifier : specialization) expected following iftype",
+					IProblem.SEVERITY_ERROR, IProblem.INVALID_IFTYPE_SYNTAX,
+					token.ptr, token.len);
 			return null;
 		}
-		Condition condition = new IftypeCondition(targ, ident[0], tok, tspec);
 
-		problem("iftype(condition) is deprecated, use static if (is(condition))", IProblem.SEVERITY_WARNING, IProblem.IFTYPE_DEPRECATED, firstToken.ptr, firstToken.len);
+		problem(
+				"iftype(condition) is deprecated, use static if (is(condition))",
+				IProblem.SEVERITY_WARNING, IProblem.IFTYPE_DEPRECATED,
+				firstToken.ptr, firstToken.len);
 
-		return condition;
+		return new IftypeCondition(targ, ident[0], tok, tspec);
 	}
 	
 	private FunctionDeclaration parseCtor() {
@@ -1155,12 +1227,12 @@ public class Parser extends Lexer {
 						problem("Variadic argument cannot be out or inout", IProblem.SEVERITY_ERROR, IProblem.VARIADIC_ARGUMENT_CANNOT_BE_OUT_OR_INOUT, inoutToken.ptr, inoutToken.len);
 					}
 					varargs = 2;
-					a = new Argument(inout, at, new SimpleName(ai), ae);
+					a = new Argument(inout, at, newSimpleNameForIdentifier(ai), ae);
 					arguments.add(a);
 					nextToken();
 					break;
 				}
-				a = new Argument(inout, at, new SimpleName(ai), ae);
+				a = new Argument(inout, at, newSimpleNameForIdentifier(ai), ae);
 				a.startPosition = firstToken.ptr;
 				a.length = prevToken.ptr + prevToken.len - a.startPosition;
 				arguments.add(a);
@@ -1199,7 +1271,7 @@ public class Parser extends Lexer {
 			t = null;
 		}
 
-		e = new EnumDeclaration(id == null ? null : new SimpleName(id), t);
+		e = new EnumDeclaration(newSimpleNameForIdentifier(id), t);
 		e.startPosition = enumToken.ptr;
 		
 		if (token.value == TOKsemicolon && id != null) {
@@ -1228,7 +1300,7 @@ public class Parser extends Lexer {
 						value = parseAssignExp();
 					}
 					
-					em = new EnumMember(new SimpleName(ident), value);
+					em = new EnumMember(newSimpleNameForIdentifier(ident), value);
 					e.enumMembers().add(em);
 					if (token.value == TOKrcurly) {
 						;
@@ -1304,9 +1376,9 @@ public class Parser extends Lexer {
 			}
 
 			if (tok == TOKclass) {
-				a = new AggregateDeclaration(AggregateDeclaration.Kind.CLASS, new SimpleName(id), baseclasses);
+				a = new AggregateDeclaration(AggregateDeclaration.Kind.CLASS, newSimpleNameForIdentifier(id), baseclasses);
 			} else {
-				a = new AggregateDeclaration(AggregateDeclaration.Kind.INTERFACE, new SimpleName(id), baseclasses);
+				a = new AggregateDeclaration(AggregateDeclaration.Kind.INTERFACE, newSimpleNameForIdentifier(id), baseclasses);
 			}
 			a.startPosition = firstToken.ptr;
 			break;
@@ -1314,7 +1386,7 @@ public class Parser extends Lexer {
 
 		case TOKstruct:
 			//if (id != null) {
-				a = new AggregateDeclaration(AggregateDeclaration.Kind.STRUCT, new SimpleName(id));
+				a = new AggregateDeclaration(AggregateDeclaration.Kind.STRUCT, newSimpleNameForIdentifier(id));
 				a.startPosition = firstToken.ptr;
 			//} else {
 			//	anon = 1;
@@ -1323,7 +1395,7 @@ public class Parser extends Lexer {
 
 		case TOKunion:
 			//if (id != null) {
-				a = new AggregateDeclaration(AggregateDeclaration.Kind.UNION, new SimpleName(id));
+				a = new AggregateDeclaration(AggregateDeclaration.Kind.UNION, newSimpleNameForIdentifier(id));
 				a.startPosition = firstToken.ptr;
 			//} else {
 			//	anon = 2;
@@ -1666,8 +1738,10 @@ public class Parser extends Lexer {
 
 		tqual = null;
 		if (token.value == TOKdot) {
+			/*
 			id = new Identifier(Id.empty, TOKidentifier);
 			id.startPosition = token.ptr;
+			*/
 		} else {
 			if (token.value == TOKtypeof) {
 				Expression exp;
@@ -2507,7 +2581,7 @@ public class Parser extends Lexer {
 					if (init != null) {
 						problem("Alias cannot have initializer", IProblem.SEVERITY_ERROR, IProblem.ALIAS_CANNOT_HAVE_INITIALIZER, tokAssign.ptr, init.startPosition + init.length - tokAssign.ptr);
 					}
-					AliasDeclaration al = new AliasDeclaration(new SimpleName(ident), t);
+					AliasDeclaration al = new AliasDeclaration(newSimpleNameForIdentifier(ident), t);
 					al.startPosition = nextTypdefOrAliasStart;
 					v = al;
 				}
@@ -2698,7 +2772,7 @@ public class Parser extends Lexer {
 						problem("Identifier following 'out' expected", IProblem.SEVERITY_ERROR, IProblem.IDENTIFIER_EXPECTED,
 								token.ptr, token.len);
 					}
-					f.setPostconditionVariableName(new SimpleName(new Identifier(token)));
+					f.setPostconditionVariableName(newSimpleNameForCurrentToken());
 					nextToken();
 					check(TOKrparen);
 				}
@@ -2905,9 +2979,6 @@ public class Parser extends Lexer {
 	public Statement parseStatement(int flags) {
 		Statement s = null;
 		Token t;
-		Condition condition;
-		Statement ifbody;
-		Statement elsebody;
 
 		// printf("parseStatement()\n");
 
@@ -2929,7 +3000,7 @@ public class Parser extends Lexer {
 				nextToken();
 				nextToken();
 				Statement body = parseStatement(PSsemi);
-				s = new LabelStatement(new SimpleName(ident), body);
+				s = new LabelStatement(newSimpleNameForIdentifier(ident), body);
 				s.startPosition = ident.startPosition;
 				s.length = body.startPosition + body.length - s.startPosition;
 				break;
@@ -3020,17 +3091,17 @@ public class Parser extends Lexer {
 			}
 			if (t2.value == TOKif) {
 				nextToken();
-				condition = parseStaticIfCondition();
-				// goto Lcondition;
-				ifbody = parseStatement(PSsemi);
-				elsebody = null;
+				
+				StaticIfStatement staticIfStatement = new StaticIfStatement(ast);
+				StaticIfCondition staticIfCondition = parseStaticIfCondition();
+				staticIfStatement.setExpression(staticIfCondition.exp);
+				staticIfStatement.setThenBody(parseStatement(PSsemi));
 				if (token.value == TOKelse) {
 					nextToken();
-					elsebody = parseStatement(PSsemi);
+					staticIfStatement.setElseBody(parseStatement(PSsemi));
 				}
-				s = new StaticIfStatement(condition, ifbody, elsebody);
-				s.startPosition = saveToken.ptr;
-				s.length = prevToken.ptr + prevToken.len - s.startPosition;
+				staticIfStatement.setSourceRange(saveToken.ptr, prevToken.ptr + prevToken.len - saveToken.ptr);
+				s = staticIfStatement;
 				break;
 			}
 			// goto Ldeclaration;
@@ -3271,7 +3342,7 @@ public class Parser extends Lexer {
 						at = null; // infer argument type
 						nextToken();
 						// goto Larg;
-						a = new Argument(inout, at, new SimpleName(ai), null);
+						a = new Argument(inout, at, newSimpleNameForIdentifier(ai), null);
 						a.startPosition = argumentStart.ptr;
 						a.length = prevToken.ptr + prevToken.len - a.startPosition;
 						arguments.add(a);
@@ -3291,7 +3362,7 @@ public class Parser extends Lexer {
 					problem("No identifier for declarator", IProblem.SEVERITY_ERROR, IProblem.NO_IDENTIFIER_FOR_DECLARATOR, at.startPosition, at.length);
 				}
 				// Larg:
-				a = new Argument(inout, at, new SimpleName(ai), null);
+				a = new Argument(inout, at, newSimpleNameForIdentifier(ai), null);
 				a.startPosition = argumentStart.ptr;
 				a.length = prevToken.ptr + prevToken.len - a.startPosition;
 				arguments.add(a);
@@ -3336,7 +3407,9 @@ public class Parser extends Lexer {
 				if (token.value == TOKidentifier) {
 					Token t2 = peek(token);
 					if (t2.value == TOKassign) {
-						arg = new Argument(Argument.PassageMode.IN, null, new SimpleName(token), null);
+						SimpleName simpleName = newSimpleNameForCurrentToken();
+						
+						arg = new Argument(Argument.PassageMode.IN, null, simpleName, null);
 						arg.startPosition = autoToken.ptr;
 						arg.length = token.ptr + token.len - arg.startPosition;
 						nextToken();
@@ -3377,7 +3450,7 @@ public class Parser extends Lexer {
 					at = parseDeclarator(tb, pointer2_ai);
 					ai = pointer2_ai[0];
 					
-					arg = new Argument(Argument.PassageMode.IN, at, new SimpleName(ai), null);
+					arg = new Argument(Argument.PassageMode.IN, at, newSimpleNameForIdentifier(ai), null);
 					arg.startPosition = argToken.ptr;
 					arg.length = prevToken.ptr + prevToken.len - arg.startPosition;
 					
@@ -3388,7 +3461,9 @@ public class Parser extends Lexer {
 				else if (token.value == TOKidentifier) {
 					Token t2 = peek(token);
 					if (t2.value == TOKcomma || t2.value == TOKsemicolon) {
-						arg = new Argument(Argument.PassageMode.IN, null, new SimpleName(token), null);
+						SimpleName simpleName = newSimpleNameForCurrentToken();
+						
+						arg = new Argument(Argument.PassageMode.IN, null, simpleName, null);
 						arg.startPosition = argToken.ptr;
 						arg.length = token.ptr + token.len - arg.startPosition;
 						
@@ -3491,70 +3566,63 @@ public class Parser extends Lexer {
 			saveToken = new Token(token);
 			
 			nextToken();
-			condition = parseDebugCondition();
-			// goto Lcondition;
-			ifbody = parseStatement(PSsemi);
-			elsebody = null;
+			
+			DebugStatement debugStatement = new DebugStatement(ast);
+			DebugCondition debugCondition = parseDebugCondition();
+			if (debugCondition.id != null) {
+				Version version = new Version(ast);
+				version.setValue(debugCondition.id.string);
+				debugStatement.setVersion(version);
+			}
+			debugStatement.setThenBody(parseStatement(PSsemi));
 			if (token.value == TOKelse) {
 				nextToken();
-				elsebody = parseStatement(PSsemi);
+				debugStatement.setElseBody(parseStatement(PSsemi));
 			}
-			if (((DebugCondition)condition).id == null) {
-				s = new DebugStatement(null, ifbody, elsebody);
-			} else {
-				s = new DebugStatement(((DebugCondition)condition).id.string, ifbody, elsebody);
-			}
-			s.startPosition = saveToken.ptr;
-			s.length = prevToken.ptr + prevToken.len - s.startPosition;
+			debugStatement.setSourceRange(saveToken.ptr, prevToken.ptr + prevToken.len - saveToken.ptr);
+			s = debugStatement;
 			break;
 
 		case TOKversion:
 			saveToken = new Token(token);
 			
 			nextToken();
-			condition = parseVersionCondition();
-			// goto Lcondition;
-			ifbody = parseStatement(PSsemi);
-			elsebody = null;
+			
+			VersionStatement versionStatement = new VersionStatement(ast);
+			VersionCondition versionCondition = parseVersionCondition();
+			if (versionCondition.id != null) {
+				Version version = new Version(ast);
+				version.setValue(versionCondition.id.string);
+				versionStatement.setVersion(version);
+			}
+			versionStatement.setThenBody(parseStatement(PSsemi));
 			if (token.value == TOKelse) {
 				nextToken();
-				elsebody = parseStatement(PSsemi);
+				versionStatement.setElseBody(parseStatement(PSsemi));
 			}
-			if (((VersionCondition)condition).id == null) {
-				s = new VersionStatement(null, ifbody, elsebody);
-			} else {
-				s = new VersionStatement(((VersionCondition)condition).id.string, ifbody, elsebody);
-			}
-			s.startPosition = saveToken.ptr;
-			s.length = prevToken.ptr + prevToken.len - s.startPosition;
+			versionStatement.setSourceRange(saveToken.ptr, prevToken.ptr + prevToken.len - saveToken.ptr);
+			s = versionStatement;
 			break;
 
 		case TOKiftype:
 			saveToken = new Token(token);
 			
-			condition = parseIftypeCondition();
-			// goto Lcondition;
-			ifbody = parseStatement(PSsemi);
-			elsebody = null;
+			IftypeStatement iftypeStatement = new IftypeStatement(ast);
+			IftypeCondition iftypeCondition = parseIftypeCondition();
+			if (iftypeCondition != null) {
+				iftypeStatement.setKind(iftypeCondition.getKind());
+				iftypeStatement.setName(newSimpleNameForIdentifier(iftypeCondition.ident));
+				iftypeStatement.setTestType(iftypeCondition.targ);
+				iftypeStatement.setMatchingType(iftypeCondition.tspec);
+			}
+			iftypeStatement.setThenBody(parseStatement(PSsemi));
 			if (token.value == TOKelse) {
 				nextToken();
-				elsebody = parseStatement(PSsemi);
+				iftypeStatement.setElseBody(parseStatement(PSsemi));
 			}
-			s = new ConditionalStatement(condition, ifbody, elsebody);
-			s.startPosition = saveToken.ptr;
-			s.length = prevToken.ptr + prevToken.len - s.startPosition;
+			iftypeStatement.setSourceRange(saveToken.ptr, prevToken.ptr + prevToken.len - saveToken.ptr);
+			s = iftypeStatement;
 			break;
-
-		// Lcondition:
-		// ifbody = parseStatement(PSsemi);
-		// elsebody = null;
-		// if (token.value == TOKelse)
-		// {
-		// nextToken();
-		// elsebody = parseStatement(PSsemi);
-		// }
-		// s = new ConditionalStatement(loc, condition, ifbody, elsebody);
-		// break;
 
 		case TOKpragma: {
 			Identifier ident;
@@ -3590,7 +3658,7 @@ public class Parser extends Lexer {
 			}
 			
 			PragmaStatement pragmaStatement = new PragmaStatement(ast);
-			pragmaStatement.setName(new SimpleName(ident));
+			pragmaStatement.setName(newSimpleNameForIdentifier(ident));
 			if (args != null) {
 				pragmaStatement.arguments().addAll(args);
 			}
@@ -3715,7 +3783,7 @@ public class Parser extends Lexer {
 			} else
 				ident = null;
 			check(TOKsemicolon, "break statement");
-			BreakStatement bs = new BreakStatement(new SimpleName(ident));
+			BreakStatement bs = new BreakStatement(newSimpleNameForIdentifier(ident));
 			bs.startPosition = saveToken.ptr;
 			bs.length = prevToken.ptr + prevToken.len - bs.startPosition;
 			s = bs;
@@ -3733,7 +3801,7 @@ public class Parser extends Lexer {
 			} else
 				ident = null;
 			check(TOKsemicolon, "continue statement");
-			ContinueStatement cs = new ContinueStatement(new SimpleName(ident));
+			ContinueStatement cs = new ContinueStatement(newSimpleNameForIdentifier(ident));
 			cs.startPosition = saveToken.ptr;
 			cs.length = prevToken.ptr + prevToken.len - cs.startPosition;
 			s = cs;
@@ -3764,7 +3832,7 @@ public class Parser extends Lexer {
 					ident = new Identifier(token);
 					nextToken();
 				}
-				s = new GotoStatement(new SimpleName(ident));
+				s = new GotoStatement(newSimpleNameForIdentifier(ident));
 			}
 			check(TOKsemicolon, "goto statement");
 			s.startPosition = saveToken.ptr;
@@ -3846,7 +3914,7 @@ public class Parser extends Lexer {
 					check(TOKrparen);
 				}
 				handler = parseStatement(0);
-				c = new CatchClause(t2, new SimpleName(id), handler);
+				c = new CatchClause(t2, newSimpleNameForIdentifier(id), handler);
 				c.startPosition = firstToken.ptr;
 				c.length = prevToken.ptr + prevToken.len - c.startPosition;
 				if (catches == null) {
@@ -3956,7 +4024,7 @@ public class Parser extends Lexer {
 						toklist = null;
 						ptoklist[0] = toklist;
 						if (label == null) {
-							s = new LabelStatement(new SimpleName(label), s);
+							s = new LabelStatement(newSimpleNameForIdentifier(label), s);
 							label = null;
 						}
 						statements.add(s);
@@ -4799,7 +4867,7 @@ public class Parser extends Lexer {
 			e = new ScopeExp(tempinst);
 		    }
 		    else
-			e = new SimpleName(id);
+			e = newSimpleNameForIdentifier(id);
 		    break;
 
 		case TOKdollar:
@@ -4812,7 +4880,8 @@ public class Parser extends Lexer {
 
 		case TOKdot:
 		    // Signal global scope '.' operator with "" identifier
-		    e = new SimpleName(new Identifier(Id.empty, TOKidentifier));
+			e = null;
+		    // e = new SimpleName(new Identifier(Id.empty, TOKidentifier));
 		    break;
 
 		case TOKthis:
@@ -5196,8 +5265,18 @@ public class Parser extends Lexer {
 						nextToken();
 						tempinst.tiargs = parseTemplateArgumentList();
 						e = new DotTemplateInstanceExp(e, tempinst);
-					} else
-						e = new DotIdExp(e, id);
+					} else {
+						DotIdentifierExpression die = new DotIdentifierExpression(ast);
+						die.setExpression(e);
+						die.setName(newSimpleNameForIdentifier(id));
+						if (e == null) {
+							die.setSourceRange(prevToken.ptr, token.ptr + token.len - prevToken.ptr);
+						} else {
+							die.setSourceRange(e.getStartPosition(), id.startPosition + id.length - e.getStartPosition());
+						}
+						
+						e = die;
+					}
 					continue;
 				} else if (token.value == TOKnew) {
 					e = parseNewExp(e);
@@ -5844,7 +5923,7 @@ public class Parser extends Lexer {
 				baseclasses = parseBaseClasses();
 
 			Identifier id = null;
-			AggregateDeclaration cd = new AggregateDeclaration(AggregateDeclaration.Kind.CLASS, new SimpleName(id), baseclasses);
+			AggregateDeclaration cd = new AggregateDeclaration(AggregateDeclaration.Kind.CLASS, newSimpleNameForIdentifier(id), baseclasses);
 
 			if (token.value != TOKlcurly) {
 				problem("{ members } expected for anonymous class", IProblem.SEVERITY_ERROR, IProblem.MEMBERS_EXPECTED, token.ptr, token.len);

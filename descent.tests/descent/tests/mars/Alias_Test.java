@@ -16,7 +16,7 @@ public class Alias_Test extends Parser_Test {
 		IAliasDeclaration alias = (IAliasDeclaration) declDefs[0];
 		assertEquals(IElement.ALIAS_DECLARATION, alias.getNodeType0());
 		
-		assertEquals("Ble", alias.getName().toString());
+		assertEquals("Ble", alias.getName().getIdentifier());
 		assertPosition(alias.getName(), 11, 3);
 		assertEquals("int", alias.getType().toString());
 		

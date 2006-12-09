@@ -1,5 +1,7 @@
 package descent.core.dom;
 
+import descent.internal.core.dom.Version;
+
 /**
  * A version statement:
  * 
@@ -15,6 +17,6 @@ public interface IVersionStatement extends IConditionalStatement {
 	/**
 	 * Returns the version number or identifier.
 	 */
-	String getName();
+	Version getVersion();
 
 }

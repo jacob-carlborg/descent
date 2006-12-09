@@ -31,7 +31,6 @@ public class Import_Test extends Parser_Test {
 		
 		SimpleName name = (SimpleName) anImport.getName();
 		assertEquals("a", name.getIdentifier());
-		assertEquals("a", name.toString());
 		assertPosition(name, 8, 1);
 	}
 	
@@ -90,7 +89,7 @@ public class Import_Test extends Parser_Test {
 		assertPosition(qualifiedName, 17, 12);
 		
 		SimpleName alias = anImport.getAlias();
-		assertEquals("mAlias", alias.toString());
+		assertEquals("mAlias", alias.getIdentifier());
 		assertPosition(alias, 8, 6);
 	}
 	
@@ -110,13 +109,13 @@ public class Import_Test extends Parser_Test {
 		assertPosition(imp, 8, 9);
 		
 		SimpleName name = (SimpleName) imp.getName();
-		assertEquals("uno", name.toString());
+		assertEquals("uno", name.getIdentifier());
 		assertPosition(name, 8, 3);
 		
 		assertEquals(1, imp.selectiveImports().size());
 		
 		SelectiveImport sel = imp.selectiveImports().get(0);
-		assertEquals("dos", sel.getName().toString());
+		assertEquals("dos", sel.getName().getIdentifier());
 		assertPosition(sel.getName(), 14, 3);
 		assertNull(sel.getAlias());
 	}
@@ -137,16 +136,16 @@ public class Import_Test extends Parser_Test {
 		assertPosition(imp, 8, 18);
 		
 		SimpleName qName = (SimpleName) imp.getName();
-		assertEquals("uno", qName.toString());
+		assertEquals("uno", qName.getIdentifier());
 		assertPosition(qName, 8, 3);
 		
 		assertEquals(1, imp.selectiveImports().size());
 		
 		SelectiveImport sel = imp.selectiveImports().get(0);
-		assertEquals("dos", sel.getName().toString());
+		assertEquals("dos", sel.getName().getIdentifier());
 		assertPosition(sel.getName(), 23, 3);
 		
-		assertEquals("mAlias", sel.getAlias().toString());
+		assertEquals("mAlias", sel.getAlias().getIdentifier());
 		assertPosition(sel.getAlias(), 14, 6);
 	}
 	
@@ -169,7 +168,7 @@ public class Import_Test extends Parser_Test {
 		assertPosition(imp, 15, 1);
 		
 		SimpleName qName = (SimpleName) imp.getName();
-		assertEquals("a", qName.toString());
+		assertEquals("a", qName.getIdentifier());
 		assertPosition(qName, 15, 1);
 	}
 

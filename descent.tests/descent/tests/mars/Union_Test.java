@@ -23,7 +23,7 @@ public class Union_Test extends Parser_Test {
 		
 		ISimpleName name = c.getName();
 		assertEquals(IElement.SIMPLE_NAME, name.getNodeType0());
-		assertEquals("Clazz", name.toString());
+		assertEquals("Clazz", name.getIdentifier());
 		assertPosition(name, 7, 5);
 		
 		assertEquals(0, c.baseClasses().size());

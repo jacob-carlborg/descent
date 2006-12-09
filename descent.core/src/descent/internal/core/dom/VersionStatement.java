@@ -11,22 +11,22 @@ import descent.core.dom.IVersionStatement;
  *
  * <pre>
  * VersionStatement:
- *    <b>version</b> [ <b>(</b> name <b>)</b> ] Statement [ <b>else</b> Statement ]
+ *    <b>version</b> [ <b>(</b> Version <b>)</b> ] Statement [ <b>else</b> Statement ]
  * </pre>
  */
 public class VersionStatement extends Statement implements IVersionStatement {
 	
 	/**
-	 * The "name" structural property of this node type.
+	 * The "version" structural property of this node type.
 	 */
-	public static final SimplePropertyDescriptor NAME_PROPERTY =
-		new SimplePropertyDescriptor(VersionStatement.class, "name", String.class, OPTIONAL); //$NON-NLS-1$
+	public static final ChildPropertyDescriptor VERSION_PROPERTY =
+		new ChildPropertyDescriptor(VersionStatement.class, "version", Version.class, OPTIONAL, NO_CYCLE_RISK); //$NON-NLS-1$
 
 	/**
-	 * The "body" structural property of this node type.
+	 * The "thenBody" structural property of this node type.
 	 */
-	public static final ChildPropertyDescriptor BODY_PROPERTY =
-		new ChildPropertyDescriptor(VersionStatement.class, "body", Statement.class, MANDATORY, CYCLE_RISK); //$NON-NLS-1$
+	public static final ChildPropertyDescriptor THEN_BODY_PROPERTY =
+		new ChildPropertyDescriptor(VersionStatement.class, "thenBody", Statement.class, MANDATORY, CYCLE_RISK); //$NON-NLS-1$
 
 	/**
 	 * The "elseBody" structural property of this node type.
@@ -44,8 +44,8 @@ public class VersionStatement extends Statement implements IVersionStatement {
 	static {
 		List properyList = new ArrayList(3);
 		createPropertyList(VersionStatement.class, properyList);
-		addProperty(NAME_PROPERTY, properyList);
-		addProperty(BODY_PROPERTY, properyList);
+		addProperty(VERSION_PROPERTY, properyList);
+		addProperty(THEN_BODY_PROPERTY, properyList);
 		addProperty(ELSE_BODY_PROPERTY, properyList);
 		PROPERTY_DESCRIPTORS = reapPropertyList(properyList);
 	}
@@ -66,14 +66,14 @@ public class VersionStatement extends Statement implements IVersionStatement {
 	}
 
 	/**
-	 * The name.
+	 * The version.
 	 */
-	private String name;
+	private Version version;
 
 	/**
-	 * The body.
+	 * The thenBody.
 	 */
-	private Statement body;
+	private Statement thenBody;
 
 	/**
 	 * The elseBody.
@@ -104,28 +104,20 @@ public class VersionStatement extends Statement implements IVersionStatement {
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
 	 */
-	final Object internalGetSetObjectProperty(SimplePropertyDescriptor property, boolean get, Object value) {
-		if (property == NAME_PROPERTY) {
+	final ASTNode internalGetSetChildProperty(ChildPropertyDescriptor property, boolean get, ASTNode child) {
+		if (property == VERSION_PROPERTY) {
 			if (get) {
-				return getName();
+				return getVersion();
 			} else {
-				setName((String) value);
+				setVersion((Version) child);
 				return null;
 			}
 		}
-		// allow default implementation to flag the error
-		return super.internalGetSetObjectProperty(property, get, value);
-	}
-
-	/* (omit javadoc for this method)
-	 * Method declared on ASTNode.
-	 */
-	final ASTNode internalGetSetChildProperty(ChildPropertyDescriptor property, boolean get, ASTNode child) {
-		if (property == BODY_PROPERTY) {
+		if (property == THEN_BODY_PROPERTY) {
 			if (get) {
-				return getBody();
+				return getThenBody();
 			} else {
-				setBody((Statement) child);
+				setThenBody((Statement) child);
 				return null;
 			}
 		}
@@ -155,8 +147,8 @@ public class VersionStatement extends Statement implements IVersionStatement {
 	ASTNode clone0(AST target) {
 		VersionStatement result = new VersionStatement(target);
 		result.setSourceRange(this.getStartPosition(), this.getLength());
-		result.setName(getName());
-		result.setBody((Statement) getBody().clone(target));
+	result.setVersion((Version) ASTNode.copySubtree(target, getVersion()));
+		result.setThenBody((Statement) getThenBody().clone(target));
 	result.setElseBody((Statement) ASTNode.copySubtree(target, getElseBody()));
 		return result;
 	}
@@ -176,59 +168,26 @@ public class VersionStatement extends Statement implements IVersionStatement {
 		boolean visitChildren = visitor.visit(this);
 		if (visitChildren) {
 			// visit children in normal left to right reading order
-			acceptChild(visitor, getBody());
+			acceptChild(visitor, getVersion());
+			acceptChild(visitor, getThenBody());
 			acceptChild(visitor, getElseBody());
 		}
 		visitor.endVisit(this);
 	}
 
 	/**
-	 * Returns the name of this version statement.
+	 * Returns the version of this version statement.
 	 * 
-	 * @return the name
+	 * @return the version
 	 */ 
-	public String getName() {
-		return this.name;
+	public Version getVersion() {
+		return this.version;
 	}
 
 	/**
-	 * Sets the name of this version statement.
+	 * Sets the version of this version statement.
 	 * 
-	 * @param name the name
-	 * @exception IllegalArgumentException if the argument is incorrect
-	 */ 
-	public void setName(String name) {
-		if (name == null) {
-			throw new IllegalArgumentException();
-		}
-		preValueChange(NAME_PROPERTY);
-		this.name = name;
-		postValueChange(NAME_PROPERTY);
-	}
-
-	/**
-	 * Returns the body of this version statement.
-	 * 
-	 * @return the body
-	 */ 
-	public Statement getBody() {
-		if (this.body == null) {
-			// lazy init must be thread-safe for readers
-			synchronized (this) {
-				if (this.body == null) {
-					preLazyInit();
-					this.body = new Block(this.ast);
-					postLazyInit(this.body, BODY_PROPERTY);
-				}
-			}
-		}
-		return this.body;
-	}
-
-	/**
-	 * Sets the body of this version statement.
-	 * 
-	 * @param body the body
+	 * @param version the version
 	 * @exception IllegalArgumentException if:
 	 * <ul>
 	 * <li>the node belongs to a different AST</li>
@@ -236,14 +195,51 @@ public class VersionStatement extends Statement implements IVersionStatement {
 	 * <li>a cycle in would be created</li>
 	 * </ul>
 	 */ 
-	public void setBody(Statement body) {
-		if (body == null) {
+	public void setVersion(Version version) {
+		ASTNode oldChild = this.version;
+		preReplaceChild(oldChild, version, VERSION_PROPERTY);
+		this.version = version;
+		postReplaceChild(oldChild, version, VERSION_PROPERTY);
+	}
+
+	/**
+	 * Returns the then body of this version statement.
+	 * 
+	 * @return the then body
+	 */ 
+	public Statement getThenBody() {
+		if (this.thenBody == null) {
+			// lazy init must be thread-safe for readers
+			synchronized (this) {
+				if (this.thenBody == null) {
+					preLazyInit();
+					this.thenBody = new Block(this.ast);
+					postLazyInit(this.thenBody, THEN_BODY_PROPERTY);
+				}
+			}
+		}
+		return this.thenBody;
+	}
+
+	/**
+	 * Sets the then body of this version statement.
+	 * 
+	 * @param thenBody the then body
+	 * @exception IllegalArgumentException if:
+	 * <ul>
+	 * <li>the node belongs to a different AST</li>
+	 * <li>the node already has a parent</li>
+	 * <li>a cycle in would be created</li>
+	 * </ul>
+	 */ 
+	public void setThenBody(Statement thenBody) {
+		if (thenBody == null) {
 			throw new IllegalArgumentException();
 		}
-		ASTNode oldChild = this.body;
-		preReplaceChild(oldChild, body, BODY_PROPERTY);
-		this.body = body;
-		postReplaceChild(oldChild, body, BODY_PROPERTY);
+		ASTNode oldChild = this.thenBody;
+		preReplaceChild(oldChild, thenBody, THEN_BODY_PROPERTY);
+		this.thenBody = thenBody;
+		postReplaceChild(oldChild, thenBody, THEN_BODY_PROPERTY);
 	}
 
 	/**
@@ -286,15 +282,10 @@ public class VersionStatement extends Statement implements IVersionStatement {
 	int treeSize() {
 		return
 			memSize()
-			+ (this.body == null ? 0 : getBody().treeSize())
+			+ (this.version == null ? 0 : getVersion().treeSize())
+			+ (this.thenBody == null ? 0 : getThenBody().treeSize())
 			+ (this.elseBody == null ? 0 : getElseBody().treeSize())
 	;
-	}
-
-	public VersionStatement(String name, Statement body, Statement elseBody) {
-		this.name = name;
-		this.body = body;
-		this.elseBody = elseBody;
 	}
 
 }

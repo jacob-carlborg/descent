@@ -20,7 +20,7 @@ public class Module_Test extends Parser_Test {
 		assertEquals(IElement.MODULE_DECLARATION, md.getNodeType0());
 		
 		SimpleName qName = (SimpleName) md.getName();
-		assertEquals("a", qName.toString());
+		assertEquals("a", qName.getIdentifier());
 		assertPosition(qName, 8, 1);
 	}
 	

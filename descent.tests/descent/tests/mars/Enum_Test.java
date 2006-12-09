@@ -22,7 +22,7 @@ public class Enum_Test extends Parser_Test {
 		assertEquals(IElement.ENUM_DECLARATION, e.getNodeType0());
 		assertPosition(e, 1, 8);
 		assertPosition(e.getName(), 6, 2);
-		assertEquals("En", e.getName().toString());
+		assertEquals("En", e.getName().getIdentifier());
 		assertEquals(0, e.enumMembers().size());
 		
 		assertVisitor(e, 2);
@@ -37,24 +37,24 @@ public class Enum_Test extends Parser_Test {
 		IEnumDeclaration e = (IEnumDeclaration) declDefs[0];
 		assertPosition(e, 1, 23);
 		assertPosition(e.getName(), 6, 2);
-		assertEquals("En", e.getName().toString());
+		assertEquals("En", e.getName().getIdentifier());
 		assertEquals(3, e.enumMembers().size());
 		
 		IEnumMember em;
 		
 		em = e.enumMembers().get(0);
 		assertEquals(IElement.ENUM_MEMBER, em.getNodeType0());
-		assertEquals("x", em.getName().toString());
+		assertEquals("x", em.getName().getIdentifier());
 		assertNull(em.getValue());
 		assertPosition(em, 11, 1);
 		
 		em = e.enumMembers().get(1);
-		assertEquals("y", em.getName().toString());
+		assertEquals("y", em.getName().getIdentifier());
 		assertEquals(BigInteger.ONE, ((IIntegerExpression) em.getValue()).getValue());
 		assertPosition(em, 14, 5);
 		
 		em = e.enumMembers().get(2);
-		assertEquals("z", em.getName().toString());
+		assertEquals("z", em.getName().getIdentifier());
 		assertNull(em.getValue());
 		assertPosition(em, 21, 1);
 	}
@@ -79,7 +79,7 @@ public class Enum_Test extends Parser_Test {
 		IEnumDeclaration e = (IEnumDeclaration) declDefs[0];
 		assertPosition(e, 1, 14);
 		assertPosition(e.getName(), 6, 2);
-		assertEquals("En", e.getName().toString());
+		assertEquals("En", e.getName().getIdentifier());
 		assertEquals("int", e.getBaseType().toString());
 		assertEquals(0, e.enumMembers().size());
 		

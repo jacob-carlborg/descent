@@ -15,6 +15,6 @@ public interface IStaticIfStatement extends IConditionalStatement {
 	/**
 	 * The static condition to evaluate.
 	 */
-	IExpression getCondition();
+	IExpression getExpression();
 
 }

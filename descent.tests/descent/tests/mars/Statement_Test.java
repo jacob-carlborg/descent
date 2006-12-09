@@ -42,6 +42,7 @@ import descent.internal.core.dom.AggregateDeclaration;
 import descent.internal.core.dom.Argument;
 import descent.internal.core.dom.ParserFacade;
 import descent.internal.core.dom.ScopeStatement;
+import descent.internal.core.dom.SimpleName;
 
 public class Statement_Test extends Parser_Test {
 	
@@ -64,7 +65,7 @@ public class Statement_Test extends Parser_Test {
 		assertEquals(IStatement.BREAK_STATEMENT, stm.getNodeType0());
 		assertPosition(stm, 1, 6);
 		
-		assertEquals("MISSING", stm.getLabel().toString());
+		assertNull(stm.getLabel());
 	}
 	
 	public void testBreakLabel() {
@@ -74,7 +75,7 @@ public class Statement_Test extends Parser_Test {
 		assertEquals(IStatement.BREAK_STATEMENT, stm.getNodeType0());
 		assertPosition(stm, 1, 12);
 		
-		assertEquals("label", stm.getLabel().toString());
+		assertEquals("label", stm.getLabel().getIdentifier());
 		assertPosition(stm.getLabel(), 7, 5);
 		
 		assertVisitor(stm, 2);
@@ -87,7 +88,7 @@ public class Statement_Test extends Parser_Test {
 		assertEquals(IStatement.CONTINUE_STATEMENT, stm.getNodeType0());
 		assertPosition(stm, 1, 9);
 		
-		assertEquals("MISSING", stm.getLabel().toString());
+		assertNull(stm.getLabel());
 	}
 	
 	public void testContinueLabel() {
@@ -97,7 +98,7 @@ public class Statement_Test extends Parser_Test {
 		assertEquals(IStatement.CONTINUE_STATEMENT, stm.getNodeType0());
 		assertPosition(stm, 1, 15);
 		
-		assertEquals("label", stm.getLabel().toString());
+		assertEquals("label", stm.getLabel().getIdentifier());
 		assertPosition(stm.getLabel(), 10, 5);
 		
 		assertVisitor(stm, 2);
@@ -122,7 +123,7 @@ public class Statement_Test extends Parser_Test {
 		assertEquals(IStatement.RETURN_STATEMENT, stm.getNodeType0());
 		assertPosition(stm, 1, 13);
 		
-		assertEquals("somex", stm.getExpression().toString());
+		assertEquals("somex", ((SimpleName) stm.getExpression()).getIdentifier());
 		assertPosition(stm.getExpression(), 8, 5);
 	}
 	
@@ -161,7 +162,7 @@ public class Statement_Test extends Parser_Test {
 		assertEquals(IStatement.LABEL_STATEMENT, stm.getNodeType0());
 		assertPosition(stm, 1, 13);
 		
-		assertEquals("label", stm.getLabel().toString());
+		assertEquals("label", stm.getLabel().getIdentifier());
 		assertPosition(stm.getLabel(), 1, 5);
 		
 		assertPosition(stm.getBody(), 8, 6);
@@ -238,17 +239,17 @@ public class Statement_Test extends Parser_Test {
 		
 		assertPosition(args[0], 9, 7);
 		assertEquals(Argument.PassageMode.INOUT, args[0].getPassageMode());
-		assertEquals("a", args[0].getName().toString());
+		assertEquals("a", args[0].getName().getIdentifier());
 		assertPosition(args[0].getName(), 15, 1);
 		
 		assertPosition(args[1], 18, 1);
 		assertEquals(Argument.PassageMode.IN, args[1].getPassageMode());
-		assertEquals("b", args[1].getName().toString());
+		assertEquals("b", args[1].getName().getIdentifier());
 		assertPosition(args[1].getName(), 18, 1);
 		
 		assertPosition(args[2], 21, 1);
 		assertEquals(Argument.PassageMode.IN, args[2].getPassageMode());
-		assertEquals("c", args[2].getName().toString());
+		assertEquals("c", args[2].getName().getIdentifier());
 		assertPosition(args[2].getName(), 21, 1);
 	}
 	
@@ -259,7 +260,7 @@ public class Statement_Test extends Parser_Test {
 		assertEquals(IStatement.FOREACH_STATEMENT, stm.getNodeType0());
 		assertPosition(stm, 1, s.length() - 1);
 		
-		assertEquals("x", stm.getExpression().toString());
+		assertEquals("x", ((SimpleName) stm.getExpression()).getIdentifier());
 		
 		assertTrue(stm.isReverse());
 	}
@@ -278,7 +279,7 @@ public class Statement_Test extends Parser_Test {
 		
 		assertPosition(args[0], 9, 5);
 		assertEquals(Argument.PassageMode.IN, args[0].getPassageMode());
-		assertEquals("x", args[0].getName().toString());
+		assertEquals("x", args[0].getName().getIdentifier());
 		assertEquals("int", args[0].getType().toString());
 		assertPosition(args[0].getName(), 13, 1);
 	}
@@ -415,7 +416,7 @@ public class Statement_Test extends Parser_Test {
 		assertEquals(IStatement.PRAGMA_STATEMENT, stm.getNodeType0());
 		assertPosition(stm, 1, s.length() - 1);
 		
-		assertEquals("lib", stm.getName().toString());
+		assertEquals("lib", stm.getName().getIdentifier());
 		assertPosition(stm.getName(), 8, 3);
 		
 		assertEquals(1, stm.arguments().size());
@@ -441,7 +442,7 @@ public class Statement_Test extends Parser_Test {
 		
 		assertEquals("1", stm.getExpression().toString());
 		assertNotNull(stm.getArgument());
-		assertEquals("x", stm.getArgument().getName().toString());
+		assertEquals("x", stm.getArgument().getName().getIdentifier());
 		assertPosition(stm.getArgument(), 5, 6);
 	}
 	
@@ -456,7 +457,7 @@ public class Statement_Test extends Parser_Test {
 		
 		IArgument argument = stm.getArgument();
 		assertNotNull(argument);
-		assertEquals("x", argument.getName().toString());
+		assertEquals("x", argument.getName().getIdentifier());
 		assertEquals("int", argument.getType().toString());
 		assertPosition(argument, 5, 5);
 	}
@@ -468,11 +469,11 @@ public class Statement_Test extends Parser_Test {
 		assertEquals(IStatement.IF_STATEMENT, stm.getNodeType0());
 		assertPosition(stm, 1, s.length() - 1);
 		
-		assertEquals("b", stm.getExpression().toString());
+		assertEquals("b", ((SimpleName) stm.getExpression()).getIdentifier());
 		
 		IArgument argument = stm.getArgument();
 		assertNotNull(argument);
-		assertEquals("a", argument.getName().toString());
+		assertEquals("a", argument.getName().getIdentifier());
 		assertPosition(argument, 5, 1);
 	}
 	
@@ -483,7 +484,7 @@ public class Statement_Test extends Parser_Test {
 		assertEquals(IConditionalStatement.STATIC_IF_STATEMENT, stm.getNodeType0());
 		assertPosition(stm, 1, s.length() - 1);
 		
-		assertEquals("1", stm.getCondition().toString());
+		assertEquals("1", stm.getExpression().toString());
 	}
 	
 	public void testDebug1() {
@@ -493,7 +494,7 @@ public class Statement_Test extends Parser_Test {
 		assertEquals(IConditionalStatement.DEBUG_STATEMENT, stm.getNodeType0());
 		assertPosition(stm, 1, s.length() - 1);
 		
-		assertNull(stm.getName());
+		assertNull(stm.getVersion());
 	}
 	
 	public void testDebug2() {
@@ -503,7 +504,7 @@ public class Statement_Test extends Parser_Test {
 		assertEquals(IConditionalStatement.DEBUG_STATEMENT, stm.getNodeType0());
 		assertPosition(stm, 1, s.length() - 1);
 		
-		assertEquals("1", stm.getName().toString());
+		assertEquals("1", stm.getVersion().toString());
 	}
 	
 	public void testVersion() {
@@ -513,7 +514,7 @@ public class Statement_Test extends Parser_Test {
 		assertEquals(IConditionalStatement.VERSION_STATEMENT, stm.getNodeType0());
 		assertPosition(stm, 1, s.length() - 1);
 		
-		assertEquals("release", stm.getName().toString());
+		assertEquals("release", stm.getVersion().toString());
 	}
 	
 	public void testStaticExtern() {
