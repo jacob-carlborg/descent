@@ -1,5 +1,7 @@
 package descent.core.dom;
 
+import descent.internal.core.dom.Type;
+
 /**
  * A template alias parameter:
  * 
@@ -12,11 +14,11 @@ public interface IAliasTemplateParameter extends ITemplateParameter {
 	/**
 	 * Returns the specific type, if any, or null.
 	 */
-	IType getSpecificType();
+	Type getSpecificType();
 	
 	/**
 	 * Returns the default type, if any, or null.
 	 */
-	IType getDefaultType();
+	Type getDefaultType();
 
 }

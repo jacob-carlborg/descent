@@ -180,7 +180,7 @@ public class Modifier_Test extends Parser_Test {
 	}
 	
 	public void testOnTypedef() {
-		String s = " const typedef Bla int;";
+		String s = " const typedef int Bla;";
 		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
 		IElement[] declDefs = unit.getDeclarationDefinitions();
 		

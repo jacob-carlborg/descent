@@ -7,17 +7,15 @@ public class ASTNodeGenerator {
 	
 	public static void main(String[] args) {
 		
-		String description = "iftype statement";
+		String description = "typedef declaration";
 		String clazz = toMethod(description);
 		String nodeType = toProperty(description);
 
 		Member[] members = {
-				Member.simple("kind", "Kind"),
-				Member.child("name", "SimpleName", NO_CYCLE_RISK),
-				Member.child("test type", "Type", NO_CYCLE_RISK),
-				Member.child("matching type", "Type", NO_CYCLE_RISK),
-				Member.childMandatory("then body", "Statement", CYCLE_RISK, "Block"),
-				Member.child("else body", "Statement", CYCLE_RISK),
+				Member.simple("modifier flags", "int"),
+				Member.childMandatory("name", "SimpleName", NO_CYCLE_RISK, "SimpleName"),
+				Member.childMandatory("type", "Type", NO_CYCLE_RISK, "Type.tint32"),
+				Member.child("initializer", "Initializer", NO_CYCLE_RISK),
 		};
 		
 		StringBuilder sb = new StringBuilder();

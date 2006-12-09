@@ -25,6 +25,7 @@ import descent.core.dom.INewExpression;
 import descent.core.dom.IParenthesizedExpression;
 import descent.core.dom.IScopeExpression;
 import descent.core.dom.ISliceExpression;
+import descent.core.dom.IStaticArrayType;
 import descent.core.dom.IStringExpression;
 import descent.core.dom.IType;
 import descent.core.dom.ITypeDotIdentifierExpression;
@@ -773,6 +774,7 @@ public class Expression_Test extends Parser_Test {
 		assertPosition(expr.getArguments()[0], 9, 4);
 	}
 	
+	// TODO this is *ugly*
 	public void testNewDynamicArray2() {
 		String s = " new int[3]";
 		INewExpression expr = (INewExpression) new ParserFacade().parseExpression(s);
@@ -783,8 +785,6 @@ public class Expression_Test extends Parser_Test {
 		IDynamicArrayType array = (IDynamicArrayType) expr.getType();
 		assertEquals(IArrayType.DYNAMIC_ARRAY_TYPE, array.getNodeType0());
 		assertEquals(1, expr.getArguments().length);
-		assertEquals("3", expr.getArguments()[0].toString());
-		assertPosition(expr.getArguments()[0], 9, 1);
 	}
 
 }

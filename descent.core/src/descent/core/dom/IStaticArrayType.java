@@ -12,6 +12,6 @@ public interface IStaticArrayType extends IArrayType {
 	/**
 	 * Returns the dimension of the array.
 	 */
-	IExpression getDimension();
+	IExpression getSize();
 
 }

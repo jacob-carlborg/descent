@@ -1602,8 +1602,13 @@ public class Parser extends Lexer {
 						tp_defaulttype = parseBasicType();
 						tp_defaulttype = parseDeclarator(tp_defaulttype, null);
 					}
-					tp = new TemplateAliasParameter(tp_ident, tp_spectype,
-							tp_defaulttype);
+					
+					AliasTemplateParameter aliasTemplateParameter = new AliasTemplateParameter(ast);
+					aliasTemplateParameter.setName(newSimpleNameForIdentifier(tp_ident));
+					aliasTemplateParameter.setSpecificType(tp_spectype);
+					aliasTemplateParameter.setDefaultType(tp_defaulttype);
+					
+					tp = aliasTemplateParameter;
 				} else if (t.value == TOKcolon || t.value == TOKassign
 						|| t.value == TOKcomma || t.value == TOKrparen) { // TypeParameter
 					if (token.value != TOKidentifier) {
@@ -1625,8 +1630,13 @@ public class Parser extends Lexer {
 						tp_defaulttype = parseBasicType();
 						tp_defaulttype = parseDeclarator(tp_defaulttype, null);
 					}
-					tp = new TemplateTypeParameter(tp_ident, tp_spectype,
-									tp_defaulttype);
+					
+					TypeTemplateParameter typeTemplateParameter = new TypeTemplateParameter(ast);
+					typeTemplateParameter.setName(newSimpleNameForIdentifier(tp_ident));
+					typeTemplateParameter.setSpecificType(tp_spectype);
+					typeTemplateParameter.setDefaultType(tp_defaulttype);
+					
+					tp = typeTemplateParameter;
 				}
 			    else if (token.value == TOKidentifier && t.value == TOKdotdotdot)
 			    {	// ident...
@@ -1639,7 +1649,11 @@ public class Parser extends Lexer {
 					tp_ident = new Identifier(token);
 					nextToken();
 					nextToken();
-					tp = new TemplateTupleParameter(tp_ident);
+					
+					TupleTemplateParameter tupleTemplateParameter = new TupleTemplateParameter(ast);
+					tupleTemplateParameter.setName(newSimpleNameForIdentifier(tp_ident));
+					
+					tp = tupleTemplateParameter;
 				} else { // ValueParameter
 					tp_valtype = parseBasicType();
 
@@ -1661,8 +1675,14 @@ public class Parser extends Lexer {
 						nextToken();
 						tp_defaultvalue = parseCondExp();
 					}
-					tp = new TemplateValueParameter(tp_ident, tp_valtype,
-							tp_specvalue, tp_defaultvalue);
+					
+					ValueTemplateParameter valueTemplateParameter = new ValueTemplateParameter(ast);
+					valueTemplateParameter.setType(tp_valtype);
+					valueTemplateParameter.setName(newSimpleNameForIdentifier(tp_ident));
+					valueTemplateParameter.setSpecificValue(tp_specvalue);
+					valueTemplateParameter.setDefaultValue(tp_defaultvalue);
+					
+					tp = valueTemplateParameter;
 				}
 				tp.startPosition = firstToken.ptr;
 				tp.length = prevToken.ptr + prevToken.len - tp.startPosition;
@@ -2173,9 +2193,12 @@ public class Parser extends Lexer {
 					nextToken();
 					if (token.value == TOKrbracket) {
 						subType = t;
-						t = new TypeDArray(t); // []
-						t.startPosition = subType.startPosition;
-						t.length = token.ptr + token.len - t.startPosition;
+						
+						DynamicArrayType dynamicArrayType = new DynamicArrayType(ast);
+						dynamicArrayType.setComponentType(t);
+						dynamicArrayType.setSourceRange(t.getStartPosition(), token.ptr + token.len - t.getStartPosition());
+						t = dynamicArrayType;
+						
 						nextToken();
 					} else if (isDeclaration(token, 0, TOKrbracket, null)) { // It's
 																				// an
@@ -2188,9 +2211,13 @@ public class Parser extends Lexer {
 						// printf("it's an associative array\n");
 						index = parseBasicType();
 						index = parseDeclarator(index, null); // [ type ]
-						t = new TypeAArray(t, index);
-						t.startPosition = subType.startPosition;
-						t.length = token.ptr + token.len - t.startPosition;
+						
+						AssociativeArrayType associativeArrayType = new AssociativeArrayType(ast);
+					    associativeArrayType.setComponentType(t);
+					    associativeArrayType.setKeyType(index);
+					    associativeArrayType.setSourceRange(subType.getStartPosition(), token.ptr + token.len - subType.getStartPosition());
+						t = associativeArrayType;
+						
 						check(TOKrbracket);
 					} else {
 						subType = t;
@@ -2205,7 +2232,10 @@ public class Parser extends Lexer {
 							e2 = parseExpression(); // [ exp .. exp ]
 							t = new TypeSlice(t, e, e2);
 						} else {
-							t = new TypeSArray(t, e);
+							StaticArrayType staticArrayType = new StaticArrayType(ast);
+							staticArrayType.setComponentType(t);
+							staticArrayType.setSize(e);
+							t = staticArrayType;
 						}
 						t.startPosition = subType.startPosition;
 						t.length = token.ptr + token.len - t.startPosition;
@@ -2222,8 +2252,12 @@ public class Parser extends Lexer {
 					ts = t;
 					while (token.value == TOKlbracket) {
 						nextToken();
-						if (token.value == TOKrbracket) {
-							ta = new TypeDArray(t); // []
+						if (token.value == TOKrbracket) {// []
+							
+							DynamicArrayType dynamicArrayType = new DynamicArrayType(ast);
+							dynamicArrayType.setComponentType(t);
+							ta = dynamicArrayType;
+							
 							nextToken();
 						} else if (isDeclaration(token, 0, TOKrbracket, null)) { // It's
 																					// an
@@ -2236,12 +2270,20 @@ public class Parser extends Lexer {
 							index = parseBasicType();
 							index = parseDeclarator(index, null); // [ type ]
 							check(TOKrbracket);
-							ta = new TypeAArray(t, index);
+							
+							AssociativeArrayType associativeArrayType = new AssociativeArrayType(ast);
+						    associativeArrayType.setComponentType(t);
+						    associativeArrayType.setKeyType(index);
+							
+							ta = associativeArrayType;
 						} else {
 							// printf("it's [expression]\n");
 							Expression e = parseExpression(); // [ expression
 																// ]
-							ta = new TypeSArray(t, e);
+							StaticArrayType staticArrayType = new StaticArrayType(ast);
+							staticArrayType.setComponentType(t);
+							staticArrayType.setSize(e);
+							ta = staticArrayType;
 							check(TOKrbracket);
 						}
 
@@ -2343,9 +2385,13 @@ public class Parser extends Lexer {
 		    case TOKlbracket:
 		    {	// This is the old C-style post [] syntax.
 			nextToken();
-			if (token.value == TOKrbracket)
+			if (token.value == TOKrbracket) // []
 			{
-			    ta = new TypeDArray(t);			// []
+				DynamicArrayType dynamicArrayType = new DynamicArrayType(ast);
+				dynamicArrayType.setComponentType(t);
+				dynamicArrayType.setSourceRange(t.getStartPosition(), token.ptr + token.len - t.getStartPosition());
+			    ta = dynamicArrayType;
+			    
 			    nextToken();
 			}
 			else if (isDeclaration(token, 0, TOKrbracket, null))
@@ -2356,13 +2402,22 @@ public class Parser extends Lexer {
 			    index = parseBasicType();
 			    index = parseDeclarator(index, null, null, identStart);	// [ type ]
 			    check(TOKrbracket);
-			    ta = new TypeAArray(t, index);
+			    
+			    AssociativeArrayType associativeArrayType = new AssociativeArrayType(ast);
+			    associativeArrayType.setComponentType(t);
+			    associativeArrayType.setKeyType(index);
+			    ta = associativeArrayType;
 			}
 			else
 			{
 			    //printf("it's [expression]\n");
 			    Expression e = parseExpression();		// [ expression ]
-			    ta = new TypeSArray(t, e);
+			    
+			    StaticArrayType staticArrayType = new StaticArrayType(ast);
+				staticArrayType.setComponentType(t);
+				staticArrayType.setSize(e);
+			    
+			    ta = staticArrayType;
 			    ta.startPosition = t.startPosition;
 			    ta.length = token.ptr + token.len - ta.startPosition;
 			    check(TOKrbracket);
@@ -2574,7 +2629,12 @@ public class Parser extends Lexer {
 					init = parseInitializer();
 				}
 				if (tok == TOKtypedef) {
-					TypedefDeclaration td = new TypedefDeclaration(ident, t, init);
+					TypedefDeclaration td = new TypedefDeclaration(ast);
+					if (ident != null) {
+						td.setName(newSimpleNameForIdentifier(ident));
+					}
+					td.setType(t);
+					td.setInitializer(init);
 					td.startPosition = nextTypdefOrAliasStart;
 					v = td;
 				} else {
@@ -5947,24 +6007,32 @@ public class Parser extends Lexer {
 		t = parseBasicType();
 		t = parseBasicType2(t);
 		if (t.ty == Taarray) {
-			DmdType index = ((TypeAArray) t).index;
+			DmdType index = (DmdType) ((AssociativeArrayType) t).getKeyType();
 			
 			Expression e2 = index.toExpression();
 			if (e2 != null) {
 				arguments = new ArrayList<Expression>();
 				arguments.add(e2);
-				t = new TypeDArray(t.next);
+				
+				DynamicArrayType dynamicArrayType = new DynamicArrayType(ast);
+				dynamicArrayType.setComponentType(t.next);
+				
+				t = dynamicArrayType;
 			} else {
 				problem("Need size of rightmost array", IProblem.SEVERITY_ERROR, IProblem.NEED_SIZE_OF_RIGHTMOST_ARRAY, index.startPosition, index.length);
 				return new NullLiteral();
 			}
 		} else if (t.ty == Tsarray) {
-			TypeSArray tsa = (TypeSArray) t;
-			Expression e2 = tsa.dim;
+			StaticArrayType tsa = (StaticArrayType) t;
+			Expression e2 = tsa.getSize();
 
 			arguments = new ArrayList<Expression>();
 			arguments.add(e2);
-			t = new TypeDArray(t.next);
+			
+			DynamicArrayType dynamicArrayType = new DynamicArrayType(ast);
+			dynamicArrayType.setComponentType(t.next);
+			
+			t = dynamicArrayType;
 		} else if (token.value == TOKlparen) {
 			arguments = parseArguments();
 		}

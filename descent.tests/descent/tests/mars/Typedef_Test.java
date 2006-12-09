@@ -20,7 +20,7 @@ public class Typedef_Test extends Parser_Test {
 		assertPosition(t, 1, 16);
 		
 		assertEquals("int", t.getType().toString());
-		assertEquals("Bla", t.getName().toString());
+		assertEquals("Bla", t.getName().getIdentifier());
 		assertPosition(t.getName(), 13, 3);
 		
 		assertVisitor(t, 3);
@@ -37,7 +37,7 @@ public class Typedef_Test extends Parser_Test {
 		assertPosition(t, 1, 20);
 		
 		assertEquals("int", t.getType().toString());
-		assertEquals("Bla", t.getName().toString());
+		assertEquals("Bla", t.getName().getIdentifier());
 		assertPosition(t.getName(), 13, 3);
 		
 		assertEquals(IInitializer.EXPRESSION_INITIALIZER, t.getInitializer().getNodeType0());
@@ -57,7 +57,7 @@ public class Typedef_Test extends Parser_Test {
 		assertPosition(t, 1, 15);
 		
 		assertEquals("int", t.getType().toString());
-		assertEquals("Bla", t.getName().toString());
+		assertEquals("Bla", t.getName().getIdentifier());
 		assertPosition(t.getName(), 13, 3);
 		
 		assertVisitor(t, 3);
@@ -66,7 +66,7 @@ public class Typedef_Test extends Parser_Test {
 		assertPosition(t, 18, 4);
 		
 		assertEquals("int", t.getType().toString());
-		assertEquals("Ble", t.getName().toString());
+		assertEquals("Ble", t.getName().getIdentifier());
 		assertPosition(t.getName(), 18, 3);
 		
 		assertVisitor(t, 3);

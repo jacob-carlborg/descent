@@ -548,7 +548,7 @@ s.append('(');
 			IStaticArrayType array = (IStaticArrayType) type;
 			appendType(s, array.getComponentType());
 			s.append('[');
-			s.append(array.getDimension().toString());
+			s.append(array.getSize().toString());
 			s.append(']');
 			break;
 		}
