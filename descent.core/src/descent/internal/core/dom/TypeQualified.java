@@ -10,6 +10,11 @@ public abstract class TypeQualified extends DmdType {
 	public List<Identifier> idents;
 	public QualifiedNameBak qName;
 	
+	public TypeQualified(AST ast) {
+		super(ast);
+		this.idents = new ArrayList<Identifier>();
+	}
+	
 	public TypeQualified(TY ty) {
 		super(ty, null);
 		this.idents = new ArrayList<Identifier>();

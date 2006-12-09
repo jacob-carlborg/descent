@@ -1747,7 +1747,7 @@ public class Parser extends Lexer {
 	private Declaration parseMixin() {
 		TemplateMixin tm;
 		Identifier id = null;
-		TypeTypeof tqual;
+		TypeofType tqual;
 		List<IElement> tiargs;
 		List<Identifier> idents;
 		
@@ -1770,7 +1770,10 @@ public class Parser extends Lexer {
 				check(TOKlparen);
 				exp = parseExpression();
 				check(TOKrparen);
-				tqual = new TypeTypeof(exp);
+				
+				TypeofType typeofType = new TypeofType(ast);
+				typeofType.setExpression(exp);
+				tqual = typeofType;
 				check(TOKdot);
 			}
 			if (token.value != TOKidentifier) {
@@ -2116,7 +2119,10 @@ public class Parser extends Lexer {
 			check(TOKlparen);
 			exp = parseExpression();
 			check(TOKrparen);
-			tid = new TypeTypeof(exp);
+			
+			TypeofType typeofType = new TypeofType(ast);
+			typeofType.setExpression(exp);
+			tid = typeofType;
 			tid.startPosition = start;
 			
 			// goto Lident2;
@@ -5133,7 +5139,11 @@ public class Parser extends Lexer {
 		    check(TOKlparen);
 		    exp = parseExpression();
 		    check(TOKrparen);
-		    t = new TypeTypeof(exp);
+		    
+		    TypeofType typeofType = new TypeofType(ast);
+			typeofType.setExpression(exp);
+			t = typeofType;
+			
 		    if (token.value == TOKdot) {
 		    	// goto L1;
 		    	check(TOKdot, t.toString());
