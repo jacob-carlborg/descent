@@ -302,9 +302,4 @@ public class AliasDeclaration extends Declaration implements IAliasDeclaration {
 	;
 	}
 
-	public AliasDeclaration(SimpleName name, DmdType type) {
-		this.name = name;
-		this.type = type;
-	}
-
 }

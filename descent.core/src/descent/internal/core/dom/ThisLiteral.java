@@ -113,9 +113,6 @@ public class ThisLiteral extends Expression implements ISuperExpression {
 	}
 
 	// TODO Descent remove
-	public ThisLiteral() {
-	}
-	
 	@Override
 	public String toString() {
 		return "this";

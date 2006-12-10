@@ -251,10 +251,4 @@ public class WithStatement extends Statement implements IWithStatement {
 	;
 	}
 
-	// TODO Descent remove
-	public WithStatement(Expression exp, Statement body) {
-		this.expression = exp;
-		this.body = body;
-	}
-
 }

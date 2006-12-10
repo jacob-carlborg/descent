@@ -112,13 +112,4 @@ public class DollarLiteral extends Expression implements IDollarExpression {
 	;
 	}
 
-	// TODO Descent remove
-	public DollarLiteral() {
-	}
-	
-	@Override
-	public String toString() {
-		return "$";
-	}
-
 }

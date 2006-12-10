@@ -187,10 +187,5 @@ public class DefaultStatement extends Statement implements IDefaultStatement {
 			+ (this.body == null ? 0 : getBody().treeSize())
 	;
 	}
-	
-	// TODO Descent remove
-	public DefaultStatement(Statement body) {
-		this.body = body;
-	}
 
 }

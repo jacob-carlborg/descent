@@ -52,11 +52,6 @@ public abstract class ArrayType extends DmdType implements IArrayType {
 		return new ChildPropertyDescriptor(nodeClass, "componentType", Name.class, MANDATORY, CYCLE_RISK); //$NON-NLS-1$
 	}
 	
-	// TODO descent remove
-	public ArrayType(TY ty, DmdType next) {
-		super(ty, next);
-	}
-	
 	/**
 	 * Creates a new AST node for an abstract array type.
 	 * <p>

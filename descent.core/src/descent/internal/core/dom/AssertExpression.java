@@ -237,11 +237,5 @@ public class AssertExpression extends Expression implements IAssertExpression {
 			+ (this.message == null ? 0 : getMessage().treeSize())
 	;
 	}
-
-	// TODO Descent remove
-	public AssertExpression(Expression e, Expression msg) {
-		this.expression = e;
-		this.message = msg;
-	}
 	
 }

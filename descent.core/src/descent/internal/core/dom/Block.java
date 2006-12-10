@@ -156,12 +156,4 @@ public class Block extends Statement implements ICompoundStatement {
 	;
 	}
 
-	// TODO Descent remove
-	public Block(List<Statement> as) {
-		for(Statement s : as) {
-			if (s == null) continue;
-			this.statements.add(s);
-		}
-	}
-
 }

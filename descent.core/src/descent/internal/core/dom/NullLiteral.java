@@ -112,10 +112,6 @@ public class NullLiteral extends Expression implements INullExpression {
 			memSize()
 	;
 	}
-
-	// TODO Descent remove
-	public NullLiteral() {
-	}
 	
 	@Override
 	public String toString() {

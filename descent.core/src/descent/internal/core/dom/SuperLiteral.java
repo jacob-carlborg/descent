@@ -112,10 +112,7 @@ public class SuperLiteral extends Expression implements ISuperExpression {
 	;
 	}
 
-	// TODO Descent remove
-	public SuperLiteral() {
-	}
-	
+	// TODO Descent remove	
 	@Override
 	public String toString() {
 		return "super";

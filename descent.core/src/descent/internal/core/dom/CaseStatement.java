@@ -250,11 +250,5 @@ public class CaseStatement extends Statement implements ICaseStatement {
 			+ (this.body == null ? 0 : getBody().treeSize())
 	;
 	}
-	
-	// TODO Descent remove
-	public CaseStatement(Expression expr, Statement body) {
-		this.expression = expr;
-		this.body = body;
-	}
 
 }

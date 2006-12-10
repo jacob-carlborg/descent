@@ -238,10 +238,4 @@ public class StaticAssert extends Declaration implements IStaticAssertDeclaratio
 	;
 	}
 
-	// TODO Descent remove
-	public StaticAssert(Expression e, Expression msg) {
-		this.expression = e;
-		this.message = msg;
-	}
-
 }

@@ -175,15 +175,5 @@ public class BooleanLiteral extends Expression implements IBooleanLiteral {
 		return memSize();
 	}
 	
-	// TODO Descent remove
-	
-	public BooleanLiteral(boolean b) {
-		this.value = b;
-	}
-	
-	@Override
-	public String toString() {
-		return booleanValue() ? "true" : "false";
-	}
 }
 

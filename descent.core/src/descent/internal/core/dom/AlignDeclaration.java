@@ -250,11 +250,4 @@ public class AlignDeclaration extends Declaration implements IAlignDeclaration {
 	;
 	}
 
-	public AlignDeclaration(int align, List<Declaration> a) {
-		this.align = align;
-		if (a != null) {
-			this.declarations.addAll(a);
-		}
-	}
-
 }

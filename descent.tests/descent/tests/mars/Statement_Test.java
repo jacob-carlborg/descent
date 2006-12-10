@@ -40,6 +40,7 @@ import descent.core.dom.IWhileStatement;
 import descent.core.dom.IWithStatement;
 import descent.internal.core.dom.AggregateDeclaration;
 import descent.internal.core.dom.Argument;
+import descent.internal.core.dom.BooleanLiteral;
 import descent.internal.core.dom.ParserFacade;
 import descent.internal.core.dom.ScopeStatement;
 import descent.internal.core.dom.SimpleName;
@@ -134,7 +135,7 @@ public class Statement_Test extends Parser_Test {
 		assertEquals(IStatement.WHILE_STATEMENT, stm.getNodeType0());
 		assertPosition(stm, 1, 15);
 		
-		assertEquals("true", stm.getExpression().toString());
+		assertTrue(((BooleanLiteral) stm.getExpression()).booleanValue());
 		
 		assertPosition(stm.getBody(), 13, 3);
 		
@@ -148,7 +149,7 @@ public class Statement_Test extends Parser_Test {
 		assertEquals(IStatement.DO_STATEMENT, stm.getNodeType0());
 		assertPosition(stm, 1, 18);
 		
-		assertEquals("true", stm.getExpression().toString());
+		assertTrue(((BooleanLiteral) stm.getExpression()).booleanValue());
 		
 		assertPosition(stm.getBody(), 4, 3);
 		
@@ -176,7 +177,7 @@ public class Statement_Test extends Parser_Test {
 		assertPosition(stm, 1, 23);
 		
 		assertEquals("1", stm.getStaticAssert().getExpression().toString());
-		assertEquals("true", stm.getStaticAssert().getMessage().toString());
+		assertTrue(((BooleanLiteral) stm.getStaticAssert().getMessage()).booleanValue());
 	}
 	
 	public void testStaticAssertDeclaration() {
@@ -190,7 +191,7 @@ public class Statement_Test extends Parser_Test {
 		assertPosition(stm, 1, 23);
 		
 		assertEquals("1", stm.getExpression().toString());
-		assertEquals("true", stm.getMessage().toString());
+		assertTrue(((BooleanLiteral) stm.getMessage()).booleanValue());
 		
 		assertVisitor(stm, 3);
 	}
@@ -204,7 +205,7 @@ public class Statement_Test extends Parser_Test {
 		
 		assertPosition(stm.getBody(), 12, 3);
 		
-		assertEquals("true", stm.getExpression().toString());
+		assertTrue(((BooleanLiteral) stm.getExpression()).booleanValue());
 		
 		assertVisitor(stm, 3);
 	}
@@ -504,7 +505,7 @@ public class Statement_Test extends Parser_Test {
 		assertEquals(IConditionalStatement.DEBUG_STATEMENT, stm.getNodeType0());
 		assertPosition(stm, 1, s.length() - 1);
 		
-		assertEquals("1", stm.getVersion().toString());
+		assertEquals("1", stm.getVersion().getValue());
 	}
 	
 	public void testVersion() {
@@ -514,7 +515,7 @@ public class Statement_Test extends Parser_Test {
 		assertEquals(IConditionalStatement.VERSION_STATEMENT, stm.getNodeType0());
 		assertPosition(stm, 1, s.length() - 1);
 		
-		assertEquals("release", stm.getVersion().toString());
+		assertEquals("release", stm.getVersion().getValue());
 	}
 	
 	public void testStaticExtern() {

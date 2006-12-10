@@ -38,5 +38,9 @@ public class Identifier extends ASTNode implements ISimpleName {
 	public String toString() {
 		return string;
 	}
+	
+	public String getFullyQualifiedName() {
+		return string;
+	}
 
 }

@@ -249,11 +249,5 @@ public class LabelStatement extends Statement implements ILabelStatement {
 			+ (this.body == null ? 0 : getBody().treeSize())
 	;
 	}
-	
-	// TODO Descent remove
-	public LabelStatement(SimpleName label, Statement body) {
-		this.label = label;
-		this.body = body;
-	}
 
 }

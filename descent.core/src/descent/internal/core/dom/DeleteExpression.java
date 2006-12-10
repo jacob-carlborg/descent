@@ -188,9 +188,4 @@ public class DeleteExpression extends Expression implements IDeleteExpression {
 	;
 	}
 
-	// TODO Descent remove
-	public DeleteExpression(Expression e) {
-		this.expression = e;
-	}
-
 }

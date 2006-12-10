@@ -7,6 +7,7 @@ import descent.core.dom.IElement;
 import descent.core.dom.IIftypeDeclaration;
 import descent.core.dom.IStaticIfDeclaration;
 import descent.core.dom.IVersionDeclaration;
+import descent.internal.core.dom.BooleanLiteral;
 import descent.internal.core.dom.DebugAssignment;
 import descent.internal.core.dom.IftypeDeclaration;
 import descent.internal.core.dom.ParserFacade;
@@ -23,7 +24,7 @@ public class Condition_Test extends Parser_Test {
 		IVersionDeclaration version = (IVersionDeclaration) declDefs[0];
 		assertPosition(version, 1, 18);
 		
-		assertEquals("linux", version.getVersion().toString());
+		assertEquals("linux", version.getVersion().getValue());
 		assertPosition(version.getVersion(), 9, 5);
 	}
 	
@@ -36,7 +37,7 @@ public class Condition_Test extends Parser_Test {
 		IVersionDeclaration version = (IVersionDeclaration) declDefs[0];
 		assertPosition(version, 1, 14);
 		
-		assertEquals("1", version.getVersion().toString());
+		assertEquals("1", version.getVersion().getValue());
 		assertPosition(version.getVersion(), 9, 1);
 	}
 	
@@ -60,7 +61,7 @@ public class Condition_Test extends Parser_Test {
 		assertEquals(IConditionalDeclaration.DEBUG_DECLARATION, d.getNodeType0());
 		assertPosition(d, 1, s.length() - 1);
 		
-		assertEquals("bla", d.getVersion().toString());
+		assertEquals("bla", d.getVersion().getValue());
 		assertPosition(d.getVersion(), 7, 3);
 	}
 	
@@ -74,7 +75,7 @@ public class Condition_Test extends Parser_Test {
 		assertEquals(IConditionalDeclaration.STATIC_IF_DECLARATION, d.getNodeType0());
 		assertPosition(d, 1, s.length() - 1);
 		
-		assertEquals("true", d.getExpression().toString());
+		assertTrue(((BooleanLiteral) d.getExpression()).booleanValue());
 	}
 	
 	public void testVersionAssign() {

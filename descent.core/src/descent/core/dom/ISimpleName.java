@@ -6,5 +6,7 @@ package descent.core.dom;
 public interface ISimpleName extends IName {
 	
 	String getIdentifier();
+	
+	String getFullyQualifiedName();
 
 }

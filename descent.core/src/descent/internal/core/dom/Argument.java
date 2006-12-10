@@ -12,7 +12,7 @@ import descent.core.dom.IArgument;
  *
  * <pre>
  * Argument:
- *    [ | <b>in</b> | <b>out</b> | <b>inout</b> | <b>lazy</b> ] Type SimpleName [ <b>=</b> Expression ]
+ *    [ | <b>in</b> | <b>out</b> | <b>inout</b> | <b>lazy</b> ] [ Type ] [ SimpleName ] [ <b>=</b> Expression ]
  * </pre>
  */
 public class Argument extends ASTNode implements IArgument {
@@ -42,13 +42,13 @@ public class Argument extends ASTNode implements IArgument {
 	 * The "type" structural property of this node type.
 	 */
 	public static final ChildPropertyDescriptor TYPE_PROPERTY =
-		new ChildPropertyDescriptor(Argument.class, "type", DmdType.class, MANDATORY, CYCLE_RISK); //$NON-NLS-1$
+		new ChildPropertyDescriptor(Argument.class, "type", Type.class, OPTIONAL, CYCLE_RISK); //$NON-NLS-1$
 
 	/**
 	 * The "name" structural property of this node type.
 	 */
 	public static final ChildPropertyDescriptor NAME_PROPERTY =
-		new ChildPropertyDescriptor(Argument.class, "name", SimpleName.class, MANDATORY, NO_CYCLE_RISK); //$NON-NLS-1$
+		new ChildPropertyDescriptor(Argument.class, "name", SimpleName.class, OPTIONAL, NO_CYCLE_RISK); //$NON-NLS-1$
 
 	/**
 	 * The "defaultValue" structural property of this node type.
@@ -91,22 +91,22 @@ public class Argument extends ASTNode implements IArgument {
 	/**
 	 * The passageMode.
 	 */
-	private PassageMode passageMode = null;
+	private PassageMode passageMode;
 
 	/**
 	 * The type.
 	 */
-	private DmdType type = null;
+	private Type type;
 
 	/**
 	 * The name.
 	 */
-	private SimpleName name = null;
+	private SimpleName name;
 
 	/**
 	 * The defaultValue.
 	 */
-	private Expression defaultValue = null;
+	private Expression defaultValue;
 
 
 	/**
@@ -153,7 +153,7 @@ public class Argument extends ASTNode implements IArgument {
 			if (get) {
 				return getType();
 			} else {
-				setType((DmdType) child);
+				setType((Type) child);
 				return null;
 			}
 		}
@@ -192,8 +192,8 @@ public class Argument extends ASTNode implements IArgument {
 		Argument result = new Argument(target);
 		result.setSourceRange(this.getStartPosition(), this.getLength());
 		result.setPassageMode(getPassageMode());
-		result.setType((DmdType) getType().clone(target));
-		result.setName((SimpleName) getName().clone(target));
+	result.setType((Type) ASTNode.copySubtree(target, getType()));
+	result.setName((SimpleName) ASTNode.copySubtree(target, getName()));
 	result.setDefaultValue((Expression) ASTNode.copySubtree(target, getDefaultValue()));
 		return result;
 	}
@@ -249,17 +249,7 @@ public class Argument extends ASTNode implements IArgument {
 	 * 
 	 * @return the type
 	 */ 
-	public DmdType getType() {
-		if (this.type == null) {
-			// lazy init must be thread-safe for readers
-			synchronized (this) {
-				if (this.type == null) {
-					preLazyInit();
-					this.type = new PrimitiveType(ast);
-					postLazyInit(this.type, TYPE_PROPERTY);
-				}
-			}
-		}
+	public Type getType() {
 		return this.type;
 	}
 
@@ -274,10 +264,7 @@ public class Argument extends ASTNode implements IArgument {
 	 * <li>a cycle in would be created</li>
 	 * </ul>
 	 */ 
-	public void setType(DmdType type) {
-		if (type == null) {
-			throw new IllegalArgumentException();
-		}
+	public void setType(Type type) {
 		ASTNode oldChild = this.type;
 		preReplaceChild(oldChild, type, TYPE_PROPERTY);
 		this.type = type;
@@ -290,16 +277,6 @@ public class Argument extends ASTNode implements IArgument {
 	 * @return the name
 	 */ 
 	public SimpleName getName() {
-		if (this.name == null) {
-			// lazy init must be thread-safe for readers
-			synchronized (this) {
-				if (this.name == null) {
-					preLazyInit();
-					this.name = new SimpleName(this.ast);
-					postLazyInit(this.name, NAME_PROPERTY);
-				}
-			}
-		}
 		return this.name;
 	}
 
@@ -315,9 +292,6 @@ public class Argument extends ASTNode implements IArgument {
 	 * </ul>
 	 */ 
 	public void setName(SimpleName name) {
-		if (name == null) {
-			throw new IllegalArgumentException();
-		}
 		ASTNode oldChild = this.name;
 		preReplaceChild(oldChild, name, NAME_PROPERTY);
 		this.name = name;
@@ -368,15 +342,6 @@ public class Argument extends ASTNode implements IArgument {
 			+ (this.name == null ? 0 : getName().treeSize())
 			+ (this.defaultValue == null ? 0 : getDefaultValue().treeSize())
 	;
-	}
-
-	// TODO Descent remove
-	public Argument(Argument.PassageMode passageMode, DmdType type, SimpleName name, Expression defaultValue) {
-		super(AST.newAST(AST.JLS3));
-		this.name = name;
-		this.type = type;
-		this.passageMode = passageMode;
-		this.defaultValue = defaultValue;
 	}
 
 }

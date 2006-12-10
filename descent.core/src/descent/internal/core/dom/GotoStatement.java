@@ -188,9 +188,4 @@ public class GotoStatement extends Statement implements IGotoStatement {
 	;
 	}
 
-	// TODO Descent remove
-	public GotoStatement(SimpleName optionalLabel) {
-		this.label = optionalLabel;
-	}
-
 }

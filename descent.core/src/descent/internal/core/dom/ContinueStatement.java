@@ -175,9 +175,4 @@ public class ContinueStatement extends Statement implements IContinueStatement {
 	;
 	}
 
-	// TODO Descent remove
-	public ContinueStatement(SimpleName label) {
-		this.label = label;
-	}
-
 }

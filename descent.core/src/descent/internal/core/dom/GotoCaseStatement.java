@@ -188,9 +188,4 @@ public class GotoCaseStatement extends Statement implements IGotoCaseStatement {
 	;
 	}
 
-	// TODO Descent remove
-	public GotoCaseStatement(Expression expr) {
-		this.label = expr;
-	}
-
 }

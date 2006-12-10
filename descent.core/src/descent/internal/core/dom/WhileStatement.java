@@ -250,11 +250,5 @@ public class WhileStatement extends Statement implements IWhileStatement {
 			+ (this.body == null ? 0 : getBody().treeSize())
 	;
 	}
-	
-	// TODO Descent remove
-	public WhileStatement(Expression expr, Statement body) {
-		this.expression = expr;
-		this.body = body;
-	}
 
 }

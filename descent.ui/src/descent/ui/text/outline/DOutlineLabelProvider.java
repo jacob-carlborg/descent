@@ -124,7 +124,7 @@ public class DOutlineLabelProvider extends LabelProvider {
 		
 		switch(e.getNodeType0()) {
 		case IElement.MODULE_DECLARATION:
-			return ((IModuleDeclaration) element).getName().toString();
+			return ((IModuleDeclaration) element).getName().getFullyQualifiedName();
 		case IElement.IMPORT_DECLARATION:
 			IImportDeclaration importDeclaration = (IImportDeclaration) element;
 			return getImportText(importDeclaration);
@@ -132,7 +132,7 @@ public class DOutlineLabelProvider extends LabelProvider {
 			IAggregateDeclaration aggregateDeclaration = (IAggregateDeclaration) element;
 			s = new StringBuilder();
 			name = aggregateDeclaration.getName();
-			if (name != null) s.append(name.toString());
+			if (name != null) s.append(name.getFullyQualifiedName());
 			if (!aggregateDeclaration.templateParameters().isEmpty()) {
 				appendTemplateParameters(s, aggregateDeclaration.templateParameters());
 			}
@@ -142,7 +142,7 @@ public class DOutlineLabelProvider extends LabelProvider {
 			s = new StringBuilder();
 			switch(f.getKind()) {
 			case FUNCTION:
-				s.append(f.getName() == null ? "" : f.getName().toString());
+				s.append(f.getName() == null ? "" : f.getName().getFullyQualifiedName());
 				break;
 			case CONSTRUCTOR:
 			case STATIC_CONSTRUCTOR:
@@ -166,9 +166,9 @@ public class DOutlineLabelProvider extends LabelProvider {
 			return s.toString();
 		case IElement.ENUM_DECLARATION:
 			name = ((IEnumDeclaration) element).getName();
-			return name == null ? "" : name.toString();
+			return name == null ? "" : name.getFullyQualifiedName();
 		case IElement.ENUM_MEMBER:
-			return ((IEnumMember) element).getName().toString();
+			return ((IEnumMember) element).getName().getFullyQualifiedName();
 		case IElement.INVARIANT_DECLARATION:
 			return "invariant";
 		case IElement.UNIT_TEST_DECLARATION:
@@ -177,7 +177,7 @@ public class DOutlineLabelProvider extends LabelProvider {
 			IVariableDeclaration var = (IVariableDeclaration) element;
 			name = var.getName();
 			s = new StringBuilder();
-			if (name != null) s.append(name.toString());
+			if (name != null) s.append(name.getFullyQualifiedName());
 			if (var.getType() != null) {
 				s.append(" : ");
 				appendType(s, var.getType());
@@ -187,7 +187,7 @@ public class DOutlineLabelProvider extends LabelProvider {
 			ITypedefDeclaration td = (ITypedefDeclaration) element;
 			name = td.getName();
 			s = new StringBuilder();
-			if (name != null) s.append(name.toString());
+			if (name != null) s.append(name.getFullyQualifiedName());
 			s.append(" : ");
 			appendType(s, td.getType());
 			return s.toString();
@@ -195,7 +195,7 @@ public class DOutlineLabelProvider extends LabelProvider {
 			IAliasDeclaration al = (IAliasDeclaration) element;
 			name = al.getName();
 			s = new StringBuilder();
-			if (name != null) s.append(name.toString());
+			if (name != null) s.append(name.getFullyQualifiedName());
 			s.append(" : ");
 			appendType(s, al.getType());
 			return s.toString();
@@ -203,7 +203,7 @@ public class DOutlineLabelProvider extends LabelProvider {
 			ITemplateDeclaration t = (ITemplateDeclaration) element;
 			name = t.getName();
 			s = new StringBuilder();
-			if (name != null) s.append(name.toString());
+			if (name != null) s.append(name.getFullyQualifiedName());
 			appendTemplateParameters(s, t.templateParameters());
 			return s.toString();
 		case IElement.LINK_DECLARATION:
@@ -230,7 +230,7 @@ public class DOutlineLabelProvider extends LabelProvider {
 			return "version = " + va.getVersion().getValue();
 		case IElement.PRAGMA_DECLARATION:
 			IPragmaDeclaration pd = (IPragmaDeclaration) element;
-			return pd.getName() == null ? "" : pd.getName().toString();
+			return pd.getName() == null ? "" : pd.getName().getFullyQualifiedName();
 		case IElement.MIXIN_DECLARATION:
 			IMixinDeclaration mix = (IMixinDeclaration) element;
 			s = new StringBuilder();
@@ -372,21 +372,21 @@ public class DOutlineLabelProvider extends LabelProvider {
 		StringBuilder builder = new StringBuilder();
 		for(IImport imp : impDecl.imports()) {
 			if (imp.getAlias() == null) {
-				builder.append(imp.getName());
+				builder.append(imp.getName().getFullyQualifiedName());
 			} else {
-				builder.append(imp.getAlias());
+				builder.append(imp.getAlias().getFullyQualifiedName());
 				builder.append(" = ");
-				builder.append(imp.getName());
+				builder.append(imp.getName().getFullyQualifiedName());
 			}
 			if (imp.selectiveImports().size() > 0) {
 				builder.append(": ");
 				for(ISelectiveImport sel : imp.selectiveImports()) {
 					if (sel.getAlias() == null) {
-						builder.append(sel.getName());
+						builder.append(sel.getName().getFullyQualifiedName());
 					} else {
 						builder.append(sel.getAlias());
 						builder.append(" = ");
-						builder.append(sel.getName());
+						builder.append(sel.getName().getFullyQualifiedName());
 					}
 					builder.append(", ");
 				}
@@ -400,48 +400,6 @@ public class DOutlineLabelProvider extends LabelProvider {
 		}
 		
 		return builder.toString();
-	}
-	
-	// TODO remove duplicated code
-	private void appendTemplateParameters(StringBuilder s, ITemplateParameter[] templateParameters) {
-s.append('(');
-		
-		int i = 0;
-		for(ITemplateParameter p : templateParameters) {
-			switch(p.getNodeType0()) {
-			case ITemplateParameter.TYPE_TEMPLATE_PARAMETER:
-				ITypeTemplateParameter ttp = (ITypeTemplateParameter) p;
-				s.append(ttp.getName().toString());
-				if (ttp.getSpecificType() != null) {
-					s.append(" : ");
-					appendType(s, ttp.getSpecificType());
-				}
-				if (ttp.getDefaultType() != null) {
-					s.append(" = ");
-					appendType(s, ttp.getDefaultType());
-				}
-				break;
-			case ITemplateParameter.ALIAS_TEMPLATE_PARAMETER:
-				IAliasTemplateParameter tap = (IAliasTemplateParameter) p;
-				s.append("alias ");
-				s.append(tap.getName().toString());
-				if (tap.getSpecificType() != null) {
-					s.append(" : ");
-					appendType(s, tap.getSpecificType());
-				}
-				if (tap.getDefaultType() != null) {
-					s.append(" = ");
-					appendType(s, tap.getDefaultType());
-				}
-				break;
-			}
-			if (i != templateParameters.length - 1) {
-				s.append(", ");
-			}
-			i++;
-		}
-			
-		s.append(')');
 	}
 	
 	private void appendTemplateParameters(StringBuilder s, List<TemplateParameter> templateParameters) {

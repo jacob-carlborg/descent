@@ -175,9 +175,4 @@ public class BreakStatement extends Statement implements IBreakStatement {
 	;
 	}
 
-	// TODO Descent remove
-	public BreakStatement(SimpleName label) {
-		this.label = label;
-	}
-
 }

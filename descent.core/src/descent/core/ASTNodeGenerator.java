@@ -7,15 +7,15 @@ public class ASTNodeGenerator {
 	
 	public static void main(String[] args) {
 		
-		String description = "template declaration";
-		String clazz = toMethod(description);
-		String nodeType = toProperty(description);
+		String description = "argument";
+		String clazz = "Argument";
+		String nodeType = "ARGUMENT";
 
 		Member[] members = {
-				Member.simple("modifier flags", "int"),
-				Member.childMandatory("name", "SimpleName", NO_CYCLE_RISK, "SimpleName"),
-				Member.list("templateParameters", "TemplateParameter", NO_CYCLE_RISK),
-				Member.list("declarations", "Declaration", CYCLE_RISK),
+			Member.simpleMandatory("passage mode", "PassageMode", "PassageMode.IN"),
+			Member.child("type", "Type", CYCLE_RISK),
+			Member.child("name", "SimpleName", NO_CYCLE_RISK),
+			Member.child("default value", "Expression", CYCLE_RISK),
 		};
 		
 		StringBuilder sb = new StringBuilder();

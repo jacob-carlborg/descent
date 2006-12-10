@@ -300,33 +300,5 @@ public class Version extends ASTNode implements IElement {
 		return memSize();
 	}
 	
-	// TODO Descent remove
-	
-	public Version(Token token) {
-		super(AST.newAST(AST.JLS3));
-		this.value = token.ident.string;
-		this.startPosition = token.ptr;
-		this.length = token.len;
-	}
-	
-	public Version(Identifier id) {
-		super(AST.newAST(AST.JLS3));
-		if (id != null) {
-			this.value = id.string;
-			this.startPosition = id.startPosition;
-			this.length = id.length;
-		}
-	}
-	
-	@Override
-	public String toString() {
-		return value;
-	}
-	
-	// TODO Descent remove
-	Version() {
-		super(AST.newAST(AST.JLS3));
-	}
-	
 }
 

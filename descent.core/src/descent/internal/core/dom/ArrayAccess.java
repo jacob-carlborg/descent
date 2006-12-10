@@ -226,10 +226,4 @@ public class ArrayAccess extends Expression implements IArrayExpression {
 			+ (this.indexes.listSize());
 	}
 
-	// TODO Descent remove
-	public ArrayAccess(Expression array, List<Expression> indexes) {
-		this.array = array;
-		this.indexes.addAll(indexes);
-	}
-
 }

@@ -191,9 +191,4 @@ public class ExpressionStatement extends Statement implements IExpressionStateme
 	;
 	}
 
-	// TODO Descent remove
-	public ExpressionStatement(Expression exp) {
-		this.expression = exp;
-	}
-
 }

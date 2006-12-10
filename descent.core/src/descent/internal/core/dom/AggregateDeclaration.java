@@ -418,20 +418,5 @@ public class AggregateDeclaration extends Declaration implements IAggregateDecla
 			+ (this.docComments.listSize())
 	;
 	}
-	
-	public AggregateDeclaration(Kind kind, SimpleName name) {
-		super(AST.newAST(AST.JLS3));
-		this.kind = kind;
-		this.name = name;
-	}
-	
-	public AggregateDeclaration(Kind kind, SimpleName name, List<BaseClass> baseClasses) {
-		super(AST.newAST(AST.JLS3));
-		this.kind = kind;
-		this.name = name;
-		if (baseClasses != null) {
-			this.baseClasses.addAll(baseClasses);
-		}
-	}
 
 }
