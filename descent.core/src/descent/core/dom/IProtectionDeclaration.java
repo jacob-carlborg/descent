@@ -1,5 +1,9 @@
 package descent.core.dom;
 
+import java.util.List;
+
+import descent.internal.core.dom.Declaration;
+
 /**
  * A protection declaration:
  * 
@@ -16,7 +20,7 @@ public interface IProtectionDeclaration extends IDeclaration {
 	 * Returns the declaration definitions contained in this
 	 * declaration.
 	 */
-	IDeclaration[] getDeclarationDefinitions();
+	List<Declaration> declarations();
 	
 	/**
 	 * Returns the protection level.

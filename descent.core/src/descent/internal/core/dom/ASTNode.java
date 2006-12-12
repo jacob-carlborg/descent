@@ -500,9 +500,8 @@ public abstract class ASTNode implements IElement {
 		}
 		
 		this.ast = ast;
-		// TODO Descent uncomment
-		// setNodeType(getNodeType0());
-		// setFlags(ast.getDefaultNodeFlag());
+		setNodeType(getNodeType0());
+		setFlags(ast.getDefaultNodeFlag());
 		
 		// setFlags calls modifying();
 	}

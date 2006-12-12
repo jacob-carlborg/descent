@@ -7,7 +7,6 @@ import descent.core.dom.IFunctionDeclaration;
 import descent.internal.core.dom.Argument;
 import descent.internal.core.dom.FunctionDeclaration;
 import descent.internal.core.dom.ParserFacade;
-import descent.internal.core.dom.DmdType;
 import descent.internal.core.dom.PrimitiveType;
 
 public class Function_Test extends Parser_Test {

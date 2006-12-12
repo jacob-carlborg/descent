@@ -3,7 +3,6 @@ package descent.tests.mars;
 import descent.core.dom.IAggregateDeclaration;
 import descent.core.dom.ICompilationUnit;
 import descent.core.dom.IElement;
-import descent.core.dom.IImport;
 import descent.core.dom.IImportDeclaration;
 import descent.core.dom.IModifier;
 import descent.core.dom.IProtectionDeclaration;
@@ -88,7 +87,7 @@ public class Modifier_Test extends Parser_Test {
 			
 			IProtectionDeclaration prot = (IProtectionDeclaration) declDefs[0];
 			
-			IAggregateDeclaration agg = (IAggregateDeclaration) prot.getDeclarationDefinitions()[0];
+			IAggregateDeclaration agg = (IAggregateDeclaration) prot.declarations().get(0);
 			assertEquals(pair[1], agg.getModifierFlags());
 		}
 	}
@@ -109,7 +108,7 @@ public class Modifier_Test extends Parser_Test {
 			
 			IProtectionDeclaration prot = (IProtectionDeclaration) declDefs[0];
 			
-			IAggregateDeclaration agg = (IAggregateDeclaration) prot.getDeclarationDefinitions()[0];
+			IAggregateDeclaration agg = (IAggregateDeclaration) prot.declarations().get(0);
 			assertEquals(pair[1], agg.getModifierFlags());
 		}
 	}
@@ -123,11 +122,11 @@ public class Modifier_Test extends Parser_Test {
 		IAggregateDeclaration agg;
 		
 		prot = (IProtectionDeclaration) declDefs[0];
-		agg = (IAggregateDeclaration) prot.getDeclarationDefinitions()[0];
+		agg = (IAggregateDeclaration) prot.declarations().get(0);
 		assertEquals(IModifier.PUBLIC, agg.getModifierFlags());
 		
-		prot = (IProtectionDeclaration) prot.getDeclarationDefinitions()[1];
-		agg = (IAggregateDeclaration) prot.getDeclarationDefinitions()[0];
+		prot = (IProtectionDeclaration) prot.declarations().get(1);
+		agg = (IAggregateDeclaration) prot.declarations().get(0);
 		assertEquals(IModifier.PRIVATE, agg.getModifierFlags());
 	}
 	

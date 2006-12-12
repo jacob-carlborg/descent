@@ -1,5 +1,10 @@
 package descent.core.dom;
 
+import java.util.List;
+
+import descent.internal.core.dom.Declaration;
+import descent.internal.core.dom.ExternDeclaration.Linkage;
+
 /**
  * A linkage declaration:
  * 
@@ -7,23 +12,17 @@ package descent.core.dom;
  * extern(linkage) { }
  * </pre>
  */
-public interface ILinkDeclaration extends IDeclaration {
-	
-	int LINKAGE_D = 1;
-	int LINKAGE_C = 2;
-	int LINKAGE_CPP = 3;
-	int LINKAGE_WINDOWS = 4;
-	int LINKAGE_PASCAL = 5;
+public interface IExternDeclaration extends IDeclaration {
 	
 	/**
 	 * Returns the linkage identifier. Check the constans defined
 	 * in this inteface.
 	 */
-	int getLinkage();
+	Linkage getLinkage();
 	
 	/**
 	 * Returns the declarations in this linkage.
 	 */
-	IDeclaration[] getDeclarationDefinitions();
+	List<Declaration> declarations();
 
 }

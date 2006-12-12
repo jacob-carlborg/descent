@@ -287,11 +287,5 @@ public class CatchClause extends ASTNode implements ICatchClause {
 			+ (this.body == null ? 0 : getBody().treeSize())
 	;
 	}
-
-	public CatchClause(DmdType type, SimpleName name, Statement body) {
-		this.type = type;
-		this.name = name;
-		this.body = body;
-	}
 	
 }

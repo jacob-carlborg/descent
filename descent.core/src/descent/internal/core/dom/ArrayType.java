@@ -15,6 +15,8 @@ import descent.core.dom.IArrayType;
  *    Type <b>[ ]</b>
  * StaticArrayType:
  *    Type <b>[</b> Expression <b>]</b>
+ * SliceType:
+ *    Type <b>[</b> Expression <b>..</b> Expression <b>]</b>
  * </pre>
  */
 public abstract class ArrayType extends DmdType implements IArrayType {

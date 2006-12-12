@@ -154,9 +154,9 @@ public class Type_Test extends Parser_Test {
 	public void testTypeSlice() {
 		ISliceType type = (ISliceType) getType("int[1 .. 2]");
 		assertPosition(type, 1, 11);
-		assertEquals("int", type.getInnerType().toString());
-		assertEquals("1", type.getFrom().toString());
-		assertEquals("2", type.getTo().toString());
+		assertEquals("int", type.getComponentType().toString());
+		assertEquals("1", type.getFromExpression().toString());
+		assertEquals("2", type.getToExpression().toString());
 	}
 	
 	private IType getType(String type) {

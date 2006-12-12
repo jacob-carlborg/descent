@@ -90,6 +90,7 @@ import descent.core.compiler.IProblem;
 import descent.core.dom.IBaseClass;
 import descent.core.dom.IElement;
 import descent.core.dom.IUnaryExpression;
+import descent.internal.core.dom.IsTypeSpecializationExpression.TypeSpecialization;
 
 public class Parser extends Lexer {
 	
@@ -448,9 +449,13 @@ public class Parser extends Lexer {
 					LINK linksave = linkage;
 					linkage = parseLinkage();
 					a = parseBlock();
-					s = new LinkDeclaration(linkage, a);
-					s.startPosition = saveToken.ptr;
-					s.length = prevToken.ptr + prevToken.len - s.startPosition;
+					
+					ExternDeclaration externDeclaration = new ExternDeclaration(ast);
+					externDeclaration.setLinkage(linkage.getLinkage());
+					externDeclaration.declarations().addAll(a);
+					externDeclaration.setSourceRange(saveToken.ptr, prevToken.ptr + prevToken.len - saveToken.ptr);
+					s = externDeclaration;
+					
 					linkage = linksave;
 					break;
 				}
@@ -470,13 +475,19 @@ public class Parser extends Lexer {
 						s = (ASTNode) a.get(0);
 						s.modifierFlags |= protection;
 					} else {
-						s = new ProtDeclaration(prot, a);
+						ProtectionDeclaration protectionDeclaration = new ProtectionDeclaration(ast);
+						protectionDeclaration.setModifierFlags(prot.getModifiers());
+						protectionDeclaration.declarations().addAll(a);
+						s = protectionDeclaration;
+						
 						for(IElement elem : a) {
 							((ASTNode) elem).modifierFlags |= protection;
 						}
 					}
 				} else {
-					s = new ProtDeclaration(prot, a);
+					ProtectionDeclaration protectionDeclaration = new ProtectionDeclaration(ast);
+					protectionDeclaration.setModifierFlags(prot.getModifiers());
+					s = protectionDeclaration;
 				}
 				s.startPosition = saveToken.ptr;
 				s.length = prevToken.ptr + prevToken.len - s.startPosition;
@@ -2267,7 +2278,12 @@ public class Parser extends Lexer {
 
 							nextToken();
 							e2 = parseExpression(); // [ exp .. exp ]
-							t = new TypeSlice(t, e, e2);
+							
+							SliceType sliceType = new SliceType(ast);
+							sliceType.setComponentType(t);
+							sliceType.setFromExpression(e);
+							sliceType.setToExpression(e2);
+							t = sliceType;
 						} else {
 							StaticArrayType staticArrayType = new StaticArrayType(ast);
 							staticArrayType.setComponentType(t);
@@ -2733,9 +2749,10 @@ public class Parser extends Lexer {
 				if (link == linkage) {
 					s = function;
 				} else {
-					List ax = new ArrayList();
-					ax.add(function);
-					s = new LinkDeclaration(link, ax);
+					ExternDeclaration externDeclaration = new ExternDeclaration(ast);
+					externDeclaration.setLinkage(link.getLinkage());
+					externDeclaration.declarations().add(function);
+					s = externDeclaration;
 				}
 				if (tpl != null) // it's a function template
 				{
@@ -4057,9 +4074,14 @@ public class Parser extends Lexer {
 					check(TOKrparen);
 				}
 				handler = parseStatement(0);
-				c = new CatchClause(t2, newSimpleNameForIdentifier(id), handler);
-				c.startPosition = firstToken.ptr;
-				c.length = prevToken.ptr + prevToken.len - c.startPosition;
+				
+				CatchClause catchClause = new CatchClause(ast);
+				catchClause.setType(t2);
+				catchClause.setName(newSimpleNameForIdentifier(id));
+				catchClause.setBody(handler);
+				catchClause.setSourceRange(firstToken.ptr, prevToken.ptr + prevToken.len - firstToken.ptr);
+				c = catchClause;
+				
 				if (catches == null) {
 					catches = new ArrayList();
 				}
@@ -5312,7 +5334,36 @@ public class Parser extends Lexer {
 				nextToken();
 				break;
 			}
-			e = new IftypeExp(targ, ident, tok, tspec, token2);
+			
+			if (token2.value == TOK.TOKreserved) {
+				IsTypeExpression isTypeExpression = new IsTypeExpression(ast);
+				isTypeExpression.setName(newSimpleNameForIdentifier(ident));
+				isTypeExpression.setType(targ);
+				isTypeExpression.setSpecialization(tspec);
+				isTypeExpression.setSameComparison(tok == TOK.TOKequal);
+				e = isTypeExpression;
+			} else {
+				IsTypeSpecializationExpression isTypeSpecializationExpression = new IsTypeSpecializationExpression(ast);
+				isTypeSpecializationExpression.setName(newSimpleNameForIdentifier(ident));
+				isTypeSpecializationExpression.setType(targ);
+				TypeSpecialization specialization = null;
+				switch(token2.value) {
+				case TOKtypedef: specialization = TypeSpecialization.TYPEDEF; break;
+				case TOKstruct: specialization = TypeSpecialization.STRUCT; break;
+				case TOKunion: specialization = TypeSpecialization.UNION; break;
+				case TOKclass: specialization = TypeSpecialization.CLASS; break;
+				case TOKsuper: specialization = TypeSpecialization.SUPER; break;
+				case TOKenum: specialization = TypeSpecialization.ENUM; break;
+				case TOKinterface: specialization = TypeSpecialization.INTERFACE; break;
+				case TOKfunction: specialization = TypeSpecialization.FUNCTION; break;
+				case TOKdelegate: specialization = TypeSpecialization.DELEGATE; break;
+				case TOKreturn: specialization = TypeSpecialization.RETURN; break;
+				default: throw new RuntimeException("Can't happen");
+				}
+				isTypeSpecializationExpression.setSpecialization(specialization);
+				isTypeSpecializationExpression.setSameComparison(tok == TOK.TOKequal);
+				e = isTypeSpecializationExpression;
+			}
 			break;
 		}
 

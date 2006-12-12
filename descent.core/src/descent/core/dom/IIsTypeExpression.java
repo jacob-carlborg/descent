@@ -7,14 +7,12 @@ package descent.core.dom;
  * is(type : specialization)
  * </pre>
  */
-public interface IIsExpression extends IExpression {
+public interface IIsTypeExpression extends IExpression {
 	
-	ISimpleName getIdentifier();
+	ISimpleName getName();
 	
 	IType getType();
 	
 	IType getSpecialization();
-	
-	ITypeSpecialization getTypeSpecialization();
 
 }

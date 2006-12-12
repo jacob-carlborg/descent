@@ -5,10 +5,10 @@ package descent.core.dom;
  */
 public interface ISliceType extends IType {
 	
-	IType getInnerType();
+	IType getComponentType();
 	
-	IExpression getFrom();
+	IExpression getFromExpression();
 	
-	IExpression getTo();
+	IExpression getToExpression();
 
 }

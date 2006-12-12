@@ -19,23 +19,23 @@ import descent.core.dom.IExpression;
 import descent.core.dom.IFunctionExpression;
 import descent.core.dom.IInfixExpression;
 import descent.core.dom.IIntegerExpression;
-import descent.core.dom.IIsExpression;
+import descent.core.dom.IIsTypeExpression;
 import descent.core.dom.INewAnonymousClassExpression;
 import descent.core.dom.INewExpression;
 import descent.core.dom.IParenthesizedExpression;
 import descent.core.dom.IScopeExpression;
 import descent.core.dom.ISliceExpression;
-import descent.core.dom.IStaticArrayType;
 import descent.core.dom.IStringExpression;
 import descent.core.dom.IType;
 import descent.core.dom.ITypeDotIdentifierExpression;
 import descent.core.dom.ITypeExpression;
-import descent.core.dom.ITypeSpecialization;
 import descent.core.dom.ITypeidExpression;
 import descent.core.dom.ITypeofType;
 import descent.core.dom.IUnaryExpression;
 import descent.internal.core.dom.Expression;
 import descent.internal.core.dom.InfixExpression;
+import descent.internal.core.dom.IsTypeExpression;
+import descent.internal.core.dom.IsTypeSpecializationExpression;
 import descent.internal.core.dom.ParserFacade;
 import descent.internal.core.dom.SimpleName;
 
@@ -634,56 +634,56 @@ public class Expression_Test extends Parser_Test {
 	
 	public void testIftype() {
 		String s = " is(x : float)";
-		IIsExpression expr = (IIsExpression) new ParserFacade().parseExpression(s);
+		IIsTypeExpression expr = (IIsTypeExpression) new ParserFacade().parseExpression(s);
 		
-		assertEquals(IExpression.IS_EXPRESSION, expr.getNodeType0());
+		assertEquals(IExpression.IS_TYPE_EXPRESSION, expr.getNodeType0());
 		assertPosition(expr, 1, s.length() - 1);
 		
 		assertEquals("x", expr.getType().toString());
 		assertEquals("float", expr.getSpecialization().toString());
-		assertNull(expr.getIdentifier());
+		assertNull(expr.getName());
 	}
 	
-	public void testIftypeWithId() {
+	public void testIsTypeExpression() {
 		String s = " is(int x : float)";
-		IIsExpression expr = (IIsExpression) new ParserFacade().parseExpression(s);
 		
-		assertEquals(IExpression.IS_EXPRESSION, expr.getNodeType0());
+		IsTypeExpression expr = (IsTypeExpression) new ParserFacade().parseExpression(s);
+		
 		assertPosition(expr, 1, s.length() - 1);
 		
 		assertEquals("int", expr.getType().toString());
 		assertEquals("float", expr.getSpecialization().toString());
 		
-		assertEquals("x", expr.getIdentifier().toString());
-		assertPosition(expr.getIdentifier(), 8, 1);
+		assertEquals("x", expr.getName().getIdentifier());
+		assertPosition(expr.getName(), 8, 1);
+		
+		assertFalse(expr.getSameComparison());
 	}
 	
-	public void testIftypeWithType() {
+	public void testIsTypeSpecializationExpression() {
 		Object[][] objs = {
-				{ "typedef", ITypeSpecialization.TYPEDEF },
-				{ "struct", ITypeSpecialization.STRUCT },
-				{ "union", ITypeSpecialization.UNION },
-				{ "class", ITypeSpecialization.CLASS },
-				{ "super", ITypeSpecialization.SUPER },
-				{ "enum", ITypeSpecialization.ENUM },
-				{ "interface", ITypeSpecialization.INTERFACE },
-				{ "function", ITypeSpecialization.FUNCTION },
-				{ "delegate", ITypeSpecialization.DELEGATE },
-				{ "return", ITypeSpecialization.RETURN },
+				{ "typedef", IsTypeSpecializationExpression.TypeSpecialization.TYPEDEF },
+				{ "struct", IsTypeSpecializationExpression.TypeSpecialization.STRUCT },
+				{ "union", IsTypeSpecializationExpression.TypeSpecialization.UNION },
+				{ "class", IsTypeSpecializationExpression.TypeSpecialization.CLASS },
+				{ "super", IsTypeSpecializationExpression.TypeSpecialization.SUPER },
+				{ "enum", IsTypeSpecializationExpression.TypeSpecialization.ENUM },
+				{ "interface", IsTypeSpecializationExpression.TypeSpecialization.INTERFACE },
+				{ "function", IsTypeSpecializationExpression.TypeSpecialization.FUNCTION },
+				{ "delegate", IsTypeSpecializationExpression.TypeSpecialization.DELEGATE },
+				{ "return", IsTypeSpecializationExpression.TypeSpecialization.RETURN },
 		};
 		
 		for(Object[] pair : objs) {
 			String s = " is(x == " + pair[0] + ")";
-			IIsExpression expr = (IIsExpression) new ParserFacade().parseExpression(s);
+			IsTypeSpecializationExpression expr = (IsTypeSpecializationExpression) new ParserFacade().parseExpression(s);
 			
-			assertEquals(IExpression.IS_EXPRESSION, expr.getNodeType0());
 			assertPosition(expr, 1, s.length() - 1);
 			
 			assertEquals("x", expr.getType().toString());
-			assertNull(expr.getSpecialization());
+			assertEquals(pair[1], expr.getSpecialization());
 			
-			assertEquals(pair[1], expr.getTypeSpecialization().getKeyword());
-			assertPosition(expr.getTypeSpecialization(), 9, ((String) pair[0]).length());
+			assertTrue(expr.getSameComparison());
 		}
 	}
 	

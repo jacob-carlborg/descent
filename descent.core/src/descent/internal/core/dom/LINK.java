@@ -1,6 +1,6 @@
 package descent.internal.core.dom;
 
-import descent.core.dom.ILinkDeclaration;
+import descent.internal.core.dom.ExternDeclaration.Linkage;
 
 public enum LINK {
 	
@@ -11,13 +11,13 @@ public enum LINK {
     LINKwindows,
     LINKpascal;
     
-    public int getLinkage() {
+    public Linkage getLinkage() {
     	switch(this) {
-    	case LINKd: return ILinkDeclaration.LINKAGE_D;
-    	case LINKc: return ILinkDeclaration.LINKAGE_C;
-    	case LINKcpp: return ILinkDeclaration.LINKAGE_CPP;
-    	case LINKwindows: return ILinkDeclaration.LINKAGE_WINDOWS;
-    	case LINKpascal: return ILinkDeclaration.LINKAGE_PASCAL;
+    	case LINKd: return Linkage.D;
+    	case LINKc: return Linkage.C;
+    	case LINKcpp: return Linkage.CPP;
+    	case LINKwindows: return Linkage.WINDOWS;
+    	case LINKpascal: return Linkage.PASCAL;
     	default: throw new RuntimeException("Can't happen?");
     	}
     }

@@ -15,7 +15,7 @@ import descent.core.dom.IConditionalDeclaration;
 import descent.core.dom.IElement;
 import descent.core.dom.IEnumDeclaration;
 import descent.core.dom.IImportDeclaration;
-import descent.core.dom.ILinkDeclaration;
+import descent.core.dom.IExternDeclaration;
 import descent.core.dom.IModuleDeclaration;
 import descent.core.dom.IPragmaDeclaration;
 import descent.core.dom.IProtectionDeclaration;
@@ -65,9 +65,9 @@ public class DOutlineContentProvider implements ITreeContentProvider {
 			return list.toArray();
 		case IElement.ENUM_DECLARATION:
 			return ((IEnumDeclaration) e).enumMembers().toArray();
-		case IElement.LINK_DECLARATION:
+		case IElement.EXTERN_DECLARATION:
 			list = new ArrayList<Object>();
-			addDeclDefs(list, ((ILinkDeclaration) e).getDeclarationDefinitions());
+			addDeclDefs(list, ((IExternDeclaration) e).declarations());
 			return list.toArray();
 		case IElement.VERSION_DECLARATION:
 		case IElement.DEBUG_DECLARATION:
@@ -97,7 +97,7 @@ public class DOutlineContentProvider implements ITreeContentProvider {
 		for(IElement elem : declDefs) {
 			switch(elem.getNodeType0()) {
 			case IElement.PROTECTION_DECLARATION:
-				addDeclDefs(list, ((IProtectionDeclaration) elem).getDeclarationDefinitions());
+				addDeclDefs(list, ((IProtectionDeclaration) elem).declarations());
 				break;
 			case IElement.STORAGE_CLASS_DECLARATION:
 				addDeclDefs(list, ((IStorageClassDeclaration) elem).getDeclarationDefinitions());
@@ -127,7 +127,7 @@ public class DOutlineContentProvider implements ITreeContentProvider {
 		for(IElement elem : declDefs) {
 			switch(elem.getNodeType0()) {
 			case IElement.PROTECTION_DECLARATION:
-				addDeclDefs(list, ((IProtectionDeclaration) elem).getDeclarationDefinitions());
+				addDeclDefs(list, ((IProtectionDeclaration) elem).declarations());
 				break;
 			case IElement.STORAGE_CLASS_DECLARATION:
 				addDeclDefs(list, ((IStorageClassDeclaration) elem).getDeclarationDefinitions());
@@ -176,8 +176,8 @@ public class DOutlineContentProvider implements ITreeContentProvider {
 			return ((IAggregateDeclaration) e).declarations().size() > 0;
 		case IElement.ENUM_DECLARATION:
 			return ((IEnumDeclaration) e).enumMembers().size() > 0;
-		case IElement.LINK_DECLARATION:
-			return ((ILinkDeclaration) e).getDeclarationDefinitions().length > 0;
+		case IElement.EXTERN_DECLARATION:
+			return ((IExternDeclaration) e).declarations().size() > 0;
 		case IElement.VERSION_DECLARATION:
 		case IElement.DEBUG_DECLARATION:
 		case IElement.STATIC_IF_DECLARATION:

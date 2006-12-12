@@ -7,15 +7,15 @@ public class ASTNodeGenerator {
 	
 	public static void main(String[] args) {
 		
-		String description = "argument";
-		String clazz = "Argument";
-		String nodeType = "ARGUMENT";
+		String description = "is type specialization expression";
+		String clazz = toMethod(description);
+		String nodeType = toProperty(description);
 
 		Member[] members = {
-			Member.simpleMandatory("passage mode", "PassageMode", "PassageMode.IN"),
-			Member.child("type", "Type", CYCLE_RISK),
+			Member.simple("same comparison", "boolean"),
 			Member.child("name", "SimpleName", NO_CYCLE_RISK),
-			Member.child("default value", "Expression", CYCLE_RISK),
+			Member.childMandatory("type", "Type", CYCLE_RISK, "PrimitiveType"),
+			Member.simple("specialization", "TypeSpecialization"),
 		};
 		
 		StringBuilder sb = new StringBuilder();

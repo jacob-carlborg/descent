@@ -141,7 +141,7 @@ public interface IElement {
 	 * Constant representing a link declaration.
 	 * A D element with this type can be safely cast to <code>ILinkDeclaration</code>. 
 	 */
-	int LINK_DECLARATION = 29;
+	int EXTERN_DECLARATION = 29;
 	
 	/**
 	 * Constant representing a condition assignment.
@@ -339,7 +339,7 @@ public interface IElement {
 	 * Constant representing an is expression.
 	 * An expression with this type can be safely cast to <code>IIsExpression</code>. 
 	 */
-	int IS_EXPRESSION = 62;
+	int IS_TYPE_EXPRESSION = 62;
 	
 	/**
 	 * Constant representing a new anonymous class expression.
@@ -683,11 +683,9 @@ public interface IElement {
 	
 	int VERSION_ASSIGNMENT = 125;
 	
-	/**
-	 * Constant representing the deprecated iftype declaration.
-	 * A D element with this type can be safely cast to <code>IIftypeDeclaration</code>. 
-	 */
 	int IFTYPE_STATEMENT = 126;
+	
+	int IS_TYPE_SPECIALIZATION_EXPRESSION = 127;
 	
 	/**
 	 * Returns the start position in the source code where this element

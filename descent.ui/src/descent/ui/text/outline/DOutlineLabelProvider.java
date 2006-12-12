@@ -20,7 +20,7 @@ import descent.core.dom.IFunctionDeclaration;
 import descent.core.dom.IIdentifierType;
 import descent.core.dom.IImport;
 import descent.core.dom.IImportDeclaration;
-import descent.core.dom.ILinkDeclaration;
+import descent.core.dom.IExternDeclaration;
 import descent.core.dom.IMixinDeclaration;
 import descent.core.dom.IModifier;
 import descent.core.dom.IModuleDeclaration;
@@ -206,16 +206,10 @@ public class DOutlineLabelProvider extends LabelProvider {
 			if (name != null) s.append(name.getFullyQualifiedName());
 			appendTemplateParameters(s, t.templateParameters());
 			return s.toString();
-		case IElement.LINK_DECLARATION:
-			ILinkDeclaration link = (ILinkDeclaration) element;
-			switch(link.getLinkage()) {
-			case ILinkDeclaration.LINKAGE_C: return "C";
-			case ILinkDeclaration.LINKAGE_CPP: return "Cpp";
-			case ILinkDeclaration.LINKAGE_D: return "D";
-			case ILinkDeclaration.LINKAGE_WINDOWS: return "Windows";
-			case ILinkDeclaration.LINKAGE_PASCAL: return "Pascal";
-			}
-			break;
+		case IElement.EXTERN_DECLARATION:
+			// TODO correct
+			IExternDeclaration link = (IExternDeclaration) element;
+			return link.getLinkage().toString();
 		case IElement.VERSION_DECLARATION:
 			IVersionDeclaration v = (IVersionDeclaration) element;
 			return v.getVersion() == null ? "" : v.getVersion().toString();
@@ -352,7 +346,7 @@ public class DOutlineLabelProvider extends LabelProvider {
 			return aliasImage;
 		case IElement.TEMPLATE_DECLARATION:
 			return templateImage;
-		case IElement.LINK_DECLARATION:
+		case IElement.EXTERN_DECLARATION:
 			return linkImage;
 		case IElement.DEBUG_DECLARATION:
 			return debugImage;

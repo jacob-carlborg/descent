@@ -2,7 +2,6 @@ package descent.tests.mars;
 
 import descent.core.dom.ICompilationUnit;
 import descent.core.dom.IElement;
-import descent.core.dom.IExpression;
 import descent.core.dom.IPragmaDeclaration;
 import descent.internal.core.dom.ParserFacade;
 
