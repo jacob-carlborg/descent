@@ -3,6 +3,7 @@ package descent.internal.core.dom;
 import descent.core.dom.IExpression;
 import descent.core.dom.IName;
 import descent.core.dom.IType;
+import descent.core.dom.IElement.ElementTypes;
 import descent.core.domX.ASTVisitor;
 
 public class TemplateValueParameter extends TemplateParameter {
@@ -20,7 +21,7 @@ public class TemplateValueParameter extends TemplateParameter {
 	}
 	
 	public int getElementType() {
-		return VALUE_TEMPLATE_PARAMETER;
+		return ElementTypes.VALUE_TEMPLATE_PARAMETER;
 	}
 	
 	public IName getName() {

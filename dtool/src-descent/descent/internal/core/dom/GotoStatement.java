@@ -2,6 +2,7 @@ package descent.internal.core.dom;
 
 import descent.core.dom.IGotoStatement;
 import descent.core.dom.IName;
+import descent.core.dom.IElement.ElementTypes;
 import descent.core.domX.ASTVisitor;
 
 public class GotoStatement extends Statement implements IGotoStatement {
@@ -13,7 +14,7 @@ public class GotoStatement extends Statement implements IGotoStatement {
 	}
 	
 	public int getElementType() {
-		return GOTO_STATEMENT;
+		return ElementTypes.GOTO_STATEMENT;
 	}
 	
 	public IName getLabel() {

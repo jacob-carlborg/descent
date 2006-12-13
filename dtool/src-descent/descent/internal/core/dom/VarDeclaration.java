@@ -4,6 +4,7 @@ import descent.core.dom.IInitializer;
 import descent.core.dom.IName;
 import descent.core.dom.IType;
 import descent.core.dom.IVariableDeclaration;
+import descent.core.dom.IElement.ElementTypes;
 import descent.core.domX.ASTVisitor;
 
 public class VarDeclaration extends Declaration implements IVariableDeclaration {
@@ -18,7 +19,7 @@ public class VarDeclaration extends Declaration implements IVariableDeclaration 
 	}
 	
 	public int getElementType() {
-		return VARIABLE_DECLARATION;
+		return ElementTypes.VARIABLE_DECLARATION;
 	}
 	
 	public IType getType() {

@@ -1,11 +1,13 @@
 package descent.internal.core.dom;
 
-import descent.core.dom.IAliasDeclaration;
+import descent.core.dom.IDeclaration;
+import descent.core.dom.IModifiersContainer;
 import descent.core.dom.IName;
 import descent.core.dom.IType;
+import descent.core.dom.IElement.ElementTypes;
 import descent.core.domX.ASTVisitor;
 
-public class AliasDeclaration extends Declaration implements IAliasDeclaration {
+public class AliasDeclaration extends Declaration implements IDeclaration, IModifiersContainer {
 	
 	public Type type;
 
@@ -23,7 +25,7 @@ public class AliasDeclaration extends Declaration implements IAliasDeclaration {
 	}
 	
 	public int getElementType() {
-		return ALIAS_DECLARATION;
+		return ElementTypes.ALIAS_DECLARATION;
 	}
 	
 	public void accept0(ASTVisitor visitor) {

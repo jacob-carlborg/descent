@@ -1,11 +1,11 @@
 package descent.internal.core.dom;
 
-import descent.core.dom.IDoWhileStatement;
 import descent.core.dom.IExpression;
 import descent.core.dom.IStatement;
+import descent.core.dom.IElement.ElementTypes;
 import descent.core.domX.ASTVisitor;
 
-public class DoStatement extends Statement implements IDoWhileStatement {
+public class DoStatement extends Statement {
 	
 	public Expression expr;
 	public Statement body;
@@ -24,7 +24,7 @@ public class DoStatement extends Statement implements IDoWhileStatement {
 	}
 	
 	public int getElementType() {
-		return DO_WHILE_STATEMENT;
+		return ElementTypes.DO_WHILE_STATEMENT;
 	}
 	
 	public void accept0(ASTVisitor visitor) {

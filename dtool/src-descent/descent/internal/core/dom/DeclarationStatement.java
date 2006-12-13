@@ -1,9 +1,8 @@
 package descent.internal.core.dom;
 
-import descent.core.dom.IDeclarationStatement;
 import descent.core.domX.ASTVisitor;
 
-public class DeclarationStatement extends Statement implements IDeclarationStatement {
+public class DeclarationStatement extends Statement {
 
 	private final Dsymbol d;
 
@@ -12,7 +11,7 @@ public class DeclarationStatement extends Statement implements IDeclarationState
 	}
 	
 	public int getElementType() {
-		return DECLARATION_STATEMENT;
+		return ElementTypes.DECLARATION_STATEMENT;
 	}
 	
 	public Declaration getDeclaration() {

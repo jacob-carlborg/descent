@@ -3,6 +3,7 @@ package descent.internal.core.dom;
 import descent.core.dom.ICaseStatement;
 import descent.core.dom.IExpression;
 import descent.core.dom.IStatement;
+import descent.core.dom.IElement.ElementTypes;
 import descent.core.domX.ASTVisitor;
 
 public class CaseStatement extends Statement implements ICaseStatement {
@@ -24,7 +25,7 @@ public class CaseStatement extends Statement implements ICaseStatement {
 	}
 	
 	public int getElementType() {
-		return CASE_STATEMENT;
+		return ElementTypes.CASE_STATEMENT;
 	}
 	
 	public void accept0(ASTVisitor visitor) {

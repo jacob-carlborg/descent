@@ -2,7 +2,6 @@ package dtool.dom;
 
 import java.util.List;
 
-import descent.internal.core.dom.Type;
 import dtool.dom.ext.ASTNeoVisitor;
 
 /**

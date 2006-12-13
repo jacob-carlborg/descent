@@ -1,5 +1,7 @@
 package descent.internal.core.dom;
 
+import descent.internal.core.dom.BinaryExpression.BinaryExpressionTypes;
+
 public class IdentityExp extends BinaryExpression {
 
 	private final TOK value;
@@ -11,8 +13,8 @@ public class IdentityExp extends BinaryExpression {
 	
 	public int getBinaryExpressionType() {
 		switch(value) {
-		case TOKidentity: return IDENTITY;
-		case TOKnotidentity: return NOT_IDENTITY;
+		case TOKidentity: return BinaryExpressionTypes.IDENTITY;
+		case TOKnotidentity: return BinaryExpressionTypes.NOT_IDENTITY;
 		}
 		return 0;
 	}

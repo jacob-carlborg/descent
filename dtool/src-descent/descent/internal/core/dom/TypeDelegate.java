@@ -1,8 +1,7 @@
 package descent.internal.core.dom;
 
-import descent.core.dom.IArgument;
 import descent.core.dom.IDelegateType;
-import descent.core.dom.IType;
+import descent.core.dom.IElement.ElementTypes;
 import descent.core.domX.ASTVisitor;
 
 public class TypeDelegate extends Type implements IDelegateType {
@@ -20,7 +19,7 @@ public class TypeDelegate extends Type implements IDelegateType {
 	}
 	
 	public int getElementType() {
-		return DELEGATE_TYPE;
+		return ElementTypes.DELEGATE_TYPE;
 	}
 	
 	@Override

@@ -1,10 +1,9 @@
 package descent.internal.core.dom;
 
-import descent.core.dom.IArgument;
 import descent.core.dom.IFunctionDeclaration;
 import descent.core.dom.IName;
 import descent.core.dom.IStatement;
-import descent.core.dom.IType;
+import descent.core.dom.IElement.ElementTypes;
 import descent.core.domX.ASTVisitor;
 
 public class FuncDeclaration extends Declaration implements IFunctionDeclaration {
@@ -47,7 +46,7 @@ public class FuncDeclaration extends Declaration implements IFunctionDeclaration
 	}
 	
 	public int getElementType() {
-		return FUNCTION_DECLARATION;
+		return ElementTypes.FUNCTION_DECLARATION;
 	}
 	
 	public int getFunctionDeclarationType() {

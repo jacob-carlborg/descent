@@ -2,12 +2,12 @@ package descent.internal.core.dom;
 
 import java.util.List;
 
-import descent.core.dom.IAlignDeclaration;
 import descent.core.dom.IDeclaration;
+import descent.core.dom.IElement.ElementTypes;
 import descent.core.domX.ASTVisitor;
 import descent.core.domX.AbstractElement;
 
-public class AlignDeclaration extends Dsymbol implements IAlignDeclaration {
+public class AlignDeclaration extends Dsymbol implements IDeclaration {
 	
 	public IDeclaration[] declDefs;
 	public long n;
@@ -29,7 +29,7 @@ public class AlignDeclaration extends Dsymbol implements IAlignDeclaration {
 	}
 	
 	public int getElementType() {
-		return ALIGN_DECLARATION;
+		return ElementTypes.ALIGN_DECLARATION;
 	}
 	
 	public void accept0(ASTVisitor visitor) {

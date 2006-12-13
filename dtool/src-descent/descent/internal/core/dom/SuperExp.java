@@ -1,6 +1,7 @@
 package descent.internal.core.dom;
 
 import descent.core.dom.ISuperExpression;
+import descent.core.dom.IElement.ElementTypes;
 import descent.core.domX.ASTVisitor;
 
 public class SuperExp extends Expression implements ISuperExpression {
@@ -10,7 +11,7 @@ public class SuperExp extends Expression implements ISuperExpression {
 	}
 	
 	public int getElementType() {
-		return SUPER_EXPRESSION;
+		return ElementTypes.SUPER_EXPRESSION;
 	}
 	
 	@Override

@@ -1,11 +1,11 @@
 package descent.internal.core.dom;
 
-import descent.core.dom.IBaseClass;
 import descent.core.dom.IType;
+import descent.core.dom.IElement.ElementTypes;
 import descent.core.domX.ASTVisitor;
 import descent.core.domX.AbstractElement;
 
-public class BaseClass extends AbstractElement implements IBaseClass {
+public class BaseClass extends AbstractElement {
 	
 	private int prot;
 	private final Type type;
@@ -20,7 +20,7 @@ public class BaseClass extends AbstractElement implements IBaseClass {
 	}
 
 	public int getElementType() {
-		return BASE_CLASS;
+		return ElementTypes.BASE_CLASS;
 	}
 	
 	public IType getType() {

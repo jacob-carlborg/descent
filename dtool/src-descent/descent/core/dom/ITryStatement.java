@@ -1,5 +1,7 @@
 package descent.core.dom;
 
+import descent.internal.core.dom.Catch;
+
 /**
  * A try statement:
  * 
@@ -27,7 +29,7 @@ public interface ITryStatement extends IStatement {
 	/**
 	 * Returns the catches of the try statement.
 	 */
-	ICatchClause[] getCatches();
+	Catch[] getCatches();
 	
 	/**
 	 * Returns the finally statement, if any, or null.

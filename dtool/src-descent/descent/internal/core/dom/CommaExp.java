@@ -1,5 +1,7 @@
 package descent.internal.core.dom;
 
+import descent.internal.core.dom.BinaryExpression.BinaryExpressionTypes;
+
 public class CommaExp extends BinaryExpression {
 
 	public CommaExp(Expression e, Expression exp) {
@@ -7,7 +9,7 @@ public class CommaExp extends BinaryExpression {
 	}
 	
 	public int getBinaryExpressionType() {
-		return COMMA;
+		return BinaryExpressionTypes.COMMA;
 	}
 
 }

@@ -4,6 +4,7 @@ import java.util.List;
 
 import descent.core.dom.IDeclaration;
 import descent.core.dom.IStorageClassDeclaration;
+import descent.core.dom.IElement.ElementTypes;
 import descent.core.domX.ASTVisitor;
 import descent.core.domX.AbstractElement;
 
@@ -25,7 +26,7 @@ public class StorageClassDeclaration extends Dsymbol implements IStorageClassDec
 	}
 	
 	public int getElementType() {
-		return STORAGE_CLASS_DECLARATION;
+		return ElementTypes.STORAGE_CLASS_DECLARATION;
 	}
 	
 	public void accept0(ASTVisitor visitor) {

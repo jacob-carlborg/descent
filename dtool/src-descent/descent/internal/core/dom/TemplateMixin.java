@@ -7,6 +7,7 @@ import descent.core.dom.IMixinDeclaration;
 import descent.core.dom.IName;
 import descent.core.dom.IQualifiedName;
 import descent.core.dom.ITypeofType;
+import descent.core.dom.IElement.ElementTypes;
 import descent.core.domX.ASTVisitor;
 import descent.core.domX.AbstractElement;
 
@@ -26,7 +27,7 @@ public class TemplateMixin extends Declaration implements IMixinDeclaration {
 	}
 	
 	public int getElementType() {
-		return MIXIN_DECLARATION;
+		return ElementTypes.MIXIN_DECLARATION;
 	}
 	
 	public IName getName() {
@@ -37,7 +38,7 @@ public class TemplateMixin extends Declaration implements IMixinDeclaration {
 		return qName;
 	}
 	
-	public ITypeofType getTypeofType() {
+	public TypeTypeof getTypeofType() {
 		return tqual;
 	}
 	

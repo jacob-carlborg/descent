@@ -90,7 +90,6 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
-import descent.core.dom.IBaseClass;
 import descent.core.dom.IDeclaration;
 import descent.core.dom.IElement;
 import descent.core.dom.IEnumMember;

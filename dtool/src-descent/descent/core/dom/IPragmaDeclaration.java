@@ -1,6 +1,5 @@
 package descent.core.dom;
 
-import descent.internal.core.dom.Declaration;
 
 /**
  * A pragma declaration:

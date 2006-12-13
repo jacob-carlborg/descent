@@ -1,5 +1,7 @@
 package descent.internal.core.dom;
 
+import descent.internal.core.dom.UnaryExpression.IUnaryExpression2;
+
 public class NegExp extends UnaryExpression {
 
 	public NegExp(Expression e) {
@@ -7,7 +9,7 @@ public class NegExp extends UnaryExpression {
 	}
 	
 	public int getUnaryExpressionType() {
-		return NEGATIVE;
+		return UnaryExpression.IUnaryExpression2.NEGATIVE;
 	}
 
 }

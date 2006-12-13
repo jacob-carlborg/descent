@@ -1,5 +1,7 @@
 package descent.internal.core.dom;
 
+import descent.internal.core.dom.BinaryExpression.BinaryExpressionTypes;
+
 public class CmpExp extends BinaryExpression {
 
 	public CmpExp(TOK op, Expression e, Expression e2) {
@@ -7,7 +9,7 @@ public class CmpExp extends BinaryExpression {
 	}
 	
 	public int getBinaryExpressionType() {
-		return CMP;
+		return BinaryExpressionTypes.CMP;
 	}
 
 }

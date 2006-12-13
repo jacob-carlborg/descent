@@ -3,7 +3,6 @@ package descent.internal.core.dom;
 import java.util.List;
 
 import util.StringUtil;
-
 import descent.core.dom.IElement;
 import descent.core.domX.AbstractElement;
 

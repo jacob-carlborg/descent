@@ -1,6 +1,5 @@
 package descent.core.domX;
 
-import descent.core.dom.IBinaryExpression;
 import descent.core.dom.IDebugDeclaration;
 import descent.core.dom.IDebugStatement;
 import descent.core.dom.IDelegateType;
@@ -11,7 +10,6 @@ import descent.core.dom.IIntegerExpression;
 import descent.core.dom.IPointerType;
 import descent.core.dom.IStaticIfStatement;
 import descent.core.dom.ITrueExpression;
-import descent.core.dom.IUnaryExpression;
 import descent.core.dom.IVersionDeclaration;
 import descent.core.dom.IVersionStatement;
 import descent.internal.core.dom.*;
@@ -796,14 +794,6 @@ public abstract class ASTVisitor extends CommonTreeVisitor {
 	
 	
 	/* ------------- Ary Interfaces -------------------- */
-
-	public boolean visit(IBinaryExpression element) {
-		return visit((BinaryExpression)element);
-	}
-	
-	public boolean visit(IUnaryExpression element) {
-		return visit((UnaryExpression)element);
-	}
 	
 	public boolean visit(IDebugDeclaration element) {
 		return visit((ConditionalDeclaration)element);

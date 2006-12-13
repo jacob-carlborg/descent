@@ -2,10 +2,9 @@ package descent.internal.core.dom;
 
 import java.util.List;
 
-import descent.core.dom.IBaseClass;
 import descent.core.dom.IDeclaration;
-import descent.core.dom.IExpression;
 import descent.core.dom.INewAnonymousClassExpression;
+import descent.core.dom.IElement.ElementTypes;
 import descent.core.domX.ASTVisitor;
 import descent.core.domX.AbstractElement;
 
@@ -30,7 +29,7 @@ public class NewAnonClassExp extends Expression implements INewAnonymousClassExp
 	}
 	
 	public int getElementType() {
-		return NEW_ANONYMOUS_CLASS_EXPRESSION;
+		return ElementTypes.NEW_ANONYMOUS_CLASS_EXPRESSION;
 	}
 	
 	public Expression[] getCallArguments() {

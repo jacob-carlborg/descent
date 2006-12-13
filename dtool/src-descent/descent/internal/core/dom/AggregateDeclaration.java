@@ -3,9 +3,8 @@ package descent.internal.core.dom;
 import java.util.List;
 
 import descent.core.dom.IAggregateDeclaration;
-import descent.core.dom.IBaseClass;
 import descent.core.dom.IDeclaration;
-import descent.core.dom.IName;
+import descent.core.dom.IElement.ElementTypes;
 import descent.core.domX.ASTVisitor;
 import descent.core.domX.AbstractElement;
 
@@ -65,7 +64,7 @@ public abstract class AggregateDeclaration extends ScopeDsymbol implements IAggr
 	}
 	
 	public int getElementType() {
-		return AGGREGATE_DECLARATION;
+		return ElementTypes.AGGREGATE_DECLARATION;
 	}
 
 }

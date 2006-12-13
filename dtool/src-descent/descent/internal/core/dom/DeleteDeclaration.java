@@ -2,8 +2,6 @@ package descent.internal.core.dom;
 
 import java.util.List;
 
-import descent.core.dom.IArgument;
-
 public class DeleteDeclaration extends FuncDeclaration {
 	
 	private Argument[] arguments;

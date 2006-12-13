@@ -4,6 +4,7 @@ import java.util.List;
 
 import descent.core.dom.IDeclaration;
 import descent.core.dom.ILinkDeclaration;
+import descent.core.dom.IElement.ElementTypes;
 import descent.core.domX.ASTVisitor;
 import descent.core.domX.AbstractElement;
 
@@ -20,7 +21,7 @@ public class LinkDeclaration extends Dsymbol implements ILinkDeclaration {
 	}
 	
 	public int getElementType() {
-		return LINK_DECLARATION;
+		return ElementTypes.LINK_DECLARATION;
 	}
 	
 	public int getLinkage() {

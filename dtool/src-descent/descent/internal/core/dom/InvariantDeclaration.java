@@ -3,6 +3,7 @@ package descent.internal.core.dom;
 import descent.core.dom.IInvariantDeclaration;
 import descent.core.dom.IName;
 import descent.core.dom.IStatement;
+import descent.core.dom.IElement.ElementTypes;
 import descent.core.domX.ASTVisitor;
 
 public class InvariantDeclaration extends Dsymbol implements IInvariantDeclaration {
@@ -22,7 +23,7 @@ public class InvariantDeclaration extends Dsymbol implements IInvariantDeclarati
 	}
 	
 	public int getElementType() {
-		return INVARIANT_DECLARATION;
+		return ElementTypes.INVARIANT_DECLARATION;
 	}
 	
 	public void accept0(ASTVisitor visitor) {

@@ -1,6 +1,5 @@
 package descent.core.dom;
 
-import descent.internal.core.dom.Declaration;
 import descent.internal.core.dom.TemplateParameter;
 
 /**

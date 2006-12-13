@@ -1,5 +1,7 @@
 package descent.internal.core.dom;
 
+import descent.internal.core.dom.BinaryExpression.BinaryExpressionTypes;
+
 public class EqualExp extends BinaryExpression {
 
 	public EqualExp(TOK value, Expression e, Expression e2) {
@@ -7,7 +9,7 @@ public class EqualExp extends BinaryExpression {
 	}
 	
 	public int getBinaryExpressionType() {
-		return EQUAL;
+		return BinaryExpressionTypes.EQUAL;
 	}
 
 }

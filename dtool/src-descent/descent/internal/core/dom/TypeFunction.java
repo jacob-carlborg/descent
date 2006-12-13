@@ -2,8 +2,6 @@ package descent.internal.core.dom;
 
 import java.util.List;
 
-import descent.core.dom.IArgument;
-import descent.core.dom.IType;
 import descent.core.domX.ASTVisitor;
 
 public class TypeFunction extends Type {

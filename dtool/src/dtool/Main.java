@@ -8,6 +8,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
 
 import dtool.ANTLRparser.Model;
+import dtool.dom.ext.ASTChecker;
 import dtool.dom.ext.ASTPrinter;
 import dtool.formater.CodeFormatter;
 
@@ -17,6 +18,7 @@ public class Main {
     public static void main(String[] args) throws Exception {
 		System.out.println("======== DTool ========");
 
+	
 		try {
 			
 			Project.newTestProject();
@@ -29,7 +31,7 @@ public class Main {
 			System.out.flush();
 			System.err.flush();
 			throw e;
-		}
+		} 
 
 		System.out.println("= THE END =");
 	}
@@ -64,6 +66,8 @@ public class Main {
 		cu.adaptDOM();
 		cu.cumodule.accept(new ASTPrinter(false, false));
 		
+		System.out.println("====== Neo AST Consistency check: ======");
+		ASTChecker.checkConsistency(cu.cumodule);
 		if(true) return;
 		
 		System.out.println("=== Reformat: ===");

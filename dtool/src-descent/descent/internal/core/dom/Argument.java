@@ -4,6 +4,7 @@ import descent.core.dom.IArgument;
 import descent.core.dom.IExpression;
 import descent.core.dom.IName;
 import descent.core.dom.IType;
+import descent.core.dom.IElement.ElementTypes;
 import descent.core.domX.ASTVisitor;
 import descent.core.domX.AbstractElement;
 
@@ -53,7 +54,7 @@ public class Argument extends AbstractElement implements IArgument {
 	}
 
 	public int getElementType() {
-		return ARGUMENT;
+		return ElementTypes.ARGUMENT;
 	}
 
 }

@@ -6,6 +6,7 @@ import descent.core.dom.IName;
 import descent.core.dom.IStatement;
 import descent.core.dom.IStaticIfStatement;
 import descent.core.dom.IVersionStatement;
+import descent.core.dom.IElement.ElementTypes;
 import descent.core.domX.ASTVisitor;
 
 public class ConditionalStatement extends Statement implements IStaticIfStatement, IDebugStatement, IVersionStatement {
@@ -34,9 +35,9 @@ public class ConditionalStatement extends Statement implements IStaticIfStatemen
 	
 	public int getElementType() {
 		switch(this.condition.getConditionType()) {
-		case Condition.DEBUG: return DEBUG_STATEMENT;
-		case Condition.VERSION: return VERSION_STATEMENT;
-		case Condition.STATIC_IF: return STATIC_IF_STATEMENT;
+		case Condition.DEBUG: return ElementTypes.DEBUG_STATEMENT;
+		case Condition.VERSION: return ElementTypes.VERSION_STATEMENT;
+		case Condition.STATIC_IF: return ElementTypes.STATIC_IF_STATEMENT;
 		}
 		return 0;
 	}

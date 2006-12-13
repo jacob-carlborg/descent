@@ -1,10 +1,10 @@
 package descent.internal.core.dom;
 
 import descent.core.dom.IExpression;
-import descent.core.dom.IExpressionInitializer;
+import descent.core.dom.IElement.ElementTypes;
 import descent.core.domX.ASTVisitor;
 
-public class ExpInitializer extends Initializer implements IExpressionInitializer {
+public class ExpInitializer extends Initializer {
 
 	public Expression e;
 
@@ -22,7 +22,7 @@ public class ExpInitializer extends Initializer implements IExpressionInitialize
 	}
 	
 	public int getElementType() {
-		return EXPRESSION_INITIALIZER;
+		return ElementTypes.EXPRESSION_INITIALIZER;
 	}
 	
 	public void accept0(ASTVisitor visitor) {

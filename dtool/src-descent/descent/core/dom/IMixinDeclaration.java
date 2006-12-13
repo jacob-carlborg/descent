@@ -1,5 +1,7 @@
 package descent.core.dom;
 
+import descent.internal.core.dom.TypeTypeof;
+
 /**
  * A mixin declaration:
  * 
@@ -22,7 +24,7 @@ public interface IMixinDeclaration extends IDeclaration {
 	/**
 	 * Returns the typeof type (TODO: what the hell in the world is this?)
 	 */
-	ITypeofType getTypeofType();
+	TypeTypeof getTypeofType();
 	
 	/**
 	 * Returns the template arguments of the mixin.

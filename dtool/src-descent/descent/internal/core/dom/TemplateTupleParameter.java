@@ -1,6 +1,7 @@
 package descent.internal.core.dom;
 
 import descent.core.dom.IName;
+import descent.core.dom.IElement.ElementTypes;
 import descent.core.domX.ASTVisitor;
 
 public class TemplateTupleParameter extends TemplateParameter {
@@ -16,7 +17,7 @@ public class TemplateTupleParameter extends TemplateParameter {
 	}
 
 	public int getElementType() {
-		return TUPLE_TEMPLATE_PARAMETER;
+		return ElementTypes.TUPLE_TEMPLATE_PARAMETER;
 	}
 
 	public void accept0(ASTVisitor visitor) {

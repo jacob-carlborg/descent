@@ -2,6 +2,7 @@ package descent.internal.core.dom;
 
 import descent.core.dom.IExpression;
 import descent.core.dom.IThrowStatement;
+import descent.core.dom.IElement.ElementTypes;
 import descent.core.domX.ASTVisitor;
 
 public class ThrowStatement extends Statement implements IThrowStatement {
@@ -17,7 +18,7 @@ public class ThrowStatement extends Statement implements IThrowStatement {
 	}
 	
 	public int getElementType() {
-		return THROW_STATEMENT;
+		return ElementTypes.THROW_STATEMENT;
 	}
 	
 	public void accept0(ASTVisitor visitor) {

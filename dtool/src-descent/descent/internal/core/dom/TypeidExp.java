@@ -2,6 +2,7 @@ package descent.internal.core.dom;
 
 import descent.core.dom.IType;
 import descent.core.dom.ITypeidExpression;
+import descent.core.dom.IElement.ElementTypes;
 import descent.core.domX.ASTVisitor;
 
 public class TypeidExp extends Expression implements ITypeidExpression {
@@ -17,7 +18,7 @@ public class TypeidExp extends Expression implements ITypeidExpression {
 	}
 	
 	public int getElementType() {
-		return TYPEID_EXPRESSION;
+		return ElementTypes.TYPEID_EXPRESSION;
 	}
 	
 	public void accept0(ASTVisitor visitor) {

@@ -4,8 +4,8 @@ import java.util.List;
 
 import descent.core.dom.ICompilationUnit;
 import descent.core.dom.IDeclaration;
-import descent.core.dom.IModuleDeclaration;
 import descent.core.dom.IProblem;
+import descent.core.dom.IElement.ElementTypes;
 import descent.core.domX.ASTVisitor;
 import descent.core.domX.AbstractElement;
 
@@ -14,7 +14,7 @@ public class Module extends ScopeDsymbol implements ICompilationUnit {
 	public ModuleDeclaration md;
 	public List<IProblem> problems;
 	
-	public IModuleDeclaration getModuleDeclaration() {
+	public ModuleDeclaration getModuleDeclaration() {
 		return md;
 	}
 	
@@ -30,7 +30,7 @@ public class Module extends ScopeDsymbol implements ICompilationUnit {
 	}
 	
 	public int getElementType() {
-		return COMPILATION_UNIT;
+		return ElementTypes.COMPILATION_UNIT;
 	}
 	
 	@SuppressWarnings("unchecked")

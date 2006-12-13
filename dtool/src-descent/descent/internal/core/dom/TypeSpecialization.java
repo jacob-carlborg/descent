@@ -1,6 +1,7 @@
 package descent.internal.core.dom;
 
 import descent.core.dom.ITypeSpecialization;
+import descent.core.dom.IElement.ElementTypes;
 import descent.core.domX.ASTVisitor;
 import descent.core.domX.AbstractElement;
 
@@ -31,7 +32,7 @@ public class TypeSpecialization extends AbstractElement implements ITypeSpeciali
 	}
 
 	public int getElementType() {
-		return TYPE_SPECIALIZATION;
+		return ElementTypes.TYPE_SPECIALIZATION;
 	}
 
 	public int getKeyword() {

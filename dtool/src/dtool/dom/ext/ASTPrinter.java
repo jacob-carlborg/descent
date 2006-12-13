@@ -1,11 +1,15 @@
 package dtool.dom.ext;
 
+import util.StringUtil;
+import descent.core.dom.IElement;
 import descent.core.domX.ASTNode;
+import descent.internal.core.dom.Type;
 import dtool.dom.ASTElement;
 import dtool.dom.Def_Modifiers;
 import dtool.dom.Definition;
+import dtool.dom.EntityReference;
+import dtool.dom.SingleEntityRef;
 import dtool.dom.SymbolDef;
-import dtool.dom.SymbolReference;
 
 /**
  * Simple class for printing the AST in indented tree form.
@@ -14,7 +18,12 @@ import dtool.dom.SymbolReference;
 public class ASTPrinter extends ASTNeoVisitor {
 	
 	public boolean collapseLeafs = true; //Print leaf nodes in same line?
-	public boolean printUnconverted = true; //Print UncovertedElements?
+	public boolean recurseUnconverted = true; //recurse UncovertedElements?
+	public boolean visitChildren = true; // visit the Element's children
+	public boolean visitIdentifierChildren = false; 
+
+	public boolean printRangeInfo = true;
+
 	
 	int indent;
 	boolean siblingsAreLeafs;
@@ -28,9 +37,10 @@ public class ASTPrinter extends ASTNeoVisitor {
 	}
 	public ASTPrinter(boolean collapseLeafs, boolean printUnconverted) {
 		this(collapseLeafs);
-		this.printUnconverted = printUnconverted;
+		this.recurseUnconverted = printUnconverted;
 	}
 	
+
 	private String trailString(String str, String strtrail) {
 		return util.StringUtil.trailString(str, strtrail);
 	}
@@ -38,7 +48,21 @@ public class ASTPrinter extends ASTNeoVisitor {
 	public static String trimmedElementName(Object elem) {
 		return elem.getClass().getName().replaceAll("^.*\\.dom\\.", "");
 	}
+	
+	private String nodeToString(ASTNode elem) {
+		String name = elem.nodeToString();
+		if(printRangeInfo) 
+			name += " [" + elem.startPos+"+"+elem.length+"]";
+		return name;
+	}
 
+	private static ASTPrinter singlePrinter = new ASTPrinter(false);
+	public static void printSingleElement(ASTNode elem) {
+		singlePrinter.visitChildren = false;
+		singlePrinter.indent = 0;
+		elem.accept(singlePrinter);
+	}
+	
 	/* ---------------------------------- */
 	
 	private void printIndent() {
@@ -68,74 +92,79 @@ public class ASTPrinter extends ASTNeoVisitor {
 	
 	/* ====================================================== */
 
-	public boolean visit(ASTNode element) {
-		printGenericElement(element, "#"+element.nodeToString() + "");
-		return true;
+	public boolean visit(ASTNode elem) {
+		printGenericElement(elem, "#"+nodeToString(elem) + "");
+		return visitChildren && recurseUnconverted;
 	}
 
 	public boolean visit(descent.internal.core.dom.Identifier elem) {
-		printGenericElement(elem, "#"+elem.nodeToString() 
+		printGenericElement(elem, "#"+nodeToString(elem) 
 				+ " " + elem.string);
-		return true;
+		return visitChildren && recurseUnconverted;
 	}
 	
 	public boolean visit(descent.internal.core.dom.QualifiedName elem) {
-		printGenericElement(elem, "#"+elem.nodeToString() 
+		printGenericElement(elem, "#"+nodeToString(elem) 
 				+ " " + elem.toString());
-		return true;
+		return visitChildren && recurseUnconverted;
 	}	
 	
 	public boolean visit(descent.internal.core.dom.Dsymbol elem) {
-		printGenericElement(elem, "#"+elem.nodeToString() 
+		printGenericElement(elem, "#"+nodeToString(elem) 
 				+ " " + ((elem.ident != null) ? elem.ident.string : "<null>"));
-		return true;
+		return visitChildren && recurseUnconverted;
 	}	
 	
 	public boolean visit(descent.internal.core.dom.Type elem) {
-		printGenericElement(elem, "#"+elem.nodeToString() 
+		printGenericElement(elem, "#"+nodeToString(elem) 
 				+ " TYPE: " + elem.toString());
-		return true;
+		return visitChildren && recurseUnconverted;
 	}	
-
+	
 	public boolean visit(descent.internal.core.dom.TypeQualified elem) {
-		printGenericElement(elem, "#"+elem.nodeToString() 
+		printGenericElement(elem, "#"+nodeToString(elem) 
 				+ " TYPE: " + elem.toString());
-		return true;
+		return visitChildren && recurseUnconverted;
 	}
 	
 	/* ---------------- Neo ------------------ */
 	
-	public boolean visit(ASTElement element) {
-		printGenericElement(element, element.nodeToString() + "");
-		return true;
+	public boolean visit(ASTElement elem) {
+		printGenericElement(elem, nodeToString(elem) + "");
+		return visitChildren;
 	}
 	
-	public boolean visit(SymbolDef element) {
-		printGenericElement(element, element.nodeToString() 
-				+ " " + element.name);
-		return true;
+	public boolean visit(EntityReference elem) {
+		printGenericElement(elem, nodeToString(elem) 
+				+ " ID: " + StringUtil.collToString(elem.ents, "."));
+		return visitChildren && visitIdentifierChildren;
 	}
-	public boolean visit(SymbolReference element) {
-		printGenericElement(element, element.nodeToString() 
-				+ " " + element.name);
-		return true;
+	
+	public boolean visit(SymbolDef elem) {
+		printGenericElement(elem, nodeToString(elem) 
+				+ " " + elem.name);
+		return visitChildren;
+	}
+	public boolean visit(SingleEntityRef.Identifier elem) {
+		printGenericElement(elem, nodeToString(elem) 
+				+ " " + elem.name);
+		return visitChildren;
 	}
 
-	public boolean visit(Definition element) {
-		printGenericElement(element, element.nodeToString() + " "
-				+ trailString(element.protection.toString(), " ")
-				+ trailString(Def_Modifiers.toString(element.modifiers), " ")
-				+ "=> " + element.name);
-		return true;
+	public boolean visit(Definition elem) {
+		printGenericElement(elem, nodeToString(elem) + " "
+				+ trailString(elem.protection.toString(), " ")
+				+ trailString(Def_Modifiers.toString(elem.modifiers), " ")
+				+ "=> " + elem.name);
+		return visitChildren;
 	}
 	
 	
 	/* ---------------------------------- */
 	
 	public void endVisit(ASTNode element) {
-		int maxdepth = TreeDepthRecon.findMaxDepth(element);
 		
-		if(collapseLeafs && maxdepth == 2) {
+		if(collapseLeafs && TreeDepthRecon.findMaxDepth(element) == 2) {
 			siblingsAreLeafs = false;
 			System.out.println(" )");
 		}

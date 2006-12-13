@@ -4,6 +4,7 @@ import java.util.List;
 
 import descent.core.dom.IDeclaration;
 import descent.core.dom.IProtectionDeclaration;
+import descent.core.dom.IElement.ElementTypes;
 import descent.core.domX.ASTVisitor;
 import descent.core.domX.AbstractElement;
 
@@ -25,7 +26,7 @@ public class ProtDeclaration extends Dsymbol implements IProtectionDeclaration {
 	}
 	
 	public int getElementType() {
-		return PROTECTION_DECLARATION;
+		return ElementTypes.PROTECTION_DECLARATION;
 	}
 	
 	public int getProtection() {

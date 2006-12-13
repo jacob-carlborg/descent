@@ -1,5 +1,7 @@
 package descent.internal.core.dom;
 
+import descent.internal.core.dom.BinaryExpression.BinaryExpressionTypes;
+
 public class XorAssignExp extends BinaryExpression {
 
 	public XorAssignExp(Expression e, Expression exp) {
@@ -7,7 +9,7 @@ public class XorAssignExp extends BinaryExpression {
 	}
 	
 	public int getBinaryExpressionType() {
-		return XOR_ASSIGN;
+		return BinaryExpressionTypes.XOR_ASSIGN;
 	}
 
 }

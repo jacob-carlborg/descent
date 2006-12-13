@@ -5,6 +5,7 @@ import java.util.List;
 import descent.core.dom.IDeclaration;
 import descent.core.dom.IExpression;
 import descent.core.dom.IStaticIfDeclaration;
+import descent.core.dom.IElement.ElementTypes;
 import descent.core.domX.ASTVisitor;
 import descent.core.domX.AbstractElement;
 
@@ -25,7 +26,7 @@ public class StaticIfDeclaration extends Dsymbol implements IStaticIfDeclaration
 	}
 
 	public int getElementType() {
-		return STATIC_IF_DECLARATION;
+		return ElementTypes.STATIC_IF_DECLARATION;
 	}
 
 	@SuppressWarnings("unchecked")

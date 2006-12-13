@@ -1,16 +1,15 @@
 module pack/*** */ .subpack.test; // My module
 
-typeof(foo).a.b!(2).c.d var;
-.typ var2;
+import foo.bar;
 
-public alias a.b!(2).c.d tplinst;
+typeof(foo)[] var = 2++;
+.a.b!(2).c.d[] var2;
+alias .a.b.c.d baR;
 
 class Foo : BigFoo{ }
-
 version = 2;
 
-alias int2.sizeof.sizeof as; 
-alias a.b.c.d baR;
+
 
   
 

@@ -1,5 +1,7 @@
 package descent.internal.core.dom;
 
+import descent.internal.core.dom.UnaryExpression.IUnaryExpression2;
+
 
 public class PostIncExp extends UnaryExpression {
 
@@ -8,7 +10,7 @@ public class PostIncExp extends UnaryExpression {
 	}
 	
 	public int getUnaryExpressionType() {
-		return POST_INCREMENT;
+		return UnaryExpression.IUnaryExpression2.POST_INCREMENT;
 	}
 
 }

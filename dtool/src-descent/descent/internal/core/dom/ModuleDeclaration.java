@@ -2,11 +2,13 @@ package descent.internal.core.dom;
 
 import java.util.List;
 
-import descent.core.dom.IModuleDeclaration;
+import descent.core.dom.ICommented;
+import descent.core.dom.IDeclaration;
 import descent.core.dom.IQualifiedName;
+import descent.core.dom.IElement.ElementTypes;
 import descent.core.domX.ASTVisitor;
 
-public class ModuleDeclaration extends Declaration implements IModuleDeclaration {
+public class ModuleDeclaration extends Declaration implements IDeclaration, ICommented {
 	
 	public List<Identifier> packages;
 	public QualifiedName qName;
@@ -22,7 +24,7 @@ public class ModuleDeclaration extends Declaration implements IModuleDeclaration
 	}
 	
 	public int getElementType() {
-		return MODULE_DECLARATION;
+		return ElementTypes.MODULE_DECLARATION;
 	}
 	
 	public void accept0(ASTVisitor visitor) {

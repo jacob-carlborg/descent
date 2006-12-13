@@ -1,10 +1,9 @@
 package descent.internal.core.dom;
 
-import descent.core.dom.IDeleteExpression;
 import descent.core.dom.IExpression;
 import descent.core.domX.ASTVisitor;
 
-public class DeleteExp extends Expression implements IDeleteExpression {
+public class DeleteExp extends Expression {
 
 	private final Expression e;
 
@@ -17,7 +16,7 @@ public class DeleteExp extends Expression implements IDeleteExpression {
 	}
 	
 	public int getElementType() {
-		return DELETE_EXPRESSION;
+		return ElementTypes.DELETE_EXPRESSION;
 	}
 	
 	public void accept0(ASTVisitor visitor) {

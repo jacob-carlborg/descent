@@ -1,6 +1,7 @@
 package descent.internal.core.dom;
 
 import descent.core.dom.IGotoDefaultStatement;
+import descent.core.dom.IElement.ElementTypes;
 import descent.core.domX.ASTVisitor;
 
 public class GotoDefaultStatement extends Statement implements IGotoDefaultStatement {
@@ -10,7 +11,7 @@ public class GotoDefaultStatement extends Statement implements IGotoDefaultState
 	}
 	
 	public int getElementType() {
-		return GOTO_DEFAULT_STATEMENT;
+		return ElementTypes.GOTO_DEFAULT_STATEMENT;
 	}
 	
 	public void accept0(ASTVisitor visitor) {

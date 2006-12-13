@@ -5,6 +5,7 @@ import java.util.List;
 import descent.core.dom.IDeclaration;
 import descent.core.dom.IName;
 import descent.core.dom.ITemplateDeclaration;
+import descent.core.dom.IElement.ElementTypes;
 import descent.core.domX.ASTVisitor;
 import descent.core.domX.AbstractElement;
 
@@ -35,7 +36,7 @@ public class TemplateDeclaration extends Declaration implements ITemplateDeclara
 	}
 	
 	public int getElementType() {
-		return TEMPLATE_DECLARATION;
+		return ElementTypes.TEMPLATE_DECLARATION;
 	}
 	
 	public void accept0(ASTVisitor visitor) {

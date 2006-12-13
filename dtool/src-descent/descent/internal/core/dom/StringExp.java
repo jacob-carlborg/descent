@@ -1,6 +1,7 @@
 package descent.internal.core.dom;
 
 import descent.core.dom.IStringExpression;
+import descent.core.dom.IElement.ElementTypes;
 import descent.core.domX.ASTVisitor;
 
 public class StringExp extends Expression implements IStringExpression {
@@ -22,7 +23,7 @@ public class StringExp extends Expression implements IStringExpression {
 	}
 	
 	public int getElementType() {
-		return STRING_EXPRESSION;
+		return ElementTypes.STRING_EXPRESSION;
 	}
 	
 	@Override

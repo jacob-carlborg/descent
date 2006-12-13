@@ -1,6 +1,7 @@
 package descent.internal.core.dom;
 
 import descent.core.dom.IDynamicArrayType;
+import descent.core.dom.IElement.ElementTypes;
 import descent.core.domX.ASTVisitor;
 
 public class TypeDArray extends TypeArray implements IDynamicArrayType {
@@ -10,7 +11,7 @@ public class TypeDArray extends TypeArray implements IDynamicArrayType {
 	}
 	
 	public int getElementType() {
-		return DYNAMIC_ARRAY_TYPE;
+		return ElementTypes.DYNAMIC_ARRAY_TYPE;
 	}
 	
 	@Override
@@ -20,7 +21,10 @@ public class TypeDArray extends TypeArray implements IDynamicArrayType {
 	
 	@Override
 	public void accept0(ASTVisitor visitor) {
-		visitor.visit(this);
+		boolean children = visitor.visit(this);
+		if (children) {
+			acceptChild(visitor, next);
+		}
 		visitor.endVisit(this);
 	}
 	

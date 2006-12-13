@@ -5,10 +5,9 @@ import java.util.List;
 
 import descent.core.dom.IInitializer;
 import descent.core.dom.IName;
-import descent.core.dom.IStructInitializer;
 import descent.core.domX.ASTVisitor;
 
-public class StructInitializer extends Initializer implements IStructInitializer {
+public class StructInitializer extends Initializer {
 	
 	private List<Identifier> ids;
 	private List<Initializer> values;
@@ -32,7 +31,7 @@ public class StructInitializer extends Initializer implements IStructInitializer
 	}
 	
 	public int getElementType() {
-		return STRUCT_INITIALIZER;
+		return ElementTypes.STRUCT_INITIALIZER;
 	}
 	
 	public void accept0(ASTVisitor visitor) {

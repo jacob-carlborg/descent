@@ -1,5 +1,7 @@
 package descent.internal.core.dom;
 
+import descent.internal.core.dom.UnaryExpression.IUnaryExpression2;
+
 public class ComExp extends UnaryExpression {
 
 	public ComExp(Expression e) {
@@ -7,7 +9,7 @@ public class ComExp extends UnaryExpression {
 	}
 	
 	public int getUnaryExpressionType() {
-		return INVERT;
+		return UnaryExpression.IUnaryExpression2.INVERT;
 	}
 
 }

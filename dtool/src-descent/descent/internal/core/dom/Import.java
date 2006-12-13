@@ -7,6 +7,7 @@ import descent.core.dom.IImport;
 import descent.core.dom.IName;
 import descent.core.dom.IQualifiedName;
 import descent.core.dom.ISelectiveImport;
+import descent.core.dom.IElement.ElementTypes;
 import descent.core.domX.ASTVisitor;
 
 public class Import extends Dsymbol implements IImport {
@@ -44,7 +45,7 @@ public class Import extends Dsymbol implements IImport {
 	}
 	
 	public int getElementType() {
-		return IMPORT;
+		return ElementTypes.IMPORT;
 	}
 	
 	public void accept0(ASTVisitor visitor) {

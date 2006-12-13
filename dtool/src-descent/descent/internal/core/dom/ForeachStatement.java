@@ -2,10 +2,10 @@ package descent.internal.core.dom;
 
 import java.util.List;
 
-import descent.core.dom.IArgument;
 import descent.core.dom.IExpression;
 import descent.core.dom.IForeachStatement;
 import descent.core.dom.IStatement;
+import descent.core.dom.IElement.ElementTypes;
 import descent.core.domX.ASTVisitor;
 
 public class ForeachStatement extends Statement implements IForeachStatement {
@@ -39,7 +39,7 @@ public class ForeachStatement extends Statement implements IForeachStatement {
 	}
 	
 	public int getElementType() {
-		return FOREACH_STATEMENT;
+		return ElementTypes.FOREACH_STATEMENT;
 	}
 	
 	public void accept0(ASTVisitor visitor) {

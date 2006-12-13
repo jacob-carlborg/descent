@@ -5,6 +5,7 @@ import java.math.BigInteger;
 import descent.core.dom.IFalseExpression;
 import descent.core.dom.IIntegerExpression;
 import descent.core.dom.ITrueExpression;
+import descent.core.dom.IElement.ElementTypes;
 import descent.core.domX.ASTVisitor;
 
 public class IntegerExp extends Expression implements IIntegerExpression, IFalseExpression, ITrueExpression {
@@ -14,9 +15,9 @@ public class IntegerExp extends Expression implements IIntegerExpression, IFalse
 	
 	public IntegerExp(BigInteger number, Type type) {
 		if (type == Type.tbool) {
-			expressionType = number.compareTo(BigInteger.ZERO) == 0 ? FALSE_EXPRESSION : TRUE_EXPRESSION;
+			expressionType = number.compareTo(BigInteger.ZERO) == 0 ? ElementTypes.FALSE_EXPRESSION : ElementTypes.TRUE_EXPRESSION;
 		} else {
-			expressionType = INTEGER_EXPRESSION;
+			expressionType = ElementTypes.INTEGER_EXPRESSION;
 		}
 		this.number = number;
 	}
@@ -32,15 +33,15 @@ public class IntegerExp extends Expression implements IIntegerExpression, IFalse
 	@Override
 	public void accept0(ASTVisitor visitor) {
 		switch(expressionType) {
-		case TRUE_EXPRESSION:
+		case ElementTypes.TRUE_EXPRESSION:
 			visitor.visit((ITrueExpression) this);
 			visitor.endVisit((ITrueExpression) this);
 			break;
-		case FALSE_EXPRESSION:
+		case ElementTypes.FALSE_EXPRESSION:
 			visitor.visit((IFalseExpression) this);
 			visitor.endVisit((IFalseExpression) this);
 			break;
-		case INTEGER_EXPRESSION:
+		case ElementTypes.INTEGER_EXPRESSION:
 			visitor.visit((IIntegerExpression) this);
 			visitor.endVisit((IIntegerExpression) this);
 			break;
@@ -50,9 +51,9 @@ public class IntegerExp extends Expression implements IIntegerExpression, IFalse
 	@Override
 	public String toString() {
 		switch(expressionType) {
-		case TRUE_EXPRESSION: return "true";
-		case FALSE_EXPRESSION: return "false";
-		case INTEGER_EXPRESSION: return String.valueOf(number);
+		case ElementTypes.TRUE_EXPRESSION: return "true";
+		case ElementTypes.FALSE_EXPRESSION: return "false";
+		case ElementTypes.INTEGER_EXPRESSION: return String.valueOf(number);
 		}
 		throw new IllegalStateException("Can't happen");
 	}

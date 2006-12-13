@@ -1,11 +1,12 @@
 package descent.internal.core.dom;
 
-import descent.core.dom.IBinaryExpression;
 import descent.core.dom.IExpression;
-import descent.core.dom.IUnaryExpression;
+import descent.core.dom.IElement.ElementTypes;
 import descent.core.domX.ASTVisitor;
+import descent.internal.core.dom.BinaryExpression.BinaryExpressionTypes;
+import descent.internal.core.dom.UnaryExpression.IUnaryExpression2;
 
-public class AddAssignExp extends BinaryExpression implements IUnaryExpression {
+public class AddAssignExp extends BinaryExpression implements IExpression {
 	
 	private final boolean isUnary;
 
@@ -19,15 +20,15 @@ public class AddAssignExp extends BinaryExpression implements IUnaryExpression {
 	}
 	
 	public int getElementType() {
-		return isUnary ? UNARY_EXPRESSION : BINARY_EXPRESSION;
+		return isUnary ? ElementTypes.UNARY_EXPRESSION : ElementTypes.BINARY_EXPRESSION;
 	}
 	
 	public int getBinaryExpressionType() {
-		return ADD_ASSIGN;
+		return BinaryExpressionTypes.ADD_ASSIGN;
 	}
 	
 	public int getUnaryExpressionType() {
-		return PRE_INCREMENT;
+		return UnaryExpression.IUnaryExpression2.PRE_INCREMENT;
 	}
 	
 	public IExpression getInnerExpression() {
@@ -37,13 +38,14 @@ public class AddAssignExp extends BinaryExpression implements IUnaryExpression {
 	@Override
 	public void accept0(ASTVisitor visitor) {
 		if (isUnary) {
-			boolean children = visitor.visit((IUnaryExpression) this);
+			boolean children = visitor.visit(this);
 			if (children) {
 				acceptChild(visitor, e1);
+				acceptChild(visitor, e2);
 			}
-			visitor.endVisit((IUnaryExpression) this);
+			visitor.endVisit((BinaryExpression) this);
 		} else {
-			boolean children = visitor.visit((IBinaryExpression) this);
+			boolean children = visitor.visit(this);
 			if (children) {
 				acceptChild(visitor, e1);
 				acceptChild(visitor, e2);

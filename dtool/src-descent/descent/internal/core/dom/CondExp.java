@@ -2,6 +2,7 @@ package descent.internal.core.dom;
 
 import descent.core.dom.IConditionExpression;
 import descent.core.dom.IExpression;
+import descent.core.dom.IElement.ElementTypes;
 import descent.core.domX.ASTVisitor;
 
 public class CondExp extends Expression implements IConditionExpression {
@@ -31,7 +32,7 @@ public class CondExp extends Expression implements IConditionExpression {
 	}
 	
 	public int getElementType() {
-		return CONDITION_EXPRESSION;
+		return ElementTypes.CONDITION_EXPRESSION;
 	}
 	
 	public void accept0(ASTVisitor visitor) {

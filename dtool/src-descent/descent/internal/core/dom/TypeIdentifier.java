@@ -1,11 +1,10 @@
 package descent.internal.core.dom;
 
-import java.util.Collection;
-
 import descent.core.dom.IElement;
 import descent.core.dom.IIdentifierType;
 import descent.core.dom.IQualifiedName;
 import descent.core.dom.ITemplateInstanceType;
+import descent.core.dom.IElement.ElementTypes;
 import descent.core.domX.ASTVisitor;
 
 public class TypeIdentifier extends TypeQualified implements IIdentifierType, ITemplateInstanceType {
@@ -20,12 +19,12 @@ public class TypeIdentifier extends TypeQualified implements IIdentifierType, IT
 	
 	public int getElementType() {
 		if (idents.size() == 0) {
-			return IDENTIFIER_TYPE;
+			return ElementTypes.IDENTIFIER_TYPE;
 		} else {
 			if (idents.get(idents.size() - 1) instanceof TemplateInstance) {
-				return TEMPLATE_INSTANCE_TYPE;
+				return ElementTypes.TEMPLATE_INSTANCE_TYPE;
 			} else {
-				return IDENTIFIER_TYPE;
+				return ElementTypes.IDENTIFIER_TYPE;
 			}
 		}
 	}

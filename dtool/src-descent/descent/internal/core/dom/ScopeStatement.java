@@ -2,6 +2,7 @@ package descent.internal.core.dom;
 
 import descent.core.dom.IScopeStatement;
 import descent.core.dom.IStatement;
+import descent.core.dom.IElement.ElementTypes;
 import descent.core.domX.ASTVisitor;
 
 public class ScopeStatement extends Statement implements IScopeStatement {
@@ -17,7 +18,7 @@ public class ScopeStatement extends Statement implements IScopeStatement {
 	}
 	
 	public int getElementType() {
-		return SCOPE_STATEMENT;
+		return ElementTypes.SCOPE_STATEMENT;
 	}
 	
 	public void accept0(ASTVisitor visitor) {

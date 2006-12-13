@@ -1,6 +1,7 @@
 package descent.internal.core.dom;
 
 import descent.core.dom.IName;
+import descent.core.dom.IElement.ElementTypes;
 import descent.core.domX.ASTVisitor;
 import descent.core.domX.AbstractElement;
 
@@ -32,7 +33,7 @@ public class Identifier extends AbstractElement implements IName {
 	}
 
 	public int getElementType() {
-		return NAME;
+		return ElementTypes.NAME;
 	}
 
 }

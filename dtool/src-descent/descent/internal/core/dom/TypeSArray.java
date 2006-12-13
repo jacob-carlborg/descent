@@ -5,6 +5,7 @@ import java.util.List;
 
 import descent.core.dom.IExpression;
 import descent.core.dom.IStaticArrayType;
+import descent.core.dom.IElement.ElementTypes;
 import descent.core.domX.ASTVisitor;
 
 public class TypeSArray extends TypeArray implements IStaticArrayType {
@@ -17,7 +18,7 @@ public class TypeSArray extends TypeArray implements IStaticArrayType {
 	}
 	
 	public int getElementType() {
-		return STATIC_ARRAY_TYPE;
+		return ElementTypes.STATIC_ARRAY_TYPE;
 	}
 	
 	public IExpression getDimension() {

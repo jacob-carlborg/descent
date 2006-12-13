@@ -2,6 +2,7 @@ package descent.internal.core.dom;
 
 import descent.core.dom.IConditionAssignment;
 import descent.core.dom.IName;
+import descent.core.dom.IElement.ElementTypes;
 import descent.core.domX.ASTVisitor;
 
 public class DebugSymbol extends Dsymbol implements IConditionAssignment {
@@ -17,7 +18,7 @@ public class DebugSymbol extends Dsymbol implements IConditionAssignment {
 	}
 	
 	public int getElementType() {
-		return CONDITION_ASSIGNMENT;
+		return ElementTypes.CONDITION_ASSIGNMENT;
 	}
 	
 	public int getConditionAssignmentType() {

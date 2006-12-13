@@ -2,6 +2,7 @@ package descent.internal.core.dom;
 
 import descent.core.dom.IAssociativeArrayType;
 import descent.core.dom.IType;
+import descent.core.dom.IElement.ElementTypes;
 import descent.core.domX.ASTVisitor;
 
 // asociative array
@@ -15,7 +16,7 @@ public class TypeAArray extends TypeArray implements IAssociativeArrayType {
 	}
 	
 	public int getElementType() {
-		return ASSOCIATIVE_ARRAY_TYPE;
+		return ElementTypes.ASSOCIATIVE_ARRAY_TYPE;
 	}
 	
 	public IType getKeyType() {

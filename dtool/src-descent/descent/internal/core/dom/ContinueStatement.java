@@ -2,6 +2,7 @@ package descent.internal.core.dom;
 
 import descent.core.dom.IContinueStatement;
 import descent.core.dom.IName;
+import descent.core.dom.IElement.ElementTypes;
 import descent.core.domX.ASTVisitor;
 
 public class ContinueStatement extends Statement implements IContinueStatement {
@@ -17,7 +18,7 @@ public class ContinueStatement extends Statement implements IContinueStatement {
 	}
 	
 	public int getElementType() {
-		return CONTINUE_STATEMENT;
+		return ElementTypes.CONTINUE_STATEMENT;
 	}
 	
 	public void accept0(ASTVisitor visitor) {

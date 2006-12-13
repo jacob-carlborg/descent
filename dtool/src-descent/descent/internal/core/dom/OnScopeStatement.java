@@ -2,6 +2,7 @@ package descent.internal.core.dom;
 
 import descent.core.dom.IOnScopeStatement;
 import descent.core.dom.IStatement;
+import descent.core.dom.IElement.ElementTypes;
 import descent.core.domX.ASTVisitor;
 
 public class OnScopeStatement extends Statement implements IOnScopeStatement  {
@@ -28,7 +29,7 @@ public class OnScopeStatement extends Statement implements IOnScopeStatement  {
 	}
 	
 	public int getElementType() {
-		return ON_SCOPE_STATEMENT;
+		return ElementTypes.ON_SCOPE_STATEMENT;
 	}
 	
 	public void accept0(ASTVisitor visitor) {

@@ -1,51 +1,50 @@
 package dtool.dom;
 
+import descent.core.domX.ASTNode;
+import descent.internal.core.dom.Expression;
 import dtool.dom.ext.ASTNeoVisitor;
 
 /**
- * TODO 
+ * A qualified entity/name reference
  */
 public abstract class EntityReference extends ASTElement {
 
-	public Entity entity;
+	public boolean moduleRoot; 
+	public SingleEntityRef[] ents; 
+	
 	public EReferenceConstraint refConstraint = null;
 	
-	public static enum EReferenceConstraint {
+	public static enum EReferenceConstraint {	
 		none,
 		type,
 		expvalue
 	}
 
-	public EntityReference() { }
-	
-	public EntityReference(Entity entity) {
-		this.entity = entity;
-	}
 	
 	public void accept0(ASTNeoVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
-			acceptChild(visitor, entity);
+			acceptChildren(visitor, ents);
 		}
 		visitor.endVisit(this);
 	}
 	
 	public static class TypeEntityReference extends EntityReference {
-		public TypeEntityReference() { super(); }
-		public TypeEntityReference(Entity entity) {
-			super(entity);
+		public TypeEntityReference() { 
+			super(); 
+			refConstraint = EReferenceConstraint.expvalue;
 		}
 	}
 	public static class ValueEntityReference extends EntityReference {
-		public ValueEntityReference() { super(); }
-		public ValueEntityReference(Entity entity) {
-			super(entity);
+		public ValueEntityReference() { 
+			super(); 
+			refConstraint = EReferenceConstraint.type;
 		}
 	}	
 	public static class AnyEntityReference extends EntityReference {
-		public AnyEntityReference() { super(); }
-		public AnyEntityReference(Entity entity) {
-			super(entity);
+		public AnyEntityReference() { 
+			super(); 
+			refConstraint = EReferenceConstraint.none;
 		}
 	}
 

@@ -2,6 +2,7 @@ package descent.internal.core.dom;
 
 import descent.core.dom.IExpression;
 import descent.core.dom.IParenthesizedExpression;
+import descent.core.dom.IElement.ElementTypes;
 import descent.core.domX.ASTVisitor;
 
 public class ParenthesizedExpression extends Expression implements IParenthesizedExpression {
@@ -13,7 +14,7 @@ public class ParenthesizedExpression extends Expression implements IParenthesize
 	}
 	
 	public int getElementType() {
-		return PARENTHESIZED_EXPRESSION;
+		return ElementTypes.PARENTHESIZED_EXPRESSION;
 	}
 
 	public IExpression getExpression() {

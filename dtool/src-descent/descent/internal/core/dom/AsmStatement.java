@@ -1,9 +1,8 @@
 package descent.internal.core.dom;
 
-import descent.core.dom.IAsmStatement;
 import descent.core.domX.ASTVisitor;
 
-public class AsmStatement extends Statement implements IAsmStatement {
+public class AsmStatement extends Statement {
 
 	public AsmStatement(Token toklist) {
 		// TODO Auto-generated constructor stub
@@ -15,7 +14,7 @@ public class AsmStatement extends Statement implements IAsmStatement {
 	}
 
 	public int getElementType() {
-		return ASM_STATEMENT;
+		return ElementTypes.ASM_STATEMENT;
 	}
 
 }

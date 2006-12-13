@@ -6,6 +6,7 @@ import descent.core.dom.IEnumDeclaration;
 import descent.core.dom.IEnumMember;
 import descent.core.dom.IName;
 import descent.core.dom.IType;
+import descent.core.dom.IElement.ElementTypes;
 import descent.core.domX.ASTVisitor;
 
 public class EnumDeclaration extends Dsymbol implements IEnumDeclaration {
@@ -27,7 +28,7 @@ public class EnumDeclaration extends Dsymbol implements IEnumDeclaration {
 	}
 	
 	public int getElementType() {
-		return ENUM_DECLARATION;
+		return ElementTypes.ENUM_DECLARATION;
 	}
 
 	public IEnumMember[] getMembers() {

@@ -2,9 +2,10 @@ package descent.internal.core.dom;
 
 import descent.core.dom.IExpression;
 import descent.core.dom.ITypeofType;
+import descent.core.dom.IElement.ElementTypes;
 import descent.core.domX.ASTVisitor;
 
-public class TypeTypeof extends TypeQualified implements ITypeofType {
+public class TypeTypeof extends TypeQualified {
 	
 	public Expression exp;
 
@@ -14,7 +15,7 @@ public class TypeTypeof extends TypeQualified implements ITypeofType {
 	}
 	
 	public int getElementType() {
-		return TYPEOF_TYPE;
+		return ElementTypes.TYPEOF_TYPE;
 	}
 	
 	public IExpression getExpression() {

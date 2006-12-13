@@ -1,6 +1,7 @@
 package descent.internal.core.dom;
 
 import descent.core.dom.IDollarExpression;
+import descent.core.dom.IElement.ElementTypes;
 import descent.core.domX.ASTVisitor;
 
 public class DollarExp extends Expression implements IDollarExpression {
@@ -9,7 +10,7 @@ public class DollarExp extends Expression implements IDollarExpression {
 	}
 	
 	public int getElementType() {
-		return DOLAR_EXPRESSION;
+		return ElementTypes.DOLAR_EXPRESSION;
 	}
 	
 	@Override

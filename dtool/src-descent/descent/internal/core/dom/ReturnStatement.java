@@ -2,6 +2,7 @@ package descent.internal.core.dom;
 
 import descent.core.dom.IExpression;
 import descent.core.dom.IReturnStatement;
+import descent.core.dom.IElement.ElementTypes;
 import descent.core.domX.ASTVisitor;
 
 public class ReturnStatement extends Statement implements IReturnStatement {
@@ -17,7 +18,7 @@ public class ReturnStatement extends Statement implements IReturnStatement {
 	}
 	
 	public int getElementType() {
-		return RETURN_STATEMENT;
+		return ElementTypes.RETURN_STATEMENT;
 	}
 	
 	public void accept0(ASTVisitor visitor) {

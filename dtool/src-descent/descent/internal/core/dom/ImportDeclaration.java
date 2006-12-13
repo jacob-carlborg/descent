@@ -4,6 +4,7 @@ import java.util.List;
 
 import descent.core.dom.IImport;
 import descent.core.dom.IImportDeclaration;
+import descent.core.dom.IElement.ElementTypes;
 import descent.core.domX.ASTVisitor;
 import descent.core.domX.AbstractElement;
 
@@ -26,7 +27,7 @@ public class ImportDeclaration extends Declaration implements IImportDeclaration
 	}
 	
 	public int getElementType() {
-		return IMPORT_DECLARATION;
+		return ElementTypes.IMPORT_DECLARATION;
 	}
 	
 	public boolean isStatic() {

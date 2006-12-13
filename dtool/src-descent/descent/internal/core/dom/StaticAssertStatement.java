@@ -2,6 +2,7 @@ package descent.internal.core.dom;
 
 import descent.core.dom.IExpression;
 import descent.core.dom.IStaticAssertStatement;
+import descent.core.dom.IElement.ElementTypes;
 import descent.core.domX.ASTVisitor;
 
 public class StaticAssertStatement extends Statement implements IStaticAssertStatement {
@@ -21,7 +22,7 @@ public class StaticAssertStatement extends Statement implements IStaticAssertSta
 	}
 	
 	public int getElementType() {
-		return STATIC_ASSERT_STATEMENT;
+		return ElementTypes.STATIC_ASSERT_STATEMENT;
 	}
 	
 	public void accept0(ASTVisitor visitor) {

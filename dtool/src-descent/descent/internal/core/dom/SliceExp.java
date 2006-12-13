@@ -2,6 +2,7 @@ package descent.internal.core.dom;
 
 import descent.core.dom.IExpression;
 import descent.core.dom.ISliceExpression;
+import descent.core.dom.IElement.ElementTypes;
 import descent.core.domX.ASTVisitor;
 
 public class SliceExp extends Expression implements ISliceExpression {
@@ -29,7 +30,7 @@ public class SliceExp extends Expression implements ISliceExpression {
 	}
 	
 	public int getElementType() {
-		return SLICE_EXPRESSION;
+		return ElementTypes.SLICE_EXPRESSION;
 	}
 	
 	public void accept0(ASTVisitor visitor) {

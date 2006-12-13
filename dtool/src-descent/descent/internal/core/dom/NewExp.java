@@ -3,11 +3,11 @@ package descent.internal.core.dom;
 import java.util.List;
 
 import descent.core.dom.IExpression;
-import descent.core.dom.INewExpression;
 import descent.core.dom.IType;
+import descent.core.dom.IElement.ElementTypes;
 import descent.core.domX.ASTVisitor;
 
-public class NewExp extends Expression implements INewExpression {
+public class NewExp extends Expression {
 	
 	private Expression[] arguments;
 	private Type type;
@@ -26,7 +26,7 @@ public class NewExp extends Expression implements INewExpression {
 	}
 	
 	public int getElementType() {
-		return NEW_EXPRESSION;
+		return ElementTypes.NEW_EXPRESSION;
 	}
 	
 	public void accept0(ASTVisitor visitor) {

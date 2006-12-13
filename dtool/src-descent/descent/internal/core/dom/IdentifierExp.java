@@ -2,6 +2,7 @@ package descent.internal.core.dom;
 
 import descent.core.dom.IIdentifierExpression;
 import descent.core.dom.IName;
+import descent.core.dom.IElement.ElementTypes;
 import descent.core.domX.ASTVisitor;
 
 public class IdentifierExp extends Expression implements IIdentifierExpression {
@@ -15,7 +16,7 @@ public class IdentifierExp extends Expression implements IIdentifierExpression {
 	}
 	
 	public int getElementType() {
-		return IDENTIFIER_EXPRESSION;
+		return ElementTypes.IDENTIFIER_EXPRESSION;
 	}
 	
 	public IName getIdentifier() {

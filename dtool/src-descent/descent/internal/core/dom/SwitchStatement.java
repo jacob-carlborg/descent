@@ -2,10 +2,9 @@ package descent.internal.core.dom;
 
 import descent.core.dom.IExpression;
 import descent.core.dom.IStatement;
-import descent.core.dom.ISwitchStatement;
 import descent.core.domX.ASTVisitor;
 
-public class SwitchStatement extends Statement implements ISwitchStatement {
+public class SwitchStatement extends Statement {
 
 	private final Expression expr;
 	private final Statement body;
@@ -24,7 +23,7 @@ public class SwitchStatement extends Statement implements ISwitchStatement {
 	}
 	
 	public int getElementType() {
-		return SWITCH_STATEMENT;
+		return ElementTypes.SWITCH_STATEMENT;
 	}
 	
 	public void accept0(ASTVisitor visitor) {

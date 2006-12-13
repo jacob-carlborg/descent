@@ -1,5 +1,7 @@
 package descent.internal.core.dom;
 
+import descent.internal.core.dom.BinaryExpression.BinaryExpressionTypes;
+
 public class MulAssignExp extends BinaryExpression {
 
 	public MulAssignExp(Expression e, Expression e2) {
@@ -7,7 +9,7 @@ public class MulAssignExp extends BinaryExpression {
 	}
 	
 	public int getBinaryExpressionType() {
-		return MUL_ASSIGN;
+		return BinaryExpressionTypes.MUL_ASSIGN;
 	}
 
 }

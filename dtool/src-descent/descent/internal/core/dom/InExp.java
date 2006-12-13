@@ -1,5 +1,7 @@
 package descent.internal.core.dom;
 
+import descent.internal.core.dom.BinaryExpression.BinaryExpressionTypes;
+
 public class InExp extends BinaryExpression {
 
 	public InExp(Expression e, Expression e2) {
@@ -7,7 +9,7 @@ public class InExp extends BinaryExpression {
 	}
 	
 	public int getBinaryExpressionType() {
-		return IN;
+		return BinaryExpressionTypes.IN;
 	}
 
 }

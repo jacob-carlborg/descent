@@ -1,5 +1,7 @@
 package descent.internal.core.dom;
 
+import descent.internal.core.dom.BinaryExpression.BinaryExpressionTypes;
+
 public class ShlExp extends BinaryExpression {
 
 	public ShlExp(Expression e, Expression e2) {
@@ -7,7 +9,7 @@ public class ShlExp extends BinaryExpression {
 	}
 	
 	public int getBinaryExpressionType() {
-		return SHIFT_LEFT;
+		return BinaryExpressionTypes.SHIFT_LEFT;
 	}
 
 }

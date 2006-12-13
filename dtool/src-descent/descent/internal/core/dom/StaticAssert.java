@@ -2,6 +2,7 @@ package descent.internal.core.dom;
 
 import descent.core.dom.IExpression;
 import descent.core.dom.IStaticAssertDeclaration;
+import descent.core.dom.IElement.ElementTypes;
 import descent.core.domX.ASTVisitor;
 
 public class StaticAssert extends Dsymbol implements IStaticAssertDeclaration {
@@ -15,7 +16,7 @@ public class StaticAssert extends Dsymbol implements IStaticAssertDeclaration {
 	}
 
 	public int getElementType() {
-		return STATIC_ASSERT;
+		return ElementTypes.STATIC_ASSERT;
 	}
 	
 	public IExpression getExpression() {

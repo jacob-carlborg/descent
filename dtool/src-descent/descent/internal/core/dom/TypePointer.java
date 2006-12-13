@@ -1,9 +1,9 @@
 package descent.internal.core.dom;
 
-import descent.core.dom.IArgument;
 import descent.core.dom.IDelegateType;
 import descent.core.dom.IPointerType;
 import descent.core.dom.IType;
+import descent.core.dom.IElement.ElementTypes;
 import descent.core.domX.ASTVisitor;
 
 public class TypePointer extends Type implements IPointerType, IDelegateType {
@@ -13,7 +13,7 @@ public class TypePointer extends Type implements IPointerType, IDelegateType {
 	}
 	
 	public int getElementType() {
-		return next instanceof TypeFunction ? POINTER_TO_FUNCTION_TYPE : POINTER_TYPE;
+		return next instanceof TypeFunction ? ElementTypes.POINTER_TO_FUNCTION_TYPE : ElementTypes.POINTER_TYPE;
 	}
 	
 	public IType getInnerType() {
@@ -32,7 +32,7 @@ public class TypePointer extends Type implements IPointerType, IDelegateType {
 	public void accept0(ASTVisitor visitor) {
 		boolean children;
 		switch(getElementType()) {
-		case POINTER_TO_FUNCTION_TYPE:
+		case ElementTypes.POINTER_TO_FUNCTION_TYPE:
 			children = visitor.visit((IDelegateType) this);
 			if (children) {
 				acceptChild(visitor, getReturnType());
@@ -40,7 +40,7 @@ public class TypePointer extends Type implements IPointerType, IDelegateType {
 			}
 			visitor.endVisit((IDelegateType) this);
 			break;
-		case POINTER_TYPE:
+		case ElementTypes.POINTER_TYPE:
 			children = visitor.visit((IPointerType) this);
 			if (children) {
 				acceptChild(visitor, next);

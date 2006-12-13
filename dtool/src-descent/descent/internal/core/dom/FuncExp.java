@@ -4,6 +4,7 @@ import descent.core.dom.IArgument;
 import descent.core.dom.IFunctionExpression;
 import descent.core.dom.IName;
 import descent.core.dom.IStatement;
+import descent.core.dom.IElement.ElementTypes;
 import descent.core.domX.ASTVisitor;
 
 public class FuncExp extends Expression implements IFunctionExpression {
@@ -15,7 +16,7 @@ public class FuncExp extends Expression implements IFunctionExpression {
 	}
 	
 	public int getElementType() {
-		return FUNCTION_EXPRESSION;
+		return ElementTypes.FUNCTION_EXPRESSION;
 	}
 
 	public IArgument[] getArguments() {

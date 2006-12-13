@@ -1,6 +1,5 @@
 package descent.internal.core.dom;
 
-import descent.core.dom.ICatchClause;
 import descent.core.dom.IStatement;
 import descent.core.dom.ITryStatement;
 import descent.core.domX.ASTVisitor;
@@ -16,14 +15,14 @@ public class TryFinallyStatement extends Statement implements ITryStatement {
 	}
 	
 	public int getElementType() {
-		return TRY_STATEMENT;
+		return ElementTypes.TRY_STATEMENT;
 	}
 	
-	public ICatchClause[] getCatches() {
+	public Catch[] getCatches() {
 		if (s instanceof TryCatchStatement) {
 			return ((TryCatchStatement) s).getCatches();
 		} else {
-			return new ICatchClause[0];
+			return new Catch[0];
 		}
 	}
 

@@ -27,8 +27,8 @@ public class Module extends SymbolDef {
 
 	public static class DeclarationModule extends ASTElement {
 
-		public SymbolReference[] packages;
-		public SymbolReference moduleName; // XXX: SymbolReference?
+		public SingleEntityRef[] packages;
+		public SingleEntityRef moduleName; // XXX: SymbolReference?
 
 		public void accept0(ASTNeoVisitor visitor) {
 			boolean children = visitor.visit(this);

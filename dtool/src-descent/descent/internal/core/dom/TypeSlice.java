@@ -3,6 +3,7 @@ package descent.internal.core.dom;
 import descent.core.dom.IExpression;
 import descent.core.dom.ISliceType;
 import descent.core.dom.IType;
+import descent.core.dom.IElement.ElementTypes;
 import descent.core.domX.ASTVisitor;
 
 public class TypeSlice extends Type implements ISliceType {
@@ -17,7 +18,7 @@ public class TypeSlice extends Type implements ISliceType {
 	}
 	
 	public int getElementType() {
-		return SLICE_TYPE;
+		return ElementTypes.SLICE_TYPE;
 	}
 	
 	public IType getInnerType() {

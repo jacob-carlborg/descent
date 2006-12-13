@@ -3,6 +3,7 @@ package descent.internal.core.dom;
 import descent.core.dom.IExpression;
 import descent.core.dom.IStatement;
 import descent.core.dom.ISynchronizedStatement;
+import descent.core.dom.IElement.ElementTypes;
 import descent.core.domX.ASTVisitor;
 
 public class SynchronizedStatement extends Statement implements ISynchronizedStatement {
@@ -24,7 +25,7 @@ public class SynchronizedStatement extends Statement implements ISynchronizedSta
 	}
 	
 	public int getElementType() {
-		return SYNCHRONIZED_STATEMENT;
+		return ElementTypes.SYNCHRONIZED_STATEMENT;
 	}
 	
 	public void accept0(ASTVisitor visitor) {

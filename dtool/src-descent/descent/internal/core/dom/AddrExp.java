@@ -1,5 +1,7 @@
 package descent.internal.core.dom;
 
+import descent.internal.core.dom.UnaryExpression.IUnaryExpression2;
+
 public class AddrExp extends UnaryExpression {
 	
 	public AddrExp(Expression e) {
@@ -7,7 +9,7 @@ public class AddrExp extends UnaryExpression {
 	}
 	
 	public int getUnaryExpressionType() {
-		return ADDRESS;
+		return UnaryExpression.IUnaryExpression2.ADDRESS;
 	}
 
 }

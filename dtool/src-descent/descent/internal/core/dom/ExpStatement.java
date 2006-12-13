@@ -1,10 +1,10 @@
 package descent.internal.core.dom;
 
 import descent.core.dom.IExpression;
-import descent.core.dom.IExpressionStatement;
+import descent.core.dom.IElement.ElementTypes;
 import descent.core.domX.ASTVisitor;
 
-public class ExpStatement extends Statement implements IExpressionStatement {
+public class ExpStatement extends Statement {
 	
 	private Expression exp;
 
@@ -13,7 +13,7 @@ public class ExpStatement extends Statement implements IExpressionStatement {
 	}
 	
 	public int getElementType() {
-		return EXPRESSION_STATEMENT;
+		return ElementTypes.EXPRESSION_STATEMENT;
 	}
 	
 	public IExpression getExpression() {

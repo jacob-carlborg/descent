@@ -28,7 +28,7 @@ public enum Def_EProtection {
 
 	public static Def_EProtection adaptFromDescent(int modifiers) {
 
-		if(util.BitFields.countActiveFlags(modifiers, IModifier.protModifiers) < 1)
+		if(util.BitFields.countActiveFlags(modifiers, IModifier.protModifiers) > 1)
 			assert false;
 		
     	if ((modifiers & IModifier.PUBLIC) != 0) return Def_EProtection.PROTpublic;
@@ -45,7 +45,7 @@ public enum Def_EProtection {
 	// TODO: link with tokens?
 	public String toString() {
 		switch(this){
-		case PROTundefined: return "UNDEFINED??"; // XXX: *know*
+		case PROTundefined: return "UNDEFINED??"; // XXX: what is PROTundefined??
 		case PROTnone: return "";
 		case PROTprivate: return "private";
 		case PROTpackage: return "package";

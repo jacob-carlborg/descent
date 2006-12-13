@@ -2,6 +2,7 @@ package descent.internal.core.dom;
 
 import descent.core.dom.IBreakStatement;
 import descent.core.dom.IName;
+import descent.core.dom.IElement.ElementTypes;
 import descent.core.domX.ASTVisitor;
 
 public class BreakStatement extends Statement implements IBreakStatement {
@@ -17,7 +18,7 @@ public class BreakStatement extends Statement implements IBreakStatement {
 	}
 	
 	public int getElementType() {
-		return BREAK_STATEMENT;
+		return ElementTypes.BREAK_STATEMENT;
 	}
 	
 	public void accept0(ASTVisitor visitor) {

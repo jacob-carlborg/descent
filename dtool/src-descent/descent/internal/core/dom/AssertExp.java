@@ -1,10 +1,9 @@
 package descent.internal.core.dom;
 
-import descent.core.dom.IAssertExpression;
 import descent.core.dom.IExpression;
 import descent.core.domX.ASTVisitor;
 
-public class AssertExp extends Expression implements IAssertExpression {
+public class AssertExp extends Expression {
 	
 	private Expression e;
 	private Expression msg;
@@ -15,7 +14,7 @@ public class AssertExp extends Expression implements IAssertExpression {
 	}
 	
 	public int getElementType() {
-		return ASSERT_EXPRESSION;
+		return ElementTypes.ASSERT_EXPRESSION;
 	}
 	
 	public IExpression getExpression() {

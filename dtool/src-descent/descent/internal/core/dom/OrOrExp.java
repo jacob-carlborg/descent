@@ -1,5 +1,7 @@
 package descent.internal.core.dom;
 
+import descent.internal.core.dom.BinaryExpression.BinaryExpressionTypes;
+
 public class OrOrExp extends BinaryExpression {
 
 	public OrOrExp(Expression e, Expression e2) {
@@ -7,7 +9,7 @@ public class OrOrExp extends BinaryExpression {
 	}
 	
 	public int getBinaryExpressionType() {
-		return OR_OR;
+		return BinaryExpressionTypes.OR_OR;
 	}
 
 }

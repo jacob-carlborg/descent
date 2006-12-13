@@ -8,6 +8,7 @@ import descent.core.dom.IIftypeDeclaration;
 import descent.core.dom.IName;
 import descent.core.dom.IType;
 import descent.core.dom.IVersionDeclaration;
+import descent.core.dom.IElement.ElementTypes;
 import descent.core.domX.ASTVisitor;
 import descent.core.domX.AbstractElement;
 
@@ -25,9 +26,9 @@ public class ConditionalDeclaration extends Dsymbol implements IVersionDeclarati
 	
 	public int getElementType() {
 		switch(this.condition.getConditionType()) {
-		case Condition.DEBUG: return DEBUG_DECLARATION;
-		case Condition.VERSION: return VERSION_DECLARATION;
-		case Condition.IFTYPE: return IFTYPE_DECLARATION;
+		case Condition.DEBUG: return ElementTypes.DEBUG_DECLARATION;
+		case Condition.VERSION: return ElementTypes.VERSION_DECLARATION;
+		case Condition.IFTYPE: return ElementTypes.IFTYPE_DECLARATION;
 		}
 		return 0;
 	}

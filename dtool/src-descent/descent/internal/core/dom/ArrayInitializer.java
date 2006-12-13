@@ -6,6 +6,7 @@ import java.util.List;
 import descent.core.dom.IArrayInitializer;
 import descent.core.dom.IExpression;
 import descent.core.dom.IInitializer;
+import descent.core.dom.IElement.ElementTypes;
 import descent.core.domX.ASTVisitor;
 
 public class ArrayInitializer extends Initializer implements IArrayInitializer {
@@ -32,7 +33,7 @@ public class ArrayInitializer extends Initializer implements IArrayInitializer {
 	}
 	
 	public int getElementType() {
-		return ARRAY_INITIALIZER;
+		return ElementTypes.ARRAY_INITIALIZER;
 	}
 	
 	public void accept0(ASTVisitor visitor) {

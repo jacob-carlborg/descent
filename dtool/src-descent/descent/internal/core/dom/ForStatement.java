@@ -3,6 +3,7 @@ package descent.internal.core.dom;
 import descent.core.dom.IExpression;
 import descent.core.dom.IForStatement;
 import descent.core.dom.IStatement;
+import descent.core.dom.IElement.ElementTypes;
 import descent.core.domX.ASTVisitor;
 
 public class ForStatement extends Statement implements IForStatement {
@@ -36,7 +37,7 @@ public class ForStatement extends Statement implements IForStatement {
 	}
 	
 	public int getElementType() {
-		return FOR_STATEMENT;
+		return ElementTypes.FOR_STATEMENT;
 	}
 	
 	public void accept0(ASTVisitor visitor) {

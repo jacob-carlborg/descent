@@ -1,8 +1,8 @@
 package descent.internal.core.dom;
 
-import descent.core.dom.IElement;
 import descent.core.dom.IQualifiedName;
 import descent.core.dom.ITemplateInstanceType;
+import descent.core.dom.IElement.ElementTypes;
 import descent.core.domX.ASTVisitor;
 import descent.core.domX.AbstractElement;
 
@@ -17,7 +17,7 @@ public class TypeInstance extends TypeQualified implements ITemplateInstanceType
 	}
 	
 	public int getElementType() {
-		return TEMPLATE_INSTANCE_TYPE;
+		return ElementTypes.TEMPLATE_INSTANCE_TYPE;
 	}
 	
 	public AbstractElement[] getTemplateArguments() {

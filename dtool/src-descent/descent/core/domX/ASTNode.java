@@ -2,6 +2,8 @@ package descent.core.domX;
 
 import java.util.List;
 
+import util.ExceptionAdapter;
+
 import descent.core.dom.IElement;
 
 public abstract class ASTNode implements IElement  {
@@ -17,6 +19,27 @@ public abstract class ASTNode implements IElement  {
 	 * information is recorded for this node; <code>0</code> by default.
 	 */
 	public int length = 0;
+
+	public int getStartPos() {
+		return startPos;
+	}
+	public int getOffset() {
+		return startPos;
+	}
+	public int getLength() {
+		return length;
+	}
+	
+	public int getEndPos() {
+		assert(startPos != -1);
+		return startPos+length;
+	}
+
+	public void setEndPos(int endPos) {
+		assert(startPos != -1);
+		assert(endPos >= startPos);
+		length = endPos - startPos ;
+	}
 
 	/**
 	 * Sets the source range of the original source file where the source
@@ -36,20 +59,16 @@ public abstract class ASTNode implements IElement  {
 		this.length = length;
 	}
 	
-	public int getStartPos() {
-		return startPos;
-	}
-	public int getOffset() {
-		return startPos;
+	public boolean hasNoSourceRangeInfo() {
+		return startPos == -1;
 	}
 
-	public int getLength() {
-		return length;
-	}
-
+	
+	
 	public final String nodeToString() {
 		String name = this.getClass().getName().replaceAll("^.*\\.dom\\.", "");
-		return name + " [" + startPos+"+"+length+"]";
+		//return name + " [" + startPos+"+"+length+"]";
+		return name;
 	}
 
 	/**
@@ -103,11 +122,17 @@ public abstract class ASTNode implements IElement  {
 	}
 
 	/**
+	 * Same as acceptChild.
+	 */
+	public final void acceptChildren(ASTVisitor visitor, ASTNode child) {
+		acceptChild(visitor, child);
+	}
+	
+	/**
 	 * Accepts the given visitor on a visit of the given list of
 	 * child nodes. 
 	 */
 	public final void acceptChildren(ASTVisitor visitor, ASTNode[] children) {
-		// FIXME: that Object above is ASTNode
 		if (children == null)
 			return;
 		
@@ -118,6 +143,13 @@ public abstract class ASTNode implements IElement  {
 		}
 	}
 	
+	/**
+	 * Same as accepChildren. TODO: clearify?
+	 */
+	public final void acceptChild(ASTVisitor visitor, ASTNode[] children) {
+		acceptChildren(visitor, children);
+	}
+
 	
 	/**
 	 * Accepts the visitor on the children. If children is null,
@@ -134,5 +166,6 @@ public abstract class ASTNode implements IElement  {
 			}
 		}
 	}
+
 
 }

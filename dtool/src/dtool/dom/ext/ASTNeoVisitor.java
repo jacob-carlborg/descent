@@ -6,8 +6,8 @@ import dtool.dom.ASTElement;
 import dtool.dom.Definition;
 import dtool.dom.EntityReference;
 import dtool.dom.Module;
+import dtool.dom.SingleEntityRef;
 import dtool.dom.SymbolDef;
-import dtool.dom.SymbolReference;
 
 
 /**
@@ -37,19 +37,29 @@ public abstract class ASTNeoVisitor extends ASTVisitor {
 	public boolean visit(SymbolDef elem) {
 		return visitAsSuperType(elem, SymbolDef.class);
 	}
+
+	public boolean visit(EntityReference elem) {
+		return visitAsSuperType(elem, EntityReference.class);
+	}
 	
-	public boolean visit(SymbolReference elem) {
-		return visitAsSuperType(elem, SymbolReference.class);
+	public boolean visit(SingleEntityRef elem) {
+		return visitAsSuperType(elem, SingleEntityRef.class);
+	}
+	
+	public boolean visit(SingleEntityRef.Identifier elem) {
+		return visitAsSuperType(elem, SingleEntityRef.Identifier.class);
 	}
 
-	public boolean visit(EntityReference.AnyEntityReference elem) {
-		return visitAsSuperType(elem, EntityReference.AnyEntityReference.class);
+	public boolean visit(SingleEntityRef.TemplateInstance elem) {
+		return visitAsSuperType(elem, SingleEntityRef.TemplateInstance.class);
+	}
+
+	public boolean visit(SingleEntityRef.TypeDynArray elem) {
+		return visitAsSuperType(elem, SingleEntityRef.TypeDynArray.class);
 	}
 	
-	public boolean visit(Module elem) {
-		return visitAsSuperType(elem, Module.class);
-	}
-	
+	/* ---------------------------------- */
+
 	public boolean visit(Definition elem) {
 		return visitAsSuperType(elem, Definition.class);
 	}
@@ -57,5 +67,8 @@ public abstract class ASTNeoVisitor extends ASTVisitor {
 	
 	/* ---------------------------------- */
 
+	public boolean visit(Module elem) {
+		return visitAsSuperType(elem, Module.class);
+	}
 
 }

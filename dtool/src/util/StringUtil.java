@@ -67,6 +67,9 @@ public final class StringUtil {
 		return sb.toString();
 	}
 
+	/**
+	 * Append a string if the string isn't empty
+	 */
 	public static String trailString(String str, String strtrail) {
 		if(str.length() > 0)
 			return str + strtrail;
@@ -76,7 +79,9 @@ public final class StringUtil {
 	
 	
 	
-	
+	/**
+	 * Prints a Collection with given separator String
+	 */	
 	public static String collToString(Collection coll, String sep) {
 		StringBuilder sb = new StringBuilder();
 		boolean first = true;
@@ -90,4 +95,20 @@ public final class StringUtil {
 		return sb.toString();
 	}
 
+	
+	/**
+	 * Prints an array with given separator String
+	 */	
+	public static String collToString(Object[] coll, String sep) {
+		StringBuilder sb = new StringBuilder();
+		boolean first = true;
+		for(Object item : coll){
+			if(!first)
+				sb.append(sep);
+			else
+				first = false;
+			sb.append(item.toString());
+		}
+		return sb.toString();
+	}
 }

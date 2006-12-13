@@ -4,6 +4,7 @@ import descent.core.dom.IArgument;
 import descent.core.dom.IExpression;
 import descent.core.dom.IIfStatement;
 import descent.core.dom.IStatement;
+import descent.core.dom.IElement.ElementTypes;
 import descent.core.domX.ASTVisitor;
 
 public class IfStatement extends Statement implements IIfStatement {
@@ -21,7 +22,7 @@ public class IfStatement extends Statement implements IIfStatement {
 	}
 	
 	public int getElementType() {
-		return IF_STATEMENT;
+		return ElementTypes.IF_STATEMENT;
 	}
 	
 	public IArgument getArgument() {

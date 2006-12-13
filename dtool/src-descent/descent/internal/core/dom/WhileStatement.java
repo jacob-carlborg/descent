@@ -3,6 +3,7 @@ package descent.internal.core.dom;
 import descent.core.dom.IExpression;
 import descent.core.dom.IStatement;
 import descent.core.dom.IWhileStatement;
+import descent.core.dom.IElement.ElementTypes;
 import descent.core.domX.ASTVisitor;
 
 public class WhileStatement extends Statement implements IWhileStatement {
@@ -24,7 +25,7 @@ public class WhileStatement extends Statement implements IWhileStatement {
 	}
 	
 	public int getElementType() {
-		return WHILE_STATEMENT;
+		return ElementTypes.WHILE_STATEMENT;
 	}
 	
 	public void accept0(ASTVisitor visitor) {

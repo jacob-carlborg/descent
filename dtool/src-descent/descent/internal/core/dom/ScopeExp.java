@@ -3,6 +3,7 @@ package descent.internal.core.dom;
 import descent.core.dom.IElement;
 import descent.core.dom.IName;
 import descent.core.dom.IScopeExpression;
+import descent.core.dom.IElement.ElementTypes;
 import descent.core.domX.ASTVisitor;
 
 public class ScopeExp extends Expression implements IScopeExpression {
@@ -14,7 +15,7 @@ public class ScopeExp extends Expression implements IScopeExpression {
 	}
 	
 	public int getElementType() {
-		return SCOPE_EXPRESSION;
+		return ElementTypes.SCOPE_EXPRESSION;
 	}
 	
 	public IName getName() {

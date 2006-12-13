@@ -1,13 +1,12 @@
 package descent.internal.core.dom;
 
-import descent.core.dom.ICatchClause;
 import descent.core.dom.IName;
 import descent.core.dom.IStatement;
 import descent.core.dom.IType;
 import descent.core.domX.ASTVisitor;
 import descent.core.domX.AbstractElement;
 
-public class Catch extends AbstractElement implements ICatchClause {
+public class Catch extends AbstractElement  {
 
 	private final Type t;
 	private final Identifier id;
@@ -20,7 +19,7 @@ public class Catch extends AbstractElement implements ICatchClause {
 	}
 	
 	public int getElementType() {
-		return CATCH_CLAUSE;
+		return ElementTypes.CATCH_CLAUSE;
 	}
 	
 	public IType getType() {

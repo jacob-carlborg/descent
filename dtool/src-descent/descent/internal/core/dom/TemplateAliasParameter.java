@@ -2,6 +2,7 @@ package descent.internal.core.dom;
 
 import descent.core.dom.IName;
 import descent.core.dom.IType;
+import descent.core.dom.IElement.ElementTypes;
 import descent.core.domX.ASTVisitor;
 
 public class TemplateAliasParameter extends TemplateParameter {
@@ -17,7 +18,7 @@ public class TemplateAliasParameter extends TemplateParameter {
 	}
 	
 	public int getElementType() {
-		return ALIAS_TEMPLATE_PARAMETER;
+		return ElementTypes.ALIAS_TEMPLATE_PARAMETER;
 	}
 	
 	public IName getName() {

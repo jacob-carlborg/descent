@@ -3,6 +3,7 @@ package descent.internal.core.dom;
 import descent.core.dom.IEnumMember;
 import descent.core.dom.IExpression;
 import descent.core.dom.IName;
+import descent.core.dom.IElement.ElementTypes;
 import descent.core.domX.ASTVisitor;
 
 public class EnumMember extends Dsymbol implements IEnumMember {
@@ -29,7 +30,7 @@ public class EnumMember extends Dsymbol implements IEnumMember {
 	}
 	
 	public int getElementType() {
-		return ENUM_MEMBER;
+		return ElementTypes.ENUM_MEMBER;
 	}
 	
 	public void accept0(ASTVisitor visitor) {
