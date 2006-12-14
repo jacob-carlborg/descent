@@ -35,19 +35,19 @@ public class Lexer implements IProblemCollector {
 	public char[] input;
 	public Token token;
 	public Token prevToken;
-	public boolean doDocComment;
 	public boolean anyToken;
-	public boolean commentToken;
 	
 	public List<Comment> comments;
 	public List<IProblem> problems;
+	
+	AST ast = AST.newAST(AST.JLS3);
     
     public Lexer(String source) {
-    	this(source, 0, 0, source.length(), true, true);
+    	this(source, 0, 0, source.length());
     }
 	
 	public Lexer(String source, int base, int begoffset, 
-			int endoffset, boolean doDocComment, boolean commentToken) {
+			int endoffset) {
 		
 		initKeywords();
 		
@@ -61,9 +61,7 @@ public class Lexer implements IProblemCollector {
 		this.base = base;
 		this.end = base + endoffset;
 		this.p = base + begoffset;
-		this.doDocComment = doDocComment;
 	    this.anyToken = false;
-	    this.commentToken = commentToken;
 	    this.token = new Token();
 	    
 	    if (input[p] == '#' && input[p+1] =='!')

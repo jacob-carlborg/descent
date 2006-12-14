@@ -1,5 +1,9 @@
 package descent.core.dom;
 
+import java.util.List;
+
+import descent.internal.core.dom.CatchClause;
+
 /**
  * A try statement:
  * 
@@ -22,12 +26,12 @@ public interface ITryStatement extends IStatement {
 	/**
 	 * Returns the statement to try.
 	 */
-	IStatement getTry();
+	IStatement getBody();
 	
 	/**
 	 * Returns the catches of the try statement.
 	 */
-	ICatchClause[] getCatches();
+	List<CatchClause> catchClauses();
 	
 	/**
 	 * Returns the finally statement, if any, or null.

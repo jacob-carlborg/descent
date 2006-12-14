@@ -318,8 +318,8 @@ public class Statement_Test extends Parser_Test {
 		assertEquals(IStatement.TRY_STATEMENT, stm.getNodeType0());
 		assertPosition(stm, 1, s.length() - 1);
 		
-		assertEquals(2, stm.getCatches().length);
-		assertPosition(stm.getCatches()[0], 9, 16);
+		assertEquals(2, stm.catchClauses().size());
+		assertPosition(stm.catchClauses().get(0), 9, 16);
 	}
 	
 	public void testThrow() {

@@ -7,18 +7,14 @@ public class ASTNodeGenerator {
 	
 	public static void main(String[] args) {
 		
-		String description = "function literal declaration expression";
+		String description = "try statement";
 		String clazz = toMethod(description);
 		String nodeType = toProperty(description);
 
 		Member[] members = {
-				Member.simple("syntax", "Syntax"),
-				Member.list("arguments", "Argument", CYCLE_RISK),
-				Member.simple("variadic", "boolean"),
-				Member.child("precondition", "Statement", CYCLE_RISK),
-				Member.child("postcondition", "Statement", CYCLE_RISK),
-				Member.child("postconditionVariableName", "SimpleName", NO_CYCLE_RISK),
-				Member.childMandatory("body", "Statement", CYCLE_RISK, "Block"),
+				Member.childMandatory("body", "Block", CYCLE_RISK, "Block"),
+				Member.list("catchClauses", "CatchClause", CYCLE_RISK),
+				Member.child("finally", "Block", CYCLE_RISK),				
 		};
 		
 		StringBuilder sb = new StringBuilder();

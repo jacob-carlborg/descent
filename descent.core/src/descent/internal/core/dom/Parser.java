@@ -108,8 +108,6 @@ public class Parser extends Lexer {
 	int inBrackets;
 	
 	LINK linkage = LINK.LINKd;
-	
-	AST ast = AST.newAST(AST.JLS3);
 
 	public Parser(String source) {
 		super(source);
@@ -118,8 +116,8 @@ public class Parser extends Lexer {
 	}
 	
 	public Parser(String source, int base, int begoffset, 
-			int endoffset, boolean doDocComment, boolean commentToken) {
-		super(source, base, begoffset, endoffset, doDocComment, commentToken);
+			int endoffset) {
+		super(source, base, begoffset, endoffset);
 		
 		nextToken();
 	}
@@ -4120,14 +4118,14 @@ public class Parser extends Lexer {
 			if (catches == null && finalbody == null) {
 				problem("Catch or finally expected following try", IProblem.SEVERITY_ERROR, IProblem.CATCH_OR_FINALLY_EXPECTED, prevToken.ptr, prevToken.len);
 			} else {
+				TryStatement tryStatement = new TryStatement(ast);
+				tryStatement.setBody((Block) body);
 				if (catches != null) {
-					s = new TryCatchStatement(body, catches);
+					tryStatement.catchClauses().addAll(catches);
 				}
-				if (finalbody != null) {
-					s = new TryFinallyStatement(s, finalbody);
-				}
-				s.startPosition = saveToken.ptr;
-				s.length = prevToken.ptr + prevToken.len - s.startPosition;
+				tryStatement.setFinally((Block) finalbody);
+				tryStatement.setSourceRange(saveToken.ptr, prevToken.ptr + prevToken.len - saveToken.ptr);
+				s = tryStatement;
 			}
 			break;
 		}
