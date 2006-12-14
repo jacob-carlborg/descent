@@ -67,7 +67,8 @@ public class TypeofType extends TypeQualified implements ITypeofType {
 	 * @param ast the AST that is to own this node
 	 */
 	TypeofType(AST ast) {
-		super(ast);
+		// TODO Descent fix
+		super(ast, TY.Ttypeof);
 	}
 
 	/* (omit javadoc for this method)

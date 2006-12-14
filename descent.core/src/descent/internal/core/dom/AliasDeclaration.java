@@ -32,7 +32,7 @@ public class AliasDeclaration extends Declaration implements IAliasDeclaration {
 	 * The "type" structural property of this node type.
 	 */
 	public static final ChildPropertyDescriptor TYPE_PROPERTY =
-		new ChildPropertyDescriptor(AliasDeclaration.class, "type", DmdType.class, MANDATORY, NO_CYCLE_RISK); //$NON-NLS-1$
+		new ChildPropertyDescriptor(AliasDeclaration.class, "type", Type.class, MANDATORY, NO_CYCLE_RISK); //$NON-NLS-1$
 
 	/**
 	 * A list of property descriptors (element type: 
@@ -79,7 +79,7 @@ public class AliasDeclaration extends Declaration implements IAliasDeclaration {
 	/**
 	 * The type.
 	 */
-	private DmdType type;
+	private Type type;
 
 
 	/**
@@ -134,7 +134,7 @@ public class AliasDeclaration extends Declaration implements IAliasDeclaration {
 			if (get) {
 				return getType();
 			} else {
-				setType((DmdType) child);
+				setType((Type) child);
 				return null;
 			}
 		}
@@ -158,7 +158,7 @@ public class AliasDeclaration extends Declaration implements IAliasDeclaration {
 		result.setSourceRange(this.getStartPosition(), this.getLength());
 		result.setModifierFlags(getModifierFlags());
 		result.setName((SimpleName) getName().clone(target));
-		result.setType((DmdType) getType().clone(target));
+		result.setType((Type) getType().clone(target));
 		return result;
 	}
 
@@ -249,7 +249,7 @@ public class AliasDeclaration extends Declaration implements IAliasDeclaration {
 	 * 
 	 * @return the type
 	 */ 
-	public DmdType getType() {
+	public Type getType() {
 		if (this.type == null) {
 			// lazy init must be thread-safe for readers
 			synchronized (this) {
@@ -274,7 +274,7 @@ public class AliasDeclaration extends Declaration implements IAliasDeclaration {
 	 * <li>a cycle in would be created</li>
 	 * </ul>
 	 */ 
-	public void setType(DmdType type) {
+	public void setType(Type type) {
 		if (type == null) {
 			throw new IllegalArgumentException();
 		}

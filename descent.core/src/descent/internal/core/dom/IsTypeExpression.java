@@ -6,7 +6,14 @@ import java.util.List;
 import descent.core.dom.ASTVisitor;
 import descent.core.dom.IIsTypeExpression;
 
-// TODO comment
+/**
+ * An is expression ASTNode where the comparison is made against a type.
+ * 
+ * <pre>
+ * IsTypeExpression:
+ *    <b>is</b> <b>(</b> Type [ [ <b>:</b> | <b>==</b> ] Type ] <b>)</b>
+ * </pre>
+ */
 public class IsTypeExpression extends Expression implements IIsTypeExpression {
 	
 	/**
@@ -112,7 +119,7 @@ public class IsTypeExpression extends Expression implements IIsTypeExpression {
 	final boolean internalGetSetBooleanProperty(SimplePropertyDescriptor property, boolean get, boolean value) {
 		if (property == SAME_COMPARISON_PROPERTY) {
 			if (get) {
-				return getSameComparison();
+				return isSameComparison();
 			} else {
 				setSameComparison(value);
 				return false;
@@ -168,7 +175,7 @@ public class IsTypeExpression extends Expression implements IIsTypeExpression {
 	ASTNode clone0(AST target) {
 		IsTypeExpression result = new IsTypeExpression(target);
 		result.setSourceRange(this.getStartPosition(), this.getLength());
-		result.setSameComparison(getSameComparison());
+		result.setSameComparison(isSameComparison());
 	result.setName((SimpleName) ASTNode.copySubtree(target, getName()));
 		result.setType((Type) getType().clone(target));
 		result.setSpecialization((Type) getSpecialization().clone(target));
@@ -198,16 +205,20 @@ public class IsTypeExpression extends Expression implements IIsTypeExpression {
 	}
 
 	/**
-	 * Returns the same comparison of this is type expression.
+	 * Returns the same comparison of this is type expression. The same
+	 * comparison is true if the type equality (<b>==</b>) is compared, instead
+	 * of assignability (<b>:</b>).
 	 * 
 	 * @return the same comparison
 	 */ 
-	public boolean getSameComparison() {
+	public boolean isSameComparison() {
 		return this.sameComparison;
 	}
 
 	/**
-	 * Sets the same comparison of this is type expression.
+	 * Sets the same comparison of this is type expression. The same
+	 * comparison is true if the type equality (<b>==</b>) is compared, instead
+	 * of assignability (<b>:</b>).
 	 * 
 	 * @param sameComparison the same comparison
 	 * @exception IllegalArgumentException if the argument is incorrect

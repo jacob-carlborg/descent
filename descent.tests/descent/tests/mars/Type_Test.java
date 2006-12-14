@@ -4,7 +4,6 @@ import descent.core.dom.IArrayType;
 import descent.core.dom.IAssociativeArrayType;
 import descent.core.dom.IBasicType;
 import descent.core.dom.ICompilationUnit;
-import descent.core.dom.IDelegateType;
 import descent.core.dom.IDynamicArrayType;
 import descent.core.dom.IElement;
 import descent.core.dom.IIdentifierType;
@@ -14,6 +13,7 @@ import descent.core.dom.IStaticArrayType;
 import descent.core.dom.IType;
 import descent.core.dom.ITypeofType;
 import descent.core.dom.IVariableDeclaration;
+import descent.internal.core.dom.DelegateType;
 import descent.internal.core.dom.ParserFacade;
 import descent.internal.core.dom.PrimitiveType;
 
@@ -57,9 +57,8 @@ public class Type_Test extends Parser_Test {
 	public void testPointerType() {
 		IPointerType type = (IPointerType) getType("int *");
 		assertEquals(IType.POINTER_TYPE, type.getNodeType0());
-		assertEquals("int*", type.toString());
 		assertPosition(type, 1, 5);
-		assertPosition(type.getInnerType(), 1, 3);
+		assertPosition(type.getComponentType(), 1, 3);
 		
 		assertVisitor(type, 2);
 	}
@@ -111,28 +110,30 @@ public class Type_Test extends Parser_Test {
 	}
 	
 	public void testDelegateType() {
-		IDelegateType type = (IDelegateType) getType("int delegate(char, bool)");
+		DelegateType type = (DelegateType) getType("int delegate(char, bool)");
 		assertEquals(IType.DELEGATE_TYPE, type.getNodeType0());
+		assertFalse(type.isFunctionPointer());
 		assertEquals("int", type.getReturnType().toString());
 		assertPosition(type.getReturnType(), 1, 3);
-		assertEquals(2, type.getArguments().length);
-		assertEquals("char", type.getArguments()[0].getType().toString());
-		assertPosition(type.getArguments()[0], 14, 4);
-		assertEquals("bool", type.getArguments()[1].getType().toString());
-		assertPosition(type.getArguments()[1], 20, 4);
+		assertEquals(2, type.arguments().size());
+		assertEquals("char", type.arguments().get(0).getType().toString());
+		assertPosition(type.arguments().get(0), 14, 4);
+		assertEquals("bool", type.arguments().get(1).getType().toString());
+		assertPosition(type.arguments().get(1), 20, 4);
 		assertPosition(type, 1, 24);
 	}
 	
 	public void testPointerToFunction() {
-		IDelegateType type = (IDelegateType) getType("int function(char, bool)");
-		assertEquals(IType.POINTER_TO_FUNCTION_TYPE, type.getNodeType0());
+		DelegateType type = (DelegateType) getType("int function(char, bool)");
+		assertEquals(IType.DELEGATE_TYPE, type.getNodeType0());
+		assertTrue(type.isFunctionPointer());
 		assertEquals("int", type.getReturnType().toString());
 		assertPosition(type.getReturnType(), 1, 3);
-		assertEquals(2, type.getArguments().length);
-		assertEquals("char", type.getArguments()[0].getType().toString());
-		assertPosition(type.getArguments()[0], 14, 4);
-		assertEquals("bool", type.getArguments()[1].getType().toString());
-		assertPosition(type.getArguments()[1], 20, 4);
+		assertEquals(2, type.arguments().size());
+		assertEquals("char", type.arguments().get(0).getType().toString());
+		assertPosition(type.arguments().get(0), 14, 4);
+		assertEquals("bool", type.arguments().get(1).getType().toString());
+		assertPosition(type.arguments().get(1), 20, 4);
 		assertPosition(type, 1, 24);
 	}
 	

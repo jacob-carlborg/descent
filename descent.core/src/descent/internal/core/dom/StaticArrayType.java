@@ -80,9 +80,6 @@ public class StaticArrayType extends ArrayType implements IStaticArrayType {
 	 */
 	StaticArrayType(AST ast) {
 		super(ast);
-		
-		// TODO Descent remove
-		this.ty = TY.Tsarray;
 	}
 
 	/* (omit javadoc for this method)

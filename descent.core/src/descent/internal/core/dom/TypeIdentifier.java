@@ -11,8 +11,8 @@ public class TypeIdentifier extends TypeQualified implements IIdentifierType, IT
 	public Identifier ident;
 	public QualifiedNameBak qName;
 
-	public TypeIdentifier(Identifier ident) {
-		super(TY.Tident);
+	public TypeIdentifier(AST ast, Identifier ident) {
+		super(ast, TY.Tident);
 		this.ident = ident;
 	}
 	
@@ -58,7 +58,6 @@ public class TypeIdentifier extends TypeQualified implements IIdentifierType, IT
 		return ((TemplateInstance) idents.get(idents.size() - 1)).getTemplateArguments();
 	}
 	
-	@Override
 	public Expression toExpression() {
 		Expression e = Parser.newSimpleNameForIdentifierWithAST(ident, ast);
 	    for (int i = 0; i < idents.size(); i++)

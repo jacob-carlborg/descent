@@ -6,9 +6,10 @@ import descent.core.dom.ITypeExpression;
 
 public class TypeExp extends Expression implements ITypeExpression {
 
-	private final DmdType t;
+	private final Type t;
 
-	public TypeExp(DmdType t) {
+	public TypeExp(AST ast, Type t) {
+		super(ast);
 		this.t = t;
 	}
 	

@@ -38,6 +38,7 @@ import descent.internal.core.dom.IsTypeExpression;
 import descent.internal.core.dom.IsTypeSpecializationExpression;
 import descent.internal.core.dom.ParserFacade;
 import descent.internal.core.dom.SimpleName;
+import descent.internal.core.dom.FunctionLiteralDeclarationExpression.Syntax;
 
 public class Expression_Test extends Parser_Test {
 	
@@ -657,7 +658,7 @@ public class Expression_Test extends Parser_Test {
 		assertEquals("x", expr.getName().getIdentifier());
 		assertPosition(expr.getName(), 8, 1);
 		
-		assertFalse(expr.getSameComparison());
+		assertFalse(expr.isSameComparison());
 	}
 	
 	public void testIsTypeSpecializationExpression() {
@@ -683,18 +684,51 @@ public class Expression_Test extends Parser_Test {
 			assertEquals("x", expr.getType().toString());
 			assertEquals(pair[1], expr.getSpecialization());
 			
-			assertTrue(expr.getSameComparison());
+			assertTrue(expr.isSameComparison());
 		}
 	}
 	
-	public void testFunctionLiteralEmpty() {
-		String s = " () { }";
+	public void testFunctionLiteralFunction() {
+		String s = " function () { }";
 		IFunctionExpression expr = (IFunctionExpression) new ParserFacade().parseExpression(s);
+		assertEquals(Syntax.FUNCTION, expr.getSyntax());
 		
-		assertEquals(IExpression.FUNCTION_EXPRESSION, expr.getNodeType0());
 		assertPosition(expr, 1, s.length() - 1);
 		
-		assertEquals(0, expr.getArguments().length);
+		assertEquals(0, expr.arguments().size());
+	}
+	
+	public void testFunctionLiteralDelegate() {
+		String s = " delegate { }";
+		IFunctionExpression expr = (IFunctionExpression) new ParserFacade().parseExpression(s);
+		assertEquals(Syntax.DELEGATE, expr.getSyntax());
+		
+		assertPosition(expr, 1, s.length() - 1);
+		
+		assertEquals(0, expr.arguments().size());
+	}
+	
+	public void testFunctionLiteralEmpty() {
+		String s = " { }";
+		IFunctionExpression expr = (IFunctionExpression) new ParserFacade().parseExpression(s);
+		assertEquals(Syntax.EMPTY, expr.getSyntax());
+		
+		assertEquals(IExpression.FUNCTION_LITERAL_DECLARATION_EXPRESSION, expr.getNodeType0());
+		assertPosition(expr, 1, s.length() - 1);
+		
+		assertEquals(0, expr.arguments().size());
+		assertPosition(expr.getBody(), 1, 3);
+	}
+	
+	public void testFunctionLiteralEmpty2() {
+		String s = " () { }";
+		IFunctionExpression expr = (IFunctionExpression) new ParserFacade().parseExpression(s);
+		assertEquals(Syntax.EMPTY, expr.getSyntax());
+		
+		assertEquals(IExpression.FUNCTION_LITERAL_DECLARATION_EXPRESSION, expr.getNodeType0());
+		assertPosition(expr, 1, s.length() - 1);
+		
+		assertEquals(0, expr.arguments().size());
 		assertPosition(expr.getBody(), 4, 3);
 	}
 	
@@ -702,8 +736,8 @@ public class Expression_Test extends Parser_Test {
 		String s = " (int x) { }";
 		IFunctionExpression expr = (IFunctionExpression) new ParserFacade().parseExpression(s);
 		
-		assertEquals(1, expr.getArguments().length);
-		assertEquals("int", expr.getArguments()[0].getType().toString());
+		assertEquals(1, expr.arguments().size());
+		assertEquals("int", expr.arguments().get(0).getType().toString());
 	}
 	
 	public void testFunctionLiteralWithoutParameters() {
@@ -712,17 +746,8 @@ public class Expression_Test extends Parser_Test {
 		
 		assertPosition(expr, 1, s.length() - 1);
 		
-		assertEquals(0, expr.getArguments().length);
-	}
-	
-	public void testFunctionLiteralDelegate() {
-		String s = " delegate { }";
-		IFunctionExpression expr = (IFunctionExpression) new ParserFacade().parseExpression(s);
-		
-		assertPosition(expr, 1, s.length() - 1);
-		
-		assertEquals(0, expr.getArguments().length);
-	}
+		assertEquals(0, expr.arguments().size());
+	}	
 	
 	public void testAnnonymousClass() {
 		String s = " new class { }";

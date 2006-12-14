@@ -1,5 +1,10 @@
 package descent.core.dom;
 
+import java.util.List;
+
+import descent.internal.core.dom.Argument;
+import descent.internal.core.dom.FunctionLiteralDeclarationExpression.Syntax;
+
 /**
  * 
  * @author Ary
@@ -7,10 +12,12 @@ package descent.core.dom;
  */
 public interface IFunctionExpression extends IExpression {
 	
+	Syntax getSyntax();
+	
 	/**
 	 * Returns the arguments of the function.
 	 */
-	IArgument[] getArguments();
+	List<Argument> arguments();
 
 	/**
 	 * Determines whether this function is variadic.
@@ -25,16 +32,16 @@ public interface IFunctionExpression extends IExpression {
 	/**
 	 * Returns the precondition of the function, if any, or <code>null</code>.
 	 */
-	IStatement getIn();
+	IStatement getPrecondition();
 	
 	/**
 	 * Returns the postcondition of the function, if any, or <code>null</code>.
 	 */
-	IStatement getOut();
+	IStatement getPostcondition();
 	
 	/**
 	 * Returns the name of the out clase of the function, if any, or <code>null</code>.
 	 */
-	ISimpleName getOutName();
+	ISimpleName getPostconditionVariableName();
 
 }

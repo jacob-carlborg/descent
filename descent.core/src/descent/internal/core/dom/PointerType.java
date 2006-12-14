@@ -4,23 +4,23 @@ import java.util.ArrayList;
 import java.util.List;
 
 import descent.core.dom.ASTVisitor;
-import descent.core.dom.IDynamicArrayType;
+import descent.core.dom.IPointerType;
 
 /**
- * Dynamic array type AST node type.
+ * Pointer type AST node type.
  *
  * <pre>
- * DynamicArrayType:
- *    Type <b>[ ]</b>
+ * PointerType:
+ *    Type <b>*</b>
  * </pre>
  */
-public class DynamicArrayType extends ArrayType implements IDynamicArrayType {
+public class PointerType extends Type implements IPointerType {
 	
 	/**
 	 * The "componentType" structural property of this node type.
 	 */
 	public static final ChildPropertyDescriptor COMPONENT_TYPE_PROPERTY =
-		internalComponentTypePropertyFactory(DynamicArrayType.class); //$NON-NLS-1$
+		new ChildPropertyDescriptor(PointerType.class, "componentType", Type.class, MANDATORY, CYCLE_RISK); //$NON-NLS-1$
 
 	/**
 	 * A list of property descriptors (element type: 
@@ -31,7 +31,7 @@ public class DynamicArrayType extends ArrayType implements IDynamicArrayType {
 
 	static {
 		List properyList = new ArrayList(1);
-		createPropertyList(DynamicArrayType.class, properyList);
+		createPropertyList(PointerType.class, properyList);
 		addProperty(COMPONENT_TYPE_PROPERTY, properyList);
 		PROPERTY_DESCRIPTORS = reapPropertyList(properyList);
 	}
@@ -58,7 +58,7 @@ public class DynamicArrayType extends ArrayType implements IDynamicArrayType {
 
 
 	/**
-	 * Creates a new unparented dynamic array type node owned by the given 
+	 * Creates a new unparented pointer type node owned by the given 
 	 * AST.
 	 * <p>
 	 * N.B. This constructor is package-private.
@@ -66,7 +66,7 @@ public class DynamicArrayType extends ArrayType implements IDynamicArrayType {
 	 * 
 	 * @param ast the AST that is to own this node
 	 */
-	DynamicArrayType(AST ast) {
+	PointerType(AST ast) {
 		super(ast);
 	}
 
@@ -92,27 +92,22 @@ public class DynamicArrayType extends ArrayType implements IDynamicArrayType {
 		// allow default implementation to flag the error
 		return super.internalGetSetChildProperty(property, get, child);
 	}
-	
-	@Override
-	final ChildPropertyDescriptor internalComponentTypeProperty() {
-		return COMPONENT_TYPE_PROPERTY;
-	}
 
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
 	 * TODO make it package
 	 */
 	public final int getNodeType0() {
-		return DYNAMIC_ARRAY_TYPE;
+		return POINTER_TYPE;
 	}
 
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
 	 */
 	ASTNode clone0(AST target) {
-		DynamicArrayType result = new DynamicArrayType(target);
+		PointerType result = new PointerType(target);
 		result.setSourceRange(this.getStartPosition(), this.getLength());
-	result.setComponentType((Type) ASTNode.copySubtree(target, getComponentType()));
+		result.setComponentType((Type) getComponentType().clone(target));
 		return result;
 	}
 
@@ -136,6 +131,46 @@ public class DynamicArrayType extends ArrayType implements IDynamicArrayType {
 		visitor.endVisit(this);
 	}
 
+	/**
+	 * Returns the component type of this pointer type.
+	 * 
+	 * @return the component type
+	 */ 
+	public Type getComponentType() {
+		if (this.componentType == null) {
+			// lazy init must be thread-safe for readers
+			synchronized (this) {
+				if (this.componentType == null) {
+					preLazyInit();
+					this.componentType = new PrimitiveType(this.ast);
+					postLazyInit(this.componentType, COMPONENT_TYPE_PROPERTY);
+				}
+			}
+		}
+		return this.componentType;
+	}
+
+	/**
+	 * Sets the component type of this pointer type.
+	 * 
+	 * @param componentType the component type
+	 * @exception IllegalArgumentException if:
+	 * <ul>
+	 * <li>the node belongs to a different AST</li>
+	 * <li>the node already has a parent</li>
+	 * <li>a cycle in would be created</li>
+	 * </ul>
+	 */ 
+	public void setComponentType(Type componentType) {
+		if (componentType == null) {
+			throw new IllegalArgumentException();
+		}
+		ASTNode oldChild = this.componentType;
+		preReplaceChild(oldChild, componentType, COMPONENT_TYPE_PROPERTY);
+		this.componentType = componentType;
+		postReplaceChild(oldChild, componentType, COMPONENT_TYPE_PROPERTY);
+	}
+
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
 	 */
@@ -152,5 +187,5 @@ public class DynamicArrayType extends ArrayType implements IDynamicArrayType {
 			+ (this.componentType == null ? 0 : getComponentType().treeSize())
 	;
 	}
-	
+
 }

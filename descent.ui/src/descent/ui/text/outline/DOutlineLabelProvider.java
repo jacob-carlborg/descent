@@ -487,7 +487,7 @@ public class DOutlineLabelProvider extends LabelProvider {
 			break;
 		case IType.POINTER_TYPE:
 			IPointerType pointer = (IPointerType) type;
-			appendType(s, pointer.getInnerType());
+			appendType(s, pointer.getComponentType());
 			s.append('*');
 			break;
 		case IType.DYNAMIC_ARRAY_TYPE: {
@@ -532,7 +532,7 @@ public class DOutlineLabelProvider extends LabelProvider {
 			} else {
 				s.append("function");
 			}
-			appendArguments(s, dt.getArguments());
+			appendArguments(s, dt.arguments());
 			break;
 		case IType.TYPEOF_TYPE:
 			ITypeofType tt = (ITypeofType) type;

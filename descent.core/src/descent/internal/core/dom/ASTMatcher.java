@@ -2346,7 +2346,7 @@ public class ASTMatcher {
 		}
 		IsTypeExpression o = (IsTypeExpression) other;
 		return (
-			node.getSameComparison() == o.getSameComparison()
+			node.isSameComparison() == o.isSameComparison()
 			&& safeSubtreeMatch(node.getName(), o.getName())
 			&& safeSubtreeMatch(node.getType(), o.getType())
 			&& safeSubtreeMatch(node.getSpecialization(), o.getSpecialization())
@@ -2373,10 +2373,91 @@ public class ASTMatcher {
 		}
 		IsTypeSpecializationExpression o = (IsTypeSpecializationExpression) other;
 		return (
-			node.getSameComparison() == o.getSameComparison()
+			node.isSameComparison() == o.isSameComparison()
 			&& safeSubtreeMatch(node.getName(), o.getName())
 			&& safeSubtreeMatch(node.getType(), o.getType())
 			&& node.getSpecialization() == o.getSpecialization()
+			);
+	}
+	
+	/**
+	 * Returns whether the given node and the other object match.
+	 * <p>
+	 * The default implementation provided by this class tests whether the
+	 * other object is a node of the same type with structurally isomorphic
+	 * child subtrees. Subclasses may override this method as needed.
+	 * </p>
+	 * 
+	 * @param node the node
+	 * @param other the other object, or <code>null</code>
+	 * @return <code>true</code> if the subtree matches, or 
+	 *   <code>false</code> if they do not match or the other object has a
+	 *   different node type or is <code>null</code>
+	 */
+	public boolean match(PointerType node, Object other) {
+		if (!(other instanceof PointerType)) {
+			return false;
+		}
+		PointerType o = (PointerType) other;
+		return (
+			safeSubtreeMatch(node.getComponentType(), o.getComponentType())
+			);
+	}
+	
+	/**
+	 * Returns whether the given node and the other object match.
+	 * <p>
+	 * The default implementation provided by this class tests whether the
+	 * other object is a node of the same type with structurally isomorphic
+	 * child subtrees. Subclasses may override this method as needed.
+	 * </p>
+	 * 
+	 * @param node the node
+	 * @param other the other object, or <code>null</code>
+	 * @return <code>true</code> if the subtree matches, or 
+	 *   <code>false</code> if they do not match or the other object has a
+	 *   different node type or is <code>null</code>
+	 */
+	public boolean match(DelegateType node, Object other) {
+		if (!(other instanceof DelegateType)) {
+			return false;
+		}
+		DelegateType o = (DelegateType) other;
+		return (
+			node.isVariadic() == o.isVariadic()
+			&& node.isFunctionPointer() == o.isFunctionPointer()
+			&& safeSubtreeMatch(node.getReturnType(), o.getReturnType())
+			&& safeSubtreeListMatch(node.arguments(), o.arguments())
+			);
+	}
+	
+	/**
+	 * Returns whether the given node and the other object match.
+	 * <p>
+	 * The default implementation provided by this class tests whether the
+	 * other object is a node of the same type with structurally isomorphic
+	 * child subtrees. Subclasses may override this method as needed.
+	 * </p>
+	 * 
+	 * @param node the node
+	 * @param other the other object, or <code>null</code>
+	 * @return <code>true</code> if the subtree matches, or 
+	 *   <code>false</code> if they do not match or the other object has a
+	 *   different node type or is <code>null</code>
+	 */
+	public boolean match(FunctionLiteralDeclarationExpression node, Object other) {
+		if (!(other instanceof FunctionLiteralDeclarationExpression)) {
+			return false;
+		}
+		FunctionLiteralDeclarationExpression o = (FunctionLiteralDeclarationExpression) other;
+		return (
+			node.getSyntax() == o.getSyntax()
+			&& safeSubtreeListMatch(node.arguments(), o.arguments())
+			&& node.isVariadic() == o.isVariadic()
+			&& safeSubtreeMatch(node.getPrecondition(), o.getPrecondition())
+			&& safeSubtreeMatch(node.getPostcondition(), o.getPostcondition())
+			&& safeSubtreeMatch(node.getPostconditionVariableName(), o.getPostconditionVariableName())
+			&& safeSubtreeMatch(node.getBody(), o.getBody())
 			);
 	}
 

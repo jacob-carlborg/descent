@@ -20,7 +20,7 @@ public class CatchClause extends ASTNode implements ICatchClause {
 	 * The "type" structural property of this node type.
 	 */
 	public static final ChildPropertyDescriptor TYPE_PROPERTY =
-		new ChildPropertyDescriptor(CatchClause.class, "type", DmdType.class, OPTIONAL, NO_CYCLE_RISK); //$NON-NLS-1$
+		new ChildPropertyDescriptor(CatchClause.class, "type", Type.class, OPTIONAL, NO_CYCLE_RISK); //$NON-NLS-1$
 
 	/**
 	 * The "name" structural property of this node type.
@@ -68,7 +68,7 @@ public class CatchClause extends ASTNode implements ICatchClause {
 	/**
 	 * The type.
 	 */
-	private DmdType type;
+	private Type type;
 
 	/**
 	 * The name.
@@ -109,7 +109,7 @@ public class CatchClause extends ASTNode implements ICatchClause {
 			if (get) {
 				return getType();
 			} else {
-				setType((DmdType) child);
+				setType((Type) child);
 				return null;
 			}
 		}
@@ -147,7 +147,7 @@ public class CatchClause extends ASTNode implements ICatchClause {
 	ASTNode clone0(AST target) {
 		CatchClause result = new CatchClause(target);
 		result.setSourceRange(this.getStartPosition(), this.getLength());
-	result.setType((DmdType) ASTNode.copySubtree(target, getType()));
+	result.setType((Type) ASTNode.copySubtree(target, getType()));
 	result.setName((SimpleName) ASTNode.copySubtree(target, getName()));
 		result.setBody((Statement) getBody().clone(target));
 		return result;
@@ -180,7 +180,7 @@ public class CatchClause extends ASTNode implements ICatchClause {
 	 * 
 	 * @return the type
 	 */ 
-	public DmdType getType() {
+	public Type getType() {
 		return this.type;
 	}
 
@@ -195,7 +195,7 @@ public class CatchClause extends ASTNode implements ICatchClause {
 	 * <li>a cycle in would be created</li>
 	 * </ul>
 	 */ 
-	public void setType(DmdType type) {
+	public void setType(Type type) {
 		ASTNode oldChild = this.type;
 		preReplaceChild(oldChild, type, TYPE_PROPERTY);
 		this.type = type;

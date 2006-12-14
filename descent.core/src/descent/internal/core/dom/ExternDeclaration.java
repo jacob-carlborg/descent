@@ -16,12 +16,19 @@ import descent.core.dom.IExternDeclaration;
  */
 public class ExternDeclaration extends Declaration implements IExternDeclaration {
 	
-	// TODO comment
+	/**
+	 * A kind of linkage.
+	 */
 	public static enum Linkage {
+		/** Link to D code */
 		D,
+		/** Link to C code */
 		C,
+		/** Link to C++ code */
 		CPP,
+		/** Link to Windows code */
 		WINDOWS,
+		/** Link to Pascal code */
 		PASCAL
 	}
 

@@ -18,7 +18,7 @@ public class BaseClass extends ASTNode implements IBaseClass {
 	 * The "type" structural property of this node type.
 	 */
 	public static final ChildPropertyDescriptor TYPE_PROPERTY =
-		new ChildPropertyDescriptor(BaseClass.class, "type", DmdType.class, MANDATORY, NO_CYCLE_RISK); //$NON-NLS-1$
+		new ChildPropertyDescriptor(BaseClass.class, "type", Type.class, MANDATORY, NO_CYCLE_RISK); //$NON-NLS-1$
 
 	/**
 	 * A list of property descriptors (element type: 
@@ -58,7 +58,7 @@ public class BaseClass extends ASTNode implements IBaseClass {
 	/**
 	 * The type.
 	 */
-	private DmdType type;
+	private Type type;
 
 
 	/**
@@ -105,7 +105,7 @@ public class BaseClass extends ASTNode implements IBaseClass {
 			if (get) {
 				return getType();
 			} else {
-				setType((DmdType) child);
+				setType((Type) child);
 				return null;
 			}
 		}
@@ -128,7 +128,7 @@ public class BaseClass extends ASTNode implements IBaseClass {
 		BaseClass result = new BaseClass(target);
 		result.setSourceRange(this.getStartPosition(), this.getLength());
 		result.setModifierFlags(getModifierFlags());
-		result.setType((DmdType) getType().clone(target));
+		result.setType((Type) getType().clone(target));
 		return result;
 	}
 
@@ -178,7 +178,7 @@ public class BaseClass extends ASTNode implements IBaseClass {
 	 * 
 	 * @return the type
 	 */ 
-	public DmdType getType() {
+	public Type getType() {
 		if (this.type == null) {
 			// lazy init must be thread-safe for readers
 			synchronized (this) {
@@ -203,7 +203,7 @@ public class BaseClass extends ASTNode implements IBaseClass {
 	 * <li>a cycle in would be created</li>
 	 * </ul>
 	 */ 
-	public void setType(DmdType type) {
+	public void setType(Type type) {
 		if (type == null) {
 			throw new IllegalArgumentException();
 		}
@@ -230,7 +230,7 @@ public class BaseClass extends ASTNode implements IBaseClass {
 	;
 	}
 
-	public BaseClass(DmdType type, PROT protection) {
+	public BaseClass(Type type, PROT protection) {
 		this.type = type;
 		this.modifierFlags = protection.getModifiers();
 	}

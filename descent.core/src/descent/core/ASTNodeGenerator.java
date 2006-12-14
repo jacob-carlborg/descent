@@ -7,15 +7,18 @@ public class ASTNodeGenerator {
 	
 	public static void main(String[] args) {
 		
-		String description = "is type specialization expression";
+		String description = "function literal declaration expression";
 		String clazz = toMethod(description);
 		String nodeType = toProperty(description);
 
 		Member[] members = {
-			Member.simple("same comparison", "boolean"),
-			Member.child("name", "SimpleName", NO_CYCLE_RISK),
-			Member.childMandatory("type", "Type", CYCLE_RISK, "PrimitiveType"),
-			Member.simple("specialization", "TypeSpecialization"),
+				Member.simple("syntax", "Syntax"),
+				Member.list("arguments", "Argument", CYCLE_RISK),
+				Member.simple("variadic", "boolean"),
+				Member.child("precondition", "Statement", CYCLE_RISK),
+				Member.child("postcondition", "Statement", CYCLE_RISK),
+				Member.child("postconditionVariableName", "SimpleName", NO_CYCLE_RISK),
+				Member.childMandatory("body", "Statement", CYCLE_RISK, "Block"),
 		};
 		
 		StringBuilder sb = new StringBuilder();

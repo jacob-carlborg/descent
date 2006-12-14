@@ -351,7 +351,7 @@ public interface IElement {
 	 * Constant representing a function expression.
 	 * An expression with this type can be safely cast to <code>IFunctionExpression</code>. 
 	 */
-	int FUNCTION_EXPRESSION = 64;
+	int FUNCTION_LITERAL_DECLARATION_EXPRESSION = 64;
 	
 	/**
 	 * Constant representing a value template parameter.

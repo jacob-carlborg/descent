@@ -117,11 +117,11 @@ public class VariableDeclaration_Test extends Parser_Test {
 		assertEquals(IElement.VARIABLE_DECLARATION, var.getNodeType0());
 		assertEquals("x", var.getName().toString());
 		assertPosition(var.getName(), 7, 1);
-		assertEquals(IType.POINTER_TO_FUNCTION_TYPE, var.getType().getNodeType0());
+		assertEquals(IType.DELEGATE_TYPE, var.getType().getNodeType0());
 		assertPosition(var, 1, 15);
 		
 		IDelegateType del = (IDelegateType) var.getType();
-		assertEquals("char", del.getArguments()[0].getType().toString());
+		assertEquals("char", del.arguments().get(0).getType().toString());
 		assertEquals("int", del.getReturnType().toString());
 	}
 	
@@ -139,9 +139,9 @@ public class VariableDeclaration_Test extends Parser_Test {
 		assertPosition(var, 1, 18);
 		
 		IArrayType array = (IArrayType) var.getType();
-		assertEquals(IType.POINTER_TO_FUNCTION_TYPE, array.getComponentType().getNodeType0());
+		assertEquals(IType.DELEGATE_TYPE, array.getComponentType().getNodeType0());
 		IDelegateType del = (IDelegateType) array.getComponentType();
-		assertEquals("char", del.getArguments()[0].getType().toString());
+		assertEquals("char", del.arguments().get(0).getType().toString());
 		assertEquals("int", del.getReturnType().toString());
 	}
 	

@@ -7,10 +7,10 @@ import descent.core.dom.ITypeDotIdentifierExpression;
 
 public class TypeDotIdExp extends Expression implements ITypeDotIdentifierExpression {
 	
-	private final DmdType t;
+	private final Type t;
 	private final Identifier ident;
 
-	public TypeDotIdExp(DmdType t, Identifier ident) {
+	public TypeDotIdExp(AST ast, Type t, Identifier ident) {
 		this.t = t;
 		this.ident = ident;
 		this.startPosition = t.startPosition;

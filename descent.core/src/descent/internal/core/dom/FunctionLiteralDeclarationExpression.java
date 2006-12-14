@@ -4,86 +4,62 @@ import java.util.ArrayList;
 import java.util.List;
 
 import descent.core.dom.ASTVisitor;
-import descent.core.dom.IFunctionDeclaration;
+import descent.core.dom.IFunctionExpression;
 
-// TODO comment 
-public class FunctionDeclaration extends Declaration implements IFunctionDeclaration {
+/**
+ * An expression that declares an annonymous function.
+ * TODO comment better
+ */
+public class FunctionLiteralDeclarationExpression extends Expression implements IFunctionExpression {
 	
-	public enum Kind {
+	// TODO comment
+	public static enum Syntax {
+		EMPTY,
 		FUNCTION,
-		CONSTRUCTOR,
-		DESTRUCTOR,
-		STATIC_CONSTRUCTOR,
-		STATIC_DESTRUCTOR,
-		NEW,
-		DELETE
+		DELEGATE
 	}
-
+	
 	/**
-	 * The "modifierFlags" structural property of this node type.
+	 * The "syntax" structural property of this node type.
 	 */
-	public static final SimplePropertyDescriptor MODIFIER_FLAGS_PROPERTY =
-		new SimplePropertyDescriptor(FunctionDeclaration.class, "modifierFlags", int.class, OPTIONAL); //$NON-NLS-1$
-
-	/**
-	 * The "kind" structural property of this node type.
-	 */
-	public static final SimplePropertyDescriptor KIND_PROPERTY =
-		new SimplePropertyDescriptor(FunctionDeclaration.class, "kind", Kind.class, OPTIONAL); //$NON-NLS-1$
-
-	/**
-	 * The "returnType" structural property of this node type.
-	 */
-	public static final ChildPropertyDescriptor RETURN_TYPE_PROPERTY =
-		new ChildPropertyDescriptor(FunctionDeclaration.class, "returnType", Type.class, MANDATORY, CYCLE_RISK); //$NON-NLS-1$
-
-	/**
-	 * The "name" structural property of this node type.
-	 */
-	public static final ChildPropertyDescriptor NAME_PROPERTY =
-		new ChildPropertyDescriptor(FunctionDeclaration.class, "name", SimpleName.class, MANDATORY, NO_CYCLE_RISK); //$NON-NLS-1$
-
-	/**
-	 * The "templateParameters" structural property of this node type.
-	 */
-	public static final ChildListPropertyDescriptor TEMPLATE_PARAMETERS_PROPERTY =
-		new ChildListPropertyDescriptor(FunctionDeclaration.class, "templateParameters", TemplateParameter.class, NO_CYCLE_RISK); //$NON-NLS-1$
+	public static final SimplePropertyDescriptor SYNTAX_PROPERTY =
+		new SimplePropertyDescriptor(FunctionLiteralDeclarationExpression.class, "syntax", Syntax.class, OPTIONAL); //$NON-NLS-1$
 
 	/**
 	 * The "arguments" structural property of this node type.
 	 */
 	public static final ChildListPropertyDescriptor ARGUMENTS_PROPERTY =
-		new ChildListPropertyDescriptor(FunctionDeclaration.class, "arguments", Argument.class, CYCLE_RISK); //$NON-NLS-1$
+		new ChildListPropertyDescriptor(FunctionLiteralDeclarationExpression.class, "arguments", Argument.class, CYCLE_RISK); //$NON-NLS-1$
 
 	/**
 	 * The "variadic" structural property of this node type.
 	 */
 	public static final SimplePropertyDescriptor VARIADIC_PROPERTY =
-		new SimplePropertyDescriptor(FunctionDeclaration.class, "variadic", boolean.class, OPTIONAL); //$NON-NLS-1$
+		new SimplePropertyDescriptor(FunctionLiteralDeclarationExpression.class, "variadic", boolean.class, OPTIONAL); //$NON-NLS-1$
 
 	/**
 	 * The "precondition" structural property of this node type.
 	 */
 	public static final ChildPropertyDescriptor PRECONDITION_PROPERTY =
-		new ChildPropertyDescriptor(FunctionDeclaration.class, "precondition", Statement.class, OPTIONAL, CYCLE_RISK); //$NON-NLS-1$
+		new ChildPropertyDescriptor(FunctionLiteralDeclarationExpression.class, "precondition", Statement.class, OPTIONAL, CYCLE_RISK); //$NON-NLS-1$
 
 	/**
 	 * The "postcondition" structural property of this node type.
 	 */
 	public static final ChildPropertyDescriptor POSTCONDITION_PROPERTY =
-		new ChildPropertyDescriptor(FunctionDeclaration.class, "postcondition", Statement.class, OPTIONAL, CYCLE_RISK); //$NON-NLS-1$
+		new ChildPropertyDescriptor(FunctionLiteralDeclarationExpression.class, "postcondition", Statement.class, OPTIONAL, CYCLE_RISK); //$NON-NLS-1$
 
 	/**
 	 * The "postconditionVariableName" structural property of this node type.
 	 */
 	public static final ChildPropertyDescriptor POSTCONDITIONVARIABLENAME_PROPERTY =
-		new ChildPropertyDescriptor(FunctionDeclaration.class, "postconditionVariableName", SimpleName.class, OPTIONAL, NO_CYCLE_RISK); //$NON-NLS-1$
+		new ChildPropertyDescriptor(FunctionLiteralDeclarationExpression.class, "postconditionVariableName", SimpleName.class, OPTIONAL, NO_CYCLE_RISK); //$NON-NLS-1$
 
 	/**
 	 * The "body" structural property of this node type.
 	 */
 	public static final ChildPropertyDescriptor BODY_PROPERTY =
-		new ChildPropertyDescriptor(FunctionDeclaration.class, "body", Statement.class, MANDATORY, CYCLE_RISK); //$NON-NLS-1$
+		new ChildPropertyDescriptor(FunctionLiteralDeclarationExpression.class, "body", Statement.class, MANDATORY, CYCLE_RISK); //$NON-NLS-1$
 
 	/**
 	 * A list of property descriptors (element type: 
@@ -93,13 +69,9 @@ public class FunctionDeclaration extends Declaration implements IFunctionDeclara
 	private static final List PROPERTY_DESCRIPTORS;
 
 	static {
-		List properyList = new ArrayList(11);
-		createPropertyList(FunctionDeclaration.class, properyList);
-		addProperty(MODIFIER_FLAGS_PROPERTY, properyList);
-		addProperty(KIND_PROPERTY, properyList);
-		addProperty(RETURN_TYPE_PROPERTY, properyList);
-		addProperty(NAME_PROPERTY, properyList);
-		addProperty(TEMPLATE_PARAMETERS_PROPERTY, properyList);
+		List properyList = new ArrayList(7);
+		createPropertyList(FunctionLiteralDeclarationExpression.class, properyList);
+		addProperty(SYNTAX_PROPERTY, properyList);
 		addProperty(ARGUMENTS_PROPERTY, properyList);
 		addProperty(VARIADIC_PROPERTY, properyList);
 		addProperty(PRECONDITION_PROPERTY, properyList);
@@ -125,32 +97,10 @@ public class FunctionDeclaration extends Declaration implements IFunctionDeclara
 	}
 
 	/**
-	 * The modifierFlags.
+	 * The syntax.
 	 */
-	private int modifierFlags;
+	private Syntax syntax;
 
-	/**
-	 * The kind.
-	 */
-	private Kind kind;
-
-	/**
-	 * The returnType.
-	 */
-	private Type returnType;
-
-	/**
-	 * The name.
-	 */
-	private SimpleName name;
-
-	/**
-	 * The template parameters
-	 * (element type: <code>TemplateParameter</code>).
-	 * Defaults to an empty list.
-	 */
-	private ASTNode.NodeList templateParameters =
-		new ASTNode.NodeList(TEMPLATE_PARAMETERS_PROPERTY);
 	/**
 	 * The arguments
 	 * (element type: <code>Argument</code>).
@@ -185,7 +135,7 @@ public class FunctionDeclaration extends Declaration implements IFunctionDeclara
 
 
 	/**
-	 * Creates a new unparented function declaration node owned by the given 
+	 * Creates a new unparented function literal declaration expression node owned by the given 
 	 * AST.
 	 * <p>
 	 * N.B. This constructor is package-private.
@@ -193,7 +143,7 @@ public class FunctionDeclaration extends Declaration implements IFunctionDeclara
 	 * 
 	 * @param ast the AST that is to own this node
 	 */
-	FunctionDeclaration(AST ast) {
+	FunctionLiteralDeclarationExpression(AST ast) {
 		super(ast);
 	}
 
@@ -208,32 +158,16 @@ public class FunctionDeclaration extends Declaration implements IFunctionDeclara
 	 * Method declared on ASTNode.
 	 */
 	final Object internalGetSetObjectProperty(SimplePropertyDescriptor property, boolean get, Object value) {
-		if (property == KIND_PROPERTY) {
+		if (property == SYNTAX_PROPERTY) {
 			if (get) {
-				return getKind();
+				return getSyntax();
 			} else {
-				setKind((Kind) value);
+				setSyntax((Syntax) value);
 				return null;
 			}
 		}
 		// allow default implementation to flag the error
 		return super.internalGetSetObjectProperty(property, get, value);
-	}
-
-	/* (omit javadoc for this method)
-	 * Method declared on ASTNode.
-	 */
-	final int internalGetSetIntProperty(SimplePropertyDescriptor property, boolean get, int value) {
-		if (property == MODIFIER_FLAGS_PROPERTY) {
-			if (get) {
-				return getModifierFlags();
-			} else {
-				setModifierFlags(value);
-				return 0;
-			}
-		}
-		// allow default implementation to flag the error
-		return super.internalGetSetIntProperty(property, get, value);
 	}
 
 	/* (omit javadoc for this method)
@@ -256,22 +190,6 @@ public class FunctionDeclaration extends Declaration implements IFunctionDeclara
 	 * Method declared on ASTNode.
 	 */
 	final ASTNode internalGetSetChildProperty(ChildPropertyDescriptor property, boolean get, ASTNode child) {
-		if (property == RETURN_TYPE_PROPERTY) {
-			if (get) {
-				return getReturnType();
-			} else {
-				setReturnType((Type) child);
-				return null;
-			}
-		}
-		if (property == NAME_PROPERTY) {
-			if (get) {
-				return getName();
-			} else {
-				setName((SimpleName) child);
-				return null;
-			}
-		}
 		if (property == PRECONDITION_PROPERTY) {
 			if (get) {
 				return getPrecondition();
@@ -312,9 +230,6 @@ public class FunctionDeclaration extends Declaration implements IFunctionDeclara
 	 * Method declared on ASTNode.
 	 */
 	final List internalGetChildListProperty(ChildListPropertyDescriptor property) {
-		if (property == TEMPLATE_PARAMETERS_PROPERTY) {
-			return templateParameters();
-		}
 		if (property == ARGUMENTS_PROPERTY) {
 			return arguments();
 		}
@@ -327,20 +242,16 @@ public class FunctionDeclaration extends Declaration implements IFunctionDeclara
 	 * TODO make it package
 	 */
 	public final int getNodeType0() {
-		return FUNCTION_DECLARATION;
+		return FUNCTION_LITERAL_DECLARATION_EXPRESSION;
 	}
 
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
 	 */
 	ASTNode clone0(AST target) {
-		FunctionDeclaration result = new FunctionDeclaration(target);
+		FunctionLiteralDeclarationExpression result = new FunctionLiteralDeclarationExpression(target);
 		result.setSourceRange(this.getStartPosition(), this.getLength());
-		result.setModifierFlags(getModifierFlags());
-		result.setKind(getKind());
-		result.setReturnType((Type) getReturnType().clone(target));
-		result.setName((SimpleName) getName().clone(target));
-		result.templateParameters.addAll(ASTNode.copySubtrees(target, templateParameters()));
+		result.setSyntax(getSyntax());
 		result.arguments.addAll(ASTNode.copySubtrees(target, arguments()));
 		result.setVariadic(isVariadic());
 	result.setPrecondition((Statement) ASTNode.copySubtree(target, getPrecondition()));
@@ -365,9 +276,6 @@ public class FunctionDeclaration extends Declaration implements IFunctionDeclara
 		boolean visitChildren = visitor.visit(this);
 		if (visitChildren) {
 			// visit children in normal left to right reading order
-			acceptChild(visitor, getReturnType());
-			acceptChild(visitor, getName());
-			acceptChildren(visitor, templateParameters());
 			acceptChildren(visitor, arguments());
 			acceptChild(visitor, getPrecondition());
 			acceptChild(visitor, getPostcondition());
@@ -378,146 +286,34 @@ public class FunctionDeclaration extends Declaration implements IFunctionDeclara
 	}
 
 	/**
-	 * Returns the modifier flags of this function declaration.
+	 * Returns the syntax of this function literal declaration expression.
 	 * 
-	 * @return the modifier flags
+	 * @return the syntax
 	 */ 
-	public int getModifierFlags() {
-		return this.modifierFlags;
+	public Syntax getSyntax() {
+		return this.syntax;
 	}
 
 	/**
-	 * Sets the modifier flags of this function declaration.
+	 * Sets the syntax of this function literal declaration expression.
 	 * 
-	 * @param modifierFlags the modifier flags
+	 * @param syntax the syntax
 	 * @exception IllegalArgumentException if the argument is incorrect
 	 */ 
-	public void setModifierFlags(int modifierFlags) {
-		preValueChange(MODIFIER_FLAGS_PROPERTY);
-		this.modifierFlags = modifierFlags;
-		postValueChange(MODIFIER_FLAGS_PROPERTY);
-	}
-
-	/**
-	 * Returns the kind of this function declaration.
-	 * 
-	 * @return the kind
-	 */ 
-	public Kind getKind() {
-		return this.kind;
-	}
-
-	/**
-	 * Sets the kind of this function declaration.
-	 * 
-	 * @param kind the kind
-	 * @exception IllegalArgumentException if the argument is incorrect
-	 */ 
-	public void setKind(Kind kind) {
-		if (kind == null) {
+	public void setSyntax(Syntax syntax) {
+		if (syntax == null) {
 			throw new IllegalArgumentException();
 		}
-		preValueChange(KIND_PROPERTY);
-		this.kind = kind;
-		postValueChange(KIND_PROPERTY);
-	}
-
-	/**
-	 * Returns the return type of this function declaration.
-	 * 
-	 * @return the return type
-	 */ 
-	public Type getReturnType() {
-		if (this.returnType == null) {
-			// lazy init must be thread-safe for readers
-			synchronized (this) {
-				if (this.returnType == null) {
-					preLazyInit();
-					this.returnType = new PrimitiveType(ast);
-					postLazyInit(this.returnType, RETURN_TYPE_PROPERTY);
-				}
-			}
-		}
-		return this.returnType;
-	}
-
-	/**
-	 * Sets the return type of this function declaration.
-	 * 
-	 * @param returnType the return type
-	 * @exception IllegalArgumentException if:
-	 * <ul>
-	 * <li>the node belongs to a different AST</li>
-	 * <li>the node already has a parent</li>
-	 * <li>a cycle in would be created</li>
-	 * </ul>
-	 */ 
-	public void setReturnType(Type returnType) {
-		if (returnType == null) {
-			throw new IllegalArgumentException();
-		}
-		ASTNode oldChild = this.returnType;
-		preReplaceChild(oldChild, returnType, RETURN_TYPE_PROPERTY);
-		this.returnType = returnType;
-		postReplaceChild(oldChild, returnType, RETURN_TYPE_PROPERTY);
-	}
-
-	/**
-	 * Returns the name of this function declaration.
-	 * 
-	 * @return the name
-	 */ 
-	public SimpleName getName() {
-		if (this.name == null) {
-			// lazy init must be thread-safe for readers
-			synchronized (this) {
-				if (this.name == null) {
-					preLazyInit();
-					this.name = new SimpleName(this.ast);
-					postLazyInit(this.name, NAME_PROPERTY);
-				}
-			}
-		}
-		return this.name;
-	}
-
-	/**
-	 * Sets the name of this function declaration.
-	 * 
-	 * @param name the name
-	 * @exception IllegalArgumentException if:
-	 * <ul>
-	 * <li>the node belongs to a different AST</li>
-	 * <li>the node already has a parent</li>
-	 * <li>a cycle in would be created</li>
-	 * </ul>
-	 */ 
-	public void setName(SimpleName name) {
-		if (name == null) {
-			throw new IllegalArgumentException();
-		}
-		ASTNode oldChild = this.name;
-		preReplaceChild(oldChild, name, NAME_PROPERTY);
-		this.name = name;
-		postReplaceChild(oldChild, name, NAME_PROPERTY);
-	}
-
-	/**
-	 * Returns the live ordered list of template parameters for this
-	 * function declaration.
-	 * 
-	 * @return the live list of function declaration
-	 *    (element type: <code>TemplateParameter</code>)
-	 */ 
-	public List<TemplateParameter> templateParameters() {
-		return this.templateParameters;
+		preValueChange(SYNTAX_PROPERTY);
+		this.syntax = syntax;
+		postValueChange(SYNTAX_PROPERTY);
 	}
 
 	/**
 	 * Returns the live ordered list of arguments for this
-	 * function declaration.
+	 * function literal declaration expression.
 	 * 
-	 * @return the live list of function declaration
+	 * @return the live list of function literal declaration expression
 	 *    (element type: <code>Argument</code>)
 	 */ 
 	public List<Argument> arguments() {
@@ -525,7 +321,7 @@ public class FunctionDeclaration extends Declaration implements IFunctionDeclara
 	}
 
 	/**
-	 * Returns the variadic of this function declaration.
+	 * Returns the variadic of this function literal declaration expression.
 	 * 
 	 * @return the variadic
 	 */ 
@@ -534,7 +330,7 @@ public class FunctionDeclaration extends Declaration implements IFunctionDeclara
 	}
 
 	/**
-	 * Sets the variadic of this function declaration.
+	 * Sets the variadic of this function literal declaration expression.
 	 * 
 	 * @param variadic the variadic
 	 * @exception IllegalArgumentException if the argument is incorrect
@@ -546,7 +342,7 @@ public class FunctionDeclaration extends Declaration implements IFunctionDeclara
 	}
 
 	/**
-	 * Returns the precondition of this function declaration.
+	 * Returns the precondition of this function literal declaration expression.
 	 * 
 	 * @return the precondition
 	 */ 
@@ -555,7 +351,7 @@ public class FunctionDeclaration extends Declaration implements IFunctionDeclara
 	}
 
 	/**
-	 * Sets the precondition of this function declaration.
+	 * Sets the precondition of this function literal declaration expression.
 	 * 
 	 * @param precondition the precondition
 	 * @exception IllegalArgumentException if:
@@ -573,7 +369,7 @@ public class FunctionDeclaration extends Declaration implements IFunctionDeclara
 	}
 
 	/**
-	 * Returns the postcondition of this function declaration.
+	 * Returns the postcondition of this function literal declaration expression.
 	 * 
 	 * @return the postcondition
 	 */ 
@@ -582,7 +378,7 @@ public class FunctionDeclaration extends Declaration implements IFunctionDeclara
 	}
 
 	/**
-	 * Sets the postcondition of this function declaration.
+	 * Sets the postcondition of this function literal declaration expression.
 	 * 
 	 * @param postcondition the postcondition
 	 * @exception IllegalArgumentException if:
@@ -600,7 +396,7 @@ public class FunctionDeclaration extends Declaration implements IFunctionDeclara
 	}
 
 	/**
-	 * Returns the postconditionVariableName of this function declaration.
+	 * Returns the postconditionVariableName of this function literal declaration expression.
 	 * 
 	 * @return the postconditionVariableName
 	 */ 
@@ -609,7 +405,7 @@ public class FunctionDeclaration extends Declaration implements IFunctionDeclara
 	}
 
 	/**
-	 * Sets the postconditionVariableName of this function declaration.
+	 * Sets the postconditionVariableName of this function literal declaration expression.
 	 * 
 	 * @param postconditionVariableName the postconditionVariableName
 	 * @exception IllegalArgumentException if:
@@ -627,7 +423,7 @@ public class FunctionDeclaration extends Declaration implements IFunctionDeclara
 	}
 
 	/**
-	 * Returns the body of this function declaration.
+	 * Returns the body of this function literal declaration expression.
 	 * 
 	 * @return the body
 	 */ 
@@ -646,7 +442,7 @@ public class FunctionDeclaration extends Declaration implements IFunctionDeclara
 	}
 
 	/**
-	 * Sets the body of this function declaration.
+	 * Sets the body of this function literal declaration expression.
 	 * 
 	 * @param body the body
 	 * @exception IllegalArgumentException if:
@@ -670,7 +466,7 @@ public class FunctionDeclaration extends Declaration implements IFunctionDeclara
 	 * Method declared on ASTNode.
 	 */
 	int memSize() {
-		return BASE_NODE_SIZE + 11 * 4;
+		return BASE_NODE_SIZE + 7 * 4;
 	}
 
 	/* (omit javadoc for this method)
@@ -679,9 +475,6 @@ public class FunctionDeclaration extends Declaration implements IFunctionDeclara
 	int treeSize() {
 		return
 			memSize()
-			+ (this.returnType == null ? 0 : getReturnType().treeSize())
-			+ (this.name == null ? 0 : getName().treeSize())
-			+ (this.templateParameters.listSize())
 			+ (this.arguments.listSize())
 			+ (this.precondition == null ? 0 : getPrecondition().treeSize())
 			+ (this.postcondition == null ? 0 : getPostcondition().treeSize())
@@ -689,5 +482,5 @@ public class FunctionDeclaration extends Declaration implements IFunctionDeclara
 			+ (this.body == null ? 0 : getBody().treeSize())
 	;
 	}
-	
+
 }

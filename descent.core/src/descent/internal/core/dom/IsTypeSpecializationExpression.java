@@ -6,10 +6,22 @@ import java.util.List;
 import descent.core.dom.ASTVisitor;
 import descent.core.dom.IIsTypeSpecializationExpression;
 
-// TODO comment
+/**
+ * An is expression ASTNode where the comparison is made against a type specialization keyword.
+ * 
+ * <pre>
+ * IsTypeSpecializationExpression:
+ *    <b>is</b> <b>(</b> Type [ [ <b>:</b> | <b>==</b> ] TypeSpecialization ] <b>)</b>
+ *    
+ * TypeSpecialization:
+ *    <b>typedef</b> | <b>struct</b> | <b>union</b> | <b>class</b> | <b>enum</b> | <b>interface</b> | <b>function</b> | <b>delegate</b> | <b>return</b> | <b>super</b> 
+ * </pre>
+ */
 public class IsTypeSpecializationExpression extends Expression implements IIsTypeSpecializationExpression {
 	
-	// TODO comment
+	/**
+	 * A type specialization keyword.
+	 */
 	public static enum TypeSpecialization {
 		TYPEDEF,
 		STRUCT,
@@ -142,7 +154,7 @@ public class IsTypeSpecializationExpression extends Expression implements IIsTyp
 	final boolean internalGetSetBooleanProperty(SimplePropertyDescriptor property, boolean get, boolean value) {
 		if (property == SAME_COMPARISON_PROPERTY) {
 			if (get) {
-				return getSameComparison();
+				return isSameComparison();
 			} else {
 				setSameComparison(value);
 				return false;
@@ -190,7 +202,7 @@ public class IsTypeSpecializationExpression extends Expression implements IIsTyp
 	ASTNode clone0(AST target) {
 		IsTypeSpecializationExpression result = new IsTypeSpecializationExpression(target);
 		result.setSourceRange(this.getStartPosition(), this.getLength());
-		result.setSameComparison(getSameComparison());
+		result.setSameComparison(isSameComparison());
 	result.setName((SimpleName) ASTNode.copySubtree(target, getName()));
 		result.setType((Type) getType().clone(target));
 		result.setSpecialization(getSpecialization());
@@ -219,16 +231,20 @@ public class IsTypeSpecializationExpression extends Expression implements IIsTyp
 	}
 
 	/**
-	 * Returns the same comparison of this is type specialization expression.
+	 * Returns the same comparison of this is type expression. The same
+	 * comparison is true if the type equality (<b>==</b>) is compared, instead
+	 * of assignability (<b>:</b>).
 	 * 
 	 * @return the same comparison
 	 */ 
-	public boolean getSameComparison() {
+	public boolean isSameComparison() {
 		return this.sameComparison;
 	}
 
 	/**
-	 * Sets the same comparison of this is type specialization expression.
+	 * Sets the same comparison of this is type expression. The same
+	 * comparison is true if the type equality (<b>==</b>) is compared, instead
+	 * of assignability (<b>:</b>).
 	 * 
 	 * @param sameComparison the same comparison
 	 * @exception IllegalArgumentException if the argument is incorrect

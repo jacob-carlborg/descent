@@ -12,6 +12,6 @@ public interface IPointerType extends IType {
 	/**
 	 * Returns the pointed type.
 	 */
-	IType getInnerType();
+	IType getComponentType();
 
 }

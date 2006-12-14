@@ -19,7 +19,7 @@ import descent.core.dom.IArrayType;
  *    Type <b>[</b> Expression <b>..</b> Expression <b>]</b>
  * </pre>
  */
-public abstract class ArrayType extends DmdType implements IArrayType {
+public abstract class ArrayType extends Type implements IArrayType {
 	
 	/**
 	 * The componentType.
@@ -96,9 +96,6 @@ public abstract class ArrayType extends DmdType implements IArrayType {
 		preReplaceChild(oldChild, componentType, p);
 		this.componentType = componentType;
 		postReplaceChild(oldChild, componentType, p);
-		
-		// TODO descent remove
-		this.next = (DmdType) componentType;
 	}
 
 }

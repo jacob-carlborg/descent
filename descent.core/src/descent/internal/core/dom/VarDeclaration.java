@@ -8,10 +8,10 @@ import descent.core.dom.IVariableDeclaration;
 
 public class VarDeclaration extends Declaration implements IVariableDeclaration {
 	
-	public DmdType type;
+	public Type type;
 	public Initializer init;
 
-	public VarDeclaration(DmdType type, Identifier ident, Initializer init) {
+	public VarDeclaration(AST ast, Type type, Identifier ident, Initializer init) {
 		super(ident);
 		this.type = type;
 		this.init = init;

@@ -3,12 +3,12 @@ package descent.internal.core.dom;
 
 public class IftypeCondition extends Condition {
 
-	public DmdType targ;
+	public Type targ;
 	public Identifier ident;
 	public TOK tok;
-	public DmdType tspec;
+	public Type tspec;
 
-	public IftypeCondition(DmdType targ, Identifier ident, TOK tok, DmdType tspec) {
+	public IftypeCondition(Type targ, Identifier ident, TOK tok, Type tspec) {
 		this.targ = targ;
 		this.ident = ident;
 		this.tok = tok;

@@ -1,18 +1,18 @@
 package descent.internal.core.dom;
 
 import descent.core.dom.ASTVisitor;
-import descent.core.dom.IType;
 import descent.core.dom.ITypeidExpression;
 
 public class TypeidExp extends Expression implements ITypeidExpression {
 
-	private final DmdType type;
+	private final Type type;
 
-	public TypeidExp(DmdType type) {
+	public TypeidExp(AST ast, Type type) {
+		super(ast);
 		this.type = type;
 	}
 	
-	public IType getType() {
+	public Type getType() {
 		return type;
 	}
 	

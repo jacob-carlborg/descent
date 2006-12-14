@@ -77,9 +77,6 @@ public class AssociativeArrayType extends ArrayType implements IAssociativeArray
 	 */
 	AssociativeArrayType(AST ast) {
 		super(ast);
-		
-		// TODO Descent remove
-		this.ty = TY.Taarray;
 	}
 
 	/* (omit javadoc for this method)

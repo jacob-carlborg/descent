@@ -24,7 +24,7 @@ public class EnumDeclaration extends Declaration implements IEnumDeclaration {
 	 * The "baseType" structural property of this node type.
 	 */
 	public static final ChildPropertyDescriptor BASETYPE_PROPERTY =
-		new ChildPropertyDescriptor(EnumDeclaration.class, "baseType", DmdType.class, OPTIONAL, NO_CYCLE_RISK); //$NON-NLS-1$
+		new ChildPropertyDescriptor(EnumDeclaration.class, "baseType", Type.class, OPTIONAL, NO_CYCLE_RISK); //$NON-NLS-1$
 
 	/**
 	 * The "enumMembers" structural property of this node type.
@@ -77,7 +77,7 @@ public class EnumDeclaration extends Declaration implements IEnumDeclaration {
 	/**
 	 * The baseType.
 	 */
-	private DmdType baseType;
+	private Type baseType;
 
 	/**
 	 * The enumMembers
@@ -139,7 +139,7 @@ public class EnumDeclaration extends Declaration implements IEnumDeclaration {
 			if (get) {
 				return getBaseType();
 			} else {
-				setBaseType((DmdType) child);
+				setBaseType((Type) child);
 				return null;
 			}
 		}
@@ -174,7 +174,7 @@ public class EnumDeclaration extends Declaration implements IEnumDeclaration {
 		result.setSourceRange(this.getStartPosition(), this.getLength());
 		result.setModifierFlags(getModifierFlags());
 	result.setName((SimpleName) ASTNode.copySubtree(target, getName()));
-	result.setBaseType((DmdType) ASTNode.copySubtree(target, getBaseType()));
+	result.setBaseType((Type) ASTNode.copySubtree(target, getBaseType()));
 		result.enumMembers.addAll(ASTNode.copySubtrees(target, enumMembers()));
 		return result;
 	}
@@ -254,7 +254,7 @@ public class EnumDeclaration extends Declaration implements IEnumDeclaration {
 	 * 
 	 * @return the baseType
 	 */ 
-	public DmdType getBaseType() {
+	public Type getBaseType() {
 		return this.baseType;
 	}
 
@@ -269,7 +269,7 @@ public class EnumDeclaration extends Declaration implements IEnumDeclaration {
 	 * <li>a cycle in would be created</li>
 	 * </ul>
 	 */ 
-	public void setBaseType(DmdType baseType) {
+	public void setBaseType(Type baseType) {
 		ASTNode oldChild = this.baseType;
 		preReplaceChild(oldChild, baseType, BASETYPE_PROPERTY);
 		this.baseType = baseType;
@@ -306,7 +306,7 @@ public class EnumDeclaration extends Declaration implements IEnumDeclaration {
 	;
 	}
 	
-	public EnumDeclaration(SimpleName name, DmdType baseType) {
+	public EnumDeclaration(SimpleName name, Type baseType) {
 		this.name = name;
 		this.baseType = baseType;
 	}

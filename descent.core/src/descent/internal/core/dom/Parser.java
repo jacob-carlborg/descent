@@ -90,6 +90,7 @@ import descent.core.compiler.IProblem;
 import descent.core.dom.IBaseClass;
 import descent.core.dom.IElement;
 import descent.core.dom.IUnaryExpression;
+import descent.internal.core.dom.FunctionLiteralDeclarationExpression.Syntax;
 import descent.internal.core.dom.IsTypeSpecializationExpression.TypeSpecialization;
 
 public class Parser extends Lexer {
@@ -786,7 +787,7 @@ public class Parser extends Lexer {
 		    nextToken();
 		    nextToken();
 		    Initializer init = parseInitializer();
-		    VarDeclaration v = new VarDeclaration(null, ident, init);
+		    VarDeclaration v = new VarDeclaration(ast, null, ident, init);
 		    v.storage_class = stc;
 		    v.modifierFlags = STC.getModifiers(stc);
 		    Dsymbol s = v;
@@ -991,9 +992,9 @@ public class Parser extends Lexer {
 	}
 	
 	private IftypeCondition parseIftypeCondition() {
-		DmdType targ;
+		Type targ;
 		Identifier[] ident = new Identifier[1];
-		DmdType tspec = null;
+		Type tspec = null;
 		TOK tok = TOKreserved;
 
 		Token firstToken = new Token(token);
@@ -1180,9 +1181,9 @@ public class Parser extends Lexer {
 
 		check(TOKlparen);
 		while (true) {
-			DmdType tb;
+			Type tb;
 			Identifier ai;
-			DmdType at;
+			Type at;
 			Argument a;
 			Argument.PassageMode inout;
 			Expression ae;
@@ -1281,7 +1282,7 @@ public class Parser extends Lexer {
 
 		EnumDeclaration e;
 		Identifier id;
-		DmdType t;
+		Type t;
 		
 		// printf("Parser::parseEnum()\n");
 		nextToken();
@@ -1609,9 +1610,9 @@ public class Parser extends Lexer {
 			
 			while (true) {
 				Identifier tp_ident = null;
-				DmdType tp_spectype = null;
-				DmdType tp_valtype = null;
-				DmdType tp_defaulttype = null;
+				Type tp_spectype = null;
+				Type tp_valtype = null;
+				Type tp_defaulttype = null;
 				Expression tp_specvalue = null;
 				Expression tp_defaultvalue = null;
 				Token t;
@@ -1902,7 +1903,7 @@ public class Parser extends Lexer {
 		    // See if it is an Expression or a Type
 		    if (isDeclaration(token, 0, TOKreserved, null))
 		    {	// Type
-			DmdType ta;
+			Type ta;
 
 			// Get TemplateArgument
 			ta = parseBasicType();
@@ -2059,8 +2060,8 @@ public class Parser extends Lexer {
 		return null;
 	}
 	
-	private DmdType parseBasicType() {
-		DmdType t = null;
+	private Type parseBasicType() {
+		Type t = null;
 		Identifier id = null;
 		TypeQualified tid = null;
 		TemplateInstance tempinst = null;
@@ -2103,13 +2104,13 @@ public class Parser extends Lexer {
 				tempinst = new TemplateInstance(id);
 				tempinst.tiargs = parseTemplateArgumentList();
 				
-				tid = new TypeInstance(tempinst);
+				tid = new TypeInstance(ast, tempinst);
 				// goto Lident2;
 				{
 				Identifier[] p_id = { id };
 				TemplateInstance[] p_tempinst = { tempinst };
 				TypeQualified[] p_tid = { tid };
-				DmdType[] p_t = { t };
+				Type[] p_t = { t };
 				parseBasicType_Lident2(p_id, p_tempinst, p_tid, p_t);
 				id = p_id[0];
 				tempinst = p_tempinst[0];
@@ -2120,14 +2121,14 @@ public class Parser extends Lexer {
 
 			}
 			// Lident:
-			tid = new TypeIdentifier(id);
+			tid = new TypeIdentifier(ast, id);
 			tid.startPosition = prevToken.ptr;
 			// Lident2:
 			{
 			Identifier[] p_id = { id };
 			TemplateInstance[] p_tempinst = { tempinst };
 			TypeQualified[] p_tid = { tid };
-			DmdType[] p_t = { t };
+			Type[] p_t = { t };
 			parseBasicType_Lident2(p_id, p_tempinst, p_tid, p_t);
 			id = p_id[0];
 			tempinst = p_tempinst[0];
@@ -2139,12 +2140,12 @@ public class Parser extends Lexer {
 		case TOKdot:
 			id = new Identifier(Id.empty, TOKidentifier);
 			// goto Lident;
-			tid = new TypeIdentifier(id);
+			tid = new TypeIdentifier(ast, id);
 			{
 			Identifier[] p_id = { id };
 			TemplateInstance[] p_tempinst = { tempinst };
 			TypeQualified[] p_tid = { tid };
-			DmdType[] p_t = { t };
+			Type[] p_t = { t };
 			parseBasicType_Lident2(p_id, p_tempinst, p_tid, p_t);
 			id = p_id[0];
 			tempinst = p_tempinst[0];
@@ -2172,7 +2173,7 @@ public class Parser extends Lexer {
 			Identifier[] p_id = { id };
 			TemplateInstance[] p_tempinst = { tempinst };
 			TypeQualified[] p_tid = { tid };
-			DmdType[] p_t = { t };
+			Type[] p_t = { t };
 			parseBasicType_Lident2(p_id, p_tempinst, p_tid, p_t);
 			id = p_id[0];
 			tempinst = p_tempinst[0];
@@ -2195,7 +2196,7 @@ public class Parser extends Lexer {
 		return t;
 	}
 	
-	private void parseBasicType_Lident2(Identifier[] id, TemplateInstance[] tempinst, TypeQualified[] tid, DmdType[] t) {
+	private void parseBasicType_Lident2(Identifier[] id, TemplateInstance[] tempinst, TypeQualified[] tid, Type[] t) {
 		while (token.value == TOKdot) {
 			nextToken();
 			if (token.value != TOKidentifier) {
@@ -2217,19 +2218,22 @@ public class Parser extends Lexer {
 		t[0] = tid[0];
 	}
 	
-	private DmdType parseBasicType2(DmdType t) {
-		DmdType ts;
-		DmdType ta;
-		DmdType subType;
+	private Type parseBasicType2(Type t) {
+		Type ts;
+		Type ta;
+		Type subType;
 
 		// printf("parseBasicType2()\n");
 		while (true) {
 			switch (token.value) {
 			case TOKmul:
 				subType = t;
-				t = new TypePointer(t);
-				t.startPosition = subType.startPosition;
-				t.length = token.ptr + token.len - t.startPosition;
+				
+				PointerType pointerType = new PointerType(ast);
+				pointerType.setComponentType(t);
+				pointerType.setSourceRange(t.startPosition, token.ptr + token.len - t.startPosition);
+				t = pointerType;
+				
 				nextToken();
 				continue;
 
@@ -2254,7 +2258,7 @@ public class Parser extends Lexer {
 																				// array
 																				// declaration
 						subType = t;
-						DmdType index;
+						Type index;
 
 						// printf("it's an associative array\n");
 						index = parseBasicType();
@@ -2317,7 +2321,7 @@ public class Parser extends Lexer {
 																					// associative
 																					// array
 																					// declaration
-							DmdType index;
+							Type index;
 
 							// printf("it's an associative array\n");
 							index = parseBasicType();
@@ -2341,11 +2345,11 @@ public class Parser extends Lexer {
 						}
 
 						if (ts != t) {
-							DmdType pt = ts;
-							while (pt.next != t) {
-								pt = pt.next;
+							IDmdType pt = TypeAdapter.getAdapter(ts);
+							while (pt.getNext() != t) {
+								pt = TypeAdapter.getAdapter(pt.getNext());
 							}
-							pt.next = ta;
+							pt.setNext(ta);
 						} else {
 							ts = ta;
 						}
@@ -2370,15 +2374,15 @@ public class Parser extends Lexer {
 
 				int saveStart = t.startPosition;
 
-				t = new TypeFunction(arguments, t, varargs != 0, linkage);
-				if (save == TOKdelegate) {
-					t = new TypeDelegate(t);
-				} else {
-					TypePointer tp = new TypePointer(t);
-					t = tp; // pointer to function
-				}
-				t.startPosition = saveStart;
-				t.length = prevToken.ptr + prevToken.len - t.startPosition;
+				DmdTypeFunction typeFunction = new DmdTypeFunction(ast, arguments, t, varargs != 0, linkage);
+				
+				DelegateType delegateType = new DelegateType(ast);
+				delegateType.setReturnType(typeFunction.getReturnType());
+				delegateType.setFunctionPointer(save == TOKfunction);
+				delegateType.arguments().addAll(typeFunction.arguments);
+				delegateType.setVariadic(varargs != 0);
+				t = delegateType;
+				t.setSourceRange(saveStart, prevToken.ptr + prevToken.len - saveStart);
 				continue;
 			}
 
@@ -2391,13 +2395,13 @@ public class Parser extends Lexer {
 		return ts;
 	}
 	
-	private DmdType parseDeclarator(DmdType targ, Identifier[] ident) {
+	private Type parseDeclarator(Type targ, Identifier[] ident) {
 		return parseDeclarator(targ, ident, null, null);
 	}
 
-	private DmdType parseDeclarator(DmdType t, Identifier[] pident, List<TemplateParameter>[] tpl, int[] identStart) {
-		DmdType ts;
-	    DmdType ta;
+	private Type parseDeclarator(Type t, Identifier[] pident, List<TemplateParameter>[] tpl, int[] identStart) {
+		Type ts;
+	    Type ta;
 
 	    //printf("parseDeclarator(tpl = %p)\n", tpl);
 	    t = parseBasicType2(t);
@@ -2449,7 +2453,7 @@ public class Parser extends Lexer {
 			}
 			else if (isDeclaration(token, 0, TOKrbracket, null))
 			{   // It's an associative array declaration
-			    DmdType index;
+			    Type index;
 
 			    //printf("it's an associative array\n");
 			    index = parseBasicType();
@@ -2477,11 +2481,11 @@ public class Parser extends Lexer {
 			}
 			
 			if (ts != t) {
-				DmdType pt = ts;
-				while(pt.next != t) {
-					pt = pt.next;
+				IDmdType pt = TypeAdapter.getAdapter(ts);
+				while(pt.getNext() != t) {
+					pt = TypeAdapter.getAdapter(pt.getNext());
 				}
-				pt.next = ta;
+				pt.setNext(ta);
 			} else {
 				ts = ta;
 			}
@@ -2511,16 +2515,35 @@ public class Parser extends Lexer {
 			arguments = parseParameters(pointer2_varargs);
 			varargs = pointer2_varargs[0];
 			
-			ta = new TypeFunction(arguments, t, varargs != 0, linkage);
+			ta = new DmdTypeFunction(ast, arguments, t, varargs != 0, linkage);
 			ta.startPosition = t.startPosition;
 			ta.length = t.length;
+			
+			DmdTypeFunction typeFunction = (DmdTypeFunction) ta;
 
 			if (ts != t) {
-				DmdType pt = ts;
-				while(pt.next != t) {
-					pt = pt.next;
+				IDmdType pt = TypeAdapter.getAdapter(ts);
+				IDmdType previous = null;
+				while(pt.getNext() != t) {
+					previous = pt;
+					pt = TypeAdapter.getAdapter(pt.getNext());
 				}
-				pt.next = ta;
+				
+				if (pt.getAdaptedType() instanceof PointerType) {
+					DelegateType delegateType = new DelegateType(ast);
+					delegateType.setReturnType(typeFunction.getReturnType());
+					delegateType.setFunctionPointer(true);
+					delegateType.arguments().addAll(typeFunction.arguments);
+					delegateType.setVariadic(varargs != 0);
+					
+					if (previous == null) {
+						ts = delegateType;
+					} else {
+						previous.setNext(delegateType);
+					}
+				} else {
+					throw new RuntimeException("Not expected");
+				}
 			} else {
 				ts = ta;
 			}
@@ -2538,9 +2561,9 @@ public class Parser extends Lexer {
 	private List<Declaration> parseDeclarations() {
 		int storage_class;
 		int stc;
-		DmdType ts;
-		DmdType t;
-		DmdType tfirst;
+		Type ts;
+		Type t;
+		Type tfirst;
 		Identifier ident;
 		List a;
 		TOK tok;
@@ -2615,7 +2638,7 @@ public class Parser extends Lexer {
 			nextToken();
 			nextToken();
 			Initializer init = parseInitializer();
-			VarDeclaration v = new VarDeclaration(null, ident, init);
+			VarDeclaration v = new VarDeclaration(ast, null, ident, init);
 			v.storage_class = storage_class;
 			v.modifierFlags = STC.getModifiers(storage_class);
 			a.add(v);
@@ -2722,8 +2745,8 @@ public class Parser extends Lexer {
 					problem("Semicolon expected to close declaration", IProblem.SEVERITY_ERROR, IProblem.SEMICOLON_EXPECTED, v.startPosition, prevToken.ptr + prevToken.len - v.startPosition);
 					break;
 				}
-			} else if (t.ty == Tfunction) {
-				TypeFunction typeFunction = (TypeFunction) t;
+			} else if (TypeAdapter.getAdapter(t).getTY() == Tfunction) {
+				DmdTypeFunction typeFunction = (DmdTypeFunction) t;
 				
 				SimpleName name = new SimpleName(ast);
 				name.setSourceRange(ident.startPosition, ident.length);
@@ -2781,7 +2804,7 @@ public class Parser extends Lexer {
 					nextToken();
 					init = parseInitializer();
 				}
-				v = new VarDeclaration(t, ident, init);
+				v = new VarDeclaration(ast, t, ident, init);
 				v.startPosition = nextVarStart;
 				v.storage_class = storage_class;
 				v.modifierFlags = STC.getModifiers(storage_class);
@@ -3452,9 +3475,9 @@ public class Parser extends Lexer {
 			arguments = new ArrayList();
 
 			while (true) {
-				DmdType tb;
+				Type tb;
 				Identifier ai = null;
-				DmdType at;
+				Type at;
 				Argument.PassageMode inout;
 				Argument a;
 				
@@ -3577,8 +3600,8 @@ public class Parser extends Lexer {
 			} else {
 				Token argToken = new Token(token);
 				if (isDeclaration(token, 2, TOKassign, null)) {
-					DmdType tb;
-					DmdType at;
+					Type tb;
+					Type at;
 					Identifier ai = null;
 
 					tb = parseBasicType();
@@ -4055,7 +4078,7 @@ public class Parser extends Lexer {
 			while (token.value == TOKcatch) {
 				Statement handler;
 				CatchClause c;
-				DmdType t2;
+				Type t2;
 				Identifier id;
 				
 				Token firstToken = new Token(token);
@@ -5024,7 +5047,7 @@ public class Parser extends Lexer {
 	
 	private Expression parsePrimaryExp()
 	{   Expression e = null;
-	    DmdType t;
+	    Type t;
 	    Identifier id;
 	    TOK save;
 
@@ -5231,7 +5254,7 @@ public class Parser extends Lexer {
 		    		nextToken();
 		    		break;
 			    }
-			    e = new TypeDotIdExp(t, new Identifier(token));
+			    e = new TypeDotIdExp(ast, t, new Identifier(token));
 			    nextToken();
 			    break;
 
@@ -5261,34 +5284,34 @@ public class Parser extends Lexer {
 			    	nextToken();
 			    	break;
 			    }
-			    e = new TypeDotIdExp(t, new Identifier(token));
+			    e = new TypeDotIdExp(ast, t, new Identifier(token));
 			    nextToken();
 			    break;
 		    }
 		    	
-		    e = new TypeExp(t);
+		    e = new TypeExp(ast, t);
 		    e.startPosition = saveToken.ptr;
 		    e.length = prevToken.ptr + prevToken.len - e.startPosition;
 		    break;
 		}
 
 		case TOKtypeid:
-		{   DmdType t2;
+		{   Type t2;
 
 		    nextToken();
 		    check(TOKlparen, "typeid");
 		    t2 = parseBasicType();
 		    t2 = parseDeclarator(t2, null);	// ( type )
 		    check(TOKrparen);
-		    e = new TypeidExp(t2);
+		    e = new TypeidExp(ast, t2);
 		    break;
 		}
 
 		case TOKis:
 		{
-			DmdType targ = null;
+			Type targ = null;
 			Identifier ident = null;
-			DmdType tspec = null;
+			Type tspec = null;
 			TOK tok = TOKreserved;
 			Token token2 = new Token();
 			token2.value = TOKreserved;
@@ -5396,7 +5419,7 @@ public class Parser extends Lexer {
 				// goto case_delegate;
 				{
 				Expression[] pe = { e };
-				parsePrimaryExp_case_delegate(pe, save);
+				parsePrimaryExp_case_delegate(pe, Syntax.EMPTY);
 				e = pe[0];
 				}
 				break;
@@ -5427,7 +5450,7 @@ public class Parser extends Lexer {
 			// goto case_delegate;
 			{
 			Expression[] pe = { e };
-			parsePrimaryExp_case_delegate(pe, save);
+			parsePrimaryExp_case_delegate(pe, Syntax.EMPTY);
 			e = pe[0];
 			}
 			break;
@@ -5439,7 +5462,7 @@ public class Parser extends Lexer {
 			// case_delegate:
 			{
 				Expression[] pe = { e };
-				parsePrimaryExp_case_delegate(pe, save);
+				parsePrimaryExp_case_delegate(pe, save == TOKfunction ? Syntax.FUNCTION : Syntax.DELEGATE);
 				e = pe[0];
 				break;
 			}
@@ -5627,7 +5650,7 @@ public class Parser extends Lexer {
 
 		case TOKcast: // cast(type) expression
 		{
-			DmdType t;
+			Type t;
 
 			nextToken();
 			check(TOKlparen);
@@ -5712,7 +5735,7 @@ public class Parser extends Lexer {
 				case TOKcomplex64:
 				case TOKcomplex80:
 				case TOKvoid: { // (type) una_exp
-					DmdType t;
+					Type t;
 
 					nextToken();
 					t = parseBasicType();
@@ -5726,7 +5749,7 @@ public class Parser extends Lexer {
 							problem("Identifier expected following (type).", IProblem.SEVERITY_ERROR, IProblem.IDENTIFIER_EXPECTED, token.ptr, token.len);
 							return null;
 						}
-						e = new TypeDotIdExp(t, new Identifier(token));
+						e = new TypeDotIdExp(ast, t, new Identifier(token));
 						nextToken();
 					} else {
 						e = parseUnaryExp();
@@ -5753,11 +5776,11 @@ public class Parser extends Lexer {
 		return e;
 	}
 	
-	private void parsePrimaryExp_case_delegate(Expression[] e, TOK save) {
+	private void parsePrimaryExp_case_delegate(Expression[] e, Syntax syntax) {
 		List<Argument> arguments;
 		int varargs = 0;
-		FuncLiteralDeclaration fd;
-		DmdType t2;
+		DmdFuncLiteralDeclaration fd;
+		Type t2;
 
 		if (token.value == TOKlcurly) {
 			t2 = null;
@@ -5775,11 +5798,23 @@ public class Parser extends Lexer {
 			varargs = pointer2_varargs[0];
 
 		}
-		t2 = new TypeFunction(arguments, t2, varargs != 0, linkage);
-		fd = new FuncLiteralDeclaration(ast);
+		
+		t2 = new DmdTypeFunction(ast, arguments, t2, varargs != 0, linkage);
+		
+		fd = new DmdFuncLiteralDeclaration(ast);
 		fd.arguments().addAll(arguments);
 		parseContracts(fd);
-		e[0] = new FuncExp(fd);
+		
+		FunctionLiteralDeclarationExpression expression = new FunctionLiteralDeclarationExpression(ast);
+		expression.setSyntax(syntax); 
+		expression.arguments().addAll(fd.arguments());
+		expression.setVariadic(fd.isVariadic());
+		expression.setPrecondition(fd.getPrecondition());
+		expression.setPostcondition(fd.getPostcondition());
+		expression.setPostconditionVariableName(fd.getPostconditionVariableName());
+		expression.setBody(fd.getBody());
+		
+		e[0] = expression;
 	}
 	
 	private Expression parseMulExp()
@@ -6117,7 +6152,7 @@ public class Parser extends Lexer {
 	
 	@SuppressWarnings("unchecked")
 	private Expression parseNewExp(Expression thisexp) {
-		DmdType t;
+		Type t;
 		List<Expression> newargs = null;
 		List<Expression> arguments = null;
 		Expression e;
@@ -6167,23 +6202,23 @@ public class Parser extends Lexer {
 		// #if LTORARRAYDECL
 		t = parseBasicType();
 		t = parseBasicType2(t);
-		if (t.ty == Taarray) {
-			DmdType index = (DmdType) ((AssociativeArrayType) t).getKeyType();
+		if (TypeAdapter.getAdapter(t).getTY() == Taarray) {
+			Type index = (Type) ((AssociativeArrayType) t).getKeyType();
 			
-			Expression e2 = index.toExpression();
+			Expression e2 = TypeAdapter.getAdapter(index).toExpression();
 			if (e2 != null) {
 				arguments = new ArrayList<Expression>();
 				arguments.add(e2);
 				
 				DynamicArrayType dynamicArrayType = new DynamicArrayType(ast);
-				dynamicArrayType.setComponentType(t.next);
+				dynamicArrayType.setComponentType((Type) TypeAdapter.getAdapter(t).getNext());
 				
 				t = dynamicArrayType;
 			} else {
 				problem("Need size of rightmost array", IProblem.SEVERITY_ERROR, IProblem.NEED_SIZE_OF_RIGHTMOST_ARRAY, index.startPosition, index.length);
 				return new NullLiteral(ast);
 			}
-		} else if (t.ty == Tsarray) {
+		} else if (TypeAdapter.getAdapter(t).getTY() == Tsarray) {
 			StaticArrayType tsa = (StaticArrayType) t;
 			Expression e2 = tsa.getSize();
 
@@ -6191,7 +6226,7 @@ public class Parser extends Lexer {
 			arguments.add(e2);
 			
 			DynamicArrayType dynamicArrayType = new DynamicArrayType(ast);
-			dynamicArrayType.setComponentType(t.next);
+			dynamicArrayType.setComponentType(TypeAdapter.getAdapter(t).getNext());
 			
 			t = dynamicArrayType;
 		} else if (token.value == TOKlparen) {

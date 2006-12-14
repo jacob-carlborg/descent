@@ -26,7 +26,7 @@ public class CastExpression extends Expression implements ICastExpression {
 	 * The "type" structural property of this node type.
 	 */
 	public static final ChildPropertyDescriptor TYPE_PROPERTY =
-		new ChildPropertyDescriptor(CastExpression.class, "type", DmdType.class, MANDATORY, CYCLE_RISK); //$NON-NLS-1$
+		new ChildPropertyDescriptor(CastExpression.class, "type", Type.class, MANDATORY, CYCLE_RISK); //$NON-NLS-1$
 
 	/**
 	 * A list of property descriptors (element type: 
@@ -66,7 +66,7 @@ public class CastExpression extends Expression implements ICastExpression {
 	/**
 	 * The type.
 	 */
-	private DmdType type;
+	private Type type;
 
 
 	/**
@@ -105,7 +105,7 @@ public class CastExpression extends Expression implements ICastExpression {
 			if (get) {
 				return getType();
 			} else {
-				setType((DmdType) child);
+				setType((Type) child);
 				return null;
 			}
 		}
@@ -128,7 +128,7 @@ public class CastExpression extends Expression implements ICastExpression {
 		CastExpression result = new CastExpression(target);
 		result.setSourceRange(this.getStartPosition(), this.getLength());
 		result.setExpression((Expression) getExpression().clone(target));
-		result.setType((DmdType) getType().clone(target));
+		result.setType((Type) getType().clone(target));
 		return result;
 	}
 
@@ -198,7 +198,7 @@ public class CastExpression extends Expression implements ICastExpression {
 	 * 
 	 * @return the type
 	 */ 
-	public DmdType getType() {
+	public Type getType() {
 		if (this.type == null) {
 			// lazy init must be thread-safe for readers
 			synchronized (this) {
@@ -223,7 +223,7 @@ public class CastExpression extends Expression implements ICastExpression {
 	 * <li>a cycle in would be created</li>
 	 * </ul>
 	 */ 
-	public void setType(DmdType type) {
+	public void setType(Type type) {
 		if (type == null) {
 			throw new IllegalArgumentException();
 		}
@@ -251,7 +251,7 @@ public class CastExpression extends Expression implements ICastExpression {
 	;
 	}
 
-	public CastExpression(Expression expression, DmdType type) {
+	public CastExpression(Expression expression, Type type) {
 		this.expression = expression;
 		this.type = type;
 	}
