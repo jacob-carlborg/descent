@@ -23,6 +23,8 @@ import descent.core.dom.IIsTypeExpression;
 import descent.core.dom.INewAnonymousClassExpression;
 import descent.core.dom.INewExpression;
 import descent.core.dom.IParenthesizedExpression;
+import descent.core.dom.IPostfixExpression;
+import descent.core.dom.IPrefixExpression;
 import descent.core.dom.IScopeExpression;
 import descent.core.dom.ISliceExpression;
 import descent.core.dom.IStringExpression;
@@ -31,12 +33,13 @@ import descent.core.dom.ITypeDotIdentifierExpression;
 import descent.core.dom.ITypeExpression;
 import descent.core.dom.ITypeidExpression;
 import descent.core.dom.ITypeofType;
-import descent.core.dom.IUnaryExpression;
 import descent.internal.core.dom.Expression;
 import descent.internal.core.dom.InfixExpression;
 import descent.internal.core.dom.IsTypeExpression;
 import descent.internal.core.dom.IsTypeSpecializationExpression;
 import descent.internal.core.dom.ParserFacade;
+import descent.internal.core.dom.PostfixExpression;
+import descent.internal.core.dom.PrefixExpression;
 import descent.internal.core.dom.SimpleName;
 import descent.internal.core.dom.FunctionLiteralDeclarationExpression.Syntax;
 
@@ -360,44 +363,44 @@ public class Expression_Test extends Parser_Test {
 		}
 	}
 	
-	public void testUnary() {
+	public void testPrefixExpression() {
 		Object[][] objs = { 
-				{ "&", IUnaryExpression.Operator.ADDRESS },
-				{ "++", IUnaryExpression.Operator.PRE_INCREMENT },
-				{ "--", IUnaryExpression.Operator.PRE_DECREMENT },
-				{ "*", IUnaryExpression.Operator.POINTER },
-				{ "-", IUnaryExpression.Operator.NEGATIVE },
-				{ "+", IUnaryExpression.Operator.POSITIVE },
-				{ "!", IUnaryExpression.Operator.NOT },
-				{ "~", IUnaryExpression.Operator.INVERT },
+				{ "&", PrefixExpression.Operator.ADDRESS },
+				{ "++", PrefixExpression.Operator.INCREMENT },
+				{ "--", PrefixExpression.Operator.DECREMENT },
+				{ "*", PrefixExpression.Operator.POINTER },
+				{ "-", PrefixExpression.Operator.NEGATIVE },
+				{ "+", PrefixExpression.Operator.POSITIVE },
+				{ "!", PrefixExpression.Operator.NOT },
+				{ "~", PrefixExpression.Operator.INVERT },
 			};
 		
 		for(Object[] pair : objs) {
 			String s = " " + pair[0] + "1";
-			IUnaryExpression expr = (IUnaryExpression) new ParserFacade().parseExpression(s);
+			IPrefixExpression expr = (IPrefixExpression) new ParserFacade().parseExpression(s);
 			
-			assertEquals(IExpression.UNARY_EXPRESSION, expr.getNodeType0());
+			assertEquals(IExpression.PREFIX_EXPRESSION, expr.getNodeType0());
 			assertEquals(pair[1], expr.getOperator());
-			assertEquals(IExpression.INTEGER_EXPRESSION, expr.getInnerExpression().getNodeType0());
+			assertEquals(IExpression.INTEGER_EXPRESSION, expr.getExpression().getNodeType0());
 			assertPosition(expr, 1, 1 + ((String) pair[0]).length());
 			
 			assertVisitor(expr, 2);
 		}
 	}
 	
-	public void testUnary2() {
+	public void testPostfixExpression() {
 		Object[][] objs = { 
-				{ "++", IUnaryExpression.Operator.POST_INCREMENT },
-				{ "--", IUnaryExpression.Operator.POST_DECREMENT },
+				{ "++", PostfixExpression.Operator.INCREMENT },
+				{ "--", PostfixExpression.Operator.DECREMENT },
 			};
 		
 		for(Object[] pair : objs) {
 			String s = " 1" + pair[0];
-			IUnaryExpression expr = (IUnaryExpression) new ParserFacade().parseExpression(s);
+			IPostfixExpression expr = (IPostfixExpression) new ParserFacade().parseExpression(s);
 			
-			assertEquals(IExpression.UNARY_EXPRESSION, expr.getNodeType0());
+			assertEquals(IExpression.POSTFIX_EXPRESSION, expr.getNodeType0());
 			assertEquals(pair[1], expr.getOperator());
-			assertEquals(IExpression.INTEGER_EXPRESSION, expr.getInnerExpression().getNodeType0());
+			assertEquals(IExpression.INTEGER_EXPRESSION, expr.getExpression().getNodeType0());
 			assertPosition(expr, 1, 1 + ((String) pair[0]).length());
 			
 			assertVisitor(expr, 2);

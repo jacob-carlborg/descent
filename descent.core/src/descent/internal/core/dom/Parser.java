@@ -89,7 +89,6 @@ import java.util.List;
 import descent.core.compiler.IProblem;
 import descent.core.dom.IBaseClass;
 import descent.core.dom.IElement;
-import descent.core.dom.IUnaryExpression;
 import descent.internal.core.dom.FunctionLiteralDeclarationExpression.Syntax;
 import descent.internal.core.dom.IsTypeSpecializationExpression.TypeSpecialization;
 
@@ -124,52 +123,6 @@ public class Parser extends Lexer {
 	
 	private void adjustLastDocComment() {
 		lastDocCommentRead = comments.size();
-	}
-	
-	private SimpleName newSimpleNameForCurrentToken() {
-		SimpleName simpleName = new SimpleName(ast);
-		simpleName.setIdentifier(token.ident.string);
-		simpleName.setSourceRange(token.ptr, token.len);
-		return simpleName;
-	}
-	
-	public SimpleName newSimpleNameForIdentifier(Identifier id) {
-		if (id == null) return null;
-		
-		SimpleName simpleName = new SimpleName(ast);
-		simpleName.setIdentifier(id.string);
-		simpleName.setSourceRange(id.startPosition, id.length);
-		return simpleName;
-	}
-	
-	public static SimpleName newSimpleNameForIdentifierWithAST(Identifier id, AST ast) {
-		if (id == null) return null;
-		
-		SimpleName simpleName = new SimpleName(ast);
-		simpleName.setIdentifier(id.string);
-		simpleName.setSourceRange(id.startPosition, id.length);
-		return simpleName;
-	}
-	
-	private QualifiedName newQualifiedNameForCurrentToken(Name name) {
-		QualifiedName qualifiedName = new QualifiedName(ast);
-		qualifiedName.setQualifier(name);
-		qualifiedName.setName(newSimpleNameForCurrentToken());
-		qualifiedName.setSourceRange(name.getStartPosition(), token.ptr + token.len - name.getStartPosition());
-		return qualifiedName;
-	}
-	
-	private List<Comment> getLastDocComments() {
-		List<Comment> toReturn = new ArrayList<Comment>();
-		for(int i = comments.size() - 1; i >= lastDocCommentRead; i--) {
-			Comment comment = comments.get(i);
-			if (comment.isDocComment()) {
-				toReturn.add(comment);
-			} else {
-				break;
-			}
-		}
-		return toReturn;
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -5515,11 +5468,11 @@ public class Parser extends Lexer {
 				break;
 
 			case TOKplusplus:
-				e = new UnaryExpression(e, IUnaryExpression.Operator.POST_INCREMENT);
+				e = newPostfixExpression(e, PostfixExpression.Operator.INCREMENT);
 				break;
 
 			case TOKminusminus:
-				e = new UnaryExpression(e, IUnaryExpression.Operator.POST_DECREMENT);
+				e = newPostfixExpression(e, PostfixExpression.Operator.DECREMENT);
 				break;
 
 			case TOKlparen:
@@ -5588,49 +5541,49 @@ public class Parser extends Lexer {
 		case TOKand:
 			nextToken();
 			e = parseUnaryExp();
-			e = new UnaryExpression(e, IUnaryExpression.Operator.ADDRESS);
+			e = newPrefixExpression(e, PrefixExpression.Operator.ADDRESS);
 			break;
 
 		case TOKplusplus:
 			nextToken();
 			e = parseUnaryExp();
-			e = new UnaryExpression(e, IUnaryExpression.Operator.PRE_INCREMENT);
+			e = newPrefixExpression(e, PrefixExpression.Operator.INCREMENT);
 			break;
 
 		case TOKminusminus:
 			nextToken();
 			e = parseUnaryExp();
-			e = new UnaryExpression(e, IUnaryExpression.Operator.PRE_DECREMENT);
+			e = newPrefixExpression(e, PrefixExpression.Operator.DECREMENT);
 			break;
 
 		case TOKmul:
 			nextToken();
 			e = parseUnaryExp();
-			e = new UnaryExpression(e, IUnaryExpression.Operator.POINTER);
+			e = newPrefixExpression(e, PrefixExpression.Operator.POINTER);
 			break;
 
 		case TOKmin:
 			nextToken();
 			e = parseUnaryExp();
-			e = new UnaryExpression(e, IUnaryExpression.Operator.NEGATIVE);
+			e = newPrefixExpression(e, PrefixExpression.Operator.NEGATIVE);
 			break;
 
 		case TOKadd:
 			nextToken();
 			e = parseUnaryExp();
-			e = new UnaryExpression(e, IUnaryExpression.Operator.POSITIVE);
+			e = newPrefixExpression(e, PrefixExpression.Operator.POSITIVE);
 			break;
 
 		case TOKnot:
 			nextToken();
 			e = parseUnaryExp();
-			e = new UnaryExpression(e, IUnaryExpression.Operator.NOT);
+			e = newPrefixExpression(e, PrefixExpression.Operator.NOT);
 			break;
 
 		case TOKtilde:
 			nextToken();
 			e = parseUnaryExp();
-			e = new UnaryExpression(e, IUnaryExpression.Operator.INVERT);
+			e = newPrefixExpression(e, PrefixExpression.Operator.INVERT);
 			break;
 
 		case TOKdelete:
@@ -6285,6 +6238,66 @@ public class Parser extends Lexer {
 		}
 		
 		return type;
+	}
+	
+	private PostfixExpression newPostfixExpression(Expression expression, PostfixExpression.Operator operator) {
+		PostfixExpression postfixExpression = new PostfixExpression(ast);
+		postfixExpression.setExpression(expression);
+		postfixExpression.setOperator(operator);
+		return postfixExpression;
+	}
+	
+	private PrefixExpression newPrefixExpression(Expression expression, PrefixExpression.Operator operator) {
+		PrefixExpression prefixExpression = new PrefixExpression(ast);
+		prefixExpression.setExpression(expression);
+		prefixExpression.setOperator(operator);
+		return prefixExpression;
+	}
+	
+	private SimpleName newSimpleNameForCurrentToken() {
+		SimpleName simpleName = new SimpleName(ast);
+		simpleName.setIdentifier(token.ident.string);
+		simpleName.setSourceRange(token.ptr, token.len);
+		return simpleName;
+	}
+	
+	public SimpleName newSimpleNameForIdentifier(Identifier id) {
+		if (id == null) return null;
+		
+		SimpleName simpleName = new SimpleName(ast);
+		simpleName.setIdentifier(id.string);
+		simpleName.setSourceRange(id.startPosition, id.length);
+		return simpleName;
+	}
+	
+	public static SimpleName newSimpleNameForIdentifierWithAST(Identifier id, AST ast) {
+		if (id == null) return null;
+		
+		SimpleName simpleName = new SimpleName(ast);
+		simpleName.setIdentifier(id.string);
+		simpleName.setSourceRange(id.startPosition, id.length);
+		return simpleName;
+	}
+	
+	private QualifiedName newQualifiedNameForCurrentToken(Name name) {
+		QualifiedName qualifiedName = new QualifiedName(ast);
+		qualifiedName.setQualifier(name);
+		qualifiedName.setName(newSimpleNameForCurrentToken());
+		qualifiedName.setSourceRange(name.getStartPosition(), token.ptr + token.len - name.getStartPosition());
+		return qualifiedName;
+	}
+	
+	private List<Comment> getLastDocComments() {
+		List<Comment> toReturn = new ArrayList<Comment>();
+		for(int i = comments.size() - 1; i >= lastDocCommentRead; i--) {
+			Comment comment = comments.get(i);
+			if (comment.isDocComment()) {
+				toReturn.add(comment);
+			} else {
+				break;
+			}
+		}
+		return toReturn;
 	}
 	
 }

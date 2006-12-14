@@ -267,7 +267,7 @@ public interface IElement {
 	 * Constant representing a unary expression.
 	 * An expression with this type can be safely cast to <code>IUnaryExpression</code>. 
 	 */
-	int UNARY_EXPRESSION = 50;
+	int POSTFIX_EXPRESSION = 50;
 	
 	/**
 	 * Constant representing a cast expression.
@@ -686,6 +686,8 @@ public interface IElement {
 	int IFTYPE_STATEMENT = 126;
 	
 	int IS_TYPE_SPECIALIZATION_EXPRESSION = 127;
+	
+	int PREFIX_EXPRESSION = 128;
 	
 	/**
 	 * Returns the start position in the source code where this element

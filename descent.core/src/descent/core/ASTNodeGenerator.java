@@ -7,14 +7,13 @@ public class ASTNodeGenerator {
 	
 	public static void main(String[] args) {
 		
-		String description = "try statement";
+		String description = "postfix expression";
 		String clazz = toMethod(description);
 		String nodeType = toProperty(description);
 
 		Member[] members = {
-				Member.childMandatory("body", "Block", CYCLE_RISK, "Block"),
-				Member.list("catchClauses", "CatchClause", CYCLE_RISK),
-				Member.child("finally", "Block", CYCLE_RISK),				
+				Member.simple("operator", "Operator"),
+				Member.childMandatory("expression", "Expression", CYCLE_RISK, "SimpleName"),				
 		};
 		
 		StringBuilder sb = new StringBuilder();

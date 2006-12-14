@@ -2486,5 +2486,55 @@ public class ASTMatcher {
 			&& safeSubtreeMatch(node.getFinally(), o.getFinally())
 			);
 	}
+	
+	/**
+	 * Returns whether the given node and the other object match.
+	 * <p>
+	 * The default implementation provided by this class tests whether the
+	 * other object is a node of the same type with structurally isomorphic
+	 * child subtrees. Subclasses may override this method as needed.
+	 * </p>
+	 * 
+	 * @param node the node
+	 * @param other the other object, or <code>null</code>
+	 * @return <code>true</code> if the subtree matches, or 
+	 *   <code>false</code> if they do not match or the other object has a
+	 *   different node type or is <code>null</code>
+	 */
+	public boolean match(PrefixExpression node, Object other) {
+		if (!(other instanceof PrefixExpression)) {
+			return false;
+		}
+		PrefixExpression o = (PrefixExpression) other;
+		return (
+			node.getOperator() == o.getOperator()
+			&& safeSubtreeMatch(node.getExpression(), o.getExpression())
+			);
+	}
+	
+	/**
+	 * Returns whether the given node and the other object match.
+	 * <p>
+	 * The default implementation provided by this class tests whether the
+	 * other object is a node of the same type with structurally isomorphic
+	 * child subtrees. Subclasses may override this method as needed.
+	 * </p>
+	 * 
+	 * @param node the node
+	 * @param other the other object, or <code>null</code>
+	 * @return <code>true</code> if the subtree matches, or 
+	 *   <code>false</code> if they do not match or the other object has a
+	 *   different node type or is <code>null</code>
+	 */
+	public boolean match(PostfixExpression node, Object other) {
+		if (!(other instanceof PostfixExpression)) {
+			return false;
+		}
+		PostfixExpression o = (PostfixExpression) other;
+		return (
+			node.getOperator() == o.getOperator()
+			&& safeSubtreeMatch(node.getExpression(), o.getExpression())
+			);
+	}
 
 }
