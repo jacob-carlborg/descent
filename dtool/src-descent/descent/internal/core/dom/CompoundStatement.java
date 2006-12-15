@@ -4,7 +4,6 @@ import java.util.List;
 
 import descent.core.dom.ICompoundStatement;
 import descent.core.dom.IStatement;
-import descent.core.dom.IElement.ElementTypes;
 import descent.core.domX.ASTVisitor;
 
 public class CompoundStatement extends Statement implements ICompoundStatement {

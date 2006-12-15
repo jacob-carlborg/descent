@@ -2,7 +2,6 @@ package descent.core.domX;
 
 import descent.core.dom.IDebugDeclaration;
 import descent.core.dom.IDebugStatement;
-import descent.core.dom.IDelegateType;
 import descent.core.dom.IElement;
 import descent.core.dom.IFalseExpression;
 import descent.core.dom.IIftypeDeclaration;
@@ -819,10 +818,7 @@ public abstract class ASTVisitor extends CommonTreeVisitor {
 		return visit((ConditionalStatement)element);
 	}
 	
-	
-	public boolean visit(IDelegateType element) {
-		return visit((TypePointer)element);
-	}
+
 	public boolean visit(IPointerType element) {
 		return visit((TypePointer)element);
 	}

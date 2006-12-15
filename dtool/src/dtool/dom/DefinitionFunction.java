@@ -6,8 +6,8 @@ import descent.internal.core.dom.Argument;
 import descent.internal.core.dom.LINK;
 import descent.internal.core.dom.Statement;
 import descent.internal.core.dom.TemplateParameter;
-import descent.internal.core.dom.TypeFunction;
-import dtool.dom.ext.ASTNeoVisitor;
+import dtool.dombase.ASTNeoVisitor;
+import dtool.dombase.IScope;
 
 /**
  * A definition of a function.
@@ -21,15 +21,15 @@ public class DefinitionFunction extends Definition {
 	public List<Argument> arguments;
 	public int varargs;
 	public LINK linkage;
-	public EntityReference.TypeEntityReference rettype;
+	public EntityConstrainedRef.TypeConstraint rettype;
 	
 	public Statement frequire;
 	public Statement fbody;
 	public Statement fensure;
 
 	@Override
-	public ArcheType getArcheType() {
-		return ArcheType.Function;
+	public EArcheType getArcheType() {
+		return EArcheType.Function;
 	}
 	
 	public void accept0(ASTNeoVisitor visitor) {
@@ -42,5 +42,11 @@ public class DefinitionFunction extends Definition {
 			acceptChild(visitor, fensure);
 		}
 		visitor.endVisit(this);
+	}
+
+	@Override
+	public IScope getScope() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

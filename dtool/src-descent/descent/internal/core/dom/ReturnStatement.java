@@ -1,11 +1,10 @@
 package descent.internal.core.dom;
 
 import descent.core.dom.IExpression;
-import descent.core.dom.IReturnStatement;
-import descent.core.dom.IElement.ElementTypes;
+import descent.core.dom.IStatement;
 import descent.core.domX.ASTVisitor;
 
-public class ReturnStatement extends Statement implements IReturnStatement {
+public class ReturnStatement extends Statement implements IStatement {
 	
 	public Expression exp;
 

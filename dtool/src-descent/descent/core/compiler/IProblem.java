@@ -1,4 +1,4 @@
-package descent.core.dom;
+package descent.core.compiler;
 
 /**
  * A problem found while compiling or building a model

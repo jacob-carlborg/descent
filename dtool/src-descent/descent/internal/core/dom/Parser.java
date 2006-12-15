@@ -90,11 +90,10 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
+import descent.core.compiler.IProblem;
 import descent.core.dom.IDeclaration;
 import descent.core.dom.IElement;
 import descent.core.dom.IEnumMember;
-import descent.core.dom.IImport;
-import descent.core.dom.IProblem;
 import descent.core.domX.ASTNode;
 import descent.core.domX.AbstractElement;
 
@@ -1721,7 +1720,7 @@ public class Parser extends Lexer {
 	private Import parseImport(List<IDeclaration> decldefs, boolean isstatic) {
 		ImportDeclaration importDeclaration = new ImportDeclaration();
 		importDeclaration.startPos = token.ptr;
-		importDeclaration.imports = new ArrayList<IImport>();
+		importDeclaration.imports = new ArrayList<Import>();
 		
 		Import s = null;
 	    Identifier id;

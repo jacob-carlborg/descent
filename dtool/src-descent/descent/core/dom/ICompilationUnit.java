@@ -1,5 +1,6 @@
 package descent.core.dom;
 
+import descent.core.compiler.IProblem;
 import descent.internal.core.dom.ModuleDeclaration;
 
 

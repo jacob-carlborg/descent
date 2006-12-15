@@ -1,4 +1,4 @@
-package dtool.dom.ext;
+package dtool.dombase;
 
 import descent.core.domX.ASTNode;
 

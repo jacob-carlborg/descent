@@ -1,12 +1,10 @@
 package descent.internal.core.dom;
 
-import descent.core.dom.IDelegateType;
 import descent.core.dom.IPointerType;
 import descent.core.dom.IType;
-import descent.core.dom.IElement.ElementTypes;
 import descent.core.domX.ASTVisitor;
 
-public class TypePointer extends Type implements IPointerType, IDelegateType {
+public class TypePointer extends Type implements IPointerType {
 	
 	public TypePointer(Type t) {
 		super(TY.Tpointer, t);
@@ -33,12 +31,12 @@ public class TypePointer extends Type implements IPointerType, IDelegateType {
 		boolean children;
 		switch(getElementType()) {
 		case ElementTypes.POINTER_TO_FUNCTION_TYPE:
-			children = visitor.visit((IDelegateType) this);
+			children = visitor.visit(this);
 			if (children) {
 				acceptChild(visitor, getReturnType());
 				acceptChildren(visitor, getArguments());
 			}
-			visitor.endVisit((IDelegateType) this);
+			visitor.endVisit(this);
 			break;
 		case ElementTypes.POINTER_TYPE:
 			children = visitor.visit((IPointerType) this);

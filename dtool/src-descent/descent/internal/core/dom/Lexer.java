@@ -8,7 +8,7 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 
-import descent.core.dom.IProblem;
+import descent.core.compiler.IProblem;
 import descent.core.dom.IProblemCollector;
 
 public class Lexer implements IProblemCollector {

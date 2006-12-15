@@ -5,7 +5,6 @@ import java.util.List;
 import descent.core.dom.IExpression;
 import descent.core.dom.IName;
 import descent.core.dom.IPragmaStatement;
-import descent.core.dom.IElement.ElementTypes;
 import descent.core.domX.ASTVisitor;
 
 public class PragmaStatement extends Statement implements IPragmaStatement {

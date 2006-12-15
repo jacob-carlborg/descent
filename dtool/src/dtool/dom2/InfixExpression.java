@@ -1,7 +1,6 @@
 package dtool.dom2;
 
-import descent.core.dom.IExpression;
-import dtool.dom.ext.ASTNeoVisitor;
+import dtool.dombase.ASTNeoVisitor;
 
 public abstract class InfixExpression extends Expression {
 	

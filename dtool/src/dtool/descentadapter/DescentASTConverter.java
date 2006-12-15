@@ -3,6 +3,7 @@ package dtool.descentadapter;
 import java.util.List;
 
 import descent.core.domX.ASTNode;
+import descent.internal.core.dom.Identifier;
 import dtool.dom.DeclarationImport;
 import dtool.dom.Def_EProtection;
 import dtool.dom.Def_Modifiers;
@@ -11,11 +12,12 @@ import dtool.dom.DefinitionAggregate;
 import dtool.dom.DefinitionAlias;
 import dtool.dom.DefinitionFunction;
 import dtool.dom.DefinitionVariable;
-import dtool.dom.EntityReference;
+import dtool.dom.Entity;
+import dtool.dom.EntitySingle;
 import dtool.dom.Module;
-import dtool.dom.SingleEntityRef;
-import dtool.dom.EntityReference.AnyEntityReference;
-import dtool.dom.EntityReference.TypeEntityReference;
+import dtool.dom.TypeDynArray;
+import dtool.dom.TypeTypeof;
+import dtool.dom.DefUnit.Symbol;
 import dtool.dom.Module.DeclarationModule;
 
 /**
@@ -25,10 +27,14 @@ public class DescentASTConverter extends ASTCommonConverter {
 
 
 	
+	private Symbol convertIdentifier(Identifier ident) {
+		return (ident != null) ? new Symbol(ident.string) : null;
+	}
+	
 	private void definitionAdapt(Definition newelem, descent.internal.core.dom.Dsymbol elem) {
 		rangeAdapt(newelem, elem);
 
-		newelem.name = (elem.ident != null) ? elem.ident.string : null; 
+		newelem.name = convertIdentifier(elem.ident); 
 		newelem.modifiers = Def_Modifiers.adaptFromDescent(elem.modifiers); 
 		newelem.protection = Def_EProtection.adaptFromDescent(elem.modifiers); 
 	}
@@ -36,94 +42,103 @@ public class DescentASTConverter extends ASTCommonConverter {
 
 	/*  =======================================================  */
 
-
-	
 	public boolean visit(descent.internal.core.dom.Module elem) {
 		Module newelem = new Module();
 		rangeAdapt(newelem, elem);
 		//newelem.name = (elem.ident != null) ? elem.ident.string : null; 
 		if(elem.md != null){
-			newelem.name = elem.ident.string; // If there is md there is this
+			newelem.name = convertIdentifier(elem.ident); // If there is md there is this
 			newelem.md = new DeclarationModule();
 			rangeAdapt(newelem.md, elem.md);
 			// XXX: Check this
-			newelem.md.moduleName = new SingleEntityRef.Identifier(newelem.name);
+			newelem.md.moduleName = new EntitySingle.Identifier(newelem.name.name);
 			//newelem.md.moduleName = new SymbolReference(elem.md.qName.toString());
-			newelem.md.packages = new SingleEntityRef.Identifier[elem.md.packages.size()];
+			newelem.md.packages = new EntitySingle.Identifier[elem.md.packages.size()];
 			convertMany(newelem.md.packages, elem.md.packages.toArray());
 		}
 		newelem.members = convertMany(elem.getDeclarationDefinitions());
 		return endAdapt(newelem);
 	}
-	
+
+
 	public boolean visit(descent.internal.core.dom.ImportDeclaration elem) {
 		DeclarationImport newelem = new DeclarationImport();
 		rangeAdapt(newelem, elem);
 		newelem.imports = (List) elem.imports;
+		newelem.imports.get(0).getSelectiveImports();
 		return endAdapt(newelem);
 	}
 	
 	/* ---- Entities Core ---- */
 	public boolean visit(descent.internal.core.dom.Identifier elem) {
-		SingleEntityRef.Identifier newelem = new SingleEntityRef.Identifier(elem.string);
+		EntitySingle.Identifier newelem = new EntitySingle.Identifier(elem.string);
 		rangeAdapt(newelem, elem);
 		return endAdapt(newelem);
+	}
+	
+	
+	private Entity convertIdents(Entity rootent,
+			descent.internal.core.dom.TypeQualified elem, int endix) {
+		if (endix > 0-1) { 
+			Entity.QualifiedEnt entref = new Entity.QualifiedEnt();
+			entref.topent = convertIdents(rootent,elem, endix-1);
+			entref.baseent = (EntitySingle) convert(elem.idents.get(endix));
+
+			entref.startPos = rootent.startPos;
+			entref.setEndPos(entref.baseent.getEndPos());
+			return entref;
+		} else if( endix == 0-1 ) {
+			return rootent;
+		}
+		return null;
 	}
 	
 	public boolean visit(descent.internal.core.dom.TypeIdentifier elem) {
-		EntityReference newelem = new EntityReference.TypeEntityReference();
-
-		// Check the entity reference root for module QN root 
-		if(elem.startPos == -1) { 
-			assert(elem.ident.string.equals(""));
-			newelem.moduleRoot = true;
-			newelem.ents = new SingleEntityRef[elem.idents.size()];
-			convertMany(newelem.ents, elem.idents);
-			// FIXME: the source range startpos
-			newelem.startPos = newelem.ents[0].startPos-1;
-			newelem.setEndPos(newelem.ents[newelem.ents.length-1].getEndPos());
-		} else {
-			newelem.moduleRoot = false;
-			newelem.ents = new SingleEntityRef[elem.idents.size()+1];
-			newelem.ents[0] = (SingleEntityRef) convert(elem.ident);
-			convertMany(newelem.ents, elem.idents, 1);
-			rangeAdapt(newelem, elem);
-		}
-				
-		return endAdapt(newelem);
-	}
-	public boolean visit(descent.internal.core.dom.TypeTypeof elem) {
-		EntityReference newelem = new EntityReference.TypeEntityReference();
 		
-		SingleEntityRef.TypeofRef typeofRef = new SingleEntityRef.TypeofRef();
-		// The qualified root reference has an adapted source range
-		typeofRef.startPos = elem.startPos;
-		if(elem.idents.size() == 0) {
-			typeofRef.length = elem.length;
+		Entity rootent;
+		
+		if(elem.startPos == -1 ) { 
+			assert(elem.ident.string.equals(""));
+			rootent = new Entity.ModuleRootEnt();
+
+			rootent.startPos = elem.idents.get(0).startPos-1;
+			rootent.setEndPos(rootent.startPos+1);
 		} else {
-			typeofRef.length = elem.idents.get(0).startPos - elem.startPos;
+			rootent = (EntitySingle.Identifier) convert(elem.ident);
 		}
-		typeofRef.expression = convert(elem.exp);
-
-		newelem.moduleRoot = false;
-		newelem.ents = new SingleEntityRef[elem.idents.size()+1];
-		newelem.ents[0] = (SingleEntityRef) typeofRef;
-		convertMany(newelem.ents, elem.idents, 1);
-
-		rangeAdapt(newelem, elem);
+		
+		Entity newelem; 
+		if(elem.idents.size() > 0){
+			newelem = convertIdents(rootent, elem, elem.idents.size()-1);
+		} else {
+			newelem = rootent;
+		}
+		
 		return endAdapt(newelem);
 	}
-	
+
+	public boolean visit(descent.internal.core.dom.TypeTypeof elem) {
+
+		Entity rootent = new TypeTypeof();
+		rangeAdapt(rootent, elem); //FIXME end range
+		
+		Entity newelem; 
+		if(elem.idents.size() > 0){
+			newelem = convertIdents(rootent, elem, elem.idents.size()-1);
+		} else {
+			newelem = rootent;
+		}
+		
+		return endAdapt(newelem);
+	}
+
 	
 	public boolean visit(descent.internal.core.dom.TypeDArray elem) {
-		EntityReference newelem = (EntityReference) convert(elem.next);
 		
-		SingleEntityRef.TypeDynArray dynar = new SingleEntityRef.TypeDynArray();
-		dynar.elemtype = newelem.ents[newelem.ents.length-1];
-		newelem.ents[newelem.ents.length-1] = dynar;
+		TypeDynArray newelem = new TypeDynArray();
+		rangeAdapt(newelem, elem); //FIXME end range
 
-		dynar.startPos = dynar.elemtype.startPos;
-		dynar.setEndPos(newelem.getEndPos());
+		newelem.elemtype = (Entity) convert(elem.next);
 
 		return endAdapt(newelem);
 	}
@@ -134,17 +149,18 @@ public class DescentASTConverter extends ASTCommonConverter {
 	public final boolean visit(descent.internal.core.dom.AliasDeclaration elem) {
 		DefinitionAlias newelem = new DefinitionAlias();
 		definitionAdapt(newelem, elem);
-		newelem.target = new AnyEntityReference();
-		TypeEntityReference typeEntRef = (TypeEntityReference)convert(elem.type);
+		newelem.target = (Entity) convert(elem.type);
+		/*TypeConstraint typeEntRef = (TypeConstraint)convert(elem.type);
+		newelem.target = new NoConstraint();
 		newelem.target.ents = typeEntRef.ents;
 		newelem.target.moduleRoot = typeEntRef.moduleRoot;
-		rangeAdapt(newelem.target, typeEntRef);
+		rangeAdapt(newelem.target, typeEntRef);*/
 		return endAdapt(newelem);
 	}	
 	public boolean visit(descent.internal.core.dom.VarDeclaration elem) {
 		DefinitionVariable newelem = new DefinitionVariable();
 		definitionAdapt(newelem, elem);
-		newelem.type = (TypeEntityReference)convert(elem.type);
+		newelem.type = (Entity) convert(elem.type);
 		newelem.init = elem.init;
 		return endAdapt(newelem);
 	}	

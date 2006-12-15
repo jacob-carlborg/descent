@@ -2,12 +2,11 @@ package descent.internal.core.dom;
 
 import java.util.List;
 
-import descent.core.dom.IQualifiedName;
-import descent.core.dom.IElement.ElementTypes;
+import descent.core.dom.IName;
 import descent.core.domX.ASTVisitor;
 import descent.core.domX.AbstractElement;
 
-public class QualifiedName extends AbstractElement implements IQualifiedName  {
+public class QualifiedName extends AbstractElement implements IName  {
 	
 	private String name;
 	

@@ -3,7 +3,7 @@ package dtool.dom;
 import java.util.List;
 
 import descent.internal.core.dom.Import;
-import dtool.dom.ext.ASTNeoVisitor;
+import dtool.dombase.ASTNeoVisitor;
 
 /**
  * An Import Declaration

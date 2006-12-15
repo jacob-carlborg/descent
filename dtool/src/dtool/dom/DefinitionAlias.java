@@ -1,18 +1,19 @@
 package dtool.dom;
 
-import dtool.dom.EntityReference.AnyEntityReference;
-import dtool.dom.ext.ASTNeoVisitor;
+
+import dtool.dombase.ASTNeoVisitor;
+import dtool.dombase.IScope;
 
 /**
  * A definition of an alias.
  */
 public class DefinitionAlias extends Definition {
 	
-	public AnyEntityReference target;
+	public Entity target;
 
 	
-	public ArcheType getArcheType() {
-		return ArcheType.Alias; // XXX: use efective archetype?
+	public EArcheType getArcheType() {
+		return EArcheType.Alias; // XXX: use efective archetype?
 	}
 
 	public void accept0(ASTNeoVisitor visitor) {
@@ -21,5 +22,10 @@ public class DefinitionAlias extends Definition {
 			acceptChild(visitor, target);
 		}
 		visitor.endVisit(this);
+	}
+
+	@Override
+	public IScope getScope() {
+		return target.getReferencedDefUnit().getScope();
 	}
 }

@@ -1,19 +1,23 @@
 package dtool.dom;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import descent.core.domX.ASTNode;
-import dtool.dom.ext.ASTNeoVisitor;
+import dtool.dombase.ASTNeoVisitor;
+import dtool.dombase.IScope;
 
 /**
  * D Module
  */
-public class Module extends SymbolDef {
+public class Module extends DefUnit implements IScope {
 	
 	public DeclarationModule md;
 	public ASTNode[] members; //FIXME
 	
 
-	public ArcheType getArcheType() {
-		return ArcheType.Module;
+	public EArcheType getArcheType() {
+		return EArcheType.Module;
 	}
 	
 	public void accept0(ASTNeoVisitor visitor) {
@@ -27,8 +31,8 @@ public class Module extends SymbolDef {
 
 	public static class DeclarationModule extends ASTElement {
 
-		public SingleEntityRef[] packages;
-		public SingleEntityRef moduleName; // XXX: SymbolReference?
+		public EntitySingle[] packages;
+		public EntitySingle moduleName; // XXX: SymbolReference?
 
 		public void accept0(ASTNeoVisitor visitor) {
 			boolean children = visitor.visit(this);
@@ -38,6 +42,21 @@ public class Module extends SymbolDef {
 			}
 			visitor.endVisit(this);
 		}
+	}
+	
+	
+	public List<DefUnit> getDefUnits() {
+		List<DefUnit> defunits = new ArrayList<DefUnit>();
+		for(ASTNode elem: members) {
+			if(elem instanceof DefUnit)
+				defunits.add((DefUnit)elem);
+		}
+		return defunits;
+	}
+
+	@Override
+	public IScope getScope() {
+		return this;
 	}
 
 }

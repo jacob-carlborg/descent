@@ -1,10 +1,8 @@
 package descent.internal.core.dom;
 
-import descent.core.dom.IDelegateType;
-import descent.core.dom.IElement.ElementTypes;
 import descent.core.domX.ASTVisitor;
 
-public class TypeDelegate extends Type implements IDelegateType {
+public class TypeDelegate extends Type {
 
 	public TypeDelegate(Type t) {
 		super(TY.Tdelegate, t);

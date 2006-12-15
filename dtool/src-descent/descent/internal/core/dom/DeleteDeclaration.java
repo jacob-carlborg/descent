@@ -29,7 +29,7 @@ public class DeleteDeclaration extends FuncDeclaration {
 	
 	@Override
 	public int getFunctionDeclarationType() {
-		return DELETE;
+		return IFunctionDeclaration.DELETE;
 	}
 	
 }

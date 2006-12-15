@@ -5,9 +5,6 @@ import java.util.List;
 import descent.core.dom.IElement;
 import descent.core.dom.IMixinDeclaration;
 import descent.core.dom.IName;
-import descent.core.dom.IQualifiedName;
-import descent.core.dom.ITypeofType;
-import descent.core.dom.IElement.ElementTypes;
 import descent.core.domX.ASTVisitor;
 import descent.core.domX.AbstractElement;
 
@@ -34,7 +31,7 @@ public class TemplateMixin extends Declaration implements IMixinDeclaration {
 		return ident;
 	}
 	
-	public IQualifiedName getType() {
+	public QualifiedName getType() {
 		return qName;
 	}
 	

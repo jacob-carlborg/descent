@@ -3,8 +3,6 @@ package descent.internal.core.dom;
 import java.util.ArrayList;
 import java.util.List;
 
-import descent.core.dom.IQualifiedName;
-
 public abstract class TypeQualified extends Type {
 	
 	public List<Identifier> idents;
@@ -19,7 +17,7 @@ public abstract class TypeQualified extends Type {
 		this.idents.add(identifier);
 	}
 	
-	public IQualifiedName getName() {
+	public QualifiedName getName() {
 		if (qName == null) {
 			this.qName = new QualifiedName(idents);
 		}

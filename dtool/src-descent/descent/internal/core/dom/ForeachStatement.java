@@ -3,12 +3,10 @@ package descent.internal.core.dom;
 import java.util.List;
 
 import descent.core.dom.IExpression;
-import descent.core.dom.IForeachStatement;
 import descent.core.dom.IStatement;
-import descent.core.dom.IElement.ElementTypes;
 import descent.core.domX.ASTVisitor;
 
-public class ForeachStatement extends Statement implements IForeachStatement {
+public class ForeachStatement extends Statement implements IStatement {
 	
 	private Argument[] arguments;
 	private Expression aggr;

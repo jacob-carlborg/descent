@@ -2,12 +2,10 @@ package descent.internal.core.dom;
 
 import descent.core.dom.IElement;
 import descent.core.dom.IIdentifierType;
-import descent.core.dom.IQualifiedName;
-import descent.core.dom.ITemplateInstanceType;
-import descent.core.dom.IElement.ElementTypes;
+import descent.core.dom.IType;
 import descent.core.domX.ASTVisitor;
 
-public class TypeIdentifier extends TypeQualified implements IIdentifierType, ITemplateInstanceType {
+public class TypeIdentifier extends TypeQualified implements IIdentifierType, IType {
 
 	public Identifier ident;
 	public QualifiedName qName;
@@ -38,7 +36,7 @@ public class TypeIdentifier extends TypeQualified implements IIdentifierType, IT
 	}
 	
 	@Override
-	public IQualifiedName getName() {
+	public QualifiedName getName() {
 		if (qName == null) {
 			qName = new QualifiedName(ident, idents);
 		}

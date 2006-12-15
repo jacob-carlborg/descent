@@ -1,6 +1,7 @@
 package descent.internal.core.dom;
 
 
+
 public class DtorDeclaration extends FuncDeclaration {
 	
 	public DtorDeclaration() {
@@ -10,7 +11,7 @@ public class DtorDeclaration extends FuncDeclaration {
 	
 	@Override
 	public int getFunctionDeclarationType() {
-		return DESTRUCTOR;
+		return IFunctionDeclaration.DESTRUCTOR;
 	}
 
 }

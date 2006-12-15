@@ -1,7 +1,6 @@
 package descent.internal.core.dom;
 
 import descent.core.dom.IBasicType;
-import descent.core.dom.IElement.ElementTypes;
 import descent.core.domX.ASTVisitor;
 
 public class TypeBasic extends Type implements IBasicType {

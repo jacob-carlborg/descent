@@ -4,7 +4,6 @@ import descent.core.dom.IInitializer;
 import descent.core.dom.IName;
 import descent.core.dom.IType;
 import descent.core.dom.ITypedefDeclaration;
-import descent.core.dom.IElement.ElementTypes;
 import descent.core.domX.ASTVisitor;
 
 public class TypedefDeclaration extends Declaration implements ITypedefDeclaration {

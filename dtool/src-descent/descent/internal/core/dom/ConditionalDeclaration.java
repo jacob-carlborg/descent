@@ -8,7 +8,6 @@ import descent.core.dom.IIftypeDeclaration;
 import descent.core.dom.IName;
 import descent.core.dom.IType;
 import descent.core.dom.IVersionDeclaration;
-import descent.core.dom.IElement.ElementTypes;
 import descent.core.domX.ASTVisitor;
 import descent.core.domX.AbstractElement;
 

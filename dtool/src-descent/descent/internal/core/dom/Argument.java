@@ -1,19 +1,30 @@
 package descent.internal.core.dom;
 
-import descent.core.dom.IArgument;
 import descent.core.dom.IExpression;
 import descent.core.dom.IName;
 import descent.core.dom.IType;
-import descent.core.dom.IElement.ElementTypes;
 import descent.core.domX.ASTVisitor;
 import descent.core.domX.AbstractElement;
 
-public class Argument extends AbstractElement implements IArgument {
+public class Argument extends AbstractElement {
 	
 	public Identifier id;
 	public Type type;
 	public InOut inout;
 	public Expression defaultValue;
+	
+	public static interface IArgument {
+
+		/** The argument is in */
+		int IN = 1;
+		/** The argument is out */
+		int OUT = 2;
+		/** The argument is inout */
+		int INOUT = 3;
+		/** The argument is lazy */
+		int LAZY = 4;
+		
+	}
 
 	public Argument(InOut inout, Type type, Identifier id, Expression defaultValue) {
 		this.id = id;

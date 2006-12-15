@@ -1,6 +1,5 @@
 package descent.internal.core.dom;
 
-import descent.internal.core.dom.BinaryExpression.BinaryExpressionTypes;
 
 public class XorAssignExp extends BinaryExpression {
 

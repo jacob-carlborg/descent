@@ -1,13 +1,11 @@
 package descent.internal.core.dom;
 
-import descent.core.dom.IArgument;
-import descent.core.dom.IFunctionExpression;
+import descent.core.dom.IExpression;
 import descent.core.dom.IName;
 import descent.core.dom.IStatement;
-import descent.core.dom.IElement.ElementTypes;
 import descent.core.domX.ASTVisitor;
 
-public class FuncExp extends Expression implements IFunctionExpression {
+public class FuncExp extends Expression implements IExpression {
 
 	private final FuncLiteralDeclaration fd;
 
@@ -19,7 +17,7 @@ public class FuncExp extends Expression implements IFunctionExpression {
 		return ElementTypes.FUNCTION_EXPRESSION;
 	}
 
-	public IArgument[] getArguments() {
+	public Argument[] getArguments() {
 		return fd.getArguments();
 	}
 

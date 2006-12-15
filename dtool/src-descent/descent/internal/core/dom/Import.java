@@ -3,17 +3,14 @@ package descent.internal.core.dom;
 import java.util.ArrayList;
 import java.util.List;
 
-import descent.core.dom.IImport;
+import descent.core.dom.IModifiersContainer;
 import descent.core.dom.IName;
-import descent.core.dom.IQualifiedName;
-import descent.core.dom.ISelectiveImport;
-import descent.core.dom.IElement.ElementTypes;
 import descent.core.domX.ASTVisitor;
 
-public class Import extends Dsymbol implements IImport {
+public class Import extends Dsymbol implements IModifiersContainer {
 	
 	public List<Identifier> packages;
-	public List<ISelectiveImport> selectiveImports;
+	public List<SelectiveImport> selectiveImports;
 	public QualifiedName qName;
 	public Identifier alias;
 
@@ -26,12 +23,12 @@ public class Import extends Dsymbol implements IImport {
 
 	public void addAlias(Identifier name, Identifier alias) {
 		if (selectiveImports == null) {
-			selectiveImports = new ArrayList<ISelectiveImport>();
+			selectiveImports = new ArrayList<SelectiveImport>();
 		}
 		selectiveImports.add(new SelectiveImport(name, alias));
 	}
 
-	public IQualifiedName getQualifiedName() {
+	public QualifiedName getQualifiedName() {
 		return qName;
 	}
 	
@@ -39,9 +36,9 @@ public class Import extends Dsymbol implements IImport {
 		return alias;
 	}
 	
-	public ISelectiveImport[] getSelectiveImports() {
-		if (selectiveImports == null) return new ISelectiveImport[0];
-		return selectiveImports.toArray(new ISelectiveImport[selectiveImports.size()]);
+	public SelectiveImport[] getSelectiveImports() {
+		if (selectiveImports == null) return new SelectiveImport[0];
+		return selectiveImports.toArray(new SelectiveImport[selectiveImports.size()]);
 	}
 	
 	public int getElementType() {

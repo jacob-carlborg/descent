@@ -1,13 +1,13 @@
-package dtool.dom.ext;
+package dtool.dombase;
 
 import descent.core.domX.ASTNode;
 import descent.core.domX.ASTVisitor;
 import dtool.dom.ASTElement;
+import dtool.dom.DefUnit;
 import dtool.dom.Definition;
-import dtool.dom.EntityReference;
+import dtool.dom.Entity;
+import dtool.dom.EntitySingle;
 import dtool.dom.Module;
-import dtool.dom.SingleEntityRef;
-import dtool.dom.SymbolDef;
 
 
 /**
@@ -34,29 +34,30 @@ public abstract class ASTNeoVisitor extends ASTVisitor {
 		return visitAsSuperType(elem, ASTElement.class);
 	}
 
-	public boolean visit(SymbolDef elem) {
-		return visitAsSuperType(elem, SymbolDef.class);
+	public boolean visit(DefUnit elem) {
+		return visitAsSuperType(elem, DefUnit.class);
 	}
 
-	public boolean visit(EntityReference elem) {
-		return visitAsSuperType(elem, EntityReference.class);
+	public boolean visit(Entity elem) {
+		return visitAsSuperType(elem, Entity.class);
+	}
+
+	public boolean visit(Entity.QualifiedEnt elem) {
+		return visitAsSuperType(elem, Entity.QualifiedEnt.class);
 	}
 	
-	public boolean visit(SingleEntityRef elem) {
-		return visitAsSuperType(elem, SingleEntityRef.class);
+	public boolean visit(EntitySingle elem) {
+		return visitAsSuperType(elem, EntitySingle.class);
 	}
 	
-	public boolean visit(SingleEntityRef.Identifier elem) {
-		return visitAsSuperType(elem, SingleEntityRef.Identifier.class);
+	public boolean visit(EntitySingle.Identifier elem) {
+		return visitAsSuperType(elem, EntitySingle.Identifier.class);
 	}
 
-	public boolean visit(SingleEntityRef.TemplateInstance elem) {
-		return visitAsSuperType(elem, SingleEntityRef.TemplateInstance.class);
+	public boolean visit(EntitySingle.TemplateInstance elem) {
+		return visitAsSuperType(elem, EntitySingle.TemplateInstance.class);
 	}
 
-	public boolean visit(SingleEntityRef.TypeDynArray elem) {
-		return visitAsSuperType(elem, SingleEntityRef.TypeDynArray.class);
-	}
 	
 	/* ---------------------------------- */
 

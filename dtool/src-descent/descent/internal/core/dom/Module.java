@@ -2,10 +2,9 @@ package descent.internal.core.dom;
 
 import java.util.List;
 
+import descent.core.compiler.IProblem;
 import descent.core.dom.ICompilationUnit;
 import descent.core.dom.IDeclaration;
-import descent.core.dom.IProblem;
-import descent.core.dom.IElement.ElementTypes;
 import descent.core.domX.ASTVisitor;
 import descent.core.domX.AbstractElement;
 

@@ -5,7 +5,6 @@ import java.math.BigInteger;
 import descent.core.dom.IFalseExpression;
 import descent.core.dom.IIntegerExpression;
 import descent.core.dom.ITrueExpression;
-import descent.core.dom.IElement.ElementTypes;
 import descent.core.domX.ASTVisitor;
 
 public class IntegerExp extends Expression implements IIntegerExpression, IFalseExpression, ITrueExpression {

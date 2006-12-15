@@ -3,7 +3,6 @@ package descent.internal.core.dom;
 import descent.core.dom.IExpression;
 import descent.core.dom.IName;
 import descent.core.dom.IType;
-import descent.core.dom.IElement.ElementTypes;
 import descent.core.domX.ASTVisitor;
 
 public class TemplateValueParameter extends TemplateParameter {

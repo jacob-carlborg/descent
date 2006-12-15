@@ -4,11 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import descent.core.dom.IExpression;
-import descent.core.dom.IStaticArrayType;
-import descent.core.dom.IElement.ElementTypes;
+import descent.core.dom.IType;
 import descent.core.domX.ASTVisitor;
 
-public class TypeSArray extends TypeArray implements IStaticArrayType {
+public class TypeSArray extends TypeArray implements IType {
 	
 	public Expression dim;
 

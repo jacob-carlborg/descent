@@ -1,5 +1,6 @@
 package descent.core.dom;
 
+import descent.internal.core.dom.QualifiedName;
 import descent.internal.core.dom.TypeTypeof;
 
 /**
@@ -19,7 +20,7 @@ public interface IMixinDeclaration extends IDeclaration {
 	/**
 	 * Returns the qualified name of the mixin.
 	 */
-	IQualifiedName getType();
+	QualifiedName getType();
 	
 	/**
 	 * Returns the typeof type (TODO: what the hell in the world is this?)

@@ -31,7 +31,7 @@ public class NewDeclaration extends FuncDeclaration {
 	
 	@Override
 	public int getFunctionDeclarationType() {
-		return NEW;
+		return IFunctionDeclaration.NEW;
 	}
 
 }

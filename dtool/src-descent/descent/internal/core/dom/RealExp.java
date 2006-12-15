@@ -3,7 +3,6 @@ package descent.internal.core.dom;
 import java.math.BigInteger;
 
 import descent.core.dom.IRealExpression;
-import descent.core.dom.IElement.ElementTypes;
 import descent.core.domX.ASTVisitor;
 
 public class RealExp extends Expression implements IRealExpression {

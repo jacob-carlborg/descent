@@ -1,6 +1,5 @@
 package descent.internal.core.dom;
 
-import descent.internal.core.dom.UnaryExpression.IUnaryExpression2;
 
 public class NotExp extends UnaryExpression {
 

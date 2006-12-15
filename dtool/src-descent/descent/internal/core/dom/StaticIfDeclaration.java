@@ -5,7 +5,6 @@ import java.util.List;
 import descent.core.dom.IDeclaration;
 import descent.core.dom.IExpression;
 import descent.core.dom.IStaticIfDeclaration;
-import descent.core.dom.IElement.ElementTypes;
 import descent.core.domX.ASTVisitor;
 import descent.core.domX.AbstractElement;
 

@@ -2,7 +2,6 @@ package descent.internal.core.dom;
 
 import descent.core.dom.IScopeStatement;
 import descent.core.dom.IStatement;
-import descent.core.dom.IElement.ElementTypes;
 import descent.core.domX.ASTVisitor;
 
 public class ScopeStatement extends Statement implements IScopeStatement {

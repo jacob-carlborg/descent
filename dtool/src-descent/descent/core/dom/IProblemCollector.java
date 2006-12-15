@@ -1,5 +1,7 @@
 package descent.core.dom;
 
+import descent.core.compiler.IProblem;
+
 /**
  * A problem collector collects problems.
  */

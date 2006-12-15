@@ -1,11 +1,9 @@
 package descent.internal.core.dom;
 
-import descent.core.dom.IDefaultStatement;
 import descent.core.dom.IStatement;
-import descent.core.dom.IElement.ElementTypes;
 import descent.core.domX.ASTVisitor;
 
-public class DefaultStatement extends Statement implements IDefaultStatement {
+public class DefaultStatement extends Statement {
 
 	private final Statement s;
 

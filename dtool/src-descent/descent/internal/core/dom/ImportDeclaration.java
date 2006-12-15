@@ -2,28 +2,27 @@ package descent.internal.core.dom;
 
 import java.util.List;
 
-import descent.core.dom.IImport;
-import descent.core.dom.IImportDeclaration;
-import descent.core.dom.IElement.ElementTypes;
+import descent.core.dom.IDeclaration;
+import descent.core.dom.IModifiersContainer;
 import descent.core.domX.ASTVisitor;
 import descent.core.domX.AbstractElement;
 
-public class ImportDeclaration extends Declaration implements IImportDeclaration {
+public class ImportDeclaration extends Declaration implements IDeclaration, IModifiersContainer {
 	
 	public ImportDeclaration() {
 		super(null);
 	}
 
-	public List<IImport> imports;
+	public List<Import> imports;
 	public boolean isStatic;
 
-	public IImport[] getImports() {
-		if (imports == null) return new IImport[0];
+	public Import[] getImports() {
+		if (imports == null) return new Import[0];
 		// TODO: optimize?
-		for(IImport imp : imports) {
+		for(Import imp : imports) {
 			((AbstractElement) imp).modifiers = this.modifiers;
 		}
-		return imports.toArray(new IImport[imports.size()]);
+		return imports.toArray(new Import[imports.size()]);
 	}
 	
 	public int getElementType() {

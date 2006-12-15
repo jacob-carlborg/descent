@@ -1,12 +1,10 @@
 package descent.internal.core.dom;
 
-import descent.core.dom.IQualifiedName;
-import descent.core.dom.ITemplateInstanceType;
-import descent.core.dom.IElement.ElementTypes;
+import descent.core.dom.IType;
 import descent.core.domX.ASTVisitor;
 import descent.core.domX.AbstractElement;
 
-public class TypeInstance extends TypeQualified implements ITemplateInstanceType {
+public class TypeInstance extends TypeQualified implements IType {
 	
 	public TemplateInstance tempinst;
 	public QualifiedName qName;
@@ -29,7 +27,7 @@ public class TypeInstance extends TypeQualified implements ITemplateInstanceType
 	}
 	
 	@Override
-	public IQualifiedName getName() {
+	public QualifiedName getName() {
 		if (qName == null) {
 			qName = new QualifiedName(tempinst);
 		}

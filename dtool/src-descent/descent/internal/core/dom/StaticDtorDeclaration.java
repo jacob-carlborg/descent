@@ -1,6 +1,7 @@
 package descent.internal.core.dom;
 
 
+
 public class StaticDtorDeclaration extends FuncDeclaration {
 	
 	public StaticDtorDeclaration() {
@@ -16,7 +17,7 @@ public class StaticDtorDeclaration extends FuncDeclaration {
 	
 	@Override
 	public int getFunctionDeclarationType() {
-		return STATIC_DESTRUCTOR;
+		return IFunctionDeclaration.STATIC_DESTRUCTOR;
 	}
 
 }

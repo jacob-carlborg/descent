@@ -2,7 +2,6 @@ package descent.internal.core.dom;
 
 import descent.core.dom.IExpression;
 import descent.core.dom.IGotoCaseStatement;
-import descent.core.dom.IElement.ElementTypes;
 import descent.core.domX.ASTVisitor;
 
 public class GotoCaseStatement extends Statement implements IGotoCaseStatement {

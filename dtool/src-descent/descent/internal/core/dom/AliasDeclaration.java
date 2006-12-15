@@ -4,7 +4,6 @@ import descent.core.dom.IDeclaration;
 import descent.core.dom.IModifiersContainer;
 import descent.core.dom.IName;
 import descent.core.dom.IType;
-import descent.core.dom.IElement.ElementTypes;
 import descent.core.domX.ASTVisitor;
 
 public class AliasDeclaration extends Declaration implements IDeclaration, IModifiersContainer {

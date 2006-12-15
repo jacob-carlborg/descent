@@ -1,10 +1,7 @@
 package descent.internal.core.dom;
 
 import descent.core.dom.IExpression;
-import descent.core.dom.IElement.ElementTypes;
 import descent.core.domX.ASTVisitor;
-import descent.internal.core.dom.BinaryExpression.BinaryExpressionTypes;
-import descent.internal.core.dom.UnaryExpression.IUnaryExpression2;
 
 public class MinAssignExp extends BinaryExpression {
 

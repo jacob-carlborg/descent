@@ -27,7 +27,7 @@ public class CtorDeclaration extends FuncDeclaration {
 	
 	@Override
 	public int getFunctionDeclarationType() {
-		return CONSTRUCTOR;
+		return IFunctionDeclaration.CONSTRUCTOR;
 	}
 
 }

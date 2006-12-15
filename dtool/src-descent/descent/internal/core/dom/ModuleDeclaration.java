@@ -4,8 +4,6 @@ import java.util.List;
 
 import descent.core.dom.ICommented;
 import descent.core.dom.IDeclaration;
-import descent.core.dom.IQualifiedName;
-import descent.core.dom.IElement.ElementTypes;
 import descent.core.domX.ASTVisitor;
 
 public class ModuleDeclaration extends Declaration implements IDeclaration, ICommented {
@@ -19,7 +17,7 @@ public class ModuleDeclaration extends Declaration implements IDeclaration, ICom
 		this.qName = new QualifiedName(packages, id);
 	}
 	
-	public IQualifiedName getQualifiedName() {
+	public QualifiedName getQualifiedName() {
 		return qName;
 	}
 	

@@ -1,6 +1,6 @@
 package descent.internal.core.dom;
 
-import descent.core.dom.IProblem;
+import descent.core.compiler.IProblem;
 import descent.core.dom.IProblemCollector;
 
 public class Entity {

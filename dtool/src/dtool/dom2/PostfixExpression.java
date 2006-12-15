@@ -1,6 +1,6 @@
 package dtool.dom2;
 
-import dtool.dom.ext.ASTNeoVisitor;
+import dtool.dombase.ASTNeoVisitor;
 
 public abstract class PostfixExpression extends Expression {
 	

@@ -4,7 +4,6 @@ import java.util.List;
 
 import descent.core.dom.IArrayLiteralExpression;
 import descent.core.dom.IExpression;
-import descent.core.dom.IElement.ElementTypes;
 import descent.core.domX.ASTVisitor;
 
 public class ArrayLiteralExp extends Expression implements IArrayLiteralExpression {

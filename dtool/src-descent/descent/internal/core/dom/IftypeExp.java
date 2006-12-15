@@ -4,7 +4,6 @@ import descent.core.dom.IIsExpression;
 import descent.core.dom.IName;
 import descent.core.dom.IType;
 import descent.core.dom.ITypeSpecialization;
-import descent.core.dom.IElement.ElementTypes;
 import descent.core.domX.ASTVisitor;
 
 public class IftypeExp extends Expression implements IIsExpression {

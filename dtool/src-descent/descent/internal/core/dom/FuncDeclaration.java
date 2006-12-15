@@ -1,12 +1,12 @@
 package descent.internal.core.dom;
 
-import descent.core.dom.IFunctionDeclaration;
+import descent.core.dom.IDeclaration;
+import descent.core.dom.IModifiersContainer;
 import descent.core.dom.IName;
 import descent.core.dom.IStatement;
-import descent.core.dom.IElement.ElementTypes;
 import descent.core.domX.ASTVisitor;
 
-public class FuncDeclaration extends Declaration implements IFunctionDeclaration {
+public class FuncDeclaration extends Declaration implements IDeclaration, IModifiersContainer {
 
 	public Statement frequire;
 	public Statement fensure;
@@ -15,6 +15,16 @@ public class FuncDeclaration extends Declaration implements IFunctionDeclaration
 	public TypeFunction type;
 	public TemplateParameter[] templateParameters;
 
+	public static interface IFunctionDeclaration {
+		int FUNCTION = 1;
+		int CONSTRUCTOR = 2;
+		int DESTRUCTOR = 3;
+		int STATIC_CONSTRUCTOR = 4;
+		int STATIC_DESTRUCTOR = 5;
+		int NEW = 6;
+		int DELETE = 7;
+	}
+	
 	public FuncDeclaration(Identifier ident, int storage_class, Type type) {
 		super(ident);
 		this.type = (TypeFunction) type;
@@ -50,7 +60,7 @@ public class FuncDeclaration extends Declaration implements IFunctionDeclaration
 	}
 	
 	public int getFunctionDeclarationType() {
-		return FUNCTION;
+		return IFunctionDeclaration.FUNCTION;
 	}
 	
 	public IStatement getBody() {

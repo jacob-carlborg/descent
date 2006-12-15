@@ -1,7 +1,6 @@
 package descent.internal.core.dom;
 
 import descent.core.dom.ISuperExpression;
-import descent.core.dom.IElement.ElementTypes;
 import descent.core.domX.ASTVisitor;
 
 public class SuperExp extends Expression implements ISuperExpression {

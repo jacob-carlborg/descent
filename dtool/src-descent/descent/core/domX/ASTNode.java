@@ -2,8 +2,6 @@ package descent.core.domX;
 
 import java.util.List;
 
-import util.ExceptionAdapter;
-
 import descent.core.dom.IElement;
 
 public abstract class ASTNode implements IElement  {
@@ -20,6 +18,10 @@ public abstract class ASTNode implements IElement  {
 	 */
 	public int length = 0;
 
+
+	public ASTNode parent = null;
+	
+	
 	public int getStartPos() {
 		return startPos;
 	}
@@ -62,8 +64,14 @@ public abstract class ASTNode implements IElement  {
 	public boolean hasNoSourceRangeInfo() {
 		return startPos == -1;
 	}
-
 	
+	public ASTNode getParent() {
+		return parent;
+	}
+
+	public String toString() {
+		return nodeToString();
+	}
 	
 	public final String nodeToString() {
 		String name = this.getClass().getName().replaceAll("^.*\\.dom\\.", "");
@@ -144,7 +152,7 @@ public abstract class ASTNode implements IElement  {
 	}
 	
 	/**
-	 * Same as accepChildren. TODO: clearify?
+	 * Same as accepChildren. TODO: cleanify?
 	 */
 	public final void acceptChild(ASTVisitor visitor, ASTNode[] children) {
 		acceptChildren(visitor, children);
@@ -166,6 +174,5 @@ public abstract class ASTNode implements IElement  {
 			}
 		}
 	}
-
 
 }

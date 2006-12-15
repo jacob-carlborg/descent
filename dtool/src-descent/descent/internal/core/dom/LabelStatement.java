@@ -3,7 +3,6 @@ package descent.internal.core.dom;
 import descent.core.dom.ILabelStatement;
 import descent.core.dom.IName;
 import descent.core.dom.IStatement;
-import descent.core.dom.IElement.ElementTypes;
 import descent.core.domX.ASTVisitor;
 
 public class LabelStatement extends Statement implements ILabelStatement {

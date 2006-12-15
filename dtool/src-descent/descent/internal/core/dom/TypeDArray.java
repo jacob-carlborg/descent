@@ -1,10 +1,9 @@
 package descent.internal.core.dom;
 
-import descent.core.dom.IDynamicArrayType;
-import descent.core.dom.IElement.ElementTypes;
+import descent.core.dom.IType;
 import descent.core.domX.ASTVisitor;
 
-public class TypeDArray extends TypeArray implements IDynamicArrayType {
+public class TypeDArray extends TypeArray implements IType {
 
 	public TypeDArray(Type t) {
 		super(TY.Tarray, t);

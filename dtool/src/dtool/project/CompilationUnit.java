@@ -1,14 +1,16 @@
-package dtool;
+package dtool.project;
 
 import java.io.File;
 import java.io.FileReader;
 
 import util.StringUtil;
-import descent.core.dom.IProblem;
+import descent.core.compiler.IProblem;
 import descent.core.domX.ASTNode;
 import descent.core.domX.AbstractElement;
 import descent.internal.core.dom.ParserFacade;
 import dtool.descentadapter.DescentASTConverter;
+import dtool.dom.Module;
+import dtool.dombase.ASTParentizer;
 /**
  * Similar to Module 
  */
@@ -27,9 +29,17 @@ public class CompilationUnit {
 		this.source = StringUtil.readBytesFromFile(file);
 	}
 	
-	public ASTNode cumodule;
+	private ASTNode cumodule;
 	public IProblem[] problems;
 
+	
+	public descent.internal.core.dom.Module getOldModule() {
+		return (descent.internal.core.dom.Module) cumodule;
+	}
+	
+	public Module getModule() {
+		return (Module) cumodule;
+	}
 	
 	public void preParseCompilationUnit() {
 		ParserFacade parser = new descent.internal.core.dom.ParserFacade();
@@ -45,5 +55,6 @@ public class CompilationUnit {
 	public void adaptDOM() {
 		DescentASTConverter domadapter = new DescentASTConverter();
 		this.cumodule = domadapter.convert((AbstractElement) cumodule); 
+		ASTParentizer.parentize(this.cumodule);
 	}
 }

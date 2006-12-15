@@ -1,18 +1,19 @@
 package dtool.dom;
 
-import dtool.dom.ext.ASTNeoVisitor;
+import dtool.dombase.ASTNeoVisitor;
+import dtool.dombase.IScope;
 
 /**
  * A definition of a variable
  */
 public class DefinitionVariable extends Definition {
 	
-	public EntityReference type;
+	public Entity type;
 	public descent.internal.core.dom.Initializer init;
 	
 	@Override
-	public ArcheType getArcheType() {
-		return ArcheType.Variable;
+	public EArcheType getArcheType() {
+		return EArcheType.Variable;
 	}
 
 	public void accept0(ASTNeoVisitor visitor) {
@@ -22,6 +23,11 @@ public class DefinitionVariable extends Definition {
 			acceptChild(visitor, init);
 		}
 		visitor.endVisit(this);
+	}
+
+	@Override
+	public IScope getScope() {
+		return type.getReferencedDefUnit().getScope();
 	}
 
 }

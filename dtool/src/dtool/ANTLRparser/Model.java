@@ -7,9 +7,10 @@ import org.antlr.runtime.tree.CommonTree;
 
 import util.ExceptionAdapter;
 import util.StringUtil;
-import dtool.CompilationUnit;
+import dtool.Main;
 import dtool.parser.DParser;
 import dtool.parser.DParserLexer;
+import dtool.project.CompilationUnit;
 
 
 public class Model {
@@ -60,6 +61,14 @@ public class Model {
 			printTreeElem((CommonTree)tree.getChild(i),indent+1);
 		}
 		
+	}
+
+	public static void testDtool(String[] args) {
+		System.out.println("== ANTLR Parsing... ==");
+		
+		createModel(Main.dproj.testcu);
+		printModel();
+		//Engine.testRefactor();
 	}
 
 

@@ -6,7 +6,6 @@ import descent.core.dom.IName;
 import descent.core.dom.IStatement;
 import descent.core.dom.IStaticIfStatement;
 import descent.core.dom.IVersionStatement;
-import descent.core.dom.IElement.ElementTypes;
 import descent.core.domX.ASTVisitor;
 
 public class ConditionalStatement extends Statement implements IStaticIfStatement, IDebugStatement, IVersionStatement {

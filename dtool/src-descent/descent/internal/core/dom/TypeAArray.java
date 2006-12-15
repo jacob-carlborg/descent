@@ -1,12 +1,10 @@
 package descent.internal.core.dom;
 
-import descent.core.dom.IAssociativeArrayType;
 import descent.core.dom.IType;
-import descent.core.dom.IElement.ElementTypes;
 import descent.core.domX.ASTVisitor;
 
 // asociative array
-public class TypeAArray extends TypeArray implements IAssociativeArrayType {
+public class TypeAArray extends TypeArray implements IType {
 
 	public Type index;
 

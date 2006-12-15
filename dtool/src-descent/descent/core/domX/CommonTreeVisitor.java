@@ -20,11 +20,14 @@ public class CommonTreeVisitor {
 			visitingAsSuper = false;
 			return result;
 		} catch (InvocationTargetException ite) {
-			Exception e = (Exception)ite.getTargetException();
+			/// TODO: fix this?
+			Throwable e = (Throwable)ite.getTargetException();
 			if(e instanceof RuntimeException)
 				throw (RuntimeException) e;
+			else if(e instanceof Error)
+				throw (Error) e;
 			else
-				throw new ExceptionAdapter(e); 
+				throw new ExceptionAdapter((Exception)e); 
 		} catch (Exception e) {
 			throw new ExceptionAdapter(e); 
 		} 
