@@ -6,7 +6,6 @@ import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.graphics.Image;
 
 import descent.core.dom.IAggregateDeclaration;
-import descent.core.dom.IAliasDeclaration;
 import descent.core.dom.IAliasTemplateParameter;
 import descent.core.dom.IArgument;
 import descent.core.dom.IAssociativeArrayType;
@@ -16,11 +15,11 @@ import descent.core.dom.IDynamicArrayType;
 import descent.core.dom.IElement;
 import descent.core.dom.IEnumDeclaration;
 import descent.core.dom.IEnumMember;
+import descent.core.dom.IExternDeclaration;
 import descent.core.dom.IFunctionDeclaration;
 import descent.core.dom.IIdentifierType;
 import descent.core.dom.IImport;
 import descent.core.dom.IImportDeclaration;
-import descent.core.dom.IExternDeclaration;
 import descent.core.dom.IMixinDeclaration;
 import descent.core.dom.IModifier;
 import descent.core.dom.IModuleDeclaration;
@@ -38,6 +37,8 @@ import descent.core.dom.ITypedefDeclaration;
 import descent.core.dom.ITypeofType;
 import descent.core.dom.IVariableDeclaration;
 import descent.core.dom.IVersionDeclaration;
+import descent.internal.core.dom.AliasDeclaration;
+import descent.internal.core.dom.AliasDeclarationFragment;
 import descent.internal.core.dom.Argument;
 import descent.internal.core.dom.DebugAssignment;
 import descent.internal.core.dom.TemplateParameter;
@@ -191,13 +192,13 @@ public class DOutlineLabelProvider extends LabelProvider {
 			s.append(" : ");
 			appendType(s, td.getType());
 			return s.toString();
-		case IElement.ALIAS_DECLARATION:
-			IAliasDeclaration al = (IAliasDeclaration) element;
+		case IElement.ALIAS_DECLARATION_FRAGMENT:
+			AliasDeclarationFragment al = (AliasDeclarationFragment) element;
 			name = al.getName();
 			s = new StringBuilder();
 			if (name != null) s.append(name.getFullyQualifiedName());
 			s.append(" : ");
-			appendType(s, al.getType());
+			appendType(s, ((AliasDeclaration) al.getParent()).getType());
 			return s.toString();
 		case IElement.TEMPLATE_DECLARATION:
 			ITemplateDeclaration t = (ITemplateDeclaration) element;

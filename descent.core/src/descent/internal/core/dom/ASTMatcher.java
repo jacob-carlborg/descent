@@ -883,8 +883,8 @@ public class ASTMatcher {
 		AliasDeclaration o = (AliasDeclaration) other;
 		return (
 			node.getModifierFlags() == o.getModifierFlags()
-			&& safeSubtreeMatch(node.getName(), o.getName())
 			&& safeSubtreeMatch(node.getType(), o.getType())
+			&& safeSubtreeListMatch(node.fragments(), o.fragments())
 			);
 	}
 
@@ -2534,6 +2534,103 @@ public class ASTMatcher {
 		return (
 			node.getOperator() == o.getOperator()
 			&& safeSubtreeMatch(node.getExpression(), o.getExpression())
+			);
+	}
+	
+	/**
+	 * Returns whether the given node and the other object match.
+	 * <p>
+	 * The default implementation provided by this class tests whether the
+	 * other object is a node of the same type with structurally isomorphic
+	 * child subtrees. Subclasses may override this method as needed.
+	 * </p>
+	 * 
+	 * @param node the node
+	 * @param other the other object, or <code>null</code>
+	 * @return <code>true</code> if the subtree matches, or 
+	 *   <code>false</code> if they do not match or the other object has a
+	 *   different node type or is <code>null</code>
+	 */
+	public boolean match(AliasDeclarationFragment node, Object other) {
+		if (!(other instanceof AliasDeclarationFragment)) {
+			return false;
+		}
+		AliasDeclarationFragment o = (AliasDeclarationFragment) other;
+		return (
+			safeSubtreeMatch(node.getName(), o.getName())
+			);
+	}
+	
+	/**
+	 * Returns whether the given node and the other object match.
+	 * <p>
+	 * The default implementation provided by this class tests whether the
+	 * other object is a node of the same type with structurally isomorphic
+	 * child subtrees. Subclasses may override this method as needed.
+	 * </p>
+	 * 
+	 * @param node the node
+	 * @param other the other object, or <code>null</code>
+	 * @return <code>true</code> if the subtree matches, or 
+	 *   <code>false</code> if they do not match or the other object has a
+	 *   different node type or is <code>null</code>
+	 */
+	public boolean match(Modifier node, Object other) {
+		if (!(other instanceof Modifier)) {
+			return false;
+		}
+		Modifier o = (Modifier) other;
+		return (
+			node.getModifierKeyword() == o.getModifierKeyword()
+			);
+	}
+	
+	/**
+	 * Returns whether the given node and the other object match.
+	 * <p>
+	 * The default implementation provided by this class tests whether the
+	 * other object is a node of the same type with structurally isomorphic
+	 * child subtrees. Subclasses may override this method as needed.
+	 * </p>
+	 * 
+	 * @param node the node
+	 * @param other the other object, or <code>null</code>
+	 * @return <code>true</code> if the subtree matches, or 
+	 *   <code>false</code> if they do not match or the other object has a
+	 *   different node type or is <code>null</code>
+	 */
+	public boolean match(StructInitializer node, Object other) {
+		if (!(other instanceof StructInitializer)) {
+			return false;
+		}
+		StructInitializer o = (StructInitializer) other;
+		return (
+			safeSubtreeListMatch(node.fragments(), o.fragments())
+			);
+	}
+	
+	/**
+	 * Returns whether the given node and the other object match.
+	 * <p>
+	 * The default implementation provided by this class tests whether the
+	 * other object is a node of the same type with structurally isomorphic
+	 * child subtrees. Subclasses may override this method as needed.
+	 * </p>
+	 * 
+	 * @param node the node
+	 * @param other the other object, or <code>null</code>
+	 * @return <code>true</code> if the subtree matches, or 
+	 *   <code>false</code> if they do not match or the other object has a
+	 *   different node type or is <code>null</code>
+	 */
+	public boolean match(StructInitializerFragment node, Object other) {
+		if (!(other instanceof StructInitializerFragment)) {
+			return false;
+		}
+		StructInitializerFragment o = (StructInitializerFragment) other;
+		return (
+			safeSubtreeMatch(node.getName(), o.getName())
+			&& safeSubtreeMatch(node.getInitializer(), o.getInitializer())
 			);
 	}
 

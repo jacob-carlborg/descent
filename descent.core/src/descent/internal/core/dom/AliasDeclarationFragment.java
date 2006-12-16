@@ -4,17 +4,23 @@ import java.util.ArrayList;
 import java.util.List;
 
 import descent.core.dom.ASTVisitor;
-import descent.core.dom.IInitializer;
-import descent.core.dom.ISimpleName;
-import descent.core.dom.IStructInitializer;
 
-public class StructInitializer extends Initializer implements IStructInitializer {
+/**
+ * Alias declaration fragment AST node. An alias declaration
+ * framgment is just a wrapper of a SimpleName.
+ * 
+ * <pre>
+ * AliasDeclarationFragment:
+ *    SimpleName
+ * </pre>
+ */
+public class AliasDeclarationFragment extends ASTNode {
 	
 	/**
-	 * The "fragments" structural property of this node type.
+	 * The "name" structural property of this node type.
 	 */
-	public static final ChildListPropertyDescriptor FRAGMENTS_PROPERTY =
-		new ChildListPropertyDescriptor(StructInitializer.class, "fragments", StructInitializerFragment.class, CYCLE_RISK); //$NON-NLS-1$
+	public static final ChildPropertyDescriptor NAME_PROPERTY =
+		new ChildPropertyDescriptor(AliasDeclarationFragment.class, "name", SimpleName.class, MANDATORY, NO_CYCLE_RISK); //$NON-NLS-1$
 
 	/**
 	 * A list of property descriptors (element type: 
@@ -25,8 +31,8 @@ public class StructInitializer extends Initializer implements IStructInitializer
 
 	static {
 		List properyList = new ArrayList(1);
-		createPropertyList(StructInitializer.class, properyList);
-		addProperty(FRAGMENTS_PROPERTY, properyList);
+		createPropertyList(AliasDeclarationFragment.class, properyList);
+		addProperty(NAME_PROPERTY, properyList);
 		PROPERTY_DESCRIPTORS = reapPropertyList(properyList);
 	}
 
@@ -46,15 +52,13 @@ public class StructInitializer extends Initializer implements IStructInitializer
 	}
 
 	/**
-	 * The fragments
-	 * (element type: <code>StructInitializerFragment</code>).
-	 * Defaults to an empty list.
+	 * The name.
 	 */
-	private ASTNode.NodeList fragments =
-		new ASTNode.NodeList(FRAGMENTS_PROPERTY);
+	private SimpleName name;
+
 
 	/**
-	 * Creates a new unparented struct initializer node owned by the given 
+	 * Creates a new unparented alias declaration fragment node owned by the given 
 	 * AST.
 	 * <p>
 	 * N.B. This constructor is package-private.
@@ -62,7 +66,7 @@ public class StructInitializer extends Initializer implements IStructInitializer
 	 * 
 	 * @param ast the AST that is to own this node
 	 */
-	StructInitializer(AST ast) {
+	AliasDeclarationFragment(AST ast) {
 		super(ast);
 	}
 
@@ -76,12 +80,17 @@ public class StructInitializer extends Initializer implements IStructInitializer
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
 	 */
-	final List internalGetChildListProperty(ChildListPropertyDescriptor property) {
-		if (property == FRAGMENTS_PROPERTY) {
-			return fragments();
+	final ASTNode internalGetSetChildProperty(ChildPropertyDescriptor property, boolean get, ASTNode child) {
+		if (property == NAME_PROPERTY) {
+			if (get) {
+				return getName();
+			} else {
+				setName((SimpleName) child);
+				return null;
+			}
 		}
 		// allow default implementation to flag the error
-		return super.internalGetChildListProperty(property);
+		return super.internalGetSetChildProperty(property, get, child);
 	}
 
 	/* (omit javadoc for this method)
@@ -89,16 +98,16 @@ public class StructInitializer extends Initializer implements IStructInitializer
 	 * TODO make it package
 	 */
 	public final int getNodeType0() {
-		return STRUCT_INITIALIZER;
+		return ALIAS_DECLARATION_FRAGMENT;
 	}
 
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
 	 */
 	ASTNode clone0(AST target) {
-		StructInitializer result = new StructInitializer(target);
+		AliasDeclarationFragment result = new AliasDeclarationFragment(target);
 		result.setSourceRange(this.getStartPosition(), this.getLength());
-		result.fragments.addAll(ASTNode.copySubtrees(target, fragments()));
+		result.setName((SimpleName) getName().clone(target));
 		return result;
 	}
 
@@ -117,20 +126,49 @@ public class StructInitializer extends Initializer implements IStructInitializer
 		boolean visitChildren = visitor.visit(this);
 		if (visitChildren) {
 			// visit children in normal left to right reading order
-			acceptChildren(visitor, fragments());
+			acceptChild(visitor, getName());
 		}
 		visitor.endVisit(this);
 	}
 
 	/**
-	 * Returns the live ordered list of fragments for this
-	 * struct initializer.
+	 * Returns the name of this alias declaration fragment.
 	 * 
-	 * @return the live list of struct initializer
-	 *    (element type: <code>StructInitializerFragment</code>)
+	 * @return the name
 	 */ 
-	public List<StructInitializerFragment> fragments() {
-		return this.fragments;
+	public SimpleName getName() {
+		if (this.name == null) {
+			// lazy init must be thread-safe for readers
+			synchronized (this) {
+				if (this.name == null) {
+					preLazyInit();
+					this.name = new SimpleName(this.ast);
+					postLazyInit(this.name, NAME_PROPERTY);
+				}
+			}
+		}
+		return this.name;
+	}
+
+	/**
+	 * Sets the name of this alias declaration fragment.
+	 * 
+	 * @param name the name
+	 * @exception IllegalArgumentException if:
+	 * <ul>
+	 * <li>the node belongs to a different AST</li>
+	 * <li>the node already has a parent</li>
+	 * <li>a cycle in would be created</li>
+	 * </ul>
+	 */ 
+	public void setName(SimpleName name) {
+		if (name == null) {
+			throw new IllegalArgumentException();
+		}
+		ASTNode oldChild = this.name;
+		preReplaceChild(oldChild, name, NAME_PROPERTY);
+		this.name = name;
+		postReplaceChild(oldChild, name, NAME_PROPERTY);
 	}
 
 	/* (omit javadoc for this method)
@@ -146,7 +184,7 @@ public class StructInitializer extends Initializer implements IStructInitializer
 	int treeSize() {
 		return
 			memSize()
-			+ (this.fragments.listSize())
+			+ (this.name == null ? 0 : getName().treeSize())
 	;
 	}
 

@@ -3,7 +3,6 @@ package descent.ui.text;
 import org.eclipse.jface.text.Position;
 
 import descent.core.dom.IAggregateDeclaration;
-import descent.core.dom.IAliasDeclaration;
 import descent.core.dom.IDebugDeclaration;
 import descent.core.dom.IElement;
 import descent.core.dom.IEnumDeclaration;
@@ -17,6 +16,7 @@ import descent.core.dom.ITemplateDeclaration;
 import descent.core.dom.ITypedefDeclaration;
 import descent.core.dom.IVariableDeclaration;
 import descent.core.dom.IVersionDeclaration;
+import descent.internal.core.dom.AliasDeclarationFragment;
 import descent.internal.core.dom.DebugAssignment;
 import descent.internal.core.dom.VersionAssignment;
 
@@ -85,9 +85,9 @@ public class PositionHelper {
 			name = t.getName();
 			if (name != null) element = name;
 			break;
-		case IElement.ALIAS_DECLARATION:
-			IAliasDeclaration a = (IAliasDeclaration) element;
-			name = a.getName();
+		case IElement.ALIAS_DECLARATION_FRAGMENT:
+			AliasDeclarationFragment fragment = (AliasDeclarationFragment) element;
+			name = fragment.getName();
 			if (name != null) element = name;
 			break;
 		case IElement.VERSION_DECLARATION:

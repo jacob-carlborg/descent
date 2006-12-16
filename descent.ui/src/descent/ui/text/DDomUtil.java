@@ -4,6 +4,7 @@ import descent.core.dom.ICompilationUnit;
 import descent.core.dom.IDeclaration;
 import descent.core.dom.IElement;
 import descent.core.dom.ASTVisitor;
+import descent.internal.core.dom.AliasDeclarationFragment;
 
 public class DDomUtil {
 	
@@ -41,7 +42,7 @@ public class DDomUtil {
 		}
 		
 		private boolean isOfInterest(IElement element) {
-			return element instanceof IDeclaration;
+			return element instanceof IDeclaration || element instanceof AliasDeclarationFragment;
 		}
 		
 		private boolean isInBounds(IElement element) {

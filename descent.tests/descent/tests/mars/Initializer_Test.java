@@ -6,7 +6,6 @@ import descent.core.dom.IArrayInitializer;
 import descent.core.dom.IExpression;
 import descent.core.dom.IExpressionInitializer;
 import descent.core.dom.IInitializer;
-import descent.core.dom.ISimpleName;
 import descent.core.dom.IStructInitializer;
 import descent.internal.core.dom.ArrayInitializerFragment;
 import descent.internal.core.dom.ParserFacade;
@@ -38,8 +37,7 @@ public class Initializer_Test extends Parser_Test {
 		assertEquals(IInitializer.STRUCT_INITIALIZER, init.getNodeType0());
 		assertPosition(init, 1, 3);
 		
-		assertEquals(0, init.getNames().length);
-		assertEquals(0, init.getValues().length);
+		assertEquals(0, init.fragments().size());
 	}
 	
 	public void testStructInitializers() {
@@ -48,20 +46,16 @@ public class Initializer_Test extends Parser_Test {
 		assertEquals(IInitializer.STRUCT_INITIALIZER, init.getNodeType0());
 		assertPosition(init, 1, s.length() - 2);
 		
-		ISimpleName[] names = init.getNames();
-		assertEquals(2, names.length);
+		assertEquals(2, init.fragments().size());
 		
-		assertNull(names[0]);
-		assertNull(names[1]);
+		assertNull(init.fragments().get(0).getName());
+		assertNull(init.fragments().get(1).getName());
 		
-		IInitializer[] values = init.getValues();
-		assertEquals(2, values.length);
+		assertPosition(init.fragments().get(0).getInitializer(), 3, 5);
+		assertPosition(init.fragments().get(1).getInitializer(), 10, 5);
 		
-		assertPosition(values[0], 3, 5);
-		assertPosition(values[1], 10, 5);
-		
-		assertEquals(IInitializer.EXPRESSION_INITIALIZER, values[0].getNodeType0());
-		assertEquals(IInitializer.EXPRESSION_INITIALIZER, values[1].getNodeType0());
+		assertEquals(IInitializer.EXPRESSION_INITIALIZER, init.fragments().get(0).getInitializer().getNodeType0());
+		assertEquals(IInitializer.EXPRESSION_INITIALIZER, init.fragments().get(0).getInitializer().getNodeType0());
 	}
 	
 	public void testStructInitializers2() {
@@ -70,11 +64,10 @@ public class Initializer_Test extends Parser_Test {
 		assertEquals(IInitializer.STRUCT_INITIALIZER, init.getNodeType0());
 		assertPosition(init, 1, s.length() - 2);
 		
-		ISimpleName[] names = init.getNames();
-		assertEquals(1, names.length);
+		assertEquals(1, init.fragments().size());
 		
-		assertEquals("a", names[0].toString());
-		assertPosition(names[0], 3, 1);
+		assertEquals("a", init.fragments().get(0).getName().getIdentifier());
+		assertPosition(init.fragments().get(0).getName(), 3, 1);
 	}
 	
 	public void testStructInitializers3() {
@@ -83,12 +76,10 @@ public class Initializer_Test extends Parser_Test {
 		assertEquals(IInitializer.STRUCT_INITIALIZER, init.getNodeType0());
 		assertPosition(init, 1, s.length() - 2);
 		
-		ISimpleName[] names = init.getNames();
-		assertEquals(1, names.length);
-		assertNull(names[0]);
+		assertEquals(1, init.fragments().size());
+		assertNull(init.fragments().get(0).getName());
 		
-		IInitializer[] values = init.getValues();
-		assertEquals(IInitializer.EXPRESSION_INITIALIZER, values[0].getNodeType0());
+		assertEquals(IInitializer.EXPRESSION_INITIALIZER, init.fragments().get(0).getInitializer().getNodeType0());
 	}
 	
 	public void testArray() {

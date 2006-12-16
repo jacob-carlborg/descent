@@ -689,6 +689,12 @@ public interface IElement {
 	
 	int PREFIX_EXPRESSION = 128;
 	
+	int ALIAS_DECLARATION_FRAGMENT = 129;
+	
+	int MODIFIER = 130;
+	
+	int STRUCT_INITIALIZER_FRAGMENT = 131;
+	
 	/**
 	 * Returns the start position in the source code where this element
 	 * is located.

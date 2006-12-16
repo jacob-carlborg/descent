@@ -11,7 +11,7 @@ import descent.core.dom.IAliasDeclaration;
  *
  * <pre>
  * AliasDeclaration:
- *    <b>alias</b> Type Type <b>;</b>
+ *    <b>alias</b> Type AliasDeclarationFragment { , AliasDeclarationFragment }<b>;</b>
  * </pre>
  */
 public class AliasDeclaration extends Declaration implements IAliasDeclaration {
@@ -23,16 +23,16 @@ public class AliasDeclaration extends Declaration implements IAliasDeclaration {
 		new SimplePropertyDescriptor(AliasDeclaration.class, "modifierFlags", int.class, OPTIONAL); //$NON-NLS-1$
 
 	/**
-	 * The "name" structural property of this node type.
-	 */
-	public static final ChildPropertyDescriptor NAME_PROPERTY =
-		new ChildPropertyDescriptor(AliasDeclaration.class, "name", SimpleName.class, MANDATORY, NO_CYCLE_RISK); //$NON-NLS-1$
-
-	/**
 	 * The "type" structural property of this node type.
 	 */
 	public static final ChildPropertyDescriptor TYPE_PROPERTY =
 		new ChildPropertyDescriptor(AliasDeclaration.class, "type", Type.class, MANDATORY, NO_CYCLE_RISK); //$NON-NLS-1$
+
+	/**
+	 * The "fragments" structural property of this node type.
+	 */
+	public static final ChildListPropertyDescriptor FRAGMENTS_PROPERTY =
+		new ChildListPropertyDescriptor(AliasDeclaration.class, "fragments", AliasDeclarationFragment.class, NO_CYCLE_RISK); //$NON-NLS-1$
 
 	/**
 	 * A list of property descriptors (element type: 
@@ -45,8 +45,8 @@ public class AliasDeclaration extends Declaration implements IAliasDeclaration {
 		List properyList = new ArrayList(3);
 		createPropertyList(AliasDeclaration.class, properyList);
 		addProperty(MODIFIER_FLAGS_PROPERTY, properyList);
-		addProperty(NAME_PROPERTY, properyList);
 		addProperty(TYPE_PROPERTY, properyList);
+		addProperty(FRAGMENTS_PROPERTY, properyList);
 		PROPERTY_DESCRIPTORS = reapPropertyList(properyList);
 	}
 
@@ -67,20 +67,21 @@ public class AliasDeclaration extends Declaration implements IAliasDeclaration {
 
 	/**
 	 * The modifierFlags.
-	 * TODO uncomment
 	 */
-	// private int modifierFlags;
-
-	/**
-	 * The name.
-	 */
-	private SimpleName name;
+	//private int modifierFlags;
 
 	/**
 	 * The type.
 	 */
 	private Type type;
 
+	/**
+	 * The fragments
+	 * (element type: <code>AliasDeclarationFragment</code>).
+	 * Defaults to an empty list.
+	 */
+	private ASTNode.NodeList fragments =
+		new ASTNode.NodeList(FRAGMENTS_PROPERTY);
 
 	/**
 	 * Creates a new unparented alias declaration node owned by the given 
@@ -122,14 +123,6 @@ public class AliasDeclaration extends Declaration implements IAliasDeclaration {
 	 * Method declared on ASTNode.
 	 */
 	final ASTNode internalGetSetChildProperty(ChildPropertyDescriptor property, boolean get, ASTNode child) {
-		if (property == NAME_PROPERTY) {
-			if (get) {
-				return getName();
-			} else {
-				setName((SimpleName) child);
-				return null;
-			}
-		}
 		if (property == TYPE_PROPERTY) {
 			if (get) {
 				return getType();
@@ -140,6 +133,17 @@ public class AliasDeclaration extends Declaration implements IAliasDeclaration {
 		}
 		// allow default implementation to flag the error
 		return super.internalGetSetChildProperty(property, get, child);
+	}
+
+	/* (omit javadoc for this method)
+	 * Method declared on ASTNode.
+	 */
+	final List internalGetChildListProperty(ChildListPropertyDescriptor property) {
+		if (property == FRAGMENTS_PROPERTY) {
+			return fragments();
+		}
+		// allow default implementation to flag the error
+		return super.internalGetChildListProperty(property);
 	}
 
 	/* (omit javadoc for this method)
@@ -157,8 +161,8 @@ public class AliasDeclaration extends Declaration implements IAliasDeclaration {
 		AliasDeclaration result = new AliasDeclaration(target);
 		result.setSourceRange(this.getStartPosition(), this.getLength());
 		result.setModifierFlags(getModifierFlags());
-		result.setName((SimpleName) getName().clone(target));
 		result.setType((Type) getType().clone(target));
+		result.fragments.addAll(ASTNode.copySubtrees(target, fragments()));
 		return result;
 	}
 
@@ -177,8 +181,8 @@ public class AliasDeclaration extends Declaration implements IAliasDeclaration {
 		boolean visitChildren = visitor.visit(this);
 		if (visitChildren) {
 			// visit children in normal left to right reading order
-			acceptChild(visitor, getName());
 			acceptChild(visitor, getType());
+			acceptChildren(visitor, fragments());
 		}
 		visitor.endVisit(this);
 	}
@@ -205,46 +209,6 @@ public class AliasDeclaration extends Declaration implements IAliasDeclaration {
 	}
 
 	/**
-	 * Returns the name of this alias declaration.
-	 * 
-	 * @return the name
-	 */ 
-	public SimpleName getName() {
-		if (this.name == null) {
-			// lazy init must be thread-safe for readers
-			synchronized (this) {
-				if (this.name == null) {
-					preLazyInit();
-					this.name = new SimpleName(this.ast);
-					postLazyInit(this.name, NAME_PROPERTY);
-				}
-			}
-		}
-		return this.name;
-	}
-
-	/**
-	 * Sets the name of this alias declaration.
-	 * 
-	 * @param name the name
-	 * @exception IllegalArgumentException if:
-	 * <ul>
-	 * <li>the node belongs to a different AST</li>
-	 * <li>the node already has a parent</li>
-	 * <li>a cycle in would be created</li>
-	 * </ul>
-	 */ 
-	public void setName(SimpleName name) {
-		if (name == null) {
-			throw new IllegalArgumentException();
-		}
-		ASTNode oldChild = this.name;
-		preReplaceChild(oldChild, name, NAME_PROPERTY);
-		this.name = name;
-		postReplaceChild(oldChild, name, NAME_PROPERTY);
-	}
-
-	/**
 	 * Returns the type of this alias declaration.
 	 * 
 	 * @return the type
@@ -255,7 +219,7 @@ public class AliasDeclaration extends Declaration implements IAliasDeclaration {
 			synchronized (this) {
 				if (this.type == null) {
 					preLazyInit();
-					this.type = new PrimitiveType(ast);
+					this.type = new PrimitiveType(this.ast);
 					postLazyInit(this.type, TYPE_PROPERTY);
 				}
 			}
@@ -284,6 +248,17 @@ public class AliasDeclaration extends Declaration implements IAliasDeclaration {
 		postReplaceChild(oldChild, type, TYPE_PROPERTY);
 	}
 
+	/**
+	 * Returns the live ordered list of fragments for this
+	 * alias declaration.
+	 * 
+	 * @return the live list of alias declaration
+	 *    (element type: <code>AliasDeclarationFragment</code>)
+	 */ 
+	public List<AliasDeclarationFragment> fragments() {
+		return this.fragments;
+	}
+
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
 	 */
@@ -297,8 +272,8 @@ public class AliasDeclaration extends Declaration implements IAliasDeclaration {
 	int treeSize() {
 		return
 			memSize()
-			+ (this.name == null ? 0 : getName().treeSize())
 			+ (this.type == null ? 0 : getType().treeSize())
+			+ (this.fragments.listSize())
 	;
 	}
 

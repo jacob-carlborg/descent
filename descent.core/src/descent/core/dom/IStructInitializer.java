@@ -1,5 +1,9 @@
 package descent.core.dom;
 
+import java.util.List;
+
+import descent.internal.core.dom.StructInitializerFragment;
+
 /**
  * A struct initializer:
  * 
@@ -9,15 +13,6 @@ package descent.core.dom;
  */
 public interface IStructInitializer extends IInitializer {
 	
-	/**
-	 * Returns the names. Some may be <code>null</code>.
-	 */
-	ISimpleName[] getNames();
-	
-	/**
-	 * Returns the values assigned to the names. Some
-	 * may be <code>null</code>.
-	 */
-	IInitializer[] getValues();
+	List<StructInitializerFragment> fragments();
 
 }

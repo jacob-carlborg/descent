@@ -2623,9 +2623,12 @@ public class Parser extends Lexer {
 		tfirst = null;
 		
 		int[] identStart = new int[1];
+		AliasDeclaration aliasDeclaration = null;
+		boolean addDelcaration = true;
 		
 		while (true) {
 			List<TemplateParameter> tpl = null;
+			addDelcaration = true;
 
 			ident = null;
 			Identifier[] pointer2_ident = { ident };
@@ -2642,6 +2645,11 @@ public class Parser extends Lexer {
 			}
 			if (ident == null) {
 				problem("No identifier for declarator", IProblem.SEVERITY_ERROR, IProblem.NO_IDENTIFIER_FOR_DECLARATION, t.getStartPosition(), t.getLength());
+			}
+			
+			if (tok != TOKalias && aliasDeclaration != null) {
+				a.add(aliasDeclaration);
+				aliasDeclaration = null;
 			}
 
 			if (tok == TOKtypedef || tok == TOKalias) {
@@ -2668,14 +2676,28 @@ public class Parser extends Lexer {
 					if (init != null) {
 						problem("Alias cannot have initializer", IProblem.SEVERITY_ERROR, IProblem.ALIAS_CANNOT_HAVE_INITIALIZER, tokAssign.ptr, init.startPosition + init.length - tokAssign.ptr);
 					}
-					AliasDeclaration aliasDeclaration = new AliasDeclaration(ast);
-					aliasDeclaration.setName(newSimpleNameForIdentifier(ident));
-					aliasDeclaration.setType(t);
-					aliasDeclaration.startPosition = nextTypdefOrAliasStart;
+					
+					if (aliasDeclaration == null) {
+						aliasDeclaration = new AliasDeclaration(ast);
+						aliasDeclaration.setType(t);
+						aliasDeclaration.startPosition = nextTypdefOrAliasStart;
+					} else {
+						addDelcaration = false;
+					}
+					
+					if (ident != null) {
+						AliasDeclarationFragment fragment = new AliasDeclarationFragment(ast);
+						fragment.setName(newSimpleNameForIdentifier(ident));
+						fragment.setSourceRange(ident.startPosition, ident.length);
+						aliasDeclaration.fragments().add(fragment);
+					}
+
 					v = aliasDeclaration;
 				}
 				v.storage_class = storage_class;
-				a.add(v);
+				if (addDelcaration) {
+					a.add(v);
+				}
 				switch (token.value) {
 				case TOKsemicolon:
 					v.length = token.ptr + token.len - v.startPosition;
@@ -2783,6 +2805,7 @@ public class Parser extends Lexer {
 			}
 			break;
 		}
+		
 		return a;
 	}
 	
@@ -2925,7 +2948,7 @@ public class Parser extends Lexer {
 				break;
 			}
 			
-			is = new StructInitializer();
+			is = new StructInitializer(ast);
 			nextToken();
 			comma = 0;
 			while (true) {
@@ -2945,7 +2968,17 @@ public class Parser extends Lexer {
 						id = null;
 					}
 					value = parseInitializer();
-					is.addInit(id, value);
+					
+					StructInitializerFragment fragment = new StructInitializerFragment(ast);
+					fragment.setName(newSimpleNameForIdentifier(id));
+					fragment.setInitializer(value);
+					if (id == null) {
+						fragment.setSourceRange(value.getStartPosition(), value.getLength());
+					} else {
+						fragment.setSourceRange(id.startPosition, value.getStartPosition() + value.getLength() - id.startPosition);
+					}
+					is.fragments().add(fragment);
+					
 					comma = 1;
 					continue;
 
@@ -2962,7 +2995,12 @@ public class Parser extends Lexer {
 
 				default:
 					value = parseInitializer();
-					is.addInit(null, value);
+				
+					fragment = new StructInitializerFragment(ast);
+					fragment.setInitializer(value);
+					fragment.setSourceRange(value.getStartPosition(), value.getLength());
+					is.fragments().add(fragment);
+					
 					comma = 1;
 					continue;
 				}
