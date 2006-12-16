@@ -11,16 +11,16 @@ import descent.core.dom.IImportDeclaration;
  * 
  * <pre>
  * ImportDeclaration:
- *    <b>import</b> Import { , Import } <b>;</b>
+ *    { Modifier - <b>static</b> } <b>import</b> Import { , Import } <b>;</b>
  * </pre>
  */
 public class ImportDeclaration extends Declaration implements IImportDeclaration {
 	
 	/**
-	 * The "modifierFlags" structural property of this node type.
+	 * The "modifiers" structural property of this node type.
 	 */
-	public static final SimplePropertyDescriptor MODIFIER_FLAGS_PROPERTY =
-		new SimplePropertyDescriptor(ImportDeclaration.class, "modifierFlags", int.class, OPTIONAL); //$NON-NLS-1$
+	public static final ChildListPropertyDescriptor MODIFIERS_PROPERTY =
+	internalModifiersPropertyFactory(ImportDeclaration.class); //$NON-NLS-1$
 
 	/**
 	 * The "static" structural property of this node type.
@@ -44,7 +44,7 @@ public class ImportDeclaration extends Declaration implements IImportDeclaration
 	static {
 		List properyList = new ArrayList(3);
 		createPropertyList(ImportDeclaration.class, properyList);
-		addProperty(MODIFIER_FLAGS_PROPERTY, properyList);
+		addProperty(MODIFIERS_PROPERTY, properyList);
 		addProperty(STATIC_PROPERTY, properyList);
 		addProperty(IMPORTS_PROPERTY, properyList);
 		PROPERTY_DESCRIPTORS = reapPropertyList(properyList);
@@ -66,11 +66,12 @@ public class ImportDeclaration extends Declaration implements IImportDeclaration
 	}
 
 	/**
-	 * The modifierFlags.
-	 * TODO uncomment
+	 * The modifiers
+	 * (element type: <code>Modifier</code>).
+	 * Defaults to an empty list.
 	 */
-	// private int modifierFlags;
-
+	private ASTNode.NodeList modifiers =
+		new ASTNode.NodeList(MODIFIERS_PROPERTY);
 	/**
 	 * The static.
 	 */
@@ -107,22 +108,6 @@ public class ImportDeclaration extends Declaration implements IImportDeclaration
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
 	 */
-	final int internalGetSetIntProperty(SimplePropertyDescriptor property, boolean get, int value) {
-		if (property == MODIFIER_FLAGS_PROPERTY) {
-			if (get) {
-				return getModifier();
-			} else {
-				setModifierFlags(value);
-				return 0;
-			}
-		}
-		// allow default implementation to flag the error
-		return super.internalGetSetIntProperty(property, get, value);
-	}
-
-	/* (omit javadoc for this method)
-	 * Method declared on ASTNode.
-	 */
 	final boolean internalGetSetBooleanProperty(SimplePropertyDescriptor property, boolean get, boolean value) {
 		if (property == STATIC_PROPERTY) {
 			if (get) {
@@ -140,6 +125,9 @@ public class ImportDeclaration extends Declaration implements IImportDeclaration
 	 * Method declared on ASTNode.
 	 */
 	final List internalGetChildListProperty(ChildListPropertyDescriptor property) {
+		if (property == MODIFIERS_PROPERTY) {
+			return modifiers();
+		}
 		if (property == IMPORTS_PROPERTY) {
 			return imports();
 		}
@@ -147,6 +135,11 @@ public class ImportDeclaration extends Declaration implements IImportDeclaration
 		return super.internalGetChildListProperty(property);
 	}
 
+		@Override
+		final ChildListPropertyDescriptor internalModifiersProperty() {
+			return MODIFIERS_PROPERTY;
+		}
+		
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
 	 * TODO make it package
@@ -161,7 +154,7 @@ public class ImportDeclaration extends Declaration implements IImportDeclaration
 	ASTNode clone0(AST target) {
 		ImportDeclaration result = new ImportDeclaration(target);
 		result.setSourceRange(this.getStartPosition(), this.getLength());
-		result.setModifierFlags(getModifier());
+		result.modifiers.addAll(ASTNode.copySubtrees(target, modifiers()));
 		result.setStatic(isStatic());
 		result.imports.addAll(ASTNode.copySubtrees(target, imports()));
 		return result;
@@ -182,30 +175,10 @@ public class ImportDeclaration extends Declaration implements IImportDeclaration
 		boolean visitChildren = visitor.visit(this);
 		if (visitChildren) {
 			// visit children in normal left to right reading order
+			acceptChildren(visitor, modifiers());
 			acceptChildren(visitor, imports());
 		}
 		visitor.endVisit(this);
-	}
-
-	/**
-	 * Returns the modifier flags of this import declaration.
-	 * 
-	 * @return the modifier flags
-	 */ 
-	public int getModifier() {
-		return this.modifierFlags;
-	}
-
-	/**
-	 * Sets the modifier flags of this import declaration.
-	 * 
-	 * @param modifierFlags the modifier flags
-	 * @exception IllegalArgumentException if the argument is incorrect
-	 */ 
-	public void setModifierFlags(int modifierFlags) {
-		preValueChange(MODIFIER_FLAGS_PROPERTY);
-		this.modifierFlags = modifierFlags;
-		postValueChange(MODIFIER_FLAGS_PROPERTY);
 	}
 
 	/**
@@ -253,6 +226,7 @@ public class ImportDeclaration extends Declaration implements IImportDeclaration
 	int treeSize() {
 		return
 			memSize()
+			+ (this.modifiers.listSize())
 			+ (this.imports.listSize())
 	;
 	}

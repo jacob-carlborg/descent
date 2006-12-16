@@ -6,13 +6,14 @@ import java.util.List;
 import descent.core.dom.ASTVisitor;
 import descent.core.dom.IEnumDeclaration;
 
+// TODO comment
 public class EnumDeclaration extends Declaration implements IEnumDeclaration {
 	
 	/**
-	 * The "modifierFlags" structural property of this node type.
+	 * The "modifiers" structural property of this node type.
 	 */
-	public static final SimplePropertyDescriptor MODIFIER_FLAGS_PROPERTY =
-		new SimplePropertyDescriptor(EnumDeclaration.class, "modifierFlags", int.class, OPTIONAL); //$NON-NLS-1$
+	public static final ChildListPropertyDescriptor MODIFIERS_PROPERTY =
+	internalModifiersPropertyFactory(EnumDeclaration.class); //$NON-NLS-1$
 
 	/**
 	 * The "name" structural property of this node type.
@@ -42,7 +43,7 @@ public class EnumDeclaration extends Declaration implements IEnumDeclaration {
 	static {
 		List properyList = new ArrayList(4);
 		createPropertyList(EnumDeclaration.class, properyList);
-		addProperty(MODIFIER_FLAGS_PROPERTY, properyList);
+		addProperty(MODIFIERS_PROPERTY, properyList);
 		addProperty(NAME_PROPERTY, properyList);
 		addProperty(BASETYPE_PROPERTY, properyList);
 		addProperty(ENUMMEMBERS_PROPERTY, properyList);
@@ -65,10 +66,12 @@ public class EnumDeclaration extends Declaration implements IEnumDeclaration {
 	}
 
 	/**
-	 * The modifierFlags.
+	 * The modifiers
+	 * (element type: <code>Modifier</code>).
+	 * Defaults to an empty list.
 	 */
-	private int modifierFlags;
-
+	private ASTNode.NodeList modifiers =
+		new ASTNode.NodeList(MODIFIERS_PROPERTY);
 	/**
 	 * The name.
 	 */
@@ -110,22 +113,6 @@ public class EnumDeclaration extends Declaration implements IEnumDeclaration {
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
 	 */
-	final int internalGetSetIntProperty(SimplePropertyDescriptor property, boolean get, int value) {
-		if (property == MODIFIER_FLAGS_PROPERTY) {
-			if (get) {
-				return getModifier();
-			} else {
-				setModifierFlags(value);
-				return 0;
-			}
-		}
-		// allow default implementation to flag the error
-		return super.internalGetSetIntProperty(property, get, value);
-	}
-
-	/* (omit javadoc for this method)
-	 * Method declared on ASTNode.
-	 */
 	final ASTNode internalGetSetChildProperty(ChildPropertyDescriptor property, boolean get, ASTNode child) {
 		if (property == NAME_PROPERTY) {
 			if (get) {
@@ -151,6 +138,9 @@ public class EnumDeclaration extends Declaration implements IEnumDeclaration {
 	 * Method declared on ASTNode.
 	 */
 	final List internalGetChildListProperty(ChildListPropertyDescriptor property) {
+		if (property == MODIFIERS_PROPERTY) {
+			return modifiers();
+		}
 		if (property == ENUMMEMBERS_PROPERTY) {
 			return enumMembers();
 		}
@@ -158,6 +148,11 @@ public class EnumDeclaration extends Declaration implements IEnumDeclaration {
 		return super.internalGetChildListProperty(property);
 	}
 
+		@Override
+		final ChildListPropertyDescriptor internalModifiersProperty() {
+			return MODIFIERS_PROPERTY;
+		}
+		
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
 	 * TODO make it package
@@ -172,7 +167,7 @@ public class EnumDeclaration extends Declaration implements IEnumDeclaration {
 	ASTNode clone0(AST target) {
 		EnumDeclaration result = new EnumDeclaration(target);
 		result.setSourceRange(this.getStartPosition(), this.getLength());
-		result.setModifierFlags(getModifier());
+		result.modifiers.addAll(ASTNode.copySubtrees(target, modifiers()));
 	result.setName((SimpleName) ASTNode.copySubtree(target, getName()));
 	result.setBaseType((Type) ASTNode.copySubtree(target, getBaseType()));
 		result.enumMembers.addAll(ASTNode.copySubtrees(target, enumMembers()));
@@ -194,32 +189,12 @@ public class EnumDeclaration extends Declaration implements IEnumDeclaration {
 		boolean visitChildren = visitor.visit(this);
 		if (visitChildren) {
 			// visit children in normal left to right reading order
+			acceptChildren(visitor, modifiers());
 			acceptChild(visitor, getName());
 			acceptChild(visitor, getBaseType());
 			acceptChildren(visitor, enumMembers());
 		}
 		visitor.endVisit(this);
-	}
-
-	/**
-	 * Returns the modifier flags of this enum declaration.
-	 * 
-	 * @return the modifier flags
-	 */ 
-	public int getModifier() {
-		return this.modifierFlags;
-	}
-
-	/**
-	 * Sets the modifier flags of this enum declaration.
-	 * 
-	 * @param modifierFlags the modifier flags
-	 * @exception IllegalArgumentException if the argument is incorrect
-	 */ 
-	public void setModifierFlags(int modifierFlags) {
-		preValueChange(MODIFIER_FLAGS_PROPERTY);
-		this.modifierFlags = modifierFlags;
-		postValueChange(MODIFIER_FLAGS_PROPERTY);
 	}
 
 	/**
@@ -300,15 +275,11 @@ public class EnumDeclaration extends Declaration implements IEnumDeclaration {
 	int treeSize() {
 		return
 			memSize()
+			+ (this.modifiers.listSize())
 			+ (this.name == null ? 0 : getName().treeSize())
 			+ (this.baseType == null ? 0 : getBaseType().treeSize())
 			+ (this.enumMembers.listSize())
 	;
-	}
-	
-	public EnumDeclaration(SimpleName name, Type baseType) {
-		this.name = name;
-		this.baseType = baseType;
 	}
 
 }

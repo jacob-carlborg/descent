@@ -15,6 +15,12 @@ import descent.core.dom.IVersionDeclaration;
  * </pre>
  */
 public class VersionDeclaration extends Declaration implements IVersionDeclaration {
+	
+	/**
+	 * The "modifiers" structural property of this node type.
+	 */
+	public static final ChildListPropertyDescriptor MODIFIERS_PROPERTY =
+		internalModifiersPropertyFactory(VersionDeclaration.class); //$NON-NLS-1$
 
 	/**
 	 * The "version" structural property of this node type.
@@ -134,6 +140,11 @@ public class VersionDeclaration extends Declaration implements IVersionDeclarati
 		// allow default implementation to flag the error
 		return super.internalGetChildListProperty(property);
 	}
+	
+	@Override
+	final ChildListPropertyDescriptor internalModifiersProperty() {
+		return MODIFIERS_PROPERTY;
+	}
 
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
@@ -230,7 +241,7 @@ public class VersionDeclaration extends Declaration implements IVersionDeclarati
 	 * Method declared on ASTNode.
 	 */
 	int memSize() {
-		return BASE_NODE_SIZE + 3 * 4;
+		return BASE_NODE_SIZE + 4 * 4;
 	}
 
 	/* (omit javadoc for this method)
@@ -239,6 +250,7 @@ public class VersionDeclaration extends Declaration implements IVersionDeclarati
 	int treeSize() {
 		return
 			memSize()
+			+ (this.modifiers.listSize())
 			+ (this.version == null ? 0 : getVersion().treeSize())
 			+ (this.thenDeclarations.listSize())
 			+ (this.elseDeclarations.listSize())

@@ -103,7 +103,7 @@ public enum TOK {
 	TOKmixin("mixin"),
 
 	TOKalign("align"), TOKextern("extern"), TOKprivate("private"), TOKprotected("protected"), TOKpublic("public"), TOKexport("export"),
-	TOKstatic("static"), /*TOKvirtual,*/ TOKfinal("final"), TOKconst("(const)"), TOKabstract("abstract"), TOKvolatile("volatile"),
+	TOKstatic("static"), /*TOKvirtual,*/ TOKfinal("final"), TOKconst("const"), TOKabstract("abstract"), TOKvolatile("volatile"),
 	TOKdebug("debug"), TOKdeprecated("deprecated"), TOKin("in"), TOKout("out"), TOKinout("inout"), TOKlazy("lazy"),
 	TOKauto("auto"), TOKpackage("package"),
 

@@ -11,10 +11,16 @@ import descent.core.dom.IDebugAssignment;
  * 
  * <pre>
  * DebugAssignment:
- *     <b>debug</b> <b>=</b> Version
+ *     { Modifier } <b>debug</b> <b>=</b> Version
  * </pre>
  */
 public class DebugAssignment extends Declaration implements IDebugAssignment {
+
+	/**
+	 * The "modifiers" structural property of this node type.
+	 */
+	public static final ChildListPropertyDescriptor MODIFIERS_PROPERTY =
+	internalModifiersPropertyFactory(DebugAssignment.class); //$NON-NLS-1$
 
 	/**
 	 * The "version" structural property of this node type.
@@ -30,8 +36,9 @@ public class DebugAssignment extends Declaration implements IDebugAssignment {
 	private static final List PROPERTY_DESCRIPTORS;
 
 	static {
-		List properyList = new ArrayList(1);
+		List properyList = new ArrayList(2);
 		createPropertyList(DebugAssignment.class, properyList);
+		addProperty(MODIFIERS_PROPERTY, properyList);
 		addProperty(VERSION_PROPERTY, properyList);
 		PROPERTY_DESCRIPTORS = reapPropertyList(properyList);
 	}
@@ -51,6 +58,13 @@ public class DebugAssignment extends Declaration implements IDebugAssignment {
 		return PROPERTY_DESCRIPTORS;
 	}
 
+	/**
+	 * The modifiers
+	 * (element type: <code>Modifier</code>).
+	 * Defaults to an empty list.
+	 */
+	private ASTNode.NodeList modifiers =
+		new ASTNode.NodeList(MODIFIERS_PROPERTY);
 	/**
 	 * The version.
 	 */
@@ -95,6 +109,22 @@ public class DebugAssignment extends Declaration implements IDebugAssignment {
 
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
+	 */
+	final List internalGetChildListProperty(ChildListPropertyDescriptor property) {
+		if (property == MODIFIERS_PROPERTY) {
+			return modifiers();
+		}
+		// allow default implementation to flag the error
+		return super.internalGetChildListProperty(property);
+	}
+
+		@Override
+		final ChildListPropertyDescriptor internalModifiersProperty() {
+			return MODIFIERS_PROPERTY;
+		}
+		
+	/* (omit javadoc for this method)
+	 * Method declared on ASTNode.
 	 * TODO make it package
 	 */
 	public final int getNodeType0() {
@@ -107,6 +137,7 @@ public class DebugAssignment extends Declaration implements IDebugAssignment {
 	ASTNode clone0(AST target) {
 		DebugAssignment result = new DebugAssignment(target);
 		result.setSourceRange(this.getStartPosition(), this.getLength());
+		result.modifiers.addAll(ASTNode.copySubtrees(target, modifiers()));
 		result.setVersion((Version) getVersion().clone(target));
 		return result;
 	}
@@ -126,6 +157,7 @@ public class DebugAssignment extends Declaration implements IDebugAssignment {
 		boolean visitChildren = visitor.visit(this);
 		if (visitChildren) {
 			// visit children in normal left to right reading order
+			acceptChildren(visitor, modifiers());
 			acceptChild(visitor, getVersion());
 		}
 		visitor.endVisit(this);
@@ -175,7 +207,7 @@ public class DebugAssignment extends Declaration implements IDebugAssignment {
 	 * Method declared on ASTNode.
 	 */
 	int memSize() {
-		return BASE_NODE_SIZE + 1 * 4;
+		return BASE_NODE_SIZE + 2 * 4;
 	}
 
 	/* (omit javadoc for this method)
@@ -184,6 +216,7 @@ public class DebugAssignment extends Declaration implements IDebugAssignment {
 	int treeSize() {
 		return
 			memSize()
+			+ (this.modifiers.listSize())
 			+ (this.version == null ? 0 : getVersion().treeSize())
 	;
 	}

@@ -11,7 +11,7 @@ import descent.core.dom.IAlignDeclaration;
  *
  * <pre>
  * AliasDeclaration:
- *    <b>align</b> <b>(</b> int <b>)</b> ...
+ *    { Modifier } <b>align</b> <b>(</b> Integer <b>)</b> { Declaration }
  * </pre>
  * 
  * TODO comment correctly
@@ -19,16 +19,16 @@ import descent.core.dom.IAlignDeclaration;
 public class AlignDeclaration extends Declaration implements IAlignDeclaration {
 	
 	/**
-	 * The "modifierFlags" structural property of this node type.
+	 * The "modifiers" structural property of this node type.
 	 */
-	public static final SimplePropertyDescriptor MODIFIER_FLAGS_PROPERTY =
-		new SimplePropertyDescriptor(AlignDeclaration.class, "modifierFlags", int.class, OPTIONAL); //$NON-NLS-1$
+	public static final ChildListPropertyDescriptor MODIFIERS_PROPERTY =
+	internalModifiersPropertyFactory(AlignDeclaration.class); //$NON-NLS-1$
 
 	/**
 	 * The "align" structural property of this node type.
 	 */
 	public static final SimplePropertyDescriptor ALIGN_PROPERTY =
-		new SimplePropertyDescriptor(AlignDeclaration.class, "align", int.class, MANDATORY); //$NON-NLS-1$
+		new SimplePropertyDescriptor(AlignDeclaration.class, "align", int.class, OPTIONAL); //$NON-NLS-1$
 
 	/**
 	 * The "declarations" structural property of this node type.
@@ -46,7 +46,7 @@ public class AlignDeclaration extends Declaration implements IAlignDeclaration {
 	static {
 		List properyList = new ArrayList(3);
 		createPropertyList(AlignDeclaration.class, properyList);
-		addProperty(MODIFIER_FLAGS_PROPERTY, properyList);
+		addProperty(MODIFIERS_PROPERTY, properyList);
 		addProperty(ALIGN_PROPERTY, properyList);
 		addProperty(DECLARATIONS_PROPERTY, properyList);
 		PROPERTY_DESCRIPTORS = reapPropertyList(properyList);
@@ -68,14 +68,16 @@ public class AlignDeclaration extends Declaration implements IAlignDeclaration {
 	}
 
 	/**
-	 * The modifierFlags.
+	 * The modifiers
+	 * (element type: <code>Modifier</code>).
+	 * Defaults to an empty list.
 	 */
-	private int modifierFlags;
-
+	private ASTNode.NodeList modifiers =
+		new ASTNode.NodeList(MODIFIERS_PROPERTY);
 	/**
 	 * The align.
 	 */
-	private int align = 1;
+	private int align;
 
 	/**
 	 * The declarations
@@ -109,14 +111,6 @@ public class AlignDeclaration extends Declaration implements IAlignDeclaration {
 	 * Method declared on ASTNode.
 	 */
 	final int internalGetSetIntProperty(SimplePropertyDescriptor property, boolean get, int value) {
-		if (property == MODIFIER_FLAGS_PROPERTY) {
-			if (get) {
-				return getModifier();
-			} else {
-				setModifierFlags(value);
-				return 0;
-			}
-		}
 		if (property == ALIGN_PROPERTY) {
 			if (get) {
 				return getAlign();
@@ -133,6 +127,9 @@ public class AlignDeclaration extends Declaration implements IAlignDeclaration {
 	 * Method declared on ASTNode.
 	 */
 	final List internalGetChildListProperty(ChildListPropertyDescriptor property) {
+		if (property == MODIFIERS_PROPERTY) {
+			return modifiers();
+		}
 		if (property == DECLARATIONS_PROPERTY) {
 			return declarations();
 		}
@@ -140,6 +137,11 @@ public class AlignDeclaration extends Declaration implements IAlignDeclaration {
 		return super.internalGetChildListProperty(property);
 	}
 
+		@Override
+		final ChildListPropertyDescriptor internalModifiersProperty() {
+			return MODIFIERS_PROPERTY;
+		}
+		
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
 	 * TODO make it package
@@ -154,7 +156,7 @@ public class AlignDeclaration extends Declaration implements IAlignDeclaration {
 	ASTNode clone0(AST target) {
 		AlignDeclaration result = new AlignDeclaration(target);
 		result.setSourceRange(this.getStartPosition(), this.getLength());
-		result.setModifierFlags(getModifier());
+		result.modifiers.addAll(ASTNode.copySubtrees(target, modifiers()));
 		result.setAlign(getAlign());
 		result.declarations.addAll(ASTNode.copySubtrees(target, declarations()));
 		return result;
@@ -175,30 +177,10 @@ public class AlignDeclaration extends Declaration implements IAlignDeclaration {
 		boolean visitChildren = visitor.visit(this);
 		if (visitChildren) {
 			// visit children in normal left to right reading order
+			acceptChildren(visitor, modifiers());
 			acceptChildren(visitor, declarations());
 		}
 		visitor.endVisit(this);
-	}
-
-	/**
-	 * Returns the modifier flags of this align declaration.
-	 * 
-	 * @return the modifier flags
-	 */ 
-	public int getModifier() {
-		return this.modifierFlags;
-	}
-
-	/**
-	 * Sets the modifier flags of this align declaration.
-	 * 
-	 * @param modifierFlags the modifier flags
-	 * @exception IllegalArgumentException if the argument is incorrect
-	 */ 
-	public void setModifierFlags(int modifierFlags) {
-		preValueChange(MODIFIER_FLAGS_PROPERTY);
-		this.modifierFlags = modifierFlags;
-		postValueChange(MODIFIER_FLAGS_PROPERTY);
 	}
 
 	/**
@@ -246,6 +228,7 @@ public class AlignDeclaration extends Declaration implements IAlignDeclaration {
 	int treeSize() {
 		return
 			memSize()
+			+ (this.modifiers.listSize())
 			+ (this.declarations.listSize())
 	;
 	}

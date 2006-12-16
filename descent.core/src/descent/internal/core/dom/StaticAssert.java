@@ -11,11 +11,17 @@ import descent.core.dom.IStaticAssertDeclaration;
  *
  * <pre>
  * StaticAssert:
- *    <b>static assert</b> <b>(</b> Expression [ , Expression ] <b>)</b>
+ *    { Modifier } <b>static assert</b> <b>(</b> Expression [ , Expression ] <b>)</b>
  * </pre>
  */
 public class StaticAssert extends Declaration implements IStaticAssertDeclaration {
 	
+	/**
+	 * The "modifiers" structural property of this node type.
+	 */
+	public static final ChildListPropertyDescriptor MODIFIERS_PROPERTY =
+	internalModifiersPropertyFactory(StaticAssert.class); //$NON-NLS-1$
+
 	/**
 	 * The "expression" structural property of this node type.
 	 */
@@ -36,8 +42,9 @@ public class StaticAssert extends Declaration implements IStaticAssertDeclaratio
 	private static final List PROPERTY_DESCRIPTORS;
 
 	static {
-		List properyList = new ArrayList(2);
+		List properyList = new ArrayList(3);
 		createPropertyList(StaticAssert.class, properyList);
+		addProperty(MODIFIERS_PROPERTY, properyList);
 		addProperty(EXPRESSION_PROPERTY, properyList);
 		addProperty(MESSAGE_PROPERTY, properyList);
 		PROPERTY_DESCRIPTORS = reapPropertyList(properyList);
@@ -58,6 +65,13 @@ public class StaticAssert extends Declaration implements IStaticAssertDeclaratio
 		return PROPERTY_DESCRIPTORS;
 	}
 
+	/**
+	 * The modifiers
+	 * (element type: <code>Modifier</code>).
+	 * Defaults to an empty list.
+	 */
+	private ASTNode.NodeList modifiers =
+		new ASTNode.NodeList(MODIFIERS_PROPERTY);
 	/**
 	 * The expression.
 	 */
@@ -115,6 +129,22 @@ public class StaticAssert extends Declaration implements IStaticAssertDeclaratio
 
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
+	 */
+	final List internalGetChildListProperty(ChildListPropertyDescriptor property) {
+		if (property == MODIFIERS_PROPERTY) {
+			return modifiers();
+		}
+		// allow default implementation to flag the error
+		return super.internalGetChildListProperty(property);
+	}
+
+		@Override
+		final ChildListPropertyDescriptor internalModifiersProperty() {
+			return MODIFIERS_PROPERTY;
+		}
+		
+	/* (omit javadoc for this method)
+	 * Method declared on ASTNode.
 	 * TODO make it package
 	 */
 	public final int getNodeType0() {
@@ -127,6 +157,7 @@ public class StaticAssert extends Declaration implements IStaticAssertDeclaratio
 	ASTNode clone0(AST target) {
 		StaticAssert result = new StaticAssert(target);
 		result.setSourceRange(this.getStartPosition(), this.getLength());
+		result.modifiers.addAll(ASTNode.copySubtrees(target, modifiers()));
 		result.setExpression((Expression) getExpression().clone(target));
 	result.setMessage((Expression) ASTNode.copySubtree(target, getMessage()));
 		return result;
@@ -147,6 +178,7 @@ public class StaticAssert extends Declaration implements IStaticAssertDeclaratio
 		boolean visitChildren = visitor.visit(this);
 		if (visitChildren) {
 			// visit children in normal left to right reading order
+			acceptChildren(visitor, modifiers());
 			acceptChild(visitor, getExpression());
 			acceptChild(visitor, getMessage());
 		}
@@ -224,7 +256,7 @@ public class StaticAssert extends Declaration implements IStaticAssertDeclaratio
 	 * Method declared on ASTNode.
 	 */
 	int memSize() {
-		return BASE_NODE_SIZE + 2 * 4;
+		return BASE_NODE_SIZE + 3 * 4;
 	}
 
 	/* (omit javadoc for this method)
@@ -233,6 +265,7 @@ public class StaticAssert extends Declaration implements IStaticAssertDeclaratio
 	int treeSize() {
 		return
 			memSize()
+			+ (this.modifiers.listSize())
 			+ (this.expression == null ? 0 : getExpression().treeSize())
 			+ (this.message == null ? 0 : getMessage().treeSize())
 	;

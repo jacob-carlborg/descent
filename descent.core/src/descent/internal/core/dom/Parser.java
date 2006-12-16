@@ -174,7 +174,7 @@ public class Parser extends Lexer {
 			}
 		}
 
-		decldefs = parseDeclDefs(false);
+		decldefs = parseDeclDefs(false, new ArrayList<Modifier>());
 		if (token.value != TOKeof) {
 			problem("Unrecognized declaration", IProblem.SEVERITY_ERROR, IProblem.UNRECOGNIZED_DECLARATION, token.ptr, token.len);
 			// goto Lerr;
@@ -191,14 +191,13 @@ public class Parser extends Lexer {
 	}
 
 	@SuppressWarnings("unchecked")
-	private List<Declaration> parseDeclDefs(boolean once) {
+	private List<Declaration> parseDeclDefs(boolean once, List<Modifier> modifiers) {
 		Object[] tempObj;
 
-		ASTNode s;
+		Declaration s = null;
 		List<Declaration> decldefs;
 		List<Declaration> a = new ArrayList<Declaration>();
 		List<Declaration> aelse;
-		PROT prot;
 		int stc;
 		Condition condition;
 		
@@ -223,7 +222,7 @@ public class Parser extends Lexer {
 				break;
 
 			case TOKimport:
-				s = parseImport(decldefs, false);
+				s = parseImport(false);
 				break;
 
 			case TOKtemplate:
@@ -334,18 +333,46 @@ public class Parser extends Lexer {
 					s = staticIf;
 					break;
 				} else if (token.value == TOKimport) {
-					s = parseImport(decldefs, true);
-					ImportDeclaration id = (ImportDeclaration) decldefs.get(decldefs.size() -1);
+					s = parseImport(true);
+					ImportDeclaration id = (ImportDeclaration) s;
 					id.setStatic(true);
 					id.length += id.startPosition - staticToken.ptr;
 					id.startPosition = staticToken.ptr;
 				} else {
 					stc = STCstatic;
 					// goto Lstc2;
-					tempObj = parseDeclDefs_Lstc2(stc, a, isSingle);
+					
+					Modifier modifier = newModifierFromToken(staticToken);
+					modifiers.add(modifier);
+					
+					ModifierDeclaration.Syntax[] syntax = new ModifierDeclaration.Syntax[1];
+					tempObj = parseDeclDefs_Lstc2(stc, a, isSingle, syntax, modifiers);
 					a = (List<Declaration>) tempObj[0];
 					stc = ((Integer) tempObj[1]);
-					s = (ASTNode) tempObj[2];
+					s = (Declaration) tempObj[2];
+					
+					if (a != null && a.size() > 0) {
+						if (isSingle[0]) {						
+							s = (Declaration) a.get(0);
+						} else {
+							ModifierDeclaration modifierDeclaration = new ModifierDeclaration(ast);
+							modifierDeclaration.setModifier(modifier);
+							if (syntax[0] != null) {
+								modifierDeclaration.setSyntax(syntax[0]);
+							}
+							modifierDeclaration.declarations().addAll(a);
+							s = modifierDeclaration;
+						}
+					} else {
+						if (!isSingle[0]) {
+							ModifierDeclaration modifierDeclaration = new ModifierDeclaration(ast);
+							modifierDeclaration.setModifier(modifier);
+							if (syntax[0] != null) {
+								modifierDeclaration.setSyntax(syntax[0]);
+							}
+							s = modifierDeclaration;
+						}
+					}
 				}
 				if (s != null) {
 					s.startPosition = staticToken.ptr;
@@ -361,23 +388,32 @@ public class Parser extends Lexer {
 			case TOKabstract:
 			case TOKsynchronized:
 			case TOKdeprecated:
+				Modifier modifier = newModifierFromToken(token);
+				modifiers.add(modifier);
+				
 				stc = STC.fromToken(token.value);
-				int mod = STC.getModifiers(stc);
 				// goto Lstc;
 				saveToken = new Token(token);
-				nextToken(); 
-				tempObj = parseDeclDefs_Lstc2(stc, a, isSingle);
+				nextToken();
+				
+				ModifierDeclaration.Syntax[] syntax = new ModifierDeclaration.Syntax[1];
+				tempObj = parseDeclDefs_Lstc2(stc, a, isSingle, syntax, modifiers);
 				a = (List) tempObj[0];
 				stc = ((Integer) tempObj[1]);
-				s = (ASTNode) tempObj[2];
+				s = (Declaration) tempObj[2];
 				
-				if (a != null && a.size() == 1) {
+				if (a != null && a.size() > 0) {
 					if (isSingle[0]) {
-						s = (ASTNode) a.get(0);
-						s.modifierFlags |= mod;
+						s = (Declaration) a.get(0);
 					} else {
-						for(Declaration elem : a) {
-							elem.modifierFlags |= mod;
+						if (!isSingle[0]) {
+							ModifierDeclaration modifierDeclaration = new ModifierDeclaration(ast);
+							modifierDeclaration.setModifier(newModifierFromToken(saveToken));
+							if (syntax[0] != null) {
+								modifierDeclaration.setSyntax(syntax[0]);
+							}
+							modifierDeclaration.declarations().addAll(a);
+							s = modifierDeclaration;
 						}
 					}
 				}
@@ -392,10 +428,12 @@ public class Parser extends Lexer {
 					stc = STCextern;
 					// goto Lstc;
 					nextToken();
-					tempObj = parseDeclDefs_Lstc2(stc, a, isSingle);
+					
+					syntax = new ModifierDeclaration.Syntax[1];
+					tempObj = parseDeclDefs_Lstc2(stc, a, isSingle, syntax, modifiers);
 					a = (List) tempObj[0];
 					stc = ((Integer) tempObj[1]);
-					s = (ASTNode) tempObj[2];
+					s = (Declaration) tempObj[2];
 					break;
 				}
 				{
@@ -417,18 +455,19 @@ public class Parser extends Lexer {
 			case TOKprotected:
 			case TOKpublic:
 			case TOKexport:
-				prot = PROT.fromToken(token.value);
-				int protection = prot.getModifiers();
+				
+				modifier = newModifierFromToken(token);
+				modifiers.add(modifier);
+				
 				// goto Lprot;
 				saveToken = new Token(token);
 				nextToken();
 				
-				ModifierDeclaration.Syntax[] syntax = new ModifierDeclaration.Syntax[1]; 
-				a = parseBlock(isSingle, syntax);
-				if (a != null && a.size() > 0) {
-					if (isSingle[0]) {
-						s = (ASTNode) a.get(0);
-						s.modifierFlags |= protection;
+				syntax = new ModifierDeclaration.Syntax[1]; 
+				a = parseBlock(isSingle, syntax, modifiers);
+				if (a != null) {
+					if (isSingle[0]) {						
+						s = (Declaration) a.get(0);
 					} else {
 						ModifierDeclaration modifierDeclaration = new ModifierDeclaration(ast);
 						modifierDeclaration.setModifier(newModifierFromToken(saveToken));
@@ -437,21 +476,21 @@ public class Parser extends Lexer {
 						}
 						modifierDeclaration.declarations().addAll(a);
 						s = modifierDeclaration;
-						
-						for(IElement elem : a) {
-							((ASTNode) elem).modifierFlags |= protection;
-						}
 					}
 				} else {
-					ModifierDeclaration modifierDeclaration = new ModifierDeclaration(ast);
-					modifierDeclaration.setModifier(newModifierFromToken(saveToken));
-					if (syntax[0] != null) {
-						modifierDeclaration.setSyntax(syntax[0]);
+					if (!isSingle[0]) {
+						ModifierDeclaration modifierDeclaration = new ModifierDeclaration(ast);
+						modifierDeclaration.setModifier(modifier);
+						if (syntax[0] != null) {
+							modifierDeclaration.setSyntax(syntax[0]);
+						}
+						s = modifierDeclaration;
 					}
-					s = modifierDeclaration;
 				}
-				s.startPosition = saveToken.ptr;
-				s.length = prevToken.ptr + prevToken.len - s.startPosition;
+				if (s != null) {
+					s.startPosition = saveToken.ptr;
+					s.length = prevToken.ptr + prevToken.len - s.startPosition;
+				}
 				break;
 				
 			case TOKalign: {
@@ -688,15 +727,18 @@ public class Parser extends Lexer {
 				continue;
 			}
 			if (s != null) {
-				decldefs.add((Declaration) s);
+				s.modifiers().addAll(modifiers);
+				modifiers.clear();
+				
 				s.comments = lastComments;
 				adjustLastDocComment();
+				decldefs.add(s);				
 			}
 		} while (!once);
 		return decldefs;
 	}
 	
-	private Dsymbol parseDeclDefs_Lerror() {
+	private Declaration parseDeclDefs_Lerror() {
 		while (token.value != TOKsemicolon && token.value != TOKeof)
 		    nextToken();
 		nextToken();
@@ -718,19 +760,20 @@ public class Parser extends Lexer {
 	*/
 	
 	// a, stc, s
-	private Object[] parseDeclDefs_Lstc2(int stc, List<Declaration> a, boolean[] isSingle) {
+	private Object[] parseDeclDefs_Lstc2(int stc, List<Declaration> a, boolean[] isSingle, ModifierDeclaration.Syntax[] syntax, List<Modifier> modifiers) {
+		// TODO
 		boolean repeat = true;
 		while(repeat) {
 			switch (token.value)
 			{
-			    case TOKconst:	  stc |= STCconst; nextToken(); break;
-			    case TOKfinal:	  stc |= STCfinal; nextToken(); break;
-			    case TOKauto:	  stc |= STCauto; nextToken(); break;
-			    case TOKscope:	  stc |= STC.STCscope; nextToken(); break;
-			    case TOKoverride:	  stc |= STCoverride; nextToken(); break;
-			    case TOKabstract:	  stc |= STCabstract; nextToken(); break;
-			    case TOKsynchronized: stc |= STCsynchronized; nextToken(); break;
-			    case TOKdeprecated:   stc |= STCdeprecated; nextToken(); break;
+			    case TOKconst:	  modifiers.add(newModifierFromTokenAndKeyword(token, Modifier.ModifierKeyword.CONST_KEYWORD)); stc |= STCconst; nextToken(); break;
+			    case TOKfinal:	  modifiers.add(newModifierFromTokenAndKeyword(token, Modifier.ModifierKeyword.FINAL_KEYWORD)); stc |= STCfinal; nextToken(); break;
+			    case TOKauto:	  nextToken(); modifiers.add(newModifierFromTokenAndKeyword(token, Modifier.ModifierKeyword.AUTO_KEYWORD)); stc |= STCauto; break;
+			    case TOKscope:	  nextToken(); modifiers.add(newModifierFromTokenAndKeyword(token, Modifier.ModifierKeyword.SCOPE_KEYWORD)); stc |= STC.STCscope;  break;
+			    case TOKoverride:	  nextToken(); modifiers.add(newModifierFromTokenAndKeyword(token, Modifier.ModifierKeyword.OVERRIDE_KEYWORD)); stc |= STCoverride; break;
+			    case TOKabstract:	  nextToken(); modifiers.add(newModifierFromTokenAndKeyword(token, Modifier.ModifierKeyword.ABSTRACT_KEYWORD)); stc |= STCabstract; break;
+			    case TOKsynchronized: nextToken(); modifiers.add(newModifierFromTokenAndKeyword(token, Modifier.ModifierKeyword.SYNCHRONIZED_KEYWORD)); stc |= STCsynchronized; break;
+			    case TOKdeprecated:   nextToken(); modifiers.add(newModifierFromTokenAndKeyword(token, Modifier.ModifierKeyword.DEPRECATED_KEYWORD)); stc |= STCdeprecated; break;
 			    default:
 			    	repeat = false;
 				break;
@@ -743,6 +786,8 @@ public class Parser extends Lexer {
 		if (token.value == TOKidentifier &&
 		    peek(token).value == TOKassign)
 		{
+			isSingle[0] = true;
+			
 		    Identifier ident = token.ident;
 		    nextToken();
 		    nextToken();
@@ -753,34 +798,37 @@ public class Parser extends Lexer {
 		    Dsymbol s = v;
 		    if (token.value != TOKsemicolon) {
 		    	problem("Semicolon expected following auto declaration", IProblem.SEVERITY_ERROR, IProblem.SEMICOLON_EXPECTED, token.ptr, token.len);
+		    } else {
+		    	nextToken();
 		    }
-		    else
-			nextToken();
 		    
 		    return new Object[] { a, stc, s }; 
 		}
 		else
 		{   
-			ModifierDeclaration.Syntax[] syntax = new ModifierDeclaration.Syntax[1];
-			a = parseBlock(isSingle, syntax);
+			a = parseBlock(isSingle, syntax, modifiers);
 			
-			ModifierDeclaration modifierDeclaration = new ModifierDeclaration(ast);
-			modifierDeclaration.setModifier(new Modifier(ast));
-			if (syntax[0] != null) {
-				modifierDeclaration.setSyntax(syntax[0]);
-			}
-			modifierDeclaration.declarations().addAll(a);
-			
-		    return new Object[] { a, stc, modifierDeclaration }; 
+			if (isSingle[0]) {
+				return new Object[] { a, stc, a.get(0) };
+			} else {
+				ModifierDeclaration modifierDeclaration = new ModifierDeclaration(ast);
+				modifierDeclaration.setModifier(new Modifier(ast));
+				if (syntax[0] != null) {
+					modifierDeclaration.setSyntax(syntax[0]);
+				}
+				modifierDeclaration.declarations().addAll(a);
+				
+			    return new Object[] { a, stc, modifierDeclaration };
+			}			 
 		}
 	}
 	
 	private List<Declaration> parseBlock() {
-		return parseBlock(null, null);
+		return parseBlock(null, null, new ArrayList<Modifier>());
 	}
 	
 	private List<Declaration> parseBlock(boolean[] isSingle,
-			ModifierDeclaration.Syntax[] syntax) {
+			ModifierDeclaration.Syntax[] syntax, List<Modifier> modifiers) {
 		List<Declaration> a = null;
 		// Dsymbol s; // <-- not used
 
@@ -798,7 +846,7 @@ public class Parser extends Lexer {
 			if (syntax != null) {
 				syntax[0] = ModifierDeclaration.Syntax.CURLY_BRACES;
 			}
-			a = parseDeclDefs(false);
+			a = parseDeclDefs(false, modifiers);
 			if (token.value != TOKrcurly) { /* { */
 				problem("Matching '}' expected", IProblem.SEVERITY_ERROR,
 						IProblem.MATCHING_CURLY_EXPECTED, token.ptr, token.len);
@@ -814,13 +862,13 @@ public class Parser extends Lexer {
 			// #if 1
 			// a = null;
 			// #else
-			a = parseDeclDefs(false); // grab declarations up to closing curly
+			a = parseDeclDefs(false, modifiers); // grab declarations up to closing curly
 										// bracket
 			// #endif
 			break;
 
 		default:
-			a = parseDeclDefs(true);
+			a = parseDeclDefs(true, modifiers);
 			if (isSingle != null) {
 				isSingle[0] = true;
 			}
@@ -1276,8 +1324,11 @@ public class Parser extends Lexer {
 		} else {
 			t = null;
 		}
-
-		e = new EnumDeclaration(newSimpleNameForIdentifier(id), t);
+		
+		e = new EnumDeclaration(ast);
+		e.setName(newSimpleNameForIdentifier(id));
+		e.setBaseType(t);
+		
 		e.startPosition = enumToken.ptr;
 		
 		if (token.value == TOKsemicolon && id != null) {
@@ -1429,7 +1480,7 @@ public class Parser extends Lexer {
 			Token lcurlyToken = new Token(token);
 			// printf("aggregate definition\n");
 			nextToken();
-			List decl = parseDeclDefs(false);
+			List decl = parseDeclDefs(false, new ArrayList<Modifier>());
 			if (token.value != TOKrcurly) {
 				problem("} expected following member declarations in aggregate", IProblem.SEVERITY_ERROR, IProblem.RIGHT_CURLY_EXPECTED_FOLLOWING_MEMBER_DECLARATIONS_IN_AGGREGATE,
 						lcurlyToken.ptr, lcurlyToken.len);
@@ -1546,7 +1597,7 @@ public class Parser extends Lexer {
 	    else
 	    {
 		nextToken();
-		decldefs = parseDeclDefs(false);
+		decldefs = parseDeclDefs(false, new ArrayList<Modifier>());
 		if (token.value != TOKrcurly)
 		{
 			problem("Template member expected", IProblem.SEVERITY_ERROR, IProblem.MEMBERS_EXPECTED, token.ptr, token.len);
@@ -1903,7 +1954,7 @@ public class Parser extends Lexer {
 	    return tiargs;
 	}
 	
-	private Import parseImport(List<Declaration> decldefs, boolean isstatic) {
+	private ImportDeclaration parseImport(boolean isstatic) {
 		ImportDeclaration importDeclaration = new ImportDeclaration(ast);
 
 		Import theImport = null;
@@ -2031,10 +2082,8 @@ public class Parser extends Lexer {
 					token.ptr, token.len);
 			nextToken();
 		}
-		
-		decldefs.add(importDeclaration);
 
-		return null;
+		return importDeclaration;
 	}
 	
 	private Type parseBasicType() {
@@ -6201,7 +6250,7 @@ public class Parser extends Lexer {
 				cd.declarations().clear();
 			} else {
 				nextToken();
-				List decl = parseDeclDefs(false);
+				List decl = parseDeclDefs(false, new ArrayList<Modifier>());
 				if (token.value != TOKrcurly) {
 					problem("class member expected", IProblem.SEVERITY_ERROR, IProblem.MEMBERS_EXPECTED, token.ptr, token.len);
 				}
@@ -6351,7 +6400,12 @@ public class Parser extends Lexer {
 		return qualifiedName;
 	}
 	
-
+	private Modifier newModifierFromTokenAndKeyword(Token token, Modifier.ModifierKeyword keyword) {
+		Modifier modifier = new Modifier(ast);
+		modifier.setModifierKeyword(keyword);
+		modifier.setSourceRange(token.ptr, token.len);
+		return modifier;
+	}
 	
 	private Modifier newModifierFromToken(Token token) {
 		Modifier modifier = new Modifier(ast);

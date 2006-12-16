@@ -11,11 +11,17 @@ import descent.core.dom.IPragmaDeclaration;
  * 
  * <pre>
  * PragmaDeclaration:
- *    <b>pragma</b> <b>(</b> SimpleName { <b>,</b> Expression } <b>)</b> { Declaration }
+ *    { Modifier } <b>pragma</b> <b>(</b> SimpleName { <b>,</b> Expression } <b>)</b> { Declaration }
  * </pre>
  */
 public class PragmaDeclaration extends Declaration implements IPragmaDeclaration {
 	
+	/**
+	 * The "modifiers" structural property of this node type.
+	 */
+	public static final ChildListPropertyDescriptor MODIFIERS_PROPERTY =
+	internalModifiersPropertyFactory(PragmaDeclaration.class); //$NON-NLS-1$
+
 	/**
 	 * The "name" structural property of this node type.
 	 */
@@ -42,8 +48,9 @@ public class PragmaDeclaration extends Declaration implements IPragmaDeclaration
 	private static final List PROPERTY_DESCRIPTORS;
 
 	static {
-		List properyList = new ArrayList(3);
+		List properyList = new ArrayList(4);
 		createPropertyList(PragmaDeclaration.class, properyList);
+		addProperty(MODIFIERS_PROPERTY, properyList);
 		addProperty(NAME_PROPERTY, properyList);
 		addProperty(ARGUMENTS_PROPERTY, properyList);
 		addProperty(DECLARATIONS_PROPERTY, properyList);
@@ -65,6 +72,13 @@ public class PragmaDeclaration extends Declaration implements IPragmaDeclaration
 		return PROPERTY_DESCRIPTORS;
 	}
 
+	/**
+	 * The modifiers
+	 * (element type: <code>Modifier</code>).
+	 * Defaults to an empty list.
+	 */
+	private ASTNode.NodeList modifiers =
+		new ASTNode.NodeList(MODIFIERS_PROPERTY);
 	/**
 	 * The name.
 	 */
@@ -125,6 +139,9 @@ public class PragmaDeclaration extends Declaration implements IPragmaDeclaration
 	 * Method declared on ASTNode.
 	 */
 	final List internalGetChildListProperty(ChildListPropertyDescriptor property) {
+		if (property == MODIFIERS_PROPERTY) {
+			return modifiers();
+		}
 		if (property == ARGUMENTS_PROPERTY) {
 			return arguments();
 		}
@@ -135,6 +152,11 @@ public class PragmaDeclaration extends Declaration implements IPragmaDeclaration
 		return super.internalGetChildListProperty(property);
 	}
 
+		@Override
+		final ChildListPropertyDescriptor internalModifiersProperty() {
+			return MODIFIERS_PROPERTY;
+		}
+		
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
 	 * TODO make it package
@@ -149,6 +171,7 @@ public class PragmaDeclaration extends Declaration implements IPragmaDeclaration
 	ASTNode clone0(AST target) {
 		PragmaDeclaration result = new PragmaDeclaration(target);
 		result.setSourceRange(this.getStartPosition(), this.getLength());
+		result.modifiers.addAll(ASTNode.copySubtrees(target, modifiers()));
 		result.setName((SimpleName) getName().clone(target));
 		result.arguments.addAll(ASTNode.copySubtrees(target, arguments()));
 		result.declarations.addAll(ASTNode.copySubtrees(target, declarations()));
@@ -170,6 +193,7 @@ public class PragmaDeclaration extends Declaration implements IPragmaDeclaration
 		boolean visitChildren = visitor.visit(this);
 		if (visitChildren) {
 			// visit children in normal left to right reading order
+			acceptChildren(visitor, modifiers());
 			acceptChild(visitor, getName());
 			acceptChildren(visitor, arguments());
 			acceptChildren(visitor, declarations());
@@ -243,7 +267,7 @@ public class PragmaDeclaration extends Declaration implements IPragmaDeclaration
 	 * Method declared on ASTNode.
 	 */
 	int memSize() {
-		return BASE_NODE_SIZE + 3 * 4;
+		return BASE_NODE_SIZE + 4 * 4;
 	}
 
 	/* (omit javadoc for this method)
@@ -252,6 +276,7 @@ public class PragmaDeclaration extends Declaration implements IPragmaDeclaration
 	int treeSize() {
 		return
 			memSize()
+			+ (this.modifiers.listSize())
 			+ (this.name == null ? 0 : getName().treeSize())
 			+ (this.arguments.listSize())
 			+ (this.declarations.listSize())

@@ -55,4 +55,9 @@ public class TemplateMixin extends Declaration implements IMixinDeclaration {
 		visitor.endVisit(this);
 	}
 
+	@Override
+	ChildListPropertyDescriptor internalModifiersProperty() {
+		return null;
+	}
+
 }

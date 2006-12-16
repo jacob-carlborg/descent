@@ -11,7 +11,7 @@ import descent.core.dom.IModifierDeclaration;
  * 
  * <pre>
  * ProtectionDeclaration:
- *    [ Modifier <b>:</b> { Declaration } | Modifier <b>{</b> { Declaration } <b>}</b> ] 
+ *    { Modifier } [ Modifier <b>:</b> { Declaration } | Modifier <b>{</b> { Declaration } <b>}</b> ] 
  * </pre>
  * 
  * <p>Note that if a modifier keyword is not followed by <b>;</b> or by <b>{</b> then
@@ -46,6 +46,12 @@ public class ModifierDeclaration extends Declaration implements IModifierDeclara
 	}
 	
 	/**
+	 * The "modifiers" structural property of this node type.
+	 */
+	public static final ChildListPropertyDescriptor MODIFIERS_PROPERTY =
+	internalModifiersPropertyFactory(ModifierDeclaration.class); //$NON-NLS-1$
+
+	/**
 	 * The "syntax" structural property of this node type.
 	 */
 	public static final SimplePropertyDescriptor SYNTAX_PROPERTY =
@@ -71,8 +77,9 @@ public class ModifierDeclaration extends Declaration implements IModifierDeclara
 	private static final List PROPERTY_DESCRIPTORS;
 
 	static {
-		List properyList = new ArrayList(3);
+		List properyList = new ArrayList(4);
 		createPropertyList(ModifierDeclaration.class, properyList);
+		addProperty(MODIFIERS_PROPERTY, properyList);
 		addProperty(SYNTAX_PROPERTY, properyList);
 		addProperty(MODIFIER_PROPERTY, properyList);
 		addProperty(DECLARATIONS_PROPERTY, properyList);
@@ -94,6 +101,13 @@ public class ModifierDeclaration extends Declaration implements IModifierDeclara
 		return PROPERTY_DESCRIPTORS;
 	}
 
+	/**
+	 * The modifiers
+	 * (element type: <code>Modifier</code>).
+	 * Defaults to an empty list.
+	 */
+	private ASTNode.NodeList modifiers =
+		new ASTNode.NodeList(MODIFIERS_PROPERTY);
 	/**
 	 * The syntax.
 	 */
@@ -168,6 +182,9 @@ public class ModifierDeclaration extends Declaration implements IModifierDeclara
 	 * Method declared on ASTNode.
 	 */
 	final List internalGetChildListProperty(ChildListPropertyDescriptor property) {
+		if (property == MODIFIERS_PROPERTY) {
+			return modifiers();
+		}
 		if (property == DECLARATIONS_PROPERTY) {
 			return declarations();
 		}
@@ -175,6 +192,11 @@ public class ModifierDeclaration extends Declaration implements IModifierDeclara
 		return super.internalGetChildListProperty(property);
 	}
 
+		@Override
+		final ChildListPropertyDescriptor internalModifiersProperty() {
+			return MODIFIERS_PROPERTY;
+		}
+		
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
 	 * TODO make it package
@@ -189,6 +211,7 @@ public class ModifierDeclaration extends Declaration implements IModifierDeclara
 	ASTNode clone0(AST target) {
 		ModifierDeclaration result = new ModifierDeclaration(target);
 		result.setSourceRange(this.getStartPosition(), this.getLength());
+		result.modifiers.addAll(ASTNode.copySubtrees(target, modifiers()));
 		result.setSyntax(getSyntax());
 		result.setModifier((Modifier) getModifier().clone(target));
 		result.declarations.addAll(ASTNode.copySubtrees(target, declarations()));
@@ -210,6 +233,7 @@ public class ModifierDeclaration extends Declaration implements IModifierDeclara
 		boolean visitChildren = visitor.visit(this);
 		if (visitChildren) {
 			// visit children in normal left to right reading order
+			acceptChildren(visitor, modifiers());
 			acceptChild(visitor, getModifier());
 			acceptChildren(visitor, declarations());
 		}
@@ -295,7 +319,7 @@ public class ModifierDeclaration extends Declaration implements IModifierDeclara
 	 * Method declared on ASTNode.
 	 */
 	int memSize() {
-		return BASE_NODE_SIZE + 3 * 4;
+		return BASE_NODE_SIZE + 4 * 4;
 	}
 
 	/* (omit javadoc for this method)
@@ -304,6 +328,7 @@ public class ModifierDeclaration extends Declaration implements IModifierDeclara
 	int treeSize() {
 		return
 			memSize()
+			+ (this.modifiers.listSize())
 			+ (this.modifier == null ? 0 : getModifier().treeSize())
 			+ (this.declarations.listSize())
 	;

@@ -20,10 +20,10 @@ import descent.core.dom.ITemplateDeclaration;
 public class TemplateDeclaration extends Declaration implements ITemplateDeclaration {
 	
 	/**
-	 * The "modifierFlags" structural property of this node type.
+	 * The "modifiers" structural property of this node type.
 	 */
-	public static final SimplePropertyDescriptor MODIFIER_FLAGS_PROPERTY =
-		new SimplePropertyDescriptor(TemplateDeclaration.class, "modifierFlags", int.class, OPTIONAL); //$NON-NLS-1$
+	public static final ChildListPropertyDescriptor MODIFIERS_PROPERTY =
+	internalModifiersPropertyFactory(TemplateDeclaration.class); //$NON-NLS-1$
 
 	/**
 	 * The "name" structural property of this node type.
@@ -53,7 +53,7 @@ public class TemplateDeclaration extends Declaration implements ITemplateDeclara
 	static {
 		List properyList = new ArrayList(4);
 		createPropertyList(TemplateDeclaration.class, properyList);
-		addProperty(MODIFIER_FLAGS_PROPERTY, properyList);
+		addProperty(MODIFIERS_PROPERTY, properyList);
 		addProperty(NAME_PROPERTY, properyList);
 		addProperty(TEMPLATEPARAMETERS_PROPERTY, properyList);
 		addProperty(DECLARATIONS_PROPERTY, properyList);
@@ -76,11 +76,12 @@ public class TemplateDeclaration extends Declaration implements ITemplateDeclara
 	}
 
 	/**
-	 * The modifierFlags.
-	 * TODO uncomment
+	 * The modifiers
+	 * (element type: <code>Modifier</code>).
+	 * Defaults to an empty list.
 	 */
-	// private int modifierFlags;
-
+	private ASTNode.NodeList modifiers =
+		new ASTNode.NodeList(MODIFIERS_PROPERTY);
 	/**
 	 * The name.
 	 */
@@ -124,22 +125,6 @@ public class TemplateDeclaration extends Declaration implements ITemplateDeclara
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
 	 */
-	final int internalGetSetIntProperty(SimplePropertyDescriptor property, boolean get, int value) {
-		if (property == MODIFIER_FLAGS_PROPERTY) {
-			if (get) {
-				return getModifier();
-			} else {
-				setModifierFlags(value);
-				return 0;
-			}
-		}
-		// allow default implementation to flag the error
-		return super.internalGetSetIntProperty(property, get, value);
-	}
-
-	/* (omit javadoc for this method)
-	 * Method declared on ASTNode.
-	 */
 	final ASTNode internalGetSetChildProperty(ChildPropertyDescriptor property, boolean get, ASTNode child) {
 		if (property == NAME_PROPERTY) {
 			if (get) {
@@ -157,6 +142,9 @@ public class TemplateDeclaration extends Declaration implements ITemplateDeclara
 	 * Method declared on ASTNode.
 	 */
 	final List internalGetChildListProperty(ChildListPropertyDescriptor property) {
+		if (property == MODIFIERS_PROPERTY) {
+			return modifiers();
+		}
 		if (property == TEMPLATEPARAMETERS_PROPERTY) {
 			return templateParameters();
 		}
@@ -167,6 +155,11 @@ public class TemplateDeclaration extends Declaration implements ITemplateDeclara
 		return super.internalGetChildListProperty(property);
 	}
 
+		@Override
+		final ChildListPropertyDescriptor internalModifiersProperty() {
+			return MODIFIERS_PROPERTY;
+		}
+		
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
 	 * TODO make it package
@@ -181,7 +174,7 @@ public class TemplateDeclaration extends Declaration implements ITemplateDeclara
 	ASTNode clone0(AST target) {
 		TemplateDeclaration result = new TemplateDeclaration(target);
 		result.setSourceRange(this.getStartPosition(), this.getLength());
-		result.setModifierFlags(getModifier());
+		result.modifiers.addAll(ASTNode.copySubtrees(target, modifiers()));
 		result.setName((SimpleName) getName().clone(target));
 		result.templateParameters.addAll(ASTNode.copySubtrees(target, templateParameters()));
 		result.declarations.addAll(ASTNode.copySubtrees(target, declarations()));
@@ -203,32 +196,12 @@ public class TemplateDeclaration extends Declaration implements ITemplateDeclara
 		boolean visitChildren = visitor.visit(this);
 		if (visitChildren) {
 			// visit children in normal left to right reading order
+			acceptChildren(visitor, modifiers());
 			acceptChild(visitor, getName());
 			acceptChildren(visitor, templateParameters());
 			acceptChildren(visitor, declarations());
 		}
 		visitor.endVisit(this);
-	}
-
-	/**
-	 * Returns the modifier flags of this template declaration.
-	 * 
-	 * @return the modifier flags
-	 */ 
-	public int getModifier() {
-		return this.modifierFlags;
-	}
-
-	/**
-	 * Sets the modifier flags of this template declaration.
-	 * 
-	 * @param modifierFlags the modifier flags
-	 * @exception IllegalArgumentException if the argument is incorrect
-	 */ 
-	public void setModifierFlags(int modifierFlags) {
-		preValueChange(MODIFIER_FLAGS_PROPERTY);
-		this.modifierFlags = modifierFlags;
-		postValueChange(MODIFIER_FLAGS_PROPERTY);
 	}
 
 	/**
@@ -306,6 +279,7 @@ public class TemplateDeclaration extends Declaration implements ITemplateDeclara
 	int treeSize() {
 		return
 			memSize()
+			+ (this.modifiers.listSize())
 			+ (this.name == null ? 0 : getName().treeSize())
 			+ (this.templateParameters.listSize())
 			+ (this.declarations.listSize())

@@ -14,7 +14,7 @@ import descent.core.dom.IModuleDeclaration;
  *    <b>module</b> Name <b>;</b>
  * </pre>
  */
-public class ModuleDeclaration extends Declaration implements IModuleDeclaration {
+public class ModuleDeclaration extends ASTNode implements IModuleDeclaration {
 	
 	/**
 	 * The "name" structural property of this node type.

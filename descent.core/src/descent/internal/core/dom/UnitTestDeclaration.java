@@ -15,6 +15,12 @@ import descent.core.dom.IUnitTestDeclaration;
  * </pre>
  */
 public class UnitTestDeclaration extends Declaration implements IUnitTestDeclaration {
+	
+	/**
+	 * The "modifiers" structural property of this node type.
+	 */
+	public static final ChildListPropertyDescriptor MODIFIERS_PROPERTY =
+		internalModifiersPropertyFactory(UnitTestDeclaration.class); //$NON-NLS-1$
 
 	/**
 	 * The "body" structural property of this node type.
@@ -91,6 +97,11 @@ public class UnitTestDeclaration extends Declaration implements IUnitTestDeclara
 		}
 		// allow default implementation to flag the error
 		return super.internalGetSetChildProperty(property, get, child);
+	}
+	
+	@Override
+	final ChildListPropertyDescriptor internalModifiersProperty() {
+		return MODIFIERS_PROPERTY;
 	}
 
 	/* (omit javadoc for this method)
@@ -175,7 +186,7 @@ public class UnitTestDeclaration extends Declaration implements IUnitTestDeclara
 	 * Method declared on ASTNode.
 	 */
 	int memSize() {
-		return BASE_NODE_SIZE + 1 * 4;
+		return BASE_NODE_SIZE + 2 * 4;
 	}
 
 	/* (omit javadoc for this method)
@@ -184,6 +195,7 @@ public class UnitTestDeclaration extends Declaration implements IUnitTestDeclara
 	int treeSize() {
 		return
 			memSize()
+			+ (this.modifiers.listSize())
 			+ (this.body == null ? 0 : getBody().treeSize())
 	;
 	}

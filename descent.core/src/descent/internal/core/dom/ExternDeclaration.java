@@ -11,8 +11,10 @@ import descent.core.dom.IExternDeclaration;
  *
  * <pre>
  * ExternDeclaration:
- *    <b>extern</b> [ <b>(</b> [ | D | C | C++ | Windows | Pascal ]<b>)</b> ] { Declaration }
+ *    { Modifier } <b>extern</b> [ <b>(</b> [ | D | C | C++ | Windows | Pascal ]<b>)</b> ] { Declaration }
  * </pre>
+ * 
+ * TODO reflect syntax better
  */
 public class ExternDeclaration extends Declaration implements IExternDeclaration {
 	
@@ -31,6 +33,12 @@ public class ExternDeclaration extends Declaration implements IExternDeclaration
 		/** Link to Pascal code */
 		PASCAL
 	}
+
+	/**
+	 * The "modifiers" structural property of this node type.
+	 */
+	public static final ChildListPropertyDescriptor MODIFIERS_PROPERTY =
+	internalModifiersPropertyFactory(ExternDeclaration.class); //$NON-NLS-1$
 
 	/**
 	 * The "linkage" structural property of this node type.
@@ -52,8 +60,9 @@ public class ExternDeclaration extends Declaration implements IExternDeclaration
 	private static final List PROPERTY_DESCRIPTORS;
 
 	static {
-		List properyList = new ArrayList(2);
+		List properyList = new ArrayList(3);
 		createPropertyList(ExternDeclaration.class, properyList);
+		addProperty(MODIFIERS_PROPERTY, properyList);
 		addProperty(LINKAGE_PROPERTY, properyList);
 		addProperty(DECLARATIONS_PROPERTY, properyList);
 		PROPERTY_DESCRIPTORS = reapPropertyList(properyList);
@@ -74,6 +83,13 @@ public class ExternDeclaration extends Declaration implements IExternDeclaration
 		return PROPERTY_DESCRIPTORS;
 	}
 
+	/**
+	 * The modifiers
+	 * (element type: <code>Modifier</code>).
+	 * Defaults to an empty list.
+	 */
+	private ASTNode.NodeList modifiers =
+		new ASTNode.NodeList(MODIFIERS_PROPERTY);
 	/**
 	 * The linkage.
 	 */
@@ -127,6 +143,9 @@ public class ExternDeclaration extends Declaration implements IExternDeclaration
 	 * Method declared on ASTNode.
 	 */
 	final List internalGetChildListProperty(ChildListPropertyDescriptor property) {
+		if (property == MODIFIERS_PROPERTY) {
+			return modifiers();
+		}
 		if (property == DECLARATIONS_PROPERTY) {
 			return declarations();
 		}
@@ -134,6 +153,11 @@ public class ExternDeclaration extends Declaration implements IExternDeclaration
 		return super.internalGetChildListProperty(property);
 	}
 
+		@Override
+		final ChildListPropertyDescriptor internalModifiersProperty() {
+			return MODIFIERS_PROPERTY;
+		}
+		
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
 	 * TODO make it package
@@ -148,6 +172,7 @@ public class ExternDeclaration extends Declaration implements IExternDeclaration
 	ASTNode clone0(AST target) {
 		ExternDeclaration result = new ExternDeclaration(target);
 		result.setSourceRange(this.getStartPosition(), this.getLength());
+		result.modifiers.addAll(ASTNode.copySubtrees(target, modifiers()));
 		result.setLinkage(getLinkage());
 		result.declarations.addAll(ASTNode.copySubtrees(target, declarations()));
 		return result;
@@ -168,6 +193,7 @@ public class ExternDeclaration extends Declaration implements IExternDeclaration
 		boolean visitChildren = visitor.visit(this);
 		if (visitChildren) {
 			// visit children in normal left to right reading order
+			acceptChildren(visitor, modifiers());
 			acceptChildren(visitor, declarations());
 		}
 		visitor.endVisit(this);
@@ -212,7 +238,7 @@ public class ExternDeclaration extends Declaration implements IExternDeclaration
 	 * Method declared on ASTNode.
 	 */
 	int memSize() {
-		return BASE_NODE_SIZE + 2 * 4;
+		return BASE_NODE_SIZE + 3 * 4;
 	}
 
 	/* (omit javadoc for this method)
@@ -221,6 +247,7 @@ public class ExternDeclaration extends Declaration implements IExternDeclaration
 	int treeSize() {
 		return
 			memSize()
+			+ (this.modifiers.listSize())
 			+ (this.declarations.listSize())
 	;
 	}

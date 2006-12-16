@@ -19,7 +19,8 @@ public class ParserFacade implements IParser {
 		parser.mod.length = source.length();
 		
 		if (parser.mod.md != null) {
-			parser.mod.ident = parser.mod.md.ident;
+			// TODO
+			parser.mod.ident = new Identifier(parser.mod.md.getName().getFullyQualifiedName(), TOK.TOKstring);
 		}
 		
 		//parser.mod.semantic(null, parser);

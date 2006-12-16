@@ -15,6 +15,12 @@ import descent.core.dom.IVersionAssignment;
  * </pre>
  */
 public class VersionAssignment extends Declaration implements IVersionAssignment {
+	
+	/**
+	 * The "modifiers" structural property of this node type.
+	 */
+	public static final ChildListPropertyDescriptor MODIFIERS_PROPERTY =
+		internalModifiersPropertyFactory(AliasDeclaration.class); //$NON-NLS-1$
 
 	/**
 	 * The "version" structural property of this node type.
@@ -91,6 +97,11 @@ public class VersionAssignment extends Declaration implements IVersionAssignment
 		}
 		// allow default implementation to flag the error
 		return super.internalGetSetChildProperty(property, get, child);
+	}
+	
+	@Override
+	final ChildListPropertyDescriptor internalModifiersProperty() {
+		return MODIFIERS_PROPERTY;
 	}
 
 	/* (omit javadoc for this method)
@@ -175,7 +186,7 @@ public class VersionAssignment extends Declaration implements IVersionAssignment
 	 * Method declared on ASTNode.
 	 */
 	int memSize() {
-		return BASE_NODE_SIZE + 1 * 4;
+		return BASE_NODE_SIZE + 2 * 4;
 	}
 
 	/* (omit javadoc for this method)
@@ -184,6 +195,7 @@ public class VersionAssignment extends Declaration implements IVersionAssignment
 	int treeSize() {
 		return
 			memSize()
+			+ (this.modifiers.listSize())
 			+ (this.version == null ? 0 : getVersion().treeSize())
 	;
 	}

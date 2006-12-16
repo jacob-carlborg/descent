@@ -9,7 +9,7 @@ import descent.internal.core.dom.Name;
  * module foo.bar;
  * </pre>
  */
-public interface IModuleDeclaration extends IDeclaration, ICommented {
+public interface IModuleDeclaration extends IElement, ICommented {
 	
 	/**
 	 * Returns the qualified name of the module.

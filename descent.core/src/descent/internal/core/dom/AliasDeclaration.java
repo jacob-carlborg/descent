@@ -11,16 +11,16 @@ import descent.core.dom.IAliasDeclaration;
  *
  * <pre>
  * AliasDeclaration:
- *    <b>alias</b> Type AliasDeclarationFragment { , AliasDeclarationFragment }<b>;</b>
+ *    { Modifier } <b>alias</b> Type AliasDeclarationFragment { , AliasDeclarationFragment }<b>;</b>
  * </pre>
  */
 public class AliasDeclaration extends Declaration implements IAliasDeclaration {
 	
 	/**
-	 * The "modifierFlags" structural property of this node type.
+	 * The "modifiers" structural property of this node type.
 	 */
-	public static final SimplePropertyDescriptor MODIFIER_FLAGS_PROPERTY =
-		new SimplePropertyDescriptor(AliasDeclaration.class, "modifierFlags", int.class, OPTIONAL); //$NON-NLS-1$
+	public static final ChildListPropertyDescriptor MODIFIERS_PROPERTY =
+	internalModifiersPropertyFactory(AliasDeclaration.class); //$NON-NLS-1$
 
 	/**
 	 * The "type" structural property of this node type.
@@ -44,7 +44,7 @@ public class AliasDeclaration extends Declaration implements IAliasDeclaration {
 	static {
 		List properyList = new ArrayList(3);
 		createPropertyList(AliasDeclaration.class, properyList);
-		addProperty(MODIFIER_FLAGS_PROPERTY, properyList);
+		addProperty(MODIFIERS_PROPERTY, properyList);
 		addProperty(TYPE_PROPERTY, properyList);
 		addProperty(FRAGMENTS_PROPERTY, properyList);
 		PROPERTY_DESCRIPTORS = reapPropertyList(properyList);
@@ -66,10 +66,12 @@ public class AliasDeclaration extends Declaration implements IAliasDeclaration {
 	}
 
 	/**
-	 * The modifierFlags.
+	 * The modifiers
+	 * (element type: <code>Modifier</code>).
+	 * Defaults to an empty list.
 	 */
-	//private int modifierFlags;
-
+	private ASTNode.NodeList modifiers =
+		new ASTNode.NodeList(MODIFIERS_PROPERTY);
 	/**
 	 * The type.
 	 */
@@ -106,22 +108,6 @@ public class AliasDeclaration extends Declaration implements IAliasDeclaration {
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
 	 */
-	final int internalGetSetIntProperty(SimplePropertyDescriptor property, boolean get, int value) {
-		if (property == MODIFIER_FLAGS_PROPERTY) {
-			if (get) {
-				return getModifier();
-			} else {
-				setModifierFlags(value);
-				return 0;
-			}
-		}
-		// allow default implementation to flag the error
-		return super.internalGetSetIntProperty(property, get, value);
-	}
-
-	/* (omit javadoc for this method)
-	 * Method declared on ASTNode.
-	 */
 	final ASTNode internalGetSetChildProperty(ChildPropertyDescriptor property, boolean get, ASTNode child) {
 		if (property == TYPE_PROPERTY) {
 			if (get) {
@@ -139,6 +125,9 @@ public class AliasDeclaration extends Declaration implements IAliasDeclaration {
 	 * Method declared on ASTNode.
 	 */
 	final List internalGetChildListProperty(ChildListPropertyDescriptor property) {
+		if (property == MODIFIERS_PROPERTY) {
+			return modifiers();
+		}
 		if (property == FRAGMENTS_PROPERTY) {
 			return fragments();
 		}
@@ -146,6 +135,11 @@ public class AliasDeclaration extends Declaration implements IAliasDeclaration {
 		return super.internalGetChildListProperty(property);
 	}
 
+		@Override
+		final ChildListPropertyDescriptor internalModifiersProperty() {
+			return MODIFIERS_PROPERTY;
+		}
+		
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
 	 * TODO make it package
@@ -160,7 +154,7 @@ public class AliasDeclaration extends Declaration implements IAliasDeclaration {
 	ASTNode clone0(AST target) {
 		AliasDeclaration result = new AliasDeclaration(target);
 		result.setSourceRange(this.getStartPosition(), this.getLength());
-		result.setModifierFlags(getModifier());
+		result.modifiers.addAll(ASTNode.copySubtrees(target, modifiers()));
 		result.setType((Type) getType().clone(target));
 		result.fragments.addAll(ASTNode.copySubtrees(target, fragments()));
 		return result;
@@ -181,31 +175,11 @@ public class AliasDeclaration extends Declaration implements IAliasDeclaration {
 		boolean visitChildren = visitor.visit(this);
 		if (visitChildren) {
 			// visit children in normal left to right reading order
+			acceptChildren(visitor, modifiers());
 			acceptChild(visitor, getType());
 			acceptChildren(visitor, fragments());
 		}
 		visitor.endVisit(this);
-	}
-
-	/**
-	 * Returns the modifier flags of this alias declaration.
-	 * 
-	 * @return the modifier flags
-	 */ 
-	public int getModifier() {
-		return this.modifierFlags;
-	}
-
-	/**
-	 * Sets the modifier flags of this alias declaration.
-	 * 
-	 * @param modifierFlags the modifier flags
-	 * @exception IllegalArgumentException if the argument is incorrect
-	 */ 
-	public void setModifierFlags(int modifierFlags) {
-		preValueChange(MODIFIER_FLAGS_PROPERTY);
-		this.modifierFlags = modifierFlags;
-		postValueChange(MODIFIER_FLAGS_PROPERTY);
 	}
 
 	/**
@@ -272,6 +246,7 @@ public class AliasDeclaration extends Declaration implements IAliasDeclaration {
 	int treeSize() {
 		return
 			memSize()
+			+ (this.modifiers.listSize())
 			+ (this.type == null ? 0 : getType().treeSize())
 			+ (this.fragments.listSize())
 	;

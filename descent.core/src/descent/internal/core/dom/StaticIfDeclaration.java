@@ -11,11 +11,17 @@ import descent.core.dom.IStaticIfDeclaration;
  *
  * <pre>
  * StaticIfDeclaration:
- *    <b>static</b> <b>if</b> <b>(</b> Expression <b>)</b> { Declaration } [ <b>else</b> { Declaration } ]
+ *    { Modifier } <b>static</b> <b>if</b> <b>(</b> Expression <b>)</b> { Declaration } [ <b>else</b> { Declaration } ]
  * </pre>
  */
 public class StaticIfDeclaration extends Declaration implements IStaticIfDeclaration {
 	
+	/**
+	 * The "modifiers" structural property of this node type.
+	 */
+	public static final ChildListPropertyDescriptor MODIFIERS_PROPERTY =
+	internalModifiersPropertyFactory(StaticIfDeclaration.class); //$NON-NLS-1$
+
 	/**
 	 * The "expression" structural property of this node type.
 	 */
@@ -42,8 +48,9 @@ public class StaticIfDeclaration extends Declaration implements IStaticIfDeclara
 	private static final List PROPERTY_DESCRIPTORS;
 
 	static {
-		List properyList = new ArrayList(3);
+		List properyList = new ArrayList(4);
 		createPropertyList(StaticIfDeclaration.class, properyList);
+		addProperty(MODIFIERS_PROPERTY, properyList);
 		addProperty(EXPRESSION_PROPERTY, properyList);
 		addProperty(THENDECLARATIONS_PROPERTY, properyList);
 		addProperty(ELSEDECLARATIONS_PROPERTY, properyList);
@@ -65,6 +72,13 @@ public class StaticIfDeclaration extends Declaration implements IStaticIfDeclara
 		return PROPERTY_DESCRIPTORS;
 	}
 
+	/**
+	 * The modifiers
+	 * (element type: <code>Modifier</code>).
+	 * Defaults to an empty list.
+	 */
+	private ASTNode.NodeList modifiers =
+		new ASTNode.NodeList(MODIFIERS_PROPERTY);
 	/**
 	 * The expression.
 	 */
@@ -125,6 +139,9 @@ public class StaticIfDeclaration extends Declaration implements IStaticIfDeclara
 	 * Method declared on ASTNode.
 	 */
 	final List internalGetChildListProperty(ChildListPropertyDescriptor property) {
+		if (property == MODIFIERS_PROPERTY) {
+			return modifiers();
+		}
 		if (property == THENDECLARATIONS_PROPERTY) {
 			return thenDeclarations();
 		}
@@ -135,6 +152,11 @@ public class StaticIfDeclaration extends Declaration implements IStaticIfDeclara
 		return super.internalGetChildListProperty(property);
 	}
 
+		@Override
+		final ChildListPropertyDescriptor internalModifiersProperty() {
+			return MODIFIERS_PROPERTY;
+		}
+		
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
 	 * TODO make it package
@@ -149,6 +171,7 @@ public class StaticIfDeclaration extends Declaration implements IStaticIfDeclara
 	ASTNode clone0(AST target) {
 		StaticIfDeclaration result = new StaticIfDeclaration(target);
 		result.setSourceRange(this.getStartPosition(), this.getLength());
+		result.modifiers.addAll(ASTNode.copySubtrees(target, modifiers()));
 		result.setExpression((Expression) getExpression().clone(target));
 		result.thenDeclarations.addAll(ASTNode.copySubtrees(target, thenDeclarations()));
 		result.elseDeclarations.addAll(ASTNode.copySubtrees(target, elseDeclarations()));
@@ -170,6 +193,7 @@ public class StaticIfDeclaration extends Declaration implements IStaticIfDeclara
 		boolean visitChildren = visitor.visit(this);
 		if (visitChildren) {
 			// visit children in normal left to right reading order
+			acceptChildren(visitor, modifiers());
 			acceptChild(visitor, getExpression());
 			acceptChildren(visitor, thenDeclarations());
 			acceptChildren(visitor, elseDeclarations());
@@ -243,7 +267,7 @@ public class StaticIfDeclaration extends Declaration implements IStaticIfDeclara
 	 * Method declared on ASTNode.
 	 */
 	int memSize() {
-		return BASE_NODE_SIZE + 3 * 4;
+		return BASE_NODE_SIZE + 4 * 4;
 	}
 
 	/* (omit javadoc for this method)
@@ -252,6 +276,7 @@ public class StaticIfDeclaration extends Declaration implements IStaticIfDeclara
 	int treeSize() {
 		return
 			memSize()
+			+ (this.modifiers.listSize())
 			+ (this.expression == null ? 0 : getExpression().treeSize())
 			+ (this.thenDeclarations.listSize())
 			+ (this.elseDeclarations.listSize())

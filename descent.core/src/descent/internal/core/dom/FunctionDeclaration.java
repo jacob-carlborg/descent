@@ -20,10 +20,10 @@ public class FunctionDeclaration extends Declaration implements IFunctionDeclara
 	}
 
 	/**
-	 * The "modifierFlags" structural property of this node type.
+	 * The "modifiers" structural property of this node type.
 	 */
-	public static final SimplePropertyDescriptor MODIFIER_FLAGS_PROPERTY =
-		new SimplePropertyDescriptor(FunctionDeclaration.class, "modifierFlags", int.class, OPTIONAL); //$NON-NLS-1$
+	public static final ChildListPropertyDescriptor MODIFIERS_PROPERTY =
+	internalModifiersPropertyFactory(FunctionDeclaration.class); //$NON-NLS-1$
 
 	/**
 	 * The "kind" structural property of this node type.
@@ -95,7 +95,7 @@ public class FunctionDeclaration extends Declaration implements IFunctionDeclara
 	static {
 		List properyList = new ArrayList(11);
 		createPropertyList(FunctionDeclaration.class, properyList);
-		addProperty(MODIFIER_FLAGS_PROPERTY, properyList);
+		addProperty(MODIFIERS_PROPERTY, properyList);
 		addProperty(KIND_PROPERTY, properyList);
 		addProperty(RETURN_TYPE_PROPERTY, properyList);
 		addProperty(NAME_PROPERTY, properyList);
@@ -125,10 +125,12 @@ public class FunctionDeclaration extends Declaration implements IFunctionDeclara
 	}
 
 	/**
-	 * The modifierFlags.
+	 * The modifiers
+	 * (element type: <code>Modifier</code>).
+	 * Defaults to an empty list.
 	 */
-	private int modifierFlags;
-
+	private ASTNode.NodeList modifiers =
+		new ASTNode.NodeList(MODIFIERS_PROPERTY);
 	/**
 	 * The kind.
 	 */
@@ -223,22 +225,6 @@ public class FunctionDeclaration extends Declaration implements IFunctionDeclara
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
 	 */
-	final int internalGetSetIntProperty(SimplePropertyDescriptor property, boolean get, int value) {
-		if (property == MODIFIER_FLAGS_PROPERTY) {
-			if (get) {
-				return getModifier();
-			} else {
-				setModifierFlags(value);
-				return 0;
-			}
-		}
-		// allow default implementation to flag the error
-		return super.internalGetSetIntProperty(property, get, value);
-	}
-
-	/* (omit javadoc for this method)
-	 * Method declared on ASTNode.
-	 */
 	final boolean internalGetSetBooleanProperty(SimplePropertyDescriptor property, boolean get, boolean value) {
 		if (property == VARIADIC_PROPERTY) {
 			if (get) {
@@ -312,6 +298,9 @@ public class FunctionDeclaration extends Declaration implements IFunctionDeclara
 	 * Method declared on ASTNode.
 	 */
 	final List internalGetChildListProperty(ChildListPropertyDescriptor property) {
+		if (property == MODIFIERS_PROPERTY) {
+			return modifiers();
+		}
 		if (property == TEMPLATE_PARAMETERS_PROPERTY) {
 			return templateParameters();
 		}
@@ -322,6 +311,11 @@ public class FunctionDeclaration extends Declaration implements IFunctionDeclara
 		return super.internalGetChildListProperty(property);
 	}
 
+		@Override
+		final ChildListPropertyDescriptor internalModifiersProperty() {
+			return MODIFIERS_PROPERTY;
+		}
+		
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
 	 * TODO make it package
@@ -336,7 +330,7 @@ public class FunctionDeclaration extends Declaration implements IFunctionDeclara
 	ASTNode clone0(AST target) {
 		FunctionDeclaration result = new FunctionDeclaration(target);
 		result.setSourceRange(this.getStartPosition(), this.getLength());
-		result.setModifierFlags(getModifier());
+		result.modifiers.addAll(ASTNode.copySubtrees(target, modifiers()));
 		result.setKind(getKind());
 		result.setReturnType((Type) getReturnType().clone(target));
 		result.setName((SimpleName) getName().clone(target));
@@ -365,6 +359,7 @@ public class FunctionDeclaration extends Declaration implements IFunctionDeclara
 		boolean visitChildren = visitor.visit(this);
 		if (visitChildren) {
 			// visit children in normal left to right reading order
+			acceptChildren(visitor, modifiers());
 			acceptChild(visitor, getReturnType());
 			acceptChild(visitor, getName());
 			acceptChildren(visitor, templateParameters());
@@ -375,27 +370,6 @@ public class FunctionDeclaration extends Declaration implements IFunctionDeclara
 			acceptChild(visitor, getBody());
 		}
 		visitor.endVisit(this);
-	}
-
-	/**
-	 * Returns the modifier flags of this function declaration.
-	 * 
-	 * @return the modifier flags
-	 */ 
-	public int getModifier() {
-		return this.modifierFlags;
-	}
-
-	/**
-	 * Sets the modifier flags of this function declaration.
-	 * 
-	 * @param modifierFlags the modifier flags
-	 * @exception IllegalArgumentException if the argument is incorrect
-	 */ 
-	public void setModifierFlags(int modifierFlags) {
-		preValueChange(MODIFIER_FLAGS_PROPERTY);
-		this.modifierFlags = modifierFlags;
-		postValueChange(MODIFIER_FLAGS_PROPERTY);
 	}
 
 	/**
@@ -433,7 +407,7 @@ public class FunctionDeclaration extends Declaration implements IFunctionDeclara
 			synchronized (this) {
 				if (this.returnType == null) {
 					preLazyInit();
-					this.returnType = new PrimitiveType(ast);
+					this.returnType = new PrimitiveType(this.ast);
 					postLazyInit(this.returnType, RETURN_TYPE_PROPERTY);
 				}
 			}
@@ -679,6 +653,7 @@ public class FunctionDeclaration extends Declaration implements IFunctionDeclara
 	int treeSize() {
 		return
 			memSize()
+			+ (this.modifiers.listSize())
 			+ (this.returnType == null ? 0 : getReturnType().treeSize())
 			+ (this.name == null ? 0 : getName().treeSize())
 			+ (this.templateParameters.listSize())

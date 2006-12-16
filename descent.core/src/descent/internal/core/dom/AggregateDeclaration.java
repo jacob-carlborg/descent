@@ -25,10 +25,10 @@ public class AggregateDeclaration extends Declaration implements IAggregateDecla
 	}
 
 	/**
-	 * The "modifierFlags" structural property of this node type.
+	 * The "modifiers" structural property of this node type.
 	 */
-	public static final SimplePropertyDescriptor MODIFIER_FLAGS_PROPERTY =
-		new SimplePropertyDescriptor(AggregateDeclaration.class, "modifierFlags", int.class, OPTIONAL); //$NON-NLS-1$
+	public static final ChildListPropertyDescriptor MODIFIERS_PROPERTY =
+		internalModifiersPropertyFactory(AggregateDeclaration.class); //$NON-NLS-1$
 
 	/**
 	 * The "kind" structural property of this node type.
@@ -76,7 +76,7 @@ public class AggregateDeclaration extends Declaration implements IAggregateDecla
 	static {
 		List properyList = new ArrayList(7);
 		createPropertyList(AggregateDeclaration.class, properyList);
-		addProperty(MODIFIER_FLAGS_PROPERTY, properyList);
+		addProperty(MODIFIERS_PROPERTY, properyList);
 		addProperty(KIND_PROPERTY, properyList);
 		addProperty(NAME_PROPERTY, properyList);
 		addProperty(TEMPLATE_PARAMETERS_PROPERTY, properyList);
@@ -102,11 +102,12 @@ public class AggregateDeclaration extends Declaration implements IAggregateDecla
 	}
 
 	/**
-	 * The modifierFlags.
-	 * TODO uncomment
+	 * The modifiers
+	 * (element type: <code>Modifier</code>).
+	 * Defaults to an empty list.
 	 */
-	// private int modifierFlags;
-
+	private ASTNode.NodeList modifiers =
+		new ASTNode.NodeList(MODIFIERS_PROPERTY);
 	/**
 	 * The kind.
 	 */
@@ -185,22 +186,6 @@ public class AggregateDeclaration extends Declaration implements IAggregateDecla
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
 	 */
-	final int internalGetSetIntProperty(SimplePropertyDescriptor property, boolean get, int value) {
-		if (property == MODIFIER_FLAGS_PROPERTY) {
-			if (get) {
-				return getModifier();
-			} else {
-				setModifierFlags(value);
-				return 0;
-			}
-		}
-		// allow default implementation to flag the error
-		return super.internalGetSetIntProperty(property, get, value);
-	}
-
-	/* (omit javadoc for this method)
-	 * Method declared on ASTNode.
-	 */
 	final ASTNode internalGetSetChildProperty(ChildPropertyDescriptor property, boolean get, ASTNode child) {
 		if (property == NAME_PROPERTY) {
 			if (get) {
@@ -218,6 +203,9 @@ public class AggregateDeclaration extends Declaration implements IAggregateDecla
 	 * Method declared on ASTNode.
 	 */
 	final List internalGetChildListProperty(ChildListPropertyDescriptor property) {
+		if (property == MODIFIERS_PROPERTY) {
+			return modifiers();
+		}
 		if (property == TEMPLATE_PARAMETERS_PROPERTY) {
 			return templateParameters();
 		}
@@ -234,6 +222,11 @@ public class AggregateDeclaration extends Declaration implements IAggregateDecla
 		return super.internalGetChildListProperty(property);
 	}
 
+		@Override
+		final ChildListPropertyDescriptor internalModifiersProperty() {
+			return MODIFIERS_PROPERTY;
+		}
+		
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
 	 * TODO make it package
@@ -248,7 +241,7 @@ public class AggregateDeclaration extends Declaration implements IAggregateDecla
 	ASTNode clone0(AST target) {
 		AggregateDeclaration result = new AggregateDeclaration(target);
 		result.setSourceRange(this.getStartPosition(), this.getLength());
-		result.setModifierFlags(getModifier());
+		result.modifiers.addAll(ASTNode.copySubtrees(target, modifiers()));
 		result.setKind(getKind());
 	result.setName((SimpleName) ASTNode.copySubtree(target, getName()));
 		result.templateParameters.addAll(ASTNode.copySubtrees(target, templateParameters()));
@@ -273,6 +266,7 @@ public class AggregateDeclaration extends Declaration implements IAggregateDecla
 		boolean visitChildren = visitor.visit(this);
 		if (visitChildren) {
 			// visit children in normal left to right reading order
+			acceptChildren(visitor, modifiers());
 			acceptChild(visitor, getName());
 			acceptChildren(visitor, templateParameters());
 			acceptChildren(visitor, baseClasses());
@@ -280,27 +274,6 @@ public class AggregateDeclaration extends Declaration implements IAggregateDecla
 			acceptChildren(visitor, docComments());
 		}
 		visitor.endVisit(this);
-	}
-
-	/**
-	 * Returns the modifier flags of this aggregate declaration.
-	 * 
-	 * @return the modifier flags
-	 */ 
-	public int getModifier() {
-		return this.modifierFlags;
-	}
-
-	/**
-	 * Sets the modifier flags of this aggregate declaration.
-	 * 
-	 * @param modifierFlags the modifier flags
-	 * @exception IllegalArgumentException if the argument is incorrect
-	 */ 
-	public void setModifierFlags(int modifierFlags) {
-		preValueChange(MODIFIER_FLAGS_PROPERTY);
-		this.modifierFlags = modifierFlags;
-		postValueChange(MODIFIER_FLAGS_PROPERTY);
 	}
 
 	/**
@@ -411,6 +384,7 @@ public class AggregateDeclaration extends Declaration implements IAggregateDecla
 	int treeSize() {
 		return
 			memSize()
+			+ (this.modifiers.listSize())
 			+ (this.name == null ? 0 : getName().treeSize())
 			+ (this.templateParameters.listSize())
 			+ (this.baseClasses.listSize())

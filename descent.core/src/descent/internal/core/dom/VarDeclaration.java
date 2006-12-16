@@ -8,6 +8,17 @@ import descent.core.dom.IVariableDeclaration;
 
 public class VarDeclaration extends Declaration implements IVariableDeclaration {
 	
+	/**
+	 * The "modifiers" structural property of this node type.
+	 */
+	public static final ChildListPropertyDescriptor MODIFIERS_PROPERTY =
+		internalModifiersPropertyFactory(VarDeclaration.class); //$NON-NLS-1$
+	
+	@Override
+	final ChildListPropertyDescriptor internalModifiersProperty() {
+		return MODIFIERS_PROPERTY;
+	}
+	
 	public Type type;
 	public Initializer init;
 

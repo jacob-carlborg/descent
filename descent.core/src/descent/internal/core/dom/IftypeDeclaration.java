@@ -11,7 +11,7 @@ import descent.core.dom.IIftypeDeclaration;
  *
  * <pre>
  * IftypeDeclaration:
- *    <b>iftype</b> <b>(</b> Type [ SimpleName ] [ [ <b>:</b> | <b>==</b> ] Type ] <b>)</b> { Declaration }  [ <b>else</b> { Declaration } ]
+ *    { Modifier } <b>iftype</b> <b>(</b> Type [ SimpleName ] [ [ <b>:</b> | <b>==</b> ] Type ] <b>)</b> { Declaration }  [ <b>else</b> { Declaration } ]
  * </pre>
  */
 public class IftypeDeclaration extends Declaration implements IIftypeDeclaration {
@@ -23,6 +23,12 @@ public class IftypeDeclaration extends Declaration implements IIftypeDeclaration
 		EXTENDS
 	}
 	
+	/**
+	 * The "modifiers" structural property of this node type.
+	 */
+	public static final ChildListPropertyDescriptor MODIFIERS_PROPERTY =
+	internalModifiersPropertyFactory(IftypeDeclaration.class); //$NON-NLS-1$
+
 	/**
 	 * The "kind" structural property of this node type.
 	 */
@@ -67,8 +73,9 @@ public class IftypeDeclaration extends Declaration implements IIftypeDeclaration
 	private static final List PROPERTY_DESCRIPTORS;
 
 	static {
-		List properyList = new ArrayList(6);
+		List properyList = new ArrayList(7);
 		createPropertyList(IftypeDeclaration.class, properyList);
+		addProperty(MODIFIERS_PROPERTY, properyList);
 		addProperty(KIND_PROPERTY, properyList);
 		addProperty(NAME_PROPERTY, properyList);
 		addProperty(TEST_TYPE_PROPERTY, properyList);
@@ -93,6 +100,13 @@ public class IftypeDeclaration extends Declaration implements IIftypeDeclaration
 		return PROPERTY_DESCRIPTORS;
 	}
 
+	/**
+	 * The modifiers
+	 * (element type: <code>Modifier</code>).
+	 * Defaults to an empty list.
+	 */
+	private ASTNode.NodeList modifiers =
+		new ASTNode.NodeList(MODIFIERS_PROPERTY);
 	/**
 	 * The kind.
 	 */
@@ -200,6 +214,9 @@ public class IftypeDeclaration extends Declaration implements IIftypeDeclaration
 	 * Method declared on ASTNode.
 	 */
 	final List internalGetChildListProperty(ChildListPropertyDescriptor property) {
+		if (property == MODIFIERS_PROPERTY) {
+			return modifiers();
+		}
 		if (property == THEN_DECLARATIONS_PROPERTY) {
 			return thenDeclarations();
 		}
@@ -210,6 +227,11 @@ public class IftypeDeclaration extends Declaration implements IIftypeDeclaration
 		return super.internalGetChildListProperty(property);
 	}
 
+		@Override
+		final ChildListPropertyDescriptor internalModifiersProperty() {
+			return MODIFIERS_PROPERTY;
+		}
+		
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
 	 * TODO make it package
@@ -224,6 +246,7 @@ public class IftypeDeclaration extends Declaration implements IIftypeDeclaration
 	ASTNode clone0(AST target) {
 		IftypeDeclaration result = new IftypeDeclaration(target);
 		result.setSourceRange(this.getStartPosition(), this.getLength());
+		result.modifiers.addAll(ASTNode.copySubtrees(target, modifiers()));
 		result.setKind(getKind());
 	result.setName((SimpleName) ASTNode.copySubtree(target, getName()));
 	result.setTestType((Type) ASTNode.copySubtree(target, getTestType()));
@@ -248,6 +271,7 @@ public class IftypeDeclaration extends Declaration implements IIftypeDeclaration
 		boolean visitChildren = visitor.visit(this);
 		if (visitChildren) {
 			// visit children in normal left to right reading order
+			acceptChildren(visitor, modifiers());
 			acceptChild(visitor, getName());
 			acceptChild(visitor, getTestType());
 			acceptChild(visitor, getMatchingType());
@@ -388,7 +412,7 @@ public class IftypeDeclaration extends Declaration implements IIftypeDeclaration
 	 * Method declared on ASTNode.
 	 */
 	int memSize() {
-		return BASE_NODE_SIZE + 6 * 4;
+		return BASE_NODE_SIZE + 7 * 4;
 	}
 
 	/* (omit javadoc for this method)
@@ -397,6 +421,7 @@ public class IftypeDeclaration extends Declaration implements IIftypeDeclaration
 	int treeSize() {
 		return
 			memSize()
+			+ (this.modifiers.listSize())
 			+ (this.name == null ? 0 : getName().treeSize())
 			+ (this.testType == null ? 0 : getTestType().treeSize())
 			+ (this.matchingType == null ? 0 : getMatchingType().treeSize())
