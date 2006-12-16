@@ -14,7 +14,7 @@ import descent.core.dom.IImport;
  *    [ SimpleName <b>=</b> ] Name [ <b>:</b> SelectiveImport { <b>,</b> SelectiveImport } ]
  * </pre>
  */
-public class Import extends Dsymbol implements IImport {
+public class Import extends ASTNode implements IImport {
 	
 	/**
 	 * The "alias" structural property of this node type.

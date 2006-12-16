@@ -5,8 +5,8 @@ import org.eclipse.jface.viewers.IDecoration;
 import org.eclipse.jface.viewers.ILightweightLabelDecorator;
 import org.eclipse.jface.viewers.LabelProvider;
 
-import descent.core.dom.IModifier;
 import descent.core.dom.IModifiersContainer;
+import descent.internal.core.dom.Modifier;
 import descent.ui.DescentUI;
 import descent.ui.IImages;
 
@@ -23,11 +23,11 @@ public class DOutlineLightweightLabelDecorator extends LabelProvider implements 
 	public void decorate(Object element, IDecoration decoration) {
 		if (element instanceof IModifiersContainer) {
 			IModifiersContainer cont = (IModifiersContainer) element;
-			int m = cont.getModifierFlags();
-			if ((m & IModifier.ABSTRACT) != 0) {
+			Modifier m = cont.getModifier();
+			if (m.isAbstract()) {
 				decoration.addOverlay(abstractOverlay, IDecoration.TOP_RIGHT);
 			}
-			if ((m & IModifier.FINAL) != 0) {
+			if (m.isFinal()) {
 				decoration.addOverlay(finalOverlay, IDecoration.TOP_RIGHT);
 			}
 		}

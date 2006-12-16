@@ -87,7 +87,7 @@ public class BaseClass extends ASTNode implements IBaseClass {
 	final int internalGetSetIntProperty(SimplePropertyDescriptor property, boolean get, int value) {
 		if (property == MODIFIER_FLAGS_PROPERTY) {
 			if (get) {
-				return getModifierFlags();
+				return getModifier();
 			} else {
 				setModifierFlags(value);
 				return 0;
@@ -127,7 +127,7 @@ public class BaseClass extends ASTNode implements IBaseClass {
 	ASTNode clone0(AST target) {
 		BaseClass result = new BaseClass(target);
 		result.setSourceRange(this.getStartPosition(), this.getLength());
-		result.setModifierFlags(getModifierFlags());
+		result.setModifierFlags(getModifier());
 		result.setType((Type) getType().clone(target));
 		return result;
 	}
@@ -157,7 +157,7 @@ public class BaseClass extends ASTNode implements IBaseClass {
 	 * 
 	 * @return the modifier flags
 	 */ 
-	public int getModifierFlags() {
+	public int getModifier() {
 		return this.modifierFlags;
 	}
 

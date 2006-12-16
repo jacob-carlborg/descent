@@ -59,9 +59,54 @@ public class Modifier extends ASTNode {
 		}
 		
 		/**
+		 * Returns the modifier corresponding to the given single-bit flag value,
+		 * or <code>null</code> if none or if more than one bit is set.
+		 * <p>
+		 * <code>fromFlagValue</code> is the converse of <code>toFlagValue</code>:
+		 * that is, <code>ModifierKeyword.fromFlagValue(k.toFlagValue()) == k</code> for 
+		 * all modifier keywords <code>k</code>.
+		 * </p>
+		 * 
+		 * @param flagValue the single-bit flag value for the modifier
+		 * @return the modifier keyword, or <code>null</code> if none
+		 * @see #toFlagValue()
+		 */
+		public static ModifierKeyword fromFlagValue(int flagValue) {
+			for(ModifierKeyword keyword : ModifierKeyword.values()) {
+				if (keyword.toFlagValue() == flagValue) {
+					return keyword;
+				}
+			}
+			return null;
+		}
+		
+		/**
+		 * Returns the modifier corresponding to the given string,
+		 * or <code>null</code> if none.
+		 * <p>
+		 * <code>toKeyword</code> is the converse of <code>toString</code>:
+		 * that is, <code>ModifierKeyword.toKeyword(k.toString()) == k</code> for 
+		 * all modifier keywords <code>k</code>.
+		 * </p>
+		 * 
+		 * @param keyword the lowercase string name for the modifier
+		 * @return the modifier keyword, or <code>null</code> if none
+		 * @see #toString()
+		 */
+		public static ModifierKeyword toKeyword(String keyword) {
+			for(ModifierKeyword mKeyword : ModifierKeyword.values()) {
+				if (mKeyword.toString().equals(keyword)) {
+					return mKeyword;
+				}
+			}
+			return null;
+		}
+		
+		/**
 		 * Returns the modifier flag value corresponding to this modifier keyword.
 		 * 
 		 * @return one of the <code>Modifier</code> constants
+		 * @see #fromFlagValue(int)
 		 */ 
 		public int toFlagValue() {
 			return this.flagValue;
@@ -71,6 +116,7 @@ public class Modifier extends ASTNode {
 		 * Returns the keyword for the modifier.
 		 * 
 		 * @return the keyword for the modifier
+		 * @see #toKeyword(String)
 		 */
 		public String toString() {
 			return this.keyword;

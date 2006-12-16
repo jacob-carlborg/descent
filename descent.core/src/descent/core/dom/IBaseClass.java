@@ -14,6 +14,6 @@ public interface IBaseClass extends IElement {
 	 * Returns the modifiers defined in the base class.
 	 * @see IModifier
 	 */
-	int getModifierFlags();
+	int getModifier();
 
 }

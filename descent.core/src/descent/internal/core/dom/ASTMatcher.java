@@ -852,7 +852,7 @@ public class ASTMatcher {
 		}
 		AggregateDeclaration o = (AggregateDeclaration) other;
 		return (
-			node.getModifierFlags() == o.getModifierFlags()
+			node.getModifier() == o.getModifier()
 			&& node.getKind() == o.getKind()
 			&& safeSubtreeMatch(node.getName(), o.getName())
 			&& safeSubtreeListMatch(node.templateParameters(), o.templateParameters())
@@ -882,7 +882,7 @@ public class ASTMatcher {
 		}
 		AliasDeclaration o = (AliasDeclaration) other;
 		return (
-			node.getModifierFlags() == o.getModifierFlags()
+			node.getModifier() == o.getModifier()
 			&& safeSubtreeMatch(node.getType(), o.getType())
 			&& safeSubtreeListMatch(node.fragments(), o.fragments())
 			);
@@ -932,7 +932,7 @@ public class ASTMatcher {
 		}
 		BaseClass o = (BaseClass) other;
 		return (
-			node.getModifierFlags() == o.getModifierFlags()
+			node.getModifier() == o.getModifier()
 			&& safeSubtreeMatch(node.getType(), o.getType())
 			);
 	}
@@ -957,7 +957,7 @@ public class ASTMatcher {
 		}
 		AlignDeclaration o = (AlignDeclaration) other;
 		return (
-			node.getModifierFlags() == o.getModifierFlags()
+			node.getModifier() == o.getModifier()
 			&& node.getAlign() == o.getAlign()
 			&& safeSubtreeListMatch(node.declarations(), o.declarations())
 			);
@@ -1085,7 +1085,7 @@ public class ASTMatcher {
 		}
 		FunctionDeclaration o = (FunctionDeclaration) other;
 		return (
-			node.getModifierFlags() == o.getModifierFlags()
+			node.getModifier() == o.getModifier()
 			&& node.getKind() == o.getKind()
 			&& safeSubtreeMatch(node.getReturnType(), o.getReturnType())
 			&& safeSubtreeMatch(node.getName(), o.getName())
@@ -1119,7 +1119,7 @@ public class ASTMatcher {
 		}
 		EnumDeclaration o = (EnumDeclaration) other;
 		return (
-			node.getModifierFlags() == o.getModifierFlags()
+			node.getModifier() == o.getModifier()
 			&& safeSubtreeMatch(node.getName(), o.getName())
 			&& safeSubtreeMatch(node.getBaseType(), o.getBaseType())
 			&& safeSubtreeListMatch(node.enumMembers(), o.enumMembers())
@@ -1246,7 +1246,7 @@ public class ASTMatcher {
 		}
 		ImportDeclaration o = (ImportDeclaration) other;
 		return (
-			node.getModifierFlags() == o.getModifierFlags()
+			node.getModifier() == o.getModifier()
 			&& node.isStatic() == o.isStatic()
 			&& safeSubtreeListMatch(node.imports(), o.imports())
 			);
@@ -2192,7 +2192,7 @@ public class ASTMatcher {
 		}
 		TypedefDeclaration o = (TypedefDeclaration) other;
 		return (
-			node.getModifierFlags() == o.getModifierFlags()
+			node.getModifier() == o.getModifier()
 			&& safeSubtreeMatch(node.getName(), o.getName())
 			&& safeSubtreeMatch(node.getType(), o.getType())
 			&& safeSubtreeMatch(node.getInitializer(), o.getInitializer())
@@ -2243,7 +2243,7 @@ public class ASTMatcher {
 		}
 		TemplateDeclaration o = (TemplateDeclaration) other;
 		return (
-			node.getModifierFlags() == o.getModifierFlags()
+			node.getModifier() == o.getModifier()
 			&& safeSubtreeMatch(node.getName(), o.getName())
 			&& safeSubtreeListMatch(node.templateParameters(), o.templateParameters())
 			&& safeSubtreeListMatch(node.declarations(), o.declarations())
@@ -2290,13 +2290,14 @@ public class ASTMatcher {
 	 *   <code>false</code> if they do not match or the other object has a
 	 *   different node type or is <code>null</code>
 	 */
-	public boolean match(ProtectionDeclaration node, Object other) {
-		if (!(other instanceof ProtectionDeclaration)) {
+	public boolean match(ModifierDeclaration node, Object other) {
+		if (!(other instanceof ModifierDeclaration)) {
 			return false;
 		}
-		ProtectionDeclaration o = (ProtectionDeclaration) other;
+		ModifierDeclaration o = (ModifierDeclaration) other;
 		return (
-			node.getModifierFlags() == o.getModifierFlags()
+			node.getSyntax() == o.getSyntax()
+			&& safeSubtreeMatch(node.getModifier(), o.getModifier())
 			&& safeSubtreeListMatch(node.declarations(), o.declarations())
 			);
 	}

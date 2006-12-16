@@ -113,7 +113,7 @@ public class EnumDeclaration extends Declaration implements IEnumDeclaration {
 	final int internalGetSetIntProperty(SimplePropertyDescriptor property, boolean get, int value) {
 		if (property == MODIFIER_FLAGS_PROPERTY) {
 			if (get) {
-				return getModifierFlags();
+				return getModifier();
 			} else {
 				setModifierFlags(value);
 				return 0;
@@ -172,7 +172,7 @@ public class EnumDeclaration extends Declaration implements IEnumDeclaration {
 	ASTNode clone0(AST target) {
 		EnumDeclaration result = new EnumDeclaration(target);
 		result.setSourceRange(this.getStartPosition(), this.getLength());
-		result.setModifierFlags(getModifierFlags());
+		result.setModifierFlags(getModifier());
 	result.setName((SimpleName) ASTNode.copySubtree(target, getName()));
 	result.setBaseType((Type) ASTNode.copySubtree(target, getBaseType()));
 		result.enumMembers.addAll(ASTNode.copySubtrees(target, enumMembers()));
@@ -206,7 +206,7 @@ public class EnumDeclaration extends Declaration implements IEnumDeclaration {
 	 * 
 	 * @return the modifier flags
 	 */ 
-	public int getModifierFlags() {
+	public int getModifier() {
 		return this.modifierFlags;
 	}
 

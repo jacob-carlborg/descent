@@ -14,7 +14,7 @@ import descent.internal.core.dom.TemplateParameter;
  * <p>Note that if the aggregate is templated (i.e. <code>class Foo(T) { }</code>) the parser
  * dosen't generate a template declaration: instead, it makes this class templated.</p>
  */
-public interface IAggregateDeclaration extends IDeclaration, IModifiersContainer, ICommented {
+public interface IAggregateDeclaration extends IDeclaration, ICommented {
 	
 	AggregateDeclaration.Kind getKind();
 	

@@ -110,7 +110,7 @@ public class ImportDeclaration extends Declaration implements IImportDeclaration
 	final int internalGetSetIntProperty(SimplePropertyDescriptor property, boolean get, int value) {
 		if (property == MODIFIER_FLAGS_PROPERTY) {
 			if (get) {
-				return getModifierFlags();
+				return getModifier();
 			} else {
 				setModifierFlags(value);
 				return 0;
@@ -161,7 +161,7 @@ public class ImportDeclaration extends Declaration implements IImportDeclaration
 	ASTNode clone0(AST target) {
 		ImportDeclaration result = new ImportDeclaration(target);
 		result.setSourceRange(this.getStartPosition(), this.getLength());
-		result.setModifierFlags(getModifierFlags());
+		result.setModifierFlags(getModifier());
 		result.setStatic(isStatic());
 		result.imports.addAll(ASTNode.copySubtrees(target, imports()));
 		return result;
@@ -192,7 +192,7 @@ public class ImportDeclaration extends Declaration implements IImportDeclaration
 	 * 
 	 * @return the modifier flags
 	 */ 
-	public int getModifierFlags() {
+	public int getModifier() {
 		return this.modifierFlags;
 	}
 

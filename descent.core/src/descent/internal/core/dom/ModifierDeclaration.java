@@ -4,44 +4,64 @@ import java.util.ArrayList;
 import java.util.List;
 
 import descent.core.dom.ASTVisitor;
-import descent.core.dom.ITemplateDeclaration;
+import descent.core.dom.IModifierDeclaration;
 
 /**
- * Template declaration AST node type.
- *
+ * <p>A protection declaration AST node.</p>
+ * 
  * <pre>
- * TemplateDeclaration:
- *    <b>template</b> SimpleName <b>( [ TemplateParameter { <b>,</b> TemplateParameter } ] 
- *    <b>{</b> 
- *       { Declaration } 
- *    <b>}</b>
+ * ProtectionDeclaration:
+ *    [ Modifier <b>:</b> { Declaration } | Modifier <b>{</b> { Declaration } <b>}</b> ] 
  * </pre>
+ * 
+ * <p>Note that if a modifier keyword is not followed by <b>;</b> or by <b>{</b> then
+ * the modifier goes to the modifiers of the following declaration.</p>
+ * 
+ * TODO: comment better
  */
-public class TemplateDeclaration extends Declaration implements ITemplateDeclaration {
+public class ModifierDeclaration extends Declaration implements IModifierDeclaration {
 	
 	/**
-	 * The "modifierFlags" structural property of this node type.
+	 * The syntax used in the declaration.
 	 */
-	public static final SimplePropertyDescriptor MODIFIER_FLAGS_PROPERTY =
-		new SimplePropertyDescriptor(TemplateDeclaration.class, "modifierFlags", int.class, OPTIONAL); //$NON-NLS-1$
+	public static enum Syntax {
+		/** 
+		 * The syntax is:
+		 * 
+		 * <pre>
+		 * ProtectionDeclaration:
+		 *    Modifier <b>{</b> { Declaration } <b>}</b> 
+		 * </pre>
+		 */ 
+		CURLY_BRACES,
+		/** 
+		 * The syntax is:
+		 * 
+		 * <pre>
+		 * ProtectionDeclaration:
+		 *    Modifier <b>:</b> { Declaration } 
+		 * </pre>
+		 */
+		COLON
+	}
+	
+	/**
+	 * The "syntax" structural property of this node type.
+	 */
+	public static final SimplePropertyDescriptor SYNTAX_PROPERTY =
+		new SimplePropertyDescriptor(ModifierDeclaration.class, "syntax", Syntax.class, OPTIONAL); //$NON-NLS-1$
 
 	/**
-	 * The "name" structural property of this node type.
+	 * The "modifier" structural property of this node type.
 	 */
-	public static final ChildPropertyDescriptor NAME_PROPERTY =
-		new ChildPropertyDescriptor(TemplateDeclaration.class, "name", SimpleName.class, MANDATORY, NO_CYCLE_RISK); //$NON-NLS-1$
-
-	/**
-	 * The "templateParameters" structural property of this node type.
-	 */
-	public static final ChildListPropertyDescriptor TEMPLATEPARAMETERS_PROPERTY =
-		new ChildListPropertyDescriptor(TemplateDeclaration.class, "templateParameters", TemplateParameter.class, NO_CYCLE_RISK); //$NON-NLS-1$
+	public static final ChildPropertyDescriptor MODIFIER_PROPERTY =
+		new ChildPropertyDescriptor(ModifierDeclaration.class, "modifier", Modifier.class, MANDATORY, NO_CYCLE_RISK); //$NON-NLS-1$
 
 	/**
 	 * The "declarations" structural property of this node type.
 	 */
 	public static final ChildListPropertyDescriptor DECLARATIONS_PROPERTY =
-		new ChildListPropertyDescriptor(TemplateDeclaration.class, "declarations", Declaration.class, CYCLE_RISK); //$NON-NLS-1$
+		new ChildListPropertyDescriptor(ModifierDeclaration.class, "declarations", Declaration.class, CYCLE_RISK); //$NON-NLS-1$
 
 	/**
 	 * A list of property descriptors (element type: 
@@ -51,11 +71,10 @@ public class TemplateDeclaration extends Declaration implements ITemplateDeclara
 	private static final List PROPERTY_DESCRIPTORS;
 
 	static {
-		List properyList = new ArrayList(4);
-		createPropertyList(TemplateDeclaration.class, properyList);
-		addProperty(MODIFIER_FLAGS_PROPERTY, properyList);
-		addProperty(NAME_PROPERTY, properyList);
-		addProperty(TEMPLATEPARAMETERS_PROPERTY, properyList);
+		List properyList = new ArrayList(3);
+		createPropertyList(ModifierDeclaration.class, properyList);
+		addProperty(SYNTAX_PROPERTY, properyList);
+		addProperty(MODIFIER_PROPERTY, properyList);
 		addProperty(DECLARATIONS_PROPERTY, properyList);
 		PROPERTY_DESCRIPTORS = reapPropertyList(properyList);
 	}
@@ -76,23 +95,15 @@ public class TemplateDeclaration extends Declaration implements ITemplateDeclara
 	}
 
 	/**
-	 * The modifierFlags.
-	 * TODO uncomment
+	 * The syntax.
 	 */
-	// private int modifierFlags;
+	private Syntax syntax;
 
 	/**
-	 * The name.
+	 * The modifier.
 	 */
-	private SimpleName name;
+	private Modifier modifier;
 
-	/**
-	 * The templateParameters
-	 * (element type: <code>TemplateParameter</code>).
-	 * Defaults to an empty list.
-	 */
-	private ASTNode.NodeList templateParameters =
-		new ASTNode.NodeList(TEMPLATEPARAMETERS_PROPERTY);
 	/**
 	 * The declarations
 	 * (element type: <code>Declaration</code>).
@@ -102,7 +113,7 @@ public class TemplateDeclaration extends Declaration implements ITemplateDeclara
 		new ASTNode.NodeList(DECLARATIONS_PROPERTY);
 
 	/**
-	 * Creates a new unparented template declaration node owned by the given 
+	 * Creates a new unparented modifier declaration node owned by the given 
 	 * AST.
 	 * <p>
 	 * N.B. This constructor is package-private.
@@ -110,7 +121,7 @@ public class TemplateDeclaration extends Declaration implements ITemplateDeclara
 	 * 
 	 * @param ast the AST that is to own this node
 	 */
-	TemplateDeclaration(AST ast) {
+	ModifierDeclaration(AST ast) {
 		super(ast);
 	}
 
@@ -124,28 +135,28 @@ public class TemplateDeclaration extends Declaration implements ITemplateDeclara
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
 	 */
-	final int internalGetSetIntProperty(SimplePropertyDescriptor property, boolean get, int value) {
-		if (property == MODIFIER_FLAGS_PROPERTY) {
+	final Object internalGetSetObjectProperty(SimplePropertyDescriptor property, boolean get, Object value) {
+		if (property == SYNTAX_PROPERTY) {
 			if (get) {
-				return getModifier();
+				return getSyntax();
 			} else {
-				setModifierFlags(value);
-				return 0;
+				setSyntax((Syntax) value);
+				return null;
 			}
 		}
 		// allow default implementation to flag the error
-		return super.internalGetSetIntProperty(property, get, value);
+		return super.internalGetSetObjectProperty(property, get, value);
 	}
 
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
 	 */
 	final ASTNode internalGetSetChildProperty(ChildPropertyDescriptor property, boolean get, ASTNode child) {
-		if (property == NAME_PROPERTY) {
+		if (property == MODIFIER_PROPERTY) {
 			if (get) {
-				return getName();
+				return getModifier();
 			} else {
-				setName((SimpleName) child);
+				setModifier((Modifier) child);
 				return null;
 			}
 		}
@@ -157,9 +168,6 @@ public class TemplateDeclaration extends Declaration implements ITemplateDeclara
 	 * Method declared on ASTNode.
 	 */
 	final List internalGetChildListProperty(ChildListPropertyDescriptor property) {
-		if (property == TEMPLATEPARAMETERS_PROPERTY) {
-			return templateParameters();
-		}
 		if (property == DECLARATIONS_PROPERTY) {
 			return declarations();
 		}
@@ -172,18 +180,17 @@ public class TemplateDeclaration extends Declaration implements ITemplateDeclara
 	 * TODO make it package
 	 */
 	public final int getNodeType0() {
-		return TEMPLATE_DECLARATION;
+		return MODIFIER_DECLARATION;
 	}
 
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
 	 */
 	ASTNode clone0(AST target) {
-		TemplateDeclaration result = new TemplateDeclaration(target);
+		ModifierDeclaration result = new ModifierDeclaration(target);
 		result.setSourceRange(this.getStartPosition(), this.getLength());
-		result.setModifierFlags(getModifier());
-		result.setName((SimpleName) getName().clone(target));
-		result.templateParameters.addAll(ASTNode.copySubtrees(target, templateParameters()));
+		result.setSyntax(getSyntax());
+		result.setModifier((Modifier) getModifier().clone(target));
 		result.declarations.addAll(ASTNode.copySubtrees(target, declarations()));
 		return result;
 	}
@@ -203,57 +210,59 @@ public class TemplateDeclaration extends Declaration implements ITemplateDeclara
 		boolean visitChildren = visitor.visit(this);
 		if (visitChildren) {
 			// visit children in normal left to right reading order
-			acceptChild(visitor, getName());
-			acceptChildren(visitor, templateParameters());
+			acceptChild(visitor, getModifier());
 			acceptChildren(visitor, declarations());
 		}
 		visitor.endVisit(this);
 	}
 
 	/**
-	 * Returns the modifier flags of this template declaration.
+	 * Returns the syntax of this modifier declaration.
 	 * 
-	 * @return the modifier flags
+	 * @return the syntax
 	 */ 
-	public int getModifier() {
-		return this.modifierFlags;
+	public Syntax getSyntax() {
+		return this.syntax;
 	}
 
 	/**
-	 * Sets the modifier flags of this template declaration.
+	 * Sets the syntax of this modifier declaration.
 	 * 
-	 * @param modifierFlags the modifier flags
+	 * @param syntax the syntax
 	 * @exception IllegalArgumentException if the argument is incorrect
 	 */ 
-	public void setModifierFlags(int modifierFlags) {
-		preValueChange(MODIFIER_FLAGS_PROPERTY);
-		this.modifierFlags = modifierFlags;
-		postValueChange(MODIFIER_FLAGS_PROPERTY);
+	public void setSyntax(Syntax syntax) {
+		if (syntax == null) {
+			throw new IllegalArgumentException();
+		}
+		preValueChange(SYNTAX_PROPERTY);
+		this.syntax = syntax;
+		postValueChange(SYNTAX_PROPERTY);
 	}
 
 	/**
-	 * Returns the name of this template declaration.
+	 * Returns the modifier of this modifier declaration.
 	 * 
-	 * @return the name
+	 * @return the modifier
 	 */ 
-	public SimpleName getName() {
-		if (this.name == null) {
+	public Modifier getModifier() {
+		if (this.modifier == null) {
 			// lazy init must be thread-safe for readers
 			synchronized (this) {
-				if (this.name == null) {
+				if (this.modifier == null) {
 					preLazyInit();
-					this.name = new SimpleName(this.ast);
-					postLazyInit(this.name, NAME_PROPERTY);
+					this.modifier = new Modifier(this.ast);
+					postLazyInit(this.modifier, MODIFIER_PROPERTY);
 				}
 			}
 		}
-		return this.name;
+		return this.modifier;
 	}
 
 	/**
-	 * Sets the name of this template declaration.
+	 * Sets the modifier of this modifier declaration.
 	 * 
-	 * @param name the name
+	 * @param modifier the modifier
 	 * @exception IllegalArgumentException if:
 	 * <ul>
 	 * <li>the node belongs to a different AST</li>
@@ -261,32 +270,21 @@ public class TemplateDeclaration extends Declaration implements ITemplateDeclara
 	 * <li>a cycle in would be created</li>
 	 * </ul>
 	 */ 
-	public void setName(SimpleName name) {
-		if (name == null) {
+	public void setModifier(Modifier modifier) {
+		if (modifier == null) {
 			throw new IllegalArgumentException();
 		}
-		ASTNode oldChild = this.name;
-		preReplaceChild(oldChild, name, NAME_PROPERTY);
-		this.name = name;
-		postReplaceChild(oldChild, name, NAME_PROPERTY);
-	}
-
-	/**
-	 * Returns the live ordered list of templateParameters for this
-	 * template declaration.
-	 * 
-	 * @return the live list of template declaration
-	 *    (element type: <code>TemplateParameter</code>)
-	 */ 
-	public List<TemplateParameter> templateParameters() {
-		return this.templateParameters;
+		ASTNode oldChild = this.modifier;
+		preReplaceChild(oldChild, modifier, MODIFIER_PROPERTY);
+		this.modifier = modifier;
+		postReplaceChild(oldChild, modifier, MODIFIER_PROPERTY);
 	}
 
 	/**
 	 * Returns the live ordered list of declarations for this
-	 * template declaration.
+	 * modifier declaration.
 	 * 
-	 * @return the live list of template declaration
+	 * @return the live list of modifier declaration
 	 *    (element type: <code>Declaration</code>)
 	 */ 
 	public List<Declaration> declarations() {
@@ -297,7 +295,7 @@ public class TemplateDeclaration extends Declaration implements ITemplateDeclara
 	 * Method declared on ASTNode.
 	 */
 	int memSize() {
-		return BASE_NODE_SIZE + 4 * 4;
+		return BASE_NODE_SIZE + 3 * 4;
 	}
 
 	/* (omit javadoc for this method)
@@ -306,8 +304,7 @@ public class TemplateDeclaration extends Declaration implements ITemplateDeclara
 	int treeSize() {
 		return
 			memSize()
-			+ (this.name == null ? 0 : getName().treeSize())
-			+ (this.templateParameters.listSize())
+			+ (this.modifier == null ? 0 : getModifier().treeSize())
 			+ (this.declarations.listSize())
 	;
 	}

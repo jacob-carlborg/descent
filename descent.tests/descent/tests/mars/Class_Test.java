@@ -56,11 +56,11 @@ public class Class_Test extends Parser_Test {
 		assertEquals(5, bs.size());
 		
 		assertEquals(IElement.BASE_CLASS, bs.get(0).getNodeType0());
-		assertEquals(IModifier.PUBLIC, bs.get(0).getModifierFlags());
-		assertEquals(IModifier.PRIVATE, bs.get(1).getModifierFlags());
-		assertEquals(IModifier.PACKAGE, bs.get(2).getModifierFlags());
-		assertEquals(IModifier.PROTECTED, bs.get(3).getModifierFlags());
-		assertEquals(IModifier.PUBLIC, bs.get(4).getModifierFlags());
+		assertEquals(IModifier.PUBLIC, bs.get(0).getModifier());
+		assertEquals(IModifier.PRIVATE, bs.get(1).getModifier());
+		assertEquals(IModifier.PACKAGE, bs.get(2).getModifier());
+		assertEquals(IModifier.PROTECTED, bs.get(3).getModifier());
+		assertEquals(IModifier.PUBLIC, bs.get(4).getModifier());
 		
 		assertEquals("None", bs.get(0).getType().toString());
 		assertPosition(bs.get(0).getType(), 15, 4);

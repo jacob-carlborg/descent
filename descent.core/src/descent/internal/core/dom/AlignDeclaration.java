@@ -111,7 +111,7 @@ public class AlignDeclaration extends Declaration implements IAlignDeclaration {
 	final int internalGetSetIntProperty(SimplePropertyDescriptor property, boolean get, int value) {
 		if (property == MODIFIER_FLAGS_PROPERTY) {
 			if (get) {
-				return getModifierFlags();
+				return getModifier();
 			} else {
 				setModifierFlags(value);
 				return 0;
@@ -154,7 +154,7 @@ public class AlignDeclaration extends Declaration implements IAlignDeclaration {
 	ASTNode clone0(AST target) {
 		AlignDeclaration result = new AlignDeclaration(target);
 		result.setSourceRange(this.getStartPosition(), this.getLength());
-		result.setModifierFlags(getModifierFlags());
+		result.setModifierFlags(getModifier());
 		result.setAlign(getAlign());
 		result.declarations.addAll(ASTNode.copySubtrees(target, declarations()));
 		return result;
@@ -185,7 +185,7 @@ public class AlignDeclaration extends Declaration implements IAlignDeclaration {
 	 * 
 	 * @return the modifier flags
 	 */ 
-	public int getModifierFlags() {
+	public int getModifier() {
 		return this.modifierFlags;
 	}
 

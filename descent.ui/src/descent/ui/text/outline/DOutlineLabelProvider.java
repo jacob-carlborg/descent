@@ -21,7 +21,6 @@ import descent.core.dom.IIdentifierType;
 import descent.core.dom.IImport;
 import descent.core.dom.IImportDeclaration;
 import descent.core.dom.IMixinDeclaration;
-import descent.core.dom.IModifier;
 import descent.core.dom.IModuleDeclaration;
 import descent.core.dom.IPointerType;
 import descent.core.dom.IPragmaDeclaration;
@@ -41,6 +40,7 @@ import descent.internal.core.dom.AliasDeclaration;
 import descent.internal.core.dom.AliasDeclarationFragment;
 import descent.internal.core.dom.Argument;
 import descent.internal.core.dom.DebugAssignment;
+import descent.internal.core.dom.Modifier;
 import descent.internal.core.dom.TemplateParameter;
 import descent.internal.core.dom.VersionAssignment;
 import descent.ui.DescentUI;
@@ -259,7 +259,7 @@ public class DOutlineLabelProvider extends LabelProvider {
 	@Override
 	public Image getImage(Object element) {
 		IElement e = (IElement) element;
-		int m;
+		Modifier m;
 		
 		switch(e.getNodeType0()) {
 		case IElement.MODULE_DECLARATION:
@@ -280,44 +280,47 @@ public class DOutlineLabelProvider extends LabelProvider {
 			}
 		case IElement.FUNCTION_DECLARATION:
 			IFunctionDeclaration func = (IFunctionDeclaration) element;
-			m = func.getModifierFlags();
+			// TODO m = func.getModifier();
 			switch(func.getKind()) {
 			case FUNCTION:
 			case NEW:
 			case DELETE:
-				if ((m & IModifier.PRIVATE) > 0) {
+				/*
+				if (m.isPrivate()) {
 					return functionPrivateImage;
-				} else if ((m & IModifier.PROTECTED) > 0) {
+				} else if (m.isProtected()) {
 					return functionProtectedImage;
-				} else if ((m & IModifier.PACKAGE) > 0) {
+				} else if (m.isPackage()) {
 					return functionPackageImage;
-				} else if ((m & IModifier.EXPORT) > 0) {
-					// TODO
 				}
+				*/
+				// TODO
 				return functionPublicImage;
 			case CONSTRUCTOR:
 			case STATIC_CONSTRUCTOR:
-				if ((m & IModifier.PRIVATE) > 0) {
+				/*
+				if (m.isPrivate()) {
 					return ctorPrivateImage;
-				} else if ((m & IModifier.PROTECTED) > 0) {
+				} else if (m.isProtected()) {
 					return ctorProtectedImage;
-				} else if ((m & IModifier.PACKAGE) > 0) {
+				} else if (m.isPackage()) {
 					return ctorPackageImage;
-				} else if ((m & IModifier.EXPORT) > 0) {
-					// TODO
 				}
+				*/
+				// TODO
 				return ctorPublicImage;
 			case DESTRUCTOR:
 			case STATIC_DESTRUCTOR:
-				if ((m & IModifier.PRIVATE) > 0) {
+				/*
+				if (m.isPrivate()) {
 					return dtorPrivateImage;
-				} else if ((m & IModifier.PROTECTED) > 0) {
+				} else if (m.isProtected()) {
 					return dtorProtectedImage;
-				} else if ((m & IModifier.PACKAGE) > 0) {
+				} else if (m.isPackage()) {
 					return dtorPackageImage;
-				} else if ((m & IModifier.EXPORT) > 0) {
-					// TODO
 				}
+				*/
+				// TODO
 				return dtorPublicImage;
 			}
 		case IElement.ENUM_DECLARATION:
@@ -329,17 +332,17 @@ public class DOutlineLabelProvider extends LabelProvider {
 		case IElement.UNIT_TEST_DECLARATION:
 			return unittestImage;
 		case IElement.VARIABLE_DECLARATION:
-			m = ((IVariableDeclaration) element).getModifierFlags();
-			if ((m & IModifier.PRIVATE) > 0) {
+			/*
+			m = ((IVariableDeclaration) element).getModifier();
+			if (m.isPrivate()) {
 				return fieldPrivateImage;
-			} else if ((m & IModifier.PROTECTED) > 0) {
+			} else if (m.isProtected()) {
 				return fieldProtectedImage;
-			} else if ((m & IModifier.PACKAGE) > 0) {
+			} else if (m.isPackage()) {
 				return fieldPackageImage;
-			} else if ((m & IModifier.EXPORT) > 0) {
-				// TODO:
-				return fieldPublicImage;
 			}
+			*/
+			// TODO
 			return fieldPublicImage;
 		case IElement.TYPEDEF_DECLARATION:
 			return typedefImage;

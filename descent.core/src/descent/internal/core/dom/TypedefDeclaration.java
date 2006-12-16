@@ -120,7 +120,7 @@ public class TypedefDeclaration extends Declaration implements ITypedefDeclarati
 	final int internalGetSetIntProperty(SimplePropertyDescriptor property, boolean get, int value) {
 		if (property == MODIFIER_FLAGS_PROPERTY) {
 			if (get) {
-				return getModifierFlags();
+				return getModifier();
 			} else {
 				setModifierFlags(value);
 				return 0;
@@ -176,7 +176,7 @@ public class TypedefDeclaration extends Declaration implements ITypedefDeclarati
 	ASTNode clone0(AST target) {
 		TypedefDeclaration result = new TypedefDeclaration(target);
 		result.setSourceRange(this.getStartPosition(), this.getLength());
-		result.setModifierFlags(getModifierFlags());
+		result.setModifierFlags(getModifier());
 		result.setName((SimpleName) getName().clone(target));
 		result.setType((Type) getType().clone(target));
 	result.setInitializer((Initializer) ASTNode.copySubtree(target, getInitializer()));
@@ -210,7 +210,7 @@ public class TypedefDeclaration extends Declaration implements ITypedefDeclarati
 	 * 
 	 * @return the modifier flags
 	 */ 
-	public int getModifierFlags() {
+	public int getModifier() {
 		return this.modifierFlags;
 	}
 

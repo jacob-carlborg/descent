@@ -13,7 +13,7 @@ import descent.internal.core.dom.FunctionDeclaration.Kind;
  * <p>Note that if the aggregate is templated (i.e. <code>foo(T)(...) { }</code>) the parser
  * dosen't generate a template declaration: instead, it makes this class templated.</p>
  */
-public interface IFunctionDeclaration extends IDeclaration, IModifiersContainer {
+public interface IFunctionDeclaration extends IDeclaration {
 	
 	int FUNCTION = 1;
 	int CONSTRUCTOR = 2;

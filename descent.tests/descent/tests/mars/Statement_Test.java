@@ -524,7 +524,7 @@ public class Statement_Test extends Parser_Test {
 		
 		IVariableDeclaration var = (IVariableDeclaration) stm.getDeclaration();
 		
-		assertTrue((var.getModifierFlags() & IModifier.EXTERN) != 0);
+		// TODO assertTrue((var.getModifier() & IModifier.EXTERN) != 0);
 	}
 	
 	public void testTypeof() {
@@ -565,7 +565,7 @@ public class Statement_Test extends Parser_Test {
 		
 		IVariableDeclaration var = (IVariableDeclaration) stm.getDeclaration();
 		assertNotNull(var);
-		assertTrue((var.getModifierFlags() & IModifier.SCOPE) != 0);
+		// TODO assertTrue((var.getModifier() & IModifier.SCOPE) != 0);
 	}
 
 }

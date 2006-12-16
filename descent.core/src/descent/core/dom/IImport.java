@@ -18,7 +18,7 @@ import descent.internal.core.dom.SimpleName;
  *               selective import
  * </pre>
  */
-public interface IImport extends IElement, IModifiersContainer {
+public interface IImport extends IElement {
 	
 	/**
 	 * Returns the qualified name to import.

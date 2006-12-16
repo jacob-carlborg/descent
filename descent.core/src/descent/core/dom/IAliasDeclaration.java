@@ -11,7 +11,7 @@ import descent.internal.core.dom.AliasDeclarationFragment;
  * alias type name;
  * </pre>
  */
-public interface IAliasDeclaration extends IDeclaration, IModifiersContainer {
+public interface IAliasDeclaration extends IDeclaration {
 	
 	/**
 	 * The name of the alias.

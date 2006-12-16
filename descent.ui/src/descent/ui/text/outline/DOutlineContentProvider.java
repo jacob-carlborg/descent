@@ -14,12 +14,11 @@ import descent.core.dom.ICompilationUnit;
 import descent.core.dom.IConditionalDeclaration;
 import descent.core.dom.IElement;
 import descent.core.dom.IEnumDeclaration;
-import descent.core.dom.IImportDeclaration;
 import descent.core.dom.IExternDeclaration;
+import descent.core.dom.IImportDeclaration;
+import descent.core.dom.IModifierDeclaration;
 import descent.core.dom.IModuleDeclaration;
 import descent.core.dom.IPragmaDeclaration;
-import descent.core.dom.IProtectionDeclaration;
-import descent.core.dom.IStorageClassDeclaration;
 import descent.core.dom.ITemplateDeclaration;
 import descent.internal.core.dom.Declaration;
 import descent.ui.text.DEditor;
@@ -96,11 +95,8 @@ public class DOutlineContentProvider implements ITreeContentProvider {
 		List<IImportDeclaration> importDeclarations = null;
 		for(IElement elem : declDefs) {
 			switch(elem.getNodeType0()) {
-			case IElement.PROTECTION_DECLARATION:
-				addDeclDefs(list, ((IProtectionDeclaration) elem).declarations());
-				break;
-			case IElement.STORAGE_CLASS_DECLARATION:
-				addDeclDefs(list, ((IStorageClassDeclaration) elem).getDeclarationDefinitions());
+			case IElement.MODIFIER_DECLARATION:
+				addDeclDefs(list, ((IModifierDeclaration) elem).declarations());
 				break;
 			case IElement.ALIGN_DECLARATION:
 				addDeclDefs(list, ((IAlignDeclaration) elem).declarations());
@@ -126,11 +122,8 @@ public class DOutlineContentProvider implements ITreeContentProvider {
 		List<IImportDeclaration> importDeclarations = null;
 		for(IElement elem : declDefs) {
 			switch(elem.getNodeType0()) {
-			case IElement.PROTECTION_DECLARATION:
-				addDeclDefs(list, ((IProtectionDeclaration) elem).declarations());
-				break;
-			case IElement.STORAGE_CLASS_DECLARATION:
-				addDeclDefs(list, ((IStorageClassDeclaration) elem).getDeclarationDefinitions());
+			case IElement.MODIFIER_DECLARATION:
+				addDeclDefs(list, ((IModifierDeclaration) elem).declarations());
 				break;
 			case IElement.ALIGN_DECLARATION:
 				addDeclDefs(list, ((IAlignDeclaration) elem).declarations());

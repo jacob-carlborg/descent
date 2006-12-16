@@ -111,7 +111,7 @@ public interface IElement {
 	 * Constant representing a protection declaration.
 	 * A D element with this type can be safely cast to <code>IProtectionDeclaration</code>. 
 	 */
-	int PROTECTION_DECLARATION = 23;
+	int MODIFIER_DECLARATION = 23;
 	
 	/**
 	 * Constant representing a storage class declaration.

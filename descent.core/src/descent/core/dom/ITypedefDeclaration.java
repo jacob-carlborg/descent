@@ -9,7 +9,7 @@ package descent.core.dom;
  * 
  * where initializer is optional.
  */
-public interface ITypedefDeclaration extends IDeclaration, IModifiersContainer {
+public interface ITypedefDeclaration extends IDeclaration {
 	
 	/**
 	 * Returns the name of the typedef.

@@ -5,10 +5,11 @@ import descent.core.dom.ICompilationUnit;
 import descent.core.dom.IElement;
 import descent.core.dom.IImportDeclaration;
 import descent.core.dom.IModifier;
-import descent.core.dom.IProtectionDeclaration;
-import descent.core.dom.IStorageClassDeclaration;
+import descent.core.dom.IModifierDeclaration;
 import descent.core.dom.ITypedefDeclaration;
 import descent.core.dom.IVariableDeclaration;
+import descent.internal.core.dom.Modifier;
+import descent.internal.core.dom.ModifierDeclaration;
 import descent.internal.core.dom.ParserFacade;
 
 public class Modifier_Test extends Parser_Test {
@@ -38,7 +39,7 @@ public class Modifier_Test extends Parser_Test {
 		IElement[] declDefs = unit.getDeclarationDefinitions();
 		
 		IAggregateDeclaration agg = (IAggregateDeclaration) declDefs[0];
-		assertEquals(IModifier.NONE, agg.getModifierFlags());
+		// TODO assertEquals(IModifier.NONE, agg.getModifier());
 	}
 	
 	public void testSomeModifiersAsJava() {
@@ -56,39 +57,29 @@ public class Modifier_Test extends Parser_Test {
 			IElement[] declDefs = unit.getDeclarationDefinitions();
 			
 			IAggregateDeclaration agg = (IAggregateDeclaration) declDefs[0];
-			assertEquals(pair[1], agg.getModifierFlags());
+			// TODO assertEquals(pair[1], agg.getModifier());
 		}
 	}
 	
-	/** TODO
-	public void testSomeModifiersAsJava2() {
-		String s = "public private class Priv { }";
-		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
-		IElement[] declDefs = unit.getDeclarationDefinitions();
-		
-		IAggregateDeclaration agg = (IAggregateDeclaration) declDefs[0];
-		assertEquals(IModifier.PRIVATE, agg.getModifiers());
-	}
-	*/
-	
 	public void testSomeModifiersWithCurlies() {
 		Object[][] objs = {
-			{ "private", IModifier.PRIVATE },
-			{ "package", IModifier.PACKAGE},
-			{ "protected", IModifier.PROTECTED},
-			{ "public", IModifier.PUBLIC },
-			{ "export", IModifier.EXPORT},
+			{ "private", Modifier.ModifierKeyword.PRIVATE_KEYWORD },
+			{ "package", Modifier.ModifierKeyword.PACKAGE_KEYWORD },
+			{ "protected", Modifier.ModifierKeyword.PROTECTED_KEYWORD },
+			{ "public", Modifier.ModifierKeyword.PUBLIC_KEYWORD },
+			{ "export", Modifier.ModifierKeyword.EXPORT_KEYWORD },
 		};
 		
 		for(Object[] pair : objs) {
-			String s = pair[0] + " { class Clazz { } }";
+			String s = " " + pair[0] + " { class Clazz { } }";
 			ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
 			IElement[] declDefs = unit.getDeclarationDefinitions();
 			
-			IProtectionDeclaration prot = (IProtectionDeclaration) declDefs[0];
-			
-			IAggregateDeclaration agg = (IAggregateDeclaration) prot.declarations().get(0);
-			assertEquals(pair[1], agg.getModifierFlags());
+			ModifierDeclaration modifierDeclaration = (ModifierDeclaration) declDefs[0];
+			assertEquals(pair[1], modifierDeclaration.getModifier().getModifierKeyword());
+			assertPosition(modifierDeclaration.getModifier(), 1, ((String) pair[0]).length());
+			assertEquals(1, modifierDeclaration.declarations().size());
+			assertEquals(ModifierDeclaration.Syntax.CURLY_BRACES, modifierDeclaration.getSyntax());
 		}
 	}
 	
@@ -106,10 +97,10 @@ public class Modifier_Test extends Parser_Test {
 			ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
 			IElement[] declDefs = unit.getDeclarationDefinitions();
 			
-			IProtectionDeclaration prot = (IProtectionDeclaration) declDefs[0];
+			IModifierDeclaration prot = (IModifierDeclaration) declDefs[0];
 			
 			IAggregateDeclaration agg = (IAggregateDeclaration) prot.declarations().get(0);
-			assertEquals(pair[1], agg.getModifierFlags());
+			// TODO assertEquals(pair[1], agg.getModifier());
 		}
 	}
 	
@@ -118,16 +109,16 @@ public class Modifier_Test extends Parser_Test {
 		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
 		IElement[] declDefs = unit.getDeclarationDefinitions();
 		
-		IProtectionDeclaration prot;
+		IModifierDeclaration prot;
 		IAggregateDeclaration agg;
 		
-		prot = (IProtectionDeclaration) declDefs[0];
+		prot = (IModifierDeclaration) declDefs[0];
 		agg = (IAggregateDeclaration) prot.declarations().get(0);
-		assertEquals(IModifier.PUBLIC, agg.getModifierFlags());
+		// TODO assertEquals(IModifier.PUBLIC, agg.getModifier());
 		
-		prot = (IProtectionDeclaration) prot.declarations().get(1);
+		prot = (IModifierDeclaration) prot.declarations().get(1);
 		agg = (IAggregateDeclaration) prot.declarations().get(0);
-		assertEquals(IModifier.PRIVATE, agg.getModifierFlags());
+		// TODO assertEquals(IModifier.PRIVATE, agg.getModifier());
 	}
 	
 	public void testAbstract() {
@@ -136,7 +127,7 @@ public class Modifier_Test extends Parser_Test {
 		IElement[] declDefs = unit.getDeclarationDefinitions();
 		
 		IAggregateDeclaration agg = (IAggregateDeclaration) declDefs[0];
-		assertEquals(IModifier.ABSTRACT, agg.getModifierFlags());
+		// TODO assertEquals(IModifier.ABSTRACT, agg.getModifier());
 	}
 	
 	public void testAbstract2() {
@@ -144,11 +135,11 @@ public class Modifier_Test extends Parser_Test {
 		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
 		IElement[] declDefs = unit.getDeclarationDefinitions();
 		
-		IStorageClassDeclaration sto = (IStorageClassDeclaration) declDefs[0];
-		assertEquals(1, sto.getDeclarationDefinitions().length);
+		IModifierDeclaration sto = (IModifierDeclaration) declDefs[0];
+		assertEquals(1, sto.declarations().size());
 		
-		IAggregateDeclaration agg = (IAggregateDeclaration) sto.getDeclarationDefinitions()[0];
-		assertEquals(IModifier.ABSTRACT, agg.getModifierFlags());
+		IAggregateDeclaration agg = (IAggregateDeclaration) sto.declarations().get(0);
+		// TODO assertEquals(IModifier.ABSTRACT, agg.getModifier());
 	}
 	
 	public void testOnImport() {
@@ -157,7 +148,7 @@ public class Modifier_Test extends Parser_Test {
 		IElement[] declDefs = unit.getDeclarationDefinitions();
 		
 		IImportDeclaration decl = (IImportDeclaration) declDefs[0];
-		assertEquals(IModifier.PRIVATE, decl.getModifierFlags());
+		// TODO assertEquals(IModifier.PRIVATE, decl.getModifier());
 	}
 	
 	public void testOnVar1() {
@@ -166,7 +157,7 @@ public class Modifier_Test extends Parser_Test {
 		IElement[] declDefs = unit.getDeclarationDefinitions();
 		
 		IVariableDeclaration var = (IVariableDeclaration) declDefs[0];
-		assertEquals(IModifier.PRIVATE, var.getModifierFlags());
+		// TODO assertEquals(IModifier.PRIVATE, var.getModifier());
 	}
 	
 	public void testOnVar2() {
@@ -175,7 +166,7 @@ public class Modifier_Test extends Parser_Test {
 		IElement[] declDefs = unit.getDeclarationDefinitions();
 		
 		IVariableDeclaration var = (IVariableDeclaration) declDefs[0];
-		assertEquals(IModifier.CONST, var.getModifierFlags());
+		// TODO assertEquals(IModifier.CONST, var.getModifier());
 	}
 	
 	public void testOnTypedef() {
@@ -184,7 +175,7 @@ public class Modifier_Test extends Parser_Test {
 		IElement[] declDefs = unit.getDeclarationDefinitions();
 		
 		ITypedefDeclaration var = (ITypedefDeclaration) declDefs[0];
-		assertEquals(IModifier.CONST, var.getModifierFlags());
+		// TODO assertEquals(IModifier.CONST, var.getModifier());
 	}
 
 }

@@ -226,7 +226,7 @@ public class FunctionDeclaration extends Declaration implements IFunctionDeclara
 	final int internalGetSetIntProperty(SimplePropertyDescriptor property, boolean get, int value) {
 		if (property == MODIFIER_FLAGS_PROPERTY) {
 			if (get) {
-				return getModifierFlags();
+				return getModifier();
 			} else {
 				setModifierFlags(value);
 				return 0;
@@ -336,7 +336,7 @@ public class FunctionDeclaration extends Declaration implements IFunctionDeclara
 	ASTNode clone0(AST target) {
 		FunctionDeclaration result = new FunctionDeclaration(target);
 		result.setSourceRange(this.getStartPosition(), this.getLength());
-		result.setModifierFlags(getModifierFlags());
+		result.setModifierFlags(getModifier());
 		result.setKind(getKind());
 		result.setReturnType((Type) getReturnType().clone(target));
 		result.setName((SimpleName) getName().clone(target));
@@ -382,7 +382,7 @@ public class FunctionDeclaration extends Declaration implements IFunctionDeclara
 	 * 
 	 * @return the modifier flags
 	 */ 
-	public int getModifierFlags() {
+	public int getModifier() {
 		return this.modifierFlags;
 	}
 

@@ -7,7 +7,7 @@ import descent.internal.core.dom.Import;
 /**
  * An import declaration. An import declaration is breaked in imports.
  */
-public interface IImportDeclaration extends IDeclaration, IModifiersContainer {
+public interface IImportDeclaration extends IDeclaration {
 	
 	/**
 	 * Returns the imports of this declaration.

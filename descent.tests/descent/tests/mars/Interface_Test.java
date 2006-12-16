@@ -50,11 +50,11 @@ public class Interface_Test extends Parser_Test {
 		assertEquals(5, bs.length);
 		
 		assertEquals(IElement.BASE_CLASS, bs[0].getNodeType0());
-		assertEquals(IModifier.PUBLIC, bs[0].getModifierFlags());
-		assertEquals(IModifier.PRIVATE, bs[1].getModifierFlags());
-		assertEquals(IModifier.PACKAGE, bs[2].getModifierFlags());
-		assertEquals(IModifier.PROTECTED, bs[3].getModifierFlags());
-		assertEquals(IModifier.PUBLIC, bs[4].getModifierFlags());
+		assertEquals(IModifier.PUBLIC, bs[0].getModifier());
+		assertEquals(IModifier.PRIVATE, bs[1].getModifier());
+		assertEquals(IModifier.PACKAGE, bs[2].getModifier());
+		assertEquals(IModifier.PROTECTED, bs[3].getModifier());
+		assertEquals(IModifier.PUBLIC, bs[4].getModifier());
 	}
 	
 	public void testWithComments() {

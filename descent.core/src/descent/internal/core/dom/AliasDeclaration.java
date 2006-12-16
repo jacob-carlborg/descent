@@ -109,7 +109,7 @@ public class AliasDeclaration extends Declaration implements IAliasDeclaration {
 	final int internalGetSetIntProperty(SimplePropertyDescriptor property, boolean get, int value) {
 		if (property == MODIFIER_FLAGS_PROPERTY) {
 			if (get) {
-				return getModifierFlags();
+				return getModifier();
 			} else {
 				setModifierFlags(value);
 				return 0;
@@ -160,7 +160,7 @@ public class AliasDeclaration extends Declaration implements IAliasDeclaration {
 	ASTNode clone0(AST target) {
 		AliasDeclaration result = new AliasDeclaration(target);
 		result.setSourceRange(this.getStartPosition(), this.getLength());
-		result.setModifierFlags(getModifierFlags());
+		result.setModifierFlags(getModifier());
 		result.setType((Type) getType().clone(target));
 		result.fragments.addAll(ASTNode.copySubtrees(target, fragments()));
 		return result;
@@ -192,7 +192,7 @@ public class AliasDeclaration extends Declaration implements IAliasDeclaration {
 	 * 
 	 * @return the modifier flags
 	 */ 
-	public int getModifierFlags() {
+	public int getModifier() {
 		return this.modifierFlags;
 	}
 
