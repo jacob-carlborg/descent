@@ -6,6 +6,7 @@ import descent.core.dom.IElement;
 import descent.core.dom.IFunctionDeclaration;
 import descent.internal.core.dom.Argument;
 import descent.internal.core.dom.FunctionDeclaration;
+import descent.internal.core.dom.NumberLiteral;
 import descent.internal.core.dom.ParserFacade;
 import descent.internal.core.dom.PrimitiveType;
 
@@ -127,6 +128,7 @@ public class Function_Test extends Parser_Test {
 	public void testDelete() {
 		String s = " delete() { }";
 		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
+		assertEquals(0, unit.getProblems().length);
 		IElement[] declDefs = unit.getDeclarationDefinitions();
 		assertEquals(1, declDefs.length);
 		
@@ -145,6 +147,7 @@ public class Function_Test extends Parser_Test {
 	public void testFunctionWithoutArguments() {
 		String s = " void func() { }";
 		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
+		assertEquals(0, unit.getProblems().length);
 		IElement[] declDefs = unit.getDeclarationDefinitions();
 		assertEquals(1, declDefs.length);
 		
@@ -162,6 +165,7 @@ public class Function_Test extends Parser_Test {
 	public void testFunctionSemicolon() {
 		String s = " void func();";
 		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
+		assertEquals(0, unit.getProblems().length);
 		IElement[] declDefs = unit.getDeclarationDefinitions();
 		assertEquals(1, declDefs.length);
 		
@@ -172,6 +176,7 @@ public class Function_Test extends Parser_Test {
 	public void testFunctionWithArguments() {
 		String s = " void func(int a, in char b, out bool c, inout float d, lazy double e) { }";
 		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
+		assertEquals(0, unit.getProblems().length);
 		IElement[] declDefs = unit.getDeclarationDefinitions();
 		
 		IFunctionDeclaration func = (IFunctionDeclaration) declDefs[0];
@@ -212,6 +217,7 @@ public class Function_Test extends Parser_Test {
 	public void testFunctionWithOneArgument() {
 		String s = " void func(int a) { }";
 		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
+		assertEquals(0, unit.getProblems().length);
 		IElement[] declDefs = unit.getDeclarationDefinitions();
 		
 		IFunctionDeclaration func = (IFunctionDeclaration) declDefs[0];
@@ -220,8 +226,9 @@ public class Function_Test extends Parser_Test {
 	}
 	
 	public void testConstructorWithArguments() {
-		String s = "      this(int a = 2, in char b, out bool c, inout float d, lazy double e) { }";
+		String s = "      this(int a, in char b, out bool c, inout float d, lazy double e = 2) { }";
 		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
+		assertEquals(0, unit.getProblems().length);
 		IElement[] declDefs = unit.getDeclarationDefinitions();
 		
 		IFunctionDeclaration func = (IFunctionDeclaration) declDefs[0];
@@ -232,36 +239,37 @@ public class Function_Test extends Parser_Test {
 		IArgument[] args = func.arguments().toArray(new IArgument[func.arguments().size()]);
 		assertEquals(5, args.length);
 		
-		assertPosition(args[0], 11, 9);
+		assertPosition(args[0], 11, 5);
 		assertEquals("a", args[0].getName().getIdentifier());
 		assertEquals("int", args[0].getType().toString());
 		assertEquals(Argument.PassageMode.IN, args[0].getPassageMode());
-		assertEquals("2", args[0].getDefaultValue().toString());
 		
-		assertPosition(args[1], 22, 9);
+		assertPosition(args[1], 18, 9);
 		assertEquals("b", args[1].getName().getIdentifier());
 		assertEquals("char", args[1].getType().toString());
 		assertEquals(Argument.PassageMode.IN, args[1].getPassageMode());
 		
-		assertPosition(args[2], 33, 10);
+		assertPosition(args[2], 29, 10);
 		assertEquals("c", args[2].getName().getIdentifier());
 		assertEquals("bool", args[2].getType().toString());
 		assertEquals(Argument.PassageMode.OUT, args[2].getPassageMode());
 		
-		assertPosition(args[3], 45, 13);
+		assertPosition(args[3], 41, 13);
 		assertEquals("d", args[3].getName().getIdentifier());
 		assertEquals("float", args[3].getType().toString());
 		assertEquals(Argument.PassageMode.INOUT, args[3].getPassageMode());
 		
-		assertPosition(args[4], 60, 13);
+		assertPosition(args[4], 56, 17);
 		assertEquals("e", args[4].getName().getIdentifier());
 		assertEquals("double", args[4].getType().toString());
 		assertEquals(Argument.PassageMode.LAZY, args[4].getPassageMode());
+		assertEquals("2", ((NumberLiteral) args[4].getDefaultValue()).getToken());
 	}
 	
 	public void testFunctionVariadic() {
 		String s = " void func(...);";
 		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
+		assertEquals(0, unit.getProblems().length);
 		IElement[] declDefs = unit.getDeclarationDefinitions();
 		assertEquals(1, declDefs.length);
 		
@@ -272,6 +280,7 @@ public class Function_Test extends Parser_Test {
 	public void testFunctionVariadic2() {
 		String s = " void func(int[] x ...);";
 		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
+		assertEquals(0, unit.getProblems().length);
 		IElement[] declDefs = unit.getDeclarationDefinitions();
 		assertEquals(1, declDefs.length);
 		
@@ -283,6 +292,7 @@ public class Function_Test extends Parser_Test {
 	public void testFunctionBody() {
 		String s = " void func() body { }";
 		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
+		assertEquals(0, unit.getProblems().length);
 		IElement[] declDefs = unit.getDeclarationDefinitions();
 		assertEquals(1, declDefs.length);
 		
@@ -293,8 +303,9 @@ public class Function_Test extends Parser_Test {
 	}
 	
 	public void testFunctionIn() {
-		String s = " void func() in { } { }";
+		String s = " void func() in { } body { }";
 		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
+		assertEquals(0, unit.getProblems().length);
 		IElement[] declDefs = unit.getDeclarationDefinitions();
 		assertEquals(1, declDefs.length);
 		
@@ -304,8 +315,9 @@ public class Function_Test extends Parser_Test {
 	}
 	
 	public void testFunctionOut() {
-		String s = " void func() out { } { }";
+		String s = " void func() out { } body { }";
 		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
+		assertEquals(0, unit.getProblems().length);
 		IElement[] declDefs = unit.getDeclarationDefinitions();
 		assertEquals(1, declDefs.length);
 		
@@ -316,8 +328,9 @@ public class Function_Test extends Parser_Test {
 	}
 	
 	public void testFunctionOutName() {
-		String s = " void func() out(bla) { } { }";
+		String s = " void func() out(bla) { } body { }";
 		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
+		assertEquals(0, unit.getProblems().length);
 		IElement[] declDefs = unit.getDeclarationDefinitions();
 		assertEquals(1, declDefs.length);
 		

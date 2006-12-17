@@ -8,6 +8,7 @@ import descent.core.dom.IExpressionInitializer;
 import descent.core.dom.IInitializer;
 import descent.core.dom.IStructInitializer;
 import descent.internal.core.dom.ArrayInitializerFragment;
+import descent.internal.core.dom.NumberLiteral;
 import descent.internal.core.dom.ParserFacade;
 
 public class Initializer_Test extends Parser_Test {
@@ -25,7 +26,7 @@ public class Initializer_Test extends Parser_Test {
 		String s = " 1;";
 		IExpressionInitializer init = (IExpressionInitializer) new ParserFacade().parseInitializer(s);
 		assertEquals(IInitializer.EXPRESSION_INITIALIZER, init.getNodeType0());
-		assertEquals("1", init.getExpression().toString());
+		assertEquals("1", ((NumberLiteral) init.getExpression()).getToken());
 		assertPosition(init, 1, 1);
 		
 		assertVisitor(init, 2);
@@ -108,7 +109,7 @@ public class Initializer_Test extends Parser_Test {
 		
 		IExpressionInitializer expInit = (IExpressionInitializer) fragments.get(0).getInitializer();
 		IExpression exp = expInit.getExpression();
-		assertEquals("1", exp.toString());
+		assertEquals("1", ((NumberLiteral) exp).getToken());
 	}
 	
 	public void testArrayInitializers2() {
@@ -126,7 +127,7 @@ public class Initializer_Test extends Parser_Test {
 		
 		IExpressionInitializer expInit = (IExpressionInitializer) fragments.get(0).getInitializer();
 		IExpression exp = expInit.getExpression();
-		assertEquals("1", exp.toString());
+		assertEquals("1", ((NumberLiteral) exp).getToken());
 	}
 	
 	public void testArrayInitializersNested() {

@@ -5162,72 +5162,16 @@ public class Parser extends Lexer {
 		    break;
 
 		case TOKint32v:
-		    e = new IntegerExp(token.numberValue, PrimitiveType.Code.INT);
-		    e.startPosition = token.ptr;
-		    e.length = token.len;
-		    nextToken();
-		    break;
-
 		case TOKuns32v:
-		    e = new IntegerExp(token.numberValue, PrimitiveType.Code.UINT);
-		    e.startPosition = token.ptr;
-		    e.length = token.len;
-		    nextToken();
-		    break;
-
 		case TOKint64v:
-		    e = new IntegerExp(token.numberValue, PrimitiveType.Code.LONG);
-		    e.startPosition = token.ptr;
-		    e.length = token.len;
-		    nextToken();
-		    break;
-
 		case TOKuns64v:
-		    e = new IntegerExp(token.numberValue, PrimitiveType.Code.ULONG);
-		    e.startPosition = token.ptr;
-		    e.length = token.len;
-		    nextToken();
-		    break;
-
 		case TOKfloat32v:
-		    e = new RealExp(token.numberValue, PrimitiveType.Code.FLOAT);
-		    e.startPosition = token.ptr;
-		    e.length = token.len;
-		    nextToken();
-		    break;
-
 		case TOKfloat64v:
-		    e = new RealExp(token.numberValue, PrimitiveType.Code.DOUBLE);
-		    e.startPosition = token.ptr;
-		    e.length = token.len;
-		    nextToken();
-		    break;
-
 		case TOKfloat80v:
-		    e = new RealExp(token.numberValue, PrimitiveType.Code.REAL);
-		    e.startPosition = token.ptr;
-		    e.length = token.len;
-		    nextToken();
-		    break;
-
 		case TOKimaginary32v:
-		    e = new RealExp(token.numberValue, PrimitiveType.Code.IFLOAT);
-		    e.startPosition = token.ptr;
-		    e.length = token.len;
-		    nextToken();
-		    break;
-
 		case TOKimaginary64v:
-		    e = new RealExp(token.numberValue, PrimitiveType.Code.IDOUBLE);
-		    e.startPosition = token.ptr;
-		    e.length = token.len;
-		    nextToken();
-		    break;
-
 		case TOKimaginary80v:
-		    e = new RealExp(token.numberValue, PrimitiveType.Code.IREAL);
-		    e.startPosition = token.ptr;
-		    e.length = token.len;
+		    e = newNumberLiteral(token);
 		    nextToken();
 		    break;
 
@@ -5248,17 +5192,9 @@ public class Parser extends Lexer {
 		    break;
 
 		case TOKcharv:
-		    e = new IntegerExp(token.numberValue, PrimitiveType.Code.CHAR);
-		    nextToken();
-		    break;
-
 		case TOKwcharv:
-		    e = new IntegerExp(token.numberValue, PrimitiveType.Code.WCHAR);
-		    nextToken();
-		    break;
-
 		case TOKdcharv:
-		    e = new IntegerExp(token.numberValue, PrimitiveType.Code.DCHAR);
+			e = newCharacterLiteral(token);
 		    nextToken();
 		    break;
 
@@ -5314,7 +5250,7 @@ public class Parser extends Lexer {
 			    	problem("Identifier expected", IProblem.SEVERITY_ERROR, IProblem.IDENTIFIER_EXPECTED, token.ptr, token.len);
 			    	// goto Lerr;
 		    		// Anything for e, as long as it's not NULL
-		    		e = new IntegerExp(BigInteger.ZERO, PrimitiveType.Code.INT);
+			    	e = new NumberLiteral(ast);
 		    		nextToken();
 		    		break;
 			    }
@@ -5344,7 +5280,7 @@ public class Parser extends Lexer {
 			    	problem("Identifier expected", IProblem.SEVERITY_ERROR, IProblem.IDENTIFIER_EXPECTED, token.ptr, token.len);
 					// goto Lerr;
 			    	// Anything for e, as long as it's not NULL
-			    	e = new IntegerExp(BigInteger.ZERO, PrimitiveType.Code.INT);
+			    	e = new NumberLiteral(ast);
 			    	nextToken();
 			    	break;
 			    }
@@ -5417,7 +5353,7 @@ public class Parser extends Lexer {
 						IProblem.INVALID_IFTYPE_SYNTAX, token.ptr, token.len);
 				// goto Lerr;
 				// Anything for e, as long as it's not NULL
-				e = new IntegerExp(BigInteger.ZERO, PrimitiveType.Code.INT);
+				e = new NumberLiteral(ast);
 				nextToken();
 				break;
 			}
@@ -5535,7 +5471,7 @@ public class Parser extends Lexer {
 			problem("Expression expected", IProblem.SEVERITY_ERROR, IProblem.EXPRESSION_EXPECTED, token.ptr, token.len);
 		// Lerr:
 		    // Anything for e, as long as it's not NULL
-		    e = new IntegerExp(BigInteger.ZERO, PrimitiveType.Code.INT);
+			e = new NumberLiteral(ast);
 		    nextToken();
 		    break;
 	    }
@@ -6412,6 +6348,20 @@ public class Parser extends Lexer {
 		modifier.setModifierKeyword(ModifierKeyword.toKeyword(token.toString()));
 		modifier.setSourceRange(token.ptr, token.len);
 		return modifier;
+	}
+	
+	private NumberLiteral newNumberLiteral(Token token) {
+		NumberLiteral number = new NumberLiteral(ast);
+		number.setToken(token.string);
+		number.setSourceRange(token.ptr, token.len);
+		return number;
+	}
+	
+	private CharacterLiteral newCharacterLiteral(Token token) {
+		CharacterLiteral number = new CharacterLiteral(ast);
+		number.setEscapedValue(token.string);
+		number.setSourceRange(token.ptr, token.len);
+		return number;
 	}
 	
 	private List<Comment> getLastDocComments() {

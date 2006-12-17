@@ -13,6 +13,7 @@ import descent.core.dom.ITupleTemplateParameter;
 import descent.core.dom.IType;
 import descent.core.dom.ITypeTemplateParameter;
 import descent.core.dom.IValueTemplateParameter;
+import descent.internal.core.dom.NumberLiteral;
 import descent.internal.core.dom.ParserFacade;
 import descent.internal.core.dom.TemplateParameter;
 
@@ -21,6 +22,7 @@ public class Template_Test extends Parser_Test {
 	public void testEmpty() {
 		String s = " template Temp() { }";
 		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
+		assertEquals(0, unit.getProblems().length);
 		IElement[] declDefs = unit.getDeclarationDefinitions();
 		assertEquals(1, declDefs.length);
 		
@@ -39,6 +41,7 @@ public class Template_Test extends Parser_Test {
 	public void testDeclDefs() {
 		String s = " template Temp() { int x; }";
 		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
+		assertEquals(0, unit.getProblems().length);
 		IElement[] declDefs = unit.getDeclarationDefinitions();
 		assertEquals(1, declDefs.length);
 		
@@ -52,6 +55,7 @@ public class Template_Test extends Parser_Test {
 	public void testParameters() {
 		String s = " template Temp(T, U : U*, V : int, W = int, alias A : B = C) { }";
 		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
+		assertEquals(0, unit.getProblems().length);
 		IElement[] declDefs = unit.getDeclarationDefinitions();
 		
 		ITemplateDeclaration t = (ITemplateDeclaration) declDefs[0];
@@ -102,6 +106,7 @@ public class Template_Test extends Parser_Test {
 	public void testParametersTuple() {
 		String s = " template Temp(T ...) { }";
 		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
+		assertEquals(0, unit.getProblems().length);
 		IElement[] declDefs = unit.getDeclarationDefinitions();
 		
 		ITemplateDeclaration t = (ITemplateDeclaration) declDefs[0];
@@ -119,6 +124,7 @@ public class Template_Test extends Parser_Test {
 	public void testParametersValue() {
 		String s = " template Temp(int T : 2 = 3) { }";
 		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
+		assertEquals(0, unit.getProblems().length);
 		IElement[] declDefs = unit.getDeclarationDefinitions();
 		
 		ITemplateDeclaration t = (ITemplateDeclaration) declDefs[0];
@@ -133,13 +139,14 @@ public class Template_Test extends Parser_Test {
 		assertPosition(param.getName(), 19, 1);
 		
 		assertEquals("int", param.getType().toString());
-		assertEquals("2", param.getSpecificValue().toString());
-		assertEquals("3", param.getDefaultValue().toString());
+		assertEquals("2", ((NumberLiteral) param.getSpecificValue()).getToken());
+		assertEquals("3", ((NumberLiteral) param.getDefaultValue()).getToken());
 	}
 	
 	public void testAggregate() {
 		String s = " class Bla(T) { }";
 		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
+		assertEquals(0, unit.getProblems().length);
 		IElement[] declDefs = unit.getDeclarationDefinitions();
 		assertEquals(1, declDefs.length);
 		
@@ -153,6 +160,7 @@ public class Template_Test extends Parser_Test {
 	public void testFunction() {
 		String s = " T Square(T)(T t) { return t * t; }";
 		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
+		assertEquals(0, unit.getProblems().length);
 		IElement[] declDefs = unit.getDeclarationDefinitions();
 		assertEquals(1, declDefs.length);
 		

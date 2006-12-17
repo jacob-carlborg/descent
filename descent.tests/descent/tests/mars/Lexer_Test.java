@@ -106,8 +106,8 @@ public class Lexer_Test extends TestCase {
 		assertToken(" \\1", TOK.TOKstring, 1, 2);
 		assertToken(" \\12", TOK.TOKstring, 1, 3);
 		assertToken(" \\123", TOK.TOKstring, 1, 4);
-		assertToken(" \\uab12", TOK.TOKstring, 1, 6);
-		assertToken(" \\Uab12AB12", TOK.TOKstring, 1, 10);
+		assertToken(" \\u1234", TOK.TOKstring, 1, 6);
+		assertToken(" \\U00001234", TOK.TOKstring, 1, 10);
 		// TODO: named entities
 	}
 	
@@ -154,11 +154,11 @@ public class Lexer_Test extends TestCase {
 	}
 	
 	public void testChar() {
-		assertToken(" 'c'", TOK.TOKcharv, 1, 3);
-		assertToken(" '\\n'", TOK.TOKcharv, 1, 4);
-		assertToken(" '\\1234'", TOK.TOKcharv, 1, 6);
-		assertToken(" '\\u1234'", TOK.TOKwcharv, 1, 8);
-		assertToken(" '\\U12345678'", TOK.TOKdcharv, 1, 12);
+		assertCharToken(" 'c'", TOK.TOKcharv, 1, 3);
+		assertCharToken(" '\\n'", TOK.TOKcharv, 1, 4);
+		assertCharToken(" '\\123'", TOK.TOKcharv, 1, 6);
+		assertCharToken(" '\\u1234'", TOK.TOKwcharv, 1, 8);
+		assertCharToken(" '\\U00001234'", TOK.TOKdcharv, 1, 12);
 	}
 	
 	public void testComments() {
@@ -176,6 +176,16 @@ public class Lexer_Test extends TestCase {
 		assertEquals(t, lexer.nextToken());
 		assertEquals(start, lexer.token.ptr);
 		assertEquals(len, lexer.token.len);
+		assertEquals(0, lexer.problems.size());
+	}
+	
+	private void assertCharToken(String s, TOK t, int start, int len) {
+		Lexer lexer = new Lexer(s);
+		assertEquals(t, lexer.nextToken());
+		assertEquals(s.trim(), lexer.token.string);
+		assertEquals(start, lexer.token.ptr);
+		assertEquals(len, lexer.token.len);
+		assertEquals(0, lexer.problems.size());
 	}
 	
 	private void assertStringToken(String s, String value, int start, int len) {
@@ -184,30 +194,37 @@ public class Lexer_Test extends TestCase {
 		assertEquals(value, lexer.token.string);
 		assertEquals(start, lexer.token.ptr);
 		assertEquals(len, lexer.token.len);
+		assertEquals(0, lexer.problems.size());
 	}
 	
 	private void assertInt32Token(String s, int value, int start, int len) {
 		Lexer lexer = new Lexer(s);
 		assertEquals(TOK.TOKint32v, lexer.nextToken());
 		assertEquals(BigInteger.valueOf(value), lexer.token.numberValue);
+		assertEquals(s.trim(), lexer.token.string);
 		assertEquals(start, lexer.token.ptr);
 		assertEquals(len, lexer.token.len);
+		assertEquals(0, lexer.problems.size());
 	}
 	
 	private void assertUns32Token(String s, int value, int start, int len) {
 		Lexer lexer = new Lexer(s);
 		assertEquals(TOK.TOKuns32v, lexer.nextToken());
 		assertEquals(BigInteger.valueOf(value), lexer.token.numberValue);
+		assertEquals(s.trim(), lexer.token.string);
 		assertEquals(start, lexer.token.ptr);
 		assertEquals(len, lexer.token.len);
+		assertEquals(0, lexer.problems.size());
 	}
 	
 	private void assertInt64Token(String s, int value, int start, int len) {
 		Lexer lexer = new Lexer(s);
 		assertEquals(TOK.TOKint64v, lexer.nextToken());
 		assertEquals(BigInteger.valueOf(value), lexer.token.numberValue);
+		assertEquals(s.trim(), lexer.token.string);
 		assertEquals(start, lexer.token.ptr);
 		assertEquals(len, lexer.token.len);
+		assertEquals(0, lexer.problems.size());
 	}
 	
 	private void assertComment(String string, String comment, int start, int len, TOK tok) {
@@ -218,6 +235,7 @@ public class Lexer_Test extends TestCase {
 		assertEquals(start, com.startPosition);
 		assertEquals(len, com.length);
 		assertEquals(tok, com.tok);
+		assertEquals(0, lexer.problems.size());
 	}
 
 }

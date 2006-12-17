@@ -313,7 +313,7 @@ public class Lexer implements IProblemCollector {
 			do
 			{
 			    p++;
-			    c = escapeSequence();
+			    c = escapeSequence(new StringBuilder());
 			    stringbuffer.writeUTF8(c);
 			} while (input[p] == '\\');
 				t.len = p - t.ptr;
@@ -962,15 +962,15 @@ public class Lexer implements IProblemCollector {
 		return;
 	}
 	
-	private int escapeSequence() {
+	private int escapeSequence(StringBuilder stringBuilder) {
 		int c;
-	    int n;
-	    int ndigits = 0;
-	    int startOfNumber;
+		int n;
+		int ndigits = 0;
+		int startOfNumber;
 
-	    c = input[p];
-	    switch (c)
-	    {
+		c = input[p];
+		stringBuilder.append((char) c);
+		switch (c) {
 		case '\'':
 		case '"':
 		case '?':
@@ -978,13 +978,34 @@ public class Lexer implements IProblemCollector {
 			p++;
 			break;
 
-		case 'a':	c = 7; p++; break;
-		case 'b':	c = 8; p++; break;
-		case 'f':	c = 12; p++; break;
-		case 'n':	c = 10; p++; break;
-		case 'r':	c = 13; p++; break;
-		case 't':	c = 9; p++; break;
-		case 'v':	c = 11; p++; break;
+		case 'a':
+			c = 7;
+			p++;
+			break;
+		case 'b':
+			c = 8;
+			p++;
+			break;
+		case 'f':
+			c = 12;
+			p++;
+			break;
+		case 'n':
+			c = 10;
+			p++;
+			break;
+		case 'r':
+			c = 13;
+			p++;
+			break;
+		case 't':
+			c = 9;
+			p++;
+			break;
+		case 'v':
+			c = 11;
+			p++;
+			break;
 
 		case 'u':
 			ndigits = 4;
@@ -993,26 +1014,31 @@ public class Lexer implements IProblemCollector {
 				ndigits = 8;
 		case 'x':
 			startOfNumber = p - 1;
-			if (ndigits == 0)
+			if (ndigits == 0) {
 				ndigits = 2;
+			}
 			p++;
 			c = input[p];
+			stringBuilder.append((char) c);
 			if (Chars.ishex(c)) {
 				long v;
 
 				n = 0;
 				v = 0;
 				while (true) {
-					if (Chars.isdigit(c))
+					if (Chars.isdigit(c)) {
 						c -= '0';
-					else if (Chars.islower(c))
+					} else if (Chars.islower(c)) {
 						c -= 'a' - 10;
-					else
+					} else {
 						c -= 'A' - 10;
+					}
 					v = v * 16 + c;
 					c = input[++p];
-					if (++n == ndigits)
+					if (++n == ndigits) {
 						break;
+					}
+					stringBuilder.append((char) c);
 					if (!Chars.ishex(c)) {
 						problem(
 								"Escape hex sequence has " + n
@@ -1024,10 +1050,10 @@ public class Lexer implements IProblemCollector {
 					}
 				}
 				if (ndigits != 2 && !Utf.isValidDchar(v)) {
-					problem(
-							"Invalid UTF character: \\U" + Long.toHexString(v),
+					problem("Invalid UTF character: \\U" + Long.toHexString(v),
 							IProblem.SEVERITY_ERROR,
-							IProblem.INVALID_UTF_CHARACTER, startOfNumber, p - startOfNumber);
+							IProblem.INVALID_UTF_CHARACTER, startOfNumber, p
+									- startOfNumber);
 				}
 				c = (int) v;
 			} else {
@@ -1038,58 +1064,61 @@ public class Lexer implements IProblemCollector {
 			}
 			break;
 
-		case '&':			// named character entity
-			for (int idstart = ++p; true; p++)
-			{
-			    switch (input[p])
-			    {
+		case '&': // named character entity
+			for (int idstart = ++p; true; p++) {
+				switch (input[p]) {
 				case ';':
-				    c = Entity.HtmlNamedEntity(input, idstart, p - idstart, this);
-				    if (c == ~0)
-				    {   
-				    	// TODO: ?
-				    	//error("unnamed character entity &%.*s;", p - idstart, idstart);
-				    	c = ' ';
-				    }
-				    p++;
-				    break;
+					c = Entity.HtmlNamedEntity(input, idstart, p - idstart,
+							this);
+					if (c == ~0) {
+						// TODO: ?
+						// error("unnamed character entity &%.*s;", p - idstart,
+						// idstart);
+						c = ' ';
+					}
+					p++;
+					break;
 
 				default:
-				    if (Chars.isalpha(input[p]) ||
-					(p != idstart + 1 && Chars.isdigit(input[p])))
-					continue;
-				    problem("Unterminated named entity", IProblem.SEVERITY_ERROR,
-				    		IProblem.UNTERMINATED_NAMED_ENTITY, idstart - 1, p - idstart + 1);
-				    break;
-			    }
-			    break;
+					if (Chars.isalpha(input[p])
+							|| (p != idstart + 1 && Chars.isdigit(input[p])))
+						continue;
+					problem("Unterminated named entity",
+							IProblem.SEVERITY_ERROR,
+							IProblem.UNTERMINATED_NAMED_ENTITY, idstart - 1, p
+									- idstart + 1);
+					break;
+				}
+				break;
 			}
 			break;
 
 		case 0:
-		case 0x1A:			// end of file
+		case 0x1A: // end of file
 			c = '\\';
 			break;
 
 		default:
-			if (Chars.isoctal(c))
-			{   int v;
+			if (Chars.isoctal(c)) {
+				int v;
 
-			    n = 0;
-			    v = 0;
-			    do
-			    {
-				v = v * 8 + (c - '0');
-				c = input[++p];
-			    } while (++n < 3 && Chars.isoctal(c));
-			    c = v;
-			}
-			else {
-				problem("Undefined escape sequence", IProblem.SEVERITY_ERROR, IProblem.UNDEFINED_ESCAPE_SEQUENCE, p - 1, 2);
+				n = 0;
+				v = 0;
+				do {
+					v = v * 8 + (c - '0');
+					c = input[++p];
+					if (n + 1 < 3 && Chars.isoctal(c)) {
+						stringBuilder.append((char) c);
+					}
+				} while (++n < 3 && Chars.isoctal(c));
+				c = v;
+			} else {
+				problem("Undefined escape sequence", IProblem.SEVERITY_ERROR,
+						IProblem.UNDEFINED_ESCAPE_SEQUENCE, p - 1, 2);
 			}
 			break;
-	    }
-	    return c;
+		}
+		return c;
 	}
 	
 	private TOK wysiwygStringConstant(Token t, int tc) {
@@ -1244,12 +1273,12 @@ public class Lexer implements IProblemCollector {
 			    case 'u':
 			    case 'U':
 			    case '&':
-				c = escapeSequence();
+				c = escapeSequence(new StringBuilder());
 				stringbuffer.writeUTF8(c);
 				continue;
 
 			    default:
-				c = escapeSequence();
+				c = escapeSequence(new StringBuilder());
 				break;
 			}
 			break;
@@ -1303,72 +1332,84 @@ public class Lexer implements IProblemCollector {
 	
 	private TOK charConstant(Token t, int wide) {
 		int c;
-	    TOK tk = TOKcharv;
+		TOK tk = TOKcharv;
+		
+		StringBuilder fullChar = new StringBuilder();
+		fullChar.append("'");
 
-	    //printf("Lexer::charConstant\n");
-	    p++;
-	    c = input[p++];
-	    switch (c)
-	    {
+		p++;
+		c = input[p++];
+		fullChar.append((char) c);		
+		
+		switch (c) {
 		case '\\':
-		    switch (input[p])
-		    {
+			switch (input[p]) {
 			case 'u':
-			    t.numberValue = BigInteger.valueOf(escapeSequence());
-			    tk = TOKwcharv;
-			    break;
+				escapeSequence(fullChar);
+				//t.numberValue = BigInteger.valueOf(escapeSequence(fullChar));
+				tk = TOKwcharv;
+				break;
 
 			case 'U':
 			case '&':
-			    t.numberValue = BigInteger.valueOf(escapeSequence());
-			    tk = TOKdcharv;
-			    break;
+				//t.numberValue = BigInteger.valueOf(escapeSequence(fullChar));
+				escapeSequence(fullChar);
+				tk = TOKdcharv;
+				break;
 
 			default:
-			    t.numberValue = BigInteger.valueOf(escapeSequence());
-			    break;
-		    }
-		    break;
+				//t.numberValue = BigInteger.valueOf(escapeSequence(fullChar));
+				escapeSequence(fullChar);
+				break;
+			}
+			break;
 
 		case '\n':
-		    linnum++;
+			linnum++;
 		case '\r':
 		case 0:
 		case 0x1A:
 		case '\'': {
-		    problem("Unterminated character constant", IProblem.SEVERITY_ERROR, IProblem.UNTERMINATED_CHARACTER_CONSTANT, token.ptr, p - token.ptr);
-		    return tk;
+			problem("Unterminated character constant", IProblem.SEVERITY_ERROR,
+					IProblem.UNTERMINATED_CHARACTER_CONSTANT, token.ptr, p
+							- token.ptr);
+			return tk;
 		}
 
 		default:
-		    if ((c & 0x80) != 0)
-		    {
-			p--;
-			c = decodeUTF();
-			p++;
-			if (c == LS || c == PS) {
-				linnum++;
-				problem("Unterminated character constant", IProblem.SEVERITY_ERROR, IProblem.UNTERMINATED_CHARACTER_CONSTANT, token.ptr, p - token.ptr);
-				return tk;
+			if ((c & 0x80) != 0) {
+				p--;
+				c = decodeUTF();
+				p++;
+				if (c == LS || c == PS) {
+					linnum++;
+					problem("Unterminated character constant",
+							IProblem.SEVERITY_ERROR,
+							IProblem.UNTERMINATED_CHARACTER_CONSTANT,
+							token.ptr, p - token.ptr);
+					return tk;
+				}
+				if (c < 0xD800 || (c >= 0xE000 && c < 0xFFFE))
+					tk = TOKwcharv;
+				else
+					tk = TOKdcharv;
 			}
-			if (c < 0xD800 || (c >= 0xE000 && c < 0xFFFE))
-			    tk = TOKwcharv;
-			else
-			    tk = TOKdcharv;
-		    }
-		    break;
-	    }
-	    
-	    t.numberValue = BigInteger.valueOf(c);
-	    t.len = p - t.ptr + 1;
+			break;
+		}
 
-	    if (input[p] != '\'')
-	    {	
-	    	problem("Unterminated character constant", IProblem.SEVERITY_ERROR, IProblem.UNTERMINATED_CHARACTER_CONSTANT, token.ptr, p - token.ptr);
-	    	return tk;
-	    }
-	    p++;
-	    return tk;
+		fullChar.append("'");
+		t.string = new String(fullChar);
+		//t.numberValue = BigInteger.valueOf(c);
+		t.len = p - t.ptr + 1;
+
+		if (input[p] != '\'') {
+			problem("Unterminated character constant", IProblem.SEVERITY_ERROR,
+					IProblem.UNTERMINATED_CHARACTER_CONSTANT, token.ptr, p
+							- token.ptr);
+			return tk;
+		}
+		p++;
+		return tk;
 	}
 	
 	private void stringPostfix(Token t) {
@@ -1443,6 +1484,8 @@ public class Lexer implements IProblemCollector {
 		int c;
 		int start;
 		TOK result;
+		
+		StringBuilder fullNumber = new StringBuilder();
 
 		// printf("Lexer::number()\n");
 		state = STATE.STATE_initial;
@@ -1452,6 +1495,7 @@ public class Lexer implements IProblemCollector {
 
 	goto_done: 
 		while (true) {
+			boolean writeToStringBuffer = true;
 			c = input[p];
 			switch (state) {
 			case STATE_initial: // opening state
@@ -1512,8 +1556,9 @@ public class Lexer implements IProblemCollector {
 				// #endif
 				case '_':
 					state = STATE.STATE_octal;
+					writeToStringBuffer = false;
 					p++;
-					continue;
+					break;
 					
 			    case 'L':
 					if (input[p + 1] == 'i') {
@@ -1537,8 +1582,8 @@ public class Lexer implements IProblemCollector {
 					// #endif
 					if (c == '_') // ignore embedded _
 					{
-						p++;
-						continue;
+						writeToStringBuffer = false;
+						break;
 					}
 					if (c == '.' && input[p + 1] != '.') {
 						p = start;
@@ -1564,8 +1609,8 @@ public class Lexer implements IProblemCollector {
 				if (!Chars.ishex(c)) {
 					if (c == '_') // ignore embedded _
 					{
-						p++;
-						continue;
+						writeToStringBuffer = false;
+						break;
 					}
 					if (c == '.' && input[p + 1] != '.') {
 						p = start;
@@ -1606,8 +1651,8 @@ public class Lexer implements IProblemCollector {
 					// #endif
 					if (c == '_') // ignore embedded _
 					{
-						p++;
-						continue;
+						writeToStringBuffer = false;
+						break;
 					}
 					if (c == '.' && input[p + 1] != '.') {
 						p = start;
@@ -1634,8 +1679,8 @@ public class Lexer implements IProblemCollector {
 					// #endif
 					if (c == '_') // ignore embedded _
 					{
-						p++;
-						continue;
+						writeToStringBuffer = false;
+						break;
 					}
 					if (state == STATE.STATE_binary0) {
 						problem("Binary digit expected",
@@ -1657,7 +1702,10 @@ public class Lexer implements IProblemCollector {
 			default:
 				throw new IllegalStateException("Can't happen");
 			}
-			stringbuffer.writeByte(c);
+			if (writeToStringBuffer) {
+				stringbuffer.writeByte(c);
+			}
+			fullNumber.append((char) c);
 			p++;
 		}
 		
@@ -1717,6 +1765,7 @@ public class Lexer implements IProblemCollector {
 							p - 1, 1);
 				}
 				flags = (flags | f);
+				fullNumber.append(input[p - 1]);				
 				continue;
 
 			case 'l':
@@ -1733,6 +1782,7 @@ public class Lexer implements IProblemCollector {
 							p - 1, 1);
 				}
 				flags = (flags | f);
+				fullNumber.append(input[p - 1]);
 				continue;
 			default:
 				break;
@@ -1810,6 +1860,7 @@ public class Lexer implements IProblemCollector {
 		default:
 			throw new IllegalStateException("Can't happen");
 		}
+		t.string = new String(fullNumber);
 		t.numberValue = n;
 		return result;
 	}
@@ -1819,6 +1870,8 @@ public class Lexer implements IProblemCollector {
 		int c;
 		int hex; // is this a hexadecimal-floating-constant?
 		TOK result;
+		
+		StringBuilder fullNumber = new StringBuilder();
 
 		// printf("Lexer::inreal()\n");
 		stringbuffer.reset();
@@ -1900,6 +1953,7 @@ public class Lexer implements IProblemCollector {
 			if (writeByte) {
 				stringbuffer.writeByte(c);
 			}
+			fullNumber.append((char) c); 
 		}
 		p--;
 
@@ -1919,6 +1973,7 @@ public class Lexer implements IProblemCollector {
 			 * #endif
 			 */
 			result = TOKfloat32v;
+			fullNumber.append(input[p]);
 			p++;
 			break;
 
@@ -1938,6 +1993,7 @@ public class Lexer implements IProblemCollector {
 					p, 1);
 		case 'L':
 			result = TOKfloat80v;
+			fullNumber.append(input[p]);
 			p++;
 			break;
 		}
@@ -1947,6 +2003,7 @@ public class Lexer implements IProblemCollector {
 						IProblem.SEVERITY_ERROR, IProblem.I_SUFFIX_DEPRECATED,
 						p, 1);
 			}
+			fullNumber.append(input[p]);
 			p++;
 			switch (result) {
 			case TOKfloat32v:
@@ -1964,6 +2021,9 @@ public class Lexer implements IProblemCollector {
 		 * TODO: #if _WIN32 && __DMC__ __locale_decpoint = save; #endif if
 		 * (errno == ERANGE) error("number is not representable");
 		 */
+		
+		t.string = new String(fullNumber);
+		
 		return result;
 	}
 	

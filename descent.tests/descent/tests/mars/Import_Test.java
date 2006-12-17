@@ -14,6 +14,7 @@ public class Import_Test extends Parser_Test {
 	public void testImportSingle() throws Exception {
 		String s = " import a; ";
 		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
+		assertEquals(0, unit.getProblems().length);
 		
 		IElement[] declarations = unit.getDeclarationDefinitions();
 		assertEquals(1, declarations.length);
@@ -37,6 +38,7 @@ public class Import_Test extends Parser_Test {
 	public void testImportMultiple() throws Exception {
 		String s = " import a, b, c; ";
 		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
+		assertEquals(0, unit.getProblems().length);
 		
 		IElement[] declarations = unit.getDeclarationDefinitions();
 		assertEquals(1, declarations.length);
@@ -52,6 +54,7 @@ public class Import_Test extends Parser_Test {
 	public void testImportQualified() throws Exception {
 		String s = " import uno.dos.tres; ";
 		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
+		assertEquals(0, unit.getProblems().length);
 		
 		IElement[] declDefs = unit.getDeclarationDefinitions();
 		assertEquals(1, declDefs.length);
@@ -72,6 +75,7 @@ public class Import_Test extends Parser_Test {
 	public void testImportAlias() throws Exception {
 		String s = " import mAlias = uno.dos.tres; ";
 		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
+		assertEquals(0, unit.getProblems().length);
 		
 		IElement[] declDefs = unit.getDeclarationDefinitions();
 		assertEquals(1, declDefs.length);
@@ -96,6 +100,7 @@ public class Import_Test extends Parser_Test {
 	public void testImportSelective() throws Exception {
 		String s = " import uno : dos; ";
 		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
+		assertEquals(0, unit.getProblems().length);
 		
 		IElement[] declDefs = unit.getDeclarationDefinitions();
 		assertEquals(1, declDefs.length);
@@ -123,6 +128,7 @@ public class Import_Test extends Parser_Test {
 	public void testImportSelectiveWithAlias() throws Exception {
 		String s = " import uno : mAlias = dos; ";
 		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
+		assertEquals(0, unit.getProblems().length);
 		
 		IElement[] declDefs = unit.getDeclarationDefinitions();
 		assertEquals(1, declDefs.length);
@@ -152,6 +158,7 @@ public class Import_Test extends Parser_Test {
 	public void testStaticImport() throws Exception {
 		String s = " static import a;";
 		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
+		assertEquals(0, unit.getProblems().length);
 		
 		IElement[] declDefs = unit.getDeclarationDefinitions();
 		assertEquals(1, declDefs.length);

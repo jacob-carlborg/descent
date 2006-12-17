@@ -13,6 +13,7 @@ public class Struct_Test extends Parser_Test {
 	public void testEmpty() {
 		String s = " struct Clazz { }";
 		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
+		assertEquals(0, unit.getProblems().length);
 		IElement[] declDefs = unit.getDeclarationDefinitions();
 		assertEquals(1, declDefs.length);
 		
@@ -32,6 +33,7 @@ public class Struct_Test extends Parser_Test {
 	public void testSemicolon() {
 		String s = " struct Clazz;";
 		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
+		assertEquals(0, unit.getProblems().length);
 		IElement[] declDefs = unit.getDeclarationDefinitions();
 		assertEquals(1, declDefs.length);
 		
@@ -42,6 +44,7 @@ public class Struct_Test extends Parser_Test {
 	public void testWithComments() {
 		String s = " /** hola */ struct Clazz;";
 		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
+		assertEquals(0, unit.getProblems().length);
 		IElement[] declDefs = unit.getDeclarationDefinitions();
 		assertEquals(1, declDefs.length);
 		

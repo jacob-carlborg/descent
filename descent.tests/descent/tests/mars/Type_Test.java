@@ -14,6 +14,7 @@ import descent.core.dom.IType;
 import descent.core.dom.ITypeofType;
 import descent.core.dom.IVariableDeclaration;
 import descent.internal.core.dom.DelegateType;
+import descent.internal.core.dom.NumberLiteral;
 import descent.internal.core.dom.ParserFacade;
 import descent.internal.core.dom.PrimitiveType;
 
@@ -75,7 +76,7 @@ public class Type_Test extends Parser_Test {
 		IStaticArrayType type = (IStaticArrayType) getType("int [3]");
 		assertEquals(IArrayType.STATIC_ARRAY_TYPE, type.getNodeType0());
 		// TODO test to string somehow assertEquals("int[3]", type.toString()); // not 
-		assertEquals("3", type.getSize().toString());
+		assertEquals("3", ((NumberLiteral) type.getSize()).getToken());
 		assertPosition(type, 1, 7);
 		assertPosition(type.getComponentType(), 1, 3);
 	}
@@ -139,7 +140,7 @@ public class Type_Test extends Parser_Test {
 	
 	public void testTypeof() {
 		ITypeofType type = (ITypeofType) getType("typeof(1)");
-		assertEquals("1", type.getExpression().toString());
+		assertEquals("1", ((NumberLiteral) type.getExpression()).getToken());
 		assertPosition(type, 1, 9);
 		
 		assertVisitor(type, 2);
@@ -147,7 +148,7 @@ public class Type_Test extends Parser_Test {
 	
 	public void testTypeofPlus() {
 		ITypeofType type = (ITypeofType) getType("typeof(1).bla");
-		assertEquals("1", type.getExpression().toString());
+		assertEquals("1", ((NumberLiteral) type.getExpression()).getToken());
 		assertPosition(type, 1, 13);
 		// TODO
 	}
@@ -156,13 +157,14 @@ public class Type_Test extends Parser_Test {
 		ISliceType type = (ISliceType) getType("int[1 .. 2]");
 		assertPosition(type, 1, 11);
 		assertEquals("int", type.getComponentType().toString());
-		assertEquals("1", type.getFromExpression().toString());
-		assertEquals("2", type.getToExpression().toString());
+		assertEquals("1", ((NumberLiteral) type.getFromExpression()).getToken());
+		assertEquals("2", ((NumberLiteral) type.getToExpression()).getToken());
 	}
 	
 	private IType getType(String type) {
 		String s = " " + type + " x;";
 		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
+		assertEquals(0, unit.getProblems().length);
 		IElement[] declDefs = unit.getDeclarationDefinitions();
 		assertEquals(1, declDefs.length);
 		

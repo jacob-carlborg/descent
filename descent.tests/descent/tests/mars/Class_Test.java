@@ -17,6 +17,7 @@ public class Class_Test extends Parser_Test {
 	public void testEmpty() {
 		String s = " class Clazz { }";
 		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
+		assertEquals(0, unit.getProblems().length);
 		IElement[] declDefs = unit.getDeclarationDefinitions();
 		assertEquals(1, declDefs.length);
 		
@@ -40,6 +41,7 @@ public class Class_Test extends Parser_Test {
 	public void testSemicolon() {
 		String s = " class Clazz;";
 		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
+		assertEquals(0, unit.getProblems().length);
 		IElement[] declDefs = unit.getDeclarationDefinitions();
 		assertEquals(1, declDefs.length);
 		
@@ -50,6 +52,7 @@ public class Class_Test extends Parser_Test {
 	public void testBaseClasses() {
 		String s = " class Clazz : None, private Private, package Package, protected Protected, public Public { }";
 		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
+		assertEquals(0, unit.getProblems().length);
 		IElement[] declDefs = unit.getDeclarationDefinitions();
 		IAggregateDeclaration c = (IAggregateDeclaration) declDefs[0];
 		List<BaseClass> bs = c.baseClasses();
@@ -71,6 +74,7 @@ public class Class_Test extends Parser_Test {
 	public void testWithComments() {
 		String s = " /** hola */ class Clazz;";
 		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
+		assertEquals(0, unit.getProblems().length);
 		IElement[] declDefs = unit.getDeclarationDefinitions();
 		assertEquals(1, declDefs.length);
 		
@@ -85,6 +89,7 @@ public class Class_Test extends Parser_Test {
 	public void testDontCarryComments() {
 		String s = " /** hola */ class A; class B;";
 		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
+		assertEquals(0, unit.getProblems().length);
 		IElement[] declDefs = unit.getDeclarationDefinitions();
 		assertEquals(2, declDefs.length);
 		
@@ -103,6 +108,7 @@ public class Class_Test extends Parser_Test {
 	public void testWithMembers() {
 		String s = " class Clazz { int x; }";
 		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
+		assertEquals(0, unit.getProblems().length);
 		IElement[] declDefs = unit.getDeclarationDefinitions();
 		assertEquals(1, declDefs.length);
 		
@@ -116,6 +122,7 @@ public class Class_Test extends Parser_Test {
 	public void testClassAlias() {
 		String s = " alias class Clazz { int x; }";
 		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
+		assertEquals(0, unit.getProblems().length);
 		IElement[] declDefs = unit.getDeclarationDefinitions();
 		assertEquals(1, declDefs.length);
 		

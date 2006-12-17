@@ -18,6 +18,7 @@ public class Condition_Test extends Parser_Test {
 	public void testVersionString() {
 		String s = " version(linux) { }";
 		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
+		assertEquals(0, unit.getProblems().length);
 		IElement[] declDefs = unit.getDeclarationDefinitions();
 		assertEquals(1, declDefs.length);
 		
@@ -31,6 +32,7 @@ public class Condition_Test extends Parser_Test {
 	public void testVersionNumber() {
 		String s = " version(1) { }";
 		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
+		assertEquals(0, unit.getProblems().length);
 		IElement[] declDefs = unit.getDeclarationDefinitions();
 		assertEquals(1, declDefs.length);
 		
@@ -44,6 +46,7 @@ public class Condition_Test extends Parser_Test {
 	public void testVersionElse() {
 		String s = " version(Windows) { } else { }";
 		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
+		assertEquals(0, unit.getProblems().length);
 		IElement[] declDefs = unit.getDeclarationDefinitions();
 		assertEquals(1, declDefs.length);
 		
@@ -54,6 +57,7 @@ public class Condition_Test extends Parser_Test {
 	public void testDebug() {
 		String s = " debug(bla) { int x; } else { }";
 		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
+		assertEquals(0, unit.getProblems().length);
 		IElement[] declDefs = unit.getDeclarationDefinitions();
 		assertEquals(1, declDefs.length);
 		
@@ -68,6 +72,7 @@ public class Condition_Test extends Parser_Test {
 	public void testStaticIf() {
 		String s = " static if(true) { int x; } else { }";
 		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
+		assertEquals(0, unit.getProblems().length);
 		IElement[] declDefs = unit.getDeclarationDefinitions();
 		assertEquals(1, declDefs.length);
 		
@@ -81,6 +86,7 @@ public class Condition_Test extends Parser_Test {
 	public void testVersionAssign() {
 		String s = " version = 2;";
 		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
+		assertEquals(0, unit.getProblems().length);
 		IElement[] declDefs = unit.getDeclarationDefinitions();
 		assertEquals(1, declDefs.length);
 		
@@ -93,6 +99,7 @@ public class Condition_Test extends Parser_Test {
 	public void testVersionAssign2() {
 		String s = " version = some;";
 		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
+		assertEquals(0, unit.getProblems().length);
 		IElement[] declDefs = unit.getDeclarationDefinitions();
 		assertEquals(1, declDefs.length);
 		
@@ -105,6 +112,7 @@ public class Condition_Test extends Parser_Test {
 	public void testDebugAssign() {
 		String s = " debug = 2;";
 		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
+		assertEquals(0, unit.getProblems().length);
 		IElement[] declDefs = unit.getDeclarationDefinitions();
 		assertEquals(1, declDefs.length);
 		
@@ -117,6 +125,7 @@ public class Condition_Test extends Parser_Test {
 	public void testDebugAssign2() {
 		String s = " debug = some;";
 		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
+		assertEquals(0, unit.getProblems().length);
 		IElement[] declDefs = unit.getDeclarationDefinitions();
 		assertEquals(1, declDefs.length);
 		
@@ -129,6 +138,7 @@ public class Condition_Test extends Parser_Test {
 	public void testIftypeNone() {
 		String s = " iftype(x) { }";
 		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
+		assertEquals(1, unit.getProblems().length); // iftype deprecated
 		IElement[] declDefs = unit.getDeclarationDefinitions();
 		assertEquals(1, declDefs.length);
 		
@@ -146,6 +156,7 @@ public class Condition_Test extends Parser_Test {
 	public void testIftypeEquals() {
 		String s = " iftype(x == y) { }";
 		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
+		assertEquals(1, unit.getProblems().length); // iftype deprecated
 		IElement[] declDefs = unit.getDeclarationDefinitions();
 		assertEquals(1, declDefs.length);
 		
@@ -163,6 +174,7 @@ public class Condition_Test extends Parser_Test {
 	public void testIftypeExtends() {
 		String s = " iftype(x : y) { }";
 		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
+		assertEquals(1, unit.getProblems().length); // iftype deprecated
 		IElement[] declDefs = unit.getDeclarationDefinitions();
 		assertEquals(1, declDefs.length);
 		
@@ -180,6 +192,7 @@ public class Condition_Test extends Parser_Test {
 	public void testIftypeWithIdentifier() {
 		String s = " iftype(int x : y) { }";
 		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
+		assertEquals(1, unit.getProblems().length); // iftype deprecated
 		IElement[] declDefs = unit.getDeclarationDefinitions();
 		assertEquals(1, declDefs.length);
 		

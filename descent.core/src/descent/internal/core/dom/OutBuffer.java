@@ -59,5 +59,10 @@ public class OutBuffer {
 	    else
 	    	throw new IllegalStateException("Can't happen");
 	}
+	
+	@Override
+	public String toString() {
+		return data.toString();
+	}
 
 }

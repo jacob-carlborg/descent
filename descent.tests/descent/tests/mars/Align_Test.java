@@ -11,6 +11,7 @@ public class Align_Test extends Parser_Test {
 	public void testWithNumber() {
 		String s = " align(4): class Pub { }";
 		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
+		assertEquals(0, unit.getProblems().length);
 		IElement[] declDefs = unit.getDeclarationDefinitions();
 		
 		IAlignDeclaration align;
@@ -27,6 +28,7 @@ public class Align_Test extends Parser_Test {
 	public void testWithoutNumber() {
 		String s = " align: class Pub { }";
 		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
+		assertEquals(0, unit.getProblems().length);
 		IElement[] declDefs = unit.getDeclarationDefinitions();
 		
 		IAlignDeclaration align;

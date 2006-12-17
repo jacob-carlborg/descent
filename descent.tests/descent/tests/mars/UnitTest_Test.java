@@ -10,6 +10,7 @@ public class UnitTest_Test extends Parser_Test {
 	public void test() {
 		String s = " unittest { } ";
 		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
+		assertEquals(0, unit.getProblems().length);
 		IElement[] declDefs = unit.getDeclarationDefinitions();
 		
 		IUnitTestDeclaration inv = (IUnitTestDeclaration) declDefs[0];

@@ -22,6 +22,7 @@ public class Link_Test extends Parser_Test {
 		for(Object[] linkX : links) {
 			String s = " extern(" + linkX[0] + ") { }";
 			ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
+			assertEquals(0, unit.getProblems().length);
 			IElement[] declDefs = unit.getDeclarationDefinitions();
 			
 			IExternDeclaration link = (IExternDeclaration) declDefs[0];

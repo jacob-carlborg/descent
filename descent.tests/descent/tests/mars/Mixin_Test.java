@@ -3,6 +3,7 @@ package descent.tests.mars;
 import descent.core.dom.ICompilationUnit;
 import descent.core.dom.IElement;
 import descent.core.dom.IMixinDeclaration;
+import descent.internal.core.dom.NumberLiteral;
 import descent.internal.core.dom.ParserFacade;
 
 public class Mixin_Test extends Parser_Test {
@@ -10,6 +11,7 @@ public class Mixin_Test extends Parser_Test {
 	public void testOne() {
 		String s = " mixin Foo!(int, real) m;";
 		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
+		assertEquals(0, unit.getProblems().length);
 		IElement[] declDefs = unit.getDeclarationDefinitions();
 		assertEquals(1, declDefs.length);
 		
@@ -33,6 +35,7 @@ public class Mixin_Test extends Parser_Test {
 	public void testTwo() {
 		String s = " mixin a.b.Foo!(int, real) m;";
 		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
+		assertEquals(0, unit.getProblems().length);
 		IElement[] declDefs = unit.getDeclarationDefinitions();
 		assertEquals(1, declDefs.length);
 		
@@ -72,6 +75,7 @@ public class Mixin_Test extends Parser_Test {
 	public void testTypeof() {
 		String s = " mixin typeof(2).Foo!(int, real) m;";
 		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
+		assertEquals(0, unit.getProblems().length);
 		IElement[] declDefs = unit.getDeclarationDefinitions();
 		assertEquals(1, declDefs.length);
 		
@@ -86,12 +90,13 @@ public class Mixin_Test extends Parser_Test {
 		assertEquals("Foo", m.getType().toString());
 		assertPosition(m.getType(), 17, 3);
 		
-		assertEquals("2", m.getTypeofType().getExpression().toString());
+		assertEquals("2", ((NumberLiteral) m.getTypeofType().getExpression()).getToken());
 	}
 	
 	public void testExpressionParameter() {
 		String s = " mixin Foo!(2) m;";
 		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
+		assertEquals(0, unit.getProblems().length);
 		IElement[] declDefs = unit.getDeclarationDefinitions();
 		assertEquals(1, declDefs.length);
 		
@@ -100,12 +105,13 @@ public class Mixin_Test extends Parser_Test {
 		
 		IElement[] params = m.getTemplateArguments();
 		assertEquals(1, params.length);
-		assertEquals("2", params[0].toString());
+		assertEquals("2", ((NumberLiteral) params[0]).getToken());
 	}
 	
 	public void testWithoutNot() {
 		String s = " mixin Foo m;";
 		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
+		assertEquals(0, unit.getProblems().length);
 		IElement[] declDefs = unit.getDeclarationDefinitions();
 		assertEquals(1, declDefs.length);
 		
@@ -127,6 +133,7 @@ public class Mixin_Test extends Parser_Test {
 	public void testDotAfterTemplate() {
 		String s = " mixin Foo!().bar m;";
 		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
+		assertEquals(0, unit.getProblems().length);
 		IElement[] declDefs = unit.getDeclarationDefinitions();
 		assertEquals(1, declDefs.length);
 		

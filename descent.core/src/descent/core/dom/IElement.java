@@ -695,6 +695,10 @@ public interface IElement {
 	
 	int STRUCT_INITIALIZER_FRAGMENT = 131;
 	
+	int NUMBER_LITERAL = 132;
+
+	int CHARACTER_LITERAL = 132;
+	
 	/**
 	 * Returns the start position in the source code where this element
 	 * is located.

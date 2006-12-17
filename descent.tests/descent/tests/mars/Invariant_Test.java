@@ -10,6 +10,7 @@ public class Invariant_Test extends Parser_Test {
 	public void test() {
 		String s = " invariant { } ";
 		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
+		assertEquals(0, unit.getProblems().length);
 		IElement[] declDefs = unit.getDeclarationDefinitions();
 		
 		IInvariantDeclaration inv = (IInvariantDeclaration) declDefs[0];

@@ -12,6 +12,7 @@ public class Typedef_Test extends Parser_Test {
 	public void testOne() {
 		String s = " typedef int Bla;";
 		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
+		assertEquals(0, unit.getProblems().length);
 		IElement[] declDefs = unit.getDeclarationDefinitions();
 		assertEquals(1, declDefs.length);
 		
@@ -29,6 +30,7 @@ public class Typedef_Test extends Parser_Test {
 	public void testInitializer() {
 		String s = " typedef int Bla = 1;";
 		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
+		assertEquals(0, unit.getProblems().length);
 		IElement[] declDefs = unit.getDeclarationDefinitions();
 		assertEquals(1, declDefs.length);
 		
@@ -49,6 +51,7 @@ public class Typedef_Test extends Parser_Test {
 	public void testMany() {
 		String s = " typedef int Bla, Ble;";
 		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
+		assertEquals(0, unit.getProblems().length);
 		IElement[] declDefs = unit.getDeclarationDefinitions();
 		assertEquals(2, declDefs.length);
 		

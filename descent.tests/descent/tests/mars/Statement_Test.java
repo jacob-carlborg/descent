@@ -20,7 +20,6 @@ import descent.core.dom.IGotoStatement;
 import descent.core.dom.IIfStatement;
 import descent.core.dom.ILabelStatement;
 import descent.core.dom.IMixinDeclaration;
-import descent.core.dom.IModifier;
 import descent.core.dom.IPragmaStatement;
 import descent.core.dom.IReturnStatement;
 import descent.core.dom.IScopeStatement;
@@ -41,6 +40,7 @@ import descent.core.dom.IWithStatement;
 import descent.internal.core.dom.AggregateDeclaration;
 import descent.internal.core.dom.Argument;
 import descent.internal.core.dom.BooleanLiteral;
+import descent.internal.core.dom.NumberLiteral;
 import descent.internal.core.dom.ParserFacade;
 import descent.internal.core.dom.ScopeStatement;
 import descent.internal.core.dom.SimpleName;
@@ -54,7 +54,7 @@ public class Statement_Test extends Parser_Test {
 		assertEquals(IStatement.EXPRESSION_STATEMENT, stm.getNodeType0());
 		assertPosition(stm, 1, 2);
 		
-		assertEquals(IExpression.INTEGER_EXPRESSION, stm.getExpression().getNodeType0());
+		assertEquals(IExpression.NUMBER_LITERAL, stm.getExpression().getNodeType0());
 		
 		assertVisitor(stm, 2);
 	}
@@ -176,7 +176,7 @@ public class Statement_Test extends Parser_Test {
 		assertEquals(IStatement.STATIC_ASSERT_STATEMENT, stm.getNodeType0());
 		assertPosition(stm, 1, 23);
 		
-		assertEquals("1", stm.getStaticAssert().getExpression().toString());
+		assertEquals("1", ((NumberLiteral) stm.getStaticAssert().getExpression()).getToken());
 		assertTrue(((BooleanLiteral) stm.getStaticAssert().getMessage()).booleanValue());
 	}
 	
@@ -190,7 +190,7 @@ public class Statement_Test extends Parser_Test {
 		assertEquals(IElement.STATIC_ASSERT, stm.getNodeType0());
 		assertPosition(stm, 1, 23);
 		
-		assertEquals("1", stm.getExpression().toString());
+		assertEquals("1", ((NumberLiteral) stm.getExpression()).getToken());
 		assertTrue(((BooleanLiteral) stm.getMessage()).booleanValue());
 		
 		assertVisitor(stm, 3);
@@ -300,7 +300,7 @@ public class Statement_Test extends Parser_Test {
 		assertEquals(IStatement.SWITCH_STATEMENT, stm.getNodeType0());
 		assertPosition(stm, 1, s.length() - 1);
 		
-		assertEquals("1", stm.getExpression().toString());
+		assertEquals("1", ((NumberLiteral) stm.getExpression()).getToken());
 	}
 	
 	public void testTryFinally() {
@@ -329,7 +329,7 @@ public class Statement_Test extends Parser_Test {
 		assertEquals(IStatement.THROW_STATEMENT, stm.getNodeType0());
 		assertPosition(stm, 1, s.length() - 1);
 		
-		assertEquals("1", stm.getExpression().toString());
+		assertEquals("1", ((NumberLiteral) stm.getExpression()).getToken());
 	}
 	
 	public void testSynchronized1() {
@@ -430,7 +430,7 @@ public class Statement_Test extends Parser_Test {
 		assertEquals(IStatement.IF_STATEMENT, stm.getNodeType0());
 		assertPosition(stm, 1, s.length() - 1);
 		
-		assertEquals("1", stm.getExpression().toString());
+		assertEquals("1", ((NumberLiteral) stm.getExpression()).getToken());
 		assertNull(stm.getArgument());
 	}
 	
@@ -441,7 +441,7 @@ public class Statement_Test extends Parser_Test {
 		assertEquals(IStatement.IF_STATEMENT, stm.getNodeType0());
 		assertPosition(stm, 1, s.length() - 1);
 		
-		assertEquals("1", stm.getExpression().toString());
+		assertEquals("1", ((NumberLiteral) stm.getExpression()).getToken());
 		assertNotNull(stm.getArgument());
 		assertEquals("x", stm.getArgument().getName().getIdentifier());
 		assertPosition(stm.getArgument(), 5, 6);
@@ -454,7 +454,7 @@ public class Statement_Test extends Parser_Test {
 		assertEquals(IStatement.IF_STATEMENT, stm.getNodeType0());
 		assertPosition(stm, 1, s.length() - 1);
 		
-		assertEquals("1", stm.getExpression().toString());
+		assertEquals("1", ((NumberLiteral) stm.getExpression()).getToken());
 		
 		IArgument argument = stm.getArgument();
 		assertNotNull(argument);
@@ -485,7 +485,7 @@ public class Statement_Test extends Parser_Test {
 		assertEquals(IConditionalStatement.STATIC_IF_STATEMENT, stm.getNodeType0());
 		assertPosition(stm, 1, s.length() - 1);
 		
-		assertEquals("1", stm.getExpression().toString());
+		assertEquals("1", ((NumberLiteral) stm.getExpression()).getToken());
 	}
 	
 	public void testDebug1() {
@@ -560,7 +560,7 @@ public class Statement_Test extends Parser_Test {
 	}
 	
 	public void testScope() {
-		String s = " scope x;";
+		String s = " scope int x;";
 		IDeclarationStatement stm = (IDeclarationStatement) new ParserFacade().parseStatement(s);
 		
 		IVariableDeclaration var = (IVariableDeclaration) stm.getDeclaration();

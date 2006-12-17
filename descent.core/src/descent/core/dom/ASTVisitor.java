@@ -2,8 +2,10 @@ package descent.core.dom;
 
 import descent.internal.core.dom.AliasDeclarationFragment;
 import descent.internal.core.dom.ArrayInitializerFragment;
+import descent.internal.core.dom.CharacterLiteral;
 import descent.internal.core.dom.DebugAssignment;
 import descent.internal.core.dom.Modifier;
+import descent.internal.core.dom.NumberLiteral;
 import descent.internal.core.dom.StructInitializerFragment;
 import descent.internal.core.dom.Version;
 import descent.internal.core.dom.VersionAssignment;
@@ -92,6 +94,22 @@ public abstract class ASTVisitor {
 	}
 	
 	public void endVisit(Modifier node) {
+		
+	}
+	
+	public boolean visit(NumberLiteral node) {
+		return true;
+	}
+	
+	public void endVisit(NumberLiteral node) {
+		
+	}
+	
+	public boolean visit(CharacterLiteral node) {
+		return true;
+	}
+	
+	public void endVisit(CharacterLiteral node) {
 		
 	}
 	

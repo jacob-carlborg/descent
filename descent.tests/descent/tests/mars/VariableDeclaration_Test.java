@@ -17,6 +17,7 @@ public class VariableDeclaration_Test extends Parser_Test {
 	public void testOne() {
 		String s = " int x;";
 		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
+		assertEquals(0, unit.getProblems().length);
 		IElement[] declDefs = unit.getDeclarationDefinitions();
 		assertEquals(1, declDefs.length);
 		
@@ -33,6 +34,7 @@ public class VariableDeclaration_Test extends Parser_Test {
 	public void testTwo() {
 		String s = " int x, y;";
 		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
+		assertEquals(0, unit.getProblems().length);
 		IElement[] declDefs = unit.getDeclarationDefinitions();
 		assertEquals(2, declDefs.length);
 		
@@ -54,6 +56,7 @@ public class VariableDeclaration_Test extends Parser_Test {
 	public void testComments() {
 		String s = " /** hola */ int x;";
 		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
+		assertEquals(0, unit.getProblems().length);
 		IElement[] declDefs = unit.getDeclarationDefinitions();
 		assertEquals(1, declDefs.length);
 		
@@ -68,6 +71,7 @@ public class VariableDeclaration_Test extends Parser_Test {
 	public void testCStyle() {
 		String s = " int x[3];";
 		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
+		assertEquals(0, unit.getProblems().length);
 		IElement[] declDefs = unit.getDeclarationDefinitions();
 		assertEquals(1, declDefs.length);
 		
@@ -82,6 +86,7 @@ public class VariableDeclaration_Test extends Parser_Test {
 	public void testCStyle2() {
 		String s = " int x[3][5];";
 		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
+		assertEquals(0, unit.getProblems().length);
 		IElement[] declDefs = unit.getDeclarationDefinitions();
 		assertEquals(1, declDefs.length);
 		
@@ -96,6 +101,7 @@ public class VariableDeclaration_Test extends Parser_Test {
 	public void testCStyle3() {
 		String s = " int (*x[5])[3];";
 		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
+		assertEquals(0, unit.getProblems().length);
 		IElement[] declDefs = unit.getDeclarationDefinitions();
 		assertEquals(1, declDefs.length);
 		
@@ -110,6 +116,7 @@ public class VariableDeclaration_Test extends Parser_Test {
 	public void testCStyle5() {
 		String s = " int (*x)(char);";
 		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
+		assertEquals(0, unit.getProblems().length);
 		IElement[] declDefs = unit.getDeclarationDefinitions();
 		assertEquals(1, declDefs.length);
 		
@@ -128,6 +135,7 @@ public class VariableDeclaration_Test extends Parser_Test {
 	public void testCStyle6() {
 		String s = " int (*[] x)(char);";
 		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
+		assertEquals(0, unit.getProblems().length);
 		IElement[] declDefs = unit.getDeclarationDefinitions();
 		assertEquals(1, declDefs.length);
 		
@@ -148,6 +156,7 @@ public class VariableDeclaration_Test extends Parser_Test {
 	public void testAuto() {
 		String s = " auto x = 1;";
 		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
+		assertEquals(0, unit.getProblems().length);
 		IElement[] declDefs = unit.getDeclarationDefinitions();
 		assertEquals(1, declDefs.length);
 		
@@ -160,6 +169,7 @@ public class VariableDeclaration_Test extends Parser_Test {
 	public void testStatic() {
 		String s = " static x = 1;";
 		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
+		assertEquals(0, unit.getProblems().length);
 		IElement[] declDefs = unit.getDeclarationDefinitions();
 		assertEquals(1, declDefs.length);
 		
@@ -172,6 +182,7 @@ public class VariableDeclaration_Test extends Parser_Test {
 	public void testExtern() {
 		String s = " extern x = 1;";
 		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
+		assertEquals(0, unit.getProblems().length);
 		IElement[] declDefs = unit.getDeclarationDefinitions();
 		assertEquals(1, declDefs.length);
 		
@@ -196,6 +207,7 @@ public class VariableDeclaration_Test extends Parser_Test {
 		for(Object[] modifier : modifiers) {
 			String s = " static " + modifier[0] + " x = 1;";
 			ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
+			assertEquals(0, unit.getProblems().length);
 			IElement[] declDefs = unit.getDeclarationDefinitions();
 			assertEquals(1, declDefs.length);
 			
@@ -221,6 +233,7 @@ public class VariableDeclaration_Test extends Parser_Test {
 		for(Object[] modifier : modifiers) {
 			String s = " alias " + modifier[0] + " x = 1;";
 			ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
+			assertEquals(0, unit.getProblems().length);
 			IElement[] declDefs = unit.getDeclarationDefinitions();
 			assertEquals(1, declDefs.length);
 			
@@ -234,6 +247,7 @@ public class VariableDeclaration_Test extends Parser_Test {
 	public void testAssociativeArray() {
 		String s = " char x[int] = 1;";
 		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
+		assertEquals(0, unit.getProblems().length);
 		IElement[] declDefs = unit.getDeclarationDefinitions();
 		assertEquals(1, declDefs.length);
 		
@@ -249,6 +263,7 @@ public class VariableDeclaration_Test extends Parser_Test {
 	public void testTemplate() {
 		String s = " a.b.Temp!(int) x = 1;";
 		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
+		assertEquals(0, unit.getProblems().length);
 		IElement[] declDefs = unit.getDeclarationDefinitions();
 		assertEquals(1, declDefs.length);
 		
@@ -269,6 +284,7 @@ public class VariableDeclaration_Test extends Parser_Test {
 	public void testTemplate2() {
 		String s = " Temp!(int) x = 1;";
 		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
+		assertEquals(0, unit.getProblems().length);
 		IElement[] declDefs = unit.getDeclarationDefinitions();
 		assertEquals(1, declDefs.length);
 		
@@ -289,6 +305,7 @@ public class VariableDeclaration_Test extends Parser_Test {
 	public void testTemplate3() {
 		String s = " .Temp!(int) x = 1;";
 		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
+		assertEquals(0, unit.getProblems().length);
 		IElement[] declDefs = unit.getDeclarationDefinitions();
 		assertEquals(1, declDefs.length);
 		

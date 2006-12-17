@@ -15,6 +15,7 @@ public class Interface_Test extends Parser_Test {
 	public void testEmpty() {
 		String s = " interface Clazz { }";
 		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
+		assertEquals(0, unit.getProblems().length);
 		IElement[] declDefs = unit.getDeclarationDefinitions();
 		assertEquals(1, declDefs.length);
 		
@@ -34,6 +35,7 @@ public class Interface_Test extends Parser_Test {
 	public void testSemicolon() {
 		String s = " interface Clazz;";
 		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
+		assertEquals(0, unit.getProblems().length);
 		IElement[] declDefs = unit.getDeclarationDefinitions();
 		assertEquals(1, declDefs.length);
 		
@@ -44,6 +46,7 @@ public class Interface_Test extends Parser_Test {
 	public void testBaseClasses() {
 		String s = " interface Clazz : None, private Private, package Package, protected Protected, public Public { }";
 		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
+		assertEquals(0, unit.getProblems().length);
 		IElement[] declDefs = unit.getDeclarationDefinitions();
 		IAggregateDeclaration c = (IAggregateDeclaration) declDefs[0];
 		IBaseClass[] bs = c.baseClasses().toArray(new IBaseClass[c.baseClasses().size()]);
@@ -60,6 +63,7 @@ public class Interface_Test extends Parser_Test {
 	public void testWithComments() {
 		String s = " /** hola */ interface Clazz;";
 		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
+		assertEquals(0, unit.getProblems().length);
 		IElement[] declDefs = unit.getDeclarationDefinitions();
 		assertEquals(1, declDefs.length);
 		

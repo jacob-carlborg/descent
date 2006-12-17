@@ -17,6 +17,7 @@ public class Modifier_Test extends Parser_Test {
 	public void testWithoutModifiers() {
 		String s = " alias int Bla;";
 		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
+		assertEquals(0, unit.getProblems().length);
 		IElement[] declDefs = unit.getDeclarationDefinitions();
 		assertEquals(1, declDefs.length);
 		
@@ -46,6 +47,7 @@ public class Modifier_Test extends Parser_Test {
 		for(Object[] pair : objs) {
 			String s = " " + pair[0] + " alias int Bla;";
 			ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
+			assertEquals(0, unit.getProblems().length);
 			IElement[] declDefs = unit.getDeclarationDefinitions();
 			assertEquals(1, declDefs.length);
 			
@@ -67,6 +69,7 @@ public class Modifier_Test extends Parser_Test {
 	public void testManyProtectionModifiersAsJava() {
 		String s = " private public alias int Bla;";
 		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
+		assertEquals(0, unit.getProblems().length);
 		IElement[] declDefs = unit.getDeclarationDefinitions();
 		assertEquals(1, declDefs.length);
 		
@@ -89,6 +92,7 @@ public class Modifier_Test extends Parser_Test {
 	public void testProtectionAndStaticModifiersAsJava() {
 		String s = " private static alias int Bla;";
 		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
+		assertEquals(0, unit.getProblems().length);
 		IElement[] declDefs = unit.getDeclarationDefinitions();
 		assertEquals(1, declDefs.length);
 		
@@ -111,6 +115,7 @@ public class Modifier_Test extends Parser_Test {
 	public void testProtectionAndOtherModifiersAsJava() {
 		String s = " private const alias int Bla;";
 		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
+		assertEquals(0, unit.getProblems().length);
 		IElement[] declDefs = unit.getDeclarationDefinitions();
 		assertEquals(1, declDefs.length);
 		
@@ -133,6 +138,7 @@ public class Modifier_Test extends Parser_Test {
 	public void testStaticAndProtectionModifiersAsJava() {
 		String s = " static private alias int Bla;";
 		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
+		assertEquals(0, unit.getProblems().length);
 		IElement[] declDefs = unit.getDeclarationDefinitions();
 		assertEquals(1, declDefs.length);
 		
@@ -155,6 +161,7 @@ public class Modifier_Test extends Parser_Test {
 	public void testOtherAndProtectionModifiersAsJava() {
 		String s = " const private alias int Bla;";
 		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
+		assertEquals(0, unit.getProblems().length);
 		IElement[] declDefs = unit.getDeclarationDefinitions();
 		assertEquals(1, declDefs.length);
 		
@@ -177,6 +184,7 @@ public class Modifier_Test extends Parser_Test {
 	public void testOtherAndStaticModifiersAsJava() {
 		String s = " const static alias int Bla;";
 		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
+		assertEquals(0, unit.getProblems().length);
 		IElement[] declDefs = unit.getDeclarationDefinitions();
 		assertEquals(1, declDefs.length);
 		
@@ -199,6 +207,7 @@ public class Modifier_Test extends Parser_Test {
 	public void testStaticAndOtherModifiersAsJava() {
 		String s = " static const alias int Bla;";
 		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
+		assertEquals(0, unit.getProblems().length);
 		IElement[] declDefs = unit.getDeclarationDefinitions();
 		assertEquals(1, declDefs.length);
 		
@@ -238,6 +247,7 @@ public class Modifier_Test extends Parser_Test {
 		for(Object[] pair : objs) {
 			String s = " " + pair[0] + " { class Clazz { } }";
 			ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
+			assertEquals(0, unit.getProblems().length);
 			IElement[] declDefs = unit.getDeclarationDefinitions();
 			
 			ModifierDeclaration modifierDeclaration = (ModifierDeclaration) declDefs[0];
@@ -269,6 +279,7 @@ public class Modifier_Test extends Parser_Test {
 		for(Object[] pair : objs) {
 			String s = " " + pair[0] + ": class Clazz { }";
 			ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
+			assertEquals(0, unit.getProblems().length);
 			IElement[] declDefs = unit.getDeclarationDefinitions();
 			
 			ModifierDeclaration modifierDeclaration = (ModifierDeclaration) declDefs[0];
@@ -283,6 +294,7 @@ public class Modifier_Test extends Parser_Test {
 	public void testOnImport() {
 		String s = " private import x;";
 		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
+		assertEquals(0, unit.getProblems().length);
 		IElement[] declDefs = unit.getDeclarationDefinitions();
 		
 		IImportDeclaration decl = (IImportDeclaration) declDefs[0];
@@ -290,36 +302,10 @@ public class Modifier_Test extends Parser_Test {
 		// TODO assertEquals(IModifier.PRIVATE, decl.getModifier());
 	}
 	
-	public void testOnVar1() {
-		String s = " private int x;";
-		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
-		IElement[] declDefs = unit.getDeclarationDefinitions();
-		
-		IVariableDeclaration var = (IVariableDeclaration) declDefs[0];
-		// TODO assertEquals(IModifier.PRIVATE, var.getModifier());
-	}
-	
-	public void testOnVar2() {
-		String s = " const int x;";
-		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
-		IElement[] declDefs = unit.getDeclarationDefinitions();
-		
-		IVariableDeclaration var = (IVariableDeclaration) declDefs[0];
-		// TODO assertEquals(IModifier.CONST, var.getModifier());
-	}
-	
-	public void testOnTypedef() {
-		String s = " const typedef int Bla;";
-		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
-		IElement[] declDefs = unit.getDeclarationDefinitions();
-		
-		ITypedefDeclaration var = (ITypedefDeclaration) declDefs[0];
-		// TODO assertEquals(IModifier.CONST, var.getModifier());
-	}
-	
 	public void testPosition_bug() {
 		String s = " this() { } public int bla() { }";
 		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
+		assertEquals(0, unit.getProblems().length);
 		IElement[] declDefs = unit.getDeclarationDefinitions();
 		assertEquals(2, declDefs.length);
 		

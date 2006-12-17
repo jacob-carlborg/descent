@@ -10,6 +10,7 @@ public class Pragma_Test extends Parser_Test {
 	public void testOne() {
 		String s = " pragma(lib, 1, 2, 3)";
 		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
+		assertEquals(0, unit.getProblems().length);
 		IElement[] declDefs = unit.getDeclarationDefinitions();
 		assertEquals(1, declDefs.length);
 		

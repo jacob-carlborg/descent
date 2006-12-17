@@ -3,7 +3,7 @@ package descent.tests.mars;
 import junit.framework.TestCase;
 import descent.core.dom.IElement;
 
-public class Parser_Test extends TestCase {
+public abstract class Parser_Test extends TestCase {
 	
 	protected void assertPosition(IElement elem, int start, int length) {
 		assertEquals(start, elem.getStartPosition());
