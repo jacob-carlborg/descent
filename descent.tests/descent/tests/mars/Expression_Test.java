@@ -104,9 +104,8 @@ public class Expression_Test extends Parser_Test {
 		String s = " \"hola\"";
 		IStringExpression expr = (IStringExpression) new ParserFacade().parseExpression(s);
 		
-		assertEquals(IExpression.STRING_EXPRESSION, expr.getNodeType0());
-		assertEquals("hola", expr.getString());
-		assertEquals(0, expr.getPostfix());
+		assertEquals(IExpression.STRING_LITERAL, expr.getNodeType0());
+		assertEquals("\"hola\"", expr.getEscapedValue());
 		assertPosition(expr, 1, s.length() - 1);
 		
 		assertVisitor(expr, 1);
@@ -116,9 +115,8 @@ public class Expression_Test extends Parser_Test {
 		String s = " \"hola\" \"chau\"";
 		IStringExpression expr = (IStringExpression) new ParserFacade().parseExpression(s);
 		
-		assertEquals(IExpression.STRING_EXPRESSION, expr.getNodeType0());
-		assertEquals("holachau", expr.getString());
-		assertEquals(0, expr.getPostfix());
+		assertEquals(IExpression.STRING_LITERAL, expr.getNodeType0());
+		assertEquals("\"hola\"\"chau\"", expr.getEscapedValue());
 		assertPosition(expr, 1, s.length() - 1);
 	}
 	
@@ -126,9 +124,8 @@ public class Expression_Test extends Parser_Test {
 		String s = " \"hola\"c";
 		IStringExpression expr = (IStringExpression) new ParserFacade().parseExpression(s);
 		
-		assertEquals(IExpression.STRING_EXPRESSION, expr.getNodeType0());
-		assertEquals("hola", expr.getString());
-		assertEquals('c', expr.getPostfix());
+		assertEquals(IExpression.STRING_LITERAL, expr.getNodeType0());
+		assertEquals("\"hola\"c", expr.getEscapedValue());
 		assertPosition(expr, 1, s.length() - 1);
 	}
 	
@@ -136,7 +133,7 @@ public class Expression_Test extends Parser_Test {
 		String s = " x\"1234\"";
 		IStringExpression expr = (IStringExpression) new ParserFacade().parseExpression(s);
 		
-		assertEquals(IExpression.STRING_EXPRESSION, expr.getNodeType0());
+		assertEquals(IExpression.STRING_LITERAL, expr.getNodeType0());
 		assertPosition(expr, 1, s.length() - 1);
 	}
 	

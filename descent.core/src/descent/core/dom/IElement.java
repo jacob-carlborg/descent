@@ -213,7 +213,7 @@ public interface IElement {
 	 * Constant representing a string expression.
 	 * An expression with this type can be safely cast to <code>IStringExpression</code>. 
 	 */
-	int STRING_EXPRESSION = 40;
+	int STRING_LITERAL = 40;
 	
 	/**
 	 * Constant representing an integer expression.

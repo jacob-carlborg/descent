@@ -82,7 +82,6 @@ import static descent.internal.core.dom.TY.Taarray;
 import static descent.internal.core.dom.TY.Tfunction;
 import static descent.internal.core.dom.TY.Tsarray;
 
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 

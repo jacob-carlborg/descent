@@ -151,10 +151,10 @@ public class NumberLiteral extends Expression implements INumberLiteral {
 	 */ 
 	public void setToken(String token) {
 		// update internalSetToken(String) if this is changed
-		/* TODO
 		if (token == null || token.length() == 0) {
 			throw new IllegalArgumentException();
 		}
+		/* TODO
 		Scanner scanner = this.ast.scanner;
 		char[] source = token.toCharArray();
 		scanner.setSource(source);

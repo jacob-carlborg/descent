@@ -210,7 +210,6 @@ public class Lexer implements IProblemCollector {
 	*/
 	
 	public void scan(Token t) {
-		int lastLine = this.linnum;
 	    int linnum = this.linnum;
 	    
 	    while (true)
@@ -286,7 +285,11 @@ public class Lexer implements IProblemCollector {
 			}
 			p++;
 		    case '`':
+		    boolean hasR = input[p - 1] == 'r';
 			t.value = wysiwygStringConstant(t, input[p]);
+			if (hasR) {
+				t.string = "r" + t.string;
+			}
 			t.len = p - t.ptr;
 			return;
 
@@ -297,6 +300,7 @@ public class Lexer implements IProblemCollector {
 			}
 			p++;
 			t.value = hexStringConstant(t);
+			t.string = "x" + t.string;
 			t.len = p - t.ptr;
 			return;
 
@@ -306,22 +310,20 @@ public class Lexer implements IProblemCollector {
 			t.len = p - t.ptr;
 			return;
 
-		    case '\\':			// escaped string literal
-		    {	int c;
-
-				stringbuffer.reset();
-			do
+		    case '\\': // escaped string literal
 			{
-			    p++;
-			    c = escapeSequence(new StringBuilder());
-			    stringbuffer.writeUTF8(c);
-			} while (input[p] == '\\');
+				stringbuffer.reset();
+				stringbuffer.data.append(input[p]);
+				do {
+					p++;
+					escapeSequence(stringbuffer.data);
+				} while (input[p] == '\\');
 				t.len = p - t.ptr;
 				t.string = stringbuffer.data.toString();
 				t.postfix = 0;
 				t.value = TOKstring;
 				return;
-		    }
+			}
 
 		    case 'l':
 		    case 'L':
@@ -1123,12 +1125,15 @@ public class Lexer implements IProblemCollector {
 	
 	private TOK wysiwygStringConstant(Token t, int tc) {
 		int c;
+		
+		stringbuffer.reset();
+		stringbuffer.data.append(input[p]);
 
 	    p++;
-	    stringbuffer.reset();
 	    while (true)
 	    {
 		c = input[p++];
+		stringbuffer.data.append((char) c);
 		switch (c)
 		{
 		    case '\n':
@@ -1136,14 +1141,17 @@ public class Lexer implements IProblemCollector {
 			break;
 
 		    case '\r':
-			if (input[p] == '\n')
+			if (input[p] == '\n') {
+				stringbuffer.data.append(input[p]);
 			    continue;	// ignore
+			}
 			c = '\n';	// treat EndOfLine as \n character
 			linnum++;
 			break;
 
 		    case 0:
 		    case 0x1A: {
+		    	// TODO handle better
 		    	problem("Unterminated string constant", IProblem.SEVERITY_ERROR, IProblem.UNTERMINATED_STRING_CONSTANT, token.ptr, p - token.ptr - 1);
 				t.string = "";
 				t.len = 0;
@@ -1155,9 +1163,9 @@ public class Lexer implements IProblemCollector {
 		    case '`':
 			if (c == tc)
 			{
+			    stringPostfix(t, stringbuffer.data);
 			    t.len = stringbuffer.data.length();
 			    t.string = stringbuffer.data.toString();
-			    stringPostfix(t);
 			    return TOKstring;
 			}
 			break;
@@ -1174,7 +1182,6 @@ public class Lexer implements IProblemCollector {
 			}
 			break;
 		}
-		stringbuffer.writeByte(c);
 	    }
 	}
 	
@@ -1185,20 +1192,24 @@ public class Lexer implements IProblemCollector {
 
 	    p++;
 	    stringbuffer.reset();
+	    stringbuffer.data.append("\"");
 	    while (true)
 	    {
 		c = input[p++];
+		stringbuffer.data.append((char) c);
 		switch (c)
 		{
 		    case ' ':
 		    case '\t':
 		    // XXX: case '\v':
 		    case '\f':
-			continue;			// skip white space
+		    	continue;			// skip white space
 
 		    case '\r':
-			if (input[p] == '\n')
+			if (input[p] == '\n') {
+				stringbuffer.data.append(input[p]);
 			    continue;			// ignore
+			}
 			// Treat isolated '\r' as if it were a '\n'
 		    case '\n':
 			linnum++;
@@ -1219,9 +1230,9 @@ public class Lexer implements IProblemCollector {
 				problem("Odd number (" + n + ") of hex characters in hex string", IProblem.SEVERITY_ERROR, IProblem.ODD_NUMBER_OF_CHARACTERS_IN_HEX_STRING, token.ptr, p - token.ptr);
 			    stringbuffer.writeByte(v);
 			}
+			stringPostfix(t, stringbuffer.data);
 			t.len = stringbuffer.data.length();
 			t.string = stringbuffer.data.toString();
-			stringPostfix(t);
 			return TOKstring;
 
 		    default:
@@ -1246,7 +1257,7 @@ public class Lexer implements IProblemCollector {
 			}
 			if ((n & 1) != 0)
 			{   v = (v << 4) | c;
-			    stringbuffer.writeByte(v);
+			    //stringbuffer.writeByte(v);
 			}
 			else
 			    v = c;
@@ -1260,8 +1271,11 @@ public class Lexer implements IProblemCollector {
 		int c;
 	    //Loc start = loc;
 
+		stringbuffer.reset();
+		stringbuffer.data.append(input[p]);
+		
 	    p++;
-	    stringbuffer.reset();
+	    
 	    while (true)
 	    {
 		c = input[p++];
@@ -1273,12 +1287,11 @@ public class Lexer implements IProblemCollector {
 			    case 'u':
 			    case 'U':
 			    case '&':
-				c = escapeSequence(new StringBuilder());
-				stringbuffer.writeUTF8(c);
+				c = escapeSequence(stringbuffer.data);
 				continue;
 
 			    default:
-				c = escapeSequence(new StringBuilder());
+				c = escapeSequence(stringbuffer.data);
 				break;
 			}
 			break;
@@ -1288,16 +1301,18 @@ public class Lexer implements IProblemCollector {
 			break;
 
 		    case '\r':
-			if (input[p] == '\n')
+			if (input[p] == '\n') {
 			    continue;	// ignore
+			}
 			c = '\n';	// treat EndOfLine as \n character
 			linnum++;
 			break;
 
 		    case '"':
-			t.len = stringbuffer.data.length();
-			t.string = stringbuffer.data.toString();
-			stringPostfix(t);
+		    	stringbuffer.data.append("\"");
+				stringPostfix(t, stringbuffer.data);
+				t.len = stringbuffer.data.length();
+				t.string = stringbuffer.data.toString();
 			return TOKstring;
 
 		    case 0:
@@ -1412,12 +1427,13 @@ public class Lexer implements IProblemCollector {
 		return tk;
 	}
 	
-	private void stringPostfix(Token t) {
+	private void stringPostfix(Token t, StringBuilder stringBuilder) {
 		switch (input[p])
 	    {
 		case 'c':
 		case 'w':
 		case 'd':
+			stringBuilder.append(input[p]);
 		    t.postfix = input[p];
 		    p++;
 		    break;

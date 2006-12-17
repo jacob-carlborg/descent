@@ -13,7 +13,7 @@ public class StringExp extends Expression implements IStringExpression {
 		this.postfix = postfix;
 	}
 	
-	public String getString() {
+	public String getEscapedValue() {
 		return s;
 	}
 	
@@ -22,7 +22,7 @@ public class StringExp extends Expression implements IStringExpression {
 	}
 	
 	public int getNodeType0() {
-		return STRING_EXPRESSION;
+		return STRING_LITERAL;
 	}
 	
 	@Override

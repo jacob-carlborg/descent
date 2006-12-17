@@ -160,11 +160,11 @@ public class CharacterLiteral extends Expression implements ICharacterLiteral {
 	 * @exception IllegalArgumentException if the argument is incorrect
 	 */ 
 	public void setEscapedValue(String value) {
-		/* TODO
 		// check setInternalEscapedValue(String) if this method is changed
 		if (value == null) {
 			throw new IllegalArgumentException();
 		}
+		/* TODO
 		Scanner scanner = this.ast.scanner;
 		char[] source = value.toCharArray();
 		scanner.setSource(source);

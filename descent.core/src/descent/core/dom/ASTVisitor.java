@@ -6,6 +6,7 @@ import descent.internal.core.dom.CharacterLiteral;
 import descent.internal.core.dom.DebugAssignment;
 import descent.internal.core.dom.Modifier;
 import descent.internal.core.dom.NumberLiteral;
+import descent.internal.core.dom.StringLiteral;
 import descent.internal.core.dom.StructInitializerFragment;
 import descent.internal.core.dom.Version;
 import descent.internal.core.dom.VersionAssignment;
@@ -110,6 +111,14 @@ public abstract class ASTVisitor {
 	}
 	
 	public void endVisit(CharacterLiteral node) {
+		
+	}
+	
+	public boolean visit(StringLiteral node) {
+		return true;
+	}
+	
+	public void endVisit(StringLiteral node) {
 		
 	}
 	

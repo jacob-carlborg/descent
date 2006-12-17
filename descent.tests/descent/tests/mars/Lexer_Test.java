@@ -94,11 +94,11 @@ public class Lexer_Test extends TestCase {
 	}
 	
 	public void testEscapeSequenceSome() {
-		assertStringToken(" \\", "\\", 1, 1);
-		assertStringToken(" \\\\", "\\", 1, 2);
-		assertStringToken(" \\\"", "\"", 1, 2);
-		assertStringToken(" \\'", "'", 1, 2);
-		assertStringToken(" \\?", "?", 1, 2);
+		// TODO how to test EOF assertStringToken(" \\", 1, 1);
+		assertStringToken(" \\\\", 1, 2);
+		assertStringToken(" \\\"", 1, 2);
+		assertStringToken(" \\'", 1, 2);
+		assertStringToken(" \\?", 1, 2);
 	}
 	
 	public void testEscapeSequenceHex() {
@@ -108,26 +108,22 @@ public class Lexer_Test extends TestCase {
 		assertToken(" \\123", TOK.TOKstring, 1, 4);
 		assertToken(" \\u1234", TOK.TOKstring, 1, 6);
 		assertToken(" \\U00001234", TOK.TOKstring, 1, 10);
-		// TODO: named entities
 	}
+	
+	// TODO named entities
 	
 	public void testString() {
-		assertStringToken(" \"hola\"", "hola", 1, 6);
-		assertStringToken(" \"hola\"c", "hola", 1, 7);
-	}
-	
-	public void testWysiwygString() {
-		assertStringToken(" `ho\\la`", "ho\\la", 1, 7);
-		assertStringToken(" r\"ho\\la\"", "ho\\la", 1, 8);
-		assertStringToken(" `ho\\la`c", "ho\\la", 1, 8);
-		assertStringToken(" r\"ho\\la\"c", "ho\\la", 1, 9);
-	}
-	
-	public void testHexString() {
-		assertToken(" x\"1234\"", TOK.TOKstring, 1, 7);
-		assertToken(" x\"1D34 ab34 c2\"", TOK.TOKstring, 1, 15);
-		assertToken(" x\"1234\"c", TOK.TOKstring, 1, 8);
-		assertToken(" x\"1D34 ab34 c2\"c", TOK.TOKstring, 1, 16);
+		assertStringToken(" \"hola\"", 1, 6);
+		assertStringToken(" \"hola\n\"", 1, 7);
+		assertStringToken(" \"hola\"c", 1, 7);
+		assertStringToken(" `ho\\la`", 1, 7);
+		assertStringToken(" r\"ho\\la\"", 1, 8);
+		assertStringToken(" `ho\\la`c", 1, 8);
+		assertStringToken(" r\"ho\\la\"c", 1, 9);
+		assertStringToken(" x\"1234\"", 1, 7);
+		assertStringToken(" x\"1D34 ab34 c2\"", 1, 15);
+		assertStringToken(" x\"1234\"c", 1, 8);
+		assertStringToken(" x\"1D34 ab34 c2\"c", 1, 16);
 	}
 	
 	public void testNumber() {
@@ -188,10 +184,10 @@ public class Lexer_Test extends TestCase {
 		assertEquals(0, lexer.problems.size());
 	}
 	
-	private void assertStringToken(String s, String value, int start, int len) {
+	private void assertStringToken(String s, int start, int len) {
 		Lexer lexer = new Lexer(s);
 		assertEquals(TOK.TOKstring, lexer.nextToken());
-		assertEquals(value, lexer.token.string);
+		assertEquals(s.trim(), lexer.token.string);
 		assertEquals(start, lexer.token.ptr);
 		assertEquals(len, lexer.token.len);
 		assertEquals(0, lexer.problems.size());
