@@ -699,6 +699,8 @@ public interface IElement {
 
 	int CHARACTER_LITERAL = 132;
 	
+	int STRINGS_EXPRESSION = 133;
+	
 	/**
 	 * Returns the start position in the source code where this element
 	 * is located.

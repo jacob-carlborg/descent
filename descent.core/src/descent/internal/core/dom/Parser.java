@@ -5198,37 +5198,45 @@ public class Parser extends Lexer {
 		    break;
 
 		case TOKstring: {
-			String s;
-			int start = token.ptr; 
-			int len = token.len;
+			
+			int start = token.ptr;
+			StringsExpression stringsExpression = new StringsExpression(ast);
+			StringLiteral stringLiteral = newStringLiteral(token);
+			stringsExpression.stringLiterals().add(stringLiteral);
+			
 			int postfix;
+			boolean moreThanOne = false;
 
 			// cat adjacent strings
-			s = token.string;
 			postfix = token.postfix;
 			while (true) {
-				int lastStringString = token.ptr;
 				nextToken();
 				if (token.value == TOKstring) {
-					len = token.ptr + token.len - start;
+					moreThanOne = true;
 					if (token.postfix != 0) {
-						if (token.postfix != postfix)
+						if (token.postfix != postfix) {
 							problem("Mismatched string literal postfixes '" + (char) postfix + "' and '" + (char) token.postfix + "'",
 									IProblem.SEVERITY_ERROR,
 									IProblem.MISMATCHED_STRING_LITERAL_POSTFIXES,
-									lastStringString, token.ptr + token.len - lastStringString);
-							
+									stringLiteral.getStartPosition(), token.ptr + token.len - stringLiteral.getStartPosition());
+						}							
 						postfix = token.postfix;
 					}
 
-					if (token.string != null)
-						s += token.string;
+					if (token.string != null) {
+						stringLiteral = newStringLiteral(token);
+						stringsExpression.stringLiterals().add(stringLiteral);
+					}
 				} else
 					break;
 			}
-			e = new StringExp(s, len, postfix);
-			e.startPosition = start;
-			e.length = len;
+			
+			if (moreThanOne) {
+				stringsExpression.setSourceRange(start, prevToken.ptr + prevToken.len - start);			
+				e = stringsExpression;
+			} else {
+				e = stringLiteral;
+			}
 			break;
 		}
 		
@@ -6361,6 +6369,13 @@ public class Parser extends Lexer {
 		number.setEscapedValue(token.string);
 		number.setSourceRange(token.ptr, token.len);
 		return number;
+	}
+	
+	private StringLiteral newStringLiteral(Token token) {
+		StringLiteral string = new StringLiteral(ast);
+		string.setEscapedValue(token.string);
+		string.setSourceRange(token.ptr, token.len);
+		return string;
 	}
 	
 	private List<Comment> getLastDocComments() {

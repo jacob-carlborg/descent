@@ -41,6 +41,7 @@ import descent.internal.core.dom.ParserFacade;
 import descent.internal.core.dom.PostfixExpression;
 import descent.internal.core.dom.PrefixExpression;
 import descent.internal.core.dom.SimpleName;
+import descent.internal.core.dom.StringsExpression;
 import descent.internal.core.dom.FunctionLiteralDeclarationExpression.Syntax;
 
 public class Expression_Test extends Parser_Test {
@@ -113,11 +114,15 @@ public class Expression_Test extends Parser_Test {
 	
 	public void testStringMany() {
 		String s = " \"hola\" \"chau\"";
-		IStringExpression expr = (IStringExpression) new ParserFacade().parseExpression(s);
+		StringsExpression strings = (StringsExpression) new ParserFacade().parseExpression(s);
 		
-		assertEquals(IExpression.STRING_LITERAL, expr.getNodeType0());
-		assertEquals("\"hola\"\"chau\"", expr.getEscapedValue());
-		assertPosition(expr, 1, s.length() - 1);
+		assertEquals(2, strings.stringLiterals().size());
+		
+		assertEquals("\"hola\"", strings.stringLiterals().get(0).getEscapedValue());
+		assertPosition(strings.stringLiterals().get(0), 1, 6);
+		
+		assertEquals("\"chau\"", strings.stringLiterals().get(1).getEscapedValue());
+		assertPosition(strings.stringLiterals().get(1), 8, 6);
 	}
 	
 	public void testStringPostfix() {
