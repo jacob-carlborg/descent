@@ -237,18 +237,5 @@ public class EnumMember extends ASTNode implements IEnumMember {
 			+ (this.value == null ? 0 : getValue().treeSize())
 	;
 	}
-
-	// TODO descent remove
-	public EnumMember(SimpleName name, Expression value) {
-		super(AST.newAST(AST.JLS3));
-		this.name = name;
-		this.value = value;
-		this.startPosition = name.startPosition;
-		if (value == null) {
-			this.length = this.name.length;
-		} else {
-			this.length = value.startPosition + value.length - this.startPosition;
-		}
-	}
 	
 }

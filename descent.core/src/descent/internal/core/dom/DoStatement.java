@@ -251,9 +251,4 @@ public class DoStatement extends Statement implements IDoWhileStatement {
 	;
 	}
 
-	public DoStatement(Statement body, Expression expr) {
-		this.expression = expr;
-		this.body = body;
-	}
-
 }

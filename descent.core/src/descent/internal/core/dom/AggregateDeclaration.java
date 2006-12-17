@@ -6,7 +6,21 @@ import java.util.List;
 import descent.core.dom.ASTVisitor;
 import descent.core.dom.IAggregateDeclaration;
 
-// TODO comment
+/**
+ * Aggregate declaration AST node. An aggregate can be a class, interface, struct or union.
+ * 
+ * <pre>
+ * AggregateDeclaration:
+ *    { Modifier } 
+ *       [<b>class</b> | <b>struct</b> | <b>union</b> | <b>interface</b> ] SimpleName 
+ *          [ <b>(</b> TemplateParameter { <b>,</b> TemplateParameter } <b>)</b> ]
+ *          [ <b>:</b> Type { <b>,</b> Type } ]
+ *       <b>{</b>
+ *          { Declaration }
+ *       <b>}</b>
+ *    
+ * </pre>
+ */
 public class AggregateDeclaration extends Declaration implements IAggregateDeclaration {
 	
 	/**

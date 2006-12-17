@@ -4,10 +4,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 import descent.core.dom.ASTVisitor;
-import descent.core.dom.IInitializer;
-import descent.core.dom.ISimpleName;
 import descent.core.dom.IStructInitializer;
 
+/**
+ * Struct initializer AST node.
+ * 
+ * <pre>
+ * StructInitializer:
+ *    <b>{</b> [ StructInitializerFragment { <b>,</b> StructInitializerFragment } ] <b>}</b> 
+ * </pre>
+ */
 public class StructInitializer extends Initializer implements IStructInitializer {
 	
 	/**

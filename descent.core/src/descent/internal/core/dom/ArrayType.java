@@ -9,14 +9,7 @@ import descent.core.dom.IArrayType;
  *    AssociativeArrayType
  *    DynamicArrayType
  *    StaticArrayType
- * AssociativeArrayType:
- *    Type <b>[</b> Type <b>]</b>
- * DynamicArrayType:
- *    Type <b>[ ]</b>
- * StaticArrayType:
- *    Type <b>[</b> Expression <b>]</b>
- * SliceType:
- *    Type <b>[</b> Expression <b>..</b> Expression <b>]</b>
+ *    SliceType
  * </pre>
  */
 public abstract class ArrayType extends Type implements IArrayType {

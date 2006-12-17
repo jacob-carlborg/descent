@@ -10,7 +10,7 @@ public class Link_Test extends Parser_Test {
 	
 	public void test() {
 		Object[][] links = {
-				{ "", ExternDeclaration.Linkage.D },
+				{ "", ExternDeclaration.Linkage.DEFAULT },
 				{ "D", ExternDeclaration.Linkage.D  },
 				{ "C", ExternDeclaration.Linkage.C  },
 				{ "C++", ExternDeclaration.Linkage.CPP  },

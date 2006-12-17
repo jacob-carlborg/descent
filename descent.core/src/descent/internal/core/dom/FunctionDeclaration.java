@@ -6,16 +6,39 @@ import java.util.List;
 import descent.core.dom.ASTVisitor;
 import descent.core.dom.IFunctionDeclaration;
 
-// TODO comment 
+/**
+ * Function declaration AST node. A function declaration is the union of functions,
+ * constructors, destructors, static constructors, static destructors, allocators (new)
+ * and deallocators (delete).
+ * 
+ * <pre>
+ * FunctionDeclaration:
+ *    Type SimpleName [ <b>(</b> TemplateParameter { <b>,</b> TemplateParameter } <b>)</b> ]
+ *       <b>(</b> [ Argument { <b>,</b> Argument } ] <b>)</b>
+ *       [ <b>in</b> Block ]
+ *       [ <b>out</b> [ <b>(</b> SimpleName <b>)</b> ] Block ]
+ *       [ <b>body</b> ] Block
+ * </pre>
+ */
 public class FunctionDeclaration extends Declaration implements IFunctionDeclaration {
 	
+	/**
+	 * Kinds of functions.
+	 */
 	public enum Kind {
+		/** Function kind */
 		FUNCTION,
+		/** Constructor kind */
 		CONSTRUCTOR,
+		/** Destructor kind */
 		DESTRUCTOR,
+		/** Static constructor kind */
 		STATIC_CONSTRUCTOR,
+		/** Static destructor kind */
 		STATIC_DESTRUCTOR,
+		/** New (allocator) kind */
 		NEW,
+		/** Delete (deallocator) kind */
 		DELETE
 	}
 
@@ -23,7 +46,7 @@ public class FunctionDeclaration extends Declaration implements IFunctionDeclara
 	 * The "modifiers" structural property of this node type.
 	 */
 	public static final ChildListPropertyDescriptor MODIFIERS_PROPERTY =
-	internalModifiersPropertyFactory(FunctionDeclaration.class); //$NON-NLS-1$
+		internalModifiersPropertyFactory(FunctionDeclaration.class); //$NON-NLS-1$
 
 	/**
 	 * The "kind" structural property of this node type.

@@ -22,6 +22,8 @@ public class ExternDeclaration extends Declaration implements IExternDeclaration
 	 * A kind of linkage.
 	 */
 	public static enum Linkage {
+		/** Link to D code by default*/
+		DEFAULT,
 		/** Link to D code */
 		D,
 		/** Link to C code */

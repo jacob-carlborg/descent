@@ -7,7 +7,7 @@ import descent.core.dom.ASTVisitor;
 import descent.core.dom.IStaticAssertStatement;
 
 /**
- * An expression wrapper arround a static assert.
+ * A statement wrapper arround a static assert.
  */
 public class StaticAssertStatement extends Statement implements IStaticAssertStatement {
 

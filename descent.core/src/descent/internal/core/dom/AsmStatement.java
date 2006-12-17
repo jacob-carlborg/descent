@@ -5,8 +5,8 @@ import descent.core.dom.ASTVisitor;
 
 public class AsmStatement extends Statement implements IAsmStatement {
 
-	public AsmStatement(Token toklist) {
-		// TODO Auto-generated constructor stub
+	public AsmStatement(AST ast, Token toklist) {
+		super(ast);
 	}
 	
 	public void accept0(ASTVisitor visitor) {

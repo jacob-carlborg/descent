@@ -59,14 +59,14 @@ public class TypeIdentifier extends TypeQualified implements IIdentifierType, IT
 	}
 	
 	public Expression toExpression() {
-		Expression e = Parser.newSimpleNameForIdentifierWithAST(ident, ast);
+		Expression e = Parser.newSimpleNameFromIdentifierWithAST(ident, ast);
 	    for (int i = 0; i < idents.size(); i++)
 	    {
 	    	Identifier id = (Identifier) idents.get(i);
 	    	
 	    	DotIdentifierExpression die = new DotIdentifierExpression(ast);
 			die.setExpression(e);
-			die.setName(Parser.newSimpleNameForIdentifierWithAST(id, ast));
+			die.setName(Parser.newSimpleNameFromIdentifierWithAST(id, ast));
 			die.setSourceRange(e.getStartPosition(), id.startPosition + id.length - e.getStartPosition());
 			
 			e = die;	

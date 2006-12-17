@@ -188,8 +188,4 @@ public class VolatileStatement extends Statement implements IVolatileStatement {
 	;
 	}
 
-	public VolatileStatement(Statement body) {
-		this.body = body;
-	}
-
 }

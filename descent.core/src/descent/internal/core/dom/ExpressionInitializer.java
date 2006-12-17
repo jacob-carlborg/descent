@@ -8,7 +8,6 @@ import descent.core.dom.IExpressionInitializer;
 
 /**
  * This is a wrapper around an expression, used as an initializer.
- * TODO comment better?
  */
 public class ExpressionInitializer extends Initializer implements IExpressionInitializer {
 
@@ -182,15 +181,6 @@ public class ExpressionInitializer extends Initializer implements IExpressionIni
 			memSize()
 			+ (this.expression == null ? 0 : getExpression().treeSize())
 	;
-	}
-
-	public ExpressionInitializer(Expression expression) {
-		this.expression = expression;
-		if (expression != null)
-		{
-			this.startPosition = expression.startPosition;
-			this.length = expression.length;
-		}	
 	}
 
 }

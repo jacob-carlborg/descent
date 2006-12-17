@@ -6,14 +6,24 @@ import java.util.List;
 import descent.core.dom.ASTVisitor;
 import descent.core.dom.IEnumDeclaration;
 
-// TODO comment
+/**
+ * Enum declaration AST node.
+ * 
+ * <pre>
+ * EnumDeclaration:
+ *    { Modifier } <b>enum</b> SimpleName [ <b>:</b> Type ]
+ *    <b>{</b>
+ *       { Declaration }
+ *    <b>}</b>
+ * </pre>
+ */
 public class EnumDeclaration extends Declaration implements IEnumDeclaration {
 	
 	/**
 	 * The "modifiers" structural property of this node type.
 	 */
 	public static final ChildListPropertyDescriptor MODIFIERS_PROPERTY =
-	internalModifiersPropertyFactory(EnumDeclaration.class); //$NON-NLS-1$
+		internalModifiersPropertyFactory(EnumDeclaration.class); //$NON-NLS-1$
 
 	/**
 	 * The "name" structural property of this node type.

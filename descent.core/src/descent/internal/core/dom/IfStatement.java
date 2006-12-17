@@ -351,11 +351,4 @@ public class IfStatement extends Statement implements IIfStatement {
 	;
 	}
 
-	public IfStatement(Argument arg, Expression expr, Statement ifbody, Statement elsebody) {
-		this.argument = arg;
-		this.expression = expr;
-		this.thenBody = ifbody;
-		this.elseBody = elsebody;
-	}
-
 }

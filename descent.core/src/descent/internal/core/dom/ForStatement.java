@@ -342,11 +342,4 @@ public class ForStatement extends Statement implements IForStatement {
 	;
 	}
 
-	public ForStatement(Statement init, Expression condition, Expression increment, Statement body) {
-		this.initializer = init;
-		this.condition = condition;
-		this.increment = increment;
-		this.body = body;
-	}
-
 }

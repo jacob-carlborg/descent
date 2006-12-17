@@ -13,6 +13,7 @@ public enum LINK {
     
     public Linkage getLinkage() {
     	switch(this) {
+    	case LINKdefault: return Linkage.DEFAULT;
     	case LINKd: return Linkage.D;
     	case LINKc: return Linkage.C;
     	case LINKcpp: return Linkage.CPP;

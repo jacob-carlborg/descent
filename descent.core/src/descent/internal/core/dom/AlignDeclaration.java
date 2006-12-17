@@ -13,8 +13,6 @@ import descent.core.dom.IAlignDeclaration;
  * AliasDeclaration:
  *    { Modifier } <b>align</b> <b>(</b> Integer <b>)</b> { Declaration }
  * </pre>
- * 
- * TODO comment correctly
  */
 public class AlignDeclaration extends Declaration implements IAlignDeclaration {
 	

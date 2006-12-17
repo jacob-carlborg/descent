@@ -4,6 +4,34 @@ import java.util.List;
 
 import descent.core.dom.IDeclaration;
 
+/**
+ * Abstract subclass for declarations.
+ * <pre>
+ * Declaration:
+ *    AggregateDeclaration
+ *    AliasDeclaration
+ *    AlignDeclaration
+ *    DebugAssignment
+ *    DebugDeclaration
+ *    EnumDeclaration
+ *    ExternDeclaration
+ *    FunctionDeclaration
+ *    IftypeDeclaration
+ *    ImportDeclaration
+ *    InvariantDeclaration
+ *    ModifierDeclaration
+ *    PragmaDeclaration
+ *    StaticAssert
+ *    StaticIfDeclaration
+ *    TemplateDeclaration
+ *    TemplateMixin TODO
+ *    TypedefDeclaration
+ *    UnitTestDeclaration
+ *    VariableDeclaration TODO
+ *    VersionAssignment
+ *    VersionDeclaration
+ * </pre>
+ */
 public abstract class Declaration extends Dsymbol implements IDeclaration {
 
 	/**

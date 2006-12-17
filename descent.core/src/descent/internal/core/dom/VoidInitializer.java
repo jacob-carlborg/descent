@@ -6,6 +6,9 @@ import java.util.List;
 import descent.core.dom.ASTVisitor;
 import descent.core.dom.IVoidInitializer;
 
+/**
+ * An initializer that is a wrapper around a void literal.
+ */
 public class VoidInitializer extends Initializer implements IVoidInitializer {
 	
 	/**
