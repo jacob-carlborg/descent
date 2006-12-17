@@ -703,6 +703,8 @@ public interface IElement {
 	
 	int TYPEDEF_DECLARATION_FRAGMENT = 134;
 	
+	int VARIABLE_DECLARATION_FRAGMENT = 135;
+	
 	/**
 	 * Returns the start position in the source code where this element
 	 * is located.

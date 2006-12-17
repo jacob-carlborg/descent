@@ -791,10 +791,18 @@ public class Parser extends Lexer {
 		    nextToken();
 		    nextToken();
 		    Initializer init = parseInitializer();
-		    VarDeclaration v = new VarDeclaration(ast, null, ident, init);
-		    v.storage_class = stc;
-		    v.modifierFlags = STC.getModifiers(stc);
-		    Dsymbol s = v;
+		    
+		    VariableDeclaration variableDeclaration = new VariableDeclaration(ast);
+		    
+		    VariableDeclarationFragment fragment = new VariableDeclarationFragment(ast);
+		    fragment.setName(newSimpleNameFromIdentifier(ident));
+		    fragment.setInitializer(init);
+		    
+		    variableDeclaration.fragments().add(fragment);
+		    
+		    variableDeclaration.storage_class = stc;
+		    variableDeclaration.modifierFlags = STC.getModifiers(stc);
+		    Dsymbol s = variableDeclaration;
 		    if (token.value != TOKsemicolon) {
 		    	problem("Semicolon expected following auto declaration", IProblem.SEVERITY_ERROR, IProblem.SEMICOLON_EXPECTED, token.ptr, token.len);
 		    } else {
@@ -2662,13 +2670,19 @@ public class Parser extends Lexer {
 			nextToken();
 			nextToken();
 			Initializer init = parseInitializer();
-			VarDeclaration v = new VarDeclaration(ast, null, ident, init);
-			v.storage_class = storage_class;
-			v.modifierFlags = STC.getModifiers(storage_class);
-			a.add(v);
+			
+			VariableDeclaration variableDeclaration = new VariableDeclaration(ast);
+			VariableDeclarationFragment fragment = new VariableDeclarationFragment(ast);
+			fragment.setName(newSimpleNameFromIdentifier(ident));
+			fragment.setInitializer(init);
+			variableDeclaration.fragments().add(fragment);
+			
+			variableDeclaration.storage_class = storage_class;
+			variableDeclaration.modifierFlags = STC.getModifiers(storage_class);
+			a.add(variableDeclaration);
 			if (token.value == TOKsemicolon) {
 				nextToken();
-				v.comments = lastComments;
+				variableDeclaration.comments = lastComments;
 				adjustLastDocComment();
 			} else {
 				problem("Semicolon expected following auto declaration", IProblem.SEVERITY_ERROR, IProblem.SEMICOLON_EXPECTED, token.ptr, token.len);
@@ -2698,6 +2712,7 @@ public class Parser extends Lexer {
 		int[] identStart = new int[1];
 		AliasDeclaration aliasDeclaration = null;
 		TypedefDeclaration typedefDeclaration = null;
+		VariableDeclaration variableDeclaration = null;
 		boolean addDelcaration = true;
 		
 		while (true) {
@@ -2856,7 +2871,6 @@ public class Parser extends Lexer {
 				adjustLastDocComment();
 				a.add(s);
 			} else {
-				VarDeclaration v;
 				Initializer init;
 
 				init = null;
@@ -2864,29 +2878,43 @@ public class Parser extends Lexer {
 					nextToken();
 					init = parseInitializer();
 				}
-				v = new VarDeclaration(ast, t, ident, init);
-				v.startPosition = nextVarStart;
-				v.storage_class = storage_class;
-				v.modifierFlags = STC.getModifiers(storage_class);
-				a.add(v);
+				
+				if (variableDeclaration == null) {
+					variableDeclaration = new VariableDeclaration(ast);
+					variableDeclaration.setType(t);
+					variableDeclaration.startPosition = nextVarStart;
+					variableDeclaration.storage_class = storage_class;
+					variableDeclaration.modifierFlags = STC.getModifiers(storage_class);
+				} else {
+					addDelcaration = false;
+				}
+				
+				VariableDeclarationFragment fragment = new VariableDeclarationFragment(ast);
+				fragment.setName(newSimpleNameFromIdentifier(ident));
+				fragment.setInitializer(init);
+				variableDeclaration.fragments().add(fragment);
+				
+				if (addDelcaration) {
+					a.add(variableDeclaration);
+				}
 				switch (token.value) {
 				case TOKsemicolon:
-					v.length = token.ptr + token.len - v.startPosition;
+					variableDeclaration.length = token.ptr + token.len - variableDeclaration.startPosition;
 					nextToken();
-					v.comments = lastComments;
+					variableDeclaration.comments = lastComments;
 					adjustLastDocComment();
 					break;
 
 				case TOKcomma:
-					v.length = prevToken.ptr + prevToken.len - v.startPosition;
+					variableDeclaration.length = prevToken.ptr + prevToken.len - variableDeclaration.startPosition;
 					nextToken();
 					nextVarStart = token.ptr;
-					v.comments = lastComments;
+					variableDeclaration.comments = lastComments;
 					adjustLastDocComment();
 					continue;
 
 				default:
-					problem("Semicolon expected to close declaration", IProblem.SEVERITY_ERROR, IProblem.SEMICOLON_EXPECTED, v.startPosition, prevToken.ptr + prevToken.len - v.startPosition);
+					problem("Semicolon expected to close declaration", IProblem.SEVERITY_ERROR, IProblem.SEMICOLON_EXPECTED, variableDeclaration.startPosition, prevToken.ptr + prevToken.len - variableDeclaration.startPosition);
 					break;
 				}
 			}

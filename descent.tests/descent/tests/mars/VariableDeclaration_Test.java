@@ -11,6 +11,7 @@ import descent.core.dom.ITemplateInstanceType;
 import descent.core.dom.IType;
 import descent.core.dom.IVariableDeclaration;
 import descent.internal.core.dom.ParserFacade;
+import descent.internal.core.dom.VariableDeclarationFragment;
 
 public class VariableDeclaration_Test extends Parser_Test {
 	
@@ -23,12 +24,18 @@ public class VariableDeclaration_Test extends Parser_Test {
 		
 		IVariableDeclaration var = (IVariableDeclaration) declDefs[0];
 		assertEquals(IElement.VARIABLE_DECLARATION, var.getNodeType0());
-		assertEquals("x", var.getName().toString());
-		assertPosition(var.getName(), 5, 1);
-		assertEquals("int", var.getType().toString());
-		assertPosition(var, 1, 6);
 		
-		assertNull(var.getInitializer());
+		assertPosition(var, 1, s.length() - 1);
+		assertEquals("int", var.getType().toString());
+		assertPosition(var.getType(), 1, 3);
+		assertEquals(1, var.fragments().size());
+		
+		VariableDeclarationFragment fragment = var.fragments().get(0);
+		
+		assertEquals("x", fragment.getName().getFullyQualifiedName());
+		assertPosition(fragment.getName(), 5, 1);
+		
+		assertNull(fragment.getInitializer());
 	}
 	
 	public void testTwo() {
@@ -36,21 +43,26 @@ public class VariableDeclaration_Test extends Parser_Test {
 		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
 		assertEquals(0, unit.getProblems().length);
 		IElement[] declDefs = unit.getDeclarationDefinitions();
-		assertEquals(2, declDefs.length);
+		assertEquals(1, declDefs.length);
 		
-		IVariableDeclaration var;
+		IVariableDeclaration var = (IVariableDeclaration) declDefs[0];
 		
-		var = (IVariableDeclaration) declDefs[0];
-		assertEquals("x", var.getName().toString());
-		assertPosition(var.getName(), 5, 1);
+		assertPosition(var, 1, s.length() - 1);
 		assertEquals("int", var.getType().toString());
-		assertPosition(var, 1, 5);
+		assertPosition(var.getType(), 1, 3);
+		assertEquals(2, var.fragments().size());
 		
-		var = (IVariableDeclaration) declDefs[1];
-		assertEquals("y", var.getName().toString());
-		assertPosition(var.getName(), 8, 1);
-		assertEquals("int", var.getType().toString());
-		assertPosition(var, 8, 2);
+		VariableDeclarationFragment fragment;
+		
+		fragment = var.fragments().get(0);
+		assertEquals("x", fragment.getName().getFullyQualifiedName());
+		assertPosition(fragment.getName(), 5, 1);
+		assertNull(fragment.getInitializer());
+		
+		fragment = var.fragments().get(1);
+		assertEquals("y", fragment.getName().getFullyQualifiedName());
+		assertPosition(fragment.getName(), 8, 1);
+		assertNull(fragment.getInitializer());
 	}
 	
 	public void testComments() {
@@ -77,8 +89,8 @@ public class VariableDeclaration_Test extends Parser_Test {
 		
 		IVariableDeclaration var = (IVariableDeclaration) declDefs[0];
 		assertEquals(IElement.VARIABLE_DECLARATION, var.getNodeType0());
-		assertEquals("x", var.getName().toString());
-		assertPosition(var.getName(), 5, 1);
+		assertEquals("x", var.fragments().get(0).getName().getFullyQualifiedName());
+		assertPosition(var.fragments().get(0).getName(), 5, 1);
 		// TODO test to string somehow assertEquals("int[3]", var.getType().toString());
 		assertPosition(var, 1, 9);
 	}
@@ -92,8 +104,8 @@ public class VariableDeclaration_Test extends Parser_Test {
 		
 		IVariableDeclaration var = (IVariableDeclaration) declDefs[0];
 		assertEquals(IElement.VARIABLE_DECLARATION, var.getNodeType0());
-		assertEquals("x", var.getName().toString());
-		assertPosition(var.getName(), 5, 1);
+		assertEquals("x", var.fragments().get(0).getName().getFullyQualifiedName());
+		assertPosition(var.fragments().get(0).getName(), 5, 1);
 		// TODO test to string somehow assertEquals("int[3][5]", var.getType().toString());
 		assertPosition(var, 1, 12);
 	}
@@ -107,8 +119,8 @@ public class VariableDeclaration_Test extends Parser_Test {
 		
 		IVariableDeclaration var = (IVariableDeclaration) declDefs[0];
 		assertEquals(IElement.VARIABLE_DECLARATION, var.getNodeType0());
-		assertEquals("x", var.getName().toString());
-		assertPosition(var.getName(), 7, 1);
+		assertEquals("x", var.fragments().get(0).getName().getFullyQualifiedName());
+		assertPosition(var.fragments().get(0).getName(), 7, 1);
 		// TODO test to string somehow assertEquals("int[3]*[5]", var.getType().toString());
 		assertPosition(var, 1, 15);
 	}
@@ -122,8 +134,8 @@ public class VariableDeclaration_Test extends Parser_Test {
 		
 		IVariableDeclaration var = (IVariableDeclaration) declDefs[0];
 		assertEquals(IElement.VARIABLE_DECLARATION, var.getNodeType0());
-		assertEquals("x", var.getName().toString());
-		assertPosition(var.getName(), 7, 1);
+		assertEquals("x", var.fragments().get(0).getName().getFullyQualifiedName());
+		assertPosition(var.fragments().get(0).getName(), 7, 1);
 		assertEquals(IType.DELEGATE_TYPE, var.getType().getNodeType0());
 		assertPosition(var, 1, 15);
 		
@@ -141,8 +153,8 @@ public class VariableDeclaration_Test extends Parser_Test {
 		
 		IVariableDeclaration var = (IVariableDeclaration) declDefs[0];
 		assertEquals(IElement.VARIABLE_DECLARATION, var.getNodeType0());
-		assertEquals("x", var.getName().toString());
-		assertPosition(var.getName(), 10, 1);
+		assertEquals("x", var.fragments().get(0).getName().getFullyQualifiedName());
+		assertPosition(var.fragments().get(0).getName(), 10, 1);
 		assertEquals(IType.DYNAMIC_ARRAY_TYPE, var.getType().getNodeType0());
 		assertPosition(var, 1, 18);
 		

@@ -1,5 +1,9 @@
 package descent.core.dom;
 
+import java.util.List;
+
+import descent.internal.core.dom.VariableDeclarationFragment;
+
 /**
  * A variable declaration.
  */
@@ -14,11 +18,6 @@ public interface IVariableDeclaration extends IDeclaration, ICommented {
 	/**
 	 * Returns the name of the variable.
 	 */
-	ISimpleName getName();
-	
-	/**
-	 * Returns the initializer of the variable, if any, or null.
-	 */
-	IInitializer getInitializer();
+	List<VariableDeclarationFragment> fragments();
 
 }

@@ -48,8 +48,6 @@ public class Template_Test extends Parser_Test {
 		ITemplateDeclaration t = (ITemplateDeclaration) declDefs[0];
 		
 		assertEquals(1, t.declarations().size());
-		
-		assertVisitor(t, 5);
 	}
 	
 	public void testParameters() {

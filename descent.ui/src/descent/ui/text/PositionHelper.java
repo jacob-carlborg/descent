@@ -57,9 +57,11 @@ public class PositionHelper {
 			if (name != null) element = name;
 			break;
 		case IElement.VARIABLE_DECLARATION:
+			/* TODO fixme
 			IVariableDeclaration var = (IVariableDeclaration) element;
 			name = var.getName();
 			if (name != null) element = name;
+			*/
 			break;
 		case IElement.TYPEDEF_DECLARATION:
 			/* TODO fixme

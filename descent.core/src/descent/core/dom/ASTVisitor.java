@@ -10,6 +10,7 @@ import descent.internal.core.dom.StringLiteral;
 import descent.internal.core.dom.StringsExpression;
 import descent.internal.core.dom.StructInitializerFragment;
 import descent.internal.core.dom.TypedefDeclarationFragment;
+import descent.internal.core.dom.VariableDeclarationFragment;
 import descent.internal.core.dom.Version;
 import descent.internal.core.dom.VersionAssignment;
 import descent.internal.core.dom.VersionDeclaration;
@@ -137,6 +138,14 @@ public abstract class ASTVisitor {
 	}
 	
 	public void endVisit(TypedefDeclarationFragment node) {
+		
+	}
+	
+	public boolean visit(VariableDeclarationFragment node) {
+		return true;
+	}
+	
+	public void endVisit(VariableDeclarationFragment node) {
 		
 	}
 	

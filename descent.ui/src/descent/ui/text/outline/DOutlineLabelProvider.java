@@ -43,6 +43,8 @@ import descent.internal.core.dom.Modifier;
 import descent.internal.core.dom.TemplateParameter;
 import descent.internal.core.dom.TypedefDeclaration;
 import descent.internal.core.dom.TypedefDeclarationFragment;
+import descent.internal.core.dom.VariableDeclaration;
+import descent.internal.core.dom.VariableDeclarationFragment;
 import descent.internal.core.dom.VersionAssignment;
 import descent.ui.DescentUI;
 import descent.ui.IImages;
@@ -175,14 +177,14 @@ public class DOutlineLabelProvider extends LabelProvider {
 			return "invariant";
 		case IElement.UNIT_TEST_DECLARATION:
 			return "unit test";
-		case IElement.VARIABLE_DECLARATION:
-			IVariableDeclaration var = (IVariableDeclaration) element;
+		case IElement.VARIABLE_DECLARATION_FRAGMENT:
+			VariableDeclarationFragment var = (VariableDeclarationFragment) element;
 			name = var.getName();
 			s = new StringBuilder();
 			if (name != null) s.append(name.getFullyQualifiedName());
-			if (var.getType() != null) {
+			if (((VariableDeclaration) var.getParent()).getType() != null) {
 				s.append(" : ");
-				appendType(s, var.getType());
+				appendType(s, ((VariableDeclaration) var.getParent()).getType());
 			}
 			return s.toString();
 		case IElement.TYPEDEF_DECLARATION_FRAGMENT:

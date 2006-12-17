@@ -115,8 +115,6 @@ public class Class_Test extends Parser_Test {
 		IAggregateDeclaration c = (IAggregateDeclaration) declDefs[0];
 		
 		assertEquals(1, c.declarations().size());
-		
-		assertVisitor(c, 5);
 	}
 	
 	public void testClassAlias() {
