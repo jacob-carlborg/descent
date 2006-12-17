@@ -2697,6 +2697,7 @@ public class Parser extends Lexer {
 		
 		int[] identStart = new int[1];
 		AliasDeclaration aliasDeclaration = null;
+		TypedefDeclaration typedefDeclaration = null;
 		boolean addDelcaration = true;
 		
 		while (true) {
@@ -2737,14 +2738,27 @@ public class Parser extends Lexer {
 					init = parseInitializer();
 				}
 				if (tok == TOKtypedef) {
-					TypedefDeclaration td = new TypedefDeclaration(ast);
-					if (ident != null) {
-						td.setName(newSimpleNameFromIdentifier(ident));
+					if (typedefDeclaration == null) {
+						typedefDeclaration = new TypedefDeclaration(ast);
+						typedefDeclaration.setType(t);
+						typedefDeclaration.startPosition = nextTypdefOrAliasStart;
+					} else {
+						addDelcaration = false;
 					}
-					td.setType(t);
-					td.setInitializer(init);
-					td.startPosition = nextTypdefOrAliasStart;
-					v = td;
+					
+					if (ident != null) {
+						TypedefDeclarationFragment fragment = new TypedefDeclarationFragment(ast);
+						SimpleName name = newSimpleNameFromIdentifier(ident);
+						fragment.setName(name);
+						if (init == null) {
+							fragment.setSourceRange(name.getStartPosition(), name.getLength());
+						} else {
+							fragment.setInitializer(init);
+							fragment.setSourceRange(name.getStartPosition(), ident.getStartPosition() + ident.getLength() - name.getStartPosition());
+						}
+						typedefDeclaration.fragments().add(fragment);
+					}
+					v = typedefDeclaration;
 				} else {
 					if (init != null) {
 						problem("Alias cannot have initializer", IProblem.SEVERITY_ERROR, IProblem.ALIAS_CANNOT_HAVE_INITIALIZER, tokAssign.ptr, init.startPosition + init.length - tokAssign.ptr);

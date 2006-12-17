@@ -701,6 +701,8 @@ public interface IElement {
 	
 	int STRINGS_EXPRESSION = 133;
 	
+	int TYPEDEF_DECLARATION_FRAGMENT = 134;
+	
 	/**
 	 * Returns the start position in the source code where this element
 	 * is located.

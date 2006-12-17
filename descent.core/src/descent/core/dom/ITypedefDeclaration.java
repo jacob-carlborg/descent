@@ -1,5 +1,9 @@
 package descent.core.dom;
 
+import java.util.List;
+
+import descent.internal.core.dom.TypedefDeclarationFragment;
+
 /**
  * A typedef declaration:
  * 
@@ -14,16 +18,11 @@ public interface ITypedefDeclaration extends IDeclaration {
 	/**
 	 * Returns the name of the typedef.
 	 */
-	ISimpleName getName();
+	List<TypedefDeclarationFragment> fragments();
 	
 	/**
 	 * Returns the type maked a typedef.
 	 */
 	IType getType();
-	
-	/**
-	 * Returns the initializer, if any, or null.
-	 */
-	IInitializer getInitializer();
 
 }

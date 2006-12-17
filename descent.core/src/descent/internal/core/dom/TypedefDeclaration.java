@@ -11,7 +11,7 @@ import descent.core.dom.ITypedefDeclaration;
  *
  * <pre>
  * TypedefDeclaration:
- *    { Modifier } <b>typedef</b> Type Type [ <b>=</b> Initializer ] <b>;</b>
+ *    { Modifier } <b>typedef</b> Type TypedefDeclarationFragment { <b>,</b> TypedefDeclarationFragment } <b>;</b>
  * </pre>
  */
 public class TypedefDeclaration extends Declaration implements ITypedefDeclaration {
@@ -23,22 +23,16 @@ public class TypedefDeclaration extends Declaration implements ITypedefDeclarati
 	internalModifiersPropertyFactory(TypedefDeclaration.class); //$NON-NLS-1$
 
 	/**
-	 * The "name" structural property of this node type.
-	 */
-	public static final ChildPropertyDescriptor NAME_PROPERTY =
-		new ChildPropertyDescriptor(TypedefDeclaration.class, "name", SimpleName.class, MANDATORY, NO_CYCLE_RISK); //$NON-NLS-1$
-
-	/**
 	 * The "type" structural property of this node type.
 	 */
 	public static final ChildPropertyDescriptor TYPE_PROPERTY =
 		new ChildPropertyDescriptor(TypedefDeclaration.class, "type", Type.class, MANDATORY, NO_CYCLE_RISK); //$NON-NLS-1$
 
 	/**
-	 * The "initializer" structural property of this node type.
+	 * The "fragments" structural property of this node type.
 	 */
-	public static final ChildPropertyDescriptor INITIALIZER_PROPERTY =
-		new ChildPropertyDescriptor(TypedefDeclaration.class, "initializer", Initializer.class, OPTIONAL, NO_CYCLE_RISK); //$NON-NLS-1$
+	public static final ChildListPropertyDescriptor FRAGMENTS_PROPERTY =
+		new ChildListPropertyDescriptor(TypedefDeclaration.class, "fragments", TypedefDeclarationFragment.class, NO_CYCLE_RISK); //$NON-NLS-1$
 
 	/**
 	 * A list of property descriptors (element type: 
@@ -48,12 +42,11 @@ public class TypedefDeclaration extends Declaration implements ITypedefDeclarati
 	private static final List PROPERTY_DESCRIPTORS;
 
 	static {
-		List properyList = new ArrayList(4);
+		List properyList = new ArrayList(3);
 		createPropertyList(TypedefDeclaration.class, properyList);
 		addProperty(MODIFIERS_PROPERTY, properyList);
-		addProperty(NAME_PROPERTY, properyList);
 		addProperty(TYPE_PROPERTY, properyList);
-		addProperty(INITIALIZER_PROPERTY, properyList);
+		addProperty(FRAGMENTS_PROPERTY, properyList);
 		PROPERTY_DESCRIPTORS = reapPropertyList(properyList);
 	}
 
@@ -80,20 +73,17 @@ public class TypedefDeclaration extends Declaration implements ITypedefDeclarati
 	private ASTNode.NodeList modifiers =
 		new ASTNode.NodeList(MODIFIERS_PROPERTY);
 	/**
-	 * The name.
-	 */
-	private SimpleName name;
-
-	/**
 	 * The type.
 	 */
 	private Type type;
 
 	/**
-	 * The initializer.
+	 * The fragments
+	 * (element type: <code>TypedefDeclarationFragment</code>).
+	 * Defaults to an empty list.
 	 */
-	private Initializer initializer;
-
+	private ASTNode.NodeList fragments =
+		new ASTNode.NodeList(FRAGMENTS_PROPERTY);
 
 	/**
 	 * Creates a new unparented typedef declaration node owned by the given 
@@ -119,27 +109,11 @@ public class TypedefDeclaration extends Declaration implements ITypedefDeclarati
 	 * Method declared on ASTNode.
 	 */
 	final ASTNode internalGetSetChildProperty(ChildPropertyDescriptor property, boolean get, ASTNode child) {
-		if (property == NAME_PROPERTY) {
-			if (get) {
-				return getName();
-			} else {
-				setName((SimpleName) child);
-				return null;
-			}
-		}
 		if (property == TYPE_PROPERTY) {
 			if (get) {
 				return getType();
 			} else {
 				setType((Type) child);
-				return null;
-			}
-		}
-		if (property == INITIALIZER_PROPERTY) {
-			if (get) {
-				return getInitializer();
-			} else {
-				setInitializer((Initializer) child);
 				return null;
 			}
 		}
@@ -153,6 +127,9 @@ public class TypedefDeclaration extends Declaration implements ITypedefDeclarati
 	final List internalGetChildListProperty(ChildListPropertyDescriptor property) {
 		if (property == MODIFIERS_PROPERTY) {
 			return modifiers();
+		}
+		if (property == FRAGMENTS_PROPERTY) {
+			return fragments();
 		}
 		// allow default implementation to flag the error
 		return super.internalGetChildListProperty(property);
@@ -178,9 +155,8 @@ public class TypedefDeclaration extends Declaration implements ITypedefDeclarati
 		TypedefDeclaration result = new TypedefDeclaration(target);
 		result.setSourceRange(this.getStartPosition(), this.getLength());
 		result.modifiers.addAll(ASTNode.copySubtrees(target, modifiers()));
-		result.setName((SimpleName) getName().clone(target));
 		result.setType((Type) getType().clone(target));
-	result.setInitializer((Initializer) ASTNode.copySubtree(target, getInitializer()));
+		result.fragments.addAll(ASTNode.copySubtrees(target, fragments()));
 		return result;
 	}
 
@@ -200,51 +176,10 @@ public class TypedefDeclaration extends Declaration implements ITypedefDeclarati
 		if (visitChildren) {
 			// visit children in normal left to right reading order
 			acceptChildren(visitor, modifiers());
-			acceptChild(visitor, getName());
 			acceptChild(visitor, getType());
-			acceptChild(visitor, getInitializer());
+			acceptChildren(visitor, fragments());
 		}
 		visitor.endVisit(this);
-	}
-
-	/**
-	 * Returns the name of this typedef declaration.
-	 * 
-	 * @return the name
-	 */ 
-	public SimpleName getName() {
-		if (this.name == null) {
-			// lazy init must be thread-safe for readers
-			synchronized (this) {
-				if (this.name == null) {
-					preLazyInit();
-					this.name = new SimpleName(this.ast);
-					postLazyInit(this.name, NAME_PROPERTY);
-				}
-			}
-		}
-		return this.name;
-	}
-
-	/**
-	 * Sets the name of this typedef declaration.
-	 * 
-	 * @param name the name
-	 * @exception IllegalArgumentException if:
-	 * <ul>
-	 * <li>the node belongs to a different AST</li>
-	 * <li>the node already has a parent</li>
-	 * <li>a cycle in would be created</li>
-	 * </ul>
-	 */ 
-	public void setName(SimpleName name) {
-		if (name == null) {
-			throw new IllegalArgumentException();
-		}
-		ASTNode oldChild = this.name;
-		preReplaceChild(oldChild, name, NAME_PROPERTY);
-		this.name = name;
-		postReplaceChild(oldChild, name, NAME_PROPERTY);
 	}
 
 	/**
@@ -288,37 +223,21 @@ public class TypedefDeclaration extends Declaration implements ITypedefDeclarati
 	}
 
 	/**
-	 * Returns the initializer of this typedef declaration.
+	 * Returns the live ordered list of fragments for this
+	 * typedef declaration.
 	 * 
-	 * @return the initializer
+	 * @return the live list of typedef declaration
+	 *    (element type: <code>TypedefDeclarationFragment</code>)
 	 */ 
-	public Initializer getInitializer() {
-		return this.initializer;
-	}
-
-	/**
-	 * Sets the initializer of this typedef declaration.
-	 * 
-	 * @param initializer the initializer
-	 * @exception IllegalArgumentException if:
-	 * <ul>
-	 * <li>the node belongs to a different AST</li>
-	 * <li>the node already has a parent</li>
-	 * <li>a cycle in would be created</li>
-	 * </ul>
-	 */ 
-	public void setInitializer(Initializer initializer) {
-		ASTNode oldChild = this.initializer;
-		preReplaceChild(oldChild, initializer, INITIALIZER_PROPERTY);
-		this.initializer = initializer;
-		postReplaceChild(oldChild, initializer, INITIALIZER_PROPERTY);
+	public List<TypedefDeclarationFragment> fragments() {
+		return this.fragments;
 	}
 
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
 	 */
 	int memSize() {
-		return BASE_NODE_SIZE + 4 * 4;
+		return BASE_NODE_SIZE + 3 * 4;
 	}
 
 	/* (omit javadoc for this method)
@@ -328,9 +247,8 @@ public class TypedefDeclaration extends Declaration implements ITypedefDeclarati
 		return
 			memSize()
 			+ (this.modifiers.listSize())
-			+ (this.name == null ? 0 : getName().treeSize())
 			+ (this.type == null ? 0 : getType().treeSize())
-			+ (this.initializer == null ? 0 : getInitializer().treeSize())
+			+ (this.fragments.listSize())
 	;
 	}
 

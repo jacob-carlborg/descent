@@ -2200,9 +2200,8 @@ public class ASTMatcher {
 		TypedefDeclaration o = (TypedefDeclaration) other;
 		return (
 			safeSubtreeListMatch(node.modifiers(), o.modifiers())
-			&& safeSubtreeMatch(node.getName(), o.getName())
 			&& safeSubtreeMatch(node.getType(), o.getType())
-			&& safeSubtreeMatch(node.getInitializer(), o.getInitializer())
+			&& safeSubtreeListMatch(node.fragments(), o.fragments())
 			);
 	}
 	
@@ -2731,6 +2730,31 @@ public class ASTMatcher {
 		StringsExpression o = (StringsExpression) other;
 		return (
 			safeSubtreeListMatch(node.stringLiterals(), o.stringLiterals())
+			);
+	}
+	
+	/**
+	 * Returns whether the given node and the other object match.
+	 * <p>
+	 * The default implementation provided by this class tests whether the
+	 * other object is a node of the same type with structurally isomorphic
+	 * child subtrees. Subclasses may override this method as needed.
+	 * </p>
+	 * 
+	 * @param node the node
+	 * @param other the other object, or <code>null</code>
+	 * @return <code>true</code> if the subtree matches, or 
+	 *   <code>false</code> if they do not match or the other object has a
+	 *   different node type or is <code>null</code>
+	 */
+	public boolean match(TypedefDeclarationFragment node, Object other) {
+		if (!(other instanceof TypedefDeclarationFragment)) {
+			return false;
+		}
+		TypedefDeclarationFragment o = (TypedefDeclarationFragment) other;
+		return (
+			safeSubtreeMatch(node.getName(), o.getName())
+			&& safeSubtreeMatch(node.getInitializer(), o.getInitializer())
 			);
 	}
 

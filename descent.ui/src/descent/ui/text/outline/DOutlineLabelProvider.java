@@ -32,7 +32,6 @@ import descent.core.dom.ITemplateInstanceType;
 import descent.core.dom.ITemplateParameter;
 import descent.core.dom.IType;
 import descent.core.dom.ITypeTemplateParameter;
-import descent.core.dom.ITypedefDeclaration;
 import descent.core.dom.ITypeofType;
 import descent.core.dom.IVariableDeclaration;
 import descent.core.dom.IVersionDeclaration;
@@ -42,6 +41,8 @@ import descent.internal.core.dom.Argument;
 import descent.internal.core.dom.DebugAssignment;
 import descent.internal.core.dom.Modifier;
 import descent.internal.core.dom.TemplateParameter;
+import descent.internal.core.dom.TypedefDeclaration;
+import descent.internal.core.dom.TypedefDeclarationFragment;
 import descent.internal.core.dom.VersionAssignment;
 import descent.ui.DescentUI;
 import descent.ui.IImages;
@@ -184,13 +185,13 @@ public class DOutlineLabelProvider extends LabelProvider {
 				appendType(s, var.getType());
 			}
 			return s.toString();
-		case IElement.TYPEDEF_DECLARATION:
-			ITypedefDeclaration td = (ITypedefDeclaration) element;
-			name = td.getName();
+		case IElement.TYPEDEF_DECLARATION_FRAGMENT:
+			TypedefDeclarationFragment tl = (TypedefDeclarationFragment) element;
+			name = tl.getName();
 			s = new StringBuilder();
 			if (name != null) s.append(name.getFullyQualifiedName());
 			s.append(" : ");
-			appendType(s, td.getType());
+			appendType(s, ((TypedefDeclaration) tl.getParent()).getType());
 			return s.toString();
 		case IElement.ALIAS_DECLARATION_FRAGMENT:
 			AliasDeclarationFragment al = (AliasDeclarationFragment) element;

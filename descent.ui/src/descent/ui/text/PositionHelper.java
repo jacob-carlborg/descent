@@ -62,9 +62,11 @@ public class PositionHelper {
 			if (name != null) element = name;
 			break;
 		case IElement.TYPEDEF_DECLARATION:
+			/* TODO fixme
 			ITypedefDeclaration td = (ITypedefDeclaration) element;
 			name = td.getName();
 			if (name != null) element = name;
+			*/
 			break;
 		case IElement.UNIT_TEST_DECLARATION:
 			/* TODO fixme
