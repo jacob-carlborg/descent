@@ -251,9 +251,4 @@ public class CastExpression extends Expression implements ICastExpression {
 	;
 	}
 
-	public CastExpression(Expression expression, Type type) {
-		this.expression = expression;
-		this.type = type;
-	}
-
 }

@@ -322,12 +322,4 @@ public class ConditionalExpression extends Expression implements IConditionExpre
 			+ (this.elseExpression == null ? 0 : getElseExpression().treeSize());
 	}
 
-	public ConditionalExpression(Expression cond, Expression t, Expression f) {
-		this.conditionExpression = cond;
-		this.thenExpression = t;
-		this.elseExpression = f;
-		this.startPosition = cond.startPosition;
-		this.length = f.startPosition + f.length - this.startPosition;
-	}
-
 }

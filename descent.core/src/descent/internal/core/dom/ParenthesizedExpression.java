@@ -188,8 +188,4 @@ public class ParenthesizedExpression extends Expression implements IParenthesize
 	;
 	}
 
-	public ParenthesizedExpression(Expression e) {
-		this.expression = e;
-	}
-
 }

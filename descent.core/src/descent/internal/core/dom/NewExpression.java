@@ -12,7 +12,8 @@ public class NewExpression extends Expression implements INewExpression {
 	private IExpression[] arguments;
 	private Type type;
 
-	public NewExpression(Expression thisexp, List<Expression> newargs, Type t, List<Expression> arguments) {
+	public NewExpression(AST ast, Expression thisexp, List<Expression> newargs, Type t, List<Expression> arguments) {
+		super(ast);
 		this.type = t;
 		this.arguments = arguments == null ? new IExpression[0] : arguments.toArray(new IExpression[arguments.size()]);
 	}

@@ -4,8 +4,8 @@ import descent.core.dom.ASTVisitor;
 
 public class DotTemplateInstanceExp extends Expression {
 
-	public DotTemplateInstanceExp(Expression e, TemplateInstance tempinst) {
-		// TODO Auto-generated constructor stub
+	public DotTemplateInstanceExp(AST ast, Expression e, TemplateInstance tempinst) {
+		super(ast);
 	}
 	
 	public int getNodeType0() {

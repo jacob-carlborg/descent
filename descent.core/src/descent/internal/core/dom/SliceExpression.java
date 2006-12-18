@@ -288,10 +288,4 @@ public class SliceExpression extends Expression implements ISliceExpression {
 	;
 	}
 
-	public SliceExpression(Expression expression, Expression fromExpression, Expression toExpression) {
-		this.expression = expression;
-		this.fromExpression = fromExpression;
-		this.toExpression = toExpression;
-	}
-
 }

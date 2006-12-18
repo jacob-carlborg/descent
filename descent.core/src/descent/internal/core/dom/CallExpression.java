@@ -227,9 +227,4 @@ public class CallExpression extends Expression implements ICallExpression {
 	;
 	}
 
-	public CallExpression(Expression expression, List<Expression> arguments) {
-		this.expression = expression;
-		this.arguments.addAll(arguments);
-	}
-
 }

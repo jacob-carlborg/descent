@@ -156,8 +156,4 @@ public class ArrayLiteral extends Expression implements IArrayLiteralExpression 
 	;
 	}
 
-	public ArrayLiteral(List<Expression> arguments) {
-		this.arguments.addAll(arguments);
-	}
-
 }

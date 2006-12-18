@@ -11,6 +11,7 @@ public class TypeDotIdExp extends Expression implements ITypeDotIdentifierExpres
 	private final Identifier ident;
 
 	public TypeDotIdExp(AST ast, Type t, Identifier ident) {
+		super(ast);
 		this.t = t;
 		this.ident = ident;
 		this.startPosition = t.startPosition;

@@ -9,7 +9,8 @@ public class ScopeExp extends Expression implements IScopeExpression {
 
 	private final TemplateInstance tempinst;
 
-	public ScopeExp(TemplateInstance tempinst) {
+	public ScopeExp(AST ast, TemplateInstance tempinst) {
+		super(ast);
 		this.tempinst = tempinst;
 	}
 	

@@ -215,7 +215,6 @@ public class Lexer implements IProblemCollector {
 	    while (true)
 	    {
 		t.ptr = p;
-		//printf("p = %p, *p = '%c'\n",p,*p);
 		switch (input[p])
 		{
 		    case 0:
@@ -960,7 +959,6 @@ public class Lexer implements IProblemCollector {
 		    }
 		    */
 		}
-		//printf("t->value = %d\n",t->value);
 		return;
 	}
 	
@@ -1503,7 +1501,6 @@ public class Lexer implements IProblemCollector {
 		
 		StringBuilder fullNumber = new StringBuilder();
 
-		// printf("Lexer::number()\n");
 		state = STATE.STATE_initial;
 		base = 0;
 		stringbuffer.reset();
@@ -1889,7 +1886,6 @@ public class Lexer implements IProblemCollector {
 		
 		StringBuilder fullNumber = new StringBuilder();
 
-		// printf("Lexer::inreal()\n");
 		stringbuffer.reset();
 		dblstate = 0;
 		hex = 0;
@@ -1897,7 +1893,6 @@ public class Lexer implements IProblemCollector {
 		while (true) {
 			// Get next char from input
 			c = input[p++];
-			// printf("dblstate = %d, c = '%c'\n", dblstate, c);
 			boolean writeByte = true;
 		inner_while: 
 			while (true) {

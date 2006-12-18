@@ -269,19 +269,6 @@ public class InfixExpression extends Expression implements IInfixExpression {
 		super(ast);
 	}
 	
-	public InfixExpression(Expression e1, Expression e2, InfixExpression.Operator operator) {
-		this(e1, e2);
-		this.operator = operator;
-	}
-	
-	public InfixExpression(Expression e1, Expression e2) {
-		this.leftOperand = e1;
-		this.rightOperand = e2;
-		
-		this.startPosition = e1.startPosition;
-		this.length = e2.startPosition + e2.length - this.startPosition;
-	}
-	
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
 	 */

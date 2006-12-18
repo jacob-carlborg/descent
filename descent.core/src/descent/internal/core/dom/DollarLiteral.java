@@ -7,7 +7,12 @@ import descent.core.dom.ASTVisitor;
 import descent.core.dom.IDollarExpression;
 
 /**
- * Dollar literal node.
+ * Dollar literal AST node.
+ * 
+ * <pre>
+ * DollarLiteral:
+ *    <b>$</b>
+ * </pre>
  */
 public class DollarLiteral extends Expression implements IDollarExpression {
 	
