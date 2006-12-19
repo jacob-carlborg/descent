@@ -6,11 +6,11 @@ import descent.core.dom.IAggregateDeclaration;
 import descent.core.dom.IComment;
 import descent.core.dom.ICompilationUnit;
 import descent.core.dom.IElement;
-import descent.core.dom.IModifier;
 import descent.core.dom.ISimpleName;
 import descent.internal.core.dom.AggregateDeclaration;
 import descent.internal.core.dom.BaseClass;
 import descent.internal.core.dom.ParserFacade;
+import descent.internal.core.dom.Modifier.ModifierKeyword;
 
 public class Class_Test extends Parser_Test {
 	
@@ -59,16 +59,14 @@ public class Class_Test extends Parser_Test {
 		assertEquals(5, bs.size());
 		
 		assertEquals(IElement.BASE_CLASS, bs.get(0).getNodeType0());
-		assertEquals(IModifier.PUBLIC, bs.get(0).getModifier());
-		assertEquals(IModifier.PRIVATE, bs.get(1).getModifier());
-		assertEquals(IModifier.PACKAGE, bs.get(2).getModifier());
-		assertEquals(IModifier.PROTECTED, bs.get(3).getModifier());
-		assertEquals(IModifier.PUBLIC, bs.get(4).getModifier());
+		assertNull(bs.get(0).getModifier());
+		assertEquals(ModifierKeyword.PRIVATE_KEYWORD, bs.get(1).getModifier().getModifierKeyword());
+		assertEquals(ModifierKeyword.PACKAGE_KEYWORD, bs.get(2).getModifier().getModifierKeyword());
+		assertEquals(ModifierKeyword.PROTECTED_KEYWORD, bs.get(3).getModifier().getModifierKeyword());
+		assertEquals(ModifierKeyword.PUBLIC_KEYWORD, bs.get(4).getModifier().getModifierKeyword());
 		
 		assertEquals("None", bs.get(0).getType().toString());
 		assertPosition(bs.get(0).getType(), 15, 4);
-		
-		assertVisitor(c, 12);
 	}
 	
 	public void testWithComments() {

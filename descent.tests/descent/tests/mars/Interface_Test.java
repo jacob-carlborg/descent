@@ -1,14 +1,16 @@
 package descent.tests.mars;
 
+import java.util.List;
+
 import descent.core.dom.IAggregateDeclaration;
-import descent.core.dom.IBaseClass;
 import descent.core.dom.IComment;
 import descent.core.dom.ICompilationUnit;
 import descent.core.dom.IElement;
-import descent.core.dom.IModifier;
 import descent.core.dom.ISimpleName;
 import descent.internal.core.dom.AggregateDeclaration;
+import descent.internal.core.dom.BaseClass;
 import descent.internal.core.dom.ParserFacade;
+import descent.internal.core.dom.Modifier.ModifierKeyword;
 
 public class Interface_Test extends Parser_Test {
 	
@@ -49,15 +51,15 @@ public class Interface_Test extends Parser_Test {
 		assertEquals(0, unit.getProblems().length);
 		IElement[] declDefs = unit.getDeclarationDefinitions();
 		IAggregateDeclaration c = (IAggregateDeclaration) declDefs[0];
-		IBaseClass[] bs = c.baseClasses().toArray(new IBaseClass[c.baseClasses().size()]);
-		assertEquals(5, bs.length);
+		List<BaseClass> bs = c.baseClasses();
+		assertEquals(5, bs.size());
 		
-		assertEquals(IElement.BASE_CLASS, bs[0].getNodeType0());
-		assertEquals(IModifier.PUBLIC, bs[0].getModifier());
-		assertEquals(IModifier.PRIVATE, bs[1].getModifier());
-		assertEquals(IModifier.PACKAGE, bs[2].getModifier());
-		assertEquals(IModifier.PROTECTED, bs[3].getModifier());
-		assertEquals(IModifier.PUBLIC, bs[4].getModifier());
+		assertEquals(IElement.BASE_CLASS, bs.get(0).getNodeType0());
+		assertNull(bs.get(0).getModifier());
+		assertEquals(ModifierKeyword.PRIVATE_KEYWORD, bs.get(1).getModifier().getModifierKeyword());
+		assertEquals(ModifierKeyword.PACKAGE_KEYWORD, bs.get(2).getModifier().getModifierKeyword());
+		assertEquals(ModifierKeyword.PROTECTED_KEYWORD, bs.get(3).getModifier().getModifierKeyword());
+		assertEquals(ModifierKeyword.PUBLIC_KEYWORD, bs.get(4).getModifier().getModifierKeyword());
 	}
 	
 	public void testWithComments() {

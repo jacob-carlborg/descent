@@ -27,7 +27,7 @@ import descent.core.dom.IDeclaration;
  *    TemplateMixin TODO
  *    TypedefDeclaration
  *    UnitTestDeclaration
- *    VariableDeclaration TODO
+ *    VariableDeclaration
  *    VersionAssignment
  *    VersionDeclaration
  * </pre>
@@ -70,6 +70,7 @@ public abstract class Declaration extends Dsymbol implements IDeclaration {
 		return new ChildListPropertyDescriptor(nodeClass, "modifiers", Modifier.class, NO_CYCLE_RISK); //$NON-NLS-1$
 	}
 	
+	// TODO remove
 	public int storage_class;
 	
 	public Declaration() {

@@ -6,13 +6,21 @@ import java.util.List;
 import descent.core.dom.ASTVisitor;
 import descent.core.dom.IBaseClass;
 
+/**
+ * Base class AST node.
+ * 
+ * <pre>
+ * BaseClass:
+ *    [ Modifier ] Type
+ * </pre>
+ */
 public class BaseClass extends ASTNode implements IBaseClass {
 	
 	/**
-	 * The "modifierFlags" structural property of this node type.
+	 * The "modifier" structural property of this node type.
 	 */
-	public static final SimplePropertyDescriptor MODIFIER_FLAGS_PROPERTY =
-		new SimplePropertyDescriptor(BaseClass.class, "modifierFlags", int.class, OPTIONAL); //$NON-NLS-1$
+	public static final ChildPropertyDescriptor MODIFIER_PROPERTY =
+		new ChildPropertyDescriptor(BaseClass.class, "modifier", Modifier.class, OPTIONAL, NO_CYCLE_RISK); //$NON-NLS-1$
 
 	/**
 	 * The "type" structural property of this node type.
@@ -30,7 +38,7 @@ public class BaseClass extends ASTNode implements IBaseClass {
 	static {
 		List properyList = new ArrayList(2);
 		createPropertyList(BaseClass.class, properyList);
-		addProperty(MODIFIER_FLAGS_PROPERTY, properyList);
+		addProperty(MODIFIER_PROPERTY, properyList);
 		addProperty(TYPE_PROPERTY, properyList);
 		PROPERTY_DESCRIPTORS = reapPropertyList(properyList);
 	}
@@ -51,9 +59,9 @@ public class BaseClass extends ASTNode implements IBaseClass {
 	}
 
 	/**
-	 * The modifierFlags.
+	 * The modifier.
 	 */
-	private int modifierFlags;
+	private Modifier modifier;
 
 	/**
 	 * The type.
@@ -84,23 +92,15 @@ public class BaseClass extends ASTNode implements IBaseClass {
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
 	 */
-	final int internalGetSetIntProperty(SimplePropertyDescriptor property, boolean get, int value) {
-		if (property == MODIFIER_FLAGS_PROPERTY) {
+	final ASTNode internalGetSetChildProperty(ChildPropertyDescriptor property, boolean get, ASTNode child) {
+		if (property == MODIFIER_PROPERTY) {
 			if (get) {
 				return getModifier();
 			} else {
-				setModifierFlags(value);
-				return 0;
+				setModifier((Modifier) child);
+				return null;
 			}
 		}
-		// allow default implementation to flag the error
-		return super.internalGetSetIntProperty(property, get, value);
-	}
-
-	/* (omit javadoc for this method)
-	 * Method declared on ASTNode.
-	 */
-	final ASTNode internalGetSetChildProperty(ChildPropertyDescriptor property, boolean get, ASTNode child) {
 		if (property == TYPE_PROPERTY) {
 			if (get) {
 				return getType();
@@ -127,7 +127,7 @@ public class BaseClass extends ASTNode implements IBaseClass {
 	ASTNode clone0(AST target) {
 		BaseClass result = new BaseClass(target);
 		result.setSourceRange(this.getStartPosition(), this.getLength());
-		result.setModifierFlags(getModifier());
+	result.setModifier((Modifier) ASTNode.copySubtree(target, getModifier()));
 		result.setType((Type) getType().clone(target));
 		return result;
 	}
@@ -147,30 +147,37 @@ public class BaseClass extends ASTNode implements IBaseClass {
 		boolean visitChildren = visitor.visit(this);
 		if (visitChildren) {
 			// visit children in normal left to right reading order
+			acceptChild(visitor, getModifier());
 			acceptChild(visitor, getType());
 		}
 		visitor.endVisit(this);
 	}
 
 	/**
-	 * Returns the modifier flags of this base class.
+	 * Returns the modifier of this base class.
 	 * 
-	 * @return the modifier flags
+	 * @return the modifier
 	 */ 
-	public int getModifier() {
-		return this.modifierFlags;
+	public Modifier getModifier() {
+		return this.modifier;
 	}
 
 	/**
-	 * Sets the modifier flags of this base class.
+	 * Sets the modifier of this base class.
 	 * 
-	 * @param modifierFlags the modifier flags
-	 * @exception IllegalArgumentException if the argument is incorrect
+	 * @param modifier the modifier
+	 * @exception IllegalArgumentException if:
+	 * <ul>
+	 * <li>the node belongs to a different AST</li>
+	 * <li>the node already has a parent</li>
+	 * <li>a cycle in would be created</li>
+	 * </ul>
 	 */ 
-	public void setModifierFlags(int modifierFlags) {
-		preValueChange(MODIFIER_FLAGS_PROPERTY);
-		this.modifierFlags = modifierFlags;
-		postValueChange(MODIFIER_FLAGS_PROPERTY);
+	public void setModifier(Modifier modifier) {
+		ASTNode oldChild = this.modifier;
+		preReplaceChild(oldChild, modifier, MODIFIER_PROPERTY);
+		this.modifier = modifier;
+		postReplaceChild(oldChild, modifier, MODIFIER_PROPERTY);
 	}
 
 	/**
@@ -184,7 +191,7 @@ public class BaseClass extends ASTNode implements IBaseClass {
 			synchronized (this) {
 				if (this.type == null) {
 					preLazyInit();
-					this.type = new PrimitiveType(ast);
+					this.type = new PrimitiveType(this.ast);
 					postLazyInit(this.type, TYPE_PROPERTY);
 				}
 			}
@@ -226,13 +233,9 @@ public class BaseClass extends ASTNode implements IBaseClass {
 	int treeSize() {
 		return
 			memSize()
+			+ (this.modifier == null ? 0 : getModifier().treeSize())
 			+ (this.type == null ? 0 : getType().treeSize())
 	;
-	}
-
-	public BaseClass(Type type, PROT protection) {
-		this.type = type;
-		this.modifierFlags = protection.getModifiers();
 	}
 
 }

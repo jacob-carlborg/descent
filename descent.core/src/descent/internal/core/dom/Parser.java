@@ -6,20 +6,6 @@ import static descent.internal.core.dom.LINK.LINKd;
 import static descent.internal.core.dom.LINK.LINKdefault;
 import static descent.internal.core.dom.LINK.LINKpascal;
 import static descent.internal.core.dom.LINK.LINKwindows;
-import static descent.internal.core.dom.PROT.PROTpackage;
-import static descent.internal.core.dom.PROT.PROTprivate;
-import static descent.internal.core.dom.PROT.PROTprotected;
-import static descent.internal.core.dom.PROT.PROTpublic;
-import static descent.internal.core.dom.STC.STCabstract;
-import static descent.internal.core.dom.STC.STCauto;
-import static descent.internal.core.dom.STC.STCconst;
-import static descent.internal.core.dom.STC.STCdeprecated;
-import static descent.internal.core.dom.STC.STCextern;
-import static descent.internal.core.dom.STC.STCfinal;
-import static descent.internal.core.dom.STC.STCoverride;
-import static descent.internal.core.dom.STC.STCstatic;
-import static descent.internal.core.dom.STC.STCsynchronized;
-import static descent.internal.core.dom.STC.STCundefined;
 import static descent.internal.core.dom.TOK.TOKalias;
 import static descent.internal.core.dom.TOK.TOKand;
 import static descent.internal.core.dom.TOK.TOKandand;
@@ -188,7 +174,6 @@ public class Parser extends Lexer {
 		List<Declaration> decldefs;
 		List<Declaration> a = new ArrayList<Declaration>();
 		List<Declaration> aelse;
-		int stc;
 		
 		Token saveToken;
 		boolean[] isSingle = new boolean[1];
@@ -300,33 +285,30 @@ public class Parser extends Lexer {
 				else if (token.value == TOKassert)
 					s = parseStaticAssert();
 				else if (token.value == TOKif) {
-					StaticIfCondition staticIfCondition = parseStaticIfCondition();
+					StaticIfCondition condition = parseStaticIfCondition();
 					a = parseBlock();
 					aelse = null;
 					if (token.value == TOKelse) {
 						nextToken();
 						aelse = parseBlock();
 					}					
-					s = newStaticIfDeclaration(staticIfCondition, a, aelse);
+					s = newStaticIfDeclaration(condition, a, aelse);
 					s.setSourceRange(staticToken.ptr, prevToken.ptr + prevToken.len - staticToken.ptr);
 					break;
 				} else if (token.value == TOKimport) {
 					s = parseImport(true);
 					ImportDeclaration id = (ImportDeclaration) s;
-					id.setStatic(true);
 					id.setSourceRange(staticToken.ptr, id.startPosition - staticToken.ptr);
 				} else {
-					stc = STCstatic;
 					// goto Lstc2;
 					
 					Modifier modifier = newModifierFromTokenAndKeyword(staticToken, ModifierKeyword.STATIC_KEYWORD);
 					modifiers.add(modifier);
 					
 					ModifierDeclaration.Syntax[] syntax = new ModifierDeclaration.Syntax[1];
-					tempObj = parseDeclDefs_Lstc2(stc, a, isSingle, syntax, modifiers);
+					tempObj = parseDeclDefs_Lstc2(a, isSingle, syntax, modifiers);
 					a = (List<Declaration>) tempObj[0];
-					stc = ((Integer) tempObj[1]);
-					s = (Declaration) tempObj[2];
+					s = (Declaration) tempObj[1];
 					
 					if (a != null && a.size() > 0) {
 						if (isSingle[0]) {						
@@ -368,16 +350,14 @@ public class Parser extends Lexer {
 				Modifier modifier = newModifierFromCurrentToken();
 				modifiers.add(modifier);
 				
-				stc = STC.fromToken(token.value);
 				// goto Lstc;
 				saveToken = new Token(token);
 				nextToken();
 				
 				ModifierDeclaration.Syntax[] syntax = new ModifierDeclaration.Syntax[1];
-				tempObj = parseDeclDefs_Lstc2(stc, a, isSingle, syntax, modifiers);
+				tempObj = parseDeclDefs_Lstc2(a, isSingle, syntax, modifiers);
 				a = (List) tempObj[0];
-				stc = ((Integer) tempObj[1]);
-				s = (Declaration) tempObj[2];
+				s = (Declaration) tempObj[1];
 				
 				if (a != null && a.size() > 0) {
 					if (isSingle[0]) {
@@ -402,15 +382,13 @@ public class Parser extends Lexer {
 				saveToken = new Token(token);
 				
 				if (peek(token).value != TOKlparen) {
-					stc = STCextern;
 					// goto Lstc;
 					nextToken();
 					
 					syntax = new ModifierDeclaration.Syntax[1];
-					tempObj = parseDeclDefs_Lstc2(stc, a, isSingle, syntax, modifiers);
+					tempObj = parseDeclDefs_Lstc2(a, isSingle, syntax, modifiers);
 					a = (List) tempObj[0];
-					stc = ((Integer) tempObj[1]);
-					s = (Declaration) tempObj[2];
+					s = (Declaration) tempObj[1];
 					break;
 				}
 				{
@@ -737,20 +715,20 @@ public class Parser extends Lexer {
 	*/
 	
 	// a, stc, s
-	private Object[] parseDeclDefs_Lstc2(int stc, List<Declaration> a, boolean[] isSingle, ModifierDeclaration.Syntax[] syntax, List<Modifier> modifiers) {
+	private Object[] parseDeclDefs_Lstc2(List<Declaration> a, boolean[] isSingle, ModifierDeclaration.Syntax[] syntax, List<Modifier> modifiers) {
 		// TODO
 		boolean repeat = true;
 		while(repeat) {
 			switch (token.value)
 			{
-			    case TOKconst:	  modifiers.add(newModifierFromTokenAndKeyword(token, Modifier.ModifierKeyword.CONST_KEYWORD)); stc |= STCconst; nextToken(); break;
-			    case TOKfinal:	  modifiers.add(newModifierFromTokenAndKeyword(token, Modifier.ModifierKeyword.FINAL_KEYWORD)); stc |= STCfinal; nextToken(); break;
-			    case TOKauto:	  nextToken(); modifiers.add(newModifierFromTokenAndKeyword(token, Modifier.ModifierKeyword.AUTO_KEYWORD)); stc |= STCauto; break;
-			    case TOKscope:	  nextToken(); modifiers.add(newModifierFromTokenAndKeyword(token, Modifier.ModifierKeyword.SCOPE_KEYWORD)); stc |= STC.STCscope;  break;
-			    case TOKoverride:	  nextToken(); modifiers.add(newModifierFromTokenAndKeyword(token, Modifier.ModifierKeyword.OVERRIDE_KEYWORD)); stc |= STCoverride; break;
-			    case TOKabstract:	  nextToken(); modifiers.add(newModifierFromTokenAndKeyword(token, Modifier.ModifierKeyword.ABSTRACT_KEYWORD)); stc |= STCabstract; break;
-			    case TOKsynchronized: nextToken(); modifiers.add(newModifierFromTokenAndKeyword(token, Modifier.ModifierKeyword.SYNCHRONIZED_KEYWORD)); stc |= STCsynchronized; break;
-			    case TOKdeprecated:   nextToken(); modifiers.add(newModifierFromTokenAndKeyword(token, Modifier.ModifierKeyword.DEPRECATED_KEYWORD)); stc |= STCdeprecated; break;
+			    case TOKconst:	  modifiers.add(newModifierFromTokenAndKeyword(token, Modifier.ModifierKeyword.CONST_KEYWORD)); nextToken(); break;
+			    case TOKfinal:	  modifiers.add(newModifierFromTokenAndKeyword(token, Modifier.ModifierKeyword.FINAL_KEYWORD)); nextToken(); break;
+			    case TOKauto:	  nextToken(); modifiers.add(newModifierFromTokenAndKeyword(token, Modifier.ModifierKeyword.AUTO_KEYWORD)); break;
+			    case TOKscope:	  nextToken(); modifiers.add(newModifierFromTokenAndKeyword(token, Modifier.ModifierKeyword.SCOPE_KEYWORD)); break;
+			    case TOKoverride:	  nextToken(); modifiers.add(newModifierFromTokenAndKeyword(token, Modifier.ModifierKeyword.OVERRIDE_KEYWORD)); break;
+			    case TOKabstract:	  nextToken(); modifiers.add(newModifierFromTokenAndKeyword(token, Modifier.ModifierKeyword.ABSTRACT_KEYWORD)); break;
+			    case TOKsynchronized: nextToken(); modifiers.add(newModifierFromTokenAndKeyword(token, Modifier.ModifierKeyword.SYNCHRONIZED_KEYWORD)); break;
+			    case TOKdeprecated:   nextToken(); modifiers.add(newModifierFromTokenAndKeyword(token, Modifier.ModifierKeyword.DEPRECATED_KEYWORD)); break;
 			    default:
 			    	repeat = false;
 				break;
@@ -778,8 +756,6 @@ public class Parser extends Lexer {
 		    
 		    variableDeclaration.fragments().add(fragment);
 		    
-		    variableDeclaration.storage_class = stc;
-		    variableDeclaration.modifierFlags = STC.getModifiers(stc);
 		    Dsymbol s = variableDeclaration;
 		    if (token.value != TOKsemicolon) {
 		    	problem("Semicolon expected following auto declaration", IProblem.SEVERITY_ERROR, IProblem.SEMICOLON_EXPECTED, token.ptr, token.len);
@@ -787,14 +763,14 @@ public class Parser extends Lexer {
 		    	nextToken();
 		    }
 		    
-		    return new Object[] { a, stc, s }; 
+		    return new Object[] { a, s }; 
 		}
 		else
 		{   
 			a = parseBlock(isSingle, syntax, modifiers);
 			
 			if (isSingle[0]) {
-				return new Object[] { a, stc, a.get(0) };
+				return new Object[] { a, a.get(0) };
 			} else {
 				ModifierDeclaration modifierDeclaration = new ModifierDeclaration(ast);
 				modifierDeclaration.setModifier(new Modifier(ast));
@@ -803,7 +779,7 @@ public class Parser extends Lexer {
 				}
 				modifierDeclaration.declarations().addAll(a);
 				
-			    return new Object[] { a, stc, modifierDeclaration };
+			    return new Object[] { a, modifierDeclaration };
 			}			 
 		}
 	}
@@ -1118,7 +1094,7 @@ public class Parser extends Lexer {
 		int start = token.ptr;
 	    nextToken();
 
-	    InvariantDeclaration invariant = new InvariantDeclaration(ast);
+	    InvariantDeclaration invariant = newInvariantDeclaration();
 	    invariant.setBody(parseStatement(PScurly));
 	    invariant.setSourceRange(start, prevToken.ptr + prevToken.len - start);
 	    return invariant;
@@ -1128,7 +1104,7 @@ public class Parser extends Lexer {
 		int start = token.ptr;
 		nextToken();
 		
-		UnitTestDeclaration unitTest = new UnitTestDeclaration(ast);
+		UnitTestDeclaration unitTest = newUnitTestDeclaration();
 	    unitTest.setBody(parseStatement(PScurly));
 	    unitTest.setSourceRange(start, prevToken.ptr + prevToken.len - start);
 	    return unitTest;
@@ -1494,40 +1470,32 @@ public class Parser extends Lexer {
 		return a;
 	}
 	
-	@SuppressWarnings("unchecked")
 	private List<BaseClass> parseBaseClasses() {
-		PROT protection = PROTpublic;
 		List<BaseClass> baseclasses = new ArrayList<BaseClass>();
+		Modifier modifier = null;
 
-	    for (; true; nextToken())
-	    {
-		switch (token.value)
-		{
-		    case TOKidentifier:
-			break;
-		    case TOKprivate:
-			protection = PROTprivate;
-			continue;
-		    case TOKpackage:
-			protection = PROTpackage;
-			continue;
-		    case TOKprotected:
-			protection = PROTprotected;
-			continue;
-		    case TOKpublic:
-			protection = PROTpublic;
-			continue;
-		    default:
-		    	problem("Base class expected", IProblem.SEVERITY_ERROR, IProblem.BASE_CLASS_EXPECTED, token.ptr, token.len);
-			return null;
+		for (; true; nextToken()) {
+			switch (token.value) {
+			case TOKidentifier:
+				break;
+			case TOKprivate:
+			case TOKpackage:
+			case TOKprotected:
+			case TOKpublic:
+				modifier = newModifierFromCurrentToken();
+				continue;
+			default:
+				problem("Base class expected", IProblem.SEVERITY_ERROR,
+						IProblem.BASE_CLASS_EXPECTED, token.ptr, token.len);
+				return null;
+			}
+			BaseClass b = newBaseClass(parseBasicType(), modifier);
+			baseclasses.add(b);
+			if (token.value != TOKcomma) {
+				break;
+			}
 		}
-		BaseClass b = new BaseClass(parseBasicType(), protection);
-		baseclasses.add(b);
-		if (token.value != TOKcomma)
-		    break;
-		protection = PROTpublic;
-	    }
-	    return baseclasses;
+		return baseclasses;
 	}
 	
 	private TemplateDeclaration parseTemplateDeclaration() {
@@ -1990,6 +1958,7 @@ public class Parser extends Lexer {
 			} while (token.value == TOKcomma);
 		}
 		
+		importDeclaration.setStatic(isstatic);
 		importDeclaration.setSourceRange(start, token.ptr + token.len - start);
 
 		if (token.value == TOKsemicolon) {
@@ -2494,8 +2463,6 @@ public class Parser extends Lexer {
 	// TODO add modifiers to typedef, alias and variable declarations
 	@SuppressWarnings("unchecked")
 	private List<Declaration> parseDeclarations() {
-		int storage_class;
-		int stc;
 		Type ts;
 		Type t;
 		Type tfirst;
@@ -2521,7 +2488,6 @@ public class Parser extends Lexer {
 			break;
 		}
 
-		storage_class = STCundefined;
 		while (true) {
 			switch (token.value) {
 			case TOKconst:
@@ -2534,23 +2500,21 @@ public class Parser extends Lexer {
 			case TOKsynchronized:
 			case TOKdeprecated:
 				modifiers.add(newModifierFromCurrentToken());
-				stc = STC.fromToken(token.value);
+				// TODO check modifiers redundancy
 				// goto L1;
-				if ((storage_class & stc) != 0) {
-					problem("Redundant storage class", IProblem.SEVERITY_ERROR, IProblem.REDUNDANT_STORAGE_CLASS, token.ptr, token.len);
-				}
-				storage_class |= stc;
+				// if ((storage_class & stc) != 0) {
+				//	problem("Redundant storage class", IProblem.SEVERITY_ERROR, IProblem.REDUNDANT_STORAGE_CLASS, token.ptr, token.len);
+				//}
 				nextToken();
 				continue;
 
 			case TOKextern:
 				if (peek(token).value != TOKlparen) {
 					modifiers.add(newModifierFromCurrentToken());
-					stc = STCextern;
-					if ((storage_class & stc) != 0) {
-						problem("Redundant storage class", IProblem.SEVERITY_ERROR, IProblem.REDUNDANT_STORAGE_CLASS, token.ptr, token.len);
-					}
-					storage_class |= stc;
+					// TODO check modifiers redundancy
+					//if ((storage_class & stc) != 0) {
+					//	problem("Redundant storage class", IProblem.SEVERITY_ERROR, IProblem.REDUNDANT_STORAGE_CLASS, token.ptr, token.len);
+					//}
 					nextToken();
 					continue;
 				}
@@ -2569,7 +2533,7 @@ public class Parser extends Lexer {
 		/*
 		 * Look for auto initializers: storage_class identifier = initializer;
 		 */
-		if (storage_class != 0 && token.value == TOKidentifier
+		if (modifiers.size() > 0 && token.value == TOKidentifier
 				&& peek(token).value == TOKassign) {
 			ident = token.ident;
 			nextToken();
@@ -2584,8 +2548,6 @@ public class Parser extends Lexer {
 			fragment.setInitializer(init);
 			variableDeclaration.fragments().add(fragment);
 			
-			variableDeclaration.storage_class = storage_class;
-			variableDeclaration.modifierFlags = STC.getModifiers(storage_class);
 			a.add(variableDeclaration);
 			if (token.value == TOKsemicolon) {
 				nextToken();
@@ -2602,8 +2564,6 @@ public class Parser extends Lexer {
 
 			s = (AggregateDeclaration) parseAggregate();
 			s.modifiers().addAll(modifiers);
-			// TODO CHECK DMD s.storage_class |= storage_class;
-			s.modifierFlags = STC.getModifiers(storage_class);
 			a.add(s);
 			s.comments = lastComments;
 			adjustLastDocComment();
@@ -2688,23 +2648,19 @@ public class Parser extends Lexer {
 					}
 					
 					if (aliasDeclaration == null) {
-						aliasDeclaration = new AliasDeclaration(ast);
-						aliasDeclaration.setType(t);
+						aliasDeclaration = newAliasDeclaration(t);
 						aliasDeclaration.startPosition = nextTypdefOrAliasStart;
 					} else {
 						addDelcaration = false;
 					}
 					
 					if (ident != null) {
-						AliasDeclarationFragment fragment = new AliasDeclarationFragment(ast);
-						fragment.setName(newSimpleNameFromIdentifier(ident));
-						fragment.setSourceRange(ident.startPosition, ident.length);
+						AliasDeclarationFragment fragment = newAliasDeclarationFragment(ident);
 						aliasDeclaration.fragments().add(fragment);
 					}
 
 					v = aliasDeclaration;
 				}
-				v.storage_class = storage_class;
 				if (addDelcaration) {
 					a.add(v);
 				}
@@ -2791,8 +2747,6 @@ public class Parser extends Lexer {
 					variableDeclaration = new VariableDeclaration(ast);
 					variableDeclaration.setType(t);
 					variableDeclaration.startPosition = nextVarStart;
-					variableDeclaration.storage_class = storage_class;
-					variableDeclaration.modifierFlags = STC.getModifiers(storage_class);
 				} else {
 					addDelcaration = false;
 				}
@@ -2833,7 +2787,6 @@ public class Parser extends Lexer {
 	}
 	
 	private void parseContracts(FunctionDeclaration f) {
-		// Type tb; // <-- not used
 		LINK linksave = linkage;
 
 		// The following is irrelevant, as it is overridden by sc->linkage in
@@ -3310,7 +3263,7 @@ public class Parser extends Lexer {
 		case TOKunion:
 		case TOKclass:
 		case TOKinterface: {
-			AggregateDeclaration d;
+			Declaration d;
 
 			d = parseAggregate();
 			
@@ -6120,12 +6073,7 @@ public class Parser extends Lexer {
 
 			Identifier id = null;
 			
-			AggregateDeclaration cd = new AggregateDeclaration(ast);
-			cd.setKind(AggregateDeclaration.Kind.CLASS);
-			cd.setName(newSimpleNameFromIdentifier(id));
-			if (baseClasses != null) {
-				cd.baseClasses().addAll(baseClasses);
-			}
+			AggregateDeclaration cd = newAggregateDeclaration(TOKclass, id, baseClasses);
 
 			if (token.value != TOKlcurly) {
 				problem("{ members } expected for anonymous class", IProblem.SEVERITY_ERROR, IProblem.MEMBERS_EXPECTED, token.ptr, token.len);
@@ -6472,6 +6420,38 @@ public class Parser extends Lexer {
 			classDeclaration.baseClasses().addAll(baseClasses);
 		}
 		return classDeclaration;
+	}
+	
+	private AliasDeclaration newAliasDeclaration(Type t) {
+		AliasDeclaration aliasDeclaration = new AliasDeclaration(ast);
+		aliasDeclaration.setType(t);
+		return aliasDeclaration;
+	}
+	
+	private AliasDeclarationFragment newAliasDeclarationFragment(Identifier id) {
+		AliasDeclarationFragment fragment = new AliasDeclarationFragment(ast);
+		if (id != null) {
+			fragment.setName(newSimpleNameFromIdentifier(id));
+			fragment.setSourceRange(id.startPosition, id.length);
+		}
+		return fragment;
+	}
+	
+	private InvariantDeclaration newInvariantDeclaration() {
+		InvariantDeclaration invariant = new InvariantDeclaration(ast);
+		return invariant;
+	}
+	
+	private UnitTestDeclaration newUnitTestDeclaration() {
+		UnitTestDeclaration unitTest = new UnitTestDeclaration(ast);
+		return unitTest;
+	}
+	
+	private BaseClass newBaseClass(Type type, Modifier modifier) {
+		BaseClass baseClass = new BaseClass(ast);
+		baseClass.setType(type);
+		baseClass.setModifier(modifier);
+		return baseClass;
 	}
 	
 	private List<Comment> getLastDocComments() {

@@ -1549,22 +1549,6 @@ public abstract class ASTNode implements IElement {
 	 */
 	ASTNode clone0(AST target) { return null; }
 	
-	public int modifierFlags;
-	
-	public int getModifierFlags() {
-		return modifierFlags;
-	}
-	
-	/*
-	public void addComment(String string, int blockCommentStart) {
-		comments = string;
-		if (blockCommentStart != -1) {
-			this.length += this.startPosition - blockCommentStart; 
-			this.startPosition = blockCommentStart;
-		}
-	}
-	*/
-	
 	public IComment[] getComments() {
 		if (comments == null) {
 			return new IComment[0];

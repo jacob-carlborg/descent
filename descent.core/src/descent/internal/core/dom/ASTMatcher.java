@@ -933,7 +933,7 @@ public class ASTMatcher {
 		}
 		BaseClass o = (BaseClass) other;
 		return (
-			node.getModifier() == o.getModifier()
+			safeSubtreeMatch(node.getModifier(), o.getModifier())
 			&& safeSubtreeMatch(node.getType(), o.getType())
 			);
 	}
