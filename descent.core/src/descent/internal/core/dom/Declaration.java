@@ -32,7 +32,7 @@ import descent.core.dom.IDeclaration;
  *    VersionDeclaration
  * </pre>
  */
-public abstract class Declaration extends Dsymbol implements IDeclaration {
+public abstract class Declaration extends ASTNode implements IDeclaration {
 
 	/**
 	 * The modifiers
@@ -68,16 +68,6 @@ public abstract class Declaration extends Dsymbol implements IDeclaration {
 	 */
 	static final ChildListPropertyDescriptor internalModifiersPropertyFactory(Class nodeClass) {
 		return new ChildListPropertyDescriptor(nodeClass, "modifiers", Modifier.class, NO_CYCLE_RISK); //$NON-NLS-1$
-	}
-	
-	// TODO remove
-	public int storage_class;
-	
-	public Declaration() {
-	}
-	
-	public Declaration(Identifier id) {
-		this.ident = id;
 	}
 	
 	/**

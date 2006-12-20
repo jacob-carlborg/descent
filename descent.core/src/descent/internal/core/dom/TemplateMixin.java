@@ -11,12 +11,14 @@ import descent.core.dom.ITypeofType;
 
 public class TemplateMixin extends Declaration implements IMixinDeclaration {
 
+	private Identifier ident;
 	private QualifiedNameBak qName;
 	private TypeofType tqual;
 	private IElement[] tiargs;
 
-	public TemplateMixin(Identifier id, TypeofType tqual, List<Identifier> idents, List<IElement> tiargs) {
-		super(id);
+	public TemplateMixin(AST ast, Identifier id, TypeofType tqual, List<Identifier> idents, List<IElement> tiargs) {
+		super(ast);
+		this.ident = id;
 		this.tqual = tqual;
 		this.qName = new QualifiedNameBak(idents);
 		if (tiargs != null) {

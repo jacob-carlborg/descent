@@ -4,7 +4,7 @@ public class VersionCondition extends Condition {
 	
 	public Identifier id;
 
-	public VersionCondition(Module mod, long level, Identifier id) {
+	public VersionCondition(long level, Identifier id) {
 		this.id = id;
 	}
 	
