@@ -55,8 +55,6 @@ public class Statement_Test extends Parser_Test {
 		assertPosition(stm, 1, 2);
 		
 		assertEquals(IExpression.NUMBER_LITERAL, stm.getExpression().getNodeType0());
-		
-		assertVisitor(stm, 2);
 	}
 	
 	public void testBreak() {
