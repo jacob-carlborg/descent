@@ -719,21 +719,21 @@ public class Expression_Test extends Parser_Test {
 		assertEquals(IExpression.NEW_ANONYMOUS_CLASS_EXPRESSION, expr.getNodeType0());
 		assertPosition(expr, 1, s.length() - 1);
 		
-		assertEquals(0, expr.getCallArguments().length);
-		assertEquals(0, expr.getConstructorArguments().length);
-		assertEquals(0, expr.getBaseClasses().length);
+		assertEquals(0, expr.newArguments().size());
+		assertEquals(0, expr.constructorArguments().size());
+		assertEquals(0, expr.baseClasses().size());
 	}
 	
 	public void testAnnonymousClass2() {
-		String s = " new (1, 2) class (int a, int b) { }";
+		String s = " new (1, 2) class (3, 4) { }";
 		INewAnonymousClassExpression expr = (INewAnonymousClassExpression) new ParserFacade().parseExpression(s);
 		
 		assertEquals(IExpression.NEW_ANONYMOUS_CLASS_EXPRESSION, expr.getNodeType0());
 		assertPosition(expr, 1, s.length() - 1);
 		
-		assertEquals(2, expr.getCallArguments().length);
-		assertEquals(2, expr.getConstructorArguments().length);
-		assertEquals(0, expr.getBaseClasses().length);
+		assertEquals(2, expr.newArguments().size());
+		assertEquals(2, expr.constructorArguments().size());
+		assertEquals(0, expr.baseClasses().size());
 	}
 	
 	public void testAnnonymousClass3() {
@@ -743,9 +743,23 @@ public class Expression_Test extends Parser_Test {
 		assertEquals(IExpression.NEW_ANONYMOUS_CLASS_EXPRESSION, expr.getNodeType0());
 		assertPosition(expr, 1, s.length() - 1);
 		
-		assertEquals(0, expr.getCallArguments().length);
-		assertEquals(0, expr.getConstructorArguments().length);
-		assertEquals(2, expr.getBaseClasses().length);
+		assertNull(expr.getExpression());
+		assertEquals(0, expr.newArguments().size());
+		assertEquals(0, expr.constructorArguments().size());
+		assertEquals(2, expr.baseClasses().size());
+	}
+	
+	public void testAnnonymousClass4() {
+		String s = " id.new (1, 2) class (3, 4) { }";
+		INewAnonymousClassExpression expr = (INewAnonymousClassExpression) new ParserFacade().parseExpression(s);
+		
+		assertEquals(IExpression.NEW_ANONYMOUS_CLASS_EXPRESSION, expr.getNodeType0());
+		assertPosition(expr, 1, s.length() - 1);
+		
+		assertEquals("id", ((SimpleName) expr.getExpression()).getIdentifier());
+		assertEquals(2, expr.newArguments().size());
+		assertEquals(2, expr.constructorArguments().size());
+		assertEquals(0, expr.baseClasses().size());
 	}
 	
 	public void testNewDynamicArray1() {

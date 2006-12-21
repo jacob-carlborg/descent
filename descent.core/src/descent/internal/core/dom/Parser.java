@@ -5534,7 +5534,7 @@ public class Parser extends Lexer {
 				cd.declarations().addAll(decl);
 			}
 
-			e = new NewAnonClassExp(ast, thisexp, newargs, cd, arguments);
+			e = newNewAnonymousClassExpression(ast, thisexp, newargs, cd, arguments);
 
 			return e;
 		}
@@ -5579,7 +5579,7 @@ public class Parser extends Lexer {
 		e = new NewExpression(ast, thisexp, newargs, t, arguments);
 		return e;
 	}
-	
+
 	private void addComment(ASTNode s, String blockComment) {
 		addComment(s, blockComment, -1);
 	}
@@ -6556,6 +6556,20 @@ public class Parser extends Lexer {
 		withStatement.setExpression(expression);
 		withStatement.setBody(body);
 		return withStatement;
+	}
+	
+	private Expression newNewAnonymousClassExpression(AST ast, Expression thisexp, List<Expression> newargs, AggregateDeclaration cd, List<Expression> arguments) {
+		NewAnonymousClassExpression expression = new NewAnonymousClassExpression(ast);
+		expression.setExpression(thisexp);
+		if (newargs != null) {
+			expression.newArguments().addAll(newargs);
+		}
+		if (arguments != null) {
+			expression.constructorArguments().addAll(arguments);
+		}
+		expression.baseClasses().addAll(cd.baseClasses());
+		expression.declarations().addAll(cd.declarations());
+		return expression;
 	}
 	
 	private List<Comment> getLastDocComments() {

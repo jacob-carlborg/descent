@@ -1,13 +1,21 @@
 package descent.core.dom;
 
+import java.util.List;
+
+import descent.internal.core.dom.BaseClass;
+import descent.internal.core.dom.Declaration;
+import descent.internal.core.dom.Expression;
+
 public interface INewAnonymousClassExpression extends IExpression {
 	
-	IExpression[] getCallArguments();
+	Expression getExpression();
 	
-	IExpression[] getConstructorArguments();
+	List<Expression> newArguments();
 	
-	IBaseClass[] getBaseClasses();
+	List<Expression> constructorArguments();
 	
-	IDeclaration[] getDeclarationDefinitions();
+	List<BaseClass> baseClasses();
+	
+	List<Declaration> declarations();
 
 }
