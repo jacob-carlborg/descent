@@ -17,16 +17,6 @@ public interface IMixinDeclaration extends IDeclaration {
 	/**
 	 * Returns the qualified name of the mixin.
 	 */
-	IQualifiedName getType();
-	
-	/**
-	 * Returns the typeof type (TODO: what the hell in the world is this?)
-	 */
-	ITypeofType getTypeofType();
-	
-	/**
-	 * Returns the template arguments of the mixin.
-	 */
-	IElement[] getTemplateArguments();
+	IType getType();
 
 }

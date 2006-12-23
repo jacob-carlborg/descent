@@ -41,6 +41,16 @@ public abstract class TypeAdapter {
 			return getAdapter((DelegateType) object);
 		}
 		
+		if (object instanceof SimpleType 
+				|| object instanceof QualifiedType 
+				|| object instanceof TemplateType) {
+			return getAdapterForTident((Type) object);
+		}
+		
+		if (object instanceof TypeofType) {
+			return getAdapter((TypeofType) object);
+		}
+		
 		throw new RuntimeException("Can't adapt " + object + " to ITypeWithNextField");
 	}
 	
@@ -88,6 +98,25 @@ public abstract class TypeAdapter {
 		};
 	}
 	
+	private final static IDmdType getAdapterForTident(final Type type) {
+		return new IDmdType() {
+			public Object getAdaptedType() {
+				return type;
+			}
+			public Type getNext() {
+				return null;
+			}
+			public void setNext(Type dmdType) {
+			}
+			public Expression toExpression() {
+				return null;
+			}
+			public TY getTY() {
+				return TY.Tident;
+			}
+		};
+	}
+	
 	public final static IDmdType getAdapter(final PointerType type) {
 		return new IDmdType() {
 			public Object getAdaptedType() {
@@ -104,6 +133,26 @@ public abstract class TypeAdapter {
 			}
 			public TY getTY() {
 				return TY.Tpointer;
+			}
+		};
+	}
+	
+	public final static IDmdType getAdapter(final TypeofType type) {
+		return new IDmdType() {
+			public Object getAdaptedType() {
+				return type;
+			}
+			public Type getNext() {
+				return null;
+			}
+			public void setNext(Type dmdType) {
+				
+			}
+			public Expression toExpression() {
+				return null;
+			}
+			public TY getTY() {
+				return TY.Ttypeof;
 			}
 		};
 	}

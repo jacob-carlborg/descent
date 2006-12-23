@@ -17,28 +17,26 @@ import descent.core.dom.IExpression;
  *    DeleteExpression
  *    DollarLiteral
  *    DotIdentifierExpression
- *    DotTemplateInstanceExp TODO
+ *    DotTemplateTypeExpression
  *    FunctionLiteralDeclarationExpression
  *    InfixExpression
  *    IsTypeExpression
  *    IsTypeSpecializationExpression
  *    Name
- *    NewAnonClassExp TODO
- *    NewExpression TODO
+ *    NewAnonymousClassExpression
+ *    NewExpression
  *    NullLiteral
  *    NumberLiteral
  *    ParenthesizedExpression
  *    PostfixExpression
  *    PrefixExpression
- *    ScopeExp TODO
  *    SliceExpression
  *    StringLiteral
  *    StringsExpression
  *    SuperLiteral
  *    ThisLiteral
- *    TypeDotIdExp TODO
- *    TypeExp TODO
- *    TypeidExp TODO
+ *    TypeExpression
+ *    TypeidExpression
  * </pre>
  */
 public abstract class Expression extends ASTNode implements IExpression {

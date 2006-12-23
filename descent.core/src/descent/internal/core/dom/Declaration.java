@@ -24,7 +24,7 @@ import descent.core.dom.IDeclaration;
  *    StaticAssert
  *    StaticIfDeclaration
  *    TemplateDeclaration
- *    TemplateMixin TODO
+ *    TemplateMixin
  *    TypedefDeclaration
  *    UnitTestDeclaration
  *    VariableDeclaration

@@ -7,7 +7,6 @@ import descent.core.dom.ICompilationUnit;
 import descent.core.dom.IDelegateType;
 import descent.core.dom.IElement;
 import descent.core.dom.IModifier;
-import descent.core.dom.ITemplateInstanceType;
 import descent.core.dom.IType;
 import descent.core.dom.IVariableDeclaration;
 import descent.internal.core.dom.ParserFacade;
@@ -270,69 +269,6 @@ public class VariableDeclaration_Test extends Parser_Test {
 		assertEquals(IArrayType.ASSOCIATIVE_ARRAY_TYPE, type.getNodeType0());
 		assertEquals("char", type.getComponentType().toString());
 		assertEquals("int", type.getKeyType().toString());
-	}
-	
-	public void testTemplate() {
-		String s = " a.b.Temp!(int) x = 1;";
-		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
-		assertEquals(0, unit.getProblems().length);
-		IElement[] declDefs = unit.getDeclarationDefinitions();
-		assertEquals(1, declDefs.length);
-		
-		IVariableDeclaration var = (IVariableDeclaration) declDefs[0];
-		assertEquals(IElement.VARIABLE_DECLARATION, var.getNodeType0());
-		
-		IType type = var.getType();
-		assertEquals(IType.TEMPLATE_INSTANCE_TYPE, type.getNodeType0());
-		ITemplateInstanceType ti = (ITemplateInstanceType) type;
-		assertEquals("a.b.Temp", ti.getName().toString());
-		assertEquals("Temp", ti.getShortName());
-		
-		IElement[] args = ti.getTemplateArguments();
-		assertEquals(1, args.length);
-		assertEquals("int", args[0].toString());
-	}
-	
-	public void testTemplate2() {
-		String s = " Temp!(int) x = 1;";
-		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
-		assertEquals(0, unit.getProblems().length);
-		IElement[] declDefs = unit.getDeclarationDefinitions();
-		assertEquals(1, declDefs.length);
-		
-		IVariableDeclaration var = (IVariableDeclaration) declDefs[0];
-		assertEquals(IElement.VARIABLE_DECLARATION, var.getNodeType0());
-		
-		IType type = var.getType();
-		assertEquals(IType.TEMPLATE_INSTANCE_TYPE, type.getNodeType0());
-		ITemplateInstanceType ti = (ITemplateInstanceType) type;
-		assertEquals("Temp", ti.getName().toString());
-		assertEquals("Temp", ti.getShortName());
-		
-		IElement[] args = ti.getTemplateArguments();
-		assertEquals(1, args.length);
-		assertEquals("int", args[0].toString());
-	}
-	
-	public void testTemplate3() {
-		String s = " .Temp!(int) x = 1;";
-		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
-		assertEquals(0, unit.getProblems().length);
-		IElement[] declDefs = unit.getDeclarationDefinitions();
-		assertEquals(1, declDefs.length);
-		
-		IVariableDeclaration var = (IVariableDeclaration) declDefs[0];
-		assertEquals(IElement.VARIABLE_DECLARATION, var.getNodeType0());
-		
-		IType type = var.getType();
-		assertEquals(IType.TEMPLATE_INSTANCE_TYPE, type.getNodeType0());
-		ITemplateInstanceType ti = (ITemplateInstanceType) type;
-		assertEquals(".Temp", ti.getName().toString());
-		assertEquals("Temp", ti.getShortName());
-		
-		IElement[] args = ti.getTemplateArguments();
-		assertEquals(1, args.length);
-		assertEquals("int", args[0].toString());
 	}
 	
 	/* TODO Solve UTF SVN problems

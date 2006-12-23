@@ -4,44 +4,28 @@ import java.util.ArrayList;
 import java.util.List;
 
 import descent.core.dom.ASTVisitor;
-import descent.core.dom.ITemplateDeclaration;
 
 /**
- * Template declaration AST node type.
- *
+ * Template type AST node.
+ * 
  * <pre>
- * TemplateDeclaration:
- *    <b>template</b> SimpleName <b>( [ TemplateParameter { <b>,</b> TemplateParameter } ] 
- *    <b>{</b> 
- *       { Declaration } 
- *    <b>}</b>
+ * TemplateType:
+ *    SimpleName <b>!</b> <b>(</b> [ ASTNode { <b>,</b> ASTNode } ] <b>)</b>
  * </pre>
  */
-public class TemplateDeclaration extends Declaration implements ITemplateDeclaration {
+public class TemplateType extends Type {
 	
-	/**
-	 * The "modifiers" structural property of this node type.
-	 */
-	public static final ChildListPropertyDescriptor MODIFIERS_PROPERTY =
-	internalModifiersPropertyFactory(TemplateDeclaration.class); //$NON-NLS-1$
-
 	/**
 	 * The "name" structural property of this node type.
 	 */
 	public static final ChildPropertyDescriptor NAME_PROPERTY =
-		new ChildPropertyDescriptor(TemplateDeclaration.class, "name", SimpleName.class, MANDATORY, NO_CYCLE_RISK); //$NON-NLS-1$
+		new ChildPropertyDescriptor(TemplateType.class, "name", SimpleName.class, MANDATORY, NO_CYCLE_RISK); //$NON-NLS-1$
 
 	/**
-	 * The "templateParameters" structural property of this node type.
+	 * The "arguments" structural property of this node type.
 	 */
-	public static final ChildListPropertyDescriptor TEMPLATE_PARAMETERS_PROPERTY =
-		new ChildListPropertyDescriptor(TemplateDeclaration.class, "templateParameters", TemplateParameter.class, NO_CYCLE_RISK); //$NON-NLS-1$
-
-	/**
-	 * The "declarations" structural property of this node type.
-	 */
-	public static final ChildListPropertyDescriptor DECLARATIONS_PROPERTY =
-		new ChildListPropertyDescriptor(TemplateDeclaration.class, "declarations", Declaration.class, CYCLE_RISK); //$NON-NLS-1$
+	public static final ChildListPropertyDescriptor ARGUMENTS_PROPERTY =
+		new ChildListPropertyDescriptor(TemplateType.class, "arguments", ASTNode.class, NO_CYCLE_RISK); //$NON-NLS-1$
 
 	/**
 	 * A list of property descriptors (element type: 
@@ -51,12 +35,10 @@ public class TemplateDeclaration extends Declaration implements ITemplateDeclara
 	private static final List PROPERTY_DESCRIPTORS;
 
 	static {
-		List properyList = new ArrayList(4);
-		createPropertyList(TemplateDeclaration.class, properyList);
-		addProperty(MODIFIERS_PROPERTY, properyList);
+		List properyList = new ArrayList(2);
+		createPropertyList(TemplateType.class, properyList);
 		addProperty(NAME_PROPERTY, properyList);
-		addProperty(TEMPLATE_PARAMETERS_PROPERTY, properyList);
-		addProperty(DECLARATIONS_PROPERTY, properyList);
+		addProperty(ARGUMENTS_PROPERTY, properyList);
 		PROPERTY_DESCRIPTORS = reapPropertyList(properyList);
 	}
 
@@ -76,34 +58,20 @@ public class TemplateDeclaration extends Declaration implements ITemplateDeclara
 	}
 
 	/**
-	 * The modifiers
-	 * (element type: <code>Modifier</code>).
-	 * Defaults to an empty list.
-	 */
-	private ASTNode.NodeList modifiers =
-		new ASTNode.NodeList(MODIFIERS_PROPERTY);
-	/**
 	 * The name.
 	 */
 	private SimpleName name;
 
 	/**
-	 * The templateParameters
-	 * (element type: <code>TemplateParameter</code>).
+	 * The arguments
+	 * (element type: <code>ASTNode</code>).
 	 * Defaults to an empty list.
 	 */
-	private ASTNode.NodeList templateParameters =
-		new ASTNode.NodeList(TEMPLATE_PARAMETERS_PROPERTY);
-	/**
-	 * The declarations
-	 * (element type: <code>Declaration</code>).
-	 * Defaults to an empty list.
-	 */
-	private ASTNode.NodeList declarations =
-		new ASTNode.NodeList(DECLARATIONS_PROPERTY);
+	private ASTNode.NodeList arguments =
+		new ASTNode.NodeList(ARGUMENTS_PROPERTY);
 
 	/**
-	 * Creates a new unparented template declaration node owned by the given 
+	 * Creates a new unparented template type node owned by the given 
 	 * AST.
 	 * <p>
 	 * N.B. This constructor is package-private.
@@ -111,7 +79,7 @@ public class TemplateDeclaration extends Declaration implements ITemplateDeclara
 	 * 
 	 * @param ast the AST that is to own this node
 	 */
-	TemplateDeclaration(AST ast) {
+	TemplateType(AST ast) {
 		super(ast);
 	}
 
@@ -142,42 +110,29 @@ public class TemplateDeclaration extends Declaration implements ITemplateDeclara
 	 * Method declared on ASTNode.
 	 */
 	final List internalGetChildListProperty(ChildListPropertyDescriptor property) {
-		if (property == MODIFIERS_PROPERTY) {
-			return modifiers();
-		}
-		if (property == TEMPLATE_PARAMETERS_PROPERTY) {
-			return templateParameters();
-		}
-		if (property == DECLARATIONS_PROPERTY) {
-			return declarations();
+		if (property == ARGUMENTS_PROPERTY) {
+			return arguments();
 		}
 		// allow default implementation to flag the error
 		return super.internalGetChildListProperty(property);
 	}
 
-		@Override
-		final ChildListPropertyDescriptor internalModifiersProperty() {
-			return MODIFIERS_PROPERTY;
-		}
-		
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
 	 * TODO make it package
 	 */
 	public final int getNodeType0() {
-		return TEMPLATE_DECLARATION;
+		return TEMPLATE_TYPE;
 	}
 
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
 	 */
 	ASTNode clone0(AST target) {
-		TemplateDeclaration result = new TemplateDeclaration(target);
+		TemplateType result = new TemplateType(target);
 		result.setSourceRange(this.getStartPosition(), this.getLength());
-		result.modifiers.addAll(ASTNode.copySubtrees(target, modifiers()));
 		result.setName((SimpleName) getName().clone(target));
-		result.templateParameters.addAll(ASTNode.copySubtrees(target, templateParameters()));
-		result.declarations.addAll(ASTNode.copySubtrees(target, declarations()));
+		result.arguments.addAll(ASTNode.copySubtrees(target, arguments()));
 		return result;
 	}
 
@@ -196,16 +151,14 @@ public class TemplateDeclaration extends Declaration implements ITemplateDeclara
 		boolean visitChildren = visitor.visit(this);
 		if (visitChildren) {
 			// visit children in normal left to right reading order
-			acceptChildren(visitor, modifiers());
 			acceptChild(visitor, getName());
-			acceptChildren(visitor, templateParameters());
-			acceptChildren(visitor, declarations());
+			acceptChildren(visitor, arguments());
 		}
 		visitor.endVisit(this);
 	}
 
 	/**
-	 * Returns the name of this template declaration.
+	 * Returns the name of this template type.
 	 * 
 	 * @return the name
 	 */ 
@@ -224,7 +177,7 @@ public class TemplateDeclaration extends Declaration implements ITemplateDeclara
 	}
 
 	/**
-	 * Sets the name of this template declaration.
+	 * Sets the name of this template type.
 	 * 
 	 * @param name the name
 	 * @exception IllegalArgumentException if:
@@ -245,32 +198,21 @@ public class TemplateDeclaration extends Declaration implements ITemplateDeclara
 	}
 
 	/**
-	 * Returns the live ordered list of templateParameters for this
-	 * template declaration.
+	 * Returns the live ordered list of arguments for this
+	 * template type.
 	 * 
-	 * @return the live list of template declaration
-	 *    (element type: <code>TemplateParameter</code>)
+	 * @return the live list of template type
+	 *    (element type: <code>ASTNode</code>)
 	 */ 
-	public List<TemplateParameter> templateParameters() {
-		return this.templateParameters;
-	}
-
-	/**
-	 * Returns the live ordered list of declarations for this
-	 * template declaration.
-	 * 
-	 * @return the live list of template declaration
-	 *    (element type: <code>Declaration</code>)
-	 */ 
-	public List<Declaration> declarations() {
-		return this.declarations;
+	public List<ASTNode> arguments() {
+		return this.arguments;
 	}
 
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
 	 */
 	int memSize() {
-		return BASE_NODE_SIZE + 4 * 4;
+		return BASE_NODE_SIZE + 2 * 4;
 	}
 
 	/* (omit javadoc for this method)
@@ -279,10 +221,8 @@ public class TemplateDeclaration extends Declaration implements ITemplateDeclara
 	int treeSize() {
 		return
 			memSize()
-			+ (this.modifiers.listSize())
 			+ (this.name == null ? 0 : getName().treeSize())
-			+ (this.templateParameters.listSize())
-			+ (this.declarations.listSize())
+			+ (this.arguments.listSize())
 	;
 	}
 

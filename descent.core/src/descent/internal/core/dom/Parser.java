@@ -1153,7 +1153,7 @@ public class Parser extends Lexer {
 						value = parseAssignExp();
 					}
 					
-					EnumMember em = newEnumMember(newSimpleNameFromIdentifier(ident), value);
+					EnumMember em = newEnumMember(newSimpleNameForIdentifier(ident), value);
 					e.enumMembers().add(em);
 					if (token.value == TOKrcurly) {
 						;
@@ -1523,22 +1523,24 @@ public class Parser extends Lexer {
 	
 	@SuppressWarnings("unchecked")
 	private Declaration parseMixin() {
-		TemplateMixin tm;
+		MixinDeclaration tm;
 		Identifier id = null;
-		TypeofType tqual;
-		List<IElement> tiargs;
-		List<Identifier> idents;
+		List<ASTNode> tiargs;
 		
+		Type type = null;
 		Token firstToken = new Token(token);
 
 		nextToken();
+		
+		int start = token.ptr;
+		boolean foundOneType = false;
 
-		tqual = null;
 		if (token.value == TOKdot) {
 			/*
 			id = new Identifier(Id.empty, TOKidentifier);
 			id.startPosition = token.ptr;
 			*/
+			foundOneType = true;
 		} else {
 			if (token.value == TOKtypeof) {
 				Expression exp;
@@ -1548,8 +1550,11 @@ public class Parser extends Lexer {
 				exp = parseExpression();
 				check(TOKrparen);
 				
-				tqual = newTypeofType(exp);
+				type = newTypeofType(exp);
+				type.setSourceRange(start, prevToken.ptr + prevToken.len - start);
 				check(TOKdot);
+				
+				foundOneType = true;
 			}
 			if (token.value != TOKidentifier) {
 				problem("Identifier expected", IProblem.SEVERITY_ERROR,
@@ -1559,26 +1564,38 @@ public class Parser extends Lexer {
 			}
 			id = new Identifier(token);
 			nextToken();
+			
+			if (token.value != TOKnot) {
+				if (type == null) {
+					type = newSimpleType(id);
+					foundOneType = true;
+				} else {
+					type = newQualifiedType(type, newSimpleType(id), type.getStartPosition());
+					foundOneType = true;
+				}
+			}
 		}
 
-		idents = new ArrayList<Identifier>();
 		while (true) {
 			tiargs = null;
 			if (token.value == TOKnot) {
 				nextToken();
 				tiargs = parseTemplateArgumentList();
+				
+				if (foundOneType) {
+					TemplateType templateType = newTemplateType(id, tiargs);
+					templateType.setSourceRange(id.startPosition, prevToken.ptr + prevToken.len - id.startPosition);
+					type = newQualifiedType(type, templateType, start);
+				} else {
+					type = newTemplateType(id, tiargs);
+					type.setSourceRange(id.startPosition, prevToken.ptr + prevToken.len - id.startPosition);
+				}
 			}
+			
+			foundOneType = true;
 
 			if (token.value != TOKdot)
 				break;
-
-			if (tiargs != null) {
-				TemplateInstance tempinst = new TemplateInstance(id);
-				tempinst.tiargs = tiargs;
-				id = tempinst;
-				tiargs = null;
-			}
-			idents.add(id);
 
 			nextToken();
 			if (token.value != TOKidentifier) {
@@ -1588,8 +1605,11 @@ public class Parser extends Lexer {
 			}
 			id = new Identifier(token);
 			nextToken();
+			
+			if (token.value != TOKnot) {
+				type = newQualifiedType(type, newSimpleType(id), type.getStartPosition());
+			}
 		}
-		idents.add(id);
 
 		if (token.value == TOKidentifier) {
 			id = new Identifier(token);
@@ -1597,8 +1617,10 @@ public class Parser extends Lexer {
 		} else {
 			id = null;
 		}
+		
+		tm = newMixinDeclaration(type, id);
 
-		tm = new TemplateMixin(ast, id, tqual, idents, tiargs);
+		//tm = new MixinDeclaration(ast, id, tqual, idents, tiargs);
 		if (token.value != TOKsemicolon) {
 			problem("Semicolon expected following mixin",
 					IProblem.SEVERITY_ERROR,
@@ -1615,10 +1637,10 @@ public class Parser extends Lexer {
 	    // Lerr:
 	    // return NULL;
 	}
-	
+
 	@SuppressWarnings("unchecked")
-	private List<IElement> parseTemplateArgumentList() {
-	    List<IElement> tiargs = new ArrayList<IElement>();
+	private List<ASTNode> parseTemplateArgumentList() {
+	    List<ASTNode> tiargs = new ArrayList<ASTNode>();
 	    if (token.value != TOKlparen)
 	    {   
 	    	problem("!(TemplateArgumentList) expected following TemplateIdentifier", IProblem.SEVERITY_ERROR, IProblem.TEMPLATE_ARGUMENT_LIST_EXPECTED, token.ptr, token.len);
@@ -1790,8 +1812,7 @@ public class Parser extends Lexer {
 	private Type parseBasicType() {
 		Type t = null;
 		Identifier id = null;
-		TypeQualified tid = null;
-		TemplateInstance tempinst = null;
+		Type tid = null;
 		
 		switch (token.value) {
 		// CASE_BASIC_TYPES_X(t):
@@ -1827,19 +1848,17 @@ public class Parser extends Lexer {
 			nextToken();
 			if (token.value == TOKnot) {
 				nextToken();
-				tempinst = new TemplateInstance(id);
-				tempinst.tiargs = parseTemplateArgumentList();
 				
-				tid = new TypeInstance(ast, tempinst);
+				List<ASTNode> arguments = parseTemplateArgumentList();
+				tid = newTemplateType(id, arguments);
+				tid.setSourceRange(id.startPosition, prevToken.ptr + prevToken.len - id.startPosition);
 				// goto Lident2;
 				{
 				Identifier[] p_id = { id };
-				TemplateInstance[] p_tempinst = { tempinst };
-				TypeQualified[] p_tid = { tid };
+				Type[] p_tid = { tid };
 				Type[] p_t = { t };
-				parseBasicType_Lident2(p_id, p_tempinst, p_tid, p_t);
+				parseBasicType_Lident2(p_id, p_tid, p_t, id.startPosition);
 				id = p_id[0];
-				tempinst = p_tempinst[0];
 				tid = p_tid[0];
 				t = p_t[0];
 				}
@@ -1847,34 +1866,33 @@ public class Parser extends Lexer {
 
 			}
 			// Lident:
-			tid = new TypeIdentifier(ast, id);
+			tid = newSimpleType(id);
 			tid.startPosition = prevToken.ptr;
 			// Lident2:
 			{
 			Identifier[] p_id = { id };
-			TemplateInstance[] p_tempinst = { tempinst };
-			TypeQualified[] p_tid = { tid };
+			Type[] p_tid = { tid };
 			Type[] p_t = { t };
-			parseBasicType_Lident2(p_id, p_tempinst, p_tid, p_t);
+			parseBasicType_Lident2(p_id, p_tid, p_t, id.startPosition);
 			id = p_id[0];
-			tempinst = p_tempinst[0];
 			tid = p_tid[0];
 			t = p_t[0];
 			}
 			break;
 
-		case TOKdot:
-			id = new Identifier(Id.empty, TOKidentifier);
+		case TOKdot:			
 			// goto Lident;
-			tid = new TypeIdentifier(ast, id);
+			if (id == null) {
+				tid = null;
+			} else {
+				tid = newSimpleType(id);
+			}
 			{
 			Identifier[] p_id = { id };
-			TemplateInstance[] p_tempinst = { tempinst };
-			TypeQualified[] p_tid = { tid };
+			Type[] p_tid = { tid };
 			Type[] p_t = { t };
-			parseBasicType_Lident2(p_id, p_tempinst, p_tid, p_t);
+			parseBasicType_Lident2(p_id, p_tid, p_t, token.ptr);
 			id = p_id[0];
-			tempinst = p_tempinst[0];
 			tid = p_tid[0];
 			t = p_t[0];
 			}
@@ -1890,17 +1908,15 @@ public class Parser extends Lexer {
 			check(TOKrparen);
 			
 			tid = newTypeofType(exp);
-			tid.startPosition = start;
+			tid.setSourceRange(start, prevToken.ptr + prevToken.len - start);
 			
 			// goto Lident2;
 			{
 			Identifier[] p_id = { id };
-			TemplateInstance[] p_tempinst = { tempinst };
-			TypeQualified[] p_tid = { tid };
+			Type[] p_tid = { tid };
 			Type[] p_t = { t };
-			parseBasicType_Lident2(p_id, p_tempinst, p_tid, p_t);
+			parseBasicType_Lident2(p_id, p_tid, p_t, start);
 			id = p_id[0];
-			tempinst = p_tempinst[0];
 			tid = p_tid[0];
 			t = p_t[0];
 			}
@@ -1919,8 +1935,8 @@ public class Parser extends Lexer {
 		}
 		return t;
 	}
-	
-	private void parseBasicType_Lident2(Identifier[] id, TemplateInstance[] tempinst, TypeQualified[] tid, Type[] t) {
+
+	private void parseBasicType_Lident2(Identifier[] id, Type[] tid, Type[] t, int start) {
 		while (token.value == TOKdot) {
 			nextToken();
 			if (token.value != TOKidentifier) {
@@ -1932,16 +1948,21 @@ public class Parser extends Lexer {
 			nextToken();
 			if (token.value == TOKnot) {
 				nextToken();
-				tempinst[0] = new TemplateInstance(id[0]);
-				tempinst[0].tiargs = parseTemplateArgumentList();
-				tid[0].addIdent((Identifier) tempinst[0]);
-			} else
-				tid[0].addIdent(id[0]);
+				
+				List<ASTNode> arguments = parseTemplateArgumentList();
+				TemplateType templateType = newTemplateType(id[0], arguments);
+				templateType.setSourceRange(id[0].startPosition, prevToken.ptr + prevToken.len - id[0].startPosition);
+				
+				tid[0] = newQualifiedType(tid[0], templateType, start);
+				tid[0].setSourceRange(start, prevToken.ptr + prevToken.len - start);
+			} else {
+				tid[0] = newQualifiedType(tid[0], id[0], start);
+			}
 		}
 		tid[0].length = prevToken.ptr + prevToken.len - tid[0].startPosition;
 		t[0] = tid[0];
 	}
-	
+
 	private Type parseBasicType2(Type t) {
 		Type ts;
 		Type ta;
@@ -2266,22 +2287,25 @@ public class Parser extends Lexer {
 			case TOKabstract:
 			case TOKsynchronized:
 			case TOKdeprecated:
-				modifiers.add(newModifierFromCurrentToken());
-				// TODO check modifiers redundancy
-				// goto L1;
-				// if ((storage_class & stc) != 0) {
-				//	problem("Redundant storage class", IProblem.SEVERITY_ERROR, IProblem.REDUNDANT_STORAGE_CLASS, token.ptr, token.len);
-				//}
+				Modifier currentModifier = newModifierFromCurrentToken();
+				for(Modifier previousModifier : modifiers) {
+					if (previousModifier.getModifierKeyword().equals(currentModifier.getModifierKeyword())) {
+						problem("Redundant storage class", IProblem.SEVERITY_ERROR, IProblem.REDUNDANT_STORAGE_CLASS, currentModifier);
+					}
+				}
+				modifiers.add(currentModifier);
 				nextToken();
 				continue;
 
 			case TOKextern:
 				if (peek(token).value != TOKlparen) {
-					modifiers.add(newModifierFromCurrentToken());
-					// TODO check modifiers redundancy
-					//if ((storage_class & stc) != 0) {
-					//	problem("Redundant storage class", IProblem.SEVERITY_ERROR, IProblem.REDUNDANT_STORAGE_CLASS, token.ptr, token.len);
-					//}
+					currentModifier = newModifierFromCurrentToken();
+					for(Modifier previousModifier : modifiers) {
+						if (previousModifier.getModifierKeyword().equals(currentModifier.getModifierKeyword())) {
+							problem("Redundant storage class", IProblem.SEVERITY_ERROR, IProblem.REDUNDANT_STORAGE_CLASS, currentModifier);
+						}
+					}
+					modifiers.add(currentModifier);
 					nextToken();
 					continue;
 				}
@@ -2439,7 +2463,7 @@ public class Parser extends Lexer {
 			} else if (TypeAdapter.getAdapter(t).getTY() == Tfunction) {
 				DmdTypeFunction typeFunction = (DmdTypeFunction) t;
 				
-				SimpleName name = newSimpleNameFromIdentifier(ident);
+				SimpleName name = newSimpleNameForIdentifier(ident);
 				
 				FunctionDeclaration function = newFunctionDeclaration(FunctionDeclaration.Kind.FUNCTION, 
 						typeFunction.getReturnType(), name, typeFunction.getArguments(), typeFunction.varargs ? 1 : 0);
@@ -4520,15 +4544,16 @@ public class Parser extends Lexer {
 		    nextToken();
 		    if (token.value == TOKnot && peek(token).value == TOKlparen)
 		    {	// identifier!(template-argument-list)
-			TemplateInstance tempinst;
-
-			tempinst = new TemplateInstance(id);
-			nextToken();
-			tempinst.tiargs = parseTemplateArgumentList();
-			e = new ScopeExp(ast, tempinst);
+		    	
+		    	nextToken();
+		    	List<ASTNode> arguments = parseTemplateArgumentList();
+				TemplateType templateType = newTemplateType(id, arguments);
+				templateType.setSourceRange(id.startPosition, prevToken.ptr + prevToken.len - id.startPosition);
+				e = newTypeExpression(templateType);
 		    }
-		    else
-			e = newSimpleNameFromIdentifier(id);
+		    else {
+		    	e = newSimpleNameForIdentifier(id);
+		    }
 		    break;
 
 		case TOKdollar:
@@ -4653,13 +4678,12 @@ public class Parser extends Lexer {
 		    		nextToken();
 		    		break;
 			    }
-			    e = new TypeDotIdExp(ast, t, new Identifier(token));
+			    e = newTypeDotIdentifierExpression(t, token);
 			    nextToken();
 			    break;
 
 		case TOKtypeof:
 		{   
-			Token saveToken = new Token(token);
 			Expression exp;
 
 		    nextToken();
@@ -4681,14 +4705,12 @@ public class Parser extends Lexer {
 			    	nextToken();
 			    	break;
 			    }
-			    e = new TypeDotIdExp(ast, t, new Identifier(token));
+			    e = newTypeDotIdentifierExpression(t, token);
 			    nextToken();
 			    break;
 		    }
 		    	
-		    e = new TypeExp(ast, t);
-		    e.startPosition = saveToken.ptr;
-		    e.length = prevToken.ptr + prevToken.len - e.startPosition;
+		    e = newTypeExpression(t);
 		    break;
 		}
 
@@ -4700,7 +4722,7 @@ public class Parser extends Lexer {
 		    t2 = parseBasicType();
 		    t2 = parseDeclarator(t2, null);	// ( type )
 		    check(TOKrparen);
-		    e = new TypeidExp(ast, t2);
+		    e = newTypeidExpression(t2);
 		    break;
 		}
 
@@ -4859,12 +4881,13 @@ public class Parser extends Lexer {
 
 					nextToken();
 					if (token.value == TOKnot && peek(token).value == TOKlparen) { // identifier!(template-argument-list)
-						TemplateInstance tempinst;
-
-						tempinst = new TemplateInstance(id);
 						nextToken();
-						tempinst.tiargs = parseTemplateArgumentList();
-						e = new DotTemplateInstanceExp(ast, e, tempinst);
+						
+						List<ASTNode> arguments = parseTemplateArgumentList();
+						TemplateType templateType = newTemplateType(id, arguments);
+						templateType.setSourceRange(id.startPosition, prevToken.ptr + prevToken.len - id.startPosition);
+						
+						e = newDotTemplateTypeExpression(e, templateType);
 					} else {
 						e = newDotIdentifierExpression(e, id);
 					}
@@ -4937,7 +4960,7 @@ public class Parser extends Lexer {
 			nextToken();
 	    }
 	}
-	
+
 	private Expression parseUnaryExp() {
 		Expression e;
 
@@ -5103,7 +5126,7 @@ public class Parser extends Lexer {
 							problem("Identifier expected following (type).", IProblem.SEVERITY_ERROR, IProblem.IDENTIFIER_EXPECTED, token.ptr, token.len);
 							return null;
 						}
-						e = new TypeDotIdExp(ast, t, new Identifier(token));
+						e = newTypeDotIdentifierExpression(t, token);
 						nextToken();
 					} else {
 						e = parseUnaryExp();
@@ -5129,7 +5152,7 @@ public class Parser extends Lexer {
 
 		return e;
 	}
-	
+
 	private void parsePrimaryExp_case_delegate(Expression[] e, Syntax syntax) {
 		List<Argument> arguments;
 		int varargs = 0;
@@ -5576,7 +5599,7 @@ public class Parser extends Lexer {
 		 * t = new TypeDArray(t); } else if (token.value == TOKlparen) arguments =
 		 * parseArguments(); #endif
 		 */
-		e = new NewExpression(ast, thisexp, newargs, t, arguments);
+		e = newNewExpression(ast, thisexp, newargs, t, arguments);
 		return e;
 	}
 
@@ -5644,7 +5667,14 @@ public class Parser extends Lexer {
 		return simpleName;
 	}
 	
-	public SimpleName newSimpleNameFromIdentifier(Identifier id) {
+	private SimpleName newSimpleNameForToken(Token token) {
+		SimpleName simpleName = new SimpleName(ast);
+		simpleName.setIdentifier(token.ident.string);
+		simpleName.setSourceRange(token.ptr, token.len);
+		return simpleName;
+	}
+	
+	public SimpleName newSimpleNameForIdentifier(Identifier id) {
 		if (id == null) return null;
 		
 		SimpleName simpleName = new SimpleName(ast);
@@ -5653,7 +5683,7 @@ public class Parser extends Lexer {
 		return simpleName;
 	}
 	
-	public static SimpleName newSimpleNameFromIdentifierWithAST(Identifier id, AST ast) {
+	public static SimpleName newSimpleNameForIdentifierWithAST(Identifier id, AST ast) {
 		if (id == null) return null;
 		
 		SimpleName simpleName = new SimpleName(ast);
@@ -5686,14 +5716,18 @@ public class Parser extends Lexer {
 	
 	private NumberLiteral newNumberLiteralForCurrentToken() {
 		NumberLiteral number = new NumberLiteral(ast);
-		number.setToken(token.string);
+		if (token.string != null) {
+			number.setToken(token.string);
+		}
 		number.setSourceRange(token.ptr, token.len);
 		return number;
 	}
 	
 	private CharacterLiteral newCharacterLiteralForCurrentToken() {
 		CharacterLiteral number = new CharacterLiteral(ast);
-		number.setEscapedValue(token.string);
+		if (token.string != null) {
+			number.setEscapedValue(token.string);
+		}
 		number.setSourceRange(token.ptr, token.len);
 		return number;
 	}
@@ -5707,8 +5741,10 @@ public class Parser extends Lexer {
 	
 	private ExpressionInitializer newExpressionInitializer(Expression expression) {
 		ExpressionInitializer initializer = new ExpressionInitializer(ast);
-		initializer.setExpression(expression);
-		initializer.setSourceRange(expression.getStartPosition(), expression.getLength());
+		if (expression != null) {
+			initializer.setExpression(expression);
+			initializer.setSourceRange(expression.getStartPosition(), expression.getLength());
+		}
 		return initializer;
 	}
 	
@@ -5854,7 +5890,7 @@ public class Parser extends Lexer {
 			throw new RuntimeException("Can't happen");
 		}
 		if (id != null) {
-			classDeclaration.setName(newSimpleNameFromIdentifier(id));
+			classDeclaration.setName(newSimpleNameForIdentifier(id));
 		}
 		if (baseClasses != null) {
 			classDeclaration.baseClasses().addAll(baseClasses);
@@ -5871,7 +5907,7 @@ public class Parser extends Lexer {
 	private AliasDeclarationFragment newAliasDeclarationFragment(Identifier id) {
 		AliasDeclarationFragment fragment = new AliasDeclarationFragment(ast);
 		if (id != null) {
-			fragment.setName(newSimpleNameFromIdentifier(id));
+			fragment.setName(newSimpleNameForIdentifier(id));
 			fragment.setSourceRange(id.startPosition, id.length);
 		}
 		return fragment;
@@ -5895,7 +5931,7 @@ public class Parser extends Lexer {
 	
 	private AliasTemplateParameter newAliasTemplateParamete(Identifier id, Type specificType, Type defaultType) {
 		AliasTemplateParameter parameter = new AliasTemplateParameter(ast);
-		parameter.setName(newSimpleNameFromIdentifier(id));
+		parameter.setName(newSimpleNameForIdentifier(id));
 		parameter.setSpecificType(specificType);
 		parameter.setDefaultType(defaultType);
 		return parameter;
@@ -5914,7 +5950,7 @@ public class Parser extends Lexer {
 		Argument argument = new Argument(ast);
 		argument.setPassageMode(passageMode);
 		argument.setType(type);
-		argument.setName(newSimpleNameFromIdentifier(id));
+		argument.setName(newSimpleNameForIdentifier(id));
 		argument.setDefaultValue(expression);
 		return argument;
 	}
@@ -5976,7 +6012,7 @@ public class Parser extends Lexer {
 	
 	private BreakStatement newBreakStatement(Identifier label) {
 		BreakStatement breakStatement = new BreakStatement(ast);
-		breakStatement.setLabel(newSimpleNameFromIdentifier(label));
+		breakStatement.setLabel(newSimpleNameForIdentifier(label));
 		return breakStatement;
 	}
 	
@@ -5990,14 +6026,14 @@ public class Parser extends Lexer {
 	private CatchClause newCatchClause(Type type, Identifier id, Statement body) {
 		CatchClause catchClause = new CatchClause(ast);
 		catchClause.setType(type);
-		catchClause.setName(newSimpleNameFromIdentifier(id));
+		catchClause.setName(newSimpleNameForIdentifier(id));
 		catchClause.setBody(body);
 		return catchClause;
 	}
 	
 	private ContinueStatement newContinueStatement(Identifier label) {
 		ContinueStatement continueStatement = new ContinueStatement(ast);
-		continueStatement.setLabel(newSimpleNameFromIdentifier(label));
+		continueStatement.setLabel(newSimpleNameForIdentifier(label));
 		return continueStatement;
 	}
 	
@@ -6095,7 +6131,7 @@ public class Parser extends Lexer {
 	private DotIdentifierExpression newDotIdentifierExpression(Expression e, Identifier id) {
 		DotIdentifierExpression die = new DotIdentifierExpression(ast);
 		die.setExpression(e);
-		die.setName(newSimpleNameFromIdentifier(id));
+		die.setName(newSimpleNameForIdentifier(id));
 		if (e == null) {
 			die.setSourceRange(prevToken.ptr, token.ptr + token.len - prevToken.ptr);
 		} else {
@@ -6112,7 +6148,7 @@ public class Parser extends Lexer {
 	
 	private EnumDeclaration newEnumDeclaration(Identifier id, Type type) {
 		EnumDeclaration enumDeclaration = new EnumDeclaration(ast);
-		enumDeclaration.setName(newSimpleNameFromIdentifier(id));
+		enumDeclaration.setName(newSimpleNameForIdentifier(id));
 		enumDeclaration.setBaseType(type);
 		return enumDeclaration;
 	}
@@ -6184,7 +6220,7 @@ public class Parser extends Lexer {
 	private GotoStatement newGotoStatement(Identifier ident) {
 		GotoStatement gotoStatement = new GotoStatement(ast);
 		if (ident != null) {
-			gotoStatement.setLabel(newSimpleNameFromIdentifier(ident));
+			gotoStatement.setLabel(newSimpleNameForIdentifier(ident));
 		}
 		return gotoStatement;
 	}
@@ -6193,7 +6229,7 @@ public class Parser extends Lexer {
 		IftypeDeclaration iftypeDeclaration = new IftypeDeclaration(ast);
 		if (iftypeCondition != null) {
 			iftypeDeclaration.setKind(iftypeCondition.getKind());
-			iftypeDeclaration.setName(newSimpleNameFromIdentifier(iftypeCondition.ident));
+			iftypeDeclaration.setName(newSimpleNameForIdentifier(iftypeCondition.ident));
 			iftypeDeclaration.setTestType(iftypeCondition.targ);
 			iftypeDeclaration.setMatchingType(iftypeCondition.tspec);
 		}
@@ -6210,7 +6246,7 @@ public class Parser extends Lexer {
 		IftypeStatement iftypeStatement = new IftypeStatement(ast);
 		if (iftypeCondition != null) {
 			iftypeStatement.setKind(iftypeCondition.getKind());
-			iftypeStatement.setName(newSimpleNameFromIdentifier(iftypeCondition.ident));
+			iftypeStatement.setName(newSimpleNameForIdentifier(iftypeCondition.ident));
 			iftypeStatement.setTestType(iftypeCondition.targ);
 			iftypeStatement.setMatchingType(iftypeCondition.tspec);
 		}
@@ -6236,7 +6272,7 @@ public class Parser extends Lexer {
 	
 	private IsTypeExpression newIsTypeExpression(Identifier ident, Type targ, Type tspec, TOK tok) {
 		IsTypeExpression isTypeExpression = new IsTypeExpression(ast);
-		isTypeExpression.setName(newSimpleNameFromIdentifier(ident));
+		isTypeExpression.setName(newSimpleNameForIdentifier(ident));
 		isTypeExpression.setType(targ);
 		isTypeExpression.setSpecialization(tspec);
 		isTypeExpression.setSameComparison(tok == TOK.TOKequal);
@@ -6245,7 +6281,7 @@ public class Parser extends Lexer {
 	
 	private IsTypeSpecializationExpression newIsTypeSpecializationExpression(Identifier ident, Type targ, TOK tok, TOK tok2) {
 		IsTypeSpecializationExpression exp = new IsTypeSpecializationExpression(ast);
-		exp.setName(newSimpleNameFromIdentifier(ident));
+		exp.setName(newSimpleNameForIdentifier(ident));
 		exp.setType(targ);
 		TypeSpecialization specialization = null;
 		switch(tok2) {
@@ -6268,7 +6304,7 @@ public class Parser extends Lexer {
 	
 	private LabelStatement newLabelStatement(Identifier ident, Statement body) {
 		LabelStatement labelStatement = new LabelStatement(ast);
-		labelStatement.setLabel(newSimpleNameFromIdentifier(ident));
+		labelStatement.setLabel(newSimpleNameForIdentifier(ident));
 		labelStatement.setBody(body);
 		labelStatement.setSourceRange(ident.startPosition, body.startPosition + body.length - ident.startPosition);
 		return labelStatement;
@@ -6302,7 +6338,7 @@ public class Parser extends Lexer {
 	
 	private PragmaDeclaration newPragmaDeclaration(Identifier ident, List<Expression> arguments, List<Declaration> declarations) {
 		PragmaDeclaration pragmaDeclaration = new PragmaDeclaration(ast);
-		pragmaDeclaration.setName(newSimpleNameFromIdentifier(ident));
+		pragmaDeclaration.setName(newSimpleNameForIdentifier(ident));
 		if (arguments != null) {
 			pragmaDeclaration.arguments().addAll(arguments);
 		}
@@ -6314,7 +6350,7 @@ public class Parser extends Lexer {
 	
 	private PragmaStatement newPragmaStatement(Identifier ident, List<Expression> arguments, Statement body) {
 		PragmaStatement pragmaStatement = new PragmaStatement(ast);
-		pragmaStatement.setName(newSimpleNameFromIdentifier(ident));
+		pragmaStatement.setName(newSimpleNameForIdentifier(ident));
 		if (arguments != null) {
 			pragmaStatement.arguments().addAll(arguments);
 		}
@@ -6389,7 +6425,7 @@ public class Parser extends Lexer {
 	
 	private StructInitializerFragment newStructInitializerFragment(Identifier id, Initializer value) {
 		StructInitializerFragment fragment = new StructInitializerFragment(ast);
-		fragment.setName(newSimpleNameFromIdentifier(id));
+		fragment.setName(newSimpleNameForIdentifier(id));
 		fragment.setInitializer(value);
 		if (id == null) {
 			fragment.setSourceRange(value.getStartPosition(), value.getLength());
@@ -6419,7 +6455,7 @@ public class Parser extends Lexer {
 	
 	private TemplateDeclaration newTemplateDeclaration(Identifier id, List<TemplateParameter> templateParameters, List<Declaration> declarations) {
 		TemplateDeclaration tempdecl = new TemplateDeclaration(ast);
-	    tempdecl.setName(newSimpleNameFromIdentifier(id));
+	    tempdecl.setName(newSimpleNameForIdentifier(id));
 	    tempdecl.templateParameters().addAll(templateParameters);
 	    tempdecl.declarations().addAll(declarations);
 	    return tempdecl;
@@ -6449,7 +6485,7 @@ public class Parser extends Lexer {
 	
 	private TupleTemplateParameter newTupleTemplateParameter(Identifier id) {
 		TupleTemplateParameter tupleTemplateParameter = new TupleTemplateParameter(ast);
-		tupleTemplateParameter.setName(newSimpleNameFromIdentifier(id));
+		tupleTemplateParameter.setName(newSimpleNameForIdentifier(id));
 		return tupleTemplateParameter;
 	}
 	
@@ -6461,7 +6497,7 @@ public class Parser extends Lexer {
 	
 	private TypedefDeclarationFragment newTypedefDeclarationFragment(Identifier ident, Initializer init) {
 		TypedefDeclarationFragment fragment = new TypedefDeclarationFragment(ast);
-		SimpleName name = newSimpleNameFromIdentifier(ident);
+		SimpleName name = newSimpleNameForIdentifier(ident);
 		fragment.setName(name);
 		if (init == null) {
 			fragment.setSourceRange(name.getStartPosition(), name.getLength());
@@ -6480,7 +6516,7 @@ public class Parser extends Lexer {
 	
 	private TypeTemplateParameter newTypeTemplateParameter(Identifier id, Type specificType, Type defaultType) {
 		TypeTemplateParameter typeTemplateParameter = new TypeTemplateParameter(ast);
-		typeTemplateParameter.setName(newSimpleNameFromIdentifier(id));
+		typeTemplateParameter.setName(newSimpleNameForIdentifier(id));
 		typeTemplateParameter.setSpecificType(specificType);
 		typeTemplateParameter.setDefaultType(defaultType);
 		return typeTemplateParameter;
@@ -6489,7 +6525,7 @@ public class Parser extends Lexer {
 	private ValueTemplateParameter newValueTemplateParameter(Identifier tp_ident, Type tp_valtype, Expression tp_specvalue, Expression tp_defaultvalue) {
 		ValueTemplateParameter valueTemplateParameter = new ValueTemplateParameter(ast);
 		valueTemplateParameter.setType(tp_valtype);
-		valueTemplateParameter.setName(newSimpleNameFromIdentifier(tp_ident));
+		valueTemplateParameter.setName(newSimpleNameForIdentifier(tp_ident));
 		valueTemplateParameter.setSpecificValue(tp_specvalue);
 		valueTemplateParameter.setDefaultValue(tp_defaultvalue);
 		return valueTemplateParameter;
@@ -6503,7 +6539,9 @@ public class Parser extends Lexer {
 	
 	private VariableDeclarationFragment newVariableDeclarationFragment(Identifier ident, Initializer init) {
 		VariableDeclarationFragment fragment = new VariableDeclarationFragment(ast);
-		fragment.setName(newSimpleNameFromIdentifier(ident));
+		if (ident != null) {
+			fragment.setName(newSimpleNameForIdentifier(ident));
+		}
 		fragment.setInitializer(init);
 		return fragment;
 	}
@@ -6570,6 +6608,82 @@ public class Parser extends Lexer {
 		expression.baseClasses().addAll(cd.baseClasses());
 		expression.declarations().addAll(cd.declarations());
 		return expression;
+	}
+
+	private NewExpression newNewExpression(AST ast, Expression thisexp, List<Expression> newargs, Type t, List<Expression> arguments) {
+		NewExpression newExpression = new NewExpression(ast);
+		newExpression.setExpression(thisexp);
+		if (newargs != null) {
+			newExpression.newArguments().addAll(newargs);
+		}
+		newExpression.setType(t);
+		if (arguments != null) {
+			newExpression.constructorArguments().addAll(arguments);
+		}
+		return newExpression;
+	}
+	
+	private TypeExpression newTypeExpression(Type type) {
+		TypeExpression typeExpression = new TypeExpression(ast);
+		typeExpression.setType(type);
+		return typeExpression;
+	}
+	
+	private TypeDotIdentifierExpression newTypeDotIdentifierExpression(Type t, Token token) {
+		TypeDotIdentifierExpression typeDot = new TypeDotIdentifierExpression(ast);
+		typeDot.setType(t);
+		typeDot.setName(newSimpleNameForToken(token));
+		return typeDot;
+	}
+	
+	private QualifiedType newQualifiedType(Type type, Identifier identifier, int start) {
+		return newQualifiedType(type, newSimpleType(identifier), start);
+	}
+	
+	private QualifiedType newQualifiedType(Type qualifier, Type type, int start) {
+		QualifiedType qualifiedType = new QualifiedType(ast);
+		qualifiedType.setQualifier(qualifier);
+		qualifiedType.setType(type);
+		qualifiedType.setSourceRange(start, type.getStartPosition() + type.getLength() - start);
+		return qualifiedType;
+	}
+	
+	private SimpleType newSimpleType(Identifier id) {
+		SimpleType simpleType = new SimpleType(ast);
+		if (id != null) {
+			simpleType.setName(newSimpleNameForIdentifier(id));
+			simpleType.setSourceRange(id.startPosition, id.length);
+		}
+		return simpleType;
+	}
+	
+	private TemplateType newTemplateType(Identifier identifier, List<ASTNode> arguments) {
+		TemplateType templateType = new TemplateType(ast);
+		templateType.setName(newSimpleNameForIdentifier(identifier));
+		if (templateType != null) {
+			templateType.arguments().addAll(arguments);
+		}
+		return templateType;
+	}
+	
+	private DotTemplateTypeExpression newDotTemplateTypeExpression(Expression e, TemplateType templateType) {
+		DotTemplateTypeExpression dot = new DotTemplateTypeExpression(ast);
+		dot.setExpression(e);
+		dot.setTemplateType(templateType);
+		return dot;
+	}
+	
+	private MixinDeclaration newMixinDeclaration(Type type, Identifier id) {
+		MixinDeclaration mixin = new MixinDeclaration(ast);
+		mixin.setType(type);
+		mixin.setName(newSimpleNameForIdentifier(id));
+		return mixin;
+	}
+	
+	private TypeidExpression newTypeidExpression(Type type) {
+		TypeidExpression typeid = new TypeidExpression(ast);
+		typeid.setType(type);
+		return typeid;
 	}
 	
 	private List<Comment> getLastDocComments() {

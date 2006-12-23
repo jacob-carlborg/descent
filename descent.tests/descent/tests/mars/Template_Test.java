@@ -15,6 +15,7 @@ import descent.core.dom.ITypeTemplateParameter;
 import descent.core.dom.IValueTemplateParameter;
 import descent.internal.core.dom.NumberLiteral;
 import descent.internal.core.dom.ParserFacade;
+import descent.internal.core.dom.SimpleType;
 import descent.internal.core.dom.TemplateParameter;
 
 public class Template_Test extends Parser_Test {
@@ -95,10 +96,8 @@ public class Template_Test extends Parser_Test {
 		IAliasTemplateParameter tap = (IAliasTemplateParameter) tp.get(4);		
 		assertEquals("A", tap.getName().getIdentifier());
 		assertPosition(tap, 44, 15);
-		assertEquals("B", tap.getSpecificType().toString());
-		assertEquals("C", tap.getDefaultType().toString());
-		
-		assertVisitor(t, 18);
+		assertEquals("B", ((SimpleType) tap.getSpecificType()).getName().getFullyQualifiedName());
+		assertEquals("C", ((SimpleType) tap.getDefaultType()).getName().getFullyQualifiedName());
 	}
 	
 	public void testParametersTuple() {

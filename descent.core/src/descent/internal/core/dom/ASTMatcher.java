@@ -2836,5 +2836,230 @@ public class ASTMatcher {
 			&& safeSubtreeListMatch(node.declarations(), o.declarations())
 			);
 	}
+	
+	/**
+	 * Returns whether the given node and the other object match.
+	 * <p>
+	 * The default implementation provided by this class tests whether the
+	 * other object is a node of the same type with structurally isomorphic
+	 * child subtrees. Subclasses may override this method as needed.
+	 * </p>
+	 * 
+	 * @param node the node
+	 * @param other the other object, or <code>null</code>
+	 * @return <code>true</code> if the subtree matches, or 
+	 *   <code>false</code> if they do not match or the other object has a
+	 *   different node type or is <code>null</code>
+	 */
+	public boolean match(NewExpression node, Object other) {
+		if (!(other instanceof NewExpression)) {
+			return false;
+		}
+		NewExpression o = (NewExpression) other;
+		return (
+			safeSubtreeMatch(node.getExpression(), o.getExpression())
+			&& safeSubtreeMatch(node.getType(), o.getType())
+			&& safeSubtreeListMatch(node.newArguments(), o.newArguments())
+			&& safeSubtreeListMatch(node.constructorArguments(), o.constructorArguments())
+			);
+	}
+	
+	/**
+	 * Returns whether the given node and the other object match.
+	 * <p>
+	 * The default implementation provided by this class tests whether the
+	 * other object is a node of the same type with structurally isomorphic
+	 * child subtrees. Subclasses may override this method as needed.
+	 * </p>
+	 * 
+	 * @param node the node
+	 * @param other the other object, or <code>null</code>
+	 * @return <code>true</code> if the subtree matches, or 
+	 *   <code>false</code> if they do not match or the other object has a
+	 *   different node type or is <code>null</code>
+	 */
+	public boolean match(TypeExpression node, Object other) {
+		if (!(other instanceof TypeExpression)) {
+			return false;
+		}
+		TypeExpression o = (TypeExpression) other;
+		return (
+			safeSubtreeMatch(node.getType(), o.getType())
+			);
+	}
+	
+	/**
+	 * Returns whether the given node and the other object match.
+	 * <p>
+	 * The default implementation provided by this class tests whether the
+	 * other object is a node of the same type with structurally isomorphic
+	 * child subtrees. Subclasses may override this method as needed.
+	 * </p>
+	 * 
+	 * @param node the node
+	 * @param other the other object, or <code>null</code>
+	 * @return <code>true</code> if the subtree matches, or 
+	 *   <code>false</code> if they do not match or the other object has a
+	 *   different node type or is <code>null</code>
+	 */
+	public boolean match(TypeDotIdentifierExpression node, Object other) {
+		if (!(other instanceof TypeDotIdentifierExpression)) {
+			return false;
+		}
+		TypeDotIdentifierExpression o = (TypeDotIdentifierExpression) other;
+		return (
+			safeSubtreeMatch(node.getType(), o.getType())
+			&& safeSubtreeMatch(node.getName(), o.getName())
+			);
+	}
+	
+	/**
+	 * Returns whether the given node and the other object match.
+	 * <p>
+	 * The default implementation provided by this class tests whether the
+	 * other object is a node of the same type with structurally isomorphic
+	 * child subtrees. Subclasses may override this method as needed.
+	 * </p>
+	 * 
+	 * @param node the node
+	 * @param other the other object, or <code>null</code>
+	 * @return <code>true</code> if the subtree matches, or 
+	 *   <code>false</code> if they do not match or the other object has a
+	 *   different node type or is <code>null</code>
+	 */
+	public boolean match(QualifiedType node, Object other) {
+		if (!(other instanceof QualifiedType)) {
+			return false;
+		}
+		QualifiedType o = (QualifiedType) other;
+		return (
+			safeSubtreeMatch(node.getQualifier(), o.getQualifier())
+			&& safeSubtreeMatch(node.getType(), o.getType())
+			);
+	}
+	
+	/**
+	 * Returns whether the given node and the other object match.
+	 * <p>
+	 * The default implementation provided by this class tests whether the
+	 * other object is a node of the same type with structurally isomorphic
+	 * child subtrees. Subclasses may override this method as needed.
+	 * </p>
+	 * 
+	 * @param node the node
+	 * @param other the other object, or <code>null</code>
+	 * @return <code>true</code> if the subtree matches, or 
+	 *   <code>false</code> if they do not match or the other object has a
+	 *   different node type or is <code>null</code>
+	 */
+	public boolean match(SimpleType node, Object other) {
+		if (!(other instanceof SimpleType)) {
+			return false;
+		}
+		SimpleType o = (SimpleType) other;
+		return (
+			safeSubtreeMatch(node.getName(), o.getName())
+			);
+	}
+	
+	/**
+	 * Returns whether the given node and the other object match.
+	 * <p>
+	 * The default implementation provided by this class tests whether the
+	 * other object is a node of the same type with structurally isomorphic
+	 * child subtrees. Subclasses may override this method as needed.
+	 * </p>
+	 * 
+	 * @param node the node
+	 * @param other the other object, or <code>null</code>
+	 * @return <code>true</code> if the subtree matches, or 
+	 *   <code>false</code> if they do not match or the other object has a
+	 *   different node type or is <code>null</code>
+	 */
+	public boolean match(TemplateType node, Object other) {
+		if (!(other instanceof TemplateType)) {
+			return false;
+		}
+		TemplateType o = (TemplateType) other;
+		return (
+			safeSubtreeMatch(node.getName(), o.getName())
+			&& safeSubtreeListMatch(node.arguments(), o.arguments())
+			);
+	}
+	
+	/**
+	 * Returns whether the given node and the other object match.
+	 * <p>
+	 * The default implementation provided by this class tests whether the
+	 * other object is a node of the same type with structurally isomorphic
+	 * child subtrees. Subclasses may override this method as needed.
+	 * </p>
+	 * 
+	 * @param node the node
+	 * @param other the other object, or <code>null</code>
+	 * @return <code>true</code> if the subtree matches, or 
+	 *   <code>false</code> if they do not match or the other object has a
+	 *   different node type or is <code>null</code>
+	 */
+	public boolean match(DotTemplateTypeExpression node, Object other) {
+		if (!(other instanceof DotTemplateTypeExpression)) {
+			return false;
+		}
+		DotTemplateTypeExpression o = (DotTemplateTypeExpression) other;
+		return (
+			safeSubtreeMatch(node.getExpression(), o.getExpression())
+			&& safeSubtreeMatch(node.getTemplateType(), o.getTemplateType())
+			);
+	}
+	
+	/**
+	 * Returns whether the given node and the other object match.
+	 * <p>
+	 * The default implementation provided by this class tests whether the
+	 * other object is a node of the same type with structurally isomorphic
+	 * child subtrees. Subclasses may override this method as needed.
+	 * </p>
+	 * 
+	 * @param node the node
+	 * @param other the other object, or <code>null</code>
+	 * @return <code>true</code> if the subtree matches, or 
+	 *   <code>false</code> if they do not match or the other object has a
+	 *   different node type or is <code>null</code>
+	 */
+	public boolean match(MixinDeclaration node, Object other) {
+		if (!(other instanceof MixinDeclaration)) {
+			return false;
+		}
+		MixinDeclaration o = (MixinDeclaration) other;
+		return (
+			safeSubtreeListMatch(node.modifiers(), o.modifiers())
+			&& safeSubtreeMatch(node.getType(), o.getType())
+			&& safeSubtreeMatch(node.getName(), o.getName())
+			);
+	}
+	
+	/**
+	 * Returns whether the given node and the other object match.
+	 * <p>
+	 * The default implementation provided by this class tests whether the
+	 * other object is a node of the same type with structurally isomorphic
+	 * child subtrees. Subclasses may override this method as needed.
+	 * </p>
+	 * 
+	 * @param node the node
+	 * @param other the other object, or <code>null</code>
+	 * @return <code>true</code> if the subtree matches, or 
+	 *   <code>false</code> if they do not match or the other object has a
+	 *   different node type or is <code>null</code>
+	 */
+	public boolean match(TypeidExpression node, Object other) {
+		if (!(other instanceof TypeidExpression)) {
+			return false;
+		}
+		TypeidExpression o = (TypeidExpression) other;
+		return (
+			safeSubtreeMatch(node.getType(), o.getType())
+			);
+	}
 
 }

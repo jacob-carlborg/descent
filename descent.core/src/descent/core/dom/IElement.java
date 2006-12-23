@@ -561,7 +561,7 @@ public interface IElement {
 	 * Constant representing an identifier type.
 	 * A D element with this type can be safely cast to <code>IIdentifierType</code>. 
 	 */
-	int IDENTIFIER_TYPE = 102;
+	int SIMPLE_TYPE = 102;
 	
 	/**
 	 * Constant representing a delegate type.
@@ -704,6 +704,12 @@ public interface IElement {
 	int TYPEDEF_DECLARATION_FRAGMENT = 134;
 	
 	int VARIABLE_DECLARATION_FRAGMENT = 135;
+	
+	int QUALIFIED_TYPE = 136;
+	
+	int TEMPLATE_TYPE = 137;
+	
+	int DOT_TEMPLATE_TYPE_EXPRESSION = 138;
 	
 	/**
 	 * Returns the start position in the source code where this element

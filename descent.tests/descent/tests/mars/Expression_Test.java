@@ -32,6 +32,7 @@ import descent.core.dom.ITypeExpression;
 import descent.core.dom.ITypeidExpression;
 import descent.core.dom.ITypeofType;
 import descent.internal.core.dom.CharacterLiteral;
+import descent.internal.core.dom.DotTemplateTypeExpression;
 import descent.internal.core.dom.Expression;
 import descent.internal.core.dom.InfixExpression;
 import descent.internal.core.dom.IsTypeExpression;
@@ -40,8 +41,12 @@ import descent.internal.core.dom.NumberLiteral;
 import descent.internal.core.dom.ParserFacade;
 import descent.internal.core.dom.PostfixExpression;
 import descent.internal.core.dom.PrefixExpression;
+import descent.internal.core.dom.QualifiedType;
 import descent.internal.core.dom.SimpleName;
+import descent.internal.core.dom.SimpleType;
 import descent.internal.core.dom.StringsExpression;
+import descent.internal.core.dom.TemplateType;
+import descent.internal.core.dom.TypeExpression;
 import descent.internal.core.dom.FunctionLiteralDeclarationExpression.Syntax;
 
 public class Expression_Test extends Parser_Test {
@@ -388,7 +393,7 @@ public class Expression_Test extends Parser_Test {
 		assertPosition(expr, 1, 10);
 		
 		assertEquals(IType.PRIMITIVE_TYPE, expr.getType().getNodeType0());
-		assertEquals("length", expr.getProperty().toString());
+		assertEquals("length", expr.getName().getFullyQualifiedName());
 		
 		assertVisitor(expr, 3);
 	}
@@ -418,21 +423,19 @@ public class Expression_Test extends Parser_Test {
 	
 	public void testTemplateInstance() {
 		String s = " some!(int, float)";
-		IScopeExpression expr = (IScopeExpression) new ParserFacade().parseExpression(s);
+		TypeExpression expr = (TypeExpression) new ParserFacade().parseExpression(s);
 		
-		assertEquals(IExpression.SCOPE_EXPRESSION, expr.getNodeType0());
 		assertPosition(expr, 1, 17);
 		
-		assertEquals("some", expr.getName().toString());
-		assertPosition(expr.getName(), 1, 4);
+		TemplateType templateType = (TemplateType) expr.getType();
 		
-		IElement[] arguments = expr.getArguments();
-		assertEquals(2, arguments.length);
+		assertEquals("some", templateType.getName().getFullyQualifiedName());
+		assertPosition(templateType.getName(), 1, 4);
 		
-		assertEquals("int", arguments[0].toString());
-		assertEquals("float", arguments[1].toString());
+		assertEquals(2, templateType.arguments().size());
 		
-		assertVisitor(expr, 4);
+		assertEquals("int", templateType.arguments().get(0).toString());
+		assertEquals("float", templateType.arguments().get(1).toString());
 	}
 	
 	public void testNew() {
@@ -442,11 +445,11 @@ public class Expression_Test extends Parser_Test {
 		assertEquals(IExpression.NEW_EXPRESSION, expr.getNodeType0());
 		assertPosition(expr, 1, 13);
 		
-		IExpression[] args = expr.getArguments();
-		assertEquals(2, args.length);
+		List<Expression> args = expr.constructorArguments();
+		assertEquals(2, args.size());
 		
-		assertEquals("1", ((NumberLiteral) args[0]).getToken());
-		assertEquals("2", ((NumberLiteral) args[1]).getToken());
+		assertEquals("1", ((NumberLiteral) args.get(0)).getToken());
+		assertEquals("2", ((NumberLiteral) args.get(1)).getToken());
 	}
 	
 	public void testArray() {
@@ -555,8 +558,8 @@ public class Expression_Test extends Parser_Test {
 		ITypeofType typeof = (ITypeofType) expr.getType();
 		assertEquals("3", ((NumberLiteral) typeof.getExpression()).getToken());
 		
-		assertEquals("length", expr.getProperty().toString());
-		assertPosition(expr.getProperty(), 11, 6);
+		assertEquals("length", expr.getName().getFullyQualifiedName());
+		assertPosition(expr.getName(), 11, 6);
 	}
 	
 	public void testDotId() {
@@ -603,7 +606,7 @@ public class Expression_Test extends Parser_Test {
 		assertEquals(IExpression.IS_TYPE_EXPRESSION, expr.getNodeType0());
 		assertPosition(expr, 1, s.length() - 1);
 		
-		assertEquals("x", expr.getType().toString());
+		assertEquals("x", ((SimpleType) expr.getType()).getName().getFullyQualifiedName());
 		assertEquals("float", expr.getSpecialization().toString());
 		assertNull(expr.getName());
 	}
@@ -644,7 +647,7 @@ public class Expression_Test extends Parser_Test {
 			
 			assertPosition(expr, 1, s.length() - 1);
 			
-			assertEquals("x", expr.getType().toString());
+			assertEquals("x", ((SimpleType) expr.getType()).getName().getFullyQualifiedName());
 			assertEquals(pair[1], expr.getSpecialization());
 			
 			assertTrue(expr.isSameComparison());
@@ -762,22 +765,8 @@ public class Expression_Test extends Parser_Test {
 		assertEquals(0, expr.baseClasses().size());
 	}
 	
-	public void testNewDynamicArray1() {
-		String s = " new int[size]";
-		INewExpression expr = (INewExpression) new ParserFacade().parseExpression(s);
-		
-		assertEquals(IExpression.NEW_EXPRESSION, expr.getNodeType0());
-		assertPosition(expr, 1, s.length() - 1);
-		
-		IDynamicArrayType array = (IDynamicArrayType) expr.getType();
-		assertEquals(IArrayType.DYNAMIC_ARRAY_TYPE, array.getNodeType0());
-		assertEquals(1, expr.getArguments().length);
-		assertEquals("size", ((SimpleName) expr.getArguments()[0]).getIdentifier());
-		assertPosition(expr.getArguments()[0], 9, 4);
-	}
-	
 	// TODO this is *ugly*
-	public void testNewDynamicArray2() {
+	public void testNewDynamicArray1() {
 		String s = " new int[3]";
 		INewExpression expr = (INewExpression) new ParserFacade().parseExpression(s);
 		
@@ -786,7 +775,74 @@ public class Expression_Test extends Parser_Test {
 		
 		IDynamicArrayType array = (IDynamicArrayType) expr.getType();
 		assertEquals(IArrayType.DYNAMIC_ARRAY_TYPE, array.getNodeType0());
-		assertEquals(1, expr.getArguments().length);
+		assertEquals(1, expr.constructorArguments().size());
+		assertEquals("3", ((NumberLiteral) expr.constructorArguments().get(0)).getToken());
+		assertPosition(expr.constructorArguments().get(0), 9, 1);
+	}
+	
+	// TODO this is *ugly*
+	public void testNewDynamicArray2() {
+		String s = " new (1, 2) int[3]";
+		INewExpression expr = (INewExpression) new ParserFacade().parseExpression(s);
+		
+		assertEquals(IExpression.NEW_EXPRESSION, expr.getNodeType0());
+		assertPosition(expr, 1, s.length() - 1);
+		
+		IDynamicArrayType array = (IDynamicArrayType) expr.getType();
+		assertEquals(IArrayType.DYNAMIC_ARRAY_TYPE, array.getNodeType0());
+		assertEquals(1, expr.constructorArguments().size());
+	}
+	
+	public void testNewDynamicArray3() {
+		String s = " new (1, 2) int[][30]";
+		INewExpression expr = (INewExpression) new ParserFacade().parseExpression(s);
+		
+		assertEquals(IExpression.NEW_EXPRESSION, expr.getNodeType0());
+		assertPosition(expr, 1, s.length() - 1);
+		
+		IDynamicArrayType array = (IDynamicArrayType) expr.getType();
+		assertEquals(IArrayType.DYNAMIC_ARRAY_TYPE, array.getNodeType0());
+		assertEquals(1, expr.constructorArguments().size());
+	}
+	
+	public void testNewDynamicArray4() {
+		String s = " new (1, 2) int[][](30)";
+		INewExpression expr = (INewExpression) new ParserFacade().parseExpression(s);
+		
+		assertEquals(IExpression.NEW_EXPRESSION, expr.getNodeType0());
+		assertPosition(expr, 1, s.length() - 1);
+		
+		IDynamicArrayType array = (IDynamicArrayType) expr.getType();
+		assertEquals(IArrayType.DYNAMIC_ARRAY_TYPE, array.getNodeType0());
+		assertEquals(1, expr.constructorArguments().size());
+	}
+	
+	public void testDotTemplateTypeExpression() {
+		String s = " .Temp!(int)";
+		
+		
+		DotTemplateTypeExpression dot = (DotTemplateTypeExpression) new ParserFacade().parseExpression(s);
+		assertPosition(dot, 1, 11);
+		
+		assertNull(dot.getExpression());
+		
+		TemplateType type2 = dot.getTemplateType();
+		assertEquals("Temp", type2.getName().getFullyQualifiedName());
+		assertEquals(1, type2.arguments().size());
+	}
+
+	public void testDotTemplateTypeExpression2() {
+		String s = " bla.Temp!(int)";
+		
+		
+		DotTemplateTypeExpression dot = (DotTemplateTypeExpression) new ParserFacade().parseExpression(s);
+		assertPosition(dot, 1, 14);
+		
+		assertEquals("bla", ((SimpleName) dot.getExpression()).getFullyQualifiedName());
+		
+		TemplateType type2 = dot.getTemplateType();
+		assertEquals("Temp", type2.getName().getFullyQualifiedName());
+		assertEquals(1, type2.arguments().size());
 	}
 
 }

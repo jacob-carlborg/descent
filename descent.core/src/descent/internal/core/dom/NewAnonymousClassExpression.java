@@ -12,8 +12,8 @@ import descent.core.dom.INewAnonymousClassExpression;
  * <pre>
  * NewAnonymousClassExpression:
  *    [ Expression <b>.</b> ] 
- *       <b>new</b> [ <b>(<b> Expression { <b>,</b> Expression } <b>)<b>
- *       <b>class</b> [ <b>(<b> Expression { <b>,</b> Expression } <b>)<b> [ BaseClass ] 
+ *       <b>new</b> [ <b>(</b> Expression { <b>,</b> Expression } <b>)</b>
+ *       <b>class</b> [ <b>(</b> Expression { <b>,</b> Expression } <b>)</b> { BaseClass } 
  *       <b>{</b>
  *          { Declaration }
  *       <b>}</b>

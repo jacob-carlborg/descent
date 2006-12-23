@@ -11,6 +11,7 @@ import descent.internal.core.dom.BooleanLiteral;
 import descent.internal.core.dom.DebugAssignment;
 import descent.internal.core.dom.IftypeDeclaration;
 import descent.internal.core.dom.ParserFacade;
+import descent.internal.core.dom.SimpleType;
 import descent.internal.core.dom.VersionAssignment;
 
 public class Condition_Test extends Parser_Test {
@@ -146,7 +147,7 @@ public class Condition_Test extends Parser_Test {
 		assertEquals(IConditionalDeclaration.IFTYPE_DECLARATION, d.getNodeType0());
 		
 		assertEquals(IftypeDeclaration.Kind.NONE, d.getKind());
-		assertEquals("x", d.getTestType().toString());
+		assertEquals("x", ((SimpleType) d.getTestType()).getName().getFullyQualifiedName());
 		assertNull(d.getName());
 		assertNull(d.getMatchingType());
 		
@@ -164,9 +165,9 @@ public class Condition_Test extends Parser_Test {
 		assertEquals(IConditionalDeclaration.IFTYPE_DECLARATION, d.getNodeType0());
 		
 		assertEquals(IftypeDeclaration.Kind.EQUALS, d.getKind());
-		assertEquals("x", d.getTestType().toString());
+		assertEquals("x", ((SimpleType) d.getTestType()).getName().getFullyQualifiedName());
 		assertNull(d.getName());
-		assertEquals("y", d.getMatchingType().toString());
+		assertEquals("y", ((SimpleType) d.getMatchingType()).getName().getFullyQualifiedName());
 		
 		assertPosition(d, 1, s.length() - 1);
 	}
@@ -182,10 +183,9 @@ public class Condition_Test extends Parser_Test {
 		assertEquals(IConditionalDeclaration.IFTYPE_DECLARATION, d.getNodeType0());
 		
 		assertEquals(IftypeDeclaration.Kind.EXTENDS, d.getKind());
-		assertEquals("x", d.getTestType().toString());
+		assertEquals("x", ((SimpleType) d.getTestType()).getName().getFullyQualifiedName());
 		assertNull(d.getName());
-		assertEquals("y", d.getMatchingType().toString());
-		
+		assertEquals("y", ((SimpleType) d.getMatchingType()).getName().getFullyQualifiedName());		
 		assertPosition(d, 1, s.length() - 1);
 	}
 	
@@ -203,8 +203,7 @@ public class Condition_Test extends Parser_Test {
 		assertEquals("int", d.getTestType().toString());
 		assertEquals("x", d.getName().getIdentifier());
 		assertPosition(d.getName(), 12, 1);
-		assertEquals("y", d.getMatchingType().toString());
-		
+		assertEquals("y", ((SimpleType) d.getMatchingType()).getName().getFullyQualifiedName());		
 		assertPosition(d, 1, s.length() - 1);
 	}
 	

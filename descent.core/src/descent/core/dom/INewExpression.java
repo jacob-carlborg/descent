@@ -1,5 +1,9 @@
 package descent.core.dom;
 
+import java.util.List;
+
+import descent.internal.core.dom.Expression;
+
 /**
  * A new expression:
  * 
@@ -17,6 +21,6 @@ public interface INewExpression extends IExpression {
 	/**
 	 * Returns the arguments of the expression.
 	 */
-	IExpression[] getArguments();
+	List<Expression> constructorArguments();
 
 }

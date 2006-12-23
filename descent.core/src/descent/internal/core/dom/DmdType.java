@@ -1,7 +1,5 @@
 package descent.internal.core.dom;
 
-
-
 public abstract class DmdType extends Type implements IDmdType {
 
 	public static StringTable stringtable = new StringTable();

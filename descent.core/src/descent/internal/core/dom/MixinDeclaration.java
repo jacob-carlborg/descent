@@ -4,44 +4,35 @@ import java.util.ArrayList;
 import java.util.List;
 
 import descent.core.dom.ASTVisitor;
-import descent.core.dom.ITemplateDeclaration;
+import descent.core.dom.IMixinDeclaration;
 
 /**
- * Template declaration AST node type.
- *
+ * Mixin declaration AST node.
+ * 
  * <pre>
- * TemplateDeclaration:
- *    <b>template</b> SimpleName <b>( [ TemplateParameter { <b>,</b> TemplateParameter } ] 
- *    <b>{</b> 
- *       { Declaration } 
- *    <b>}</b>
+ * MixinDeclaration:
+ *    { Modifier } <b>mixin</b> Type [ SimpleName ] <b>;</b>
  * </pre>
  */
-public class TemplateDeclaration extends Declaration implements ITemplateDeclaration {
-	
+public class MixinDeclaration extends Declaration implements IMixinDeclaration {
+
 	/**
 	 * The "modifiers" structural property of this node type.
 	 */
 	public static final ChildListPropertyDescriptor MODIFIERS_PROPERTY =
-	internalModifiersPropertyFactory(TemplateDeclaration.class); //$NON-NLS-1$
+	internalModifiersPropertyFactory(MixinDeclaration.class); //$NON-NLS-1$
+
+	/**
+	 * The "type" structural property of this node type.
+	 */
+	public static final ChildPropertyDescriptor TYPE_PROPERTY =
+		new ChildPropertyDescriptor(MixinDeclaration.class, "type", Type.class, MANDATORY, NO_CYCLE_RISK); //$NON-NLS-1$
 
 	/**
 	 * The "name" structural property of this node type.
 	 */
 	public static final ChildPropertyDescriptor NAME_PROPERTY =
-		new ChildPropertyDescriptor(TemplateDeclaration.class, "name", SimpleName.class, MANDATORY, NO_CYCLE_RISK); //$NON-NLS-1$
-
-	/**
-	 * The "templateParameters" structural property of this node type.
-	 */
-	public static final ChildListPropertyDescriptor TEMPLATE_PARAMETERS_PROPERTY =
-		new ChildListPropertyDescriptor(TemplateDeclaration.class, "templateParameters", TemplateParameter.class, NO_CYCLE_RISK); //$NON-NLS-1$
-
-	/**
-	 * The "declarations" structural property of this node type.
-	 */
-	public static final ChildListPropertyDescriptor DECLARATIONS_PROPERTY =
-		new ChildListPropertyDescriptor(TemplateDeclaration.class, "declarations", Declaration.class, CYCLE_RISK); //$NON-NLS-1$
+		new ChildPropertyDescriptor(MixinDeclaration.class, "name", SimpleName.class, OPTIONAL, NO_CYCLE_RISK); //$NON-NLS-1$
 
 	/**
 	 * A list of property descriptors (element type: 
@@ -51,12 +42,11 @@ public class TemplateDeclaration extends Declaration implements ITemplateDeclara
 	private static final List PROPERTY_DESCRIPTORS;
 
 	static {
-		List properyList = new ArrayList(4);
-		createPropertyList(TemplateDeclaration.class, properyList);
+		List properyList = new ArrayList(3);
+		createPropertyList(MixinDeclaration.class, properyList);
 		addProperty(MODIFIERS_PROPERTY, properyList);
+		addProperty(TYPE_PROPERTY, properyList);
 		addProperty(NAME_PROPERTY, properyList);
-		addProperty(TEMPLATE_PARAMETERS_PROPERTY, properyList);
-		addProperty(DECLARATIONS_PROPERTY, properyList);
 		PROPERTY_DESCRIPTORS = reapPropertyList(properyList);
 	}
 
@@ -83,27 +73,18 @@ public class TemplateDeclaration extends Declaration implements ITemplateDeclara
 	private ASTNode.NodeList modifiers =
 		new ASTNode.NodeList(MODIFIERS_PROPERTY);
 	/**
+	 * The type.
+	 */
+	private Type type;
+
+	/**
 	 * The name.
 	 */
 	private SimpleName name;
 
-	/**
-	 * The templateParameters
-	 * (element type: <code>TemplateParameter</code>).
-	 * Defaults to an empty list.
-	 */
-	private ASTNode.NodeList templateParameters =
-		new ASTNode.NodeList(TEMPLATE_PARAMETERS_PROPERTY);
-	/**
-	 * The declarations
-	 * (element type: <code>Declaration</code>).
-	 * Defaults to an empty list.
-	 */
-	private ASTNode.NodeList declarations =
-		new ASTNode.NodeList(DECLARATIONS_PROPERTY);
 
 	/**
-	 * Creates a new unparented template declaration node owned by the given 
+	 * Creates a new unparented mixin declaration node owned by the given 
 	 * AST.
 	 * <p>
 	 * N.B. This constructor is package-private.
@@ -111,7 +92,7 @@ public class TemplateDeclaration extends Declaration implements ITemplateDeclara
 	 * 
 	 * @param ast the AST that is to own this node
 	 */
-	TemplateDeclaration(AST ast) {
+	MixinDeclaration(AST ast) {
 		super(ast);
 	}
 
@@ -126,6 +107,14 @@ public class TemplateDeclaration extends Declaration implements ITemplateDeclara
 	 * Method declared on ASTNode.
 	 */
 	final ASTNode internalGetSetChildProperty(ChildPropertyDescriptor property, boolean get, ASTNode child) {
+		if (property == TYPE_PROPERTY) {
+			if (get) {
+				return getType();
+			} else {
+				setType((Type) child);
+				return null;
+			}
+		}
 		if (property == NAME_PROPERTY) {
 			if (get) {
 				return getName();
@@ -145,12 +134,6 @@ public class TemplateDeclaration extends Declaration implements ITemplateDeclara
 		if (property == MODIFIERS_PROPERTY) {
 			return modifiers();
 		}
-		if (property == TEMPLATE_PARAMETERS_PROPERTY) {
-			return templateParameters();
-		}
-		if (property == DECLARATIONS_PROPERTY) {
-			return declarations();
-		}
 		// allow default implementation to flag the error
 		return super.internalGetChildListProperty(property);
 	}
@@ -165,19 +148,18 @@ public class TemplateDeclaration extends Declaration implements ITemplateDeclara
 	 * TODO make it package
 	 */
 	public final int getNodeType0() {
-		return TEMPLATE_DECLARATION;
+		return MIXIN_DECLARATION;
 	}
 
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
 	 */
 	ASTNode clone0(AST target) {
-		TemplateDeclaration result = new TemplateDeclaration(target);
+		MixinDeclaration result = new MixinDeclaration(target);
 		result.setSourceRange(this.getStartPosition(), this.getLength());
 		result.modifiers.addAll(ASTNode.copySubtrees(target, modifiers()));
-		result.setName((SimpleName) getName().clone(target));
-		result.templateParameters.addAll(ASTNode.copySubtrees(target, templateParameters()));
-		result.declarations.addAll(ASTNode.copySubtrees(target, declarations()));
+		result.setType((Type) getType().clone(target));
+	result.setName((SimpleName) ASTNode.copySubtree(target, getName()));
 		return result;
 	}
 
@@ -197,34 +179,63 @@ public class TemplateDeclaration extends Declaration implements ITemplateDeclara
 		if (visitChildren) {
 			// visit children in normal left to right reading order
 			acceptChildren(visitor, modifiers());
+			acceptChild(visitor, getType());
 			acceptChild(visitor, getName());
-			acceptChildren(visitor, templateParameters());
-			acceptChildren(visitor, declarations());
 		}
 		visitor.endVisit(this);
 	}
 
 	/**
-	 * Returns the name of this template declaration.
+	 * Returns the type of this mixin declaration.
+	 * 
+	 * @return the type
+	 */ 
+	public Type getType() {
+		if (this.type == null) {
+			// lazy init must be thread-safe for readers
+			synchronized (this) {
+				if (this.type == null) {
+					preLazyInit();
+					this.type = new PrimitiveType(this.ast);
+					postLazyInit(this.type, TYPE_PROPERTY);
+				}
+			}
+		}
+		return this.type;
+	}
+
+	/**
+	 * Sets the type of this mixin declaration.
+	 * 
+	 * @param type the type
+	 * @exception IllegalArgumentException if:
+	 * <ul>
+	 * <li>the node belongs to a different AST</li>
+	 * <li>the node already has a parent</li>
+	 * <li>a cycle in would be created</li>
+	 * </ul>
+	 */ 
+	public void setType(Type type) {
+		if (type == null) {
+			throw new IllegalArgumentException();
+		}
+		ASTNode oldChild = this.type;
+		preReplaceChild(oldChild, type, TYPE_PROPERTY);
+		this.type = type;
+		postReplaceChild(oldChild, type, TYPE_PROPERTY);
+	}
+
+	/**
+	 * Returns the name of this mixin declaration.
 	 * 
 	 * @return the name
 	 */ 
 	public SimpleName getName() {
-		if (this.name == null) {
-			// lazy init must be thread-safe for readers
-			synchronized (this) {
-				if (this.name == null) {
-					preLazyInit();
-					this.name = new SimpleName(this.ast);
-					postLazyInit(this.name, NAME_PROPERTY);
-				}
-			}
-		}
 		return this.name;
 	}
 
 	/**
-	 * Sets the name of this template declaration.
+	 * Sets the name of this mixin declaration.
 	 * 
 	 * @param name the name
 	 * @exception IllegalArgumentException if:
@@ -235,42 +246,17 @@ public class TemplateDeclaration extends Declaration implements ITemplateDeclara
 	 * </ul>
 	 */ 
 	public void setName(SimpleName name) {
-		if (name == null) {
-			throw new IllegalArgumentException();
-		}
 		ASTNode oldChild = this.name;
 		preReplaceChild(oldChild, name, NAME_PROPERTY);
 		this.name = name;
 		postReplaceChild(oldChild, name, NAME_PROPERTY);
 	}
 
-	/**
-	 * Returns the live ordered list of templateParameters for this
-	 * template declaration.
-	 * 
-	 * @return the live list of template declaration
-	 *    (element type: <code>TemplateParameter</code>)
-	 */ 
-	public List<TemplateParameter> templateParameters() {
-		return this.templateParameters;
-	}
-
-	/**
-	 * Returns the live ordered list of declarations for this
-	 * template declaration.
-	 * 
-	 * @return the live list of template declaration
-	 *    (element type: <code>Declaration</code>)
-	 */ 
-	public List<Declaration> declarations() {
-		return this.declarations;
-	}
-
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
 	 */
 	int memSize() {
-		return BASE_NODE_SIZE + 4 * 4;
+		return BASE_NODE_SIZE + 3 * 4;
 	}
 
 	/* (omit javadoc for this method)
@@ -280,9 +266,8 @@ public class TemplateDeclaration extends Declaration implements ITemplateDeclara
 		return
 			memSize()
 			+ (this.modifiers.listSize())
+			+ (this.type == null ? 0 : getType().treeSize())
 			+ (this.name == null ? 0 : getName().treeSize())
-			+ (this.templateParameters.listSize())
-			+ (this.declarations.listSize())
 	;
 	}
 

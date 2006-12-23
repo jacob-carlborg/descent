@@ -230,6 +230,7 @@ public class DOutlineLabelProvider extends LabelProvider {
 			IPragmaDeclaration pd = (IPragmaDeclaration) element;
 			return pd.getName() == null ? "" : pd.getName().getFullyQualifiedName();
 		case IElement.MIXIN_DECLARATION:
+			/* TODO fix
 			IMixinDeclaration mix = (IMixinDeclaration) element;
 			s = new StringBuilder();
 			if (mix.getName() != null) {
@@ -242,6 +243,7 @@ public class DOutlineLabelProvider extends LabelProvider {
 				s.append(")");
 			}
 			return s.toString();
+			*/
 		case IImaginaryElements.IMPORTS:
 			 return "import declarations";
 		case IImaginaryElements.ELSE:
@@ -525,9 +527,9 @@ public class DOutlineLabelProvider extends LabelProvider {
 			appendElements(s, ti.getTemplateArguments());
 			s.append(")");
 			break;
-		case IType.IDENTIFIER_TYPE:
+		case IType.SIMPLE_TYPE:
 			IIdentifierType it = (IIdentifierType) type;
-			s.append(it.getShortName());
+			s.append(it.getName());
 			break;
 		case IType.DELEGATE_TYPE:
 		case IType.POINTER_TO_FUNCTION_TYPE:

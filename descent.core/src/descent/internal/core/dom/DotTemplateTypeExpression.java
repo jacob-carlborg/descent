@@ -4,23 +4,28 @@ import java.util.ArrayList;
 import java.util.List;
 
 import descent.core.dom.ASTVisitor;
-import descent.core.dom.ITypeofType;
 
 /**
- * Typeof type AST node type.
- *
+ * Dot template type expression AST node.
+ * 
  * <pre>
- * TypeofType:
- *    <b>typeof (</b> Expression <b>)</b>
+ * DotTemplateTypeExpression:
+ *    [ Expression ] <b>.</b> TemplateType
  * </pre>
  */
-public class TypeofType extends Type implements ITypeofType {
+public class DotTemplateTypeExpression extends Expression {
 	
 	/**
 	 * The "expression" structural property of this node type.
 	 */
 	public static final ChildPropertyDescriptor EXPRESSION_PROPERTY =
-		new ChildPropertyDescriptor(TypeofType.class, "expression", Expression.class, MANDATORY, CYCLE_RISK); //$NON-NLS-1$
+		new ChildPropertyDescriptor(DotTemplateTypeExpression.class, "expression", Expression.class, OPTIONAL, CYCLE_RISK); //$NON-NLS-1$
+
+	/**
+	 * The "templateType" structural property of this node type.
+	 */
+	public static final ChildPropertyDescriptor TEMPLATE_TYPE_PROPERTY =
+		new ChildPropertyDescriptor(DotTemplateTypeExpression.class, "templateType", TemplateType.class, MANDATORY, CYCLE_RISK); //$NON-NLS-1$
 
 	/**
 	 * A list of property descriptors (element type: 
@@ -30,9 +35,10 @@ public class TypeofType extends Type implements ITypeofType {
 	private static final List PROPERTY_DESCRIPTORS;
 
 	static {
-		List properyList = new ArrayList(1);
-		createPropertyList(TypeofType.class, properyList);
+		List properyList = new ArrayList(2);
+		createPropertyList(DotTemplateTypeExpression.class, properyList);
 		addProperty(EXPRESSION_PROPERTY, properyList);
+		addProperty(TEMPLATE_TYPE_PROPERTY, properyList);
 		PROPERTY_DESCRIPTORS = reapPropertyList(properyList);
 	}
 
@@ -56,9 +62,14 @@ public class TypeofType extends Type implements ITypeofType {
 	 */
 	private Expression expression;
 
+	/**
+	 * The templateType.
+	 */
+	private TemplateType templateType;
+
 
 	/**
-	 * Creates a new unparented typeof type node owned by the given 
+	 * Creates a new unparented dot template type expression node owned by the given 
 	 * AST.
 	 * <p>
 	 * N.B. This constructor is package-private.
@@ -66,7 +77,7 @@ public class TypeofType extends Type implements ITypeofType {
 	 * 
 	 * @param ast the AST that is to own this node
 	 */
-	TypeofType(AST ast) {
+	DotTemplateTypeExpression(AST ast) {
 		super(ast);
 	}
 
@@ -89,6 +100,14 @@ public class TypeofType extends Type implements ITypeofType {
 				return null;
 			}
 		}
+		if (property == TEMPLATE_TYPE_PROPERTY) {
+			if (get) {
+				return getTemplateType();
+			} else {
+				setTemplateType((TemplateType) child);
+				return null;
+			}
+		}
 		// allow default implementation to flag the error
 		return super.internalGetSetChildProperty(property, get, child);
 	}
@@ -98,16 +117,17 @@ public class TypeofType extends Type implements ITypeofType {
 	 * TODO make it package
 	 */
 	public final int getNodeType0() {
-		return TYPEOF_TYPE;
+		return DOT_TEMPLATE_TYPE_EXPRESSION;
 	}
 
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
 	 */
 	ASTNode clone0(AST target) {
-		TypeofType result = new TypeofType(target);
+		DotTemplateTypeExpression result = new DotTemplateTypeExpression(target);
 		result.setSourceRange(this.getStartPosition(), this.getLength());
-		result.setExpression((Expression) getExpression().clone(target));
+	result.setExpression((Expression) ASTNode.copySubtree(target, getExpression()));
+		result.setTemplateType((TemplateType) getTemplateType().clone(target));
 		return result;
 	}
 
@@ -127,31 +147,22 @@ public class TypeofType extends Type implements ITypeofType {
 		if (visitChildren) {
 			// visit children in normal left to right reading order
 			acceptChild(visitor, getExpression());
+			acceptChild(visitor, getTemplateType());
 		}
 		visitor.endVisit(this);
 	}
 
 	/**
-	 * Returns the expression of this typeof type.
+	 * Returns the expression of this dot template type expression.
 	 * 
 	 * @return the expression
 	 */ 
 	public Expression getExpression() {
-		if (this.expression == null) {
-			// lazy init must be thread-safe for readers
-			synchronized (this) {
-				if (this.expression == null) {
-					preLazyInit();
-					this.expression = new SimpleName(this.ast);
-					postLazyInit(this.expression, EXPRESSION_PROPERTY);
-				}
-			}
-		}
 		return this.expression;
 	}
 
 	/**
-	 * Sets the expression of this typeof type.
+	 * Sets the expression of this dot template type expression.
 	 * 
 	 * @param expression the expression
 	 * @exception IllegalArgumentException if:
@@ -162,20 +173,57 @@ public class TypeofType extends Type implements ITypeofType {
 	 * </ul>
 	 */ 
 	public void setExpression(Expression expression) {
-		if (expression == null) {
-			throw new IllegalArgumentException();
-		}
 		ASTNode oldChild = this.expression;
 		preReplaceChild(oldChild, expression, EXPRESSION_PROPERTY);
 		this.expression = expression;
 		postReplaceChild(oldChild, expression, EXPRESSION_PROPERTY);
 	}
 
+	/**
+	 * Returns the template type of this dot template type expression.
+	 * 
+	 * @return the template type
+	 */ 
+	public TemplateType getTemplateType() {
+		if (this.templateType == null) {
+			// lazy init must be thread-safe for readers
+			synchronized (this) {
+				if (this.templateType == null) {
+					preLazyInit();
+					this.templateType = new TemplateType(this.ast);
+					postLazyInit(this.templateType, TEMPLATE_TYPE_PROPERTY);
+				}
+			}
+		}
+		return this.templateType;
+	}
+
+	/**
+	 * Sets the template type of this dot template type expression.
+	 * 
+	 * @param templateType the template type
+	 * @exception IllegalArgumentException if:
+	 * <ul>
+	 * <li>the node belongs to a different AST</li>
+	 * <li>the node already has a parent</li>
+	 * <li>a cycle in would be created</li>
+	 * </ul>
+	 */ 
+	public void setTemplateType(TemplateType templateType) {
+		if (templateType == null) {
+			throw new IllegalArgumentException();
+		}
+		ASTNode oldChild = this.templateType;
+		preReplaceChild(oldChild, templateType, TEMPLATE_TYPE_PROPERTY);
+		this.templateType = templateType;
+		postReplaceChild(oldChild, templateType, TEMPLATE_TYPE_PROPERTY);
+	}
+
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
 	 */
 	int memSize() {
-		return BASE_NODE_SIZE + 1 * 4;
+		return BASE_NODE_SIZE + 2 * 4;
 	}
 
 	/* (omit javadoc for this method)
@@ -185,6 +233,7 @@ public class TypeofType extends Type implements ITypeofType {
 		return
 			memSize()
 			+ (this.expression == null ? 0 : getExpression().treeSize())
+			+ (this.templateType == null ? 0 : getTemplateType().treeSize())
 	;
 	}
 

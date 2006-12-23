@@ -10,6 +10,7 @@ import descent.core.dom.ISimpleName;
 import descent.internal.core.dom.AggregateDeclaration;
 import descent.internal.core.dom.BaseClass;
 import descent.internal.core.dom.ParserFacade;
+import descent.internal.core.dom.SimpleType;
 import descent.internal.core.dom.Modifier.ModifierKeyword;
 
 public class Class_Test extends Parser_Test {
@@ -65,7 +66,7 @@ public class Class_Test extends Parser_Test {
 		assertEquals(ModifierKeyword.PROTECTED_KEYWORD, bs.get(3).getModifier().getModifierKeyword());
 		assertEquals(ModifierKeyword.PUBLIC_KEYWORD, bs.get(4).getModifier().getModifierKeyword());
 		
-		assertEquals("None", bs.get(0).getType().toString());
+		assertEquals("None", ((SimpleType) bs.get(0).getType()).getName().getFullyQualifiedName());
 		assertPosition(bs.get(0).getType(), 15, 4);
 	}
 	

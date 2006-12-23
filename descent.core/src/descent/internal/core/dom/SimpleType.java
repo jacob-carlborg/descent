@@ -4,23 +4,23 @@ import java.util.ArrayList;
 import java.util.List;
 
 import descent.core.dom.ASTVisitor;
-import descent.core.dom.ITypeofType;
+import descent.core.dom.IIdentifierType;
 
 /**
- * Typeof type AST node type.
- *
+ * A simple type is a wrapper around a SimpleName.
+ * 
  * <pre>
- * TypeofType:
- *    <b>typeof (</b> Expression <b>)</b>
+ * SimpleType:
+ *    SimpleName
  * </pre>
  */
-public class TypeofType extends Type implements ITypeofType {
-	
+public class SimpleType extends Type implements IIdentifierType {
+
 	/**
-	 * The "expression" structural property of this node type.
+	 * The "name" structural property of this node type.
 	 */
-	public static final ChildPropertyDescriptor EXPRESSION_PROPERTY =
-		new ChildPropertyDescriptor(TypeofType.class, "expression", Expression.class, MANDATORY, CYCLE_RISK); //$NON-NLS-1$
+	public static final ChildPropertyDescriptor NAME_PROPERTY =
+		new ChildPropertyDescriptor(SimpleType.class, "name", SimpleName.class, MANDATORY, NO_CYCLE_RISK); //$NON-NLS-1$
 
 	/**
 	 * A list of property descriptors (element type: 
@@ -31,8 +31,8 @@ public class TypeofType extends Type implements ITypeofType {
 
 	static {
 		List properyList = new ArrayList(1);
-		createPropertyList(TypeofType.class, properyList);
-		addProperty(EXPRESSION_PROPERTY, properyList);
+		createPropertyList(SimpleType.class, properyList);
+		addProperty(NAME_PROPERTY, properyList);
 		PROPERTY_DESCRIPTORS = reapPropertyList(properyList);
 	}
 
@@ -52,13 +52,13 @@ public class TypeofType extends Type implements ITypeofType {
 	}
 
 	/**
-	 * The expression.
+	 * The name.
 	 */
-	private Expression expression;
+	private SimpleName name;
 
 
 	/**
-	 * Creates a new unparented typeof type node owned by the given 
+	 * Creates a new unparented simple type node owned by the given 
 	 * AST.
 	 * <p>
 	 * N.B. This constructor is package-private.
@@ -66,7 +66,7 @@ public class TypeofType extends Type implements ITypeofType {
 	 * 
 	 * @param ast the AST that is to own this node
 	 */
-	TypeofType(AST ast) {
+	SimpleType(AST ast) {
 		super(ast);
 	}
 
@@ -81,11 +81,11 @@ public class TypeofType extends Type implements ITypeofType {
 	 * Method declared on ASTNode.
 	 */
 	final ASTNode internalGetSetChildProperty(ChildPropertyDescriptor property, boolean get, ASTNode child) {
-		if (property == EXPRESSION_PROPERTY) {
+		if (property == NAME_PROPERTY) {
 			if (get) {
-				return getExpression();
+				return getName();
 			} else {
-				setExpression((Expression) child);
+				setName((SimpleName) child);
 				return null;
 			}
 		}
@@ -98,16 +98,16 @@ public class TypeofType extends Type implements ITypeofType {
 	 * TODO make it package
 	 */
 	public final int getNodeType0() {
-		return TYPEOF_TYPE;
+		return SIMPLE_TYPE;
 	}
 
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
 	 */
 	ASTNode clone0(AST target) {
-		TypeofType result = new TypeofType(target);
+		SimpleType result = new SimpleType(target);
 		result.setSourceRange(this.getStartPosition(), this.getLength());
-		result.setExpression((Expression) getExpression().clone(target));
+		result.setName((SimpleName) getName().clone(target));
 		return result;
 	}
 
@@ -126,34 +126,34 @@ public class TypeofType extends Type implements ITypeofType {
 		boolean visitChildren = visitor.visit(this);
 		if (visitChildren) {
 			// visit children in normal left to right reading order
-			acceptChild(visitor, getExpression());
+			acceptChild(visitor, getName());
 		}
 		visitor.endVisit(this);
 	}
 
 	/**
-	 * Returns the expression of this typeof type.
+	 * Returns the name of this simple type.
 	 * 
-	 * @return the expression
+	 * @return the name
 	 */ 
-	public Expression getExpression() {
-		if (this.expression == null) {
+	public SimpleName getName() {
+		if (this.name == null) {
 			// lazy init must be thread-safe for readers
 			synchronized (this) {
-				if (this.expression == null) {
+				if (this.name == null) {
 					preLazyInit();
-					this.expression = new SimpleName(this.ast);
-					postLazyInit(this.expression, EXPRESSION_PROPERTY);
+					this.name = new SimpleName(this.ast);
+					postLazyInit(this.name, NAME_PROPERTY);
 				}
 			}
 		}
-		return this.expression;
+		return this.name;
 	}
 
 	/**
-	 * Sets the expression of this typeof type.
+	 * Sets the name of this simple type.
 	 * 
-	 * @param expression the expression
+	 * @param name the name
 	 * @exception IllegalArgumentException if:
 	 * <ul>
 	 * <li>the node belongs to a different AST</li>
@@ -161,14 +161,14 @@ public class TypeofType extends Type implements ITypeofType {
 	 * <li>a cycle in would be created</li>
 	 * </ul>
 	 */ 
-	public void setExpression(Expression expression) {
-		if (expression == null) {
+	public void setName(SimpleName name) {
+		if (name == null) {
 			throw new IllegalArgumentException();
 		}
-		ASTNode oldChild = this.expression;
-		preReplaceChild(oldChild, expression, EXPRESSION_PROPERTY);
-		this.expression = expression;
-		postReplaceChild(oldChild, expression, EXPRESSION_PROPERTY);
+		ASTNode oldChild = this.name;
+		preReplaceChild(oldChild, name, NAME_PROPERTY);
+		this.name = name;
+		postReplaceChild(oldChild, name, NAME_PROPERTY);
 	}
 
 	/* (omit javadoc for this method)
@@ -184,7 +184,7 @@ public class TypeofType extends Type implements ITypeofType {
 	int treeSize() {
 		return
 			memSize()
-			+ (this.expression == null ? 0 : getExpression().treeSize())
+			+ (this.name == null ? 0 : getName().treeSize())
 	;
 	}
 

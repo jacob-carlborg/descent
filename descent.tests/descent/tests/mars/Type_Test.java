@@ -6,7 +6,6 @@ import descent.core.dom.IBasicType;
 import descent.core.dom.ICompilationUnit;
 import descent.core.dom.IDynamicArrayType;
 import descent.core.dom.IElement;
-import descent.core.dom.IIdentifierType;
 import descent.core.dom.IPointerType;
 import descent.core.dom.ISliceType;
 import descent.core.dom.IStaticArrayType;
@@ -17,6 +16,10 @@ import descent.internal.core.dom.DelegateType;
 import descent.internal.core.dom.NumberLiteral;
 import descent.internal.core.dom.ParserFacade;
 import descent.internal.core.dom.PrimitiveType;
+import descent.internal.core.dom.QualifiedType;
+import descent.internal.core.dom.SimpleType;
+import descent.internal.core.dom.TemplateType;
+import descent.internal.core.dom.TypeofType;
 
 public class Type_Test extends Parser_Test {
 	
@@ -91,23 +94,28 @@ public class Type_Test extends Parser_Test {
 	}
 	
 	public void testIdentifierTypeSingle() {
-		IIdentifierType type = (IIdentifierType) getType("Clazz");
-		assertEquals(IType.IDENTIFIER_TYPE, type.getNodeType0());
-		assertEquals("Clazz", type.toString());
-		assertEquals("Clazz", type.getShortName());
+		SimpleType type = (SimpleType) getType("Clazz");
+		assertEquals(IType.SIMPLE_TYPE, type.getNodeType0());
+		assertEquals("Clazz", type.getName().getFullyQualifiedName());
 		assertPosition(type, 1, 5);
-		
-		assertVisitor(type, 1);
 	}
 	
 	public void testIdentifierTypeMany() {
-		IIdentifierType type = (IIdentifierType) getType("mod.bla.Clazz");
-		assertEquals(IType.IDENTIFIER_TYPE, type.getNodeType0());
-		assertEquals("mod.bla.Clazz", type.toString());
-		assertEquals("Clazz", type.getShortName());
-		assertPosition(type, 1, 13);
+		QualifiedType type = (QualifiedType) getType("mod.bla.Clazz");
+		assertEquals(IType.QUALIFIED_TYPE, type.getNodeType0());
 		
-		assertVisitor(type, 1);
+		assertEquals("Clazz", ((SimpleType) type.getType()).getName().getFullyQualifiedName());
+		assertPosition(((SimpleType) type.getType()).getName(), 9, 5);
+		
+		QualifiedType type2 = (QualifiedType) type.getQualifier();
+		assertEquals("bla", ((SimpleType) type2.getType()).getName().getFullyQualifiedName());
+		assertPosition(((SimpleType) type2.getType()).getName(), 5, 3);
+		
+		SimpleType type3 = (SimpleType) type2.getQualifier();
+		assertEquals("mod", type3.getName().getFullyQualifiedName());
+		assertPosition(type3.getName(), 1, 3);
+		
+		assertPosition(type, 1, 13);
 	}
 	
 	public void testDelegateType() {
@@ -146,11 +154,21 @@ public class Type_Test extends Parser_Test {
 		assertVisitor(type, 2);
 	}
 	
-	public void testTypeofPlus() {
-		ITypeofType type = (ITypeofType) getType("typeof(1).bla");
-		assertEquals("1", ((NumberLiteral) type.getExpression()).getToken());
-		assertPosition(type, 1, 13);
-		// TODO
+	public void testQualifiedTypeofWithTypeof() {
+		QualifiedType type = (QualifiedType) getType("typeof(1).bla.ble");
+		
+		assertEquals("ble", ((SimpleType) type.getType()).getName().getFullyQualifiedName());
+		assertPosition(((SimpleType) type.getType()).getName(), 15, 3);
+		
+		QualifiedType type2 = (QualifiedType) type.getQualifier();
+		assertEquals("bla", ((SimpleType) type2.getType()).getName().getFullyQualifiedName());
+		assertPosition(((SimpleType) type2.getType()).getName(), 11, 3);
+		
+		TypeofType type3 = (TypeofType) type2.getQualifier();
+		assertEquals("1", ((NumberLiteral) type3.getExpression()).getToken());
+		assertPosition(type3, 1, 9);
+		
+		assertPosition(type, 1, 17);
 	}
 	
 	public void testTypeSlice() {
@@ -159,6 +177,47 @@ public class Type_Test extends Parser_Test {
 		assertEquals("int", type.getComponentType().toString());
 		assertEquals("1", ((NumberLiteral) type.getFromExpression()).getToken());
 		assertEquals("2", ((NumberLiteral) type.getToExpression()).getToken());
+	}
+	
+	public void testTemplateType() {
+		QualifiedType type = (QualifiedType) getType("a.b.Temp!(int)");
+		assertPosition(type, 1, 14);
+		
+		TemplateType templateType = (TemplateType) type.getType();
+		
+		assertEquals("Temp", templateType.getName().getFullyQualifiedName());
+		assertEquals(1, templateType.arguments().size());
+		
+		QualifiedType type2 = (QualifiedType) type.getQualifier();
+		assertEquals("b", ((SimpleType) type2.getType()).getName().getFullyQualifiedName());
+		assertPosition(type2, 1, 3);
+		assertPosition(((SimpleType) type2.getType()).getName(), 3, 1);
+		
+		SimpleType type3 = (SimpleType) type2.getQualifier();
+		assertEquals("a", type3.getName().getFullyQualifiedName());
+		assertPosition(type3, 1, 1);
+		assertPosition(type3.getName(), 1, 1);
+	}
+	
+	public void testTemplateType2() {
+		TemplateType type = (TemplateType) getType("Temp!(int)");
+		
+		assertEquals("Temp", type.getName().getFullyQualifiedName());
+		assertEquals(1, type.arguments().size());
+		assertPosition(type, 1, 10);
+	}
+	
+	public void testTemplateType3() {
+		QualifiedType type = (QualifiedType) getType(".Temp!(int)");
+		
+		assertNull(type.getQualifier());
+		assertPosition(type, 1, 11);
+		
+		TemplateType type2 = (TemplateType) type.getType();
+		
+		assertEquals("Temp", type2.getName().getFullyQualifiedName());
+		assertEquals(1, type2.arguments().size());
+		
 	}
 	
 	private IType getType(String type) {

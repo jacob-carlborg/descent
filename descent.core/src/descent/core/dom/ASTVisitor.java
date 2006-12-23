@@ -4,11 +4,14 @@ import descent.internal.core.dom.AliasDeclarationFragment;
 import descent.internal.core.dom.ArrayInitializerFragment;
 import descent.internal.core.dom.CharacterLiteral;
 import descent.internal.core.dom.DebugAssignment;
+import descent.internal.core.dom.DotTemplateTypeExpression;
 import descent.internal.core.dom.Modifier;
 import descent.internal.core.dom.NumberLiteral;
+import descent.internal.core.dom.QualifiedType;
 import descent.internal.core.dom.StringLiteral;
 import descent.internal.core.dom.StringsExpression;
 import descent.internal.core.dom.StructInitializerFragment;
+import descent.internal.core.dom.TemplateType;
 import descent.internal.core.dom.TypedefDeclarationFragment;
 import descent.internal.core.dom.VariableDeclarationFragment;
 import descent.internal.core.dom.Version;
@@ -101,6 +104,14 @@ public abstract class ASTVisitor {
 		
 	}
 	
+	public boolean visit(DotTemplateTypeExpression node) {
+		return true;
+	}
+	
+	public void endVisit(DotTemplateTypeExpression node) {
+		
+	}
+	
 	public boolean visit(NumberLiteral node) {
 		return true;
 	}
@@ -125,6 +136,14 @@ public abstract class ASTVisitor {
 		
 	}
 	
+	public boolean visit(QualifiedType node) {
+		return true;
+	}
+	
+	public void endVisit(QualifiedType node) {
+		
+	}
+	
 	public boolean visit(StringsExpression node) {
 		return true;
 	}
@@ -146,6 +165,14 @@ public abstract class ASTVisitor {
 	}
 	
 	public void endVisit(VariableDeclarationFragment node) {
+		
+	}
+	
+	public boolean visit(TemplateType node) {
+		return true;
+	}
+	
+	public void endVisit(TemplateType node) {
 		
 	}
 	
