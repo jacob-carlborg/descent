@@ -2939,11 +2939,12 @@ public class Parser extends Lexer {
 				
 				StaticIfCondition staticIfCondition = parseStaticIfCondition();
 				
-				ifbody = parseStatement(PSsemi);
+				// goto Lcondition
+				ifbody = parseStatement(0 /*PSsemi*/);
 				elsebody = null;			
 				if (token.value == TOKelse) {
 					nextToken();
-					elsebody = parseStatement(PSsemi);
+					elsebody = parseStatement(0 /*PSsemi*/);
 				}
 				
 				s = newStaticIfStatement(staticIfCondition, ifbody, elsebody);
@@ -3353,11 +3354,12 @@ public class Parser extends Lexer {
 			
 			DebugCondition condition = parseDebugCondition();
 			
-			ifbody = parseStatement(PSsemi);
+			// goto Lcondition
+			ifbody = parseStatement(0 /*PSsemi*/);
 			elsebody = null;			
 			if (token.value == TOKelse) {
 				nextToken();
-				elsebody = parseStatement(PSsemi);
+				elsebody = parseStatement(0 /*PSsemi*/);
 			}
 			
 			s = newDebugStatement(condition, ifbody, elsebody);
@@ -3368,11 +3370,12 @@ public class Parser extends Lexer {
 			
 			VersionCondition versionCondition = parseVersionCondition();
 			
-			ifbody = parseStatement(PSsemi);
+			// goto Lcondition
+			ifbody = parseStatement(0 /*PSsemi*/);
 			elsebody = null;			
 			if (token.value == TOKelse) {
 				nextToken();
-				elsebody = parseStatement(PSsemi);
+				elsebody = parseStatement(0 /*PSsemi*/);
 			}
 			
 			s = newVersionStatement(versionCondition, ifbody, elsebody);
@@ -3381,11 +3384,12 @@ public class Parser extends Lexer {
 		case TOKiftype:
 			IftypeCondition iftypeCondition = parseIftypeCondition();
 			
-			ifbody = parseStatement(PSsemi);
+			// goto Lcondition
+			ifbody = parseStatement(0 /*PSsemi*/);
 			elsebody = null;			
 			if (token.value == TOKelse) {
 				nextToken();
-				elsebody = parseStatement(PSsemi);
+				elsebody = parseStatement(0 /*PSsemi*/);
 			}
 			
 			s = newIftypeStatement(iftypeCondition, ifbody, elsebody);
