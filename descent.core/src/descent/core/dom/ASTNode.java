@@ -859,7 +859,7 @@ public abstract class ASTNode {
 	
 	// TODO Descent remove
 	ASTNode() {
-		this(AST.newAST(AST.JLS3));
+		this(AST.newAST(AST.D1));
 	}
 	
 	public final static ASTNode[] NO_ELEMENTS = new ASTNode[0];
@@ -1689,32 +1689,6 @@ public abstract class ASTNode {
 		ArrayList a = new ArrayList(propertyList.size());
 		a.addAll(propertyList); 
 		return Collections.unmodifiableList(a);
-	}
-	
-	/**
-     * Checks that this AST operation is not used when
-     * building JLS2 level ASTs.
-
-     * @exception UnsupportedOperationException
-	 * @since 3.0
-     */
-	final void unsupportedIn2() {
-	  if (this.ast.apiLevel == AST.JLS2_INTERNAL) {
-	  	throw new UnsupportedOperationException("Operation not supported in JLS2 AST"); //$NON-NLS-1$
-	  }
-	}
-
-	/**
-     * Checks that this AST operation is only used when
-     * building JLS2 level ASTs.
-
-     * @exception UnsupportedOperationException
-	 * @since 3.0
-     */
-	final void supportedOnlyIn2() {
-	  if (this.ast.apiLevel != AST.JLS2_INTERNAL) {
-	  	throw new UnsupportedOperationException("Operation only supported in JLS2 AST"); //$NON-NLS-1$
-	  }
 	}
 	
 	/**

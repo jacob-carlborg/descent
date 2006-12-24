@@ -21,6 +21,9 @@ import descent.core.dom.TypeofType;
  */
 public abstract class TypeAdapter {
 	
+	// TODO implement toExpression() for TypeSArray (now StaticArrayType) and TypeIdentifier
+	// (this can be SimpleType, QualifiedType or TemplateType)
+	
 	public final static IDmdType getAdapter(Object object) {
 		if (object == null) return null;
 		

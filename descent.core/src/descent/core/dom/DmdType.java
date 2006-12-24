@@ -4,7 +4,11 @@ import descent.internal.core.parser.IDmdType;
 import descent.internal.core.parser.StringTable;
 import descent.internal.core.parser.TY;
 
-public abstract class DmdType extends Type implements IDmdType {
+/**
+ * These are types that didn't make it to the AST, but are needed
+ * in the parser.
+ */
+abstract class DmdType extends Type implements IDmdType {
 
 	public static StringTable stringtable = new StringTable();
 	public static char[] mangleChar;

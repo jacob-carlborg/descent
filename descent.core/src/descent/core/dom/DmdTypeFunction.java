@@ -6,7 +6,12 @@ import java.util.List;
 import descent.internal.core.parser.LINK;
 import descent.internal.core.parser.TY;
 
-public class DmdTypeFunction extends DmdType {
+/**
+ * Internal class that is a TypeFunction
+ * @author Ary
+ *
+ */
+class DmdTypeFunction extends DmdType {
 	
 	public List<Argument> arguments;
 	public boolean varargs;

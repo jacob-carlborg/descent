@@ -50,7 +50,7 @@ public class Lexer implements IProblemCollector {
 	public List<Comment> comments;
 	public List<IProblem> problems;
 	
-	AST ast = AST.newAST(AST.JLS3);
+	AST ast = AST.newAST(AST.D1);
 	public CompilationUnit mod = new CompilationUnit(ast);
     
     public Lexer(String source) {

@@ -10,7 +10,7 @@ package descent.core.dom;
  * Abstract syntax trees may be hand constructed by clients, using the
  * <code>new<i>TYPE</i></code> factory methods to create new nodes, and the
  * various <code>set<i>CHILD</i></code> methods 
- * (see {@link org.eclipse.jdt.core.dom.ASTNode ASTNode} and its subclasses)
+ * (see {@link descen.core.dom.ASTNode ASTNode} and its subclasses)
  * to connect them together.
  * </p>
  * <p>
@@ -66,43 +66,11 @@ package descent.core.dom;
  */
 public class AST {
 	
-	// TODO update this JDT constants
-	
 	/**
-	 * Constant for indicating the AST API that handles JLS2.
-	 * This API is capable of handling all constructs
-	 * in the Java language as described in the Java Language
-     * Specification, Second Edition (JLS2).
-     * JLS2 is a superset of all earlier versions of the
-     * Java language, and the JLS2 API can be used to manipulate
-     * programs written in all versions of the Java language
-     * up to and including J2SE 1.4.
-     *
-	 * @since 3.0
-	 * @deprecated Clients should use the {@link #JLS3} AST API instead.
+	 * Constant for indicating the AST API that handles D1
+	 * (D v1.0).
 	 */
-	public static final int JLS2 = 2;
-	
-	/**
-	 * Internal synonym for {@link #JLS2}. Use to alleviate
-	 * deprecation warnings.
-	 * @since 3.1
-	 */
-	/*package*/ static final int JLS2_INTERNAL = JLS2;
-
-	/**
-	 * Constant for indicating the AST API that handles JLS3.
-	 * This API is capable of handling all constructs in the
-	 * Java language as described in the Java Language
-	 * Specification, Third Edition (JLS3).
-     * JLS3 is a superset of all earlier versions of the
-     * Java language, and the JLS3 API can be used to manipulate
-     * programs written in all versions of the Java language
-     * up to and including J2SE 5 (aka JDK 1.5). 
-     *
-	 * @since 3.1
-	 */
-	public static final int JLS3 = 3;
+	public static final int D1 = 3;
 	
 	/**
 	 * The event handler for this AST. 
@@ -163,8 +131,7 @@ public class AST {
      * @since 3.0
 	 */
 	private AST(int level) {
-		if ((level != AST.JLS2)
-			&& (level != AST.JLS3)) {
+		if (level != AST.D1) {
 			throw new IllegalArgumentException();
 		}
 		this.apiLevel = level;
@@ -176,7 +143,7 @@ public class AST {
 	 * Creates a new Java abstract syntax tree
      * (AST) following the specified set of API rules. 
      * <p>
-     * Clients should use this method specifing {@link #JLS3} as the
+     * Clients should use this method specifing {@link #D1} as the
      * AST level in all cases, even when dealing with JDK 1.3 or 1.4..
      * </p>
      * 
@@ -189,8 +156,7 @@ public class AST {
      * @since 3.0
 	 */
 	public static AST newAST(int level) {
-		if ((level != AST.JLS2)
-			&& (level != AST.JLS3)) {
+		if (level != AST.D1) {
 			throw new IllegalArgumentException();
 		}
 		return new AST(level);
@@ -628,32 +594,6 @@ public class AST {
 	 */
 	void setOriginalModificationCount(long count) {
 		this.originalModificationCount = count;
-	}
-	
-	/**
-     * Checks that this AST operation is not used when
-     * building level JLS2 ASTs.
-
-     * @exception UnsupportedOperationException
-	 * @since 3.0
-     */
-	void unsupportedIn2() {
-	  if (this.apiLevel == AST.JLS2) {
-	  	throw new UnsupportedOperationException("Operation not supported in JLS2 AST"); //$NON-NLS-1$
-	  }
-	}
-
-	/**
-     * Checks that this AST operation is only used when
-     * building level JLS2 ASTs.
-
-     * @exception UnsupportedOperationException
-	 * @since 3.0
-     */
-	void supportedOnlyIn2() {
-	  if (this.apiLevel != AST.JLS2) {
-	  	throw new UnsupportedOperationException("Operation not supported in JLS2 AST"); //$NON-NLS-1$
-	  }
 	}
 
 	/**
