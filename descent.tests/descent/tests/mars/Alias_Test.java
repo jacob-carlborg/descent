@@ -1,21 +1,14 @@
 package descent.tests.mars;
 
-import descent.core.dom.IAliasDeclaration;
-import descent.core.dom.ICompilationUnit;
-import descent.core.dom.IElement;
-import descent.internal.core.dom.ParserFacade;
+import descent.core.dom.ASTNode;
+import descent.core.dom.AliasDeclaration;
 
 public class Alias_Test extends Parser_Test {
 	
 	public void testOneFragment() {
 		String s = " alias int Bla;";
-		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
-		assertEquals(0, unit.getProblems().length);
-		IElement[] declDefs = unit.getDeclarationDefinitions();
-		assertEquals(1, declDefs.length);
-		
-		IAliasDeclaration alias = (IAliasDeclaration) declDefs[0];
-		assertEquals(IElement.ALIAS_DECLARATION, alias.getNodeType0());
+		AliasDeclaration alias = (AliasDeclaration) getSingleDeclarationNoProblems(s);
+		assertEquals(ASTNode.ALIAS_DECLARATION, alias.getNodeType0());
 		
 		assertEquals("int", alias.getType().toString());
 		assertPosition(alias.getType(), 7, 3);
@@ -28,13 +21,8 @@ public class Alias_Test extends Parser_Test {
 	
 	public void testTwoFragments() {
 		String s = " alias int Bla, Ble;";
-		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
-		assertEquals(0, unit.getProblems().length);
-		IElement[] declDefs = unit.getDeclarationDefinitions();
-		assertEquals(1, declDefs.length);
-		
-		IAliasDeclaration alias = (IAliasDeclaration) declDefs[0];
-		assertEquals(IElement.ALIAS_DECLARATION, alias.getNodeType0());
+		AliasDeclaration alias = (AliasDeclaration) getSingleDeclarationNoProblems(s);
+		assertEquals(ASTNode.ALIAS_DECLARATION, alias.getNodeType0());
 		
 		assertEquals("int", alias.getType().toString());
 		assertPosition(alias.getType(), 7, 3);
@@ -50,13 +38,8 @@ public class Alias_Test extends Parser_Test {
 	
 	public void testThreeFragments() {
 		String s = " alias int Bla, Ble, Bli;";
-		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
-		assertEquals(0, unit.getProblems().length);
-		IElement[] declDefs = unit.getDeclarationDefinitions();
-		assertEquals(1, declDefs.length);
-		
-		IAliasDeclaration alias = (IAliasDeclaration) declDefs[0];
-		assertEquals(IElement.ALIAS_DECLARATION, alias.getNodeType0());
+		AliasDeclaration alias = (AliasDeclaration) getSingleDeclarationNoProblems(s);
+		assertEquals(ASTNode.ALIAS_DECLARATION, alias.getNodeType0());
 		
 		assertEquals("int", alias.getType().toString());
 		assertPosition(alias.getType(), 7, 3);
@@ -75,13 +58,8 @@ public class Alias_Test extends Parser_Test {
 	
 	public void testThreeFragmentsWithNextDeclaration() {
 		String s = " alias int Bla, Ble, Bli; alias int Blo;";
-		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
-		assertEquals(0, unit.getProblems().length);
-		IElement[] declDefs = unit.getDeclarationDefinitions();
-		assertEquals(2, declDefs.length);
-		
-		IAliasDeclaration alias = (IAliasDeclaration) declDefs[0];
-		assertEquals(IElement.ALIAS_DECLARATION, alias.getNodeType0());
+		AliasDeclaration alias = (AliasDeclaration) getDeclarationsNoProblems(s).get(0);
+		assertEquals(ASTNode.ALIAS_DECLARATION, alias.getNodeType0());
 		
 		assertEquals("int", alias.getType().toString());
 		assertPosition(alias.getType(), 7, 3);

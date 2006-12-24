@@ -1,24 +1,23 @@
 package descent.tests.mars;
 
-import descent.core.dom.IComment;
-import descent.core.dom.ICompilationUnit;
-import descent.core.dom.IElement;
-import descent.core.dom.IModuleDeclaration;
-import descent.internal.core.dom.ParserFacade;
-import descent.internal.core.dom.QualifiedName;
-import descent.internal.core.dom.SimpleName;
+import java.util.List;
+
+import descent.core.dom.ASTNode;
+import descent.core.dom.Comment;
+import descent.core.dom.CompilationUnit;
+import descent.core.dom.ModuleDeclaration;
+import descent.core.dom.QualifiedName;
+import descent.core.dom.SimpleName;
 
 public class Module_Test extends Parser_Test {
 	
 	public void testModuleDeclarationSingle() {
 		String s = " module a; ";
-		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
-		assertEquals(0, unit.getProblems().length);
-		IModuleDeclaration md = unit.getModuleDeclaration();
+		ModuleDeclaration md = getModuleDeclaration(s);
 		
 		assertNotNull(md);
 		assertPosition(md, 1, 9);
-		assertEquals(IElement.MODULE_DECLARATION, md.getNodeType0());
+		assertEquals(ASTNode.MODULE_DECLARATION, md.getNodeType0());
 		
 		SimpleName qName = (SimpleName) md.getName();
 		assertEquals("a", qName.getIdentifier());
@@ -27,9 +26,7 @@ public class Module_Test extends Parser_Test {
 	
 	public void testModuleDeclarationMany() {
 		String s = " module hola.chau.uno; ";
-		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
-		assertEquals(0, unit.getProblems().length);
-		IModuleDeclaration md = unit.getModuleDeclaration();
+		ModuleDeclaration md = getModuleDeclaration(s);
 		
 		assertNotNull(md);
 		assertPosition(md, 1, 21);
@@ -41,46 +38,43 @@ public class Module_Test extends Parser_Test {
 	
 	public void testModuleDeclarationWithComments() {
 		String s = " /** hola */ module pepe; ";
-		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
-		assertEquals(0, unit.getProblems().length);
-		IModuleDeclaration md = unit.getModuleDeclaration();
+		ModuleDeclaration md = getModuleDeclaration(s);
 		
-		IComment[] comments = md.getComments();
-		assertEquals(1, comments.length);
+		List<Comment> comments = md.getComments();
+		assertEquals(1, comments.size());
 		
-		assertEquals("/** hola */", comments[0].getComment());
+		assertEquals("/** hola */", comments.get(0).getComment());
 		
 		assertPosition(md, 13, 12);
 	}
 	
 	public void testModuleDeclarationWithMultipleComments() {
 		String s = " /** hola */ /** chau */ module pepe; ";
-		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
-		assertEquals(0, unit.getProblems().length);
-		IModuleDeclaration md = unit.getModuleDeclaration();
+		ModuleDeclaration md = getModuleDeclaration(s);
 		
-		IComment[] comments = md.getComments();
-		assertEquals(2, comments.length);
+		List<Comment> comments = md.getComments();
+		assertEquals(2, comments.size());
 		
 		assertPosition(md, 25, 12);
 	}
 	
+	// TODO I need this kind of declarations
 	public void testSkipFirstLine() {
 		String s = "#! something, I don't mind\n module a; ";
-		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
+		CompilationUnit unit = getCompilationUnit(s);
 		assertEquals(0, unit.getProblems().length);
-		IModuleDeclaration md = unit.getModuleDeclaration();
+		ModuleDeclaration md = unit.getModuleDeclaration();
 		
 		assertNotNull(md);
 		
 		s = "#! something, I don't mind\r module a; ";
-		unit = new ParserFacade().parseCompilationUnit(s);
+		unit = getCompilationUnit(s);
 		md = unit.getModuleDeclaration();
 		
 		assertNotNull(md);
 		
 		s = "#! something, I don't mind\r\n module a; ";
-		unit = new ParserFacade().parseCompilationUnit(s);
+		unit = getCompilationUnit(s);
 		md = unit.getModuleDeclaration();
 		
 		assertNotNull(md);

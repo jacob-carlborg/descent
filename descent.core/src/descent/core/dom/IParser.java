@@ -1,13 +1,14 @@
 package descent.core.dom;
 
+
 public interface IParser {
 	
-	ICompilationUnit parseCompilationUnit(String source);
+	CompilationUnit parseCompilationUnit(String source);
 	
-	IExpression parseExpression(String source);
+	Expression parseExpression(String source);
 	
-	IStatement parseStatement(String source);
+	Statement parseStatement(String source);
 	
-	IInitializer parseInitializer(String source);
+	Initializer parseInitializer(String source);
 
 }

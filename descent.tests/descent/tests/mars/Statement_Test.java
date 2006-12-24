@@ -1,67 +1,62 @@
 package descent.tests.mars;
 
-import descent.core.dom.IAggregateDeclaration;
-import descent.core.dom.IArgument;
-import descent.core.dom.IBreakStatement;
-import descent.core.dom.ICompilationUnit;
-import descent.core.dom.IConditionalStatement;
-import descent.core.dom.IContinueStatement;
-import descent.core.dom.IDebugStatement;
-import descent.core.dom.IDeclarationStatement;
-import descent.core.dom.IDoWhileStatement;
-import descent.core.dom.IElement;
-import descent.core.dom.IEnumDeclaration;
-import descent.core.dom.IExpression;
-import descent.core.dom.IExpressionStatement;
-import descent.core.dom.IForStatement;
-import descent.core.dom.IForeachStatement;
-import descent.core.dom.IGotoCaseStatement;
-import descent.core.dom.IGotoStatement;
-import descent.core.dom.IIfStatement;
-import descent.core.dom.ILabelStatement;
-import descent.core.dom.IMixinDeclaration;
-import descent.core.dom.IPragmaStatement;
-import descent.core.dom.IReturnStatement;
-import descent.core.dom.IScopeStatement;
-import descent.core.dom.IStatement;
-import descent.core.dom.IStaticAssertDeclaration;
-import descent.core.dom.IStaticAssertStatement;
-import descent.core.dom.IStaticIfStatement;
-import descent.core.dom.ISwitchStatement;
-import descent.core.dom.ISynchronizedStatement;
-import descent.core.dom.IThrowStatement;
-import descent.core.dom.ITryStatement;
-import descent.core.dom.IType;
-import descent.core.dom.IVariableDeclaration;
-import descent.core.dom.IVersionStatement;
-import descent.core.dom.IVolatileStatement;
-import descent.core.dom.IWhileStatement;
-import descent.core.dom.IWithStatement;
-import descent.internal.core.dom.AggregateDeclaration;
-import descent.internal.core.dom.Argument;
-import descent.internal.core.dom.BooleanLiteral;
-import descent.internal.core.dom.NumberLiteral;
-import descent.internal.core.dom.ParserFacade;
-import descent.internal.core.dom.ScopeStatement;
-import descent.internal.core.dom.SimpleName;
+import java.util.List;
+
+import descent.core.dom.ASTNode;
+import descent.core.dom.AggregateDeclaration;
+import descent.core.dom.Argument;
+import descent.core.dom.BooleanLiteral;
+import descent.core.dom.BreakStatement;
+import descent.core.dom.CatchClause;
+import descent.core.dom.CompilationUnit;
+import descent.core.dom.ContinueStatement;
+import descent.core.dom.DebugStatement;
+import descent.core.dom.DeclarationStatement;
+import descent.core.dom.DoStatement;
+import descent.core.dom.EnumDeclaration;
+import descent.core.dom.ExpressionStatement;
+import descent.core.dom.ForStatement;
+import descent.core.dom.ForeachStatement;
+import descent.core.dom.GotoCaseStatement;
+import descent.core.dom.GotoStatement;
+import descent.core.dom.IfStatement;
+import descent.core.dom.LabelStatement;
+import descent.core.dom.MixinDeclaration;
+import descent.core.dom.NumberLiteral;
+import descent.core.dom.PragmaStatement;
+import descent.core.dom.ReturnStatement;
+import descent.core.dom.ScopeStatement;
+import descent.core.dom.SimpleName;
+import descent.core.dom.StaticAssert;
+import descent.core.dom.StaticAssertStatement;
+import descent.core.dom.StaticIfStatement;
+import descent.core.dom.SwitchStatement;
+import descent.core.dom.SynchronizedStatement;
+import descent.core.dom.ThrowStatement;
+import descent.core.dom.TryStatement;
+import descent.core.dom.VariableDeclaration;
+import descent.core.dom.VersionStatement;
+import descent.core.dom.VolatileStatement;
+import descent.core.dom.WhileStatement;
+import descent.core.dom.WithStatement;
 
 public class Statement_Test extends Parser_Test {
 	
 	public void testExpression() {
 		String s = " 1;";
-		IExpressionStatement stm = (IExpressionStatement) new ParserFacade().parseStatement(s);
+		ExpressionStatement stm = (ExpressionStatement) parseStatement(s);
 		
-		assertEquals(IStatement.EXPRESSION_STATEMENT, stm.getNodeType0());
+		assertEquals(ASTNode.EXPRESSION_STATEMENT, stm.getNodeType0());
 		assertPosition(stm, 1, 2);
 		
-		assertEquals(IExpression.NUMBER_LITERAL, stm.getExpression().getNodeType0());
+		assertEquals(ASTNode.NUMBER_LITERAL, stm.getExpression().getNodeType0());
 	}
 	
 	public void testBreak() {
 		String s = " break;";
-		IBreakStatement stm = (IBreakStatement) new ParserFacade().parseStatement(s);
+		BreakStatement stm = (BreakStatement) parseStatement(s);
 		
-		assertEquals(IStatement.BREAK_STATEMENT, stm.getNodeType0());
+		assertEquals(ASTNode.BREAK_STATEMENT, stm.getNodeType0());
 		assertPosition(stm, 1, 6);
 		
 		assertNull(stm.getLabel());
@@ -69,22 +64,20 @@ public class Statement_Test extends Parser_Test {
 	
 	public void testBreakLabel() {
 		String s = " break label;";
-		IBreakStatement stm = (IBreakStatement) new ParserFacade().parseStatement(s);
+		BreakStatement stm = (BreakStatement) parseStatement(s);
 		
-		assertEquals(IStatement.BREAK_STATEMENT, stm.getNodeType0());
+		assertEquals(ASTNode.BREAK_STATEMENT, stm.getNodeType0());
 		assertPosition(stm, 1, 12);
 		
 		assertEquals("label", stm.getLabel().getIdentifier());
 		assertPosition(stm.getLabel(), 7, 5);
-		
-		assertVisitor(stm, 2);
 	}
 	
 	public void testContinue() {
 		String s = " continue;";
-		IContinueStatement stm = (IContinueStatement) new ParserFacade().parseStatement(s);
+		ContinueStatement stm = (ContinueStatement) parseStatement(s);
 		
-		assertEquals(IStatement.CONTINUE_STATEMENT, stm.getNodeType0());
+		assertEquals(ASTNode.CONTINUE_STATEMENT, stm.getNodeType0());
 		assertPosition(stm, 1, 9);
 		
 		assertNull(stm.getLabel());
@@ -92,34 +85,30 @@ public class Statement_Test extends Parser_Test {
 	
 	public void testContinueLabel() {
 		String s = " continue label;";
-		IContinueStatement stm = (IContinueStatement) new ParserFacade().parseStatement(s);
+		ContinueStatement stm = (ContinueStatement) parseStatement(s);
 		
-		assertEquals(IStatement.CONTINUE_STATEMENT, stm.getNodeType0());
+		assertEquals(ASTNode.CONTINUE_STATEMENT, stm.getNodeType0());
 		assertPosition(stm, 1, 15);
 		
 		assertEquals("label", stm.getLabel().getIdentifier());
 		assertPosition(stm.getLabel(), 10, 5);
-		
-		assertVisitor(stm, 2);
 	}
 	
 	public void testReturn() {
 		String s = " return;";
-		IReturnStatement stm = (IReturnStatement) new ParserFacade().parseStatement(s);
+		ReturnStatement stm = (ReturnStatement) parseStatement(s);
 		
-		assertEquals(IStatement.RETURN_STATEMENT, stm.getNodeType0());
+		assertEquals(ASTNode.RETURN_STATEMENT, stm.getNodeType0());
 		assertPosition(stm, 1, 7);
 		
 		assertNull(stm.getExpression());
-		
-		assertVisitor(stm, 1);
 	}
 	
 	public void testReturnValue() {
 		String s = " return somex;";
-		IReturnStatement stm = (IReturnStatement) new ParserFacade().parseStatement(s);
+		ReturnStatement stm = (ReturnStatement) parseStatement(s);
 		
-		assertEquals(IStatement.RETURN_STATEMENT, stm.getNodeType0());
+		assertEquals(ASTNode.RETURN_STATEMENT, stm.getNodeType0());
 		assertPosition(stm, 1, 13);
 		
 		assertEquals("somex", ((SimpleName) stm.getExpression()).getIdentifier());
@@ -128,37 +117,33 @@ public class Statement_Test extends Parser_Test {
 	
 	public void testWhile() {
 		String s = " while(true) { }";
-		IWhileStatement stm = (IWhileStatement) new ParserFacade().parseStatement(s);
+		WhileStatement stm = (WhileStatement) parseStatement(s);
 		
-		assertEquals(IStatement.WHILE_STATEMENT, stm.getNodeType0());
+		assertEquals(ASTNode.WHILE_STATEMENT, stm.getNodeType0());
 		assertPosition(stm, 1, 15);
 		
 		assertTrue(((BooleanLiteral) stm.getExpression()).booleanValue());
 		
 		assertPosition(stm.getBody(), 13, 3);
-		
-		assertVisitor(stm, 3);
 	}
 	
 	public void testDoWhile() {
 		String s = " do { } while(true)";
-		IDoWhileStatement stm = (IDoWhileStatement) new ParserFacade().parseStatement(s);
+		DoStatement stm = (DoStatement) parseStatement(s);
 		
-		assertEquals(IStatement.DO_STATEMENT, stm.getNodeType0());
+		assertEquals(ASTNode.DO_STATEMENT, stm.getNodeType0());
 		assertPosition(stm, 1, 18);
 		
 		assertTrue(((BooleanLiteral) stm.getExpression()).booleanValue());
 		
 		assertPosition(stm.getBody(), 4, 3);
-		
-		assertVisitor(stm, 3);
 	}
 	
 	public void testLabel() {
 		String s = " label: break;";
-		ILabelStatement stm = (ILabelStatement) new ParserFacade().parseStatement(s);
+		LabelStatement stm = (LabelStatement) parseStatement(s);
 		
-		assertEquals(IStatement.LABEL_STATEMENT, stm.getNodeType0());
+		assertEquals(ASTNode.LABEL_STATEMENT, stm.getNodeType0());
 		assertPosition(stm, 1, 13);
 		
 		assertEquals("label", stm.getLabel().getIdentifier());
@@ -169,9 +154,9 @@ public class Statement_Test extends Parser_Test {
 	
 	public void testStaticAssertStatement() {
 		String s = " static assert(1, true);";
-		IStaticAssertStatement stm = (IStaticAssertStatement) new ParserFacade().parseStatement(s);
+		StaticAssertStatement stm = (StaticAssertStatement) parseStatement(s);
 		
-		assertEquals(IStatement.STATIC_ASSERT_STATEMENT, stm.getNodeType0());
+		assertEquals(ASTNode.STATIC_ASSERT_STATEMENT, stm.getNodeType0());
 		assertPosition(stm, 1, 23);
 		
 		assertEquals("1", ((NumberLiteral) stm.getStaticAssert().getExpression()).getToken());
@@ -180,83 +165,79 @@ public class Statement_Test extends Parser_Test {
 	
 	public void testStaticAssertDeclaration() {
 		String s = " static assert(1, true);";
-		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
+		CompilationUnit unit = getCompilationUnit(s);
 		
-		assertEquals(1, unit.getDeclarationDefinitions().length);
+		assertEquals(1, unit.declarations().size());
 		
-		IStaticAssertDeclaration stm = (IStaticAssertDeclaration) unit.getDeclarationDefinitions()[0];
-		assertEquals(IElement.STATIC_ASSERT, stm.getNodeType0());
+		StaticAssert stm = (StaticAssert) unit.declarations().get(0);
+		assertEquals(ASTNode.STATIC_ASSERT, stm.getNodeType0());
 		assertPosition(stm, 1, 23);
 		
 		assertEquals("1", ((NumberLiteral) stm.getExpression()).getToken());
 		assertTrue(((BooleanLiteral) stm.getMessage()).booleanValue());
-		
-		assertVisitor(stm, 3);
 	}
 	
 	public void testWith() {
 		String s = " with(true) { }";
-		IWithStatement stm = (IWithStatement) new ParserFacade().parseStatement(s);
+		WithStatement stm = (WithStatement) parseStatement(s);
 		
-		assertEquals(IStatement.WITH_STATEMENT, stm.getNodeType0());
+		assertEquals(ASTNode.WITH_STATEMENT, stm.getNodeType0());
 		assertPosition(stm, 1, 14);
 		
 		assertPosition(stm.getBody(), 12, 3);
 		
 		assertTrue(((BooleanLiteral) stm.getExpression()).booleanValue());
-		
-		assertVisitor(stm, 3);
 	}
 	
 	public void testFor() {
 		String s = " for(int i = 0; i < 10; i++) { }";
-		IForStatement stm = (IForStatement) new ParserFacade().parseStatement(s);
+		ForStatement stm = (ForStatement) parseStatement(s);
 		
-		assertEquals(IStatement.FOR_STATEMENT, stm.getNodeType0());
+		assertEquals(ASTNode.FOR_STATEMENT, stm.getNodeType0());
 		assertPosition(stm, 1, s.length() - 1);
 	}
 	
 	public void testForEmpty() {
 		String s = " for(;;) { }";
-		IForStatement stm = (IForStatement) new ParserFacade().parseStatement(s);
+		ForStatement stm = (ForStatement) parseStatement(s);
 		
-		assertEquals(IStatement.FOR_STATEMENT, stm.getNodeType0());
+		assertEquals(ASTNode.FOR_STATEMENT, stm.getNodeType0());
 		assertPosition(stm, 1, s.length() - 1);
 	}
 	
 	public void testForeach() {
 		String s = " foreach(inout a, b, c; x) { }";
-		IForeachStatement stm = (IForeachStatement) new ParserFacade().parseStatement(s);
+		ForeachStatement stm = (ForeachStatement) parseStatement(s);
 		
-		assertEquals(IStatement.FOREACH_STATEMENT, stm.getNodeType0());
+		assertEquals(ASTNode.FOREACH_STATEMENT, stm.getNodeType0());
 		assertPosition(stm, 1, s.length() - 1);
 		
 		assertFalse(stm.isReverse());
 		
-		IArgument[] args = stm.arguments().toArray(new IArgument[stm.arguments().size()]);
-		assertEquals(3, args.length);
+		List<Argument> args = stm.arguments();
+		assertEquals(3, args.size());
 		
-		assertPosition(args[0], 9, 7);
-		assertEquals(Argument.PassageMode.INOUT, args[0].getPassageMode());
-		assertEquals("a", args[0].getName().getIdentifier());
-		assertPosition(args[0].getName(), 15, 1);
+		assertPosition(args.get(0), 9, 7);
+		assertEquals(Argument.PassageMode.INOUT, args.get(0).getPassageMode());
+		assertEquals("a", args.get(0).getName().getIdentifier());
+		assertPosition(args.get(0).getName(), 15, 1);
 		
-		assertPosition(args[1], 18, 1);
-		assertEquals(Argument.PassageMode.IN, args[1].getPassageMode());
-		assertEquals("b", args[1].getName().getIdentifier());
-		assertPosition(args[1].getName(), 18, 1);
+		assertPosition(args.get(1), 18, 1);
+		assertEquals(Argument.PassageMode.IN, args.get(1).getPassageMode());
+		assertEquals("b", args.get(1).getName().getIdentifier());
+		assertPosition(args.get(1).getName(), 18, 1);
 		
-		assertPosition(args[2], 21, 1);
-		assertEquals(Argument.PassageMode.IN, args[2].getPassageMode());
-		assertEquals("c", args[2].getName().getIdentifier());
-		assertPosition(args[2].getName(), 21, 1);
+		assertPosition(args.get(2), 21, 1);
+		assertEquals(Argument.PassageMode.IN, args.get(2).getPassageMode());
+		assertEquals("c", args.get(2).getName().getIdentifier());
+		assertPosition(args.get(2).getName(), 21, 1);
 	}
 	
 	public void testForeachReverse() {
 		String s = " foreach_reverse(a, b, c; x) { }";
-		IForeachStatement stm = (IForeachStatement) new ParserFacade().parseStatement(s);
+		ForeachStatement stm = (ForeachStatement) parseStatement(s);
 		
-		assertEquals(IStatement.FOREACH_STATEMENT, stm.getNodeType0());
+		assertEquals(ASTNode.FOREACH_STATEMENT, stm.getNodeType0());
 		assertPosition(stm, 1, s.length() - 1);
 		
 		assertEquals("x", ((SimpleName) stm.getExpression()).getIdentifier());
@@ -266,36 +247,36 @@ public class Statement_Test extends Parser_Test {
 	
 	public void testForeachWithDeclaration() {
 		String s = " foreach(int x; y) { }";
-		IForeachStatement stm = (IForeachStatement) new ParserFacade().parseStatement(s);
+		ForeachStatement stm = (ForeachStatement) parseStatement(s);
 		
-		assertEquals(IStatement.FOREACH_STATEMENT, stm.getNodeType0());
+		assertEquals(ASTNode.FOREACH_STATEMENT, stm.getNodeType0());
 		assertPosition(stm, 1, s.length() - 1);
 		
 		assertFalse(stm.isReverse());
 		
-		IArgument[] args = stm.arguments().toArray(new IArgument[stm.arguments().size()]);
-		assertEquals(1, args.length);
+		List<Argument> args = stm.arguments();
+		assertEquals(1, args.size());
 		
-		assertPosition(args[0], 9, 5);
-		assertEquals(Argument.PassageMode.IN, args[0].getPassageMode());
-		assertEquals("x", args[0].getName().getIdentifier());
-		assertEquals("int", args[0].getType().toString());
-		assertPosition(args[0].getName(), 13, 1);
+		assertPosition(args.get(0), 9, 5);
+		assertEquals(Argument.PassageMode.IN, args.get(0).getPassageMode());
+		assertEquals("x", args.get(0).getName().getIdentifier());
+		assertEquals("int", args.get(0).getType().toString());
+		assertPosition(args.get(0).getName(), 13, 1);
 	}
 	
 	public void testVolatile() {
 		String s = " volatile int x = 2;";
-		IVolatileStatement stm = (IVolatileStatement) new ParserFacade().parseStatement(s);
+		VolatileStatement stm = (VolatileStatement) parseStatement(s);
 		
-		assertEquals(IStatement.VOLATILE_STATEMENT, stm.getNodeType0());
+		assertEquals(ASTNode.VOLATILE_STATEMENT, stm.getNodeType0());
 		assertPosition(stm, 1, s.length() - 1);
 	}
 	
 	public void testSwitch() {
 		String s = " switch(1) { case 1: default: }";
-		ISwitchStatement stm = (ISwitchStatement) new ParserFacade().parseStatement(s);
+		SwitchStatement stm = (SwitchStatement) parseStatement(s);
 		
-		assertEquals(IStatement.SWITCH_STATEMENT, stm.getNodeType0());
+		assertEquals(ASTNode.SWITCH_STATEMENT, stm.getNodeType0());
 		assertPosition(stm, 1, s.length() - 1);
 		
 		assertEquals("1", ((NumberLiteral) stm.getExpression()).getToken());
@@ -303,28 +284,28 @@ public class Statement_Test extends Parser_Test {
 	
 	public void testTryFinally() {
 		String s = " try { } finally { }";
-		ITryStatement stm = (ITryStatement) new ParserFacade().parseStatement(s);
+		TryStatement stm = (TryStatement) parseStatement(s);
 		
-		assertEquals(IStatement.TRY_STATEMENT, stm.getNodeType0());
+		assertEquals(ASTNode.TRY_STATEMENT, stm.getNodeType0());
 		assertPosition(stm, 1, s.length() - 1);
 	}
 	
 	public void testTryCatchFinally() {
 		String s = " try { } catch(Bla b) { } catch { } finally { }";
-		ITryStatement stm = (ITryStatement) new ParserFacade().parseStatement(s);
+		TryStatement stm = (TryStatement) parseStatement(s);
 		
-		assertEquals(IStatement.TRY_STATEMENT, stm.getNodeType0());
+		assertEquals(ASTNode.TRY_STATEMENT, stm.getNodeType0());
 		assertPosition(stm, 1, s.length() - 1);
 		
 		assertEquals(2, stm.catchClauses().size());
-		assertPosition(stm.catchClauses().get(0), 9, 16);
+		assertPosition((CatchClause) stm.catchClauses().get(0), 9, 16);
 	}
 	
 	public void testThrow() {
 		String s = " throw 1;";
-		IThrowStatement stm = (IThrowStatement) new ParserFacade().parseStatement(s);
+		ThrowStatement stm = (ThrowStatement) parseStatement(s);
 		
-		assertEquals(IStatement.THROW_STATEMENT, stm.getNodeType0());
+		assertEquals(ASTNode.THROW_STATEMENT, stm.getNodeType0());
 		assertPosition(stm, 1, s.length() - 1);
 		
 		assertEquals("1", ((NumberLiteral) stm.getExpression()).getToken());
@@ -332,17 +313,17 @@ public class Statement_Test extends Parser_Test {
 	
 	public void testSynchronized1() {
 		String s = " synchronized x = 2;";
-		ISynchronizedStatement stm = (ISynchronizedStatement) new ParserFacade().parseStatement(s);
+		SynchronizedStatement stm = (SynchronizedStatement) parseStatement(s);
 		
-		assertEquals(IStatement.SYNCHRONIZED_STATEMENT, stm.getNodeType0());
+		assertEquals(ASTNode.SYNCHRONIZED_STATEMENT, stm.getNodeType0());
 		assertPosition(stm, 1, s.length() - 1);
 	}
 	
 	public void testSynchronized2() {
 		String s = " synchronized(1) x = 2;";
-		ISynchronizedStatement stm = (ISynchronizedStatement) new ParserFacade().parseStatement(s);
+		SynchronizedStatement stm = (SynchronizedStatement) parseStatement(s);
 		
-		assertEquals(IStatement.SYNCHRONIZED_STATEMENT, stm.getNodeType0());
+		assertEquals(ASTNode.SYNCHRONIZED_STATEMENT, stm.getNodeType0());
 		assertPosition(stm, 1, s.length() - 1);
 	}
 	
@@ -355,9 +336,9 @@ public class Statement_Test extends Parser_Test {
 		
 		for(Object[] obj : objs) {
 			String s = " scope(" + obj[0] + ") x = 2;";
-			IScopeStatement stm = (IScopeStatement) new ParserFacade().parseStatement(s);
+			ScopeStatement stm = (ScopeStatement) parseStatement(s);
 			
-			assertEquals(IStatement.SCOPE_STATEMENT, stm.getNodeType0());
+			assertEquals(ASTNode.SCOPE_STATEMENT, stm.getNodeType0());
 			assertPosition(stm, 1, s.length() - 1);
 			
 			assertEquals(obj[1], stm.getEvent());
@@ -373,9 +354,9 @@ public class Statement_Test extends Parser_Test {
 		
 		for(Object[] obj : objs) {
 			String s = " on_scope_" + obj[0] + " { }";
-			IScopeStatement stm = (IScopeStatement) new ParserFacade().parseStatement(s);
+			ScopeStatement stm = (ScopeStatement) parseStatement(s);
 			
-			assertEquals(IStatement.SCOPE_STATEMENT, stm.getNodeType0());
+			assertEquals(ASTNode.SCOPE_STATEMENT, stm.getNodeType0());
 			assertPosition(stm, 1, s.length() - 1);
 			
 			assertEquals(obj[1], stm.getEvent());
@@ -384,9 +365,9 @@ public class Statement_Test extends Parser_Test {
 	
 	public void testGoto() {
 		String s = " goto bla;";
-		IGotoStatement stm = (IGotoStatement) new ParserFacade().parseStatement(s);
+		GotoStatement stm = (GotoStatement) parseStatement(s);
 		
-		assertEquals(IStatement.GOTO_STATEMENT, stm.getNodeType0());
+		assertEquals(ASTNode.GOTO_STATEMENT, stm.getNodeType0());
 		assertPosition(stm, 1, s.length() - 1);
 		
 		assertPosition(stm.getLabel(), 6, 3);
@@ -394,25 +375,25 @@ public class Statement_Test extends Parser_Test {
 	
 	public void testGotoDefault() {
 		String s = " goto default;";
-		IStatement stm = (IStatement) new ParserFacade().parseStatement(s);
+		ASTNode stm = (ASTNode) parseStatement(s);
 		
-		assertEquals(IStatement.GOTO_DEFAULT_STATEMENT, stm.getNodeType0());
+		assertEquals(ASTNode.GOTO_DEFAULT_STATEMENT, stm.getNodeType0());
 		assertPosition(stm, 1, s.length() - 1);
 	}
 	
 	public void testGotoCase() {
 		String s = " goto case bla;";
-		IGotoCaseStatement stm = (IGotoCaseStatement) new ParserFacade().parseStatement(s);
+		GotoCaseStatement stm = (GotoCaseStatement) parseStatement(s);
 		
-		assertEquals(IStatement.GOTO_CASE_STATEMENT, stm.getNodeType0());
+		assertEquals(ASTNode.GOTO_CASE_STATEMENT, stm.getNodeType0());
 		assertPosition(stm, 1, s.length() - 1);
 	}
 	
 	public void testPragma() {
 		String s = " pragma(lib, 1);";
-		IPragmaStatement stm = (IPragmaStatement) new ParserFacade().parseStatement(s);
+		PragmaStatement stm = (PragmaStatement) parseStatement(s);
 		
-		assertEquals(IStatement.PRAGMA_STATEMENT, stm.getNodeType0());
+		assertEquals(ASTNode.PRAGMA_STATEMENT, stm.getNodeType0());
 		assertPosition(stm, 1, s.length() - 1);
 		
 		assertEquals("lib", stm.getName().getIdentifier());
@@ -423,9 +404,9 @@ public class Statement_Test extends Parser_Test {
 	
 	public void testIf() {
 		String s = " if (1) { } else { }";
-		IIfStatement stm = (IIfStatement) new ParserFacade().parseStatement(s);
+		IfStatement stm = (IfStatement) parseStatement(s);
 		
-		assertEquals(IStatement.IF_STATEMENT, stm.getNodeType0());
+		assertEquals(ASTNode.IF_STATEMENT, stm.getNodeType0());
 		assertPosition(stm, 1, s.length() - 1);
 		
 		assertEquals("1", ((NumberLiteral) stm.getExpression()).getToken());
@@ -434,9 +415,9 @@ public class Statement_Test extends Parser_Test {
 	
 	public void testIfAuto() {
 		String s = " if (auto x = 1) { } else { }";
-		IIfStatement stm = (IIfStatement) new ParserFacade().parseStatement(s);
+		IfStatement stm = (IfStatement) parseStatement(s);
 		
-		assertEquals(IStatement.IF_STATEMENT, stm.getNodeType0());
+		assertEquals(ASTNode.IF_STATEMENT, stm.getNodeType0());
 		assertPosition(stm, 1, s.length() - 1);
 		
 		assertEquals("1", ((NumberLiteral) stm.getExpression()).getToken());
@@ -447,14 +428,14 @@ public class Statement_Test extends Parser_Test {
 	
 	public void testIfDeclaration() {
 		String s = " if (int x = 1) { } else { }";
-		IIfStatement stm = (IIfStatement) new ParserFacade().parseStatement(s);
+		IfStatement stm = (IfStatement) parseStatement(s);
 		
-		assertEquals(IStatement.IF_STATEMENT, stm.getNodeType0());
+		assertEquals(ASTNode.IF_STATEMENT, stm.getNodeType0());
 		assertPosition(stm, 1, s.length() - 1);
 		
 		assertEquals("1", ((NumberLiteral) stm.getExpression()).getToken());
 		
-		IArgument argument = stm.getArgument();
+		Argument argument = stm.getArgument();
 		assertNotNull(argument);
 		assertEquals("x", argument.getName().getIdentifier());
 		assertEquals("int", argument.getType().toString());
@@ -463,14 +444,14 @@ public class Statement_Test extends Parser_Test {
 	
 	public void testIfDeprecated() {
 		String s = " if (a; b) { } else { }";
-		IIfStatement stm = (IIfStatement) new ParserFacade().parseStatement(s);
+		IfStatement stm = (IfStatement) parseStatement(s);
 		
-		assertEquals(IStatement.IF_STATEMENT, stm.getNodeType0());
+		assertEquals(ASTNode.IF_STATEMENT, stm.getNodeType0());
 		assertPosition(stm, 1, s.length() - 1);
 		
 		assertEquals("b", ((SimpleName) stm.getExpression()).getIdentifier());
 		
-		IArgument argument = stm.getArgument();
+		Argument argument = stm.getArgument();
 		assertNotNull(argument);
 		assertEquals("a", argument.getName().getIdentifier());
 		assertPosition(argument, 5, 1);
@@ -478,9 +459,9 @@ public class Statement_Test extends Parser_Test {
 	
 	public void testStaticIf() {
 		String s = " static if (1) { } else { }";
-		IStaticIfStatement stm = (IStaticIfStatement) new ParserFacade().parseStatement(s);
+		StaticIfStatement stm = (StaticIfStatement) parseStatement(s);
 		
-		assertEquals(IConditionalStatement.STATIC_IF_STATEMENT, stm.getNodeType0());
+		assertEquals(ASTNode.STATIC_IF_STATEMENT, stm.getNodeType0());
 		assertPosition(stm, 1, s.length() - 1);
 		
 		assertEquals("1", ((NumberLiteral) stm.getExpression()).getToken());
@@ -488,9 +469,9 @@ public class Statement_Test extends Parser_Test {
 	
 	public void testDebug1() {
 		String s = " debug { } else { }";
-		IDebugStatement stm = (IDebugStatement) new ParserFacade().parseStatement(s);
+		DebugStatement stm = (DebugStatement) parseStatement(s);
 		
-		assertEquals(IConditionalStatement.DEBUG_STATEMENT, stm.getNodeType0());
+		assertEquals(ASTNode.DEBUG_STATEMENT, stm.getNodeType0());
 		assertPosition(stm, 1, s.length() - 1);
 		
 		assertNull(stm.getVersion());
@@ -498,9 +479,9 @@ public class Statement_Test extends Parser_Test {
 	
 	public void testDebug2() {
 		String s = " debug(1) { }";
-		IDebugStatement stm = (IDebugStatement) new ParserFacade().parseStatement(s);
+		DebugStatement stm = (DebugStatement) parseStatement(s);
 		
-		assertEquals(IConditionalStatement.DEBUG_STATEMENT, stm.getNodeType0());
+		assertEquals(ASTNode.DEBUG_STATEMENT, stm.getNodeType0());
 		assertPosition(stm, 1, s.length() - 1);
 		
 		assertEquals("1", stm.getVersion().getValue());
@@ -508,62 +489,63 @@ public class Statement_Test extends Parser_Test {
 	
 	public void testVersion() {
 		String s = " version(release) { } else { }";
-		IVersionStatement stm = (IVersionStatement) new ParserFacade().parseStatement(s);
+		VersionStatement stm = (VersionStatement) parseStatement(s);
 		
-		assertEquals(IConditionalStatement.VERSION_STATEMENT, stm.getNodeType0());
+		assertEquals(ASTNode.VERSION_STATEMENT, stm.getNodeType0());
 		assertPosition(stm, 1, s.length() - 1);
 		
 		assertEquals("release", stm.getVersion().getValue());
 	}
 	
+	/* TODO
 	public void testStaticExtern() {
 		String s = " static extern int x;";
-		IDeclarationStatement stm = (IDeclarationStatement) new ParserFacade().parseStatement(s);
+		DeclarationStatement stm = (DeclarationStatement) parseStatement(s);
 		
-		IVariableDeclaration var = (IVariableDeclaration) stm.getDeclaration();
-		
-		// TODO assertTrue((var.getModifier() & IModifier.EXTERN) != 0);
+		VariableDeclaration var = (VariableDeclaration) stm.getDeclaration();
+		assertTrue((var.getModifier() & IModifier.EXTERN) != 0);
 	}
+	*/
 	
 	public void testTypeof() {
 		String s = " typeof(2) x;";
-		IDeclarationStatement stm = (IDeclarationStatement) new ParserFacade().parseStatement(s);
+		DeclarationStatement stm = (DeclarationStatement) parseStatement(s);
 		
-		IVariableDeclaration var = (IVariableDeclaration) stm.getDeclaration();
-		assertEquals(IType.TYPEOF_TYPE, var.getType().getNodeType0());
+		VariableDeclaration var = (VariableDeclaration) stm.getDeclaration();
+		assertEquals(ASTNode.TYPEOF_TYPE, var.getType().getNodeType0());
 	}
 	
 	public void testAggregate() {
 		String s = " class X { };";
-		IDeclarationStatement stm = (IDeclarationStatement) new ParserFacade().parseStatement(s);
+		DeclarationStatement stm = (DeclarationStatement) parseStatement(s);
 		
-		IAggregateDeclaration ad = (IAggregateDeclaration) stm.getDeclaration();
+		AggregateDeclaration ad = (AggregateDeclaration) stm.getDeclaration();
 		assertEquals(AggregateDeclaration.Kind.CLASS, ad.getKind());
 	}
 	
 	public void testEnum() {
 		String s = " enum X { a };";
-		IDeclarationStatement stm = (IDeclarationStatement) new ParserFacade().parseStatement(s);
+		DeclarationStatement stm = (DeclarationStatement) parseStatement(s);
 		
-		IEnumDeclaration var = (IEnumDeclaration) stm.getDeclaration();
+		EnumDeclaration var = (EnumDeclaration) stm.getDeclaration();
 		assertNotNull(var);
 	}
 	
 	public void testMixin() {
 		String s = " mixin X x;";
-		IDeclarationStatement stm = (IDeclarationStatement) new ParserFacade().parseStatement(s);
+		DeclarationStatement stm = (DeclarationStatement) parseStatement(s);
 		
-		IMixinDeclaration var = (IMixinDeclaration) stm.getDeclaration();
+		MixinDeclaration var = (MixinDeclaration) stm.getDeclaration();
 		assertNotNull(var);
 	}
 	
 	public void testScope() {
 		String s = " scope int x;";
-		IDeclarationStatement stm = (IDeclarationStatement) new ParserFacade().parseStatement(s);
+		DeclarationStatement stm = (DeclarationStatement) parseStatement(s);
 		
-		IVariableDeclaration var = (IVariableDeclaration) stm.getDeclaration();
+		VariableDeclaration var = (VariableDeclaration) stm.getDeclaration();
 		assertNotNull(var);
-		// TODO assertTrue((var.getModifier() & IModifier.SCOPE) != 0);
+		// TODO assertEquals(1, var.modifiers().size());
 	}
 
 }

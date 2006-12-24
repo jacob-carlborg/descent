@@ -1,11 +1,9 @@
 package descent.tests.mars;
 
-import junit.framework.TestCase;
 import descent.core.compiler.IProblem;
-import descent.core.dom.ICompilationUnit;
-import descent.internal.core.dom.ParserFacade;
+import descent.core.dom.CompilationUnit;
 
-public class Problems_Test extends TestCase {
+public class Problems_Test extends Parser_Test {
 
 	public void test_INVALID_UTF_CHARACTER() {
 		IProblem[] p = getProblems(" char c = \"\\UFFFFFFFF\";", 1);
@@ -764,7 +762,7 @@ public class Problems_Test extends TestCase {
 	}
 	
 	public void test_INVALID_PRAGMA_SYNTAX_4() {
-		IProblem[] ps = getProblems(" #line 1 __FILE__ \" int x = 2;", 3);
+		IProblem[] ps = getProblems(" #line 1 __FILE__ \" int x = 2;", 1);
 		IProblem p = ps[0];
 
 		assertEquals(IProblem.INVALID_PRAGMA_SYNTAX, p.getId());
@@ -1157,8 +1155,7 @@ public class Problems_Test extends TestCase {
 	}
 
 	private IProblem getProblem(String s) {
-		ParserFacade facade = new ParserFacade();
-		ICompilationUnit unit = facade.parseCompilationUnit(s);
+		CompilationUnit unit = getCompilationUnit(s);
 		IProblem[] problems = unit.getProblems();
 		assertEquals(1, problems.length);
 
@@ -1166,8 +1163,7 @@ public class Problems_Test extends TestCase {
 	}
 
 	private IProblem[] getProblems(String s, int expected) {
-		ParserFacade facade = new ParserFacade();
-		ICompilationUnit unit = facade.parseCompilationUnit(s);
+		CompilationUnit unit = getCompilationUnit(s);
 		IProblem[] problems = unit.getProblems();
 		assertEquals(expected, problems.length);
 

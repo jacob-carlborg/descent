@@ -4,7 +4,7 @@ import org.eclipse.core.runtime.Plugin;
 import org.osgi.framework.BundleContext;
 
 import descent.core.dom.IParser;
-import descent.internal.core.dom.ParserFacade;
+import descent.internal.core.parser.ParserFacade;
 
 /**
  * The activator class controls the plug-in life cycle

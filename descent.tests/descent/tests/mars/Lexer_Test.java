@@ -3,9 +3,9 @@ package descent.tests.mars;
 import java.math.BigInteger;
 
 import junit.framework.TestCase;
-import descent.internal.core.dom.Comment;
-import descent.internal.core.dom.Lexer;
-import descent.internal.core.dom.TOK;
+import descent.core.dom.Comment;
+import descent.core.dom.Lexer;
+import descent.internal.core.parser.TOK;
 
 public class Lexer_Test extends TestCase {
 	

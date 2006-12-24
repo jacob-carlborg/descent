@@ -9,10 +9,9 @@ import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.texteditor.AbstractDecoratedTextEditor;
 import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
 
-import descent.core.dom.IComment;
-import descent.core.dom.ICommented;
-import descent.core.dom.ICompilationUnit;
-import descent.core.dom.IElement;
+import descent.core.dom.ASTNode;
+import descent.core.dom.Comment;
+import descent.core.dom.CompilationUnit;
 import descent.ui.text.outline.DEditorContentOutlinePage;
 
 public class DEditor extends AbstractDecoratedTextEditor {
@@ -20,7 +19,7 @@ public class DEditor extends AbstractDecoratedTextEditor {
 	private ColorManager colorManager;
 	private DEditorContentOutlinePage outlinePage;
 	private DReconcilingStrategy reconcilingStrategy;
-	private IElement currentOutlineElement;
+	private ASTNode currentOutlineElement;
 
 	public DEditor() {
 		super();
@@ -49,7 +48,7 @@ public class DEditor extends AbstractDecoratedTextEditor {
 	/**
 	 * Returns the compilation unit being edited.
 	 */
-	public ICompilationUnit getCompilationUnit() {
+	public CompilationUnit getCompilationUnit() {
 		return reconcilingStrategy.getCompilationUnit();
 	}
 	
@@ -71,7 +70,7 @@ public class DEditor extends AbstractDecoratedTextEditor {
 	
 	/**
 	 * Returns the outline element under the cursor.	 */
-	public IElement getOutlineElement() {
+	public ASTNode getOutlineElement() {
 		return currentOutlineElement;
 	}
 	
@@ -146,19 +145,14 @@ public class DEditor extends AbstractDecoratedTextEditor {
 	 * Highlights a range for an element in this editor. If the
 	 * element has comments, the comments are also highlighted.
 	 */
-	public void highlightRangeForElement(IElement element, boolean moveCursor) {
-		if (element instanceof ICommented) {
-			ICommented commented = (ICommented) element;
-			int start = element.getStartPosition();
-			for(IComment comment : commented.getComments()) {
-				if (comment.getStartPosition() < start) {
-					start = comment.getStartPosition();
-				}
+	public void highlightRangeForElement(ASTNode element, boolean moveCursor) {
+		int start = element.getStartPosition();
+		for(Comment comment : element.getComments()) {
+			if (comment.getStartPosition() < start) {
+				start = comment.getStartPosition();
 			}
-			setHighlightRange(start, element.getStartPosition() + element.getLength() - start, moveCursor);
-		} else {
-			setHighlightRange(element.getStartPosition(), element.getLength(), moveCursor);
 		}
+		setHighlightRange(start, element.getStartPosition() + element.getLength() - start, moveCursor);
 	}
 	
 	public Object getAdapter(Class required) {

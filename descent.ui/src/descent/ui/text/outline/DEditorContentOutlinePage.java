@@ -13,7 +13,7 @@ import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.views.contentoutline.ContentOutlinePage;
 
-import descent.core.dom.IElement;
+import descent.core.dom.ASTNode;
 import descent.ui.text.DEditor;
 import descent.ui.text.PositionHelper;
 
@@ -102,7 +102,7 @@ public class DEditorContentOutlinePage extends ContentOutlinePage {
 	/**
 	 * Selects the specified element.
 	 */
-	public void selectElement(IElement element) {
+	public void selectElement(ASTNode element) {
 		TreeViewer viewer = getTreeViewer();
 		viewer.removeSelectionChangedListener(this);
 		viewer.setSelection(new StructuredSelection(element));
@@ -116,7 +116,7 @@ public class DEditorContentOutlinePage extends ContentOutlinePage {
 		
 		ISelection selection = event.getSelection();
 		if (!selection.isEmpty()) {
-			IElement element = (IElement) ((IStructuredSelection) selection).getFirstElement();
+			ASTNode element = (ASTNode) ((IStructuredSelection) selection).getFirstElement();
 			Position pos = PositionHelper.getElementOfInterest(element);
 			editor.selectAndReveal(pos.getOffset(), pos.getLength());
 		}

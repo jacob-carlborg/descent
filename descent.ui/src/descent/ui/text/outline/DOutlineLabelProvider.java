@@ -5,47 +5,43 @@ import java.util.List;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.graphics.Image;
 
-import descent.core.dom.IAggregateDeclaration;
-import descent.core.dom.IAliasTemplateParameter;
-import descent.core.dom.IArgument;
-import descent.core.dom.IAssociativeArrayType;
-import descent.core.dom.IDebugDeclaration;
-import descent.core.dom.IDelegateType;
-import descent.core.dom.IDynamicArrayType;
-import descent.core.dom.IElement;
-import descent.core.dom.IEnumDeclaration;
-import descent.core.dom.IEnumMember;
-import descent.core.dom.IExternDeclaration;
-import descent.core.dom.IFunctionDeclaration;
-import descent.core.dom.IIdentifierType;
-import descent.core.dom.IImport;
-import descent.core.dom.IImportDeclaration;
-import descent.core.dom.IMixinDeclaration;
-import descent.core.dom.IModuleDeclaration;
-import descent.core.dom.IPointerType;
-import descent.core.dom.IPragmaDeclaration;
-import descent.core.dom.ISelectiveImport;
-import descent.core.dom.ISimpleName;
-import descent.core.dom.IStaticArrayType;
-import descent.core.dom.ITemplateDeclaration;
-import descent.core.dom.ITemplateInstanceType;
-import descent.core.dom.ITemplateParameter;
-import descent.core.dom.IType;
-import descent.core.dom.ITypeTemplateParameter;
-import descent.core.dom.ITypeofType;
-import descent.core.dom.IVariableDeclaration;
-import descent.core.dom.IVersionDeclaration;
-import descent.internal.core.dom.AliasDeclaration;
-import descent.internal.core.dom.AliasDeclarationFragment;
-import descent.internal.core.dom.Argument;
-import descent.internal.core.dom.DebugAssignment;
-import descent.internal.core.dom.Modifier;
-import descent.internal.core.dom.TemplateParameter;
-import descent.internal.core.dom.TypedefDeclaration;
-import descent.internal.core.dom.TypedefDeclarationFragment;
-import descent.internal.core.dom.VariableDeclaration;
-import descent.internal.core.dom.VariableDeclarationFragment;
-import descent.internal.core.dom.VersionAssignment;
+import descent.core.dom.ASTNode;
+import descent.core.dom.AggregateDeclaration;
+import descent.core.dom.AliasDeclaration;
+import descent.core.dom.AliasDeclarationFragment;
+import descent.core.dom.AliasTemplateParameter;
+import descent.core.dom.Argument;
+import descent.core.dom.AssociativeArrayType;
+import descent.core.dom.DebugAssignment;
+import descent.core.dom.DebugDeclaration;
+import descent.core.dom.DelegateType;
+import descent.core.dom.DynamicArrayType;
+import descent.core.dom.EnumDeclaration;
+import descent.core.dom.EnumMember;
+import descent.core.dom.ExternDeclaration;
+import descent.core.dom.FunctionDeclaration;
+import descent.core.dom.Import;
+import descent.core.dom.ImportDeclaration;
+import descent.core.dom.Modifier;
+import descent.core.dom.ModuleDeclaration;
+import descent.core.dom.Name;
+import descent.core.dom.PointerType;
+import descent.core.dom.PragmaDeclaration;
+import descent.core.dom.SelectiveImport;
+import descent.core.dom.SimpleType;
+import descent.core.dom.StaticArrayType;
+import descent.core.dom.TemplateDeclaration;
+import descent.core.dom.TemplateParameter;
+import descent.core.dom.TemplateType;
+import descent.core.dom.Type;
+import descent.core.dom.TypeTemplateParameter;
+import descent.core.dom.TypedefDeclaration;
+import descent.core.dom.TypedefDeclarationFragment;
+import descent.core.dom.TypeofType;
+import descent.core.dom.VariableDeclaration;
+import descent.core.dom.VariableDeclarationFragment;
+import descent.core.dom.VersionAssignment;
+import descent.core.dom.VersionDeclaration;
 import descent.ui.DescentUI;
 import descent.ui.IImages;
 
@@ -121,19 +117,19 @@ public class DOutlineLabelProvider extends LabelProvider {
 	
 	@Override
 	public String getText(Object element) {
-		IElement e = (IElement) element;
-		ISimpleName name;
+		ASTNode e = (ASTNode) element;
+		Name name;
 		StringBuilder s;
-		IElement[] templateArguments;
+		ASTNode[] templateArguments;
 		
 		switch(e.getNodeType0()) {
-		case IElement.MODULE_DECLARATION:
-			return ((IModuleDeclaration) element).getName().getFullyQualifiedName();
-		case IElement.IMPORT_DECLARATION:
-			IImportDeclaration importDeclaration = (IImportDeclaration) element;
+		case ASTNode.MODULE_DECLARATION:
+			return ((ModuleDeclaration) element).getName().getFullyQualifiedName();
+		case ASTNode.IMPORT_DECLARATION:
+			ImportDeclaration importDeclaration = (ImportDeclaration) element;
 			return getImportText(importDeclaration);
-		case IElement.AGGREGATE_DECLARATION:
-			IAggregateDeclaration aggregateDeclaration = (IAggregateDeclaration) element;
+		case ASTNode.AGGREGATE_DECLARATION:
+			AggregateDeclaration aggregateDeclaration = (AggregateDeclaration) element;
 			s = new StringBuilder();
 			name = aggregateDeclaration.getName();
 			if (name != null) s.append(name.getFullyQualifiedName());
@@ -141,8 +137,8 @@ public class DOutlineLabelProvider extends LabelProvider {
 				appendTemplateParameters(s, aggregateDeclaration.templateParameters());
 			}
 			return s.toString();
-		case IElement.FUNCTION_DECLARATION:
-			IFunctionDeclaration f = (IFunctionDeclaration) e;
+		case ASTNode.FUNCTION_DECLARATION:
+			FunctionDeclaration f = (FunctionDeclaration) e;
 			s = new StringBuilder();
 			switch(f.getKind()) {
 			case FUNCTION:
@@ -168,16 +164,16 @@ public class DOutlineLabelProvider extends LabelProvider {
 			}
 			appendArguments(s, f.arguments());
 			return s.toString();
-		case IElement.ENUM_DECLARATION:
-			name = ((IEnumDeclaration) element).getName();
+		case ASTNode.ENUM_DECLARATION:
+			name = ((EnumDeclaration) element).getName();
 			return name == null ? "" : name.getFullyQualifiedName();
-		case IElement.ENUM_MEMBER:
-			return ((IEnumMember) element).getName().getFullyQualifiedName();
-		case IElement.INVARIANT_DECLARATION:
+		case ASTNode.ENUM_MEMBER:
+			return ((EnumMember) element).getName().getFullyQualifiedName();
+		case ASTNode.INVARIANT_DECLARATION:
 			return "invariant";
-		case IElement.UNIT_TEST_DECLARATION:
+		case ASTNode.UNIT_TEST_DECLARATION:
 			return "unit test";
-		case IElement.VARIABLE_DECLARATION_FRAGMENT:
+		case ASTNode.VARIABLE_DECLARATION_FRAGMENT:
 			VariableDeclarationFragment var = (VariableDeclarationFragment) element;
 			name = var.getName();
 			s = new StringBuilder();
@@ -187,7 +183,7 @@ public class DOutlineLabelProvider extends LabelProvider {
 				appendType(s, ((VariableDeclaration) var.getParent()).getType());
 			}
 			return s.toString();
-		case IElement.TYPEDEF_DECLARATION_FRAGMENT:
+		case ASTNode.TYPEDEF_DECLARATION_FRAGMENT:
 			TypedefDeclarationFragment tl = (TypedefDeclarationFragment) element;
 			name = tl.getName();
 			s = new StringBuilder();
@@ -195,7 +191,7 @@ public class DOutlineLabelProvider extends LabelProvider {
 			s.append(" : ");
 			appendType(s, ((TypedefDeclaration) tl.getParent()).getType());
 			return s.toString();
-		case IElement.ALIAS_DECLARATION_FRAGMENT:
+		case ASTNode.ALIAS_DECLARATION_FRAGMENT:
 			AliasDeclarationFragment al = (AliasDeclarationFragment) element;
 			name = al.getName();
 			s = new StringBuilder();
@@ -203,33 +199,33 @@ public class DOutlineLabelProvider extends LabelProvider {
 			s.append(" : ");
 			appendType(s, ((AliasDeclaration) al.getParent()).getType());
 			return s.toString();
-		case IElement.TEMPLATE_DECLARATION:
-			ITemplateDeclaration t = (ITemplateDeclaration) element;
+		case ASTNode.TEMPLATE_DECLARATION:
+			TemplateDeclaration t = (TemplateDeclaration) element;
 			name = t.getName();
 			s = new StringBuilder();
 			if (name != null) s.append(name.getFullyQualifiedName());
 			appendTemplateParameters(s, t.templateParameters());
 			return s.toString();
-		case IElement.EXTERN_DECLARATION:
+		case ASTNode.EXTERN_DECLARATION:
 			// TODO correct
-			IExternDeclaration link = (IExternDeclaration) element;
+			ExternDeclaration link = (ExternDeclaration) element;
 			return link.getLinkage().toString();
-		case IElement.VERSION_DECLARATION:
-			IVersionDeclaration v = (IVersionDeclaration) element;
+		case ASTNode.VERSION_DECLARATION:
+			VersionDeclaration v = (VersionDeclaration) element;
 			return v.getVersion() == null ? "" : v.getVersion().toString();
-		case IElement.DEBUG_DECLARATION:
-			IDebugDeclaration d = (IDebugDeclaration) element;
+		case ASTNode.DEBUG_DECLARATION:
+			DebugDeclaration d = (DebugDeclaration) element;
 			return d.getVersion() == null ? "" : d.getVersion().toString();
-		case IElement.DEBUG_ASSIGNMENT:
+		case ASTNode.DEBUG_ASSIGNMENT:
 			DebugAssignment da = (DebugAssignment) element;
 			return "debug = " + da.getVersion().getValue();
-		case IElement.VERSION_ASSIGNMENT:
+		case ASTNode.VERSION_ASSIGNMENT:
 			VersionAssignment va = (VersionAssignment) element;
 			return "version = " + va.getVersion().getValue();
-		case IElement.PRAGMA_DECLARATION:
-			IPragmaDeclaration pd = (IPragmaDeclaration) element;
+		case ASTNode.PRAGMA_DECLARATION:
+			PragmaDeclaration pd = (PragmaDeclaration) element;
 			return pd.getName() == null ? "" : pd.getName().getFullyQualifiedName();
-		case IElement.MIXIN_DECLARATION:
+		case ASTNode.MIXIN_DECLARATION:
 			/* TODO fix
 			IMixinDeclaration mix = (IMixinDeclaration) element;
 			s = new StringBuilder();
@@ -250,9 +246,9 @@ public class DOutlineLabelProvider extends LabelProvider {
 			return "else";
 		}
 		
-		if (element instanceof IType) {
+		if (element instanceof Type) {
 			s = new StringBuilder();
-			appendType(s, (IType) element);
+			appendType(s, (Type) element);
 			return s.toString();
 		}
 		
@@ -263,16 +259,16 @@ public class DOutlineLabelProvider extends LabelProvider {
 
 	@Override
 	public Image getImage(Object element) {
-		IElement e = (IElement) element;
+		ASTNode e = (ASTNode) element;
 		Modifier m;
 		
 		switch(e.getNodeType0()) {
-		case IElement.MODULE_DECLARATION:
+		case ASTNode.MODULE_DECLARATION:
 			return moduleImage;
-		case IElement.IMPORT_DECLARATION:
+		case ASTNode.IMPORT_DECLARATION:
 			return importImage;
-		case IElement.AGGREGATE_DECLARATION:
-			IAggregateDeclaration a = (IAggregateDeclaration) element;
+		case ASTNode.AGGREGATE_DECLARATION:
+			AggregateDeclaration a = (AggregateDeclaration) element;
 			switch(a.getKind()) {
 			case CLASS:
 				return classImage;
@@ -283,8 +279,8 @@ public class DOutlineLabelProvider extends LabelProvider {
 			case UNION:
 				return unionImage;
 			}
-		case IElement.FUNCTION_DECLARATION:
-			IFunctionDeclaration func = (IFunctionDeclaration) element;
+		case ASTNode.FUNCTION_DECLARATION:
+			FunctionDeclaration func = (FunctionDeclaration) element;
 			// TODO m = func.getModifier();
 			switch(func.getKind()) {
 			case FUNCTION:
@@ -328,15 +324,15 @@ public class DOutlineLabelProvider extends LabelProvider {
 				// TODO
 				return dtorPublicImage;
 			}
-		case IElement.ENUM_DECLARATION:
+		case ASTNode.ENUM_DECLARATION:
 			return enumImage;
-		case IElement.ENUM_MEMBER:
+		case ASTNode.ENUM_MEMBER:
 			return fieldPublicImage;
-		case IElement.INVARIANT_DECLARATION:
+		case ASTNode.INVARIANT_DECLARATION:
 			return invariantImage;
-		case IElement.UNIT_TEST_DECLARATION:
+		case ASTNode.UNIT_TEST_DECLARATION:
 			return unittestImage;
-		case IElement.VARIABLE_DECLARATION:
+		case ASTNode.VARIABLE_DECLARATION:
 			/*
 			m = ((IVariableDeclaration) element).getModifier();
 			if (m.isPrivate()) {
@@ -349,21 +345,21 @@ public class DOutlineLabelProvider extends LabelProvider {
 			*/
 			// TODO
 			return fieldPublicImage;
-		case IElement.TYPEDEF_DECLARATION:
+		case ASTNode.TYPEDEF_DECLARATION:
 			return typedefImage;
-		case IElement.ALIAS_DECLARATION:
+		case ASTNode.ALIAS_DECLARATION:
 			return aliasImage;
-		case IElement.TEMPLATE_DECLARATION:
+		case ASTNode.TEMPLATE_DECLARATION:
 			return templateImage;
-		case IElement.EXTERN_DECLARATION:
+		case ASTNode.EXTERN_DECLARATION:
 			return linkImage;
-		case IElement.DEBUG_DECLARATION:
+		case ASTNode.DEBUG_DECLARATION:
 			return debugImage;
-		case IElement.VERSION_DECLARATION:
+		case ASTNode.VERSION_DECLARATION:
 			return versionImage;
-		case IElement.CONDITION_ASSIGNMENT:
+		case ASTNode.DEBUG_ASSIGNMENT:
 			return debugImage;
-		case IElement.VERSION_ASSIGNMENT:
+		case ASTNode.VERSION_ASSIGNMENT:
 			return versionImage;
 		case IImaginaryElements.IMPORTS:
 			return importsImage;
@@ -371,9 +367,9 @@ public class DOutlineLabelProvider extends LabelProvider {
 		return super.getImage(element);
 	}
 	
-	private String getImportText(IImportDeclaration impDecl) {
+	private String getImportText(ImportDeclaration impDecl) {
 		StringBuilder builder = new StringBuilder();
-		for(IImport imp : impDecl.imports()) {
+		for(Import imp : impDecl.imports()) {
 			if (imp.getAlias() == null) {
 				builder.append(imp.getName().getFullyQualifiedName());
 			} else {
@@ -383,7 +379,7 @@ public class DOutlineLabelProvider extends LabelProvider {
 			}
 			if (imp.selectiveImports().size() > 0) {
 				builder.append(": ");
-				for(ISelectiveImport sel : imp.selectiveImports()) {
+				for(SelectiveImport sel : imp.selectiveImports()) {
 					if (sel.getAlias() == null) {
 						builder.append(sel.getName().getFullyQualifiedName());
 					} else {
@@ -409,10 +405,10 @@ public class DOutlineLabelProvider extends LabelProvider {
 		s.append('(');
 		
 		int i = 0;
-		for(ITemplateParameter p : templateParameters) {
+		for(TemplateParameter p : templateParameters) {
 			switch(p.getNodeType0()) {
-			case ITemplateParameter.TYPE_TEMPLATE_PARAMETER:
-				ITypeTemplateParameter ttp = (ITypeTemplateParameter) p;
+			case TemplateParameter.TYPE_TEMPLATE_PARAMETER:
+				TypeTemplateParameter ttp = (TypeTemplateParameter) p;
 				s.append(ttp.getName().toString());
 				if (ttp.getSpecificType() != null) {
 					s.append(" : ");
@@ -423,8 +419,8 @@ public class DOutlineLabelProvider extends LabelProvider {
 					appendType(s, ttp.getDefaultType());
 				}
 				break;
-			case ITemplateParameter.ALIAS_TEMPLATE_PARAMETER:
-				IAliasTemplateParameter tap = (IAliasTemplateParameter) p;
+			case TemplateParameter.ALIAS_TEMPLATE_PARAMETER:
+				AliasTemplateParameter tap = (AliasTemplateParameter) p;
 				s.append("alias ");
 				s.append(tap.getName().toString());
 				if (tap.getSpecificType() != null) {
@@ -446,10 +442,10 @@ public class DOutlineLabelProvider extends LabelProvider {
 		s.append(')');
 	}
 	
-	private void appendElements(StringBuilder s, IElement[] templateArguments) {
-		for(int i = 0; i < templateArguments.length; i++) {
-			s.append(getText(templateArguments[i]));
-			if (i != templateArguments.length - 1) {
+	private void appendElements(StringBuilder s, List<ASTNode> templateArguments) {
+		for(int i = 0; i < templateArguments.size(); i++) {
+			s.append(getText(templateArguments.get(0)));
+			if (i != templateArguments.size() - 1) {
 				s.append(", ");
 			}
 		}
@@ -472,79 +468,61 @@ public class DOutlineLabelProvider extends LabelProvider {
 		s.append(')');
 	}
 	
-	// TODO remove duplicated code
-	private void appendArguments(StringBuilder s, IArgument[] arguments) {
-		s.append('(');
-		for(int i = 0; i < arguments.length; i++) {
-			switch(arguments[i].getPassageMode()) {
-			case OUT: s.append("out "); break;
-			case INOUT: s.append("inout "); break;
-			case LAZY: s.append("lazy "); break;
-			}
-			appendType(s, arguments[i].getType());
-			if (i != arguments.length - 1) {
-				s.append(", ");
-			}
-		}
-		s.append(')');
-	}
-	
-	private void appendType(StringBuilder s, IType type) {
+	private void appendType(StringBuilder s, Type type) {
 		switch(type.getNodeType0()) {
-		case IType.PRIMITIVE_TYPE:
+		case Type.PRIMITIVE_TYPE:
 			s.append(type);
 			break;
-		case IType.POINTER_TYPE:
-			IPointerType pointer = (IPointerType) type;
+		case Type.POINTER_TYPE:
+			PointerType pointer = (PointerType) type;
 			appendType(s, pointer.getComponentType());
 			s.append('*');
 			break;
-		case IType.DYNAMIC_ARRAY_TYPE: {
-			IDynamicArrayType array = (IDynamicArrayType) type;
+		case Type.DYNAMIC_ARRAY_TYPE: {
+			DynamicArrayType array = (DynamicArrayType) type;
 			appendType(s, array.getComponentType());
 			s.append("[]");
 			break;
 		}
-		case IType.STATIC_ARRAY_TYPE: {
-			IStaticArrayType array = (IStaticArrayType) type;
+		case Type.STATIC_ARRAY_TYPE: {
+			StaticArrayType array = (StaticArrayType) type;
 			appendType(s, array.getComponentType());
 			s.append('[');
 			s.append(array.getSize().toString());
 			s.append(']');
 			break;
 		}
-		case IType.ASSOCIATIVE_ARRAY_TYPE:
-			IAssociativeArrayType array = (IAssociativeArrayType) type;
+		case Type.ASSOCIATIVE_ARRAY_TYPE:
+			AssociativeArrayType array = (AssociativeArrayType) type;
 			appendType(s, array.getComponentType());
 			s.append('[');
 			appendType(s, array.getKeyType());
 			s.append(']');
 			break;
-		case IType.TEMPLATE_INSTANCE_TYPE:
-			ITemplateInstanceType ti = (ITemplateInstanceType) type;
-			s.append(ti.getShortName());
+		case Type.TEMPLATE_TYPE:
+			TemplateType ti = (TemplateType) type;
+			s.append(ti.getName());
 			s.append("!(");
-			appendElements(s, ti.getTemplateArguments());
+			appendElements(s, ti.arguments());
 			s.append(")");
 			break;
-		case IType.SIMPLE_TYPE:
-			IIdentifierType it = (IIdentifierType) type;
+		case Type.SIMPLE_TYPE:
+			SimpleType it = (SimpleType) type;
 			s.append(it.getName());
 			break;
-		case IType.DELEGATE_TYPE:
-		case IType.POINTER_TO_FUNCTION_TYPE:
-			IDelegateType dt = (IDelegateType) type;
+		case Type.DELEGATE_TYPE:
+			DelegateType dt = (DelegateType) type;
 			appendType(s, dt.getReturnType());
 			s.append(' ');
-			if (type.getNodeType0() == IType.DELEGATE_TYPE) {
-				s.append("delegate");
-			} else {
+			if (dt.isFunctionPointer()) {
 				s.append("function");
+			} else {
+				s.append("delegate");
 			}
 			appendArguments(s, dt.arguments());
 			break;
-		case IType.TYPEOF_TYPE:
-			ITypeofType tt = (ITypeofType) type;
+		case Type.TYPEOF_TYPE:
+			TypeofType tt = (TypeofType) type;
 			s.append("typeof(");
 			s.append(tt.getExpression());
 			s.append(")");

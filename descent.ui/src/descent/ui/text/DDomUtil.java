@@ -1,10 +1,10 @@
 package descent.ui.text;
 
-import descent.core.dom.ICompilationUnit;
-import descent.core.dom.IDeclaration;
-import descent.core.dom.IElement;
+import descent.core.dom.ASTNode;
 import descent.core.dom.ASTVisitor;
-import descent.internal.core.dom.AliasDeclarationFragment;
+import descent.core.dom.AliasDeclarationFragment;
+import descent.core.dom.CompilationUnit;
+import descent.core.dom.Declaration;
 
 public class DDomUtil {
 	
@@ -12,7 +12,7 @@ public class DDomUtil {
 	 * <p>Finds the "outline" element present at the line and column specified,
 	 * or null if no element was found.</p>
 	 */
-	public static IElement getOutlineElementAt(ICompilationUnit unit, int offset) {
+	public static ASTNode getOutlineElementAt(CompilationUnit unit, int offset) {
 		assert(unit != null);
 		
 		FindOutlineElementVisitor visitor = new FindOutlineElementVisitor(offset);
@@ -24,7 +24,7 @@ public class DDomUtil {
 	// TODO: fix to make it a real visitor
 	private static class FindOutlineElementVisitor extends ASTVisitor {
 		
-		public IElement theElement = null;
+		public ASTNode theElement = null;
 		
 		private int offset;
 		
@@ -33,7 +33,7 @@ public class DDomUtil {
 		}
 		
 		@Override
-		public void postVisit(IElement node) {
+		public void postVisit(ASTNode node) {
 			if (theElement != null) return;
 			
 			if (isOfInterest(node) && isInBounds(node)) {
@@ -41,11 +41,12 @@ public class DDomUtil {
 			}
 		}
 		
-		private boolean isOfInterest(IElement element) {
-			return element instanceof IDeclaration || element instanceof AliasDeclarationFragment;
+		private boolean isOfInterest(ASTNode element) {
+			// TODO fix
+			return element instanceof Declaration || element instanceof AliasDeclarationFragment;
 		}
 		
-		private boolean isInBounds(IElement element) {
+		private boolean isInBounds(ASTNode element) {
 			int off = element.getStartPosition();
 			return off <= offset && off + element.getLength() >= offset;
 		}

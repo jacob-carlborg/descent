@@ -14,5 +14,5 @@ Eclipse-LazyStart: true
 Export-Package: descent.core,
  descent.core.compiler,
  descent.core.dom,
- descent.internal.core.dom
+ descent.internal.core.parser;x-friends:="descent.tests"
 Eclipse-BuddyPolicy: registered

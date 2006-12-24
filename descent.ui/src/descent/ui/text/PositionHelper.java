@@ -2,23 +2,21 @@ package descent.ui.text;
 
 import org.eclipse.jface.text.Position;
 
-import descent.core.dom.IAggregateDeclaration;
-import descent.core.dom.IDebugDeclaration;
-import descent.core.dom.IElement;
-import descent.core.dom.IEnumDeclaration;
-import descent.core.dom.IEnumMember;
-import descent.core.dom.IFunctionDeclaration;
-import descent.core.dom.IMixinDeclaration;
-import descent.core.dom.IModuleDeclaration;
-import descent.core.dom.IName;
-import descent.core.dom.IPragmaDeclaration;
-import descent.core.dom.ITemplateDeclaration;
-import descent.core.dom.ITypedefDeclaration;
-import descent.core.dom.IVariableDeclaration;
-import descent.core.dom.IVersionDeclaration;
-import descent.internal.core.dom.AliasDeclarationFragment;
-import descent.internal.core.dom.DebugAssignment;
-import descent.internal.core.dom.VersionAssignment;
+import descent.core.dom.ASTNode;
+import descent.core.dom.AggregateDeclaration;
+import descent.core.dom.AliasDeclarationFragment;
+import descent.core.dom.DebugAssignment;
+import descent.core.dom.DebugDeclaration;
+import descent.core.dom.EnumDeclaration;
+import descent.core.dom.EnumMember;
+import descent.core.dom.FunctionDeclaration;
+import descent.core.dom.MixinDeclaration;
+import descent.core.dom.ModuleDeclaration;
+import descent.core.dom.Name;
+import descent.core.dom.PragmaDeclaration;
+import descent.core.dom.TemplateDeclaration;
+import descent.core.dom.VersionAssignment;
+import descent.core.dom.VersionDeclaration;
 
 public class PositionHelper {
 	
@@ -27,96 +25,96 @@ public class PositionHelper {
 	 * For example, if the element is a IModuleDeclaration, it returns
 	 * it's qualified name.
 	 */
-	public static Position getElementOfInterest(IElement element) {
-		IName name;
+	public static Position getElementOfInterest(ASTNode element) {
+		Name name;
 		
 		switch(element.getNodeType0()) {
-		case IElement.MODULE_DECLARATION:
-			IModuleDeclaration md = (IModuleDeclaration) element;
+		case ASTNode.MODULE_DECLARATION:
+			ModuleDeclaration md = (ModuleDeclaration) element;
 			name = md.getName();
 			if (name != null) element = name;
 			break;
-		case IElement.AGGREGATE_DECLARATION:
-			IAggregateDeclaration aggr = (IAggregateDeclaration) element;
+		case ASTNode.AGGREGATE_DECLARATION:
+			AggregateDeclaration aggr = (AggregateDeclaration) element;
 			name = aggr.getName();
 			if (name != null) element = name;
 			break;
-		case IElement.FUNCTION_DECLARATION:
-			IFunctionDeclaration func = (IFunctionDeclaration) element;
+		case ASTNode.FUNCTION_DECLARATION:
+			FunctionDeclaration func = (FunctionDeclaration) element;
 			name = func.getName();
 			if (name != null) element = name;
 			break;
-		case IElement.ENUM_DECLARATION:
-			IEnumDeclaration e = (IEnumDeclaration) element;
+		case ASTNode.ENUM_DECLARATION:
+			EnumDeclaration e = (EnumDeclaration) element;
 			name = e.getName();
 			if (name != null) element = name;
 			break;
-		case IElement.ENUM_MEMBER:
-			IEnumMember em = (IEnumMember) element;
+		case ASTNode.ENUM_MEMBER:
+			EnumMember em = (EnumMember) element;
 			name = em.getName();
 			if (name != null) element = name;
 			break;
-		case IElement.VARIABLE_DECLARATION:
+		case ASTNode.VARIABLE_DECLARATION:
 			/* TODO fixme
 			IVariableDeclaration var = (IVariableDeclaration) element;
 			name = var.getName();
 			if (name != null) element = name;
 			*/
 			break;
-		case IElement.TYPEDEF_DECLARATION:
+		case ASTNode.TYPEDEF_DECLARATION:
 			/* TODO fixme
 			ITypedefDeclaration td = (ITypedefDeclaration) element;
 			name = td.getName();
 			if (name != null) element = name;
 			*/
 			break;
-		case IElement.UNIT_TEST_DECLARATION:
+		case ASTNode.UNIT_TEST_DECLARATION:
 			/* TODO fixme
 			IUnitTestDeclaration u = (IUnitTestDeclaration) element;
 			name = u.getName();
 			if (name != null) element = name;
 			*/
 			break;
-		case IElement.INVARIANT_DECLARATION:
+		case ASTNode.INVARIANT_DECLARATION:
 			/* TODO fixme
 			IInvariantDeclaration inv = (IInvariantDeclaration) element;
 			name = inv.getName();
 			if (name != null) element = name;
 			*/
 			break;
-		case IElement.TEMPLATE_DECLARATION:
-			ITemplateDeclaration t = (ITemplateDeclaration) element;
+		case ASTNode.TEMPLATE_DECLARATION:
+			TemplateDeclaration t = (TemplateDeclaration) element;
 			name = t.getName();
 			if (name != null) element = name;
 			break;
-		case IElement.ALIAS_DECLARATION_FRAGMENT:
+		case ASTNode.ALIAS_DECLARATION_FRAGMENT:
 			AliasDeclarationFragment fragment = (AliasDeclarationFragment) element;
 			name = fragment.getName();
 			if (name != null) element = name;
 			break;
-		case IElement.VERSION_DECLARATION:
-			if (((IVersionDeclaration) element).getVersion() != null) element = ((IVersionDeclaration) element).getVersion();
+		case ASTNode.VERSION_DECLARATION:
+			if (((VersionDeclaration) element).getVersion() != null) element = ((VersionDeclaration) element).getVersion();
 			break;
-		case IElement.DEBUG_DECLARATION:
-			if (((IDebugDeclaration) element).getVersion() != null) {
-				element = ((IDebugDeclaration) element).getVersion();
+		case ASTNode.DEBUG_DECLARATION:
+			if (((DebugDeclaration) element).getVersion() != null) {
+				element = ((DebugDeclaration) element).getVersion();
 			}
 			break;
-		case IElement.DEBUG_ASSIGNMENT:
+		case ASTNode.DEBUG_ASSIGNMENT:
 			DebugAssignment da = (DebugAssignment) element;
 			element = da.getVersion();
 			break;
-		case IElement.VERSION_ASSIGNMENT:
+		case ASTNode.VERSION_ASSIGNMENT:
 			VersionAssignment va = (VersionAssignment) element;
 			element = va.getVersion();
 			break;			
-		case IElement.PRAGMA_DECLARATION:
-			IPragmaDeclaration pd = (IPragmaDeclaration) element;
+		case ASTNode.PRAGMA_DECLARATION:
+			PragmaDeclaration pd = (PragmaDeclaration) element;
 			name = pd.getName();
 			if (name != null) element = name;
 			break;
-		case IElement.MIXIN_DECLARATION:
-			IMixinDeclaration mix = (IMixinDeclaration) element;
+		case ASTNode.MIXIN_DECLARATION:
+			MixinDeclaration mix = (MixinDeclaration) element;
 			name = mix.getName();
 			if (name != null) element = name;
 			break;

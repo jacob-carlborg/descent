@@ -1,33 +1,25 @@
 package descent.tests.mars;
 
-import descent.core.dom.ICompilationUnit;
-import descent.core.dom.IElement;
-import descent.internal.core.dom.Import;
-import descent.internal.core.dom.ImportDeclaration;
-import descent.internal.core.dom.ParserFacade;
-import descent.internal.core.dom.QualifiedName;
-import descent.internal.core.dom.SelectiveImport;
-import descent.internal.core.dom.SimpleName;
+import descent.core.dom.ASTNode;
+import descent.core.dom.Import;
+import descent.core.dom.ImportDeclaration;
+import descent.core.dom.QualifiedName;
+import descent.core.dom.SelectiveImport;
+import descent.core.dom.SimpleName;
 
 public class Import_Test extends Parser_Test {
 	
 	public void testImportSingle() throws Exception {
 		String s = " import a; ";
-		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
-		assertEquals(0, unit.getProblems().length);
-		
-		IElement[] declarations = unit.getDeclarationDefinitions();
-		assertEquals(1, declarations.length);
-		
-		ImportDeclaration importDeclaration = (ImportDeclaration) declarations[0];
-		assertEquals(IElement.IMPORT_DECLARATION, importDeclaration.getNodeType0());
+		ImportDeclaration importDeclaration = (ImportDeclaration) getSingleDeclarationNoProblems(s);
+		assertEquals(ASTNode.IMPORT_DECLARATION, importDeclaration.getNodeType0());
 		assertFalse(importDeclaration.isStatic());
 		assertPosition(importDeclaration, 1, 9);
 		
 		assertEquals(1, importDeclaration.imports().size());
 		
 		Import anImport = importDeclaration.imports().get(0);
-		assertEquals(IElement.IMPORT, anImport.getNodeType0());
+		assertEquals(ASTNode.IMPORT, anImport.getNodeType0());
 		assertPosition(anImport, 8, 1);
 		
 		SimpleName name = (SimpleName) anImport.getName();
@@ -37,14 +29,8 @@ public class Import_Test extends Parser_Test {
 	
 	public void testImportMultiple() throws Exception {
 		String s = " import a, b, c; ";
-		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
-		assertEquals(0, unit.getProblems().length);
-		
-		IElement[] declarations = unit.getDeclarationDefinitions();
-		assertEquals(1, declarations.length);
-		
-		ImportDeclaration importDeclaration = (ImportDeclaration) declarations[0];
-		assertEquals(IElement.IMPORT_DECLARATION, importDeclaration.getNodeType0());
+		ImportDeclaration importDeclaration = (ImportDeclaration) getSingleDeclarationNoProblems(s);
+		assertEquals(ASTNode.IMPORT_DECLARATION, importDeclaration.getNodeType0());
 		assertFalse(importDeclaration.isStatic());
 		assertPosition(importDeclaration, 1, 15);
 		
@@ -53,13 +39,7 @@ public class Import_Test extends Parser_Test {
 	
 	public void testImportQualified() throws Exception {
 		String s = " import uno.dos.tres; ";
-		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
-		assertEquals(0, unit.getProblems().length);
-		
-		IElement[] declDefs = unit.getDeclarationDefinitions();
-		assertEquals(1, declDefs.length);
-		
-		ImportDeclaration importDeclaration = (ImportDeclaration) declDefs[0];
+		ImportDeclaration importDeclaration = (ImportDeclaration) getSingleDeclarationNoProblems(s);
 		assertPosition(importDeclaration, 1, 20);
 		
 		assertEquals(1, importDeclaration.imports().size());
@@ -74,13 +54,7 @@ public class Import_Test extends Parser_Test {
 	
 	public void testImportAlias() throws Exception {
 		String s = " import mAlias = uno.dos.tres; ";
-		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
-		assertEquals(0, unit.getProblems().length);
-		
-		IElement[] declDefs = unit.getDeclarationDefinitions();
-		assertEquals(1, declDefs.length);
-		
-		ImportDeclaration importDeclaration = (ImportDeclaration) declDefs[0];
+		ImportDeclaration importDeclaration = (ImportDeclaration) getSingleDeclarationNoProblems(s);
 		assertPosition(importDeclaration, 1, 29);
 		
 		assertEquals(1, importDeclaration.imports().size());
@@ -99,18 +73,12 @@ public class Import_Test extends Parser_Test {
 	
 	public void testImportSelective() throws Exception {
 		String s = " import uno : dos; ";
-		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
-		assertEquals(0, unit.getProblems().length);
+		ImportDeclaration importDeclaration = (ImportDeclaration) getSingleDeclarationNoProblems(s);
+		assertPosition(importDeclaration, 1, 17);
 		
-		IElement[] declDefs = unit.getDeclarationDefinitions();
-		assertEquals(1, declDefs.length);
+		assertEquals(1, importDeclaration.imports().size());
 		
-		ImportDeclaration impDecl = (ImportDeclaration) declDefs[0];
-		assertPosition(impDecl, 1, 17);
-		
-		assertEquals(1, impDecl.imports().size());
-		
-		Import imp = impDecl.imports().get(0);
+		Import imp = importDeclaration.imports().get(0);
 		assertPosition(imp, 8, 9);
 		
 		SimpleName name = (SimpleName) imp.getName();
@@ -127,18 +95,12 @@ public class Import_Test extends Parser_Test {
 	
 	public void testImportSelectiveWithAlias() throws Exception {
 		String s = " import uno : mAlias = dos; ";
-		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
-		assertEquals(0, unit.getProblems().length);
+		ImportDeclaration importDeclaration = (ImportDeclaration) getSingleDeclarationNoProblems(s);
+		assertPosition(importDeclaration, 1, 26);
 		
-		IElement[] declDefs = unit.getDeclarationDefinitions();
-		assertEquals(1, declDefs.length);
+		assertEquals(1, importDeclaration.imports().size());
 		
-		ImportDeclaration impDecl = (ImportDeclaration) declDefs[0];
-		assertPosition(impDecl, 1, 26);
-		
-		assertEquals(1, impDecl.imports().size());
-		
-		Import imp = impDecl.imports().get(0);
+		Import imp = importDeclaration.imports().get(0);
 		assertPosition(imp, 8, 18);
 		
 		SimpleName qName = (SimpleName) imp.getName();
@@ -157,21 +119,15 @@ public class Import_Test extends Parser_Test {
 	
 	public void testStaticImport() throws Exception {
 		String s = " static import a;";
-		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
-		assertEquals(0, unit.getProblems().length);
+		ImportDeclaration importDeclaration = (ImportDeclaration) getSingleDeclarationNoProblems(s);
+		assertEquals(ASTNode.IMPORT_DECLARATION, importDeclaration.getNodeType0());
+		assertTrue(importDeclaration.isStatic());
+		assertPosition(importDeclaration, 1, s.length() - 1);
 		
-		IElement[] declDefs = unit.getDeclarationDefinitions();
-		assertEquals(1, declDefs.length);
+		assertEquals(1, importDeclaration.imports().size());
 		
-		ImportDeclaration impDecl = (ImportDeclaration) declDefs[0];
-		assertEquals(IElement.IMPORT_DECLARATION, impDecl.getNodeType0());
-		assertTrue(impDecl.isStatic());
-		assertPosition(impDecl, 1, s.length() - 1);
-		
-		assertEquals(1, impDecl.imports().size());
-		
-		Import imp = impDecl.imports().get(0);
-		assertEquals(IElement.IMPORT, imp.getNodeType0());
+		Import imp = importDeclaration.imports().get(0);
+		assertEquals(ASTNode.IMPORT, imp.getNodeType0());
 		assertPosition(imp, 15, 1);
 		
 		SimpleName qName = (SimpleName) imp.getName();

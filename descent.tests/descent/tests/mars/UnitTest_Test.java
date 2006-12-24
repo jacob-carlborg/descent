@@ -1,20 +1,15 @@
 package descent.tests.mars;
 
-import descent.core.dom.ICompilationUnit;
-import descent.core.dom.IElement;
-import descent.core.dom.IUnitTestDeclaration;
-import descent.internal.core.dom.ParserFacade;
+import descent.core.dom.ASTNode;
+import descent.core.dom.UnitTestDeclaration;
 
 public class UnitTest_Test extends Parser_Test {
 	
 	public void test() {
 		String s = " unittest { } ";
-		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
-		assertEquals(0, unit.getProblems().length);
-		IElement[] declDefs = unit.getDeclarationDefinitions();
 		
-		IUnitTestDeclaration inv = (IUnitTestDeclaration) declDefs[0];
-		assertEquals(IElement.UNIT_TEST_DECLARATION, inv.getNodeType0());
+		UnitTestDeclaration inv = (UnitTestDeclaration) getSingleDeclarationNoProblems(s);
+		assertEquals(ASTNode.UNIT_TEST_DECLARATION, inv.getNodeType0());
 		assertPosition(inv, 1, 12);
 	}
 

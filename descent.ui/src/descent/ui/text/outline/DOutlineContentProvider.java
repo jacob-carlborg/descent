@@ -7,20 +7,18 @@ import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.ui.IEditorInput;
 
-import descent.core.dom.ASTVisitor;
-import descent.core.dom.IAggregateDeclaration;
-import descent.core.dom.IAlignDeclaration;
-import descent.core.dom.ICompilationUnit;
-import descent.core.dom.IConditionalDeclaration;
-import descent.core.dom.IElement;
-import descent.core.dom.IEnumDeclaration;
-import descent.core.dom.IExternDeclaration;
-import descent.core.dom.IImportDeclaration;
-import descent.core.dom.IModifierDeclaration;
-import descent.core.dom.IModuleDeclaration;
-import descent.core.dom.IPragmaDeclaration;
-import descent.core.dom.ITemplateDeclaration;
-import descent.internal.core.dom.Declaration;
+import descent.core.dom.ASTNode;
+import descent.core.dom.AggregateDeclaration;
+import descent.core.dom.AlignDeclaration;
+import descent.core.dom.CompilationUnit;
+import descent.core.dom.ConditionalDeclaration;
+import descent.core.dom.Declaration;
+import descent.core.dom.EnumDeclaration;
+import descent.core.dom.ExternDeclaration;
+import descent.core.dom.ModifierDeclaration;
+import descent.core.dom.ModuleDeclaration;
+import descent.core.dom.PragmaDeclaration;
+import descent.core.dom.TemplateDeclaration;
 import descent.ui.text.DEditor;
 
 public class DOutlineContentProvider implements ITreeContentProvider {
@@ -34,114 +32,96 @@ public class DOutlineContentProvider implements ITreeContentProvider {
 	}
 
 	public Object[] getChildren(Object parentElement) {
-		ICompilationUnit compilationUnit = editor.getCompilationUnit();
+		CompilationUnit compilationUnit = editor.getCompilationUnit();
 		
 		if (parentElement == input) {
 			parentElement = editor.getCompilationUnit();
 		}
 		
-		List<Object> list;
-		IElement e = (IElement) parentElement;
+		List<ASTNode> list;
+		ASTNode e = (ASTNode) parentElement;
 		switch(e.getNodeType0()) {
-		case IElement.COMPILATION_UNIT:
-			list = new ArrayList<Object>();
+		case ASTNode.COMPILATION_UNIT:
+			list = new ArrayList<ASTNode>();
 			
-			IModuleDeclaration module = compilationUnit.getModuleDeclaration();
+			ModuleDeclaration module = compilationUnit.getModuleDeclaration();
 			if (module != null) {
 				list.add(module);
 			}
 			
-			addDeclDefs(list, compilationUnit.getDeclarationDefinitions());
+			addDeclDefs(list, compilationUnit.declarations());
 			
 			return list.toArray();
-		case IElement.AGGREGATE_DECLARATION:
-			list = new ArrayList<Object>();
-			addDeclDefs(list, ((IAggregateDeclaration) e).declarations());
+		case ASTNode.AGGREGATE_DECLARATION:
+			list = new ArrayList<ASTNode>();
+			addDeclDefs(list, ((AggregateDeclaration) e).declarations());
 			return list.toArray();
-		case IElement.TEMPLATE_DECLARATION:
-			list = new ArrayList<Object>();
-			addDeclDefs(list, ((ITemplateDeclaration) e).declarations());
+		case ASTNode.TEMPLATE_DECLARATION:
+			list = new ArrayList<ASTNode>();
+			addDeclDefs(list, ((TemplateDeclaration) e).declarations());
 			return list.toArray();
-		case IElement.ENUM_DECLARATION:
-			return ((IEnumDeclaration) e).enumMembers().toArray();
-		case IElement.EXTERN_DECLARATION:
-			list = new ArrayList<Object>();
-			addDeclDefs(list, ((IExternDeclaration) e).declarations());
+		case ASTNode.ENUM_DECLARATION:
+			return ((EnumDeclaration) e).enumMembers().toArray();
+		case ASTNode.EXTERN_DECLARATION:
+			list = new ArrayList<ASTNode>();
+			addDeclDefs(list, ((ExternDeclaration) e).declarations());
 			return list.toArray();
-		case IElement.VERSION_DECLARATION:
-		case IElement.DEBUG_DECLARATION:
-		case IElement.STATIC_IF_DECLARATION:
-			IConditionalDeclaration c = (IConditionalDeclaration) e;
-			list = new ArrayList<Object>();
+		case ASTNode.VERSION_DECLARATION:
+		case ASTNode.DEBUG_DECLARATION:
+		case ASTNode.STATIC_IF_DECLARATION:
+			ConditionalDeclaration c = (ConditionalDeclaration) e;
+			list = new ArrayList<ASTNode>();
 			addDeclDefs(list, c.thenDeclarations());
+			/* TODO
 			List<Declaration> ifFalse = c.elseDeclarations();
 			if (ifFalse.size() > 0) {
 				list.add(new Else(ifFalse.toArray(new Declaration[ifFalse.size()])));
 			}
+			*/
 			return list.toArray();
-		case IElement.PRAGMA_DECLARATION:
-			list = new ArrayList<Object>();
-			addDeclDefs(list, ((IPragmaDeclaration) e).declarations());
+		case ASTNode.PRAGMA_DECLARATION:
+			list = new ArrayList<ASTNode>();
+			addDeclDefs(list, ((PragmaDeclaration) e).declarations());
 			return list.toArray();
+		/*
 		case IImaginaryElements.IMPORTS:
 			return ((Imports) e).imports;
 		case IImaginaryElements.ELSE:
 			return ((Else) e).declDefs;
+		*/
 		}
 		return new Object[0];
 	}
 	
-	private void addDeclDefs(List<Object> list, List<? extends IElement> declDefs) {
-		List<IImportDeclaration> importDeclarations = null;
-		for(IElement elem : declDefs) {
+	private void addDeclDefs(List<ASTNode> list, List<Declaration> declDefs) {
+		//List<ImportDeclaration> importDeclarations = null;
+		for(Declaration elem : declDefs) {
 			switch(elem.getNodeType0()) {
-			case IElement.MODIFIER_DECLARATION:
-				addDeclDefs(list, ((IModifierDeclaration) elem).declarations());
+			case ASTNode.MODIFIER_DECLARATION:
+				addDeclDefs(list, ((ModifierDeclaration) elem).declarations());
 				break;
-			case IElement.ALIGN_DECLARATION:
-				addDeclDefs(list, ((IAlignDeclaration) elem).declarations());
+			case ASTNode.ALIGN_DECLARATION:
+				addDeclDefs(list, ((AlignDeclaration) elem).declarations());
 				break;
-			case IElement.IMPORT_DECLARATION:
+			case ASTNode.IMPORT_DECLARATION:
+				list.add(elem);
+				/*
 				if (importDeclarations == null) {
-					importDeclarations = new ArrayList<IImportDeclaration>();
+					importDeclarations = new ArrayList<ImportDeclaration>();
 				}
-				importDeclarations.add((IImportDeclaration) elem);
+				importDeclarations.add((ImportDeclaration) elem);
+				*/
 				break;
 			default:
 				list.add(elem);
 				break;
 			}
 		}
+		/*
 		if (importDeclarations != null) {
-			list.add(new Imports(importDeclarations.toArray(new IImportDeclaration[importDeclarations.size()])));
+			list.add(new Imports(importDeclarations.toArray(new ImportDeclaration[importDeclarations.size()])));
 		}
-	}
-	
-	// TODO remove duplicate
-	private void addDeclDefs(List<Object> list, IElement[] declDefs) {
-		List<IImportDeclaration> importDeclarations = null;
-		for(IElement elem : declDefs) {
-			switch(elem.getNodeType0()) {
-			case IElement.MODIFIER_DECLARATION:
-				addDeclDefs(list, ((IModifierDeclaration) elem).declarations());
-				break;
-			case IElement.ALIGN_DECLARATION:
-				addDeclDefs(list, ((IAlignDeclaration) elem).declarations());
-				break;
-			case IElement.IMPORT_DECLARATION:
-				if (importDeclarations == null) {
-					importDeclarations = new ArrayList<IImportDeclaration>();
-				}
-				importDeclarations.add((IImportDeclaration) elem);
-				break;
-			default:
-				list.add(elem);
-				break;
-			}
-		}
-		if (importDeclarations != null) {
-			list.add(new Imports(importDeclarations.toArray(new IImportDeclaration[importDeclarations.size()])));
-		}
+		*/
 	}
 
 	public Object getParent(Object element) {
@@ -149,36 +129,36 @@ public class DOutlineContentProvider implements ITreeContentProvider {
 	}
 
 	public boolean hasChildren(Object element) {
-		ICompilationUnit compilationUnit = editor.getCompilationUnit();
+		CompilationUnit compilationUnit = editor.getCompilationUnit();
 		if (element == input) {
 			element = compilationUnit;
 		}
 		
 		if (element == null) return false;
 		
-		IElement e = (IElement) element;
+		ASTNode e = (ASTNode) element;
 		switch(e.getNodeType0()) {
-		case IElement.COMPILATION_UNIT:
+		case ASTNode.COMPILATION_UNIT:
 			if (compilationUnit.getModuleDeclaration() != null) {
 				return true;
 			}
-			if (compilationUnit.getDeclarationDefinitions().length > 0) {
+			if (compilationUnit.declarations().size() > 0) {
 				return true;
 			}
-		case IElement.AGGREGATE_DECLARATION:
-			return ((IAggregateDeclaration) e).declarations().size() > 0;
-		case IElement.ENUM_DECLARATION:
-			return ((IEnumDeclaration) e).enumMembers().size() > 0;
-		case IElement.EXTERN_DECLARATION:
-			return ((IExternDeclaration) e).declarations().size() > 0;
-		case IElement.VERSION_DECLARATION:
-		case IElement.DEBUG_DECLARATION:
-		case IElement.STATIC_IF_DECLARATION:
-			IConditionalDeclaration v = (IConditionalDeclaration) e;
+		case ASTNode.AGGREGATE_DECLARATION:
+			return ((AggregateDeclaration) e).declarations().size() > 0;
+		case ASTNode.ENUM_DECLARATION:
+			return ((EnumDeclaration) e).enumMembers().size() > 0;
+		case ASTNode.EXTERN_DECLARATION:
+			return ((ExternDeclaration) e).declarations().size() > 0;
+		case ASTNode.VERSION_DECLARATION:
+		case ASTNode.DEBUG_DECLARATION:
+		case ASTNode.STATIC_IF_DECLARATION:
+			ConditionalDeclaration v = (ConditionalDeclaration) e;
 			return v.thenDeclarations().size() > 0 ||
 				v.elseDeclarations().size() > 0;
-		case IElement.PRAGMA_DECLARATION:
-			return ((IPragmaDeclaration) e).declarations().size() > 0;
+		case ASTNode.PRAGMA_DECLARATION:
+			return ((PragmaDeclaration) e).declarations().size() > 0;
 		case IImaginaryElements.IMPORTS:
 		case IImaginaryElements.ELSE:
 			return true;
@@ -197,11 +177,13 @@ public class DOutlineContentProvider implements ITreeContentProvider {
 		input = (IEditorInput) newInput;
 	}
 	
-	class Imports implements IElement {
+	/*
+	class Imports extends ASTNode {
 		
-		private IImportDeclaration[] imports;
+		private ImportDeclaration[] imports;
 
-		public Imports(IImportDeclaration[] imports) {
+		public Imports(AST ast, ImportDeclaration[] imports) {
+			super(ast);
 			this.imports = imports;
 		}
 
@@ -221,11 +203,12 @@ public class DOutlineContentProvider implements ITreeContentProvider {
 		
 	}
 	
-	class Else implements IElement {
+	class Else extends ASTNode {
 		
-		private IElement[] declDefs;
+		private ASTNode[] declDefs;
 		
-		public Else(IElement[] declDefs) {
+		public Else(AST ast, ASTNode[] declDefs) {
+			super(ast);
 			this.declDefs = declDefs;
 		}
 
@@ -244,5 +227,6 @@ public class DOutlineContentProvider implements ITreeContentProvider {
 		public void accept(ASTVisitor visitor) { }
 		
 	}
+	*/
 	
 }

@@ -14,7 +14,7 @@ import org.eclipse.ui.IFileEditorInput;
 
 import descent.core.DescentCore;
 import descent.core.compiler.IProblem;
-import descent.core.dom.ICompilationUnit;
+import descent.core.dom.CompilationUnit;
 import descent.core.dom.IParser;
 import descent.ui.DescentUI;
 
@@ -25,7 +25,7 @@ import descent.ui.DescentUI;
 public class DReconcilingStrategy implements IReconcilingStrategy {
 	
 	private DEditor editor;
-	private ICompilationUnit unit;
+	private CompilationUnit unit;
 	
 	public DReconcilingStrategy(DEditor editor) {
 		this.editor = editor;
@@ -34,7 +34,7 @@ public class DReconcilingStrategy implements IReconcilingStrategy {
 	/**
 	 * Returns the compilation unit maintained by me.
 	 */
-	public ICompilationUnit getCompilationUnit() {
+	public CompilationUnit getCompilationUnit() {
 		return unit;
 	}
 

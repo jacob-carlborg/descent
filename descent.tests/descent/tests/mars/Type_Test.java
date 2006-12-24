@@ -1,25 +1,19 @@
 package descent.tests.mars;
 
-import descent.core.dom.IArrayType;
-import descent.core.dom.IAssociativeArrayType;
-import descent.core.dom.IBasicType;
-import descent.core.dom.ICompilationUnit;
-import descent.core.dom.IDynamicArrayType;
-import descent.core.dom.IElement;
-import descent.core.dom.IPointerType;
-import descent.core.dom.ISliceType;
-import descent.core.dom.IStaticArrayType;
-import descent.core.dom.IType;
-import descent.core.dom.ITypeofType;
-import descent.core.dom.IVariableDeclaration;
-import descent.internal.core.dom.DelegateType;
-import descent.internal.core.dom.NumberLiteral;
-import descent.internal.core.dom.ParserFacade;
-import descent.internal.core.dom.PrimitiveType;
-import descent.internal.core.dom.QualifiedType;
-import descent.internal.core.dom.SimpleType;
-import descent.internal.core.dom.TemplateType;
-import descent.internal.core.dom.TypeofType;
+import descent.core.dom.ASTNode;
+import descent.core.dom.AssociativeArrayType;
+import descent.core.dom.DelegateType;
+import descent.core.dom.DynamicArrayType;
+import descent.core.dom.NumberLiteral;
+import descent.core.dom.PointerType;
+import descent.core.dom.PrimitiveType;
+import descent.core.dom.QualifiedType;
+import descent.core.dom.SimpleType;
+import descent.core.dom.SliceType;
+import descent.core.dom.StaticArrayType;
+import descent.core.dom.TemplateType;
+import descent.core.dom.TypeofType;
+import descent.core.dom.VariableDeclaration;
 
 public class Type_Test extends Parser_Test {
 	
@@ -48,46 +42,39 @@ public class Type_Test extends Parser_Test {
 		};
 		
 		for(Object[] tri : objs) {
-			IBasicType type = (IBasicType) getType(tri[0].toString());
+			PrimitiveType type = (PrimitiveType) getType(tri[0].toString());
 			assertEquals(tri[0].toString(), type.toString());
-			assertEquals(IType.PRIMITIVE_TYPE, type.getNodeType0());
+			assertEquals(ASTNode.PRIMITIVE_TYPE, type.getNodeType0());
 			assertEquals(tri[1], type.getPrimitiveTypeCode());
 			assertPosition(type, 1, (Integer) tri[2]);
-			
-			assertVisitor(type, 1);
 		}
 	}
 	
 	public void testPointerType() {
-		IPointerType type = (IPointerType) getType("int *");
-		assertEquals(IType.POINTER_TYPE, type.getNodeType0());
+		PointerType type = (PointerType) getType("int *");
+		assertEquals(ASTNode.POINTER_TYPE, type.getNodeType0());
 		assertPosition(type, 1, 5);
 		assertPosition(type.getComponentType(), 1, 3);
-		
-		assertVisitor(type, 2);
 	}
 	
 	public void testDynamicArrayType() {
-		IDynamicArrayType type = (IDynamicArrayType) getType("int []");
-		assertEquals(IArrayType.DYNAMIC_ARRAY_TYPE, type.getNodeType0());
-		// TODO test to string somehow assertEquals("int[]", type.toString());
+		DynamicArrayType type = (DynamicArrayType) getType("int []");
+		assertEquals(ASTNode.DYNAMIC_ARRAY_TYPE, type.getNodeType0());
 		assertPosition(type, 1, 6);
 		assertPosition(type.getComponentType(), 1, 3);
 	}
 	
 	public void testStaticArrayType() {
-		IStaticArrayType type = (IStaticArrayType) getType("int [3]");
-		assertEquals(IArrayType.STATIC_ARRAY_TYPE, type.getNodeType0());
-		// TODO test to string somehow assertEquals("int[3]", type.toString()); // not 
+		StaticArrayType type = (StaticArrayType) getType("int [3]");
+		assertEquals(ASTNode.STATIC_ARRAY_TYPE, type.getNodeType0());
 		assertEquals("3", ((NumberLiteral) type.getSize()).getToken());
 		assertPosition(type, 1, 7);
 		assertPosition(type.getComponentType(), 1, 3);
 	}
 	
 	public void testAssociativeArrayType() {
-		IAssociativeArrayType type = (IAssociativeArrayType) getType("int [char]");
-		assertEquals(IArrayType.ASSOCIATIVE_ARRAY_TYPE, type.getNodeType0());
-		// TODO assertEquals("int[char]", type.toString());
+		AssociativeArrayType type = (AssociativeArrayType) getType("int [char]");
+		assertEquals(ASTNode.ASSOCIATIVE_ARRAY_TYPE, type.getNodeType0());
 		assertEquals("char", type.getKeyType().toString());
 		assertPosition(type, 1, 10);
 		assertPosition(type.getComponentType(), 1, 3);
@@ -95,14 +82,14 @@ public class Type_Test extends Parser_Test {
 	
 	public void testIdentifierTypeSingle() {
 		SimpleType type = (SimpleType) getType("Clazz");
-		assertEquals(IType.SIMPLE_TYPE, type.getNodeType0());
+		assertEquals(ASTNode.SIMPLE_TYPE, type.getNodeType0());
 		assertEquals("Clazz", type.getName().getFullyQualifiedName());
 		assertPosition(type, 1, 5);
 	}
 	
 	public void testIdentifierTypeMany() {
 		QualifiedType type = (QualifiedType) getType("mod.bla.Clazz");
-		assertEquals(IType.QUALIFIED_TYPE, type.getNodeType0());
+		assertEquals(ASTNode.QUALIFIED_TYPE, type.getNodeType0());
 		
 		assertEquals("Clazz", ((SimpleType) type.getType()).getName().getFullyQualifiedName());
 		assertPosition(((SimpleType) type.getType()).getName(), 9, 5);
@@ -120,7 +107,7 @@ public class Type_Test extends Parser_Test {
 	
 	public void testDelegateType() {
 		DelegateType type = (DelegateType) getType("int delegate(char, bool)");
-		assertEquals(IType.DELEGATE_TYPE, type.getNodeType0());
+		assertEquals(ASTNode.DELEGATE_TYPE, type.getNodeType0());
 		assertFalse(type.isFunctionPointer());
 		assertEquals("int", type.getReturnType().toString());
 		assertPosition(type.getReturnType(), 1, 3);
@@ -134,7 +121,7 @@ public class Type_Test extends Parser_Test {
 	
 	public void testPointerToFunction() {
 		DelegateType type = (DelegateType) getType("int function(char, bool)");
-		assertEquals(IType.DELEGATE_TYPE, type.getNodeType0());
+		assertEquals(ASTNode.DELEGATE_TYPE, type.getNodeType0());
 		assertTrue(type.isFunctionPointer());
 		assertEquals("int", type.getReturnType().toString());
 		assertPosition(type.getReturnType(), 1, 3);
@@ -147,11 +134,9 @@ public class Type_Test extends Parser_Test {
 	}
 	
 	public void testTypeof() {
-		ITypeofType type = (ITypeofType) getType("typeof(1)");
+		TypeofType type = (TypeofType) getType("typeof(1)");
 		assertEquals("1", ((NumberLiteral) type.getExpression()).getToken());
 		assertPosition(type, 1, 9);
-		
-		assertVisitor(type, 2);
 	}
 	
 	public void testQualifiedTypeofWithTypeof() {
@@ -172,7 +157,7 @@ public class Type_Test extends Parser_Test {
 	}
 	
 	public void testTypeSlice() {
-		ISliceType type = (ISliceType) getType("int[1 .. 2]");
+		SliceType type = (SliceType) getType("int[1 .. 2]");
 		assertPosition(type, 1, 11);
 		assertEquals("int", type.getComponentType().toString());
 		assertEquals("1", ((NumberLiteral) type.getFromExpression()).getToken());
@@ -220,14 +205,10 @@ public class Type_Test extends Parser_Test {
 		
 	}
 	
-	private IType getType(String type) {
+	private ASTNode getType(String type) {
 		String s = " " + type + " x;";
-		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);
-		assertEquals(0, unit.getProblems().length);
-		IElement[] declDefs = unit.getDeclarationDefinitions();
-		assertEquals(1, declDefs.length);
 		
-		IVariableDeclaration var = (IVariableDeclaration) declDefs[0];
+		VariableDeclaration var = (VariableDeclaration) getSingleDeclarationNoProblems(s);
 		return var.getType();
 	}
 
