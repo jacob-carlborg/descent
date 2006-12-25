@@ -13,7 +13,7 @@ public class Function_Test extends Parser_Test {
 	public void testConstructor() {
 		String s = " this() { }";
 		FunctionDeclaration f = (FunctionDeclaration) getSingleDeclarationNoProblems(s);
-		assertEquals(ASTNode.FUNCTION_DECLARATION, f.getNodeType0());
+		assertEquals(ASTNode.FUNCTION_DECLARATION, f.getNodeType());
 		assertEquals(FunctionDeclaration.Kind.CONSTRUCTOR, f.getKind());
 		assertEquals(PrimitiveType.Code.VOID, ((PrimitiveType) f.getReturnType()).getPrimitiveTypeCode());
 		assertEquals(0, f.arguments().size());
@@ -27,14 +27,14 @@ public class Function_Test extends Parser_Test {
 	public void testEmptyConstructor() {
 		String s = " this();";
 		FunctionDeclaration f = (FunctionDeclaration) getSingleDeclarationNoProblems(s);
-		assertEquals(ASTNode.FUNCTION_DECLARATION, f.getNodeType0());
+		assertEquals(ASTNode.FUNCTION_DECLARATION, f.getNodeType());
 		assertEquals(FunctionDeclaration.Kind.CONSTRUCTOR, f.getKind());
 	}
 	
 	public void testDestructor() {
 		String s = " ~this() { }";
 		FunctionDeclaration f = (FunctionDeclaration) getSingleDeclarationNoProblems(s);
-		assertEquals(ASTNode.FUNCTION_DECLARATION, f.getNodeType0());
+		assertEquals(ASTNode.FUNCTION_DECLARATION, f.getNodeType());
 		assertEquals(FunctionDeclaration.Kind.DESTRUCTOR, f.getKind());
 		assertEquals(PrimitiveType.Code.VOID, ((PrimitiveType) f.getReturnType()).getPrimitiveTypeCode());
 		assertEquals(0, f.arguments().size());
@@ -48,7 +48,7 @@ public class Function_Test extends Parser_Test {
 	public void testEmptyDestructor() {
 		String s = " ~this();";
 		FunctionDeclaration f = (FunctionDeclaration) getSingleDeclarationNoProblems(s);
-		assertEquals(ASTNode.FUNCTION_DECLARATION, f.getNodeType0());
+		assertEquals(ASTNode.FUNCTION_DECLARATION, f.getNodeType());
 		assertEquals(FunctionDeclaration.Kind.DESTRUCTOR, f.getKind());
 		assertEquals(PrimitiveType.Code.VOID, ((PrimitiveType) f.getReturnType()).getPrimitiveTypeCode());
 	}
@@ -56,7 +56,7 @@ public class Function_Test extends Parser_Test {
 	public void testStaticConstructor() {
 		String s = " static this() { }";
 		FunctionDeclaration f = (FunctionDeclaration) getSingleDeclarationNoProblems(s);
-		assertEquals(ASTNode.FUNCTION_DECLARATION, f.getNodeType0());
+		assertEquals(ASTNode.FUNCTION_DECLARATION, f.getNodeType());
 		assertEquals(FunctionDeclaration.Kind.STATIC_CONSTRUCTOR, f.getKind());
 		assertEquals(PrimitiveType.Code.VOID, ((PrimitiveType) f.getReturnType()).getPrimitiveTypeCode());
 		assertEquals(0, f.arguments().size());
@@ -70,7 +70,7 @@ public class Function_Test extends Parser_Test {
 	public void testStaticDestructor() {
 		String s = " static ~this() { }";
 		FunctionDeclaration f = (FunctionDeclaration) getSingleDeclarationNoProblems(s);
-		assertEquals(ASTNode.FUNCTION_DECLARATION, f.getNodeType0());
+		assertEquals(ASTNode.FUNCTION_DECLARATION, f.getNodeType());
 		assertEquals(FunctionDeclaration.Kind.STATIC_DESTRUCTOR, f.getKind());
 		assertEquals(PrimitiveType.Code.VOID, ((PrimitiveType) f.getReturnType()).getPrimitiveTypeCode());
 		assertEquals(0, f.arguments().size());
@@ -84,7 +84,7 @@ public class Function_Test extends Parser_Test {
 	public void testNew() {
 		String s = " new() { }";
 		FunctionDeclaration f = (FunctionDeclaration) getSingleDeclarationNoProblems(s);
-		assertEquals(ASTNode.FUNCTION_DECLARATION, f.getNodeType0());
+		assertEquals(ASTNode.FUNCTION_DECLARATION, f.getNodeType());
 		assertEquals(FunctionDeclaration.Kind.NEW, f.getKind());
 		assertEquals(PrimitiveType.Code.VOID, ((PrimitiveType) f.getReturnType()).getPrimitiveTypeCode());
 		assertEquals(0, f.arguments().size());
@@ -98,7 +98,7 @@ public class Function_Test extends Parser_Test {
 	public void testDelete() {
 		String s = " delete() { }";
 		FunctionDeclaration f = (FunctionDeclaration) getSingleDeclarationNoProblems(s);
-		assertEquals(ASTNode.FUNCTION_DECLARATION, f.getNodeType0());
+		assertEquals(ASTNode.FUNCTION_DECLARATION, f.getNodeType());
 		assertEquals(FunctionDeclaration.Kind.DELETE, f.getKind());
 		assertEquals(PrimitiveType.Code.VOID, ((PrimitiveType) f.getReturnType()).getPrimitiveTypeCode());
 		assertEquals(0, f.arguments().size());
@@ -112,7 +112,7 @@ public class Function_Test extends Parser_Test {
 	public void testFunctionWithoutArguments() {
 		String s = " void func() { }";
 		FunctionDeclaration f = (FunctionDeclaration) getSingleDeclarationNoProblems(s);
-		assertEquals(ASTNode.FUNCTION_DECLARATION, f.getNodeType0());
+		assertEquals(ASTNode.FUNCTION_DECLARATION, f.getNodeType());
 		assertEquals(FunctionDeclaration.Kind.FUNCTION, f.getKind());
 
 		assertEquals("void", f.getReturnType().toString());
@@ -140,7 +140,7 @@ public class Function_Test extends Parser_Test {
 		
 		Argument arg = args.get(0);
 		assertPosition(arg, 11, 5);
-		assertEquals(ASTNode.ARGUMENT, args.get(0).getNodeType0());
+		assertEquals(ASTNode.ARGUMENT, args.get(0).getNodeType());
 		assertEquals("a", arg.getName().getIdentifier());
 		assertEquals("int", arg.getType().toString());
 		assertEquals(Argument.PassageMode.IN, arg.getPassageMode());

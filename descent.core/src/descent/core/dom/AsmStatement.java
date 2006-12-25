@@ -1,5 +1,7 @@
 package descent.core.dom;
 
+import java.util.List;
+
 import descent.internal.core.parser.Token;
 
 public class AsmStatement extends Statement {
@@ -15,6 +17,11 @@ public class AsmStatement extends Statement {
 
 	public int getNodeType0() {
 		return ASM_STATEMENT;
+	}
+
+	@Override
+	List internalStructuralPropertiesForType(int apiLevel) {
+		return null;
 	}
 
 }

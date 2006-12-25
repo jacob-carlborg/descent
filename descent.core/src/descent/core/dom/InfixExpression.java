@@ -38,21 +38,9 @@ public class InfixExpression extends Expression {
 	 *    <b>&amp;&amp;</b>  AND_AND
 	 *    <b>||</b>  OR_OR
 	 *    <b>,</b>  COMMA
-	 *    <b>=</b>  ASSIGN
 	 *    <b>in</b>  IN
 	 *    <b>===</b>  IDENTITY (deprecated)
 	 *    <b>!==</b>  NOT_IDENTITY (deprecated)
-	 *    <b>*=</b>	TIMES_ASSIGN
-	 *    <b>/=</b>  DIVIDE_ASSIGN
-	 *    <b>%=</b>  REMAINDER_ASSIGN
-	 *    <b>+=</b>  PLUS_ASSIGN
-	 *    <b>-=</b>  MINUS_ASSIGN
-	 *    <b>~=</b>  CONCATENATE_ASSIGN
-	 *    <b>&=</b>  AND_ASSIGN
-	 *    <b>|=</b>  OR_ASSIGN
-	 *    <b>&lt;&lt;=</b>  LEFT_SHIFT_ASSIGN
-	 *    <b>&gt;&gt;=</b>  RIGHT_SHIFT_SIGNED_ASSIGN
-	 *    <b>&gt;&gt;&gt;=</b>  RIGHT_SHIFT_UNSIGNED_ASSIGN
 	 *    <b>!<>=</b>  NOT_LESS_GREATER_EQUALS
 	 *    <b>!<></b>  NOT_LESS_GREATER
 	 *    <b><></b>  LESS_GREATER
@@ -108,8 +96,6 @@ public class InfixExpression extends Expression {
 		OR_OR("||"),
 		/** Comma "," operator. */
 		COMMA(","),
-		/** Assign "=" operator. */
-		ASSIGN("="),
 		/** In "in" operator. */
 		IN("in"),
 		/** Is "is" operator. */
@@ -120,30 +106,6 @@ public class InfixExpression extends Expression {
 		IDENTITY("==="),
 		/** Not identity "!==" (deprecated) operator. */
 		NOT_IDENTITY("!=="),
-		/** Multiplication and assign "*=" operator. */
-		TIMES_ASSIGN("*="),
-		/** Division and assign "/=" operator. */
-		DIVIDE_ASSIGN("/="),
-		/** Remainder and assign "%=" operator. */
-		REMAINDER_ASSIGN("%="),
-		/** Addition and assign "+=" operator. */
-		PLUS_ASSIGN("+="),
-		/** Minus and assign "-=" operator. */
-		MINUS_ASSIGN("-="),
-		/** Concatenate and assign "~=" operator. */
-		CONCATENATE_ASSIGN("~="),
-		/** AND and assign "^=" operator. */
-		XOR_ASSIGN("^="),
-		/** AND and assign "~=" operator. */
-		AND_ASSIGN("&="),
-		/** OR and assign "¬=" operator. */
-		OR_ASSIGN("|="),
-		/** Signed left shift and assign "<<=" operator. */
-		LEFT_SHIFT_ASSIGN("<<="),
-		/** Signed right shift and assign "&gt;&gt;=" operator. */
-		RIGHT_SHIFT_SIGNED_ASSIGN(">>="),
-		/** Unsigned right shift and assign "&gt;&gt;&gt;=" operator. */
-		RIGHT_SHIFT_UNSIGNED_ASSIGN(">>>="), 
 		/** Not less greater equals "!<>=" operator. */
 		NOT_LESS_GREATER_EQUALS("!<>="),
 		/** Less greater "<>" operator. */
@@ -320,9 +282,8 @@ public class InfixExpression extends Expression {
 
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
-	 * TODO make it package
 	 */
-	public final int getNodeType0() {
+	final int getNodeType0() {
 		return INFIX_EXPRESSION;
 	}
 

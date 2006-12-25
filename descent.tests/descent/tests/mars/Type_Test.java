@@ -44,7 +44,7 @@ public class Type_Test extends Parser_Test {
 		for(Object[] tri : objs) {
 			PrimitiveType type = (PrimitiveType) getType(tri[0].toString());
 			assertEquals(tri[0].toString(), type.toString());
-			assertEquals(ASTNode.PRIMITIVE_TYPE, type.getNodeType0());
+			assertEquals(ASTNode.PRIMITIVE_TYPE, type.getNodeType());
 			assertEquals(tri[1], type.getPrimitiveTypeCode());
 			assertPosition(type, 1, (Integer) tri[2]);
 		}
@@ -52,21 +52,21 @@ public class Type_Test extends Parser_Test {
 	
 	public void testPointerType() {
 		PointerType type = (PointerType) getType("int *");
-		assertEquals(ASTNode.POINTER_TYPE, type.getNodeType0());
+		assertEquals(ASTNode.POINTER_TYPE, type.getNodeType());
 		assertPosition(type, 1, 5);
 		assertPosition(type.getComponentType(), 1, 3);
 	}
 	
 	public void testDynamicArrayType() {
 		DynamicArrayType type = (DynamicArrayType) getType("int []");
-		assertEquals(ASTNode.DYNAMIC_ARRAY_TYPE, type.getNodeType0());
+		assertEquals(ASTNode.DYNAMIC_ARRAY_TYPE, type.getNodeType());
 		assertPosition(type, 1, 6);
 		assertPosition(type.getComponentType(), 1, 3);
 	}
 	
 	public void testStaticArrayType() {
 		StaticArrayType type = (StaticArrayType) getType("int [3]");
-		assertEquals(ASTNode.STATIC_ARRAY_TYPE, type.getNodeType0());
+		assertEquals(ASTNode.STATIC_ARRAY_TYPE, type.getNodeType());
 		assertEquals("3", ((NumberLiteral) type.getSize()).getToken());
 		assertPosition(type, 1, 7);
 		assertPosition(type.getComponentType(), 1, 3);
@@ -74,7 +74,7 @@ public class Type_Test extends Parser_Test {
 	
 	public void testAssociativeArrayType() {
 		AssociativeArrayType type = (AssociativeArrayType) getType("int [char]");
-		assertEquals(ASTNode.ASSOCIATIVE_ARRAY_TYPE, type.getNodeType0());
+		assertEquals(ASTNode.ASSOCIATIVE_ARRAY_TYPE, type.getNodeType());
 		assertEquals("char", type.getKeyType().toString());
 		assertPosition(type, 1, 10);
 		assertPosition(type.getComponentType(), 1, 3);
@@ -82,14 +82,14 @@ public class Type_Test extends Parser_Test {
 	
 	public void testIdentifierTypeSingle() {
 		SimpleType type = (SimpleType) getType("Clazz");
-		assertEquals(ASTNode.SIMPLE_TYPE, type.getNodeType0());
+		assertEquals(ASTNode.SIMPLE_TYPE, type.getNodeType());
 		assertEquals("Clazz", type.getName().getFullyQualifiedName());
 		assertPosition(type, 1, 5);
 	}
 	
 	public void testIdentifierTypeMany() {
 		QualifiedType type = (QualifiedType) getType("mod.bla.Clazz");
-		assertEquals(ASTNode.QUALIFIED_TYPE, type.getNodeType0());
+		assertEquals(ASTNode.QUALIFIED_TYPE, type.getNodeType());
 		
 		assertEquals("Clazz", ((SimpleType) type.getType()).getName().getFullyQualifiedName());
 		assertPosition(((SimpleType) type.getType()).getName(), 9, 5);
@@ -107,7 +107,7 @@ public class Type_Test extends Parser_Test {
 	
 	public void testDelegateType() {
 		DelegateType type = (DelegateType) getType("int delegate(char, bool)");
-		assertEquals(ASTNode.DELEGATE_TYPE, type.getNodeType0());
+		assertEquals(ASTNode.DELEGATE_TYPE, type.getNodeType());
 		assertFalse(type.isFunctionPointer());
 		assertEquals("int", type.getReturnType().toString());
 		assertPosition(type.getReturnType(), 1, 3);
@@ -121,7 +121,7 @@ public class Type_Test extends Parser_Test {
 	
 	public void testPointerToFunction() {
 		DelegateType type = (DelegateType) getType("int function(char, bool)");
-		assertEquals(ASTNode.DELEGATE_TYPE, type.getNodeType0());
+		assertEquals(ASTNode.DELEGATE_TYPE, type.getNodeType());
 		assertTrue(type.isFunctionPointer());
 		assertEquals("int", type.getReturnType().toString());
 		assertPosition(type.getReturnType(), 1, 3);

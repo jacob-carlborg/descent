@@ -50,12 +50,6 @@ public class DynamicArrayType extends ArrayType {
 	}
 
 	/**
-	 * The componentType.
-	 */
-	private Type componentType;
-
-
-	/**
 	 * Creates a new unparented dynamic array type node owned by the given 
 	 * AST.
 	 * <p>
@@ -98,9 +92,8 @@ public class DynamicArrayType extends ArrayType {
 
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
-	 * TODO make it package
 	 */
-	public final int getNodeType0() {
+	final int getNodeType0() {
 		return DYNAMIC_ARRAY_TYPE;
 	}
 

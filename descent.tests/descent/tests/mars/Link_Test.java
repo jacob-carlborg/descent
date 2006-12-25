@@ -19,7 +19,7 @@ public class Link_Test extends Parser_Test {
 		for(Object[] linkX : links) {
 			String s = " extern(" + linkX[0] + ") { }";
 			ExternDeclaration link = (ExternDeclaration) getSingleDeclarationNoProblems(s);
-			assertEquals(ASTNode.EXTERN_DECLARATION, link.getNodeType0());
+			assertEquals(ASTNode.EXTERN_DECLARATION, link.getNodeType());
 			assertEquals(linkX[1], link.getLinkage());
 			
 			assertPosition(link, 1, s.length() - 1);

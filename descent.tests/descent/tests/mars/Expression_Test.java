@@ -6,6 +6,7 @@ import descent.core.dom.ASTNode;
 import descent.core.dom.ArrayAccess;
 import descent.core.dom.ArrayLiteral;
 import descent.core.dom.AssertExpression;
+import descent.core.dom.Assignment;
 import descent.core.dom.BooleanLiteral;
 import descent.core.dom.CallExpression;
 import descent.core.dom.CastExpression;
@@ -44,7 +45,7 @@ public class Expression_Test extends Parser_Test {
 		String s = " this";
 		Expression expr = parseExpression(s);
 		
-		assertEquals(ASTNode.THIS_LITERAL, expr.getNodeType0());
+		assertEquals(ASTNode.THIS_LITERAL, expr.getNodeType());
 		assertEquals("this", expr.toString());
 		assertPosition(expr, 1, s.length() - 1);
 	}
@@ -53,7 +54,7 @@ public class Expression_Test extends Parser_Test {
 		String s = " super";
 		Expression expr = parseExpression(s);
 		
-		assertEquals(ASTNode.SUPER_LITERAL, expr.getNodeType0());
+		assertEquals(ASTNode.SUPER_LITERAL, expr.getNodeType());
 		assertEquals("super", expr.toString());
 		assertPosition(expr, 1, s.length() - 1);
 	}
@@ -62,7 +63,7 @@ public class Expression_Test extends Parser_Test {
 		String s = " null";
 		Expression expr = parseExpression(s);
 		
-		assertEquals(ASTNode.NULL_LITERAL, expr.getNodeType0());
+		assertEquals(ASTNode.NULL_LITERAL, expr.getNodeType());
 		assertEquals("null", expr.toString());
 		assertPosition(expr, 1, s.length() - 1);
 	}
@@ -71,7 +72,7 @@ public class Expression_Test extends Parser_Test {
 		String s = " true";
 		BooleanLiteral expr = (BooleanLiteral) parseExpression(s);
 		
-		assertEquals(ASTNode.BOOLEAN_LITERAL, expr.getNodeType0());
+		assertEquals(ASTNode.BOOLEAN_LITERAL, expr.getNodeType());
 		assertTrue(expr.booleanValue());
 		assertPosition(expr, 1, s.length() - 1);
 	}
@@ -80,7 +81,7 @@ public class Expression_Test extends Parser_Test {
 		String s = " false";
 		BooleanLiteral expr = (BooleanLiteral) parseExpression(s);
 		
-		assertEquals(ASTNode.BOOLEAN_LITERAL, expr.getNodeType0());
+		assertEquals(ASTNode.BOOLEAN_LITERAL, expr.getNodeType());
 		assertFalse(expr.booleanValue());
 		assertPosition(expr, 1, s.length() - 1);
 	}
@@ -89,7 +90,7 @@ public class Expression_Test extends Parser_Test {
 		String s = " \"hola\"";
 		StringLiteral expr = (StringLiteral) parseExpression(s);
 		
-		assertEquals(ASTNode.STRING_LITERAL, expr.getNodeType0());
+		assertEquals(ASTNode.STRING_LITERAL, expr.getNodeType());
 		assertEquals("\"hola\"", expr.getEscapedValue());
 		assertPosition(expr, 1, s.length() - 1);
 	}
@@ -111,7 +112,7 @@ public class Expression_Test extends Parser_Test {
 		String s = " \"hola\"c";
 		StringLiteral expr = (StringLiteral) parseExpression(s);
 		
-		assertEquals(ASTNode.STRING_LITERAL, expr.getNodeType0());
+		assertEquals(ASTNode.STRING_LITERAL, expr.getNodeType());
 		assertEquals("\"hola\"c", expr.getEscapedValue());
 		assertPosition(expr, 1, s.length() - 1);
 	}
@@ -120,7 +121,7 @@ public class Expression_Test extends Parser_Test {
 		String s = " x\"1234\"";
 		StringLiteral expr = (StringLiteral) parseExpression(s);
 		
-		assertEquals(ASTNode.STRING_LITERAL, expr.getNodeType0());
+		assertEquals(ASTNode.STRING_LITERAL, expr.getNodeType());
 		assertPosition(expr, 1, s.length() - 1);
 	}
 	
@@ -190,8 +191,8 @@ public class Expression_Test extends Parser_Test {
 		String s = " assert(false)";
 		AssertExpression expr = (AssertExpression) parseExpression(s);
 		
-		assertEquals(ASTNode.ASSERT_EXPRESSION, expr.getNodeType0());
-		assertEquals(ASTNode.BOOLEAN_LITERAL, expr.getExpression().getNodeType0());
+		assertEquals(ASTNode.ASSERT_EXPRESSION, expr.getNodeType());
+		assertEquals(ASTNode.BOOLEAN_LITERAL, expr.getExpression().getNodeType());
 		assertNull(expr.getMessage());
 		assertPosition(expr, 1, s.length() - 1);
 	}
@@ -200,9 +201,9 @@ public class Expression_Test extends Parser_Test {
 		String s = " assert(false, true)";
 		AssertExpression expr = (AssertExpression) parseExpression(s);
 		
-		assertEquals(ASTNode.ASSERT_EXPRESSION, expr.getNodeType0());
-		assertEquals(ASTNode.BOOLEAN_LITERAL, expr.getExpression().getNodeType0());
-		assertEquals(ASTNode.BOOLEAN_LITERAL, expr.getMessage().getNodeType0());
+		assertEquals(ASTNode.ASSERT_EXPRESSION, expr.getNodeType());
+		assertEquals(ASTNode.BOOLEAN_LITERAL, expr.getExpression().getNodeType());
+		assertEquals(ASTNode.BOOLEAN_LITERAL, expr.getMessage().getNodeType());
 		assertPosition(expr, 1, s.length() - 1);
 	}
 	
@@ -210,8 +211,8 @@ public class Expression_Test extends Parser_Test {
 		String s = " ( false )";
 		ParenthesizedExpression expr = (ParenthesizedExpression) parseExpression(s);
 		
-		assertEquals(ASTNode.PARENTHESIZED_EXPRESSION, expr.getNodeType0());
-		assertEquals(ASTNode.BOOLEAN_LITERAL, expr.getExpression().getNodeType0());
+		assertEquals(ASTNode.PARENTHESIZED_EXPRESSION, expr.getNodeType());
+		assertEquals(ASTNode.BOOLEAN_LITERAL, expr.getExpression().getNodeType());
 		assertPosition(expr, 1, s.length() - 1);
 	}
 	
@@ -238,19 +239,6 @@ public class Expression_Test extends Parser_Test {
 				{ "|", InfixExpression.Operator.OR },
 				{ "&&", InfixExpression.Operator.AND_AND },
 				{ "||", InfixExpression.Operator.OR_OR },
-				{ "=", InfixExpression.Operator.ASSIGN },
-				{ "+=", InfixExpression.Operator.PLUS_ASSIGN },
-				{ "-=", InfixExpression.Operator.MINUS_ASSIGN },
-				{ "*=", InfixExpression.Operator.TIMES_ASSIGN },
-				{ "/=", InfixExpression.Operator.DIVIDE_ASSIGN },
-				{ "%=", InfixExpression.Operator.REMAINDER_ASSIGN },
-				{ "&=", InfixExpression.Operator.AND_ASSIGN },
-				{ "|=", InfixExpression.Operator.OR_ASSIGN },
-				{ "^=", InfixExpression.Operator.XOR_ASSIGN },
-				{ "<<=", InfixExpression.Operator.LEFT_SHIFT_ASSIGN },
-				{ ">>=", InfixExpression.Operator.RIGHT_SHIFT_SIGNED_ASSIGN },
-				{ ">>>=", InfixExpression.Operator.RIGHT_SHIFT_UNSIGNED_ASSIGN },
-				{ "~=", InfixExpression.Operator.CONCATENATE_ASSIGN },
 				{ ",", InfixExpression.Operator.COMMA },
 				{ "<", InfixExpression.Operator.LESS },
 				{ "<=", InfixExpression.Operator.LESS_EQUALS },
@@ -271,11 +259,41 @@ public class Expression_Test extends Parser_Test {
 			String s = " 1 " + pair[0] + " 1.0";
 			InfixExpression expr = (InfixExpression) parseExpression(s);
 			
-			assertEquals(ASTNode.INFIX_EXPRESSION, expr.getNodeType0());
+			assertEquals(ASTNode.INFIX_EXPRESSION, expr.getNodeType());
 			assertEquals(pair[1], expr.getOperator());
 			assertEquals(pair[0], pair[1].toString());
-			assertEquals(ASTNode.NUMBER_LITERAL, expr.getLeftOperand().getNodeType0());
-			assertEquals(ASTNode.NUMBER_LITERAL, expr.getRightOperand().getNodeType0());
+			assertEquals(ASTNode.NUMBER_LITERAL, expr.getLeftOperand().getNodeType());
+			assertEquals(ASTNode.NUMBER_LITERAL, expr.getRightOperand().getNodeType());
+			assertPosition(expr, 1, 6 + ((String) pair[0]).length());
+		}
+	}
+	
+	public void testAssignment() {
+		Object[][] objs = {
+				{ "=", Assignment.Operator.ASSIGN },
+				{ "+=", Assignment.Operator.PLUS_ASSIGN },
+				{ "-=", Assignment.Operator.MINUS_ASSIGN },
+				{ "*=", Assignment.Operator.TIMES_ASSIGN },
+				{ "/=", Assignment.Operator.DIVIDE_ASSIGN },
+				{ "%=", Assignment.Operator.REMAINDER_ASSIGN },
+				{ "&=", Assignment.Operator.AND_ASSIGN },
+				{ "|=", Assignment.Operator.OR_ASSIGN },
+				{ "^=", Assignment.Operator.XOR_ASSIGN },
+				{ "<<=", Assignment.Operator.LEFT_SHIFT_ASSIGN },
+				{ ">>=", Assignment.Operator.RIGHT_SHIFT_SIGNED_ASSIGN },
+				{ ">>>=", Assignment.Operator.RIGHT_SHIFT_UNSIGNED_ASSIGN },
+				{ "~=", Assignment.Operator.CONCATENATE_ASSIGN },
+			};
+		
+		for(Object[] pair : objs) {
+			String s = " 1 " + pair[0] + " 1.0";
+			Assignment expr = (Assignment) parseExpression(s);
+			
+			assertEquals(ASTNode.ASSIGNMENT, expr.getNodeType());
+			assertEquals(pair[1], expr.getOperator());
+			assertEquals(pair[0], pair[1].toString());
+			assertEquals(ASTNode.NUMBER_LITERAL, expr.getLeftHandSize().getNodeType());
+			assertEquals(ASTNode.NUMBER_LITERAL, expr.getRightHandSize().getNodeType());
 			assertPosition(expr, 1, 6 + ((String) pair[0]).length());
 		}
 	}
@@ -296,9 +314,9 @@ public class Expression_Test extends Parser_Test {
 			String s = " " + pair[0] + "1";
 			PrefixExpression expr = (PrefixExpression) parseExpression(s);
 			
-			assertEquals(ASTNode.PREFIX_EXPRESSION, expr.getNodeType0());
+			assertEquals(ASTNode.PREFIX_EXPRESSION, expr.getNodeType());
 			assertEquals(pair[1], expr.getOperator());
-			assertEquals(ASTNode.NUMBER_LITERAL, expr.getExpression().getNodeType0());
+			assertEquals(ASTNode.NUMBER_LITERAL, expr.getExpression().getNodeType());
 			assertPosition(expr, 1, 1 + ((String) pair[0]).length());
 		}
 	}
@@ -313,9 +331,9 @@ public class Expression_Test extends Parser_Test {
 			String s = " 1" + pair[0];
 			PostfixExpression expr = (PostfixExpression) parseExpression(s);
 			
-			assertEquals(ASTNode.POSTFIX_EXPRESSION, expr.getNodeType0());
+			assertEquals(ASTNode.POSTFIX_EXPRESSION, expr.getNodeType());
 			assertEquals(pair[1], expr.getOperator());
-			assertEquals(ASTNode.NUMBER_LITERAL, expr.getExpression().getNodeType0());
+			assertEquals(ASTNode.NUMBER_LITERAL, expr.getExpression().getNodeType());
 			assertPosition(expr, 1, 1 + ((String) pair[0]).length());
 		}
 	}
@@ -324,10 +342,10 @@ public class Expression_Test extends Parser_Test {
 		String s = " 1 ? true : false";
 		ConditionalExpression expr = (ConditionalExpression) parseExpression(s);
 		
-		assertEquals(ASTNode.CONDITIONAL_EXPRESSION, expr.getNodeType0());
-		assertEquals(ASTNode.NUMBER_LITERAL, expr.getExpression().getNodeType0());
-		assertEquals(ASTNode.BOOLEAN_LITERAL, expr.getThenExpression().getNodeType0());
-		assertEquals(ASTNode.BOOLEAN_LITERAL, expr.getElseExpression().getNodeType0());
+		assertEquals(ASTNode.CONDITIONAL_EXPRESSION, expr.getNodeType());
+		assertEquals(ASTNode.NUMBER_LITERAL, expr.getExpression().getNodeType());
+		assertEquals(ASTNode.BOOLEAN_LITERAL, expr.getThenExpression().getNodeType());
+		assertEquals(ASTNode.BOOLEAN_LITERAL, expr.getElseExpression().getNodeType());
 		assertPosition(expr, 1, 16);
 	}
 	
@@ -335,10 +353,10 @@ public class Expression_Test extends Parser_Test {
 		String s = " int.length";
 		TypeDotIdentifierExpression expr = (TypeDotIdentifierExpression) parseExpression(s);
 		
-		assertEquals(ASTNode.TYPE_DOT_IDENTIFIER_EXPRESSION, expr.getNodeType0());
+		assertEquals(ASTNode.TYPE_DOT_IDENTIFIER_EXPRESSION, expr.getNodeType());
 		assertPosition(expr, 1, 10);
 		
-		assertEquals(ASTNode.PRIMITIVE_TYPE, expr.getType().getNodeType0());
+		assertEquals(ASTNode.PRIMITIVE_TYPE, expr.getType().getNodeType());
 		assertEquals("length", expr.getName().getFullyQualifiedName());
 	}
 	
@@ -346,7 +364,7 @@ public class Expression_Test extends Parser_Test {
 		String s = " delete some";
 		DeleteExpression expr = (DeleteExpression) parseExpression(s);
 		
-		assertEquals(ASTNode.DELETE_EXPRESSION, expr.getNodeType0());
+		assertEquals(ASTNode.DELETE_EXPRESSION, expr.getNodeType());
 		assertPosition(expr, 1, 11);
 		
 		assertEquals("some", ((SimpleName) expr.getExpression()).getIdentifier().toString());
@@ -356,7 +374,7 @@ public class Expression_Test extends Parser_Test {
 		String s = " cast(float) 1";
 		CastExpression expr = (CastExpression) parseExpression(s);
 		
-		assertEquals(ASTNode.CAST_EXPRESSION, expr.getNodeType0());
+		assertEquals(ASTNode.CAST_EXPRESSION, expr.getNodeType());
 		assertPosition(expr, 1, 13);
 		
 		assertEquals("float", expr.getType().toString());
@@ -384,7 +402,7 @@ public class Expression_Test extends Parser_Test {
 		String s = " new Bla(1, 2)";
 		NewExpression expr = (NewExpression) parseExpression(s);
 		
-		assertEquals(ASTNode.NEW_EXPRESSION, expr.getNodeType0());
+		assertEquals(ASTNode.NEW_EXPRESSION, expr.getNodeType());
 		assertPosition(expr, 1, 13);
 		
 		List<Expression> args = expr.constructorArguments();
@@ -397,7 +415,7 @@ public class Expression_Test extends Parser_Test {
 	public void testArray() {
 		String s = " bla[1, 2, 3]";
 		ArrayAccess expr = (ArrayAccess) parseExpression(s);
-		assertEquals(ASTNode.ARRAY_ACCESS, expr.getNodeType0());
+		assertEquals(ASTNode.ARRAY_ACCESS, expr.getNodeType());
 		
 		assertEquals("bla", ((SimpleName) expr.getArray()).getIdentifier().toString());
 		
@@ -414,7 +432,7 @@ public class Expression_Test extends Parser_Test {
 	public void testArrayLiteral() {
 		String s = " [1, 2, 3]";
 		ArrayLiteral expr = (ArrayLiteral) parseExpression(s);
-		assertEquals(ASTNode.ARRAY_LITERAL, expr.getNodeType0());
+		assertEquals(ASTNode.ARRAY_LITERAL, expr.getNodeType());
 		
 		Expression[] args = expr.arguments().toArray(new Expression[expr.arguments().size()]);
 		assertEquals(3, args.length);
@@ -429,7 +447,7 @@ public class Expression_Test extends Parser_Test {
 	public void testSlice() {
 		String s = " bla[1 .. 3]";
 		SliceExpression expr = (SliceExpression) parseExpression(s);
-		assertEquals(ASTNode.SLICE_EXPRESSION, expr.getNodeType0());
+		assertEquals(ASTNode.SLICE_EXPRESSION, expr.getNodeType());
 		
 		assertEquals("bla", ((SimpleName) expr.getExpression()).getIdentifier());
 		
@@ -442,7 +460,7 @@ public class Expression_Test extends Parser_Test {
 	public void testSliceEmpty() {
 		String s = " bla[]";
 		SliceExpression expr = (SliceExpression) parseExpression(s);
-		assertEquals(ASTNode.SLICE_EXPRESSION, expr.getNodeType0());
+		assertEquals(ASTNode.SLICE_EXPRESSION, expr.getNodeType());
 		
 		assertEquals("bla", ((SimpleName) expr.getExpression()).getIdentifier());
 		
@@ -455,7 +473,7 @@ public class Expression_Test extends Parser_Test {
 	public void testDolar() {
 		String s = " $";
 		Expression expr = (Expression) parseExpression(s);
-		assertEquals(Expression.DOLLAR_LITERAL, expr.getNodeType0());
+		assertEquals(Expression.DOLLAR_LITERAL, expr.getNodeType());
 		
 		assertPosition(expr, 1, 1);
 	}
@@ -463,7 +481,7 @@ public class Expression_Test extends Parser_Test {
 	public void testCall() {
 		String s = " bla(1, 2, 3)";
 		CallExpression expr = (CallExpression) parseExpression(s);
-		assertEquals(ASTNode.CALL_EXPRESSION, expr.getNodeType0());
+		assertEquals(ASTNode.CALL_EXPRESSION, expr.getNodeType());
 		
 		assertEquals("bla", ((SimpleName) expr.getExpression()).getIdentifier());
 		
@@ -480,9 +498,9 @@ public class Expression_Test extends Parser_Test {
 	public void testTypeof() {
 		String s = " typeof(3)";
 		TypeExpression expr = (TypeExpression) parseExpression(s);
-		assertEquals(ASTNode.TYPE_EXPRESSION, expr.getNodeType0());
+		assertEquals(ASTNode.TYPE_EXPRESSION, expr.getNodeType());
 		
-		assertEquals(ASTNode.TYPEOF_TYPE, expr.getType().getNodeType0());
+		assertEquals(ASTNode.TYPEOF_TYPE, expr.getType().getNodeType());
 		assertPosition(expr, 1, s.length() - 1);
 		
 		TypeofType typeof = (TypeofType) expr.getType();
@@ -492,9 +510,9 @@ public class Expression_Test extends Parser_Test {
 	public void testTypeofDotId() {
 		String s = " typeof(3).length";
 		TypeDotIdentifierExpression expr = (TypeDotIdentifierExpression) parseExpression(s);
-		assertEquals(ASTNode.TYPE_DOT_IDENTIFIER_EXPRESSION, expr.getNodeType0());
+		assertEquals(ASTNode.TYPE_DOT_IDENTIFIER_EXPRESSION, expr.getNodeType());
 		
-		assertEquals(ASTNode.TYPEOF_TYPE, expr.getType().getNodeType0());
+		assertEquals(ASTNode.TYPEOF_TYPE, expr.getType().getNodeType());
 		assertPosition(expr, 1, s.length() - 1);
 		
 		TypeofType typeof = (TypeofType) expr.getType();
@@ -508,7 +526,7 @@ public class Expression_Test extends Parser_Test {
 		String s = " .bla";
 		DotIdentifierExpression expr = (DotIdentifierExpression) parseExpression(s);
 		
-		assertEquals(ASTNode.DOT_IDENTIFIER_EXPRESSION, expr.getNodeType0());
+		assertEquals(ASTNode.DOT_IDENTIFIER_EXPRESSION, expr.getNodeType());
 		assertPosition(expr, 1, s.length() - 1);
 		
 		assertNull(expr.getExpression());
@@ -521,7 +539,7 @@ public class Expression_Test extends Parser_Test {
 		String s = " ble.bla";
 		DotIdentifierExpression expr = (DotIdentifierExpression) parseExpression(s);
 		
-		assertEquals(ASTNode.DOT_IDENTIFIER_EXPRESSION, expr.getNodeType0());
+		assertEquals(ASTNode.DOT_IDENTIFIER_EXPRESSION, expr.getNodeType());
 		assertPosition(expr, 1, s.length() - 1);
 		
 		assertEquals("ble", ((SimpleName) expr.getExpression()).getIdentifier());
@@ -535,7 +553,7 @@ public class Expression_Test extends Parser_Test {
 		String s = " typeid(int)";
 		TypeidExpression expr = (TypeidExpression) parseExpression(s);
 		
-		assertEquals(ASTNode.TYPEID_EXPRESSION, expr.getNodeType0());
+		assertEquals(ASTNode.TYPEID_EXPRESSION, expr.getNodeType());
 		assertPosition(expr, 1, s.length() - 1);
 		
 		assertEquals("int", expr.getType().toString());
@@ -545,7 +563,7 @@ public class Expression_Test extends Parser_Test {
 		String s = " is(x : float)";
 		IsTypeExpression expr = (IsTypeExpression) parseExpression(s);
 		
-		assertEquals(ASTNode.IS_TYPE_EXPRESSION, expr.getNodeType0());
+		assertEquals(ASTNode.IS_TYPE_EXPRESSION, expr.getNodeType());
 		assertPosition(expr, 1, s.length() - 1);
 		
 		assertEquals("x", ((SimpleType) expr.getType()).getName().getFullyQualifiedName());
@@ -621,7 +639,7 @@ public class Expression_Test extends Parser_Test {
 		FunctionLiteralDeclarationExpression expr = (FunctionLiteralDeclarationExpression) parseExpression(s);
 		assertEquals(Syntax.EMPTY, expr.getSyntax());
 		
-		assertEquals(ASTNode.FUNCTION_LITERAL_DECLARATION_EXPRESSION, expr.getNodeType0());
+		assertEquals(ASTNode.FUNCTION_LITERAL_DECLARATION_EXPRESSION, expr.getNodeType());
 		assertPosition(expr, 1, s.length() - 1);
 		
 		assertEquals(0, expr.arguments().size());
@@ -633,7 +651,7 @@ public class Expression_Test extends Parser_Test {
 		FunctionLiteralDeclarationExpression expr = (FunctionLiteralDeclarationExpression) parseExpression(s);
 		assertEquals(Syntax.EMPTY, expr.getSyntax());
 		
-		assertEquals(ASTNode.FUNCTION_LITERAL_DECLARATION_EXPRESSION, expr.getNodeType0());
+		assertEquals(ASTNode.FUNCTION_LITERAL_DECLARATION_EXPRESSION, expr.getNodeType());
 		assertPosition(expr, 1, s.length() - 1);
 		
 		assertEquals(0, expr.arguments().size());
@@ -661,7 +679,7 @@ public class Expression_Test extends Parser_Test {
 		String s = " new class { }";
 		NewAnonymousClassExpression expr = (NewAnonymousClassExpression) parseExpression(s);
 		
-		assertEquals(ASTNode.NEW_ANONYMOUS_CLASS_EXPRESSION, expr.getNodeType0());
+		assertEquals(ASTNode.NEW_ANONYMOUS_CLASS_EXPRESSION, expr.getNodeType());
 		assertPosition(expr, 1, s.length() - 1);
 		
 		assertEquals(0, expr.newArguments().size());
@@ -673,7 +691,7 @@ public class Expression_Test extends Parser_Test {
 		String s = " new (1, 2) class (3, 4) { }";
 		NewAnonymousClassExpression expr = (NewAnonymousClassExpression) parseExpression(s);
 		
-		assertEquals(ASTNode.NEW_ANONYMOUS_CLASS_EXPRESSION, expr.getNodeType0());
+		assertEquals(ASTNode.NEW_ANONYMOUS_CLASS_EXPRESSION, expr.getNodeType());
 		assertPosition(expr, 1, s.length() - 1);
 		
 		assertEquals(2, expr.newArguments().size());
@@ -685,7 +703,7 @@ public class Expression_Test extends Parser_Test {
 		String s = " new class A, B { }";
 		NewAnonymousClassExpression expr = (NewAnonymousClassExpression) parseExpression(s);
 		
-		assertEquals(ASTNode.NEW_ANONYMOUS_CLASS_EXPRESSION, expr.getNodeType0());
+		assertEquals(ASTNode.NEW_ANONYMOUS_CLASS_EXPRESSION, expr.getNodeType());
 		assertPosition(expr, 1, s.length() - 1);
 		
 		assertNull(expr.getExpression());
@@ -698,7 +716,7 @@ public class Expression_Test extends Parser_Test {
 		String s = " id.new (1, 2) class (3, 4) { }";
 		NewAnonymousClassExpression expr = (NewAnonymousClassExpression) parseExpression(s);
 		
-		assertEquals(ASTNode.NEW_ANONYMOUS_CLASS_EXPRESSION, expr.getNodeType0());
+		assertEquals(ASTNode.NEW_ANONYMOUS_CLASS_EXPRESSION, expr.getNodeType());
 		assertPosition(expr, 1, s.length() - 1);
 		
 		assertEquals("id", ((SimpleName) expr.getExpression()).getIdentifier());
@@ -712,11 +730,11 @@ public class Expression_Test extends Parser_Test {
 		String s = " new int[3]";
 		NewExpression expr = (NewExpression) parseExpression(s);
 		
-		assertEquals(ASTNode.NEW_EXPRESSION, expr.getNodeType0());
+		assertEquals(ASTNode.NEW_EXPRESSION, expr.getNodeType());
 		assertPosition(expr, 1, s.length() - 1);
 		
 		DynamicArrayType array = (DynamicArrayType) expr.getType();
-		assertEquals(ASTNode.DYNAMIC_ARRAY_TYPE, array.getNodeType0());
+		assertEquals(ASTNode.DYNAMIC_ARRAY_TYPE, array.getNodeType());
 		assertEquals(1, expr.constructorArguments().size());
 		assertEquals("3", ((NumberLiteral) expr.constructorArguments().get(0)).getToken());
 		assertPosition(expr.constructorArguments().get(0), 9, 1);
@@ -727,11 +745,11 @@ public class Expression_Test extends Parser_Test {
 		String s = " new (1, 2) int[3]";
 		NewExpression expr = (NewExpression) parseExpression(s);
 		
-		assertEquals(ASTNode.NEW_EXPRESSION, expr.getNodeType0());
+		assertEquals(ASTNode.NEW_EXPRESSION, expr.getNodeType());
 		assertPosition(expr, 1, s.length() - 1);
 		
 		DynamicArrayType array = (DynamicArrayType) expr.getType();
-		assertEquals(ASTNode.DYNAMIC_ARRAY_TYPE, array.getNodeType0());
+		assertEquals(ASTNode.DYNAMIC_ARRAY_TYPE, array.getNodeType());
 		assertEquals(1, expr.constructorArguments().size());
 	}
 	
@@ -739,11 +757,11 @@ public class Expression_Test extends Parser_Test {
 		String s = " new (1, 2) int[][30]";
 		NewExpression expr = (NewExpression) parseExpression(s);
 		
-		assertEquals(ASTNode.NEW_EXPRESSION, expr.getNodeType0());
+		assertEquals(ASTNode.NEW_EXPRESSION, expr.getNodeType());
 		assertPosition(expr, 1, s.length() - 1);
 		
 		DynamicArrayType array = (DynamicArrayType) expr.getType();
-		assertEquals(ASTNode.DYNAMIC_ARRAY_TYPE, array.getNodeType0());
+		assertEquals(ASTNode.DYNAMIC_ARRAY_TYPE, array.getNodeType());
 		assertEquals(1, expr.constructorArguments().size());
 	}
 	
@@ -751,11 +769,11 @@ public class Expression_Test extends Parser_Test {
 		String s = " new (1, 2) int[][](30)";
 		NewExpression expr = (NewExpression) parseExpression(s);
 		
-		assertEquals(ASTNode.NEW_EXPRESSION, expr.getNodeType0());
+		assertEquals(ASTNode.NEW_EXPRESSION, expr.getNodeType());
 		assertPosition(expr, 1, s.length() - 1);
 		
 		DynamicArrayType array = (DynamicArrayType) expr.getType();
-		assertEquals(ASTNode.DYNAMIC_ARRAY_TYPE, array.getNodeType0());
+		assertEquals(ASTNode.DYNAMIC_ARRAY_TYPE, array.getNodeType());
 		assertEquals(1, expr.constructorArguments().size());
 	}
 	

@@ -1,5 +1,7 @@
 package descent.core.dom;
 
+import java.util.List;
+
 import descent.internal.core.parser.TOK;
 
 public class Comment extends ASTNode {
@@ -29,6 +31,12 @@ public class Comment extends ASTNode {
 		return tok == TOK.TOKdocblockcomment ||
 			tok == TOK.TOKdoclinecomment ||
 			tok == TOK.TOKdocpluscomment;
+	}
+
+	@Override
+	List internalStructuralPropertiesForType(int apiLevel) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

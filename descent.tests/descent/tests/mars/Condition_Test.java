@@ -39,7 +39,7 @@ public class Condition_Test extends Parser_Test {
 	public void testDebug() {
 		String s = " debug(bla) { int x; } else { }";
 		DebugDeclaration d = (DebugDeclaration) getSingleDeclarationNoProblems(s);
-		assertEquals(ASTNode.DEBUG_DECLARATION, d.getNodeType0());
+		assertEquals(ASTNode.DEBUG_DECLARATION, d.getNodeType());
 		assertPosition(d, 1, s.length() - 1);
 		
 		assertEquals("bla", d.getVersion().getValue());
@@ -49,7 +49,7 @@ public class Condition_Test extends Parser_Test {
 	public void testStaticIf() {
 		String s = " static if(true) { int x; } else { }";
 		StaticIfDeclaration d = (StaticIfDeclaration) getSingleDeclarationNoProblems(s);
-		assertEquals(ASTNode.STATIC_IF_DECLARATION, d.getNodeType0());
+		assertEquals(ASTNode.STATIC_IF_DECLARATION, d.getNodeType());
 		assertPosition(d, 1, s.length() - 1);
 		
 		assertTrue(((BooleanLiteral) d.getExpression()).booleanValue());
@@ -90,7 +90,7 @@ public class Condition_Test extends Parser_Test {
 	public void testIftypeNone() {
 		String s = " iftype(x) { }";
 		IftypeDeclaration d = (IftypeDeclaration) getSingleDeclarationWithProblems(s, 1); // iftype deprecated
-		assertEquals(ASTNode.IFTYPE_DECLARATION, d.getNodeType0());
+		assertEquals(ASTNode.IFTYPE_DECLARATION, d.getNodeType());
 		
 		assertEquals(IftypeDeclaration.Kind.NONE, d.getKind());
 		assertEquals("x", ((SimpleType) d.getTestType()).getName().getFullyQualifiedName());
@@ -103,7 +103,7 @@ public class Condition_Test extends Parser_Test {
 	public void testIftypeEquals() {
 		String s = " iftype(x == y) { }";
 		IftypeDeclaration d = (IftypeDeclaration) getSingleDeclarationWithProblems(s, 1); // iftype deprecated
-		assertEquals(ASTNode.IFTYPE_DECLARATION, d.getNodeType0());
+		assertEquals(ASTNode.IFTYPE_DECLARATION, d.getNodeType());
 		
 		assertEquals(IftypeDeclaration.Kind.EQUALS, d.getKind());
 		assertEquals("x", ((SimpleType) d.getTestType()).getName().getFullyQualifiedName());
@@ -116,7 +116,7 @@ public class Condition_Test extends Parser_Test {
 	public void testIftypeExtends() {
 		String s = " iftype(x : y) { }";
 		IftypeDeclaration d = (IftypeDeclaration) getSingleDeclarationWithProblems(s, 1); // iftype deprecated
-		assertEquals(ASTNode.IFTYPE_DECLARATION, d.getNodeType0());
+		assertEquals(ASTNode.IFTYPE_DECLARATION, d.getNodeType());
 		
 		assertEquals(IftypeDeclaration.Kind.EXTENDS, d.getKind());
 		assertEquals("x", ((SimpleType) d.getTestType()).getName().getFullyQualifiedName());
@@ -128,7 +128,7 @@ public class Condition_Test extends Parser_Test {
 	public void testIftypeWithIdentifier() {
 		String s = " iftype(int x : y) { }";
 		IftypeDeclaration d = (IftypeDeclaration) getSingleDeclarationWithProblems(s, 1); // iftype deprecated
-		assertEquals(ASTNode.IFTYPE_DECLARATION, d.getNodeType0());
+		assertEquals(ASTNode.IFTYPE_DECLARATION, d.getNodeType());
 		
 		assertEquals(IftypeDeclaration.Kind.EXTENDS, d.getKind());
 		assertEquals("int", d.getTestType().toString());

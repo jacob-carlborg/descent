@@ -13,7 +13,7 @@ public class Enum_Test extends Parser_Test {
 	public void testEnumClosed() {
 		String s = " enum En;";
 		EnumDeclaration e = (EnumDeclaration) getSingleDeclarationNoProblems(s);
-		assertEquals(ASTNode.ENUM_DECLARATION, e.getNodeType0());
+		assertEquals(ASTNode.ENUM_DECLARATION, e.getNodeType());
 		assertPosition(e, 1, 8);
 		assertPosition(e.getName(), 6, 2);
 		assertEquals("En", e.getName().getIdentifier());
@@ -31,7 +31,7 @@ public class Enum_Test extends Parser_Test {
 		EnumMember em;
 		
 		em = e.enumMembers().get(0);
-		assertEquals(ASTNode.ENUM_MEMBER, em.getNodeType0());
+		assertEquals(ASTNode.ENUM_MEMBER, em.getNodeType());
 		assertEquals("x", em.getName().getIdentifier());
 		assertNull(em.getValue());
 		assertPosition(em, 11, 1);

@@ -121,11 +121,10 @@ public class InvariantDeclaration extends Declaration {
 			return MODIFIERS_PROPERTY;
 		}
 		
-	/* (omit javadoc for this method)
-	 * Method declared on ASTNode.
-	 * TODO make it package
-	 */
-	public final int getNodeType0() {
+		/* (omit javadoc for this method)
+		 * Method declared on ASTNode.
+		 */
+		final int getNodeType0() {
 		return INVARIANT_DECLARATION;
 	}
 

@@ -9,7 +9,7 @@ public class UnitTest_Test extends Parser_Test {
 		String s = " unittest { } ";
 		
 		UnitTestDeclaration inv = (UnitTestDeclaration) getSingleDeclarationNoProblems(s);
-		assertEquals(ASTNode.UNIT_TEST_DECLARATION, inv.getNodeType0());
+		assertEquals(ASTNode.UNIT_TEST_DECLARATION, inv.getNodeType());
 		assertPosition(inv, 1, 12);
 	}
 

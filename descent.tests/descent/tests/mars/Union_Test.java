@@ -13,12 +13,12 @@ public class Union_Test extends Parser_Test {
 		String s = " union Clazz { }";
 		
 		AggregateDeclaration c = (AggregateDeclaration) getSingleDeclarationNoProblems(s);
-		assertEquals(ASTNode.AGGREGATE_DECLARATION, c.getNodeType0());
+		assertEquals(ASTNode.AGGREGATE_DECLARATION, c.getNodeType());
 		assertEquals(AggregateDeclaration.Kind.UNION, c.getKind());
 		assertPosition(c, 1, 15);
 		
 		SimpleName name = c.getName();
-		assertEquals(ASTNode.SIMPLE_NAME, name.getNodeType0());
+		assertEquals(ASTNode.SIMPLE_NAME, name.getNodeType());
 		assertEquals("Clazz", name.getIdentifier());
 		assertPosition(name, 7, 5);
 		

@@ -17,7 +17,7 @@ public class Module_Test extends Parser_Test {
 		
 		assertNotNull(md);
 		assertPosition(md, 1, 9);
-		assertEquals(ASTNode.MODULE_DECLARATION, md.getNodeType0());
+		assertEquals(ASTNode.MODULE_DECLARATION, md.getNodeType());
 		
 		SimpleName qName = (SimpleName) md.getName();
 		assertEquals("a", qName.getIdentifier());

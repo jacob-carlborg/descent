@@ -138,9 +138,8 @@ public class Import extends ASTNode {
 
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
-	 * TODO make it package
 	 */
-	public final int getNodeType0() {
+	final int getNodeType0() {
 		return IMPORT;
 	}
 

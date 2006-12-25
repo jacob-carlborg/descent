@@ -16,7 +16,7 @@ public class VariableDeclaration_Test extends Parser_Test {
 		String s = " int x;";
 		
 		VariableDeclaration var = (VariableDeclaration) getSingleDeclarationNoProblems(s);
-		assertEquals(ASTNode.VARIABLE_DECLARATION, var.getNodeType0());
+		assertEquals(ASTNode.VARIABLE_DECLARATION, var.getNodeType());
 		
 		assertPosition(var, 1, s.length() - 1);
 		assertEquals("int", var.getType().toString());
@@ -66,7 +66,7 @@ public class VariableDeclaration_Test extends Parser_Test {
 	public void testCStyle() {
 		String s = " int x[3];";
 		VariableDeclaration var = (VariableDeclaration) getSingleDeclarationNoProblems(s);
-		assertEquals(ASTNode.VARIABLE_DECLARATION, var.getNodeType0());
+		assertEquals(ASTNode.VARIABLE_DECLARATION, var.getNodeType());
 		assertEquals("x", var.fragments().get(0).getName().getFullyQualifiedName());
 		assertPosition(var.fragments().get(0).getName(), 5, 1);
 		assertPosition(var, 1, 9);
@@ -75,7 +75,7 @@ public class VariableDeclaration_Test extends Parser_Test {
 	public void testCStyle2() {
 		String s = " int x[3][5];";
 		VariableDeclaration var = (VariableDeclaration) getSingleDeclarationNoProblems(s);
-		assertEquals(ASTNode.VARIABLE_DECLARATION, var.getNodeType0());
+		assertEquals(ASTNode.VARIABLE_DECLARATION, var.getNodeType());
 		assertEquals("x", var.fragments().get(0).getName().getFullyQualifiedName());
 		assertPosition(var.fragments().get(0).getName(), 5, 1);
 		assertPosition(var, 1, 12);
@@ -84,7 +84,7 @@ public class VariableDeclaration_Test extends Parser_Test {
 	public void testCStyle3() {
 		String s = " int (*x[5])[3];";
 		VariableDeclaration var = (VariableDeclaration) getSingleDeclarationNoProblems(s);
-		assertEquals(ASTNode.VARIABLE_DECLARATION, var.getNodeType0());
+		assertEquals(ASTNode.VARIABLE_DECLARATION, var.getNodeType());
 		assertEquals("x", var.fragments().get(0).getName().getFullyQualifiedName());
 		assertPosition(var.fragments().get(0).getName(), 7, 1);
 		assertPosition(var, 1, 15);
@@ -93,10 +93,10 @@ public class VariableDeclaration_Test extends Parser_Test {
 	public void testCStyle5() {
 		String s = " int (*x)(char);";
 		VariableDeclaration var = (VariableDeclaration) getSingleDeclarationNoProblems(s);
-		assertEquals(ASTNode.VARIABLE_DECLARATION, var.getNodeType0());
+		assertEquals(ASTNode.VARIABLE_DECLARATION, var.getNodeType());
 		assertEquals("x", var.fragments().get(0).getName().getFullyQualifiedName());
 		assertPosition(var.fragments().get(0).getName(), 7, 1);
-		assertEquals(ASTNode.DELEGATE_TYPE, var.getType().getNodeType0());
+		assertEquals(ASTNode.DELEGATE_TYPE, var.getType().getNodeType());
 		assertPosition(var, 1, 15);
 		
 		DelegateType del = (DelegateType) var.getType();
@@ -107,14 +107,14 @@ public class VariableDeclaration_Test extends Parser_Test {
 	public void testCStyle6() {
 		String s = " int (*[] x)(char);";
 		VariableDeclaration var = (VariableDeclaration) getSingleDeclarationNoProblems(s);
-		assertEquals(ASTNode.VARIABLE_DECLARATION, var.getNodeType0());
+		assertEquals(ASTNode.VARIABLE_DECLARATION, var.getNodeType());
 		assertEquals("x", var.fragments().get(0).getName().getFullyQualifiedName());
 		assertPosition(var.fragments().get(0).getName(), 10, 1);
-		assertEquals(ASTNode.DYNAMIC_ARRAY_TYPE, var.getType().getNodeType0());
+		assertEquals(ASTNode.DYNAMIC_ARRAY_TYPE, var.getType().getNodeType());
 		assertPosition(var, 1, 18);
 		
 		ArrayType array = (ArrayType) var.getType();
-		assertEquals(ASTNode.DELEGATE_TYPE, array.getComponentType().getNodeType0());
+		assertEquals(ASTNode.DELEGATE_TYPE, array.getComponentType().getNodeType());
 		DelegateType del = (DelegateType) array.getComponentType();
 		assertEquals("char", del.arguments().get(0).getType().toString());
 		assertEquals("int", del.getReturnType().toString());
@@ -123,7 +123,7 @@ public class VariableDeclaration_Test extends Parser_Test {
 	public void testAuto() {
 		String s = " auto x = 1;";
 		VariableDeclaration var = (VariableDeclaration) getSingleDeclarationNoProblems(s);
-		assertEquals(ASTNode.VARIABLE_DECLARATION, var.getNodeType0());
+		assertEquals(ASTNode.VARIABLE_DECLARATION, var.getNodeType());
 		assertNull(var.getType());
 		// TODO assertTrue((var.getModifier() & IModifier.AUTO) != 0);
 	}
@@ -131,7 +131,7 @@ public class VariableDeclaration_Test extends Parser_Test {
 	public void testStatic() {
 		String s = " static x = 1;";
 		VariableDeclaration var = (VariableDeclaration) getSingleDeclarationNoProblems(s);
-		assertEquals(ASTNode.VARIABLE_DECLARATION, var.getNodeType0());
+		assertEquals(ASTNode.VARIABLE_DECLARATION, var.getNodeType());
 		assertNull(var.getType());
 		// TODO assertTrue((var.getModifier() & IModifier.STATIC) != 0);
 	}
@@ -139,7 +139,7 @@ public class VariableDeclaration_Test extends Parser_Test {
 	public void testExtern() {
 		String s = " extern x = 1;";
 		VariableDeclaration var = (VariableDeclaration) getSingleDeclarationNoProblems(s);
-		assertEquals(ASTNode.VARIABLE_DECLARATION, var.getNodeType0());
+		assertEquals(ASTNode.VARIABLE_DECLARATION, var.getNodeType());
 		assertNull(var.getType());
 		// TODO assertTrue((var.getModifier() & IModifier.EXTERN) != 0);
 	}
@@ -193,10 +193,10 @@ public class VariableDeclaration_Test extends Parser_Test {
 	public void testAssociativeArray() {
 		String s = " char x[int] = 1;";
 		VariableDeclaration var = (VariableDeclaration) getSingleDeclarationNoProblems(s);
-		assertEquals(ASTNode.VARIABLE_DECLARATION, var.getNodeType0());
+		assertEquals(ASTNode.VARIABLE_DECLARATION, var.getNodeType());
 		
 		AssociativeArrayType type = (AssociativeArrayType) var.getType();
-		assertEquals(ArrayType.ASSOCIATIVE_ARRAY_TYPE, type.getNodeType0());
+		assertEquals(ArrayType.ASSOCIATIVE_ARRAY_TYPE, type.getNodeType());
 		assertEquals("char", type.getComponentType().toString());
 		assertEquals("int", type.getKeyType().toString());
 	}

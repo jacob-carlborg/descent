@@ -10,7 +10,7 @@ public class Typedef_Test extends Parser_Test {
 		String s = " typedef int Bla;";
 		
 		TypedefDeclaration t = (TypedefDeclaration) getSingleDeclarationNoProblems(s);
-		assertEquals(ASTNode.TYPEDEF_DECLARATION, t.getNodeType0());
+		assertEquals(ASTNode.TYPEDEF_DECLARATION, t.getNodeType());
 		assertPosition(t, 1, 16);
 		
 		assertEquals(1, t.fragments().size());
@@ -25,7 +25,7 @@ public class Typedef_Test extends Parser_Test {
 	public void testInitializer() {
 		String s = " typedef int Bla = 1;";
 		TypedefDeclaration t = (TypedefDeclaration) getSingleDeclarationNoProblems(s);
-		assertEquals(ASTNode.TYPEDEF_DECLARATION, t.getNodeType0());
+		assertEquals(ASTNode.TYPEDEF_DECLARATION, t.getNodeType());
 		assertPosition(t, 1, 20);
 		
 		TypedefDeclarationFragment fragment = t.fragments().get(0);
@@ -56,7 +56,7 @@ public class Typedef_Test extends Parser_Test {
 	public void testThreeFragmentsWithNextDeclaration() {
 		String s = " typedef int Bla, Ble, Bli; typedef int Blo;";
 		TypedefDeclaration t = (TypedefDeclaration) getDeclarationsNoProblems(s).get(0);
-		assertEquals(ASTNode.TYPEDEF_DECLARATION, t.getNodeType0());
+		assertEquals(ASTNode.TYPEDEF_DECLARATION, t.getNodeType());
 		
 		assertEquals("int", t.getType().toString());
 		assertPosition(t.getType(), 9, 3);

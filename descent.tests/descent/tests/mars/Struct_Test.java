@@ -12,12 +12,12 @@ public class Struct_Test extends Parser_Test {
 	public void testEmpty() {
 		String s = " struct Clazz { }";
 		AggregateDeclaration c = (AggregateDeclaration) getSingleDeclarationNoProblems(s);
-		assertEquals(ASTNode.AGGREGATE_DECLARATION, c.getNodeType0());
+		assertEquals(ASTNode.AGGREGATE_DECLARATION, c.getNodeType());
 		assertEquals(AggregateDeclaration.Kind.STRUCT, c.getKind());
 		assertPosition(c, 1, 16);
 		
 		SimpleName name = c.getName();
-		assertEquals(ASTNode.SIMPLE_NAME, name.getNodeType0());
+		assertEquals(ASTNode.SIMPLE_NAME, name.getNodeType());
 		assertEquals("Clazz", name.getIdentifier());
 		assertPosition(name, 8, 5);
 		

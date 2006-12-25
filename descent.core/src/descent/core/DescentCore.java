@@ -3,9 +3,6 @@ package descent.core;
 import org.eclipse.core.runtime.Plugin;
 import org.osgi.framework.BundleContext;
 
-import descent.core.dom.IParser;
-import descent.internal.core.parser.ParserFacade;
-
 /**
  * The activator class controls the plug-in life cycle
  */
@@ -16,8 +13,6 @@ public class DescentCore extends Plugin {
 
 	// The shared instance
 	private static DescentCore plugin;
-	
-	private IParser parser;
 	
 	/**
 	 * The constructor
@@ -50,16 +45,6 @@ public class DescentCore extends Plugin {
 	 */
 	public static DescentCore getDefault() {
 		return plugin;
-	}
-	
-	/**
-	 * Returns a IParser for this plugin.
-	 */
-	public IParser getParser() {
-		if (parser == null) {
-			parser = new ParserFacade();
-		}
-		return parser;
 	}
 
 }

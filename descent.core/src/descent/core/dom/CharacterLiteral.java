@@ -99,10 +99,8 @@ public class CharacterLiteral extends Expression {
 	
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
-	 * 
-	 * TODO make it package
 	 */
-	public final int getNodeType0() {
+	final int getNodeType0() {
 		return CHARACTER_LITERAL;
 	}
 

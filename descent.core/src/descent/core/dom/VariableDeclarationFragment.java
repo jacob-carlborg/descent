@@ -9,7 +9,7 @@ import java.util.List;
  * 
  * <pre>
  * VariableDeclarationFragment:
- *    Type [ <b>=</b> Initializer ]
+ *    SimpleName [ <b>=</b> Initializer ]
  * </pre>
  */
 public class VariableDeclarationFragment extends ASTNode {
@@ -113,9 +113,8 @@ public class VariableDeclarationFragment extends ASTNode {
 
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
-	 * TODO make it package
 	 */
-	public final int getNodeType0() {
+	final int getNodeType0() {
 		return VARIABLE_DECLARATION_FRAGMENT;
 	}
 

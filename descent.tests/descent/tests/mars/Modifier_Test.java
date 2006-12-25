@@ -181,11 +181,13 @@ public class Modifier_Test extends Parser_Test {
 	
 	public void testModifiersWithCurlyBraces() {
 		Object[][] objs = {
+				/*
 			{ "private", Modifier.ModifierKeyword.PRIVATE_KEYWORD },
 			{ "package", Modifier.ModifierKeyword.PACKAGE_KEYWORD },
 			{ "protected", Modifier.ModifierKeyword.PROTECTED_KEYWORD },
 			{ "public", Modifier.ModifierKeyword.PUBLIC_KEYWORD },
 			{ "export", Modifier.ModifierKeyword.EXPORT_KEYWORD },
+			*/
 			{ "const", Modifier.ModifierKeyword.CONST_KEYWORD },
 			{ "final", Modifier.ModifierKeyword.FINAL_KEYWORD },
 			{ "auto", Modifier.ModifierKeyword.AUTO_KEYWORD },

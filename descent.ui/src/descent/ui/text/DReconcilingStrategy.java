@@ -12,10 +12,10 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IFileEditorInput;
 
-import descent.core.DescentCore;
 import descent.core.compiler.IProblem;
+import descent.core.dom.AST;
+import descent.core.dom.ASTParser;
 import descent.core.dom.CompilationUnit;
-import descent.core.dom.IParser;
 import descent.ui.DescentUI;
 
 /**
@@ -61,8 +61,9 @@ public class DReconcilingStrategy implements IReconcilingStrategy {
 			DescentUI.log(e);
 		}
 		
-		IParser manager = DescentCore.getDefault().getParser();
-		unit = manager.parseCompilationUnit(editor.getDocument().get());
+		ASTParser parser = ASTParser.newParser(AST.D1);
+		parser.setSource(editor.getDocument().get().toCharArray());
+		unit = (CompilationUnit) parser.createAST(null);
 		
 		// and now mark the errors
 		for(IProblem problem : unit.getProblems()) {

@@ -64,11 +64,6 @@ public class SliceType extends ArrayType {
 	}
 
 	/**
-	 * The componentType.
-	 */
-	private Type componentType;
-
-	/**
 	 * The fromExpression.
 	 */
 	private Expression fromExpression;
@@ -138,9 +133,8 @@ public class SliceType extends ArrayType {
 
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
-	 * TODO make it package
 	 */
-	public final int getNodeType0() {
+	final int getNodeType0() {
 		return SLICE_TYPE;
 	}
 

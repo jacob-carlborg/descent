@@ -50,28 +50,38 @@ public class Lexer implements IProblemCollector {
 	public List<Comment> comments;
 	public List<IProblem> problems;
 	
-	AST ast = AST.newAST(AST.D1);
-	public CompilationUnit mod = new CompilationUnit(ast);
+	AST ast;
+	CompilationUnit mod;
     
-    public Lexer(String source) {
-    	this(source, 0, 0, source.length());
+    public Lexer(AST ast, String source) {
+    	this(ast, source.toCharArray());
+    }
+    
+    public Lexer(AST ast, char[] source) {
+    	this(ast, source, 0, source.length);
+    }
+    
+    public Lexer(AST ast, String source, int offset, 
+			int length) {
+    	this(ast, source.toCharArray(), offset, length);
     }
 	
-	public Lexer(String source, int base, int begoffset, 
-			int endoffset) {
+	public Lexer(AST ast, char[] source, int offset, 
+			int length) {
 		
 		initKeywords();
 		
+		this.ast = ast;
+		this.mod = new CompilationUnit(ast);
 		this.comments = new ArrayList<Comment>();
 		this.problems = new ArrayList<IProblem>();
 		
 		// Make input larger and add zeros, to avoid comparing
-		input = new char[endoffset - base + 5];
-		source.getChars(base, source.length(), input, 0);
+		input = new char[length - base + 5];
+		System.arraycopy(source, 0, input, 0, source.length);
 		this.linnum = 1;
-		this.base = base;
-		this.end = base + endoffset;
-		this.p = base + begoffset;
+		this.end = offset + length;
+		this.p = offset;
 	    this.anyToken = false;
 	    this.token = new Token();
 	    
@@ -412,9 +422,8 @@ public class Lexer implements IProblemCollector {
 				
 				Comment comment = new Comment(ast);
 				comment.tok = (input[t.ptr + 2] == '*' && p - 4 != t.ptr) ? TOKdocblockcomment : TOKblockcomment;
-				comment.startPosition = t.ptr;
-				comment.length = p - t.ptr;
-				comment.string = new String(input, comment.startPosition, comment.length);
+				comment.setSourceRange(t.ptr, p - t.ptr);
+				comment.string = new String(input, comment.getStartPosition(), comment.getLength());
 				comments.add(comment);
 				
 				continue;
@@ -437,9 +446,8 @@ public class Lexer implements IProblemCollector {
 					case 0x1A:
 						comment = new Comment(ast);
 						comment.tok = input[t.ptr + 2] == '/' ? TOKdoclinecomment : TOKlinecomment;
-						comment.startPosition = t.ptr;
-						comment.length = p - t.ptr;
-						comment.string = new String(input, comment.startPosition, comment.length);
+						comment.setSourceRange(t.ptr, p - t.ptr);
+						comment.string = new String(input, comment.getStartPosition(), comment.getLength());
 						comments.add(comment);
 						
 						p = end;
@@ -459,9 +467,8 @@ public class Lexer implements IProblemCollector {
 				
 				comment = new Comment(ast);
 				comment.tok = input[t.ptr + 2] == '/' ? TOKdoclinecomment : TOKlinecomment;
-				comment.startPosition = t.ptr;
-				comment.length = p - t.ptr;
-				comment.string = new String(input, comment.startPosition, comment.length);
+				comment.setSourceRange(t.ptr, p - t.ptr);
+				comment.string = new String(input, comment.getStartPosition(), comment.getLength());
 				comments.add(comment);
 				
 				p++;
@@ -529,9 +536,8 @@ public class Lexer implements IProblemCollector {
 				
 				comment = new Comment(ast);
 				comment.tok = (input[t.ptr + 2] == '+' && p - 4 != t.ptr) ? TOKdocpluscomment : TOKpluscomment;
-				comment.startPosition = t.ptr;
-				comment.length = p - t.ptr;
-				comment.string = new String(input, comment.startPosition, comment.length);
+				comment.setSourceRange(t.ptr, p- t.ptr);
+				comment.string = new String(input, comment.getStartPosition(), comment.getLength());
 				comments.add(comment);
 				continue;
 			    }

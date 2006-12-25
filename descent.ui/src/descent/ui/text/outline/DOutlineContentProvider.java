@@ -40,7 +40,7 @@ public class DOutlineContentProvider implements ITreeContentProvider {
 		
 		List<ASTNode> list;
 		ASTNode e = (ASTNode) parentElement;
-		switch(e.getNodeType0()) {
+		switch(e.getNodeType()) {
 		case ASTNode.COMPILATION_UNIT:
 			list = new ArrayList<ASTNode>();
 			
@@ -96,7 +96,7 @@ public class DOutlineContentProvider implements ITreeContentProvider {
 	private void addDeclDefs(List<ASTNode> list, List<Declaration> declDefs) {
 		//List<ImportDeclaration> importDeclarations = null;
 		for(Declaration elem : declDefs) {
-			switch(elem.getNodeType0()) {
+			switch(elem.getNodeType()) {
 			case ASTNode.MODIFIER_DECLARATION:
 				addDeclDefs(list, ((ModifierDeclaration) elem).declarations());
 				break;
@@ -137,7 +137,7 @@ public class DOutlineContentProvider implements ITreeContentProvider {
 		if (element == null) return false;
 		
 		ASTNode e = (ASTNode) element;
-		switch(e.getNodeType0()) {
+		switch(e.getNodeType()) {
 		case ASTNode.COMPILATION_UNIT:
 			if (compilationUnit.getModuleDeclaration() != null) {
 				return true;

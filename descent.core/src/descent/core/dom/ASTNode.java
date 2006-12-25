@@ -8,7 +8,141 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Abstract superclass of all Abstract Syntax Tree (AST) node types.
+ * <p>
+ * An AST node represents a D source code construct, such
+ * as a name, type, expression, statement, or declaration.
+ * </p>
+ * <p>
+ * Each AST node belongs to a unique AST instance, called the owning AST.
+ * The children of an AST node always have the same owner as their parent node.
+ * If a node from one AST is to be added to a different AST, the subtree must
+ * be cloned first to ensure that the added nodes have the correct owning AST.
+ * </p>
+ * <p>
+ * When an AST node is part of an AST, it has a unique parent node.
+ * Clients can navigate upwards, from child to parent, as well as downwards,
+ * from parent to child. Newly created nodes are unparented. When an 
+ * unparented node is set as a child of a node (using a 
+ * <code>set<i>CHILD</i></code> method), its parent link is set automatically
+ * and the parent link of the former child is set to <code>null</code>.
+ * For nodes with properties that include a list of children (for example,
+ * <code>Block</code> whose <code>statements</code> property is a list
+ * of statements), adding or removing an element to/for the list property
+ * automatically updates the parent links. These lists support the 
+ * <code>List.set</code> method; however, the constraint that the same
+ * node cannot appear more than once means that this method cannot be used
+ * to swap elements without first removing the node.
+ * </p>
+ * <p>
+ * ASTs must not contain cycles. All operations that could create a cycle
+ * detect this possibility and fail.
+ * </p>
+ * <p>
+ * ASTs do not contain "holes" (missing subtrees). If a node is required to
+ * have a certain property, a syntactically plausible initial value is
+ * always supplied. 
+ * </p>
+ * <p>
+ * The hierarchy of AST node types has some convenient groupings marked
+ * by abstract superclasses:
+ * <ul>
+ * <li>declarations - <code>Declaration</code></li>
+ * <li>expressions - <code>Expression</code></li>
+ * <li>names - <code>Name</code> (a sub-kind of expression)</li>
+ * <li>initializers - <code>Initializer</code></li>
+ * <li>statements - <code>Statement</code></li>
+ * <li>template parameters - <code>TemplateParameter</code></li>
+ * <li>types - <code>Type</code></li>
+ * </ul>
+ * </p>
+ * <p>
+ * Abstract syntax trees may be hand constructed by clients, using the
+ * <code>new<i>TYPE</i></code> factory methods (see <code>AST</code>) to
+ * create new nodes, and the various <code>set<i>CHILD</i></code> methods
+ * to connect them together.
+ * </p>
+ * <p>
+ * The class {@link ASTParser} parses a string
+ * containing a D source code and returns an abstract syntax tree
+ * for it. The resulting nodes carry source ranges relating the node back to
+ * the original source characters. The source range covers the construct
+ * as a whole.
+ * </p>
+ * <p>
+ * Each AST node carries bit flags, which may convey additional information about
+ * the node. For instance, the parser uses a flag to indicate a syntax error.
+ * Newly created nodes have no flags set.
+ * </p>
+ * <p>
+ * Each AST node is capable of carrying an open-ended collection of
+ * client-defined properties. Newly created nodes have none. 
+ * <code>getProperty</code> and <code>setProperty</code> are used to access
+ * these properties.
+ * </p>
+ * <p>
+ * AST nodes are thread-safe for readers provided there are no active writers.
+ * If one thread is modifying an AST, including creating new nodes or cloning
+ * existing ones, it is <b>not</b> safe for another thread to read, visit,
+ * write, create, or clone <em>any</em> of the nodes on the same AST.
+ * When synchronization is required, consider using the common AST
+ * object that owns the node; that is, use  
+ * <code>synchronize (node.getAST()) {...}</code>.
+ * </p>
+ * <p>
+ * ASTs also support the visitor pattern; see the class <code>ASTVisitor</code>
+ * for details.
+ * </p>
+ * <p>
+ * Compilation units created by <code>ASTParser</code> from a
+ * source document can be serialized after arbitrary modifications
+ * with minimal loss of original formatting. See 
+ * {@link CompilationUnit#recordModifications()} for details.
+ * See also {@link org.eclipse.jdt.core.dom.rewrite.ASTRewrite} for
+ * an alternative way to describe and serialize changes to a
+ * read-only AST.
+ * </p>
+ * 
+ * @see ASTParser
+ * @see ASTVisitor
+ */
 public abstract class ASTNode {
+	
+	/*
+	 * INSTRUCTIONS FOR ADDING NEW CONCRETE AST NODE TYPES
+	 * 
+	 * There are several things that need to be changed when a
+	 * new concrete AST node type (call it "FooBar"):
+	 * 
+	 * 1. Create the FooBar AST node type class.
+	 * The most effective way to do this is to copy a similar
+	 * existing concrete node class to get a template that
+     * includes all the framework methods that must be implemented.
+	 * 
+	 * 2. Add node type constant ASTNode.FOO_BAR.
+	 * Node constants are numbered consecutively. Add the
+	 * constant after the existing ones.
+	 * 
+	 * 3. Add entry to ASTNode.nodeClassForType(int).
+	 * 
+	 * 4. Add AST.newFooBar() factory method.
+	 * 
+	 * 5. Add ASTVisitor.visit(FooBar) and endVisit(FooBar) methods.
+	 * 
+	 * 6. Add ASTMatcher.match(FooBar,Object) method.
+	 * 
+	 * 7. Ensure that SimpleName.isDeclaration() covers FooBar
+	 * nodes if required.
+	 * 
+	 * 8. Add NaiveASTFlattener.visit(FooBar) method to illustrate
+	 * how these nodes should be serialized.
+	 * 
+	 * 9. Update the AST test suites.
+	 * 
+	 * The next steps are to update AST.parse* to start generating
+	 * the new type of nodes, and ASTRewrite to serialize them back out.
+	 */
 	
 	/**
 	 * Node type constant indicating a node of type 
@@ -96,776 +230,1032 @@ public abstract class ASTNode {
 	 
 	/**
 	 * Node type constant indicating a node of type 
+	 * <code>Assignment</code>.
+	 * @see Assignment
+	 */
+	public static final int ASSIGNMENT = 13;
+	 
+	/**
+	 * Node type constant indicating a node of type 
 	 * <code>AssociativeArrayType</code>.
 	 * @see AssociativeArrayType
 	 */
-	public static final int ASSOCIATIVE_ARRAY_TYPE = 13;
+	public static final int ASSOCIATIVE_ARRAY_TYPE = 14;
 	 
 	/**
 	 * Node type constant indicating a node of type 
 	 * <code>BaseClass</code>.
 	 * @see BaseClass
 	 */
-	public static final int BASE_CLASS = 14;
+	public static final int BASE_CLASS = 15;
 	 
 	/**
 	 * Node type constant indicating a node of type 
 	 * <code>Block</code>.
 	 * @see Block
 	 */
-	public static final int BLOCK = 15;
+	public static final int BLOCK = 16;
 	 
 	/**
 	 * Node type constant indicating a node of type 
 	 * <code>BooleanLiteral</code>.
 	 * @see BooleanLiteral
 	 */
-	public static final int BOOLEAN_LITERAL = 16;
+	public static final int BOOLEAN_LITERAL = 17;
 	 
 	/**
 	 * Node type constant indicating a node of type 
 	 * <code>BreakStatement</code>.
 	 * @see BreakStatement
 	 */
-	public static final int BREAK_STATEMENT = 17;
+	public static final int BREAK_STATEMENT = 18;
 	 
 	/**
 	 * Node type constant indicating a node of type 
 	 * <code>CallExpression</code>.
 	 * @see CallExpression
 	 */
-	public static final int CALL_EXPRESSION = 18;
+	public static final int CALL_EXPRESSION = 19;
 	 
 	/**
 	 * Node type constant indicating a node of type 
 	 * <code>CaseStatement</code>.
 	 * @see CaseStatement
 	 */
-	public static final int CASE_STATEMENT = 19;
+	public static final int CASE_STATEMENT = 20;
 	 
 	/**
 	 * Node type constant indicating a node of type 
 	 * <code>CastExpression</code>.
 	 * @see CastExpression
 	 */
-	public static final int CAST_EXPRESSION = 20;
+	public static final int CAST_EXPRESSION = 21;
 	 
 	/**
 	 * Node type constant indicating a node of type 
 	 * <code>CatchClause</code>.
 	 * @see CatchClause
 	 */
-	public static final int CATCH_CLAUSE = 21;
+	public static final int CATCH_CLAUSE = 22;
 	 
 	/**
 	 * Node type constant indicating a node of type 
 	 * <code>CharacterLiteral</code>.
 	 * @see CharacterLiteral
 	 */
-	public static final int CHARACTER_LITERAL = 22;
+	public static final int CHARACTER_LITERAL = 23;
 	 
 	/**
 	 * Node type constant indicating a node of type 
 	 * <code>Comment</code>.
 	 * @see Comment
 	 */
-	public static final int COMMENT = 23;
+	public static final int COMMENT = 24;
 	 
 	/**
 	 * Node type constant indicating a node of type 
 	 * <code>CompilationUnit</code>.
 	 * @see CompilationUnit
 	 */
-	public static final int COMPILATION_UNIT = 24;
+	public static final int COMPILATION_UNIT = 25;
 	 
 	/**
 	 * Node type constant indicating a node of type 
 	 * <code>ConditionalExpression</code>.
 	 * @see ConditionalExpression
 	 */
-	public static final int CONDITIONAL_EXPRESSION = 25;
+	public static final int CONDITIONAL_EXPRESSION = 26;
 	 
 	/**
 	 * Node type constant indicating a node of type 
 	 * <code>ContinueStatement</code>.
 	 * @see ContinueStatement
 	 */
-	public static final int CONTINUE_STATEMENT = 26;
+	public static final int CONTINUE_STATEMENT = 27;
 	 
 	/**
 	 * Node type constant indicating a node of type 
 	 * <code>DebugAssignment</code>.
 	 * @see DebugAssignment
 	 */
-	public static final int DEBUG_ASSIGNMENT = 27;
+	public static final int DEBUG_ASSIGNMENT = 28;
 	 
 	/**
 	 * Node type constant indicating a node of type 
 	 * <code>DebugDeclaration</code>.
 	 * @see DebugDeclaration
 	 */
-	public static final int DEBUG_DECLARATION = 28;
+	public static final int DEBUG_DECLARATION = 29;
 	 
 	/**
 	 * Node type constant indicating a node of type 
 	 * <code>DebugStatement</code>.
 	 * @see DebugStatement
 	 */
-	public static final int DEBUG_STATEMENT = 29;
+	public static final int DEBUG_STATEMENT = 30;
 	 
 	/**
 	 * Node type constant indicating a node of type 
 	 * <code>DeclarationStatement</code>.
 	 * @see DeclarationStatement
 	 */
-	public static final int DECLARATION_STATEMENT = 30;
+	public static final int DECLARATION_STATEMENT = 31;
 	 
 	/**
 	 * Node type constant indicating a node of type 
 	 * <code>DefaultStatement</code>.
 	 * @see DefaultStatement
 	 */
-	public static final int DEFAULT_STATEMENT = 31;
+	public static final int DEFAULT_STATEMENT = 32;
 	 
 	/**
 	 * Node type constant indicating a node of type 
 	 * <code>DelegateType</code>.
 	 * @see DelegateType
 	 */
-	public static final int DELEGATE_TYPE = 32;
+	public static final int DELEGATE_TYPE = 33;
 	 
 	/**
 	 * Node type constant indicating a node of type 
 	 * <code>DeleteExpression</code>.
 	 * @see DeleteExpression
 	 */
-	public static final int DELETE_EXPRESSION = 33;
+	public static final int DELETE_EXPRESSION = 34;
 	 
 	/**
 	 * Node type constant indicating a node of type 
 	 * <code>DollarLiteral</code>.
 	 * @see DollarLiteral
 	 */
-	public static final int DOLLAR_LITERAL = 34;
+	public static final int DOLLAR_LITERAL = 35;
 	 
 	/**
 	 * Node type constant indicating a node of type 
 	 * <code>DoStatement</code>.
 	 * @see DoStatement
 	 */
-	public static final int DO_STATEMENT = 35;
+	public static final int DO_STATEMENT = 36;
 	 
 	/**
 	 * Node type constant indicating a node of type 
 	 * <code>DotIdentifierExpression</code>.
 	 * @see DotIdentifierExpression
 	 */
-	public static final int DOT_IDENTIFIER_EXPRESSION = 36;
+	public static final int DOT_IDENTIFIER_EXPRESSION = 37;
 	 
 	/**
 	 * Node type constant indicating a node of type 
 	 * <code>DotTemplateTypeExpression</code>.
 	 * @see DotTemplateTypeExpression
 	 */
-	public static final int DOT_TEMPLATE_TYPE_EXPRESSION = 37;
+	public static final int DOT_TEMPLATE_TYPE_EXPRESSION = 38;
 	 
 	/**
 	 * Node type constant indicating a node of type 
 	 * <code>DynamicArrayType</code>.
 	 * @see DynamicArrayType
 	 */
-	public static final int DYNAMIC_ARRAY_TYPE = 38;
+	public static final int DYNAMIC_ARRAY_TYPE = 39;
 	 
 	/**
 	 * Node type constant indicating a node of type 
 	 * <code>EnumDeclaration</code>.
 	 * @see EnumDeclaration
 	 */
-	public static final int ENUM_DECLARATION = 39;
+	public static final int ENUM_DECLARATION = 40;
 	 
 	/**
 	 * Node type constant indicating a node of type 
 	 * <code>EnumMember</code>.
 	 * @see EnumMember
 	 */
-	public static final int ENUM_MEMBER = 40;
+	public static final int ENUM_MEMBER = 41;
 	 
 	/**
 	 * Node type constant indicating a node of type 
 	 * <code>ExpressionInitializer</code>.
 	 * @see ExpressionInitializer
 	 */
-	public static final int EXPRESSION_INITIALIZER = 41;
+	public static final int EXPRESSION_INITIALIZER = 42;
 	 
 	/**
 	 * Node type constant indicating a node of type 
 	 * <code>ExpressionStatement</code>.
 	 * @see ExpressionStatement
 	 */
-	public static final int EXPRESSION_STATEMENT = 42;
+	public static final int EXPRESSION_STATEMENT = 43;
 	 
 	/**
 	 * Node type constant indicating a node of type 
 	 * <code>ExternDeclaration</code>.
 	 * @see ExternDeclaration
 	 */
-	public static final int EXTERN_DECLARATION = 43;
+	public static final int EXTERN_DECLARATION = 44;
 	 
 	/**
 	 * Node type constant indicating a node of type 
 	 * <code>ForeachStatement</code>.
 	 * @see ForeachStatement
 	 */
-	public static final int FOREACH_STATEMENT = 44;
+	public static final int FOREACH_STATEMENT = 45;
 	 
 	/**
 	 * Node type constant indicating a node of type 
 	 * <code>ForStatement</code>.
 	 * @see ForStatement
 	 */
-	public static final int FOR_STATEMENT = 45;
+	public static final int FOR_STATEMENT = 46;
 	 
 	/**
 	 * Node type constant indicating a node of type 
 	 * <code>FunctionDeclaration</code>.
 	 * @see FunctionDeclaration
 	 */
-	public static final int FUNCTION_DECLARATION = 46;
+	public static final int FUNCTION_DECLARATION = 47;
 	 
 	/**
 	 * Node type constant indicating a node of type 
 	 * <code>FunctionLiteralDeclarationExpression</code>.
 	 * @see FunctionLiteralDeclarationExpression
 	 */
-	public static final int FUNCTION_LITERAL_DECLARATION_EXPRESSION = 47;
+	public static final int FUNCTION_LITERAL_DECLARATION_EXPRESSION = 48;
 	 
 	/**
 	 * Node type constant indicating a node of type 
 	 * <code>GotoCaseStatement</code>.
 	 * @see GotoCaseStatement
 	 */
-	public static final int GOTO_CASE_STATEMENT = 48;
+	public static final int GOTO_CASE_STATEMENT = 49;
 	 
 	/**
 	 * Node type constant indicating a node of type 
 	 * <code>GotoDefaultStatement</code>.
 	 * @see GotoDefaultStatement
 	 */
-	public static final int GOTO_DEFAULT_STATEMENT = 49;
+	public static final int GOTO_DEFAULT_STATEMENT = 50;
 	 
 	/**
 	 * Node type constant indicating a node of type 
 	 * <code>GotoStatement</code>.
 	 * @see GotoStatement
 	 */
-	public static final int GOTO_STATEMENT = 50;
+	public static final int GOTO_STATEMENT = 51;
 	 
 	/**
 	 * Node type constant indicating a node of type 
 	 * <code>IfStatement</code>.
 	 * @see IfStatement
 	 */
-	public static final int IF_STATEMENT = 51;
+	public static final int IF_STATEMENT = 52;
 	 
 	/**
 	 * Node type constant indicating a node of type 
 	 * <code>IftypeDeclaration</code>.
 	 * @see IftypeDeclaration
 	 */
-	public static final int IFTYPE_DECLARATION = 52;
+	public static final int IFTYPE_DECLARATION = 53;
 	 
 	/**
 	 * Node type constant indicating a node of type 
 	 * <code>IftypeStatement</code>.
 	 * @see IftypeStatement
 	 */
-	public static final int IFTYPE_STATEMENT = 53;
+	public static final int IFTYPE_STATEMENT = 54;
 	 
 	/**
 	 * Node type constant indicating a node of type 
 	 * <code>Import</code>.
 	 * @see Import
 	 */
-	public static final int IMPORT = 54;
+	public static final int IMPORT = 55;
 	 
 	/**
 	 * Node type constant indicating a node of type 
 	 * <code>ImportDeclaration</code>.
 	 * @see ImportDeclaration
 	 */
-	public static final int IMPORT_DECLARATION = 55;
+	public static final int IMPORT_DECLARATION = 56;
 	 
 	/**
 	 * Node type constant indicating a node of type 
 	 * <code>InfixExpression</code>.
 	 * @see InfixExpression
 	 */
-	public static final int INFIX_EXPRESSION = 56;
+	public static final int INFIX_EXPRESSION = 57;
 	 
 	/**
 	 * Node type constant indicating a node of type 
 	 * <code>InvariantDeclaration</code>.
 	 * @see InvariantDeclaration
 	 */
-	public static final int INVARIANT_DECLARATION = 57;
+	public static final int INVARIANT_DECLARATION = 58;
 	 
 	/**
 	 * Node type constant indicating a node of type 
 	 * <code>IsTypeExpression</code>.
 	 * @see IsTypeExpression
 	 */
-	public static final int IS_TYPE_EXPRESSION = 58;
+	public static final int IS_TYPE_EXPRESSION = 59;
 	 
 	/**
 	 * Node type constant indicating a node of type 
 	 * <code>IsTypeSpecializationExpression</code>.
 	 * @see IsTypeSpecializationExpression
 	 */
-	public static final int IS_TYPE_SPECIALIZATION_EXPRESSION = 59;
+	public static final int IS_TYPE_SPECIALIZATION_EXPRESSION = 60;
 	 
 	/**
 	 * Node type constant indicating a node of type 
 	 * <code>LabelStatement</code>.
 	 * @see LabelStatement
 	 */
-	public static final int LABEL_STATEMENT = 60;
+	public static final int LABEL_STATEMENT = 61;
 	 
 	/**
 	 * Node type constant indicating a node of type 
 	 * <code>MixinDeclaration</code>.
 	 * @see MixinDeclaration
 	 */
-	public static final int MIXIN_DECLARATION = 61;
+	public static final int MIXIN_DECLARATION = 62;
 	 
 	/**
 	 * Node type constant indicating a node of type 
 	 * <code>Modifier</code>.
 	 * @see Modifier
 	 */
-	public static final int MODIFIER = 62;
+	public static final int MODIFIER = 63;
 	 
 	/**
 	 * Node type constant indicating a node of type 
 	 * <code>ModifierDeclaration</code>.
 	 * @see ModifierDeclaration
 	 */
-	public static final int MODIFIER_DECLARATION = 63;
+	public static final int MODIFIER_DECLARATION = 64;
 	 
 	/**
 	 * Node type constant indicating a node of type 
 	 * <code>ModuleDeclaration</code>.
 	 * @see ModuleDeclaration
 	 */
-	public static final int MODULE_DECLARATION = 64;
+	public static final int MODULE_DECLARATION = 65;
 	 
 	/**
 	 * Node type constant indicating a node of type 
 	 * <code>NewAnonymousClassExpression</code>.
 	 * @see NewAnonymousClassExpression
 	 */
-	public static final int NEW_ANONYMOUS_CLASS_EXPRESSION = 65;
+	public static final int NEW_ANONYMOUS_CLASS_EXPRESSION = 66;
 	 
 	/**
 	 * Node type constant indicating a node of type 
 	 * <code>NewExpression</code>.
 	 * @see NewExpression
 	 */
-	public static final int NEW_EXPRESSION = 66;
+	public static final int NEW_EXPRESSION = 67;
 	 
 	/**
 	 * Node type constant indicating a node of type 
 	 * <code>NullLiteral</code>.
 	 * @see NullLiteral
 	 */
-	public static final int NULL_LITERAL = 67;
+	public static final int NULL_LITERAL = 68;
 	 
 	/**
 	 * Node type constant indicating a node of type 
 	 * <code>NumberLiteral</code>.
 	 * @see NumberLiteral
 	 */
-	public static final int NUMBER_LITERAL = 68;
+	public static final int NUMBER_LITERAL = 69;
 	 
 	/**
 	 * Node type constant indicating a node of type 
 	 * <code>ParenthesizedExpression</code>.
 	 * @see ParenthesizedExpression
 	 */
-	public static final int PARENTHESIZED_EXPRESSION = 69;
+	public static final int PARENTHESIZED_EXPRESSION = 70;
 	 
 	/**
 	 * Node type constant indicating a node of type 
 	 * <code>PointerType</code>.
 	 * @see PointerType
 	 */
-	public static final int POINTER_TYPE = 70;
+	public static final int POINTER_TYPE = 71;
 	 
 	/**
 	 * Node type constant indicating a node of type 
 	 * <code>PostfixExpression</code>.
 	 * @see PostfixExpression
 	 */
-	public static final int POSTFIX_EXPRESSION = 71;
+	public static final int POSTFIX_EXPRESSION = 72;
 	 
 	/**
 	 * Node type constant indicating a node of type 
 	 * <code>PragmaDeclaration</code>.
 	 * @see PragmaDeclaration
 	 */
-	public static final int PRAGMA_DECLARATION = 72;
+	public static final int PRAGMA_DECLARATION = 73;
 	 
 	/**
 	 * Node type constant indicating a node of type 
 	 * <code>PragmaStatement</code>.
 	 * @see PragmaStatement
 	 */
-	public static final int PRAGMA_STATEMENT = 73;
+	public static final int PRAGMA_STATEMENT = 74;
 	 
 	/**
 	 * Node type constant indicating a node of type 
 	 * <code>PrefixExpression</code>.
 	 * @see PrefixExpression
 	 */
-	public static final int PREFIX_EXPRESSION = 74;
+	public static final int PREFIX_EXPRESSION = 75;
 	 
 	/**
 	 * Node type constant indicating a node of type 
 	 * <code>PrimitiveType</code>.
 	 * @see PrimitiveType
 	 */
-	public static final int PRIMITIVE_TYPE = 75;
+	public static final int PRIMITIVE_TYPE = 76;
 	 
 	/**
 	 * Node type constant indicating a node of type 
 	 * <code>QualifiedName</code>.
 	 * @see QualifiedName
 	 */
-	public static final int QUALIFIED_NAME = 76;
+	public static final int QUALIFIED_NAME = 77;
 	 
 	/**
 	 * Node type constant indicating a node of type 
 	 * <code>QualifiedType</code>.
 	 * @see QualifiedType
 	 */
-	public static final int QUALIFIED_TYPE = 77;
+	public static final int QUALIFIED_TYPE = 78;
 	 
 	/**
 	 * Node type constant indicating a node of type 
 	 * <code>ReturnStatement</code>.
 	 * @see ReturnStatement
 	 */
-	public static final int RETURN_STATEMENT = 78;
+	public static final int RETURN_STATEMENT = 79;
 	 
 	/**
 	 * Node type constant indicating a node of type 
 	 * <code>ScopeStatement</code>.
 	 * @see ScopeStatement
 	 */
-	public static final int SCOPE_STATEMENT = 79;
+	public static final int SCOPE_STATEMENT = 80;
 	 
 	/**
 	 * Node type constant indicating a node of type 
 	 * <code>SelectiveImport</code>.
 	 * @see SelectiveImport
 	 */
-	public static final int SELECTIVE_IMPORT = 80;
+	public static final int SELECTIVE_IMPORT = 81;
 	 
 	/**
 	 * Node type constant indicating a node of type 
 	 * <code>SimpleName</code>.
 	 * @see SimpleName
 	 */
-	public static final int SIMPLE_NAME = 81;
+	public static final int SIMPLE_NAME = 82;
 	 
 	/**
 	 * Node type constant indicating a node of type 
 	 * <code>SimpleType</code>.
 	 * @see SimpleType
 	 */
-	public static final int SIMPLE_TYPE = 82;
+	public static final int SIMPLE_TYPE = 83;
 	 
 	/**
 	 * Node type constant indicating a node of type 
 	 * <code>SliceExpression</code>.
 	 * @see SliceExpression
 	 */
-	public static final int SLICE_EXPRESSION = 83;
+	public static final int SLICE_EXPRESSION = 84;
 	 
 	/**
 	 * Node type constant indicating a node of type 
 	 * <code>SliceType</code>.
 	 * @see SliceType
 	 */
-	public static final int SLICE_TYPE = 84;
+	public static final int SLICE_TYPE = 85;
 	 
 	/**
 	 * Node type constant indicating a node of type 
 	 * <code>StaticArrayType</code>.
 	 * @see StaticArrayType
 	 */
-	public static final int STATIC_ARRAY_TYPE = 85;
+	public static final int STATIC_ARRAY_TYPE = 86;
 	 
 	/**
 	 * Node type constant indicating a node of type 
 	 * <code>StaticAssert</code>.
 	 * @see StaticAssert
 	 */
-	public static final int STATIC_ASSERT = 86;
+	public static final int STATIC_ASSERT = 87;
 	 
 	/**
 	 * Node type constant indicating a node of type 
 	 * <code>StaticAssertStatement</code>.
 	 * @see StaticAssertStatement
 	 */
-	public static final int STATIC_ASSERT_STATEMENT = 87;
+	public static final int STATIC_ASSERT_STATEMENT = 88;
 	 
 	/**
 	 * Node type constant indicating a node of type 
 	 * <code>StaticIfDeclaration</code>.
 	 * @see StaticIfDeclaration
 	 */
-	public static final int STATIC_IF_DECLARATION = 88;
+	public static final int STATIC_IF_DECLARATION = 89;
 	 
 	/**
 	 * Node type constant indicating a node of type 
 	 * <code>StaticIfStatement</code>.
 	 * @see StaticIfStatement
 	 */
-	public static final int STATIC_IF_STATEMENT = 89;
+	public static final int STATIC_IF_STATEMENT = 90;
 	 
 	/**
 	 * Node type constant indicating a node of type 
 	 * <code>StringLiteral</code>.
 	 * @see StringLiteral
 	 */
-	public static final int STRING_LITERAL = 90;
+	public static final int STRING_LITERAL = 91;
 	 
 	/**
 	 * Node type constant indicating a node of type 
 	 * <code>StringsExpression</code>.
 	 * @see StringsExpression
 	 */
-	public static final int STRINGS_EXPRESSION = 91;
+	public static final int STRINGS_EXPRESSION = 92;
 	 
 	/**
 	 * Node type constant indicating a node of type 
 	 * <code>StructInitializer</code>.
 	 * @see StructInitializer
 	 */
-	public static final int STRUCT_INITIALIZER = 92;
+	public static final int STRUCT_INITIALIZER = 93;
 	 
 	/**
 	 * Node type constant indicating a node of type 
 	 * <code>StructInitializerFragment</code>.
 	 * @see StructInitializerFragment
 	 */
-	public static final int STRUCT_INITIALIZER_FRAGMENT = 93;
+	public static final int STRUCT_INITIALIZER_FRAGMENT = 94;
 	 
 	/**
 	 * Node type constant indicating a node of type 
 	 * <code>SuperLiteral</code>.
 	 * @see SuperLiteral
 	 */
-	public static final int SUPER_LITERAL = 94;
+	public static final int SUPER_LITERAL = 95;
 	 
 	/**
 	 * Node type constant indicating a node of type 
 	 * <code>SwitchStatement</code>.
 	 * @see SwitchStatement
 	 */
-	public static final int SWITCH_STATEMENT = 95;
+	public static final int SWITCH_STATEMENT = 96;
 	 
 	/**
 	 * Node type constant indicating a node of type 
 	 * <code>SynchronizedStatement</code>.
 	 * @see SynchronizedStatement
 	 */
-	public static final int SYNCHRONIZED_STATEMENT = 96;
+	public static final int SYNCHRONIZED_STATEMENT = 97;
 	 
 	/**
 	 * Node type constant indicating a node of type 
 	 * <code>TemplateDeclaration</code>.
 	 * @see TemplateDeclaration
 	 */
-	public static final int TEMPLATE_DECLARATION = 97;
+	public static final int TEMPLATE_DECLARATION = 98;
 	 
 	/**
 	 * Node type constant indicating a node of type 
 	 * <code>TemplateType</code>.
 	 * @see TemplateType
 	 */
-	public static final int TEMPLATE_TYPE = 98;
+	public static final int TEMPLATE_TYPE = 99;
 	 
 	/**
 	 * Node type constant indicating a node of type 
 	 * <code>ThisLiteral</code>.
 	 * @see ThisLiteral
 	 */
-	public static final int THIS_LITERAL = 99;
+	public static final int THIS_LITERAL = 100;
 	 
 	/**
 	 * Node type constant indicating a node of type 
 	 * <code>ThrowStatement</code>.
 	 * @see ThrowStatement
 	 */
-	public static final int THROW_STATEMENT = 100;
+	public static final int THROW_STATEMENT = 101;
 	 
 	/**
 	 * Node type constant indicating a node of type 
 	 * <code>TryStatement</code>.
 	 * @see TryStatement
 	 */
-	public static final int TRY_STATEMENT = 101;
+	public static final int TRY_STATEMENT = 102;
 	 
 	/**
 	 * Node type constant indicating a node of type 
 	 * <code>TupleTemplateParameter</code>.
 	 * @see TupleTemplateParameter
 	 */
-	public static final int TUPLE_TEMPLATE_PARAMETER = 102;
+	public static final int TUPLE_TEMPLATE_PARAMETER = 103;
 	 
 	/**
 	 * Node type constant indicating a node of type 
 	 * <code>TypedefDeclaration</code>.
 	 * @see TypedefDeclaration
 	 */
-	public static final int TYPEDEF_DECLARATION = 103;
+	public static final int TYPEDEF_DECLARATION = 104;
 	 
 	/**
 	 * Node type constant indicating a node of type 
 	 * <code>TypedefDeclarationFragment</code>.
 	 * @see TypedefDeclarationFragment
 	 */
-	public static final int TYPEDEF_DECLARATION_FRAGMENT = 104;
+	public static final int TYPEDEF_DECLARATION_FRAGMENT = 105;
 	 
 	/**
 	 * Node type constant indicating a node of type 
 	 * <code>TypeDotIdentifierExpression</code>.
 	 * @see TypeDotIdentifierExpression
 	 */
-	public static final int TYPE_DOT_IDENTIFIER_EXPRESSION = 105;
+	public static final int TYPE_DOT_IDENTIFIER_EXPRESSION = 106;
 	 
 	/**
 	 * Node type constant indicating a node of type 
 	 * <code>TypeExpression</code>.
 	 * @see TypeExpression
 	 */
-	public static final int TYPE_EXPRESSION = 106;
+	public static final int TYPE_EXPRESSION = 107;
 	 
 	/**
 	 * Node type constant indicating a node of type 
 	 * <code>TypeidExpression</code>.
 	 * @see TypeidExpression
 	 */
-	public static final int TYPEID_EXPRESSION = 107;
+	public static final int TYPEID_EXPRESSION = 108;
 	 
 	/**
 	 * Node type constant indicating a node of type 
 	 * <code>TypeofType</code>.
 	 * @see TypeofType
 	 */
-	public static final int TYPEOF_TYPE = 108;
+	public static final int TYPEOF_TYPE = 109;
 	 
 	/**
 	 * Node type constant indicating a node of type 
 	 * <code>TypeTemplateParameter</code>.
 	 * @see TypeTemplateParameter
 	 */
-	public static final int TYPE_TEMPLATE_PARAMETER = 109;
+	public static final int TYPE_TEMPLATE_PARAMETER = 110;
 	 
 	/**
 	 * Node type constant indicating a node of type 
 	 * <code>UnitTestDeclaration</code>.
 	 * @see UnitTestDeclaration
 	 */
-	public static final int UNIT_TEST_DECLARATION = 110;
+	public static final int UNIT_TEST_DECLARATION = 111;
 	 
 	/**
 	 * Node type constant indicating a node of type 
 	 * <code>ValueTemplateParameter</code>.
 	 * @see ValueTemplateParameter
 	 */
-	public static final int VALUE_TEMPLATE_PARAMETER = 111;
+	public static final int VALUE_TEMPLATE_PARAMETER = 112;
 	 
 	/**
 	 * Node type constant indicating a node of type 
 	 * <code>VariableDeclaration</code>.
 	 * @see VariableDeclaration
 	 */
-	public static final int VARIABLE_DECLARATION = 112;
+	public static final int VARIABLE_DECLARATION = 113;
 	 
 	/**
 	 * Node type constant indicating a node of type 
 	 * <code>VariableDeclarationFragment</code>.
 	 * @see VariableDeclarationFragment
 	 */
-	public static final int VARIABLE_DECLARATION_FRAGMENT = 113;
+	public static final int VARIABLE_DECLARATION_FRAGMENT = 114;
 	 
 	/**
 	 * Node type constant indicating a node of type 
 	 * <code>Version</code>.
 	 * @see Version
 	 */
-	public static final int VERSION = 114;
+	public static final int VERSION = 115;
 	 
 	/**
 	 * Node type constant indicating a node of type 
 	 * <code>VersionAssignment</code>.
 	 * @see VersionAssignment
 	 */
-	public static final int VERSION_ASSIGNMENT = 115;
+	public static final int VERSION_ASSIGNMENT = 116;
 	 
 	/**
 	 * Node type constant indicating a node of type 
 	 * <code>VersionDeclaration</code>.
 	 * @see VersionDeclaration
 	 */
-	public static final int VERSION_DECLARATION = 116;
+	public static final int VERSION_DECLARATION = 117;
 	 
 	/**
 	 * Node type constant indicating a node of type 
 	 * <code>VersionStatement</code>.
 	 * @see VersionStatement
 	 */
-	public static final int VERSION_STATEMENT = 117;
+	public static final int VERSION_STATEMENT = 118;
 	 
 	/**
 	 * Node type constant indicating a node of type 
 	 * <code>VoidInitializer</code>.
 	 * @see VoidInitializer
 	 */
-	public static final int VOID_INITIALIZER = 118;
+	public static final int VOID_INITIALIZER = 119;
 	 
 	/**
 	 * Node type constant indicating a node of type 
 	 * <code>VolatileStatement</code>.
 	 * @see VolatileStatement
 	 */
-	public static final int VOLATILE_STATEMENT = 119;
+	public static final int VOLATILE_STATEMENT = 120;
 	 
 	/**
 	 * Node type constant indicating a node of type 
 	 * <code>WhileStatement</code>.
 	 * @see WhileStatement
 	 */
-	public static final int WHILE_STATEMENT = 120;
+	public static final int WHILE_STATEMENT = 121;
 	 
 	/**
 	 * Node type constant indicating a node of type 
 	 * <code>WithStatement</code>.
 	 * @see WithStatement
 	 */
-	public static final int WITH_STATEMENT = 121;
+	public static final int WITH_STATEMENT = 122;
 	
-	// TODO Descent remove
-	ASTNode() {
-		this(AST.newAST(AST.D1));
+	/**
+	 * Returns the node class for the corresponding node type.
+	 * 
+	 * @param nodeType AST node type
+	 * @return the corresponding <code>ASTNode</code> subclass
+	 * @exception IllegalArgumentException if <code>nodeType</code> is 
+	 * not a legal AST node type
+	 * @see #getNodeType()
+	 */
+	public static Class nodeClassForType(int nodeType) {
+		switch (nodeType) {
+		case AGGREGATE_DECLARATION:
+			return AggregateDeclaration.class;
+		case ALIAS_DECLARATION:
+			return AliasDeclaration.class;
+		case ALIAS_DECLARATION_FRAGMENT:
+			return AliasDeclarationFragment.class;
+		case ALIAS_TEMPLATE_PARAMETER:
+			return AliasTemplateParameter.class;
+		case ALIGN_DECLARATION:
+			return AlignDeclaration.class;
+		case ARGUMENT:
+			return Argument.class;
+		case ARRAY_ACCESS:
+			return ArrayAccess.class;
+		case ARRAY_INITIALIZER:
+			return ArrayInitializer.class;
+		case ARRAY_INITIALIZER_FRAGMENT:
+			return ArrayInitializerFragment.class;
+		case ARRAY_LITERAL:
+			return ArrayLiteral.class;
+		case ASM_STATEMENT:
+			return AsmStatement.class;
+		case ASSERT_EXPRESSION:
+			return AssertExpression.class;
+		case ASSIGNMENT:
+			return Assignment.class;
+		case ASSOCIATIVE_ARRAY_TYPE:
+			return AssociativeArrayType.class;
+		case BASE_CLASS:
+			return BaseClass.class;
+		case BLOCK:
+			return Block.class;
+		case BOOLEAN_LITERAL:
+			return BooleanLiteral.class;
+		case BREAK_STATEMENT:
+			return BreakStatement.class;
+		case CALL_EXPRESSION:
+			return CallExpression.class;
+		case CASE_STATEMENT:
+			return CaseStatement.class;
+		case CAST_EXPRESSION:
+			return CastExpression.class;
+		case CATCH_CLAUSE:
+			return CatchClause.class;
+		case CHARACTER_LITERAL:
+			return CharacterLiteral.class;
+		case COMMENT:
+			return Comment.class;
+		case COMPILATION_UNIT:
+			return CompilationUnit.class;
+		case CONDITIONAL_EXPRESSION:
+			return ConditionalExpression.class;
+		case CONTINUE_STATEMENT:
+			return ContinueStatement.class;
+		case DEBUG_ASSIGNMENT:
+			return DebugAssignment.class;
+		case DEBUG_DECLARATION:
+			return DebugDeclaration.class;
+		case DEBUG_STATEMENT:
+			return DebugStatement.class;
+		case DECLARATION_STATEMENT:
+			return DeclarationStatement.class;
+		case DEFAULT_STATEMENT:
+			return DefaultStatement.class;
+		case DELEGATE_TYPE:
+			return DelegateType.class;
+		case DELETE_EXPRESSION:
+			return DeleteExpression.class;
+		case DOLLAR_LITERAL:
+			return DollarLiteral.class;
+		case DO_STATEMENT:
+			return DoStatement.class;
+		case DOT_IDENTIFIER_EXPRESSION:
+			return DotIdentifierExpression.class;
+		case DOT_TEMPLATE_TYPE_EXPRESSION:
+			return DotTemplateTypeExpression.class;
+		case DYNAMIC_ARRAY_TYPE:
+			return DynamicArrayType.class;
+		case ENUM_DECLARATION:
+			return EnumDeclaration.class;
+		case ENUM_MEMBER:
+			return EnumMember.class;
+		case EXPRESSION_INITIALIZER:
+			return ExpressionInitializer.class;
+		case EXPRESSION_STATEMENT:
+			return ExpressionStatement.class;
+		case EXTERN_DECLARATION:
+			return ExternDeclaration.class;
+		case FOREACH_STATEMENT:
+			return ForeachStatement.class;
+		case FOR_STATEMENT:
+			return ForStatement.class;
+		case FUNCTION_DECLARATION:
+			return FunctionDeclaration.class;
+		case FUNCTION_LITERAL_DECLARATION_EXPRESSION:
+			return FunctionLiteralDeclarationExpression.class;
+		case GOTO_CASE_STATEMENT:
+			return GotoCaseStatement.class;
+		case GOTO_DEFAULT_STATEMENT:
+			return GotoDefaultStatement.class;
+		case GOTO_STATEMENT:
+			return GotoStatement.class;
+		case IF_STATEMENT:
+			return IfStatement.class;
+		case IFTYPE_DECLARATION:
+			return IftypeDeclaration.class;
+		case IFTYPE_STATEMENT:
+			return IftypeStatement.class;
+		case IMPORT:
+			return Import.class;
+		case IMPORT_DECLARATION:
+			return ImportDeclaration.class;
+		case INFIX_EXPRESSION:
+			return InfixExpression.class;
+		case INVARIANT_DECLARATION:
+			return InvariantDeclaration.class;
+		case IS_TYPE_EXPRESSION:
+			return IsTypeExpression.class;
+		case IS_TYPE_SPECIALIZATION_EXPRESSION:
+			return IsTypeSpecializationExpression.class;
+		case LABEL_STATEMENT:
+			return LabelStatement.class;
+		case MIXIN_DECLARATION:
+			return MixinDeclaration.class;
+		case MODIFIER:
+			return Modifier.class;
+		case MODIFIER_DECLARATION:
+			return ModifierDeclaration.class;
+		case MODULE_DECLARATION:
+			return ModuleDeclaration.class;
+		case NEW_ANONYMOUS_CLASS_EXPRESSION:
+			return NewAnonymousClassExpression.class;
+		case NEW_EXPRESSION:
+			return NewExpression.class;
+		case NULL_LITERAL:
+			return NullLiteral.class;
+		case NUMBER_LITERAL:
+			return NumberLiteral.class;
+		case PARENTHESIZED_EXPRESSION:
+			return ParenthesizedExpression.class;
+		case POINTER_TYPE:
+			return PointerType.class;
+		case POSTFIX_EXPRESSION:
+			return PostfixExpression.class;
+		case PRAGMA_DECLARATION:
+			return PragmaDeclaration.class;
+		case PRAGMA_STATEMENT:
+			return PragmaStatement.class;
+		case PREFIX_EXPRESSION:
+			return PrefixExpression.class;
+		case PRIMITIVE_TYPE:
+			return PrimitiveType.class;
+		case QUALIFIED_NAME:
+			return QualifiedName.class;
+		case QUALIFIED_TYPE:
+			return QualifiedType.class;
+		case RETURN_STATEMENT:
+			return ReturnStatement.class;
+		case SCOPE_STATEMENT:
+			return ScopeStatement.class;
+		case SELECTIVE_IMPORT:
+			return SelectiveImport.class;
+		case SIMPLE_NAME:
+			return SimpleName.class;
+		case SIMPLE_TYPE:
+			return SimpleType.class;
+		case SLICE_EXPRESSION:
+			return SliceExpression.class;
+		case SLICE_TYPE:
+			return SliceType.class;
+		case STATIC_ARRAY_TYPE:
+			return StaticArrayType.class;
+		case STATIC_ASSERT:
+			return StaticAssert.class;
+		case STATIC_ASSERT_STATEMENT:
+			return StaticAssertStatement.class;
+		case STATIC_IF_DECLARATION:
+			return StaticIfDeclaration.class;
+		case STATIC_IF_STATEMENT:
+			return StaticIfStatement.class;
+		case STRING_LITERAL:
+			return StringLiteral.class;
+		case STRINGS_EXPRESSION:
+			return StringsExpression.class;
+		case STRUCT_INITIALIZER:
+			return StructInitializer.class;
+		case STRUCT_INITIALIZER_FRAGMENT:
+			return StructInitializerFragment.class;
+		case SUPER_LITERAL:
+			return SuperLiteral.class;
+		case SWITCH_STATEMENT:
+			return SwitchStatement.class;
+		case SYNCHRONIZED_STATEMENT:
+			return SynchronizedStatement.class;
+		case TEMPLATE_DECLARATION:
+			return TemplateDeclaration.class;
+		case TEMPLATE_TYPE:
+			return TemplateType.class;
+		case THIS_LITERAL:
+			return ThisLiteral.class;
+		case THROW_STATEMENT:
+			return ThrowStatement.class;
+		case TRY_STATEMENT:
+			return TryStatement.class;
+		case TUPLE_TEMPLATE_PARAMETER:
+			return TupleTemplateParameter.class;
+		case TYPEDEF_DECLARATION:
+			return TypedefDeclaration.class;
+		case TYPEDEF_DECLARATION_FRAGMENT:
+			return TypedefDeclarationFragment.class;
+		case TYPE_DOT_IDENTIFIER_EXPRESSION:
+			return TypeDotIdentifierExpression.class;
+		case TYPE_EXPRESSION:
+			return TypeExpression.class;
+		case TYPEID_EXPRESSION:
+			return TypeidExpression.class;
+		case TYPEOF_TYPE:
+			return TypeofType.class;
+		case TYPE_TEMPLATE_PARAMETER:
+			return TypeTemplateParameter.class;
+		case UNIT_TEST_DECLARATION:
+			return UnitTestDeclaration.class;
+		case VALUE_TEMPLATE_PARAMETER:
+			return ValueTemplateParameter.class;
+		case VARIABLE_DECLARATION:
+			return VariableDeclaration.class;
+		case VARIABLE_DECLARATION_FRAGMENT:
+			return VariableDeclarationFragment.class;
+		case VERSION:
+			return Version.class;
+		case VERSION_ASSIGNMENT:
+			return VersionAssignment.class;
+		case VERSION_DECLARATION:
+			return VersionDeclaration.class;
+		case VERSION_STATEMENT:
+			return VersionStatement.class;
+		case VOID_INITIALIZER:
+			return VoidInitializer.class;
+		case VOLATILE_STATEMENT:
+			return VolatileStatement.class;
+		case WHILE_STATEMENT:
+			return WhileStatement.class;
+		case WITH_STATEMENT:
+			return WithStatement.class;
+		}
+		return null;
 	}
-	
-	public final static ASTNode[] NO_ELEMENTS = new ASTNode[0];
-	public final static Declaration[] NO_DECLARATIONS = new Declaration[0];
-	
-	public List<Comment> comments = new ArrayList<Comment>();
 	
 	/**
 	 * Owning AST.
@@ -914,13 +1304,13 @@ public abstract class ASTNode {
 	 * or <code>-1</code> if no source position information is available
 	 * for this node; <code>-1</code> by default.
 	 */
-	public int startPosition = -1;
+	private int startPosition = -1;
 	
 	/**
 	 * A character length, or <code>0</code> if no source position
 	 * information is recorded for this node; <code>0</code> by default.
 	 */
-	public int length = 0;
+	private int length = 0;
 	
 	/**
 	 * Flag constant (bit mask, value 1) indicating that there is something
@@ -1343,8 +1733,7 @@ public abstract class ASTNode {
 		
 		this.ast = ast;
 		setNodeType(getNodeType0());
-		setFlags(ast.getDefaultNodeFlag());
-		
+		setFlags(ast.getDefaultNodeFlag());		
 		// setFlags calls modifying();
 	}
 	
@@ -1397,7 +1786,6 @@ public abstract class ASTNode {
 	 * 
 	 * @return the location of this node in its parent, 
 	 * or <code>null</code> if this node has no parent
-	 * @since 3.0
 	 */ 
 	public final StructuralPropertyDescriptor getLocationInParent() {
 		return this.location;
@@ -1435,7 +1823,6 @@ public abstract class ASTNode {
 	 * @param property the property
 	 * @return the value, or <code>null</code> if none
 	 * @exception RuntimeException if this node does not have the given property
-	 * @since 3.0
 	 */
 	public final Object getStructuralProperty(StructuralPropertyDescriptor property) {
 		if (property instanceof SimplePropertyDescriptor) {
@@ -1474,7 +1861,6 @@ public abstract class ASTNode {
 	 * @param value the property value
 	 * @exception RuntimeException if this node does not have the
 	 * given property, or if the given property cannot be set
-	 * @since 3.0
 	 */
 	public final void setStructuralProperty(StructuralPropertyDescriptor property, Object value) {
 		if (property instanceof SimplePropertyDescriptor) {
@@ -1524,7 +1910,6 @@ public abstract class ASTNode {
 	 * <code>0</code> for set operations
 	 * @exception RuntimeException if this node does not have the 
 	 * given property, or if the given value cannot be set as specified
-	 * @since 3.0
 	 */
 	int internalGetSetIntProperty(SimplePropertyDescriptor property, boolean get, int value) {
 		throw new RuntimeException("Node does not have this property");  //$NON-NLS-1$
@@ -1545,7 +1930,6 @@ public abstract class ASTNode {
 	 * <code>false</code> for set operations
 	 * @exception RuntimeException if this node does not have the 
 	 * given property, or if the given value cannot be set as specified
-	 * @since 3.0
 	 */
 	boolean internalGetSetBooleanProperty(SimplePropertyDescriptor property, boolean get, boolean value) {
 		throw new RuntimeException("Node does not have this property");  //$NON-NLS-1$
@@ -1567,7 +1951,6 @@ public abstract class ASTNode {
 	 * <code>null</code> for set operations
 	 * @exception RuntimeException if this node does not have the 
 	 * given property, or if the given value cannot be set as specified
-	 * @since 3.0
 	 */
 	Object internalGetSetObjectProperty(SimplePropertyDescriptor property, boolean get, Object value) {
 		throw new RuntimeException("Node does not have this property");  //$NON-NLS-1$
@@ -1588,7 +1971,6 @@ public abstract class ASTNode {
 	 * <code>null</code> for set operations
 	 * @exception RuntimeException if this node does not have the
 	 * given property, or if the given child cannot be set as specified
-	 * @since 3.0
 	 */
 	ASTNode internalGetSetChildProperty(ChildPropertyDescriptor property, boolean get, ASTNode child) {
 		throw new RuntimeException("Node does not have this property");  //$NON-NLS-1$
@@ -1604,7 +1986,6 @@ public abstract class ASTNode {
 	 * @return the list (element type: {@link ASTNode})
 	 * @exception RuntimeException if the given node does not have the
 	 * given property
-	 * @since 3.0
 	 */
 	List internalGetChildListProperty(ChildListPropertyDescriptor property) {
 		throw new RuntimeException("Node does not have this property");  //$NON-NLS-1$
@@ -1621,7 +2002,6 @@ public abstract class ASTNode {
 	 * 
 	 * @return a list of property descriptors (element type: 
 	 * {@link StructuralPropertyDescriptor})
-	 * @since 3.0
 	 */
 	public final List structuralPropertiesForType() {
 		return internalStructuralPropertiesForType(this.ast.apiLevel);
@@ -1640,11 +2020,8 @@ public abstract class ASTNode {
 	 * @param apiLevel the API level; one of the <code>AST.JLS*</code> constants
 	 * @return a list of property descriptors (element type: 
 	 * {@link StructuralPropertyDescriptor})
-	 * @since 3.0
-	 * 
-	 * TODO make it abstract
 	 */
-	List internalStructuralPropertiesForType(int apiLevel) { return null; }
+	abstract List internalStructuralPropertiesForType(int apiLevel);
 	
 	/**
 	 * Internal helper method that starts the building a list of
@@ -1705,7 +2082,6 @@ public abstract class ASTNode {
 	 * or <code>null</code> if <code>parent</code> is <code>null</code>
 	 * @see #getLocationInParent
 	 * @see #getParent
-	 * @since 3.0
 	 */ 
 	final void setParent(ASTNode parent, StructuralPropertyDescriptor property) {
 		this.ast.modifying();
@@ -1722,8 +2098,6 @@ public abstract class ASTNode {
 	 * parent, then this node is detached from its parent 
 	 * by passing <code>null</code> to the appropriate setter method;
 	 * this operation fails if this node is in a mandatory property.
-	 * 
-	 * @since 3.0
 	 */ 
 	public final void delete() {
 		StructuralPropertyDescriptor p = getLocationInParent();
@@ -1760,17 +2134,17 @@ public abstract class ASTNode {
 	 * <li>the child is null</li>
 	 * <li>the node belongs to a different AST</li>
 	 * <li>the child has the incorrect node type</li>
-	 * <li>the node already has a parent</li>
+	 * <li>TODO the node already has a parent</li>
 	 * <li>a cycle in would be created</li>
 	 * </ul>
 	 */ 
 	static void checkNewChild(ASTNode node, ASTNode newChild,
 			boolean cycleCheck, Class nodeType) {
-		/* JDT Remove comments
 		if (newChild.ast != node.ast) {
 			// new child is from a different AST
 			throw new IllegalArgumentException();
 		}		
+		/* FIXME this breaks the parser
 		if (newChild.getParent() != null) {
 			// new child currently has a different parent
 			throw new IllegalArgumentException();
@@ -1828,7 +2202,6 @@ public abstract class ASTNode {
 	 * <li>a cycle in would be created</li>
 	 * <li>any of the nodes involved are unmodifiable</li>
 	 * </ul>
-	 * @since 3.0
 	 */ 
 	final void preReplaceChild(ASTNode oldChild, ASTNode newChild, ChildPropertyDescriptor property) {
 		if ((this.typeAndFlags & PROTECT) != 0) {
@@ -1867,7 +2240,6 @@ public abstract class ASTNode {
 	 * old child of this node with another node.
      * See {@link #preReplaceChild(ASTNode, ASTNode, ChildPropertyDescriptor)}
      * for details.
-	 * @since 3.0
 	 */ 
 	final void postReplaceChild(ASTNode oldChild, ASTNode newChild, ChildPropertyDescriptor property) {
 		// link new child to parent
@@ -1906,7 +2278,6 @@ public abstract class ASTNode {
 	 * <ul>
 	 * <li>this node is unmodifiable</li>
 	 * </ul>
-	 * @since 3.0
 	 */ 
 	final void preValueChange(SimplePropertyDescriptor property) {
 		if ((this.typeAndFlags & PROTECT) != 0) {
@@ -1921,7 +2292,6 @@ public abstract class ASTNode {
      * Postlude portion of the "3 step program" for replacing the
 	 * old child of this node with another node.
      * See {@link #preValueChange(SimplePropertyDescriptor)} for details.
-	 * @since 3.0
 	 */ 
 	final void postValueChange(SimplePropertyDescriptor property) {
 		this.ast.postValueChangeEvent(this, property);
@@ -1955,7 +2325,6 @@ public abstract class ASTNode {
      *    }
      * }
      * </pre>
-     * @since 3.0
      */
 	final void preLazyInit() {
 		// IMPORTANT: this method is called by readers
@@ -1971,7 +2340,6 @@ public abstract class ASTNode {
 	 *   there is no replacement child
 	 * @param property the property descriptor of this node describing
      * the relationship between node and child
-     * @since 3.0
      */
 	final void postLazyInit(ASTNode newChild, ChildPropertyDescriptor property) {
 		// IMPORTANT: this method is called by readers
@@ -2211,10 +2579,8 @@ public abstract class ASTNode {
 	 * </p>
 	 * 
 	 * @return one of the node type constants
-	 * 
-	 * TODO make it package
 	 */
-	public int getNodeType0() { return 0; }
+	abstract int getNodeType0();
 	
 	/**
 	 * The <code>ASTNode</code> implementation of this <code>Object</code>
@@ -2616,5 +2982,10 @@ public abstract class ASTNode {
 			}
 		}
 	}
+	
+	public final static ASTNode[] NO_ELEMENTS = new ASTNode[0];
+	public final static Declaration[] NO_DECLARATIONS = new Declaration[0];
+	
+	public List<Comment> comments = new ArrayList<Comment>();
 
 }

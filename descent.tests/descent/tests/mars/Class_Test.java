@@ -16,12 +16,12 @@ public class Class_Test extends Parser_Test {
 	public void testEmpty() {
 		String s = " class Clazz { }";
 		AggregateDeclaration c = (AggregateDeclaration) getSingleDeclarationNoProblems(s);
-		assertEquals(ASTNode.AGGREGATE_DECLARATION, c.getNodeType0());
+		assertEquals(ASTNode.AGGREGATE_DECLARATION, c.getNodeType());
 		assertEquals(AggregateDeclaration.Kind.CLASS, c.getKind());
 		assertPosition(c, 1, 15);
 		
 		SimpleName name = c.getName();
-		assertEquals(ASTNode.SIMPLE_NAME, name.getNodeType0());
+		assertEquals(ASTNode.SIMPLE_NAME, name.getNodeType());
 		assertEquals("Clazz", name.getIdentifier());
 		assertPosition(name, 7, 5);
 		
@@ -42,7 +42,7 @@ public class Class_Test extends Parser_Test {
 		List<BaseClass> bs = c.baseClasses();
 		assertEquals(5, bs.size());
 		
-		assertEquals(ASTNode.BASE_CLASS, bs.get(0).getNodeType0());
+		assertEquals(ASTNode.BASE_CLASS, bs.get(0).getNodeType());
 		assertNull(bs.get(0).getModifier());
 		assertEquals(ModifierKeyword.PRIVATE_KEYWORD, bs.get(1).getModifier().getModifierKeyword());
 		assertEquals(ModifierKeyword.PACKAGE_KEYWORD, bs.get(2).getModifier().getModifierKeyword());

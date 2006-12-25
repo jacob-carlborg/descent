@@ -113,9 +113,8 @@ public class DoStatement extends Statement {
 
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
-	 * TODO make it package
 	 */
-	public final int getNodeType0() {
+	final int getNodeType0() {
 		return DO_STATEMENT;
 	}
 

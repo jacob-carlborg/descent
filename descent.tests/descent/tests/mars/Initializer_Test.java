@@ -16,14 +16,14 @@ public class Initializer_Test extends Parser_Test {
 	public void testVoid() {
 		String s = " void;";
 		Initializer init = parseInitializer(s);
-		assertEquals(ASTNode.VOID_INITIALIZER, init.getNodeType0());
+		assertEquals(ASTNode.VOID_INITIALIZER, init.getNodeType());
 		assertPosition(init, 1, 4);
 	}
 	
 	public void testExpression() {
 		String s = " 1;";
 		ExpressionInitializer init = (ExpressionInitializer) parseInitializer(s);
-		assertEquals(ASTNode.EXPRESSION_INITIALIZER, init.getNodeType0());
+		assertEquals(ASTNode.EXPRESSION_INITIALIZER, init.getNodeType());
 		assertEquals("1", ((NumberLiteral) init.getExpression()).getToken());
 		assertPosition(init, 1, 1);
 	}
@@ -31,7 +31,7 @@ public class Initializer_Test extends Parser_Test {
 	public void testStructEmpty() {
 		String s = " { };";
 		StructInitializer init = (StructInitializer) parseInitializer(s);
-		assertEquals(ASTNode.STRUCT_INITIALIZER, init.getNodeType0());
+		assertEquals(ASTNode.STRUCT_INITIALIZER, init.getNodeType());
 		assertPosition(init, 1, 3);
 		
 		assertEquals(0, init.fragments().size());
@@ -40,7 +40,7 @@ public class Initializer_Test extends Parser_Test {
 	public void testStructInitializers() {
 		String s = " { a = 2, b = 3 };";
 		StructInitializer init = (StructInitializer) parseInitializer(s);
-		assertEquals(ASTNode.STRUCT_INITIALIZER, init.getNodeType0());
+		assertEquals(ASTNode.STRUCT_INITIALIZER, init.getNodeType());
 		assertPosition(init, 1, s.length() - 2);
 		
 		assertEquals(2, init.fragments().size());
@@ -51,14 +51,14 @@ public class Initializer_Test extends Parser_Test {
 		assertPosition(init.fragments().get(0).getInitializer(), 3, 5);
 		assertPosition(init.fragments().get(1).getInitializer(), 10, 5);
 		
-		assertEquals(ASTNode.EXPRESSION_INITIALIZER, init.fragments().get(0).getInitializer().getNodeType0());
-		assertEquals(ASTNode.EXPRESSION_INITIALIZER, init.fragments().get(0).getInitializer().getNodeType0());
+		assertEquals(ASTNode.EXPRESSION_INITIALIZER, init.fragments().get(0).getInitializer().getNodeType());
+		assertEquals(ASTNode.EXPRESSION_INITIALIZER, init.fragments().get(0).getInitializer().getNodeType());
 	}
 	
 	public void testStructInitializers2() {
 		String s = " { a : b = 2 };";
 		StructInitializer init = (StructInitializer) parseInitializer(s);
-		assertEquals(ASTNode.STRUCT_INITIALIZER, init.getNodeType0());
+		assertEquals(ASTNode.STRUCT_INITIALIZER, init.getNodeType());
 		assertPosition(init, 1, s.length() - 2);
 		
 		assertEquals(1, init.fragments().size());
@@ -70,26 +70,26 @@ public class Initializer_Test extends Parser_Test {
 	public void testStructInitializers3() {
 		String s = " { 2 };";
 		StructInitializer init = (StructInitializer) parseInitializer(s);
-		assertEquals(ASTNode.STRUCT_INITIALIZER, init.getNodeType0());
+		assertEquals(ASTNode.STRUCT_INITIALIZER, init.getNodeType());
 		assertPosition(init, 1, s.length() - 2);
 		
 		assertEquals(1, init.fragments().size());
 		assertNull(init.fragments().get(0).getName());
 		
-		assertEquals(ASTNode.EXPRESSION_INITIALIZER, init.fragments().get(0).getInitializer().getNodeType0());
+		assertEquals(ASTNode.EXPRESSION_INITIALIZER, init.fragments().get(0).getInitializer().getNodeType());
 	}
 	
 	public void testArray() {
 		String s = " [ ];";
 		ArrayInitializer init = (ArrayInitializer) parseInitializer(s);
-		assertEquals(ASTNode.ARRAY_INITIALIZER, init.getNodeType0());
+		assertEquals(ASTNode.ARRAY_INITIALIZER, init.getNodeType());
 		assertPosition(init, 1, s.length() - 2);
 	}
 	
 	public void testArrayInitializers() {
 		String s = " [ 1, 2, 3 ];";
 		ArrayInitializer init = (ArrayInitializer) parseInitializer(s);
-		assertEquals(ASTNode.ARRAY_INITIALIZER, init.getNodeType0());
+		assertEquals(ASTNode.ARRAY_INITIALIZER, init.getNodeType());
 		assertPosition(init, 1, s.length() - 2);
 		
 		List<ArrayInitializerFragment> fragments = init.fragments();
@@ -111,7 +111,7 @@ public class Initializer_Test extends Parser_Test {
 	public void testArrayInitializers2() {
 		String s = " [ 2 : 1 ];";
 		ArrayInitializer init = (ArrayInitializer) parseInitializer(s);
-		assertEquals(Initializer.ARRAY_INITIALIZER, init.getNodeType0());
+		assertEquals(Initializer.ARRAY_INITIALIZER, init.getNodeType());
 		assertPosition(init, 1, s.length() - 2);
 		
 		List<ArrayInitializerFragment> fragments = init.fragments();
@@ -129,7 +129,7 @@ public class Initializer_Test extends Parser_Test {
 	public void testArrayInitializersNested() {
 		String s = " [ [ 1 ] ];";
 		ArrayInitializer init = (ArrayInitializer) parseInitializer(s);
-		assertEquals(Initializer.ARRAY_INITIALIZER, init.getNodeType0());
+		assertEquals(Initializer.ARRAY_INITIALIZER, init.getNodeType());
 		assertPosition(init, 1, s.length() - 2);
 		
 		assertEquals(1, init.fragments().size());

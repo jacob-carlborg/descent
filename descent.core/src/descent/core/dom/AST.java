@@ -1,5 +1,8 @@
 package descent.core.dom;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+
 
 /**
  * Umbrella owner and abstract syntax tree node factory.
@@ -119,6 +122,17 @@ public class AST {
 	private final Object internalASTLock = new Object();
 	
 	/**
+	 * Java Scanner used to validate preconditions for the creation of specific nodes
+	 * like CharacterLiteral, NumberLiteral, StringLiteral or SimpleName.
+	 */
+	// TODO Scanner scanner;
+	
+	/**
+	 * Internal ast rewriter used to record ast modification when record mode is enabled.
+	 */
+	// TODO InternalASTRewrite rewriter;
+	
+	/**
 	 * Default value of <code>flag<code> when a new node is created.
 	 */
 	private int defaultNodeFlag = 0;
@@ -196,7 +210,6 @@ public class AST {
 	 * 
 	 * @return level the API level; one of the <code>JLS*</code>LEVEL
      * declared on <code>AST</code>; assume this set is open-ended
-     * @since 3.0
 	 */
 	public int apiLevel() {
 		return this.apiLevel;	
@@ -439,7 +452,6 @@ public class AST {
 	 * 
 	 * @param node the node to be modified
 	 * @param property the property descriptor
-	 * @since 3.0
 	 */
 	void preValueChangeEvent(ASTNode node, SimplePropertyDescriptor property) {
 		// IMPORTANT: this method is called by readers during lazy init
@@ -468,7 +480,6 @@ public class AST {
 	 * 
 	 * @param node the node that was modified
 	 * @param property the property descriptor
-	 * @since 3.0
 	 */
 	void postValueChangeEvent(ASTNode node, SimplePropertyDescriptor property) {
 		// IMPORTANT: this method is called by readers during lazy init
@@ -545,6 +556,17 @@ public class AST {
 	}
 	
 	/**
+	 * Returns the binding resolver for this AST.
+	 * 
+	 * @return the binding resolver for this AST
+	 */
+	/* TODO
+	BindingResolver getBindingResolver() {
+		return this.resolver;
+	}
+	*/
+	
+	/**
 	 * Returns the event handler for this AST.
 	 * 
 	 * @return the event handler for this AST
@@ -607,5 +629,63 @@ public class AST {
 	 * @since 3.0
 	 */
 	private final Object[] THIS_AST= new Object[] {this};
+	
+	/**
+	 * Creates an unparented node of the given node class
+	 * (non-abstract subclass of {@link ASTNode}). 
+	 * 
+	 * @param nodeClass AST node class
+	 * @return a new unparented node owned by this AST
+	 * @exception IllegalArgumentException if <code>nodeClass</code> is 
+	 * <code>null</code> or is not a concrete node type class
+	 * @since 3.0
+	 */
+	public ASTNode createInstance(Class nodeClass) {
+		if (nodeClass == null) {
+			throw new IllegalArgumentException();
+		}
+		try {
+			// invoke constructor with signature Foo(AST)
+			Constructor c = nodeClass.getDeclaredConstructor(AST_CLASS);
+			Object result = c.newInstance(this.THIS_AST);
+			return (ASTNode) result;
+		} catch (NoSuchMethodException e) {
+			// all AST node classes have a Foo(AST) constructor
+			// therefore nodeClass is not legit
+			throw new IllegalArgumentException();
+		} catch (InstantiationException e) {
+			// all concrete AST node classes can be instantiated
+			// therefore nodeClass is not legit
+			throw new IllegalArgumentException();
+		} catch (IllegalAccessException e) {
+			// all AST node classes have an accessible Foo(AST) constructor
+			// therefore nodeClass is not legit
+			throw new IllegalArgumentException();
+		} catch (InvocationTargetException e) {
+			// concrete AST node classes do not die in the constructor
+			// therefore nodeClass is not legit
+			throw new IllegalArgumentException();
+		}		
+	}
+	
+	/**
+	 * Creates an unparented node of the given node type.
+	 * This convenience method is equivalent to:
+	 * <pre>
+	 * createInstance(ASTNode.nodeClassForType(nodeType))
+	 * </pre>
+	 * 
+	 * @param nodeType AST node type, one of the node type
+	 * constants declared on {@link ASTNode}
+	 * @return a new unparented node owned by this AST
+	 * @exception IllegalArgumentException if <code>nodeType</code> is 
+	 * not a legal AST node type
+	 * @since 3.0
+	 */
+	public ASTNode createInstance(int nodeType) {
+		// nodeClassForType throws IllegalArgumentException if nodeType is bogus
+		Class nodeClass = ASTNode.nodeClassForType(nodeType);
+		return createInstance(nodeClass);
+	}
 
 }

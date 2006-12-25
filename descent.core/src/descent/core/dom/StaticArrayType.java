@@ -55,12 +55,7 @@ public class StaticArrayType extends ArrayType {
 	public static List propertyDescriptors(int apiLevel) {
 		return PROPERTY_DESCRIPTORS;
 	}
-
-	/**
-	 * The componentType.
-	 */
-	private Type componentType;
-
+	
 	/**
 	 * The size.
 	 */
@@ -118,9 +113,8 @@ public class StaticArrayType extends ArrayType {
 
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
-	 * TODO make it package
 	 */
-	public final int getNodeType0() {
+	final int getNodeType0() {
 		return STATIC_ARRAY_TYPE;
 	}
 

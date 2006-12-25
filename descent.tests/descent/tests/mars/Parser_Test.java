@@ -10,7 +10,6 @@ import descent.core.dom.Expression;
 import descent.core.dom.Initializer;
 import descent.core.dom.ModuleDeclaration;
 import descent.core.dom.Statement;
-import descent.internal.core.parser.ParserFacade;
 
 public abstract class Parser_Test extends TestCase {
 	

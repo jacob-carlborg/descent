@@ -19,7 +19,7 @@ public class Template_Test extends Parser_Test {
 	public void testEmpty() {
 		String s = " template Temp() { }";
 		TemplateDeclaration t = (TemplateDeclaration) getSingleDeclarationNoProblems(s);
-		assertEquals(ASTNode.TEMPLATE_DECLARATION, t.getNodeType0());
+		assertEquals(ASTNode.TEMPLATE_DECLARATION, t.getNodeType());
 		assertPosition(t, 1, 19);
 		
 		assertEquals("Temp", t.getName().getIdentifier());
@@ -44,35 +44,35 @@ public class Template_Test extends Parser_Test {
 		
 		TypeTemplateParameter ttp;
 		
-		assertEquals(ASTNode.TYPE_TEMPLATE_PARAMETER, tp.get(0).getNodeType0());
+		assertEquals(ASTNode.TYPE_TEMPLATE_PARAMETER, tp.get(0).getNodeType());
 		ttp = (TypeTemplateParameter) tp.get(0);
 		assertEquals("T", ttp.getName().getIdentifier());
 		assertPosition(ttp, 15, 1);
 		assertNull(ttp.getSpecificType());
 		assertNull(ttp.getDefaultType());
 		
-		assertEquals(ASTNode.TYPE_TEMPLATE_PARAMETER, tp.get(1).getNodeType0());
+		assertEquals(ASTNode.TYPE_TEMPLATE_PARAMETER, tp.get(1).getNodeType());
 		ttp = (TypeTemplateParameter) tp.get(1);		
 		assertEquals("U", ttp.getName().getIdentifier());
 		assertPosition(ttp, 18, 6);
-		assertEquals(ASTNode.POINTER_TYPE, ttp.getSpecificType().getNodeType0());
+		assertEquals(ASTNode.POINTER_TYPE, ttp.getSpecificType().getNodeType());
 		assertNull(ttp.getDefaultType());
 		
-		assertEquals(ASTNode.TYPE_TEMPLATE_PARAMETER, tp.get(2).getNodeType0());
+		assertEquals(ASTNode.TYPE_TEMPLATE_PARAMETER, tp.get(2).getNodeType());
 		ttp = (TypeTemplateParameter) tp.get(2);		
 		assertEquals("V", ttp.getName().getIdentifier());
 		assertPosition(ttp, 26, 7);
-		assertEquals(ASTNode.PRIMITIVE_TYPE, ttp.getSpecificType().getNodeType0());
+		assertEquals(ASTNode.PRIMITIVE_TYPE, ttp.getSpecificType().getNodeType());
 		assertNull(ttp.getDefaultType());
 		
-		assertEquals(ASTNode.TYPE_TEMPLATE_PARAMETER, tp.get(3).getNodeType0());
+		assertEquals(ASTNode.TYPE_TEMPLATE_PARAMETER, tp.get(3).getNodeType());
 		ttp = (TypeTemplateParameter) tp.get(3);		
 		assertEquals("W", ttp.getName().getIdentifier());
 		assertPosition(ttp, 35, 7);
 		assertNull(ttp.getSpecificType());
-		assertEquals(ASTNode.PRIMITIVE_TYPE, ttp.getDefaultType().getNodeType0());
+		assertEquals(ASTNode.PRIMITIVE_TYPE, ttp.getDefaultType().getNodeType());
 		
-		assertEquals(ASTNode.ALIAS_TEMPLATE_PARAMETER, tp.get(4).getNodeType0());
+		assertEquals(ASTNode.ALIAS_TEMPLATE_PARAMETER, tp.get(4).getNodeType());
 		AliasTemplateParameter tap = (AliasTemplateParameter) tp.get(4);		
 		assertEquals("A", tap.getName().getIdentifier());
 		assertPosition(tap, 44, 15);
@@ -88,7 +88,7 @@ public class Template_Test extends Parser_Test {
 		assertEquals(1, tp.size());
 		
 		TupleTemplateParameter param = (TupleTemplateParameter) tp.get(0);
-		assertEquals(ASTNode.TUPLE_TEMPLATE_PARAMETER, param.getNodeType0());
+		assertEquals(ASTNode.TUPLE_TEMPLATE_PARAMETER, param.getNodeType());
 		assertEquals("T", param.getName().getIdentifier());
 		assertPosition(param, 15, 5);
 		assertPosition(param.getName(), 15, 1);
@@ -102,7 +102,7 @@ public class Template_Test extends Parser_Test {
 		assertEquals(1, tp.size());
 		
 		ValueTemplateParameter param = (ValueTemplateParameter) tp.get(0);
-		assertEquals(ASTNode.VALUE_TEMPLATE_PARAMETER, param.getNodeType0());
+		assertEquals(ASTNode.VALUE_TEMPLATE_PARAMETER, param.getNodeType());
 		assertEquals("T", param.getName().getIdentifier());
 		assertPosition(param, 15, 13);
 		assertPosition(param.getName(), 19, 1);

@@ -122,7 +122,7 @@ public class DOutlineLabelProvider extends LabelProvider {
 		StringBuilder s;
 		ASTNode[] templateArguments;
 		
-		switch(e.getNodeType0()) {
+		switch(e.getNodeType()) {
 		case ASTNode.MODULE_DECLARATION:
 			return ((ModuleDeclaration) element).getName().getFullyQualifiedName();
 		case ASTNode.IMPORT_DECLARATION:
@@ -262,7 +262,7 @@ public class DOutlineLabelProvider extends LabelProvider {
 		ASTNode e = (ASTNode) element;
 		Modifier m;
 		
-		switch(e.getNodeType0()) {
+		switch(e.getNodeType()) {
 		case ASTNode.MODULE_DECLARATION:
 			return moduleImage;
 		case ASTNode.IMPORT_DECLARATION:
@@ -406,7 +406,7 @@ public class DOutlineLabelProvider extends LabelProvider {
 		
 		int i = 0;
 		for(TemplateParameter p : templateParameters) {
-			switch(p.getNodeType0()) {
+			switch(p.getNodeType()) {
 			case TemplateParameter.TYPE_TEMPLATE_PARAMETER:
 				TypeTemplateParameter ttp = (TypeTemplateParameter) p;
 				s.append(ttp.getName().toString());
@@ -469,7 +469,7 @@ public class DOutlineLabelProvider extends LabelProvider {
 	}
 	
 	private void appendType(StringBuilder s, Type type) {
-		switch(type.getNodeType0()) {
+		switch(type.getNodeType()) {
 		case Type.PRIMITIVE_TYPE:
 			s.append(type);
 			break;

@@ -28,7 +28,7 @@ public class PositionHelper {
 	public static Position getElementOfInterest(ASTNode element) {
 		Name name;
 		
-		switch(element.getNodeType0()) {
+		switch(element.getNodeType()) {
 		case ASTNode.MODULE_DECLARATION:
 			ModuleDeclaration md = (ModuleDeclaration) element;
 			name = md.getName();

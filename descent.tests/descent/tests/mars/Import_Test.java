@@ -12,14 +12,14 @@ public class Import_Test extends Parser_Test {
 	public void testImportSingle() throws Exception {
 		String s = " import a; ";
 		ImportDeclaration importDeclaration = (ImportDeclaration) getSingleDeclarationNoProblems(s);
-		assertEquals(ASTNode.IMPORT_DECLARATION, importDeclaration.getNodeType0());
+		assertEquals(ASTNode.IMPORT_DECLARATION, importDeclaration.getNodeType());
 		assertFalse(importDeclaration.isStatic());
 		assertPosition(importDeclaration, 1, 9);
 		
 		assertEquals(1, importDeclaration.imports().size());
 		
 		Import anImport = importDeclaration.imports().get(0);
-		assertEquals(ASTNode.IMPORT, anImport.getNodeType0());
+		assertEquals(ASTNode.IMPORT, anImport.getNodeType());
 		assertPosition(anImport, 8, 1);
 		
 		SimpleName name = (SimpleName) anImport.getName();
@@ -30,7 +30,7 @@ public class Import_Test extends Parser_Test {
 	public void testImportMultiple() throws Exception {
 		String s = " import a, b, c; ";
 		ImportDeclaration importDeclaration = (ImportDeclaration) getSingleDeclarationNoProblems(s);
-		assertEquals(ASTNode.IMPORT_DECLARATION, importDeclaration.getNodeType0());
+		assertEquals(ASTNode.IMPORT_DECLARATION, importDeclaration.getNodeType());
 		assertFalse(importDeclaration.isStatic());
 		assertPosition(importDeclaration, 1, 15);
 		
@@ -120,14 +120,14 @@ public class Import_Test extends Parser_Test {
 	public void testStaticImport() throws Exception {
 		String s = " static import a;";
 		ImportDeclaration importDeclaration = (ImportDeclaration) getSingleDeclarationNoProblems(s);
-		assertEquals(ASTNode.IMPORT_DECLARATION, importDeclaration.getNodeType0());
+		assertEquals(ASTNode.IMPORT_DECLARATION, importDeclaration.getNodeType());
 		assertTrue(importDeclaration.isStatic());
 		assertPosition(importDeclaration, 1, s.length() - 1);
 		
 		assertEquals(1, importDeclaration.imports().size());
 		
 		Import imp = importDeclaration.imports().get(0);
-		assertEquals(ASTNode.IMPORT, imp.getNodeType0());
+		assertEquals(ASTNode.IMPORT, imp.getNodeType());
 		assertPosition(imp, 15, 1);
 		
 		SimpleName qName = (SimpleName) imp.getName();

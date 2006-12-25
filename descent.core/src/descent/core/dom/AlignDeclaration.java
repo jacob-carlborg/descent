@@ -139,9 +139,8 @@ public class AlignDeclaration extends Declaration {
 		
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
-	 * TODO make it package
 	 */
-	public final int getNodeType0() {
+	final int getNodeType0() {
 		return ALIGN_DECLARATION;
 	}
 

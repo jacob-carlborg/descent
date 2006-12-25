@@ -7,9 +7,7 @@ import descent.internal.core.parser.LINK;
 import descent.internal.core.parser.TY;
 
 /**
- * Internal class that is a TypeFunction
- * @author Ary
- *
+ * Internal class that is a TypeFunction.
  */
 class DmdTypeFunction extends DmdType {
 	
@@ -42,6 +40,12 @@ class DmdTypeFunction extends DmdType {
 	public List<Argument> getArguments() {
 		if (arguments == null) return Collections.EMPTY_LIST;
 		return arguments;
+	}
+
+	@Override
+	List internalStructuralPropertiesForType(int apiLevel) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }
