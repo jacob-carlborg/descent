@@ -27,6 +27,7 @@ public class VariableDeclaration_Test extends Parser_Test {
 		
 		assertEquals("x", fragment.getName().getFullyQualifiedName());
 		assertPosition(fragment.getName(), 5, 1);
+		assertPosition(fragment, 5, 1);
 		
 		assertNull(fragment.getInitializer());
 	}

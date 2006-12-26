@@ -61,9 +61,13 @@ public class DReconcilingStrategy implements IReconcilingStrategy {
 			DescentUI.log(e);
 		}
 		
-		ASTParser parser = ASTParser.newParser(AST.D1);
-		parser.setSource(editor.getDocument().get().toCharArray());
-		unit = (CompilationUnit) parser.createAST(null);
+		try {
+			ASTParser parser = ASTParser.newParser(AST.D1);
+			parser.setSource(editor.getDocument().get().toCharArray());
+			unit = (CompilationUnit) parser.createAST(null);
+		} catch (Throwable t) {
+			DescentUI.log(t);
+		}
 		
 		// and now mark the errors
 		for(IProblem problem : unit.getProblems()) {

@@ -10,6 +10,8 @@
  *******************************************************************************/
 package descent.astview.views;
 
+import java.util.List;
+
 import org.eclipse.swt.graphics.Image;
 
 import descent.core.dom.CompilationUnit;
@@ -36,22 +38,16 @@ public class CommentsProperty extends ASTAttribute {
 	 * @see descent.astview.views.ASTAttribute#getChildren()
 	 */
 	public Object[] getChildren() {
-		/* TODO
 		List commentList= fRoot.getCommentList();
 		return (commentList == null ? EMPTY : commentList.toArray());
-		*/
-		return EMPTY;
 	}
 
 	/* (non-Javadoc)
 	 * @see descent.astview.views.ASTAttribute#getLabel()
 	 */
 	public String getLabel() {
-		/* TODO
 		List commentList= fRoot.getCommentList();
 		return "> comments (" +  (commentList == null ? 0 : commentList.size()) + ")";  //$NON-NLS-1$//$NON-NLS-2$
-		*/
-		return "";
 	}
 
 	/* (non-Javadoc)

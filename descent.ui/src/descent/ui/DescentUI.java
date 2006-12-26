@@ -94,6 +94,7 @@ public class DescentUI extends AbstractUIPlugin {
 	 */
 	public static void log(IStatus aStatus) {
 		getDefault().getLog().log(aStatus);
+		System.err.println(aStatus);
 	}
 	
 	/**

@@ -2760,6 +2760,7 @@ public class Parser extends Lexer {
 								IProblem.SEVERITY_ERROR,
 								IProblem.COMMA_EXPECTED, token.ptr, token.len);
 						nextToken();
+						ia.setSourceRange(saveToken.ptr, token.ptr + token.len - saveToken.ptr);
 						break;
 					}
 					e = parseAssignExp();
@@ -5137,13 +5138,17 @@ public class Parser extends Lexer {
 						nextToken();
 						if (token.value != TOKidentifier) {
 							problem("Identifier expected following (type).", IProblem.SEVERITY_ERROR, IProblem.IDENTIFIER_EXPECTED, token.ptr, token.len);
-							return null;
+							// Change from DMD
+							e = newTypeDotIdentifierExpression(t);
+							e.setSourceRange(saveToken.ptr, prevToken.ptr + prevToken.len - saveToken.ptr);
+							return e;
 						}
 						e = newTypeDotIdentifierExpression(t, token);
 						nextToken();
 					} else {
 						e = parseUnaryExp();
 						e = newCastExpression(e, t);
+						e.setSourceRange(saveToken.ptr, prevToken.ptr + prevToken.len - saveToken.ptr);
 						problem("C style cast illegal, use cast(...)", IProblem.SEVERITY_ERROR, IProblem.C_STYLE_CAST_ILLEGAL, firstToken.ptr, prevToken.ptr + prevToken.len - firstToken.ptr);
 					}
 					return e;
@@ -6574,6 +6579,15 @@ public class Parser extends Lexer {
 			fragment.setName(newSimpleNameForIdentifier(ident));
 		}
 		fragment.setInitializer(init);
+		if (ident == null && init == null) {
+			
+		} else if (ident != null && init != null) {
+			fragment.setSourceRange(ident.startPosition, init.getStartPosition() + init.getLength() - ident.startPosition);
+		} else if (ident != null && init == null) {
+			fragment.setSourceRange(ident.startPosition, ident.length);
+		} else {
+			fragment.setSourceRange(init.getStartPosition(), init.getLength());
+		}
 		return fragment;
 	}
 	
@@ -6664,6 +6678,12 @@ public class Parser extends Lexer {
 		TypeDotIdentifierExpression typeDot = new TypeDotIdentifierExpression(ast);
 		typeDot.setType(t);
 		typeDot.setName(newSimpleNameForToken(token));
+		return typeDot;
+	}
+	
+	private TypeDotIdentifierExpression newTypeDotIdentifierExpression(Type t) {
+		TypeDotIdentifierExpression typeDot = new TypeDotIdentifierExpression(ast);
+		typeDot.setType(t);
 		return typeDot;
 	}
 	

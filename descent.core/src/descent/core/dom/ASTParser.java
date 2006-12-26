@@ -783,8 +783,9 @@ public class ASTParser {
 				if (declDefs != null) {
 					parser.mod.declarations().addAll(declDefs);
 				}
-				parser.mod.setSourceRange(0, rawSource.length);			
-				parser.mod.problems = parser.problems;			
+				parser.mod.setSourceRange(0, rawSource.length);
+				parser.mod.setCommentTable(parser.comments.toArray(new Comment[parser.comments.size()]));
+				parser.mod.problems = parser.problems;
 				return parser.mod;
 			}
 			throw new IllegalStateException();

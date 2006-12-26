@@ -1,5 +1,6 @@
 package descent.core.dom;
 
+import java.util.Collections;
 import java.util.List;
 
 import descent.internal.core.parser.TOK;
@@ -35,8 +36,7 @@ public class Comment extends ASTNode {
 
 	@Override
 	List internalStructuralPropertiesForType(int apiLevel) {
-		// TODO Auto-generated method stub
-		return null;
+		return Collections.EMPTY_LIST;
 	}
 
 }
