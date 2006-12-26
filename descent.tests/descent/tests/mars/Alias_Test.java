@@ -1,7 +1,6 @@
 package descent.tests.mars;
 
 import descent.core.dom.ASTNode;
-import descent.core.dom.ASTParser;
 import descent.core.dom.AliasDeclaration;
 
 public class Alias_Test extends Parser_Test {

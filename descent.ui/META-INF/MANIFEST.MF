@@ -18,3 +18,5 @@ Require-Bundle: org.eclipse.core.runtime,
 Eclipse-LazyStart: true
 Eclipse-BuddyPolicy: registered
 Eclipse-RegisterBuddy: org.antlr
+Export-Package: descent.ui,
+ descent.ui.text

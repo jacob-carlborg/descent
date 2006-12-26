@@ -42,6 +42,35 @@ package descent.core.dom;
  */
 public abstract class ASTVisitor {
 
+/**
+ * Indicates whether doc tags should be visited by default.
+ */
+private boolean visitDocTags;
+
+/**
+ * Creates a new AST visitor instance.
+ * <p>
+ * For backwards compatibility, the visitor does not visit tag
+ * elements below doc comments by default. Use 
+ * {@link #ASTVisitor(boolean) ASTVisitor(true)}
+ * for an visitor that includes doc comments by default.
+ * </p>
+ */
+public ASTVisitor() {
+	this(false);
+}
+
+/**
+ * Creates a new AST visitor instance. 
+ * 
+ * @param visitDocTags <code>true</code> if doc comment tags are
+ * to be visited by default, and <code>false</code> otherwise
+ * @see Javadoc#tags()
+ * @see #visit(Javadoc)
+ */
+public ASTVisitor(boolean visitDocTags) {
+	this.visitDocTags = visitDocTags;
+}
 	/**
 	 * Visits the given AST node prior to the type-specific visit.
 	 * (before <code>visit</code>).

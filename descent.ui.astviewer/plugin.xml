@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.0"?>
+<plugin>
+
+     <extension
+         point="org.eclipse.ui.views">
+      <view
+            name="ASTView"
+            icon="$nl$/icons/view.gif"
+            category="descent.category"
+            class="descent.astview.views.ASTView"
+            id="descent.astview.views.ASTView">
+      </view>
+      <category
+            id="descent.category"
+            name="D"/>
+   </extension>
+   
+
+
+  
+  
+  
+</plugin>
