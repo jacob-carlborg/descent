@@ -40,10 +40,9 @@ public class Module_Test extends Parser_Test {
 		String s = " /** hola */ module pepe; ";
 		ModuleDeclaration md = getModuleDeclaration(s);
 		
-		List<Comment> comments = md.getComments();
+		List<Comment> comments = md.dDocs();
 		assertEquals(1, comments.size());
-		
-		assertEquals("/** hola */", comments.get(0).getComment());
+		assertPosition(comments.get(0), 1, 11);
 		
 		assertPosition(md, 13, 12);
 	}
@@ -52,7 +51,7 @@ public class Module_Test extends Parser_Test {
 		String s = " /** hola */ /** chau */ module pepe; ";
 		ModuleDeclaration md = getModuleDeclaration(s);
 		
-		List<Comment> comments = md.getComments();
+		List<Comment> comments = md.dDocs();
 		assertEquals(2, comments.size());
 		
 		assertPosition(md, 25, 12);

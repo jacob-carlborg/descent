@@ -120,7 +120,7 @@ public class Block extends Statement {
 		boolean visitChildren = visitor.visit(this);
 		if (visitChildren) {
 			// visit children in normal left to right reading order
-			acceptChildren(visitor, statements());
+			acceptChildren(visitor, statements);
 		}
 		visitor.endVisit(this);
 	}

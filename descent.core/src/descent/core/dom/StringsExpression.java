@@ -123,7 +123,7 @@ public class StringsExpression extends Expression {
 		boolean visitChildren = visitor.visit(this);
 		if (visitChildren) {
 			// visit children in normal left to right reading order
-			acceptChildren(visitor, stringLiterals());
+			acceptChildren(visitor, stringLiterals);
 		}
 		visitor.endVisit(this);
 	}

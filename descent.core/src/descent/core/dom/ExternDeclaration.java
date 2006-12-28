@@ -11,8 +11,6 @@ import java.util.List;
  * ExternDeclaration:
  *    { Modifier } <b>extern</b> [ <b>(</b> [ | D | C | C++ | Windows | Pascal ]<b>)</b> ] { Declaration }
  * </pre>
- * 
- * TODO reflect syntax better
  */
 public class ExternDeclaration extends Declaration {
 	
@@ -53,6 +51,12 @@ public class ExternDeclaration extends Declaration {
 		new ChildListPropertyDescriptor(ExternDeclaration.class, "declarations", Declaration.class, CYCLE_RISK); //$NON-NLS-1$
 
 	/**
+	 * The "dDocs" structural property of this node type.
+	 */
+	public static final ChildListPropertyDescriptor D_DOCS_PROPERTY =
+	internalDDocsPropertyFactory(ExternDeclaration.class); //$NON-NLS-1$
+
+	/**
 	 * A list of property descriptors (element type: 
 	 * {@link StructuralPropertyDescriptor}),
 	 * or null if uninitialized.
@@ -60,11 +64,12 @@ public class ExternDeclaration extends Declaration {
 	private static final List PROPERTY_DESCRIPTORS;
 
 	static {
-		List properyList = new ArrayList(3);
+		List properyList = new ArrayList(4);
 		createPropertyList(ExternDeclaration.class, properyList);
 		addProperty(MODIFIERS_PROPERTY, properyList);
 		addProperty(LINKAGE_PROPERTY, properyList);
 		addProperty(DECLARATIONS_PROPERTY, properyList);
+		addProperty(D_DOCS_PROPERTY, properyList);
 		PROPERTY_DESCRIPTORS = reapPropertyList(properyList);
 	}
 
@@ -83,13 +88,6 @@ public class ExternDeclaration extends Declaration {
 		return PROPERTY_DESCRIPTORS;
 	}
 
-	/**
-	 * The modifiers
-	 * (element type: <code>Modifier</code>).
-	 * Defaults to an empty list.
-	 */
-	private ASTNode.NodeList modifiers =
-		new ASTNode.NodeList(MODIFIERS_PROPERTY);
 	/**
 	 * The linkage.
 	 */
@@ -149,6 +147,9 @@ public class ExternDeclaration extends Declaration {
 		if (property == DECLARATIONS_PROPERTY) {
 			return declarations();
 		}
+		if (property == D_DOCS_PROPERTY) {
+			return dDocs();
+		}
 		// allow default implementation to flag the error
 		return super.internalGetChildListProperty(property);
 	}
@@ -158,10 +159,15 @@ public class ExternDeclaration extends Declaration {
 			return MODIFIERS_PROPERTY;
 		}
 		
-		/* (omit javadoc for this method)
-		 * Method declared on ASTNode.
-		 */
-		final int getNodeType0() {
+		@Override
+		final ChildListPropertyDescriptor internalDDocsProperty() {
+			return D_DOCS_PROPERTY;
+		}
+		
+	/* (omit javadoc for this method)
+	 * Method declared on ASTNode.
+	 */
+	final int getNodeType0() {
 		return EXTERN_DECLARATION;
 	}
 
@@ -174,6 +180,7 @@ public class ExternDeclaration extends Declaration {
 		result.modifiers.addAll(ASTNode.copySubtrees(target, modifiers()));
 		result.setLinkage(getLinkage());
 		result.declarations.addAll(ASTNode.copySubtrees(target, declarations()));
+		result.dDocs.addAll(ASTNode.copySubtrees(target, dDocs()));
 		return result;
 	}
 
@@ -192,8 +199,9 @@ public class ExternDeclaration extends Declaration {
 		boolean visitChildren = visitor.visit(this);
 		if (visitChildren) {
 			// visit children in normal left to right reading order
-			acceptChildren(visitor, modifiers());
-			acceptChildren(visitor, declarations());
+			acceptChildren(visitor, modifiers);
+			acceptChildren(visitor, declarations);
+			acceptChildren(visitor, dDocs);
 		}
 		visitor.endVisit(this);
 	}
@@ -237,7 +245,7 @@ public class ExternDeclaration extends Declaration {
 	 * Method declared on ASTNode.
 	 */
 	int memSize() {
-		return BASE_NODE_SIZE + 3 * 4;
+		return BASE_NODE_SIZE + 4 * 4;
 	}
 
 	/* (omit javadoc for this method)
@@ -248,6 +256,7 @@ public class ExternDeclaration extends Declaration {
 			memSize()
 			+ (this.modifiers.listSize())
 			+ (this.declarations.listSize())
+			+ (this.dDocs.listSize())
 	;
 	}
 

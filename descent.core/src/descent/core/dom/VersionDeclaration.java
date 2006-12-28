@@ -18,7 +18,7 @@ public class VersionDeclaration extends ConditionalDeclaration {
 	 * The "modifiers" structural property of this node type.
 	 */
 	public static final ChildListPropertyDescriptor MODIFIERS_PROPERTY =
-		internalModifiersPropertyFactory(VersionDeclaration.class); //$NON-NLS-1$
+	internalModifiersPropertyFactory(VersionDeclaration.class); //$NON-NLS-1$
 
 	/**
 	 * The "version" structural property of this node type.
@@ -30,13 +30,19 @@ public class VersionDeclaration extends ConditionalDeclaration {
 	 * The "thenDeclarations" structural property of this node type.
 	 */
 	public static final ChildListPropertyDescriptor THEN_DECLARATIONS_PROPERTY =
-		internalThenDeclarationsPropertyFactory(VersionDeclaration.class); //$NON-NLS-1$
+	internalThenDeclarationsPropertyFactory(VersionDeclaration.class); //$NON-NLS-1$
 
 	/**
 	 * The "elseDeclarations" structural property of this node type.
 	 */
 	public static final ChildListPropertyDescriptor ELSE_DECLARATIONS_PROPERTY =
-		internalElseDeclarationsPropertyFactory(VersionDeclaration.class); //$NON-NLS-1$
+	internalElseDeclarationsPropertyFactory(VersionDeclaration.class); //$NON-NLS-1$
+
+	/**
+	 * The "dDocs" structural property of this node type.
+	 */
+	public static final ChildListPropertyDescriptor D_DOCS_PROPERTY =
+	internalDDocsPropertyFactory(VersionDeclaration.class); //$NON-NLS-1$
 
 	/**
 	 * A list of property descriptors (element type: 
@@ -46,11 +52,13 @@ public class VersionDeclaration extends ConditionalDeclaration {
 	private static final List PROPERTY_DESCRIPTORS;
 
 	static {
-		List properyList = new ArrayList(3);
+		List properyList = new ArrayList(5);
 		createPropertyList(VersionDeclaration.class, properyList);
+		addProperty(MODIFIERS_PROPERTY, properyList);
 		addProperty(VERSION_PROPERTY, properyList);
 		addProperty(THEN_DECLARATIONS_PROPERTY, properyList);
 		addProperty(ELSE_DECLARATIONS_PROPERTY, properyList);
+		addProperty(D_DOCS_PROPERTY, properyList);
 		PROPERTY_DESCRIPTORS = reapPropertyList(properyList);
 	}
 
@@ -73,6 +81,7 @@ public class VersionDeclaration extends ConditionalDeclaration {
 	 * The version.
 	 */
 	private Version version;
+
 
 	/**
 	 * Creates a new unparented version declaration node owned by the given 
@@ -114,31 +123,42 @@ public class VersionDeclaration extends ConditionalDeclaration {
 	 * Method declared on ASTNode.
 	 */
 	final List internalGetChildListProperty(ChildListPropertyDescriptor property) {
+		if (property == MODIFIERS_PROPERTY) {
+			return modifiers();
+		}
 		if (property == THEN_DECLARATIONS_PROPERTY) {
 			return thenDeclarations();
 		}
 		if (property == ELSE_DECLARATIONS_PROPERTY) {
 			return elseDeclarations();
 		}
+		if (property == D_DOCS_PROPERTY) {
+			return dDocs();
+		}
 		// allow default implementation to flag the error
 		return super.internalGetChildListProperty(property);
 	}
-	
-	@Override
-	final ChildListPropertyDescriptor internalModifiersProperty() {
-		return MODIFIERS_PROPERTY;
-	}
-	
-	@Override
-	final ChildListPropertyDescriptor internalThenDeclarationsProperty() {
-		return THEN_DECLARATIONS_PROPERTY;
-	}
-	
-	@Override
-	final ChildListPropertyDescriptor internalElseDeclarationsProperty() {
-		return ELSE_DECLARATIONS_PROPERTY;
-	}
 
+		@Override
+		final ChildListPropertyDescriptor internalModifiersProperty() {
+			return MODIFIERS_PROPERTY;
+		}
+		
+		@Override
+		final ChildListPropertyDescriptor internalThenDeclarationsProperty() {
+			return THEN_DECLARATIONS_PROPERTY;
+		}
+		
+		@Override
+		final ChildListPropertyDescriptor internalElseDeclarationsProperty() {
+			return ELSE_DECLARATIONS_PROPERTY;
+		}
+		
+		@Override
+		final ChildListPropertyDescriptor internalDDocsProperty() {
+			return D_DOCS_PROPERTY;
+		}
+		
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
 	 */
@@ -152,9 +172,11 @@ public class VersionDeclaration extends ConditionalDeclaration {
 	ASTNode clone0(AST target) {
 		VersionDeclaration result = new VersionDeclaration(target);
 		result.setSourceRange(this.getStartPosition(), this.getLength());
+		result.modifiers.addAll(ASTNode.copySubtrees(target, modifiers()));
 	result.setVersion((Version) ASTNode.copySubtree(target, getVersion()));
 		result.thenDeclarations.addAll(ASTNode.copySubtrees(target, thenDeclarations()));
 		result.elseDeclarations.addAll(ASTNode.copySubtrees(target, elseDeclarations()));
+		result.dDocs.addAll(ASTNode.copySubtrees(target, dDocs()));
 		return result;
 	}
 
@@ -173,9 +195,11 @@ public class VersionDeclaration extends ConditionalDeclaration {
 		boolean visitChildren = visitor.visit(this);
 		if (visitChildren) {
 			// visit children in normal left to right reading order
+			acceptChildren(visitor, modifiers);
 			acceptChild(visitor, getVersion());
-			acceptChildren(visitor, thenDeclarations());
-			acceptChildren(visitor, elseDeclarations());
+			acceptChildren(visitor, thenDeclarations);
+			acceptChildren(visitor, elseDeclarations);
+			acceptChildren(visitor, dDocs);
 		}
 		visitor.endVisit(this);
 	}
@@ -211,7 +235,7 @@ public class VersionDeclaration extends ConditionalDeclaration {
 	 * Method declared on ASTNode.
 	 */
 	int memSize() {
-		return BASE_NODE_SIZE + 4 * 4;
+		return BASE_NODE_SIZE + 5 * 4;
 	}
 
 	/* (omit javadoc for this method)
@@ -224,6 +248,7 @@ public class VersionDeclaration extends ConditionalDeclaration {
 			+ (this.version == null ? 0 : getVersion().treeSize())
 			+ (this.thenDeclarations.listSize())
 			+ (this.elseDeclarations.listSize())
+			+ (this.dDocs.listSize())
 	;
 	}
 

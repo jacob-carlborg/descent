@@ -119,7 +119,7 @@ public class ArrayInitializer extends Initializer {
 		boolean visitChildren = visitor.visit(this);
 		if (visitChildren) {
 			// visit children in normal left to right reading order
-			acceptChildren(visitor, fragments());
+			acceptChildren(visitor, fragments);
 		}
 		visitor.endVisit(this);
 	}

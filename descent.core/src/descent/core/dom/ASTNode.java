@@ -2620,10 +2620,8 @@ public abstract class ASTNode {
 	 * @param other the other object, or <code>null</code>
 	 * @return <code>true</code> if the subtree matches, or 
 	 * <code>false</code> if they do not match
-	 * 
-	 * TODO make it abstract
 	 */
-	boolean subtreeMatch0(ASTMatcher matcher, Object other) { return false; }
+	abstract boolean subtreeMatch0(ASTMatcher matcher, Object other);
 	
 	/**
 	 * Returns a deep copy of the subtree of AST nodes rooted at the
@@ -2726,14 +2724,8 @@ public abstract class ASTNode {
 	 * 
 	 * @param target the AST that is to own the nodes in the result
 	 * @return the root node of the copies subtree
-	 * 
-	 * TODO make it abstract
 	 */
-	ASTNode clone0(AST target) { return null; }
-	
-	public List<Comment> getComments() {
-		return comments;
-	}
+	abstract ASTNode clone0(AST target);
 	
 	/**
 	 * Accepts the given visitor on a visit of the current node.
@@ -2936,56 +2928,18 @@ public abstract class ASTNode {
 	 * </p>
 	 * 
 	 * @return the size of this subtree in bytes
-	 * 
-	 * TODO make it abstract
 	 */
-	int treeSize() { return 0; }
+	abstract int treeSize();
 	
 	/**
 	 * Returns an estimate of the memory footprint of this node in bytes.
 	 * The estimate does not include the space occupied by child nodes.
 	 * 
 	 * @return the size of this node in bytes
-	 * 
-	 * TODO make it abstract
 	 */
-	int memSize() { return 0; }
-	
-	/**
-	 * Accepts the visitor on the children. If children is null,
-	 * nothing happens.
-	 * TODO Descent remove
-	 */
-	protected void acceptChildren(ASTVisitor visitor, ASTNode[] children) {
-		if (children == null)
-			return;
-		
-		for(int i = 0; i < children.length; i++) {
-			if (children[i] instanceof ASTNode) {
-				acceptChild(visitor, children[i]);
-			}
-		}
-	}
-	
-	/**
-	 * Accepts the visitor on the children. If children is null,
-	 * nothing happens.
-	 * TODO Descent remove
-	 */
-	protected void acceptChildren(ASTVisitor visitor, List<? extends ASTNode> children) {
-		if (children == null)
-			return;
-		
-		for(int i = 0; i < children.size(); i++) {
-			if (children.get(i) instanceof ASTNode) {
-				acceptChild(visitor, children.get(i));
-			}
-		}
-	}
+	abstract int memSize();
 	
 	public final static ASTNode[] NO_ELEMENTS = new ASTNode[0];
 	public final static Declaration[] NO_DECLARATIONS = new Declaration[0];
-	
-	public List<Comment> comments = new ArrayList<Comment>();
 
 }

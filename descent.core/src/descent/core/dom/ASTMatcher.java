@@ -532,6 +532,7 @@ public class ASTMatcher {
 			safeSubtreeListMatch(node.modifiers(), o.modifiers())
 			&& safeSubtreeMatch(node.getExpression(), o.getExpression())
 			&& safeSubtreeMatch(node.getMessage(), o.getMessage())
+			&& safeSubtreeListMatch(node.dDocs(), o.dDocs())
 			);
 	}
 
@@ -803,6 +804,7 @@ public class ASTMatcher {
 		return (
 			safeSubtreeMatch(node.getName(), o.getName())
 			&& safeSubtreeMatch(node.getValue(), o.getValue())
+			&& safeSubtreeListMatch(node.dDocs(), o.dDocs())
 			);
 	}
 
@@ -859,7 +861,7 @@ public class ASTMatcher {
 			&& safeSubtreeListMatch(node.templateParameters(), o.templateParameters())
 			&& safeSubtreeListMatch(node.baseClasses(), o.baseClasses())
 			&& safeSubtreeListMatch(node.declarations(), o.declarations())
-			&& safeSubtreeListMatch(node.docComments(), o.docComments())
+			&& safeSubtreeListMatch(node.dDocs(), o.dDocs())
 			);
 	}
 
@@ -886,6 +888,7 @@ public class ASTMatcher {
 			safeSubtreeListMatch(node.modifiers(), o.modifiers())
 			&& safeSubtreeMatch(node.getType(), o.getType())
 			&& safeSubtreeListMatch(node.fragments(), o.fragments())
+			&& safeSubtreeListMatch(node.dDocs(), o.dDocs())
 			);
 	}
 
@@ -961,6 +964,7 @@ public class ASTMatcher {
 			safeSubtreeListMatch(node.modifiers(), o.modifiers())
 			&& node.getAlign() == o.getAlign()
 			&& safeSubtreeListMatch(node.declarations(), o.declarations())
+			&& safeSubtreeListMatch(node.dDocs(), o.dDocs())
 			);
 	}
 
@@ -1097,6 +1101,7 @@ public class ASTMatcher {
 			&& safeSubtreeMatch(node.getPostcondition(), o.getPostcondition())
 			&& safeSubtreeMatch(node.getPostconditionVariableName(), o.getPostconditionVariableName())
 			&& safeSubtreeMatch(node.getBody(), o.getBody())
+			&& safeSubtreeListMatch(node.dDocs(), o.dDocs())
 			);
 	}
 	
@@ -1124,6 +1129,7 @@ public class ASTMatcher {
 			&& safeSubtreeMatch(node.getName(), o.getName())
 			&& safeSubtreeMatch(node.getBaseType(), o.getBaseType())
 			&& safeSubtreeListMatch(node.enumMembers(), o.enumMembers())
+			&& safeSubtreeListMatch(node.dDocs(), o.dDocs())
 			);
 	}
 	
@@ -1173,6 +1179,7 @@ public class ASTMatcher {
 		return (
 			safeSubtreeListMatch(node.modifiers(), o.modifiers())
 			&& safeSubtreeMatch(node.getBody(), o.getBody())
+			&& safeSubtreeListMatch(node.dDocs(), o.dDocs())
 			);
 	}
 	
@@ -1251,6 +1258,7 @@ public class ASTMatcher {
 			safeSubtreeListMatch(node.modifiers(), o.modifiers())
 			&& node.isStatic() == o.isStatic()
 			&& safeSubtreeListMatch(node.imports(), o.imports())
+			&& safeSubtreeListMatch(node.dDocs(), o.dDocs())
 			);
 	}
 	
@@ -1292,7 +1300,9 @@ public class ASTMatcher {
 		}
 		UnitTestDeclaration o = (UnitTestDeclaration) other;
 		return (
-			safeSubtreeMatch(node.getBody(), o.getBody())
+			safeSubtreeListMatch(node.modifiers(), o.modifiers())
+			&& safeSubtreeMatch(node.getBody(), o.getBody())
+			&& safeSubtreeListMatch(node.dDocs(), o.dDocs())
 			);
 	}
 	
@@ -1532,6 +1542,7 @@ public class ASTMatcher {
 		return (
 			safeSubtreeListMatch(node.modifiers(), o.modifiers())
 			&& safeSubtreeMatch(node.getVersion(), o.getVersion())
+			&& safeSubtreeListMatch(node.dDocs(), o.dDocs())
 			);
 	}
 	
@@ -1555,7 +1566,9 @@ public class ASTMatcher {
 		}
 		VersionAssignment o = (VersionAssignment) other;
 		return (
-			safeSubtreeMatch(node.getVersion(), o.getVersion())
+			safeSubtreeListMatch(node.modifiers(), o.modifiers())
+			&& safeSubtreeMatch(node.getVersion(), o.getVersion())
+			&& safeSubtreeListMatch(node.dDocs(), o.dDocs())
 			);
 	}
 	
@@ -1681,7 +1694,9 @@ public class ASTMatcher {
 		}
 		ModuleDeclaration o = (ModuleDeclaration) other;
 		return (
-			safeSubtreeMatch(node.getName(), o.getName())
+			safeSubtreeListMatch(node.modifiers(), o.modifiers())
+			&& safeSubtreeMatch(node.getName(), o.getName())
+			&& safeSubtreeListMatch(node.dDocs(), o.dDocs())
 			);
 	}
 	
@@ -1784,6 +1799,7 @@ public class ASTMatcher {
 			&& safeSubtreeMatch(node.getName(), o.getName())
 			&& safeSubtreeListMatch(node.arguments(), o.arguments())
 			&& safeSubtreeListMatch(node.declarations(), o.declarations())
+			&& safeSubtreeListMatch(node.dDocs(), o.dDocs())
 			);
 	}
 	
@@ -1887,6 +1903,7 @@ public class ASTMatcher {
 			&& safeSubtreeMatch(node.getExpression(), o.getExpression())
 			&& safeSubtreeListMatch(node.thenDeclarations(), o.thenDeclarations())
 			&& safeSubtreeListMatch(node.elseDeclarations(), o.elseDeclarations())
+			&& safeSubtreeListMatch(node.dDocs(), o.dDocs())
 			);
 	}
 	
@@ -1917,6 +1934,7 @@ public class ASTMatcher {
 			&& safeSubtreeMatch(node.getMatchingType(), o.getMatchingType())
 			&& safeSubtreeListMatch(node.thenDeclarations(), o.thenDeclarations())
 			&& safeSubtreeListMatch(node.elseDeclarations(), o.elseDeclarations())
+			&& safeSubtreeListMatch(node.dDocs(), o.dDocs())
 			);
 	}
 	
@@ -1944,6 +1962,7 @@ public class ASTMatcher {
 			&& safeSubtreeMatch(node.getVersion(), o.getVersion())
 			&& safeSubtreeListMatch(node.thenDeclarations(), o.thenDeclarations())
 			&& safeSubtreeListMatch(node.elseDeclarations(), o.elseDeclarations())
+			&& safeSubtreeListMatch(node.dDocs(), o.dDocs())
 			);
 	}
 	
@@ -1967,9 +1986,11 @@ public class ASTMatcher {
 		}
 		VersionDeclaration o = (VersionDeclaration) other;
 		return (
-			safeSubtreeMatch(node.getVersion(), o.getVersion())
+			safeSubtreeListMatch(node.modifiers(), o.modifiers())
+			&& safeSubtreeMatch(node.getVersion(), o.getVersion())
 			&& safeSubtreeListMatch(node.thenDeclarations(), o.thenDeclarations())
 			&& safeSubtreeListMatch(node.elseDeclarations(), o.elseDeclarations())
+			&& safeSubtreeListMatch(node.dDocs(), o.dDocs())
 			);
 	}
 	
@@ -2202,6 +2223,7 @@ public class ASTMatcher {
 			safeSubtreeListMatch(node.modifiers(), o.modifiers())
 			&& safeSubtreeMatch(node.getType(), o.getType())
 			&& safeSubtreeListMatch(node.fragments(), o.fragments())
+			&& safeSubtreeListMatch(node.dDocs(), o.dDocs())
 			);
 	}
 	
@@ -2253,6 +2275,7 @@ public class ASTMatcher {
 			&& safeSubtreeMatch(node.getName(), o.getName())
 			&& safeSubtreeListMatch(node.templateParameters(), o.templateParameters())
 			&& safeSubtreeListMatch(node.declarations(), o.declarations())
+			&& safeSubtreeListMatch(node.dDocs(), o.dDocs())
 			);
 	}
 	
@@ -2306,6 +2329,7 @@ public class ASTMatcher {
 			&& node.getSyntax() == o.getSyntax()
 			&& safeSubtreeMatch(node.getModifier(), o.getModifier())
 			&& safeSubtreeListMatch(node.declarations(), o.declarations())
+			&& safeSubtreeListMatch(node.dDocs(), o.dDocs())
 			);
 	}
 	
@@ -2332,6 +2356,7 @@ public class ASTMatcher {
 			safeSubtreeListMatch(node.modifiers(), o.modifiers())
 			&& node.getLinkage() == o.getLinkage()
 			&& safeSubtreeListMatch(node.declarations(), o.declarations())
+			&& safeSubtreeListMatch(node.dDocs(), o.dDocs())
 			);
 	}
 	
@@ -2781,6 +2806,7 @@ public class ASTMatcher {
 			safeSubtreeListMatch(node.modifiers(), o.modifiers())
 			&& safeSubtreeMatch(node.getType(), o.getType())
 			&& safeSubtreeListMatch(node.fragments(), o.fragments())
+			&& safeSubtreeListMatch(node.dDocs(), o.dDocs())
 			);
 	}
 	
@@ -3035,6 +3061,7 @@ public class ASTMatcher {
 			safeSubtreeListMatch(node.modifiers(), o.modifiers())
 			&& safeSubtreeMatch(node.getType(), o.getType())
 			&& safeSubtreeMatch(node.getName(), o.getName())
+			&& safeSubtreeListMatch(node.dDocs(), o.dDocs())
 			);
 	}
 	
@@ -3110,6 +3137,72 @@ public class ASTMatcher {
 			safeSubtreeMatch(node.getLeftHandSize(), o.getLeftHandSize())
 			&& node.getOperator() == o.getOperator()
 			&& safeSubtreeMatch(node.getRightHandSize(), o.getRightHandSize())
+			);
+	}
+	
+	/**
+	 * Returns whether the given node and the other object match.
+	 * <p>
+	 * The default implementation provided by this class tests whether the
+	 * other object is a node of the same type with structurally isomorphic
+	 * child subtrees. Subclasses may override this method as needed.
+	 * </p>
+	 * 
+	 * @param node the node
+	 * @param other the other object, or <code>null</code>
+	 * @return <code>true</code> if the subtree matches, or 
+	 *   <code>false</code> if they do not match or the other object has a
+	 *   different node type or is <code>null</code>
+	 */
+	public boolean match(QualifiedName node, Object other) {
+		if (!(other instanceof QualifiedName)) {
+			return false;
+		}
+		QualifiedName o = (QualifiedName) other;
+		return (
+			safeSubtreeMatch(node.getQualifier(), o.getQualifier())
+				&& safeSubtreeMatch(node.getName(), o.getName()));
+	}
+	
+	/**
+	 * Returns whether the given node and the other object match.
+	 * <p>
+	 * The default implementation provided by this class tests whether the
+	 * other object is a node of the same type with structurally isomorphic
+	 * child subtrees. Subclasses may override this method as needed.
+	 * </p>
+	 * 
+	 * @param node the node
+	 * @param other the other object, or <code>null</code>
+	 * @return <code>true</code> if the subtree matches, or 
+	 *   <code>false</code> if they do not match or the other object has a
+	 *   different node type or is <code>null</code>
+	 */
+	public boolean match(AsmStatement node, Object other) {
+		return other instanceof AsmStatement;
+	}
+	
+	/**
+	 * Returns whether the given node and the other object match.
+	 * <p>
+	 * The default implementation provided by this class tests whether the
+	 * other object is a node of the same type with structurally isomorphic
+	 * child subtrees. Subclasses may override this method as needed.
+	 * </p>
+	 * 
+	 * @param node the node
+	 * @param other the other object, or <code>null</code>
+	 * @return <code>true</code> if the subtree matches, or 
+	 *   <code>false</code> if they do not match or the other object has a
+	 *   different node type or is <code>null</code>
+	 */
+	public boolean match(Comment node, Object other) {
+		if (!(other instanceof Comment)) {
+			return false;
+		}
+		Comment o = (Comment) other;
+		return (
+			node.getKind() == o.getKind()
 			);
 	}
 

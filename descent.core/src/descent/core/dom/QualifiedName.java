@@ -155,12 +155,10 @@ public class QualifiedName extends Name {
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
 	 */
-	/* TODO JDT
 	final boolean subtreeMatch0(ASTMatcher matcher, Object other) {
 		// dispatch to correct overloaded match method
 		return matcher.match(this, other);
 	}
-	*/
 
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.

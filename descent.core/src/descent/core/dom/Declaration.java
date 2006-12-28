@@ -39,12 +39,28 @@ public abstract class Declaration extends ASTNode {
 		new ASTNode.NodeList(getModifiersProperty());
 	
 	/**
+	 * The documentation comments
+	 * (element type: <code>Comment</code>).
+	 * Defaults to an empty list.
+	 */
+	final ASTNode.NodeList dDocs =
+		new ASTNode.NodeList(getDDocsProperty());
+	
+	/**
 	 * Returns structural property descriptor for the "modifiers" property
 	 * of this node.
 	 * 
 	 * @return the property descriptor
 	 */
 	abstract ChildListPropertyDescriptor internalModifiersProperty();
+	
+	/**
+	 * Returns structural property descriptor for the "d docs" property
+	 * of this node.
+	 * 
+	 * @return the property descriptor
+	 */
+	abstract ChildListPropertyDescriptor internalDDocsProperty();
 	
 	/**
 	 * Returns structural property descriptor for the "componentType" property
@@ -57,13 +73,33 @@ public abstract class Declaration extends ASTNode {
 	}
 	
 	/**
+	 * Returns structural property descriptor for the "d docs" property
+	 * of this node.
+	 * 
+	 * @return the property descriptor
+	 */
+	public final ChildListPropertyDescriptor getDDocsProperty() {
+		return internalDDocsProperty();
+	}
+	
+	/**
 	 * Creates and returns a structural property descriptor for the
-	 * "name" property declared on the given concrete node type.
+	 * "modifiers" property declared on the given concrete node type.
 	 * 
 	 * @return the property descriptor
 	 */
 	static final ChildListPropertyDescriptor internalModifiersPropertyFactory(Class nodeClass) {
 		return new ChildListPropertyDescriptor(nodeClass, "modifiers", Modifier.class, NO_CYCLE_RISK); //$NON-NLS-1$
+	}
+	
+	/**
+	 * Creates and returns a structural property descriptor for the
+	 * "d docs" property declared on the given concrete node type.
+	 * 
+	 * @return the property descriptor
+	 */
+	static final ChildListPropertyDescriptor internalDDocsPropertyFactory(Class nodeClass) {
+		return new ChildListPropertyDescriptor(nodeClass, "dDocs", Comment.class, NO_CYCLE_RISK); //$NON-NLS-1$
 	}
 	
 	/**
@@ -82,13 +118,24 @@ public abstract class Declaration extends ASTNode {
 	
 	/**
 	 * Returns the live ordered list of modifiers for this
-	 * alias declaration.
+	 * declaration.
 	 * 
 	 * @return the live list of alias declaration
 	 *    (element type: <code>Modifier</code>)
 	 */ 
 	public final List<Modifier> modifiers() {
 		return this.modifiers;
+	}
+	
+	/**
+	 * Returns the live ordered list of d docs for this
+	 * declaration.
+	 * 
+	 * @return the live list of alias declaration
+	 *    (element type: <code>Comment</code>)
+	 */ 
+	public final List<Comment> dDocs() {
+		return this.dDocs;
 	}
 
 }

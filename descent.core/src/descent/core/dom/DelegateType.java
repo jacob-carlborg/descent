@@ -200,7 +200,7 @@ public class DelegateType extends Type {
 		if (visitChildren) {
 			// visit children in normal left to right reading order
 			acceptChild(visitor, getReturnType());
-			acceptChildren(visitor, arguments());
+			acceptChildren(visitor, arguments);
 		}
 		visitor.endVisit(this);
 	}

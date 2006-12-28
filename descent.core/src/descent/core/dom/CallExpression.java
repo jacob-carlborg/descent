@@ -150,7 +150,7 @@ public class CallExpression extends Expression {
 		if (visitChildren) {
 			// visit children in normal left to right reading order
 			acceptChild(visitor, getExpression());
-			acceptChildren(visitor, arguments());
+			acceptChildren(visitor, arguments);
 		}
 		visitor.endVisit(this);
 	}

@@ -18,13 +18,19 @@ public class UnitTestDeclaration extends Declaration {
 	 * The "modifiers" structural property of this node type.
 	 */
 	public static final ChildListPropertyDescriptor MODIFIERS_PROPERTY =
-		internalModifiersPropertyFactory(UnitTestDeclaration.class); //$NON-NLS-1$
+	internalModifiersPropertyFactory(UnitTestDeclaration.class); //$NON-NLS-1$
 
 	/**
 	 * The "body" structural property of this node type.
 	 */
 	public static final ChildPropertyDescriptor BODY_PROPERTY =
 		new ChildPropertyDescriptor(UnitTestDeclaration.class, "body", Statement.class, MANDATORY, CYCLE_RISK); //$NON-NLS-1$
+
+	/**
+	 * The "dDocs" structural property of this node type.
+	 */
+	public static final ChildListPropertyDescriptor D_DOCS_PROPERTY =
+	internalDDocsPropertyFactory(UnitTestDeclaration.class); //$NON-NLS-1$
 
 	/**
 	 * A list of property descriptors (element type: 
@@ -34,9 +40,11 @@ public class UnitTestDeclaration extends Declaration {
 	private static final List PROPERTY_DESCRIPTORS;
 
 	static {
-		List properyList = new ArrayList(1);
+		List properyList = new ArrayList(3);
 		createPropertyList(UnitTestDeclaration.class, properyList);
+		addProperty(MODIFIERS_PROPERTY, properyList);
 		addProperty(BODY_PROPERTY, properyList);
+		addProperty(D_DOCS_PROPERTY, properyList);
 		PROPERTY_DESCRIPTORS = reapPropertyList(properyList);
 	}
 
@@ -96,12 +104,31 @@ public class UnitTestDeclaration extends Declaration {
 		// allow default implementation to flag the error
 		return super.internalGetSetChildProperty(property, get, child);
 	}
-	
-	@Override
-	final ChildListPropertyDescriptor internalModifiersProperty() {
-		return MODIFIERS_PROPERTY;
+
+	/* (omit javadoc for this method)
+	 * Method declared on ASTNode.
+	 */
+	final List internalGetChildListProperty(ChildListPropertyDescriptor property) {
+		if (property == MODIFIERS_PROPERTY) {
+			return modifiers();
+		}
+		if (property == D_DOCS_PROPERTY) {
+			return dDocs();
+		}
+		// allow default implementation to flag the error
+		return super.internalGetChildListProperty(property);
 	}
 
+		@Override
+		final ChildListPropertyDescriptor internalModifiersProperty() {
+			return MODIFIERS_PROPERTY;
+		}
+		
+		@Override
+		final ChildListPropertyDescriptor internalDDocsProperty() {
+			return D_DOCS_PROPERTY;
+		}
+		
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
 	 */
@@ -115,7 +142,9 @@ public class UnitTestDeclaration extends Declaration {
 	ASTNode clone0(AST target) {
 		UnitTestDeclaration result = new UnitTestDeclaration(target);
 		result.setSourceRange(this.getStartPosition(), this.getLength());
+		result.modifiers.addAll(ASTNode.copySubtrees(target, modifiers()));
 		result.setBody((Statement) getBody().clone(target));
+		result.dDocs.addAll(ASTNode.copySubtrees(target, dDocs()));
 		return result;
 	}
 
@@ -134,7 +163,9 @@ public class UnitTestDeclaration extends Declaration {
 		boolean visitChildren = visitor.visit(this);
 		if (visitChildren) {
 			// visit children in normal left to right reading order
+			acceptChildren(visitor, modifiers);
 			acceptChild(visitor, getBody());
+			acceptChildren(visitor, dDocs);
 		}
 		visitor.endVisit(this);
 	}
@@ -183,7 +214,7 @@ public class UnitTestDeclaration extends Declaration {
 	 * Method declared on ASTNode.
 	 */
 	int memSize() {
-		return BASE_NODE_SIZE + 2 * 4;
+		return BASE_NODE_SIZE + 3 * 4;
 	}
 
 	/* (omit javadoc for this method)
@@ -194,6 +225,7 @@ public class UnitTestDeclaration extends Declaration {
 			memSize()
 			+ (this.modifiers.listSize())
 			+ (this.body == null ? 0 : getBody().treeSize())
+			+ (this.dDocs.listSize())
 	;
 	}
 

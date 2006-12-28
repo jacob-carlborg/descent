@@ -129,10 +129,6 @@ public class Parser extends Lexer {
 		nextToken();
 	}
 	
-	private void adjustLastDocComment() {
-		lastDocCommentRead = comments.size();
-	}
-	
 	@SuppressWarnings("unchecked")
 	public List<Declaration> parseModule() {
 	    List<Declaration> decldefs = new ArrayList<Declaration>();
@@ -160,7 +156,7 @@ public class Parser extends Lexer {
 
 				md = newModuleDeclaration(name);
 				md.setSourceRange(start, token.ptr + token.len - start);
-				md.comments = moduleDocComments;
+				md.dDocs().addAll(moduleDocComments);
 				adjustLastDocComment();
 				mod.setModuleDeclaration(md);
 
@@ -168,7 +164,9 @@ public class Parser extends Lexer {
 					problem("';' expected following module declaration", IProblem.SEVERITY_ERROR, IProblem.SEMICOLON_EXPECTED, token.ptr, token.len);
 				}
 				
-				nextToken();				
+				nextToken();
+				
+				attachLeadingComments(md.dDocs());
 			}
 		}
 
@@ -596,13 +594,12 @@ public class Parser extends Lexer {
 				continue;
 			}
 			if (s != null) {
-				//modifiers.addAll(clearInParent(modifiers));
 				s.modifiers().addAll(modifiers);
 				modifiers.clear();
-				
-				s.comments = lastComments;
+				s.dDocs().addAll(lastComments);
 				adjustLastDocComment();
-				decldefs.add(s);				
+				attachLeadingComments(s.dDocs());
+				decldefs.add(s);
 			}
 		} while (!once);
 		return decldefs;
@@ -671,6 +668,8 @@ public class Parser extends Lexer {
 		    } else {
 		    	nextToken();
 		    }
+		    
+		    attachLeadingComments(variableDeclaration.dDocs());
 		    
 		    return new Object[] { a, variableDeclaration }; 
 		}
@@ -1166,7 +1165,6 @@ public class Parser extends Lexer {
 			nextToken();			  
 		} else if (token.value == TOKlcurly) {
 			nextToken();
-			String comment = token.string;
 			while (token.value != TOKrcurly) {
 				if (token.value == TOKeof) {
 					problem("Enum declaration is invalid", IProblem.SEVERITY_ERROR, IProblem.ENUM_DECLARATION_IS_INVALID, enumToken.ptr, enumToken.len);
@@ -1190,12 +1188,8 @@ public class Parser extends Lexer {
 					if (token.value == TOKrcurly) {
 						;
 					} else {
-						addComment(em, comment);
-						comment = null;
 						check(TOKcomma);
 					}
-					addComment(em, comment);
-					// TODO MARS comment = token.comment;
 				} else {
 					problem("Enum member expected", IProblem.SEVERITY_ERROR, IProblem.ENUM_MEMBER_EXPECTED, token.ptr, token.len);
 					nextToken();
@@ -2351,18 +2345,20 @@ public class Parser extends Lexer {
 			Initializer init = parseInitializer();
 			
 			VariableDeclaration variableDeclaration = newVariableDeclaration(null);
-			variableDeclaration.modifiers().addAll(modifiers);
-			
+			variableDeclaration.modifiers().addAll(modifiers);			
 			variableDeclaration.fragments().add(newVariableDeclarationFragment(ident, init));
 			
 			a.add(variableDeclaration);
 			if (token.value == TOKsemicolon) {
 				nextToken();
-				variableDeclaration.comments = lastComments;
+				variableDeclaration.dDocs().addAll(lastComments);
 				adjustLastDocComment();
 			} else {
 				problem("Semicolon expected following auto declaration", IProblem.SEVERITY_ERROR, IProblem.SEMICOLON_EXPECTED, token.ptr, token.len);
 			}
+			
+			attachLeadingComments(variableDeclaration.dDocs());
+			
 			return a;
 		}
 
@@ -2372,7 +2368,7 @@ public class Parser extends Lexer {
 			s = (AggregateDeclaration) parseAggregate();
 			s.modifiers().addAll(modifiers);
 			a.add(s);
-			s.comments = lastComments;
+			s.dDocs().addAll(lastComments);
 			adjustLastDocComment();
 			return a;
 		}
@@ -2461,14 +2457,14 @@ public class Parser extends Lexer {
 				case TOKsemicolon:
 					v.setSourceRange(nextTypdefOrAliasStart, token.ptr + token.len - nextTypdefOrAliasStart);
 					nextToken();
-					v.comments = lastComments;
+					v.dDocs().addAll(lastComments);
 					adjustLastDocComment();
 					break;
 
 				case TOKcomma:
 					v.setSourceRange(nextTypdefOrAliasStart, prevToken.ptr + prevToken.len - nextTypdefOrAliasStart);
 					nextToken();
-					v.comments = lastComments;
+					v.dDocs().addAll(lastComments);
 					adjustLastDocComment();
 					continue;
 
@@ -2483,7 +2479,7 @@ public class Parser extends Lexer {
 				
 				FunctionDeclaration function = newFunctionDeclaration(FunctionDeclaration.Kind.FUNCTION, 
 						typeFunction.getReturnType(), name, typeFunction.getArguments(), typeFunction.varargs ? 1 : 0);
-				function.comments = lastComments;
+				function.dDocs().addAll(lastComments);
 				adjustLastDocComment();
 				
 				parseContracts(function);
@@ -2512,7 +2508,7 @@ public class Parser extends Lexer {
 					s = tempdecl;
 					*/
 				}
-				s.comments = lastComments;
+				s.dDocs().addAll(lastComments);
 				adjustLastDocComment();
 				a.add(s);
 			} else {
@@ -2539,14 +2535,15 @@ public class Parser extends Lexer {
 				case TOKsemicolon:
 					variableDeclaration.setSourceRange(nextVarStart, token.ptr + token.len - nextVarStart);
 					nextToken();
-					variableDeclaration.comments = lastComments;
+					variableDeclaration.dDocs().addAll(lastComments);
 					adjustLastDocComment();
+					attachLeadingComments(variableDeclaration.dDocs());
 					break;
 
 				case TOKcomma:
 					variableDeclaration.setSourceRange(nextVarStart, prevToken.ptr + prevToken.len - nextVarStart);
 					nextToken();
-					variableDeclaration.comments = lastComments;
+					variableDeclaration.dDocs().addAll(lastComments);
 					adjustLastDocComment();
 					continue;
 
@@ -3724,7 +3721,7 @@ public class Parser extends Lexer {
 															// AsmStatement from
 															// list of tokens
 															// we've saved
-						s = new AsmStatement(ast, toklist);
+						s = newAsmStatement(ast, toklist);
 						
 						toklist = null;
 						ptoklist[0] = toklist;
@@ -3785,7 +3782,7 @@ public class Parser extends Lexer {
 		
 		return s;
 	}
-	
+
 	private void parseStatement_Ldeclaration(Statement[] s, int flags) {
 		List a;
 
@@ -5619,14 +5616,6 @@ public class Parser extends Lexer {
 		e = newNewExpression(ast, thisexp, newargs, t, arguments);
 		return e;
 	}
-
-	private void addComment(ASTNode s, String blockComment) {
-		addComment(s, blockComment, -1);
-	}
-
-	private void addComment(ASTNode s, String blockComment, int blockCommentStart) {
-		// TODO MARS s.addComment(combineComments(blockComment, token.lineComment), blockComment == null ? - 1 : blockCommentStart);
-	}
 	
 	public PrimitiveType newPrimitiveTypeFromCurrentToken() {
 		PrimitiveType type = new PrimitiveType(ast);
@@ -6737,6 +6726,11 @@ public class Parser extends Lexer {
 		return typeid;
 	}
 	
+	private AsmStatement newAsmStatement(AST ast, Token toklist) {
+		AsmStatement asmStatement = new AsmStatement(ast);
+		return asmStatement;
+	}
+	
 	private List<Comment> getLastDocComments() {
 		List<Comment> toReturn = new ArrayList<Comment>();
 		for(int i = comments.size() - 1; i >= lastDocCommentRead; i--) {
@@ -6748,6 +6742,16 @@ public class Parser extends Lexer {
 			}
 		}
 		return toReturn;
+	}
+	
+	private void adjustLastDocComment() {
+		lastDocCommentRead = comments.size();
+	}
+	
+	private void attachLeadingComments(List<Comment> comments) {
+		if (prevToken.leadingComments != null) {
+			comments.addAll(prevToken.leadingComments);
+		}
 	}
 	
 }

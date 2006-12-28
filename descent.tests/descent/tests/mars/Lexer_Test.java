@@ -159,13 +159,13 @@ public class Lexer_Test extends TestCase {
 	}
 	
 	public void testComments() {
-		assertComment(" //hola\n", "//hola", 1, 6, TOK.TOKlinecomment);
-		assertComment(" ///hola\n", "///hola", 1, 7, TOK.TOKdoclinecomment);
-		assertComment(" /*hola*/", "/*hola*/", 1, 8, TOK.TOKblockcomment);
-		assertComment(" /**hola*/", "/**hola*/", 1, 9, TOK.TOKdocblockcomment);
-		assertComment(" /+hola+/", "/+hola+/", 1, 8, TOK.TOKpluscomment);
-		assertComment(" /++hola+/", "/++hola+/", 1, 9, TOK.TOKdocpluscomment);
-		assertComment(" /++ /+ hola +/ +/", "/++ /+ hola +/ +/", 1, 17, TOK.TOKdocpluscomment);
+		assertComment(" //hola\n", "//hola", 1, 6, Comment.Kind.LINE_COMMENT);
+		assertComment(" ///hola\n", "///hola", 1, 7, Comment.Kind.DOC_LINE_COMMENT);
+		assertComment(" /*hola*/", "/*hola*/", 1, 8, Comment.Kind.BLOCK_COMMENT);
+		assertComment(" /**hola*/", "/**hola*/", 1, 9, Comment.Kind.DOC_BLOCK_COMMENT);
+		assertComment(" /+hola+/", "/+hola+/", 1, 8, Comment.Kind.PLUS_COMMENT);
+		assertComment(" /++hola+/", "/++hola+/", 1, 9, Comment.Kind.DOC_PLUS_COMMENT);
+		assertComment(" /++ /+ hola +/ +/", "/++ /+ hola +/ +/", 1, 17, Comment.Kind.DOC_PLUS_COMMENT);
 	}
 
 	private void assertToken(String s, TOK t, int start, int len) {
@@ -224,14 +224,13 @@ public class Lexer_Test extends TestCase {
 		assertEquals(0, lexer.problems.size());
 	}
 	
-	private void assertComment(String string, String comment, int start, int len, TOK tok) {
+	private void assertComment(String string, String comment, int start, int len, Comment.Kind kind) {
 		Lexer lexer = new Lexer(AST.newAST(AST.D1), string);
 		lexer.nextToken();
 		Comment com = lexer.comments.get(lexer.comments.size() - 1);
-		assertEquals(comment, com.string);
 		assertEquals(start, com.getStartPosition());
 		assertEquals(len, com.getLength());
-		assertEquals(tok, com.tok);
+		assertEquals(kind, com.getKind());
 		assertEquals(0, lexer.problems.size());
 	}
 

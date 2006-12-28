@@ -27,7 +27,7 @@ package descent.core.dom;
  * 
  * @since 2.0
  */
-public abstract class Name extends Expression /* TODO JDT implements IDocElement */ {
+public abstract class Name extends Expression {
 	
 	/**
 	 * Approximate base size of an expression node instance in bytes, 

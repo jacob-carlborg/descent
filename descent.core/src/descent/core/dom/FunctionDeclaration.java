@@ -44,7 +44,7 @@ public class FunctionDeclaration extends Declaration {
 	 * The "modifiers" structural property of this node type.
 	 */
 	public static final ChildListPropertyDescriptor MODIFIERS_PROPERTY =
-		internalModifiersPropertyFactory(FunctionDeclaration.class); //$NON-NLS-1$
+	internalModifiersPropertyFactory(FunctionDeclaration.class); //$NON-NLS-1$
 
 	/**
 	 * The "kind" structural property of this node type.
@@ -97,7 +97,7 @@ public class FunctionDeclaration extends Declaration {
 	/**
 	 * The "postconditionVariableName" structural property of this node type.
 	 */
-	public static final ChildPropertyDescriptor POSTCONDITIONVARIABLENAME_PROPERTY =
+	public static final ChildPropertyDescriptor POSTCONDITION_VARIABLE_NAME_PROPERTY =
 		new ChildPropertyDescriptor(FunctionDeclaration.class, "postconditionVariableName", SimpleName.class, OPTIONAL, NO_CYCLE_RISK); //$NON-NLS-1$
 
 	/**
@@ -107,6 +107,12 @@ public class FunctionDeclaration extends Declaration {
 		new ChildPropertyDescriptor(FunctionDeclaration.class, "body", Statement.class, MANDATORY, CYCLE_RISK); //$NON-NLS-1$
 
 	/**
+	 * The "dDocs" structural property of this node type.
+	 */
+	public static final ChildListPropertyDescriptor D_DOCS_PROPERTY =
+	internalDDocsPropertyFactory(FunctionDeclaration.class); //$NON-NLS-1$
+
+	/**
 	 * A list of property descriptors (element type: 
 	 * {@link StructuralPropertyDescriptor}),
 	 * or null if uninitialized.
@@ -114,7 +120,7 @@ public class FunctionDeclaration extends Declaration {
 	private static final List PROPERTY_DESCRIPTORS;
 
 	static {
-		List properyList = new ArrayList(11);
+		List properyList = new ArrayList(12);
 		createPropertyList(FunctionDeclaration.class, properyList);
 		addProperty(MODIFIERS_PROPERTY, properyList);
 		addProperty(KIND_PROPERTY, properyList);
@@ -125,8 +131,9 @@ public class FunctionDeclaration extends Declaration {
 		addProperty(VARIADIC_PROPERTY, properyList);
 		addProperty(PRECONDITION_PROPERTY, properyList);
 		addProperty(POSTCONDITION_PROPERTY, properyList);
-		addProperty(POSTCONDITIONVARIABLENAME_PROPERTY, properyList);
+		addProperty(POSTCONDITION_VARIABLE_NAME_PROPERTY, properyList);
 		addProperty(BODY_PROPERTY, properyList);
+		addProperty(D_DOCS_PROPERTY, properyList);
 		PROPERTY_DESCRIPTORS = reapPropertyList(properyList);
 	}
 
@@ -145,13 +152,6 @@ public class FunctionDeclaration extends Declaration {
 		return PROPERTY_DESCRIPTORS;
 	}
 
-	/**
-	 * The modifiers
-	 * (element type: <code>Modifier</code>).
-	 * Defaults to an empty list.
-	 */
-	private ASTNode.NodeList modifiers =
-		new ASTNode.NodeList(MODIFIERS_PROPERTY);
 	/**
 	 * The kind.
 	 */
@@ -295,7 +295,7 @@ public class FunctionDeclaration extends Declaration {
 				return null;
 			}
 		}
-		if (property == POSTCONDITIONVARIABLENAME_PROPERTY) {
+		if (property == POSTCONDITION_VARIABLE_NAME_PROPERTY) {
 			if (get) {
 				return getPostconditionVariableName();
 			} else {
@@ -328,6 +328,9 @@ public class FunctionDeclaration extends Declaration {
 		if (property == ARGUMENTS_PROPERTY) {
 			return arguments();
 		}
+		if (property == D_DOCS_PROPERTY) {
+			return dDocs();
+		}
 		// allow default implementation to flag the error
 		return super.internalGetChildListProperty(property);
 	}
@@ -337,10 +340,15 @@ public class FunctionDeclaration extends Declaration {
 			return MODIFIERS_PROPERTY;
 		}
 		
-		/* (omit javadoc for this method)
-		 * Method declared on ASTNode.
-		 */
-		final int getNodeType0() {
+		@Override
+		final ChildListPropertyDescriptor internalDDocsProperty() {
+			return D_DOCS_PROPERTY;
+		}
+		
+	/* (omit javadoc for this method)
+	 * Method declared on ASTNode.
+	 */
+	final int getNodeType0() {
 		return FUNCTION_DECLARATION;
 	}
 
@@ -361,6 +369,7 @@ public class FunctionDeclaration extends Declaration {
 	result.setPostcondition((Statement) ASTNode.copySubtree(target, getPostcondition()));
 	result.setPostconditionVariableName((SimpleName) ASTNode.copySubtree(target, getPostconditionVariableName()));
 		result.setBody((Statement) getBody().clone(target));
+		result.dDocs.addAll(ASTNode.copySubtrees(target, dDocs()));
 		return result;
 	}
 
@@ -379,15 +388,16 @@ public class FunctionDeclaration extends Declaration {
 		boolean visitChildren = visitor.visit(this);
 		if (visitChildren) {
 			// visit children in normal left to right reading order
-			acceptChildren(visitor, modifiers());
+			acceptChildren(visitor, modifiers);
 			acceptChild(visitor, getReturnType());
 			acceptChild(visitor, getName());
-			acceptChildren(visitor, templateParameters());
-			acceptChildren(visitor, arguments());
+			acceptChildren(visitor, templateParameters);
+			acceptChildren(visitor, arguments);
 			acceptChild(visitor, getPrecondition());
 			acceptChild(visitor, getPostcondition());
 			acceptChild(visitor, getPostconditionVariableName());
 			acceptChild(visitor, getBody());
+			acceptChildren(visitor, dDocs);
 		}
 		visitor.endVisit(this);
 	}
@@ -594,18 +604,18 @@ public class FunctionDeclaration extends Declaration {
 	}
 
 	/**
-	 * Returns the postconditionVariableName of this function declaration.
+	 * Returns the postcondition variable name of this function declaration.
 	 * 
-	 * @return the postconditionVariableName
+	 * @return the postcondition variable name
 	 */ 
 	public SimpleName getPostconditionVariableName() {
 		return this.postconditionVariableName;
 	}
 
 	/**
-	 * Sets the postconditionVariableName of this function declaration.
+	 * Sets the postcondition variable name of this function declaration.
 	 * 
-	 * @param postconditionVariableName the postconditionVariableName
+	 * @param postconditionVariableName the postcondition variable name
 	 * @exception IllegalArgumentException if:
 	 * <ul>
 	 * <li>the node belongs to a different AST</li>
@@ -615,9 +625,9 @@ public class FunctionDeclaration extends Declaration {
 	 */ 
 	public void setPostconditionVariableName(SimpleName postconditionVariableName) {
 		ASTNode oldChild = this.postconditionVariableName;
-		preReplaceChild(oldChild, postconditionVariableName, POSTCONDITIONVARIABLENAME_PROPERTY);
+		preReplaceChild(oldChild, postconditionVariableName, POSTCONDITION_VARIABLE_NAME_PROPERTY);
 		this.postconditionVariableName = postconditionVariableName;
-		postReplaceChild(oldChild, postconditionVariableName, POSTCONDITIONVARIABLENAME_PROPERTY);
+		postReplaceChild(oldChild, postconditionVariableName, POSTCONDITION_VARIABLE_NAME_PROPERTY);
 	}
 
 	/**
@@ -664,7 +674,7 @@ public class FunctionDeclaration extends Declaration {
 	 * Method declared on ASTNode.
 	 */
 	int memSize() {
-		return BASE_NODE_SIZE + 11 * 4;
+		return BASE_NODE_SIZE + 12 * 4;
 	}
 
 	/* (omit javadoc for this method)
@@ -682,6 +692,7 @@ public class FunctionDeclaration extends Declaration {
 			+ (this.postcondition == null ? 0 : getPostcondition().treeSize())
 			+ (this.postconditionVariableName == null ? 0 : getPostconditionVariableName().treeSize())
 			+ (this.body == null ? 0 : getBody().treeSize())
+			+ (this.dDocs.listSize())
 	;
 	}
 	

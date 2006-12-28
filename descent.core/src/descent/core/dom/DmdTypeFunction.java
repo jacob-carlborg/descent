@@ -27,13 +27,11 @@ class DmdTypeFunction extends DmdType {
 	}
 	
 	public int getNodeType0() {
-		// TODO
 		return 0;
 	}
 	
 	@Override
 	void accept0(ASTVisitor visitor) {
-		// TODO Auto-generated method stub
 		
 	}
 	
@@ -44,8 +42,28 @@ class DmdTypeFunction extends DmdType {
 
 	@Override
 	List internalStructuralPropertiesForType(int apiLevel) {
+		return null;
+	}
+
+	@Override
+	ASTNode clone0(AST target) {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	int memSize() {
+		return 0;
+	}
+
+	@Override
+	boolean subtreeMatch0(ASTMatcher matcher, Object other) {
+		return false;
+	}
+
+	@Override
+	int treeSize() {
+		return 0;
 	}
 
 }

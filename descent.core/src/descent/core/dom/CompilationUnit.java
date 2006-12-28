@@ -261,7 +261,7 @@ public class CompilationUnit extends ASTNode {
 		if (visitChildren) {
 			// visit children in normal left to right reading order
 			acceptChild(visitor, getModuleDeclaration());
-			acceptChildren(visitor, declarations());
+			acceptChildren(visitor, declarations);
 		}
 		visitor.endVisit(this);
 	}

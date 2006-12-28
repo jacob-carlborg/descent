@@ -12,6 +12,7 @@ import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
 import descent.core.dom.ASTNode;
 import descent.core.dom.Comment;
 import descent.core.dom.CompilationUnit;
+import descent.core.dom.Declaration;
 import descent.ui.text.outline.DEditorContentOutlinePage;
 
 public class DEditor extends AbstractDecoratedTextEditor {
@@ -146,12 +147,15 @@ public class DEditor extends AbstractDecoratedTextEditor {
 	 * element has comments, the comments are also highlighted.
 	 */
 	public void highlightRangeForElement(ASTNode element, boolean moveCursor) {
+		// TODO make an interface for element that have comments
 		int start = element.getStartPosition();
+		/*
 		for(Comment comment : element.getComments()) {
 			if (comment.getStartPosition() < start) {
 				start = comment.getStartPosition();
 			}
 		}
+		*/
 		setHighlightRange(start, element.getStartPosition() + element.getLength() - start, moveCursor);
 	}
 	

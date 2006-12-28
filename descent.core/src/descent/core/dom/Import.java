@@ -172,7 +172,7 @@ public class Import extends ASTNode {
 			// visit children in normal left to right reading order
 			acceptChild(visitor, getAlias());
 			acceptChild(visitor, getName());
-			acceptChildren(visitor, selectiveImports());
+			acceptChildren(visitor, selectiveImports);
 		}
 		visitor.endVisit(this);
 	}

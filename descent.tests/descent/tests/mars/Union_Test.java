@@ -36,9 +36,9 @@ public class Union_Test extends Parser_Test {
 		AggregateDeclaration c = (AggregateDeclaration) getSingleDeclarationNoProblems(s);
 		assertPosition(c, 13, 12);
 		
-		List<Comment> comments = c.getComments();
+		List<Comment> comments = c.dDocs();
 		assertEquals(1, comments.size());
-		assertEquals("/** hola */", comments.get(0).getComment());
+		assertPosition(comments.get(0), 1, 11);
 	}
 
 }

@@ -68,6 +68,12 @@ public class ModifierDeclaration extends Declaration {
 		new ChildListPropertyDescriptor(ModifierDeclaration.class, "declarations", Declaration.class, CYCLE_RISK); //$NON-NLS-1$
 
 	/**
+	 * The "dDocs" structural property of this node type.
+	 */
+	public static final ChildListPropertyDescriptor D_DOCS_PROPERTY =
+	internalDDocsPropertyFactory(ModifierDeclaration.class); //$NON-NLS-1$
+
+	/**
 	 * A list of property descriptors (element type: 
 	 * {@link StructuralPropertyDescriptor}),
 	 * or null if uninitialized.
@@ -75,12 +81,13 @@ public class ModifierDeclaration extends Declaration {
 	private static final List PROPERTY_DESCRIPTORS;
 
 	static {
-		List properyList = new ArrayList(4);
+		List properyList = new ArrayList(5);
 		createPropertyList(ModifierDeclaration.class, properyList);
 		addProperty(MODIFIERS_PROPERTY, properyList);
 		addProperty(SYNTAX_PROPERTY, properyList);
 		addProperty(MODIFIER_PROPERTY, properyList);
 		addProperty(DECLARATIONS_PROPERTY, properyList);
+		addProperty(D_DOCS_PROPERTY, properyList);
 		PROPERTY_DESCRIPTORS = reapPropertyList(properyList);
 	}
 
@@ -99,13 +106,6 @@ public class ModifierDeclaration extends Declaration {
 		return PROPERTY_DESCRIPTORS;
 	}
 
-	/**
-	 * The modifiers
-	 * (element type: <code>Modifier</code>).
-	 * Defaults to an empty list.
-	 */
-	private ASTNode.NodeList modifiers =
-		new ASTNode.NodeList(MODIFIERS_PROPERTY);
 	/**
 	 * The syntax.
 	 */
@@ -186,6 +186,9 @@ public class ModifierDeclaration extends Declaration {
 		if (property == DECLARATIONS_PROPERTY) {
 			return declarations();
 		}
+		if (property == D_DOCS_PROPERTY) {
+			return dDocs();
+		}
 		// allow default implementation to flag the error
 		return super.internalGetChildListProperty(property);
 	}
@@ -195,10 +198,15 @@ public class ModifierDeclaration extends Declaration {
 			return MODIFIERS_PROPERTY;
 		}
 		
-		/* (omit javadoc for this method)
-		 * Method declared on ASTNode.
-		 */
-		final int getNodeType0() {
+		@Override
+		final ChildListPropertyDescriptor internalDDocsProperty() {
+			return D_DOCS_PROPERTY;
+		}
+		
+	/* (omit javadoc for this method)
+	 * Method declared on ASTNode.
+	 */
+	final int getNodeType0() {
 		return MODIFIER_DECLARATION;
 	}
 
@@ -212,6 +220,7 @@ public class ModifierDeclaration extends Declaration {
 		result.setSyntax(getSyntax());
 		result.setModifier((Modifier) getModifier().clone(target));
 		result.declarations.addAll(ASTNode.copySubtrees(target, declarations()));
+		result.dDocs.addAll(ASTNode.copySubtrees(target, dDocs()));
 		return result;
 	}
 
@@ -230,9 +239,10 @@ public class ModifierDeclaration extends Declaration {
 		boolean visitChildren = visitor.visit(this);
 		if (visitChildren) {
 			// visit children in normal left to right reading order
-			acceptChildren(visitor, modifiers());
+			acceptChildren(visitor, modifiers);
 			acceptChild(visitor, getModifier());
-			acceptChildren(visitor, declarations());
+			acceptChildren(visitor, declarations);
+			acceptChildren(visitor, dDocs);
 		}
 		visitor.endVisit(this);
 	}
@@ -316,7 +326,7 @@ public class ModifierDeclaration extends Declaration {
 	 * Method declared on ASTNode.
 	 */
 	int memSize() {
-		return BASE_NODE_SIZE + 4 * 4;
+		return BASE_NODE_SIZE + 5 * 4;
 	}
 
 	/* (omit javadoc for this method)
@@ -328,6 +338,7 @@ public class ModifierDeclaration extends Declaration {
 			+ (this.modifiers.listSize())
 			+ (this.modifier == null ? 0 : getModifier().treeSize())
 			+ (this.declarations.listSize())
+			+ (this.dDocs.listSize())
 	;
 	}
 

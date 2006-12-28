@@ -269,7 +269,7 @@ public class TryStatement extends Statement {
 	 * Method declared on ASTNode.
 	 */
 	int memSize() {
-		return super.memSize() + 3 * 4;
+		return BASE_NODE_SIZE + 3 * 4;
 	}
 	
 	/* (omit javadoc for this method)

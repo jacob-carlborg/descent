@@ -209,10 +209,10 @@ public class NewAnonymousClassExpression extends Expression {
 		if (visitChildren) {
 			// visit children in normal left to right reading order
 			acceptChild(visitor, getExpression());
-			acceptChildren(visitor, newArguments());
-			acceptChildren(visitor, constructorArguments());
-			acceptChildren(visitor, baseClasses());
-			acceptChildren(visitor, declarations());
+			acceptChildren(visitor, newArguments);
+			acceptChildren(visitor, constructorArguments);
+			acceptChildren(visitor, baseClasses);
+			acceptChildren(visitor, declarations);
 		}
 		visitor.endVisit(this);
 	}

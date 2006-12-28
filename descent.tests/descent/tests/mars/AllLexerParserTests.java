@@ -13,6 +13,7 @@ public class AllLexerParserTests {
 		suite.addTestSuite(Pragma_Test.class);
 		suite.addTestSuite(Problems_Test.class);
 		suite.addTestSuite(Class_Test.class);
+		suite.addTestSuite(Comment_Test.class);
 		suite.addTestSuite(Typedef_Test.class);
 		suite.addTestSuite(Expression_Test.class);
 		suite.addTestSuite(Interface_Test.class);

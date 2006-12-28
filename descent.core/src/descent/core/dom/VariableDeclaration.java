@@ -33,6 +33,12 @@ public class VariableDeclaration extends Declaration {
 		new ChildListPropertyDescriptor(VariableDeclaration.class, "fragments", VariableDeclarationFragment.class, NO_CYCLE_RISK); //$NON-NLS-1$
 
 	/**
+	 * The "dDocs" structural property of this node type.
+	 */
+	public static final ChildListPropertyDescriptor D_DOCS_PROPERTY =
+	internalDDocsPropertyFactory(VariableDeclaration.class); //$NON-NLS-1$
+
+	/**
 	 * A list of property descriptors (element type: 
 	 * {@link StructuralPropertyDescriptor}),
 	 * or null if uninitialized.
@@ -40,11 +46,12 @@ public class VariableDeclaration extends Declaration {
 	private static final List PROPERTY_DESCRIPTORS;
 
 	static {
-		List properyList = new ArrayList(3);
+		List properyList = new ArrayList(4);
 		createPropertyList(VariableDeclaration.class, properyList);
 		addProperty(MODIFIERS_PROPERTY, properyList);
 		addProperty(TYPE_PROPERTY, properyList);
 		addProperty(FRAGMENTS_PROPERTY, properyList);
+		addProperty(D_DOCS_PROPERTY, properyList);
 		PROPERTY_DESCRIPTORS = reapPropertyList(properyList);
 	}
 
@@ -63,13 +70,6 @@ public class VariableDeclaration extends Declaration {
 		return PROPERTY_DESCRIPTORS;
 	}
 
-	/**
-	 * The modifiers
-	 * (element type: <code>Modifier</code>).
-	 * Defaults to an empty list.
-	 */
-	private ASTNode.NodeList modifiers =
-		new ASTNode.NodeList(MODIFIERS_PROPERTY);
 	/**
 	 * The type.
 	 */
@@ -129,6 +129,9 @@ public class VariableDeclaration extends Declaration {
 		if (property == FRAGMENTS_PROPERTY) {
 			return fragments();
 		}
+		if (property == D_DOCS_PROPERTY) {
+			return dDocs();
+		}
 		// allow default implementation to flag the error
 		return super.internalGetChildListProperty(property);
 	}
@@ -138,10 +141,15 @@ public class VariableDeclaration extends Declaration {
 			return MODIFIERS_PROPERTY;
 		}
 		
-		/* (omit javadoc for this method)
-		 * Method declared on ASTNode.
-		 */
-		final int getNodeType0() {
+		@Override
+		final ChildListPropertyDescriptor internalDDocsProperty() {
+			return D_DOCS_PROPERTY;
+		}
+		
+	/* (omit javadoc for this method)
+	 * Method declared on ASTNode.
+	 */
+	final int getNodeType0() {
 		return VARIABLE_DECLARATION;
 	}
 
@@ -154,6 +162,7 @@ public class VariableDeclaration extends Declaration {
 		result.modifiers.addAll(ASTNode.copySubtrees(target, modifiers()));
 	result.setType((Type) ASTNode.copySubtree(target, getType()));
 		result.fragments.addAll(ASTNode.copySubtrees(target, fragments()));
+		result.dDocs.addAll(ASTNode.copySubtrees(target, dDocs()));
 		return result;
 	}
 
@@ -172,9 +181,10 @@ public class VariableDeclaration extends Declaration {
 		boolean visitChildren = visitor.visit(this);
 		if (visitChildren) {
 			// visit children in normal left to right reading order
-			acceptChildren(visitor, modifiers());
+			acceptChildren(visitor, modifiers);
 			acceptChild(visitor, getType());
-			acceptChildren(visitor, fragments());
+			acceptChildren(visitor, fragments);
+			acceptChildren(visitor, dDocs);
 		}
 		visitor.endVisit(this);
 	}
@@ -221,7 +231,7 @@ public class VariableDeclaration extends Declaration {
 	 * Method declared on ASTNode.
 	 */
 	int memSize() {
-		return BASE_NODE_SIZE + 3 * 4;
+		return BASE_NODE_SIZE + 4 * 4;
 	}
 
 	/* (omit javadoc for this method)
@@ -233,6 +243,7 @@ public class VariableDeclaration extends Declaration {
 			+ (this.modifiers.listSize())
 			+ (this.type == null ? 0 : getType().treeSize())
 			+ (this.fragments.listSize())
+			+ (this.dDocs.listSize())
 	;
 	}
 

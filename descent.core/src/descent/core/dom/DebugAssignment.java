@@ -27,6 +27,12 @@ public class DebugAssignment extends Declaration {
 		new ChildPropertyDescriptor(DebugAssignment.class, "version", Version.class, MANDATORY, NO_CYCLE_RISK); //$NON-NLS-1$
 
 	/**
+	 * The "dDocs" structural property of this node type.
+	 */
+	public static final ChildListPropertyDescriptor D_DOCS_PROPERTY =
+	internalDDocsPropertyFactory(DebugAssignment.class); //$NON-NLS-1$
+
+	/**
 	 * A list of property descriptors (element type: 
 	 * {@link StructuralPropertyDescriptor}),
 	 * or null if uninitialized.
@@ -34,10 +40,11 @@ public class DebugAssignment extends Declaration {
 	private static final List PROPERTY_DESCRIPTORS;
 
 	static {
-		List properyList = new ArrayList(2);
+		List properyList = new ArrayList(3);
 		createPropertyList(DebugAssignment.class, properyList);
 		addProperty(MODIFIERS_PROPERTY, properyList);
 		addProperty(VERSION_PROPERTY, properyList);
+		addProperty(D_DOCS_PROPERTY, properyList);
 		PROPERTY_DESCRIPTORS = reapPropertyList(properyList);
 	}
 
@@ -56,13 +63,6 @@ public class DebugAssignment extends Declaration {
 		return PROPERTY_DESCRIPTORS;
 	}
 
-	/**
-	 * The modifiers
-	 * (element type: <code>Modifier</code>).
-	 * Defaults to an empty list.
-	 */
-	private ASTNode.NodeList modifiers =
-		new ASTNode.NodeList(MODIFIERS_PROPERTY);
 	/**
 	 * The version.
 	 */
@@ -112,6 +112,9 @@ public class DebugAssignment extends Declaration {
 		if (property == MODIFIERS_PROPERTY) {
 			return modifiers();
 		}
+		if (property == D_DOCS_PROPERTY) {
+			return dDocs();
+		}
 		// allow default implementation to flag the error
 		return super.internalGetChildListProperty(property);
 	}
@@ -121,10 +124,15 @@ public class DebugAssignment extends Declaration {
 			return MODIFIERS_PROPERTY;
 		}
 		
-		/* (omit javadoc for this method)
-		 * Method declared on ASTNode.
-		 */
-		final int getNodeType0() {
+		@Override
+		final ChildListPropertyDescriptor internalDDocsProperty() {
+			return D_DOCS_PROPERTY;
+		}
+		
+	/* (omit javadoc for this method)
+	 * Method declared on ASTNode.
+	 */
+	final int getNodeType0() {
 		return DEBUG_ASSIGNMENT;
 	}
 
@@ -136,6 +144,7 @@ public class DebugAssignment extends Declaration {
 		result.setSourceRange(this.getStartPosition(), this.getLength());
 		result.modifiers.addAll(ASTNode.copySubtrees(target, modifiers()));
 		result.setVersion((Version) getVersion().clone(target));
+		result.dDocs.addAll(ASTNode.copySubtrees(target, dDocs()));
 		return result;
 	}
 
@@ -154,8 +163,9 @@ public class DebugAssignment extends Declaration {
 		boolean visitChildren = visitor.visit(this);
 		if (visitChildren) {
 			// visit children in normal left to right reading order
-			acceptChildren(visitor, modifiers());
+			acceptChildren(visitor, modifiers);
 			acceptChild(visitor, getVersion());
+			acceptChildren(visitor, dDocs);
 		}
 		visitor.endVisit(this);
 	}
@@ -204,7 +214,7 @@ public class DebugAssignment extends Declaration {
 	 * Method declared on ASTNode.
 	 */
 	int memSize() {
-		return BASE_NODE_SIZE + 2 * 4;
+		return BASE_NODE_SIZE + 3 * 4;
 	}
 
 	/* (omit javadoc for this method)
@@ -215,6 +225,7 @@ public class DebugAssignment extends Declaration {
 			memSize()
 			+ (this.modifiers.listSize())
 			+ (this.version == null ? 0 : getVersion().treeSize())
+			+ (this.dDocs.listSize())
 	;
 	}
 

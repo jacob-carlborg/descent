@@ -199,7 +199,7 @@ public class ForeachStatement extends Statement {
 		boolean visitChildren = visitor.visit(this);
 		if (visitChildren) {
 			// visit children in normal left to right reading order
-			acceptChildren(visitor, arguments());
+			acceptChildren(visitor, arguments);
 			acceptChild(visitor, getExpression());
 			acceptChild(visitor, getBody());
 		}

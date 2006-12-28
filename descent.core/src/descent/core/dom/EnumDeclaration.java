@@ -21,7 +21,7 @@ public class EnumDeclaration extends Declaration {
 	 * The "modifiers" structural property of this node type.
 	 */
 	public static final ChildListPropertyDescriptor MODIFIERS_PROPERTY =
-		internalModifiersPropertyFactory(EnumDeclaration.class); //$NON-NLS-1$
+	internalModifiersPropertyFactory(EnumDeclaration.class); //$NON-NLS-1$
 
 	/**
 	 * The "name" structural property of this node type.
@@ -32,14 +32,20 @@ public class EnumDeclaration extends Declaration {
 	/**
 	 * The "baseType" structural property of this node type.
 	 */
-	public static final ChildPropertyDescriptor BASETYPE_PROPERTY =
+	public static final ChildPropertyDescriptor BASE_TYPE_PROPERTY =
 		new ChildPropertyDescriptor(EnumDeclaration.class, "baseType", Type.class, OPTIONAL, NO_CYCLE_RISK); //$NON-NLS-1$
 
 	/**
 	 * The "enumMembers" structural property of this node type.
 	 */
-	public static final ChildListPropertyDescriptor ENUMMEMBERS_PROPERTY =
+	public static final ChildListPropertyDescriptor ENUM_MEMBERS_PROPERTY =
 		new ChildListPropertyDescriptor(EnumDeclaration.class, "enumMembers", EnumMember.class, NO_CYCLE_RISK); //$NON-NLS-1$
+
+	/**
+	 * The "dDocs" structural property of this node type.
+	 */
+	public static final ChildListPropertyDescriptor D_DOCS_PROPERTY =
+	internalDDocsPropertyFactory(EnumDeclaration.class); //$NON-NLS-1$
 
 	/**
 	 * A list of property descriptors (element type: 
@@ -49,12 +55,13 @@ public class EnumDeclaration extends Declaration {
 	private static final List PROPERTY_DESCRIPTORS;
 
 	static {
-		List properyList = new ArrayList(4);
+		List properyList = new ArrayList(5);
 		createPropertyList(EnumDeclaration.class, properyList);
 		addProperty(MODIFIERS_PROPERTY, properyList);
 		addProperty(NAME_PROPERTY, properyList);
-		addProperty(BASETYPE_PROPERTY, properyList);
-		addProperty(ENUMMEMBERS_PROPERTY, properyList);
+		addProperty(BASE_TYPE_PROPERTY, properyList);
+		addProperty(ENUM_MEMBERS_PROPERTY, properyList);
+		addProperty(D_DOCS_PROPERTY, properyList);
 		PROPERTY_DESCRIPTORS = reapPropertyList(properyList);
 	}
 
@@ -74,13 +81,6 @@ public class EnumDeclaration extends Declaration {
 	}
 
 	/**
-	 * The modifiers
-	 * (element type: <code>Modifier</code>).
-	 * Defaults to an empty list.
-	 */
-	private ASTNode.NodeList modifiers =
-		new ASTNode.NodeList(MODIFIERS_PROPERTY);
-	/**
 	 * The name.
 	 */
 	private SimpleName name;
@@ -91,12 +91,12 @@ public class EnumDeclaration extends Declaration {
 	private Type baseType;
 
 	/**
-	 * The enumMembers
+	 * The enum members
 	 * (element type: <code>EnumMember</code>).
 	 * Defaults to an empty list.
 	 */
 	private ASTNode.NodeList enumMembers =
-		new ASTNode.NodeList(ENUMMEMBERS_PROPERTY);
+		new ASTNode.NodeList(ENUM_MEMBERS_PROPERTY);
 
 	/**
 	 * Creates a new unparented enum declaration node owned by the given 
@@ -130,7 +130,7 @@ public class EnumDeclaration extends Declaration {
 				return null;
 			}
 		}
-		if (property == BASETYPE_PROPERTY) {
+		if (property == BASE_TYPE_PROPERTY) {
 			if (get) {
 				return getBaseType();
 			} else {
@@ -149,8 +149,11 @@ public class EnumDeclaration extends Declaration {
 		if (property == MODIFIERS_PROPERTY) {
 			return modifiers();
 		}
-		if (property == ENUMMEMBERS_PROPERTY) {
+		if (property == ENUM_MEMBERS_PROPERTY) {
 			return enumMembers();
+		}
+		if (property == D_DOCS_PROPERTY) {
+			return dDocs();
 		}
 		// allow default implementation to flag the error
 		return super.internalGetChildListProperty(property);
@@ -161,10 +164,15 @@ public class EnumDeclaration extends Declaration {
 			return MODIFIERS_PROPERTY;
 		}
 		
-		/* (omit javadoc for this method)
-		 * Method declared on ASTNode.
-		 */
-		final int getNodeType0() {
+		@Override
+		final ChildListPropertyDescriptor internalDDocsProperty() {
+			return D_DOCS_PROPERTY;
+		}
+		
+	/* (omit javadoc for this method)
+	 * Method declared on ASTNode.
+	 */
+	final int getNodeType0() {
 		return ENUM_DECLARATION;
 	}
 
@@ -178,6 +186,7 @@ public class EnumDeclaration extends Declaration {
 	result.setName((SimpleName) ASTNode.copySubtree(target, getName()));
 	result.setBaseType((Type) ASTNode.copySubtree(target, getBaseType()));
 		result.enumMembers.addAll(ASTNode.copySubtrees(target, enumMembers()));
+		result.dDocs.addAll(ASTNode.copySubtrees(target, dDocs()));
 		return result;
 	}
 
@@ -196,10 +205,11 @@ public class EnumDeclaration extends Declaration {
 		boolean visitChildren = visitor.visit(this);
 		if (visitChildren) {
 			// visit children in normal left to right reading order
-			acceptChildren(visitor, modifiers());
+			acceptChildren(visitor, modifiers);
 			acceptChild(visitor, getName());
 			acceptChild(visitor, getBaseType());
-			acceptChildren(visitor, enumMembers());
+			acceptChildren(visitor, enumMembers);
+			acceptChildren(visitor, dDocs);
 		}
 		visitor.endVisit(this);
 	}
@@ -232,18 +242,18 @@ public class EnumDeclaration extends Declaration {
 	}
 
 	/**
-	 * Returns the baseType of this enum declaration.
+	 * Returns the base type of this enum declaration.
 	 * 
-	 * @return the baseType
+	 * @return the base type
 	 */ 
 	public Type getBaseType() {
 		return this.baseType;
 	}
 
 	/**
-	 * Sets the baseType of this enum declaration.
+	 * Sets the base type of this enum declaration.
 	 * 
-	 * @param baseType the baseType
+	 * @param baseType the base type
 	 * @exception IllegalArgumentException if:
 	 * <ul>
 	 * <li>the node belongs to a different AST</li>
@@ -253,13 +263,13 @@ public class EnumDeclaration extends Declaration {
 	 */ 
 	public void setBaseType(Type baseType) {
 		ASTNode oldChild = this.baseType;
-		preReplaceChild(oldChild, baseType, BASETYPE_PROPERTY);
+		preReplaceChild(oldChild, baseType, BASE_TYPE_PROPERTY);
 		this.baseType = baseType;
-		postReplaceChild(oldChild, baseType, BASETYPE_PROPERTY);
+		postReplaceChild(oldChild, baseType, BASE_TYPE_PROPERTY);
 	}
 
 	/**
-	 * Returns the live ordered list of enumMembers for this
+	 * Returns the live ordered list of enum members for this
 	 * enum declaration.
 	 * 
 	 * @return the live list of enum declaration
@@ -273,7 +283,7 @@ public class EnumDeclaration extends Declaration {
 	 * Method declared on ASTNode.
 	 */
 	int memSize() {
-		return BASE_NODE_SIZE + 4 * 4;
+		return BASE_NODE_SIZE + 5 * 4;
 	}
 
 	/* (omit javadoc for this method)
@@ -286,6 +296,7 @@ public class EnumDeclaration extends Declaration {
 			+ (this.name == null ? 0 : getName().treeSize())
 			+ (this.baseType == null ? 0 : getBaseType().treeSize())
 			+ (this.enumMembers.listSize())
+			+ (this.dDocs.listSize())
 	;
 	}
 

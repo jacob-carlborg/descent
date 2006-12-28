@@ -76,9 +76,9 @@ public class Enum_Test extends Parser_Test {
 		EnumDeclaration e = (EnumDeclaration) getSingleDeclarationNoProblems(s);
 		assertPosition(e, 13, 8);
 		
-		List<Comment> comments = e.getComments();
+		List<Comment> comments = e.dDocs();
 		assertEquals(1, comments.size());
-		assertEquals("/** hola */", comments.get(0).getComment());
+		assertPosition(comments.get(0), 1, 11);
 	}
 
 }

@@ -192,8 +192,8 @@ public class NewExpression extends Expression {
 			// visit children in normal left to right reading order
 			acceptChild(visitor, getExpression());
 			acceptChild(visitor, getType());
-			acceptChildren(visitor, newArguments());
-			acceptChildren(visitor, constructorArguments());
+			acceptChildren(visitor, newArguments);
+			acceptChildren(visitor, constructorArguments);
 		}
 		visitor.endVisit(this);
 	}

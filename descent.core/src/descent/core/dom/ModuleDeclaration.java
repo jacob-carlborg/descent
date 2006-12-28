@@ -15,10 +15,22 @@ import java.util.List;
 public class ModuleDeclaration extends ASTNode {
 	
 	/**
+	 * The "modifiers" structural property of this node type.
+	 */
+	public static final ChildListPropertyDescriptor MODIFIERS_PROPERTY =
+		new ChildListPropertyDescriptor(ModuleDeclaration.class, "modifiers", Modifier.class, NO_CYCLE_RISK); //$NON-NLS-1$
+
+	/**
 	 * The "name" structural property of this node type.
 	 */
 	public static final ChildPropertyDescriptor NAME_PROPERTY =
 		new ChildPropertyDescriptor(ModuleDeclaration.class, "name", Name.class, MANDATORY, NO_CYCLE_RISK); //$NON-NLS-1$
+
+	/**
+	 * The "dDocs" structural property of this node type.
+	 */
+	public static final ChildListPropertyDescriptor D_DOCS_PROPERTY =
+		new ChildListPropertyDescriptor(ModuleDeclaration.class, "dDocs", Comment.class, NO_CYCLE_RISK); //$NON-NLS-1$
 
 	/**
 	 * A list of property descriptors (element type: 
@@ -28,9 +40,11 @@ public class ModuleDeclaration extends ASTNode {
 	private static final List PROPERTY_DESCRIPTORS;
 
 	static {
-		List properyList = new ArrayList(1);
+		List properyList = new ArrayList(3);
 		createPropertyList(ModuleDeclaration.class, properyList);
+		addProperty(MODIFIERS_PROPERTY, properyList);
 		addProperty(NAME_PROPERTY, properyList);
+		addProperty(D_DOCS_PROPERTY, properyList);
 		PROPERTY_DESCRIPTORS = reapPropertyList(properyList);
 	}
 
@@ -50,10 +64,24 @@ public class ModuleDeclaration extends ASTNode {
 	}
 
 	/**
+	 * The modifiers
+	 * (element type: <code>Modifier</code>).
+	 * Defaults to an empty list.
+	 */
+	private ASTNode.NodeList modifiers =
+		new ASTNode.NodeList(MODIFIERS_PROPERTY);
+	/**
 	 * The name.
 	 */
 	private Name name;
 
+	/**
+	 * The d docs
+	 * (element type: <code>Comment</code>).
+	 * Defaults to an empty list.
+	 */
+	private ASTNode.NodeList dDocs =
+		new ASTNode.NodeList(D_DOCS_PROPERTY);
 
 	/**
 	 * Creates a new unparented module declaration node owned by the given 
@@ -94,6 +122,20 @@ public class ModuleDeclaration extends ASTNode {
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
 	 */
+	final List internalGetChildListProperty(ChildListPropertyDescriptor property) {
+		if (property == MODIFIERS_PROPERTY) {
+			return modifiers();
+		}
+		if (property == D_DOCS_PROPERTY) {
+			return dDocs();
+		}
+		// allow default implementation to flag the error
+		return super.internalGetChildListProperty(property);
+	}
+
+	/* (omit javadoc for this method)
+	 * Method declared on ASTNode.
+	 */
 	final int getNodeType0() {
 		return MODULE_DECLARATION;
 	}
@@ -104,7 +146,9 @@ public class ModuleDeclaration extends ASTNode {
 	ASTNode clone0(AST target) {
 		ModuleDeclaration result = new ModuleDeclaration(target);
 		result.setSourceRange(this.getStartPosition(), this.getLength());
+		result.modifiers.addAll(ASTNode.copySubtrees(target, modifiers()));
 		result.setName((Name) getName().clone(target));
+		result.dDocs.addAll(ASTNode.copySubtrees(target, dDocs()));
 		return result;
 	}
 
@@ -123,9 +167,22 @@ public class ModuleDeclaration extends ASTNode {
 		boolean visitChildren = visitor.visit(this);
 		if (visitChildren) {
 			// visit children in normal left to right reading order
+			acceptChildren(visitor, modifiers);
 			acceptChild(visitor, getName());
+			acceptChildren(visitor, dDocs);
 		}
 		visitor.endVisit(this);
+	}
+
+	/**
+	 * Returns the live ordered list of modifiers for this
+	 * module declaration.
+	 * 
+	 * @return the live list of module declaration
+	 *    (element type: <code>Modifier</code>)
+	 */ 
+	public List<Modifier> modifiers() {
+		return this.modifiers;
 	}
 
 	/**
@@ -168,11 +225,22 @@ public class ModuleDeclaration extends ASTNode {
 		postReplaceChild(oldChild, name, NAME_PROPERTY);
 	}
 
+	/**
+	 * Returns the live ordered list of d docs for this
+	 * module declaration.
+	 * 
+	 * @return the live list of module declaration
+	 *    (element type: <code>Comment</code>)
+	 */ 
+	public List<Comment> dDocs() {
+		return this.dDocs;
+	}
+
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
 	 */
 	int memSize() {
-		return BASE_NODE_SIZE + 1 * 4;
+		return BASE_NODE_SIZE + 3 * 4;
 	}
 
 	/* (omit javadoc for this method)
@@ -181,7 +249,9 @@ public class ModuleDeclaration extends ASTNode {
 	int treeSize() {
 		return
 			memSize()
+			+ (this.modifiers.listSize())
 			+ (this.name == null ? 0 : getName().treeSize())
+			+ (this.dDocs.listSize())
 	;
 	}
 	

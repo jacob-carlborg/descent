@@ -59,9 +59,9 @@ public class VariableDeclaration_Test extends Parser_Test {
 		VariableDeclaration var = (VariableDeclaration) getSingleDeclarationNoProblems(s);
 		assertPosition(var, 13, 6);
 		
-		List<Comment> comments = var.getComments();
+		List<Comment> comments = var.dDocs();
 		assertEquals(1, comments.size());
-		assertEquals("/** hola */", comments.get(0).getComment());
+		assertPosition(comments.get(0), 1, 11);
 	}
 	
 	public void testCStyle() {

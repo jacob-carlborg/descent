@@ -39,7 +39,7 @@ public class AggregateDeclaration extends Declaration {
 	 * The "modifiers" structural property of this node type.
 	 */
 	public static final ChildListPropertyDescriptor MODIFIERS_PROPERTY =
-		internalModifiersPropertyFactory(AggregateDeclaration.class); //$NON-NLS-1$
+	internalModifiersPropertyFactory(AggregateDeclaration.class); //$NON-NLS-1$
 
 	/**
 	 * The "kind" structural property of this node type.
@@ -72,10 +72,10 @@ public class AggregateDeclaration extends Declaration {
 		new ChildListPropertyDescriptor(AggregateDeclaration.class, "declarations", Declaration.class, CYCLE_RISK); //$NON-NLS-1$
 
 	/**
-	 * The "docComments" structural property of this node type.
+	 * The "dDocs" structural property of this node type.
 	 */
-	public static final ChildListPropertyDescriptor DOC_COMMENTS_PROPERTY =
-		new ChildListPropertyDescriptor(AggregateDeclaration.class, "docComments", Comment.class, NO_CYCLE_RISK); //$NON-NLS-1$
+	public static final ChildListPropertyDescriptor D_DOCS_PROPERTY =
+	internalDDocsPropertyFactory(AggregateDeclaration.class); //$NON-NLS-1$
 
 	/**
 	 * A list of property descriptors (element type: 
@@ -93,7 +93,7 @@ public class AggregateDeclaration extends Declaration {
 		addProperty(TEMPLATE_PARAMETERS_PROPERTY, properyList);
 		addProperty(BASE_CLASSES_PROPERTY, properyList);
 		addProperty(DECLARATIONS_PROPERTY, properyList);
-		addProperty(DOC_COMMENTS_PROPERTY, properyList);
+		addProperty(D_DOCS_PROPERTY, properyList);
 		PROPERTY_DESCRIPTORS = reapPropertyList(properyList);
 	}
 
@@ -112,13 +112,6 @@ public class AggregateDeclaration extends Declaration {
 		return PROPERTY_DESCRIPTORS;
 	}
 
-	/**
-	 * The modifiers
-	 * (element type: <code>Modifier</code>).
-	 * Defaults to an empty list.
-	 */
-	private ASTNode.NodeList modifiers =
-		new ASTNode.NodeList(MODIFIERS_PROPERTY);
 	/**
 	 * The kind.
 	 */
@@ -150,13 +143,6 @@ public class AggregateDeclaration extends Declaration {
 	 */
 	private ASTNode.NodeList declarations =
 		new ASTNode.NodeList(DECLARATIONS_PROPERTY);
-	/**
-	 * The doc comments
-	 * (element type: <code>Comment</code>).
-	 * Defaults to an empty list.
-	 */
-	private ASTNode.NodeList docComments =
-		new ASTNode.NodeList(DOC_COMMENTS_PROPERTY);
 
 	/**
 	 * Creates a new unparented aggregate declaration node owned by the given 
@@ -226,8 +212,8 @@ public class AggregateDeclaration extends Declaration {
 		if (property == DECLARATIONS_PROPERTY) {
 			return declarations();
 		}
-		if (property == DOC_COMMENTS_PROPERTY) {
-			return docComments();
+		if (property == D_DOCS_PROPERTY) {
+			return dDocs();
 		}
 		// allow default implementation to flag the error
 		return super.internalGetChildListProperty(property);
@@ -236,6 +222,11 @@ public class AggregateDeclaration extends Declaration {
 		@Override
 		final ChildListPropertyDescriptor internalModifiersProperty() {
 			return MODIFIERS_PROPERTY;
+		}
+		
+		@Override
+		final ChildListPropertyDescriptor internalDDocsProperty() {
+			return D_DOCS_PROPERTY;
 		}
 		
 	/* (omit javadoc for this method)
@@ -257,7 +248,7 @@ public class AggregateDeclaration extends Declaration {
 		result.templateParameters.addAll(ASTNode.copySubtrees(target, templateParameters()));
 		result.baseClasses.addAll(ASTNode.copySubtrees(target, baseClasses()));
 		result.declarations.addAll(ASTNode.copySubtrees(target, declarations()));
-		result.docComments.addAll(ASTNode.copySubtrees(target, docComments()));
+		result.dDocs.addAll(ASTNode.copySubtrees(target, dDocs()));
 		return result;
 	}
 
@@ -276,12 +267,12 @@ public class AggregateDeclaration extends Declaration {
 		boolean visitChildren = visitor.visit(this);
 		if (visitChildren) {
 			// visit children in normal left to right reading order
-			acceptChildren(visitor, modifiers());
+			acceptChildren(visitor, modifiers);
 			acceptChild(visitor, getName());
-			acceptChildren(visitor, templateParameters());
-			acceptChildren(visitor, baseClasses());
-			acceptChildren(visitor, declarations());
-			acceptChildren(visitor, docComments());
+			acceptChildren(visitor, templateParameters);
+			acceptChildren(visitor, baseClasses);
+			acceptChildren(visitor, declarations);
+			acceptChildren(visitor, dDocs);
 		}
 		visitor.endVisit(this);
 	}
@@ -370,17 +361,6 @@ public class AggregateDeclaration extends Declaration {
 		return this.declarations;
 	}
 
-	/**
-	 * Returns the live ordered list of doc comments for this
-	 * aggregate declaration.
-	 * 
-	 * @return the live list of aggregate declaration
-	 *    (element type: <code>Comment</code>)
-	 */ 
-	public List<Comment> docComments() {
-		return this.docComments;
-	}
-
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
 	 */
@@ -399,7 +379,7 @@ public class AggregateDeclaration extends Declaration {
 			+ (this.templateParameters.listSize())
 			+ (this.baseClasses.listSize())
 			+ (this.declarations.listSize())
-			+ (this.docComments.listSize())
+			+ (this.dDocs.listSize())
 	;
 	}
 

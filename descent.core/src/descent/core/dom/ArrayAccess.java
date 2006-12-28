@@ -149,7 +149,7 @@ public class ArrayAccess extends Expression {
 		if (visitChildren) {
 			// visit children in normal left to right reading order
 			acceptChild(visitor, getArray());
-			acceptChildren(visitor, indexes());
+			acceptChildren(visitor, indexes);
 		}
 		visitor.endVisit(this);
 	}

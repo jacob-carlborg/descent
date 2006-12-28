@@ -273,7 +273,7 @@ public class FunctionLiteralDeclarationExpression extends Expression {
 		boolean visitChildren = visitor.visit(this);
 		if (visitChildren) {
 			// visit children in normal left to right reading order
-			acceptChildren(visitor, arguments());
+			acceptChildren(visitor, arguments);
 			acceptChild(visitor, getPrecondition());
 			acceptChild(visitor, getPostcondition());
 			acceptChild(visitor, getPostconditionVariableName());

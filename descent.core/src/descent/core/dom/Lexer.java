@@ -49,6 +49,7 @@ public class Lexer implements IProblemCollector {
 	
 	public List<Comment> comments;
 	public List<IProblem> problems;
+	public boolean appendLeadingComments = true;
 	
 	AST ast;
 	CompilationUnit mod;
@@ -94,13 +95,16 @@ public class Lexer implements IProblemCollector {
 			    switch (c)
 			    {
 					case '\n':
+						newline();
 					    p++;
 					    break;
 	
 				case '\r':
 				    p++;
-				    if (input[p] == '\n')
-					p++;
+				    if (input[p] == '\n') {
+				    	newline();
+				    	p++;
+				    }
 				    break;
 	
 				case 0:
@@ -233,6 +237,8 @@ public class Lexer implements IProblemCollector {
 	public void scan(Token t) {
 	    int linnum = this.linnum;
 	    
+	    appendLeadingComments = true;
+	    t.leadingComments = null;
 	    while (true)
 	    {
 		t.ptr = p;
@@ -253,13 +259,14 @@ public class Lexer implements IProblemCollector {
 
 		    case '\r':
 			p++;
-			if (input[p] != '\n')			// if CR stands by itself
-			    linnum++;
+			if (input[p] != '\n') {			// if CR stands by itself
+				newline();
+			}
 			continue;			// skip white space
 
 		    case '\n':
-			p++;
-			linnum++;
+		    	newline();
+		    	p++;
 			continue;			// skip white space
 
 		    case '0':  	case '1':   case '2':   case '3':   case '4':
@@ -387,14 +394,14 @@ public class Lexer implements IProblemCollector {
 						break;
 
 					    case '\n':
-						linnum++;
+					    	newline();
 						p++;
 						continue;
 
 					    case '\r':
 						p++;
 						if (input[p] != '\n')
-						    linnum++;
+							newline();
 						continue;
 
 					    case 0:
@@ -421,10 +428,10 @@ public class Lexer implements IProblemCollector {
 				}
 				
 				Comment comment = new Comment(ast);
-				comment.tok = (input[t.ptr + 2] == '*' && p - 4 != t.ptr) ? TOKdocblockcomment : TOKblockcomment;
+				comment.setKind((input[t.ptr + 2] == '*' && p - 4 != t.ptr) ? Comment.Kind.DOC_BLOCK_COMMENT : Comment.Kind.BLOCK_COMMENT);
 				comment.setSourceRange(t.ptr, p - t.ptr);
-				comment.string = new String(input, comment.getStartPosition(), comment.getLength());
 				comments.add(comment);
+				attachCommentToCurrentToken(comment);
 				
 				continue;
 
@@ -438,17 +445,19 @@ public class Lexer implements IProblemCollector {
 					    break;
 
 					case '\r':
-					    if (input[p + 1] == '\n')
-						p++;
+					    if (input[p + 1] == '\n') {
+					    	newline();
+					    	p++;
+					    }
 					    break;
 
 					case 0:
 					case 0x1A:
 						comment = new Comment(ast);
-						comment.tok = input[t.ptr + 2] == '/' ? TOKdoclinecomment : TOKlinecomment;
+						comment.setKind(input[t.ptr + 2] == '/' ? Comment.Kind.DOC_LINE_COMMENT : Comment.Kind.LINE_COMMENT);
 						comment.setSourceRange(t.ptr, p - t.ptr);
-						comment.string = new String(input, comment.getStartPosition(), comment.getLength());
 						comments.add(comment);
+						attachCommentToCurrentToken(comment);
 						
 						p = end;
 						t.value = TOKeof;
@@ -466,13 +475,13 @@ public class Lexer implements IProblemCollector {
 				}
 				
 				comment = new Comment(ast);
-				comment.tok = input[t.ptr + 2] == '/' ? TOKdoclinecomment : TOKlinecomment;
+				comment.setKind(input[t.ptr + 2] == '/' ? Comment.Kind.DOC_LINE_COMMENT : Comment.Kind.LINE_COMMENT);
 				comment.setSourceRange(t.ptr, p - t.ptr);
-				comment.string = new String(input, comment.getStartPosition(), comment.getLength());
 				comments.add(comment);
+				attachCommentToCurrentToken(comment);
 				
+				newline();
 				p++;
-				linnum++;
 				continue;
 
 			    case '+':
@@ -506,12 +515,13 @@ public class Lexer implements IProblemCollector {
 
 					case '\r':
 					    p++;
-					    if (input[p] != '\n')
-						linnum++;
+					    if (input[p] != '\n') {
+					    	newline();
+					    }
 					    continue;
 
 					case '\n':
-					    linnum++;
+						newline();
 					    p++;
 					    continue;
 
@@ -535,10 +545,10 @@ public class Lexer implements IProblemCollector {
 				}
 				
 				comment = new Comment(ast);
-				comment.tok = (input[t.ptr + 2] == '+' && p - 4 != t.ptr) ? TOKdocpluscomment : TOKpluscomment;
+				comment.setKind((input[t.ptr + 2] == '+' && p - 4 != t.ptr) ? Comment.Kind.DOC_PLUS_COMMENT : Comment.Kind.PLUS_COMMENT);
 				comment.setSourceRange(t.ptr, p- t.ptr);
-				comment.string = new String(input, comment.getStartPosition(), comment.getLength());
 				comments.add(comment);
+				attachCommentToCurrentToken(comment);
 				continue;
 			    }
 			}
@@ -902,7 +912,7 @@ public class Lexer implements IProblemCollector {
 		}
 	    }
 	}
-	
+
 	private void case_ident(Token t) {
 		char c;
 		StringValue sv;
@@ -1152,7 +1162,7 @@ public class Lexer implements IProblemCollector {
 		switch (c)
 		{
 		    case '\n':
-			linnum++;
+		    	newline();
 			break;
 
 		    case '\r':
@@ -1161,7 +1171,7 @@ public class Lexer implements IProblemCollector {
 			    continue;	// ignore
 			}
 			c = '\n';	// treat EndOfLine as \n character
-			linnum++;
+			newline();
 			break;
 
 		    case 0:
@@ -1227,7 +1237,7 @@ public class Lexer implements IProblemCollector {
 			}
 			// Treat isolated '\r' as if it were a '\n'
 		    case '\n':
-			linnum++;
+		    	newline();
 			continue;
 
 		    case 0:
@@ -1312,7 +1322,7 @@ public class Lexer implements IProblemCollector {
 			break;
 
 		    case '\n':
-			linnum++;
+		    	newline();
 			break;
 
 		    case '\r':
@@ -1320,7 +1330,7 @@ public class Lexer implements IProblemCollector {
 			    continue;	// ignore
 			}
 			c = '\n';	// treat EndOfLine as \n character
-			linnum++;
+			newline();
 			break;
 
 		    case '"':
@@ -1348,7 +1358,7 @@ public class Lexer implements IProblemCollector {
 			    c = decodeUTF();
 			    if (c == LS || c == PS)
 			    {	c = '\n';
-				linnum++;
+			    newline();
 			    }
 			    p++;
 			    stringbuffer.writeUTF8(c);
@@ -1395,7 +1405,7 @@ public class Lexer implements IProblemCollector {
 			break;
 
 		case '\n':
-			linnum++;
+			newline();
 		case '\r':
 		case 0:
 		case 0x1A:
@@ -2477,6 +2487,20 @@ public class Lexer implements IProblemCollector {
 			sv = stringtable.insert(entry.getKey());
 			sv.ptrvalue = new Identifier(sv.lstring, entry.getValue());
 		}
+	}
+	
+	private void attachCommentToCurrentToken(Comment comment) {
+		if (!appendLeadingComments) return;
+		
+		if (prevToken.leadingComments == null) {
+			prevToken.leadingComments = new ArrayList<Comment>();
+		}
+		prevToken.leadingComments.add(comment);
+	}
+	
+	private void newline() {
+		linnum++;
+		appendLeadingComments = false;
 	}
 
 }

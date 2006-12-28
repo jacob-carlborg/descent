@@ -5,8 +5,6 @@ import java.util.List;
 import descent.core.dom.ASTNode;
 import descent.core.dom.AggregateDeclaration;
 import descent.core.dom.BaseClass;
-import descent.core.dom.Comment;
-import descent.core.dom.Declaration;
 import descent.core.dom.SimpleName;
 import descent.core.dom.SimpleType;
 import descent.core.dom.Modifier.ModifierKeyword;
@@ -51,33 +49,6 @@ public class Class_Test extends Parser_Test {
 		
 		assertEquals("None", ((SimpleType) bs.get(0).getType()).getName().getFullyQualifiedName());
 		assertPosition(bs.get(0).getType(), 15, 4);
-	}
-	
-	public void testWithComments() {
-		String s = " /** hola */ class Clazz;";
-		AggregateDeclaration c = (AggregateDeclaration) getSingleDeclarationNoProblems(s);
-		assertPosition(c, 13, 12);
-		
-		List<Comment> comments = c.getComments();
-		assertEquals(1, comments.size());
-		assertEquals("/** hola */", comments.get(0).getComment());
-	}
-	
-	public void testDontCarryComments() {
-		String s = " /** hola */ class A; class B;";
-		List<Declaration> declDefs = getDeclarationsNoProblems(s);
-		assertEquals(2, declDefs.size());
-		
-		AggregateDeclaration c;
-		List<Comment> comments;
-		
-		c = (AggregateDeclaration) declDefs.get(0);
-		comments = c.getComments();
-		assertEquals(1, comments.size());
-		
-		c = (AggregateDeclaration) declDefs.get(1);
-		comments = c.getComments();
-		assertEquals(0, comments.size());
 	}
 	
 	public void testWithMembers() {

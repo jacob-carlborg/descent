@@ -42,6 +42,12 @@ public class TemplateDeclaration extends Declaration {
 		new ChildListPropertyDescriptor(TemplateDeclaration.class, "declarations", Declaration.class, CYCLE_RISK); //$NON-NLS-1$
 
 	/**
+	 * The "dDocs" structural property of this node type.
+	 */
+	public static final ChildListPropertyDescriptor D_DOCS_PROPERTY =
+	internalDDocsPropertyFactory(TemplateDeclaration.class); //$NON-NLS-1$
+
+	/**
 	 * A list of property descriptors (element type: 
 	 * {@link StructuralPropertyDescriptor}),
 	 * or null if uninitialized.
@@ -49,12 +55,13 @@ public class TemplateDeclaration extends Declaration {
 	private static final List PROPERTY_DESCRIPTORS;
 
 	static {
-		List properyList = new ArrayList(4);
+		List properyList = new ArrayList(5);
 		createPropertyList(TemplateDeclaration.class, properyList);
 		addProperty(MODIFIERS_PROPERTY, properyList);
 		addProperty(NAME_PROPERTY, properyList);
 		addProperty(TEMPLATE_PARAMETERS_PROPERTY, properyList);
 		addProperty(DECLARATIONS_PROPERTY, properyList);
+		addProperty(D_DOCS_PROPERTY, properyList);
 		PROPERTY_DESCRIPTORS = reapPropertyList(properyList);
 	}
 
@@ -73,13 +80,6 @@ public class TemplateDeclaration extends Declaration {
 		return PROPERTY_DESCRIPTORS;
 	}
 
-	/**
-	 * The modifiers
-	 * (element type: <code>Modifier</code>).
-	 * Defaults to an empty list.
-	 */
-	private ASTNode.NodeList modifiers =
-		new ASTNode.NodeList(MODIFIERS_PROPERTY);
 	/**
 	 * The name.
 	 */
@@ -149,6 +149,9 @@ public class TemplateDeclaration extends Declaration {
 		if (property == DECLARATIONS_PROPERTY) {
 			return declarations();
 		}
+		if (property == D_DOCS_PROPERTY) {
+			return dDocs();
+		}
 		// allow default implementation to flag the error
 		return super.internalGetChildListProperty(property);
 	}
@@ -158,10 +161,15 @@ public class TemplateDeclaration extends Declaration {
 			return MODIFIERS_PROPERTY;
 		}
 		
-		/* (omit javadoc for this method)
-		 * Method declared on ASTNode.
-		 */
-		final int getNodeType0() {
+		@Override
+		final ChildListPropertyDescriptor internalDDocsProperty() {
+			return D_DOCS_PROPERTY;
+		}
+		
+	/* (omit javadoc for this method)
+	 * Method declared on ASTNode.
+	 */
+	final int getNodeType0() {
 		return TEMPLATE_DECLARATION;
 	}
 
@@ -175,6 +183,7 @@ public class TemplateDeclaration extends Declaration {
 		result.setName((SimpleName) getName().clone(target));
 		result.templateParameters.addAll(ASTNode.copySubtrees(target, templateParameters()));
 		result.declarations.addAll(ASTNode.copySubtrees(target, declarations()));
+		result.dDocs.addAll(ASTNode.copySubtrees(target, dDocs()));
 		return result;
 	}
 
@@ -193,10 +202,11 @@ public class TemplateDeclaration extends Declaration {
 		boolean visitChildren = visitor.visit(this);
 		if (visitChildren) {
 			// visit children in normal left to right reading order
-			acceptChildren(visitor, modifiers());
+			acceptChildren(visitor, modifiers);
 			acceptChild(visitor, getName());
-			acceptChildren(visitor, templateParameters());
-			acceptChildren(visitor, declarations());
+			acceptChildren(visitor, templateParameters);
+			acceptChildren(visitor, declarations);
+			acceptChildren(visitor, dDocs);
 		}
 		visitor.endVisit(this);
 	}
@@ -267,7 +277,7 @@ public class TemplateDeclaration extends Declaration {
 	 * Method declared on ASTNode.
 	 */
 	int memSize() {
-		return BASE_NODE_SIZE + 4 * 4;
+		return BASE_NODE_SIZE + 5 * 4;
 	}
 
 	/* (omit javadoc for this method)
@@ -280,6 +290,7 @@ public class TemplateDeclaration extends Declaration {
 			+ (this.name == null ? 0 : getName().treeSize())
 			+ (this.templateParameters.listSize())
 			+ (this.declarations.listSize())
+			+ (this.dDocs.listSize())
 	;
 	}
 

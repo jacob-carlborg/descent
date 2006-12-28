@@ -33,6 +33,12 @@ public class StaticAssert extends Declaration {
 		new ChildPropertyDescriptor(StaticAssert.class, "message", Expression.class, OPTIONAL, CYCLE_RISK); //$NON-NLS-1$
 
 	/**
+	 * The "dDocs" structural property of this node type.
+	 */
+	public static final ChildListPropertyDescriptor D_DOCS_PROPERTY =
+	internalDDocsPropertyFactory(StaticAssert.class); //$NON-NLS-1$
+
+	/**
 	 * A list of property descriptors (element type: 
 	 * {@link StructuralPropertyDescriptor}),
 	 * or null if uninitialized.
@@ -40,11 +46,12 @@ public class StaticAssert extends Declaration {
 	private static final List PROPERTY_DESCRIPTORS;
 
 	static {
-		List properyList = new ArrayList(3);
+		List properyList = new ArrayList(4);
 		createPropertyList(StaticAssert.class, properyList);
 		addProperty(MODIFIERS_PROPERTY, properyList);
 		addProperty(EXPRESSION_PROPERTY, properyList);
 		addProperty(MESSAGE_PROPERTY, properyList);
+		addProperty(D_DOCS_PROPERTY, properyList);
 		PROPERTY_DESCRIPTORS = reapPropertyList(properyList);
 	}
 
@@ -63,13 +70,6 @@ public class StaticAssert extends Declaration {
 		return PROPERTY_DESCRIPTORS;
 	}
 
-	/**
-	 * The modifiers
-	 * (element type: <code>Modifier</code>).
-	 * Defaults to an empty list.
-	 */
-	private ASTNode.NodeList modifiers =
-		new ASTNode.NodeList(MODIFIERS_PROPERTY);
 	/**
 	 * The expression.
 	 */
@@ -132,6 +132,9 @@ public class StaticAssert extends Declaration {
 		if (property == MODIFIERS_PROPERTY) {
 			return modifiers();
 		}
+		if (property == D_DOCS_PROPERTY) {
+			return dDocs();
+		}
 		// allow default implementation to flag the error
 		return super.internalGetChildListProperty(property);
 	}
@@ -141,10 +144,15 @@ public class StaticAssert extends Declaration {
 			return MODIFIERS_PROPERTY;
 		}
 		
-		/* (omit javadoc for this method)
-		 * Method declared on ASTNode.
-		 */
-		final int getNodeType0() {
+		@Override
+		final ChildListPropertyDescriptor internalDDocsProperty() {
+			return D_DOCS_PROPERTY;
+		}
+		
+	/* (omit javadoc for this method)
+	 * Method declared on ASTNode.
+	 */
+	final int getNodeType0() {
 		return STATIC_ASSERT;
 	}
 
@@ -157,6 +165,7 @@ public class StaticAssert extends Declaration {
 		result.modifiers.addAll(ASTNode.copySubtrees(target, modifiers()));
 		result.setExpression((Expression) getExpression().clone(target));
 	result.setMessage((Expression) ASTNode.copySubtree(target, getMessage()));
+		result.dDocs.addAll(ASTNode.copySubtrees(target, dDocs()));
 		return result;
 	}
 
@@ -175,9 +184,10 @@ public class StaticAssert extends Declaration {
 		boolean visitChildren = visitor.visit(this);
 		if (visitChildren) {
 			// visit children in normal left to right reading order
-			acceptChildren(visitor, modifiers());
+			acceptChildren(visitor, modifiers);
 			acceptChild(visitor, getExpression());
 			acceptChild(visitor, getMessage());
+			acceptChildren(visitor, dDocs);
 		}
 		visitor.endVisit(this);
 	}
@@ -253,7 +263,7 @@ public class StaticAssert extends Declaration {
 	 * Method declared on ASTNode.
 	 */
 	int memSize() {
-		return BASE_NODE_SIZE + 3 * 4;
+		return BASE_NODE_SIZE + 4 * 4;
 	}
 
 	/* (omit javadoc for this method)
@@ -265,6 +275,7 @@ public class StaticAssert extends Declaration {
 			+ (this.modifiers.listSize())
 			+ (this.expression == null ? 0 : getExpression().treeSize())
 			+ (this.message == null ? 0 : getMessage().treeSize())
+			+ (this.dDocs.listSize())
 	;
 	}
 

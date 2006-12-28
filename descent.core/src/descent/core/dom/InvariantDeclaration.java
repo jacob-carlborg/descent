@@ -27,6 +27,12 @@ public class InvariantDeclaration extends Declaration {
 		new ChildPropertyDescriptor(InvariantDeclaration.class, "body", Statement.class, MANDATORY, CYCLE_RISK); //$NON-NLS-1$
 
 	/**
+	 * The "dDocs" structural property of this node type.
+	 */
+	public static final ChildListPropertyDescriptor D_DOCS_PROPERTY =
+	internalDDocsPropertyFactory(InvariantDeclaration.class); //$NON-NLS-1$
+
+	/**
 	 * A list of property descriptors (element type: 
 	 * {@link StructuralPropertyDescriptor}),
 	 * or null if uninitialized.
@@ -34,10 +40,11 @@ public class InvariantDeclaration extends Declaration {
 	private static final List PROPERTY_DESCRIPTORS;
 
 	static {
-		List properyList = new ArrayList(2);
+		List properyList = new ArrayList(3);
 		createPropertyList(InvariantDeclaration.class, properyList);
 		addProperty(MODIFIERS_PROPERTY, properyList);
 		addProperty(BODY_PROPERTY, properyList);
+		addProperty(D_DOCS_PROPERTY, properyList);
 		PROPERTY_DESCRIPTORS = reapPropertyList(properyList);
 	}
 
@@ -56,13 +63,6 @@ public class InvariantDeclaration extends Declaration {
 		return PROPERTY_DESCRIPTORS;
 	}
 
-	/**
-	 * The modifiers
-	 * (element type: <code>Modifier</code>).
-	 * Defaults to an empty list.
-	 */
-	private ASTNode.NodeList modifiers =
-		new ASTNode.NodeList(MODIFIERS_PROPERTY);
 	/**
 	 * The body.
 	 */
@@ -112,6 +112,9 @@ public class InvariantDeclaration extends Declaration {
 		if (property == MODIFIERS_PROPERTY) {
 			return modifiers();
 		}
+		if (property == D_DOCS_PROPERTY) {
+			return dDocs();
+		}
 		// allow default implementation to flag the error
 		return super.internalGetChildListProperty(property);
 	}
@@ -121,10 +124,15 @@ public class InvariantDeclaration extends Declaration {
 			return MODIFIERS_PROPERTY;
 		}
 		
-		/* (omit javadoc for this method)
-		 * Method declared on ASTNode.
-		 */
-		final int getNodeType0() {
+		@Override
+		final ChildListPropertyDescriptor internalDDocsProperty() {
+			return D_DOCS_PROPERTY;
+		}
+		
+	/* (omit javadoc for this method)
+	 * Method declared on ASTNode.
+	 */
+	final int getNodeType0() {
 		return INVARIANT_DECLARATION;
 	}
 
@@ -136,6 +144,7 @@ public class InvariantDeclaration extends Declaration {
 		result.setSourceRange(this.getStartPosition(), this.getLength());
 		result.modifiers.addAll(ASTNode.copySubtrees(target, modifiers()));
 		result.setBody((Statement) getBody().clone(target));
+		result.dDocs.addAll(ASTNode.copySubtrees(target, dDocs()));
 		return result;
 	}
 
@@ -154,8 +163,9 @@ public class InvariantDeclaration extends Declaration {
 		boolean visitChildren = visitor.visit(this);
 		if (visitChildren) {
 			// visit children in normal left to right reading order
-			acceptChildren(visitor, modifiers());
+			acceptChildren(visitor, modifiers);
 			acceptChild(visitor, getBody());
+			acceptChildren(visitor, dDocs);
 		}
 		visitor.endVisit(this);
 	}
@@ -204,7 +214,7 @@ public class InvariantDeclaration extends Declaration {
 	 * Method declared on ASTNode.
 	 */
 	int memSize() {
-		return BASE_NODE_SIZE + 2 * 4;
+		return BASE_NODE_SIZE + 3 * 4;
 	}
 
 	/* (omit javadoc for this method)
@@ -215,6 +225,7 @@ public class InvariantDeclaration extends Declaration {
 			memSize()
 			+ (this.modifiers.listSize())
 			+ (this.body == null ? 0 : getBody().treeSize())
+			+ (this.dDocs.listSize())
 	;
 	}
 

@@ -171,7 +171,7 @@ public class PragmaStatement extends Statement {
 		if (visitChildren) {
 			// visit children in normal left to right reading order
 			acceptChild(visitor, getName());
-			acceptChildren(visitor, arguments());
+			acceptChildren(visitor, arguments);
 			acceptChild(visitor, getBody());
 		}
 		visitor.endVisit(this);
