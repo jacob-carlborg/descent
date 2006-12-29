@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Descent Core Plug-in
 Bundle-SymbolicName: descent.core
-Bundle-Version: 1.0.0
+Bundle-Version: 0.1.20061228
 Bundle-Activator: descent.core.DescentCore
 Bundle-Vendor: Descent
 Bundle-Localization: plugin

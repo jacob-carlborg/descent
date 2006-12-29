@@ -2,10 +2,11 @@
 <feature
       id="descent.ui"
       label="Descent UI"
-      version="1.0.0">
+      version="0.1.20061228">
 
    <description url="http://dsource.org/projects/descent">
-      The Descent plugin is still a work in progress towards a fully functionar Eclipse plugin for the D Digital Mars language.
+      The Descent plugin is still a work in progress towards a fully
+functional Eclipse plugin for the D Digital Mars language.
    </description>
 
    <copyright url="http://www.example.com/copyright">
@@ -34,21 +35,21 @@
          id="descent.core"
          download-size="0"
          install-size="0"
-         version="1.0.0"
+         version="0.0.0"
          unpack="false"/>
 
    <plugin
          id="descent.ui"
          download-size="0"
          install-size="0"
-         version="1.0.0"
+         version="0.0.0"
          unpack="false"/>
 
    <plugin
          id="descent.astview"
          download-size="0"
          install-size="0"
-         version="1.0.0"
+         version="0.0.0"
          unpack="false"/>
 
 </feature>
