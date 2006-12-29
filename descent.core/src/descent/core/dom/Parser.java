@@ -140,16 +140,25 @@ class Parser extends Lexer {
 			
 			nextToken();
 			if (token.value != TOKidentifier) {
-				problem("Identifier expected following module", IProblem.SEVERITY_ERROR, IProblem.IDENTIFIER_EXPECTED, token.ptr, token.len);
-				// goto Lerr;
-				return parseModule_LErr();
+				syntaxErrorDeleteThisToken(prevToken);
+				
+				decldefs = parseDeclDefs(false, new ArrayList<Modifier>());
+				if (token.value != TOKeof) {
+					problem("Unrecognized declaration", IProblem.SEVERITY_ERROR, IProblem.UNRECOGNIZED_DECLARATION, token.ptr, token.len);
+				}
+				return decldefs;
 			} else {
 				Name name = newSimpleNameForCurrentToken();
 				while (nextToken() == TOKdot) {
 					nextToken();
 					if (token.value != TOKidentifier) {
-						problem("Identifier expected following package", IProblem.SEVERITY_ERROR, IProblem.IDENTIFIER_EXPECTED, token.ptr, token.len);
-						return parseModule_LErr();
+						syntaxErrorTokenExpected(prevToken, ";");
+						
+						decldefs = parseDeclDefs(false, new ArrayList<Modifier>());
+						if (token.value != TOKeof) {
+							problem("Unrecognized declaration", IProblem.SEVERITY_ERROR, IProblem.UNRECOGNIZED_DECLARATION, token.ptr, token.len);
+						}
+						return decldefs;
 					}
 					name = newQualifiedNameFromCurrentToken(name);
 				}
@@ -163,10 +172,10 @@ class Parser extends Lexer {
 				if (token.value != TOKsemicolon) {
 					setMalformed(md);
 					setRecovered(md.getName());
-					problem("';' expected following module declaration", IProblem.SEVERITY_ERROR, IProblem.SEMICOLON_EXPECTED, token.ptr, token.len);
+					syntaxErrorTokenExpected(prevToken, ";");
+				} else {
+					nextToken();
 				}
-				
-				nextToken();
 				
 				attachLeadingComments(md.dDocs());
 			}
@@ -6758,6 +6767,14 @@ class Parser extends Lexer {
 	
 	private void setRecovered(ASTNode node) {
 		node.setFlags(node.getFlags() | ASTNode.RECOVERED);
+	}
+	
+	private void syntaxErrorTokenExpected(Token targetToken, String expected) {
+		problem("Syntax error on token \"" + targetToken + "\", " + expected + " expected after this token", IProblem.SEVERITY_ERROR, IProblem.TOKEN_EXPECTED , targetToken.ptr, targetToken.len);
+	}
+	
+	private void syntaxErrorDeleteThisToken(Token targetToken) {
+		problem("Syntax error on token \"" + targetToken + "\", delete this token", IProblem.SEVERITY_ERROR, IProblem.TOKEN_MISPLACED, targetToken.ptr, targetToken.len);
 	}
 	
 }

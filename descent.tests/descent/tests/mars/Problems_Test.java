@@ -354,27 +354,36 @@ public class Problems_Test extends Parser_Test {
 	public void test_IDENTIFIER_EXPECTED_FOLLOWING_MODULE() {
 		IProblem p = getProblem(" module ;");
 
-		assertEquals(IProblem.IDENTIFIER_EXPECTED, p.getId());
+		assertEquals(IProblem.TOKEN_MISPLACED, p.getId());
 		assertEquals(IProblem.SEVERITY_ERROR, p.getSeverity());
-		assertEquals(8, p.getOffset());
-		assertEquals(1, p.getLength());
+		assertEquals(1, p.getOffset());
+		assertEquals(6, p.getLength());
 	}
 
 	public void test_SEMICOLON_EXPECTED_FOLLOWING_MODULE_DECLARATION() {
-		IProblem p = getProblem(" module bla 1");
+		IProblem p = getProblems(" module bla 1", 2)[0];
 
-		assertEquals(IProblem.SEMICOLON_EXPECTED, p.getId());
+		assertEquals(IProblem.TOKEN_EXPECTED, p.getId());
 		assertEquals(IProblem.SEVERITY_ERROR, p.getSeverity());
-		assertEquals(12, p.getOffset());
-		assertEquals(1, p.getLength());
+		assertEquals(8, p.getOffset());
+		assertEquals(3, p.getLength());
+	}
+	
+	public void test_MODULE_ONLY_DELETE_TOKEN() {
+		IProblem p = getProblem(" module ");
+
+		assertEquals(IProblem.TOKEN_MISPLACED, p.getId());
+		assertEquals(IProblem.SEVERITY_ERROR, p.getSeverity());
+		assertEquals(1, p.getOffset());
+		assertEquals(6, p.getLength());
 	}
 
 	public void test_IDENTIFIER_EXPECTED_FOLLOWING_PACKAGE_FOR_MODULE() {
-		IProblem p = getProblem(" module bla.;");
+		IProblem p = getProblem(" module bla.");
 
-		assertEquals(IProblem.IDENTIFIER_EXPECTED, p.getId());
+		assertEquals(IProblem.TOKEN_EXPECTED, p.getId());
 		assertEquals(IProblem.SEVERITY_ERROR, p.getSeverity());
-		assertEquals(12, p.getOffset());
+		assertEquals(11, p.getOffset());
 		assertEquals(1, p.getLength());
 	}
 

@@ -27,5 +27,41 @@ public class Recovery_Tests extends Parser_Test {
 		assertPosition(md.getName(), 8, 1);
 		assertRecovered(md.getName());
 	}
+	
+	public void testModuleErrorDosentExitParsing() {
+		String s = " module int x = 2;";
+		CompilationUnit cu = getCompilationUnit(s);
+		assertEquals(1, cu.getProblems().length);
+		
+		assertNull(cu.getModuleDeclaration());
+		assertEquals(1, cu.declarations().size());
+	}
+	
+	public void testModuleErrorDosentExitParsing2() {
+		String s = " module a int x = 2;";
+		CompilationUnit cu = getCompilationUnit(s);
+		assertEquals(1, cu.getProblems().length);
+		
+		assertNotNull(cu.getModuleDeclaration());
+		assertEquals(1, cu.declarations().size());
+	}
+	
+	public void testModuleErrorDosentExitParsing3() {
+		String s = " module a. int x = 2;";
+		CompilationUnit cu = getCompilationUnit(s);
+		assertEquals(1, cu.getProblems().length);
+		
+		assertNull(cu.getModuleDeclaration());
+		assertEquals(1, cu.declarations().size());
+	}
+	
+	public void testClassOnlyIsNothing() {
+		String s = " module a. int x = 2;";
+		CompilationUnit cu = getCompilationUnit(s);
+		assertEquals(1, cu.getProblems().length);
+		
+		assertNull(cu.getModuleDeclaration());
+		assertEquals(1, cu.declarations().size());
+	}
 
 }
