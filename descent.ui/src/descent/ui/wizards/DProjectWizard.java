@@ -3,7 +3,6 @@ package descent.ui.wizards;
 import java.net.URI;
 
 import org.eclipse.core.filesystem.URIUtil;
-import org.eclipse.core.resources.ICommand;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
@@ -82,6 +81,7 @@ public class DProjectWizard extends Wizard implements INewWizard {
 			description.setNatureIds(newNatures);
 			
 			// Add builder
+			/*
 			ICommand[] commands = description.getBuildSpec();
 			boolean found = false;
 
@@ -91,6 +91,7 @@ public class DProjectWizard extends Wizard implements INewWizard {
 					break;
 				}
 			}
+			
 			if (!found) {
 				// add builder to project
 				ICommand command = description.newCommand();
@@ -102,6 +103,7 @@ public class DProjectWizard extends Wizard implements INewWizard {
 				newCommands[0] = command;
 				description.setBuildSpec(newCommands);
 			}
+			*/
 			
 			project.setDescription(description, null);
 			

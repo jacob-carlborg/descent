@@ -55,6 +55,18 @@ public abstract class Parser_Test extends TestCase {
 		return new ParserFacade().parseCompilationUnit(source);
 	}
 	
+	protected void assertOriginal(ASTNode elem) {
+		assertTrue((elem.getFlags() & ASTNode.ORIGINAL) > 0);
+	}
+	
+	protected void assertMalformed(ASTNode elem) {
+		assertTrue((elem.getFlags() & ASTNode.MALFORMED) > 0);
+	}
+	
+	protected void assertRecovered(ASTNode elem) {
+		assertTrue((elem.getFlags() & ASTNode.RECOVERED) > 0);
+	}
+	
 	protected void assertPosition(ASTNode elem, int start, int length) {
 		assertEquals(start, elem.getStartPosition());
 		assertEquals(length, elem.getLength());

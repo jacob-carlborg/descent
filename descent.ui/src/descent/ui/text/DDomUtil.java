@@ -36,8 +36,19 @@ public class DDomUtil {
 		public void postVisit(ASTNode node) {
 			if (theElement != null) return;
 			
-			if (isOfInterest(node) && isInBounds(node)) {
-					theElement = node;
+			if (!isInBounds(node)) return;
+			
+			if (isOfInterest(node)) {
+				theElement = node;
+			}
+			
+			if (node.getNodeType() == ASTNode.COMMENT) {
+				ASTNode parent = node.getParent();
+				if (parent != null) {
+					if (isOfInterest(parent)) {
+						theElement = parent;
+					}
+				}
 			}
 		}
 		

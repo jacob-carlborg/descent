@@ -9,33 +9,34 @@ public class AllLexerParserTests {
 		TestSuite suite = new TestSuite(
 				"Test for org.asterite.deditor.tests.mars");
 		//$JUnit-BEGIN$
-		suite.addTestSuite(Import_Test.class);
-		suite.addTestSuite(Pragma_Test.class);
-		suite.addTestSuite(Problems_Test.class);
-		suite.addTestSuite(Class_Test.class);
 		suite.addTestSuite(Comment_Test.class);
-		suite.addTestSuite(Typedef_Test.class);
-		suite.addTestSuite(Expression_Test.class);
-		suite.addTestSuite(Interface_Test.class);
-		suite.addTestSuite(Mixin_Test.class);
-		suite.addTestSuite(Function_Test.class);
-		suite.addTestSuite(Type_Test.class);
-		suite.addTestSuite(CompilationUnit_Test.class);
-		suite.addTestSuite(Template_Test.class);
-		suite.addTestSuite(Align_Test.class);
-		suite.addTestSuite(Invariant_Test.class);
-		suite.addTestSuite(Modifier_Test.class);
-		suite.addTestSuite(Condition_Test.class);
-		suite.addTestSuite(Link_Test.class);
 		suite.addTestSuite(VariableDeclaration_Test.class);
-		suite.addTestSuite(UnitTest_Test.class);
-		suite.addTestSuite(Initializer_Test.class);
-		suite.addTestSuite(Struct_Test.class);
-		suite.addTestSuite(Alias_Test.class);
-		suite.addTestSuite(Lexer_Test.class);
+		suite.addTestSuite(Link_Test.class);
+		suite.addTestSuite(Class_Test.class);
+		suite.addTestSuite(Template_Test.class);
+		suite.addTestSuite(Pragma_Test.class);
+		suite.addTestSuite(Interface_Test.class);
+		suite.addTestSuite(Type_Test.class);
 		suite.addTestSuite(Enum_Test.class);
 		suite.addTestSuite(Union_Test.class);
+		suite.addTestSuite(Import_Test.class);
+		suite.addTestSuite(Struct_Test.class);
+		suite.addTestSuite(Condition_Test.class);
+		suite.addTestSuite(UnitTest_Test.class);
+		suite.addTestSuite(Lexer_Test.class);
+		suite.addTestSuite(Expression_Test.class);
+		suite.addTestSuite(Align_Test.class);
+		suite.addTestSuite(CompilationUnit_Test.class);
+		suite.addTestSuite(Mixin_Test.class);
+		suite.addTestSuite(Typedef_Test.class);
+		suite.addTestSuite(Problems_Test.class);
+		suite.addTestSuite(Recovery_Tests.class);
+		suite.addTestSuite(Function_Test.class);
+		suite.addTestSuite(Initializer_Test.class);
+		suite.addTestSuite(Alias_Test.class);
+		suite.addTestSuite(Modifier_Test.class);
 		suite.addTestSuite(Statement_Test.class);
+		suite.addTestSuite(Invariant_Test.class);
 		//$JUnit-END$
 		return suite;
 	}

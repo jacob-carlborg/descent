@@ -775,20 +775,28 @@ public class ASTParser {
 	private ASTNode internalCreateAST(IProgressMonitor monitor) {
 		AST ast = AST.newAST(apiLevel);
 		
+		// Mark all nodes created by the parser as originals
+		int savedDefaultNodeFlag = ast.getDefaultNodeFlag();
+		ast.setDefaultNodeFlag(ASTNode.ORIGINAL);
+		
 		if (this.rawSource != null) {
 			if (this.sourceOffset + this.sourceLength > this.rawSource.length) {
 			    throw new IllegalStateException();
 			}
 			Parser parser = new Parser(ast, rawSource, sourceOffset, sourceLength == -1 ? rawSource.length : sourceLength);
+			ASTNode result = null;
 			
 			//boolean needToResolveBindings = this.resolveBindings;
 			switch(this.astKind) {
 			case K_INITIALIZER :
-				return parser.parseInitializer();
+				result = parser.parseInitializer();
+				break;
 			case K_EXPRESSION :
-				return parser.parseExpression();
+				result = parser.parseExpression();
+				break;
 			case K_STATEMENT :
-				return parser.parseStatement(0);
+				result = parser.parseStatement(0);
+				break;
 			case K_COMPILATION_UNIT :
 				List<Declaration> declDefs = parser.parseModule();
 				if (declDefs != null) {
@@ -797,9 +805,14 @@ public class ASTParser {
 				parser.mod.setSourceRange(0, rawSource.length);
 				parser.mod.setCommentTable(parser.comments.toArray(new Comment[parser.comments.size()]));
 				parser.mod.problems = parser.problems;
-				return parser.mod;
+				result = parser.mod;
+				break;
+			default:
+				throw new IllegalStateException();
 			}
-			throw new IllegalStateException();
+			
+			ast.setDefaultNodeFlag(savedDefaultNodeFlag);
+			return result;
 		} else {
 			throw new RuntimeException("Not yet implemented");
 		}

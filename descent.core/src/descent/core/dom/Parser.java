@@ -96,7 +96,7 @@ class Parser extends Lexer {
 	public final static int PSscope = 2;	// start a new scope
 	public final static int PScurly = 4;	// { } statement is required
 	public final static int PScurlyscope = 8;	// { } starts a new scope
-	
+
 	ModuleDeclaration md;
 	
 	int lastDocCommentRead = 0;
@@ -161,6 +161,8 @@ class Parser extends Lexer {
 				mod.setModuleDeclaration(md);
 
 				if (token.value != TOKsemicolon) {
+					setMalformed(md);
+					setRecovered(md.getName());
 					problem("';' expected following module declaration", IProblem.SEVERITY_ERROR, IProblem.SEMICOLON_EXPECTED, token.ptr, token.len);
 				}
 				
@@ -6748,6 +6750,14 @@ class Parser extends Lexer {
 		if (prevToken.leadingComments != null) {
 			comments.addAll(prevToken.leadingComments);
 		}
+	}
+	
+	private void setMalformed(ASTNode node) {
+		node.setFlags(node.getFlags() | ASTNode.MALFORMED);
+	}
+	
+	private void setRecovered(ASTNode node) {
+		node.setFlags(node.getFlags() | ASTNode.RECOVERED);
 	}
 	
 }
