@@ -74,6 +74,7 @@ import descent.astview.ASTViewImages;
 import descent.astview.ASTViewPlugin;
 import descent.astview.EditorUtility;
 import descent.astview.NodeFinder;
+import descent.core.IJavaElement;
 import descent.core.IOpenable;
 import descent.core.dom.AST;
 import descent.core.dom.ASTNode;
@@ -92,7 +93,7 @@ public class ASTView extends ViewPart implements IShowInSource {
 
 		public ISelection getSelection() {
 			IStructuredSelection selection= (IStructuredSelection) fViewer.getSelection();
-			ArrayList externalSelection= new ArrayList();
+			ArrayList<IJavaElement> externalSelection= new ArrayList<IJavaElement>();
 			for (Iterator iter= selection.iterator(); iter.hasNext();) {
 				Object element= iter.next();
 				if (element instanceof JavaElement)
@@ -977,12 +978,8 @@ public class ASTView extends ViewPart implements IShowInSource {
 		}
 		
 		if (node != null) {
-			/*
 			int offset= isTripleClick ? fRoot.getExtendedStartPosition(node) : node.getStartPosition();
 			int length= isTripleClick ? fRoot.getExtendedLength(node) : node.getLength();
-			*/
-			int offset = node.getStartPosition();
-			int length = node.getLength();
 
 			EditorUtility.selectInEditor(fEditor, offset, length);
 		}

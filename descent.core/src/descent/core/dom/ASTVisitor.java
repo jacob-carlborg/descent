@@ -740,9 +740,12 @@ public ASTVisitor(boolean visitDocTags) {
 	}
 
 	/**
-	 * Visits the given type-specific AST node.
+	 * Visits the given AST node.
 	 * <p>
-	 * The default implementation does nothing and return true.
+	 * Unlike other node types, the boolean returned by the default
+	 * implementation is controlled by a constructor-supplied
+	 * parameter  {@link #ASTVisitor(boolean) ASTVisitor(boolean)} 
+	 * which is <code>false</code> by default.
 	 * Subclasses may reimplement.
 	 * </p>
 	 * 
@@ -750,9 +753,11 @@ public ASTVisitor(boolean visitDocTags) {
 	 * @return <code>true</code> if the children of this node should be
 	 * visited, and <code>false</code> if the children of this node should
 	 * be skipped
+	 * @see #ASTVisitor()
+	 * @see #ASTVisitor(boolean)
 	 */
 	public boolean visit(Comment node) {
-		return true;
+		return this.visitDocTags;
 	}
 
 	/**

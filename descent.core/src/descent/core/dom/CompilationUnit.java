@@ -244,6 +244,67 @@ public class CompilationUnit extends ASTNode {
 			this.optionalCommentList = Collections.unmodifiableList(commentList);
 		}
 	}
+	
+	/**
+	 * Returns the extended source length of the given node. Unlike
+	 * {@link ASTNode#getStartPosition()} and {@link ASTNode#getLength()},
+	 * the extended source range may include comments and whitespace
+	 * immediately before or after the normal source range for the node.
+	 * 
+	 * @param node the node
+	 * @return a (possibly 0) length, or <code>0</code>
+	 *    if no source position information is recorded for this node
+	 * @see #getExtendedStartPosition(ASTNode)
+	 */
+	public int getExtendedLength(ASTNode node) {
+		int[] startLength = getExtendedStartLength(node);
+		return startLength[1];
+	}
+
+	/**
+	 * Returns the extended start position of the given node. Unlike
+	 * {@link ASTNode#getStartPosition()} and {@link ASTNode#getLength()},
+	 * the extended source range may include comments and whitespace
+	 * immediately before or after the normal source range for the node.
+	 * 
+	 * @param node the node
+	 * @return the 0-based character index, or <code>-1</code>
+	 *    if no source position information is recorded for this node
+	 * @see #getExtendedLength(ASTNode)
+	 */
+	public int getExtendedStartPosition(ASTNode node) {
+		int[] startLength = getExtendedStartLength(node);
+		return startLength[0];
+	}
+	
+	private final static int[] NO_EXTENDED_START_LENGTH = new int[] { 0, 1 };
+	private int[] getExtendedStartLength(ASTNode node) {
+		List<Comment> comments;
+		if (node instanceof Declaration) {
+			comments = ((Declaration) node).dDocs();
+		} else if (node instanceof ModuleDeclaration) {
+			comments = ((ModuleDeclaration) node).dDocs();
+		} else if (node instanceof EnumMember) {
+			comments = ((EnumMember) node).dDocs();
+		} else {
+			return NO_EXTENDED_START_LENGTH;
+		}
+		int startPosition = node.getStartPosition();
+		int length = node.getLength();
+		if (startPosition == -1 && length == 0) {
+			return NO_EXTENDED_START_LENGTH;
+		}
+		int endPosition = startPosition + length;
+		for(Comment comment : comments) {
+			if (comment.getStartPosition() < startPosition) {
+				startPosition = comment.getStartPosition();
+			}
+			if (comment.getStartPosition() + comment.getLength() > endPosition) {
+				endPosition = comment.getStartPosition() + comment.getLength(); 
+			}
+		}
+		return new int[] { startPosition, endPosition - startPosition };
+	}
 
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.

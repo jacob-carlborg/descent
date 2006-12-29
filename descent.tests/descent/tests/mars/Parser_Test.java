@@ -59,5 +59,10 @@ public abstract class Parser_Test extends TestCase {
 		assertEquals(start, elem.getStartPosition());
 		assertEquals(length, elem.getLength());
 	}
+	
+	protected void assertExtendedPosition(ASTNode elem, int start, int length, CompilationUnit unit) {
+		assertEquals(start, unit.getExtendedStartPosition(elem));
+		assertEquals(length, unit.getExtendedLength(elem));
+	}
 
 }

@@ -22,7 +22,13 @@ import descent.internal.core.parser.Token;
 import descent.internal.core.parser.UniAlpha;
 import descent.internal.core.parser.Utf;
 
+/**
+ * Internal lexer class. TODO hide it.
+ */
 public class Lexer implements IProblemCollector {
+	
+	public final static boolean IN_COMMENT = true;
+	public final static boolean NOT_IN_COMMENT = false;
 	
 	public final static BigInteger X_FFFFFFFFFFFFFFFF =     new BigInteger("FFFFFFFFFFFFFFFF", 16);
 	public final static BigInteger X_8000000000000000 =         new BigInteger("8000000000000000", 16);
@@ -95,14 +101,14 @@ public class Lexer implements IProblemCollector {
 			    switch (c)
 			    {
 					case '\n':
-						newline();
+						newline(NOT_IN_COMMENT);
 					    p++;
 					    break;
 	
 				case '\r':
 				    p++;
 				    if (input[p] == '\n') {
-				    	newline();
+				    	newline(NOT_IN_COMMENT);
 				    	p++;
 				    }
 				    break;
@@ -260,12 +266,12 @@ public class Lexer implements IProblemCollector {
 		    case '\r':
 			p++;
 			if (input[p] != '\n') {			// if CR stands by itself
-				newline();
+				newline(NOT_IN_COMMENT);
 			}
 			continue;			// skip white space
 
 		    case '\n':
-		    	newline();
+		    	newline(NOT_IN_COMMENT);
 		    	p++;
 			continue;			// skip white space
 
@@ -394,14 +400,14 @@ public class Lexer implements IProblemCollector {
 						break;
 
 					    case '\n':
-					    	newline();
+					    	newline(IN_COMMENT);
 						p++;
 						continue;
 
 					    case '\r':
 						p++;
 						if (input[p] != '\n')
-							newline();
+							newline(IN_COMMENT);
 						continue;
 
 					    case 0:
@@ -446,7 +452,6 @@ public class Lexer implements IProblemCollector {
 
 					case '\r':
 					    if (input[p + 1] == '\n') {
-					    	newline();
 					    	p++;
 					    }
 					    break;
@@ -480,7 +485,7 @@ public class Lexer implements IProblemCollector {
 				comments.add(comment);
 				attachCommentToCurrentToken(comment);
 				
-				newline();
+				newline(NOT_IN_COMMENT);
 				p++;
 				continue;
 
@@ -516,12 +521,12 @@ public class Lexer implements IProblemCollector {
 					case '\r':
 					    p++;
 					    if (input[p] != '\n') {
-					    	newline();
+					    	newline(IN_COMMENT);
 					    }
 					    continue;
 
 					case '\n':
-						newline();
+						newline(IN_COMMENT);
 					    p++;
 					    continue;
 
@@ -1162,7 +1167,7 @@ public class Lexer implements IProblemCollector {
 		switch (c)
 		{
 		    case '\n':
-		    	newline();
+		    	newline(NOT_IN_COMMENT);
 			break;
 
 		    case '\r':
@@ -1171,7 +1176,7 @@ public class Lexer implements IProblemCollector {
 			    continue;	// ignore
 			}
 			c = '\n';	// treat EndOfLine as \n character
-			newline();
+			newline(NOT_IN_COMMENT);
 			break;
 
 		    case 0:
@@ -1237,7 +1242,7 @@ public class Lexer implements IProblemCollector {
 			}
 			// Treat isolated '\r' as if it were a '\n'
 		    case '\n':
-		    	newline();
+		    	newline(NOT_IN_COMMENT);
 			continue;
 
 		    case 0:
@@ -1322,7 +1327,7 @@ public class Lexer implements IProblemCollector {
 			break;
 
 		    case '\n':
-		    	newline();
+		    	newline(NOT_IN_COMMENT);
 			break;
 
 		    case '\r':
@@ -1330,7 +1335,7 @@ public class Lexer implements IProblemCollector {
 			    continue;	// ignore
 			}
 			c = '\n';	// treat EndOfLine as \n character
-			newline();
+			newline(NOT_IN_COMMENT);
 			break;
 
 		    case '"':
@@ -1358,7 +1363,7 @@ public class Lexer implements IProblemCollector {
 			    c = decodeUTF();
 			    if (c == LS || c == PS)
 			    {	c = '\n';
-			    newline();
+			    newline(NOT_IN_COMMENT);
 			    }
 			    p++;
 			    stringbuffer.writeUTF8(c);
@@ -1405,7 +1410,7 @@ public class Lexer implements IProblemCollector {
 			break;
 
 		case '\n':
-			newline();
+			newline(NOT_IN_COMMENT);
 		case '\r':
 		case 0:
 		case 0x1A:
@@ -2498,9 +2503,11 @@ public class Lexer implements IProblemCollector {
 		prevToken.leadingComments.add(comment);
 	}
 	
-	private void newline() {
+	private void newline(boolean inComment) {
 		linnum++;
-		appendLeadingComments = false;
+		if (!inComment) {
+			appendLeadingComments = false;
+		}
 	}
 
 }

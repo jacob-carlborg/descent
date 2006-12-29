@@ -33,11 +33,11 @@ public class TreeCopyAction extends Action {
 	private static class TreeObject {
 		private final TreeItem fTreeItem;
 		private boolean fSelected;
-		private final List fChildren;
+		private final List<Object> fChildren;
 		public TreeObject(TreeItem element, boolean selected) {
 			fTreeItem= element;
 			fSelected= selected;
-			fChildren= new ArrayList();
+			fChildren= new ArrayList<Object>();
 		}
 		public void setSelected() {
 			fSelected= true;
@@ -117,8 +117,8 @@ public class TreeCopyAction extends Action {
 	}
 
 	private void copyTree(TreeItem[] selection, Clipboard clipboard) {
-		HashMap elementToTreeObj= new HashMap();
-		List roots= new ArrayList();
+		HashMap<TreeItem, TreeObject> elementToTreeObj= new HashMap<TreeItem, TreeObject>();
+		List<TreeObject> roots= new ArrayList<TreeObject>();
 		int indent= Integer.MIN_VALUE;
 		
 		for (int i= 0; i < selection.length; i++) {

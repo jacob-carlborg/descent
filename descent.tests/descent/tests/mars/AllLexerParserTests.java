@@ -20,7 +20,7 @@ public class AllLexerParserTests {
 		suite.addTestSuite(Mixin_Test.class);
 		suite.addTestSuite(Function_Test.class);
 		suite.addTestSuite(Type_Test.class);
-		suite.addTestSuite(Module_Test.class);
+		suite.addTestSuite(CompilationUnit_Test.class);
 		suite.addTestSuite(Template_Test.class);
 		suite.addTestSuite(Align_Test.class);
 		suite.addTestSuite(Invariant_Test.class);

@@ -88,7 +88,7 @@ import descent.internal.core.parser.TypeAdapter;
 import descent.internal.core.parser.VersionCondition;
 import descent.internal.core.parser.global;
 
-public class Parser extends Lexer {
+class Parser extends Lexer {
 	
 	public final static boolean LTORARRAYDECL = true;
 	
@@ -2464,8 +2464,6 @@ public class Parser extends Lexer {
 				case TOKcomma:
 					v.setSourceRange(nextTypdefOrAliasStart, prevToken.ptr + prevToken.len - nextTypdefOrAliasStart);
 					nextToken();
-					v.dDocs().addAll(lastComments);
-					adjustLastDocComment();
 					continue;
 
 				default:
@@ -2543,8 +2541,6 @@ public class Parser extends Lexer {
 				case TOKcomma:
 					variableDeclaration.setSourceRange(nextVarStart, prevToken.ptr + prevToken.len - nextVarStart);
 					nextToken();
-					variableDeclaration.dDocs().addAll(lastComments);
-					adjustLastDocComment();
 					continue;
 
 				default:

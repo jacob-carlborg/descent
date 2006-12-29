@@ -30,7 +30,7 @@ public class ASTViewLabelProvider extends LabelProvider implements IColorProvide
 	private int fSelectionStart;
 	private int fSelectionLength;
 	
-	private final Color fBlue, fRed, fDarkGray, fDarkGreen, fDarkRed;
+	private final Color /* fBlue, */ fRed, fDarkGray, fDarkGreen, fDarkRed;
 	private final Font fBold;
 	
 	//to dispose:
@@ -45,7 +45,7 @@ public class ASTViewLabelProvider extends LabelProvider implements IColorProvide
 		
 		fRed= display.getSystemColor(SWT.COLOR_RED);
 		fDarkGray= display.getSystemColor(SWT.COLOR_DARK_GRAY);
-		fBlue= display.getSystemColor(SWT.COLOR_DARK_BLUE);
+		//fBlue= display.getSystemColor(SWT.COLOR_DARK_BLUE);
 		fDarkGreen= display.getSystemColor(SWT.COLOR_DARK_GREEN);
 		fDarkRed= display.getSystemColor(SWT.COLOR_DARK_RED);
 		

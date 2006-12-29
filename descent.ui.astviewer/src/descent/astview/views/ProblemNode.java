@@ -72,12 +72,12 @@ public class ProblemNode extends ASTAttribute {
 		
 		return buf.toString();
 	}
-	
+
+	/*
 	private String getErrorLabel() {
 		int id= fProblem.getId();
 		StringBuffer buf= new StringBuffer();
 		
-		/*
 		if ((id & IProblem.TypeRelated) != 0) {
 			buf.append("TypeRelated + "); //$NON-NLS-1$
 		}
@@ -103,11 +103,11 @@ public class ProblemNode extends ASTAttribute {
 			buf.append("Javadoc + "); //$NON-NLS-1$
 		}
 		buf.append(id & IProblem.IgnoreCategoriesMask);
-		*/
 		buf.append(" = 0x").append(Integer.toHexString(id)).append(" = ").append(id);
 		
 		return buf.toString();
 	}
+	*/
 	
 	/*
 	private String getCategoryCode() {

@@ -3185,9 +3185,13 @@ public class ASTMatcher {
 	/**
 	 * Returns whether the given node and the other object match.
 	 * <p>
-	 * The default implementation provided by this class tests whether the
-	 * other object is a node of the same type with structurally isomorphic
-	 * child subtrees. Subclasses may override this method as needed.
+	 * Unlike other node types, the behavior of the default
+	 * implementation is controlled by a constructor-supplied
+	 * parameter  {@link #ASTMatcher(boolean) ASTMatcher(boolean)} 
+	 * which is <code>false</code> if not specified. 
+	 * When this parameter is <code>true</code>, the implementation
+	 * tests whether the other object is also a <code>Comment</code>. 
+	 * Subclasses may reimplement.
 	 * </p>
 	 * 
 	 * @param node the node
@@ -3195,15 +3199,21 @@ public class ASTMatcher {
 	 * @return <code>true</code> if the subtree matches, or 
 	 *   <code>false</code> if they do not match or the other object has a
 	 *   different node type or is <code>null</code>
+	 * @see #ASTMatcher()
+	 * @see #ASTMatcher(boolean)
 	 */
 	public boolean match(Comment node, Object other) {
 		if (!(other instanceof Comment)) {
 			return false;
 		}
 		Comment o = (Comment) other;
-		return (
-			node.getKind() == o.getKind()
-			);
+		if (this.matchDocTags) {
+			return (
+				node.getKind() == o.getKind()
+				);
+		} else {
+			return true;
+		}
 	}
 
 }

@@ -9,7 +9,6 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import descent.core.ICompilationUnit;
 import descent.core.IJavaProject;
 import descent.core.WorkingCopyOwner;
-import descent.internal.core.DefaultWorkingCopyOwner;
 
 /**
  * A D language parser for creating abstract syntax trees (ASTs).
@@ -113,28 +112,28 @@ public class ASTParser {
 	/**
 	 * Compiler options. Defaults to JavaCore.getOptions().
 	 */
-	private Map compilerOptions;
+	//private Map compilerOptions;
 	
 	/**
 	 * Request for bindings. Defaults to <code>false</code>.
      */
-	private boolean resolveBindings;
+	//private boolean resolveBindings;
 
 	/**
 	 * Request for a partial AST. Defaults to <code>false</code>.
      */
-	private boolean partial = false;
+	//private boolean partial = false;
 
 	/**
 	 * Request for a statements recovery. Defaults to <code>false</code>.
      */
-	private boolean statementsRecovery;
+	//private boolean statementsRecovery;
 	
 	/**
 	 * The focal point for a partial AST request.
      * Only used when <code>partial</code> is <code>true</code>.
      */
-	private int focalPointPosition;
+	//private int focalPointPosition;
 
     /**
      * Source string. 
@@ -168,19 +167,19 @@ public class ASTParser {
     /**
      * Working copy owner. Defaults to primary owner.
      */
-	private WorkingCopyOwner workingCopyOwner = DefaultWorkingCopyOwner.PRIMARY;
+	//private WorkingCopyOwner workingCopyOwner = DefaultWorkingCopyOwner.PRIMARY;
 	
     /**
 	 * Java project used to resolve names, or <code>null</code> if none.
      * Defaults to none.
      */
-	private IJavaProject project = null;
+	//private IJavaProject project = null;
 	
     /**
 	 * Name of the compilation unit for resolving bindings, or 
 	 * <code>null</code> if none. Defaults to none.
      */
-	private String unitName = null; 
+	//private String unitName = null; 
 
  	/**
 	 * Creates a new AST parser for the given API level.
@@ -207,13 +206,13 @@ public class ASTParser {
 		this.rawSource = null;
 		// TODO this.classFileSource = null;
 		this.compilationUnitSource = null;
-		this.resolveBindings = false;
+		//this.resolveBindings = false;
 		this.sourceLength = -1;
 		this.sourceOffset = 0;
-		this.workingCopyOwner = DefaultWorkingCopyOwner.PRIMARY;
-		this.unitName = null;
-		this.project = null;
-		this.partial = false;
+		//this.workingCopyOwner = DefaultWorkingCopyOwner.PRIMARY;
+		//this.unitName = null;
+		//this.project = null;
+		//this.partial = false;
 		/* TODO
 		Map options = JavaCore.getOptions();
 		options.remove(JavaCore.COMPILER_TASK_TAGS); // no need to parse task tags
@@ -254,7 +253,7 @@ public class ASTParser {
 			options = new HashMap(options);
 		}
 		// TODO options.remove(JavaCore.COMPILER_TASK_TAGS); // no need to parse task tags
-		this.compilerOptions = options;
+		//this.compilerOptions = options;
 	}
 	
 	/**
@@ -306,9 +305,11 @@ public class ASTParser {
 	 * @param bindings <code>true</code> if bindings are wanted, 
 	 *   and <code>false</code> if bindings are not of interest
 	 */
+	/*
 	public void setResolveBindings(boolean bindings) {
 	  this.resolveBindings = bindings;
 	}
+	*/
 	
 	/**
      * Requests an abridged abstract syntax tree. 
@@ -346,10 +347,12 @@ public class ASTParser {
 	 * 
 	 * @param position a position into the corresponding body declaration
 	 */
+	/*
 	public void setFocalPosition(int position) {
 		this.partial = true;
 		this.focalPointPosition = position;
 	}
+	*/
 	
 	/**
 	 * Sets the kind of constructs to be parsed from the source.
@@ -463,10 +466,10 @@ public class ASTParser {
 		this.rawSource = null;
 		// TODO this.classFileSource = null;
 		if (source != null) {
-			this.project = source.getJavaProject();
-			Map options = this.project.getOptions(true);
+			//this.project = source.getJavaProject();
+			//Map options = this.project.getOptions(true);
 			// TODO options.remove(JavaCore.COMPILER_TASK_TAGS); // no need to parse task tags
-			this.compilerOptions = options;
+			//this.compilerOptions = options;
 		}
 	}
 	
@@ -526,9 +529,11 @@ public class ASTParser {
 	 *   
 	 * @since 3.2
 	 */
+	/*
 	public void setStatementsRecovery(boolean enabled) {
 		this.statementsRecovery = enabled;
 	}
+	*/
 	
     /**
      * Sets the working copy owner using when resolving bindings, where
@@ -537,6 +542,7 @@ public class ASTParser {
 	 * @param owner the owner of working copies that take precedence over underlying 
 	 *   compilation units, or <code>null</code> if the primary owner should be used
      */
+	/*
 	public void setWorkingCopyOwner(WorkingCopyOwner owner) {
 	    if (owner == null) {
 			this.workingCopyOwner = DefaultWorkingCopyOwner.PRIMARY;
@@ -544,6 +550,7 @@ public class ASTParser {
 			this.workingCopyOwner = owner;
 	 	}
 	}
+	*/
 
 	/**
      * Sets the name of the compilation unit that would hypothetically contains
@@ -564,9 +571,11 @@ public class ASTParser {
 	 * @param unitName the name of the compilation unit that would contain the source
 	 *    string, or <code>null</code> if none
      */
+	/*
 	public void setUnitName(String unitName) {
 		this.unitName = unitName;
 	}
+	*/
 	
 	/**
 	 * Sets the Java project used when resolving bindings.
@@ -587,14 +596,16 @@ public class ASTParser {
 	 * @param project the Java project used to resolve names, or 
 	 *    <code>null</code> if none
 	 */
+	/*
 	public void setProject(IJavaProject project) {
 		this.project = project;
 		if (project != null) {
-			Map options = project.getOptions(true);
+			// Map options = project.getOptions(true);
 			// TODO options.remove(JavaCore.COMPILER_TASK_TAGS); // no need to parse task tags
-			this.compilerOptions = options;
+			// this.compilerOptions = options;
 		}
 	}
+	*/
 	
 	/**
      * Creates an abstract syntax tree.
