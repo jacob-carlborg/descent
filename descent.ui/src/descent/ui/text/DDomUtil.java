@@ -2,9 +2,9 @@ package descent.ui.text;
 
 import descent.core.dom.ASTNode;
 import descent.core.dom.ASTVisitor;
-import descent.core.dom.AliasDeclarationFragment;
 import descent.core.dom.CompilationUnit;
 import descent.core.dom.Declaration;
+import descent.core.dom.ModuleDeclaration;
 
 public class DDomUtil {
 	
@@ -41,20 +41,11 @@ public class DDomUtil {
 			if (isOfInterest(node)) {
 				theElement = node;
 			}
-			
-			if (node.getNodeType() == ASTNode.COMMENT) {
-				ASTNode parent = node.getParent();
-				if (parent != null) {
-					if (isOfInterest(parent)) {
-						theElement = parent;
-					}
-				}
-			}
 		}
 		
 		private boolean isOfInterest(ASTNode element) {
 			// TODO fix
-			return element instanceof Declaration || element instanceof AliasDeclarationFragment;
+			return element instanceof Declaration || element instanceof ModuleDeclaration;
 		}
 		
 		private boolean isInBounds(ASTNode element) {

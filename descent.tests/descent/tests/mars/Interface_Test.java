@@ -5,7 +5,6 @@ import java.util.List;
 import descent.core.dom.ASTNode;
 import descent.core.dom.AggregateDeclaration;
 import descent.core.dom.BaseClass;
-import descent.core.dom.Comment;
 import descent.core.dom.SimpleName;
 import descent.core.dom.Modifier.ModifierKeyword;
 
@@ -44,16 +43,6 @@ public class Interface_Test extends Parser_Test {
 		assertEquals(ModifierKeyword.PACKAGE_KEYWORD, bs.get(2).getModifier().getModifierKeyword());
 		assertEquals(ModifierKeyword.PROTECTED_KEYWORD, bs.get(3).getModifier().getModifierKeyword());
 		assertEquals(ModifierKeyword.PUBLIC_KEYWORD, bs.get(4).getModifier().getModifierKeyword());
-	}
-	
-	public void testWithComments() {
-		String s = " /** hola */ interface Clazz;";
-		AggregateDeclaration c = (AggregateDeclaration) getSingleDeclarationNoProblems(s);
-		assertPosition(c, 13, 16);
-		
-		List<Comment> comments = c.dDocs();
-		assertEquals(1, comments.size());
-		assertPosition(comments.get(0), 1, 11);
 	}
 
 }

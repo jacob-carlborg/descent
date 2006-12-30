@@ -1,9 +1,6 @@
 package descent.tests.mars;
 
-import java.util.List;
-
 import descent.core.dom.ASTNode;
-import descent.core.dom.Comment;
 import descent.core.dom.EnumDeclaration;
 import descent.core.dom.EnumMember;
 import descent.core.dom.NumberLiteral;
@@ -69,16 +66,6 @@ public class Enum_Test extends Parser_Test {
 		EnumDeclaration e = (EnumDeclaration) getSingleDeclarationNoProblems(s);
 		assertPosition(e, 1, 16);
 		assertNull(e.getName());
-	}
-	
-	public void testEnumWithComments() {
-		String s = " /** hola */ enum En;";
-		EnumDeclaration e = (EnumDeclaration) getSingleDeclarationNoProblems(s);
-		assertPosition(e, 13, 8);
-		
-		List<Comment> comments = e.dDocs();
-		assertEquals(1, comments.size());
-		assertPosition(comments.get(0), 1, 11);
 	}
 
 }

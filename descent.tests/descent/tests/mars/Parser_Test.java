@@ -3,6 +3,7 @@ package descent.tests.mars;
 import java.util.List;
 
 import junit.framework.TestCase;
+import descent.core.compiler.IProblem;
 import descent.core.dom.ASTNode;
 import descent.core.dom.CompilationUnit;
 import descent.core.dom.Declaration;
@@ -75,6 +76,21 @@ public abstract class Parser_Test extends TestCase {
 	protected void assertExtendedPosition(ASTNode elem, int start, int length, CompilationUnit unit) {
 		assertEquals(start, unit.getExtendedStartPosition(elem));
 		assertEquals(length, unit.getExtendedLength(elem));
+	}
+	
+	protected void assertError(IProblem p, int errorCode, int start, int length) {
+		assertProblem(p, errorCode, IProblem.SEVERITY_ERROR, start, length);
+	}
+	
+	protected void assertWarning(IProblem p, int errorCode, int start, int length) {
+		assertProblem(p, errorCode, IProblem.SEVERITY_WARNING, start, length);
+	}
+	
+	protected void assertProblem(IProblem p, int errorCode, int severity, int start, int length) {
+		assertEquals(errorCode, p.getId());
+		assertEquals(severity, p.getSeverity());
+		assertEquals(start, p.getOffset());
+		assertEquals(length, p.getLength());
 	}
 
 }

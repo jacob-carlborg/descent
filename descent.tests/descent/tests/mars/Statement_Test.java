@@ -223,12 +223,12 @@ public class Statement_Test extends Parser_Test {
 		assertPosition(args.get(0).getName(), 15, 1);
 		
 		assertPosition(args.get(1), 18, 1);
-		assertEquals(Argument.PassageMode.IN, args.get(1).getPassageMode());
+		assertEquals(Argument.PassageMode.DEFAULT, args.get(1).getPassageMode());
 		assertEquals("b", args.get(1).getName().getIdentifier());
 		assertPosition(args.get(1).getName(), 18, 1);
 		
 		assertPosition(args.get(2), 21, 1);
-		assertEquals(Argument.PassageMode.IN, args.get(2).getPassageMode());
+		assertEquals(Argument.PassageMode.DEFAULT, args.get(2).getPassageMode());
 		assertEquals("c", args.get(2).getName().getIdentifier());
 		assertPosition(args.get(2).getName(), 21, 1);
 	}
@@ -258,7 +258,7 @@ public class Statement_Test extends Parser_Test {
 		assertEquals(1, args.size());
 		
 		assertPosition(args.get(0), 9, 5);
-		assertEquals(Argument.PassageMode.IN, args.get(0).getPassageMode());
+		assertEquals(Argument.PassageMode.DEFAULT, args.get(0).getPassageMode());
 		assertEquals("x", args.get(0).getName().getIdentifier());
 		assertEquals("int", args.get(0).getType().toString());
 		assertPosition(args.get(0).getName(), 13, 1);

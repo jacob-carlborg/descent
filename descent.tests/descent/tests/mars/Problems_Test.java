@@ -354,7 +354,7 @@ public class Problems_Test extends Parser_Test {
 	public void test_IDENTIFIER_EXPECTED_FOLLOWING_MODULE() {
 		IProblem p = getProblem(" module ;");
 
-		assertEquals(IProblem.TOKEN_MISPLACED, p.getId());
+		assertEquals(IProblem.ParsingErrorDeleteToken, p.getId());
 		assertEquals(IProblem.SEVERITY_ERROR, p.getSeverity());
 		assertEquals(1, p.getOffset());
 		assertEquals(6, p.getLength());
@@ -363,7 +363,7 @@ public class Problems_Test extends Parser_Test {
 	public void test_SEMICOLON_EXPECTED_FOLLOWING_MODULE_DECLARATION() {
 		IProblem p = getProblems(" module bla 1", 2)[0];
 
-		assertEquals(IProblem.TOKEN_EXPECTED, p.getId());
+		assertEquals(IProblem.ParsingErrorInsertTokenAfter, p.getId());
 		assertEquals(IProblem.SEVERITY_ERROR, p.getSeverity());
 		assertEquals(8, p.getOffset());
 		assertEquals(3, p.getLength());
@@ -372,7 +372,7 @@ public class Problems_Test extends Parser_Test {
 	public void test_MODULE_ONLY_DELETE_TOKEN() {
 		IProblem p = getProblem(" module ");
 
-		assertEquals(IProblem.TOKEN_MISPLACED, p.getId());
+		assertEquals(IProblem.ParsingErrorDeleteToken, p.getId());
 		assertEquals(IProblem.SEVERITY_ERROR, p.getSeverity());
 		assertEquals(1, p.getOffset());
 		assertEquals(6, p.getLength());
@@ -381,7 +381,7 @@ public class Problems_Test extends Parser_Test {
 	public void test_IDENTIFIER_EXPECTED_FOLLOWING_PACKAGE_FOR_MODULE() {
 		IProblem p = getProblem(" module bla.");
 
-		assertEquals(IProblem.TOKEN_EXPECTED, p.getId());
+		assertEquals(IProblem.ParsingErrorInsertTokenAfter, p.getId());
 		assertEquals(IProblem.SEVERITY_ERROR, p.getSeverity());
 		assertEquals(11, p.getOffset());
 		assertEquals(1, p.getLength());
@@ -459,32 +459,10 @@ public class Problems_Test extends Parser_Test {
 		assertEquals(15, p.getLength());
 	}
 
-	public void test_ANONYMOUS_CLASSES_NOT_ALLOWED() {
-		IProblem p = getProblem(" class { }");
-
-		assertEquals(IProblem.ANONYMOUS_CLASSES_NOT_ALLOWED, p.getId());
-		assertEquals(IProblem.SEVERITY_ERROR, p.getSeverity());
-		assertEquals(1, p.getOffset());
-		assertEquals(5, p.getLength());
-	}
-
-	public void test_MEMBERS_EXPECTED_AFTER_BASE_CLASSES() {
-		IProblem[] p = getProblems(" class Ble : Bla, Bli ", 2);
-
-		assertEquals(IProblem.MEMBERS_EXPECTED, p[0].getId());
-		assertEquals(IProblem.CURLIES_EXPECTED_FOLLOWING_AGGREGATE_DECLARATION,
-				p[1].getId());
-		assertEquals(IProblem.SEVERITY_ERROR, p[0].getSeverity());
-		/* TODO: hacer que el error vaya a la �ltima clase heredada
-		 assertEquals(16, p.getOffset());
-		 assertEquals(3, p.getLength());
-		 */
-	}
-
 	public void test_RIGHT_CURLY_EXPECTED_FOLLOWING_MEMBER_DECLARATIONS_IN_AGGREGATE_1() {
 		IProblem[] p = getProblems(" class { ", 2);
 
-		assertEquals(IProblem.ANONYMOUS_CLASSES_NOT_ALLOWED, p[0].getId());
+		assertEquals(IProblem.ParsingErrorInsertTokenAfter, p[0].getId());
 		assertEquals(
 				IProblem.RIGHT_CURLY_EXPECTED_FOLLOWING_MEMBER_DECLARATIONS_IN_AGGREGATE,
 				p[1].getId());
@@ -507,28 +485,10 @@ public class Problems_Test extends Parser_Test {
 	public void test_CURLIES_EXPECTED_FOLLOWING_AGGREGATE_DECLARATION_2() {
 		IProblem p = getProblem(" class Ble ");
 
-		assertEquals(IProblem.CURLIES_EXPECTED_FOLLOWING_AGGREGATE_DECLARATION,
+		assertEquals(IProblem.ParsingErrorInsertToComplete,
 				p.getId());
 		assertEquals(IProblem.SEVERITY_ERROR, p.getSeverity());
-		assertEquals(1, p.getOffset());
-		assertEquals(9, p.getLength());
-	}
-
-	public void test_NO_IDENTIFIER_FOR_DECLARATOR() {
-		IProblem p = getProblem(" int ;");
-
-		assertEquals(IProblem.NO_IDENTIFIER_FOR_DECLARATION, p.getId());
-		assertEquals(IProblem.SEVERITY_ERROR, p.getSeverity());
-		assertEquals(1, p.getOffset());
-		assertEquals(3, p.getLength());
-	}
-
-	public void test_NO_IDENTIFIER_FOR_DECLARATOR2() {
-		IProblem p = getProblem(" int x, ;");
-
-		assertEquals(IProblem.NO_IDENTIFIER_FOR_DECLARATION, p.getId());
-		assertEquals(IProblem.SEVERITY_ERROR, p.getSeverity());
-		assertEquals(1, p.getOffset());
+		assertEquals(7, p.getOffset());
 		assertEquals(3, p.getLength());
 	}
 
@@ -696,15 +656,6 @@ public class Problems_Test extends Parser_Test {
 		assertEquals(6, p.getLength());
 	}
 
-	public void test_BASE_CLASS_EXPECTED() {
-		IProblem p = getProblem(" class Bla : { }");
-
-		assertEquals(IProblem.BASE_CLASS_EXPECTED, p.getId());
-		assertEquals(IProblem.SEVERITY_ERROR, p.getSeverity());
-		assertEquals(13, p.getOffset());
-		assertEquals(1, p.getLength());
-	}
-
 	public void test_TEMPLATE_IDENTIFIER_EXPECTED() {
 		IProblem p = getProblem(" template class Bla { }");
 
@@ -846,7 +797,7 @@ public class Problems_Test extends Parser_Test {
 	}
 
 	public void test_MEMBERS_OF_TEMPLATE_DECLARATION_EXPECTED() {
-		IProblem[] p = getProblems(" template T() int", 3);
+		IProblem[] p = getProblems(" template T() int", 2);
 
 		assertEquals(IProblem.MEMBERS_EXPECTED, p[0].getId());
 		assertEquals(IProblem.SEVERITY_ERROR, p[0].getSeverity());
@@ -873,7 +824,7 @@ public class Problems_Test extends Parser_Test {
 	}
 
 	public void test_INVALID_IFTYPE_SYNTAX() {
-		IProblem p[] = getProblems(" iftype int", 3);
+		IProblem p[] = getProblems(" iftype int", 2);
 
 		assertEquals(IProblem.INVALID_IFTYPE_SYNTAX, p[0].getId());
 		assertEquals(IProblem.SEVERITY_ERROR, p[0].getSeverity());
@@ -882,7 +833,7 @@ public class Problems_Test extends Parser_Test {
 	}
 
 	public void test_IDENTIFIER_EXPECTED_FOR_TEMPLATE_PARAMETER_2() {
-		IProblem[] p = getProblems(" template T(2)", 2);
+		IProblem[] p = getProblems(" template T(2)", 3);
 
 		assertEquals(IProblem.IDENTIFIER_EXPECTED, p[0].getId());
 		assertEquals(IProblem.SEVERITY_ERROR, p[0].getSeverity());
@@ -891,7 +842,7 @@ public class Problems_Test extends Parser_Test {
 	}
 
 	public void test_IDENTIFIER_EXPECTED_FOR_MIXIN() {
-		IProblem[] p = getProblems(" mixin typeof(2).!() m;", 2);
+		IProblem[] p = getProblems(" mixin typeof(2).!() m;", 5);
 
 		assertEquals(IProblem.IDENTIFIER_EXPECTED, p[0].getId());
 		assertEquals(IProblem.SEVERITY_ERROR, p[0].getSeverity());
@@ -900,7 +851,7 @@ public class Problems_Test extends Parser_Test {
 	}
 
 	public void test_NO_IDENTIFIER_FOR_TEMPLATE_VALUE_PARAMETER() {
-		IProblem[] p = getProblems(" template Temp(int 2) { }", 2);
+		IProblem[] p = getProblems(" template Temp(int 2) { }", 5);
 
 		assertEquals(IProblem.IDENTIFIER_EXPECTED, p[0].getId());
 		assertEquals(IProblem.SEVERITY_ERROR, p[0].getSeverity());
@@ -909,7 +860,7 @@ public class Problems_Test extends Parser_Test {
 	}
 
 	public void test_IDENTIFIER_EXPECTED_FOR_MIXIN_2() {
-		IProblem[] p = getProblems(" mixin !() m;", 2);
+		IProblem[] p = getProblems(" mixin !() m;", 5);
 
 		assertEquals(IProblem.IDENTIFIER_EXPECTED, p[0].getId());
 		assertEquals(IProblem.SEVERITY_ERROR, p[0].getSeverity());

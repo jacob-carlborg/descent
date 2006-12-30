@@ -38,9 +38,9 @@ public enum TOK {
 	TOKmodule("module"),	TOKdollar,
 	TOKtemplate("template"),	TOKdottd,
 	TOKdeclaration,	TOKtypeof("typeof"),
-	TOKpragma,	TOKdsymbol,
-	TOKtypeid,	TOKuadd,
-	TOKiftype,	TOKremove,
+	TOKpragma("pragma"),	TOKdsymbol,
+	TOKtypeid("typeid"),	TOKuadd,
+	TOKiftype("iftype"),	TOKremove,
 	TOKnewanonclass, 
 	TOKlinecomment, TOKdoclinecomment, TOKblockcomment, TOKdocblockcomment, TOKpluscomment, TOKdocpluscomment,
 	TOKarrayliteral,
@@ -86,15 +86,15 @@ public enum TOK {
 	TOKhalt,	TOKtuple,
 
 	// Basic types
-	TOKvoid,
-	TOKint8, TOKuns8,
-	TOKint16, TOKuns16,
-	TOKint32, TOKuns32,
-	TOKint64, TOKuns64,
-	TOKfloat32, TOKfloat64, TOKfloat80,
-	TOKimaginary32, TOKimaginary64, TOKimaginary80,
-	TOKcomplex32, TOKcomplex64, TOKcomplex80,
-	TOKchar, TOKwchar, TOKdchar, TOKbit, TOKbool,
+	TOKvoid("void"),
+	TOKint8("byte"), TOKuns8("ubyte"),
+	TOKint16("short"), TOKuns16("ushort"),
+	TOKint32("int"), TOKuns32("uint"),
+	TOKint64("long"), TOKuns64("ulong"),
+	TOKfloat32("float"), TOKfloat64("double"), TOKfloat80("real"),
+	TOKimaginary32("ifloat"), TOKimaginary64("idouble"), TOKimaginary80("ireal"),
+	TOKcomplex32("complex32"), TOKcomplex64("complex64"), TOKcomplex80("complex80"), // TODO
+	TOKchar("char"), TOKwchar("wchar"), TOKdchar("dchar"), TOKbit("bit"), TOKbool("bool"),
 	TOKcent, TOKucent,
 
 	// Aggregates

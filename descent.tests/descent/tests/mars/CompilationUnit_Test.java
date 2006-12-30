@@ -1,9 +1,6 @@
 package descent.tests.mars;
 
-import java.util.List;
-
 import descent.core.dom.ASTNode;
-import descent.core.dom.Comment;
 import descent.core.dom.CompilationUnit;
 import descent.core.dom.Declaration;
 import descent.core.dom.ModuleDeclaration;
@@ -37,28 +34,7 @@ public class CompilationUnit_Test extends Parser_Test {
 		assertPosition(qName, 8, 13);
 	}
 	
-	public void testModuleDeclarationWithComments() {
-		String s = " /** hola */ module pepe; ";
-		ModuleDeclaration md = getModuleDeclaration(s);
-		
-		List<Comment> comments = md.dDocs();
-		assertEquals(1, comments.size());
-		assertPosition(comments.get(0), 1, 11);
-		
-		assertPosition(md, 13, 12);
-	}
-	
-	public void testModuleDeclarationWithMultipleComments() {
-		String s = " /** hola */ /** chau */ module pepe; ";
-		ModuleDeclaration md = getModuleDeclaration(s);
-		
-		List<Comment> comments = md.dDocs();
-		assertEquals(2, comments.size());
-		
-		assertPosition(md, 25, 12);
-	}
-	
-	// TODO I need this kind of declarations
+	// TODO I need this kind of ast nodes
 	public void testSkipFirstLine() {
 		String s = "#! something, I don't mind\n module a; ";
 		CompilationUnit unit = getCompilationUnit(s);

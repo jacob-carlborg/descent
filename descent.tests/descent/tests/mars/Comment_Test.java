@@ -14,7 +14,7 @@ public class Comment_Test extends Parser_Test {
 	public void testPreviousComments() {
 		String s = " /** hola */ class Clazz;";
 		AggregateDeclaration c = (AggregateDeclaration) getSingleDeclarationNoProblems(s);
-		assertPosition(c, 13, 12);
+		assertPosition(c, 1, s.length() - 1);
 		
 		List<Comment> comments = c.dDocs();
 		assertEquals(1, comments.size());
@@ -41,17 +41,26 @@ public class Comment_Test extends Parser_Test {
 	public void testLeadingComment() {
 		String s = " class Clazz; /** hola */";
 		AggregateDeclaration c = (AggregateDeclaration) getSingleDeclarationNoProblems(s);
-		assertPosition(c, 1, 12);
+		assertPosition(c, 1, s.length() - 1);
 		
 		List<Comment> comments = c.dDocs();
 		assertEquals(1, comments.size());
 		assertPosition(comments.get(0), 14, 11);
 	}
 	
+	public void testLeadingCommentNotDDoc() {
+		String s = " class Clazz; /* hola */";
+		AggregateDeclaration c = (AggregateDeclaration) getSingleDeclarationNoProblems(s);
+		assertPosition(c, 1, 12);
+		
+		List<Comment> comments = c.dDocs();
+		assertEquals(0, comments.size());
+	}
+	
 	public void testPreviosAndLeadingComment() {
 		String s = " /** hola */ class Clazz; /** hola */";
 		AggregateDeclaration c = (AggregateDeclaration) getSingleDeclarationNoProblems(s);
-		assertPosition(c, 13, 12);
+		assertPosition(c, 1, s.length() - 1);
 		
 		List<Comment> comments = c.dDocs();
 		assertEquals(2, comments.size());
@@ -62,7 +71,7 @@ public class Comment_Test extends Parser_Test {
 	public void testLeadingAndPreviousInNextLineComment() {
 		String s = " /** hola */ class Clazz; /** hola */ \n /** hola */";
 		AggregateDeclaration c = (AggregateDeclaration) getSingleDeclarationNoProblems(s);
-		assertPosition(c, 13, 12);
+		assertPosition(c, 1, 36);
 		
 		List<Comment> comments = c.dDocs();
 		assertEquals(2, comments.size());
@@ -75,7 +84,7 @@ public class Comment_Test extends Parser_Test {
 		CompilationUnit compilationUnit = getCompilationUnit(s);
 		assertEquals(0, compilationUnit.getProblems().length);
 		ModuleDeclaration c = (ModuleDeclaration) compilationUnit.getModuleDeclaration();
-		assertPosition(c, 13, 12);
+		assertPosition(c, 1, 36);
 		
 		List<Comment> comments = c.dDocs();
 		assertEquals(2, comments.size());
@@ -88,7 +97,7 @@ public class Comment_Test extends Parser_Test {
 		CompilationUnit compilationUnit = getCompilationUnit(s);
 		assertEquals(0, compilationUnit.getProblems().length);
 		VariableDeclaration c = (VariableDeclaration) getSingleDeclarationNoProblems(s);
-		assertPosition(c, 13, 12);
+		assertPosition(c, 1, 36);
 		
 		List<Comment> comments = c.dDocs();
 		assertEquals(2, comments.size());

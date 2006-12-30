@@ -10,6 +10,7 @@ public class AllLexerParserTests {
 				"Test for org.asterite.deditor.tests.mars");
 		//$JUnit-BEGIN$
 		suite.addTestSuite(Comment_Test.class);
+		suite.addTestSuite(Bugs_Test.class);
 		suite.addTestSuite(VariableDeclaration_Test.class);
 		suite.addTestSuite(Link_Test.class);
 		suite.addTestSuite(Class_Test.class);
@@ -19,8 +20,8 @@ public class AllLexerParserTests {
 		suite.addTestSuite(Type_Test.class);
 		suite.addTestSuite(Enum_Test.class);
 		suite.addTestSuite(Union_Test.class);
-		suite.addTestSuite(Import_Test.class);
 		suite.addTestSuite(Struct_Test.class);
+		suite.addTestSuite(Import_Test.class);
 		suite.addTestSuite(Condition_Test.class);
 		suite.addTestSuite(UnitTest_Test.class);
 		suite.addTestSuite(Lexer_Test.class);

@@ -1,11 +1,8 @@
 package descent.tests.mars;
 
-import java.util.List;
-
 import descent.core.dom.ASTNode;
 import descent.core.dom.ArrayType;
 import descent.core.dom.AssociativeArrayType;
-import descent.core.dom.Comment;
 import descent.core.dom.DelegateType;
 import descent.core.dom.VariableDeclaration;
 import descent.core.dom.VariableDeclarationFragment;
@@ -52,16 +49,6 @@ public class VariableDeclaration_Test extends Parser_Test {
 		assertEquals("y", fragment.getName().getFullyQualifiedName());
 		assertPosition(fragment.getName(), 8, 1);
 		assertNull(fragment.getInitializer());
-	}
-	
-	public void testComments() {
-		String s = " /** hola */ int x;";
-		VariableDeclaration var = (VariableDeclaration) getSingleDeclarationNoProblems(s);
-		assertPosition(var, 13, 6);
-		
-		List<Comment> comments = var.dDocs();
-		assertEquals(1, comments.size());
-		assertPosition(comments.get(0), 1, 11);
 	}
 	
 	public void testCStyle() {

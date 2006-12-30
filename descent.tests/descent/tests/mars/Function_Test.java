@@ -143,7 +143,7 @@ public class Function_Test extends Parser_Test {
 		assertEquals(ASTNode.ARGUMENT, args.get(0).getNodeType());
 		assertEquals("a", arg.getName().getIdentifier());
 		assertEquals("int", arg.getType().toString());
-		assertEquals(Argument.PassageMode.IN, arg.getPassageMode());
+		assertEquals(Argument.PassageMode.DEFAULT, arg.getPassageMode());
 		
 		arg = args.get(1);
 		assertPosition(arg, 18, 9);
@@ -190,7 +190,7 @@ public class Function_Test extends Parser_Test {
 		assertPosition(arg, 11, 5);
 		assertEquals("a", arg.getName().getIdentifier());
 		assertEquals("int", arg.getType().toString());
-		assertEquals(Argument.PassageMode.IN, arg.getPassageMode());
+		assertEquals(Argument.PassageMode.DEFAULT, arg.getPassageMode());
 		
 		arg = args.get(1);
 		assertPosition(arg, 18, 9);

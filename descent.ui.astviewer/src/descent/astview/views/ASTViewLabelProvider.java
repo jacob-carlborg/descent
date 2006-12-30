@@ -25,7 +25,6 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.PlatformUI;
 
 import descent.core.dom.ASTNode;
-import descent.core.dom.Comment;
 
 public class ASTViewLabelProvider extends LabelProvider implements IColorProvider, IFontProvider {
 	private int fSelectionStart;
@@ -140,7 +139,7 @@ public class ASTViewLabelProvider extends LabelProvider implements IColorProvide
 	 * @see org.eclipse.jface.viewers.IColorProvider#getBackground(java.lang.Object)
 	 */
 	public Color getBackground(Object element) {
-		if (!(element instanceof Comment) && isNotProperlyNested(element)) {
+		if (isNotProperlyNested(element)) {
 			return fLightRed;
 		}
 		if (fSelectionStart != -1 && isInside(element)) {

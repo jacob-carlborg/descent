@@ -87,8 +87,9 @@ public interface IProblem {
 	int FOUND_SOMETHING_WHEN_EXPECTING_SOMETHING = 150;
 	int VARIADIC_TEMPLATE_PARAMETER_MUST_BE_LAST_ONE = 151;
 	int NEED_SIZE_OF_RIGHTMOST_ARRAY = 152;
-	int TOKEN_EXPECTED = 153;
-	int TOKEN_MISPLACED = 153;
+	int ParsingErrorInsertTokenAfter = 153;
+	int ParsingErrorDeleteToken = 154;
+	int ParsingErrorInsertToComplete = 155;
 	
 	int PROPERTY_CANNOT_BE_REDEFINED = 1001;
 	int STRUCTS_UNIONS_CANT_BE_ABSTRACT = 1002;

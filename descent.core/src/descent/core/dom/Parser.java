@@ -140,7 +140,7 @@ class Parser extends Lexer {
 			
 			nextToken();
 			if (token.value != TOKidentifier) {
-				syntaxErrorDeleteThisToken(prevToken);
+				parsingErrorDeleteToken(prevToken);
 				
 				decldefs = parseDeclDefs(false, new ArrayList<Modifier>());
 				if (token.value != TOKeof) {
@@ -152,7 +152,7 @@ class Parser extends Lexer {
 				while (nextToken() == TOKdot) {
 					nextToken();
 					if (token.value != TOKidentifier) {
-						syntaxErrorTokenExpected(prevToken, ";");
+						parsingErrorInsertTokenAfter(prevToken, ";");
 						
 						decldefs = parseDeclDefs(false, new ArrayList<Modifier>());
 						if (token.value != TOKeof) {
@@ -172,12 +172,13 @@ class Parser extends Lexer {
 				if (token.value != TOKsemicolon) {
 					setMalformed(md);
 					setRecovered(md.getName());
-					syntaxErrorTokenExpected(prevToken, ";");
+					parsingErrorInsertTokenAfter(prevToken, ";");
 				} else {
 					nextToken();
 				}
 				
 				attachLeadingComments(md.dDocs());
+				adjustPossitionAccordingToComments(md, md.dDocs());
 			}
 		}
 
@@ -205,14 +206,13 @@ class Parser extends Lexer {
 		List<Declaration> decldefs;
 		List<Declaration> a = new ArrayList<Declaration>();
 		List<Declaration> aelse;
-		
-		Token saveToken;
 		boolean[] isSingle = new boolean[1];
 		
 		decldefs = new ArrayList<Declaration>();
 		do {
 			List<Comment> lastComments = getLastDocComments();
 			
+			int start = token.ptr;
 			switch (token.value) {
 			case TOKenum:
 				s = parseEnum();
@@ -281,12 +281,10 @@ class Parser extends Lexer {
 				break;
 
 			case TOKinvariant:
-				saveToken = new Token(token);
 				s = parseInvariant();
 				break;
 
 			case TOKunittest:
-				saveToken = new Token(token);
 				s = parseUnitTest();
 				break;
 
@@ -322,12 +320,9 @@ class Parser extends Lexer {
 						aelse = parseBlock();
 					}					
 					s = newStaticIfDeclaration(condition, a, aelse);
-					s.setSourceRange(staticToken.ptr, prevToken.ptr + prevToken.len - staticToken.ptr);
 					break;
 				} else if (token.value == TOKimport) {
 					s = parseImport(true);
-					ImportDeclaration importDeclaration = (ImportDeclaration) s;
-					importDeclaration.setSourceRange(staticToken.ptr, importDeclaration.getStartPosition() - staticToken.ptr);
 				} else {
 					// goto Lstc2;
 					
@@ -351,9 +346,6 @@ class Parser extends Lexer {
 						}
 					}
 				}
-				if (s != null) {
-					s.setSourceRange(staticToken.ptr, prevToken.ptr + prevToken.len - staticToken.ptr);
-				}
 				break;
 
 			case TOKconst:
@@ -368,7 +360,6 @@ class Parser extends Lexer {
 				modifiers.add(modifier);
 				
 				// goto Lstc;
-				saveToken = new Token(token);
 				nextToken();
 				
 				ModifierDeclaration.Syntax[] syntax = new ModifierDeclaration.Syntax[1];
@@ -385,12 +376,9 @@ class Parser extends Lexer {
 						}
 					}
 				}
-				s.setSourceRange(saveToken.ptr, prevToken.ptr + prevToken.len - saveToken.ptr);
 				break;
 
 			case TOKextern:
-				saveToken = new Token(token);
-				
 				if (peek(token).value != TOKlparen) {
 					// goto Lstc;
 					nextToken();
@@ -405,10 +393,7 @@ class Parser extends Lexer {
 					LINK linksave = linkage;
 					linkage = parseLinkage();
 					a = parseBlock();
-					
 					s = newExternDeclaration(linkage, a);
-					s.setSourceRange(saveToken.ptr, prevToken.ptr + prevToken.len - saveToken.ptr);
-					
 					linkage = linksave;
 					break;
 				}
@@ -422,7 +407,6 @@ class Parser extends Lexer {
 				modifiers.add(modifier);
 				
 				// goto Lprot;
-				saveToken = new Token(token);
 				nextToken();
 				
 				syntax = new ModifierDeclaration.Syntax[1]; 
@@ -438,16 +422,12 @@ class Parser extends Lexer {
 						s = newModifierDeclaration(modifier, syntax[0], a);
 					}
 				}
-				if (s != null) {
-					s.setSourceRange(saveToken.ptr, prevToken.ptr + prevToken.len - saveToken.ptr);
-				}
 				break;
 				
 			case TOKalign: {
 				long n;
 
 				s = null;
-				saveToken = new Token(token);
 				nextToken();
 				if (token.value == TOKlparen) {
 					nextToken();
@@ -462,19 +442,14 @@ class Parser extends Lexer {
 				} else {
 					n = global.structalign; // default
 				}
-
 				a = parseBlock();
-
 				s = newAlignDeclaration((int) n, a);
-				s.setSourceRange(saveToken.ptr, prevToken.ptr + prevToken.len - saveToken.ptr);
 				break;
 			}
 
 			case TOKpragma: {
 				Identifier ident;
 				List<Expression> args = null;
-				
-				saveToken = new Token(token);
 
 				nextToken();
 				check(TOKlparen);
@@ -499,13 +474,10 @@ class Parser extends Lexer {
 				}
 				
 				s = newPragmaDeclaration(ident, args, a);
-				s.setSourceRange(saveToken.ptr, prevToken.ptr + prevToken.len - saveToken.ptr);
 				break;
 			}
 
 			case TOKdebug:
-				saveToken = new Token(token);
-				
 				nextToken();
 				if (token.value == TOKassign) {
 					nextToken();
@@ -520,11 +492,6 @@ class Parser extends Lexer {
 						problem("Semicolon expected", IProblem.SEVERITY_ERROR, IProblem.SEMICOLON_EXPECTED, token.ptr, token.len);
 					}
 					nextToken();
-					
-					if (s != null) {
-						s.setSourceRange(saveToken.ptr, prevToken.ptr + prevToken.len - saveToken.ptr);
-					}
-					
 					break;
 				}
 
@@ -538,12 +505,9 @@ class Parser extends Lexer {
 				}
 				
 				s = newDebugDeclaration(debugCondition, a, aelse);
-				s.setSourceRange(saveToken.ptr, prevToken.ptr + prevToken.len - saveToken.ptr);
 				break;
 
 			case TOKversion:
-				saveToken = new Token(token);
-				
 				nextToken();
 				if (token.value == TOKassign) {
 					nextToken();
@@ -558,11 +522,6 @@ class Parser extends Lexer {
 						problem("Semicolon expected", IProblem.SEVERITY_ERROR, IProblem.SEMICOLON_EXPECTED, token.ptr, token.len);
 					}
 					nextToken();
-					
-					if (s != null) {
-						s.setSourceRange(saveToken.ptr, prevToken.ptr + prevToken.len - saveToken.ptr);
-					}
-					
 					break;
 				}
 				
@@ -575,13 +534,10 @@ class Parser extends Lexer {
 					aelse = parseBlock();
 				}
 				
-				s = newVersionDeclaration(versionCondition, a, aelse);				
-				s.setSourceRange(saveToken.ptr, prevToken.ptr + prevToken.len - saveToken.ptr);
+				s = newVersionDeclaration(versionCondition, a, aelse);
 				break;
 
-			case TOKiftype:
-				saveToken = new Token(token);
-				
+			case TOKiftype:				
 				IftypeCondition iftypeCondition = parseIftypeCondition();
 				
 				a = parseBlock();
@@ -592,7 +548,6 @@ class Parser extends Lexer {
 				}				
 
 				s = newIftypeDeclaration(iftypeCondition, a, aelse);
-				s.setSourceRange(saveToken.ptr, prevToken.ptr + prevToken.len - saveToken.ptr);
 				break;
 
 			case TOKsemicolon: // empty declaration
@@ -600,16 +555,18 @@ class Parser extends Lexer {
 				continue;
 
 			default:
-				problem("Declaration expected", IProblem.SEVERITY_ERROR, IProblem.DECLARATION_EXPECTED, token.ptr, token.len);
-				s = parseDeclDefs_Lerror();
+				parsingErrorDeleteToken(token);
+				nextToken();
 				continue;
 			}
 			if (s != null) {
+				s.setSourceRange(start, prevToken.ptr + prevToken.len - start);
 				s.modifiers().addAll(modifiers);
 				modifiers.clear();
 				s.dDocs().addAll(lastComments);
 				adjustLastDocComment();
-				attachLeadingComments(s.dDocs());
+				attachLeadingComments(s.dDocs());				
+				adjustPossitionAccordingToComments(s, s.dDocs());				
 				decldefs.add(s);
 			}
 		} while (!once);
@@ -637,9 +594,9 @@ class Parser extends Lexer {
 	}
 	*/
 	
-	// a, stc, s
 	private Object[] parseDeclDefs_Lstc2(List<Declaration> a, boolean[] isSingle, ModifierDeclaration.Syntax[] syntax, List<Modifier> modifiers) {
-		// TODO
+		Token firstToken = new Token(prevToken);
+		
 		boolean repeat = true;
 		while(repeat) {
 			switch (token.value)
@@ -681,7 +638,7 @@ class Parser extends Lexer {
 		    }
 		    
 		    attachLeadingComments(variableDeclaration.dDocs());
-		    
+		    adjustPossitionAccordingToComments(variableDeclaration, variableDeclaration.dDocs());
 		    return new Object[] { a, variableDeclaration }; 
 		}
 		else
@@ -689,13 +646,18 @@ class Parser extends Lexer {
 			a = parseBlock(isSingle, syntax, modifiers);
 			
 			if (isSingle[0]) {
-				return new Object[] { a, a.get(0) };
+				if (a.size() == 0) {
+					parsingErrorDeleteToken(firstToken);
+					return new Object[] { a, null };
+				} else {
+					return new Object[] { a, a.get(0) };
+				}
 			} else {
 				
 				//ModifierDeclaration modifierDeclaration = newModifierDeclaration(modifiers.get(modifiers.size() - 1), syntax[0], a);				
 				ModifierDeclaration modifierDeclaration = newModifierDeclaration(null, syntax[0], a);
 			    return new Object[] { a, modifierDeclaration };
-			}			 
+			}
 		}
 	}
 	
@@ -1063,7 +1025,7 @@ class Parser extends Lexer {
 			Token firstToken = new Token(token);
 			
 			ai = null;
-			inout = Argument.PassageMode.IN; // parameter is "in" by default
+			inout = Argument.PassageMode.DEFAULT;
 			
 			if (token.value == TOKrparen) {
 				break;
@@ -1219,81 +1181,52 @@ class Parser extends Lexer {
 	@SuppressWarnings("unchecked")
 	private AggregateDeclaration parseAggregate() {
 		AggregateDeclaration a = null;
-		int anon = 0;
-		TOK tok;
 		Identifier id;
+		List<BaseClass> baseClasses = null;
 		List<TemplateParameter> tpl = null;
 		
 		Token firstToken = new Token(token);
-
-		tok = token.value;
+		
 		nextToken();
 		if (token.value != TOKidentifier) {
+			// Change from DMD
 			id = null;
 		} else {
 			id = new Identifier(token);
 			nextToken();
-
-			if (token.value == TOKlparen) { // Class template declaration.
-
+			if (token.value == TOKlparen) {
 				// Gather template parameter list
 				tpl = parseTemplateParameterList();
 			}
 		}
 
-		switch (tok) {
+		switch (firstToken.value) {
 		case TOKclass:
-		case TOKinterface: {
+		case TOKinterface:
 			if (id == null) {
-				problem("Anonymous classes not allowed", IProblem.SEVERITY_ERROR, IProblem.ANONYMOUS_CLASSES_NOT_ALLOWED,
-						firstToken.ptr, firstToken.len);
+				parsingErrorInsertTokenAfter(firstToken, "Identifier");
 			}
 
 			// Collect base class(es)
-			List<BaseClass> baseClasses = null;
 			if (token.value == TOKcolon) {
-				nextToken();
-				baseClasses = parseBaseClasses();
-
-				if (token.value != TOKlcurly) {
-					if (baseClasses != null &&  baseClasses.size() > 0) {
-						BaseClass last = baseClasses.get(baseClasses.size() - 1);
-						problem("Members expected", IProblem.SEVERITY_ERROR, IProblem.MEMBERS_EXPECTED,
-								last.getStartPosition(), last.getLength());
-					}
-				}
+				nextToken();				
+				baseClasses = parseBaseClasses();				
 			}
-			
-			a = newAggregateDeclaration(tok, id, baseClasses);
-			break;
-		}
-
+			break;			
 		case TOKstruct:
-			//if (id != null) {
-			
-				a = newAggregateDeclaration(tok, id, null);
-			//} else {
-			//	anon = 1;
-			//}
-			break;
-
 		case TOKunion:
-			//if (id != null) {
-				a = newAggregateDeclaration(tok, id, null);
-			//} else {
-			//	anon = 2;
-			//}
 			break;
 
 		default:
-			assert (false);
-			break;
+			throw new IllegalStateException("Can't happen");
 		}
 		
-		if (a != null && token.value == TOKsemicolon) {
-			a.setSourceRange(firstToken.ptr, token.ptr + token.len - firstToken.ptr);
+		if (token.value == TOKsemicolon) {
+			a = newAggregateDeclaration(firstToken.value, id, baseClasses, tpl);
 			nextToken();
 		} else if (token.value == TOKlcurly) {
+			a = newAggregateDeclaration(firstToken.value, id, baseClasses, tpl);
+			
 			Token lcurlyToken = new Token(token);
 			nextToken();
 			List decl = parseDeclDefs(false, new ArrayList<Modifier>());
@@ -1302,44 +1235,23 @@ class Parser extends Lexer {
 						lcurlyToken.ptr, lcurlyToken.len);
 			}
 			
-			if (a != null) {
-				a.setSourceRange(firstToken.ptr, token.ptr + token.len - firstToken.ptr);
-			}
+			a.declarations().addAll(decl);
 			
-			nextToken();
-			if (anon != 0) {
-				throw new IllegalStateException("Can't happen");
-				/*
-				 * Anonymous structs/unions are more like attributes.
-				 */
-				//return new AnonDeclaration(loc, anon - 1, decl);
-			} else {
-				a.declarations().addAll(decl);
-			}
+			nextToken();			
 		} else {
-			if (a.getName() == null) {
-				problem("{ } expected following aggregate declaration", IProblem.SEVERITY_ERROR, IProblem.CURLIES_EXPECTED_FOLLOWING_AGGREGATE_DECLARATION,
-						firstToken.ptr, firstToken.len);
+			if (id == null) {
+				// A single "class" makes no declaration
+				if (firstToken.value == TOKstruct || firstToken.value == TOKunion) {
+					String word = toWord(firstToken.value.toString());
+					parsingErrorInsertToComplete(firstToken,  word + "Body", word + "Declaration");
+				}
+				a = null;
 			} else {
-				problem("{ } expected following aggregate declaration", IProblem.SEVERITY_ERROR, IProblem.CURLIES_EXPECTED_FOLLOWING_AGGREGATE_DECLARATION,
-						firstToken.ptr, a.getName().getStartPosition() + a.getName().getLength() - firstToken.ptr);
-			}
-			
-			a = newAggregateDeclaration(TOK.TOKstruct, null, null);
-		}
-
-		if (tpl != null) {
-			a.templateParameters().addAll(tpl);
-			/*
-			List decldefs;
-			TemplateDeclaration tempdecl;
-
-			// Wrap a template around the aggregate declaration
-			decldefs = new ArrayList();
-			decldefs.add(a);
-			tempdecl = new TemplateDeclaration(loc, id, tpl, decldefs);
-			return tempdecl;
-			*/
+				// We've got at least "class Identifier", make a declaration out of it
+				String word = toWord(firstToken.value.toString());
+				parsingErrorInsertToComplete(prevToken,  word + "Body", word + "Declaration");
+				a = newAggregateDeclaration(firstToken.value, id, baseClasses, tpl);
+			}		
 		}
 
 		return a;
@@ -1360,8 +1272,7 @@ class Parser extends Lexer {
 				modifier = newModifierFromCurrentToken();
 				continue;
 			default:
-				problem("Base class expected", IProblem.SEVERITY_ERROR,
-						IProblem.BASE_CLASS_EXPECTED, token.ptr, token.len);
+				parsingErrorInsertTokenAfter(prevToken, "Type");
 				return null;
 			}
 			BaseClass b = newBaseClass(parseBasicType(), modifier);
@@ -1951,13 +1862,7 @@ class Parser extends Lexer {
 		}
 
 		default:
-			problem("Basic type expected", IProblem.SEVERITY_ERROR,
-					IProblem.BASIC_TYPE_EXPECTED, token.ptr, token.len);
-		
-			// TODO what to do?
-			PrimitiveType pt = new PrimitiveType(ast);
-			pt.setPrimitiveTypeCode(PrimitiveType.Code.INT);		
-			t =  pt;
+			parsingErrorInsertTokenAfter(prevToken, "Type");
 			break;
 		}
 		return t;
@@ -2135,6 +2040,11 @@ class Parser extends Lexer {
 	}
 
 	private Type parseDeclarator(Type t, Identifier[] pident, List<TemplateParameter>[] tpl, int[] identStart) {
+		// This may happen if a basic type was not find
+		if (t == null) {
+			return null;
+		}
+		
 		Type ts;
 	    Type ta;
 
@@ -2369,6 +2279,7 @@ class Parser extends Lexer {
 			}
 			
 			attachLeadingComments(variableDeclaration.dDocs());
+			adjustPossitionAccordingToComments(variableDeclaration, variableDeclaration.dDocs());
 			
 			return a;
 		}
@@ -2388,6 +2299,9 @@ class Parser extends Lexer {
 		int nextTypdefOrAliasStart = firstToken.ptr;
 
 		ts = parseBasicType();
+		if (ts == null) {
+			return a;
+		}
 		ts = parseBasicType2(ts);
 		tfirst = null;
 		
@@ -2415,7 +2329,8 @@ class Parser extends Lexer {
 						ident.startPosition, ident.length);
 			}
 			if (ident == null) {
-				problem("No identifier for declarator", IProblem.SEVERITY_ERROR, IProblem.NO_IDENTIFIER_FOR_DECLARATION, t.getStartPosition(), t.getLength());
+				parsingErrorInsertTokenAfter(prevToken, "Identifier");
+				return a;
 			}
 			
 			if (tok != TOKalias && aliasDeclaration != null) {
@@ -2547,6 +2462,7 @@ class Parser extends Lexer {
 					variableDeclaration.dDocs().addAll(lastComments);
 					adjustLastDocComment();
 					attachLeadingComments(variableDeclaration.dDocs());
+					adjustPossitionAccordingToComments(variableDeclaration, variableDeclaration.dDocs());
 					break;
 
 				case TOKcomma:
@@ -3150,7 +3066,7 @@ class Parser extends Lexer {
 				
 				Token argumentStart = new Token(token);
 
-				inout = Argument.PassageMode.IN;
+				inout = Argument.PassageMode.DEFAULT;
 				if (token.value == TOKinout) {
 					inout = Argument.PassageMode.INOUT;
 					nextToken();
@@ -3216,7 +3132,7 @@ class Parser extends Lexer {
 				if (token.value == TOKidentifier) {
 					Token t2 = peek(token);
 					if (t2.value == TOKassign) {
-						arg = newArgument(Argument.PassageMode.IN, null, token.ident, null);
+						arg = newArgument(Argument.PassageMode.DEFAULT, null, token.ident, null);
 						arg.setSourceRange(autoToken.ptr, token.ptr + token.len - autoToken.ptr);
 						
 						nextToken();
@@ -3257,7 +3173,7 @@ class Parser extends Lexer {
 					at = parseDeclarator(tb, pointer2_ai);
 					ai = pointer2_ai[0];
 
-					arg = newArgument(Argument.PassageMode.IN, at, ai, null);
+					arg = newArgument(Argument.PassageMode.DEFAULT, at, ai, null);
 					arg.setSourceRange(argToken.ptr, prevToken.ptr + prevToken.len - argToken.ptr);
 					
 					check(TOKassign);					
@@ -3267,7 +3183,7 @@ class Parser extends Lexer {
 				else if (token.value == TOKidentifier) {
 					Token t2 = peek(token);
 					if (t2.value == TOKcomma || t2.value == TOKsemicolon) {
-						arg = newArgument(Argument.PassageMode.IN, null, token.ident, null);
+						arg = newArgument(Argument.PassageMode.DEFAULT, null, token.ident, null);
 						arg.setSourceRange(argToken.ptr, token.ptr + token.len - argToken.ptr);
 						
 						nextToken();
@@ -3715,6 +3631,8 @@ class Parser extends Lexer {
 						}
 					}
 					// TODO: goto Ldefault;
+					nextToken();
+					continue;
 
 				case TOKrcurly:
 					if (toklist != null || label != null) {
@@ -4890,6 +4808,8 @@ class Parser extends Lexer {
 
 	@SuppressWarnings("unchecked")
 	private Expression parsePostExp(Expression e) {
+		int start = e == null ? prevToken.ptr : e.getStartPosition();
+		
 		while (true) {
 			switch (token.value) {
 			case TOKdot:
@@ -4969,6 +4889,8 @@ class Parser extends Lexer {
 					check(TOKrbracket);
 					inBrackets--;
 				}
+				
+				e.setSourceRange(start, prevToken.ptr + prevToken.len - start);
 				continue;
 			}
 
@@ -5148,6 +5070,7 @@ class Parser extends Lexer {
 							return e;
 						}
 						e = newTypeDotIdentifierExpression(t, token);
+						e.setSourceRange(saveToken.ptr, prevToken.ptr + prevToken.len - saveToken.ptr);
 						nextToken();
 					} else {
 						e = parseUnaryExp();
@@ -5563,7 +5486,7 @@ class Parser extends Lexer {
 
 			Identifier id = null;
 			
-			AggregateDeclaration cd = newAggregateDeclaration(TOKclass, id, baseClasses);
+			AggregateDeclaration cd = newAggregateDeclaration(TOKclass, id, baseClasses, null);
 
 			if (token.value != TOKlcurly) {
 				problem("{ members } expected for anonymous class", IProblem.SEVERITY_ERROR, IProblem.MEMBERS_EXPECTED, token.ptr, token.len);
@@ -5893,7 +5816,7 @@ class Parser extends Lexer {
 		return staticIf;
 	}
 	
-	private AggregateDeclaration newAggregateDeclaration(TOK tok, Identifier id, List<BaseClass> baseClasses) {
+	private AggregateDeclaration newAggregateDeclaration(TOK tok, Identifier id, List<BaseClass> baseClasses, List<TemplateParameter> templateParameters) {
 		AggregateDeclaration classDeclaration = new AggregateDeclaration(ast);
 		switch(tok) {
 		case TOKclass:
@@ -5916,6 +5839,9 @@ class Parser extends Lexer {
 		}
 		if (baseClasses != null) {
 			classDeclaration.baseClasses().addAll(baseClasses);
+		}
+		if (templateParameters != null) {
+			classDeclaration.templateParameters().addAll(templateParameters);
 		}
 		return classDeclaration;
 	}
@@ -6769,12 +6695,38 @@ class Parser extends Lexer {
 		node.setFlags(node.getFlags() | ASTNode.RECOVERED);
 	}
 	
-	private void syntaxErrorTokenExpected(Token targetToken, String expected) {
-		problem("Syntax error on token \"" + targetToken + "\", " + expected + " expected after this token", IProblem.SEVERITY_ERROR, IProblem.TOKEN_EXPECTED , targetToken.ptr, targetToken.len);
+	private void parsingErrorInsertTokenAfter(Token targetToken, String expected) {
+		problem("Syntax error on token \"" + targetToken + "\", " + expected + " expected after this token", IProblem.SEVERITY_ERROR, IProblem.ParsingErrorInsertTokenAfter , targetToken.ptr, targetToken.len);
 	}
 	
-	private void syntaxErrorDeleteThisToken(Token targetToken) {
-		problem("Syntax error on token \"" + targetToken + "\", delete this token", IProblem.SEVERITY_ERROR, IProblem.TOKEN_MISPLACED, targetToken.ptr, targetToken.len);
+	private void parsingErrorDeleteToken(Token targetToken) {
+		problem("Syntax error on token \"" + targetToken + "\", delete this token", IProblem.SEVERITY_ERROR, IProblem.ParsingErrorDeleteToken, targetToken.ptr, targetToken.len);
+	}
+	
+	private void parsingErrorInsertToComplete(Token targetToken, String insert, String toComplete) {
+		problem("Syntax error, insert \"" + insert + "\" to complete " + toComplete, IProblem.SEVERITY_ERROR, IProblem.ParsingErrorInsertToComplete, targetToken.ptr, targetToken.len);
+	}
+	
+	private String toWord(String s) {
+		return Character.toUpperCase(s.charAt(0)) + s.substring(1);
+	}
+	
+	private void adjustPossitionAccordingToComments(ASTNode node, List<Comment> comments) {
+		if (comments.size() == 0) return;
+		
+		int minStart = node.getStartPosition();
+		int maxEnd = node.getStartPosition() + node.getLength();
+		for(Comment comment : comments) {
+			int commentStart = comment.getStartPosition();
+			if (commentStart < minStart) {
+				minStart = commentStart;
+			}
+			if (commentStart + comment.getLength() > maxEnd) {
+				maxEnd = commentStart + comment.getLength();
+			}
+		}
+		
+		node.setSourceRange(minStart, maxEnd - minStart);
 	}
 	
 }

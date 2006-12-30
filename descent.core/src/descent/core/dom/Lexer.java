@@ -244,6 +244,7 @@ public class Lexer implements IProblemCollector {
 	    int linnum = this.linnum;
 	    
 	    appendLeadingComments = true;
+	    t.lineNumber = linnum;
 	    t.leadingComments = null;
 	    while (true)
 	    {
@@ -2495,7 +2496,7 @@ public class Lexer implements IProblemCollector {
 	}
 	
 	private void attachCommentToCurrentToken(Comment comment) {
-		if (!appendLeadingComments) return;
+		if (!appendLeadingComments || !comment.isDocComment()) return;
 		
 		if (prevToken.leadingComments == null) {
 			prevToken.leadingComments = new ArrayList<Comment>();

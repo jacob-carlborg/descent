@@ -20,6 +20,8 @@ public class Argument extends ASTNode {
 	 * TODO: comment better
 	 */
 	public static enum PassageMode {
+		/** Default (no token) passage mode */
+		DEFAULT,
 		/** "in" passage mode */
 		IN,
 		/** "out" passage mode */

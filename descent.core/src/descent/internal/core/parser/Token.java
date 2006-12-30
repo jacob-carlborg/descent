@@ -16,6 +16,7 @@ public class Token {
 	public int postfix;
 	public BigInteger numberValue; // Numeric value of the token, see if it is needed
 	public Identifier ident;
+	public int lineNumber;
 	public List<Comment> leadingComments;
 	
 	public Token() {
@@ -31,6 +32,7 @@ public class Token {
 		this.postfix = other.postfix;
 		this.numberValue = other.numberValue;
 		this.ident = other.ident;
+		this.lineNumber = other.lineNumber;
 		this.leadingComments = other.leadingComments;
 	}
 	

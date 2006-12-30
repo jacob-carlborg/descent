@@ -256,9 +256,9 @@ public class CompilationUnit extends ASTNode {
 	 *    if no source position information is recorded for this node
 	 * @see #getExtendedStartPosition(ASTNode)
 	 */
+	// TODO: implement
 	public int getExtendedLength(ASTNode node) {
-		int[] startLength = getExtendedStartLength(node);
-		return startLength[1];
+		return node.getLength();
 	}
 
 	/**
@@ -272,38 +272,9 @@ public class CompilationUnit extends ASTNode {
 	 *    if no source position information is recorded for this node
 	 * @see #getExtendedLength(ASTNode)
 	 */
+	// TODO: implement
 	public int getExtendedStartPosition(ASTNode node) {
-		int[] startLength = getExtendedStartLength(node);
-		return startLength[0];
-	}
-	
-	private final static int[] NO_EXTENDED_START_LENGTH = new int[] { 0, 1 };
-	private int[] getExtendedStartLength(ASTNode node) {
-		List<Comment> comments;
-		if (node instanceof Declaration) {
-			comments = ((Declaration) node).dDocs();
-		} else if (node instanceof ModuleDeclaration) {
-			comments = ((ModuleDeclaration) node).dDocs();
-		} else if (node instanceof EnumMember) {
-			comments = ((EnumMember) node).dDocs();
-		} else {
-			return NO_EXTENDED_START_LENGTH;
-		}
-		int startPosition = node.getStartPosition();
-		int length = node.getLength();
-		if (startPosition == -1 && length == 0) {
-			return NO_EXTENDED_START_LENGTH;
-		}
-		int endPosition = startPosition + length;
-		for(Comment comment : comments) {
-			if (comment.getStartPosition() < startPosition) {
-				startPosition = comment.getStartPosition();
-			}
-			if (comment.getStartPosition() + comment.getLength() > endPosition) {
-				endPosition = comment.getStartPosition() + comment.getLength(); 
-			}
-		}
-		return new int[] { startPosition, endPosition - startPosition };
+		return node.getStartPosition();
 	}
 
 	/* (omit javadoc for this method)
