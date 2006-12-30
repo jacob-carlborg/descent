@@ -3,15 +3,15 @@ package dtool.model;
 import java.util.List;
 
 import util.StringUtil;
-import dtool.dom.DefUnit;
-import dtool.dombase.IScope;
-import dtool.project.Project;
+import dtool.dom.ast.IScope;
+import dtool.dom.base.DefUnit;
+import dtool.project.DeeProject;
 
 public class BindingResolver {
 	
-	private Project project;
+	private DeeProject project;
 	
-	public BindingResolver(Project project) {
+	public BindingResolver(DeeProject project) {
 		this.project = project;
 	}
 

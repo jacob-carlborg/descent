@@ -12,6 +12,7 @@ import descent.core.dom.ITrueExpression;
 import descent.core.dom.IVersionDeclaration;
 import descent.core.dom.IVersionStatement;
 import descent.internal.core.dom.*;
+import dtool.dom.base.ASTNode;
 
 
 /**

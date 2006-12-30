@@ -1,4 +1,6 @@
 package dtool.ANTLRparser;
+import java.io.FileReader;
+
 import org.antlr.runtime.ANTLRReaderStream;
 import org.antlr.runtime.ANTLRStringStream;
 import org.antlr.runtime.CommonTokenStream;
@@ -20,7 +22,8 @@ public class Model {
 	
 	public static void createModel(CompilationUnit cu) {
 		try {
-			ANTLRStringStream afs = new ANTLRReaderStream(cu.fr);
+			FileReader fr = new java.io.FileReader(cu.file);
+			ANTLRStringStream afs = new ANTLRReaderStream(fr);
 			DParserLexer lex = new DParserLexer(afs);
 
 			tokens = new CommonTokenStream(lex);

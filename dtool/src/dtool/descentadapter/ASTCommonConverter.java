@@ -3,9 +3,9 @@ package dtool.descentadapter;
 import java.util.ArrayList;
 import java.util.List;
 
-import descent.core.domX.ASTNode;
 import descent.core.domX.ASTVisitor;
-import dtool.dom.ASTElement;
+import dtool.dom.base.ASTElement;
+import dtool.dom.base.ASTNode;
 
 public abstract class ASTCommonConverter extends ASTVisitor {
 	

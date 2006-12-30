@@ -3,6 +3,8 @@ package descent.core.domX;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
+import dtool.dom.base.ASTNode;
+
 import util.ExceptionAdapter;
 
 public class CommonTreeVisitor {

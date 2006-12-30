@@ -3,7 +3,7 @@ package dtool.formater;
 import java.io.OutputStream;
 
 import descent.core.domX.ASTVisitor;
-import dtool.dom.ASTElement;
+import dtool.dom.base.ASTElement;
 
 
 public class FormaterVisitor extends ASTVisitor {
@@ -12,6 +12,11 @@ public class FormaterVisitor extends ASTVisitor {
 	
 	public FormaterVisitor(OutputStream out, char[] sbuf) {
 		scribe = new FormaterScribe(out, sbuf);
+	}
+	
+	public FormaterVisitor(OutputStream out, String str) {
+		// TODO: Formatter
+		//scribe = new FormaterScribe(out, sbuf);
 	}
 	
 	// ***************************** //

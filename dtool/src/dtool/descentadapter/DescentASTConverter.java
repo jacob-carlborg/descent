@@ -2,23 +2,23 @@ package dtool.descentadapter;
 
 import java.util.List;
 
-import descent.core.domX.ASTNode;
 import descent.internal.core.dom.Identifier;
-import dtool.dom.DeclarationImport;
-import dtool.dom.Def_EProtection;
-import dtool.dom.Def_Modifiers;
-import dtool.dom.Definition;
-import dtool.dom.DefinitionAggregate;
-import dtool.dom.DefinitionAlias;
-import dtool.dom.DefinitionFunction;
-import dtool.dom.DefinitionVariable;
-import dtool.dom.Entity;
-import dtool.dom.EntitySingle;
-import dtool.dom.Module;
-import dtool.dom.TypeDynArray;
-import dtool.dom.TypeTypeof;
-import dtool.dom.DefUnit.Symbol;
-import dtool.dom.Module.DeclarationModule;
+import dtool.dom.base.ASTNode;
+import dtool.dom.base.DeclarationImport;
+import dtool.dom.base.Def_EProtection;
+import dtool.dom.base.Def_Modifiers;
+import dtool.dom.base.Definition;
+import dtool.dom.base.DefinitionAggregate;
+import dtool.dom.base.DefinitionAlias;
+import dtool.dom.base.DefinitionFunction;
+import dtool.dom.base.DefinitionVariable;
+import dtool.dom.base.Entity;
+import dtool.dom.base.EntitySingle;
+import dtool.dom.base.Module;
+import dtool.dom.base.TypeDynArray;
+import dtool.dom.base.TypeTypeof;
+import dtool.dom.base.DefUnit.Symbol;
+import dtool.dom.base.Module.DeclarationModule;
 
 /**
  * Converts from DMD's AST to a proper DOM AST ("Neo AST")

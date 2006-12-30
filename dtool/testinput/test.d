@@ -1,5 +1,5 @@
 module pack/*** */ .subpack.test; // My module
-
+/*
 import mybar = pack.mody , mymodx = pack.modx : mysel = sel1;
 public import mybar = foo.bar;
 static import pack2.modb : sel1 = asdf;
@@ -15,7 +15,7 @@ invariant {}
 }
 version = 2;
 
-Foo myfoo;
+Foo myfoo;*/
 
 
 

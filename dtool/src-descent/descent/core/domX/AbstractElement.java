@@ -1,6 +1,7 @@
 package descent.core.domX;
 
 import descent.core.dom.IDeclaration;
+import dtool.dom.base.ASTNode;
 
 /**
  * The base AST node for DMD's AST 

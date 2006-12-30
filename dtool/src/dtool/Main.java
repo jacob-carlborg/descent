@@ -9,27 +9,28 @@ import java.io.OutputStream;
 
 import util.ExceptionAdapter;
 import util.StringUtil;
-import descent.core.domX.ASTNode;
-import dtool.dom.DefUnit;
-import dtool.dom.Entity;
-import dtool.dombase.ASTChecker;
-import dtool.dombase.ASTPrinter;
+import dtool.dom.ast.ASTChecker;
+import dtool.dom.ast.ASTPrinter;
+import dtool.dom.base.ASTNode;
+import dtool.dom.base.DefUnit;
+import dtool.dom.base.Entity;
 import dtool.formater.CodeFormatter;
 import dtool.model.ModelException;
-import dtool.model.NoSuchEntModelException;
 import dtool.project.CompilationUnit;
-import dtool.project.Project;
+import dtool.project.DeeProject;
 
 
 public class Main {
 	
-    public static Project dproj;
+	private Main() { }
+	
+    public static DeeProject dproj;
 
 	public static void main(String[] args) throws Exception {
 		System.out.println("======== DTool ========");
 
 		try {
-			dproj = Project.newTestProject();
+			dproj = DeeProject.newTestProject();
 			testDescent(args);
 			//testDtool(args);
 			

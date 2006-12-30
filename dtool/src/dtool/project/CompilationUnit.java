@@ -1,37 +1,39 @@
 package dtool.project;
 
 import java.io.File;
-import java.io.FileReader;
 
-import util.StringUtil;
+import util.FileUtil;
 import descent.core.compiler.IProblem;
-import descent.core.domX.ASTNode;
 import descent.core.domX.AbstractElement;
 import descent.internal.core.dom.ParserFacade;
 import dtool.descentadapter.DescentASTConverter;
-import dtool.dom.Module;
-import dtool.dombase.ASTParentizer;
+import dtool.dom.ast.ASTParentizer;
+import dtool.dom.base.ASTNode;
+import dtool.dom.base.Module;
 /**
  * Similar to Module 
  */
 public class CompilationUnit {
-	public FileReader fr;
-	public char[] source;
+	public String source;
 	public File file;
-
-	public CompilationUnit(String filename) throws Exception {
-		this(new File(filename));
-	}
-
-	public CompilationUnit(File file) throws Exception {
-		this.file = file;
-		this.fr = new java.io.FileReader(file);
-		this.source = StringUtil.readBytesFromFile(file);
-	}
 	
 	private ASTNode cumodule;
 	public IProblem[] problems;
 
+	public CompilationUnit(String source) {
+		this.source = source;
+		parse();
+	}
+
+	public CompilationUnit(File file) throws Exception {
+		this.file = file;
+		this.source = FileUtil.readStringFromFile(file);
+	}
+	
+	public void update(String source) {
+		this.source = source;
+		parse();
+	}
 	
 	public descent.internal.core.dom.Module getOldModule() {
 		return (descent.internal.core.dom.Module) cumodule;
@@ -41,11 +43,14 @@ public class CompilationUnit {
 		return (Module) cumodule;
 	}
 	
+	public ASTNode getModule2() {
+		return cumodule;
+	}
+	
 	public void preParseCompilationUnit() {
 		ParserFacade parser = new descent.internal.core.dom.ParserFacade();
-		String str = new String(source);
 		descent.internal.core.dom.Module descentmodule;
-		descentmodule = parser.parseCompilationUnit(str);
+		descentmodule = parser.parseCompilationUnit(source);
 
 		this.problems = descentmodule.getProblems();
 		this.cumodule = descentmodule;
@@ -56,5 +61,10 @@ public class CompilationUnit {
 		DescentASTConverter domadapter = new DescentASTConverter();
 		this.cumodule = domadapter.convert((AbstractElement) cumodule); 
 		ASTParentizer.parentize(this.cumodule);
+	}
+	
+	public void parse(){
+		preParseCompilationUnit();
+		adaptDOM();
 	}
 }

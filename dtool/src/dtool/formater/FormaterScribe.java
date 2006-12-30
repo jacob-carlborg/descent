@@ -6,7 +6,7 @@ import java.io.PrintStream;
 import util.ExceptionAdapter;
 import util.StringUtil;
 import descent.internal.core.dom.Token;
-import dtool.dom.ASTElement;
+import dtool.dom.base.ASTElement;
 
 
 public class FormaterScribe {

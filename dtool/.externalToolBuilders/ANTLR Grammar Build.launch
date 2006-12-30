@@ -6,7 +6,7 @@
 <stringAttribute key="org.eclipse.ui.externaltools.ATTR_TOOL_ARGUMENTS" value="-classpath &quot;D:/devel/ANTLR/antlr-3.0b4/lib/antlr-3.0b4.jar;D:/devel/ANTLR/antlr-3.0b4/lib/antlr-2.7.6.jar;D:/devel/ANTLR/antlr-3.0b4/lib/stringtemplate-2.3b9.jar&quot; org.antlr.Tool dee.g"/>
 <stringAttribute key="org.eclipse.ui.externaltools.ATTR_RUN_BUILD_KINDS" value="full,incremental,auto,"/>
 <stringAttribute key="org.eclipse.debug.core.ATTR_REFRESH_SCOPE" value="${workspace}"/>
-<stringAttribute key="org.eclipse.ui.externaltools.ATTR_WORKING_DIRECTORY" value="${project_loc}/DGrammar"/>
+<stringAttribute key="org.eclipse.ui.externaltools.ATTR_WORKING_DIRECTORY" value="${build_project}/DGrammar"/>
 <stringAttribute key="org.eclipse.ui.externaltools.ATTR_LOCATION" value="C:/Programs/Java/jdk1.5.0_09/bin/java.exe"/>
 <booleanAttribute key="org.eclipse.ui.externaltools.ATTR_TRIGGERS_CONFIGURED" value="true"/>
 <booleanAttribute key="org.eclipse.debug.core.appendEnvironmentVariables" value="true"/>

@@ -4,6 +4,7 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" path="DGrammar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="libs/antlr-3.0b5.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/antlr-3.0b5.jar"/>
+	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

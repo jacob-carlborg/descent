@@ -94,8 +94,8 @@ import descent.core.compiler.IProblem;
 import descent.core.dom.IDeclaration;
 import descent.core.dom.IElement;
 import descent.core.dom.IEnumMember;
-import descent.core.domX.ASTNode;
 import descent.core.domX.AbstractElement;
+import dtool.dom.base.ASTNode;
 
 public class Parser extends Lexer {
 	
