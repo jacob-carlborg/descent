@@ -109,10 +109,4 @@ public class SuperLiteral extends Expression {
 	;
 	}
 
-	// TODO Descent remove	
-	@Override
-	public String toString() {
-		return "super";
-	}
-
 }

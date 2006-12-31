@@ -10,8 +10,6 @@ import java.util.List;
  *AsmStatement:
  *   <b>asm</b> Block
  *</pre>
- *
- * TODO: think about the properties of this node.
  */
 public class AsmStatement extends Statement {
 

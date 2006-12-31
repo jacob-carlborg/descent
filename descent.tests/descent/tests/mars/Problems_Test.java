@@ -10,7 +10,7 @@ public class Problems_Test extends Parser_Test {
 		assertError(p, IProblem.InvalidUtfCharacter, 11, 10);
 	}
 
-	/* TODO Solve UTF SVN problems
+	/*
 	public void test_NON_HEX_CHARACTER2() {
 		IProblem[] p = getProblems(" char c = x\"€1\";", 2);
 
@@ -220,7 +220,7 @@ public class Problems_Test extends Parser_Test {
 		assertError(p, IProblem.UnsupportedCharacter, 1, 1);
 	}
 
-	/* TODO:
+	/*
 	 public void test_INVALID_UTF_CHARACTER() {
 	 IProblem p = getProblem("char c = \\uFFFF;");
 	 
@@ -479,18 +479,6 @@ public class Problems_Test extends Parser_Test {
 		IProblem p = getProblem(" mixin ");
 		assertError(p, IProblem.ParsingErrorDeleteToken, 1, 5);
 	}
-
-	// TODO fix
-	/*
-	public void test_IDENTIFIER_EXPECTED_FOR_MIXIN_3() {
-		IProblem[] p = getProblems(" mixin .!() m;", 3);
-
-		assertEquals(IProblem.IDENTIFIER_EXPECTED, p[0].getId());
-		assertEquals(IProblem.SEVERITY_ERROR, p[0].getSeverity());
-		assertEquals(8, p[0].getOffset());
-		assertEquals(1, p[0].getLength());
-	}
-	*/
 
 	public void test_SEMICOLON_EXPECTED_FOLLOWING_MIXIN() {
 		IProblem p = getProblem(" mixin Foo!()");

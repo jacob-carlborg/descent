@@ -78,13 +78,11 @@ public class AST {
 	/**
 	 * The event handler for this AST. 
 	 * Initially an event handler that does not nothing.
-	 * @since 3.0
 	 */
 	private NodeEventHandler eventHandler = new NodeEventHandler();
 	
 	/**
 	 * Level of AST API supported by this AST.
-	 * @since 3.0
 	 */
 	int apiLevel;
 	
@@ -98,7 +96,6 @@ public class AST {
 	 * Internal original modification count; value is equals to <code>
 	 * modificationCount</code> at the end of the parse (<code>ASTParser
 	 * </code>). If this ast is not created with a parser then value is 0.
-	 * @since 3.0
 	 */
 	private long originalModificationCount = 0;
 	
@@ -110,14 +107,12 @@ public class AST {
 	 * to prevent events from being reported for the modification
 	 * of the node as well as for the creation of the missing child.
 	 * </p>
-	 * @since 3.0
 	 */
 	private int disableEvents = 0;
 	
 	/**
 	 * Internal object unique to the AST instance. Readers must synchronize on
 	 * this object when the modifying instance fields.
-	 * @since 3.0
 	 */
 	private final Object internalASTLock = new Object();
 	
@@ -125,12 +120,12 @@ public class AST {
 	 * Java Scanner used to validate preconditions for the creation of specific nodes
 	 * like CharacterLiteral, NumberLiteral, StringLiteral or SimpleName.
 	 */
-	// TODO Scanner scanner;
+	// TODO JDT Scanner scanner;
 	
 	/**
 	 * Internal ast rewriter used to record ast modification when record mode is enabled.
 	 */
-	// TODO InternalASTRewrite rewriter;
+	// TODO JDT InternalASTRewrite rewriter;
 	
 	/**
 	 * Default value of <code>flag<code> when a new node is created.
@@ -142,7 +137,6 @@ public class AST {
      * (AST) following the specified set of API rules. 
      * 
  	 * @param level the API level; one of the LEVEL constants
-     * @since 3.0
 	 */
 	private AST(int level) {
 		if (level != AST.D1) {
@@ -560,7 +554,7 @@ public class AST {
 	 * 
 	 * @return the binding resolver for this AST
 	 */
-	/* TODO
+	/* TODO JDT
 	BindingResolver getBindingResolver() {
 		return this.resolver;
 	}
@@ -570,7 +564,6 @@ public class AST {
 	 * Returns the event handler for this AST.
 	 * 
 	 * @return the event handler for this AST
-	 * @since 3.0
 	 */
 	NodeEventHandler getEventHandler() {
 		return this.eventHandler;
@@ -580,7 +573,6 @@ public class AST {
 	 * Sets the event handler for this AST.
 	 * 
 	 * @param eventHandler the event handler for this AST
-	 * @since 3.0
 	 */
 	void setEventHandler(NodeEventHandler eventHandler) {
 		if (this.eventHandler == null) {
@@ -593,7 +585,6 @@ public class AST {
 	 * Returns default node flags of new nodes of this AST.
 	 * 
 	 * @return the default node flags of new nodes of this AST
-	 * @since 3.0
 	 */
 	int getDefaultNodeFlag() {
 		return this.defaultNodeFlag;
@@ -611,8 +602,6 @@ public class AST {
 	
 	/**
 	 * Set <code>originalModificationCount</code> to the current modification count
-	 * 
-	 * @since 3.0
 	 */
 	void setOriginalModificationCount(long count) {
 		this.originalModificationCount = count;
@@ -620,13 +609,11 @@ public class AST {
 
 	/**
 	 * new Class[] {AST.class}
-	 * @since 3.0
 	 */
 	private static final Class[] AST_CLASS = new Class[] {AST.class};
 
 	/**
 	 * new Object[] {this}
-	 * @since 3.0
 	 */
 	private final Object[] THIS_AST= new Object[] {this};
 	
@@ -638,7 +625,6 @@ public class AST {
 	 * @return a new unparented node owned by this AST
 	 * @exception IllegalArgumentException if <code>nodeClass</code> is 
 	 * <code>null</code> or is not a concrete node type class
-	 * @since 3.0
 	 */
 	public ASTNode createInstance(Class nodeClass) {
 		if (nodeClass == null) {
@@ -680,7 +666,6 @@ public class AST {
 	 * @return a new unparented node owned by this AST
 	 * @exception IllegalArgumentException if <code>nodeType</code> is 
 	 * not a legal AST node type
-	 * @since 3.0
 	 */
 	public ASTNode createInstance(int nodeType) {
 		// nodeClassForType throws IllegalArgumentException if nodeType is bogus

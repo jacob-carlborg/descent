@@ -23,7 +23,7 @@ import descent.internal.core.parser.UniAlpha;
 import descent.internal.core.parser.Utf;
 
 /**
- * Internal lexer class. TODO hide it.
+ * Internal lexer class.
  */
 public class Lexer implements IProblemCollector {
 	
@@ -230,8 +230,7 @@ public class Lexer implements IProblemCollector {
 	 * Placed here because of commonality with Lexer functionality.
 	 */
 
-	/*
-	TODO: not used yet
+	/* not used yet
 	public boolean isValidIdentifier(String p)
 	{
 	    int len;
@@ -281,7 +280,7 @@ public class Lexer implements IProblemCollector {
 
 		    case ' ':
 		    case '\t':
-		    // TODO: case '\v':
+		    // case '\v':
 		    case '\f':
 			p++;
 			continue;			// skip white space
@@ -961,59 +960,6 @@ public class Lexer implements IProblemCollector {
 		t.len = id.string.length();
 		
 		anyToken = true;
-		if (input[t.ptr] == '_') // if special identifier token
-		{
-			// TODO
-			/*
-		    static char date[11+1];
-		    static char time[8+1];
-		    static char timestamp[24+1];
-
-		    if (!date[0])	// lazy evaluation
-		    {   time_t t;
-			char *p;
-
-			::time(&t);
-			p = ctime(&t);
-			assert(p);
-			sprintf(date, "%.6s %.4s", p + 4, p + 20);
-			sprintf(time, "%.8s", p + 11);
-			sprintf(timestamp, "%.24s", p);
-		    }
-
-		    if (mod && id == Id::FILE)
-		    {
-			t->value = TOKstring;
-			t->ustring = (unsigned char *)(loc.filename ? loc.filename : mod->ident->toChars());
-			goto Llen;
-		    }
-		    else if (mod && id == Id::LINE)
-		    {
-			t->value = TOKint64v;
-			t->uns64value = linnum;
-		    }
-		    else if (id == Id::DATE)
-		    {
-			t->value = TOKstring;
-			t->ustring = (unsigned char *)date;
-			goto Llen;
-		    }
-		    else if (id == Id::TIME)
-		    {
-			t->value = TOKstring;
-			t->ustring = (unsigned char *)time;
-			goto Llen;
-		    }
-		    else if (id == Id::TIMESTAMP)
-		    {
-			t->value = TOKstring;
-			t->ustring = (unsigned char *)timestamp;
-		     Llen:
-			t->postfix = 0;
-			t->len = strlen((char *)t->ustring);
-		    }
-		    */
-		}
 		return;
 	}
 	
@@ -1123,7 +1069,6 @@ public class Lexer implements IProblemCollector {
 					c = Entity.HtmlNamedEntity(input, idstart, p - idstart, linnum,
 							this);
 					if (c == ~0) {
-						// TODO: ?
 						// error("unnamed character entity &%.*s;", p - idstart,
 						// idstart);
 						c = ' ';
@@ -1200,7 +1145,6 @@ public class Lexer implements IProblemCollector {
 
 		    case 0:
 		    case 0x1A: {
-		    	// TODO handle better
 		    	error("Unterminated string constant", IProblem.UnterminatedStringConstant, token.lineNumber, token.ptr, p - token.ptr - 1);
 				t.string = "";
 				t.len = 0;
@@ -1250,7 +1194,7 @@ public class Lexer implements IProblemCollector {
 		{
 		    case ' ':
 		    case '\t':
-		    // XXX: case '\v':
+		    // case '\v':
 		    case '\f':
 		    	continue;			// skip white space
 
@@ -2016,7 +1960,7 @@ public class Lexer implements IProblemCollector {
 		p--;
 
 		/*
-		 * TODO: #if _WIN32 && __DMC__ char *save = __locale_decpoint;
+		 * #if _WIN32 && __DMC__ char *save = __locale_decpoint;
 		 * __locale_decpoint = "."; #endif #ifdef IN_GCC t->float80value =
 		 * real_t::parse((char *)stringbuffer.data, real_t::LongDouble); #else
 		 * t->float80value = strtold((char *)stringbuffer.data, NULL); #endif
@@ -2026,7 +1970,7 @@ public class Lexer implements IProblemCollector {
 		case 'F':
 		case 'f':
 			/*
-			 * TODO: #ifdef IN_GCC real_t::parse((char *)stringbuffer.data,
+			 * #ifdef IN_GCC real_t::parse((char *)stringbuffer.data,
 			 * real_t::Float); #else strtof((char *)stringbuffer.data, NULL);
 			 * #endif
 			 */
@@ -2037,7 +1981,7 @@ public class Lexer implements IProblemCollector {
 
 		default:
 			/*
-			 * TODO: #ifdef IN_GCC real_t::parse((char *)stringbuffer.data,
+			 * #ifdef IN_GCC real_t::parse((char *)stringbuffer.data,
 			 * real_t::Double); #else strtod((char *)stringbuffer.data, NULL);
 			 * #endif
 			 */
@@ -2076,7 +2020,7 @@ public class Lexer implements IProblemCollector {
 			}
 		}
 		/*
-		 * TODO: #if _WIN32 && __DMC__ __locale_decpoint = save; #endif if
+		 * #if _WIN32 && __DMC__ __locale_decpoint = save; #endif if
 		 * (errno == ERANGE) error("number is not representable");
 		 */
 		

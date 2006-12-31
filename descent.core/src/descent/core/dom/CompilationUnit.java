@@ -342,7 +342,7 @@ public class CompilationUnit extends ASTNode {
 	 *    if no source position information is recorded for this node
 	 * @see #getExtendedStartPosition(ASTNode)
 	 */
-	// TODO: implement
+	// TODO JDT
 	public int getExtendedLength(ASTNode node) {
 		return node.getLength();
 	}
@@ -358,7 +358,7 @@ public class CompilationUnit extends ASTNode {
 	 *    if no source position information is recorded for this node
 	 * @see #getExtendedLength(ASTNode)
 	 */
-	// TODO: implement
+	// TODO JDT
 	public int getExtendedStartPosition(ASTNode node) {
 		return node.getStartPosition();
 	}

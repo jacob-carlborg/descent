@@ -380,6 +380,8 @@ class Parser extends Lexer {
 
 			case TOKextern:
 				if (peek(token).value != TOKlparen) {
+					modifier = newModifierFromCurrentToken();
+					
 					// goto Lstc;
 					nextToken();
 					
@@ -387,6 +389,7 @@ class Parser extends Lexer {
 					tempObj = parseDeclDefs_Lstc2(a, isSingle, syntax, modifiers);
 					a = (List) tempObj[0];
 					s = (Declaration) tempObj[1];
+					s.modifiers().add(modifier);
 					break;
 				}
 				{
@@ -603,12 +606,12 @@ class Parser extends Lexer {
 			{
 			    case TOKconst:	  modifiers.add(newModifierFromTokenAndKeyword(token, Modifier.ModifierKeyword.CONST_KEYWORD)); nextToken(); break;
 			    case TOKfinal:	  modifiers.add(newModifierFromTokenAndKeyword(token, Modifier.ModifierKeyword.FINAL_KEYWORD)); nextToken(); break;
-			    case TOKauto:	  nextToken(); modifiers.add(newModifierFromTokenAndKeyword(token, Modifier.ModifierKeyword.AUTO_KEYWORD)); break;
-			    case TOKscope:	  nextToken(); modifiers.add(newModifierFromTokenAndKeyword(token, Modifier.ModifierKeyword.SCOPE_KEYWORD)); break;
-			    case TOKoverride:	  nextToken(); modifiers.add(newModifierFromTokenAndKeyword(token, Modifier.ModifierKeyword.OVERRIDE_KEYWORD)); break;
-			    case TOKabstract:	  nextToken(); modifiers.add(newModifierFromTokenAndKeyword(token, Modifier.ModifierKeyword.ABSTRACT_KEYWORD)); break;
-			    case TOKsynchronized: nextToken(); modifiers.add(newModifierFromTokenAndKeyword(token, Modifier.ModifierKeyword.SYNCHRONIZED_KEYWORD)); break;
-			    case TOKdeprecated:   nextToken(); modifiers.add(newModifierFromTokenAndKeyword(token, Modifier.ModifierKeyword.DEPRECATED_KEYWORD)); break;
+			    case TOKauto:	  modifiers.add(newModifierFromTokenAndKeyword(token, Modifier.ModifierKeyword.AUTO_KEYWORD)); nextToken(); break;
+			    case TOKscope:	  modifiers.add(newModifierFromTokenAndKeyword(token, Modifier.ModifierKeyword.SCOPE_KEYWORD)); nextToken(); break;
+			    case TOKoverride:	  modifiers.add(newModifierFromTokenAndKeyword(token, Modifier.ModifierKeyword.OVERRIDE_KEYWORD)); nextToken(); break;
+			    case TOKabstract:	  modifiers.add(newModifierFromTokenAndKeyword(token, Modifier.ModifierKeyword.ABSTRACT_KEYWORD)); nextToken(); break;
+			    case TOKsynchronized: modifiers.add(newModifierFromTokenAndKeyword(token, Modifier.ModifierKeyword.SYNCHRONIZED_KEYWORD)); nextToken(); break;
+			    case TOKdeprecated:   modifiers.add(newModifierFromTokenAndKeyword(token, Modifier.ModifierKeyword.DEPRECATED_KEYWORD)); nextToken(); break;
 			    default:
 			    	repeat = false;
 				break;
@@ -2129,7 +2132,6 @@ class Parser extends Lexer {
 	    return ts;
 	}
 	
-	// TODO add modifiers to typedef, alias and variable declarations
 	@SuppressWarnings("unchecked")
 	private List<Declaration> parseDeclarations() {
 		Type ts;
@@ -3150,9 +3152,13 @@ class Parser extends Lexer {
 		    if (peek(token).value != TOKlparen) {
 		    	// goto Ldeclaration
 		    	// scope used as storage class
+		    	Modifier modifier = newModifierFromCurrentToken();
 				Statement[] ps = { s };
 				parseStatement_Ldeclaration(ps, flags);
 				s = ps[0];
+				if (s instanceof DeclarationStatement) {
+					((DeclarationStatement) s).getDeclaration().modifiers().add(modifier);
+				}
 				break;
 		    }
 			
@@ -3569,7 +3575,7 @@ class Parser extends Lexer {
 							continue;
 						}
 					}
-					// TODO: goto Ldefault;
+					// goto Ldefault;
 					nextToken();
 					continue;
 
@@ -3606,7 +3612,7 @@ class Parser extends Lexer {
 				default:
 					//Ldefault:
 					/*
-					 * TODO: ptoklist = new Token(); memcpy(*ptoklist, &token,
+					 * ptoklist = new Token(); memcpy(*ptoklist, &token,
 					 * sizeof(Token)); ptoklist = &(*ptoklist)->next; ptoklist =
 					 * NULL;
 					 */
@@ -3640,7 +3646,7 @@ class Parser extends Lexer {
 		if (s != null) {
 			s.setSourceRange(saveToken.ptr, prevToken.ptr + prevToken.len - saveToken.ptr);
 		} else {
-			// Changed from DMD... TODO remove it!
+			// Changed from DMD... TODO support better syntax recovery and remove it!
 			s = newBlock(null);
 		}
 		

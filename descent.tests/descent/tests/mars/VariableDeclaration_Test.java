@@ -113,7 +113,7 @@ public class VariableDeclaration_Test extends Parser_Test {
 		VariableDeclaration var = (VariableDeclaration) getSingleDeclarationNoProblems(s);
 		assertEquals(ASTNode.VARIABLE_DECLARATION, var.getNodeType());
 		assertNull(var.getType());
-		// TODO assertTrue((var.getModifier() & IModifier.AUTO) != 0);
+		assertEquals(1, var.modifiers().size());
 	}
 	
 	public void testStatic() {
@@ -121,7 +121,7 @@ public class VariableDeclaration_Test extends Parser_Test {
 		VariableDeclaration var = (VariableDeclaration) getSingleDeclarationNoProblems(s);
 		assertEquals(ASTNode.VARIABLE_DECLARATION, var.getNodeType());
 		assertNull(var.getType());
-		// TODO assertTrue((var.getModifier() & IModifier.STATIC) != 0);
+		assertEquals(1, var.modifiers().size());
 	}
 	
 	public void testExtern() {
@@ -129,54 +129,8 @@ public class VariableDeclaration_Test extends Parser_Test {
 		VariableDeclaration var = (VariableDeclaration) getSingleDeclarationNoProblems(s);
 		assertEquals(ASTNode.VARIABLE_DECLARATION, var.getNodeType());
 		assertNull(var.getType());
-		// TODO assertTrue((var.getModifier() & IModifier.EXTERN) != 0);
+		assertEquals(1, var.modifiers().size());
 	}
-	
-	/* TODO see if this is tested in Modifier_Test
-	public void testStaticAndOther() {
-		Object[][] modifiers = {
-				{ "const", IModifier.CONST },
-				{ "final", IModifier.FINAL },	
-				{ "auto", IModifier.AUTO },
-				{ "override", IModifier.OVERRIDE },
-				{ "abstract", IModifier.ABSTRACT },
-				{ "synchronized", IModifier.SYNCHRONIZED },
-				{ "deprecated", IModifier.DEPRECATED },
-				{ "scope", IModifier.SCOPE },
-		};
-		
-		for(Object[] modifier : modifiers) {
-			String s = " static " + modifier[0] + " x = 1;";
-			VariableDeclaration var = (VariableDeclaration) getSingleDeclarationNoProblems(s);
-			assertEquals(ASTNode.VARIABLE_DECLARATION, var.getNodeType0());
-			assertNull(var.getType());
-			// TODO assertTrue((var.getModifier() & IModifier.STATIC) != 0);
-			// TODO assertTrue((var.getModifier() & ((Integer) modifier[1])) != 0);
-		}
-	}
-	*/
-	
-	/* TODO see if this is tested in Modifier_Test
-	public void testOther() {
-		Object[][] modifiers = {
-				{ "const", IModifier.CONST },
-				{ "final", IModifier.FINAL },	
-				{ "auto", IModifier.AUTO },
-				{ "override", IModifier.OVERRIDE },
-				{ "abstract", IModifier.ABSTRACT },
-				{ "synchronized", IModifier.SYNCHRONIZED },
-				{ "deprecated", IModifier.DEPRECATED },
-		};
-		
-		for(Object[] modifier : modifiers) {
-			String s = " alias " + modifier[0] + " x = 1;";
-			VariableDeclaration var = (VariableDeclaration) getSingleDeclarationNoProblems(s);
-			assertEquals(ASTNode.VARIABLE_DECLARATION, var.getNodeType0());
-			assertNull(var.getType());
-			// TODO assertTrue((var.getModifier() & ((Integer) modifier[1])) != 0);
-		}
-	}
-	*/
 	
 	public void testAssociativeArray() {
 		String s = " char x[int] = 1;";
@@ -189,7 +143,7 @@ public class VariableDeclaration_Test extends Parser_Test {
 		assertEquals("int", type.getKeyType().toString());
 	}
 	
-	/* TODO Solve UTF SVN problems
+	/*
 	public void testUnicode() {
 		String s = " int épa = 1;";
 		ICompilationUnit unit = new ParserFacade().parseCompilationUnit(s);

@@ -46,7 +46,6 @@ public class Expression_Test extends Parser_Test {
 		Expression expr = parseExpression(s);
 		
 		assertEquals(ASTNode.THIS_LITERAL, expr.getNodeType());
-		assertEquals("this", expr.toString());
 		assertPosition(expr, 1, s.length() - 1);
 	}
 	
@@ -55,7 +54,6 @@ public class Expression_Test extends Parser_Test {
 		Expression expr = parseExpression(s);
 		
 		assertEquals(ASTNode.SUPER_LITERAL, expr.getNodeType());
-		assertEquals("super", expr.toString());
 		assertPosition(expr, 1, s.length() - 1);
 	}
 	

@@ -55,32 +55,12 @@ public class PositionHelper {
 			if (name != null) element = name;
 			break;
 		case ASTNode.VARIABLE_DECLARATION:
-			/* TODO fixme
-			IVariableDeclaration var = (IVariableDeclaration) element;
-			name = var.getName();
-			if (name != null) element = name;
-			*/
 			break;
 		case ASTNode.TYPEDEF_DECLARATION:
-			/* TODO fixme
-			ITypedefDeclaration td = (ITypedefDeclaration) element;
-			name = td.getName();
-			if (name != null) element = name;
-			*/
 			break;
 		case ASTNode.UNIT_TEST_DECLARATION:
-			/* TODO fixme
-			IUnitTestDeclaration u = (IUnitTestDeclaration) element;
-			name = u.getName();
-			if (name != null) element = name;
-			*/
 			break;
 		case ASTNode.INVARIANT_DECLARATION:
-			/* TODO fixme
-			IInvariantDeclaration inv = (IInvariantDeclaration) element;
-			name = inv.getName();
-			if (name != null) element = name;
-			*/
 			break;
 		case ASTNode.TEMPLATE_DECLARATION:
 			TemplateDeclaration t = (TemplateDeclaration) element;

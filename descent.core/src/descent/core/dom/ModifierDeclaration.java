@@ -14,8 +14,6 @@ import java.util.List;
  * 
  * <p>Note that if a modifier keyword is not followed by <b>;</b> or by <b>{</b> then
  * the modifier goes to the modifiers of the following declaration.</p>
- * 
- * TODO: comment better
  */
 public class ModifierDeclaration extends Declaration {
 	

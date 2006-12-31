@@ -19,18 +19,6 @@ public class DOutlineLightweightLabelDecorator extends LabelProvider implements 
 	}
 	
 	public void decorate(Object element, IDecoration decoration) {
-		/* TODO fix
-		if (element instanceof Declaration) {
-			Declaration cont = (Declaration) element;
-			Modifier m = cont.getModifier();
-			if (m.isAbstract()) {
-				decoration.addOverlay(abstractOverlay, IDecoration.TOP_RIGHT);
-			}
-			if (m.isFinal()) {
-				decoration.addOverlay(finalOverlay, IDecoration.TOP_RIGHT);
-			}
-		}
-		*/
 	}
 	
 }

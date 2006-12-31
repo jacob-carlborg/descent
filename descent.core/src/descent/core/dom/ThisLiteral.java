@@ -109,10 +109,4 @@ public class ThisLiteral extends Expression {
 	;
 	}
 
-	// TODO Descent remove
-	@Override
-	public String toString() {
-		return "this";
-	}
-
 }

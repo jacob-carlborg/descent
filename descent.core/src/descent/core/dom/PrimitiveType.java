@@ -23,9 +23,9 @@ import java.util.List;
  *    <b>ifloat</b>
  *    <b>idouble</b>
  *    <b>ireal</b>
- *    <b>complex32</b> TODO
- *    <b>complex64</b> TODO
- *    <b>complex80</b> TODO
+ *    <b>cfloat</b>
+ *    <b>cdouble</b>
+ *    <b>creal</b>
  *    <b>bit</b>
  *    <b>bool</b>
  *    <b>char</b>
@@ -61,9 +61,9 @@ public class PrimitiveType extends Type {
 		IFLOAT("ifloat"),
 		IDOUBLE("idouble"),
 		IREAL("ireal"),
-		COMPLEX32("complex32"), // TODO
-		COMPLEX64("complex64"), // TODO
-		COMPLEX80("complex80"), // TODO
+		COMPLEX32("cfloat"),
+		COMPLEX64("cdouble"),
+		COMPLEX80("creal"),
 		BIT("bit"),
 		BOOL("bool"),
 		CHAR("char"),

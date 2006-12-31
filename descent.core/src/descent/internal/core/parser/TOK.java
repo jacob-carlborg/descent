@@ -93,7 +93,7 @@ public enum TOK {
 	TOKint64("long"), TOKuns64("ulong"),
 	TOKfloat32("float"), TOKfloat64("double"), TOKfloat80("real"),
 	TOKimaginary32("ifloat"), TOKimaginary64("idouble"), TOKimaginary80("ireal"),
-	TOKcomplex32("complex32"), TOKcomplex64("complex64"), TOKcomplex80("complex80"), // TODO
+	TOKcomplex32("cfloat"), TOKcomplex64("cdouble"), TOKcomplex80("creal"),
 	TOKchar("char"), TOKwchar("wchar"), TOKdchar("dchar"), TOKbit("bit"), TOKbool("bool"),
 	TOKcent, TOKucent,
 

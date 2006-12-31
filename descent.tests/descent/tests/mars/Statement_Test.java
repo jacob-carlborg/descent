@@ -22,6 +22,7 @@ import descent.core.dom.GotoStatement;
 import descent.core.dom.IfStatement;
 import descent.core.dom.LabelStatement;
 import descent.core.dom.MixinDeclaration;
+import descent.core.dom.Modifier;
 import descent.core.dom.NumberLiteral;
 import descent.core.dom.PragmaStatement;
 import descent.core.dom.ReturnStatement;
@@ -39,6 +40,7 @@ import descent.core.dom.VersionStatement;
 import descent.core.dom.VolatileStatement;
 import descent.core.dom.WhileStatement;
 import descent.core.dom.WithStatement;
+import descent.core.dom.Modifier.ModifierKeyword;
 
 public class Statement_Test extends Parser_Test {
 	
@@ -497,16 +499,6 @@ public class Statement_Test extends Parser_Test {
 		assertEquals("release", stm.getVersion().getValue());
 	}
 	
-	/* TODO
-	public void testStaticExtern() {
-		String s = " static extern int x;";
-		DeclarationStatement stm = (DeclarationStatement) parseStatement(s);
-		
-		VariableDeclaration var = (VariableDeclaration) stm.getDeclaration();
-		assertTrue((var.getModifier() & IModifier.EXTERN) != 0);
-	}
-	*/
-	
 	public void testTypeof() {
 		String s = " typeof(2) x;";
 		DeclarationStatement stm = (DeclarationStatement) parseStatement(s);
@@ -545,7 +537,32 @@ public class Statement_Test extends Parser_Test {
 		
 		VariableDeclaration var = (VariableDeclaration) stm.getDeclaration();
 		assertNotNull(var);
-		// TODO assertEquals(1, var.modifiers().size());
+		assertEquals(1, var.modifiers().size());
+	}
+	
+	public void testModifiersWithVar() {
+		Object[][] objs = {
+			{ "const", Modifier.ModifierKeyword.CONST_KEYWORD },
+			{ "final", Modifier.ModifierKeyword.FINAL_KEYWORD },
+			{ "auto", Modifier.ModifierKeyword.AUTO_KEYWORD },
+			{ "scope", Modifier.ModifierKeyword.SCOPE_KEYWORD },
+			{ "override", Modifier.ModifierKeyword.OVERRIDE_KEYWORD },
+			{ "abstract", Modifier.ModifierKeyword.ABSTRACT_KEYWORD },
+			{ "synchronized", Modifier.ModifierKeyword.SYNCHRONIZED_KEYWORD },
+			{ "deprecated", Modifier.ModifierKeyword.DEPRECATED_KEYWORD },
+			{ "scope", Modifier.ModifierKeyword.SCOPE_KEYWORD },
+		};
+		
+		for(Object[] pair : objs) {
+			String s = " static " + pair[0] + "  x = 1;";
+			DeclarationStatement stm = (DeclarationStatement) parseStatement(s);
+			VariableDeclaration var = (VariableDeclaration) stm.getDeclaration();
+			assertEquals(2, var.modifiers().size());
+			assertEquals(ModifierKeyword.STATIC_KEYWORD, var.modifiers().get(0).getModifierKeyword());
+			assertPosition(var.modifiers().get(0), 1, "static".length());
+			assertEquals(pair[1], var.modifiers().get(1).getModifierKeyword());
+			assertPosition(var.modifiers().get(1), 8, ((String) pair[0]).length());
+		}
 	}
 
 }

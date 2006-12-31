@@ -67,12 +67,10 @@ public class Problem implements IProblem {
 	}
 	
 	public String[] getArguments() {
-		// TODO
 		return new String[0];
 	}
 	
 	public char[] getOriginatingFileName() {
-		// TODO
 		return new char[0];
 	}
 

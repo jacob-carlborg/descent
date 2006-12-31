@@ -72,23 +72,11 @@ public class DOutlineContentProvider implements ITreeContentProvider {
 			ConditionalDeclaration c = (ConditionalDeclaration) e;
 			list = new ArrayList<ASTNode>();
 			addDeclDefs(list, c.thenDeclarations());
-			/* TODO
-			List<Declaration> ifFalse = c.elseDeclarations();
-			if (ifFalse.size() > 0) {
-				list.add(new Else(ifFalse.toArray(new Declaration[ifFalse.size()])));
-			}
-			*/
 			return list.toArray();
 		case ASTNode.PRAGMA_DECLARATION:
 			list = new ArrayList<ASTNode>();
 			addDeclDefs(list, ((PragmaDeclaration) e).declarations());
 			return list.toArray();
-		/*
-		case IImaginaryElements.IMPORTS:
-			return ((Imports) e).imports;
-		case IImaginaryElements.ELSE:
-			return ((Else) e).declDefs;
-		*/
 		}
 		return new Object[0];
 	}

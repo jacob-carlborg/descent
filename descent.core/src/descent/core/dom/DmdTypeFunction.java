@@ -47,7 +47,6 @@ class DmdTypeFunction extends DmdType {
 
 	@Override
 	ASTNode clone0(AST target) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 

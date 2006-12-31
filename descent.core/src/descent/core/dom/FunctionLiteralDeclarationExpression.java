@@ -6,11 +6,10 @@ import java.util.List;
 
 /**
  * An expression that declares an annonymous function.
- * TODO comment better
+ * TODO comment better, Syntax as well
  */
 public class FunctionLiteralDeclarationExpression extends Expression {
 	
-	// TODO comment
 	public static enum Syntax {
 		EMPTY,
 		FUNCTION,

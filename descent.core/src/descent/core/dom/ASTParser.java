@@ -148,7 +148,7 @@ public class ASTParser {
     /**
      * Java model class file supplying the source.
      */
-    // TODO private IClassFile classFileSource = null;
+    // TODO JDT private IClassFile classFileSource = null;
     
     /**
      * Character-based offset into the source string where parsing is to
@@ -204,7 +204,7 @@ public class ASTParser {
 	private void initializeDefaults() {
 		this.astKind = K_COMPILATION_UNIT;
 		this.rawSource = null;
-		// TODO this.classFileSource = null;
+		// TODO JDT this.classFileSource = null;
 		this.compilationUnitSource = null;
 		//this.resolveBindings = false;
 		this.sourceLength = -1;
@@ -213,7 +213,7 @@ public class ASTParser {
 		//this.unitName = null;
 		//this.project = null;
 		//this.partial = false;
-		/* TODO
+		/* TODO JDT
 		Map options = JavaCore.getOptions();
 		options.remove(JavaCore.COMPILER_TASK_TAGS); // no need to parse task tags
 		this.compilerOptions = options;
@@ -247,12 +247,12 @@ public class ASTParser {
 	 */
 	public void setCompilerOptions(Map options) {
 		if (options == null) {
-			// TODO options = JavaCore.getOptions();
+			// TODO JDT options = JavaCore.getOptions();
 		} else {
 			// copy client's options so as to not do any side effect on them
 			options = new HashMap(options);
 		}
-		// TODO options.remove(JavaCore.COMPILER_TASK_TAGS); // no need to parse task tags
+		// TODO JDT options.remove(JavaCore.COMPILER_TASK_TAGS); // no need to parse task tags
 		//this.compilerOptions = options;
 	}
 	
@@ -448,7 +448,7 @@ public class ASTParser {
 		this.rawSource = source;
 		// clear the others
 		this.compilationUnitSource = null;
-		// TODO this.classFileSource = null;
+		// TODO JDT this.classFileSource = null;
 	}
 
 	/**
@@ -464,11 +464,11 @@ public class ASTParser {
 		this.compilationUnitSource = source;
 		// clear the others
 		this.rawSource = null;
-		// TODO this.classFileSource = null;
+		// TODO JDT this.classFileSource = null;
 		if (source != null) {
 			//this.project = source.getJavaProject();
 			//Map options = this.project.getOptions(true);
-			// TODO options.remove(JavaCore.COMPILER_TASK_TAGS); // no need to parse task tags
+			// TODO JDT options.remove(JavaCore.COMPILER_TASK_TAGS); // no need to parse task tags
 			//this.compilerOptions = options;
 		}
 	}
@@ -484,7 +484,7 @@ public class ASTParser {
 	 * @param source the Java model class file whose corresponding source code
      * is to be parsed, or <code>null</code> if none
      */
-	/* TODO
+	/* TODO JDT
 	public void setSource(IClassFile source) {
 		this.classFileSource = source;
 		// clear the others
@@ -601,7 +601,7 @@ public class ASTParser {
 		this.project = project;
 		if (project != null) {
 			// Map options = project.getOptions(true);
-			// TODO options.remove(JavaCore.COMPILER_TASK_TAGS); // no need to parse task tags
+			// TODO JDT options.remove(JavaCore.COMPILER_TASK_TAGS); // no need to parse task tags
 			// this.compilerOptions = options;
 		}
 	}
@@ -703,7 +703,7 @@ public class ASTParser {
 	 * are insufficient, contradictory, or otherwise unsupported
 	 * @since 3.1
      */
-	/* TODO
+	/* TODO JDT
 	public void createASTs(ICompilationUnit[] compilationUnits, String[] bindingKeys, ASTRequestor requestor, IProgressMonitor monitor) {
 		try {
 			if (this.resolveBindings) {
@@ -759,7 +759,7 @@ public class ASTParser {
 	 * are insufficient, contradictory, or otherwise unsupported
 	 * @since 3.1
      */
-	/* TODO
+	/* TODO JDT
 	public IBinding[] createBindings(IJavaElement[] elements, IProgressMonitor monitor) {
 		try {
 			if (this.project == null)

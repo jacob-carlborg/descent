@@ -7,6 +7,8 @@ import descent.core.dom.AliasDeclaration;
 import descent.core.dom.Declaration;
 import descent.core.dom.Modifier;
 import descent.core.dom.ModifierDeclaration;
+import descent.core.dom.VariableDeclaration;
+import descent.core.dom.Modifier.ModifierKeyword;
 
 public class Modifier_Test extends Parser_Test {
 	
@@ -181,13 +183,11 @@ public class Modifier_Test extends Parser_Test {
 	
 	public void testModifiersWithCurlyBraces() {
 		Object[][] objs = {
-				/*
 			{ "private", Modifier.ModifierKeyword.PRIVATE_KEYWORD },
 			{ "package", Modifier.ModifierKeyword.PACKAGE_KEYWORD },
 			{ "protected", Modifier.ModifierKeyword.PROTECTED_KEYWORD },
 			{ "public", Modifier.ModifierKeyword.PUBLIC_KEYWORD },
 			{ "export", Modifier.ModifierKeyword.EXPORT_KEYWORD },
-			*/
 			{ "const", Modifier.ModifierKeyword.CONST_KEYWORD },
 			{ "final", Modifier.ModifierKeyword.FINAL_KEYWORD },
 			{ "auto", Modifier.ModifierKeyword.AUTO_KEYWORD },
@@ -234,6 +234,30 @@ public class Modifier_Test extends Parser_Test {
 			assertEquals(1, modifierDeclaration.declarations().size());
 			assertEquals(ModifierDeclaration.Syntax.COLON, modifierDeclaration.getSyntax());
 			assertEquals(0, modifierDeclaration.modifiers().size());
+		}
+	}
+	
+	public void testModifiersWithVar() {
+		Object[][] objs = {
+			{ "const", Modifier.ModifierKeyword.CONST_KEYWORD },
+			{ "final", Modifier.ModifierKeyword.FINAL_KEYWORD },
+			{ "auto", Modifier.ModifierKeyword.AUTO_KEYWORD },
+			{ "scope", Modifier.ModifierKeyword.SCOPE_KEYWORD },
+			{ "override", Modifier.ModifierKeyword.OVERRIDE_KEYWORD },
+			{ "abstract", Modifier.ModifierKeyword.ABSTRACT_KEYWORD },
+			{ "synchronized", Modifier.ModifierKeyword.SYNCHRONIZED_KEYWORD },
+			{ "deprecated", Modifier.ModifierKeyword.DEPRECATED_KEYWORD },
+			{ "scope", Modifier.ModifierKeyword.SCOPE_KEYWORD },
+		};
+		
+		for(Object[] pair : objs) {
+			String s = " static " + pair[0] + "  x = 1;";
+			VariableDeclaration var = (VariableDeclaration) getSingleDeclarationNoProblems(s);
+			assertEquals(2, var.modifiers().size());
+			assertEquals(ModifierKeyword.STATIC_KEYWORD, var.modifiers().get(0).getModifierKeyword());
+			assertPosition(var.modifiers().get(0), 1, "static".length());
+			assertEquals(pair[1], var.modifiers().get(1).getModifierKeyword());
+			assertPosition(var.modifiers().get(1), 8, ((String) pair[0]).length());
 		}
 	}
 	

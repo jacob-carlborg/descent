@@ -2152,7 +2152,7 @@ public abstract class ASTNode {
 	 * <li>the child is null</li>
 	 * <li>the node belongs to a different AST</li>
 	 * <li>the child has the incorrect node type</li>
-	 * <li>TODO the node already has a parent</li>
+	 * <li>the node already has a parent</li>
 	 * <li>a cycle in would be created</li>
 	 * </ul>
 	 */ 
@@ -2162,7 +2162,7 @@ public abstract class ASTNode {
 			// new child is from a different AST
 			throw new IllegalArgumentException();
 		}		
-		/* FIXME this breaks the parser
+		/* FIXME JDT this breaks the parser
 		if (newChild.getParent() != null) {
 			// new child currently has a different parent
 			throw new IllegalArgumentException();

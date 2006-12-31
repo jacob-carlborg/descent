@@ -14,10 +14,15 @@ import java.util.List;
  */
 public class IftypeDeclaration extends ConditionalDeclaration {
 	
-	// TODO comment
+	/**
+	 * The kind of comparison.
+	 */
 	public static enum Kind {
+		/** No comparison */
 		NONE,
+		/** Comparison made with <b>=</b> */
 		EQUALS,
+		/** Comparison made with <b>:</b> */
 		EXTENDS
 	}
 	

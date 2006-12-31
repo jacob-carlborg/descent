@@ -51,8 +51,8 @@ public class JavaElement extends ASTAttribute {
 	
 	public Image getImage() {
 		return null;
-		//TODO: looks ugly when not all nodes have an icon
-//		return new JavaElementImageProvider().getImageLabel(fJavaElement, JavaElementImageProvider.SMALL_ICONS | JavaElementImageProvider.OVERLAY_ICONS);
+		// looks ugly when not all nodes have an icon
+		// return new JavaElementImageProvider().getImageLabel(fJavaElement, JavaElementImageProvider.SMALL_ICONS | JavaElementImageProvider.OVERLAY_ICONS);
 	}
 
 	/*

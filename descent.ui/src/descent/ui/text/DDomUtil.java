@@ -21,7 +21,6 @@ public class DDomUtil {
 		return visitor.theElement;
 	}
 	
-	// TODO: fix to make it a real visitor
 	private static class FindOutlineElementVisitor extends ASTVisitor {
 		
 		public ASTNode theElement = null;
@@ -44,7 +43,6 @@ public class DDomUtil {
 		}
 		
 		private boolean isOfInterest(ASTNode element) {
-			// TODO fix
 			return element instanceof Declaration || element instanceof ModuleDeclaration;
 		}
 		

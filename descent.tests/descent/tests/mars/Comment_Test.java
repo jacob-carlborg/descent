@@ -132,23 +132,5 @@ public class Comment_Test extends Parser_Test {
 		Declaration c = getSingleDeclarationNoProblems(s);
 		assertEquals(1, c.dDocs().size());
 	}
-	
-	/* TODO
-	public void testLeadingAndPreviousInNextLineCommentInEnumMember() {
-		String s = " enum X { /** hola * / a, /** hola * / \n /** hola * / }";
-		EnumDeclaration enumDeclaration = (EnumDeclaration) getSingleDeclarationNoProblems(s);
-		assertPosition(enumDeclaration, 1, s.length() - 1);
-		
-		assertEquals(1, enumDeclaration.enumMembers().size());
-		
-		EnumMember c = enumDeclaration.enumMembers().get(0);
-		
-		
-		List<Comment> comments = c.dDocs();
-		assertEquals(2, comments.size());
-		assertPosition(comments.get(0), 1, 11);
-		assertPosition(comments.get(1), 26, 11);
-	}
-	*/
 
 }

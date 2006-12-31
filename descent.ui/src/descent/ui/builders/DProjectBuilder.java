@@ -197,7 +197,7 @@ public class DProjectBuilder extends IncrementalProjectBuilder {
 		marker.setAttribute(IMarker.PRIORITY, IMarker.PRIORITY_HIGH);
 		marker.setAttribute(IMarker.SEVERITY, severity);
 		
-		// TODO: Este mensaje se repite indefinidamente, creo... 
+		// Este mensaje se repite indefinidamente, creo... 
 		if (message.equals("found 'EOF' instead of statement")) {
 			return true;
 		} else {
@@ -205,7 +205,6 @@ public class DProjectBuilder extends IncrementalProjectBuilder {
 		}
 	}
 	
-	// TODO: do not double parse, see how JDT do it
 	/*
 	private ICompilationUnit getCompilationUnit(IFile file) throws CoreException, IOException {
 		IParser parser = DescentCore.getDefault().getParser();

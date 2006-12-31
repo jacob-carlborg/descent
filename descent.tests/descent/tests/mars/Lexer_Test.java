@@ -110,8 +110,6 @@ public class Lexer_Test extends TestCase {
 		assertToken(" \\U00001234", TOK.TOKstring, 1, 10);
 	}
 	
-	// TODO named entities
-	
 	public void testString() {
 		assertStringToken(" \"hola\"", 1, 6);
 		assertStringToken(" \"hola\n\"", 1, 7);

@@ -207,7 +207,6 @@ public class DOutlineLabelProvider extends LabelProvider {
 			appendTemplateParameters(s, t.templateParameters());
 			return s.toString();
 		case ASTNode.EXTERN_DECLARATION:
-			// TODO correct
 			ExternDeclaration link = (ExternDeclaration) element;
 			return link.getLinkage().toString();
 		case ASTNode.VERSION_DECLARATION:
@@ -226,20 +225,7 @@ public class DOutlineLabelProvider extends LabelProvider {
 			PragmaDeclaration pd = (PragmaDeclaration) element;
 			return pd.getName() == null ? "" : pd.getName().getFullyQualifiedName();
 		case ASTNode.MIXIN_DECLARATION:
-			/* TODO fix
-			IMixinDeclaration mix = (IMixinDeclaration) element;
-			s = new StringBuilder();
-			if (mix.getName() != null) {
-				s.append(mix.getName());
-			}
-			templateArguments = mix.getTemplateArguments();
-			if (templateArguments.length > 0) {
-				s.append("!(");
-				appendElements(s, templateArguments);
-				s.append(")");
-			}
-			return s.toString();
-			*/
+			return "";
 		case IImaginaryElements.IMPORTS:
 			 return "import declarations";
 		case IImaginaryElements.ELSE:
@@ -281,47 +267,16 @@ public class DOutlineLabelProvider extends LabelProvider {
 			}
 		case ASTNode.FUNCTION_DECLARATION:
 			FunctionDeclaration func = (FunctionDeclaration) element;
-			// TODO m = func.getModifier();
 			switch(func.getKind()) {
 			case FUNCTION:
 			case NEW:
 			case DELETE:
-				/*
-				if (m.isPrivate()) {
-					return functionPrivateImage;
-				} else if (m.isProtected()) {
-					return functionProtectedImage;
-				} else if (m.isPackage()) {
-					return functionPackageImage;
-				}
-				*/
-				// TODO
 				return functionPublicImage;
 			case CONSTRUCTOR:
 			case STATIC_CONSTRUCTOR:
-				/*
-				if (m.isPrivate()) {
-					return ctorPrivateImage;
-				} else if (m.isProtected()) {
-					return ctorProtectedImage;
-				} else if (m.isPackage()) {
-					return ctorPackageImage;
-				}
-				*/
-				// TODO
 				return ctorPublicImage;
 			case DESTRUCTOR:
 			case STATIC_DESTRUCTOR:
-				/*
-				if (m.isPrivate()) {
-					return dtorPrivateImage;
-				} else if (m.isProtected()) {
-					return dtorProtectedImage;
-				} else if (m.isPackage()) {
-					return dtorPackageImage;
-				}
-				*/
-				// TODO
 				return dtorPublicImage;
 			}
 		case ASTNode.ENUM_DECLARATION:
@@ -343,7 +298,6 @@ public class DOutlineLabelProvider extends LabelProvider {
 				return fieldPackageImage;
 			}
 			*/
-			// TODO
 			return fieldPublicImage;
 		case ASTNode.TYPEDEF_DECLARATION:
 			return typedefImage;
@@ -451,7 +405,6 @@ public class DOutlineLabelProvider extends LabelProvider {
 		}
 	}
 	
-	// TODO improve performance
 	private void appendArguments(StringBuilder s, List<Argument> arguments) {
 		s.append('(');
 		for(int i = 0; i < arguments.size(); i++) {

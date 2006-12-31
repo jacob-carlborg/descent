@@ -217,11 +217,9 @@ public abstract class TypeAdapter {
 				return type;
 			}
 			public Type getNext() {
-				// TODO
 				return null;
 			}
 			public void setNext(Type dmdType) {
-				// TODO
 			}
 			public Expression toExpression() {
 				return null;

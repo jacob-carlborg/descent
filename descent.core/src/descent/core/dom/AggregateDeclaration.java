@@ -14,15 +14,13 @@ import java.util.List;
  *          [ <b>:</b> Type { <b>,</b> Type } ]
  *       <b>{</b>
  *          { Declaration }
- *       <b>}</b>
- *    
+ *       <b>}</b> *    
  * </pre>
  */
 public class AggregateDeclaration extends Declaration {
 	
 	/**
 	 * The kind of declaration.
-	 * TODO: comment better
 	 */
 	public static enum Kind {
 		/** Class declaration */

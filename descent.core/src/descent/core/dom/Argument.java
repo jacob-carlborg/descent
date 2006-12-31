@@ -17,7 +17,6 @@ public class Argument extends ASTNode {
 	
 	/**
 	 * The passage mode of the argument.
-	 * TODO: comment better
 	 */
 	public static enum PassageMode {
 		/** Default (no token) passage mode */

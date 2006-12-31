@@ -160,7 +160,7 @@ public class CharacterLiteral extends Expression {
 		if (value == null) {
 			throw new IllegalArgumentException();
 		}
-		/* TODO
+		/* TODO JDT
 		Scanner scanner = this.ast.scanner;
 		char[] source = value.toCharArray();
 		scanner.setSource(source);
@@ -207,7 +207,7 @@ public class CharacterLiteral extends Expression {
 	 *    escapes
 	 * @exception IllegalArgumentException if the literal value cannot be converted
 	 */
-	/* TODO
+	/* TODO JDT
 	public char charValue() {
 		Scanner scanner = this.ast.scanner;
 		char[] source = escapedValue.toCharArray();
@@ -308,7 +308,7 @@ public class CharacterLiteral extends Expression {
 	 * 
 	 * @param value the character value
 	 */
-	/* TODO
+	/* TODO JDT
 	public void setCharValue(char value) {
 		StringBuffer b = new StringBuffer(3);
 		
