@@ -39,11 +39,11 @@ public class CompilationUnit {
 		return (descent.internal.core.dom.Module) cumodule;
 	}
 	
-	public Module getModule() {
+	public Module getNeoModule() {
 		return (Module) cumodule;
 	}
 	
-	public ASTNode getModule2() {
+	public ASTNode getModule() {
 		return cumodule;
 	}
 	

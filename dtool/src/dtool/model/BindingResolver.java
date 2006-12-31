@@ -33,7 +33,7 @@ public class BindingResolver {
 		DefUnit defunit;
 		for (String name : names) {
 			if(name.equals("%%")) {
-				scopeent = project.testcu.getModule();
+				scopeent = project.testcu.getNeoModule();
 				continue;
 			}
 			defunit = findDefUnit(scopeent.getDefUnits(), name);

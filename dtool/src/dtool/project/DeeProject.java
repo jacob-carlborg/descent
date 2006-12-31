@@ -29,7 +29,7 @@ public class DeeProject implements IScope {
 	}
 
 	public List<DefUnit> getDefUnits() {
-		return testcu.getModule().getDefUnits();
+		return testcu.getNeoModule().getDefUnits();
 	}
 
 	public DefUnit findEntity(String string) throws ModelException {
@@ -37,7 +37,7 @@ public class DeeProject implements IScope {
 	}
 
 	public ASTNode findEntity(CompilationUnit cunit, int offset) {
-		ASTNode elem = ASTElementFinder.findElement(cunit.getModule(), offset);
+		ASTNode elem = ASTElementFinder.findElement(cunit.getNeoModule(), offset);
 		return elem;
 	}
 

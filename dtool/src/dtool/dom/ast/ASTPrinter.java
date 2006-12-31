@@ -177,6 +177,10 @@ public class ASTPrinter extends ASTNeoVisitor {
 
 		indent--;
 	}
+	public static String toStringAST(ASTNode elem) {
+		elem.accept(new ASTPrinter(false));
+		return "TODO";
+	}
 
 
 }

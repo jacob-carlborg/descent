@@ -63,10 +63,10 @@ public class Main {
 		
 		System.out.println("====== Neo AST Tree: ======");
 		cu.adaptDOM();
-		cu.getModule().accept(new ASTPrinter(false, false));
+		cu.getNeoModule().accept(new ASTPrinter(false, false));
 		
 		System.out.println("====== Neo AST Consistency check: ======");
-		ASTChecker.checkConsistency(cu.getModule());
+		ASTChecker.checkConsistency(cu.getNeoModule());
 		
 		try {
 			System.out.println("====== findEntity by name: ======");

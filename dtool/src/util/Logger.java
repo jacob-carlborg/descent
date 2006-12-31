@@ -2,6 +2,8 @@ package util;
 
 public class Logger {
 	
+	public static boolean debug = false;
+
 	static {
 	}
 
