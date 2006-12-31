@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.2"?>
+<plugin>
+
+   <extension
+         point="org.eclipse.ui.actionSets">
+      <actionSet
+            label="Mmrnmhrm Action Set"
+            visible="true"
+            id="mmrnmhrm.actionSet">
+         <menu
+               label="Mmrnmhrm"
+               id="mmrnmhrmMenu">
+            <separator
+                  name="mmrnmhrmGroup">
+            </separator>
+         </menu>
+         <action
+               label="Print Partitions"
+               icon="icons/sample.gif"
+               class="mmrnmhrm.ui.actions.PrintPartitions"
+               tooltip="Mmrnmhrm tooltip"
+               menubarPath="mmrnmhrmMenu/mmrnmhrmGroup"
+               toolbarPath="mmrnmhrmGroup"
+               id="dtoolide.actions.PrintPartition">
+         </action>
+         <action
+               class="mmrnmhrm.ui.actions.PrintAST"
+               icon="icons/sample.gif"
+               id="dtoolide.actions.PrintAST"
+               label="Print AST"
+               menubarPath="mmrnmhrmMenu/mmrnmhrmGroup"
+               style="push"
+               toolbarPath="mmrnmhrmGroup"/>
+      </actionSet>
+   </extension>
+   <extension
+         point="org.eclipse.ui.editors">
+      <editor
+            class="mmrnmhrm.ui.editors.DeeEditor"
+            contributorClass="org.eclipse.ui.texteditor.BasicTextEditorActionContributor"
+            extensions="xd"
+            icon="icons/sample.gif"
+            id="chmmr.editors.DeeEditor"
+            name="X Dee Editor"/>
+   </extension>
+
+</plugin>
