@@ -5,20 +5,28 @@ import descent.core.compiler.IProblem;
 public class Problem implements IProblem {
 	
 	private String message;
-	private int severity;
+	private boolean isError;
+	private int categoryId;
 	private int id;
-	private int offset;
-	private int length;
+	private int sourceStart;
+	private int sourceEnd;
+	private int sourceLineNumber;
 	
-	public Problem(String message, int severity, int id, int offset, int length) {
-		this.message = message;
-		this.severity = severity;
-		this.id = id;
-		this.offset = offset;
-		this.length = length;
+	private Problem() { }
+	
+	public static Problem newSyntaxError(String message, int id, int line, int sourceStart, int length) {
+		Problem p = new Problem();
+		p.message = message;
+		p.isError = true;
+		p.id = id;
+		p.categoryId = CAT_SYNTAX;
+		p.sourceLineNumber = line;
+		p.sourceStart = sourceStart;
+		p.sourceEnd = sourceStart + length;
+		return p;
 	}
 	
-	public int getId() {
+	public int getID() {
 		return id;
 	}
 
@@ -27,15 +35,57 @@ public class Problem implements IProblem {
 	}
 	
 	public int getLength() {
-		return length;
+		return sourceEnd;
 	}
 
-	public int getOffset() {
-		return offset;
+	public int getSourceStart() {
+		return sourceStart;
+	}
+	
+	public int getSourceEnd() {
+		return sourceEnd;
+	}
+	
+	public boolean isError() {
+		return isError;
+	}
+	
+	public boolean isWarning() {
+		return !isError;
+	}
+	
+	public int getSourceLineNumber() {
+		return sourceLineNumber;
+	}
+	
+	public int getCategoryID() {
+		return categoryId;
+	}
+	
+	public String getMarkerType() {
+		return "descent.core.problem";
+	}
+	
+	public String[] getArguments() {
+		// TODO
+		return new String[0];
+	}
+	
+	public char[] getOriginatingFileName() {
+		// TODO
+		return new char[0];
 	}
 
-	public int getSeverity() {
-		return severity;
-	}	
+	public void setSourceEnd(int sourceEnd) {
+		this.sourceEnd = sourceEnd;
+	}
+
+	public void setSourceLineNumber(int lineNumber) {
+		this.sourceLineNumber = lineNumber;
+	}
+
+	public void setSourceStart(int sourceStart) {
+		this.sourceStart = sourceStart;
+	}
 
 }

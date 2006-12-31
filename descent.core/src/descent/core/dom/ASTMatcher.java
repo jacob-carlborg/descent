@@ -3109,7 +3109,8 @@ public class ASTMatcher {
 		}
 		CompilationUnit o = (CompilationUnit) other;
 		return (
-			safeSubtreeMatch(node.getModuleDeclaration(), o.getModuleDeclaration())
+			safeSubtreeMatch(node.getScriptLine(), o.getScriptLine())
+			&& safeSubtreeMatch(node.getModuleDeclaration(), o.getModuleDeclaration())
 			&& safeSubtreeListMatch(node.declarations(), o.declarations())
 			);
 	}
@@ -3214,6 +3215,30 @@ public class ASTMatcher {
 		} else {
 			return true;
 		}
+	}
+	
+	/**
+	 * Returns whether the given node and the other object match.
+	 * <p>
+	 * The default implementation provided by this class tests whether the
+	 * other object is a node of the same type with structurally isomorphic
+	 * child subtrees. Subclasses may override this method as needed.
+	 * </p>
+	 * 
+	 * @param node the node
+	 * @param other the other object, or <code>null</code>
+	 * @return <code>true</code> if the subtree matches, or 
+	 *   <code>false</code> if they do not match or the other object has a
+	 *   different node type or is <code>null</code>
+	 */
+	public boolean match(ScriptLine node, Object other) {
+		if (!(other instanceof ScriptLine)) {
+			return false;
+		}
+		ScriptLine o = (ScriptLine) other;
+		return (
+			node.getText() == o.getText()
+			);
 	}
 
 }

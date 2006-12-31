@@ -144,7 +144,7 @@ class Parser extends Lexer {
 				
 				decldefs = parseDeclDefs(false, new ArrayList<Modifier>());
 				if (token.value != TOKeof) {
-					problem("Unrecognized declaration", IProblem.SEVERITY_ERROR, IProblem.UNRECOGNIZED_DECLARATION, token.ptr, token.len);
+					parsingErrorDeleteToken(token);
 				}
 				return decldefs;
 			} else {
@@ -156,7 +156,7 @@ class Parser extends Lexer {
 						
 						decldefs = parseDeclDefs(false, new ArrayList<Modifier>());
 						if (token.value != TOKeof) {
-							problem("Unrecognized declaration", IProblem.SEVERITY_ERROR, IProblem.UNRECOGNIZED_DECLARATION, token.ptr, token.len);
+							parsingErrorDeleteToken(token);
 						}
 						return decldefs;
 					}
@@ -167,7 +167,7 @@ class Parser extends Lexer {
 				md.setSourceRange(start, token.ptr + token.len - start);
 				md.dDocs().addAll(moduleDocComments);
 				adjustLastDocComment();
-				mod.setModuleDeclaration(md);
+				compilationUnit.setModuleDeclaration(md);
 
 				if (token.value != TOKsemicolon) {
 					setMalformed(md);
@@ -184,7 +184,7 @@ class Parser extends Lexer {
 
 		decldefs = parseDeclDefs(false, new ArrayList<Modifier>());
 		if (token.value != TOKeof) {
-			problem("Unrecognized declaration", IProblem.SEVERITY_ERROR, IProblem.UNRECOGNIZED_DECLARATION, token.ptr, token.len);
+			parsingErrorDeleteToken(token);
 			// goto Lerr;
 			return parseModule_LErr();
 		}
@@ -434,7 +434,7 @@ class Parser extends Lexer {
 					if (token.value == TOKint32v)
 						n = token.numberValue.intValue();
 					else {
-						problem("Integer expected", IProblem.SEVERITY_ERROR, IProblem.INTEGER_EXPECTED, token.ptr, token.len);
+						parsingErrorInsertTokenAfter(prevToken, "Integer");
 						n = 1;
 					}
 					nextToken();
@@ -454,7 +454,7 @@ class Parser extends Lexer {
 				nextToken();
 				check(TOKlparen);
 				if (token.value != TOKidentifier) {
-					problem("Pragma identifier expected", IProblem.SEVERITY_ERROR, IProblem.IDENTIFIER_EXPECTED, token.ptr, token.len);
+					parsingErrorInsertTokenAfter(prevToken, "Identifier");
 					// goto Lerror;
 					s = parseDeclDefs_Lerror();
 					continue;
@@ -484,12 +484,12 @@ class Parser extends Lexer {
 					if (token.value == TOKidentifier || token.value == TOKint32v) {
 						s = newDebugAssignmentForCurrentToken();
 					} else {
-						problem("Identifier or integer expected", IProblem.SEVERITY_ERROR, IProblem.IDENTIFIER_OR_INTEGER_EXPECTED, token.ptr, token.len);
+						parsingErrorInsertTokenAfter(prevToken, "Identifier or Integer");
 						s = null;
 					}
 					nextToken();
 					if (token.value != TOKsemicolon) {
-						problem("Semicolon expected", IProblem.SEVERITY_ERROR, IProblem.SEMICOLON_EXPECTED, token.ptr, token.len);
+						parsingErrorInsertTokenAfter(prevToken, ";");
 					}
 					nextToken();
 					break;
@@ -514,12 +514,12 @@ class Parser extends Lexer {
 					if (token.value == TOKidentifier || token.value == TOKint32v) {
 						s = newVersionAssignmentForCurrentToken();
 					} else {
-						problem("Identifier or integer expected", IProblem.SEVERITY_ERROR, IProblem.IDENTIFIER_OR_INTEGER_EXPECTED, token.ptr, token.len);
+						parsingErrorInsertTokenAfter(prevToken, "Identifier or Integer");
 						s = null;
 					}
 					nextToken();
 					if (token.value != TOKsemicolon) {
-						problem("Semicolon expected", IProblem.SEVERITY_ERROR, IProblem.SEMICOLON_EXPECTED, token.ptr, token.len);
+						parsingErrorInsertTokenAfter(prevToken, ";");
 					}
 					nextToken();
 					break;
@@ -631,11 +631,7 @@ class Parser extends Lexer {
 		    VariableDeclaration variableDeclaration = newVariableDeclaration(null);
 		    variableDeclaration.fragments().add(newVariableDeclarationFragment(ident, init));
 		    
-		    if (token.value != TOKsemicolon) {
-		    	problem("Semicolon expected following auto declaration", IProblem.SEVERITY_ERROR, IProblem.SEMICOLON_EXPECTED, token.ptr, token.len);
-		    } else {
-		    	nextToken();
-		    }
+		    check(TOKsemicolon);
 		    
 		    attachLeadingComments(variableDeclaration.dDocs());
 		    adjustPossitionAccordingToComments(variableDeclaration, variableDeclaration.dDocs());
@@ -671,9 +667,7 @@ class Parser extends Lexer {
 
 		switch (token.value) {
 		case TOKsemicolon:
-			problem("Declaration expected following attribute",
-					IProblem.SEVERITY_ERROR, IProblem.DECLARATION_EXPECTED,
-					token.ptr, token.len);
+			parsingErrorInsertToComplete(prevToken, "Declaration", "Declaration");
 			nextToken();
 			break;
 
@@ -684,8 +678,7 @@ class Parser extends Lexer {
 			}
 			a = parseDeclDefs(false, modifiers);
 			if (token.value != TOKrcurly) { /* { */
-				problem("Matching '}' expected", IProblem.SEVERITY_ERROR,
-						IProblem.MATCHING_CURLY_EXPECTED, token.ptr, token.len);
+				parsingErrorInsertTokenAfter(prevToken, "}");
 			} else
 				nextToken();
 			break;
@@ -737,6 +730,7 @@ class Parser extends Lexer {
 		nextToken();
 		if (token.value == TOKidentifier) {
 			Identifier id = new Identifier(token);
+			int lineNumber = token.lineNumber;
 
 			nextToken();
 			if (id.string.equals(Id.Windows))
@@ -752,7 +746,7 @@ class Parser extends Lexer {
 					nextToken();
 				}
 			} else {
-				problem("valid linkage identifiers are D, C, C++, Pascal, Windows", IProblem.SEVERITY_ERROR, IProblem.INVALID_LINKAGE_IDENTIFIER, id.startPosition, id.length);
+				error("Valid linkage identifiers are D, C, C++, Pascal, Windows", IProblem.InvalidLinkageIdentifier, lineNumber, id.startPosition, id.length);
 				link = LINKd;
 			}
 		} else {
@@ -776,10 +770,7 @@ class Parser extends Lexer {
 				idToken = new Token(token);
 				level = token.numberValue.intValue();
 			} else {
-				problem("Identifier or integer expected",
-						IProblem.SEVERITY_ERROR,
-						IProblem.IDENTIFIER_OR_INTEGER_EXPECTED, token.ptr,
-						token.len);
+				parsingErrorInsertTokenAfter(prevToken, "Identifier or Integer");
 			}
 			nextToken();
 			check(TOKrparen);
@@ -810,18 +801,12 @@ class Parser extends Lexer {
 				idToken = new Token(token);
 				level = token.numberValue.intValue();
 			} else {
-				problem("Identifier or integer expected",
-						IProblem.SEVERITY_ERROR,
-						IProblem.IDENTIFIER_OR_INTEGER_EXPECTED, token.ptr,
-						token.len);
+				parsingErrorInsertTokenAfter(prevToken, "Identifier or Integer");
 			}
 			nextToken();
 			check(TOKrparen);
 		} else {
-			problem("(condition) expected following version",
-					IProblem.SEVERITY_ERROR,
-					IProblem.CONDITION_EXPECTED_FOLLOWING_VERSION, token.ptr,
-					token.len);
+			parsingErrorInsertToComplete(prevToken, "(condition)", "VersionDeclaration");
 		}
 		c = new VersionCondition(level, id);
 		if (id == null && idToken != null) {
@@ -840,9 +825,7 @@ class Parser extends Lexer {
 			exp = parseAssignExp();
 			check(TOKrparen);
 		} else {
-			problem("(expression) expected following version",
-					IProblem.SEVERITY_ERROR, IProblem.EXPRESSION_EXPECTED,
-					token.ptr, token.len);
+			parsingErrorInsertToComplete(prevToken, "(expression)", "StaticIfDeclaration");
 			exp = null;
 		}
 		return new StaticIfCondition(exp);
@@ -869,16 +852,13 @@ class Parser extends Lexer {
 			}
 			check(TOKrparen);
 		} else {
-			problem(
-					"(type identifier : specialization) expected following iftype",
-					IProblem.SEVERITY_ERROR, IProblem.INVALID_IFTYPE_SYNTAX,
-					token.ptr, token.len);
+			parsingErrorInsertToComplete(prevToken, "(type identifier : specialization)", "IftypeDeclaration");
 			return null;
 		}
 
-		problem(
+		error(
 				"iftype(condition) is deprecated, use static if (is(condition))",
-				IProblem.SEVERITY_WARNING, IProblem.IFTYPE_DEPRECATED,
+				IProblem.IftypeDeprecated, firstToken.lineNumber,
 				firstToken.ptr, firstToken.len);
 
 		return new IftypeCondition(targ, ident[0], tok, tspec);
@@ -986,6 +966,7 @@ class Parser extends Lexer {
 	
 	private FunctionDeclaration parseDelete() {
 		int start = token.ptr;
+		int startLine = token.lineNumber;
 		
 		SimpleName name = newSimpleNameForCurrentToken();
 		
@@ -994,10 +975,10 @@ class Parser extends Lexer {
 		List<Argument> arguments = parseParameters(varargs);
 		
 		if (varargs[0] != 0) {
-	    	problem("... not allowed in delete function parameter list", 
-	    			IProblem.SEVERITY_ERROR, 
-	    			IProblem.VARIADIC_NOT_ALLOWED_IN_DELETE, 
-	    			name);
+	    	error("... not allowed in delete function parameter list", 
+	    			
+	    			IProblem.VariadicNotAllowedInDelete, 
+	    			startLine, name);
 	    }
 		
 		FunctionDeclaration f = newFunctionDeclaration(FunctionDeclaration.Kind.DELETE, null, name, arguments, varargs[0]);
@@ -1069,15 +1050,7 @@ class Parser extends Lexer {
 					hasdefault = true;
 				} else {
 					if (hasdefault) {
-						int start, length;
-						if (ai == null) {
-							start = at.getStartPosition();
-							length = at.getLength();
-						} else {
-							start = ai.startPosition;
-							length = ai.length;
-						}
-						problem("Default argument expected", IProblem.SEVERITY_ERROR, IProblem.DEFAULT_ARGUMENT_EXPECTED, start, length);
+						parsingErrorInsertTokenAfter(prevToken, "default argument");
 					}
 				}
 				if (token.value == TOKdotdotdot) { 
@@ -1085,7 +1058,7 @@ class Parser extends Lexer {
 					 * This is: at ai ...
 					 */
 					if (inout == Argument.PassageMode.OUT || inout == Argument.PassageMode.INOUT) {
-						problem("Variadic argument cannot be out or inout", IProblem.SEVERITY_ERROR, IProblem.VARIADIC_ARGUMENT_CANNOT_BE_OUT_OR_INOUT, inoutToken.ptr, inoutToken.len);
+						error("Variadic argument cannot be out or inout", IProblem.VariadicArgumentCannotBeOutOrInout, inoutToken.lineNumber, inoutToken.ptr, inoutToken.len);
 					}
 					varargs = 2;
 					
@@ -1140,7 +1113,7 @@ class Parser extends Lexer {
 			nextToken();
 			while (token.value != TOKrcurly) {
 				if (token.value == TOKeof) {
-					problem("Enum declaration is invalid", IProblem.SEVERITY_ERROR, IProblem.ENUM_DECLARATION_IS_INVALID, enumToken.ptr, enumToken.len);
+					error("Enum declaration is invalid", IProblem.EnumDeclarationIsInvalid, enumToken.lineNumber, enumToken.ptr, enumToken.len);
 					break;
 				}
 				
@@ -1164,7 +1137,7 @@ class Parser extends Lexer {
 						check(TOKcomma);
 					}
 				} else {
-					problem("Enum member expected", IProblem.SEVERITY_ERROR, IProblem.ENUM_MEMBER_EXPECTED, token.ptr, token.len);
+					parsingErrorInsertToComplete(prevToken, "EnumMember", "EnumDeclaration");
 					nextToken();
 				}
 			}
@@ -1172,7 +1145,7 @@ class Parser extends Lexer {
 			
 			nextToken();
 		} else {
-			problem("Enum declaration is invalid", IProblem.SEVERITY_ERROR, IProblem.ENUM_DECLARATION_IS_INVALID, enumToken.ptr, enumToken.len);
+			error("Enum declaration is invalid", IProblem.EnumDeclarationIsInvalid, enumToken.lineNumber, enumToken.ptr, enumToken.len);
 		}
 		
 		return e;
@@ -1227,12 +1200,10 @@ class Parser extends Lexer {
 		} else if (token.value == TOKlcurly) {
 			a = newAggregateDeclaration(firstToken.value, id, baseClasses, tpl);
 			
-			Token lcurlyToken = new Token(token);
 			nextToken();
 			List decl = parseDeclDefs(false, new ArrayList<Modifier>());
 			if (token.value != TOKrcurly) {
-				problem("} expected following member declarations in aggregate", IProblem.SEVERITY_ERROR, IProblem.RIGHT_CURLY_EXPECTED_FOLLOWING_MEMBER_DECLARATIONS_IN_AGGREGATE,
-						lcurlyToken.ptr, lcurlyToken.len);
+				parsingErrorInsertTokenAfter(prevToken, "}");
 			}
 			
 			a.declarations().addAll(decl);
@@ -1292,8 +1263,8 @@ class Parser extends Lexer {
 	    Token firstToken = new Token(token);
 	    nextToken();
 	    if (token.value != TOKidentifier)
-	    {   
-	    	problem("TemplateIdentifier expected following template", IProblem.SEVERITY_ERROR, IProblem.TEMPLATE_IDENTIFIER_EXPECTED, token.ptr, token.len);
+	    {
+	    	parsingErrorInsertTokenAfter(prevToken, "Identifier");
 	    	return null;
 			//goto Lerr;
 	    }
@@ -1306,7 +1277,7 @@ class Parser extends Lexer {
 
 	    if (token.value != TOKlcurly)
 	    {	
-	    	problem("Members of template declaration expected", IProblem.SEVERITY_ERROR, IProblem.MEMBERS_EXPECTED, token.ptr, token.len);
+	    	parsingErrorInsertToComplete(prevToken, "TemplateBodyDeclaration", "TemplateDeclaration");
 			//goto Lerr;
 	    	return null;
 	    }
@@ -1316,7 +1287,7 @@ class Parser extends Lexer {
 		decldefs = parseDeclDefs(false, new ArrayList<Modifier>());
 		if (token.value != TOKrcurly)
 		{
-			problem("Template member expected", IProblem.SEVERITY_ERROR, IProblem.MEMBERS_EXPECTED, token.ptr, token.len);
+			parsingErrorInsertToComplete(prevToken, "TemplateBodyDeclaration", "TemplateDeclaration");
 		    //goto Lerr;
 			return null;
 		}
@@ -1337,7 +1308,7 @@ class Parser extends Lexer {
 		List<TemplateParameter> tpl;
 
 		if (token.value != TOKlparen) {
-			problem("Parenthesized TemplateParameterList expected following TemplateIdentifier", IProblem.SEVERITY_ERROR, IProblem.PARENTHESIZED_TEMPLATE_PARAMETER_LIST_EXPECTED, token.ptr, token.len);
+			parsingErrorInsertToComplete(prevToken, "Parenthesized TemplateParameterList", "TemplateDeclaration");
 			// goto Lerr;
 			return null;
 		}
@@ -1369,7 +1340,7 @@ class Parser extends Lexer {
 				if (token.value == TOKalias) { // AliasParameter
 					nextToken();
 					if (token.value != TOKidentifier) {
-						problem("Identifier expected for template parameter", IProblem.SEVERITY_ERROR, IProblem.IDENTIFIER_EXPECTED, token.ptr, token.len);
+						parsingErrorInsertTokenAfter(prevToken, "Identifier");
 						// goto Lerr;
 						return null;
 					}
@@ -1392,7 +1363,7 @@ class Parser extends Lexer {
 				} else if (t.value == TOKcolon || t.value == TOKassign
 						|| t.value == TOKcomma || t.value == TOKrparen) { // TypeParameter
 					if (token.value != TOKidentifier) {
-						problem("Identifier expected for template parameter", IProblem.SEVERITY_ERROR, IProblem.IDENTIFIER_EXPECTED, token.ptr, token.len);
+						parsingErrorInsertTokenAfter(prevToken, "Identifier");
 						// goto Lerr;
 						return null;
 					}
@@ -1416,8 +1387,8 @@ class Parser extends Lexer {
 			    else if (token.value == TOKidentifier && t.value == TOKdotdotdot)
 			    {	// ident...
 			    	if (isvariadic) {
-			    		problem("Variadic template parameter must be last one", IProblem.SEVERITY_ERROR, IProblem.VARIADIC_TEMPLATE_PARAMETER_MUST_BE_LAST_ONE, 
-				    			token.ptr, 
+			    		error("Variadic template parameter must be last one", IProblem.VariadicTemplateParameterMustBeTheLastOne, 
+			    				t.lineNumber, token.ptr, 
 				    			t.ptr + t.len - token.ptr);
 			    	}
 					isvariadic = true;
@@ -1433,7 +1404,7 @@ class Parser extends Lexer {
 					tp_valtype = parseDeclarator(tp_valtype, pointer2_tp_ident);
 					tp_ident = pointer2_tp_ident[0];
 					if (tp_ident == null) {
-						problem("No identifier for template value parameter", IProblem.SEVERITY_ERROR, IProblem.IDENTIFIER_EXPECTED, t.ptr, t.len);
+						error("No identifier for template value parameter", IProblem.NoIdentifierForTemplateValueParameter, t.lineNumber, t.ptr, t.len);
 						// goto Lerr;
 						return null;
 					}
@@ -1497,8 +1468,7 @@ class Parser extends Lexer {
 				foundOneType = true;
 			}
 			if (token.value != TOKidentifier) {
-				problem("Identifier expected", IProblem.SEVERITY_ERROR,
-						IProblem.IDENTIFIER_EXPECTED, token.ptr, token.len);
+				parsingErrorDeleteToken(prevToken);
 				// goto Lerr;
 				return null;
 			}
@@ -1539,8 +1509,7 @@ class Parser extends Lexer {
 
 			nextToken();
 			if (token.value != TOKidentifier) {
-				problem("Identifier expected", IProblem.SEVERITY_ERROR,
-						IProblem.IDENTIFIER_EXPECTED, token.ptr, token.len);
+				parsingErrorInsertTokenAfter(prevToken, "Identifier");
 				break;
 			}
 			id = new Identifier(token);
@@ -1562,12 +1531,10 @@ class Parser extends Lexer {
 
 		//tm = new MixinDeclaration(ast, id, tqual, idents, tiargs);
 		if (token.value != TOKsemicolon) {
-			problem("Semicolon expected following mixin",
-					IProblem.SEVERITY_ERROR,
-					IProblem.SEMICOLON_EXPECTED, token.ptr,
-					token.len);
+			parsingErrorInsertTokenAfter(prevToken, ";");
+		} else {
+			nextToken();
 		}
-		nextToken();
 		
 		tm.setSourceRange(firstToken.ptr, prevToken.ptr + prevToken.len - firstToken.ptr);
 
@@ -1582,7 +1549,7 @@ class Parser extends Lexer {
 	    List<ASTNode> tiargs = new ArrayList<ASTNode>();
 	    if (token.value != TOKlparen)
 	    {   
-	    	problem("!(TemplateArgumentList) expected following TemplateIdentifier", IProblem.SEVERITY_ERROR, IProblem.TEMPLATE_ARGUMENT_LIST_EXPECTED, token.ptr, token.len);
+	    	parsingErrorInsertToComplete(prevToken, "!(TemplateArgumentList)", "TemplateType");
 	    	return tiargs;
 	    }
 	    nextToken();
@@ -1614,7 +1581,7 @@ class Parser extends Lexer {
 		    nextToken();
 		}
 	    }
-	    check(TOKrparen, "template argument list");
+	    check(TOKrparen);
 	    return tiargs;
 	}
 	
@@ -1644,10 +1611,7 @@ class Parser extends Lexer {
 				}
 
 				if (token.value != TOKidentifier) {
-					problem("Identifier expected following import",
-							IProblem.SEVERITY_ERROR,
-							IProblem.IDENTIFIER_EXPECTED, token.ptr,
-							token.len);
+					parsingErrorInsertTokenAfter(prevToken, "Identifier");
 					break;
 				}
 				
@@ -1665,11 +1629,7 @@ class Parser extends Lexer {
 				while (token.value == TOKdot) {
 					nextToken();
 					if (token.value != TOKidentifier) {
-						problem("Identifier expected following package",
-								IProblem.SEVERITY_ERROR,
-								IProblem.IDENTIFIER_EXPECTED, name
-										.getStartPosition(), token.ptr
-										- name.getStartPosition());
+						parsingErrorInsertTokenAfter(prevToken, "Identifier");
 						break;
 					}
 					
@@ -1684,18 +1644,13 @@ class Parser extends Lexer {
 				 * Look for : alias=name, alias=name; syntax.
 				 */
 				if (token.value == TOKcolon) {
-					Token dotToken = new Token(token);
-
 					do {
 						SelectiveImport selectiveImport = newSelectiveImport();
 						
 						nextToken();
 
 						if (token.value != TOKidentifier) {
-							problem("Identifier expected following ':'",
-									IProblem.SEVERITY_ERROR,
-									IProblem.IDENTIFIER_EXPECTED, dotToken.ptr,
-									dotToken.len);
+							parsingErrorInsertTokenAfter(prevToken, "Identifier");
 							break;
 						}
 						
@@ -1705,7 +1660,7 @@ class Parser extends Lexer {
 						if (token.value == TOKassign) {
 							nextToken();
 							if (token.value != TOKidentifier) {
-								problem("Identifier expected", IProblem.SEVERITY_ERROR, IProblem.IDENTIFIER_EXPECTED, token.ptr, token.len);
+								parsingErrorInsertTokenAfter(prevToken, "Identifier");
 								break;
 							}
 							
@@ -1736,14 +1691,7 @@ class Parser extends Lexer {
 		importDeclaration.setStatic(isstatic);
 		importDeclaration.setSourceRange(start, token.ptr + token.len - start);
 
-		if (token.value == TOKsemicolon) {
-			nextToken();
-		} else {
-			problem("';' expected following import declaration",
-					IProblem.SEVERITY_ERROR, IProblem.SEMICOLON_EXPECTED,
-					token.ptr, token.len);
-			nextToken();
-		}
+		check(TOKsemicolon);
 
 		return importDeclaration;
 	}
@@ -1872,8 +1820,7 @@ class Parser extends Lexer {
 		while (token.value == TOKdot) {
 			nextToken();
 			if (token.value != TOKidentifier) {
-				problem("Identifier expected", IProblem.SEVERITY_ERROR,
-						IProblem.IDENTIFIER_EXPECTED, token.ptr, token.len);
+				parsingErrorInsertTokenAfter(prevToken, "Identifier");
 				break;
 			}
 			id[0] = new Identifier(token);
@@ -2058,7 +2005,7 @@ class Parser extends Lexer {
 		    	pident[0] = new Identifier(token);
 		    	if (identStart != null) identStart[0] = token.ptr;
 		    } else {
-		    	problem("Unexpected identifier in declarator", IProblem.SEVERITY_ERROR, IProblem.UNEXPECTED_IDENTIFIER_IN_DECLARATOR, token.ptr, token.len);
+		    	error("Unexpected identifier in declarator", IProblem.UnexpectedIdentifierInDeclarator, token.lineNumber, token.ptr, token.len);
 		    }
 		    ts = t;
 		    nextToken();
@@ -2224,7 +2171,7 @@ class Parser extends Lexer {
 				Modifier currentModifier = newModifierFromCurrentToken();
 				for(Modifier previousModifier : modifiers) {
 					if (previousModifier.getModifierKeyword().equals(currentModifier.getModifierKeyword())) {
-						problem("Redundant storage class", IProblem.SEVERITY_ERROR, IProblem.REDUNDANT_STORAGE_CLASS, currentModifier);
+						error("Redundant storage class", IProblem.RedundantStorageClass, token.lineNumber, currentModifier);
 					}
 				}
 				modifiers.add(currentModifier);
@@ -2236,7 +2183,7 @@ class Parser extends Lexer {
 					currentModifier = newModifierFromCurrentToken();
 					for(Modifier previousModifier : modifiers) {
 						if (previousModifier.getModifierKeyword().equals(currentModifier.getModifierKeyword())) {
-							problem("Redundant storage class", IProblem.SEVERITY_ERROR, IProblem.REDUNDANT_STORAGE_CLASS, currentModifier);
+							error("Redundant storage class", IProblem.RedundantStorageClass, token.lineNumber, currentModifier);
 						}
 					}
 					modifiers.add(currentModifier);
@@ -2275,7 +2222,7 @@ class Parser extends Lexer {
 				variableDeclaration.dDocs().addAll(lastComments);
 				adjustLastDocComment();
 			} else {
-				problem("Semicolon expected following auto declaration", IProblem.SEVERITY_ERROR, IProblem.SEMICOLON_EXPECTED, token.ptr, token.len);
+				parsingErrorInsertTokenAfter(prevToken, ";");
 			}
 			
 			attachLeadingComments(variableDeclaration.dDocs());
@@ -2325,8 +2272,8 @@ class Parser extends Lexer {
 			if (tfirst == null)
 				tfirst = t;
 			else if (t != tfirst) {
-				problem("Multiple declarations must have the same type", IProblem.SEVERITY_ERROR, IProblem.MULTIPLE_DECLARATIONS_MUST_HAVE_THE_SAME_TYPE,
-						ident.startPosition, ident.length);
+				error("Multiple declarations must have the same type", IProblem.MultipleDeclarationsMustHaveTheSameType,
+						 ident.lineNumber, ident.startPosition, ident.length);
 			}
 			if (ident == null) {
 				parsingErrorInsertTokenAfter(prevToken, "Identifier");
@@ -2360,7 +2307,7 @@ class Parser extends Lexer {
 					v = typedefDeclaration;
 				} else {
 					if (init != null) {
-						problem("Alias cannot have initializer", IProblem.SEVERITY_ERROR, IProblem.ALIAS_CANNOT_HAVE_INITIALIZER, tokAssign.ptr, init.getStartPosition() + init.getLength() - tokAssign.ptr);
+						error("Alias cannot have initializer", IProblem.AliasCannotHaveInitializer, tokAssign.lineNumber, tokAssign.ptr,  init.getStartPosition() + init.getLength() - tokAssign.ptr);
 					}
 					
 					if (aliasDeclaration == null) {
@@ -2393,7 +2340,7 @@ class Parser extends Lexer {
 					continue;
 
 				default:
-					problem("Semicolon expected to close declaration", IProblem.SEVERITY_ERROR, IProblem.SEMICOLON_EXPECTED, v.getStartPosition(), prevToken.ptr + prevToken.len - v.getStartPosition());
+					parsingErrorInsertTokenAfter(prevToken, ";");
 					break;
 				}
 			} else if (TypeAdapter.getAdapter(t).getTY() == Tfunction) {
@@ -2471,7 +2418,7 @@ class Parser extends Lexer {
 					continue;
 
 				default:
-					problem("Semicolon expected to close declaration", IProblem.SEVERITY_ERROR, IProblem.SEMICOLON_EXPECTED, nextVarStart, prevToken.ptr + prevToken.len - nextVarStart);
+					parsingErrorInsertTokenAfter(prevToken, ";");
 					break;
 				}
 			}
@@ -2495,8 +2442,7 @@ class Parser extends Lexer {
 			switch (token.value) {
 			case TOKlcurly:
 				if (f.getPrecondition() != null || f.getPostcondition() != null) {
-					problem("Missing body { ... } after in or out", IProblem.SEVERITY_ERROR, IProblem.MISSING_BODY_AFTER_IN_OR_OUT,
-							f.getName().getStartPosition(), f.getName().getLength());
+					parsingErrorInsertToComplete(prevToken, "body { ... }", "FunctionDeclaration");
 				}
 				f.setBody(parseStatement(PSsemi));
 				//f.length = prevToken.ptr + prevToken.len - f.startPosition;
@@ -2510,8 +2456,7 @@ class Parser extends Lexer {
 
 			case TOKsemicolon:
 				if (f.getPrecondition() != null || f.getPostcondition() != null) {
-					problem("Missing body { ... } after in or out", IProblem.SEVERITY_ERROR, IProblem.MISSING_BODY_AFTER_IN_OR_OUT,
-							f.getName().getStartPosition(), f.getName().getLength());
+					parsingErrorInsertToComplete(prevToken, "body { ... }", "FunctionDeclaration");
 				}
 				//f.length = token.ptr + token.len - f.startPosition;
 				nextToken();
@@ -2532,8 +2477,8 @@ class Parser extends Lexer {
 
 			case TOKin:
 				if (f.getPrecondition() != null) {
-					problem("Redundant 'in' statement", IProblem.SEVERITY_ERROR, IProblem.REDUNDANT_IN_STATEMENT,
-							token.ptr, token.len);
+					error("Redundant 'in' statement", IProblem.RedundantInStatement,
+							token);
 				}
 				nextToken();
 				
@@ -2545,19 +2490,20 @@ class Parser extends Lexer {
 				// parse: out (identifier) { statement }
 				
 				if (f.getPostcondition() != null) {
-					problem("Redundant 'out' statement", IProblem.SEVERITY_ERROR, IProblem.REDUNDANT_OUT_STATEMENT,
-							token.ptr, token.len);
+					error("Redundant 'out' statement", IProblem.RedundantOutStatement,
+							token.lineNumber, token.ptr, token.len);
 				}
 				
 				nextToken();
 				if (token.value != TOKlcurly) {
 					check(TOKlparen);
 					if (token.value != TOKidentifier) {
-						problem("Identifier following 'out' expected", IProblem.SEVERITY_ERROR, IProblem.IDENTIFIER_EXPECTED,
-								token.ptr, token.len);
+						parsingErrorInsertTokenAfter(prevToken, "Identifier");
+					} else {
+						f.setPostconditionVariableName(newSimpleNameForCurrentToken());
+						nextToken();
 					}
-					f.setPostconditionVariableName(newSimpleNameForCurrentToken());
-					nextToken();
+					
 					check(TOKrparen);
 				}
 				
@@ -2566,7 +2512,7 @@ class Parser extends Lexer {
 				break;
 
 			default:
-				problem("Semicolon expected following function declaration", IProblem.SEVERITY_ERROR, IProblem.SEMICOLON_EXPECTED, token.ptr, token.len);
+				parsingErrorInsertTokenAfter(prevToken, ";");
 				break;
 			}
 		}
@@ -2626,9 +2572,7 @@ class Parser extends Lexer {
 				switch (token.value) {
 				case TOKidentifier:
 					if (comma == 1) {
-						problem("Comma expected separating field initializers",
-								IProblem.SEVERITY_ERROR,
-								IProblem.COMMA_EXPECTED, token.ptr, token.len);
+						parsingErrorInsertTokenAfter(prevToken, ",");
 					}
 					t = peek(token);
 					if (t.value == TOKcolon) {
@@ -2676,9 +2620,7 @@ class Parser extends Lexer {
 				switch (token.value) {
 				default:
 					if (comma == 1) {
-						problem("Comma expected separating array initializers",
-								IProblem.SEVERITY_ERROR,
-								IProblem.COMMA_EXPECTED, token.ptr, token.len);
+						parsingErrorInsertTokenAfter(prevToken, ",");
 						nextToken();
 						ia.setSourceRange(saveToken.ptr, token.ptr + token.len - saveToken.ptr);
 						break;
@@ -2700,9 +2642,7 @@ class Parser extends Lexer {
 				case TOKlcurly:
 				case TOKlbracket:
 					if (comma == 1) {
-						problem("Comma expected separating array initializers",
-							IProblem.SEVERITY_ERROR,
-							IProblem.COMMA_EXPECTED, token.ptr, token.len);
+						parsingErrorInsertTokenAfter(prevToken, ",");
 					}
 					
 					value = parseInitializer();
@@ -2722,9 +2662,7 @@ class Parser extends Lexer {
 					break;
 
 				case TOKeof:
-					problem("Array initializer expected",
-							IProblem.SEVERITY_ERROR,
-							IProblem.FOUND_SOMETHING_WHEN_EXPECTING_SOMETHING, token.ptr, token.len);
+					parsingErrorInsertTokenAfter(prevToken, "ArryaInitializer");
 					break;
 				}
 				break;
@@ -2755,9 +2693,8 @@ class Parser extends Lexer {
 	    Statement elsebody;
 
 		if ((flags & PScurly) != 0 && token.value != TOKlcurly) {
-			problem("Statement expected to be { }",
-					IProblem.SEVERITY_ERROR,
-					IProblem.STATEMENT_EXPECTED_TO_BE_CURLIES, token.ptr, token.len);
+			error("Statement expected to be { }",
+					IProblem.StatementExpectedToBeCurlies, token);
 		}
 		
 		Token saveToken = new Token(token);
@@ -2790,7 +2727,7 @@ class Parser extends Lexer {
 			} else {
 				// goto Lexp;
 				Expression exp = parseExpression();
-				check(TOKsemicolon, "statement");
+				check(TOKsemicolon);
 				s = newExpressionStatement(exp);
 				break;
 			}
@@ -2833,7 +2770,7 @@ class Parser extends Lexer {
 			// Lexp:
 		{
 			Expression exp = parseExpression();
-			check(TOKsemicolon, "statement");
+			check(TOKsemicolon);
 			s = newExpressionStatement(exp);
 			s.setSourceRange(exp.getStartPosition(), prevToken.ptr + prevToken.len - exp.getStartPosition());
 			break;
@@ -2946,7 +2883,7 @@ class Parser extends Lexer {
 			
 			while (token.value != TOKrcurly) {
 				if (token.value == TOKeof) {
-					problem("'}' expected", IProblem.SEVERITY_ERROR, IProblem.FOUND_SOMETHING_WHEN_EXPECTING_SOMETHING, prevToken.ptr, prevToken.len);
+					parsingErrorInsertTokenAfter(prevToken, "}");
 					break;
 				}
 				statements.add(parseStatement(PSsemi | PScurlyscope));
@@ -2979,7 +2916,7 @@ class Parser extends Lexer {
 
 		case TOKsemicolon:
 			if ((flags & PSsemi) == 0) {
-				problem("Use '{ }' for an empty statement, not a ';'", IProblem.SEVERITY_ERROR, IProblem.USE_BRACES_FOR_AN_EMPTY_STATEMENT, token.ptr, token.len);
+				error("Use '{ }' for an empty statement, not a ';'", IProblem.UseBracesForAnEmptyStatement, token);
 			}
 			nextToken();
 			
@@ -3021,7 +2958,7 @@ class Parser extends Lexer {
 				nextToken();
 			} else {
 				condition2 = parseExpression();
-				check(TOKsemicolon, "for condition");
+				check(TOKsemicolon);
 			}
 			if (token.value == TOKrparen) {
 				increment = null;
@@ -3091,10 +3028,12 @@ class Parser extends Lexer {
 				tb = parseBasicType();
 
 				Identifier[] pointer2_ai = { ai };
+				
+				int lineNumber = token.lineNumber;
 				at = parseDeclarator(tb, pointer2_ai);
 				ai = pointer2_ai[0];
 				if (ai == null) {
-					problem("No identifier for declarator", IProblem.SEVERITY_ERROR, IProblem.NO_IDENTIFIER_FOR_DECLARATOR, at);
+					error("No identifier for declarator", IProblem.NoIdentifierForDeclarator, lineNumber, at);
 				}
 				// Larg:
 				a = newArgument(inout, at, ai, null);
@@ -3138,7 +3077,7 @@ class Parser extends Lexer {
 						nextToken();
 						nextToken();
 					} else {
-						problem("'=' expected following auto identifier", IProblem.SEVERITY_ERROR, IProblem.EQUALS_EXPECTED, token.ptr, token.len);
+						parsingErrorInsertTokenAfter(prevToken, "=");
 						// goto Lerror;
 						while (token.value != TOKrcurly
 								&& token.value != TOKsemicolon
@@ -3150,7 +3089,7 @@ class Parser extends Lexer {
 						break;
 					}
 				} else {
-					problem("Identifier expected following auto", IProblem.SEVERITY_ERROR, IProblem.IDENTIFIER_EXPECTED, token.ptr, token.len);
+					parsingErrorInsertTokenAfter(prevToken, "Identifier");
 					// goto Lerror;
 					while (token.value != TOKrcurly
 							&& token.value != TOKsemicolon
@@ -3190,7 +3129,7 @@ class Parser extends Lexer {
 						nextToken();
 						
 						// if (!global.params.useDeprecated)
-						problem("if (v; e) is deprecated, use if (auto v = e)", IProblem.SEVERITY_ERROR, IProblem.DEPRECATED_IF_AUTO, argToken.ptr, token.ptr + token.len - argToken.ptr);
+						error("if (v; e) is deprecated, use if (auto v = e)", IProblem.IfAutoDeprecated, argToken.lineNumber, argToken.ptr, token.ptr + token.len - argToken.ptr);
 					}
 				}
 			}
@@ -3220,7 +3159,7 @@ class Parser extends Lexer {
 			nextToken();
 			check(TOKlparen);
 			if (token.value != TOKidentifier) {
-				problem("Scope identifier expected", IProblem.SEVERITY_ERROR, IProblem.IDENTIFIER_EXPECTED, token.ptr, token.len);
+				parsingErrorInsertTokenAfter(prevToken, "Identifier");
 				// goto Lerror;
 				while (token.value != TOKrcurly && token.value != TOKsemicolon
 						&& token.value != TOKeof)
@@ -3240,7 +3179,7 @@ class Parser extends Lexer {
 				else if (id.string.equals(Id.success))
 					t2 = TOKon_scope_success;
 				else {
-					problem("Valid scope identifiers are exit, failure, or success", IProblem.SEVERITY_ERROR, IProblem.INVALID_SCOPE_IDENTIFIER, token.ptr, token.len);
+					error("Valid scope identifiers are exit, failure, or success", IProblem.InvalidScopeIdentifier, token);
 				}
 				nextToken();
 				check(TOKrparen);
@@ -3257,7 +3196,7 @@ class Parser extends Lexer {
 			TOK t2 = token.value;
 			
 			// if (!global.params.useDeprecated)
-			problem(token.toString() + " is deprecated, use scope", IProblem.SEVERITY_ERROR, IProblem.ON_SCOPE_DEPRECATED, token.ptr, token.len);
+			error(token.toString() + " is deprecated, use scope", IProblem.OnScopeDeprecated, token);
 			nextToken();
 			Statement st = parseStatement(PScurlyscope);
 			
@@ -3319,7 +3258,7 @@ class Parser extends Lexer {
 			nextToken();
 			check(TOKlparen);
 			if (token.value != TOKidentifier) {
-				problem("Pragma identifier expected", IProblem.SEVERITY_ERROR, IProblem.IDENTIFIER_EXPECTED, token.ptr, token.len);
+				parsingErrorInsertTokenAfter(prevToken, "Identifier");
 				// goto Lerror;
 				while (token.value != TOKrcurly && token.value != TOKsemicolon
 						&& token.value != TOKeof)
@@ -3428,7 +3367,7 @@ class Parser extends Lexer {
 			} else {
 				exp = parseExpression();
 			}
-			check(TOKsemicolon, "return statement");
+			check(TOKsemicolon);
 			
 			s = newReturnStatement(exp);
 			break;
@@ -3443,7 +3382,7 @@ class Parser extends Lexer {
 				nextToken();
 			} else
 				ident = null;
-			check(TOKsemicolon, "break statement");
+			check(TOKsemicolon);
 			
 			s = newBreakStatement(ident);
 			break;
@@ -3460,7 +3399,7 @@ class Parser extends Lexer {
 				ident = null;
 			}
 			
-			check(TOKsemicolon, "continue statement");
+			check(TOKsemicolon);
 			
 			s = newContinueStatement(ident);
 			break;
@@ -3484,7 +3423,7 @@ class Parser extends Lexer {
 				s = newGotoCaseStatement(exp);
 			} else {
 				if (token.value != TOKidentifier) {
-					problem("Identifier expected following goto", IProblem.SEVERITY_ERROR, IProblem.IDENTIFIER_EXPECTED, token.ptr, token.len);
+					parsingErrorInsertTokenAfter(prevToken, "Identifier");
 					ident = null;
 				} else {
 					ident = new Identifier(token);
@@ -3493,7 +3432,7 @@ class Parser extends Lexer {
 				
 				s = newGotoStatement(ident);
 			}
-			check(TOKsemicolon, "goto statement");
+			check(TOKsemicolon);
 			break;
 		}
 
@@ -3576,7 +3515,7 @@ class Parser extends Lexer {
 
 			s = body;
 			if (catches == null && finalbody == null) {
-				problem("Catch or finally expected following try", IProblem.SEVERITY_ERROR, IProblem.CATCH_OR_FINALLY_EXPECTED, prevToken.ptr, prevToken.len);
+				parsingErrorInsertToComplete(prevToken, "Catch or finally", "TryStatement");
 			} else {
 				s = newTryStatement(body, catches, finalbody);
 			}
@@ -3588,7 +3527,7 @@ class Parser extends Lexer {
 			
 			nextToken();
 			exp = parseExpression();
-			check(TOKsemicolon, "throw statement");
+			check(TOKsemicolon);
 			
 			s = newThrowStatement(exp);
 			break;
@@ -3636,7 +3575,7 @@ class Parser extends Lexer {
 
 				case TOKrcurly:
 					if (toklist != null || label != null) {
-						problem("asm statements must end in ';'", IProblem.SEVERITY_ERROR, IProblem.SEMICOLON_EXPECTED, token.ptr, token.len);
+						parsingErrorInsertTokenAfter(prevToken, ";");
 					}
 					break;
 
@@ -3661,7 +3600,7 @@ class Parser extends Lexer {
 
 				case TOKeof:
 					/* { */
-					problem("Matching '}' expected, not end of file", IProblem.SEVERITY_ERROR, IProblem.MATCHING_CURLY_EXPECTED, token.ptr, token.len);
+					parsingErrorInsertTokenAfter(prevToken, "}");
 					break;
 
 				default:
@@ -3685,7 +3624,7 @@ class Parser extends Lexer {
 		}
 
 		default:
-			problem("Statement expected", IProblem.SEVERITY_ERROR, IProblem.STATEMENT_EXPECTED, token.ptr, token.len);
+			parsingErrorInsertTokenAfter(prevToken, "Statement");
 			// goto Lerror;
 
 			// Lerror:
@@ -3737,20 +3676,10 @@ class Parser extends Lexer {
 	
 	private void check(TOK value) {
 		if (token.value != value) {
-			problem("'" + value + "' expected",
-					IProblem.SEVERITY_ERROR, IProblem.FOUND_SOMETHING_WHEN_EXPECTING_SOMETHING,
-					token.ptr, token.len);
+			parsingErrorInsertTokenAfter(prevToken, value.toString());
+		} else {
+			nextToken();
 		}
-		nextToken();
-	}
-	
-	private void check(TOK value, String string) {
-		if (token.value != value) {
-			problem("'" + value + "' expected following '" + string + "'",
-					IProblem.SEVERITY_ERROR, IProblem.FOUND_SOMETHING_WHEN_EXPECTING_SOMETHING,
-					token.ptr, token.len);
-		}
-		nextToken();
 	}
 	
 	private boolean isDeclaration(Token t, int needId, TOK endtok, Token[] pt) {
@@ -4497,7 +4426,7 @@ class Parser extends Lexer {
 
 		case TOKdollar:
 		    if (inBrackets == 0) {
-		    	problem("'$' is valid only inside [] of index or slice", IProblem.SEVERITY_ERROR, IProblem.DOLLAR_INVALID_OUTSIDE_BRACKETS, token.ptr, token.len);
+		    	error("'$' is valid only inside [] of index or slice", IProblem.DollarInvalidOutsideBrackets, token);
 		    }
 		    e = newDollarLiteral();
 		    nextToken();
@@ -4554,6 +4483,7 @@ class Parser extends Lexer {
 		case TOKstring: {
 			
 			int start = token.ptr;
+			int startLine = token.lineNumber;
 			StringsExpression stringsExpression = newStringsExpression();
 			StringLiteral stringLiteral = newStringLiteralForCurrentToken();
 			stringsExpression.stringLiterals().add(stringLiteral);
@@ -4569,10 +4499,9 @@ class Parser extends Lexer {
 					moreThanOne = true;
 					if (token.postfix != 0) {
 						if (token.postfix != postfix) {
-							problem("Mismatched string literal postfixes '" + (char) postfix + "' and '" + (char) token.postfix + "'",
-									IProblem.SEVERITY_ERROR,
-									IProblem.MISMATCHED_STRING_LITERAL_POSTFIXES,
-									stringLiteral.getStartPosition(), token.ptr + token.len - stringLiteral.getStartPosition());
+							error("Mismatched string literal postfixes '" + (char) postfix + "' and '" + (char) token.postfix + "'",
+									IProblem.MismatchedStringLiteralPostfixes,
+									startLine, stringLiteral.getStartPosition(), token.ptr + token.len - stringLiteral.getStartPosition());
 						}							
 						postfix = token.postfix;
 					}
@@ -4605,10 +4534,10 @@ class Parser extends Lexer {
 			t = newPrimitiveTypeFromCurrentToken();
 			nextToken();
 			// L1:
-			    check(TOKdot, t.toString());
+			    check(TOKdot);
 			    if (token.value != TOKidentifier)
 			    {
-			    	problem("Identifier expected", IProblem.SEVERITY_ERROR, IProblem.IDENTIFIER_EXPECTED, token.ptr, token.len);
+			    	parsingErrorInsertTokenAfter(prevToken, "Identifier");
 			    	// goto Lerr;
 		    		// Anything for e, as long as it's not NULL
 			    	e = newNumberLiteralForCurrentToken();
@@ -4632,10 +4561,10 @@ class Parser extends Lexer {
 			
 		    if (token.value == TOKdot) {
 		    	// goto L1;
-		    	check(TOKdot, t.toString());
+		    	check(TOKdot);
 			    if (token.value != TOKidentifier)
 			    {   
-			    	problem("Identifier expected", IProblem.SEVERITY_ERROR, IProblem.IDENTIFIER_EXPECTED, token.ptr, token.len);
+			    	parsingErrorInsertTokenAfter(prevToken, "Identifier");
 					// goto Lerr;
 			    	// Anything for e, as long as it's not NULL
 			    	e = newNumberLiteralForCurrentToken();
@@ -4655,7 +4584,7 @@ class Parser extends Lexer {
 		{   Type t2;
 
 		    nextToken();
-		    check(TOKlparen, "typeid");
+		    check(TOKlparen);
 		    t2 = parseBasicType();
 		    t2 = parseDeclarator(t2, null);	// ( type )
 		    check(TOKrparen);
@@ -4703,10 +4632,7 @@ class Parser extends Lexer {
 				}
 				check(TOKrparen);
 			} else {
-				problem(
-						"(type identifier : specialization) expected following is",
-						IProblem.SEVERITY_ERROR,
-						IProblem.INVALID_IFTYPE_SYNTAX, token.ptr, token.len);
+				parsingErrorInsertToComplete(prevToken, "(type identifier : specialization)", "IftypeDeclaration");
 				// goto Lerr;
 				// Anything for e, as long as it's not NULL
 				e = newNumberLiteralForCurrentToken();
@@ -4727,7 +4653,7 @@ class Parser extends Lexer {
 
 			int start = token.ptr;
 			nextToken();
-			check(TOKlparen, "assert");
+			check(TOKlparen);
 			e = parseAssignExp();
 			if (token.value == TOKcomma) {
 				nextToken();
@@ -4796,7 +4722,7 @@ class Parser extends Lexer {
 			}
 
 		default:
-			problem("Expression expected", IProblem.SEVERITY_ERROR, IProblem.EXPRESSION_EXPECTED, token.ptr, token.len);
+			parsingErrorInsertTokenAfter(prevToken, "Expression");
 		// Lerr:
 		    // Anything for e, as long as it's not NULL
 			e = newNumberLiteralForCurrentToken();
@@ -4834,7 +4760,7 @@ class Parser extends Lexer {
 					e = parseNewExp(e);
 					continue;
 				} else {
-					problem("Identifier expected", IProblem.SEVERITY_ERROR, IProblem.IDENTIFIER_EXPECTED, token.ptr, token.len);
+					parsingErrorInsertTokenAfter(prevToken, "Identifier");
 				}
 				break;
 
@@ -5063,7 +4989,7 @@ class Parser extends Lexer {
 					if (token.value == TOKdot) {
 						nextToken();
 						if (token.value != TOKidentifier) {
-							problem("Identifier expected following (type).", IProblem.SEVERITY_ERROR, IProblem.IDENTIFIER_EXPECTED, token.ptr, token.len);
+							parsingErrorInsertTokenAfter(prevToken, "Identifier");
 							// Change from DMD
 							e = newTypeDotIdentifierExpression(t);
 							e.setSourceRange(saveToken.ptr, prevToken.ptr + prevToken.len - saveToken.ptr);
@@ -5076,7 +5002,7 @@ class Parser extends Lexer {
 						e = parseUnaryExp();
 						e = newCastExpression(e, t);
 						e.setSourceRange(saveToken.ptr, prevToken.ptr + prevToken.len - saveToken.ptr);
-						problem("C style cast illegal, use cast(...)", IProblem.SEVERITY_ERROR, IProblem.C_STYLE_CAST_ILLEGAL, firstToken.ptr, prevToken.ptr + prevToken.len - firstToken.ptr);
+						error("C style cast illegal, use cast(...)", IProblem.CStyleCastIllegal, firstToken.lineNumber, firstToken.ptr, prevToken.ptr + prevToken.len - firstToken.ptr);
 					}
 					return e;
 				}
@@ -5249,8 +5175,8 @@ class Parser extends Lexer {
 
 		    case TOKidentity:
 			//if (!global.params.useDeprecated)
-		    	problem("'===' is no longer legal, use 'is' instead", IProblem.SEVERITY_ERROR,
-		    			IProblem.THREE_EQUALS_IS_NO_LONGER_LEGAL, token.ptr, token.len);
+		    	error("'===' is no longer legal, use 'is' instead",
+		    			IProblem.ThreeEqualsIsNoLongerLegal, token.lineNumber, token.ptr, token.len);
 			//goto L1;
 			nextToken();
 			e2 = parseRelExp();
@@ -5259,8 +5185,8 @@ class Parser extends Lexer {
 
 		    case TOKnotidentity:
 			//if (!global.params.useDeprecated)
-		    	problem("'!==' is no longer legal, use 'is' instead", IProblem.SEVERITY_ERROR,
-		    			IProblem.NOT_TWO_EQUALS_IS_NO_LONGER_LEGAL, token.ptr, token.len);
+		    	error("'!==' is no longer legal, use 'is' instead",
+		    			IProblem.NotTwoEqualsIsNoLongerLegal, token.lineNumber, token.ptr, token.len);
 			//goto L1;
 			nextToken();
 			e2 = parseRelExp();
@@ -5489,13 +5415,13 @@ class Parser extends Lexer {
 			AggregateDeclaration cd = newAggregateDeclaration(TOKclass, id, baseClasses, null);
 
 			if (token.value != TOKlcurly) {
-				problem("{ members } expected for anonymous class", IProblem.SEVERITY_ERROR, IProblem.MEMBERS_EXPECTED, token.ptr, token.len);
+				parsingErrorInsertToComplete(prevToken, "{ members }", "AnnonymousClassDeclaration");
 				cd.declarations().clear();
 			} else {
 				nextToken();
 				List decl = parseDeclDefs(false, new ArrayList<Modifier>());
 				if (token.value != TOKrcurly) {
-					problem("class member expected", IProblem.SEVERITY_ERROR, IProblem.MEMBERS_EXPECTED, token.ptr, token.len);
+					parsingErrorInsertToComplete(prevToken, "ClassBody", "AnnonymousClassDeclaration");
 				}
 				nextToken();
 				cd.declarations().addAll(decl);
@@ -5507,6 +5433,7 @@ class Parser extends Lexer {
 		}
 
 		// #if LTORARRAYDECL
+		int lineNumber = token.lineNumber;
 		t = parseBasicType();
 		t = parseBasicType2(t);
 		if (TypeAdapter.getAdapter(t).getTY() == Taarray) {
@@ -5519,7 +5446,7 @@ class Parser extends Lexer {
 				
 				t = newDynamicArrayType((Type) TypeAdapter.getAdapter(t).getNext());
 			} else {
-				problem("Need size of rightmost array", IProblem.SEVERITY_ERROR, IProblem.NEED_SIZE_OF_RIGHTMOST_ARRAY, index);
+				error("Need size of rightmost array", IProblem.NeedSizeOfRightmostArray, lineNumber, index);
 				return newNullLiteralForCurrentToken();
 			}
 		} else if (TypeAdapter.getAdapter(t).getTY() == Tsarray) {
@@ -6696,15 +6623,15 @@ class Parser extends Lexer {
 	}
 	
 	private void parsingErrorInsertTokenAfter(Token targetToken, String expected) {
-		problem("Syntax error on token \"" + targetToken + "\", " + expected + " expected after this token", IProblem.SEVERITY_ERROR, IProblem.ParsingErrorInsertTokenAfter , targetToken.ptr, targetToken.len);
+		error("Syntax error on token \"" + targetToken + "\", " + expected + " expected after this token", IProblem.ParsingErrorInsertTokenAfter, targetToken.lineNumber, targetToken.ptr, targetToken.len);
 	}
 	
 	private void parsingErrorDeleteToken(Token targetToken) {
-		problem("Syntax error on token \"" + targetToken + "\", delete this token", IProblem.SEVERITY_ERROR, IProblem.ParsingErrorDeleteToken, targetToken.ptr, targetToken.len);
+		error("Syntax error on token \"" + targetToken + "\", delete this token", IProblem.ParsingErrorDeleteToken, targetToken.lineNumber, targetToken.ptr, targetToken.len);
 	}
 	
 	private void parsingErrorInsertToComplete(Token targetToken, String insert, String toComplete) {
-		problem("Syntax error, insert \"" + insert + "\" to complete " + toComplete, IProblem.SEVERITY_ERROR, IProblem.ParsingErrorInsertToComplete, targetToken.ptr, targetToken.len);
+		error("Syntax error, insert \"" + insert + "\" to complete " + toComplete, IProblem.ParsingErrorInsertToComplete, targetToken.lineNumber, targetToken.ptr, targetToken.len);
 	}
 	
 	private String toWord(String s) {

@@ -800,12 +800,12 @@ public class ASTParser {
 			case K_COMPILATION_UNIT :
 				List<Declaration> declDefs = parser.parseModule();
 				if (declDefs != null) {
-					parser.mod.declarations().addAll(declDefs);
+					parser.compilationUnit.declarations().addAll(declDefs);
 				}
-				parser.mod.setSourceRange(0, rawSource.length);
-				parser.mod.setCommentTable(parser.comments.toArray(new Comment[parser.comments.size()]));
-				parser.mod.problems = parser.problems;
-				result = parser.mod;
+				parser.compilationUnit.setSourceRange(0, rawSource.length);
+				parser.compilationUnit.setCommentTable(parser.comments.toArray(new Comment[parser.comments.size()]));
+				parser.compilationUnit.problems = parser.problems;
+				result = parser.compilationUnit;
 				break;
 			default:
 				throw new IllegalStateException();

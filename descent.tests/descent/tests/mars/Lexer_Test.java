@@ -95,7 +95,6 @@ public class Lexer_Test extends TestCase {
 	}
 	
 	public void testEscapeSequenceSome() {
-		// TODO how to test EOF assertStringToken(" \\", 1, 1);
 		assertStringToken(" \\\\", 1, 2);
 		assertStringToken(" \\\"", 1, 2);
 		assertStringToken(" \\'", 1, 2);

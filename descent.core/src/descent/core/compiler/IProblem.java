@@ -1,124 +1,224 @@
 package descent.core.compiler;
 
 /**
- * A problem found while compiling or building a model
- * from source.
+ * Richer description of a D problem, as detected by the compiler or some of the underlying
+ * technology reusing the compiler.
+ * 
+ * A problem provides access to:
+ * <ul>
+ * <li> its location (originating source file name, source position, line number), </li>
+ * <li> its message description and a predicate to check its severity (warning or error). </li>
+ * <li> its ID : a number identifying the very nature of this problem. All possible IDs for standard Java 
+ * problems are listed as constants on <code>IProblem</code>, </li>
+ * <li> its marker type : a string identfying the problem creator. It corresponds to the marker type
+ * chosen if this problem was to be persisted. Standard Java problems are associated to marker
+ * type "org.eclipse.jdt.core.problem"), </li>
+ * <li> its category ID : a number identifying the category this problem belongs to. All possible IDs for 
+ * standard Java problem categories are listed in this class. </li>
+ * </ul>
+ * 
+ * Note: the compiler produces IProblems internally, which are turned into markers by the DBuilder
+ * so as to persist problem descriptions. This explains why there is no API allowing to reach IProblem detected
+ * when compiling. However, the D problem markers carry equivalent information to IProblem, in particular
+ * their ID (attribute "id") is set to one of the IDs defined on this interface.
  */
 public interface IProblem {
 	
-	int SEVERITY_ERROR = 1;
-	int SEVERITY_WARNING = 2;
-	
-	int UNTERMINATED_BLOCK_COMMENT = 1;
-	int UNTERMINATED_PLUS_BLOCK_COMMENT = 2;
-	int INCORRECT_NUMBER_OF_HEX_DIGITS_IN_ESCAPE_SEQUENCE = 3;
-	int UNDEFINED_ESCAPE_HEX_SEQUENCE = 4;
-	int UNTERMINATED_STRING_CONSTANT = 5;
-	int ODD_NUMBER_OF_CHARACTERS_IN_HEX_STRING = 6;
-	int NON_HEX_CHARACTER = 7;
-	int UNTERMINATED_CHARACTER_CONSTANT = 8;
-	int BINARY_DIGIT_EXPECTED = 9;
-	int OCTAL_DIGIT_EXPECTED = 10;
-	int HEX_DIGIT_EXPECTED = 11;
-	int UNSUPPORTED_CHAR = 12;
-	int INVALID_UTF_CHARACTER = 13;
-	int THREE_EQUALS_IS_NO_LONGER_LEGAL = 14;
-	int NOT_TWO_EQUALS_IS_NO_LONGER_LEGAL = 15;
-	int L_SUFFIX_DEPRECATED = 16;
-	int INVALID_PRAGMA_SYNTAX = 17;
-	int UNRECOGNIZED_CHARACTER_ENTITY = 18;
-	int UNTERMINATED_NAMED_ENTITY = 19;
-	int UNDEFINED_ESCAPE_SEQUENCE = 20;
-	int INVALID_UTF_8_SEQUENCE = 21;
-	int INTEGER_OVERFLOW = 22;
-	int SIGNED_INTEGER_OVERFLOW = 23;
-	int UNRECOGNIZED_TOKEN = 24;
-	int BINARY_EXPONENT_PART_REQUIRED = 25;
-	int EXPONENT_EXPECTED = 26;
-	int I_SUFFIX_DEPRECATED = 27;
-	
-	int ENUM_MEMBER_EXPECTED = 108;
-	int ENUM_DECLARATION_IS_INVALID = 109;
-	int MISMATCHED_STRING_LITERAL_POSTFIXES = 110;
-	int ANONYMOUS_CLASSES_NOT_ALLOWED = 101;
-	int MEMBERS_EXPECTED = 102;
-	int RIGHT_CURLY_EXPECTED_FOLLOWING_MEMBER_DECLARATIONS_IN_AGGREGATE = 103;
-	int CURLIES_EXPECTED_FOLLOWING_AGGREGATE_DECLARATION = 104;
-	int NO_IDENTIFIER_FOR_DECLARATION = 105;
-	int NO_IDENTIFIER_FOR_DECLARATOR = 106;
-	int ALIAS_CANNOT_HAVE_INITIALIZER = 107;
-	int C_STYLE_CAST_ILLEGAL = 108;
-	int UNRECOGNIZED_DECLARATION = 109;
-	int INTEGER_EXPECTED = 110;
-	int MATCHING_CURLY_EXPECTED = 112;
-	int IDENTIFIER_OR_INTEGER_EXPECTED = 113;
-	int SEMICOLON_EXPECTED = 114;
-	int CONDITION_EXPECTED_FOLLOWING_VERSION = 115;
-	int EXPRESSION_EXPECTED = 116;
-	int DECLARATION_EXPECTED = 117;
-	int INVALID_LINKAGE_IDENTIFIER = 119;
-	int VARIADIC_ARGUMENT_CANNOT_BE_OUT_OR_INOUT = 120;
-	int DEFAULT_ARGUMENT_EXPECTED = 121;
-	int VARIADIC_NOT_ALLOWED_IN_DELETE = 122;
-	int BASE_CLASS_EXPECTED = 123;
-	int TEMPLATE_IDENTIFIER_EXPECTED = 124;
-	int PARENTHESIZED_TEMPLATE_PARAMETER_LIST_EXPECTED = 125;
-	int IDENTIFIER_EXPECTED = 127;
-	int BASIC_TYPE_EXPECTED = 129;
-	int UNEXPECTED_IDENTIFIER_IN_DECLARATOR = 130;
-	int REDUNDANT_STORAGE_CLASS = 131;
-	int USE_BRACES_FOR_AN_EMPTY_STATEMENT = 132;
-	int TEMPLATE_ARGUMENT_LIST_EXPECTED = 133;
-	int MULTIPLE_DECLARATIONS_MUST_HAVE_THE_SAME_TYPE = 134;
-	int MISSING_BODY_AFTER_IN_OR_OUT = 135;
-	int REDUNDANT_IN_STATEMENT = 136;
-	int REDUNDANT_OUT_STATEMENT = 137;
-	int COMMA_EXPECTED = 138;
-	int STATEMENT_EXPECTED_TO_BE_CURLIES = 139;
-	int EQUALS_EXPECTED = 140;
-	int INVALID_SCOPE_IDENTIFIER = 141;
-	int ON_SCOPE_DEPRECATED = 142;
-	int CATCH_OR_FINALLY_EXPECTED = 143;
-	int DOLLAR_INVALID_OUTSIDE_BRACKETS = 144;
-	int STATEMENT_EXPECTED = 145;
-	int IFTYPE_DEPRECATED = 146;
-	int INVALID_IFTYPE_SYNTAX = 147;
-	int DEPRECATED_IF_AUTO = 148;
-	int FOUND_SOMETHING_WHEN_EXPECTING_SOMETHING = 150;
-	int VARIADIC_TEMPLATE_PARAMETER_MUST_BE_LAST_ONE = 151;
-	int NEED_SIZE_OF_RIGHTMOST_ARRAY = 152;
-	int ParsingErrorInsertTokenAfter = 153;
-	int ParsingErrorDeleteToken = 154;
-	int ParsingErrorInsertToComplete = 155;
-	
-	int PROPERTY_CANNOT_BE_REDEFINED = 1001;
-	int STRUCTS_UNIONS_CANT_BE_ABSTRACT = 1002;
-	
 	/**
-	 * A unique identifier of the problem, listed
-	 * in this interface.
+	 * Answer back the original arguments recorded into the problem.
+	 * @return the original arguments recorded into the problem
 	 */
-	int getId();
+	String[] getArguments();
 	
 	/**
-	 * The error message.
+	 * Returns the problem id
+	 * 
+	 * @return the problem id
+	 */
+	int getID();
+	
+	/**
+	 * Answer a localized, human-readable message string which describes the problem.
+	 * 
+	 * @return a localized, human-readable message string which describes the problem
 	 */
 	String getMessage();
 	
 	/**
-	 * Returns the severity of the problem. One of
-	 * SEVERITY_ERROR or SEVERITY_WARNING.
+	 * Answer the file name in which the problem was found.
+	 * 
+	 * @return the file name in which the problem was found
 	 */
-	int getSeverity();
+	char[] getOriginatingFileName();
 	
 	/**
-	 * The offset of the problem starts.
+	 * Answer the end position of the problem (inclusive), or -1 if unknown.
+	 * 
+	 * @return the end position of the problem (inclusive), or -1 if unknown
 	 */
-	int getOffset();
+	int getSourceEnd();
+
+	/**
+	 * Answer the line number in source where the problem begins.
+	 * 
+	 * @return the line number in source where the problem begins
+	 */
+	int getSourceLineNumber();
+
+	/**
+	 * Answer the start position of the problem (inclusive), or -1 if unknown.
+	 * 
+	 * @return the start position of the problem (inclusive), or -1 if unknown
+	 */
+	int getSourceStart();
 	
 	/**
-	 * The length of the problem.
+	 * Checks the severity to see if the Error bit is set.
+	 * 
+	 * @return true if the Error bit is set for the severity, false otherwise
 	 */
-	int getLength();
+	boolean isError();
+
+	/**
+	 * Checks the severity to see if the Error bit is not set.
+	 * 
+	 * @return true if the Error bit is not set for the severity, false otherwise
+	 */
+	boolean isWarning();
+	
+	/**
+	 * Set the end position of the problem (inclusive), or -1 if unknown.
+	 * Used for shifting problem positions.
+	 * 
+	 * @param sourceEnd the given end position
+	 */
+	void setSourceEnd(int sourceEnd);
+
+	/**
+	 * Set the line number in source where the problem begins.
+	 * 
+	 * @param lineNumber the given line number
+	 */
+	void setSourceLineNumber(int lineNumber);
+
+	/**
+	 * Set the start position of the problem (inclusive), or -1 if unknown.
+	 * Used for shifting problem positions.
+	 * 
+	 * @param sourceStart the given start position
+	 */
+	void setSourceStart(int sourceStart);
+	
+	/** 
+	 * Returns an integer identifying the category of this problem. Categories, like problem IDs are
+	 * defined in the context of some marker type. Custom implementations of <code>IProblem</code>
+	 * may choose arbitrary values for problem/category IDs, as long as they are associated with a different
+	 * marker type.
+	 * Standard D problem markers (i.e. marker type is "descent.core.core.problem") carry an
+	 * attribute "categoryId" persisting the originating problem category ID as defined by this method.
+	 * @return id - an integer identifying the category of this problem
+	 */
+	public abstract int getCategoryID();
+
+	/**
+	 * Returns the marker type associated to this problem, if it gets persisted into a marker by the DBuilder
+	 * Standard D problems are associated to marker type "descent.core.problem").
+	 * Note: problem markers are expected to extend "org.eclipse.core.resources.problemmarker" marker type.
+	 * @return the type of the marker which would be associated to the problem
+	 */
+	public abstract String getMarkerType();
+	
+	/**
+	 * List of standard category IDs used by Java problems, more categories will be added 
+	 * in the future.
+	 */
+	int CAT_UNSPECIFIED = 0;
+	/** Category for problems related to buildpath */
+	int CAT_BUILDPATH = 10;
+	/** Category for fatal problems related to syntax */
+	int CAT_SYNTAX = 20;
+	/** Category for fatal problems in import statements */
+	int CAT_IMPORT = 30;
+	/** Category for fatal problems related to types, could be addressed by some type change */
+	int CAT_TYPE = 40;
+	/** Category for fatal problems related to type members, could be addressed by some field or method change */
+	int CAT_MEMBER = 50;
+	/** Category for fatal problems which could not be addressed by external changes, but require an edit to be addressed */
+	int CAT_INTERNAL = 60;	
+	/** Category for optional problems in DDoc */
+	int CAT_DDOC = 70;
+	/** Category for optional problems related to coding style practices */
+	int CAT_CODE_STYLE = 80;
+	/** Category for optional problems related to potential programming flaws */
+	int CAT_POTENTIAL_PROGRAMMING_PROBLEM = 90;
+	/** Category for optional problems related to naming conflicts */
+	int CAT_NAME_SHADOWING_CONFLICT = 100;
+	/** Category for optional problems related to deprecation */
+	int CAT_DEPRECATION = 110;
+	/** Category for optional problems related to unnecessary code */
+	int CAT_UNNECESSARY_CODE = 120;
+	/** Category for optional problems related to type safety in generics */
+	int CAT_UNCHECKED_RAW = 130;
+	/** Category for optional problems related to internationalization of String literals */
+	int CAT_NLS = 140;
+	/** Category for optional problems related to access restrictions */
+	int CAT_RESTRICTION = 150;
+	
+	/* Problems produces by the lexer */
+	int UnterminatedBlockComment = 1;
+	int UnterminatedPlusBlockComment = 2;
+	int IncorrectNumberOfHexDigitsInEscapeSequence = 3;
+	int UndefinedEscapeHexSequence = 4;
+	int UnterminatedStringConstant = 5;
+	int OddNumberOfCharactersInHexString = 6;
+	int NonHexCharacter = 7;
+	int UnterminatedCharacterConstant = 8;
+	int BinaryDigitExpected = 9;
+	int OctalDigitExpected = 10;
+	int HexDigitExpected = 11;
+	int UnsupportedCharacter = 12;
+	int InvalidUtfCharacter = 13;
+	int ThreeEqualsIsNoLongerLegal = 14;
+	int NotTwoEqualsIsNoLongerLegal = 15;
+	int LSuffixDeprecated = 16;
+	int InvalidPragmaSyntax = 17;
+	int UnrecognizedCharacterEntity = 18;
+	int UnterminatedNamedEntity = 19;
+	int UndefinedEscapeSequence = 20;
+	int InvalidUtf8Sequence = 21;
+	int IntegerOverflow = 22;
+	int SignedIntegerOverflow = 23;
+	int UnrecognizedToken = 24;
+	int BinaryExponentPartRequired = 25;
+	int ExponentExpected = 26;
+	int ISuffixDeprecated = 27;
+	
+	/* Problems produced by Parser */
+	int ParsingErrorInsertTokenAfter = 101;
+	int ParsingErrorDeleteToken = 102;
+	int ParsingErrorInsertToComplete = 103;
+	int EnumDeclarationIsInvalid = 104;
+	int MismatchedStringLiteralPostfixes = 105;
+	int NoIdentifierForDeclarator = 106;
+	int AliasCannotHaveInitializer = 107;
+	int CStyleCastIllegal = 108;
+	int InvalidLinkageIdentifier = 109;
+	int VariadicArgumentCannotBeOutOrInout = 110;
+	int VariadicNotAllowedInDelete = 111;
+	int NoIdentifierForTemplateValueParameter = 112;
+	int UnexpectedIdentifierInDeclarator = 113;
+	int RedundantStorageClass = 114;
+	int UseBracesForAnEmptyStatement = 115;
+	int MultipleDeclarationsMustHaveTheSameType = 116;
+	int RedundantInStatement = 117;
+	int RedundantOutStatement = 118;
+	int StatementExpectedToBeCurlies = 119;
+	int InvalidScopeIdentifier = 120;
+	int OnScopeDeprecated = 121;
+	int DollarInvalidOutsideBrackets = 122;
+	int IftypeDeprecated = 123;
+	int IfAutoDeprecated = 124;
+	int VariadicTemplateParameterMustBeTheLastOne = 125;
+	int NeedSizeOfRightmostArray = 126;	
 
 }

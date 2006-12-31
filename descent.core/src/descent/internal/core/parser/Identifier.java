@@ -5,6 +5,7 @@ public class Identifier {
 	
 	public int startPosition;
 	public int length;
+	public int lineNumber;
 	public String string;
 	public TOK value;
 	
@@ -18,6 +19,7 @@ public class Identifier {
 		this.value = token.value;
 		this.startPosition = token.ptr;
 		this.length = token.len;
+		this.lineNumber = token.lineNumber;
 	}
 	
 	public String getIdentifier() {

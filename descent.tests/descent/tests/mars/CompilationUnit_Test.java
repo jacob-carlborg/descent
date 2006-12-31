@@ -34,28 +34,6 @@ public class CompilationUnit_Test extends Parser_Test {
 		assertPosition(qName, 8, 13);
 	}
 	
-	// TODO I need this kind of ast nodes
-	public void testSkipFirstLine() {
-		String s = "#! something, I don't mind\n module a; ";
-		CompilationUnit unit = getCompilationUnit(s);
-		assertEquals(0, unit.getProblems().length);
-		ModuleDeclaration md = unit.getModuleDeclaration();
-		
-		assertNotNull(md);
-		
-		s = "#! something, I don't mind\r module a; ";
-		unit = getCompilationUnit(s);
-		md = unit.getModuleDeclaration();
-		
-		assertNotNull(md);
-		
-		s = "#! something, I don't mind\r\n module a; ";
-		unit = getCompilationUnit(s);
-		md = unit.getModuleDeclaration();
-		
-		assertNotNull(md);
-	}
-	
 	public void testExtendedLengthWithDeclaration() {
 		String s = " /** hola */ int x = 2;";
 		CompilationUnit unit = getCompilationUnit(s);

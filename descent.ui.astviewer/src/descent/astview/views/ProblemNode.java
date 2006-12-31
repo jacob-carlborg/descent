@@ -60,12 +60,12 @@ public class ProblemNode extends ASTAttribute {
 	 */
 	public String getLabel() {
 		StringBuffer buf= new StringBuffer();
-		int offset= fProblem.getOffset();
-		int length= fProblem.getLength();
+		int offset= fProblem.getSourceStart();
+		int length= fProblem.getSourceEnd() - fProblem.getSourceStart();
 		
-		if (fProblem.getSeverity() == IProblem.SEVERITY_ERROR)
+		if (fProblem.isError())
 			buf.append("E");
-		if (fProblem.getSeverity() == IProblem.SEVERITY_WARNING)
+		if (fProblem.isWarning())
 			buf.append("W");
 		buf.append('[').append(offset).append(", ").append(length).append(']').append(' ');
 		buf.append(fProblem.getMessage());
@@ -187,14 +187,14 @@ public class ProblemNode extends ASTAttribute {
 	 * @return Returns the offset of the problem
 	 */
 	public int getOffset() {
-		return fProblem.getOffset();
+		return fProblem.getSourceStart();
 	}
 	
 	/**
 	 * @return Returns the length of the problem
 	 */
 	public int getLength() {
-		return fProblem.getLength();
+		return fProblem.getSourceEnd() - fProblem.getSourceStart();
 	}
 
 	/*

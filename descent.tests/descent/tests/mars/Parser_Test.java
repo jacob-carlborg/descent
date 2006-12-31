@@ -14,6 +14,9 @@ import descent.core.dom.Statement;
 
 public abstract class Parser_Test extends TestCase {
 	
+	protected final static int SEVERITY_ERROR = 1;
+	protected final static int SEVERITY_WARNING = 2;
+	
 	protected List<Declaration> getDeclarationsWithProblems(String source, int numberOfProblems) {
 		CompilationUnit unit = new ParserFacade().parseCompilationUnit(source);
 		assertEquals(numberOfProblems, unit.getProblems().length);
@@ -79,18 +82,17 @@ public abstract class Parser_Test extends TestCase {
 	}
 	
 	protected void assertError(IProblem p, int errorCode, int start, int length) {
-		assertProblem(p, errorCode, IProblem.SEVERITY_ERROR, start, length);
+		assertEquals(errorCode, p.getID());
+		assertTrue(p.isError());
+		assertEquals(start, p.getSourceStart());
+		assertEquals(length, p.getSourceEnd() - p.getSourceStart());
 	}
 	
 	protected void assertWarning(IProblem p, int errorCode, int start, int length) {
-		assertProblem(p, errorCode, IProblem.SEVERITY_WARNING, start, length);
-	}
-	
-	protected void assertProblem(IProblem p, int errorCode, int severity, int start, int length) {
-		assertEquals(errorCode, p.getId());
-		assertEquals(severity, p.getSeverity());
-		assertEquals(start, p.getOffset());
-		assertEquals(length, p.getLength());
+		assertEquals(errorCode, p.getID());
+		assertTrue(p.isError());
+		assertEquals(start, p.getSourceStart());
+		assertEquals(length, p.getSourceEnd() - p.getSourceStart());
 	}
 
 }

@@ -75,9 +75,9 @@ public class DReconcilingStrategy implements IReconcilingStrategy {
 				IMarker marker = file.createMarker(IMarker.PROBLEM);
 				marker.setAttribute(IMarker.MESSAGE, problem.getMessage());
 				marker.setAttribute(IMarker.PRIORITY, IMarker.PRIORITY_HIGH);
-				marker.setAttribute(IMarker.SEVERITY, problem.getSeverity() == IProblem.SEVERITY_ERROR ? IMarker.SEVERITY_ERROR : IMarker.SEVERITY_WARNING);
-				marker.setAttribute(IMarker.CHAR_START, problem.getOffset());
-				marker.setAttribute(IMarker.CHAR_END, problem.getOffset() + problem.getLength());
+				marker.setAttribute(IMarker.SEVERITY, problem.isError() ? IMarker.SEVERITY_ERROR : IMarker.SEVERITY_WARNING);
+				marker.setAttribute(IMarker.CHAR_START, problem.getSourceStart());
+				marker.setAttribute(IMarker.CHAR_END, problem.getSourceEnd());
 			} catch (CoreException e) {
 				DescentUI.log(e);
 			}

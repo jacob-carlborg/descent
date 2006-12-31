@@ -5,7 +5,7 @@ import descent.core.dom.IProblemCollector;
 
 public class Entity {
 	
-	public static int HtmlNamedEntity(char[] input, int p, int length, IProblemCollector problemCollector) {
+	public static int HtmlNamedEntity(char[] input, int p, int length, int lineNumber, IProblemCollector problemCollector) {
 		String s = new String(input, p, length);
 
 		int tableIndex = Character.toLowerCase(input[p]) - 'a';
@@ -19,9 +19,9 @@ public class Entity {
 				}
 			}
 		}
-		problemCollector.collectProblem(new Problem(
-				"Unrecognized character entity", IProblem.SEVERITY_ERROR,
-				IProblem.UNRECOGNIZED_CHARACTER_ENTITY, p - 1, length + 2));
+		problemCollector.collectProblem(Problem.newSyntaxError(
+				"Unrecognized character entity", 
+				IProblem.UnrecognizedCharacterEntity, lineNumber, p - 1, length + 2));
 		return -1;
 	}
 	
