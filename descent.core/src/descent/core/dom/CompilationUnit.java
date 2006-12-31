@@ -80,7 +80,6 @@ public class CompilationUnit extends ASTNode {
 	/**
 	 * The comment list (element type: <code>Comment</code>, 
 	 * or <code>null</code> if none; initially <code>null</code>.
-	 * @since 3.0
 	 */
 	private List optionalCommentList = null;
 
@@ -88,9 +87,21 @@ public class CompilationUnit extends ASTNode {
 	 * The comment table, or <code>null</code> if none; initially
 	 * <code>null</code>. This array is the storage underlying
 	 * the <code>optionalCommentList</code> ArrayList.
-	 * @since 3.0
 	 */
 	Comment[] optionalCommentTable = null;
+	
+	/**
+	 * The pragma list (element type: <code>Pragma</code>, 
+	 * or <code>null</code> if none; initially <code>null</code>.
+	 */
+	private List optionalPragmaList = null;
+
+	/**
+	 * The prgama table, or <code>null</code> if none; initially
+	 * <code>null</code>. This array is the storage underlying
+	 * the <code>optionalPragmaList</code> ArrayList.
+	 */
+	Pragma[] optionalPragmaTable = null;
 
 	/**
 	 * The declarations
@@ -178,32 +189,17 @@ public class CompilationUnit extends ASTNode {
 	 * Returns a list of the comments encountered while parsing
 	 * this compilation unit.
 	 * <p>
-	 * Since the Java language allows comments to appear most anywhere
+	 * Since the D language allows comments to appear most anywhere
 	 * in the source text, it is problematic to locate comments in relation
 	 * to the structure of an AST. The one exception is doc comments 
-	 * which, by convention, immediately precede type, field, and
-	 * method declarations; these comments are located in the AST
-	 * by {@link  BodyDeclaration#getJavadoc BodyDeclaration.getJavadoc}.
+	 * which, by convention, immediately precede declarations; 
+	 * these comments are located in the AST
+	 * by {@link  Declaration#getDDocs Declaration.getDDocs}.
 	 * Other comments do not show up in the AST. The table of comments
 	 * is provided for clients that need to find the source ranges of
 	 * all comments in the original source string. It includes entries
-	 * for comments of all kinds (line, block, and doc), arranged in order
+	 * for comments of all kinds (line, block, plus and doc), arranged in order
 	 * of increasing source position. 
-	 * </p>
-	 * <p>
-	 * Note on comment parenting: The {@link ASTNode#getParent() getParent()}
-	 * of a doc comment associated with a body declaration is the body
-	 * declaration node; for these comment nodes
-	 * {@link ASTNode#getRoot() getRoot()} will return the compilation unit
-	 * (assuming an unmodified AST) reflecting the fact that these nodes
-	 * are property located in the AST for the compilation unit.
-	 * However, for other comment nodes, {@link ASTNode#getParent() getParent()}
-	 * will return <code>null</code>, and {@link ASTNode#getRoot() getRoot()}
-	 * will return the comment node itself, indicating that these comment nodes
-	 * are not directly connected to the AST for the compilation unit. The 
-	 * {@link Comment#getAlternateRoot Comment.getAlternateRoot}
-	 * method provides a way to navigate from a comment to its compilation
-	 * unit.
 	 * </p>
 	 * <p>
 	 * A note on visitors: The only comment nodes that will be visited when
@@ -263,6 +259,75 @@ public class CompilationUnit extends ASTNode {
 			List commentList = Arrays.asList(commentTable);
 			// protect the list from further modification
 			this.optionalCommentList = Collections.unmodifiableList(commentList);
+		}
+	}
+	
+	/**
+	 * Returns a list of the pragmas encountered while parsing
+	 * this compilation unit.
+	 * <p>
+	 * Since the D language allows pragmas to appear most anywhere
+	 * in the source text, it is problematic to locate pragmas in relation
+	 * to the structure of an AST. The table of pragmas
+	 * is provided for clients that need to find the source ranges of
+	 * all pragmas in the original source string. It includes entries
+	 * for all pragmas, arranged in order
+	 * of increasing source position. 
+	 * </p>
+	 * <p>
+	 * A note on visitors: to visit all pragmas in normal reading order, iterate
+	 * over the pragmas table and call {@link ASTNode#accept(ASTVisitor) accept}
+	 * on each element.
+	 * </p>
+	 * <p>
+	 * Clients cannot modify the resulting list.
+	 * </p>
+	 * 
+	 * @return an unmodifiable list of pragmas in increasing order of source
+	 * start position, or <code>null</code> if pragma information
+	 * for this compilation unit is not available
+	 * @see ASTParser
+	 */
+	public List<Pragma> getPragmaList() {
+		return this.optionalPragmaList;
+	}
+	
+	/**
+	 * Sets the list of the pragmas encountered while parsing
+	 * this compilation unit.
+	 * 
+	 * @param pragmaTable a list of pragmas in increasing order
+	 * of source start position, or <code>null</code> if pragma
+	 * information for this compilation unit is not available
+	 * @exception IllegalArgumentException if the pragma table is
+	 * not in increasing order of source position
+	 * @see #getPragmaList()
+	 * @see ASTParser
+	 */
+	void setPragmaTable(Pragma[] pragmaTable) {
+		// double check table to ensure that all comments have
+		// source positions and are in strictly increasing order
+		if (pragmaTable == null) {
+			this.optionalPragmaList = null;
+			this.optionalPragmaTable = null;
+		} else {
+			int nextAvailablePosition = 0;
+			for (int i = 0; i < pragmaTable.length; i++) {
+				Pragma pragma = pragmaTable[i];
+				if (pragma == null) {
+					throw new IllegalArgumentException();
+				}
+				int start = pragma.getStartPosition();
+				int length = pragma.getLength();
+				if (start < 0 || length < 0 || start < nextAvailablePosition) {
+					throw new IllegalArgumentException();
+				}
+				nextAvailablePosition = pragma.getStartPosition() + pragma.getLength();
+			}
+			this.optionalPragmaTable = pragmaTable;
+			List pragmaList = Arrays.asList(pragmaTable);
+			// protect the list from further modification
+			this.optionalPragmaList = Collections.unmodifiableList(pragmaList);
 		}
 	}
 	

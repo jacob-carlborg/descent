@@ -42,6 +42,8 @@ public class CompilationUnit_Test extends Parser_Test {
 		
 		Declaration decl = unit.declarations().get(0);
 		assertExtendedPosition(decl, 1, s.length() - 1, unit);
+		
+		assertEquals(1, unit.getCommentList().size());
 	}
 	
 	public void testExtendedLengthWithDeclaration2() {
@@ -52,6 +54,8 @@ public class CompilationUnit_Test extends Parser_Test {
 		
 		Declaration decl = unit.declarations().get(0);
 		assertExtendedPosition(decl, 1, s.length() - 1, unit);
+		
+		assertEquals(2, unit.getCommentList().size());
 	}
 	
 	public void testExtendedLengthWithModuleDeclaration() {

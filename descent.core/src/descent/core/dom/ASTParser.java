@@ -804,6 +804,7 @@ public class ASTParser {
 				}
 				parser.compilationUnit.setSourceRange(0, rawSource.length);
 				parser.compilationUnit.setCommentTable(parser.comments.toArray(new Comment[parser.comments.size()]));
+				parser.compilationUnit.setPragmaTable(parser.pragmas.toArray(new Pragma[parser.pragmas.size()]));
 				parser.compilationUnit.problems = parser.problems;
 				result = parser.compilationUnit;
 				break;

@@ -2,6 +2,7 @@ package descent.tests.mars;
 
 import descent.core.dom.ASTNode;
 import descent.core.dom.CompilationUnit;
+import descent.core.dom.Pragma;
 import descent.core.dom.PragmaDeclaration;
 
 public class Pragma_Test extends Parser_Test {
@@ -41,6 +42,91 @@ public class Pragma_Test extends Parser_Test {
 		assertNotNull(cu.getScriptLine());
 		assertPosition(cu.getScriptLine(), 0, 13);
 		assertEquals(" something ", cu.getScriptLine().getText());
+	}
+	
+	public void testPragmaBroken1() {
+		String s = " # 1";
+		CompilationUnit cu = getCompilationUnit(s);
+		assertEquals(1, cu.getPragmaList().size());
+		
+		Pragma pragma = cu.getPragmaList().get(0); 
+		assertPosition(pragma, 1, s.length() - 1);
+		assertEquals(" 1", pragma.getText());
+		assertMalformed(pragma);
+	}
+	
+	public void testPragmaBroken2() {
+		String s = " # pragma";
+		CompilationUnit cu = getCompilationUnit(s);
+		assertEquals(1, cu.getPragmaList().size());
+		
+		Pragma pragma = cu.getPragmaList().get(0); 
+		assertPosition(pragma, 1, s.length() - 1);
+		assertEquals(" pragma", pragma.getText());
+		assertMalformed(pragma);
+	}
+	
+	public void testPragmaBroken3() {
+		String s = " #line bla";
+		CompilationUnit cu = getCompilationUnit(s);
+		assertEquals(1, cu.getPragmaList().size());
+		
+		Pragma pragma = cu.getPragmaList().get(0); 
+		assertPosition(pragma, 1, s.length() - 1);
+		assertEquals("line bla", pragma.getText());
+		assertMalformed(pragma);
+	}
+	
+	public void testPragmaOk1() {
+		String s = " #line 1";
+		CompilationUnit cu = getCompilationUnit(s);
+		assertEquals(1, cu.getPragmaList().size());
+		
+		Pragma pragma = cu.getPragmaList().get(0); 
+		assertPosition(pragma, 1, s.length() - 1);
+		assertEquals("line 1", pragma.getText());
+	}
+	
+	public void testPragmaOk2() {
+		String s = " #line 1\r\n";
+		CompilationUnit cu = getCompilationUnit(s);
+		assertEquals(1, cu.getPragmaList().size());
+		
+		Pragma pragma = cu.getPragmaList().get(0); 
+		assertPosition(pragma, 1, 7);
+		assertEquals("line 1", pragma.getText());
+	}
+	
+	public void testPragmaBroken4() {
+		String s = " #line 1 something";
+		CompilationUnit cu = getCompilationUnit(s);
+		assertEquals(1, cu.getPragmaList().size());
+		
+		Pragma pragma = cu.getPragmaList().get(0); 
+		assertPosition(pragma, 1, 8);
+		assertEquals("line 1 ", pragma.getText());
+		assertMalformed(pragma);
+	}
+	
+	public void testPragmaBroken5() {
+		String s = " #line 1 \"hola";
+		CompilationUnit cu = getCompilationUnit(s);
+		assertEquals(1, cu.getPragmaList().size());
+		
+		Pragma pragma = cu.getPragmaList().get(0); 
+		assertPosition(pragma, 1, s.length() - 1);
+		assertEquals("line 1 \"hola", pragma.getText());
+		assertMalformed(pragma);
+	}
+	
+	public void testPragmaOk3() {
+		String s = " #line 1 \"hola\"";
+		CompilationUnit cu = getCompilationUnit(s);
+		assertEquals(1, cu.getPragmaList().size());
+		
+		Pragma pragma = cu.getPragmaList().get(0); 
+		assertPosition(pragma, 1, s.length() - 1);
+		assertEquals("line 1 \"hola\"", pragma.getText());
 	}
 
 }

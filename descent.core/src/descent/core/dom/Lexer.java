@@ -54,6 +54,7 @@ public class Lexer implements IProblemCollector {
 	public boolean anyToken;
 	
 	public List<Comment> comments;
+	public List<Pragma> pragmas;	
 	public List<IProblem> problems;
 	public boolean appendLeadingComments = true;
 	
@@ -81,6 +82,7 @@ public class Lexer implements IProblemCollector {
 		this.ast = ast;
 		this.compilationUnit = new CompilationUnit(ast);
 		this.comments = new ArrayList<Comment>();
+		this.pragmas = new ArrayList<Pragma>();
 		this.problems = new ArrayList<IProblem>();
 		
 		// Make input larger and add zeros, to avoid comparing
@@ -2084,137 +2086,179 @@ public class Lexer implements IProblemCollector {
 	}
 	
 	private void pragma() {
+		int start = p - 1;
+		Pragma pragma = new Pragma(ast);
+
 		Token firstToken = new Token(token);
 		Token tok = new Token();
-	    int linnum;
-	    String filespec = null;
+		//int linnum;
+		String filespec = null;
 
-	    scan(tok);
-	    if (tok.value != TOKidentifier || !tok.ident.string.equals(Id.line)) {
-	    	error("#line integer [\"filespec\"]\\n expected", IProblem.InvalidPragmaSyntax, firstToken.lineNumber, firstToken.ptr, tok.ptr + tok.len - firstToken.ptr);
-	    	return;
-	    }
-
-	    scan(tok);
-	    if (tok.value == TOKint32v || tok.value == TOKint64v)
-	    	linnum = tok.numberValue.intValue() - 1;
-	    else {
-	    	error("#line integer [\"filespec\"]\\n expected", IProblem.InvalidPragmaSyntax, firstToken.lineNumber, firstToken.ptr, tok.ptr + tok.len - firstToken.ptr);
-	    	return;
-	    }
-
-	    while (true)
-	    {
-		switch (input[p])
-		{
-		    case 0:
-		    case 0x1A:
-		    case '\n':
-			this.linnum = linnum;
-			// TODO
-			//if (filespec != null)
-			//    this.loc.filename = filespec;
+		scan(tok);
+		if (tok.value != TOKidentifier || !tok.ident.string.equals(Id.line)) {
+			error("#line integer [\"filespec\"]\\n expected",
+					IProblem.InvalidPragmaSyntax, firstToken.lineNumber,
+					firstToken.ptr, tok.ptr + tok.len - firstToken.ptr);
+			pragma.setSourceRange(start, p - start);
+			pragma.setText(new String(input, pragma.getStartPosition() + 1, pragma.getLength() - 1));
+			setMalformed(pragma);
+			pragmas.add(pragma);
 			return;
+		}
 
-		    case '\r':
-			p++;
-			if (input[p] != '\n')
-			{   p--;
-				this.linnum = linnum;
-				// TODO
-				//if (filespec != null)
-				//    this.loc.filename = filespec;
+		scan(tok);
+		if (tok.value == TOKint32v || tok.value == TOKint64v) {
+			linnum = tok.numberValue.intValue() - 1;
+		} else {
+			error("#line integer [\"filespec\"]\\n expected",
+					IProblem.InvalidPragmaSyntax, firstToken.lineNumber,
+					firstToken.ptr, tok.ptr + tok.len - firstToken.ptr);
+			pragma.setSourceRange(start, p - start);
+			pragma.setText(new String(input, pragma.getStartPosition() + 1, pragma.getLength() - 1));
+			setMalformed(pragma);
+			pragmas.add(pragma);
+			return;
+		}
+
+		while (true) {
+			switch (input[p]) {
+			case 0:
+			case 0x1A:
+			case '\n':
+				if (input[p - 1] == '\r') { 
+					pragma.setSourceRange(start, p - 1 - start);
+				} else {
+					pragma.setSourceRange(start, p - start);
+				}
+				pragma.setText(new String(input, pragma.getStartPosition() + 1, pragma.getLength() - 1));
+				pragmas.add(pragma);
+				/*
+				 * this.linnum = linnum;
+				 */
 				return;
-			}
-			continue;
 
-		    case ' ':
-		    case '\t':
-		    // TODO: case '\v':
-		    case '\f':
-			p++;
-			continue;			// skip white space
-
-		    case '_':
-			if (compilationUnit != null &&  p + 8 <= input.length 
-					&& input[p + 0] == '_' 
-					&& input[p + 1] == '_'
-					&& input[p + 2] == 'F'
-					&& input[p + 3] == 'I'
-					&& input[p + 4] == 'L'
-					&& input[p + 5] == 'E'
-					&& input[p + 6] == '_'
-					&& input[p + 7] == '_')
-			{
-			    p += 8;
-			    /*
-			    TODO
-			    if (mod.ident == null) {
-			    	filespec = "TODO: this is not done in Descent... yet";
-			    } else {
-			    	// filespec = loc != null && loc.filename != null ? loc.filename : mod.ident.toString();
-			    }
-			    */
-			}
-			continue;
-
-		    case '"':
-			if (filespec != null) {
-				error("#line integer [\"filespec\"]\\n expected", IProblem.InvalidPragmaSyntax, firstToken.lineNumber, firstToken.ptr, tok.ptr + tok.len - firstToken.ptr);
-				return;
-			}
-			stringbuffer.reset();
-			p++;
-			while (true)
-			{   int c;
-
-			    c = input[p];
-			    switch (c)
-			    {
-				case '\n':
-				case '\r':
-				case 0:
-				case 0x1A: {
-					error("#line integer [\"filespec\"]\\n expected", IProblem.InvalidPragmaSyntax, firstToken.lineNumber, firstToken.ptr, tok.ptr + tok.len - firstToken.ptr);
+			case '\r':
+				p++;
+				if (input[p] != '\n') {
+					pragma.setSourceRange(start, p - 1 - start);
+					pragma.setText(new String(input, pragma.getStartPosition() + 1, pragma.getLength() - 1));
+					pragmas.add(pragma);
+					p--;
+					/*
+					 * this.linnum = linnum; if (filespec != null)
+					 * this.loc.filename = filespec;
+					 */
 					return;
 				}
+				continue;
 
-				case '"':
-				    filespec = stringbuffer.data.toString();
-				    p++;
-				    break;
+			case ' ':
+			case '\t':
+			case '\f':
+				p++;
+				continue; // skip white space
 
-				default:
-				    if ((c & 0x80) != 0)
-				    {   int u = decodeUTF();
-					if (u == PS || u == LS) {
-						error("#line integer [\"filespec\"]\\n expected", IProblem.InvalidPragmaSyntax, firstToken.lineNumber, firstToken.ptr, tok.ptr + tok.len - firstToken.ptr);
+			case '_':
+				if (compilationUnit != null && p + 8 <= input.length
+						&& input[p + 0] == '_' && input[p + 1] == '_'
+						&& input[p + 2] == 'F' && input[p + 3] == 'I'
+						&& input[p + 4] == 'L' && input[p + 5] == 'E'
+						&& input[p + 6] == '_' && input[p + 7] == '_') {
+					p += 8;
+					/*
+					 * if (mod.ident == null) { filespec = loc !=
+					 * null && loc.filename != null ? loc.filename :
+					 * mod.ident.toString(); }
+					 */
+				}
+				continue;
+
+			case '"':
+				if (filespec != null) {
+					error("#line integer [\"filespec\"]\\n expected",
+							IProblem.InvalidPragmaSyntax,
+							firstToken.lineNumber, firstToken.ptr, tok.ptr
+									+ tok.len - firstToken.ptr);
+					pragma.setSourceRange(start, p - start);
+					pragma.setText(new String(input, pragma.getStartPosition() + 1, pragma.getLength() - 1));
+					setMalformed(pragma);
+					pragmas.add(pragma);
+					return;
+				}
+				//stringbuffer.reset();
+				p++;
+				while (true) {
+					int c;
+
+					c = input[p];
+					switch (c) {
+					case '\n':
+					case '\r':
+					case 0:
+					case 0x1A: {
+						error("#line integer [\"filespec\"]\\n expected",
+								IProblem.InvalidPragmaSyntax,
+								firstToken.lineNumber, firstToken.ptr, tok.ptr
+										+ tok.len - firstToken.ptr);
+						pragma.setSourceRange(start, p - start);
+						pragma.setText(new String(input, pragma.getStartPosition() + 1, pragma.getLength() - 1));
+						setMalformed(pragma);
+						pragmas.add(pragma);
 						return;
 					}
-				    }
-				    stringbuffer.writeByte(c);
-				    p++;
-				    continue;
-			    }
-			    break;
-			}
-			continue;
 
-		    default:
-			if ((input[p] & 0x80) != 0)
-			{   int u = decodeUTF();
-			    if (u == PS || u == LS) {
-			    	this.linnum = linnum;
-			    	// TODO:
-					//if (filespec != null)
-					//    this.loc.filename = filespec;
-					return;
-			    }
+					case '"':
+						//filespec = stringbuffer.data.toString();
+						p++;
+						break;
+
+					default:
+						if ((c & 0x80) != 0) {
+							int u = decodeUTF();
+							if (u == PS || u == LS) {
+								error(
+										"#line integer [\"filespec\"]\\n expected",
+										IProblem.InvalidPragmaSyntax,
+										firstToken.lineNumber, firstToken.ptr,
+										tok.ptr + tok.len - firstToken.ptr);
+								pragma.setSourceRange(start, p - start);
+								pragma.setText(new String(input, pragma.getStartPosition() + 1, pragma.getLength() - 1));
+								setMalformed(pragma);
+								pragmas.add(pragma);
+								return;
+							}
+						}
+						//stringbuffer.writeByte(c);
+						p++;
+						continue;
+					}
+					break;
+				}
+				continue;
+
+			default:
+				if ((input[p] & 0x80) != 0) {
+					int u = decodeUTF();
+					if (u == PS || u == LS) {
+						pragma.setSourceRange(start, p - start);
+						pragma.setText(new String(input, pragma.getStartPosition() + 1, pragma.getLength() - 1));
+						pragmas.add(pragma);
+						// this.linnum = linnum;
+						// if (filespec != null)
+						//	this.loc.filename = filespec;
+						return;
+					}
+				}
+				error("#line integer [\"filespec\"]\\n expected",
+						IProblem.InvalidPragmaSyntax, firstToken.lineNumber,
+						firstToken.ptr, tok.ptr + tok.len - firstToken.ptr);
+				pragma.setSourceRange(start, p - start);
+				pragma.setText(new String(input, pragma.getStartPosition() + 1, pragma.getLength() - 1));
+				setMalformed(pragma);
+				pragmas.add(pragma);
+				return;
 			}
-		    error("#line integer [\"filespec\"]\\n expected", IProblem.InvalidPragmaSyntax, firstToken.lineNumber, firstToken.ptr, tok.ptr + tok.len - firstToken.ptr);
-		    return;
 		}
-	    }
 	}
 	
 	private int decodeUTF() {
@@ -2521,6 +2565,14 @@ public class Lexer implements IProblemCollector {
 		if (!inComment) {
 			appendLeadingComments = false;
 		}
+	}
+	
+	protected void setMalformed(ASTNode node) {
+		node.setFlags(node.getFlags() | ASTNode.MALFORMED);
+	}
+	
+	protected void setRecovered(ASTNode node) {
+		node.setFlags(node.getFlags() | ASTNode.RECOVERED);
 	}
 
 }

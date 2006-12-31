@@ -6614,14 +6614,6 @@ class Parser extends Lexer {
 		}
 	}
 	
-	private void setMalformed(ASTNode node) {
-		node.setFlags(node.getFlags() | ASTNode.MALFORMED);
-	}
-	
-	private void setRecovered(ASTNode node) {
-		node.setFlags(node.getFlags() | ASTNode.RECOVERED);
-	}
-	
 	private void parsingErrorInsertTokenAfter(Token targetToken, String expected) {
 		error("Syntax error on token \"" + targetToken + "\", " + expected + " expected after this token", IProblem.ParsingErrorInsertTokenAfter, targetToken.lineNumber, targetToken.ptr, targetToken.len);
 	}

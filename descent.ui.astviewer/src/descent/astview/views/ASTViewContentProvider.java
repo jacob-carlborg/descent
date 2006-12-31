@@ -83,6 +83,7 @@ public class ASTViewContentProvider implements ITreeContentProvider {
 		if (node instanceof CompilationUnit) {
 			CompilationUnit root= (CompilationUnit) node;
 			res.add(new CommentsProperty(root));
+			res.add(new PragmasProperty(root));
 			res.add(new ProblemsProperty(root));
 		}
 		
