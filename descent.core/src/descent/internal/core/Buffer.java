@@ -28,6 +28,7 @@ import descent.core.IBuffer;
 import descent.core.IBufferChangedListener;
 import descent.core.IOpenable;
 import descent.core.JavaModelException;
+import descent.internal.core.util.Util;
 
 /**
  * @see IBuffer
@@ -263,9 +264,7 @@ protected void notifyChanged(final BufferChangedEvent event) {
 			final IBufferChangedListener listener = (IBufferChangedListener) listeners.get(i);
 			SafeRunner.run(new ISafeRunnable() {
 				public void handleException(Throwable exception) {
-					/* TODO JDT
 					Util.log(exception, "Exception occurred in listener of buffer change notification"); //$NON-NLS-1$
-					*/
 				}
 				public void run() throws Exception {
 					listener.bufferChanged(event);
@@ -363,7 +362,7 @@ public void save(IProgressMonitor progress, boolean force) throws JavaModelExcep
 
 		// Special case for UTF-8 BOM files
 		// see bug https://bugs.eclipse.org/bugs/show_bug.cgi?id=110576
-		if (encoding.equals(/* TODO JDT descent.internal.compiler.util.Util.UTF_8 */ "UTF-8")) {
+		if (encoding.equals(descent.internal.compiler.util.Util.UTF_8)) {
 			IContentDescription description = this.file.getContentDescription();
 			if (description != null && description.getProperty(IContentDescription.BYTE_ORDER_MARK) != null) {
 				int bomLength= IContentDescription.BOM_UTF_8.length;
@@ -440,7 +439,6 @@ protected void setReadOnly(boolean readOnly) {
 	}
 }
 
-/* TODO JDT
 public String toString() {
 	StringBuffer buffer = new StringBuffer();
 	buffer.append("Owner: " + ((JavaElement)this.owner).toStringWithAncestors()); //$NON-NLS-1$
@@ -475,5 +473,4 @@ public String toString() {
 	}
 	return buffer.toString();
 }
-*/
 }

@@ -11,23 +11,25 @@ import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
 
 import descent.core.dom.ASTNode;
 import descent.core.dom.CompilationUnit;
+import descent.internal.ui.JavaPlugin;
 import descent.ui.text.outline.DEditorContentOutlinePage;
 
 public class DEditor extends AbstractDecoratedTextEditor {
 
 	private ColorManager colorManager;
 	private DEditorContentOutlinePage outlinePage;
-	private DReconcilingStrategy reconcilingStrategy;
+	private JavaReconcilingStrategy reconcilingStrategy;
 	private ASTNode currentOutlineElement;
 
 	public DEditor() {
 		super();
 		
 		colorManager = new ColorManager();
-		reconcilingStrategy = new DReconcilingStrategy(this);
+		reconcilingStrategy = new JavaReconcilingStrategy(this);
 		
 		setSourceViewerConfiguration(new DConfiguration(this));
-		setDocumentProvider(new DDocumentProvider());
+		//setDocumentProvider(new DDocumentProvider());
+		setDocumentProvider(JavaPlugin.getDefault().getCompilationUnitDocumentProvider());
 	}
 	
 	/**

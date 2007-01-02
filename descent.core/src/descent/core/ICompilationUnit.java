@@ -13,6 +13,9 @@ package descent.core;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 
+import descent.core.dom.AST;
+import descent.core.dom.CompilationUnit;
+
 
 /**
  * Represents an entire Java compilation unit (source file with one of the 
@@ -535,9 +538,7 @@ boolean isWorkingCopy();
  * </ul>
  * @since 3.0
  */
-/* TODO JDT
 CompilationUnit reconcile(int astLevel, boolean forceProblemDetection, WorkingCopyOwner owner, IProgressMonitor monitor) throws JavaModelException;
-*/
 
 /**
  * Reconciles the contents of this working copy, sends out a Java delta
@@ -602,9 +603,7 @@ CompilationUnit reconcile(int astLevel, boolean forceProblemDetection, WorkingCo
  * </ul>
  * @since 3.2
  */
-/* TODO JDT
 CompilationUnit reconcile(int astLevel, boolean forceProblemDetection, boolean enableStatementsRecovery, WorkingCopyOwner owner, IProgressMonitor monitor) throws JavaModelException;
-*/
 
 /**
  * Restores the contents of this working copy to the current contents of

@@ -219,6 +219,10 @@ public interface IProblem {
 	int IftypeDeprecated = 123;
 	int IfAutoDeprecated = 124;
 	int VariadicTemplateParameterMustBeTheLastOne = 125;
-	int NeedSizeOfRightmostArray = 126;	
+	int NeedSizeOfRightmostArray = 126;
+	
+	/* Others, needed by JDT */
+	int ForbiddenReference = 201;
+	int DiscouragedReference = 202;
 
 }

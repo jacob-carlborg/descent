@@ -18,16 +18,6 @@ public class DescentUI extends AbstractUIPlugin {
 	public static final String PLUGIN_ID = "descent.ui";
 	
 	/**
-	 * The nature ID
-	 */
-	public static final String NATURE_ID = PLUGIN_ID + "." + "dnature";
-	
-	/**
-	 * The builder ID
-	 */
-	public static final String BUILDER_ID = PLUGIN_ID + "." + "dbuilder";
-	
-	/**
 	 * The preference keyword for the D root path.
 	 */
 	public static final String PREFERENCE_D_ROOT = "d.root";

@@ -32,6 +32,7 @@ public class DOutlineContentProvider implements ITreeContentProvider {
 	}
 
 	public Object[] getChildren(Object parentElement) {
+		/* TODO
 		CompilationUnit compilationUnit = editor.getCompilationUnit();
 		
 		if (parentElement == input) {
@@ -78,6 +79,7 @@ public class DOutlineContentProvider implements ITreeContentProvider {
 			addDeclDefs(list, ((PragmaDeclaration) e).declarations());
 			return list.toArray();
 		}
+		*/
 		return new Object[0];
 	}
 	
@@ -117,6 +119,7 @@ public class DOutlineContentProvider implements ITreeContentProvider {
 	}
 
 	public boolean hasChildren(Object element) {
+		/*
 		CompilationUnit compilationUnit = editor.getCompilationUnit();
 		if (element == input) {
 			element = compilationUnit;
@@ -151,6 +154,7 @@ public class DOutlineContentProvider implements ITreeContentProvider {
 		case IImaginaryElements.ELSE:
 			return true;
 		}
+		*/
 		return false;
 	}
 

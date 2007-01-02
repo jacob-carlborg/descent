@@ -90,9 +90,11 @@ public class DEditorContentOutlinePage extends ContentOutlinePage {
 				viewer.expandAll();
 				control.setRedraw(true);
 				
+				/* TODO
 				if (editor.getOutlineElement() != null) {
 					selectElement(editor.getOutlineElement());
 				}
+				*/
 				
 				viewer.addSelectionChangedListener(this);
 			}

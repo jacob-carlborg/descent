@@ -29,7 +29,7 @@ public interface IMember extends IJavaElement, ISourceReference, ISourceManipula
  *      exception occurs while accessing its corresponding resource.
  *  @since 3.2
  */
-String[] getCategories() throws JavaModelException;
+// TODO JDT String[] getCategories() throws JavaModelException;
 /**
  * Returns the class file in which this member is declared, or <code>null</code>
  * if this member is not declared in a class file (for example, a source type).
@@ -38,9 +38,8 @@ String[] getCategories() throws JavaModelException;
  * @return the class file in which this member is declared, or <code>null</code>
  * if this member is not declared in a class file (for example, a source type)
  */
-/* TODO JDT
 IClassFile getClassFile();
-*/
+
 /**
  * Returns the compilation unit in which this member is declared, or <code>null</code>
  * if this member is not declared in a compilation unit (for example, a binary type).

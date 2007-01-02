@@ -6,11 +6,11 @@
          point="org.eclipse.ui.editors">
       <editor
             name="D Editor"
-            extensions="d"
             icon="icons/d.gif"
             contributorClass="org.eclipse.ui.texteditor.BasicTextEditorActionContributor"
             class="descent.ui.text.DEditor"
             id="descent.ui.text.DEditor">
+         <contentTypeBinding contentTypeId="descent.core.dSource"/>
       </editor>
    </extension>
    <extension
@@ -48,20 +48,17 @@
             name="D Compiler"/>
    </extension>
    <extension
-         id="dnature"
-         name="D Project Nature"
-         point="org.eclipse.core.resources.natures">
-      <runtime>
-         <run class="descent.ui.project.DProjectNature"/>
-      </runtime>
-   </extension>
-   <extension
          point="org.eclipse.ui.ide.projectNatureImages">
       <image
             icon="icons/d_ovr.gif"
             id="descent.ui.dProjectNatureImage"
-            natureId="descent.ui.dnature"/>
+            natureId="descent.core.dnature"/>
    </extension>
+   
+   <!-- CommonNavigator -->
+   
+	
+   
    <!--
    <extension
          id="dbuilder"

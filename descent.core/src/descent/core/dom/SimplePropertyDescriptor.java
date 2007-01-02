@@ -50,11 +50,9 @@ public final class SimplePropertyDescriptor extends StructuralPropertyDescriptor
 	 */
 	SimplePropertyDescriptor(Class nodeClass, String propertyId, Class valueType, boolean mandatory) {
 		super(nodeClass, propertyId);
-		/* TODO JDT PRIORITY
 		if (valueType == null || ASTNode.class.isAssignableFrom(valueType)) {
 			throw new IllegalArgumentException();
 		}
-		*/
 		this.valueType = valueType;
 		this.mandatory = mandatory;
 	}

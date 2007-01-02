@@ -6,8 +6,10 @@ import java.util.Map;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 
+import descent.core.IClassFile;
 import descent.core.ICompilationUnit;
 import descent.core.IJavaProject;
+import descent.core.JavaCore;
 import descent.core.WorkingCopyOwner;
 
 /**
@@ -148,7 +150,7 @@ public class ASTParser {
     /**
      * Java model class file supplying the source.
      */
-    // TODO JDT private IClassFile classFileSource = null;
+    // private IClassFile classFileSource = null;
     
     /**
      * Character-based offset into the source string where parsing is to

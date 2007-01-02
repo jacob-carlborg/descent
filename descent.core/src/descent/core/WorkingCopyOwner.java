@@ -10,8 +10,14 @@
  *******************************************************************************/
 package descent.core;
 
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.Path;
+
+import descent.internal.core.CompilationUnit;
 import descent.internal.core.BufferManager;
 import descent.internal.core.DefaultWorkingCopyOwner;
+import descent.internal.core.ExternalJavaProject;
+import descent.internal.core.PackageFragment;
 
 /**
  * The owner of an <code>ICompilationUnit</code> handle in working copy mode. 
@@ -107,7 +113,6 @@ public abstract class WorkingCopyOwner {
 	 * @see ICompilationUnit#becomeWorkingCopy(IProblemRequestor, IProgressMonitor)
 	 * @since 3.2
 	 */
-	/* TODO JDT PRIORITY
 	public final ICompilationUnit newWorkingCopy(String name, IClasspathEntry[] classpath, IProblemRequestor problemRequestor, IProgressMonitor monitor) throws JavaModelException {
 		ExternalJavaProject project = new ExternalJavaProject(classpath);
 		IPackageFragment parent = project.getPackageFragmentRoot(Path.EMPTY).getPackageFragment(IPackageFragment.DEFAULT_PACKAGE_NAME);
@@ -115,6 +120,5 @@ public abstract class WorkingCopyOwner {
 		result.becomeWorkingCopy(problemRequestor, monitor);
 		return result;
 	}
-	*/
 
 }

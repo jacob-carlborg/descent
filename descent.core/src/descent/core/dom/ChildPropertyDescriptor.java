@@ -57,11 +57,9 @@ public final class ChildPropertyDescriptor extends StructuralPropertyDescriptor 
 	 */
 	ChildPropertyDescriptor(Class nodeClass, String propertyId, Class childType, boolean mandatory, boolean cycleRisk) {
 		super(nodeClass, propertyId);
-		/* TODO JDT PRIORITY
 		if (childType == null || !ASTNode.class.isAssignableFrom(childType)) {
 			throw new IllegalArgumentException();
 		}
-		*/
 		this.childClass = childType;
 		this.mandatory = mandatory;
 		this.cycleRisk = cycleRisk;

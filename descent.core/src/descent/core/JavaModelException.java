@@ -14,6 +14,9 @@ import java.io.PrintStream;
 import java.io.PrintWriter;
 
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IStatus;
+
+import descent.internal.core.JavaModelStatus;
 
 /**
  * A checked exception representing a failure in the Java model.
@@ -45,10 +48,7 @@ public class JavaModelException extends CoreException {
  * @see org.eclipse.core.runtime.IStatus#ERROR
  */
 public JavaModelException(Throwable e, int code) {
-	/* TODO JDT
 	this(new JavaModelStatus(code, e));
-	*/
-	super(null);
 }
 
 /**
@@ -68,11 +68,10 @@ public JavaModelException(CoreException exception) {
  *
  * @param status the Java-specific status object
  */
-	/* TODO JDT
 public JavaModelException(IJavaModelStatus status) {
 	super(status);
 }
-*/
+
 /**
  * Returns the underlying <code>Throwable</code> that caused the failure.
  *
@@ -92,7 +91,6 @@ public Throwable getException() {
  *
  * @return a status object
  */
-/* TODO JDT
 public IJavaModelStatus getJavaModelStatus() {
 	IStatus status = this.getStatus();
 	if (status instanceof IJavaModelStatus) {
@@ -103,7 +101,7 @@ public IJavaModelStatus getJavaModelStatus() {
 		return new JavaModelStatus(this.nestedCoreException);
 	}
 }
-*/
+
 /**
  * Returns whether this exception indicates that a Java model element does not
  * exist. Such exceptions have a status with a code of
@@ -117,12 +115,10 @@ public IJavaModelStatus getJavaModelStatus() {
  * @see IJavaModelStatusConstants#ELEMENT_DOES_NOT_EXIST
  * @see IJavaModelStatusConstants#ELEMENT_NOT_ON_CLASSPATH
  */
-/* TODO JDT
 public boolean isDoesNotExist() {
 	IJavaModelStatus javaModelStatus = getJavaModelStatus();
 	return javaModelStatus != null && javaModelStatus.isDoesNotExist();
 }
-*/
 
 /**
  * Prints this exception's stack trace to the given print stream.

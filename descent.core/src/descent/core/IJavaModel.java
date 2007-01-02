@@ -97,6 +97,7 @@ boolean contains(IResource resource);
  * </ul>
  */
 void copy(IJavaElement[] elements, IJavaElement[] containers, IJavaElement[] siblings, String[] renamings, boolean replace, IProgressMonitor monitor) throws JavaModelException;
+
 /**
  * Deletes the given elements, forcing the operation if necessary and specified.
  *
@@ -113,6 +114,7 @@ void copy(IJavaElement[] elements, IJavaElement[] containers, IJavaElement[] sib
  * </ul>
  */
 void delete(IJavaElement[] elements, boolean force, IProgressMonitor monitor) throws JavaModelException;
+
 /**
  * Returns the Java project with the given name. This is a handle-only method. 
  * The project may or may not exist.

@@ -23,10 +23,6 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IPath;
 
-/* TODO JDT
-import descent.core.eval.IEvaluationContext;
-*/
-
 /**
  * A Java project represents a view of a project resource in terms of Java 
  * elements such as package fragments, types, methods and fields.
@@ -440,7 +436,7 @@ public interface IJavaProject extends IParent, IJavaElement, IOpenable {
 	 * @param jarPath the jars's file system path
 	 * @return a package fragment root for the JAR at the specified file system path
 	 */
-	IPackageFragmentRoot getPackageFragmentRoot(String jarPath);
+	// TODO JDT IPackageFragmentRoot getPackageFragmentRoot(String jarPath);
 
 	/**
 	 * Returns a package fragment root for the given resource, which

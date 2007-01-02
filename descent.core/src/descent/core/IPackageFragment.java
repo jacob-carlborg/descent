@@ -79,9 +79,8 @@ public interface IPackageFragment extends IParent, IJavaElement, IOpenable, ISou
 	 * @param name the given name
 	 * @return the class file with the specified name in this package
 	 */
-	/* TODO JDT
 	IClassFile getClassFile(String name);
-	*/
+
 	/**
 	 * Returns all of the class files in this package fragment.
 	 *
@@ -93,9 +92,8 @@ public interface IPackageFragment extends IParent, IJavaElement, IOpenable, ISou
 	 *		exception occurs while accessing its corresponding resource.
 	 * @return all of the class files in this package fragment
 	 */
-	/* TODO JDT
 	IClassFile[] getClassFiles() throws JavaModelException;
-	*/
+
 	/**
 	 * Returns the compilation unit with the specified name
 	 * in this package (for example, <code>"Object.java"</code>).
