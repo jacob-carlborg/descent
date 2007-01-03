@@ -6,11 +6,7 @@ import mmrnmhrm.text.DeeDocumentProvider;
 import mmrnmhrm.ui.outline.DeeOutlinePage;
 
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.jface.util.Assert;
 import org.eclipse.ui.IEditorInput;
-import org.eclipse.ui.editors.text.ITextEditorHelpContextIds;
-import org.eclipse.ui.editors.text.TextEditor;
-import org.eclipse.ui.internal.editors.text.EditorsPlugin;
 import org.eclipse.ui.texteditor.AbstractDecoratedTextEditor;
 import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
 
@@ -19,6 +15,7 @@ public class DeeEditor extends AbstractDecoratedTextEditor {
 	DeeDocumentProvider documentProvider;
 	DeeDocument document;
 	DeeOutlinePage outlinePage;
+	public DeeSourceViewerConfiguration sourceViewerConfiguration;
 
 	public DeeEditor() {
 		super();
@@ -28,7 +25,8 @@ public class DeeEditor extends AbstractDecoratedTextEditor {
 	
 	protected void initializeEditor() {
 		super.initializeEditor();
-		setSourceViewerConfiguration(new DeeSourceViewerConfiguration());
+		sourceViewerConfiguration = new DeeSourceViewerConfiguration();
+		setSourceViewerConfiguration(sourceViewerConfiguration);
 		setEditorContextMenuId("#DeeEditorContext"); 
 		setRulerContextMenuId("#DeeRulerContext"); 
 		/*

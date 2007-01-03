@@ -6,18 +6,17 @@ import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.ui.IEditorInput;
-import org.eclipse.ui.texteditor.ITextEditor;
 import org.eclipse.ui.views.contentoutline.ContentOutlinePage;
 
 public class DeeOutlinePage extends ContentOutlinePage {
 
-	private ITextEditor editor;
 	private IEditorInput input;
+	//private ITextEditor editor;
 	
 	public DeeOutlinePage(DeeEditor editor) {
 		super();
-		this.editor = editor;
 		this.input = editor.getEditorInput();
+		//this.editor = editor;
 	}
 
 	public void createControl(Composite parent) {

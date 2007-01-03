@@ -1,7 +1,7 @@
 package mmrnmhrm.text;
 
-import mmrnmhrm.ui.preferences.ColorManager;
 import mmrnmhrm.ui.preferences.ColorConstants;
+import mmrnmhrm.ui.preferences.ColorManager;
 
 import org.eclipse.jface.text.TextAttribute;
 import org.eclipse.jface.text.rules.IRule;

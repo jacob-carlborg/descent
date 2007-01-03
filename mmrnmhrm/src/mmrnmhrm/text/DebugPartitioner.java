@@ -10,10 +10,8 @@ import util.Logger;
 
 
 /**
- * Simple extension of DefaultPartitioner with printPartitions() method to assist with printing out partition
- * information
- * 
- * @author Phil Zoio
+ * Simple extension of DefaultPartitioner with printPartitions() method to
+ * assist with printing out partition information
  */
 public class DebugPartitioner extends FastPartitioner
 {
@@ -25,13 +23,13 @@ public class DebugPartitioner extends FastPartitioner
 
 	public void connect(IDocument document, boolean delayInitialization) {
 		super.connect(document, delayInitialization);
-		if(Logger.debug)
-			Logger.print(printPartitions(document));
 			
+		Logger.printDebug(toStringPartitions(document));
+
 	}
 
-	public static String printPartitions(IDocument document)	{
-		StringBuffer buffer = new StringBuffer();
+	public static String toStringPartitions(IDocument document) {
+		// TODO: learn partitioning lifecycle
 		
 		ITypedRegion[] partitions;
 		try {
@@ -39,12 +37,15 @@ public class DebugPartitioner extends FastPartitioner
 		} catch (BadLocationException e1) {
 			return "ERROR: BadLocationException";
 		}
+		
+		StringBuffer buffer = new StringBuffer();
+	
 		for (int i = 0; i < partitions.length; i++)	{
 			try	{
-				buffer.append("Partition type: " + partitions[i].getType() + ", offset: " + partitions[i].getOffset()
+				buffer.append("=Partition type: " + partitions[i].getType() 
+						+ ", offset: " + partitions[i].getOffset()
 						+ ", length: " + partitions[i].getLength());
-				buffer.append("\n");
-				buffer.append("Text:\n");
+				buffer.append("=\n");
 				buffer.append(document.get(partitions[i].getOffset(), partitions[i].getLength()));
 				buffer.append("\n---------------------------\n");
 			}

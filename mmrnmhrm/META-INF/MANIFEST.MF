@@ -13,3 +13,4 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.ui.views,
  DTool
 Eclipse-LazyStart: true
+Bundle-ClassPath: .

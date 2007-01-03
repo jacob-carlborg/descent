@@ -1,14 +1,15 @@
 package mmrnmhrm.text;
 
 import org.eclipse.jface.text.IDocument;
-import org.eclipse.jface.text.rules.*;
+import org.eclipse.jface.text.rules.IToken;
+import org.eclipse.jface.text.rules.ITokenScanner;
 
 public class FastDeePartitionScanner implements ITokenScanner{
 
 	public FastDeePartitionScanner() {
 
-		IToken deeDefault = new Token(EDeePartitions.DEE_DEFAULT);
-		IToken deeDoc = new Token(EDeePartitions.DEE_DOC);
+		//IToken deeDefault = new Token(EDeePartitions.DEE_DEFAULT);
+		//IToken deeDoc = new Token(EDeePartitions.DEE_DOC);
 
 	}
 

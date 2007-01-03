@@ -8,11 +8,8 @@ import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.ui.IEditorInput;
 
 import util.Assert;
-
-import dtool.dom.ast.ASTChecker;
-import dtool.dom.ast.TreeDepthRecon;
+import dtool.dom.ast.tree.TreeDepthRecon;
 import dtool.dom.base.ASTNode;
-import dtool.dom.base.Module;
 import dtool.project.CompilationUnit;
 
 public class DeeOutlineContentProvider implements ITreeContentProvider {
@@ -48,7 +45,7 @@ public class DeeOutlineContentProvider implements ITreeContentProvider {
 	    	DeeDocumentProvider documentProvider = DeeCore.getDeeDocumentProvider();
 	    	CompilationUnit cunit = documentProvider.getCompilationUnit(input);
 	    	
-	    	return cunit.getNeoModule().getChildren();
+	    	return cunit.getModule().getChildren();
 	    }
 		
 		ASTNode elem = (ASTNode) inputElement;

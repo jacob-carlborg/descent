@@ -1,5 +1,6 @@
 package mmrnmhrm.ui.actions;
 
+import mmrnmhrm.text.DebugPartitioner;
 import mmrnmhrm.ui.editors.DeeEditor;
 
 import org.eclipse.jface.action.IAction;
@@ -9,16 +10,13 @@ import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.IWorkbenchWindowActionDelegate;
 
-import dtool.dom.ast.ASTPrinter;
-import dtool.project.CompilationUnit;
-
 /**
- * DEBUG UTIL: Prints the AST in a message bug.
+ * Opens a DeeEditor in a given target
  */
-public class PrintAST implements IWorkbenchWindowActionDelegate {
+public class GoToDefinition implements IWorkbenchWindowActionDelegate {
 	private IWorkbenchWindow window;
 
-	public PrintAST() {
+	public GoToDefinition() {
 	}
 
 	/**
@@ -31,11 +29,11 @@ public class PrintAST implements IWorkbenchWindowActionDelegate {
 		IEditorPart editor  = window.getActivePage().getActiveEditor();
 		if(editor instanceof DeeEditor) {
 			DeeEditor deeEditor = (DeeEditor) editor;
+			//deeEditor.sourceViewerConfiguration.get
 			
-			CompilationUnit cunit = deeEditor.getDocument().getCompilationUnit();
 			MessageDialog.openInformation( window.getShell(),
 					"Partitions",
-					ASTPrinter.toStringAST(cunit.getModule()));
+					DebugPartitioner.toStringPartitions(deeEditor.getDocument()));
 		}
 	}
 

@@ -1,9 +1,9 @@
 package mmrnmhrm;
 
+import mmrnmhrm.text.DeeDocumentProvider;
+
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IWorkbenchWindow;
-
-import mmrnmhrm.text.DeeDocumentProvider;
 
 public class DeeCore extends DeeCoreActivator {
 
