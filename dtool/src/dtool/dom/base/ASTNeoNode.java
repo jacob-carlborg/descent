@@ -3,7 +3,7 @@ package dtool.dom.base;
 import descent.core.domX.ASTVisitor;
 import dtool.dom.ast.ASTNeoVisitor;
 
-public abstract class ASTElement extends ASTNode {
+public abstract class ASTNeoNode extends ASTNode {
 
 	public int getElementType() {
 		return 0; // TODO Not DMD element
@@ -11,8 +11,8 @@ public abstract class ASTElement extends ASTNode {
 	
 
 	/**
-	 * XXX: There is some temporary wizardry going on here...
-	 * Same as ASTNode.accept but makes sub-elements accept0 use ASTNeoVisitor
+	 * Same as ASTNode.accept but makes sub-elements accept0 use ASTNeoVisitor.
+	 * This is a temporary adapting solution.
 	 */
 	public final void accept(ASTVisitor visitor) {
 		if (visitor == null) {

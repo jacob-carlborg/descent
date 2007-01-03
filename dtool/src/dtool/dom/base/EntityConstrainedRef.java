@@ -5,7 +5,7 @@ import dtool.dom.ast.ASTNeoVisitor;
 /**
  * A qualified entity/name reference
  */
-public abstract class EntityConstrainedRef extends ASTElement {
+public abstract class EntityConstrainedRef extends ASTNeoNode {
 
 	Entity ent;
 	
@@ -45,7 +45,7 @@ public abstract class EntityConstrainedRef extends ASTElement {
 		}
 	}
 	
-	public static class TypeEntity extends ASTElement {
+	public static class TypeEntity extends ASTNeoNode {
 		Entity ent;
 		
 		public void accept0(ASTNeoVisitor visitor) {

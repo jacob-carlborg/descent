@@ -4,14 +4,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import dtool.dom.ast.ASTNeoVisitor;
-import dtool.dom.ast.IScope;
+import dtool.model.IScope;
 
 /**
  * A definition of a aggregate. TODO.
  */
 public class DefinitionAggregate extends Definition implements IScope {
 	
-	public List<ASTElement> members; 
+	public List<ASTNeoNode> members; 
 	
 	
 	public EArcheType getArcheType() {

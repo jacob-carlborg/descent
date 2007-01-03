@@ -8,11 +8,13 @@ import java.io.StringWriter;
  * Idea from Bruce Eckel's article:
  * http://www.mindview.net/Etc/Discussions/CheckedExceptions
  */
+@SuppressWarnings("serial")
 public class ExceptionAdapter extends RuntimeException {
+
 	private final String stackTrace;
 	public Exception originalException;
 
-	public ExceptionAdapter(Exception e) {
+	private ExceptionAdapter(Exception e) {
 		super(e.toString());
 		originalException = e;
 		StringWriter sw = new StringWriter();
@@ -40,5 +42,18 @@ public class ExceptionAdapter extends RuntimeException {
 
 	public void rethrow() throws Exception {
 		throw originalException;
+	}
+
+	public static RuntimeException unchecked(Throwable e) {
+		if(e instanceof RuntimeException)
+			return (RuntimeException) e;
+		else if(e instanceof Exception)
+			return new ExceptionAdapter((Exception)e);
+		if(e instanceof Error)
+			throw (Error) e;
+		else {
+			Assert.fail("uncheck: Unsupported Throwable: " + e);
+			return null;
+		}
 	}
 }

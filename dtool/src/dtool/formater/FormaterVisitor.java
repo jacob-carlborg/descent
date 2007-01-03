@@ -3,7 +3,7 @@ package dtool.formater;
 import java.io.OutputStream;
 
 import descent.core.domX.ASTVisitor;
-import dtool.dom.base.ASTElement;
+import dtool.dom.base.ASTNeoNode;
 
 
 public class FormaterVisitor extends ASTVisitor {
@@ -21,7 +21,7 @@ public class FormaterVisitor extends ASTVisitor {
 	
 	// ***************************** //
 	
-	public boolean visit(ASTElement element) {
+	public boolean visit(ASTNeoNode element) {
 		scribe.synchToElementAndIndent(element); 
 		scribe.write("««" + element.toString() + "»»");
 		scribe.writeElement(element);

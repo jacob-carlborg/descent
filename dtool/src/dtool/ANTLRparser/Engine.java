@@ -65,8 +65,6 @@ static List<Token> refactortokens;
 	}
 	
 	public static void rewriteTokenStream() {
-		int i;
-		
 		
 		for (Object tokenobj : Model.tokens.getTokens()) {
 			Token token = (Token) tokenobj;

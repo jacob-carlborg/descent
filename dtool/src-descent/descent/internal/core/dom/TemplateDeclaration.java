@@ -1,5 +1,6 @@
 package descent.internal.core.dom;
 
+import java.util.Arrays;
 import java.util.List;
 
 import descent.core.dom.IDeclaration;
@@ -41,10 +42,12 @@ public class TemplateDeclaration extends Declaration implements ITemplateDeclara
 	public void accept0(ASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
+			
 			acceptChild(visitor, ident);
 			acceptChildren(visitor, tpl);
-			acceptChildren(visitor, (AbstractElement[]) declDefs);
+			acceptChildren(visitor, Arrays.asList(declDefs));
 		}
+		
 		visitor.endVisit(this);
 	}
 

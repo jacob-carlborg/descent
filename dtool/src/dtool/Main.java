@@ -1,11 +1,5 @@
 package dtool;
-/**
- * @author phoenix
- *
- */
 
-import java.io.ByteArrayOutputStream;
-import java.io.OutputStream;
 
 import util.ExceptionAdapter;
 import util.StringUtil;
@@ -14,7 +8,6 @@ import dtool.dom.ast.ASTPrinter;
 import dtool.dom.base.ASTNode;
 import dtool.dom.base.DefUnit;
 import dtool.dom.base.Entity;
-import dtool.formater.CodeFormatter;
 import dtool.model.ModelException;
 import dtool.project.CompilationUnit;
 import dtool.project.DeeProject;
@@ -24,20 +17,22 @@ public class Main {
 	
 	private Main() { }
 	
+
     public static DeeProject dproj;
 
 	public static void main(String[] args) throws Exception {
 		System.out.println("======== DTool ========");
-
+		
 		try {
 			dproj = DeeProject.newTestProject();
 			testDescent(args);
 			//testDtool(args);
 			
 		} catch (Exception e) {
-			// Annoying flushing problems
+			// For annoying flushing problems in Eclipse console
 			System.out.flush();
 			System.err.flush();
+				
 			throw e;
 		} 
 		System.out.println("= THE END =");
@@ -50,7 +45,10 @@ public class Main {
 		CompilationUnit cu = dproj.testcu;
 		cu.preParseCompilationUnit();
 		
-		if(cu.problems.length > 0) {
+		System.out.println("====== Descent AST Tree: ======");
+		System.out.println(ASTPrinter.toStringAST(cu.getOldModule()));
+		
+		if(cu.hasErrors()) {
 			System.out.println("== Problems: ==");
 			for (int i = 0; i < cu.problems.length; i++) {
 				System.out.println(cu.problems[i].toString());
@@ -58,16 +56,19 @@ public class Main {
 			System.exit(1);
 		}
 		
-		System.out.println("====== Descent AST Tree: ======");
-		cu.getOldModule().accept(new ASTPrinter(false));
-		
 		System.out.println("====== Neo AST Tree: ======");
 		cu.adaptDOM();
-		cu.getNeoModule().accept(new ASTPrinter(false, false));
+		System.out.println(ASTPrinter.toStringNeoAST(cu.getNeoModule()));
 		
 		System.out.println("====== Neo AST Consistency check: ======");
 		ASTChecker.checkConsistency(cu.getNeoModule());
 		
+		testFindEntityByOffset(40);
+		
+		testFindEntityByName();
+	}
+
+	private static void testFindEntityByName() {
 		try {
 			System.out.println("====== findEntity by name: ======");
 			DefUnit defunit = dproj.findEntity("%%.Foo");
@@ -75,14 +76,20 @@ public class Main {
 			System.out.println(StringUtil.collToString(defunit.getScope().getDefUnits(), "\n"));
 			
 		} catch (ModelException e) {
-			throw new ExceptionAdapter(e);
+			throw ExceptionAdapter.unchecked(e);
 		}
-	
+	}
+
+	private static void testFindEntityByOffset(int offset) {
 		try {
-			int offset = 80;
+			;
 			System.out.println("===== findEntity by offset: "+offset+ " =====");
 			ASTNode elem = dproj.findEntity(dproj.testcu, offset);
-			ASTPrinter.printSingleElement(elem);
+			if(elem == null) {
+				System.out.println("No Elem found??");
+				return;
+			}
+			System.out.println(ASTPrinter.toStringElement(elem));
 			if(elem instanceof Entity) {
 				DefUnit defunit = ((Entity)elem).getReferencedDefUnit();
 				System.out.println("F3 Declaration at:" +defunit.getStartPos());
@@ -95,16 +102,8 @@ public class Main {
 				System.out.println("other");
 			} 
 		} catch (Exception e) {
-			throw new ExceptionAdapter(e);
+			throw ExceptionAdapter.unchecked(e);
 		}
 	}
 
-	private static void testRefactor(CompilationUnit cu) {
-		System.out.println("=== Reformat: ===");
-		
-		OutputStream out = new ByteArrayOutputStream();
-		CodeFormatter.formatSource(cu);
-		//cu.module.accept(new FormaterVisitor(System.out, Main.cbuf));
-		//System.out.print(out);
-	}
 }

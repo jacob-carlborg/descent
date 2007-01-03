@@ -2,8 +2,8 @@ package dtool.dom.base;
 
 import util.ExceptionAdapter;
 import dtool.dom.ast.ASTNeoVisitor;
-import dtool.dom.ast.IScope;
 import dtool.model.BindingResolver;
+import dtool.model.IScope;
 import dtool.model.ModelException;
 
 public abstract class EntitySingle extends Entity {
@@ -18,7 +18,7 @@ public abstract class EntitySingle extends Entity {
 		}
 		
 		public void accept0(ASTNeoVisitor visitor) {
-			boolean children = visitor.visit(this);
+			visitor.visit(this);
 			visitor.endVisit(this);
 		}
 		
@@ -30,7 +30,7 @@ public abstract class EntitySingle extends Entity {
 			ASTNode elem = this;
 			// Search for module elem
 			while((elem instanceof IScope) == false)
-				elem = elem.parent;
+				elem = elem.getParent();
 			return ((IScope)elem);
 		}
 
@@ -41,7 +41,7 @@ public abstract class EntitySingle extends Entity {
 			try {
 				BindingResolver.findDefUnit(scope.getDefUnits(), name);
 			} catch (ModelException e) {
-				throw new ExceptionAdapter(e);
+				throw ExceptionAdapter.unchecked(e);
 			}
 			return null;
 		}

@@ -3,7 +3,6 @@ package dtool.model;
 import java.util.List;
 
 import util.StringUtil;
-import dtool.dom.ast.IScope;
 import dtool.dom.base.DefUnit;
 import dtool.project.DeeProject;
 

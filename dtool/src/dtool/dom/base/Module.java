@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import dtool.dom.ast.ASTNeoVisitor;
-import dtool.dom.ast.IScope;
+import dtool.model.IScope;
 
 /**
  * D Module
@@ -28,7 +28,7 @@ public class Module extends DefUnit implements IScope {
 		visitor.endVisit(this);
 	}
 
-	public static class DeclarationModule extends ASTElement {
+	public static class DeclarationModule extends ASTNeoNode {
 
 		public EntitySingle[] packages;
 		public EntitySingle moduleName; // XXX: SymbolReference?

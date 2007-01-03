@@ -2,16 +2,16 @@ package dtool.dom.base;
 
 import util.ExceptionAdapter;
 import dtool.dom.ast.ASTNeoVisitor;
-import dtool.dom.ast.IScope;
 import dtool.dom.base.EntitySingle.Identifier;
 import dtool.model.BindingResolver;
+import dtool.model.IScope;
 import dtool.model.ModelException;
 
 /**
  * A qualified entity/name reference
  * XXX: Consider in the future to be an interface?
  */
-public abstract class Entity extends ASTElement {
+public abstract class Entity extends ASTNeoNode {
 
 	//public EntitySingleRef[] ents; 
 	
@@ -46,7 +46,7 @@ public abstract class Entity extends ASTElement {
 			try {
 				BindingResolver.findDefUnit(scope.getDefUnits(), id.name );
 			} catch (ModelException e) {
-				throw new ExceptionAdapter(e);
+				throw ExceptionAdapter.unchecked(e);
 			}
 
 			return null;
@@ -62,7 +62,7 @@ public abstract class Entity extends ASTElement {
 		//public EntitySingle baseent;
 		
 		public void accept0(ASTNeoVisitor visitor) {
-			boolean children = visitor.visit(this);
+			visitor.visit(this);
 /*			if (children) {
 				acceptChildren(visitor, baseent);
 			}
@@ -79,7 +79,7 @@ public abstract class Entity extends ASTElement {
 			ASTNode elem = this;
 			// Search for module elem
 			while((elem instanceof Module) == false)
-				elem = elem.parent;
+				elem = elem.getParent();
 			return ((Module)elem);
 		}
 	}

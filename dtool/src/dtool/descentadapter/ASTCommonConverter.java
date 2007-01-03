@@ -4,14 +4,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 import descent.core.domX.ASTVisitor;
-import dtool.dom.base.ASTElement;
+import dtool.dom.base.ASTNeoNode;
 import dtool.dom.base.ASTNode;
 
+/**
+ * This class is a mixin. 
+ * Do not use it, instead use it's subclass: {@link DefConverter}
+ */
 public abstract class ASTCommonConverter extends ASTVisitor {
 	
 	ASTNode ret = null;
 	
-	public ASTNode convert(ASTNode elem) {
+	ASTNode convert(ASTNode elem) {
 		elem.accept(this);
 		return ret;
 	}
@@ -49,7 +53,7 @@ public abstract class ASTCommonConverter extends ASTVisitor {
 	protected <T extends ASTNode> List<T> convertMany(List<ASTNode> children) {
 		List<T> rets = new ArrayList<T>(children.size());
 		for (int i = 0; i < children.size(); ++i) {
-			ASTNode elem = (ASTNode) children.get(i);
+			ASTNode elem = children.get(i);
 			elem.accept(this);
 			rets.add((T) ret);
 		}
@@ -58,12 +62,12 @@ public abstract class ASTCommonConverter extends ASTVisitor {
 	
 	/* ---- common adaptors ---- */
 	
-	protected void rangeAdapt(ASTElement newelem, ASTNode elem) {
+	protected void rangeAdapt(ASTNeoNode newelem, ASTNode elem) {
 		newelem.startPos = elem.getStartPos();
 		newelem.length = elem.getLength();
 	}
 
-	protected boolean endAdapt(ASTElement newelem) {
+	protected boolean endAdapt(ASTNeoNode newelem) {
 		ret = newelem;
 		return false;
 	}

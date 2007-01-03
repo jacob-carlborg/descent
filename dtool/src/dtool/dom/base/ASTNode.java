@@ -1,61 +1,61 @@
 package dtool.dom.base;
 
-import java.util.List;
-
+import util.Assert;
+import util.AssertIn;
 import descent.core.dom.IElement;
 import descent.core.domX.ASTVisitor;
-import dtool.dom.ast.TreeChildrenCollector;
+import dtool.dom.ast.tree.TreeChildrenCollector;
+import dtool.dom.ast.tree.TreeNode;
 
-public abstract class ASTNode implements IElement  {
+public abstract class ASTNode extends TreeNode<ASTNode, ASTVisitor> implements IElement  {
 
-	/**
-	 * A character index into the original source string, 
+	/** Returns the node's children, ordered. */
+	public ASTNode[] getChildren() {
+		return (ASTNode[]) TreeChildrenCollector.getChildrenArray(this, new ASTNode[0]);
+	}
+
+	/** A character index into the original source string, 
 	 * or <code>-1</code> if no source position information is available
 	 * for this node; <code>-1</code> by default.
 	 */
 	public int startPos = -1;
-	/**
-	 * A character length, or <code>0</code> if no source position
+	/** A character length, or <code>0</code> if no source position
 	 * information is recorded for this node; <code>0</code> by default.
 	 */
 	public int length = 0;
 
-
-	public ASTNode parent = null;
 	
-	
+	/** Gets the source range start position, aka offset. */
 	public int getStartPos() {
 		return startPos;
 	}
+	/** Gets the source range start position, aka offset. */
 	public int getOffset() {
 		return startPos;
 	}
+	/** Gets the source range length. */
 	public int getLength() {
 		return length;
 	}
 	
+	/** Gets the source range end position (start position + length). */
 	public int getEndPos() {
-		assert(startPos != -1);
+		Assert.isTrue(startPos != -1);
 		return startPos+length;
 	}
-
+	/** Sets the source range end position (start position + length). */
 	public void setEndPos(int endPos) {
-		assert(startPos != -1);
-		assert(endPos >= startPos);
+		AssertIn.isTrue(endPos >= startPos);
+		Assert.isTrue(startPos != -1);
 		length = endPos - startPos ;
 	}
 
-	/**
-	 * Sets the source range of the original source file where the source
+	/** Sets the source range of the original source file where the source
 	 * fragment corresponding to this node was found.
 	 */
 	public final void setSourceRange(int startPosition, int length) {
-		if (startPosition >= 0 && length < 0) {
-			throw new IllegalArgumentException();
-		}
-		if (startPosition < 0 && length != 0) {
-			throw new IllegalArgumentException();
-		}
+		AssertIn.isTrue(startPosition >= 0 && length < 0);
+		AssertIn.isTrue(startPosition < 0 && length != 0);
 		// source positions are not considered a structural property
 		// but we protect them nevertheless
 		//checkModifiable();
@@ -63,128 +63,11 @@ public abstract class ASTNode implements IElement  {
 		this.length = length;
 	}
 	
+	/** Checks if the node has no defined source range info.
+	 */
 	public boolean hasNoSourceRangeInfo() {
 		return startPos == -1;
 	}
 	
-	/**
-	 * Returns#  
-	 * @return the parent of this node, or <code>null</code> if none
-	 */ 
-	public ASTNode getParent() {
-		return parent;
-	}
-
-	public String toString() {
-		return nodeToString();
-	}
 	
-	public final String nodeToString() {
-		String name = this.getClass().getName().replaceAll("^.*\\.dom\\.", "");
-		//return name + " [" + startPos+"+"+length+"]";
-		return name;
-	}
-
-	/**
-	 * Accepts the given visitor on a visit of the current node.
-	 * 
-	 * @param visitor the visitor object
-	 * @exception IllegalArgumentException if the visitor is null
-	 */
-	public void accept(ASTVisitor visitor) {
-		if (visitor == null) {
-			throw new IllegalArgumentException();
-		}
-		// begin with the generic pre-visit
-		visitor.preVisit(this);
-		// dynamic dispatch to internal method for type-specific visit/endVisit
-		this.accept0(visitor);
-		// end with the generic post-visit
-		visitor.postVisit(this);
-	}
-
-	
-	/**
-	 * Accepts the given visitor on a type-specific visit of the current node.
-	 * This method must be implemented in all concrete AST node types.
-	 * <p>
-	 * General template for implementation on each concrete IElement class:
-	 * <pre> <code>
-	 * boolean visitChildren = visitor.visit(this);
-	 * if (visitChildren) {
-	 *    // visit children in normal left to right reading order
-	 *    acceptChild(visitor, getProperty1());
-	 *    acceptChildren(visitor, rawListProperty);
-	 *    acceptChild(visitor, getProperty2());
-	 * }
-	 * visitor.endVisit(this);
-	 * </code> </pre>
-	 * Note that the caller (<code>accept</code>) take cares of invoking
-	 * <code>visitor.preVisit(this)</code> and <code>visitor.postVisit(this)</code>.
-	 * </p>
-	 */
-	public abstract void accept0(ASTVisitor visitor);
-	
-	/**
-	 * Accepts the given visitor on a visit of the current node.
-	 */
-	public final void acceptChild(ASTVisitor visitor, ASTNode child) {
-		if (child == null) {
-			return;
-		}
-		child.accept(visitor);
-	}
-
-	/**
-	 * Same as acceptChild.
-	 */
-	public final void acceptChildren(ASTVisitor visitor, ASTNode child) {
-		acceptChild(visitor, child);
-	}
-	
-	/**
-	 * Accepts the given visitor on a visit of the given list of
-	 * child nodes. 
-	 */
-	public final void acceptChildren(ASTVisitor visitor, ASTNode[] children) {
-		if (children == null)
-			return;
-		
-		for(int i = 0; i < children.length; i++) {
-			if (children[i] instanceof ASTNode) {
-				acceptChild(visitor, (ASTNode) children[i]);
-			}
-		}
-	}
-	
-	/**
-	 * Same as accepChildren. TODO: cleanify?
-	 */
-	public final void acceptChild(ASTVisitor visitor, ASTNode[] children) {
-		acceptChildren(visitor, children);
-	}
-
-	
-	/**
-	 * Accepts the visitor on the children. If children is null,
-	 * nothing happens.
-	 */
-	public void acceptChildren(ASTVisitor visitor, List<? extends Object> children) {
-		// FIXME: that Object above is ASTNode
-		if (children == null)
-			return;
-		
-		for(int i = 0; i < children.size(); i++) {
-			if (children.get(i) instanceof ASTNode) {
-				acceptChild(visitor, (ASTNode) children.get(i));
-			}
-		}
-	}
-
-	/**
-	 * Returns the children elements, in order.
-	 */
-	public ASTNode[] getChildren() {
-		return TreeChildrenCollector.getChildrenArray(this);
-	}
 }

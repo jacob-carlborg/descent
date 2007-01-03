@@ -39,7 +39,9 @@ public abstract class DElementVisitor {
 		} 
 	}
 	
+	@SuppressWarnings("serial")
 	public static class UnknownASTElementException extends Exception {
+
 		public UnknownASTElementException(AbstractElement element) {
 			super("ASTVisitor: Unknown ASTElement type:"+element);
 		}

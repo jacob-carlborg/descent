@@ -1,12 +1,12 @@
 package dtool.dom.base;
 
 import dtool.dom.ast.ASTNeoVisitor;
-import dtool.dom.ast.IScope;
+import dtool.model.IScope;
 
 /**
  * Abstract class for all AST elements that define a new symbol.
  */
-public abstract class DefUnit extends ASTElement {
+public abstract class DefUnit extends ASTNeoNode {
 	
 	public Symbol name; // XXX fixme the accept0
 	public EArcheType archeType;
@@ -18,7 +18,7 @@ public abstract class DefUnit extends ASTElement {
 		this.name = new Symbol(name);
 	}
 	
-	public static class Symbol extends ASTElement {
+	public static class Symbol extends ASTNeoNode {
 		public String name;
 
 		public Symbol(String name) {

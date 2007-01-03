@@ -1,7 +1,7 @@
 package dtool.dom.expressions;
 
-import dtool.dom.base.ASTElement;
+import dtool.dom.base.ASTNeoNode;
 
-public abstract class Expression extends ASTElement {
+public abstract class Expression extends ASTNeoNode {
 	
 }

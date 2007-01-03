@@ -6,7 +6,7 @@ import java.io.PrintStream;
 import util.ExceptionAdapter;
 import util.StringUtil;
 import descent.internal.core.dom.Token;
-import dtool.dom.base.ASTElement;
+import dtool.dom.base.ASTNeoNode;
 
 
 public class FormaterScribe {
@@ -52,7 +52,7 @@ public class FormaterScribe {
 	boolean requireNL;
 	int requireNLpos;
 	
-	public void requireNewLine(ASTElement element) {
+	public void requireNewLine(ASTNeoNode element) {
 		requireNewLine(element.getOffset() + element.getLength() );
 	}
 
@@ -83,22 +83,22 @@ public class FormaterScribe {
 
 	/* ****************************************** */
 	
-	public void writeToElement(ASTElement elem) {
+	public void writeToElement(ASTNeoNode elem) {
 		writeToPos(elem.getOffset());
 	}
 	
-	public void writeElement(ASTElement elem) {
+	public void writeElement(ASTNeoNode elem) {
 		writeToPos(elem.getOffset());
 		write(new String(source, elem.getOffset(), elem.getLength())); 
 		advancePos(elem.getLength());
 	}
 	
-	public void synchToElementAndIndent(ASTElement element) {
+	public void synchToElementAndIndent(ASTNeoNode element) {
 		synchToElement(element); 
 		indent(element.getOffset()); 
 	}
 	
-	public void synchToElement(ASTElement element) {
+	public void synchToElement(ASTNeoNode element) {
 		int targetpos = element.getOffset();
 //		System.out.println(source[targetpos]);
 
@@ -125,7 +125,7 @@ public class FormaterScribe {
 				continue;
 			}		
 
-			throw new ExceptionAdapter(
+			throw ExceptionAdapter.unchecked(
 					new Exception("synch:Unexpected Token:" + tok));
 		}
 		// TODO: assert tokens match?

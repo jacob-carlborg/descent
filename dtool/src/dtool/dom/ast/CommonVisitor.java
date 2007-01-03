@@ -1,13 +1,26 @@
-package descent.core.domX;
+package dtool.dom.ast;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
+import util.Assert;
+import util.ExceptionAdapter;
+import dtool.dom.ast.tree.TreeNode;
 import dtool.dom.base.ASTNode;
 
-import util.ExceptionAdapter;
+public class CommonVisitor<T extends TreeNode> {
+	
+	public void preVisit(T elem) {
+		// Default implementation: do nothing
+	}
 
-public class CommonTreeVisitor {
+	public void postVisit(T elem) {
+		// Default implementation: do nothing
+	}
+	
+	protected static void ensureFirstIsSuperOfLast(Class basecl, Class supercl) {
+		Assert.isTrue(basecl.getSuperclass().equals(supercl));
+	}
 
 	protected boolean checkASTtypes = false;
 	protected boolean visitingAsSuper = false;
@@ -22,26 +35,22 @@ public class CommonTreeVisitor {
 			visitingAsSuper = false;
 			return result;
 		} catch (InvocationTargetException ite) {
-			/// TODO: fix this?
 			Throwable e = (Throwable)ite.getTargetException();
-			if(e instanceof RuntimeException)
-				throw (RuntimeException) e;
-			else if(e instanceof Error)
-				throw (Error) e;
-			else
-				throw new ExceptionAdapter((Exception)e); 
+			throw ExceptionAdapter.unchecked(e);
 		} catch (Exception e) {
-			throw new ExceptionAdapter(e); 
+			throw ExceptionAdapter.unchecked(e);
 		} 
 	}
 	
+	@SuppressWarnings("serial")
 	public static class UnknownASTElementException extends Exception {
+
 		public UnknownASTElementException(ASTNode element) {
-			super("ASTVisitor: Unknown ASTElement type:"+element);
+			super("Tree Visitor: Unknown ASTElement type:"+element);
 		}
 	}
 	
-	protected void ensureVisitIsNotDirectVisit(AbstractElement element) {
+	protected void ensureVisitIsNotDirectVisit(ASTNode element) {
 		if(checkASTtypes && visitingAsSuper != true)
 			throw new RuntimeException(new UnknownASTElementException(element));
 	}

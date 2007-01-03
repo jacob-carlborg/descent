@@ -7,7 +7,7 @@ import descent.core.compiler.IProblem;
 import descent.core.domX.AbstractElement;
 import descent.internal.core.dom.ParserFacade;
 import dtool.descentadapter.DescentASTConverter;
-import dtool.dom.ast.ASTParentizer;
+import dtool.dom.ast.tree.TreeParentizer;
 import dtool.dom.base.ASTNode;
 import dtool.dom.base.Module;
 /**
@@ -30,11 +30,6 @@ public class CompilationUnit {
 		this.source = FileUtil.readStringFromFile(file);
 	}
 	
-	public void update(String source) {
-		this.source = source;
-		parse();
-	}
-	
 	public descent.internal.core.dom.Module getOldModule() {
 		return (descent.internal.core.dom.Module) cumodule;
 	}
@@ -46,7 +41,16 @@ public class CompilationUnit {
 	public ASTNode getModule() {
 		return cumodule;
 	}
+
+	public boolean hasErrors() {
+		return problems.length > 0;
+	}
 	
+	public void update(String source) {
+		this.source = source;
+		parse();
+	}
+
 	public void preParseCompilationUnit() {
 		ParserFacade parser = new descent.internal.core.dom.ParserFacade();
 		descent.internal.core.dom.Module descentmodule;
@@ -60,11 +64,14 @@ public class CompilationUnit {
 	public void adaptDOM() {
 		DescentASTConverter domadapter = new DescentASTConverter();
 		this.cumodule = domadapter.convert((AbstractElement) cumodule); 
-		ASTParentizer.parentize(this.cumodule);
+		TreeParentizer.parentize(this.cumodule);
 	}
 	
 	public void parse(){
 		preParseCompilationUnit();
+		if(hasErrors())
+			return;
 		adaptDOM();
 	}
+
 }

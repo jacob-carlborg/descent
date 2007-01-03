@@ -41,7 +41,7 @@ public class Model {
 			System.out.println("Parsed.");
 			System.out.flush();
 		} catch (Exception e) {
-			throw new ExceptionAdapter(e);
+			throw ExceptionAdapter.unchecked(e);
 		}
 	}
 	

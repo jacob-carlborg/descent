@@ -7,7 +7,7 @@ import descent.internal.core.dom.LINK;
 import descent.internal.core.dom.Statement;
 import descent.internal.core.dom.TemplateParameter;
 import dtool.dom.ast.ASTNeoVisitor;
-import dtool.dom.ast.IScope;
+import dtool.model.IScope;
 
 /**
  * A definition of a function.

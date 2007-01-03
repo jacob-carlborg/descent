@@ -3,12 +3,13 @@ package dtool.project;
 import java.io.File;
 import java.util.List;
 
+import util.AssertIn;
 import util.ExceptionAdapter;
 import dtool.dom.ast.ASTElementFinder;
-import dtool.dom.ast.IScope;
 import dtool.dom.base.ASTNode;
 import dtool.dom.base.DefUnit;
 import dtool.model.BindingResolver;
+import dtool.model.IScope;
 import dtool.model.ModelException;
 
 public class DeeProject implements IScope {
@@ -23,7 +24,7 @@ public class DeeProject implements IScope {
 			//System.out.println(testcu.source);
 			
 		} catch (Exception e) {
-			throw new ExceptionAdapter(e);
+			throw ExceptionAdapter.unchecked(e);
 		}
 		return dproj;
 	}
@@ -37,6 +38,7 @@ public class DeeProject implements IScope {
 	}
 
 	public ASTNode findEntity(CompilationUnit cunit, int offset) {
+		AssertIn.isTrue(offset < cunit.source.length());
 		ASTNode elem = ASTElementFinder.findElement(cunit.getNeoModule(), offset);
 		return elem;
 	}

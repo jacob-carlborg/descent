@@ -8,7 +8,7 @@ import dtool.dom.ast.ASTNeoVisitor;
 /**
  * An Import Declaration
  */
-public class DeclarationImport extends ASTElement {
+public class DeclarationImport extends ASTNeoNode {
 
 	public List<Import> imports;
 	public boolean isStatic;

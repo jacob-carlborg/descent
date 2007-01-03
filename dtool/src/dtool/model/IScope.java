@@ -1,4 +1,4 @@
-package dtool.dom.ast;
+package dtool.model;
 
 import java.util.List;
 

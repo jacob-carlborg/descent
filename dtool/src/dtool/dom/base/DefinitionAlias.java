@@ -2,7 +2,7 @@ package dtool.dom.base;
 
 
 import dtool.dom.ast.ASTNeoVisitor;
-import dtool.dom.ast.IScope;
+import dtool.model.IScope;
 
 /**
  * A definition of an alias.

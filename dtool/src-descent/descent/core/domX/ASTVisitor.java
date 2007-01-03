@@ -12,6 +12,7 @@ import descent.core.dom.ITrueExpression;
 import descent.core.dom.IVersionDeclaration;
 import descent.core.dom.IVersionStatement;
 import descent.internal.core.dom.*;
+import dtool.dom.ast.CommonVisitor;
 import dtool.dom.base.ASTNode;
 
 
@@ -55,7 +56,7 @@ import dtool.dom.base.ASTNode;
  * 
  * @see descent.core.IElement#accept(ElementVisitor)
  */
-public abstract class ASTVisitor extends CommonTreeVisitor {
+public abstract class ASTVisitor extends CommonVisitor<ASTNode> {
 
 	public void preVisit(ASTNode elem) {
 		// Default implementation: do nothing

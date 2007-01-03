@@ -1,5 +1,6 @@
 package dtool.model;
 
+@SuppressWarnings("serial")
 public class NoSuchEntModelException extends ModelException {
 
 	public NoSuchEntModelException() {
