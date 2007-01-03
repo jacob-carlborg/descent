@@ -1,4 +1,4 @@
-package dtool.ANTLRparser;
+package dtool.antlr_parser;
 import java.io.FileReader;
 
 import org.antlr.runtime.ANTLRReaderStream;
