@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<project name="OwnTaskExample" default="compile" basedir=".">
+
+	<taskdef classname="anttasks.D" name="D" />
+	
+	<property name="compiler.dir" value="/opt/dmd" />
+	<property name="compiler.type" value="dmd-linux" />
+	<property name="tango.dir" value="${user.home}/tango" />
+	<property name="tango.examples.dir" value="${tango.dir}/example" />
+	
+	<target name="resgen" >
+		<BinToD
+			file="t.d"
+			fqn="t"
+		>
+			<resource file="src/anttasks/BinToD.java" id="bintod" variable="bintod" version="all" />
+		</BinToD>
+	</target>	
+	
+	<target name="compile" >
+		
+		<D 
+		  type        = "${compiler.type}"
+		  mode        = "executable"
+		  compilerdir = "${compiler.dir}"
+		  destfile    = "target"
+		  cleanup     = "true"
+		>
+			<version value="Posix" />
+			
+			<!-- The main modules -->
+			<mainmodules>
+				<fileset file="${tango.examples.dir}/hello.d"/>
+			</mainmodules>
+			
+			<!-- Modules for compilation and linking, if imported -->
+			<includemodules>
+				<dirset file="${tango.examples.dir}" />
+				<dirset file="${tango.dir}" />
+			</includemodules>
+
+			<!-- Imported modules, only for declarations, no compile/link (libs) -->
+			<includepath>
+			</includepath>
+			
+			<linkflag value="/usr/lib/libphobos.a" />
+			<linkflag value="-lc" />
+			<linkflag value="-lphobos" />
+			<linkflag value="-lpthread" />
+			<linkflag value="-lm" />			
+		</D>
+	</target>
+</project>
+
+
