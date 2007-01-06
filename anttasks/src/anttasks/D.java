@@ -39,13 +39,11 @@ package anttasks;
  * <taskdef classname="anttasks.D" name="D" />
  */
 
-import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.regex.Matcher;
@@ -53,12 +51,13 @@ import java.util.regex.Pattern;
 
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.DirectoryScanner;
+import org.apache.tools.ant.Project;
 import org.apache.tools.ant.Task;
 import org.apache.tools.ant.taskdefs.Execute;
 import org.apache.tools.ant.taskdefs.PumpStreamHandler;
+import org.apache.tools.ant.types.Commandline;
 import org.apache.tools.ant.types.DirSet;
 import org.apache.tools.ant.types.FileSet;
-import org.apache.tools.ant.util.TeeOutputStream;
 
 /*
  * mode="object"
@@ -247,16 +246,16 @@ public class D extends Task {
 			throw new BuildException("type must be one of dmd/gdc");
 		}
 		
-		System.out.format("D Task: compile     = %s\n", compile     );
-		System.out.format("D Task: compilerdir = %s\n", compilerdir );
-		System.out.format("D Task: mode        = %s\n", mode.toString() );
-		System.out.format("D Task: header      = %s\n", header      );
-		System.out.format("D Task: ddoc        = %s\n", ddoc        );
-		System.out.format("D Task: debuginfo   = %s\n", debuginfo   );
-		System.out.format("D Task: debuginfo_c = %s\n", debuginfo_c );
-		System.out.format("D Task: destfile    = %s\n", destfile    );
-		System.out.format("D Task: cleanup     = %s\n", cleanup     );
-		System.out.format("D Task: warnings    = %s\n", warnings    );
+		log( String.format("D Task: compile     = %s\n", compile     ), Project.MSG_VERBOSE );
+		log( String.format("D Task: compilerdir = %s\n", compilerdir ), Project.MSG_VERBOSE );
+		log( String.format("D Task: mode        = %s\n", mode.toString() ), Project.MSG_VERBOSE );
+		log( String.format("D Task: header      = %s\n", header      ), Project.MSG_VERBOSE );
+		log( String.format("D Task: ddoc        = %s\n", ddoc        ), Project.MSG_VERBOSE );
+		log( String.format("D Task: debuginfo   = %s\n", debuginfo   ), Project.MSG_VERBOSE );
+		log( String.format("D Task: debuginfo_c = %s\n", debuginfo_c ), Project.MSG_VERBOSE );
+		log( String.format("D Task: destfile    = %s\n", destfile    ), Project.MSG_VERBOSE );
+		log( String.format("D Task: cleanup     = %s\n", cleanup     ), Project.MSG_VERBOSE );
+		log( String.format("D Task: warnings    = %s\n", warnings    ), Project.MSG_VERBOSE );
 		
 		
 		for( MainModules mainModules : mainModuless ){
@@ -267,7 +266,7 @@ public class D extends Task {
 				for( String name : names ){
 					File srcFile = new File( scanner.getBasedir(), name );
 					mMainModules.add(srcFile );
-					System.out.format("D Task: main module = %s\n", srcFile.getAbsolutePath() );
+					log( String.format("D Task: main module = %s\n", srcFile.getAbsolutePath() ), Project.MSG_VERBOSE );
 					if( !name.endsWith( ".d" )){
 						throw new BuildException( String.format( "The source file %s does not end with \".d\".", name ));
 					}
@@ -282,7 +281,7 @@ public class D extends Task {
 				for( String name : names ){
 					File srcFile = new File( scanner.getBasedir(), name );
 					mIncludedModules.add(srcFile );
-					System.out.format("D Task: includepath = %s\n", srcFile.getAbsolutePath() );
+					log( String.format("D Task: includepath = %s\n", srcFile.getAbsolutePath() ), Project.MSG_VERBOSE );
 					if( !srcFile.isDirectory()){
 						throw new BuildException( String.format( 
 								"The include path %s is not an existing directory", srcFile.getAbsolutePath() ));
@@ -298,7 +297,7 @@ public class D extends Task {
 				for( String name : names ){
 					File srcFile = new File( scanner.getBasedir(), name );
 					mIncludePaths.add(srcFile );
-					System.out.format("D Task: includepath = %s\n", srcFile.getAbsolutePath() );
+					log( String.format("D Task: includepath = %s\n", srcFile.getAbsolutePath() ), Project.MSG_VERBOSE );
 					if( !srcFile.isDirectory()){
 						throw new BuildException( String.format( 
 								"The include path %s is not an existing directory", srcFile.getAbsolutePath() ));
@@ -308,7 +307,7 @@ public class D extends Task {
 		}
 
 		for( LinkFlag flag : linkflags ){
-			System.out.format("D Task: linkflag    = %s\n", flag.value );
+			log( String.format("D Task: linkflag    = %s\n", flag.value ), Project.MSG_VERBOSE );
 		}
 
 		try{
@@ -333,6 +332,8 @@ public class D extends Task {
 		try {
 			File t = File.createTempFile("AntMsgs", "log" );
 			FileOutputStream ostr = new FileOutputStream( t );
+			log(Commandline.describeCommand(cmdparts),
+                    Project.MSG_VERBOSE);
 			Execute exe = new Execute(new PumpStreamHandler(ostr));
 			exe.setAntRun(getProject());
 			exe.setCommandline(cmdparts);
@@ -342,7 +343,7 @@ public class D extends Task {
 				BufferedReader rd = new BufferedReader( new FileReader( t ));
 				String line;
 				while((line=rd.readLine()) != null ){
-					System.err.println(line);
+					log( line, Project.MSG_ERR );
 				}
 				rd.close();
 				throw new BuildException(cmdparts[0]
@@ -388,7 +389,7 @@ public class D extends Task {
 				if( moduleName.equals("object")){
 					continue;
 				}
-				System.out.println( "dep mod : "+moduleName );
+				//System.out.println( "dep mod : "+moduleName );
 				
 				boolean found = false;
 				found = findModule(mIncludedModules, moduleName, found);
@@ -492,17 +493,17 @@ public class D extends Task {
 			}
 			for( File inc : mIncludePaths ){
 				cmdline.add( "-I"+ inc.getAbsolutePath() );
-				System.out.println( "-I"+ inc.getAbsolutePath());
+				//System.out.println( "-I"+ inc.getAbsolutePath());
 			}
 			for( File inc : mIncludedModules ){
 				cmdline.add( "-I"+ inc.getAbsolutePath() );
-				System.out.println( "-I"+ inc.getAbsolutePath());
+				//System.out.println( "-I"+ inc.getAbsolutePath());
 			}
 			for( File f : mMainModules ){
 				cmdline.add( f.getAbsolutePath() );
 			}
 			
-			System.out.println( "Calling compiler to get dependencies: " );
+			log( "Calling compiler to get dependencies: ", Project.MSG_INFO );
 
 			File output = executeCmdCreateOutputFile( cmdline );
 			
@@ -512,12 +513,7 @@ public class D extends Task {
 				throw new BuildException( "BUDs modules file cannot be read." );
 			} finally {
 				output.delete();
-			}
-			
-			
-			for( String mod : mCompileFqns ){
-				System.out.println( " compile module: " + mod );
-			}
+			}			
 		}
 
 		private String getCompiler(){
@@ -555,15 +551,15 @@ public class D extends Task {
 			}
 			for( File inc : mIncludePaths ){
 				cmdline.add( "-I"+ inc.getAbsolutePath() );
-				System.out.println( "-I"+ inc.getAbsolutePath());
+				//System.out.println( "-I"+ inc.getAbsolutePath());
 			}
 			for( File inc : mIncludedModules ){
 				cmdline.add( "-I"+ inc.getAbsolutePath() );
-				System.out.println( "-I"+ inc.getAbsolutePath());
+				//System.out.println( "-I"+ inc.getAbsolutePath());
 			}
 			for( String mod : mCompileFiles ){
 				cmdline.add( mod );
-				System.out.println( "compile : "+mod );
+				//System.out.println( "compile : "+mod );
 				String srcName = mod;
 				String objName = srcName.substring(0, srcName.length()-1 ) + "o";
 				objFiles.add( objName );
@@ -574,9 +570,9 @@ public class D extends Task {
 			for( String s : cmdline ){
 				sb.append( " " + s );
 			}
-			System.out.format( "Will call compiler with parm count: %d and length %d\n", cmdline.size(), sb.length() );
+			log( String.format( "Will call compiler with parm count: %d and length %d\n", cmdline.size(), sb.length() ), Project.MSG_VERBOSE );
 			
-			System.out.println( "Calling compiler: " );
+			log( String.format( "Calling compiler: " ), Project.MSG_INFO );
 			Execute.runCommand(D.this, cmdline.toArray(new String[0]));
 			
 			
@@ -598,7 +594,7 @@ public class D extends Task {
 				cmdline.add( "" + flag.value );
 			}
 
-			System.out.println( "Calling linker: " );
+			log( "Calling linker: ", Project.MSG_INFO );
 			Execute.runCommand(D.this, cmdline.toArray(new String[0]));
 		}
 
@@ -617,7 +613,7 @@ public class D extends Task {
 					continue;
 				}
 				if( !tempFile.delete() ){
-					System.out.format( "cannot delete the temporary file %s\n", fileName );
+					log( String.format( "cannot delete the temporary file %s\n", fileName ), Project.MSG_WARN );
 				}
 			}			
 		}

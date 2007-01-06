@@ -7,6 +7,7 @@
 	<property name="compiler.type" value="dmd-linux" />
 	<property name="tango.dir" value="${user.home}/tango" />
 	<property name="tango.examples.dir" value="${tango.dir}/example" />
+	<property name="tango.examples.hello" value="${tango.examples.dir}/hello" />
 	
 	<target name="resgen" >
 		<BinToD
@@ -23,14 +24,14 @@
 		  type        = "${compiler.type}"
 		  mode        = "executable"
 		  compilerdir = "${compiler.dir}"
-		  destfile    = "target"
+		  destfile    = "${tango.examples.hello}"
 		  cleanup     = "true"
 		>
 			<version value="Posix" />
 			
 			<!-- The main modules -->
 			<mainmodules>
-				<fileset file="${tango.examples.dir}/hello.d"/>
+				<fileset file="${tango.examples.hello}.d"/>
 			</mainmodules>
 			
 			<!-- Modules for compilation and linking, if imported -->

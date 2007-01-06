@@ -95,20 +95,20 @@ public class BinToD extends Task {
 			mWriter.println("");
 
 			// Write id to variable mapper
-			mWriter.println("ubyte[] getDataById( char[] aId ){");
+			mWriter.println("public ubyte[] getDataById( char[] aId ){");
 			for (Resource res : resources ) {
-			    mWriter.format("    version( %s ){{\n", res.version);
+			    mWriter.format("    version( %s ){\n", res.version);
 			    mWriter.format("        if( aId == \"%s\" ) return %s;\n",res.id, res.variable);
 			    mWriter.println("    }");
 			}
-			mWriter.println("    return null;");
+			mWriter.println("    return null; // aId did not match");
 			mWriter.println("}");
 			mWriter.println("");
 
 			// Write the data
 			for( Resource res: resources) {
-			    mWriter.format("version( %s ){{\n", res.version);
-			    mWriter.format("    ubyte[] %s = [ cast(ubyte)", res.variable);
+			    mWriter.format("version( %s ){\n", res.version);
+			    mWriter.format("    public ubyte[] %s = [ cast(ubyte)", res.variable);
 			    FileInputStream dataFc = new FileInputStream( res.file );
 			    int c, idx = 0;
 			    boolean first = true;
