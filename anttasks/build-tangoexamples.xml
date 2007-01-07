@@ -44,11 +44,11 @@
 			<includepath>
 			</includepath>
 			
-			<linkflag value="/usr/lib/libphobos.a" />
-			<linkflag value="-lc" />
-			<linkflag value="-lphobos" />
-			<linkflag value="-lpthread" />
-			<linkflag value="-lm" />			
+			<linklib type="static"  name="/usr/lib/libphobos.a" />
+			<linklib type="dynamic" name="c" />
+			<linklib type="dynamic" name="phobos" />
+			<linklib type="dynamic" name="pthread" />
+			<linklib type="dynamic" name="m" />			
 		</D>
 	</target>
 </project>

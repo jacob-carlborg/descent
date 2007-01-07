@@ -104,7 +104,14 @@ import org.apache.tools.ant.types.FileSet;
 	<includepath>
 		<dirset file="${dater.dir}/dater/lib/duit" />
 	</includepath>
-	<linkflag   ... >
+
+	<!-- list flags for the linker -->
+	<linkflag value="-L/usr/lib" />
+
+	
+	<!-- list the libs, the linker shall link -->
+	<linklib type="static|dynamic" name="name" />
+	
 </D>
  
  */
@@ -186,6 +193,12 @@ public class D extends Task {
 	public LinkFlag createLinkflag(){
 		LinkFlag result = new LinkFlag();
 		linkflags.add( result );
+		return result;
+	}
+	LinkedList<LinkLib> linkLibs = new LinkedList<LinkLib>();
+	public LinkLib createLinklib(){
+		LinkLib result = new LinkLib();
+		linkLibs.add( result );
 		return result;
 	}
 	LinkedList<Version> versionflags = new LinkedList<Version>();
@@ -308,6 +321,19 @@ public class D extends Task {
 
 		for( LinkFlag flag : linkflags ){
 			log( String.format("D Task: linkflag    = %s\n", flag.value ), Project.MSG_VERBOSE );
+		}
+		for( LinkLib linkLib : linkLibs ){
+			if( linkLib.linkMode == null ){
+				throw new BuildException( "linklib needs a type" );
+			}
+			switch( linkLib.linkMode ){
+			case STATIC:
+				log( String.format("D Task: link static = %s\n", linkLib.name ), Project.MSG_VERBOSE );
+				break;
+			case DYNAMIC:
+				log( String.format("D Task: link dynamic= %s\n", linkLib.name ), Project.MSG_VERBOSE );
+				break;
+			}
 		}
 
 		try{
@@ -438,12 +464,211 @@ public class D extends Task {
 	}
 	
 	class DmdWindows extends Dmd{
+		
+		
+		LinkedList<String> objFiles = new LinkedList<String>();
+		LinkedList<String> temporaryFiles = new LinkedList<String>();
+		
 		public void build() {
-			throw new BuildException( "DMD for windows not yet implemented" );
+			switch( mode ){
+			case OBJECTS:
+				compile();
+				break;
+			case EXECUTABLE:
+				compile();
+				linkExecutable();
+				break;
+			case LIBRARY_STATIC:
+				compile();
+				linkStaticLibrary();
+				break;
+			case LIBRARY_DYNAMIC:
+				compile();
+				linkDynamicLibrary();
+				break;
+			default:
+			}
 		}
-		public void calcDependencies() {
+
+		public void calcDependencies(){
+			LinkedList<String> cmdline = new LinkedList<String>();
+			cmdline.add( getCompiler() );
+			cmdline.add( "-c" );
+			cmdline.add( "-o-" );
+			cmdline.add( "-v" );
+			
+			for( Debug flag : debugflags ){
+				if( flag.value.length() == 0 ){
+					cmdline.add( "-debug" );
+				}
+				else{
+					cmdline.add( "-debug="+ flag.value );
+				}
+			}
+			
+			for( Version flag : versionflags ){
+				cmdline.add( "-version="+ flag.value );
+			}
+			for( File inc : mIncludePaths ){
+				cmdline.add( "-I"+ inc.getAbsolutePath() );
+				//System.out.println( "-I"+ inc.getAbsolutePath());
+			}
+			for( File inc : mIncludedModules ){
+				cmdline.add( "-I"+ inc.getAbsolutePath() );
+				//System.out.println( "-I"+ inc.getAbsolutePath());
+			}
+			for( File f : mMainModules ){
+				cmdline.add( f.getAbsolutePath() );
+			}
+			StringBuilder sb = new StringBuilder();
+			for( String s : cmdline ){
+				sb.append( " " + s );
+			}
+			
+			log( String.format("Calling compiler to get dependencies: ( %s ) ",sb.toString() ), Project.MSG_INFO );
+
+			File output = executeCmdCreateOutputFile( cmdline );
+			
+			try {
+				getDSourceTree(output );
+			} catch (IOException e) {
+				throw new BuildException( "BUDs modules file cannot be read." );
+			} finally {
+				output.delete();
+			}			
 		}
+
+		private String getCompiler(){
+			File compiler = new File( compilerdir, "dmd\\bin\\dmd.exe" );
+			if( !compiler.isFile() ){
+				throw new BuildException( String.format( "Compiler %s is not an existing file", compiler.getAbsolutePath() ));
+			}
+			return compiler.getAbsolutePath();
+		}
+		private void compile() {
+			LinkedList<String> cmdline = new LinkedList<String>();
+			cmdline.add( getCompiler() );
+			cmdline.add( "-c" );
+			cmdline.add( "-op" );
+			if( debuginfo ){
+				cmdline.add( "-g" );
+			}
+			if( debuginfo_c ){
+				cmdline.add( "-gc" );
+			}
+			if( warnings ){
+				cmdline.add( "-w" );
+			}
+			
+		
+			
+			for( Debug flag : debugflags ){
+				if( flag.value.length() == 0 ){
+					cmdline.add( "-debug" );
+				}
+				else{
+					cmdline.add( "-debug="+ flag.value );
+				}
+			}
+			for( Version flag : versionflags ){
+				cmdline.add( "-version="+ flag.value );
+			}
+			for( File inc : mIncludePaths ){
+				cmdline.add( "-I"+ inc.getAbsolutePath() );
+				//System.out.println( "-I"+ inc.getAbsolutePath());
+			}
+			for( File inc : mIncludedModules ){
+				cmdline.add( "-I"+ inc.getAbsolutePath() );
+				//System.out.println( "-I"+ inc.getAbsolutePath());
+			}
+			for( String mod : mCompileFiles ){
+				cmdline.add( mod );
+				//System.out.println( "compile : "+mod );
+				String srcName = mod;
+				String objName = srcName.substring(0, srcName.length()-1 ) + "obj";
+				objFiles.add( objName );
+				temporaryFiles.add(objName);
+			}
+			
+			StringBuilder sb = new StringBuilder();
+			for( String s : cmdline ){
+				sb.append( " " + s );
+			}
+			log( String.format( "Will call compiler with parm count: %d and length %d\n", cmdline.size(), sb.length() ), Project.MSG_INFO );
+			
+			log( String.format( "Calling compiler: %s" , sb.toString()), Project.MSG_INFO );
+			Execute.runCommand(D.this, cmdline.toArray(new String[0]));
+			
+			
+		}
+		
+		private void linkExecutable() {
+			LinkedList<String> cmdline = new LinkedList<String>();
+			cmdline.add( compilerdir + "dm\\bin\\link.exe");
+			
+			StringBuilder objectBuilder = new StringBuilder();
+			
+			for( String objName : objFiles ){
+				objectBuilder.append( objName + "+");
+			
+			}
+			
+			objectBuilder.delete(objectBuilder.length() - 1	, objectBuilder.length());
+			
+			// strip off the last '+'
+			
+			
+			objectBuilder.append(",,,user32+kernel32/noi;");
+			for( LinkFlag flag : linkflags ){
+				cmdline.add( "" + flag.value );
+			}
+
+					
+			cmdline.add(objectBuilder.toString());
+			
+			
+			StringBuilder sb = new StringBuilder();
+			for( String s : cmdline ){
+				sb.append( " " + s );
+			}
+			String libraryPath = compilerdir + "dmd\\lib;" + compilerdir + "dm\\lib";
+			
+			log( String.format("Setting Library path to : %s", libraryPath) , Project.MSG_INFO );
+			String[] libOpts = new String[1];
+			libOpts[0] = "LIB=" + libraryPath ;
+ 			
+			Execute exec = new Execute();
+			exec.setEnvironment(libOpts);
+			
+			log( String.format("Calling linker: %s", sb.toString () ) , Project.MSG_INFO );
+			exec.setCommandline(cmdline.toArray(new String[0]));
+			try {
+				exec.execute();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			//exec.runCommand(D.this, cmdline.toArray(new String[0]));
+		}
+
+		private void linkStaticLibrary() {
+			LinkedList<String> cmdline = new LinkedList<String>();
+		}
+
+		private void linkDynamicLibrary() {
+			LinkedList<String> cmdline = new LinkedList<String>();
+		}
+
 		public void cleanup() {
+			for( String fileName : temporaryFiles ){
+				File tempFile = new File( fileName );
+				if( !tempFile.exists() ){
+					continue;
+				}
+				if( !tempFile.delete() ){
+					log( String.format( "cannot delete the temporary file %s\n", fileName ), Project.MSG_WARN );
+				}
+			}			
 		}
 	}
 	class DmdLinux extends Dmd{
@@ -648,6 +873,31 @@ public class D extends Task {
 			this.value = value;
 		}
 	}
+
+
+	public static class LinkLib {
+		enum LinkMode{
+			STATIC, DYNAMIC
+		}
+		
+		String name;
+		public void setName(String value ){
+			this.name = value;
+		}
+
+		LinkMode linkMode;
+		public void setType(String value ){
+			if( "static".equals(value)){
+				linkMode = LinkMode.STATIC;
+			}
+			else if( "dynamic".equals(value)){
+				linkMode = LinkMode.DYNAMIC;
+			}
+			else{
+				throw new BuildException( "only 'static' or 'dynamic' is allowed for linklib type." );
+			}
+		}
+}
 
 	public class MainModules {
 		LinkedList<FileSet> mods = new LinkedList<FileSet>();
