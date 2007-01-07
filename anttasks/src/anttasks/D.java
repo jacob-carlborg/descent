@@ -2,28 +2,11 @@
  * Ant Task for building D programs.
  *
  * Authors:
- *  Frank Benoit
+ *  Frank Benoit (benoit at tionex dot de)
+ *  Charles Sanders
  *
  * License:
- *  Copyright (c) 2006  Frank Benoit
- * 
- *  Permission is hereby granted, free of charge, to any person obtaining a
- *  copy of this software and associated documentation files (the "Software"),
- *  to deal in the Software without restriction, including without limitation
- *  the rights to use, copy, modify, merge, publish, distribute, sublicense,
- *  and/or sell copies of the Software, and to permit persons to whom the
- *  Software is furnished to do so, subject to the following conditions:
- * 
- *  The above copyright notice and this permission notice shall be included in
- *  all copies or substantial portions of the Software.
- * 
- *  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- *  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- *  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- *  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- *  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
- *  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
- *  DEALINGS IN THE SOFTWARE.
+ *  Public Domain
  */
 package anttasks;
 
@@ -85,6 +68,7 @@ import org.apache.tools.ant.types.FileSet;
   	verbose     = "true|false"
   	warnings    = "true|false"
   	cleanup     = "true|false"
+  	stdargs     = "true|false"
 	>
 	<debug   value="1"/>
 	<version value="1"/>
@@ -183,6 +167,10 @@ public class D extends Task {
 	public void setWarnings( boolean value ){
 		this.warnings = value;
 	}
+	private boolean stdargs = true;
+	public void setStdargs( boolean value ){
+		this.stdargs = value;
+	}
 	private File destfile;
 	public void setDestfile( File value ){
 		this.destfile = value;
@@ -269,6 +257,7 @@ public class D extends Task {
 		log( String.format("D Task: destfile    = %s\n", destfile    ), Project.MSG_VERBOSE );
 		log( String.format("D Task: cleanup     = %s\n", cleanup     ), Project.MSG_VERBOSE );
 		log( String.format("D Task: warnings    = %s\n", warnings    ), Project.MSG_VERBOSE );
+		log( String.format("D Task: stdargs     = %s\n", stdargs     ), Project.MSG_VERBOSE );
 		
 		
 		for( MainModules mainModules : mainModuless ){
@@ -817,6 +806,25 @@ public class D extends Task {
 			
 			for( LinkFlag flag : linkflags ){
 				cmdline.add( "" + flag.value );
+			}
+			
+			for( LinkLib linkLib : linkLibs ){
+				// linkMode != null is already checked
+				switch( linkLib.linkMode ){
+				case STATIC:
+					cmdline.add( "" + linkLib.name );
+					break;
+				case DYNAMIC:
+					cmdline.add( "-l" + linkLib.name );
+					break;
+				}
+			}
+
+			if( stdargs ){
+				cmdline.add( "-lm" );
+				cmdline.add( "-lphobos" );
+				cmdline.add( "-lc" );
+				cmdline.add( "-lpthread" );
 			}
 
 			log( "Calling linker: ", Project.MSG_INFO );
