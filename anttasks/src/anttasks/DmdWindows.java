@@ -26,11 +26,7 @@ import anttasks.D.LinkLib;
 import anttasks.D.Version;
 
 class DmdWindows extends Dmd{
-		
 
-		/**
-		 * @param d
-		 */
 		DmdWindows(D d) {
 			super(d);
 		}
@@ -80,14 +76,11 @@ class DmdWindows extends Dmd{
 			}
 			for( File inc : dTask.mIncludePaths ){
 				cmdline.add( "-I"+ inc.getAbsolutePath() );
-				//System.out.println( "-I"+ inc.getAbsolutePath());
 			}
 			for( File inc : dTask.mIncludedModules ){
 				cmdline.add( "-I"+ inc.getAbsolutePath() );
-				//System.out.println( "-I"+ inc.getAbsolutePath());
 			}
 			for( File f : dTask.mMainModules ){
-			//	log("Outputing" + f.getAbsolutePath() );
 				cmdline.add( f.getAbsolutePath() );
 			}
 			StringBuilder sb = new StringBuilder();
@@ -129,8 +122,6 @@ class DmdWindows extends Dmd{
 			if( dTask.warnings ){
 				cmdline.add( "-w" );
 			}
-			
-		
 			
 			for( Debug flag : dTask.debugflags ){
 				if( flag.value.length() == 0 ){

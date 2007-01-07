@@ -35,8 +35,6 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.HashSet;
 import java.util.LinkedList;
 
@@ -46,6 +44,7 @@ import org.apache.tools.ant.Project;
 import org.apache.tools.ant.Task;
 import org.apache.tools.ant.taskdefs.Execute;
 import org.apache.tools.ant.taskdefs.PumpStreamHandler;
+import org.apache.tools.ant.taskdefs.condition.Os;
 import org.apache.tools.ant.types.Commandline;
 import org.apache.tools.ant.types.DirSet;
 import org.apache.tools.ant.types.FileSet;
@@ -77,6 +76,9 @@ import org.apache.tools.ant.types.FileSet;
   	warnings    = "true|false*"
   	cleanup     = "true*|false"
   	stdargs     = "true*|false"
+  	mapfile     = "file"
+  	deffile     = "file"
+  	resfile     = "file"
 	>
 	<debug/>
 	<debug   value="1"/>
@@ -162,18 +164,31 @@ public class D extends Task {
 	public void setCompile( boolean value ){
 		this.compile = value;
 	}
+	private boolean isWindows(){
+		return Os.isFamily( "windows" );
+	}
+
 	String mapfile;
 	public void setMapFile( File value ){
+		if( !isWindows() ){
+			throw new BuildException( "the mapfile option is available only on windows" );
+		}
 		mapfile= value.getAbsolutePath();
 	}
 	
 	String deffile;
 	public void setDefFile( File value ){
+		if( !isWindows() ){
+			throw new BuildException( "the mapfile option is available only on windows" );
+		}
 		deffile= value.getAbsolutePath();
 	}
 	
 	String resfile;
 	public void setResFile( File value ){
+		if( !isWindows() ){
+			throw new BuildException( "the mapfile option is available only on windows" );
+		}
 		resfile= value.getAbsolutePath();
 	}
 	
@@ -211,12 +226,6 @@ public class D extends Task {
 		this.stdargs = value;
 	}
 	File destfile;
-	/**
-	 * sdklfj lksdj flksdj f
-	 * 
-	 * 
-	 * @param value
-	 */
 	public void setDestfile( File value ){
 		this.destfile = value;
 	}
@@ -308,10 +317,10 @@ public class D extends Task {
 			log( String.format("D Task: mapfile     = %s\n", mapfile     ), Project.MSG_VERBOSE );
 		}
 		if( deffile != null ){
-			log( String.format("D Task: mapfile     = %s\n", deffile     ), Project.MSG_VERBOSE );
+			log( String.format("D Task: deffile     = %s\n", deffile     ), Project.MSG_VERBOSE );
 		}
 		if( resfile != null ){
-			log( String.format("D Task: mapfile     = %s\n", resfile     ), Project.MSG_VERBOSE );
+			log( String.format("D Task: resfile     = %s\n", resfile     ), Project.MSG_VERBOSE );
 		}
 		
 		for( MainModules mainModules : mainModuless ){

@@ -2,7 +2,8 @@
 <project name="OwnTaskExample" default="compile" basedir=".">
 
 	<taskdef classname="anttasks.D" name="D" />
-	
+	<taskdef classname="anttasks.DModuleBuildNumber" name="DBldNum" />
+
 	<property name="compiler.dir" value="/opt/dmd" />
 	<property name="compiler.type" value="dmd-linux" />
 	<property name="tango.dir" value="${user.home}/tango" />
@@ -19,7 +20,9 @@
 	</target>	
 	
 	<target name="compile" >
-		
+
+		<DBldNum file="${tango.examples.hello}_bn.d" fqn="hello_bn" />
+
 		<D 
 		  type        = "${compiler.type}"
 		  mode        = "executable"
