@@ -3,6 +3,7 @@
 
 	<taskdef classname="anttasks.D" name="D" />
 	<taskdef classname="anttasks.DModuleBuildNumber" name="DBldNum" />
+	<taskdef classname="anttasks.DModuleBuildNumber" name="foreach" />
 
 	<property name="compiler.dir" value="/opt/dmd" />
 	<property name="compiler.type" value="dmd-linux" />
@@ -11,6 +12,9 @@
 	<property name="tango.examples.hello" value="${tango.examples.dir}/hello" />
 	
 	<target name="resgen" >
+		<!-- convert any file into a d module as a constant array
+		and read the data directly
+		This data can be any icon or other resource -->
 		<BinToD
 			file="t.d"
 			fqn="t"
@@ -18,36 +22,71 @@
 			<resource file="src/anttasks/BinToD.java" id="bintod" variable="bintod" version="all" />
 		</BinToD>
 	</target>	
+		
+	<target name="build-number" >
+		<DBldNum file="${tango.examples.hello}_bn.d" fqn="hello_bn" />
+	</target>	
+	
+	<macrodef name="compile" >
+		<attribute name="bldtrg" />
+		<sequential>
+			<D 
+			  type        = "${compiler.type}"
+			  mode        = "executable"
+			  compilerdir = "${compiler.dir}"
+			  destfile    = "${tango.examples.dir}/@{bldtrg}"
+			  cleanup     = "true"
+			>
+				<version value="Posix" />
+				
+				<!-- The main modules -->
+				<mainmodules>
+					<fileset file="${tango.examples.dir}/@{bldtrg}.d"/>
+				</mainmodules>
+				
+				<!-- Modules for compilation and linking, if imported -->
+				<includemodules>
+					<dirset file="${tango.examples.dir}" />
+					<dirset file="${tango.dir}" />
+				</includemodules>
+	
+				<!-- Imported modules, only for declarations, no compile/link (libs) -->
+				<includepath>
+				</includepath>
+			</D>
+		</sequential>
+	</macrodef>
 	
 	<target name="compile" >
-
-		<DBldNum file="${tango.examples.hello}_bn.d" fqn="hello_bn" />
-
-		<D 
-		  type        = "${compiler.type}"
-		  mode        = "executable"
-		  compilerdir = "${compiler.dir}"
-		  destfile    = "${tango.examples.hello}"
-		  cleanup     = "true"
-		>
-			<version value="Posix" />
-			
-			<!-- The main modules -->
-			<mainmodules>
-				<fileset file="${tango.examples.hello}.d"/>
-			</mainmodules>
-			
-			<!-- Modules for compilation and linking, if imported -->
-			<includemodules>
-				<dirset file="${tango.examples.dir}" />
-				<dirset file="${tango.dir}" />
-			</includemodules>
-
-			<!-- Imported modules, only for declarations, no compile/link (libs) -->
-			<includepath>
-			</includepath>
-		</D>
+		<compile bldtrg="argparser" />
+		<compile bldtrg="chainsaw" />
+		<compile bldtrg="composite" />
+		<compile bldtrg="filebubbler" />
+		<compile bldtrg="filecat" />
+		<compile bldtrg="filecopy" />
+		<compile bldtrg="filescan" />
+		<compile bldtrg="formatalign" />
+		<compile bldtrg="formatindex" />
+		<compile bldtrg="hello" />
+		<compile bldtrg="homepage" />
+		<compile bldtrg="httpget" />
+		<compile bldtrg="httpserver" />
+		<compile bldtrg="lineio" />
+		<compile bldtrg="localetime" />
+		<!--compile bldtrg="localtime" /-->
+		<compile bldtrg="logging" />
+		<compile bldtrg="mmap" />
+		<compile bldtrg="randomio" />
+		<compile bldtrg="servlets" />
+		<compile bldtrg="servletserver" />
+		<compile bldtrg="sockethello" />
+		<compile bldtrg="socketserver" />
+		<compile bldtrg="stdout" />
+		<compile bldtrg="token" />
+		<compile bldtrg="unifile" />
 	</target>
+
+
 </project>
 
 

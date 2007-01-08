@@ -284,6 +284,8 @@ public class D extends Task {
 	@Override
 	public void execute() throws BuildException {
 
+		log( String.format("Building %s\n", destfile     ), Project.MSG_INFO );
+
 		try{
 		Compiler compiler = null;
 		if( type == null ){
