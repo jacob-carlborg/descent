@@ -4,7 +4,7 @@ import java.io.*;
 
 public class WindowsFilenameConverter {
     
-	private static boolean debug = true;
+	private static boolean debug = false;
     
     public static String checkForSpaces(String filename) throws FileNotFoundException {
         String cmd;
@@ -129,11 +129,11 @@ public class WindowsFilenameConverter {
                 while((line = br.readLine()) != null) {
                     if(line.indexOf(file) != -1) {
                         dirInfo = line.split("\\s+");
-//                        if(osName.indexOf("windows xp") > -1) {
-//                            file = dirInfo[4];
-//                        } else {
+                        if(osName.indexOf("windows xp") > -1) {
+                            file = dirInfo[4];
+                        } else {
                             file = dirInfo[3]; // should be the 8.3 formatted filename
-//                        }
+                        }
                         
                         continue;
                     }

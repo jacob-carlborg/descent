@@ -76,9 +76,10 @@ import org.apache.tools.ant.types.FileSet;
   	warnings    = "true|false*"
   	cleanup     = "true*|false"
   	stdargs     = "true*|false"
-  	mapfile     = "file"
-  	deffile     = "file"
-  	resfile     = "file"
+  	mapfile     = "file.map"
+  	deffile     = "file.def"
+  	resfile     = "file.res"
+  	destfile    = "target_file_name.exe"
 	>
 	<debug/>
 	<debug   value="1"/>

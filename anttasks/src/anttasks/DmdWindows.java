@@ -154,20 +154,19 @@ class DmdWindows extends Dmd{
 				}
 				temporaryFiles.add(objName);
 			}
+		
 			
-			StringBuilder sb = new StringBuilder();
-			for( String s : cmdline ){
-				sb.append( " " + s );
-			}
-			dTask.log( String.format( "Will call compiler with parm count: %d and length %d\n", cmdline.size(), sb.length() ), Project.MSG_INFO );
 			
-			dTask.log( String.format( "Calling compiler: %s" , sb.toString()), Project.MSG_INFO );
+			dTask.log(  "Calling compiler", Project.MSG_INFO );
 			Execute.runCommand(dTask, cmdline.toArray(new String[0]));
 			
 			
 		}
 		
 		private void linkExecutable() {
+			
+			if ( dTask.destfile == null ) throw new BuildException("You must specify a target name for your executable via 'destfile' property");
+			
 			LinkedList<String> cmdline = new LinkedList<String>();
 			cmdline.add( dTask.compilerdir + "dm\\bin\\link.exe");
 			
@@ -256,17 +255,38 @@ class DmdWindows extends Dmd{
 			Execute exec = new Execute();
 			exec.setEnvironment(libOpts);
 			
-			dTask.log( String.format("Calling linker: %s", sb.toString () ) , Project.MSG_INFO );
+			dTask.log( "Calling linker " , Project.MSG_INFO );
 			exec.setCommandline(cmdline.toArray(new String[0]));
 			try {
 				exec.execute();
 			} catch (IOException e) {
 				throw new BuildException( "Linker can't be started" );
 			}
+			dTask.log( String.format("Built %s", dTask.destfile.getAbsolutePath()), Project.MSG_INFO );
 		}
 
 		private void linkStaticLibrary() {
+			
+			if ( dTask.destfile == null ) throw new BuildException("You must specify a target name for your library via 'destfile' property");
+			
 			LinkedList<String> cmdline = new LinkedList<String>();
+			cmdline.add( dTask.compilerdir + "dm\\bin\\lib.exe");
+			cmdline.add("-c");
+			cmdline.add(dTask.destfile.getName());
+			
+			for( LinkFlag flag : dTask.linkflags ){
+				cmdline.add(flag.value);
+			}
+		
+			for( String objName : objFiles ){
+				cmdline.add( objName );
+			}
+			dTask.log( "Calling lib " , Project.MSG_INFO );
+			
+			Execute.runCommand(dTask, cmdline.toArray(new String[0]));
+			
+			dTask.log( String.format("Built %s", dTask.destfile.getAbsolutePath()), Project.MSG_INFO );
+			
 		}
 
 		private void linkDynamicLibrary() {
