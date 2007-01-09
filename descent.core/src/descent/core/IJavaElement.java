@@ -183,7 +183,7 @@ public interface IJavaElement extends IAdaptable {
 	 * @see IClasspathAttribute#JAVADOC_LOCATION_ATTRIBUTE_NAME
 	 * @since 3.2
 	 */
-	String getAttachedJavadoc(IProgressMonitor monitor) throws JavaModelException;		
+	// TODO JDT String getAttachedJavadoc(IProgressMonitor monitor) throws JavaModelException;		
 
 	/**
 	 * Returns the resource that corresponds directly to this element,

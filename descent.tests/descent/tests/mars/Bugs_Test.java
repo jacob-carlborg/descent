@@ -28,5 +28,12 @@ public class Bugs_Test extends Parser_Test {
 		String s = " a b ((void));";
 		getCompilationUnit(s);
 	}
+	
+	// Dont give error on UTF characters
+	public void testBugUTF() {
+		String s = " // ö";
+		CompilationUnit unit = getCompilationUnit(s);
+		assertEquals(0, unit.getProblems().length);
+	}
 
 }

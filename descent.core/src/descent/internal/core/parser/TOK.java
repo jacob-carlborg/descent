@@ -30,12 +30,12 @@ public enum TOK {
 	TOKaddress,	TOKtypedot,
 	TOKtype,	TOKthrow("throw"),
 	TOKnew("new"),		TOKdelete("delete"),
-	TOKstar,	TOKsymoff,
+	TOKstar("*"),	TOKsymoff,
 	TOKvar,		TOKdotvar,
 	TOKdotti,	TOKdotexp,
 	TOKdottype,	TOKslice,
 	TOKarraylength,	TOKversion("version"),
-	TOKmodule("module"),	TOKdollar,
+	TOKmodule("module"),	TOKdollar("$"),
 	TOKtemplate("template"),	TOKdottd,
 	TOKdeclaration,	TOKtypeof("typeof"),
 	TOKpragma("pragma"),	TOKdsymbol,
@@ -49,7 +49,7 @@ public enum TOK {
 	TOKlt("<"),		TOKgt(">"),
 	TOKle("<="),		TOKge(">="),
 	TOKequal("=="),	TOKnotequal("!="),
-	TOKidentity,	TOKnotidentity,
+	TOKidentity("==="),	TOKnotidentity("!=="),
 	TOKindex,	TOKis("is"),
 	TOKtobool,
 
@@ -95,7 +95,7 @@ public enum TOK {
 	TOKimaginary32("ifloat"), TOKimaginary64("idouble"), TOKimaginary80("ireal"),
 	TOKcomplex32("cfloat"), TOKcomplex64("cdouble"), TOKcomplex80("creal"),
 	TOKchar("char"), TOKwchar("wchar"), TOKdchar("dchar"), TOKbit("bit"), TOKbool("bool"),
-	TOKcent, TOKucent,
+	TOKcent("cent"), TOKucent("ucent"),
 
 	// Aggregates
 	TOKstruct("struct"), TOKclass("class"), TOKinterface("interface"), TOKunion("union"), TOKenum("enum"), TOKimport("import"),

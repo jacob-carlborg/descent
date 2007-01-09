@@ -125,7 +125,7 @@ public class Lexer implements IProblemCollector {
 				    break;
 	
 				default:
-				    if ((c & 0x80) != 0) {
+				    if (c >= 0x80) {
 						int u = decodeUTF();
 						if (u == PS || u == LS) {
 							scriptLine.setSourceRange(0, p);
@@ -948,7 +948,7 @@ public class Lexer implements IProblemCollector {
 		do
 		{
 			c = input[++p];
-		} while (c > 0 && Chars.isidchar(c) || ((c & 0x80) != 0 && UniAlpha.isUniAlpha(decodeUTF())));
+		} while (c > 0 && Chars.isidchar(c) || (c >= 0x80 && UniAlpha.isUniAlpha(decodeUTF())));
 		sv = stringtable.update(input, t.ptr, p - t.ptr);
 		id = (Identifier) sv.ptrvalue;
 		if (id == null)
@@ -1235,7 +1235,7 @@ public class Lexer implements IProblemCollector {
 			    c -= 'a' - 10;
 			else if (c >= 'A' && c <= 'F')
 			    c -= 'A' - 10;
-			else if ((c & 0x80) != 0)
+			else if (c >= 0x80)
 			{   p--;
 			    int u = decodeUTF();
 			    p++;
@@ -1320,7 +1320,7 @@ public class Lexer implements IProblemCollector {
 		    }
 
 		    default:
-			if ((c & 0x80) != 0)
+			if (c >= 0x80)
 			{
 			    p--;
 			    c = decodeUTF();
@@ -2157,7 +2157,7 @@ public class Lexer implements IProblemCollector {
 						break;
 
 					default:
-						if ((c & 0x80) != 0) {
+						if (c >= 0x80) {
 							int u = decodeUTF();
 							if (u == PS || u == LS) {
 								error(
@@ -2181,7 +2181,7 @@ public class Lexer implements IProblemCollector {
 				continue;
 
 			default:
-				if ((input[p] & 0x80) != 0) {
+				if (input[p] >= 0x80) {
 					int u = decodeUTF();
 					if (u == PS || u == LS) {
 						pragma.setSourceRange(start, p - start);
@@ -2206,24 +2206,17 @@ public class Lexer implements IProblemCollector {
 	}
 	
 	private int decodeUTF() {
-		int[] u = new int[] { 0 };
-	    int s = p;
-	    int len;
-	    int[] idx;
-	    String msg = null;
-
-	    // Check length of remaining string up to 6 UTF-8 characters
-	    for (len = 1; len < 6 && len < end; len++)
-		;
-
-	    idx = new int[] { 0 };
-	    msg = Utf.decodeChar(input, s, len, idx, u);
-	    p += idx[0] - 1;
-	    if (msg != null)
-	    {
-	    	error(msg, IProblem.InvalidUtf8Sequence, linnum, p, 1);
-	    }
-	    return u[0];
+		try { 
+		 	// decode one codepoint, starting at the index p 
+		 	int result = Character.codePointAt(input, p); 
+		 	// increase p with the count of chars for the decoded codepoint. 
+		 	p = Character.offsetByCodePoints(input, 0, input.length, p, 1); 
+		 	return result; 
+		 } catch (Exception e) { 
+		 	// a problem while decoding the codepoint occured => invalid input 
+		 	error("invalid input sequence", IProblem.InvalidUtf8Sequence, linnum, p, 1); 
+		 	return 0; 
+		 } 
 	}
 	
 	/*
