@@ -23,5 +23,10 @@ public class DeeDocument extends Document {
 	public void setFileInput(IPathEditorInput input) {
 		cunit.file = input.getPath().toFile();
 	}
+
+	public void updateCompilationUnit() {
+		cunit.update(get());
+		cunit.parse();
+	}
 	
 }

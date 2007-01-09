@@ -23,13 +23,12 @@ public class DebugPartitioner extends FastPartitioner
 
 	public void connect(IDocument document, boolean delayInitialization) {
 		super.connect(document, delayInitialization);
+		// TODO: learn partitioning lifecycle
 			
 		Logger.printDebug(toStringPartitions(document));
-
 	}
 
 	public static String toStringPartitions(IDocument document) {
-		// TODO: learn partitioning lifecycle
 		
 		ITypedRegion[] partitions;
 		try {
@@ -42,12 +41,14 @@ public class DebugPartitioner extends FastPartitioner
 	
 		for (int i = 0; i < partitions.length; i++)	{
 			try	{
-				buffer.append("=Partition type: " + partitions[i].getType() 
-						+ ", offset: " + partitions[i].getOffset()
-						+ ", length: " + partitions[i].getLength());
-				buffer.append("=\n");
-				buffer.append(document.get(partitions[i].getOffset(), partitions[i].getLength()));
-				buffer.append("\n---------------------------\n");
+				buffer.append("======== type: " + partitions[i].getType() 
+						+ " range: " + partitions[i].getOffset()
+						+ ", " + partitions[i].getLength());
+				buffer.append(" ========\n");
+				String str = document.get(partitions[i].getOffset(), partitions[i].getLength());
+				buffer.append(str.replaceAll("\r\n", "\n"));
+				buffer.append("\n");
+				//buffer.append("\n---------------------------\n");
 			}
 			catch (BadLocationException e) {
 				e.printStackTrace();

@@ -14,32 +14,38 @@ import dtool.project.CompilationUnit;
 
 /// JDT uses TextFileDocumentProvider
 public class DeeDocumentProvider extends FileDocumentProvider {
-	
 
+	public DeeDocumentProvider() {
+	}
+
+	@Override
+	protected IDocument createEmptyDocument() {
+		return new DeeDocument();
+	}
+	
 	protected IDocument createDocument(Object element) throws CoreException {
 		IDocument document = super.createDocument(element);
 
 		DeeDocument deedocument = (DeeDocument) document;
 		
-		if (deedocument != null) {
-			IDocumentPartitioner partitioner = new DebugPartitioner(
-					new DeePartitionScanner(), EDeePartitions.legalContentTypes);
-			partitioner.connect(deedocument);
-			deedocument.setDocumentPartitioner(partitioner);
-		}
-
-		CompilationUnit cunit = new CompilationUnit(deedocument.get());
-		deedocument.setCompilationUnit(cunit);
-		deedocument.setFileInput((IPathEditorInput) element);
+		setupDocument((IPathEditorInput) element, deedocument);
 
 		return deedocument;
 	}
-	
-	
-	@Override
-	protected IDocument createEmptyDocument() {
-		return new DeeDocument();
+
+	private void setupDocument(IPathEditorInput element, DeeDocument deedocument) {
+		IDocumentPartitioner partitioner = new DebugPartitioner(
+				new DeePartitionScanner_Fast(), EDeePartitions.legalContentTypes);
+		partitioner.connect(deedocument);
+		deedocument.setDocumentPartitioner(partitioner);
+
+		CompilationUnit cunit = new CompilationUnit(deedocument.get());
+		deedocument.setCompilationUnit(cunit);
+		deedocument.setFileInput(element);
 	}
+	
+	
+
 	
 	public void changed(Object element) {
 		// TODO Auto-generated method stub
@@ -48,7 +54,7 @@ public class DeeDocumentProvider extends FileDocumentProvider {
 	
 	protected void doSaveDocument(IProgressMonitor monitor, Object element,
 			IDocument document, boolean overwrite) throws CoreException {
-		
+		super.doSaveDocument(monitor, element, document, overwrite);
 		// TODO: update model here
 	}
 

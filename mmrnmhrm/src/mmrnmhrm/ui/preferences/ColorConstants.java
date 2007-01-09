@@ -8,4 +8,5 @@ public interface ColorConstants {
 	RGB XXXGREEN = new RGB(0, 128, 0);
 	RGB BLACK = new RGB(0, 0, 0);
 	RGB XXXBLUE = new RGB(0, 0, 128);
+	RGB WHITE = new RGB(255, 255, 255);;
 }

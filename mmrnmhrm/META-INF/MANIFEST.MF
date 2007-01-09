@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: DToolIDE Plug-in
-Bundle-SymbolicName: DToolIDE; singleton:=true
+Bundle-Name: Mmrnmhrm Plug-in
+Bundle-SymbolicName: Mmrnmhrm;singleton:=true
 Bundle-Version: 0.1.0
 Bundle-Activator: mmrnmhrm.DeeCore
 Bundle-Localization: plugin

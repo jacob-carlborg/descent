@@ -32,7 +32,15 @@
                menubarPath="mmrnmhrmMenu/mmrnmhrmGroup"
                style="push"
                toolbarPath="mmrnmhrmGroup"/>
-      </actionSet>
+         <action
+               class="mmrnmhrm.ui.actions.GoToDefinition"
+               icon="icons/sample2.gif"
+               id="dtoolide.actions.GotoDef"
+               label="Go to Definition"
+               menubarPath="mmrnmhrmMenu/mmrnmhrmGroup"
+               style="push"
+               toolbarPath="mmrnmhrmGroup"/>
+     </actionSet>
    </extension>
    <extension
          point="org.eclipse.ui.editors">

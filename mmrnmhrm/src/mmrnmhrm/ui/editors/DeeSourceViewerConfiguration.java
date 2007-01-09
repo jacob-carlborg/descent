@@ -39,8 +39,8 @@ public class DeeSourceViewerConfiguration extends SourceViewerConfiguration {
 	    PresentationReconciler reconciler = new PresentationReconciler();
 
 	    DefaultDamagerRepairer dr = new DefaultDamagerRepairer(DeeUICore.getDefaultDeeCodeScanner());
-	    reconciler.setDamager(dr, EDeePartitions.DEE_DEFAULT);
-	    reconciler.setRepairer(dr, EDeePartitions.DEE_DEFAULT);
+	    reconciler.setDamager(dr, EDeePartitions.DEE_CODE);
+	    reconciler.setRepairer(dr, EDeePartitions.DEE_CODE);
 
 	    return reconciler;
 	}

@@ -10,6 +10,7 @@ import util.AssertIn;
 
 /**
  * Detects hyperlinks for D elements.
+ * {@link org.eclipse.jdt.internal.ui.javaeditor.JavaElementHyperlinkDetector }
  */
 public class DeeHyperlinkDetector implements IHyperlinkDetector {
 	
@@ -23,7 +24,7 @@ public class DeeHyperlinkDetector implements IHyperlinkDetector {
 
 	public IHyperlink[] detectHyperlinks(ITextViewer textViewer,
 			IRegion region, boolean canShowMultipleHyperlinks) {
-		// TODO Detects hyperlinks for D elements.
+		// TODO Detect hyperlinks for D elements.
 		return null;
 	}
 

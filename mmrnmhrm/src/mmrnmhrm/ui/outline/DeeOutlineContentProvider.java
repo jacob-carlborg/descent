@@ -7,7 +7,6 @@ import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.ui.IEditorInput;
 
-import util.Assert;
 import dtool.dom.ast.tree.TreeDepthRecon;
 import dtool.dom.base.ASTNode;
 import dtool.project.CompilationUnit;
@@ -27,7 +26,6 @@ public class DeeOutlineContentProvider implements ITreeContentProvider {
 	}
 
 	public Object getParent(Object element) {
-		Assert.fail();
 		ASTNode elem = (ASTNode) element; 
 		return elem.getParent();
 	}

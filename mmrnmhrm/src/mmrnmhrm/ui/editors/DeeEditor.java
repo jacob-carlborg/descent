@@ -6,6 +6,7 @@ import mmrnmhrm.text.DeeDocumentProvider;
 import mmrnmhrm.ui.outline.DeeOutlinePage;
 
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.jface.text.TextSelection;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.texteditor.AbstractDecoratedTextEditor;
 import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
@@ -35,22 +36,10 @@ public class DeeEditor extends AbstractDecoratedTextEditor {
 		*/
 		//configureInsertMode(SMART_INSERT, false);
 		setInsertMode(INSERT);
-
 	}
 	
 	public void dispose() { 
 	 	super.dispose(); 
-	}
-	
-	protected void doSetInput(IEditorInput input) throws CoreException {
-		super.doSetInput(input);
-		document = (DeeDocument) documentProvider.getDocument(input);
-	}
-	
-	protected void editorSaved() {
-		super.editorSaved();
-		if (outlinePage != null)
-			outlinePage.update(); 
 	}
 	
 
@@ -69,6 +58,21 @@ public class DeeEditor extends AbstractDecoratedTextEditor {
 		return super.getAdapter(required);
 	}
 
+	
+	protected void doSetInput(IEditorInput input) throws CoreException {
+		super.doSetInput(input);
+		document = (DeeDocument) documentProvider.getDocument(input);
+	}
+	
+	protected void editorSaved() {
+		super.editorSaved();
+		document.updateCompilationUnit();
+		if (outlinePage != null)
+			outlinePage.update(); 
+	}
 
+	public TextSelection getSelection() {
+		return (TextSelection) getSelectionProvider().getSelection();
+	}
 	
 }
