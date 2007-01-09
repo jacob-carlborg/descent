@@ -20,12 +20,13 @@ public class DefinitionAlias extends Definition {
 		boolean children = visitor.visit(this);
 		if (children) {
 			acceptChild(visitor, target);
+			acceptChild(visitor, symbol);
 		}
 		visitor.endVisit(this);
 	}
 
 	@Override
 	public IScope getScope() {
-		return target.getReferencedDefUnit().getScope();
+		return target.getTargetDefUnit().getScope();
 	}
 }

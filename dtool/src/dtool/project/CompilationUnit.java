@@ -2,11 +2,12 @@ package dtool.project;
 
 import java.io.File;
 
-import util.FileUtil;
+import util.AssertIn;
 import descent.core.compiler.IProblem;
 import descent.core.domX.AbstractElement;
 import descent.internal.core.dom.ParserFacade;
 import dtool.descentadapter.DescentASTConverter;
+import dtool.dom.ast.ASTElementFinder;
 import dtool.dom.ast.tree.TreeParentizer;
 import dtool.dom.base.ASTNode;
 import dtool.dom.base.Module;
@@ -19,16 +20,19 @@ public class CompilationUnit {
 	
 	private ASTNode cumodule;
 	public IProblem[] problems;
+	private boolean astUpdated;
 
 	public CompilationUnit(String source) {
+		update(source);
+
+	}
+	
+	public void update(String source) {
 		this.source = source;
-		parse();
+		astUpdated = false;
+		parse();	
 	}
 
-	public CompilationUnit(File file) throws Exception {
-		this.file = file;
-		this.source = FileUtil.readStringFromFile(file);
-	}
 	
 	public descent.internal.core.dom.Module getOldModule() {
 		return (descent.internal.core.dom.Module) cumodule;
@@ -46,15 +50,10 @@ public class CompilationUnit {
 		return problems.length > 0;
 	}
 	
-	public void update(String source) {
-		this.source = source;
-		parse();
-	}
-
 	public void preParseCompilationUnit() {
 		ParserFacade parser = new descent.internal.core.dom.ParserFacade();
 		descent.internal.core.dom.Module descentmodule;
-		descentmodule = parser.parseCompilationUnit(source);
+		descentmodule = parser.parseCompilationUnit(source).mod;
 
 		this.problems = descentmodule.getProblems();
 		this.cumodule = descentmodule;
@@ -68,10 +67,19 @@ public class CompilationUnit {
 	}
 	
 	public void parse(){
+		if(astUpdated)
+			return;
+		astUpdated = true;
 		preParseCompilationUnit();
 		if(hasErrors())
 			return;
 		adaptDOM();
+	}
+
+	/* === bindings === */
+	public ASTNode findEntity(int offset) {
+		AssertIn.isTrue(offset < source.length());
+		return ASTElementFinder.findElement(getModule(), offset);
 	}
 
 }

@@ -8,14 +8,14 @@ import dtool.model.IScope;
  */
 public abstract class DefUnit extends ASTNeoNode {
 	
-	public Symbol name; // XXX fixme the accept0
+	public Symbol symbol; // XXX fixme the accept0
 	public EArcheType archeType;
 	
 	public DefUnit() {
 	}
 
 	public DefUnit(String name) {
-		this.name = new Symbol(name);
+		this.symbol = new Symbol(name);
 	}
 	
 	public static class Symbol extends ASTNeoNode {
@@ -28,9 +28,13 @@ public abstract class DefUnit extends ASTNeoNode {
 		@Override
 		public boolean equals(Object obj) {
 			if(obj instanceof String)
-				return name.equals(obj);
+				return equalsStr((String) obj);
 			else
 				return super.equals(obj);
+		}
+		
+		public boolean equalsStr(String name) {
+			return this.name.equals(name);
 		}
 
 		@Override
@@ -38,6 +42,7 @@ public abstract class DefUnit extends ASTNeoNode {
 			visitor.visit(this);
 			visitor.endVisit(this);
 		}
+
 	}
 	
 	static public enum EArcheType {
@@ -71,6 +76,6 @@ public abstract class DefUnit extends ASTNeoNode {
 	
 	@Override
 	public String toString() {
-		return super.toString() + " => " + name;
+		return super.toString() + " => " + symbol.name;
 	}
 }

@@ -45,6 +45,7 @@ public class Module extends DefUnit implements IScope {
 	
 	
 	public List<DefUnit> getDefUnits() {
+		//TODO cache
 		List<DefUnit> defunits = new ArrayList<DefUnit>();
 		for(ASTNode elem: members) {
 			if(elem instanceof DefUnit)

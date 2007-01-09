@@ -118,9 +118,9 @@ public class Parser extends Lexer {
 		nextToken();
 	}
 	
-	public Parser(String source, int base, int begoffset, 
+	public Parser(String source, int begoffset, 
 			int endoffset, boolean doDocComment, boolean commentToken) {
-		super(source, base, begoffset, endoffset, doDocComment, commentToken);
+		super(source, begoffset, endoffset, doDocComment, commentToken);
 		
 		nextToken();
 	}

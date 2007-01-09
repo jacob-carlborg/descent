@@ -4,7 +4,9 @@ import dtool.dom.base.ASTNode;
 
 
 /**
- * Finds an element given the offset 
+ * Finds the innermost element whose source range contains the offset.
+ * A source range starts at element.startPos (inclusive), and ends at 
+ * element.endPos (not inclusive).   
  */
 public class ASTElementFinder extends ASTNeoVisitor {
 	
@@ -27,17 +29,20 @@ public class ASTElementFinder extends ASTNeoVisitor {
 
 	public boolean visit(ASTNode elem) {
 		if(elem.hasNoSourceRangeInfo()) {
-			//assert(false); 
-			return true;
+			//Assert.fail();
+			return false;
 		} else if(offset >= elem.getEndPos() ) {
-			// Don't descend, go to next Node			
+			// Match not here, don't bother descending. Search ahead;
 			return false; 
-		} else if(offset < elem.getStartPos() && match == null) {
-			// Gone too far, match is parent.
-			match = elem.getParent();
-			return false; 
+		} else if(offset < elem.getStartPos()) {
+			// Already past match, so don't descend. Bail out.			
+			return false;
+		} else {
+			// This node is the match, or is parent of the match.
+			match = elem;
+			return true; // Search children.
 		}
-		return true; //Descend
+		
 	}
 
 	public void endVisit(ASTNode elem) {

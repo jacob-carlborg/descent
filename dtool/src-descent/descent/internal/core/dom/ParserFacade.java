@@ -9,7 +9,7 @@ import descent.core.dom.IStatement;
 
 public class ParserFacade {
 	
-	public Module parseCompilationUnit(String source) {
+	public Parser parseCompilationUnit(String source) {
 		Parser parser = new Parser(source);
 		List<IDeclaration> declDefs = parser.parseModule();
 		
@@ -25,7 +25,9 @@ public class ParserFacade {
 		
 		parser.mod.problems = parser.problems;
 		
-		return parser.mod;
+		//parser.freelist
+		
+		return parser;
 	}
 	
 	public IExpression parseExpression(String source) {

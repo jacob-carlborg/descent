@@ -18,8 +18,12 @@ public abstract class BaseConverter extends ASTCommonConverter {
 		super();
 	}
 	
-	protected Symbol convertIdentifier(Identifier ident) {
-		return (ident != null) ? new Symbol(ident.string) : null;
+	protected Symbol convertIdentifierToSymbol(Identifier ident) {
+		if(ident == null)
+			return null;
+		Symbol newelem = new Symbol(ident.string);
+		rangeAdapt(newelem, ident);
+		return newelem;
 	}
 	
 	/*  =======================================================  */

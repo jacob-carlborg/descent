@@ -17,7 +17,7 @@ public class TypePointer extends Entity {
 	}
 
 	@Override
-	public DefUnit getReferencedDefUnit() {
+	public DefUnit getTargetDefUnit() {
 		// TODO return intrinsic
 		return null;
 	}

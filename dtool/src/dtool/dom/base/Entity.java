@@ -1,11 +1,9 @@
 package dtool.dom.base;
 
-import util.ExceptionAdapter;
 import dtool.dom.ast.ASTNeoVisitor;
 import dtool.dom.base.EntitySingle.Identifier;
 import dtool.model.BindingResolver;
 import dtool.model.IScope;
-import dtool.model.ModelException;
 
 /**
  * A qualified entity/name reference
@@ -23,7 +21,7 @@ public abstract class Entity extends ASTNeoNode {
 		expvalue
 	}
 	
-	public abstract DefUnit getReferencedDefUnit();
+	public abstract DefUnit getTargetDefUnit();
 
 	
 	public static class QualifiedEnt extends Entity {
@@ -40,14 +38,10 @@ public abstract class Entity extends ASTNeoNode {
 		}
 		
 		@Override
-		public DefUnit getReferencedDefUnit() {
-			IScope scope = topent.getReferencedDefUnit().getScope();
+		public DefUnit getTargetDefUnit() {
+			IScope scope = topent.getTargetDefUnit().getScope();
 			Identifier id = (Identifier) baseent;
-			try {
-				BindingResolver.findDefUnit(scope.getDefUnits(), id.name );
-			} catch (ModelException e) {
-				throw ExceptionAdapter.unchecked(e);
-			}
+			BindingResolver.getDefUnit(scope.getDefUnits(), id.name );
 
 			return null;
 		}
@@ -75,7 +69,7 @@ public abstract class Entity extends ASTNeoNode {
 		}
 
 		@Override
-		public DefUnit getReferencedDefUnit() {
+		public DefUnit getTargetDefUnit() {
 			ASTNode elem = this;
 			// Search for module elem
 			while((elem instanceof Module) == false)

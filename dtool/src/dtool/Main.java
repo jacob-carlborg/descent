@@ -25,7 +25,7 @@ public class Main {
 		
 		try {
 			dproj = DeeProject.newTestProject();
-			testDescent(args);
+			testDtool(args);
 			//testDtool(args);
 			
 		} catch (Exception e) {
@@ -38,7 +38,7 @@ public class Main {
 		System.out.println("= THE END =");
 	}
 
-    public static void testDescent(String[] args) {
+    public static void testDtool(String[] args) {
 		
 		System.out.println("== Descent Parsing... ==");
 		
@@ -63,9 +63,9 @@ public class Main {
 		System.out.println("====== Neo AST Consistency check: ======");
 		ASTChecker.checkConsistency(cu.getNeoModule());
 		
-		testFindEntityByOffset(40);
-		
 		testFindEntityByName();
+		ASTNode elem = testFindEntityByOffset(44);
+		testFindDef(elem); 
 	}
 
 	private static void testFindEntityByName() {
@@ -73,6 +73,7 @@ public class Main {
 			System.out.println("====== findEntity by name: ======");
 			DefUnit defunit = dproj.findEntity("%%.Foo");
 			System.out.println(defunit);
+			System.out.println(" == def units: == ");
 			System.out.println(StringUtil.collToString(defunit.getScope().getDefUnits(), "\n"));
 			
 		} catch (ModelException e) {
@@ -80,29 +81,31 @@ public class Main {
 		}
 	}
 
-	private static void testFindEntityByOffset(int offset) {
-		try {
-			;
-			System.out.println("===== findEntity by offset: "+offset+ " =====");
-			ASTNode elem = dproj.findEntity(dproj.testcu, offset);
-			if(elem == null) {
-				System.out.println("No Elem found??");
+	private static ASTNode testFindEntityByOffset(int offset) {
+		ShellUI.println("===== findEntity by offset: "+offset+ " =====");
+		
+		ASTNode elem = dproj.testcu.findEntity(offset);
+		if(elem == null) {
+			ShellUI.println("No element found at pos: " + offset);
+			return null;
+		}
+		ShellUI.println("FOUND: " + ASTPrinter.toStringElement(elem));
+		return elem;
+	}
+
+	private static void testFindDef(ASTNode elem) {
+		if(elem instanceof Entity) {
+			DefUnit defunit = ((Entity)elem).getTargetDefUnit();
+			if(defunit == null) {
+				ShellUI.println("Definition not found, for entity: " + elem);
 				return;
 			}
-			System.out.println(ASTPrinter.toStringElement(elem));
-			if(elem instanceof Entity) {
-				DefUnit defunit = ((Entity)elem).getReferencedDefUnit();
-				System.out.println("F3 Declaration at:" +defunit.getStartPos());
-				System.out.println(StringUtil.collToString(defunit.getScope().getDefUnits(), "\n"));
-			} else if(elem instanceof DefUnit) {
-				DefUnit defunit = ((DefUnit)elem);
-				System.out.println(defunit);
-				System.out.println(StringUtil.collToString(defunit.getScope().getDefUnits(), "\n"));
-			} else {
-				System.out.println("other");
-			} 
-		} catch (Exception e) {
-			throw ExceptionAdapter.unchecked(e);
+			ShellUI.println("Definition at: " + defunit.getStartPos());
+			ShellUI.println(StringUtil.collToString(defunit.getScope().getDefUnits(), "\n"));
+		} else if(elem instanceof DefUnit.Symbol) {
+			ShellUI.println("Already at definition of element: " + elem);
+		} else {
+			ShellUI.println("Element is not an entity reference. (" + elem +")");
 		}
 	}
 

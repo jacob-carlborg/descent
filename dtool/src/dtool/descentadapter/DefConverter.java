@@ -26,7 +26,7 @@ public class DefConverter extends BaseConverter {
 	private void definitionAdapt(Definition newelem, descent.internal.core.dom.Dsymbol elem) {
 		rangeAdapt(newelem, elem);
 
-		newelem.name = convertIdentifier(elem.ident); 
+		newelem.symbol = convertIdentifierToSymbol(elem.ident); 
 		newelem.modifiers = Def_Modifiers.adaptFromDescent(elem.modifiers); 
 		newelem.protection = Def_EProtection.adaptFromDescent(elem.modifiers); 
 	}
@@ -39,11 +39,11 @@ public class DefConverter extends BaseConverter {
 		rangeAdapt(newelem, elem);
 		//newelem.name = (elem.ident != null) ? elem.ident.string : null; 
 		if(elem.md != null){
-			newelem.name = convertIdentifier(elem.ident); // If there is md there is this
+			newelem.symbol = convertIdentifierToSymbol(elem.ident); // If there is md there is this
 			newelem.md = new DeclarationModule();
 			rangeAdapt(newelem.md, elem.md);
 			// XXX: Check this
-			newelem.md.moduleName = new EntitySingle.Identifier(newelem.name.name);
+			newelem.md.moduleName = new EntitySingle.Identifier(newelem.symbol.name);
 			//newelem.md.moduleName = new SymbolReference(elem.md.qName.toString());
 			if(elem.md.packages != null) {
 				newelem.md.packages = new EntitySingle.Identifier[elem.md.packages.size()];

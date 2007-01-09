@@ -1,10 +1,8 @@
 package dtool.dom.base;
 
-import util.ExceptionAdapter;
 import dtool.dom.ast.ASTNeoVisitor;
 import dtool.model.BindingResolver;
 import dtool.model.IScope;
-import dtool.model.ModelException;
 
 public abstract class EntitySingle extends Entity {
 	public String name;
@@ -36,14 +34,9 @@ public abstract class EntitySingle extends Entity {
 
 		
 		@Override
-		public DefUnit getReferencedDefUnit() {
+		public DefUnit getTargetDefUnit() {
 			IScope scope = getParentScope();
-			try {
-				BindingResolver.findDefUnit(scope.getDefUnits(), name);
-			} catch (ModelException e) {
-				throw ExceptionAdapter.unchecked(e);
-			}
-			return null;
+			return BindingResolver.getDefUnit(scope.getDefUnits(), name);
 		}
 	}
 
@@ -57,7 +50,7 @@ public abstract class EntitySingle extends Entity {
 		}
 
 		@Override
-		public DefUnit getReferencedDefUnit() {
+		public DefUnit getTargetDefUnit() {
 			// TODO CHANGE
 			return null;
 		}

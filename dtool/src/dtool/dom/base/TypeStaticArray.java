@@ -18,7 +18,7 @@ public class TypeStaticArray extends Entity {
 	}
 
 	@Override
-	public DefUnit getReferencedDefUnit() {
+	public DefUnit getTargetDefUnit() {
 		// TODO return INTRINSIC
 		return null;
 	}

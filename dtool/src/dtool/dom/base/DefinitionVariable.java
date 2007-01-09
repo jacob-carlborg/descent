@@ -20,6 +20,7 @@ public class DefinitionVariable extends Definition {
 		boolean children = visitor.visit(this);
 		if (children) {
 			acceptChild(visitor, type);
+			acceptChild(visitor, symbol);
 			acceptChild(visitor, init);
 		}
 		visitor.endVisit(this);
@@ -27,7 +28,7 @@ public class DefinitionVariable extends Definition {
 
 	@Override
 	public IScope getScope() {
-		return type.getReferencedDefUnit().getScope();
+		return type.getTargetDefUnit().getScope();
 	}
 
 }

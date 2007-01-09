@@ -186,7 +186,7 @@ public class ASTPrinter extends ASTNeoVisitor {
 	
 	public boolean visit(DefUnit elem) {
 		printGenericElement(elem, toStringElementExtra(elem) 
-				+ " " + elem.name);
+				+ " " + elem.symbol);
 		return visitChildren;
 	}
 	public boolean visit(EntitySingle.Identifier elem) {
@@ -199,7 +199,7 @@ public class ASTPrinter extends ASTNeoVisitor {
 		printGenericElement(elem, toStringElementExtra(elem) + " "
 				+ trailString(elem.protection.toString(), " ")
 				+ trailString(Def_Modifiers.toString(elem.modifiers), " ")
-				+ "=> " + elem.name);
+				+ "=> " + elem.symbol.name);
 		return visitChildren;
 	}
 	

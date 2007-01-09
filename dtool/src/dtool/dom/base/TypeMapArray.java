@@ -15,7 +15,7 @@ public class TypeMapArray extends Entity {
 	}
 
 	@Override
-	public DefUnit getReferencedDefUnit() {
+	public DefUnit getTargetDefUnit() {
 		// TODO: return INTRISINC
 		return null;
 	}

@@ -14,13 +14,13 @@ public class BindingResolver {
 		this.project = project;
 	}
 
-	public static DefUnit findDefUnit(List<DefUnit> defunits, String name)
-			throws ModelException {
+	public static DefUnit getDefUnit(List<DefUnit> defunits, String name) {
 		for (DefUnit defunit : defunits) {
-			if (defunit.name.equals(name))
+			if (defunit.symbol.equalsStr(name))
 				return defunit;
 		}
-		throw new NoSuchEntModelException();
+		return null;
+		//throw new NoSuchEntModelException();
 		
 	}
 
@@ -35,7 +35,7 @@ public class BindingResolver {
 				scopeent = project.testcu.getNeoModule();
 				continue;
 			}
-			defunit = findDefUnit(scopeent.getDefUnits(), name);
+			defunit = getDefUnit(scopeent.getDefUnits(), name);
 			scopeent = defunit.getScope();
 		}
 		if((scopeent instanceof DefUnit) == false) {

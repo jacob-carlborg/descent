@@ -29,7 +29,7 @@ public class Lexer implements IProblemCollector {
 	public int linnum;
 	
 	public Module mod = new Module();
-	public int base;
+	//public int base;
 	public int p;
 	public int end;
 	public char[] input;
@@ -40,25 +40,31 @@ public class Lexer implements IProblemCollector {
 	public boolean commentToken;
 	
 	public List<IProblem> problems;
+	public List<Token> tokenList;
     
     public Lexer(String source) {
-    	this(source, 0, 0, source.length(), true, false);
+    	this(source, 0, source.length(), true, false);
     }
 	
-	public Lexer(String source, int base, int begoffset, 
+    /* XXX: Mmrnmhrm: A fix from DMD was made here */
+	public Lexer(String source, int begoffset, 
 			int endoffset, boolean doDocComment, boolean commentToken) {
 		
 		initKeywords();
 		
 		this.problems = new ArrayList<IProblem>();
+		this.tokenList = new ArrayList<Token>();
 		
 		// Make input larger and add zeros, to avoid comparing
-		input = new char[endoffset - base + 5];
-		source.getChars(base, source.length(), input, 0);
+		// TODO: make input of the range size only
+		input = new char[endoffset + 5];
+		source.getChars(0, endoffset, input, 0);
 		this.linnum = 1;
-		this.base = base;
-		this.end = base + endoffset;
-		this.p = base + begoffset;
+		//this.base = base;
+		//this.end = base + endoffset;
+		//this.p = base + begoffset;
+		this.end = endoffset ;
+		this.p = begoffset;
 		this.doDocComment = doDocComment;
 	    this.anyToken = false;
 	    this.commentToken = commentToken;
@@ -124,6 +130,7 @@ public class Lexer implements IProblemCollector {
 	    } else {
 	    	scan(token);
 	    }
+	    tokenList.add(token);
 	    return token.value;
 	}
 	
@@ -2266,7 +2273,7 @@ public class Lexer implements IProblemCollector {
 	    return id;
 	}
 	
-	private static Map<String, TOK> keywords;
+	public static Map<String, TOK> keywords;
 	
 	static {
 		keywords = new Hashtable<String, TOK>();

@@ -35,7 +35,11 @@ public class DefinitionFunction extends Definition {
 	public void accept0(ASTNeoVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
+			// TODO... ah shit, the symbol is in the middle of the type
+			acceptChildren(visitor, rettype);
+			acceptChildren(visitor, symbol);
 			acceptChildren(visitor, templateParameters);
+			acceptChildren(visitor, arguments);
 			//acceptChild(visitor, type);
 			acceptChild(visitor, frequire);
 			acceptChild(visitor, fbody);
