@@ -21,6 +21,9 @@ import java.util.regex.Pattern;
 import org.apache.tools.ant.BuildException;
 
 abstract class Dmd extends Compiler{
+	
+	static final String DMD_VERBOSE_ERRORFILTER = "^(import|semantic|parse)\\s+.*";
+
 	/**
 	 * @param d
 	 */

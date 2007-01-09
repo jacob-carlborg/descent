@@ -15,6 +15,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.LinkedList;
+import java.util.regex.Pattern;
 
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
@@ -90,7 +91,7 @@ class DmdWindows extends Dmd{
 			
 			dTask.log( String.format("Calling compiler to get dependencies: ( %s ) ",sb.toString() ), Project.MSG_INFO );
 
-			File output = dTask.executeCmdCreateOutputFile( cmdline );
+			File output = dTask.executeCmdCreateOutputFile( cmdline, Pattern.compile(DMD_VERBOSE_ERRORFILTER) );
 			
 			try {
 				getDSourceTree(output );

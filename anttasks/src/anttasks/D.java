@@ -33,10 +33,14 @@ package anttasks;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
+import java.io.IOException;
 import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.DirectoryScanner;
@@ -407,8 +411,24 @@ public class D extends Task {
 			throw e;
 		}
 	}
+
+	private void printFile( File t, Pattern filter ){
+		try {
+			BufferedReader rd = new BufferedReader( new FileReader( t ));
+			String line;
+			while((line=rd.readLine()) != null ){
+				Matcher matcher = filter.matcher(line);
+				if( !matcher.matches() ){
+					log( line, Project.MSG_ERR );
+				}
+			}
+			rd.close();
+		} catch (FileNotFoundException e) {
+		} catch (IOException e) {
+		}
+	}
 	
-	File executeCmdCreateOutputFile( LinkedList<String> cmdlist ){
+	File executeCmdCreateOutputFile( LinkedList<String> cmdlist, Pattern errorFilter ){
 		String[] cmdparts = cmdlist.toArray(new String[0]);
 		try {
 			File t = File.createTempFile("AntMsgs", "log" );
@@ -421,12 +441,7 @@ public class D extends Task {
 			int retval = exe.execute();
 			if (Execute.isFailure(retval)) {
 				ostr.close();
-				BufferedReader rd = new BufferedReader( new FileReader( t ));
-				String line;
-				while((line=rd.readLine()) != null ){
-					log( line, Project.MSG_ERR );
-				}
-				rd.close();
+				printFile( t, errorFilter );
 				throw new BuildException(cmdparts[0]
 				                                 + " failed with return code " + retval, getLocation());
 			}

@@ -12,6 +12,7 @@ package anttasks;
 import java.io.File;
 import java.io.IOException;
 import java.util.LinkedList;
+import java.util.regex.Pattern;
 
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
@@ -85,7 +86,7 @@ class DmdLinux extends Dmd{
 		
 		dTask.log( "Calling compiler to get dependencies: ", Project.MSG_INFO );
 
-		File output = dTask.executeCmdCreateOutputFile( cmdline );
+		File output = dTask.executeCmdCreateOutputFile( cmdline, Pattern.compile(DMD_VERBOSE_ERRORFILTER) );
 		
 		try {
 			getDSourceTree(output );
