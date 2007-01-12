@@ -1,3 +1,14 @@
+/*******************************************************************************
+ * Copyright (c) 2000, 2006 IBM Corporation and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     IBM Corporation - initial API and implementation
+ *******************************************************************************/
+
 package descent.core.compiler;
 
 /**
@@ -39,7 +50,7 @@ public interface ITerminalSymbols {
 	int TokenNamedelete = 19;
 	int TokenNameversion = 20;
 	int TokenNamemodule = 21;
-	int TokenNamedollary = 22;
+	int TokenNameDOLLAR = 22;
 	int TokenNametemplate = 23;
 	int TokenNametypeof = 24;
 	int TokenNamepragma = 25;
@@ -51,9 +62,9 @@ public interface ITerminalSymbols {
 	int TokenNameGREATER_EQUAL = 31;
 	int TokenNameEQUAL = 32;
 	int TokenNameNOT_EQUAL = 33;
-	int TokenNameIDENTITY = 34;
-	int TokenNameNOT_IDENTITY = 35;
-	int TokenNameIS = 36;
+	int TokenNameEQUAL_EQUAL_EQUAL = 34;
+	int TokenNameNOT_EQUAL_EQUAL = 35;
+	int TokenNameis = 36;
 	int TokenNameNOT_LESS_GREATER_EQUAL = 37;
 	int TokenNameLESS_GREATER = 38;
 	int TokenNameLESS_GREATER_EQUAL = 39;
@@ -189,10 +200,12 @@ public interface ITerminalSymbols {
 	int TokenNamescope = 169;
 	int TokenNameexit = 170;
 	int TokenNamefailure = 171;
-	int TokenNamesucess = 172;
+	int TokenNamesuccess = 172;
 	int TokenNamebody = 173;
 	int TokenNameinvariant = 174;
 	int TokenNameunittest = 175;
+	int TokenNameDOT_DOT = 176;
+	int TokenNameEQUAL_EQUAL = 177;
 
 }
 

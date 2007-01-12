@@ -64,7 +64,7 @@ public class DModuleBuildNumber extends Task {
 			Pattern pattern = Pattern.compile( String.format("%s\\((\\d+)\\)",FIRSTLINECOMMENT) );
 			Matcher matcher = pattern.matcher(firstLine);
 			if( !matcher.matches() ){
-				throw new BuildException( String.format( "Buildnumber file %s seams not to contain valid data", file.getAbsolutePath() ));
+				throw new BuildException( String.format( "Buildnumber file %s seems not to contain valid data", file.getAbsolutePath() ));
 			}
 			return Integer.parseInt(matcher.group(1));
 		}
