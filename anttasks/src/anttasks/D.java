@@ -80,6 +80,7 @@ import org.apache.tools.ant.types.FileSet;
   	warnings    = "true|false*"
   	cleanup     = "true*|false"
   	stdargs     = "true*|false"
+  	unittest    = "true|false*"
   	mapfile     = "file.map"
   	deffile     = "file.def"
   	resfile     = "file.res"
@@ -225,6 +226,10 @@ public class D extends Task {
 	boolean warnings = false;
 	public void setWarnings( boolean value ){
 		this.warnings = value;
+	}
+	boolean unittest = false;
+	public void setUnittest( boolean value ){
+		this.unittest = value;
 	}
 	boolean stdargs = true;
 	public void setStdargs( boolean value ){

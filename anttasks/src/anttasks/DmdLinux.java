@@ -68,7 +68,9 @@ class DmdLinux extends Dmd{
 				cmdline.add( "-debug="+ flag.value );
 			}
 		}
-		
+		if( dTask.unittest ){
+			cmdline.add( "-unittest" );
+		}
 		for( Version flag : dTask.versionflags ){
 			cmdline.add( "-version="+ flag.value );
 		}
@@ -118,7 +120,10 @@ class DmdLinux extends Dmd{
 		if( dTask.warnings ){
 			cmdline.add( "-w" );
 		}
-		
+		if( dTask.unittest ){
+			cmdline.add( "-unittest" );
+		}
+
 		for( Debug flag : dTask.debugflags ){
 			if( flag.value.length() == 0 ){
 				cmdline.add( "-debug" );
