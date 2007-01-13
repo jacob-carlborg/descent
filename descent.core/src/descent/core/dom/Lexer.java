@@ -1385,7 +1385,7 @@ public class Lexer implements IProblemCollector {
 		}
 
 		default:
-			if ((c & 0x80) != 0) {
+			if (c >= 0x80) {
 				p--;
 				c = decodeUTF();
 				p++;
