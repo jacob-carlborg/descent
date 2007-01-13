@@ -14,7 +14,8 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.ui.workbench.texteditor,
  org.eclipse.ui.views,
  org.eclipse.ui.ide,
- descent.core
+ descent.core,
+ com.ibm.icu
 Eclipse-LazyStart: true
 Eclipse-BuddyPolicy: registered
 Eclipse-RegisterBuddy: org.antlr

@@ -43,9 +43,14 @@
    <extension
          point="org.eclipse.ui.preferencePages">
       <page
-            class="descent.ui.preferences.DCompilerPreferencePage"
-            id="descent.ui.preferecens.DCompilerPreferencePage"
-            name="D Compiler"/>
+            class="descent.ui.preferences.DMainPreferencePage"
+            id="descent.ui.preferences.DMainPreferencePage"
+            name="D"/>
+      <page
+            category="descent.ui.preferences.DMainPreferencePage"
+            class="descent.ui.preferences.DInstalledCompilersPreferencePage"
+            id="descent.ui.preferences.DInstalledCompilersPreferencePage"
+            name="Installed Compilers"/>
    </extension>
    <extension
          point="org.eclipse.ui.ide.projectNatureImages">

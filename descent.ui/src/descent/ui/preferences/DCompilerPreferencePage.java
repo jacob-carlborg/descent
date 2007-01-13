@@ -30,7 +30,7 @@ public class DCompilerPreferencePage extends FieldEditorPreferencePage implement
 	@Override
 	protected void createFieldEditors() {
 		Composite parent = getFieldEditorParent();
-		
+
 		dirField = new DirectoryFieldEditor(DescentUI.PREFERENCE_D_ROOT, "D root:", parent);
 		dirField.getTextControl(parent).addModifyListener(new ModifyListener() {
 			public void modifyText(ModifyEvent e) {
