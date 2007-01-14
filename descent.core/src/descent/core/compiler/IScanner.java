@@ -42,8 +42,7 @@ public interface IScanner {
 	/**
 	 * Answers the starting position of the current token inside the original source.
 	 * This position is zero-based and inclusive. It corresponds to the position of the first character 
-	 * which is part of this token. If this character was a unicode escape sequence, it points at the first 
-	 * character of this sequence.
+	 * which is part of this token.
 	 * 
 	 * @return the starting position of the current token inside the original source
 	 */
@@ -52,8 +51,7 @@ public interface IScanner {
 	/**
 	 * Answers the ending position of the current token inside the original source.
 	 * This position is zero-based and inclusive. It corresponds to the position of the last character
-	 * which is part of this token. If this character was a unicode escape sequence, it points at the last 
-	 * character of this sequence.
+	 * which is part of this token.
 	 * 
 	 * @return the ending position of the current token inside the original source
 	 */
@@ -75,7 +73,7 @@ public interface IScanner {
 	 * already in the tokenization process (in other words, it cannot be used to compute positions of lines beyond
 	 * current token). Once the entire source has been processed, it can be used without any limit.
 	 * Line ending positions are zero-based, and correspond to the last character of the line separator 
-	 * (in case multi-character line separators).	 
+	 * (in case multi-character line separators).
 	 * 
 	 * @param lineNumber the given line number
 	 * @return the ending position of a given line number

@@ -28,7 +28,7 @@ public class ToolFactory {
 	 * 
 	 * <code>
 	 * <pre>
-	 *   IScanner scanner = ToolFactory.createScanner(false, false, false, false);
+	 *   IScanner scanner = ToolFactory.createScanner(false, false, false, AST.D1);
 	 *   scanner.setSource("int i = 0;".toCharArray());
 	 *   while (true) {
 	 *     int token = scanner.getNextToken();
@@ -37,13 +37,9 @@ public class ToolFactory {
 	 *   }
 	 * </pre>
 	 * </code>
-	 * 
-	 * <p>
-	 * The returned scanner will tolerate unterminated line comments (missing line separator). It can be made stricter
-	 * by using API with extra boolean parameter (<code>strictCommentMode</code>).
-	 * <p>
 	 * @param tokenizeComments if set to <code>false</code>, comments will be silently consumed
 	 * @param tokenizeWhiteSpace if set to <code>false</code>, white spaces will be silently consumed,
+	 * @param tokenizePragmas if set to <code>false</code>, pragmas will be silently consumed,
 	 * @param recordLineSeparator if set to <code>true</code>, the scanner will record positions of encountered line 
 	 * separator ends. In case of multi-character line separators, the last character position is considered. These positions
 	 * can then be extracted using <code>IScanner#getLineEnds</code>. Only non-unicode escape sequences are 
@@ -52,7 +48,7 @@ public class ToolFactory {
   	 * @return a scanner
 	 * @see descent.core.compiler.IScanner
 	 */
-	public static IScanner createScanner(boolean tokenizeComments, boolean tokenizeWhiteSpace, boolean recordLineSeparator, int apiLevel) {
-		return new PublicScanner(tokenizeComments, tokenizeWhiteSpace, recordLineSeparator, apiLevel);
+	public static IScanner createScanner(boolean tokenizeComments, boolean tokenizePragmas, boolean tokenizeWhiteSpace, boolean recordLineSeparator, int apiLevel) {
+		return new PublicScanner(tokenizeComments, tokenizePragmas, tokenizeWhiteSpace, recordLineSeparator, apiLevel);
 	}
 }

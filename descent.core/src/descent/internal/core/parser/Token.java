@@ -41,7 +41,7 @@ public class Token {
 		if (value == TOK.TOKidentifier) {
 			return ident.string;
 		} else {
-			return value.toString();
+			return value.value;
 		}
 	}
 

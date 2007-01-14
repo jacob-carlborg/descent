@@ -1,6 +1,5 @@
 package descent.ui.text.outline;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.jface.viewers.ITreeContentProvider;
@@ -8,17 +7,9 @@ import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.ui.IEditorInput;
 
 import descent.core.dom.ASTNode;
-import descent.core.dom.AggregateDeclaration;
 import descent.core.dom.AlignDeclaration;
-import descent.core.dom.CompilationUnit;
-import descent.core.dom.ConditionalDeclaration;
 import descent.core.dom.Declaration;
-import descent.core.dom.EnumDeclaration;
-import descent.core.dom.ExternDeclaration;
 import descent.core.dom.ModifierDeclaration;
-import descent.core.dom.ModuleDeclaration;
-import descent.core.dom.PragmaDeclaration;
-import descent.core.dom.TemplateDeclaration;
 import descent.ui.text.DEditor;
 
 public class DOutlineContentProvider implements ITreeContentProvider {

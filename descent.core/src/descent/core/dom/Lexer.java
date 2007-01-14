@@ -11,7 +11,6 @@ import java.util.Map;
 import descent.core.compiler.IProblem;
 import descent.internal.core.parser.Chars;
 import descent.internal.core.parser.Entity;
-import descent.internal.core.parser.Id;
 import descent.internal.core.parser.Identifier;
 import descent.internal.core.parser.OutBuffer;
 import descent.internal.core.parser.Problem;
@@ -27,21 +26,21 @@ import descent.internal.core.parser.Utf;
  */
 public class Lexer implements IProblemCollector {
 	
-	public final static boolean IN_COMMENT = true;
-	public final static boolean NOT_IN_COMMENT = false;
+	private final static boolean IN_COMMENT = true;
+	private final static boolean NOT_IN_COMMENT = false;
 	
-	public final static BigInteger X_FFFFFFFFFFFFFFFF =     new BigInteger("FFFFFFFFFFFFFFFF", 16);
-	public final static BigInteger X_8000000000000000 =         new BigInteger("8000000000000000", 16);
-	public final static BigInteger X_FFFFFFFF00000000  =       new BigInteger("FFFFFFFF00000000", 16);
-	public final static BigInteger X_80000000 =                 new BigInteger("80000000", 16);
-	public final static BigInteger X_FFFFFFFF80000000 =     new BigInteger("FFFFFFFF80000000", 16);
+	private final static BigInteger X_FFFFFFFFFFFFFFFF =     new BigInteger("FFFFFFFFFFFFFFFF", 16);
+	private final static BigInteger X_8000000000000000 =         new BigInteger("8000000000000000", 16);
+	private final static BigInteger X_FFFFFFFF00000000  =       new BigInteger("FFFFFFFF00000000", 16);
+	private final static BigInteger X_80000000 =                 new BigInteger("80000000", 16);
+	private final static BigInteger X_FFFFFFFF80000000 =     new BigInteger("FFFFFFFF80000000", 16);
 	                                                                       
-	public final static int LS = 0x2028;
-	public final static int PS = 0x2029;
+	private final static int LS = 0x2028;
+	private final static int PS = 0x2029;
 	
-	public StringTable stringtable = new StringTable();
-	public OutBuffer stringbuffer = new OutBuffer();
-	public Token freelist;
+	private StringTable stringtable = new StringTable();
+	private OutBuffer stringbuffer = new OutBuffer();
+	private Token freelist;
 	
 	public int linnum;
 	
@@ -49,100 +48,49 @@ public class Lexer implements IProblemCollector {
 	public int p;
 	public int end;
 	public char[] input;
+	
 	public Token token;
 	public Token prevToken;
-	public boolean anyToken;
 	
-	public List<Comment> comments;
-	public List<Pragma> pragmas;	
 	public List<IProblem> problems;
-	public boolean appendLeadingComments = true;
+	public List<Integer> lineEnds;
 	
-	AST ast;
-	CompilationUnit compilationUnit;
+	private boolean tokenizeComments;
+	private boolean tokenizeWhiteSpace;
+	private boolean tokenizePragmas;
+	private boolean recordLineSeparator;
     
-    public Lexer(AST ast, String source) {
-    	this(ast, source.toCharArray());
+    public Lexer(String source, boolean tokenizeComments, boolean tokenizePragmas, boolean tokenizeWhiteSpace, boolean recordLineSeparator) {
+    	this(source.toCharArray(), tokenizeComments, tokenizePragmas, tokenizeWhiteSpace, recordLineSeparator);
     }
     
-    public Lexer(AST ast, char[] source) {
-    	this(ast, source, 0, source.length);
+    public Lexer(char[] source, boolean tokenizeComments, boolean tokenizePragmas, boolean tokenizeWhiteSpace, boolean recordLineSeparator) {
+    	this(source, 0, source.length, tokenizeComments, tokenizePragmas, tokenizeWhiteSpace, recordLineSeparator);
     }
     
-    public Lexer(AST ast, String source, int offset, 
-			int length) {
-    	this(ast, source.toCharArray(), offset, length);
+    public Lexer(String source, int offset, int length, boolean tokenizeComments, boolean tokenizePragmas, boolean tokenizeWhiteSpace, boolean recordLineSeparator) {
+    	this(source.toCharArray(), offset, length, tokenizeComments, tokenizePragmas, tokenizeWhiteSpace, recordLineSeparator);
     }
 	
-	public Lexer(AST ast, char[] source, int offset, 
-			int length) {
+	public Lexer(char[] source, int offset, int length, boolean tokenizeComments, boolean tokenizePragmas, boolean tokenizeWhiteSpace, boolean recordLineSeparator) {
 		
 		initKeywords();
 		
-		this.ast = ast;
-		this.compilationUnit = new CompilationUnit(ast);
-		this.comments = new ArrayList<Comment>();
-		this.pragmas = new ArrayList<Pragma>();
 		this.problems = new ArrayList<IProblem>();
 		
 		// Make input larger and add zeros, to avoid comparing
 		input = new char[length - base + 5];
 		System.arraycopy(source, 0, input, 0, source.length);
 		this.linnum = 1;
+		this.base = offset;
 		this.end = offset + length;
 		this.p = offset;
-	    this.anyToken = false;
+	    this.tokenizeComments = tokenizeComments;
+	    this.tokenizePragmas = tokenizePragmas;
+		this.tokenizeWhiteSpace = tokenizeWhiteSpace;
+		this.recordLineSeparator = recordLineSeparator;
+		this.lineEnds = new ArrayList<Integer>();
 	    this.token = new Token();
-	    
-	    if (input[p] == '#' && input[p+1] =='!')
-	    {
-	    	ScriptLine scriptLine = new ScriptLine(ast);
-	    	
-	    	p += 2;
-	    	while (true)
-	    	{
-	    		char c = input[p];
-			    switch (c)
-			    {
-					case '\n':
-						scriptLine.setSourceRange(0, p);
-						newline(NOT_IN_COMMENT);
-					    p++;
-					    break;
-	
-				case '\r':
-				    p++;
-				    if (input[p] == '\n') {
-				    	scriptLine.setSourceRange(0, p - 1);
-				    	newline(NOT_IN_COMMENT);
-				    	p++;
-				    }
-				    break;
-	
-				case 0:
-				case 0x1A:
-					scriptLine.setSourceRange(0, p);
-				    break;
-	
-				default:
-				    if (c >= 0x80) {
-						int u = decodeUTF();
-						if (u == PS || u == LS) {
-							scriptLine.setSourceRange(0, p);
-							break;
-						}
-					}
-					p++;
-				    continue;
-			    }
-			    break;
-			}
-	    	
-	    	scriptLine.setText(new String(input, 2, scriptLine.getLength() - 2));
-	    	compilationUnit.setScriptLine(scriptLine);
-	    	
-	    	linnum = 2;
-	    }
 	}
 	
 	public void error(String message, int id, int line, int offset, int length) {
@@ -168,7 +116,9 @@ public class Lexer implements IProblemCollector {
 	public TOK nextToken() {
 		Token t;
 		
-		if (token != null) {
+		if (token != null && !(token.value == TOK.TOKlinecomment || token.value == TOK.TOKdoclinecomment ||
+				token.value == TOK.TOKblockcomment || token.value == TOK.TOKdocblockcomment ||
+				token.value == TOK.TOKpluscomment || token.value == TOK.TOKdocpluscomment)) {
 			prevToken = new Token(token);
 		}
 
@@ -225,46 +175,9 @@ public class Lexer implements IProblemCollector {
 	    }
 	}
 	
-	/**********************************
-	 * Determine if string is a valid Identifier.
-	 * Placed here because of commonality with Lexer functionality.
-	 */
-
-	/* not used yet
-	public boolean isValidIdentifier(String p)
-	{
-	    int len;
-		int[] idx = { 0 };
-		char[] chars;
-
-		if (p == null || p.length() == 0)
-			return false;
-
-		if (Chars.isdigit(p.charAt(0)))
-			return false;
-
-		len = p.length();
-		idx[0] = 0;
-		chars = p.toCharArray();
-		while (p.charAt(idx[0]) != 0) {
-			int[] dc = { 0 };
-
-			String q = Utf.decodeChar(chars, 0, len, idx, dc);
-			if (q != null)
-				return false;
-
-			if (!((dc[0] >= 0x80 && UniAlpha.isUniAlpha(dc[0]))
-					|| Chars.isalnum(dc[0]) || dc[0] == '_'))
-				return false;
-		}
-		return true;
-	}
-	*/
-	
 	public void scan(Token t) {
 	    int linnum = this.linnum;
 	    
-	    appendLeadingComments = true;
 	    t.lineNumber = linnum;
 	    t.leadingComments = null;
 	    while (true)
@@ -282,19 +195,31 @@ public class Lexer implements IProblemCollector {
 		    case '\t':
 		    // case '\v':
 		    case '\f':
-			p++;
+		    	p++;
+		    	if (tokenizeWhiteSpace) {
+		    		whitespace(t);
+		    		return;
+		    	}
 			continue;			// skip white space
 
 		    case '\r':
-			p++;
-			if (input[p] != '\n') {			// if CR stands by itself
-				newline(NOT_IN_COMMENT);
-			}
+		    	p++;
+				if (input[p] != '\n') {			// if CR stands by itself
+					newline(NOT_IN_COMMENT);
+				}
+			    if (tokenizeWhiteSpace) {
+			    	whitespace(t);
+			    	return;
+			    }
 			continue;			// skip white space
 
 		    case '\n':
 		    	newline(NOT_IN_COMMENT);
 		    	p++;
+		    	if (tokenizeWhiteSpace) {
+		    		whitespace(t);
+		    		return;
+		    	}
 			continue;			// skip white space
 
 		    case '0':  	case '1':   case '2':   case '3':   case '4':
@@ -419,18 +344,18 @@ public class Lexer implements IProblemCollector {
 					switch (c)
 					{
 					    case '/':
-						break;
+					    	break;
 
 					    case '\n':
 					    	newline(IN_COMMENT);
-						p++;
-						continue;
+					    	p++;
+					    	continue;
 
 					    case '\r':
-						p++;
-						if (input[p] != '\n')
-							newline(IN_COMMENT);
-						continue;
+					    	p++;
+					    	if (input[p] != '\n')
+					    		newline(IN_COMMENT);
+					    	continue;
 
 					    case 0:
 					    case 0x1A:
@@ -440,13 +365,14 @@ public class Lexer implements IProblemCollector {
 					    	return;
 
 					    default:
-						if ((c & 0x80) != 0)
-						{   int u = decodeUTF();
-						    if (u == PS || u == LS)
-							linnum++;
-						}
-						p++;
-						continue;
+							if (c >= 0x80) {   
+								int u = decodeUTF();
+							    if (u == PS || u == LS) {
+							    	newline(IN_COMMENT);
+							    }
+							}
+							p++;
+							continue;
 					}
 					break;
 				    }
@@ -455,13 +381,14 @@ public class Lexer implements IProblemCollector {
 					break;
 				}
 				
-				Comment comment = new Comment(ast);
-				comment.setKind((input[t.ptr + 2] == '*' && p - 4 != t.ptr) ? Comment.Kind.DOC_BLOCK_COMMENT : Comment.Kind.BLOCK_COMMENT);
-				comment.setSourceRange(t.ptr, p - t.ptr);
-				comments.add(comment);
-				attachCommentToCurrentToken(comment);
-				
-				continue;
+				if (tokenizeComments) {
+					t.value = (input[t.ptr + 2] == '*' && p - 4 != t.ptr) ? TOKdocblockcomment : TOKblockcomment;
+					t.len = p - t.ptr;
+					t.string = new String(input, t.ptr, t.len);
+					return;
+				} else {
+					continue;
+				}
 
 			    case '/':		// do // style comments
 				linnum = this.linnum;
@@ -480,18 +407,21 @@ public class Lexer implements IProblemCollector {
 
 					case 0:
 					case 0x1A:
-						comment = new Comment(ast);
-						comment.setKind(input[t.ptr + 2] == '/' ? Comment.Kind.DOC_LINE_COMMENT : Comment.Kind.LINE_COMMENT);
-						comment.setSourceRange(t.ptr, p - t.ptr);
-						comments.add(comment);
-						attachCommentToCurrentToken(comment);
+						if (tokenizeComments) {
+							t.value = input[t.ptr + 2] == '/' ? TOKdoclinecomment : TOKlinecomment;
+							t.len = p - t.ptr;
+							t.string = new String(input, t.ptr, t.len);
+							
+							p = end;
+							return;
+						}
 						
 						p = end;
 						t.value = TOKeof;
 						return;
 
 					default:
-					    if ((c & 0x80) != 0)
+					    if (c >= 0x80)
 					    {   int u = decodeUTF();
 						if (u == PS || u == LS)
 						    break;
@@ -501,15 +431,19 @@ public class Lexer implements IProblemCollector {
 				    break;
 				}
 				
-				comment = new Comment(ast);
-				comment.setKind(input[t.ptr + 2] == '/' ? Comment.Kind.DOC_LINE_COMMENT : Comment.Kind.LINE_COMMENT);
-				comment.setSourceRange(t.ptr, p - t.ptr);
-				comments.add(comment);
-				attachCommentToCurrentToken(comment);
-				
-				newline(NOT_IN_COMMENT);
-				p++;
-				continue;
+				if (tokenizeComments) {
+					t.value = input[t.ptr + 2] == '/' ? TOKdoclinecomment : TOKlinecomment;
+					t.len = p - t.ptr;
+					t.string = new String(input, t.ptr, t.len);
+					
+					newline(NOT_IN_COMMENT);
+					p++;					
+					return;
+				} else {
+					newline(NOT_IN_COMMENT);
+					p++;
+					continue;
+				}
 
 			    case '+':
 			    {	int nest;
@@ -560,10 +494,10 @@ public class Lexer implements IProblemCollector {
 					    return;
 
 					default:
-					    if ((c & 0x80) != 0)
+					    if (c >= 0x80)
 					    {   int u = decodeUTF();
 						if (u == PS || u == LS)
-						    linnum++;
+						    newline(IN_COMMENT);
 					    }
 					    p++;
 					    continue;
@@ -571,12 +505,14 @@ public class Lexer implements IProblemCollector {
 				    break;
 				}
 				
-				comment = new Comment(ast);
-				comment.setKind((input[t.ptr + 2] == '+' && p - 4 != t.ptr) ? Comment.Kind.DOC_PLUS_COMMENT : Comment.Kind.PLUS_COMMENT);
-				comment.setSourceRange(t.ptr, p- t.ptr);
-				comments.add(comment);
-				attachCommentToCurrentToken(comment);
-				continue;
+				if (tokenizeComments) {
+					t.value = (input[t.ptr + 2] == '+' && p - 4 != t.ptr) ? TOKdocpluscomment : TOKpluscomment;
+					t.len = p - t.ptr;
+					t.string = new String(input, t.ptr, t.len);
+					return;
+				} else {
+					continue;
+				}
 			    }
 			}
 			t.value = TOKdiv;
@@ -905,38 +841,45 @@ public class Lexer implements IProblemCollector {
 
 		    case '#':
 			p++;
-			pragma();
+			pragma(t);
+			if (tokenizePragmas) {
+				return;
+			}
 			continue;
 
-		    default:
-		    {	char c = input[p];
+		    default: {
+				char c = input[p];
 
-			if ((c & 0x80) != 0)
-			{   
-				int u = decodeUTF();
+				if (c >= 0x80) {
+					int u = decodeUTF();
 
-			    // Check for start of unicode identifier
-			    if (UniAlpha.isUniAlpha(u)) {
-			    	case_ident(t);
-			    	return;
-			    }
+					// Check for start of unicode identifier
+					if (UniAlpha.isUniAlpha(u)) {
+						case_ident(t);
+						return;
+					}
 
-			    if (u == PS || u == LS)
-			    {
-				linnum++;
+					if (u == PS || u == LS) {
+						newline(NOT_IN_COMMENT);
+						p++;
+						if (tokenizeWhiteSpace) {
+							whitespace(t);
+							return;
+						}
+						continue;
+					}
+				}
+				if (Chars.isprint(c)) {
+					error("Unsupported char: " + (char) c,
+							IProblem.UnsupportedCharacter, t.lineNumber, p, 1);
+				} else {
+					error("Unsupported char: 0x" + Integer.toHexString(c),
+							IProblem.UnsupportedCharacter, t.lineNumber, p, 1);
+				}
 				p++;
 				continue;
-			    }
 			}
-			if (Chars.isprint(c)) {
-				error("Unsupported char: " + (char) c, IProblem.UnsupportedCharacter, t.lineNumber, p, 1);
-			} else {
-				error("Unsupported char: 0x" + Integer.toHexString(c), IProblem.UnsupportedCharacter, t.lineNumber, p, 1);
 			}
-			p++;
-			continue;
-		    }
-		}
 	    }
 	}
 
@@ -958,8 +901,6 @@ public class Lexer implements IProblemCollector {
 		t.ident = id;
 		t.value = id.value;
 		t.len = id.string.length();
-		
-		anyToken = true;
 		return;
 	}
 	
@@ -1132,7 +1073,7 @@ public class Lexer implements IProblemCollector {
 		{
 		    case '\n':
 		    	newline(NOT_IN_COMMENT);
-			break;
+		    	break;
 
 		    case '\r':
 			if (input[p] == '\n') {
@@ -1164,12 +1105,12 @@ public class Lexer implements IProblemCollector {
 			break;
 
 		    default:
-			if ((c & 0x80) != 0)
+			if (c >= 0x80)
 			{   p--;
 			    int u = decodeUTF();
 			    p++;
 			    if (u == PS || u == LS)
-				linnum++;
+				newline(NOT_IN_COMMENT);
 			    stringbuffer.writeUTF8(u);
 			    continue;
 			}
@@ -1240,7 +1181,7 @@ public class Lexer implements IProblemCollector {
 			    int u = decodeUTF();
 			    p++;
 			    if (u == PS || u == LS)
-				linnum++;
+				newline(NOT_IN_COMMENT);
 			    else {
 			    	error("Non-hex character: " + (char) u, IProblem.NonHexCharacter, linnum, p - 1, 1);
 			    }
@@ -1390,7 +1331,7 @@ public class Lexer implements IProblemCollector {
 				c = decodeUTF();
 				p++;
 				if (c == LS || c == PS) {
-					linnum++;
+					newline(NOT_IN_COMMENT);
 					error("Unterminated character constant",
 							IProblem.UnterminatedCharacterConstant,
 							token.lineNumber, token.ptr, p - token.ptr);
@@ -2029,180 +1970,69 @@ public class Lexer implements IProblemCollector {
 		return result;
 	}
 	
-	private void pragma() {
-		int start = p - 1;
-		Pragma pragma = new Pragma(ast);
-
-		Token firstToken = new Token(token);
-		Token tok = new Token();
-		//int linnum;
-		String filespec = null;
-
-		scan(tok);
-		if (tok.value != TOKidentifier || !tok.ident.string.equals(Id.line)) {
-			error("#line integer [\"filespec\"]\\n expected",
-					IProblem.InvalidPragmaSyntax, firstToken.lineNumber,
-					firstToken.ptr, tok.ptr + tok.len - firstToken.ptr);
-			pragma.setSourceRange(start, p - start);
-			pragma.setText(new String(input, pragma.getStartPosition() + 1, pragma.getLength() - 1));
-			setMalformed(pragma);
-			pragmas.add(pragma);
-			return;
-		}
-
-		scan(tok);
-		if (tok.value == TOKint32v || tok.value == TOKint64v) {
-			linnum = tok.numberValue.intValue() - 1;
-		} else {
-			error("#line integer [\"filespec\"]\\n expected",
-					IProblem.InvalidPragmaSyntax, firstToken.lineNumber,
-					firstToken.ptr, tok.ptr + tok.len - firstToken.ptr);
-			pragma.setSourceRange(start, p - start);
-			pragma.setText(new String(input, pragma.getStartPosition() + 1, pragma.getLength() - 1));
-			setMalformed(pragma);
-			pragmas.add(pragma);
-			return;
-		}
-
-		while (true) {
-			switch (input[p]) {
+	private void pragma(Token t) {
+		boolean stay = true;
+		boolean isRN = false;
+		do {
+			switch(input[p]) {
 			case 0:
 			case 0x1A:
+				p++;
+				stay = false;
+				break;
 			case '\n':
-				if (input[p - 1] == '\r') { 
-					pragma.setSourceRange(start, p - 1 - start);
-				} else {
-					pragma.setSourceRange(start, p - start);
-				}
-				pragma.setText(new String(input, pragma.getStartPosition() + 1, pragma.getLength() - 1));
-				pragmas.add(pragma);
-				/*
-				 * this.linnum = linnum;
-				 */
-				return;
-
+				newline(NOT_IN_COMMENT);
+				p++;				
+				stay = false;
+				break;
 			case '\r':
 				p++;
-				if (input[p] != '\n') {
-					pragma.setSourceRange(start, p - 1 - start);
-					pragma.setText(new String(input, pragma.getStartPosition() + 1, pragma.getLength() - 1));
-					pragmas.add(pragma);
-					p--;
-					/*
-					 * this.linnum = linnum; if (filespec != null)
-					 * this.loc.filename = filespec;
-					 */
-					return;
+				if (input[p] == '\n') {
+					newline(NOT_IN_COMMENT);
+					p++;					
+					stay = false;
+					isRN = true;
 				}
-				continue;
-
+				break;
+			default:
+				// TODO make the PS and LS stuff
+				p++;
+			}
+		} while(stay);
+		t.len = p - t.ptr - (isRN ? 2 : 1);
+		t.value = TOKPRAGMA;
+		t.string = new String(input, t.ptr, t.len);
+	}
+	
+	private void whitespace(Token t) {
+		boolean stay = true;
+		do {
+			switch(input[p]) {
 			case ' ':
 			case '\t':
 			case '\f':
 				p++;
-				continue; // skip white space
-
-			case '_':
-				if (compilationUnit != null && p + 8 <= input.length
-						&& input[p + 0] == '_' && input[p + 1] == '_'
-						&& input[p + 2] == 'F' && input[p + 3] == 'I'
-						&& input[p + 4] == 'L' && input[p + 5] == 'E'
-						&& input[p + 6] == '_' && input[p + 7] == '_') {
-					p += 8;
-					/*
-					 * if (mod.ident == null) { filespec = loc !=
-					 * null && loc.filename != null ? loc.filename :
-					 * mod.ident.toString(); }
-					 */
-				}
-				continue;
-
-			case '"':
-				if (filespec != null) {
-					error("#line integer [\"filespec\"]\\n expected",
-							IProblem.InvalidPragmaSyntax,
-							firstToken.lineNumber, firstToken.ptr, tok.ptr
-									+ tok.len - firstToken.ptr);
-					pragma.setSourceRange(start, p - start);
-					pragma.setText(new String(input, pragma.getStartPosition() + 1, pragma.getLength() - 1));
-					setMalformed(pragma);
-					pragmas.add(pragma);
-					return;
-				}
-				//stringbuffer.reset();
+				break;
+			case '\n':
+				newline(NOT_IN_COMMENT);
+				p++;				
+				break;
+			case '\r':
 				p++;
-				while (true) {
-					int c;
-
-					c = input[p];
-					switch (c) {
-					case '\n':
-					case '\r':
-					case 0:
-					case 0x1A: {
-						error("#line integer [\"filespec\"]\\n expected",
-								IProblem.InvalidPragmaSyntax,
-								firstToken.lineNumber, firstToken.ptr, tok.ptr
-										+ tok.len - firstToken.ptr);
-						pragma.setSourceRange(start, p - start);
-						pragma.setText(new String(input, pragma.getStartPosition() + 1, pragma.getLength() - 1));
-						setMalformed(pragma);
-						pragmas.add(pragma);
-						return;
-					}
-
-					case '"':
-						//filespec = stringbuffer.data.toString();
-						p++;
-						break;
-
-					default:
-						if (c >= 0x80) {
-							int u = decodeUTF();
-							if (u == PS || u == LS) {
-								error(
-										"#line integer [\"filespec\"]\\n expected",
-										IProblem.InvalidPragmaSyntax,
-										firstToken.lineNumber, firstToken.ptr,
-										tok.ptr + tok.len - firstToken.ptr);
-								pragma.setSourceRange(start, p - start);
-								pragma.setText(new String(input, pragma.getStartPosition() + 1, pragma.getLength() - 1));
-								setMalformed(pragma);
-								pragmas.add(pragma);
-								return;
-							}
-						}
-						//stringbuffer.writeByte(c);
-						p++;
-						continue;
-					}
+				if (input[p] == '\n') {
+					newline(NOT_IN_COMMENT);
+					p++;					
 					break;
 				}
-				continue;
-
+				break;
 			default:
-				if (input[p] >= 0x80) {
-					int u = decodeUTF();
-					if (u == PS || u == LS) {
-						pragma.setSourceRange(start, p - start);
-						pragma.setText(new String(input, pragma.getStartPosition() + 1, pragma.getLength() - 1));
-						pragmas.add(pragma);
-						// this.linnum = linnum;
-						// if (filespec != null)
-						//	this.loc.filename = filespec;
-						return;
-					}
-				}
-				error("#line integer [\"filespec\"]\\n expected",
-						IProblem.InvalidPragmaSyntax, firstToken.lineNumber,
-						firstToken.ptr, tok.ptr + tok.len - firstToken.ptr);
-				pragma.setSourceRange(start, p - start);
-				pragma.setText(new String(input, pragma.getStartPosition() + 1, pragma.getLength() - 1));
-				setMalformed(pragma);
-				pragmas.add(pragma);
-				return;
+				// TODO make the PS and LS stuff
+				stay = false;
 			}
-		}
+		} while(stay);
+		t.len = p - t.ptr;
+		t.value = TOKwhitespace;
+		t.string = new String(input, t.ptr, t.len);
 	}
 	
 	private int decodeUTF() {
@@ -2488,19 +2318,11 @@ public class Lexer implements IProblemCollector {
 		}
 	}
 	
-	private void attachCommentToCurrentToken(Comment comment) {
-		if (!appendLeadingComments || !comment.isDocComment()) return;
-		
-		if (prevToken.leadingComments == null) {
-			prevToken.leadingComments = new ArrayList<Comment>();
-		}
-		prevToken.leadingComments.add(comment);
-	}
 	
-	private void newline(boolean inComment) {
+	protected void newline(boolean inComment) {
 		linnum++;
-		if (!inComment) {
-			appendLeadingComments = false;
+		if (recordLineSeparator) {
+			lineEnds.add(p);
 		}
 	}
 	

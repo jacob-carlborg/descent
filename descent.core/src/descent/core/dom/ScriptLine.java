@@ -15,12 +15,6 @@ import java.util.List;
 public class ScriptLine extends ASTNode {
 	
 	/**
-	 * The "text" structural property of this node type.
-	 */
-	public static final SimplePropertyDescriptor TEXT_PROPERTY =
-		new SimplePropertyDescriptor(ScriptLine.class, "text", String.class, OPTIONAL); //$NON-NLS-1$
-
-	/**
 	 * A list of property descriptors (element type: 
 	 * {@link StructuralPropertyDescriptor}),
 	 * or null if uninitialized.
@@ -28,9 +22,8 @@ public class ScriptLine extends ASTNode {
 	private static final List PROPERTY_DESCRIPTORS;
 
 	static {
-		List properyList = new ArrayList(1);
+		List properyList = new ArrayList(0);
 		createPropertyList(ScriptLine.class, properyList);
-		addProperty(TEXT_PROPERTY, properyList);
 		PROPERTY_DESCRIPTORS = reapPropertyList(properyList);
 	}
 
@@ -48,11 +41,6 @@ public class ScriptLine extends ASTNode {
 	public static List propertyDescriptors(int apiLevel) {
 		return PROPERTY_DESCRIPTORS;
 	}
-
-	/**
-	 * The text.
-	 */
-	private String text;
 
 
 	/**
@@ -78,22 +66,6 @@ public class ScriptLine extends ASTNode {
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
 	 */
-	final Object internalGetSetObjectProperty(SimplePropertyDescriptor property, boolean get, Object value) {
-		if (property == TEXT_PROPERTY) {
-			if (get) {
-				return getText();
-			} else {
-				setText((String) value);
-				return null;
-			}
-		}
-		// allow default implementation to flag the error
-		return super.internalGetSetObjectProperty(property, get, value);
-	}
-
-	/* (omit javadoc for this method)
-	 * Method declared on ASTNode.
-	 */
 	final int getNodeType0() {
 		return SCRIPT_LINE;
 	}
@@ -104,7 +76,6 @@ public class ScriptLine extends ASTNode {
 	ASTNode clone0(AST target) {
 		ScriptLine result = new ScriptLine(target);
 		result.setSourceRange(this.getStartPosition(), this.getLength());
-		result.setText(getText());
 		return result;
 	}
 
@@ -127,35 +98,11 @@ public class ScriptLine extends ASTNode {
 		visitor.endVisit(this);
 	}
 
-	/**
-	 * Returns the text of this script line.
-	 * 
-	 * @return the text
-	 */ 
-	public String getText() {
-		return this.text;
-	}
-
-	/**
-	 * Sets the text of this script line.
-	 * 
-	 * @param text the text
-	 * @exception IllegalArgumentException if the argument is incorrect
-	 */ 
-	public void setText(String text) {
-		if (text == null) {
-			throw new IllegalArgumentException();
-		}
-		preValueChange(TEXT_PROPERTY);
-		this.text = text;
-		postValueChange(TEXT_PROPERTY);
-	}
-
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
 	 */
 	int memSize() {
-		return BASE_NODE_SIZE + 1 * 4;
+		return BASE_NODE_SIZE + 0 * 4;
 	}
 
 	/* (omit javadoc for this method)

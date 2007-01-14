@@ -32,7 +32,7 @@ import descent.ui.IWorkingCopyManagerExtension;
 public class WorkingCopyManager implements IWorkingCopyManager, IWorkingCopyManagerExtension {
 
 	private ICompilationUnitDocumentProvider fDocumentProvider;
-	private Map fMap;
+	private Map<IEditorInput, ICompilationUnit> fMap;
 	private boolean fIsShuttingDown;
 
 	/**
@@ -114,7 +114,7 @@ public class WorkingCopyManager implements IWorkingCopyManager, IWorkingCopyMana
 	public void setWorkingCopy(IEditorInput input, ICompilationUnit workingCopy) {
 		if (fDocumentProvider.getDocument(input) != null) {
 			if (fMap == null)
-				fMap= new HashMap();
+				fMap= new HashMap<IEditorInput, ICompilationUnit>();
 			fMap.put(input, workingCopy);
 		}
 	}

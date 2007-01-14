@@ -22,7 +22,6 @@ import descent.core.dom.ExternDeclaration;
 import descent.core.dom.FunctionDeclaration;
 import descent.core.dom.Import;
 import descent.core.dom.ImportDeclaration;
-import descent.core.dom.Modifier;
 import descent.core.dom.ModuleDeclaration;
 import descent.core.dom.Name;
 import descent.core.dom.PointerType;
@@ -76,9 +75,9 @@ public class DOutlineLabelProvider extends LabelProvider {
 	private Image dtorProtectedImage;
 	private Image dtorPrivateImage;
 	private Image fieldPublicImage;
-	private Image fieldPackageImage;
-	private Image fieldProtectedImage;
-	private Image fieldPrivateImage;
+	//private Image fieldPackageImage;
+	//private Image fieldProtectedImage;
+	//private Image fieldPrivateImage;
 	
 	public DOutlineLabelProvider() {
 		this.moduleImage = DescentUI.getImageDescriptor(IImages.MODULE).createImage();
@@ -102,9 +101,9 @@ public class DOutlineLabelProvider extends LabelProvider {
 		this.functionProtectedImage = DescentUI.getImageDescriptor(IImages.FUNCTION_PROTECTED).createImage();
 		this.functionPrivateImage = DescentUI.getImageDescriptor(IImages.FUNCTION_PRIVATE).createImage();
 		this.fieldPublicImage = DescentUI.getImageDescriptor(IImages.FIELD_PUBLIC).createImage();
-		this.fieldPackageImage = DescentUI.getImageDescriptor(IImages.FIELD_PACKAGE).createImage();
-		this.fieldProtectedImage = DescentUI.getImageDescriptor(IImages.FIELD_PROTECTED).createImage();
-		this.fieldPrivateImage = DescentUI.getImageDescriptor(IImages.FIELD_PRIVATE).createImage();
+		//this.fieldPackageImage = DescentUI.getImageDescriptor(IImages.FIELD_PACKAGE).createImage();
+		//this.fieldProtectedImage = DescentUI.getImageDescriptor(IImages.FIELD_PROTECTED).createImage();
+		//this.fieldPrivateImage = DescentUI.getImageDescriptor(IImages.FIELD_PRIVATE).createImage();
 		this.ctorPublicImage = DescentUI.getImageDescriptor(IImages.CONSTUCTOR_PUBLIC).createImage();
 		this.ctorPackageImage = DescentUI.getImageDescriptor(IImages.CONSTUCTOR_PACKAGE).createImage();
 		this.ctorProtectedImage = DescentUI.getImageDescriptor(IImages.CONSTUCTOR_PROTECTED).createImage();
@@ -120,7 +119,7 @@ public class DOutlineLabelProvider extends LabelProvider {
 		ASTNode e = (ASTNode) element;
 		Name name;
 		StringBuilder s;
-		ASTNode[] templateArguments;
+		//ASTNode[] templateArguments;
 		
 		switch(e.getNodeType()) {
 		case ASTNode.MODULE_DECLARATION:
@@ -246,7 +245,7 @@ public class DOutlineLabelProvider extends LabelProvider {
 	@Override
 	public Image getImage(Object element) {
 		ASTNode e = (ASTNode) element;
-		Modifier m;
+		//Modifier m;
 		
 		switch(e.getNodeType()) {
 		case ASTNode.MODULE_DECLARATION:

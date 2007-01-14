@@ -35,33 +35,10 @@ import java.util.List;
 public class ASTMatcher {
 	
 	/**
-	 * Indicates whether doc tags should be matched.
-	 */
-	private boolean matchDocTags;
-	
-	/**
 	 * Creates a new AST matcher instance.
-	 * <p>
-	 * For backwards compatibility, the matcher ignores tag
-	 * elements below doc comments by default. Use 
-	 * {@link #ASTMatcher(boolean) ASTMatcher(true)}
-	 * for a matcher that compares doc tags by default.
-	 * </p>
 	 */
 	public ASTMatcher() {
-		this(false);
-	}
-
-	/**
-	 * Creates a new AST matcher instance.
-	 * 
-	 * @param matchDocTags <code>true</code> if doc comment tags are
-	 * to be compared by default, and <code>false</code> otherwise
-	 * @see #match(Javadoc,Object)
-	 */
-	public ASTMatcher(boolean matchDocTags) {
-		this.matchDocTags = matchDocTags;
-	}
+	}	
 
 	/**
 	 * Returns whether the given lists of AST nodes match pair wise according
@@ -3186,13 +3163,9 @@ public class ASTMatcher {
 	/**
 	 * Returns whether the given node and the other object match.
 	 * <p>
-	 * Unlike other node types, the behavior of the default
-	 * implementation is controlled by a constructor-supplied
-	 * parameter  {@link #ASTMatcher(boolean) ASTMatcher(boolean)} 
-	 * which is <code>false</code> if not specified. 
-	 * When this parameter is <code>true</code>, the implementation
-	 * tests whether the other object is also a <code>Comment</code>. 
-	 * Subclasses may reimplement.
+	 * The default implementation provided by this class tests whether the
+	 * other object is a node of the same type with structurally isomorphic
+	 * child subtrees. Subclasses may override this method as needed.
 	 * </p>
 	 * 
 	 * @param node the node
@@ -3207,14 +3180,7 @@ public class ASTMatcher {
 		if (!(other instanceof Comment)) {
 			return false;
 		}
-		Comment o = (Comment) other;
-		if (this.matchDocTags) {
-			return (
-				node.getKind() == o.getKind()
-				);
-		} else {
-			return true;
-		}
+		return node.getKind() == ((Comment) other).getKind();
 	}
 	
 	/**
@@ -3232,13 +3198,7 @@ public class ASTMatcher {
 	 *   different node type or is <code>null</code>
 	 */
 	public boolean match(ScriptLine node, Object other) {
-		if (!(other instanceof ScriptLine)) {
-			return false;
-		}
-		ScriptLine o = (ScriptLine) other;
-		return (
-			node.getText() == o.getText()
-			);
+		return other instanceof ScriptLine;
 	}
 	
 	/**
@@ -3256,13 +3216,7 @@ public class ASTMatcher {
 	 *   different node type or is <code>null</code>
 	 */
 	public boolean match(Pragma node, Object other) {
-		if (!(other instanceof Pragma)) {
-			return false;
-		}
-		Pragma o = (Pragma) other;
-		return (
-			node.getText() == o.getText()
-			);
+		return other instanceof Pragma;
 	}
 
 }

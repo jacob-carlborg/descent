@@ -29,7 +29,9 @@ public enum TOK implements ITerminalSymbols {
 	//TOKuadd, 
 	TOKiftype("iftype", TokenNameiftype), 
 	//TOKremove, TOKnewanonclass, 
-	TOKlinecomment, TOKdoclinecomment, TOKblockcomment, TOKdocblockcomment, TOKpluscomment, TOKdocpluscomment, 
+	TOKlinecomment(TokenNameCOMMENT_LINE), TOKdoclinecomment(TokenNameCOMMENT_DOC_LINE), 
+	TOKblockcomment(TokenNameCOMMENT_BLOCK), TOKdocblockcomment(TokenNameCOMMENT_DOC_BLOCK), 
+	TOKpluscomment(TokenNameCOMMENT_PLUS), TOKdocpluscomment(TokenNameCOMMENT_DOC_PLUS), 
 	//TOKarrayliteral,
 
 	// Operators
@@ -130,19 +132,23 @@ public enum TOK implements ITerminalSymbols {
 	TOKtry("try", TokenNametry), TOKcatch("catch", TokenNamecatch), 
 	TOKfinally("finally", TokenNamefinally), TOKasm("asm", TokenNameasm), 
 	TOKforeach("foreach", TokenNameforeach), TOKforeach_reverse("foreach_reverse", TokenNameforeach_reverse), 
-	TOKscope("scope", TokenNamescope), TOKon_scope_exit("exit", TokenNameexit), 
-	TOKon_scope_failure("failure", TokenNamefailure), TOKon_scope_success("success", TokenNamesuccess),
+	TOKscope("scope", TokenNamescope), TOKon_scope_exit("on_scope_exit", TokenNameon_scope_exit), 
+	TOKon_scope_failure("on_scope_failure", TokenNameon_scope_failure), TOKon_scope_success("on_scope_success", TokenNameon_scope_success),
 
 	// Contracts
 	TOKbody("body", TokenNamebody), TOKinvariant("invariant", TokenNameinvariant),
 
 	// Testing
 	TOKunittest("unittest", TokenNameunittest),
+	
+	// Additional in Descent
+	TOKwhitespace(TokenNameWHITESPACE), TOKPRAGMA(TokenNamePRAGMA),
 
 	//TOKMAX
 	;
 
 	public String value;
+	public char[] charArrayValue;
 
 	public int terminalSymbol;
 
@@ -156,12 +162,8 @@ public enum TOK implements ITerminalSymbols {
 
 	TOK(String value, int terminalSymbol) {
 		this.value = value;
+		this.charArrayValue = value.toCharArray();
 		this.terminalSymbol = terminalSymbol;
-	}
-
-	@Override
-	public String toString() {
-		return value;
 	}
 
 }

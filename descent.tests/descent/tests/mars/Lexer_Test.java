@@ -4,7 +4,6 @@ import java.math.BigInteger;
 
 import junit.framework.TestCase;
 import descent.core.dom.AST;
-import descent.core.dom.Comment;
 import descent.core.dom.Lexer;
 import descent.internal.core.parser.TOK;
 
@@ -156,17 +155,17 @@ public class Lexer_Test extends TestCase {
 	}
 	
 	public void testComments() {
-		assertComment(" //hola\n", "//hola", 1, 6, Comment.Kind.LINE_COMMENT);
-		assertComment(" ///hola\n", "///hola", 1, 7, Comment.Kind.DOC_LINE_COMMENT);
-		assertComment(" /*hola*/", "/*hola*/", 1, 8, Comment.Kind.BLOCK_COMMENT);
-		assertComment(" /**hola*/", "/**hola*/", 1, 9, Comment.Kind.DOC_BLOCK_COMMENT);
-		assertComment(" /+hola+/", "/+hola+/", 1, 8, Comment.Kind.PLUS_COMMENT);
-		assertComment(" /++hola+/", "/++hola+/", 1, 9, Comment.Kind.DOC_PLUS_COMMENT);
-		assertComment(" /++ /+ hola +/ +/", "/++ /+ hola +/ +/", 1, 17, Comment.Kind.DOC_PLUS_COMMENT);
+		assertComment(" //hola\n", "//hola", 1, 6, TOK.TOKlinecomment);
+		assertComment(" ///hola\n", "///hola", 1, 7, TOK.TOKdoclinecomment);
+		assertComment(" /*hola*/", "/*hola*/", 1, 8, TOK.TOKblockcomment);
+		assertComment(" /**hola*/", "/**hola*/", 1, 9, TOK.TOKdocblockcomment);
+		assertComment(" /+hola+/", "/+hola+/", 1, 8, TOK.TOKpluscomment);
+		assertComment(" /++hola+/", "/++hola+/", 1, 9, TOK.TOKdocpluscomment);
+		assertComment(" /++ /+ hola +/ +/", "/++ /+ hola +/ +/", 1, 17, TOK.TOKdocpluscomment);
 	}
 
 	private void assertToken(String s, TOK t, int start, int len) {
-		Lexer lexer = new Lexer(AST.newAST(AST.D1), s);
+		Lexer lexer = new Lexer(s, true, true, false, true);
 		assertEquals(t, lexer.nextToken());
 		assertEquals(start, lexer.token.ptr);
 		assertEquals(len, lexer.token.len);
@@ -174,7 +173,7 @@ public class Lexer_Test extends TestCase {
 	}
 	
 	private void assertCharToken(String s, TOK t, int start, int len) {
-		Lexer lexer = new Lexer(AST.newAST(AST.D1), s);
+		Lexer lexer = new Lexer(s, true, true, false, true);
 		assertEquals(t, lexer.nextToken());
 		assertEquals(s.trim(), lexer.token.string);
 		assertEquals(start, lexer.token.ptr);
@@ -183,7 +182,7 @@ public class Lexer_Test extends TestCase {
 	}
 	
 	private void assertStringToken(String s, int start, int len) {
-		Lexer lexer = new Lexer(AST.newAST(AST.D1), s);
+		Lexer lexer = new Lexer(s, true, true, false, true);
 		assertEquals(TOK.TOKstring, lexer.nextToken());
 		assertEquals(s.trim(), lexer.token.string);
 		assertEquals(start, lexer.token.ptr);
@@ -192,7 +191,7 @@ public class Lexer_Test extends TestCase {
 	}
 	
 	private void assertInt32Token(String s, int value, int start, int len) {
-		Lexer lexer = new Lexer(AST.newAST(AST.D1), s);
+		Lexer lexer = new Lexer(s, true, true, false, true);
 		assertEquals(TOK.TOKint32v, lexer.nextToken());
 		assertEquals(BigInteger.valueOf(value), lexer.token.numberValue);
 		assertEquals(s.trim(), lexer.token.string);
@@ -202,7 +201,7 @@ public class Lexer_Test extends TestCase {
 	}
 	
 	private void assertUns32Token(String s, int value, int start, int len) {
-		Lexer lexer = new Lexer(AST.newAST(AST.D1), s);
+		Lexer lexer = new Lexer(s, true, true, false, true);
 		assertEquals(TOK.TOKuns32v, lexer.nextToken());
 		assertEquals(BigInteger.valueOf(value), lexer.token.numberValue);
 		assertEquals(s.trim(), lexer.token.string);
@@ -212,7 +211,7 @@ public class Lexer_Test extends TestCase {
 	}
 	
 	private void assertInt64Token(String s, int value, int start, int len) {
-		Lexer lexer = new Lexer(AST.newAST(AST.D1), s);
+		Lexer lexer = new Lexer(s, true, true, false, true);
 		assertEquals(TOK.TOKint64v, lexer.nextToken());
 		assertEquals(BigInteger.valueOf(value), lexer.token.numberValue);
 		assertEquals(s.trim(), lexer.token.string);
@@ -221,13 +220,11 @@ public class Lexer_Test extends TestCase {
 		assertEquals(0, lexer.problems.size());
 	}
 	
-	private void assertComment(String string, String comment, int start, int len, Comment.Kind kind) {
-		Lexer lexer = new Lexer(AST.newAST(AST.D1), string);
-		lexer.nextToken();
-		Comment com = lexer.comments.get(lexer.comments.size() - 1);
-		assertEquals(start, com.getStartPosition());
-		assertEquals(len, com.getLength());
-		assertEquals(kind, com.getKind());
+	private void assertComment(String string, String comment, int start, int len, TOK tok) {
+		Lexer lexer = new Lexer(string, true, true, false, true);
+		assertEquals(tok, lexer.nextToken());
+		assertEquals(start, lexer.token.ptr);
+		assertEquals(len, lexer.token.len);
 		assertEquals(0, lexer.problems.size());
 	}
 

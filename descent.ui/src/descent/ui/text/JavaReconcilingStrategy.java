@@ -1,10 +1,5 @@
 package descent.ui.text;
 
-import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IMarker;
-import org.eclipse.core.resources.IResource;
-import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.ISafeRunnable;
 import org.eclipse.core.runtime.SafeRunner;
@@ -13,22 +8,15 @@ import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.reconciler.DirtyRegion;
 import org.eclipse.jface.text.reconciler.IReconcilingStrategy;
 import org.eclipse.jface.text.reconciler.IReconcilingStrategyExtension;
-import org.eclipse.ui.IEditorInput;
-import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.texteditor.IDocumentProvider;
 import org.eclipse.ui.texteditor.ITextEditor;
 
 import descent.core.ICompilationUnit;
-import descent.core.IJavaModel;
-import descent.core.JavaCore;
 import descent.core.JavaModelException;
-import descent.core.compiler.IProblem;
 import descent.core.dom.AST;
-import descent.core.dom.ASTParser;
 import descent.core.dom.CompilationUnit;
 import descent.internal.ui.JavaPlugin;
 import descent.internal.ui.javaeditor.WorkingCopyManager;
-import descent.ui.DescentUI;
 
 public class JavaReconcilingStrategy implements IReconcilingStrategy, IReconcilingStrategyExtension {
 	

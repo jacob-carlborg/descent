@@ -2,8 +2,8 @@ package descent.internal.compiler;
 
 import descent.core.compiler.IScanner;
 import descent.core.compiler.InvalidInputException;
-import descent.core.dom.AST;
 import descent.core.dom.Lexer;
+import descent.internal.core.parser.TOK;
 
 /**
  * Implementation of an IScanner for the D language.
@@ -12,24 +12,30 @@ import descent.core.dom.Lexer;
  */
 public class PublicScanner implements IScanner {
 	
+	private final static char[] EMPTY_CHAR_ARRAY = new char[0];
+	
 	private final boolean tokenizeComments;
-	private final boolean tokenizeWhiteSpace;
+	private final boolean tokenizePragmas;
+	private final boolean tokenizeWhiteSpace;	
 	private final boolean recordLineSeparator;
-	private final int apiLevel;
-	private int startPosition;
-	private int endPosition;
+	//private final int apiLevel;
 	private char[] source;
 	private Lexer lexer;	
 
-	public PublicScanner(boolean tokenizeComments, boolean tokenizeWhiteSpace, boolean recordLineSeparator, int apiLevel) {
+	public PublicScanner(boolean tokenizeComments, boolean tokenizePragmas, boolean tokenizeWhiteSpace, boolean recordLineSeparator, int apiLevel) {
 		this.tokenizeComments = tokenizeComments;
-		this.tokenizeWhiteSpace = tokenizeWhiteSpace;
+		this.tokenizePragmas = tokenizePragmas;
+		this.tokenizeWhiteSpace = tokenizeWhiteSpace;		
 		this.recordLineSeparator = recordLineSeparator;
-		this.apiLevel = apiLevel;
+		//this.apiLevel = apiLevel;
 	}
 
 	public int getCurrentTokenEndPosition() {
-		return lexer.token.ptr + lexer.token.len;
+		if (lexer.token.value == TOK.TOKeof) {
+			return lexer.token.ptr + lexer.token.len;
+		} else {
+			return lexer.token.ptr + lexer.token.len - 1;
+		}
 	}
 
 	public int getCurrentTokenStartPosition() {
@@ -37,34 +43,96 @@ public class PublicScanner implements IScanner {
 	}
 
 	public int getLineEnd(int lineNumber) {
-		// TODO Auto-generated method stub
-		return 0;
+		if (lineNumber <= 0) {
+			return -1;
+		}
+		if (lineNumber - 1 < lexer.lineEnds.size()) {
+			return lexer.lineEnds.get(lineNumber - 1);
+		}
+		return lexer.end;
 	}
 
 	public int[] getLineEnds() {
-		// TODO Auto-generated method stub
-		return null;
+		int[] ends = new int[lexer.lineEnds.size()];
+		for(int i = 0; i < lexer.lineEnds.size(); i++) {
+			ends[i] = lexer.lineEnds.get(i);
+		}
+		return ends;
 	}
 
-	public int getLineNumber(int charPosition) {
-		// TODO Auto-generated method stub
-		return 0;
+	public int getLineNumber(int position) {
+		if (lexer.lineEnds.size() == 0)
+			return 1;
+		int length = lexer.lineEnds.size() + 1;
+		if (length == 0)
+			return 1;
+		int g = 0, d = length - 1;
+		int m = 0;
+		while (g <= d) {
+			m = (g + d) /2;
+			if (position < lexer.lineEnds.get(m)) {
+				d = m-1;
+			} else if (position > lexer.lineEnds.get(m)) {
+				g = m+1;
+			} else {
+				return m + 1;
+			}
+		}
+		if (position < lexer.lineEnds.get(m)) {
+			return m+1;
+		}
+		return m+2;
 	}
 
 	public int getLineStart(int lineNumber) {
-		// TODO Auto-generated method stub
-		return 0;
+		if (lineNumber <= 0) {
+			return -1;
+		}
+		if (lineNumber == 1) {
+			return lexer.base;
+		}
+		if (lineNumber - 1 < lexer.lineEnds.size()) {
+			return lexer.lineEnds.get(lineNumber - 2) + 1;
+		}
+		return lexer.end;
 	}
 
 	public int getNextToken() throws InvalidInputException {
-		if (lexer == null) {
-			lexer = new Lexer(AST.newAST(AST.D1), source, startPosition, endPosition);
-		}
 		return lexer.nextToken().terminalSymbol;
 	}
 
 	public char[] getRawTokenSource() {
-		return lexer.token.value.value.toCharArray();
+		switch(lexer.token.value) {
+			case TOKeof:
+				return EMPTY_CHAR_ARRAY;
+			case TOKint32v:
+			case TOKuns32v:
+			case TOKint64v:
+			case TOKuns64v:
+			case TOKfloat32v:
+			case TOKfloat64v:
+			case TOKfloat80v:
+			case TOKimaginary32v:
+			case TOKimaginary64v:
+			case TOKimaginary80v:
+			case TOKcharv:
+			case TOKwcharv:
+			case TOKdcharv:
+			case TOKstring:
+			case TOKlinecomment:
+			case TOKdoclinecomment:
+			case TOKblockcomment:
+			case TOKdocblockcomment:
+			case TOKpluscomment:
+			case TOKdocpluscomment:
+			case TOKwhitespace:
+			case TOKPRAGMA:
+				return lexer.token.string.toCharArray();
+			case TOKidentifier:
+				return lexer.token.ident.string.toCharArray();
+			default:
+				return lexer.token.value.charArrayValue;
+		}		
 	}
 
 	public char[] getSource() {
@@ -72,9 +140,7 @@ public class PublicScanner implements IScanner {
 	}
 
 	public void resetTo(int startPosition, int endPosition) {
-		this.startPosition = startPosition;
-		this.endPosition = endPosition;
-		lexer = null;
+		this.lexer = new Lexer(source, startPosition, endPosition, tokenizeComments, tokenizePragmas, tokenizeWhiteSpace, recordLineSeparator);
 	}
 
 	public void setSource(char[] source) {

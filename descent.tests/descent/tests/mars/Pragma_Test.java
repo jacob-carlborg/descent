@@ -25,7 +25,6 @@ public class Pragma_Test extends Parser_Test {
 		CompilationUnit cu = getCompilationUnit(s);
 		assertNotNull(cu.getScriptLine());
 		assertPosition(cu.getScriptLine(), 0, 13);
-		assertEquals(" something ", cu.getScriptLine().getText());
 	}
 	
 	public void testScriptLine2() {
@@ -33,7 +32,6 @@ public class Pragma_Test extends Parser_Test {
 		CompilationUnit cu = getCompilationUnit(s);
 		assertNotNull(cu.getScriptLine());
 		assertPosition(cu.getScriptLine(), 0, 13);
-		assertEquals(" something ", cu.getScriptLine().getText());
 	}
 	
 	public void testScriptLine3() {
@@ -41,7 +39,6 @@ public class Pragma_Test extends Parser_Test {
 		CompilationUnit cu = getCompilationUnit(s);
 		assertNotNull(cu.getScriptLine());
 		assertPosition(cu.getScriptLine(), 0, 13);
-		assertEquals(" something ", cu.getScriptLine().getText());
 	}
 	
 	public void testPragmaBroken1() {
@@ -51,7 +48,6 @@ public class Pragma_Test extends Parser_Test {
 		
 		Pragma pragma = cu.getPragmaList().get(0); 
 		assertPosition(pragma, 1, s.length() - 1);
-		assertEquals(" 1", pragma.getText());
 		assertMalformed(pragma);
 	}
 	
@@ -62,7 +58,6 @@ public class Pragma_Test extends Parser_Test {
 		
 		Pragma pragma = cu.getPragmaList().get(0); 
 		assertPosition(pragma, 1, s.length() - 1);
-		assertEquals(" pragma", pragma.getText());
 		assertMalformed(pragma);
 	}
 	
@@ -73,7 +68,6 @@ public class Pragma_Test extends Parser_Test {
 		
 		Pragma pragma = cu.getPragmaList().get(0); 
 		assertPosition(pragma, 1, s.length() - 1);
-		assertEquals("line bla", pragma.getText());
 		assertMalformed(pragma);
 	}
 	
@@ -84,7 +78,6 @@ public class Pragma_Test extends Parser_Test {
 		
 		Pragma pragma = cu.getPragmaList().get(0); 
 		assertPosition(pragma, 1, s.length() - 1);
-		assertEquals("line 1", pragma.getText());
 	}
 	
 	public void testPragmaOk2() {
@@ -94,7 +87,6 @@ public class Pragma_Test extends Parser_Test {
 		
 		Pragma pragma = cu.getPragmaList().get(0); 
 		assertPosition(pragma, 1, 7);
-		assertEquals("line 1", pragma.getText());
 	}
 	
 	public void testPragmaBroken4() {
@@ -103,8 +95,7 @@ public class Pragma_Test extends Parser_Test {
 		assertEquals(1, cu.getPragmaList().size());
 		
 		Pragma pragma = cu.getPragmaList().get(0); 
-		assertPosition(pragma, 1, 8);
-		assertEquals("line 1 ", pragma.getText());
+		assertPosition(pragma, 1, s.length() - 1);
 		assertMalformed(pragma);
 	}
 	
@@ -115,7 +106,6 @@ public class Pragma_Test extends Parser_Test {
 		
 		Pragma pragma = cu.getPragmaList().get(0); 
 		assertPosition(pragma, 1, s.length() - 1);
-		assertEquals("line 1 \"hola", pragma.getText());
 		assertMalformed(pragma);
 	}
 	
@@ -126,7 +116,6 @@ public class Pragma_Test extends Parser_Test {
 		
 		Pragma pragma = cu.getPragmaList().get(0); 
 		assertPosition(pragma, 1, s.length() - 1);
-		assertEquals("line 1 \"hola\"", pragma.getText());
 	}
 
 }

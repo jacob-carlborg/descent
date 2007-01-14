@@ -53,7 +53,7 @@ public class CompilationUnitDocumentProvider extends TextFileDocumentProvider im
 	 * Element information of all connected elements with a fake CU but no file info.
 	 * @since 3.2
 	 */
-	private final Map fFakeCUMapForMissingInfo= new HashMap();
+	private final Map<Object, CompilationUnitInfo> fFakeCUMapForMissingInfo= new HashMap<Object, CompilationUnitInfo>();
 	
 	/**
 	 * Bundle of all required informations to allow working copy management.

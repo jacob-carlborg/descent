@@ -138,6 +138,7 @@ public class Util {
 	 *
 	 * @return </code>"\n"</code> or </code>"\r"</code> or  </code>"\r\n"</code>
 	 */
+	/*
 	private static String getLineSeparator(char[] text, char[] buffer) {
 		// search in this buffer's contents first
 		String lineSeparator = findLineSeparator(buffer);
@@ -151,6 +152,7 @@ public class Util {
 		}
 		return lineSeparator;
 	}
+	*/
 	
 	/**
 	 * Combines two hash codes to make a new one.

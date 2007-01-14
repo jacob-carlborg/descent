@@ -206,6 +206,10 @@ public interface ITerminalSymbols {
 	int TokenNameunittest = 175;
 	int TokenNameDOT_DOT = 176;
 	int TokenNameEQUAL_EQUAL = 177;
+	int TokenNameon_scope_exit = 178;
+	int TokenNameon_scope_failure = 179;
+	int TokenNameon_scope_success = 180;
+	int TokenNamePRAGMA = 181;
 
 }
 

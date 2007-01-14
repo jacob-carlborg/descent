@@ -397,12 +397,12 @@ public class Problems_Test extends Parser_Test {
 	
 	public void test_INVALID_PRAGMA_SYNTAX_3() {
 		IProblem p = getProblem(" #line 1 int x = 2;");
-		assertError(p, IProblem.InvalidPragmaSyntax, 1, 7);
+		assertError(p, IProblem.InvalidPragmaSyntax, 1, 18);
 	}
 	
 	public void test_INVALID_PRAGMA_SYNTAX_4() {
 		IProblem p = getProblems(" #line 1 __FILE__ \" int x = 2;", 1)[0];
-		assertError(p, IProblem.InvalidPragmaSyntax, 1, 7);
+		assertError(p, IProblem.InvalidPragmaSyntax, 1, 29);
 	}
 
 	public void test_UNRECOGNIZED_CHARACTER_ENTITY() {

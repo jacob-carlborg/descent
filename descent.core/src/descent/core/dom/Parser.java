@@ -70,6 +70,7 @@ import static descent.internal.core.parser.TY.Tsarray;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.StringTokenizer;
 
 import descent.core.compiler.IProblem;
 import descent.core.dom.FunctionLiteralDeclarationExpression.Syntax;
@@ -97,36 +98,146 @@ class Parser extends Lexer {
 	public final static int PScurly = 4;	// { } statement is required
 	public final static int PScurlyscope = 8;	// { } starts a new scope
 
-	ModuleDeclaration md;
+	private ModuleDeclaration md;
+	private int inBrackets;	
+	private LINK linkage = LINK.LINKd;
 	
-	int lastDocCommentRead = 0;
-	int inBrackets;
-	
-	LINK linkage = LINK.LINKd;
+	AST ast;
+	CompilationUnit compilationUnit;
+	List<Comment> comments;
+	List<Pragma> pragmas;
+	private int lastDocCommentRead = 0;
+	private boolean appendLeadingComments = true;
 
 	public Parser(AST ast, String source) {
-		super(ast, source);
-		
-		nextToken();
+		this(ast, source, 0, source.length());
 	}
 	
 	public Parser(AST ast, char[] source) {
-		super(ast, source);
-		
-		nextToken();
+		this(ast, source, 0, source.length);
 	}
 	
 	public Parser(AST ast, String source, int offset, int length) {
-		super(ast, source, offset, length);
-		
-		nextToken();
+		this(ast, source.toCharArray(), offset, length);
 	}
 	
 	public Parser(AST ast, char[] source, int offset, 
 			int length) {
-		super(ast, source, offset, length);
+		super(source, offset, length, 
+				true /* tokenize comments */, 
+				true /* tokenize pragmas */,
+				false /* don't tokenize whitespace */, 
+				true /* record line separators */);
+		
+		this.ast = ast;
+		compilationUnit = new CompilationUnit(ast);
+		comments = new ArrayList<Comment>();
+		pragmas = new ArrayList<Pragma>();
 		
 		nextToken();
+	}
+	
+	@Override
+	public TOK nextToken() {
+		TOK tok = super.nextToken();
+		while(tok == TOK.TOKlinecomment || tok == TOK.TOKdoclinecomment ||
+			  tok == TOK.TOKblockcomment || tok == TOK.TOKdocblockcomment ||
+			  tok == TOK.TOKpluscomment || tok == TOK.TOKdocpluscomment) {
+			
+			Comment comment = new Comment(ast);
+			comment.setSourceRange(token.ptr, token.len);
+			switch(tok) {
+			case TOKlinecomment:
+				comment.setKind(Comment.Kind.LINE_COMMENT);
+				break;
+			case TOKdoclinecomment:
+				comment.setKind(Comment.Kind.DOC_LINE_COMMENT);
+				break;
+			case TOKblockcomment:
+				comment.setKind(Comment.Kind.BLOCK_COMMENT);
+				break;
+			case TOKdocblockcomment:
+				comment.setKind(Comment.Kind.DOC_BLOCK_COMMENT);
+				break;
+			case TOKpluscomment:
+				comment.setKind(Comment.Kind.PLUS_COMMENT);
+				break;
+			case TOKdocpluscomment:
+				comment.setKind(Comment.Kind.DOC_PLUS_COMMENT);
+				break;
+			default:
+				throw new IllegalStateException("Can't happen");
+			}
+			
+			comments.add(comment);
+			attachCommentToCurrentToken(comment);
+			
+			tok = nextToken();
+		}
+		
+		while(tok == TOK.TOKPRAGMA) {
+			if (token.ptr == 0 && token.string.length() > 1 && token.string.charAt(1) == '!') {
+				// Script line
+				ScriptLine scriptLine = new ScriptLine(ast);
+				scriptLine.setSourceRange(0, token.len);
+				compilationUnit.setScriptLine(scriptLine);
+			} else {
+				Pragma pragma = new Pragma(ast);
+				pragma.setSourceRange(token.ptr, token.len);
+				pragmas.add(pragma);
+				
+				// Let's see if it's correct
+				StringTokenizer st = new StringTokenizer(token.string.substring(1));
+				if (st.countTokens() != 3) {
+					error("#line integer [\"filespec\"]\\n expected", IProblem.InvalidPragmaSyntax, token);
+					setMalformed(pragma);
+				} else {
+					String value = st.nextToken();
+					if (!"line".equals(value)) {
+						error("#line integer [\"filespec\"]\\n expected", IProblem.InvalidPragmaSyntax, token);
+						setMalformed(pragma);
+					} else {
+						value = st.nextToken();
+						try {
+							int num = Integer.parseInt(value);
+							if (num <= 0) throw new NumberFormatException();
+							
+							value = st.nextToken();
+							if (!"__FILE__".equals(value)) {
+								if (value.length() < 2 || value.charAt(0) != '"' || value.charAt(value.length() - 1) != '"') {
+									error("#line integer [\"filespec\"]\\n expected", IProblem.InvalidPragmaSyntax, token);
+									setMalformed(pragma);
+								}
+							}
+						} catch (NumberFormatException e) {
+							error("#line integer [\"filespec\"]\\n expected", IProblem.InvalidPragmaSyntax, token);
+							setMalformed(pragma);
+						}
+					}
+				}
+			}
+			
+			tok = nextToken();
+		}
+		
+		return tok;
+	}
+	
+	@Override
+	protected void newline(boolean inComment) {
+		super.newline(inComment);
+		if (!inComment) {
+			appendLeadingComments = false;
+		}
+	}
+	
+	private void attachCommentToCurrentToken(Comment comment) {
+		if (!appendLeadingComments || !comment.isDocComment()) return;
+		
+		if (prevToken.leadingComments == null) {
+			prevToken.leadingComments = new ArrayList<Comment>();
+		}
+		prevToken.leadingComments.add(comment);
 	}
 	
 	@SuppressWarnings("unchecked")
