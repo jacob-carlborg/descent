@@ -1,7 +1,19 @@
+/*******************************************************************************
+ * Copyright (c) 2004, 2006 IBM Corporation and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     IBM Corporation - initial API and implementation
+ *******************************************************************************/
 package descent.core.dom;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+
+import descent.core.compiler.IScanner;
 
 
 /**
@@ -120,7 +132,7 @@ public class AST {
 	 * Java Scanner used to validate preconditions for the creation of specific nodes
 	 * like CharacterLiteral, NumberLiteral, StringLiteral or SimpleName.
 	 */
-	// TODO JDT Scanner scanner;
+	IScanner scanner;
 	
 	/**
 	 * Internal ast rewriter used to record ast modification when record mode is enabled.
@@ -144,7 +156,7 @@ public class AST {
 		}
 		this.apiLevel = level;
 		// initialize a scanner
-		/* TODO JDT check with original source */		
+		this.scanner = ToolFactory.createScanner(true, true, true, true, level);		
 	}
 	
 	/**

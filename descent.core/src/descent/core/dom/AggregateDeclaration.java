@@ -24,13 +24,28 @@ public class AggregateDeclaration extends Declaration {
 	 */
 	public static enum Kind {
 		/** Class declaration */
-		CLASS,
+		CLASS("class"),
 		/** Interface declaration */
-		INTERFACE,
+		INTERFACE("interface"),
 		/** "inout" passage mode */
-		STRUCT,
+		STRUCT("struct"),
 		/** "lazy" passage mode */
-		UNION
+		UNION("union")
+		
+		;
+		
+		String token;
+		
+		Kind(String token) {
+			this.token = token;
+		}
+		
+		/**
+		 * Returns the token of this kind.
+		 */
+		public String getToken() {
+			return token;
+		}
 	}
 
 	/**

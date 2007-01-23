@@ -14,6 +14,10 @@ package descent.core.dom;
 import java.util.ArrayList;
 import java.util.List;
 
+import descent.core.compiler.IScanner;
+import descent.core.compiler.ITerminalSymbols;
+import descent.core.compiler.InvalidInputException;
+
 
 /**
  * Character literal nodes.
@@ -160,15 +164,19 @@ public class CharacterLiteral extends Expression {
 		if (value == null) {
 			throw new IllegalArgumentException();
 		}
-		/* TODO JDT
-		Scanner scanner = this.ast.scanner;
+		IScanner scanner = this.ast.scanner;
 		char[] source = value.toCharArray();
 		scanner.setSource(source);
-		scanner.resetTo(0, source.length);
 		try {
 			int tokenType = scanner.getNextToken();
 			switch(tokenType) {
-				case TerminalTokens.TokenNameCharacterLiteral:
+				case ITerminalSymbols.TokenNameCharacterLiteral:
+				case ITerminalSymbols.TokenNameWCharacterLiteral:
+				case ITerminalSymbols.TokenNameDCharacterLiteral:
+					if (scanner.getCurrentTokenEndPosition() != source.length - 1) {
+						// this is the case when there is only one char
+						throw new IllegalArgumentException();
+					}
 					break;
 				default:
 					throw new IllegalArgumentException();
@@ -176,7 +184,6 @@ public class CharacterLiteral extends Expression {
 		} catch(InvalidInputException e) {
 			throw new IllegalArgumentException();
 		}
-		*/
 		preValueChange(ESCAPED_VALUE_PROPERTY);
 		this.escapedValue = value;
 		postValueChange(ESCAPED_VALUE_PROPERTY);

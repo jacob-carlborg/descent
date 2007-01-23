@@ -1,8 +1,7 @@
-package descent.internal.compiler;
+package descent.core.dom;
 
 import descent.core.compiler.IScanner;
 import descent.core.compiler.InvalidInputException;
-import descent.core.dom.Lexer;
 import descent.internal.core.parser.TOK;
 
 /**
@@ -20,7 +19,7 @@ public class PublicScanner implements IScanner {
 	private final boolean recordLineSeparator;
 	//private final int apiLevel;
 	private char[] source;
-	private Lexer lexer;	
+	public Lexer lexer;
 
 	public PublicScanner(boolean tokenizeComments, boolean tokenizePragmas, boolean tokenizeWhiteSpace, boolean recordLineSeparator, int apiLevel) {
 		this.tokenizeComments = tokenizeComments;
@@ -53,17 +52,13 @@ public class PublicScanner implements IScanner {
 	}
 
 	public int[] getLineEnds() {
-		int[] ends = new int[lexer.lineEnds.size()];
-		for(int i = 0; i < lexer.lineEnds.size(); i++) {
-			ends[i] = lexer.lineEnds.get(i);
-		}
-		return ends;
+		return lexer.getLineEnds();
 	}
 
 	public int getLineNumber(int position) {
 		if (lexer.lineEnds.size() == 0)
 			return 1;
-		int length = lexer.lineEnds.size() + 1;
+		int length = lexer.lineEnds.size();
 		if (length == 0)
 			return 1;
 		int g = 0, d = length - 1;
@@ -91,10 +86,10 @@ public class PublicScanner implements IScanner {
 		if (lineNumber == 1) {
 			return lexer.base;
 		}
-		if (lineNumber - 1 < lexer.lineEnds.size()) {
+		if (lineNumber - 1 <= lexer.lineEnds.size()) {
 			return lexer.lineEnds.get(lineNumber - 2) + 1;
 		}
-		return lexer.end;
+		return -1;
 	}
 
 	public int getNextToken() throws InvalidInputException {
@@ -140,12 +135,30 @@ public class PublicScanner implements IScanner {
 	}
 
 	public void resetTo(int startPosition, int endPosition) {
-		this.lexer = new Lexer(source, startPosition, endPosition, tokenizeComments, tokenizePragmas, tokenizeWhiteSpace, recordLineSeparator);
+		if (this.lexer == null) {
+			this.lexer = new Lexer(source, startPosition, endPosition - startPosition, tokenizeComments, tokenizePragmas, tokenizeWhiteSpace, recordLineSeparator);
+		} else {
+			this.lexer.reset(startPosition, endPosition - startPosition);
+		}
 	}
 
 	public void setSource(char[] source) {
 		this.source = source;
+		if (this.lexer == null) {
+			this.lexer = new Lexer(source, 0, source.length, tokenizeComments, tokenizePragmas, tokenizeWhiteSpace, recordLineSeparator);
+		} else {
+			this.lexer.reset(source, 0, source.length, tokenizeComments, tokenizePragmas, tokenizeWhiteSpace, recordLineSeparator);
+		}
 		resetTo(0, source.length);
+	}
+	
+	/**
+	 * This method allows this scanner to reuse the lexer that is used
+	 * to parse a compilation unit.
+	 */
+	public void setLexerAndSource(Lexer lexer, char[] source) {
+		this.lexer = lexer;
+		this.source = source;
 	}
 
 }

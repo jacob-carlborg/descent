@@ -173,7 +173,7 @@ public class ScannerTests extends TestCase implements ITerminalSymbols {
 				"int x = 2;\n" +
 				"int bla = 3;\n" +
 				"int lala = 4;\r\n" +
-				""
+				"int"
 				).toCharArray()
 			);
 		assertEquals(0, scanner.getLineEnds().length);
@@ -192,6 +192,9 @@ public class ScannerTests extends TestCase implements ITerminalSymbols {
 		assertEquals(24, scanner.getLineStart(3));
 		assertEquals(38, scanner.getLineEnd(3));
 		
+		assertEquals(39, scanner.getLineStart(4));
+		assertEquals(42, scanner.getLineEnd(4));
+		
 		for(int i = 0; i <= 10; i++) {
 			assertEquals(1, scanner.getLineNumber(i));
 		}
@@ -200,6 +203,9 @@ public class ScannerTests extends TestCase implements ITerminalSymbols {
 		}
 		for(int i = 24; i <= 38; i++) {
 			assertEquals(3, scanner.getLineNumber(i));
+		}
+		for(int i = 39; i <= 41; i++) {
+			assertEquals(4, scanner.getLineNumber(i));
 		}
 	}
 	

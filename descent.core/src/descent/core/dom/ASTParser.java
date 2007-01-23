@@ -1,3 +1,13 @@
+/*******************************************************************************
+ * Copyright (c) 2004, 2006 IBM Corporation and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     IBM Corporation - initial API and implementation
+ *******************************************************************************/
 package descent.core.dom;
 
 import java.util.HashMap;
@@ -11,6 +21,7 @@ import descent.core.ICompilationUnit;
 import descent.core.IJavaProject;
 import descent.core.JavaCore;
 import descent.core.WorkingCopyOwner;
+import descent.core.compiler.IScanner;
 
 /**
  * A D language parser for creating abstract syntax trees (ASTs).
@@ -800,6 +811,9 @@ public class ASTParser {
 				result = parser.parseStatement(0);
 				break;
 			case K_COMPILATION_UNIT :
+				PublicScanner scanner = new PublicScanner(true, true, true, true, ast.apiLevel);
+				scanner.setLexerAndSource(parser, rawSource);
+				
 				List<Declaration> declDefs = parser.parseModule();
 				if (declDefs != null) {
 					parser.compilationUnit.declarations().addAll(declDefs);
@@ -807,6 +821,9 @@ public class ASTParser {
 				parser.compilationUnit.setSourceRange(0, rawSource.length);
 				parser.compilationUnit.setCommentTable(parser.comments.toArray(new Comment[parser.comments.size()]));
 				parser.compilationUnit.setPragmaTable(parser.pragmas.toArray(new Pragma[parser.pragmas.size()]));
+				parser.compilationUnit.setLineEndTable(parser.getLineEnds());
+				parser.compilationUnit.initCommentMapper(scanner);
+				
 				parser.compilationUnit.problems = parser.problems;
 				result = parser.compilationUnit;
 				break;

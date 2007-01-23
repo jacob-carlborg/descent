@@ -56,9 +56,35 @@ public class Lexer implements IProblemCollector {
 	public List<Integer> lineEnds;
 	
 	private boolean tokenizeComments;
-	private boolean tokenizeWhiteSpace;
+	public boolean tokenizeWhiteSpace;
 	private boolean tokenizePragmas;
 	private boolean recordLineSeparator;
+	
+	/* package */ Lexer() {
+		initKeywords();
+	}
+	
+	public void reset(char[] source, int offset, int length, boolean tokenizeComments, boolean tokenizePragmas, boolean tokenizeWhiteSpace, boolean recordLineSeparator) {
+		this.problems = new ArrayList<IProblem>();
+		
+		// Make input larger and add zeros, to avoid comparing
+		input = new char[length - base + 5];
+		System.arraycopy(source, 0, input, 0, source.length);
+		reset(offset, length);
+	    this.tokenizeComments = tokenizeComments;
+	    this.tokenizePragmas = tokenizePragmas;
+		this.tokenizeWhiteSpace = tokenizeWhiteSpace;
+		this.recordLineSeparator = recordLineSeparator;
+		this.lineEnds = new ArrayList<Integer>();
+	    this.token = new Token();
+	}
+	
+	public void reset(int offset, int length) {
+		this.linnum = 1;
+		this.base = offset;
+		this.end = offset + length;
+		this.p = offset;
+	}
     
     public Lexer(String source, boolean tokenizeComments, boolean tokenizePragmas, boolean tokenizeWhiteSpace, boolean recordLineSeparator) {
     	this(source.toCharArray(), tokenizeComments, tokenizePragmas, tokenizeWhiteSpace, recordLineSeparator);
@@ -73,24 +99,8 @@ public class Lexer implements IProblemCollector {
     }
 	
 	public Lexer(char[] source, int offset, int length, boolean tokenizeComments, boolean tokenizePragmas, boolean tokenizeWhiteSpace, boolean recordLineSeparator) {
-		
-		initKeywords();
-		
-		this.problems = new ArrayList<IProblem>();
-		
-		// Make input larger and add zeros, to avoid comparing
-		input = new char[length - base + 5];
-		System.arraycopy(source, 0, input, 0, source.length);
-		this.linnum = 1;
-		this.base = offset;
-		this.end = offset + length;
-		this.p = offset;
-	    this.tokenizeComments = tokenizeComments;
-	    this.tokenizePragmas = tokenizePragmas;
-		this.tokenizeWhiteSpace = tokenizeWhiteSpace;
-		this.recordLineSeparator = recordLineSeparator;
-		this.lineEnds = new ArrayList<Integer>();
-	    this.token = new Token();
+		this();
+		reset(source, offset, length, tokenizeComments, tokenizePragmas, tokenizeWhiteSpace, recordLineSeparator);
 	}
 	
 	public void error(String message, int id, int line, int offset, int length) {
@@ -180,15 +190,23 @@ public class Lexer implements IProblemCollector {
 	    
 	    t.lineNumber = linnum;
 	    t.leadingComments = null;
+	    
 	    while (true)
 	    {
 		t.ptr = p;
+		
+		if (p > end) {
+	    	t.value = TOK.TOKeof;
+	    	return;
+	    }
+		
 		switch (input[p])
 		{
 		    case 0:
 		    case 0x1A:
 			t.value = TOKeof;			// end of file
 			t.len = 0;
+			//lineEnds.add(p - 1);
 			return;
 
 		    case ' ':
@@ -360,8 +378,8 @@ public class Lexer implements IProblemCollector {
 					    case 0:
 					    case 0x1A:
 					    	error("Unterminated block comment", IProblem.UnterminatedBlockComment, t.lineNumber, t.ptr, p - t.ptr);
-					    	p = end;
 					    	t.value = TOKeof;
+					    	p++;
 					    	return;
 
 					    default:
@@ -411,12 +429,8 @@ public class Lexer implements IProblemCollector {
 							t.value = input[t.ptr + 2] == '/' ? TOKdoclinecomment : TOKlinecomment;
 							t.len = p - t.ptr;
 							t.string = new String(input, t.ptr, t.len);
-							
-							p = end;
 							return;
 						}
-						
-						p = end;
 						t.value = TOKeof;
 						return;
 
@@ -489,8 +503,8 @@ public class Lexer implements IProblemCollector {
 					case 0:
 					case 0x1A:
 						error("Unterminated plus block comment", IProblem.UnterminatedPlusBlockComment, t.lineNumber, t.ptr, p - t.ptr);
-					    p = end;
 					    t.value = TOKeof;
+					    p++;
 					    return;
 
 					default:
@@ -2320,10 +2334,10 @@ public class Lexer implements IProblemCollector {
 	
 	
 	protected void newline(boolean inComment) {
-		linnum++;
-		if (recordLineSeparator) {
+		if (recordLineSeparator && linnum - 1 == lineEnds.size()) {
 			lineEnds.add(p);
 		}
+		linnum++;		
 	}
 	
 	protected void setMalformed(ASTNode node) {
@@ -2332,6 +2346,14 @@ public class Lexer implements IProblemCollector {
 	
 	protected void setRecovered(ASTNode node) {
 		node.setFlags(node.getFlags() | ASTNode.RECOVERED);
+	}
+	
+	public int[] getLineEnds() {
+		int[] ends = new int[lineEnds.size()];
+		for(int i = 0; i < lineEnds.size(); i++) {
+			ends[i] = lineEnds.get(i);
+		}
+		return ends;
 	}
 
 }

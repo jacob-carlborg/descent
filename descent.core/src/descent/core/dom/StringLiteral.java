@@ -14,6 +14,10 @@ package descent.core.dom;
 import java.util.ArrayList;
 import java.util.List;
 
+import descent.core.compiler.IScanner;
+import descent.core.compiler.ITerminalSymbols;
+import descent.core.compiler.InvalidInputException;
+
 
 /**
  * String literal nodes.
@@ -166,15 +170,17 @@ public class StringLiteral extends Expression {
 		if (token == null) {
 			throw new IllegalArgumentException("Token cannot be null"); //$NON-NLS-1$
 		}
-		/* TODO JDT
-		Scanner scanner = this.ast.scanner;
+		IScanner scanner = this.ast.scanner;
 		char[] source = token.toCharArray();
 		scanner.setSource(source);
 		scanner.resetTo(0, source.length);
 		try {
 			int tokenType = scanner.getNextToken();
 			switch(tokenType) {
-				case TerminalTokens.TokenNameStringLiteral:
+				case ITerminalSymbols.TokenNameStringLiteral:
+					if (scanner.getCurrentTokenEndPosition() != source.length - 1) {
+						throw new IllegalArgumentException("Invalid string literal : >" + token + "<"); //$NON-NLS-1$//$NON-NLS-2$
+					}
 					break;
 				default:
 					throw new IllegalArgumentException("Invalid string literal : >" + token + "<"); //$NON-NLS-1$//$NON-NLS-2$
@@ -182,7 +188,6 @@ public class StringLiteral extends Expression {
 		} catch(InvalidInputException e) {
 			throw new IllegalArgumentException("Invalid string literal : >" + token + "<");//$NON-NLS-1$//$NON-NLS-2$
 		}
-		*/
 		preValueChange(ESCAPED_VALUE_PROPERTY);
 		this.escapedValue = token;
 		postValueChange(ESCAPED_VALUE_PROPERTY);

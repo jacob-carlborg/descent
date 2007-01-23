@@ -172,7 +172,7 @@ class Parser extends Lexer {
 			comments.add(comment);
 			attachCommentToCurrentToken(comment);
 			
-			tok = nextToken();
+			tok = super.nextToken();
 		}
 		
 		while(tok == TOK.TOKPRAGMA) {
@@ -1003,7 +1003,7 @@ class Parser extends Lexer {
 		
 		SimpleName name = newSimpleName();
 		name.setSourceRange(firstToken.ptr, secondToken.ptr + secondToken.len - firstToken.ptr);
-		name.setIdentifier("~this");
+		name.internalSetIdentifier("~this");
 		
 		FunctionDeclaration f = newFunctionDeclaration(FunctionDeclaration.Kind.DESTRUCTOR, null, name, null, 0);
 	    parseContracts(f);
@@ -1035,7 +1035,7 @@ class Parser extends Lexer {
 	    
 	    SimpleName name = newSimpleName();
 		name.setSourceRange(firstToken.ptr, secondToken.ptr + secondToken.len - firstToken.ptr);
-		name.setIdentifier("~this");
+		name.internalSetIdentifier("~this");
 		
 		FunctionDeclaration f = newFunctionDeclaration(FunctionDeclaration.Kind.STATIC_DESTRUCTOR, null, name, null, 0);
 		f.setSourceRange(firstToken.ptr, 0);
@@ -5642,14 +5642,14 @@ class Parser extends Lexer {
 	
 	private SimpleName newSimpleNameForCurrentToken() {
 		SimpleName simpleName = new SimpleName(ast);
-		simpleName.setIdentifier(token.ident.string);
+		simpleName.internalSetIdentifier(token.ident.string);
 		simpleName.setSourceRange(token.ptr, token.len);
 		return simpleName;
 	}
 	
 	private SimpleName newSimpleNameForToken(Token token) {
 		SimpleName simpleName = new SimpleName(ast);
-		simpleName.setIdentifier(token.ident.string);
+		simpleName.internalSetIdentifier(token.ident.string);
 		simpleName.setSourceRange(token.ptr, token.len);
 		return simpleName;
 	}
@@ -5658,7 +5658,7 @@ class Parser extends Lexer {
 		if (id == null) return null;
 		
 		SimpleName simpleName = new SimpleName(ast);
-		simpleName.setIdentifier(id.string);
+		simpleName.internalSetIdentifier(id.string);
 		simpleName.setSourceRange(id.startPosition, id.length);
 		return simpleName;
 	}
@@ -5667,7 +5667,7 @@ class Parser extends Lexer {
 		if (id == null) return null;
 		
 		SimpleName simpleName = new SimpleName(ast);
-		simpleName.setIdentifier(id.string);
+		simpleName.internalSetIdentifier(id.string);
 		simpleName.setSourceRange(id.startPosition, id.length);
 		return simpleName;
 	}
@@ -5706,7 +5706,7 @@ class Parser extends Lexer {
 	private CharacterLiteral newCharacterLiteralForCurrentToken() {
 		CharacterLiteral number = new CharacterLiteral(ast);
 		if (token.string != null) {
-			number.setEscapedValue(token.string);
+			number.internalSetEscapedValue(token.string);
 		}
 		number.setSourceRange(token.ptr, token.len);
 		return number;
@@ -5714,7 +5714,7 @@ class Parser extends Lexer {
 	
 	private StringLiteral newStringLiteralForCurrentToken() {
 		StringLiteral string = new StringLiteral(ast);
-		string.setEscapedValue(token.string);
+		string.internalSetEscapedValue(token.string);
 		string.setSourceRange(token.ptr, token.len);
 		return string;
 	}
@@ -6040,7 +6040,7 @@ class Parser extends Lexer {
 		
 		if (token.value == TOKint32v) {
 			version = new Version(ast);
-			version.setValue(String.valueOf(token.numberValue));
+			version.internalSetValue(String.valueOf(token.numberValue));
 			version.setSourceRange(token.ptr, token.len);
 		} else if (token.value == TOKidentifier) {
 			version = new Version(ast);
@@ -6055,7 +6055,7 @@ class Parser extends Lexer {
 	
 	private Version newVersion(Identifier id) {
 		Version version = new Version(ast);
-		version.setValue(id.string);
+		version.internalSetValue(id.string);
 		version.setSourceRange(id.startPosition, id.length);
 		return version;
 	}

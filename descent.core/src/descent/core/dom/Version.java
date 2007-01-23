@@ -14,6 +14,10 @@ package descent.core.dom;
 import java.util.ArrayList;
 import java.util.List;
 
+import descent.core.compiler.IScanner;
+import descent.core.compiler.ITerminalSymbols;
+import descent.core.compiler.InvalidInputException;
+
 
 /**
  * AST node for a version. A value is an identifier other than
@@ -100,9 +104,7 @@ public class Version extends ASTNode {
 			if (get) {
 				return getValue();
 			} else {
-				/* TODO JDT
-				setIdentifier((String) value);
-				*/
+				setValue((String) value);
 				return null;
 			}
 		}
@@ -123,9 +125,7 @@ public class Version extends ASTNode {
 	ASTNode clone0(AST target) {
 		Version result = new Version(target);
 		result.setSourceRange(this.getStartPosition(), this.getLength());
-		/* TODO JDT
-		result.setIdentifier(getIdentifier());
-		*/
+		result.setValue(getValue());
 		return result;
 	}
 	
@@ -161,22 +161,22 @@ public class Version extends ASTNode {
 	 * @exception IllegalArgumentException if the value is invalid
 	 */ 
 	public void setValue(String value) {
-		// update internalSetIdentifier if this is changed
+		// update internalSetValue if this is changed
 		if (value == null) {
 			throw new IllegalArgumentException();
 		}
-		/* TODO JDT
-		Scanner scanner = this.ast.scanner;
-		char[] source = identifier.toCharArray();
+		IScanner scanner = this.ast.scanner;
+		char[] source = value.toCharArray();
 		scanner.setSource(source);
 		final int length = source.length;
 		scanner.resetTo(0, length);
 		try {
 			int tokenType = scanner.getNextToken();
 			switch(tokenType) {
-				case TerminalTokens.TokenNameIdentifier:
+				case ITerminalSymbols.TokenNameIdentifier:
+				case ITerminalSymbols.TokenNameIntegerLiteral:
 					if (scanner.getCurrentTokenEndPosition() != length - 1) {
-						// this is the case when there is only one identifier see 87849
+						// this is the case when there is only one value
 						throw new IllegalArgumentException();
 					}
 					break;
@@ -186,7 +186,6 @@ public class Version extends ASTNode {
 		} catch(InvalidInputException e) {
 			throw new IllegalArgumentException();
 		}
-		*/
 		preValueChange(VALUE_PROPERTY);
 		this.value = value;
 		postValueChange(VALUE_PROPERTY);
@@ -195,81 +194,11 @@ public class Version extends ASTNode {
 	/* (omit javadoc for this method)
 	 * This method is a copy of setIdentifier(String) that doesn't do any validation.
 	 */
-	void internalSetIdentifier(String ident) {
+	void internalSetValue(String ident) {
 		preValueChange(VALUE_PROPERTY);
 		this.value = ident;
 		postValueChange(VALUE_PROPERTY);
 	}
-	
-	/**
-	 * Returns whether this simple name represents a name that is being defined,
-	 * as opposed to one being referenced. The following positions are considered
-	 * ones where a name is defined:
-	 * <ul>
-	 * <li>The type name in a <code>TypeDeclaration</code> node.</li>
-	 * <li>The method name in a <code>MethodDeclaration</code> node
-	 * providing <code>isConstructor</code> is <code>false</code>.</li>
-	 * <li>The variable name in any type of <code>VariableDeclaration</code>
-	 * node.</li>
-	 * <li>The enum type name in a <code>EnumDeclaration</code> node.</li>
-	 * <li>The enum constant name in an <code>EnumConstantDeclaration</code>
-	 * node.</li>
-	 * <li>The variable name in an <code>EnhancedForStatement</code>
-	 * node.</li>
-	 * <li>The type variable name in a <code>TypeParameter</code>
-	 * node.</li>
-	 * <li>The type name in an <code>AnnotationTypeDeclaration</code> node.</li>
-	 * <li>The member name in an <code>AnnotationTypeMemberDeclaration</code> node.</li>
-	 * </ul>
-	 * <p>
-	 * Note that this is a convenience method that simply checks whether
-	 * this node appears in the declaration position relative to its parent.
-	 * It always returns <code>false</code> if this node is unparented.
-	 * </p>
-	 * 
-	 * @return <code>true</code> if this node declares a name, and 
-	 *    <code>false</code> otherwise
-	 */ 
-	/* TODO JDT
-	public boolean isDeclaration() {
-		StructuralPropertyDescriptor d = getLocationInParent();
-		if (d == null) {
-			// unparented node
-			return false;
-		}
-		ASTNode parent = getParent();
-		if (parent instanceof TypeDeclaration) {
-			return (d == TypeDeclaration.NAME_PROPERTY);
-		}
-		if (parent instanceof MethodDeclaration) {
-			MethodDeclaration p = (MethodDeclaration) parent;
-			// could be the name of the method or constructor
-			return !p.isConstructor() && (d == MethodDeclaration.NAME_PROPERTY);
-		}
-		if (parent instanceof SingleVariableDeclaration) {
-			return (d == SingleVariableDeclaration.NAME_PROPERTY);
-		}
-		if (parent instanceof VariableDeclarationFragment) {
-			return (d == VariableDeclarationFragment.NAME_PROPERTY);
-		}
-		if (parent instanceof EnumDeclaration) {
-			return (d == EnumDeclaration.NAME_PROPERTY);
-		}
-		if (parent instanceof EnumConstantDeclaration) {
-			return (d == EnumConstantDeclaration.NAME_PROPERTY);
-		}
-		if (parent instanceof TypeParameter) {
-			return (d == TypeParameter.NAME_PROPERTY);
-		}
-		if (parent instanceof AnnotationTypeDeclaration) {
-			return (d == AnnotationTypeDeclaration.NAME_PROPERTY);
-		}
-		if (parent instanceof AnnotationTypeMemberDeclaration) {
-			return (d == AnnotationTypeMemberDeclaration.NAME_PROPERTY);
-		}
-		return false;
-	}
-	*/
 		
 	/* (omit javadoc for this method)
 	 * Method declared on Name.

@@ -68,6 +68,13 @@ public class CompilationUnit extends ASTNode {
 	}
 	
 	/**
+	 * The comment mapper, or <code>null</code> if none; 
+	 * initially <code>null</code>.
+	 * @since 3.0
+	 */
+	private DefaultCommentMapper commentMapper = null;
+	
+	/**
 	 * The scriptLine.
 	 */
 	private ScriptLine scriptLine;
@@ -110,6 +117,16 @@ public class CompilationUnit extends ASTNode {
 	 */
 	private ASTNode.NodeList declarations =
 		new ASTNode.NodeList(DECLARATIONS_PROPERTY);
+	
+	/**
+	 * Line end table. If <code>lineEndTable[i] == p</code> then the
+	 * line number <code>i+1</code> ends at character position 
+	 * <code>p</code>. Except for the last line, the positions are that
+	 * of the last character of the line delimiter. 
+	 * For example, the source string <code>A\nB\nC</code> has
+	 * line end table {1, 3} (if \n is one character).
+	 */
+	private int[] lineEndTable = new int[0];
 
 	/**
 	 * Creates a new unparented compilation unit node owned by the given 
@@ -122,6 +139,56 @@ public class CompilationUnit extends ASTNode {
 	 */
 	CompilationUnit(AST ast) {
 		super(ast);
+	}
+	
+	/**
+	 * Return the index in the whole comments list {@link #getCommentList() }
+	 * of the first leading comments associated with the given node. 
+	 * 
+	 * @param node the node
+	 * @return 0-based index of first leading comment or -1 if node has no associated
+	 * 	comment before its start position.
+	 * @since 3.2
+	 */
+	public int firstLeadingCommentIndex(ASTNode node) {
+		if (node == null) {
+			throw new IllegalArgumentException();
+		}
+		if (this.commentMapper == null || node.getAST() != getAST()) {
+			return -1;
+		}
+		return this.commentMapper.firstLeadingCommentIndex(node);
+	}
+
+	/**
+	 * Return the index in the whole comments list {@link #getCommentList() }
+	 * of the last trailing comments associated with the given node. 
+	 * 
+	 * @param node the node
+	 * @return 0-based index of last trailing comment or -1 if node has no
+	 * 	associated comment after its end position.
+	 * @since 3.2
+	 */
+	public int lastTrailingCommentIndex(ASTNode node) {
+		if (node == null) {
+			throw new IllegalArgumentException();
+		}
+		if (this.commentMapper == null || node.getAST() != getAST()) {
+			return -1;
+		}
+		return this.commentMapper.lastTrailingCommentIndex(node);
+	}
+	
+	/**
+	 * Initializes the internal comment mapper with the given
+	 * scanner.
+	 * 
+	 * @param scanner the scanner
+	 * @since 3.0
+	 */
+	void initCommentMapper(PublicScanner scanner) {
+		this.commentMapper = new DefaultCommentMapper(this.optionalCommentTable);
+		this.commentMapper.initialize(this, scanner);
 	}
 
 	/* (omit javadoc for this method)
@@ -183,6 +250,190 @@ public class CompilationUnit extends ASTNode {
 		result.setModuleDeclaration((ModuleDeclaration) ASTNode.copySubtree(target, getModuleDeclaration()));
 		result.declarations.addAll(ASTNode.copySubtrees(target, declarations()));
 		return result;
+	}
+	
+	/**
+	 * Returns the column number corresponding to the given source character
+	 * position in the original source string. Column number are zero-based. 
+	 * Return <code>-1</code> if it is beyond the valid range or <code>-2</code>
+	 * if the column number information is unknown.
+	 * 
+	 * @param position a 0-based character position, possibly
+	 *   negative or out of range
+	 * @return the 0-based column number, or <code>-1</code> if the character
+	 *    position does not correspond to a source line in the original
+	 *    source file or <code>-2</code> if column number information is unknown for this
+	 *    compilation unit
+	 * @see ASTParser
+	 */
+	public int getColumnNumber(final int position) {
+		if (this.lineEndTable == null) return -2;
+		final int line = getLineNumber(position);
+		if (line == -1) {
+			return -1;
+		}
+		if (line == 1) {
+			if (position >= getStartPosition() + getLength()) return -1;
+			return position;
+		}
+		// length is different from 0
+		int length = this.lineEndTable.length;
+		// -1 to for one-based to zero-based conversion.
+		// -1, again, to get previous line.
+		final int previousLineOffset = this.lineEndTable[line - 2];
+		 // previousLineOffset + 1 is the first character of the current line
+		final int offsetForLine = previousLineOffset + 1;
+		final int currentLineEnd = line == length + 1 ? getStartPosition() + getLength() - 1 :	this.lineEndTable[line - 1];
+		if (offsetForLine > currentLineEnd) {
+			return -1;
+		} else {
+			return position - offsetForLine;
+		}
+	}
+	
+	/**
+	 * Given a line number and column number, returns the corresponding 
+	 * position in the original source string.
+	 * Returns -2 if no line number information is available for this
+	 * compilation unit. 
+	 * Returns the total size of the source string if <code>line</code>
+	 * is greater than the actual number lines in the unit.
+	 * Returns -1 if <code>column</code> is less than 0,  
+	 * or the position of the last character of the line if <code>column</code>
+	 * is beyond the legal range, or the given line number is less than one. 
+	 * 
+	 * @param line the one-based line number
+	 * @param column the zero-based column number
+	 * @return the 0-based character position in the source string; 
+	 * <code>-2</code> if line/column number information is not known 
+	 * for this compilation unit or <code>-1</code> the inputs are not valid
+	 */
+	 public int getPosition(int line, int column) {
+		if (this.lineEndTable == null) return -2;
+		if (line < 1 || column < 0) return -1;
+		int length;
+		if ((length = this.lineEndTable.length) == 0) {
+			if (line != 1) return -1;
+			return column >= getStartPosition() + getLength() ? -1 : column;
+		}
+		if (line == 1) {
+			final int endOfLine = this.lineEndTable[0];
+			return column > endOfLine ? -1 : column;			
+		} else if( line > length + 1 ) {
+			// greater than the number of lines in the source string.
+			return -1;
+		}		
+		// -1 to for one-based to zero-based conversion.
+		// -1, again, to get previous line.
+		final int previousLineOffset = this.lineEndTable[line - 2];
+		 // previousLineOffset + 1 is the first character of the current line
+		final int offsetForLine = previousLineOffset + 1;
+		final int currentLineEnd = line == length + 1 ? getStartPosition() + getLength() - 1 : this.lineEndTable[line-1];
+		if ((offsetForLine + column) > currentLineEnd) {  
+			return -1;
+		} else {  
+			return offsetForLine + column;
+		}
+	}
+	 
+	 /**
+	 * Returns the line number corresponding to the given source character
+	 * position in the original source string. The initial line of the 
+	 * compilation unit is numbered 1, and each line extends through the
+	 * last character of the end-of-line delimiter. The very last line extends
+	 * through the end of the source string and has no line delimiter.
+	 * For example, the source string <code>class A\n{\n}</code> has 3 lines
+	 * corresponding to inclusive character ranges [0,7], [8,9], and [10,10].
+	 * Returns -1 for a character position that does not correspond to any
+	 * source line, or -2 if no line number information is available for this
+	 * compilation unit.
+	 * 
+	 * @param position a 0-based character position, possibly
+	 *   negative or out of range
+	 * @return the 1-based line number, or <code>-1</code> if the character
+	 *    position does not correspond to a source line in the original
+	 *    source file or <code>-2</code> if line number information is not known for this
+	 *    compilation unit
+	 * @see ASTParser
+	 * @since 3.2
+	 */
+	public int getLineNumber(int position) {
+		if (this.lineEndTable == null) return -2;
+		int length;
+		if ((length = this.lineEndTable.length) == 0) {
+			if (position >= getStartPosition() + getLength()) {
+				return -1;
+			}
+			return 1;
+		}
+		int low = 0;
+		if (position < 0) {
+			// position illegal 
+			return -1;
+		}
+		if (position <= this.lineEndTable[low]) {
+			// before the first line delimiter
+			return 1;
+		}
+		// assert position > lineEndTable[low+1]  && low == 0
+		int hi = length - 1;
+		if (position > this.lineEndTable[hi]) {
+			// position beyond the last line separator
+			if (position >= getStartPosition() + getLength()) {
+				// this is beyond the end of the source length
+				return -1;
+			} else {
+				return length + 1;
+			}
+		}
+		// assert lineEndTable[low]  < position <= lineEndTable[hi]
+		// && low == 0 && hi == length - 1 && low < hi
+		
+		// binary search line end table
+		while (true) {
+			// invariant lineEndTable[low] < position <= lineEndTable[hi]
+			// && 0 <= low < hi <= length - 1
+			// reducing measure hi - low
+			if (low + 1 == hi) {
+				// assert lineEndTable[low] < position <= lineEndTable[low+1]
+				// position is on line low+1 (line number is low+2)
+				return low + 2;
+			}
+			// assert hi - low >= 2, so average is truly in between
+			int mid = (low + hi) / 2;
+			// assert 0 <= low < mid < hi <= length - 1
+			if (position <= this.lineEndTable[mid]) {
+				// assert lineEndTable[low] < position <= lineEndTable[mid]
+				// && 0 <= low < mid < hi <= length - 1
+				hi = mid;
+			} else {
+				// position > lineEndTable[mid]
+				// assert lineEndTable[mid] < position <= lineEndTable[hi]
+				// && 0 <= low < mid < hi <= length - 1
+				low = mid;
+			}
+			// in both cases, invariant reachieved with reduced measure
+		}
+	}
+	
+	/**
+	 * Sets the line end table for this compilation unit.
+	 * If <code>lineEndTable[i] == p</code> then line number <code>i+1</code> 
+	 * ends at character position <code>p</code>. Except for the last line, the 
+	 * positions are that of (the last character of) the line delimiter.
+	 * For example, the source string <code>A\nB\nC</code> has
+	 * line end table {1, 3, 4}.
+	 * 
+	 * @param lineEndTable the line end table
+	 */
+	void setLineEndTable(int[] lineEndTable) {
+		if (lineEndTable == null) {
+			throw new NullPointerException();
+		}
+		// alternate root is *not* considered a structural property
+		// but we protect them nevertheless
+		checkModifiable();
+		this.lineEndTable = lineEndTable;
 	}
 	
 	/**
@@ -341,10 +592,18 @@ public class CompilationUnit extends ASTNode {
 	 * @return a (possibly 0) length, or <code>0</code>
 	 *    if no source position information is recorded for this node
 	 * @see #getExtendedStartPosition(ASTNode)
+	 * @since 3.0
 	 */
-	// TODO JDT
 	public int getExtendedLength(ASTNode node) {
-		return node.getLength();
+		if (node == null) {
+			throw new IllegalArgumentException();
+		}
+		if (this.commentMapper == null || node.getAST() != getAST()) {
+			// fall back: use best info available
+			return node.getLength();
+		} else {
+			return this.commentMapper.getExtendedLength(node);
+		}
 	}
 
 	/**
@@ -357,10 +616,18 @@ public class CompilationUnit extends ASTNode {
 	 * @return the 0-based character index, or <code>-1</code>
 	 *    if no source position information is recorded for this node
 	 * @see #getExtendedLength(ASTNode)
+	 * @since 3.0
 	 */
-	// TODO JDT
 	public int getExtendedStartPosition(ASTNode node) {
-		return node.getStartPosition();
+		if (node == null) {
+			throw new IllegalArgumentException();
+		}
+		if (this.commentMapper == null || node.getAST() != getAST()) {
+			// fall back: use best info available
+			return node.getStartPosition();
+		} else {
+			return this.commentMapper.getExtendedStartPosition(node);
+		}
 	}
 
 	/* (omit javadoc for this method)

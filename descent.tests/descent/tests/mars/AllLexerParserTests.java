@@ -38,6 +38,7 @@ public class AllLexerParserTests {
 		suite.addTestSuite(Modifier_Test.class);
 		suite.addTestSuite(Statement_Test.class);
 		suite.addTestSuite(Invariant_Test.class);
+		suite.addTestSuite(ExtendedSourceRange_Test.class);
 		//$JUnit-END$
 		return suite;
 	}

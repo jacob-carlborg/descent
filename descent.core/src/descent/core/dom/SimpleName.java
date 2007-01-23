@@ -1,7 +1,21 @@
+/*******************************************************************************
+ * Copyright (c) 2004, 2006 IBM Corporation and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     IBM Corporation - initial API and implementation
+ *******************************************************************************/
 package descent.core.dom;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import descent.core.compiler.IScanner;
+import descent.core.compiler.ITerminalSymbols;
+import descent.core.compiler.InvalidInputException;
 
 
 /**
@@ -91,9 +105,7 @@ public class SimpleName extends Name {
 			if (get) {
 				return getIdentifier();
 			} else {
-				/* TODO JDT
 				setIdentifier((String) value);
-				*/
 				return null;
 			}
 		}
@@ -114,9 +126,7 @@ public class SimpleName extends Name {
 	ASTNode clone0(AST target) {
 		SimpleName result = new SimpleName(target);
 		result.setSourceRange(this.getStartPosition(), this.getLength());
-		/* TODO JDT
 		result.setIdentifier(getIdentifier());
-		*/
 		return result;
 	}
 	
@@ -163,18 +173,15 @@ public class SimpleName extends Name {
 		if (identifier == null) {
 			throw new IllegalArgumentException();
 		}
-		/* TODO JDT
-		Scanner scanner = this.ast.scanner;
+		IScanner scanner = this.ast.scanner;
 		char[] source = identifier.toCharArray();
 		scanner.setSource(source);
-		final int length = source.length;
-		scanner.resetTo(0, length);
 		try {
 			int tokenType = scanner.getNextToken();
 			switch(tokenType) {
-				case TerminalTokens.TokenNameIdentifier:
-					if (scanner.getCurrentTokenEndPosition() != length - 1) {
-						// this is the case when there is only one identifier see 87849
+				case ITerminalSymbols.TokenNameIdentifier:
+					if (scanner.getCurrentTokenEndPosition() != source.length - 1) {
+						// this is the case when there is only one identifier
 						throw new IllegalArgumentException();
 					}
 					break;
@@ -184,7 +191,6 @@ public class SimpleName extends Name {
 		} catch(InvalidInputException e) {
 			throw new IllegalArgumentException();
 		}
-		*/
 		preValueChange(IDENTIFIER_PROPERTY);
 		this.identifier = identifier;
 		postValueChange(IDENTIFIER_PROPERTY);
@@ -204,20 +210,16 @@ public class SimpleName extends Name {
 	 * as opposed to one being referenced. The following positions are considered
 	 * ones where a name is defined:
 	 * <ul>
-	 * <li>The type name in a <code>TypeDeclaration</code> node.</li>
-	 * <li>The method name in a <code>MethodDeclaration</code> node
-	 * providing <code>isConstructor</code> is <code>false</code>.</li>
-	 * <li>The variable name in any type of <code>VariableDeclaration</code>
-	 * node.</li>
-	 * <li>The enum type name in a <code>EnumDeclaration</code> node.</li>
-	 * <li>The enum constant name in an <code>EnumConstantDeclaration</code>
-	 * node.</li>
-	 * <li>The variable name in an <code>EnhancedForStatement</code>
-	 * node.</li>
-	 * <li>The type variable name in a <code>TypeParameter</code>
-	 * node.</li>
-	 * <li>The type name in an <code>AnnotationTypeDeclaration</code> node.</li>
-	 * <li>The member name in an <code>AnnotationTypeMemberDeclaration</code> node.</li>
+	 * <li>The name in an <code>AliasDeclarationFragment</code> node.</li>
+	 * <li>The name in an <code>AggregateDeclaration</code> node.</li>
+	 * <li>The name in a <code>CatchClause</code> node.</li>
+	 * <li>The name in an <code>EnumDeclaration</code> node.</li>
+	 * <li>The name in an <code>EnumMember</code> node.</li>
+	 * <li>The name in a <code>FunctionDeclaration</code> node.</li>
+	 * <li>The name in a <code>MixinDeclaration</code> node.</li>
+	 * <li>The name in a <code>TemplateDeclaration</code> node.</li>
+	 * <li>The name in a <code>TypedefDeclarationFragment</code> node.</li>
+	 * <li>The name in a <code>VariableDeclarationFragment</code> node.</li> 
 	 * </ul>
 	 * <p>
 	 * Note that this is a convenience method that simply checks whether
@@ -228,7 +230,6 @@ public class SimpleName extends Name {
 	 * @return <code>true</code> if this node declares a name, and 
 	 *    <code>false</code> otherwise
 	 */ 
-	/* TODO JDT
 	public boolean isDeclaration() {
 		StructuralPropertyDescriptor d = getLocationInParent();
 		if (d == null) {
@@ -236,38 +237,43 @@ public class SimpleName extends Name {
 			return false;
 		}
 		ASTNode parent = getParent();
-		if (parent instanceof TypeDeclaration) {
-			return (d == TypeDeclaration.NAME_PROPERTY);
+		if (parent instanceof AliasDeclarationFragment) {
+			return (d == AliasDeclarationFragment.NAME_PROPERTY);
 		}
-		if (parent instanceof MethodDeclaration) {
-			MethodDeclaration p = (MethodDeclaration) parent;
-			// could be the name of the method or constructor
-			return !p.isConstructor() && (d == MethodDeclaration.NAME_PROPERTY);
+		if (parent instanceof CatchClause) {
+			return (d == CatchClause.NAME_PROPERTY);
 		}
-		if (parent instanceof SingleVariableDeclaration) {
-			return (d == SingleVariableDeclaration.NAME_PROPERTY);
-		}
-		if (parent instanceof VariableDeclarationFragment) {
-			return (d == VariableDeclarationFragment.NAME_PROPERTY);
+		if (parent instanceof AggregateDeclaration) {
+			return (d == AggregateDeclaration.NAME_PROPERTY);
 		}
 		if (parent instanceof EnumDeclaration) {
 			return (d == EnumDeclaration.NAME_PROPERTY);
 		}
-		if (parent instanceof EnumConstantDeclaration) {
-			return (d == EnumConstantDeclaration.NAME_PROPERTY);
+		if (parent instanceof FunctionDeclaration) {
+			FunctionDeclaration fd = (FunctionDeclaration) parent;
+			if (fd.getKind() == FunctionDeclaration.Kind.FUNCTION) {
+				return (d == FunctionDeclaration.NAME_PROPERTY);
+			} else {
+				return false;
+			}
 		}
-		if (parent instanceof TypeParameter) {
-			return (d == TypeParameter.NAME_PROPERTY);
+		if (parent instanceof MixinDeclaration) {
+			return (d == MixinDeclaration.NAME_PROPERTY);
 		}
-		if (parent instanceof AnnotationTypeDeclaration) {
-			return (d == AnnotationTypeDeclaration.NAME_PROPERTY);
+		if (parent instanceof TemplateDeclaration) {
+			return (d == TemplateDeclaration.NAME_PROPERTY);
 		}
-		if (parent instanceof AnnotationTypeMemberDeclaration) {
-			return (d == AnnotationTypeMemberDeclaration.NAME_PROPERTY);
+		if (parent instanceof TypedefDeclarationFragment) {
+			return (d == TypedefDeclarationFragment.NAME_PROPERTY);
+		}
+		if (parent instanceof VariableDeclarationFragment) {
+			return (d == VariableDeclarationFragment.NAME_PROPERTY);
+		}
+		if (parent instanceof EnumMember) {
+			return (d == EnumMember.NAME_PROPERTY);
 		}
 		return false;
 	}
-	*/
 		
 	/* (omit javadoc for this method)
 	 * Method declared on Name.

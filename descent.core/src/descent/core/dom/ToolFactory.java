@@ -11,7 +11,6 @@
 package descent.core.dom;
 
 import descent.core.compiler.IScanner;
-import descent.internal.compiler.PublicScanner;
 
 /**
  * Factory for creating various compiler tools, such as scanners.
