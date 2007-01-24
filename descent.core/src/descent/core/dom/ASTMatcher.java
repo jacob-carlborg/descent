@@ -516,10 +516,11 @@ public class ASTMatcher {
 		}
 		StaticAssert o = (StaticAssert) other;
 		return (
-			safeSubtreeListMatch(node.modifiers(), o.modifiers())
+			safeSubtreeListMatch(node.preDDocs(), o.preDDocs())
+			&& safeSubtreeListMatch(node.modifiers(), o.modifiers())
 			&& safeSubtreeMatch(node.getExpression(), o.getExpression())
 			&& safeSubtreeMatch(node.getMessage(), o.getMessage())
-			&& safeSubtreeListMatch(node.dDocs(), o.dDocs())
+			&& safeSubtreeMatch(node.getPostDDoc(), o.getPostDDoc())
 			);
 	}
 
@@ -789,9 +790,10 @@ public class ASTMatcher {
 		}
 		EnumMember o = (EnumMember) other;
 		return (
-			safeSubtreeMatch(node.getName(), o.getName())
+			safeSubtreeListMatch(node.preDDocs(), o.preDDocs())
+			&& safeSubtreeMatch(node.getName(), o.getName())
 			&& safeSubtreeMatch(node.getValue(), o.getValue())
-			&& safeSubtreeListMatch(node.dDocs(), o.dDocs())
+			&& safeSubtreeMatch(node.getPostDDoc(), o.getPostDDoc())
 			);
 	}
 
@@ -842,13 +844,14 @@ public class ASTMatcher {
 		}
 		AggregateDeclaration o = (AggregateDeclaration) other;
 		return (
-			safeSubtreeListMatch(node.modifiers(), o.modifiers())
+			safeSubtreeListMatch(node.preDDocs(), o.preDDocs())
+			&& safeSubtreeListMatch(node.modifiers(), o.modifiers())
 			&& node.getKind() == o.getKind()
 			&& safeSubtreeMatch(node.getName(), o.getName())
 			&& safeSubtreeListMatch(node.templateParameters(), o.templateParameters())
 			&& safeSubtreeListMatch(node.baseClasses(), o.baseClasses())
 			&& safeSubtreeListMatch(node.declarations(), o.declarations())
-			&& safeSubtreeListMatch(node.dDocs(), o.dDocs())
+			&& safeSubtreeMatch(node.getPostDDoc(), o.getPostDDoc())
 			);
 	}
 
@@ -872,10 +875,11 @@ public class ASTMatcher {
 		}
 		AliasDeclaration o = (AliasDeclaration) other;
 		return (
-			safeSubtreeListMatch(node.modifiers(), o.modifiers())
+			safeSubtreeListMatch(node.preDDocs(), o.preDDocs())
+			&& safeSubtreeListMatch(node.modifiers(), o.modifiers())
 			&& safeSubtreeMatch(node.getType(), o.getType())
 			&& safeSubtreeListMatch(node.fragments(), o.fragments())
-			&& safeSubtreeListMatch(node.dDocs(), o.dDocs())
+			&& safeSubtreeMatch(node.getPostDDoc(), o.getPostDDoc())
 			);
 	}
 
@@ -948,10 +952,11 @@ public class ASTMatcher {
 		}
 		AlignDeclaration o = (AlignDeclaration) other;
 		return (
-			safeSubtreeListMatch(node.modifiers(), o.modifiers())
+			safeSubtreeListMatch(node.preDDocs(), o.preDDocs())
+			&& safeSubtreeListMatch(node.modifiers(), o.modifiers())
 			&& node.getAlign() == o.getAlign()
 			&& safeSubtreeListMatch(node.declarations(), o.declarations())
-			&& safeSubtreeListMatch(node.dDocs(), o.dDocs())
+			&& safeSubtreeMatch(node.getPostDDoc(), o.getPostDDoc())
 			);
 	}
 
@@ -1077,7 +1082,8 @@ public class ASTMatcher {
 		}
 		FunctionDeclaration o = (FunctionDeclaration) other;
 		return (
-			safeSubtreeListMatch(node.modifiers(), o.modifiers())
+			safeSubtreeListMatch(node.preDDocs(), o.preDDocs())
+			&& safeSubtreeListMatch(node.modifiers(), o.modifiers())
 			&& node.getKind() == o.getKind()
 			&& safeSubtreeMatch(node.getReturnType(), o.getReturnType())
 			&& safeSubtreeMatch(node.getName(), o.getName())
@@ -1088,7 +1094,7 @@ public class ASTMatcher {
 			&& safeSubtreeMatch(node.getPostcondition(), o.getPostcondition())
 			&& safeSubtreeMatch(node.getPostconditionVariableName(), o.getPostconditionVariableName())
 			&& safeSubtreeMatch(node.getBody(), o.getBody())
-			&& safeSubtreeListMatch(node.dDocs(), o.dDocs())
+			&& safeSubtreeMatch(node.getPostDDoc(), o.getPostDDoc())
 			);
 	}
 	
@@ -1112,11 +1118,12 @@ public class ASTMatcher {
 		}
 		EnumDeclaration o = (EnumDeclaration) other;
 		return (
-			safeSubtreeListMatch(node.modifiers(), o.modifiers())
+			safeSubtreeListMatch(node.preDDocs(), o.preDDocs())
+			&& safeSubtreeListMatch(node.modifiers(), o.modifiers())
 			&& safeSubtreeMatch(node.getName(), o.getName())
 			&& safeSubtreeMatch(node.getBaseType(), o.getBaseType())
 			&& safeSubtreeListMatch(node.enumMembers(), o.enumMembers())
-			&& safeSubtreeListMatch(node.dDocs(), o.dDocs())
+			&& safeSubtreeMatch(node.getPostDDoc(), o.getPostDDoc())
 			);
 	}
 	
@@ -1164,9 +1171,10 @@ public class ASTMatcher {
 		}
 		InvariantDeclaration o = (InvariantDeclaration) other;
 		return (
-			safeSubtreeListMatch(node.modifiers(), o.modifiers())
+			safeSubtreeListMatch(node.preDDocs(), o.preDDocs())
+			&& safeSubtreeListMatch(node.modifiers(), o.modifiers())
 			&& safeSubtreeMatch(node.getBody(), o.getBody())
-			&& safeSubtreeListMatch(node.dDocs(), o.dDocs())
+			&& safeSubtreeMatch(node.getPostDDoc(), o.getPostDDoc())
 			);
 	}
 	
@@ -1242,10 +1250,11 @@ public class ASTMatcher {
 		}
 		ImportDeclaration o = (ImportDeclaration) other;
 		return (
-			safeSubtreeListMatch(node.modifiers(), o.modifiers())
+			safeSubtreeListMatch(node.preDDocs(), o.preDDocs())
+			&& safeSubtreeListMatch(node.modifiers(), o.modifiers())
 			&& node.isStatic() == o.isStatic()
 			&& safeSubtreeListMatch(node.imports(), o.imports())
-			&& safeSubtreeListMatch(node.dDocs(), o.dDocs())
+			&& safeSubtreeMatch(node.getPostDDoc(), o.getPostDDoc())
 			);
 	}
 	
@@ -1287,9 +1296,10 @@ public class ASTMatcher {
 		}
 		UnitTestDeclaration o = (UnitTestDeclaration) other;
 		return (
-			safeSubtreeListMatch(node.modifiers(), o.modifiers())
+			safeSubtreeListMatch(node.preDDocs(), o.preDDocs())
+			&& safeSubtreeListMatch(node.modifiers(), o.modifiers())
 			&& safeSubtreeMatch(node.getBody(), o.getBody())
-			&& safeSubtreeListMatch(node.dDocs(), o.dDocs())
+			&& safeSubtreeMatch(node.getPostDDoc(), o.getPostDDoc())
 			);
 	}
 	
@@ -1527,9 +1537,10 @@ public class ASTMatcher {
 		}
 		DebugAssignment o = (DebugAssignment) other;
 		return (
-			safeSubtreeListMatch(node.modifiers(), o.modifiers())
+			safeSubtreeListMatch(node.preDDocs(), o.preDDocs())
+			&& safeSubtreeListMatch(node.modifiers(), o.modifiers())
 			&& safeSubtreeMatch(node.getVersion(), o.getVersion())
-			&& safeSubtreeListMatch(node.dDocs(), o.dDocs())
+			&& safeSubtreeMatch(node.getPostDDoc(), o.getPostDDoc())
 			);
 	}
 	
@@ -1553,9 +1564,10 @@ public class ASTMatcher {
 		}
 		VersionAssignment o = (VersionAssignment) other;
 		return (
-			safeSubtreeListMatch(node.modifiers(), o.modifiers())
+			safeSubtreeListMatch(node.preDDocs(), o.preDDocs())
+			&& safeSubtreeListMatch(node.modifiers(), o.modifiers())
 			&& safeSubtreeMatch(node.getVersion(), o.getVersion())
-			&& safeSubtreeListMatch(node.dDocs(), o.dDocs())
+			&& safeSubtreeMatch(node.getPostDDoc(), o.getPostDDoc())
 			);
 	}
 	
@@ -1681,9 +1693,10 @@ public class ASTMatcher {
 		}
 		ModuleDeclaration o = (ModuleDeclaration) other;
 		return (
-			safeSubtreeListMatch(node.modifiers(), o.modifiers())
+			safeSubtreeListMatch(node.preDDocs(), o.preDDocs())
+			&& safeSubtreeListMatch(node.modifiers(), o.modifiers())
 			&& safeSubtreeMatch(node.getName(), o.getName())
-			&& safeSubtreeListMatch(node.dDocs(), o.dDocs())
+			&& safeSubtreeMatch(node.getPostDDoc(), o.getPostDDoc())
 			);
 	}
 	
@@ -1782,11 +1795,12 @@ public class ASTMatcher {
 		}
 		PragmaDeclaration o = (PragmaDeclaration) other;
 		return (
-			safeSubtreeListMatch(node.modifiers(), o.modifiers())
+			safeSubtreeListMatch(node.preDDocs(), o.preDDocs())
+			&& safeSubtreeListMatch(node.modifiers(), o.modifiers())
 			&& safeSubtreeMatch(node.getName(), o.getName())
 			&& safeSubtreeListMatch(node.arguments(), o.arguments())
 			&& safeSubtreeListMatch(node.declarations(), o.declarations())
-			&& safeSubtreeListMatch(node.dDocs(), o.dDocs())
+			&& safeSubtreeMatch(node.getPostDDoc(), o.getPostDDoc())
 			);
 	}
 	
@@ -1886,11 +1900,12 @@ public class ASTMatcher {
 		}
 		StaticIfDeclaration o = (StaticIfDeclaration) other;
 		return (
-			safeSubtreeListMatch(node.modifiers(), o.modifiers())
+			safeSubtreeListMatch(node.preDDocs(), o.preDDocs())
+			&& safeSubtreeListMatch(node.modifiers(), o.modifiers())
 			&& safeSubtreeMatch(node.getExpression(), o.getExpression())
 			&& safeSubtreeListMatch(node.thenDeclarations(), o.thenDeclarations())
 			&& safeSubtreeListMatch(node.elseDeclarations(), o.elseDeclarations())
-			&& safeSubtreeListMatch(node.dDocs(), o.dDocs())
+			&& safeSubtreeMatch(node.getPostDDoc(), o.getPostDDoc())
 			);
 	}
 	
@@ -1914,14 +1929,15 @@ public class ASTMatcher {
 		}
 		IftypeDeclaration o = (IftypeDeclaration) other;
 		return (
-			safeSubtreeListMatch(node.modifiers(), o.modifiers())
+			safeSubtreeListMatch(node.preDDocs(), o.preDDocs())
+			&& safeSubtreeListMatch(node.modifiers(), o.modifiers())
 			&& node.getKind() == o.getKind()
 			&& safeSubtreeMatch(node.getName(), o.getName())
 			&& safeSubtreeMatch(node.getTestType(), o.getTestType())
 			&& safeSubtreeMatch(node.getMatchingType(), o.getMatchingType())
 			&& safeSubtreeListMatch(node.thenDeclarations(), o.thenDeclarations())
 			&& safeSubtreeListMatch(node.elseDeclarations(), o.elseDeclarations())
-			&& safeSubtreeListMatch(node.dDocs(), o.dDocs())
+			&& safeSubtreeMatch(node.getPostDDoc(), o.getPostDDoc())
 			);
 	}
 	
@@ -1945,11 +1961,12 @@ public class ASTMatcher {
 		}
 		DebugDeclaration o = (DebugDeclaration) other;
 		return (
-			safeSubtreeListMatch(node.modifiers(), o.modifiers())
+			safeSubtreeListMatch(node.preDDocs(), o.preDDocs())
+			&& safeSubtreeListMatch(node.modifiers(), o.modifiers())
 			&& safeSubtreeMatch(node.getVersion(), o.getVersion())
 			&& safeSubtreeListMatch(node.thenDeclarations(), o.thenDeclarations())
 			&& safeSubtreeListMatch(node.elseDeclarations(), o.elseDeclarations())
-			&& safeSubtreeListMatch(node.dDocs(), o.dDocs())
+			&& safeSubtreeMatch(node.getPostDDoc(), o.getPostDDoc())
 			);
 	}
 	
@@ -1973,11 +1990,12 @@ public class ASTMatcher {
 		}
 		VersionDeclaration o = (VersionDeclaration) other;
 		return (
-			safeSubtreeListMatch(node.modifiers(), o.modifiers())
+			safeSubtreeListMatch(node.preDDocs(), o.preDDocs())
+			&& safeSubtreeListMatch(node.modifiers(), o.modifiers())
 			&& safeSubtreeMatch(node.getVersion(), o.getVersion())
 			&& safeSubtreeListMatch(node.thenDeclarations(), o.thenDeclarations())
 			&& safeSubtreeListMatch(node.elseDeclarations(), o.elseDeclarations())
-			&& safeSubtreeListMatch(node.dDocs(), o.dDocs())
+			&& safeSubtreeMatch(node.getPostDDoc(), o.getPostDDoc())
 			);
 	}
 	
@@ -2207,10 +2225,11 @@ public class ASTMatcher {
 		}
 		TypedefDeclaration o = (TypedefDeclaration) other;
 		return (
-			safeSubtreeListMatch(node.modifiers(), o.modifiers())
+			safeSubtreeListMatch(node.preDDocs(), o.preDDocs())
+			&& safeSubtreeListMatch(node.modifiers(), o.modifiers())
 			&& safeSubtreeMatch(node.getType(), o.getType())
 			&& safeSubtreeListMatch(node.fragments(), o.fragments())
-			&& safeSubtreeListMatch(node.dDocs(), o.dDocs())
+			&& safeSubtreeMatch(node.getPostDDoc(), o.getPostDDoc())
 			);
 	}
 	
@@ -2258,11 +2277,12 @@ public class ASTMatcher {
 		}
 		TemplateDeclaration o = (TemplateDeclaration) other;
 		return (
-			safeSubtreeListMatch(node.modifiers(), o.modifiers())
+			safeSubtreeListMatch(node.preDDocs(), o.preDDocs())
+			&& safeSubtreeListMatch(node.modifiers(), o.modifiers())
 			&& safeSubtreeMatch(node.getName(), o.getName())
 			&& safeSubtreeListMatch(node.templateParameters(), o.templateParameters())
 			&& safeSubtreeListMatch(node.declarations(), o.declarations())
-			&& safeSubtreeListMatch(node.dDocs(), o.dDocs())
+			&& safeSubtreeMatch(node.getPostDDoc(), o.getPostDDoc())
 			);
 	}
 	
@@ -2312,11 +2332,12 @@ public class ASTMatcher {
 		}
 		ModifierDeclaration o = (ModifierDeclaration) other;
 		return (
-			safeSubtreeListMatch(node.modifiers(), o.modifiers())
+			safeSubtreeListMatch(node.preDDocs(), o.preDDocs())
+			&& safeSubtreeListMatch(node.modifiers(), o.modifiers())
 			&& node.getSyntax() == o.getSyntax()
 			&& safeSubtreeMatch(node.getModifier(), o.getModifier())
 			&& safeSubtreeListMatch(node.declarations(), o.declarations())
-			&& safeSubtreeListMatch(node.dDocs(), o.dDocs())
+			&& safeSubtreeMatch(node.getPostDDoc(), o.getPostDDoc())
 			);
 	}
 	
@@ -2340,10 +2361,11 @@ public class ASTMatcher {
 		}
 		ExternDeclaration o = (ExternDeclaration) other;
 		return (
-			safeSubtreeListMatch(node.modifiers(), o.modifiers())
+			safeSubtreeListMatch(node.preDDocs(), o.preDDocs())
+			&& safeSubtreeListMatch(node.modifiers(), o.modifiers())
 			&& node.getLinkage() == o.getLinkage()
 			&& safeSubtreeListMatch(node.declarations(), o.declarations())
-			&& safeSubtreeListMatch(node.dDocs(), o.dDocs())
+			&& safeSubtreeMatch(node.getPostDDoc(), o.getPostDDoc())
 			);
 	}
 	
@@ -2790,10 +2812,11 @@ public class ASTMatcher {
 		}
 		VariableDeclaration o = (VariableDeclaration) other;
 		return (
-			safeSubtreeListMatch(node.modifiers(), o.modifiers())
+			safeSubtreeListMatch(node.preDDocs(), o.preDDocs())
+			&& safeSubtreeListMatch(node.modifiers(), o.modifiers())
 			&& safeSubtreeMatch(node.getType(), o.getType())
 			&& safeSubtreeListMatch(node.fragments(), o.fragments())
-			&& safeSubtreeListMatch(node.dDocs(), o.dDocs())
+			&& safeSubtreeMatch(node.getPostDDoc(), o.getPostDDoc())
 			);
 	}
 	
@@ -3045,10 +3068,11 @@ public class ASTMatcher {
 		}
 		MixinDeclaration o = (MixinDeclaration) other;
 		return (
-			safeSubtreeListMatch(node.modifiers(), o.modifiers())
+			safeSubtreeListMatch(node.preDDocs(), o.preDDocs())
+			&& safeSubtreeListMatch(node.modifiers(), o.modifiers())
 			&& safeSubtreeMatch(node.getType(), o.getType())
 			&& safeSubtreeMatch(node.getName(), o.getName())
-			&& safeSubtreeListMatch(node.dDocs(), o.dDocs())
+			&& safeSubtreeMatch(node.getPostDDoc(), o.getPostDDoc())
 			);
 	}
 	

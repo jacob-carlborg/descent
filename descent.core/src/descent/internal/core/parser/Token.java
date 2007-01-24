@@ -17,7 +17,7 @@ public class Token {
 	public BigInteger numberValue; // Numeric value of the token, see if it is needed
 	public Identifier ident;
 	public int lineNumber;
-	public List<Comment> leadingComments;
+	public Comment leadingComment;
 	
 	public Token() {
 		
@@ -33,7 +33,7 @@ public class Token {
 		this.numberValue = other.numberValue;
 		this.ident = other.ident;
 		this.lineNumber = other.lineNumber;
-		this.leadingComments = other.leadingComments;
+		this.leadingComment = other.leadingComment;
 	}
 	
 	@Override

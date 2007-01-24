@@ -14,6 +14,12 @@ import java.util.List;
 public class AlignDeclaration extends Declaration {
 	
 	/**
+	 * The "preDDocs" structural property of this node type.
+	 */
+	public static final ChildListPropertyDescriptor PRE_D_DOCS_PROPERTY =
+	internalPreDDocsPropertyFactory(AlignDeclaration.class); //$NON-NLS-1$
+
+	/**
 	 * The "modifiers" structural property of this node type.
 	 */
 	public static final ChildListPropertyDescriptor MODIFIERS_PROPERTY =
@@ -32,10 +38,10 @@ public class AlignDeclaration extends Declaration {
 		new ChildListPropertyDescriptor(AlignDeclaration.class, "declarations", Declaration.class, CYCLE_RISK); //$NON-NLS-1$
 
 	/**
-	 * The "dDocs" structural property of this node type.
+	 * The "postDDoc" structural property of this node type.
 	 */
-	public static final ChildListPropertyDescriptor D_DOCS_PROPERTY =
-	internalDDocsPropertyFactory(AlignDeclaration.class); //$NON-NLS-1$
+	public static final ChildPropertyDescriptor POST_D_DOC_PROPERTY =
+	internalPostDDocPropertyFactory(AlignDeclaration.class); //$NON-NLS-1$
 
 	/**
 	 * A list of property descriptors (element type: 
@@ -45,12 +51,13 @@ public class AlignDeclaration extends Declaration {
 	private static final List PROPERTY_DESCRIPTORS;
 
 	static {
-		List properyList = new ArrayList(4);
+		List properyList = new ArrayList(5);
 		createPropertyList(AlignDeclaration.class, properyList);
+		addProperty(PRE_D_DOCS_PROPERTY, properyList);
 		addProperty(MODIFIERS_PROPERTY, properyList);
 		addProperty(ALIGN_PROPERTY, properyList);
 		addProperty(DECLARATIONS_PROPERTY, properyList);
-		addProperty(D_DOCS_PROPERTY, properyList);
+		addProperty(POST_D_DOC_PROPERTY, properyList);
 		PROPERTY_DESCRIPTORS = reapPropertyList(properyList);
 	}
 
@@ -121,28 +128,49 @@ public class AlignDeclaration extends Declaration {
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
 	 */
+	final ASTNode internalGetSetChildProperty(ChildPropertyDescriptor property, boolean get, ASTNode child) {
+		if (property == POST_D_DOC_PROPERTY) {
+			if (get) {
+				return getPostDDoc();
+			} else {
+				setPostDDoc((Comment) child);
+				return null;
+			}
+		}
+		// allow default implementation to flag the error
+		return super.internalGetSetChildProperty(property, get, child);
+	}
+
+	/* (omit javadoc for this method)
+	 * Method declared on ASTNode.
+	 */
 	final List internalGetChildListProperty(ChildListPropertyDescriptor property) {
+		if (property == PRE_D_DOCS_PROPERTY) {
+			return preDDocs();
+		}
 		if (property == MODIFIERS_PROPERTY) {
 			return modifiers();
 		}
 		if (property == DECLARATIONS_PROPERTY) {
 			return declarations();
 		}
-		if (property == D_DOCS_PROPERTY) {
-			return dDocs();
-		}
 		// allow default implementation to flag the error
 		return super.internalGetChildListProperty(property);
 	}
 
+		@Override
+		final ChildListPropertyDescriptor internalPreDDocsProperty() {
+			return PRE_D_DOCS_PROPERTY;
+		}
+		
 		@Override
 		final ChildListPropertyDescriptor internalModifiersProperty() {
 			return MODIFIERS_PROPERTY;
 		}
 		
 		@Override
-		final ChildListPropertyDescriptor internalDDocsProperty() {
-			return D_DOCS_PROPERTY;
+		final ChildPropertyDescriptor internalPostDDocProperty() {
+			return POST_D_DOC_PROPERTY;
 		}
 		
 	/* (omit javadoc for this method)
@@ -158,10 +186,11 @@ public class AlignDeclaration extends Declaration {
 	ASTNode clone0(AST target) {
 		AlignDeclaration result = new AlignDeclaration(target);
 		result.setSourceRange(this.getStartPosition(), this.getLength());
+		result.preDDocs.addAll(ASTNode.copySubtrees(target, preDDocs()));
 		result.modifiers.addAll(ASTNode.copySubtrees(target, modifiers()));
 		result.setAlign(getAlign());
 		result.declarations.addAll(ASTNode.copySubtrees(target, declarations()));
-		result.dDocs.addAll(ASTNode.copySubtrees(target, dDocs()));
+	result.setPostDDoc((Comment) ASTNode.copySubtree(target, getPostDDoc()));
 		return result;
 	}
 
@@ -180,9 +209,10 @@ public class AlignDeclaration extends Declaration {
 		boolean visitChildren = visitor.visit(this);
 		if (visitChildren) {
 			// visit children in normal left to right reading order
-			acceptChildren(visitor, modifiers);
-			acceptChildren(visitor, declarations);
-			acceptChildren(visitor, dDocs);
+			acceptChildren(visitor, this.preDDocs);
+			acceptChildren(visitor, this.modifiers);
+			acceptChildren(visitor, this.declarations);
+			acceptChild(visitor, getPostDDoc());
 		}
 		visitor.endVisit(this);
 	}
@@ -223,7 +253,7 @@ public class AlignDeclaration extends Declaration {
 	 * Method declared on ASTNode.
 	 */
 	int memSize() {
-		return BASE_NODE_SIZE + 4 * 4;
+		return BASE_NODE_SIZE + 5 * 4;
 	}
 
 	/* (omit javadoc for this method)
@@ -232,9 +262,10 @@ public class AlignDeclaration extends Declaration {
 	int treeSize() {
 		return
 			memSize()
+			+ (this.preDDocs.listSize())
 			+ (this.modifiers.listSize())
 			+ (this.declarations.listSize())
-			+ (this.dDocs.listSize())
+			+ (this.postDDoc == null ? 0 : getPostDDoc().treeSize())
 	;
 	}
 

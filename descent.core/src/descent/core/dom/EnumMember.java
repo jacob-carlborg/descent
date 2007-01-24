@@ -15,6 +15,12 @@ import java.util.List;
 public class EnumMember extends ASTNode {
 	
 	/**
+	 * The "preDDocs" structural property of this node type.
+	 */
+	public static final ChildListPropertyDescriptor PRE_D_DOCS_PROPERTY =
+		new ChildListPropertyDescriptor(EnumMember.class, "preDDocs", Comment.class, NO_CYCLE_RISK); //$NON-NLS-1$
+
+	/**
 	 * The "name" structural property of this node type.
 	 */
 	public static final ChildPropertyDescriptor NAME_PROPERTY =
@@ -27,10 +33,10 @@ public class EnumMember extends ASTNode {
 		new ChildPropertyDescriptor(EnumMember.class, "value", Expression.class, OPTIONAL, NO_CYCLE_RISK); //$NON-NLS-1$
 
 	/**
-	 * The "dDocs" structural property of this node type.
+	 * The "postDDoc" structural property of this node type.
 	 */
-	public static final ChildListPropertyDescriptor D_DOCS_PROPERTY =
-		new ChildListPropertyDescriptor(EnumMember.class, "dDocs", Comment.class, NO_CYCLE_RISK); //$NON-NLS-1$
+	public static final ChildPropertyDescriptor POST_D_DOC_PROPERTY =
+		new ChildPropertyDescriptor(EnumMember.class, "postDDoc", Comment.class, OPTIONAL, NO_CYCLE_RISK); //$NON-NLS-1$
 
 	/**
 	 * A list of property descriptors (element type: 
@@ -40,11 +46,12 @@ public class EnumMember extends ASTNode {
 	private static final List PROPERTY_DESCRIPTORS;
 
 	static {
-		List properyList = new ArrayList(3);
+		List properyList = new ArrayList(4);
 		createPropertyList(EnumMember.class, properyList);
+		addProperty(PRE_D_DOCS_PROPERTY, properyList);
 		addProperty(NAME_PROPERTY, properyList);
 		addProperty(VALUE_PROPERTY, properyList);
-		addProperty(D_DOCS_PROPERTY, properyList);
+		addProperty(POST_D_DOC_PROPERTY, properyList);
 		PROPERTY_DESCRIPTORS = reapPropertyList(properyList);
 	}
 
@@ -64,6 +71,13 @@ public class EnumMember extends ASTNode {
 	}
 
 	/**
+	 * The pre d docs
+	 * (element type: <code>Comment</code>).
+	 * Defaults to an empty list.
+	 */
+	private ASTNode.NodeList preDDocs =
+		new ASTNode.NodeList(PRE_D_DOCS_PROPERTY);
+	/**
 	 * The name.
 	 */
 	private SimpleName name;
@@ -74,12 +88,10 @@ public class EnumMember extends ASTNode {
 	private Expression value;
 
 	/**
-	 * The d docs
-	 * (element type: <code>Comment</code>).
-	 * Defaults to an empty list.
+	 * The postDDoc.
 	 */
-	private ASTNode.NodeList dDocs =
-		new ASTNode.NodeList(D_DOCS_PROPERTY);
+	private Comment postDDoc;
+
 
 	/**
 	 * Creates a new unparented enum member node owned by the given 
@@ -121,6 +133,14 @@ public class EnumMember extends ASTNode {
 				return null;
 			}
 		}
+		if (property == POST_D_DOC_PROPERTY) {
+			if (get) {
+				return getPostDDoc();
+			} else {
+				setPostDDoc((Comment) child);
+				return null;
+			}
+		}
 		// allow default implementation to flag the error
 		return super.internalGetSetChildProperty(property, get, child);
 	}
@@ -129,8 +149,8 @@ public class EnumMember extends ASTNode {
 	 * Method declared on ASTNode.
 	 */
 	final List internalGetChildListProperty(ChildListPropertyDescriptor property) {
-		if (property == D_DOCS_PROPERTY) {
-			return dDocs();
+		if (property == PRE_D_DOCS_PROPERTY) {
+			return preDDocs();
 		}
 		// allow default implementation to flag the error
 		return super.internalGetChildListProperty(property);
@@ -149,9 +169,10 @@ public class EnumMember extends ASTNode {
 	ASTNode clone0(AST target) {
 		EnumMember result = new EnumMember(target);
 		result.setSourceRange(this.getStartPosition(), this.getLength());
+		result.preDDocs.addAll(ASTNode.copySubtrees(target, preDDocs()));
 		result.setName((SimpleName) getName().clone(target));
 	result.setValue((Expression) ASTNode.copySubtree(target, getValue()));
-		result.dDocs.addAll(ASTNode.copySubtrees(target, dDocs()));
+	result.setPostDDoc((Comment) ASTNode.copySubtree(target, getPostDDoc()));
 		return result;
 	}
 
@@ -170,11 +191,23 @@ public class EnumMember extends ASTNode {
 		boolean visitChildren = visitor.visit(this);
 		if (visitChildren) {
 			// visit children in normal left to right reading order
+			acceptChildren(visitor, this.preDDocs);
 			acceptChild(visitor, getName());
 			acceptChild(visitor, getValue());
-			acceptChildren(visitor, dDocs);
+			acceptChild(visitor, getPostDDoc());
 		}
 		visitor.endVisit(this);
+	}
+
+	/**
+	 * Returns the live ordered list of pre d docs for this
+	 * enum member.
+	 * 
+	 * @return the live list of enum member
+	 *    (element type: <code>Comment</code>)
+	 */ 
+	public List<Comment> preDDocs() {
+		return this.preDDocs;
 	}
 
 	/**
@@ -245,21 +278,37 @@ public class EnumMember extends ASTNode {
 	}
 
 	/**
-	 * Returns the live ordered list of d docs for this
-	 * enum member.
+	 * Returns the post d doc of this enum member.
 	 * 
-	 * @return the live list of enum member
-	 *    (element type: <code>Comment</code>)
+	 * @return the post d doc
 	 */ 
-	public List<Comment> dDocs() {
-		return this.dDocs;
+	public Comment getPostDDoc() {
+		return this.postDDoc;
+	}
+
+	/**
+	 * Sets the post d doc of this enum member.
+	 * 
+	 * @param postDDoc the post d doc
+	 * @exception IllegalArgumentException if:
+	 * <ul>
+	 * <li>the node belongs to a different AST</li>
+	 * <li>the node already has a parent</li>
+	 * <li>a cycle in would be created</li>
+	 * </ul>
+	 */ 
+	public void setPostDDoc(Comment postDDoc) {
+		ASTNode oldChild = this.postDDoc;
+		preReplaceChild(oldChild, postDDoc, POST_D_DOC_PROPERTY);
+		this.postDDoc = postDDoc;
+		postReplaceChild(oldChild, postDDoc, POST_D_DOC_PROPERTY);
 	}
 
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
 	 */
 	int memSize() {
-		return BASE_NODE_SIZE + 3 * 4;
+		return BASE_NODE_SIZE + 4 * 4;
 	}
 
 	/* (omit javadoc for this method)
@@ -268,9 +317,10 @@ public class EnumMember extends ASTNode {
 	int treeSize() {
 		return
 			memSize()
+			+ (this.preDDocs.listSize())
 			+ (this.name == null ? 0 : getName().treeSize())
 			+ (this.value == null ? 0 : getValue().treeSize())
-			+ (this.dDocs.listSize())
+			+ (this.postDDoc == null ? 0 : getPostDDoc().treeSize())
 	;
 	}
 	

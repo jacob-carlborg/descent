@@ -7,13 +7,13 @@ import descent.core.dom.CompilationUnit;
 public class ExtendedSourceRange_Test extends Parser_Test {
 	
 	public void testOnAlias() {
-		String s = " // hola\nalias int Bla;";
+		String s = "\n// hola\nalias int Bla;";
 		AliasDeclaration alias = (AliasDeclaration) getSingleDeclarationNoProblems(s);
 		assertEquals(ASTNode.ALIAS_DECLARATION, alias.getNodeType());
 		
 		CompilationUnit unit = (CompilationUnit) alias.getRoot();
-		System.out.println(unit.getExtendedStartPosition(alias));
-		System.out.println(unit.getExtendedLength(alias));
+		assertEquals(1, unit.getExtendedStartPosition(alias));
+		assertEquals(22, unit.getExtendedLength(alias));
 	}
 
 }

@@ -189,7 +189,7 @@ public class Lexer implements IProblemCollector {
 	    int linnum = this.linnum;
 	    
 	    t.lineNumber = linnum;
-	    t.leadingComments = null;
+	    t.leadingComment = null;
 	    
 	    while (true)
 	    {

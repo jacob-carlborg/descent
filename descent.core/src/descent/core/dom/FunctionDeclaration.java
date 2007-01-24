@@ -41,6 +41,12 @@ public class FunctionDeclaration extends Declaration {
 	}
 
 	/**
+	 * The "preDDocs" structural property of this node type.
+	 */
+	public static final ChildListPropertyDescriptor PRE_D_DOCS_PROPERTY =
+	internalPreDDocsPropertyFactory(FunctionDeclaration.class); //$NON-NLS-1$
+
+	/**
 	 * The "modifiers" structural property of this node type.
 	 */
 	public static final ChildListPropertyDescriptor MODIFIERS_PROPERTY =
@@ -107,10 +113,10 @@ public class FunctionDeclaration extends Declaration {
 		new ChildPropertyDescriptor(FunctionDeclaration.class, "body", Statement.class, MANDATORY, CYCLE_RISK); //$NON-NLS-1$
 
 	/**
-	 * The "dDocs" structural property of this node type.
+	 * The "postDDoc" structural property of this node type.
 	 */
-	public static final ChildListPropertyDescriptor D_DOCS_PROPERTY =
-	internalDDocsPropertyFactory(FunctionDeclaration.class); //$NON-NLS-1$
+	public static final ChildPropertyDescriptor POST_D_DOC_PROPERTY =
+	internalPostDDocPropertyFactory(FunctionDeclaration.class); //$NON-NLS-1$
 
 	/**
 	 * A list of property descriptors (element type: 
@@ -120,8 +126,9 @@ public class FunctionDeclaration extends Declaration {
 	private static final List PROPERTY_DESCRIPTORS;
 
 	static {
-		List properyList = new ArrayList(12);
+		List properyList = new ArrayList(13);
 		createPropertyList(FunctionDeclaration.class, properyList);
+		addProperty(PRE_D_DOCS_PROPERTY, properyList);
 		addProperty(MODIFIERS_PROPERTY, properyList);
 		addProperty(KIND_PROPERTY, properyList);
 		addProperty(RETURN_TYPE_PROPERTY, properyList);
@@ -133,7 +140,7 @@ public class FunctionDeclaration extends Declaration {
 		addProperty(POSTCONDITION_PROPERTY, properyList);
 		addProperty(POSTCONDITION_VARIABLE_NAME_PROPERTY, properyList);
 		addProperty(BODY_PROPERTY, properyList);
-		addProperty(D_DOCS_PROPERTY, properyList);
+		addProperty(POST_D_DOC_PROPERTY, properyList);
 		PROPERTY_DESCRIPTORS = reapPropertyList(properyList);
 	}
 
@@ -311,6 +318,14 @@ public class FunctionDeclaration extends Declaration {
 				return null;
 			}
 		}
+		if (property == POST_D_DOC_PROPERTY) {
+			if (get) {
+				return getPostDDoc();
+			} else {
+				setPostDDoc((Comment) child);
+				return null;
+			}
+		}
 		// allow default implementation to flag the error
 		return super.internalGetSetChildProperty(property, get, child);
 	}
@@ -319,6 +334,9 @@ public class FunctionDeclaration extends Declaration {
 	 * Method declared on ASTNode.
 	 */
 	final List internalGetChildListProperty(ChildListPropertyDescriptor property) {
+		if (property == PRE_D_DOCS_PROPERTY) {
+			return preDDocs();
+		}
 		if (property == MODIFIERS_PROPERTY) {
 			return modifiers();
 		}
@@ -328,21 +346,23 @@ public class FunctionDeclaration extends Declaration {
 		if (property == ARGUMENTS_PROPERTY) {
 			return arguments();
 		}
-		if (property == D_DOCS_PROPERTY) {
-			return dDocs();
-		}
 		// allow default implementation to flag the error
 		return super.internalGetChildListProperty(property);
 	}
 
+		@Override
+		final ChildListPropertyDescriptor internalPreDDocsProperty() {
+			return PRE_D_DOCS_PROPERTY;
+		}
+		
 		@Override
 		final ChildListPropertyDescriptor internalModifiersProperty() {
 			return MODIFIERS_PROPERTY;
 		}
 		
 		@Override
-		final ChildListPropertyDescriptor internalDDocsProperty() {
-			return D_DOCS_PROPERTY;
+		final ChildPropertyDescriptor internalPostDDocProperty() {
+			return POST_D_DOC_PROPERTY;
 		}
 		
 	/* (omit javadoc for this method)
@@ -358,6 +378,7 @@ public class FunctionDeclaration extends Declaration {
 	ASTNode clone0(AST target) {
 		FunctionDeclaration result = new FunctionDeclaration(target);
 		result.setSourceRange(this.getStartPosition(), this.getLength());
+		result.preDDocs.addAll(ASTNode.copySubtrees(target, preDDocs()));
 		result.modifiers.addAll(ASTNode.copySubtrees(target, modifiers()));
 		result.setKind(getKind());
 		result.setReturnType((Type) getReturnType().clone(target));
@@ -369,7 +390,7 @@ public class FunctionDeclaration extends Declaration {
 	result.setPostcondition((Statement) ASTNode.copySubtree(target, getPostcondition()));
 	result.setPostconditionVariableName((SimpleName) ASTNode.copySubtree(target, getPostconditionVariableName()));
 		result.setBody((Statement) getBody().clone(target));
-		result.dDocs.addAll(ASTNode.copySubtrees(target, dDocs()));
+	result.setPostDDoc((Comment) ASTNode.copySubtree(target, getPostDDoc()));
 		return result;
 	}
 
@@ -388,16 +409,17 @@ public class FunctionDeclaration extends Declaration {
 		boolean visitChildren = visitor.visit(this);
 		if (visitChildren) {
 			// visit children in normal left to right reading order
-			acceptChildren(visitor, modifiers);
+			acceptChildren(visitor, this.preDDocs);
+			acceptChildren(visitor, this.modifiers);
 			acceptChild(visitor, getReturnType());
 			acceptChild(visitor, getName());
-			acceptChildren(visitor, templateParameters);
-			acceptChildren(visitor, arguments);
+			acceptChildren(visitor, this.templateParameters);
+			acceptChildren(visitor, this.arguments);
 			acceptChild(visitor, getPrecondition());
 			acceptChild(visitor, getPostcondition());
 			acceptChild(visitor, getPostconditionVariableName());
 			acceptChild(visitor, getBody());
-			acceptChildren(visitor, dDocs);
+			acceptChild(visitor, getPostDDoc());
 		}
 		visitor.endVisit(this);
 	}
@@ -674,7 +696,7 @@ public class FunctionDeclaration extends Declaration {
 	 * Method declared on ASTNode.
 	 */
 	int memSize() {
-		return BASE_NODE_SIZE + 12 * 4;
+		return BASE_NODE_SIZE + 13 * 4;
 	}
 
 	/* (omit javadoc for this method)
@@ -683,6 +705,7 @@ public class FunctionDeclaration extends Declaration {
 	int treeSize() {
 		return
 			memSize()
+			+ (this.preDDocs.listSize())
 			+ (this.modifiers.listSize())
 			+ (this.returnType == null ? 0 : getReturnType().treeSize())
 			+ (this.name == null ? 0 : getName().treeSize())
@@ -692,7 +715,7 @@ public class FunctionDeclaration extends Declaration {
 			+ (this.postcondition == null ? 0 : getPostcondition().treeSize())
 			+ (this.postconditionVariableName == null ? 0 : getPostconditionVariableName().treeSize())
 			+ (this.body == null ? 0 : getBody().treeSize())
-			+ (this.dDocs.listSize())
+			+ (this.postDDoc == null ? 0 : getPostDDoc().treeSize())
 	;
 	}
 	

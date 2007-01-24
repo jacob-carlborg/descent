@@ -108,12 +108,12 @@ class NaiveASTFlattener extends ASTVisitor {
 	
 	@Override
 	public boolean visit(AggregateDeclaration node) {
-		printPreDDocss(node, node.dDocs());
+		printPreDDocss(node, node.preDDocs());
 		printIndent();
 		printModifiers(node.modifiers());
 		buffer.append(node.getKind().getToken());
 		buffer.append(" ");
-		printPostDDocss(node, node.dDocs());
+		printPostDDocss(node, node.preDDocs());
 		// TODO finish it
 		return false;
 	}

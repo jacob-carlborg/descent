@@ -234,10 +234,7 @@ class Parser extends Lexer {
 	private void attachCommentToCurrentToken(Comment comment) {
 		if (!appendLeadingComments || !comment.isDocComment()) return;
 		
-		if (prevToken.leadingComments == null) {
-			prevToken.leadingComments = new ArrayList<Comment>();
-		}
-		prevToken.leadingComments.add(comment);
+		prevToken.leadingComment = comment;
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -276,7 +273,7 @@ class Parser extends Lexer {
 
 				md = newModuleDeclaration(name);
 				md.setSourceRange(start, token.ptr + token.len - start);
-				md.dDocs().addAll(moduleDocComments);
+				md.preDDocs().addAll(moduleDocComments);
 				adjustLastDocComment();
 				compilationUnit.setModuleDeclaration(md);
 
@@ -288,8 +285,8 @@ class Parser extends Lexer {
 					nextToken();
 				}
 				
-				attachLeadingComments(md.dDocs());
-				adjustPossitionAccordingToComments(md, md.dDocs());
+				attachLeadingComments(md);
+				adjustPossitionAccordingToComments(md, md.preDDocs(), md.getPostDDoc());
 			}
 		}
 
@@ -677,10 +674,10 @@ class Parser extends Lexer {
 				s.setSourceRange(start, prevToken.ptr + prevToken.len - start);
 				s.modifiers().addAll(modifiers);
 				modifiers.clear();
-				s.dDocs().addAll(lastComments);
+				s.preDDocs().addAll(lastComments);
 				adjustLastDocComment();
-				attachLeadingComments(s.dDocs());				
-				adjustPossitionAccordingToComments(s, s.dDocs());				
+				attachLeadingComments(s);				
+				adjustPossitionAccordingToComments(s, s.preDDocs(), s.getPostDDoc());				
 				decldefs.add(s);
 			}
 		} while (!once);
@@ -747,8 +744,8 @@ class Parser extends Lexer {
 		    
 		    check(TOKsemicolon);
 		    
-		    attachLeadingComments(variableDeclaration.dDocs());
-		    adjustPossitionAccordingToComments(variableDeclaration, variableDeclaration.dDocs());
+		    attachLeadingComments(variableDeclaration);
+		    adjustPossitionAccordingToComments(variableDeclaration, variableDeclaration.preDDocs(), variableDeclaration.getPostDDoc());
 		    return new Object[] { a, variableDeclaration }; 
 		}
 		else
@@ -2332,14 +2329,14 @@ class Parser extends Lexer {
 			a.add(variableDeclaration);
 			if (token.value == TOKsemicolon) {
 				nextToken();
-				variableDeclaration.dDocs().addAll(lastComments);
+				variableDeclaration.preDDocs().addAll(lastComments);
 				adjustLastDocComment();
 			} else {
 				parsingErrorInsertTokenAfter(prevToken, ";");
 			}
 			
-			attachLeadingComments(variableDeclaration.dDocs());
-			adjustPossitionAccordingToComments(variableDeclaration, variableDeclaration.dDocs());
+			attachLeadingComments(variableDeclaration);
+			adjustPossitionAccordingToComments(variableDeclaration, variableDeclaration.preDDocs(), variableDeclaration.getPostDDoc());
 			
 			return a;
 		}
@@ -2350,7 +2347,7 @@ class Parser extends Lexer {
 			s = (AggregateDeclaration) parseAggregate();
 			s.modifiers().addAll(modifiers);
 			a.add(s);
-			s.dDocs().addAll(lastComments);
+			s.preDDocs().addAll(lastComments);
 			adjustLastDocComment();
 			return a;
 		}
@@ -2443,7 +2440,7 @@ class Parser extends Lexer {
 				case TOKsemicolon:
 					v.setSourceRange(nextTypdefOrAliasStart, token.ptr + token.len - nextTypdefOrAliasStart);
 					nextToken();
-					v.dDocs().addAll(lastComments);
+					v.preDDocs().addAll(lastComments);
 					adjustLastDocComment();
 					break;
 
@@ -2463,7 +2460,7 @@ class Parser extends Lexer {
 				
 				FunctionDeclaration function = newFunctionDeclaration(FunctionDeclaration.Kind.FUNCTION, 
 						typeFunction.getReturnType(), name, typeFunction.getArguments(), typeFunction.varargs ? 1 : 0);
-				function.dDocs().addAll(lastComments);
+				function.preDDocs().addAll(lastComments);
 				adjustLastDocComment();
 				
 				parseContracts(function);
@@ -2492,7 +2489,7 @@ class Parser extends Lexer {
 					s = tempdecl;
 					*/
 				}
-				s.dDocs().addAll(lastComments);
+				s.preDDocs().addAll(lastComments);
 				adjustLastDocComment();
 				a.add(s);
 			} else {
@@ -2519,10 +2516,10 @@ class Parser extends Lexer {
 				case TOKsemicolon:
 					variableDeclaration.setSourceRange(nextVarStart, token.ptr + token.len - nextVarStart);
 					nextToken();
-					variableDeclaration.dDocs().addAll(lastComments);
+					variableDeclaration.preDDocs().addAll(lastComments);
 					adjustLastDocComment();
-					attachLeadingComments(variableDeclaration.dDocs());
-					adjustPossitionAccordingToComments(variableDeclaration, variableDeclaration.dDocs());
+					attachLeadingComments(variableDeclaration);
+					adjustPossitionAccordingToComments(variableDeclaration, variableDeclaration.preDDocs(), variableDeclaration.getPostDDoc());
 					break;
 
 				case TOKcomma:
@@ -6725,9 +6722,15 @@ class Parser extends Lexer {
 		lastDocCommentRead = comments.size();
 	}
 	
-	private void attachLeadingComments(List<Comment> comments) {
-		if (prevToken.leadingComments != null) {
-			comments.addAll(prevToken.leadingComments);
+	private void attachLeadingComments(Declaration declaration) {
+		if (prevToken.leadingComment != null) {
+			declaration.setPostDDoc(prevToken.leadingComment);
+		}
+	}
+	
+	private void attachLeadingComments(ModuleDeclaration declaration) {
+		if (prevToken.leadingComment != null) {
+			declaration.setPostDDoc(prevToken.leadingComment);
 		}
 	}
 	
@@ -6747,22 +6750,23 @@ class Parser extends Lexer {
 		return Character.toUpperCase(s.charAt(0)) + s.substring(1);
 	}
 	
-	private void adjustPossitionAccordingToComments(ASTNode node, List<Comment> comments) {
-		if (comments.size() == 0) return;
-		
-		int minStart = node.getStartPosition();
-		int maxEnd = node.getStartPosition() + node.getLength();
-		for(Comment comment : comments) {
-			int commentStart = comment.getStartPosition();
-			if (commentStart < minStart) {
-				minStart = commentStart;
-			}
-			if (commentStart + comment.getLength() > maxEnd) {
-				maxEnd = commentStart + comment.getLength();
-			}
+	private void adjustPossitionAccordingToComments(ASTNode node, List<Comment> preDDocs, Comment postDDoc) {
+		if (preDDocs.isEmpty() && postDDoc == null) {
+			return;
 		}
 		
-		node.setSourceRange(minStart, maxEnd - minStart);
+		int start = node.getStartPosition();
+		int end = start + node.getLength();
+		
+		if (!preDDocs.isEmpty()) {
+			start = preDDocs.get(0).getStartPosition();
+		}
+		
+		if (postDDoc != null) {
+			end = postDDoc.getStartPosition() + postDDoc.getLength();
+		}
+		
+		node.setSourceRange(start, end - start);
 	}
 	
 }

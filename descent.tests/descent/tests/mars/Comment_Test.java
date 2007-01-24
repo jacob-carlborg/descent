@@ -16,7 +16,7 @@ public class Comment_Test extends Parser_Test {
 		AggregateDeclaration c = (AggregateDeclaration) getSingleDeclarationNoProblems(s);
 		assertPosition(c, 1, s.length() - 1);
 		
-		List<Comment> comments = c.dDocs();
+		List<Comment> comments = c.preDDocs();
 		assertEquals(1, comments.size());
 		assertPosition(comments.get(0), 1, 11);
 	}
@@ -30,11 +30,11 @@ public class Comment_Test extends Parser_Test {
 		List<Comment> comments;
 		
 		c = (AggregateDeclaration) declDefs.get(0);
-		comments = c.dDocs();
+		comments = c.preDDocs();
 		assertEquals(1, comments.size());
 		
 		c = (AggregateDeclaration) declDefs.get(1);
-		comments = c.dDocs();
+		comments = c.preDDocs();
 		assertEquals(0, comments.size());
 	}
 	
@@ -43,9 +43,10 @@ public class Comment_Test extends Parser_Test {
 		AggregateDeclaration c = (AggregateDeclaration) getSingleDeclarationNoProblems(s);
 		assertPosition(c, 1, s.length() - 1);
 		
-		List<Comment> comments = c.dDocs();
-		assertEquals(1, comments.size());
-		assertPosition(comments.get(0), 14, 11);
+		List<Comment> comments = c.preDDocs();
+		assertEquals(0, comments.size());
+		
+		assertPosition(c.getPostDDoc(), 14, 11);
 	}
 	
 	public void testLeadingCommentNotDDoc() {
@@ -53,7 +54,7 @@ public class Comment_Test extends Parser_Test {
 		AggregateDeclaration c = (AggregateDeclaration) getSingleDeclarationNoProblems(s);
 		assertPosition(c, 1, 12);
 		
-		List<Comment> comments = c.dDocs();
+		List<Comment> comments = c.preDDocs();
 		assertEquals(0, comments.size());
 	}
 	
@@ -62,10 +63,10 @@ public class Comment_Test extends Parser_Test {
 		AggregateDeclaration c = (AggregateDeclaration) getSingleDeclarationNoProblems(s);
 		assertPosition(c, 1, s.length() - 1);
 		
-		List<Comment> comments = c.dDocs();
-		assertEquals(2, comments.size());
+		List<Comment> comments = c.preDDocs();
+		assertEquals(1, comments.size());
 		assertPosition(comments.get(0), 1, 11);
-		assertPosition(comments.get(1), 26, 11);
+		assertPosition(c.getPostDDoc(), 26, 11);
 	}
 	
 	public void testLeadingAndPreviousInNextLineComment() {
@@ -73,10 +74,10 @@ public class Comment_Test extends Parser_Test {
 		AggregateDeclaration c = (AggregateDeclaration) getSingleDeclarationNoProblems(s);
 		assertPosition(c, 1, 36);
 		
-		List<Comment> comments = c.dDocs();
-		assertEquals(2, comments.size());
+		List<Comment> comments = c.preDDocs();
+		assertEquals(1, comments.size());
 		assertPosition(comments.get(0), 1, 11);
-		assertPosition(comments.get(1), 26, 11);
+		assertPosition(c.getPostDDoc(), 26, 11);
 	}
 	
 	public void testLeadingAndPreviousInNextLineCommentInModule() {
@@ -86,10 +87,10 @@ public class Comment_Test extends Parser_Test {
 		ModuleDeclaration c = (ModuleDeclaration) compilationUnit.getModuleDeclaration();
 		assertPosition(c, 1, 36);
 		
-		List<Comment> comments = c.dDocs();
-		assertEquals(2, comments.size());
+		List<Comment> comments = c.preDDocs();
+		assertEquals(1, comments.size());
 		assertPosition(comments.get(0), 1, 11);
-		assertPosition(comments.get(1), 26, 11);
+		assertPosition(c.getPostDDoc(), 26, 11);
 	}
 	
 	public void testLeadingAndPreviousInNextLineCommentInVarDeclaration() {
@@ -99,10 +100,10 @@ public class Comment_Test extends Parser_Test {
 		VariableDeclaration c = (VariableDeclaration) getSingleDeclarationNoProblems(s);
 		assertPosition(c, 1, 36);
 		
-		List<Comment> comments = c.dDocs();
-		assertEquals(2, comments.size());
+		List<Comment> comments = c.preDDocs();
+		assertEquals(1, comments.size());
 		assertPosition(comments.get(0), 1, 11);
-		assertPosition(comments.get(1), 26, 11);
+		assertPosition(c.getPostDDoc(), 26, 11);
 	}
 	
 	public void testLeadingCommentWithLineBreak() {
@@ -111,26 +112,40 @@ public class Comment_Test extends Parser_Test {
 		assertEquals(0, compilationUnit.getProblems().length);
 		VariableDeclaration c = (VariableDeclaration) getSingleDeclarationNoProblems(s);
 		
-		List<Comment> comments = c.dDocs();
-		assertEquals(1, comments.size());
+		List<Comment> comments = c.preDDocs();
+		assertEquals(0, comments.size());
+		
+		assertNotNull(c.getPostDDoc());
+	}
+	
+	public void testLeadingCommentWithLineBreakBefore() {
+		String s = " int a; \n /** hola */";
+		CompilationUnit compilationUnit = getCompilationUnit(s);
+		assertEquals(0, compilationUnit.getProblems().length);
+		VariableDeclaration c = (VariableDeclaration) getSingleDeclarationNoProblems(s);
+		
+		List<Comment> comments = c.preDDocs();
+		assertEquals(0, comments.size());
+		
+		assertNull(c.getPostDDoc());
 	}
 	
 	public void testVariableFragmentsProblem() {
 		String s = " /** hola */ int a, b;";
 		Declaration c = getSingleDeclarationNoProblems(s);
-		assertEquals(1, c.dDocs().size());
+		assertEquals(1, c.preDDocs().size());
 	}
 	
 	public void testAliasFragmentsProblem() {
 		String s = " /** hola */ alias int a, b;";
 		Declaration c = getSingleDeclarationNoProblems(s);
-		assertEquals(1, c.dDocs().size());
+		assertEquals(1, c.preDDocs().size());
 	}
 	
 	public void testTypedefFragmentsProblem() {
 		String s = " /** hola */ typedef int a, b;";
 		Declaration c = getSingleDeclarationNoProblems(s);
-		assertEquals(1, c.dDocs().size());
+		assertEquals(1, c.preDDocs().size());
 	}
 
 }
