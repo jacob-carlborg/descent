@@ -8,7 +8,7 @@ import java.util.List;
  *
  * <pre>
  * ArrayLiteral:
- *    Expression <b>[</b> [ Expression { <b>,</b> Expression } ] <b>]</b>
+ *    <b>[</b> [ Expression { <b>,</b> Expression } ] <b>]</b>
  * </pre>
  */
 public class ArrayLiteral extends Expression {

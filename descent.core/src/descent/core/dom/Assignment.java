@@ -92,10 +92,10 @@ public class Assignment extends Expression {
 	}
 	
 	/**
-	 * The "leftHandSize" structural property of this node type.
+	 * The "leftHandSide" structural property of this node type.
 	 */
-	public static final ChildPropertyDescriptor LEFT_HAND_SIZE_PROPERTY =
-		new ChildPropertyDescriptor(Assignment.class, "leftHandSize", Expression.class, MANDATORY, CYCLE_RISK); //$NON-NLS-1$
+	public static final ChildPropertyDescriptor LEFT_HAND_SIDE_PROPERTY =
+		new ChildPropertyDescriptor(Assignment.class, "leftHandSide", Expression.class, MANDATORY, CYCLE_RISK); //$NON-NLS-1$
 
 	/**
 	 * The "operator" structural property of this node type.
@@ -104,10 +104,10 @@ public class Assignment extends Expression {
 		new SimplePropertyDescriptor(Assignment.class, "operator", Operator.class, MANDATORY); //$NON-NLS-1$
 
 	/**
-	 * The "rightHandSize" structural property of this node type.
+	 * The "rightHandSide" structural property of this node type.
 	 */
-	public static final ChildPropertyDescriptor RIGHT_HAND_SIZE_PROPERTY =
-		new ChildPropertyDescriptor(Assignment.class, "rightHandSize", Expression.class, MANDATORY, CYCLE_RISK); //$NON-NLS-1$
+	public static final ChildPropertyDescriptor RIGHT_HAND_SIDE_PROPERTY =
+		new ChildPropertyDescriptor(Assignment.class, "rightHandSide", Expression.class, MANDATORY, CYCLE_RISK); //$NON-NLS-1$
 
 	/**
 	 * A list of property descriptors (element type: 
@@ -119,9 +119,9 @@ public class Assignment extends Expression {
 	static {
 		List properyList = new ArrayList(3);
 		createPropertyList(Assignment.class, properyList);
-		addProperty(LEFT_HAND_SIZE_PROPERTY, properyList);
+		addProperty(LEFT_HAND_SIDE_PROPERTY, properyList);
 		addProperty(OPERATOR_PROPERTY, properyList);
-		addProperty(RIGHT_HAND_SIZE_PROPERTY, properyList);
+		addProperty(RIGHT_HAND_SIDE_PROPERTY, properyList);
 		PROPERTY_DESCRIPTORS = reapPropertyList(properyList);
 	}
 
@@ -141,9 +141,9 @@ public class Assignment extends Expression {
 	}
 
 	/**
-	 * The leftHandSize.
+	 * The leftHandSide.
 	 */
-	private Expression leftHandSize;
+	private Expression leftHandSide;
 
 	/**
 	 * The operator.
@@ -151,9 +151,9 @@ public class Assignment extends Expression {
 	private Operator operator;
 
 	/**
-	 * The rightHandSize.
+	 * The rightHandSide.
 	 */
-	private Expression rightHandSize;
+	private Expression rightHandSide;
 
 
 	/**
@@ -196,19 +196,19 @@ public class Assignment extends Expression {
 	 * Method declared on ASTNode.
 	 */
 	final ASTNode internalGetSetChildProperty(ChildPropertyDescriptor property, boolean get, ASTNode child) {
-		if (property == LEFT_HAND_SIZE_PROPERTY) {
+		if (property == LEFT_HAND_SIDE_PROPERTY) {
 			if (get) {
-				return getLeftHandSize();
+				return getLeftHandSide();
 			} else {
-				setLeftHandSize((Expression) child);
+				setLeftHandSide((Expression) child);
 				return null;
 			}
 		}
-		if (property == RIGHT_HAND_SIZE_PROPERTY) {
+		if (property == RIGHT_HAND_SIDE_PROPERTY) {
 			if (get) {
-				return getRightHandSize();
+				return getRightHandSide();
 			} else {
-				setRightHandSize((Expression) child);
+				setRightHandSide((Expression) child);
 				return null;
 			}
 		}
@@ -229,9 +229,9 @@ public class Assignment extends Expression {
 	ASTNode clone0(AST target) {
 		Assignment result = new Assignment(target);
 		result.setSourceRange(this.getStartPosition(), this.getLength());
-		result.setLeftHandSize((Expression) getLeftHandSize().clone(target));
+		result.setLeftHandSide((Expression) getLeftHandSide().clone(target));
 		result.setOperator(getOperator());
-		result.setRightHandSize((Expression) getRightHandSize().clone(target));
+		result.setRightHandSide((Expression) getRightHandSide().clone(target));
 		return result;
 	}
 
@@ -250,35 +250,35 @@ public class Assignment extends Expression {
 		boolean visitChildren = visitor.visit(this);
 		if (visitChildren) {
 			// visit children in normal left to right reading order
-			acceptChild(visitor, getLeftHandSize());
-			acceptChild(visitor, getRightHandSize());
+			acceptChild(visitor, getLeftHandSide());
+			acceptChild(visitor, getRightHandSide());
 		}
 		visitor.endVisit(this);
 	}
 
 	/**
-	 * Returns the left hand size of this assignment.
+	 * Returns the left hand side of this assignment.
 	 * 
-	 * @return the left hand size
+	 * @return the left hand side
 	 */ 
-	public Expression getLeftHandSize() {
-		if (this.leftHandSize == null) {
+	public Expression getLeftHandSide() {
+		if (this.leftHandSide == null) {
 			// lazy init must be thread-safe for readers
 			synchronized (this) {
-				if (this.leftHandSize == null) {
+				if (this.leftHandSide == null) {
 					preLazyInit();
-					this.leftHandSize = new SimpleName(this.ast);
-					postLazyInit(this.leftHandSize, LEFT_HAND_SIZE_PROPERTY);
+					this.leftHandSide = new SimpleName(this.ast);
+					postLazyInit(this.leftHandSide, LEFT_HAND_SIDE_PROPERTY);
 				}
 			}
 		}
-		return this.leftHandSize;
+		return this.leftHandSide;
 	}
 
 	/**
-	 * Sets the left hand size of this assignment.
+	 * Sets the left hand side of this assignment.
 	 * 
-	 * @param leftHandSize the left hand size
+	 * @param leftHandSide the left hand side
 	 * @exception IllegalArgumentException if:
 	 * <ul>
 	 * <li>the node belongs to a different AST</li>
@@ -286,14 +286,14 @@ public class Assignment extends Expression {
 	 * <li>a cycle in would be created</li>
 	 * </ul>
 	 */ 
-	public void setLeftHandSize(Expression leftHandSize) {
-		if (leftHandSize == null) {
+	public void setLeftHandSide(Expression leftHandSide) {
+		if (leftHandSide == null) {
 			throw new IllegalArgumentException();
 		}
-		ASTNode oldChild = this.leftHandSize;
-		preReplaceChild(oldChild, leftHandSize, LEFT_HAND_SIZE_PROPERTY);
-		this.leftHandSize = leftHandSize;
-		postReplaceChild(oldChild, leftHandSize, LEFT_HAND_SIZE_PROPERTY);
+		ASTNode oldChild = this.leftHandSide;
+		preReplaceChild(oldChild, leftHandSide, LEFT_HAND_SIDE_PROPERTY);
+		this.leftHandSide = leftHandSide;
+		postReplaceChild(oldChild, leftHandSide, LEFT_HAND_SIDE_PROPERTY);
 	}
 
 	/**
@@ -321,28 +321,28 @@ public class Assignment extends Expression {
 	}
 
 	/**
-	 * Returns the right hand size of this assignment.
+	 * Returns the right hand side of this assignment.
 	 * 
-	 * @return the right hand size
+	 * @return the right hand side
 	 */ 
-	public Expression getRightHandSize() {
-		if (this.rightHandSize == null) {
+	public Expression getRightHandSide() {
+		if (this.rightHandSide == null) {
 			// lazy init must be thread-safe for readers
 			synchronized (this) {
-				if (this.rightHandSize == null) {
+				if (this.rightHandSide == null) {
 					preLazyInit();
-					this.rightHandSize = new SimpleName(this.ast);
-					postLazyInit(this.rightHandSize, RIGHT_HAND_SIZE_PROPERTY);
+					this.rightHandSide = new SimpleName(this.ast);
+					postLazyInit(this.rightHandSide, RIGHT_HAND_SIDE_PROPERTY);
 				}
 			}
 		}
-		return this.rightHandSize;
+		return this.rightHandSide;
 	}
 
 	/**
-	 * Sets the right hand size of this assignment.
+	 * Sets the right hand side of this assignment.
 	 * 
-	 * @param rightHandSize the right hand size
+	 * @param rightHandSide the right hand side
 	 * @exception IllegalArgumentException if:
 	 * <ul>
 	 * <li>the node belongs to a different AST</li>
@@ -350,14 +350,14 @@ public class Assignment extends Expression {
 	 * <li>a cycle in would be created</li>
 	 * </ul>
 	 */ 
-	public void setRightHandSize(Expression rightHandSize) {
-		if (rightHandSize == null) {
+	public void setRightHandSide(Expression rightHandSide) {
+		if (rightHandSide == null) {
 			throw new IllegalArgumentException();
 		}
-		ASTNode oldChild = this.rightHandSize;
-		preReplaceChild(oldChild, rightHandSize, RIGHT_HAND_SIZE_PROPERTY);
-		this.rightHandSize = rightHandSize;
-		postReplaceChild(oldChild, rightHandSize, RIGHT_HAND_SIZE_PROPERTY);
+		ASTNode oldChild = this.rightHandSide;
+		preReplaceChild(oldChild, rightHandSide, RIGHT_HAND_SIDE_PROPERTY);
+		this.rightHandSide = rightHandSide;
+		postReplaceChild(oldChild, rightHandSide, RIGHT_HAND_SIDE_PROPERTY);
 	}
 
 	/* (omit javadoc for this method)
@@ -373,8 +373,8 @@ public class Assignment extends Expression {
 	int treeSize() {
 		return
 			memSize()
-			+ (this.leftHandSize == null ? 0 : getLeftHandSize().treeSize())
-			+ (this.rightHandSize == null ? 0 : getRightHandSize().treeSize())
+			+ (this.leftHandSide == null ? 0 : getLeftHandSide().treeSize())
+			+ (this.rightHandSide == null ? 0 : getRightHandSide().treeSize())
 	;
 	}
 

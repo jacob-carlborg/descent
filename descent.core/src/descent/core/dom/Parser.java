@@ -5812,9 +5812,9 @@ class Parser extends Lexer {
 	
 	private Assignment newAssignment(Expression e1, Expression e2, Assignment.Operator operator) {
 		Assignment assignment = new Assignment(ast);
-		assignment.setLeftHandSize(e1);
+		assignment.setLeftHandSide(e1);
 		assignment.setOperator(operator);
-		assignment.setRightHandSize(e2);
+		assignment.setRightHandSide(e2);
 		assignment.setSourceRange(e1.getStartPosition(), e2.getStartPosition() + e2.getLength() - e1.getStartPosition());
 		return assignment;
 	}

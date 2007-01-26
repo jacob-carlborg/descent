@@ -251,10 +251,5 @@ public class PrimitiveType extends Type {
 			memSize()
 	;
 	}
-	
-	@Override
-	public String toString() {
-		return primitiveTypeCode.toString();
-	}
 
 }

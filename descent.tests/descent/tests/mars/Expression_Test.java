@@ -290,8 +290,8 @@ public class Expression_Test extends Parser_Test {
 			assertEquals(ASTNode.ASSIGNMENT, expr.getNodeType());
 			assertEquals(pair[1], expr.getOperator());
 			assertEquals(pair[0], pair[1].toString());
-			assertEquals(ASTNode.NUMBER_LITERAL, expr.getLeftHandSize().getNodeType());
-			assertEquals(ASTNode.NUMBER_LITERAL, expr.getRightHandSize().getNodeType());
+			assertEquals(ASTNode.NUMBER_LITERAL, expr.getLeftHandSide().getNodeType());
+			assertEquals(ASTNode.NUMBER_LITERAL, expr.getRightHandSide().getNodeType());
 			assertPosition(expr, 1, 6 + ((String) pair[0]).length());
 		}
 	}

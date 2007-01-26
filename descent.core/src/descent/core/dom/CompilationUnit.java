@@ -12,6 +12,7 @@ import descent.core.compiler.IProblem;
  * 
  * <pre>
  * CompilationUnit:
+ *    [ ScriptLine ]
  *    [ ModuleDeclaration ]
  *    { Declaration }
  * </pre>

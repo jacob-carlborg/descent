@@ -109,10 +109,5 @@ public class NullLiteral extends Expression {
 			memSize()
 	;
 	}
-	
-	@Override
-	public String toString() {
-		return "null";
-	}
 
 }

@@ -3146,9 +3146,9 @@ public class ASTMatcher {
 		}
 		Assignment o = (Assignment) other;
 		return (
-			safeSubtreeMatch(node.getLeftHandSize(), o.getLeftHandSize())
+			safeSubtreeMatch(node.getLeftHandSide(), o.getLeftHandSide())
 			&& node.getOperator() == o.getOperator()
-			&& safeSubtreeMatch(node.getRightHandSize(), o.getRightHandSize())
+			&& safeSubtreeMatch(node.getRightHandSide(), o.getRightHandSide())
 			);
 	}
 	

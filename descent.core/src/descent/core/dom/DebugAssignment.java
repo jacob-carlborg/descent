@@ -9,7 +9,7 @@ import java.util.List;
  * 
  * <pre>
  * DebugAssignment:
- *     { Modifier } <b>debug</b> <b>=</b> Version
+ *     { Modifier } <b>debug</b> <b>=</b> Version <b>;</b>
  * </pre>
  */
 public class DebugAssignment extends Declaration {

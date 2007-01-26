@@ -13,6 +13,7 @@ public class Function_Test extends Parser_Test {
 	public void testConstructor() {
 		String s = " this() { }";
 		FunctionDeclaration f = (FunctionDeclaration) getSingleDeclarationNoProblems(s);
+		
 		assertEquals(ASTNode.FUNCTION_DECLARATION, f.getNodeType());
 		assertEquals(FunctionDeclaration.Kind.CONSTRUCTOR, f.getKind());
 		assertEquals(PrimitiveType.Code.VOID, ((PrimitiveType) f.getReturnType()).getPrimitiveTypeCode());
