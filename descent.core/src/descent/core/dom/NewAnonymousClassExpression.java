@@ -11,7 +11,7 @@ import java.util.List;
  * NewAnonymousClassExpression:
  *    [ Expression <b>.</b> ] 
  *       <b>new</b> [ <b>(</b> Expression { <b>,</b> Expression } <b>)</b>
- *       <b>class</b> [ <b>(</b> Expression { <b>,</b> Expression } <b>)</b> { BaseClass } 
+ *       <b>class</b> [ <b>(</b> Expression { <b>,</b> Expression } <b>)</b> [ BaseClass <b>,</b> { BaseClass } ] 
  *       <b>{</b>
  *          { Declaration }
  *       <b>}</b>

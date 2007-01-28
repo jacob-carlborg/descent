@@ -481,6 +481,9 @@ class Parser extends Lexer {
 					} else {
 						if (!isSingle[0]) {
 							s = newModifierDeclaration(modifier, syntax[0], a);
+							// We don't want the modifier to be as a modifier in the
+							// modifier declaration
+							modifiers.remove(modifiers.size() - 1);
 						}
 					}
 				}
@@ -523,14 +526,20 @@ class Parser extends Lexer {
 				syntax = new ModifierDeclaration.Syntax[1]; 
 				a = parseBlock(isSingle, syntax, modifiers);
 				if (a != null) {
-					if (isSingle[0]) {						
-						s = (Declaration) a.get(0);
+					if (isSingle[0]) {	
+						s = (Declaration) a.get(0);						
 					} else {
 						s = newModifierDeclaration(modifier, syntax[0], a);
+						// We don't want the modifier to be as a modifier in the
+						// modifier declaration
+						modifiers.remove(modifiers.size() - 1);
 					}
 				} else {
 					if (!isSingle[0]) {
 						s = newModifierDeclaration(modifier, syntax[0], a);
+						// We don't want the modifier to be as a modifier in the
+						// modifier declaration
+						modifiers.remove(modifiers.size() - 1);
 					}
 				}
 				break;
@@ -787,7 +796,7 @@ class Parser extends Lexer {
 			if (syntax != null) {
 				syntax[0] = ModifierDeclaration.Syntax.CURLY_BRACES;
 			}
-			a = parseDeclDefs(false, modifiers);
+			a = parseDeclDefs(false, new ArrayList<Modifier>());
 			if (token.value != TOKrcurly) { /* { */
 				parsingErrorInsertTokenAfter(prevToken, "}");
 			} else
@@ -802,7 +811,7 @@ class Parser extends Lexer {
 			// #if 1
 			// a = null;
 			// #else
-			a = parseDeclDefs(false, modifiers); // grab declarations up to closing curly
+			a = parseDeclDefs(false, new ArrayList<Modifier>()); // grab declarations up to closing curly
 										// bracket
 			// #endif
 			break;
@@ -4880,14 +4889,17 @@ class Parser extends Lexer {
 
 			case TOKplusplus:
 				e = newPostfixExpression(e, PostfixExpression.Operator.INCREMENT);
+				e.setSourceRange(start, prevToken.ptr + prevToken.len - start);
 				break;
 
 			case TOKminusminus:
 				e = newPostfixExpression(e, PostfixExpression.Operator.DECREMENT);
+				e.setSourceRange(start, prevToken.ptr + prevToken.len - start);
 				break;
 
 			case TOKlparen:
 				e = newCallExpression(e, parseArguments());
+				e.setSourceRange(start, prevToken.ptr + prevToken.len - start);
 				continue;
 
 			case TOKlbracket: { // array dereferences:
@@ -6634,6 +6646,7 @@ class Parser extends Lexer {
 	private TypeExpression newTypeExpression(Type type) {
 		TypeExpression typeExpression = new TypeExpression(ast);
 		typeExpression.setType(type);
+		typeExpression.setSourceRange(type.getStartPosition(), type.getLength());
 		return typeExpression;
 	}
 	

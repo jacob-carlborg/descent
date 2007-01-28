@@ -9,7 +9,7 @@ import java.util.List;
  * 
  * <pre>
  * IsTypeExpression:
- *    <b>is</b> <b>(</b> Type [ [ <b>:</b> | <b>==</b> ] Type ] <b>)</b>
+ *    <b>is</b> <b>(</b> Type [ SimpleName ] [ [ <b>:</b> | <b>==</b> ] Type ] <b>)</b>
  * </pre>
  */
 public class IsTypeExpression extends Expression {

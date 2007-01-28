@@ -120,7 +120,7 @@ public class IftypeDeclaration extends ConditionalDeclaration {
 	/**
 	 * The kind.
 	 */
-	private Kind kind;
+	private Kind kind = Kind.NONE;
 
 	/**
 	 * The name.

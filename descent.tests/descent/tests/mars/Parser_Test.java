@@ -40,23 +40,28 @@ public abstract class Parser_Test extends TestCase {
 	}
 	
 	protected Expression parseExpression(String source) {
-		return new ParserFacade().parseExpression(source);
+		Expression exp = new ParserFacade().parseExpression(source);
+		return exp;
 	}
 	
 	protected Initializer parseInitializer(String source) {
-		return new ParserFacade().parseInitializer(source);
+		Initializer init = new ParserFacade().parseInitializer(source);
+		return init;
 	}
 	
 	protected Statement parseStatement(String source) {
-		return new ParserFacade().parseStatement(source);
+		Statement stm = new ParserFacade().parseStatement(source);
+		return stm;
 	}
 	
 	protected ModuleDeclaration getModuleDeclaration(String source) {
-		return new ParserFacade().parseCompilationUnit(source).getModuleDeclaration();
+		ModuleDeclaration md = new ParserFacade().parseCompilationUnit(source).getModuleDeclaration();
+		return md;
 	}
 	
 	protected CompilationUnit getCompilationUnit(String source) {
-		return new ParserFacade().parseCompilationUnit(source);
+		CompilationUnit unit = new ParserFacade().parseCompilationUnit(source);
+		return unit;
 	}
 	
 	protected void assertOriginal(ASTNode elem) {

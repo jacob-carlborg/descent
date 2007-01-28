@@ -644,7 +644,9 @@ public class ASTParser {
 		   	  /*&& (this.classFileSource == null)*/) {
 		   	  throw new IllegalStateException("source not specified"); //$NON-NLS-1$
 		   }
-	   		result = internalCreateAST(monitor);
+			result = internalCreateAST(monitor);
+		} catch (Exception e) {
+	   		e.printStackTrace();
 		} finally {
 	   	   // re-init defaults to allow reuse (and avoid leaking)
 	   	   initializeDefaults();

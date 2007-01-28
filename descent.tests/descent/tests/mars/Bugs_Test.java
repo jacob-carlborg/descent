@@ -29,6 +29,36 @@ public class Bugs_Test extends Parser_Test {
 		getCompilationUnit(s);
 	}
 	
+	public void testBug5a() {
+		String s = " void bla() { return std.string.toString(buffer).dup; }";
+		CompilationUnit cu = getCompilationUnit(s);
+		assertEquals(1, cu.declarations().size());
+	}
+	
+	public void testBug5b() {
+		String s = " void bla() { return std.string.toString--.dup; }";
+		CompilationUnit cu = getCompilationUnit(s);
+		assertEquals(1, cu.declarations().size());
+	}
+	
+	public void testBug5c() {
+		String s = " void bla() { return std.string.toString++.dup; }";
+		CompilationUnit cu = getCompilationUnit(s);
+		assertEquals(1, cu.declarations().size());
+	}
+	
+	public void testBug6() {
+		String s = " void bla() { return isNumeric(va_arg!(char[])(_argptr)); }";
+		CompilationUnit cu = getCompilationUnit(s);
+		assertEquals(1, cu.declarations().size());
+	}
+	
+	public void testBug7() {
+		String s = " const char[16] hexdigits = \"0123456789ABCDEF\\n\";			/// 0..9A..F";
+		CompilationUnit cu = getCompilationUnit(s);
+		assertEquals(1, cu.declarations().size());
+	}
+	
 	// Dont give error on UTF characters
 	public void testBugUTF() {
 		String s = " // ö";

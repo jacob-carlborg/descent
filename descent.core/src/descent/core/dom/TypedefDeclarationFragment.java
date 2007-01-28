@@ -9,7 +9,7 @@ import java.util.List;
  * 
  * <pre>
  * TypdefDeclarationFragment:
- *    Type [ <b>=</b> Initializer ]
+ *    SimpleName [ <b>=</b> Initializer ]
  * </pre>
  */
 public class TypedefDeclarationFragment extends ASTNode {

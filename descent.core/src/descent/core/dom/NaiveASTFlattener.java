@@ -111,24 +111,26 @@ class NaiveASTFlattener extends ASTVisitor {
 		printModifiers(node.modifiers());
 		this.buffer.append(node.getKind().getToken());
 		this.buffer.append(" ");
-		node.getName().accept(this);
+		if (node.getName() != null) {
+			node.getName().accept(this);
+		}
 		if (!node.templateParameters().isEmpty()) {
 			this.buffer.append("(");
 			printList(node.templateParameters(), ", ", DONT_PRINT_LAST_ONE);
 			this.buffer.append(")");
 		}
-		this.buffer.append(" ");
 		if (!node.baseClasses().isEmpty()) {
 			this.buffer.append(" : ");
 			printList(node.baseClasses(), ", ", DONT_PRINT_LAST_ONE);
 		}
-		this.buffer.append("{\n");
+		this.buffer.append(" {\n");
 		this.indent++;
 		printList(node.declarations(), "\n", PRINT_LAST_ONE);
 		this.indent--;
 		printIndent();
 		this.buffer.append("}");
 		if (node.getPostDDoc() != null) {
+			this.buffer.append(" ");
 			node.getPostDDoc().accept(this);
 		}
 		return false;
@@ -145,6 +147,7 @@ class NaiveASTFlattener extends ASTVisitor {
 		printList(node.fragments(), ", ", DONT_PRINT_LAST_ONE);
 		this.buffer.append(";");
 		if (node.getPostDDoc() != null) {
+			this.buffer.append(" ");
 			node.getPostDDoc().accept(this);
 		}
 		return false;
@@ -176,15 +179,20 @@ class NaiveASTFlattener extends ASTVisitor {
 		printPreDDocss(node.preDDocs());
 		printIndent();
 		printModifiers(node.modifiers());
-		this.buffer.append("align(");
-		this.buffer.append(node.getAlign());
-		this.buffer.append(") {\n");
+		this.buffer.append("align");
+		if (node.getAlign() >= 2) {
+			this.buffer.append("(");
+			this.buffer.append(node.getAlign());
+			this.buffer.append(")");
+		}
+		this.buffer.append(" {\n");
 		this.indent++;
 		printList(node.declarations(), "\n", PRINT_LAST_ONE);
 		this.indent--;
 		printIndent();
 		this.buffer.append("}");
 		if (node.getPostDDoc() != null) {
+			this.buffer.append(" ");
 			node.getPostDDoc().accept(this);
 		}
 		return false;
@@ -192,18 +200,28 @@ class NaiveASTFlattener extends ASTVisitor {
 	
 	@Override
 	public boolean visit(Argument node) {
+		boolean mustAppendSpace = true;
 		switch(node.getPassageMode()) {
-		case DEFAULT: break;
-		case IN: this.buffer.append("in "); break;
-		case INOUT: this.buffer.append("inout "); break;
-		case LAZY: this.buffer.append("lazy "); break;
-		case OUT: this.buffer.append("out "); break;
+		case DEFAULT: mustAppendSpace = false; break;
+		case IN: this.buffer.append("in"); break;
+		case INOUT: this.buffer.append("inout"); break;
+		case LAZY: this.buffer.append("lazy"); break;
+		case OUT: this.buffer.append("out"); break;
 		}
+		
 		if (node.getType() != null) {
+			if (mustAppendSpace) {
+				this.buffer.append(" ");
+			}
 			node.getType().accept(this);
-			this.buffer.append(" ");
+			mustAppendSpace = true;
 		}
-		node.getName().accept(this);
+		if (node.getName() != null) {
+			if (mustAppendSpace) {
+				this.buffer.append(" ");
+			}
+			node.getName().accept(this);
+		}
 		if (node.getDefaultValue() != null) {
 			this.buffer.append(" = ");
 			node.getDefaultValue().accept(this);
@@ -248,6 +266,7 @@ class NaiveASTFlattener extends ASTVisitor {
 	
 	@Override
 	public boolean visit(AsmStatement node) {
+		printIndent();
 		this.buffer.append("asm {\n");
 		this.indent++;
 		// TODO complete when Asm statement is done
@@ -299,7 +318,7 @@ class NaiveASTFlattener extends ASTVisitor {
 	
 	@Override
 	public boolean visit(Block node) {
-		printIndent();
+		//printIndent();
 		this.buffer.append("{\n");
 		this.indent++;
 		printList(node.statements(), "\n", PRINT_LAST_ONE);
@@ -324,7 +343,7 @@ class NaiveASTFlattener extends ASTVisitor {
 			node.getLabel().accept(this);
 		}
 		this.buffer.append(";");
-		return super.visit(node);
+		return false;
 	}
 	
 	@Override
@@ -341,11 +360,8 @@ class NaiveASTFlattener extends ASTVisitor {
 		printIndent();
 		this.buffer.append("case ");
 		node.getExpression().accept(this);
-		this.buffer.append(":\n");
-		this.indent++;
+		this.buffer.append(": ");
 		node.getBody().accept(this);
-		this.buffer.append("\n");
-		this.indent--;
 		return false;
 	}
 	
@@ -365,12 +381,14 @@ class NaiveASTFlattener extends ASTVisitor {
 		if (node.getType() != null) {
 			this.buffer.append("(");
 			node.getType().accept(this);
-			this.buffer.append(" ");
-			node.getName().accept(this);
+			if (node.getName() != null) {
+				this.buffer.append(" ");
+				node.getName().accept(this);
+			}
 			this.buffer.append(")");
 		}
+		this.buffer.append(" ");
 		node.getBody().accept(this);
-		this.buffer.append("\n");
 		return false;
 	}
 	
@@ -383,12 +401,12 @@ class NaiveASTFlattener extends ASTVisitor {
 	@Override
 	public boolean visit(Comment node) {
 		switch(node.getKind()) {
-		case BLOCK_COMMENT: this.buffer.append("/* */\n"); break;
-		case DOC_BLOCK_COMMENT: this.buffer.append("/** */\n"); break;
-		case DOC_LINE_COMMENT: this.buffer.append("///\n"); break;
-		case DOC_PLUS_COMMENT: this.buffer.append("/++ +/\n"); break;
-		case LINE_COMMENT: this.buffer.append("//\n"); break;
-		case PLUS_COMMENT: this.buffer.append("/+ +/\n"); break;
+		case BLOCK_COMMENT: this.buffer.append("/* */"); break;
+		case DOC_BLOCK_COMMENT: this.buffer.append("/** */"); break;
+		case DOC_LINE_COMMENT: this.buffer.append("///"); break;
+		case DOC_PLUS_COMMENT: this.buffer.append("/++ +/"); break;
+		case LINE_COMMENT: this.buffer.append("//"); break;
+		case PLUS_COMMENT: this.buffer.append("/+ +/"); break;
 		}
 		return false;
 	}
@@ -440,6 +458,7 @@ class NaiveASTFlattener extends ASTVisitor {
 		node.getVersion().accept(this);
 		this.buffer.append(";");
 		if (node.getPostDDoc() != null) {
+			this.buffer.append(" ");
 			node.getPostDDoc().accept(this);
 		}
 		return false;
@@ -469,6 +488,7 @@ class NaiveASTFlattener extends ASTVisitor {
 			this.buffer.append("}");
 		}
 		if (node.getPostDDoc() != null) {
+			this.buffer.append(" ");
 			node.getPostDDoc().accept(this);
 		}
 		return false;
@@ -483,17 +503,11 @@ class NaiveASTFlattener extends ASTVisitor {
 			node.getVersion().accept(this);
 			this.buffer.append(")");
 		}
-		this.buffer.append(" {\n");
-		this.indent++;
+		this.buffer.append(" ");
 		node.getThenBody().accept(this);
-		this.indent--;
-		this.buffer.append("}");
 		if (node.getElseBody() != null) {
-			this.buffer.append(" else {\n");
-			this.indent++;
+			this.buffer.append(" else ");
 			node.getElseBody().accept(this);
-			this.indent--;
-			this.buffer.append("}");
 		}
 		return false;
 	}
@@ -508,11 +522,8 @@ class NaiveASTFlattener extends ASTVisitor {
 	@Override
 	public boolean visit(DefaultStatement node) {
 		printIndent();
-		this.buffer.append("default: \n");
-		this.indent++;
+		this.buffer.append("default: ");
 		node.getBody().accept(this);
-		this.buffer.append("\n");
-		this.indent--;
 		return false;
 	}
 	
@@ -525,7 +536,7 @@ class NaiveASTFlattener extends ASTVisitor {
 		} else {
 			this.buffer.append("delegate");
 		}
-		this.buffer.append(" (");
+		this.buffer.append("(");
 		printList(node.arguments(), ", ", DONT_PRINT_LAST_ONE);
 		if (node.isVariadic()) {
 			this.buffer.append("...");
@@ -605,6 +616,7 @@ class NaiveASTFlattener extends ASTVisitor {
 		this.indent--;
 		this.buffer.append("}");
 		if (node.getPostDDoc() != null) {
+			this.buffer.append(" ");
 			node.getPostDDoc().accept(this);
 		}
 		return false;
@@ -612,6 +624,7 @@ class NaiveASTFlattener extends ASTVisitor {
 	
 	@Override
 	public boolean visit(EnumMember node) {
+		printIndent();
 		node.getName().accept(this);
 		if (node.getValue() != null) {
 			this.buffer.append(" = ");
@@ -654,6 +667,7 @@ class NaiveASTFlattener extends ASTVisitor {
 		this.indent--;
 		this.buffer.append("}");
 		if (node.getPostDDoc() != null) {
+			this.buffer.append(" ");
 			node.getPostDDoc().accept(this);
 		}
 		return false;
@@ -693,11 +707,8 @@ class NaiveASTFlattener extends ASTVisitor {
 		if (node.getIncrement() != null) {
 			node.getIncrement().accept(this);
 		}
-		this.buffer.append(") {\n");
-		this.indent++;
+		this.buffer.append(") ");
 		node.getBody().accept(this);
-		this.indent--;
-		this.buffer.append("}");
 		return false;
 	}
 	
@@ -745,7 +756,7 @@ class NaiveASTFlattener extends ASTVisitor {
 		if (node.getPrecondition() != null) {
 			this.buffer.append("\n");
 			printIndent();
-			this.buffer.append(" in ");
+			this.buffer.append("in ");
 			node.getPrecondition().accept(this);
 			this.buffer.append("\n");
 			printIndent();
@@ -753,18 +764,18 @@ class NaiveASTFlattener extends ASTVisitor {
 		if (node.getPostcondition() != null) {
 			this.buffer.append("\n");
 			printIndent();
-			this.buffer.append(" out ");
+			this.buffer.append("out ");
 			node.getPostcondition().accept(this);
 			this.buffer.append("\n");
 			printIndent();
 		}
 		if (node.getPrecondition() != null || node.getPostcondition() != null) {
-			this.buffer.append(" body");
+			this.buffer.append("body");
 		}
 		this.buffer.append(" ");
 		node.getBody().accept(this);
-		this.buffer.append("\n");
 		if (node.getPostDDoc() != null) {
+			this.buffer.append(" ");
 			node.getPostDDoc().accept(this);
 		}
 		return false;
@@ -834,14 +845,402 @@ class NaiveASTFlattener extends ASTVisitor {
 	}
 	
 	@Override
+	public boolean visit(IfStatement node) {
+		printIndent();
+		this.buffer.append("if(");
+		if (node.getArgument() != null) {
+			node.getArgument().accept(this);
+			this.buffer.append(" = ");
+		}
+		node.getExpression().accept(this);
+		this.buffer.append(") ");
+		node.getThenBody().accept(this);
+		if (node.getElseBody() != null) {
+			this.buffer.append(" else ");
+			node.getElseBody().accept(this);
+		}
+		return false;
+	}
+	
+	@Override
+	public boolean visit(IftypeDeclaration node) {
+		printPreDDocss(node.preDDocs());
+		printIndent();
+		printModifiers(node.modifiers());
+		this.buffer.append("iftype(");
+		if (node.getTestType() != null) {
+			node.getTestType().accept(this);
+		}
+		if (node.getName() != null) {
+			this.buffer.append(" ");
+			node.getName().accept(this);
+		}
+		if (node.getMatchingType() != null) {
+			switch(node.getKind()) {
+			case EQUALS: this.buffer.append(" = "); break;
+			case EXTENDS: this.buffer.append(" : "); break;
+			case NONE: break;
+			}
+			node.getMatchingType().accept(this);
+		}
+		this.buffer.append(") {\n");
+		this.indent++;
+		printList(node.thenDeclarations(), "\n", PRINT_LAST_ONE);
+		this.indent--;
+		this.buffer.append("}");
+		if (!node.elseDeclarations().isEmpty()) {
+			this.buffer.append(" else {\n");
+			this.indent++;
+			printList(node.elseDeclarations(), "\n", PRINT_LAST_ONE);
+			this.indent--;
+			this.buffer.append("}");
+		}
+		if (node.getPostDDoc() != null) {
+			this.buffer.append(" ");
+			node.getPostDDoc().accept(this);
+		}
+		return false;
+	}
+	
+	@Override
+	public boolean visit(IftypeStatement node) {
+		printIndent();
+		this.buffer.append("iftype(");
+		node.getTestType().accept(this);
+		if (node.getName() != null) {
+			this.buffer.append(" ");
+			node.getName().accept(this);
+		}
+		if (node.getMatchingType() != null) {
+			switch(node.getKind()) {
+			case EQUALS: this.buffer.append(" = "); break;
+			case EXTENDS: this.buffer.append(" : "); break;
+			case NONE: break;
+			}
+			node.getMatchingType().accept(this);
+		}
+		this.buffer.append(") ");
+		node.getThenBody().accept(this);
+		if (node.getElseBody() != null) {
+			this.buffer.append(" else ");
+			node.getElseBody().accept(this);
+		}
+		this.buffer.append("\n");
+		return false;
+	}
+	
+	@Override
+	public boolean visit(Import node) {
+		if (node.getAlias() != null) {
+			node.getAlias().accept(this);
+			this.buffer.append(" = ");
+		}
+		node.getName().accept(this);
+		if (!node.selectiveImports().isEmpty()) {
+			this.buffer.append(" : ");
+			printList(node.selectiveImports(), ", ", DONT_PRINT_LAST_ONE);
+		}
+		return false;
+	}
+	
+	@Override
+	public boolean visit(ImportDeclaration node) {
+		printPreDDocss(node.preDDocs());
+		printIndent();
+		printModifiers(node.modifiers());
+		if (node.isStatic()) {
+			this.buffer.append("static ");
+		}
+		this.buffer.append("import ");
+		printList(node.imports(), ", ", DONT_PRINT_LAST_ONE);
+		this.buffer.append(";");
+		if (node.getPostDDoc() != null) {
+			this.buffer.append(" ");
+			node.getPostDDoc().accept(this);
+		}
+		return false;
+	}
+	
+	@Override
+	public boolean visit(InfixExpression node) {
+		node.getLeftOperand().accept(this);
+		this.buffer.append(" ");
+		this.buffer.append(node.getOperator().toString());
+		this.buffer.append(" ");
+		node.getRightOperand().accept(this);
+		return false;
+	}
+	
+	@Override
+	public boolean visit(InvariantDeclaration node) {
+		printPreDDocss(node.preDDocs());
+		printIndent();
+		printModifiers(node.modifiers());
+		this.buffer.append("invariant ");
+		node.getBody().accept(this);
+		this.buffer.append("\n");
+		if (node.getPostDDoc() != null) {
+			this.buffer.append(" ");
+			node.getPostDDoc().accept(this);
+		}
+		return false;
+	}
+	
+	@Override
+	public boolean visit(IsTypeExpression node) {
+		this.buffer.append("is(");
+		node.getType().accept(this);
+		if (node.getName() != null) {
+			this.buffer.append(" ");
+			node.getName().accept(this);
+		}
+		if (node.getSpecialization() != null) {
+			if (node.isSameComparison()) {
+				this.buffer.append(" == ");
+			} else {
+				this.buffer.append(" : ");
+			}
+			node.getSpecialization().accept(this);
+		}
+		this.buffer.append(")");
+		return false;
+	}
+	
+	@Override
+	public boolean visit(IsTypeSpecializationExpression node) {
+		this.buffer.append("is(");
+		node.getType().accept(this);
+		if (node.getName() != null) {
+			this.buffer.append(" ");
+			node.getName().accept(this);
+		}
+		if (node.getSpecialization() != null) {
+			if (node.isSameComparison()) {
+				this.buffer.append(" == ");
+			} else {
+				this.buffer.append(" : ");
+			}
+			this.buffer.append(node.getSpecialization().toString().toLowerCase());
+		}
+		this.buffer.append(")");
+		return false;
+	}
+	
+	@Override
+	public boolean visit(LabelStatement node) {
+		printIndent();
+		node.getLabel().accept(this);
+		this.buffer.append(": ");
+		node.getBody().accept(this);
+		return false;
+	}
+	
+	@Override
+	public boolean visit(MixinDeclaration node) {
+		printPreDDocss(node.preDDocs());
+		printIndent();
+		printModifiers(node.modifiers());
+		this.buffer.append("mixin ");
+		node.getType().accept(this);
+		if (node.getName() != null) {
+			this.buffer.append(" ");
+			node.getName().accept(this);
+		}
+		this.buffer.append(";");
+		if (node.getPostDDoc() != null) {
+			this.buffer.append(" ");
+			node.getPostDDoc().accept(this);
+		}
+		return false;
+	}
+	
+	@Override
+	public boolean visit(Modifier node) {
+		this.buffer.append(node.getModifierKeyword().toString());
+		return false;
+	}
+	
+	@Override
+	public boolean visit(ModifierDeclaration node) {
+		printPreDDocss(node.preDDocs());
+		printIndent();
+		printModifiers(node.modifiers());
+		node.getModifier().accept(this);
+		if (node.getSyntax().equals(ModifierDeclaration.Syntax.CURLY_BRACES)) {
+			this.buffer.append(" {\n");
+		} else {
+			this.buffer.append(":\n");
+		}
+		this.indent++;
+		printList(node.declarations(), "\n", PRINT_LAST_ONE);
+		this.indent--;
+		if (node.getSyntax().equals(ModifierDeclaration.Syntax.CURLY_BRACES)) {
+			this.buffer.append("}");
+		}
+		if (node.getPostDDoc() != null) {
+			this.buffer.append(" ");
+			node.getPostDDoc().accept(this);
+		}
+		return false;
+	}
+	
+	@Override
+	public boolean visit(ModuleDeclaration node) {
+		printPreDDocss(node.preDDocs());
+		printIndent();
+		printModifiers(node.modifiers());
+		this.buffer.append("module ");
+		node.getName().accept(this);
+		this.buffer.append(";");
+		if (node.getPostDDoc() != null) {
+			this.buffer.append(" ");
+			node.getPostDDoc().accept(this);
+		}
+		return false;
+	}
+	
+	@Override
+	public boolean visit(NewAnonymousClassExpression node) {
+		if (node.getExpression() != null) {
+			node.getExpression().accept(this);
+			this.buffer.append(".");
+		}
+		this.buffer.append("new");
+		if (!node.newArguments().isEmpty()) {
+			this.buffer.append("(");
+			printList(node.newArguments(), ", ", DONT_PRINT_LAST_ONE);
+			this.buffer.append(") ");
+		} else {
+			this.buffer.append(" ");
+		}
+		this.buffer.append("class");
+		if (!node.constructorArguments().isEmpty()) {
+			this.buffer.append("(");
+			printList(node.constructorArguments(), ", ", DONT_PRINT_LAST_ONE);
+			this.buffer.append(")");
+		}
+		if (!node.baseClasses().isEmpty()) {
+			this.buffer.append(" ");
+			printList(node.baseClasses(), ", ", DONT_PRINT_LAST_ONE);
+		}
+		this.buffer.append(" {\n");
+		this.indent++;
+		printList(node.declarations(), "\n", PRINT_LAST_ONE);
+		this.indent--;
+		this.buffer.append("}");
+		return false;
+	}
+	
+	@Override
+	public boolean visit(NewExpression node) {
+		if (node.getExpression() != null) {
+			node.getExpression().accept(this);
+			this.buffer.append(".");
+		}
+		this.buffer.append("new ");
+		if (!node.newArguments().isEmpty()) {
+			this.buffer.append("(");
+			printList(node.newArguments(), ", ", DONT_PRINT_LAST_ONE);
+			this.buffer.append(") ");
+		}
+		node.getType().accept(this);
+		if (!node.constructorArguments().isEmpty()) {
+			this.buffer.append("(");
+			printList(node.constructorArguments(), ", ", DONT_PRINT_LAST_ONE);
+			this.buffer.append(")");
+		}
+		return false;
+	}
+	
+	@Override
 	public boolean visit(NullLiteral node) {
 		this.buffer.append("null");
 		return false;
 	}
 	
 	@Override
-	public boolean visit(SimpleName node) {
-		this.buffer.append(node.getIdentifier());
+	public boolean visit(NumberLiteral node) {
+		this.buffer.append(node.getToken());
+		return false;
+	}
+	
+	@Override
+	public boolean visit(ParenthesizedExpression node) {
+		this.buffer.append("(");
+		node.getExpression().accept(this);
+		this.buffer.append(")");
+		return false;
+	}
+	
+	@Override
+	public boolean visit(PointerType node) {
+		node.getComponentType().accept(this);
+		this.buffer.append("*");
+		return false;
+	}
+	
+	@Override
+	public boolean visit(PostfixExpression node) {
+		node.getExpression().accept(this);
+		this.buffer.append(node.getOperator().toString());
+		return false;
+	}
+	
+	@Override
+	public boolean visit(Pragma node) {
+		this.buffer.append("#\n");
+		return false;
+	}
+	
+	@Override
+	public boolean visit(PragmaDeclaration node) {
+		printPreDDocss(node.preDDocs());
+		printIndent();
+		printModifiers(node.modifiers());
+		this.buffer.append("pragma(");
+		node.getName().accept(this);
+		if (!node.arguments().isEmpty()) {
+			this.buffer.append(", ");
+			printList(node.arguments(), ", ", DONT_PRINT_LAST_ONE);
+		}
+		this.buffer.append(")");
+		if (!node.declarations().isEmpty()) {
+			this.buffer.append(" {\n");
+			this.indent++;
+			printList(node.declarations(), "\n", PRINT_LAST_ONE);
+			this.indent--;
+			this.buffer.append("}");
+		}
+		if (node.getPostDDoc() != null) {
+			this.buffer.append(" ");
+			node.getPostDDoc().accept(this);
+		}
+		return false;
+	}
+	
+	@Override
+	public boolean visit(PragmaStatement node) {
+		printIndent();
+		this.buffer.append("pragma(");
+		node.getName().accept(this);
+		if (!node.arguments().isEmpty()) {
+			this.buffer.append(", ");
+			printList(node.arguments(), ", ", DONT_PRINT_LAST_ONE);
+		}
+		this.buffer.append(")");
+		if (node.getBody() != null) {
+			this.buffer.append(" ");
+			node.getBody().accept(this);
+		} else {
+			this.buffer.append(";");
+		}
+		return false;
+	}
+	
+	@Override
+	public boolean visit(PrefixExpression node) {
+		this.buffer.append(node.getOperator().toString());
+		node.getExpression().accept(this);		
 		return false;
 	}
 	
@@ -853,8 +1252,536 @@ class NaiveASTFlattener extends ASTVisitor {
 	
 	@Override
 	public boolean visit(QualifiedName node) {
-		// TODO Auto-generated method stub
-		return super.visit(node);
+		node.appendName(this.buffer);
+		return false;
+	}
+	
+	@Override
+	public boolean visit(QualifiedType node) {
+		if (node.getQualifier() != null) {
+			node.getQualifier().accept(this);
+		}
+		this.buffer.append(".");
+		node.getType().accept(this);
+		return false;
+	}
+	
+	@Override
+	public boolean visit(ReturnStatement node) {
+		printIndent();
+		this.buffer.append("return");
+		if (node.getExpression() != null) {
+			this.buffer.append(" ");
+			node.getExpression().accept(this);
+		}
+		this.buffer.append(";");
+		return false;
+	}
+	
+	@Override
+	public boolean visit(ScopeStatement node) {
+		printIndent();
+		this.buffer.append("scope(");
+		this.buffer.append(node.getEvent().toString().toLowerCase());
+		this.buffer.append(") ");
+		node.getBody().accept(this);
+		return false;
+	}
+	
+	@Override
+	public boolean visit(ScriptLine node) {
+		this.buffer.append("#!\n");
+		return false;
+	}
+	
+	@Override
+	public boolean visit(SelectiveImport node) {
+		if (node.getAlias() != null) {
+			node.getAlias().accept(this);
+			this.buffer.append(" = ");
+		}
+		node.getName().accept(this);
+		return false;
+	}
+	
+	@Override
+	public boolean visit(SimpleName node) {
+		node.appendName(this.buffer);
+		return false;
+	}
+	
+	@Override
+	public boolean visit(SimpleType node) {
+		node.getName().accept(this);
+		return false;
+	}
+	
+	@Override
+	public boolean visit(SliceExpression node) {
+		node.getExpression().accept(this);
+		this.buffer.append("[");
+		if (node.getFromExpression() != null && node.getToExpression() != null) {
+			node.getFromExpression().accept(this);
+			this.buffer.append(" .. ");
+			node.getToExpression().accept(this);
+		}
+		this.buffer.append("]");
+		return false;
+	}
+	
+	@Override
+	public boolean visit(SliceType node) {
+		node.getComponentType().accept(this);
+		this.buffer.append("[");
+		if (node.getFromExpression() != null && node.getToExpression() != null) {
+			node.getFromExpression().accept(this);
+			this.buffer.append(" .. ");
+			node.getToExpression().accept(this);
+		}
+		this.buffer.append("]");
+		return false;
+	}
+	
+	@Override
+	public boolean visit(StaticArrayType node) {
+		node.getComponentType().accept(this);
+		this.buffer.append("[");
+		node.getSize().accept(this);
+		this.buffer.append("]");
+		return false;
+	}
+	
+	@Override
+	public boolean visit(StaticAssert node) {
+		printPreDDocss(node.preDDocs());
+		printIndent();
+		printModifiers(node.modifiers());
+		this.buffer.append("static assert(");
+		node.getExpression().accept(this);
+		if (node.getMessage() != null) {
+			this.buffer.append(", ");
+			node.getMessage().accept(this);
+		}
+		this.buffer.append(")");
+		if (node.getPostDDoc() != null) {
+			this.buffer.append(" ");
+			node.getPostDDoc().accept(this);
+		}
+		return false;
+	}
+	
+	@Override
+	public boolean visit(StaticAssertStatement node) {
+		printIndent();
+		node.getStaticAssert().accept(this);
+		this.buffer.append(";");
+		return false;
+	}
+	
+	@Override
+	public boolean visit(StaticIfDeclaration node) {
+		printPreDDocss(node.preDDocs());
+		printIndent();
+		printModifiers(node.modifiers());
+		this.buffer.append("static if(");
+		node.getExpression().accept(this);
+		this.buffer.append(") {\n");
+		this.indent++;
+		printList(node.thenDeclarations(), "\n", PRINT_LAST_ONE);
+		this.indent--;
+		this.buffer.append("}");
+		if (!node.elseDeclarations().isEmpty()) {
+			this.buffer.append(" else {\n");
+			this.indent++;
+			printList(node.elseDeclarations(), "\n", PRINT_LAST_ONE);
+			this.indent--;
+			this.buffer.append("}");
+		}
+		if (node.getPostDDoc() != null) {
+			this.buffer.append(" ");
+			node.getPostDDoc().accept(this);
+		}
+		return false;
+	}
+	
+	@Override
+	public boolean visit(StaticIfStatement node) {
+		printIndent();
+		this.buffer.append("static if(");
+		node.getExpression().accept(this);
+		this.buffer.append(") ");
+		node.getThenBody().accept(this);
+		if (node.getElseBody() != null) {
+			this.buffer.append(" else ");
+			node.getElseBody().accept(this);
+		}
+		return false;
 	}
 
+	@Override
+	public boolean visit(StringLiteral node) {
+		this.buffer.append(node.getEscapedValue());
+		return false;
+	}
+	
+	@Override
+	public boolean visit(StringsExpression node) {
+		printList(node.stringLiterals(), " ", DONT_PRINT_LAST_ONE);
+		return false;
+	}
+	
+	@Override
+	public boolean visit(StructInitializer node) {
+		this.buffer.append("{ ");
+		printList(node.fragments(), ", ", PRINT_LAST_ONE);
+		this.buffer.append("}");
+		return false;
+	}
+	
+	@Override
+	public boolean visit(StructInitializerFragment node) {
+		if (node.getName() != null) {
+			node.getName().accept(this);
+			this.buffer.append(": ");
+		}
+		node.getInitializer().accept(this);
+		return false;
+	}
+	
+	@Override
+	public boolean visit(SuperLiteral node) {
+		this.buffer.append("super");
+		return false;
+	}
+	
+	@Override
+	public boolean visit(SwitchStatement node) {
+		printIndent();
+		this.buffer.append("switch(");
+		node.getExpression().accept(this);
+		this.buffer.append(") ");
+		node.getBody().accept(this);
+		return false;
+	}
+	
+	@Override
+	public boolean visit(SynchronizedStatement node) {
+		printIndent();
+		this.buffer.append("synchronized");
+		if (node.getExpression() != null) {
+			this.buffer.append("(");
+			node.getExpression().accept(this);
+			this.buffer.append(")");
+		}
+		this.buffer.append(" ");
+		node.getBody().accept(this);
+		return false;
+	}
+	
+	@Override
+	public boolean visit(TemplateDeclaration node) {
+		printPreDDocss(node.preDDocs());
+		printIndent();
+		printModifiers(node.modifiers());
+		this.buffer.append("template ");
+		node.getName().accept(this);
+		if (!node.templateParameters().isEmpty()) {
+			this.buffer.append("(");
+			printList(node.templateParameters(), ", ", DONT_PRINT_LAST_ONE);
+			this.buffer.append(")");
+		}
+		this.buffer.append(" {\n");
+		this.indent++;
+		printList(node.declarations(), "\n", PRINT_LAST_ONE);
+		this.indent--;
+		this.buffer.append("}");
+		if (node.getPostDDoc() != null) {
+			this.buffer.append(" ");
+			node.getPostDDoc().accept(this);
+		}
+		return false;
+	}
+	
+	@Override
+	public boolean visit(TemplateType node) {
+		node.getName().accept(this);
+		this.buffer.append("!");
+		if (!node.arguments().isEmpty()) {
+			this.buffer.append("(");
+			printList(node.arguments(), ", ", DONT_PRINT_LAST_ONE);
+			this.buffer.append(")");
+		}
+		return false;
+	}
+	
+	@Override
+	public boolean visit(ThisLiteral node) {
+		this.buffer.append("this");
+		return false;
+	}
+	
+	@Override
+	public boolean visit(ThrowStatement node) {
+		printIndent();
+		this.buffer.append("throw ");
+		node.getExpression().accept(this);
+		this.buffer.append(";");
+		return false;
+	}
+	
+	@Override
+	public boolean visit(TryStatement node) {
+		printIndent();
+		this.buffer.append("try ");
+		node.getBody().accept(this);
+		this.buffer.append("\n");
+		printList(node.catchClauses(), "\n", PRINT_LAST_ONE);
+		if (node.getFinally() != null) {
+			this.buffer.append("finally ");
+			node.getFinally().accept(this);
+			this.buffer.append("\n");
+		}
+		return false;
+	}
+	
+	@Override
+	public boolean visit(TupleTemplateParameter node) {
+		node.getName().accept(this);
+		this.buffer.append(" ...");
+		return false;
+	}
+	
+	@Override
+	public boolean visit(TypedefDeclaration node) {
+		printPreDDocss(node.preDDocs());
+		printIndent();
+		printModifiers(node.modifiers());
+		this.buffer.append("typedef ");
+		node.getType().accept(this);
+		this.buffer.append(" ");
+		printList(node.fragments(), ", ", DONT_PRINT_LAST_ONE);
+		this.buffer.append(";");
+		if (node.getPostDDoc() != null) {
+			this.buffer.append(" ");
+			node.getPostDDoc().accept(this);
+		}
+		return false;
+	}
+	
+	@Override
+	public boolean visit(TypedefDeclarationFragment node) {
+		node.getName().accept(this);
+		if (node.getInitializer() != null) {
+			this.buffer.append(" = ");
+			node.getInitializer().accept(this);
+		}
+		return false;
+	}
+	
+	@Override
+	public boolean visit(TypeDotIdentifierExpression node) {
+		node.getType().accept(this);
+		this.buffer.append(".");
+		node.getName().accept(this);
+		return false;
+	}
+	
+	@Override
+	public boolean visit(TypeExpression node) {
+		node.getType().accept(this);
+		return false;
+	}
+	
+	@Override
+	public boolean visit(TypeidExpression node) {
+		this.buffer.append("typeid(");
+		node.getType().accept(this);
+		this.buffer.append(")");
+		return false;
+	}
+	
+	@Override
+	public boolean visit(TypeofType node) {
+		this.buffer.append("typeof(");
+		node.getExpression().accept(this);
+		this.buffer.append(")");
+		return false;
+	}
+	
+	@Override
+	public boolean visit(TypeTemplateParameter node) {
+		node.getName().accept(this);
+		if (node.getSpecificType() != null) {
+			this.buffer.append(" : ");
+			node.getSpecificType().accept(this);
+		}
+		if (node.getDefaultType() != null) {
+			this.buffer.append(" = ");
+			node.getDefaultType().accept(this);
+		}
+		return false;
+	}
+	
+	@Override
+	public boolean visit(UnitTestDeclaration node) {
+		printPreDDocss(node.preDDocs());
+		printIndent();
+		printModifiers(node.modifiers());
+		this.buffer.append("unittest ");
+		node.getBody().accept(this);
+		this.buffer.append("\n");
+		if (node.getPostDDoc() != null) {
+			this.buffer.append(" ");
+			node.getPostDDoc().accept(this);
+		}
+		return false;
+	}
+	
+	@Override
+	public boolean visit(ValueTemplateParameter node) {
+		node.getName().accept(this);
+		if (node.getSpecificValue() != null) {
+			this.buffer.append(" : ");
+			node.getSpecificValue().accept(this);
+		}
+		if (node.getDefaultValue() != null) {
+			this.buffer.append(" = ");
+			node.getDefaultValue().accept(this);
+		}
+		return false;
+	}
+	
+	@Override
+	public boolean visit(VariableDeclaration node) {
+		printPreDDocss(node.preDDocs());
+		printIndent();
+		printModifiers(node.modifiers());
+		if (node.getType() != null) {
+			node.getType().accept(this);
+			this.buffer.append(" ");
+		}
+		printList(node.fragments(), ", ", DONT_PRINT_LAST_ONE);
+		this.buffer.append(";");
+		if (node.getPostDDoc() != null) {
+			this.buffer.append(" ");
+			node.getPostDDoc().accept(this);
+		}
+		return false;
+	}
+	
+	@Override
+	public boolean visit(VariableDeclarationFragment node) {
+		node.getName().accept(this);
+		if (node.getInitializer() != null) {
+			this.buffer.append(" = ");
+			node.getInitializer().accept(this);
+		}
+		return false;
+	}
+	
+	@Override
+	public boolean visit(Version node) {
+		this.buffer.append(node.getValue());
+		return false;
+	}
+	
+	@Override
+	public boolean visit(VersionAssignment node) {
+		printPreDDocss(node.preDDocs());
+		printIndent();
+		printModifiers(node.modifiers());
+		this.buffer.append("version = ");
+		node.getVersion().accept(this);
+		this.buffer.append(";");
+		if (node.getPostDDoc() != null) {
+			this.buffer.append(" ");
+			node.getPostDDoc().accept(this);
+		}
+		return false;
+	}
+	
+	@Override
+	public boolean visit(VersionDeclaration node) {
+		printPreDDocss(node.preDDocs());
+		printIndent();
+		printModifiers(node.modifiers());
+		this.buffer.append("version");
+		if (node.getVersion() != null) {
+			this.buffer.append("(");
+			node.getVersion().accept(this);
+			this.buffer.append(")");
+		}
+		this.buffer.append(" {\n");
+		this.indent++;
+		printList(node.thenDeclarations(), "\n", PRINT_LAST_ONE);
+		this.indent--;
+		this.buffer.append("}");
+		if (!node.elseDeclarations().isEmpty()) {
+			this.buffer.append(" else {\n");
+			this.indent++;
+			printList(node.elseDeclarations(), "\n", PRINT_LAST_ONE);
+			this.indent--;
+			this.buffer.append("}");
+		}
+		if (node.getPostDDoc() != null) {
+			this.buffer.append(" ");
+			node.getPostDDoc().accept(this);
+		}
+		return false;
+	}
+	
+	@Override
+	public boolean visit(VersionStatement node) {
+		printIndent();
+		this.buffer.append("version");
+		if (node.getVersion() != null) {
+			this.buffer.append("(");
+			node.getVersion().accept(this);
+			this.buffer.append(")");
+		}
+		this.buffer.append(" ");
+		node.getThenBody().accept(this);
+		if (node.getElseBody() != null) {
+			this.buffer.append(" else ");
+			node.getElseBody().accept(this);
+		}
+		return false;
+	}
+	
+	@Override
+	public boolean visit(VoidInitializer node) {
+		this.buffer.append("void");
+		return false;
+	}
+	
+	@Override
+	public boolean visit(VolatileStatement node) {
+		printIndent();
+		this.buffer.append("volatile ");
+		node.getBody().accept(this);
+		return false;
+	}
+	
+	@Override
+	public boolean visit(WhileStatement node) {
+		printIndent();
+		this.buffer.append("while(");
+		node.getExpression().accept(this);
+		this.buffer.append(") ");
+		node.getBody().accept(this);
+		this.buffer.append("\n");
+		return false;
+	}
+	
+	@Override
+	public boolean visit(WithStatement node) {
+		printIndent();
+		this.buffer.append("with(");
+		node.getExpression().accept(this);
+		this.buffer.append(") ");
+		node.getBody().accept(this);
+		this.buffer.append("\n");
+		return false;
+	}
+	
 }

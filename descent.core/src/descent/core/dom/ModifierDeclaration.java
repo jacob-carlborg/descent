@@ -114,7 +114,7 @@ public class ModifierDeclaration extends Declaration {
 	/**
 	 * The syntax.
 	 */
-	private Syntax syntax;
+	private Syntax syntax = Syntax.CURLY_BRACES;
 
 	/**
 	 * The modifier.
