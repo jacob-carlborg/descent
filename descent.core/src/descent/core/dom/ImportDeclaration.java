@@ -134,7 +134,7 @@ public class ImportDeclaration extends Declaration {
 			if (get) {
 				return getPostDDoc();
 			} else {
-				setPostDDoc((Comment) child);
+				setPostDDoc((DDocComment) child);
 				return null;
 			}
 		}
@@ -191,7 +191,7 @@ public class ImportDeclaration extends Declaration {
 		result.modifiers.addAll(ASTNode.copySubtrees(target, modifiers()));
 		result.setStatic(isStatic());
 		result.imports.addAll(ASTNode.copySubtrees(target, imports()));
-	result.setPostDDoc((Comment) ASTNode.copySubtree(target, getPostDDoc()));
+	result.setPostDDoc((DDocComment) ASTNode.copySubtree(target, getPostDDoc()));
 		return result;
 	}
 

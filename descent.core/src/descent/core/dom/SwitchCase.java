@@ -5,25 +5,26 @@ import java.util.List;
 
 
 /**
- * A statement that is labeled.
+ * Switch case statement AST node type.
+ *
  * <pre>
- * LabelStatement:
- *    SimpleName <b>:</b> Statement
+ * SwitchCase:
+ *    <b>case</b> Expression <b>:</b> Statement
  * </pre>
  */
-public class LabelStatement extends Statement {
-	
+public class SwitchCase extends Statement {
+
 	/**
-	 * The "label" structural property of this node type.
+	 * The "expression" structural property of this node type.
 	 */
-	public static final ChildPropertyDescriptor LABEL_PROPERTY =
-		new ChildPropertyDescriptor(LabelStatement.class, "label", SimpleName.class, MANDATORY, CYCLE_RISK); //$NON-NLS-1$
+	public static final ChildPropertyDescriptor EXPRESSION_PROPERTY =
+		new ChildPropertyDescriptor(SwitchCase.class, "expression", Expression.class, MANDATORY, CYCLE_RISK); //$NON-NLS-1$
 
 	/**
 	 * The "body" structural property of this node type.
 	 */
 	public static final ChildPropertyDescriptor BODY_PROPERTY =
-		new ChildPropertyDescriptor(LabelStatement.class, "body", Statement.class, MANDATORY, CYCLE_RISK); //$NON-NLS-1$
+		new ChildPropertyDescriptor(SwitchCase.class, "body", Statement.class, MANDATORY, CYCLE_RISK); //$NON-NLS-1$
 
 	/**
 	 * A list of property descriptors (element type: 
@@ -34,8 +35,8 @@ public class LabelStatement extends Statement {
 
 	static {
 		List properyList = new ArrayList(2);
-		createPropertyList(LabelStatement.class, properyList);
-		addProperty(LABEL_PROPERTY, properyList);
+		createPropertyList(SwitchCase.class, properyList);
+		addProperty(EXPRESSION_PROPERTY, properyList);
 		addProperty(BODY_PROPERTY, properyList);
 		PROPERTY_DESCRIPTORS = reapPropertyList(properyList);
 	}
@@ -56,9 +57,9 @@ public class LabelStatement extends Statement {
 	}
 
 	/**
-	 * The label.
+	 * The expression.
 	 */
-	private SimpleName label;
+	private Expression expression;
 
 	/**
 	 * The body.
@@ -67,7 +68,7 @@ public class LabelStatement extends Statement {
 
 
 	/**
-	 * Creates a new unparented label statement node owned by the given 
+	 * Creates a new unparented case statement node owned by the given 
 	 * AST.
 	 * <p>
 	 * N.B. This constructor is package-private.
@@ -75,9 +76,9 @@ public class LabelStatement extends Statement {
 	 * 
 	 * @param ast the AST that is to own this node
 	 */
-	LabelStatement(AST ast) {
+	SwitchCase(AST ast) {
 		super(ast);
-	}	
+	}
 
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
@@ -90,11 +91,11 @@ public class LabelStatement extends Statement {
 	 * Method declared on ASTNode.
 	 */
 	final ASTNode internalGetSetChildProperty(ChildPropertyDescriptor property, boolean get, ASTNode child) {
-		if (property == LABEL_PROPERTY) {
+		if (property == EXPRESSION_PROPERTY) {
 			if (get) {
-				return getLabel();
+				return getExpression();
 			} else {
-				setLabel((SimpleName) child);
+				setExpression((Expression) child);
 				return null;
 			}
 		}
@@ -114,16 +115,16 @@ public class LabelStatement extends Statement {
 	 * Method declared on ASTNode.
 	 */
 	final int getNodeType0() {
-		return LABEL_STATEMENT;
+		return SWITCH_CASE;
 	}
 
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
 	 */
 	ASTNode clone0(AST target) {
-		LabelStatement result = new LabelStatement(target);
+		SwitchCase result = new SwitchCase(target);
 		result.setSourceRange(this.getStartPosition(), this.getLength());
-		result.setLabel((SimpleName) getLabel().clone(target));
+		result.setExpression((Expression) getExpression().clone(target));
 		result.setBody((Statement) getBody().clone(target));
 		return result;
 	}
@@ -143,35 +144,35 @@ public class LabelStatement extends Statement {
 		boolean visitChildren = visitor.visit(this);
 		if (visitChildren) {
 			// visit children in normal left to right reading order
-			acceptChild(visitor, getLabel());
+			acceptChild(visitor, getExpression());
 			acceptChild(visitor, getBody());
 		}
 		visitor.endVisit(this);
 	}
 
 	/**
-	 * Returns the label of this label statement.
+	 * Returns the expression of this case statement.
 	 * 
-	 * @return the label
+	 * @return the expression
 	 */ 
-	public SimpleName getLabel() {
-		if (this.label == null) {
+	public Expression getExpression() {
+		if (this.expression == null) {
 			// lazy init must be thread-safe for readers
 			synchronized (this) {
-				if (this.label == null) {
+				if (this.expression == null) {
 					preLazyInit();
-					this.label = new SimpleName(this.ast);
-					postLazyInit(this.label, LABEL_PROPERTY);
+					this.expression = new SimpleName(this.ast);
+					postLazyInit(this.expression, EXPRESSION_PROPERTY);
 				}
 			}
 		}
-		return this.label;
+		return this.expression;
 	}
 
 	/**
-	 * Sets the label of this label statement.
+	 * Sets the expression of this case statement.
 	 * 
-	 * @param label the label
+	 * @param expression the expression
 	 * @exception IllegalArgumentException if:
 	 * <ul>
 	 * <li>the node belongs to a different AST</li>
@@ -179,18 +180,18 @@ public class LabelStatement extends Statement {
 	 * <li>a cycle in would be created</li>
 	 * </ul>
 	 */ 
-	public void setLabel(SimpleName label) {
-		if (label == null) {
+	public void setExpression(Expression expression) {
+		if (expression == null) {
 			throw new IllegalArgumentException();
 		}
-		ASTNode oldChild = this.label;
-		preReplaceChild(oldChild, label, LABEL_PROPERTY);
-		this.label = label;
-		postReplaceChild(oldChild, label, LABEL_PROPERTY);
+		ASTNode oldChild = this.expression;
+		preReplaceChild(oldChild, expression, EXPRESSION_PROPERTY);
+		this.expression = expression;
+		postReplaceChild(oldChild, expression, EXPRESSION_PROPERTY);
 	}
 
 	/**
-	 * Returns the body of this label statement.
+	 * Returns the body of this case statement.
 	 * 
 	 * @return the body
 	 */ 
@@ -209,7 +210,7 @@ public class LabelStatement extends Statement {
 	}
 
 	/**
-	 * Sets the body of this label statement.
+	 * Sets the body of this case statement.
 	 * 
 	 * @param body the body
 	 * @exception IllegalArgumentException if:
@@ -242,7 +243,7 @@ public class LabelStatement extends Statement {
 	int treeSize() {
 		return
 			memSize()
-			+ (this.label == null ? 0 : getLabel().treeSize())
+			+ (this.expression == null ? 0 : getExpression().treeSize())
 			+ (this.body == null ? 0 : getBody().treeSize())
 	;
 	}

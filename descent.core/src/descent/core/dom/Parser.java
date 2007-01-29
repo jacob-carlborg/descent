@@ -144,29 +144,40 @@ class Parser extends Lexer {
 			  tok == TOK.TOKblockcomment || tok == TOK.TOKdocblockcomment ||
 			  tok == TOK.TOKpluscomment || tok == TOK.TOKdocpluscomment) {
 			
-			Comment comment = new Comment(ast);
-			comment.setSourceRange(token.ptr, token.len);
+			Comment comment;
 			switch(tok) {
 			case TOKlinecomment:
-				comment.setKind(Comment.Kind.LINE_COMMENT);
-				break;
-			case TOKdoclinecomment:
-				comment.setKind(Comment.Kind.DOC_LINE_COMMENT);
+				comment = new CodeComment(ast);
+				comment.setKind(CodeComment.Kind.LINE_COMMENT);
 				break;
 			case TOKblockcomment:
-				comment.setKind(Comment.Kind.BLOCK_COMMENT);
-				break;
-			case TOKdocblockcomment:
-				comment.setKind(Comment.Kind.DOC_BLOCK_COMMENT);
+				comment = new CodeComment(ast);
+				comment.setKind(CodeComment.Kind.BLOCK_COMMENT);
 				break;
 			case TOKpluscomment:
-				comment.setKind(Comment.Kind.PLUS_COMMENT);
+				comment = new CodeComment(ast);
+				comment.setKind(CodeComment.Kind.PLUS_COMMENT);
+				break;
+			case TOKdoclinecomment:
+				comment = new DDocComment(ast);
+				comment.setKind(CodeComment.Kind.LINE_COMMENT);
+				break;
+			case TOKdocblockcomment:
+				comment = new DDocComment(ast);
+				comment.setKind(CodeComment.Kind.BLOCK_COMMENT);
 				break;
 			case TOKdocpluscomment:
-				comment.setKind(Comment.Kind.DOC_PLUS_COMMENT);
+				comment = new DDocComment(ast);
+				comment.setKind(CodeComment.Kind.PLUS_COMMENT);
 				break;
 			default:
 				throw new IllegalStateException("Can't happen");
+			}
+			
+			comment.setSourceRange(token.ptr, token.len);
+			if (comment.isDDocComment()) {
+				DDocComment ddocComment = (DDocComment) comment;
+				ddocComment.setText(token.string);
 			}
 			
 			comments.add(comment);
@@ -178,9 +189,9 @@ class Parser extends Lexer {
 		while(tok == TOK.TOKPRAGMA) {
 			if (token.ptr == 0 && token.string.length() > 1 && token.string.charAt(1) == '!') {
 				// Script line
-				ScriptLine scriptLine = new ScriptLine(ast);
-				scriptLine.setSourceRange(0, token.len);
-				compilationUnit.setScriptLine(scriptLine);
+				Pragma pragma = new Pragma(ast);
+				pragma.setSourceRange(0, token.len);
+				pragmas.add(pragma);
 			} else {
 				Pragma pragma = new Pragma(ast);
 				pragma.setSourceRange(token.ptr, token.len);
@@ -232,15 +243,15 @@ class Parser extends Lexer {
 	}
 	
 	private void attachCommentToCurrentToken(Comment comment) {
-		if (!appendLeadingComments || !comment.isDocComment()) return;
+		if (!appendLeadingComments || !comment.isDDocComment()) return;
 		
-		prevToken.leadingComment = comment;
+		prevToken.leadingComment = (DDocComment) comment;
 	}
 	
 	@SuppressWarnings("unchecked")
 	public List<Declaration> parseModule() {
 	    List<Declaration> decldefs = new ArrayList<Declaration>();
-	    List<Comment> moduleDocComments = getLastDocComments();
+	    List<DDocComment> moduleDocComments = getLastDocComments();
 
 		// ModuleDeclation leads off
 		if (token.value == TOKmodule) {
@@ -318,7 +329,7 @@ class Parser extends Lexer {
 		
 		decldefs = new ArrayList<Declaration>();
 		do {
-			List<Comment> lastComments = getLastDocComments();
+			List<DDocComment> lastComments = getLastDocComments();
 			
 			int start = token.ptr;
 			switch (token.value) {
@@ -2259,7 +2270,7 @@ class Parser extends Lexer {
 		TOK tok;
 		LINK link = linkage;
 		
-		List<Comment> lastComments = getLastDocComments();
+		List<DDocComment> lastComments = getLastDocComments();
 		List<Modifier> modifiers = new ArrayList<Modifier>();
 		
 		Token firstToken = new Token(token);
@@ -5637,14 +5648,14 @@ class Parser extends Lexer {
 	
 	private PostfixExpression newPostfixExpression(Expression expression, PostfixExpression.Operator operator) {
 		PostfixExpression postfixExpression = new PostfixExpression(ast);
-		postfixExpression.setExpression(expression);
+		postfixExpression.setOperand(expression);
 		postfixExpression.setOperator(operator);
 		return postfixExpression;
 	}
 	
 	private PrefixExpression newPrefixExpression(Expression expression, PrefixExpression.Operator operator) {
 		PrefixExpression prefixExpression = new PrefixExpression(ast);
-		prefixExpression.setExpression(expression);
+		prefixExpression.setOperand(expression);
 		prefixExpression.setOperator(operator);
 		return prefixExpression;
 	}
@@ -6017,8 +6028,8 @@ class Parser extends Lexer {
 		return breakStatement;
 	}
 	
-	private CaseStatement newCaseStatement(Expression expression, Statement body) {
-		CaseStatement caseStatement = new CaseStatement(ast);
+	private SwitchCase newCaseStatement(Expression expression, Statement body) {
+		SwitchCase caseStatement = new SwitchCase(ast);
 		caseStatement.setExpression(expression);
 		caseStatement.setBody(body);
 		return caseStatement;
@@ -6311,8 +6322,8 @@ class Parser extends Lexer {
 		return exp;
 	}
 	
-	private LabelStatement newLabelStatement(Identifier ident, Statement body) {
-		LabelStatement labelStatement = new LabelStatement(ast);
+	private LabeledStatement newLabelStatement(Identifier ident, Statement body) {
+		LabeledStatement labelStatement = new LabeledStatement(ast);
 		labelStatement.setLabel(newSimpleNameForIdentifier(ident));
 		labelStatement.setBody(body);
 		labelStatement.setSourceRange(ident.startPosition, body.getStartPosition() + body.getLength() - ident.startPosition);
@@ -6718,12 +6729,12 @@ class Parser extends Lexer {
 		return asmStatement;
 	}
 	
-	private List<Comment> getLastDocComments() {
-		List<Comment> toReturn = new ArrayList<Comment>();
+	private List<DDocComment> getLastDocComments() {
+		List<DDocComment> toReturn = new ArrayList<DDocComment>();
 		for(int i = comments.size() - 1; i >= lastDocCommentRead; i--) {
 			Comment comment = comments.get(i);
-			if (comment.isDocComment()) {
-				toReturn.add(comment);
+			if (comment.isDDocComment()) {
+				toReturn.add((DDocComment) comment);
 			} else {
 				break;
 			}
@@ -6763,7 +6774,7 @@ class Parser extends Lexer {
 		return Character.toUpperCase(s.charAt(0)) + s.substring(1);
 	}
 	
-	private void adjustPossitionAccordingToComments(ASTNode node, List<Comment> preDDocs, Comment postDDoc) {
+	private void adjustPossitionAccordingToComments(ASTNode node, List<DDocComment> preDDocs, DDocComment postDDoc) {
 		if (preDDocs.isEmpty() && postDDoc == null) {
 			return;
 		}

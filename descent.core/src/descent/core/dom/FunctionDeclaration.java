@@ -322,7 +322,7 @@ public class FunctionDeclaration extends Declaration {
 			if (get) {
 				return getPostDDoc();
 			} else {
-				setPostDDoc((Comment) child);
+				setPostDDoc((DDocComment) child);
 				return null;
 			}
 		}
@@ -390,7 +390,7 @@ public class FunctionDeclaration extends Declaration {
 	result.setPostcondition((Statement) ASTNode.copySubtree(target, getPostcondition()));
 	result.setPostconditionVariableName((SimpleName) ASTNode.copySubtree(target, getPostconditionVariableName()));
 		result.setBody((Statement) getBody().clone(target));
-	result.setPostDDoc((Comment) ASTNode.copySubtree(target, getPostDDoc()));
+	result.setPostDDoc((DDocComment) ASTNode.copySubtree(target, getPostDDoc()));
 		return result;
 	}
 

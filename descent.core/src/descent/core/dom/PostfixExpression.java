@@ -65,10 +65,10 @@ public class PostfixExpression extends Expression {
 		new SimplePropertyDescriptor(PostfixExpression.class, "operator", Operator.class, OPTIONAL); //$NON-NLS-1$
 
 	/**
-	 * The "expression" structural property of this node type.
+	 * The "operand" structural property of this node type.
 	 */
-	public static final ChildPropertyDescriptor EXPRESSION_PROPERTY =
-		new ChildPropertyDescriptor(PostfixExpression.class, "expression", Expression.class, MANDATORY, CYCLE_RISK); //$NON-NLS-1$
+	public static final ChildPropertyDescriptor OPERAND_PROPERTY =
+		new ChildPropertyDescriptor(PostfixExpression.class, "operand", Expression.class, MANDATORY, CYCLE_RISK); //$NON-NLS-1$
 
 	/**
 	 * A list of property descriptors (element type: 
@@ -81,7 +81,7 @@ public class PostfixExpression extends Expression {
 		List properyList = new ArrayList(2);
 		createPropertyList(PostfixExpression.class, properyList);
 		addProperty(OPERATOR_PROPERTY, properyList);
-		addProperty(EXPRESSION_PROPERTY, properyList);
+		addProperty(OPERAND_PROPERTY, properyList);
 		PROPERTY_DESCRIPTORS = reapPropertyList(properyList);
 	}
 
@@ -106,9 +106,9 @@ public class PostfixExpression extends Expression {
 	private Operator operator;
 
 	/**
-	 * The expression.
+	 * The operand.
 	 */
-	private Expression expression;
+	private Expression operand;
 
 
 	/**
@@ -151,11 +151,11 @@ public class PostfixExpression extends Expression {
 	 * Method declared on ASTNode.
 	 */
 	final ASTNode internalGetSetChildProperty(ChildPropertyDescriptor property, boolean get, ASTNode child) {
-		if (property == EXPRESSION_PROPERTY) {
+		if (property == OPERAND_PROPERTY) {
 			if (get) {
-				return getExpression();
+				return getOperand();
 			} else {
-				setExpression((Expression) child);
+				setOperand((Expression) child);
 				return null;
 			}
 		}
@@ -177,7 +177,7 @@ public class PostfixExpression extends Expression {
 		PostfixExpression result = new PostfixExpression(target);
 		result.setSourceRange(this.getStartPosition(), this.getLength());
 		result.setOperator(getOperator());
-		result.setExpression((Expression) getExpression().clone(target));
+		result.setOperand((Expression) getOperand().clone(target));
 		return result;
 	}
 
@@ -196,7 +196,7 @@ public class PostfixExpression extends Expression {
 		boolean visitChildren = visitor.visit(this);
 		if (visitChildren) {
 			// visit children in normal left to right reading order
-			acceptChild(visitor, getExpression());
+			acceptChild(visitor, getOperand());
 		}
 		visitor.endVisit(this);
 	}
@@ -226,28 +226,28 @@ public class PostfixExpression extends Expression {
 	}
 
 	/**
-	 * Returns the expression of this postfix expression.
+	 * Returns the operand of this postfix expression.
 	 * 
-	 * @return the expression
+	 * @return the operand
 	 */ 
-	public Expression getExpression() {
-		if (this.expression == null) {
+	public Expression getOperand() {
+		if (this.operand == null) {
 			// lazy init must be thread-safe for readers
 			synchronized (this) {
-				if (this.expression == null) {
+				if (this.operand == null) {
 					preLazyInit();
-					this.expression = new SimpleName(this.ast);
-					postLazyInit(this.expression, EXPRESSION_PROPERTY);
+					this.operand = new SimpleName(this.ast);
+					postLazyInit(this.operand, OPERAND_PROPERTY);
 				}
 			}
 		}
-		return this.expression;
+		return this.operand;
 	}
 
 	/**
-	 * Sets the expression of this postfix expression.
+	 * Sets the operand of this postfix expression.
 	 * 
-	 * @param expression the expression
+	 * @param operand the operand
 	 * @exception IllegalArgumentException if:
 	 * <ul>
 	 * <li>the node belongs to a different AST</li>
@@ -255,14 +255,14 @@ public class PostfixExpression extends Expression {
 	 * <li>a cycle in would be created</li>
 	 * </ul>
 	 */ 
-	public void setExpression(Expression expression) {
-		if (expression == null) {
+	public void setOperand(Expression operand) {
+		if (operand == null) {
 			throw new IllegalArgumentException();
 		}
-		ASTNode oldChild = this.expression;
-		preReplaceChild(oldChild, expression, EXPRESSION_PROPERTY);
-		this.expression = expression;
-		postReplaceChild(oldChild, expression, EXPRESSION_PROPERTY);
+		ASTNode oldChild = this.operand;
+		preReplaceChild(oldChild, operand, OPERAND_PROPERTY);
+		this.operand = operand;
+		postReplaceChild(oldChild, operand, OPERAND_PROPERTY);
 	}
 
 	/* (omit javadoc for this method)
@@ -278,7 +278,7 @@ public class PostfixExpression extends Expression {
 	int treeSize() {
 		return
 			memSize()
-			+ (this.expression == null ? 0 : getExpression().treeSize())
+			+ (this.operand == null ? 0 : getOperand().treeSize())
 	;
 	}
 

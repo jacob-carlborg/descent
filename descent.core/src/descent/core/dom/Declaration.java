@@ -49,7 +49,7 @@ public abstract class Declaration extends ASTNode {
 	/**
 	 * The leading documentation comment.
 	 */
-	Comment postDDoc;
+	DDocComment postDDoc;
 	
 	/**
 	 * Returns structural property descriptor for the "modifiers" property
@@ -122,7 +122,7 @@ public abstract class Declaration extends ASTNode {
 	 * @return the property descriptor
 	 */
 	static final ChildListPropertyDescriptor internalPreDDocsPropertyFactory(Class nodeClass) {
-		return new ChildListPropertyDescriptor(nodeClass, "preDDocs", Comment.class, NO_CYCLE_RISK); //$NON-NLS-1$
+		return new ChildListPropertyDescriptor(nodeClass, "preDDocs", DDocComment.class, NO_CYCLE_RISK); //$NON-NLS-1$
 	}
 	
 	/**
@@ -132,7 +132,7 @@ public abstract class Declaration extends ASTNode {
 	 * @return the property descriptor
 	 */
 	static final ChildPropertyDescriptor internalPostDDocPropertyFactory(Class nodeClass) {
-		return new ChildPropertyDescriptor(nodeClass, "postDDoc", Comment.class, OPTIONAL, NO_CYCLE_RISK); //$NON-NLS-1$
+		return new ChildPropertyDescriptor(nodeClass, "postDDoc", DDocComment.class, OPTIONAL, NO_CYCLE_RISK); //$NON-NLS-1$
 	}
 	
 	/**
@@ -167,7 +167,7 @@ public abstract class Declaration extends ASTNode {
 	 * @return the live list of alias declaration
 	 *    (element type: <code>Comment</code>)
 	 */ 
-	public final List<Comment> preDDocs() {
+	public final List<DDocComment> preDDocs() {
 		return this.preDDocs;
 	}
 	
@@ -176,7 +176,7 @@ public abstract class Declaration extends ASTNode {
 	 * 
 	 * @return the post ddoc
 	 */ 
-	public Comment getPostDDoc() {
+	public DDocComment getPostDDoc() {
 		return this.postDDoc;
 	}
 
@@ -191,7 +191,7 @@ public abstract class Declaration extends ASTNode {
 	 * <li>a cycle in would be created</li>
 	 * </ul>
 	 */ 
-	public void setPostDDoc(Comment postDDoc) {
+	public void setPostDDoc(DDocComment postDDoc) {
 		ASTNode oldChild = this.postDDoc;
 		
 		ChildPropertyDescriptor p = internalPostDDocProperty();

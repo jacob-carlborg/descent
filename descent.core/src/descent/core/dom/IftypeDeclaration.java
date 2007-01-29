@@ -206,7 +206,7 @@ public class IftypeDeclaration extends ConditionalDeclaration {
 			if (get) {
 				return getPostDDoc();
 			} else {
-				setPostDDoc((Comment) child);
+				setPostDDoc((DDocComment) child);
 				return null;
 			}
 		}
@@ -280,7 +280,7 @@ public class IftypeDeclaration extends ConditionalDeclaration {
 	result.setMatchingType((Type) ASTNode.copySubtree(target, getMatchingType()));
 		result.thenDeclarations.addAll(ASTNode.copySubtrees(target, thenDeclarations()));
 		result.elseDeclarations.addAll(ASTNode.copySubtrees(target, elseDeclarations()));
-	result.setPostDDoc((Comment) ASTNode.copySubtree(target, getPostDDoc()));
+	result.setPostDDoc((DDocComment) ASTNode.copySubtree(target, getPostDDoc()));
 		return result;
 	}
 

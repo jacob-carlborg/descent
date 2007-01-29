@@ -40,6 +40,12 @@ public class PublicScanner implements IScanner {
 	public int getCurrentTokenStartPosition() {
 		return lexer.token.ptr;
 	}
+	
+	// This method is here to make DefaultCommentMapper look much more like
+	// the original one
+	public int getCurrentPosition() {
+		return getCurrentTokenEndPosition() + 1;
+	}
 
 	public int getLineEnd(int lineNumber) {
 		if (lineNumber <= 0) {

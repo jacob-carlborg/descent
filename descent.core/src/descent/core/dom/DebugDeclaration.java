@@ -126,7 +126,7 @@ public class DebugDeclaration extends ConditionalDeclaration {
 			if (get) {
 				return getPostDDoc();
 			} else {
-				setPostDDoc((Comment) child);
+				setPostDDoc((DDocComment) child);
 				return null;
 			}
 		}
@@ -197,7 +197,7 @@ public class DebugDeclaration extends ConditionalDeclaration {
 	result.setVersion((Version) ASTNode.copySubtree(target, getVersion()));
 		result.thenDeclarations.addAll(ASTNode.copySubtrees(target, thenDeclarations()));
 		result.elseDeclarations.addAll(ASTNode.copySubtrees(target, elseDeclarations()));
-	result.setPostDDoc((Comment) ASTNode.copySubtree(target, getPostDDoc()));
+	result.setPostDDoc((DDocComment) ASTNode.copySubtree(target, getPostDDoc()));
 		return result;
 	}
 

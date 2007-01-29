@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import descent.core.IJavaElement;
 import descent.core.compiler.IProblem;
 
 /**
@@ -12,18 +13,11 @@ import descent.core.compiler.IProblem;
  * 
  * <pre>
  * CompilationUnit:
- *    [ ScriptLine ]
  *    [ ModuleDeclaration ]
  *    { Declaration }
  * </pre>
  */
 public class CompilationUnit extends ASTNode {
-	
-	/**
-	 * The "scriptLine" structural property of this node type.
-	 */
-	public static final ChildPropertyDescriptor SCRIPT_LINE_PROPERTY =
-		new ChildPropertyDescriptor(CompilationUnit.class, "scriptLine", ScriptLine.class, OPTIONAL, NO_CYCLE_RISK); //$NON-NLS-1$
 	
 	/**
 	 * The "moduleDeclaration" structural property of this node type.
@@ -47,7 +41,6 @@ public class CompilationUnit extends ASTNode {
 	static {
 		List properyList = new ArrayList(2);
 		createPropertyList(CompilationUnit.class, properyList);
-		addProperty(SCRIPT_LINE_PROPERTY, properyList);
 		addProperty(MODULE_DECLARATION_PROPERTY, properyList);
 		addProperty(DECLARATIONS_PROPERTY, properyList);
 		PROPERTY_DESCRIPTORS = reapPropertyList(properyList);
@@ -76,9 +69,11 @@ public class CompilationUnit extends ASTNode {
 	private DefaultCommentMapper commentMapper = null;
 	
 	/**
-	 * The scriptLine.
+	 * The Java element (an <code>descent.core.ICompilationUnit</code>) 
+	 * this compilation unit was created from, or <code>null</code> if it was not created from a Java element.
+	 * @since 3.1
 	 */
-	private ScriptLine scriptLine;
+	private IJavaElement element = null;
 
 	/**
 	 * The moduleDeclaration.
@@ -203,14 +198,6 @@ public class CompilationUnit extends ASTNode {
 	 * Method declared on ASTNode.
 	 */
 	final ASTNode internalGetSetChildProperty(ChildPropertyDescriptor property, boolean get, ASTNode child) {
-		if (property == SCRIPT_LINE_PROPERTY) {
-			if (get) {
-				return getScriptLine();
-			} else {
-				setScriptLine((ScriptLine) child);
-				return null;
-			}
-		}
 		if (property == MODULE_DECLARATION_PROPERTY) {
 			if (get) {
 				return getModuleDeclaration();
@@ -247,7 +234,6 @@ public class CompilationUnit extends ASTNode {
 	ASTNode clone0(AST target) {
 		CompilationUnit result = new CompilationUnit(target);
 		result.setSourceRange(this.getStartPosition(), this.getLength());
-		result.setScriptLine((ScriptLine) ASTNode.copySubtree(target, getScriptLine()));
 		result.setModuleDeclaration((ModuleDeclaration) ASTNode.copySubtree(target, getModuleDeclaration()));
 		result.declarations.addAll(ASTNode.copySubtrees(target, declarations()));
 		return result;
@@ -584,6 +570,28 @@ public class CompilationUnit extends ASTNode {
 	}
 	
 	/**
+	 * Sets the Java element (an <code>org.eclipse.jdt.core.ICompilationUnit</code> or an <code>org.eclipse.jdt.core.IClassFile</code>) 
+	 * this compilation unit was created from, or <code>null</code> if it was not created from a Java element.
+	 * 
+	 * @param element the Java element this compilation unit was created from
+	 * @since 3.1
+	 */
+	void setJavaElement(IJavaElement element) {
+		this.element = element;
+	}
+	
+	/**
+	 * The Java element (an <code>org.eclipse.jdt.core.ICompilationUnit</code> or an <code>org.eclipse.jdt.core.IClassFile</code>) 
+	 * this compilation unit was created from, or <code>null</code> if it was not created from a Java element.
+	 * 
+	 * @return the Java element this compilation unit was created from, or <code>null</code> if none
+	 * @since 3.1
+	 */
+	public IJavaElement getJavaElement() {
+		return this.element;
+	}
+	
+	/**
 	 * Returns the extended source length of the given node. Unlike
 	 * {@link ASTNode#getStartPosition()} and {@link ASTNode#getLength()},
 	 * the extended source range may include comments and whitespace
@@ -646,40 +654,12 @@ public class CompilationUnit extends ASTNode {
 		boolean visitChildren = visitor.visit(this);
 		if (visitChildren) {
 			// visit children in normal left to right reading order
-			acceptChild(visitor, getScriptLine());
 			acceptChild(visitor, getModuleDeclaration());
 			acceptChildren(visitor, declarations);
 		}
 		visitor.endVisit(this);
 	}
 	
-	/**
-	 * Returns the script line of this compilation unit.
-	 * 
-	 * @return the script line
-	 */ 
-	public ScriptLine getScriptLine() {
-		return this.scriptLine;
-	}
-
-	/**
-	 * Sets the script line of this compilation unit.
-	 * 
-	 * @param scriptLine the script line
-	 * @exception IllegalArgumentException if:
-	 * <ul>
-	 * <li>the node belongs to a different AST</li>
-	 * <li>the node already has a parent</li>
-	 * <li>a cycle in would be created</li>
-	 * </ul>
-	 */ 
-	public void setScriptLine(ScriptLine scriptLine) {
-		ASTNode oldChild = this.scriptLine;
-		preReplaceChild(oldChild, scriptLine, SCRIPT_LINE_PROPERTY);
-		this.scriptLine = scriptLine;
-		postReplaceChild(oldChild, scriptLine, SCRIPT_LINE_PROPERTY);
-	}
-
 	/**
 	 * Returns the module declaration of this compilation unit.
 	 * 
@@ -722,7 +702,7 @@ public class CompilationUnit extends ASTNode {
 	 * Method declared on ASTNode.
 	 */
 	int memSize() {
-		return BASE_NODE_SIZE + 3 * 4;
+		return BASE_NODE_SIZE + 2 * 4;
 	}
 
 	/* (omit javadoc for this method)
@@ -731,7 +711,6 @@ public class CompilationUnit extends ASTNode {
 	int treeSize() {
 		return
 			memSize()
-			+ (this.scriptLine == null ? 0 : getScriptLine().treeSize())
 			+ (this.moduleDeclaration == null ? 0 : getModuleDeclaration().treeSize())
 			+ (this.declarations.listSize())
 	;

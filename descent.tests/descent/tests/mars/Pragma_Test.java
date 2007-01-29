@@ -23,22 +23,22 @@ public class Pragma_Test extends Parser_Test {
 	public void testScriptLine1() {
 		String s = "#! something \n module a;";
 		CompilationUnit cu = getCompilationUnit(s);
-		assertNotNull(cu.getScriptLine());
-		assertPosition(cu.getScriptLine(), 0, 13);
+		assertEquals(1, cu.getPragmaList().size());
+		assertPosition(cu.getPragmaList().get(0), 0, 13);
 	}
 	
 	public void testScriptLine2() {
 		String s = "#! something \r\n module a;";
 		CompilationUnit cu = getCompilationUnit(s);
-		assertNotNull(cu.getScriptLine());
-		assertPosition(cu.getScriptLine(), 0, 13);
+		assertEquals(1, cu.getPragmaList().size());
+		assertPosition(cu.getPragmaList().get(0), 0, 13);
 	}
 	
 	public void testScriptLine3() {
 		String s = "#! something ";
 		CompilationUnit cu = getCompilationUnit(s);
-		assertNotNull(cu.getScriptLine());
-		assertPosition(cu.getScriptLine(), 0, 13);
+		assertEquals(1, cu.getPragmaList().size());
+		assertPosition(cu.getPragmaList().get(0), 0, 13);
 	}
 	
 	public void testPragmaBroken1() {

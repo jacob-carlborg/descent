@@ -4,16 +4,22 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Scripe line AST node. A script line is the first line of the source
- * file, if the source file begins with <b>#!</b>.
- * 
- * <pre>
- * ScriptLine:
- *    <b>#!</b> <i>text</i>
- * </pre>
+ * D doc comment AST node.
  */
-public class ScriptLine extends ASTNode {
+public class DDocComment extends Comment {
 	
+	/**
+	 * The "kind" structural property of this node type.
+	 */
+	public static final SimplePropertyDescriptor KIND_PROPERTY =
+	internalKindPropertyFactory(DDocComment.class); //$NON-NLS-1$
+
+	/**
+	 * The "text" structural property of this node type.
+	 */
+	public static final SimplePropertyDescriptor TEXT_PROPERTY =
+		new SimplePropertyDescriptor(DDocComment.class, "text", String.class, OPTIONAL); //$NON-NLS-1$
+
 	/**
 	 * A list of property descriptors (element type: 
 	 * {@link StructuralPropertyDescriptor}),
@@ -22,8 +28,10 @@ public class ScriptLine extends ASTNode {
 	private static final List PROPERTY_DESCRIPTORS;
 
 	static {
-		List properyList = new ArrayList(0);
-		createPropertyList(ScriptLine.class, properyList);
+		List properyList = new ArrayList(2);
+		createPropertyList(DDocComment.class, properyList);
+		addProperty(KIND_PROPERTY, properyList);
+		addProperty(TEXT_PROPERTY, properyList);
 		PROPERTY_DESCRIPTORS = reapPropertyList(properyList);
 	}
 
@@ -42,9 +50,14 @@ public class ScriptLine extends ASTNode {
 		return PROPERTY_DESCRIPTORS;
 	}
 
+	/**
+	 * The text.
+	 */
+	private String text;
+
 
 	/**
-	 * Creates a new unparented script line node owned by the given 
+	 * Creates a new unparented d doc comment node owned by the given 
 	 * AST.
 	 * <p>
 	 * N.B. This constructor is package-private.
@@ -52,7 +65,7 @@ public class ScriptLine extends ASTNode {
 	 * 
 	 * @param ast the AST that is to own this node
 	 */
-	ScriptLine(AST ast) {
+	DDocComment(AST ast) {
 		super(ast);
 	}
 
@@ -66,16 +79,47 @@ public class ScriptLine extends ASTNode {
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
 	 */
+	final Object internalGetSetObjectProperty(SimplePropertyDescriptor property, boolean get, Object value) {
+		if (property == KIND_PROPERTY) {
+			if (get) {
+				return getKind();
+			} else {
+				setKind((Kind) value);
+				return null;
+			}
+		}
+		if (property == TEXT_PROPERTY) {
+			if (get) {
+				return getText();
+			} else {
+				setText((String) value);
+				return null;
+			}
+		}
+		// allow default implementation to flag the error
+		return super.internalGetSetObjectProperty(property, get, value);
+	}
+
+		@Override
+		final SimplePropertyDescriptor internalKindProperty() {
+			return KIND_PROPERTY;
+		}
+		
+	/* (omit javadoc for this method)
+	 * Method declared on ASTNode.
+	 */
 	final int getNodeType0() {
-		return SCRIPT_LINE;
+		return D_DOC_COMMENT;
 	}
 
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
 	 */
 	ASTNode clone0(AST target) {
-		ScriptLine result = new ScriptLine(target);
+		DDocComment result = new DDocComment(target);
 		result.setSourceRange(this.getStartPosition(), this.getLength());
+		result.setKind(getKind());
+		result.setText(getText());
 		return result;
 	}
 
@@ -98,11 +142,35 @@ public class ScriptLine extends ASTNode {
 		visitor.endVisit(this);
 	}
 
+	/**
+	 * Returns the text of this d doc comment.
+	 * 
+	 * @return the text
+	 */ 
+	public String getText() {
+		return this.text;
+	}
+
+	/**
+	 * Sets the text of this d doc comment.
+	 * 
+	 * @param text the text
+	 * @exception IllegalArgumentException if the argument is incorrect
+	 */ 
+	public void setText(String text) {
+		if (text == null) {
+			throw new IllegalArgumentException();
+		}
+		preValueChange(TEXT_PROPERTY);
+		this.text = text;
+		postValueChange(TEXT_PROPERTY);
+	}
+
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
 	 */
 	int memSize() {
-		return BASE_NODE_SIZE + 0 * 4;
+		return BASE_NODE_SIZE + 2 * 4;
 	}
 
 	/* (omit javadoc for this method)

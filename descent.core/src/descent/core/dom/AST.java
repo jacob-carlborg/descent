@@ -684,5 +684,1299 @@ public class AST {
 		Class nodeClass = ASTNode.nodeClassForType(nodeType);
 		return createInstance(nodeClass);
 	}
+	
+	// ============================ new methods ================================
+	
+	/**
+	 * Creates an unparented aggregate declaration node owned by this AST.
+	 * 
+	 * @return the new unparented aggregate declaration node
+	 */
+	public AggregateDeclaration newAggregateDeclaration() {
+		AggregateDeclaration node = new AggregateDeclaration(this);
+		return node;
+	}
+
+	/**
+	 * Creates an unparented alias declaration node owned by this AST.
+	 * 
+	 * @return the new unparented alias declaration node
+	 */
+	public AliasDeclaration newAliasDeclaration() {
+		AliasDeclaration node = new AliasDeclaration(this);
+		return node;
+	}
+
+	/**
+	 * Creates an unparented alias declaration fragment node owned by this AST.
+	 * 
+	 * @return the new unparented alias declaration fragment node
+	 */
+	public AliasDeclarationFragment newAliasDeclarationFragment() {
+		AliasDeclarationFragment node = new AliasDeclarationFragment(this);
+		return node;
+	}
+
+	/**
+	 * Creates an unparented alias template parameter node owned by this AST.
+	 * 
+	 * @return the new unparented alias template parameter node
+	 */
+	public AliasTemplateParameter newAliasTemplateParameter() {
+		AliasTemplateParameter node = new AliasTemplateParameter(this);
+		return node;
+	}
+
+	/**
+	 * Creates an unparented align declaration node owned by this AST.
+	 * 
+	 * @return the new unparented align declaration node
+	 */
+	public AlignDeclaration newAlignDeclaration() {
+		AlignDeclaration node = new AlignDeclaration(this);
+		return node;
+	}
+
+	/**
+	 * Creates an unparented argument node owned by this AST.
+	 * 
+	 * @return the new unparented argument node
+	 */
+	public Argument newArgument() {
+		Argument node = new Argument(this);
+		return node;
+	}
+
+	/**
+	 * Creates an unparented array access node owned by this AST.
+	 * 
+	 * @return the new unparented array access node
+	 */
+	public ArrayAccess newArrayAccess() {
+		ArrayAccess node = new ArrayAccess(this);
+		return node;
+	}
+
+	/**
+	 * Creates an unparented array initializer node owned by this AST.
+	 * 
+	 * @return the new unparented array initializer node
+	 */
+	public ArrayInitializer newArrayInitializer() {
+		ArrayInitializer node = new ArrayInitializer(this);
+		return node;
+	}
+
+	/**
+	 * Creates an unparented array initializer fragment node owned by this AST.
+	 * 
+	 * @return the new unparented array initializer fragment node
+	 */
+	public ArrayInitializerFragment newArrayInitializerFragment() {
+		ArrayInitializerFragment node = new ArrayInitializerFragment(this);
+		return node;
+	}
+
+	/**
+	 * Creates an unparented array literal node owned by this AST.
+	 * 
+	 * @return the new unparented array literal node
+	 */
+	public ArrayLiteral newArrayLiteral() {
+		ArrayLiteral node = new ArrayLiteral(this);
+		return node;
+	}
+
+	/**
+	 * Creates an unparented asm statement node owned by this AST.
+	 * 
+	 * @return the new unparented asm statement node
+	 */
+	public AsmStatement newAsmStatement() {
+		AsmStatement node = new AsmStatement(this);
+		return node;
+	}
+
+	/**
+	 * Creates an unparented assert expression node owned by this AST.
+	 * 
+	 * @return the new unparented assert expression node
+	 */
+	public AssertExpression newAssertExpression() {
+		AssertExpression node = new AssertExpression(this);
+		return node;
+	}
+
+	/**
+	 * Creates an unparented assignment node owned by this AST.
+	 * 
+	 * @return the new unparented assignment node
+	 */
+	public Assignment newAssignment() {
+		Assignment node = new Assignment(this);
+		return node;
+	}
+
+	/**
+	 * Creates an unparented associative array type node owned by this AST.
+	 * 
+	 * @return the new unparented associative array type node
+	 */
+	public AssociativeArrayType newAssociativeArrayType() {
+		AssociativeArrayType node = new AssociativeArrayType(this);
+		return node;
+	}
+
+	/**
+	 * Creates an unparented base class node owned by this AST.
+	 * 
+	 * @return the new unparented base class node
+	 */
+	public BaseClass newBaseClass() {
+		BaseClass node = new BaseClass(this);
+		return node;
+	}
+
+	/**
+	 * Creates an unparented block node owned by this AST.
+	 * 
+	 * @return the new unparented block node
+	 */
+	public Block newBlock() {
+		Block node = new Block(this);
+		return node;
+	}
+
+	/**
+	 * Creates an unparented boolean literal node owned by this AST.
+	 * 
+	 * @return the new unparented boolean literal node
+	 */
+	public BooleanLiteral newBooleanLiteral() {
+		BooleanLiteral node = new BooleanLiteral(this);
+		return node;
+	}
+
+	/**
+	 * Creates an unparented break statement node owned by this AST.
+	 * 
+	 * @return the new unparented break statement node
+	 */
+	public BreakStatement newBreakStatement() {
+		BreakStatement node = new BreakStatement(this);
+		return node;
+	}
+
+	/**
+	 * Creates an unparented call expression node owned by this AST.
+	 * 
+	 * @return the new unparented call expression node
+	 */
+	public CallExpression newCallExpression() {
+		CallExpression node = new CallExpression(this);
+		return node;
+	}
+
+	/**
+	 * Creates an unparented cast expression node owned by this AST.
+	 * 
+	 * @return the new unparented cast expression node
+	 */
+	public CastExpression newCastExpression() {
+		CastExpression node = new CastExpression(this);
+		return node;
+	}
+
+	/**
+	 * Creates an unparented catch clause node owned by this AST.
+	 * 
+	 * @return the new unparented catch clause node
+	 */
+	public CatchClause newCatchClause() {
+		CatchClause node = new CatchClause(this);
+		return node;
+	}
+
+	/**
+	 * Creates an unparented character literal node owned by this AST.
+	 * 
+	 * @return the new unparented character literal node
+	 */
+	public CharacterLiteral newCharacterLiteral() {
+		CharacterLiteral node = new CharacterLiteral(this);
+		return node;
+	}
+
+	/**
+	 * Creates an unparented code comment node owned by this AST.
+	 * 
+	 * @return the new unparented code comment node
+	 */
+	public CodeComment newCodeComment() {
+		CodeComment node = new CodeComment(this);
+		return node;
+	}
+
+	/**
+	 * Creates an unparented compilation unit node owned by this AST.
+	 * 
+	 * @return the new unparented compilation unit node
+	 */
+	public CompilationUnit newCompilationUnit() {
+		CompilationUnit node = new CompilationUnit(this);
+		return node;
+	}
+
+	/**
+	 * Creates an unparented conditional expression node owned by this AST.
+	 * 
+	 * @return the new unparented conditional expression node
+	 */
+	public ConditionalExpression newConditionalExpression() {
+		ConditionalExpression node = new ConditionalExpression(this);
+		return node;
+	}
+
+	/**
+	 * Creates an unparented continue statement node owned by this AST.
+	 * 
+	 * @return the new unparented continue statement node
+	 */
+	public ContinueStatement newContinueStatement() {
+		ContinueStatement node = new ContinueStatement(this);
+		return node;
+	}
+
+	/**
+	 * Creates an unparented d doc comment node owned by this AST.
+	 * 
+	 * @return the new unparented d doc comment node
+	 */
+	public DDocComment newDDocComment(String text) {
+		DDocComment node = new DDocComment(this);
+		node.setText(text);
+		return node;
+	}
+
+	/**
+	 * Creates an unparented debug assignment node owned by this AST.
+	 * 
+	 * @return the new unparented debug assignment node
+	 */
+	public DebugAssignment newDebugAssignment() {
+		DebugAssignment node = new DebugAssignment(this);
+		return node;
+	}
+
+	/**
+	 * Creates an unparented debug declaration node owned by this AST.
+	 * 
+	 * @return the new unparented debug declaration node
+	 */
+	public DebugDeclaration newDebugDeclaration() {
+		DebugDeclaration node = new DebugDeclaration(this);
+		return node;
+	}
+
+	/**
+	 * Creates an unparented debug statement node owned by this AST.
+	 * 
+	 * @return the new unparented debug statement node
+	 */
+	public DebugStatement newDebugStatement() {
+		DebugStatement node = new DebugStatement(this);
+		return node;
+	}
+
+	/**
+	 * Creates an unparented declaration statement node owned by this AST.
+	 * 
+	 * @return the new unparented declaration statement node
+	 */
+	public DeclarationStatement newDeclarationStatement() {
+		DeclarationStatement node = new DeclarationStatement(this);
+		return node;
+	}
+
+	/**
+	 * Creates an unparented default statement node owned by this AST.
+	 * 
+	 * @return the new unparented default statement node
+	 */
+	public DefaultStatement newDefaultStatement() {
+		DefaultStatement node = new DefaultStatement(this);
+		return node;
+	}
+
+	/**
+	 * Creates an unparented delegate type node owned by this AST.
+	 * 
+	 * @return the new unparented delegate type node
+	 */
+	public DelegateType newDelegateType() {
+		DelegateType node = new DelegateType(this);
+		return node;
+	}
+
+	/**
+	 * Creates an unparented delete expression node owned by this AST.
+	 * 
+	 * @return the new unparented delete expression node
+	 */
+	public DeleteExpression newDeleteExpression() {
+		DeleteExpression node = new DeleteExpression(this);
+		return node;
+	}
+
+	/**
+	 * Creates an unparented dollar literal node owned by this AST.
+	 * 
+	 * @return the new unparented dollar literal node
+	 */
+	public DollarLiteral newDollarLiteral() {
+		DollarLiteral node = new DollarLiteral(this);
+		return node;
+	}
+
+	/**
+	 * Creates an unparented do statement node owned by this AST.
+	 * 
+	 * @return the new unparented do statement node
+	 */
+	public DoStatement newDoStatement() {
+		DoStatement node = new DoStatement(this);
+		return node;
+	}
+
+	/**
+	 * Creates an unparented dot identifier expression node owned by this AST.
+	 * 
+	 * @return the new unparented dot identifier expression node
+	 */
+	public DotIdentifierExpression newDotIdentifierExpression() {
+		DotIdentifierExpression node = new DotIdentifierExpression(this);
+		return node;
+	}
+
+	/**
+	 * Creates an unparented dot template type expression node owned by this AST.
+	 * 
+	 * @return the new unparented dot template type expression node
+	 */
+	public DotTemplateTypeExpression newDotTemplateTypeExpression() {
+		DotTemplateTypeExpression node = new DotTemplateTypeExpression(this);
+		return node;
+	}
+
+	/**
+	 * Creates an unparented dynamic array type node owned by this AST.
+	 * 
+	 * @return the new unparented dynamic array type node
+	 */
+	public DynamicArrayType newDynamicArrayType() {
+		DynamicArrayType node = new DynamicArrayType(this);
+		return node;
+	}
+
+	/**
+	 * Creates an unparented enum declaration node owned by this AST.
+	 * 
+	 * @return the new unparented enum declaration node
+	 */
+	public EnumDeclaration newEnumDeclaration() {
+		EnumDeclaration node = new EnumDeclaration(this);
+		return node;
+	}
+
+	/**
+	 * Creates an unparented enum member node owned by this AST.
+	 * 
+	 * @return the new unparented enum member node
+	 */
+	public EnumMember newEnumMember() {
+		EnumMember node = new EnumMember(this);
+		return node;
+	}
+
+	/**
+	 * Creates an unparented expression initializer node owned by this AST.
+	 * 
+	 * @return the new unparented expression initializer node
+	 */
+	public ExpressionInitializer newExpressionInitializer() {
+		ExpressionInitializer node = new ExpressionInitializer(this);
+		return node;
+	}
+
+	/**
+	 * Creates an unparented expression statement node owned by this AST.
+	 * 
+	 * @return the new unparented expression statement node
+	 */
+	public ExpressionStatement newExpressionStatement() {
+		ExpressionStatement node = new ExpressionStatement(this);
+		return node;
+	}
+
+	/**
+	 * Creates an unparented extern declaration node owned by this AST.
+	 * 
+	 * @return the new unparented extern declaration node
+	 */
+	public ExternDeclaration newExternDeclaration() {
+		ExternDeclaration node = new ExternDeclaration(this);
+		return node;
+	}
+
+	/**
+	 * Creates an unparented foreach statement node owned by this AST.
+	 * 
+	 * @return the new unparented foreach statement node
+	 */
+	public ForeachStatement newForeachStatement() {
+		ForeachStatement node = new ForeachStatement(this);
+		return node;
+	}
+
+	/**
+	 * Creates an unparented for statement node owned by this AST.
+	 * 
+	 * @return the new unparented for statement node
+	 */
+	public ForStatement newForStatement() {
+		ForStatement node = new ForStatement(this);
+		return node;
+	}
+
+	/**
+	 * Creates an unparented function declaration node owned by this AST.
+	 * 
+	 * @return the new unparented function declaration node
+	 */
+	public FunctionDeclaration newFunctionDeclaration() {
+		FunctionDeclaration node = new FunctionDeclaration(this);
+		return node;
+	}
+
+	/**
+	 * Creates an unparented function literal declaration expression node owned by this AST.
+	 * 
+	 * @return the new unparented function literal declaration expression node
+	 */
+	public FunctionLiteralDeclarationExpression newFunctionLiteralDeclarationExpression() {
+		FunctionLiteralDeclarationExpression node = new FunctionLiteralDeclarationExpression(this);
+		return node;
+	}
+
+	/**
+	 * Creates an unparented goto case statement node owned by this AST.
+	 * 
+	 * @return the new unparented goto case statement node
+	 */
+	public GotoCaseStatement newGotoCaseStatement() {
+		GotoCaseStatement node = new GotoCaseStatement(this);
+		return node;
+	}
+
+	/**
+	 * Creates an unparented goto default statement node owned by this AST.
+	 * 
+	 * @return the new unparented goto default statement node
+	 */
+	public GotoDefaultStatement newGotoDefaultStatement() {
+		GotoDefaultStatement node = new GotoDefaultStatement(this);
+		return node;
+	}
+
+	/**
+	 * Creates an unparented goto statement node owned by this AST.
+	 * 
+	 * @return the new unparented goto statement node
+	 */
+	public GotoStatement newGotoStatement() {
+		GotoStatement node = new GotoStatement(this);
+		return node;
+	}
+
+	/**
+	 * Creates an unparented if statement node owned by this AST.
+	 * 
+	 * @return the new unparented if statement node
+	 */
+	public IfStatement newIfStatement() {
+		IfStatement node = new IfStatement(this);
+		return node;
+	}
+
+	/**
+	 * Creates an unparented iftype declaration node owned by this AST.
+	 * 
+	 * @return the new unparented iftype declaration node
+	 */
+	public IftypeDeclaration newIftypeDeclaration() {
+		IftypeDeclaration node = new IftypeDeclaration(this);
+		return node;
+	}
+
+	/**
+	 * Creates an unparented iftype statement node owned by this AST.
+	 * 
+	 * @return the new unparented iftype statement node
+	 */
+	public IftypeStatement newIftypeStatement() {
+		IftypeStatement node = new IftypeStatement(this);
+		return node;
+	}
+
+	/**
+	 * Creates an unparented import node owned by this AST.
+	 * 
+	 * @return the new unparented import node
+	 */
+	public Import newImport() {
+		Import node = new Import(this);
+		return node;
+	}
+
+	/**
+	 * Creates an unparented import declaration node owned by this AST.
+	 * 
+	 * @return the new unparented import declaration node
+	 */
+	public ImportDeclaration newImportDeclaration() {
+		ImportDeclaration node = new ImportDeclaration(this);
+		return node;
+	}
+
+	/**
+	 * Creates an unparented infix expression node owned by this AST.
+	 * 
+	 * @return the new unparented infix expression node
+	 */
+	public InfixExpression newInfixExpression() {
+		InfixExpression node = new InfixExpression(this);
+		return node;
+	}
+
+	/**
+	 * Creates an unparented invariant declaration node owned by this AST.
+	 * 
+	 * @return the new unparented invariant declaration node
+	 */
+	public InvariantDeclaration newInvariantDeclaration() {
+		InvariantDeclaration node = new InvariantDeclaration(this);
+		return node;
+	}
+
+	/**
+	 * Creates an unparented is type expression node owned by this AST.
+	 * 
+	 * @return the new unparented is type expression node
+	 */
+	public IsTypeExpression newIsTypeExpression() {
+		IsTypeExpression node = new IsTypeExpression(this);
+		return node;
+	}
+
+	/**
+	 * Creates an unparented is type specialization expression node owned by this AST.
+	 * 
+	 * @return the new unparented is type specialization expression node
+	 */
+	public IsTypeSpecializationExpression newIsTypeSpecializationExpression() {
+		IsTypeSpecializationExpression node = new IsTypeSpecializationExpression(this);
+		return node;
+	}
+
+	/**
+	 * Creates an unparented labeled statement node owned by this AST.
+	 * 
+	 * @return the new unparented labeled statement node
+	 */
+	public LabeledStatement newLabeledStatement() {
+		LabeledStatement node = new LabeledStatement(this);
+		return node;
+	}
+
+	/**
+	 * Creates an unparented mixin declaration node owned by this AST.
+	 * 
+	 * @return the new unparented mixin declaration node
+	 */
+	public MixinDeclaration newMixinDeclaration() {
+		MixinDeclaration node = new MixinDeclaration(this);
+		return node;
+	}
+
+	/**
+	 * Creates an unparented modifier node owned by this AST.
+	 * 
+	 * @return the new unparented modifier node
+	 */
+	public Modifier newModifier() {
+		Modifier node = new Modifier(this);
+		return node;
+	}
+
+	/**
+	 * Creates an unparented modifier declaration node owned by this AST.
+	 * 
+	 * @return the new unparented modifier declaration node
+	 */
+	public ModifierDeclaration newModifierDeclaration() {
+		ModifierDeclaration node = new ModifierDeclaration(this);
+		return node;
+	}
+
+	/**
+	 * Creates an unparented module declaration node owned by this AST.
+	 * 
+	 * @return the new unparented module declaration node
+	 */
+	public ModuleDeclaration newModuleDeclaration() {
+		ModuleDeclaration node = new ModuleDeclaration(this);
+		return node;
+	}
+
+	/**
+	 * Creates an unparented new anonymous class expression node owned by this AST.
+	 * 
+	 * @return the new unparented new anonymous class expression node
+	 */
+	public NewAnonymousClassExpression newNewAnonymousClassExpression() {
+		NewAnonymousClassExpression node = new NewAnonymousClassExpression(this);
+		return node;
+	}
+
+	/**
+	 * Creates an unparented new expression node owned by this AST.
+	 * 
+	 * @return the new unparented new expression node
+	 */
+	public NewExpression newNewExpression() {
+		NewExpression node = new NewExpression(this);
+		return node;
+	}
+
+	/**
+	 * Creates an unparented null literal node owned by this AST.
+	 * 
+	 * @return the new unparented null literal node
+	 */
+	public NullLiteral newNullLiteral() {
+		NullLiteral node = new NullLiteral(this);
+		return node;
+	}
+
+	/**
+	 * Creates an unparented number literal node owned by this AST.
+	 * 
+	 * @return the new unparented number literal node
+	 */
+	public NumberLiteral newNumberLiteral() {
+		NumberLiteral node = new NumberLiteral(this);
+		return node;
+	}
+
+	/**
+	 * Creates an unparented parenthesized expression node owned by this AST.
+	 * 
+	 * @return the new unparented parenthesized expression node
+	 */
+	public ParenthesizedExpression newParenthesizedExpression() {
+		ParenthesizedExpression node = new ParenthesizedExpression(this);
+		return node;
+	}
+
+	/**
+	 * Creates an unparented pointer type node owned by this AST.
+	 * 
+	 * @return the new unparented pointer type node
+	 */
+	public PointerType newPointerType() {
+		PointerType node = new PointerType(this);
+		return node;
+	}
+
+	/**
+	 * Creates an unparented postfix expression node owned by this AST.
+	 * 
+	 * @return the new unparented postfix expression node
+	 */
+	public PostfixExpression newPostfixExpression() {
+		PostfixExpression node = new PostfixExpression(this);
+		return node;
+	}
+
+	/**
+	 * Creates an unparented pragma node owned by this AST.
+	 * 
+	 * @return the new unparented pragma node
+	 */
+	public Pragma newPragma() {
+		Pragma node = new Pragma(this);
+		return node;
+	}
+
+	/**
+	 * Creates an unparented pragma declaration node owned by this AST.
+	 * 
+	 * @return the new unparented pragma declaration node
+	 */
+	public PragmaDeclaration newPragmaDeclaration() {
+		PragmaDeclaration node = new PragmaDeclaration(this);
+		return node;
+	}
+
+	/**
+	 * Creates an unparented pragma statement node owned by this AST.
+	 * 
+	 * @return the new unparented pragma statement node
+	 */
+	public PragmaStatement newPragmaStatement() {
+		PragmaStatement node = new PragmaStatement(this);
+		return node;
+	}
+
+	/**
+	 * Creates an unparented prefix expression node owned by this AST.
+	 * 
+	 * @return the new unparented prefix expression node
+	 */
+	public PrefixExpression newPrefixExpression() {
+		PrefixExpression node = new PrefixExpression(this);
+		return node;
+	}
+
+	/**
+	 * Creates an unparented primitive type node owned by this AST.
+	 * 
+	 * @return the new unparented primitive type node
+	 */
+	public PrimitiveType newPrimitiveType() {
+		PrimitiveType node = new PrimitiveType(this);
+		return node;
+	}
+
+	/**
+	 * Creates and returns a new unparented qualified name node for the given 
+	 * qualifier and simple name child node.
+	 * 
+	 * @param qualifier the qualifier name node
+	 * @param name the simple name being qualified
+	 * @return a new unparented qualified name node
+	 * @exception IllegalArgumentException if:
+	 * <ul>
+	 * <li>the node belongs to a different AST</li>
+	 * <li>the node already has a parent</li>
+	 * </ul>
+	 */
+	public QualifiedName newQualifiedName(
+		Name qualifier,
+		SimpleName name) {
+		QualifiedName result = new QualifiedName(this);
+		result.setQualifier(qualifier);
+		result.setName(name);
+		return result;
+		
+	}
+	
+	/**
+	 * Creates and returns a new unparented name node for the given name 
+	 * segments. Returns a simple name if there is only one name segment, and
+	 * a qualified name if there are multiple name segments. Each of the name
+	 * segments should be legal Java identifiers (this constraint may or may 
+	 * not be enforced), and there must be at least one name segment.
+	 * 
+	 * @param identifiers a list of 1 or more name segments, each of which
+	 *    is a legal Java identifier
+	 * @return a new unparented name node
+	 * @exception IllegalArgumentException if:
+	 * <ul>
+	 * <li>the identifier is invalid</li>
+	 * <li>the list of identifiers is empty</li>
+	 * </ul>
+	 */
+	public Name newName(String[] identifiers) {
+		// update internalSetName(String[] if changed
+		int count = identifiers.length;
+		if (count == 0) {
+			throw new IllegalArgumentException();
+		}
+		Name result = newSimpleName(identifiers[0]);
+		for (int i = 1; i < count; i++) {
+			SimpleName name = newSimpleName(identifiers[i]);
+			result = newQualifiedName(result, name);
+		}
+		return result;
+	}
+
+	/**
+	 * Creates an unparented qualified type node owned by this AST.
+	 * 
+	 * @return the new unparented qualified type node
+	 */
+	public QualifiedType newQualifiedType() {
+		QualifiedType node = new QualifiedType(this);
+		return node;
+	}
+
+	/**
+	 * Creates an unparented return statement node owned by this AST.
+	 * 
+	 * @return the new unparented return statement node
+	 */
+	public ReturnStatement newReturnStatement() {
+		ReturnStatement node = new ReturnStatement(this);
+		return node;
+	}
+
+	/**
+	 * Creates an unparented scope statement node owned by this AST.
+	 * 
+	 * @return the new unparented scope statement node
+	 */
+	public ScopeStatement newScopeStatement() {
+		ScopeStatement node = new ScopeStatement(this);
+		return node;
+	}
+
+	/**
+	 * Creates an unparented selective import node owned by this AST.
+	 * 
+	 * @return the new unparented selective import node
+	 */
+	public SelectiveImport newSelectiveImport() {
+		SelectiveImport node = new SelectiveImport(this);
+		return node;
+	}
+
+	/**
+	 * Creates and returns a new unparented simple name node for the given
+	 * identifier. The identifier should be a legal Java identifier, but not
+	 * a keyword, boolean literal ("true", "false") or null literal ("null").
+	 * 
+	 * @param identifier the identifier
+	 * @return a new unparented simple name node
+	 * @exception IllegalArgumentException if the identifier is invalid
+	 */
+	public SimpleName newSimpleName(String identifier) {
+		if (identifier == null) {
+			throw new IllegalArgumentException();
+		}
+		SimpleName result = new SimpleName(this);
+		result.setIdentifier(identifier);
+		return result;
+	}
+
+	/**
+	 * Creates an unparented simple type node owned by this AST.
+	 * 
+	 * @return the new unparented simple type node
+	 */
+	public SimpleType newSimpleType() {
+		SimpleType node = new SimpleType(this);
+		return node;
+	}
+
+	/**
+	 * Creates an unparented slice expression node owned by this AST.
+	 * 
+	 * @return the new unparented slice expression node
+	 */
+	public SliceExpression newSliceExpression() {
+		SliceExpression node = new SliceExpression(this);
+		return node;
+	}
+
+	/**
+	 * Creates an unparented slice type node owned by this AST.
+	 * 
+	 * @return the new unparented slice type node
+	 */
+	public SliceType newSliceType() {
+		SliceType node = new SliceType(this);
+		return node;
+	}
+
+	/**
+	 * Creates an unparented static array type node owned by this AST.
+	 * 
+	 * @return the new unparented static array type node
+	 */
+	public StaticArrayType newStaticArrayType() {
+		StaticArrayType node = new StaticArrayType(this);
+		return node;
+	}
+
+	/**
+	 * Creates an unparented static assert node owned by this AST.
+	 * 
+	 * @return the new unparented static assert node
+	 */
+	public StaticAssert newStaticAssert() {
+		StaticAssert node = new StaticAssert(this);
+		return node;
+	}
+
+	/**
+	 * Creates an unparented static assert statement node owned by this AST.
+	 * 
+	 * @return the new unparented static assert statement node
+	 */
+	public StaticAssertStatement newStaticAssertStatement() {
+		StaticAssertStatement node = new StaticAssertStatement(this);
+		return node;
+	}
+
+	/**
+	 * Creates an unparented static if declaration node owned by this AST.
+	 * 
+	 * @return the new unparented static if declaration node
+	 */
+	public StaticIfDeclaration newStaticIfDeclaration() {
+		StaticIfDeclaration node = new StaticIfDeclaration(this);
+		return node;
+	}
+
+	/**
+	 * Creates an unparented static if statement node owned by this AST.
+	 * 
+	 * @return the new unparented static if statement node
+	 */
+	public StaticIfStatement newStaticIfStatement() {
+		StaticIfStatement node = new StaticIfStatement(this);
+		return node;
+	}
+
+	/**
+	 * Creates an unparented string literal node owned by this AST.
+	 * 
+	 * @return the new unparented string literal node
+	 */
+	public StringLiteral newStringLiteral() {
+		StringLiteral node = new StringLiteral(this);
+		return node;
+	}
+
+	/**
+	 * Creates an unparented strings expression node owned by this AST.
+	 * 
+	 * @return the new unparented strings expression node
+	 */
+	public StringsExpression newStringsExpression() {
+		StringsExpression node = new StringsExpression(this);
+		return node;
+	}
+
+	/**
+	 * Creates an unparented struct initializer node owned by this AST.
+	 * 
+	 * @return the new unparented struct initializer node
+	 */
+	public StructInitializer newStructInitializer() {
+		StructInitializer node = new StructInitializer(this);
+		return node;
+	}
+
+	/**
+	 * Creates an unparented struct initializer fragment node owned by this AST.
+	 * 
+	 * @return the new unparented struct initializer fragment node
+	 */
+	public StructInitializerFragment newStructInitializerFragment() {
+		StructInitializerFragment node = new StructInitializerFragment(this);
+		return node;
+	}
+
+	/**
+	 * Creates an unparented super literal node owned by this AST.
+	 * 
+	 * @return the new unparented super literal node
+	 */
+	public SuperLiteral newSuperLiteral() {
+		SuperLiteral node = new SuperLiteral(this);
+		return node;
+	}
+
+	/**
+	 * Creates an unparented switch case node owned by this AST.
+	 * 
+	 * @return the new unparented switch case node
+	 */
+	public SwitchCase newSwitchCase() {
+		SwitchCase node = new SwitchCase(this);
+		return node;
+	}
+
+	/**
+	 * Creates an unparented switch statement node owned by this AST.
+	 * 
+	 * @return the new unparented switch statement node
+	 */
+	public SwitchStatement newSwitchStatement() {
+		SwitchStatement node = new SwitchStatement(this);
+		return node;
+	}
+
+	/**
+	 * Creates an unparented synchronized statement node owned by this AST.
+	 * 
+	 * @return the new unparented synchronized statement node
+	 */
+	public SynchronizedStatement newSynchronizedStatement() {
+		SynchronizedStatement node = new SynchronizedStatement(this);
+		return node;
+	}
+
+	/**
+	 * Creates an unparented template declaration node owned by this AST.
+	 * 
+	 * @return the new unparented template declaration node
+	 */
+	public TemplateDeclaration newTemplateDeclaration() {
+		TemplateDeclaration node = new TemplateDeclaration(this);
+		return node;
+	}
+
+	/**
+	 * Creates an unparented template type node owned by this AST.
+	 * 
+	 * @return the new unparented template type node
+	 */
+	public TemplateType newTemplateType() {
+		TemplateType node = new TemplateType(this);
+		return node;
+	}
+
+	/**
+	 * Creates an unparented this literal node owned by this AST.
+	 * 
+	 * @return the new unparented this literal node
+	 */
+	public ThisLiteral newThisLiteral() {
+		ThisLiteral node = new ThisLiteral(this);
+		return node;
+	}
+
+	/**
+	 * Creates an unparented throw statement node owned by this AST.
+	 * 
+	 * @return the new unparented throw statement node
+	 */
+	public ThrowStatement newThrowStatement() {
+		ThrowStatement node = new ThrowStatement(this);
+		return node;
+	}
+
+	/**
+	 * Creates an unparented try statement node owned by this AST.
+	 * 
+	 * @return the new unparented try statement node
+	 */
+	public TryStatement newTryStatement() {
+		TryStatement node = new TryStatement(this);
+		return node;
+	}
+
+	/**
+	 * Creates an unparented tuple template parameter node owned by this AST.
+	 * 
+	 * @return the new unparented tuple template parameter node
+	 */
+	public TupleTemplateParameter newTupleTemplateParameter() {
+		TupleTemplateParameter node = new TupleTemplateParameter(this);
+		return node;
+	}
+
+	/**
+	 * Creates an unparented typedef declaration node owned by this AST.
+	 * 
+	 * @return the new unparented typedef declaration node
+	 */
+	public TypedefDeclaration newTypedefDeclaration() {
+		TypedefDeclaration node = new TypedefDeclaration(this);
+		return node;
+	}
+
+	/**
+	 * Creates an unparented typedef declaration fragment node owned by this AST.
+	 * 
+	 * @return the new unparented typedef declaration fragment node
+	 */
+	public TypedefDeclarationFragment newTypedefDeclarationFragment() {
+		TypedefDeclarationFragment node = new TypedefDeclarationFragment(this);
+		return node;
+	}
+
+	/**
+	 * Creates an unparented type dot identifier expression node owned by this AST.
+	 * 
+	 * @return the new unparented type dot identifier expression node
+	 */
+	public TypeDotIdentifierExpression newTypeDotIdentifierExpression() {
+		TypeDotIdentifierExpression node = new TypeDotIdentifierExpression(this);
+		return node;
+	}
+
+	/**
+	 * Creates an unparented type expression node owned by this AST.
+	 * 
+	 * @return the new unparented type expression node
+	 */
+	public TypeExpression newTypeExpression() {
+		TypeExpression node = new TypeExpression(this);
+		return node;
+	}
+
+	/**
+	 * Creates an unparented typeid expression node owned by this AST.
+	 * 
+	 * @return the new unparented typeid expression node
+	 */
+	public TypeidExpression newTypeidExpression() {
+		TypeidExpression node = new TypeidExpression(this);
+		return node;
+	}
+
+	/**
+	 * Creates an unparented typeof type node owned by this AST.
+	 * 
+	 * @return the new unparented typeof type node
+	 */
+	public TypeofType newTypeofType() {
+		TypeofType node = new TypeofType(this);
+		return node;
+	}
+
+	/**
+	 * Creates an unparented type template parameter node owned by this AST.
+	 * 
+	 * @return the new unparented type template parameter node
+	 */
+	public TypeTemplateParameter newTypeTemplateParameter() {
+		TypeTemplateParameter node = new TypeTemplateParameter(this);
+		return node;
+	}
+
+	/**
+	 * Creates an unparented unit test declaration node owned by this AST.
+	 * 
+	 * @return the new unparented unit test declaration node
+	 */
+	public UnitTestDeclaration newUnitTestDeclaration() {
+		UnitTestDeclaration node = new UnitTestDeclaration(this);
+		return node;
+	}
+
+	/**
+	 * Creates an unparented value template parameter node owned by this AST.
+	 * 
+	 * @return the new unparented value template parameter node
+	 */
+	public ValueTemplateParameter newValueTemplateParameter() {
+		ValueTemplateParameter node = new ValueTemplateParameter(this);
+		return node;
+	}
+
+	/**
+	 * Creates an unparented variable declaration node owned by this AST.
+	 * 
+	 * @return the new unparented variable declaration node
+	 */
+	public VariableDeclaration newVariableDeclaration() {
+		VariableDeclaration node = new VariableDeclaration(this);
+		return node;
+	}
+
+	/**
+	 * Creates an unparented variable declaration fragment node owned by this AST.
+	 * 
+	 * @return the new unparented variable declaration fragment node
+	 */
+	public VariableDeclarationFragment newVariableDeclarationFragment() {
+		VariableDeclarationFragment node = new VariableDeclarationFragment(this);
+		return node;
+	}
+
+	/**
+	 * Creates an unparented version node owned by this AST.
+	 * 
+	 * @return the new unparented version node
+	 */
+	public Version newVersion() {
+		Version node = new Version(this);
+		return node;
+	}
+
+	/**
+	 * Creates an unparented version assignment node owned by this AST.
+	 * 
+	 * @return the new unparented version assignment node
+	 */
+	public VersionAssignment newVersionAssignment() {
+		VersionAssignment node = new VersionAssignment(this);
+		return node;
+	}
+
+	/**
+	 * Creates an unparented version declaration node owned by this AST.
+	 * 
+	 * @return the new unparented version declaration node
+	 */
+	public VersionDeclaration newVersionDeclaration() {
+		VersionDeclaration node = new VersionDeclaration(this);
+		return node;
+	}
+
+	/**
+	 * Creates an unparented version statement node owned by this AST.
+	 * 
+	 * @return the new unparented version statement node
+	 */
+	public VersionStatement newVersionStatement() {
+		VersionStatement node = new VersionStatement(this);
+		return node;
+	}
+
+	/**
+	 * Creates an unparented void initializer node owned by this AST.
+	 * 
+	 * @return the new unparented void initializer node
+	 */
+	public VoidInitializer newVoidInitializer() {
+		VoidInitializer node = new VoidInitializer(this);
+		return node;
+	}
+
+	/**
+	 * Creates an unparented volatile statement node owned by this AST.
+	 * 
+	 * @return the new unparented volatile statement node
+	 */
+	public VolatileStatement newVolatileStatement() {
+		VolatileStatement node = new VolatileStatement(this);
+		return node;
+	}
+
+	/**
+	 * Creates an unparented while statement node owned by this AST.
+	 * 
+	 * @return the new unparented while statement node
+	 */
+	public WhileStatement newWhileStatement() {
+		WhileStatement node = new WhileStatement(this);
+		return node;
+	}
+
+	/**
+	 * Creates an unparented with statement node owned by this AST.
+	 * 
+	 * @return the new unparented with statement node
+	 */
+	public WithStatement newWithStatement() {
+		WithStatement node = new WithStatement(this);
+		return node;
+	}
 
 }

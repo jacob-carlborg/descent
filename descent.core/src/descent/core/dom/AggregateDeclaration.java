@@ -46,6 +46,12 @@ public class AggregateDeclaration extends Declaration {
 		public String getToken() {
 			return token;
 		}
+		
+		@Override
+		public String toString() {
+			return token;
+		}
+		
 	}
 
 	/**
@@ -216,7 +222,7 @@ public class AggregateDeclaration extends Declaration {
 			if (get) {
 				return getPostDDoc();
 			} else {
-				setPostDDoc((Comment) child);
+				setPostDDoc((DDocComment) child);
 				return null;
 			}
 		}
@@ -282,7 +288,7 @@ public class AggregateDeclaration extends Declaration {
 		result.templateParameters.addAll(ASTNode.copySubtrees(target, templateParameters()));
 		result.baseClasses.addAll(ASTNode.copySubtrees(target, baseClasses()));
 		result.declarations.addAll(ASTNode.copySubtrees(target, declarations()));
-	result.setPostDDoc((Comment) ASTNode.copySubtree(target, getPostDDoc()));
+	result.setPostDDoc((DDocComment) ASTNode.copySubtree(target, getPostDDoc()));
 		return result;
 	}
 

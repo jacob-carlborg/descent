@@ -149,7 +149,7 @@ class DefaultASTVisitor extends ASTVisitor {
 	}
 
 	@Override
-	public void endVisit(CaseStatement node) {
+	public void endVisit(SwitchCase node) {
 
 		endVisitNode(node);
 	}
@@ -173,7 +173,7 @@ class DefaultASTVisitor extends ASTVisitor {
 	}
 
 	@Override
-	public void endVisit(Comment node) {
+	public void endVisit(CodeComment node) {
 
 		endVisitNode(node);
 	}
@@ -395,7 +395,7 @@ class DefaultASTVisitor extends ASTVisitor {
 	}
 
 	@Override
-	public void endVisit(LabelStatement node) {
+	public void endVisit(LabeledStatement node) {
 
 		endVisitNode(node);
 	}
@@ -516,12 +516,6 @@ class DefaultASTVisitor extends ASTVisitor {
 
 	@Override
 	public void endVisit(ScopeStatement node) {
-
-		endVisitNode(node);
-	}
-
-	@Override
-	public void endVisit(ScriptLine node) {
 
 		endVisitNode(node);
 	}
@@ -893,7 +887,7 @@ class DefaultASTVisitor extends ASTVisitor {
 	}
 
 	@Override
-	public boolean visit(CaseStatement node) {
+	public boolean visit(SwitchCase node) {
 
 		return visitNode(node);
 	}
@@ -917,7 +911,7 @@ class DefaultASTVisitor extends ASTVisitor {
 	}
 
 	@Override
-	public boolean visit(Comment node) {
+	public boolean visit(CodeComment node) {
 
 		return visitNode(node);
 	}
@@ -1139,7 +1133,7 @@ class DefaultASTVisitor extends ASTVisitor {
 	}
 
 	@Override
-	public boolean visit(LabelStatement node) {
+	public boolean visit(LabeledStatement node) {
 
 		return visitNode(node);
 	}
@@ -1260,12 +1254,6 @@ class DefaultASTVisitor extends ASTVisitor {
 
 	@Override
 	public boolean visit(ScopeStatement node) {
-
-		return visitNode(node);
-	}
-
-	@Override
-	public boolean visit(ScriptLine node) {
 
 		return visitNode(node);
 	}

@@ -132,7 +132,7 @@ public class StaticAssert extends Declaration {
 			if (get) {
 				return getPostDDoc();
 			} else {
-				setPostDDoc((Comment) child);
+				setPostDDoc((DDocComment) child);
 				return null;
 			}
 		}
@@ -186,7 +186,7 @@ public class StaticAssert extends Declaration {
 		result.modifiers.addAll(ASTNode.copySubtrees(target, modifiers()));
 		result.setExpression((Expression) getExpression().clone(target));
 	result.setMessage((Expression) ASTNode.copySubtree(target, getMessage()));
-	result.setPostDDoc((Comment) ASTNode.copySubtree(target, getPostDDoc()));
+	result.setPostDDoc((DDocComment) ASTNode.copySubtree(target, getPostDDoc()));
 		return result;
 	}
 

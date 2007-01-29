@@ -154,7 +154,7 @@ public class GenericVisitor extends ASTVisitor {
 	}
 
 	@Override
-	public void endVisit(CaseStatement node) {
+	public void endVisit(SwitchCase node) {
 		
 		endVisitNode(node);
 	}
@@ -178,7 +178,7 @@ public class GenericVisitor extends ASTVisitor {
 	}
 
 	@Override
-	public void endVisit(Comment node) {
+	public void endVisit(CodeComment node) {
 		
 		endVisitNode(node);
 	}
@@ -400,7 +400,7 @@ public class GenericVisitor extends ASTVisitor {
 	}
 
 	@Override
-	public void endVisit(LabelStatement node) {
+	public void endVisit(LabeledStatement node) {
 		
 		endVisitNode(node);
 	}
@@ -886,7 +886,7 @@ public class GenericVisitor extends ASTVisitor {
 	}
 
 	@Override
-	public boolean visit(CaseStatement node) {
+	public boolean visit(SwitchCase node) {
 		
 		return visitNode(node);
 	}
@@ -910,7 +910,7 @@ public class GenericVisitor extends ASTVisitor {
 	}
 
 	@Override
-	public boolean visit(Comment node) {
+	public boolean visit(CodeComment node) {
 		
 		return visitNode(node);
 	}
@@ -1132,7 +1132,7 @@ public class GenericVisitor extends ASTVisitor {
 	}
 
 	@Override
-	public boolean visit(LabelStatement node) {
+	public boolean visit(LabeledStatement node) {
 		
 		return visitNode(node);
 	}

@@ -289,59 +289,59 @@ public abstract class ASTNode {
 	 
 	/**
 	 * Node type constant indicating a node of type 
-	 * <code>CaseStatement</code>.
-	 * @see CaseStatement
-	 */
-	public static final int CASE_STATEMENT = 20;
-	 
-	/**
-	 * Node type constant indicating a node of type 
 	 * <code>CastExpression</code>.
 	 * @see CastExpression
 	 */
-	public static final int CAST_EXPRESSION = 21;
+	public static final int CAST_EXPRESSION = 20;
 	 
 	/**
 	 * Node type constant indicating a node of type 
 	 * <code>CatchClause</code>.
 	 * @see CatchClause
 	 */
-	public static final int CATCH_CLAUSE = 22;
+	public static final int CATCH_CLAUSE = 21;
 	 
 	/**
 	 * Node type constant indicating a node of type 
 	 * <code>CharacterLiteral</code>.
 	 * @see CharacterLiteral
 	 */
-	public static final int CHARACTER_LITERAL = 23;
+	public static final int CHARACTER_LITERAL = 22;
 	 
 	/**
 	 * Node type constant indicating a node of type 
-	 * <code>Comment</code>.
-	 * @see Comment
+	 * <code>CodeComment</code>.
+	 * @see CodeComment
 	 */
-	public static final int COMMENT = 24;
+	public static final int CODE_COMMENT = 23;
 	 
 	/**
 	 * Node type constant indicating a node of type 
 	 * <code>CompilationUnit</code>.
 	 * @see CompilationUnit
 	 */
-	public static final int COMPILATION_UNIT = 25;
+	public static final int COMPILATION_UNIT = 24;
 	 
 	/**
 	 * Node type constant indicating a node of type 
 	 * <code>ConditionalExpression</code>.
 	 * @see ConditionalExpression
 	 */
-	public static final int CONDITIONAL_EXPRESSION = 26;
+	public static final int CONDITIONAL_EXPRESSION = 25;
 	 
 	/**
 	 * Node type constant indicating a node of type 
 	 * <code>ContinueStatement</code>.
 	 * @see ContinueStatement
 	 */
-	public static final int CONTINUE_STATEMENT = 27;
+	public static final int CONTINUE_STATEMENT = 26;
+	 
+	/**
+	 * Node type constant indicating a node of type 
+	 * <code>DDocComment</code>.
+	 * @see DDocComment
+	 */
+	public static final int D_DOC_COMMENT = 27;
 	 
 	/**
 	 * Node type constant indicating a node of type 
@@ -576,10 +576,10 @@ public abstract class ASTNode {
 	 
 	/**
 	 * Node type constant indicating a node of type 
-	 * <code>LabelStatement</code>.
-	 * @see LabelStatement
+	 * <code>LabeledStatement</code>.
+	 * @see LabeledStatement
 	 */
-	public static final int LABEL_STATEMENT = 61;
+	public static final int LABELED_STATEMENT = 61;
 	 
 	/**
 	 * Node type constant indicating a node of type 
@@ -723,115 +723,115 @@ public abstract class ASTNode {
 	 
 	/**
 	 * Node type constant indicating a node of type 
-	 * <code>ScriptLine</code>.
-	 * @see ScriptLine
-	 */
-	public static final int SCRIPT_LINE = 82;
-	 
-	/**
-	 * Node type constant indicating a node of type 
 	 * <code>SelectiveImport</code>.
 	 * @see SelectiveImport
 	 */
-	public static final int SELECTIVE_IMPORT = 83;
+	public static final int SELECTIVE_IMPORT = 82;
 	 
 	/**
 	 * Node type constant indicating a node of type 
 	 * <code>SimpleName</code>.
 	 * @see SimpleName
 	 */
-	public static final int SIMPLE_NAME = 84;
+	public static final int SIMPLE_NAME = 83;
 	 
 	/**
 	 * Node type constant indicating a node of type 
 	 * <code>SimpleType</code>.
 	 * @see SimpleType
 	 */
-	public static final int SIMPLE_TYPE = 85;
+	public static final int SIMPLE_TYPE = 84;
 	 
 	/**
 	 * Node type constant indicating a node of type 
 	 * <code>SliceExpression</code>.
 	 * @see SliceExpression
 	 */
-	public static final int SLICE_EXPRESSION = 86;
+	public static final int SLICE_EXPRESSION = 85;
 	 
 	/**
 	 * Node type constant indicating a node of type 
 	 * <code>SliceType</code>.
 	 * @see SliceType
 	 */
-	public static final int SLICE_TYPE = 87;
+	public static final int SLICE_TYPE = 86;
 	 
 	/**
 	 * Node type constant indicating a node of type 
 	 * <code>StaticArrayType</code>.
 	 * @see StaticArrayType
 	 */
-	public static final int STATIC_ARRAY_TYPE = 88;
+	public static final int STATIC_ARRAY_TYPE = 87;
 	 
 	/**
 	 * Node type constant indicating a node of type 
 	 * <code>StaticAssert</code>.
 	 * @see StaticAssert
 	 */
-	public static final int STATIC_ASSERT = 89;
+	public static final int STATIC_ASSERT = 88;
 	 
 	/**
 	 * Node type constant indicating a node of type 
 	 * <code>StaticAssertStatement</code>.
 	 * @see StaticAssertStatement
 	 */
-	public static final int STATIC_ASSERT_STATEMENT = 90;
+	public static final int STATIC_ASSERT_STATEMENT = 89;
 	 
 	/**
 	 * Node type constant indicating a node of type 
 	 * <code>StaticIfDeclaration</code>.
 	 * @see StaticIfDeclaration
 	 */
-	public static final int STATIC_IF_DECLARATION = 91;
+	public static final int STATIC_IF_DECLARATION = 90;
 	 
 	/**
 	 * Node type constant indicating a node of type 
 	 * <code>StaticIfStatement</code>.
 	 * @see StaticIfStatement
 	 */
-	public static final int STATIC_IF_STATEMENT = 92;
+	public static final int STATIC_IF_STATEMENT = 91;
 	 
 	/**
 	 * Node type constant indicating a node of type 
 	 * <code>StringLiteral</code>.
 	 * @see StringLiteral
 	 */
-	public static final int STRING_LITERAL = 93;
+	public static final int STRING_LITERAL = 92;
 	 
 	/**
 	 * Node type constant indicating a node of type 
 	 * <code>StringsExpression</code>.
 	 * @see StringsExpression
 	 */
-	public static final int STRINGS_EXPRESSION = 94;
+	public static final int STRINGS_EXPRESSION = 93;
 	 
 	/**
 	 * Node type constant indicating a node of type 
 	 * <code>StructInitializer</code>.
 	 * @see StructInitializer
 	 */
-	public static final int STRUCT_INITIALIZER = 95;
+	public static final int STRUCT_INITIALIZER = 94;
 	 
 	/**
 	 * Node type constant indicating a node of type 
 	 * <code>StructInitializerFragment</code>.
 	 * @see StructInitializerFragment
 	 */
-	public static final int STRUCT_INITIALIZER_FRAGMENT = 96;
+	public static final int STRUCT_INITIALIZER_FRAGMENT = 95;
 	 
 	/**
 	 * Node type constant indicating a node of type 
 	 * <code>SuperLiteral</code>.
 	 * @see SuperLiteral
 	 */
-	public static final int SUPER_LITERAL = 97;
+	public static final int SUPER_LITERAL = 96;
+	 
+	/**
+	 * Node type constant indicating a node of type 
+	 * <code>SwitchCase</code>.
+	 * @see SwitchCase
+	 */
+	public static final int SWITCH_CASE = 97;
 	 
 	/**
 	 * Node type constant indicating a node of type 
@@ -1071,22 +1071,22 @@ public abstract class ASTNode {
 			return BreakStatement.class;
 		case CALL_EXPRESSION:
 			return CallExpression.class;
-		case CASE_STATEMENT:
-			return CaseStatement.class;
 		case CAST_EXPRESSION:
 			return CastExpression.class;
 		case CATCH_CLAUSE:
 			return CatchClause.class;
 		case CHARACTER_LITERAL:
 			return CharacterLiteral.class;
-		case COMMENT:
-			return Comment.class;
+		case CODE_COMMENT:
+			return CodeComment.class;
 		case COMPILATION_UNIT:
 			return CompilationUnit.class;
 		case CONDITIONAL_EXPRESSION:
 			return ConditionalExpression.class;
 		case CONTINUE_STATEMENT:
 			return ContinueStatement.class;
+		case D_DOC_COMMENT:
+			return DDocComment.class;
 		case DEBUG_ASSIGNMENT:
 			return DebugAssignment.class;
 		case DEBUG_DECLARATION:
@@ -1153,8 +1153,8 @@ public abstract class ASTNode {
 			return IsTypeExpression.class;
 		case IS_TYPE_SPECIALIZATION_EXPRESSION:
 			return IsTypeSpecializationExpression.class;
-		case LABEL_STATEMENT:
-			return LabelStatement.class;
+		case LABELED_STATEMENT:
+			return LabeledStatement.class;
 		case MIXIN_DECLARATION:
 			return MixinDeclaration.class;
 		case MODIFIER:
@@ -1195,8 +1195,6 @@ public abstract class ASTNode {
 			return ReturnStatement.class;
 		case SCOPE_STATEMENT:
 			return ScopeStatement.class;
-		case SCRIPT_LINE:
-			return ScriptLine.class;
 		case SELECTIVE_IMPORT:
 			return SelectiveImport.class;
 		case SIMPLE_NAME:
@@ -1227,6 +1225,8 @@ public abstract class ASTNode {
 			return StructInitializerFragment.class;
 		case SUPER_LITERAL:
 			return SuperLiteral.class;
+		case SWITCH_CASE:
+			return SwitchCase.class;
 		case SWITCH_STATEMENT:
 			return SwitchStatement.class;
 		case SYNCHRONIZED_STATEMENT:

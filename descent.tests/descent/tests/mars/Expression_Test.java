@@ -314,7 +314,7 @@ public class Expression_Test extends Parser_Test {
 			
 			assertEquals(ASTNode.PREFIX_EXPRESSION, expr.getNodeType());
 			assertEquals(pair[1], expr.getOperator());
-			assertEquals(ASTNode.NUMBER_LITERAL, expr.getExpression().getNodeType());
+			assertEquals(ASTNode.NUMBER_LITERAL, expr.getOperand().getNodeType());
 			assertPosition(expr, 1, 1 + ((String) pair[0]).length());
 		}
 	}
@@ -331,7 +331,7 @@ public class Expression_Test extends Parser_Test {
 			
 			assertEquals(ASTNode.POSTFIX_EXPRESSION, expr.getNodeType());
 			assertEquals(pair[1], expr.getOperator());
-			assertEquals(ASTNode.NUMBER_LITERAL, expr.getExpression().getNodeType());
+			assertEquals(ASTNode.NUMBER_LITERAL, expr.getOperand().getNodeType());
 			assertPosition(expr, 1, 1 + ((String) pair[0]).length());
 		}
 	}

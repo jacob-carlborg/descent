@@ -102,7 +102,7 @@ public class PrimitiveType extends Type {
 	/**
 	 * The "primitiveTypeCode" structural property of this node type.
 	 */
-	public static final SimplePropertyDescriptor PRIMITIVETYPECODE_PROPERTY =
+	public static final SimplePropertyDescriptor PRIMITIVE_TYPE_CODE_PROPERTY =
 		new SimplePropertyDescriptor(PrimitiveType.class, "primitiveTypeCode", Code.class, OPTIONAL); //$NON-NLS-1$
 
 	/**
@@ -115,7 +115,7 @@ public class PrimitiveType extends Type {
 	static {
 		List properyList = new ArrayList(1);
 		createPropertyList(PrimitiveType.class, properyList);
-		addProperty(PRIMITIVETYPECODE_PROPERTY, properyList);
+		addProperty(PRIMITIVE_TYPE_CODE_PROPERTY, properyList);
 		PROPERTY_DESCRIPTORS = reapPropertyList(properyList);
 	}
 
@@ -164,7 +164,7 @@ public class PrimitiveType extends Type {
 	 * Method declared on ASTNode.
 	 */
 	final Object internalGetSetObjectProperty(SimplePropertyDescriptor property, boolean get, Object value) {
-		if (property == PRIMITIVETYPECODE_PROPERTY) {
+		if (property == PRIMITIVE_TYPE_CODE_PROPERTY) {
 			if (get) {
 				return getPrimitiveTypeCode();
 			} else {
@@ -231,9 +231,9 @@ public class PrimitiveType extends Type {
 		if (primitiveTypeCode == null) {
 			throw new IllegalArgumentException();
 		}
-		preValueChange(PRIMITIVETYPECODE_PROPERTY);
+		preValueChange(PRIMITIVE_TYPE_CODE_PROPERTY);
 		this.primitiveTypeCode = primitiveTypeCode;
-		postValueChange(PRIMITIVETYPECODE_PROPERTY);
+		postValueChange(PRIMITIVE_TYPE_CODE_PROPERTY);
 	}
 
 	/* (omit javadoc for this method)

@@ -649,7 +649,7 @@ public ASTVisitor(boolean visitDocTags) {
 	 * visited, and <code>false</code> if the children of this node should
 	 * be skipped
 	 */
-	public boolean visit(CaseStatement node) {
+	public boolean visit(SwitchCase node) {
 		return true;
 	}
 
@@ -661,7 +661,7 @@ public ASTVisitor(boolean visitDocTags) {
 	 * 
 	 * @param node the node to visit
 	 */
-	public void endVisit(CaseStatement node) {
+	public void endVisit(SwitchCase node) {
 
 	}
 
@@ -766,7 +766,7 @@ public ASTVisitor(boolean visitDocTags) {
 	 * @see #ASTVisitor()
 	 * @see #ASTVisitor(boolean)
 	 */
-	public boolean visit(Comment node) {
+	public boolean visit(CodeComment node) {
 		return this.visitDocTags;
 	}
 
@@ -778,7 +778,7 @@ public ASTVisitor(boolean visitDocTags) {
 	 * 
 	 * @param node the node to visit
 	 */
-	public void endVisit(Comment node) {
+	public void endVisit(CodeComment node) {
 
 	}
 
@@ -863,6 +863,34 @@ public ASTVisitor(boolean visitDocTags) {
 	 * @param node the node to visit
 	 */
 	public void endVisit(ContinueStatement node) {
+
+	}
+	
+	/**
+	 * Visits the given type-specific AST node.
+	 * <p>
+	 * The default implementation does nothing and return true.
+	 * Subclasses may reimplement.
+	 * </p>
+	 * 
+	 * @param node the node to visit
+	 * @return <code>true</code> if the children of this node should be
+	 * visited, and <code>false</code> if the children of this node should
+	 * be skipped
+	 */
+	public boolean visit(DDocComment node) {
+		return true;
+	}
+
+	/**
+	 * End of visit the given type-specific AST node.
+	 * <p>
+	 * The default implementation does nothing. Subclasses may reimplement.
+	 * </p>
+	 * 
+	 * @param node the node to visit
+	 */
+	public void endVisit(DDocComment node) {
 
 	}
 
@@ -1802,7 +1830,7 @@ public ASTVisitor(boolean visitDocTags) {
 	 * visited, and <code>false</code> if the children of this node should
 	 * be skipped
 	 */
-	public boolean visit(LabelStatement node) {
+	public boolean visit(LabeledStatement node) {
 		return true;
 	}
 
@@ -1814,7 +1842,7 @@ public ASTVisitor(boolean visitDocTags) {
 	 * 
 	 * @param node the node to visit
 	 */
-	public void endVisit(LabelStatement node) {
+	public void endVisit(LabeledStatement node) {
 
 	}
 
@@ -2375,34 +2403,6 @@ public ASTVisitor(boolean visitDocTags) {
 	 * @param node the node to visit
 	 */
 	public void endVisit(ScopeStatement node) {
-
-	}
-	
-	/**
-	 * Visits the given type-specific AST node.
-	 * <p>
-	 * The default implementation does nothing and return true.
-	 * Subclasses may reimplement.
-	 * </p>
-	 * 
-	 * @param node the node to visit
-	 * @return <code>true</code> if the children of this node should be
-	 * visited, and <code>false</code> if the children of this node should
-	 * be skipped
-	 */
-	public boolean visit(ScriptLine node) {
-		return true;
-	}
-
-	/**
-	 * End of visit the given type-specific AST node.
-	 * <p>
-	 * The default implementation does nothing. Subclasses may reimplement.
-	 * </p>
-	 * 
-	 * @param node the node to visit
-	 */
-	public void endVisit(ScriptLine node) {
 
 	}
 

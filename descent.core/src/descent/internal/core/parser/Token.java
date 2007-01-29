@@ -1,9 +1,8 @@
 package descent.internal.core.parser;
 
 import java.math.BigInteger;
-import java.util.List;
 
-import descent.core.dom.Comment;
+import descent.core.dom.DDocComment;
 
 
 public class Token {
@@ -17,7 +16,7 @@ public class Token {
 	public BigInteger numberValue; // Numeric value of the token, see if it is needed
 	public Identifier ident;
 	public int lineNumber;
-	public Comment leadingComment;
+	public DDocComment leadingComment;
 	
 	public Token() {
 		

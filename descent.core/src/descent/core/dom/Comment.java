@@ -1,66 +1,68 @@
 package descent.core.dom;
 
-import java.util.ArrayList;
-import java.util.List;
 
 /**
- * Comment AST node.
+ * Abstract base class for all AST nodes that represent comments.
+ * There are exactly two kinds of comment: 
+ * code comments ({@link CodeComment}),
+ * d doc comments ({@link DDocComment}).
+ * <p>
+ * <pre>
+ * Comment:
+ *     CodeComment
+ *     DDocComment
+ * </pre>
+ * </p>
  */
-public class Comment extends ASTNode {
+public abstract class Comment extends ASTNode {
 	
 	public static enum Kind {
 		LINE_COMMENT,
 		BLOCK_COMMENT,
 		PLUS_COMMENT,
-		DOC_LINE_COMMENT,
-		DOC_BLOCK_COMMENT,
-		DOC_PLUS_COMMENT
 	}
 	
 	/**
-	 * The "kind" structural property of this node type.
+	 * The kind of comment.
 	 */
-	public static final SimplePropertyDescriptor KIND_PROPERTY =
-		new SimplePropertyDescriptor(Comment.class, "kind", Kind.class, OPTIONAL); //$NON-NLS-1$
-
+	Kind kind = Kind.LINE_COMMENT;
+	
 	/**
-	 * A list of property descriptors (element type: 
-	 * {@link StructuralPropertyDescriptor}),
-	 * or null if uninitialized.
+	 * Alternate root node, or <code>null</code> if none.
+	 * Initially <code>null</code>.
 	 */
-	private static final List PROPERTY_DESCRIPTORS;
-
-	static {
-		List properyList = new ArrayList(1);
-		createPropertyList(Comment.class, properyList);
-		addProperty(KIND_PROPERTY, properyList);
-		PROPERTY_DESCRIPTORS = reapPropertyList(properyList);
-	}
-
+	private ASTNode alternateRoot = null;
+	
 	/**
-	 * Returns a list of structural property descriptors for this node type.
-	 * Clients must not modify the result.
+	 * Returns structural property descriptor for the "kind" property
+	 * of this node.
 	 * 
-	 * @param apiLevel the API level; one of the
-	 * <code>AST.JLS*</code> constants
-
-	 * @return a list of property descriptors (element type: 
-	 * {@link StructuralPropertyDescriptor})
-	 * @since 3.0
+	 * @return the property descriptor
 	 */
-	public static List propertyDescriptors(int apiLevel) {
-		return PROPERTY_DESCRIPTORS;
+	abstract SimplePropertyDescriptor internalKindProperty();
+	
+	/**
+	 * Returns structural property descriptor for the "postDDoc" property
+	 * of this node.
+	 * 
+	 * @return the property descriptor
+	 */
+	public final SimplePropertyDescriptor getKindProperty() {
+		return internalKindProperty();
+	}
+	
+	/**
+	 * Creates and returns a structural property descriptor for the
+	 * "kind" property declared on the given concrete node type.
+	 * 
+	 * @return the property descriptor
+	 */
+	static final SimplePropertyDescriptor internalKindPropertyFactory(Class nodeClass) {
+		return new SimplePropertyDescriptor(nodeClass, "kind", Kind.class, MANDATORY); //$NON-NLS-1$
 	}
 
 	/**
-	 * The kind.
-	 */
-	private Kind kind;
-
-
-	/**
-	 * Creates a new unparented comment node owned by the given 
-	 * AST.
+	 * Creates a new AST node for a comment owned by the given AST.
 	 * <p>
 	 * N.B. This constructor is package-private.
 	 * </p>
@@ -70,66 +72,69 @@ public class Comment extends ASTNode {
 	Comment(AST ast) {
 		super(ast);
 	}
-
-	/* (omit javadoc for this method)
-	 * Method declared on ASTNode.
+	
+	/**
+	 * Returns whether this comment is a code comment
+	 * (<code>CodeComment</code>).
+	 * 
+	 * @return <code>true</code> if this is a code comment, and 
+	 *    <code>false</code> otherwise
 	 */
-	final List internalStructuralPropertiesForType(int apiLevel) {
-		return propertyDescriptors(apiLevel);
+	public final boolean isCodeComment() {
+		return (this instanceof CodeComment);
 	}
-
-	/* (omit javadoc for this method)
-	 * Method declared on ASTNode.
+	
+	/**
+	 * Returns whether this comment is a d doc comment
+	 * (<code>DDocComment</code>).
+	 * 
+	 * @return <code>true</code> if this is a d doc comment, and 
+	 *    <code>false</code> otherwise
 	 */
-	final Object internalGetSetObjectProperty(SimplePropertyDescriptor property, boolean get, Object value) {
-		if (property == KIND_PROPERTY) {
-			if (get) {
-				return getKind();
-			} else {
-				setKind((Kind) value);
-				return null;
-			}
-		}
-		// allow default implementation to flag the error
-		return super.internalGetSetObjectProperty(property, get, value);
+	public final boolean isDDocComment() {
+		return (this instanceof DDocComment);
 	}
-
-	/* (omit javadoc for this method)
-	 * Method declared on ASTNode.
+	
+	/**
+	 * Returns the root AST node that this comment occurs
+	 * within, or <code>null</code> if none (or not recorded).
+	 * <p>
+	 * Typically, the comment nodes created while parsing a compilation
+	 * unit are not considered descendents of the normal AST
+	 * root, namely an {@link CompilationUnit}. Instead, these
+	 * comment nodes exist outside the normal AST and each is 
+	 * a root in its own right. This optional property provides
+	 * a well-known way to navigate from the comment to the
+	 * compilation unit in such cases. Note that the alternate root
+	 * property is not one of the comment node's children. It is simply a
+	 * reference to a node.
+	 * </p>
+	 * 
+	 * @return the alternate root node, or <code>null</code> 
+	 * if none
+	 * @see #setAlternateRoot(ASTNode)
 	 */
-	final int getNodeType0() {
-		return COMMENT;
+	public final ASTNode getAlternateRoot() {
+		return this.alternateRoot;
 	}
-
-	/* (omit javadoc for this method)
-	 * Method declared on ASTNode.
+	
+	/**
+	 * Returns the root AST node that this comment occurs
+	 * within, or <code>null</code> if none (or not recorded).
+	 * <p>
+	 * </p>
+	 * 
+	 * @param root the alternate root node, or <code>null</code> 
+	 * if none
+	 * @see #getAlternateRoot()
 	 */
-	ASTNode clone0(AST target) {
-		Comment result = new Comment(target);
-		result.setSourceRange(this.getStartPosition(), this.getLength());
-		result.setKind(getKind());
-		return result;
+	public final void setAlternateRoot(ASTNode root) {
+		// alternate root is *not* considered a structural property
+		// but we protect them nevertheless
+		checkModifiable();
+		this.alternateRoot = root;
 	}
-
-	/* (omit javadoc for this method)
-	 * Method declared on ASTNode.
-	 */
-	final boolean subtreeMatch0(ASTMatcher matcher, Object other) {
-		// dispatch to correct overloaded match method
-		return matcher.match(this, other);
-	}
-
-	/* (omit javadoc for this method)
-	 * Method declared on ASTNode.
-	 */
-	void accept0(ASTVisitor visitor) {
-		boolean visitChildren = visitor.visit(this);
-		if (visitChildren) {
-			// visit children in normal left to right reading order
-		}
-		visitor.endVisit(this);
-	}
-
+	
 	/**
 	 * Returns the kind of this comment.
 	 * 
@@ -143,25 +148,14 @@ public class Comment extends ASTNode {
 	 * Sets the kind of this comment.
 	 * 
 	 * @param kind the kind
-	 * @exception IllegalArgumentException if the argument is incorrect
 	 */ 
 	public void setKind(Kind kind) {
 		if (kind == null) {
 			throw new IllegalArgumentException();
 		}
-		preValueChange(KIND_PROPERTY);
+		preValueChange(getKindProperty());
 		this.kind = kind;
-		postValueChange(KIND_PROPERTY);
-	}
-	
-	/**
-	 * Determines if this comment is a documentation comment.
-	 * This is a convenience method.
-	 */
-	public boolean isDocComment() {
-		return kind == Kind.DOC_LINE_COMMENT ||
-				kind == Kind.DOC_BLOCK_COMMENT ||
-				kind == Kind.DOC_PLUS_COMMENT;
+		postValueChange(getKindProperty());
 	}
 
 	/* (omit javadoc for this method)
@@ -169,15 +163,6 @@ public class Comment extends ASTNode {
 	 */
 	int memSize() {
 		return BASE_NODE_SIZE + 1 * 4;
-	}
-
-	/* (omit javadoc for this method)
-	 * Method declared on ASTNode.
-	 */
-	int treeSize() {
-		return
-			memSize()
-	;
 	}
 
 }

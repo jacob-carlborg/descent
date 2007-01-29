@@ -18,7 +18,7 @@ public class EnumMember extends ASTNode {
 	 * The "preDDocs" structural property of this node type.
 	 */
 	public static final ChildListPropertyDescriptor PRE_D_DOCS_PROPERTY =
-		new ChildListPropertyDescriptor(EnumMember.class, "preDDocs", Comment.class, NO_CYCLE_RISK); //$NON-NLS-1$
+		new ChildListPropertyDescriptor(EnumMember.class, "preDDocs", CodeComment.class, NO_CYCLE_RISK); //$NON-NLS-1$
 
 	/**
 	 * The "name" structural property of this node type.
@@ -36,7 +36,7 @@ public class EnumMember extends ASTNode {
 	 * The "postDDoc" structural property of this node type.
 	 */
 	public static final ChildPropertyDescriptor POST_D_DOC_PROPERTY =
-		new ChildPropertyDescriptor(EnumMember.class, "postDDoc", Comment.class, OPTIONAL, NO_CYCLE_RISK); //$NON-NLS-1$
+		new ChildPropertyDescriptor(EnumMember.class, "postDDoc", CodeComment.class, OPTIONAL, NO_CYCLE_RISK); //$NON-NLS-1$
 
 	/**
 	 * A list of property descriptors (element type: 
@@ -90,7 +90,7 @@ public class EnumMember extends ASTNode {
 	/**
 	 * The postDDoc.
 	 */
-	private Comment postDDoc;
+	private CodeComment postDDoc;
 
 
 	/**
@@ -137,7 +137,7 @@ public class EnumMember extends ASTNode {
 			if (get) {
 				return getPostDDoc();
 			} else {
-				setPostDDoc((Comment) child);
+				setPostDDoc((CodeComment) child);
 				return null;
 			}
 		}
@@ -172,7 +172,7 @@ public class EnumMember extends ASTNode {
 		result.preDDocs.addAll(ASTNode.copySubtrees(target, preDDocs()));
 		result.setName((SimpleName) getName().clone(target));
 	result.setValue((Expression) ASTNode.copySubtree(target, getValue()));
-	result.setPostDDoc((Comment) ASTNode.copySubtree(target, getPostDDoc()));
+	result.setPostDDoc((CodeComment) ASTNode.copySubtree(target, getPostDDoc()));
 		return result;
 	}
 
@@ -206,7 +206,7 @@ public class EnumMember extends ASTNode {
 	 * @return the live list of enum member
 	 *    (element type: <code>Comment</code>)
 	 */ 
-	public List<Comment> preDDocs() {
+	public List<CodeComment> preDDocs() {
 		return this.preDDocs;
 	}
 
@@ -282,7 +282,7 @@ public class EnumMember extends ASTNode {
 	 * 
 	 * @return the post d doc
 	 */ 
-	public Comment getPostDDoc() {
+	public CodeComment getPostDDoc() {
 		return this.postDDoc;
 	}
 
@@ -297,7 +297,7 @@ public class EnumMember extends ASTNode {
 	 * <li>a cycle in would be created</li>
 	 * </ul>
 	 */ 
-	public void setPostDDoc(Comment postDDoc) {
+	public void setPostDDoc(CodeComment postDDoc) {
 		ASTNode oldChild = this.postDDoc;
 		preReplaceChild(oldChild, postDDoc, POST_D_DOC_PROPERTY);
 		this.postDDoc = postDDoc;

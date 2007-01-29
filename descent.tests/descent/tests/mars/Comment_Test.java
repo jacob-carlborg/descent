@@ -3,7 +3,7 @@ package descent.tests.mars;
 import java.util.List;
 
 import descent.core.dom.AggregateDeclaration;
-import descent.core.dom.Comment;
+import descent.core.dom.DDocComment;
 import descent.core.dom.CompilationUnit;
 import descent.core.dom.Declaration;
 import descent.core.dom.ModuleDeclaration;
@@ -16,7 +16,7 @@ public class Comment_Test extends Parser_Test {
 		AggregateDeclaration c = (AggregateDeclaration) getSingleDeclarationNoProblems(s);
 		assertPosition(c, 1, s.length() - 1);
 		
-		List<Comment> comments = c.preDDocs();
+		List<DDocComment> comments = c.preDDocs();
 		assertEquals(1, comments.size());
 		assertPosition(comments.get(0), 1, 11);
 	}
@@ -27,7 +27,7 @@ public class Comment_Test extends Parser_Test {
 		assertEquals(2, declDefs.size());
 		
 		AggregateDeclaration c;
-		List<Comment> comments;
+		List<DDocComment> comments;
 		
 		c = (AggregateDeclaration) declDefs.get(0);
 		comments = c.preDDocs();
@@ -43,7 +43,7 @@ public class Comment_Test extends Parser_Test {
 		AggregateDeclaration c = (AggregateDeclaration) getSingleDeclarationNoProblems(s);
 		assertPosition(c, 1, s.length() - 1);
 		
-		List<Comment> comments = c.preDDocs();
+		List<DDocComment> comments = c.preDDocs();
 		assertEquals(0, comments.size());
 		
 		assertPosition(c.getPostDDoc(), 14, 11);
@@ -54,7 +54,7 @@ public class Comment_Test extends Parser_Test {
 		AggregateDeclaration c = (AggregateDeclaration) getSingleDeclarationNoProblems(s);
 		assertPosition(c, 1, 12);
 		
-		List<Comment> comments = c.preDDocs();
+		List<DDocComment> comments = c.preDDocs();
 		assertEquals(0, comments.size());
 	}
 	
@@ -63,7 +63,7 @@ public class Comment_Test extends Parser_Test {
 		AggregateDeclaration c = (AggregateDeclaration) getSingleDeclarationNoProblems(s);
 		assertPosition(c, 1, s.length() - 1);
 		
-		List<Comment> comments = c.preDDocs();
+		List<DDocComment> comments = c.preDDocs();
 		assertEquals(1, comments.size());
 		assertPosition(comments.get(0), 1, 11);
 		assertPosition(c.getPostDDoc(), 26, 11);
@@ -74,7 +74,7 @@ public class Comment_Test extends Parser_Test {
 		AggregateDeclaration c = (AggregateDeclaration) getSingleDeclarationNoProblems(s);
 		assertPosition(c, 1, 36);
 		
-		List<Comment> comments = c.preDDocs();
+		List<DDocComment> comments = c.preDDocs();
 		assertEquals(1, comments.size());
 		assertPosition(comments.get(0), 1, 11);
 		assertPosition(c.getPostDDoc(), 26, 11);
@@ -87,7 +87,7 @@ public class Comment_Test extends Parser_Test {
 		ModuleDeclaration c = (ModuleDeclaration) compilationUnit.getModuleDeclaration();
 		assertPosition(c, 1, 36);
 		
-		List<Comment> comments = c.preDDocs();
+		List<DDocComment> comments = c.preDDocs();
 		assertEquals(1, comments.size());
 		assertPosition(comments.get(0), 1, 11);
 		assertPosition(c.getPostDDoc(), 26, 11);
@@ -100,7 +100,7 @@ public class Comment_Test extends Parser_Test {
 		VariableDeclaration c = (VariableDeclaration) getSingleDeclarationNoProblems(s);
 		assertPosition(c, 1, 36);
 		
-		List<Comment> comments = c.preDDocs();
+		List<DDocComment> comments = c.preDDocs();
 		assertEquals(1, comments.size());
 		assertPosition(comments.get(0), 1, 11);
 		assertPosition(c.getPostDDoc(), 26, 11);
@@ -112,7 +112,7 @@ public class Comment_Test extends Parser_Test {
 		assertEquals(0, compilationUnit.getProblems().length);
 		VariableDeclaration c = (VariableDeclaration) getSingleDeclarationNoProblems(s);
 		
-		List<Comment> comments = c.preDDocs();
+		List<DDocComment> comments = c.preDDocs();
 		assertEquals(0, comments.size());
 		
 		assertNotNull(c.getPostDDoc());
@@ -124,7 +124,7 @@ public class Comment_Test extends Parser_Test {
 		assertEquals(0, compilationUnit.getProblems().length);
 		VariableDeclaration c = (VariableDeclaration) getSingleDeclarationNoProblems(s);
 		
-		List<Comment> comments = c.preDDocs();
+		List<DDocComment> comments = c.preDDocs();
 		assertEquals(0, comments.size());
 		
 		assertNull(c.getPostDDoc());

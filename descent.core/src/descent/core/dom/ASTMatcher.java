@@ -611,11 +611,11 @@ public class ASTMatcher {
 	 *   <code>false</code> if they do not match or the other object has a
 	 *   different node type or is <code>null</code>
 	 */
-	public boolean match(CaseStatement node, Object other) {
-		if (!(other instanceof CaseStatement)) {
+	public boolean match(SwitchCase node, Object other) {
+		if (!(other instanceof SwitchCase)) {
 			return false;
 		}
-		CaseStatement o = (CaseStatement) other;
+		SwitchCase o = (SwitchCase) other;
 		return (
 			safeSubtreeMatch(node.getExpression(), o.getExpression())
 			&& safeSubtreeMatch(node.getBody(), o.getBody())
@@ -1192,11 +1192,11 @@ public class ASTMatcher {
 	 *   <code>false</code> if they do not match or the other object has a
 	 *   different node type or is <code>null</code>
 	 */
-	public boolean match(LabelStatement node, Object other) {
-		if (!(other instanceof LabelStatement)) {
+	public boolean match(LabeledStatement node, Object other) {
+		if (!(other instanceof LabeledStatement)) {
 			return false;
 		}
-		LabelStatement o = (LabelStatement) other;
+		LabeledStatement o = (LabeledStatement) other;
 		return (
 			safeSubtreeMatch(node.getLabel(), o.getLabel())
 			&& safeSubtreeMatch(node.getBody(), o.getBody())
@@ -2551,7 +2551,7 @@ public class ASTMatcher {
 		PrefixExpression o = (PrefixExpression) other;
 		return (
 			node.getOperator() == o.getOperator()
-			&& safeSubtreeMatch(node.getExpression(), o.getExpression())
+			&& safeSubtreeMatch(node.getOperand(), o.getOperand())
 			);
 	}
 	
@@ -2576,7 +2576,7 @@ public class ASTMatcher {
 		PostfixExpression o = (PostfixExpression) other;
 		return (
 			node.getOperator() == o.getOperator()
-			&& safeSubtreeMatch(node.getExpression(), o.getExpression())
+			&& safeSubtreeMatch(node.getOperand(), o.getOperand())
 			);
 	}
 	
@@ -3120,8 +3120,7 @@ public class ASTMatcher {
 		}
 		CompilationUnit o = (CompilationUnit) other;
 		return (
-			safeSubtreeMatch(node.getScriptLine(), o.getScriptLine())
-			&& safeSubtreeMatch(node.getModuleDeclaration(), o.getModuleDeclaration())
+			safeSubtreeMatch(node.getModuleDeclaration(), o.getModuleDeclaration())
 			&& safeSubtreeListMatch(node.declarations(), o.declarations())
 			);
 	}
@@ -3210,29 +3209,11 @@ public class ASTMatcher {
 	 * @see #ASTMatcher()
 	 * @see #ASTMatcher(boolean)
 	 */
-	public boolean match(Comment node, Object other) {
-		if (!(other instanceof Comment)) {
+	public boolean match(CodeComment node, Object other) {
+		if (!(other instanceof CodeComment)) {
 			return false;
 		}
-		return node.getKind() == ((Comment) other).getKind();
-	}
-	
-	/**
-	 * Returns whether the given node and the other object match.
-	 * <p>
-	 * The default implementation provided by this class tests whether the
-	 * other object is a node of the same type with structurally isomorphic
-	 * child subtrees. Subclasses may override this method as needed.
-	 * </p>
-	 * 
-	 * @param node the node
-	 * @param other the other object, or <code>null</code>
-	 * @return <code>true</code> if the subtree matches, or 
-	 *   <code>false</code> if they do not match or the other object has a
-	 *   different node type or is <code>null</code>
-	 */
-	public boolean match(ScriptLine node, Object other) {
-		return other instanceof ScriptLine;
+		return node.getKind() == ((CodeComment) other).getKind();
 	}
 	
 	/**
@@ -3251,6 +3232,31 @@ public class ASTMatcher {
 	 */
 	public boolean match(Pragma node, Object other) {
 		return other instanceof Pragma;
+	}
+	
+	/**
+	 * Returns whether the given node and the other object match.
+	 * <p>
+	 * The default implementation provided by this class tests whether the
+	 * other object is a node of the same type with structurally isomorphic
+	 * child subtrees. Subclasses may override this method as needed.
+	 * </p>
+	 * 
+	 * @param node the node
+	 * @param other the other object, or <code>null</code>
+	 * @return <code>true</code> if the subtree matches, or 
+	 *   <code>false</code> if they do not match or the other object has a
+	 *   different node type or is <code>null</code>
+	 */
+	public boolean match(DDocComment node, Object other) {
+		if (!(other instanceof DDocComment)) {
+			return false;
+		}
+		DDocComment o = (DDocComment) other;
+		return (
+			node.getKind() == o.getKind()
+			&& node.getText() == o.getText()
+			);
 	}
 
 }

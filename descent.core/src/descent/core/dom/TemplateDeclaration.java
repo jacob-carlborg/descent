@@ -143,7 +143,7 @@ public class TemplateDeclaration extends Declaration {
 			if (get) {
 				return getPostDDoc();
 			} else {
-				setPostDDoc((Comment) child);
+				setPostDDoc((DDocComment) child);
 				return null;
 			}
 		}
@@ -204,7 +204,7 @@ public class TemplateDeclaration extends Declaration {
 		result.setName((SimpleName) getName().clone(target));
 		result.templateParameters.addAll(ASTNode.copySubtrees(target, templateParameters()));
 		result.declarations.addAll(ASTNode.copySubtrees(target, declarations()));
-	result.setPostDDoc((Comment) ASTNode.copySubtree(target, getPostDDoc()));
+	result.setPostDDoc((DDocComment) ASTNode.copySubtree(target, getPostDDoc()));
 		return result;
 	}
 

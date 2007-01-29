@@ -33,15 +33,14 @@ import java.util.List;
  */
 class NaiveASTFlattener extends ASTVisitor {
 	
-	private boolean DONT_PRINT_LAST_ONE = false;
-	private boolean PRINT_LAST_ONE = true;
+	private final String EMPTY= ""; //$NON-NLS-1$
+	private final String LINE_END= "\n"; //$NON-NLS-1$
 	
 	/**
 	 * The string buffer into which the serialized representation of the AST is
 	 * written.
 	 */
-	private StringBuffer buffer;
-	
+	private StringBuffer buffer;	
 	private int indent = 0;
 	
 	/**
@@ -72,60 +71,48 @@ class NaiveASTFlattener extends ASTVisitor {
 			this.buffer.append("  "); //$NON-NLS-1$
 	}
 	
-	/**
-	 * Appends the text representation of the given modifier flags, followed by a single space.
-	 * 
-	 * @param ext the list of modifier and annotation nodes
-	 * (element type: <code>IExtendedModifiers</code>)
-	 */
-	void printModifiers(List<Modifier> ext) {
-		for(Modifier p : ext) {
-			p.accept(this);
-			this.buffer.append(" ");//$NON-NLS-1$
-		}
+	void visitModifiers(List<Modifier> ext) {
+		visitList(ext, " ", EMPTY, " ");
 	}
 	
-	void printPreDDocss(List<? extends ASTNode> ext) {
-		for(ASTNode p : ext) {
-			p.accept(this);
-			this.buffer.append("\n");//$NON-NLS-1$
-		}
+	void visitPreDDocss(List<? extends ASTNode> ext) {
+		visitList(ext, LINE_END, EMPTY, LINE_END);
 	}
 	
-	void printList(List<? extends ASTNode> ext, String separator, boolean printLastOne) {
+	void visitList(List<? extends ASTNode> ext, String separator) {
+		visitList(ext, separator, EMPTY, EMPTY);
+	}
+	
+	void visitList(List<? extends ASTNode> ext, String separator, String pre, String post) {
+		if (ext.isEmpty()) return;
+		
 		int i = 0;
-		int size = ext.size();
+		this.buffer.append(pre);
 		for(ASTNode p : ext) {
-			p.accept(this);
-			if (i != size - 1 || printLastOne) {
+			if (i > 0) {
 				this.buffer.append(separator);
 			}
+			p.accept(this);
 			i++;
 		}
+		this.buffer.append(post);
 	}
 	
 	@Override
 	public boolean visit(AggregateDeclaration node) {
-		printPreDDocss(node.preDDocs());
+		visitPreDDocss(node.preDDocs());
 		printIndent();
-		printModifiers(node.modifiers());
+		visitModifiers(node.modifiers());
 		this.buffer.append(node.getKind().getToken());
 		this.buffer.append(" ");
 		if (node.getName() != null) {
 			node.getName().accept(this);
 		}
-		if (!node.templateParameters().isEmpty()) {
-			this.buffer.append("(");
-			printList(node.templateParameters(), ", ", DONT_PRINT_LAST_ONE);
-			this.buffer.append(")");
-		}
-		if (!node.baseClasses().isEmpty()) {
-			this.buffer.append(" : ");
-			printList(node.baseClasses(), ", ", DONT_PRINT_LAST_ONE);
-		}
+		visitList(node.templateParameters(), ", ", "(", ")");
+		visitList(node.baseClasses(), ", ", " : ", EMPTY);
 		this.buffer.append(" {\n");
 		this.indent++;
-		printList(node.declarations(), "\n", PRINT_LAST_ONE);
+		visitList(node.declarations(), LINE_END, EMPTY, LINE_END);
 		this.indent--;
 		printIndent();
 		this.buffer.append("}");
@@ -138,13 +125,13 @@ class NaiveASTFlattener extends ASTVisitor {
 	
 	@Override
 	public boolean visit(AliasDeclaration node) {
-		printPreDDocss(node.preDDocs());
+		visitPreDDocss(node.preDDocs());
 		printIndent();
-		printModifiers(node.modifiers());
+		visitModifiers(node.modifiers());
 		this.buffer.append("alias ");
 		node.getType().accept(this);
 		this.buffer.append(" ");
-		printList(node.fragments(), ", ", DONT_PRINT_LAST_ONE);
+		visitList(node.fragments(), ", ");
 		this.buffer.append(";");
 		if (node.getPostDDoc() != null) {
 			this.buffer.append(" ");
@@ -176,9 +163,9 @@ class NaiveASTFlattener extends ASTVisitor {
 	
 	@Override
 	public boolean visit(AlignDeclaration node) {
-		printPreDDocss(node.preDDocs());
+		visitPreDDocss(node.preDDocs());
 		printIndent();
-		printModifiers(node.modifiers());
+		visitModifiers(node.modifiers());
 		this.buffer.append("align");
 		if (node.getAlign() >= 2) {
 			this.buffer.append("(");
@@ -187,7 +174,7 @@ class NaiveASTFlattener extends ASTVisitor {
 		}
 		this.buffer.append(" {\n");
 		this.indent++;
-		printList(node.declarations(), "\n", PRINT_LAST_ONE);
+		visitList(node.declarations(), LINE_END, EMPTY, LINE_END);
 		this.indent--;
 		printIndent();
 		this.buffer.append("}");
@@ -233,7 +220,7 @@ class NaiveASTFlattener extends ASTVisitor {
 	public boolean visit(ArrayAccess node) {
 		node.getArray().accept(this);
 		this.buffer.append("[");
-		printList(node.indexes(), ", ", DONT_PRINT_LAST_ONE);
+		visitList(node.indexes(), ", ");
 		this.buffer.append("]");
 		return false;
 	}
@@ -241,7 +228,7 @@ class NaiveASTFlattener extends ASTVisitor {
 	@Override
 	public boolean visit(ArrayInitializer node) {
 		this.buffer.append("[");
-		printList(node.fragments(), ", ", DONT_PRINT_LAST_ONE);
+		visitList(node.fragments(), ", ");
 		this.buffer.append("]");
 		return false;
 	}
@@ -259,7 +246,7 @@ class NaiveASTFlattener extends ASTVisitor {
 	@Override
 	public boolean visit(ArrayLiteral node) {
 		this.buffer.append("[");
-		printList(node.arguments(), ", ", DONT_PRINT_LAST_ONE);
+		visitList(node.arguments(), ", ");
 		this.buffer.append("]");
 		return false;
 	}
@@ -321,7 +308,7 @@ class NaiveASTFlattener extends ASTVisitor {
 		//printIndent();
 		this.buffer.append("{\n");
 		this.indent++;
-		printList(node.statements(), "\n", PRINT_LAST_ONE);
+		visitList(node.statements(), LINE_END, EMPTY, LINE_END);
 		this.indent--;
 		printIndent();
 		this.buffer.append("}");
@@ -350,13 +337,13 @@ class NaiveASTFlattener extends ASTVisitor {
 	public boolean visit(CallExpression node) {
 		node.getExpression().accept(this);
 		this.buffer.append("(");
-		printList(node.arguments(), ", ", DONT_PRINT_LAST_ONE);
+		visitList(node.arguments(), ", ");
 		this.buffer.append(")");
 		return false;
 	}
 	
 	@Override
-	public boolean visit(CaseStatement node) {
+	public boolean visit(SwitchCase node) {
 		printIndent();
 		this.buffer.append("case ");
 		node.getExpression().accept(this);
@@ -399,12 +386,9 @@ class NaiveASTFlattener extends ASTVisitor {
 	}
 	
 	@Override
-	public boolean visit(Comment node) {
+	public boolean visit(CodeComment node) {
 		switch(node.getKind()) {
 		case BLOCK_COMMENT: this.buffer.append("/* */"); break;
-		case DOC_BLOCK_COMMENT: this.buffer.append("/** */"); break;
-		case DOC_LINE_COMMENT: this.buffer.append("///"); break;
-		case DOC_PLUS_COMMENT: this.buffer.append("/++ +/"); break;
 		case LINE_COMMENT: this.buffer.append("//"); break;
 		case PLUS_COMMENT: this.buffer.append("/+ +/"); break;
 		}
@@ -413,17 +397,12 @@ class NaiveASTFlattener extends ASTVisitor {
 	
 	@Override
 	public boolean visit(CompilationUnit node) {
-		if (node.getScriptLine() != null) {
-			node.getScriptLine().accept(this);
-			this.buffer.append("\n");
-		}
-		
 		if (node.getModuleDeclaration() != null) {
 			node.getModuleDeclaration().accept(this);
-			this.buffer.append("\n");
+			this.buffer.append(LINE_END);
 		}
 		
-		printList(node.declarations(), "\n", PRINT_LAST_ONE);
+		visitList(node.declarations(), LINE_END, EMPTY, LINE_END);
 		return false;
 	}
 	
@@ -450,10 +429,16 @@ class NaiveASTFlattener extends ASTVisitor {
 	}
 	
 	@Override
+	public boolean visit(DDocComment node) {
+		this.buffer.append(node.getText());
+		return false;
+	}
+	
+	@Override
 	public boolean visit(DebugAssignment node) {
-		printPreDDocss(node.preDDocs());
+		visitPreDDocss(node.preDDocs());
 		printIndent();
-		printModifiers(node.modifiers());
+		visitModifiers(node.modifiers());
 		this.buffer.append("debug = ");
 		node.getVersion().accept(this);
 		this.buffer.append(";");
@@ -466,9 +451,9 @@ class NaiveASTFlattener extends ASTVisitor {
 	
 	@Override
 	public boolean visit(DebugDeclaration node) {
-		printPreDDocss(node.preDDocs());
+		visitPreDDocss(node.preDDocs());
 		printIndent();
-		printModifiers(node.modifiers());
+		visitModifiers(node.modifiers());
 		this.buffer.append("debug");
 		if (node.getVersion() != null) {
 			this.buffer.append("(");
@@ -477,13 +462,13 @@ class NaiveASTFlattener extends ASTVisitor {
 		}
 		this.buffer.append(" {\n");
 		this.indent++;
-		printList(node.thenDeclarations(), "\n", PRINT_LAST_ONE);
+		visitList(node.thenDeclarations(), LINE_END, EMPTY, LINE_END);
 		this.indent--;
 		this.buffer.append("}");
 		if (!node.elseDeclarations().isEmpty()) {
 			this.buffer.append(" else {\n");
 			this.indent++;
-			printList(node.elseDeclarations(), "\n", PRINT_LAST_ONE);
+			visitList(node.elseDeclarations(), LINE_END, EMPTY, LINE_END);
 			this.indent--;
 			this.buffer.append("}");
 		}
@@ -537,7 +522,7 @@ class NaiveASTFlattener extends ASTVisitor {
 			this.buffer.append("delegate");
 		}
 		this.buffer.append("(");
-		printList(node.arguments(), ", ", DONT_PRINT_LAST_ONE);
+		visitList(node.arguments(), ", ");
 		if (node.isVariadic()) {
 			this.buffer.append("...");
 		}
@@ -598,9 +583,9 @@ class NaiveASTFlattener extends ASTVisitor {
 	
 	@Override
 	public boolean visit(EnumDeclaration node) {
-		printPreDDocss(node.preDDocs());
+		visitPreDDocss(node.preDDocs());
 		printIndent();
-		printModifiers(node.modifiers());
+		visitModifiers(node.modifiers());
 		this.buffer.append("enum");
 		if (node.getName() != null) {
 			this.buffer.append(" ");
@@ -612,7 +597,7 @@ class NaiveASTFlattener extends ASTVisitor {
 		}
 		this.buffer.append(" {\n");
 		this.indent++;
-		printList(node.enumMembers(), ",\n", PRINT_LAST_ONE);
+		visitList(node.enumMembers(), ",\n", EMPTY, LINE_END);
 		this.indent--;
 		this.buffer.append("}");
 		if (node.getPostDDoc() != null) {
@@ -649,9 +634,9 @@ class NaiveASTFlattener extends ASTVisitor {
 	
 	@Override
 	public boolean visit(ExternDeclaration node) {
-		printPreDDocss(node.preDDocs());
+		visitPreDDocss(node.preDDocs());
 		printIndent();
-		printModifiers(node.modifiers());
+		visitModifiers(node.modifiers());
 		this.buffer.append("extern");
 		switch(node.getLinkage()) {
 		case C: this.buffer.append("(C)"); break;
@@ -663,7 +648,7 @@ class NaiveASTFlattener extends ASTVisitor {
 		}
 		this.buffer.append(" {\n");
 		this.indent++;
-		printList(node.declarations(), "\n", PRINT_LAST_ONE);
+		visitList(node.declarations(), LINE_END, EMPTY, LINE_END);
 		this.indent--;
 		this.buffer.append("}");
 		if (node.getPostDDoc() != null) {
@@ -681,14 +666,13 @@ class NaiveASTFlattener extends ASTVisitor {
 			this.buffer.append("_reverse");
 		}
 		this.buffer.append("(");
-		printList(node.arguments(), ", ", DONT_PRINT_LAST_ONE);
+		visitList(node.arguments(), ", ");
 		this.buffer.append("; ");
 		if (node.getExpression() != null) {
 			node.getExpression().accept(this);
 		}
 		this.buffer.append(") ");
 		node.getBody().accept(this);
-		this.buffer.append("\n");
 		return false;
 	}
 	
@@ -714,9 +698,9 @@ class NaiveASTFlattener extends ASTVisitor {
 	
 	@Override
 	public boolean visit(FunctionDeclaration node) {
-		printPreDDocss(node.preDDocs());
+		visitPreDDocss(node.preDDocs());
 		printIndent();
-		printModifiers(node.modifiers());
+		visitModifiers(node.modifiers());
 		switch(node.getKind()) {
 		case CONSTRUCTOR:
 			this.buffer.append("this");
@@ -742,31 +726,27 @@ class NaiveASTFlattener extends ASTVisitor {
 			this.buffer.append("static ~this");
 			break;
 		}
-		if (!node.templateParameters().isEmpty()) {
-			this.buffer.append("(");
-			printList(node.templateParameters(), ", ", DONT_PRINT_LAST_ONE);
-			this.buffer.append(")");
-		}
+		visitList(node.templateParameters(), ", ", "(", ")");
 		this.buffer.append("(");
-		printList(node.arguments(), ", ", DONT_PRINT_LAST_ONE);
+		visitList(node.arguments(), ", ");
 		if (node.isVariadic()) {
 			this.buffer.append("...");
 		}
 		this.buffer.append(")");
 		if (node.getPrecondition() != null) {
-			this.buffer.append("\n");
+			this.buffer.append(LINE_END);
 			printIndent();
 			this.buffer.append("in ");
 			node.getPrecondition().accept(this);
-			this.buffer.append("\n");
+			this.buffer.append(LINE_END);
 			printIndent();
 		}
 		if (node.getPostcondition() != null) {
-			this.buffer.append("\n");
+			this.buffer.append(LINE_END);
 			printIndent();
 			this.buffer.append("out ");
 			node.getPostcondition().accept(this);
-			this.buffer.append("\n");
+			this.buffer.append(LINE_END);
 			printIndent();
 		}
 		if (node.getPrecondition() != null || node.getPostcondition() != null) {
@@ -789,25 +769,25 @@ class NaiveASTFlattener extends ASTVisitor {
 		case FUNCTION: this.buffer.append("function "); break;
 		}
 		this.buffer.append("(");
-		printList(node.arguments(), ", ", DONT_PRINT_LAST_ONE);
+		visitList(node.arguments(), ", ");
 		if (node.isVariadic()) {
 			this.buffer.append("...");
 		}
 		this.buffer.append(")");
 		if (node.getPrecondition() != null) {
-			this.buffer.append("\n");
+			this.buffer.append(LINE_END);
 			printIndent();
 			this.buffer.append(" in ");
 			node.getPrecondition().accept(this);
-			this.buffer.append("\n");
+			this.buffer.append(LINE_END);
 			printIndent();
 		}
 		if (node.getPostcondition() != null) {
-			this.buffer.append("\n");
+			this.buffer.append(LINE_END);
 			printIndent();
 			this.buffer.append(" out ");
 			node.getPostcondition().accept(this);
-			this.buffer.append("\n");
+			this.buffer.append(LINE_END);
 			printIndent();
 		}
 		if (node.getPrecondition() != null || node.getPostcondition() != null) {
@@ -815,7 +795,6 @@ class NaiveASTFlattener extends ASTVisitor {
 		}
 		this.buffer.append(" ");
 		node.getBody().accept(this);
-		this.buffer.append("\n");
 		return false;
 	}
 	
@@ -864,9 +843,9 @@ class NaiveASTFlattener extends ASTVisitor {
 	
 	@Override
 	public boolean visit(IftypeDeclaration node) {
-		printPreDDocss(node.preDDocs());
+		visitPreDDocss(node.preDDocs());
 		printIndent();
-		printModifiers(node.modifiers());
+		visitModifiers(node.modifiers());
 		this.buffer.append("iftype(");
 		if (node.getTestType() != null) {
 			node.getTestType().accept(this);
@@ -885,13 +864,13 @@ class NaiveASTFlattener extends ASTVisitor {
 		}
 		this.buffer.append(") {\n");
 		this.indent++;
-		printList(node.thenDeclarations(), "\n", PRINT_LAST_ONE);
+		visitList(node.thenDeclarations(), LINE_END, EMPTY, LINE_END);
 		this.indent--;
 		this.buffer.append("}");
 		if (!node.elseDeclarations().isEmpty()) {
 			this.buffer.append(" else {\n");
 			this.indent++;
-			printList(node.elseDeclarations(), "\n", PRINT_LAST_ONE);
+			visitList(node.elseDeclarations(), LINE_END, EMPTY, LINE_END);
 			this.indent--;
 			this.buffer.append("}");
 		}
@@ -925,7 +904,6 @@ class NaiveASTFlattener extends ASTVisitor {
 			this.buffer.append(" else ");
 			node.getElseBody().accept(this);
 		}
-		this.buffer.append("\n");
 		return false;
 	}
 	
@@ -938,21 +916,21 @@ class NaiveASTFlattener extends ASTVisitor {
 		node.getName().accept(this);
 		if (!node.selectiveImports().isEmpty()) {
 			this.buffer.append(" : ");
-			printList(node.selectiveImports(), ", ", DONT_PRINT_LAST_ONE);
+			visitList(node.selectiveImports(), ", ");
 		}
 		return false;
 	}
 	
 	@Override
 	public boolean visit(ImportDeclaration node) {
-		printPreDDocss(node.preDDocs());
+		visitPreDDocss(node.preDDocs());
 		printIndent();
-		printModifiers(node.modifiers());
+		visitModifiers(node.modifiers());
 		if (node.isStatic()) {
 			this.buffer.append("static ");
 		}
 		this.buffer.append("import ");
-		printList(node.imports(), ", ", DONT_PRINT_LAST_ONE);
+		visitList(node.imports(), ", ");
 		this.buffer.append(";");
 		if (node.getPostDDoc() != null) {
 			this.buffer.append(" ");
@@ -973,12 +951,11 @@ class NaiveASTFlattener extends ASTVisitor {
 	
 	@Override
 	public boolean visit(InvariantDeclaration node) {
-		printPreDDocss(node.preDDocs());
+		visitPreDDocss(node.preDDocs());
 		printIndent();
-		printModifiers(node.modifiers());
+		visitModifiers(node.modifiers());
 		this.buffer.append("invariant ");
 		node.getBody().accept(this);
-		this.buffer.append("\n");
 		if (node.getPostDDoc() != null) {
 			this.buffer.append(" ");
 			node.getPostDDoc().accept(this);
@@ -1027,7 +1004,7 @@ class NaiveASTFlattener extends ASTVisitor {
 	}
 	
 	@Override
-	public boolean visit(LabelStatement node) {
+	public boolean visit(LabeledStatement node) {
 		printIndent();
 		node.getLabel().accept(this);
 		this.buffer.append(": ");
@@ -1037,9 +1014,9 @@ class NaiveASTFlattener extends ASTVisitor {
 	
 	@Override
 	public boolean visit(MixinDeclaration node) {
-		printPreDDocss(node.preDDocs());
+		visitPreDDocss(node.preDDocs());
 		printIndent();
-		printModifiers(node.modifiers());
+		visitModifiers(node.modifiers());
 		this.buffer.append("mixin ");
 		node.getType().accept(this);
 		if (node.getName() != null) {
@@ -1062,9 +1039,9 @@ class NaiveASTFlattener extends ASTVisitor {
 	
 	@Override
 	public boolean visit(ModifierDeclaration node) {
-		printPreDDocss(node.preDDocs());
+		visitPreDDocss(node.preDDocs());
 		printIndent();
-		printModifiers(node.modifiers());
+		visitModifiers(node.modifiers());
 		node.getModifier().accept(this);
 		if (node.getSyntax().equals(ModifierDeclaration.Syntax.CURLY_BRACES)) {
 			this.buffer.append(" {\n");
@@ -1072,7 +1049,7 @@ class NaiveASTFlattener extends ASTVisitor {
 			this.buffer.append(":\n");
 		}
 		this.indent++;
-		printList(node.declarations(), "\n", PRINT_LAST_ONE);
+		visitList(node.declarations(), LINE_END, EMPTY, LINE_END);
 		this.indent--;
 		if (node.getSyntax().equals(ModifierDeclaration.Syntax.CURLY_BRACES)) {
 			this.buffer.append("}");
@@ -1086,9 +1063,9 @@ class NaiveASTFlattener extends ASTVisitor {
 	
 	@Override
 	public boolean visit(ModuleDeclaration node) {
-		printPreDDocss(node.preDDocs());
+		visitPreDDocss(node.preDDocs());
 		printIndent();
-		printModifiers(node.modifiers());
+		visitModifiers(node.modifiers());
 		this.buffer.append("module ");
 		node.getName().accept(this);
 		this.buffer.append(";");
@@ -1105,27 +1082,14 @@ class NaiveASTFlattener extends ASTVisitor {
 			node.getExpression().accept(this);
 			this.buffer.append(".");
 		}
-		this.buffer.append("new");
-		if (!node.newArguments().isEmpty()) {
-			this.buffer.append("(");
-			printList(node.newArguments(), ", ", DONT_PRINT_LAST_ONE);
-			this.buffer.append(") ");
-		} else {
-			this.buffer.append(" ");
-		}
-		this.buffer.append("class");
-		if (!node.constructorArguments().isEmpty()) {
-			this.buffer.append("(");
-			printList(node.constructorArguments(), ", ", DONT_PRINT_LAST_ONE);
-			this.buffer.append(")");
-		}
-		if (!node.baseClasses().isEmpty()) {
-			this.buffer.append(" ");
-			printList(node.baseClasses(), ", ", DONT_PRINT_LAST_ONE);
-		}
+		this.buffer.append("new ");
+		visitList(node.newArguments(), ", ", "(", ") ");
+		this.buffer.append("class ");
+		visitList(node.constructorArguments(), ", ", "(", ") ");
+		visitList(node.baseClasses(), ", ");
 		this.buffer.append(" {\n");
 		this.indent++;
-		printList(node.declarations(), "\n", PRINT_LAST_ONE);
+		visitList(node.declarations(), LINE_END, EMPTY, LINE_END);
 		this.indent--;
 		this.buffer.append("}");
 		return false;
@@ -1138,17 +1102,9 @@ class NaiveASTFlattener extends ASTVisitor {
 			this.buffer.append(".");
 		}
 		this.buffer.append("new ");
-		if (!node.newArguments().isEmpty()) {
-			this.buffer.append("(");
-			printList(node.newArguments(), ", ", DONT_PRINT_LAST_ONE);
-			this.buffer.append(") ");
-		}
+		visitList(node.newArguments(), ", ", "(", ") ");
 		node.getType().accept(this);
-		if (!node.constructorArguments().isEmpty()) {
-			this.buffer.append("(");
-			printList(node.constructorArguments(), ", ", DONT_PRINT_LAST_ONE);
-			this.buffer.append(")");
-		}
+		visitList(node.constructorArguments(), ", ", "(", ")");
 		return false;
 	}
 	
@@ -1181,7 +1137,7 @@ class NaiveASTFlattener extends ASTVisitor {
 	
 	@Override
 	public boolean visit(PostfixExpression node) {
-		node.getExpression().accept(this);
+		node.getOperand().accept(this);
 		this.buffer.append(node.getOperator().toString());
 		return false;
 	}
@@ -1194,20 +1150,17 @@ class NaiveASTFlattener extends ASTVisitor {
 	
 	@Override
 	public boolean visit(PragmaDeclaration node) {
-		printPreDDocss(node.preDDocs());
+		visitPreDDocss(node.preDDocs());
 		printIndent();
-		printModifiers(node.modifiers());
+		visitModifiers(node.modifiers());
 		this.buffer.append("pragma(");
 		node.getName().accept(this);
-		if (!node.arguments().isEmpty()) {
-			this.buffer.append(", ");
-			printList(node.arguments(), ", ", DONT_PRINT_LAST_ONE);
-		}
+		visitList(node.arguments(), ", ", ", ", EMPTY);
 		this.buffer.append(")");
 		if (!node.declarations().isEmpty()) {
 			this.buffer.append(" {\n");
 			this.indent++;
-			printList(node.declarations(), "\n", PRINT_LAST_ONE);
+			visitList(node.declarations(), LINE_END, EMPTY, LINE_END);
 			this.indent--;
 			this.buffer.append("}");
 		}
@@ -1223,10 +1176,7 @@ class NaiveASTFlattener extends ASTVisitor {
 		printIndent();
 		this.buffer.append("pragma(");
 		node.getName().accept(this);
-		if (!node.arguments().isEmpty()) {
-			this.buffer.append(", ");
-			printList(node.arguments(), ", ", DONT_PRINT_LAST_ONE);
-		}
+		visitList(node.arguments(), ", ", ", ", EMPTY);
 		this.buffer.append(")");
 		if (node.getBody() != null) {
 			this.buffer.append(" ");
@@ -1240,7 +1190,7 @@ class NaiveASTFlattener extends ASTVisitor {
 	@Override
 	public boolean visit(PrefixExpression node) {
 		this.buffer.append(node.getOperator().toString());
-		node.getExpression().accept(this);		
+		node.getOperand().accept(this);		
 		return false;
 	}
 	
@@ -1285,12 +1235,6 @@ class NaiveASTFlattener extends ASTVisitor {
 		this.buffer.append(node.getEvent().toString().toLowerCase());
 		this.buffer.append(") ");
 		node.getBody().accept(this);
-		return false;
-	}
-	
-	@Override
-	public boolean visit(ScriptLine node) {
-		this.buffer.append("#!\n");
 		return false;
 	}
 	
@@ -1353,9 +1297,9 @@ class NaiveASTFlattener extends ASTVisitor {
 	
 	@Override
 	public boolean visit(StaticAssert node) {
-		printPreDDocss(node.preDDocs());
+		visitPreDDocss(node.preDDocs());
 		printIndent();
-		printModifiers(node.modifiers());
+		visitModifiers(node.modifiers());
 		this.buffer.append("static assert(");
 		node.getExpression().accept(this);
 		if (node.getMessage() != null) {
@@ -1380,20 +1324,20 @@ class NaiveASTFlattener extends ASTVisitor {
 	
 	@Override
 	public boolean visit(StaticIfDeclaration node) {
-		printPreDDocss(node.preDDocs());
+		visitPreDDocss(node.preDDocs());
 		printIndent();
-		printModifiers(node.modifiers());
+		visitModifiers(node.modifiers());
 		this.buffer.append("static if(");
 		node.getExpression().accept(this);
 		this.buffer.append(") {\n");
 		this.indent++;
-		printList(node.thenDeclarations(), "\n", PRINT_LAST_ONE);
+		visitList(node.thenDeclarations(), LINE_END, EMPTY, LINE_END);
 		this.indent--;
 		this.buffer.append("}");
 		if (!node.elseDeclarations().isEmpty()) {
 			this.buffer.append(" else {\n");
 			this.indent++;
-			printList(node.elseDeclarations(), "\n", PRINT_LAST_ONE);
+			visitList(node.elseDeclarations(), LINE_END, EMPTY, LINE_END);
 			this.indent--;
 			this.buffer.append("}");
 		}
@@ -1426,14 +1370,14 @@ class NaiveASTFlattener extends ASTVisitor {
 	
 	@Override
 	public boolean visit(StringsExpression node) {
-		printList(node.stringLiterals(), " ", DONT_PRINT_LAST_ONE);
+		visitList(node.stringLiterals(), " ");
 		return false;
 	}
 	
 	@Override
 	public boolean visit(StructInitializer node) {
 		this.buffer.append("{ ");
-		printList(node.fragments(), ", ", PRINT_LAST_ONE);
+		visitList(node.fragments(), ", ");
 		this.buffer.append("}");
 		return false;
 	}
@@ -1480,19 +1424,15 @@ class NaiveASTFlattener extends ASTVisitor {
 	
 	@Override
 	public boolean visit(TemplateDeclaration node) {
-		printPreDDocss(node.preDDocs());
+		visitPreDDocss(node.preDDocs());
 		printIndent();
-		printModifiers(node.modifiers());
+		visitModifiers(node.modifiers());
 		this.buffer.append("template ");
 		node.getName().accept(this);
-		if (!node.templateParameters().isEmpty()) {
-			this.buffer.append("(");
-			printList(node.templateParameters(), ", ", DONT_PRINT_LAST_ONE);
-			this.buffer.append(")");
-		}
+		visitList(node.templateParameters(), ", ", "(", ")");
 		this.buffer.append(" {\n");
 		this.indent++;
-		printList(node.declarations(), "\n", PRINT_LAST_ONE);
+		visitList(node.declarations(), LINE_END, EMPTY, LINE_END);
 		this.indent--;
 		this.buffer.append("}");
 		if (node.getPostDDoc() != null) {
@@ -1506,11 +1446,7 @@ class NaiveASTFlattener extends ASTVisitor {
 	public boolean visit(TemplateType node) {
 		node.getName().accept(this);
 		this.buffer.append("!");
-		if (!node.arguments().isEmpty()) {
-			this.buffer.append("(");
-			printList(node.arguments(), ", ", DONT_PRINT_LAST_ONE);
-			this.buffer.append(")");
-		}
+		visitList(node.arguments(), ", ", "(", ")");
 		return false;
 	}
 	
@@ -1534,12 +1470,11 @@ class NaiveASTFlattener extends ASTVisitor {
 		printIndent();
 		this.buffer.append("try ");
 		node.getBody().accept(this);
-		this.buffer.append("\n");
-		printList(node.catchClauses(), "\n", PRINT_LAST_ONE);
+		this.buffer.append(LINE_END);
+		visitList(node.catchClauses(), LINE_END, EMPTY, LINE_END);
 		if (node.getFinally() != null) {
-			this.buffer.append("finally ");
+			this.buffer.append(" finally ");
 			node.getFinally().accept(this);
-			this.buffer.append("\n");
 		}
 		return false;
 	}
@@ -1553,13 +1488,13 @@ class NaiveASTFlattener extends ASTVisitor {
 	
 	@Override
 	public boolean visit(TypedefDeclaration node) {
-		printPreDDocss(node.preDDocs());
+		visitPreDDocss(node.preDDocs());
 		printIndent();
-		printModifiers(node.modifiers());
+		visitModifiers(node.modifiers());
 		this.buffer.append("typedef ");
 		node.getType().accept(this);
 		this.buffer.append(" ");
-		printList(node.fragments(), ", ", DONT_PRINT_LAST_ONE);
+		visitList(node.fragments(), ", ");
 		this.buffer.append(";");
 		if (node.getPostDDoc() != null) {
 			this.buffer.append(" ");
@@ -1624,12 +1559,11 @@ class NaiveASTFlattener extends ASTVisitor {
 	
 	@Override
 	public boolean visit(UnitTestDeclaration node) {
-		printPreDDocss(node.preDDocs());
+		visitPreDDocss(node.preDDocs());
 		printIndent();
-		printModifiers(node.modifiers());
+		visitModifiers(node.modifiers());
 		this.buffer.append("unittest ");
 		node.getBody().accept(this);
-		this.buffer.append("\n");
 		if (node.getPostDDoc() != null) {
 			this.buffer.append(" ");
 			node.getPostDDoc().accept(this);
@@ -1653,14 +1587,14 @@ class NaiveASTFlattener extends ASTVisitor {
 	
 	@Override
 	public boolean visit(VariableDeclaration node) {
-		printPreDDocss(node.preDDocs());
+		visitPreDDocss(node.preDDocs());
 		printIndent();
-		printModifiers(node.modifiers());
+		visitModifiers(node.modifiers());
 		if (node.getType() != null) {
 			node.getType().accept(this);
 			this.buffer.append(" ");
 		}
-		printList(node.fragments(), ", ", DONT_PRINT_LAST_ONE);
+		visitList(node.fragments(), ", ");
 		this.buffer.append(";");
 		if (node.getPostDDoc() != null) {
 			this.buffer.append(" ");
@@ -1687,9 +1621,9 @@ class NaiveASTFlattener extends ASTVisitor {
 	
 	@Override
 	public boolean visit(VersionAssignment node) {
-		printPreDDocss(node.preDDocs());
+		visitPreDDocss(node.preDDocs());
 		printIndent();
-		printModifiers(node.modifiers());
+		visitModifiers(node.modifiers());
 		this.buffer.append("version = ");
 		node.getVersion().accept(this);
 		this.buffer.append(";");
@@ -1702,9 +1636,9 @@ class NaiveASTFlattener extends ASTVisitor {
 	
 	@Override
 	public boolean visit(VersionDeclaration node) {
-		printPreDDocss(node.preDDocs());
+		visitPreDDocss(node.preDDocs());
 		printIndent();
-		printModifiers(node.modifiers());
+		visitModifiers(node.modifiers());
 		this.buffer.append("version");
 		if (node.getVersion() != null) {
 			this.buffer.append("(");
@@ -1713,13 +1647,13 @@ class NaiveASTFlattener extends ASTVisitor {
 		}
 		this.buffer.append(" {\n");
 		this.indent++;
-		printList(node.thenDeclarations(), "\n", PRINT_LAST_ONE);
+		visitList(node.thenDeclarations(), LINE_END, EMPTY, LINE_END);
 		this.indent--;
 		this.buffer.append("}");
 		if (!node.elseDeclarations().isEmpty()) {
 			this.buffer.append(" else {\n");
 			this.indent++;
-			printList(node.elseDeclarations(), "\n", PRINT_LAST_ONE);
+			visitList(node.elseDeclarations(), LINE_END, EMPTY, LINE_END);
 			this.indent--;
 			this.buffer.append("}");
 		}
@@ -1769,7 +1703,6 @@ class NaiveASTFlattener extends ASTVisitor {
 		node.getExpression().accept(this);
 		this.buffer.append(") ");
 		node.getBody().accept(this);
-		this.buffer.append("\n");
 		return false;
 	}
 	
@@ -1780,7 +1713,6 @@ class NaiveASTFlattener extends ASTVisitor {
 		node.getExpression().accept(this);
 		this.buffer.append(") ");
 		node.getBody().accept(this);
-		this.buffer.append("\n");
 		return false;
 	}
 	

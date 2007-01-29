@@ -29,13 +29,13 @@ public class IfStatement extends Statement {
 	/**
 	 * The "thenBody" structural property of this node type.
 	 */
-	public static final ChildPropertyDescriptor THENBODY_PROPERTY =
+	public static final ChildPropertyDescriptor THEN_BODY_PROPERTY =
 		new ChildPropertyDescriptor(IfStatement.class, "thenBody", Statement.class, MANDATORY, CYCLE_RISK); //$NON-NLS-1$
 
 	/**
 	 * The "elseBody" structural property of this node type.
 	 */
-	public static final ChildPropertyDescriptor ELSEBODY_PROPERTY =
+	public static final ChildPropertyDescriptor ELSE_BODY_PROPERTY =
 		new ChildPropertyDescriptor(IfStatement.class, "elseBody", Statement.class, OPTIONAL, CYCLE_RISK); //$NON-NLS-1$
 
 	/**
@@ -50,8 +50,8 @@ public class IfStatement extends Statement {
 		createPropertyList(IfStatement.class, properyList);
 		addProperty(ARGUMENT_PROPERTY, properyList);
 		addProperty(EXPRESSION_PROPERTY, properyList);
-		addProperty(THENBODY_PROPERTY, properyList);
-		addProperty(ELSEBODY_PROPERTY, properyList);
+		addProperty(THEN_BODY_PROPERTY, properyList);
+		addProperty(ELSE_BODY_PROPERTY, properyList);
 		PROPERTY_DESCRIPTORS = reapPropertyList(properyList);
 	}
 
@@ -131,7 +131,7 @@ public class IfStatement extends Statement {
 				return null;
 			}
 		}
-		if (property == THENBODY_PROPERTY) {
+		if (property == THEN_BODY_PROPERTY) {
 			if (get) {
 				return getThenBody();
 			} else {
@@ -139,7 +139,7 @@ public class IfStatement extends Statement {
 				return null;
 			}
 		}
-		if (property == ELSEBODY_PROPERTY) {
+		if (property == ELSE_BODY_PROPERTY) {
 			if (get) {
 				return getElseBody();
 			} else {
@@ -273,7 +273,7 @@ public class IfStatement extends Statement {
 				if (this.thenBody == null) {
 					preLazyInit();
 					this.thenBody = new Block(this.ast);
-					postLazyInit(this.thenBody, THENBODY_PROPERTY);
+					postLazyInit(this.thenBody, THEN_BODY_PROPERTY);
 				}
 			}
 		}
@@ -296,9 +296,9 @@ public class IfStatement extends Statement {
 			throw new IllegalArgumentException();
 		}
 		ASTNode oldChild = this.thenBody;
-		preReplaceChild(oldChild, thenBody, THENBODY_PROPERTY);
+		preReplaceChild(oldChild, thenBody, THEN_BODY_PROPERTY);
 		this.thenBody = thenBody;
-		postReplaceChild(oldChild, thenBody, THENBODY_PROPERTY);
+		postReplaceChild(oldChild, thenBody, THEN_BODY_PROPERTY);
 	}
 
 	/**
@@ -323,9 +323,9 @@ public class IfStatement extends Statement {
 	 */ 
 	public void setElseBody(Statement elseBody) {
 		ASTNode oldChild = this.elseBody;
-		preReplaceChild(oldChild, elseBody, ELSEBODY_PROPERTY);
+		preReplaceChild(oldChild, elseBody, ELSE_BODY_PROPERTY);
 		this.elseBody = elseBody;
-		postReplaceChild(oldChild, elseBody, ELSEBODY_PROPERTY);
+		postReplaceChild(oldChild, elseBody, ELSE_BODY_PROPERTY);
 	}
 
 	/* (omit javadoc for this method)

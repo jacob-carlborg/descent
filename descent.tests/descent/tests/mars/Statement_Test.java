@@ -20,7 +20,7 @@ import descent.core.dom.ForeachStatement;
 import descent.core.dom.GotoCaseStatement;
 import descent.core.dom.GotoStatement;
 import descent.core.dom.IfStatement;
-import descent.core.dom.LabelStatement;
+import descent.core.dom.LabeledStatement;
 import descent.core.dom.MixinDeclaration;
 import descent.core.dom.Modifier;
 import descent.core.dom.NumberLiteral;
@@ -143,9 +143,9 @@ public class Statement_Test extends Parser_Test {
 	
 	public void testLabel() {
 		String s = " label: break;";
-		LabelStatement stm = (LabelStatement) parseStatement(s);
+		LabeledStatement stm = (LabeledStatement) parseStatement(s);
 		
-		assertEquals(ASTNode.LABEL_STATEMENT, stm.getNodeType());
+		assertEquals(ASTNode.LABELED_STATEMENT, stm.getNodeType());
 		assertPosition(stm, 1, 13);
 		
 		assertEquals("label", stm.getLabel().getIdentifier());

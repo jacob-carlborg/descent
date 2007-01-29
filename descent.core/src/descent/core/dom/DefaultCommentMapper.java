@@ -312,7 +312,7 @@ class DefaultCommentMapper {
 				this.scanner.resetTo(end+1, previousStart);
 				try {
 					int token = this.scanner.getNextToken();
-					if (token != ITerminalSymbols.TokenNameWHITESPACE || this.scanner.getCurrentTokenEndPosition() + 1 != previousStart) {
+					if (token != ITerminalSymbols.TokenNameWHITESPACE || this.scanner.getCurrentPosition() != previousStart) {
 						// stop search on condition 3)
 						// if first comment fails, then there's no extended position in fact
 						if (idx == endIdx) {
@@ -347,7 +347,7 @@ class DefaultCommentMapper {
 				int lastTokenEnd = previousEnd;
 				this.scanner.resetTo(previousEnd, commentStart);
 				try {
-					while (this.scanner.getCurrentTokenEndPosition() + 1 < commentStart) {
+					while (this.scanner.getCurrentPosition() < commentStart) {
 						if (this.scanner.getNextToken() != ITerminalSymbols.TokenNameWHITESPACE) {
 							lastTokenEnd =  this.scanner.getCurrentTokenEndPosition();
 						}
@@ -448,7 +448,7 @@ class DefaultCommentMapper {
 				this.scanner.resetTo(previousEnd, commentStart);
 				try {
 					int token = this.scanner.getNextToken();
-					if (token != ITerminalSymbols.TokenNameWHITESPACE || this.scanner.getCurrentTokenEndPosition() + 1 != commentStart) {
+					if (token != ITerminalSymbols.TokenNameWHITESPACE || this.scanner.getCurrentPosition() != commentStart) {
 						// stop search on condition 2)
 						// if first index fails, then there's no extended position in fact...
 						if (idx == startIdx) {

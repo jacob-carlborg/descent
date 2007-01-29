@@ -149,7 +149,7 @@ public class EnumDeclaration extends Declaration {
 			if (get) {
 				return getPostDDoc();
 			} else {
-				setPostDDoc((Comment) child);
+				setPostDDoc((DDocComment) child);
 				return null;
 			}
 		}
@@ -207,7 +207,7 @@ public class EnumDeclaration extends Declaration {
 	result.setName((SimpleName) ASTNode.copySubtree(target, getName()));
 	result.setBaseType((Type) ASTNode.copySubtree(target, getBaseType()));
 		result.enumMembers.addAll(ASTNode.copySubtrees(target, enumMembers()));
-	result.setPostDDoc((Comment) ASTNode.copySubtree(target, getPostDDoc()));
+	result.setPostDDoc((DDocComment) ASTNode.copySubtree(target, getPostDDoc()));
 		return result;
 	}
 

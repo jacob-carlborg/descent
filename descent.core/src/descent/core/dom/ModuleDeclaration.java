@@ -18,7 +18,7 @@ public class ModuleDeclaration extends ASTNode {
 	 * The "preDDocs" structural property of this node type.
 	 */
 	public static final ChildListPropertyDescriptor PRE_D_DOCS_PROPERTY =
-		new ChildListPropertyDescriptor(ModuleDeclaration.class, "preDDocs", Comment.class, NO_CYCLE_RISK); //$NON-NLS-1$
+		new ChildListPropertyDescriptor(ModuleDeclaration.class, "preDDocs", DDocComment.class, NO_CYCLE_RISK); //$NON-NLS-1$
 
 	/**
 	 * The "modifiers" structural property of this node type.
@@ -36,7 +36,7 @@ public class ModuleDeclaration extends ASTNode {
 	 * The "postDDoc" structural property of this node type.
 	 */
 	public static final ChildPropertyDescriptor POST_D_DOC_PROPERTY =
-		new ChildPropertyDescriptor(ModuleDeclaration.class, "postDDoc", Comment.class, OPTIONAL, NO_CYCLE_RISK); //$NON-NLS-1$
+		new ChildPropertyDescriptor(ModuleDeclaration.class, "postDDoc", DDocComment.class, OPTIONAL, NO_CYCLE_RISK); //$NON-NLS-1$
 
 	/**
 	 * A list of property descriptors (element type: 
@@ -92,7 +92,7 @@ public class ModuleDeclaration extends ASTNode {
 	/**
 	 * The postDDoc.
 	 */
-	private Comment postDDoc;
+	private DDocComment postDDoc;
 
 
 	/**
@@ -131,7 +131,7 @@ public class ModuleDeclaration extends ASTNode {
 			if (get) {
 				return getPostDDoc();
 			} else {
-				setPostDDoc((Comment) child);
+				setPostDDoc((DDocComment) child);
 				return null;
 			}
 		}
@@ -169,7 +169,7 @@ public class ModuleDeclaration extends ASTNode {
 		result.preDDocs.addAll(ASTNode.copySubtrees(target, preDDocs()));
 		result.modifiers.addAll(ASTNode.copySubtrees(target, modifiers()));
 		result.setName((Name) getName().clone(target));
-	result.setPostDDoc((Comment) ASTNode.copySubtree(target, getPostDDoc()));
+	result.setPostDDoc((DDocComment) ASTNode.copySubtree(target, getPostDDoc()));
 		return result;
 	}
 
@@ -203,7 +203,7 @@ public class ModuleDeclaration extends ASTNode {
 	 * @return the live list of module declaration
 	 *    (element type: <code>Comment</code>)
 	 */ 
-	public List<Comment> preDDocs() {
+	public List<DDocComment> preDDocs() {
 		return this.preDDocs;
 	}
 
@@ -263,7 +263,7 @@ public class ModuleDeclaration extends ASTNode {
 	 * 
 	 * @return the post d doc
 	 */ 
-	public Comment getPostDDoc() {
+	public DDocComment getPostDDoc() {
 		return this.postDDoc;
 	}
 
@@ -278,7 +278,7 @@ public class ModuleDeclaration extends ASTNode {
 	 * <li>a cycle in would be created</li>
 	 * </ul>
 	 */ 
-	public void setPostDDoc(Comment postDDoc) {
+	public void setPostDDoc(DDocComment postDDoc) {
 		ASTNode oldChild = this.postDDoc;
 		preReplaceChild(oldChild, postDDoc, POST_D_DOC_PROPERTY);
 		this.postDDoc = postDDoc;

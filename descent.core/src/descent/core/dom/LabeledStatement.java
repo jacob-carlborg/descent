@@ -5,26 +5,25 @@ import java.util.List;
 
 
 /**
- * Case statement AST node type.
- *
+ * A statement that is labeled.
  * <pre>
- * CaseStatement:
- *    <b>case</b> Expression <b>:</b> Statement
+ * LabeledStatement:
+ *    SimpleName <b>:</b> Statement
  * </pre>
  */
-public class CaseStatement extends Statement {
-
+public class LabeledStatement extends Statement {
+	
 	/**
-	 * The "expression" structural property of this node type.
+	 * The "label" structural property of this node type.
 	 */
-	public static final ChildPropertyDescriptor EXPRESSION_PROPERTY =
-		new ChildPropertyDescriptor(CaseStatement.class, "expression", Expression.class, MANDATORY, CYCLE_RISK); //$NON-NLS-1$
+	public static final ChildPropertyDescriptor LABEL_PROPERTY =
+		new ChildPropertyDescriptor(LabeledStatement.class, "label", SimpleName.class, MANDATORY, CYCLE_RISK); //$NON-NLS-1$
 
 	/**
 	 * The "body" structural property of this node type.
 	 */
 	public static final ChildPropertyDescriptor BODY_PROPERTY =
-		new ChildPropertyDescriptor(CaseStatement.class, "body", Statement.class, MANDATORY, CYCLE_RISK); //$NON-NLS-1$
+		new ChildPropertyDescriptor(LabeledStatement.class, "body", Statement.class, MANDATORY, CYCLE_RISK); //$NON-NLS-1$
 
 	/**
 	 * A list of property descriptors (element type: 
@@ -35,8 +34,8 @@ public class CaseStatement extends Statement {
 
 	static {
 		List properyList = new ArrayList(2);
-		createPropertyList(CaseStatement.class, properyList);
-		addProperty(EXPRESSION_PROPERTY, properyList);
+		createPropertyList(LabeledStatement.class, properyList);
+		addProperty(LABEL_PROPERTY, properyList);
 		addProperty(BODY_PROPERTY, properyList);
 		PROPERTY_DESCRIPTORS = reapPropertyList(properyList);
 	}
@@ -57,9 +56,9 @@ public class CaseStatement extends Statement {
 	}
 
 	/**
-	 * The expression.
+	 * The label.
 	 */
-	private Expression expression;
+	private SimpleName label;
 
 	/**
 	 * The body.
@@ -68,7 +67,7 @@ public class CaseStatement extends Statement {
 
 
 	/**
-	 * Creates a new unparented case statement node owned by the given 
+	 * Creates a new unparented label statement node owned by the given 
 	 * AST.
 	 * <p>
 	 * N.B. This constructor is package-private.
@@ -76,9 +75,9 @@ public class CaseStatement extends Statement {
 	 * 
 	 * @param ast the AST that is to own this node
 	 */
-	CaseStatement(AST ast) {
+	LabeledStatement(AST ast) {
 		super(ast);
-	}
+	}	
 
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
@@ -91,11 +90,11 @@ public class CaseStatement extends Statement {
 	 * Method declared on ASTNode.
 	 */
 	final ASTNode internalGetSetChildProperty(ChildPropertyDescriptor property, boolean get, ASTNode child) {
-		if (property == EXPRESSION_PROPERTY) {
+		if (property == LABEL_PROPERTY) {
 			if (get) {
-				return getExpression();
+				return getLabel();
 			} else {
-				setExpression((Expression) child);
+				setLabel((SimpleName) child);
 				return null;
 			}
 		}
@@ -115,16 +114,16 @@ public class CaseStatement extends Statement {
 	 * Method declared on ASTNode.
 	 */
 	final int getNodeType0() {
-		return CASE_STATEMENT;
+		return LABELED_STATEMENT;
 	}
 
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
 	 */
 	ASTNode clone0(AST target) {
-		CaseStatement result = new CaseStatement(target);
+		LabeledStatement result = new LabeledStatement(target);
 		result.setSourceRange(this.getStartPosition(), this.getLength());
-		result.setExpression((Expression) getExpression().clone(target));
+		result.setLabel((SimpleName) getLabel().clone(target));
 		result.setBody((Statement) getBody().clone(target));
 		return result;
 	}
@@ -144,35 +143,35 @@ public class CaseStatement extends Statement {
 		boolean visitChildren = visitor.visit(this);
 		if (visitChildren) {
 			// visit children in normal left to right reading order
-			acceptChild(visitor, getExpression());
+			acceptChild(visitor, getLabel());
 			acceptChild(visitor, getBody());
 		}
 		visitor.endVisit(this);
 	}
 
 	/**
-	 * Returns the expression of this case statement.
+	 * Returns the label of this label statement.
 	 * 
-	 * @return the expression
+	 * @return the label
 	 */ 
-	public Expression getExpression() {
-		if (this.expression == null) {
+	public SimpleName getLabel() {
+		if (this.label == null) {
 			// lazy init must be thread-safe for readers
 			synchronized (this) {
-				if (this.expression == null) {
+				if (this.label == null) {
 					preLazyInit();
-					this.expression = new SimpleName(this.ast);
-					postLazyInit(this.expression, EXPRESSION_PROPERTY);
+					this.label = new SimpleName(this.ast);
+					postLazyInit(this.label, LABEL_PROPERTY);
 				}
 			}
 		}
-		return this.expression;
+		return this.label;
 	}
 
 	/**
-	 * Sets the expression of this case statement.
+	 * Sets the label of this label statement.
 	 * 
-	 * @param expression the expression
+	 * @param label the label
 	 * @exception IllegalArgumentException if:
 	 * <ul>
 	 * <li>the node belongs to a different AST</li>
@@ -180,18 +179,18 @@ public class CaseStatement extends Statement {
 	 * <li>a cycle in would be created</li>
 	 * </ul>
 	 */ 
-	public void setExpression(Expression expression) {
-		if (expression == null) {
+	public void setLabel(SimpleName label) {
+		if (label == null) {
 			throw new IllegalArgumentException();
 		}
-		ASTNode oldChild = this.expression;
-		preReplaceChild(oldChild, expression, EXPRESSION_PROPERTY);
-		this.expression = expression;
-		postReplaceChild(oldChild, expression, EXPRESSION_PROPERTY);
+		ASTNode oldChild = this.label;
+		preReplaceChild(oldChild, label, LABEL_PROPERTY);
+		this.label = label;
+		postReplaceChild(oldChild, label, LABEL_PROPERTY);
 	}
 
 	/**
-	 * Returns the body of this case statement.
+	 * Returns the body of this label statement.
 	 * 
 	 * @return the body
 	 */ 
@@ -210,7 +209,7 @@ public class CaseStatement extends Statement {
 	}
 
 	/**
-	 * Sets the body of this case statement.
+	 * Sets the body of this label statement.
 	 * 
 	 * @param body the body
 	 * @exception IllegalArgumentException if:
@@ -243,7 +242,7 @@ public class CaseStatement extends Statement {
 	int treeSize() {
 		return
 			memSize()
-			+ (this.expression == null ? 0 : getExpression().treeSize())
+			+ (this.label == null ? 0 : getLabel().treeSize())
 			+ (this.body == null ? 0 : getBody().treeSize())
 	;
 	}

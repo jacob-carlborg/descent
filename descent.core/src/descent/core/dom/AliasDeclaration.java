@@ -125,7 +125,7 @@ public class AliasDeclaration extends Declaration {
 			if (get) {
 				return getPostDDoc();
 			} else {
-				setPostDDoc((Comment) child);
+				setPostDDoc((DDocComment) child);
 				return null;
 			}
 		}
@@ -182,7 +182,7 @@ public class AliasDeclaration extends Declaration {
 		result.modifiers.addAll(ASTNode.copySubtrees(target, modifiers()));
 		result.setType((Type) getType().clone(target));
 		result.fragments.addAll(ASTNode.copySubtrees(target, fragments()));
-	result.setPostDDoc((Comment) ASTNode.copySubtree(target, getPostDDoc()));
+	result.setPostDDoc((DDocComment) ASTNode.copySubtree(target, getPostDDoc()));
 		return result;
 	}
 
