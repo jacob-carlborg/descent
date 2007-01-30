@@ -6,10 +6,18 @@ import org.eclipse.text.edits.TextEdit;
 import descent.core.compiler.IScanner;
 import descent.core.compiler.ITerminalSymbols;
 import descent.core.dom.AST;
+import descent.core.dom.Block;
+import descent.core.dom.BooleanLiteral;
 import descent.core.dom.CompilationUnit;
+import descent.core.dom.DoStatement;
+import descent.core.dom.ExpressionStatement;
+import descent.core.dom.FunctionDeclaration;
+import descent.core.dom.IfStatement;
 import descent.core.dom.Import;
 import descent.core.dom.ImportDeclaration;
+import descent.core.dom.InfixExpression;
 import descent.core.dom.ModuleDeclaration;
+import descent.core.dom.PostfixExpression;
 import descent.core.dom.ToolFactory;
 import descent.core.dom.rewrite.ASTRewrite;
 import descent.core.dom.rewrite.ListRewrite;
@@ -32,6 +40,9 @@ public class RewriteTest extends Parser_Test {
 	private String end() throws Exception {
 		TextEdit edit = rewriter.rewriteAST(document, null);
 		edit.apply(document);
+		
+		System.out.println(document.get());
+		System.out.println("-------------------------------------------");
 		
 		return document.get().trim();
 	}
@@ -90,8 +101,73 @@ public class RewriteTest extends Parser_Test {
 		lrw.insertFirst(importDeclaration, null);
 		lrw.insertAfter(importDeclaration2, importDeclaration, null);
 		
-		String end = end();
-		assertEqualsTokenByToken("module hola; import std.stdio; import std.something;", end);
+		assertEqualsTokenByToken("module hola; import std.stdio; import std.something;", end());
+	}
+	
+	public void testDeleteStatementFromFunction() throws Exception {
+		begin("int bla() { if (true) { return 1; } else { return 2; } }");
+		
+		FunctionDeclaration function = (FunctionDeclaration) unit.declarations().get(0);
+		Block block = (Block) function.getBody();
+		
+		ListRewrite lrw = rewriter.getListRewrite(block, Block.STATEMENTS_PROPERTY);
+		lrw.remove(block.statements().get(0), null);
+		
+		assertEqualsTokenByToken("int bla() { }", end());
+	}
+	
+	public void testReplaceExpressionValueInIf() throws Exception {
+		begin("int bla() { if (true) { return 1; } else { return 2; } }");
+		
+		FunctionDeclaration function = (FunctionDeclaration) unit.declarations().get(0);
+		Block block = (Block) function.getBody();
+		
+		IfStatement ifStatement = (IfStatement) block.statements().get(0);
+		BooleanLiteral condition = (BooleanLiteral) ifStatement.getExpression();
+		
+		rewriter.set(condition, BooleanLiteral.BOOLEAN_VALUE_PROPERTY, false, null);
+		
+		assertEqualsTokenByToken("int bla() { if (false) { return 1; } else { return 2; } }", end());
+	}
+	
+	public void testReplaceExpressionInIf() throws Exception {
+		begin("int bla() { if (true) { return 1; } else { return 2; } }");
+		
+		FunctionDeclaration function = (FunctionDeclaration) unit.declarations().get(0);
+		Block block = (Block) function.getBody();
+		
+		IfStatement ifStatement = (IfStatement) block.statements().get(0);
+		
+		InfixExpression infix = ast.newInfixExpression();
+		infix.setLeftOperand(ast.newSimpleName("a"));
+		infix.setOperator(InfixExpression.Operator.GREATER);
+		infix.setRightOperand(ast.newSimpleName("b"));
+		
+		rewriter.set(ifStatement, IfStatement.EXPRESSION_PROPERTY, infix, null);
+		
+		assertEqualsTokenByToken("int bla() { if (a > b) { return 1; } else { return 2; } }", end());
+	}
+	
+	public void testReplaceDoBody() throws Exception {
+		begin("int bla() { do { i++; } while(i < 3); }");
+		
+		FunctionDeclaration function = (FunctionDeclaration) unit.declarations().get(0);
+		Block functionBlock = (Block) function.getBody();
+		
+		DoStatement doStatement = (DoStatement) functionBlock.statements().get(0);
+		
+		Block newBlock = ast.newBlock();
+		PostfixExpression decrement = ast.newPostfixExpression();
+		decrement.setOperand(ast.newSimpleName("j"));
+		decrement.setOperator(PostfixExpression.Operator.DECREMENT);
+		
+		ExpressionStatement statement = ast.newExpressionStatement();
+		statement.setExpression(decrement);
+		newBlock.statements().add(statement);
+		
+		rewriter.replace(doStatement.getBody(), newBlock, null);
+		
+		assertEqualsTokenByToken("int bla() { do { j--; } while(i < 3); }", end());
 	}
 	
 	private void assertEqualsTokenByToken(String document1, String document2) throws Exception {
