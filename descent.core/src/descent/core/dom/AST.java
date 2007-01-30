@@ -1309,13 +1309,20 @@ public class AST {
 	}
 
 	/**
-	 * Creates an unparented modifier node owned by this AST.
+	 * Creates and returns a new unparented modifier node for the given
+	 * modifier.
 	 * 
-	 * @return the new unparented modifier node
+	 * @param keyword one of the modifier keyword constants
+	 * @return a new unparented modifier node
+	 * @exception IllegalArgumentException if the primitive type code is invalid
+	 * @exception UnsupportedOperationException if this operation is used in
+	 * a JLS2 AST
+	 * @since 3.1
 	 */
-	public Modifier newModifier() {
-		Modifier node = new Modifier(this);
-		return node;
+	public Modifier newModifier(Modifier.ModifierKeyword keyword) {
+		Modifier result = new Modifier(this);
+		result.setModifierKeyword(keyword);
+		return result;
 	}
 
 	/**

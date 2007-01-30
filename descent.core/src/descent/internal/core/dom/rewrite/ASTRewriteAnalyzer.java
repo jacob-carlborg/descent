@@ -35,11 +35,13 @@ import descent.core.compiler.ITerminalSymbols;
 import descent.core.dom.AST;
 import descent.core.dom.ASTNode;
 import descent.core.dom.ASTVisitor;
+import descent.core.dom.AggregateDeclaration;
 import descent.core.dom.Assignment;
 import descent.core.dom.Block;
 import descent.core.dom.BooleanLiteral;
 import descent.core.dom.BreakStatement;
 import descent.core.dom.CharacterLiteral;
+import descent.core.dom.ChildListPropertyDescriptor;
 import descent.core.dom.ChildPropertyDescriptor;
 import descent.core.dom.CompilationUnit;
 import descent.core.dom.ConditionalExpression;
@@ -70,6 +72,7 @@ import descent.core.dom.ThrowStatement;
 import descent.core.dom.ToolFactory;
 import descent.core.dom.TryStatement;
 import descent.core.dom.WhileStatement;
+import descent.core.dom.AggregateDeclaration.Kind;
 import descent.core.dom.rewrite.TargetSourceRangeComputer;
 import descent.core.dom.rewrite.TargetSourceRangeComputer.SourceRange;
 import descent.core.formatter.IndentManipulation;
@@ -1003,6 +1006,46 @@ public final class ASTRewriteAnalyzer extends ASTVisitor {
 		}
 		voidVisit(parent, FunctionDeclaration.BODY_PROPERTY);
 	}
+	
+	class ModifierRewriter extends ListRewriter {
+		
+	}
+	
+	
+	private int rewriteModifiers(ASTNode node, ChildListPropertyDescriptor property, int pos) {
+		RewriteEvent event= getEvent(node, property);
+		if (event == null || event.getChangeKind() == RewriteEvent.UNCHANGED) {
+			return doVisit(node, property, pos);
+		}
+		RewriteEvent[] children= event.getChildren();
+		boolean isAllInsert= isAllOfKind(children, RewriteEvent.INSERTED);
+		boolean isAllRemove= isAllOfKind(children, RewriteEvent.REMOVED);
+		if (isAllInsert || isAllRemove) {
+			// update pos
+			try {
+				pos= getScanner().getNextStartOffset(pos, false);
+			} catch (CoreException e) {
+				handleException(e);
+			}
+		}
+		
+		int endPos= new ModifierRewriter().rewriteList(node, property, pos, "", " "); //$NON-NLS-1$ //$NON-NLS-2$
+
+		if (isAllInsert) {
+			RewriteEvent lastChild= children[children.length - 1];
+			String separator= String.valueOf(' ');
+			doTextInsert(endPos, separator, getEditGroup(lastChild));
+		} else if (isAllRemove) {
+			try {
+				int nextPos= getScanner().getNextStartOffset(endPos, false); // to the next token
+				doTextRemove(endPos, nextPos - endPos, getEditGroup(children[children.length - 1]));
+				return nextPos;
+			} catch (CoreException e) {
+				handleException(e);
+			}
+		}
+		return endPos;
+	}
 		
 	/*
 	 * Next token is a left brace. Returns the offset after the brace. For incomplete code, return the start offset.  
@@ -1166,6 +1209,40 @@ public final class ASTRewriteAnalyzer extends ASTVisitor {
 			nodeEndStack.pop();
 			this.currentEdit= this.currentEdit.getParent();
 		}
+	}
+	
+	@Override
+	public boolean visit(AggregateDeclaration node) {
+		if (!hasChildrenChanges(node)) {
+			return doVisitUnchangedChildren(node);
+		}
+		
+		int startPos = rewriteParagraphList(node, AggregateDeclaration.PRE_D_DOCS_PROPERTY, 0, 0, 0, 0);
+		startPos = rewriteModifiers(node, AggregateDeclaration.MODIFIERS_PROPERTY, startPos);
+		
+		if (isChanged(node, AggregateDeclaration.KIND_PROPERTY)) {
+			AggregateDeclaration.Kind originalKind = (Kind) getOriginalValue(node, AggregateDeclaration.KIND_PROPERTY);
+			AggregateDeclaration.Kind newValue = (Kind) getNewValue(node, AggregateDeclaration.KIND_PROPERTY);
+			try {
+				int terminalSymbol = 0;
+				switch(originalKind) {
+				case CLASS: terminalSymbol = ITerminalSymbols.TokenNameclass; break;
+				case INTERFACE: terminalSymbol = ITerminalSymbols.TokenNameinterface; break;
+				case UNION: terminalSymbol = ITerminalSymbols.TokenNameunion; break;
+				case STRUCT: terminalSymbol = ITerminalSymbols.TokenNamestruct; break;
+				}
+				
+				getScanner().readToToken(terminalSymbol, node.getStartPosition());
+				int start = getScanner().getCurrentStartOffset();
+				int end = getScanner().getCurrentEndOffset();
+				
+				doTextReplace(start, end - start, newValue.toString(), null);
+			} catch (CoreException e) {
+				
+			}
+		}
+		
+		return false;
 	}
 
 	/* (non-Javadoc)

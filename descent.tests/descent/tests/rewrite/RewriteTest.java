@@ -6,6 +6,7 @@ import org.eclipse.text.edits.TextEdit;
 import descent.core.compiler.IScanner;
 import descent.core.compiler.ITerminalSymbols;
 import descent.core.dom.AST;
+import descent.core.dom.AggregateDeclaration;
 import descent.core.dom.Block;
 import descent.core.dom.BooleanLiteral;
 import descent.core.dom.CompilationUnit;
@@ -16,6 +17,7 @@ import descent.core.dom.IfStatement;
 import descent.core.dom.Import;
 import descent.core.dom.ImportDeclaration;
 import descent.core.dom.InfixExpression;
+import descent.core.dom.Modifier;
 import descent.core.dom.ModuleDeclaration;
 import descent.core.dom.PostfixExpression;
 import descent.core.dom.ToolFactory;
@@ -45,6 +47,76 @@ public class RewriteTest extends Parser_Test {
 		System.out.println("-------------------------------------------");
 		
 		return document.get().trim();
+	}
+	
+	public void testAggregateDeclarationAddPreDDoc() throws Exception {
+		begin("class X { }");
+		
+		AggregateDeclaration agg = (AggregateDeclaration) unit.declarations().get(0);
+		ListRewrite lrw = rewriter.getListRewrite(agg, AggregateDeclaration.PRE_D_DOCS_PROPERTY);
+		lrw.insertFirst(ast.newDDocComment("/** Some comment */\n"), null);
+		
+		assertEqualsTokenByToken("/** Some comment */ class X { }", end());
+	}
+	
+	public void testAggregateDeclarationAddModifiers() throws Exception {
+		begin("class X { }");
+		
+		AggregateDeclaration agg = (AggregateDeclaration) unit.declarations().get(0);
+		
+		ListRewrite lrw = rewriter.getListRewrite(agg, AggregateDeclaration.MODIFIERS_PROPERTY);
+		Modifier publicModifier = ast.newModifier(Modifier.ModifierKeyword.PUBLIC_KEYWORD);
+		Modifier abstractModifier = ast.newModifier(Modifier.ModifierKeyword.ABSTRACT_KEYWORD);
+		
+		lrw.insertFirst(publicModifier, null);
+		lrw.insertAfter(abstractModifier, publicModifier, null);
+		
+		assertEqualsTokenByToken("public abstract class X { }", end());
+	}
+	
+	public void testAggregateDeclarationRemoveModifier() throws Exception {
+		begin("public abstract class X { }");
+		
+		AggregateDeclaration agg = (AggregateDeclaration) unit.declarations().get(0);
+		
+		ListRewrite lrw = rewriter.getListRewrite(agg, AggregateDeclaration.MODIFIERS_PROPERTY);
+		lrw.remove(agg.modifiers().get(0), null);
+		
+		assertEqualsTokenByToken("abstract class X { }", end());
+	}
+	
+	public void testAggregateDeclarationChangeType() throws Exception {
+		begin("class X { }");
+		
+		AggregateDeclaration agg = (AggregateDeclaration) unit.declarations().get(0);
+		
+		rewriter.set(agg, AggregateDeclaration.KIND_PROPERTY, AggregateDeclaration.Kind.INTERFACE, null);
+		
+		assertEqualsTokenByToken("interface X { }", end());
+	}
+	
+	public void testAggregateDeclarationMultiChange() throws Exception {
+		begin("class X { }");
+		
+		AggregateDeclaration agg = (AggregateDeclaration) unit.declarations().get(0);
+		ListRewrite lrw;
+		
+		// Add comments
+		lrw = rewriter.getListRewrite(agg, AggregateDeclaration.PRE_D_DOCS_PROPERTY);
+		lrw.insertFirst(ast.newDDocComment("/** Some comment */\n"), null);
+		
+		// Add modifiers
+		lrw = rewriter.getListRewrite(agg, AggregateDeclaration.MODIFIERS_PROPERTY);
+		Modifier publicModifier = ast.newModifier(Modifier.ModifierKeyword.PUBLIC_KEYWORD);
+		Modifier abstractModifier = ast.newModifier(Modifier.ModifierKeyword.ABSTRACT_KEYWORD);
+		
+		// Change type
+		rewriter.set(agg, AggregateDeclaration.KIND_PROPERTY, AggregateDeclaration.Kind.INTERFACE, null);
+		
+		lrw.insertFirst(publicModifier, null);
+		lrw.insertAfter(abstractModifier, publicModifier, null);
+		
+		assertEqualsTokenByToken("/** Some comment */ public abstract interface X { }", end());
 	}
 	
 	public void testInsertModuleDeclaration() throws Exception {
