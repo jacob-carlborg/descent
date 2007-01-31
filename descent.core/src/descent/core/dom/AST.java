@@ -1577,13 +1577,25 @@ public class AST {
 	}
 
 	/**
-	 * Creates an unparented simple type node owned by this AST.
+	 * Creates and returns a new unparented simple type node with the given
+	 * type name.
+	 * <p>
+	 * This method can be used to convert a name (<code>Name</code>) into a
+	 * type (<code>Type</code>) by wrapping it.
+	 * </p>
 	 * 
-	 * @return the new unparented simple type node
+	 * @param typeName the name of the class or interface
+	 * @return a new unparented simple type node
+	 * @exception IllegalArgumentException if:
+	 * <ul>
+	 * <li>the node belongs to a different AST</li>
+	 * <li>the node already has a parent</li>
+	 * </ul>
 	 */
-	public SimpleType newSimpleType() {
-		SimpleType node = new SimpleType(this);
-		return node;
+	public SimpleType newSimpleType(SimpleName typeName) {
+		SimpleType result = new SimpleType(this);
+		result.setName(typeName);
+		return result;
 	}
 
 	/**

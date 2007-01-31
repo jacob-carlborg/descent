@@ -5937,7 +5937,12 @@ class Parser extends Lexer {
 	private BaseClass newBaseClass(Type type, Modifier modifier) {
 		BaseClass baseClass = new BaseClass(ast);
 		baseClass.setType(type);
-		baseClass.setModifier(modifier);
+		if (modifier == null) {
+			baseClass.setSourceRange(type.getStartPosition(), type.getLength());
+		} else {
+			baseClass.setModifier(modifier);
+			baseClass.setSourceRange(modifier.getStartPosition(), type.getStartPosition() + type.getLength() - modifier.getStartPosition());
+		}
 		return baseClass;
 	}
 	

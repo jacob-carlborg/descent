@@ -910,7 +910,7 @@ public final class ASTRewriteAnalyzer extends ASTVisitor {
 		return listRewriter.rewriteList(parent, property, insertPos, leadString.toString());
 	}
 	
-	private int rewriteOptionalTypeParameters(ASTNode parent, StructuralPropertyDescriptor property, int offset, String keyword, boolean adjustOnNext, boolean needsSpaceOnRemoveAll) {
+	private int rewriteOptionalTemplateParameters(ASTNode parent, StructuralPropertyDescriptor property, int offset, String keyword, boolean adjustOnNext, boolean needsSpaceOnRemoveAll) {
 		int pos= offset;
 		RewriteEvent event= getEvent(parent, property);
 		if (event != null && event.getChangeKind() != RewriteEvent.UNCHANGED) {
@@ -922,21 +922,21 @@ public final class ASTRewriteAnalyzer extends ASTVisitor {
 				}
 				boolean isAllRemoved= !isAllInserted && isAllOfKind(children, RewriteEvent.REMOVED);
 				if (isAllRemoved) { // all removed: set start to left bracket
-					int posBeforeOpenBracket= getScanner().getTokenStartOffset(ITerminalSymbols.TokenNameLESS, pos);
+					int posBeforeOpenBracket= getScanner().getTokenStartOffset(ITerminalSymbols.TokenNameLPAREN, pos);
 					if (posBeforeOpenBracket != pos) {
 						needsSpaceOnRemoveAll= false;
 					}
 					pos= posBeforeOpenBracket;
 				}
-				pos= new ListRewriter().rewriteList(parent, property, pos, String.valueOf('<'), ", "); //$NON-NLS-1$
+				pos= new ListRewriter().rewriteList(parent, property, pos, String.valueOf('('), ", "); //$NON-NLS-1$
 				if (isAllRemoved) { // all removed: remove right and space up to next element
-					int endPos= getScanner().getTokenEndOffset(ITerminalSymbols.TokenNameGREATER, pos); // set pos to '>'
+					int endPos= getScanner().getTokenEndOffset(ITerminalSymbols.TokenNameRPAREN, pos); // set pos to ')'
 					endPos= getScanner().getNextStartOffset(endPos, false);
 					String replacement= needsSpaceOnRemoveAll ? String.valueOf(' ') : new String();
 					doTextReplace(pos, endPos - pos, replacement, getEditGroup(children[children.length - 1]));
 					return endPos;
 				} else if (isAllInserted) {
-					doTextInsert(pos, String.valueOf('>' + keyword), getEditGroup(children[children.length - 1]));
+					doTextInsert(pos, String.valueOf(')' + keyword), getEditGroup(children[children.length - 1]));
 					return pos;
 				}
 			} catch (CoreException e) {
@@ -947,7 +947,7 @@ public final class ASTRewriteAnalyzer extends ASTVisitor {
 		}
 		if (pos != offset) { // list contained some type -> parse after closing bracket
 			try {
-				return getScanner().getTokenEndOffset(ITerminalSymbols.TokenNameGREATER, pos);
+				return getScanner().getTokenEndOffset(ITerminalSymbols.TokenNameRPAREN, pos);
 			} catch (CoreException e) {
 				handleException(e);
 			}
@@ -1217,22 +1217,22 @@ public final class ASTRewriteAnalyzer extends ASTVisitor {
 			return doVisitUnchangedChildren(node);
 		}
 		
-		int startPos = rewriteParagraphList(node, AggregateDeclaration.PRE_D_DOCS_PROPERTY, 0, 0, 0, 0);
-		startPos = rewriteModifiers(node, AggregateDeclaration.MODIFIERS_PROPERTY, startPos);
+		int pos = rewriteParagraphList(node, AggregateDeclaration.PRE_D_DOCS_PROPERTY, 0, 0, 0, 0);
+		pos = rewriteModifiers(node, AggregateDeclaration.MODIFIERS_PROPERTY, pos);
+		
+		AggregateDeclaration.Kind originalKind = (Kind) getOriginalValue(node, AggregateDeclaration.KIND_PROPERTY);
+		int kindTerminalSymbol = 0;
+		switch(originalKind) {
+		case CLASS: kindTerminalSymbol = ITerminalSymbols.TokenNameclass; break;
+		case INTERFACE: kindTerminalSymbol = ITerminalSymbols.TokenNameinterface; break;
+		case UNION: kindTerminalSymbol = ITerminalSymbols.TokenNameunion; break;
+		case STRUCT: kindTerminalSymbol = ITerminalSymbols.TokenNamestruct; break;
+		}
 		
 		if (isChanged(node, AggregateDeclaration.KIND_PROPERTY)) {
-			AggregateDeclaration.Kind originalKind = (Kind) getOriginalValue(node, AggregateDeclaration.KIND_PROPERTY);
 			AggregateDeclaration.Kind newValue = (Kind) getNewValue(node, AggregateDeclaration.KIND_PROPERTY);
 			try {
-				int terminalSymbol = 0;
-				switch(originalKind) {
-				case CLASS: terminalSymbol = ITerminalSymbols.TokenNameclass; break;
-				case INTERFACE: terminalSymbol = ITerminalSymbols.TokenNameinterface; break;
-				case UNION: terminalSymbol = ITerminalSymbols.TokenNameunion; break;
-				case STRUCT: terminalSymbol = ITerminalSymbols.TokenNamestruct; break;
-				}
-				
-				getScanner().readToToken(terminalSymbol, node.getStartPosition());
+				getScanner().readToToken(kindTerminalSymbol, node.getStartPosition());
 				int start = getScanner().getCurrentStartOffset();
 				int end = getScanner().getCurrentEndOffset();
 				
@@ -1241,7 +1241,18 @@ public final class ASTRewriteAnalyzer extends ASTVisitor {
 				
 			}
 		}
+
+		try {
+			pos = getScanner().getTokenEndOffset(kindTerminalSymbol, node.getStartPosition());
+			pos = rewriteNode(node, AggregateDeclaration.NAME_PROPERTY, pos, ASTRewriteFormatter.SPACE);
+		} catch (CoreException e) {
+			
+		}
 		
+		pos = rewriteOptionalTemplateParameters(node, AggregateDeclaration.TEMPLATE_PARAMETERS_PROPERTY, pos, "", false, false);
+		
+		rewriteNodeList(node, AggregateDeclaration.BASE_CLASSES_PROPERTY, pos, ":", ", ");
+	
 		return false;
 	}
 

@@ -49,6 +49,7 @@ public class Class_Test extends Parser_Test {
 		
 		assertEquals("None", ((SimpleType) bs.get(0).getType()).getName().getFullyQualifiedName());
 		assertPosition(bs.get(0).getType(), 15, 4);
+		assertPosition(bs.get(0), 15, 4);
 	}
 	
 	public void testWithMembers() {
