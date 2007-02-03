@@ -697,7 +697,7 @@ class Parser extends Lexer {
 				s.preDDocs().addAll(lastComments);
 				adjustLastDocComment();
 				attachLeadingComments(s);				
-				adjustPossitionAccordingToComments(s, s.preDDocs(), s.getPostDDoc());				
+				adjustPossitionAccordingToComments(s, s.preDDocs(), s.getPostDDoc());
 				decldefs.add(s);
 			}
 		} while (!once);
@@ -2462,6 +2462,8 @@ class Parser extends Lexer {
 					nextToken();
 					v.preDDocs().addAll(lastComments);
 					adjustLastDocComment();
+					attachLeadingComments(v);				
+					adjustPossitionAccordingToComments(v, v.preDDocs(), v.getPostDDoc());
 					break;
 
 				case TOKcomma:
@@ -3676,8 +3678,7 @@ class Parser extends Lexer {
 		case TOKasm: {
 			List<Statement> statements;
 			Identifier label;
-			Token toklist;
-			Token[] ptoklist = new Token[1];
+			List<Token> toklist = new ArrayList<Token>();
 			
 			// Parse the asm block into a sequence of AsmStatements,
 			// each AsmStatement is one instruction.
@@ -3686,14 +3687,12 @@ class Parser extends Lexer {
 
 			nextToken();
 			check(TOKlcurly);
-			toklist = null;
-			ptoklist[0] = toklist;
 			label = null;
 			statements = new ArrayList<Statement>();
 			while (true) {
 				switch (token.value) {
 				case TOKidentifier:
-					if (toklist == null) {
+					if (toklist.isEmpty()) {
 						// Look ahead to see if it is a label
 						t = peek(token);
 						if (t.value == TOKcolon) { // It's a label
@@ -3704,31 +3703,33 @@ class Parser extends Lexer {
 						}
 					}
 					// goto Ldefault;
+					toklist.add(new Token(token));
 					nextToken();
 					continue;
 
 				case TOKrcurly:
-					if (toklist != null || label != null) {
+					if (!toklist.isEmpty() || label != null) {
 						parsingErrorInsertTokenAfter(prevToken, ";");
 					}
 					break;
 
 				case TOKsemicolon:
 					s = null;
-					if (toklist != null || label != null) { // Create
-															// AsmStatement from
-															// list of tokens
-															// we've saved
-						s = newAsmStatement(ast, toklist);
-						
-						toklist = null;
-						ptoklist[0] = toklist;
-						if (label == null) {
-							s = newLabelStatement(label, s);
-							label = null;
-						}
-						statements.add(s);
+					// Create AsmStatement from list of tokens we've saved
+					s = newAsmStatement(ast, toklist);
+					if (toklist.isEmpty()) {
+						s.setSourceRange(token.ptr, token.len);
+					} else {
+						s.setSourceRange(toklist.get(0).ptr, token.ptr + token.len - toklist.get(0).ptr);
 					}
+					
+					toklist.clear();
+					
+					if (label != null) {
+						s = newLabelStatement(label, s);
+						label = null;
+					}
+					statements.add(s);
 					nextToken();
 					continue;
 
@@ -3738,20 +3739,14 @@ class Parser extends Lexer {
 					break;
 
 				default:
-					//Ldefault:
-					/*
-					 * ptoklist = new Token(); memcpy(*ptoklist, &token,
-					 * sizeof(Token)); ptoklist = &(*ptoklist)->next; ptoklist =
-					 * NULL;
-					 */
-
+					toklist.add(new Token(token));
 					nextToken();
 					continue;
 				}
 				break;
 			}
 			
-			s = newBlock(statements);;
+			s = newAsmBlock(statements);;
 			
 			nextToken();
 			break;
@@ -6020,6 +6015,14 @@ class Parser extends Lexer {
 		return block;
 	}
 	
+	private AsmBlock newAsmBlock(List<Statement> statements) {
+		AsmBlock asmBlock = new AsmBlock(ast);
+		if (statements != null) {
+			asmBlock.statements().addAll(statements);
+		}
+		return asmBlock;
+	}
+	
 	private BooleanLiteral newBooleanLiteralForCurrentToken() {
 		BooleanLiteral booleanLiteral = new BooleanLiteral(ast);
 		booleanLiteral.setBooleanValue(token.value == TOK.TOKtrue);
@@ -6729,8 +6732,14 @@ class Parser extends Lexer {
 		return typeid;
 	}
 	
-	private AsmStatement newAsmStatement(AST ast, Token toklist) {
+	private AsmStatement newAsmStatement(AST ast, List<Token> toklist) {
 		AsmStatement asmStatement = new AsmStatement(ast);
+		for(Token token : toklist) {
+			AsmToken asmToken = new AsmToken(ast);
+			asmToken.setToken(token.toString());
+			asmToken.setSourceRange(token.ptr, token.len);
+			asmStatement.tokens().add(asmToken);
+		}
 		return asmStatement;
 	}
 	

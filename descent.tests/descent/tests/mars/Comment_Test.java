@@ -3,6 +3,7 @@ package descent.tests.mars;
 import java.util.List;
 
 import descent.core.dom.AggregateDeclaration;
+import descent.core.dom.AliasDeclaration;
 import descent.core.dom.DDocComment;
 import descent.core.dom.CompilationUnit;
 import descent.core.dom.Declaration;
@@ -41,6 +42,17 @@ public class Comment_Test extends Parser_Test {
 	public void testLeadingComment() {
 		String s = " class Clazz; /** hola */";
 		AggregateDeclaration c = (AggregateDeclaration) getSingleDeclarationNoProblems(s);
+		assertPosition(c, 1, s.length() - 1);
+		
+		List<DDocComment> comments = c.preDDocs();
+		assertEquals(0, comments.size());
+		
+		assertPosition(c.getPostDDoc(), 14, 11);
+	}
+	
+	public void testLeadingCommentInAliasDeclaration() {
+		String s = " alias int x; /** hola */";
+		AliasDeclaration c = (AliasDeclaration) getSingleDeclarationNoProblems(s);
 		assertPosition(c, 1, s.length() - 1);
 		
 		List<DDocComment> comments = c.preDDocs();

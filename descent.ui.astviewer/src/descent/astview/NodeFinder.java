@@ -46,7 +46,6 @@ public class NodeFinder extends GenericVisitor {
 	private ASTNode fCoveredNode;
 	
 	public NodeFinder(int offset, int length) {
-		super(true); // include Javadoc tags
 		fStart= offset;
 		fEnd= offset + length;
 	}

@@ -14,21 +14,6 @@ import descent.core.dom.*;
 
 public class GenericVisitor extends ASTVisitor {
 	
-	public GenericVisitor() {
-		super();
-	}
-
-	/**
-	 * @param visitJavadocTags <code>true</code> if doc comment tags are
-	 * to be visited by default, and <code>false</code> otherwise
-	 * @see Javadoc#tags()
-	 * @see #visit(Javadoc)
-	 * @since 3.0
-	 */
-	public GenericVisitor(boolean visitJavadocTags) {
-		super(visitJavadocTags);
-	}
-	
 	//---- Hooks for subclasses -------------------------------------------------
 
 	protected boolean visitNode(ASTNode node) {
@@ -98,9 +83,20 @@ public class GenericVisitor extends ASTVisitor {
 		
 		endVisitNode(node);
 	}
+	
+	@Override
+	public void endVisit(AsmBlock node) {
+		endVisitNode(node);
+	}
 
 	@Override
 	public void endVisit(AsmStatement node) {
+		
+		endVisitNode(node);
+	}
+	
+	@Override
+	public void endVisit(AsmToken node) {
 		
 		endVisitNode(node);
 	}
@@ -197,6 +193,12 @@ public class GenericVisitor extends ASTVisitor {
 
 	@Override
 	public void endVisit(ContinueStatement node) {
+		
+		endVisitNode(node);
+	}
+	
+	@Override
+	public void endVisit(DDocComment node) {
 		
 		endVisitNode(node);
 	}
@@ -479,6 +481,12 @@ public class GenericVisitor extends ASTVisitor {
 
 	@Override
 	public void endVisit(PragmaStatement node) {
+		
+		endVisitNode(node);
+	}
+	
+	@Override
+	public void endVisit(Pragma node) {
 		
 		endVisitNode(node);
 	}
@@ -830,9 +838,21 @@ public class GenericVisitor extends ASTVisitor {
 		
 		return visitNode(node);
 	}
+	
+	@Override
+	public boolean visit(AsmBlock node) {
+		
+		return visitNode(node);
+	}
 
 	@Override
 	public boolean visit(AsmStatement node) {
+		
+		return visitNode(node);
+	}
+	
+	@Override
+	public boolean visit(AsmToken node) {
 		
 		return visitNode(node);
 	}
@@ -929,6 +949,12 @@ public class GenericVisitor extends ASTVisitor {
 
 	@Override
 	public boolean visit(ContinueStatement node) {
+		
+		return visitNode(node);
+	}
+	
+	@Override
+	public boolean visit(DDocComment node) {
 		
 		return visitNode(node);
 	}
@@ -1211,6 +1237,12 @@ public class GenericVisitor extends ASTVisitor {
 
 	@Override
 	public boolean visit(PragmaStatement node) {
+		
+		return visitNode(node);
+	}
+	
+	@Override
+	public boolean visit(Pragma node) {
 		
 		return visitNode(node);
 	}

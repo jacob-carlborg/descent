@@ -36,6 +36,8 @@ import descent.core.dom.AST;
 import descent.core.dom.ASTNode;
 import descent.core.dom.ASTVisitor;
 import descent.core.dom.AggregateDeclaration;
+import descent.core.dom.AliasDeclaration;
+import descent.core.dom.AliasDeclarationFragment;
 import descent.core.dom.Assignment;
 import descent.core.dom.Block;
 import descent.core.dom.BooleanLiteral;
@@ -71,6 +73,8 @@ import descent.core.dom.ThisLiteral;
 import descent.core.dom.ThrowStatement;
 import descent.core.dom.ToolFactory;
 import descent.core.dom.TryStatement;
+import descent.core.dom.VariableDeclaration;
+import descent.core.dom.VariableDeclarationFragment;
 import descent.core.dom.WhileStatement;
 import descent.core.dom.AggregateDeclaration.Kind;
 import descent.core.dom.rewrite.TargetSourceRangeComputer;
@@ -856,11 +860,17 @@ public final class ASTRewriteAnalyzer extends ASTVisitor {
 					last= elem;
 				}
 			}
-			/* TODO JDT Priority
-			if (currKind == ASTNode.FIELD_DECLARATION && nextKind == ASTNode.FIELD_DECLARATION ) {
+			// TODO double check this comparisons. They determine how much lines to keep
+			// between the current node and the next node
+			if (currKind == ASTNode.VARIABLE_DECLARATION && nextKind == ASTNode.VARIABLE_DECLARATION) {
 				return 0;
 			}
-			*/
+			if (currKind == ASTNode.ALIAS_DECLARATION && nextKind == ASTNode.ALIAS_DECLARATION) {
+				return 0;
+			}
+			if (currKind == ASTNode.TYPEDEF_DECLARATION && nextKind == ASTNode.TYPEDEF_DECLARATION) {
+				return 0;
+			}
 			if (secondLast != null) {
 				return countEmptyLines(secondLast);
 			}
@@ -892,6 +902,17 @@ public final class ASTRewriteAnalyzer extends ASTVisitor {
 		}		
 	}
 		
+	/**
+	 * 
+	 * @param parent
+	 * @param property
+	 * @param insertPos
+	 * @param insertIndent
+	 * @param separator how many lines to insert between each node. -1 to guess depending
+	 * on the nodes types
+	 * @param lead how many lines to insert before the new nodes
+	 * @return
+	 */
 	private int rewriteParagraphList(ASTNode parent, StructuralPropertyDescriptor property, int insertPos, int insertIndent, int separator, int lead) {
 		RewriteEvent event= getEvent(parent, property);
 		if (event == null || event.getChangeKind() == RewriteEvent.UNCHANGED) {
@@ -1250,9 +1271,47 @@ public final class ASTRewriteAnalyzer extends ASTVisitor {
 		}
 		
 		pos = rewriteOptionalTemplateParameters(node, AggregateDeclaration.TEMPLATE_PARAMETERS_PROPERTY, pos, "", false, false);
+		pos = rewriteNodeList(node, AggregateDeclaration.BASE_CLASSES_PROPERTY, pos, ":", ", ");
 		
-		rewriteNodeList(node, AggregateDeclaration.BASE_CLASSES_PROPERTY, pos, ":", ", ");
+		// startPos : find position after left brace of type, be aware that bracket might be missing
+		int startIndent= getIndent(node.getStartPosition()) + 1;
+		int startPos= getPosAfterLeftBrace(pos);
+		pos = rewriteParagraphList(node, AggregateDeclaration.DECLARATIONS_PROPERTY, startPos, startIndent, -1, 2);
+		
+		try {
+			pos = getScanner().getTokenEndOffset(ITerminalSymbols.TokenNameRCURLY, pos);
+			rewriteNode(node, AggregateDeclaration.POST_D_DOC_PROPERTY, pos, ASTRewriteFormatter.SPACE);
+		} catch (CoreException e) {
+			
+		}
 	
+		return false;
+	}
+	
+	@Override
+	public boolean visit(AliasDeclaration node) {
+		if (!hasChildrenChanges(node)) {
+			return doVisitUnchangedChildren(node);
+		}
+		int pos = rewriteParagraphList(node, AliasDeclaration.PRE_D_DOCS_PROPERTY, 0, 0, 0, 0);
+		pos = rewriteModifiers(node, AliasDeclaration.MODIFIERS_PROPERTY, pos);
+		
+		pos= rewriteNode(node, AliasDeclaration.TYPE_PROPERTY, pos, ASTRewriteFormatter.NONE);
+		pos = rewriteNodeList(node, AliasDeclaration.FRAGMENTS_PROPERTY, pos, "", ", "); //$NON-NLS-1$ //$NON-NLS-2$
+		
+		try {
+			pos = getScanner().getTokenEndOffset(ITerminalSymbols.TokenNameSEMICOLON, pos);
+			rewriteNode(node, AliasDeclaration.POST_D_DOC_PROPERTY, pos, ASTRewriteFormatter.SPACE);
+		} catch (CoreException e) {
+			
+		}
+		
+		return false;
+	}
+	
+	@Override
+	public boolean visit(AliasDeclarationFragment node) {
+		rewriteRequiredNode(node, AliasDeclarationFragment.NAME_PROPERTY);
 		return false;
 	}
 
@@ -1270,7 +1329,7 @@ public final class ASTRewriteAnalyzer extends ASTVisitor {
 			doTextInsert(0, getLineDelimiter(), getEditGroup(node, CompilationUnit.MODULE_DECLARATION_PROPERTY));
 		}
 				
-		startPos= rewriteParagraphList(node, CompilationUnit.DECLARATIONS_PROPERTY, startPos, 0, 0, 2);
+		startPos= rewriteParagraphList(node, CompilationUnit.DECLARATIONS_PROPERTY, startPos, 0, -1, 2);
 		return false;
 	}
 
@@ -1766,6 +1825,38 @@ public final class ASTRewriteAnalyzer extends ASTVisitor {
 		}
 		rewriteRequiredNode(node, QualifiedType.QUALIFIER_PROPERTY);
 		rewriteRequiredNode(node, QualifiedType.TYPE_PROPERTY);
+		return false;
+	}
+	
+	@Override
+	public boolean visit(VariableDeclaration node) {
+		if (!hasChildrenChanges(node)) {
+			return doVisitUnchangedChildren(node);
+		}
+		int pos = rewriteParagraphList(node, VariableDeclaration.PRE_D_DOCS_PROPERTY, 0, 0, 0, 0);
+		pos = rewriteModifiers(node, VariableDeclaration.MODIFIERS_PROPERTY, pos);
+		
+		pos= rewriteNode(node, VariableDeclaration.TYPE_PROPERTY, pos, ASTRewriteFormatter.NONE);
+		pos = rewriteNodeList(node, VariableDeclaration.FRAGMENTS_PROPERTY, pos, "", ", "); //$NON-NLS-1$ //$NON-NLS-2$
+		
+		try {
+			pos = getScanner().getTokenEndOffset(ITerminalSymbols.TokenNameSEMICOLON, pos);
+			rewriteNode(node, VariableDeclaration.POST_D_DOC_PROPERTY, pos, ASTRewriteFormatter.SPACE);
+		} catch (CoreException e) {
+			
+		}
+		
+		return false;
+	}
+	
+	@Override
+	public boolean visit(VariableDeclarationFragment node) {
+		if (!hasChildrenChanges(node)) {
+			return doVisitUnchangedChildren(node);
+		}
+		
+		int pos= rewriteRequiredNode(node, VariableDeclarationFragment.NAME_PROPERTY);
+		rewriteNode(node, VariableDeclarationFragment.INITIALIZER_PROPERTY, pos, this.formatter.VAR_INITIALIZER);
 		return false;
 	}
 	

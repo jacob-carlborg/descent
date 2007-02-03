@@ -9,6 +9,7 @@ public class AllRewriteTests {
 		TestSuite suite = new TestSuite("Test for descent.tests.rewrite");
 		//$JUnit-BEGIN$
 		suite.addTestSuite(RewriteAggregateDeclarationTest.class);
+		suite.addTestSuite(RewriteAliasDeclarationTest.class);
 		//$JUnit-END$
 		return suite;
 	}

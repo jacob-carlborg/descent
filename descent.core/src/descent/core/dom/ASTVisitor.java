@@ -1,13 +1,3 @@
-/*******************************************************************************
- * Copyright (c) 2004, 2006 IBM Corporation and others.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
- *
- * Contributors:
- *     IBM Corporation - initial API and implementation
- *******************************************************************************/
 package descent.core.dom;
 
 /**
@@ -52,35 +42,12 @@ package descent.core.dom;
  */
 public abstract class ASTVisitor {
 
-/**
- * Indicates whether doc tags should be visited by default.
- */
-private boolean visitDocTags;
+	/**
+	 * Creates a new AST visitor instance.
+	 */
+	public ASTVisitor() {
+	}
 
-/**
- * Creates a new AST visitor instance.
- * <p>
- * For backwards compatibility, the visitor does not visit tag
- * elements below doc comments by default. Use 
- * {@link #ASTVisitor(boolean) ASTVisitor(true)}
- * for an visitor that includes doc comments by default.
- * </p>
- */
-public ASTVisitor() {
-	this(false);
-}
-
-/**
- * Creates a new AST visitor instance. 
- * 
- * @param visitDocTags <code>true</code> if doc comment tags are
- * to be visited by default, and <code>false</code> otherwise
- * @see Javadoc#tags()
- * @see #visit(Javadoc)
- */
-public ASTVisitor(boolean visitDocTags) {
-	this.visitDocTags = visitDocTags;
-}
 	/**
 	 * Visits the given AST node prior to the type-specific visit.
 	 * (before <code>visit</code>).
@@ -397,6 +364,34 @@ public ASTVisitor(boolean visitDocTags) {
 	 * visited, and <code>false</code> if the children of this node should
 	 * be skipped
 	 */
+	public boolean visit(AsmBlock node) {
+		return true;
+	}
+
+	/**
+	 * End of visit the given type-specific AST node.
+	 * <p>
+	 * The default implementation does nothing. Subclasses may reimplement.
+	 * </p>
+	 * 
+	 * @param node the node to visit
+	 */
+	public void endVisit(AsmBlock node) {
+
+	}
+
+	/**
+	 * Visits the given type-specific AST node.
+	 * <p>
+	 * The default implementation does nothing and return true.
+	 * Subclasses may reimplement.
+	 * </p>
+	 * 
+	 * @param node the node to visit
+	 * @return <code>true</code> if the children of this node should be
+	 * visited, and <code>false</code> if the children of this node should
+	 * be skipped
+	 */
 	public boolean visit(AsmStatement node) {
 		return true;
 	}
@@ -410,6 +405,34 @@ public ASTVisitor(boolean visitDocTags) {
 	 * @param node the node to visit
 	 */
 	public void endVisit(AsmStatement node) {
+
+	}
+
+	/**
+	 * Visits the given type-specific AST node.
+	 * <p>
+	 * The default implementation does nothing and return true.
+	 * Subclasses may reimplement.
+	 * </p>
+	 * 
+	 * @param node the node to visit
+	 * @return <code>true</code> if the children of this node should be
+	 * visited, and <code>false</code> if the children of this node should
+	 * be skipped
+	 */
+	public boolean visit(AsmToken node) {
+		return true;
+	}
+
+	/**
+	 * End of visit the given type-specific AST node.
+	 * <p>
+	 * The default implementation does nothing. Subclasses may reimplement.
+	 * </p>
+	 * 
+	 * @param node the node to visit
+	 */
+	public void endVisit(AsmToken node) {
 
 	}
 
@@ -649,34 +672,6 @@ public ASTVisitor(boolean visitDocTags) {
 	 * visited, and <code>false</code> if the children of this node should
 	 * be skipped
 	 */
-	public boolean visit(SwitchCase node) {
-		return true;
-	}
-
-	/**
-	 * End of visit the given type-specific AST node.
-	 * <p>
-	 * The default implementation does nothing. Subclasses may reimplement.
-	 * </p>
-	 * 
-	 * @param node the node to visit
-	 */
-	public void endVisit(SwitchCase node) {
-
-	}
-
-	/**
-	 * Visits the given type-specific AST node.
-	 * <p>
-	 * The default implementation does nothing and return true.
-	 * Subclasses may reimplement.
-	 * </p>
-	 * 
-	 * @param node the node to visit
-	 * @return <code>true</code> if the children of this node should be
-	 * visited, and <code>false</code> if the children of this node should
-	 * be skipped
-	 */
 	public boolean visit(CastExpression node) {
 		return true;
 	}
@@ -750,12 +745,9 @@ public ASTVisitor(boolean visitDocTags) {
 	}
 
 	/**
-	 * Visits the given AST node.
+	 * Visits the given type-specific AST node.
 	 * <p>
-	 * Unlike other node types, the boolean returned by the default
-	 * implementation is controlled by a constructor-supplied
-	 * parameter  {@link #ASTVisitor(boolean) ASTVisitor(boolean)} 
-	 * which is <code>false</code> by default.
+	 * The default implementation does nothing and return true.
 	 * Subclasses may reimplement.
 	 * </p>
 	 * 
@@ -763,11 +755,9 @@ public ASTVisitor(boolean visitDocTags) {
 	 * @return <code>true</code> if the children of this node should be
 	 * visited, and <code>false</code> if the children of this node should
 	 * be skipped
-	 * @see #ASTVisitor()
-	 * @see #ASTVisitor(boolean)
 	 */
 	public boolean visit(CodeComment node) {
-		return this.visitDocTags;
+		return true;
 	}
 
 	/**
@@ -865,7 +855,7 @@ public ASTVisitor(boolean visitDocTags) {
 	public void endVisit(ContinueStatement node) {
 
 	}
-	
+
 	/**
 	 * Visits the given type-specific AST node.
 	 * <p>
@@ -2153,7 +2143,7 @@ public ASTVisitor(boolean visitDocTags) {
 	public void endVisit(PostfixExpression node) {
 
 	}
-	
+
 	/**
 	 * Visits the given type-specific AST node.
 	 * <p>
@@ -2823,6 +2813,34 @@ public ASTVisitor(boolean visitDocTags) {
 	 * @param node the node to visit
 	 */
 	public void endVisit(SuperLiteral node) {
+
+	}
+
+	/**
+	 * Visits the given type-specific AST node.
+	 * <p>
+	 * The default implementation does nothing and return true.
+	 * Subclasses may reimplement.
+	 * </p>
+	 * 
+	 * @param node the node to visit
+	 * @return <code>true</code> if the children of this node should be
+	 * visited, and <code>false</code> if the children of this node should
+	 * be skipped
+	 */
+	public boolean visit(SwitchCase node) {
+		return true;
+	}
+
+	/**
+	 * End of visit the given type-specific AST node.
+	 * <p>
+	 * The default implementation does nothing. Subclasses may reimplement.
+	 * </p>
+	 * 
+	 * @param node the node to visit
+	 */
+	public void endVisit(SwitchCase node) {
 
 	}
 

@@ -698,22 +698,33 @@ public class AST {
 	}
 
 	/**
-	 * Creates an unparented alias declaration node owned by this AST.
+	 * Creates an unparented alias declaration node owned by this AST, with the given fragment.
 	 * 
 	 * @return the new unparented alias declaration node
 	 */
-	public AliasDeclaration newAliasDeclaration() {
+	public AliasDeclaration newAliasDeclaration(AliasDeclarationFragment fragment) {
+		if (fragment == null) {
+			throw new IllegalArgumentException();
+		}
+		
 		AliasDeclaration node = new AliasDeclaration(this);
+		node.fragments().add(fragment);
 		return node;
 	}
 
 	/**
-	 * Creates an unparented alias declaration fragment node owned by this AST.
+	 * Creates an unparented alias declaration fragment node owned by this AST, with the
+	 * given name.
 	 * 
 	 * @return the new unparented alias declaration fragment node
 	 */
-	public AliasDeclarationFragment newAliasDeclarationFragment() {
+	public AliasDeclarationFragment newAliasDeclarationFragment(SimpleName name) {
+		if (name == null) {
+			throw new IllegalArgumentException();
+		}
+		
 		AliasDeclarationFragment node = new AliasDeclarationFragment(this);
+		node.setName(name);
 		return node;
 	}
 
@@ -786,6 +797,16 @@ public class AST {
 		ArrayLiteral node = new ArrayLiteral(this);
 		return node;
 	}
+	
+	/**
+	 * Creates an unparented asm block node owned by this AST.
+	 * 
+	 * @return the new unparented asm block node
+	 */
+	public AsmBlock newAsmBlock() {
+		AsmBlock node = new AsmBlock(this);
+		return node;
+	}
 
 	/**
 	 * Creates an unparented asm statement node owned by this AST.
@@ -794,6 +815,17 @@ public class AST {
 	 */
 	public AsmStatement newAsmStatement() {
 		AsmStatement node = new AsmStatement(this);
+		return node;
+	}
+
+	/**
+	 * Creates an unparented asm token node owned by this AST.
+	 * 
+	 * @return the new unparented asm token node
+	 */
+	public AsmToken newAsmToken(String token) {
+		AsmToken node = new AsmToken(this);
+		node.setToken(token);
 		return node;
 	}
 
@@ -1456,13 +1488,18 @@ public class AST {
 	}
 
 	/**
-	 * Creates an unparented primitive type node owned by this AST.
+	 * Creates and returns a new unparented primitive type node with the given
+	 * type code.
 	 * 
-	 * @return the new unparented primitive type node
+	 * @param typeCode one of the primitive type code constants declared in 
+	 *    <code>PrimitiveType</code>
+	 * @return a new unparented primitive type node
+	 * @exception IllegalArgumentException if the primitive type code is invalid
 	 */
-	public PrimitiveType newPrimitiveType() {
-		PrimitiveType node = new PrimitiveType(this);
-		return node;
+	public PrimitiveType newPrimitiveType(PrimitiveType.Code typeCode) {
+		PrimitiveType result = new PrimitiveType(this);
+		result.setPrimitiveTypeCode(typeCode);
+		return result;
 	}
 
 	/**
@@ -1809,12 +1846,18 @@ public class AST {
 	}
 
 	/**
-	 * Creates an unparented typedef declaration node owned by this AST.
+	 * Creates an unparented typedef declaration node owned by this AST, with the given
+	 * fragment.
 	 * 
 	 * @return the new unparented typedef declaration node
 	 */
-	public TypedefDeclaration newTypedefDeclaration() {
+	public TypedefDeclaration newTypedefDeclaration(TypedefDeclarationFragment fragment) {
+		if (fragment == null) {
+			throw new IllegalArgumentException();
+		}
+		
 		TypedefDeclaration node = new TypedefDeclaration(this);
+		node.fragments().add(fragment);
 		return node;
 	}
 
@@ -1899,22 +1942,30 @@ public class AST {
 	}
 
 	/**
-	 * Creates an unparented variable declaration node owned by this AST.
+	 * Creates an unparented variable declaration node owned by this AST, with the
+	 * given fragment.
 	 * 
 	 * @return the new unparented variable declaration node
 	 */
-	public VariableDeclaration newVariableDeclaration() {
+	public VariableDeclaration newVariableDeclaration(VariableDeclarationFragment fragment) {
+		if (fragment == null) {
+			throw new IllegalArgumentException();
+		}
+		
 		VariableDeclaration node = new VariableDeclaration(this);
+		node.fragments().add(fragment);
 		return node;
 	}
 
 	/**
-	 * Creates an unparented variable declaration fragment node owned by this AST.
+	 * Creates an unparented variable declaration fragment node owned by this AST, with the
+	 * given name.
 	 * 
 	 * @return the new unparented variable declaration fragment node
 	 */
-	public VariableDeclarationFragment newVariableDeclarationFragment() {
+	public VariableDeclarationFragment newVariableDeclarationFragment(SimpleName name) {
 		VariableDeclarationFragment node = new VariableDeclarationFragment(this);
+		node.setName(name);
 		return node;
 	}
 

@@ -3,7 +3,6 @@ package descent.tests.mars;
 import java.math.BigInteger;
 
 import junit.framework.TestCase;
-import descent.core.dom.AST;
 import descent.core.dom.Lexer;
 import descent.internal.core.parser.TOK;
 

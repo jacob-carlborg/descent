@@ -252,13 +252,28 @@ class NaiveASTFlattener extends ASTVisitor {
 	}
 	
 	@Override
-	public boolean visit(AsmStatement node) {
+	public boolean visit(AsmBlock node) {
 		printIndent();
 		this.buffer.append("asm {\n");
 		this.indent++;
-		// TODO complete when Asm statement is done
+		visitList(node.statements(), LINE_END, EMPTY, LINE_END);
 		this.indent--;
-		this.buffer.append("}\n");
+		printIndent();
+		this.buffer.append("}");
+		return false;
+	}
+	
+	@Override
+	public boolean visit(AsmStatement node) {
+		printIndent();
+		visitList(node.tokens(), " ");
+		this.buffer.append(";");
+		return false;
+	}
+	
+	@Override
+	public boolean visit(AsmToken node) {
+		this.buffer.append(node.getToken());
 		return false;
 	}
 	

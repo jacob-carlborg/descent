@@ -4,20 +4,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Asm statement AST node.
- *
- *<pre>
- *AsmStatement:
- *   { AsmToken } <b>;</b>
- *</pre>
+ * Asm token AST node.
  */
-public class AsmStatement extends Statement {
-
+public class AsmToken extends ASTNode {
+	
 	/**
-	 * The "tokens" structural property of this node type.
+	 * The "token" structural property of this node type.
 	 */
-	public static final ChildListPropertyDescriptor TOKENS_PROPERTY =
-		new ChildListPropertyDescriptor(AsmStatement.class, "tokens", AsmToken.class, NO_CYCLE_RISK); //$NON-NLS-1$
+	public static final SimplePropertyDescriptor TOKEN_PROPERTY =
+		new SimplePropertyDescriptor(AsmToken.class, "token", String.class, MANDATORY); //$NON-NLS-1$
 
 	/**
 	 * A list of property descriptors (element type: 
@@ -28,8 +23,8 @@ public class AsmStatement extends Statement {
 
 	static {
 		List properyList = new ArrayList(1);
-		createPropertyList(AsmStatement.class, properyList);
-		addProperty(TOKENS_PROPERTY, properyList);
+		createPropertyList(AsmToken.class, properyList);
+		addProperty(TOKEN_PROPERTY, properyList);
 		PROPERTY_DESCRIPTORS = reapPropertyList(properyList);
 	}
 
@@ -49,15 +44,13 @@ public class AsmStatement extends Statement {
 	}
 
 	/**
-	 * The tokens
-	 * (element type: <code>AsmToken</code>).
-	 * Defaults to an empty list.
+	 * The token.
 	 */
-	private ASTNode.NodeList tokens =
-		new ASTNode.NodeList(TOKENS_PROPERTY);
+	private String token;
+
 
 	/**
-	 * Creates a new unparented asm statement node owned by the given 
+	 * Creates a new unparented asm token node owned by the given 
 	 * AST.
 	 * <p>
 	 * N.B. This constructor is package-private.
@@ -65,7 +58,7 @@ public class AsmStatement extends Statement {
 	 * 
 	 * @param ast the AST that is to own this node
 	 */
-	AsmStatement(AST ast) {
+	AsmToken(AST ast) {
 		super(ast);
 	}
 
@@ -79,28 +72,33 @@ public class AsmStatement extends Statement {
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
 	 */
-	final List internalGetChildListProperty(ChildListPropertyDescriptor property) {
-		if (property == TOKENS_PROPERTY) {
-			return tokens();
+	final Object internalGetSetObjectProperty(SimplePropertyDescriptor property, boolean get, Object value) {
+		if (property == TOKEN_PROPERTY) {
+			if (get) {
+				return getToken();
+			} else {
+				setToken((String) value);
+				return null;
+			}
 		}
 		// allow default implementation to flag the error
-		return super.internalGetChildListProperty(property);
+		return super.internalGetSetObjectProperty(property, get, value);
 	}
 
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
 	 */
 	final int getNodeType0() {
-		return ASM_STATEMENT;
+		return ASM_TOKEN;
 	}
 
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
 	 */
 	ASTNode clone0(AST target) {
-		AsmStatement result = new AsmStatement(target);
+		AsmToken result = new AsmToken(target);
 		result.setSourceRange(this.getStartPosition(), this.getLength());
-		result.tokens.addAll(ASTNode.copySubtrees(target, tokens()));
+		result.setToken(getToken());
 		return result;
 	}
 
@@ -119,20 +117,32 @@ public class AsmStatement extends Statement {
 		boolean visitChildren = visitor.visit(this);
 		if (visitChildren) {
 			// visit children in normal left to right reading order
-			acceptChildren(visitor, this.tokens);
 		}
 		visitor.endVisit(this);
 	}
 
 	/**
-	 * Returns the live ordered list of tokens for this
-	 * asm statement.
+	 * Returns the token of this asm token.
 	 * 
-	 * @return the live list of asm statement
-	 *    (element type: <code>AsmToken</code>)
+	 * @return the token
 	 */ 
-	public List<AsmToken> tokens() {
-		return this.tokens;
+	public String getToken() {
+		return this.token;
+	}
+
+	/**
+	 * Sets the token of this asm token.
+	 * 
+	 * @param token the token
+	 * @exception IllegalArgumentException if the argument is incorrect
+	 */ 
+	public void setToken(String token) {
+		if (token == null) {
+			throw new IllegalArgumentException();
+		}
+		preValueChange(TOKEN_PROPERTY);
+		this.token = token;
+		postValueChange(TOKEN_PROPERTY);
 	}
 
 	/* (omit javadoc for this method)
@@ -148,7 +158,6 @@ public class AsmStatement extends Statement {
 	int treeSize() {
 		return
 			memSize()
-			+ (this.tokens.listSize())
 	;
 	}
 

@@ -12,19 +12,6 @@ package descent.core.dom;
 /**
  */
 class DefaultASTVisitor extends ASTVisitor {
-	/**
-	 * 
-	 */
-	public DefaultASTVisitor() {
-		super();
-	}
-	
-	/**
-	 * 
-	 */
-	public DefaultASTVisitor(boolean visitDocTags) {
-		super(visitDocTags);
-	}
 	
 	protected boolean visitNode(ASTNode node) {
 		return true;
@@ -93,9 +80,21 @@ class DefaultASTVisitor extends ASTVisitor {
 
 		endVisitNode(node);
 	}
+	
+	@Override
+	public void endVisit(AsmBlock node) {
+
+		endVisitNode(node);
+	}
 
 	@Override
 	public void endVisit(AsmStatement node) {
+
+		endVisitNode(node);
+	}
+	
+	@Override
+	public void endVisit(AsmToken node) {
 
 		endVisitNode(node);
 	}
@@ -192,6 +191,12 @@ class DefaultASTVisitor extends ASTVisitor {
 
 	@Override
 	public void endVisit(ContinueStatement node) {
+
+		endVisitNode(node);
+	}
+	
+	@Override
+	public void endVisit(DDocComment node) {
 
 		endVisitNode(node);
 	}
@@ -831,9 +836,21 @@ class DefaultASTVisitor extends ASTVisitor {
 
 		return visitNode(node);
 	}
+	
+	@Override
+	public boolean visit(AsmBlock node) {
+
+		return visitNode(node);
+	}
 
 	@Override
 	public boolean visit(AsmStatement node) {
+
+		return visitNode(node);
+	}
+	
+	@Override
+	public boolean visit(AsmToken node) {
 
 		return visitNode(node);
 	}
@@ -930,6 +947,12 @@ class DefaultASTVisitor extends ASTVisitor {
 
 	@Override
 	public boolean visit(ContinueStatement node) {
+
+		return visitNode(node);
+	}
+	
+	@Override
+	public boolean visit(DDocComment node) {
 
 		return visitNode(node);
 	}

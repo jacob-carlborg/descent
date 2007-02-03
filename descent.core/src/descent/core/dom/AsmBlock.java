@@ -4,20 +4,20 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Asm statement AST node.
- *
- *<pre>
- *AsmStatement:
- *   { AsmToken } <b>;</b>
- *</pre>
+ * Asm block AST node.
+ * 
+ * <pre>
+ * AsmBlock:
+ *    <b>asm</b> <b>{</b> { Statement } <b>}</b>
+ * </pre>
  */
-public class AsmStatement extends Statement {
-
+public class AsmBlock extends Statement {
+	
 	/**
-	 * The "tokens" structural property of this node type.
+	 * The "statements" structural property of this node type.
 	 */
-	public static final ChildListPropertyDescriptor TOKENS_PROPERTY =
-		new ChildListPropertyDescriptor(AsmStatement.class, "tokens", AsmToken.class, NO_CYCLE_RISK); //$NON-NLS-1$
+	public static final ChildListPropertyDescriptor STATEMENTS_PROPERTY =
+		new ChildListPropertyDescriptor(AsmBlock.class, "statements", Statement.class, CYCLE_RISK); //$NON-NLS-1$
 
 	/**
 	 * A list of property descriptors (element type: 
@@ -28,8 +28,8 @@ public class AsmStatement extends Statement {
 
 	static {
 		List properyList = new ArrayList(1);
-		createPropertyList(AsmStatement.class, properyList);
-		addProperty(TOKENS_PROPERTY, properyList);
+		createPropertyList(AsmBlock.class, properyList);
+		addProperty(STATEMENTS_PROPERTY, properyList);
 		PROPERTY_DESCRIPTORS = reapPropertyList(properyList);
 	}
 
@@ -49,15 +49,15 @@ public class AsmStatement extends Statement {
 	}
 
 	/**
-	 * The tokens
-	 * (element type: <code>AsmToken</code>).
+	 * The statements
+	 * (element type: <code>Statement</code>).
 	 * Defaults to an empty list.
 	 */
-	private ASTNode.NodeList tokens =
-		new ASTNode.NodeList(TOKENS_PROPERTY);
+	private ASTNode.NodeList statements =
+		new ASTNode.NodeList(STATEMENTS_PROPERTY);
 
 	/**
-	 * Creates a new unparented asm statement node owned by the given 
+	 * Creates a new unparented asm block node owned by the given 
 	 * AST.
 	 * <p>
 	 * N.B. This constructor is package-private.
@@ -65,7 +65,7 @@ public class AsmStatement extends Statement {
 	 * 
 	 * @param ast the AST that is to own this node
 	 */
-	AsmStatement(AST ast) {
+	AsmBlock(AST ast) {
 		super(ast);
 	}
 
@@ -80,8 +80,8 @@ public class AsmStatement extends Statement {
 	 * Method declared on ASTNode.
 	 */
 	final List internalGetChildListProperty(ChildListPropertyDescriptor property) {
-		if (property == TOKENS_PROPERTY) {
-			return tokens();
+		if (property == STATEMENTS_PROPERTY) {
+			return statements();
 		}
 		// allow default implementation to flag the error
 		return super.internalGetChildListProperty(property);
@@ -91,16 +91,16 @@ public class AsmStatement extends Statement {
 	 * Method declared on ASTNode.
 	 */
 	final int getNodeType0() {
-		return ASM_STATEMENT;
+		return ASM_BLOCK;
 	}
 
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
 	 */
 	ASTNode clone0(AST target) {
-		AsmStatement result = new AsmStatement(target);
+		AsmBlock result = new AsmBlock(target);
 		result.setSourceRange(this.getStartPosition(), this.getLength());
-		result.tokens.addAll(ASTNode.copySubtrees(target, tokens()));
+		result.statements.addAll(ASTNode.copySubtrees(target, statements()));
 		return result;
 	}
 
@@ -119,20 +119,20 @@ public class AsmStatement extends Statement {
 		boolean visitChildren = visitor.visit(this);
 		if (visitChildren) {
 			// visit children in normal left to right reading order
-			acceptChildren(visitor, this.tokens);
+			acceptChildren(visitor, this.statements);
 		}
 		visitor.endVisit(this);
 	}
 
 	/**
-	 * Returns the live ordered list of tokens for this
-	 * asm statement.
+	 * Returns the live ordered list of statements for this
+	 * asm block.
 	 * 
-	 * @return the live list of asm statement
-	 *    (element type: <code>AsmToken</code>)
+	 * @return the live list of asm block
+	 *    (element type: <code>Statement</code>)
 	 */ 
-	public List<AsmToken> tokens() {
-		return this.tokens;
+	public List<Statement> statements() {
+		return this.statements;
 	}
 
 	/* (omit javadoc for this method)
@@ -148,7 +148,7 @@ public class AsmStatement extends Statement {
 	int treeSize() {
 		return
 			memSize()
-			+ (this.tokens.listSize())
+			+ (this.statements.listSize())
 	;
 	}
 

@@ -5,6 +5,8 @@ import java.util.List;
 import descent.core.dom.ASTNode;
 import descent.core.dom.AggregateDeclaration;
 import descent.core.dom.Argument;
+import descent.core.dom.AsmBlock;
+import descent.core.dom.AsmStatement;
 import descent.core.dom.BooleanLiteral;
 import descent.core.dom.BreakStatement;
 import descent.core.dom.CatchClause;
@@ -52,6 +54,51 @@ public class Statement_Test extends Parser_Test {
 		assertPosition(stm, 1, 2);
 		
 		assertEquals(ASTNode.NUMBER_LITERAL, stm.getExpression().getNodeType());
+	}
+	
+	public void testAsmBlock() {
+		String s = " asm { }";
+		AsmBlock stm = (AsmBlock) parseStatement(s);
+		assertPosition(stm, 1, s.length() - 1);
+	}
+	
+	public void testAsmBlockWithSemicolonStatement() {
+		String s = " asm { ; }";
+		AsmBlock stm = (AsmBlock) parseStatement(s);
+		assertEquals(1, stm.statements().size());
+		assertPosition(stm.statements().get(0), 7, 1);
+	}
+	
+	public void testAsmBlockWithStatement() {
+		String s = " asm { mov eax, ebx; }";
+		AsmBlock stm = (AsmBlock) parseStatement(s);
+		assertEquals(1, stm.statements().size());
+		
+		AsmStatement asmStatement = (AsmStatement) stm.statements().get(0);
+		assertPosition(asmStatement, 7, 13);
+		
+		assertEquals(4, asmStatement.tokens().size());
+		assertEquals("mov", asmStatement.tokens().get(0).getToken());
+		assertEquals("eax", asmStatement.tokens().get(1).getToken());
+		assertEquals(",", asmStatement.tokens().get(2).getToken());
+		assertEquals("ebx", asmStatement.tokens().get(3).getToken());
+		
+		assertPosition(asmStatement.tokens().get(0), 7, 3);
+		assertPosition(asmStatement.tokens().get(1), 11, 3);
+		assertPosition(asmStatement.tokens().get(2), 14, 1);
+		assertPosition(asmStatement.tokens().get(3), 16, 3);
+	}
+	
+	public void testAsmBlockWithLabel() {
+		String s = " asm { label: nop; }";
+		AsmBlock stm = (AsmBlock) parseStatement(s);
+		assertEquals(1, stm.statements().size());
+		
+		LabeledStatement labeledStatement = (LabeledStatement) stm.statements().get(0);
+		assertEquals("label", labeledStatement.getLabel().getIdentifier());
+		assertPosition(labeledStatement, 7, 11);
+		
+		assertEquals(ASTNode.ASM_STATEMENT, labeledStatement.getBody().getNodeType());
 	}
 	
 	public void testBreak() {

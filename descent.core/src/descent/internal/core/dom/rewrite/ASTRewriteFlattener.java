@@ -238,10 +238,23 @@ public class ASTRewriteFlattener extends ASTVisitor {
 	}
 	
 	@Override
-	public boolean visit(AsmStatement node) {
+	public boolean visit(AsmBlock node) {
 		this.result.append("asm {\n");
-		// TODO complete when Asm statement is done
-		this.result.append("}\n");
+		visitList(node, AsmBlock.STATEMENTS_PROPERTY, LINE_END, EMPTY, LINE_END);
+		this.result.append("}");
+		return false;
+	}
+	
+	@Override
+	public boolean visit(AsmStatement node) {
+		visitList(node, AsmStatement.TOKENS_PROPERTY, " ");
+		this.result.append(";");
+		return false;
+	}
+	
+	@Override
+	public boolean visit(AsmToken node) {
+		this.result.append(node.getToken());
 		return false;
 	}
 	
