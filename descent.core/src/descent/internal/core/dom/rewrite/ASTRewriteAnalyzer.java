@@ -38,6 +38,8 @@ import descent.core.dom.ASTVisitor;
 import descent.core.dom.AggregateDeclaration;
 import descent.core.dom.AliasDeclaration;
 import descent.core.dom.AliasDeclarationFragment;
+import descent.core.dom.AliasTemplateParameter;
+import descent.core.dom.AlignDeclaration;
 import descent.core.dom.Assignment;
 import descent.core.dom.Block;
 import descent.core.dom.BooleanLiteral;
@@ -1069,12 +1071,49 @@ public final class ASTRewriteAnalyzer extends ASTVisitor {
 	}
 		
 	/*
-	 * Next token is a left brace. Returns the offset after the brace. For incomplete code, return the start offset.  
+	 * Next token is a left brace or semicolon. Returns the offset after the brace or semicolon. For incomplete code, return the start offset.  
 	 */
-	private int getPosAfterLeftBrace(int pos) {
+	private int getPosAfterLeftBraceOrSemicolon(int pos) {
+		try {
+			int nextToken= getScanner().readNext(pos, true);
+			if (nextToken == ITerminalSymbols.TokenNameLCURLY || nextToken == ITerminalSymbols.TokenNameSEMICOLON) {
+				return getScanner().getCurrentEndOffset();
+			}
+		} catch (CoreException e) {
+			handleException(e);
+		}
+		return pos;
+	}
+	
+	/*
+	 * Next token is a left brace or semicolon.
+	 * Returns the offset after the brace or semicolon. For incomplete code, return the start offset.
+	 * 
+	 * wasSemicolon[0] is set to true if it was a semicolon, else to false.
+	 */
+	private int getPosAfterLeftBraceOrColon(int pos, boolean[] wasSemicolon) {
 		try {
 			int nextToken= getScanner().readNext(pos, true);
 			if (nextToken == ITerminalSymbols.TokenNameLCURLY) {
+				wasSemicolon[0] = false;
+				return getScanner().getCurrentEndOffset();
+			} else if (nextToken == ITerminalSymbols.TokenNameSEMICOLON) {
+				wasSemicolon[0] = true;
+				return getScanner().getCurrentEndOffset();
+			}
+		} catch (CoreException e) {
+			handleException(e);
+		}
+		return pos;
+	}
+	
+	/*
+	 * Next token is a left brace or colon. Returns the offset after the brace or colon. For incomplete code, return the start offset.  
+	 */
+	private int getPosAfterLeftBraceOrColon(int pos) {
+		try {
+			int nextToken= getScanner().readNext(pos, true);
+			if (nextToken == ITerminalSymbols.TokenNameLCURLY || nextToken == ITerminalSymbols.TokenNameCOLON) {
 				return getScanner().getCurrentEndOffset();
 			}
 		} catch (CoreException e) {
@@ -1274,12 +1313,24 @@ public final class ASTRewriteAnalyzer extends ASTVisitor {
 		pos = rewriteNodeList(node, AggregateDeclaration.BASE_CLASSES_PROPERTY, pos, ":", ", ");
 		
 		// startPos : find position after left brace of type, be aware that bracket might be missing
+		boolean[] wasSemicolon = { false };
 		int startIndent= getIndent(node.getStartPosition()) + 1;
-		int startPos= getPosAfterLeftBrace(pos);
+		int startPos= getPosAfterLeftBraceOrColon(pos, wasSemicolon);
+		
+		if (wasSemicolon[0]) {
+			doTextReplace(startPos - 1, 1, "{", null);
+		}
+		
 		pos = rewriteParagraphList(node, AggregateDeclaration.DECLARATIONS_PROPERTY, startPos, startIndent, -1, 2);
 		
+		if (wasSemicolon[0]) {
+			doTextInsert(pos, "}", null);
+		}
+		
 		try {
-			pos = getScanner().getTokenEndOffset(ITerminalSymbols.TokenNameRCURLY, pos);
+			if (!wasSemicolon[0]) {
+				pos = getScanner().getTokenEndOffset(ITerminalSymbols.TokenNameRCURLY, pos);
+			}
 			rewriteNode(node, AggregateDeclaration.POST_D_DOC_PROPERTY, pos, ASTRewriteFormatter.SPACE);
 		} catch (CoreException e) {
 			
@@ -1312,6 +1363,52 @@ public final class ASTRewriteAnalyzer extends ASTVisitor {
 	@Override
 	public boolean visit(AliasDeclarationFragment node) {
 		rewriteRequiredNode(node, AliasDeclarationFragment.NAME_PROPERTY);
+		return false;
+	}
+	
+	@Override
+	public boolean visit(AliasTemplateParameter node) {
+		int pos = rewriteRequiredNode(node, AliasTemplateParameter.NAME_PROPERTY);
+		pos = rewriteNode(node, AliasTemplateParameter.SPECIFIC_TYPE_PROPERTY, pos, ASTRewriteFormatter.SPECIFIC);
+		pos = rewriteNode(node, AliasTemplateParameter.DEFAULT_TYPE_PROPERTY, pos, ASTRewriteFormatter.DEFAULT);
+		return false;
+	}
+	
+	@Override
+	public boolean visit(AlignDeclaration node) {
+		if (!hasChildrenChanges(node)) {
+			return doVisitUnchangedChildren(node);
+		}
+		int pos = rewriteParagraphList(node, AlignDeclaration.PRE_D_DOCS_PROPERTY, 0, 0, 0, 0);
+		pos = rewriteModifiers(node, AlignDeclaration.MODIFIERS_PROPERTY, pos);
+		
+		try {
+			pos = getScanner().getTokenEndOffset(ITerminalSymbols.TokenNameLPAREN, pos);
+		} catch (CoreException e) {
+			
+		}
+		
+		rewriteOperation(node, AlignDeclaration.ALIGN_PROPERTY, pos);
+		
+		try {
+			pos = getScanner().getNextEndOffset(pos, true);
+			pos = getScanner().getNextEndOffset(pos, true);
+		} catch (CoreException e) {
+			
+		}
+		
+		// startPos : find position after left brace of type, be aware that bracket might be missing
+		int startIndent= getIndent(node.getStartPosition()) + 1;
+		int startPos= getPosAfterLeftBraceOrColon(pos);
+		pos = rewriteParagraphList(node, AlignDeclaration.DECLARATIONS_PROPERTY, startPos, startIndent, -1, 2);
+		
+		try {
+			pos = getScanner().getTokenEndOffset(ITerminalSymbols.TokenNameRCURLY, pos);
+		} catch (CoreException e) {
+			
+		}
+		rewriteNode(node, AlignDeclaration.POST_D_DOC_PROPERTY, pos, ASTRewriteFormatter.SPACE);
+		
 		return false;
 	}
 
@@ -1372,7 +1469,7 @@ public final class ASTRewriteAnalyzer extends ASTVisitor {
 		if (isCollapsed(node)) {
 			startPos= node.getStartPosition();
 		} else {
-			startPos= getPosAfterLeftBrace(node.getStartPosition());
+			startPos= getPosAfterLeftBraceOrSemicolon(node.getStartPosition());
 		}
 		int startIndent= getIndent(node.getStartPosition()) + 1;
 		rewriteParagraphList(node, Block.STATEMENTS_PROPERTY, startPos, startIndent, 0, 1);

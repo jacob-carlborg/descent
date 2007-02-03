@@ -10,6 +10,8 @@ public class AllRewriteTests {
 		//$JUnit-BEGIN$
 		suite.addTestSuite(RewriteAggregateDeclarationTest.class);
 		suite.addTestSuite(RewriteAliasDeclarationTest.class);
+		suite.addTestSuite(RewriteAlignDeclarationTest.class);
+		suite.addTestSuite(RewriteTemplateTest.class);
 		//$JUnit-END$
 		return suite;
 	}

@@ -191,6 +191,44 @@ public class RewriteAggregateDeclarationTest extends RewriteTest {
 		assertEqualsTokenByToken("class X { int var1; // comment for var1 \n long var2; }", end());
 	}
 	
+	public void testAddDeclarationsToClosed() throws Exception {
+		begin(" class X;");
+		
+		AggregateDeclaration agg = (AggregateDeclaration) unit.declarations().get(0);
+		
+		VariableDeclaration var1 = ast.newVariableDeclaration(ast.newVariableDeclarationFragment(ast.newSimpleName("var1")));
+		var1.setType(ast.newPrimitiveType(PrimitiveType.Code.INT));
+		
+		VariableDeclaration var2 = ast.newVariableDeclaration(ast.newVariableDeclarationFragment(ast.newSimpleName("var2")));
+		var2.setType(ast.newPrimitiveType(PrimitiveType.Code.LONG));
+		
+		ListRewrite lrw = rewriter.getListRewrite(agg, AggregateDeclaration.DECLARATIONS_PROPERTY);
+		lrw.insertFirst(var1, null);
+		lrw.insertAfter(var2, var1, null);
+		
+		assertEqualsTokenByToken("class X { int var1; long var2; }", end());
+	}
+	
+	public void testAddDeclarationsToClosedAndPostDDocs() throws Exception {
+		begin(" class X;");
+		
+		AggregateDeclaration agg = (AggregateDeclaration) unit.declarations().get(0);
+		
+		VariableDeclaration var1 = ast.newVariableDeclaration(ast.newVariableDeclarationFragment(ast.newSimpleName("var1")));
+		var1.setType(ast.newPrimitiveType(PrimitiveType.Code.INT));
+		
+		VariableDeclaration var2 = ast.newVariableDeclaration(ast.newVariableDeclarationFragment(ast.newSimpleName("var2")));
+		var2.setType(ast.newPrimitiveType(PrimitiveType.Code.LONG));
+		
+		ListRewrite lrw = rewriter.getListRewrite(agg, AggregateDeclaration.DECLARATIONS_PROPERTY);
+		lrw.insertFirst(var1, null);
+		lrw.insertAfter(var2, var1, null);
+		
+		rewriter.set(agg, AggregateDeclaration.POST_D_DOC_PROPERTY, ast.newDDocComment("/// hello!"), null);
+		
+		assertEqualsTokenByToken("class X { int var1; long var2; } /// hello!", end());
+	}
+	
 	public void testRemoveDeclarations() throws Exception {
 		begin(" class X { int var1; long var2; }");
 		
