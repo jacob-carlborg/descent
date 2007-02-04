@@ -9,7 +9,7 @@ import java.util.List;
  *
  * <pre>
  * CastExpression:
- *    <b>cast(</b> Type <b>)</b> Expression
+ *    <b>cast</b> <b>(</b> Type <b>)</b> Expression
  * </pre>
  */
 public class CastExpression extends Expression {

@@ -17,6 +17,9 @@ public class AllRewriteTests {
 		suite.addTestSuite(RewriteStatementTest.class);
 		suite.addTestSuite(RewriteExpressionTest.class);
 		suite.addTestSuite(RewriteTypeTest.class);
+		suite.addTestSuite(RewriteBaseClassTest.class);
+		suite.addTestSuite(RewriteDDocCommentTest.class);
+		suite.addTestSuite(RewriteDebugAssignmentTest.class);		
 		//$JUnit-END$
 		return suite;
 	}

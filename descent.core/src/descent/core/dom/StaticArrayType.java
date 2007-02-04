@@ -18,13 +18,13 @@ public class StaticArrayType extends ArrayType {
 	 * The "componentType" structural property of this node type.
 	 */
 	public static final ChildPropertyDescriptor COMPONENT_TYPE_PROPERTY =
-		internalComponentTypePropertyFactory(StaticArrayType.class); //$NON-NLS-1$
+	internalComponentTypePropertyFactory(StaticArrayType.class); //$NON-NLS-1$
 
 	/**
 	 * The "size" structural property of this node type.
 	 */
 	public static final ChildPropertyDescriptor SIZE_PROPERTY =
-		new ChildPropertyDescriptor(StaticArrayType.class, "size", Expression.class, OPTIONAL, CYCLE_RISK); //$NON-NLS-1$
+		new ChildPropertyDescriptor(StaticArrayType.class, "size", Expression.class, MANDATORY, CYCLE_RISK); //$NON-NLS-1$
 
 	/**
 	 * A list of property descriptors (element type: 
@@ -55,7 +55,7 @@ public class StaticArrayType extends ArrayType {
 	public static List propertyDescriptors(int apiLevel) {
 		return PROPERTY_DESCRIPTORS;
 	}
-	
+
 	/**
 	 * The size.
 	 */
@@ -105,12 +105,12 @@ public class StaticArrayType extends ArrayType {
 		// allow default implementation to flag the error
 		return super.internalGetSetChildProperty(property, get, child);
 	}
-	
-	@Override
-	final ChildPropertyDescriptor internalComponentTypeProperty() {
-		return COMPONENT_TYPE_PROPERTY;
-	}
 
+		@Override
+		final ChildPropertyDescriptor internalComponentTypeProperty() {
+			return COMPONENT_TYPE_PROPERTY;
+		}
+		
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
 	 */
@@ -125,7 +125,7 @@ public class StaticArrayType extends ArrayType {
 		StaticArrayType result = new StaticArrayType(target);
 		result.setSourceRange(this.getStartPosition(), this.getLength());
 		result.setComponentType((Type) getComponentType().clone(target));
-	result.setSize((Expression) ASTNode.copySubtree(target, getSize()));
+		result.setSize((Expression) getSize().clone(target));
 		return result;
 	}
 
@@ -156,6 +156,16 @@ public class StaticArrayType extends ArrayType {
 	 * @return the size
 	 */ 
 	public Expression getSize() {
+		if (this.size == null) {
+			// lazy init must be thread-safe for readers
+			synchronized (this) {
+				if (this.size == null) {
+					preLazyInit();
+					this.size = new NumberLiteral(this.ast);
+					postLazyInit(this.size, SIZE_PROPERTY);
+				}
+			}
+		}
 		return this.size;
 	}
 
@@ -171,6 +181,9 @@ public class StaticArrayType extends ArrayType {
 	 * </ul>
 	 */ 
 	public void setSize(Expression size) {
+		if (size == null) {
+			throw new IllegalArgumentException();
+		}
 		ASTNode oldChild = this.size;
 		preReplaceChild(oldChild, size, SIZE_PROPERTY);
 		this.size = size;

@@ -2051,12 +2051,17 @@ public final class AST {
 	}
 
 	/**
-	 * Creates an unparented version node owned by this AST.
+	 * Creates an unparented version node owned by this AST, with the given value.
 	 * 
 	 * @return the new unparented version node
 	 */
-	public Version newVersion() {
+	public Version newVersion(String value) {
+		if (value == null) {
+			throw new IllegalArgumentException();
+		}
+		
 		Version node = new Version(this);
+		node.setValue(value);
 		return node;
 	}
 

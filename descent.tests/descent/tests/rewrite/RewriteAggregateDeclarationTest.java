@@ -204,6 +204,15 @@ public class RewriteAggregateDeclarationTest extends AbstractRewriteTest {
 		assertEqualsTokenByToken("class X { int var1; long var2; } /// hello!", end());
 	}
 	
+	public void testPostDDocsToClosed() throws Exception {
+		begin(" class X;");
+		
+		AggregateDeclaration agg = (AggregateDeclaration) unit.declarations().get(0);
+		agg.setPostDDoc(ast.newDDocComment("/// hello!"));
+		
+		assertEqualsTokenByToken("class X; /// hello!", end());
+	}
+	
 	public void testRemoveDeclarations() throws Exception {
 		begin(" class X { int var1; long var2; }");
 		

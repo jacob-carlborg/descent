@@ -567,6 +567,7 @@ import descent.core.formatter.IndentManipulation;
 
 	public final BlockContext FOR_BLOCK= new BlockFormattingPrefix("for (;;) ", 7); //$NON-NLS-1$
 	public final BlockContext WHILE_BLOCK= new BlockFormattingPrefix("while (true)", 11); //$NON-NLS-1$
+	public final BlockContext WITH_BLOCK= new BlockFormattingPrefix("with (true)", 10); //$NON-NLS-1$
 	public final BlockContext DO_BLOCK= new BlockFormattingPrefixSuffix("do ", "while (true);", 1); //$NON-NLS-1$ //$NON-NLS-2$
 
 }
