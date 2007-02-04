@@ -545,6 +545,7 @@ import descent.core.formatter.IndentManipulation;
 	public final static Prefix SPACE= new ConstPrefix(" "); //$NON-NLS-1$
 	public final static Prefix COLON= new ConstPrefix(" : "); //$NON-NLS-1$
 	public final static Prefix EQUALS= new ConstPrefix(" = "); //$NON-NLS-1$
+	public final static Prefix COMMA= new ConstPrefix(", "); //$NON-NLS-1$
 	
 	public final Prefix VAR_INITIALIZER= new FormattingPrefix("A a={};", "a={" , CodeFormatter.K_STATEMENTS); //$NON-NLS-1$ //$NON-NLS-2$
 	public final Prefix METHOD_BODY= new FormattingPrefix("void a() {}", ") {" , CodeFormatter.K_CLASS_BODY_DECLARATIONS); //$NON-NLS-1$ //$NON-NLS-2$

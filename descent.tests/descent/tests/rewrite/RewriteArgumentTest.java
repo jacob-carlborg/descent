@@ -8,7 +8,7 @@ import descent.core.dom.VariableDeclaration;
 import descent.core.dom.Argument.PassageMode;
 
 
-public class RewriteArgumentTest extends RewriteTest {
+public class RewriteArgumentTest extends AbstractRewriteTest {
 	
 	public void testAddPassageMode() throws Exception {
 		begin("void bla(int x) { }");

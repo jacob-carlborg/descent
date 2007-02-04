@@ -7,7 +7,7 @@ import descent.core.dom.PrimitiveType;
 import descent.core.dom.TypeTemplateParameter;
 import descent.core.dom.VariableDeclaration;
 
-public class RewriteAggregateDeclarationTest extends RewriteTest {
+public class RewriteAggregateDeclarationTest extends AbstractRewriteTest {
 	
 	public void testAddPreDDoc() throws Exception {
 		begin(" class X { }");

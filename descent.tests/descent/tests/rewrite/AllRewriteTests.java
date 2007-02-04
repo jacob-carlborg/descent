@@ -10,12 +10,13 @@ public class AllRewriteTests {
 		//$JUnit-BEGIN$
 		suite.addTestSuite(RewriteAggregateDeclarationTest.class);
 		suite.addTestSuite(RewriteAliasDeclarationTest.class);
-		suite.addTestSuite(RewriteAliasTemplateParameterTest.class);
+		suite.addTestSuite(RewriteTemplateParameterTest.class);
 		suite.addTestSuite(RewriteAlignDeclarationTest.class);		
 		suite.addTestSuite(RewriteArgumentTest.class);
-		suite.addTestSuite(RewriteArrayAccessTest.class);
-		suite.addTestSuite(RewriteArrayInitializerTest.class);
-		suite.addTestSuite(RewriteArrayLiteralTest.class);		
+		suite.addTestSuite(RewriteInitializerTest.class);
+		suite.addTestSuite(RewriteStatementTest.class);
+		suite.addTestSuite(RewriteExpressionTest.class);
+		suite.addTestSuite(RewriteTypeTest.class);
 		//$JUnit-END$
 		return suite;
 	}

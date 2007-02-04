@@ -46,7 +46,11 @@ import descent.core.dom.ArrayInitializer;
 import descent.core.dom.ArrayInitializerFragment;
 import descent.core.dom.ArrayLiteral;
 import descent.core.dom.AsmBlock;
+import descent.core.dom.AsmStatement;
+import descent.core.dom.AsmToken;
+import descent.core.dom.AssertExpression;
 import descent.core.dom.Assignment;
+import descent.core.dom.AssociativeArrayType;
 import descent.core.dom.Block;
 import descent.core.dom.BooleanLiteral;
 import descent.core.dom.BreakStatement;
@@ -1559,9 +1563,53 @@ public final class ASTRewriteAnalyzer extends ASTVisitor {
 		}
 		
 		int startIndent= getIndent(node.getStartPosition()) + 1;
-		int startPos= getPosAfterLeftBrace(3);
+		int startPos= getPosAfterLeftBrace(node.getStartPosition() + 3);
 		
 		rewriteParagraphList(node, AsmBlock.STATEMENTS_PROPERTY, startPos, startIndent, -1, 2);
+		return false;
+	}
+	
+	@Override
+	public boolean visit(AsmStatement node) {
+		if (!hasChildrenChanges(node)) {
+			return doVisitUnchangedChildren(node);
+		}
+		
+		rewriteNodeList(node, AsmStatement.TOKENS_PROPERTY, node.getStartPosition(), "", " ");
+		return false;
+	}
+	
+	@Override
+	public boolean visit(AsmToken node) {
+		if (!hasChildrenChanges(node)) {
+			return doVisitUnchangedChildren(node);
+		}
+		
+		rewriteOperation(node, AsmToken.TOKEN_PROPERTY, node.getStartPosition());
+		return false;
+	}
+	
+	@Override
+	public boolean visit(AssertExpression node) {
+		if (!hasChildrenChanges(node)) {
+			return doVisitUnchangedChildren(node);
+		}
+		
+		int pos = rewriteRequiredNode(node, AssertExpression.EXPRESSION_PROPERTY);
+		rewriteNode(node, AssertExpression.MESSAGE_PROPERTY, pos, ASTRewriteFormatter.COMMA);
+		
+		return false;
+	}
+	
+	@Override
+	public boolean visit(AssociativeArrayType node) {
+		if (!hasChildrenChanges(node)) {
+			return doVisitUnchangedChildren(node);
+		}
+		
+		rewriteRequiredNode(node, AssociativeArrayType.COMPONENT_TYPE_PROPERTY);
+		rewriteRequiredNode(node, AssociativeArrayType.KEY_TYPE_PROPERTY);
+		
 		return false;
 	}
 

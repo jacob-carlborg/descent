@@ -5,7 +5,7 @@ import descent.core.dom.Modifier;
 import descent.core.dom.PrimitiveType;
 import descent.core.dom.VariableDeclaration;
 
-public class RewriteAlignDeclarationTest extends RewriteTest {
+public class RewriteAlignDeclarationTest extends AbstractRewriteTest {
 	
 	public void testAddPreDDoc() throws Exception {
 		begin(" align(4) { }");

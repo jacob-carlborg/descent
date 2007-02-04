@@ -4,7 +4,7 @@ import descent.core.dom.AliasDeclaration;
 import descent.core.dom.Modifier;
 import descent.core.dom.PrimitiveType;
 
-public class RewriteAliasDeclarationTest extends RewriteTest {
+public class RewriteAliasDeclarationTest extends AbstractRewriteTest {
 	
 	public void testAddPreDDoc() throws Exception {
 		begin(" alias int bla;");
