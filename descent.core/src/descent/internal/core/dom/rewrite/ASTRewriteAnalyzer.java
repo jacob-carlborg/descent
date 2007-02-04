@@ -40,6 +40,12 @@ import descent.core.dom.AliasDeclaration;
 import descent.core.dom.AliasDeclarationFragment;
 import descent.core.dom.AliasTemplateParameter;
 import descent.core.dom.AlignDeclaration;
+import descent.core.dom.Argument;
+import descent.core.dom.ArrayAccess;
+import descent.core.dom.ArrayInitializer;
+import descent.core.dom.ArrayInitializerFragment;
+import descent.core.dom.ArrayLiteral;
+import descent.core.dom.AsmBlock;
 import descent.core.dom.Assignment;
 import descent.core.dom.Block;
 import descent.core.dom.BooleanLiteral;
@@ -79,6 +85,7 @@ import descent.core.dom.VariableDeclaration;
 import descent.core.dom.VariableDeclarationFragment;
 import descent.core.dom.WhileStatement;
 import descent.core.dom.AggregateDeclaration.Kind;
+import descent.core.dom.Argument.PassageMode;
 import descent.core.dom.rewrite.TargetSourceRangeComputer;
 import descent.core.dom.rewrite.TargetSourceRangeComputer.SourceRange;
 import descent.core.formatter.IndentManipulation;
@@ -1069,6 +1076,21 @@ public final class ASTRewriteAnalyzer extends ASTVisitor {
 		}
 		return endPos;
 	}
+	
+	/*
+	 * Next token is a left brace. Returns the offset after the brace. For incomplete code, return the start offset.  
+	 */
+	private int getPosAfterLeftBrace(int pos) {
+		try {
+			int nextToken= getScanner().readNext(pos, true);
+			if (nextToken == ITerminalSymbols.TokenNameLCURLY) {
+				return getScanner().getCurrentEndOffset();
+			}
+		} catch (CoreException e) {
+			handleException(e);
+		}
+		return pos;
+	}
 		
 	/*
 	 * Next token is a left brace or semicolon. Returns the offset after the brace or semicolon. For incomplete code, return the start offset.  
@@ -1280,9 +1302,9 @@ public final class ASTRewriteAnalyzer extends ASTVisitor {
 		int pos = rewriteParagraphList(node, AggregateDeclaration.PRE_D_DOCS_PROPERTY, 0, 0, 0, 0);
 		pos = rewriteModifiers(node, AggregateDeclaration.MODIFIERS_PROPERTY, pos);
 		
-		AggregateDeclaration.Kind originalKind = (Kind) getOriginalValue(node, AggregateDeclaration.KIND_PROPERTY);
+		AggregateDeclaration.Kind oldKind = (Kind) getOriginalValue(node, AggregateDeclaration.KIND_PROPERTY);
 		int kindTerminalSymbol = 0;
-		switch(originalKind) {
+		switch(oldKind) {
 		case CLASS: kindTerminalSymbol = ITerminalSymbols.TokenNameclass; break;
 		case INTERFACE: kindTerminalSymbol = ITerminalSymbols.TokenNameinterface; break;
 		case UNION: kindTerminalSymbol = ITerminalSymbols.TokenNameunion; break;
@@ -1290,13 +1312,13 @@ public final class ASTRewriteAnalyzer extends ASTVisitor {
 		}
 		
 		if (isChanged(node, AggregateDeclaration.KIND_PROPERTY)) {
-			AggregateDeclaration.Kind newValue = (Kind) getNewValue(node, AggregateDeclaration.KIND_PROPERTY);
+			AggregateDeclaration.Kind newKind = (Kind) getNewValue(node, AggregateDeclaration.KIND_PROPERTY);
 			try {
 				getScanner().readToToken(kindTerminalSymbol, node.getStartPosition());
 				int start = getScanner().getCurrentStartOffset();
 				int end = getScanner().getCurrentEndOffset();
 				
-				doTextReplace(start, end - start, newValue.toString(), null);
+				doTextReplace(start, end - start, newKind.toString(), getEditGroup(node, AggregateDeclaration.KIND_PROPERTY));
 			} catch (CoreException e) {
 				
 			}
@@ -1318,13 +1340,13 @@ public final class ASTRewriteAnalyzer extends ASTVisitor {
 		int startPos= getPosAfterLeftBraceOrColon(pos, wasSemicolon);
 		
 		if (wasSemicolon[0]) {
-			doTextReplace(startPos - 1, 1, "{", null);
+			doTextReplace(startPos - 1, 1, "{", getEditGroup(node, AggregateDeclaration.DECLARATIONS_PROPERTY));
 		}
 		
 		pos = rewriteParagraphList(node, AggregateDeclaration.DECLARATIONS_PROPERTY, startPos, startIndent, -1, 2);
 		
 		if (wasSemicolon[0]) {
-			doTextInsert(pos, "}", null);
+			doTextInsert(pos, "}", getEditGroup(node, AggregateDeclaration.DECLARATIONS_PROPERTY));
 		}
 		
 		try {
@@ -1362,15 +1384,23 @@ public final class ASTRewriteAnalyzer extends ASTVisitor {
 	
 	@Override
 	public boolean visit(AliasDeclarationFragment node) {
+		if (!hasChildrenChanges(node)) {
+			return doVisitUnchangedChildren(node);
+		}
+		
 		rewriteRequiredNode(node, AliasDeclarationFragment.NAME_PROPERTY);
 		return false;
 	}
 	
 	@Override
 	public boolean visit(AliasTemplateParameter node) {
+		if (!hasChildrenChanges(node)) {
+			return doVisitUnchangedChildren(node);
+		}
+		
 		int pos = rewriteRequiredNode(node, AliasTemplateParameter.NAME_PROPERTY);
-		pos = rewriteNode(node, AliasTemplateParameter.SPECIFIC_TYPE_PROPERTY, pos, ASTRewriteFormatter.SPECIFIC);
-		pos = rewriteNode(node, AliasTemplateParameter.DEFAULT_TYPE_PROPERTY, pos, ASTRewriteFormatter.DEFAULT);
+		pos = rewriteNode(node, AliasTemplateParameter.SPECIFIC_TYPE_PROPERTY, pos, ASTRewriteFormatter.COLON);
+		pos = rewriteNode(node, AliasTemplateParameter.DEFAULT_TYPE_PROPERTY, pos, ASTRewriteFormatter.EQUALS);
 		return false;
 	}
 	
@@ -1379,6 +1409,7 @@ public final class ASTRewriteAnalyzer extends ASTVisitor {
 		if (!hasChildrenChanges(node)) {
 			return doVisitUnchangedChildren(node);
 		}
+		
 		int pos = rewriteParagraphList(node, AlignDeclaration.PRE_D_DOCS_PROPERTY, 0, 0, 0, 0);
 		pos = rewriteModifiers(node, AlignDeclaration.MODIFIERS_PROPERTY, pos);
 		
@@ -1409,6 +1440,128 @@ public final class ASTRewriteAnalyzer extends ASTVisitor {
 		}
 		rewriteNode(node, AlignDeclaration.POST_D_DOC_PROPERTY, pos, ASTRewriteFormatter.SPACE);
 		
+		return false;
+	}
+	
+	@Override
+	public boolean visit(Argument node) {
+		if (!hasChildrenChanges(node)) {
+			return doVisitUnchangedChildren(node);
+		}
+		
+		int pos = node.getStartPosition();
+		
+		Argument.PassageMode oldPassage = (Argument.PassageMode) getOriginalValue(node, Argument.PASSAGE_MODE_PROPERTY);
+		int passageTerminalSymbol = 0;
+		switch(oldPassage) {
+		case DEFAULT: passageTerminalSymbol = -1; break;
+		case IN: passageTerminalSymbol = ITerminalSymbols.TokenNamein; break;
+		case INOUT: passageTerminalSymbol = ITerminalSymbols.TokenNameinout; break;
+		case LAZY: passageTerminalSymbol = ITerminalSymbols.TokenNamelazy; break;
+		case OUT: passageTerminalSymbol = ITerminalSymbols.TokenNameout; break;
+		}
+		
+		int passageChangeKind = getChangeKind(node, Argument.PASSAGE_MODE_PROPERTY);
+		if (passageChangeKind != RewriteEvent.UNCHANGED) {
+			Argument.PassageMode newPassage = (Argument.PassageMode) getNewValue(node, Argument.PASSAGE_MODE_PROPERTY);
+			if (oldPassage == Argument.PassageMode.DEFAULT) {
+				doTextInsert(pos, newPassage.toString().toLowerCase() + " ", getEditGroup(node, Argument.PASSAGE_MODE_PROPERTY));
+			} else {
+				try {
+					getScanner().readToToken(passageTerminalSymbol, node.getStartPosition());
+					int start = getScanner().getCurrentStartOffset();
+					int end = getScanner().getCurrentEndOffset();
+				
+					if (newPassage == Argument.PassageMode.DEFAULT) {
+						end = getScanner().getNextStartOffset(end, false);
+						doTextRemove(start, end - start, getEditGroup(node, Argument.PASSAGE_MODE_PROPERTY));
+					} else {
+						doTextReplace(start, end - start, newPassage.toString().toLowerCase(), getEditGroup(node, Argument.PASSAGE_MODE_PROPERTY));
+					}
+					
+					pos = end;
+				} catch (CoreException e) { }
+			}
+		} else {
+			if (oldPassage != Argument.PassageMode.DEFAULT) {
+				try {
+					pos = getScanner().getTokenEndOffset(passageTerminalSymbol, pos);
+				} catch (CoreException e) { }
+			}
+		}
+		
+		pos = rewriteNode(node, Argument.TYPE_PROPERTY, pos, oldPassage == PassageMode.DEFAULT ? ASTRewriteFormatter.NONE : ASTRewriteFormatter.SPACE);
+		pos = rewriteNode(node, Argument.NAME_PROPERTY, pos, ASTRewriteFormatter.SPACE);
+		pos = rewriteNode(node, Argument.DEFAULT_VALUE_PROPERTY, pos, ASTRewriteFormatter.EQUALS);
+		
+		return false;
+	}
+	
+	@Override
+	public boolean visit(ArrayAccess node) {
+		if (!hasChildrenChanges(node)) {
+			return doVisitUnchangedChildren(node);
+		}
+		
+		int pos = rewriteRequiredNode(node, ArrayAccess.ARRAY_PROPERTY);
+		rewriteNodeList(node, ArrayAccess.INDEXES_PROPERTY, pos, "", ", ");
+		return false;
+	}
+	
+	@Override
+	public boolean visit(ArrayInitializer node) {
+		if (!hasChildrenChanges(node)) {
+			return doVisitUnchangedChildren(node);
+		}
+		
+		rewriteNodeList(node, ArrayInitializer.FRAGMENTS_PROPERTY, node.getStartPosition() + 1, "", ", ");
+		return false;
+	}
+	
+	@Override
+	public boolean visit(ArrayInitializerFragment node) {
+		if (!hasChildrenChanges(node)) {
+			return doVisitUnchangedChildren(node);
+		}
+		
+		int changeKind = getChangeKind(node, ArrayInitializerFragment.EXPRESSION_PROPERTY);
+		int pos = rewriteNode(node, ArrayInitializerFragment.EXPRESSION_PROPERTY, node.getStartPosition(), ASTRewriteFormatter.NONE);
+		switch(changeKind) {
+		case RewriteEvent.INSERTED:
+			doTextInsert(pos, ": ", getEditGroup(node, ArrayInitializerFragment.EXPRESSION_PROPERTY));
+			break;
+		case RewriteEvent.REMOVED:
+			try {
+				int end = getScanner().getTokenEndOffset(ITerminalSymbols.TokenNameCOLON, pos);
+				doTextRemove(pos, end - pos, getEditGroup(node, ArrayInitializerFragment.EXPRESSION_PROPERTY));
+			} catch (CoreException e) { }
+			break;
+		}
+		
+		rewriteRequiredNode(node, ArrayInitializerFragment.INITIALIZER_PROPERTY);
+		return false;
+	}
+	
+	@Override
+	public boolean visit(ArrayLiteral node) {
+		if (!hasChildrenChanges(node)) {
+			return doVisitUnchangedChildren(node);
+		}
+		
+		rewriteNodeList(node, ArrayLiteral.ARGUMENTS_PROPERTY, node.getStartPosition() + 1, "", ", ");
+		return false;
+	}
+	
+	@Override
+	public boolean visit(AsmBlock node) {
+		if (!hasChildrenChanges(node)) {
+			return doVisitUnchangedChildren(node);
+		}
+		
+		int startIndent= getIndent(node.getStartPosition()) + 1;
+		int startPos= getPosAfterLeftBrace(3);
+		
+		rewriteParagraphList(node, AsmBlock.STATEMENTS_PROPERTY, startPos, startIndent, -1, 2);
 		return false;
 	}
 

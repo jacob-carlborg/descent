@@ -6,7 +6,6 @@ import descent.core.dom.Modifier;
 import descent.core.dom.PrimitiveType;
 import descent.core.dom.TypeTemplateParameter;
 import descent.core.dom.VariableDeclaration;
-import descent.core.dom.rewrite.ListRewrite;
 
 public class RewriteAggregateDeclarationTest extends RewriteTest {
 	
@@ -14,8 +13,7 @@ public class RewriteAggregateDeclarationTest extends RewriteTest {
 		begin(" class X { }");
 		
 		AggregateDeclaration agg = (AggregateDeclaration) unit.declarations().get(0);
-		ListRewrite lrw = rewriter.getListRewrite(agg, AggregateDeclaration.PRE_D_DOCS_PROPERTY);
-		lrw.insertFirst(ast.newDDocComment("/** Some comment */\n"), null);
+		agg.preDDocs().add(ast.newDDocComment("/** Some comment */\n"));
 		
 		assertEqualsTokenByToken("/** Some comment */ class X { }", end());
 	}
@@ -24,13 +22,8 @@ public class RewriteAggregateDeclarationTest extends RewriteTest {
 		begin(" class X { }");
 		
 		AggregateDeclaration agg = (AggregateDeclaration) unit.declarations().get(0);
-		
-		ListRewrite lrw = rewriter.getListRewrite(agg, AggregateDeclaration.MODIFIERS_PROPERTY);
-		Modifier publicModifier = ast.newModifier(Modifier.ModifierKeyword.PUBLIC_KEYWORD);
-		Modifier abstractModifier = ast.newModifier(Modifier.ModifierKeyword.ABSTRACT_KEYWORD);
-		
-		lrw.insertFirst(publicModifier, null);
-		lrw.insertAfter(abstractModifier, publicModifier, null);
+		agg.modifiers().add(ast.newModifier(Modifier.ModifierKeyword.PUBLIC_KEYWORD));
+		agg.modifiers().add(ast.newModifier(Modifier.ModifierKeyword.ABSTRACT_KEYWORD));
 		
 		assertEqualsTokenByToken("public abstract class X { }", end());
 	}
@@ -39,9 +32,7 @@ public class RewriteAggregateDeclarationTest extends RewriteTest {
 		begin(" public abstract class X { }");
 		
 		AggregateDeclaration agg = (AggregateDeclaration) unit.declarations().get(0);
-		
-		ListRewrite lrw = rewriter.getListRewrite(agg, AggregateDeclaration.MODIFIERS_PROPERTY);
-		lrw.remove(agg.modifiers().get(0), null);
+		agg.modifiers().get(0).delete();
 		
 		assertEqualsTokenByToken("abstract class X { }", end());
 	}
@@ -50,8 +41,7 @@ public class RewriteAggregateDeclarationTest extends RewriteTest {
 		begin(" class X { }");
 		
 		AggregateDeclaration agg = (AggregateDeclaration) unit.declarations().get(0);
-		
-		rewriter.set(agg, AggregateDeclaration.KIND_PROPERTY, AggregateDeclaration.Kind.INTERFACE, null);
+		agg.setKind(AggregateDeclaration.Kind.INTERFACE);
 		
 		assertEqualsTokenByToken("interface X { }", end());
 	}
@@ -60,8 +50,7 @@ public class RewriteAggregateDeclarationTest extends RewriteTest {
 		begin(" union { }");
 		
 		AggregateDeclaration agg = (AggregateDeclaration) unit.declarations().get(0);
-		
-		rewriter.set(agg, AggregateDeclaration.NAME_PROPERTY, ast.newSimpleName("New"), null);
+		agg.setName(ast.newSimpleName("New"));
 		
 		assertEqualsTokenByToken("union New { }", end());
 	}
@@ -70,8 +59,7 @@ public class RewriteAggregateDeclarationTest extends RewriteTest {
 		begin(" class Old { }");
 		
 		AggregateDeclaration agg = (AggregateDeclaration) unit.declarations().get(0);
-		
-		rewriter.set(agg, AggregateDeclaration.NAME_PROPERTY, ast.newSimpleName("New"), null);
+		agg.setName(ast.newSimpleName("New"));
 		
 		assertEqualsTokenByToken("class New { }", end());
 	}
@@ -80,7 +68,7 @@ public class RewriteAggregateDeclarationTest extends RewriteTest {
 		begin(" union Old { }");
 		
 		AggregateDeclaration agg = (AggregateDeclaration) unit.declarations().get(0);
-		rewriter.remove(agg.getName(), null);
+		agg.getName().delete();
 		
 		assertEqualsTokenByToken("union { }", end());
 	}
@@ -96,9 +84,8 @@ public class RewriteAggregateDeclarationTest extends RewriteTest {
 		TypeTemplateParameter param2 = ast.newTypeTemplateParameter();
 		param2.setName(ast.newSimpleName("U"));
 		
-		ListRewrite lrw = rewriter.getListRewrite(agg, AggregateDeclaration.TEMPLATE_PARAMETERS_PROPERTY);
-		lrw.insertFirst(param1, null);
-		lrw.insertAfter(param2, param1, null);
+		agg.templateParameters().add(param1);
+		agg.templateParameters().add(param2);
 		
 		assertEqualsTokenByToken("class X(T, U) { }", end());
 	}
@@ -107,10 +94,7 @@ public class RewriteAggregateDeclarationTest extends RewriteTest {
 		begin(" class X(T, U) { }");
 		
 		AggregateDeclaration agg = (AggregateDeclaration) unit.declarations().get(0);
-		
-		ListRewrite lrw = rewriter.getListRewrite(agg, AggregateDeclaration.TEMPLATE_PARAMETERS_PROPERTY);
-		lrw.remove(agg.templateParameters().get(0), null);
-		lrw.remove(agg.templateParameters().get(1), null);
+		agg.templateParameters().clear();
 		
 		assertEqualsTokenByToken("class X { }", end());
 	}
@@ -123,8 +107,7 @@ public class RewriteAggregateDeclarationTest extends RewriteTest {
 		TypeTemplateParameter param1 = ast.newTypeTemplateParameter();
 		param1.setName(ast.newSimpleName("V"));
 		
-		ListRewrite lrw = rewriter.getListRewrite(agg, AggregateDeclaration.TEMPLATE_PARAMETERS_PROPERTY);
-		lrw.replace(agg.templateParameters().get(0),param1,  null);
+		agg.templateParameters().set(0, param1);
 		
 		assertEqualsTokenByToken("class X(V, U) { }", end());
 	}
@@ -140,9 +123,8 @@ public class RewriteAggregateDeclarationTest extends RewriteTest {
 		BaseClass base2 = ast.newBaseClass();
 		base2.setType(ast.newSimpleType(ast.newSimpleName("Two")));
 		
-		ListRewrite lrw = rewriter.getListRewrite(agg, AggregateDeclaration.BASE_CLASSES_PROPERTY);
-		lrw.insertFirst(base1, null);
-		lrw.insertAfter(base2, base1, null);
+		agg.baseClasses().add(base1);
+		agg.baseClasses().add(base2);
 		
 		assertEqualsTokenByToken("class X : One, Two { }", end());
 	}
@@ -151,10 +133,7 @@ public class RewriteAggregateDeclarationTest extends RewriteTest {
 		begin(" class X : One, Two { }");
 		
 		AggregateDeclaration agg = (AggregateDeclaration) unit.declarations().get(0);
-		
-		ListRewrite lrw = rewriter.getListRewrite(agg, AggregateDeclaration.BASE_CLASSES_PROPERTY);
-		lrw.remove(agg.baseClasses().get(0), null);
-		lrw.remove(agg.baseClasses().get(1), null);
+		agg.baseClasses().clear();
 		
 		assertEqualsTokenByToken("class X { }", end());
 	}
@@ -170,9 +149,8 @@ public class RewriteAggregateDeclarationTest extends RewriteTest {
 		VariableDeclaration var2 = ast.newVariableDeclaration(ast.newVariableDeclarationFragment(ast.newSimpleName("var2")));
 		var2.setType(ast.newPrimitiveType(PrimitiveType.Code.LONG));
 		
-		ListRewrite lrw = rewriter.getListRewrite(agg, AggregateDeclaration.DECLARATIONS_PROPERTY);
-		lrw.insertFirst(var1, null);
-		lrw.insertAfter(var2, var1, null);
+		agg.declarations().add(var1);
+		agg.declarations().add(var2);
 		
 		assertEqualsTokenByToken("class X { int var1; long var2; }", end());
 	}
@@ -185,8 +163,7 @@ public class RewriteAggregateDeclarationTest extends RewriteTest {
 		VariableDeclaration var2 = ast.newVariableDeclaration(ast.newVariableDeclarationFragment(ast.newSimpleName("var2")));
 		var2.setType(ast.newPrimitiveType(PrimitiveType.Code.LONG));
 		
-		ListRewrite lrw = rewriter.getListRewrite(agg, AggregateDeclaration.DECLARATIONS_PROPERTY);
-		lrw.insertAfter(var2, agg.declarations().get(0), null);
+		agg.declarations().add(var2);
 		
 		assertEqualsTokenByToken("class X { int var1; // comment for var1 \n long var2; }", end());
 	}
@@ -202,9 +179,8 @@ public class RewriteAggregateDeclarationTest extends RewriteTest {
 		VariableDeclaration var2 = ast.newVariableDeclaration(ast.newVariableDeclarationFragment(ast.newSimpleName("var2")));
 		var2.setType(ast.newPrimitiveType(PrimitiveType.Code.LONG));
 		
-		ListRewrite lrw = rewriter.getListRewrite(agg, AggregateDeclaration.DECLARATIONS_PROPERTY);
-		lrw.insertFirst(var1, null);
-		lrw.insertAfter(var2, var1, null);
+		agg.declarations().add(var1);
+		agg.declarations().add(var2);
 		
 		assertEqualsTokenByToken("class X { int var1; long var2; }", end());
 	}
@@ -220,11 +196,10 @@ public class RewriteAggregateDeclarationTest extends RewriteTest {
 		VariableDeclaration var2 = ast.newVariableDeclaration(ast.newVariableDeclarationFragment(ast.newSimpleName("var2")));
 		var2.setType(ast.newPrimitiveType(PrimitiveType.Code.LONG));
 		
-		ListRewrite lrw = rewriter.getListRewrite(agg, AggregateDeclaration.DECLARATIONS_PROPERTY);
-		lrw.insertFirst(var1, null);
-		lrw.insertAfter(var2, var1, null);
+		agg.declarations().add(var1);
+		agg.declarations().add(var2);
 		
-		rewriter.set(agg, AggregateDeclaration.POST_D_DOC_PROPERTY, ast.newDDocComment("/// hello!"), null);
+		agg.setPostDDoc(ast.newDDocComment("/// hello!"));
 		
 		assertEqualsTokenByToken("class X { int var1; long var2; } /// hello!", end());
 	}
@@ -233,10 +208,7 @@ public class RewriteAggregateDeclarationTest extends RewriteTest {
 		begin(" class X { int var1; long var2; }");
 		
 		AggregateDeclaration agg = (AggregateDeclaration) unit.declarations().get(0);
-		
-		ListRewrite lrw = rewriter.getListRewrite(agg, AggregateDeclaration.DECLARATIONS_PROPERTY);
-		lrw.remove(agg.declarations().get(0), null);
-		lrw.remove(agg.declarations().get(1), null);
+		agg.declarations().clear();
 		
 		assertEqualsTokenByToken("class X { }", end());
 	}
@@ -245,7 +217,7 @@ public class RewriteAggregateDeclarationTest extends RewriteTest {
 		begin(" class X { }");
 		
 		AggregateDeclaration agg = (AggregateDeclaration) unit.declarations().get(0);
-		rewriter.set(agg, AggregateDeclaration.POST_D_DOC_PROPERTY, ast.newDDocComment("/// hello!"), null);
+		agg.setPostDDoc(ast.newDDocComment("/// hello!"));
 		
 		assertEqualsTokenByToken("class X { } /// hello!", end());
 	}
@@ -254,7 +226,7 @@ public class RewriteAggregateDeclarationTest extends RewriteTest {
 		begin(" class X { } /// hello!");
 		
 		AggregateDeclaration agg = (AggregateDeclaration) unit.declarations().get(0);
-		rewriter.remove(agg.getPostDDoc(), null);
+		agg.getPostDDoc().delete();
 		
 		assertEqualsTokenByToken("class X { }", end());
 	}
@@ -263,24 +235,19 @@ public class RewriteAggregateDeclarationTest extends RewriteTest {
 		begin(" union { }");
 		
 		AggregateDeclaration agg = (AggregateDeclaration) unit.declarations().get(0);
-		ListRewrite lrw;
 		
 		// Add comments
-		lrw = rewriter.getListRewrite(agg, AggregateDeclaration.PRE_D_DOCS_PROPERTY);
-		lrw.insertFirst(ast.newDDocComment("/** Some comment */\n"), null);
+		agg.preDDocs().add(ast.newDDocComment("/** Some comment */\n"));
 		
 		// Add modifiers
-		lrw = rewriter.getListRewrite(agg, AggregateDeclaration.MODIFIERS_PROPERTY);
-		Modifier publicModifier = ast.newModifier(Modifier.ModifierKeyword.PUBLIC_KEYWORD);
-		Modifier abstractModifier = ast.newModifier(Modifier.ModifierKeyword.ABSTRACT_KEYWORD);
-		lrw.insertFirst(publicModifier, null);
-		lrw.insertAfter(abstractModifier, publicModifier, null);
+		agg.modifiers().add(ast.newModifier(Modifier.ModifierKeyword.PUBLIC_KEYWORD));
+		agg.modifiers().add(ast.newModifier(Modifier.ModifierKeyword.ABSTRACT_KEYWORD));
 		
 		// Change type
-		rewriter.set(agg, AggregateDeclaration.KIND_PROPERTY, AggregateDeclaration.Kind.CLASS, null);
+		agg.setKind(AggregateDeclaration.Kind.CLASS);
 		
 		// Add name
-		rewriter.set(agg, AggregateDeclaration.NAME_PROPERTY, ast.newSimpleName("NewClass"), null);
+		agg.setName(ast.newSimpleName("NewClass"));
 		
 		// Add template parameters
 		TypeTemplateParameter param1 = ast.newTypeTemplateParameter();
@@ -289,9 +256,8 @@ public class RewriteAggregateDeclarationTest extends RewriteTest {
 		TypeTemplateParameter param2 = ast.newTypeTemplateParameter();
 		param2.setName(ast.newSimpleName("U"));
 		
-		lrw = rewriter.getListRewrite(agg, AggregateDeclaration.TEMPLATE_PARAMETERS_PROPERTY);
-		lrw.insertFirst(param1, null);
-		lrw.insertAfter(param2, param1, null);
+		agg.templateParameters().add(param1);
+		agg.templateParameters().add(param2);
 		
 		// Add base classes
 		BaseClass base1 = ast.newBaseClass();
@@ -300,9 +266,8 @@ public class RewriteAggregateDeclarationTest extends RewriteTest {
 		BaseClass base2 = ast.newBaseClass();
 		base2.setType(ast.newSimpleType(ast.newSimpleName("Two")));
 		
-		lrw = rewriter.getListRewrite(agg, AggregateDeclaration.BASE_CLASSES_PROPERTY);
-		lrw.insertFirst(base1, null);
-		lrw.insertAfter(base2, base1, null);
+		agg.baseClasses().add(base1);
+		agg.baseClasses().add(base2);
 		
 		// Add declarations
 		VariableDeclaration var1 = ast.newVariableDeclaration(ast.newVariableDeclarationFragment(ast.newSimpleName("var1")));
@@ -311,48 +276,11 @@ public class RewriteAggregateDeclarationTest extends RewriteTest {
 		VariableDeclaration var2 = ast.newVariableDeclaration(ast.newVariableDeclarationFragment(ast.newSimpleName("var2")));
 		var2.setType(ast.newPrimitiveType(PrimitiveType.Code.LONG));
 		
-		lrw = rewriter.getListRewrite(agg, AggregateDeclaration.DECLARATIONS_PROPERTY);
-		lrw.insertFirst(var1, null);
-		lrw.insertAfter(var2, var1, null);
+		agg.declarations().add(var1);
+		agg.declarations().add(var2);
 		
 		assertEqualsTokenByToken("/** Some comment */ public abstract class NewClass(T, U) : One, Two { int var1; long var2; }", end());
 	}
-	
-	public void testMultiChange2() throws Exception {
-		begin(" union { }");
-		
-		AggregateDeclaration agg = (AggregateDeclaration) unit.declarations().get(0);
-		ListRewrite lrw;
-		
-		// Add comments
-		lrw = rewriter.getListRewrite(agg, AggregateDeclaration.PRE_D_DOCS_PROPERTY);
-		lrw.insertFirst(ast.newDDocComment("/** Some comment */\n"), null);
-		
-		// Add modifiers
-		lrw = rewriter.getListRewrite(agg, AggregateDeclaration.MODIFIERS_PROPERTY);
-		Modifier publicModifier = ast.newModifier(Modifier.ModifierKeyword.PUBLIC_KEYWORD);
-		Modifier abstractModifier = ast.newModifier(Modifier.ModifierKeyword.ABSTRACT_KEYWORD);
-		lrw.insertFirst(publicModifier, null);
-		lrw.insertAfter(abstractModifier, publicModifier, null);
-		
-		// Change type
-		rewriter.set(agg, AggregateDeclaration.KIND_PROPERTY, AggregateDeclaration.Kind.CLASS, null);
-		
-		// Add name
-		rewriter.set(agg, AggregateDeclaration.NAME_PROPERTY, ast.newSimpleName("NewClass"), null);
-		
-		// Add template parameters
-		TypeTemplateParameter param1 = ast.newTypeTemplateParameter();
-		param1.setName(ast.newSimpleName("T"));
-		
-		TypeTemplateParameter param2 = ast.newTypeTemplateParameter();
-		param2.setName(ast.newSimpleName("U"));
-		
-		lrw = rewriter.getListRewrite(agg, AggregateDeclaration.TEMPLATE_PARAMETERS_PROPERTY);
-		lrw.insertFirst(param1, null);
-		lrw.insertAfter(param2, param1, null);		
-		
-		assertEqualsTokenByToken("/** Some comment */ public abstract class NewClass(T, U) { }", end());
-	}
 
 }
+

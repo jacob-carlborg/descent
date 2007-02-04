@@ -8,25 +8,23 @@ import descent.core.compiler.ITerminalSymbols;
 import descent.core.dom.AST;
 import descent.core.dom.CompilationUnit;
 import descent.core.dom.ToolFactory;
-import descent.core.dom.rewrite.ASTRewrite;
 import descent.tests.mars.Parser_Test;
 
 public abstract class RewriteTest extends Parser_Test {
 	
 	protected CompilationUnit unit;
 	protected Document document;
-	protected ASTRewrite rewriter;
 	protected AST ast;
 	
 	protected void begin(String source) {
 		document = new Document(source);
 		unit = getCompilationUnit(document.get());
+		unit.recordModifications();
 		ast = unit.getAST();
-		rewriter = ASTRewrite.create(ast);
 	}
 	
 	protected String end() throws Exception {
-		TextEdit edit = rewriter.rewriteAST(document, null);
+		TextEdit edit = unit.rewrite(document, null);
 		edit.apply(document);		
 		return document.get().trim();
 	}

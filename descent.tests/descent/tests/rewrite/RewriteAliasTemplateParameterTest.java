@@ -3,15 +3,14 @@ package descent.tests.rewrite;
 import descent.core.dom.AggregateDeclaration;
 import descent.core.dom.AliasTemplateParameter;
 
-public class RewriteTemplateTest extends RewriteTest {
+public class RewriteAliasTemplateParameterTest extends RewriteTest {
 	
 	public void testAliasTemplateParameterChangeName() throws Exception {
 		begin("class C (alias X) { }");
 		
 		AggregateDeclaration agg = (AggregateDeclaration) unit.declarations().get(0);
 		AliasTemplateParameter param = (AliasTemplateParameter) agg.templateParameters().get(0);
-		
-		rewriter.set(param, AliasTemplateParameter.NAME_PROPERTY, ast.newSimpleName("T"), null);
+		param.setName(ast.newSimpleName("T"));
 		
 		assertEqualsTokenByToken("class C (alias T) { }", end());
 	}
@@ -21,8 +20,7 @@ public class RewriteTemplateTest extends RewriteTest {
 		
 		AggregateDeclaration agg = (AggregateDeclaration) unit.declarations().get(0);
 		AliasTemplateParameter param = (AliasTemplateParameter) agg.templateParameters().get(0);
-		
-		rewriter.set(param, AliasTemplateParameter.SPECIFIC_TYPE_PROPERTY, ast.newSimpleType(ast.newSimpleName("Y")), null);
+		param.setSpecificType(ast.newSimpleType(ast.newSimpleName("Y")));
 		
 		assertEqualsTokenByToken("class C (alias X : Y) { }", end());
 	}
@@ -32,8 +30,7 @@ public class RewriteTemplateTest extends RewriteTest {
 		
 		AggregateDeclaration agg = (AggregateDeclaration) unit.declarations().get(0);
 		AliasTemplateParameter param = (AliasTemplateParameter) agg.templateParameters().get(0);
-		
-		rewriter.remove(param.getSpecificType(), null);
+		param.getSpecificType().delete();
 		
 		assertEqualsTokenByToken("class C (alias X) { }", end());
 	}
@@ -43,8 +40,7 @@ public class RewriteTemplateTest extends RewriteTest {
 		
 		AggregateDeclaration agg = (AggregateDeclaration) unit.declarations().get(0);
 		AliasTemplateParameter param = (AliasTemplateParameter) agg.templateParameters().get(0);
-		
-		rewriter.set(param, AliasTemplateParameter.DEFAULT_TYPE_PROPERTY, ast.newSimpleType(ast.newSimpleName("Y")), null);
+		param.setDefaultType(ast.newSimpleType(ast.newSimpleName("Y")));
 		
 		assertEqualsTokenByToken("class C (alias X = Y) { }", end());
 	}
@@ -54,8 +50,7 @@ public class RewriteTemplateTest extends RewriteTest {
 		
 		AggregateDeclaration agg = (AggregateDeclaration) unit.declarations().get(0);
 		AliasTemplateParameter param = (AliasTemplateParameter) agg.templateParameters().get(0);
-		
-		rewriter.remove(param.getDefaultType(), null);
+		param.getDefaultType().delete();
 		
 		assertEqualsTokenByToken("class C (alias X) { }", end());
 	}
@@ -65,11 +60,9 @@ public class RewriteTemplateTest extends RewriteTest {
 		
 		AggregateDeclaration agg = (AggregateDeclaration) unit.declarations().get(0);
 		AliasTemplateParameter param = (AliasTemplateParameter) agg.templateParameters().get(0);
-		rewriter.set(param, AliasTemplateParameter.NAME_PROPERTY, ast.newSimpleName("T"), null);
-		
-		rewriter.set(param, AliasTemplateParameter.SPECIFIC_TYPE_PROPERTY, ast.newSimpleType(ast.newSimpleName("Y")), null);
-		
-		rewriter.set(param, AliasTemplateParameter.DEFAULT_TYPE_PROPERTY, ast.newSimpleType(ast.newSimpleName("Z")), null);
+		param.setName(ast.newSimpleName("T"));
+		param.setSpecificType(ast.newSimpleType(ast.newSimpleName("Y")));
+		param.setDefaultType(ast.newSimpleType(ast.newSimpleName("Z")));
 		
 		assertEqualsTokenByToken("class C (alias T : Y = Z) { }", end());
 	}

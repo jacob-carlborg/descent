@@ -12,7 +12,11 @@ package descent.core.dom;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.util.Map;
+import org.eclipse.jface.text.IDocument;
+import org.eclipse.text.edits.TextEdit;
 
+import descent.core.JavaCore;
 import descent.core.compiler.IScanner;
 
 
@@ -77,9 +81,8 @@ import descent.core.compiler.IScanner;
  * 
  * @see ASTParser
  * @see ASTNode
- * @since 2.0
  */
-public class AST {
+public final class AST {
 	
 	/**
 	 * Constant for indicating the AST API that handles D1
@@ -137,7 +140,7 @@ public class AST {
 	/**
 	 * Internal ast rewriter used to record ast modification when record mode is enabled.
 	 */
-	// TODO JDT InternalASTRewrite rewriter;
+	InternalASTRewrite rewriter;
 	
 	/**
 	 * Default value of <code>flag<code> when a new node is created.
@@ -628,6 +631,71 @@ public class AST {
 	 * new Object[] {this}
 	 */
 	private final Object[] THIS_AST= new Object[] {this};
+	
+	/**
+	 * Enables the recording of changes to the given compilation
+	 * unit and its descendents. The compilation unit must have
+	 * been created by <code>ASTParser</code> and still be in
+	 * its original state. Once recording is on,
+	 * arbitrary changes to the subtree rooted at the compilation
+	 * unit are recorded internally. Once the modification has
+	 * been completed, call <code>rewrite</code> to get an object
+	 * representing the corresponding edits to the original 
+	 * source code string.
+	 *
+	 * @exception IllegalArgumentException if this compilation unit is
+	 * marked as unmodifiable, or if this compilation unit has already 
+	 * been tampered with, or if recording has already been enabled,
+	 * or if <code>root</code> is not owned by this AST
+	 * @see CompilationUnit#recordModifications()
+	 * @since 3.0
+	 */
+	void recordModifications(CompilationUnit root) {
+		if(this.modificationCount != this.originalModificationCount) {
+			throw new IllegalArgumentException("AST is already modified"); //$NON-NLS-1$
+		} else if(this.rewriter  != null) {
+			throw new IllegalArgumentException("AST modifications are already recorded"); //$NON-NLS-1$
+		} else if((root.getFlags() & ASTNode.PROTECT) != 0) {
+			throw new IllegalArgumentException("Root node is unmodifiable"); //$NON-NLS-1$
+		} else if(root.getAST() != this) {
+			throw new IllegalArgumentException("Root node is not owned by this ast"); //$NON-NLS-1$
+		}
+		
+		this.rewriter = new InternalASTRewrite(root);
+		this.setEventHandler(this.rewriter);
+	}
+	
+	/**
+	 * Converts all modifications recorded into an object
+	 * representing the corresponding text edits to the
+	 * given document containing the original source
+	 * code for the compilation unit that gave rise to
+	 * this AST.
+	 * 
+	 * @param document original document containing source code
+	 * for the compilation unit
+	 * @param options the table of formatter options
+	 * (key type: <code>String</code>; value type: <code>String</code>);
+	 * or <code>null</code> to use the standard global options
+	 * {@link JavaCore#getOptions() JavaCore.getOptions()}.
+	 * @return text edit object describing the changes to the
+	 * document corresponding to the recorded AST modifications
+	 * @exception IllegalArgumentException if the document passed is
+	 * <code>null</code> or does not correspond to this AST
+	 * @exception IllegalStateException if <code>recordModifications</code>
+	 * was not called to enable recording
+	 * @see CompilationUnit#rewrite(IDocument, Map)
+	 * @since 3.0
+	 */
+	TextEdit rewrite(IDocument document, Map options) {
+		if (document == null) {
+			throw new IllegalArgumentException();
+		}
+		if (this.rewriter  == null) {
+			throw new IllegalStateException("Modifications record is not enabled"); //$NON-NLS-1$
+		}
+		return this.rewriter.rewriteAST(document, options);
+	}
 	
 	/**
 	 * Creates an unparented node of the given node class
@@ -1131,12 +1199,18 @@ public class AST {
 	}
 
 	/**
-	 * Creates an unparented expression initializer node owned by this AST.
+	 * Creates an unparented expression initializer node owned by this AST, with the
+	 * given expression.
 	 * 
 	 * @return the new unparented expression initializer node
 	 */
-	public ExpressionInitializer newExpressionInitializer() {
+	public ExpressionInitializer newExpressionInitializer(Expression expression) {
+		if (expression == null) {
+			throw new IllegalArgumentException();
+		}
+		
 		ExpressionInitializer node = new ExpressionInitializer(this);
+		node.setExpression(expression);
 		return node;
 	}
 
@@ -1408,13 +1482,20 @@ public class AST {
 	}
 
 	/**
-	 * Creates an unparented number literal node owned by this AST.
+	 * Creates and returns a new unparented number literal node.
 	 * 
-	 * @return the new unparented number literal node
+	 * @param literal the token for the numeric literal as it would 
+	 *    appear in Java source code
+	 * @return a new unparented number literal node
+	 * @exception IllegalArgumentException if the literal is null
 	 */
-	public NumberLiteral newNumberLiteral() {
-		NumberLiteral node = new NumberLiteral(this);
-		return node;
+	public NumberLiteral newNumberLiteral(String literal) {
+		if (literal == null) {
+			throw new IllegalArgumentException();
+		}
+		NumberLiteral result = new NumberLiteral(this);
+		result.setToken(literal);
+		return result;
 	}
 
 	/**

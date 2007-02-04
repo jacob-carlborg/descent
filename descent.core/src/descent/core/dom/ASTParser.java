@@ -828,6 +828,8 @@ public class ASTParser {
 				
 				parser.compilationUnit.problems = parser.problems;
 				result = parser.compilationUnit;
+				
+				result.ast.setOriginalModificationCount(result.ast.modificationCount());
 				break;
 			default:
 				throw new IllegalStateException();
