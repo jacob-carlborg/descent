@@ -1080,7 +1080,6 @@ class NaiveASTFlattener extends ASTVisitor {
 	public boolean visit(ModuleDeclaration node) {
 		visitPreDDocss(node.preDDocs());
 		printIndent();
-		visitModifiers(node.modifiers());
 		this.buffer.append("module ");
 		node.getName().accept(this);
 		this.buffer.append(";");

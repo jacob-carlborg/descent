@@ -21,12 +21,6 @@ public class ModuleDeclaration extends ASTNode {
 		new ChildListPropertyDescriptor(ModuleDeclaration.class, "preDDocs", DDocComment.class, NO_CYCLE_RISK); //$NON-NLS-1$
 
 	/**
-	 * The "modifiers" structural property of this node type.
-	 */
-	public static final ChildListPropertyDescriptor MODIFIERS_PROPERTY =
-		new ChildListPropertyDescriptor(ModuleDeclaration.class, "modifiers", Modifier.class, NO_CYCLE_RISK); //$NON-NLS-1$
-
-	/**
 	 * The "name" structural property of this node type.
 	 */
 	public static final ChildPropertyDescriptor NAME_PROPERTY =
@@ -49,7 +43,6 @@ public class ModuleDeclaration extends ASTNode {
 		List properyList = new ArrayList(4);
 		createPropertyList(ModuleDeclaration.class, properyList);
 		addProperty(PRE_D_DOCS_PROPERTY, properyList);
-		addProperty(MODIFIERS_PROPERTY, properyList);
 		addProperty(NAME_PROPERTY, properyList);
 		addProperty(POST_D_DOC_PROPERTY, properyList);
 		PROPERTY_DESCRIPTORS = reapPropertyList(properyList);
@@ -77,13 +70,6 @@ public class ModuleDeclaration extends ASTNode {
 	 */
 	private ASTNode.NodeList preDDocs =
 		new ASTNode.NodeList(PRE_D_DOCS_PROPERTY);
-	/**
-	 * The modifiers
-	 * (element type: <code>Modifier</code>).
-	 * Defaults to an empty list.
-	 */
-	private ASTNode.NodeList modifiers =
-		new ASTNode.NodeList(MODIFIERS_PROPERTY);
 	/**
 	 * The name.
 	 */
@@ -146,9 +132,6 @@ public class ModuleDeclaration extends ASTNode {
 		if (property == PRE_D_DOCS_PROPERTY) {
 			return preDDocs();
 		}
-		if (property == MODIFIERS_PROPERTY) {
-			return modifiers();
-		}
 		// allow default implementation to flag the error
 		return super.internalGetChildListProperty(property);
 	}
@@ -167,7 +150,6 @@ public class ModuleDeclaration extends ASTNode {
 		ModuleDeclaration result = new ModuleDeclaration(target);
 		result.setSourceRange(this.getStartPosition(), this.getLength());
 		result.preDDocs.addAll(ASTNode.copySubtrees(target, preDDocs()));
-		result.modifiers.addAll(ASTNode.copySubtrees(target, modifiers()));
 		result.setName((Name) getName().clone(target));
 	result.setPostDDoc((DDocComment) ASTNode.copySubtree(target, getPostDDoc()));
 		return result;
@@ -189,7 +171,6 @@ public class ModuleDeclaration extends ASTNode {
 		if (visitChildren) {
 			// visit children in normal left to right reading order
 			acceptChildren(visitor, this.preDDocs);
-			acceptChildren(visitor, this.modifiers);
 			acceptChild(visitor, getName());
 			acceptChild(visitor, getPostDDoc());
 		}
@@ -205,17 +186,6 @@ public class ModuleDeclaration extends ASTNode {
 	 */ 
 	public List<DDocComment> preDDocs() {
 		return this.preDDocs;
-	}
-
-	/**
-	 * Returns the live ordered list of modifiers for this
-	 * module declaration.
-	 * 
-	 * @return the live list of module declaration
-	 *    (element type: <code>Modifier</code>)
-	 */ 
-	public List<Modifier> modifiers() {
-		return this.modifiers;
 	}
 
 	/**
@@ -289,7 +259,7 @@ public class ModuleDeclaration extends ASTNode {
 	 * Method declared on ASTNode.
 	 */
 	int memSize() {
-		return BASE_NODE_SIZE + 4 * 4;
+		return BASE_NODE_SIZE + 3 * 4;
 	}
 
 	/* (omit javadoc for this method)
@@ -299,7 +269,6 @@ public class ModuleDeclaration extends ASTNode {
 		return
 			memSize()
 			+ (this.preDDocs.listSize())
-			+ (this.modifiers.listSize())
 			+ (this.name == null ? 0 : getName().treeSize())
 			+ (this.postDDoc == null ? 0 : getPostDDoc().treeSize())
 	;

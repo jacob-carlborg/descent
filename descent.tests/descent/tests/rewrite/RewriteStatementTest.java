@@ -1,11 +1,13 @@
 package descent.tests.rewrite;
 
+import descent.core.dom.Argument;
 import descent.core.dom.AsmBlock;
 import descent.core.dom.AsmStatement;
 import descent.core.dom.Block;
 import descent.core.dom.CatchClause;
 import descent.core.dom.DebugStatement;
 import descent.core.dom.ExpressionStatement;
+import descent.core.dom.ForeachStatement;
 import descent.core.dom.TryStatement;
 
 public class RewriteStatementTest extends AbstractRewriteTest {
@@ -194,6 +196,38 @@ public class RewriteStatementTest extends AbstractRewriteTest {
 		stm.getElseBody().delete();
 		
 		assertStatementEqualsTokenByToken("debug (v2) { }", end()); 
+	}
+	
+	public void testForeachStatementChangeReverse() throws Exception {
+		ForeachStatement stm = (ForeachStatement) beginStatement("foreach(x; y) { }");
+		stm.setReverse(true);
+		
+		assertStatementEqualsTokenByToken("foreach_reverse(x; y) { }", end()); 
+	}
+	
+	public void testForeachStatementChangeReverse2() throws Exception {
+		ForeachStatement stm = (ForeachStatement) beginStatement("foreach_reverse(x; y) { }");
+		stm.setReverse(false);
+		
+		assertStatementEqualsTokenByToken("foreach(x; y) { }", end()); 
+	}
+	
+	public void testForeachAddArguments() throws Exception {
+		ForeachStatement stm = (ForeachStatement) beginStatement("foreach(x; y) { }");
+		
+		Argument arg1 = ast.newArgument();
+		arg1.setName(ast.newSimpleName("w"));
+		
+		stm.arguments().add(arg1);
+		
+		assertStatementEqualsTokenByToken("foreach(x, w; y) { }", end()); 
+	}
+	
+	public void testForeachRemoveArguments() throws Exception {
+		ForeachStatement stm = (ForeachStatement) beginStatement("foreach(x, w; y) { }");
+		stm.arguments().get(1).delete();
+		
+		assertStatementEqualsTokenByToken("foreach(x; y) { }", end()); 
 	}
 
 }

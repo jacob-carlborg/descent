@@ -1694,7 +1694,6 @@ public class ASTMatcher {
 		ModuleDeclaration o = (ModuleDeclaration) other;
 		return (
 			safeSubtreeListMatch(node.preDDocs(), o.preDDocs())
-			&& safeSubtreeListMatch(node.modifiers(), o.modifiers())
 			&& safeSubtreeMatch(node.getName(), o.getName())
 			&& safeSubtreeMatch(node.getPostDDoc(), o.getPostDDoc())
 			);

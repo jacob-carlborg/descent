@@ -22,6 +22,10 @@ public class AllRewriteTests {
 		suite.addTestSuite(RewriteDebugAssignmentTest.class);		
 		suite.addTestSuite(RewriteDebugDeclarationTest.class);
 		suite.addTestSuite(RewriteEnumDeclarationTest.class);
+		suite.addTestSuite(RewriteExternDeclarationTest.class);
+		suite.addTestSuite(RewriteModuleDeclarationTest.class);
+		suite.addTestSuite(RewriteStaticIfDeclarationTest.class);
+		suite.addTestSuite(RewriteMixinDeclarationTest.class);
 		//$JUnit-END$
 		return suite;
 	}

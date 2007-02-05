@@ -923,7 +923,6 @@ public class ASTRewriteFlattener extends ASTVisitor {
 	@Override
 	public boolean visit(ModuleDeclaration node) {
 		visitList(node, ModuleDeclaration.PRE_D_DOCS_PROPERTY, LINE_END, EMPTY, LINE_END);
-		visitList(node, ModuleDeclaration.MODIFIERS_PROPERTY, " ", EMPTY, " ");
 		this.result.append("module ");
 		visitChild(node, ModuleDeclaration.NAME_PROPERTY);
 		this.result.append(";");
