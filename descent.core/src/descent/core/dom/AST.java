@@ -1215,12 +1215,18 @@ public final class AST {
 	}
 
 	/**
-	 * Creates an unparented expression statement node owned by this AST.
+	 * Creates an unparented expression statement node owned by this AST, with the
+	 * given expression.
 	 * 
 	 * @return the new unparented expression statement node
 	 */
-	public ExpressionStatement newExpressionStatement() {
+	public ExpressionStatement newExpressionStatement(Expression expression) {
+		if (expression == null) {
+			throw new IllegalArgumentException();
+		}
+		
 		ExpressionStatement node = new ExpressionStatement(this);
+		node.setExpression(expression);
 		return node;
 	}
 

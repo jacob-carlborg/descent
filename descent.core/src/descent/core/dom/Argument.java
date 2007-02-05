@@ -90,7 +90,7 @@ public class Argument extends ASTNode {
 	/**
 	 * The passageMode.
 	 */
-	private PassageMode passageMode;
+	private PassageMode passageMode = PassageMode.DEFAULT;
 
 	/**
 	 * The type.

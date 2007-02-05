@@ -20,6 +20,8 @@ public class AllRewriteTests {
 		suite.addTestSuite(RewriteBaseClassTest.class);
 		suite.addTestSuite(RewriteDDocCommentTest.class);
 		suite.addTestSuite(RewriteDebugAssignmentTest.class);		
+		suite.addTestSuite(RewriteDebugDeclarationTest.class);
+		suite.addTestSuite(RewriteEnumDeclarationTest.class);
 		//$JUnit-END$
 		return suite;
 	}

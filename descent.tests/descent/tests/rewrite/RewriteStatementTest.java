@@ -2,6 +2,11 @@ package descent.tests.rewrite;
 
 import descent.core.dom.AsmBlock;
 import descent.core.dom.AsmStatement;
+import descent.core.dom.Block;
+import descent.core.dom.CatchClause;
+import descent.core.dom.DebugStatement;
+import descent.core.dom.ExpressionStatement;
+import descent.core.dom.TryStatement;
 
 public class RewriteStatementTest extends AbstractRewriteTest {
 	
@@ -41,6 +46,154 @@ public class RewriteStatementTest extends AbstractRewriteTest {
 		stm.tokens().get(0).setToken("lea");
 		
 		assertStatementEqualsTokenByToken("asm { lea eax, ebx; }", end());
+	}
+	
+	public void testCatchClauseAddNameAndType() throws Exception {
+		TryStatement tryStatement = (TryStatement) beginStatement("try { } catch { }");
+		CatchClause clause = tryStatement.catchClauses().get(0);
+		
+		clause.setType(ast.newSimpleType(ast.newSimpleName("Exception")));
+		clause.setName(ast.newSimpleName("e"));
+		
+		assertStatementEqualsTokenByToken("try { } catch (Exception e) { }", end());
+	}
+	
+	public void testCatchClauseRemoveNameAndType() throws Exception {
+		TryStatement tryStatement = (TryStatement) beginStatement("try { } catch(Exception e) { }");
+		CatchClause clause = tryStatement.catchClauses().get(0);
+		clause.getType().delete();
+		clause.getName().delete();
+		
+		assertStatementEqualsTokenByToken("try { } catch { }", end());
+	}
+	
+	public void testCatchClauseRemoveNameAndType2() throws Exception {
+		TryStatement tryStatement = (TryStatement) beginStatement("try { } catch(int function() e) { }");
+		CatchClause clause = tryStatement.catchClauses().get(0);
+		clause.getType().delete();
+		clause.getName().delete();
+		
+		assertStatementEqualsTokenByToken("try { } catch { }", end());
+	}
+	
+	public void testCatchClauseChangeName() throws Exception {
+		TryStatement tryStatement = (TryStatement) beginStatement("try { } catch(Exception e) { }");
+		CatchClause clause = tryStatement.catchClauses().get(0);
+		clause.setName(ast.newSimpleName("ex"));
+		
+		assertStatementEqualsTokenByToken("try { } catch(Exception ex) { }", end());
+	}
+	
+	public void testCatchClauseChangeType() throws Exception {
+		TryStatement tryStatement = (TryStatement) beginStatement("try { } catch(Exception e) { }");
+		CatchClause clause = tryStatement.catchClauses().get(0);
+		clause.setType(ast.newSimpleType(ast.newSimpleName("Throwable")));
+		
+		assertStatementEqualsTokenByToken("try { } catch(Throwable e) { }", end());
+	}
+	
+	public void testCatchClauseChangeBody() throws Exception {
+		TryStatement tryStatement = (TryStatement) beginStatement("try { } catch(Exception e) { }");
+		CatchClause clause = tryStatement.catchClauses().get(0);
+		
+		Block block = ast.newBlock();		
+		ExpressionStatement stm = ast.newExpressionStatement(ast.newSimpleName("doIt"));
+		block.statements().add(stm);
+		
+		clause.setBody(block);
+		
+		assertStatementEqualsTokenByToken("try { } catch(Exception e) { doIt; }", end());
+	}
+	
+	public void testDebugStatementAddVersion() throws Exception {
+		DebugStatement stm = (DebugStatement) beginStatement("debug { }");
+		stm.setVersion(ast.newVersion("v1"));
+		
+		assertStatementEqualsTokenByToken("debug(v1) { }", end()); 
+	}
+	
+	public void testDebugStatementChangeVersion() throws Exception {
+		DebugStatement stm = (DebugStatement) beginStatement("debug (v1) { }");
+		stm.setVersion(ast.newVersion("xx22"));
+		
+		assertStatementEqualsTokenByToken("debug(xx22) { }", end()); 
+	}
+	
+	public void testDebugStatementRemoveVersion() throws Exception {
+		DebugStatement stm = (DebugStatement) beginStatement("debug (v1) { }");
+		stm.getVersion().delete();
+		
+		assertStatementEqualsTokenByToken("debug { }", end()); 
+	}
+	
+	public void testDebugStatementChangeThenBody() throws Exception {
+		DebugStatement stm = (DebugStatement) beginStatement("debug { }");
+		
+		Block block = ast.newBlock();		
+		ExpressionStatement stm2 = ast.newExpressionStatement(ast.newSimpleName("doIt"));
+		block.statements().add(stm2);
+		
+		stm.setThenBody(block);
+		
+		assertStatementEqualsTokenByToken("debug { doIt; }", end()); 
+	}
+	
+	public void testDebugStatementChangeThenBody2() throws Exception {
+		DebugStatement stm = (DebugStatement) beginStatement("debug (v1) { }");
+		
+		Block block = ast.newBlock();		
+		ExpressionStatement stm2 = ast.newExpressionStatement(ast.newSimpleName("doIt"));
+		block.statements().add(stm2);
+		
+		stm.setThenBody(block);
+		
+		assertStatementEqualsTokenByToken("debug (v1) { doIt; }", end()); 
+	}
+	
+	public void testDebugStatementAddElseBody() throws Exception {
+		DebugStatement stm = (DebugStatement) beginStatement("debug { }");
+		
+		Block block = ast.newBlock();		
+		ExpressionStatement stm2 = ast.newExpressionStatement(ast.newSimpleName("doIt"));
+		block.statements().add(stm2);
+		
+		stm.setElseBody(block);
+		
+		assertStatementEqualsTokenByToken("debug { } else { doIt; }", end()); 
+	}
+	
+	public void testDebugStatementAddElseBody2() throws Exception {
+		DebugStatement stm = (DebugStatement) beginStatement("debug (v1) { }");
+		
+		Block block = ast.newBlock();		
+		ExpressionStatement stm2 = ast.newExpressionStatement(ast.newSimpleName("doIt"));
+		block.statements().add(stm2);
+		
+		stm.setElseBody(block);
+		
+		assertStatementEqualsTokenByToken("debug (v1) { } else { doIt; }", end()); 
+	}
+	
+	public void testDebugStatementRemoveElseBody() throws Exception {
+		DebugStatement stm = (DebugStatement) beginStatement("debug { } else { }");
+		stm.getElseBody().delete();
+		
+		assertStatementEqualsTokenByToken("debug { }", end()); 
+	}
+	
+	public void testDebugStatementRemoveElseBody2() throws Exception {
+		DebugStatement stm = (DebugStatement) beginStatement("debug (v1) { } else { }");
+		stm.getElseBody().delete();
+		
+		assertStatementEqualsTokenByToken("debug (v1) { }", end()); 
+	}
+	
+	public void testDebugStatementChangeVersionValueAndElse() throws Exception {
+		DebugStatement stm = (DebugStatement) beginStatement("debug (v1) { } else { }");
+		stm.getVersion().setValue("v2");
+		stm.getElseBody().delete();
+		
+		assertStatementEqualsTokenByToken("debug (v2) { }", end()); 
 	}
 
 }

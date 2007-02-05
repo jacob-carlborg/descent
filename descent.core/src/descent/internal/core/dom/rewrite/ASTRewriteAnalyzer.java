@@ -57,6 +57,7 @@ import descent.core.dom.BooleanLiteral;
 import descent.core.dom.BreakStatement;
 import descent.core.dom.CallExpression;
 import descent.core.dom.CastExpression;
+import descent.core.dom.CatchClause;
 import descent.core.dom.CharacterLiteral;
 import descent.core.dom.ChildListPropertyDescriptor;
 import descent.core.dom.CodeComment;
@@ -65,12 +66,19 @@ import descent.core.dom.ConditionalExpression;
 import descent.core.dom.ContinueStatement;
 import descent.core.dom.DDocComment;
 import descent.core.dom.DebugAssignment;
+import descent.core.dom.DebugDeclaration;
+import descent.core.dom.DebugStatement;
 import descent.core.dom.DeclarationStatement;
 import descent.core.dom.DefaultStatement;
+import descent.core.dom.DelegateType;
 import descent.core.dom.DeleteExpression;
 import descent.core.dom.DoStatement;
 import descent.core.dom.DollarLiteral;
+import descent.core.dom.DotIdentifierExpression;
+import descent.core.dom.DotTemplateTypeExpression;
 import descent.core.dom.DynamicArrayType;
+import descent.core.dom.EnumDeclaration;
+import descent.core.dom.EnumMember;
 import descent.core.dom.ExpressionInitializer;
 import descent.core.dom.ExpressionStatement;
 import descent.core.dom.GotoCaseStatement;
@@ -107,7 +115,6 @@ import descent.core.dom.TupleTemplateParameter;
 import descent.core.dom.TypeExpression;
 import descent.core.dom.TypeTemplateParameter;
 import descent.core.dom.TypedefDeclaration;
-import descent.core.dom.TypedefDeclarationFragment;
 import descent.core.dom.TypeidExpression;
 import descent.core.dom.TypeofType;
 import descent.core.dom.UnitTestDeclaration;
@@ -982,6 +989,218 @@ public final class ASTRewriteAnalyzer extends ASTVisitor {
 		}
 	}
 	
+	private int rewriteVersion(ASTNode parent, StructuralPropertyDescriptor property, int parentToken, int pos) {
+		int versionChange = getChangeKind(parent, property);
+		if (versionChange != RewriteEvent.UNCHANGED) {
+			ASTNode originalVersion = (ASTNode) getEvent(parent, property).getOriginalValue();
+			switch(versionChange) {
+			case RewriteEvent.INSERTED:
+				try {
+					pos = getScanner().getTokenEndOffset(parentToken, pos);
+					doTextInsert(pos, "(", getEditGroup(parent, property));
+					rewriteNode(parent, property, pos, ASTRewriteFormatter.NONE);
+					doTextInsert(pos, ")", getEditGroup(parent, property));
+				} catch (CoreException e) {
+					
+				}
+				break;
+			case RewriteEvent.REPLACED:
+				rewriteNode(parent, property, originalVersion.getStartPosition(), ASTRewriteFormatter.NONE);
+				break;
+			case RewriteEvent.REMOVED:
+				try {
+					pos = getScanner().getTokenStartOffset(ITerminalSymbols.TokenNameLPAREN, pos);
+					int end = getScanner().getTokenEndOffset(ITerminalSymbols.TokenNameRPAREN, originalVersion.getStartPosition() + originalVersion.getLength());
+					doTextRemove(pos, end - pos, getEditGroup(parent, property));
+					
+					pos = end;
+				} catch (CoreException e) {
+					handleException(e);
+				}
+				break;
+			}
+		} else {
+			doVisit(parent, property, pos);
+			
+			ASTNode node = (ASTNode) getOriginalValue(parent, property);
+			try {
+				if (node == null) {
+					pos = getScanner().getTokenEndOffset(parentToken, pos);
+				} else {
+					pos = getScanner().getTokenEndOffset(ITerminalSymbols.TokenNameRPAREN, node.getStartPosition() + node.getLength());
+				}
+			} catch (CoreException e) {
+				handleException(e);
+			}
+		}
+		
+		return pos;
+	}
+	
+	private int rewriteThenElseBody(ASTNode parent, StructuralPropertyDescriptor thenProperty, StructuralPropertyDescriptor elseProperty, int pos) {
+		RewriteEvent thenEvent= getEvent(parent, thenProperty);
+		int elseChange= getChangeKind(parent, elseProperty);
+
+		if (thenEvent != null && thenEvent.getChangeKind() != RewriteEvent.UNCHANGED) {
+			try {
+				int indent= getIndent(parent.getStartPosition());
+				
+				int endPos= -1;
+				Object elseStatement= getOriginalValue(parent, elseProperty);
+				if (elseStatement != null) {
+					ASTNode thenStatement = (ASTNode) thenEvent.getOriginalValue();
+					endPos= getScanner().getTokenStartOffset(ITerminalSymbols.TokenNameelse, thenStatement.getStartPosition() + thenStatement.getLength()); // else keyword
+				}
+				if (elseStatement == null || elseChange != RewriteEvent.UNCHANGED) {
+					pos= rewriteBodyNode(parent, thenProperty, pos, endPos, indent, this.formatter.IF_BLOCK_NO_ELSE); 
+				} else {
+					pos= rewriteBodyNode(parent, thenProperty, pos, endPos, indent, this.formatter.IF_BLOCK_WITH_ELSE); 
+				}
+			} catch (CoreException e) {
+				handleException(e);
+			}
+		} else {
+			pos= doVisit(parent, thenProperty, pos);
+		}
+
+		if (elseChange != RewriteEvent.UNCHANGED) {
+			int indent= getIndent(parent.getStartPosition());
+			Object newThen= getNewValue(parent, thenProperty);
+			if (newThen instanceof Block) {
+				rewriteBodyNode(parent, elseProperty, pos, -1, indent, this.formatter.ELSE_AFTER_BLOCK);
+			} else {
+				rewriteBodyNode(parent, elseProperty, pos, -1, indent, this.formatter.ELSE_AFTER_STATEMENT);
+			}
+		} else {
+			pos= doVisit(parent, elseProperty, pos);
+		}
+		
+		return pos;
+	}
+	
+	private int rewriteThenElseDeclarations(ASTNode parent, StructuralPropertyDescriptor thenProperty, StructuralPropertyDescriptor elseProperty, int pos) {
+		RewriteEvent thenEvent = getEvent(parent, thenProperty);
+		if (thenEvent != null && thenEvent.getChangeKind() != RewriteEvent.UNCHANGED) {
+			try {
+				int token;
+				try {
+					token = getScanner().readNext(true);
+				} catch (CoreException e) {
+					token = -1;
+				}
+				if (token == ITerminalSymbols.TokenNameLCURLY) {
+					pos = getScanner().getCurrentEndOffset();
+					pos = rewriteParagraphList(parent, thenProperty, pos, 0, -1, 2);
+					pos = getScanner().getNextEndOffset(pos, true);
+				} else if (token == ITerminalSymbols.TokenNameCOLON) {
+					pos = getScanner().getCurrentEndOffset();
+					pos = rewriteParagraphList(parent, thenProperty, pos, 0, -1, 2);
+				} else {
+					doTextInsert(pos, "{", getEditGroup(parent, thenProperty));
+					pos = rewriteParagraphList(parent, thenProperty, pos, 0, -1, 2);
+					doTextInsert(pos, "}", getEditGroup(parent, thenProperty));
+				}
+			} catch (CoreException e) {
+				handleException(e);
+			}
+		} else {
+			try {
+				int token;
+				try {
+					token = getScanner().readNext(true);
+				} catch (CoreException e) {
+					token = -1;
+				}
+				if (token == ITerminalSymbols.TokenNameLCURLY) {
+					pos = getScanner().getCurrentEndOffset();
+					pos = doVisit(parent, thenProperty, pos);
+					pos = getScanner().getNextEndOffset(pos, true);
+				} else {
+					pos = doVisit(parent, thenProperty, pos);
+				}
+			} catch (CoreException e) {
+				handleException(e);
+			}
+		}
+		
+		RewriteEvent elseEvent = getEvent(parent, elseProperty);
+		if (elseEvent != null && elseEvent.getChangeKind() != RewriteEvent.UNCHANGED) {
+			List originalElse = (List) elseEvent.getOriginalValue();
+			List newElse = (List) elseEvent.getNewValue();
+			
+			if (originalElse.isEmpty()) {
+				int token;
+				try {
+					token = getScanner().readNext(pos, true);
+				} catch (CoreException e) {
+					token = -1;
+				}
+				if (token != ITerminalSymbols.TokenNameelse) {
+					doTextInsert(pos, " else ", getEditGroup(parent, elseProperty));
+				}
+			} else if (newElse.isEmpty()) {
+				try {
+					pos = getScanner().getTokenStartOffset(ITerminalSymbols.TokenNameelse, pos);
+					ASTNode last = (ASTNode) originalElse.get(originalElse.size() - 1);
+					int end = last.getStartPosition() + last.getLength();
+					
+					getScanner().setOffset(end);
+					int token;
+					try {
+						token = getScanner().readNext(true);
+					} catch (CoreException e) {
+						token = -1;
+					}
+					if (token == ITerminalSymbols.TokenNameRCURLY) {
+						end = getScanner().getCurrentEndOffset();
+					}
+					doTextRemove(pos, end - pos, getEditGroup(parent, elseProperty));
+				} catch (CoreException e) {
+					handleException(e);
+				}
+				return pos;
+			}
+			
+			try {
+				int token;
+				try {
+					token = getScanner().readNext(true);
+				} catch (CoreException e) {
+					token = -1;
+				}
+				if (token == ITerminalSymbols.TokenNameLCURLY) {
+					pos = getScanner().getCurrentEndOffset();
+					pos = rewriteParagraphList(parent, elseProperty, pos, 0, -1, 2);
+					pos = getScanner().getNextEndOffset(pos, true);
+				} else {
+					doTextInsert(pos, "{", getEditGroup(parent, elseProperty));
+					pos = rewriteParagraphList(parent, elseProperty, pos, 0, -1, 2);
+					doTextInsert(pos, "}", getEditGroup(parent, elseProperty));
+				}
+			} catch (CoreException e) {
+				handleException(e);
+			}
+		} else {
+			List originalElse = (List) getOriginalValue(parent, elseProperty);
+			if (!originalElse.isEmpty()) { 
+				try {
+					int token = getScanner().readNext(true);
+					if (token == ITerminalSymbols.TokenNameLCURLY) {
+						pos = getScanner().getCurrentEndOffset();
+						pos = doVisit(parent, elseProperty, pos);
+						pos = getScanner().getNextEndOffset(pos, true);
+					} else {
+						pos = doVisit(parent, elseProperty, pos);
+					}
+				} catch (CoreException e) {
+					handleException(e);
+				}
+			}
+		}
+		
+		return pos;
+	}
+	
 	/*
 	 * endpos can be -1 -> use the end pos of the body
 	 */
@@ -1254,7 +1473,7 @@ public final class ASTRewriteAnalyzer extends ASTVisitor {
 				
 				doTextReplace(start, end - start, newKind.toString(), getEditGroup(node, AggregateDeclaration.KIND_PROPERTY));
 			} catch (CoreException e) {
-				
+				handleException(e);
 			}
 		}
 
@@ -1262,7 +1481,7 @@ public final class ASTRewriteAnalyzer extends ASTVisitor {
 			pos = getScanner().getTokenEndOffset(kindTerminalSymbol, node.getStartPosition());
 			pos = rewriteNode(node, AggregateDeclaration.NAME_PROPERTY, pos, ASTRewriteFormatter.SPACE);
 		} catch (CoreException e) {
-			
+			handleException(e);
 		}
 		
 		pos = rewriteOptionalTemplateParameters(node, AggregateDeclaration.TEMPLATE_PARAMETERS_PROPERTY, pos, "", false, false);
@@ -1291,7 +1510,7 @@ public final class ASTRewriteAnalyzer extends ASTVisitor {
 			}
 			rewriteNode(node, AggregateDeclaration.POST_D_DOC_PROPERTY, pos, ASTRewriteFormatter.SPACE);
 		} catch (CoreException e) {
-			
+			handleException(e);
 		}
 	
 		return false;
@@ -1302,6 +1521,7 @@ public final class ASTRewriteAnalyzer extends ASTVisitor {
 		if (!hasChildrenChanges(node)) {
 			return doVisitUnchangedChildren(node);
 		}
+		
 		int pos = rewriteParagraphList(node, AliasDeclaration.PRE_D_DOCS_PROPERTY, 0, 0, 0, 0);
 		pos = rewriteModifiers(node, AliasDeclaration.MODIFIERS_PROPERTY, pos);
 		
@@ -1312,7 +1532,7 @@ public final class ASTRewriteAnalyzer extends ASTVisitor {
 			pos = getScanner().getTokenEndOffset(ITerminalSymbols.TokenNameSEMICOLON, pos);
 			rewriteNode(node, AliasDeclaration.POST_D_DOC_PROPERTY, pos, ASTRewriteFormatter.SPACE);
 		} catch (CoreException e) {
-			
+			handleException(e);
 		}
 		
 		return false;
@@ -1352,7 +1572,7 @@ public final class ASTRewriteAnalyzer extends ASTVisitor {
 		try {
 			pos = getScanner().getTokenEndOffset(ITerminalSymbols.TokenNameLPAREN, pos);
 		} catch (CoreException e) {
-			
+			handleException(e);
 		}
 		
 		rewriteOperation(node, AlignDeclaration.ALIGN_PROPERTY, pos);
@@ -1361,7 +1581,7 @@ public final class ASTRewriteAnalyzer extends ASTVisitor {
 			pos = getScanner().getNextEndOffset(pos, true);
 			pos = getScanner().getNextEndOffset(pos, true);
 		} catch (CoreException e) {
-			
+			handleException(e);
 		}
 		
 		// startPos : find position after left brace of type, be aware that bracket might be missing
@@ -1372,7 +1592,7 @@ public final class ASTRewriteAnalyzer extends ASTVisitor {
 		try {
 			pos = getScanner().getTokenEndOffset(ITerminalSymbols.TokenNameRCURLY, pos);
 		} catch (CoreException e) {
-			
+			// Maybe is was : ...
 		}
 		rewriteNode(node, AlignDeclaration.POST_D_DOC_PROPERTY, pos, ASTRewriteFormatter.SPACE);
 		
@@ -1416,13 +1636,17 @@ public final class ASTRewriteAnalyzer extends ASTVisitor {
 					}
 					
 					pos = end;
-				} catch (CoreException e) { }
+				} catch (CoreException e) { 
+					handleException(e);
+				}
 			}
 		} else {
 			if (oldPassage != Argument.PassageMode.DEFAULT) {
 				try {
 					pos = getScanner().getTokenEndOffset(passageTerminalSymbol, pos);
-				} catch (CoreException e) { }
+				} catch (CoreException e) { 
+					handleException(e);
+				}
 			}
 		}
 		
@@ -1470,7 +1694,9 @@ public final class ASTRewriteAnalyzer extends ASTVisitor {
 			try {
 				int end = getScanner().getTokenEndOffset(ITerminalSymbols.TokenNameCOLON, pos);
 				doTextRemove(pos, end - pos, getEditGroup(node, ArrayInitializerFragment.EXPRESSION_PROPERTY));
-			} catch (CoreException e) { }
+			} catch (CoreException e) { 
+				handleException(e);
+			}
 			break;
 		}
 		
@@ -1657,6 +1883,53 @@ public final class ASTRewriteAnalyzer extends ASTVisitor {
 	}
 	
 	@Override
+	public boolean visit(CatchClause node) {
+		if (!hasChildrenChanges(node)) {
+			return doVisitUnchangedChildren(node);
+		}
+		
+		int typeChange = getChangeKind(node, CatchClause.TYPE_PROPERTY);
+		int nameChange = getChangeKind(node, CatchClause.NAME_PROPERTY);
+		
+		if (typeChange == RewriteEvent.INSERTED || typeChange == RewriteEvent.REMOVED) {
+			if (typeChange != nameChange) {
+				throw new IllegalStateException("The type and name of a CatchClause must be removed or inserted together");
+			}
+		}
+		
+		int pos = node.getStartPosition();
+		
+		if (typeChange == RewriteEvent.INSERTED) {
+			try {
+				pos = getScanner().getTokenEndOffset(ITerminalSymbols.TokenNamecatch, pos);
+				doTextInsert(pos, "(", getEditGroup(node, CatchClause.TYPE_PROPERTY));
+				pos = rewriteNode(node, CatchClause.TYPE_PROPERTY, pos, ASTRewriteFormatter.NONE);
+				pos = rewriteNode(node, CatchClause.NAME_PROPERTY, pos, ASTRewriteFormatter.SPACE);
+				doTextInsert(pos, ")", getEditGroup(node, CatchClause.TYPE_PROPERTY));
+			} catch (Exception e) {
+				
+			}			
+		} else if (typeChange == RewriteEvent.REMOVED) {
+			try {
+				ASTNode oldName = (ASTNode) getEvent(node, CatchClause.NAME_PROPERTY).getOriginalValue();
+				
+				pos = getScanner().getTokenStartOffset(ITerminalSymbols.TokenNameLPAREN, pos);
+				int end = getScanner().getTokenEndOffset(ITerminalSymbols.TokenNameRPAREN, oldName.getStartPosition() + oldName.getLength());
+				doTextRemove(pos, end - pos, getEditGroup(node, CatchClause.TYPE_PROPERTY));
+			} catch (Exception e) {
+				
+			}
+		} else {
+			rewriteRequiredNode(node, CatchClause.NAME_PROPERTY);
+			rewriteRequiredNode(node, CatchClause.TYPE_PROPERTY);
+		}
+		
+		rewriteRequiredNode(node, CatchClause.BODY_PROPERTY);
+		
+		return false;
+	}
+	
+	@Override
 	public boolean visit(CodeComment node) {
 		return false;
 	}
@@ -1740,8 +2013,41 @@ public final class ASTRewriteAnalyzer extends ASTVisitor {
 			pos = getScanner().getTokenEndOffset(ITerminalSymbols.TokenNameSEMICOLON, pos);
 			rewriteNode(node, DebugAssignment.POST_D_DOC_PROPERTY, pos, ASTRewriteFormatter.SPACE);
 		} catch (CoreException e) {
-			
+			handleException(e);
 		}
+		
+		return false;
+	}
+	
+	@Override
+	public boolean visit(DebugDeclaration node) {
+		if (!hasChildrenChanges(node)) {
+			return doVisitUnchangedChildren(node);
+		}
+		
+		int pos = rewriteParagraphList(node, DebugDeclaration.PRE_D_DOCS_PROPERTY, 0, 0, 0, 0);
+		pos = rewriteModifiers(node, DebugDeclaration.MODIFIERS_PROPERTY, pos);
+		
+		pos = rewriteVersion(node, DebugDeclaration.VERSION_PROPERTY, ITerminalSymbols.TokenNamedebug, pos);
+		
+		pos = rewriteThenElseDeclarations(node, DebugDeclaration.THEN_DECLARATIONS_PROPERTY, DebugDeclaration.ELSE_DECLARATIONS_PROPERTY, pos);
+		
+		rewriteNode(node, DebugDeclaration.POST_D_DOC_PROPERTY, pos, ASTRewriteFormatter.SPACE);
+		
+		return false;
+	}
+	
+	@Override
+	public boolean visit(DebugStatement node) {
+		if (!hasChildrenChanges(node)) {
+			return doVisitUnchangedChildren(node);
+		}
+		
+		int pos = node.getStartPosition();
+		
+		pos = rewriteVersion(node, DebugStatement.VERSION_PROPERTY, ITerminalSymbols.TokenNamedebug, pos);
+		
+		rewriteThenElseBody(node, DebugStatement.THEN_BODY_PROPERTY, DebugStatement.ELSE_BODY_PROPERTY, pos);
 		
 		return false;
 	}
@@ -1769,12 +2075,79 @@ public final class ASTRewriteAnalyzer extends ASTVisitor {
 	}
 	
 	@Override
+	public boolean visit(DelegateType node) {
+		if (!hasChildrenChanges(node)) {
+			return doVisitUnchangedChildren(node);
+		}
+		
+		int pos = rewriteRequiredNode(node, DelegateType.RETURN_TYPE_PROPERTY);
+		
+		if (isChanged(node, DelegateType.FUNCTION_POINTER_PROPERTY)) {
+			try {
+				int token = getScanner().readNext(pos, true);
+				String newValue = token == ITerminalSymbols.TokenNamefunction ? "delegate" : "function";
+				doTextReplace(getScanner().getCurrentStartOffset(), getScanner().getCurrentLength(), newValue, getEditGroup(node, DelegateType.FUNCTION_POINTER_PROPERTY));
+			} catch (CoreException e) {
+				handleException(e);
+			}
+		}
+		
+		try {
+			pos = getScanner().getTokenEndOffset(ITerminalSymbols.TokenNameLPAREN, pos);
+		} catch (CoreException e) {
+			handleException(e);
+		}
+		
+		pos = rewriteNodeList(node, DelegateType.ARGUMENTS_PROPERTY, pos, "", ", ");
+		
+		if (isChanged(node, DelegateType.VARIADIC_PROPERTY)) {
+			boolean originalVariadic = (Boolean) getOriginalValue(node, DelegateType.VARIADIC_PROPERTY);
+			if (originalVariadic) {
+				try {
+					getScanner().readNext(pos, true);
+					doTextRemove(getScanner().getCurrentStartOffset(), getScanner().getCurrentLength(), getEditGroup(node, DelegateType.VARIADIC_PROPERTY));
+				} catch (CoreException e) {
+					handleException(e);
+				}
+			} else {
+				doTextInsert(pos, "...", getEditGroup(node, DelegateType.VARIADIC_PROPERTY));
+			}
+		}
+		
+		return false;
+	}
+	
+	@Override
 	public boolean visit(DeleteExpression node) {
 		if (!hasChildrenChanges(node)) {
 			return doVisitUnchangedChildren(node);
 		}
 		
 		rewriteRequiredNode(node, DeleteExpression.EXPRESSION_PROPERTY);
+		
+		return false;
+	}
+	
+	@Override
+	public boolean visit(DotIdentifierExpression node) {
+		if (!hasChildrenChanges(node)) {
+			return doVisitUnchangedChildren(node);
+		}
+		
+		rewriteNode(node, DotIdentifierExpression.EXPRESSION_PROPERTY, node.getStartPosition(), ASTRewriteFormatter.NONE);
+		rewriteRequiredNode(node, DotIdentifierExpression.NAME_PROPERTY);
+		
+		return false;
+	}
+	
+	@Override
+	public boolean visit(DotTemplateTypeExpression node) {
+		if (!hasChildrenChanges(node)) {
+			return doVisitUnchangedChildren(node);
+		}
+		
+		rewriteNode(node, DotTemplateTypeExpression.EXPRESSION_PROPERTY, node.getStartPosition(), ASTRewriteFormatter.NONE);
+		rewriteRequiredNode(node, DotTemplateTypeExpression.TEMPLATE_TYPE_PROPERTY);
 		
 		return false;
 	}
@@ -1823,6 +2196,66 @@ public final class ASTRewriteAnalyzer extends ASTVisitor {
 		}
 
 		rewriteRequiredNode(node, DoStatement.EXPRESSION_PROPERTY);	
+		return false;
+	}
+	
+	@Override
+	public boolean visit(EnumDeclaration node) {
+		if (!hasChildrenChanges(node)) {
+			return doVisitUnchangedChildren(node);
+		}
+		
+		int pos = rewriteParagraphList(node, EnumDeclaration.PRE_D_DOCS_PROPERTY, 0, 0, 0, 0);
+		pos = rewriteModifiers(node, EnumDeclaration.MODIFIERS_PROPERTY, pos);
+
+		try {
+			pos = getScanner().getTokenEndOffset(ITerminalSymbols.TokenNameenum, node.getStartPosition());
+			pos = rewriteNode(node, EnumDeclaration.NAME_PROPERTY, pos, ASTRewriteFormatter.SPACE);
+		} catch (CoreException e) {
+			handleException(e);
+		}
+		
+		pos = rewriteNode(node, EnumDeclaration.BASE_TYPE_PROPERTY, pos, ASTRewriteFormatter.COLON);
+		
+		// startPos : find position after left brace of type, be aware that bracket might be missing
+		boolean[] wasSemicolon = { false };
+		int startIndent= getIndent(node.getStartPosition()) + 1;
+		int startPos= getPosAfterLeftBraceOrColon(pos, wasSemicolon);
+		
+		int declarationsChange = getChangeKind(node, EnumDeclaration.ENUM_MEMBERS_PROPERTY);
+		
+		if (wasSemicolon[0] && declarationsChange != RewriteEvent.UNCHANGED) {
+			doTextReplace(startPos - 1, 1, "{", getEditGroup(node, EnumDeclaration.ENUM_MEMBERS_PROPERTY));
+		}
+		
+		pos = rewriteParagraphList(node, EnumDeclaration.ENUM_MEMBERS_PROPERTY, startPos, startIndent, -1, 2);
+		
+		if (wasSemicolon[0] && declarationsChange != RewriteEvent.UNCHANGED) {
+			doTextInsert(pos, "}", getEditGroup(node, EnumDeclaration.ENUM_MEMBERS_PROPERTY));
+		}
+		
+		try {
+			if (!wasSemicolon[0]) {
+				pos = getScanner().getTokenEndOffset(ITerminalSymbols.TokenNameRCURLY, pos);
+			}
+			rewriteNode(node, EnumDeclaration.POST_D_DOC_PROPERTY, pos, ASTRewriteFormatter.SPACE);
+		} catch (CoreException e) {
+			handleException(e);
+		}
+	
+		return false;
+	}
+	
+	@Override
+	public boolean visit(EnumMember node) {
+		if (!hasChildrenChanges(node)) {
+			return doVisitUnchangedChildren(node);
+		}
+		
+		int pos = rewriteRequiredNode(node, EnumMember.NAME_PROPERTY);
+		
+		rewriteNode(node, EnumMember.VALUE_PROPERTY, pos, ASTRewriteFormatter.EQUALS);
+		
 		return false;
 	}
 	

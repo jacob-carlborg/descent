@@ -6,6 +6,7 @@ import descent.core.dom.AssertExpression;
 import descent.core.dom.CallExpression;
 import descent.core.dom.CastExpression;
 import descent.core.dom.DeleteExpression;
+import descent.core.dom.DotIdentifierExpression;
 import descent.core.dom.PrimitiveType;
 
 public class RewriteExpressionTest extends AbstractRewriteTest {
@@ -105,6 +106,24 @@ public class RewriteExpressionTest extends AbstractRewriteTest {
 		DeleteExpression del = (DeleteExpression) beginExpression("delete theOld");
 		del.setExpression(ast.newSimpleName("theNew"));
 		assertExpressionEqualsTokenByToken("delete theNew", end());
+	}
+	
+	public void testDotIdentifierExpressionAddExpression() throws Exception {
+		DotIdentifierExpression exp = (DotIdentifierExpression) beginExpression(".name");
+		exp.setExpression(ast.newSimpleName("theNew"));
+		assertExpressionEqualsTokenByToken("theNew.name", end());
+	}
+	
+	public void testDotIdentifierExpressionRemoveExpression() throws Exception {
+		DotIdentifierExpression exp = (DotIdentifierExpression) beginExpression("theNew.name");
+		exp.getExpression().delete();
+		assertExpressionEqualsTokenByToken(".name", end());
+	}
+	
+	public void testDotIdentifierExpressionChangeName() throws Exception {
+		DotIdentifierExpression exp = (DotIdentifierExpression) beginExpression("theNew.name");
+		exp.setName(ast.newSimpleName("theName"));
+		assertExpressionEqualsTokenByToken("theNew.theName", end());
 	}
 
 }

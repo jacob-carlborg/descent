@@ -63,7 +63,7 @@ public abstract class ConditionalDeclaration extends Declaration {
 	 * @return the property descriptor
 	 */
 	public final ChildListPropertyDescriptor getElseDeclarationsProperty() {
-		return internalThenDeclarationsProperty();
+		return internalElseDeclarationsProperty();
 	}
 	
 	/**

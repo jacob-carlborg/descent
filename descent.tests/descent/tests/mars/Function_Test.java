@@ -130,11 +130,11 @@ public class Function_Test extends Parser_Test {
 	}
 	
 	public void testFunctionWithArguments() {
-		String s = " void func(int a, in char b, out bool c, inout float d, lazy double e) { }";
+		String s = " void func(int a, in char b, out bool c, inout float d, lazy double e ...) { }";
 		FunctionDeclaration f = (FunctionDeclaration) getSingleDeclarationNoProblems(s);
-		assertPosition(f, 1, 73);
+		assertPosition(f, 1, s.length() - 1);
 		
-		assertFalse(f.isVariadic());
+		assertTrue(f.isVariadic());
 		
 		List<Argument> args = f.arguments();
 		assertEquals(5, args.size());

@@ -1194,6 +1194,7 @@ class Parser extends Lexer {
 					varargs = 2;
 					
 					a = newArgument(inout, at, ai, ae);
+					a.setSourceRange(firstToken.ptr, prevToken.ptr + prevToken.len - firstToken.ptr);
 					arguments.add(a);
 					nextToken();
 					break;
