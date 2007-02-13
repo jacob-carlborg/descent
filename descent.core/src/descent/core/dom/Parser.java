@@ -995,67 +995,55 @@ class Parser extends Lexer {
 		return new IftypeCondition(targ, ident[0], tok, tspec);
 	}
 	
-	private FunctionDeclaration parseCtor() {
+	private ConstructorDeclaration parseCtor() {
 		int start = token.ptr;
-		
-		SimpleName name = newSimpleNameForCurrentToken();
 		
 		int[] varargs = new int[1];
 	    nextToken();
 	    List<Argument> arguments = parseParameters(varargs);
-	    FunctionDeclaration f = newFunctionDeclaration(FunctionDeclaration.Kind.CONSTRUCTOR, null, name, arguments, varargs[0]);
+	    ConstructorDeclaration f = newConstructorDeclaration(ConstructorDeclaration.Kind.CONSTRUCTOR, arguments, varargs[0]);
 	    parseContracts(f);
 	    f.setSourceRange(start, prevToken.ptr + prevToken.len - start);
 	    return f;
 	}
 	
-	private FunctionDeclaration parseDtor() {
-		Token firstToken = new Token(token);
+	private ConstructorDeclaration parseDtor() {
+		int start = token.ptr;
 		nextToken();
-		Token secondToken = new Token(token);
 		
 		check(TOKthis);
 	    check(TOKlparen);
 	    check(TOKrparen);
 		
-		SimpleName name = newSimpleName();
-		name.setSourceRange(firstToken.ptr, secondToken.ptr + secondToken.len - firstToken.ptr);
-		name.internalSetIdentifier("~this");
-		
-		FunctionDeclaration f = newFunctionDeclaration(FunctionDeclaration.Kind.DESTRUCTOR, null, name, null, 0);
+		ConstructorDeclaration f = newConstructorDeclaration(ConstructorDeclaration.Kind.DESTRUCTOR, null, 0);
 	    parseContracts(f);
-	    f.setSourceRange(firstToken.ptr, prevToken.ptr + prevToken.len - firstToken.ptr);
+	    f.setSourceRange(start, prevToken.ptr + prevToken.len - start);
 	    return f;
 	}
 	
-	private FunctionDeclaration parseStaticCtor() {
-		SimpleName name = newSimpleNameForCurrentToken();
+	private ConstructorDeclaration parseStaticCtor() {
+		int start = token.ptr;
 		
 		nextToken();
 	    check(TOKlparen);
 	    check(TOKrparen);
 
-	    FunctionDeclaration f = newFunctionDeclaration(FunctionDeclaration.Kind.STATIC_CONSTRUCTOR, null, name, null, 0);
-		f.setSourceRange(token.ptr, 0);
+	    ConstructorDeclaration f = newConstructorDeclaration(ConstructorDeclaration.Kind.STATIC_CONSTRUCTOR, null, 0);
+		f.setSourceRange(start, 0);
 	    parseContracts(f);
 	    return f;
 	}
 	
-	private FunctionDeclaration parseStaticDtor() {
-		Token firstToken = new Token(token);
+	private ConstructorDeclaration parseStaticDtor() {
+		int start = token.ptr;
 		nextToken();
-		Token secondToken = new Token(token);
 		
 		check(TOKthis);
 	    check(TOKlparen);
 	    check(TOKrparen);
-	    
-	    SimpleName name = newSimpleName();
-		name.setSourceRange(firstToken.ptr, secondToken.ptr + secondToken.len - firstToken.ptr);
-		name.internalSetIdentifier("~this");
 		
-		FunctionDeclaration f = newFunctionDeclaration(FunctionDeclaration.Kind.STATIC_DESTRUCTOR, null, name, null, 0);
-		f.setSourceRange(firstToken.ptr, 0);
+		ConstructorDeclaration f = newConstructorDeclaration(ConstructorDeclaration.Kind.STATIC_DESTRUCTOR, null, 0);
+		f.setSourceRange(start, 0);
 	    parseContracts(f);
 	    return f;
 	}
@@ -1080,22 +1068,20 @@ class Parser extends Lexer {
 	    return unitTest;
 	}
 	
-	private FunctionDeclaration parseNew() {
+	private ConstructorDeclaration parseNew() {
 		int start = token.ptr;
 		
-		SimpleName name = newSimpleNameForCurrentToken();
-				
 		nextToken();
 		int[] varargs = new int[1];
 		List<Argument> arguments = parseParameters(varargs);
 		
-		FunctionDeclaration f = newFunctionDeclaration(FunctionDeclaration.Kind.NEW, null, name, arguments, varargs[0]);
+		ConstructorDeclaration f = newConstructorDeclaration(ConstructorDeclaration.Kind.NEW, arguments, varargs[0]);
 	    parseContracts(f);
 	    f.setSourceRange(start, prevToken.ptr + prevToken.len - start);
 	    return f;
 	}
 	
-	private FunctionDeclaration parseDelete() {
+	private ConstructorDeclaration parseDelete() {
 		int start = token.ptr;
 		int startLine = token.lineNumber;
 		
@@ -1112,7 +1098,7 @@ class Parser extends Lexer {
 	    			startLine, name);
 	    }
 		
-		FunctionDeclaration f = newFunctionDeclaration(FunctionDeclaration.Kind.DELETE, null, name, arguments, varargs[0]);
+		ConstructorDeclaration f = newConstructorDeclaration(ConstructorDeclaration.Kind.DELETE, arguments, varargs[0]);
 		f.arguments().addAll(arguments);
 	    parseContracts(f);
 	    f.setSourceRange(start, prevToken.ptr + prevToken.len - start);
@@ -2481,7 +2467,7 @@ class Parser extends Lexer {
 				
 				SimpleName name = newSimpleNameForIdentifier(ident);
 				
-				FunctionDeclaration function = newFunctionDeclaration(FunctionDeclaration.Kind.FUNCTION, 
+				FunctionDeclaration function = newFunctionDeclaration( 
 						typeFunction.getReturnType(), name, typeFunction.getArguments(), typeFunction.varargs ? 1 : 0);
 				function.preDDocs().addAll(lastComments);
 				adjustLastDocComment();
@@ -2561,7 +2547,7 @@ class Parser extends Lexer {
 		return a;
 	}
 	
-	private void parseContracts(FunctionDeclaration f) {
+	private void parseContracts(AbstractFunctionDeclaration f) {
 		LINK linksave = linkage;
 
 		// The following is irrelevant, as it is overridden by sc->linkage in
@@ -6208,15 +6194,24 @@ class Parser extends Lexer {
 		return foreachStatement;
 	}
 	
-	private FunctionDeclaration newFunctionDeclaration(FunctionDeclaration.Kind kind, Type returnType, SimpleName name, List<Argument> arguments, int varargs) {
+	private FunctionDeclaration newFunctionDeclaration(Type returnType, SimpleName name, List<Argument> arguments, int varargs) {
 		FunctionDeclaration function = new FunctionDeclaration(ast);
-		function.setKind(kind);
 		if (returnType != null) {
 			function.setReturnType(returnType);
 		}
 		if (name != null) {
 			function.setName(name);
 		}
+		if (arguments != null) {
+			function.arguments().addAll(arguments);
+		}
+		function.setVariadic(varargs != 0);
+		return function;
+	}
+	
+	private ConstructorDeclaration newConstructorDeclaration(ConstructorDeclaration.Kind kind, List<Argument> arguments, int varargs) {
+		ConstructorDeclaration function = new ConstructorDeclaration(ast);
+		function.setKind(kind);
 		if (arguments != null) {
 			function.arguments().addAll(arguments);
 		}
@@ -6402,10 +6397,6 @@ class Parser extends Lexer {
 	
 	private SelectiveImport newSelectiveImport() {
 		return new SelectiveImport(ast);
-	}
-	
-	private SimpleName newSimpleName() {
-		return new SimpleName(ast);
 	}
 	
 	private SliceType newSliceType(Type type, Expression fromExpression, Expression toExpression) {

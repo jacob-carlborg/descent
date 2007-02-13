@@ -432,6 +432,65 @@ class NaiveASTFlattener extends ASTVisitor {
 	}
 	
 	@Override
+	public boolean visit(ConstructorDeclaration node) {
+		visitPreDDocss(node.preDDocs());
+		printIndent();
+		visitModifiers(node.modifiers());
+		switch(node.getKind()) {
+		case CONSTRUCTOR:
+			this.buffer.append("this");
+			break;
+		case DELETE:
+			this.buffer.append("delete");
+			break;
+		case DESTRUCTOR:
+			this.buffer.append("~this");
+			break;
+		case NEW:
+			this.buffer.append("new");
+			break;
+		case STATIC_CONSTRUCTOR:
+			this.buffer.append("static this");
+			break;
+		case STATIC_DESTRUCTOR:
+			this.buffer.append("static ~this");
+			break;
+		}
+		this.buffer.append("(");
+		visitList(node.arguments(), ", ");
+		if (node.isVariadic()) {
+			this.buffer.append("...");
+		}
+		this.buffer.append(")");
+		if (node.getPrecondition() != null) {
+			this.buffer.append(LINE_END);
+			printIndent();
+			this.buffer.append("in ");
+			node.getPrecondition().accept(this);
+			this.buffer.append(LINE_END);
+			printIndent();
+		}
+		if (node.getPostcondition() != null) {
+			this.buffer.append(LINE_END);
+			printIndent();
+			this.buffer.append("out ");
+			node.getPostcondition().accept(this);
+			this.buffer.append(LINE_END);
+			printIndent();
+		}
+		if (node.getPrecondition() != null || node.getPostcondition() != null) {
+			this.buffer.append("body");
+		}
+		this.buffer.append(" ");
+		node.getBody().accept(this);
+		if (node.getPostDDoc() != null) {
+			this.buffer.append(" ");
+			node.getPostDDoc().accept(this);
+		}
+		return false;
+	}
+	
+	@Override
 	public boolean visit(ContinueStatement node) {
 		printIndent();
 		this.buffer.append("continue");
@@ -697,8 +756,9 @@ class NaiveASTFlattener extends ASTVisitor {
 		this.buffer.append("for(");
 		if (node.getInitializer() != null) {
 			node.getInitializer().accept(this);
+		} else {
+			this.buffer.append("; ");
 		}
-		this.buffer.append("; ");
 		if (node.getCondition() != null) {
 			node.getCondition().accept(this);
 		}
@@ -716,31 +776,9 @@ class NaiveASTFlattener extends ASTVisitor {
 		visitPreDDocss(node.preDDocs());
 		printIndent();
 		visitModifiers(node.modifiers());
-		switch(node.getKind()) {
-		case CONSTRUCTOR:
-			this.buffer.append("this");
-			break;
-		case DELETE:
-			this.buffer.append("delete");
-			break;
-		case DESTRUCTOR:
-			this.buffer.append("~this");
-			break;
-		case FUNCTION:
-			node.getReturnType().accept(this);
-			this.buffer.append(" ");
-			node.getName().accept(this);
-			break;
-		case NEW:
-			this.buffer.append("new");
-			break;
-		case STATIC_CONSTRUCTOR:
-			this.buffer.append("static this");
-			break;
-		case STATIC_DESTRUCTOR:
-			this.buffer.append("static ~this");
-			break;
-		}
+		node.getReturnType().accept(this);
+		this.buffer.append(" ");
+		node.getName().accept(this);
 		visitList(node.templateParameters(), ", ", "(", ")");
 		this.buffer.append("(");
 		visitList(node.arguments(), ", ");

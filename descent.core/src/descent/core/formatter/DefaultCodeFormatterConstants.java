@@ -3144,7 +3144,6 @@ public class DefaultCodeFormatterConstants {
 	 * 
 	 * @return the new alignement value
 	 */
-	/* TODO JDT
 	public static String createAlignmentValue(boolean forceSplit, int wrapStyle, int indentStyle) {
 		int alignmentValue = 0; 
 		switch(wrapStyle) {
@@ -3176,7 +3175,6 @@ public class DefaultCodeFormatterConstants {
 		}
 		return String.valueOf(alignmentValue);
 	}
-	*/
 
 	/**
 	 * Returns the formatter settings that most closely approximate

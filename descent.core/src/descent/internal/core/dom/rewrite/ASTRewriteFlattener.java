@@ -392,6 +392,65 @@ public class ASTRewriteFlattener extends ASTVisitor {
 	}
 	
 	@Override
+	public boolean visit(ConstructorDeclaration node) {
+		visitList(node, ConstructorDeclaration.PRE_D_DOCS_PROPERTY, LINE_END, EMPTY, LINE_END);
+		visitList(node, ConstructorDeclaration.MODIFIERS_PROPERTY, " ", EMPTY, " ");
+		
+		ConstructorDeclaration.Kind kind = (ConstructorDeclaration.Kind) getAttribute(node, ConstructorDeclaration.KIND_PROPERTY);
+		switch(kind) {
+		case CONSTRUCTOR:
+			this.result.append("this");
+			break;
+		case DELETE:
+			this.result.append("delete");
+			break;
+		case DESTRUCTOR:
+			this.result.append("~this");
+			break;
+		case NEW:
+			this.result.append("new");
+			break;
+		case STATIC_CONSTRUCTOR:
+			this.result.append("static this");
+			break;
+		case STATIC_DESTRUCTOR:
+			this.result.append("static ~this");
+			break;
+		}
+		this.result.append("(");
+		visitList(node, ConstructorDeclaration.ARGUMENTS_PROPERTY, ", ");
+		
+		boolean isVariadic = getBooleanAttribute(node, ConstructorDeclaration.VARIADIC_PROPERTY);
+		if (isVariadic) {
+			this.result.append("...");
+		}
+		this.result.append(")");
+		
+		ASTNode precondition = getChildNode(node, ConstructorDeclaration.PRECONDITION_PROPERTY);
+		if (precondition != null) {
+			this.result.append(LINE_END);
+			this.result.append("in ");
+			precondition.accept(this);
+			this.result.append(LINE_END);
+		}
+		
+		ASTNode postcondition = getChildNode(node, ConstructorDeclaration.POSTCONDITION_PROPERTY);
+		if (node.getPostcondition() != null) {
+			this.result.append(LINE_END);
+			this.result.append("out ");
+			postcondition.accept(this);
+			this.result.append(LINE_END);
+		}
+		if (precondition != null || postcondition != null) {
+			this.result.append("body");
+		}
+		this.result.append(" ");
+		visitChild(node, ConstructorDeclaration.BODY_PROPERTY);
+		visitChild(node, ConstructorDeclaration.POST_D_DOC_PROPERTY, " ", EMPTY);
+		return false;
+	}
+	
+	@Override
 	public boolean visit(ContinueStatement node) {
 		this.result.append("continue");
 		visitChild(node, ContinueStatement.LABEL_PROPERTY, " ", EMPTY);
@@ -596,8 +655,13 @@ public class ASTRewriteFlattener extends ASTVisitor {
 	@Override
 	public boolean visit(ForStatement node) {
 		this.result.append("for(");
-		visitChild(node, ForStatement.INITIALIZER_PROPERTY);
-		this.result.append("; ");
+		
+		ASTNode init = getChildNode(node, ForStatement.INITIALIZER_PROPERTY);
+		if (init == null) {
+			this.result.append("; ");
+		} else {
+			visitChild(node, ForStatement.INITIALIZER_PROPERTY);
+		}		
 		visitChild(node, ForStatement.CONDITION_PROPERTY);
 		this.result.append("; ");
 		visitChild(node, ForStatement.INCREMENT_PROPERTY);
@@ -610,33 +674,9 @@ public class ASTRewriteFlattener extends ASTVisitor {
 	public boolean visit(FunctionDeclaration node) {
 		visitList(node, FunctionDeclaration.PRE_D_DOCS_PROPERTY, LINE_END, EMPTY, LINE_END);
 		visitList(node, FunctionDeclaration.MODIFIERS_PROPERTY, " ", EMPTY, " ");
-		
-		FunctionDeclaration.Kind kind = (FunctionDeclaration.Kind) getAttribute(node, FunctionDeclaration.KIND_PROPERTY);
-		switch(kind) {
-		case CONSTRUCTOR:
-			this.result.append("this");
-			break;
-		case DELETE:
-			this.result.append("delete");
-			break;
-		case DESTRUCTOR:
-			this.result.append("~this");
-			break;
-		case FUNCTION:
-			visitChild(node, FunctionDeclaration.RETURN_TYPE_PROPERTY);
-			this.result.append(" ");
-			visitChild(node, FunctionDeclaration.NAME_PROPERTY);
-			break;
-		case NEW:
-			this.result.append("new");
-			break;
-		case STATIC_CONSTRUCTOR:
-			this.result.append("static this");
-			break;
-		case STATIC_DESTRUCTOR:
-			this.result.append("static ~this");
-			break;
-		}
+		visitChild(node, FunctionDeclaration.RETURN_TYPE_PROPERTY);
+		this.result.append(" ");
+		visitChild(node, FunctionDeclaration.NAME_PROPERTY);
 		visitList(node, FunctionDeclaration.TEMPLATE_PARAMETERS_PROPERTY, ", ", "(", ")");
 		this.result.append("(");
 		visitList(node, FunctionDeclaration.ARGUMENTS_PROPERTY, ", ");

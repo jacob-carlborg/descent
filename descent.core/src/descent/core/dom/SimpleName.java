@@ -250,12 +250,7 @@ public class SimpleName extends Name {
 			return (d == EnumDeclaration.NAME_PROPERTY);
 		}
 		if (parent instanceof FunctionDeclaration) {
-			FunctionDeclaration fd = (FunctionDeclaration) parent;
-			if (fd.getKind() == FunctionDeclaration.Kind.FUNCTION) {
-				return (d == FunctionDeclaration.NAME_PROPERTY);
-			} else {
-				return false;
-			}
+			return (d == FunctionDeclaration.NAME_PROPERTY);
 		}
 		if (parent instanceof MixinDeclaration) {
 			return (d == MixinDeclaration.NAME_PROPERTY);

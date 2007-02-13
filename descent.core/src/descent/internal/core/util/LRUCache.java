@@ -465,19 +465,16 @@ public class LRUCache implements Cloneable {
 	 * Returns a String that represents the value of this object.  This method
 	 * is for debugging purposes only.
 	 */
-	/* TODO JDT
 	public String toString() {
 		return 
 			toStringFillingRation("LRUCache") + //$NON-NLS-1$
 			toStringContents();
 	}
-	*/
 	
 	/**
 	 * Returns a String that represents the contents of this object.  This method
 	 * is for debugging purposes only.
 	 */
-	/* TODO JDT
 	protected String toStringContents() {
 		StringBuffer result = new StringBuffer();
 		int length = fEntryTable.size();
@@ -504,7 +501,6 @@ public class LRUCache implements Cloneable {
 		}
 		return result.toString();
 	}
-	*/
 	
 	public String toStringFillingRation(String cacheName) {
 		StringBuffer buffer = new StringBuffer(cacheName);

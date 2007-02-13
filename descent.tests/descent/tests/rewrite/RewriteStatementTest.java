@@ -7,6 +7,7 @@ import descent.core.dom.Block;
 import descent.core.dom.CatchClause;
 import descent.core.dom.DebugStatement;
 import descent.core.dom.ExpressionStatement;
+import descent.core.dom.ForStatement;
 import descent.core.dom.ForeachStatement;
 import descent.core.dom.TryStatement;
 
@@ -228,6 +229,62 @@ public class RewriteStatementTest extends AbstractRewriteTest {
 		stm.arguments().get(1).delete();
 		
 		assertStatementEqualsTokenByToken("foreach(x; y) { }", end()); 
+	}
+	
+	public void testForAddInitializer() throws Exception {
+		ForStatement stm = (ForStatement) beginStatement("for(;;) { }");
+		stm.setInitializer(ast.newExpressionStatement(ast.newSimpleName("a")));
+		
+		assertStatementEqualsTokenByToken("for(a;;) { }", end());
+	}
+	
+	public void testForRemoveInitializer() throws Exception {
+		ForStatement stm = (ForStatement) beginStatement("for(a;;) { }");
+		stm.getInitializer().delete();
+		
+		assertStatementEqualsTokenByToken("for(;;) { }", end());
+	}
+	
+	public void testForAddCondition() throws Exception {
+		ForStatement stm = (ForStatement) beginStatement("for(;;) { }");
+		stm.setCondition(ast.newSimpleName("a"));
+		
+		assertStatementEqualsTokenByToken("for(;a;) { }", end());
+	}
+	
+	public void testForRemoveCondition() throws Exception {
+		ForStatement stm = (ForStatement) beginStatement("for(;a;) { }");
+		stm.getCondition().delete();
+		
+		assertStatementEqualsTokenByToken("for(;;) { }", end());
+	}
+	
+	public void testForAddCondition2() throws Exception {
+		ForStatement stm = (ForStatement) beginStatement("for(x;;) { }");
+		stm.setCondition(ast.newSimpleName("a"));
+		
+		assertStatementEqualsTokenByToken("for(x;a;) { }", end());
+	}
+	
+	public void testForRemoveCondition2() throws Exception {
+		ForStatement stm = (ForStatement) beginStatement("for(x;a;) { }");
+		stm.getCondition().delete();
+		
+		assertStatementEqualsTokenByToken("for(x;;) { }", end());
+	}
+	
+	public void testForAddIncrement() throws Exception {
+		ForStatement stm = (ForStatement) beginStatement("for(;;) { }");
+		stm.setIncrement(ast.newSimpleName("a"));
+		
+		assertStatementEqualsTokenByToken("for(;;a) { }", end());
+	}
+	
+	public void testForRemoveIncrement() throws Exception {
+		ForStatement stm = (ForStatement) beginStatement("for(;;a) { }");
+		stm.getIncrement().delete();
+		
+		assertStatementEqualsTokenByToken("for(;;) { }", end());
 	}
 
 }

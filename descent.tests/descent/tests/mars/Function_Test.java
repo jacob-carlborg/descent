@@ -4,108 +4,83 @@ import java.util.List;
 
 import descent.core.dom.ASTNode;
 import descent.core.dom.Argument;
+import descent.core.dom.ConstructorDeclaration;
 import descent.core.dom.FunctionDeclaration;
 import descent.core.dom.NumberLiteral;
-import descent.core.dom.PrimitiveType;
 
 public class Function_Test extends Parser_Test {
 	
 	public void testConstructor() {
 		String s = " this() { }";
-		FunctionDeclaration f = (FunctionDeclaration) getSingleDeclarationNoProblems(s);
+		ConstructorDeclaration f = (ConstructorDeclaration) getSingleDeclarationNoProblems(s);
 		
-		assertEquals(ASTNode.FUNCTION_DECLARATION, f.getNodeType());
-		assertEquals(FunctionDeclaration.Kind.CONSTRUCTOR, f.getKind());
-		assertEquals(PrimitiveType.Code.VOID, ((PrimitiveType) f.getReturnType()).getPrimitiveTypeCode());
+		assertEquals(ASTNode.CONSTRUCTOR_DECLARATION, f.getNodeType());
+		assertEquals(ConstructorDeclaration.Kind.CONSTRUCTOR, f.getKind());
 		assertEquals(0, f.arguments().size());
-		
-		assertEquals("this", f.getName().getIdentifier());
-		assertPosition(f.getName(), 1, 4);
 		
 		assertPosition(f, 1, 10);
 	}
 	
 	public void testEmptyConstructor() {
 		String s = " this();";
-		FunctionDeclaration f = (FunctionDeclaration) getSingleDeclarationNoProblems(s);
-		assertEquals(ASTNode.FUNCTION_DECLARATION, f.getNodeType());
-		assertEquals(FunctionDeclaration.Kind.CONSTRUCTOR, f.getKind());
+		ConstructorDeclaration f = (ConstructorDeclaration) getSingleDeclarationNoProblems(s);
+		assertEquals(ASTNode.CONSTRUCTOR_DECLARATION, f.getNodeType());
+		assertEquals(ConstructorDeclaration.Kind.CONSTRUCTOR, f.getKind());
 	}
 	
 	public void testDestructor() {
 		String s = " ~this() { }";
-		FunctionDeclaration f = (FunctionDeclaration) getSingleDeclarationNoProblems(s);
-		assertEquals(ASTNode.FUNCTION_DECLARATION, f.getNodeType());
-		assertEquals(FunctionDeclaration.Kind.DESTRUCTOR, f.getKind());
-		assertEquals(PrimitiveType.Code.VOID, ((PrimitiveType) f.getReturnType()).getPrimitiveTypeCode());
+		ConstructorDeclaration f = (ConstructorDeclaration) getSingleDeclarationNoProblems(s);
+		assertEquals(ASTNode.CONSTRUCTOR_DECLARATION, f.getNodeType());
+		assertEquals(ConstructorDeclaration.Kind.DESTRUCTOR, f.getKind());
 		assertEquals(0, f.arguments().size());
-		
-		assertEquals("~this", f.getName().getIdentifier());
-		assertPosition(f.getName(), 1, 5);
 		
 		assertPosition(f, 1, 11);
 	}
 	
 	public void testEmptyDestructor() {
 		String s = " ~this();";
-		FunctionDeclaration f = (FunctionDeclaration) getSingleDeclarationNoProblems(s);
-		assertEquals(ASTNode.FUNCTION_DECLARATION, f.getNodeType());
-		assertEquals(FunctionDeclaration.Kind.DESTRUCTOR, f.getKind());
-		assertEquals(PrimitiveType.Code.VOID, ((PrimitiveType) f.getReturnType()).getPrimitiveTypeCode());
+		ConstructorDeclaration f = (ConstructorDeclaration) getSingleDeclarationNoProblems(s);
+		assertEquals(ASTNode.CONSTRUCTOR_DECLARATION, f.getNodeType());
+		assertEquals(ConstructorDeclaration.Kind.DESTRUCTOR, f.getKind());
 	}
 	
 	public void testStaticConstructor() {
 		String s = " static this() { }";
-		FunctionDeclaration f = (FunctionDeclaration) getSingleDeclarationNoProblems(s);
-		assertEquals(ASTNode.FUNCTION_DECLARATION, f.getNodeType());
-		assertEquals(FunctionDeclaration.Kind.STATIC_CONSTRUCTOR, f.getKind());
-		assertEquals(PrimitiveType.Code.VOID, ((PrimitiveType) f.getReturnType()).getPrimitiveTypeCode());
+		ConstructorDeclaration f = (ConstructorDeclaration) getSingleDeclarationNoProblems(s);
+		assertEquals(ASTNode.CONSTRUCTOR_DECLARATION, f.getNodeType());
+		assertEquals(ConstructorDeclaration.Kind.STATIC_CONSTRUCTOR, f.getKind());
 		assertEquals(0, f.arguments().size());
-		
-		assertEquals("this", f.getName().getIdentifier());
-		assertPosition(f.getName(), 8, 4);
 		
 		assertPosition(f, 1, 17);
 	}
 	
 	public void testStaticDestructor() {
 		String s = " static ~this() { }";
-		FunctionDeclaration f = (FunctionDeclaration) getSingleDeclarationNoProblems(s);
-		assertEquals(ASTNode.FUNCTION_DECLARATION, f.getNodeType());
-		assertEquals(FunctionDeclaration.Kind.STATIC_DESTRUCTOR, f.getKind());
-		assertEquals(PrimitiveType.Code.VOID, ((PrimitiveType) f.getReturnType()).getPrimitiveTypeCode());
+		ConstructorDeclaration f = (ConstructorDeclaration) getSingleDeclarationNoProblems(s);
+		assertEquals(ASTNode.CONSTRUCTOR_DECLARATION, f.getNodeType());
+		assertEquals(ConstructorDeclaration.Kind.STATIC_DESTRUCTOR, f.getKind());
 		assertEquals(0, f.arguments().size());
-		
-		assertEquals("~this", f.getName().getIdentifier());
-		assertPosition(f.getName(), 8, 5);
 		
 		assertPosition(f, 1, 18);
 	}
 	
 	public void testNew() {
 		String s = " new() { }";
-		FunctionDeclaration f = (FunctionDeclaration) getSingleDeclarationNoProblems(s);
-		assertEquals(ASTNode.FUNCTION_DECLARATION, f.getNodeType());
-		assertEquals(FunctionDeclaration.Kind.NEW, f.getKind());
-		assertEquals(PrimitiveType.Code.VOID, ((PrimitiveType) f.getReturnType()).getPrimitiveTypeCode());
+		ConstructorDeclaration f = (ConstructorDeclaration) getSingleDeclarationNoProblems(s);
+		assertEquals(ASTNode.CONSTRUCTOR_DECLARATION, f.getNodeType());
+		assertEquals(ConstructorDeclaration.Kind.NEW, f.getKind());
 		assertEquals(0, f.arguments().size());
-		
-		assertEquals("new", f.getName().getIdentifier());
-		assertPosition(f.getName(), 1, 3);
 		
 		assertPosition(f, 1, s.length() - 1);
 	}
 	
 	public void testDelete() {
 		String s = " delete() { }";
-		FunctionDeclaration f = (FunctionDeclaration) getSingleDeclarationNoProblems(s);
-		assertEquals(ASTNode.FUNCTION_DECLARATION, f.getNodeType());
-		assertEquals(FunctionDeclaration.Kind.DELETE, f.getKind());
-		assertEquals(PrimitiveType.Code.VOID, ((PrimitiveType) f.getReturnType()).getPrimitiveTypeCode());
+		ConstructorDeclaration f = (ConstructorDeclaration) getSingleDeclarationNoProblems(s);
+		assertEquals(ASTNode.CONSTRUCTOR_DECLARATION, f.getNodeType());
+		assertEquals(ConstructorDeclaration.Kind.DELETE, f.getKind());
 		assertEquals(0, f.arguments().size());
-		
-		assertEquals("delete", f.getName().getIdentifier());
-		assertPosition(f.getName(), 1, 6);
 		
 		assertPosition(f, 1, s.length() - 1);
 	}
@@ -114,7 +89,6 @@ public class Function_Test extends Parser_Test {
 		String s = " void func() { }";
 		FunctionDeclaration f = (FunctionDeclaration) getSingleDeclarationNoProblems(s);
 		assertEquals(ASTNode.FUNCTION_DECLARATION, f.getNodeType());
-		assertEquals(FunctionDeclaration.Kind.FUNCTION, f.getKind());
 
 		assertEquals("void", f.getReturnType().toString());
 		assertEquals("func", f.getName().getIdentifier());
@@ -179,7 +153,7 @@ public class Function_Test extends Parser_Test {
 	
 	public void testConstructorWithArguments() {
 		String s = "      this(int a, in char b, out bool c, inout float d, lazy double e = 2) { }";
-		FunctionDeclaration f = (FunctionDeclaration) getSingleDeclarationNoProblems(s);
+		ConstructorDeclaration f = (ConstructorDeclaration) getSingleDeclarationNoProblems(s);
 		assertPosition(f, 6, 72);
 		
 		assertFalse(f.isVariadic());

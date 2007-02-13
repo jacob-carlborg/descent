@@ -249,9 +249,6 @@ public final class ASTRewriteAnalyzer extends ASTVisitor {
 		}
 		
 	}
-	class ModifierRewriter extends ListRewriter {
-		
-	}
 	
 	class ParagraphListRewriter extends ListRewriter {
 		
@@ -1187,7 +1184,7 @@ public final class ASTRewriteAnalyzer extends ASTVisitor {
 			}
 		}
 		
-		int endPos= new ModifierRewriter().rewriteList(node, property, pos, "", " "); //$NON-NLS-1$ //$NON-NLS-2$
+		int endPos= new ListRewriter().rewriteList(node, property, pos, "", " "); //$NON-NLS-1$ //$NON-NLS-2$
 
 		if (isAllInsert) {
 			RewriteEvent lastChild= children[children.length - 1];
@@ -2263,7 +2260,48 @@ public final class ASTRewriteAnalyzer extends ASTVisitor {
 			return doVisitUnchangedChildren(node);
 		}
 		
-		// TODO
+		int pos = node.getStartPosition();
+		
+		try {
+			pos = getScanner().getTokenEndOffset(ITerminalSymbols.TokenNameLPAREN, pos);
+			
+			// This property is tricky: the initializer is a statement, so it could
+			// finish with a semicolon. However, if the statement is missing, a
+			// semicolon is used to show that
+			RewriteEvent initEvent = getEvent(node, ForStatement.INITIALIZER_PROPERTY);
+			if (initEvent != null && initEvent.getChangeKind() != RewriteEvent.UNCHANGED) {
+				switch(initEvent.getChangeKind()) {
+				case RewriteEvent.INSERTED:
+					// Need to delete the semicolon
+					pos = rewriteNode(node, ForStatement.INITIALIZER_PROPERTY, pos, ASTRewriteFormatter.NONE);
+					getScanner().readNext(pos, true);
+					doTextRemove(getScanner().getCurrentStartOffset(), getScanner().getCurrentLength(), getEditGroup(node, ForStatement.INITIALIZER_PROPERTY));					
+					break;
+				case RewriteEvent.REPLACED:
+					pos = rewriteNode(node, ForStatement.INITIALIZER_PROPERTY, pos, ASTRewriteFormatter.NONE);
+					break;
+				case RewriteEvent.REMOVED:
+					// Need to add the semicolon
+					doTextInsert(pos, ";", getEditGroup(node, ForStatement.INITIALIZER_PROPERTY));
+					pos = rewriteNode(node, ForStatement.INITIALIZER_PROPERTY, pos, ASTRewriteFormatter.NONE);					
+					break;
+				}
+			} else {
+				ASTNode originalInitializer = (ASTNode) getOriginalValue(node, ForStatement.INITIALIZER_PROPERTY);
+				if (originalInitializer == null) {
+					pos = getScanner().getNextEndOffset(pos, true);
+				} else {
+					pos = doVisit(node, ForStatement.INITIALIZER_PROPERTY, pos);
+				}
+			}
+			pos = rewriteNode(node, ForStatement.CONDITION_PROPERTY, pos, ASTRewriteFormatter.SPACE);
+			pos = getScanner().getTokenEndOffset(ITerminalSymbols.TokenNameSEMICOLON, pos);
+			pos = rewriteNode(node, ForStatement.INCREMENT_PROPERTY, pos, ASTRewriteFormatter.NONE);
+		} catch (CoreException e) {
+			handleException(e);
+		}
+		
+		rewriteRequiredNode(node, ForStatement.BODY_PROPERTY);
 		
 		return false;
 	}

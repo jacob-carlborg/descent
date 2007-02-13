@@ -26,6 +26,7 @@ import org.eclipse.core.runtime.content.IContentDescription;
 import descent.core.BufferChangedEvent;
 import descent.core.IBuffer;
 import descent.core.IBufferChangedListener;
+import descent.core.IJavaModelStatusConstants;
 import descent.core.IOpenable;
 import descent.core.JavaModelException;
 import descent.internal.core.util.Util;
@@ -384,7 +385,7 @@ public void save(IProgressMonitor progress, boolean force) throws JavaModelExcep
 			this.file.create(stream, force, null);
 		}	
 	} catch (IOException e) {
-		throw new JavaModelException(e, /* TODO JDT IJavaModelStatusConstants.IO_EXCEPTION */ 0);
+		throw new JavaModelException(e, IJavaModelStatusConstants.IO_EXCEPTION);
 	} catch (CoreException e) {
 		throw new JavaModelException(e);
 	}

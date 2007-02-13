@@ -1036,6 +1036,16 @@ public final class AST {
 		ConditionalExpression node = new ConditionalExpression(this);
 		return node;
 	}
+	
+	/**
+	 * Creates an unparented constructor declaration node owned by this AST.
+	 * 
+	 * @return the new unparented constructor declaration node
+	 */
+	public ConstructorDeclaration newConstructorDeclaration() {
+		ConstructorDeclaration node = new ConstructorDeclaration(this);
+		return node;
+	}
 
 	/**
 	 * Creates an unparented continue statement node owned by this AST.

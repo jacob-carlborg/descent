@@ -12,6 +12,7 @@ import descent.core.dom.AliasDeclarationFragment;
 import descent.core.dom.AliasTemplateParameter;
 import descent.core.dom.Argument;
 import descent.core.dom.AssociativeArrayType;
+import descent.core.dom.ConstructorDeclaration;
 import descent.core.dom.DebugAssignment;
 import descent.core.dom.DebugDeclaration;
 import descent.core.dom.DelegateType;
@@ -139,10 +140,16 @@ public class DOutlineLabelProvider extends LabelProvider {
 		case ASTNode.FUNCTION_DECLARATION:
 			FunctionDeclaration f = (FunctionDeclaration) e;
 			s = new StringBuilder();
-			switch(f.getKind()) {
-			case FUNCTION:
-				s.append(f.getName() == null ? "" : f.getName().getFullyQualifiedName());
-				break;
+			s.append(f.getName() == null ? "" : f.getName().getFullyQualifiedName());
+			if (!f.templateParameters().isEmpty()) {
+				appendTemplateParameters(s, f.templateParameters());
+			}
+			appendArguments(s, f.arguments());
+			return s.toString();
+		case ASTNode.CONSTRUCTOR_DECLARATION:
+			ConstructorDeclaration c = (ConstructorDeclaration) e;
+			s = new StringBuilder();
+			switch(c.getKind()) {
 			case CONSTRUCTOR:
 			case STATIC_CONSTRUCTOR:
 				s.append("this");
@@ -158,10 +165,7 @@ public class DOutlineLabelProvider extends LabelProvider {
 				s.append("delete");
 				break;
 			}
-			if (!f.templateParameters().isEmpty()) {
-				appendTemplateParameters(s, f.templateParameters());
-			}
-			appendArguments(s, f.arguments());
+			appendArguments(s, c.arguments());
 			return s.toString();
 		case ASTNode.ENUM_DECLARATION:
 			name = ((EnumDeclaration) element).getName();
@@ -265,9 +269,10 @@ public class DOutlineLabelProvider extends LabelProvider {
 				return unionImage;
 			}
 		case ASTNode.FUNCTION_DECLARATION:
-			FunctionDeclaration func = (FunctionDeclaration) element;
+			return functionPublicImage;
+		case ASTNode.CONSTRUCTOR_DECLARATION:
+			ConstructorDeclaration func = (ConstructorDeclaration) element;
 			switch(func.getKind()) {
-			case FUNCTION:
 			case NEW:
 			case DELETE:
 				return functionPublicImage;

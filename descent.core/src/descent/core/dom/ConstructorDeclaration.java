@@ -3,92 +3,102 @@ package descent.core.dom;
 import java.util.ArrayList;
 import java.util.List;
 
-
 /**
- * Function declaration AST node.
+ * Constructor declaration AST node. A constructor declaration is the union of 
+ * constructors, destructors, static constructors, static destructors, allocators (new)
+ * and deallocators (delete).
  * 
  * <pre>
- * FunctionDeclaration:
- *    Type SimpleName [ <b>(</b> TemplateParameter { <b>,</b> TemplateParameter } <b>)</b> ]
- *       <b>(</b> [ Argument { <b>,</b> Argument } ] <b>)</b>
+ * ConstructorDeclaration:
+ *    Kind
+ *       <b>(</b> [ Argument { <b>,</b> Argument } ] [ <b>...</b> ] <b>)</b>
  *       [ <b>in</b> Block ]
  *       [ <b>out</b> [ <b>(</b> SimpleName <b>)</b> ] Block ]
  *       [ <b>body</b> ] Block
+ *       
+ * Kind:
+ *    <b>this</b> | <b>~this</b> | <b>static this</b> | <b>static ~this</b> | <b>new</b> | <b>delete</b> 
  * </pre>
  */
-public class FunctionDeclaration extends AbstractFunctionDeclaration {
+public class ConstructorDeclaration extends AbstractFunctionDeclaration {
+	
+	/**
+	 * Kinds of "constructors".
+	 */
+	public enum Kind {
+		/** Constructor kind */
+		CONSTRUCTOR,
+		/** Destructor kind */
+		DESTRUCTOR,
+		/** Static constructor kind */
+		STATIC_CONSTRUCTOR,
+		/** Static destructor kind */
+		STATIC_DESTRUCTOR,
+		/** New (allocator) kind */
+		NEW,
+		/** Delete (deallocator) kind */
+		DELETE
+	}
 	
 	/**
 	 * The "preDDocs" structural property of this node type.
 	 */
 	public static final ChildListPropertyDescriptor PRE_D_DOCS_PROPERTY =
-	internalPreDDocsPropertyFactory(FunctionDeclaration.class); //$NON-NLS-1$
+	internalPreDDocsPropertyFactory(ConstructorDeclaration.class); //$NON-NLS-1$
 
 	/**
 	 * The "modifiers" structural property of this node type.
 	 */
 	public static final ChildListPropertyDescriptor MODIFIERS_PROPERTY =
-	internalModifiersPropertyFactory(FunctionDeclaration.class); //$NON-NLS-1$
+	internalModifiersPropertyFactory(ConstructorDeclaration.class); //$NON-NLS-1$
 
 	/**
-	 * The "returnType" structural property of this node type.
+	 * The "kind" structural property of this node type.
 	 */
-	public static final ChildPropertyDescriptor RETURN_TYPE_PROPERTY =
-		new ChildPropertyDescriptor(FunctionDeclaration.class, "returnType", Type.class, MANDATORY, CYCLE_RISK); //$NON-NLS-1$
-
-	/**
-	 * The "name" structural property of this node type.
-	 */
-	public static final ChildPropertyDescriptor NAME_PROPERTY =
-		new ChildPropertyDescriptor(FunctionDeclaration.class, "name", SimpleName.class, MANDATORY, NO_CYCLE_RISK); //$NON-NLS-1$
-
-	/**
-	 * The "templateParameters" structural property of this node type.
-	 */
-	public static final ChildListPropertyDescriptor TEMPLATE_PARAMETERS_PROPERTY =
-		new ChildListPropertyDescriptor(FunctionDeclaration.class, "templateParameters", TemplateParameter.class, NO_CYCLE_RISK); //$NON-NLS-1$
+	public static final SimplePropertyDescriptor KIND_PROPERTY =
+		new SimplePropertyDescriptor(ConstructorDeclaration.class, "kind", Kind.class, MANDATORY); //$NON-NLS-1$
 
 	/**
 	 * The "arguments" structural property of this node type.
 	 */
 	public static final ChildListPropertyDescriptor ARGUMENTS_PROPERTY =
-	internalArgumentsPropertyFactory(FunctionDeclaration.class); //$NON-NLS-1$
+	internalArgumentsPropertyFactory(ConstructorDeclaration.class); //$NON-NLS-1$
 
 	/**
 	 * The "variadic" structural property of this node type.
 	 */
 	public static final SimplePropertyDescriptor VARIADIC_PROPERTY =
-	internalVariadicPropertyFactory(FunctionDeclaration.class); //$NON-NLS-1$
+	internalVariadicPropertyFactory(ConstructorDeclaration.class); //$NON-NLS-1$
 
 	/**
 	 * The "precondition" structural property of this node type.
 	 */
 	public static final ChildPropertyDescriptor PRECONDITION_PROPERTY =
-	internalPreconditionPropertyFactory(FunctionDeclaration.class); //$NON-NLS-1$
+	internalPreconditionPropertyFactory(ConstructorDeclaration.class); //$NON-NLS-1$
 
 	/**
 	 * The "postcondition" structural property of this node type.
 	 */
 	public static final ChildPropertyDescriptor POSTCONDITION_PROPERTY =
-	internalPostconditionPropertyFactory(FunctionDeclaration.class); //$NON-NLS-1$
+	internalPostconditionPropertyFactory(ConstructorDeclaration.class); //$NON-NLS-1$
 
 	/**
 	 * The "postconditionVariableName" structural property of this node type.
 	 */
 	public static final ChildPropertyDescriptor POSTCONDITION_VARIABLE_NAME_PROPERTY =
-	internalPostconditionVariableNamePropertyFactory(FunctionDeclaration.class); //$NON-NLS-1$
+	internalPostconditionVariableNamePropertyFactory(ConstructorDeclaration.class); //$NON-NLS-1$
 
 	/**
 	 * The "body" structural property of this node type.
 	 */
 	public static final ChildPropertyDescriptor BODY_PROPERTY =
-	internalBodyPropertyFactory(FunctionDeclaration.class); //$NON-NLS-1$
+	internalBodyPropertyFactory(ConstructorDeclaration.class); //$NON-NLS-1$
 
 	/**
 	 * The "postDDoc" structural property of this node type.
 	 */
 	public static final ChildPropertyDescriptor POST_D_DOC_PROPERTY =
-	internalPostDDocPropertyFactory(FunctionDeclaration.class); //$NON-NLS-1$
+	internalPostDDocPropertyFactory(ConstructorDeclaration.class); //$NON-NLS-1$
 
 	/**
 	 * A list of property descriptors (element type: 
@@ -98,13 +108,11 @@ public class FunctionDeclaration extends AbstractFunctionDeclaration {
 	private static final List PROPERTY_DESCRIPTORS;
 
 	static {
-		List properyList = new ArrayList(12);
-		createPropertyList(FunctionDeclaration.class, properyList);
+		List properyList = new ArrayList(10);
+		createPropertyList(ConstructorDeclaration.class, properyList);
 		addProperty(PRE_D_DOCS_PROPERTY, properyList);
 		addProperty(MODIFIERS_PROPERTY, properyList);
-		addProperty(RETURN_TYPE_PROPERTY, properyList);
-		addProperty(NAME_PROPERTY, properyList);
-		addProperty(TEMPLATE_PARAMETERS_PROPERTY, properyList);
+		addProperty(KIND_PROPERTY, properyList);
 		addProperty(ARGUMENTS_PROPERTY, properyList);
 		addProperty(VARIADIC_PROPERTY, properyList);
 		addProperty(PRECONDITION_PROPERTY, properyList);
@@ -131,25 +139,13 @@ public class FunctionDeclaration extends AbstractFunctionDeclaration {
 	}
 
 	/**
-	 * The returnType.
+	 * The kind.
 	 */
-	private Type returnType;
+	private Kind kind;
+
 
 	/**
-	 * The name.
-	 */
-	private SimpleName name;
-
-	/**
-	 * The template parameters
-	 * (element type: <code>TemplateParameter</code>).
-	 * Defaults to an empty list.
-	 */
-	private ASTNode.NodeList templateParameters =
-		new ASTNode.NodeList(TEMPLATE_PARAMETERS_PROPERTY);
-
-	/**
-	 * Creates a new unparented function declaration node owned by the given 
+	 * Creates a new unparented constructor declaration node owned by the given 
 	 * AST.
 	 * <p>
 	 * N.B. This constructor is package-private.
@@ -157,7 +153,7 @@ public class FunctionDeclaration extends AbstractFunctionDeclaration {
 	 * 
 	 * @param ast the AST that is to own this node
 	 */
-	FunctionDeclaration(AST ast) {
+	ConstructorDeclaration(AST ast) {
 		super(ast);
 	}
 
@@ -166,6 +162,22 @@ public class FunctionDeclaration extends AbstractFunctionDeclaration {
 	 */
 	final List internalStructuralPropertiesForType(int apiLevel) {
 		return propertyDescriptors(apiLevel);
+	}
+
+	/* (omit javadoc for this method)
+	 * Method declared on ASTNode.
+	 */
+	final Object internalGetSetObjectProperty(SimplePropertyDescriptor property, boolean get, Object value) {
+		if (property == KIND_PROPERTY) {
+			if (get) {
+				return getKind();
+			} else {
+				setKind((Kind) value);
+				return null;
+			}
+		}
+		// allow default implementation to flag the error
+		return super.internalGetSetObjectProperty(property, get, value);
 	}
 
 	/* (omit javadoc for this method)
@@ -188,22 +200,6 @@ public class FunctionDeclaration extends AbstractFunctionDeclaration {
 	 * Method declared on ASTNode.
 	 */
 	final ASTNode internalGetSetChildProperty(ChildPropertyDescriptor property, boolean get, ASTNode child) {
-		if (property == RETURN_TYPE_PROPERTY) {
-			if (get) {
-				return getReturnType();
-			} else {
-				setReturnType((Type) child);
-				return null;
-			}
-		}
-		if (property == NAME_PROPERTY) {
-			if (get) {
-				return getName();
-			} else {
-				setName((SimpleName) child);
-				return null;
-			}
-		}
 		if (property == PRECONDITION_PROPERTY) {
 			if (get) {
 				return getPrecondition();
@@ -257,9 +253,6 @@ public class FunctionDeclaration extends AbstractFunctionDeclaration {
 		}
 		if (property == MODIFIERS_PROPERTY) {
 			return modifiers();
-		}
-		if (property == TEMPLATE_PARAMETERS_PROPERTY) {
-			return templateParameters();
 		}
 		if (property == ARGUMENTS_PROPERTY) {
 			return arguments();
@@ -317,20 +310,18 @@ public class FunctionDeclaration extends AbstractFunctionDeclaration {
 	 * Method declared on ASTNode.
 	 */
 	final int getNodeType0() {
-		return FUNCTION_DECLARATION;
+		return CONSTRUCTOR_DECLARATION;
 	}
 
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
 	 */
 	ASTNode clone0(AST target) {
-		FunctionDeclaration result = new FunctionDeclaration(target);
+		ConstructorDeclaration result = new ConstructorDeclaration(target);
 		result.setSourceRange(this.getStartPosition(), this.getLength());
 		result.preDDocs.addAll(ASTNode.copySubtrees(target, preDDocs()));
 		result.modifiers.addAll(ASTNode.copySubtrees(target, modifiers()));
-		result.setReturnType((Type) getReturnType().clone(target));
-		result.setName((SimpleName) getName().clone(target));
-		result.templateParameters.addAll(ASTNode.copySubtrees(target, templateParameters()));
+		result.setKind(getKind());
 		result.arguments.addAll(ASTNode.copySubtrees(target, arguments()));
 		result.setVariadic(isVariadic());
 	result.setPrecondition((Statement) ASTNode.copySubtree(target, getPrecondition()));
@@ -358,9 +349,6 @@ public class FunctionDeclaration extends AbstractFunctionDeclaration {
 			// visit children in normal left to right reading order
 			acceptChildren(visitor, this.preDDocs);
 			acceptChildren(visitor, this.modifiers);
-			acceptChild(visitor, getReturnType());
-			acceptChild(visitor, getName());
-			acceptChildren(visitor, this.templateParameters);
 			acceptChildren(visitor, this.arguments);
 			acceptChild(visitor, getPrecondition());
 			acceptChild(visitor, getPostcondition());
@@ -372,101 +360,34 @@ public class FunctionDeclaration extends AbstractFunctionDeclaration {
 	}
 
 	/**
-	 * Returns the return type of this function declaration.
+	 * Returns the kind of this constructor declaration.
 	 * 
-	 * @return the return type
+	 * @return the kind
 	 */ 
-	public Type getReturnType() {
-		if (this.returnType == null) {
-			// lazy init must be thread-safe for readers
-			synchronized (this) {
-				if (this.returnType == null) {
-					preLazyInit();
-					this.returnType = new PrimitiveType(this.ast);
-					postLazyInit(this.returnType, RETURN_TYPE_PROPERTY);
-				}
-			}
-		}
-		return this.returnType;
+	public Kind getKind() {
+		return this.kind;
 	}
 
 	/**
-	 * Sets the return type of this function declaration.
+	 * Sets the kind of this constructor declaration.
 	 * 
-	 * @param returnType the return type
-	 * @exception IllegalArgumentException if:
-	 * <ul>
-	 * <li>the node belongs to a different AST</li>
-	 * <li>the node already has a parent</li>
-	 * <li>a cycle in would be created</li>
-	 * </ul>
+	 * @param kind the kind
+	 * @exception IllegalArgumentException if the argument is incorrect
 	 */ 
-	public void setReturnType(Type returnType) {
-		if (returnType == null) {
+	public void setKind(Kind kind) {
+		if (kind == null) {
 			throw new IllegalArgumentException();
 		}
-		ASTNode oldChild = this.returnType;
-		preReplaceChild(oldChild, returnType, RETURN_TYPE_PROPERTY);
-		this.returnType = returnType;
-		postReplaceChild(oldChild, returnType, RETURN_TYPE_PROPERTY);
-	}
-
-	/**
-	 * Returns the name of this function declaration.
-	 * 
-	 * @return the name
-	 */ 
-	public SimpleName getName() {
-		if (this.name == null) {
-			// lazy init must be thread-safe for readers
-			synchronized (this) {
-				if (this.name == null) {
-					preLazyInit();
-					this.name = new SimpleName(this.ast);
-					postLazyInit(this.name, NAME_PROPERTY);
-				}
-			}
-		}
-		return this.name;
-	}
-
-	/**
-	 * Sets the name of this function declaration.
-	 * 
-	 * @param name the name
-	 * @exception IllegalArgumentException if:
-	 * <ul>
-	 * <li>the node belongs to a different AST</li>
-	 * <li>the node already has a parent</li>
-	 * <li>a cycle in would be created</li>
-	 * </ul>
-	 */ 
-	public void setName(SimpleName name) {
-		if (name == null) {
-			throw new IllegalArgumentException();
-		}
-		ASTNode oldChild = this.name;
-		preReplaceChild(oldChild, name, NAME_PROPERTY);
-		this.name = name;
-		postReplaceChild(oldChild, name, NAME_PROPERTY);
-	}
-
-	/**
-	 * Returns the live ordered list of template parameters for this
-	 * function declaration.
-	 * 
-	 * @return the live list of function declaration
-	 *    (element type: <code>TemplateParameter</code>)
-	 */ 
-	public List<TemplateParameter> templateParameters() {
-		return this.templateParameters;
+		preValueChange(KIND_PROPERTY);
+		this.kind = kind;
+		postValueChange(KIND_PROPERTY);
 	}
 
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
 	 */
 	int memSize() {
-		return BASE_NODE_SIZE + 12 * 4;
+		return BASE_NODE_SIZE + 10 * 4;
 	}
 
 	/* (omit javadoc for this method)
@@ -477,9 +398,6 @@ public class FunctionDeclaration extends AbstractFunctionDeclaration {
 			memSize()
 			+ (this.preDDocs.listSize())
 			+ (this.modifiers.listSize())
-			+ (this.returnType == null ? 0 : getReturnType().treeSize())
-			+ (this.name == null ? 0 : getName().treeSize())
-			+ (this.templateParameters.listSize())
 			+ (this.arguments.listSize())
 			+ (this.precondition == null ? 0 : getPrecondition().treeSize())
 			+ (this.postcondition == null ? 0 : getPostcondition().treeSize())
@@ -488,5 +406,5 @@ public class FunctionDeclaration extends AbstractFunctionDeclaration {
 			+ (this.postDDoc == null ? 0 : getPostDDoc().treeSize())
 	;
 	}
-	
+
 }

@@ -16,10 +16,15 @@ import java.util.List;
 import org.eclipse.text.edits.TextEditGroup;
 
 import descent.core.dom.ASTNode;
+import descent.core.dom.AliasDeclaration;
 import descent.core.dom.Block;
 import descent.core.dom.ChildListPropertyDescriptor;
+import descent.core.dom.ImportDeclaration;
+import descent.core.dom.MixinDeclaration;
 import descent.core.dom.Statement;
 import descent.core.dom.StructuralPropertyDescriptor;
+import descent.core.dom.TypedefDeclaration;
+import descent.core.dom.VariableDeclaration;
 import descent.internal.core.dom.rewrite.ListRewriteEvent;
 import descent.internal.core.dom.rewrite.NodeInfoStore;
 import descent.internal.core.dom.rewrite.RewriteEvent;
@@ -390,10 +395,12 @@ public final class ListRewrite {
 	 * Heuristic to decide if a inserted node is bound to previous or the next sibling. 
 	 */
 	private boolean isInsertBoundToPreviousByDefault(ASTNode node) {
-		/* TODO JDT see what this heuristic is about
+		/* TODO (Ary) see if the implementation I provided works
 		return (node instanceof Statement || node instanceof FieldDeclaration);
 		*/
-		return node instanceof Statement;
+		return node instanceof Statement || node instanceof AliasDeclaration ||
+			node instanceof TypedefDeclaration || node instanceof MixinDeclaration ||
+			node instanceof VariableDeclaration || node instanceof ImportDeclaration;
 	}
 	
 	/**
