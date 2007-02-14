@@ -9,6 +9,8 @@ import descent.core.dom.DebugStatement;
 import descent.core.dom.ExpressionStatement;
 import descent.core.dom.ForStatement;
 import descent.core.dom.ForeachStatement;
+import descent.core.dom.IfStatement;
+import descent.core.dom.PrimitiveType;
 import descent.core.dom.TryStatement;
 
 public class RewriteStatementTest extends AbstractRewriteTest {
@@ -285,6 +287,25 @@ public class RewriteStatementTest extends AbstractRewriteTest {
 		stm.getIncrement().delete();
 		
 		assertStatementEqualsTokenByToken("for(;;) { }", end());
+	}
+	
+	public void testIfAddArgument() throws Exception {
+		IfStatement stm = (IfStatement) beginStatement("if (true) { }");
+		
+		Argument arg = ast.newArgument();
+		arg.setType(ast.newPrimitiveType(PrimitiveType.Code.INT));
+		arg.setName(ast.newSimpleName("x"));
+		stm.setArgument(arg);
+		
+		assertStatementEqualsTokenByToken("if (int x = true) { }", end());
+	}
+	
+	public void testIfRemoveArgument() throws Exception {
+		IfStatement stm = (IfStatement) beginStatement("if (int x = true) { }");
+		
+		stm.getArgument().delete();
+		
+		assertStatementEqualsTokenByToken("if (true) { }", end());
 	}
 
 }

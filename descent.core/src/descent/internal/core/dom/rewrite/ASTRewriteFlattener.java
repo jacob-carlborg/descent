@@ -836,7 +836,7 @@ public class ASTRewriteFlattener extends ASTVisitor {
 	public boolean visit(Import node) {
 		visitChild(node, Import.ALIAS_PROPERTY, EMPTY, " = ");
 		visitChild(node, Import.NAME_PROPERTY);
-		visitList(node, Import.SELECTIVEIMPORTS_PROPERTY, ", ", " : ", EMPTY);
+		visitList(node, Import.SELECTIVE_IMPORTS_PROPERTY, ", ", " : ", EMPTY);
 		return false;
 	}
 	

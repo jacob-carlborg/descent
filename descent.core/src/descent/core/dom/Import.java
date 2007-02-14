@@ -29,7 +29,7 @@ public class Import extends ASTNode {
 	/**
 	 * The "selectiveImports" structural property of this node type.
 	 */
-	public static final ChildListPropertyDescriptor SELECTIVEIMPORTS_PROPERTY =
+	public static final ChildListPropertyDescriptor SELECTIVE_IMPORTS_PROPERTY =
 		new ChildListPropertyDescriptor(Import.class, "selectiveImports", SelectiveImport.class, NO_CYCLE_RISK); //$NON-NLS-1$
 
 	/**
@@ -44,7 +44,7 @@ public class Import extends ASTNode {
 		createPropertyList(Import.class, properyList);
 		addProperty(ALIAS_PROPERTY, properyList);
 		addProperty(NAME_PROPERTY, properyList);
-		addProperty(SELECTIVEIMPORTS_PROPERTY, properyList);
+		addProperty(SELECTIVE_IMPORTS_PROPERTY, properyList);
 		PROPERTY_DESCRIPTORS = reapPropertyList(properyList);
 	}
 
@@ -79,7 +79,7 @@ public class Import extends ASTNode {
 	 * Defaults to an empty list.
 	 */
 	private ASTNode.NodeList selectiveImports =
-		new ASTNode.NodeList(SELECTIVEIMPORTS_PROPERTY);
+		new ASTNode.NodeList(SELECTIVE_IMPORTS_PROPERTY);
 
 	/**
 	 * Creates a new unparented import node owned by the given 
@@ -129,7 +129,7 @@ public class Import extends ASTNode {
 	 * Method declared on ASTNode.
 	 */
 	final List internalGetChildListProperty(ChildListPropertyDescriptor property) {
-		if (property == SELECTIVEIMPORTS_PROPERTY) {
+		if (property == SELECTIVE_IMPORTS_PROPERTY) {
 			return selectiveImports();
 		}
 		// allow default implementation to flag the error

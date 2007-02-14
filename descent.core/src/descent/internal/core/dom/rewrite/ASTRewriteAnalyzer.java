@@ -2335,6 +2335,174 @@ public final class ASTRewriteAnalyzer extends ASTVisitor {
 		rewriteRequiredNode(node, GotoStatement.LABEL_PROPERTY);	
 		return false;
 	}
+	
+	@Override
+	public boolean visit(IfStatement node) {
+		if (!hasChildrenChanges(node)) {
+			return doVisitUnchangedChildren(node);
+		}
+		
+		int pos = node.getStartPosition();
+		
+		try {
+			pos = getScanner().getTokenEndOffset(ITerminalSymbols.TokenNameLPAREN, pos);
+		} catch (CoreException e) {
+			handleException(e);
+		}
+		
+		RewriteEvent argumentEvent = getEvent(node, IfStatement.ARGUMENT_PROPERTY);
+		if (argumentEvent != null && argumentEvent.getChangeKind() != RewriteEvent.UNCHANGED) {
+			switch(argumentEvent.getChangeKind()) {
+			case RewriteEvent.INSERTED:
+				pos = rewriteNode(node, IfStatement.ARGUMENT_PROPERTY, pos, ASTRewriteFormatter.NONE);
+				doTextInsert(pos, " = ", getEditGroup(node, IfStatement.ARGUMENT_PROPERTY));
+				break;
+			case RewriteEvent.REPLACED:
+				pos = rewriteNode(node, IfStatement.ARGUMENT_PROPERTY, pos, ASTRewriteFormatter.NONE);
+				break;
+			case RewriteEvent.REMOVED:
+				try {
+					ASTNode originalArgument = (ASTNode) argumentEvent.getOriginalValue();
+					int end = getScanner().getTokenEndOffset(ITerminalSymbols.TokenNameEQUAL, originalArgument.getStartPosition() + originalArgument.getLength());
+					end = getScanner().getNextStartOffset(end, false);
+					doTextRemove(pos, end - pos, getEditGroup(node, IfStatement.ARGUMENT_PROPERTY));
+				} catch (CoreException e) {
+					handleException(e);
+				}
+				break;
+			}
+			
+		} else {
+			doVisit(node, IfStatement.ARGUMENT_PROPERTY, pos);
+		}
+		
+		pos= rewriteRequiredNode(node, IfStatement.EXPRESSION_PROPERTY); // statement
+		
+		RewriteEvent thenEvent= getEvent(node, IfStatement.THEN_BODY_PROPERTY);
+		int elseChange= getChangeKind(node, IfStatement.ELSE_BODY_PROPERTY);
+
+		if (thenEvent != null && thenEvent.getChangeKind() != RewriteEvent.UNCHANGED) {
+			try {
+				pos= getScanner().getTokenEndOffset(ITerminalSymbols.TokenNameRPAREN, pos); // after the closing parent
+				int indent= getIndent(node.getStartPosition());
+				
+				int endPos= -1;
+				Object elseStatement= getOriginalValue(node, IfStatement.ELSE_BODY_PROPERTY);
+				if (elseStatement != null) {
+					ASTNode thenStatement = (ASTNode) thenEvent.getOriginalValue();
+					endPos= getScanner().getTokenStartOffset(ITerminalSymbols.TokenNameelse, thenStatement.getStartPosition() + thenStatement.getLength()); // else keyword
+				}
+				if (elseStatement == null || elseChange != RewriteEvent.UNCHANGED) {
+					pos= rewriteBodyNode(node, IfStatement.THEN_BODY_PROPERTY, pos, endPos, indent, this.formatter.IF_BLOCK_NO_ELSE); 
+				} else {
+					pos= rewriteBodyNode(node, IfStatement.THEN_BODY_PROPERTY, pos, endPos, indent, this.formatter.IF_BLOCK_WITH_ELSE); 
+				}
+			} catch (CoreException e) {
+				handleException(e);
+			}
+		} else {
+			pos= doVisit(node, IfStatement.THEN_BODY_PROPERTY, pos);
+		}
+
+		if (elseChange != RewriteEvent.UNCHANGED) {
+			int indent= getIndent(node.getStartPosition());
+			Object newThen= getNewValue(node, IfStatement.THEN_BODY_PROPERTY);
+			if (newThen instanceof Block) {
+				rewriteBodyNode(node, IfStatement.ELSE_BODY_PROPERTY, pos, -1, indent, this.formatter.ELSE_AFTER_BLOCK);
+			} else {
+				rewriteBodyNode(node, IfStatement.ELSE_BODY_PROPERTY, pos, -1, indent, this.formatter.ELSE_AFTER_STATEMENT);
+			}
+		} else {
+			pos= doVisit(node, IfStatement.ELSE_BODY_PROPERTY, pos);
+		}
+		return false;
+	}
+	
+	@Override
+	public boolean visit(Import node) {
+		if (!hasChildrenChanges(node)) {
+			return doVisitUnchangedChildren(node);
+		}
+		
+		int pos = node.getStartPosition();
+		
+		RewriteEvent argumentEvent = getEvent(node, Import.ALIAS_PROPERTY);
+		if (argumentEvent != null && argumentEvent.getChangeKind() != RewriteEvent.UNCHANGED) {
+			switch(argumentEvent.getChangeKind()) {
+			case RewriteEvent.INSERTED:
+				pos = rewriteNode(node, Import.ALIAS_PROPERTY, pos, ASTRewriteFormatter.NONE);
+				doTextInsert(pos, " = ", getEditGroup(node, Import.ALIAS_PROPERTY));
+				break;
+			case RewriteEvent.REPLACED:
+				pos = rewriteNode(node, Import.ALIAS_PROPERTY, pos, ASTRewriteFormatter.NONE);
+				break;
+			case RewriteEvent.REMOVED:
+				try {
+					ASTNode originalArgument = (ASTNode) argumentEvent.getOriginalValue();
+					int end = getScanner().getTokenEndOffset(ITerminalSymbols.TokenNameEQUAL, originalArgument.getStartPosition() + originalArgument.getLength());
+					end = getScanner().getNextStartOffset(end, false);
+					doTextRemove(pos, end - pos, getEditGroup(node, Import.ALIAS_PROPERTY));
+				} catch (CoreException e) {
+					handleException(e);
+				}
+				break;
+			}
+			
+		} else {
+			doVisit(node, Import.ALIAS_PROPERTY, pos);
+		}
+		
+		pos = rewriteRequiredNode(node, Import.NAME_PROPERTY);
+		
+		rewriteNodeList(node, Import.SELECTIVE_IMPORTS_PROPERTY, pos, ":", ",");
+		
+		return false;
+	}
+	
+	@Override
+	public boolean visit(ImportDeclaration node) {
+		if (!hasChildrenChanges(node)) {
+			return doVisitUnchangedChildren(node);
+		}
+		
+		int pos = rewriteParagraphList(node, ImportDeclaration.PRE_D_DOCS_PROPERTY, 0, 0, 0, 0);
+		pos = rewriteModifiers(node, ImportDeclaration.MODIFIERS_PROPERTY, pos);
+		
+		if (isChanged(node, ImportDeclaration.STATIC_PROPERTY)) {
+			RewriteEvent event = getEvent(node, ImportDeclaration.STATIC_PROPERTY);
+			if ((Boolean) event.getOriginalValue()) {
+				try {
+					getScanner().readNext(true);
+					pos = getScanner().getCurrentStartOffset();
+					int end = getScanner().getNextStartOffset(getScanner().getCurrentEndOffset(), false);					
+					doTextRemove(pos, end - pos, getEditGroup(node, ImportDeclaration.STATIC_PROPERTY));
+					pos = end;
+				} catch (CoreException e) {
+					handleException(e);
+				}
+			} else {
+				doTextInsert(pos, "static ", getEditGroup(node, ImportDeclaration.STATIC_PROPERTY));
+			}
+		}
+		
+		try {
+			pos = getScanner().getTokenEndOffset(ITerminalSymbols.TokenNameimport, pos);
+		} catch (CoreException e) {
+			handleException(e);
+		}
+		
+		pos = rewriteNodeList(node, ImportDeclaration.IMPORTS_PROPERTY, pos, "", ", ");
+		
+		try {
+			pos = getScanner().getTokenEndOffset(ITerminalSymbols.TokenNameSEMICOLON, pos);
+		} catch (CoreException e) {
+			handleException(e);
+		}
+		
+		pos = rewriteNode(node, ImportDeclaration.POST_D_DOC_PROPERTY, pos, ASTRewriteFormatter.SPACE);
+		
+		return false;
+	}
 
 	@Override
 	public boolean visit(InfixExpression node) {
@@ -2525,6 +2693,45 @@ public final class ASTRewriteAnalyzer extends ASTVisitor {
 		} catch (CoreException e) {
 			handleException(e);
 		}
+		return false;
+	}
+	
+	@Override
+	public boolean visit(SelectiveImport node) {
+		if (!hasChildrenChanges(node)) {
+			return doVisitUnchangedChildren(node);
+		}
+		
+		int pos = node.getStartPosition();
+		
+		RewriteEvent argumentEvent = getEvent(node, SelectiveImport.ALIAS_PROPERTY);
+		if (argumentEvent != null && argumentEvent.getChangeKind() != RewriteEvent.UNCHANGED) {
+			switch(argumentEvent.getChangeKind()) {
+			case RewriteEvent.INSERTED:
+				pos = rewriteNode(node, SelectiveImport.ALIAS_PROPERTY, pos, ASTRewriteFormatter.NONE);
+				doTextInsert(pos, " = ", getEditGroup(node, SelectiveImport.ALIAS_PROPERTY));
+				break;
+			case RewriteEvent.REPLACED:
+				pos = rewriteNode(node, SelectiveImport.ALIAS_PROPERTY, pos, ASTRewriteFormatter.NONE);
+				break;
+			case RewriteEvent.REMOVED:
+				try {
+					ASTNode originalArgument = (ASTNode) argumentEvent.getOriginalValue();
+					int end = getScanner().getTokenEndOffset(ITerminalSymbols.TokenNameEQUAL, originalArgument.getStartPosition() + originalArgument.getLength());
+					end = getScanner().getNextStartOffset(end, false);
+					doTextRemove(pos, end - pos, getEditGroup(node, SelectiveImport.ALIAS_PROPERTY));
+				} catch (CoreException e) {
+					handleException(e);
+				}
+				break;
+			}
+			
+		} else {
+			doVisit(node, SelectiveImport.ALIAS_PROPERTY, pos);
+		}
+		
+		pos = rewriteRequiredNode(node, SelectiveImport.NAME_PROPERTY);
+		
 		return false;
 	}
 
@@ -2760,6 +2967,17 @@ public final class ASTRewriteAnalyzer extends ASTVisitor {
 			
 		}
 		
+		return false;
+	}
+	
+	@Override
+	public boolean visit(TypedefDeclarationFragment node) {
+		if (!hasChildrenChanges(node)) {
+			return doVisitUnchangedChildren(node);
+		}
+		
+		int pos= rewriteRequiredNode(node, TypedefDeclarationFragment.NAME_PROPERTY);
+		rewriteNode(node, TypedefDeclarationFragment.INITIALIZER_PROPERTY, pos, this.formatter.VAR_INITIALIZER);
 		return false;
 	}
 	
