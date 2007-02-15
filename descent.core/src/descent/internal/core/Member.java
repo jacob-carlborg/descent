@@ -23,6 +23,11 @@ import descent.core.IType;
 import descent.core.JavaModelException;
 import descent.core.Signature;
 import descent.core.WorkingCopyOwner;
+import descent.core.compiler.IScanner;
+import descent.core.compiler.ITerminalSymbols;
+import descent.core.compiler.InvalidInputException;
+import descent.core.dom.AST;
+import descent.core.dom.ToolFactory;
 import descent.internal.core.util.MementoTokenizer;
 
 /**
@@ -272,9 +277,8 @@ public ISourceRange getJavadocRange() throws JavaModelException {
 	}
 	final int start= range.getOffset();
 	final int length= range.getLength();
-	/* TODO JDT
 	if (length > 0 && buf.getChar(start) == '/') {
-		IScanner scanner= ToolFactory.createScanner(true, false, false, false);
+		IScanner scanner= ToolFactory.createScanner(true, false, false, false, AST.D1);
 		scanner.setSource(buf.getText(start, length).toCharArray());
 		try {
 			int docOffset= -1;
@@ -283,13 +287,18 @@ public ISourceRange getJavadocRange() throws JavaModelException {
 			int terminal= scanner.getNextToken();
 			loop: while (true) {
 				switch(terminal) {
-					case ITerminalSymbols.TokenNameCOMMENT_JAVADOC :
-						docOffset= scanner.getCurrentTokenStartPosition();
-						docEnd= scanner.getCurrentTokenEndPosition() + 1;
+					case ITerminalSymbols.TokenNameCOMMENT_DOC_LINE:
+					case ITerminalSymbols.TokenNameCOMMENT_DOC_BLOCK:
+					case ITerminalSymbols.TokenNameCOMMENT_DOC_PLUS:
+						if (docEnd == -1) {
+							docOffset= scanner.getCurrentTokenStartPosition();
+						}
+						docEnd= scanner.getCurrentTokenEndPosition();
 						terminal= scanner.getNextToken();
-						break;
+						continue loop;
 					case ITerminalSymbols.TokenNameCOMMENT_LINE :
 					case ITerminalSymbols.TokenNameCOMMENT_BLOCK :
+					case ITerminalSymbols.TokenNameCOMMENT_PLUS :
 						terminal= scanner.getNextToken();
 						continue loop;
 					default :
@@ -303,7 +312,6 @@ public ISourceRange getJavadocRange() throws JavaModelException {
 			// try if there is inherited Javadoc
 		}
 	}
-	*/
 	return null;
 }
 /**

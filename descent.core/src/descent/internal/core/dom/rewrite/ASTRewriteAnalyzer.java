@@ -2307,6 +2307,44 @@ public final class ASTRewriteAnalyzer extends ASTVisitor {
 	}
 	
 	@Override
+	public boolean visit(FunctionDeclaration node) {
+		if (!hasChildrenChanges(node)) {
+			return doVisitUnchangedChildren(node);
+		}
+		
+		int pos = rewriteParagraphList(node, FunctionDeclaration.PRE_D_DOCS_PROPERTY, 0, 0, 0, 0);
+		pos = rewriteModifiers(node, FunctionDeclaration.MODIFIERS_PROPERTY, pos);
+		
+		pos = rewriteRequiredNode(node, FunctionDeclaration.RETURN_TYPE_PROPERTY);
+		pos = rewriteRequiredNode(node, FunctionDeclaration.NAME_PROPERTY);
+		
+		pos = rewriteOptionalTemplateParameters(node, FunctionDeclaration.TEMPLATE_PARAMETERS_PROPERTY, pos, "", false, false);
+		
+		try {
+			pos = getScanner().getTokenEndOffset(ITerminalSymbols.TokenNameLPAREN, pos);
+		} catch (CoreException e) {
+			handleException(e);
+		}
+		
+		pos = rewriteNodeList(node, FunctionDeclaration.ARGUMENTS_PROPERTY, pos, "", ",");
+		
+		try {
+			pos = getScanner().getTokenEndOffset(ITerminalSymbols.TokenNameRPAREN, pos);
+		} catch (CoreException e) {
+			handleException(e);
+		}
+		
+		RewriteEvent inEvent = getEvent(node, FunctionDeclaration.PRECONDITION_PROPERTY);
+		RewriteEvent outEvent = getEvent(node, FunctionDeclaration.POSTCONDITION_PROPERTY);
+		
+		// TODO...
+		
+		pos = rewriteNode(node, FunctionDeclaration.POST_D_DOC_PROPERTY, pos, ASTRewriteFormatter.SPACE);
+		
+		return false;
+	}
+	
+	@Override
 	public boolean visit(GotoCaseStatement node) {
 		if (!hasChildrenChanges(node)) {
 			return doVisitUnchangedChildren(node);

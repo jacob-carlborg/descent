@@ -65,5 +65,11 @@ public class Bugs_Test extends Parser_Test {
 		CompilationUnit unit = getCompilationUnit(s);
 		assertEquals(0, unit.getProblems().length);
 	}
+	
+	public void testBug8() {
+		String s = " /** hola */ void bla() { }";
+		CompilationUnit unit = getCompilationUnit(s);
+		assertEquals(1, unit.declarations().get(0).preDDocs().size());
+	}
 
 }

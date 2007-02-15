@@ -50,12 +50,12 @@ public interface IScanner {
 
 	/**
 	 * Answers the ending position of the current token inside the original source.
-	 * This position is zero-based and inclusive. It corresponds to the position of the last character
+	 * This position is zero-based and exclusive. It corresponds to the position of the last character
 	 * which is part of this token.
 	 * 
 	 * @return the ending position of the current token inside the original source
 	 */
-	int getCurrentTokenEndPosition();
+	int getCurrentTokenEndPosition(); // TODO: in JDT it's inclusive
 
 	/**
 	 * Answers the starting position of a given line number. This line has to have been encountered

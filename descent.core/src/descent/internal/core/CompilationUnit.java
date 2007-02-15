@@ -14,6 +14,7 @@ package descent.internal.core;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 import org.eclipse.core.resources.IContainer;
@@ -33,6 +34,7 @@ import descent.core.IImportContainer;
 import descent.core.IImportDeclaration;
 import descent.core.IJavaElement;
 import descent.core.IJavaModelStatusConstants;
+import descent.core.IJavaProject;
 import descent.core.IMember;
 import descent.core.IMethod;
 import descent.core.IOpenable;
@@ -48,6 +50,9 @@ import descent.core.JavaConventions;
 import descent.core.JavaModelException;
 import descent.core.WorkingCopyOwner;
 import descent.core.compiler.CharOperation;
+import descent.core.compiler.IProblem;
+import descent.core.dom.AST;
+import descent.internal.compiler.SourceElementParser;
 import descent.internal.compiler.util.SuffixConstants;
 import descent.internal.core.util.MementoTokenizer;
 import descent.internal.core.util.Messages;
@@ -86,9 +91,9 @@ public void becomeWorkingCopy(IProblemRequestor problemRequestor, IProgressMonit
 		operation.runOperation(monitor);
 	}
 }
+
 protected boolean buildStructure(OpenableElementInfo info, final IProgressMonitor pm, Map newElements, IResource underlyingResource) throws JavaModelException {
 
-	/* TODO JDT
 	// check if this compilation unit can be opened
 	if (!isWorkingCopy()) { // no check is done on root kind or exclusion pattern for working copies
 		IStatus status = validateCompilationUnit(underlyingResource);
@@ -132,25 +137,23 @@ protected boolean buildStructure(OpenableElementInfo info, final IProgressMonito
 	}
 	
 	boolean computeProblems = perWorkingCopyInfo != null && perWorkingCopyInfo.isActive() && project != null && JavaProject.hasJavaNature(project.getProject());
+	/*
 	IProblemFactory problemFactory = new DefaultProblemFactory();
 	Map options = project == null ? JavaCore.getOptions() : project.getOptions(true);
 	if (!computeProblems) {
 		// disable task tags checking to speed up parsing
 		options.put(JavaCore.COMPILER_TASK_TAGS, ""); //$NON-NLS-1$
 	}
-	SourceElementParser parser = new SourceElementParser(
-		requestor, 
-		problemFactory, 
-		new CompilerOptions(options),
-		true,
-		!createAST );
-	parser.reportOnlyOneSyntaxError = !computeProblems;
-	parser.setStatementsRecovery(statementsRecovery);
+	*/
+	SourceElementParser parser = new SourceElementParser(requestor);
+	// parser.reportOnlyOneSyntaxError = !computeProblems;
+	// parser.setStatementsRecovery(statementsRecovery);
 	
-	if (!computeProblems && !resolveBindings && !createAST) // disable javadoc parsing if not computing problems, not resolving and not creating ast
-		parser.javadocParser.checkDocComment = false;
-	requestor.parser = parser;
-	CompilationUnitDeclaration unit = parser.parseCompilationUnit(
+	// if (!computeProblems && !resolveBindings && !createAST) // disable javadoc parsing if not computing problems, not resolving and not creating ast
+	// 	parser.javadocParser.checkDocComment = false;
+	requestor.source = contents;
+	//requestor.parser = parser;
+	descent.core.dom.CompilationUnit unit = parser.parseCompilationUnit(
 		new descent.internal.compiler.env.ICompilationUnit() {
 			public char[] getContents() {
 				return contents;
@@ -164,8 +167,7 @@ protected boolean buildStructure(OpenableElementInfo info, final IProgressMonito
 			public char[] getFileName() {
 				return CompilationUnit.this.getFileName();
 			}
-		}, 
-		true );
+		});
 	
 	// update timestamp (might be IResource.NULL_STAMP if original does not exist)
 	if (underlyingResource == null) {
@@ -176,17 +178,18 @@ protected boolean buildStructure(OpenableElementInfo info, final IProgressMonito
 		unitInfo.timestamp = ((IFile)underlyingResource).getModificationStamp();
 	
 	// compute other problems if needed
-	CompilationUnitDeclaration compilationUnitDeclaration = null;
+	// CompilationUnit compilationUnitDeclaration = null;
 	try {
-		if (computeProblems) {
+		/* TODO JDT
+		if (computeProblems) {			
 			if (problems == null) {
 				// report problems to the problem requestor
 				problems = new HashMap();
 				compilationUnitDeclaration = CompilationUnitProblemFinder.process(unit, this, contents, parser, this.owner, problems, createAST, true, pm);
 				try {
 					perWorkingCopyInfo.beginReporting();
-					for (Iterator iteraror = problems.values().iterator(); iteraror.hasNext();) {
-						CategorizedProblem[] categorizedProblems = (CategorizedProblem[]) iteraror.next();
+					for (Iterator<E> iteraror = problems.values().iterator(); iteraror.hasNext();) {
+						IProblem[] categorizedProblems = (IProblem[]) iteraror.next();
 						if (categorizedProblems == null) continue;
 						for (int i = 0, length = categorizedProblems.length; i < length; i++) {
 							perWorkingCopyInfo.acceptProblem(categorizedProblems[i]);
@@ -200,22 +203,23 @@ protected boolean buildStructure(OpenableElementInfo info, final IProgressMonito
 				compilationUnitDeclaration = CompilationUnitProblemFinder.process(unit, this, contents, parser, this.owner, problems, createAST, true, pm);
 			}
 		}
+		*/
 		
 		if (createAST) {
-			int astLevel = ((ASTHolderCUInfo) info).astLevel;
-			descent.core.dom.CompilationUnit cu = AST.convertCompilationUnit(astLevel, unit, contents, options, computeProblems, this, pm);
-			((ASTHolderCUInfo) info).ast = cu;
+			// int astLevel = ((ASTHolderCUInfo) info).astLevel;
+			// descent.core.dom.CompilationUnit cu = AST.convertCompilationUnit(astLevel, unit, contents, options, computeProblems, this, pm);
+			// ((ASTHolderCUInfo) info).ast = cu;
+			((ASTHolderCUInfo) info).ast = unit;
 		}
 	} finally {
+		/*
 	    if (compilationUnitDeclaration != null) {
 	        compilationUnitDeclaration.cleanUp();
 	    }
+	    */
 	}
 	
 	return unitInfo.isStructureKnown();
-	*/
-	
-	return true;
 }
 /*
  * @see Openable#canBeRemovedFromCache

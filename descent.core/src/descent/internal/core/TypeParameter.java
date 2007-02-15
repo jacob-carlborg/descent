@@ -88,10 +88,9 @@ public class TypeParameter extends SourceRefElement implements ITypeParameter {
 				return mapper.getNameRange(this);
 			}
 		}
+		*/
 		TypeParameterElementInfo info = (TypeParameterElementInfo) getElementInfo();
 		return new SourceRange(info.nameStart, info.nameEnd - info.nameStart + 1);
-		*/
-		return new SourceRange(0, 0);
 	}
 
 	/*

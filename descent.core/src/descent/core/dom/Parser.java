@@ -69,6 +69,7 @@ import static descent.internal.core.parser.TY.Tfunction;
 import static descent.internal.core.parser.TY.Tsarray;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.StringTokenizer;
 
@@ -100,7 +101,6 @@ class Parser extends Lexer {
 
 	private ModuleDeclaration md;
 	private int inBrackets;	
-	private LINK linkage = LINK.LINKd;
 	
 	AST ast;
 	CompilationUnit compilationUnit;
@@ -515,11 +515,9 @@ class Parser extends Lexer {
 					break;
 				}
 				{
-					LINK linksave = linkage;
-					linkage = parseLinkage();
+					LINK linkage = parseLinkage();
 					a = parseBlock();
 					s = newExternDeclaration(linkage, a);
-					linkage = linksave;
 					break;
 				}
 			case TOKprivate:
@@ -2084,7 +2082,7 @@ class Parser extends Lexer {
 
 				int saveStart = t.getStartPosition();
 
-				DmdTypeFunction typeFunction = new DmdTypeFunction(ast, arguments, t, varargs != 0, linkage);
+				DmdTypeFunction typeFunction = new DmdTypeFunction(ast, arguments, t, varargs != 0);
 				
 				t = newDelegateType(save, typeFunction, varargs);
 				t.setSourceRange(saveStart, prevToken.ptr + prevToken.len - saveStart);
@@ -2211,7 +2209,7 @@ class Parser extends Lexer {
 			arguments = parseParameters(pointer2_varargs);
 			varargs = pointer2_varargs[0];
 			
-			ta = new DmdTypeFunction(ast, arguments, t, varargs != 0, linkage);
+			ta = new DmdTypeFunction(ast, arguments, t, varargs != 0);
 			ta.setSourceRange(t.getStartPosition(), t.getLength());
 			
 			DmdTypeFunction typeFunction = (DmdTypeFunction) ta;
@@ -2255,7 +2253,6 @@ class Parser extends Lexer {
 		Identifier ident;
 		List a;
 		TOK tok;
-		LINK link = linkage;
 		
 		List<DDocComment> lastComments = getLastDocComments();
 		List<Modifier> modifiers = new ArrayList<Modifier>();
@@ -2308,7 +2305,7 @@ class Parser extends Lexer {
 					continue;
 				}
 
-				link = parseLinkage();
+				parseLinkage();
 				continue;
 
 			default:
@@ -2469,20 +2466,10 @@ class Parser extends Lexer {
 				
 				FunctionDeclaration function = newFunctionDeclaration( 
 						typeFunction.getReturnType(), name, typeFunction.getArguments(), typeFunction.varargs ? 1 : 0);
-				function.preDDocs().addAll(lastComments);
-				adjustLastDocComment();
-				
 				parseContracts(function);
 				function.setSourceRange(t.getStartPosition(), prevToken.ptr + prevToken.len - t.getStartPosition());
 				
-				Declaration s;
-				if (link == linkage) {
-					s = function;
-				} else {
-					List<Declaration> ax = new ArrayList<Declaration>();
-					ax.add(function);
-					s = newExternDeclaration(link, ax);
-				}
+				Declaration s = function;				
 				if (tpl != null) // it's a function template
 				{
 					function.templateParameters().addAll(tpl);
@@ -2500,6 +2487,8 @@ class Parser extends Lexer {
 				}
 				s.preDDocs().addAll(lastComments);
 				adjustLastDocComment();
+				attachLeadingComments(s);
+				adjustPossitionAccordingToComments(s, s.preDDocs(), s.getPostDDoc());
 				a.add(s);
 			} else {
 				Initializer init;
@@ -2548,12 +2537,6 @@ class Parser extends Lexer {
 	}
 	
 	private void parseContracts(AbstractFunctionDeclaration f) {
-		LINK linksave = linkage;
-
-		// The following is irrelevant, as it is overridden by sc->linkage in
-		// TypeFunction::semantic
-		linkage = LINKd; // nested functions have D linkage
-
 		boolean repeat = true;
 		while (repeat) {
 			repeat = false;
@@ -2635,7 +2618,6 @@ class Parser extends Lexer {
 				break;
 			}
 		}
-		linkage = linksave;
 	}
 	
 	public Initializer parseInitializer() {
@@ -5165,7 +5147,7 @@ class Parser extends Lexer {
 
 		}
 		
-		t2 = new DmdTypeFunction(ast, arguments, t2, varargs != 0, linkage);
+		t2 = new DmdTypeFunction(ast, arguments, t2, varargs != 0);
 		
 		// fd dosen't make it to the AST, that's why it's not created via a newXXX...
 		fd = new FunctionDeclaration(ast);
@@ -6736,11 +6718,11 @@ class Parser extends Lexer {
 	}
 	
 	private List<DDocComment> getLastDocComments() {
-		List<DDocComment> toReturn = new ArrayList<DDocComment>();
+		LinkedList<DDocComment> toReturn = new LinkedList<DDocComment>();
 		for(int i = comments.size() - 1; i >= lastDocCommentRead; i--) {
 			Comment comment = comments.get(i);
 			if (comment.isDDocComment()) {
-				toReturn.add((DDocComment) comment);
+				toReturn.addFirst((DDocComment) comment);
 			} else {
 				break;
 			}

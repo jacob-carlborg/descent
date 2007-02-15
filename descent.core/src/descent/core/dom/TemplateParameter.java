@@ -24,6 +24,39 @@ package descent.core.dom;
 public abstract class TemplateParameter extends ASTNode {
 	
 	/**
+	 * The name.
+	 */
+	SimpleName name;
+	
+	/**
+	 * Returns structural property descriptor for the "name" property
+	 * of this node.
+	 * 
+	 * @return the property descriptor
+	 */
+	abstract ChildPropertyDescriptor internalNameProperty();
+	
+	/**
+	 * Returns structural property descriptor for the "name" property
+	 * of this node.
+	 * 
+	 * @return the property descriptor
+	 */
+	public final ChildPropertyDescriptor getNameProperty() {
+		return internalNameProperty();
+	}
+	
+	/**
+	 * Creates and returns a structural property descriptor for the
+	 * "name" property declared on the given concrete node type.
+	 * 
+	 * @return the property descriptor
+	 */
+	static final ChildPropertyDescriptor internalNamePropertyFactory(Class nodeClass) {
+		return new ChildPropertyDescriptor(nodeClass, "name", SimpleName.class, MANDATORY, NO_CYCLE_RISK); //$NON-NLS-1$
+	}
+	
+	/**
 	 * Creates a new AST node for a template parameter owned by the given AST.
 	 * <p>
 	 * N.B. This constructor is package-private.
@@ -33,6 +66,46 @@ public abstract class TemplateParameter extends ASTNode {
 	 */
 	TemplateParameter(AST ast) {
 		super(ast);
+	}
+	
+	/**
+	 * Returns the name of this template parameter.
+	 * 
+	 * @return the name
+	 */ 
+	public SimpleName getName() {
+		if (this.name == null) {
+			// lazy init must be thread-safe for readers
+			synchronized (this) {
+				if (this.name == null) {
+					preLazyInit();
+					this.name = new SimpleName(this.ast);
+					postLazyInit(this.name, getNameProperty());
+				}
+			}
+		}
+		return this.name;
+	}
+
+	/**
+	 * Sets the name of this template parameter.
+	 * 
+	 * @param name the name
+	 * @exception IllegalArgumentException if:
+	 * <ul>
+	 * <li>the node belongs to a different AST</li>
+	 * <li>the node already has a parent</li>
+	 * <li>a cycle in would be created</li>
+	 * </ul>
+	 */ 
+	public void setName(SimpleName name) {
+		if (name == null) {
+			throw new IllegalArgumentException();
+		}
+		ASTNode oldChild = this.name;
+		preReplaceChild(oldChild, name, getNameProperty());
+		this.name = name;
+		postReplaceChild(oldChild, name, getNameProperty());
 	}
 	
 	/**

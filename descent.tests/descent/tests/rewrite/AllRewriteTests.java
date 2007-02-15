@@ -27,6 +27,7 @@ public class AllRewriteTests {
 		suite.addTestSuite(RewriteStaticIfDeclarationTest.class);
 		suite.addTestSuite(RewriteMixinDeclarationTest.class);
 		suite.addTestSuite(RewriteImportDeclarationTest.class);
+		suite.addTestSuite(RewriteFunctionDeclarationTest.class);
 		//$JUnit-END$
 		return suite;
 	}

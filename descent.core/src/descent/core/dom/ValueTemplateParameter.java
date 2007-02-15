@@ -24,7 +24,7 @@ public class ValueTemplateParameter extends TemplateParameter {
 	 * The "name" structural property of this node type.
 	 */
 	public static final ChildPropertyDescriptor NAME_PROPERTY =
-		new ChildPropertyDescriptor(ValueTemplateParameter.class, "name", SimpleName.class, MANDATORY, NO_CYCLE_RISK); //$NON-NLS-1$
+	internalNamePropertyFactory(ValueTemplateParameter.class); //$NON-NLS-1$
 
 	/**
 	 * The "specificValue" structural property of this node type.
@@ -74,11 +74,6 @@ public class ValueTemplateParameter extends TemplateParameter {
 	 * The type.
 	 */
 	private Type type;
-
-	/**
-	 * The name.
-	 */
-	private SimpleName name;
 
 	/**
 	 * The specificValue.
@@ -151,6 +146,11 @@ public class ValueTemplateParameter extends TemplateParameter {
 		return super.internalGetSetChildProperty(property, get, child);
 	}
 
+		@Override
+		final ChildPropertyDescriptor internalNameProperty() {
+			return NAME_PROPERTY;
+		}
+		
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
 	 */
@@ -232,46 +232,6 @@ public class ValueTemplateParameter extends TemplateParameter {
 		preReplaceChild(oldChild, type, TYPE_PROPERTY);
 		this.type = type;
 		postReplaceChild(oldChild, type, TYPE_PROPERTY);
-	}
-
-	/**
-	 * Returns the name of this value template parameter.
-	 * 
-	 * @return the name
-	 */ 
-	public SimpleName getName() {
-		if (this.name == null) {
-			// lazy init must be thread-safe for readers
-			synchronized (this) {
-				if (this.name == null) {
-					preLazyInit();
-					this.name = new SimpleName(this.ast);
-					postLazyInit(this.name, NAME_PROPERTY);
-				}
-			}
-		}
-		return this.name;
-	}
-
-	/**
-	 * Sets the name of this value template parameter.
-	 * 
-	 * @param name the name
-	 * @exception IllegalArgumentException if:
-	 * <ul>
-	 * <li>the node belongs to a different AST</li>
-	 * <li>the node already has a parent</li>
-	 * <li>a cycle in would be created</li>
-	 * </ul>
-	 */ 
-	public void setName(SimpleName name) {
-		if (name == null) {
-			throw new IllegalArgumentException();
-		}
-		ASTNode oldChild = this.name;
-		preReplaceChild(oldChild, name, NAME_PROPERTY);
-		this.name = name;
-		postReplaceChild(oldChild, name, NAME_PROPERTY);
 	}
 
 	/**

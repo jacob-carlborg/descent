@@ -18,7 +18,7 @@ public class TupleTemplateParameter extends TemplateParameter {
 	 * The "name" structural property of this node type.
 	 */
 	public static final ChildPropertyDescriptor NAME_PROPERTY =
-		new ChildPropertyDescriptor(TupleTemplateParameter.class, "name", SimpleName.class, MANDATORY, NO_CYCLE_RISK); //$NON-NLS-1$
+	internalNamePropertyFactory(TupleTemplateParameter.class); //$NON-NLS-1$
 
 	/**
 	 * A list of property descriptors (element type: 
@@ -48,11 +48,6 @@ public class TupleTemplateParameter extends TemplateParameter {
 	public static List propertyDescriptors(int apiLevel) {
 		return PROPERTY_DESCRIPTORS;
 	}
-
-	/**
-	 * The name.
-	 */
-	private SimpleName name;
 
 
 	/**
@@ -91,6 +86,11 @@ public class TupleTemplateParameter extends TemplateParameter {
 		return super.internalGetSetChildProperty(property, get, child);
 	}
 
+		@Override
+		final ChildPropertyDescriptor internalNameProperty() {
+			return NAME_PROPERTY;
+		}
+		
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
 	 */
@@ -126,46 +126,6 @@ public class TupleTemplateParameter extends TemplateParameter {
 			acceptChild(visitor, getName());
 		}
 		visitor.endVisit(this);
-	}
-
-	/**
-	 * Returns the name of this tuple template parameter.
-	 * 
-	 * @return the name
-	 */ 
-	public SimpleName getName() {
-		if (this.name == null) {
-			// lazy init must be thread-safe for readers
-			synchronized (this) {
-				if (this.name == null) {
-					preLazyInit();
-					this.name = new SimpleName(this.ast);
-					postLazyInit(this.name, NAME_PROPERTY);
-				}
-			}
-		}
-		return this.name;
-	}
-
-	/**
-	 * Sets the name of this tuple template parameter.
-	 * 
-	 * @param name the name
-	 * @exception IllegalArgumentException if:
-	 * <ul>
-	 * <li>the node belongs to a different AST</li>
-	 * <li>the node already has a parent</li>
-	 * <li>a cycle in would be created</li>
-	 * </ul>
-	 */ 
-	public void setName(SimpleName name) {
-		if (name == null) {
-			throw new IllegalArgumentException();
-		}
-		ASTNode oldChild = this.name;
-		preReplaceChild(oldChild, name, NAME_PROPERTY);
-		this.name = name;
-		postReplaceChild(oldChild, name, NAME_PROPERTY);
 	}
 
 	/* (omit javadoc for this method)

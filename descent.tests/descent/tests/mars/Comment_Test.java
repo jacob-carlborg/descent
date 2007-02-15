@@ -22,6 +22,15 @@ public class Comment_Test extends Parser_Test {
 		assertPosition(comments.get(0), 1, 11);
 	}
 	
+	public void testPreviousComments2() {
+		String s = " /** hola */ /** chau */ class Clazz;";
+		AggregateDeclaration c = (AggregateDeclaration) getSingleDeclarationNoProblems(s);
+		assertPosition(c, 1, s.length() - 1);
+		
+		List<DDocComment> comments = c.preDDocs();
+		assertEquals(2, comments.size());
+	}
+	
 	public void testDontCarryComments() {
 		String s = " /** hola */ class A; class B;";
 		List<Declaration> declDefs = getDeclarationsNoProblems(s);
