@@ -14,6 +14,7 @@ package descent.internal.core;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 import org.eclipse.core.resources.IContainer;
@@ -48,9 +49,11 @@ import descent.core.ISourceReference;
 import descent.core.IType;
 import descent.core.IWorkingCopy;
 import descent.core.JavaConventions;
+import descent.core.JavaCore;
 import descent.core.JavaModelException;
 import descent.core.WorkingCopyOwner;
 import descent.core.compiler.CharOperation;
+import descent.core.compiler.IProblem;
 import descent.internal.compiler.SourceElementParser;
 import descent.internal.compiler.util.SuffixConstants;
 import descent.internal.core.util.MementoTokenizer;
@@ -138,12 +141,12 @@ protected boolean buildStructure(OpenableElementInfo info, final IProgressMonito
 	boolean computeProblems = perWorkingCopyInfo != null && perWorkingCopyInfo.isActive() && project != null && JavaProject.hasJavaNature(project.getProject());
 	/*
 	IProblemFactory problemFactory = new DefaultProblemFactory();
+	*/
 	Map options = project == null ? JavaCore.getOptions() : project.getOptions(true);
 	if (!computeProblems) {
 		// disable task tags checking to speed up parsing
 		options.put(JavaCore.COMPILER_TASK_TAGS, ""); //$NON-NLS-1$
 	}
-	*/
 	SourceElementParser parser = new SourceElementParser(requestor);
 	// parser.reportOnlyOneSyntaxError = !computeProblems;
 	// parser.setStatementsRecovery(statementsRecovery);
@@ -179,15 +182,17 @@ protected boolean buildStructure(OpenableElementInfo info, final IProgressMonito
 	// compute other problems if needed
 	// CompilationUnit compilationUnitDeclaration = null;
 	try {
-		/* TODO JDT problems
 		if (computeProblems) {			
 			if (problems == null) {
 				// report problems to the problem requestor
 				problems = new HashMap();
+				/* TODO JDT problems
 				compilationUnitDeclaration = CompilationUnitProblemFinder.process(unit, this, contents, parser, this.owner, problems, createAST, true, pm);
+				*/
+				problems.put(new Object(), unit.getProblems());
 				try {
 					perWorkingCopyInfo.beginReporting();
-					for (Iterator<E> iteraror = problems.values().iterator(); iteraror.hasNext();) {
+					for (Iterator iteraror = problems.values().iterator(); iteraror.hasNext();) {
 						IProblem[] categorizedProblems = (IProblem[]) iteraror.next();
 						if (categorizedProblems == null) continue;
 						for (int i = 0, length = categorizedProblems.length; i < length; i++) {
@@ -199,10 +204,12 @@ protected boolean buildStructure(OpenableElementInfo info, final IProgressMonito
 				}
 			} else {
 				// collect problems
+				/* TODO JDT problems
 				compilationUnitDeclaration = CompilationUnitProblemFinder.process(unit, this, contents, parser, this.owner, problems, createAST, true, pm);
+				*/
+				problems.put(new Object(), unit.getProblems());
 			}
 		}
-		*/
 		
 		if (createAST) {
 			// int astLevel = ((ASTHolderCUInfo) info).astLevel;

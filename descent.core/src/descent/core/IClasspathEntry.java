@@ -67,7 +67,7 @@ import org.eclipse.core.runtime.IPath;
  * 		and gets resolved, to either a project or library entry, using
  *      <code>JavaCore#getResolvedClasspathVariable</code>.
  *		It is also possible to register an automatic initializer (<code>ClasspathVariableInitializer</code>),
- * 	which will be invoked through the extension point "org.eclipse.jdt.core.classpathVariableInitializer".
+ * 	which will be invoked through the extension point "descent.core.classpathVariableInitializer".
  * 	After resolution, a classpath variable entry may either correspond to a project or a library entry. </li>
  * 
  *  <li> A named classpath container identified by its container path.
@@ -81,7 +81,7 @@ import org.eclipse.core.runtime.IPath;
  *     which can be used as additional hints for resolving this container reference. If no container was ever 
  *     recorded for this container path onto this project (using <code>setClasspathContainer</code>, 
  * 	then a <code>ClasspathContainerInitializer</code> will be activated if any was registered for this 
- * 	container ID onto the extension point "org.eclipse.jdt.core.classpathContainerInitializer".
+ * 	container ID onto the extension point "descent.core.classpathContainerInitializer".
  * 	A classpath container entry can be resolved explicitly using <code>JavaCore#getClasspathContainer</code>
  * 	and the resulting container entries can contain any non-container entry. In particular, it may contain variable
  *     entries, which in turn needs to be resolved before being directly used. 

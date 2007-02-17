@@ -30,7 +30,7 @@ import org.eclipse.core.runtime.IPath;
  * <p>
  * Classpath container values are persisted locally to the workspace, but are not preserved from a 
  * session to another. It is thus highly recommended to register a <code>ClasspathContainerInitializer</code> 
- * for each referenced container (through the extension point "org.eclipse.jdt.core.ClasspathContainerInitializer").
+ * for each referenced container (through the extension point "descent.core.ClasspathContainerInitializer").
  * <p>
  * @see IClasspathEntry
  * @since 2.0
@@ -121,7 +121,7 @@ public interface IClasspathContainer {
 	 * can be used as additional hints for resolving to this container.
 	 * <p>
 	 * The container ID is also used to identify a<code>ClasspathContainerInitializer</code>
-	 * registered on the extension point "org.eclipse.jdt.core.classpathContainerInitializer", which can
+	 * registered on the extension point "descent.core.classpathContainerInitializer", which can
 	 * be invoked if needing to resolve the container before it is explicitly set.
 	 * <p>
 	 * @return IPath - the container path that is associated with this container

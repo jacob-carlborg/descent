@@ -20,8 +20,8 @@ package descent.ui.text;
  * implemented.
  * </p>
  *
- * @see org.eclipse.jdt.ui.text.IColorManager
- * @see org.eclipse.jdt.ui.text.IColorManagerExtension
+ * @see descent.ui.text.IColorManager
+ * @see descent.ui.text.IColorManagerExtension
  */
 public interface IJavaColorConstants {
 
@@ -56,7 +56,7 @@ public interface IJavaColorConstants {
 	 * (value <code>"java_method_name"</code>).
 	 *
 	 * @since 3.0
-	 * @deprecated replaced as of 3.1 by an equivalent semantic highlighting, see {@link org.eclipse.jdt.internal.ui.javaeditor.SemanticHighlightings#METHOD}
+	 * @deprecated replaced as of 3.1 by an equivalent semantic highlighting, see {@link descent.internal.ui.javaeditor.SemanticHighlightings#METHOD}
 	 */
 	String JAVA_METHOD_NAME= "java_method_name"; //$NON-NLS-1$
 
@@ -93,7 +93,7 @@ public interface IJavaColorConstants {
 	 * (value <code>"java_annotation"</code>).
 	 *
 	 * @since 3.1
-	 * @deprecated replaced as of 3.2 by an equivalent semantic highlighting, see {@link org.eclipse.jdt.internal.ui.javaeditor.SemanticHighlightings#ANNOTATION}
+	 * @deprecated replaced as of 3.2 by an equivalent semantic highlighting, see {@link descent.internal.ui.javaeditor.SemanticHighlightings#ANNOTATION}
 	 */
 	String JAVA_ANNOTATION= "java_annotation"; //$NON-NLS-1$
 

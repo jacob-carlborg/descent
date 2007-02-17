@@ -18,17 +18,17 @@ import descent.core.ISourceRange;
 /* package */ class SourceRefElementInfo extends JavaElementInfo {
 	protected int fSourceRangeStart, fSourceRangeEnd;
 /**
- * @see org.eclipse.jdt.internal.compiler.env.ISourceType#getDeclarationSourceEnd()
- * @see org.eclipse.jdt.internal.compiler.env.ISourceMethod#getDeclarationSourceEnd()
- * @see org.eclipse.jdt.internal.compiler.env.ISourceField#getDeclarationSourceEnd()
+ * @see descent.internal.compiler.env.ISourceType#getDeclarationSourceEnd()
+ * @see descent.internal.compiler.env.ISourceMethod#getDeclarationSourceEnd()
+ * @see descent.internal.compiler.env.ISourceField#getDeclarationSourceEnd()
  */
 public int getDeclarationSourceEnd() {
 	return fSourceRangeEnd;
 }
 /**
- * @see org.eclipse.jdt.internal.compiler.env.ISourceType#getDeclarationSourceStart()
- * @see org.eclipse.jdt.internal.compiler.env.ISourceMethod#getDeclarationSourceStart()
- * @see org.eclipse.jdt.internal.compiler.env.ISourceField#getDeclarationSourceStart()
+ * @see descent.internal.compiler.env.ISourceType#getDeclarationSourceStart()
+ * @see descent.internal.compiler.env.ISourceMethod#getDeclarationSourceStart()
+ * @see descent.internal.compiler.env.ISourceField#getDeclarationSourceStart()
  */
 public int getDeclarationSourceStart() {
 	return fSourceRangeStart;

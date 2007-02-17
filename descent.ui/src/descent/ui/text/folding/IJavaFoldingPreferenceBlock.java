@@ -15,7 +15,7 @@ import org.eclipse.swt.widgets.Control;
 
 
 /**
- * Contributors to the <code>org.eclipse.jdt.ui.foldingStructureProvider</code> extension point
+ * Contributors to the <code>descent.ui.foldingStructureProvider</code> extension point
  * can specify an implementation of this interface to be displayed on the Java &gt; Editor &gt; Folding
  * preference page.
  * <p>

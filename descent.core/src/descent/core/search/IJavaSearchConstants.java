@@ -19,7 +19,7 @@ import descent.internal.core.search.processing.*;
  * <p>
  * This interface declares constants only; it is not intended to be implemented.
  * </p>
- * @see org.eclipse.jdt.core.search.SearchEngine
+ * @see descent.core.search.SearchEngine
  */
 public interface IJavaSearchConstants {
 

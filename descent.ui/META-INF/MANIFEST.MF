@@ -15,6 +15,7 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.ui.ide,
  org.eclipse.ui.views,
  org.eclipse.ui.editors,
+ org.eclipse.ui.navigator,
  descent.core,
  com.ibm.icu
 Eclipse-LazyStart: true

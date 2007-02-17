@@ -72,7 +72,7 @@ import descent.core.compiler.IScanner;
  * TextEdit edits = cu.rewrite(document, null);
  * UndoEdit undo = edits.apply(document);
  * </pre>
- * See also {@link org.eclipse.jdt.core.dom.rewrite.ASTRewrite} for
+ * See also {@link descent.core.dom.rewrite.ASTRewrite} for
  * an alternative way to describe and serialize changes to a
  * read-only AST.
  * </p>

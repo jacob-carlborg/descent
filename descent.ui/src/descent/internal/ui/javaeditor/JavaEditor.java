@@ -1756,7 +1756,7 @@ public abstract class JavaEditor extends AbstractDecoratedTextEditor implements 
 	 * @see org.eclipse.ui.texteditor.AbstractDecoratedTextEditor#initializeKeyBindingScopes()
 	 */
 	protected void initializeKeyBindingScopes() {
-		setKeyBindingScopes(new String[] { "descent.ui.javaEditorScope" });  //$NON-NLS-1$
+		setKeyBindingScopes(new String[] { "descent.ui.dEditorScope" });  //$NON-NLS-1$
 	}
 
 	/*

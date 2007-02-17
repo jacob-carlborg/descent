@@ -472,7 +472,7 @@ public interface IType extends IMember {
 	 * types.
 	 * 
 	 * @return the binding key for this type
-	 * @see org.eclipse.jdt.core.dom.IBinding#getKey()
+	 * @see descent.core.dom.IBinding#getKey()
 	 * @see BindingKey
 	 * @since 3.1
 	 */

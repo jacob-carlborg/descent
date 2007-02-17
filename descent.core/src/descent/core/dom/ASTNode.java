@@ -109,7 +109,7 @@ import java.util.Map;
  * source document can be serialized after arbitrary modifications
  * with minimal loss of original formatting. See 
  * {@link CompilationUnit#recordModifications()} for details.
- * See also {@link org.eclipse.jdt.core.dom.rewrite.ASTRewrite} for
+ * See also {@link descent.core.dom.rewrite.ASTRewrite} for
  * an alternative way to describe and serialize changes to a
  * read-only AST.
  * </p>

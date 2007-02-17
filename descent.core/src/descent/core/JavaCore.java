@@ -147,13 +147,13 @@ public final class JavaCore extends Plugin {
 	 * The identifier for the Java builder
 	 * (value <code>"descent.core.javabuilder"</code>).
 	 */
-	public static final String BUILDER_ID = PLUGIN_ID + ".dbuilder" ; //$NON-NLS-1$
+	public static final String BUILDER_ID = PLUGIN_ID + ".javabuilder" ; //$NON-NLS-1$
 
 	/**
 	 * The identifier for the Java model
 	 * (value <code>"descent.core.javamodel"</code>).
 	 */
-	public static final String MODEL_ID = PLUGIN_ID + ".dmodel" ; //$NON-NLS-1$
+	public static final String MODEL_ID = PLUGIN_ID + ".javamodel" ; //$NON-NLS-1$
 
 	/**
 	 * The identifier for the Java nature
@@ -163,7 +163,7 @@ public final class JavaCore extends Plugin {
 	 *
 	 * @see org.eclipse.core.resources.IProject#hasNature(java.lang.String)
 	 */
-	public static final String NATURE_ID = PLUGIN_ID + ".dnature" ; //$NON-NLS-1$
+	public static final String NATURE_ID = PLUGIN_ID + ".javanature" ; //$NON-NLS-1$
 
 	/**
 	 * Name of the handle id attribute in a Java marker.

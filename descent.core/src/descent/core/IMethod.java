@@ -92,7 +92,7 @@ int getNumberOfParameters();
  * methods.
  * 
  * @return the binding key for this method
- * @see org.eclipse.jdt.core.dom.IBinding#getKey()
+ * @see descent.core.dom.IBinding#getKey()
  * @see BindingKey
  * @since 3.1
  */

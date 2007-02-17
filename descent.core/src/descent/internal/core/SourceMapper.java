@@ -22,7 +22,7 @@ import org.eclipse.core.runtime.IPath;
  * with children in a binary type. A SourceMapper is associated
  * with a JarPackageFragment by an AttachSourceOperation.
  *
- * @see org.eclipse.jdt.internal.core.JarPackageFragment
+ * @see descent.internal.core.JarPackageFragment
  * 
  * TODO binary: replace with real one
  */

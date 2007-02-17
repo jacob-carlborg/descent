@@ -22,7 +22,7 @@ public interface IContextMenuConstants {
 	
 	/**
 	 * Type hierarchy view part: pop-up menu target ID for type hierarchy viewer
-	 * (value <code>"org.eclipse.jdt.ui.TypeHierarchy.typehierarchy"</code>).
+	 * (value <code>"descent.ui.TypeHierarchy.typehierarchy"</code>).
 	 * 
 	 * @since 2.0
 	 */
@@ -30,7 +30,7 @@ public interface IContextMenuConstants {
 
 	/**
 	 * Type hierarchy view part: pop-up menu target ID for supertype hierarchy viewer
-	 * (value <code>"org.eclipse.jdt.ui.TypeHierarchy.supertypes"</code>).
+	 * (value <code>"descent.ui.TypeHierarchy.supertypes"</code>).
 	 * 
 	 * @since 2.0
 	 */
@@ -38,7 +38,7 @@ public interface IContextMenuConstants {
 
 	/**
 	 * Type hierarchy view part: Pop-up menu target ID for the subtype hierarchy viewer
-	 * (value <code>"org.eclipse.jdt.ui.TypeHierarchy.subtypes"</code>).
+	 * (value <code>"descent.ui.TypeHierarchy.subtypes"</code>).
 	 * 
 	 * @since 2.0
 	 */
@@ -46,7 +46,7 @@ public interface IContextMenuConstants {
 
 	/**
 	 * Type hierarchy view part: pop-up menu target ID for the member viewer
-	 * (value <code>"org.eclipse.jdt.ui.TypeHierarchy.members"</code>).
+	 * (value <code>"descent.ui.TypeHierarchy.members"</code>).
 	 * 
 	 * @since 2.0
 	 */

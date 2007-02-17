@@ -14,7 +14,7 @@ import org.eclipse.swt.graphics.RGB;
 
 
 /**
- * Extends {@link org.eclipse.jdt.ui.text.IColorManager} with
+ * Extends {@link descent.ui.text.IColorManager} with
  * the ability to bind and un-bind colors.
  *
  * @since 2.0

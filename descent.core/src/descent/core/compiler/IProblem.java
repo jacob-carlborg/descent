@@ -23,7 +23,7 @@ package descent.core.compiler;
  * problems are listed as constants on <code>IProblem</code>, </li>
  * <li> its marker type : a string identfying the problem creator. It corresponds to the marker type
  * chosen if this problem was to be persisted. Standard Java problems are associated to marker
- * type "org.eclipse.jdt.core.problem"), </li>
+ * type "descent.core.problem"), </li>
  * <li> its category ID : a number identifying the category this problem belongs to. All possible IDs for 
  * standard Java problem categories are listed in this class. </li>
  * </ul>
@@ -140,6 +140,38 @@ public interface IProblem {
 	public abstract String getMarkerType();
 	
 	/**
+	 * Returns the names of the extra marker attributes associated to this problem when persisted into a marker 
+	 * by the JavaBuilder. Extra attributes are only optional, and are allowing client customization of generated
+	 * markers. By default, no EXTRA attributes is persisted, and a categorized problem only persists the following attributes:
+	 * <ul>
+	 * <li>	<code>IMarker#MESSAGE</code> -&gt; {@link IProblem#getMessage()}</li>
+	 * <li>	<code>IMarker#SEVERITY</code> -&gt; <code> IMarker#SEVERITY_ERROR</code> or 
+	 *         <code>IMarker#SEVERITY_WARNING</code> depending on {@link IProblem#isError()} or {@link IProblem#isWarning()}</li>
+	 * <li>	<code>IJavaModelMarker#ID</code> -&gt; {@link IProblem#getID()}</li>
+	 * <li>	<code>IMarker#CHAR_START</code>  -&gt; {@link IProblem#getSourceStart()}</li>
+	 * <li>	<code>IMarker#CHAR_END</code>  -&gt; {@link IProblem#getSourceEnd()}</li>
+	 * <li>	<code>IMarker#LINE_NUMBER</code>  -&gt; {@link IProblem#getSourceLineNumber()}</li>
+	 * <li>	<code>IJavaModelMarker#ARGUMENTS</code>  -&gt; some <code>String[]</code> used to compute quickfixes </li>
+	 * <li>	<code>IJavaModelMarker#CATEGORY_ID</code> -&gt; {@link CategorizedProblem#getCategoryID()}</li>
+	 * </ul>
+	 * The names must be eligible for marker creation, as defined by <code>IMarker#setAttributes(String[], Object[])</code>, 
+	 * and there must be as many names as values according to {@link #getExtraMarkerAttributeValues()}.
+	 * Note that extra marker attributes will be inserted after default ones (as described in {@link CategorizedProblem#getMarkerType()},
+	 * and thus could be used to override defaults.
+	 * @return the names of the corresponding marker attributes
+	 */
+	public String[] getExtraMarkerAttributeNames();
+
+	/**
+	 * Returns the respective values for the extra marker attributes associated to this problem when persisted into 
+	 * a marker by the JavaBuilder. Each value must correspond to a matching attribute name, as defined by
+	 * {@link #getExtraMarkerAttributeNames()}. 
+	 * The values must be eligible for marker creation, as defined by <code>IMarker#setAttributes(String[], Object[])</code>.
+	 * @return the values of the corresponding extra marker attributes
+	 */
+	public Object[] getExtraMarkerAttributeValues();
+	
+	/**
 	 * List of standard category IDs used by Java problems, more categories will be added 
 	 * in the future.
 	 */
@@ -237,5 +269,7 @@ public interface IProblem {
 	int DiscouragedReference = 202;
 	
 	int Task = 1000;
+	int UndefinedType = 10000;
+	int IsClassPathCorrect = 10001;
 
 }

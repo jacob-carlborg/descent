@@ -165,5 +165,10 @@ public enum TOK implements ITerminalSymbols {
 		this.charArrayValue = value.toCharArray();
 		this.terminalSymbol = terminalSymbol;
 	}
+	
+	@Override
+	public String toString() {
+		return value;
+	}
 
 }

@@ -21,7 +21,7 @@ import org.eclipse.swt.widgets.Text;
 
 //import org.eclipse.jface.text.contentassist.IContentAssistProcessor;
 
-//import org.eclipse.jdt.internal.ui.refactoring.contentassist.ControlContentAssistHelper;
+//import descent.internal.ui.refactoring.contentassist.ControlContentAssistHelper;
 
 /**
  * Dialog field containing a label and a text control.
@@ -176,7 +176,7 @@ public class StringDialogField extends DialogField {
 	}
 	
 	/* (non-Javadoc)
-	 * @see org.eclipse.jdt.internal.ui.wizards.dialogfields.DialogField#refresh()
+	 * @see descent.internal.ui.wizards.dialogfields.DialogField#refresh()
 	 */
 	public void refresh() {
 		super.refresh();

@@ -14,7 +14,7 @@ package descent.core;
 /**
  * Abstract base implementation of all classpath variable initializers.
  * Classpath variable initializers are used in conjunction with the
- * "org.eclipse.jdt.core.classpathVariableInitializer" extension point.
+ * "descent.core.classpathVariableInitializer" extension point.
  * <p>
  * Clients should subclass this class to implement a specific classpath
  * variable initializer. The subclass must have a public 0-argument

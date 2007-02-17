@@ -3,12 +3,20 @@
 <plugin>
 
    <extension
-         id="dnature"
+         id="javanature"
          name="D"
          point="org.eclipse.core.resources.natures">
       <runtime>
          <run class="descent.internal.core.JavaProject"/>
       </runtime>
+   </extension>
+   <extension
+         id="javabuilder"
+         name="Java Builder"
+         point="org.eclipse.core.resources.builders">
+      <builder>
+         <run class="descent.internal.core.builder.JavaBuilder"/>
+      </builder>
    </extension>
 
    <extension
@@ -23,7 +31,26 @@
    <extension
          point="org.eclipse.core.runtime.preferences">
       <initializer class="descent.internal.core.JavaCorePreferenceInitializer"/>
-      <modifier class="org.eclipse.jdt.internal.core.JavaCorePreferenceModifyListener"/>
+      <modifier class="descent.internal.core.JavaCorePreferenceModifyListener"/>
+   </extension>
+   <extension
+         id="problem"
+         name="D problem"
+         point="org.eclipse.core.resources.markers">
+      <super type="org.eclipse.core.resources.problemmarker"/>
+      <super type="org.eclipse.core.resources.textmarker"/>
+      <persistent value="true"/>
+      <attribute name="id"/>
+      <attribute name="flags"/>
+      <attribute name="arguments"/>
+      <attribute name="categoryId"/>
+   </extension>
+   <extension
+         id="task"
+         name="D task"
+         point="org.eclipse.core.resources.markers">
+      <super type="org.eclipse.core.resources.taskmarker"/>
+      <persistent value="true"/>
    </extension>
 
 </plugin>

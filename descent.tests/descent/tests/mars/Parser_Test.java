@@ -90,14 +90,14 @@ public abstract class Parser_Test extends TestCase {
 		assertEquals(errorCode, p.getID());
 		assertTrue(p.isError());
 		assertEquals(start, p.getSourceStart());
-		assertEquals(length, p.getSourceEnd() - p.getSourceStart());
+		assertEquals(length, p.getSourceEnd() - p.getSourceStart() + 1);
 	}
 	
 	protected void assertWarning(IProblem p, int errorCode, int start, int length) {
 		assertEquals(errorCode, p.getID());
 		assertTrue(p.isError());
 		assertEquals(start, p.getSourceStart());
-		assertEquals(length, p.getSourceEnd() - p.getSourceStart());
+		assertEquals(length, p.getSourceEnd() - p.getSourceStart() + 1);
 	}
 
 }

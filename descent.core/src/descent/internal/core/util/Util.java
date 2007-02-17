@@ -24,6 +24,7 @@ import org.eclipse.core.filesystem.IFileStore;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ProjectScope;
+import org.eclipse.core.resources.ResourceAttributes;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -1712,6 +1713,17 @@ public class Util {
 				getFullyQualifiedName(bound, buffer);
 				break;
 				*/
+		}
+	}
+	
+	public static void setReadOnly(IResource resource, boolean readOnly) {
+		ResourceAttributes resourceAttributes = resource.getResourceAttributes();
+		if (resourceAttributes == null) return; // not supported on this platform for this resource
+		resourceAttributes.setReadOnly(readOnly);
+		try {
+			resource.setResourceAttributes(resourceAttributes);
+		} catch (CoreException e) {
+			// ignore
 		}
 	}
 	

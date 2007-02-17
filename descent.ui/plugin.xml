@@ -12,22 +12,6 @@
          <contentTypeBinding contentTypeId="descent.core.dSource"/>
       </editor>
    </extension>
-   <!--
-   <extension
-         point="org.eclipse.ui.decorators">
-      <decorator
-            class="descent.ui.text.outline.DOutlineLightweightLabelDecorator"
-            id="descent.ui.outline.decorator"
-            label="D Outline Decorator"
-            lightweight="true"
-            location="TOP_RIGHT"
-            state="true">
-         <enablement>
-            <objectClass name="descent.core.dom.ASTNode"/>
-         </enablement>
-      </decorator>
-   </extension>
-   -->
    <extension
          point="org.eclipse.ui.newWizards">
       <category
@@ -65,24 +49,431 @@
       <initializer class="descent.internal.ui.JavaUIPreferenceInitializer"/>
    </extension>
    <extension
+         point="org.eclipse.ui.editors.annotationTypes">
+      <type
+            markerSeverity="2"
+            markerType="descent.core.problem"
+            name="descent.ui.error"
+            super="org.eclipse.ui.workbench.texteditor.error"/>
+      <type
+            markerSeverity="1"
+            markerType="descent.core.problem"
+            name="descent.ui.warning"
+            super="org.eclipse.ui.workbench.texteditor.error"/>
+      <type
+            markerSeverity="0"
+            markerType="descent.core.problem"
+            name="descent.ui.info"
+            super="org.eclipse.ui.workbench.texteditor.info"/>
+   </extension>
+   <extension
+         point="org.eclipse.ui.editors.markerAnnotationSpecification">
+      <specification
+            annotationImageProvider="descent.internal.ui.javaeditor.JavaAnnotationImageProvider"
+            annotationType="descent.ui.error"
+            />
+      <specification
+            annotationImageProvider="descent.internal.ui.javaeditor.JavaAnnotationImageProvider"
+            annotationType="descent.ui.warning"
+            />
+      <specification
+            annotationImageProvider="descent.internal.ui.javaeditor.JavaAnnotationImageProvider"
+            annotationType="descent.ui.info"
+            />
+   </extension>
+   <extension
          point="org.eclipse.core.filebuffers.documentSetup">
       <participant
             class="descent.internal.ui.javaeditor.JavaDocumentSetupParticipant"
             contentTypeId="descent.core.dSource"/>
    </extension>
-   
-   <!-- CommonNavigator -->
-   
-	
-   
-   <!--
    <extension
-         id="dbuilder"
-         name="D Project Builder"
-         point="org.eclipse.core.resources.builders">
-      <builder >
-         <run class="descent.ui.builders.DProjectBuilder"/>
-      </builder>
+         point="org.eclipse.ui.contexts">
+      <context
+            description="Editing D Source"
+            id="descent.ui.dEditorScope"
+            name="Editing D Source"
+            parentId="org.eclipse.ui.textEditorScope"/>
    </extension>
-	-->
+   <extension
+         point="org.eclipse.ui.ide.markerSupport">
+      <markerTypeCategory name="D Problems">
+         <markerTypeReference id="descent.core.problem"/>
+      </markerTypeCategory>
+   </extension>
+   <!-- CommonNavigator -->
+	
+	<extension
+			point="org.eclipse.ui.navigator.viewer">
+		<viewerContentBinding viewerId="org.eclipse.ui.navigator.ProjectExplorer">
+			<includes>
+				<contentExtension pattern="descent.java.ui.javaContent" />
+				<contentExtension pattern="descent.java.ui.filters.*" />	
+				<contentExtension pattern="descent.java.ui.javaLinkHelper" />	
+							
+			</includes>
+		</viewerContentBinding>
+	</extension>
+	
+	<extension
+			point="org.eclipse.ui.navigator.navigatorContent">
+		<navigatorContent
+				activeByDefault="true"
+				contentProvider="descent.internal.ui.navigator.JavaNavigatorContentProvider"
+				icon="$nl$/icons/full/eview16/jperspective.gif"
+				id="descent.java.ui.javaContent"
+				labelProvider="descent.internal.ui.navigator.JavaNavigatorLabelProvider"
+				name="%commonNavigatorContentName"
+				priority="high">
+			<triggerPoints>
+				<or>
+					<adapt
+							type="org.eclipse.core.resources.IProject" >
+						<test
+							property="org.eclipse.core.resources.projectNature"
+							value="descent.core.javanature" />
+					</adapt>
+					<instanceof
+							value="org.eclipse.core.resources.IWorkspaceRoot" />
+					<instanceof
+							value="org.eclipse.core.resources.IFolder" />
+					<instanceof
+							value="org.eclipse.core.resources.IFile" />
+					<instanceof
+							value="org.eclipse.core.resources.IStorage" />
+					<instanceof
+							value="descent.core.IJavaProject" />
+					<instanceof
+							value="descent.core.IJavaElement" />
+					<!--
+					<instanceof
+							value="descent.internal.core.JarEntryFile" />
+					-->
+					<instanceof
+							value="descent.core.IClassFile" />
+					<!--
+					<instanceof
+							value="descent.internal.ui.packageview.ClassPathContainer" />
+					-->
+<!--
+					<instanceof
+							value="descent.internal.ui.workingsets.WorkingSetModel" />
+-->
+				</or>
+			</triggerPoints>
+			<possibleChildren>
+				<or>
+					<adapt
+							type="org.eclipse.core.resources.IProject" >
+					</adapt>
+					<instanceof
+							value="org.eclipse.core.resources.IWorkspaceRoot" />
+					<instanceof
+							value="org.eclipse.core.resources.IFolder" />
+					<instanceof
+							value="org.eclipse.core.resources.IFile" />
+					<instanceof
+							value="org.eclipse.core.resources.IStorage" />
+					<instanceof
+							value="descent.core.IJavaProject" />
+					<instanceof
+							value="descent.core.IJavaElement" />
+					<!--
+					<instanceof
+							value="descent.internal.core.JarEntryFile" />
+					-->
+					<instanceof
+							value="descent.core.IClassFile" />
+					<!--
+					<instanceof
+							value="descent.internal.ui.packageview.ClassPathContainer" />
+					-->
+				</or>
+			</possibleChildren>
+			
+			<!--
+			<actionProvider
+					class="descent.internal.ui.navigator.PackageExplorerActionProvider"
+					id="descent.internal.ui.navigator.PackageExplorerActionProvider"
+					> 
+				<enablement>
+					<or>
+					<adapt
+							type="org.eclipse.core.resources.IProject" >
+					</adapt>
+					<instanceof
+							value="org.eclipse.core.resources.IWorkspaceRoot" />
+					<instanceof
+							value="org.eclipse.core.resources.IFolder" />
+					<instanceof
+							value="org.eclipse.core.resources.IFile" />
+					<instanceof
+							value="org.eclipse.core.resources.IStorage" />
+					<instanceof
+							value="descent.core.IJavaProject" />
+					<instanceof
+							value="descent.core.IJavaElement" />
+					<instanceof
+							value="descent.internal.core.JarEntryFile" />
+					<instanceof
+							value="descent.core.IClassFile" />
+					<instanceof
+							value="descent.internal.ui.packageview.ClassPathContainer" /> 
+					<adapt type="java.util.Collection"> 
+						<count value="0" />
+					</adapt>				
+				</or>
+				</enablement>
+			</actionProvider>
+			-->
+			
+		   <actionProvider
+		         class="descent.internal.ui.navigator.PackageExplorerOpenActionProvider"
+		         id="descent.internal.ui.navigator.PackageExplorerOpenActionProvider"
+		         overrides="org.eclipse.ui.navigator.resources.OpenActions"> 
+		   </actionProvider> 
+		   
+		   <!--
+		   <actionProvider
+           class="descent.internal.ui.navigator.JavaEditActionProvider"
+           id="descent.actions.ui.navigator.JavaEditActionProvider"
+           overrides="org.eclipse.ui.navigator.resources.actions.EditActions"/>
+          	-->
+		   
+		   <!--
+		   <actionProvider
+           class="descent.internal.ui.navigator.JavaRefactorActionProvider"
+           id="descent.actions.ui.navigator.JavaRefactorActionProvider"
+           overrides="org.eclipse.ui.navigator.resources.actions.RefactorActions"/>
+           -->
+           
+			<override
+					policy="InvokeAlwaysRegardlessOfSuppressedExt"
+					suppressedExtensionId="org.eclipse.ui.navigator.resourceContent"/>			
+		   					
+			<commonSorter
+					class="descent.ui.JavaElementSorter"
+					id="descent.ui.javaElementSorter"/>
+		   
+		   <commonWizard
+		        menuGroupId="descent.ui.java"
+		        type="new"
+		        wizardId="descent.ui.wizards.NewPackageCreationWizard">
+		     <enablement>
+		        <or>
+		           <instanceof value="descent.core.IPackageFragment"/>
+		           <instanceof value="descent.core.IPackageFragmentRoot"/>
+		           <instanceof value="descent.core.ICompilationUnit"/>
+		           <adapt type="org.eclipse.core.resources.IProject">
+		              <test
+		                    property="org.eclipse.core.resources.projectNature"
+		                    value="descent.core.javanature"/>
+		           </adapt>
+		        </or>
+		     </enablement>
+		  </commonWizard>
+		  <commonWizard
+		        menuGroupId="descent.ui.java"
+		        type="new"
+		        wizardId="descent.ui.wizards.NewClassCreationWizard">
+		     <enablement>
+		        <or>
+		           <instanceof value="descent.core.IPackageFragment"/>
+		           <instanceof value="descent.core.IPackageFragmentRoot"/>
+		           <instanceof value="descent.core.ICompilationUnit"/>
+		           <adapt type="org.eclipse.core.resources.IProject">
+		              <test
+		                    property="org.eclipse.core.resources.projectNature"
+		                    value="descent.core.javanature"/>
+		           </adapt>
+		        </or>
+		     </enablement>
+		  </commonWizard>
+
+   	      <commonWizard
+		        menuGroupId="descent.ui.java"
+		        type="new"
+		        wizardId="descent.ui.wizards.NewInterfaceCreationWizard">
+		     <enablement>
+		        <or>
+		           <instanceof value="descent.core.IPackageFragment"/>
+		           <instanceof value="descent.core.IPackageFragmentRoot"/>
+		           <instanceof value="descent.core.ICompilationUnit"/>
+		           <adapt type="org.eclipse.core.resources.IProject">
+		              <test
+		                    property="org.eclipse.core.resources.projectNature"
+		                    value="descent.core.javanature"/>
+		           </adapt>
+		        </or>
+		     </enablement>
+		  </commonWizard>		  
+		  <commonWizard
+		        menuGroupId="descent.ui.java"
+		        type="new"
+		        wizardId="descent.ui.wizards.NewAnnotationCreationWizard">
+		     <enablement>
+		        <or>
+		           <instanceof value="descent.core.IPackageFragment"/>
+		           <instanceof value="descent.core.IPackageFragmentRoot"/>
+		           <instanceof value="descent.core.ICompilationUnit"/>
+		           <adapt type="org.eclipse.core.resources.IProject">
+		              <test
+		                    property="org.eclipse.core.resources.projectNature"
+		                    value="descent.core.javanature"/>
+		           </adapt>
+		        </or>
+		     </enablement>
+		  </commonWizard>
+
+		    <commonWizard
+		          menuGroupId="descent.ui.java"
+		          type="new"
+		          wizardId="descent.ui.wizards.NewEnumCreationWizard">
+				     <enablement>
+				        <or>
+				           <instanceof value="descent.core.IPackageFragment"/>
+				           <instanceof value="descent.core.IPackageFragmentRoot"/>
+				           <instanceof value="descent.core.ICompilationUnit"/>
+				           <adapt type="org.eclipse.core.resources.IProject">
+				              <test
+				                    property="org.eclipse.core.resources.projectNature"
+				                    value="descent.core.javanature"/>
+				           </adapt>
+				        </or>
+				     </enablement>
+		    </commonWizard>	 
+		    <commonWizard
+		          menuGroupId="descent.ui.java"
+		          type="new"
+		          wizardId="descent.ui.wizards.NewSourceFolderCreationWizard">
+				     <enablement>
+				        <or> 
+				           <instanceof value="descent.core.IPackageFragmentRoot"/> 
+				           <adapt type="org.eclipse.core.resources.IProject">
+				              <test
+				                    property="org.eclipse.core.resources.projectNature"
+				                    value="descent.core.javanature"/>
+				           </adapt>
+				        </or>
+				     </enablement>
+			 </commonWizard>
+		<!--
+	      <dropAssistant
+            class="descent.internal.ui.navigator.JavaDropAdapterAssistant"
+            id="descent.ui.dropAssistant">
+         <possibleDropTargets>
+            <or>
+               <instanceof value="org.eclipse.core.resources.IResource"/>
+               <instanceof value="descent.core.IJavaElement"/>
+            </or>
+         </possibleDropTargets>
+      </dropAssistant>
+      -->
+		   
+		</navigatorContent>
+  		<commonFilter
+		        activeByDefault="false"
+		        class="descent.internal.ui.navigator.NonEssentialEmptyPackageFilter"
+		        name="%HideEmptyPackages.label"
+		        description="%HideEmptyPackages.description"
+		        id="descent.java.ui.filters.HideEmptyPackages"/>
+  		<commonFilter
+		        activeByDefault="true"
+		        class="descent.internal.ui.navigator.NonEssentialEmptyInnerPackageFilter"
+		        name="%HideEmptyInnerPackages.label"
+		        description="%HideEmptyInnerPackages.description"
+		        id="descent.java.ui.filters.HideEmptyInnerPackages"/>
+		<!--
+  		<commonFilter 
+		        class="descent.internal.ui.filters.AnnotationFilter"
+		        name="%HideAnnotation.label"
+		        description="%HideAnnotation.description"
+		        id="descent.java.ui.filters.HideAnnotations"/>
+  		<commonFilter 
+		        class="descent.internal.ui.filters.EnumFilter"
+		        name="%HideEnum.label"
+		        description="%HideEnum.description"
+		        id="descent.java.ui.filters.HideAnnotations"/>
+  		<commonFilter 
+		        class="descent.internal.ui.filters.InterfaceFilter"
+		        name="%HideInterface.label"
+		        description="%HideInterface.description"
+		        id="descent.java.ui.filters.HideInterface"/>		        		        
+  		<commonFilter 
+		        class="descent.internal.ui.filters.FieldsFilter"
+		        name="%HideFields.label"
+		        description="%HideFields.description"
+		        id="descent.java.ui.filters.HideFields"/>
+  		<commonFilter
+		        activeByDefault="true"
+		        class="descent.internal.ui.filters.ImportDeclarationFilter"
+		        name="%HideImportDeclaration.label"
+		        description="%HideImportDeclaration.description"
+		        id="descent.java.ui.filters.HideImportDeclaration"/> 
+  		<commonFilter
+		        activeByDefault="true"
+		        name="%HideInnerClassFiles.label"
+		        description="%HideInnerClassFiles.description"
+		        id="descent.java.ui.filters.HideInnerClassFiles"> 
+	         <filterExpression>
+	         	<and>
+		            <instanceof value="org.eclipse.core.resources.IFile"/>
+	            	<test property="org.eclipse.core.resources.name" value="*$*.class"/>	            
+		        </and>
+	         </filterExpression>		        
+		</commonFilter>		 
+  		<commonFilter 
+		        class="descent.internal.ui.filters.JavaFileFilter"
+		        name="%HideJavaFiles.label"
+		        description="%HideJavaFiles.description"
+		        id="descent.java.ui.filters.HideJavaFiles"/> 		 
+  		<commonFilter 
+		        class="descent.internal.ui.filters.LocalTypesFilter"
+		        name="%HideLocalTypes.label"
+		        description="%HideLocalTypes.description"
+		        id="descent.java.ui.filters.HideLocalTypes"/>    		 
+  		<commonFilter 
+		        class="descent.internal.ui.filters.NonJavaElementFilter"
+		        name="%HideNonJavaElements.label"
+		        description="%HideNonJavaElements.description"
+		        id="descent.java.ui.filters.HideNonJavaElements"/>   		
+  		<commonFilter 
+		        class="descent.internal.ui.filters.NonJavaProjectsFilter"
+		        name="%HideNonJavaProjects.label"
+		        description="%HideNonJavaProjects.description"
+		        id="descent.java.ui.filters.HideNonJavaProjects"/>   
+  		<commonFilter 
+		        class="descent.internal.ui.filters.NonPublicFilter"
+		        name="%HideNonPublic.label"
+		        description="%HideNonPublic.description"
+		        id="descent.java.ui.filters.HideNonPublic"/>   
+  		<commonFilter 
+		        class="descent.internal.ui.filters.NonSharedProjectFilter"
+		        name="%HideNonSharedProjects.label"
+		        description="%HideNonSharedProjects.description"
+		        id="descent.java.ui.filters.HideNonSharedProjects"/>   
+  		<commonFilter
+		        activeByDefault="true"
+		        class="descent.internal.ui.filters.PackageDeclarationFilter"
+		        name="%HidePackageDeclaration.label"
+		        description="%HidePackageDeclaration.description"
+		        id="descent.java.ui.filters.HidePackageDeclaration"/>   
+  		<commonFilter 
+		        class="descent.internal.ui.filters.LibraryFilter"
+		        name="%HideReferencedLibraries.label"
+		        description="%HideReferencedLibraries.description"
+		        id="descent.java.ui.filters.HideReferencedLibraries"/>   
+  		<commonFilter 
+		        class="descent.internal.ui.filters.StaticsFilter"
+		        name="%HideStatics.label"
+		        description="%HideStatics.description"
+		        id="descent.java.ui.filters.HideStatics"/>
+  		<commonFilter
+		        activeByDefault="true"
+		        class="descent.internal.ui.filters.SyntheticMembersFilter"
+		        name="%HideSyntheticMembers.label"
+		        description="%HideSyntheticMembers.description"
+		        id="descent.java.ui.filters.HideSyntheticMembers"/>
+		-->
+	</extension>
 </plugin>

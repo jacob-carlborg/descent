@@ -150,12 +150,13 @@ public class ReconcileWorkingCopyOperation extends JavaModelOperation {
 				ASTParser parser = ASTParser.newParser(this.astLevel);
 				parser.setKind(ASTParser.K_COMPILATION_UNIT);
 				parser.setSource(workingCopy.getContents());
-				this.ast = (descent.core.dom.CompilationUnit) parser.createAST(this.progressMonitor);
 				
-				/* TODO JDT problems
-			    CompilationUnitDeclaration unit = null;
+				descent.core.dom.CompilationUnit unit = (descent.core.dom.CompilationUnit) parser.createAST(this.progressMonitor);
+				
+			    //CompilationUnitDeclaration unit = null;
 			    try {
 			    	// find problems
+			    	/* TODO JDT problems
 					char[] contents = workingCopy.getContents();
 					unit = 
 						CompilationUnitProblemFinder.process(
@@ -166,37 +167,33 @@ public class ReconcileWorkingCopyOperation extends JavaModelOperation {
 							this.astLevel != ICompilationUnit.NO_AST, 
 							this.enableStatementsRecovery,
 							this.progressMonitor);
+					*/
+			    	problemMap.put(new Object(), unit.getProblems());
+			    	
 					if (this.progressMonitor != null) this.progressMonitor.worked(1);
 					
 					// create AST if needed
 					if (this.astLevel != ICompilationUnit.NO_AST && unit != null) {
-						Map options = workingCopy.getJavaProject().getOptions(true);
-						this.ast = 
-							AST.convertCompilationUnit(
-								this.astLevel, 
-								unit, 
-								contents, 
-								options, 
-								true, 
-								workingCopy, 
-								this.progressMonitor);
+						//Map options = workingCopy.getJavaProject().getOptions(true);
+						this.ast = unit;
 						if (this.ast != null) {
 							this.deltaBuilder.delta = new JavaElementDelta(workingCopy);
 							this.deltaBuilder.delta.changedAST(this.ast);
 						}
 						if (this.progressMonitor != null) this.progressMonitor.worked(1);
 					}
-			    } catch (JavaModelException e) {
-			    	if (JavaProject.hasJavaNature(workingCopy.getJavaProject().getProject()))
-			    		throw e;
+			    //} catch (JavaModelException e) {
+				//	if (JavaProject.hasJavaNature(workingCopy.getJavaProject().getProject()))
+				//		throw e;
 			    	// else JavaProject has lost its nature (or most likely was closed/deleted) while reconciling -> ignore
 			    	// (see https://bugs.eclipse.org/bugs/show_bug.cgi?id=100919)
 			    } finally {
+			    	/*
 			        if (unit != null) {
 			            unit.cleanUp();
 			        }
+			        */
 			    }
-			    */
 			} // else working copy not in a Java project
 			return this.ast;
 		} 

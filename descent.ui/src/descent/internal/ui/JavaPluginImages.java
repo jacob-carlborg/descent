@@ -35,7 +35,7 @@ public class JavaPluginImages {
 
 	public static final IPath ICONS_PATH= new Path("$nl$/icons/full"); //$NON-NLS-1$
 	
-	private static final String NAME_PREFIX= "org.eclipse.jdt.ui."; //$NON-NLS-1$
+	private static final String NAME_PREFIX= "descent.ui."; //$NON-NLS-1$
 	private static final int    NAME_PREFIX_LENGTH= NAME_PREFIX.length();
 	
 	// The plug-in registry

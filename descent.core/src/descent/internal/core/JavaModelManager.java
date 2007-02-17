@@ -60,6 +60,7 @@ import org.eclipse.core.runtime.IExtension;
 import org.eclipse.core.runtime.IExtensionPoint;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.ISafeRunnable;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.MultiStatus;
 import org.eclipse.core.runtime.Path;
@@ -68,6 +69,7 @@ import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Plugin;
 import org.eclipse.core.runtime.Preferences;
 import org.eclipse.core.runtime.QualifiedName;
+import org.eclipse.core.runtime.SafeRunner;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.content.IContentTypeManager.ContentTypeChangeEvent;
 import org.eclipse.core.runtime.content.IContentTypeManager.IContentTypeChangeListener;
@@ -104,6 +106,7 @@ import descent.core.JavaCore;
 import descent.core.JavaModelException;
 import descent.core.WorkingCopyOwner;
 import descent.core.compiler.CharOperation;
+import descent.core.compiler.CompilationParticipant;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.util.HashtableOfObjectToInt;
 import descent.internal.core.builder.JavaBuilder;
@@ -263,7 +266,6 @@ public class JavaModelManager implements ISaveParticipant, IContentTypeChangeLis
 		private Object[][] registeredParticipants = null;
 		private HashSet managedMarkerTypes;
 		
-		/* TODO JDT compiler
 		public CompilationParticipant[] getCompilationParticipants(IJavaProject project) {
 			final Object[][] participantsPerSource = getRegisteredParticipants();
 			if (participantsPerSource == NO_PARTICIPANTS)
@@ -299,7 +301,6 @@ public class JavaModelManager implements ISaveParticipant, IContentTypeChangeLis
 				System.arraycopy(result, 0, result = new CompilationParticipant[index], 0, index);
 			return result;
 		}
-		*/
 		
 		public HashSet managedMarkerTypes() {
 			if (this.managedMarkerTypes == null) {

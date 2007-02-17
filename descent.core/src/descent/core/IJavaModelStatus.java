@@ -19,7 +19,7 @@ import org.eclipse.core.runtime.IStatus;
  * wrong.
  * <p>
  * Java model status object are distinguished by their plug-in id:
- * <code>getPlugin</code> returns <code>"org.eclipse.jdt.core"</code>.
+ * <code>getPlugin</code> returns <code>"descent.core"</code>.
  * <code>getCode</code> returns one of the status codes declared in
  * <code>IJavaModelStatusConstants</code>.
  * </p>

@@ -574,7 +574,7 @@ public class CompilationUnit extends ASTNode {
 	}
 	
 	/**
-	 * Sets the Java element (an <code>org.eclipse.jdt.core.ICompilationUnit</code> or an <code>org.eclipse.jdt.core.IClassFile</code>) 
+	 * Sets the Java element (an <code>descent.core.ICompilationUnit</code> or an <code>descent.core.IClassFile</code>) 
 	 * this compilation unit was created from, or <code>null</code> if it was not created from a Java element.
 	 * 
 	 * @param element the Java element this compilation unit was created from
@@ -585,7 +585,7 @@ public class CompilationUnit extends ASTNode {
 	}
 	
 	/**
-	 * The Java element (an <code>org.eclipse.jdt.core.ICompilationUnit</code> or an <code>org.eclipse.jdt.core.IClassFile</code>) 
+	 * The Java element (an <code>descent.core.ICompilationUnit</code> or an <code>descent.core.IClassFile</code>) 
 	 * this compilation unit was created from, or <code>null</code> if it was not created from a Java element.
 	 * 
 	 * @return the Java element this compilation unit was created from, or <code>null</code> if none
@@ -689,7 +689,7 @@ public class CompilationUnit extends ASTNode {
 	 * @param options the table of formatter options
 	 * (key type: <code>String</code>; value type: <code>String</code>);
 	 * or <code>null</code> to use the standard global options
-	 * {@link org.eclipse.jdt.core.JavaCore#getOptions() JavaCore.getOptions()}.
+	 * {@link descent.core.JavaCore#getOptions() JavaCore.getOptions()}.
 	 * @return text edit object describing the changes to the
 	 * document corresponding to the recorded AST modifications
 	 * @exception IllegalArgumentException if the document passed is

@@ -24,7 +24,7 @@ public interface ISourceVersionDependent {
 	 * <code>JavaCore.VERSION_X_Y</code> values.
 	 *
 	 * @param version the new java source version
-	 * @see org.eclipse.jdt.core.JavaCore
+	 * @see descent.core.JavaCore
 	 */
 	void setSourceVersion(String version);
 }

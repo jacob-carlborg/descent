@@ -23,7 +23,7 @@ import org.eclipse.jface.text.source.ISharedTextColors;
  * In order to provide backward compatibility for clients of <code>IColorManager</code>, extension
  * interfaces are used to provide a means of evolution. The following extension interfaces exist:
  * <ul>
- * <li>{@link org.eclipse.jdt.ui.text.IColorManagerExtension} since version 2.0 introducing
+ * <li>{@link descent.ui.text.IColorManagerExtension} since version 2.0 introducing
  * 		the ability to bind and un-bind colors.</li>
  * </ul>
  * </p>
@@ -31,8 +31,8 @@ import org.eclipse.jface.text.source.ISharedTextColors;
  * This interface may be implemented by clients.
  * </p>
  *
- * @see org.eclipse.jdt.ui.text.IColorManagerExtension
- * @see org.eclipse.jdt.ui.text.IJavaColorConstants
+ * @see descent.ui.text.IColorManagerExtension
+ * @see descent.ui.text.IJavaColorConstants
  */
 public interface IColorManager extends ISharedTextColors {
 

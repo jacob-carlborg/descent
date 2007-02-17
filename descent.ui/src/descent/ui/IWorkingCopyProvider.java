@@ -19,7 +19,7 @@ package descent.ui;
  * This interface is not intended to be implemented by clients.
  * </p>
  *
- * @see org.eclipse.jdt.ui.StandardJavaElementContentProvider
+ * @see descent.ui.StandardJavaElementContentProvider
  * 
  * @since 2.0 
  */

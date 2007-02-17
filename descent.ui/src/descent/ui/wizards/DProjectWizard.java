@@ -3,6 +3,7 @@ package descent.ui.wizards;
 import java.net.URI;
 
 import org.eclipse.core.filesystem.URIUtil;
+import org.eclipse.core.resources.ICommand;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
 import org.eclipse.core.resources.IWorkspace;
@@ -81,12 +82,11 @@ public class DProjectWizard extends Wizard implements INewWizard {
 			description.setNatureIds(newNatures);
 			
 			// Add builder
-			/*
 			ICommand[] commands = description.getBuildSpec();
 			boolean found = false;
 
 			for (int i = 0; i < commands.length; ++i) {
-				if (commands[i].getBuilderName().equals(DescentUI.BUILDER_ID)) {
+				if (commands[i].getBuilderName().equals(JavaCore.BUILDER_ID)) {
 					found = true;
 					break;
 				}
@@ -95,7 +95,7 @@ public class DProjectWizard extends Wizard implements INewWizard {
 			if (!found) {
 				// add builder to project
 				ICommand command = description.newCommand();
-				command.setBuilderName(DescentUI.BUILDER_ID);
+				command.setBuilderName(JavaCore.BUILDER_ID);
 				ICommand[] newCommands = new ICommand[commands.length + 1];
 
 				// Add it before other builders.
@@ -103,7 +103,6 @@ public class DProjectWizard extends Wizard implements INewWizard {
 				newCommands[0] = command;
 				description.setBuildSpec(newCommands);
 			}
-			*/
 			
 			project.setDescription(description, null);
 			

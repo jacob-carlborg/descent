@@ -100,7 +100,7 @@ String getElementName();
  * fields.
  * 
  * @return the binding key for this field
- * @see org.eclipse.jdt.core.dom.IBinding#getKey()
+ * @see descent.core.dom.IBinding#getKey()
  * @see BindingKey
  * @since 3.1
  */

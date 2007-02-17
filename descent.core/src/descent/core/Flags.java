@@ -24,7 +24,7 @@ import descent.core.dom.Modifier;
  * Note that the numeric values of these flags match the ones for class files
  * as described in the Java Virtual Machine Specification. The AST class
  * <code>Modifier</code> provides the same functionality as this class, only in
- * the <code>org.eclipse.jdt.core.dom</code> package.
+ * the <code>descent.core.dom</code> package.
  * </p>
  *
  * @see IMember#getFlags()

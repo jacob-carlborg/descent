@@ -290,23 +290,25 @@ public class SourceElementParser extends ASTVisitor {
 	public boolean visit(VariableDeclarationFragment node) {
 		VariableDeclaration var = (VariableDeclaration) node.getParent();
 		
-		FieldInfo info = new FieldInfo();
-		info.annotationPositions = new long[0];
-		info.categories = new char[0][];
-		
-		if (var.fragments().get(0) == node) {
-			info.declarationStart = var.getStartPosition();
-		} else {
-			info.declarationStart = node.getStartPosition();
+		if (var.getParent().getNodeType() == ASTNode.AGGREGATE_DECLARATION) {		
+			FieldInfo info = new FieldInfo();
+			info.annotationPositions = new long[0];
+			info.categories = new char[0][];
+			
+			if (var.fragments().get(0) == node) {
+				info.declarationStart = var.getStartPosition();
+			} else {
+				info.declarationStart = node.getStartPosition();
+			}
+			
+			info.modifiers = getFlags(var.modifiers());
+			info.name = node.getName().getIdentifier().toCharArray();
+			info.nameSourceEnd = node.getName().getStartPosition() + node.getName().getLength() - 1;
+			info.nameSourceStart = node.getName().getStartPosition();
+			info.type = var.getType().toString().toCharArray();
+			
+			requestor.enterField(info);
 		}
-		
-		info.modifiers = getFlags(var.modifiers());
-		info.name = node.getName().getIdentifier().toCharArray();
-		info.nameSourceEnd = node.getName().getStartPosition() + node.getName().getLength() - 1;
-		info.nameSourceStart = node.getName().getStartPosition();
-		info.type = var.getType().toString().toCharArray();
-		
-		requestor.enterField(info);
 		
 		return false;
 	}
@@ -315,11 +317,13 @@ public class SourceElementParser extends ASTVisitor {
 	public void endVisit(VariableDeclarationFragment node) {
 		VariableDeclaration var = (VariableDeclaration) node.getParent();
 		
-		int initializerStart = node.getInitializer() == null ? - 1 : node.getInitializer().getStartPosition();
-		int declarationEnd = node.getName().getStartPosition() + node.getName().getLength() - 1;
-		int declarationSourceEnd = var.getStartPosition() + var.getLength() - 1;
-		
-		requestor.exitField(initializerStart, declarationEnd, declarationSourceEnd);
+		if (var.getParent().getNodeType() == ASTNode.AGGREGATE_DECLARATION) {
+			int initializerStart = node.getInitializer() == null ? - 1 : node.getInitializer().getStartPosition();
+			int declarationEnd = node.getName().getStartPosition() + node.getName().getLength() - 1;
+			int declarationSourceEnd = var.getStartPosition() + var.getLength() - 1;
+			
+			requestor.exitField(initializerStart, declarationEnd, declarationSourceEnd);
+		}
 	}
 	
 }
