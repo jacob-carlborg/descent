@@ -18,6 +18,9 @@ import java.util.Set;
 import descent.core.dom.AST;
 import descent.core.dom.ASTNode;
 import descent.core.dom.Block;
+import descent.core.dom.Modifier;
+import descent.core.dom.TryStatement;
+import descent.core.dom.VariableDeclaration;
 import descent.internal.core.dom.rewrite.RewriteEventStore.CopySourceInfo;
 
 /**
@@ -64,31 +67,21 @@ public final class NodeInfoStore {
 	 * @param nodeType Type of the node to create. Use the type constants in {@link NodeInfoStore}.
 	 * @return Returns a place holder node.
 	 */
+	// TODO rewrite placeholders finish
 	public final ASTNode newPlaceholderNode(int nodeType) {
 	    try {
 		    ASTNode node= this.ast.createInstance(nodeType);
-		    /* TODO JDT Priority
 		    switch (node.getNodeType()) {
-				case ASTNode.FIELD_DECLARATION:
-				    ((FieldDeclaration) node).fragments().add(this.ast.newVariableDeclarationFragment());
+				case ASTNode.VARIABLE_DECLARATION:
+				    ((VariableDeclaration) node).fragments().add(this.ast.newVariableDeclarationFragment());
 				    break;
 				case ASTNode.MODIFIER:
-				    ((Modifier) node).setKeyword(Modifier.ModifierKeyword.ABSTRACT_KEYWORD);
+				    ((Modifier) node).setModifierKeyword(Modifier.ModifierKeyword.ABSTRACT_KEYWORD);
 					break;
 				case ASTNode.TRY_STATEMENT :
 					((TryStatement) node).setFinally(this.ast.newBlock()); // have to set at least a finally block to be legal code
 					break;
-				case ASTNode.VARIABLE_DECLARATION_EXPRESSION :
-				    ((VariableDeclarationExpression) node).fragments().add(this.ast.newVariableDeclarationFragment());
-			    	break;
-				case ASTNode.VARIABLE_DECLARATION_STATEMENT :
-				    ((VariableDeclarationStatement) node).fragments().add(this.ast.newVariableDeclarationFragment());
-		    		break;
-				case ASTNode.PARAMETERIZED_TYPE :
-				    ((ParameterizedType) node).typeArguments().add(this.ast.newWildcardType());
-		    		break;
 			}
-			*/
 		    return node;
 	    } catch (IllegalArgumentException e) {
 	        return null;

@@ -2198,13 +2198,12 @@ public abstract class ASTNode {
 		if (newChild.ast != node.ast) {
 			// new child is from a different AST
 			throw new IllegalArgumentException();
-		}		
-		/* FIXME JDT this breaks the parser
-		if (newChild.getParent() != null) {
+		}	
+		/* see AST.internalParserMode */
+		if (!node.ast.internalParserMode && newChild.getParent() != null) {
 			// new child currently has a different parent
 			throw new IllegalArgumentException();
 		}
-		*/
 		if (cycleCheck && newChild == node.getRoot()) {
 			// inserting new child would create a cycle
 			throw new IllegalArgumentException();

@@ -449,7 +449,7 @@ public void exitField(int initializationStart, int declarationEnd, int declarati
 	setChildren(info);
 	
 	// remember initializer source if field is a constant
-	/* TODO JDT
+	/* TODO JDT initializers
 	if (initializationStart != -1) {
 		int flags = info.flags;
 		Object typeInfo;

@@ -41,8 +41,8 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 
-import descent.internal.util.PixelConverter;
-import descent.internal.util.SWTUtil;
+import descent.internal.ui.util.PixelConverter;
+import descent.internal.ui.util.SWTUtil;
 
 public class DInstalledCompilerBlock implements InstalledCompilerDlgRequestor {
 

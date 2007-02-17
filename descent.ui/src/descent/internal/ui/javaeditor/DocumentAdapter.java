@@ -44,7 +44,7 @@ import descent.core.IBuffer;
 import descent.core.IBufferChangedListener;
 import descent.core.IOpenable;
 import descent.core.JavaModelException;
-import descent.ui.DescentUI;
+import descent.internal.ui.JavaPlugin;
 
 
 /**
@@ -432,7 +432,7 @@ public class DocumentAdapter implements IBuffer, IDocumentListener {
 						existingDelimiters.add(curr);
 					}
 				} catch (BadLocationException e) {
-					DescentUI.log(e);
+					JavaPlugin.log(e);
 				}
 			}
 			if (existingDelimiters.isEmpty()) {
@@ -459,11 +459,11 @@ public class DocumentAdapter implements IBuffer, IDocumentListener {
 							buf.append(' ');
 						buf.append((int)curr.charAt(k));
 					}
-					IStatus status= new Status(IStatus.WARNING, DescentUI.PLUGIN_ID, IStatus.OK, buf.toString(), new Throwable());
-					DescentUI.log(status);
+					IStatus status= new Status(IStatus.WARNING, JavaPlugin.getPluginId(), IStatus.OK, buf.toString(), new Throwable());
+					JavaPlugin.log(status);
 				}
 			} catch (BadLocationException e) {
-				DescentUI.log(e);
+				JavaPlugin.log(e);
 			}
 		}
 	}

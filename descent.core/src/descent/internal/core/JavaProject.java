@@ -353,7 +353,7 @@ public class JavaProject
 	}
 
 	protected void closing(Object info) {
-		/* TODO JDT
+		/* TODO JDT jar
 		// forget source attachment recommendations
 		Object[] children = ((JavaElementInfo)info).children;
 		for (int i = 0, length = children.length; i < length; i++) {
@@ -539,7 +539,7 @@ public class JavaProject
 						root = getPackageFragmentRoot((IResource) target);
 					} else {
 						// external target - only JARs allowed
-						/* TODO JDT
+						/* TODO JDT jar
 						if (JavaModel.isFile(target) && (descent.internal.compiler.util.Util.isArchiveFileName(entryPath.lastSegment()))) {
 							root = new JarPackageFragmentRoot(entryPath, this);
 						}
@@ -663,7 +663,9 @@ public class JavaProject
 	public void configure() throws CoreException {
 
 		// register Java builder
-		// TODO JDT addToBuildSpec(JavaCore.BUILDER_ID);
+		/* TODO JDT builder 
+		addToBuildSpec(JavaCore.BUILDER_ID);
+		*/
 	}
 	/*
 	 * Returns whether the given resource is accessible through the children or the non-Java resources of this project.
@@ -900,7 +902,9 @@ public class JavaProject
 	public void deconfigure() throws CoreException {
 
 		// deregister Java builder
-		// TODO JDT removeFromBuildSpec(JavaCore.BUILDER_ID);
+		/* TODO JDT builder 
+		removeFromBuildSpec(JavaCore.BUILDER_ID);
+		*/
 	}
 
 	/**
@@ -1776,7 +1780,7 @@ public class JavaProject
 			default:
 				// a path ending with .jar/.zip is still ambiguous and could still resolve to a source/lib folder 
 				// thus will try to guess based on existing resource
-				/* TODO JDT
+				/* TODO JDT jar
 				if (descent.internal.compiler.util.Util.isArchiveFileName(path.lastSegment())) {
 					IResource resource = this.project.getWorkspace().getRoot().findMember(path); 
 					if (resource != null && resource.getType() == IResource.FOLDER){
@@ -1800,7 +1804,7 @@ public class JavaProject
 
 		switch (resource.getType()) {
 			case IResource.FILE:
-				/* TODO JDT
+				/* TODO JDT jar
 				if (descent.internal.compiler.util.Util.isArchiveFileName(resource.getName())) {
 					return new JarPackageFragmentRoot(resource, this);
 				} else {
@@ -1820,7 +1824,7 @@ public class JavaProject
 	/**
 	 * @see IJavaProject
 	 */
-	/* TODO JDT
+	/* TODO JDT jar
 	public IPackageFragmentRoot getPackageFragmentRoot(String jarPath) {
 
 		return getPackageFragmentRoot0(JavaProject.canonicalizedPath(new Path(jarPath)));
@@ -1830,7 +1834,7 @@ public class JavaProject
 	/*
 	 * no path canonicalization
 	 */
-	/* TODO JDT
+	/* TODO JDT jar
 	public IPackageFragmentRoot getPackageFragmentRoot0(IPath jarPath) {
 
 		return new JarPackageFragmentRoot(jarPath, this);
@@ -2558,7 +2562,7 @@ public class JavaProject
 	/**
 	 * @see IJavaProject#newEvaluationContext()
 	 */
-	 /* TODO JDT
+	 /* TODO JDT eval
 	public IEvaluationContext newEvaluationContext() {
 		EvaluationContext context = new EvaluationContext();
 		context.setLineSeparator(Util.getLineSeparator(null no existing source, this));
@@ -2586,7 +2590,7 @@ public class JavaProject
 	/*
 	 * Returns a new search name environment for this project. This name environment first looks in the given working copies.
 	 */
-	/* TODO JDT
+	/* TODO JDT search
 	public SearchableEnvironment newSearchableNameEnvironment(ICompilationUnit[] workingCopies) throws JavaModelException {
 		return new SearchableEnvironment(this, workingCopies);
 	}
@@ -2596,7 +2600,7 @@ public class JavaProject
 	 * Returns a new search name environment for this project. This name environment first looks in the working copies
 	 * of the given owner.
 	 */
-	/* TODO JDT
+	/* TODO JDT search
 	public SearchableEnvironment newSearchableNameEnvironment(WorkingCopyOwner owner) throws JavaModelException {
 		return new SearchableEnvironment(this, owner);
 	}
@@ -2605,7 +2609,7 @@ public class JavaProject
 	/**
 	 * @see IJavaProject
 	 */
-	/* TODO JDT
+	/* TODO JDT type hierarchy
 	public ITypeHierarchy newTypeHierarchy(
 		IRegion region,
 		IProgressMonitor monitor)
@@ -2618,7 +2622,7 @@ public class JavaProject
 	/**
 	 * @see IJavaProject
 	 */
-	/* TODO JDT
+	/* TODO JDT type hierarchy
 	public ITypeHierarchy newTypeHierarchy(
 		IRegion region,
 		WorkingCopyOwner owner,
@@ -2639,7 +2643,7 @@ public class JavaProject
 	/**
 	 * @see IJavaProject
 	 */
-	/* TODO JDT
+	/* TODO JDT type hierarchy
 	public ITypeHierarchy newTypeHierarchy(
 		IType type,
 		IRegion region,
@@ -2653,7 +2657,7 @@ public class JavaProject
 	/**
 	 * @see IJavaProject
 	 */
-	/* TODO JDT
+	/* TODO JDT type hierarchy
 	public ITypeHierarchy newTypeHierarchy(
 		IType type,
 		IRegion region,

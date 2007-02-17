@@ -84,7 +84,7 @@ public final class JavaConventions {
 		if (!trimmed.equals(id)) {
 			return null;
 		}
-		/* TODO JDT
+		/* TODO JDT convention for identifier
 		try {
 			SCANNER.setSource(id.toCharArray());
 			int token = SCANNER.getNextToken();

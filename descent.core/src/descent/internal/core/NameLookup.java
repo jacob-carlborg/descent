@@ -265,7 +265,7 @@ public class NameLookup implements SuffixConstants {
 	 */
 	protected boolean acceptType(IType type, int acceptFlags, boolean isSourceType) {
 		return false;
-		/* TODO JDT
+		/* TODO JDT name lookup
 		if (acceptFlags == 0 || acceptFlags == ACCEPT_ALL)
 			return true; // no flags or all flags, always accepted
 		try {
@@ -953,7 +953,7 @@ public class NameLookup implements SuffixConstants {
 	 * Performs type search in a binary package.
 	 */
 	protected void seekTypesInBinaryPackage(String name, IPackageFragment pkg, boolean partialMatch, int acceptFlags, IJavaElementRequestor requestor) {
-		/* TODO JDT
+		/* TODO JDT search in binary
 		long start = -1;
 		if (VERBOSE)
 			start = System.currentTimeMillis();

@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.2"?>
 <plugin>
-
    <extension
          point="org.eclipse.ui.editors">
       <editor
             name="D Editor"
             icon="icons/d.gif"
-            contributorClass="org.eclipse.ui.texteditor.BasicTextEditorActionContributor"
-            class="descent.ui.text.DEditor"
-            id="descent.ui.text.DEditor">
+            contributorClass="descent.internal.ui.javaeditor.CompilationUnitEditorActionContributor"
+            class="descent.internal.ui.javaeditor.CompilationUnitEditor"
+            id="descent.ui.CompilationUnitEditor">
          <contentTypeBinding contentTypeId="descent.core.dSource"/>
       </editor>
    </extension>
+   <!--
    <extension
          point="org.eclipse.ui.decorators">
       <decorator
@@ -27,6 +27,7 @@
          </enablement>
       </decorator>
    </extension>
+   -->
    <extension
          point="org.eclipse.ui.newWizards">
       <category
@@ -58,6 +59,16 @@
             icon="icons/d_ovr.gif"
             id="descent.ui.dProjectNatureImage"
             natureId="descent.core.dnature"/>
+   </extension>
+   <extension
+         point="org.eclipse.core.runtime.preferences">
+      <initializer class="descent.internal.ui.JavaUIPreferenceInitializer"/>
+   </extension>
+   <extension
+         point="org.eclipse.core.filebuffers.documentSetup">
+      <participant
+            class="descent.internal.ui.javaeditor.JavaDocumentSetupParticipant"
+            contentTypeId="descent.core.dSource"/>
    </extension>
    
    <!-- CommonNavigator -->

@@ -12,13 +12,17 @@ package descent.internal.core;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
 
 import descent.core.IJavaElement;
 import descent.core.IJavaElementDelta;
 import descent.core.IParent;
 import descent.core.JavaModelException;
+import descent.core.compiler.CharOperation;
+import descent.internal.core.util.Util;
 
 /**
  * A java element delta biulder creates a java element delta on
@@ -147,7 +151,6 @@ public void buildDeltas() {
 		this.delta.contentChanged();
 	}
 }
-/*
 private boolean equals(char[][][] first, char[][][] second) {
 	if (first == second)
 		return true;
@@ -161,7 +164,6 @@ private boolean equals(char[][][] first, char[][][] second) {
 			return false;
 	return true;
 }
-*/
 /**
  * Finds elements which have been added or changed.
  */
@@ -235,7 +237,7 @@ private void findContentChange(JavaElementInfo oldInfo, JavaElementInfo newInfo,
 	if (oldInfo instanceof MemberElementInfo && newInfo instanceof MemberElementInfo) {
 		if (((MemberElementInfo)oldInfo).getModifiers() != ((MemberElementInfo)newInfo).getModifiers()) {
 			this.delta.changed(newElement, IJavaElementDelta.F_MODIFIERS);
-		} /* else TODO JDT if (oldInfo instanceof SourceMethodElementInfo && newInfo instanceof SourceMethodElementInfo) {
+		} else if (oldInfo instanceof SourceMethodElementInfo && newInfo instanceof SourceMethodElementInfo) {
 			SourceMethodElementInfo oldSourceMethodInfo = (SourceMethodElementInfo)oldInfo;
 			SourceMethodElementInfo newSourceMethodInfo = (SourceMethodElementInfo)newInfo;
 			if (!CharOperation.equals(oldSourceMethodInfo.getReturnTypeName(), newSourceMethodInfo.getReturnTypeName())
@@ -250,9 +252,7 @@ private void findContentChange(JavaElementInfo oldInfo, JavaElementInfo newInfo,
 				this.delta.changed(newElement, IJavaElementDelta.F_CONTENT);
 			}
 		}
-		*/
 	}
-	/* TODO JDT
 	if (oldInfo instanceof SourceTypeElementInfo && newInfo instanceof SourceTypeElementInfo) {
 		SourceTypeElementInfo oldSourceTypeInfo = (SourceTypeElementInfo)oldInfo;
 		SourceTypeElementInfo newSourceTypeInfo = (SourceTypeElementInfo)newInfo;
@@ -291,7 +291,6 @@ private void findContentChange(JavaElementInfo oldInfo, JavaElementInfo newInfo,
 			}
 		}
 	}
-	*/
 }
 /**
  * Adds removed deltas for any handles left in the table

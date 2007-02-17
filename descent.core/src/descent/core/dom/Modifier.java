@@ -124,6 +124,12 @@ public class Modifier extends ASTNode {
 	}
 	
 	/**
+	 * Modifier constant (bit mask, value 0) indicating no modifiers.
+	 * @since 2.0
+	 */
+	public static final int NONE = 0x0000;
+	
+	/**
 	 * "private" modifier constant (bit mask).
 	 */
 	public static final int PRIVATE = 0x0001;

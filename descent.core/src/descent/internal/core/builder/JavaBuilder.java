@@ -5,7 +5,7 @@ import java.io.DataOutputStream;
 
 import org.eclipse.core.resources.IProject;
 
-// TODO replace with real one
+// TODO builder replace with real one
 public class JavaBuilder {
 	
 	public static boolean DEBUG = false;

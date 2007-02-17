@@ -436,7 +436,10 @@ public interface IJavaProject extends IParent, IJavaElement, IOpenable {
 	 * @param jarPath the jars's file system path
 	 * @return a package fragment root for the JAR at the specified file system path
 	 */
-	// TODO JDT IPackageFragmentRoot getPackageFragmentRoot(String jarPath);
+	/* 
+	TODO JDT jar
+	IPackageFragmentRoot getPackageFragmentRoot(String jarPath);
+	*/
 
 	/**
 	 * Returns a package fragment root for the given resource, which
@@ -637,7 +640,7 @@ public interface IJavaProject extends IParent, IJavaElement, IOpenable {
 	 * Creates a new evaluation context.
 	 * @return a new evaluation context.
 	 */
-	/* TODO JDT
+	/* TODO JDT eval
 	IEvaluationContext newEvaluationContext();
 	*/
 
@@ -653,7 +656,7 @@ public interface IJavaProject extends IParent, IJavaElement, IOpenable {
 	 * @return a type hierarchy for all types in the given
 	 * region, considering subtypes within that region
 	 */
-	/* TODO JDT
+	/* TODO JDT type hierarchy
 	ITypeHierarchy newTypeHierarchy(IRegion region, IProgressMonitor monitor)
 		throws JavaModelException;
 	*/
@@ -679,7 +682,7 @@ public interface IJavaProject extends IParent, IJavaElement, IOpenable {
 	 * region, considering subtypes within that region
 	 * @since 3.0
 	 */
-	/* TODO JDT
+	/* TODO JDT type hierarchy
 	ITypeHierarchy newTypeHierarchy(IRegion region, WorkingCopyOwner owner, IProgressMonitor monitor)
 		throws JavaModelException;
 	*/
@@ -699,7 +702,7 @@ public interface IJavaProject extends IParent, IJavaElement, IOpenable {
 	 * @return a type hierarchy for the given type considering
 	 * subtypes in the specified region
 	 */
-	/* TODO JDT
+	/* TODO JDT type hierarchy
 	ITypeHierarchy newTypeHierarchy(
 		IType type,
 		IRegion region,
@@ -731,7 +734,7 @@ public interface IJavaProject extends IParent, IJavaElement, IOpenable {
 	 * subtypes in the specified region
 	 * @since 3.0
 	 */
-	/* TODO JDT
+	/* TODO JDT type hierarchy
 	ITypeHierarchy newTypeHierarchy(
 		IType type,
 		IRegion region,

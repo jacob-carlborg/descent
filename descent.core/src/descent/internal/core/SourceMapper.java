@@ -24,7 +24,7 @@ import org.eclipse.core.runtime.IPath;
  *
  * @see org.eclipse.jdt.internal.core.JarPackageFragment
  * 
- * TODO: replace with real one
+ * TODO binary: replace with real one
  */
 public class SourceMapper {
 	

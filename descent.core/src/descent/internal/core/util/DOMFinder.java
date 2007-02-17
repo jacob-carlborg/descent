@@ -16,9 +16,18 @@ import descent.core.ISourceRange;
 import descent.core.JavaModelException;
 import descent.core.dom.ASTNode;
 import descent.core.dom.ASTVisitor;
+import descent.core.dom.AggregateDeclaration;
 import descent.core.dom.CompilationUnit;
+import descent.core.dom.ConstructorDeclaration;
+import descent.core.dom.EnumDeclaration;
+import descent.core.dom.EnumMember;
+import descent.core.dom.FunctionDeclaration;
+import descent.core.dom.ImportDeclaration;
+import descent.core.dom.ModuleDeclaration;
+import descent.core.dom.VariableDeclarationFragment;
 import descent.internal.core.SourceRefElement;
 
+// TODO JDT model/dom
 public class DOMFinder extends ASTVisitor {
 	
 	public ASTNode foundNode = null;
@@ -26,13 +35,13 @@ public class DOMFinder extends ASTVisitor {
 	
 	private CompilationUnit ast;
 	private SourceRefElement element;
-	//private boolean resolveBinding;
+	private boolean resolveBinding;
 	private int rangeStart = -1, rangeLength = 0;
 	
 	public DOMFinder(CompilationUnit ast, SourceRefElement element, boolean resolveBinding) {
 		this.ast = ast;
 		this.element = element;
-		//this.resolveBinding = resolveBinding;
+		this.resolveBinding = resolveBinding;
 	}
 	
 	protected boolean found(ASTNode node, ASTNode name) {
@@ -55,7 +64,7 @@ public class DOMFinder extends ASTVisitor {
 		return this.foundNode;
 	}
 	
-	/* TODO JDT PRIORITY: this is probably the way IJavaElement are built... probably
+	/*
 	public boolean visit(AnnotationTypeDeclaration node) {
 		if (found(node, node.getName()) && this.resolveBinding) 
 			this.foundBinding = node.resolveBinding();
@@ -85,59 +94,68 @@ public class DOMFinder extends ASTVisitor {
 			this.foundBinding = node.resolveBinding();
 		return true;
 	}
+	*/
 	
-	public boolean visit(EnumConstantDeclaration node) {
-		if (found(node, node.getName()) && this.resolveBinding) 
-			this.foundBinding = node.resolveVariable();
+	public boolean visit(EnumMember node) {
+		if (found(node, node.getName()) && this.resolveBinding) { 
+			// this.foundBinding = node.resolveVariable();
+		}
 		return true;
 	}
 	
 	public boolean visit(EnumDeclaration node) {
-		if (found(node, node.getName()) && this.resolveBinding) 
-			this.foundBinding = node.resolveBinding();
+		if (found(node, node.getName()) && this.resolveBinding) { 
+			// this.foundBinding = node.resolveBinding();
+		}
 		return true;
 	}
 	
 	public boolean visit(ImportDeclaration node) {
-		if (found(node, node) && this.resolveBinding) 
-			this.foundBinding = node.resolveBinding();
+		if (found(node, node) && this.resolveBinding) { 
+			// this.foundBinding = node.resolveBinding();
+		}
 		return true;
 	}
 	
-	public boolean visit(Initializer node) {
+	public boolean visit(ConstructorDeclaration node) {
 		// note that no binding exists for an Initializer
 		found(node, node);
 		return true;
 	}
 	
-	public boolean visit(MethodDeclaration node) {
-		if (found(node, node.getName()) && this.resolveBinding) 
-			this.foundBinding = node.resolveBinding();
+	public boolean visit(FunctionDeclaration node) {
+		if (found(node, node.getName()) && this.resolveBinding) { 
+			// this.foundBinding = node.resolveBinding();
+		}
 		return true;
 	}
 	
-	public boolean visit(PackageDeclaration node) {
-		if (found(node, node) && this.resolveBinding) 
-			this.foundBinding = node.resolveBinding();
+	public boolean visit(ModuleDeclaration node) {
+		if (found(node, node) && this.resolveBinding) { 
+			// this.foundBinding = node.resolveBinding();
+		}
 		return true;
 	}
 	
-	public boolean visit(TypeDeclaration node) {
-		if (found(node, node.getName()) && this.resolveBinding) 
-			this.foundBinding = node.resolveBinding();
+	public boolean visit(AggregateDeclaration node) {
+		if (found(node, node.getName()) && this.resolveBinding) { 
+			// this.foundBinding = node.resolveBinding();
+		}
 		return true;
 	}
 	
+	/*
 	public boolean visit(TypeParameter node) {
 		if (found(node, node.getName()) && this.resolveBinding) 
 			this.foundBinding = node.resolveBinding();
 		return true;
 	}
+	*/
 	
 	public boolean visit(VariableDeclarationFragment node) {						
-		if (found(node, node.getName()) && this.resolveBinding) 
-			this.foundBinding = node.resolveBinding();
+		if (found(node, node.getName()) && this.resolveBinding) { 
+			// this.foundBinding = node.resolveBinding();
+		}
 		return true;
 	}
-	*/
 }

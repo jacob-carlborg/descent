@@ -4,7 +4,7 @@ import java.io.File;
 
 import org.eclipse.core.runtime.IStatus;
 
-import descent.internal.util.StatusInfo;
+import descent.internal.ui.util.StatusInfo;
 
 public class DCompilerType {
 

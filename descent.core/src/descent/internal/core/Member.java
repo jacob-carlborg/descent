@@ -12,6 +12,7 @@ package descent.internal.core;
 
 import java.util.ArrayList;
 
+import descent.core.Flags;
 import descent.core.IBuffer;
 import descent.core.IClassFile;
 import descent.core.ICompilationUnit;
@@ -22,12 +23,12 @@ import descent.core.ISourceRange;
 import descent.core.IType;
 import descent.core.JavaModelException;
 import descent.core.Signature;
+import descent.core.ToolFactory;
 import descent.core.WorkingCopyOwner;
 import descent.core.compiler.IScanner;
 import descent.core.compiler.ITerminalSymbols;
 import descent.core.compiler.InvalidInputException;
 import descent.core.dom.AST;
-import descent.core.dom.ToolFactory;
 import descent.internal.core.util.MementoTokenizer;
 
 /**
@@ -66,7 +67,7 @@ protected static boolean areSimilarMethods(
  * Converts a field constant from the compiler's representation
  * to the Java Model constant representation (Number or String).
  */
-/* TODO JDT
+/* TODO JDT compiler
 protected static Object convertConstant(Constant constant) {
 	if (constant == null)
 		return null;
@@ -130,7 +131,7 @@ public static IMethod[] findMethods(IMethod method, IMethod[] methods) {
 		return result;
 	}
 }
-/* TODO JDT
+/* TODO JDT categories
 public String[] getCategories() throws JavaModelException {
 	IType type = (IType) getAncestor(IJavaElement.TYPE);
 	if (type == null) return CharOperation.NO_STRINGS;
@@ -340,8 +341,8 @@ public boolean isBinary() {
 	return false;
 }
 protected boolean isMainMethod(IMethod method) throws JavaModelException {
+	/* TODO JDT Java -> D */
 	if ("main".equals(method.getElementName()) && Signature.SIG_VOID.equals(method.getReturnType())) { //$NON-NLS-1$
-		/* TODO JDT
 		int flags= method.getFlags();
 		if (Flags.isStatic(flags) && Flags.isPublic(flags)) {
 			String[] paramTypes= method.getParameterTypes();
@@ -350,7 +351,6 @@ protected boolean isMainMethod(IMethod method) throws JavaModelException {
 				return "String[]".equals(Signature.getSimpleName(typeSignature)); //$NON-NLS-1$
 			}
 		}
-		*/
 		return true;
 	}
 	return false;

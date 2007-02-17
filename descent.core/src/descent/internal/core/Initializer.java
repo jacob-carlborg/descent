@@ -12,6 +12,7 @@ package descent.internal.core;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 
+import descent.core.Flags;
 import descent.core.IInitializer;
 import descent.core.IJavaElement;
 import descent.core.IJavaModelStatusConstants;
@@ -105,21 +106,17 @@ protected void toStringInfo(int tab, StringBuffer buffer, Object info, boolean s
 		buffer.append(this.occurrenceCount);
 		buffer.append(">"); //$NON-NLS-1$
 	} else {
-		//try {
+		try {
 			buffer.append("<"); //$NON-NLS-1$
-			/* TODO JDT
 			if (Flags.isStatic(this.getFlags())) {
 				buffer.append("static "); //$NON-NLS-1$
 			}
-			*/
-		buffer.append("initializer #"); //$NON-NLS-1$
-		buffer.append(this.occurrenceCount);
-		buffer.append(">"); //$NON-NLS-1$
-		/*
+			buffer.append("initializer #"); //$NON-NLS-1$
+			buffer.append(this.occurrenceCount);
+			buffer.append(">"); //$NON-NLS-1$
 		} catch (JavaModelException e) {
 			buffer.append("<JavaModelException in toString of " + getElementName()); //$NON-NLS-1$
 		}
-		*/
 	}
 }
 }

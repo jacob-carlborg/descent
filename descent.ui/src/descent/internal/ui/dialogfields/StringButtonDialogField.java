@@ -20,7 +20,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 
-import descent.internal.util.SWTUtil;
+import descent.internal.ui.util.SWTUtil;
 
 /**
  * Dialog field containing a label, text control and a button control.

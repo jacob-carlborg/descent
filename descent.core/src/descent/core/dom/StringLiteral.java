@@ -221,7 +221,7 @@ public class StringLiteral extends Expression {
 	 *    escapes
 	 * @exception IllegalArgumentException if the literal value cannot be converted
 	 */
-	/* TODO JDT
+	/* TODO JDT ast node api
 	public String getLiteralValue() {
 		String s = getEscapedValue();
 		int len = s.length();
@@ -267,7 +267,7 @@ public class StringLiteral extends Expression {
 	 *    embedded escapes
 	 * @exception IllegalArgumentException if the argument is incorrect
 	 */
-	/* TODO JDT
+	/* TODO JDT ast node api
 	public void setLiteralValue(String value) {
 		if (value == null) {
 			throw new IllegalArgumentException();

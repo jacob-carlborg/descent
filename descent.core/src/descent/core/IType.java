@@ -61,7 +61,7 @@ public interface IType extends IMember {
 	 * @since 2.0
 	 * @deprecated Use {@link #codeComplete(char[],int,int,char[][],char[][],int[],boolean,CompletionRequestor)} instead.
 	 */
-	/* TODO JDT
+	/* TODO JDT code completion
 	void codeComplete(
 		char[] snippet,
 		int insertion,
@@ -108,7 +108,7 @@ public interface IType extends IMember {
 	 * @since 3.0
 	 * @deprecated Use {@link #codeComplete(char[],int,int,char[][],char[][],int[],boolean,CompletionRequestor,WorkingCopyOwner)} instead.
 	 */
-	/* TODO JDT
+	/* TODO JDT code completion
 	void codeComplete(
 		char[] snippet,
 		int insertion,
@@ -147,7 +147,7 @@ public interface IType extends IMember {
 	 *		exception occurs while accessing its corresponding resource.
 	 * @since 3.1
 	 */
-	/* TODO JDT
+	/* TODO JDT code completion
 	void codeComplete(
 		char[] snippet,
 		int insertion,
@@ -193,7 +193,7 @@ public interface IType extends IMember {
 	 *		exception occurs while accessing its corresponding resource.
 	 * @since 3.1
 	 */
-	/* TODO JDT
+	/* TODO JDT code completion
 	void codeComplete(
 		char[] snippet,
 		int insertion,
@@ -819,7 +819,7 @@ public interface IType extends IMember {
 	 * @see ITypeHierarchy#store(java.io.OutputStream, IProgressMonitor)
 	 * @since 2.1
 	 */
-	/* TODO JDT
+	/* TODO JDT type hierarchy
 	ITypeHierarchy loadTypeHierachy(InputStream input, IProgressMonitor monitor) throws JavaModelException;
 	*/
 	/**
@@ -831,7 +831,7 @@ public interface IType extends IMember {
 	 *		exception occurs while accessing its corresponding resource.
 	 * @return a type hierarchy for this type containing this type and all of its supertypes
 	 */
-	/* TODO JDT
+	/* TODO JDT type hierarchy
 	ITypeHierarchy newSupertypeHierarchy(IProgressMonitor monitor) throws JavaModelException;
 	*/
 	
@@ -852,7 +852,7 @@ public interface IType extends IMember {
 	 *		exception occurs while accessing its corresponding resource.
 	 * @since 3.0
 	 */
-	/* TODO JDT
+	/* TODO JDT type hierarchy
 	ITypeHierarchy newSupertypeHierarchy(ICompilationUnit[] workingCopies, IProgressMonitor monitor)
 		throws JavaModelException;
 	*/
@@ -875,7 +875,7 @@ public interface IType extends IMember {
 	 * @since 2.0
 	 * @deprecated use #newSupertypeHierarchy(ICompilationUnit[], IProgressMonitor) instead
 	 */
-	/* TODO JDT
+	/* TODO JDT type hierarchy
 	ITypeHierarchy newSupertypeHierarchy(IWorkingCopy[] workingCopies, IProgressMonitor monitor)
 		throws JavaModelException;
 	*/
@@ -898,7 +898,7 @@ public interface IType extends IMember {
 	 *		exception occurs while accessing its corresponding resource.
 	 * @since 3.0
 	 */
-	/* TODO JDT
+	/* TODO JDT type hierarchy
 	ITypeHierarchy newSupertypeHierarchy(WorkingCopyOwner owner, IProgressMonitor monitor)
 		throws JavaModelException;
 	*/
@@ -916,7 +916,7 @@ public interface IType extends IMember {
 	 * this type, all of its supertypes, and all its subtypes 
 	 * in the context of the given project
 	 */
-	/* TODO JDT
+	/* TODO JDT type hierarchy
 	ITypeHierarchy newTypeHierarchy(IJavaProject project, IProgressMonitor monitor) throws JavaModelException;
 	*/
 	
@@ -942,7 +942,7 @@ public interface IType extends IMember {
 	 * in the context of the given project
 	 * @since 3.0
 	 */
-	/* TODO JDT
+	/* TODO JDT type hierarchy
 	ITypeHierarchy newTypeHierarchy(IJavaProject project, WorkingCopyOwner owner, IProgressMonitor monitor) throws JavaModelException;
 	*/
 
@@ -956,7 +956,7 @@ public interface IType extends IMember {
 	 * @return a type hierarchy for this type containing
 	 * this type, all of its supertypes, and all its subtypes in the workspace
 	 */
-	/* TODO JDT
+	/* TODO JDT type hierarchy
 	ITypeHierarchy newTypeHierarchy(IProgressMonitor monitor) throws JavaModelException;
 	*/
 	
@@ -977,7 +977,7 @@ public interface IType extends IMember {
 	 *		exception occurs while accessing its corresponding resource.
 	 * @since 3.0
 	 */
-	/* TODO JDT
+	/* TODO JDT type hierarchy
 	ITypeHierarchy newTypeHierarchy(ICompilationUnit[] workingCopies, IProgressMonitor monitor) throws JavaModelException;
 	*/
 	
@@ -999,7 +999,7 @@ public interface IType extends IMember {
 	 * @since 2.0
 	 * @deprecated use #newTypeHierarchy(ICompilationUnit[], IProgressMonitor) instead
 	 */
-	/* TODO JDT
+	/* TODO JDT type hierarchy
 	ITypeHierarchy newTypeHierarchy(IWorkingCopy[] workingCopies, IProgressMonitor monitor) throws JavaModelException;
 	*/
 	
@@ -1022,7 +1022,7 @@ public interface IType extends IMember {
 	 *		exception occurs while accessing its corresponding resource.
 	 * @since 3.0
 	 */
-	/* TODO JDT
+	/* TODO JDT type hierarchy
 	ITypeHierarchy newTypeHierarchy(WorkingCopyOwner owner, IProgressMonitor monitor) throws JavaModelException;
 	*/
 	

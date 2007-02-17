@@ -176,7 +176,7 @@ public class SourceElementParser extends ASTVisitor {
 	
 	@Override
 	public boolean visit(ImportDeclaration node) {
-		// TODO this is the "Java like" case, update it to D
+		// TODO Java -> D
 		if (node.imports().size() == 1) {
 			Import imp = node.imports().get(0);
 			if (imp.getAlias() == null && imp.selectiveImports().size() == 0) {
@@ -188,7 +188,7 @@ public class SourceElementParser extends ASTVisitor {
 	
 	@Override
 	public boolean visit(AggregateDeclaration node) {
-		// TODO this is the "Java like" case, update it to D
+		// TODO Java -> D
 		// Also, since the base class notation in D dosen't distinguis between
 		// classes and interfaces, let's assume they are all interfaces for the moment
 		TypeInfo info = new TypeInfo();

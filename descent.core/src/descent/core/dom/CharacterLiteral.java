@@ -214,7 +214,7 @@ public class CharacterLiteral extends Expression {
 	 *    escapes
 	 * @exception IllegalArgumentException if the literal value cannot be converted
 	 */
-	/* TODO JDT
+	/* TODO JDT ast node api
 	public char charValue() {
 		Scanner scanner = this.ast.scanner;
 		char[] source = escapedValue.toCharArray();
@@ -315,7 +315,7 @@ public class CharacterLiteral extends Expression {
 	 * 
 	 * @param value the character value
 	 */
-	/* TODO JDT
+	/* TODO JDT ast node api
 	public void setCharValue(char value) {
 		StringBuffer b = new StringBuffer(3);
 		

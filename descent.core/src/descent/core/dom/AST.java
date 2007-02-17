@@ -13,10 +13,12 @@ package descent.core.dom;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
+import java.util.StringTokenizer;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.text.edits.TextEdit;
 
 import descent.core.JavaCore;
+import descent.core.ToolFactory;
 import descent.core.compiler.IScanner;
 
 
@@ -146,6 +148,15 @@ public final class AST {
 	 * Default value of <code>flag<code> when a new node is created.
 	 */
 	private int defaultNodeFlag = 0;
+	
+	/**
+	 * This flag is a workaround for the following problem:
+	 * the parser build the AST nodes in a way that ASTNode.checkNewChild
+	 * fails sometimes. This flag is set to true by ASTParser to
+	 * bypass certain checks. After the parsing, the flag is set
+	 * back to false.
+	 */
+	boolean internalParserMode = false;
 	
 	/**
 	 * Creates a new Java abstract syntax tree
@@ -569,7 +580,7 @@ public final class AST {
 	 * 
 	 * @return the binding resolver for this AST
 	 */
-	/* TODO JDT
+	/* TODO JDT binding
 	BindingResolver getBindingResolver() {
 		return this.resolver;
 	}
@@ -1651,6 +1662,64 @@ public final class AST {
 		}
 		return result;
 	}
+	
+	/**
+	 * Creates and returns a new unparented name node for the given name.
+	 * The name string must consist of 1 or more name segments separated 
+	 * by single dots '.'. Returns a {@link QualifiedName} if the name has
+	 * dots, and a {@link SimpleName} otherwise. Each of the name
+	 * segments should be legal Java identifiers (this constraint may or may 
+	 * not be enforced), and there must be at least one name segment.
+	 * The string must not contains white space, '&lt;', '&gt;',
+	 * '[', ']', or other any other characters that are not
+	 * part of the Java identifiers or separating '.'s.
+	 * 
+	 * @param qualifiedName string consisting of 1 or more name segments,
+	 * each of which is a legal Java identifier, separated  by single dots '.'
+	 * @return a new unparented name node
+	 * @exception IllegalArgumentException if:
+	 * <ul>
+	 * <li>the string is empty</li>
+	 * <li>the string begins or ends in a '.'</li>
+	 * <li>the string has adjacent '.'s</li>
+	 * <li>the segments between the '.'s are not valid Java identifiers</li>
+	 * </ul>
+	 * @since 3.1
+	 */
+	public Name newName(String qualifiedName) {
+		StringTokenizer t = new StringTokenizer(qualifiedName, ".", true); //$NON-NLS-1$
+		Name result = null;
+		// balance is # of name tokens - # of period tokens seen so far
+		// initially 0; finally 1; should never drop < 0 or > 1
+		int balance = 0;
+		while(t.hasMoreTokens()) {
+			String s = t.nextToken();
+			if (s.indexOf('.') >= 0) {
+				// this is a delimiter
+				if (s.length() > 1) {
+					// too many dots in a row
+					throw new IllegalArgumentException();
+				}
+				balance--;
+				if (balance < 0) {
+					throw new IllegalArgumentException();
+				}
+			} else {
+				// this is an identifier segment
+				balance++;
+				SimpleName name = newSimpleName(s);
+				if (result == null) {
+					result = name;
+				} else {
+					result = newQualifiedName(result, name);
+				}
+			}
+		}
+		if (balance != 1) {
+			throw new IllegalArgumentException();
+		}
+		return result;
+	}
 
 	/**
 	 * Creates an unparented qualified type node owned by this AST.
@@ -2051,6 +2120,16 @@ public final class AST {
 		
 		VariableDeclaration node = new VariableDeclaration(this);
 		node.fragments().add(fragment);
+		return node;
+	}
+	
+	/**
+	 * Creates an unparented variable declaration fragment node owned by this AST.
+	 * 
+	 * @return the new unparented variable declaration fragment node
+	 */
+	public VariableDeclarationFragment newVariableDeclarationFragment() {
+		VariableDeclarationFragment node = new VariableDeclarationFragment(this);
 		return node;
 	}
 

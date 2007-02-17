@@ -3,8 +3,6 @@ package descent.tests.rewrite;
 import org.eclipse.jface.text.Document;
 import org.eclipse.text.edits.TextEdit;
 
-import descent.core.compiler.IScanner;
-import descent.core.compiler.ITerminalSymbols;
 import descent.core.dom.AST;
 import descent.core.dom.AggregateDeclaration;
 import descent.core.dom.Assignment;
@@ -16,10 +14,10 @@ import descent.core.dom.FunctionDeclaration;
 import descent.core.dom.Initializer;
 import descent.core.dom.Statement;
 import descent.core.dom.TemplateParameter;
-import descent.core.dom.ToolFactory;
 import descent.core.dom.Type;
 import descent.core.dom.VariableDeclaration;
 import descent.tests.mars.Parser_Test;
+import descent.tests.utils.Util;
 
 public abstract class AbstractRewriteTest extends Parser_Test {
 	
@@ -97,35 +95,7 @@ public abstract class AbstractRewriteTest extends Parser_Test {
 	}
 	
 	protected void assertEqualsTokenByToken(String document1, String document2) throws Exception {
-		IScanner scanner1 = ToolFactory.createScanner(true, true, false, false, AST.D1);
-		IScanner scanner2 = ToolFactory.createScanner(true, true, false, false, AST.D1);
-		
-		scanner1.setSource(document1.toCharArray());
-		scanner2.setSource(document2.toCharArray());
-		
-		int token1 = scanner1.getNextToken();
-		int token2 = scanner2.getNextToken();
-		
-		try {
-			while(token1 == token2) {
-				if (token1 == ITerminalSymbols.TokenNameEOF) {
-					return;
-				}
-				assertEquals(scanner1.getRawTokenSource(), scanner2.getRawTokenSource());
-				
-				token1 = scanner1.getNextToken();
-				token2 = scanner2.getNextToken();
-			}
-		} catch (Throwable t) {
-		}
-		fail("'" + document1 + "' is not equal to '" + document2 + "'");
-	}
-	
-	protected void assertEquals(char[] s1, char[] s2) {
-		assertEquals(s1.length, s2.length);
-		for(int i = 0; i < s1.length; i++) {
-			assertEquals(s1[i], s2[i]);
-		}
+		assertTrue(Util.equalsTokenByToken(document1, document2));
 	}
 
 }

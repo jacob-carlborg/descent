@@ -269,6 +269,11 @@ public final class Flags {
 		return (flags & AccScope) != 0;
 	}
 	
+	// TODO JDT flags
+	public static boolean isEnum(int flags) {
+		return false;
+	}
+	
 	/**
 	 * Returns a standard string describing the given modifier flags.
 	 * @param flags the flags

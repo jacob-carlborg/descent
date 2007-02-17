@@ -8,7 +8,7 @@ public enum TOK implements ITerminalSymbols {
 	// Other
 	TOKlparen("(", TokenNameLPAREN), TOKrparen(")", TokenNameRPAREN), 
 	TOKlbracket("[", TokenNameLBRACKET), TOKrbracket("]", TokenNameRBRACKET), 
-	TOKlcurly("{", TokenNameLCURLY), TOKrcurly("}", TokenNameRCURLY), 
+	TOKlcurly("{", TokenNameLBRACE), TOKrcurly("}", TokenNameRBRACE), 
 	TOKcolon(":", TokenNameCOLON), TOKneg("!", TokenNameNOT), 
 	TOKsemicolon(";", TokenNameSEMICOLON), TOKdotdotdot("...", TokenNameDOT_DOT_DOT), 
 	TOKeof("EOF", TokenNameEOF), TOKcast("cast", TokenNamecast), 

@@ -21,7 +21,7 @@ import descent.core.ICompilationUnit;
 import descent.core.IJavaProject;
 import descent.core.JavaCore;
 import descent.core.WorkingCopyOwner;
-import descent.core.compiler.IScanner;
+import descent.internal.core.DefaultWorkingCopyOwner;
 
 /**
  * A D language parser for creating abstract syntax trees (ASTs).
@@ -80,7 +80,7 @@ public class ASTParser {
 	 * Kind constant used to request that the source be parsed
 	 * as a sequence of class body declarations.
 	 */
-	//public static final int K_DECLARATIONS = 0x04;
+	public static final int K_DECLARATIONS = 0x04;
 	
 	/**
 	 * Kind constant used to request that the source be parsed
@@ -125,12 +125,12 @@ public class ASTParser {
 	/**
 	 * Compiler options. Defaults to JavaCore.getOptions().
 	 */
-	//private Map compilerOptions;
+	private Map compilerOptions;
 	
 	/**
 	 * Request for bindings. Defaults to <code>false</code>.
      */
-	//private boolean resolveBindings;
+	private boolean resolveBindings;
 
 	/**
 	 * Request for a partial AST. Defaults to <code>false</code>.
@@ -140,7 +140,7 @@ public class ASTParser {
 	/**
 	 * Request for a statements recovery. Defaults to <code>false</code>.
      */
-	//private boolean statementsRecovery;
+	private boolean statementsRecovery;
 	
 	/**
 	 * The focal point for a partial AST request.
@@ -180,19 +180,19 @@ public class ASTParser {
     /**
      * Working copy owner. Defaults to primary owner.
      */
-	//private WorkingCopyOwner workingCopyOwner = DefaultWorkingCopyOwner.PRIMARY;
+	private WorkingCopyOwner workingCopyOwner = DefaultWorkingCopyOwner.PRIMARY;
 	
     /**
 	 * Java project used to resolve names, or <code>null</code> if none.
      * Defaults to none.
      */
-	//private IJavaProject project = null;
+	private IJavaProject project = null;
 	
     /**
 	 * Name of the compilation unit for resolving bindings, or 
 	 * <code>null</code> if none. Defaults to none.
      */
-	//private String unitName = null; 
+	private String unitName = null; 
 
  	/**
 	 * Creates a new AST parser for the given API level.
@@ -217,20 +217,20 @@ public class ASTParser {
 	private void initializeDefaults() {
 		this.astKind = K_COMPILATION_UNIT;
 		this.rawSource = null;
-		// TODO JDT this.classFileSource = null;
+		/* TODO JDT binary 
+		this.classFileSource = null;
+		*/
 		this.compilationUnitSource = null;
-		//this.resolveBindings = false;
+		this.resolveBindings = false;
 		this.sourceLength = -1;
 		this.sourceOffset = 0;
-		//this.workingCopyOwner = DefaultWorkingCopyOwner.PRIMARY;
-		//this.unitName = null;
-		//this.project = null;
+		this.workingCopyOwner = DefaultWorkingCopyOwner.PRIMARY;
+		this.unitName = null;
+		this.project = null;
 		//this.partial = false;
-		/* TODO JDT
 		Map options = JavaCore.getOptions();
 		options.remove(JavaCore.COMPILER_TASK_TAGS); // no need to parse task tags
 		this.compilerOptions = options;
-		*/
 	}
 	   
 	/**
@@ -260,13 +260,13 @@ public class ASTParser {
 	 */
 	public void setCompilerOptions(Map options) {
 		if (options == null) {
-			// TODO JDT options = JavaCore.getOptions();
+			options = JavaCore.getOptions();
 		} else {
 			// copy client's options so as to not do any side effect on them
 			options = new HashMap(options);
 		}
-		// TODO JDT options.remove(JavaCore.COMPILER_TASK_TAGS); // no need to parse task tags
-		//this.compilerOptions = options;
+		options.remove(JavaCore.COMPILER_TASK_TAGS); // no need to parse task tags
+		this.compilerOptions = options;
 	}
 	
 	/**
@@ -318,11 +318,9 @@ public class ASTParser {
 	 * @param bindings <code>true</code> if bindings are wanted, 
 	 *   and <code>false</code> if bindings are not of interest
 	 */
-	/*
 	public void setResolveBindings(boolean bindings) {
 	  this.resolveBindings = bindings;
 	}
-	*/
 	
 	/**
      * Requests an abridged abstract syntax tree. 
@@ -441,7 +439,7 @@ public class ASTParser {
 	 */
 	public void setKind(int kind) {
 	    if ((kind != K_COMPILATION_UNIT)
-		    //&& (kind != K_DECLARATIONS)
+		    && (kind != K_DECLARATIONS)
 		    && (kind != K_EXPRESSION)
 		    && (kind != K_STATEMENT)
 		    && (kind != K_INITIALIZER)
@@ -461,7 +459,9 @@ public class ASTParser {
 		this.rawSource = source;
 		// clear the others
 		this.compilationUnitSource = null;
-		// TODO JDT this.classFileSource = null;
+		/* TODO JDT binary 
+		this.classFileSource = null;
+		*/
 	}
 
 	/**
@@ -477,12 +477,14 @@ public class ASTParser {
 		this.compilationUnitSource = source;
 		// clear the others
 		this.rawSource = null;
-		// TODO JDT this.classFileSource = null;
+		/* TODO JDT binary 
+		this.classFileSource = null;
+		*/
 		if (source != null) {
-			//this.project = source.getJavaProject();
-			//Map options = this.project.getOptions(true);
-			// TODO JDT options.remove(JavaCore.COMPILER_TASK_TAGS); // no need to parse task tags
-			//this.compilerOptions = options;
+			this.project = source.getJavaProject();
+			Map options = this.project.getOptions(true);
+			options.remove(JavaCore.COMPILER_TASK_TAGS); // no need to parse task tags
+			this.compilerOptions = options;
 		}
 	}
 	
@@ -497,7 +499,7 @@ public class ASTParser {
 	 * @param source the Java model class file whose corresponding source code
      * is to be parsed, or <code>null</code> if none
      */
-	/* TODO JDT
+	/* TODO JDT binary
 	public void setSource(IClassFile source) {
 		this.classFileSource = source;
 		// clear the others
@@ -542,11 +544,9 @@ public class ASTParser {
 	 *   
 	 * @since 3.2
 	 */
-	/*
 	public void setStatementsRecovery(boolean enabled) {
 		this.statementsRecovery = enabled;
 	}
-	*/
 	
     /**
      * Sets the working copy owner using when resolving bindings, where
@@ -555,7 +555,6 @@ public class ASTParser {
 	 * @param owner the owner of working copies that take precedence over underlying 
 	 *   compilation units, or <code>null</code> if the primary owner should be used
      */
-	/*
 	public void setWorkingCopyOwner(WorkingCopyOwner owner) {
 	    if (owner == null) {
 			this.workingCopyOwner = DefaultWorkingCopyOwner.PRIMARY;
@@ -563,7 +562,6 @@ public class ASTParser {
 			this.workingCopyOwner = owner;
 	 	}
 	}
-	*/
 
 	/**
      * Sets the name of the compilation unit that would hypothetically contains
@@ -584,11 +582,9 @@ public class ASTParser {
 	 * @param unitName the name of the compilation unit that would contain the source
 	 *    string, or <code>null</code> if none
      */
-	/*
 	public void setUnitName(String unitName) {
 		this.unitName = unitName;
 	}
-	*/
 	
 	/**
 	 * Sets the Java project used when resolving bindings.
@@ -609,16 +605,14 @@ public class ASTParser {
 	 * @param project the Java project used to resolve names, or 
 	 *    <code>null</code> if none
 	 */
-	/*
 	public void setProject(IJavaProject project) {
 		this.project = project;
 		if (project != null) {
-			// Map options = project.getOptions(true);
-			// TODO JDT options.remove(JavaCore.COMPILER_TASK_TAGS); // no need to parse task tags
-			// this.compilerOptions = options;
+			Map options = project.getOptions(true);
+			options.remove(JavaCore.COMPILER_TASK_TAGS); // no need to parse task tags
+			this.compilerOptions = options;
 		}
 	}
-	*/
 	
 	/**
      * Creates an abstract syntax tree.
@@ -645,8 +639,6 @@ public class ASTParser {
 		   	  throw new IllegalStateException("source not specified"); //$NON-NLS-1$
 		   }
 			result = internalCreateAST(monitor);
-		} catch (Exception e) {
-	   		e.printStackTrace();
 		} finally {
 	   	   // re-init defaults to allow reuse (and avoid leaking)
 	   	   initializeDefaults();
@@ -718,7 +710,7 @@ public class ASTParser {
 	 * are insufficient, contradictory, or otherwise unsupported
 	 * @since 3.1
      */
-	/* TODO JDT
+	/* TODO JDT other
 	public void createASTs(ICompilationUnit[] compilationUnits, String[] bindingKeys, ASTRequestor requestor, IProgressMonitor monitor) {
 		try {
 			if (this.resolveBindings) {
@@ -774,7 +766,7 @@ public class ASTParser {
 	 * are insufficient, contradictory, or otherwise unsupported
 	 * @since 3.1
      */
-	/* TODO JDT
+	/* TODO JDT binding
 	public IBinding[] createBindings(IJavaElement[] elements, IProgressMonitor monitor) {
 		try {
 			if (this.project == null)
@@ -793,53 +785,60 @@ public class ASTParser {
 		// Mark all nodes created by the parser as originals
 		int savedDefaultNodeFlag = ast.getDefaultNodeFlag();
 		ast.setDefaultNodeFlag(ASTNode.ORIGINAL);
+		ast.internalParserMode = true;
 		
+		char[] source;
 		if (this.rawSource != null) {
 			if (this.sourceOffset + this.sourceLength > this.rawSource.length) {
 			    throw new IllegalStateException();
 			}
-			Parser parser = new Parser(ast, rawSource, sourceOffset, sourceLength == -1 ? rawSource.length : sourceLength);
-			ASTNode result = null;
-			
-			//boolean needToResolveBindings = this.resolveBindings;
-			switch(this.astKind) {
-			case K_INITIALIZER :
-				result = parser.parseInitializer();
-				break;
-			case K_EXPRESSION :
-				result = parser.parseExpression();
-				break;
-			case K_STATEMENT :
-				result = parser.parseStatement(0);
-				break;
-			case K_COMPILATION_UNIT :
-				PublicScanner scanner = new PublicScanner(true, true, true, true, ast.apiLevel);
-				scanner.setLexerAndSource(parser, rawSource);
-				
-				List<Declaration> declDefs = parser.parseModule();
-				if (declDefs != null) {
-					parser.compilationUnit.declarations().addAll(declDefs);
-				}
-				parser.compilationUnit.setSourceRange(0, rawSource.length);
-				parser.compilationUnit.setCommentTable(parser.comments.toArray(new Comment[parser.comments.size()]));
-				parser.compilationUnit.setPragmaTable(parser.pragmas.toArray(new Pragma[parser.pragmas.size()]));
-				parser.compilationUnit.setLineEndTable(parser.getLineEnds());
-				parser.compilationUnit.initCommentMapper(scanner);
-				
-				parser.compilationUnit.problems = parser.problems;
-				result = parser.compilationUnit;
-				
-				result.ast.setOriginalModificationCount(result.ast.modificationCount());
-				break;
-			default:
-				throw new IllegalStateException();
-			}
-			
-			ast.setDefaultNodeFlag(savedDefaultNodeFlag);
-			return result;
+			source = rawSource;
+		} else if (this.compilationUnitSource != null) {
+			source = ((descent.internal.compiler.env.ICompilationUnit) compilationUnitSource).getContents();
 		} else {
-			throw new RuntimeException("Not yet implemented");
+			throw new IllegalStateException();
 		}
 		
+		Parser parser = new Parser(ast, source, sourceOffset, sourceLength == -1 ? source.length : sourceLength);
+		ASTNode result = null;
+		
+		//boolean needToResolveBindings = this.resolveBindings;
+		switch(this.astKind) {
+		case K_INITIALIZER :
+			result = parser.parseInitializer();
+			break;
+		case K_EXPRESSION :
+			result = parser.parseExpression();
+			break;
+		case K_STATEMENT :
+			result = parser.parseStatement(0);
+			break;
+		case K_COMPILATION_UNIT :
+		case K_DECLARATIONS:
+			PublicScanner scanner = new PublicScanner(true, true, true, true, ast.apiLevel);
+			scanner.setLexerAndSource(parser, source);
+			
+			List<Declaration> declDefs = parser.parseModule();
+			if (declDefs != null) {
+				parser.compilationUnit.declarations().addAll(declDefs);
+			}
+			parser.compilationUnit.setSourceRange(0, source.length);
+			parser.compilationUnit.setCommentTable(parser.comments.toArray(new Comment[parser.comments.size()]));
+			parser.compilationUnit.setPragmaTable(parser.pragmas.toArray(new Pragma[parser.pragmas.size()]));
+			parser.compilationUnit.setLineEndTable(parser.getLineEnds());
+			parser.compilationUnit.initCommentMapper(scanner);
+			
+			parser.compilationUnit.problems = parser.problems;
+			result = parser.compilationUnit;
+			
+			result.ast.setOriginalModificationCount(result.ast.modificationCount());		
+			break;
+		default:
+			throw new IllegalStateException();
+		}
+		
+		ast.setDefaultNodeFlag(savedDefaultNodeFlag);
+		ast.internalParserMode = false;
+		return result;
 	}
 }

@@ -6,7 +6,7 @@ import org.eclipse.core.runtime.IPath;
 
 import descent.internal.core.JavaProject;
 
-// TODO JDT implement with real one
+// TODO JDT index manager: implement with real one
 public class IndexManager {
 
 	public void removeIndex(IPath entryPath) {		

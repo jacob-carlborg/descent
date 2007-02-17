@@ -60,7 +60,7 @@ protected void closing(Object info) throws JavaModelException {
  * @see IType
  * @deprecated
  */
-/* TODO JDT
+/* TODO JDT code completion
 public void codeComplete(char[] snippet,int insertion,int position,char[][] localVariableTypeNames,char[][] localVariableNames,int[] localVariableModifiers,boolean isStatic,ICompletionRequestor requestor) throws JavaModelException {
 	codeComplete(snippet, insertion, position, localVariableTypeNames, localVariableNames, localVariableModifiers, isStatic, requestor, DefaultWorkingCopyOwner.PRIMARY);
 }
@@ -69,7 +69,7 @@ public void codeComplete(char[] snippet,int insertion,int position,char[][] loca
  * @see IType
  * @deprecated
  */
-/* TODO JDT
+/* TODO JDT code completion
 public void codeComplete(char[] snippet,int insertion,int position,char[][] localVariableTypeNames,char[][] localVariableNames,int[] localVariableModifiers,boolean isStatic,ICompletionRequestor requestor, WorkingCopyOwner owner) throws JavaModelException {
 	if (requestor == null) {
 		throw new IllegalArgumentException("Completion requestor cannot be null"); //$NON-NLS-1$
@@ -81,7 +81,7 @@ public void codeComplete(char[] snippet,int insertion,int position,char[][] loca
 /**
  * @see IType
  */
-/* TODO JDT
+/* TODO JDT code completion
 public void codeComplete(char[] snippet,int insertion,int position,char[][] localVariableTypeNames,char[][] localVariableNames,int[] localVariableModifiers,boolean isStatic,CompletionRequestor requestor) throws JavaModelException {
 	codeComplete(snippet, insertion, position, localVariableTypeNames, localVariableNames, localVariableModifiers, isStatic, requestor, DefaultWorkingCopyOwner.PRIMARY);
 }
@@ -89,7 +89,7 @@ public void codeComplete(char[] snippet,int insertion,int position,char[][] loca
 /**
  * @see IType
  */
-/* TODO JDT
+/* TODO JDT code completion
 public void codeComplete(char[] snippet,int insertion,int position,char[][] localVariableTypeNames,char[][] localVariableNames,int[] localVariableModifiers,boolean isStatic,CompletionRequestor requestor, WorkingCopyOwner owner) throws JavaModelException {
 	if (requestor == null) {
 		throw new IllegalArgumentException("Completion requestor cannot be null"); //$NON-NLS-1$
@@ -127,57 +127,45 @@ public void codeComplete(char[] snippet,int insertion,int position,char[][] loca
  * @see IType
  */
 public IField createField(String contents, IJavaElement sibling, boolean force, IProgressMonitor monitor) throws JavaModelException {
-	/* TODO JDT
 	CreateFieldOperation op = new CreateFieldOperation(this, contents, force);
 	if (sibling != null) {
 		op.createBefore(sibling);
 	}
 	op.runOperation(monitor);
 	return (IField) op.getResultElements()[0];
-	*/
-	return null;
 }
 /**
  * @see IType
  */
 public IInitializer createInitializer(String contents, IJavaElement sibling, IProgressMonitor monitor) throws JavaModelException {
-	/* TODO JDT
 	CreateInitializerOperation op = new CreateInitializerOperation(this, contents);
 	if (sibling != null) {
 		op.createBefore(sibling);
 	}
 	op.runOperation(monitor);
 	return (IInitializer) op.getResultElements()[0];
-	*/
-	return null;
 }
 /**
  * @see IType
  */
 public IMethod createMethod(String contents, IJavaElement sibling, boolean force, IProgressMonitor monitor) throws JavaModelException {
-	/* TODO JDT
 	CreateMethodOperation op = new CreateMethodOperation(this, contents, force);
 	if (sibling != null) {
 		op.createBefore(sibling);
 	}
 	op.runOperation(monitor);
 	return (IMethod) op.getResultElements()[0];
-	*/
-	return null;
 }
 /**
  * @see IType
  */
 public IType createType(String contents, IJavaElement sibling, boolean force, IProgressMonitor monitor) throws JavaModelException {
-	/* TODO JDT
 	CreateTypeOperation op = new CreateTypeOperation(this, contents, force);
 	if (sibling != null) {
 		op.createBefore(sibling);
 	}
 	op.runOperation(monitor);
 	return (IType) op.getResultElements()[0];
-	*/
-	return null;
 }
 public boolean equals(Object o) {
 	if (!(o instanceof SourceType)) return false;
@@ -568,7 +556,7 @@ public boolean isAnonymous() {
  * @see IType
  */
 public boolean isClass() throws JavaModelException {
-	/* TODO JDT
+	/* TODO JDT Java -> D
 	SourceTypeElementInfo info = (SourceTypeElementInfo) getElementInfo();
 	return TypeDeclaration.kind(info.getModifiers()) == TypeDeclaration.CLASS_DECL;
 	*/
@@ -580,7 +568,7 @@ public boolean isClass() throws JavaModelException {
  * @since 3.0
  */
 public boolean isEnum() throws JavaModelException {
-	/* TODO JDT
+	/* TODO JDT Java -> D
 	SourceTypeElementInfo info = (SourceTypeElementInfo) getElementInfo();
 	return TypeDeclaration.kind(info.getModifiers()) == TypeDeclaration.ENUM_DECL;
 	*/
@@ -591,7 +579,7 @@ public boolean isEnum() throws JavaModelException {
  * @see IType
  */
 public boolean isInterface() throws JavaModelException {
-	/* TODO JDT
+	/* TODO JDT Java -> D
 	SourceTypeElementInfo info = (SourceTypeElementInfo) getElementInfo();
 	switch (TypeDeclaration.kind(info.getModifiers())) {
 		case TypeDeclaration.INTERFACE_DECL:
@@ -607,7 +595,7 @@ public boolean isInterface() throws JavaModelException {
  * @since 3.0
  */
 public boolean isAnnotation() throws JavaModelException {
-	/* TODO JDT
+	/* TODO JDT Java -> D
 	SourceTypeElementInfo info = (SourceTypeElementInfo) getElementInfo();
 	return TypeDeclaration.kind(info.getModifiers()) == TypeDeclaration.ANNOTATION_TYPE_DECL;
 	*/
@@ -642,7 +630,7 @@ public boolean isResolved() {
 /**
  * @see IType
  */
-/* TODO JDT
+/* TODO JDT type hierarchy
 public ITypeHierarchy loadTypeHierachy(InputStream input, IProgressMonitor monitor) throws JavaModelException {
 	return loadTypeHierachy(input, DefaultWorkingCopyOwner.PRIMARY, monitor);
 }
@@ -677,7 +665,7 @@ public ITypeHierarchy loadTypeHierachy(InputStream input, IProgressMonitor monit
  * @see ITypeHierarchy#store(java.io.OutputStream, IProgressMonitor)
  * @since 3.0
  */
-/* TODO JDT
+/* TODO JDT type hierarchy
 public ITypeHierarchy loadTypeHierachy(InputStream input, WorkingCopyOwner owner, IProgressMonitor monitor) throws JavaModelException {
 	// TODO monitor should be passed to TypeHierarchy.load(...)
 	return TypeHierarchy.load(this, input, owner);
@@ -686,7 +674,7 @@ public ITypeHierarchy loadTypeHierachy(InputStream input, WorkingCopyOwner owner
 /**
  * @see IType
  */
-/* TODO JDT
+/* TODO JDT type hierarchy
 public ITypeHierarchy newSupertypeHierarchy(IProgressMonitor monitor) throws JavaModelException {
 	return this.newSupertypeHierarchy(DefaultWorkingCopyOwner.PRIMARY, monitor);
 }
@@ -694,7 +682,7 @@ public ITypeHierarchy newSupertypeHierarchy(IProgressMonitor monitor) throws Jav
 /*
  * @see IType#newSupertypeHierarchy(ICompilationUnit[], IProgressMonitor)
  */
-/* TODO JDT
+/* TODO JDT type hierarchy
 public ITypeHierarchy newSupertypeHierarchy(
 	ICompilationUnit[] workingCopies,
 	IProgressMonitor monitor)
@@ -715,7 +703,7 @@ public ITypeHierarchy newSupertypeHierarchy(
  * @see IType#newSupertypeHierarchy(IWorkingCopy[], IProgressMonitor)
  * @deprecated
  */
-/* TODO JDT
+/* TODO JDT type hierarchy
 public ITypeHierarchy newSupertypeHierarchy(
 	IWorkingCopy[] workingCopies,
 	IProgressMonitor monitor)
@@ -734,7 +722,7 @@ public ITypeHierarchy newSupertypeHierarchy(
 /**
  * @see IType#newSupertypeHierarchy(WorkingCopyOwner, IProgressMonitor)
  */
-/* TODO JDT
+/* TODO JDT type hierarchy
 public ITypeHierarchy newSupertypeHierarchy(
 	WorkingCopyOwner owner,
 	IProgressMonitor monitor)
@@ -749,7 +737,7 @@ public ITypeHierarchy newSupertypeHierarchy(
 /**
  * @see IType
  */
-/* TODO JDT
+/* TODO JDT type hierarchy
 public ITypeHierarchy newTypeHierarchy(IJavaProject project, IProgressMonitor monitor) throws JavaModelException {
 	return newTypeHierarchy(project, DefaultWorkingCopyOwner.PRIMARY, monitor);
 }
@@ -757,7 +745,7 @@ public ITypeHierarchy newTypeHierarchy(IJavaProject project, IProgressMonitor mo
 /**
  * @see IType#newTypeHierarchy(IJavaProject, WorkingCopyOwner, IProgressMonitor)
  */
-/* TODO JDT
+/* TODO JDT type hierarchy
 public ITypeHierarchy newTypeHierarchy(IJavaProject project, WorkingCopyOwner owner, IProgressMonitor monitor) throws JavaModelException {
 	if (project == null) {
 		throw new IllegalArgumentException(Messages.hierarchy_nullProject); 
@@ -790,7 +778,7 @@ public ITypeHierarchy newTypeHierarchy(IJavaProject project, WorkingCopyOwner ow
 /**
  * @see IType
  */
-/* TODO JDT
+/* TODO JDT type hiearchy
 public ITypeHierarchy newTypeHierarchy(IProgressMonitor monitor) throws JavaModelException {
 	CreateTypeHierarchyOperation op= new CreateTypeHierarchyOperation(this, null, SearchEngine.createWorkspaceScope(), true);
 	op.runOperation(monitor);
@@ -800,7 +788,7 @@ public ITypeHierarchy newTypeHierarchy(IProgressMonitor monitor) throws JavaMode
 /*
  * @see IType#newTypeHierarchy(ICompilationUnit[], IProgressMonitor)
  */
-/* TODO JDT
+/* TODO JDT type hierarchy
 public ITypeHierarchy newTypeHierarchy(
 	ICompilationUnit[] workingCopies,
 	IProgressMonitor monitor)
@@ -815,7 +803,7 @@ public ITypeHierarchy newTypeHierarchy(
  * @see IType#newTypeHierarchy(IWorkingCopy[], IProgressMonitor)
  * @deprecated
  */
-/* TODO JDT
+/* TODO JDT type hiearchy
 public ITypeHierarchy newTypeHierarchy(
 	IWorkingCopy[] workingCopies,
 	IProgressMonitor monitor)
@@ -834,7 +822,7 @@ public ITypeHierarchy newTypeHierarchy(
 /**
  * @see IType#newTypeHierarchy(WorkingCopyOwner, IProgressMonitor)
  */
-/* TODO JDT
+/* TODO JDT type hiearchy
 public ITypeHierarchy newTypeHierarchy(
 	WorkingCopyOwner owner,
 	IProgressMonitor monitor)
@@ -861,7 +849,7 @@ public String[][] resolveType(String typeName) throws JavaModelException {
  * @see IType#resolveType(String, WorkingCopyOwner)
  */
 public String[][] resolveType(String typeName, WorkingCopyOwner owner) throws JavaModelException {
-	/* TODO JDT
+	/* TODO JDT type resolution
 	ISourceType info = (ISourceType) getElementInfo();
 	JavaProject project = (JavaProject) getJavaProject();
 	SearchableEnvironment environment = project.newSearchableNameEnvironment(owner);

@@ -85,10 +85,13 @@ protected boolean buildStructure(OpenableElementInfo info, IProgressMonitor pm, 
 				if (kind == IPackageFragmentRoot.K_SOURCE && Util.isValidCompilationUnitName(child.getName())) {
 					childElement = new CompilationUnit(this, child.getName(), DefaultWorkingCopyOwner.PRIMARY);
 					vChildren.add(childElement);
-				} /* TODO JDT else if (kind == IPackageFragmentRoot.K_BINARY && Util.isValidClassFileName(child.getName())) {
+				} 
+				/* TODO JDT jar 
+				else if (kind == IPackageFragmentRoot.K_BINARY && Util.isValidClassFileName(child.getName())) {
 					childElement = getClassFile(child.getName());
 					vChildren.add(childElement);
-				} */
+				}
+				*/
 			}
 		}
 	} catch (CoreException e) {
@@ -175,7 +178,7 @@ public boolean exists() {
  */
 public IClassFile getClassFile(String classFileName) {
 	throw new IllegalArgumentException("Not implemented");
-	/* TODO JDT
+	/* TODO JDT binary
 	if (!descent.internal.compiler.util.Util.isClassFileName(classFileName)) {
 		throw new IllegalArgumentException(Messages.element_invalidClassFileName); 
 	}
@@ -456,7 +459,7 @@ protected void toStringInfo(int tab, StringBuffer buffer, Object info, boolean s
 /*
  * @see IJavaElement#getAttachedJavadoc(IProgressMonitor)
  */
-/* TODO JDT
+/* TODO JDT attached javadoc
 public String getAttachedJavadoc(IProgressMonitor monitor) throws JavaModelException {
 	PerProjectInfo projectInfo = JavaModelManager.getJavaModelManager().getPerProjectInfoCheckExistence(this.getJavaProject().getProject());
 	String cachedJavadoc = null;

@@ -141,7 +141,7 @@ public class ConstructorDeclaration extends AbstractFunctionDeclaration {
 	/**
 	 * The kind.
 	 */
-	private Kind kind;
+	private Kind kind = Kind.STATIC_CONSTRUCTOR;
 
 
 	/**

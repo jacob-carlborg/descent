@@ -424,7 +424,7 @@ public abstract class JavaElement extends PlatformObject implements IJavaElement
 	 * <code>null</code> if this element does not have a
 	 * SourceMapper.
 	 */
-	/* TODO JDT
+	/* TODO JDT binary
 	public SourceMapper getSourceMapper() {
 		return ((JavaElement)getParent()).getSourceMapper();
 	}
@@ -555,7 +555,7 @@ public abstract class JavaElement extends PlatformObject implements IJavaElement
 	public String readableName() {
 		return this.getElementName();
 	}
-	/* TODO JDT
+	/* TODO JDT binding
 	public JavaElement resolved(Binding binding) {
 		return this;
 	}
@@ -643,7 +643,7 @@ public abstract class JavaElement extends PlatformObject implements IJavaElement
 	}
 	/**
 	 *  Debugging purposes
-	 * @param showResolvedInfo TODO
+	 * @param showResolvedInfo
 	 */
 	protected void toStringInfo(int tab, StringBuffer buffer, Object info, boolean showResolvedInfo) {
 		buffer.append(this.tabString(tab));
@@ -659,7 +659,7 @@ public abstract class JavaElement extends PlatformObject implements IJavaElement
 		buffer.append(getElementName());
 	}
 	
-	/* TODO JDT
+	/* TODO JDT attached javadoc
 	protected URL getJavadocBaseLocation() throws JavaModelException {
 		IPackageFragmentRoot root= (IPackageFragmentRoot) this.getAncestor(IJavaElement.PACKAGE_FRAGMENT_ROOT);
 		if (root == null) {

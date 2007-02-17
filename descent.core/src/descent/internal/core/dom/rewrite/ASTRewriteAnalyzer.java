@@ -30,6 +30,7 @@ import org.eclipse.text.edits.ReplaceEdit;
 import org.eclipse.text.edits.TextEdit;
 import org.eclipse.text.edits.TextEditGroup;
 
+import descent.core.ToolFactory;
 import descent.core.compiler.IScanner;
 import descent.core.compiler.ITerminalSymbols;
 import descent.core.dom.*;
@@ -745,7 +746,7 @@ public final class ASTRewriteAnalyzer extends ASTVisitor {
 	private int getPosAfterLeftBrace(int pos) {
 		try {
 			int nextToken= getScanner().readNext(pos, true);
-			if (nextToken == ITerminalSymbols.TokenNameLCURLY) {
+			if (nextToken == ITerminalSymbols.TokenNameLBRACE) {
 				return getScanner().getCurrentEndOffset();
 			}
 		} catch (CoreException e) {
@@ -760,7 +761,7 @@ public final class ASTRewriteAnalyzer extends ASTVisitor {
 	private int getPosAfterLeftBraceOrColon(int pos) {
 		try {
 			int nextToken= getScanner().readNext(pos, true);
-			if (nextToken == ITerminalSymbols.TokenNameLCURLY || nextToken == ITerminalSymbols.TokenNameCOLON) {
+			if (nextToken == ITerminalSymbols.TokenNameLBRACE || nextToken == ITerminalSymbols.TokenNameCOLON) {
 				return getScanner().getCurrentEndOffset();
 			}
 		} catch (CoreException e) {
@@ -778,7 +779,7 @@ public final class ASTRewriteAnalyzer extends ASTVisitor {
 	private int getPosAfterLeftBraceOrColon(int pos, boolean[] wasSemicolon) {
 		try {
 			int nextToken= getScanner().readNext(pos, true);
-			if (nextToken == ITerminalSymbols.TokenNameLCURLY) {
+			if (nextToken == ITerminalSymbols.TokenNameLBRACE) {
 				wasSemicolon[0] = false;
 				return getScanner().getCurrentEndOffset();
 			} else if (nextToken == ITerminalSymbols.TokenNameSEMICOLON) {
@@ -797,7 +798,7 @@ public final class ASTRewriteAnalyzer extends ASTVisitor {
 	private int getPosAfterLeftBraceOrSemicolon(int pos) {
 		try {
 			int nextToken= getScanner().readNext(pos, true);
-			if (nextToken == ITerminalSymbols.TokenNameLCURLY || nextToken == ITerminalSymbols.TokenNameSEMICOLON) {
+			if (nextToken == ITerminalSymbols.TokenNameLBRACE || nextToken == ITerminalSymbols.TokenNameSEMICOLON) {
 				return getScanner().getCurrentEndOffset();
 			}
 		} catch (CoreException e) {
@@ -992,7 +993,7 @@ public final class ASTRewriteAnalyzer extends ASTVisitor {
 				} catch (CoreException e) {
 					token = -1;
 				}
-				if (token == ITerminalSymbols.TokenNameLCURLY) {
+				if (token == ITerminalSymbols.TokenNameLBRACE) {
 					pos = getScanner().getCurrentEndOffset();
 					pos = rewriteParagraphList(parent, thenProperty, pos, 0, -1, 2);
 					pos = getScanner().getNextEndOffset(pos, true);
@@ -1015,7 +1016,7 @@ public final class ASTRewriteAnalyzer extends ASTVisitor {
 				} catch (CoreException e) {
 					token = -1;
 				}
-				if (token == ITerminalSymbols.TokenNameLCURLY) {
+				if (token == ITerminalSymbols.TokenNameLBRACE) {
 					pos = getScanner().getCurrentEndOffset();
 					pos = doVisit(parent, thenProperty, pos);
 					pos = getScanner().getNextEndOffset(pos, true);
@@ -1055,7 +1056,7 @@ public final class ASTRewriteAnalyzer extends ASTVisitor {
 					} catch (CoreException e) {
 						token = -1;
 					}
-					if (token == ITerminalSymbols.TokenNameRCURLY) {
+					if (token == ITerminalSymbols.TokenNameRBRACE) {
 						end = getScanner().getCurrentEndOffset();
 					}
 					doTextRemove(pos, end - pos, getEditGroup(parent, elseProperty));
@@ -1072,7 +1073,7 @@ public final class ASTRewriteAnalyzer extends ASTVisitor {
 				} catch (CoreException e) {
 					token = -1;
 				}
-				if (token == ITerminalSymbols.TokenNameLCURLY) {
+				if (token == ITerminalSymbols.TokenNameLBRACE) {
 					pos = getScanner().getCurrentEndOffset();
 					pos = rewriteParagraphList(parent, elseProperty, pos, 0, -1, 2);
 					pos = getScanner().getNextEndOffset(pos, true);
@@ -1089,7 +1090,7 @@ public final class ASTRewriteAnalyzer extends ASTVisitor {
 			if (!originalElse.isEmpty()) { 
 				try {
 					int token = getScanner().readNext(true);
-					if (token == ITerminalSymbols.TokenNameLCURLY) {
+					if (token == ITerminalSymbols.TokenNameLBRACE) {
 						pos = getScanner().getCurrentEndOffset();
 						pos = doVisit(parent, elseProperty, pos);
 						pos = getScanner().getNextEndOffset(pos, true);
@@ -1424,7 +1425,7 @@ public final class ASTRewriteAnalyzer extends ASTVisitor {
 		
 		try {
 			if (!wasSemicolon[0]) {
-				pos = getScanner().getTokenEndOffset(ITerminalSymbols.TokenNameRCURLY, pos);
+				pos = getScanner().getTokenEndOffset(ITerminalSymbols.TokenNameRBRACE, pos);
 			}
 			rewriteNode(node, AggregateDeclaration.POST_D_DOC_PROPERTY, pos, ASTRewriteFormatter.SPACE);
 		} catch (CoreException e) {
@@ -1508,7 +1509,7 @@ public final class ASTRewriteAnalyzer extends ASTVisitor {
 		pos = rewriteParagraphList(node, AlignDeclaration.DECLARATIONS_PROPERTY, startPos, startIndent, -1, 2);
 		
 		try {
-			pos = getScanner().getTokenEndOffset(ITerminalSymbols.TokenNameRCURLY, pos);
+			pos = getScanner().getTokenEndOffset(ITerminalSymbols.TokenNameRBRACE, pos);
 		} catch (CoreException e) {
 			// Maybe is was a colon
 		}
@@ -2137,7 +2138,7 @@ public final class ASTRewriteAnalyzer extends ASTVisitor {
 		pos = rewriteParagraphList(node, EnumDeclaration.ENUM_MEMBERS_PROPERTY, startPos, startIndent, -1, 2);
 		
 		try {
-			pos = getScanner().getTokenEndOffset(ITerminalSymbols.TokenNameRCURLY, pos);
+			pos = getScanner().getTokenEndOffset(ITerminalSymbols.TokenNameRBRACE, pos);
 			rewriteNode(node, EnumDeclaration.POST_D_DOC_PROPERTY, pos, ASTRewriteFormatter.SPACE);
 		} catch (CoreException e) {
 			handleException(e);
@@ -2212,7 +2213,7 @@ public final class ASTRewriteAnalyzer extends ASTVisitor {
 		pos = rewriteParagraphList(node, ExternDeclaration.DECLARATIONS_PROPERTY, startPos, startIndent, -1, 2);
 		
 		try {
-			pos = getScanner().getTokenEndOffset(ITerminalSymbols.TokenNameRCURLY, pos);
+			pos = getScanner().getTokenEndOffset(ITerminalSymbols.TokenNameRBRACE, pos);
 		} catch (CoreException e) {
 			// Maybe is was a colon
 		}
@@ -2570,7 +2571,7 @@ public final class ASTRewriteAnalyzer extends ASTVisitor {
 		pos = rewriteModifiers(node, InvariantDeclaration.MODIFIERS_PROPERTY, pos);
 		
 		try {
-			pos = getScanner().getTokenEndOffset(ITerminalSymbols.TokenNameRCURLY, pos);
+			pos = getScanner().getTokenEndOffset(ITerminalSymbols.TokenNameRBRACE, pos);
 			rewriteNode(node, InvariantDeclaration.POST_D_DOC_PROPERTY, pos, ASTRewriteFormatter.SPACE);
 		} catch (CoreException e) {
 			
@@ -3086,7 +3087,7 @@ public final class ASTRewriteAnalyzer extends ASTVisitor {
 		pos = rewriteModifiers(node, UnitTestDeclaration.MODIFIERS_PROPERTY, pos);
 		
 		try {
-			pos = getScanner().getTokenEndOffset(ITerminalSymbols.TokenNameRCURLY, pos);
+			pos = getScanner().getTokenEndOffset(ITerminalSymbols.TokenNameRBRACE, pos);
 			rewriteNode(node, UnitTestDeclaration.POST_D_DOC_PROPERTY, pos, ASTRewriteFormatter.SPACE);
 		} catch (CoreException e) {
 			

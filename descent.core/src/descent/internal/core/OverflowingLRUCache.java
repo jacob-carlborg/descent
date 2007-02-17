@@ -14,6 +14,7 @@ import java.util.Enumeration;
 import java.util.Iterator;
 
 import descent.internal.core.util.LRUCache;
+import descent.internal.core.util.Messages;
 
 /**
  *	The <code>OverflowingLRUCache</code> is an LRUCache which attempts
@@ -369,7 +370,7 @@ public void setLoadFactor(double newLoadFactor) throws IllegalArgumentException 
 	if(newLoadFactor <= 1.0 && newLoadFactor > 0.0)
 		fLoadFactor = newLoadFactor;
 	else
-		throw new IllegalArgumentException(/* TODO JDT Messages.cache_invalidLoadFactor */); 
+		throw new IllegalArgumentException(Messages.cache_invalidLoadFactor); 
 }
 	/**
 	 * Sets the maximum amount of space that the cache can store
@@ -395,13 +396,11 @@ public void setLoadFactor(double newLoadFactor) throws IllegalArgumentException 
  * Returns a String that represents the value of this object.  This method
  * is for debugging purposes only.
  */
-/* TODO JDT
 public String toString() {
 	return 
 		toStringFillingRation("OverflowingLRUCache ") + //$NON-NLS-1$
 		toStringContents();
 }
-*/
 /**
  * Updates the timestamp for the given entry, ensuring that the queue is 
  * kept in correct order.  The entry must exist.

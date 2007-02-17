@@ -11,6 +11,7 @@
 package descent.astview;
 
 import descent.core.dom.ASTNode;
+import descent.core.dom.GenericVisitor;
 
 /**
  * For a give range finds the node covered and the node covering.

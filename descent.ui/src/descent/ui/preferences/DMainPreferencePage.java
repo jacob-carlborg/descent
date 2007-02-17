@@ -1,24 +1,18 @@
 package descent.ui.preferences;
 
-import java.io.File;
-
-import org.eclipse.jface.preference.DirectoryFieldEditor;
 import org.eclipse.jface.preference.FieldEditorPreferencePage;
 import org.eclipse.jface.preference.IPreferenceStore;
-import org.eclipse.swt.events.ModifyEvent;
-import org.eclipse.swt.events.ModifyListener;
-import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 
-import descent.ui.DescentUI;
+import descent.internal.ui.JavaPlugin;
 
 public class DMainPreferencePage extends FieldEditorPreferencePage implements IWorkbenchPreferencePage {
 	
 	public DMainPreferencePage() {
 		super(FieldEditorPreferencePage.GRID);
 		
-		IPreferenceStore store = DescentUI.getDefault().getPreferenceStore();
+		IPreferenceStore store = JavaPlugin.getDefault().getPreferenceStore();
 		setPreferenceStore(store);
 	}
 	

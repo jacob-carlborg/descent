@@ -16,7 +16,7 @@ package descent.internal.formatter.align;
  * 
  * @since 2.1
  * 
- * TODO replace with real one
+ * TODO format replace with real one
  */
 public class Alignment {
 	

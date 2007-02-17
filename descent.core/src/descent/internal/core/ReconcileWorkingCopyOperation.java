@@ -152,7 +152,7 @@ public class ReconcileWorkingCopyOperation extends JavaModelOperation {
 				parser.setSource(workingCopy.getContents());
 				this.ast = (descent.core.dom.CompilationUnit) parser.createAST(this.progressMonitor);
 				
-				/* TODO JDT
+				/* TODO JDT problems
 			    CompilationUnitDeclaration unit = null;
 			    try {
 			    	// find problems
@@ -203,7 +203,7 @@ public class ReconcileWorkingCopyOperation extends JavaModelOperation {
 		return null;
 	}
 	private void notifyParticipants(final CompilationUnit workingCopy) {
-		/* TODO JDT
+		/* TODO JDT compiler
 		IJavaProject javaProject = getWorkingCopy().getJavaProject();
 		CompilationParticipant[] participants = JavaModelManager.getJavaModelManager().compilationParticipants.getCompilationParticipants(javaProject);	
 		if (participants == null) return;

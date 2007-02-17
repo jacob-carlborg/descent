@@ -84,7 +84,7 @@ public abstract class Name extends Expression {
 	 * @return the binding, or <code>null</code> if the binding cannot be 
 	 *    resolved
 	 */	
-	/* TODO JDT
+	/* TODO JDT binding
 	public final IBinding resolveBinding() {
 		return this.ast.getBindingResolver().resolveName(this);
 	}

@@ -20,5 +20,10 @@
             name="D Source"
             priority="high"/>
    </extension>
+   <extension
+         point="org.eclipse.core.runtime.preferences">
+      <initializer class="descent.internal.core.JavaCorePreferenceInitializer"/>
+      <modifier class="org.eclipse.jdt.internal.core.JavaCorePreferenceModifyListener"/>
+   </extension>
 
 </plugin>

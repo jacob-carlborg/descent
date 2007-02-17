@@ -263,7 +263,7 @@ public class JavaModelManager implements ISaveParticipant, IContentTypeChangeLis
 		private Object[][] registeredParticipants = null;
 		private HashSet managedMarkerTypes;
 		
-		/* TODO JDT
+		/* TODO JDT compiler
 		public CompilationParticipant[] getCompilationParticipants(IJavaProject project) {
 			final Object[][] participantsPerSource = getRegisteredParticipants();
 			if (participantsPerSource == NO_PARTICIPANTS)
@@ -1160,7 +1160,7 @@ public class JavaModelManager implements ISaveParticipant, IContentTypeChangeLis
 	 * Configure the plugin with respect to option settings defined in ".options" file
 	 */
 	public void configurePluginDebugOptions(){
-		/* TODO JDT
+		/* TODO JDT debug options
 		if(JavaCore.getPlugin().isDebugging()){
 			String option = Platform.getDebugOption(BUFFER_MANAGER_DEBUG);
 			if(option != null) BufferManager.VERBOSE = option.equalsIgnoreCase("true") ; //$NON-NLS-1$
@@ -1488,7 +1488,7 @@ public class JavaModelManager implements ISaveParticipant, IContentTypeChangeLis
 
 	// Do not modify without modifying getDefaultOptions()
 	private Hashtable getDefaultOptionsNoInitialization() {
-		/* TODO JDT
+		/* TODO JDT compiler options
 		Map defaultOptionsMap = new CompilerOptions().getMap(); // compiler defaults
 		
 		// Override some compiler defaults
@@ -2612,7 +2612,7 @@ public class JavaModelManager implements ISaveParticipant, IContentTypeChangeLis
 		// Subsequent resolution against package in the jar would fail as a result.
 		// https://bugs.eclipse.org/bugs/show_bug.cgi?id=102422
 		// (theodora)
-		/* TODO JDT
+		/* TODO JDT jar
 		for(Iterator it = newElements.entrySet().iterator(); it.hasNext(); ) {
 			Map.Entry entry = (Map.Entry)it.next();
 			IJavaElement element = (IJavaElement)entry.getKey();
@@ -2635,7 +2635,7 @@ public class JavaModelManager implements ISaveParticipant, IContentTypeChangeLis
 	/*
 	 * Remember the info for the jar binary type
 	 */
-	/* TODO JDT
+	/* TODO JDT jar
 	protected synchronized void putJarTypeInfo(IJavaElement type, Object info) {
 		this.cache.jarTypeCache.put(type, info);
 	}
@@ -3477,7 +3477,7 @@ public class JavaModelManager implements ISaveParticipant, IContentTypeChangeLis
 	 * If not waiting for indexes and indexing is running, will return types found in current built indexes...
 	 */
 	private Map secondaryTypesSearching(IJavaProject project, boolean waitForIndexes, IProgressMonitor monitor, final PerProjectInfo projectInfo) throws JavaModelException {
-		/* TODO JDT
+		/* TODO JDT search
 		if (VERBOSE || BasicSearchEngine.VERBOSE) {
 			StringBuffer buffer = new StringBuffer("JavaModelManager.secondaryTypesSearch("); //$NON-NLS-1$
 			buffer.append(project.getElementName());

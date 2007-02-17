@@ -135,7 +135,9 @@ public String getTypeSignature() throws JavaModelException {
 /* (non-Javadoc)
  * @see descent.core.IField#isEnumConstant()
  */public boolean isEnumConstant() throws JavaModelException {
-	// TODO JDT return Flags.isEnum(getFlags());
+	/* TODO JDT Java -> D 
+	return Flags.isEnum(getFlags());
+	*/
 	 return false;
 }
 /* (non-Javadoc)
@@ -144,7 +146,7 @@ public String getTypeSignature() throws JavaModelException {
 public boolean isResolved() {
 	return false;
 }
-/* TODO JDT
+/* TODO JDT binding
 public JavaElement resolved(Binding binding) {
 	SourceRefElement resolvedHandle = new ResolvedSourceField(this.parent, this.name, new String(binding.computeUniqueKey()));
 	resolvedHandle.occurrenceCount = this.occurrenceCount;

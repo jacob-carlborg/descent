@@ -47,7 +47,7 @@ protected boolean close(LRUCacheEntry entry) {
 			return false;
 		} else {
 			// We must close an entire JarPackageFragmentRoot at once.
-			/* TODO JDT
+			/* TODO JDT jar
 			if (element instanceof JarPackageFragment) {
 				JarPackageFragment packageFragment= (JarPackageFragment) element;
 				JarPackageFragmentRoot root = (JarPackageFragmentRoot) packageFragment.getParent();

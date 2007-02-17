@@ -1,5 +1,6 @@
 package descent.core.dom;
 
+import java.util.Iterator;
 import java.util.List;
 
 
@@ -7,6 +8,7 @@ import java.util.List;
  * Abstract subclass for declarations.
  * <pre>
  * Declaration:
+ *    AbstractFunctionDeclaration
  *    AggregateDeclaration
  *    AliasDeclaration
  *    AlignDeclaration
@@ -14,7 +16,6 @@ import java.util.List;
  *    DebugAssignment
  *    EnumDeclaration
  *    ExternDeclaration
- *    FunctionDeclaration
  *    ImportDeclaration
  *    InvariantDeclaration
  *    ModifierDeclaration
@@ -158,6 +159,23 @@ public abstract class Declaration extends ASTNode {
 	 */ 
 	public final List<Modifier> modifiers() {
 		return this.modifiers;
+	}
+	
+	/**
+	 * Returns the modifiers explicitly specified on this declaration.
+	 * 
+	 * @return the bit-wise or of <code>Modifier</code> constants
+	 * @see Modifier
+	 */ 
+	public int getModifiers() {
+		int computedmodifierFlags = 0;
+		for (Iterator it = modifiers().iterator(); it.hasNext(); ) {
+			Object x = it.next();
+			if (x instanceof Modifier) {
+				computedmodifierFlags |= ((Modifier) x).getModifierKeyword().toFlagValue();
+			}
+		}
+		return computedmodifierFlags;
 	}
 	
 	/**

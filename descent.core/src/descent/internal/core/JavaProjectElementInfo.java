@@ -211,7 +211,7 @@ class JavaProjectElementInfo extends OpenableElementInfo {
 				IJavaElement[] frags = null;
 				try {
 					if (root.isArchive() && !root.isOpen()) {
-						/* TODO JDT
+						/* TODO JDT jar
 						JarPackageFragmentRootInfo info = new JarPackageFragmentRootInfo();
 						((JarPackageFragmentRoot) root).computeChildren(info, new HashMap());
 						frags = info.children;

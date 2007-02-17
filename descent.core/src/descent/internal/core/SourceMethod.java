@@ -12,6 +12,7 @@ package descent.internal.core;
 
 import org.eclipse.core.runtime.Assert;
 
+import descent.core.Flags;
 import descent.core.IJavaElement;
 import descent.core.IMethod;
 import descent.core.IType;
@@ -65,12 +66,12 @@ public int getElementType() {
  * @see IMethod
  */
 public String[] getExceptionTypes() throws JavaModelException {
-	/* TODO JDT
+	/* TODO JDT exceptions
 	SourceMethodElementInfo info = (SourceMethodElementInfo) getElementInfo();
 	char[][] exs= info.getExceptionTypeNames();
 	return CompilationUnitStructureRequestor.convertTypeNamesToSigs(exs);
 	*/
-	return new String[] { "" };
+	return new String[0];
 }
 /**
  * @see JavaElement#getHandleMemento(StringBuffer)
@@ -253,7 +254,7 @@ public String readableName() {
 	buffer.append(')');
 	return buffer.toString();
 }
-/* TODO JDT
+/* TODO JDT binding
 public JavaElement resolved(Binding binding) {
 	SourceRefElement resolvedHandle = new ResolvedSourceMethod(this.parent, this.name, this.parameterTypes, new String(binding.computeUniqueKey()));
 	resolvedHandle.occurrenceCount = this.occurrenceCount;
@@ -273,11 +274,9 @@ protected void toStringInfo(int tab, StringBuffer buffer, Object info, boolean s
 	} else {
 		SourceMethodElementInfo methodInfo = (SourceMethodElementInfo) info;
 		int flags = methodInfo.getModifiers();
-		/* TODO JDT
 		if (Flags.isStatic(flags)) {
 			buffer.append("static "); //$NON-NLS-1$
 		}
-		*/
 		if (!methodInfo.isConstructor()) {
 			buffer.append(methodInfo.getReturnTypeName());
 			buffer.append(' ');
@@ -291,7 +290,7 @@ protected void toStringName(StringBuffer buffer) {
 protected void toStringName(StringBuffer buffer, int flags) {
 	buffer.append(getElementName());
 	buffer.append('(');
-	/* TODO JDT
+	/* TODO JDT debug -> varargs
 	String[] parameters = getParameterTypes();
 	int length;
 	if (parameters != null && (length = parameters.length) > 0) {

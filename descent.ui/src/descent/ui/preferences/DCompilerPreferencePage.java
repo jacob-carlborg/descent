@@ -11,7 +11,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 
-import descent.ui.DescentUI;
+import descent.internal.ui.JavaPlugin;
 
 public class DCompilerPreferencePage extends FieldEditorPreferencePage implements IWorkbenchPreferencePage {
 	
@@ -20,7 +20,7 @@ public class DCompilerPreferencePage extends FieldEditorPreferencePage implement
 	public DCompilerPreferencePage() {
 		super(FieldEditorPreferencePage.GRID);
 		
-		IPreferenceStore store = DescentUI.getDefault().getPreferenceStore();
+		IPreferenceStore store = JavaPlugin.getDefault().getPreferenceStore();
 		setPreferenceStore(store);
 	}
 	
@@ -31,7 +31,7 @@ public class DCompilerPreferencePage extends FieldEditorPreferencePage implement
 	protected void createFieldEditors() {
 		Composite parent = getFieldEditorParent();
 
-		dirField = new DirectoryFieldEditor(DescentUI.PREFERENCE_D_ROOT, "D root:", parent);
+		dirField = new DirectoryFieldEditor(JavaPlugin.PREFERENCE_D_ROOT, "D root:", parent);
 		dirField.getTextControl(parent).addModifyListener(new ModifyListener() {
 			public void modifyText(ModifyEvent e) {
 				validate();

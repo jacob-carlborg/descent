@@ -154,7 +154,7 @@ public abstract class NamedMember extends Member {
 	}
 
 	protected String getFullyQualifiedParameterizedName(String fullyQualifiedName, String uniqueKey) throws JavaModelException {
-		/* TODO JDT
+		/* TODO JDT debug?
 		String[] typeArguments = new BindingKey(uniqueKey).getTypeArguments();
 		int length = typeArguments.length;
 		if (length == 0) return fullyQualifiedName;

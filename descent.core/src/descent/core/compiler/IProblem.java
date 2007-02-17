@@ -235,5 +235,7 @@ public interface IProblem {
 	/* Others, needed by JDT */
 	int ForbiddenReference = 201;
 	int DiscouragedReference = 202;
+	
+	int Task = 1000;
 
 }

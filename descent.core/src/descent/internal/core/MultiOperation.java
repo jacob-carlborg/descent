@@ -235,7 +235,7 @@ public abstract class MultiOperation extends JavaModelOperation {
 			case IJavaElement.METHOD :
 			case IJavaElement.FIELD :
 			case IJavaElement.INITIALIZER :
-				/* TODO JDT
+				/* TODO JDT binary
 				if (destType != IJavaElement.TYPE || destination instanceof BinaryType)
 					error(IJavaModelStatusConstants.INVALID_DESTINATION, element);
 				*/

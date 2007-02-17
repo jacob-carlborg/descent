@@ -23,14 +23,14 @@ import org.eclipse.swt.widgets.Shell;
 
 import com.ibm.icu.text.MessageFormat;
 
+import descent.internal.ui.JavaPlugin;
 import descent.internal.ui.dialogfields.ComboDialogField;
 import descent.internal.ui.dialogfields.DialogField;
 import descent.internal.ui.dialogfields.IDialogFieldListener;
 import descent.internal.ui.dialogfields.IStringButtonAdapter;
 import descent.internal.ui.dialogfields.StringButtonDialogField;
 import descent.internal.ui.dialogfields.StringDialogField;
-import descent.internal.util.StatusInfo;
-import descent.ui.DescentUI;
+import descent.internal.ui.util.StatusInfo;
 
 public class InstalledCompilerDlg extends StatusDialog{
 	
@@ -393,7 +393,7 @@ public class InstalledCompilerDlg extends StatusDialog{
      * @see org.eclipse.jface.dialogs.Dialog#getDialogBoundsSettings()
      */
     protected IDialogSettings getDialogBoundsSettings() {
-    	 IDialogSettings settings = DescentUI.getDefault().getDialogSettings();
+    	 IDialogSettings settings = JavaPlugin.getDefault().getDialogSettings();
          IDialogSettings section = settings.getSection(getDialogSettingsSectionName());
          if (section == null) {
              section = settings.addNewSection(getDialogSettingsSectionName());

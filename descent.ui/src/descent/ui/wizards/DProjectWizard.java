@@ -18,7 +18,7 @@ import org.eclipse.ui.INewWizard;
 import org.eclipse.ui.IWorkbench;
 
 import descent.core.JavaCore;
-import descent.ui.DescentUI;
+import descent.internal.ui.JavaPlugin;
 
 public class DProjectWizard extends Wizard implements INewWizard {
 	
@@ -75,7 +75,7 @@ public class DProjectWizard extends Wizard implements INewWizard {
 			IStatus status = workspace.validateNatureSet(natures);
 			// check the status and decide what to do
 			if (status.getCode() != IStatus.OK) {
-			  	throw new CoreException(new Status(IStatus.ERROR, DescentUI.PLUGIN_ID, 1, "Error", null));
+			  	throw new CoreException(new Status(IStatus.ERROR, JavaPlugin.getPluginId(), 1, "Error", null));
 			}
 			
 			description.setNatureIds(newNatures);
@@ -114,7 +114,7 @@ public class DProjectWizard extends Wizard implements INewWizard {
 			}		
 			*/	
 		} catch (CoreException e) {
-			DescentUI.log(e);
+			JavaPlugin.log(e);
 		}
 		
 		return true;

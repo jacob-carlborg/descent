@@ -21,7 +21,11 @@ import descent.core.compiler.CharOperation;
 /** 
  * Element info for an IType element that originated from source. 
  */
-public class SourceTypeElementInfo extends MemberElementInfo /* TODO JDT implements ISourceType */ {
+public class SourceTypeElementInfo extends MemberElementInfo
+/* TODO JDT binary
+implements ISourceType
+*/ 
+{
 
 	//protected static final ISourceImport[] NO_IMPORTS = new ISourceImport[0];
 	protected static final InitializerElementInfo[] NO_INITIALIZERS = new InitializerElementInfo[0];
@@ -77,7 +81,7 @@ public HashMap getCategories() {
  * Returns the ISourceType that is the enclosing type for this
  * type, or <code>null</code> if this type is a top level type.
  */
-/* TODO JDT
+/* TODO JDT compiler
 public ISourceType getEnclosingType() {
 	IJavaElement parent= this.handle.getParent();
 	if (parent != null && parent.getElementType() == IJavaElement.TYPE) {
@@ -94,7 +98,7 @@ public ISourceType getEnclosingType() {
 /**
  * @see ISourceType
  */
-/* TODO JDT
+/* TODO JDT compiler
 public ISourceField[] getFields() {
 	SourceField[] fieldHandles = getFieldHandles();
 	int length = fieldHandles.length;
@@ -174,7 +178,7 @@ public char[][] getInterfaceNames() {
 /**
  * @see ISourceType
  */
-/* TODO JDT
+/* TODO JDT compiler
 public ISourceType[] getMemberTypes() {
 	SourceType[] memberTypeHandles = getMemberTypeHandles();
 	int length = memberTypeHandles.length;
@@ -208,7 +212,7 @@ public SourceType[] getMemberTypeHandles() {
 /**
  * @see ISourceType
  */
-/* TODO JDT
+/* TODO JDT compiler
 public ISourceMethod[] getMethods() {
 	SourceMethod[] methodHandles = getMethodHandles();
 	int length = methodHandles.length;

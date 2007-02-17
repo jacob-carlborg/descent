@@ -26,6 +26,7 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.*;
 import descent.core.*;
 import descent.core.compiler.CharOperation;
+import descent.internal.compiler.SourceElementParser;
 import descent.internal.core.builder.JavaBuilder;
 import descent.internal.core.search.AbstractSearchScope;
 import descent.internal.core.search.JavaWorkspaceScope;
@@ -99,9 +100,12 @@ public class DeltaProcessor {
 					Object target = JavaModel.getTarget(ResourcesPlugin.getWorkspace().getRoot(), this.rootPath, false/*don't check existence*/);
 					if (target instanceof IResource) {
 						this.root = this.project.getPackageFragmentRoot((IResource)target);
-					} /* TODO JDT else {
+					} 
+					/* TODO JDT jar 
+					else {
 						this.root = this.project.getPackageFragmentRoot(this.rootPath.toOSString());
-					} */
+					} 
+					*/
 				}
 			}
 			return this.root;
@@ -240,7 +244,7 @@ public class DeltaProcessor {
 	/*
 	 * Cache SourceElementParser for the project being visited
 	 */
-	// TODO JDT private SourceElementParser sourceElementParserCache;
+	private SourceElementParser sourceElementParserCache;
 		
 	public DeltaProcessor(DeltaProcessingState state, JavaModelManager manager) {
 		this.state = state;
@@ -569,7 +573,7 @@ public class DeltaProcessor {
 		} else {
 			close(element);
 			int flags = IJavaElementDelta.F_CONTENT;
-			/* TODO JDT
+			/* TODO JDT jar
 			if (element instanceof JarPackageFragmentRoot){
 				flags |= IJavaElementDelta.F_ARCHIVE_CONTENT_CHANGED;
 			}
@@ -847,7 +851,7 @@ public class DeltaProcessor {
 						}
 					}
 					// according to computed status, generate a delta
-					/* TODO JDT
+					/* TODO JDT jar
 					status = (String)externalArchivesStatus.get(entryPath);					
 					if (status != null){
 						if (status == EXTERNAL_JAR_ADDED){
@@ -1209,7 +1213,7 @@ public class DeltaProcessor {
 		this.javaModelDeltas = new ArrayList();
 	}
 	
-	/* TODO JDT
+	/* TODO JDT index manager
 	private SourceElementParser getSourceElementParser(Openable element) {
 		if (this.sourceElementParserCache == null)
 			this.sourceElementParserCache = this.manager.indexManager.getSourceElementParser(element.getJavaProject(), null);
@@ -1474,7 +1478,7 @@ public class DeltaProcessor {
 		}
 	}
 	
-	/* TODO JDT
+	/* TODO JDT type hierarchy
 	private void notifyTypeHierarchies(IElementChangedListener[] listeners, int listenerCount) {
 		for (int i= 0; i < listenerCount; i++) {
 			final IElementChangedListener listener = listeners[i];
@@ -1830,10 +1834,10 @@ public class DeltaProcessor {
 								registerJavaModelDelta(translatedDelta);
 							}
 						} finally {
-							// TODO JDT this.sourceElementParserCache = null; // don't hold onto parser longer than necessary
+							this.sourceElementParserCache = null; // don't hold onto parser longer than necessary
 							startDeltas();
 						}
-						/* TODO JDT
+						/* TODO JDT type hierarchy
 						IElementChangedListener[] listeners;
 						int listenerCount;
 						synchronized (this.state) {
@@ -1919,7 +1923,7 @@ public class DeltaProcessor {
 		boolean processChildren = true;
 		if (res instanceof IProject) {
 			// reset source element parser cache
-			// TODO JDT this.sourceElementParserCache = null;
+			this.sourceElementParserCache = null;
 			
 			processChildren = 
 				this.updateCurrentDeltaAndIndex(
@@ -2349,7 +2353,7 @@ public class DeltaProcessor {
 				}
 				break;
 			case IJavaElement.PACKAGE_FRAGMENT_ROOT :
-				/* TODO JDT
+				/* TODO JDT jar
 				if (element instanceof JarPackageFragmentRoot) {
 					JarPackageFragmentRoot root = (JarPackageFragmentRoot)element;
 					// index jar file only once (if the root is in its declaring project)

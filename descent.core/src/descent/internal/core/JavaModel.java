@@ -117,10 +117,10 @@ public boolean contains(IResource resource) {
 	return true;
 }
 /**
- * @see IJavaModel
+ * @see IJavaModel source manipulation
  */
 public void copy(IJavaElement[] elements, IJavaElement[] containers, IJavaElement[] siblings, String[] renamings, boolean force, IProgressMonitor monitor) throws JavaModelException {
-	/* TODO JDT
+	/* TODO JDT source manipulation
 	if (elements != null && elements.length > 0 && elements[0] != null && elements[0].getElementType() < IJavaElement.TYPE) {
 		runOperation(new CopyResourceElementsOperation(elements, containers, force), elements, siblings, renamings, monitor);
 	} else {
@@ -140,7 +140,7 @@ protected Object createElementInfo() {
  * @see IJavaModel
  */
 public void delete(IJavaElement[] elements, boolean force, IProgressMonitor monitor) throws JavaModelException {
-	/* TODO JDT
+	/* TODO JDT source manipulation
 	if (elements != null && elements.length > 0 && elements[0] != null && elements[0].getElementType() < IJavaElement.TYPE) {
 		new DeleteResourceElementsOperation(elements, force).runOperation(monitor);
 	} else {
@@ -265,7 +265,7 @@ public IWorkspace getWorkspace() {
  * @see IJavaModel
  */
 public void move(IJavaElement[] elements, IJavaElement[] containers, IJavaElement[] siblings, String[] renamings, boolean force, IProgressMonitor monitor) throws JavaModelException {
-	/* TODO JDT
+	/* TODO JDT source manipulation
 	if (elements != null && elements.length > 0 && elements[0] != null && elements[0].getElementType() < IJavaElement.TYPE) {
 		runOperation(new MoveResourceElementsOperation(elements, containers, force), elements, siblings, renamings, monitor);
 	} else {
@@ -278,7 +278,7 @@ public void move(IJavaElement[] elements, IJavaElement[] containers, IJavaElemen
  * @see IJavaModel#refreshExternalArchives(IJavaElement[], IProgressMonitor)
  */
 public void refreshExternalArchives(IJavaElement[] elementsScope, IProgressMonitor monitor) throws JavaModelException {
-	/* TODO JDT
+	/* TODO JDT jar
 	if (elementsScope == null){
 		elementsScope = new IJavaElement[] { this };
 	}
@@ -290,7 +290,7 @@ public void refreshExternalArchives(IJavaElement[] elementsScope, IProgressMonit
  * @see IJavaModel
  */
 public void rename(IJavaElement[] elements, IJavaElement[] destinations, String[] renamings, boolean force, IProgressMonitor monitor) throws JavaModelException {
-	/* TODO JDT
+	/* TODO JDT source manipulation
 	MultiOperation op;
 	if (elements != null && elements.length > 0 && elements[0] != null && elements[0].getElementType() < IJavaElement.TYPE) {
 		op = new RenameResourceElementsOperation(elements, destinations, renamings, force);

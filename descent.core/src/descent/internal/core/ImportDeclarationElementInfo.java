@@ -15,7 +15,12 @@ package descent.internal.core;
  * Element info for IImportDeclaration elements.
  * @see descent.core.IImportDeclaration
  */
-public class ImportDeclarationElementInfo extends MemberElementInfo /* TODO JDT implements ISourceImport */{
-	
+public class ImportDeclarationElementInfo extends MemberElementInfo 
+/* 
+TODO JDT binary 
+implements ISourceImport 
+*/
+
+{	
 	// empty element info
 }

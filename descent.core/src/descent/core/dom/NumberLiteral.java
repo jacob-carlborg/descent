@@ -150,7 +150,7 @@ public class NumberLiteral extends Expression {
 		if (token == null || token.length() == 0) {
 			throw new IllegalArgumentException();
 		}
-		/* TODO JDT
+		/* TODO JDT ast node api
 		Scanner scanner = this.ast.scanner;
 		char[] source = token.toCharArray();
 		scanner.setSource(source);

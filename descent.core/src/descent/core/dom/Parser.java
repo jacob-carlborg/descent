@@ -454,7 +454,7 @@ class Parser extends Lexer {
 					s = (Declaration) tempObj[1];
 					
 					if (a != null && a.size() > 0) {
-						if (isSingle[0]) {						
+						if (isSingle[0] && a.size() == 1) {						
 							s = (Declaration) a.get(0);
 						} else {
 							s = newModifierDeclaration(modifier, syntax[0], a);
@@ -487,7 +487,7 @@ class Parser extends Lexer {
 				s = (Declaration) tempObj[1];
 				
 				if (a != null && a.size() > 0) {
-					if (isSingle[0]) {
+					if (isSingle[0] && a.size() == 1) {
 						s = (Declaration) a.get(0);
 					} else {
 						if (!isSingle[0]) {
@@ -535,7 +535,7 @@ class Parser extends Lexer {
 				syntax = new ModifierDeclaration.Syntax[1]; 
 				a = parseBlock(isSingle, syntax, modifiers);
 				if (a != null) {
-					if (isSingle[0]) {	
+					if (isSingle[0] && a.size() == 1) {	
 						s = (Declaration) a.get(0);						
 					} else {
 						s = newModifierDeclaration(modifier, syntax[0], a);

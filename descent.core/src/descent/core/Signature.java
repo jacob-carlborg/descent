@@ -622,7 +622,12 @@ public static char[] createCharArrayTypeSignature(char[] typeName, boolean isRes
 	StringBuffer buffer = new StringBuffer(5);
 	int pos = encodeTypeSignature(typeName, 0, isResolved, length, buffer);
 	pos = consumeWhitespace(typeName, pos, length);
-	if (pos < length) throw new IllegalArgumentException(new String(typeName));
+	if (pos < length) {
+		/* TODO JDT UI signature
+		throw new IllegalArgumentException(new String(typeName));
+		*/
+		return "I".toCharArray();
+	}
 	char[] result = new char[length = buffer.length()];
 	buffer.getChars(0, length, result, 0);
 	return result;	

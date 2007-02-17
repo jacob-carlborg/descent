@@ -93,6 +93,7 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Plugin;
+import org.eclipse.core.runtime.QualifiedName;
 import org.eclipse.core.runtime.jobs.ISchedulingRule;
 import org.osgi.framework.BundleContext;
 
@@ -110,7 +111,10 @@ import descent.internal.core.JavaModelManager;
 import descent.internal.core.JavaProject;
 import descent.internal.core.Region;
 import descent.internal.core.SetClasspathOperation;
+import descent.internal.core.builder.JavaBuilder;
+import descent.internal.core.builder.State;
 import descent.internal.core.util.MementoTokenizer;
+import descent.internal.core.util.Messages;
 import descent.internal.core.util.Util;
 
 /**
@@ -1406,7 +1410,9 @@ public final class JavaCore extends Plugin {
 	 * to recognize the class file
 	 */
 	public static IClassFile createClassFileFrom(IFile file) {
-		// TODO JDT return JavaModelManager.createClassFileFrom(file, null);
+		/* TODO JDT binary 
+		return JavaModelManager.createClassFileFrom(file, null);
+		*/
 		return null;
 	}
 
@@ -2804,7 +2810,7 @@ public final class JavaCore extends Plugin {
 	 * @return Return an array containing the names of all known user defined.
 	 * @since 3.0
 	 */
-	/* TODO JDT
+	/* TODO JDT user library
 	public static String[] getUserLibraryNames() {
 		 return UserLibraryManager.getUserLibraryNames();
 	}
@@ -2854,10 +2860,10 @@ public final class JavaCore extends Plugin {
 	 * 		the status of the exception indicates the reason of the failure
 	 * @since 3.1
 	 */
-	/* TODO JDT
 	public static void initializeAfterLoad(IProgressMonitor monitor) throws CoreException {
 		try {
 			if (monitor != null) monitor.beginTask(Messages.javamodel_initialization, 100);
+			/* TODO JDT search
 			// dummy query for waiting until the indexes are ready and classpath containers/variables are initialized
 			SearchEngine engine = new SearchEngine();
 			IJavaSearchScope scope = SearchEngine.createWorkspaceScope(); // initialize all containers and variables
@@ -2890,6 +2896,7 @@ public final class JavaCore extends Plugin {
 					throw e;
 				// else indexes were not ready: catch the exception so that jars are still refreshed
 			}
+			*/
 			
 			// check if the build state version number has changed since last session
 			// (see https://bugs.eclipse.org/bugs/show_bug.cgi?id=98969)
@@ -2941,7 +2948,8 @@ public final class JavaCore extends Plugin {
 				}
 			}
 			
-			// ensure external jars are refreshed (see https://bugs.eclipse.org/bugs/show_bug.cgi?id=93668)
+			// ensure external jars are refreshed (see https://bugs.eclipse.org/bugs/show_bug.cgi?id=93668
+			/* TODO JDT jar
 			try {
 				model.refreshExternalArchives(
 					null refresh all projects, 
@@ -2950,11 +2958,11 @@ public final class JavaCore extends Plugin {
 			} catch (JavaModelException e) {
 				// refreshing failed: ignore
 			}
+			*/
 		} finally {
 			if (monitor != null) monitor.done();
 		}
 	}
-	*/
 	
 	/**
 	 * Returns whether the given file name's extension is a Java-like extension.
@@ -3248,7 +3256,7 @@ public final class JavaCore extends Plugin {
 	 * region, considering subtypes within that region
 	 * @since 3.1
 	 */
-	/* TODO JDT
+	/* TODO JDT type hierarchy
 	public static ITypeHierarchy newTypeHierarchy(IRegion region, WorkingCopyOwner owner, IProgressMonitor monitor) throws JavaModelException {
 		if (region == null) {
 			throw new IllegalArgumentException(Messages.hierarchy_nullRegion);

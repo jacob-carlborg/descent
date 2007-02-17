@@ -55,7 +55,7 @@ public interface IScanner {
 	 * 
 	 * @return the ending position of the current token inside the original source
 	 */
-	int getCurrentTokenEndPosition(); // TODO: in JDT it's inclusive
+	int getCurrentTokenEndPosition(); // TODO in JDT it's inclusive
 
 	/**
 	 * Answers the starting position of a given line number. This line has to have been encountered

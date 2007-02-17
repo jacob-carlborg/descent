@@ -47,7 +47,7 @@ public class TypeParameter extends SourceRefElement implements ITypeParameter {
 			openableParent.generateInfos(openableParent.createElementInfo(), newElements, pm);
 		}
 		
-		/* TODO JDT
+		/* TODO JDT binary
 		if (openableParent.getElementType() == IJavaElement.CLASS_FILE) {
 			ClassFileInfo classFileInfo = (ClassFileInfo) (openableParentInfo == null ? newElements.get(openableParent) : openableParentInfo);
 			if (classFileInfo == null) return;
@@ -78,7 +78,7 @@ public class TypeParameter extends SourceRefElement implements ITypeParameter {
 	}
 	
 	public ISourceRange getNameRange() throws JavaModelException {
-		/* TODO JDT 
+		/* TODO JDT binary
 		SourceMapper mapper= getSourceMapper();
 		if (mapper != null) {
 			// ensure the class file's buffer is open so that source ranges are computed
@@ -97,7 +97,7 @@ public class TypeParameter extends SourceRefElement implements ITypeParameter {
 	 * @see ISourceReference
 	 */
 	public ISourceRange getSourceRange() throws JavaModelException {
-		/* TODO JDT
+		/* TODO JDT binary
 		SourceMapper mapper= getSourceMapper();
 		if (mapper != null) {
 			// ensure the class file's buffer is open so that source ranges are computed

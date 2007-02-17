@@ -12,6 +12,7 @@ package descent.astview;
 
 import descent.core.dom.ASTNode;
 import descent.core.dom.CompilationUnit;
+import descent.core.dom.GenericVisitor;
 
 /**
  *

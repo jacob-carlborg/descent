@@ -1,10 +1,10 @@
 package descent.tests.scanner;
 
 import junit.framework.TestCase;
+import descent.core.ToolFactory;
 import descent.core.compiler.IScanner;
 import descent.core.compiler.ITerminalSymbols;
 import descent.core.dom.AST;
-import descent.core.dom.ToolFactory;
 import descent.internal.core.parser.TOK;
 
 public class ScannerTests extends TestCase implements ITerminalSymbols {

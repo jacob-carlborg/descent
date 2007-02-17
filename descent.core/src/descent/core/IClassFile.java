@@ -32,7 +32,11 @@ import org.eclipse.core.runtime.IProgressMonitor;
  * @see IPackageFragmentRoot#attachSource(org.eclipse.core.runtime.IPath, org.eclipse.core.runtime.IPath, IProgressMonitor)
  */
  
-public interface IClassFile extends IJavaElement, IParent, IOpenable, ISourceReference /* TODO JDT, ICodeAssist */ {
+public interface IClassFile extends IJavaElement, IParent, IOpenable, ISourceReference
+/* TODO JDT code completion
+, ICodeAssist 
+*/ 
+{
 	
 /**
  * Changes this class file handle into a working copy. A new {@link IBuffer} is

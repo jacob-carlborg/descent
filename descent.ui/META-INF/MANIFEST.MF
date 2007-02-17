@@ -3,21 +3,23 @@ Bundle-ManifestVersion: 2
 Bundle-Name: Descent UI Plug-in
 Bundle-SymbolicName: descent.ui;singleton:=true
 Bundle-Version: 0.1.20061228
-Bundle-Activator: descent.ui.DescentUI
+Bundle-Activator: descent.internal.ui.JavaPlugin
 Bundle-Localization: plugin
-Require-Bundle: org.eclipse.core.runtime,
- org.eclipse.core.resources,
+Require-Bundle: org.eclipse.ui,
+ org.eclipse.help,
  org.eclipse.core.filesystem,
+ org.eclipse.core.resources,
+ org.eclipse.core.runtime,
  org.eclipse.jface.text,
- org.eclipse.ui,
- org.eclipse.ui.editors,
  org.eclipse.ui.workbench.texteditor,
- org.eclipse.ui.views,
  org.eclipse.ui.ide,
+ org.eclipse.ui.views,
+ org.eclipse.ui.editors,
  descent.core,
  com.ibm.icu
 Eclipse-LazyStart: true
 Eclipse-BuddyPolicy: registered
-Eclipse-RegisterBuddy: org.antlr
-Export-Package: descent.ui,
+Export-Package: descent.internal.ui,
+ descent.internal.ui.javaeditor,
+ descent.ui,
  descent.ui.text

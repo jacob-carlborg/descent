@@ -33,8 +33,8 @@ public interface ITerminalSymbols {
 	int TokenNameRPAREN = 2;
 	int TokenNameLBRACKET = 3;
 	int TokenNameRBRACKET = 4;
-	int TokenNameLCURLY = 5;
-	int TokenNameRCURLY = 6;
+	int TokenNameLBRACE = 5;
+	int TokenNameRBRACE = 6;
 	int TokenNameCOLON = 7;
 	int TokenNameNOT = 8;
 	int TokenNameSEMICOLON = 9;

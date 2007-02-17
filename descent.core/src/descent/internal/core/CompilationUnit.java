@@ -14,7 +14,6 @@ package descent.internal.core;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 import org.eclipse.core.resources.IContainer;
@@ -27,6 +26,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.PerformanceStats;
 
+import descent.core.Flags;
 import descent.core.IBuffer;
 import descent.core.IBufferFactory;
 import descent.core.ICompilationUnit;
@@ -39,6 +39,7 @@ import descent.core.IMember;
 import descent.core.IMethod;
 import descent.core.IOpenable;
 import descent.core.IPackageDeclaration;
+import descent.core.IPackageFragment;
 import descent.core.IPackageFragmentRoot;
 import descent.core.IProblemRequestor;
 import descent.core.ISourceManipulation;
@@ -50,8 +51,6 @@ import descent.core.JavaConventions;
 import descent.core.JavaModelException;
 import descent.core.WorkingCopyOwner;
 import descent.core.compiler.CharOperation;
-import descent.core.compiler.IProblem;
-import descent.core.dom.AST;
 import descent.internal.compiler.SourceElementParser;
 import descent.internal.compiler.util.SuffixConstants;
 import descent.internal.core.util.MementoTokenizer;
@@ -61,7 +60,7 @@ import descent.internal.core.util.Util;
 /**
  * @see ICompilationUnit
  */
-public class CompilationUnit extends Openable implements ICompilationUnit /*, descent.internal.compiler.env.ICompilationUnit*/ , SuffixConstants {
+public class CompilationUnit extends Openable implements ICompilationUnit, descent.internal.compiler.env.ICompilationUnit, SuffixConstants {
 	
 	private static final IImportDeclaration[] NO_IMPORTS = new IImportDeclaration[0];
 	
@@ -180,7 +179,7 @@ protected boolean buildStructure(OpenableElementInfo info, final IProgressMonito
 	// compute other problems if needed
 	// CompilationUnit compilationUnitDeclaration = null;
 	try {
-		/* TODO JDT
+		/* TODO JDT problems
 		if (computeProblems) {			
 			if (problems == null) {
 				// report problems to the problem requestor
@@ -253,7 +252,7 @@ protected void closing(Object info) {
  * @see ICodeAssist#codeComplete(int, ICompletionRequestor)
  * @deprecated
  */
-/* TODO JDT
+/* TODO JDT code completion
 public void codeComplete(int offset, ICompletionRequestor requestor) throws JavaModelException {
 	codeComplete(offset, requestor, DefaultWorkingCopyOwner.PRIMARY);
 }
@@ -262,7 +261,7 @@ public void codeComplete(int offset, ICompletionRequestor requestor) throws Java
  * @see ICodeAssist#codeComplete(int, ICompletionRequestor, WorkingCopyOwner)
  * @deprecated
  */
-/* TODO JDT
+/* TODO JDT code completion
 public void codeComplete(int offset, ICompletionRequestor requestor, WorkingCopyOwner workingCopyOwner) throws JavaModelException {
 	if (requestor == null) {
 		throw new IllegalArgumentException("Completion requestor cannot be null"); //$NON-NLS-1$
@@ -274,7 +273,7 @@ public void codeComplete(int offset, ICompletionRequestor requestor, WorkingCopy
  * @see ICodeAssist#codeComplete(int, ICodeCompletionRequestor)
  * @deprecated - use codeComplete(int, ICompletionRequestor)
  */
-/* TODO JDT
+/* TODO JDT code completion
 public void codeComplete(int offset, final ICodeCompletionRequestor requestor) throws JavaModelException {
 	
 	if (requestor == null){
@@ -334,7 +333,7 @@ public void codeComplete(int offset, final ICodeCompletionRequestor requestor) t
 /* (non-Javadoc)
  * @see descent.core.ICodeAssist#codeComplete(int, descent.core.CompletionRequestor)
  */
-/* TODO JDT
+/* TODO JDT code completion
 public void codeComplete(int offset, CompletionRequestor requestor) throws JavaModelException {
 	codeComplete(offset, requestor, DefaultWorkingCopyOwner.PRIMARY);
 }
@@ -343,7 +342,7 @@ public void codeComplete(int offset, CompletionRequestor requestor) throws JavaM
 /* (non-Javadoc)
  * @see descent.core.ICodeAssist#codeComplete(int, descent.core.CompletionRequestor, descent.core.WorkingCopyOwner)
  */
-/* TODO JDT
+/* TODO JDT code completion
 public void codeComplete(int offset, CompletionRequestor requestor, WorkingCopyOwner workingCopyOwner) throws JavaModelException {
 	codeComplete(this, isWorkingCopy() ? (descent.internal.compiler.env.ICompilationUnit) getOriginalElement() : this, offset, requestor, workingCopyOwner);
 }
@@ -352,7 +351,7 @@ public void codeComplete(int offset, CompletionRequestor requestor, WorkingCopyO
 /**
  * @see ICodeAssist#codeSelect(int, int)
  */
-/* TODO JDT
+/* TODO JDT code completion
 public IJavaElement[] codeSelect(int offset, int length) throws JavaModelException {
 	return codeSelect(offset, length, DefaultWorkingCopyOwner.PRIMARY);
 }
@@ -360,7 +359,7 @@ public IJavaElement[] codeSelect(int offset, int length) throws JavaModelExcepti
 /**
  * @see ICodeAssist#codeSelect(int, int, WorkingCopyOwner)
  */
-/* TODO JDT
+/* TODO JDT code completion
 public IJavaElement[] codeSelect(int offset, int length, WorkingCopyOwner workingCopyOwner) throws JavaModelException {
 	return super.codeSelect(this, offset, length, workingCopyOwner);
 }
@@ -404,10 +403,7 @@ protected Object createElementInfo() {
  * @see ICompilationUnit#createImport(String, IJavaElement, IProgressMonitor)
  */
 public IImportDeclaration createImport(String importName, IJavaElement sibling, IProgressMonitor monitor) throws JavaModelException {
-	/* TODO JDT
 	return createImport(importName, sibling, Flags.AccDefault, monitor);
-	*/
-	return null;
 }
 
 /**
@@ -415,33 +411,26 @@ public IImportDeclaration createImport(String importName, IJavaElement sibling, 
  * @since 3.0
  */
 public IImportDeclaration createImport(String importName, IJavaElement sibling, int flags, IProgressMonitor monitor) throws JavaModelException {
-	/* TODO JDT
 	CreateImportOperation op = new CreateImportOperation(importName, this, flags);
 	if (sibling != null) {
 		op.createBefore(sibling);
 	}
 	op.runOperation(monitor);
 	return getImport(importName);
-	*/
-	return null;
 }
 
 /**
  * @see ICompilationUnit#createPackageDeclaration(String, IProgressMonitor)
  */
 public IPackageDeclaration createPackageDeclaration(String pkg, IProgressMonitor monitor) throws JavaModelException {
-	/* TODO JDT
 	CreatePackageDeclarationOperation op= new CreatePackageDeclarationOperation(pkg, this);
 	op.runOperation(monitor);
 	return getPackageDeclaration(pkg);
-	*/
-	return null;
 }
 /**
  * @see ICompilationUnit#createType(String, IJavaElement, boolean, IProgressMonitor)
  */
 public IType createType(String content, IJavaElement sibling, boolean force, IProgressMonitor monitor) throws JavaModelException {
-	/* TODO JDT
 	if (!exists()) {
 		//autogenerate this compilation unit
 		IPackageFragment pkg = (IPackageFragment) getParent();
@@ -460,8 +449,6 @@ public IType createType(String content, IJavaElement sibling, boolean force, IPr
 	}
 	op.runOperation(monitor);
 	return (IType) op.getResultElements()[0];
-	*/
-	return null;
 }
 /**
  * @see ISourceManipulation#delete(boolean, IProgressMonitor)

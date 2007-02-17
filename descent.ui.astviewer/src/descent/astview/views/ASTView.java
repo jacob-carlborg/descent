@@ -74,11 +74,20 @@ import descent.astview.ASTViewImages;
 import descent.astview.ASTViewPlugin;
 import descent.astview.EditorUtility;
 import descent.astview.NodeFinder;
+import descent.core.IClassFile;
+import descent.core.ICompilationUnit;
 import descent.core.IJavaElement;
 import descent.core.IOpenable;
+import descent.core.IProblemRequestor;
+import descent.core.JavaModelException;
+import descent.core.WorkingCopyOwner;
+import descent.core.compiler.IProblem;
 import descent.core.dom.AST;
 import descent.core.dom.ASTNode;
+import descent.core.dom.ASTParser;
 import descent.core.dom.CompilationUnit;
+import descent.internal.ui.JavaPlugin;
+import descent.internal.ui.javaeditor.ASTProvider;
 
 public class ASTView extends ViewPart implements IShowInSource {
 	
@@ -446,17 +455,17 @@ public class ASTView extends ViewPart implements IShowInSource {
 		fRoot= null;
 		
 		if (editor != null) {
-			CompilationUnit compilationUnit = EditorUtility.getCompilationUnit(editor);
-			if (compilationUnit == null) {
+			IOpenable openable= EditorUtility.getJavaInput(editor);
+			if (openable == null) {
 				throw new CoreException(getErrorStatus("Editor not showing a CU or class file", null)); //$NON-NLS-1$
 			}
-			fRoot= compilationUnit;
-			int astLevel= getInitialASTLevel();
+			fOpenable= openable;
+			int astLevel= getInitialASTLevel((IJavaElement) openable);
 			
 			ISelection selection= editor.getSelectionProvider().getSelection();
 			if (selection instanceof ITextSelection) {
 				ITextSelection textSelection= (ITextSelection) selection;
-				fRoot= internalSetInput(compilationUnit, textSelection.getOffset(), textSelection.getLength(), astLevel);
+				fRoot= internalSetInput(openable, textSelection.getOffset(), textSelection.getLength(), astLevel);
 				fEditor= editor;
 				setASTLevel(astLevel, false);
 			}
@@ -465,12 +474,17 @@ public class ASTView extends ViewPart implements IShowInSource {
 
 	}
 	
-	private int getInitialASTLevel() {
+	private int getInitialASTLevel(IJavaElement openable) {
 		return D1;
 	}
 
-	private CompilationUnit internalSetInput(CompilationUnit root, int offset, int length, int astLevel) throws CoreException {
+	private CompilationUnit internalSetInput(IOpenable input, int offset, int length, int astLevel) throws CoreException {
+		if (input.getBuffer() == null) {
+			throw new CoreException(getErrorStatus("Input has no buffer", null)); //$NON-NLS-1$
+		}
+		
 		try {
+			CompilationUnit root= createAST(input, astLevel, offset);
 			resetView(root);
 			if (root == null) {
 				setContentDescription("AST could not be created."); //$NON-NLS-1$
@@ -488,6 +502,75 @@ public class ASTView extends ViewPart implements IShowInSource {
 		} catch (RuntimeException e) {
 			throw new CoreException(getErrorStatus("Could not create AST:\n" + e.getMessage(), e)); //$NON-NLS-1$
 		}
+	}
+	
+	private CompilationUnit createAST(IOpenable input, int astLevel, int offset) throws JavaModelException, CoreException {
+		long startTime;
+		long endTime;
+		CompilationUnit root;
+		
+		if ((input instanceof ICompilationUnit || input instanceof IClassFile)) {
+			IProblemRequestor problemRequestor= new IProblemRequestor() { //strange: don't get bindings when supplying null as problemRequestor
+				public void acceptProblem(IProblem problem) {/*not interested*/}
+				public void beginReporting() {/*not interested*/}
+				public void endReporting() {/*not interested*/}
+				public boolean isActive() {
+					return true;
+				}
+			};
+			ICompilationUnit wc;
+			if (input instanceof ICompilationUnit) {
+				wc= ((ICompilationUnit) input).getWorkingCopy(
+						new WorkingCopyOwner() {/*useless subclass*/},
+						problemRequestor,
+						null);
+			} else {
+				wc= ((IClassFile) input).becomeWorkingCopy(
+						problemRequestor,
+						new WorkingCopyOwner() {/*useless subclass*/},
+						null);
+			}
+			try {
+				//make inconsistent (otherwise, no AST is generated):
+//				IBuffer buffer= wc.getBuffer();
+//				buffer.append(new char[] {' '});
+//				buffer.replace(buffer.getLength() - 1, 1, new char[0]);
+				
+				startTime= System.currentTimeMillis();
+				root= wc.reconcile(getCurrentASTLevel(), true, fStatementsRecovery, null, null);
+				endTime= System.currentTimeMillis();
+			} finally {
+				wc.discardWorkingCopy();
+			}
+			
+		} else if (input instanceof ICompilationUnit) {
+			ICompilationUnit cu= (ICompilationUnit) input;
+			startTime= System.currentTimeMillis();
+			root= JavaPlugin.getDefault().getASTProvider().getAST(cu, ASTProvider.WAIT_NO, null);
+			endTime= System.currentTimeMillis();
+			
+		} else {
+			ASTParser parser= ASTParser.newParser(astLevel);
+			//parser.setResolveBindings(fCreateBindings);
+			if (input instanceof ICompilationUnit) {
+				parser.setSource((ICompilationUnit) input);
+			} else {
+				//parser.setSource((IClassFile) input);
+			}
+			parser.setStatementsRecovery(fStatementsRecovery);
+			/*
+			if (getCurrentInputKind() == ASTInputKindAction.USE_FOCAL) {
+				parser.setFocalPosition(offset);
+			}
+			*/
+			startTime= System.currentTimeMillis();
+			root= (CompilationUnit) parser.createAST(null);
+			endTime= System.currentTimeMillis();
+		}
+		if (root != null) {
+			//updateContentDescription((IJavaElement) input, root, endTime - startTime);
+		}
+		return root;
 	}
 	
 	private void clearView() {
@@ -737,7 +820,7 @@ public class ASTView extends ViewPart implements IShowInSource {
 			length= node.getLength();
 		}
 
-		internalSetInput(fRoot, offset, length, getCurrentASTLevel());
+		internalSetInput(fOpenable, offset, length, getCurrentASTLevel());
 	}
 		
 	protected void setASTLevel(int level, boolean doRefresh) {
@@ -820,7 +903,7 @@ public class ASTView extends ViewPart implements IShowInSource {
 			return;
 		}
 		if (fRoot == null || part != fEditor) {
-			if (part instanceof ITextEditor && (EditorUtility.getCompilationUnit((ITextEditor) part) != null)) {
+			if (part instanceof ITextEditor && (EditorUtility.getJavaInput((ITextEditor) part) != null)) {
 				try {
 					setInput((ITextEditor) part);
 				} catch (CoreException e) {
