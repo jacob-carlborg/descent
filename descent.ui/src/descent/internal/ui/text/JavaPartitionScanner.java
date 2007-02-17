@@ -26,6 +26,9 @@ import org.eclipse.jface.text.rules.Token;
 import org.eclipse.jface.text.rules.WordRule;
 
 import descent.ui.text.IJavaPartitions;
+import descent.ui.text.rules.DEscapeRule;
+import descent.ui.text.rules.DStringRule;
+import descent.ui.text.rules.NestedCommentRule;
 
 
 /**
@@ -91,33 +94,34 @@ public class JavaPartitionScanner extends RuleBasedPartitionScanner implements I
 	public JavaPartitionScanner() {
 		super();
 
+		// TODO JDT UI update according to D partitions
 		IToken string= new Token(JAVA_STRING);
 		IToken character= new Token(JAVA_CHARACTER);
 		IToken javaDoc= new Token(JAVA_DOC);
 		IToken multiLineComment= new Token(JAVA_MULTI_LINE_COMMENT);
 		IToken singleLineComment= new Token(JAVA_SINGLE_LINE_COMMENT);
+		
+		List<IPredicateRule> rules = new ArrayList<IPredicateRule>();
+		
+		rules.add(new NestedCommentRule("/++", "/+", "+/", javaDoc, (char) 0, true));
+		rules.add(new NestedCommentRule("/+", "/+", "+/", multiLineComment, (char) 0, true));
+		rules.add(new MultiLineRule("/**", "*/", javaDoc, (char) 0, true));
+		rules.add(new MultiLineRule("/*", "*/", multiLineComment, (char) 0, true));
 
-		List rules= new ArrayList();
-
-		// Add rule for single line comments.
-		rules.add(new EndOfLineRule("//", singleLineComment)); //$NON-NLS-1$
-
-		// Add rule for strings.
-		rules.add(new SingleLineRule("\"", "\"", string, '\\')); //$NON-NLS-2$ //$NON-NLS-1$
-
-		// Add rule for character constants.
-		rules.add(new SingleLineRule("'", "'", character, '\\')); //$NON-NLS-2$ //$NON-NLS-1$
-
-		// Add special case word rule.
-		EmptyCommentRule wordRule= new EmptyCommentRule(multiLineComment);
-		rules.add(wordRule);
-
-		// Add rules for multi-line comments and javadoc.
-		rules.add(new MultiLineRule("/**", "*/", javaDoc)); //$NON-NLS-1$ //$NON-NLS-2$
-		rules.add(new MultiLineRule("/*", "*/", multiLineComment)); //$NON-NLS-1$ //$NON-NLS-2$
-
-		IPredicateRule[] result= new IPredicateRule[rules.size()];
-		rules.toArray(result);
-		setPredicateRules(result);
+		rules.add(new EndOfLineRule("///", javaDoc));
+		rules.add(new EndOfLineRule("//", singleLineComment));
+		
+		rules.add(new DStringRule("x\"", "\"", string, (char) 0));
+		
+		rules.add(new DStringRule("r\"", "\"", string, (char) 0));
+		rules.add(new DStringRule("`", "`", string, (char) 0));
+		
+		rules.add(new DStringRule("\"", "\"", string, '\\'));
+		
+		rules.add(new DEscapeRule(string));
+		
+		rules.add(new SingleLineRule("'", "'", character, '\\', true));
+		
+		setPredicateRules(rules.toArray(new IPredicateRule[rules.size()]));
 	}
 }

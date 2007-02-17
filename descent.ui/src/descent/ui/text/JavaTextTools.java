@@ -11,21 +11,19 @@
 package descent.ui.text;
 
 import org.eclipse.core.runtime.Preferences;
-
 import org.eclipse.jface.preference.IPreferenceStore;
-import org.eclipse.jface.util.IPropertyChangeListener;
-import org.eclipse.jface.util.PropertyChangeEvent;
-
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IDocumentExtension3;
 import org.eclipse.jface.text.IDocumentPartitioner;
 import org.eclipse.jface.text.rules.FastPartitioner;
 import org.eclipse.jface.text.rules.IPartitionTokenScanner;
 import org.eclipse.jface.text.rules.RuleBasedScanner;
+import org.eclipse.jface.util.IPropertyChangeListener;
+import org.eclipse.jface.util.PropertyChangeEvent;
 
-import descent.internal.ui.text.FastJavaPartitionScanner;
 import descent.internal.ui.text.JavaColorManager;
 import descent.internal.ui.text.JavaCommentScanner;
+import descent.internal.ui.text.JavaPartitionScannerFactory;
 import descent.internal.ui.text.SingleTokenJavaScanner;
 import descent.internal.ui.text.java.JavaCodeScanner;
 import descent.internal.ui.text.javadoc.JavaDocScanner;
@@ -79,7 +77,7 @@ public class JavaTextTools {
 	/** The JavaDoc scanner. */
 	private JavaDocScanner fJavaDocScanner;
 	/** The Java partitions scanner. */
-	private FastJavaPartitionScanner fPartitionScanner;
+	private IPartitionTokenScanner fPartitionScanner;
 	/** The preference store. */
 	private IPreferenceStore fPreferenceStore;
 	/**
@@ -168,7 +166,7 @@ public class JavaTextTools {
 		fSinglelineCommentScanner= new JavaCommentScanner(fColorManager, store, coreStore, IJavaColorConstants.JAVA_SINGLE_LINE_COMMENT);
 		fStringScanner= new SingleTokenJavaScanner(fColorManager, store, IJavaColorConstants.JAVA_STRING);
 		fJavaDocScanner= new JavaDocScanner(fColorManager, store, coreStore);
-		fPartitionScanner= new FastJavaPartitionScanner();
+		fPartitionScanner= JavaPartitionScannerFactory.newJavaPartitionScanner();
 	}
 
 	/**

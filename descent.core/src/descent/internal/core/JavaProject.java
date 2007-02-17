@@ -661,11 +661,7 @@ public class JavaProject
 	 * Configure the project with Java nature.
 	 */
 	public void configure() throws CoreException {
-
-		// register Java builder
-		/* TODO JDT builder 
 		addToBuildSpec(JavaCore.BUILDER_ID);
-		*/
 	}
 	/*
 	 * Returns whether the given resource is accessible through the children or the non-Java resources of this project.

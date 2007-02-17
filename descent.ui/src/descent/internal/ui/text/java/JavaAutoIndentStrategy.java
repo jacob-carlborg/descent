@@ -52,6 +52,7 @@ import descent.internal.ui.javaeditor.ASTProvider;
 import descent.internal.ui.text.FastJavaPartitionScanner;
 import descent.internal.ui.text.JavaHeuristicScanner;
 import descent.internal.ui.text.JavaIndenter;
+import descent.internal.ui.text.JavaPartitionScannerFactory;
 import descent.internal.ui.text.Symbols;
 import descent.ui.PreferenceConstants;
 import descent.ui.text.IJavaPartitions;
@@ -593,7 +594,7 @@ public class JavaAutoIndentStrategy extends DefaultIndentLineAutoEditStrategy {
 									  IJavaPartitions.JAVA_CHARACTER,
 									  IDocument.DEFAULT_CONTENT_TYPE
 		};
-		FastPartitioner partitioner= new FastPartitioner(new FastJavaPartitionScanner(), types);
+		FastPartitioner partitioner= new FastPartitioner(JavaPartitionScannerFactory.newJavaPartitionScanner(), types);
 		partitioner.connect(document);
 		document.setDocumentPartitioner(IJavaPartitions.JAVA_PARTITIONING, partitioner);
 	}

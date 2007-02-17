@@ -31,6 +31,43 @@ public class Comment_Test extends Parser_Test {
 		assertEquals(2, comments.size());
 	}
 	
+	public void testPreviousComments3() {
+		String s = " /** hola */ class Clazz; \n /** chau */ class Claxx;";
+		List<Declaration> declarations = getDeclarationsNoProblems(s);
+		assertEquals(2, declarations.size());
+		
+		AggregateDeclaration c;
+		List<DDocComment> comments;
+		
+		c= (AggregateDeclaration) declarations.get(0);		
+		assertPosition(c, 1, 24);
+		
+		comments = c.preDDocs();
+		assertEquals(1, comments.size());
+		assertPosition(comments.get(0), 1, 11);
+		
+		c= (AggregateDeclaration) declarations.get(1);		
+		assertPosition(c, 28, 24);
+		
+		comments = c.preDDocs();
+		assertEquals(1, comments.size());
+		assertPosition(comments.get(0), 28, 11);
+	}
+	
+	public void testPreviousComments4() {
+		String s = " /** hola */ // Hola\n /** Pepe */ class Clazz; \n /** lala */ // Jeje \n /** chau */ class Claxx;";
+		List<Declaration> declarations = getDeclarationsNoProblems(s);
+		assertEquals(2, declarations.size());
+		
+		AggregateDeclaration c;
+		
+		c= (AggregateDeclaration) declarations.get(0);		
+		assertEquals(1, c.preDDocs().size());
+		
+		c= (AggregateDeclaration) declarations.get(1);		
+		assertEquals(1, c.preDDocs().size());
+	}
+	
 	public void testDontCarryComments() {
 		String s = " /** hola */ class A; class B;";
 		List<Declaration> declDefs = getDeclarationsNoProblems(s);
@@ -46,6 +83,21 @@ public class Comment_Test extends Parser_Test {
 		c = (AggregateDeclaration) declDefs.get(1);
 		comments = c.preDDocs();
 		assertEquals(0, comments.size());
+	}
+	
+	public void testDontCarryComments2() {
+		String s = " /** hola */ class A { class B; }";
+		List<Declaration> declDefs = getDeclarationsNoProblems(s);
+		assertEquals(1, declDefs.size());
+		
+		AggregateDeclaration c;
+		List<DDocComment> comments;
+		
+		c = (AggregateDeclaration) declDefs.get(0);
+		comments = c.preDDocs();
+		assertEquals(1, comments.size());
+		
+		assertEquals(0, c.declarations().get(0).preDDocs().size());
 	}
 	
 	public void testLeadingComment() {

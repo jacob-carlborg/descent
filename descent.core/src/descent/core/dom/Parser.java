@@ -251,11 +251,12 @@ class Parser extends Lexer {
 	@SuppressWarnings("unchecked")
 	public List<Declaration> parseModule() {
 	    List<Declaration> decldefs = new ArrayList<Declaration>();
-	    List<DDocComment> moduleDocComments = getLastDocComments();
 
 		// ModuleDeclation leads off
 		if (token.value == TOKmodule) {
 			int start = token.ptr;
+			
+			List<DDocComment> moduleDocComments = getLastDocComments();
 			
 			nextToken();
 			if (token.value != TOKidentifier) {
@@ -387,7 +388,7 @@ class Parser extends Lexer {
 			case TOKtypeof:
 			case TOKdot:
 				// Ldeclaration:
-				a = parseDeclarations();
+				a = parseDeclarations(lastComments);
 				decldefs.addAll(a);
 				continue;
 
@@ -2246,7 +2247,7 @@ class Parser extends Lexer {
 	}
 	
 	@SuppressWarnings("unchecked")
-	private List<Declaration> parseDeclarations() {
+	private List<Declaration> parseDeclarations(List<DDocComment> lastComments) {
 		Type ts;
 		Type t;
 		Type tfirst;
@@ -2254,7 +2255,6 @@ class Parser extends Lexer {
 		List a;
 		TOK tok;
 		
-		List<DDocComment> lastComments = getLastDocComments();
 		List<Modifier> modifiers = new ArrayList<Modifier>();
 		
 		Token firstToken = new Token(token);
@@ -3748,7 +3748,7 @@ class Parser extends Lexer {
 	private void parseStatement_Ldeclaration(Statement[] s, int flags) {
 		List a;
 
-		a = parseDeclarations();
+		a = parseDeclarations(new ArrayList<DDocComment>());
 		if (a.size() > 1) {
 			List<Statement> as = new ArrayList<Statement>(a.size());
 			for (int i = 0; i < a.size(); i++) {
@@ -6727,11 +6727,14 @@ class Parser extends Lexer {
 				break;
 			}
 		}
+		
+		lastDocCommentRead = comments.size();
+		
 		return toReturn;
 	}
 	
 	private void adjustLastDocComment() {
-		lastDocCommentRead = comments.size();
+		// not used, see if this is needed
 	}
 	
 	private void attachLeadingComments(Declaration declaration) {
