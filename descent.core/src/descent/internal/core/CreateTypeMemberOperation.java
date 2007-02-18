@@ -107,7 +107,7 @@ protected ASTNode generateElementAST(ASTRewrite rewriter, IDocument document, IC
 		ASTParser parser = ASTParser.newParser(AST.D1);
 		parser.setSource(this.source.toCharArray());
 		parser.setProject(getCompilationUnit().getJavaProject());
-		parser.setKind(ASTParser.K_DECLARATIONS);
+		parser.setKind(ASTParser.K_CLASS_BODY_DECLARATIONS);
 		ASTNode node = parser.createAST(this.progressMonitor);
 		String createdNodeSource;
 		if (node.getNodeType() != ASTNode.COMPILATION_UNIT) {

@@ -21,6 +21,7 @@ import descent.core.ICompilationUnit;
 import descent.core.IJavaProject;
 import descent.core.JavaCore;
 import descent.core.WorkingCopyOwner;
+import descent.core.compiler.CharOperation;
 import descent.internal.core.DefaultWorkingCopyOwner;
 
 /**
@@ -74,31 +75,33 @@ public class ASTParser {
 	 * Kind constant used to request that the source be parsed
      * as a sequence of statements.
 	 */
-	//public static final int K_STATEMENTS = 0x02;
+	public static final int K_STATEMENTS = 0x02;
 	
 	/**
 	 * Kind constant used to request that the source be parsed
-	 * as a sequence of class body declarations.
+	 * as a sequence of class body declarations. This is a
+	 * synomym of K_COMPILATION_UNIT retained from JDT
+	 * for improved compatibility.  
 	 */
-	public static final int K_DECLARATIONS = 0x04;
-	
-	/**
-	 * Kind constant used to request that the source be parsed
-	 * as a compilation unit.
-	 */
-	public static final int K_COMPILATION_UNIT = 0x08;
+	public static final int K_CLASS_BODY_DECLARATIONS = 0x04;
 	
 	/**
 	 * Kind constant used to request that the source be parsed
 	 * as a compilation unit.
 	 */
-	public static final int K_STATEMENT = 0x10;
+	public static final int K_COMPILATION_UNIT = 0x04;
 	
 	/**
 	 * Kind constant used to request that the source be parsed
-	 * as a compilation unit.
+	 * as a single statement.
 	 */
-	public static final int K_INITIALIZER = 0x20;
+	public static final int K_STATEMENT = 0x08;
+	
+	/**
+	 * Kind constant used to request that the source be parsed
+	 * as a single initializer.
+	 */
+	public static final int K_INITIALIZER = 0x10;
 	
 	/**
 	 * Creates a new object for creating a Java abstract syntax tree
@@ -374,15 +377,19 @@ public class ASTParser {
 	 * <ul>
 	 * <li>{@link #K_COMPILATION_UNIT K_COMPILATION_UNIT}: The result node
 	 * is a {@link CompilationUnit}.</li>
-	 * <li>{@link #K_DECLARATIONS K_CLASS_BODY_DECLARATIONS}: The result node
-	 * is a {@link TypeDeclaration} whose
-	 * {@link TypeDeclaration#bodyDeclarations() bodyDeclarations}
-	 * are the new trees. Other aspects of the type declaration are unspecified.</li>
+	 * <li>{@link #K_CLASS_BODY_DECLARATIONS K_CLASS_BODY_DECLARATIONS}: The result node
+	 * is a {@link CompilationUnit} whose
+	 * {@link CompilationUnitDeclaration#declarations() declarations}
+	 * are the new trees. Other aspects of the declaration are unspecified.</li>
 	 * <li>{@link #K_STATEMENTS K_STATEMENTS}: The result node is a
 	 * {@link Block Block} whose {@link Block#statements() statements}
 	 * are the new trees. Other aspects of the block are unspecified.</li>
+	 * <li>{@link #K_STATEMENT K_STATEMENT}: The result node is a
+	 * subclass of {@link Statement Statement}. Other aspects of the statement are unspecified.</li>
 	 * <li>{@link #K_EXPRESSION K_EXPRESSION}: The result node is a subclass of
 	 * {@link Expression Expression}. Other aspects of the expression are unspecified.</li>
+	 * <li>{@link #K_INITIALIZER K_INITIALIZER}: The result node is a subclass of
+	 * {@link Initializer Initializer}. Other aspects of the initializer are unspecified.</li>
 	 * </ul>
 	 * The resulting AST node is rooted under (possibly contrived)
 	 * {@link CompilationUnit CompilationUnit} node, to allow the
@@ -433,17 +440,16 @@ public class ASTParser {
 	 *  
 	 * @param kind the kind of construct to parse: one of 
 	 * {@link #K_COMPILATION_UNIT},
-	 * {@link #K_DECLARATIONS},
+	 * {@link #K_CLASS_BODY_DECLARATIONS},
 	 * {@link #K_EXPRESSION},
 	 * {@link #K_STATEMENTS}
 	 */
 	public void setKind(int kind) {
 	    if ((kind != K_COMPILATION_UNIT)
-		    && (kind != K_DECLARATIONS)
 		    && (kind != K_EXPRESSION)
 		    && (kind != K_STATEMENT)
 		    && (kind != K_INITIALIZER)
-		    /*&& (kind != K_STATEMENTS)*/) {
+		    && (kind != K_STATEMENTS)) {
 	    	throw new IllegalArgumentException();
 	    }
 		this.astKind = kind;
@@ -799,10 +805,15 @@ public class ASTParser {
 			throw new IllegalStateException();
 		}
 		
+		// If statements, turn it into a block
+		if (this.astKind == K_STATEMENTS) {
+			source = CharOperation.concat('{', source, '}');
+		}
+		
 		Parser parser = new Parser(ast, source, sourceOffset, sourceLength == -1 ? source.length : sourceLength);
 		ASTNode result = null;
 		
-		//boolean needToResolveBindings = this.resolveBindings;
+		boolean needToResolveBindings = this.resolveBindings;
 		switch(this.astKind) {
 		case K_INITIALIZER :
 			result = parser.parseInitializer();
@@ -813,8 +824,19 @@ public class ASTParser {
 		case K_STATEMENT :
 			result = parser.parseStatement(0);
 			break;
+		case K_STATEMENTS:
+			result = parser.parseStatement(0);
+			// correct positions due to '{' + source + '}'
+			for(Statement statement : ((Block) result).statements()) {
+				statement.accept(new GenericVisitor() {
+					protected boolean visitNode(ASTNode node) {
+						node.setSourceRange(node.getStartPosition() - 1, node.getLength());
+						return true;
+					}
+				});
+			}
+			break;
 		case K_COMPILATION_UNIT :
-		case K_DECLARATIONS:
 			PublicScanner scanner = new PublicScanner(true, true, true, true, ast.apiLevel);
 			scanner.setLexerAndSource(parser, source);
 			

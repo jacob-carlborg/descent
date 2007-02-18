@@ -2,11 +2,14 @@ package descent.tests.mars;
 
 import java.util.List;
 
+import descent.core.dom.AST;
 import descent.core.dom.ASTNode;
+import descent.core.dom.ASTParser;
 import descent.core.dom.AggregateDeclaration;
 import descent.core.dom.Argument;
 import descent.core.dom.AsmBlock;
 import descent.core.dom.AsmStatement;
+import descent.core.dom.Block;
 import descent.core.dom.BooleanLiteral;
 import descent.core.dom.BreakStatement;
 import descent.core.dom.CatchClause;
@@ -30,6 +33,7 @@ import descent.core.dom.PragmaStatement;
 import descent.core.dom.ReturnStatement;
 import descent.core.dom.ScopeStatement;
 import descent.core.dom.SimpleName;
+import descent.core.dom.Statement;
 import descent.core.dom.StaticAssert;
 import descent.core.dom.StaticAssertStatement;
 import descent.core.dom.StaticIfStatement;
@@ -610,6 +614,20 @@ public class Statement_Test extends Parser_Test {
 			assertEquals(pair[1], var.modifiers().get(1).getModifierKeyword());
 			assertPosition(var.modifiers().get(1), 8, ((String) pair[0]).length());
 		}
+	}
+	
+	public void testParseStatements() {
+		String s = "if(true) { } if (false) { } if (1) { }";
+		
+		ASTParser parser = ASTParser.newParser(AST.D1);
+		parser.setKind(ASTParser.K_STATEMENTS);
+		parser.setSource(s.toCharArray());
+		Block block = (Block) parser.createAST(null);
+		
+		assertEquals(3, block.statements().size());
+		
+		Statement st = block.statements().get(0);
+		assertPosition(st, 0, 12);
 	}
 
 }

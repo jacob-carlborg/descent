@@ -266,7 +266,7 @@ import descent.core.formatter.IndentManipulation;
 	}
 		
 	public static TextEdit formatString(int kind, String string, int indentationLevel, String lineSeparator, Map options) {
-		/* TODO JDT code format
+		/* TODO JDT format
 		return ToolFactory.createCodeFormatter(options).format(kind, string, 0, string.length(), indentationLevel, lineSeparator);
 		*/
 		return null;
@@ -284,7 +284,7 @@ import descent.core.formatter.IndentManipulation;
 	 *  IllegalArgumentException is thrown.
 	 */
 	private static TextEdit formatNode(ASTNode node, String str, int indentationLevel, String lineSeparator, Map options) {
-		/* TODO JDT code format
+		/* TODO JDT format
 		int code;
 		String prefix= ""; //$NON-NLS-1$
 		String suffix= ""; //$NON-NLS-1$
