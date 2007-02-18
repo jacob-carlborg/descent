@@ -29,6 +29,8 @@ import descent.core.JavaCore;
 import descent.core.compiler.CharOperation;
 import descent.internal.compiler.env.AccessRuleSet;
 import descent.internal.compiler.env.INameEnvironment;
+import descent.internal.compiler.env.NameEnvironmentAnswer;
+import descent.internal.compiler.problem.AbortCompilation;
 import descent.internal.compiler.util.SimpleLookupTable;
 import descent.internal.compiler.util.SimpleSet;
 import descent.internal.compiler.util.SuffixConstants;
@@ -264,7 +266,6 @@ private void createFolder(IContainer folder) throws CoreException {
 	}
 }
 
-/*
 private NameEnvironmentAnswer findClass(String qualifiedTypeName, char[] typeName) {
 	if (this.initialTypeNames != null && this.initialTypeNames.includes(qualifiedTypeName)) {
 		if (isIncrementalBuild)
@@ -325,7 +326,6 @@ public NameEnvironmentAnswer findType(char[] typeName, char[][] packageName) {
 			typeName);
 	return null;
 }
-*/
 
 public boolean isPackage(char[][] compoundName, char[] packageName) {
 	return isPackage(new String(CharOperation.concatWith(compoundName, packageName, '/')));

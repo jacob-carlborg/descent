@@ -898,9 +898,7 @@ public class JavaProject
 	public void deconfigure() throws CoreException {
 
 		// deregister Java builder
-		/* TODO JDT builder 
 		removeFromBuildSpec(JavaCore.BUILDER_ID);
-		*/
 	}
 
 	/**

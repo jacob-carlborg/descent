@@ -16,6 +16,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 
 import descent.internal.compiler.env.AccessRuleSet;
+import descent.internal.compiler.env.NameEnvironmentAnswer;
 import descent.internal.compiler.util.SimpleLookupTable;
 
 public class ClasspathDirectory extends ClasspathLocation {
@@ -87,10 +88,10 @@ public boolean equals(Object o) {
 	return this.binaryFolder.equals(dir.binaryFolder);
 } 
 
-/*
 public NameEnvironmentAnswer findClass(String binaryFileName, String qualifiedPackageName, String qualifiedBinaryFileName) {
 	if (!doesFileExist(binaryFileName, qualifiedPackageName, qualifiedBinaryFileName)) return null; // most common case
 
+	/* TODO JDT binary
 	ClassFileReader reader = null;
 	try {
 		reader = Util.newClassFileReader(this.binaryFolder.getFile(new Path(qualifiedBinaryFileName)));
@@ -107,9 +108,10 @@ public NameEnvironmentAnswer findClass(String binaryFileName, String qualifiedPa
 		String fileNameWithoutExtension = qualifiedBinaryFileName.substring(0, qualifiedBinaryFileName.length() - SuffixConstants.SUFFIX_CLASS.length);
 		return new NameEnvironmentAnswer(reader, this.accessRuleSet.getViolatedRestriction(fileNameWithoutExtension.toCharArray()));
 	}
+	*/
+	
 	return null;
 }
-*/
 
 public IPath getProjectRelativePath() {
 	return binaryFolder.getProjectRelativePath();

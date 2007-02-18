@@ -14,6 +14,7 @@ import org.eclipse.core.resources.*;
 import org.eclipse.core.runtime.*;
 
 import descent.internal.compiler.env.AccessRuleSet;
+import descent.internal.compiler.env.NameEnvironmentAnswer;
 
 public abstract class ClasspathLocation {
 
@@ -46,7 +47,7 @@ static ClasspathLocation forLibrary(IFile library, AccessRuleSet accessRuleSet) 
 	return null;
 }
 
-//public abstract NameEnvironmentAnswer findClass(String binaryFileName, String qualifiedPackageName, String qualifiedBinaryFileName);
+public abstract NameEnvironmentAnswer findClass(String binaryFileName, String qualifiedPackageName, String qualifiedBinaryFileName);
 
 public abstract IPath getProjectRelativePath();
 

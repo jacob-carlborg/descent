@@ -13,18 +13,24 @@ package descent.internal.core;
 import java.util.HashMap;
 import java.util.Iterator;
 
+import org.eclipse.core.runtime.ISafeRunnable;
 import org.eclipse.core.runtime.OperationCanceledException;
+import org.eclipse.core.runtime.SafeRunner;
 
 import descent.core.ICompilationUnit;
 import descent.core.IJavaElement;
 import descent.core.IJavaModelStatus;
 import descent.core.IJavaModelStatusConstants;
+import descent.core.IJavaProject;
 import descent.core.IProblemRequestor;
 import descent.core.JavaModelException;
 import descent.core.WorkingCopyOwner;
+import descent.core.compiler.CompilationParticipant;
 import descent.core.compiler.IProblem;
+import descent.core.compiler.ReconcileContext;
 import descent.core.dom.ASTParser;
 import descent.internal.core.util.Messages;
+import descent.internal.core.util.Util;
 
 /**
  * Reconcile a working copy and signal the changes through a delta.
@@ -200,7 +206,6 @@ public class ReconcileWorkingCopyOperation extends JavaModelOperation {
 		return null;
 	}
 	private void notifyParticipants(final CompilationUnit workingCopy) {
-		/* TODO JDT compiler
 		IJavaProject javaProject = getWorkingCopy().getJavaProject();
 		CompilationParticipant[] participants = JavaModelManager.getJavaModelManager().compilationParticipants.getCompilationParticipants(javaProject);	
 		if (participants == null) return;
@@ -225,7 +230,6 @@ public class ReconcileWorkingCopyOperation extends JavaModelOperation {
 				}
 			});
 		}
-		*/
 	}
 	protected IJavaModelStatus verify() {
 		IJavaModelStatus status = super.verify();

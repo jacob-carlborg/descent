@@ -30,8 +30,7 @@ public interface INameEnvironment {
  * internal name A$B, but the source file for A is answered if the binary
  * file is inconsistent.
  */
-
-//NameEnvironmentAnswer findType(char[][] compoundTypeName);
+NameEnvironmentAnswer findType(char[][] compoundTypeName);
 /**
  * Find a type named <typeName> in the package <packageName>.
  * Answer the binary form of the type if it is known to be consistent.
@@ -45,8 +44,7 @@ public interface INameEnvironment {
  * internal name A$B, but the source file for A is answered if the binary
  * file is inconsistent.
  */
-
-	//NameEnvironmentAnswer findType(char[] typeName, char[][] packageName);
+NameEnvironmentAnswer findType(char[] typeName, char[][] packageName);
 /**
  * Answer whether packageName is the name of a known subpackage inside
  * the package parentPackageName. A top level package is found relative to null.
