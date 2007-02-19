@@ -123,6 +123,14 @@ public class Recovery_Tests extends Parser_Test {
 		assertEquals(1, cu.declarations().size());
 	}
 	
+	public void testTemplateWithoutTemplateParameters() {
+		String s = " template T { }";
+		CompilationUnit cu = getCompilationUnit(s);
+		assertEquals(1, cu.getProblems().length);
+		assertEquals(1, cu.declarations().size());
+		assertMalformed(cu.declarations().get(0));
+	}
+	
 	private void assertParsingErrorDeleteToken_NoDeclarations(String s, int start, int length) {
 		CompilationUnit cu = getCompilationUnit(s);
 		assertEquals(1, cu.getProblems().length);

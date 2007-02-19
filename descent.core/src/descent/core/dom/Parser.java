@@ -1274,6 +1274,7 @@ class Parser extends Lexer {
 		Identifier id;
 		List<BaseClass> baseClasses = null;
 		List<TemplateParameter> tpl = null;
+		boolean[] malformed = { false };
 		
 		Token firstToken = new Token(token);
 		
@@ -1284,9 +1285,9 @@ class Parser extends Lexer {
 		} else {
 			id = new Identifier(token);
 			nextToken();
-			if (token.value == TOKlparen) {
+			if (token.value == TOKlparen) {				
 				// Gather template parameter list
-				tpl = parseTemplateParameterList();
+				tpl = parseTemplateParameterList(malformed);
 			}
 		}
 
@@ -1341,6 +1342,10 @@ class Parser extends Lexer {
 				a = newAggregateDeclaration(firstToken.value, id, baseClasses, tpl);
 			}		
 		}
+		
+		if (malformed[0]) {
+			setMalformed(a);
+		}
 
 		return a;
 	}
@@ -1373,63 +1378,71 @@ class Parser extends Lexer {
 	}
 	
 	private TemplateDeclaration parseTemplateDeclaration() {
-	    Identifier id;
-	    List<TemplateParameter> tpl;
-	    List<Declaration> decldefs;
+		Identifier id;
+		List<TemplateParameter> tpl;
+		List<Declaration> decldefs;
+		boolean[] malformed = { false };
 
-	    Token firstToken = new Token(token);
-	    nextToken();
-	    if (token.value != TOKidentifier)
-	    {
-	    	parsingErrorInsertTokenAfter(prevToken, "Identifier");
-	    	return null;
-			//goto Lerr;
-	    }
-	    id = new Identifier(token);
-	    nextToken();
-	    tpl = parseTemplateParameterList();
-	    if (tpl == null)
-	    	//goto Lerr;
-	    	return null;
-
-	    if (token.value != TOKlcurly)
-	    {	
-	    	parsingErrorInsertToComplete(prevToken, "TemplateBodyDeclaration", "TemplateDeclaration");
-			//goto Lerr;
-	    	return null;
-	    }
-	    else
-	    {
+		Token firstToken = new Token(token);
 		nextToken();
-		decldefs = parseDeclDefs(false, new ArrayList<Modifier>());
-		if (token.value != TOKrcurly)
-		{
-			parsingErrorInsertToComplete(prevToken, "TemplateBodyDeclaration", "TemplateDeclaration");
-		    //goto Lerr;
+		if (token.value != TOKidentifier) {
+			parsingErrorInsertTokenAfter(prevToken, "Identifier");
 			return null;
+			// goto Lerr;
 		}
+		id = new Identifier(token);
 		nextToken();
-	    }
+		tpl = parseTemplateParameterList(malformed);
+		if (tpl == null)
+			// goto Lerr;
+			return null;
 
-	    
-	    TemplateDeclaration tempdecl = newTemplateDeclaration(id, tpl, decldefs);
-	    tempdecl.setSourceRange(firstToken.ptr, prevToken.ptr + prevToken.len - firstToken.ptr);
-	    return tempdecl;
+		if (token.value != TOKlcurly) {
+			parsingErrorInsertToComplete(prevToken, "TemplateBodyDeclaration",
+					"TemplateDeclaration");
+			// goto Lerr;
+			return null;
+		} else {
+			nextToken();
+			decldefs = parseDeclDefs(false, new ArrayList<Modifier>());
+			if (token.value != TOKrcurly) {
+				parsingErrorInsertToComplete(prevToken,
+						"TemplateBodyDeclaration", "TemplateDeclaration");
+				// goto Lerr;
+				return null;
+			}
+			nextToken();
+		}
 
-	//Lerr:
-	//    return NULL;
+		TemplateDeclaration tempdecl = newTemplateDeclaration(id, tpl, decldefs);
+		tempdecl.setSourceRange(firstToken.ptr, prevToken.ptr + prevToken.len
+				- firstToken.ptr);
+		
+		if (malformed[0]) {
+			setMalformed(tempdecl);
+		}
+		
+		return tempdecl;
+
+		// Lerr:
+		// return NULL;
 	}
 	
 	@SuppressWarnings("unchecked")
-	private List<TemplateParameter> parseTemplateParameterList() {
-		List<TemplateParameter> tpl;
+	private List<TemplateParameter> parseTemplateParameterList(boolean[] malformed) {
+		// Change from DMD: empty template parameter list is returned in case
+		// of a syntax error
+		
+		List<TemplateParameter> tpl = new ArrayList<TemplateParameter>();
 
 		if (token.value != TOKlparen) {
 			parsingErrorInsertToComplete(prevToken, "Parenthesized TemplateParameterList", "TemplateDeclaration");
+			
 			// goto Lerr;
-			return null;
+			malformed[0] = true;
+			return tpl;
 		}
-		tpl = new ArrayList<TemplateParameter>();
+		
 		nextToken();
 
 		// Get array of TemplateParameters
@@ -1459,7 +1472,8 @@ class Parser extends Lexer {
 					if (token.value != TOKidentifier) {
 						parsingErrorInsertTokenAfter(prevToken, "Identifier");
 						// goto Lerr;
-						return null;
+						malformed[0] = true;
+						return tpl;
 					}
 					tp_ident = new Identifier(token);
 					nextToken();
@@ -1482,7 +1496,8 @@ class Parser extends Lexer {
 					if (token.value != TOKidentifier) {
 						parsingErrorInsertTokenAfter(prevToken, "Identifier");
 						// goto Lerr;
-						return null;
+						malformed[0] = true;
+						return tpl;
 					}
 					tp_ident = new Identifier(token);
 					nextToken();
@@ -1523,7 +1538,8 @@ class Parser extends Lexer {
 					if (tp_ident == null) {
 						error("No identifier for template value parameter", IProblem.NoIdentifierForTemplateValueParameter, t.lineNumber, t.ptr, t.len);
 						// goto Lerr;
-						return null;
+						malformed[0] = true;
+						return tpl;
 					}
 					if (token.value == TOKcolon) // : CondExpression
 					{
@@ -2201,8 +2217,9 @@ class Parser extends Lexer {
 			    if (peekPastParen(token).value == TOKlparen)
 			    {   // It's a function template declaration
 
-				// Gather template parameter list
-				tpl[0] = parseTemplateParameterList();
+			    	// Gather template parameter list
+			    	boolean[] malformed = { false };
+			    	tpl[0] = parseTemplateParameterList(malformed);
 			    }
 			}
 

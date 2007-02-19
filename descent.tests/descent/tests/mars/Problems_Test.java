@@ -371,12 +371,12 @@ public class Problems_Test extends Parser_Test {
 	}
 
 	public void test_PARENTHESIZED_TEMPLATE_PARAMETER_LIST_EXPECTED() {
-		IProblem p = getProblem(" template Bla class Bla { }");
+		IProblem p = getProblems(" template Bla class Bla { }", 2)[0];
 		assertError(p, IProblem.ParsingErrorInsertToComplete, 10, 3);
 	}
 
 	public void test_IDENTIFIER_EXPECTED_FOR_TEMPLATE_PARAMETER() {
-		IProblem p = getProblem(" template Bla(alias class Bla { }");
+		IProblem p = getProblems(" template Bla(alias class Bla { }", 2)[0];
 		assertError(p, IProblem.ParsingErrorInsertTokenAfter, 14, 5);
 	}
 
@@ -461,7 +461,7 @@ public class Problems_Test extends Parser_Test {
 	}
 
 	public void test_IDENTIFIER_EXPECTED_FOR_TEMPLATE_PARAMETER_2() {
-		IProblem p = getProblems(" template T(2)", 3)[0];
+		IProblem p = getProblems(" template T(2)", 4)[0];
 		assertError(p, IProblem.ParsingErrorInsertTokenAfter, 11, 1);
 	}
 
@@ -471,7 +471,7 @@ public class Problems_Test extends Parser_Test {
 	}
 
 	public void test_NO_IDENTIFIER_FOR_TEMPLATE_VALUE_PARAMETER() {
-		IProblem p = getProblems(" template Temp(int 2) { }", 5)[0];
+		IProblem p = getProblems(" template Temp(int 2) { }", 6)[0];
 		assertError(p, IProblem.NoIdentifierForTemplateValueParameter, 19, 1);
 	}
 

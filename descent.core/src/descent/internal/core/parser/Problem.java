@@ -124,5 +124,10 @@ public class Problem implements IProblem {
 	public Object[] getExtraMarkerAttributeValues() {
 		return EMPTY;
 	}
+	
+	@Override
+	public String toString() {
+		return message;
+	}
 
 }
