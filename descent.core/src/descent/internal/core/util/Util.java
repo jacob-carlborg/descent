@@ -1727,4 +1727,115 @@ public class Util {
 		}
 	}
 	
+	/**
+	 * Split signatures of all levels  from a type unique key.
+	 * 
+	 * Example:
+	 * 	For following type X<Y<Z>,V<W>,U>.A<B>, unique key is:
+	 * 	"LX<LY<LZ;>;LV<LW;>;LU;>.LA<LB;>;"
+	 * 
+	 * 	The return splitted signatures array is:
+	 * 	[
+	 * 		['L','X','<','L','Y','<','L','Z',';'>',';','L','V','<','L','W',';'>',';','L','U','>',';'],
+	 * 		['L','A','<','L','B',';','>',';']
+	 * 
+	 * @param typeSignature ParameterizedSourceType type signature
+	 * @return char[][] Array of signatures for each level of given unique key
+	 */
+	public final static char[][] splitTypeLevelsSignature(String typeSignature) {
+		// In case of IJavaElement signature, replace '$' by '.'
+		char[] source = Signature.removeCapture(typeSignature.toCharArray());
+		CharOperation.replace(source, '$', '.');
+
+		// Init counters and arrays
+		char[][] signatures = new char[10][];
+		int signaturesCount = 0;
+//		int[] lengthes = new int [10];
+		int typeArgsCount = 0;
+		int paramOpening = 0;
+		
+		// Scan each signature character
+		for (int idx=0, ln = source.length; idx < ln; idx++) {
+			switch (source[idx]) {
+				case '>':
+					paramOpening--;
+					if (paramOpening == 0)  {
+						if (signaturesCount == signatures.length) {
+							System.arraycopy(signatures, 0, signatures = new char[signaturesCount+10][], 0, signaturesCount);
+						}
+						typeArgsCount = 0;
+					}
+					break;
+				case '<':
+					paramOpening++;
+					if (paramOpening == 1) {
+						typeArgsCount = 1;
+					}
+					break;
+				case '*':
+				case ';':
+					if (paramOpening == 1) typeArgsCount++;
+					break;
+				case '.':
+					if (paramOpening == 0)  {
+						if (signaturesCount == signatures.length) {
+							System.arraycopy(signatures, 0, signatures = new char[signaturesCount+10][], 0, signaturesCount);
+						}
+						signatures[signaturesCount] = new char[idx+1];
+						System.arraycopy(source, 0, signatures[signaturesCount], 0, idx);
+						signatures[signaturesCount][idx] = Signature.C_SEMICOLON;
+						signaturesCount++;
+					}
+					break;
+				case '/':
+					source[idx] = '.';
+					break;
+			}
+		}
+
+		// Resize signatures array
+		char[][] typeSignatures = new char[signaturesCount+1][];
+		typeSignatures[0] = source;
+		for (int i=1, j=signaturesCount-1; i<=signaturesCount; i++, j--){
+			typeSignatures[i] = signatures[j];
+		}
+		return typeSignatures;
+	}
+	
+	/**
+	 * Get all type arguments from an array of signatures.
+	 * 
+	 * Example:
+	 * 	For following type X<Y<Z>,V<W>,U>.A<B> signatures is:
+	 * 	[
+	 * 		['L','X','<','L','Y','<','L','Z',';'>',';','L','V','<','L','W',';'>',';','L','U',';',>',';'],
+	 * 		['L','A','<','L','B',';','>',';']
+	 * 	]
+	 * 	@see #splitTypeLevelsSignature(String)
+	 * 	Then, this method returns:
+	 * 	[
+	 * 		[
+	 * 			['L','Y','<','L','Z',';'>',';'],
+	 * 			['L','V','<','L','W',';'>',';'],
+	 * 			['L','U',';']
+	 * 		],
+	 * 		[
+	 * 			['L','B',';']
+	 * 		]
+	 * 	]
+	 * 
+	 * @param typeSignatures Array of signatures (one per each type levels)
+	 * @throws IllegalArgumentException If one of provided signature is malformed
+	 * @return char[][][] Array of type arguments for each signature
+	 */
+	public final static char[][][] getAllTypeArguments(char[][] typeSignatures) {
+		if (typeSignatures == null) return null;
+		int length = typeSignatures.length;
+		char[][][] typeArguments = new char[length][][];
+		for (int i=0; i<length; i++){
+			typeArguments[i] = Signature.getTypeArguments(typeSignatures[i]);
+		}
+		return typeArguments;
+	}
+	
 }

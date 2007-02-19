@@ -7,7 +7,6 @@ import descent.internal.compiler.env.ICompilationUnit;
 import descent.internal.compiler.env.INameEnvironment;
 import descent.internal.compiler.impl.CompilerOptions;
 import descent.internal.compiler.problem.AbortCompilation;
-import descent.internal.core.builder.SourceFile;
 
 // TODO JDT compile: compiler
 public class Compiler {
@@ -24,14 +23,15 @@ public class Compiler {
 	public Compiler(INameEnvironment nameEnvironment, 
 			IErrorHandlingPolicy policy, 
 			CompilerOptions options, 
-			final ICompilerRequestor requestor) {
+			final ICompilerRequestor requestor,
+			IProblemFactory problemFactory) {
 	
 		this.options = options;
 		this.requestor = requestor;
 		initializeParser();
 	}
 
-	public void compile(SourceFile[] sourceUnits) {
+	public void compile(ICompilationUnit[] sourceUnits) {
 		CompilationUnit unit = null;
 		CompilationResult result = null;
 		

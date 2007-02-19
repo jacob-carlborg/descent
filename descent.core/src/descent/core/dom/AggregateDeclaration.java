@@ -424,5 +424,23 @@ public class AggregateDeclaration extends Declaration {
 			+ (this.postDDoc == null ? 0 : getPostDDoc().treeSize())
 	;
 	}
+	
+	/**
+	 * Resolves and returns the binding for the type declared in this type
+	 * declaration.
+	 * <p>
+	 * Note that bindings are generally unavailable unless requested when the
+	 * AST is being built.
+	 * </p>
+	 * 
+	 * @return the binding, or <code>null</code> if the binding cannot be 
+	 *    resolved
+	 */	
+	public final ITypeBinding resolveBinding() {
+		/* TODO binding
+		return this.ast.getBindingResolver().resolveType(this);
+		*/
+		return null;
+	}
 
 }

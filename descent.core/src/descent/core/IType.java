@@ -771,6 +771,39 @@ public interface IType extends IMember {
 	 * @since 3.0
 	 */
 	boolean isAnnotation() throws JavaModelException;
+	
+	/**
+	 * Returns whether this type represents a struct.
+	 *
+	 * @exception JavaModelException if this element does not exist or if an
+	 *		exception occurs while accessing its corresponding resource.
+	 * @return true if this type represents an annotation type,
+	 * false otherwise
+	 * @since 3.0
+	 */
+	boolean isStruct() throws JavaModelException;
+	
+	/**
+	 * Returns whether this type represents a union.
+	 *
+	 * @exception JavaModelException if this element does not exist or if an
+	 *		exception occurs while accessing its corresponding resource.
+	 * @return true if this type represents an annotation type,
+	 * false otherwise
+	 * @since 3.0
+	 */
+	boolean isUnion() throws JavaModelException;
+	
+	/**
+	 * Returns whether this type represents a template.
+	 *
+	 * @exception JavaModelException if this element does not exist or if an
+	 *		exception occurs while accessing its corresponding resource.
+	 * @return true if this type represents an annotation type,
+	 * false otherwise
+	 * @since 3.0
+	 */
+	boolean isTemplate() throws JavaModelException;
 
 	/**
 	 * Returns whether this type represents a local type.

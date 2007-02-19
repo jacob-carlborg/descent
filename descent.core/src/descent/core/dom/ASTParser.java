@@ -15,9 +15,17 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.core.runtime.IProgressMonitor;
+import descent.core.dom.CompilationUnitResolver;
+
+import descent.core.JavaModelException;
+import descent.internal.compiler.util.SuffixConstants;
+import descent.internal.core.BasicCompilationUnit;
+import descent.internal.core.PackageFragment;
+import descent.internal.core.util.Util;
 
 import descent.core.IClassFile;
 import descent.core.ICompilationUnit;
+import descent.core.IJavaElement;
 import descent.core.IJavaProject;
 import descent.core.JavaCore;
 import descent.core.WorkingCopyOwner;
@@ -772,95 +780,167 @@ public class ASTParser {
 	 * are insufficient, contradictory, or otherwise unsupported
 	 * @since 3.1
      */
-	/* TODO JDT binding
 	public IBinding[] createBindings(IJavaElement[] elements, IProgressMonitor monitor) {
 		try {
 			if (this.project == null)
 				throw new IllegalStateException("project not specified"); //$NON-NLS-1$
+			/* TODO JDT binding
 			return CompilationUnitResolver.resolve(elements, this.apiLevel, this.compilerOptions, this.project, this.workingCopyOwner, this.statementsRecovery, monitor);
+			*/
+			return null;
 		} finally {
 	   	   // re-init defaults to allow reuse (and avoid leaking)
 	   	   initializeDefaults();
 		}
 	}
-	*/
 
 	private ASTNode internalCreateAST(IProgressMonitor monitor) {
-		AST ast = AST.newAST(apiLevel);
+		boolean needToResolveBindings = this.resolveBindings;		
+		switch(this.astKind) {
+		case K_INITIALIZER :
+		case K_EXPRESSION :
+		case K_STATEMENT :
+		case K_STATEMENTS:
+			if (this.rawSource != null) {
+				if (this.sourceOffset + this.sourceLength > this.rawSource.length) {
+				    throw new IllegalStateException();
+				}
+				return internalCreateASTForKind();
+			}
+			break;
+		case K_COMPILATION_UNIT :
+			CompilationUnit result = null;
+			descent.internal.compiler.env.ICompilationUnit sourceUnit = null;
+			IJavaElement element = null;
+			if (this.compilationUnitSource != null) {
+				sourceUnit = (descent.internal.compiler.env.ICompilationUnit) this.compilationUnitSource;
+				// use a BasicCompilation that caches the source instead of using the compilationUnitSource directly 
+				// (if it is a working copy, the source can change between the parse and the AST convertion)
+				// (see https://bugs.eclipse.org/bugs/show_bug.cgi?id=75632)
+				sourceUnit = new BasicCompilationUnit(sourceUnit.getContents(), sourceUnit.getPackageName(), new String(sourceUnit.getFileName()), this.project);
+				element = this.compilationUnitSource;
+			/* TODO JDT binary
+			} else if (this.classFileSource != null) {
+				try {
+					String sourceString = this.classFileSource.getSource();
+					if (sourceString == null) {
+						throw new IllegalStateException();
+					}
+					PackageFragment packageFragment = (PackageFragment) this.classFileSource.getParent();
+					BinaryType type = (BinaryType) this.classFileSource.getType();
+					IBinaryType binaryType = (IBinaryType) type.getElementInfo();
+					// file name is used to recreate the Java element, so it has to be the toplevel .class file name
+					char[] fileName = binaryType.getFileName();
+					int firstDollar = CharOperation.indexOf('$', fileName);
+					if (firstDollar != -1) {
+						char[] suffix = SuffixConstants.SUFFIX_class;
+						int suffixLength = suffix.length;
+						char[] newFileName = new char[firstDollar + suffixLength];
+						System.arraycopy(fileName, 0, newFileName, 0, firstDollar);
+						System.arraycopy(suffix, 0, newFileName, firstDollar, suffixLength);
+						fileName = newFileName;
+					}
+					sourceUnit = new BasicCompilationUnit(sourceString.toCharArray(), Util.toCharArrays(packageFragment.names), new String(fileName), this.project);
+					element = this.classFileSource;
+				} catch(JavaModelException e) {
+					// an error occured accessing the java element
+					throw new IllegalStateException();
+				}
+			*/
+			} else if (this.rawSource != null) {
+				needToResolveBindings = this.resolveBindings && this.unitName != null && this.project != null && this.compilerOptions != null;
+				sourceUnit = new BasicCompilationUnit(this.rawSource, null, this.unitName == null ? "" : this.unitName, this.project); //$NON-NLS-1$
+			} else {
+				throw new IllegalStateException();
+			}
+			
+			if (needToResolveBindings) {
+				try {
+					// parse and resolve
+					result = 
+						CompilationUnitResolver.resolve(
+							this.apiLevel,
+							sourceUnit,
+							this.project,
+							this.compilerOptions,
+							this.workingCopyOwner,
+							this.statementsRecovery,
+							monitor);
+				} catch (JavaModelException e) {
+					result = CompilationUnitResolver.parse(
+							this.apiLevel,
+							sourceUnit,
+							this.compilerOptions,
+							this.statementsRecovery);
+					needToResolveBindings = false;
+				}
+			} else {
+				result = CompilationUnitResolver.parse(
+						this.apiLevel,
+						sourceUnit,
+						this.compilerOptions,
+						this.statementsRecovery);
+				needToResolveBindings = false;
+			}
+			
+			result.setJavaElement(element);
+			return result;
+		}		
+		throw new IllegalStateException();
+	}
+	
+	private ASTNode internalCreateASTForKind() {
+		AST ast = AST.newAST(this.apiLevel);
 		
 		// Mark all nodes created by the parser as originals
 		int savedDefaultNodeFlag = ast.getDefaultNodeFlag();
 		ast.setDefaultNodeFlag(ASTNode.ORIGINAL);
-		ast.internalParserMode = true;
+		ast.internalParserMode = true;		
+		ast.setBindingResolver(new BindingResolver());
 		
-		char[] source;
-		if (this.rawSource != null) {
-			if (this.sourceOffset + this.sourceLength > this.rawSource.length) {
-			    throw new IllegalStateException();
-			}
-			source = rawSource;
-		} else if (this.compilationUnitSource != null) {
-			source = ((descent.internal.compiler.env.ICompilationUnit) compilationUnitSource).getContents();
-		} else {
-			throw new IllegalStateException();
-		}
-		
-		// If statements, turn it into a block
 		if (this.astKind == K_STATEMENTS) {
-			source = CharOperation.concat('{', source, '}');
+			// Turn source into block, then correct positions
+			rawSource = CharOperation.concat('{', rawSource, '}');
 		}
 		
-		Parser parser = new Parser(ast, source, sourceOffset, sourceLength == -1 ? source.length : sourceLength);
-		ASTNode result = null;
-		
-		boolean needToResolveBindings = this.resolveBindings;
-		switch(this.astKind) {
-		case K_INITIALIZER :
-			result = parser.parseInitializer();
-			break;
-		case K_EXPRESSION :
-			result = parser.parseExpression();
-			break;
-		case K_STATEMENT :
-			result = parser.parseStatement(0);
-			break;
-		case K_STATEMENTS:
-			result = parser.parseStatement(0);
-			// correct positions due to '{' + source + '}'
-			for(Statement statement : ((Block) result).statements()) {
-				statement.accept(new GenericVisitor() {
-					protected boolean visitNode(ASTNode node) {
-						node.setSourceRange(node.getStartPosition() - 1, node.getLength());
-						return true;
-					}
-				});
-			}
-			break;
-		case K_COMPILATION_UNIT :
-			PublicScanner scanner = new PublicScanner(true, true, true, true, ast.apiLevel);
-			scanner.setLexerAndSource(parser, source);
-			
-			List<Declaration> declDefs = parser.parseModule();
-			if (declDefs != null) {
-				parser.compilationUnit.declarations().addAll(declDefs);
-			}
-			parser.compilationUnit.setSourceRange(0, source.length);
-			parser.compilationUnit.setCommentTable(parser.comments.toArray(new Comment[parser.comments.size()]));
-			parser.compilationUnit.setPragmaTable(parser.pragmas.toArray(new Pragma[parser.pragmas.size()]));
-			parser.compilationUnit.setLineEndTable(parser.getLineEnds());
-			parser.compilationUnit.initCommentMapper(scanner);
-			
-			parser.compilationUnit.problems = parser.problems;
-			result = parser.compilationUnit;
-			
-			result.ast.setOriginalModificationCount(result.ast.modificationCount());		
-			break;
-		default:
-			throw new IllegalStateException();
+		if (this.sourceLength == -1) {
+			this.sourceLength = this.rawSource.length;
 		}
 		
-		ast.setDefaultNodeFlag(savedDefaultNodeFlag);
-		ast.internalParserMode = false;
-		return result;
+		try {
+			Parser parser = null;
+			ASTNode result = null;
+			switch(this.astKind) {
+			case K_INITIALIZER :
+				parser = new Parser(ast, rawSource, sourceOffset, sourceLength);
+				result = parser.parseInitializer();
+				return result;
+			case K_EXPRESSION :
+				parser = new Parser(ast, rawSource, sourceOffset, sourceLength);
+				result = parser.parseExpression();
+				return result;
+			case K_STATEMENT :
+				parser = new Parser(ast, rawSource, sourceOffset, sourceLength);
+				result = parser.parseStatement(0);
+				return result;
+			case K_STATEMENTS:
+				parser = new Parser(ast, rawSource, sourceOffset, sourceLength);
+				result = parser.parseStatement(0);
+				for(Statement statement : ((Block) result).statements()) {
+					statement.accept(new GenericVisitor() {
+						protected boolean visitNode(ASTNode node) {
+							node.setSourceRange(node.getStartPosition() - 1, node.getLength());
+							return true;
+						}
+					});
+				}
+				return result;
+			}
+		} finally {
+			ast.setDefaultNodeFlag(savedDefaultNodeFlag);
+			ast.internalParserMode = false;
+		}
+		throw new IllegalStateException();
 	}
+	
 }

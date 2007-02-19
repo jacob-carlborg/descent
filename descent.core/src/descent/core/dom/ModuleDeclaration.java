@@ -274,4 +274,19 @@ public class ModuleDeclaration extends ASTNode {
 	;
 	}
 	
+	/**
+	 * Resolves and returns the binding for the module declared in this module
+	 * declaration.
+	 * <p>
+	 * Note that bindings are generally unavailable unless requested when the
+	 * AST is being built.
+	 * </p>
+	 * 
+	 * @return the binding, or <code>null</code> if the binding cannot be 
+	 *    resolved
+	 */	
+	public IPackageBinding resolveBinding() {
+		return this.ast.getBindingResolver().resolvePackage(this);
+	}
+	
 }

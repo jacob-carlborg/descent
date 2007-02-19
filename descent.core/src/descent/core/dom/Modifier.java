@@ -3,6 +3,8 @@ package descent.core.dom;
 import java.util.ArrayList;
 import java.util.List;
 
+import descent.core.Flags;
+
 
 /**
  * Modifier node.
@@ -127,82 +129,82 @@ public class Modifier extends ASTNode {
 	 * Modifier constant (bit mask, value 0) indicating no modifiers.
 	 * @since 2.0
 	 */
-	public static final int NONE = 0x0000;
+	public static final int NONE = Flags.AccDefault;
 	
 	/**
 	 * "private" modifier constant (bit mask).
 	 */
-	public static final int PRIVATE = 0x0001;
+	public static final int PRIVATE = Flags.AccPrivate;
 	
 	/**
 	 * "package" modifier constant (bit mask).
 	 */
-	public static final int PACKAGE = 0x0002;
+	public static final int PACKAGE = Flags.AccPackage;
 	
 	/**
 	 * "protected" modifier constant (bit mask).
 	 */
-	public static final int PROTECTED = 0x0004;
+	public static final int PROTECTED = Flags.AccProtected;
 	
 	/**
 	 * "public" modifier constant (bit mask).
 	 */
-	public static final int PUBLIC = 0x0008;
+	public static final int PUBLIC = Flags.AccPublic;
 	
 	/**
 	 * "export" modifier constant (bit mask).
 	 */
-	public static final int EXPORT = 0x0010;
+	public static final int EXPORT = Flags.AccExport;
 	
 	/**
 	 * "static" modifier constant (bit mask).
 	 */
-	public static final int STATIC = 0x0020;
+	public static final int STATIC = Flags.AccStatic;
 	
 	/**
 	 * "final" modifier constant (bit mask).
 	 */
-	public static final int FINAL = 0x0040;
+	public static final int FINAL = Flags.AccFinal;
 	
 	/**
 	 * "abstract" modifier constant (bit mask).
 	 */
-	public static final int ABSTRACT = 0x0080;
+	public static final int ABSTRACT = Flags.AccAbstract;
 	
 	/**
 	 * "override" modifier constant (bit mask).
 	 */
-	public static final int OVERRIDE = 0x0100;
+	public static final int OVERRIDE = Flags.AccOverride;
 	
 	/**
 	 * "auto" modifier constant (bit mask).
 	 */
-	public static final int AUTO = 0x0200;
+	public static final int AUTO = Flags.AccAuto;
 	
 	/**
 	 * "synchronized" modifier constant (bit mask).
 	 */
-	public static final int SYNCHRONIZED = 0x0400;
+	public static final int SYNCHRONIZED = Flags.AccSynchronized;
 	
 	/**
 	 * "deprecated" modifier constant (bit mask).
 	 */
-	public static final int DEPRECATED = 0x0800;
+	public static final int DEPRECATED = Flags.AccDeprecated;
 	
 	/**
 	 * "extern" modifier constant (bit mask).
 	 */
-	public static final int EXTERN = 0x1000;
+	public static final int EXTERN = Flags.AccExtern;
 	
 	/**
 	 * "const" modifier constant (bit mask).
 	 */
-	public static final int CONST = 0x2000;
+	public static final int CONST = Flags.AccConst;
 	
 	/**
 	 * "scope" modifier constant (bit mask).
 	 */
-	public static final int SCOPE = 0x4000;
+	public static final int SCOPE = Flags.AccScope;
 	
 	/**
 	 * The "modifierKeyword" structural property of this node type.

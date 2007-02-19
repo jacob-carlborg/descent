@@ -16,6 +16,7 @@ import java.util.HashMap;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IProgressMonitor;
 
+import descent.core.Flags;
 import descent.core.ICompilationUnit;
 import descent.core.IField;
 import descent.core.IInitializer;
@@ -556,11 +557,13 @@ public boolean isAnonymous() {
  * @see IType
  */
 public boolean isClass() throws JavaModelException {
-	/* TODO JDT Java -> D
 	SourceTypeElementInfo info = (SourceTypeElementInfo) getElementInfo();
-	return TypeDeclaration.kind(info.getModifiers()) == TypeDeclaration.CLASS_DECL;
-	*/
-	return true;
+	int flags = info.getModifiers();
+	return !Flags.isEnum(flags) 
+		&& !Flags.isInterface(flags) 
+		&& !Flags.isStruct(flags) 
+		&& !Flags.isUnion(flags)
+		&& !Flags.isTemplate(flags);
 }
 
 /**
@@ -568,26 +571,45 @@ public boolean isClass() throws JavaModelException {
  * @since 3.0
  */
 public boolean isEnum() throws JavaModelException {
-	/* TODO JDT Java -> D
 	SourceTypeElementInfo info = (SourceTypeElementInfo) getElementInfo();
-	return TypeDeclaration.kind(info.getModifiers()) == TypeDeclaration.ENUM_DECL;
-	*/
-	return false;
+	int flags = info.getModifiers();
+	return Flags.isEnum(flags);
 }
 
 /**
  * @see IType
  */
 public boolean isInterface() throws JavaModelException {
-	/* TODO JDT Java -> D
 	SourceTypeElementInfo info = (SourceTypeElementInfo) getElementInfo();
-	switch (TypeDeclaration.kind(info.getModifiers())) {
-		case TypeDeclaration.INTERFACE_DECL:
-		case TypeDeclaration.ANNOTATION_TYPE_DECL: // annotation is interface too
-			return true;
-	}
-	*/
-	return false;
+	int flags = info.getModifiers();
+	return Flags.isInterface(flags);
+}
+
+/**
+ * @see IType
+ */
+public boolean isStruct() throws JavaModelException {
+	SourceTypeElementInfo info = (SourceTypeElementInfo) getElementInfo();
+	int flags = info.getModifiers();
+	return Flags.isStruct(flags);
+}
+
+/**
+ * @see IType
+ */
+public boolean isUnion() throws JavaModelException {
+	SourceTypeElementInfo info = (SourceTypeElementInfo) getElementInfo();
+	int flags = info.getModifiers();
+	return Flags.isUnion(flags);
+}
+
+/**
+ * @see IType
+ */
+public boolean isTemplate() throws JavaModelException {
+	SourceTypeElementInfo info = (SourceTypeElementInfo) getElementInfo();
+	int flags = info.getModifiers();
+	return Flags.isTemplate(flags);
 }
 
 /**
@@ -595,10 +617,6 @@ public boolean isInterface() throws JavaModelException {
  * @since 3.0
  */
 public boolean isAnnotation() throws JavaModelException {
-	/* TODO JDT Java -> D
-	SourceTypeElementInfo info = (SourceTypeElementInfo) getElementInfo();
-	return TypeDeclaration.kind(info.getModifiers()) == TypeDeclaration.ANNOTATION_TYPE_DECL;
-	*/
 	return false;
 }
 

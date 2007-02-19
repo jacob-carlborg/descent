@@ -489,4 +489,19 @@ public class FunctionDeclaration extends AbstractFunctionDeclaration {
 	;
 	}
 	
+	/**
+	 * Resolves and returns the binding for the function declared
+	 * in this function declaration.
+	 * <p>
+	 * Note that bindings are generally unavailable unless requested when the
+	 * AST is being built.
+	 * </p>
+	 * 
+	 * @return the binding, or <code>null</code> if the binding cannot be 
+	 *    resolved
+	 */	
+	public IMethodBinding resolveBinding() {
+		return this.ast.getBindingResolver().resolveMethod(this);
+	}
+	
 }

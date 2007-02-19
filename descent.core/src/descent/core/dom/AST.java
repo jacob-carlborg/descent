@@ -14,6 +14,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
 import java.util.StringTokenizer;
+
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.text.edits.TextEdit;
 
@@ -91,6 +92,12 @@ public final class AST {
 	 * (D v1.0).
 	 */
 	public static final int D1 = 3;
+	
+	/**
+	 * The binding resolver for this AST. Initially a binding resolver that
+	 * does not resolve names at all.
+	 */
+	private BindingResolver resolver = new BindingResolver();
 	
 	/**
 	 * The event handler for this AST. 
@@ -580,11 +587,9 @@ public final class AST {
 	 * 
 	 * @return the binding resolver for this AST
 	 */
-	/* TODO JDT binding
 	BindingResolver getBindingResolver() {
 		return this.resolver;
 	}
-	*/
 	
 	/**
 	 * Returns the event handler for this AST.
@@ -631,6 +636,70 @@ public final class AST {
 	 */
 	void setOriginalModificationCount(long count) {
 		this.originalModificationCount = count;
+	}
+	
+	/** 
+	 * Returns the type binding for a "well known" type.
+	 * <p>
+	 * Note that bindings are generally unavailable unless requested when the
+	 * AST is being built.
+	 * </p>
+	 * <p>
+	 * The following type names are supported:
+	 * <ul>
+	 * <li><code>"boolean"</code></li>
+	 * <li><code>"byte"</code></li>
+	 * <li><code>"char"</code></li>
+	 * <li><code>"double"</code></li>
+	 * <li><code>"float"</code></li>
+	 * <li><code>"int"</code></li>
+	 * <li><code>"long"</code></li>
+	 * <li><code>"short"</code></li>
+	 * <li><code>"void"</code></li>
+	 * <li><code>"java.lang.Boolean"</code> (since 3.1)</li>
+	 * <li><code>"java.lang.Byte"</code> (since 3.1)</li>
+	 * <li><code>"java.lang.Character"</code> (since 3.1)</li>
+	 * <li><code>"java.lang.Class"</code></li>
+	 * <li><code>"java.lang.Cloneable"</code></li>
+	 * <li><code>"java.lang.Double"</code> (since 3.1)</li>
+	 * <li><code>"java.lang.Error"</code></li>
+	 * <li><code>"java.lang.Exception"</code></li>
+	 * <li><code>"java.lang.Float"</code> (since 3.1)</li>
+	 * <li><code>"java.lang.Integer"</code> (since 3.1)</li>
+	 * <li><code>"java.lang.Long"</code> (since 3.1)</li>
+	 * <li><code>"java.lang.Object"</code></li>
+	 * <li><code>"java.lang.RuntimeException"</code></li>
+	 * <li><code>"java.lang.Short"</code> (since 3.1)</li>
+	 * <li><code>"java.lang.String"</code></li>
+	 * <li><code>"java.lang.StringBuffer"</code></li>
+	 * <li><code>"java.lang.Throwable"</code></li>
+	 * <li><code>"java.lang.Void"</code> (since 3.1)</li>
+	 * <li><code>"java.io.Serializable"</code></li>
+	 * </ul>
+	 * </p>
+	 * 
+	 * @param name the name of a well known type
+	 * @return the corresponding type binding, or <code>null</code> if the 
+	 *   named type is not considered well known or if no binding can be found
+	 *   for it
+	 */
+	public ITypeBinding resolveWellKnownType(String name) {
+		if (name == null) {
+			return null;
+		}
+		return getBindingResolver().resolveWellKnownType(name);
+	}
+		
+	/**
+	 * Sets the binding resolver for this AST.
+	 * 
+	 * @param resolver the new binding resolver for this AST
+	 */
+	void setBindingResolver(BindingResolver resolver) {
+		if (resolver == null) {
+			throw new IllegalArgumentException();
+		}
+		this.resolver = resolver;
 	}
 
 	/**

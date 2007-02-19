@@ -104,6 +104,21 @@ public class JavaPluginImages {
 	public static final String IMG_OBJS_ENUM_PRIVATE= NAME_PREFIX + "enum_private_obj.gif"; //$NON-NLS-1$
 	public static final String IMG_OBJS_ENUM_ALT= NAME_PREFIX + "enum_alt_obj.gif"; //$NON-NLS-1$
 	
+	// TODO JDT UI images: make icons for IMG_OBJS_STRUCTALT, IMG_OBJS_STRUCT_DEFAULT, IMG_OBJS_UNIONALT, IMG_OBJS_UNION_DEFAULT, IMG_OBJS_TEMPLATE_ELEMENTALT and IMG_OBJS_TEMPLATE_ELEMENT_DEFAULT 
+	
+	public static final String IMG_OBJS_STRUCT= NAME_PREFIX + "struct_obj.gif"; 			//$NON-NLS-1$
+	public static final String IMG_OBJS_STRUCTALT= NAME_PREFIX + "structf_obj.gif"; 			//$NON-NLS-1$	
+	public static final String IMG_OBJS_STRUCT_DEFAULT= NAME_PREFIX + "struct_default_obj.gif"; 		//$NON-NLS-1$
+	
+	public static final String IMG_OBJS_UNION= NAME_PREFIX + "struct_obj.gif"; 			//$NON-NLS-1$
+	public static final String IMG_OBJS_UNIONALT= NAME_PREFIX + "unionf_obj.gif"; 			//$NON-NLS-1$	
+	public static final String IMG_OBJS_UNION_DEFAULT= NAME_PREFIX + "union_default_obj.gif"; 		//$NON-NLS-1$
+	
+	/** These are for the Java elements */
+	public static final String IMG_OBJS_TEMPLATE_ELEMENT= NAME_PREFIX + "template_element_obj.gif"; 			//$NON-NLS-1$
+	public static final String IMG_OBJS_TEMPLATE_ELEMENTALT= NAME_PREFIX + "template_elementf_obj.gif"; 			//$NON-NLS-1$	
+	public static final String IMG_OBJS_TEMPLATE_ELEMENT_DEFAULT= NAME_PREFIX + "template_element_default_obj.gif"; 		//$NON-NLS-1$
+	
 	public static final String IMG_OBJS_CUNIT= NAME_PREFIX + "jcu_obj.gif"; 				//$NON-NLS-1$
 	public static final String IMG_OBJS_CUNIT_RESOURCE= NAME_PREFIX + "jcu_resource_obj.gif"; 				//$NON-NLS-1$
 	public static final String IMG_OBJS_CFILE= NAME_PREFIX + "classf_obj.gif";  			//$NON-NLS-1$
@@ -230,6 +245,18 @@ public class JavaPluginImages {
 	public static final ImageDescriptor DESC_OBJS_INNER_INTERFACE_PRIVATE= createManagedFromKey(T_OBJ, IMG_OBJS_INNER_INTERFACE_PRIVATE);
 	
 	public static final ImageDescriptor DESC_OBJS_INTERFACEALT= createManagedFromKey(T_OBJ, IMG_OBJS_INTERFACEALT);
+	
+	public static final ImageDescriptor DESC_OBJS_STRUCT= createManagedFromKey(T_OBJ, IMG_OBJS_STRUCT);
+	public static final ImageDescriptor DESC_OBJS_STRUCT_DEFAULT= createManagedFromKey(T_OBJ, IMG_OBJS_STRUCT_DEFAULT);
+	public static final ImageDescriptor DESC_OBJS_STRUCTALT= createManagedFromKey(T_OBJ, IMG_OBJS_STRUCTALT);
+	
+	public static final ImageDescriptor DESC_OBJS_UNION= createManagedFromKey(T_OBJ, IMG_OBJS_UNION);
+	public static final ImageDescriptor DESC_OBJS_UNION_DEFAULT= createManagedFromKey(T_OBJ, IMG_OBJS_UNION_DEFAULT);
+	public static final ImageDescriptor DESC_OBJS_UNIONALT= createManagedFromKey(T_OBJ, IMG_OBJS_UNIONALT);
+	
+	public static final ImageDescriptor DESC_OBJS_TEMPLATE_ELEMENT= createManagedFromKey(T_OBJ, IMG_OBJS_TEMPLATE_ELEMENT);
+	public static final ImageDescriptor DESC_OBJS_TEMPLATE_ELEMENT_DEFAULT= createManagedFromKey(T_OBJ, IMG_OBJS_TEMPLATE_ELEMENT_DEFAULT);
+	public static final ImageDescriptor DESC_OBJS_TEMPLATE_ELEMENTALT= createManagedFromKey(T_OBJ, IMG_OBJS_TEMPLATE_ELEMENTALT);
 	
 	public static final ImageDescriptor DESC_OBJS_ANNOTATION= createManagedFromKey(T_OBJ, IMG_OBJS_ANNOTATION);
 	public static final ImageDescriptor DESC_OBJS_ANNOTATION_DEFAULT= createManagedFromKey(T_OBJ, IMG_OBJS_ANNOTATION_DEFAULT);

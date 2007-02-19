@@ -10,23 +10,37 @@
  *******************************************************************************/
 package descent.internal.core.builder;
 
-import org.eclipse.core.runtime.*;
-import org.eclipse.core.resources.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Locale;
+import java.util.Map;
 
-import descent.core.*;
-import descent.core.compiler.*;
-import descent.internal.compiler.*;
+import org.eclipse.core.resources.IContainer;
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IFolder;
+import org.eclipse.core.resources.IMarker;
+import org.eclipse.core.resources.IResource;
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
+
+import descent.core.IJavaModelMarker;
+import descent.core.IMember;
+import descent.core.ISourceRange;
+import descent.core.IType;
+import descent.core.JavaCore;
+import descent.core.JavaModelException;
+import descent.core.compiler.BuildContext;
+import descent.core.compiler.CharOperation;
+import descent.core.compiler.IProblem;
+import descent.internal.compiler.CompilationResult;
 import descent.internal.compiler.Compiler;
+import descent.internal.compiler.DefaultErrorHandlingPolicies;
+import descent.internal.compiler.ICompilerRequestor;
 import descent.internal.compiler.impl.CompilerOptions;
-import descent.internal.compiler.problem.*;
+import descent.internal.compiler.problem.AbortCompilation;
 import descent.internal.compiler.util.SimpleSet;
-import descent.internal.compiler.util.SuffixConstants;
 import descent.internal.core.JavaModelManager;
-import descent.internal.core.util.Messages;
 import descent.internal.core.util.Util;
-
-import java.io.*;
-import java.util.*;
 
 /**
  * The abstract superclass of Java builders.
@@ -428,8 +442,8 @@ protected Compiler newCompiler() {
 		nameEnvironment,
 		DefaultErrorHandlingPolicies.proceedWithAllProblems(),
 		compilerOptions,
-		this
-		//ProblemFactory.getProblemFactory(Locale.getDefault())
+		this,
+		ProblemFactory.getProblemFactory(Locale.getDefault())
 		);
 	CompilerOptions options = newCompiler.options;
 

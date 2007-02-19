@@ -38,6 +38,8 @@ import descent.core.dom.IPackageBinding;
 import descent.core.dom.ITypeBinding;
 import descent.core.dom.IVariableBinding;
 import descent.core.dom.Modifier;
+import descent.core.dom.QualifiedName;
+import descent.core.dom.SimpleName;
 import descent.internal.corext.util.JavaModelUtil;
 
 public class Bindings {
@@ -778,21 +780,21 @@ public class Bindings {
 	 * @return The binding or <code>null</code> if no bindings are available.
 	 */
 	public static IVariableBinding getAssignedVariable(Assignment assignment) {
-		/* TODO JDT UI binding
 		Expression leftHand = assignment.getLeftHandSide();		
 		switch (leftHand.getNodeType()) {
 			case ASTNode.SIMPLE_NAME:
 				return (IVariableBinding) ((SimpleName) leftHand).resolveBinding();
 			case ASTNode.QUALIFIED_NAME:
-				return (IVariableBinding) ((QualifiedName) leftHand).getName().resolveBinding();				
+				return (IVariableBinding) ((QualifiedName) leftHand).getName().resolveBinding();
+				/* TODO JDT UI binding
 			case ASTNode.FIELD_ACCESS:
 				return ((FieldAccess) leftHand).resolveFieldBinding();
 			case ASTNode.SUPER_FIELD_ACCESS:
 				return ((SuperFieldAccess) leftHand).resolveFieldBinding();
 			default:
 				return null;
-		}
-		*/
+				*/
+		}		
 		return null;
 	}
 	
@@ -960,10 +962,8 @@ public class Bindings {
 	 * @return the normalized type to be used in declarations
 	 */
 	public static ITypeBinding normalizeForDeclarationUse(ITypeBinding binding, AST ast) {
-		/* TODO JDT UI binding
 		if (binding.isNullType())
-			return ast.resolveWellKnownType("java.lang.Object"); //$NON-NLS-1$
-		*/
+			return ast.resolveWellKnownType("Object"); //$NON-NLS-1$
 		if (binding.isPrimitive())
 			return binding;
 		binding= normalizeTypeBinding(binding);
@@ -972,10 +972,7 @@ public class Bindings {
 		if (binding.isUpperbound()) {
 			return binding.getBound();
 		} else {
-			/* TODO JDT UI binding
-			return ast.resolveWellKnownType("java.lang.Object"); //$NON-NLS-1$
-			*/
-			return null;
+			return ast.resolveWellKnownType("Object"); //$NON-NLS-1$
 		}
 	}
 

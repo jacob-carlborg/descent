@@ -155,21 +155,7 @@ protected boolean buildStructure(OpenableElementInfo info, final IProgressMonito
 	// 	parser.javadocParser.checkDocComment = false;
 	requestor.source = contents;
 	//requestor.parser = parser;
-	descent.core.dom.CompilationUnit unit = parser.parseCompilationUnit(
-		new descent.internal.compiler.env.ICompilationUnit() {
-			public char[] getContents() {
-				return contents;
-			}
-			public char[] getMainTypeName() {
-				return CompilationUnit.this.getMainTypeName();
-			}
-			public char[][] getPackageName() {
-				return CompilationUnit.this.getPackageName();
-			}
-			public char[] getFileName() {
-				return CompilationUnit.this.getFileName();
-			}
-		});
+	descent.core.dom.CompilationUnit unit = parser.parseCompilationUnit(this, resolveBindings);
 	
 	// update timestamp (might be IResource.NULL_STAMP if original does not exist)
 	if (underlyingResource == null) {
@@ -182,7 +168,7 @@ protected boolean buildStructure(OpenableElementInfo info, final IProgressMonito
 	// compute other problems if needed
 	// CompilationUnit compilationUnitDeclaration = null;
 	try {
-		if (computeProblems) {			
+		if (computeProblems) {	
 			if (problems == null) {
 				// report problems to the problem requestor
 				problems = new HashMap();

@@ -234,5 +234,20 @@ public class VariableDeclarationFragment extends ASTNode {
 			+ (this.initializer == null ? 0 : getInitializer().treeSize())
 	;
 	}
+	
+	/**
+	 * Resolves and returns the binding for the variable declared in this
+	 * variable declaration.
+	 * <p>
+	 * Note that bindings are generally unavailable unless requested when the
+	 * AST is being built.
+	 * </p>
+	 * 
+	 * @return the binding, or <code>null</code> if the binding cannot be 
+	 *    resolved
+	 */	
+	public IVariableBinding resolveBinding() {
+		return this.ast.getBindingResolver().resolveVariable(this);
+	}
 
 }

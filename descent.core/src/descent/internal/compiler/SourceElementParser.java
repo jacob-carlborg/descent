@@ -14,6 +14,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import descent.core.Flags;
+import descent.core.ICompilationUnit;
 import descent.core.dom.AST;
 import descent.core.dom.ASTNode;
 import descent.core.dom.ASTParser;
@@ -23,6 +24,7 @@ import descent.core.dom.Argument;
 import descent.core.dom.BaseClass;
 import descent.core.dom.CompilationUnit;
 import descent.core.dom.ConstructorDeclaration;
+import descent.core.dom.EnumDeclaration;
 import descent.core.dom.FunctionDeclaration;
 import descent.core.dom.Import;
 import descent.core.dom.ImportDeclaration;
@@ -30,6 +32,7 @@ import descent.core.dom.Modifier;
 import descent.core.dom.ModuleDeclaration;
 import descent.core.dom.Name;
 import descent.core.dom.QualifiedName;
+import descent.core.dom.TemplateDeclaration;
 import descent.core.dom.TemplateParameter;
 import descent.core.dom.VariableDeclaration;
 import descent.core.dom.VariableDeclarationFragment;
@@ -37,7 +40,6 @@ import descent.internal.compiler.ISourceElementRequestor.FieldInfo;
 import descent.internal.compiler.ISourceElementRequestor.MethodInfo;
 import descent.internal.compiler.ISourceElementRequestor.TypeInfo;
 import descent.internal.compiler.ISourceElementRequestor.TypeParameterInfo;
-import descent.internal.compiler.env.ICompilationUnit;
 import descent.internal.compiler.util.HashtableOfObjectToInt;
 
 /**
@@ -81,9 +83,10 @@ public class SourceElementParser extends ASTVisitor {
 		nestedTypeIndex = 0;
 	}
 
-	public CompilationUnit parseCompilationUnit(ICompilationUnit unit) {
+	public CompilationUnit parseCompilationUnit(ICompilationUnit unit, boolean resolveBindings) {
 		ASTParser parser = ASTParser.newParser(AST.D1);
-		parser.setSource(unit.getContents());
+		parser.setSource(unit);
+		parser.setResolveBindings(resolveBindings);
 		CompilationUnit compilationUnit = (CompilationUnit) parser.createAST(null);
 		
 		requestor.enterCompilationUnit();
@@ -196,6 +199,17 @@ public class SourceElementParser extends ASTVisitor {
 		info.categories = new char[0][];
 		info.declarationStart = node.getStartPosition();
 		info.modifiers = getFlags(node.modifiers());
+		switch(node.getKind()) {
+		case INTERFACE:
+			info.modifiers |= Flags.AccInterface;
+			break;
+		case STRUCT:
+			info.modifiers |= Flags.AccStruct;
+			break;
+		case UNION:
+			info.modifiers |= Flags.AccUnion;
+			break;
+		}
 		info.name = node.getName().getFullyQualifiedName().toCharArray();
 		info.nameSourceEnd = node.getName().getStartPosition() + node.getName().getLength() - 1;
 		info.nameSourceStart = node.getName().getStartPosition();
@@ -213,6 +227,67 @@ public class SourceElementParser extends ASTVisitor {
 	
 	@Override
 	public void endVisit(AggregateDeclaration node) {
+		requestor.exitType(node.getStartPosition() + node.getLength() - 1);
+	}
+	
+	@Override
+	public boolean visit(EnumDeclaration node) {
+		// TODO Java -> D
+		// Also, since the base class notation in D dosen't distinguis between
+		// classes and interfaces, let's assume they are all interfaces for the moment
+		TypeInfo info = new TypeInfo();
+		info.annotationPositions = new long[0];
+		info.categories = new char[0][];
+		info.declarationStart = node.getStartPosition();
+		info.modifiers = getFlags(node.modifiers());
+		info.modifiers |= Flags.AccEnum;
+		if (node.getName() != null) {
+			info.name = node.getName().getFullyQualifiedName().toCharArray();
+			info.nameSourceEnd = node.getName().getStartPosition() + node.getName().getLength() - 1;
+			info.nameSourceStart = node.getName().getStartPosition();
+		}
+		info.secondary = !foundType;
+		info.superclass = new char[0];
+		if (node.getBaseType() != null) {
+			info.superinterfaces = new char[][] { node.getBaseType().toString().toCharArray() };
+		}
+		
+		foundType = true;
+		
+		requestor.enterType(info);
+		
+		return true;
+	}
+	
+	@Override
+	public void endVisit(EnumDeclaration node) {
+		requestor.exitType(node.getStartPosition() + node.getLength() - 1);
+	}
+	
+	@Override
+	public boolean visit(TemplateDeclaration node) {
+		// TODO Java -> D
+		TypeInfo info = new TypeInfo();
+		info.annotationPositions = new long[0];
+		info.categories = new char[0][];
+		info.declarationStart = node.getStartPosition();
+		info.modifiers = getFlags(node.modifiers());
+		info.modifiers |= Flags.AccTemplate;
+		info.name = node.getName().getFullyQualifiedName().toCharArray();
+		info.nameSourceEnd = node.getName().getStartPosition() + node.getName().getLength() - 1;
+		info.nameSourceStart = node.getName().getStartPosition();
+		info.secondary = !foundType;
+		info.superclass = new char[0];
+		
+		foundType = true;
+		
+		requestor.enterType(info);
+		
+		return true;
+	}
+	
+	@Override
+	public void endVisit(TemplateDeclaration node) {
 		requestor.exitType(node.getStartPosition() + node.getLength() - 1);
 	}
 	

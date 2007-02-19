@@ -178,6 +178,40 @@ public interface ISharedImages {
 	 * @since 3.0
 	 */
 	public static final String IMG_OBJS_INNER_INTERFACE_PRIVATE= JavaPluginImages.IMG_OBJS_INNER_INTERFACE_PRIVATE;
+	
+	/**
+	 * Key to access the shared image or image descriptor for a struct.
+	 */	
+	public static final String IMG_OBJS_STRUCT= JavaPluginImages.IMG_OBJS_STRUCT;
+	
+	/**
+	 * Key to access the shared image or image descriptor for a struct with default visibility.
+	 * @since 3.0
+	 */
+	public static final String IMG_OBJS_STRUCT_DEFAULT= JavaPluginImages.IMG_OBJS_STRUCT_DEFAULT;
+	
+	/**
+	 * Key to access the shared image or image descriptor for a union.
+	 */	
+	public static final String IMG_OBJS_UNION= JavaPluginImages.IMG_OBJS_UNION;
+	
+	/**
+	 * Key to access the shared image or image descriptor for a union with default visibility.
+	 * @since 3.0
+	 */
+	public static final String IMG_OBJS_UNION_DEFAULT= JavaPluginImages.IMG_OBJS_UNION_DEFAULT;
+	
+	/**
+	 * Key to access the shared image or image descriptor for a template.
+	 */	
+	public static final String IMG_OBJS_TEMPLATE= JavaPluginImages.IMG_OBJS_TEMPLATE_ELEMENT;
+	
+	/**
+	 * Key to access the shared image or image descriptor for a template with default visibility.
+	 * @since 3.0
+	 */
+	public static final String IMG_OBJS_TEMPLATE_DEFAULT= JavaPluginImages.IMG_OBJS_TEMPLATE_ELEMENT_DEFAULT;
+	
 
 	/** Key to access the shared image or image descriptor for a package declaration. */
 	public static final String IMG_OBJS_PACKDECL= JavaPluginImages.IMG_OBJS_PACKDECL;

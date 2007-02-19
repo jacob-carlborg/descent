@@ -47,6 +47,12 @@ public class HierarchyTest extends AbstractModelTest {
 		assertEquals(1, types.length);
 		
 		IType type = types[0];
+		assertTrue(type.isClass());
+		assertFalse(type.isEnum());
+		assertFalse(type.isInterface());
+		assertFalse(type.isStruct());
+		assertFalse(type.isUnion());
+		assertFalse(type.isTemplate());
 		assertEquals("Clazz1", type.getElementName());
 		assertEquals(1, type.getSourceRange().getOffset());
 		assertEquals(28, type.getSourceRange().getLength());
@@ -165,6 +171,119 @@ public class HierarchyTest extends AbstractModelTest {
 		assertNull(init.getNameRange());
 	}
 	
+	public void testEnum() throws Exception {
+		ICompilationUnit unit = createCompilationUnit("test.d", " /** hola */ enum  Clazz1 { }");
+		
+		IType[] types = unit.getTypes();
+		assertEquals(1, types.length);
+		
+		IType type = types[0];
+		assertFalse(type.isClass());
+		assertTrue(type.isEnum());
+		assertFalse(type.isInterface());
+		assertFalse(type.isStruct());
+		assertFalse(type.isUnion());
+		assertFalse(type.isTemplate());
+		assertEquals("Clazz1", type.getElementName());
+		assertEquals(1, type.getSourceRange().getOffset());
+		assertEquals(28, type.getSourceRange().getLength());
+		assertEquals(19, type.getNameRange().getOffset());
+		assertEquals(6, type.getNameRange().getLength());
+		assertEquals("/** hola */ enum  Clazz1 { }", type.getSource());
+		assertEquals(1, type.getJavadocRange().getOffset());
+		assertEquals(11, type.getJavadocRange().getLength());
+	}
 	
+	public void testInterface() throws Exception {
+		ICompilationUnit unit = createCompilationUnit("test.d", " /** hola */ interface Clazz1 { }");
+		
+		IType[] types = unit.getTypes();
+		assertEquals(1, types.length);
+		
+		IType type = types[0];
+		assertFalse(type.isClass());
+		assertFalse(type.isEnum());
+		assertTrue(type.isInterface());
+		assertFalse(type.isStruct());
+		assertFalse(type.isUnion());
+		assertFalse(type.isTemplate());
+		assertEquals("Clazz1", type.getElementName());
+		assertEquals(1, type.getSourceRange().getOffset());
+		assertEquals(32, type.getSourceRange().getLength());
+		assertEquals(23, type.getNameRange().getOffset());
+		assertEquals(6, type.getNameRange().getLength());
+		assertEquals("/** hola */ interface Clazz1 { }", type.getSource());
+		assertEquals(1, type.getJavadocRange().getOffset());
+		assertEquals(11, type.getJavadocRange().getLength());
+	}
+	
+	public void testStruct() throws Exception {
+		ICompilationUnit unit = createCompilationUnit("test.d", " /** hola */ struct Clazz1 { }");
+		
+		IType[] types = unit.getTypes();
+		assertEquals(1, types.length);
+		
+		IType type = types[0];
+		assertFalse(type.isClass());
+		assertFalse(type.isEnum());
+		assertFalse(type.isInterface());
+		assertTrue(type.isStruct());
+		assertFalse(type.isUnion());
+		assertFalse(type.isTemplate());
+		assertEquals("Clazz1", type.getElementName());
+		assertEquals(1, type.getSourceRange().getOffset());
+		assertEquals(29, type.getSourceRange().getLength());
+		assertEquals(20, type.getNameRange().getOffset());
+		assertEquals(6, type.getNameRange().getLength());
+		assertEquals("/** hola */ struct Clazz1 { }", type.getSource());
+		assertEquals(1, type.getJavadocRange().getOffset());
+		assertEquals(11, type.getJavadocRange().getLength());
+	}
+	
+	public void testUnion() throws Exception {
+		ICompilationUnit unit = createCompilationUnit("test.d", " /** hola */ union Clazz1 { }");
+		
+		IType[] types = unit.getTypes();
+		assertEquals(1, types.length);
+		
+		IType type = types[0];
+		assertFalse(type.isClass());
+		assertFalse(type.isEnum());
+		assertFalse(type.isInterface());
+		assertFalse(type.isStruct());
+		assertTrue(type.isUnion());
+		assertFalse(type.isTemplate());
+		assertEquals("Clazz1", type.getElementName());
+		assertEquals(1, type.getSourceRange().getOffset());
+		assertEquals(28, type.getSourceRange().getLength());
+		assertEquals(19, type.getNameRange().getOffset());
+		assertEquals(6, type.getNameRange().getLength());
+		assertEquals("/** hola */ union Clazz1 { }", type.getSource());
+		assertEquals(1, type.getJavadocRange().getOffset());
+		assertEquals(11, type.getJavadocRange().getLength());
+	}
+	
+	public void testTemplate() throws Exception {
+		ICompilationUnit unit = createCompilationUnit("test.d", " /** hola */ template Clazz1() { }");
+		
+		IType[] types = unit.getTypes();
+		assertEquals(1, types.length);
+		
+		IType type = types[0];
+		assertFalse(type.isClass());
+		assertFalse(type.isEnum());
+		assertFalse(type.isInterface());
+		assertFalse(type.isStruct());
+		assertFalse(type.isUnion());
+		assertTrue(type.isTemplate());
+		assertEquals("Clazz1", type.getElementName());
+		assertEquals(1, type.getSourceRange().getOffset());
+		assertEquals(33, type.getSourceRange().getLength());
+		assertEquals(22, type.getNameRange().getOffset());
+		assertEquals(6, type.getNameRange().getLength());
+		assertEquals("/** hola */ template Clazz1() { }", type.getSource());
+		assertEquals(1, type.getJavadocRange().getOffset());
+		assertEquals(11, type.getJavadocRange().getLength());
+	}	
 
 }

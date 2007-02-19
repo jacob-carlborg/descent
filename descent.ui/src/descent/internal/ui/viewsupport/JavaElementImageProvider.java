@@ -430,6 +430,7 @@ public class JavaElementImageProvider {
 				return getInnerAnnotationImageDescriptor(isInInterfaceOrAnnotation, flags);
 			}
 			return getAnnotationImageDescriptor(flags);
+		*/
 		}  else if (Flags.isInterface(flags)) {
 			if (useLightIcons) {
 				return JavaPluginImages.DESC_OBJS_INTERFACEALT;
@@ -438,7 +439,30 @@ public class JavaElementImageProvider {
 				return getInnerInterfaceImageDescriptor(isInInterfaceOrAnnotation, flags);
 			}
 			return getInterfaceImageDescriptor(flags);
-		*/
+		}  else if (Flags.isStruct(flags)) {
+			if (useLightIcons) {
+				return JavaPluginImages.DESC_OBJS_STRUCTALT;
+			}
+			if (isInner) {
+				return getInnerStructImageDescriptor(isInInterfaceOrAnnotation, flags);
+			}
+			return getStructImageDescriptor(flags);
+		}  else if (Flags.isUnion(flags)) {
+			if (useLightIcons) {
+				return JavaPluginImages.DESC_OBJS_UNIONALT;
+			}
+			if (isInner) {
+				return getInnerUnionImageDescriptor(isInInterfaceOrAnnotation, flags);
+			}
+			return getUnionImageDescriptor(flags);
+		}  else if (Flags.isTemplate(flags)) {
+			if (useLightIcons) {
+				return JavaPluginImages.DESC_OBJS_TEMPLATE_ELEMENTALT;
+			}
+			if (isInner) {
+				return getInnerTemplateImageDescriptor(isInInterfaceOrAnnotation, flags);
+			}
+			return getTemplateImageDescriptor(flags);
 		} else {
 			if (useLightIcons) {
 				return JavaPluginImages.DESC_OBJS_CLASSALT;
@@ -492,6 +516,7 @@ public class JavaElementImageProvider {
 			return JavaPluginImages.DESC_OBJS_ENUM_DEFAULT;
 	}
 	
+	/*
 	private static ImageDescriptor getAnnotationImageDescriptor(int flags) {
 		if (Flags.isPublic(flags) || Flags.isProtected(flags) || Flags.isPrivate(flags))
 			return JavaPluginImages.DESC_OBJS_ANNOTATION;
@@ -509,12 +534,34 @@ public class JavaElementImageProvider {
 		else
 			return JavaPluginImages.DESC_OBJS_ANNOTATION_DEFAULT;
 	}
+	*/
 	
 	private static ImageDescriptor getInterfaceImageDescriptor(int flags) {
 		if (Flags.isPublic(flags) || Flags.isProtected(flags) || Flags.isPrivate(flags))
 			return JavaPluginImages.DESC_OBJS_INTERFACE;
 		else
 			return JavaPluginImages.DESC_OBJS_INTERFACE_DEFAULT;
+	}
+	
+	private static ImageDescriptor getStructImageDescriptor(int flags) {
+		if (Flags.isPublic(flags) || Flags.isProtected(flags) || Flags.isPrivate(flags))
+			return JavaPluginImages.DESC_OBJS_STRUCT;
+		else
+			return JavaPluginImages.DESC_OBJS_STRUCT_DEFAULT;
+	}
+	
+	private static ImageDescriptor getUnionImageDescriptor(int flags) {
+		if (Flags.isPublic(flags) || Flags.isProtected(flags) || Flags.isPrivate(flags))
+			return JavaPluginImages.DESC_OBJS_UNION;
+		else
+			return JavaPluginImages.DESC_OBJS_UNION_DEFAULT;
+	}
+	
+	private static ImageDescriptor getTemplateImageDescriptor(int flags) {
+		if (Flags.isPublic(flags) || Flags.isProtected(flags) || Flags.isPrivate(flags))
+			return JavaPluginImages.DESC_OBJS_TEMPLATE_ELEMENT;
+		else
+			return JavaPluginImages.DESC_OBJS_TEMPLATE_ELEMENT_DEFAULT;
 	}
 	
 	private static ImageDescriptor getInnerInterfaceImageDescriptor(boolean isInInterfaceOrAnnotation, int flags) {
@@ -527,4 +574,47 @@ public class JavaElementImageProvider {
 		else
 			return JavaPluginImages.DESC_OBJS_INTERFACE_DEFAULT;
 	}
+	
+	private static ImageDescriptor getInnerStructImageDescriptor(boolean isInInterfaceOrAnnotation, int flags) {
+		/* TODO JDT UI images
+		if (Flags.isPublic(flags) || isInInterfaceOrAnnotation)
+			return JavaPluginImages.DESC_OBJS_INNER_INTERFACE_PUBLIC;
+		else if (Flags.isPrivate(flags))
+			return JavaPluginImages.DESC_OBJS_INNER_INTERFACE_PRIVATE;
+		else if (Flags.isProtected(flags))
+			return JavaPluginImages.DESC_OBJS_INNER_INTERFACE_PROTECTED;
+		else
+			return JavaPluginImages.DESC_OBJS_INTERFACE_DEFAULT;
+		*/
+		return getStructImageDescriptor(flags);
+	}
+	
+	private static ImageDescriptor getInnerUnionImageDescriptor(boolean isInInterfaceOrAnnotation, int flags) {
+		/* TODO JDT UI images
+		if (Flags.isPublic(flags) || isInInterfaceOrAnnotation)
+			return JavaPluginImages.DESC_OBJS_INNER_INTERFACE_PUBLIC;
+		else if (Flags.isPrivate(flags))
+			return JavaPluginImages.DESC_OBJS_INNER_INTERFACE_PRIVATE;
+		else if (Flags.isProtected(flags))
+			return JavaPluginImages.DESC_OBJS_INNER_INTERFACE_PROTECTED;
+		else
+			return JavaPluginImages.DESC_OBJS_INTERFACE_DEFAULT;
+		*/
+		return getUnionImageDescriptor(flags);
+	}
+	
+	private static ImageDescriptor getInnerTemplateImageDescriptor(boolean isInInterfaceOrAnnotation, int flags) {
+		/* TODO JDT UI images
+		if (Flags.isPublic(flags) || isInInterfaceOrAnnotation)
+			return JavaPluginImages.DESC_OBJS_INNER_INTERFACE_PUBLIC;
+		else if (Flags.isPrivate(flags))
+			return JavaPluginImages.DESC_OBJS_INNER_INTERFACE_PRIVATE;
+		else if (Flags.isProtected(flags))
+			return JavaPluginImages.DESC_OBJS_INNER_INTERFACE_PROTECTED;
+		else
+			return JavaPluginImages.DESC_OBJS_INTERFACE_DEFAULT;
+		*/
+		return getTemplateImageDescriptor(flags);
+	}
+	
 }

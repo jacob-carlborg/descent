@@ -12,7 +12,6 @@
  *******************************************************************************/
 package descent.core;
 
-import descent.core.dom.Modifier;
 
 /**
  * Utility class for decoding modifier flags in Java elements.
@@ -40,77 +39,102 @@ public final class Flags {
 	 * Private access flag.
 	 * @since 2.0
 	 */
-	public static final int AccPrivate = Modifier.PRIVATE;
+	public static final int AccPrivate = 0x0001;
 	/**
 	 * Package access flag.
 	 * @since 2.0
 	 */
-	public static final int AccPackage = Modifier.PACKAGE;
+	public static final int AccPackage = 0x0002;
 	/**
 	 * Protected access flag.
 	 * @since 2.0
 	 */
-	public static final int AccProtected = Modifier.PROTECTED;
+	public static final int AccProtected = 0x0004;
 	/**
 	 * Public access flag.
 	 * @since 2.0
 	 */
-	public static final int AccPublic = Modifier.PUBLIC;
+	public static final int AccPublic = 0x0008;
 	/**
 	 * Export access flag.
 	 * @since 2.0
 	 */
-	public static final int AccExport = Modifier.EXPORT;
+	public static final int AccExport = 0x0010;
 	/**
 	 * Static property flag.
 	 * @since 2.0
 	 */
-	public static final int AccStatic = Modifier.STATIC;
+	public static final int AccStatic = 0x0020;
 	/**
 	 * Final property flag.
 	 * @since 2.0
 	 */
-	public static final int AccFinal = Modifier.FINAL;
+	public static final int AccFinal = 0x0040;
 	/**
 	 * Abstract property flag.
 	 * @since 2.0
 	 */
-	public static final int AccAbstract = Modifier.ABSTRACT;
+	public static final int AccAbstract = 0x0080;
 	/**
 	 * Override property flag.
 	 * @since 2.0
 	 */
-	public static final int AccOverride = Modifier.OVERRIDE;
+	public static final int AccOverride = 0x0100;
 	/**
 	 * Auto property flag.
 	 * @since 2.0
 	 */
-	public static final int AccAuto = Modifier.AUTO;
+	public static final int AccAuto = 0x0200;
 	/**
 	 * Synchronized property flag.
 	 * @since 2.0
 	 */
-	public static final int AccSynchronized = Modifier.SYNCHRONIZED;
+	public static final int AccSynchronized = 0x0400;
 	/**
 	 * Deprecated property flag.
 	 * @since 2.0
 	 */
-	public static final int AccDeprecated = Modifier.DEPRECATED;
+	public static final int AccDeprecated = 0x0800;
 	/**
 	 * Extern property flag.
 	 * @since 2.0
 	 */
-	public static final int AccExtern = Modifier.EXTERN;
+	public static final int AccExtern = 0x1000;
 	/**
 	 * Const property flag.
 	 * @since 2.0
 	 */
-	public static final int AccConst = Modifier.CONST;
+	public static final int AccConst = 0x2000;
 	/**
 	 * Scope property flag.
 	 * @since 2.0
 	 */
-	public static final int AccScope = Modifier.SCOPE;
+	public static final int AccScope = 0x4000;
+	/**
+	 * Enum property flag.
+	 * @since 2.0
+	 */
+	public static final int AccEnum = 0x8000;
+	/**
+	 * Interface property flag.
+	 * @since 2.0
+	 */
+	public static final int AccInterface = 0x00010000;
+	/**
+	 * Struct property flag.
+	 * @since 2.0
+	 */
+	public static final int AccStruct = 0x00020000;
+	/**
+	 * Union property flag.
+	 * @since 2.0
+	 */
+	public static final int AccUnion = 0x00040000;
+	/**
+	 * Template property flag.
+	 * @since 2.0
+	 */
+	public static final int AccTemplate = 0x00080000;
 
 	/**
 	 * Not instantiable.
@@ -269,9 +293,54 @@ public final class Flags {
 		return (flags & AccScope) != 0;
 	}
 	
-	// TODO JDT flags
+	/**
+	 * Returns whether the given integer includes the <code>enum</code> modifier.
+	 *
+	 * @param flags the flags
+	 * @return <code>true</code> if the <code>enum</code> modifier is included
+	 */
 	public static boolean isEnum(int flags) {
-		return false;
+		return (flags & AccEnum) != 0;
+	}
+	
+	/**
+	 * Returns whether the given integer includes the <code>interface</code> modifier.
+	 *
+	 * @param flags the flags
+	 * @return <code>true</code> if the <code>interface</code> modifier is included
+	 */
+	public static boolean isInterface(int flags) {
+		return (flags & AccInterface) != 0;
+	}
+	
+	/**
+	 * Returns whether the given integer includes the <code>struct</code> modifier.
+	 *
+	 * @param flags the flags
+	 * @return <code>true</code> if the <code>struct</code> modifier is included
+	 */
+	public static boolean isStruct(int flags) {
+		return (flags & AccStruct) != 0;
+	}
+	
+	/**
+	 * Returns whether the given integer includes the <code>union</code> modifier.
+	 *
+	 * @param flags the flags
+	 * @return <code>true</code> if the <code>union</code> modifier is included
+	 */
+	public static boolean isUnion(int flags) {
+		return (flags & AccUnion) != 0;
+	}
+	
+	/**
+	 * Returns whether the given integer includes the <code>template</code> modifier.
+	 *
+	 * @param flags the flags
+	 * @return <code>true</code> if the <code>template</code> modifier is included
+	 */
+	public static boolean isTemplate(int flags) {
+		return (flags & AccTemplate) != 0;
 	}
 	
 	/**
@@ -312,6 +381,16 @@ public final class Flags {
 			sb.append("const "); //$NON-NLS-1$
 		if (isScope(flags))
 			sb.append("scope "); //$NON-NLS-1$
+		if (isEnum(flags))
+			sb.append("enum "); //$NON-NLS-1$
+		if (isInterface(flags))
+			sb.append("interface "); //$NON-NLS-1$
+		if (isStruct(flags))
+			sb.append("struct "); //$NON-NLS-1$
+		if (isUnion(flags))
+			sb.append("union "); //$NON-NLS-1$
+		if (isTemplate(flags))
+			sb.append("template "); //$NON-NLS-1$
 
 		int len = sb.length();
 		if (len == 0)

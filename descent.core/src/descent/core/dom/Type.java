@@ -1,7 +1,5 @@
 package descent.core.dom;
 
-
-
 /**
  * Abstract subclass for types.
  * <pre>
@@ -30,6 +28,20 @@ public abstract class Type extends ASTNode {
 	 */
 	Type(AST ast) {
 		super(ast);
+	}
+	
+	/**
+	 * Resolves and returns the binding for this type.
+	 * <p>
+	 * Note that bindings are generally unavailable unless requested when the
+	 * AST is being built.
+	 * </p>
+	 * 
+	 * @return the type binding, or <code>null</code> if the binding cannot be 
+	 *    resolved
+	 */	
+	public final ITypeBinding resolveBinding() {
+		return this.ast.getBindingResolver().resolveType(this);
 	}
 
 }

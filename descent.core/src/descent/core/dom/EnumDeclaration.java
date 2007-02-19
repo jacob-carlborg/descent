@@ -322,5 +322,23 @@ public class EnumDeclaration extends Declaration {
 			+ (this.postDDoc == null ? 0 : getPostDDoc().treeSize())
 	;
 	}
+	
+	/**
+	 * Resolves and returns the binding for the type declared in this enum
+	 * declaration.
+	 * <p>
+	 * Note that bindings are generally unavailable unless requested when the
+	 * AST is being built.
+	 * </p>
+	 * 
+	 * @return the binding, or <code>null</code> if the binding cannot be 
+	 *    resolved
+	 */	
+	public final ITypeBinding resolveBinding() {
+		/* TODO binding
+		return this.ast.getBindingResolver().resolveType(this);
+		*/
+		return null;
+	}
 
 }

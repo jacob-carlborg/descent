@@ -234,5 +234,22 @@ public class SelectiveImport extends ASTNode {
 			+ (this.name == null ? 0 : getName().treeSize())
 	;
 	}
+	
+	/**
+	 * Resolves and returns the binding for the imported member.
+	 * <p>
+	 * Note that bindings are generally unavailable unless requested when the
+	 * AST is being built.
+	 * </p>
+	 * 
+	 * @return the binding, or <code>null</code> if the binding cannot be 
+	 *    resolved
+	 */	
+	public final IBinding resolveBinding() {
+		/* TODO binding
+		return this.ast.getBindingResolver().resolveSelectiveImport(this);
+		*/
+		return null;
+	}
 
 }
