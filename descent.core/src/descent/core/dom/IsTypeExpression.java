@@ -36,7 +36,7 @@ public class IsTypeExpression extends Expression {
 	 * The "specialization" structural property of this node type.
 	 */
 	public static final ChildPropertyDescriptor SPECIALIZATION_PROPERTY =
-		new ChildPropertyDescriptor(IsTypeExpression.class, "specialization", Type.class, MANDATORY, CYCLE_RISK); //$NON-NLS-1$
+		new ChildPropertyDescriptor(IsTypeExpression.class, "specialization", Type.class, OPTIONAL, CYCLE_RISK); //$NON-NLS-1$
 
 	/**
 	 * A list of property descriptors (element type: 
@@ -299,16 +299,6 @@ public class IsTypeExpression extends Expression {
 	 * @return the specialization
 	 */ 
 	public Type getSpecialization() {
-		if (this.specialization == null) {
-			// lazy init must be thread-safe for readers
-			synchronized (this) {
-				if (this.specialization == null) {
-					preLazyInit();
-					this.specialization = new PrimitiveType(this.ast);
-					postLazyInit(this.specialization, SPECIALIZATION_PROPERTY);
-				}
-			}
-		}
 		return this.specialization;
 	}
 
@@ -324,9 +314,6 @@ public class IsTypeExpression extends Expression {
 	 * </ul>
 	 */ 
 	public void setSpecialization(Type specialization) {
-		if (specialization == null) {
-			throw new IllegalArgumentException();
-		}
 		ASTNode oldChild = this.specialization;
 		preReplaceChild(oldChild, specialization, SPECIALIZATION_PROPERTY);
 		this.specialization = specialization;

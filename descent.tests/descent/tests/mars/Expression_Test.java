@@ -585,6 +585,17 @@ public class Expression_Test extends Parser_Test {
 		assertFalse(expr.isSameComparison());
 	}
 	
+	public void testIsTypeSpecializationEmpty() {
+		String s = " is(x)";
+		
+		IsTypeExpression expr = (IsTypeExpression) parseExpression(s);
+		
+		assertPosition(expr, 1, s.length() - 1);
+		assertEquals("x", expr.getType().toString());
+		assertNull(expr.getName());
+		assertNull(expr.getSpecialization());
+	}
+	
 	public void testIsTypeSpecializationExpression() {
 		Object[][] objs = {
 				{ "typedef", IsTypeSpecializationExpression.TypeSpecialization.TYPEDEF },

@@ -6296,7 +6296,9 @@ class Parser extends Lexer {
 		IsTypeExpression isTypeExpression = new IsTypeExpression(ast);
 		isTypeExpression.setName(newSimpleNameForIdentifier(ident));
 		isTypeExpression.setType(targ);
-		isTypeExpression.setSpecialization(tspec);
+		if (tspec != null) {
+			isTypeExpression.setSpecialization(tspec);
+		}
 		isTypeExpression.setSameComparison(tok == TOK.TOKequal);
 		return isTypeExpression;
 	}

@@ -280,6 +280,7 @@ public class SourceElementParser extends ASTVisitor {
 		info.nameSourceStart = node.getName().getStartPosition();
 		info.secondary = !foundType;
 		info.superclass = new char[0];
+		info.typeParameters = getTypeParameters(node.templateParameters());
 		
 		foundType = true;
 		

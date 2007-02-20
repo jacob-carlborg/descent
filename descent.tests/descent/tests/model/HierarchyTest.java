@@ -41,7 +41,7 @@ public class HierarchyTest extends AbstractModelTest {
 	}
 	
 	public void testType() throws Exception {
-		ICompilationUnit unit = createCompilationUnit("test.d", " /** hola */ class Clazz1 { }");
+		ICompilationUnit unit = createCompilationUnit("test.d", " /** hola */ class Clazz1(T) { }");
 		
 		IType[] types = unit.getTypes();
 		assertEquals(1, types.length);
@@ -55,12 +55,18 @@ public class HierarchyTest extends AbstractModelTest {
 		assertFalse(type.isTemplate());
 		assertEquals("Clazz1", type.getElementName());
 		assertEquals(1, type.getSourceRange().getOffset());
-		assertEquals(28, type.getSourceRange().getLength());
+		assertEquals(31, type.getSourceRange().getLength());
 		assertEquals(19, type.getNameRange().getOffset());
 		assertEquals(6, type.getNameRange().getLength());
-		assertEquals("/** hola */ class Clazz1 { }", type.getSource());
+		assertEquals("/** hola */ class Clazz1(T) { }", type.getSource());
 		assertEquals(1, type.getJavadocRange().getOffset());
 		assertEquals(11, type.getJavadocRange().getLength());
+		assertEquals(1, type.getTypeParameters().length);
+		assertEquals("T", type.getTypeParameters()[0].getElementName());
+		assertEquals(26, type.getTypeParameters()[0].getSourceRange().getOffset());
+		assertEquals(1, type.getTypeParameters()[0].getSourceRange().getLength());
+		assertEquals(26, type.getTypeParameters()[0].getNameRange().getOffset());
+		assertEquals(1, type.getTypeParameters()[0].getNameRange().getLength());		
 	}
 	
 	public void testTypeWithTwoComments() throws Exception {
@@ -472,7 +478,7 @@ public class HierarchyTest extends AbstractModelTest {
 	}
 	
 	public void testTemplate() throws Exception {
-		ICompilationUnit unit = createCompilationUnit("test.d", " /** hola */ template Clazz1() { }");
+		ICompilationUnit unit = createCompilationUnit("test.d", " /** hola */ template Clazz1(T) { }");
 		
 		IType[] types = unit.getTypes();
 		assertEquals(1, types.length);
@@ -486,12 +492,18 @@ public class HierarchyTest extends AbstractModelTest {
 		assertTrue(type.isTemplate());
 		assertEquals("Clazz1", type.getElementName());
 		assertEquals(1, type.getSourceRange().getOffset());
-		assertEquals(33, type.getSourceRange().getLength());
+		assertEquals(34, type.getSourceRange().getLength());
 		assertEquals(22, type.getNameRange().getOffset());
 		assertEquals(6, type.getNameRange().getLength());
-		assertEquals("/** hola */ template Clazz1() { }", type.getSource());
+		assertEquals("/** hola */ template Clazz1(T) { }", type.getSource());
 		assertEquals(1, type.getJavadocRange().getOffset());
 		assertEquals(11, type.getJavadocRange().getLength());
+		assertEquals(1, type.getTypeParameters().length);
+		assertEquals("T", type.getTypeParameters()[0].getElementName());
+		assertEquals(29, type.getTypeParameters()[0].getSourceRange().getOffset());
+		assertEquals(1, type.getTypeParameters()[0].getSourceRange().getLength());
+		assertEquals(29, type.getTypeParameters()[0].getNameRange().getOffset());
+		assertEquals(1, type.getTypeParameters()[0].getNameRange().getLength());
 	}	
 
 }

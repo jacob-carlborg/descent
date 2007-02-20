@@ -616,21 +616,27 @@ public static String createTypeSignature(char[] typeName, boolean isResolved) {
  * @since 2.0
  */
 public static char[] createCharArrayTypeSignature(char[] typeName, boolean isResolved) {
-	if (typeName == null) throw new IllegalArgumentException("null"); //$NON-NLS-1$
-	int length = typeName.length;
-	if (length == 0) throw new IllegalArgumentException(new String(typeName));
-	StringBuffer buffer = new StringBuffer(5);
-	int pos = encodeTypeSignature(typeName, 0, isResolved, length, buffer);
-	pos = consumeWhitespace(typeName, pos, length);
-	if (pos < length) {
-		/* TODO JDT UI signature
-		throw new IllegalArgumentException(new String(typeName));
-		*/
+	try {
+		if (typeName == null) throw new IllegalArgumentException("null"); //$NON-NLS-1$
+		int length = typeName.length;
+		if (length == 0) throw new IllegalArgumentException(new String(typeName));
+		StringBuffer buffer = new StringBuffer(5);
+		int pos = encodeTypeSignature(typeName, 0, isResolved, length, buffer);
+		pos = consumeWhitespace(typeName, pos, length);
+		if (pos < length) {
+			/* TODO JDT UI signature
+			throw new IllegalArgumentException(new String(typeName));
+			*/
+			return "I".toCharArray();
+		}
+		char[] result = new char[length = buffer.length()];
+		buffer.getChars(0, length, result, 0);
+		return result;
+	} catch (Throwable t) {
+		// TODO JDT signature: this is not working some times...
 		return "I".toCharArray();
 	}
-	char[] result = new char[length = buffer.length()];
-	buffer.getChars(0, length, result, 0);
-	return result;	
+	
 }
 private static int consumeWhitespace(char[] typeName, int pos, int length) {
     while (pos < length) {
