@@ -62,6 +62,18 @@ public class JavaPluginImages {
 	public static final String IMG_FIELD_PROTECTED= NAME_PREFIX + "field_protected_obj.gif"; 		//$NON-NLS-1$
 	public static final String IMG_FIELD_PRIVATE= NAME_PREFIX + "field_private_obj.gif"; 		//$NON-NLS-1$
 	public static final String IMG_FIELD_DEFAULT= NAME_PREFIX + "field_default_obj.gif"; 		//$NON-NLS-1$
+	
+	// TODO JDT UI images: missing images for alias and typedef
+	
+	public static final String IMG_ALIAS_PUBLIC= NAME_PREFIX + "alias_public_obj.gif"; 			//$NON-NLS-1$
+	public static final String IMG_ALIAS_PROTECTED= NAME_PREFIX + "alias_protected_obj.gif"; 		//$NON-NLS-1$
+	public static final String IMG_ALIAS_PRIVATE= NAME_PREFIX + "alias_private_obj.gif"; 		//$NON-NLS-1$
+	public static final String IMG_ALIAS_DEFAULT= NAME_PREFIX + "alias_default_obj.gif"; 		//$NON-NLS-1$
+	
+	public static final String IMG_TYPEDEF_PUBLIC= NAME_PREFIX + "typedef_public_obj.gif"; 			//$NON-NLS-1$
+	public static final String IMG_TYPEDEF_PROTECTED= NAME_PREFIX + "typedef_protected_obj.gif"; 		//$NON-NLS-1$
+	public static final String IMG_TYPEDEF_PRIVATE= NAME_PREFIX + "typedef_private_obj.gif"; 		//$NON-NLS-1$
+	public static final String IMG_TYPEDEF_DEFAULT= NAME_PREFIX + "typedef_default_obj.gif"; 		//$NON-NLS-1$
 
 	public static final String IMG_ELCL_VIEW_MENU= NAME_PREFIX + T_ELCL + "view_menu.gif"; //$NON-NLS-1$
 	public static final String IMG_DLCL_VIEW_MENU= NAME_PREFIX + T_DLCL + "view_menu.gif"; //$NON-NLS-1$
@@ -198,6 +210,16 @@ public class JavaPluginImages {
 	public static final ImageDescriptor DESC_FIELD_PROTECTED= createManagedFromKey(T_OBJ, IMG_FIELD_PROTECTED); 
 	public static final ImageDescriptor DESC_FIELD_PRIVATE= createManagedFromKey(T_OBJ, IMG_FIELD_PRIVATE); 
 	public static final ImageDescriptor DESC_FIELD_DEFAULT= createManagedFromKey(T_OBJ, IMG_FIELD_DEFAULT); 
+	
+	public static final ImageDescriptor DESC_ALIAS_PUBLIC= createManagedFromKey(T_OBJ, IMG_ALIAS_PUBLIC); 
+	public static final ImageDescriptor DESC_ALIAS_PROTECTED= createManagedFromKey(T_OBJ, IMG_ALIAS_PROTECTED); 
+	public static final ImageDescriptor DESC_ALIAS_PRIVATE= createManagedFromKey(T_OBJ, IMG_ALIAS_PRIVATE); 
+	public static final ImageDescriptor DESC_ALIAS_DEFAULT= createManagedFromKey(T_OBJ, IMG_ALIAS_DEFAULT);
+	
+	public static final ImageDescriptor DESC_TYPEDEF_PUBLIC= createManagedFromKey(T_OBJ, IMG_TYPEDEF_PUBLIC); 
+	public static final ImageDescriptor DESC_TYPEDEF_PROTECTED= createManagedFromKey(T_OBJ, IMG_TYPEDEF_PROTECTED); 
+	public static final ImageDescriptor DESC_TYPEDEF_PRIVATE= createManagedFromKey(T_OBJ, IMG_TYPEDEF_PRIVATE); 
+	public static final ImageDescriptor DESC_TYPEDEF_DEFAULT= createManagedFromKey(T_OBJ, IMG_TYPEDEF_DEFAULT);
 	
 	public static final ImageDescriptor DESC_MENU_SHIFT_RIGHT= createUnManaged(T_ETOOL, "shift_r_edit.gif"); 	//$NON-NLS-1$
 	public static final ImageDescriptor DESC_MENU_SHIFT_LEFT= createUnManaged(T_ETOOL, "shift_l_edit.gif"); 	//$NON-NLS-1$

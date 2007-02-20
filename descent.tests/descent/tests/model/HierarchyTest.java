@@ -143,12 +143,64 @@ public class HierarchyTest extends AbstractModelTest {
 		assertEquals(1, fields.length);
 		
 		IField field = fields[0];
+		assertTrue(field.isVariable());
+		assertFalse(field.isEnumConstant());
+		assertFalse(field.isAlias());
+		assertFalse(field.isTypedef());
 		assertEquals(16, field.getSourceRange().getOffset());
 		assertEquals(18, field.getSourceRange().getLength());
 		assertEquals(16, field.getJavadocRange().getOffset());
 		assertEquals(11, field.getJavadocRange().getLength());
 		assertEquals("x", field.getElementName());
 		assertEquals(32, field.getNameRange().getOffset());
+		assertEquals(1, field.getNameRange().getLength());
+	}
+	
+	public void testAlias() throws Exception {
+		ICompilationUnit unit = createCompilationUnit("test.d", " class Clazz1 { /** hola */ alias int x; }");
+		
+		IType[] types = unit.getTypes();
+		assertEquals(1, types.length);
+		
+		IType type = types[0];
+		IField[] fields = type.getFields();
+		assertEquals(1, fields.length);
+		
+		IField field = fields[0];
+		assertFalse(field.isVariable());
+		assertFalse(field.isEnumConstant());
+		assertTrue(field.isAlias());
+		assertFalse(field.isTypedef());
+		assertEquals(16, field.getSourceRange().getOffset());
+		assertEquals(24, field.getSourceRange().getLength());
+		assertEquals(16, field.getJavadocRange().getOffset());
+		assertEquals(11, field.getJavadocRange().getLength());
+		assertEquals("x", field.getElementName());
+		assertEquals(38, field.getNameRange().getOffset());
+		assertEquals(1, field.getNameRange().getLength());
+	}
+	
+	public void testTypdef() throws Exception {
+		ICompilationUnit unit = createCompilationUnit("test.d", " class Clazz1 { /** hola */ typedef int x; }");
+		
+		IType[] types = unit.getTypes();
+		assertEquals(1, types.length);
+		
+		IType type = types[0];
+		IField[] fields = type.getFields();
+		assertEquals(1, fields.length);
+		
+		IField field = fields[0];
+		assertFalse(field.isVariable());
+		assertFalse(field.isEnumConstant());
+		assertFalse(field.isAlias());
+		assertTrue(field.isTypedef());
+		assertEquals(16, field.getSourceRange().getOffset());
+		assertEquals(26, field.getSourceRange().getLength());
+		assertEquals(16, field.getJavadocRange().getOffset());
+		assertEquals(11, field.getJavadocRange().getLength());
+		assertEquals("x", field.getElementName());
+		assertEquals(40, field.getNameRange().getOffset());
 		assertEquals(1, field.getNameRange().getLength());
 	}
 	
@@ -172,7 +224,7 @@ public class HierarchyTest extends AbstractModelTest {
 	}
 	
 	public void testEnum() throws Exception {
-		ICompilationUnit unit = createCompilationUnit("test.d", " /** hola */ enum  Clazz1 { }");
+		ICompilationUnit unit = createCompilationUnit("test.d", " /** hola */ enum  Clazz1 { x }");
 		
 		IType[] types = unit.getTypes();
 		assertEquals(1, types.length);
@@ -186,12 +238,25 @@ public class HierarchyTest extends AbstractModelTest {
 		assertFalse(type.isTemplate());
 		assertEquals("Clazz1", type.getElementName());
 		assertEquals(1, type.getSourceRange().getOffset());
-		assertEquals(28, type.getSourceRange().getLength());
+		assertEquals(30, type.getSourceRange().getLength());
 		assertEquals(19, type.getNameRange().getOffset());
 		assertEquals(6, type.getNameRange().getLength());
-		assertEquals("/** hola */ enum  Clazz1 { }", type.getSource());
+		assertEquals("/** hola */ enum  Clazz1 { x }", type.getSource());
 		assertEquals(1, type.getJavadocRange().getOffset());
 		assertEquals(11, type.getJavadocRange().getLength());
+		
+		IField[] fields = type.getFields();
+		assertEquals(1, fields.length);
+		
+		IField field = fields[0];
+		assertFalse(field.isVariable());
+		assertTrue(field.isEnumConstant());
+		assertFalse(field.isAlias());
+		assertFalse(field.isTypedef());
+		assertEquals("x", field.getElementName());
+		assertEquals("x", field.getSource());
+		assertEquals(28, field.getSourceRange().getOffset());
+		assertEquals(1, field.getSourceRange().getLength());
 	}
 	
 	public void testInterface() throws Exception {

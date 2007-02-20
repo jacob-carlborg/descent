@@ -27,6 +27,11 @@ import descent.internal.core.util.ReferenceInfoAdapter;
  * A requestor for the fuzzy parser, used to compute the children of an ICompilationUnit.
  */
 public class CompilationUnitStructureRequestor extends ReferenceInfoAdapter implements ISourceElementRequestor {
+	
+	/**
+	 * The name of an annoymous enum, struct or union.
+	 */
+	private final static char[] ANNONYMOUS_NAME = { ' ' };
 
 	/**
 	 * The handle to the compilation unit being parsed
@@ -351,7 +356,8 @@ public void enterType(TypeInfo typeInfo) {
 
 	JavaElementInfo parentInfo = (JavaElementInfo) this.infoStack.peek();
 	JavaElement parentHandle= (JavaElement) this.handleStack.peek();
-	String nameString= new String(typeInfo.name);
+	// Changed to allow annonymous enums, structs and unions
+	String nameString= new String(typeInfo.name == null ? ANNONYMOUS_NAME : typeInfo.name);
 	SourceType handle = new SourceType(parentHandle, nameString); //NB: occurenceCount is computed in resolveDuplicates
 	resolveDuplicates(handle);
 	
@@ -359,8 +365,11 @@ public void enterType(TypeInfo typeInfo) {
 	info.setHandle(handle);
 	info.setSourceRangeStart(typeInfo.declarationStart);
 	info.setFlags(typeInfo.modifiers);
-	info.setNameSourceStart(typeInfo.nameSourceStart);
-	info.setNameSourceEnd(typeInfo.nameSourceEnd);
+	// Added to allow annonymous enums, structs and unions
+	if (typeInfo.name != null) {
+		info.setNameSourceStart(typeInfo.nameSourceStart);
+		info.setNameSourceEnd(typeInfo.nameSourceEnd);
+	}
 	JavaModelManager manager = JavaModelManager.getJavaModelManager();
 	char[] superclass = typeInfo.superclass;
 	info.setSuperclassName(superclass == null ? null : manager.intern(superclass));

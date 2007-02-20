@@ -121,6 +121,15 @@ String getKey();
  */
 String getTypeSignature() throws JavaModelException;
 /**
+ * Returns whether this field represents a variable.
+ * 
+ * @return whether this field represents a variable
+ * @exception JavaModelException if this element does not exist or if an
+ *      exception occurs while accessing its corresponding resource
+ * @since 3.1
+ */
+boolean isVariable() throws JavaModelException;
+/**
  * Returns whether this field represents an enum constant.
  * 
  * @return whether this field represents an enum constant
@@ -129,6 +138,24 @@ String getTypeSignature() throws JavaModelException;
  * @since 3.1
  */
 boolean isEnumConstant() throws JavaModelException;
+/**
+ * Returns whether this field represents an alias.
+ * 
+ * @return whether this field represents an alias
+ * @exception JavaModelException if this element does not exist or if an
+ *      exception occurs while accessing its corresponding resource
+ * @since 3.1
+ */
+boolean isAlias() throws JavaModelException;
+/**
+ * Returns whether this field represents a typedef.
+ * 
+ * @return whether this field represents a typedef
+ * @exception JavaModelException if this element does not exist or if an
+ *      exception occurs while accessing its corresponding resource
+ * @since 3.1
+ */
+boolean isTypedef() throws JavaModelException;
 /**
  * Returns whether this field represents a resolved field.
  * If a field is resoved, its key contains resolved information.

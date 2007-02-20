@@ -10,6 +10,7 @@
  *******************************************************************************/
 package descent.internal.core;
 
+import descent.core.Flags;
 import descent.core.IField;
 import descent.core.IJavaElement;
 import descent.core.IType;
@@ -134,11 +135,27 @@ public String getTypeSignature() throws JavaModelException {
 }
 /* (non-Javadoc)
  * @see descent.core.IField#isEnumConstant()
- */public boolean isEnumConstant() throws JavaModelException {
-	/* TODO JDT Java -> D 
+ */
+public boolean isVariable() throws JavaModelException {
+	return !Flags.isEnum(getFlags()) && !Flags.isAlias(getFlags()) && !Flags.isTypedef(getFlags());
+}
+/* (non-Javadoc)
+ * @see descent.core.IField#isEnumConstant()
+ */
+public boolean isEnumConstant() throws JavaModelException {
 	return Flags.isEnum(getFlags());
-	*/
-	 return false;
+}
+/* (non-Javadoc)
+ * @see descent.core.IField#isAilas()
+ */
+public boolean isAlias() throws JavaModelException {
+	return Flags.isAlias(getFlags());
+}
+/* (non-Javadoc)
+ * @see descent.core.IField#isTypedef()
+ */
+public boolean isTypedef() throws JavaModelException {
+	return Flags.isTypedef(getFlags());
 }
 /* (non-Javadoc)
  * @see descent.core.IField#isResolved()

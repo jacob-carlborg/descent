@@ -24,6 +24,7 @@ import org.eclipse.ui.ide.IDE;
 import org.eclipse.ui.model.IWorkbenchAdapter;
 
 import descent.core.Flags;
+import descent.core.IField;
 import descent.core.IJavaElement;
 import descent.core.IJavaProject;
 import descent.core.IMember;
@@ -186,9 +187,15 @@ public class JavaElementImageProvider {
 					return getMethodImageDescriptor(JavaModelUtil.isInterfaceOrAnnotation(declType), flags);				
 				}
 				case IJavaElement.FIELD: {
-					IMember member= (IMember) element;
-					IType declType= member.getDeclaringType();
-					return getFieldImageDescriptor(JavaModelUtil.isInterfaceOrAnnotation(declType), member.getFlags());
+					IField field= (IField) element;
+					if (field.isVariable() || field.isEnumConstant()) {
+						IType declType= field.getDeclaringType();
+						return getVariableImageDescriptor(JavaModelUtil.isInterfaceOrAnnotation(declType), field.getFlags());
+					} else if (field.isAlias()) {
+						return getAliasImageDescriptor(field.getFlags());
+					} else {
+						return getTypedefImageDescriptor(field.getFlags());
+					}
 				}
 				case IJavaElement.LOCAL_VARIABLE:
 					return JavaPluginImages.DESC_OBJS_LOCAL_VARIABLE;				
@@ -320,11 +327,11 @@ public class JavaElementImageProvider {
 				int modifiers= member.getFlags();
 				if (Flags.isAbstract(modifiers) && confirmAbstract(member))
 					flags |= JavaElementImageDescriptor.ABSTRACT;
-				if (Flags.isFinal(modifiers) || isInterfaceOrAnnotationField(member) || isEnumConstant(member, modifiers))
+				if (Flags.isFinal(modifiers) /*|| isInterfaceOrAnnotationField(member) || isEnumConstant(member, modifiers) */)
 					flags |= JavaElementImageDescriptor.FINAL;
 				if (Flags.isSynchronized(modifiers) && confirmSynchronized(member))
 					flags |= JavaElementImageDescriptor.SYNCHRONIZED;
-				if (Flags.isStatic(modifiers) || isInterfaceOrAnnotationFieldOrType(member) || isEnumConstant(member, modifiers))
+				if (Flags.isStatic(modifiers) /*|| isInterfaceOrAnnotationFieldOrType(member) || isEnumConstant(member, modifiers)*/)
 					flags |= JavaElementImageDescriptor.STATIC;
 				
 				if (Flags.isDeprecated(modifiers))
@@ -344,10 +351,17 @@ public class JavaElementImageProvider {
 		
 	private static boolean confirmAbstract(IMember element) throws JavaModelException {
 		// never show the abstract symbol on interfaces or members in interfaces
+		/*
 		if (element.getElementType() == IJavaElement.TYPE) {
 			return ! JavaModelUtil.isInterfaceOrAnnotation((IType) element);
 		}
 		return ! JavaModelUtil.isInterfaceOrAnnotation(element.getDeclaringType());
+		*/
+		if (element.getElementType() == IJavaElement.TYPE) {
+			return ((IType) element).isClass();
+		} else {
+			return element.getElementType() == IJavaElement.METHOD;	
+		}
 	}
 	
 	private static boolean isInterfaceOrAnnotationField(IMember element) throws JavaModelException {
@@ -392,7 +406,7 @@ public class JavaElementImageProvider {
 		return JavaPluginImages.DESC_MISC_DEFAULT;
 	}
 		
-	public static ImageDescriptor getFieldImageDescriptor(boolean isInInterfaceOrAnnotation, int flags) {
+	public static ImageDescriptor getVariableImageDescriptor(boolean isInInterfaceOrAnnotation, int flags) {
 		if (Flags.isPublic(flags) || isInInterfaceOrAnnotation || Flags.isEnum(flags))
 			return JavaPluginImages.DESC_FIELD_PUBLIC;
 		if (Flags.isProtected(flags))
@@ -401,7 +415,29 @@ public class JavaElementImageProvider {
 			return JavaPluginImages.DESC_FIELD_PRIVATE;
 			
 		return JavaPluginImages.DESC_FIELD_DEFAULT;
-	}		
+	}
+	
+	public static ImageDescriptor getAliasImageDescriptor(int flags) {
+		if (Flags.isPublic(flags))
+			return JavaPluginImages.DESC_ALIAS_PUBLIC;
+		if (Flags.isProtected(flags))
+			return JavaPluginImages.DESC_ALIAS_PROTECTED;
+		if (Flags.isPrivate(flags))
+			return JavaPluginImages.DESC_ALIAS_PRIVATE;
+			
+		return JavaPluginImages.DESC_ALIAS_DEFAULT;
+	}
+	
+	public static ImageDescriptor getTypedefImageDescriptor(int flags) {
+		if (Flags.isPublic(flags))
+			return JavaPluginImages.DESC_TYPEDEF_PUBLIC;
+		if (Flags.isProtected(flags))
+			return JavaPluginImages.DESC_TYPEDEF_PROTECTED;
+		if (Flags.isPrivate(flags))
+			return JavaPluginImages.DESC_TYPEDEF_PRIVATE;
+			
+		return JavaPluginImages.DESC_TYPEDEF_DEFAULT;
+	}
 	
 	/**
 	 * @deprecated
@@ -421,7 +457,7 @@ public class JavaElementImageProvider {
 				return getInnerEnumImageDescriptor(isInInterfaceOrAnnotation, flags);
 			}
 			return getEnumImageDescriptor(flags);
-		/* TODO JDT UI image
+		/* TODO JDT UI images
 		} else if (Flags.isAnnotation(flags)) {
 			if (useLightIcons) {
 				return JavaPluginImages.DESC_OBJS_ANNOTATION_ALT;

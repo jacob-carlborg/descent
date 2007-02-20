@@ -20,11 +20,14 @@ import descent.core.dom.ASTNode;
 import descent.core.dom.ASTParser;
 import descent.core.dom.ASTVisitor;
 import descent.core.dom.AggregateDeclaration;
+import descent.core.dom.AliasDeclaration;
+import descent.core.dom.AliasDeclarationFragment;
 import descent.core.dom.Argument;
 import descent.core.dom.BaseClass;
 import descent.core.dom.CompilationUnit;
 import descent.core.dom.ConstructorDeclaration;
 import descent.core.dom.EnumDeclaration;
+import descent.core.dom.EnumMember;
 import descent.core.dom.FunctionDeclaration;
 import descent.core.dom.Import;
 import descent.core.dom.ImportDeclaration;
@@ -34,6 +37,8 @@ import descent.core.dom.Name;
 import descent.core.dom.QualifiedName;
 import descent.core.dom.TemplateDeclaration;
 import descent.core.dom.TemplateParameter;
+import descent.core.dom.TypedefDeclaration;
+import descent.core.dom.TypedefDeclarationFragment;
 import descent.core.dom.VariableDeclaration;
 import descent.core.dom.VariableDeclarationFragment;
 import descent.internal.compiler.ISourceElementRequestor.FieldInfo;
@@ -210,9 +215,11 @@ public class SourceElementParser extends ASTVisitor {
 			info.modifiers |= Flags.AccUnion;
 			break;
 		}
-		info.name = node.getName().getFullyQualifiedName().toCharArray();
-		info.nameSourceEnd = node.getName().getStartPosition() + node.getName().getLength() - 1;
-		info.nameSourceStart = node.getName().getStartPosition();
+		if (node.getName() != null) {
+			info.name = node.getName().getFullyQualifiedName().toCharArray();
+			info.nameSourceEnd = node.getName().getStartPosition() + node.getName().getLength() - 1;
+			info.nameSourceStart = node.getName().getStartPosition();
+		}
 		info.secondary = !foundType;
 		info.superclass = new char[0];
 		info.superinterfaces = getTokens(node.baseClasses());		
@@ -363,9 +370,11 @@ public class SourceElementParser extends ASTVisitor {
 	
 	@Override
 	public boolean visit(VariableDeclarationFragment node) {
+		// TODO JDT Java -> D
 		VariableDeclaration var = (VariableDeclaration) node.getParent();
 		
-		if (var.getParent().getNodeType() == ASTNode.AGGREGATE_DECLARATION) {		
+		int parentType = var.getParent().getNodeType(); 
+		if (parentType == ASTNode.AGGREGATE_DECLARATION || parentType == ASTNode.TEMPLATE_DECLARATION) {
 			FieldInfo info = new FieldInfo();
 			info.annotationPositions = new long[0];
 			info.categories = new char[0][];
@@ -392,13 +401,133 @@ public class SourceElementParser extends ASTVisitor {
 	public void endVisit(VariableDeclarationFragment node) {
 		VariableDeclaration var = (VariableDeclaration) node.getParent();
 		
-		if (var.getParent().getNodeType() == ASTNode.AGGREGATE_DECLARATION) {
+		int parentType = var.getParent().getNodeType(); 
+		if (parentType == ASTNode.AGGREGATE_DECLARATION || parentType == ASTNode.TEMPLATE_DECLARATION) {
 			int initializerStart = node.getInitializer() == null ? - 1 : node.getInitializer().getStartPosition();
 			int declarationEnd = node.getName().getStartPosition() + node.getName().getLength() - 1;
 			int declarationSourceEnd = var.getStartPosition() + var.getLength() - 1;
 			
 			requestor.exitField(initializerStart, declarationEnd, declarationSourceEnd);
 		}
+	}
+	
+	@Override
+	public boolean visit(AliasDeclarationFragment node) {
+		// TODO JDT Java -> D
+		AliasDeclaration var = (AliasDeclaration) node.getParent();
+		
+		int parentType = var.getParent().getNodeType(); 
+		if (parentType == ASTNode.AGGREGATE_DECLARATION || parentType == ASTNode.TEMPLATE_DECLARATION) {
+			FieldInfo info = new FieldInfo();
+			info.annotationPositions = new long[0];
+			info.categories = new char[0][];
+			
+			if (var.fragments().get(0) == node) {
+				info.declarationStart = var.getStartPosition();
+			} else {
+				info.declarationStart = node.getStartPosition();
+			}
+			
+			info.modifiers = getFlags(var.modifiers());
+			info.modifiers |= Flags.AccAlias;
+			info.name = node.getName().getIdentifier().toCharArray();
+			info.nameSourceEnd = node.getName().getStartPosition() + node.getName().getLength() - 1;
+			info.nameSourceStart = node.getName().getStartPosition();
+			info.type = var.getType().toString().toCharArray();
+			
+			requestor.enterField(info);
+		}
+		
+		return false;
+	}
+	
+	@Override
+	public void endVisit(AliasDeclarationFragment node) {
+		AliasDeclaration var = (AliasDeclaration) node.getParent();
+		
+		int parentType = var.getParent().getNodeType(); 
+		if (parentType == ASTNode.AGGREGATE_DECLARATION || parentType == ASTNode.TEMPLATE_DECLARATION) {
+			int initializerStart = node.getName().getStartPosition() + node.getLength() - 1;
+			int declarationSourceEnd = var.getStartPosition() + var.getLength() - 1;
+			
+			requestor.exitField(initializerStart, declarationSourceEnd, declarationSourceEnd);
+		}
+	}
+	
+	@Override
+	public boolean visit(TypedefDeclarationFragment node) {
+		// TODO JDT Java -> D
+		TypedefDeclaration var = (TypedefDeclaration) node.getParent();
+		
+		int parentType = var.getParent().getNodeType(); 
+		if (parentType == ASTNode.AGGREGATE_DECLARATION || parentType == ASTNode.TEMPLATE_DECLARATION) {
+			FieldInfo info = new FieldInfo();
+			info.annotationPositions = new long[0];
+			info.categories = new char[0][];
+			
+			if (var.fragments().get(0) == node) {
+				info.declarationStart = var.getStartPosition();
+			} else {
+				info.declarationStart = node.getStartPosition();
+			}
+			
+			info.modifiers = getFlags(var.modifiers());
+			info.modifiers |= Flags.AccTypedef;
+			info.name = node.getName().getIdentifier().toCharArray();
+			info.nameSourceEnd = node.getName().getStartPosition() + node.getName().getLength() - 1;
+			info.nameSourceStart = node.getName().getStartPosition();
+			info.type = var.getType().toString().toCharArray();
+			
+			requestor.enterField(info);
+		}
+		
+		return false;
+	}
+	
+	@Override
+	public void endVisit(TypedefDeclarationFragment node) {
+		TypedefDeclaration var = (TypedefDeclaration) node.getParent();
+		
+		int parentType = var.getParent().getNodeType(); 
+		if (parentType == ASTNode.AGGREGATE_DECLARATION || parentType == ASTNode.TEMPLATE_DECLARATION) {
+			int initializerStart = node.getInitializer() == null ? - 1 : node.getInitializer().getStartPosition();
+			int declarationEnd = node.getName().getStartPosition() + node.getName().getLength() - 1;
+			int declarationSourceEnd = var.getStartPosition() + var.getLength() - 1;
+			
+			requestor.exitField(initializerStart, declarationEnd, declarationSourceEnd);
+		}
+	}
+	
+	@Override
+	public boolean visit(EnumMember node) {
+		FieldInfo info = new FieldInfo();
+		info.annotationPositions = new long[0];
+		info.categories = new char[0][];
+		info.declarationStart = node.getStartPosition();
+		info.modifiers = Flags.AccEnum;
+		info.name = node.getName().getIdentifier().toCharArray();
+		info.nameSourceEnd = node.getName().getStartPosition() + node.getName().getLength() - 1;
+		info.nameSourceStart = node.getName().getStartPosition();
+		
+		EnumDeclaration enumDeclaration = (EnumDeclaration) node.getParent();
+		if (enumDeclaration.getBaseType() != null) {
+			info.type = enumDeclaration.getBaseType().toString().toCharArray();
+		} else {
+			info.type = "int".toCharArray();
+		}
+		
+		requestor.enterField(info);
+		
+		return false;
+	}
+	
+	@Override
+	public void endVisit(EnumMember node) {
+		int initializerStart = node.getValue() == null ? - 1 : node.getValue().getStartPosition();
+		int declarationEnd = node.getName().getStartPosition() + node.getName().getLength() - 1;
+		int declarationSourceEnd = node.getStartPosition() + node.getLength() - 1;
+		
+		requestor.exitField(initializerStart, declarationEnd, declarationSourceEnd);
 	}
 	
 }

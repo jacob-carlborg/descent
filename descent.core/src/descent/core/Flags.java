@@ -135,6 +135,16 @@ public final class Flags {
 	 * @since 2.0
 	 */
 	public static final int AccTemplate = 0x00080000;
+	/**
+	 * Alias property flag.
+	 * @since 2.0
+	 */
+	public static final int AccAlias = 0x00100000;
+	/**
+	 * Typedef property flag.
+	 * @since 2.0
+	 */
+	public static final int AccTypedef = 0x00200000;
 
 	/**
 	 * Not instantiable.
@@ -344,6 +354,26 @@ public final class Flags {
 	}
 	
 	/**
+	 * Returns whether the given integer includes the <code>alias</code> modifier.
+	 *
+	 * @param flags the flags
+	 * @return <code>true</code> if the <code>alias</code> modifier is included
+	 */
+	public static boolean isAlias(int flags) {
+		return (flags & AccAlias) != 0;
+	}
+	
+	/**
+	 * Returns whether the given integer includes the <code>typedef</code> modifier.
+	 *
+	 * @param flags the flags
+	 * @return <code>true</code> if the <code>typedef</code> modifier is included
+	 */
+	public static boolean isTypedef(int flags) {
+		return (flags & AccTypedef) != 0;
+	}
+	
+	/**
 	 * Returns a standard string describing the given modifier flags.
 	 * @param flags the flags
 	 * @return the standard string representation of the given flags
@@ -391,6 +421,10 @@ public final class Flags {
 			sb.append("union "); //$NON-NLS-1$
 		if (isTemplate(flags))
 			sb.append("template "); //$NON-NLS-1$
+		if (isAlias(flags))
+			sb.append("alias "); //$NON-NLS-1$
+		if (isTypedef(flags))
+			sb.append("typedef "); //$NON-NLS-1$
 
 		int len = sb.length();
 		if (len == 0)
