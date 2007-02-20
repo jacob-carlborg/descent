@@ -76,30 +76,6 @@ public class HierarchyTest extends AbstractModelTest {
 		assertEquals(23, type.getJavadocRange().getLength());
 	}
 	
-	public void testConstructor() throws Exception {
-		ICompilationUnit unit = createCompilationUnit("test.d", " class Clazz1 { /** hola */ this(int x) { } }");
-		
-		IType[] types = unit.getTypes();
-		assertEquals(1, types.length);
-		
-		IType type = types[0];
-		IMethod[] methods = type.getMethods();
-		assertEquals(1, methods.length);
-		
-		IMethod method = methods[0];
-		assertEquals(16, method.getSourceRange().getOffset());
-		assertEquals(27, method.getSourceRange().getLength());
-		assertEquals(16, method.getJavadocRange().getOffset());
-		assertEquals(11, method.getJavadocRange().getLength());
-		assertEquals(1, method.getNumberOfParameters());
-		assertEquals(1, method.getParameterNames().length);
-		assertEquals(1, method.getParameterTypes().length);
-		assertEquals("x", method.getParameterNames()[0]);
-		assertEquals("I", method.getParameterTypes()[0]);
-		assertEquals("V", method.getReturnType());
-		assertEquals(0, method.getTypeParameters().length);
-	}
-	
 	public void testMethod() throws Exception {
 		ICompilationUnit unit = createCompilationUnit("test.d", " class Clazz1 { /** hola */ void bla(T)(int x) { } }");
 		
@@ -111,6 +87,11 @@ public class HierarchyTest extends AbstractModelTest {
 		assertEquals(1, methods.length);
 		
 		IMethod method = methods[0];
+		assertTrue(method.isMethod());
+		assertFalse(method.isConstructor());
+		assertFalse(method.isDestructor());
+		assertFalse(method.isNew());
+		assertFalse(method.isDelete());
 		assertEquals(16, method.getSourceRange().getOffset());
 		assertEquals(34, method.getSourceRange().getLength());
 		assertEquals(16, method.getJavadocRange().getOffset());
@@ -130,6 +111,117 @@ public class HierarchyTest extends AbstractModelTest {
 		assertEquals(1, method.getTypeParameters()[0].getSourceRange().getLength());
 		assertEquals(37, method.getTypeParameters()[0].getNameRange().getOffset());
 		assertEquals(1, method.getTypeParameters()[0].getNameRange().getLength());
+	}
+	
+	public void testConstructor() throws Exception {
+		ICompilationUnit unit = createCompilationUnit("test.d", " class Clazz1 { /** hola */ this(int x) { } }");
+		
+		IType[] types = unit.getTypes();
+		assertEquals(1, types.length);
+		
+		IType type = types[0];
+		IMethod[] methods = type.getMethods();
+		assertEquals(1, methods.length);
+		
+		IMethod method = methods[0];
+		assertFalse(method.isMethod());
+		assertTrue(method.isConstructor());
+		assertFalse(method.isDestructor());
+		assertFalse(method.isNew());
+		assertFalse(method.isDelete());
+		assertEquals(16, method.getSourceRange().getOffset());
+		assertEquals(27, method.getSourceRange().getLength());
+		assertEquals(16, method.getJavadocRange().getOffset());
+		assertEquals(11, method.getJavadocRange().getLength());
+		assertEquals(1, method.getNumberOfParameters());
+		assertEquals(1, method.getParameterNames().length);
+		assertEquals(1, method.getParameterTypes().length);
+		assertEquals("x", method.getParameterNames()[0]);
+		assertEquals("I", method.getParameterTypes()[0]);
+		assertEquals("V", method.getReturnType());
+		assertEquals(0, method.getTypeParameters().length);
+	}
+	
+	public void testDestructor() throws Exception {
+		ICompilationUnit unit = createCompilationUnit("test.d", " class Clazz1 { /** hola */ ~this() { } }");
+		
+		IType[] types = unit.getTypes();
+		assertEquals(1, types.length);
+		
+		IType type = types[0];
+		IMethod[] methods = type.getMethods();
+		assertEquals(1, methods.length);
+		
+		IMethod method = methods[0];
+		assertEquals(16, method.getSourceRange().getOffset());
+		assertEquals(23, method.getSourceRange().getLength());
+		assertEquals(16, method.getJavadocRange().getOffset());
+		assertEquals(11, method.getJavadocRange().getLength());
+		assertEquals(0, method.getNumberOfParameters());
+		assertEquals(0, method.getParameterNames().length);
+		assertEquals(0, method.getParameterTypes().length);
+		assertEquals("V", method.getReturnType());
+		assertEquals(0, method.getTypeParameters().length);
+	}
+	
+	public void testNew() throws Exception {
+		ICompilationUnit unit = createCompilationUnit("test.d", " class Clazz1 { /** hola */ new(int x) { } }");
+		
+		IType[] types = unit.getTypes();
+		assertEquals(1, types.length);
+		
+		IType type = types[0];
+		IMethod[] methods = type.getMethods();
+		assertEquals(1, methods.length);
+		
+		IMethod method = methods[0];
+		assertFalse(method.isMethod());
+		assertFalse(method.isConstructor());
+		assertFalse(method.isDestructor());
+		assertTrue(method.isNew());
+		assertFalse(method.isDelete());
+		assertEquals(16, method.getSourceRange().getOffset());
+		assertEquals(26, method.getSourceRange().getLength());
+		assertEquals(16, method.getJavadocRange().getOffset());
+		assertEquals(11, method.getJavadocRange().getLength());
+		assertEquals("", method.getElementName());
+		assertEquals(1, method.getNumberOfParameters());
+		assertEquals(1, method.getParameterNames().length);
+		assertEquals(1, method.getParameterTypes().length);
+		assertEquals("x", method.getParameterNames()[0]);
+		assertEquals("I", method.getParameterTypes()[0]);
+		assertEquals("V", method.getReturnType());
+		assertEquals(0, method.getTypeParameters().length);
+	}
+	
+	public void testDelete() throws Exception {
+		ICompilationUnit unit = createCompilationUnit("test.d", " class Clazz1 { /** hola */ delete(int x) { } }");
+		
+		IType[] types = unit.getTypes();
+		assertEquals(1, types.length);
+		
+		IType type = types[0];
+		IMethod[] methods = type.getMethods();
+		assertEquals(1, methods.length);
+		
+		IMethod method = methods[0];
+		assertFalse(method.isMethod());
+		assertFalse(method.isConstructor());
+		assertFalse(method.isDestructor());
+		assertFalse(method.isNew());
+		assertTrue(method.isDelete());
+		assertEquals(16, method.getSourceRange().getOffset());
+		assertEquals(29, method.getSourceRange().getLength());
+		assertEquals(16, method.getJavadocRange().getOffset());
+		assertEquals(11, method.getJavadocRange().getLength());
+		assertEquals("", method.getElementName());
+		assertEquals(1, method.getNumberOfParameters());
+		assertEquals(1, method.getParameterNames().length);
+		assertEquals(1, method.getParameterTypes().length);
+		assertEquals("x", method.getParameterNames()[0]);
+		assertEquals("I", method.getParameterTypes()[0]);
+		assertEquals("V", method.getReturnType());
+		assertEquals(0, method.getTypeParameters().length);
 	}
 	
 	public void testField() throws Exception {
@@ -232,7 +324,7 @@ public class HierarchyTest extends AbstractModelTest {
 		assertEquals(1, field.getNameRange().getLength());
 	}
 	
-	public void testInitializer() throws Exception {
+	public void testStaticConstructor() throws Exception {
 		ICompilationUnit unit = createCompilationUnit("test.d", " class Clazz1 { /** hola */ static this() { } }");
 		
 		IType[] types = unit.getTypes();
@@ -243,8 +335,31 @@ public class HierarchyTest extends AbstractModelTest {
 		assertEquals(1, initializers.length);
 		
 		IInitializer init = initializers[0];
+		assertTrue(init.isStaticConstructor());
+		assertFalse(init.isStaticDestructor());
 		assertEquals(16, init.getSourceRange().getOffset());
 		assertEquals(29, init.getSourceRange().getLength());
+		assertEquals(16, init.getJavadocRange().getOffset());
+		assertEquals(11, init.getJavadocRange().getLength());
+		assertEquals("", init.getElementName());
+		assertNull(init.getNameRange());
+	}
+	
+	public void testStaticDestructor() throws Exception {
+		ICompilationUnit unit = createCompilationUnit("test.d", " class Clazz1 { /** hola */ static ~this() { } }");
+		
+		IType[] types = unit.getTypes();
+		assertEquals(1, types.length);
+		
+		IType type = types[0];
+		IInitializer[] initializers = type.getInitializers();
+		assertEquals(1, initializers.length);
+		
+		IInitializer init = initializers[0];
+		assertFalse(init.isStaticConstructor());
+		assertTrue(init.isStaticDestructor());
+		assertEquals(16, init.getSourceRange().getOffset());
+		assertEquals(30, init.getSourceRange().getLength());
 		assertEquals(16, init.getJavadocRange().getOffset());
 		assertEquals(11, init.getJavadocRange().getLength());
 		assertEquals("", init.getElementName());

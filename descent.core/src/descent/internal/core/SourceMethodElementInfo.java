@@ -73,8 +73,6 @@ public char[][] getTypeParameterNames() {
 	}
 	return typeParameterNames;
 }
-public abstract boolean isConstructor();
-public abstract boolean isAnnotationMethod();
 protected void setArgumentNames(char[][] names) {
 	this.argumentNames = names;
 }

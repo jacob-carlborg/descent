@@ -17,5 +17,27 @@ package descent.core;
  * </p>
  */
 public interface IInitializer extends IMember {
-	// interface used as a marker: defines no member
+	
+	/**
+	 * Returns whether this initializer represents a static constructor.
+	 * 
+	 * @return whether this initializer represents a static constructor
+	 * @exception JavaModelException if this element does not exist or if an
+	 *      exception occurs while accessing its corresponding resource
+	 * @since 3.1
+	 */
+	boolean isStaticConstructor() throws JavaModelException;
+	
+	/**
+	 * Returns whether this initializer represents a static destructor.
+	 * 
+	 * @return whether this initializer represents a static destructor
+	 * @exception JavaModelException if this element does not exist or if an
+	 *      exception occurs while accessing its corresponding resource
+	 * @since 3.1
+	 */
+	boolean isStaticDestructor() throws JavaModelException;
+	
+	
+	
 }

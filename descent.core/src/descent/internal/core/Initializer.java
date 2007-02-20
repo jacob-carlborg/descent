@@ -92,6 +92,12 @@ public IJavaElement getPrimaryElement(boolean checkOwner) {
 	IJavaElement primaryParent = this.parent.getPrimaryElement(false);
 	return ((IType)primaryParent).getInitializer(this.occurrenceCount);
 }
+public boolean isStaticConstructor() throws JavaModelException {
+	return !Flags.isStaticDestructor(getFlags());
+}
+public boolean isStaticDestructor() throws JavaModelException {
+	return Flags.isStaticDestructor(getFlags());
+}
 /**
  * @private Debugging purposes
  */

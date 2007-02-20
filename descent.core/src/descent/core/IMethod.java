@@ -197,6 +197,15 @@ String getSignature() throws JavaModelException;
  */
 ITypeParameter getTypeParameter(String name);
 /**
+ * Returns whether this method is a method.
+ *
+ * @exception JavaModelException if this element does not exist or if an
+ *      exception occurs while accessing its corresponding resource.
+ * 
+ * @return true if this method is a method, false otherwise
+ */
+boolean isMethod() throws JavaModelException;
+/**
  * Returns whether this method is a constructor.
  *
  * @exception JavaModelException if this element does not exist or if an
@@ -205,6 +214,33 @@ ITypeParameter getTypeParameter(String name);
  * @return true if this method is a constructor, false otherwise
  */
 boolean isConstructor() throws JavaModelException;
+/**
+ * Returns whether this method is a destructor.
+ *
+ * @exception JavaModelException if this element does not exist or if an
+ *      exception occurs while accessing its corresponding resource.
+ * 
+ * @return true if this method is a destructor, false otherwise
+ */
+boolean isDestructor() throws JavaModelException;
+/**
+ * Returns whether this method is a new (allocator).
+ *
+ * @exception JavaModelException if this element does not exist or if an
+ *      exception occurs while accessing its corresponding resource.
+ * 
+ * @return true if this method is a new (allocator), false otherwise
+ */
+boolean isNew() throws JavaModelException;
+/**
+ * Returns whether this method is a delete (dellocator).
+ *
+ * @exception JavaModelException if this element does not exist or if an
+ *      exception occurs while accessing its corresponding resource.
+ * 
+ * @return true if this method is a delete (dellocator), false otherwise
+ */
+boolean isDelete() throws JavaModelException;
 
 /**
  * Returns whether this method is a main method.

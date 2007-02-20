@@ -312,10 +312,12 @@ public void enterMethod(MethodInfo methodInfo) {
 	resolveDuplicates(handle);
 	
 	SourceMethodElementInfo info;
-	if (methodInfo.isConstructor)
+	if (Flags.isConstructor(methodInfo.modifiers))
 		info = new SourceConstructorInfo();
+	/*
 	else if (methodInfo.isAnnotation)
 		info = new SourceAnnotationMethodInfo();
+	*/
 	else
 		info = new SourceMethodInfo();
 	info.setSourceRangeStart(methodInfo.declarationStart);
@@ -500,11 +502,13 @@ public void exitMethod(int declarationEnd, int defaultValueStart, int defaultVal
 	setChildren(info);
 	
 	// remember default value of annotation method
+	/*
 	if (info.isAnnotationMethod()) {
 		SourceAnnotationMethodInfo annotationMethodInfo = (SourceAnnotationMethodInfo) info;
 		annotationMethodInfo.defaultValueStart = defaultValueStart;
 		annotationMethodInfo.defaultValueEnd = defaultValueEnd;
 	}
+	*/
 	this.handleStack.pop();
 }
 /**

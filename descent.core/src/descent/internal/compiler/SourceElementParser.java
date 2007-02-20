@@ -10,7 +10,6 @@
  *******************************************************************************/
 package descent.internal.compiler;
 
-import java.util.HashMap;
 import java.util.List;
 
 import descent.core.Flags;
@@ -36,6 +35,7 @@ import descent.core.dom.Modifier;
 import descent.core.dom.ModuleDeclaration;
 import descent.core.dom.Name;
 import descent.core.dom.QualifiedName;
+import descent.core.dom.SimpleName;
 import descent.core.dom.TemplateDeclaration;
 import descent.core.dom.TemplateParameter;
 import descent.core.dom.TypedefDeclaration;
@@ -46,7 +46,6 @@ import descent.internal.compiler.ISourceElementRequestor.FieldInfo;
 import descent.internal.compiler.ISourceElementRequestor.MethodInfo;
 import descent.internal.compiler.ISourceElementRequestor.TypeInfo;
 import descent.internal.compiler.ISourceElementRequestor.TypeParameterInfo;
-import descent.internal.compiler.util.HashtableOfObjectToInt;
 
 /**
  * A source element parser extracts structural and reference information
@@ -69,13 +68,6 @@ import descent.internal.compiler.util.HashtableOfObjectToInt;
 public class SourceElementParser extends ASTVisitor {
 	
 	public ISourceElementRequestor requestor;
-	int fieldCount;
-	boolean reportReferenceInfo;
-	char[][] typeNames;
-	char[][] superTypeNames;
-	int nestedTypeIndex;
-	HashtableOfObjectToInt sourceEnds = new HashtableOfObjectToInt();
-	HashMap nodesToCategories = new HashMap(); // a map from ASTNode to char[][]
 	
 	private boolean foundType = false;
 
@@ -84,9 +76,6 @@ public class SourceElementParser extends ASTVisitor {
 		
 	
 		this.requestor = requestor;
-		typeNames = new char[4][];
-		superTypeNames = new char[4][];
-		nestedTypeIndex = 0;
 	}
 
 	public CompilationUnit parseCompilationUnit(ICompilationUnit unit, boolean resolveBindings) {
@@ -164,7 +153,12 @@ public class SourceElementParser extends ASTVisitor {
 	private char[][] getParameterNames(List<Argument> arguments) {
 		char[][] names = new char[arguments.size()][];
 		for(int i = 0; i < arguments.size(); i++) {
-			names[i] = arguments.get(i).getName().getIdentifier().toCharArray();
+			SimpleName name = arguments.get(i).getName();
+			if (name == null) {
+				names[i] = new char[0];
+			} else {
+				names[i] = name.getIdentifier().toCharArray();
+			}
 		}
 		return names;
 	}
@@ -302,16 +296,31 @@ public class SourceElementParser extends ASTVisitor {
 	@Override
 	public boolean visit(ConstructorDeclaration node) {
 		if (node.getParent().getNodeType() == ASTNode.AGGREGATE_DECLARATION) {
-			if (node.getKind() == ConstructorDeclaration.Kind.CONSTRUCTOR) {
+			if (node.getKind() == ConstructorDeclaration.Kind.STATIC_CONSTRUCTOR) {
+				requestor.enterInitializer(node.getStartPosition(), getFlags(node.modifiers()));
+			} else if (node.getKind() == ConstructorDeclaration.Kind.STATIC_DESTRUCTOR) {
+				requestor.enterInitializer(node.getStartPosition(), getFlags(node.modifiers()) | Flags.AccStaticDestructor);
+			} else {
 				MethodInfo info = new MethodInfo();
 				info.annotationPositions = new long[0];
 				info.categories = new char[0][];
 				info.declarationStart = node.getStartPosition();
 				info.exceptionTypes = new char[0][];
-				info.isAnnotation = false;
-				info.isConstructor = true;
 				info.modifiers = getFlags(node.modifiers());
-				// TODO correct the name and related fields
+				switch(node.getKind()) {
+				case CONSTRUCTOR:
+					info.modifiers |= Flags.AccConstructor;
+					break;
+				case DESTRUCTOR:
+					info.modifiers |= Flags.AccDestructor;
+					break;
+				case NEW:
+					info.modifiers |= Flags.AccNew;
+					break;
+				case DELETE:
+					info.modifiers |= Flags.AccDelete;
+					break;
+				}				
 				info.name = new char[0];
 				info.nameSourceEnd = 0;
 				info.nameSourceStart = 0;
@@ -321,8 +330,6 @@ public class SourceElementParser extends ASTVisitor {
 				info.typeParameters = new TypeParameterInfo[0];
 				
 				requestor.enterConstructor(info);
-			} else if (node.getKind() == ConstructorDeclaration.Kind.STATIC_CONSTRUCTOR) {
-				requestor.enterInitializer(node.getStartPosition(), getFlags(node.modifiers()));
 			}
 		}
 		return true;
@@ -331,8 +338,10 @@ public class SourceElementParser extends ASTVisitor {
 	@Override
 	public void endVisit(ConstructorDeclaration node) {
 		if (node.getParent().getNodeType() == ASTNode.AGGREGATE_DECLARATION) {
-			if (node.getKind() == ConstructorDeclaration.Kind.CONSTRUCTOR ||
-					node.getKind() == ConstructorDeclaration.Kind.STATIC_CONSTRUCTOR) {
+			if (node.getKind() == ConstructorDeclaration.Kind.STATIC_CONSTRUCTOR
+					|| node.getKind() == ConstructorDeclaration.Kind.STATIC_DESTRUCTOR) {
+				requestor.exitInitializer(node.getStartPosition() + node.getLength() - 1);
+			} else {
 				requestor.exitConstructor(node.getStartPosition() + node.getLength() - 1);
 			}
 		}
@@ -346,8 +355,6 @@ public class SourceElementParser extends ASTVisitor {
 			info.categories = new char[0][];
 			info.declarationStart = node.getStartPosition();
 			info.exceptionTypes = new char[0][];
-			info.isAnnotation = false;
-			info.isConstructor = false;
 			info.modifiers = getFlags(node.modifiers());
 			info.name = node.getName().getIdentifier().toCharArray();
 			info.nameSourceEnd = node.getName().getStartPosition() + node.getName().getLength() - 1;

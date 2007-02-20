@@ -27,7 +27,7 @@ import descent.core.dom.ModuleDeclaration;
 import descent.core.dom.VariableDeclarationFragment;
 import descent.internal.core.SourceRefElement;
 
-// TODO JDT model/dom
+// XXX JDT model/dom
 public class DOMFinder extends ASTVisitor {
 	
 	public ASTNode foundNode = null;

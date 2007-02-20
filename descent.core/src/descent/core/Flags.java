@@ -115,6 +115,33 @@ public final class Flags {
 	 * @since 2.0
 	 */
 	public static final int AccEnum = 0x8000;
+	
+	// Extensions for types
+	
+	/**
+	 * Destructor property flag.
+	 * @since 2.0
+	 */
+	public static final int AccConstructor = 0x00010000;
+	
+	/**
+	 * Destructor property flag.
+	 * @since 2.0
+	 */
+	public static final int AccDestructor = 0x00020000;
+	
+	/**
+	 * New property flag.
+	 * @since 2.0
+	 */
+	public static final int AccNew = 0x00040000;
+	
+	/**
+	 * New property flag.
+	 * @since 2.0
+	 */
+	public static final int AccDelete = 0x00080000;
+	
 	/**
 	 * Interface property flag.
 	 * @since 2.0
@@ -135,21 +162,35 @@ public final class Flags {
 	 * @since 2.0
 	 */
 	public static final int AccTemplate = 0x00080000;
+	
+	// Extensions for methods
+	
+	
+	// Extensions for fields (can reuse flags)
+	
 	/**
 	 * Alias property flag.
 	 * @since 2.0
 	 */
-	public static final int AccAlias = 0x00100000;
+	public static final int AccAlias = 0x00010000;
 	/**
 	 * Typedef property flag.
 	 * @since 2.0
 	 */
-	public static final int AccTypedef = 0x00200000;
+	public static final int AccTypedef = 0x00020000;
 	/**
 	 * Mixin property flag.
 	 * @since 2.0
 	 */
-	public static final int AccMixin = 0x00400000;
+	public static final int AccMixin = 0x00040000;
+	
+	// Extensions for initializers
+	
+	/**
+	 * Mixin property flag.
+	 * @since 2.0
+	 */
+	public static final int AccStaticDestructor = 0x00010000;
 
 	/**
 	 * Not instantiable.
@@ -389,6 +430,56 @@ public final class Flags {
 	}
 	
 	/**
+	 * Returns whether the given integer includes the <code>static destructor</code> modifier.
+	 *
+	 * @param flags the flags
+	 * @return <code>true</code> if the <code>static destructor</code> modifier is included
+	 */
+	public static boolean isStaticDestructor(int flags) {
+		return (flags & AccStaticDestructor) != 0;
+	}
+	
+	/**
+	 * Returns whether the given integer includes the <code>constructor</code> modifier.
+	 *
+	 * @param flags the flags
+	 * @return <code>true</code> if the <code>constructor</code> modifier is included
+	 */
+	public static boolean isConstructor(int flags) {
+		return (flags & AccConstructor) != 0;
+	}
+	
+	/**
+	 * Returns whether the given integer includes the <code>destructor</code> modifier.
+	 *
+	 * @param flags the flags
+	 * @return <code>true</code> if the <code>destructor</code> modifier is included
+	 */
+	public static boolean isDestructor(int flags) {
+		return (flags & AccDestructor) != 0;
+	}
+	
+	/**
+	 * Returns whether the given integer includes the <code>new</code> modifier.
+	 *
+	 * @param flags the flags
+	 * @return <code>true</code> if the <code>new</code> modifier is included
+	 */
+	public static boolean isNew(int flags) {
+		return (flags & AccNew) != 0;
+	}
+	
+	/**
+	 * Returns whether the given integer includes the <code>delete</code> modifier.
+	 *
+	 * @param flags the flags
+	 * @return <code>true</code> if the <code>delete</code> modifier is included
+	 */
+	public static boolean isDelete(int flags) {
+		return (flags & AccDelete) != 0;
+	}
+	
+	/**
 	 * Returns a standard string describing the given modifier flags.
 	 * @param flags the flags
 	 * @return the standard string representation of the given flags
@@ -440,6 +531,18 @@ public final class Flags {
 			sb.append("alias "); //$NON-NLS-1$
 		if (isTypedef(flags))
 			sb.append("typedef "); //$NON-NLS-1$
+		if (isMixin(flags))
+			sb.append("mixin "); //$NON-NLS-1$
+		if (isStaticDestructor(flags))
+			sb.append("~static this() "); //$NON-NLS-1$
+		if (isConstructor(flags))
+			sb.append("this() "); //$NON-NLS-1$
+		if (isDestructor(flags))
+			sb.append("~this() "); //$NON-NLS-1$
+		if (isNew(flags))
+			sb.append("new() "); //$NON-NLS-1$
+		if (isDelete(flags))
+			sb.append("delete() "); //$NON-NLS-1$
 
 		int len = sb.length();
 		if (len == 0)

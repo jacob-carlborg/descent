@@ -85,6 +85,20 @@ public class Function_Test extends Parser_Test {
 		assertPosition(f, 1, s.length() - 1);
 	}
 	
+	// Fixed bug
+	public void testDeleteWithArguments() {
+		String s = " delete(int x) { }";
+		ConstructorDeclaration f = (ConstructorDeclaration) getSingleDeclarationNoProblems(s);
+		assertEquals(1, f.arguments().size());
+	}
+	
+	// Fixed bug
+	public void testNewWithArguments() {
+		String s = " new(int x) { }";
+		ConstructorDeclaration f = (ConstructorDeclaration) getSingleDeclarationNoProblems(s);
+		assertEquals(1, f.arguments().size());
+	}
+	
 	public void testFunctionWithoutArguments() {
 		String s = " void func() { }";
 		FunctionDeclaration f = (FunctionDeclaration) getSingleDeclarationNoProblems(s);

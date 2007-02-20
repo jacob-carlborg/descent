@@ -497,7 +497,7 @@ public class JavaElementLabels {
 			}
 			
 			// return type
-			if (getFlag(flags, M_PRE_RETURNTYPE) && method.exists() && !method.isConstructor()) {
+			if (getFlag(flags, M_PRE_RETURNTYPE) && method.exists() && method.isMethod()) {
 				String returnTypeSig= resolvedSig != null ? Signature.getReturnType(resolvedSig) : method.getReturnType();
 				getTypeSignatureLabel(returnTypeSig, flags, buf);
 				buf.append(' ');
@@ -508,8 +508,46 @@ public class JavaElementLabels {
 				getTypeLabel(method.getDeclaringType(), T_FULLY_QUALIFIED | (flags & QUALIFIER_FLAGS), buf);
 				buf.append('.');
 			}
-				
-			buf.append(method.getElementName());
+			
+			if (method.isMethod()) {
+				buf.append(method.getElementName());
+			} else if (method.isConstructor()) {
+				buf.append(JavaUIMessages.JavaElementLabels_constructor);
+			} else if (method.isDestructor()) {
+				buf.append(JavaUIMessages.JavaElementLabels_destructor);
+			} else if (method.isNew()) {
+				buf.append(JavaUIMessages.JavaElementLabels_new);
+			} else if (method.isDelete()) {
+				buf.append(JavaUIMessages.JavaElementLabels_delete);
+			}
+			
+			// template parameters (moved after the method name, like in D)
+			if (getFlag(flags, M_APP_TYPE_PARAMETERS)) {
+				/*
+				if (resolvedKey != null) {
+					if (resolvedKey.isParameterizedMethod()) {
+						String[] typeArgRefs= resolvedKey.getTypeArguments();
+						if (typeArgRefs.length > 0) {
+							buf.append(' ');
+							getTypeArgumentSignaturesLabel(typeArgRefs, flags, buf);
+						}
+					} else {
+						String[] typeParameterSigs= Signature.getTypeParameters(resolvedSig);
+						if (typeParameterSigs.length > 0) {
+							buf.append(' ');
+							getTypeParameterSignaturesLabel(typeParameterSigs, flags, buf);
+						}
+					}
+				} else
+				*/ 
+				if (method.exists()) {
+					ITypeParameter[] typeParameters= method.getTypeParameters();
+					if (typeParameters.length > 0) {
+						buf.append(' ');
+						getTypeParametersLabel(typeParameters, flags, buf);
+					}
+				}					
+			}
 			
 			// parameters
 			buf.append('(');
@@ -594,33 +632,6 @@ public class JavaElementLabels {
 				}
 			}
 			
-			if (getFlag(flags, M_APP_TYPE_PARAMETERS)) {
-				/*
-				if (resolvedKey != null) {
-					if (resolvedKey.isParameterizedMethod()) {
-						String[] typeArgRefs= resolvedKey.getTypeArguments();
-						if (typeArgRefs.length > 0) {
-							buf.append(' ');
-							getTypeArgumentSignaturesLabel(typeArgRefs, flags, buf);
-						}
-					} else {
-						String[] typeParameterSigs= Signature.getTypeParameters(resolvedSig);
-						if (typeParameterSigs.length > 0) {
-							buf.append(' ');
-							getTypeParameterSignaturesLabel(typeParameterSigs, flags, buf);
-						}
-					}
-				} else
-				*/ 
-				if (method.exists()) {
-					ITypeParameter[] typeParameters= method.getTypeParameters();
-					if (typeParameters.length > 0) {
-						buf.append(' ');
-						getTypeParametersLabel(typeParameters, flags, buf);
-					}
-				}					
-			}
-			
 			if (getFlag(flags, M_APP_RETURNTYPE) && method.exists() && !method.isConstructor()) {
 				buf.append(DECL_STRING);
 				String returnTypeSig= resolvedSig != null ? Signature.getReturnType(resolvedSig) : method.getReturnType();
@@ -659,15 +670,16 @@ public class JavaElementLabels {
 	}
 	
 	private static void getTypeParametersLabel(ITypeParameter[] typeParameters, long flags, StringBuffer buf) {
+		// Changed for Descent
 		if (typeParameters.length > 0) {
-			buf.append('<');
+			buf.append('(');
 			for (int i = 0; i < typeParameters.length; i++) {
 				if (i > 0) {
 					buf.append(COMMA_STRING);
 				}
 				buf.append(typeParameters[i].getElementName());
 			}
-			buf.append('>');
+			buf.append(')');
 		}
 	}
 	
@@ -762,17 +774,29 @@ public class JavaElementLabels {
 	 * @param buf The buffer to append the resulting label to.
 	 */	
 	public static void getInitializerLabel(IInitializer initializer, long flags, StringBuffer buf) {
-		// qualification
-		if (getFlag(flags, I_FULLY_QUALIFIED)) {
-			getTypeLabel(initializer.getDeclaringType(), T_FULLY_QUALIFIED | (flags & QUALIFIER_FLAGS), buf);
-			buf.append('.');
-		}
-		buf.append(JavaUIMessages.JavaElementLabels_initializer); 
-
-		// post qualification
-		if (getFlag(flags, I_POST_QUALIFIED)) {
-			buf.append(CONCAT_STRING);
-			getTypeLabel(initializer.getDeclaringType(), T_FULLY_QUALIFIED | (flags & QUALIFIER_FLAGS), buf);
+		try {
+			// qualification
+			/* 
+			if (getFlag(flags, I_FULLY_QUALIFIED)) {
+				getTypeLabel(initializer.getDeclaringType(), T_FULLY_QUALIFIED | (flags & QUALIFIER_FLAGS), buf);
+				buf.append('.');
+			}
+			*/
+			if (initializer.isStaticConstructor()) {
+				buf.append(JavaUIMessages.JavaElementLabels_initializer);
+			} else {
+				buf.append(JavaUIMessages.JavaElementLabels_uninitializer);
+			}
+	
+			/*
+			// post qualification
+			if (getFlag(flags, I_POST_QUALIFIED)) {
+				buf.append(CONCAT_STRING);
+				getTypeLabel(initializer.getDeclaringType(), T_FULLY_QUALIFIED | (flags & QUALIFIER_FLAGS), buf);
+			}
+			*/
+		} catch (JavaModelException e) {
+			JavaPlugin.log(e); // NotExistsException will not reach this point
 		}
 	}
 	

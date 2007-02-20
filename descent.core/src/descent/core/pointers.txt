@@ -7,7 +7,8 @@ TODO - IImportDeclaration
 - IPackageFragment: a package fragment (no changes from JDT)
 - IType represents a class, interface, struct, interface, template or enum
 - IField represents a variable, alias, typedef
-- IMethod represents a function, constructor, static constructor, static destructor, new or delete
+- IMethod represents a function, constructor, new or delete
+- IInitializer represents a static constructor or static destructor, 
 TODO - IInitializer
 TODO - ITypeParameter
 TODO - ILocalVariable

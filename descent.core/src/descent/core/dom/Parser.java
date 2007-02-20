@@ -1098,7 +1098,6 @@ class Parser extends Lexer {
 	    }
 		
 		ConstructorDeclaration f = newConstructorDeclaration(ConstructorDeclaration.Kind.DELETE, arguments, varargs[0]);
-		f.arguments().addAll(arguments);
 	    parseContracts(f);
 	    f.setSourceRange(start, prevToken.ptr + prevToken.len - start);
 	    return f;

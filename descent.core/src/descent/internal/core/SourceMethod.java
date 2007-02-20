@@ -202,16 +202,27 @@ public int hashCode() {
 	}
 	return hash;
 }
+public boolean isMethod() throws JavaModelException {
+	int flags = getFlags();
+	return !Flags.isConstructor(flags) 
+		&& !Flags.isDestructor(flags)
+		&& !Flags.isNew(flags)
+		&& !Flags.isDelete(flags);
+}
 /**
  * @see IMethod
  */
 public boolean isConstructor() throws JavaModelException {
-	if (!this.getElementName().equals(this.parent.getElementName())) {
-		// faster than reaching the info
-		return false;
-	}
-	SourceMethodElementInfo info = (SourceMethodElementInfo) getElementInfo();
-	return info.isConstructor();
+	return Flags.isConstructor(getFlags());
+}
+public boolean isDestructor() throws JavaModelException {
+	return Flags.isDestructor(getFlags());
+}
+public boolean isNew() throws JavaModelException {
+	return Flags.isNew(getFlags());
+}
+public boolean isDelete() throws JavaModelException {
+	return Flags.isDelete(getFlags());
 }
 /**
  * @see IMethod#isMainMethod()
@@ -264,6 +275,7 @@ public JavaElement resolved(Binding binding) {
 /**
  * @private Debugging purposes
  */
+// TODO JDT debug purposes
 protected void toStringInfo(int tab, StringBuffer buffer, Object info, boolean showResolvedInfo) {
 	buffer.append(tabString(tab));
 	if (info == null) {
@@ -277,10 +289,12 @@ protected void toStringInfo(int tab, StringBuffer buffer, Object info, boolean s
 		if (Flags.isStatic(flags)) {
 			buffer.append("static "); //$NON-NLS-1$
 		}
+		/*
 		if (!methodInfo.isConstructor()) {
 			buffer.append(methodInfo.getReturnTypeName());
 			buffer.append(' ');
 		}
+		*/
 		toStringName(buffer, flags);
 	}
 }
