@@ -31,6 +31,7 @@ import descent.core.dom.EnumMember;
 import descent.core.dom.FunctionDeclaration;
 import descent.core.dom.Import;
 import descent.core.dom.ImportDeclaration;
+import descent.core.dom.MixinDeclaration;
 import descent.core.dom.Modifier;
 import descent.core.dom.ModuleDeclaration;
 import descent.core.dom.Name;
@@ -495,6 +496,37 @@ public class SourceElementParser extends ASTVisitor {
 			int declarationSourceEnd = var.getStartPosition() + var.getLength() - 1;
 			
 			requestor.exitField(initializerStart, declarationEnd, declarationSourceEnd);
+		}
+	}
+	
+	@Override
+	public boolean visit(MixinDeclaration node) {
+		int parentType = node.getParent().getNodeType(); 
+		if (parentType == ASTNode.AGGREGATE_DECLARATION || parentType == ASTNode.TEMPLATE_DECLARATION) {
+			FieldInfo info = new FieldInfo();
+			info.annotationPositions = new long[0];
+			info.categories = new char[0][];
+			info.declarationStart = node.getStartPosition();
+			info.modifiers = getFlags(node.modifiers());
+			info.modifiers |= Flags.AccMixin;
+			info.name = node.getName().getIdentifier().toCharArray();
+			info.nameSourceEnd = node.getName().getStartPosition() + node.getName().getLength() - 1;
+			info.nameSourceStart = node.getName().getStartPosition();
+			info.type = node.getType().toString().toCharArray();
+			
+			requestor.enterField(info);
+		}		
+		return false;
+	}
+	
+	@Override
+	public void endVisit(MixinDeclaration node) {
+		int parentType = node.getParent().getNodeType(); 
+		if (parentType == ASTNode.AGGREGATE_DECLARATION || parentType == ASTNode.TEMPLATE_DECLARATION) {
+			int initializerStart = node.getName().getStartPosition() + node.getLength() - 1;
+			int declarationSourceEnd = node.getStartPosition() + node.getLength() - 1;
+			
+			requestor.exitField(initializerStart, declarationSourceEnd, declarationSourceEnd);
 		}
 	}
 	

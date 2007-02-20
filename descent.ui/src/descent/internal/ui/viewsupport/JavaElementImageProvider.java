@@ -193,8 +193,10 @@ public class JavaElementImageProvider {
 						return getVariableImageDescriptor(JavaModelUtil.isInterfaceOrAnnotation(declType), field.getFlags());
 					} else if (field.isAlias()) {
 						return getAliasImageDescriptor(field.getFlags());
-					} else {
+					} else if (field.isTypedef()) {
 						return getTypedefImageDescriptor(field.getFlags());
+					} else {
+						return getMixinImageDescriptor(field.getFlags());
 					}
 				}
 				case IJavaElement.LOCAL_VARIABLE:
@@ -437,6 +439,17 @@ public class JavaElementImageProvider {
 			return JavaPluginImages.DESC_TYPEDEF_PRIVATE;
 			
 		return JavaPluginImages.DESC_TYPEDEF_DEFAULT;
+	}
+	
+	public static ImageDescriptor getMixinImageDescriptor(int flags) {
+		if (Flags.isPublic(flags))
+			return JavaPluginImages.DESC_MIXIN_PUBLIC;
+		if (Flags.isProtected(flags))
+			return JavaPluginImages.DESC_MIXIN_PROTECTED;
+		if (Flags.isPrivate(flags))
+			return JavaPluginImages.DESC_MIXIN_PRIVATE;
+			
+		return JavaPluginImages.DESC_MIXIN_DEFAULT;
 	}
 	
 	/**

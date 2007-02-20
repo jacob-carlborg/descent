@@ -1,0 +1,13 @@
+This file documents which interfaces were reused for D in the JavaModel:
+
+- IPackageDeclaration represents the module declaration
+TODO - IImportContainer
+TODO - IImportDeclaration
+- IPackageFragmentRoot: a source folder
+- IPackageFragment: a package fragment (no changes from JDT)
+- IType represents a class, interface, struct, interface, template or enum
+- IField represents a variable, alias, typedef
+- IMethod represents a function, constructor, static constructor, static destructor, new or delete
+TODO - IInitializer
+TODO - ITypeParameter
+TODO - ILocalVariable

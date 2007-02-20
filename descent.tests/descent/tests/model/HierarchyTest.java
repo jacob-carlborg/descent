@@ -147,6 +147,7 @@ public class HierarchyTest extends AbstractModelTest {
 		assertFalse(field.isEnumConstant());
 		assertFalse(field.isAlias());
 		assertFalse(field.isTypedef());
+		assertFalse(field.isMixin());
 		assertEquals(16, field.getSourceRange().getOffset());
 		assertEquals(18, field.getSourceRange().getLength());
 		assertEquals(16, field.getJavadocRange().getOffset());
@@ -171,6 +172,7 @@ public class HierarchyTest extends AbstractModelTest {
 		assertFalse(field.isEnumConstant());
 		assertTrue(field.isAlias());
 		assertFalse(field.isTypedef());
+		assertFalse(field.isMixin());
 		assertEquals(16, field.getSourceRange().getOffset());
 		assertEquals(24, field.getSourceRange().getLength());
 		assertEquals(16, field.getJavadocRange().getOffset());
@@ -195,12 +197,38 @@ public class HierarchyTest extends AbstractModelTest {
 		assertFalse(field.isEnumConstant());
 		assertFalse(field.isAlias());
 		assertTrue(field.isTypedef());
+		assertFalse(field.isMixin());
 		assertEquals(16, field.getSourceRange().getOffset());
 		assertEquals(26, field.getSourceRange().getLength());
 		assertEquals(16, field.getJavadocRange().getOffset());
 		assertEquals(11, field.getJavadocRange().getLength());
 		assertEquals("x", field.getElementName());
 		assertEquals(40, field.getNameRange().getOffset());
+		assertEquals(1, field.getNameRange().getLength());
+	}
+	
+	public void testMixin() throws Exception {
+		ICompilationUnit unit = createCompilationUnit("test.d", " class Clazz1 { /** hola */ mixin T!() x; }");
+		
+		IType[] types = unit.getTypes();
+		assertEquals(1, types.length);
+		
+		IType type = types[0];
+		IField[] fields = type.getFields();
+		assertEquals(1, fields.length);
+		
+		IField field = fields[0];
+		assertFalse(field.isVariable());
+		assertFalse(field.isEnumConstant());
+		assertFalse(field.isAlias());
+		assertFalse(field.isTypedef());
+		assertTrue(field.isMixin());
+		assertEquals(16, field.getSourceRange().getOffset());
+		assertEquals(25, field.getSourceRange().getLength());
+		assertEquals(16, field.getJavadocRange().getOffset());
+		assertEquals(11, field.getJavadocRange().getLength());
+		assertEquals("x", field.getElementName());
+		assertEquals(39, field.getNameRange().getOffset());
 		assertEquals(1, field.getNameRange().getLength());
 	}
 	

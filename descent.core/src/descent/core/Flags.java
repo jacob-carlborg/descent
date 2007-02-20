@@ -145,6 +145,11 @@ public final class Flags {
 	 * @since 2.0
 	 */
 	public static final int AccTypedef = 0x00200000;
+	/**
+	 * Mixin property flag.
+	 * @since 2.0
+	 */
+	public static final int AccMixin = 0x00400000;
 
 	/**
 	 * Not instantiable.
@@ -371,6 +376,16 @@ public final class Flags {
 	 */
 	public static boolean isTypedef(int flags) {
 		return (flags & AccTypedef) != 0;
+	}
+	
+	/**
+	 * Returns whether the given integer includes the <code>mixin</code> modifier.
+	 *
+	 * @param flags the flags
+	 * @return <code>true</code> if the <code>mixin</code> modifier is included
+	 */
+	public static boolean isMixin(int flags) {
+		return (flags & AccMixin) != 0;
 	}
 	
 	/**

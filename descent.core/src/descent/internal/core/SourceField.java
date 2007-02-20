@@ -137,7 +137,11 @@ public String getTypeSignature() throws JavaModelException {
  * @see descent.core.IField#isEnumConstant()
  */
 public boolean isVariable() throws JavaModelException {
-	return !Flags.isEnum(getFlags()) && !Flags.isAlias(getFlags()) && !Flags.isTypedef(getFlags());
+	int flags = getFlags();
+	return !Flags.isEnum(flags) 
+		&& !Flags.isAlias(flags) 
+		&& !Flags.isTypedef(flags)
+		&& !Flags.isMixin(flags);
 }
 /* (non-Javadoc)
  * @see descent.core.IField#isEnumConstant()
@@ -156,6 +160,12 @@ public boolean isAlias() throws JavaModelException {
  */
 public boolean isTypedef() throws JavaModelException {
 	return Flags.isTypedef(getFlags());
+}
+/* (non-Javadoc)
+ * @see descent.core.IField#isMixin()
+ */
+public boolean isMixin() throws JavaModelException {
+	return Flags.isMixin(getFlags());
 }
 /* (non-Javadoc)
  * @see descent.core.IField#isResolved()
