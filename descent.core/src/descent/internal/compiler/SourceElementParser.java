@@ -30,6 +30,7 @@ import descent.core.dom.EnumMember;
 import descent.core.dom.FunctionDeclaration;
 import descent.core.dom.Import;
 import descent.core.dom.ImportDeclaration;
+import descent.core.dom.InvariantDeclaration;
 import descent.core.dom.MixinDeclaration;
 import descent.core.dom.Modifier;
 import descent.core.dom.ModuleDeclaration;
@@ -40,6 +41,7 @@ import descent.core.dom.TemplateDeclaration;
 import descent.core.dom.TemplateParameter;
 import descent.core.dom.TypedefDeclaration;
 import descent.core.dom.TypedefDeclarationFragment;
+import descent.core.dom.UnitTestDeclaration;
 import descent.core.dom.VariableDeclaration;
 import descent.core.dom.VariableDeclarationFragment;
 import descent.internal.compiler.ISourceElementRequestor.FieldInfo;
@@ -568,6 +570,40 @@ public class SourceElementParser extends ASTVisitor {
 		int declarationSourceEnd = node.getStartPosition() + node.getLength() - 1;
 		
 		requestor.exitField(initializerStart, declarationEnd, declarationSourceEnd);
+	}
+	
+	@Override
+	public boolean visit(InvariantDeclaration node) {
+		int parentType = node.getParent().getNodeType(); 
+		if (parentType == ASTNode.AGGREGATE_DECLARATION || parentType == ASTNode.TEMPLATE_DECLARATION) {
+			requestor.enterInitializer(node.getStartPosition(), getFlags(node.modifiers()) | Flags.AccInvariant);
+		}
+		return false;
+	}
+	
+	@Override
+	public void endVisit(InvariantDeclaration node) {
+		int parentType = node.getParent().getNodeType(); 
+		if (parentType == ASTNode.AGGREGATE_DECLARATION || parentType == ASTNode.TEMPLATE_DECLARATION) {
+			requestor.exitInitializer(node.getStartPosition() + node.getLength() - 1);
+		}
+	}
+	
+	@Override
+	public boolean visit(UnitTestDeclaration node) {
+		int parentType = node.getParent().getNodeType(); 
+		if (parentType == ASTNode.AGGREGATE_DECLARATION || parentType == ASTNode.TEMPLATE_DECLARATION) {
+			requestor.enterInitializer(node.getStartPosition(), getFlags(node.modifiers()) | Flags.AccUnitTest);
+		}
+		return false;
+	}
+	
+	@Override
+	public void endVisit(UnitTestDeclaration node) {
+		int parentType = node.getParent().getNodeType(); 
+		if (parentType == ASTNode.AGGREGATE_DECLARATION || parentType == ASTNode.TEMPLATE_DECLARATION) {
+			requestor.exitInitializer(node.getStartPosition() + node.getLength() - 1);
+		}
 	}
 	
 }

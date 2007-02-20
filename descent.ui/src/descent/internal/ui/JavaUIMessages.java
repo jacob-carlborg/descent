@@ -98,10 +98,12 @@ public final class JavaUIMessages extends NLS {
 	public static String JavaElementLabels_import_container;
 	public static String JavaElementLabels_initializer; // static constructor
 	public static String JavaElementLabels_uninitializer; // static destructor
-	public static String JavaElementLabels_constructor; // constructor
-	public static String JavaElementLabels_destructor; // destructor
-	public static String JavaElementLabels_new; // new
-	public static String JavaElementLabels_delete; // delete
+	public static String JavaElementLabels_constructor;
+	public static String JavaElementLabels_destructor;
+	public static String JavaElementLabels_new;
+	public static String JavaElementLabels_delete;
+	public static String JavaElementLabels_invariant;
+	public static String JavaElementLabels_unittest;
 	public static String JavaElementLabels_category;
 	public static String JavaElementLabels_concat_string;
 	public static String JavaElementLabels_comma_string;

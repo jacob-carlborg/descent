@@ -155,6 +155,7 @@ import descent.core.IClassFile;
 import descent.core.ICompilationUnit;
 import descent.core.IImportContainer;
 import descent.core.IImportDeclaration;
+import descent.core.IInitializer;
 import descent.core.IJavaElement;
 import descent.core.IJavaProject;
 import descent.core.ILocalVariable;

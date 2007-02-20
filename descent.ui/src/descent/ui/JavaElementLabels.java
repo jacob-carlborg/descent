@@ -49,7 +49,6 @@ import descent.internal.ui.JavaUIMessages;
  */
 public class JavaElementLabels {
 	
-	
 	/**
 	 * Method names contain parameter types.
 	 * e.g. <code>foo(int)</code>
@@ -784,6 +783,10 @@ public class JavaElementLabels {
 			*/
 			if (initializer.isStaticConstructor()) {
 				buf.append(JavaUIMessages.JavaElementLabels_initializer);
+			} else if (initializer.isInvariant()) {
+				buf.append(JavaUIMessages.JavaElementLabels_invariant);
+			} else if (initializer.isUnitTest()) {
+				buf.append(JavaUIMessages.JavaElementLabels_unittest);
 			} else {
 				buf.append(JavaUIMessages.JavaElementLabels_uninitializer);
 			}

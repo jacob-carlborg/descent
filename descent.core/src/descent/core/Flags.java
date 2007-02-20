@@ -119,6 +119,29 @@ public final class Flags {
 	// Extensions for types
 	
 	/**
+	 * Interface property flag.
+	 * @since 2.0
+	 */
+	public static final int AccInterface = 0x00010000;
+	/**
+	 * Struct property flag.
+	 * @since 2.0
+	 */
+	public static final int AccStruct = 0x00020000;
+	/**
+	 * Union property flag.
+	 * @since 2.0
+	 */
+	public static final int AccUnion = 0x00040000;
+	/**
+	 * Template property flag.
+	 * @since 2.0
+	 */
+	public static final int AccTemplate = 0x00080000;
+	
+	// Extensions for methods (can reuse flags)
+	
+	/**
 	 * Destructor property flag.
 	 * @since 2.0
 	 */
@@ -142,30 +165,6 @@ public final class Flags {
 	 */
 	public static final int AccDelete = 0x00080000;
 	
-	/**
-	 * Interface property flag.
-	 * @since 2.0
-	 */
-	public static final int AccInterface = 0x00010000;
-	/**
-	 * Struct property flag.
-	 * @since 2.0
-	 */
-	public static final int AccStruct = 0x00020000;
-	/**
-	 * Union property flag.
-	 * @since 2.0
-	 */
-	public static final int AccUnion = 0x00040000;
-	/**
-	 * Template property flag.
-	 * @since 2.0
-	 */
-	public static final int AccTemplate = 0x00080000;
-	
-	// Extensions for methods
-	
-	
 	// Extensions for fields (can reuse flags)
 	
 	/**
@@ -184,13 +183,25 @@ public final class Flags {
 	 */
 	public static final int AccMixin = 0x00040000;
 	
-	// Extensions for initializers
+	// Extensions for initializers (can reuse flags)
 	
 	/**
 	 * Mixin property flag.
 	 * @since 2.0
 	 */
 	public static final int AccStaticDestructor = 0x00010000;
+	
+	/**
+	 * Invariant property flag.
+	 * @since 2.0
+	 */
+	public static final int AccInvariant = 0x00020000;
+	
+	/**
+	 * UnitTest property flag.
+	 * @since 2.0
+	 */
+	public static final int AccUnitTest = 0x00040000;
 
 	/**
 	 * Not instantiable.
@@ -480,6 +491,26 @@ public final class Flags {
 	}
 	
 	/**
+	 * Returns whether the given integer includes the <code>invariant</code> modifier.
+	 *
+	 * @param flags the flags
+	 * @return <code>true</code> if the <code>invariant</code> modifier is included
+	 */
+	public static boolean isInvariant(int flags) {
+		return (flags & AccInvariant) != 0;
+	}
+	
+	/**
+	 * Returns whether the given integer includes the <code>unittest</code> modifier.
+	 *
+	 * @param flags the flags
+	 * @return <code>true</code> if the <code>unittest</code> modifier is included
+	 */
+	public static boolean isUnitTest(int flags) {
+		return (flags & AccUnitTest) != 0;
+	}
+	
+	/**
 	 * Returns a standard string describing the given modifier flags.
 	 * @param flags the flags
 	 * @return the standard string representation of the given flags
@@ -543,6 +574,10 @@ public final class Flags {
 			sb.append("new() "); //$NON-NLS-1$
 		if (isDelete(flags))
 			sb.append("delete() "); //$NON-NLS-1$
+		if (isInvariant(flags))
+			sb.append("invariant "); //$NON-NLS-1$
+		if (isUnitTest(flags))
+			sb.append("unittest "); //$NON-NLS-1$
 
 		int len = sb.length();
 		if (len == 0)

@@ -25,6 +25,7 @@ import org.eclipse.ui.model.IWorkbenchAdapter;
 
 import descent.core.Flags;
 import descent.core.IField;
+import descent.core.IInitializer;
 import descent.core.IJavaElement;
 import descent.core.IJavaProject;
 import descent.core.IMember;
@@ -177,7 +178,14 @@ public class JavaElementImageProvider {
 		try {			
 			switch (element.getElementType()) {	
 				case IJavaElement.INITIALIZER:
-					return JavaPluginImages.DESC_MISC_PRIVATE; // 23479
+					IInitializer init = (IInitializer) element;
+					if (init.isStaticConstructor() || init.isStaticDestructor()) {
+						return JavaPluginImages.DESC_MISC_PRIVATE; // 23479
+					} else if (init.isInvariant()) {
+						return JavaPluginImages.DESC_OBJS_INVARIANT;
+					} else {
+						return JavaPluginImages.DESC_OBJS_UNITTEST;
+					}
 				case IJavaElement.METHOD: {
 					IMethod method= (IMethod) element;
 					IType declType= method.getDeclaringType();
@@ -365,31 +373,6 @@ public class JavaElementImageProvider {
 			return element.getElementType() == IJavaElement.METHOD;	
 		}
 	}
-	
-	private static boolean isInterfaceOrAnnotationField(IMember element) throws JavaModelException {
-		// always show the final symbol on interface fields
-		if (element.getElementType() == IJavaElement.FIELD) {
-			return JavaModelUtil.isInterfaceOrAnnotation(element.getDeclaringType());
-		}
-		return false;
-	}	
-	
-	private static boolean isInterfaceOrAnnotationFieldOrType(IMember element) throws JavaModelException {
-		// always show the static symbol on interface fields and types
-		if (element.getElementType() == IJavaElement.FIELD) {
-			return JavaModelUtil.isInterfaceOrAnnotation(element.getDeclaringType());
-		} else if (element.getElementType() == IJavaElement.TYPE && element.getDeclaringType() != null) {
-			return JavaModelUtil.isInterfaceOrAnnotation(element.getDeclaringType());
-		}
-		return false;
-	}	
-	
-	private static boolean isEnumConstant(IMember element, int modifiers) throws JavaModelException {
-		if (element.getElementType() == IJavaElement.FIELD) {
-			return Flags.isEnum(modifiers);
-		}
-		return false;
-	}
 
 	private static boolean confirmSynchronized(IJavaElement member) {
 		// Synchronized types are allowed but meaningless.
@@ -450,6 +433,14 @@ public class JavaElementImageProvider {
 			return JavaPluginImages.DESC_MIXIN_PRIVATE;
 			
 		return JavaPluginImages.DESC_MIXIN_DEFAULT;
+	}
+	
+	public static ImageDescriptor getInvariantImageDescriptor(int flags) {
+		return JavaPluginImages.DESC_OBJS_INVARIANT;
+	}
+	
+	public static ImageDescriptor getUnitTestImageDescriptor(int flags) {
+		return JavaPluginImages.DESC_OBJS_UNITTEST;
 	}
 	
 	/**

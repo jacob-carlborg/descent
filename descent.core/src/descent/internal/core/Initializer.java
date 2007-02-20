@@ -93,10 +93,19 @@ public IJavaElement getPrimaryElement(boolean checkOwner) {
 	return ((IType)primaryParent).getInitializer(this.occurrenceCount);
 }
 public boolean isStaticConstructor() throws JavaModelException {
-	return !Flags.isStaticDestructor(getFlags());
+	int flags = getFlags();
+	return !Flags.isStaticDestructor(flags)
+		&& !Flags.isInvariant(flags)
+		&& !Flags.isUnitTest(flags);
 }
 public boolean isStaticDestructor() throws JavaModelException {
 	return Flags.isStaticDestructor(getFlags());
+}
+public boolean isInvariant() throws JavaModelException {
+	return Flags.isInvariant(getFlags());
+}
+public boolean isUnitTest() throws JavaModelException {
+	return Flags.isUnitTest(getFlags());
 }
 /**
  * @private Debugging purposes

@@ -343,6 +343,8 @@ public class HierarchyTest extends AbstractModelTest {
 		IInitializer init = initializers[0];
 		assertTrue(init.isStaticConstructor());
 		assertFalse(init.isStaticDestructor());
+		assertFalse(init.isInvariant());
+		assertFalse(init.isUnitTest());
 		assertEquals(16, init.getSourceRange().getOffset());
 		assertEquals(29, init.getSourceRange().getLength());
 		assertEquals(16, init.getJavadocRange().getOffset());
@@ -364,8 +366,56 @@ public class HierarchyTest extends AbstractModelTest {
 		IInitializer init = initializers[0];
 		assertFalse(init.isStaticConstructor());
 		assertTrue(init.isStaticDestructor());
+		assertFalse(init.isInvariant());
+		assertFalse(init.isUnitTest());
 		assertEquals(16, init.getSourceRange().getOffset());
 		assertEquals(30, init.getSourceRange().getLength());
+		assertEquals(16, init.getJavadocRange().getOffset());
+		assertEquals(11, init.getJavadocRange().getLength());
+		assertEquals("", init.getElementName());
+		assertNull(init.getNameRange());
+	}
+	
+	public void testInvariant() throws Exception {
+		ICompilationUnit unit = createCompilationUnit("test.d", " class Clazz1 { /** hola */ invariant { } }");
+		
+		IType[] types = unit.getTypes();
+		assertEquals(1, types.length);
+		
+		IType type = types[0];
+		IInitializer[] initializers = type.getInitializers();
+		assertEquals(1, initializers.length);
+		
+		IInitializer init = initializers[0];
+		assertFalse(init.isStaticConstructor());
+		assertFalse(init.isStaticDestructor());
+		assertTrue(init.isInvariant());
+		assertFalse(init.isUnitTest());
+		assertEquals(16, init.getSourceRange().getOffset());
+		assertEquals(25, init.getSourceRange().getLength());
+		assertEquals(16, init.getJavadocRange().getOffset());
+		assertEquals(11, init.getJavadocRange().getLength());
+		assertEquals("", init.getElementName());
+		assertNull(init.getNameRange());
+	}
+	
+	public void testUnitTest() throws Exception {
+		ICompilationUnit unit = createCompilationUnit("test.d", " class Clazz1 { /** hola */ unittest { } }");
+		
+		IType[] types = unit.getTypes();
+		assertEquals(1, types.length);
+		
+		IType type = types[0];
+		IInitializer[] initializers = type.getInitializers();
+		assertEquals(1, initializers.length);
+		
+		IInitializer init = initializers[0];
+		assertFalse(init.isStaticConstructor());
+		assertFalse(init.isStaticDestructor());
+		assertFalse(init.isInvariant());
+		assertTrue(init.isUnitTest());
+		assertEquals(16, init.getSourceRange().getOffset());
+		assertEquals(24, init.getSourceRange().getLength());
 		assertEquals(16, init.getJavadocRange().getOffset());
 		assertEquals(11, init.getJavadocRange().getLength());
 		assertEquals("", init.getElementName());

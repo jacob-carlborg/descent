@@ -38,6 +38,26 @@ public interface IInitializer extends IMember {
 	 */
 	boolean isStaticDestructor() throws JavaModelException;
 	
+	/**
+	 * Returns whether this initializer represents an invariant.
+	 * 
+	 * @return whether this initializer represents an invariant
+	 * @exception JavaModelException if this element does not exist or if an
+	 *      exception occurs while accessing its corresponding resource
+	 * @since 3.1
+	 */
+	boolean isInvariant() throws JavaModelException;
+	
+	/**
+	 * Returns whether this initializer represents a unit test.
+	 * 
+	 * @return whether this initializer represents a unit test
+	 * @exception JavaModelException if this element does not exist or if an
+	 *      exception occurs while accessing its corresponding resource
+	 * @since 3.1
+	 */
+	boolean isUnitTest() throws JavaModelException;
+	
 	
 	
 }
