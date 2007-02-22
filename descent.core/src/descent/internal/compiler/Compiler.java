@@ -45,6 +45,8 @@ public class Compiler {
 				unit = unitsToProcess[i];
 				result = resultsToProcess[i];
 				
+				process(unit, result);
+				
 				result.problems = unit.getProblems();
 				result.problemCount = unit.getProblems().length;
 				
@@ -82,6 +84,10 @@ public class Compiler {
 				sourceUnits[i] = null; // no longer hold onto the unit
 			}
 		}
+	}
+	
+	protected void process(CompilationUnit unit, CompilationResult result) {
+		// TODO for now, compile the file with the underlying compiler
 	}
 	
 	protected void addCompilationUnit(

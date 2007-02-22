@@ -532,6 +532,7 @@ public class CompilationUnitEditor extends JavaEditor implements IJavaReconcilin
 				case '[':
 				case '\'':
 				case '\"':
+				case '`':
 					break;
 				default:
 					return;
@@ -586,6 +587,7 @@ public class CompilationUnitEditor extends JavaEditor implements IJavaReconcilin
 
 					case '\'':
 					case '"':
+					case '`':
 						if (!fCloseStrings
 								|| nextToken == Symbols.TokenIDENT
 								|| prevToken == Symbols.TokenIDENT
@@ -1597,6 +1599,9 @@ public class CompilationUnitEditor extends JavaEditor implements IJavaReconcilin
 				return character;
 
 			case '\'':
+				return character;
+				
+			case '`':
 				return character;
 
 			default:
