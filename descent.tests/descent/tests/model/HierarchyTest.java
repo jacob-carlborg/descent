@@ -64,6 +64,19 @@ public class HierarchyTest extends AbstractModelTest {
 		assertEquals(12, imp.getSourceRange().getLength());
 	}
 	
+	public void testNestedImport() throws Exception {
+		ICompilationUnit unit = createCompilationUnit("test.d", " class C { import one; }");
+		
+		IType type = unit.getTypes()[0];
+		assertEquals(1, type.getChildren().length);
+		
+		IImportDeclaration imp = (IImportDeclaration) type.getChildren()[0];		
+		assertEquals("one", imp.getElementName());
+		assertEquals("import one;", imp.getSource());
+		assertEquals(11, imp.getSourceRange().getOffset());
+		assertEquals(11, imp.getSourceRange().getLength());
+	}
+	
 	public void testType() throws Exception {
 		ICompilationUnit unit = createCompilationUnit("test.d", " /** hola */ class Clazz1(T) { }");
 		
@@ -378,6 +391,7 @@ public class HierarchyTest extends AbstractModelTest {
 		assertFalse(init.isStaticDestructor());
 		assertFalse(init.isInvariant());
 		assertFalse(init.isUnitTest());
+		assertFalse(init.isStaticAssert());
 		assertEquals(16, init.getSourceRange().getOffset());
 		assertEquals(29, init.getSourceRange().getLength());
 		assertEquals(16, init.getJavadocRange().getOffset());
@@ -401,6 +415,7 @@ public class HierarchyTest extends AbstractModelTest {
 		assertTrue(init.isStaticDestructor());
 		assertFalse(init.isInvariant());
 		assertFalse(init.isUnitTest());
+		assertFalse(init.isStaticAssert());
 		assertEquals(16, init.getSourceRange().getOffset());
 		assertEquals(30, init.getSourceRange().getLength());
 		assertEquals(16, init.getJavadocRange().getOffset());
@@ -424,6 +439,7 @@ public class HierarchyTest extends AbstractModelTest {
 		assertFalse(init.isStaticDestructor());
 		assertTrue(init.isInvariant());
 		assertFalse(init.isUnitTest());
+		assertFalse(init.isStaticAssert());
 		assertEquals(16, init.getSourceRange().getOffset());
 		assertEquals(25, init.getSourceRange().getLength());
 		assertEquals(16, init.getJavadocRange().getOffset());
@@ -447,8 +463,33 @@ public class HierarchyTest extends AbstractModelTest {
 		assertFalse(init.isStaticDestructor());
 		assertFalse(init.isInvariant());
 		assertTrue(init.isUnitTest());
+		assertFalse(init.isStaticAssert());
 		assertEquals(16, init.getSourceRange().getOffset());
 		assertEquals(24, init.getSourceRange().getLength());
+		assertEquals(16, init.getJavadocRange().getOffset());
+		assertEquals(11, init.getJavadocRange().getLength());
+		assertEquals("", init.getElementName());
+		assertNull(init.getNameRange());
+	}
+	
+	public void testStaticAssert() throws Exception {
+		ICompilationUnit unit = createCompilationUnit("test.d", " class Clazz1 { /** hola */ static assert(true) }");
+		
+		IType[] types = unit.getTypes();
+		assertEquals(1, types.length);
+		
+		IType type = types[0];
+		IInitializer[] initializers = type.getInitializers();
+		assertEquals(1, initializers.length);
+		
+		IInitializer init = initializers[0];
+		assertFalse(init.isStaticConstructor());
+		assertFalse(init.isStaticDestructor());
+		assertFalse(init.isInvariant());
+		assertFalse(init.isUnitTest());
+		assertTrue(init.isStaticAssert());
+		assertEquals(16, init.getSourceRange().getOffset());
+		assertEquals(31, init.getSourceRange().getLength());
 		assertEquals(16, init.getJavadocRange().getOffset());
 		assertEquals(11, init.getJavadocRange().getLength());
 		assertEquals("", init.getElementName());

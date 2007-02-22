@@ -38,6 +38,7 @@ import descent.core.dom.ModuleDeclaration;
 import descent.core.dom.Name;
 import descent.core.dom.QualifiedName;
 import descent.core.dom.SimpleName;
+import descent.core.dom.StaticAssert;
 import descent.core.dom.TemplateDeclaration;
 import descent.core.dom.TemplateParameter;
 import descent.core.dom.TypedefDeclaration;
@@ -425,8 +426,8 @@ public class SourceElementParser extends ASTVisitor {
 		VariableDeclaration var = (VariableDeclaration) node.getParent();
 		
 		int initializerStart = node.getInitializer() == null ? - 1 : startOf(node.getInitializer());
-		int declarationEnd = endOf(node.getName());
-		int declarationSourceEnd = endOf(var);
+		int declarationSourceEnd = endOf(node.getName());
+		int declarationEnd = endOf(var);
 		
 		requestor.exitField(initializerStart, declarationEnd, declarationSourceEnd);
 	}
@@ -463,7 +464,7 @@ public class SourceElementParser extends ASTVisitor {
 		AliasDeclaration var = (AliasDeclaration) node.getParent();
 		
 		int initializerStart = endOf(node.getName());
-		int declarationSourceEnd = endOf(var);
+		int declarationSourceEnd = endOf(node.getName());
 		
 		requestor.exitField(initializerStart, declarationSourceEnd, declarationSourceEnd);
 	}
@@ -500,8 +501,8 @@ public class SourceElementParser extends ASTVisitor {
 		TypedefDeclaration var = (TypedefDeclaration) node.getParent();
 		
 		int initializerStart = node.getInitializer() == null ? - 1 : startOf(node.getInitializer());
-		int declarationEnd = endOf(node.getName());
-		int declarationSourceEnd = endOf(var);
+		int declarationSourceEnd = endOf(node.getName());
+		int declarationEnd = endOf(var);
 		
 		requestor.exitField(initializerStart, declarationEnd, declarationSourceEnd);
 	}
@@ -586,6 +587,17 @@ public class SourceElementParser extends ASTVisitor {
 	
 	@Override
 	public void endVisit(UnitTestDeclaration node) {
+		requestor.exitInitializer(endOf(node));
+	}
+	
+	@Override
+	public boolean visit(StaticAssert node) {
+		requestor.enterInitializer(startOf(node), getFlags(node.modifiers()) | Flags.AccStaticAssert);
+		return false;
+	}
+	
+	@Override
+	public void endVisit(StaticAssert node) {
 		requestor.exitInitializer(endOf(node));
 	}
 	

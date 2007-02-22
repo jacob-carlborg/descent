@@ -273,7 +273,7 @@ public class Util {
 		if (JAVA_LIKE_EXTENSIONS == null) {
 			// TODO (jerome) reenable once JDT UI supports other file extensions (see https://bugs.eclipse.org/bugs/show_bug.cgi?id=71460)
 			if (!ENABLE_JAVA_LIKE_EXTENSIONS)
-				JAVA_LIKE_EXTENSIONS = new char[][] {SuffixConstants.EXTENSION_java.toCharArray()};
+				JAVA_LIKE_EXTENSIONS = new char[][] {SuffixConstants.EXTENSION_java.toCharArray(), SuffixConstants.EXTENSION_di.toCharArray()};
 			else {
 				IContentType javaContentType = Platform.getContentTypeManager().getContentType(JavaCore.JAVA_SOURCE_CONTENT_TYPE);
 				HashSet fileExtensions = new HashSet();

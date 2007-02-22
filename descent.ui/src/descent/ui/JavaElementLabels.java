@@ -810,8 +810,10 @@ public class JavaElementLabels {
 				buf.append(JavaUIMessages.JavaElementLabels_invariant);
 			} else if (initializer.isUnitTest()) {
 				buf.append(JavaUIMessages.JavaElementLabels_unittest);
-			} else {
+			} else if (initializer.isStaticDestructor()){
 				buf.append(JavaUIMessages.JavaElementLabels_uninitializer);
+			} else {
+				buf.append(JavaUIMessages.JavaElementLabels_static_assert);
 			}
 	
 			/*

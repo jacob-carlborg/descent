@@ -96,7 +96,8 @@ public boolean isStaticConstructor() throws JavaModelException {
 	int flags = getFlags();
 	return !Flags.isStaticDestructor(flags)
 		&& !Flags.isInvariant(flags)
-		&& !Flags.isUnitTest(flags);
+		&& !Flags.isUnitTest(flags)
+		&& !Flags.isStaticAssert(flags);
 }
 public boolean isStaticDestructor() throws JavaModelException {
 	return Flags.isStaticDestructor(getFlags());
@@ -106,6 +107,9 @@ public boolean isInvariant() throws JavaModelException {
 }
 public boolean isUnitTest() throws JavaModelException {
 	return Flags.isUnitTest(getFlags());
+}
+public boolean isStaticAssert() throws JavaModelException {
+	return Flags.isStaticAssert(getFlags());
 }
 /**
  * @private Debugging purposes

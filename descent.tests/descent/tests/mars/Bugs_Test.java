@@ -76,5 +76,22 @@ public class Bugs_Test extends Parser_Test {
 		String s = " package";
 		getCompilationUnit(s);
 	}
+	
+	public void testBug10() {
+		String s;
+		CompilationUnit unit;
+		
+		s = "void bla() { Thread[] buf = new Thread[sm_tlen]; }";
+		unit = getCompilationUnit(s);
+		assertEquals(0, unit.getProblems().length);
+
+		s = "void bla() { Thread[] buf = new Thread[sm_tlen.b.c]; }";
+		unit = getCompilationUnit(s);
+		assertEquals(0, unit.getProblems().length);
+		
+		s = "void bla() { Thread[] buf = new Thread[Foo!(int).bar]; }";
+		unit = getCompilationUnit(s);
+		assertEquals(1, unit.getProblems().length);
+	}
 
 }

@@ -58,6 +58,16 @@ public interface IInitializer extends IMember {
 	 */
 	boolean isUnitTest() throws JavaModelException;
 	
+	/**
+	 * Returns whether this initializer represents a static assert.
+	 * 
+	 * @return whether this initializer represents a static assert
+	 * @exception JavaModelException if this element does not exist or if an
+	 *      exception occurs while accessing its corresponding resource
+	 * @since 3.1
+	 */
+	boolean isStaticAssert() throws JavaModelException;
+	
 	
 	
 }

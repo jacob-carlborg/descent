@@ -202,6 +202,12 @@ public final class Flags {
 	 * @since 2.0
 	 */
 	public static final int AccUnitTest = 0x00040000;
+	
+	/**
+	 * Static assert property flag.
+	 * @since 2.0
+	 */
+	public static final int AccStaticAssert = 0x00080000;
 
 	/**
 	 * Not instantiable.
@@ -511,6 +517,16 @@ public final class Flags {
 	}
 	
 	/**
+	 * Returns whether the given integer includes the <code>static assert</code> modifier.
+	 *
+	 * @param flags the flags
+	 * @return <code>true</code> if the <code>static assert</code> modifier is included
+	 */
+	public static boolean isStaticAssert(int flags) {
+		return (flags & AccStaticAssert) != 0;
+	}
+	
+	/**
 	 * Returns a standard string describing the given modifier flags.
 	 * @param flags the flags
 	 * @return the standard string representation of the given flags
@@ -578,6 +594,8 @@ public final class Flags {
 			sb.append("invariant "); //$NON-NLS-1$
 		if (isUnitTest(flags))
 			sb.append("unittest "); //$NON-NLS-1$
+		if (isStaticAssert(flags))
+			sb.append("static assert "); //$NON-NLS-1$
 
 		int len = sb.length();
 		if (len == 0)

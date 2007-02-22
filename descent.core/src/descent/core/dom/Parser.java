@@ -107,6 +107,7 @@ class Parser extends Lexer {
 	List<Pragma> pragmas;
 	private int lastDocCommentRead = 0;
 	private boolean appendLeadingComments = true;
+	private TypeAdapter typeAdapter;
 
 	public Parser(AST ast, String source) {
 		this(ast, source, 0, source.length());
@@ -132,6 +133,7 @@ class Parser extends Lexer {
 		compilationUnit = new CompilationUnit(ast);
 		comments = new ArrayList<Comment>();
 		pragmas = new ArrayList<Pragma>();
+		typeAdapter = new TypeAdapter(this);
 		
 		nextToken();
 	}
@@ -2068,9 +2070,9 @@ class Parser extends Lexer {
 						}
 
 						if (ts != t) {
-							IDmdType pt = TypeAdapter.getAdapter(ts);
+							IDmdType pt = typeAdapter.getAdapter(ts);
 							while (pt.getNext() != t) {
-								pt = TypeAdapter.getAdapter(pt.getNext());
+								pt = typeAdapter.getAdapter(pt.getNext());
 							}
 							pt.setNext(ta);
 						} else {
@@ -2191,9 +2193,9 @@ class Parser extends Lexer {
 			}
 			
 			if (ts != t) {
-				IDmdType pt = TypeAdapter.getAdapter(ts);
+				IDmdType pt = typeAdapter.getAdapter(ts);
 				while(pt.getNext() != t) {
-					pt = TypeAdapter.getAdapter(pt.getNext());
+					pt = typeAdapter.getAdapter(pt.getNext());
 				}
 				pt.setNext(ta);
 			} else {
@@ -2231,11 +2233,11 @@ class Parser extends Lexer {
 			DmdTypeFunction typeFunction = (DmdTypeFunction) ta;
 
 			if (ts != t) {
-				IDmdType pt = TypeAdapter.getAdapter(ts);
+				IDmdType pt = typeAdapter.getAdapter(ts);
 				IDmdType previous = null;
 				while(pt.getNext() != t) {
 					previous = pt;
-					pt = TypeAdapter.getAdapter(pt.getNext());
+					pt = typeAdapter.getAdapter(pt.getNext());
 				}
 				
 				if (pt.getAdaptedType() instanceof PointerType) {
@@ -2474,7 +2476,7 @@ class Parser extends Lexer {
 					parsingErrorInsertTokenAfter(prevToken, ";");
 					break;
 				}
-			} else if (TypeAdapter.getAdapter(t).getTY() == Tfunction) {
+			} else if (typeAdapter.getAdapter(t).getTY() == Tfunction) {
 				DmdTypeFunction typeFunction = (DmdTypeFunction) t;
 				
 				SimpleName name = newSimpleNameForIdentifier(ident);
@@ -5551,27 +5553,27 @@ class Parser extends Lexer {
 		int lineNumber = token.lineNumber;
 		t = parseBasicType();
 		t = parseBasicType2(t);
-		if (TypeAdapter.getAdapter(t).getTY() == Taarray) {
+		if (typeAdapter.getAdapter(t).getTY() == Taarray) {
 			Type index = (Type) ((AssociativeArrayType) t).getKeyType();
 			
-			Expression e2 = TypeAdapter.getAdapter(index).toExpression();
+			Expression e2 = typeAdapter.getAdapter(index).toExpression();
 			if (e2 != null) {
 				arguments = new ArrayList<Expression>();
 				arguments.add(e2);
 				
-				t = newDynamicArrayType((Type) TypeAdapter.getAdapter(t).getNext());
+				t = newDynamicArrayType((Type) typeAdapter.getAdapter(t).getNext());
 			} else {
 				error("Need size of rightmost array", IProblem.NeedSizeOfRightmostArray, lineNumber, index);
 				return newNullLiteralForCurrentToken();
 			}
-		} else if (TypeAdapter.getAdapter(t).getTY() == Tsarray) {
+		} else if (typeAdapter.getAdapter(t).getTY() == Tsarray) {
 			StaticArrayType tsa = (StaticArrayType) t;
 			Expression e2 = tsa.getSize();
 
 			arguments = new ArrayList<Expression>();
 			arguments.add(e2);
 			
-			t = newDynamicArrayType((Type) TypeAdapter.getAdapter(t).getNext());
+			t = newDynamicArrayType((Type) typeAdapter.getAdapter(t).getNext());
 		} else if (token.value == TOKlparen) {
 			arguments = parseArguments();
 		}
@@ -5675,6 +5677,14 @@ class Parser extends Lexer {
 		qualifiedName.setQualifier(name);
 		qualifiedName.setName(newSimpleNameForCurrentToken());
 		qualifiedName.setSourceRange(name.getStartPosition(), token.ptr + token.len - name.getStartPosition());
+		return qualifiedName;
+	}
+	
+	QualifiedName newQualifiedName(Name qualifier, SimpleName name) {
+		QualifiedName qualifiedName = new QualifiedName(ast);
+		qualifiedName.setQualifier(qualifier);
+		qualifiedName.setName(name);
+		qualifiedName.setSourceRange(qualifier.getStartPosition(), name.getStartPosition() + name.getLength() - qualifier.getStartPosition());
 		return qualifiedName;
 	}
 	
@@ -5950,7 +5960,7 @@ class Parser extends Lexer {
 		return argument;
 	}
 	
-	private ArrayAccess newArrayAccess(Expression expression, List<Expression> arguments) {
+	ArrayAccess newArrayAccess(Expression expression, List<Expression> arguments) {
 		ArrayAccess arrayAccess = new ArrayAccess(ast);
 		arrayAccess.setArray(expression);
 		arrayAccess.indexes().addAll(arguments);

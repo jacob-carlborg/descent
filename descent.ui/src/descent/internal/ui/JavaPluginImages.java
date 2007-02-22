@@ -123,6 +123,7 @@ public class JavaPluginImages {
 	
 	public static final String IMG_OBJS_INVARIANT= NAME_PREFIX + "invariant_default_obj.gif"; //$NON-NLS-1$
 	public static final String IMG_OBJS_UNITTEST= NAME_PREFIX + "unittest_default_obj.gif"; //$NON-NLS-1$	
+	public static final String IMG_OBJS_STATIC_ASSERT= NAME_PREFIX + "static_assert_default_obj.gif"; //$NON-NLS-1$
 	
 	// TODO JDT UI images: make icons for IMG_OBJS_STRUCTALT, IMG_OBJS_STRUCT_DEFAULT, IMG_OBJS_UNIONALT, IMG_OBJS_UNION_DEFAULT, IMG_OBJS_TEMPLATE_ELEMENTALT and IMG_OBJS_TEMPLATE_ELEMENT_DEFAULT 
 	
@@ -307,6 +308,7 @@ public class JavaPluginImages {
 	
 	public static final ImageDescriptor DESC_OBJS_INVARIANT= createManagedFromKey(T_OBJ, IMG_OBJS_INVARIANT);
 	public static final ImageDescriptor DESC_OBJS_UNITTEST= createManagedFromKey(T_OBJ, IMG_OBJS_UNITTEST);
+	public static final ImageDescriptor DESC_OBJS_STATIC_ASSERT= createManagedFromKey(T_OBJ, IMG_OBJS_STATIC_ASSERT);
 	
 	public static final ImageDescriptor DESC_OBJS_JAR= createManagedFromKey(T_OBJ, IMG_OBJS_JAR);
 	public static final ImageDescriptor DESC_OBJS_EXTJAR= createManagedFromKey(T_OBJ, IMG_OBJS_EXTJAR);

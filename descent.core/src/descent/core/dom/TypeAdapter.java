@@ -1,5 +1,8 @@
 package descent.core.dom;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import descent.internal.core.parser.IDmdType;
 import descent.internal.core.parser.TY;
 
@@ -7,60 +10,51 @@ import descent.internal.core.parser.TY;
  * Adapts an object to an IDmdType.
  * @see IDmdType
  */
-public abstract class TypeAdapter {
+public class TypeAdapter {
 	
-	// TODO implement toExpression() for TypeSArray (now StaticArrayType) and TypeIdentifier
-	// (this can be SimpleType, QualifiedType or TemplateType)
+	private final Parser parser;
+
+	public TypeAdapter(Parser parser) {
+		this.parser = parser;		
+	}
 	
-	public final static IDmdType getAdapter(Object object) {
+	public IDmdType getAdapter(Object object) {
 		if (object == null) return null;
 		
 		if (object instanceof IDmdType) {
 			return (IDmdType) object;
 		}
 		
-		if (object instanceof PrimitiveType) {
-			return getAdapter((PrimitiveType) object);
-		}
-		
-		if (object instanceof PointerType) {
-			return getAdapter((PointerType) object);
-		}
-		
-		if (object instanceof StaticArrayType) {
-			return getAdapter((StaticArrayType) object);
-		}
-		
-		if (object instanceof DynamicArrayType) {
-			return getAdapter((DynamicArrayType) object);
-		}
-		
-		if (object instanceof AssociativeArrayType) {
-			return getAdapter((AssociativeArrayType) object);
-		}
-		
-		if (object instanceof SliceType) {
-			return getAdapter((SliceType) object);
-		}
-		
-		if (object instanceof DelegateType) {
-			return getAdapter((DelegateType) object);
-		}
-		
-		if (object instanceof SimpleType 
-				|| object instanceof QualifiedType 
-				|| object instanceof TemplateType) {
-			return getAdapterForTident((Type) object);
-		}
-		
-		if (object instanceof TypeofType) {
-			return getAdapter((TypeofType) object);
+		if (object instanceof ASTNode) {
+			ASTNode node = (ASTNode) object;
+			switch(node.getNodeType()) {
+			case ASTNode.PRIMITIVE_TYPE:
+				return getAdapter((PrimitiveType) object);
+			case ASTNode.POINTER_TYPE:
+				return getAdapter((PointerType) object);
+			case ASTNode.STATIC_ARRAY_TYPE:
+				return getAdapter((StaticArrayType) object);
+			case ASTNode.DYNAMIC_ARRAY_TYPE:
+				return getAdapter((DynamicArrayType) object);
+			case ASTNode.ASSOCIATIVE_ARRAY_TYPE:
+				return getAdapter((AssociativeArrayType) object);
+			case ASTNode.SLICE_TYPE:
+				return getAdapter((SliceType) object);
+			case ASTNode.DELEGATE_TYPE:
+				return getAdapter((DelegateType) object);
+			case ASTNode.SIMPLE_TYPE:
+			case ASTNode.QUALIFIED_TYPE:
+			case ASTNode.TEMPLATE_TYPE:
+				return getAdapterForTident((Type) object);
+			case ASTNode.TYPEOF_TYPE:
+				return getAdapter((TypeofType) object);
+			}
 		}
 		
 		throw new RuntimeException("Can't adapt " + object + " to ITypeWithNextField");
 	}
 	
-	public final static IDmdType getAdapter(final PrimitiveType type) {
+	public IDmdType getAdapter(final PrimitiveType type) {
 		return new IDmdType() {
 			public Object getAdaptedType() {
 				return type;
@@ -104,7 +98,7 @@ public abstract class TypeAdapter {
 		};
 	}
 	
-	private final static IDmdType getAdapterForTident(final Type type) {
+	private IDmdType getAdapterForTident(final Type type) {
 		return new IDmdType() {
 			public Object getAdaptedType() {
 				return type;
@@ -115,7 +109,7 @@ public abstract class TypeAdapter {
 			public void setNext(Type dmdType) {
 			}
 			public Expression toExpression() {
-				return null;
+				return identToExpression(type);
 			}
 			public TY getTY() {
 				return TY.Tident;
@@ -123,7 +117,27 @@ public abstract class TypeAdapter {
 		};
 	}
 	
-	public final static IDmdType getAdapter(final PointerType type) {
+	private Expression identToExpression(Type type) {
+		switch(type.getNodeType()) {
+		case ASTNode.SIMPLE_TYPE:
+			SimpleType simpleType = (SimpleType) type;
+			return simpleType.getName();
+		case ASTNode.QUALIFIED_TYPE:
+			QualifiedType qualifiedType = (QualifiedType) type;
+			Expression pre = identToExpression(qualifiedType.getQualifier());
+			Expression post = identToExpression(qualifiedType.getType());
+			if (pre != null && pre instanceof Name && post != null && post instanceof SimpleName) {
+				return parser.newQualifiedName((Name) pre, (SimpleName) post);
+			}
+		case ASTNode.TEMPLATE_TYPE:
+			// TODO I don't understand how DMD's front end handles this case...
+			// but in the end it seems to return null! :-S
+			return null;
+		}
+		return null;
+	}
+	
+	public IDmdType getAdapter(final PointerType type) {
 		return new IDmdType() {
 			public Object getAdaptedType() {
 				return type;
@@ -154,7 +168,7 @@ public abstract class TypeAdapter {
 		};
 	}
 	
-	public final static IDmdType getAdapter(final TypeofType type) {
+	public IDmdType getAdapter(final TypeofType type) {
 		return new IDmdType() {
 			public Object getAdaptedType() {
 				return type;
@@ -174,23 +188,7 @@ public abstract class TypeAdapter {
 		};
 	}
 	
-	public final static IDmdType getAdapter(final StaticArrayType type) {
-		return getAdapter(type, TY.Tsarray);
-	}
-	
-	public final static IDmdType getAdapter(final DynamicArrayType type) {
-		return getAdapter(type, TY.Tarray);
-	}
-	
-	public final static IDmdType getAdapter(final AssociativeArrayType type) {
-		return getAdapter(type, TY.Taarray);
-	}
-	
-	public final static IDmdType getAdapter(final SliceType type) {
-		return getAdapter(type, TY.Tslice);
-	}
-	
-	public final static IDmdType getAdapter(final ArrayType type, final TY ty) {
+	public IDmdType getAdapter(final StaticArrayType type) {
 		return new IDmdType() {
 			public Object getAdaptedType() {
 				return type;
@@ -199,18 +197,45 @@ public abstract class TypeAdapter {
 				return type.getComponentType();
 			}
 			public void setNext(Type dmdType) {
-				// Must preserve the parent of the old assigned type
-				Type oldType = type.getComponentType();
-				ASTNode parent = null;
-				StructuralPropertyDescriptor locationInParent = null;
-				if (oldType != null) {
-					parent = oldType.getParent();
-					locationInParent = oldType.getLocationInParent();
-				}
-				type.setComponentType(dmdType);
-				if (oldType != null) {
-					oldType.setParent(parent, locationInParent);
-				}
+				TypeAdapter.setNext(type, dmdType);
+			}
+			public Expression toExpression() {
+				Expression e = getAdapter(getNext()).toExpression();
+			    if (e != null) {
+			    	List<Expression> arguments = new ArrayList<Expression>();
+			    	arguments.add(type.getSize());
+			    	parser.newArrayAccess(e, arguments);
+			    }
+			    return e;
+			}
+			public TY getTY() {
+				return TY.Tsarray;
+			}
+		};
+	}
+	
+	public IDmdType getAdapter(final DynamicArrayType type) {
+		return getAdapter(type, TY.Tarray);
+	}
+	
+	public IDmdType getAdapter(final AssociativeArrayType type) {
+		return getAdapter(type, TY.Taarray);
+	}
+	
+	public IDmdType getAdapter(final SliceType type) {
+		return getAdapter(type, TY.Tslice);
+	}
+	
+	public IDmdType getAdapter(final ArrayType type, final TY ty) {
+		return new IDmdType() {
+			public Object getAdaptedType() {
+				return type;
+			}
+			public Type getNext() {
+				return type.getComponentType();
+			}
+			public void setNext(Type dmdType) {
+				TypeAdapter.setNext(type, dmdType);
 			}
 			public Expression toExpression() {
 				return null;
@@ -221,7 +246,7 @@ public abstract class TypeAdapter {
 		};
 	}
 	
-	public final static IDmdType getAdapter(final DelegateType type) {
+	public IDmdType getAdapter(final DelegateType type) {
 		return new IDmdType() {
 			public Object getAdaptedType() {
 				return type;
@@ -238,6 +263,21 @@ public abstract class TypeAdapter {
 				return TY.Tdelegate;
 			}
 		};
+	}
+	
+	private static void setNext(ArrayType type, Type dmdType) {
+		// Must preserve the parent of the old assigned type
+		Type oldType = type.getComponentType();
+		ASTNode parent = null;
+		StructuralPropertyDescriptor locationInParent = null;
+		if (oldType != null) {
+			parent = oldType.getParent();
+			locationInParent = oldType.getLocationInParent();
+		}
+		type.setComponentType(dmdType);
+		if (oldType != null) {
+			oldType.setParent(parent, locationInParent);
+		}
 	}
 
 }

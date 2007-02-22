@@ -27,7 +27,7 @@ public class ImportDeclaration extends SourceRefElement implements IImportDeclar
  * Constructs an ImportDeclaration in the given import container
  * with the given name.
  */
-protected ImportDeclaration(ImportContainer parent, String name, boolean isOnDemand) {
+protected ImportDeclaration(JavaElement parent, String name, boolean isOnDemand) {
 	super(parent);
 	this.name = name;
 	this.isOnDemand = isOnDemand;
