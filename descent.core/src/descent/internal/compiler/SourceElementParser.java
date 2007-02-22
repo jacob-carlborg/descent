@@ -14,6 +14,7 @@ import java.util.List;
 
 import descent.core.Flags;
 import descent.core.ICompilationUnit;
+import descent.core.compiler.CharOperation;
 import descent.core.dom.AST;
 import descent.core.dom.ASTNode;
 import descent.core.dom.ASTParser;
@@ -69,8 +70,10 @@ import descent.internal.compiler.ISourceElementRequestor.TypeParameterInfo;
  */
 public class SourceElementParser extends ASTVisitor {
 	
-	public ISourceElementRequestor requestor;
+	private final static long[] NO_LONG = new long[0];
 	
+	private ISourceElementRequestor requestor;
+	private CompilationUnit compilationUnit;
 	private boolean foundType = false;
 
 	public SourceElementParser(
@@ -84,13 +87,21 @@ public class SourceElementParser extends ASTVisitor {
 		ASTParser parser = ASTParser.newParser(AST.D1);
 		parser.setSource(unit);
 		parser.setResolveBindings(resolveBindings);
-		CompilationUnit compilationUnit = (CompilationUnit) parser.createAST(null);
+		compilationUnit = (CompilationUnit) parser.createAST(null);
 		
 		requestor.enterCompilationUnit();
 		compilationUnit.accept(this);
-		requestor.exitCompilationUnit(compilationUnit.getStartPosition() + compilationUnit.getLength());
+		requestor.exitCompilationUnit(endOf(compilationUnit));
 		
 		return compilationUnit;
+	}
+	
+	private int startOf(ASTNode node) {
+		return compilationUnit.getExtendedStartPosition(node);
+	}
+	
+	private int endOf(ASTNode node) {
+		return startOf(node) + compilationUnit.getExtendedLength(node) - 1;
 	}
 	
 	private char[][] getTokens(Name name) {
@@ -140,13 +151,13 @@ public class SourceElementParser extends ASTVisitor {
 			TemplateParameter param = parameters.get(i);
 			
 			TypeParameterInfo info = new TypeParameterInfo();
-			info.annotationPositions = new long[0];
-			info.bounds = new char[0][];
-			info.declarationEnd = param.getStartPosition() + param.getLength() - 1;
-			info.declarationStart = param.getStartPosition();
+			info.annotationPositions = NO_LONG;
+			info.bounds = CharOperation.NO_CHAR_CHAR;
+			info.declarationStart = startOf(param);
+			info.declarationEnd = endOf(param);			
 			info.name = param.getName().getIdentifier().toCharArray();
-			info.nameSourceEnd = param.getName().getStartPosition() + param.getName().getLength() - 1;
-			info.nameSourceStart = param.getName().getStartPosition();
+			info.nameSourceStart = startOf(param.getName());
+			info.nameSourceEnd = endOf(param.getName());
 			infos[i] = info;
 		}
 		return infos;
@@ -157,7 +168,7 @@ public class SourceElementParser extends ASTVisitor {
 		for(int i = 0; i < arguments.size(); i++) {
 			SimpleName name = arguments.get(i).getName();
 			if (name == null) {
-				names[i] = new char[0];
+				names[i] = CharOperation.NO_CHAR;
 			} else {
 				names[i] = name.getIdentifier().toCharArray();
 			}
@@ -175,19 +186,29 @@ public class SourceElementParser extends ASTVisitor {
 	
 	@Override
 	public boolean visit(ModuleDeclaration node) {
-		requestor.acceptPackage(node.getStartPosition(), node.getStartPosition() + node.getLength() - 1, node.getName().getFullyQualifiedName().toCharArray());
+		requestor.acceptPackage(startOf(node), endOf(node), node.getName().getFullyQualifiedName().toCharArray());
 		return false;
 	}
 	
 	@Override
-	public boolean visit(ImportDeclaration node) {
-		// TODO Java -> D
-		if (node.imports().size() == 1) {
-			Import imp = node.imports().get(0);
-			if (imp.getAlias() == null && imp.selectiveImports().size() == 0) {
-				requestor.acceptImport(node.getStartPosition(), node.getStartPosition() + node.getLength() - 1, getTokens(imp.getName()), false, node.isStatic() ? Flags.AccStatic : Flags.AccDefault);
-			}
+	public boolean visit(Import node) {
+		ImportDeclaration parent = (ImportDeclaration) node.getParent();
+		int index = parent.imports().indexOf(node);
+		int start, end;
+		if (index == 0) {
+			start = startOf(parent);
+		} else {
+			start = startOf(node);
 		}
+		if (index == parent.imports().size() - 1) {
+			end = endOf(parent);
+		} else {
+			end = endOf(node);
+		}
+		
+		
+		int flags = parent.isStatic() ? Flags.AccStatic : 0;
+		requestor.acceptImport(start, end, node.toString(), false, flags);
 		return false;
 	}
 	
@@ -197,9 +218,9 @@ public class SourceElementParser extends ASTVisitor {
 		// Also, since the base class notation in D dosen't distinguis between
 		// classes and interfaces, let's assume they are all interfaces for the moment
 		TypeInfo info = new TypeInfo();
-		info.annotationPositions = new long[0];
-		info.categories = new char[0][];
-		info.declarationStart = node.getStartPosition();
+		info.annotationPositions = NO_LONG;
+		info.categories = CharOperation.NO_CHAR_CHAR;
+		info.declarationStart = startOf(node);
 		info.modifiers = getFlags(node.modifiers());
 		switch(node.getKind()) {
 		case INTERFACE:
@@ -214,11 +235,11 @@ public class SourceElementParser extends ASTVisitor {
 		}
 		if (node.getName() != null) {
 			info.name = node.getName().getFullyQualifiedName().toCharArray();
-			info.nameSourceEnd = node.getName().getStartPosition() + node.getName().getLength() - 1;
-			info.nameSourceStart = node.getName().getStartPosition();
+			info.nameSourceEnd = endOf(node.getName());
+			info.nameSourceStart = startOf(node.getName());
 		}
 		info.secondary = !foundType;
-		info.superclass = new char[0];
+		info.superclass = CharOperation.NO_CHAR;
 		info.superinterfaces = getTokens(node.baseClasses());		
 		info.typeParameters = getTypeParameters(node.templateParameters());
 		
@@ -231,7 +252,7 @@ public class SourceElementParser extends ASTVisitor {
 	
 	@Override
 	public void endVisit(AggregateDeclaration node) {
-		requestor.exitType(node.getStartPosition() + node.getLength() - 1);
+		requestor.exitType(endOf(node));
 	}
 	
 	@Override
@@ -240,18 +261,18 @@ public class SourceElementParser extends ASTVisitor {
 		// Also, since the base class notation in D dosen't distinguis between
 		// classes and interfaces, let's assume they are all interfaces for the moment
 		TypeInfo info = new TypeInfo();
-		info.annotationPositions = new long[0];
-		info.categories = new char[0][];
-		info.declarationStart = node.getStartPosition();
+		info.annotationPositions = NO_LONG;
+		info.categories = CharOperation.NO_CHAR_CHAR;
+		info.declarationStart = startOf(node);
 		info.modifiers = getFlags(node.modifiers());
 		info.modifiers |= Flags.AccEnum;
 		if (node.getName() != null) {
 			info.name = node.getName().getFullyQualifiedName().toCharArray();
-			info.nameSourceEnd = node.getName().getStartPosition() + node.getName().getLength() - 1;
-			info.nameSourceStart = node.getName().getStartPosition();
+			info.nameSourceStart = startOf(node.getName());
+			info.nameSourceEnd = endOf(node.getName());
 		}
 		info.secondary = !foundType;
-		info.superclass = new char[0];
+		info.superclass = CharOperation.NO_CHAR;
 		if (node.getBaseType() != null) {
 			info.superinterfaces = new char[][] { node.getBaseType().toString().toCharArray() };
 		}
@@ -265,23 +286,23 @@ public class SourceElementParser extends ASTVisitor {
 	
 	@Override
 	public void endVisit(EnumDeclaration node) {
-		requestor.exitType(node.getStartPosition() + node.getLength() - 1);
+		requestor.exitType(endOf(node));
 	}
 	
 	@Override
 	public boolean visit(TemplateDeclaration node) {
 		// TODO Java -> D
 		TypeInfo info = new TypeInfo();
-		info.annotationPositions = new long[0];
-		info.categories = new char[0][];
-		info.declarationStart = node.getStartPosition();
+		info.annotationPositions = NO_LONG;
+		info.categories = CharOperation.NO_CHAR_CHAR;
+		info.declarationStart = startOf(node);
 		info.modifiers = getFlags(node.modifiers());
 		info.modifiers |= Flags.AccTemplate;
 		info.name = node.getName().getFullyQualifiedName().toCharArray();
-		info.nameSourceEnd = node.getName().getStartPosition() + node.getName().getLength() - 1;
-		info.nameSourceStart = node.getName().getStartPosition();
+		info.nameSourceStart = startOf(node.getName());
+		info.nameSourceEnd = endOf(node.getName());		
 		info.secondary = !foundType;
-		info.superclass = new char[0];
+		info.superclass = CharOperation.NO_CHAR;
 		info.typeParameters = getTypeParameters(node.templateParameters());
 		
 		foundType = true;
@@ -293,90 +314,80 @@ public class SourceElementParser extends ASTVisitor {
 	
 	@Override
 	public void endVisit(TemplateDeclaration node) {
-		requestor.exitType(node.getStartPosition() + node.getLength() - 1);
+		requestor.exitType(endOf(node));
 	}
 	
 	@Override
 	public boolean visit(ConstructorDeclaration node) {
-		if (node.getParent().getNodeType() == ASTNode.AGGREGATE_DECLARATION) {
-			if (node.getKind() == ConstructorDeclaration.Kind.STATIC_CONSTRUCTOR) {
-				requestor.enterInitializer(node.getStartPosition(), getFlags(node.modifiers()));
-			} else if (node.getKind() == ConstructorDeclaration.Kind.STATIC_DESTRUCTOR) {
-				requestor.enterInitializer(node.getStartPosition(), getFlags(node.modifiers()) | Flags.AccStaticDestructor);
-			} else {
-				MethodInfo info = new MethodInfo();
-				info.annotationPositions = new long[0];
-				info.categories = new char[0][];
-				info.declarationStart = node.getStartPosition();
-				info.exceptionTypes = new char[0][];
-				info.modifiers = getFlags(node.modifiers());
-				switch(node.getKind()) {
-				case CONSTRUCTOR:
-					info.modifiers |= Flags.AccConstructor;
-					break;
-				case DESTRUCTOR:
-					info.modifiers |= Flags.AccDestructor;
-					break;
-				case NEW:
-					info.modifiers |= Flags.AccNew;
-					break;
-				case DELETE:
-					info.modifiers |= Flags.AccDelete;
-					break;
-				}				
-				info.name = new char[0];
-				info.nameSourceEnd = 0;
-				info.nameSourceStart = 0;
-				info.parameterNames = getParameterNames(node.arguments());
-				info.parameterTypes = getParameterTypes(node.arguments());
-				info.returnType = "void".toCharArray();
-				info.typeParameters = new TypeParameterInfo[0];
-				
-				requestor.enterConstructor(info);
-			}
+		if (node.getKind() == ConstructorDeclaration.Kind.STATIC_CONSTRUCTOR) {
+			requestor.enterInitializer(startOf(node), getFlags(node.modifiers()));
+		} else if (node.getKind() == ConstructorDeclaration.Kind.STATIC_DESTRUCTOR) {
+			requestor.enterInitializer(startOf(node), getFlags(node.modifiers()) | Flags.AccStaticDestructor);
+		} else {
+			MethodInfo info = new MethodInfo();
+			info.annotationPositions = NO_LONG;
+			info.categories = CharOperation.NO_CHAR_CHAR;
+			info.declarationStart = startOf(node);
+			info.exceptionTypes = CharOperation.NO_CHAR_CHAR;
+			info.modifiers = getFlags(node.modifiers());
+			switch(node.getKind()) {
+			case CONSTRUCTOR:
+				info.modifiers |= Flags.AccConstructor;
+				break;
+			case DESTRUCTOR:
+				info.modifiers |= Flags.AccDestructor;
+				break;
+			case NEW:
+				info.modifiers |= Flags.AccNew;
+				break;
+			case DELETE:
+				info.modifiers |= Flags.AccDelete;
+				break;
+			}				
+			info.name = CharOperation.NO_CHAR;
+			info.parameterNames = getParameterNames(node.arguments());
+			info.parameterTypes = getParameterTypes(node.arguments());
+			info.returnType = "void".toCharArray();
+			info.typeParameters = new TypeParameterInfo[0];
+			
+			requestor.enterConstructor(info);
 		}
-		return true;
+		return false;
 	}
 	
 	@Override
 	public void endVisit(ConstructorDeclaration node) {
-		if (node.getParent().getNodeType() == ASTNode.AGGREGATE_DECLARATION) {
-			if (node.getKind() == ConstructorDeclaration.Kind.STATIC_CONSTRUCTOR
-					|| node.getKind() == ConstructorDeclaration.Kind.STATIC_DESTRUCTOR) {
-				requestor.exitInitializer(node.getStartPosition() + node.getLength() - 1);
-			} else {
-				requestor.exitConstructor(node.getStartPosition() + node.getLength() - 1);
-			}
+		if (node.getKind() == ConstructorDeclaration.Kind.STATIC_CONSTRUCTOR
+				|| node.getKind() == ConstructorDeclaration.Kind.STATIC_DESTRUCTOR) {
+			requestor.exitInitializer(endOf(node));
+		} else {
+			requestor.exitConstructor(endOf(node));
 		}
 	}
 	
 	@Override
 	public boolean visit(FunctionDeclaration node) {
-		if (node.getParent().getNodeType() == ASTNode.AGGREGATE_DECLARATION) {
-			MethodInfo info = new MethodInfo();
-			info.annotationPositions = new long[0];
-			info.categories = new char[0][];
-			info.declarationStart = node.getStartPosition();
-			info.exceptionTypes = new char[0][];
-			info.modifiers = getFlags(node.modifiers());
-			info.name = node.getName().getIdentifier().toCharArray();
-			info.nameSourceEnd = node.getName().getStartPosition() + node.getName().getLength() - 1;
-			info.nameSourceStart = node.getName().getStartPosition();
-			info.parameterNames = getParameterNames(node.arguments());
-			info.parameterTypes = getParameterTypes(node.arguments());
-			info.returnType = node.getReturnType().toString().toCharArray();
-			info.typeParameters = getTypeParameters(node.templateParameters());
-			
-			requestor.enterMethod(info);
-		}
-		return true;
+		MethodInfo info = new MethodInfo();
+		info.annotationPositions = NO_LONG;
+		info.categories = CharOperation.NO_CHAR_CHAR;
+		info.declarationStart = startOf(node);
+		info.exceptionTypes = CharOperation.NO_CHAR_CHAR;
+		info.modifiers = getFlags(node.modifiers());
+		info.name = node.getName().getIdentifier().toCharArray();
+		info.nameSourceStart = startOf(node.getName());
+		info.nameSourceEnd = endOf(node.getName());			
+		info.parameterNames = getParameterNames(node.arguments());
+		info.parameterTypes = getParameterTypes(node.arguments());
+		info.returnType = node.getReturnType().toString().toCharArray();
+		info.typeParameters = getTypeParameters(node.templateParameters());
+		
+		requestor.enterMethod(info);
+		return false;
 	}
 	
 	@Override
 	public void endVisit(FunctionDeclaration node) {
-		if (node.getParent().getNodeType() == ASTNode.AGGREGATE_DECLARATION) {
-			requestor.exitMethod(node.getStartPosition() + node.getLength() - 1, -1, -1);
-		}
+		requestor.exitMethod(endOf(node), -1, -1);
 	}
 	
 	@Override
@@ -384,26 +395,27 @@ public class SourceElementParser extends ASTVisitor {
 		// TODO JDT Java -> D
 		VariableDeclaration var = (VariableDeclaration) node.getParent();
 		
-		int parentType = var.getParent().getNodeType(); 
-		if (parentType == ASTNode.AGGREGATE_DECLARATION || parentType == ASTNode.TEMPLATE_DECLARATION) {
-			FieldInfo info = new FieldInfo();
-			info.annotationPositions = new long[0];
-			info.categories = new char[0][];
-			
-			if (var.fragments().get(0) == node) {
-				info.declarationStart = var.getStartPosition();
-			} else {
-				info.declarationStart = node.getStartPosition();
-			}
-			
-			info.modifiers = getFlags(var.modifiers());
-			info.name = node.getName().getIdentifier().toCharArray();
-			info.nameSourceEnd = node.getName().getStartPosition() + node.getName().getLength() - 1;
-			info.nameSourceStart = node.getName().getStartPosition();
-			info.type = var.getType().toString().toCharArray();
-			
-			requestor.enterField(info);
+		FieldInfo info = new FieldInfo();
+		info.annotationPositions = NO_LONG;
+		info.categories = CharOperation.NO_CHAR_CHAR;
+		
+		if (var.fragments().get(0) == node) {
+			info.declarationStart = startOf(var);
+		} else {
+			info.declarationStart = startOf(node);
 		}
+		
+		info.modifiers = getFlags(var.modifiers());
+		info.name = node.getName().getIdentifier().toCharArray();
+		info.nameSourceStart = startOf(node.getName());
+		info.nameSourceEnd = endOf(node.getName());
+		if (var.getType() != null) {
+			info.type = var.getType().toString().toCharArray();
+		} else {
+			info.type = CharOperation.NO_CHAR;
+		}
+		
+		requestor.enterField(info);
 		
 		return false;
 	}
@@ -412,14 +424,11 @@ public class SourceElementParser extends ASTVisitor {
 	public void endVisit(VariableDeclarationFragment node) {
 		VariableDeclaration var = (VariableDeclaration) node.getParent();
 		
-		int parentType = var.getParent().getNodeType(); 
-		if (parentType == ASTNode.AGGREGATE_DECLARATION || parentType == ASTNode.TEMPLATE_DECLARATION) {
-			int initializerStart = node.getInitializer() == null ? - 1 : node.getInitializer().getStartPosition();
-			int declarationEnd = node.getName().getStartPosition() + node.getName().getLength() - 1;
-			int declarationSourceEnd = var.getStartPosition() + var.getLength() - 1;
-			
-			requestor.exitField(initializerStart, declarationEnd, declarationSourceEnd);
-		}
+		int initializerStart = node.getInitializer() == null ? - 1 : startOf(node.getInitializer());
+		int declarationEnd = endOf(node.getName());
+		int declarationSourceEnd = endOf(var);
+		
+		requestor.exitField(initializerStart, declarationEnd, declarationSourceEnd);
 	}
 	
 	@Override
@@ -427,27 +436,24 @@ public class SourceElementParser extends ASTVisitor {
 		// TODO JDT Java -> D
 		AliasDeclaration var = (AliasDeclaration) node.getParent();
 		
-		int parentType = var.getParent().getNodeType(); 
-		if (parentType == ASTNode.AGGREGATE_DECLARATION || parentType == ASTNode.TEMPLATE_DECLARATION) {
-			FieldInfo info = new FieldInfo();
-			info.annotationPositions = new long[0];
-			info.categories = new char[0][];
-			
-			if (var.fragments().get(0) == node) {
-				info.declarationStart = var.getStartPosition();
-			} else {
-				info.declarationStart = node.getStartPosition();
-			}
-			
-			info.modifiers = getFlags(var.modifiers());
-			info.modifiers |= Flags.AccAlias;
-			info.name = node.getName().getIdentifier().toCharArray();
-			info.nameSourceEnd = node.getName().getStartPosition() + node.getName().getLength() - 1;
-			info.nameSourceStart = node.getName().getStartPosition();
-			info.type = var.getType().toString().toCharArray();
-			
-			requestor.enterField(info);
+		FieldInfo info = new FieldInfo();
+		info.annotationPositions = NO_LONG;
+		info.categories = CharOperation.NO_CHAR_CHAR;
+		
+		if (var.fragments().get(0) == node) {
+			info.declarationStart = startOf(var);
+		} else {
+			info.declarationStart = startOf(node);
 		}
+		
+		info.modifiers = getFlags(var.modifiers());
+		info.modifiers |= Flags.AccAlias;
+		info.name = node.getName().getIdentifier().toCharArray();
+		info.nameSourceStart = startOf(node.getName());
+		info.nameSourceEnd = endOf(node.getName());			
+		info.type = var.getType().toString().toCharArray();
+		
+		requestor.enterField(info);
 		
 		return false;
 	}
@@ -456,13 +462,10 @@ public class SourceElementParser extends ASTVisitor {
 	public void endVisit(AliasDeclarationFragment node) {
 		AliasDeclaration var = (AliasDeclaration) node.getParent();
 		
-		int parentType = var.getParent().getNodeType(); 
-		if (parentType == ASTNode.AGGREGATE_DECLARATION || parentType == ASTNode.TEMPLATE_DECLARATION) {
-			int initializerStart = node.getName().getStartPosition() + node.getLength() - 1;
-			int declarationSourceEnd = var.getStartPosition() + var.getLength() - 1;
-			
-			requestor.exitField(initializerStart, declarationSourceEnd, declarationSourceEnd);
-		}
+		int initializerStart = endOf(node.getName());
+		int declarationSourceEnd = endOf(var);
+		
+		requestor.exitField(initializerStart, declarationSourceEnd, declarationSourceEnd);
 	}
 	
 	@Override
@@ -470,27 +473,24 @@ public class SourceElementParser extends ASTVisitor {
 		// TODO JDT Java -> D
 		TypedefDeclaration var = (TypedefDeclaration) node.getParent();
 		
-		int parentType = var.getParent().getNodeType(); 
-		if (parentType == ASTNode.AGGREGATE_DECLARATION || parentType == ASTNode.TEMPLATE_DECLARATION) {
-			FieldInfo info = new FieldInfo();
-			info.annotationPositions = new long[0];
-			info.categories = new char[0][];
-			
-			if (var.fragments().get(0) == node) {
-				info.declarationStart = var.getStartPosition();
-			} else {
-				info.declarationStart = node.getStartPosition();
-			}
-			
-			info.modifiers = getFlags(var.modifiers());
-			info.modifiers |= Flags.AccTypedef;
-			info.name = node.getName().getIdentifier().toCharArray();
-			info.nameSourceEnd = node.getName().getStartPosition() + node.getName().getLength() - 1;
-			info.nameSourceStart = node.getName().getStartPosition();
-			info.type = var.getType().toString().toCharArray();
-			
-			requestor.enterField(info);
+		FieldInfo info = new FieldInfo();
+		info.annotationPositions = NO_LONG;
+		info.categories = CharOperation.NO_CHAR_CHAR;
+		
+		if (var.fragments().get(0) == node) {
+			info.declarationStart = startOf(var);
+		} else {
+			info.declarationStart = startOf(node);
 		}
+		
+		info.modifiers = getFlags(var.modifiers());
+		info.modifiers |= Flags.AccTypedef;
+		info.name = node.getName().getIdentifier().toCharArray();
+		info.nameSourceStart = startOf(node.getName());
+		info.nameSourceEnd = endOf(node.getName());			
+		info.type = var.getType().toString().toCharArray();
+		
+		requestor.enterField(info);
 		
 		return false;
 	}
@@ -499,57 +499,52 @@ public class SourceElementParser extends ASTVisitor {
 	public void endVisit(TypedefDeclarationFragment node) {
 		TypedefDeclaration var = (TypedefDeclaration) node.getParent();
 		
-		int parentType = var.getParent().getNodeType(); 
-		if (parentType == ASTNode.AGGREGATE_DECLARATION || parentType == ASTNode.TEMPLATE_DECLARATION) {
-			int initializerStart = node.getInitializer() == null ? - 1 : node.getInitializer().getStartPosition();
-			int declarationEnd = node.getName().getStartPosition() + node.getName().getLength() - 1;
-			int declarationSourceEnd = var.getStartPosition() + var.getLength() - 1;
-			
-			requestor.exitField(initializerStart, declarationEnd, declarationSourceEnd);
-		}
+		int initializerStart = node.getInitializer() == null ? - 1 : startOf(node.getInitializer());
+		int declarationEnd = endOf(node.getName());
+		int declarationSourceEnd = endOf(var);
+		
+		requestor.exitField(initializerStart, declarationEnd, declarationSourceEnd);
 	}
 	
 	@Override
 	public boolean visit(MixinDeclaration node) {
-		int parentType = node.getParent().getNodeType(); 
-		if (parentType == ASTNode.AGGREGATE_DECLARATION || parentType == ASTNode.TEMPLATE_DECLARATION) {
-			FieldInfo info = new FieldInfo();
-			info.annotationPositions = new long[0];
-			info.categories = new char[0][];
-			info.declarationStart = node.getStartPosition();
-			info.modifiers = getFlags(node.modifiers());
-			info.modifiers |= Flags.AccMixin;
+		FieldInfo info = new FieldInfo();
+		info.annotationPositions = NO_LONG;
+		info.categories = CharOperation.NO_CHAR_CHAR;
+		info.declarationStart = startOf(node);
+		info.modifiers = getFlags(node.modifiers());
+		info.modifiers |= Flags.AccMixin;
+		if (node.getName() != null) {
 			info.name = node.getName().getIdentifier().toCharArray();
-			info.nameSourceEnd = node.getName().getStartPosition() + node.getName().getLength() - 1;
-			info.nameSourceStart = node.getName().getStartPosition();
-			info.type = node.getType().toString().toCharArray();
-			
-			requestor.enterField(info);
-		}		
+			info.nameSourceStart = startOf(node.getName());
+			info.nameSourceEnd = endOf(node.getName());				
+		} else {
+			info.name = CharOperation.NO_CHAR;
+		}
+		info.type = node.getType().toString().toCharArray();
+		
+		requestor.enterField(info);
 		return false;
 	}
 	
 	@Override
 	public void endVisit(MixinDeclaration node) {
-		int parentType = node.getParent().getNodeType(); 
-		if (parentType == ASTNode.AGGREGATE_DECLARATION || parentType == ASTNode.TEMPLATE_DECLARATION) {
-			int initializerStart = node.getName().getStartPosition() + node.getLength() - 1;
-			int declarationSourceEnd = node.getStartPosition() + node.getLength() - 1;
-			
-			requestor.exitField(initializerStart, declarationSourceEnd, declarationSourceEnd);
-		}
+		int declarationSourceEnd = endOf(node);
+		int initializerStart = node.getName() == null ? declarationSourceEnd - 1 : endOf(node.getName());			
+		
+		requestor.exitField(initializerStart, declarationSourceEnd, declarationSourceEnd);
 	}
 	
 	@Override
 	public boolean visit(EnumMember node) {
 		FieldInfo info = new FieldInfo();
-		info.annotationPositions = new long[0];
-		info.categories = new char[0][];
-		info.declarationStart = node.getStartPosition();
+		info.annotationPositions = NO_LONG;
+		info.categories = CharOperation.NO_CHAR_CHAR;
+		info.declarationStart = startOf(node);
 		info.modifiers = Flags.AccEnum;
 		info.name = node.getName().getIdentifier().toCharArray();
-		info.nameSourceEnd = node.getName().getStartPosition() + node.getName().getLength() - 1;
-		info.nameSourceStart = node.getName().getStartPosition();
+		info.nameSourceStart = startOf(node.getName());
+		info.nameSourceEnd = endOf(node.getName());		
 		
 		EnumDeclaration enumDeclaration = (EnumDeclaration) node.getParent();
 		if (enumDeclaration.getBaseType() != null) {
@@ -565,45 +560,33 @@ public class SourceElementParser extends ASTVisitor {
 	
 	@Override
 	public void endVisit(EnumMember node) {
-		int initializerStart = node.getValue() == null ? - 1 : node.getValue().getStartPosition();
-		int declarationEnd = node.getName().getStartPosition() + node.getName().getLength() - 1;
-		int declarationSourceEnd = node.getStartPosition() + node.getLength() - 1;
+		int initializerStart = node.getValue() == null ? - 1 : startOf(node.getValue());
+		int declarationEnd = endOf(node.getName());
+		int declarationSourceEnd = endOf(node);
 		
 		requestor.exitField(initializerStart, declarationEnd, declarationSourceEnd);
 	}
 	
 	@Override
 	public boolean visit(InvariantDeclaration node) {
-		int parentType = node.getParent().getNodeType(); 
-		if (parentType == ASTNode.AGGREGATE_DECLARATION || parentType == ASTNode.TEMPLATE_DECLARATION) {
-			requestor.enterInitializer(node.getStartPosition(), getFlags(node.modifiers()) | Flags.AccInvariant);
-		}
+		requestor.enterInitializer(startOf(node), getFlags(node.modifiers()) | Flags.AccInvariant);
 		return false;
 	}
 	
 	@Override
 	public void endVisit(InvariantDeclaration node) {
-		int parentType = node.getParent().getNodeType(); 
-		if (parentType == ASTNode.AGGREGATE_DECLARATION || parentType == ASTNode.TEMPLATE_DECLARATION) {
-			requestor.exitInitializer(node.getStartPosition() + node.getLength() - 1);
-		}
+		requestor.exitInitializer(endOf(node));
 	}
 	
 	@Override
 	public boolean visit(UnitTestDeclaration node) {
-		int parentType = node.getParent().getNodeType(); 
-		if (parentType == ASTNode.AGGREGATE_DECLARATION || parentType == ASTNode.TEMPLATE_DECLARATION) {
-			requestor.enterInitializer(node.getStartPosition(), getFlags(node.modifiers()) | Flags.AccUnitTest);
-		}
+		requestor.enterInitializer(startOf(node), getFlags(node.modifiers()) | Flags.AccUnitTest);
 		return false;
 	}
 	
 	@Override
 	public void endVisit(UnitTestDeclaration node) {
-		int parentType = node.getParent().getNodeType(); 
-		if (parentType == ASTNode.AGGREGATE_DECLARATION || parentType == ASTNode.TEMPLATE_DECLARATION) {
-			requestor.exitInitializer(node.getStartPosition() + node.getLength() - 1);
-		}
+		requestor.exitInitializer(endOf(node));
 	}
 	
 }

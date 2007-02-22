@@ -106,7 +106,9 @@ public interface ISourceElementRequestor {
 	 * @param modifiers
 	 *                   can be set to static from 1.5 on.
 	 */
-	void acceptImport(int declarationStart, int declarationEnd, char[][] tokens, boolean onDemand, int modifiers);
+	//void acceptImport(int declarationStart, int declarationEnd, char[][] tokens, boolean onDemand, int modifiers);
+	
+	void acceptImport(int declarationStart, int declarationEnd, String displayString, boolean onDemand, int modifiers);
 
 	/*
 	 * Table of line separator position. This table is passed once at the end of

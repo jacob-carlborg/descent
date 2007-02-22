@@ -2,6 +2,7 @@ package descent.internal.core.parser;
 
 import descent.core.dom.Expression;
 import descent.core.dom.Type;
+import descent.core.dom.TypeAdapter;
 
 /**
  * Interface that encapsulates the basic functionality provided

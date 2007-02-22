@@ -112,8 +112,10 @@ protected CompilationUnitStructureRequestor(ICompilationUnit unit, CompilationUn
 /**
  * @see ISourceElementRequestor
  */
+/*
 public void acceptImport(int declarationStart, int declarationEnd, char[][] tokens, boolean onDemand, int modifiers) {
 	JavaElement parentHandle= (JavaElement) this.handleStack.peek();
+	// TODO JDT need an import container in every declaration container 
 	if (!(parentHandle.getElementType() == IJavaElement.COMPILATION_UNIT)) {
 		Assert.isTrue(false); // Should not happen
 	}
@@ -140,6 +142,38 @@ public void acceptImport(int declarationStart, int declarationEnd, char[][] toke
 	addToChildren(this.importContainerInfo, handle);
 	this.newElements.put(handle, info);
 }
+*/
+
+public void acceptImport(int declarationStart, int declarationEnd, String displayString, boolean onDemand, int modifiers) {
+	JavaElement parentHandle= (JavaElement) this.handleStack.peek();
+	// TODO JDT need an import container in every declaration container 
+	if (!(parentHandle.getElementType() == IJavaElement.COMPILATION_UNIT)) {
+		Assert.isTrue(false); // Should not happen
+	}
+
+	ICompilationUnit parentCU= (ICompilationUnit)parentHandle;
+	//create the import container and its info
+	ImportContainer importContainer= (ImportContainer)parentCU.getImportContainer();
+	if (this.importContainerInfo == null) {
+		this.importContainerInfo = new JavaElementInfo();
+		JavaElementInfo parentInfo = (JavaElementInfo) this.infoStack.peek();
+		addToChildren(parentInfo, importContainer);
+		this.newElements.put(importContainer, this.importContainerInfo);
+	}
+	
+	String elementName = JavaModelManager.getJavaModelManager().intern(displayString);
+	ImportDeclaration handle = new ImportDeclaration(importContainer, elementName, onDemand);
+	resolveDuplicates(handle);
+	
+	ImportDeclarationElementInfo info = new ImportDeclarationElementInfo();
+	info.setSourceRangeStart(declarationStart);
+	info.setSourceRangeEnd(declarationEnd);
+	info.setFlags(modifiers);
+
+	addToChildren(this.importContainerInfo, handle);
+	this.newElements.put(handle, info);
+}
+
 /*
  * Table of line separator position. This table is passed once at the end
  * of the parse action, so as to allow computation of normalized ranges.
@@ -224,16 +258,16 @@ public void enterConstructor(MethodInfo methodInfo) {
  */
 public void enterField(FieldInfo fieldInfo) {
 
-	SourceTypeElementInfo parentInfo = (SourceTypeElementInfo) this.infoStack.peek();
+	JavaElementInfo parentInfo = (JavaElementInfo) this.infoStack.peek();
 	JavaElement parentHandle= (JavaElement) this.handleStack.peek();
 	SourceField handle = null;
-	if (parentHandle.getElementType() == IJavaElement.TYPE) {
+	//if (parentHandle.getElementType() == IJavaElement.TYPE) {
 		String fieldName = JavaModelManager.getJavaModelManager().intern(new String(fieldInfo.name));
 		handle = new SourceField(parentHandle, fieldName);
-	}
-	else {
-		Assert.isTrue(false); // Should not happen
-	}
+	//}
+	//else {
+	//	Assert.isTrue(false); // Should not happen
+	//}
 	resolveDuplicates(handle);
 	
 	SourceFieldElementInfo info = new SourceFieldElementInfo();
@@ -247,7 +281,7 @@ public void enterField(FieldInfo fieldInfo) {
 	this.unitInfo.addAnnotationPositions(handle, fieldInfo.annotationPositions);
 
 	addToChildren(parentInfo, handle);
-	parentInfo.addCategories(handle, fieldInfo.categories);
+	//parentInfo.addCategories(handle, fieldInfo.categories);
 	this.newElements.put(handle, info);
 
 	this.infoStack.push(info);
@@ -263,12 +297,12 @@ public void enterInitializer(
 		JavaElement parentHandle= (JavaElement) this.handleStack.peek();
 		Initializer handle = null;
 		
-		if (parentHandle.getElementType() == IJavaElement.TYPE) {
-			handle = new Initializer(parentHandle, 1);
-		}
-		else {
-			Assert.isTrue(false); // Should not happen
-		}
+		//if (parentHandle.getElementType() == IJavaElement.TYPE) {
+		handle = new Initializer(parentHandle, 1);
+		//}
+		//else {
+		//Assert.isTrue(false); // Should not happen
+		//}
 		resolveDuplicates(handle);
 		
 		InitializerElementInfo info = new InitializerElementInfo();
@@ -286,7 +320,7 @@ public void enterInitializer(
  */
 public void enterMethod(MethodInfo methodInfo) {
 
-	SourceTypeElementInfo parentInfo = (SourceTypeElementInfo) this.infoStack.peek();
+	JavaElementInfo parentInfo = (JavaElementInfo) this.infoStack.peek();
 	JavaElement parentHandle= (JavaElement) this.handleStack.peek();
 	SourceMethod handle = null;
 
@@ -302,13 +336,13 @@ public void enterMethod(MethodInfo methodInfo) {
 	}
 	
 	String[] parameterTypeSigs = convertTypeNamesToSigs(methodInfo.parameterTypes);
-	if (parentHandle.getElementType() == IJavaElement.TYPE) {
+	//if (parentHandle.getElementType() == IJavaElement.TYPE) {
 		String selector = JavaModelManager.getJavaModelManager().intern(new String(methodInfo.name));
 		handle = new SourceMethod(parentHandle, selector, parameterTypeSigs);
-	}
-	else {
-		Assert.isTrue(false); // Should not happen
-	}
+	//}
+	//else {
+	//	Assert.isTrue(false); // Should not happen
+	//}
 	resolveDuplicates(handle);
 	
 	SourceMethodElementInfo info;
@@ -329,6 +363,7 @@ public void enterMethod(MethodInfo methodInfo) {
 	char[][] parameterNames = methodInfo.parameterNames;
 	for (int i = 0, length = parameterNames.length; i < length; i++)
 		parameterNames[i] = manager.intern(parameterNames[i]);
+	info.setRawParameterTypes(methodInfo.parameterTypes);
 	info.setArgumentNames(parameterNames);
 	char[] returnType = methodInfo.returnType == null ? new char[]{'v', 'o','i', 'd'} : methodInfo.returnType;
 	info.setReturnType(manager.intern(returnType));
@@ -338,7 +373,7 @@ public void enterMethod(MethodInfo methodInfo) {
 		exceptionTypes[i] = manager.intern(exceptionTypes[i]);
 	this.unitInfo.addAnnotationPositions(handle, methodInfo.annotationPositions);
 	addToChildren(parentInfo, handle);
-	parentInfo.addCategories(handle, methodInfo.categories);
+	//parentInfo.addCategories(handle, methodInfo.categories);
 	this.newElements.put(handle, info);
 	this.infoStack.push(info);
 	this.handleStack.push(handle);

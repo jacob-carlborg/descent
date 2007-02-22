@@ -86,7 +86,6 @@ import descent.internal.core.parser.LINK;
 import descent.internal.core.parser.StaticIfCondition;
 import descent.internal.core.parser.TOK;
 import descent.internal.core.parser.Token;
-import descent.internal.core.parser.TypeAdapter;
 import descent.internal.core.parser.VersionCondition;
 import descent.internal.core.parser.global;
 
@@ -3699,7 +3698,6 @@ class Parser extends Lexer {
 					break;
 
 				case TOKsemicolon:
-					s = null;
 					// Create AsmStatement from list of tokens we've saved
 					s = newAsmStatement(ast, toklist);
 					if (toklist.isEmpty()) {
@@ -5682,7 +5680,7 @@ class Parser extends Lexer {
 	
 	private Modifier newModifierFromCurrentToken() {
 		Modifier modifier = new Modifier(ast);
-		modifier.setModifierKeyword(ModifierKeyword.toKeyword(token.toString()));
+		modifier.setModifierKeyword(ModifierKeyword.toKeyword(token.value.toString()));
 		modifier.setSourceRange(token.ptr, token.len);
 		return modifier;
 	}

@@ -1,19 +1,7 @@
-package descent.internal.core.parser;
+package descent.core.dom;
 
-import descent.core.dom.ArrayType;
-import descent.core.dom.AssociativeArrayType;
-import descent.core.dom.DelegateType;
-import descent.core.dom.DynamicArrayType;
-import descent.core.dom.Expression;
-import descent.core.dom.PointerType;
-import descent.core.dom.PrimitiveType;
-import descent.core.dom.QualifiedType;
-import descent.core.dom.SimpleType;
-import descent.core.dom.SliceType;
-import descent.core.dom.StaticArrayType;
-import descent.core.dom.TemplateType;
-import descent.core.dom.Type;
-import descent.core.dom.TypeofType;
+import descent.internal.core.parser.IDmdType;
+import descent.internal.core.parser.TY;
 
 /**
  * Adapts an object to an IDmdType.
@@ -144,7 +132,18 @@ public abstract class TypeAdapter {
 				return type.getComponentType();
 			}
 			public void setNext(Type dmdType) {
+				// Must preserve the parent of the old assigned type
+				Type oldType = type.getComponentType();
+				ASTNode parent = null;
+				StructuralPropertyDescriptor locationInParent = null;
+				if (oldType != null) {
+					parent = oldType.getParent();
+					locationInParent = oldType.getLocationInParent();
+				}
 				type.setComponentType(dmdType);
+				if (oldType != null) {
+					oldType.setParent(parent, locationInParent);
+				}
 			}
 			public Expression toExpression() {
 				return null;
@@ -200,7 +199,18 @@ public abstract class TypeAdapter {
 				return type.getComponentType();
 			}
 			public void setNext(Type dmdType) {
+				// Must preserve the parent of the old assigned type
+				Type oldType = type.getComponentType();
+				ASTNode parent = null;
+				StructuralPropertyDescriptor locationInParent = null;
+				if (oldType != null) {
+					parent = oldType.getParent();
+					locationInParent = oldType.getLocationInParent();
+				}
 				type.setComponentType(dmdType);
+				if (oldType != null) {
+					oldType.setParent(parent, locationInParent);
+				}
 			}
 			public Expression toExpression() {
 				return null;

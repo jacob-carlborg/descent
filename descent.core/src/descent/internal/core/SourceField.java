@@ -133,6 +133,13 @@ public String getTypeSignature() throws JavaModelException {
 	SourceFieldElementInfo info = (SourceFieldElementInfo) getElementInfo();
 	return info.getTypeSignature();
 }
+/**
+ * @see IField
+ */
+public String getRawType() throws JavaModelException {
+	SourceFieldElementInfo info = (SourceFieldElementInfo) getElementInfo();
+	return new String(info.typeName);
+}
 /* (non-Javadoc)
  * @see descent.core.IField#isEnumConstant()
  */

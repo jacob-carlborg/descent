@@ -269,11 +269,20 @@ public class JavaElementSorter extends ViewerSorter {
 		}
 		
 		if (e1 instanceof IMethod) {
-			String[] params1= ((IMethod) e1).getParameterTypes();
-			String[] params2= ((IMethod) e2).getParameterTypes();
+			String[] params1, params2;
+			//String[] params1= ((IMethod) e1).getParameterTypes();
+			//String[] params2= ((IMethod) e2).getParameterTypes();
+			try {
+				params1= ((IMethod) e1).getRawParameterTypes();
+				params2= ((IMethod) e2).getRawParameterTypes();
+			} catch (JavaModelException e) {
+				params1= ((IMethod) e1).getParameterTypes();
+				params2= ((IMethod) e2).getParameterTypes();
+			}
 			int len= Math.min(params1.length, params2.length);
 			for (int i = 0; i < len; i++) {
-				cmp= getNewCollator().compare(Signature.toString(params1[i]), Signature.toString(params2[i]));
+				//cmp= getNewCollator().compare(Signature.toString(params1[i]), Signature.toString(params2[i]));
+				cmp= getNewCollator().compare(params1[i], params2[i]);
 				if (cmp != 0) {
 					return cmp;
 				}

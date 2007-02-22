@@ -37,6 +37,8 @@ public class Token {
 	
 	@Override
 	public String toString() {
+		if (string != null) return string;
+		
 		if (value == TOK.TOKidentifier) {
 			return ident.string;
 		} else {

@@ -497,13 +497,19 @@ public class JavaElementLabels {
 			
 			// return type
 			if (getFlag(flags, M_PRE_RETURNTYPE) && method.exists() && method.isMethod()) {
-				String returnTypeSig= resolvedSig != null ? Signature.getReturnType(resolvedSig) : method.getReturnType();
-				getTypeSignatureLabel(returnTypeSig, flags, buf);
+				if (resolvedSig != null) {
+					String returnTypeSig = Signature.getReturnType(resolvedSig);
+					getTypeSignatureLabel(returnTypeSig, flags, buf);
+				} else {
+					buf.append(method.getRawReturnType());
+				}
+				//String returnTypeSig= resolvedSig != null ? Signature.getReturnType(resolvedSig) : method.getReturnType();
+				//getTypeSignatureLabel(returnTypeSig, flags, buf);
 				buf.append(' ');
 			}
 			
 			// qualification
-			if (getFlag(flags, M_FULLY_QUALIFIED)) {
+			if (getFlag(flags, M_FULLY_QUALIFIED) && method.getDeclaringType() != null) {
 				getTypeLabel(method.getDeclaringType(), T_FULLY_QUALIFIED | (flags & QUALIFIER_FLAGS), buf);
 				buf.append('.');
 			}
@@ -560,7 +566,8 @@ public class JavaElementLabels {
 						types= Signature.getParameterTypes(resolvedKey.toSignature());
 					} else {
 					*/
-						types= method.getParameterTypes();
+						//types= method.getParameterTypes();
+						types= method.getRawParameterTypes();
 					// }
 					nParams= types.length;
 					/*
@@ -596,7 +603,8 @@ public class JavaElementLabels {
 							}
 							buf.append(ELLIPSIS_STRING);
 						} else {
-							getTypeSignatureLabel(paramSig, flags, buf);
+							// getTypeSignatureLabel(paramSig, flags, buf);
+							buf.append(paramSig);
 						}
 					}
 					if (names != null) {
@@ -703,20 +711,35 @@ public class JavaElementLabels {
 			}
 			
 			// qualification
-			if (getFlag(flags, F_FULLY_QUALIFIED)) {
+			if (getFlag(flags, F_FULLY_QUALIFIED) && field.getDeclaringType() != null) {
 				getTypeLabel(field.getDeclaringType(), T_FULLY_QUALIFIED | (flags & QUALIFIER_FLAGS), buf);
 				buf.append('.');
 			}
-			buf.append(field.getElementName());
+			
+			// In case the field is annonymous (like in a mixin)
+			boolean annonymous = false;
+			if (field.getElementName().length() == 0) {
+				buf.append(" "); //$NON-NLS-1$
+				annonymous = true;
+			} else {
+				buf.append(field.getElementName());
+			}
 			
 			if (getFlag(flags, F_APP_TYPE_SIGNATURE) && field.exists() && !Flags.isEnum(field.getFlags())) {
-				buf.append(DECL_STRING);
 				if (getFlag(flags, USE_RESOLVED) && field.isResolved()) {
+					if (!annonymous) {
+						buf.append(DECL_STRING);
+					}
 					/* TODO JDT UI binding
 					getTypeSignatureLabel(new BindingKey(field.getKey()).toSignature(), flags, buf);
 					*/
 				} else {
-					getTypeSignatureLabel(field.getTypeSignature(), flags, buf);
+					//getTypeSignatureLabel(field.getTypeSignature(), flags, buf);
+					String rawType = field.getRawType();
+					if (!annonymous && rawType.length() > 0) {
+						buf.append(DECL_STRING);
+						buf.append(rawType);
+					}					
 				}
 			}
 

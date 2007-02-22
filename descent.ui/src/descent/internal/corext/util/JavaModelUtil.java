@@ -492,6 +492,7 @@ public final class JavaModelUtil {
 	 * @return <code>true</code> iff the type is an interface or an annotation
 	 */
 	public static boolean isInterfaceOrAnnotation(IType type) throws JavaModelException {
+		if (type == null) return false;
 		return type.isInterface();
 	}
 		

@@ -190,7 +190,7 @@ public class JavaElementImageProvider {
 					IMethod method= (IMethod) element;
 					IType declType= method.getDeclaringType();
 					int flags= method.getFlags();
-					if (declType.isEnum() && isDefaultFlag(flags) && method.isConstructor())
+					if (declType != null && declType.isEnum() && isDefaultFlag(flags) && method.isConstructor())
 						return JavaPluginImages.DESC_MISC_PRIVATE;
 					return getMethodImageDescriptor(JavaModelUtil.isInterfaceOrAnnotation(declType), flags);				
 				}

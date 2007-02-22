@@ -37,6 +37,12 @@ public abstract class SourceMethodElementInfo extends MemberElementInfo /* imple
 	 * For example, Hashtable or java.util.Hashtable.
 	 */
 	protected char[][] exceptionTypes;
+	
+	/**
+	 * TODO JDT documentation missing
+	 * The raw parameter typed for the method.
+	 */
+	protected char[][] parameterTypes;
 
 	/*
 	 * The type parameters of this source type. Empty if none.
@@ -75,6 +81,9 @@ public char[][] getTypeParameterNames() {
 }
 protected void setArgumentNames(char[][] names) {
 	this.argumentNames = names;
+}
+protected void setRawParameterTypes(char[][] types) {
+	this.parameterTypes = types;
 }
 protected void setExceptionTypeNames(char[][] types) {
 	this.exceptionTypes = types;

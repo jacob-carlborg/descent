@@ -4,6 +4,8 @@ import descent.core.dom.ASTNode;
 import descent.core.dom.ArrayType;
 import descent.core.dom.AssociativeArrayType;
 import descent.core.dom.DelegateType;
+import descent.core.dom.PointerType;
+import descent.core.dom.PrimitiveType;
 import descent.core.dom.VariableDeclaration;
 import descent.core.dom.VariableDeclarationFragment;
 
@@ -76,6 +78,16 @@ public class VariableDeclaration_Test extends Parser_Test {
 		assertEquals("x", var.fragments().get(0).getName().getFullyQualifiedName());
 		assertPosition(var.fragments().get(0).getName(), 7, 1);
 		assertPosition(var, 1, 15);
+		
+		// Parents are consistents
+		ArrayType arrayType = (ArrayType) var.getType();
+		PointerType pointerType = (PointerType) arrayType.getComponentType();
+		ArrayType arrayType2 = (ArrayType) pointerType.getComponentType();
+		PrimitiveType primitiveType = (PrimitiveType) arrayType2.getComponentType();
+		
+		assertEquals(arrayType2, primitiveType.getParent());
+		assertEquals(pointerType, arrayType2.getParent());
+		assertEquals(arrayType, pointerType.getParent());
 	}
 	
 	public void testCStyle5() {

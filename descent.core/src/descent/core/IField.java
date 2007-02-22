@@ -121,6 +121,13 @@ String getKey();
  */
 String getTypeSignature() throws JavaModelException;
 /**
+ * Returns the type of this field as found in the source code.
+ * @return the type of this field
+ * @throws JavaModelException if this element does not exist or if an
+ *      exception occurs while accessing its corresponding resource
+ */
+String getRawType() throws JavaModelException;
+/**
  * Returns whether this field represents a variable.
  * 
  * @return whether this field represents a variable

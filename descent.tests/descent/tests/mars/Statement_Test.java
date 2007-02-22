@@ -74,23 +74,23 @@ public class Statement_Test extends Parser_Test {
 	}
 	
 	public void testAsmBlockWithStatement() {
-		String s = " asm { mov eax, ebx; }";
+		String s = " asm { mov eax, 1; }";
 		AsmBlock stm = (AsmBlock) parseStatement(s);
 		assertEquals(1, stm.statements().size());
 		
 		AsmStatement asmStatement = (AsmStatement) stm.statements().get(0);
-		assertPosition(asmStatement, 7, 13);
+		assertPosition(asmStatement, 7, 11);
 		
 		assertEquals(4, asmStatement.tokens().size());
 		assertEquals("mov", asmStatement.tokens().get(0).getToken());
 		assertEquals("eax", asmStatement.tokens().get(1).getToken());
 		assertEquals(",", asmStatement.tokens().get(2).getToken());
-		assertEquals("ebx", asmStatement.tokens().get(3).getToken());
+		assertEquals("1", asmStatement.tokens().get(3).getToken());
 		
 		assertPosition(asmStatement.tokens().get(0), 7, 3);
 		assertPosition(asmStatement.tokens().get(1), 11, 3);
 		assertPosition(asmStatement.tokens().get(2), 14, 1);
-		assertPosition(asmStatement.tokens().get(3), 16, 3);
+		assertPosition(asmStatement.tokens().get(3), 16, 1);
 	}
 	
 	public void testAsmBlockWithLabel() {

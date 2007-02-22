@@ -127,6 +127,13 @@ public String[] getParameterNames() throws JavaModelException {
 public String[] getParameterTypes() {
 	return this.parameterTypes;
 }
+/**
+ * @see IMethod
+ */
+public String[] getRawParameterTypes() throws JavaModelException {
+	SourceMethodElementInfo info = (SourceMethodElementInfo) getElementInfo();
+	return CharOperation.toStrings(info.parameterTypes);
+}
 
 public ITypeParameter getTypeParameter(String typeParameterName) {
 	return new TypeParameter(this, typeParameterName);
@@ -184,6 +191,18 @@ public String[] getRawParameterNames() throws JavaModelException {
 public String getReturnType() throws JavaModelException {
 	SourceMethodElementInfo info = (SourceMethodElementInfo) getElementInfo();
 	return Signature.createTypeSignature(info.getReturnTypeName(), false);
+}
+/**
+ * @see IMethod
+ */
+public String getRawReturnType() throws JavaModelException {
+	SourceMethodElementInfo elementInfo = (SourceMethodElementInfo) getElementInfo();
+	if (elementInfo instanceof SourceMethodInfo) {
+		SourceMethodInfo info = (SourceMethodInfo) elementInfo;
+		return new String(info.returnType);
+	} else {
+		return "void";
+	}
 }
 /**
  * @see IMethod
