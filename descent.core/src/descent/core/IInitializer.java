@@ -68,6 +68,26 @@ public interface IInitializer extends IMember {
 	 */
 	boolean isStaticAssert() throws JavaModelException;
 	
+	/**
+	 * Returns whether this initializer represents a debug assignment.
+	 * 
+	 * @return whether this initializer represents a debug assignment
+	 * @exception JavaModelException if this element does not exist or if an
+	 *      exception occurs while accessing its corresponding resource
+	 * @since 3.1
+	 */
+	boolean isDebugAssignment() throws JavaModelException;
+	
+	/**
+	 * Returns whether this initializer represents a version assignment.
+	 * 
+	 * @return whether this initializer represents a version assignment
+	 * @exception JavaModelException if this element does not exist or if an
+	 *      exception occurs while accessing its corresponding resource
+	 * @since 3.1
+	 */
+	boolean isVersionAssignment() throws JavaModelException;
+	
 	
 	
 }

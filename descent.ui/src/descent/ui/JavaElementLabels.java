@@ -812,8 +812,12 @@ public class JavaElementLabels {
 				buf.append(JavaUIMessages.JavaElementLabels_unittest);
 			} else if (initializer.isStaticDestructor()){
 				buf.append(JavaUIMessages.JavaElementLabels_uninitializer);
-			} else {
+			} else if (initializer.isStaticAssert()) {
 				buf.append(JavaUIMessages.JavaElementLabels_static_assert);
+			} else if (initializer.isDebugAssignment()) {
+				buf.append(Messages.format(JavaUIMessages.JavaElementLabels_debug_assignment, initializer.getElementName()));
+			} else {
+				buf.append(Messages.format(JavaUIMessages.JavaElementLabels_version_assignment, initializer.getElementName()));
 			}
 	
 			/*

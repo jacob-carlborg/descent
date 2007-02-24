@@ -28,12 +28,19 @@ import descent.internal.core.util.Util;
  */
 
 /* package */ class Initializer extends Member implements IInitializer {
+	
+private String displayString;
 
 protected Initializer(JavaElement parent, int count) {
+	this(parent, count, "");
+}
+
+protected Initializer(JavaElement parent, int count, String displayString) {
 	super(parent);
 	// 0 is not valid: this first occurrence is occurrence 1.
 	if (count <= 0)
 		throw new IllegalArgumentException();
+	this.displayString = displayString;
 	this.occurrenceCount = count;
 }
 public boolean equals(Object o) {
@@ -81,6 +88,10 @@ public void rename(String newName, boolean force, IProgressMonitor monitor) thro
 public ISourceRange getNameRange() {
 	return null;
 }
+@Override
+public String getElementName() {
+	return displayString;
+}
 /*
  * @see JavaElement#getPrimaryElement(boolean)
  */
@@ -97,7 +108,9 @@ public boolean isStaticConstructor() throws JavaModelException {
 	return !Flags.isStaticDestructor(flags)
 		&& !Flags.isInvariant(flags)
 		&& !Flags.isUnitTest(flags)
-		&& !Flags.isStaticAssert(flags);
+		&& !Flags.isStaticAssert(flags)
+		&& !Flags.isDebugAssignment(flags)
+		&& !Flags.isVersionAssignment(flags);
 }
 public boolean isStaticDestructor() throws JavaModelException {
 	return Flags.isStaticDestructor(getFlags());
@@ -110,6 +123,12 @@ public boolean isUnitTest() throws JavaModelException {
 }
 public boolean isStaticAssert() throws JavaModelException {
 	return Flags.isStaticAssert(getFlags());
+}
+public boolean isVersionAssignment() throws JavaModelException {
+	return Flags.isVersionAssignment(getFlags());
+}
+public boolean isDebugAssignment() throws JavaModelException {
+	return Flags.isDebugAssignment(getFlags());
 }
 /**
  * @private Debugging purposes

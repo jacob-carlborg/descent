@@ -185,8 +185,12 @@ public class JavaElementImageProvider {
 						return JavaPluginImages.DESC_OBJS_INVARIANT;
 					} else if (init.isStaticDestructor()) {
 						return JavaPluginImages.DESC_OBJS_UNITTEST;
-					} else {
+					} else if (init.isStaticAssert()) {
 						return JavaPluginImages.DESC_OBJS_STATIC_ASSERT;
+					} else if (init.isDebugAssignment()) {
+						return JavaPluginImages.DESC_OBJS_DEBUG_ASSIGNMENT;
+					} else {
+						return JavaPluginImages.DESC_OBJS_VERSION_ASSIGNMENT;
 					}
 				case IJavaElement.METHOD: {
 					IMethod method= (IMethod) element;

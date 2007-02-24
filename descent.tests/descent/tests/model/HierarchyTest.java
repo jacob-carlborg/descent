@@ -392,6 +392,8 @@ public class HierarchyTest extends AbstractModelTest {
 		assertFalse(init.isInvariant());
 		assertFalse(init.isUnitTest());
 		assertFalse(init.isStaticAssert());
+		assertFalse(init.isDebugAssignment());
+		assertFalse(init.isVersionAssignment());
 		assertEquals(16, init.getSourceRange().getOffset());
 		assertEquals(29, init.getSourceRange().getLength());
 		assertEquals(16, init.getJavadocRange().getOffset());
@@ -416,6 +418,8 @@ public class HierarchyTest extends AbstractModelTest {
 		assertFalse(init.isInvariant());
 		assertFalse(init.isUnitTest());
 		assertFalse(init.isStaticAssert());
+		assertFalse(init.isDebugAssignment());
+		assertFalse(init.isVersionAssignment());
 		assertEquals(16, init.getSourceRange().getOffset());
 		assertEquals(30, init.getSourceRange().getLength());
 		assertEquals(16, init.getJavadocRange().getOffset());
@@ -440,6 +444,8 @@ public class HierarchyTest extends AbstractModelTest {
 		assertTrue(init.isInvariant());
 		assertFalse(init.isUnitTest());
 		assertFalse(init.isStaticAssert());
+		assertFalse(init.isDebugAssignment());
+		assertFalse(init.isVersionAssignment());
 		assertEquals(16, init.getSourceRange().getOffset());
 		assertEquals(25, init.getSourceRange().getLength());
 		assertEquals(16, init.getJavadocRange().getOffset());
@@ -464,6 +470,8 @@ public class HierarchyTest extends AbstractModelTest {
 		assertFalse(init.isInvariant());
 		assertTrue(init.isUnitTest());
 		assertFalse(init.isStaticAssert());
+		assertFalse(init.isDebugAssignment());
+		assertFalse(init.isVersionAssignment());
 		assertEquals(16, init.getSourceRange().getOffset());
 		assertEquals(24, init.getSourceRange().getLength());
 		assertEquals(16, init.getJavadocRange().getOffset());
@@ -488,11 +496,65 @@ public class HierarchyTest extends AbstractModelTest {
 		assertFalse(init.isInvariant());
 		assertFalse(init.isUnitTest());
 		assertTrue(init.isStaticAssert());
+		assertFalse(init.isDebugAssignment());
+		assertFalse(init.isVersionAssignment());
 		assertEquals(16, init.getSourceRange().getOffset());
 		assertEquals(31, init.getSourceRange().getLength());
 		assertEquals(16, init.getJavadocRange().getOffset());
 		assertEquals(11, init.getJavadocRange().getLength());
 		assertEquals("", init.getElementName());
+		assertNull(init.getNameRange());
+	}
+	
+	public void testDebugAssignment() throws Exception {
+		ICompilationUnit unit = createCompilationUnit("test.d", " class Clazz1 { /** hola */ debug = 2; }");
+		
+		IType[] types = unit.getTypes();
+		assertEquals(1, types.length);
+		
+		IType type = types[0];
+		IInitializer[] initializers = type.getInitializers();
+		assertEquals(1, initializers.length);
+		
+		IInitializer init = initializers[0];
+		assertFalse(init.isStaticConstructor());
+		assertFalse(init.isStaticDestructor());
+		assertFalse(init.isInvariant());
+		assertFalse(init.isUnitTest());
+		assertFalse(init.isStaticAssert());
+		assertTrue(init.isDebugAssignment());
+		assertFalse(init.isVersionAssignment());
+		assertEquals(16, init.getSourceRange().getOffset());
+		assertEquals(22, init.getSourceRange().getLength());
+		assertEquals(16, init.getJavadocRange().getOffset());
+		assertEquals(11, init.getJavadocRange().getLength());
+		assertEquals("2", init.getElementName());
+		assertNull(init.getNameRange());
+	}
+	
+	public void testVersionAssignment() throws Exception {
+		ICompilationUnit unit = createCompilationUnit("test.d", " class Clazz1 { /** hola */ version = 2; }");
+		
+		IType[] types = unit.getTypes();
+		assertEquals(1, types.length);
+		
+		IType type = types[0];
+		IInitializer[] initializers = type.getInitializers();
+		assertEquals(1, initializers.length);
+		
+		IInitializer init = initializers[0];
+		assertFalse(init.isStaticConstructor());
+		assertFalse(init.isStaticDestructor());
+		assertFalse(init.isInvariant());
+		assertFalse(init.isUnitTest());
+		assertFalse(init.isStaticAssert());
+		assertFalse(init.isDebugAssignment());
+		assertTrue(init.isVersionAssignment());
+		assertEquals(16, init.getSourceRange().getOffset());
+		assertEquals(24, init.getSourceRange().getLength());
+		assertEquals(16, init.getJavadocRange().getOffset());
+		assertEquals(11, init.getJavadocRange().getLength());
+		assertEquals("2", init.getElementName());
 		assertNull(init.getNameRange());
 	}
 	

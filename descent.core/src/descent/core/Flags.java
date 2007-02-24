@@ -208,6 +208,18 @@ public final class Flags {
 	 * @since 2.0
 	 */
 	public static final int AccStaticAssert = 0x00080000;
+	
+	/**
+	 * Debug assignment property flag.
+	 * @since 2.0
+	 */
+	public static final int AccDebugAssignment = 0x00100000;
+	
+	/**
+	 * Version assignment property flag.
+	 * @since 2.0
+	 */
+	public static final int AccVersionAssignment = 0x00200000;
 
 	/**
 	 * Not instantiable.
@@ -527,6 +539,26 @@ public final class Flags {
 	}
 	
 	/**
+	 * Returns whether the given integer includes the <code>version assignment</code> modifier.
+	 *
+	 * @param flags the flags
+	 * @return <code>true</code> if the <code>version assignment</code> modifier is included
+	 */
+	public static boolean isVersionAssignment(int flags) {
+		return (flags & AccVersionAssignment) != 0;
+	}
+	
+	/**
+	 * Returns whether the given integer includes the <code>debug assignment</code> modifier.
+	 *
+	 * @param flags the flags
+	 * @return <code>true</code> if the <code>debug assignment</code> modifier is included
+	 */
+	public static boolean isDebugAssignment(int flags) {
+		return (flags & AccDebugAssignment) != 0;
+	}
+	
+	/**
 	 * Returns a standard string describing the given modifier flags.
 	 * @param flags the flags
 	 * @return the standard string representation of the given flags
@@ -596,6 +628,10 @@ public final class Flags {
 			sb.append("unittest "); //$NON-NLS-1$
 		if (isStaticAssert(flags))
 			sb.append("static assert "); //$NON-NLS-1$
+		if (isVersionAssignment(flags))
+			sb.append("version= "); //$NON-NLS-1$
+		if (isDebugAssignment(flags))
+			sb.append("debug= "); //$NON-NLS-1$
 
 		int len = sb.length();
 		if (len == 0)

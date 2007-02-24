@@ -26,6 +26,7 @@ import descent.core.dom.Argument;
 import descent.core.dom.BaseClass;
 import descent.core.dom.CompilationUnit;
 import descent.core.dom.ConstructorDeclaration;
+import descent.core.dom.DebugAssignment;
 import descent.core.dom.EnumDeclaration;
 import descent.core.dom.EnumMember;
 import descent.core.dom.FunctionDeclaration;
@@ -35,8 +36,6 @@ import descent.core.dom.InvariantDeclaration;
 import descent.core.dom.MixinDeclaration;
 import descent.core.dom.Modifier;
 import descent.core.dom.ModuleDeclaration;
-import descent.core.dom.Name;
-import descent.core.dom.QualifiedName;
 import descent.core.dom.SimpleName;
 import descent.core.dom.StaticAssert;
 import descent.core.dom.TemplateDeclaration;
@@ -46,6 +45,7 @@ import descent.core.dom.TypedefDeclarationFragment;
 import descent.core.dom.UnitTestDeclaration;
 import descent.core.dom.VariableDeclaration;
 import descent.core.dom.VariableDeclarationFragment;
+import descent.core.dom.VersionAssignment;
 import descent.internal.compiler.ISourceElementRequestor.FieldInfo;
 import descent.internal.compiler.ISourceElementRequestor.MethodInfo;
 import descent.internal.compiler.ISourceElementRequestor.TypeInfo;
@@ -103,31 +103,6 @@ public class SourceElementParser extends ASTVisitor {
 	
 	private int endOf(ASTNode node) {
 		return startOf(node) + compilationUnit.getExtendedLength(node) - 1;
-	}
-	
-	private char[][] getTokens(Name name) {
-		int depth = getDepth(name);
-		char[][] tokens = new char[depth][];
-		
-		depth--;		
-		while(name.isQualifiedName()) {
-			QualifiedName qName = (QualifiedName) name;
-			tokens[depth] = qName.getName().getIdentifier().toCharArray();
-			name = qName.getQualifier();
-			depth--;
-		}
-		
-		tokens[depth] = name.getFullyQualifiedName().toCharArray();
-		
-		return tokens;
-	}
-	
-	private int getDepth(Name name) {
-		if (name.isSimpleName()) {
-			return 1;
-		} else {
-			return 1 + getDepth(((QualifiedName) name).getQualifier());
-		}
 	}
 	
 	private int getFlags(List<Modifier> modifiers) {
@@ -321,9 +296,9 @@ public class SourceElementParser extends ASTVisitor {
 	@Override
 	public boolean visit(ConstructorDeclaration node) {
 		if (node.getKind() == ConstructorDeclaration.Kind.STATIC_CONSTRUCTOR) {
-			requestor.enterInitializer(startOf(node), getFlags(node.modifiers()));
+			requestor.enterInitializer(startOf(node), getFlags(node.modifiers()), CharOperation.NO_CHAR);
 		} else if (node.getKind() == ConstructorDeclaration.Kind.STATIC_DESTRUCTOR) {
-			requestor.enterInitializer(startOf(node), getFlags(node.modifiers()) | Flags.AccStaticDestructor);
+			requestor.enterInitializer(startOf(node), getFlags(node.modifiers()) | Flags.AccStaticDestructor, CharOperation.NO_CHAR);
 		} else {
 			MethodInfo info = new MethodInfo();
 			info.annotationPositions = NO_LONG;
@@ -426,8 +401,8 @@ public class SourceElementParser extends ASTVisitor {
 		VariableDeclaration var = (VariableDeclaration) node.getParent();
 		
 		int initializerStart = node.getInitializer() == null ? - 1 : startOf(node.getInitializer());
-		int declarationSourceEnd = endOf(node.getName());
-		int declarationEnd = endOf(var);
+		int declarationSourceEnd = endOf(var);
+		int declarationEnd = endOf(node.getName());
 		
 		requestor.exitField(initializerStart, declarationEnd, declarationSourceEnd);
 	}
@@ -464,9 +439,10 @@ public class SourceElementParser extends ASTVisitor {
 		AliasDeclaration var = (AliasDeclaration) node.getParent();
 		
 		int initializerStart = endOf(node.getName());
-		int declarationSourceEnd = endOf(node.getName());
+		int declarationSourceEnd = endOf(var);
+		int declarationEnd = endOf(node.getName());
 		
-		requestor.exitField(initializerStart, declarationSourceEnd, declarationSourceEnd);
+		requestor.exitField(initializerStart, declarationEnd, declarationSourceEnd);
 	}
 	
 	@Override
@@ -501,8 +477,8 @@ public class SourceElementParser extends ASTVisitor {
 		TypedefDeclaration var = (TypedefDeclaration) node.getParent();
 		
 		int initializerStart = node.getInitializer() == null ? - 1 : startOf(node.getInitializer());
-		int declarationSourceEnd = endOf(node.getName());
-		int declarationEnd = endOf(var);
+		int declarationSourceEnd = endOf(var);
+		int declarationEnd = endOf(node.getName());
 		
 		requestor.exitField(initializerStart, declarationEnd, declarationSourceEnd);
 	}
@@ -570,7 +546,7 @@ public class SourceElementParser extends ASTVisitor {
 	
 	@Override
 	public boolean visit(InvariantDeclaration node) {
-		requestor.enterInitializer(startOf(node), getFlags(node.modifiers()) | Flags.AccInvariant);
+		requestor.enterInitializer(startOf(node), getFlags(node.modifiers()) | Flags.AccInvariant, CharOperation.NO_CHAR);
 		return false;
 	}
 	
@@ -581,7 +557,7 @@ public class SourceElementParser extends ASTVisitor {
 	
 	@Override
 	public boolean visit(UnitTestDeclaration node) {
-		requestor.enterInitializer(startOf(node), getFlags(node.modifiers()) | Flags.AccUnitTest);
+		requestor.enterInitializer(startOf(node), getFlags(node.modifiers()) | Flags.AccUnitTest, CharOperation.NO_CHAR);
 		return false;
 	}
 	
@@ -592,12 +568,34 @@ public class SourceElementParser extends ASTVisitor {
 	
 	@Override
 	public boolean visit(StaticAssert node) {
-		requestor.enterInitializer(startOf(node), getFlags(node.modifiers()) | Flags.AccStaticAssert);
+		requestor.enterInitializer(startOf(node), getFlags(node.modifiers()) | Flags.AccStaticAssert, CharOperation.NO_CHAR);
 		return false;
 	}
 	
 	@Override
 	public void endVisit(StaticAssert node) {
+		requestor.exitInitializer(endOf(node));
+	}
+	
+	@Override
+	public boolean visit(DebugAssignment node) {
+		requestor.enterInitializer(startOf(node), getFlags(node.modifiers()) | Flags.AccDebugAssignment, node.getVersion().getValue().toCharArray());
+		return false;
+	}
+	
+	@Override
+	public void endVisit(DebugAssignment node) {
+		requestor.exitInitializer(endOf(node));
+	}
+	
+	@Override
+	public boolean visit(VersionAssignment node) {
+		requestor.enterInitializer(startOf(node), getFlags(node.modifiers()) | Flags.AccVersionAssignment, node.getVersion().getValue().toCharArray());
+		return false;
+	}
+	
+	@Override
+	public void endVisit(VersionAssignment node) {
 		requestor.exitInitializer(endOf(node));
 	}
 	

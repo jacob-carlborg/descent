@@ -139,7 +139,7 @@ public interface ISourceElementRequestor {
 
 	void enterField(FieldInfo fieldInfo);
 	
-	void enterInitializer(int declarationStart, int modifiers);
+	void enterInitializer(int declarationStart, int modifiers, char[] displayString);
 	
 	void enterMethod(MethodInfo methodInfo);
 	

@@ -269,13 +269,19 @@ public void enterField(FieldInfo fieldInfo) {
  */
 public void enterInitializer(
 	int declarationSourceStart,
-	int modifiers) {
+	int modifiers,
+	char[] displayString) {
 		JavaElementInfo parentInfo = (JavaElementInfo) this.infoStack.peek();
 		JavaElement parentHandle= (JavaElement) this.handleStack.peek();
 		Initializer handle = null;
 		
 		//if (parentHandle.getElementType() == IJavaElement.TYPE) {
-		handle = new Initializer(parentHandle, 1);
+		if (displayString.length == 0) {
+			handle = new Initializer(parentHandle, 1);
+		} else {
+			String displayStringStr = JavaModelManager.getJavaModelManager().intern(new String(displayString));
+			handle = new Initializer(parentHandle, 1, displayStringStr);
+		}
 		//}
 		//else {
 		//Assert.isTrue(false); // Should not happen
