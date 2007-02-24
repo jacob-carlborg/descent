@@ -202,6 +202,7 @@ import descent.ui.JavaUI;
 import descent.ui.PreferenceConstants;
 import descent.ui.actions.IJavaEditorActionDefinitionIds;
 import descent.ui.actions.OpenEditorActionGroup;
+import descent.ui.actions.OpenViewActionGroup;
 import descent.ui.text.IJavaPartitions;
 import descent.ui.text.JavaSourceViewerConfiguration;
 import descent.ui.text.JavaTextTools;
@@ -1756,7 +1757,7 @@ public abstract class JavaEditor extends AbstractDecoratedTextEditor implements 
 	 * @see org.eclipse.ui.texteditor.AbstractDecoratedTextEditor#initializeKeyBindingScopes()
 	 */
 	protected void initializeKeyBindingScopes() {
-		setKeyBindingScopes(new String[] { "descent.ui.dEditorScope" });  //$NON-NLS-1$
+		setKeyBindingScopes(new String[] { "descent.ui.javaEditorScope" });  //$NON-NLS-1$
 	}
 
 	/*
@@ -2439,8 +2440,8 @@ public abstract class JavaEditor extends AbstractDecoratedTextEditor implements 
 		ActionGroup oeg, ovg, jsg;
 		fActionGroups= new CompositeActionGroup(new ActionGroup[] {
 			oeg= new OpenEditorActionGroup(this),
-			/* TODO JDT UI actions
 			ovg= new OpenViewActionGroup(this),
+			/* TODO JDT UI actions
 			jsg= new JavaSearchActionGroup(this)
 			*/
 		});

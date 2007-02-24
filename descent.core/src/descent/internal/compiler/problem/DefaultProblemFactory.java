@@ -35,7 +35,7 @@ public DefaultProblemFactory() {
  */
 public DefaultProblemFactory(Locale loc) {
 	this.locale = loc;
-	/* TODO JDT problem
+	/* TODO JDT problems
 	if (Locale.getDefault().equals(loc)){
 		if (DEFAULT_LOCALE_TEMPLATES == null){
 			DEFAULT_LOCALE_TEMPLATES = loadMessageTemplates(loc);
@@ -78,7 +78,7 @@ public IProblem createProblem(
 	int endPosition, 
 	int lineNumber) {
 
-	/* TODO JDT problem
+	/* TODO JDT problems
 	return new DefaultProblem(
 		originatingFileName, 
 		this.getLocalizedMessage(problemId, messageArguments),
@@ -102,7 +102,7 @@ public Locale getLocale() {
 	return this.locale;
 }
 public final String getLocalizedMessage(int id, String[] problemArguments) {
-	// TODO JDT problem
+	// TODO JDT problems
 	return null;
 }
 /**

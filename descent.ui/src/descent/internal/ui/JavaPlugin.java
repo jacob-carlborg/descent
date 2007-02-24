@@ -11,7 +11,9 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.MultiStatus;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.jface.action.GroupMarker;
 import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.preference.PreferenceConverter;
@@ -52,6 +54,8 @@ import descent.internal.ui.text.folding.JavaFoldingStructureProviderRegistry;
 import descent.internal.ui.text.java.hover.JavaEditorTextHoverDescriptor;
 import descent.internal.ui.viewsupport.ImageDescriptorRegistry;
 import descent.internal.ui.viewsupport.ProblemMarkerManager;
+import descent.ui.ICommonMenuConstants;
+import descent.ui.IContextMenuConstants;
 import descent.ui.JavaUI;
 import descent.ui.PreferenceConstants;
 import descent.ui.text.JavaTextTools;
@@ -668,7 +672,6 @@ public class JavaPlugin extends AbstractUIPlugin {
 		if (!menu.isEmpty())
 			return;
 		
-		/* TODO JDT UI menu
 		menu.add(new Separator(IContextMenuConstants.GROUP_NEW));
 		menu.add(new GroupMarker(IContextMenuConstants.GROUP_GOTO));
 		menu.add(new Separator(IContextMenuConstants.GROUP_OPEN));
@@ -681,7 +684,6 @@ public class JavaPlugin extends AbstractUIPlugin {
 		menu.add(new Separator(IContextMenuConstants.GROUP_ADDITIONS));
 		menu.add(new Separator(IContextMenuConstants.GROUP_VIEWER_SETUP));
 		menu.add(new Separator(IContextMenuConstants.GROUP_PROPERTIES));
-		*/
 	}
 
 	/**

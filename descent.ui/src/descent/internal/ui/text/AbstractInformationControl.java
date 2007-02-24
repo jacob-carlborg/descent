@@ -71,6 +71,7 @@ import org.eclipse.ui.keys.KeySequence;
 import descent.core.IJavaElement;
 import descent.core.IParent;
 import descent.internal.ui.JavaPlugin;
+import descent.internal.ui.actions.OpenActionUtil;
 import descent.internal.ui.util.StringMatcher;
 
 /**
@@ -435,7 +436,6 @@ public abstract class AbstractInformationControl extends PopupDialog implements 
 	}
 
 	private void gotoSelectedElement() {
-		/*
 		Object selectedElement= getSelectedElement();
 		if (selectedElement != null) {
 			try {
@@ -445,7 +445,6 @@ public abstract class AbstractInformationControl extends PopupDialog implements 
 				JavaPlugin.log(ex);
 			}
 		}
-		*/
 	}
 
 	/**

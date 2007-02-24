@@ -109,44 +109,9 @@ protected CompilationUnitStructureRequestor(ICompilationUnit unit, CompilationUn
 	this.unitInfo = unitInfo;
 	this.newElements = newElements;
 } 
-/**
- * @see ISourceElementRequestor
- */
-/*
-public void acceptImport(int declarationStart, int declarationEnd, char[][] tokens, boolean onDemand, int modifiers) {
-	JavaElement parentHandle= (JavaElement) this.handleStack.peek();
-	// TODO JDT need an import container in every declaration container 
-	if (!(parentHandle.getElementType() == IJavaElement.COMPILATION_UNIT)) {
-		Assert.isTrue(false); // Should not happen
-	}
-
-	ICompilationUnit parentCU= (ICompilationUnit)parentHandle;
-	//create the import container and its info
-	ImportContainer importContainer= (ImportContainer)parentCU.getImportContainer();
-	if (this.importContainerInfo == null) {
-		this.importContainerInfo = new JavaElementInfo();
-		JavaElementInfo parentInfo = (JavaElementInfo) this.infoStack.peek();
-		addToChildren(parentInfo, importContainer);
-		this.newElements.put(importContainer, this.importContainerInfo);
-	}
-	
-	String elementName = JavaModelManager.getJavaModelManager().intern(new String(CharOperation.concatWith(tokens, '.')));
-	ImportDeclaration handle = new ImportDeclaration(importContainer, elementName, onDemand);
-	resolveDuplicates(handle);
-	
-	ImportDeclarationElementInfo info = new ImportDeclarationElementInfo();
-	info.setSourceRangeStart(declarationStart);
-	info.setSourceRangeEnd(declarationEnd);
-	info.setFlags(modifiers);
-
-	addToChildren(this.importContainerInfo, handle);
-	this.newElements.put(handle, info);
-}
-*/
 
 public void acceptImport(int declarationStart, int declarationEnd, String displayString, boolean onDemand, int modifiers) {
 	JavaElement parentHandle= (JavaElement) this.handleStack.peek();
-	// TODO JDT need an import container in every declaration container 
 	if (parentHandle.getElementType() == IJavaElement.COMPILATION_UNIT) {
 		ICompilationUnit parentCU= (ICompilationUnit)parentHandle;
 		//create the import container and its info
