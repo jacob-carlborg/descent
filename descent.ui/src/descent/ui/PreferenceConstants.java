@@ -25,6 +25,7 @@ import descent.core.IClasspathEntry;
 import descent.core.IJavaProject;
 import descent.core.JavaCore;
 import descent.internal.ui.JavaPlugin;
+import descent.internal.ui.javaeditor.SemanticHighlightings;
 import descent.internal.ui.text.spelling.engine.ISpellCheckPreferenceKeys;
 import descent.ui.text.IJavaColorConstants;
 
@@ -3563,9 +3564,7 @@ public class PreferenceConstants {
 		
 		// folding
 		store.setDefault(PreferenceConstants.EDITOR_FOLDING_ENABLED, true);
-		/* TODO JDT UI folding
 		store.setDefault(PreferenceConstants.EDITOR_FOLDING_PROVIDER, "descent.ui.text.defaultFoldingProvider"); //$NON-NLS-1$
-		*/
 		store.setDefault(PreferenceConstants.EDITOR_FOLDING_JAVADOC, false);
 		store.setDefault(PreferenceConstants.EDITOR_FOLDING_INNERTYPES, false);
 		store.setDefault(PreferenceConstants.EDITOR_FOLDING_METHODS, false);

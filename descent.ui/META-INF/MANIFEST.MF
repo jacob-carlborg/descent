@@ -17,7 +17,9 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.ui.editors,
  org.eclipse.ui.navigator,
  descent.core,
- com.ibm.icu
+ com.ibm.icu,
+ org.eclipse.ltk.core.refactoring,
+ org.eclipse.ltk.ui.refactoring
 Eclipse-LazyStart: true
 Eclipse-BuddyPolicy: registered
 Export-Package: descent.internal.ui,

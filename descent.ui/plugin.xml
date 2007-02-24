@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.2"?>
 <plugin>
+
+   <extension-point id="foldingStructureProviders" name="%foldingStructureProvidersExtensionPoint" schema="schema/foldingStructureProviders.exsd"/>
+
    <extension
          point="org.eclipse.ui.editors">
       <editor
@@ -44,6 +47,52 @@
             id="descent.ui.dProjectNatureImage"
             natureId="descent.core.dnature"/>
    </extension>
+   <!-- commands to surface java elements given handle id encoded parameter -->
+	<extension
+		point="org.eclipse.ui.commands">
+		<commandParameterType
+			converter="descent.internal.ui.commands.JavaElementReferenceConverter"
+			id="descent.ui.commands.javaElementReference"
+			type="descent.core.IJavaElement"/>
+		<command
+			categoryId="org.eclipse.ui.category.navigate"
+			defaultHandler="descent.internal.ui.commands.OpenElementInEditorHandler"
+			description="%command.openElementInEditor.desc"
+			id="descent.ui.commands.openElementInEditor"
+			name="%command.openElementInEditor.name">
+			<commandParameter
+				id="elementRef"
+				name="%commandParameter.openElementInEditor.elementRef.name"
+				optional="false"
+				typeId="descent.ui.commands.javaElementReference"/>
+		</command>
+		<!--
+		<command
+			categoryId="org.eclipse.ui.category.navigate"
+			defaultHandler="descent.internal.ui.commands.ShowElementInPackageViewHandler"
+			description="%command.showElementInPackageView.desc"
+			id="descent.ui.commands.showElementInPackageView"
+			name="%command.showElementInPackageView.name">
+			<commandParameter
+				id="elementRef"
+				name="%commandParameter.showElementInPackageView.elementRef.name"
+				optional="false"
+				typeId="descent.ui.commands.javaElementReference"/>
+		</command>		
+		<command
+			categoryId="org.eclipse.ui.category.navigate"
+			defaultHandler="descent.internal.ui.commands.ShowElementInTypeHierarchyViewHandler"
+			description="%command.showElementInTypeHierarchyView.desc"
+			id="descent.ui.commands.showElementInTypeHierarchyView"
+			name="%command.showElementInTypeHierarchyView.name">
+			<commandParameter
+				id="elementRef"
+				name="%commandParameter.showElementInTypeHierarchyView.elementRef.name"
+				optional="false"
+				typeId="descent.ui.commands.javaElementReference"/>
+		</command>
+		-->
+	</extension>
    <extension
          point="org.eclipse.core.runtime.preferences">
       <initializer class="descent.internal.ui.JavaUIPreferenceInitializer"/>
@@ -476,4 +525,15 @@
 		        id="descent.java.ui.filters.HideSyntheticMembers"/>
 		-->
 	</extension>
+	
+	<extension
+		point= "descent.ui.foldingStructureProviders">
+		<provider
+			id="descent.ui.text.defaultFoldingProvider"
+			name= "%defaultFoldingStructureProviderName"
+			class="descent.ui.text.folding.DefaultJavaFoldingStructureProvider"
+			preferencesClass="descent.internal.ui.text.folding.DefaultJavaFoldingPreferenceBlock">
+		</provider>
+	</extension>
+	
 </plugin>
