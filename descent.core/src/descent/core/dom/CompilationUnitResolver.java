@@ -113,6 +113,9 @@ class CompilationUnitResolver extends descent.internal.compiler.Compiler {
 		ast.setDefaultNodeFlag(savedDefaultNodeFlag);
 		ast.internalParserMode = false;
 		
+		// TODO JDT PRIORITY remove if we do semantic analysis
+		// parser.compilationUnit.problems.clear();
+		
 		return result;
 	}
 	
@@ -129,8 +132,8 @@ class CompilationUnitResolver extends descent.internal.compiler.Compiler {
 		//CancelableNameEnvironment environment = null;
 		//CancelableProblemFactory problemFactory = null;
 		
-		SemanticComputer computer = new SemanticComputer(owner, new DefaultBindingResolver.BindingTables());
-		unit.accept(computer);
+		//SemanticComputer computer = new SemanticComputer(owner, new DefaultBindingResolver.BindingTables());
+		//unit.accept(computer);
 		
 		return unit;
 	}

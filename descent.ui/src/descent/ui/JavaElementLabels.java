@@ -840,8 +840,10 @@ public class JavaElementLabels {
 				buf.append(initializer.getElementName());
 			} else if (initializer.isThen()) {
 				buf.append(JavaUIMessages.JavaElementLabels_then);
-			} else {
+			} else if (initializer.isElse()) {
 				buf.append(JavaUIMessages.JavaElementLabels_else);
+			} else {
+				buf.append(initializer.getElementName());
 			}
 	
 			/*

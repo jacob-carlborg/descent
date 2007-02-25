@@ -91,7 +91,19 @@ public final class AST {
 	 * Constant for indicating the AST API that handles D1
 	 * (D v1.0).
 	 */
-	public static final int D1 = 3;
+	public static final int D1 = 1;
+	
+	/**
+	 * Constant for indicating the AST API that handles D1.x
+	 * , where x > 0. This is the "in-development" version of D.
+	 */
+	public static final int D2 = 2;
+	
+	/**
+	 * Constant for indicating the AST API that handles the latest version of D.
+	 * Clients should not use this constant.
+	 */
+	public static final int LATEST = D2;
 	
 	/**
 	 * The binding resolver for this AST. Initially a binding resolver that
@@ -172,7 +184,7 @@ public final class AST {
  	 * @param level the API level; one of the LEVEL constants
 	 */
 	private AST(int level) {
-		if (level != AST.D1) {
+		if (level != AST.D1 && level != AST.D2) {
 			throw new IllegalArgumentException();
 		}
 		this.apiLevel = level;
@@ -184,7 +196,7 @@ public final class AST {
 	 * Creates a new Java abstract syntax tree
      * (AST) following the specified set of API rules. 
      * <p>
-     * Clients should use this method specifing {@link #D1} as the
+     * Clients should use this method specifing {@link #LATEST} as the
      * AST level in all cases, even when dealing with JDK 1.3 or 1.4..
      * </p>
      * 
@@ -197,7 +209,7 @@ public final class AST {
      * @since 3.0
 	 */
 	public static AST newAST(int level) {
-		if (level != AST.D1) {
+		if (level != AST.D1 && level != AST.D2) {
 			throw new IllegalArgumentException();
 		}
 		return new AST(level);
@@ -1501,12 +1513,32 @@ public final class AST {
 	}
 
 	/**
+	 * Creates an unparented template mixin declaration node owned by this AST.
+	 * 
+	 * @return the new unparented template mixin declaration node
+	 */
+	public TemplateMixinDeclaration newTemplateMixinDeclaration() {
+		TemplateMixinDeclaration node = new TemplateMixinDeclaration(this);
+		return node;
+	}
+	
+	/**
 	 * Creates an unparented mixin declaration node owned by this AST.
 	 * 
 	 * @return the new unparented mixin declaration node
 	 */
 	public MixinDeclaration newMixinDeclaration() {
 		MixinDeclaration node = new MixinDeclaration(this);
+		return node;
+	}
+	
+	/**
+	 * Creates an unparented mixin expression node owned by this AST.
+	 * 
+	 * @return the new unparented mixin expression node
+	 */
+	public MixinExpression newMixinExpression() {
+		MixinExpression node = new MixinExpression(this);
 		return node;
 	}
 
@@ -2296,6 +2328,16 @@ public final class AST {
 	 */
 	public WithStatement newWithStatement() {
 		WithStatement node = new WithStatement(this);
+		return node;
+	}
+	
+	/**
+	 * Creates an unparented file import expression node owned by this AST.
+	 * 
+	 * @return the new unparented file import expression node
+	 */
+	public FileImportExpression newFileImportExpression() {
+		FileImportExpression node = new FileImportExpression(this);
 		return node;
 	}
 

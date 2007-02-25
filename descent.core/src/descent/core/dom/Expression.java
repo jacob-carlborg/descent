@@ -18,10 +18,12 @@ package descent.core.dom;
  *    DollarLiteral
  *    DotIdentifierExpression
  *    DotTemplateTypeExpression
+ *    FileImportExpression
  *    FunctionLiteralDeclarationExpression
  *    InfixExpression
  *    IsTypeExpression
  *    IsTypeSpecializationExpression
+ *    MixinExpression
  *    Name
  *    NewAnonymousClassExpression
  *    NewExpression

@@ -75,10 +75,8 @@ public class JavaPluginImages {
 	public static final String IMG_TYPEDEF_PRIVATE= NAME_PREFIX + "typedef_private_obj.gif"; 		//$NON-NLS-1$
 	public static final String IMG_TYPEDEF_DEFAULT= NAME_PREFIX + "typedef_default_obj.gif"; 		//$NON-NLS-1$
 	
-	public static final String IMG_MIXIN_PUBLIC= NAME_PREFIX + "mixin_public_obj.gif"; 			//$NON-NLS-1$
-	public static final String IMG_MIXIN_PROTECTED= NAME_PREFIX + "mixin_protected_obj.gif"; 		//$NON-NLS-1$
-	public static final String IMG_MIXIN_PRIVATE= NAME_PREFIX + "mixin_private_obj.gif"; 		//$NON-NLS-1$
-	public static final String IMG_MIXIN_DEFAULT= NAME_PREFIX + "mixin_default_obj.gif"; 		//$NON-NLS-1$
+	public static final String IMG_TEMPLATE_MIXIN_DEFAULT= NAME_PREFIX + "template_mixin_default_obj.gif"; 		//$NON-NLS-1$
+	public static final String IMG_OBJS_MIXIN= NAME_PREFIX + "mixin_default_obj.gif"; 		//$NON-NLS-1$
 
 	public static final String IMG_ELCL_VIEW_MENU= NAME_PREFIX + T_ELCL + "view_menu.gif"; //$NON-NLS-1$
 	public static final String IMG_DLCL_VIEW_MENU= NAME_PREFIX + T_DLCL + "view_menu.gif"; //$NON-NLS-1$
@@ -240,10 +238,8 @@ public class JavaPluginImages {
 	public static final ImageDescriptor DESC_TYPEDEF_PRIVATE= createManagedFromKey(T_OBJ, IMG_TYPEDEF_PRIVATE); 
 	public static final ImageDescriptor DESC_TYPEDEF_DEFAULT= createManagedFromKey(T_OBJ, IMG_TYPEDEF_DEFAULT);
 	
-	public static final ImageDescriptor DESC_MIXIN_PUBLIC= createManagedFromKey(T_OBJ, IMG_MIXIN_PUBLIC); 
-	public static final ImageDescriptor DESC_MIXIN_PROTECTED= createManagedFromKey(T_OBJ, IMG_MIXIN_PROTECTED); 
-	public static final ImageDescriptor DESC_MIXIN_PRIVATE= createManagedFromKey(T_OBJ, IMG_MIXIN_PRIVATE); 
-	public static final ImageDescriptor DESC_MIXIN_DEFAULT= createManagedFromKey(T_OBJ, IMG_MIXIN_DEFAULT);
+	public static final ImageDescriptor DESC_TEMPLATE_MIXIN_DEFAULT= createManagedFromKey(T_OBJ, IMG_TEMPLATE_MIXIN_DEFAULT);
+	public static final ImageDescriptor DESC_OBJS_MIXIN= createManagedFromKey(T_OBJ, IMG_OBJS_MIXIN);
 	
 	public static final ImageDescriptor DESC_MENU_SHIFT_RIGHT= createUnManaged(T_ETOOL, "shift_r_edit.gif"); 	//$NON-NLS-1$
 	public static final ImageDescriptor DESC_MENU_SHIFT_LEFT= createUnManaged(T_ETOOL, "shift_l_edit.gif"); 	//$NON-NLS-1$

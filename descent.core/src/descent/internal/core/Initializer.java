@@ -115,7 +115,8 @@ public boolean isStaticConstructor() throws JavaModelException {
 		&& !Flags.isExternDeclaration(flags)
 		&& !Flags.isPragma(flags)
 		&& !Flags.isThen(flags)
-		&& !Flags.isElse(flags);
+		&& !Flags.isElse(flags)
+		&& !Flags.isMixin(flags);
 }
 public boolean isStaticDestructor() throws JavaModelException {
 	return Flags.isStaticDestructor(getFlags());
@@ -149,6 +150,9 @@ public boolean isThen() throws JavaModelException {
 }
 public boolean isElse() throws JavaModelException {
 	return Flags.isElse(getFlags());
+}
+public boolean isMixin() throws JavaModelException {
+	return Flags.isMixin(getFlags());
 }
 /**
  * @private Debugging purposes

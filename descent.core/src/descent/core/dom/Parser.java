@@ -127,7 +127,8 @@ class Parser extends Lexer {
 				true /* tokenize comments */, 
 				true /* tokenize pragmas */,
 				false /* don't tokenize whitespace */, 
-				true /* record line separators */);
+				true /* record line separators */,
+				ast.apiLevel);
 		
 		this.ast = ast;
 		compilationUnit = new CompilationUnit(ast);
@@ -355,6 +356,17 @@ class Parser extends Lexer {
 				break;
 
 			case TOKmixin:
+				if (peek(token).value == TOKlparen)
+				{   // mixin(string)
+				    nextToken();
+				    check(TOKlparen);
+				    Expression e = parseAssignExp();
+				    check(TOKrparen);
+				    check(TOKsemicolon);
+				    s = newMixinDeclaration(e);
+				    break;
+				}
+
 				s = parseMixin();
 				break;
 
@@ -668,7 +680,7 @@ class Parser extends Lexer {
 				s = newVersionDeclaration(versionCondition, a, aelse);
 				break;
 
-			case TOKiftype:				
+			case TOKiftype:		
 				IftypeCondition iftypeCondition = parseIftypeCondition();
 				
 				a = parseBlock();
@@ -1571,7 +1583,7 @@ class Parser extends Lexer {
 	
 	@SuppressWarnings("unchecked")
 	private Declaration parseMixin() {
-		MixinDeclaration tm;
+		TemplateMixinDeclaration tm;
 		Identifier id = null;
 		List<ASTNode> tiargs;
 		
@@ -1660,7 +1672,7 @@ class Parser extends Lexer {
 			id = null;
 		}
 		
-		tm = newMixinDeclaration(type, id);
+		tm = newTermplateMixinDeclaration(type, id);
 
 		//tm = new MixinDeclaration(ast, id, tqual, idents, tiargs);
 		if (token.value != TOKsemicolon) {
@@ -2987,8 +2999,18 @@ class Parser extends Lexer {
 
 		case TOKmixin: {
 			Declaration d;
-			
-			d = parseMixin();
+			t = peek(token);
+		    if (t.value == TOKlparen)
+		    {	// mixin(string)
+				nextToken();
+				check(TOKlparen);
+				Expression e = parseAssignExp();
+				check(TOKrparen);
+				check(TOKsemicolon);
+				d = newMixinDeclaration(e);
+		    } else {			
+		    	d = parseMixin();
+		    }
 			s = newDeclarationStatement(d);
 			break;
 		}
@@ -4777,13 +4799,37 @@ class Parser extends Lexer {
 				nextToken();
 				msg = parseAssignExp();
 			}
-			int end = token.ptr + token.len;
 			check(TOKrparen);
 			
 			e = newAssertExpression(e, msg);
-			e.setSourceRange(start, end - start);
+			e.setSourceRange(start, prevToken.ptr + prevToken.len - start);
 			break;
 		}
+		
+		case TOKmixin:
+		{
+			int start = token.ptr;
+		    nextToken();
+		    check(TOKlparen);
+		    e = parseAssignExp();
+		    check(TOKrparen);
+		    e = newMixinExpression(e);
+		    e.setSourceRange(start, prevToken.ptr + prevToken.len - start);
+		    break;
+		}
+
+		case TOKimport:
+		{
+			int start = token.ptr;
+		    nextToken();
+		    check(TOKlparen);
+		    e = parseAssignExp();
+		    check(TOKrparen);
+		    e = newFileImportExpression(e);
+		    e.setSourceRange(start, prevToken.ptr + prevToken.len - start);
+		    break;
+		}
+
 
 		case TOKlparen:
 		    if (peekPastParen(token).value == TOKlcurly) { // (arguments) {
@@ -5119,6 +5165,7 @@ class Parser extends Lexer {
 						e = newTypeDotIdentifierExpression(t, token);
 						e.setSourceRange(saveToken.ptr, prevToken.ptr + prevToken.len - saveToken.ptr);
 						nextToken();
+						e = parsePostExp(e);
 					} else {
 						e = parseUnaryExp();
 						e = newCastExpression(e, t);
@@ -5295,7 +5342,6 @@ class Parser extends Lexer {
 				continue;
 
 		    case TOKidentity:
-			//if (!global.params.useDeprecated)
 		    	error("'===' is no longer legal, use 'is' instead",
 		    			IProblem.ThreeEqualsIsNoLongerLegal, token.lineNumber, token.ptr, token.len);
 			//goto L1;
@@ -5305,7 +5351,6 @@ class Parser extends Lexer {
 			continue;
 
 		    case TOKnotidentity:
-			//if (!global.params.useDeprecated)
 		    	error("'!==' is no longer legal, use 'is' instead",
 		    			IProblem.NotTwoEqualsIsNoLongerLegal, token.lineNumber, token.ptr, token.len);
 			//goto L1;
@@ -5349,15 +5394,92 @@ class Parser extends Lexer {
 	    return e;
 	}
 	
+	Expression parseCmpExp()
+	{   Expression e;
+	    Expression e2;
+	    Token t;
+
+	    e = parseShiftExp();
+	    TOK op = token.value;
+
+	    switch (op)
+	    {
+		case TOKequal:
+			 nextToken();
+			    e2 = parseShiftExp();
+			    e = newInfixExpression(e, e2, InfixExpression.Operator.EQUALS);
+			    break;
+		case TOKnotequal:
+		    nextToken();
+		    e2 = parseShiftExp();
+		    e = newInfixExpression(e, e2, InfixExpression.Operator.NOT_EQUALS);
+		    break;
+
+		case TOKis:
+		    op = TOKidentity;
+		    nextToken();
+		    e2 = parseShiftExp();
+		    e = newInfixExpression(e, e2, InfixExpression.Operator.IS);
+		    break;
+
+		case TOKnot:
+		    // Attempt to identify '!is'
+		    t = peek(token);
+		    if (t.value != TOKis)
+		    	break;
+		    nextToken();
+		    op = TOKnotidentity;
+		    nextToken();
+		    e2 = parseShiftExp();
+		    e = newInfixExpression(e, e2, InfixExpression.Operator.NOT_IS);
+		    break;
+		    
+		case TOKlt: nextToken(); e2 = parseShiftExp(); e = newInfixExpression(e,e2,InfixExpression.Operator.LESS); break;
+	    case TOKle: nextToken(); e2 = parseShiftExp(); e = newInfixExpression(e,e2,InfixExpression.Operator.LESS_EQUALS); break;
+	    case TOKgt: nextToken(); e2 = parseShiftExp(); e = newInfixExpression(e,e2,InfixExpression.Operator.GREATER); break;
+	    case TOKge: nextToken(); e2 = parseShiftExp(); e = newInfixExpression(e,e2,InfixExpression.Operator.GREATER_EQUALS); break;
+	    case TOKunord: nextToken(); e2 = parseShiftExp(); e = newInfixExpression(e,e2,InfixExpression.Operator.NOT_LESS_GREATER_EQUALS); break;
+	    case TOKlg: nextToken(); e2 = parseShiftExp(); e = newInfixExpression(e,e2,InfixExpression.Operator.LESS_GREATER); break;
+	    case TOKleg: nextToken(); e2 = parseShiftExp(); e = newInfixExpression(e,e2,InfixExpression.Operator.LESS_GREATER_EQUALS); break;
+	    case TOKule: nextToken(); e2 = parseShiftExp(); e = newInfixExpression(e,e2,InfixExpression.Operator.NOT_GREATER); break;
+	    case TOKul: nextToken(); e2 = parseShiftExp(); e = newInfixExpression(e,e2,InfixExpression.Operator.NOT_GREATER_EQUALS); break;
+	    case TOKuge: nextToken(); e2 = parseShiftExp(); e = newInfixExpression(e,e2,InfixExpression.Operator.NOT_LESS); break;
+	    case TOKug: nextToken(); e2 = parseShiftExp(); e = newInfixExpression(e,e2,InfixExpression.Operator.NOT_LESS_EQUALS); break;
+	    case TOKue: nextToken(); e2 = parseShiftExp(); e = newInfixExpression(e,e2,InfixExpression.Operator.NOT_LESS_GREATER); break;
+
+		case TOKin:
+		    nextToken();
+		    e2 = parseShiftExp();
+		    e = newInfixExpression(e, e2, InfixExpression.Operator.IN);
+		    break;
+
+		default:
+		    break;
+	    }
+	    return e;
+	}
+
+	
 	private Expression parseAndExp() {
 		Expression e;
 		Expression e2;
 
-		e = parseEqualExp();
-		while (token.value == TOKand) {
-			nextToken();
-			e2 = parseEqualExp();
-			e = newInfixExpression(e,e2,InfixExpression.Operator.AND);
+		if (apiLevel == AST.D1) {
+			e = parseEqualExp();
+			while (token.value == TOKand) {
+				nextToken();
+				e2 = parseEqualExp();
+				e = newInfixExpression(e,e2,InfixExpression.Operator.AND);
+			}
+		} else {
+			e = parseCmpExp();
+			while (token.value == TOKand)
+			{
+			    nextToken();
+			    e2 = parseCmpExp();
+			    e = newInfixExpression(e,e2,InfixExpression.Operator.AND);
+			}
+
 		}
 		return e;
 	}
@@ -6724,8 +6846,8 @@ class Parser extends Lexer {
 		return dot;
 	}
 	
-	private MixinDeclaration newMixinDeclaration(Type type, Identifier id) {
-		MixinDeclaration mixin = new MixinDeclaration(ast);
+	private TemplateMixinDeclaration newTermplateMixinDeclaration(Type type, Identifier id) {
+		TemplateMixinDeclaration mixin = new TemplateMixinDeclaration(ast);
 		mixin.setType(type);
 		mixin.setName(newSimpleNameForIdentifier(id));
 		return mixin;
@@ -6735,6 +6857,24 @@ class Parser extends Lexer {
 		TypeidExpression typeid = new TypeidExpression(ast);
 		typeid.setType(type);
 		return typeid;
+	}
+	
+	private MixinDeclaration newMixinDeclaration(Expression expression) {
+		MixinDeclaration mixin = new MixinDeclaration(ast);
+		mixin.setExpression(expression);
+		return mixin;
+	}
+	
+	private MixinExpression newMixinExpression(Expression expression) {
+		MixinExpression mixin = new MixinExpression(ast);
+		mixin.setExpression(expression);
+		return mixin;
+	}
+	
+	private FileImportExpression newFileImportExpression(Expression expression) {
+		FileImportExpression fileImport = new FileImportExpression(ast);
+		fileImport.setExpression(expression);
+		return fileImport;
 	}
 	
 	private AsmStatement newAsmStatement(AST ast, List<Token> toklist) {

@@ -91,7 +91,7 @@ import descent.internal.ui.javaeditor.ASTProvider;
 
 public class ASTView extends ViewPart implements IShowInSource {
 	
-	private static final int D1= AST.D1;
+	private static final int D1= AST.LATEST;
 
 	private class ASTViewSelectionProvider implements ISelectionProvider {
 		ListenerList fListeners= new ListenerList(ListenerList.IDENTITY);

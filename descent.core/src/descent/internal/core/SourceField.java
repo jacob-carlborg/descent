@@ -148,7 +148,7 @@ public boolean isVariable() throws JavaModelException {
 	return !Flags.isEnum(flags) 
 		&& !Flags.isAlias(flags) 
 		&& !Flags.isTypedef(flags)
-		&& !Flags.isMixin(flags);
+		&& !Flags.isTemplateMixin(flags);
 }
 /* (non-Javadoc)
  * @see descent.core.IField#isEnumConstant()
@@ -171,8 +171,8 @@ public boolean isTypedef() throws JavaModelException {
 /* (non-Javadoc)
  * @see descent.core.IField#isMixin()
  */
-public boolean isMixin() throws JavaModelException {
-	return Flags.isMixin(getFlags());
+public boolean isTemplateMixin() throws JavaModelException {
+	return Flags.isTemplateMixin(getFlags());
 }
 /* (non-Javadoc)
  * @see descent.core.IField#isResolved()

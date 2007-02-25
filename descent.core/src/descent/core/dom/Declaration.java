@@ -16,13 +16,15 @@ import java.util.List;
  *    DebugAssignment
  *    EnumDeclaration
  *    ExternDeclaration
+ *    FileImportDeclaration
  *    ImportDeclaration
  *    InvariantDeclaration
+ *    MixinDeclaration
  *    ModifierDeclaration
  *    PragmaDeclaration
  *    StaticAssert
  *    TemplateDeclaration
- *    TemplateMixin
+ *    TemplateMixinDeclaration
  *    TypedefDeclaration
  *    UnitTestDeclaration
  *    VariableDeclaration

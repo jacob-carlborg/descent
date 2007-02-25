@@ -215,7 +215,7 @@ public class ASTParser {
      * declared on <code>AST</code>
 	 */
 	ASTParser(int level) {
-		if (level != AST.D1) {
+		if (level != AST.D1 && level != AST.D2) {
 			throw new IllegalArgumentException();
 		}
 		this.apiLevel = level;

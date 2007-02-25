@@ -40,6 +40,7 @@ import descent.core.dom.Import;
 import descent.core.dom.ImportDeclaration;
 import descent.core.dom.InvariantDeclaration;
 import descent.core.dom.MixinDeclaration;
+import descent.core.dom.TemplateMixinDeclaration;
 import descent.core.dom.Modifier;
 import descent.core.dom.ModuleDeclaration;
 import descent.core.dom.PragmaDeclaration;
@@ -94,7 +95,7 @@ public class SourceElementParser extends ASTVisitor {
 	}
 
 	public CompilationUnit parseCompilationUnit(ICompilationUnit unit, boolean resolveBindings) {
-		ASTParser parser = ASTParser.newParser(AST.D1);
+		ASTParser parser = ASTParser.newParser(AST.LATEST);
 		parser.setSource(unit);
 		parser.setResolveBindings(resolveBindings);
 		compilationUnit = (CompilationUnit) parser.createAST(null);
@@ -493,13 +494,13 @@ public class SourceElementParser extends ASTVisitor {
 	}
 	
 	@Override
-	public boolean visit(MixinDeclaration node) {
+	public boolean visit(TemplateMixinDeclaration node) {
 		FieldInfo info = new FieldInfo();
 		info.annotationPositions = NO_LONG;
 		info.categories = CharOperation.NO_CHAR_CHAR;
 		info.declarationStart = startOf(node);
 		info.modifiers = getFlags(node.modifiers());
-		info.modifiers |= Flags.AccMixin;
+		info.modifiers |= Flags.AccTemplateMixin;
 		if (node.getName() != null) {
 			info.name = node.getName().getIdentifier().toCharArray();
 			info.nameSourceStart = startOf(node.getName());
@@ -514,7 +515,7 @@ public class SourceElementParser extends ASTVisitor {
 	}
 	
 	@Override
-	public void endVisit(MixinDeclaration node) {
+	public void endVisit(TemplateMixinDeclaration node) {
 		int declarationSourceEnd = endOf(node);
 		int initializerStart = node.getName() == null ? declarationSourceEnd - 1 : endOf(node.getName());			
 		
@@ -627,6 +628,17 @@ public class SourceElementParser extends ASTVisitor {
 	
 	@Override
 	public void endVisit(ExternDeclaration node) {
+		requestor.exitInitializer(endOf(node));
+	}
+	
+	@Override
+	public boolean visit(MixinDeclaration node) {
+		requestor.enterInitializer(startOf(node), getFlags(node.modifiers()) | Flags.AccMixin, String.valueOf(node.getExpression().toString()).toCharArray());
+		return false;
+	}
+	
+	@Override
+	public void endVisit(MixinDeclaration node) {
 		requestor.exitInitializer(endOf(node));
 	}
 	

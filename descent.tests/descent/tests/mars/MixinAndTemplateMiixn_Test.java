@@ -4,15 +4,17 @@ import descent.core.dom.ASTNode;
 import descent.core.dom.MixinDeclaration;
 import descent.core.dom.QualifiedType;
 import descent.core.dom.SimpleType;
+import descent.core.dom.StringLiteral;
+import descent.core.dom.TemplateMixinDeclaration;
 import descent.core.dom.TemplateType;
 import descent.core.dom.TypeofType;
 
-public class Mixin_Test extends Parser_Test {
+public class MixinAndTemplateMiixn_Test extends Parser_Test {
 	
 	public void testWithoutNot() {
 		String s = " mixin Foo m;";
-		MixinDeclaration m = (MixinDeclaration) getSingleDeclarationNoProblems(s);
-		assertEquals(ASTNode.MIXIN_DECLARATION, m.getNodeType());
+		TemplateMixinDeclaration m = (TemplateMixinDeclaration) getSingleDeclarationNoProblems(s);
+		assertEquals(ASTNode.TEMPLATE_MIXIN_DECLARATION, m.getNodeType());
 		
 		assertEquals("m", m.getName().getFullyQualifiedName());
 		assertPosition(m.getName(), s.length() - 2, 1);
@@ -27,8 +29,8 @@ public class Mixin_Test extends Parser_Test {
 	
 	public void testExpressionParameter() {
 		String s = " mixin Foo!(2) m;";
-		MixinDeclaration m = (MixinDeclaration) getSingleDeclarationNoProblems(s);
-		assertEquals(ASTNode.MIXIN_DECLARATION, m.getNodeType());
+		TemplateMixinDeclaration m = (TemplateMixinDeclaration) getSingleDeclarationNoProblems(s);
+		assertEquals(ASTNode.TEMPLATE_MIXIN_DECLARATION, m.getNodeType());
 		
 		assertEquals("m", m.getName().getFullyQualifiedName());
 		assertPosition(m.getName(), s.length() - 2, 1);
@@ -42,8 +44,8 @@ public class Mixin_Test extends Parser_Test {
 	
 	public void testDot() {
 		String s = " mixin .Foo!(int) m;";
-		MixinDeclaration m = (MixinDeclaration) getSingleDeclarationNoProblems(s);
-		assertEquals(ASTNode.MIXIN_DECLARATION, m.getNodeType());
+		TemplateMixinDeclaration m = (TemplateMixinDeclaration) getSingleDeclarationNoProblems(s);
+		assertEquals(ASTNode.TEMPLATE_MIXIN_DECLARATION, m.getNodeType());
 		
 		assertEquals("m", m.getName().getFullyQualifiedName());
 		assertPosition(m.getName(), s.length() - 2, 1);
@@ -60,8 +62,8 @@ public class Mixin_Test extends Parser_Test {
 	
 	public void testTwo() {
 		String s = " mixin a.Foo!(int) m;";
-		MixinDeclaration m = (MixinDeclaration) getSingleDeclarationNoProblems(s);
-		assertEquals(ASTNode.MIXIN_DECLARATION, m.getNodeType());
+		TemplateMixinDeclaration m = (TemplateMixinDeclaration) getSingleDeclarationNoProblems(s);
+		assertEquals(ASTNode.TEMPLATE_MIXIN_DECLARATION, m.getNodeType());
 		
 		assertEquals("m", m.getName().getFullyQualifiedName());
 		assertPosition(m.getName(), s.length() - 2, 1);
@@ -80,8 +82,8 @@ public class Mixin_Test extends Parser_Test {
 	
 	public void testThree() {
 		String s = " mixin a.b.Foo!(int) m;";
-		MixinDeclaration m = (MixinDeclaration) getSingleDeclarationNoProblems(s);
-		assertEquals(ASTNode.MIXIN_DECLARATION, m.getNodeType());
+		TemplateMixinDeclaration m = (TemplateMixinDeclaration) getSingleDeclarationNoProblems(s);
+		assertEquals(ASTNode.TEMPLATE_MIXIN_DECLARATION, m.getNodeType());
 		
 		assertEquals("m", m.getName().getFullyQualifiedName());
 		assertPosition(m.getName(), s.length() - 2, 1);
@@ -105,8 +107,8 @@ public class Mixin_Test extends Parser_Test {
 	
 	public void testTypeof() {
 		String s = " mixin typeof(2).Foo!(int) m;";
-		MixinDeclaration m = (MixinDeclaration) getSingleDeclarationNoProblems(s);
-		assertEquals(ASTNode.MIXIN_DECLARATION, m.getNodeType());
+		TemplateMixinDeclaration m = (TemplateMixinDeclaration) getSingleDeclarationNoProblems(s);
+		assertEquals(ASTNode.TEMPLATE_MIXIN_DECLARATION, m.getNodeType());
 		
 		assertEquals("m", m.getName().getFullyQualifiedName());
 		assertPosition(m.getName(), s.length() - 2, 1);
@@ -125,8 +127,8 @@ public class Mixin_Test extends Parser_Test {
 	
 	public void testTypeof2() {
 		String s = " mixin typeof(2).Foo m;";
-		MixinDeclaration m = (MixinDeclaration) getSingleDeclarationNoProblems(s);
-		assertEquals(ASTNode.MIXIN_DECLARATION, m.getNodeType());
+		TemplateMixinDeclaration m = (TemplateMixinDeclaration) getSingleDeclarationNoProblems(s);
+		assertEquals(ASTNode.TEMPLATE_MIXIN_DECLARATION, m.getNodeType());
 		
 		assertEquals("m", m.getName().getFullyQualifiedName());
 		assertPosition(m.getName(), s.length() - 2, 1);
@@ -144,8 +146,8 @@ public class Mixin_Test extends Parser_Test {
 	
 	public void testDotAfterTemplate() {
 		String s = " mixin Foo!(int).bar m;";
-		MixinDeclaration m = (MixinDeclaration) getSingleDeclarationNoProblems(s);
-		assertEquals(ASTNode.MIXIN_DECLARATION, m.getNodeType());
+		TemplateMixinDeclaration m = (TemplateMixinDeclaration) getSingleDeclarationNoProblems(s);
+		assertEquals(ASTNode.TEMPLATE_MIXIN_DECLARATION, m.getNodeType());
 		
 		assertEquals("m", m.getName().getFullyQualifiedName());
 		assertPosition(m.getName(), s.length() - 2, 1);
@@ -161,6 +163,18 @@ public class Mixin_Test extends Parser_Test {
 		assertPosition(type3, 7, 9);
 		assertEquals("Foo", type3.getName().getFullyQualifiedName());
 		assertEquals(1, type3.arguments().size());
+	}
+	
+	public void testNotTemplateMixin() {
+		String s = " mixin(\"something\");";
+		MixinDeclaration m = (MixinDeclaration) getSingleDeclarationNoProblems(s);
+		assertEquals(ASTNode.MIXIN_DECLARATION, m.getNodeType());
+		
+		assertPosition(m, 1, s.length() - 1);
+		
+		StringLiteral e = (StringLiteral) m.getExpression();
+		assertEquals("\"something\"", e.getEscapedValue());
+		assertPosition(e, 7, 11);
 	}
 
 }

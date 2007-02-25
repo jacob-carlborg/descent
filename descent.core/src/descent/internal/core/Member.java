@@ -279,7 +279,7 @@ public ISourceRange getJavadocRange() throws JavaModelException {
 	final int start= range.getOffset();
 	final int length= range.getLength();
 	if (length > 0 && buf.getChar(start) == '/') {
-		IScanner scanner= ToolFactory.createScanner(true, false, false, false, AST.D1);
+		IScanner scanner= ToolFactory.createScanner(true, false, false, false, AST.LATEST);
 		scanner.setSource(buf.getText(start, length).toCharArray());
 		try {
 			int docOffset= -1;

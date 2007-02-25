@@ -809,7 +809,7 @@ public final class ASTRewriteAnalyzer extends ASTVisitor {
 		
 	final TokenScanner getScanner() {
 		if (this.tokenScanner == null) {
-			IScanner scanner= ToolFactory.createScanner(true, true, false, false, AST.D1);
+			IScanner scanner= ToolFactory.createScanner(true, true, false, false, AST.LATEST);
 			scanner.setSource(this.content);
 			this.tokenScanner= new TokenScanner(scanner);
 		}
@@ -2849,15 +2849,15 @@ public final class ASTRewriteAnalyzer extends ASTVisitor {
 	}
 	
 	@Override
-	public boolean visit(MixinDeclaration node) {
+	public boolean visit(TemplateMixinDeclaration node) {
 		if (!hasChildrenChanges(node)) {
 			return doVisitUnchangedChildren(node);
 		}
 		
-		int pos = rewriteParagraphList(node, MixinDeclaration.PRE_D_DOCS_PROPERTY, 0, 0, 0, 0);
-		pos = rewriteModifiers(node, MixinDeclaration.MODIFIERS_PROPERTY, pos);		
-		pos = rewriteRequiredNode(node, MixinDeclaration.TYPE_PROPERTY);
-		pos = rewriteNode(node, MixinDeclaration.NAME_PROPERTY, pos, ASTRewriteFormatter.SPACE);
+		int pos = rewriteParagraphList(node, TemplateMixinDeclaration.PRE_D_DOCS_PROPERTY, 0, 0, 0, 0);
+		pos = rewriteModifiers(node, TemplateMixinDeclaration.MODIFIERS_PROPERTY, pos);		
+		pos = rewriteRequiredNode(node, TemplateMixinDeclaration.TYPE_PROPERTY);
+		pos = rewriteNode(node, TemplateMixinDeclaration.NAME_PROPERTY, pos, ASTRewriteFormatter.SPACE);
 		
 		try {
 			pos = getScanner().getTokenEndOffset(ITerminalSymbols.TokenNameSEMICOLON, pos);
@@ -2865,7 +2865,7 @@ public final class ASTRewriteAnalyzer extends ASTVisitor {
 			handleException(e);
 		}
 		
-		rewriteNode(node, MixinDeclaration.POST_D_DOC_PROPERTY, pos, ASTRewriteFormatter.SPACE);
+		rewriteNode(node, TemplateMixinDeclaration.POST_D_DOC_PROPERTY, pos, ASTRewriteFormatter.SPACE);
 		
 		return false;
 	}

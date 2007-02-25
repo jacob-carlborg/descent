@@ -178,10 +178,10 @@ public final class Flags {
 	 */
 	public static final int AccTypedef = 0x00020000;
 	/**
-	 * Mixin property flag.
+	 * Template mixin property flag.
 	 * @since 2.0
 	 */
-	public static final int AccMixin = 0x00040000;
+	public static final int AccTemplateMixin = 0x00040000;	
 	
 	// Extensions for initializers (can reuse flags)
 	
@@ -250,6 +250,11 @@ public final class Flags {
 	 * @since 2.0
 	 */
 	public static final int AccElse = 0x04000000;
+	/**
+	 * Mixin property flag.
+	 * @since 2.0
+	 */
+	public static final int AccMixin = 0x08000000;
 	
 	// Extensions for conditionals (can reuse flags)
 	
@@ -499,6 +504,16 @@ public final class Flags {
 	}
 	
 	/**
+	 * Returns whether the given integer includes the <code>template mixin</code> modifier.
+	 *
+	 * @param flags the flags
+	 * @return <code>true</code> if the <code>template mixin</code> modifier is included
+	 */
+	public static boolean isTemplateMixin(int flags) {
+		return (flags & AccTemplateMixin) != 0;
+	}
+	
+	/**
 	 * Returns whether the given integer includes the <code>mixin</code> modifier.
 	 *
 	 * @param flags the flags
@@ -722,7 +737,7 @@ public final class Flags {
 			sb.append("alias "); //$NON-NLS-1$
 		if (isTypedef(flags))
 			sb.append("typedef "); //$NON-NLS-1$
-		if (isMixin(flags))
+		if (isTemplateMixin(flags))
 			sb.append("mixin "); //$NON-NLS-1$
 		if (isStaticDestructor(flags))
 			sb.append("~static this() "); //$NON-NLS-1$

@@ -291,7 +291,7 @@ public class HierarchyTest extends AbstractModelTest {
 		assertFalse(field.isEnumConstant());
 		assertFalse(field.isAlias());
 		assertFalse(field.isTypedef());
-		assertFalse(field.isMixin());
+		assertFalse(field.isTemplateMixin());
 		assertEquals(16, field.getSourceRange().getOffset());
 		assertEquals(18, field.getSourceRange().getLength());
 		assertEquals(16, field.getJavadocRange().getOffset());
@@ -316,7 +316,7 @@ public class HierarchyTest extends AbstractModelTest {
 		assertFalse(field.isEnumConstant());
 		assertTrue(field.isAlias());
 		assertFalse(field.isTypedef());
-		assertFalse(field.isMixin());
+		assertFalse(field.isTemplateMixin());
 		assertEquals(16, field.getSourceRange().getOffset());
 		assertEquals(24, field.getSourceRange().getLength());
 		assertEquals(16, field.getJavadocRange().getOffset());
@@ -341,7 +341,7 @@ public class HierarchyTest extends AbstractModelTest {
 		assertFalse(field.isEnumConstant());
 		assertFalse(field.isAlias());
 		assertTrue(field.isTypedef());
-		assertFalse(field.isMixin());
+		assertFalse(field.isTemplateMixin());
 		assertEquals(16, field.getSourceRange().getOffset());
 		assertEquals(26, field.getSourceRange().getLength());
 		assertEquals(16, field.getJavadocRange().getOffset());
@@ -366,7 +366,7 @@ public class HierarchyTest extends AbstractModelTest {
 		assertFalse(field.isEnumConstant());
 		assertFalse(field.isAlias());
 		assertFalse(field.isTypedef());
-		assertTrue(field.isMixin());
+		assertTrue(field.isTemplateMixin());
 		assertEquals(16, field.getSourceRange().getOffset());
 		assertEquals(25, field.getSourceRange().getLength());
 		assertEquals(16, field.getJavadocRange().getOffset());

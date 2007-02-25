@@ -3,6 +3,7 @@ package descent.tests.mars;
 import java.math.BigInteger;
 
 import junit.framework.TestCase;
+import descent.core.dom.AST;
 import descent.core.dom.Lexer;
 import descent.internal.core.parser.TOK;
 
@@ -66,7 +67,7 @@ public class Lexer_Test extends TestCase {
 		assertToken(" !<", TOK.TOKuge, 1, 2);
 		assertToken(" !>", TOK.TOKule, 1 ,2);
 		assertToken(" <>=", TOK.TOKleg, 1 ,3);
-		assertToken(" !==", TOK.TOKnotidentity, 1, 3);
+		assertToken(" !==", TOK.TOKnotidentity, 1, 3, AST.D1);
 		assertToken(" !<>", TOK.TOKue, 1, 3);
 		assertToken(" !<=", TOK.TOKug, 1, 3);
 		assertToken(" !>=", TOK.TOKul, 1, 3);
@@ -74,7 +75,7 @@ public class Lexer_Test extends TestCase {
 		
 		assertToken(" =", TOK.TOKassign, 1, 1);
 		assertToken(" ==", TOK.TOKequal, 1, 2);
-		assertToken(" ===", TOK.TOKidentity, 1, 3);
+		assertToken(" ===", TOK.TOKidentity, 1, 3, AST.D1);
 		
 		assertToken(" ~", TOK.TOKtilde, 1, 1);
 		assertToken(" ~=", TOK.TOKcatass, 1, 2);
@@ -162,9 +163,13 @@ public class Lexer_Test extends TestCase {
 		assertComment(" /++hola+/", "/++hola+/", 1, 9, TOK.TOKdocpluscomment);
 		assertComment(" /++ /+ hola +/ +/", "/++ /+ hola +/ +/", 1, 17, TOK.TOKdocpluscomment);
 	}
-
+	
 	private void assertToken(String s, TOK t, int start, int len) {
-		Lexer lexer = new Lexer(s, true, true, false, true);
+		assertToken(s, t, start, len, AST.LATEST);
+	}
+
+	private void assertToken(String s, TOK t, int start, int len, int apiLevel) {
+		Lexer lexer = new Lexer(s, true, true, false, true, apiLevel);
 		assertEquals(t, lexer.nextToken());
 		assertEquals(start, lexer.token.ptr);
 		assertEquals(len, lexer.token.len);
@@ -172,7 +177,7 @@ public class Lexer_Test extends TestCase {
 	}
 	
 	private void assertCharToken(String s, TOK t, int start, int len) {
-		Lexer lexer = new Lexer(s, true, true, false, true);
+		Lexer lexer = new Lexer(s, true, true, false, true, AST.LATEST);
 		assertEquals(t, lexer.nextToken());
 		assertEquals(s.trim(), lexer.token.string);
 		assertEquals(start, lexer.token.ptr);
@@ -181,7 +186,7 @@ public class Lexer_Test extends TestCase {
 	}
 	
 	private void assertStringToken(String s, int start, int len) {
-		Lexer lexer = new Lexer(s, true, true, false, true);
+		Lexer lexer = new Lexer(s, true, true, false, true, AST.LATEST);
 		assertEquals(TOK.TOKstring, lexer.nextToken());
 		assertEquals(s.trim(), lexer.token.string);
 		assertEquals(start, lexer.token.ptr);
@@ -190,7 +195,7 @@ public class Lexer_Test extends TestCase {
 	}
 	
 	private void assertInt32Token(String s, int value, int start, int len) {
-		Lexer lexer = new Lexer(s, true, true, false, true);
+		Lexer lexer = new Lexer(s, true, true, false, true, AST.LATEST);
 		assertEquals(TOK.TOKint32v, lexer.nextToken());
 		assertEquals(BigInteger.valueOf(value), lexer.token.numberValue);
 		assertEquals(s.trim(), lexer.token.string);
@@ -200,7 +205,7 @@ public class Lexer_Test extends TestCase {
 	}
 	
 	private void assertUns32Token(String s, int value, int start, int len) {
-		Lexer lexer = new Lexer(s, true, true, false, true);
+		Lexer lexer = new Lexer(s, true, true, false, true, AST.LATEST);
 		assertEquals(TOK.TOKuns32v, lexer.nextToken());
 		assertEquals(BigInteger.valueOf(value), lexer.token.numberValue);
 		assertEquals(s.trim(), lexer.token.string);
@@ -210,7 +215,7 @@ public class Lexer_Test extends TestCase {
 	}
 	
 	private void assertInt64Token(String s, int value, int start, int len) {
-		Lexer lexer = new Lexer(s, true, true, false, true);
+		Lexer lexer = new Lexer(s, true, true, false, true, AST.LATEST);
 		assertEquals(TOK.TOKint64v, lexer.nextToken());
 		assertEquals(BigInteger.valueOf(value), lexer.token.numberValue);
 		assertEquals(s.trim(), lexer.token.string);
@@ -220,7 +225,7 @@ public class Lexer_Test extends TestCase {
 	}
 	
 	private void assertComment(String string, String comment, int start, int len, TOK tok) {
-		Lexer lexer = new Lexer(string, true, true, false, true);
+		Lexer lexer = new Lexer(string, true, true, false, true, AST.LATEST);
 		assertEquals(tok, lexer.nextToken());
 		assertEquals(start, lexer.token.ptr);
 		assertEquals(len, lexer.token.len);

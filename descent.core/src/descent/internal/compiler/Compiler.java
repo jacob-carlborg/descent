@@ -139,7 +139,7 @@ public class Compiler {
 	}
 	
 	public void initializeParser() {
-		this.parser = ASTParser.newParser(AST.D1);
+		this.parser = ASTParser.newParser(AST.LATEST);
 		this.parser.setCompilerOptions(options.getMap());
 		this.parser.setKind(ASTParser.K_COMPILATION_UNIT);
 	}

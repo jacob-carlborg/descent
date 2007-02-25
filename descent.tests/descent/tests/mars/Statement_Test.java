@@ -27,6 +27,7 @@ import descent.core.dom.GotoStatement;
 import descent.core.dom.IfStatement;
 import descent.core.dom.LabeledStatement;
 import descent.core.dom.MixinDeclaration;
+import descent.core.dom.TemplateMixinDeclaration;
 import descent.core.dom.Modifier;
 import descent.core.dom.NumberLiteral;
 import descent.core.dom.PragmaStatement;
@@ -407,7 +408,7 @@ public class Statement_Test extends Parser_Test {
 		
 		for(Object[] obj : objs) {
 			String s = " on_scope_" + obj[0] + " { }";
-			ScopeStatement stm = (ScopeStatement) parseStatement(s);
+			ScopeStatement stm = (ScopeStatement) parseStatement(s, AST.D1);
 			
 			assertEquals(ASTNode.SCOPE_STATEMENT, stm.getNodeType());
 			assertPosition(stm, 1, s.length() - 1);
@@ -574,8 +575,16 @@ public class Statement_Test extends Parser_Test {
 		assertNotNull(var);
 	}
 	
-	public void testMixin() {
+	public void testTemplateMixin() {
 		String s = " mixin X x;";
+		DeclarationStatement stm = (DeclarationStatement) parseStatement(s);
+		
+		TemplateMixinDeclaration var = (TemplateMixinDeclaration) stm.getDeclaration();
+		assertNotNull(var);
+	}
+	
+	public void testMixin() {
+		String s = " mixin(\"something\");";
 		DeclarationStatement stm = (DeclarationStatement) parseStatement(s);
 		
 		MixinDeclaration var = (MixinDeclaration) stm.getDeclaration();
@@ -619,7 +628,7 @@ public class Statement_Test extends Parser_Test {
 	public void testParseStatements() {
 		String s = "if(true) { } if (false) { } if (1) { }";
 		
-		ASTParser parser = ASTParser.newParser(AST.D1);
+		ASTParser parser = ASTParser.newParser(AST.LATEST);
 		parser.setKind(ASTParser.K_STATEMENTS);
 		parser.setSource(s.toCharArray());
 		Block block = (Block) parser.createAST(null);

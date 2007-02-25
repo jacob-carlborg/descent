@@ -209,8 +209,10 @@ public class JavaElementImageProvider {
 						return JavaPluginImages.DESC_OBJS_EXTERN;
 					} else if (init.isPragma()) {
 						return JavaPluginImages.DESC_OBJS_PRAGMA;
-					} else {
+					} else if (init.isThen() || init.isElse()) {
 						return JavaPluginImages.DESC_OBJS_THEN_ELSE;
+					} else {
+						return JavaPluginImages.DESC_OBJS_MIXIN;
 					}
 				case IJavaElement.METHOD: {
 					IMethod method= (IMethod) element;
@@ -230,7 +232,7 @@ public class JavaElementImageProvider {
 					} else if (field.isTypedef()) {
 						return getTypedefImageDescriptor(field.getFlags());
 					} else {
-						return getMixinImageDescriptor(field.getFlags());
+						return getTemplateMixinImageDescriptor(field.getFlags());
 					}
 				}
 				case IJavaElement.LOCAL_VARIABLE:
@@ -453,15 +455,12 @@ public class JavaElementImageProvider {
 		return JavaPluginImages.DESC_TYPEDEF_PUBLIC;
 	}
 	
+	public static ImageDescriptor getTemplateMixinImageDescriptor(int flags) {
+		return JavaPluginImages.DESC_TEMPLATE_MIXIN_DEFAULT;
+	}
+	
 	public static ImageDescriptor getMixinImageDescriptor(int flags) {
-		if (Flags.isPackage(flags))
-			return JavaPluginImages.DESC_MIXIN_DEFAULT;
-		if (Flags.isProtected(flags))
-			return JavaPluginImages.DESC_MIXIN_PROTECTED;
-		if (Flags.isPrivate(flags))
-			return JavaPluginImages.DESC_MIXIN_PRIVATE;
-			
-		return JavaPluginImages.DESC_MIXIN_PUBLIC;
+		return JavaPluginImages.DESC_OBJS_MIXIN;
 	}
 	
 	public static ImageDescriptor getInvariantImageDescriptor(int flags) {

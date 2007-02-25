@@ -924,14 +924,14 @@ public class ASTRewriteFlattener extends ASTVisitor {
 	}
 	
 	@Override
-	public boolean visit(MixinDeclaration node) {
-		visitList(node, MixinDeclaration.PRE_D_DOCS_PROPERTY, LINE_END, EMPTY, LINE_END);
-		visitList(node, MixinDeclaration.MODIFIERS_PROPERTY, " ", EMPTY, " ");
+	public boolean visit(TemplateMixinDeclaration node) {
+		visitList(node, TemplateMixinDeclaration.PRE_D_DOCS_PROPERTY, LINE_END, EMPTY, LINE_END);
+		visitList(node, TemplateMixinDeclaration.MODIFIERS_PROPERTY, " ", EMPTY, " ");
 		this.result.append("mixin ");
-		visitChild(node, MixinDeclaration.TYPE_PROPERTY);
-		visitChild(node, MixinDeclaration.NAME_PROPERTY, " ", EMPTY);
+		visitChild(node, TemplateMixinDeclaration.TYPE_PROPERTY);
+		visitChild(node, TemplateMixinDeclaration.NAME_PROPERTY, " ", EMPTY);
 		this.result.append(";");
-		visitChild(node, MixinDeclaration.POST_D_DOC_PROPERTY, " ", EMPTY);
+		visitChild(node, TemplateMixinDeclaration.POST_D_DOC_PROPERTY, " ", EMPTY);
 		return false;
 	}
 	

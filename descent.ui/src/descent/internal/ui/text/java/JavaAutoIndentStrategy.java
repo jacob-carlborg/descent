@@ -494,7 +494,7 @@ public class JavaAutoIndentStrategy extends DefaultIndentLineAutoEditStrategy {
 
 		CompilationUnit compilationUnit= null;
 		try {
-			ASTParser parser= ASTParser.newParser(AST.D1);
+			ASTParser parser= ASTParser.newParser(AST.LATEST);
 			parser.setSource(info.buffer);
 			compilationUnit= (CompilationUnit) parser.createAST(null);
 		} catch (ArrayIndexOutOfBoundsException x) {

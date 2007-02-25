@@ -20,7 +20,7 @@ import descent.core.dom.AliasDeclaration;
 import descent.core.dom.Block;
 import descent.core.dom.ChildListPropertyDescriptor;
 import descent.core.dom.ImportDeclaration;
-import descent.core.dom.MixinDeclaration;
+import descent.core.dom.TemplateMixinDeclaration;
 import descent.core.dom.Statement;
 import descent.core.dom.StructuralPropertyDescriptor;
 import descent.core.dom.TypedefDeclaration;
@@ -399,7 +399,7 @@ public final class ListRewrite {
 		return (node instanceof Statement || node instanceof FieldDeclaration);
 		*/
 		return node instanceof Statement || node instanceof AliasDeclaration ||
-			node instanceof TypedefDeclaration || node instanceof MixinDeclaration ||
+			node instanceof TypedefDeclaration || node instanceof TemplateMixinDeclaration ||
 			node instanceof VariableDeclaration || node instanceof ImportDeclaration;
 	}
 	

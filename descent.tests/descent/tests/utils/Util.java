@@ -8,8 +8,8 @@ import descent.core.dom.AST;
 public class Util {
 	
 	public static boolean equalsTokenByToken(String document1, String document2) throws Exception {
-		IScanner scanner1 = ToolFactory.createScanner(true, true, false, false, AST.D1);
-		IScanner scanner2 = ToolFactory.createScanner(true, true, false, false, AST.D1);
+		IScanner scanner1 = ToolFactory.createScanner(true, true, false, false, AST.LATEST);
+		IScanner scanner2 = ToolFactory.createScanner(true, true, false, false, AST.LATEST);
 		
 		scanner1.setSource(document1.toCharArray());
 		scanner2.setSource(document2.toCharArray());

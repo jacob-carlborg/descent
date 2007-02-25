@@ -416,7 +416,7 @@ public class GenericVisitor extends ASTVisitor {
 	}
 
 	@Override
-	public void endVisit(MixinDeclaration node) {
+	public void endVisit(TemplateMixinDeclaration node) {
 		
 		endVisitNode(node);
 	}
@@ -1172,7 +1172,7 @@ public class GenericVisitor extends ASTVisitor {
 	}
 
 	@Override
-	public boolean visit(MixinDeclaration node) {
+	public boolean visit(TemplateMixinDeclaration node) {
 		
 		return visitNode(node);
 	}

@@ -1066,7 +1066,7 @@ class NaiveASTFlattener extends ASTVisitor {
 	}
 	
 	@Override
-	public boolean visit(MixinDeclaration node) {
+	public boolean visit(TemplateMixinDeclaration node) {
 		visitPreDDocss(node.preDDocs());
 		printIndent();
 		visitModifiers(node.modifiers());

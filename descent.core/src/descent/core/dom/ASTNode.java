@@ -605,9 +605,9 @@ public abstract class ASTNode {
 	/**
 	 * Node type constant indicating a node of type 
 	 * <code>MixinDeclaration</code>.
-	 * @see MixinDeclaration
+	 * @see TemplateMixinDeclaration
 	 */
-	public static final int MIXIN_DECLARATION = 65;
+	public static final int TEMPLATE_MIXIN_DECLARATION = 65;
 	 
 	/**
 	 * Node type constant indicating a node of type 
@@ -1044,6 +1044,27 @@ public abstract class ASTNode {
 	public static final int WITH_STATEMENT = 127;
 	
 	/**
+	 * Node type constant indicating a node of type 
+	 * <code>MixinDeclaration</code>.
+	 * @see MixinDeclaration
+	 */
+	public static final int MIXIN_DECLARATION = 128;
+	
+	/**
+	 * Node type constant indicating a node of type 
+	 * <code>MixinExpression</code>.
+	 * @see MixinExpression
+	 */
+	public static final int MIXIN_EXPRESSION = 129;
+	
+	/**
+	 * Node type constant indicating a node of type 
+	 * <code>FileImportExpression</code>.
+	 * @see FileImportExpression
+	 */
+	public static final int FILE_IMPORT_EXPRESSION = 130;
+	
+	/**
 	 * Returns the node class for the corresponding node type.
 	 * 
 	 * @param nodeType AST node type
@@ -1182,8 +1203,8 @@ public abstract class ASTNode {
 			return IsTypeSpecializationExpression.class;
 		case LABELED_STATEMENT:
 			return LabeledStatement.class;
-		case MIXIN_DECLARATION:
-			return MixinDeclaration.class;
+		case TEMPLATE_MIXIN_DECLARATION:
+			return TemplateMixinDeclaration.class;
 		case MODIFIER:
 			return Modifier.class;
 		case MODIFIER_DECLARATION:
@@ -1308,6 +1329,12 @@ public abstract class ASTNode {
 			return WhileStatement.class;
 		case WITH_STATEMENT:
 			return WithStatement.class;
+		case MIXIN_DECLARATION:
+			return MixinDeclaration.class;
+		case MIXIN_EXPRESSION:
+			return MixinExpression.class;
+		case FILE_IMPORT_EXPRESSION:
+			return FileImportExpression.class;
 		}
 		return null;
 	}

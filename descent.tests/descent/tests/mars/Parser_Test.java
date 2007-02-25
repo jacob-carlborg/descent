@@ -4,6 +4,7 @@ import java.util.List;
 
 import junit.framework.TestCase;
 import descent.core.compiler.IProblem;
+import descent.core.dom.AST;
 import descent.core.dom.ASTNode;
 import descent.core.dom.CompilationUnit;
 import descent.core.dom.Declaration;
@@ -18,7 +19,11 @@ public abstract class Parser_Test extends TestCase {
 	protected final static int SEVERITY_WARNING = 2;
 	
 	protected List<Declaration> getDeclarationsWithProblems(String source, int numberOfProblems) {
-		CompilationUnit unit = new ParserFacade().parseCompilationUnit(source);
+		return getDeclarationsWithProblems(source, numberOfProblems, AST.LATEST);
+	}
+	
+	protected List<Declaration> getDeclarationsWithProblems(String source, int numberOfProblems, int apiLevel) {
+		CompilationUnit unit = new ParserFacade().parseCompilationUnit(source, apiLevel);
 		assertEquals(numberOfProblems, unit.getProblems().length);
 		return unit.declarations();
 	}
@@ -39,8 +44,19 @@ public abstract class Parser_Test extends TestCase {
 		return declDefs.get(0);
 	}
 	
+	protected Declaration getSingleDeclarationWithProblems(String source, int numberOfProblems, int apiLevel) {
+		List<Declaration> declDefs = getDeclarationsWithProblems(source, numberOfProblems, apiLevel);
+		assertEquals(1, declDefs.size());		
+		return declDefs.get(0);
+	}
+	
 	protected Expression parseExpression(String source) {
-		Expression exp = new ParserFacade().parseExpression(source);
+		Expression exp = new ParserFacade().parseExpression(source, AST.LATEST);
+		return exp;
+	}
+	
+	protected Expression parseExpression(String source, int apiLevel) {
+		Expression exp = new ParserFacade().parseExpression(source, apiLevel);
 		return exp;
 	}
 	
@@ -50,17 +66,25 @@ public abstract class Parser_Test extends TestCase {
 	}
 	
 	protected Statement parseStatement(String source) {
-		Statement stm = new ParserFacade().parseStatement(source);
+		return parseStatement(source, AST.LATEST);
+	}
+	
+	protected Statement parseStatement(String source, int apiLevel) {
+		Statement stm = new ParserFacade().parseStatement(source, apiLevel);
 		return stm;
 	}
 	
 	protected ModuleDeclaration getModuleDeclaration(String source) {
-		ModuleDeclaration md = new ParserFacade().parseCompilationUnit(source).getModuleDeclaration();
+		ModuleDeclaration md = new ParserFacade().parseCompilationUnit(source, AST.LATEST).getModuleDeclaration();
 		return md;
 	}
 	
 	protected CompilationUnit getCompilationUnit(String source) {
-		CompilationUnit unit = new ParserFacade().parseCompilationUnit(source);
+		return getCompilationUnit(source, AST.LATEST);
+	}
+	
+	protected CompilationUnit getCompilationUnit(String source, int apiLevel) {
+		CompilationUnit unit = new ParserFacade().parseCompilationUnit(source, apiLevel);
 		return unit;
 	}
 	

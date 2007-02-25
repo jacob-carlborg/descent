@@ -138,6 +138,14 @@ public interface IInitializer extends IMember {
 	 */
 	boolean isElse() throws JavaModelException;
 	
-	
+	/**
+	 * Returns whether this initializer represents a mixin.
+	 * 
+	 * @return whether this initializer represents a mixin
+	 * @exception JavaModelException if this element does not exist or if an
+	 *      exception occurs while accessing its corresponding resource
+	 * @since 3.1
+	 */
+	boolean isMixin() throws JavaModelException;
 	
 }

@@ -3,39 +3,46 @@ package descent.core.dom;
 import java.util.ArrayList;
 import java.util.List;
 
+
 /**
- * Mixin declaration AST node.
+ * Template mixin declaration AST node.
  * 
  * <pre>
- * MixinDeclaration:
- *    <b>mixin</b> <b>(</b> Expression <b>)</b>
+ * TemplateMixinDeclaration:
+ *    { Modifier } <b>mixin</b> Type [ SimpleName ] <b>;</b>
  * </pre>
  */
-public class MixinDeclaration extends Declaration {
-	
+public class TemplateMixinDeclaration extends Declaration {
+
 	/**
 	 * The "preDDocs" structural property of this node type.
 	 */
 	public static final ChildListPropertyDescriptor PRE_D_DOCS_PROPERTY =
-	internalPreDDocsPropertyFactory(MixinDeclaration.class); //$NON-NLS-1$
+	internalPreDDocsPropertyFactory(TemplateMixinDeclaration.class); //$NON-NLS-1$
 
 	/**
 	 * The "modifiers" structural property of this node type.
 	 */
 	public static final ChildListPropertyDescriptor MODIFIERS_PROPERTY =
-	internalModifiersPropertyFactory(MixinDeclaration.class); //$NON-NLS-1$
+	internalModifiersPropertyFactory(TemplateMixinDeclaration.class); //$NON-NLS-1$
 
 	/**
-	 * The "expression" structural property of this node type.
+	 * The "type" structural property of this node type.
 	 */
-	public static final ChildPropertyDescriptor EXPRESSION_PROPERTY =
-		new ChildPropertyDescriptor(MixinDeclaration.class, "expression", Expression.class, MANDATORY, NO_CYCLE_RISK); //$NON-NLS-1$
+	public static final ChildPropertyDescriptor TYPE_PROPERTY =
+		new ChildPropertyDescriptor(TemplateMixinDeclaration.class, "type", Type.class, MANDATORY, NO_CYCLE_RISK); //$NON-NLS-1$
+
+	/**
+	 * The "name" structural property of this node type.
+	 */
+	public static final ChildPropertyDescriptor NAME_PROPERTY =
+		new ChildPropertyDescriptor(TemplateMixinDeclaration.class, "name", SimpleName.class, OPTIONAL, NO_CYCLE_RISK); //$NON-NLS-1$
 
 	/**
 	 * The "postDDoc" structural property of this node type.
 	 */
 	public static final ChildPropertyDescriptor POST_D_DOC_PROPERTY =
-	internalPostDDocPropertyFactory(MixinDeclaration.class); //$NON-NLS-1$
+	internalPostDDocPropertyFactory(TemplateMixinDeclaration.class); //$NON-NLS-1$
 
 	/**
 	 * A list of property descriptors (element type: 
@@ -45,11 +52,12 @@ public class MixinDeclaration extends Declaration {
 	private static final List PROPERTY_DESCRIPTORS;
 
 	static {
-		List properyList = new ArrayList(4);
-		createPropertyList(MixinDeclaration.class, properyList);
+		List properyList = new ArrayList(5);
+		createPropertyList(TemplateMixinDeclaration.class, properyList);
 		addProperty(PRE_D_DOCS_PROPERTY, properyList);
 		addProperty(MODIFIERS_PROPERTY, properyList);
-		addProperty(EXPRESSION_PROPERTY, properyList);
+		addProperty(TYPE_PROPERTY, properyList);
+		addProperty(NAME_PROPERTY, properyList);
 		addProperty(POST_D_DOC_PROPERTY, properyList);
 		PROPERTY_DESCRIPTORS = reapPropertyList(properyList);
 	}
@@ -70,13 +78,18 @@ public class MixinDeclaration extends Declaration {
 	}
 
 	/**
-	 * The expression.
+	 * The type.
 	 */
-	private Expression expression;
+	private Type type;
+
+	/**
+	 * The name.
+	 */
+	private SimpleName name;
 
 
 	/**
-	 * Creates a new unparented mixin declaration node owned by the given 
+	 * Creates a new unparented template mixin declaration node owned by the given 
 	 * AST.
 	 * <p>
 	 * N.B. This constructor is package-private.
@@ -84,7 +97,7 @@ public class MixinDeclaration extends Declaration {
 	 * 
 	 * @param ast the AST that is to own this node
 	 */
-	MixinDeclaration(AST ast) {
+	TemplateMixinDeclaration(AST ast) {
 		super(ast);
 	}
 
@@ -99,11 +112,19 @@ public class MixinDeclaration extends Declaration {
 	 * Method declared on ASTNode.
 	 */
 	final ASTNode internalGetSetChildProperty(ChildPropertyDescriptor property, boolean get, ASTNode child) {
-		if (property == EXPRESSION_PROPERTY) {
+		if (property == TYPE_PROPERTY) {
 			if (get) {
-				return getExpression();
+				return getType();
 			} else {
-				setExpression((Expression) child);
+				setType((Type) child);
+				return null;
+			}
+		}
+		if (property == NAME_PROPERTY) {
+			if (get) {
+				return getName();
+			} else {
+				setName((SimpleName) child);
 				return null;
 			}
 		}
@@ -152,18 +173,19 @@ public class MixinDeclaration extends Declaration {
 	 * Method declared on ASTNode.
 	 */
 	final int getNodeType0() {
-		return MIXIN_DECLARATION;
+		return TEMPLATE_MIXIN_DECLARATION;
 	}
 
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
 	 */
 	ASTNode clone0(AST target) {
-		MixinDeclaration result = new MixinDeclaration(target);
+		TemplateMixinDeclaration result = new TemplateMixinDeclaration(target);
 		result.setSourceRange(this.getStartPosition(), this.getLength());
 		result.preDDocs.addAll(ASTNode.copySubtrees(target, preDDocs()));
 		result.modifiers.addAll(ASTNode.copySubtrees(target, modifiers()));
-		result.setExpression((Expression) getExpression().clone(target));
+		result.setType((Type) getType().clone(target));
+	result.setName((SimpleName) ASTNode.copySubtree(target, getName()));
 	result.setPostDDoc((DDocComment) ASTNode.copySubtree(target, getPostDDoc()));
 		return result;
 	}
@@ -185,35 +207,36 @@ public class MixinDeclaration extends Declaration {
 			// visit children in normal left to right reading order
 			acceptChildren(visitor, this.preDDocs);
 			acceptChildren(visitor, this.modifiers);
-			acceptChild(visitor, getExpression());
+			acceptChild(visitor, getType());
+			acceptChild(visitor, getName());
 			acceptChild(visitor, getPostDDoc());
 		}
 		visitor.endVisit(this);
 	}
 
 	/**
-	 * Returns the expression of this mixin declaration.
+	 * Returns the type of this template mixin declaration.
 	 * 
-	 * @return the expression
+	 * @return the type
 	 */ 
-	public Expression getExpression() {
-		if (this.expression == null) {
+	public Type getType() {
+		if (this.type == null) {
 			// lazy init must be thread-safe for readers
 			synchronized (this) {
-				if (this.expression == null) {
+				if (this.type == null) {
 					preLazyInit();
-					this.expression = new StringLiteral(this.ast);
-					postLazyInit(this.expression, EXPRESSION_PROPERTY);
+					this.type = new PrimitiveType(this.ast);
+					postLazyInit(this.type, TYPE_PROPERTY);
 				}
 			}
 		}
-		return this.expression;
+		return this.type;
 	}
 
 	/**
-	 * Sets the expression of this mixin declaration.
+	 * Sets the type of this template mixin declaration.
 	 * 
-	 * @param expression the expression
+	 * @param type the type
 	 * @exception IllegalArgumentException if:
 	 * <ul>
 	 * <li>the node belongs to a different AST</li>
@@ -221,21 +244,48 @@ public class MixinDeclaration extends Declaration {
 	 * <li>a cycle in would be created</li>
 	 * </ul>
 	 */ 
-	public void setExpression(Expression expression) {
-		if (expression == null) {
+	public void setType(Type type) {
+		if (type == null) {
 			throw new IllegalArgumentException();
 		}
-		ASTNode oldChild = this.expression;
-		preReplaceChild(oldChild, expression, EXPRESSION_PROPERTY);
-		this.expression = expression;
-		postReplaceChild(oldChild, expression, EXPRESSION_PROPERTY);
+		ASTNode oldChild = this.type;
+		preReplaceChild(oldChild, type, TYPE_PROPERTY);
+		this.type = type;
+		postReplaceChild(oldChild, type, TYPE_PROPERTY);
+	}
+
+	/**
+	 * Returns the name of this template mixin declaration.
+	 * 
+	 * @return the name
+	 */ 
+	public SimpleName getName() {
+		return this.name;
+	}
+
+	/**
+	 * Sets the name of this template mixin declaration.
+	 * 
+	 * @param name the name
+	 * @exception IllegalArgumentException if:
+	 * <ul>
+	 * <li>the node belongs to a different AST</li>
+	 * <li>the node already has a parent</li>
+	 * <li>a cycle in would be created</li>
+	 * </ul>
+	 */ 
+	public void setName(SimpleName name) {
+		ASTNode oldChild = this.name;
+		preReplaceChild(oldChild, name, NAME_PROPERTY);
+		this.name = name;
+		postReplaceChild(oldChild, name, NAME_PROPERTY);
 	}
 
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
 	 */
 	int memSize() {
-		return BASE_NODE_SIZE + 4 * 4;
+		return BASE_NODE_SIZE + 5 * 4;
 	}
 
 	/* (omit javadoc for this method)
@@ -246,7 +296,8 @@ public class MixinDeclaration extends Declaration {
 			memSize()
 			+ (this.preDDocs.listSize())
 			+ (this.modifiers.listSize())
-			+ (this.expression == null ? 0 : getExpression().treeSize())
+			+ (this.type == null ? 0 : getType().treeSize())
+			+ (this.name == null ? 0 : getName().treeSize())
 			+ (this.postDDoc == null ? 0 : getPostDDoc().treeSize())
 	;
 	}

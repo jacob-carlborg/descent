@@ -2,6 +2,7 @@ package descent.tests.mars;
 
 import java.util.List;
 
+import descent.core.dom.AST;
 import descent.core.dom.ASTNode;
 import descent.core.dom.ArrayAccess;
 import descent.core.dom.ArrayLiteral;
@@ -17,6 +18,7 @@ import descent.core.dom.DotIdentifierExpression;
 import descent.core.dom.DotTemplateTypeExpression;
 import descent.core.dom.DynamicArrayType;
 import descent.core.dom.Expression;
+import descent.core.dom.FileImportExpression;
 import descent.core.dom.FunctionLiteralDeclarationExpression;
 import descent.core.dom.InfixExpression;
 import descent.core.dom.IsTypeExpression;
@@ -228,8 +230,6 @@ public class Expression_Test extends Parser_Test {
 				{ "in", InfixExpression.Operator.IN },
 				{ "is", InfixExpression.Operator.IS },
 				{ "!is", InfixExpression.Operator.NOT_IS },
-				{ "===", InfixExpression.Operator.IDENTITY },
-				{ "!==", InfixExpression.Operator.NOT_IDENTITY },
 				{ "==", InfixExpression.Operator.EQUALS },
 				{ "!=", InfixExpression.Operator.NOT_EQUALS },
 				{ "&", InfixExpression.Operator.AND },
@@ -256,6 +256,25 @@ public class Expression_Test extends Parser_Test {
 		for(Object[] pair : objs) {
 			String s = " 1 " + pair[0] + " 1.0";
 			InfixExpression expr = (InfixExpression) parseExpression(s);
+			
+			assertEquals(ASTNode.INFIX_EXPRESSION, expr.getNodeType());
+			assertEquals(pair[1], expr.getOperator());
+			assertEquals(pair[0], pair[1].toString());
+			assertEquals(ASTNode.NUMBER_LITERAL, expr.getLeftOperand().getNodeType());
+			assertEquals(ASTNode.NUMBER_LITERAL, expr.getRightOperand().getNodeType());
+			assertPosition(expr, 1, 6 + ((String) pair[0]).length());
+		}
+	}
+	
+	public void testInfixExpressionD1() {
+		Object[][] objs = {
+				{ "===", InfixExpression.Operator.IDENTITY },
+				{ "!==", InfixExpression.Operator.NOT_IDENTITY },
+			};
+		
+		for(Object[] pair : objs) {
+			String s = " 1 " + pair[0] + " 1.0";
+			InfixExpression expr = (InfixExpression) parseExpression(s, AST.D1);
 			
 			assertEquals(ASTNode.INFIX_EXPRESSION, expr.getNodeType());
 			assertEquals(pair[1], expr.getOperator());
@@ -810,6 +829,16 @@ public class Expression_Test extends Parser_Test {
 		TemplateType type2 = dot.getTemplateType();
 		assertEquals("Temp", type2.getName().getFullyQualifiedName());
 		assertEquals(1, type2.arguments().size());
+	}
+	
+	public void testFileImport() {
+		String s = " import(\"something\")";
+		FileImportExpression expr = (FileImportExpression) parseExpression(s);
+		assertPosition(expr, 1, s.length() - 1);
+		
+		StringLiteral e = (StringLiteral) expr.getExpression();
+		assertEquals("\"something\"", e.getEscapedValue());
+		assertPosition(e, 8, 11);
 	}
 
 }

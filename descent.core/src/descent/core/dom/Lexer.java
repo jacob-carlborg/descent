@@ -4,6 +4,7 @@ import static descent.internal.core.parser.TOK.*;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
@@ -59,8 +60,10 @@ public class Lexer implements IProblemCollector {
 	public boolean tokenizeWhiteSpace;
 	private boolean tokenizePragmas;
 	private boolean recordLineSeparator;
+	protected final int apiLevel;
 	
-	/* package */ Lexer() {
+	/* package */ Lexer(int apiLevel) {
+		this.apiLevel = apiLevel;
 		initKeywords();
 	}
 	
@@ -86,20 +89,20 @@ public class Lexer implements IProblemCollector {
 		this.p = offset;
 	}
     
-    public Lexer(String source, boolean tokenizeComments, boolean tokenizePragmas, boolean tokenizeWhiteSpace, boolean recordLineSeparator) {
-    	this(source.toCharArray(), tokenizeComments, tokenizePragmas, tokenizeWhiteSpace, recordLineSeparator);
+    public Lexer(String source, boolean tokenizeComments, boolean tokenizePragmas, boolean tokenizeWhiteSpace, boolean recordLineSeparator, int apiLevel) {
+    	this(source.toCharArray(), tokenizeComments, tokenizePragmas, tokenizeWhiteSpace, recordLineSeparator, apiLevel);
     }
     
-    public Lexer(char[] source, boolean tokenizeComments, boolean tokenizePragmas, boolean tokenizeWhiteSpace, boolean recordLineSeparator) {
-    	this(source, 0, source.length, tokenizeComments, tokenizePragmas, tokenizeWhiteSpace, recordLineSeparator);
+    public Lexer(char[] source, boolean tokenizeComments, boolean tokenizePragmas, boolean tokenizeWhiteSpace, boolean recordLineSeparator, int apiLevel) {
+    	this(source, 0, source.length, tokenizeComments, tokenizePragmas, tokenizeWhiteSpace, recordLineSeparator, apiLevel);
     }
     
-    public Lexer(String source, int offset, int length, boolean tokenizeComments, boolean tokenizePragmas, boolean tokenizeWhiteSpace, boolean recordLineSeparator) {
-    	this(source.toCharArray(), offset, length, tokenizeComments, tokenizePragmas, tokenizeWhiteSpace, recordLineSeparator);
+    public Lexer(String source, int offset, int length, boolean tokenizeComments, boolean tokenizePragmas, boolean tokenizeWhiteSpace, boolean recordLineSeparator, int apiLevel) {
+    	this(source.toCharArray(), offset, length, tokenizeComments, tokenizePragmas, tokenizeWhiteSpace, recordLineSeparator, apiLevel);
     }
 	
-	public Lexer(char[] source, int offset, int length, boolean tokenizeComments, boolean tokenizePragmas, boolean tokenizeWhiteSpace, boolean recordLineSeparator) {
-		this();
+	public Lexer(char[] source, int offset, int length, boolean tokenizeComments, boolean tokenizePragmas, boolean tokenizeWhiteSpace, boolean recordLineSeparator, int apiLevel) {
+		this(apiLevel);
 		reset(source, offset, length, tokenizeComments, tokenizePragmas, tokenizeWhiteSpace, recordLineSeparator);
 	}
 	
@@ -718,7 +721,7 @@ public class Lexer implements IProblemCollector {
 			p++;
 			if (input[p] == '=')
 			{   p++;
-			    if (input[p] == '=')
+			    if (input[p] == '=' && apiLevel == AST.D1)
 			    {	p++;
 				t.value = TOKnotidentity;	// !==
 				t.len = 3;
@@ -774,7 +777,7 @@ public class Lexer implements IProblemCollector {
 			p++;
 			if (input[p] == '=')
 			{   p++;
-			    if (input[p] == '=')
+			    if (input[p] == '=' && apiLevel == AST.D1)
 			    {	p++;
 				t.value = TOKidentity;		// ===
 				t.len = 3;
@@ -2206,126 +2209,137 @@ public class Lexer implements IProblemCollector {
 	}
 	*/
 	
-	private static Map<String, TOK> keywords;
+	private static Map<String, TOK> keywordsD2;
+	private static Map<String, TOK> keywordsD1;
 	
 	static {
-		keywords = new Hashtable<String, TOK>();
-		keywords.put("this", TOKthis);
-		keywords.put("super", TOKsuper);
-		keywords.put("assert", TOKassert);
-		keywords.put("null", TOKnull);
-		keywords.put("true", TOKtrue);
-		keywords.put("false", TOKfalse);
-		keywords.put("cast", TOKcast);
-		keywords.put("new", TOKnew);
-		keywords.put("delete", TOKdelete);
-		keywords.put("throw", TOKthrow);
-		keywords.put("module", TOKmodule);
-		keywords.put("pragma", TOKpragma);
-		keywords.put("typeof", TOKtypeof);
-		keywords.put("typeid", TOKtypeid);
-		keywords.put("iftype", TOKiftype);
-		keywords.put("template", TOKtemplate);
-		keywords.put("void", TOKvoid);
-		keywords.put("byte", TOKint8);
-		keywords.put("ubyte", TOKuns8);
+		keywordsD2 = new HashMap<String, TOK>();
+		keywordsD2.put("this", TOKthis);
+		keywordsD2.put("super", TOKsuper);
+		keywordsD2.put("assert", TOKassert);
+		keywordsD2.put("null", TOKnull);
+		keywordsD2.put("true", TOKtrue);
+		keywordsD2.put("false", TOKfalse);
+		keywordsD2.put("cast", TOKcast);
+		keywordsD2.put("new", TOKnew);
+		keywordsD2.put("delete", TOKdelete);
+		keywordsD2.put("throw", TOKthrow);
+		keywordsD2.put("module", TOKmodule);
+		keywordsD2.put("pragma", TOKpragma);
+		keywordsD2.put("typeof", TOKtypeof);
+		keywordsD2.put("typeid", TOKtypeid);
+		keywordsD2.put("template", TOKtemplate);
+		keywordsD2.put("void", TOKvoid);
+		keywordsD2.put("byte", TOKint8);
+		keywordsD2.put("ubyte", TOKuns8);
 
-		keywords.put("short", TOKint16);
-		keywords.put("ushort", TOKuns16);
-		keywords.put("int",	 TOKint32);
-		keywords.put("uint", TOKuns32);
-		keywords.put("long", TOKint64);
-		keywords.put("ulong", TOKuns64);
-	    keywords.put("cent", TOKcent);
-	    keywords.put("ucent", TOKucent);
-	    keywords.put("float", TOKfloat32);
-	    keywords.put("double", TOKfloat64);
-	    keywords.put("real", TOKfloat80);
+		keywordsD2.put("short", TOKint16);
+		keywordsD2.put("ushort", TOKuns16);
+		keywordsD2.put("int",	 TOKint32);
+		keywordsD2.put("uint", TOKuns32);
+		keywordsD2.put("long", TOKint64);
+		keywordsD2.put("ulong", TOKuns64);
+	    keywordsD2.put("cent", TOKcent);
+	    keywordsD2.put("ucent", TOKucent);
+	    keywordsD2.put("float", TOKfloat32);
+	    keywordsD2.put("double", TOKfloat64);
+	    keywordsD2.put("real", TOKfloat80);
 
-	    keywords.put("bit", TOKbit);
-	    keywords.put("bool", TOKbool);
-	    keywords.put("char", TOKchar);
-	    keywords.put("wchar", TOKwchar);
-	    keywords.put("dchar", TOKdchar);
+	    keywordsD2.put("bit", TOKbit);
+	    keywordsD2.put("bool", TOKbool);
+	    keywordsD2.put("char", TOKchar);
+	    keywordsD2.put("wchar", TOKwchar);
+	    keywordsD2.put("dchar", TOKdchar);
 
-	    keywords.put("ifloat", TOKimaginary32);
-	    keywords.put("idouble", TOKimaginary64);
-	    keywords.put("ireal", TOKimaginary80);
+	    keywordsD2.put("ifloat", TOKimaginary32);
+	    keywordsD2.put("idouble", TOKimaginary64);
+	    keywordsD2.put("ireal", TOKimaginary80);
 
-	    keywords.put("cfloat", TOKcomplex32);
-	    keywords.put("cdouble", TOKcomplex64);
-	    keywords.put("creal", TOKcomplex80);
+	    keywordsD2.put("cfloat", TOKcomplex32);
+	    keywordsD2.put("cdouble", TOKcomplex64);
+	    keywordsD2.put("creal", TOKcomplex80);
 
-	    keywords.put("delegate", TOKdelegate);
-	    keywords.put("function", TOKfunction);
+	    keywordsD2.put("delegate", TOKdelegate);
+	    keywordsD2.put("function", TOKfunction);
 
-	    keywords.put("is", TOKis);
-	    keywords.put("if", TOKif);
-	    keywords.put("else", TOKelse);
-	    keywords.put("while", TOKwhile);
-	    keywords.put("for", TOKfor);
-	    keywords.put("do", TOKdo);
-	    keywords.put("switch", TOKswitch);
-	    keywords.put("case", TOKcase);
-	    keywords.put("default", TOKdefault);
-	    keywords.put("break", TOKbreak);
-	    keywords.put("continue", TOKcontinue);
-	    keywords.put("synchronized", TOKsynchronized);
-	    keywords.put("return", TOKreturn);
-	    keywords.put("goto", TOKgoto);
-	    keywords.put("try", TOKtry);
-	    keywords.put("catch", TOKcatch);
-	    keywords.put("finally", TOKfinally);
-	    keywords.put("with", TOKwith);
-	    keywords.put("asm", TOKasm);
-	    keywords.put("foreach", TOKforeach);
-	    keywords.put("foreach_reverse", TOKforeach_reverse);
-	    keywords.put("scope", TOKscope);
-	    keywords.put("on_scope_exit", TOKon_scope_exit);
-	    keywords.put("on_scope_failure", TOKon_scope_failure);
-	    keywords.put("on_scope_success", TOKon_scope_success);
+	    keywordsD2.put("is", TOKis);
+	    keywordsD2.put("if", TOKif);
+	    keywordsD2.put("else", TOKelse);
+	    keywordsD2.put("while", TOKwhile);
+	    keywordsD2.put("for", TOKfor);
+	    keywordsD2.put("do", TOKdo);
+	    keywordsD2.put("switch", TOKswitch);
+	    keywordsD2.put("case", TOKcase);
+	    keywordsD2.put("default", TOKdefault);
+	    keywordsD2.put("break", TOKbreak);
+	    keywordsD2.put("continue", TOKcontinue);
+	    keywordsD2.put("synchronized", TOKsynchronized);
+	    keywordsD2.put("return", TOKreturn);
+	    keywordsD2.put("goto", TOKgoto);
+	    keywordsD2.put("try", TOKtry);
+	    keywordsD2.put("catch", TOKcatch);
+	    keywordsD2.put("finally", TOKfinally);
+	    keywordsD2.put("with", TOKwith);
+	    keywordsD2.put("asm", TOKasm);
+	    keywordsD2.put("foreach", TOKforeach);
+	    keywordsD2.put("foreach_reverse", TOKforeach_reverse);
+	    keywordsD2.put("scope", TOKscope);
 
-	    keywords.put("struct", TOKstruct);
-	    keywords.put("class", TOKclass);
-	    keywords.put("interface", TOKinterface);
-	    keywords.put("union", TOKunion);
-	    keywords.put("enum", TOKenum);
-	    keywords.put("import", TOKimport);
-	    keywords.put("mixin", TOKmixin);
-	    keywords.put("static", TOKstatic);
-	    /*{	"virtual",	TOKvirtual	},*/
-	    keywords.put("final", TOKfinal);
-	    keywords.put("const", TOKconst);
-	    keywords.put("typedef", TOKtypedef);
-	    keywords.put("alias", TOKalias);
-	    keywords.put("override", TOKoverride);
-	    keywords.put("abstract", TOKabstract);
-	    keywords.put("volatile", TOKvolatile);
-	    keywords.put("debug", TOKdebug);
-	    keywords.put("deprecated", TOKdeprecated);
-	    keywords.put("in", TOKin);
-	    keywords.put("out", TOKout);
-	    keywords.put("inout", TOKinout);
-	    keywords.put("lazy", TOKlazy);
-	    keywords.put("auto", TOKauto);
+	    keywordsD2.put("struct", TOKstruct);
+	    keywordsD2.put("class", TOKclass);
+	    keywordsD2.put("interface", TOKinterface);
+	    keywordsD2.put("union", TOKunion);
+	    keywordsD2.put("enum", TOKenum);
+	    keywordsD2.put("import", TOKimport);
+	    keywordsD2.put("mixin", TOKmixin);
+	    keywordsD2.put("static", TOKstatic);
+	    keywordsD2.put("final", TOKfinal);
+	    keywordsD2.put("const", TOKconst);
+	    keywordsD2.put("typedef", TOKtypedef);
+	    keywordsD2.put("alias", TOKalias);
+	    keywordsD2.put("override", TOKoverride);
+	    keywordsD2.put("abstract", TOKabstract);
+	    keywordsD2.put("volatile", TOKvolatile);
+	    keywordsD2.put("debug", TOKdebug);
+	    keywordsD2.put("deprecated", TOKdeprecated);
+	    keywordsD2.put("in", TOKin);
+	    keywordsD2.put("out", TOKout);
+	    keywordsD2.put("inout", TOKinout);
+	    keywordsD2.put("lazy", TOKlazy);
+	    keywordsD2.put("auto", TOKauto);
 
-	    keywords.put("align", TOKalign);
-	    keywords.put("extern", TOKextern);
-	    keywords.put("private", TOKprivate);
-	    keywords.put("package", TOKpackage);
-	    keywords.put("protected", TOKprotected);
-	    keywords.put("public", TOKpublic);
-	    keywords.put("export", TOKexport);
+	    keywordsD2.put("align", TOKalign);
+	    keywordsD2.put("extern", TOKextern);
+	    keywordsD2.put("private", TOKprivate);
+	    keywordsD2.put("package", TOKpackage);
+	    keywordsD2.put("protected", TOKprotected);
+	    keywordsD2.put("public", TOKpublic);
+	    keywordsD2.put("export", TOKexport);
 
-	    keywords.put("body", TOKbody	);
-	    keywords.put("invariant", TOKinvariant);
-	    keywords.put("unittest", TOKunittest);
-	    keywords.put("version", TOKversion);
+	    keywordsD2.put("body", TOKbody	);
+	    keywordsD2.put("invariant", TOKinvariant);
+	    keywordsD2.put("unittest", TOKunittest);
+	    keywordsD2.put("version", TOKversion);
+	    
+	    keywordsD1 = new HashMap<String, TOK>();
+	    keywordsD1.putAll(keywordsD2);
+	    keywordsD1.put("iftype", TOKiftype);
+	    keywordsD1.put("on_scope_exit", TOKon_scope_exit);
+	    keywordsD1.put("on_scope_failure", TOKon_scope_failure);
+	    keywordsD1.put("on_scope_success", TOKon_scope_success);
 	}
 	
 	private void initKeywords() {
 		StringValue sv;
-		for(Map.Entry<String, TOK> entry : keywords.entrySet()) {
+		Map<String, TOK> keys;
+		if (apiLevel == AST.D1) {
+			keys = keywordsD1;
+		} else if (apiLevel == AST.D2) {
+			keys = keywordsD2;
+		} else {
+			throw new IllegalStateException();
+		}
+		for(Map.Entry<String, TOK> entry : keys.entrySet()) {
 			sv = stringtable.insert(entry.getKey());
 			sv.ptrvalue = new Identifier(sv.lstring, entry.getValue());
 		}

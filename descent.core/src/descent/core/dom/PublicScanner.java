@@ -17,7 +17,7 @@ public class PublicScanner implements IScanner {
 	private final boolean tokenizePragmas;
 	private final boolean tokenizeWhiteSpace;	
 	private final boolean recordLineSeparator;
-	//private final int apiLevel;
+	private final int apiLevel;
 	private char[] source;
 	public Lexer lexer;
 
@@ -26,7 +26,7 @@ public class PublicScanner implements IScanner {
 		this.tokenizePragmas = tokenizePragmas;
 		this.tokenizeWhiteSpace = tokenizeWhiteSpace;		
 		this.recordLineSeparator = recordLineSeparator;
-		//this.apiLevel = apiLevel;
+		this.apiLevel = apiLevel;
 	}
 
 	public int getCurrentTokenEndPosition() {
@@ -142,7 +142,7 @@ public class PublicScanner implements IScanner {
 
 	public void resetTo(int startPosition, int endPosition) {
 		if (this.lexer == null) {
-			this.lexer = new Lexer(source, startPosition, endPosition - startPosition, tokenizeComments, tokenizePragmas, tokenizeWhiteSpace, recordLineSeparator);
+			this.lexer = new Lexer(source, startPosition, endPosition - startPosition, tokenizeComments, tokenizePragmas, tokenizeWhiteSpace, recordLineSeparator, apiLevel);
 		} else {
 			this.lexer.reset(startPosition, endPosition - startPosition);
 		}
@@ -151,7 +151,7 @@ public class PublicScanner implements IScanner {
 	public void setSource(char[] source) {
 		this.source = source;
 		if (this.lexer == null) {
-			this.lexer = new Lexer(source, 0, source.length, tokenizeComments, tokenizePragmas, tokenizeWhiteSpace, recordLineSeparator);
+			this.lexer = new Lexer(source, 0, source.length, tokenizeComments, tokenizePragmas, tokenizeWhiteSpace, recordLineSeparator, apiLevel);
 		} else {
 			this.lexer.reset(source, 0, source.length, tokenizeComments, tokenizePragmas, tokenizeWhiteSpace, recordLineSeparator);
 		}

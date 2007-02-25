@@ -28,7 +28,7 @@ public class AllLexerParserTests {
 		suite.addTestSuite(Expression_Test.class);
 		suite.addTestSuite(Align_Test.class);
 		suite.addTestSuite(CompilationUnit_Test.class);
-		suite.addTestSuite(Mixin_Test.class);
+		suite.addTestSuite(MixinAndTemplateMiixn_Test.class);
 		suite.addTestSuite(Typedef_Test.class);
 		suite.addTestSuite(Problems_Test.class);
 		suite.addTestSuite(Recovery_Tests.class);

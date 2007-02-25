@@ -40,7 +40,7 @@ public class ScannerTests extends TestCase implements ITerminalSymbols {
 				continue;
 			}
 			
-			IScanner scanner = ToolFactory.createScanner(true, true, true, true, AST.D1);
+			IScanner scanner = ToolFactory.createScanner(true, true, true, true, AST.LATEST);
 			scanner.setSource(("$" + tok.value).toCharArray());
 			assertNextToken(scanner, TokenNameDOLLAR, 0, 0, "$");
 			try {
@@ -53,7 +53,7 @@ public class ScannerTests extends TestCase implements ITerminalSymbols {
 	}
 	
 	public void testEOF() throws Throwable {
-		IScanner scanner = ToolFactory.createScanner(true, true, true, true, AST.D1);
+		IScanner scanner = ToolFactory.createScanner(true, true, true, true, AST.LATEST);
 		scanner.setSource("$".toCharArray());
 		assertNextToken(scanner, TokenNameDOLLAR, 0, 0, "$");
 		assertNextToken(scanner, TokenNameEOF, 1, 1, "");
@@ -84,7 +84,7 @@ public class ScannerTests extends TestCase implements ITerminalSymbols {
 			String value = (String) pair[0];
 			int terminalSymbol = (Integer) pair[1];
 			
-			IScanner scanner = ToolFactory.createScanner(true, true, true, true, AST.D1);
+			IScanner scanner = ToolFactory.createScanner(true, true, true, true, AST.LATEST);
 			scanner.setSource(("$" + value).toCharArray());
 			assertNextToken(scanner, TokenNameDOLLAR, 0, 0, "$");
 			try {
@@ -110,7 +110,7 @@ public class ScannerTests extends TestCase implements ITerminalSymbols {
 			String comment = (String) pair[0];
 			int terminalSymbol = (Integer) pair[1];
 			
-			IScanner scanner = ToolFactory.createScanner(true, true, true, true, AST.D1);
+			IScanner scanner = ToolFactory.createScanner(true, true, true, true, AST.LATEST);
 			scanner.setSource(("$" + comment).toCharArray());
 			assertNextToken(scanner, TokenNameDOLLAR, 0, 0, "$");
 			try {
@@ -131,7 +131,7 @@ public class ScannerTests extends TestCase implements ITerminalSymbols {
 				"      ", 
 				"\r\n",
 			}) {
-			IScanner scanner = ToolFactory.createScanner(true, true, true, true, AST.D1);
+			IScanner scanner = ToolFactory.createScanner(true, true, true, true, AST.LATEST);
 			scanner.setSource(("$" + white).toCharArray());
 			assertNextToken(scanner, TokenNameDOLLAR, 0, 0, "$");
 			assertNextToken(scanner, ITerminalSymbols.TokenNameWHITESPACE, 1, white.length(), white);
@@ -148,7 +148,7 @@ public class ScannerTests extends TestCase implements ITerminalSymbols {
 				String comment = (String) pair[0];
 				int terminalSymbol = (Integer) pair[1];
 				
-				IScanner scanner = ToolFactory.createScanner(true, true, true, true, AST.D1);
+				IScanner scanner = ToolFactory.createScanner(true, true, true, true, AST.LATEST);
 				scanner.setSource(("$" + comment).toCharArray());
 				assertNextToken(scanner, TokenNameDOLLAR, 0, 0, "$");
 				try {
@@ -161,14 +161,14 @@ public class ScannerTests extends TestCase implements ITerminalSymbols {
 	}
 	
 	public void testPragmaRN() throws Throwable {
-		IScanner scanner = ToolFactory.createScanner(true, true, true, true, AST.D1);
+		IScanner scanner = ToolFactory.createScanner(true, true, true, true, AST.LATEST);
 		scanner.setSource(("$# something\r\n").toCharArray());
 		assertNextToken(scanner, TokenNameDOLLAR, 0, 0, "$");
 		assertNextToken(scanner, ITerminalSymbols.TokenNamePRAGMA, 1, 11, "# something");
 	}
 	
 	public void testEndLines() throws Throwable {
-		IScanner scanner = ToolFactory.createScanner(true, true, true, true, AST.D1);
+		IScanner scanner = ToolFactory.createScanner(true, true, true, true, AST.LATEST);
 		scanner.setSource((
 				"int x = 2;\n" +
 				"int bla = 3;\n" +

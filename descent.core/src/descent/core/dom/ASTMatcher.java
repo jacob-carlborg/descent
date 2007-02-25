@@ -3060,11 +3060,11 @@ public class ASTMatcher {
 	 *   <code>false</code> if they do not match or the other object has a
 	 *   different node type or is <code>null</code>
 	 */
-	public boolean match(MixinDeclaration node, Object other) {
-		if (!(other instanceof MixinDeclaration)) {
+	public boolean match(TemplateMixinDeclaration node, Object other) {
+		if (!(other instanceof TemplateMixinDeclaration)) {
 			return false;
 		}
-		MixinDeclaration o = (MixinDeclaration) other;
+		TemplateMixinDeclaration o = (TemplateMixinDeclaration) other;
 		return (
 			safeSubtreeListMatch(node.preDDocs(), o.preDDocs())
 			&& safeSubtreeListMatch(node.modifiers(), o.modifiers())
@@ -3341,6 +3341,81 @@ public class ASTMatcher {
 			&& safeSubtreeMatch(node.getPostconditionVariableName(), o.getPostconditionVariableName())
 			&& safeSubtreeMatch(node.getBody(), o.getBody())
 			&& safeSubtreeMatch(node.getPostDDoc(), o.getPostDDoc())
+			);
+	}
+	
+	/**
+	 * Returns whether the given node and the other object match.
+	 * <p>
+	 * The default implementation provided by this class tests whether the
+	 * other object is a node of the same type with structurally isomorphic
+	 * child subtrees. Subclasses may override this method as needed.
+	 * </p>
+	 * 
+	 * @param node the node
+	 * @param other the other object, or <code>null</code>
+	 * @return <code>true</code> if the subtree matches, or 
+	 *   <code>false</code> if they do not match or the other object has a
+	 *   different node type or is <code>null</code>
+	 */
+	public boolean match(MixinDeclaration node, Object other) {
+		if (!(other instanceof MixinDeclaration)) {
+			return false;
+		}
+		MixinDeclaration o = (MixinDeclaration) other;
+		return (
+			safeSubtreeListMatch(node.preDDocs(), o.preDDocs())
+			&& safeSubtreeListMatch(node.modifiers(), o.modifiers())
+			&& safeSubtreeMatch(node.getExpression(), o.getExpression())
+			&& safeSubtreeMatch(node.getPostDDoc(), o.getPostDDoc())
+			);
+	}
+	
+	/**
+	 * Returns whether the given node and the other object match.
+	 * <p>
+	 * The default implementation provided by this class tests whether the
+	 * other object is a node of the same type with structurally isomorphic
+	 * child subtrees. Subclasses may override this method as needed.
+	 * </p>
+	 * 
+	 * @param node the node
+	 * @param other the other object, or <code>null</code>
+	 * @return <code>true</code> if the subtree matches, or 
+	 *   <code>false</code> if they do not match or the other object has a
+	 *   different node type or is <code>null</code>
+	 */
+	public boolean match(MixinExpression node, Object other) {
+		if (!(other instanceof MixinExpression)) {
+			return false;
+		}
+		MixinExpression o = (MixinExpression) other;
+		return (
+			safeSubtreeMatch(node.getExpression(), o.getExpression())
+			);
+	}
+	
+	/**
+	 * Returns whether the given node and the other object match.
+	 * <p>
+	 * The default implementation provided by this class tests whether the
+	 * other object is a node of the same type with structurally isomorphic
+	 * child subtrees. Subclasses may override this method as needed.
+	 * </p>
+	 * 
+	 * @param node the node
+	 * @param other the other object, or <code>null</code>
+	 * @return <code>true</code> if the subtree matches, or 
+	 *   <code>false</code> if they do not match or the other object has a
+	 *   different node type or is <code>null</code>
+	 */
+	public boolean match(FileImportExpression node, Object other) {
+		if (!(other instanceof FileImportExpression)) {
+			return false;
+		}
+		FileImportExpression o = (FileImportExpression) other;
+		return (
+			safeSubtreeMatch(node.getExpression(), o.getExpression())
 			);
 	}
 

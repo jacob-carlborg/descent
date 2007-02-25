@@ -164,14 +164,14 @@ boolean isAlias() throws JavaModelException;
  */
 boolean isTypedef() throws JavaModelException;
 /**
- * Returns whether this field represents a mixin.
+ * Returns whether this field represents a template mixin.
  * 
- * @return whether this field represents a mixin
+ * @return whether this field represents a template mixin
  * @exception JavaModelException if this element does not exist or if an
  *      exception occurs while accessing its corresponding resource
  * @since 3.1
  */
-boolean isMixin() throws JavaModelException;
+boolean isTemplateMixin() throws JavaModelException;
 /**
  * Returns whether this field represents a resolved field.
  * If a field is resoved, its key contains resolved information.

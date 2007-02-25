@@ -1,6 +1,7 @@
 package descent.tests.mars;
 
 import descent.core.compiler.IProblem;
+import descent.core.dom.AST;
 import descent.core.dom.CompilationUnit;
 
 public class Problems_Test extends Parser_Test {
@@ -281,7 +282,7 @@ public class Problems_Test extends Parser_Test {
 	}
 
 	public void test_THREE_EQUALS_IS_DEPRECATED() {
-		IProblem p = getProblem(" bool x = 1 === 2;");
+		IProblem p = getProblem(" bool x = 1 === 2;", AST.D1);
 		assertError(p, IProblem.ThreeEqualsIsNoLongerLegal, 12, 3);
 	}
 
@@ -451,12 +452,12 @@ public class Problems_Test extends Parser_Test {
 	}
 
 	public void test_IFTYPE_DECPRECATED() {
-		IProblem p = getProblem(" iftype(x) { }");
+		IProblem p = getProblem(" iftype(x) { }", AST.D1);
 		assertError(p, IProblem.IftypeDeprecated, 1, 6);
 	}
 
 	public void test_INVALID_IFTYPE_SYNTAX() {
-		IProblem p = getProblems(" iftype int", 2)[0];
+		IProblem p = getProblems(" iftype int", 2, AST.D1)[0];
 		assertError(p, IProblem.ParsingErrorInsertToComplete, 1, 6);
 	}
 
@@ -556,7 +557,7 @@ public class Problems_Test extends Parser_Test {
 	}
 
 	public void test_ON_SCOPE_DEPRECATED() {
-		IProblem p = getProblem(" void bla() { on_scope_exit { } }");
+		IProblem p = getProblem(" void bla() { on_scope_exit { } }", AST.D1);
 		assertError(p, IProblem.OnScopeDeprecated, 14, 13);
 	}
 
@@ -611,7 +612,11 @@ public class Problems_Test extends Parser_Test {
 	}
 
 	private IProblem getProblem(String s) {
-		CompilationUnit unit = getCompilationUnit(s);
+		return getProblem(s, AST.LATEST);
+	}
+	
+	private IProblem getProblem(String s, int apiLevel) {
+		CompilationUnit unit = getCompilationUnit(s, apiLevel);
 		IProblem[] problems = unit.getProblems();
 		assertEquals(1, problems.length);
 
@@ -619,7 +624,11 @@ public class Problems_Test extends Parser_Test {
 	}
 
 	private IProblem[] getProblems(String s, int expected) {
-		CompilationUnit unit = getCompilationUnit(s);
+		return getProblems(s, expected, AST.LATEST);
+	}
+	
+	private IProblem[] getProblems(String s, int expected, int apiLevel) {
+		CompilationUnit unit = getCompilationUnit(s, apiLevel);
 		IProblem[] problems = unit.getProblems();
 		assertEquals(expected, problems.length);
 

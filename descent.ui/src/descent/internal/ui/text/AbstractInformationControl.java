@@ -79,7 +79,6 @@ import descent.internal.ui.util.StringMatcher;
  *
  * @since 2.1
  */
-// TODO JDT UI actions
 public abstract class AbstractInformationControl extends PopupDialog implements IInformationControl, IInformationControlExtension, IInformationControlExtension2, DisposeListener {
 
 	/**

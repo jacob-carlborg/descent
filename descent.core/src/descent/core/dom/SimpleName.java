@@ -252,8 +252,8 @@ public class SimpleName extends Name {
 		if (parent instanceof FunctionDeclaration) {
 			return (d == FunctionDeclaration.NAME_PROPERTY);
 		}
-		if (parent instanceof MixinDeclaration) {
-			return (d == MixinDeclaration.NAME_PROPERTY);
+		if (parent instanceof TemplateMixinDeclaration) {
+			return (d == TemplateMixinDeclaration.NAME_PROPERTY);
 		}
 		if (parent instanceof TemplateDeclaration) {
 			return (d == TemplateDeclaration.NAME_PROPERTY);
