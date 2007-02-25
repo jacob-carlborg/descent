@@ -38,6 +38,16 @@ public interface IScanner {
 	 * been translated into unicode characters
 	 */
 	char[] getRawTokenSource();	
+	
+	/**
+	 * Answers the current identifier source, before unicode escape sequences have
+	 * been translated into unicode characters.
+	 * For example, if original source was <code>\\u0061bc</code> then it will answer <code>\\u0061bc</code>.
+	 * 
+	 * @return the current identifier source, before unicode escape sequences have
+	 * been translated into unicode characters
+	 */
+	String getRawTokenSourceAsString();	
 
 	/**
 	 * Answers the starting position of the current token inside the original source.

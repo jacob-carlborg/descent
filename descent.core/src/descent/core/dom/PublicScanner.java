@@ -12,6 +12,7 @@ import descent.internal.core.parser.TOK;
 public class PublicScanner implements IScanner {
 	
 	private final static char[] EMPTY_CHAR_ARRAY = new char[0];
+	private final static String EMPTY_STRING = "";
 	
 	private final boolean tokenizeComments;
 	private final boolean tokenizePragmas;
@@ -134,6 +135,40 @@ public class PublicScanner implements IScanner {
 			default:
 				return lexer.token.value.charArrayValue;
 		}		
+	}
+	
+	public String getRawTokenSourceAsString() {
+		switch(lexer.token.value) {
+		case TOKeof:
+			return EMPTY_STRING;
+		case TOKint32v:
+		case TOKuns32v:
+		case TOKint64v:
+		case TOKuns64v:
+		case TOKfloat32v:
+		case TOKfloat64v:
+		case TOKfloat80v:
+		case TOKimaginary32v:
+		case TOKimaginary64v:
+		case TOKimaginary80v:
+		case TOKcharv:
+		case TOKwcharv:
+		case TOKdcharv:
+		case TOKstring:
+		case TOKlinecomment:
+		case TOKdoclinecomment:
+		case TOKblockcomment:
+		case TOKdocblockcomment:
+		case TOKpluscomment:
+		case TOKdocpluscomment:
+		case TOKwhitespace:
+		case TOKPRAGMA:
+			return lexer.token.string;
+		case TOKidentifier:
+			return lexer.token.ident.string;
+		default:
+			return lexer.token.value.value;
+	}	
 	}
 
 	public char[] getSource() {

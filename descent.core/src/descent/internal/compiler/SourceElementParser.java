@@ -60,6 +60,7 @@ import descent.internal.compiler.ISourceElementRequestor.FieldInfo;
 import descent.internal.compiler.ISourceElementRequestor.MethodInfo;
 import descent.internal.compiler.ISourceElementRequestor.TypeInfo;
 import descent.internal.compiler.ISourceElementRequestor.TypeParameterInfo;
+import descent.internal.compiler.impl.CompilerOptions;
 
 /**
  * A source element parser extracts structural and reference information
@@ -83,20 +84,37 @@ public class SourceElementParser extends ASTVisitor {
 	
 	private final static long[] NO_LONG = new long[0];
 	
-	private ISourceElementRequestor requestor;
+	public ISourceElementRequestor requestor;
 	private CompilationUnit compilationUnit;
 	private boolean foundType = false;
+	CompilerOptions options;
 
 	public SourceElementParser(
-			ISourceElementRequestor requestor) {
-		
+			ISourceElementRequestor requestor,
+			CompilerOptions options) {
 	
 		this.requestor = requestor;
+		this.options = options;
 	}
 
 	public CompilationUnit parseCompilationUnit(ICompilationUnit unit, boolean resolveBindings) {
 		ASTParser parser = ASTParser.newParser(AST.LATEST);
 		parser.setSource(unit);
+		parser.setCompilerOptions(options.getMap());
+		parser.setResolveBindings(resolveBindings);
+		compilationUnit = (CompilationUnit) parser.createAST(null);
+		
+		requestor.enterCompilationUnit();
+		compilationUnit.accept(this);
+		requestor.exitCompilationUnit(endOf(compilationUnit));
+		
+		return compilationUnit;
+	}
+	
+	public CompilationUnit parseCompilationUnit(descent.internal.compiler.env.ICompilationUnit unit, boolean resolveBindings) {
+		ASTParser parser = ASTParser.newParser(AST.LATEST);
+		parser.setSource(unit.getContents());
+		parser.setCompilerOptions(options.getMap());
 		parser.setResolveBindings(resolveBindings);
 		compilationUnit = (CompilationUnit) parser.createAST(null);
 		

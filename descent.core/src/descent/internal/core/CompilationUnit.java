@@ -55,6 +55,7 @@ import descent.core.WorkingCopyOwner;
 import descent.core.compiler.CharOperation;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.SourceElementParser;
+import descent.internal.compiler.impl.CompilerOptions;
 import descent.internal.compiler.util.SuffixConstants;
 import descent.internal.core.util.MementoTokenizer;
 import descent.internal.core.util.Messages;
@@ -147,7 +148,7 @@ protected boolean buildStructure(OpenableElementInfo info, final IProgressMonito
 		// disable task tags checking to speed up parsing
 		options.put(JavaCore.COMPILER_TASK_TAGS, ""); //$NON-NLS-1$
 	}
-	SourceElementParser parser = new SourceElementParser(requestor);
+	SourceElementParser parser = new SourceElementParser(requestor, new CompilerOptions(options));
 	// parser.reportOnlyOneSyntaxError = !computeProblems;
 	// parser.setStatementsRecovery(statementsRecovery);
 	
@@ -155,7 +156,7 @@ protected boolean buildStructure(OpenableElementInfo info, final IProgressMonito
 	// 	parser.javadocParser.checkDocComment = false;
 	requestor.source = contents;
 	//requestor.parser = parser;
-	descent.core.dom.CompilationUnit unit = parser.parseCompilationUnit(this, resolveBindings);
+	descent.core.dom.CompilationUnit unit = parser.parseCompilationUnit((ICompilationUnit) this, resolveBindings);
 	
 	// update timestamp (might be IResource.NULL_STAMP if original does not exist)
 	if (underlyingResource == null) {

@@ -111,12 +111,18 @@ public final class Flags {
 	 */
 	public static final int AccScope = 0x4000;
 	/**
+	 * Varargs property flag.
+	 * @since 2.0
+	 */
+	public static final int AccVarargs = 0x80000000;
+	
+	// Extensions for types
+	
+	/**
 	 * Enum property flag.
 	 * @since 2.0
 	 */
 	public static final int AccEnum = 0x8000;
-	
-	// Extensions for types
 	
 	/**
 	 * Interface property flag.

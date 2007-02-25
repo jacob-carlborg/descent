@@ -30,6 +30,9 @@ public interface IIndexConstants {
 	};
 	char CLASS_SUFFIX = 'C';
 	char INTERFACE_SUFFIX = 'I';
+	char STRUCT_SUFFIX = 'X';
+	char UNION_SUFFIX = 'U';
+	char TEMPLATE_SUFFIX = 'T';
 	char ENUM_SUFFIX = 'E';
 	char ANNOTATION_TYPE_SUFFIX = 'A';
 	char TYPE_SUFFIX = 0;
