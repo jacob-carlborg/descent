@@ -110,7 +110,10 @@ public boolean isStaticConstructor() throws JavaModelException {
 		&& !Flags.isUnitTest(flags)
 		&& !Flags.isStaticAssert(flags)
 		&& !Flags.isDebugAssignment(flags)
-		&& !Flags.isVersionAssignment(flags);
+		&& !Flags.isVersionAssignment(flags)
+		&& !Flags.isAlign(flags)
+		&& !Flags.isExternDeclaration(flags)
+		&& !Flags.isPragma(flags);
 }
 public boolean isStaticDestructor() throws JavaModelException {
 	return Flags.isStaticDestructor(getFlags());
@@ -129,6 +132,15 @@ public boolean isVersionAssignment() throws JavaModelException {
 }
 public boolean isDebugAssignment() throws JavaModelException {
 	return Flags.isDebugAssignment(getFlags());
+}
+public boolean isAlign() throws JavaModelException {
+	return Flags.isAlign(getFlags());
+}
+public boolean isExtern() throws JavaModelException {
+	return Flags.isExternDeclaration(getFlags());
+}
+public boolean isPragma() throws JavaModelException {
+	return Flags.isPragma(getFlags());
 }
 /**
  * @private Debugging purposes

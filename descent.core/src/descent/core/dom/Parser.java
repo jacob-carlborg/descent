@@ -4665,6 +4665,7 @@ class Parser extends Lexer {
 		case TOKtypeof:
 		{   
 			Expression exp;
+			int start = token.ptr;
 
 		    nextToken();
 		    check(TOKlparen);
@@ -4672,6 +4673,7 @@ class Parser extends Lexer {
 		    check(TOKrparen);
 		    
 			t = newTypeofType(exp);
+			t.setSourceRange(start, prevToken.ptr + prevToken.len - start);
 			
 		    if (token.value == TOKdot) {
 		    	// goto L1;
@@ -4696,6 +4698,7 @@ class Parser extends Lexer {
 
 		case TOKtypeid:
 		{   Type t2;
+			int start = token.ptr;
 
 		    nextToken();
 		    check(TOKlparen);
@@ -4703,6 +4706,7 @@ class Parser extends Lexer {
 		    t2 = parseDeclarator(t2, null);	// ( type )
 		    check(TOKrparen);
 		    e = newTypeidExpression(t2);
+		    e.setSourceRange(start, prevToken.ptr + prevToken.len - start);
 		    break;
 		}
 
@@ -6673,6 +6677,7 @@ class Parser extends Lexer {
 		TypeDotIdentifierExpression typeDot = new TypeDotIdentifierExpression(ast);
 		typeDot.setType(t);
 		typeDot.setName(newSimpleNameForToken(token));
+		typeDot.setSourceRange(t.getStartPosition(), token.ptr + token.len - t.getStartPosition());
 		return typeDot;
 	}
 	

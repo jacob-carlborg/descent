@@ -506,7 +506,8 @@ class DefaultCommentMapper {
 			long nodeRange = (((long)startIdx)<<32) + endIdx;
 			this.trailingIndexes[this.trailingPtr] = nodeRange;
 			// Compute new extended end
-			extended = this.comments[endIdx].getStartPosition()+this.comments[endIdx].getLength()-1;
+			//extended = this.comments[endIdx].getStartPosition()+this.comments[endIdx].getLength()-1;
+			extended = this.comments[endIdx].getStartPosition()+this.comments[endIdx].getLength();
 			// Look for children unresolved extended end
 			ASTNode previousNode = node;
 			int ptr = this.trailingPtr - 1; // children extended end were stored before

@@ -875,12 +875,18 @@ public class ASTParser {
 					needToResolveBindings = false;
 				}
 			} else {
-				result = CompilationUnitResolver.parse(
-						this.apiLevel,
-						sourceUnit,
-						this.compilerOptions,
-						this.statementsRecovery);
-				needToResolveBindings = false;
+				try {
+					result = CompilationUnitResolver.parse(
+							this.apiLevel,
+							sourceUnit,
+							this.compilerOptions,
+							this.statementsRecovery);
+					needToResolveBindings = false;
+				} catch (IllegalArgumentException e) {
+					// TODO JDT remove... this is for debugging purposes
+					System.out.println(sourceUnit.getContents());
+					throw e;
+				}
 			}
 			
 			result.setJavaElement(element);

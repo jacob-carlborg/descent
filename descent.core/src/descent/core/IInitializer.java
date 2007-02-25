@@ -88,6 +88,36 @@ public interface IInitializer extends IMember {
 	 */
 	boolean isVersionAssignment() throws JavaModelException;
 	
+	/**
+	 * Returns whether this initializer represents an align.
+	 * 
+	 * @return whether this initializer represents an align
+	 * @exception JavaModelException if this element does not exist or if an
+	 *      exception occurs while accessing its corresponding resource
+	 * @since 3.1
+	 */
+	boolean isAlign() throws JavaModelException;
+	
+	/**
+	 * Returns whether this initializer represents an extern.
+	 * 
+	 * @return whether this initializer represents an extern
+	 * @exception JavaModelException if this element does not exist or if an
+	 *      exception occurs while accessing its corresponding resource
+	 * @since 3.1
+	 */
+	boolean isExtern() throws JavaModelException;
+	
+	/**
+	 * Returns whether this initializer represents a pragma.
+	 * 
+	 * @return whether this initializer represents a pragma
+	 * @exception JavaModelException if this element does not exist or if an
+	 *      exception occurs while accessing its corresponding resource
+	 * @since 3.1
+	 */
+	boolean isPragma() throws JavaModelException;
+	
 	
 	
 }

@@ -93,5 +93,28 @@ public class Bugs_Test extends Parser_Test {
 		unit = getCompilationUnit(s);
 		assertEquals(1, unit.getProblems().length);
 	}
+	
+	public void testBug11() {
+		String s = "void bla() { typeof(mangF).mangleof[3]; }";
+		getCompilationUnit(s);
+	}
+	
+	public void testBug12() {
+		String s = "void bla() { typeid(K).getHash; }";
+		getCompilationUnit(s);
+	}
+	
+	// error parsing the token 0_
+	public void testBug13() {
+		String s = "void bla() { h4 = (0_) % 256; }";
+		assertEquals(0, getCompilationUnit(s).getProblems().length);
+	}
+	
+	public void testBug14() {
+		String s = "int suffix; // inclusive of leftmost '.'\n" +
+				   "/** */\n" +
+				   "int x;";
+		assertEquals(0, getCompilationUnit(s).getProblems().length);
+	}
 
 }

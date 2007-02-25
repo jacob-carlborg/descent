@@ -1519,7 +1519,6 @@ public class Lexer implements IProblemCollector {
 				case '_':
 					state = STATE.STATE_octal;
 					writeToStringBuffer = false;
-					p++;
 					break;
 					
 			    case 'L':

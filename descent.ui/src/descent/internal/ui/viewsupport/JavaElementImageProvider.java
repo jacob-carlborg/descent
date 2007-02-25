@@ -183,14 +183,20 @@ public class JavaElementImageProvider {
 						return JavaPluginImages.DESC_MISC_PRIVATE; // 23479
 					} else if (init.isInvariant()) {
 						return JavaPluginImages.DESC_OBJS_INVARIANT;
-					} else if (init.isStaticDestructor()) {
+					} else if (init.isUnitTest()) {
 						return JavaPluginImages.DESC_OBJS_UNITTEST;
 					} else if (init.isStaticAssert()) {
 						return JavaPluginImages.DESC_OBJS_STATIC_ASSERT;
 					} else if (init.isDebugAssignment()) {
 						return JavaPluginImages.DESC_OBJS_DEBUG_ASSIGNMENT;
-					} else {
+					} else if (init.isVersionAssignment()) {
 						return JavaPluginImages.DESC_OBJS_VERSION_ASSIGNMENT;
+					} else if (init.isAlign()) {
+						return JavaPluginImages.DESC_OBJS_ALIGN;
+					} else if (init.isExtern()) {
+						return JavaPluginImages.DESC_OBJS_EXTERN;
+					} else {
+						return JavaPluginImages.DESC_OBJS_PRAGMA;
 					}
 				case IJavaElement.METHOD: {
 					IMethod method= (IMethod) element;
@@ -308,7 +314,8 @@ public class JavaElementImageProvider {
 	}
 	
 	private static boolean isDefaultFlag(int flags) {
-		return !Flags.isPublic(flags) && !Flags.isProtected(flags) && !Flags.isPrivate(flags);
+		//return !Flags.isPublic(flags) && !Flags.isProtected(flags) && !Flags.isPrivate(flags);
+		return Flags.isPackage(flags);
 	}
 	
 	protected ImageDescriptor getPackageFragmentIcon(IJavaElement element, int renderFlags) throws JavaModelException {
@@ -387,58 +394,60 @@ public class JavaElementImageProvider {
 	
 	
 	public static ImageDescriptor getMethodImageDescriptor(boolean isInInterfaceOrAnnotation, int flags) {
-		if (Flags.isPublic(flags) || isInInterfaceOrAnnotation)
-			return JavaPluginImages.DESC_MISC_PUBLIC;
+		if (Flags.isPackage(flags) || isInInterfaceOrAnnotation)
+			return JavaPluginImages.DESC_MISC_DEFAULT;
 		if (Flags.isProtected(flags))
 			return JavaPluginImages.DESC_MISC_PROTECTED;
 		if (Flags.isPrivate(flags))
 			return JavaPluginImages.DESC_MISC_PRIVATE;
 		
-		return JavaPluginImages.DESC_MISC_DEFAULT;
+		return JavaPluginImages.DESC_MISC_PUBLIC;
 	}
 		
 	public static ImageDescriptor getVariableImageDescriptor(boolean isInInterfaceOrAnnotation, int flags) {
-		if (Flags.isPublic(flags) || isInInterfaceOrAnnotation || Flags.isEnum(flags))
+		if (Flags.isEnum(flags))
 			return JavaPluginImages.DESC_FIELD_PUBLIC;
+		if (Flags.isPackage(flags))
+			return JavaPluginImages.DESC_FIELD_DEFAULT;
 		if (Flags.isProtected(flags))
 			return JavaPluginImages.DESC_FIELD_PROTECTED;
 		if (Flags.isPrivate(flags))
 			return JavaPluginImages.DESC_FIELD_PRIVATE;
 			
-		return JavaPluginImages.DESC_FIELD_DEFAULT;
+		return JavaPluginImages.DESC_FIELD_PUBLIC;
 	}
 	
 	public static ImageDescriptor getAliasImageDescriptor(int flags) {
-		if (Flags.isPublic(flags))
-			return JavaPluginImages.DESC_ALIAS_PUBLIC;
+		if (Flags.isPackage(flags))
+			return JavaPluginImages.DESC_ALIAS_DEFAULT;
 		if (Flags.isProtected(flags))
 			return JavaPluginImages.DESC_ALIAS_PROTECTED;
 		if (Flags.isPrivate(flags))
 			return JavaPluginImages.DESC_ALIAS_PRIVATE;
 			
-		return JavaPluginImages.DESC_ALIAS_DEFAULT;
+		return JavaPluginImages.DESC_ALIAS_PUBLIC;
 	}
 	
 	public static ImageDescriptor getTypedefImageDescriptor(int flags) {
-		if (Flags.isPublic(flags))
-			return JavaPluginImages.DESC_TYPEDEF_PUBLIC;
+		if (Flags.isPackage(flags))
+			return JavaPluginImages.DESC_TYPEDEF_DEFAULT;
 		if (Flags.isProtected(flags))
 			return JavaPluginImages.DESC_TYPEDEF_PROTECTED;
 		if (Flags.isPrivate(flags))
 			return JavaPluginImages.DESC_TYPEDEF_PRIVATE;
 			
-		return JavaPluginImages.DESC_TYPEDEF_DEFAULT;
+		return JavaPluginImages.DESC_TYPEDEF_PUBLIC;
 	}
 	
 	public static ImageDescriptor getMixinImageDescriptor(int flags) {
-		if (Flags.isPublic(flags))
-			return JavaPluginImages.DESC_MIXIN_PUBLIC;
+		if (Flags.isPackage(flags))
+			return JavaPluginImages.DESC_MIXIN_DEFAULT;
 		if (Flags.isProtected(flags))
 			return JavaPluginImages.DESC_MIXIN_PROTECTED;
 		if (Flags.isPrivate(flags))
 			return JavaPluginImages.DESC_MIXIN_PRIVATE;
 			
-		return JavaPluginImages.DESC_MIXIN_DEFAULT;
+		return JavaPluginImages.DESC_MIXIN_PUBLIC;
 	}
 	
 	public static ImageDescriptor getInvariantImageDescriptor(int flags) {
@@ -527,39 +536,39 @@ public class JavaElementImageProvider {
 	
 
 	private static ImageDescriptor getClassImageDescriptor(int flags) {
-		if (Flags.isPublic(flags) || Flags.isProtected(flags) || Flags.isPrivate(flags))
-			return JavaPluginImages.DESC_OBJS_CLASS;
-		else
+		if (Flags.isPackage(flags) || Flags.isProtected(flags) || Flags.isPrivate(flags))
 			return JavaPluginImages.DESC_OBJS_CLASS_DEFAULT;
+		else
+			return JavaPluginImages.DESC_OBJS_CLASS;
 	}
 	
 	private static ImageDescriptor getInnerClassImageDescriptor(boolean isInInterfaceOrAnnotation, int flags) {
-		if (Flags.isPublic(flags) || isInInterfaceOrAnnotation)
-			return JavaPluginImages.DESC_OBJS_INNER_CLASS_PUBLIC;
+		if (Flags.isPackage(flags))
+			return JavaPluginImages.DESC_OBJS_INNER_CLASS_DEFAULT;
 		else if (Flags.isPrivate(flags))
 			return JavaPluginImages.DESC_OBJS_INNER_CLASS_PRIVATE;
 		else if (Flags.isProtected(flags))
 			return JavaPluginImages.DESC_OBJS_INNER_CLASS_PROTECTED;
 		else
-			return JavaPluginImages.DESC_OBJS_INNER_CLASS_DEFAULT;
+			return JavaPluginImages.DESC_OBJS_INNER_CLASS_PUBLIC;
 	}
 	
 	private static ImageDescriptor getEnumImageDescriptor(int flags) {
-		if (Flags.isPublic(flags) || Flags.isProtected(flags) || Flags.isPrivate(flags))
-			return JavaPluginImages.DESC_OBJS_ENUM;
-		else
+		if (Flags.isPackage(flags) || Flags.isProtected(flags) || Flags.isPrivate(flags))
 			return JavaPluginImages.DESC_OBJS_ENUM_DEFAULT;
+		else
+			return JavaPluginImages.DESC_OBJS_ENUM;
 	}
 	
 	private static ImageDescriptor getInnerEnumImageDescriptor(boolean isInInterfaceOrAnnotation, int flags) {
-		if (Flags.isPublic(flags) || isInInterfaceOrAnnotation)
-			return JavaPluginImages.DESC_OBJS_ENUM;
+		if (Flags.isPackage(flags))
+			return JavaPluginImages.DESC_OBJS_ENUM_DEFAULT;
 		else if (Flags.isPrivate(flags))
 			return JavaPluginImages.DESC_OBJS_ENUM_PRIVATE;
 		else if (Flags.isProtected(flags))
 			return JavaPluginImages.DESC_OBJS_ENUM_PROTECTED;
 		else
-			return JavaPluginImages.DESC_OBJS_ENUM_DEFAULT;
+			return JavaPluginImages.DESC_OBJS_ENUM;
 	}
 	
 	/*
@@ -583,42 +592,42 @@ public class JavaElementImageProvider {
 	*/
 	
 	private static ImageDescriptor getInterfaceImageDescriptor(int flags) {
-		if (Flags.isPublic(flags) || Flags.isProtected(flags) || Flags.isPrivate(flags))
-			return JavaPluginImages.DESC_OBJS_INTERFACE;
-		else
+		if (Flags.isPackage(flags) || Flags.isProtected(flags) || Flags.isPrivate(flags))
 			return JavaPluginImages.DESC_OBJS_INTERFACE_DEFAULT;
+		else	
+			return JavaPluginImages.DESC_OBJS_INTERFACE;
 	}
 	
 	private static ImageDescriptor getStructImageDescriptor(int flags) {
-		if (Flags.isPublic(flags) || Flags.isProtected(flags) || Flags.isPrivate(flags))
-			return JavaPluginImages.DESC_OBJS_STRUCT;
-		else
+		if (Flags.isPackage(flags) || Flags.isProtected(flags) || Flags.isPrivate(flags))
 			return JavaPluginImages.DESC_OBJS_STRUCT_DEFAULT;
+		else
+			return JavaPluginImages.DESC_OBJS_STRUCT;			
 	}
 	
 	private static ImageDescriptor getUnionImageDescriptor(int flags) {
-		if (Flags.isPublic(flags) || Flags.isProtected(flags) || Flags.isPrivate(flags))
-			return JavaPluginImages.DESC_OBJS_UNION;
-		else
+		if (Flags.isPackage(flags) || Flags.isProtected(flags) || Flags.isPrivate(flags))
 			return JavaPluginImages.DESC_OBJS_UNION_DEFAULT;
+		else
+			return JavaPluginImages.DESC_OBJS_UNION;
 	}
 	
 	private static ImageDescriptor getTemplateImageDescriptor(int flags) {
-		if (Flags.isPublic(flags) || Flags.isProtected(flags) || Flags.isPrivate(flags))
-			return JavaPluginImages.DESC_OBJS_TEMPLATE_ELEMENT;
-		else
+		if (Flags.isPackage(flags) || Flags.isProtected(flags) || Flags.isPrivate(flags))
 			return JavaPluginImages.DESC_OBJS_TEMPLATE_ELEMENT_DEFAULT;
+		else
+			return JavaPluginImages.DESC_OBJS_TEMPLATE_ELEMENT;
 	}
 	
 	private static ImageDescriptor getInnerInterfaceImageDescriptor(boolean isInInterfaceOrAnnotation, int flags) {
-		if (Flags.isPublic(flags) || isInInterfaceOrAnnotation)
-			return JavaPluginImages.DESC_OBJS_INNER_INTERFACE_PUBLIC;
+		if (Flags.isPackage(flags))
+			return JavaPluginImages.DESC_OBJS_INNER_INTERFACE_DEFAULT;
 		else if (Flags.isPrivate(flags))
 			return JavaPluginImages.DESC_OBJS_INNER_INTERFACE_PRIVATE;
 		else if (Flags.isProtected(flags))
 			return JavaPluginImages.DESC_OBJS_INNER_INTERFACE_PROTECTED;
 		else
-			return JavaPluginImages.DESC_OBJS_INTERFACE_DEFAULT;
+			return JavaPluginImages.DESC_OBJS_INTERFACE;
 	}
 	
 	private static ImageDescriptor getInnerStructImageDescriptor(boolean isInInterfaceOrAnnotation, int flags) {

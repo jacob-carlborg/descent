@@ -220,6 +220,24 @@ public final class Flags {
 	 * @since 2.0
 	 */
 	public static final int AccVersionAssignment = 0x00200000;
+	
+	/**
+	 * Align property flag.
+	 * @since 2.0
+	 */
+	public static final int AccAlign = 0x00400000;
+	
+	/**
+	 * Extern declaration property flag.
+	 * @since 2.0
+	 */
+	public static final int AccExternDeclaration = 0x00800000;
+	
+	/**
+	 * Pragma property flag.
+	 * @since 2.0
+	 */
+	public static final int AccPragma = 0x01000000;
 
 	/**
 	 * Not instantiable.
@@ -559,6 +577,36 @@ public final class Flags {
 	}
 	
 	/**
+	 * Returns whether the given integer includes the <code>align</code> modifier.
+	 *
+	 * @param flags the flags
+	 * @return <code>true</code> if the <code>align</code> modifier is included
+	 */
+	public static boolean isAlign(int flags) {
+		return (flags & AccAlign) != 0;
+	}
+	
+	/**
+	 * Returns whether the given integer includes the <code>extern declaration</code> modifier.
+	 *
+	 * @param flags the flags
+	 * @return <code>true</code> if the <code>extern declaration</code> modifier is included
+	 */
+	public static boolean isExternDeclaration(int flags) {
+		return (flags & AccExternDeclaration) != 0;
+	}
+	
+	/**
+	 * Returns whether the given integer includes the <code>pragma</code> modifier.
+	 *
+	 * @param flags the flags
+	 * @return <code>true</code> if the <code>pragma</code> modifier is included
+	 */
+	public static boolean isPragma(int flags) {
+		return (flags & AccPragma) != 0;
+	}
+	
+	/**
 	 * Returns a standard string describing the given modifier flags.
 	 * @param flags the flags
 	 * @return the standard string representation of the given flags
@@ -632,6 +680,12 @@ public final class Flags {
 			sb.append("version= "); //$NON-NLS-1$
 		if (isDebugAssignment(flags))
 			sb.append("debug= "); //$NON-NLS-1$
+		if (isAlign(flags))
+			sb.append("align "); //$NON-NLS-1$
+		if (isExternDeclaration(flags))
+			sb.append("extern declaration "); //$NON-NLS-1$
+		if (isPragma(flags))
+			sb.append("pragma "); //$NON-NLS-1$
 
 		int len = sb.length();
 		if (len == 0)

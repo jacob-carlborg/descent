@@ -813,11 +813,17 @@ public class JavaElementLabels {
 			} else if (initializer.isStaticDestructor()){
 				buf.append(JavaUIMessages.JavaElementLabels_uninitializer);
 			} else if (initializer.isStaticAssert()) {
-				buf.append(JavaUIMessages.JavaElementLabels_static_assert);
+				buf.append(Messages.format(JavaUIMessages.JavaElementLabels_static_assert, initializer.getElementName()));
 			} else if (initializer.isDebugAssignment()) {
 				buf.append(Messages.format(JavaUIMessages.JavaElementLabels_debug_assignment, initializer.getElementName()));
-			} else {
+			} else if (initializer.isVersionAssignment()) {
 				buf.append(Messages.format(JavaUIMessages.JavaElementLabels_version_assignment, initializer.getElementName()));
+			} else if (initializer.isAlign()) {
+				buf.append(initializer.getElementName());
+			} else if (initializer.isExtern()) {
+				buf.append(initializer.getElementName());
+			} else {
+				buf.append(initializer.getElementName());
 			}
 	
 			/*

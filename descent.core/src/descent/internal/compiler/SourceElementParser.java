@@ -22,6 +22,7 @@ import descent.core.dom.ASTVisitor;
 import descent.core.dom.AggregateDeclaration;
 import descent.core.dom.AliasDeclaration;
 import descent.core.dom.AliasDeclarationFragment;
+import descent.core.dom.AlignDeclaration;
 import descent.core.dom.Argument;
 import descent.core.dom.BaseClass;
 import descent.core.dom.CompilationUnit;
@@ -29,6 +30,7 @@ import descent.core.dom.ConstructorDeclaration;
 import descent.core.dom.DebugAssignment;
 import descent.core.dom.EnumDeclaration;
 import descent.core.dom.EnumMember;
+import descent.core.dom.ExternDeclaration;
 import descent.core.dom.FunctionDeclaration;
 import descent.core.dom.Import;
 import descent.core.dom.ImportDeclaration;
@@ -36,6 +38,7 @@ import descent.core.dom.InvariantDeclaration;
 import descent.core.dom.MixinDeclaration;
 import descent.core.dom.Modifier;
 import descent.core.dom.ModuleDeclaration;
+import descent.core.dom.PragmaDeclaration;
 import descent.core.dom.SimpleName;
 import descent.core.dom.StaticAssert;
 import descent.core.dom.TemplateDeclaration;
@@ -568,7 +571,7 @@ public class SourceElementParser extends ASTVisitor {
 	
 	@Override
 	public boolean visit(StaticAssert node) {
-		requestor.enterInitializer(startOf(node), getFlags(node.modifiers()) | Flags.AccStaticAssert, CharOperation.NO_CHAR);
+		requestor.enterInitializer(startOf(node), getFlags(node.modifiers()) | Flags.AccStaticAssert, node.getExpression().toString().toCharArray());
 		return false;
 	}
 	
@@ -598,5 +601,48 @@ public class SourceElementParser extends ASTVisitor {
 	public void endVisit(VersionAssignment node) {
 		requestor.exitInitializer(endOf(node));
 	}
+	
+	@Override
+	public boolean visit(AlignDeclaration node) {
+		requestor.enterInitializer(startOf(node), getFlags(node.modifiers()) | Flags.AccAlign, node.getAlign() == 0 ? CharOperation.NO_CHAR : String.valueOf(node.getAlign()).toCharArray());
+		return true;
+	}
+	
+	@Override
+	public void endVisit(AlignDeclaration node) {
+		requestor.exitInitializer(endOf(node));
+	}
+	
+	@Override
+	public boolean visit(ExternDeclaration node) {
+		requestor.enterInitializer(startOf(node), getFlags(node.modifiers()) | Flags.AccExternDeclaration, String.valueOf(node.getLinkage().toString()).toCharArray());
+		return true;
+	}
+	
+	@Override
+	public void endVisit(ExternDeclaration node) {
+		requestor.exitInitializer(endOf(node));
+	}
+	
+	@Override
+	public boolean visit(PragmaDeclaration node) {
+		StringBuilder sb = new StringBuilder();
+		sb.append(node.getName());
+		if (node.arguments().size() > 0) {
+			sb.append(": ");
+			for(int i = 0; i < node.arguments().size(); i++) {
+				if (i != 0)
+					sb.append(", ");
+				sb.append(node.arguments().get(i).toString());
+			}
+		}
+		requestor.enterInitializer(startOf(node), getFlags(node.modifiers()) | Flags.AccPragma, sb.toString().toCharArray());
+		return true;
+	}
+	
+	@Override
+	public void endVisit(PragmaDeclaration node) {
+		requestor.exitInitializer(endOf(node));
+	}	
 	
 }
