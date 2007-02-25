@@ -298,6 +298,68 @@ public void enterInitializer(
 		this.infoStack.push(info);
 		this.handleStack.push(handle);
 }
+
+public void enterConditional(int declarationSourceStart, int modifiers, char[] displayString) {
+	JavaElementInfo parentInfo = (JavaElementInfo) this.infoStack.peek();
+	JavaElement parentHandle= (JavaElement) this.handleStack.peek();
+	Conditional handle = null;
+	
+	//if (parentHandle.getElementType() == IJavaElement.TYPE) {
+	if (displayString.length == 0) {
+		handle = new Conditional(parentHandle, 1);
+	} else {
+		String displayStringStr = JavaModelManager.getJavaModelManager().intern(new String(displayString));
+		handle = new Conditional(parentHandle, 1, displayStringStr);
+	}
+	//}
+	//else {
+	//Assert.isTrue(false); // Should not happen
+	//}
+	resolveDuplicates(handle);
+	
+	ConditionalElementInfo info = new ConditionalElementInfo();
+	info.setSourceRangeStart(declarationSourceStart);
+	info.setFlags(modifiers);
+
+	addToChildren(parentInfo, handle);
+	this.newElements.put(handle, info);
+
+	this.infoStack.push(info);
+	this.handleStack.push(handle);
+}
+
+public void enterConditionalThen(int declarationSourceStart) {
+	JavaElementInfo parentInfo = (JavaElementInfo) this.infoStack.peek();
+	JavaElement parentHandle= (JavaElement) this.handleStack.peek();
+	Initializer handle = new Initializer(parentHandle, 1);
+	resolveDuplicates(handle);
+	
+	InitializerElementInfo info = new InitializerElementInfo();
+	info.setSourceRangeStart(declarationSourceStart);
+	info.setFlags(Flags.AccThen);
+	addToChildren(parentInfo, handle);
+	this.newElements.put(handle, info);
+
+	this.infoStack.push(info);
+	this.handleStack.push(handle);
+}
+
+public void enterConditionalElse(int declarationSourceStart) {
+	JavaElementInfo parentInfo = (JavaElementInfo) this.infoStack.peek();
+	JavaElement parentHandle= (JavaElement) this.handleStack.peek();
+	Initializer handle = new Initializer(parentHandle, 1);
+	resolveDuplicates(handle);
+	
+	InitializerElementInfo info = new InitializerElementInfo();
+	info.setSourceRangeStart(declarationSourceStart);
+	info.setFlags(Flags.AccElse);
+	addToChildren(parentInfo, handle);
+	this.newElements.put(handle, info);
+
+	this.infoStack.push(info);
+	this.handleStack.push(handle);
+}
+
 /**
  * @see ISourceElementRequestor
  */
@@ -500,6 +562,24 @@ public void exitField(int initializationStart, int declarationEnd, int declarati
  * @see ISourceElementRequestor
  */
 public void exitInitializer(int declarationEnd) {
+	exitMember(declarationEnd);
+}
+/**
+ * @see ISourceElementRequestor
+ */
+public void exitConditional(int declarationEnd) {
+	exitMember(declarationEnd);
+}
+/**
+ * @see ISourceElementRequestor
+ */
+public void exitConditionalThen(int declarationEnd) {
+	exitMember(declarationEnd);
+}
+/**
+ * @see ISourceElementRequestor
+ */
+public void exitConditionalElse(int declarationEnd) {
 	exitMember(declarationEnd);
 }
 /**

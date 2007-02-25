@@ -454,6 +454,8 @@ public interface IType extends IMember {
 	 */
 	IInitializer getInitializer(int occurrenceCount);
 	
+	IConditional getConditional(int occurrenceCount);
+	
 	/**
 	 * Returns the initializers declared by this type.
 	 * For binary types this is an empty collection.

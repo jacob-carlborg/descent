@@ -26,12 +26,16 @@ import descent.core.dom.AlignDeclaration;
 import descent.core.dom.Argument;
 import descent.core.dom.BaseClass;
 import descent.core.dom.CompilationUnit;
+import descent.core.dom.ConditionalDeclaration;
 import descent.core.dom.ConstructorDeclaration;
 import descent.core.dom.DebugAssignment;
+import descent.core.dom.DebugDeclaration;
+import descent.core.dom.Declaration;
 import descent.core.dom.EnumDeclaration;
 import descent.core.dom.EnumMember;
 import descent.core.dom.ExternDeclaration;
 import descent.core.dom.FunctionDeclaration;
+import descent.core.dom.IftypeDeclaration;
 import descent.core.dom.Import;
 import descent.core.dom.ImportDeclaration;
 import descent.core.dom.InvariantDeclaration;
@@ -41,6 +45,7 @@ import descent.core.dom.ModuleDeclaration;
 import descent.core.dom.PragmaDeclaration;
 import descent.core.dom.SimpleName;
 import descent.core.dom.StaticAssert;
+import descent.core.dom.StaticIfDeclaration;
 import descent.core.dom.TemplateDeclaration;
 import descent.core.dom.TemplateParameter;
 import descent.core.dom.TypedefDeclaration;
@@ -49,6 +54,7 @@ import descent.core.dom.UnitTestDeclaration;
 import descent.core.dom.VariableDeclaration;
 import descent.core.dom.VariableDeclarationFragment;
 import descent.core.dom.VersionAssignment;
+import descent.core.dom.VersionDeclaration;
 import descent.internal.compiler.ISourceElementRequestor.FieldInfo;
 import descent.internal.compiler.ISourceElementRequestor.MethodInfo;
 import descent.internal.compiler.ISourceElementRequestor.TypeInfo;
@@ -643,6 +649,77 @@ public class SourceElementParser extends ASTVisitor {
 	@Override
 	public void endVisit(PragmaDeclaration node) {
 		requestor.exitInitializer(endOf(node));
-	}	
+	}
+	
+	@Override
+	public boolean visit(DebugDeclaration node) {
+		return visitConditionalDeclaration(node, Flags.AccDefault, node.getVersion().getValue());
+	}
+	
+	@Override
+	public void endVisit(DebugDeclaration node) {
+		requestor.exitConditional(endOf(node));
+	}
+	
+	@Override
+	public boolean visit(StaticIfDeclaration node) {
+		return visitConditionalDeclaration(node, Flags.AccStaticIfDeclaration, node.getExpression().toString());
+	}
+	
+	@Override
+	public void endVisit(StaticIfDeclaration node) {
+		requestor.exitConditional(endOf(node));
+	}
+	
+	@Override
+	public boolean visit(IftypeDeclaration node) {
+		// TODO JDT model iftype
+		return visitConditionalDeclaration(node, Flags.AccIftypeDeclaration, "");
+	}
+	
+	@Override
+	public void endVisit(IftypeDeclaration node) {
+		requestor.exitConditional(endOf(node));
+	}
+	
+	@Override
+	public boolean visit(VersionDeclaration node) {
+		return visitConditionalDeclaration(node, Flags.AccVersionDeclaration, node.getVersion().getValue());
+	}
+	
+	@Override
+	public void endVisit(VersionDeclaration node) {
+		requestor.exitConditional(endOf(node));
+	}
+	
+	private boolean visitConditionalDeclaration(ConditionalDeclaration node, int flags, String displayString) {
+		requestor.enterConditional(node.getStartPosition(), getFlags(node.modifiers()) | flags, displayString.toCharArray());
+		
+		List<Declaration> thenDeclarations = node.thenDeclarations();
+		List<Declaration> elseDeclarations = node.elseDeclarations();
+		
+		if (!thenDeclarations.isEmpty()) {
+			if (!elseDeclarations.isEmpty()) {
+				requestor.enterConditionalThen(startOf(thenDeclarations.get(0)));
+			}
+			for(Declaration declaration : thenDeclarations) {
+				declaration.accept(this);
+			}
+			if (!elseDeclarations.isEmpty()) {
+				requestor.exitConditionalThen(endOf(thenDeclarations.get(thenDeclarations.size() - 1)));
+			}
+		}
+		
+		
+		if (!elseDeclarations.isEmpty()) {
+			requestor.enterConditionalElse(startOf(elseDeclarations.get(0)));
+			for(Declaration declaration : elseDeclarations) {
+				declaration.accept(this);
+			}
+			requestor.exitConditionalElse(endOf(elseDeclarations.get(elseDeclarations.size() - 1)));
+		}
+		
+		return false;
+	}
 	
 }

@@ -124,6 +124,8 @@ public interface IJavaElement extends IAdaptable {
 	 * @since 3.1
 	 */
 	int TYPE_PARAMETER = 15;
+	
+	int CONDITIONAL = 16;
 
 	/**
 	 * Returns whether this Java element exists in the model.

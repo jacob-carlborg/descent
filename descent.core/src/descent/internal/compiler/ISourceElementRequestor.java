@@ -134,6 +134,12 @@ public interface ISourceElementRequestor {
 	void acceptUnknownReference(char[] name, int sourcePosition);
 
 	void enterCompilationUnit();
+	
+	void enterConditional(int declarationStart, int modifiers, char[] displayString);
+	
+	void enterConditionalThen(int declarationStart);
+	
+	void enterConditionalElse(int declarationStart);
 
 	void enterConstructor(MethodInfo methodInfo);
 
@@ -156,6 +162,12 @@ public interface ISourceElementRequestor {
 	void exitField(int initializationStart, int declarationEnd, int declarationSourceEnd);
 	
 	void exitInitializer(int declarationEnd);
+	
+	void exitConditional(int declarationEnd);
+	
+	void exitConditionalThen(int declarationEnd);
+	
+	void exitConditionalElse(int declarationEnd);
 	
 	void exitMethod(int declarationEnd, int defaultValueStart, int defaultValueEnd);
 	

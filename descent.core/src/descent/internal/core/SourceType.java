@@ -18,6 +18,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 
 import descent.core.Flags;
 import descent.core.ICompilationUnit;
+import descent.core.IConditional;
 import descent.core.IField;
 import descent.core.IInitializer;
 import descent.core.IJavaElement;
@@ -284,6 +285,11 @@ public IJavaElement getHandleFromMemento(String token, MementoTokenizer memento,
 			String count = memento.nextToken();
 			JavaElement initializer = (JavaElement)getInitializer(Integer.parseInt(count));
 			return initializer.getHandleFromMemento(memento, workingCopyOwner);
+		case JEM_CONDITIONAL:
+			if (!memento.hasMoreTokens()) return this;
+			count = memento.nextToken();
+			JavaElement conditional = (JavaElement)getConditional(Integer.parseInt(count));
+			return conditional.getHandleFromMemento(memento, workingCopyOwner);
 		case JEM_METHOD:
 			if (!memento.hasMoreTokens()) return this;
 			String selector = memento.nextToken();
@@ -355,6 +361,12 @@ public IJavaElement getHandleFromMemento(String token, MementoTokenizer memento,
  */
 public IInitializer getInitializer(int count) {
 	return new Initializer(this, count);
+}
+/**
+ * @see IType
+ */
+public IConditional getConditional(int count) {
+	return new Conditional(this, count);
 }
 /**
  * @see IType

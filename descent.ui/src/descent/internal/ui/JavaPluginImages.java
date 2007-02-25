@@ -129,6 +129,11 @@ public class JavaPluginImages {
 	public static final String IMG_OBJS_ALIGN= NAME_PREFIX + "align_default_obj.gif"; //$NON-NLS-1$
 	public static final String IMG_OBJS_EXTERN= NAME_PREFIX + "extern_default_obj.gif"; //$NON-NLS-1$
 	public static final String IMG_OBJS_PRAGMA= NAME_PREFIX + "pragma_default_obj.gif"; //$NON-NLS-1$
+	public static final String IMG_OBJS_THEN_ELSE= NAME_PREFIX + "then_else_default_obj.gif"; //$NON-NLS-1$
+	public static final String IMG_OBJS_DEBUG_DECLARATION= NAME_PREFIX + "debug_declaration_default_obj.gif"; //$NON-NLS-1$
+	public static final String IMG_OBJS_IFTYPE= NAME_PREFIX + "iftype_default_obj.gif"; //$NON-NLS-1$
+	public static final String IMG_OBJS_STATIC_IF= NAME_PREFIX + "static_if_default_obj.gif"; //$NON-NLS-1$
+	public static final String IMG_OBJS_VERSION_DECLARATION= NAME_PREFIX + "version_declaration_default_obj.gif"; //$NON-NLS-1$
 	
 	// TODO JDT UI images: make icons for IMG_OBJS_STRUCTALT, IMG_OBJS_STRUCT_DEFAULT, IMG_OBJS_UNIONALT, IMG_OBJS_UNION_DEFAULT, IMG_OBJS_TEMPLATE_ELEMENTALT and IMG_OBJS_TEMPLATE_ELEMENT_DEFAULT 
 	
@@ -319,6 +324,11 @@ public class JavaPluginImages {
 	public static final ImageDescriptor DESC_OBJS_ALIGN= createManagedFromKey(T_OBJ, IMG_OBJS_ALIGN);
 	public static final ImageDescriptor DESC_OBJS_EXTERN= createManagedFromKey(T_OBJ, IMG_OBJS_EXTERN);
 	public static final ImageDescriptor DESC_OBJS_PRAGMA= createManagedFromKey(T_OBJ, IMG_OBJS_PRAGMA);
+	public static final ImageDescriptor DESC_OBJS_THEN_ELSE= createManagedFromKey(T_OBJ, IMG_OBJS_THEN_ELSE);
+	public static final ImageDescriptor DESC_OBJS_DEBUG_DECLARATION= createManagedFromKey(T_OBJ, IMG_OBJS_DEBUG_DECLARATION);
+	public static final ImageDescriptor DESC_OBJS_IFTYPE= createManagedFromKey(T_OBJ, IMG_OBJS_IFTYPE);
+	public static final ImageDescriptor DESC_OBJS_STATIC_IF= createManagedFromKey(T_OBJ, IMG_OBJS_STATIC_IF);
+	public static final ImageDescriptor DESC_OBJS_VERSION_DECLARATION= createManagedFromKey(T_OBJ, IMG_OBJS_VERSION_DECLARATION);
 	
 	public static final ImageDescriptor DESC_OBJS_JAR= createManagedFromKey(T_OBJ, IMG_OBJS_JAR);
 	public static final ImageDescriptor DESC_OBJS_EXTJAR= createManagedFromKey(T_OBJ, IMG_OBJS_EXTJAR);

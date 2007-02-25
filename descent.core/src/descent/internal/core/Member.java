@@ -182,7 +182,7 @@ public IJavaElement getHandleFromMemento(String token, MementoTokenizer memento,
 			if (memento.hasMoreTokens()) {
 				typeName = memento.nextToken();
 				char firstChar = typeName.charAt(0);
-				if (firstChar == JEM_FIELD || firstChar == JEM_INITIALIZER || firstChar == JEM_METHOD || firstChar == JEM_TYPE || firstChar == JEM_COUNT) {
+				if (firstChar == JEM_FIELD || firstChar == JEM_INITIALIZER || firstChar == JEM_METHOD || firstChar == JEM_TYPE || firstChar == JEM_COUNT || firstChar == JEM_CONDITIONAL) {
 					token = typeName;
 					typeName = ""; //$NON-NLS-1$
 				} else {

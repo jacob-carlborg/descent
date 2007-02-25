@@ -23,6 +23,7 @@ import descent.core.IClassFile;
 import descent.core.IClasspathContainer;
 import descent.core.IClasspathEntry;
 import descent.core.ICompilationUnit;
+import descent.core.IConditional;
 import descent.core.IField;
 import descent.core.IInitializer;
 import descent.core.IJavaElement;
@@ -416,6 +417,9 @@ public class JavaElementLabels {
 			case IJavaElement.LOCAL_VARIABLE: 
 				getLocalVariableLabel((ILocalVariable) element, flags, buf);
 				break;
+			case IJavaElement.CONDITIONAL:
+				getConditionalLabel((IConditional) element, flags, buf);
+				break;
 			case IJavaElement.INITIALIZER:
 				getInitializerLabel((IInitializer) element, flags, buf);
 				break;				
@@ -790,6 +794,16 @@ public class JavaElementLabels {
 	}
 	
 	/**
+	 * Appends the label for a conditional to a {@link StringBuffer}. Considers the C_* flags.
+	 * 	@param conditional The element to render.
+	 * @param flags The rendering flags. Flags with names starting with 'C_' are considered.
+	 * @param buf The buffer to append the resulting label to.
+	 */	
+	public static void getConditionalLabel(IConditional conditional, long flags, StringBuffer buf) {
+		buf.append(conditional.getElementName());
+	}
+	
+	/**
 	 * Appends the label for a initializer to a {@link StringBuffer}. Considers the I_* flags.
 	 * 	@param initializer The element to render.
 	 * @param flags The rendering flags. Flags with names starting with 'I_' are considered.
@@ -822,8 +836,12 @@ public class JavaElementLabels {
 				buf.append(initializer.getElementName());
 			} else if (initializer.isExtern()) {
 				buf.append(initializer.getElementName());
-			} else {
+			} else if (initializer.isPragma()) {
 				buf.append(initializer.getElementName());
+			} else if (initializer.isThen()) {
+				buf.append(JavaUIMessages.JavaElementLabels_then);
+			} else {
+				buf.append(JavaUIMessages.JavaElementLabels_else);
 			}
 	
 			/*

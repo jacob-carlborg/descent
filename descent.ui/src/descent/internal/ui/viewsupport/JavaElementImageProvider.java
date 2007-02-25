@@ -24,6 +24,7 @@ import org.eclipse.ui.ide.IDE;
 import org.eclipse.ui.model.IWorkbenchAdapter;
 
 import descent.core.Flags;
+import descent.core.IConditional;
 import descent.core.IField;
 import descent.core.IInitializer;
 import descent.core.IJavaElement;
@@ -177,6 +178,17 @@ public class JavaElementImageProvider {
 
 		try {			
 			switch (element.getElementType()) {	
+				case IJavaElement.CONDITIONAL:
+					IConditional cond = (IConditional) element;
+					if (cond.isDebugDeclaration()) {
+						return JavaPluginImages.DESC_OBJS_DEBUG_DECLARATION;
+					} else if (cond.isIftypeDeclaration()) {
+						return JavaPluginImages.DESC_OBJS_IFTYPE;
+					} else if (cond.isStaticIfDeclaration()) {
+						return JavaPluginImages.DESC_OBJS_STATIC_IF;
+					} else {
+						return JavaPluginImages.DESC_OBJS_VERSION_DECLARATION;
+					}
 				case IJavaElement.INITIALIZER:
 					IInitializer init = (IInitializer) element;
 					if (init.isStaticConstructor() || init.isStaticDestructor()) {
@@ -195,8 +207,10 @@ public class JavaElementImageProvider {
 						return JavaPluginImages.DESC_OBJS_ALIGN;
 					} else if (init.isExtern()) {
 						return JavaPluginImages.DESC_OBJS_EXTERN;
-					} else {
+					} else if (init.isPragma()) {
 						return JavaPluginImages.DESC_OBJS_PRAGMA;
+					} else {
+						return JavaPluginImages.DESC_OBJS_THEN_ELSE;
 					}
 				case IJavaElement.METHOD: {
 					IMethod method= (IMethod) element;

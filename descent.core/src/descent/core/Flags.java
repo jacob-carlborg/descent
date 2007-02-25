@@ -238,6 +238,38 @@ public final class Flags {
 	 * @since 2.0
 	 */
 	public static final int AccPragma = 0x01000000;
+	
+	/**
+	 * Then property flag.
+	 * @since 2.0
+	 */
+	public static final int AccThen = 0x02000000;
+	
+	/**
+	 * Else property flag.
+	 * @since 2.0
+	 */
+	public static final int AccElse = 0x04000000;
+	
+	// Extensions for conditionals (can reuse flags)
+	
+	/**
+	 * Iftype declaration property flag.
+	 * @since 2.0
+	 */
+	public static final int AccIftypeDeclaration = 0x00010000;
+	
+	/**
+	 * Static declaration if property flag.
+	 * @since 2.0
+	 */
+	public static final int AccStaticIfDeclaration = 0x00020000;
+	
+	/**
+	 * Version declaration property flag.
+	 * @since 2.0
+	 */
+	public static final int AccVersionDeclaration = 0x00040000;
 
 	/**
 	 * Not instantiable.
@@ -604,6 +636,38 @@ public final class Flags {
 	 */
 	public static boolean isPragma(int flags) {
 		return (flags & AccPragma) != 0;
+	}
+	
+	/**
+	 * Returns whether the given integer includes the <code>then</code> modifier.
+	 *
+	 * @param flags the flags
+	 * @return <code>true</code> if the <code>then</code> modifier is included
+	 */
+	public static boolean isThen(int flags) {
+		return (flags & AccThen) != 0;
+	}
+	
+	/**
+	 * Returns whether the given integer includes the <code>else</code> modifier.
+	 *
+	 * @param flags the flags
+	 * @return <code>true</code> if the <code>else</code> modifier is included
+	 */
+	public static boolean isElse(int flags) {
+		return (flags & AccElse) != 0;
+	}
+	
+	public static boolean isIftypeDeclaration(int flags) {
+		return (flags & AccIftypeDeclaration) != 0;
+	}
+	
+	public static boolean isStaticIfDeclaration(int flags) {
+		return (flags & AccStaticIfDeclaration) != 0;
+	}
+	
+	public static boolean isVersionDeclaration(int flags) {
+		return (flags & AccVersionDeclaration) != 0;
 	}
 	
 	/**

@@ -118,6 +118,26 @@ public interface IInitializer extends IMember {
 	 */
 	boolean isPragma() throws JavaModelException;
 	
+	/**
+	 * Returns whether this initializer represents a then.
+	 * 
+	 * @return whether this initializer represents a then
+	 * @exception JavaModelException if this element does not exist or if an
+	 *      exception occurs while accessing its corresponding resource
+	 * @since 3.1
+	 */
+	boolean isThen() throws JavaModelException;
+	
+	/**
+	 * Returns whether this initializer represents an else.
+	 * 
+	 * @return whether this initializer represents an else
+	 * @exception JavaModelException if this element does not exist or if an
+	 *      exception occurs while accessing its corresponding resource
+	 * @since 3.1
+	 */
+	boolean isElse() throws JavaModelException;
+	
 	
 	
 }

@@ -20,6 +20,7 @@ public class MementoTokenizer {
 	private static final String FIELD = Character.toString(JavaElement.JEM_FIELD);
 	private static final String METHOD = Character.toString(JavaElement.JEM_METHOD);
 	private static final String INITIALIZER = Character.toString(JavaElement.JEM_INITIALIZER);
+	private static final String CONDITIONAL = Character.toString(JavaElement.JEM_CONDITIONAL);
 	private static final String COMPILATIONUNIT = Character.toString(JavaElement.JEM_COMPILATIONUNIT);
 	private static final String CLASSFILE = Character.toString(JavaElement.JEM_CLASSFILE);
 	private static final String TYPE = Character.toString(JavaElement.JEM_TYPE);
@@ -64,6 +65,8 @@ public class MementoTokenizer {
 				return METHOD;
 			case JavaElement.JEM_INITIALIZER:
 				return INITIALIZER;
+			case JavaElement.JEM_CONDITIONAL:
+				return CONDITIONAL;
 			case JavaElement.JEM_COMPILATIONUNIT:
 				return COMPILATIONUNIT;
 			case JavaElement.JEM_CLASSFILE:
