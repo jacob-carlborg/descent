@@ -32,6 +32,8 @@ import org.eclipse.jface.text.Assert;
 import org.eclipse.jface.text.ITextSelection;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
+import org.eclipse.jface.util.TransferDragSourceListener;
+import org.eclipse.jface.util.TransferDropTargetListener;
 import org.eclipse.jface.viewers.IBaseLabelProvider;
 import org.eclipse.jface.viewers.IPostSelectionProvider;
 import org.eclipse.jface.viewers.ISelection;
@@ -96,6 +98,10 @@ import descent.internal.ui.JavaPlugin;
 import descent.internal.ui.JavaPluginImages;
 import descent.internal.ui.actions.AbstractToggleLinkingAction;
 import descent.internal.ui.actions.CompositeActionGroup;
+import descent.internal.ui.dnd.DelegatingDropAdapter;
+import descent.internal.ui.dnd.JdtViewerDragAdapter;
+import descent.internal.ui.packageview.SelectionTransferDragAdapter;
+import descent.internal.ui.packageview.SelectionTransferDropAdapter;
 import descent.internal.ui.preferences.MembersOrderPreferenceCache;
 import descent.internal.ui.viewsupport.AppearanceAwareLabelProvider;
 import descent.internal.ui.viewsupport.DecoratingJavaLabelProvider;
@@ -1379,7 +1385,6 @@ public class JavaOutlinePage extends Page implements IContentOutlinePage, IAdapt
 			LocalSelectionTransfer.getInstance()
 			};
 
-		/* TODO JDT UI dnd
 		// Drop Adapter
 		TransferDropTargetListener[] dropListeners= new TransferDropTargetListener[] {
 			new SelectionTransferDropAdapter(fOutlineViewer)
@@ -1391,6 +1396,5 @@ public class JavaOutlinePage extends Page implements IContentOutlinePage, IAdapt
 			new SelectionTransferDragAdapter(fOutlineViewer)
 		};
 		fOutlineViewer.addDragSupport(ops, transfers, new JdtViewerDragAdapter(fOutlineViewer, dragListeners));
-		*/
 	}
 }

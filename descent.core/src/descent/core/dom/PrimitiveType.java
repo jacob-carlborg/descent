@@ -235,6 +235,23 @@ public class PrimitiveType extends Type {
 		this.primitiveTypeCode = primitiveTypeCode;
 		postValueChange(PRIMITIVE_TYPE_CODE_PROPERTY);
 	}
+	
+	/**
+	 * Returns the primitive type code corresponding to the given string,
+	 * or <code>null</code> if none.
+	 * <p>
+	 * <code>toCode</code> is the converse of <code>toString</code>:
+	 * that is, 
+	 * <code>PrimitiveType.Code.toCode(code.toString()) == code</code>
+	 * for all type code <code>code</code>.
+	 * </p>
+	 * 
+	 * @param token the standard name of the primitive type
+	 * @return the primitive type code, or <code>null</code> if none
+	 */
+	public static PrimitiveType.Code toCode(String token) {
+		return (PrimitiveType.Code) Code.valueOf(token);
+	}
 
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.

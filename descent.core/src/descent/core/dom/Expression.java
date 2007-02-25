@@ -57,4 +57,18 @@ public abstract class Expression extends ASTNode {
 		super(ast);
 	}
 	
+	/**
+	 * Resolves and returns the binding for the type of this expression.
+	 * <p>
+	 * Note that bindings are generally unavailable unless requested when the
+	 * AST is being built.
+	 * </p>
+	 * 
+	 * @return the binding for the type of this expression, or
+	 *    <code>null</code> if the type cannot be resolved
+	 */	
+	public final ITypeBinding resolveTypeBinding() {
+		return this.ast.getBindingResolver().resolveExpressionType(this);
+	}
+	
 }

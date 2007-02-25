@@ -10,6 +10,7 @@
  *******************************************************************************/
 package descent.internal.ui.refactoring.reorg;
 
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.ui.ISharedImages;
@@ -17,9 +18,14 @@ import org.eclipse.ui.IWorkbenchSite;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.actions.DeleteResourceAction;
 
+import descent.internal.corext.refactoring.RefactoringAvailabilityTester;
+import descent.internal.corext.refactoring.RefactoringExecutionStarter;
 import descent.internal.corext.refactoring.reorg.ReorgUtils;
+import descent.internal.corext.util.JavaModelUtil;
 import descent.internal.ui.IJavaHelpContextIds;
 import descent.internal.ui.JavaPlugin;
+import descent.internal.ui.refactoring.RefactoringMessages;
+import descent.internal.ui.util.ExceptionHandler;
 import descent.ui.actions.SelectionDispatchAction;
 
 
@@ -45,14 +51,8 @@ public class DeleteAction extends SelectionDispatchAction {
 			setEnabled(createWorkbenchAction(selection).isEnabled());
 			return;
 		}
-		//try {
-			setEnabled(
-					/* TODO JDT UI refactor
-					RefactoringAvailabilityTester.isDeleteAvailable(selection.toArray())
-					*/
-					false
-			);
-		/*
+		try {
+			setEnabled(RefactoringAvailabilityTester.isDeleteAvailable(selection.toArray()));
 		} catch (CoreException e) {
 			//no ui here - this happens on selection changes
 			// http://bugs.eclipse.org/bugs/show_bug.cgi?id=19253
@@ -60,7 +60,6 @@ public class DeleteAction extends SelectionDispatchAction {
 				JavaPlugin.log(e);
 			setEnabled(false);
 		}
-		*/
 	}
 
 	private IAction createWorkbenchAction(IStructuredSelection selection) {
@@ -77,14 +76,10 @@ public class DeleteAction extends SelectionDispatchAction {
 			createWorkbenchAction(selection).run();
 			return;
 		}
-		//try {
-			/* TODO JDT UI refactor
+		try {
 			RefactoringExecutionStarter.startDeleteRefactoring(selection.toArray(), getShell());
-			*/
-		/*
 		} catch (CoreException e) {
 			ExceptionHandler.handle(e, RefactoringMessages.OpenRefactoringWizardAction_refactoring, RefactoringMessages.OpenRefactoringWizardAction_exception); 
 		}
-		*/
 	}
 }

@@ -1973,4 +1973,10 @@ public class Util {
 		return utflen + 2; // the number of bytes written to the stream
 	}
 	
+	public static boolean isReadOnly(IResource resource) {
+		ResourceAttributes resourceAttributes = resource.getResourceAttributes();
+		if (resourceAttributes == null) return false; // not supported on this platform for this resource
+		return resourceAttributes.isReadOnly();
+	}
+	
 }

@@ -24,13 +24,13 @@ import org.eclipse.swt.widgets.Shell;
 import com.ibm.icu.text.MessageFormat;
 
 import descent.internal.ui.JavaPlugin;
-import descent.internal.ui.dialogfields.ComboDialogField;
-import descent.internal.ui.dialogfields.DialogField;
-import descent.internal.ui.dialogfields.IDialogFieldListener;
-import descent.internal.ui.dialogfields.IStringButtonAdapter;
-import descent.internal.ui.dialogfields.StringButtonDialogField;
-import descent.internal.ui.dialogfields.StringDialogField;
 import descent.internal.ui.util.StatusInfo;
+import descent.internal.ui.wizards.dialogfields.ComboDialogField;
+import descent.internal.ui.wizards.dialogfields.DialogField;
+import descent.internal.ui.wizards.dialogfields.IDialogFieldListener;
+import descent.internal.ui.wizards.dialogfields.IStringButtonAdapter;
+import descent.internal.ui.wizards.dialogfields.StringButtonDialogField;
+import descent.internal.ui.wizards.dialogfields.StringDialogField;
 
 public class InstalledCompilerDlg extends StatusDialog{
 	

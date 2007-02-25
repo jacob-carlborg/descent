@@ -120,13 +120,11 @@ public boolean contains(IResource resource) {
  * @see IJavaModel source manipulation
  */
 public void copy(IJavaElement[] elements, IJavaElement[] containers, IJavaElement[] siblings, String[] renamings, boolean force, IProgressMonitor monitor) throws JavaModelException {
-	/* TODO JDT source manipulation
 	if (elements != null && elements.length > 0 && elements[0] != null && elements[0].getElementType() < IJavaElement.TYPE) {
 		runOperation(new CopyResourceElementsOperation(elements, containers, force), elements, siblings, renamings, monitor);
 	} else {
 		runOperation(new CopyElementsOperation(elements, containers, force), elements, siblings, renamings, monitor);
 	}
-	*/
 }
 
 /**
@@ -140,13 +138,11 @@ protected Object createElementInfo() {
  * @see IJavaModel
  */
 public void delete(IJavaElement[] elements, boolean force, IProgressMonitor monitor) throws JavaModelException {
-	/* TODO JDT source manipulation
 	if (elements != null && elements.length > 0 && elements[0] != null && elements[0].getElementType() < IJavaElement.TYPE) {
 		new DeleteResourceElementsOperation(elements, force).runOperation(monitor);
 	} else {
 		new DeleteElementsOperation(elements, force).runOperation(monitor);
 	}
-	*/
 }
 public boolean equals(Object o) {
 	if (!(o instanceof JavaModel)) return false;
@@ -265,13 +261,11 @@ public IWorkspace getWorkspace() {
  * @see IJavaModel
  */
 public void move(IJavaElement[] elements, IJavaElement[] containers, IJavaElement[] siblings, String[] renamings, boolean force, IProgressMonitor monitor) throws JavaModelException {
-	/* TODO JDT source manipulation
 	if (elements != null && elements.length > 0 && elements[0] != null && elements[0].getElementType() < IJavaElement.TYPE) {
 		runOperation(new MoveResourceElementsOperation(elements, containers, force), elements, siblings, renamings, monitor);
 	} else {
 		runOperation(new MoveElementsOperation(elements, containers, force), elements, siblings, renamings, monitor);
 	}
-	*/
 }
 
 /**
@@ -290,7 +284,6 @@ public void refreshExternalArchives(IJavaElement[] elementsScope, IProgressMonit
  * @see IJavaModel
  */
 public void rename(IJavaElement[] elements, IJavaElement[] destinations, String[] renamings, boolean force, IProgressMonitor monitor) throws JavaModelException {
-	/* TODO JDT source manipulation
 	MultiOperation op;
 	if (elements != null && elements.length > 0 && elements[0] != null && elements[0].getElementType() < IJavaElement.TYPE) {
 		op = new RenameResourceElementsOperation(elements, destinations, renamings, force);
@@ -299,7 +292,6 @@ public void rename(IJavaElement[] elements, IJavaElement[] destinations, String[
 	}
 	
 	op.runOperation(monitor);
-	*/
 }
 
 /**

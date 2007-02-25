@@ -32,13 +32,15 @@ import descent.core.IJavaElement;
 import descent.core.IJavaProject;
 import descent.core.IPackageFragmentRoot;
 import descent.core.ISourceReference;
-import descent.core.JavaCore;
 import descent.core.JavaModelException;
 import descent.core.search.IJavaSearchScope;
+import descent.core.search.SearchEngine;
 import descent.internal.corext.refactoring.reorg.JavaElementTransfer;
 import descent.internal.ui.JavaPlugin;
 import descent.internal.ui.SharedImages;
+import descent.internal.ui.dialogs.PackageSelectionDialog;
 import descent.internal.ui.javaeditor.EditorUtility;
+import descent.internal.ui.util.BusyIndicatorRunnableContext;
 import descent.ui.text.IColorManager;
 
 /**
@@ -237,12 +239,6 @@ public final class JavaUI {
 	 * @deprecated
 	 */
 	public final static String ATTR_CMDLINE= "descent.ui.launcher.cmdLine"; //$NON-NLS-1$
-	
-	
-	/**
-	 * @deprecated Constant introduced to avoid deprecated warning
-	 */
-	private final static int DEPRECATED_CONSIDER_TYPES= IJavaElementSearchConstants.CONSIDER_TYPES;
 
 	/**
 	 * Returns the shared images for the Java UI.
@@ -280,7 +276,6 @@ public final class JavaUI {
 	 * @since 2.0
 	 */
 	public static SelectionDialog createPackageDialog(Shell parent, IJavaProject project, int style, String filter) throws JavaModelException {
-		/* TODO JDT UI dialogs
 		Assert.isTrue((style | IJavaElementSearchConstants.CONSIDER_BINARIES | IJavaElementSearchConstants.CONSIDER_REQUIRED_PROJECTS) ==
 			(IJavaElementSearchConstants.CONSIDER_BINARIES | IJavaElementSearchConstants.CONSIDER_REQUIRED_PROJECTS));
 
@@ -311,9 +306,6 @@ public final class JavaUI {
 		} else {
 			return createPackageDialog(parent, context, searchScope, false, false, filter);
 		}
-		*/
-		
-		return null;
 	}
 	
 	/**
@@ -338,15 +330,12 @@ public final class JavaUI {
 	public static SelectionDialog createPackageDialog(Shell parent, IRunnableContext context, IJavaSearchScope scope, 
 			boolean multipleSelection, boolean removeDuplicates, String filter) {
 		
-		/* TODO JDT UI dialogs
 		int flag= removeDuplicates ? PackageSelectionDialog.F_REMOVE_DUPLICATES : 0;
 		PackageSelectionDialog dialog= new PackageSelectionDialog(parent, context, flag, scope);
 		dialog.setFilter(filter);
 		dialog.setIgnoreCase(false);
 		dialog.setMultipleSelection(multipleSelection);
 		return dialog;
-		*/
-		return null;
 	}
 	
 	/**
@@ -389,12 +378,9 @@ public final class JavaUI {
 	 * @since 2.0
 	 */
 	public static SelectionDialog createPackageDialog(Shell parent, IPackageFragmentRoot root, String filter) throws JavaModelException {
-		/* TODO JDT UI dialogs
 		IJavaSearchScope scope= SearchEngine.createJavaSearchScope(new IJavaElement[] {root});
 		BusyIndicatorRunnableContext context= new BusyIndicatorRunnableContext();
 		return createPackageDialog(parent, context, scope, false, true, filter);
-		*/
-		return null;
 	}
 
 	/**

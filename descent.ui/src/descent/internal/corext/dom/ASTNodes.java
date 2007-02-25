@@ -16,10 +16,15 @@
  *******************************************************************************/
 package descent.internal.corext.dom;
 
+import org.eclipse.core.runtime.Assert;
+
 import descent.core.compiler.IProblem;
 import descent.core.dom.ASTNode;
 import descent.core.dom.GenericVisitor;
 import descent.core.dom.Modifier;
+import descent.core.dom.QualifiedName;
+import descent.core.dom.QualifiedType;
+import descent.core.dom.SimpleType;
 
 // TODO JDT UI stub
 public class ASTNodes {
@@ -62,6 +67,62 @@ public class ASTNodes {
 	
 	public static int getInclusiveEnd(ASTNode node){
 		return node.getStartPosition() + node.getLength() - 1;
+	}
+	
+	public static ASTNode getParent(ASTNode node, Class parentClass) {
+		do {
+			node= node.getParent();
+		} while (node != null && !parentClass.isInstance(node));
+		return node;
+	}
+	
+	public static ASTNode getParent(ASTNode node, Class ... parentClasses) {
+		do {
+			node= node.getParent();
+			for(Class parentClass : parentClasses) {
+				if (parentClass.isInstance(node)) {
+					break;
+				}
+			}
+		} while (node != null);
+		return node;
+	}
+	
+	public static ASTNode getParent(ASTNode node, int nodeType) {
+		do {
+			node= node.getParent();
+		} while (node != null && node.getNodeType() != nodeType);
+		return node;
+	}
+	
+	public static boolean isParent(ASTNode node, ASTNode parent) {
+		Assert.isNotNull(parent);
+		do {
+			node= node.getParent();
+			if (node == parent)
+				return true;
+		} while (node != null);
+		return false;
+	}
+	
+	public static ASTNode getNormalizedNode(ASTNode node) {
+		ASTNode current= node;
+		// normalize name
+		if (QualifiedName.NAME_PROPERTY.equals(current.getLocationInParent())) {
+			current= current.getParent();
+		}
+		// normalize type
+		if (QualifiedType.TYPE_PROPERTY.equals(current.getLocationInParent()) || 
+			SimpleType.NAME_PROPERTY.equals(current.getLocationInParent())) {
+			current= current.getParent();
+		}
+		// normalize parameterized types
+		/* TODO JDT UI ast nodes
+		if (ParameterizedType.TYPE_PROPERTY.equals(current.getLocationInParent())) {
+			current= current.getParent();
+		}
+		*/
+		return current;
 	}
 	
 }

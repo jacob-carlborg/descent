@@ -12,6 +12,7 @@ package descent.internal.ui.refactoring.reorg;
 
 import java.util.Iterator;
 
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.dnd.Clipboard;
 import org.eclipse.ui.ISharedImages;
@@ -20,7 +21,9 @@ import org.eclipse.ui.PlatformUI;
 
 import descent.core.IJavaElement;
 import descent.core.IType;
+import descent.internal.corext.refactoring.RefactoringAvailabilityTester;
 import descent.internal.corext.refactoring.reorg.ReorgUtils;
+import descent.internal.corext.util.JavaModelUtil;
 import descent.internal.ui.IJavaHelpContextIds;
 import descent.internal.ui.JavaPlugin;
 import descent.ui.actions.SelectionDispatchAction;
@@ -44,7 +47,7 @@ public class CutAction extends SelectionDispatchAction{
 
 	public void selectionChanged(IStructuredSelection selection) {
 		if (!selection.isEmpty()) {
-			//try {
+			try {
 				// cannot cut top-level types. this deletes the cu and then you cannot paste because the cu is gone.
 				if (!containsOnlyElementsInsideCompilationUnits(selection) || containsTopLevelTypes(selection)) {
 					setEnabled(false);
@@ -52,11 +55,8 @@ public class CutAction extends SelectionDispatchAction{
 				}
 				fCopyToClipboardAction.selectionChanged(selection);
 				setEnabled(fCopyToClipboardAction.isEnabled()
-						/* TODO JDT UI refactor
 						&& RefactoringAvailabilityTester.isDeleteAvailable(selection)
-						*/
 					);
-			/*
 			} catch (CoreException e) {
 				// no ui here - this happens on selection changes
 				// http://bugs.eclipse.org/bugs/show_bug.cgi?id=19253
@@ -64,7 +64,6 @@ public class CutAction extends SelectionDispatchAction{
 					JavaPlugin.log(e);
 				setEnabled(false);
 			}
-			*/
 		} else
 			setEnabled(false);
 	}
