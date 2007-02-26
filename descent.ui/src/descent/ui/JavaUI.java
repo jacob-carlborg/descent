@@ -35,6 +35,7 @@ import descent.core.ISourceReference;
 import descent.core.JavaModelException;
 import descent.core.search.IJavaSearchScope;
 import descent.core.search.SearchEngine;
+import descent.internal.corext.javadoc.JavaDocLocations;
 import descent.internal.corext.refactoring.reorg.JavaElementTransfer;
 import descent.internal.ui.JavaPlugin;
 import descent.internal.ui.SharedImages;
@@ -771,11 +772,9 @@ public final class JavaUI {
 	 * 
 	 * @since 3.1
 	 */	
-	/* TODO JDT UI attached javadoc
 	public static URL getLibraryJavadocLocation(IClasspathEntry entry) {
 		return JavaDocLocations.getLibraryJavadocLocation(entry);
 	}
-	*/
 	
 	/**
 	 * Sets the Javadoc location for a Java project. This location is used for

@@ -20,7 +20,12 @@ Require-Bundle: org.eclipse.ui,
  com.ibm.icu,
  org.eclipse.ltk.core.refactoring,
  org.eclipse.ltk.ui.refactoring,
- org.eclipse.search
+ org.eclipse.search,
+ org.eclipse.debug.core,
+ org.eclipse.debug.ui,
+ org.eclipse.ui.console,
+ org.eclipse.ui.forms,
+ org.eclipse.team.core
 Eclipse-LazyStart: true
 Eclipse-BuddyPolicy: registered
 Export-Package: descent.internal.ui,
