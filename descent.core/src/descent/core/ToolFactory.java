@@ -11,6 +11,7 @@
 package descent.core;
 
 import descent.core.compiler.IScanner;
+import descent.core.dom.AST;
 import descent.core.dom.PublicScanner;
 
 /**
@@ -50,5 +51,9 @@ public class ToolFactory {
 	 */
 	public static IScanner createScanner(boolean tokenizeComments, boolean tokenizePragmas, boolean tokenizeWhiteSpace, boolean recordLineSeparator, int apiLevel) {
 		return new PublicScanner(tokenizeComments, tokenizePragmas, tokenizeWhiteSpace, recordLineSeparator, apiLevel);
+	}
+	
+	public static IScanner createScanner(boolean tokenizeComments, boolean tokenizePragmas, boolean tokenizeWhiteSpace, boolean recordLineSeparator) {
+		return new PublicScanner(tokenizeComments, tokenizePragmas, tokenizeWhiteSpace, recordLineSeparator, AST.LATEST);
 	}
 }

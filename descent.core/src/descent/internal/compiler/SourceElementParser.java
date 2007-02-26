@@ -683,7 +683,7 @@ public class SourceElementParser extends ASTVisitor {
 	
 	@Override
 	public boolean visit(DebugDeclaration node) {
-		return visitConditionalDeclaration(node, Flags.AccDefault, node.getVersion().getValue());
+		return visitConditionalDeclaration(node, Flags.AccDefault, node.getVersion() == null ? "" : node.getVersion().getValue());
 	}
 	
 	@Override

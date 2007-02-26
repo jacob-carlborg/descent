@@ -20,6 +20,9 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 
 import descent.core.compiler.CharOperation;
+import descent.core.compiler.IScanner;
+import descent.core.compiler.ITerminalSymbols;
+import descent.core.compiler.InvalidInputException;
 import descent.internal.compiler.lookup.TypeConstants;
 import descent.internal.compiler.parser.ScannerHelper;
 import descent.internal.compiler.util.SuffixConstants;
@@ -38,7 +41,7 @@ public final class JavaConventions {
 
 	private final static char DOT= '.';
 	private static final String PACKAGE_INFO = new String(TypeConstants.PACKAGE_INFO_NAME);
-	// private final static Scanner SCANNER = new Scanner();
+	private final static IScanner SCANNER = ToolFactory.createScanner(true, true, true, false);
 
 	private JavaConventions() {
 		// Not instantiable
@@ -84,20 +87,19 @@ public final class JavaConventions {
 		if (!trimmed.equals(id)) {
 			return null;
 		}
-		/* TODO JDT convention for identifier
 		try {
 			SCANNER.setSource(id.toCharArray());
 			int token = SCANNER.getNextToken();
 			char[] currentIdentifier;
 			try {
-				currentIdentifier = SCANNER.getCurrentIdentifierSource();
+				currentIdentifier = SCANNER.getRawTokenSource();
 			} catch (ArrayIndexOutOfBoundsException e) {
 				return null;
 			}
 			int nextToken= SCANNER.getNextToken();
-			if (token == TerminalTokens.TokenNameIdentifier 
-				&& nextToken == TerminalTokens.TokenNameEOF
-				&& SCANNER.startPosition == SCANNER.source.length) { // to handle case where we had an ArrayIndexOutOfBoundsException 
+			if (token == ITerminalSymbols.TokenNameIdentifier 
+				&& nextToken == ITerminalSymbols.TokenNameEOF
+				&& SCANNER.getCurrentTokenEndPosition() == id.length()) { // to handle case where we had an ArrayIndexOutOfBoundsException 
 																     // while reading the last token
 				return currentIdentifier;
 			} else {
@@ -107,8 +109,6 @@ public final class JavaConventions {
 		catch (InvalidInputException e) {
 			return null;
 		}
-		*/
-		return id.toCharArray();
 	}
 
 	/**

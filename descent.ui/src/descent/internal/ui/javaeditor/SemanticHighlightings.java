@@ -1594,29 +1594,30 @@ public class SemanticHighlightings {
 	/**
 	 * @return The semantic highlightings, the order defines the precedence of matches, the first match wins.
 	 */
+	// TODO JDT UI semantic highlighting
 	public static SemanticHighlighting[] getSemanticHighlightings() {
 		if (fgSemanticHighlightings == null)
 			fgSemanticHighlightings= new SemanticHighlighting[] {
-				new DeprecatedMemberHighlighting(),
-				new AutoboxHighlighting(),
-				new StaticFinalFieldHighlighting(),
-				new StaticFieldHighlighting(),
-				new FieldHighlighting(),
-				new MethodDeclarationHighlighting(),
-				new StaticMethodInvocationHighlighting(),
-				new AbstractMethodInvocationHighlighting(),
+				//new DeprecatedMemberHighlighting(),
+				//new AutoboxHighlighting(),
+				//new StaticFinalFieldHighlighting(),
+				//new StaticFieldHighlighting(),
+				//new FieldHighlighting(),
+				//new MethodDeclarationHighlighting(),
+				//new StaticMethodInvocationHighlighting(),
+				//new AbstractMethodInvocationHighlighting(),
 				//new AnnotationElementReferenceHighlighting(),
-				new InheritedMethodInvocationHighlighting(),
-				new ParameterVariableHighlighting(),
-				new LocalVariableDeclarationHighlighting(),
-				new LocalVariableHighlighting(),
-				new TypeVariableHighlighting(), // before type arguments!
-				new MethodHighlighting(), // before types to get ctors
-				new TypeArgumentHighlighting(), // before other types
-				new ClassHighlighting(),
-				new EnumHighlighting(),
-				new AnnotationHighlighting(), // before interfaces
-				new InterfaceHighlighting(),
+				//new InheritedMethodInvocationHighlighting(),
+				//new ParameterVariableHighlighting(),
+				//new LocalVariableDeclarationHighlighting(),
+				//new LocalVariableHighlighting(),
+				//new TypeVariableHighlighting(), // before type arguments!
+				//new MethodHighlighting(), // before types to get ctors
+				//new TypeArgumentHighlighting(), // before other types
+				//new ClassHighlighting(),
+				//new EnumHighlighting(),
+				//new AnnotationHighlighting(), // before interfaces
+				//new InterfaceHighlighting(),
 			};
 		return fgSemanticHighlightings;
 	}
