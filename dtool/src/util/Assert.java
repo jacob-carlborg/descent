@@ -48,8 +48,7 @@ public abstract class Assert {
 			throw new AssertionFailedException("null argument:" + message); //$NON-NLS-1$
 	}
 	
-	/** Like {@link #isNotNull(Object, String)} with empty message.
-	 */
+	/** Like {@link #isNotNull(Object, String)} with empty message.	 */
 	public static void isNotNull(Object object) {
 		isNotNull(object, ""); //$NON-NLS-1$
 	}
@@ -85,6 +84,10 @@ public abstract class Assert {
 	 */
 	public static void fail() {
 		throw new AssertionFailedException("ASSERT FALSE");
+	}
+
+	public static void unimplemented(String string) {
+		fail("Unimplemented: " + string);
 	}
 	
 }

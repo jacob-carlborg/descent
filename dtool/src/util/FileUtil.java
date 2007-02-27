@@ -4,7 +4,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 /**
- * Miscelleanous String utilities 
+ * Miscelleanous file utilities 
  */
 public final class FileUtil {
 
