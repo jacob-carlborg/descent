@@ -8,7 +8,7 @@
  * Contributors:
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
-package mmrnmhrm.ui.deditor.text2;
+package mmrnmhrm.ui.deditor.text;
 
 import org.eclipse.core.runtime.Assert;
 
