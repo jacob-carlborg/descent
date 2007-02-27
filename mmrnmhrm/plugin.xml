@@ -1,6 +1,48 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.2"?>
 <plugin>
+   <extension
+         id="deenature"
+         name="Dee nature"
+         point="org.eclipse.core.resources.natures">
+      <runtime>
+         <run class="mmrnmhrm.core.model.DeeProject"/>
+      </runtime>
+   </extension>
+   <extension
+         point="org.eclipse.core.runtime.contentTypes">
+      <content-type
+            base-type="org.eclipse.core.runtime.text"
+            default-charset="UTF-8"
+            file-extensions="dm"
+            id="mmrnmhrm.core.dmsource"
+            name="D M Source"
+            priority="high"/>
+   </extension>
+   <extension
+         point="org.eclipse.ui.newWizards">
+      <category
+            id="Mmrnmhrm.category"
+            name="Dee (Mmrnmhrm)"/>
+      <wizard
+            category="Mmrnmhrm.category"
+            class="mmrnmhrm.ui.wizards.DeeProjectWizard"
+            icon="icons/obj16/dproject.gif"
+            id="Mmrnmhrm.wizard.newProject"
+            name="Dee Project"
+            project="true"/>
+   </extension>
+   <extension
+         point="org.eclipse.ui.editors">
+      <editor
+            class="mmrnmhrm.ui.deditor.DeeEditor"
+            contributorClass="mmrnmhrm.ui.deditor.DeeEditorNullActionContributor"
+            icon="icons/obj16/dm.gif"
+            id="Mmrnmhrm.editors.DeeEditor"
+            name="Dee M Editor">
+         <contentTypeBinding contentTypeId="mmrnmhrm.core.dmsource"/>
+      </editor>
+   </extension>
 
    <extension
          point="org.eclipse.ui.actionSets">
@@ -8,49 +50,85 @@
             label="Mmrnmhrm Action Set"
             visible="true"
             id="mmrnmhrm.actionSet">
-         <menu
-               label="Mmrnmhrm"
-               id="mmrnmhrmMenu">
-            <separator
-                  name="mmrnmhrmGroup">
-            </separator>
-         </menu>
-         <action
-               label="Print Partitions"
-               icon="icons/sample.gif"
-               class="mmrnmhrm.ui.actions.PrintPartitions"
-               tooltip="Mmrnmhrm tooltip"
-               menubarPath="mmrnmhrmMenu/mmrnmhrmGroup"
-               toolbarPath="mmrnmhrmGroup"
-               id="dtoolide.actions.PrintPartition">
+          <action
+               id="openType"
+               toolbarPath="org.eclipse.search.searchActionSet/Search"
+               class="mmrnmhrm.ui.actions.SampleActionDelegate"
+               icon="icons/action16e/opentype.gif"
+               helpContextId="org.eclipse.jdt.ui.open_type_action"
+               label="%OpenTypeAction.label"
+               menubarPath="navigate/open.ext2"
+               tooltip="%OpenTypeAction.tooltip">
          </action>
-         <action
-               class="mmrnmhrm.ui.actions.PrintAST"
-               icon="icons/sample.gif"
-               id="dtoolide.actions.PrintAST"
-               label="Print AST"
-               menubarPath="mmrnmhrmMenu/mmrnmhrmGroup"
-               style="push"
-               toolbarPath="mmrnmhrmGroup"/>
-         <action
-               class="mmrnmhrm.ui.actions.GoToDefinition"
-               icon="icons/sample2.gif"
-               id="dtoolide.actions.GotoDef"
-               label="Go to Definition"
-               menubarPath="mmrnmhrmMenu/mmrnmhrmGroup"
-               style="push"
-               toolbarPath="mmrnmhrmGroup"/>
+         
      </actionSet>
    </extension>
    <extension
-         point="org.eclipse.ui.editors">
-      <editor
-            class="mmrnmhrm.ui.editors.DeeEditor"
-            contributorClass="org.eclipse.ui.texteditor.BasicTextEditorActionContributor"
-            extensions="xd"
-            icon="icons/sample.gif"
-            id="chmmr.editors.DeeEditor"
-            name="X Dee Editor"/>
+         point="org.eclipse.ui.popupMenus">
+      <objectContribution
+            id="Mmrnmhrm.contribution1"
+            objectClass="java.lang.Object">
+         <menu
+               id="Mmrnmhrm.menu1"
+               label="Object Contrib Menu"
+               path="additions">
+            <separator name="group1"/>
+         </menu>
+         <action
+               class="mmrnmhrm.ui.actions.SampleActionDelegate"
+               enablesFor="1"
+               id="Mmrnmhrm.newAction"
+               label="New Action"
+               menubarPath="Mmrnmhrm.menu1/group1"/>
+      </objectContribution>
+      <viewerContribution
+            id="Mmrnmhrm.editorContribution"
+            targetID="#DeeEditorContext">
+         <menu
+               id="Mmrnmhrm.editorMenu"
+               label="Declarative Menu"
+               path="additions321">
+            <groupMarker name="content"/>
+         </menu>
+         <action
+               class="mmrnmhrm.ui.actions.SampleActionDelegate"
+               id="Mmrnmhrm.action1"
+               label="=Declarative Action"
+               menubarPath="Mmrnmhrm.editorMenu/content"/>
+      </viewerContribution>
+   </extension>
+   <extension
+         point="org.eclipse.ui.editorActions">
+      <editorContribution
+            id="Mmrnmhrm.editorContribution1"
+            targetID="Mmrnmhrm.editors.DeeEditor">
+         <menu
+               id="Mmrnmhrm.menu"
+               label="Mmrnmhrm">
+            <groupMarker name="content"/>
+         </menu>
+         <action
+               class="mmrnmhrm.ui.actions.GoToDefinition"
+               icon="icons/action16e/sample2.gif"
+               id="Mmrnmhrm.actions.GotoDef"
+               label="Go to Definition"
+               menubarPath="Mmrnmhrm.menu/content"
+               toolbarPath="additions"/>
+         <action
+               class="mmrnmhrm.ui.actions.PrintAST"
+               icon="icons/action16e/sample.gif"
+               id="Mmrnmhrm.actions.PrintAST"
+               label="Print AST"
+               menubarPath="Mmrnmhrm.menu/content"
+               toolbarPath="additions"/>
+         <action
+               class="mmrnmhrm.ui.actions.PrintPartitions"
+               icon="icons/action16e/sample.gif"
+               id="Mmrnmhrm.actions.PrintPartition"
+               label="Print Partitions"
+               menubarPath="Mmrnmhrm.menu/content"
+               toolbarPath="additions"/>
+      </editorContribution>
    </extension>
 
 </plugin>

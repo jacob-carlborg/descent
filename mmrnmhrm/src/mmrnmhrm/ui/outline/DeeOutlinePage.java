@@ -1,6 +1,6 @@
 package mmrnmhrm.ui.outline;
 
-import mmrnmhrm.ui.editors.DeeEditor;
+import mmrnmhrm.ui.deditor.DeeEditor;
 
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.widgets.Composite;

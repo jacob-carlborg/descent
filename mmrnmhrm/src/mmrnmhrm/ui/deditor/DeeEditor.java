@@ -1,11 +1,13 @@
-package mmrnmhrm.ui.editors;
+package mmrnmhrm.ui.deditor;
 
-import mmrnmhrm.DeeCore;
+import mmrnmhrm.core.DeeCore;
 import mmrnmhrm.text.DeeDocument;
 import mmrnmhrm.text.DeeDocumentProvider;
+import mmrnmhrm.ui.actions.SampleAction;
 import mmrnmhrm.ui.outline.DeeOutlinePage;
 
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.text.TextSelection;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.texteditor.AbstractDecoratedTextEditor;
@@ -20,7 +22,7 @@ public class DeeEditor extends AbstractDecoratedTextEditor {
 
 	public DeeEditor() {
 		super();
-		documentProvider = DeeCore.getDeeDocumentProvider();
+		this.documentProvider = DeeCore.getDeeDocumentProvider();
 		setDocumentProvider(documentProvider);
 	}
 	
@@ -30,10 +32,8 @@ public class DeeEditor extends AbstractDecoratedTextEditor {
 		setSourceViewerConfiguration(sourceViewerConfiguration);
 		setEditorContextMenuId("#DeeEditorContext"); 
 		setRulerContextMenuId("#DeeRulerContext"); 
-		/*
-		setHelpContextId(ITextEditorHelpContextIds.TEXT_EDITOR);
-		setPreferenceStore(EditorsPlugin.getDefault().getPreferenceStore());
-		*/
+		//setHelpContextId(ITextEditorHelpContextIds.TEXT_EDITOR);
+		//setPreferenceStore(EditorsPlugin.getDefault().getPreferenceStore());
 		//configureInsertMode(SMART_INSERT, false);
 		setInsertMode(INSERT);
 	}
@@ -41,11 +41,31 @@ public class DeeEditor extends AbstractDecoratedTextEditor {
 	public void dispose() { 
 	 	super.dispose(); 
 	}
+	@Override
+	protected void createActions() {
+		// TODO Auto-generated method stub
+		super.createActions();
+	}
+
 	
 
 	public DeeDocument getDocument() {
 		return document;
 	}
+	
+
+	public TextSelection getSelection() {
+		return (TextSelection) getSelectionProvider().getSelection();
+	}
+	
+	
+	@Override
+	protected void editorContextMenuAboutToShow(IMenuManager menu) {
+		super.editorContextMenuAboutToShow(menu);
+		menu.appendToGroup("additions", new SampleAction(": <additions> action"));
+		menu.add(new SampleAction(": <> action"));
+	}
+	
 	
 	public Object getAdapter(Class required) {
 		
@@ -71,8 +91,5 @@ public class DeeEditor extends AbstractDecoratedTextEditor {
 			outlinePage.update(); 
 	}
 
-	public TextSelection getSelection() {
-		return (TextSelection) getSelectionProvider().getSelection();
-	}
 	
 }

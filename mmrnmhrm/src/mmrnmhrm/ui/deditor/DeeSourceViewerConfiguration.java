@@ -1,7 +1,8 @@
-package mmrnmhrm.ui.editors;
+package mmrnmhrm.ui.deditor;
 
-import mmrnmhrm.DeeUICore;
+import mmrnmhrm.core.DeeCore;
 import mmrnmhrm.text.EDeePartitions;
+import mmrnmhrm.ui.deditor.text.DeeHyperlinkDetector;
 
 import org.eclipse.jface.text.hyperlink.IHyperlinkDetector;
 import org.eclipse.jface.text.presentation.IPresentationReconciler;
@@ -38,7 +39,7 @@ public class DeeSourceViewerConfiguration extends SourceViewerConfiguration {
 	public IPresentationReconciler getPresentationReconciler(ISourceViewer sourceViewer) {
 	    PresentationReconciler reconciler = new PresentationReconciler();
 
-	    DefaultDamagerRepairer dr = new DefaultDamagerRepairer(DeeUICore.getDefaultDeeCodeScanner());
+	    DefaultDamagerRepairer dr = new DefaultDamagerRepairer(DeeCore.getDefaultDeeCodeScanner());
 	    reconciler.setDamager(dr, EDeePartitions.DEE_CODE);
 	    reconciler.setRepairer(dr, EDeePartitions.DEE_CODE);
 

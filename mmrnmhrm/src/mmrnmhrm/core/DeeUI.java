@@ -1,23 +1,10 @@
-package mmrnmhrm;
-
-import mmrnmhrm.text.DeeDocumentProvider;
+package mmrnmhrm.core;
 
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IWorkbenchWindow;
 
-public class DeeCore extends DeeCoreActivator {
+public class DeeUI extends DeePluginActivator {
 
-
-	private DeeDocumentProvider deeDocumentProvider;
-
-		
-	protected void initCore() {
-		deeDocumentProvider = new DeeDocumentProvider();
-	}
-	
-	public static DeeDocumentProvider getDeeDocumentProvider() {
-		return getDefault().deeDocumentProvider;
-	}
 	
 	public static IWorkbenchWindow getActiveWorkbenchWindow() {
 		return getDefault().getWorkbench().getActiveWorkbenchWindow();
@@ -30,5 +17,4 @@ public class DeeCore extends DeeCoreActivator {
 		 }
 		 return null;
 	}
-
 }

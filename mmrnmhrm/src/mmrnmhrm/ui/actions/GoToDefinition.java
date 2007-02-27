@@ -1,16 +1,17 @@
 package mmrnmhrm.ui.actions;
 
-import mmrnmhrm.ui.editors.DeeEditor;
-import mmrnmhrm.ui.editors.EditorUtil;
+import mmrnmhrm.ui.deditor.DeeEditor;
+import mmrnmhrm.ui.deditor.EditorUtil;
 
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.text.TextSelection;
 import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.ui.IEditorActionDelegate;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IWorkbenchWindow;
-import org.eclipse.ui.IWorkbenchWindowActionDelegate;
 
+import util.Assert;
 import util.Logger;
 import dtool.dom.ast.ASTPrinter;
 import dtool.dom.base.ASTNode;
@@ -19,55 +20,24 @@ import dtool.dom.base.Entity;
 import dtool.project.CompilationUnit;
 
 /**
- * Opens a DeeEditor in a given target
+ * Opens sets the editor cursor to the definition of the selected entity.
  */
-public class GoToDefinition implements IWorkbenchWindowActionDelegate {
+public class GoToDefinition implements IEditorActionDelegate {
+	private IEditorPart editor;
 	private IWorkbenchWindow window;
+
 
 	public GoToDefinition() {
 	}
 
-	/**
-	 * Selection in the workbench has been changed. We 
-	 * can change the state of the 'real' action here
-	 * if we want, but this can only happen after 
-	 * the delegate has been created.
-	 * @see IWorkbenchWindowActionDelegate#selectionChanged
-	 */
-	public void selectionChanged(IAction action, ISelection selection) {
+	public void setActiveEditor(IAction action, IEditorPart newEditor) {
+		Assert.isTrue(newEditor instanceof DeeEditor, "Not a Mmrnmhrm DeeEditor.");
+		editor = newEditor;
+		window = editor.getSite().getWorkbenchWindow(); 
 	}
 
-	/**
-	 * We can use this method to dispose of any system
-	 * resources we previously allocated.
-	 * @see IWorkbenchWindowActionDelegate#dispose
-	 */
-	public void dispose() {
-	}
-
-	/**
-	 * We will cache window object in order to
-	 * be able to provide parent shell for the message dialog.
-	 * @see IWorkbenchWindowActionDelegate#init
-	 */
-	public void init(IWorkbenchWindow window) {
-		this.window = window;
-	}
-	
-	/**
-	 * The action has been activated. The argument of the
-	 * method represents the 'real' action sitting
-	 * in the workbench UI.
-	 * @see IWorkbenchWindowActionDelegate#run
-	 */
+	/** {@inheritDoc} */
 	public void run(IAction action) {
-		IEditorPart editor  = window.getActivePage().getActiveEditor();
-		if(!(editor instanceof DeeEditor)) {
-			MessageDialog.openWarning(window.getShell(),
-					"Go to Definition",
-					"Not a Mmrnmhrm Dee Editor.");
-			return;
-		}
 			
 		DeeEditor deeEditor = (DeeEditor) editor;
 		
@@ -107,6 +77,13 @@ public class GoToDefinition implements IWorkbenchWindowActionDelegate {
 	private void dialogInfo(String string) {
 		MessageDialog.openInformation(window.getShell(),
 				"Go to Definition",	string);
+	}
+	
+
+	public void selectionChanged(IAction action, ISelection selection) {
+	}
+
+	public void dispose() {
 	}
 
 }

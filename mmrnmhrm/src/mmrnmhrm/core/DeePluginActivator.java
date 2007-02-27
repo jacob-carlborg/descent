@@ -1,4 +1,4 @@
-package mmrnmhrm;
+package mmrnmhrm.core;
 
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
@@ -7,47 +7,37 @@ import org.osgi.framework.BundleContext;
 /**
  * The activator class controls the plug-in life cycle
  */
-public abstract class DeeCoreActivator extends AbstractUIPlugin {
+public abstract class DeePluginActivator extends AbstractUIPlugin {
 
-	// The plug-in ID
-	public static final String PLUGIN_ID = "DToolIDE";
+	// The plug-in ID XXX: Watch for changes
+	public static final String PLUGIN_ID = "Mmrnmhrm";
 
 	// The shared instance
 	private static DeeCore plugin;
 	
-	/**
-	 * The constructor
-	 */
-	public DeeCoreActivator() {
+	/** The constructor */
+	public DeePluginActivator() {
 		plugin = (DeeCore) this;
 	}
+	
 
-	/*
-	 * (non-Javadoc)
-	 * @see org.eclipse.ui.plugin.AbstractUIPlugin#start(org.osgi.framework.BundleContext)
-	 */
-	public void start(BundleContext context) throws Exception {
-		super.start(context);
-		initCore();
+	/** @return the shared instance */
+	public static DeeCore getDefault() {
+		return plugin;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * @see org.eclipse.ui.plugin.AbstractUIPlugin#stop(org.osgi.framework.BundleContext)
-	 */
+	/** {@inheritDoc} */
+	public void start(BundleContext context) throws Exception {
+		super.start(context);
+		initPlugin();
+	}
+
+	/** {@inheritDoc} */
 	public void stop(BundleContext context) throws Exception {
 		plugin = null;
 		super.stop(context);
 	}
 
-	/**
-	 * Returns the shared instance
-	 *
-	 * @return the shared instance
-	 */
-	public static DeeCore getDefault() {
-		return plugin;
-	}
 
 	/**
 	 * Returns an image descriptor for the image file at the given
@@ -62,6 +52,7 @@ public abstract class DeeCoreActivator extends AbstractUIPlugin {
 	
 	/**************************************************/
 
-	abstract void initCore() ;
+	void initPlugin() {
+	}
 	
 }

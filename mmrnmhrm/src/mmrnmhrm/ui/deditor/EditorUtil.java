@@ -1,4 +1,4 @@
-package mmrnmhrm.ui.editors;
+package mmrnmhrm.ui.deditor;
 
 import org.eclipse.jface.text.TextSelection;
 
