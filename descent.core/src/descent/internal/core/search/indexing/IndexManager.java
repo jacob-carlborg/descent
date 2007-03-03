@@ -98,7 +98,8 @@ public void addBinary(IFile resource, IPath containerPath) {
  * Note: the actual operation is performed in background
  */
 public void addSource(IFile resource, IPath containerPath, SourceElementParser parser) {
-	if (JavaCore.getPlugin() == null) return;	
+	if (JavaCore.getPlugin() == null) return;
+	
 	SearchParticipant participant = SearchEngine.getDefaultSearchParticipant();
 	SearchDocument document = participant.getDocument(resource.getFullPath().toString());
 	((InternalSearchDocument) document).parser = parser;

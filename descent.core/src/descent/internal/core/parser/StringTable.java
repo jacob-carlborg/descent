@@ -21,23 +21,11 @@ public class StringTable {
 		return value;
 	}
 	
-	public StringValue insert(char[] input, int start, int length) {
-		return insert(new String(input, start, length));
-	}
-	
 	public StringValue insert(String string) {
 		StringValue value = new StringValue();
 		value.lstring = string;
 		map.put(string, value);
 		return value;
-	}
-	
-	public StringValue lookup(char[] input, int start, int length) {
-		return lookup(new String(input, start, length));
-	}
-	
-	public StringValue lookup(String string) {
-		return map.get(string);
 	}
 
 }

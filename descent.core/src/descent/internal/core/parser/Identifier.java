@@ -9,9 +9,12 @@ public class Identifier {
 	public String string;
 	public TOK value;
 	
+	private static int instances = 0;
+	
 	public Identifier(String string, TOK value) {
 		this.string = string;
 		this.value = value;
+		//System.out.println("Identifier 1: " + ++instances);
 	}
 	
 	public Identifier(Token token) {

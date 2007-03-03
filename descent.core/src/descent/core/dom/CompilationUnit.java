@@ -126,7 +126,8 @@ public class CompilationUnit extends ASTNode {
 	 * For example, the source string <code>A\nB\nC</code> has
 	 * line end table {1, 3} (if \n is one character).
 	 */
-	private int[] lineEndTable = new int[0];
+	private int[] lineEndTable = NO_INTS;
+	private static int[] NO_INTS = new int[0]; 
 
 	/**
 	 * Creates a new unparented compilation unit node owned by the given 

@@ -142,6 +142,8 @@ public class SourceElementParser extends ASTVisitor {
 	}
 	
 	private char[][] getTokens(List<BaseClass> baseClasses) {
+		if (baseClasses.size() == 0) return CharOperation.NO_CHAR_CHAR;
+		
 		char[][] tokens = new char[baseClasses.size()][];
 		for(int i = 0; i < baseClasses.size(); i++) {
 			tokens[i] = baseClasses.get(i).getType().toString().toCharArray();
@@ -168,6 +170,8 @@ public class SourceElementParser extends ASTVisitor {
 	}
 	
 	private char[][] getParameterNames(List<Argument> arguments) {
+		if (arguments.size() == 0) return CharOperation.NO_CHAR_CHAR;
+		
 		char[][] names = new char[arguments.size()][];
 		for(int i = 0; i < arguments.size(); i++) {
 			SimpleName name = arguments.get(i).getName();
@@ -181,6 +185,8 @@ public class SourceElementParser extends ASTVisitor {
 	}
 	
 	private char[][] getParameterTypes(List<Argument> arguments) {
+		if (arguments.size() == 0) return CharOperation.NO_CHAR_CHAR;
+		
 		char[][] types = new char[arguments.size()][];
 		for(int i = 0; i < arguments.size(); i++) {
 			types[i] = arguments.get(i).getType().toString().toCharArray();

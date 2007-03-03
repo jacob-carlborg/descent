@@ -1,17 +1,18 @@
 package descent.internal.core.parser;
 
 import descent.core.dom.IftypeDeclaration;
+import descent.core.dom.SimpleName;
 import descent.core.dom.Type;
 
 
 public class IftypeCondition extends Condition {
 
 	public Type targ;
-	public Identifier ident;
+	public SimpleName ident;
 	public TOK tok;
 	public Type tspec;
 
-	public IftypeCondition(Type targ, Identifier ident, TOK tok, Type tspec) {
+	public IftypeCondition(Type targ, SimpleName ident, TOK tok, Type tspec) {
 		this.targ = targ;
 		this.ident = ident;
 		this.tok = tok;

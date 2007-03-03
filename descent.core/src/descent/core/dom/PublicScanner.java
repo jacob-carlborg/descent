@@ -1,5 +1,6 @@
 package descent.core.dom;
 
+import descent.core.compiler.CharOperation;
 import descent.core.compiler.IScanner;
 import descent.core.compiler.InvalidInputException;
 import descent.internal.core.parser.TOK;
@@ -11,7 +12,7 @@ import descent.internal.core.parser.TOK;
  */
 public class PublicScanner implements IScanner {
 	
-	private final static char[] EMPTY_CHAR_ARRAY = new char[0];
+	private final static char[] EMPTY_CHAR_ARRAY = CharOperation.NO_CHAR;
 	private final static String EMPTY_STRING = "";
 	
 	private final boolean tokenizeComments;

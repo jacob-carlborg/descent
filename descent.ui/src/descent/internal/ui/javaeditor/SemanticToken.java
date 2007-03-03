@@ -40,10 +40,8 @@ public final class SemanticToken {
 	public IBinding getBinding() {
 		if (!fIsBindingResolved) {
 			fIsBindingResolved= true;
-			/* TODO JDT UI binding
 			if (fNode != null)
 				fBinding= fNode.resolveBinding();
-			*/
 		}
 		
 		return fBinding;

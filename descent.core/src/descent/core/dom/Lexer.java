@@ -5,7 +5,6 @@ import static descent.internal.core.parser.TOK.*;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 
@@ -51,7 +50,7 @@ public class Lexer implements IProblemCollector {
 	public char[] input;
 	
 	public Token token;
-	public Token prevToken;
+	public Token prevToken = new Token();
 	
 	public List<IProblem> problems;
 	public List<Integer> lineEnds;
@@ -72,6 +71,7 @@ public class Lexer implements IProblemCollector {
 		
 		// Make input larger and add zeros, to avoid comparing
 		input = new char[length - base + 5];
+		
 		System.arraycopy(source, 0, input, 0, source.length);
 		reset(offset, length);
 	    this.tokenizeComments = tokenizeComments;
@@ -79,7 +79,11 @@ public class Lexer implements IProblemCollector {
 		this.tokenizeWhiteSpace = tokenizeWhiteSpace;
 		this.recordLineSeparator = recordLineSeparator;
 		this.lineEnds = new ArrayList<Integer>();
-	    this.token = new Token();
+		if (token == null) {
+			token = new Token();
+		} else {
+			this.token.reset();
+		}
 	}
 	
 	public void reset(int offset, int length) {
@@ -124,7 +128,19 @@ public class Lexer implements IProblemCollector {
 	
 	public void collectProblem(IProblem problem) {
 		problems.add(problem);
-	}	
+	}
+	
+	private Token newFreeListToken() {
+		Token t;
+		if (freelist != null) {
+    		t = freelist;
+    		freelist = t.next;
+    	} else {
+    		t = new Token();
+    	}
+		return t;
+	}
+	
 	
 	public TOK nextToken() {
 		Token t;
@@ -132,12 +148,12 @@ public class Lexer implements IProblemCollector {
 		if (token != null && !(token.value == TOK.TOKlinecomment || token.value == TOK.TOKdoclinecomment ||
 				token.value == TOK.TOKblockcomment || token.value == TOK.TOKdocblockcomment ||
 				token.value == TOK.TOKpluscomment || token.value == TOK.TOKdocpluscomment)) {
-			prevToken = new Token(token);
+			Token.assign(prevToken, token);
 		}
 
 	    if (token.next != null) {
 	    	t = token.next;
-	    	token = new Token(t);
+	    	Token.assign(token, t);
 	    	t.next = freelist;
 	    	freelist = t;
 	    } else {
@@ -152,7 +168,7 @@ public class Lexer implements IProblemCollector {
 	    if (ct.next != null) {
 	    	t = ct.next;
 	    } else {
-	    	t = new Token();
+	    	t = newFreeListToken();
 	    	scan(t);
 	    	t.next = null;
 	    	ct.next = t;
@@ -1823,7 +1839,7 @@ public class Lexer implements IProblemCollector {
 			throw new IllegalStateException("Can't happen");
 		}
 		t.string = new String(fullNumber);
-		t.numberValue = n;
+		//t.numberValue = n;
 		return result;
 	}
 	

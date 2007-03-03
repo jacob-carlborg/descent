@@ -551,6 +551,72 @@ public class SemanticHighlightings {
 			return binding != null && binding.getKind() == IBinding.METHOD && (binding.getModifiers() & Modifier.STATIC) == Modifier.STATIC;
 		}
 	}
+	
+	/**
+	 * Semantic highlighting for annotation element references.
+	 * @since 3.1
+	 */
+	private static final class AnnotationElementReferenceHighlighting extends SemanticHighlighting {
+
+		/*
+		 * @see org.eclipse.jdt.internal.ui.javaeditor.SemanticHighlighting#getPreferenceKey()
+		 */
+		public String getPreferenceKey() {
+			return ANNOTATION_ELEMENT_REFERENCE;
+		}
+
+		/*
+		 * @see org.eclipse.jdt.internal.ui.javaeditor.ISemanticHighlighting#getDefaultTextColor()
+		 */
+		public RGB getDefaultTextColor() {
+			return new RGB(0, 0, 0);
+		}
+
+		/*
+		 * @see org.eclipse.jdt.internal.ui.javaeditor.ISemanticHighlighting#getDefaultTextStyleBold()
+		 */
+		public boolean isBoldByDefault() {
+			return false;
+		}
+
+		/*
+		 * @see org.eclipse.jdt.internal.ui.javaeditor.SemanticHighlighting#isItalicByDefault()
+		 */
+		public boolean isItalicByDefault() {
+			return false;
+		}
+
+		/*
+		 * @see org.eclipse.jdt.internal.ui.javaeditor.SemanticHighlighting#isEnabledByDefault()
+		 */
+		public boolean isEnabledByDefault() {
+			return false;
+		}
+
+		/*
+		 * @see org.eclipse.jdt.internal.ui.javaeditor.ISemanticHighlighting#getDisplayName()
+		 */
+		public String getDisplayName() {
+			return JavaEditorMessages.SemanticHighlighting_annotationElementReference;
+		}
+
+		/*
+		 * @see org.eclipse.jdt.internal.ui.javaeditor.ISemanticHighlighting#isMatched(org.eclipse.jdt.core.dom.ASTNode)
+		 */
+		public boolean consumes(SemanticToken token) {
+			/*
+			SimpleName node= token.getNode();
+			if (node.getParent() instanceof MemberValuePair) {
+				IBinding binding= token.getBinding();
+				boolean isAnnotationElement= binding != null && binding.getKind() == IBinding.METHOD;
+
+				return isAnnotationElement;
+			}
+			*/
+
+			return false;
+		}
+	}
 
 	/**
 	 * Semantic highlighting for abstract method invocations.
@@ -1598,26 +1664,26 @@ public class SemanticHighlightings {
 	public static SemanticHighlighting[] getSemanticHighlightings() {
 		if (fgSemanticHighlightings == null)
 			fgSemanticHighlightings= new SemanticHighlighting[] {
-				//new DeprecatedMemberHighlighting(),
-				//new AutoboxHighlighting(),
-				//new StaticFinalFieldHighlighting(),
-				//new StaticFieldHighlighting(),
-				//new FieldHighlighting(),
-				//new MethodDeclarationHighlighting(),
-				//new StaticMethodInvocationHighlighting(),
-				//new AbstractMethodInvocationHighlighting(),
-				//new AnnotationElementReferenceHighlighting(),
-				//new InheritedMethodInvocationHighlighting(),
-				//new ParameterVariableHighlighting(),
-				//new LocalVariableDeclarationHighlighting(),
-				//new LocalVariableHighlighting(),
-				//new TypeVariableHighlighting(), // before type arguments!
-				//new MethodHighlighting(), // before types to get ctors
-				//new TypeArgumentHighlighting(), // before other types
-				//new ClassHighlighting(),
-				//new EnumHighlighting(),
-				//new AnnotationHighlighting(), // before interfaces
-				//new InterfaceHighlighting(),
+				new DeprecatedMemberHighlighting(),
+				new AutoboxHighlighting(),
+				new StaticFinalFieldHighlighting(),
+				new StaticFieldHighlighting(),
+				new FieldHighlighting(),
+				new MethodDeclarationHighlighting(),
+				new StaticMethodInvocationHighlighting(),
+				new AbstractMethodInvocationHighlighting(),
+				new AnnotationElementReferenceHighlighting(),
+				new InheritedMethodInvocationHighlighting(),
+				new ParameterVariableHighlighting(),
+				new LocalVariableDeclarationHighlighting(),
+				new LocalVariableHighlighting(),
+				new TypeVariableHighlighting(), // before type arguments!
+				new MethodHighlighting(), // before types to get ctors
+				new TypeArgumentHighlighting(), // before other types
+				new ClassHighlighting(),
+				new EnumHighlighting(),
+				new AnnotationHighlighting(), // before interfaces
+				new InterfaceHighlighting(),
 			};
 		return fgSemanticHighlightings;
 	}

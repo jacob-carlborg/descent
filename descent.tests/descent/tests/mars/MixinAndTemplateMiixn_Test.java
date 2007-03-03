@@ -123,6 +123,8 @@ public class MixinAndTemplateMiixn_Test extends Parser_Test {
 		
 		TypeofType type3 = (TypeofType) type.getQualifier();
 		assertPosition(type3, 7, 9);
+		
+		assertPosition(m, 1, s.length() - 1);
 	}
 	
 	public void testTypeof2() {

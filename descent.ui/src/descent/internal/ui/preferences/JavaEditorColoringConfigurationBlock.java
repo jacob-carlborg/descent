@@ -229,7 +229,7 @@ class JavaEditorColoringConfigurationBlock extends AbstractConfigurationBlock {
 		 * @see org.eclipse.jface.viewers.IStructuredContentProvider#getElements(java.lang.Object)
 		 */
 		public Object[] getElements(Object inputElement) {
-			return new String[] {fJavaCategory, /* fJavadocCategory, */ fCommentsCategory};
+			return new String[] {fJavaCategory, fJavadocCategory, fCommentsCategory};
 		}
 	
 		/*
@@ -848,7 +848,6 @@ class JavaEditorColoringConfigurationBlock extends AbstractConfigurationBlock {
 	 */
 	private SemanticHighlightingManager.HighlightedRange[][] createPreviewerRanges() {
 		return new SemanticHighlightingManager.HighlightedRange[][] {
-				/*
 			{ createHighlightedRange( 6, 13,  9, SemanticHighlightings.DEPRECATED_MEMBER), createHighlightedRange( 6, 13,  9, SemanticHighlightings.CLASS),  },
 			{ createHighlightedRange( 6, 23,  1, SemanticHighlightings.TYPE_VARIABLE), createHighlightedRange( 6, 23,  1, SemanticHighlightings.TYPE_ARGUMENT), },
 			{ createHighlightedRange( 6, 37,  9, SemanticHighlightings.INTERFACE) },
@@ -872,7 +871,6 @@ class JavaEditorColoringConfigurationBlock extends AbstractConfigurationBlock {
 			{ createHighlightedRange(18, 9,  3, SemanticHighlightings.METHOD) },
 			{ createHighlightedRange(18, 13,  5, SemanticHighlightings.LOCAL_VARIABLE) },
 			{ createHighlightedRange(18, 22,  9, SemanticHighlightings.AUTOBOXING) },
-			*/
 		};
 	}
 

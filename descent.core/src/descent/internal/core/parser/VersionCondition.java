@@ -1,5 +1,6 @@
 package descent.internal.core.parser;
 
+
 public class VersionCondition extends Condition {
 	
 	public Identifier id;

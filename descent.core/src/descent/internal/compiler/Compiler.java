@@ -32,6 +32,7 @@ public class Compiler {
 	}
 
 	public void compile(ICompilationUnit[] sourceUnits) {
+		/* TODO JDT compiler
 		CompilationUnit unit = null;
 		CompilationResult result = null;
 		
@@ -63,6 +64,7 @@ public class Compiler {
 		} finally {
 			
 		}
+		*/
 	}
 	
 	protected void beginToCompile(ICompilationUnit[] sourceUnits) {
@@ -79,7 +81,7 @@ public class Compiler {
 			try {
 				parser.setSource(sourceUnits[i].getContents());
 				parsedUnit = (CompilationUnit) parser.createAST(null);
-				this.addCompilationUnit(sourceUnits[i], parsedUnit, unitResult);
+				this.addCompilationUnit(parsedUnit, unitResult);
 			} finally {
 				sourceUnits[i] = null; // no longer hold onto the unit
 			}
@@ -91,7 +93,6 @@ public class Compiler {
 	}
 	
 	protected void addCompilationUnit(
-		ICompilationUnit sourceUnit,
 		CompilationUnit parsedUnit,
 		CompilationResult unitResult) {
 

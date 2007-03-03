@@ -5,7 +5,7 @@ import descent.core.compiler.IProblem;
 
 public class Problem implements IProblem {
 	
-	public final static Object[] EMPTY = new Object[0];
+	public final static Object[] NO_OBJECTS = new Object[0];
 	
 	private String message;
 	private boolean isError;
@@ -70,11 +70,11 @@ public class Problem implements IProblem {
 	}
 	
 	public String[] getArguments() {
-		return new String[0];
+		return CharOperation.NO_STRINGS;
 	}
 	
 	public char[] getOriginatingFileName() {
-		return new char[0];
+		return CharOperation.NO_CHAR;
 	}
 
 	public void setSourceEnd(int sourceEnd) {
@@ -122,7 +122,7 @@ public class Problem implements IProblem {
 	 * @return the values of the corresponding extra marker attributes
 	 */
 	public Object[] getExtraMarkerAttributeValues() {
-		return EMPTY;
+		return NO_OBJECTS;
 	}
 	
 	@Override
