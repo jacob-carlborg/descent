@@ -187,7 +187,6 @@
          </filter>
          <keywordReference id="descent.ui.buildpath"/>
       </page>
-      <!--
       <page
             objectClass="org.eclipse.core.resources.IProject"
             name="%codeStylePageName"
@@ -210,6 +209,7 @@
          </filter>
          <keywordReference id="descent.ui.codestyle"/>
       </page>
+      <!--
       <page
             objectClass="org.eclipse.core.resources.IProject"
             name="%importOrganizePageName"
@@ -257,7 +257,8 @@
                value="descent.core.javanature">
          </filter>
          <keywordReference id="descent.ui.formatter"/>
-      </page>   
+      </page>
+      -->
       <page
             objectClass="org.eclipse.core.resources.IProject"
             name="%codeTemplatePageName"
@@ -480,7 +481,6 @@
             id="descent.ui.preferences.AppearancePreferencePage">
             <keywordReference id="descent.ui.appearance"/>
       </page>
-      <!--
       <page
             name="%codeStylePreferencePageName"
             category="descent.ui.preferences.JavaBasePreferencePage"
@@ -488,6 +488,7 @@
             id="descent.ui.preferences.CodeStylePreferencePage">
             <keywordReference id="descent.ui.codestyle"/>
       </page>
+      <!--
       <page
             name="%organizeImportsPrefName"
             category="descent.ui.preferences.CodeStylePreferencePage"
@@ -583,6 +584,7 @@
             id="descent.ui.preferences.TodoTaskPreferencePage">
             <keywordReference id="descent.ui.todo"/>
       </page>
+      -->
       <page
             name="%templatePageName"
             category="descent.ui.preferences.JavaEditorPreferencePage"
@@ -590,6 +592,7 @@
             id="descent.ui.preferences.JavaTemplatePreferencePage">
             <keywordReference id="descent.ui.templates"/>
       </page>
+      <!--
       <page
             name="%contentAssistPageName"
             category="descent.ui.preferences.JavaEditorPreferencePage"
@@ -642,7 +645,6 @@
             id="descent.ui.preferences.SmartTypingPreferencePage">
          <keywordReference id="descent.ui.smarttyping"/>
       </page>
-	  <!--
       <page
             name="%codeTemplatePreferencePageName"
             category="descent.ui.preferences.CodeStylePreferencePage"
@@ -650,6 +652,7 @@
             id="descent.ui.preferences.CodeTemplatePreferencePage">
             <keywordReference id="descent.ui.codetemplates"/>
       </page>
+      <!--
       <page
             name="%memberSortPrefName"
             category="descent.ui.preferences.AppearancePreferencePage"
@@ -2603,6 +2606,31 @@
       <enablement>
           <test property="org.eclipse.core.resources.projectNature" value="descent.core.javanature" />
       </enablement>
+   </extension>
+   
+   <!-- =========================================================================== -->
+<!-- Templates                                                                   -->
+<!-- =========================================================================== -->
+   <extension
+         point="org.eclipse.ui.editors.templates">
+      <contextType
+            name="%templates.java.contextType.name"
+            class="descent.internal.corext.template.java.JavaContextType"
+            id="java">
+      </contextType>
+      <contextType
+            name="%templates.javadoc.contextType.name"
+            class="descent.internal.corext.template.java.JavaDocContextType"
+            id="javadoc">
+      </contextType>
+      <include
+      		file="templates/default-templates.xml"
+      		translations="$nl$/templates/default-templates.properties">
+      </include>
+      <include
+      		file="templates/default-codetemplates.xml"
+      		translations="$nl$/templates/default-templates.properties">
+      </include>
    </extension>
 	
 </plugin>

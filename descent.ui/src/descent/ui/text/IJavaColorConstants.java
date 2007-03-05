@@ -36,11 +36,26 @@ public interface IJavaColorConstants {
 	 * (value <code>"java_multi_line_comment"</code>).
 	 */
 	String JAVA_MULTI_LINE_COMMENT= "java_multi_line_comment"; //$NON-NLS-1$
+	
+	/** The color key for multi-line comments in Java code
+	 * (value <code>"java_multi_line_comment"</code>).
+	 */
+	String JAVA_MULTI_LINE_PLUS_COMMENT= "java_multi_line_plus_comment"; //$NON-NLS-1$
+	
+	/** The color key for multi-line comments in Java code
+	 * (value <code>"java_multi_line_comment"</code>).
+	 */
+	String JAVA_MULTI_LINE_PLUS_DOC_COMMENT= "java_multi_line_plus_doc_comment"; //$NON-NLS-1$
 
 	/** The color key for single-line comments in Java code
 	 * (value <code>"java_single_line_comment"</code>).
 	 */
 	String JAVA_SINGLE_LINE_COMMENT= "java_single_line_comment"; //$NON-NLS-1$
+	
+	/** The color key for single-line comments in Java code
+	 * (value <code>"java_single_line_comment"</code>).
+	 */
+	String JAVA_SINGLE_LINE_DOC_COMMENT= "java_single_line_doc_comment"; //$NON-NLS-1$
 
 	/** The color key for Java keywords in Java code
 	 * (value <code>"java_keyword"</code>).

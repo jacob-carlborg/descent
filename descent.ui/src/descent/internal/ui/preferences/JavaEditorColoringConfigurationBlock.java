@@ -217,6 +217,9 @@ class JavaEditorColoringConfigurationBlock extends AbstractConfigurationBlock {
 			return ((HighlightingColorListItem)element).getDisplayName();
 		}
 	}
+	
+	private final static int JAVADOC_ELEMENTS_COUNT = 4;
+	private final static int COMMENTS_COUNT = 6;
 
 	/**
 	 * Color list content provider.
@@ -248,11 +251,11 @@ class JavaEditorColoringConfigurationBlock extends AbstractConfigurationBlock {
 			if (parentElement instanceof String) {
 				String entry= (String) parentElement;
 				if (fJavaCategory.equals(entry))
-					return fListModel.subList(7, fListModel.size()).toArray();
+					return fListModel.subList(JAVADOC_ELEMENTS_COUNT + COMMENTS_COUNT, fListModel.size()).toArray();
 				if (fJavadocCategory.equals(entry))
-					return fListModel.subList(0, 4).toArray();
+					return fListModel.subList(0, JAVADOC_ELEMENTS_COUNT).toArray();
 				if (fCommentsCategory.equals(entry))
-					return fListModel.subList(4, 7).toArray();
+					return fListModel.subList(JAVADOC_ELEMENTS_COUNT, JAVADOC_ELEMENTS_COUNT + COMMENTS_COUNT).toArray();
 			}
 			return new Object[0];
 		}
@@ -261,9 +264,9 @@ class JavaEditorColoringConfigurationBlock extends AbstractConfigurationBlock {
 			if (element instanceof String)
 				return null;
 			int index= fListModel.indexOf(element);
-			if (index < 4)
+			if (index < JAVADOC_ELEMENTS_COUNT)
 				return fJavadocCategory;
-			if (index >= 7)
+			if (index >= JAVADOC_ELEMENTS_COUNT + COMMENTS_COUNT)
 				return fJavaCategory;
 			return fCommentsCategory;
 		}
@@ -299,8 +302,11 @@ class JavaEditorColoringConfigurationBlock extends AbstractConfigurationBlock {
 			{ PreferencesMessages.JavaEditorPreferencePage_javaDocHtmlTags, PreferenceConstants.EDITOR_JAVADOC_TAG_COLOR }, 
 			{ PreferencesMessages.JavaEditorPreferencePage_javaDocLinks, PreferenceConstants.EDITOR_JAVADOC_LINKS_COLOR }, 
 			{ PreferencesMessages.JavaEditorPreferencePage_javaDocOthers, PreferenceConstants.EDITOR_JAVADOC_DEFAULT_COLOR }, 
-			{ PreferencesMessages.JavaEditorPreferencePage_multiLineComment, PreferenceConstants.EDITOR_MULTI_LINE_COMMENT_COLOR }, 
+			{ PreferencesMessages.JavaEditorPreferencePage_multiLineComment, PreferenceConstants.EDITOR_MULTI_LINE_COMMENT_COLOR },
+			{ PreferencesMessages.JavaEditorPreferencePage_multiLinePlusComment, PreferenceConstants.EDITOR_MULTI_LINE_PLUS_COMMENT_COLOR },
+			{ PreferencesMessages.JavaEditorPreferencePage_multiLinePlusDocComment, PreferenceConstants.EDITOR_MULTI_LINE_PLUS_DOC_COMMENT_COLOR },
 			{ PreferencesMessages.JavaEditorPreferencePage_singleLineComment, PreferenceConstants.EDITOR_SINGLE_LINE_COMMENT_COLOR }, 
+			{ PreferencesMessages.JavaEditorPreferencePage_singleLineDocComment, PreferenceConstants.EDITOR_SINGLE_LINE_DOC_COMMENT_COLOR },
 			{ PreferencesMessages.JavaEditorPreferencePage_javaCommentTaskTags, PreferenceConstants.EDITOR_TASK_TAG_COLOR }, 
 			{ PreferencesMessages.JavaEditorPreferencePage_keywords, PreferenceConstants.EDITOR_JAVA_KEYWORD_COLOR }, 
 			{ PreferencesMessages.JavaEditorPreferencePage_returnKeyword, PreferenceConstants.EDITOR_JAVA_KEYWORD_RETURN_COLOR }, 

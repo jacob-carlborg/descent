@@ -47,10 +47,8 @@ import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IEditorInput;
-import org.eclipse.ui.editors.text.EditorsUI;
 import org.eclipse.ui.editors.text.TextSourceViewerConfiguration;
 import org.eclipse.ui.texteditor.AbstractDecoratedTextEditorPreferenceConstants;
-import org.eclipse.ui.texteditor.ChainedPreferenceStore;
 import org.eclipse.ui.texteditor.IDocumentProvider;
 import org.eclipse.ui.texteditor.ITextEditor;
 
@@ -70,7 +68,6 @@ import descent.internal.ui.text.JavaElementProvider;
 import descent.internal.ui.text.JavaOutlineInformationControl;
 import descent.internal.ui.text.JavaPresentationReconciler;
 import descent.internal.ui.text.JavaReconciler;
-import descent.internal.ui.text.PreferencesAdapter;
 import descent.internal.ui.text.SingleTokenJavaScanner;
 import descent.internal.ui.text.java.JavaAutoIndentStrategy;
 import descent.internal.ui.text.java.JavaCodeScanner;
@@ -82,6 +79,7 @@ import descent.internal.ui.text.java.SmartSemicolonAutoEditStrategy;
 import descent.internal.ui.text.java.hover.JavaEditorTextHoverDescriptor;
 import descent.internal.ui.text.java.hover.JavaEditorTextHoverProxy;
 import descent.internal.ui.text.java.hover.JavaInformationProvider;
+import descent.internal.ui.text.javadoc.JavaDocAutoIndentStrategy;
 import descent.internal.ui.text.javadoc.JavaDocScanner;
 import descent.ui.PreferenceConstants;
 import descent.ui.actions.IJavaEditorActionDefinitionIds;
@@ -130,10 +128,25 @@ public class JavaSourceViewerConfiguration extends TextSourceViewerConfiguration
 	 */
 	private AbstractJavaScanner fMultilineCommentScanner;
 	/**
+	 * The Java multi-line comment scanner.
+	 * @since 3.0
+	 */
+	private AbstractJavaScanner fMultilinePlusCommentScanner;
+	/**
+	 * The Java multi-line comment scanner.
+	 * @since 3.0
+	 */
+	private AbstractJavaScanner fMultilinePlusDocCommentScanner;
+	/**
 	 * The Java single-line comment scanner.
 	 * @since 3.0
 	 */
 	private AbstractJavaScanner fSinglelineCommentScanner;
+	/**
+	 * The Java single-line comment scanner.
+	 * @since 3.0
+	 */
+	private AbstractJavaScanner fSinglelineDocCommentScanner;
 	/**
 	 * The Java string scanner.
 	 * @since 3.0
@@ -181,27 +194,6 @@ public class JavaSourceViewerConfiguration extends TextSourceViewerConfiguration
 	}
 
 	/**
-	 * Creates a new Java source viewer configuration for viewers in the given editor
-	 * using the given Java tools.
-	 *
-	 * @param tools the Java text tools to be used
-	 * @param editor the editor in which the configured viewer(s) will reside, or <code>null</code> if none
-	 * @see JavaTextTools
-	 * @deprecated As of 3.0, replaced by {@link JavaSourceViewerConfiguration#JavaSourceViewerConfiguration(IColorManager, IPreferenceStore, ITextEditor, String)}
-	 */
-	public JavaSourceViewerConfiguration(JavaTextTools tools, ITextEditor editor) {
-		super(createPreferenceStore(tools));
-		fJavaTextTools= tools;
-		fColorManager= tools.getColorManager();
-		fCodeScanner= (AbstractJavaScanner) fJavaTextTools.getCodeScanner();
-		fMultilineCommentScanner= (AbstractJavaScanner) fJavaTextTools.getMultilineCommentScanner();
-		fSinglelineCommentScanner= (AbstractJavaScanner) fJavaTextTools.getSinglelineCommentScanner();
-		fStringScanner= (AbstractJavaScanner) fJavaTextTools.getStringScanner();
-		fJavaDocScanner= (AbstractJavaScanner) fJavaTextTools.getJavaDocScanner();
-		fTextEditor= editor;
-	}
-
-	/**
 	 * Returns the Java source code scanner for this configuration.
 	 *
 	 * @return the Java source code scanner
@@ -219,6 +211,26 @@ public class JavaSourceViewerConfiguration extends TextSourceViewerConfiguration
 	protected RuleBasedScanner getMultilineCommentScanner() {
 		return fMultilineCommentScanner;
 	}
+	
+	/**
+	 * Returns the Java multi-line comment scanner for this configuration.
+	 *
+	 * @return the Java multi-line comment scanner
+	 * @since 2.0
+	 */
+	protected RuleBasedScanner getMultilinePlusCommentScanner() {
+		return fMultilinePlusCommentScanner;
+	}
+	
+	/**
+	 * Returns the Java multi-line comment scanner for this configuration.
+	 *
+	 * @return the Java multi-line comment scanner
+	 * @since 2.0
+	 */
+	protected RuleBasedScanner getMultilinePlusDocCommentScanner() {
+		return fMultilinePlusDocCommentScanner;
+	}
 
 	/**
 	 * Returns the Java single-line comment scanner for this configuration.
@@ -229,6 +241,17 @@ public class JavaSourceViewerConfiguration extends TextSourceViewerConfiguration
 	protected RuleBasedScanner getSinglelineCommentScanner() {
 		return fSinglelineCommentScanner;
 	}
+	
+	/**
+	 * Returns the Java single-line comment scanner for this configuration.
+	 *
+	 * @return the Java single-line comment scanner
+	 * @since 2.0
+	 */
+	protected RuleBasedScanner getSinglelineDocCommentScanner() {
+		return fSinglelineDocCommentScanner;
+	}
+
 
 	/**
 	 * Returns the Java string scanner for this configuration.
@@ -295,23 +318,6 @@ public class JavaSourceViewerConfiguration extends TextSourceViewerConfiguration
 	}
 
 	/**
-	 * Creates and returns a preference store which combines the preference
-	 * stores from the text tools and which is read-only.
-	 *
-	 * @param javaTextTools the Java text tools
-	 * @return the combined read-only preference store
-	 * @since 3.0
-	 */
-	private static final IPreferenceStore createPreferenceStore(JavaTextTools javaTextTools) {
-		Assert.isNotNull(javaTextTools);
-		IPreferenceStore generalTextStore= EditorsUI.getPreferenceStore();
-		if (javaTextTools.getCorePreferenceStore() == null)
-			return new ChainedPreferenceStore(new IPreferenceStore[] { javaTextTools.getPreferenceStore(), generalTextStore});
-
-		return new ChainedPreferenceStore(new IPreferenceStore[] { javaTextTools.getPreferenceStore(), new PreferencesAdapter(javaTextTools.getCorePreferenceStore()), generalTextStore });
-	}
-
-	/**
 	 * Initializes the scanners.
 	 *
 	 * @since 3.0
@@ -320,7 +326,10 @@ public class JavaSourceViewerConfiguration extends TextSourceViewerConfiguration
 		Assert.isTrue(isNewSetup());
 		fCodeScanner= new JavaCodeScanner(getColorManager(), fPreferenceStore);
 		fMultilineCommentScanner= new JavaCommentScanner(getColorManager(), fPreferenceStore, IJavaColorConstants.JAVA_MULTI_LINE_COMMENT);
+		fMultilinePlusCommentScanner= new JavaCommentScanner(getColorManager(), fPreferenceStore, IJavaColorConstants.JAVA_MULTI_LINE_PLUS_COMMENT);
+		fMultilinePlusDocCommentScanner= new JavaCommentScanner(getColorManager(), fPreferenceStore, IJavaColorConstants.JAVA_MULTI_LINE_PLUS_DOC_COMMENT);
 		fSinglelineCommentScanner= new JavaCommentScanner(getColorManager(), fPreferenceStore, IJavaColorConstants.JAVA_SINGLE_LINE_COMMENT);
+		fSinglelineDocCommentScanner= new JavaCommentScanner(getColorManager(), fPreferenceStore, IJavaColorConstants.JAVA_SINGLE_LINE_DOC_COMMENT);
 		fStringScanner= new SingleTokenJavaScanner(getColorManager(), fPreferenceStore, IJavaColorConstants.JAVA_STRING);
 		fJavaDocScanner= new JavaDocScanner(getColorManager(), fPreferenceStore);
 	}
@@ -344,10 +353,22 @@ public class JavaSourceViewerConfiguration extends TextSourceViewerConfiguration
 		dr= new DefaultDamagerRepairer(getMultilineCommentScanner());
 		reconciler.setDamager(dr, IJavaPartitions.JAVA_MULTI_LINE_COMMENT);
 		reconciler.setRepairer(dr, IJavaPartitions.JAVA_MULTI_LINE_COMMENT);
+		
+		dr= new DefaultDamagerRepairer(getMultilinePlusCommentScanner());
+		reconciler.setDamager(dr, IJavaPartitions.JAVA_MULTI_LINE_PLUS_COMMENT);
+		reconciler.setRepairer(dr, IJavaPartitions.JAVA_MULTI_LINE_PLUS_COMMENT);
+		
+		dr= new DefaultDamagerRepairer(getMultilinePlusDocCommentScanner());
+		reconciler.setDamager(dr, IJavaPartitions.JAVA_MULTI_LINE_PLUS_DOC_COMMENT);
+		reconciler.setRepairer(dr, IJavaPartitions.JAVA_MULTI_LINE_PLUS_DOC_COMMENT);
 
 		dr= new DefaultDamagerRepairer(getSinglelineCommentScanner());
 		reconciler.setDamager(dr, IJavaPartitions.JAVA_SINGLE_LINE_COMMENT);
 		reconciler.setRepairer(dr, IJavaPartitions.JAVA_SINGLE_LINE_COMMENT);
+		
+		dr= new DefaultDamagerRepairer(getSinglelineDocCommentScanner());
+		reconciler.setDamager(dr, IJavaPartitions.JAVA_SINGLE_LINE_DOC_COMMENT);
+		reconciler.setRepairer(dr, IJavaPartitions.JAVA_SINGLE_LINE_DOC_COMMENT);
 
 		dr= new DefaultDamagerRepairer(getStringScanner());
 		reconciler.setDamager(dr, IJavaPartitions.JAVA_STRING);
@@ -438,12 +459,9 @@ public class JavaSourceViewerConfiguration extends TextSourceViewerConfiguration
 	 */
 	public IAutoEditStrategy[] getAutoEditStrategies(ISourceViewer sourceViewer, String contentType) {
 		String partitioning= getConfiguredDocumentPartitioning(sourceViewer);
-		/* TODO JDT UI javadoc indent
 		if (IJavaPartitions.JAVA_DOC.equals(contentType) || IJavaPartitions.JAVA_MULTI_LINE_COMMENT.equals(contentType))
 			return new IAutoEditStrategy[] { new JavaDocAutoIndentStrategy(partitioning) };
-		else 
-		*/
-		if (IJavaPartitions.JAVA_STRING.equals(contentType))
+		else if (IJavaPartitions.JAVA_STRING.equals(contentType))
 			return new IAutoEditStrategy[] { new SmartSemicolonAutoEditStrategy(partitioning), new JavaStringAutoIndentStrategy(partitioning) };
 		else if (IJavaPartitions.JAVA_CHARACTER.equals(contentType) || IDocument.DEFAULT_CONTENT_TYPE.equals(contentType))
 			return new IAutoEditStrategy[] { new SmartSemicolonAutoEditStrategy(partitioning), new JavaAutoIndentStrategy(partitioning, getProject()) };
@@ -458,7 +476,11 @@ public class JavaSourceViewerConfiguration extends TextSourceViewerConfiguration
 		if (IJavaPartitions.JAVA_DOC.equals(contentType))
 			return new JavadocDoubleClickStrategy();
 		if (IJavaPartitions.JAVA_MULTI_LINE_COMMENT.equals(contentType) ||
-				IJavaPartitions.JAVA_SINGLE_LINE_COMMENT.equals(contentType))
+				IJavaPartitions.JAVA_MULTI_LINE_PLUS_COMMENT.equals(contentType) ||
+				IJavaPartitions.JAVA_MULTI_LINE_PLUS_DOC_COMMENT.equals(contentType) ||
+				IJavaPartitions.JAVA_SINGLE_LINE_COMMENT.equals(contentType) ||
+				IJavaPartitions.JAVA_SINGLE_LINE_DOC_COMMENT.equals(contentType)
+				)
 			return new DefaultTextDoubleClickStrategy();
 		else if (IJavaPartitions.JAVA_STRING.equals(contentType) ||
 				IJavaPartitions.JAVA_CHARACTER.equals(contentType))
@@ -644,7 +666,10 @@ public class JavaSourceViewerConfiguration extends TextSourceViewerConfiguration
 			IDocument.DEFAULT_CONTENT_TYPE,
 			IJavaPartitions.JAVA_DOC,
 			IJavaPartitions.JAVA_MULTI_LINE_COMMENT,
+			IJavaPartitions.JAVA_MULTI_LINE_PLUS_COMMENT,
+			IJavaPartitions.JAVA_MULTI_LINE_PLUS_DOC_COMMENT,
 			IJavaPartitions.JAVA_SINGLE_LINE_COMMENT,
+			IJavaPartitions.JAVA_SINGLE_LINE_DOC_COMMENT,
 			IJavaPartitions.JAVA_STRING,
 			IJavaPartitions.JAVA_CHARACTER
 		};
@@ -778,7 +803,10 @@ public class JavaSourceViewerConfiguration extends TextSourceViewerConfiguration
 		presenter.setInformationProvider(provider, IDocument.DEFAULT_CONTENT_TYPE);
 		presenter.setInformationProvider(provider, IJavaPartitions.JAVA_DOC);
 		presenter.setInformationProvider(provider, IJavaPartitions.JAVA_MULTI_LINE_COMMENT);
+		presenter.setInformationProvider(provider, IJavaPartitions.JAVA_MULTI_LINE_PLUS_COMMENT);
+		presenter.setInformationProvider(provider, IJavaPartitions.JAVA_MULTI_LINE_PLUS_DOC_COMMENT);
 		presenter.setInformationProvider(provider, IJavaPartitions.JAVA_SINGLE_LINE_COMMENT);
+		presenter.setInformationProvider(provider, IJavaPartitions.JAVA_SINGLE_LINE_DOC_COMMENT);
 		presenter.setInformationProvider(provider, IJavaPartitions.JAVA_STRING);
 		presenter.setInformationProvider(provider, IJavaPartitions.JAVA_CHARACTER);
 		presenter.setSizeConstraints(50, 20, true, false);
@@ -842,7 +870,10 @@ public class JavaSourceViewerConfiguration extends TextSourceViewerConfiguration
 	public boolean affectsTextPresentation(PropertyChangeEvent event) {
 		return  fCodeScanner.affectsBehavior(event)
 			|| fMultilineCommentScanner.affectsBehavior(event)
+			|| fMultilinePlusCommentScanner.affectsBehavior(event)
+			|| fMultilinePlusDocCommentScanner.affectsBehavior(event)
 			|| fSinglelineCommentScanner.affectsBehavior(event)
+			|| fSinglelineDocCommentScanner.affectsBehavior(event)
 			|| fStringScanner.affectsBehavior(event)
 			|| fJavaDocScanner.affectsBehavior(event);
 	}
@@ -865,8 +896,14 @@ public class JavaSourceViewerConfiguration extends TextSourceViewerConfiguration
 			fCodeScanner.adaptToPreferenceChange(event);
 		if (fMultilineCommentScanner.affectsBehavior(event))
 			fMultilineCommentScanner.adaptToPreferenceChange(event);
+		if (fMultilinePlusCommentScanner.affectsBehavior(event))
+			fMultilinePlusCommentScanner.adaptToPreferenceChange(event);
+		if (fMultilinePlusDocCommentScanner.affectsBehavior(event))
+			fMultilinePlusDocCommentScanner.adaptToPreferenceChange(event);
 		if (fSinglelineCommentScanner.affectsBehavior(event))
 			fSinglelineCommentScanner.adaptToPreferenceChange(event);
+		if (fSinglelineDocCommentScanner.affectsBehavior(event))
+			fSinglelineDocCommentScanner.adaptToPreferenceChange(event);
 		if (fStringScanner.affectsBehavior(event))
 			fStringScanner.adaptToPreferenceChange(event);
 		if (fJavaDocScanner.affectsBehavior(event))

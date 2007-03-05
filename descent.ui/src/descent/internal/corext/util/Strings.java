@@ -11,7 +11,6 @@
 package descent.internal.corext.util;
 
 import org.eclipse.core.runtime.Assert;
-
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.DefaultLineTracker;
 import org.eclipse.jface.text.ILineTracker;
@@ -443,4 +442,18 @@ public class Strings {
 		}
 		return result.toString();
 	}
+	
+	/**
+	 * Returns the indent of the given string in indentation units. Odd spaces
+	 * are not counted.
+	 * 
+	 * @param line the text line
+	 * @param project the java project from which to get the formatter
+	 *        preferences, or <code>null</code> for global preferences
+	 * @since 3.1
+	 */
+	public static int computeIndentUnits(String line, IJavaProject project) {
+		return IndentManipulation.measureIndentUnits(line, CodeFormatterUtil.getTabWidth(project), CodeFormatterUtil.getIndentWidth(project));
+	}
+	
 }

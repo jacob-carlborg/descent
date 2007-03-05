@@ -45,6 +45,15 @@ public class ASTNodes {
 	private ASTNodes() {
 		// no instance;
 	}
+	
+	public static String asString(ASTNode node) {
+		return node.toString();
+		/* TODO implement again ASTFlattener ?? 
+		ASTFlattener flattener= new ASTFlattener();
+		node.accept(flattener);
+		return flattener.getResult();
+		*/		
+	}
 
 	
 	/**

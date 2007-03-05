@@ -956,7 +956,13 @@ public class SmartSemicolonAutoEditStrategy implements IAutoEditStrategy {
 			return INVALID;
 		if (IJavaPartitions.JAVA_MULTI_LINE_COMMENT.equals(partition.getType()))
 			return INVALID;
+		if (IJavaPartitions.JAVA_MULTI_LINE_PLUS_COMMENT.equals(partition.getType()))
+			return INVALID;
+		if (IJavaPartitions.JAVA_MULTI_LINE_PLUS_DOC_COMMENT.equals(partition.getType()))
+			return INVALID;
 		if (IJavaPartitions.JAVA_SINGLE_LINE_COMMENT.equals(partition.getType()))
+			return INVALID;
+		if (IJavaPartitions.JAVA_SINGLE_LINE_DOC_COMMENT.equals(partition.getType()))
 			return INVALID;
 
 		int endOffset= Math.min(maxOffset, partition.getOffset() + partition.getLength());

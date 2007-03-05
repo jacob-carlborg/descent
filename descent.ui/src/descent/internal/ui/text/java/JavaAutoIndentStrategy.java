@@ -49,7 +49,6 @@ import descent.core.dom.WhileStatement;
 import descent.internal.corext.dom.NodeFinder;
 import descent.internal.ui.JavaPlugin;
 import descent.internal.ui.javaeditor.ASTProvider;
-import descent.internal.ui.text.FastJavaPartitionScanner;
 import descent.internal.ui.text.JavaHeuristicScanner;
 import descent.internal.ui.text.JavaIndenter;
 import descent.internal.ui.text.JavaPartitionScannerFactory;
@@ -589,7 +588,10 @@ public class JavaAutoIndentStrategy extends DefaultIndentLineAutoEditStrategy {
 		String[] types= new String[] {
 									  IJavaPartitions.JAVA_DOC,
 									  IJavaPartitions.JAVA_MULTI_LINE_COMMENT,
+									  IJavaPartitions.JAVA_MULTI_LINE_PLUS_COMMENT,
+									  IJavaPartitions.JAVA_MULTI_LINE_PLUS_DOC_COMMENT,
 									  IJavaPartitions.JAVA_SINGLE_LINE_COMMENT,
+									  IJavaPartitions.JAVA_SINGLE_LINE_DOC_COMMENT,
 									  IJavaPartitions.JAVA_STRING,
 									  IJavaPartitions.JAVA_CHARACTER,
 									  IDocument.DEFAULT_CONTENT_TYPE

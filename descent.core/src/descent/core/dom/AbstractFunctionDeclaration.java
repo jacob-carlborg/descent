@@ -374,5 +374,21 @@ public abstract class AbstractFunctionDeclaration extends Declaration {
 		this.body = body;
 		postReplaceChild(oldChild, body, getBodyProperty());
 	}
+	
+	/**
+	 * Returns true if this AbstractFunctionDeclaration is a
+	 * ConstructorDeclaration.
+	 */
+	public boolean isConstructor() {
+		return this instanceof ConstructorDeclaration;
+	}
+	
+	/**
+	 * Returns true if this AbstractFunctionDeclaration is a
+	 * FunctionDeclaration.
+	 */
+	public boolean isFunction() {
+		return this instanceof FunctionDeclaration;
+	}
 
 }

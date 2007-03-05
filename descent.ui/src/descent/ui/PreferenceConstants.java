@@ -1217,6 +1217,14 @@ public class PreferenceConstants {
 	public static final String EDITOR_UNDERLINE_SUFFIX= "_underline"; //$NON-NLS-1$
 
 	/**
+	 * The symbolic font name for the Java editor text font 
+	 * (value <code>"descent.ui.editors.textfont"</code>).
+	 * 
+	 * @since 2.1
+	 */
+	public final static String EDITOR_TEXT_FONT= "descent.ui.editors.textfont"; //$NON-NLS-1$
+	
+	/**
 	 * A named preference that holds the color used to render multi-line comments.
 	 * <p>
 	 * Value is of type <code>String</code>. A RGB color value encoded as a string
@@ -1227,14 +1235,6 @@ public class PreferenceConstants {
 	 * @see org.eclipse.jface.preference.PreferenceConverter
 	 */
 	public final static String EDITOR_MULTI_LINE_COMMENT_COLOR= IJavaColorConstants.JAVA_MULTI_LINE_COMMENT;
-
-	/**
-	 * The symbolic font name for the Java editor text font 
-	 * (value <code>"descent.ui.editors.textfont"</code>).
-	 * 
-	 * @since 2.1
-	 */
-	public final static String EDITOR_TEXT_FONT= "descent.ui.editors.textfont"; //$NON-NLS-1$
 
 	/**
 	 * A named preference that controls whether multi-line comments are rendered in bold.
@@ -1330,7 +1330,169 @@ public class PreferenceConstants {
 	 * 
 	 * @since 3.1
 	 */
-	public final static String EDITOR_SINGLE_LINE_COMMENT_UNDERLINE= IJavaColorConstants.JAVA_SINGLE_LINE_COMMENT + EDITOR_UNDERLINE_SUFFIX; 
+	public final static String EDITOR_SINGLE_LINE_COMMENT_UNDERLINE= IJavaColorConstants.JAVA_SINGLE_LINE_COMMENT + EDITOR_UNDERLINE_SUFFIX;
+	
+	/**
+	 * A named preference that holds the color used to render multi-line comments.
+	 * <p>
+	 * Value is of type <code>String</code>. A RGB color value encoded as a string
+	 * using class <code>PreferenceConverter</code>
+	 * </p>
+	 * 
+	 * @see org.eclipse.jface.resource.StringConverter
+	 * @see org.eclipse.jface.preference.PreferenceConverter
+	 */
+	public final static String EDITOR_MULTI_LINE_PLUS_COMMENT_COLOR= IJavaColorConstants.JAVA_MULTI_LINE_PLUS_COMMENT;
+
+	/**
+	 * A named preference that controls whether multi-line comments are rendered in bold.
+	 * <p>
+	 * Value is of type <code>Boolean</code>. If <code>true</code> multi-line comments are rendered
+	 * in bold. If <code>false</code> the are rendered using no font style attribute.
+	 * </p>
+	 */
+	public final static String EDITOR_MULTI_LINE_PLUS_COMMENT_BOLD= IJavaColorConstants.JAVA_MULTI_LINE_PLUS_COMMENT + EDITOR_BOLD_SUFFIX; 
+
+	/**
+	 * A named preference that controls whether multi-line comments are rendered in italic.
+	 * <p>
+	 * Value is of type <code>Boolean</code>. If <code>true</code> multi-line comments are rendered
+	 * in italic. If <code>false</code> the are rendered using no italic font style attribute.
+	 * </p>
+	 * 
+	 * @since 3.0
+	 */
+	public final static String EDITOR_MULTI_LINE_PLUS_COMMENT_ITALIC= IJavaColorConstants.JAVA_MULTI_LINE_PLUS_COMMENT + EDITOR_ITALIC_SUFFIX;
+	
+	/**
+	 * A named preference that controls whether multi-line comments are rendered in strikethrough.
+	 * <p>
+	 * Value is of type <code>Boolean</code>. If <code>true</code> multi-line comments are rendered
+	 * in strikethrough. If <code>false</code> the are rendered using no strikethrough font style attribute.
+	 * </p>
+	 * 
+	 * @since 3.1
+	 */
+	public final static String EDITOR_MULTI_LINE_PLUS_COMMENT_STRIKETHROUGH= IJavaColorConstants.JAVA_MULTI_LINE_PLUS_COMMENT + EDITOR_STRIKETHROUGH_SUFFIX;
+	
+	/**
+	 * A named preference that controls whether multi-line comments are rendered in underline.
+	 * <p>
+	 * Value is of type <code>Boolean</code>. If <code>true</code> multi-line comments are rendered
+	 * in underline. If <code>false</code> the are rendered using no underline font style attribute.
+	 * </p>
+	 * 
+	 * @since 3.1
+	 */
+	public final static String EDITOR_MULTI_LINE_PLUS_COMMENT_UNDERLINE= IJavaColorConstants.JAVA_MULTI_LINE_PLUS_COMMENT + EDITOR_UNDERLINE_SUFFIX;
+	
+	/**
+	 * A named preference that holds the color used to render single line comments.
+	 * <p>
+	 * Value is of type <code>String</code>. A RGB color value encoded as a string
+	 * using class <code>PreferenceConverter</code>
+	 * </p>
+	 * 
+	 * @see org.eclipse.jface.resource.StringConverter
+	 * @see org.eclipse.jface.preference.PreferenceConverter
+	 */
+	public final static String EDITOR_SINGLE_LINE_DOC_COMMENT_COLOR= IJavaColorConstants.JAVA_SINGLE_LINE_DOC_COMMENT;
+
+	/**
+	 * A named preference that controls whether single line comments are rendered in bold.
+	 * <p>
+	 * Value is of type <code>Boolean</code>. If <code>true</code> single line comments are rendered
+	 * in bold. If <code>false</code> the are rendered using no font style attribute.
+	 * </p>
+	 */
+	public final static String EDITOR_SINGLE_LINE_DOC_COMMENT_BOLD= IJavaColorConstants.JAVA_SINGLE_LINE_DOC_COMMENT + EDITOR_BOLD_SUFFIX; 
+
+	/**
+	 * A named preference that controls whether single line comments are rendered in italic.
+	 * <p>
+	 * Value is of type <code>Boolean</code>. If <code>true</code> single line comments are rendered
+	 * in italic. If <code>false</code> the are rendered using no italic font style attribute.
+	 * </p>
+	 * 
+	 * @since 3.0
+	 */
+	public final static String EDITOR_SINGLE_LINE_DOC_COMMENT_ITALIC= IJavaColorConstants.JAVA_SINGLE_LINE_DOC_COMMENT + EDITOR_ITALIC_SUFFIX;
+	
+	/**
+	 * A named preference that controls whether single line comments are rendered in strikethrough.
+	 * <p>
+	 * Value is of type <code>Boolean</code>. If <code>true</code> single line comments are rendered
+	 * in strikethrough. If <code>false</code> the are rendered using no italic font style attribute.
+	 * </p>
+	 * 
+	 * @since 3.1
+	 */
+	public final static String EDITOR_SINGLE_LINE_DOC_COMMENT_STRIKETHROUGH= IJavaColorConstants.JAVA_SINGLE_LINE_DOC_COMMENT + EDITOR_STRIKETHROUGH_SUFFIX;
+	
+	/**
+	 * A named preference that controls whether single line comments are rendered in underline.
+	 * <p>
+	 * Value is of type <code>Boolean</code>. If <code>true</code> single line comments are rendered
+	 * in underline. If <code>false</code> the are rendered using no italic font style attribute.
+	 * </p>
+	 * 
+	 * @since 3.1
+	 */
+	public final static String EDITOR_SINGLE_LINE_DOC_COMMENT_UNDERLINE= IJavaColorConstants.JAVA_SINGLE_LINE_DOC_COMMENT + EDITOR_UNDERLINE_SUFFIX;
+	
+	/**
+	 * A named preference that holds the color used to render multi-line comments.
+	 * <p>
+	 * Value is of type <code>String</code>. A RGB color value encoded as a string
+	 * using class <code>PreferenceConverter</code>
+	 * </p>
+	 * 
+	 * @see org.eclipse.jface.resource.StringConverter
+	 * @see org.eclipse.jface.preference.PreferenceConverter
+	 */
+	public final static String EDITOR_MULTI_LINE_PLUS_DOC_COMMENT_COLOR= IJavaColorConstants.JAVA_MULTI_LINE_PLUS_DOC_COMMENT;
+
+	/**
+	 * A named preference that controls whether multi-line comments are rendered in bold.
+	 * <p>
+	 * Value is of type <code>Boolean</code>. If <code>true</code> multi-line comments are rendered
+	 * in bold. If <code>false</code> the are rendered using no font style attribute.
+	 * </p>
+	 */
+	public final static String EDITOR_MULTI_LINE_PLUS_DOC_COMMENT_BOLD= IJavaColorConstants.JAVA_MULTI_LINE_PLUS_DOC_COMMENT + EDITOR_BOLD_SUFFIX; 
+
+	/**
+	 * A named preference that controls whether multi-line comments are rendered in italic.
+	 * <p>
+	 * Value is of type <code>Boolean</code>. If <code>true</code> multi-line comments are rendered
+	 * in italic. If <code>false</code> the are rendered using no italic font style attribute.
+	 * </p>
+	 * 
+	 * @since 3.0
+	 */
+	public final static String EDITOR_MULTI_LINE_PLUS_DOC_COMMENT_ITALIC= IJavaColorConstants.JAVA_MULTI_LINE_PLUS_DOC_COMMENT + EDITOR_ITALIC_SUFFIX;
+	
+	/**
+	 * A named preference that controls whether multi-line comments are rendered in strikethrough.
+	 * <p>
+	 * Value is of type <code>Boolean</code>. If <code>true</code> multi-line comments are rendered
+	 * in strikethrough. If <code>false</code> the are rendered using no strikethrough font style attribute.
+	 * </p>
+	 * 
+	 * @since 3.1
+	 */
+	public final static String EDITOR_MULTI_LINE_PLUS_DOC_COMMENT_STRIKETHROUGH= IJavaColorConstants.JAVA_MULTI_LINE_PLUS_DOC_COMMENT + EDITOR_STRIKETHROUGH_SUFFIX;
+	
+	/**
+	 * A named preference that controls whether multi-line comments are rendered in underline.
+	 * <p>
+	 * Value is of type <code>Boolean</code>. If <code>true</code> multi-line comments are rendered
+	 * in underline. If <code>false</code> the are rendered using no underline font style attribute.
+	 * </p>
+	 * 
+	 * @since 3.1
+	 */
+	public final static String EDITOR_MULTI_LINE_PLUS_DOC_COMMENT_UNDERLINE= IJavaColorConstants.JAVA_MULTI_LINE_PLUS_DOC_COMMENT + EDITOR_UNDERLINE_SUFFIX;
 
 	/**
 	 * A named preference that holds the color used to render java keywords.
@@ -3432,10 +3594,22 @@ public class PreferenceConstants {
 		PreferenceConverter.setDefault(store, PreferenceConstants.EDITOR_MULTI_LINE_COMMENT_COLOR, new RGB(63, 127, 95));
 		store.setDefault(PreferenceConstants.EDITOR_MULTI_LINE_COMMENT_BOLD, false);
 		store.setDefault(PreferenceConstants.EDITOR_MULTI_LINE_COMMENT_ITALIC, false);
+		
+		PreferenceConverter.setDefault(store, PreferenceConstants.EDITOR_MULTI_LINE_PLUS_COMMENT_COLOR, new RGB(63, 127, 95));
+		store.setDefault(PreferenceConstants.EDITOR_MULTI_LINE_PLUS_COMMENT_BOLD, false);
+		store.setDefault(PreferenceConstants.EDITOR_MULTI_LINE_PLUS_COMMENT_ITALIC, false);
+		
+		PreferenceConverter.setDefault(store, PreferenceConstants.EDITOR_MULTI_LINE_PLUS_DOC_COMMENT_COLOR, new RGB(63, 95, 191));
+		store.setDefault(PreferenceConstants.EDITOR_MULTI_LINE_PLUS_DOC_COMMENT_BOLD, false);
+		store.setDefault(PreferenceConstants.EDITOR_MULTI_LINE_PLUS_DOC_COMMENT_ITALIC, false);
 
 		PreferenceConverter.setDefault(store, PreferenceConstants.EDITOR_SINGLE_LINE_COMMENT_COLOR, new RGB(63, 127, 95));
 		store.setDefault(PreferenceConstants.EDITOR_SINGLE_LINE_COMMENT_BOLD, false);
 		store.setDefault(PreferenceConstants.EDITOR_SINGLE_LINE_COMMENT_ITALIC, false);
+		
+		PreferenceConverter.setDefault(store, PreferenceConstants.EDITOR_SINGLE_LINE_DOC_COMMENT_COLOR, new RGB(63, 95, 191));
+		store.setDefault(PreferenceConstants.EDITOR_SINGLE_LINE_DOC_COMMENT_BOLD, false);
+		store.setDefault(PreferenceConstants.EDITOR_SINGLE_LINE_DOC_COMMENT_ITALIC, false);
 
 		PreferenceConverter.setDefault(store, PreferenceConstants.EDITOR_JAVA_KEYWORD_COLOR, new RGB(127, 0, 85));
 		store.setDefault(PreferenceConstants.EDITOR_JAVA_KEYWORD_BOLD, true);

@@ -120,6 +120,9 @@ public final class PreferencesMessages extends NLS {
 	public static String JavaEditorPreferencePage_showQuickFixables;
 	public static String JavaEditorPreferencePage_analyseAnnotationsWhileTyping;
 	public static String JavaEditorPreferencePage_multiLineComment;
+	public static String JavaEditorPreferencePage_multiLinePlusComment;
+	public static String JavaEditorPreferencePage_multiLinePlusDocComment;
+	public static String JavaEditorPreferencePage_singleLineDocComment;
 	public static String JavaEditorPreferencePage_singleLineComment;
 	public static String JavaEditorPreferencePage_returnKeyword;
 	public static String JavaEditorPreferencePage_keywords;

@@ -100,27 +100,30 @@ public class JavaPartitionScanner extends RuleBasedPartitionScanner implements I
 		IToken javaDoc= new Token(JAVA_DOC);
 		IToken multiLineComment= new Token(JAVA_MULTI_LINE_COMMENT);
 		IToken singleLineComment= new Token(JAVA_SINGLE_LINE_COMMENT);
+		IToken singleLineDocComment= new Token(JAVA_SINGLE_LINE_DOC_COMMENT);
+		IToken multiLinePlusComment= new Token(JAVA_MULTI_LINE_PLUS_COMMENT);
+		IToken multiLinePlusDocComment= new Token(JAVA_MULTI_LINE_PLUS_DOC_COMMENT);
 		
 		List<IPredicateRule> rules = new ArrayList<IPredicateRule>();
 		
-		rules.add(new NestedCommentRule("/++", "/+", "+/", javaDoc, (char) 0, true));
-		rules.add(new NestedCommentRule("/+", "/+", "+/", multiLineComment, (char) 0, true));
-		rules.add(new MultiLineRule("/**", "*/", javaDoc, (char) 0, true));
-		rules.add(new MultiLineRule("/*", "*/", multiLineComment, (char) 0, true));
+		rules.add(new NestedCommentRule("/++", "/+", "+/", multiLinePlusDocComment, (char) 0, true)); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+		rules.add(new NestedCommentRule("/+", "/+", "+/", multiLinePlusComment, (char) 0, true)); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+		rules.add(new MultiLineRule("/**", "*/", javaDoc, (char) 0, true)); //$NON-NLS-1$ //$NON-NLS-2$
+		rules.add(new MultiLineRule("/*", "*/", multiLineComment, (char) 0, true)); //$NON-NLS-1$ //$NON-NLS-2$
 
-		rules.add(new EndOfLineRule("///", javaDoc));
-		rules.add(new EndOfLineRule("//", singleLineComment));
+		rules.add(new EndOfLineRule("///", singleLineDocComment)); //$NON-NLS-1$ 
+		rules.add(new EndOfLineRule("//", singleLineComment)); //$NON-NLS-1$
 		
-		rules.add(new DStringRule("x\"", "\"", string, (char) 0));
+		rules.add(new DStringRule("x\"", "\"", string, (char) 0)); //$NON-NLS-1$ //$NON-NLS-2$
 		
-		rules.add(new DStringRule("r\"", "\"", string, (char) 0));
-		rules.add(new DStringRule("`", "`", string, (char) 0));
+		rules.add(new DStringRule("r\"", "\"", string, (char) 0)); //$NON-NLS-1$ //$NON-NLS-2$
+		rules.add(new DStringRule("`", "`", string, (char) 0)); //$NON-NLS-1$ //$NON-NLS-2$
 		
-		rules.add(new DStringRule("\"", "\"", string, '\\'));
+		rules.add(new DStringRule("\"", "\"", string, '\\')); //$NON-NLS-1$ //$NON-NLS-2$
 		
 		rules.add(new DEscapeRule(string));
 		
-		rules.add(new SingleLineRule("'", "'", character, '\\', true));
+		rules.add(new SingleLineRule("'", "'", character, '\\', true)); //$NON-NLS-1$ //$NON-NLS-2$
 		
 		setPredicateRules(rules.toArray(new IPredicateRule[rules.size()]));
 	}

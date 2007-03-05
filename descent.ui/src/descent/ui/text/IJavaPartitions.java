@@ -32,11 +32,26 @@ public interface IJavaPartitions {
 	 * The identifier multi-line (JLS2: TraditionalComment) comment partition content type.
 	 */
 	String JAVA_MULTI_LINE_COMMENT= "__java_multiline_comment"; //$NON-NLS-1$
-
+	
+	/**
+	 * The identifier multi-line (JLS2: TraditionalComment) comment partition content type.
+	 */
+	String JAVA_MULTI_LINE_PLUS_COMMENT= "__java_multiline_plus_comment"; //$NON-NLS-1$
+	
 	/**
 	 * The identifier of the Javadoc (JLS2: DocumentationComment) partition content type.
 	 */
 	String JAVA_DOC= "__java_javadoc"; //$NON-NLS-1$
+	
+	/**
+	 * The identifier of the single-line (JLS2: EndOfLineComment) end comment partition content type.
+	 */
+	String JAVA_SINGLE_LINE_DOC_COMMENT= "__java_singleline_doc_comment"; //$NON-NLS-1$
+	
+	/**
+	 * The identifier multi-line (JLS2: TraditionalComment) comment partition content type.
+	 */
+	String JAVA_MULTI_LINE_PLUS_DOC_COMMENT= "__java_multiline_plus_doc_comment"; //$NON-NLS-1$
 
 	/**
 	 * The identifier of the Java string partition content type.

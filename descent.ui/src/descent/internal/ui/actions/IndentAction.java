@@ -212,7 +212,9 @@ public class IndentAction extends TextEditorAction {
 			ITypedRegion partition= TextUtilities.getPartition(document, IJavaPartitions.JAVA_PARTITIONING, offset, true);
 			ITypedRegion startingPartition= TextUtilities.getPartition(document, IJavaPartitions.JAVA_PARTITIONING, offset, false);
 			String type= partition.getType();
-			if (type.equals(IJavaPartitions.JAVA_DOC) || type.equals(IJavaPartitions.JAVA_MULTI_LINE_COMMENT)) {
+			if (type.equals(IJavaPartitions.JAVA_DOC) 
+					|| type.equals(IJavaPartitions.JAVA_MULTI_LINE_COMMENT)
+					) {
 				indent= computeJavadocIndent(document, line, scanner, startingPartition);
 			} else if (!fIsTabAction && startingPartition.getOffset() == offset && startingPartition.getType().equals(IJavaPartitions.JAVA_SINGLE_LINE_COMMENT)) {
 				

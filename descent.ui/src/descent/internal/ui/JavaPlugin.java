@@ -1,5 +1,6 @@
 package descent.internal.ui;
 
+import java.io.IOException;
 import java.util.LinkedHashMap;
 
 import org.eclipse.core.resources.IFile;
@@ -30,6 +31,8 @@ import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.editors.text.EditorsUI;
+import org.eclipse.ui.editors.text.templates.ContributionContextTypeRegistry;
+import org.eclipse.ui.editors.text.templates.ContributionTemplateStore;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.eclipse.ui.texteditor.AbstractDecoratedTextEditorPreferenceConstants;
 import org.eclipse.ui.texteditor.ChainedPreferenceStore;
@@ -41,6 +44,9 @@ import descent.core.IBuffer;
 import descent.core.ICompilationUnit;
 import descent.core.JavaCore;
 import descent.core.WorkingCopyOwner;
+import descent.internal.corext.template.java.CodeTemplateContextType;
+import descent.internal.corext.template.java.JavaContextType;
+import descent.internal.corext.template.java.JavaDocContextType;
 import descent.internal.corext.util.TypeFilter;
 import descent.internal.ui.javaeditor.ASTProvider;
 import descent.internal.ui.javaeditor.CompilationUnitDocumentProvider;
@@ -692,7 +698,6 @@ public class JavaPlugin extends AbstractUIPlugin {
 	 * @return the template context type registry for the java plug-in
 	 * @since 3.0
 	 */
-	/* TODO JDT UI templates
 	public ContextTypeRegistry getTemplateContextRegistry() {
 		if (fContextTypeRegistry == null) {
 			fContextTypeRegistry= new ContributionContextTypeRegistry();
@@ -703,7 +708,6 @@ public class JavaPlugin extends AbstractUIPlugin {
 
 		return fContextTypeRegistry;
 	}
-	*/
 	
 	/**
 	 * Returns the template store for the java editor templates.
@@ -711,17 +715,19 @@ public class JavaPlugin extends AbstractUIPlugin {
 	 * @return the template store for the java editor templates
 	 * @since 3.0
 	 */
-	/* TODO JDT UI templates
 	public TemplateStore getTemplateStore() {
 		if (fTemplateStore == null) {
 			final IPreferenceStore store= getPreferenceStore();
+			/* TODO JDT check if what I've done is OK
 			boolean alreadyMigrated= store.getBoolean(TEMPLATES_MIGRATION_KEY);
 			if (alreadyMigrated)
+			*/
 				fTemplateStore= new ContributionTemplateStore(getTemplateContextRegistry(), store, TEMPLATES_KEY);
-			else {
+			/*else {
 				fTemplateStore= new CompatibilityTemplateStore(getTemplateContextRegistry(), store, TEMPLATES_KEY, getOldTemplateStoreInstance());
 				store.setValue(TEMPLATES_MIGRATION_KEY, true);
 			}
+			*/
 
 			try {
 				fTemplateStore.load();
@@ -733,7 +739,6 @@ public class JavaPlugin extends AbstractUIPlugin {
 		
 		return fTemplateStore;
 	}
-	*/
 	
 	/**
 	 * @deprecated Indirection added to avoid deprecated warning on file
@@ -752,7 +757,6 @@ public class JavaPlugin extends AbstractUIPlugin {
 	 *         templates
 	 * @since 3.0
 	 */
-	/* TODO JDT UI templates
 	public ContextTypeRegistry getCodeTemplateContextRegistry() {
 		if (fCodeTemplateContextTypeRegistry == null) {
 			fCodeTemplateContextTypeRegistry= new ContributionContextTypeRegistry();
@@ -762,7 +766,6 @@ public class JavaPlugin extends AbstractUIPlugin {
 
 		return fCodeTemplateContextTypeRegistry;
 	}
-	*/
 	
 	/**
 	 * Returns the template store for the code generation templates.
@@ -770,17 +773,20 @@ public class JavaPlugin extends AbstractUIPlugin {
 	 * @return the template store for the code generation templates
 	 * @since 3.0
 	 */
-	/* TODO JDT UI templates
 	public TemplateStore getCodeTemplateStore() {
 		if (fCodeTemplateStore == null) {
 			IPreferenceStore store= getPreferenceStore();
+			/* TODO JDT check if what I've done is OK
 			boolean alreadyMigrated= store.getBoolean(CODE_TEMPLATES_MIGRATION_KEY);
 			if (alreadyMigrated)
+			*/
 				fCodeTemplateStore= new ContributionTemplateStore(getCodeTemplateContextRegistry(), store, CODE_TEMPLATES_KEY);
+			/*
 			else {
 				fCodeTemplateStore= new CompatibilityTemplateStore(getCodeTemplateContextRegistry(), store, CODE_TEMPLATES_KEY, getOldCodeTemplateStoreInstance());
 				store.setValue(CODE_TEMPLATES_MIGRATION_KEY, true);
 			}
+			*/
 
 			try {
 				fCodeTemplateStore.load();
@@ -792,13 +798,12 @@ public class JavaPlugin extends AbstractUIPlugin {
 			
 			// compatibility / bug fixing code for duplicated templates
 			// TODO remove for 3.0
-			CompatibilityTemplateStore.pruneDuplicates(fCodeTemplateStore, true);
+			// CompatibilityTemplateStore.pruneDuplicates(fCodeTemplateStore, true);
 			
 		}
 		
 		return fCodeTemplateStore;
 	}
-	*/
 	
 	/**
 	 * @deprecated Indirection added to avoid deprecated warning on file

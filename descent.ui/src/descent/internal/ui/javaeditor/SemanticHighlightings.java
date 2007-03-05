@@ -1664,6 +1664,7 @@ public class SemanticHighlightings {
 	public static SemanticHighlighting[] getSemanticHighlightings() {
 		if (fgSemanticHighlightings == null)
 			fgSemanticHighlightings= new SemanticHighlighting[] {
+				/* TODO JDT UI semantic highlighting
 				new DeprecatedMemberHighlighting(),
 				new AutoboxHighlighting(),
 				new StaticFinalFieldHighlighting(),
@@ -1684,6 +1685,7 @@ public class SemanticHighlightings {
 				new EnumHighlighting(),
 				new AnnotationHighlighting(), // before interfaces
 				new InterfaceHighlighting(),
+				*/
 			};
 		return fgSemanticHighlightings;
 	}
