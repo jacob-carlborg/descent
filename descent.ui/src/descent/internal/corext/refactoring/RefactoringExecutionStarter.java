@@ -57,7 +57,7 @@ public final class RefactoringExecutionStarter {
 	}
 	*/
 
-	/* TODO JDT Ui refactor
+	/* TODO JDT UI refactor
 	public static void startChangeSignatureRefactoring(final IMethod method, final SelectionDispatchAction action, final Shell shell) throws JavaModelException {
 		if (!RefactoringAvailabilityTester.isChangeSignatureAvailable(method))
 			return;
@@ -126,7 +126,7 @@ public final class RefactoringExecutionStarter {
 		DeleteUserInterfaceManager.getDefault().getStarter(refactoring).activate(refactoring, shell, false);
 	}
 
-	/* TODO JDT Ui refactor
+	/* TODO JDT UI refactor
 	public static void startExtractInterfaceRefactoring(final IType type, final Shell shell) throws JavaModelException {
 		final ExtractInterfaceRefactoring refactoring= new ExtractInterfaceRefactoring(new ExtractInterfaceProcessor(type, JavaPreferencesSettings.getCodeGenerationSettings(type.getJavaProject())));
 		if (!ActionUtil.isProcessable(shell, refactoring.getExtractInterfaceProcessor().getType()))
