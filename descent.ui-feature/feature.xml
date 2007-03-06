@@ -5,7 +5,7 @@
       version="0.2.20070305">
 
    <description url="http://dsource.org/projects/descent">
-      The Descent plugin is still a work in progress towards a fully
+      The Descent plugin is a work in progress towards a fully
 functional Eclipse plugin for the D Digital Mars language.
    </description>
 
