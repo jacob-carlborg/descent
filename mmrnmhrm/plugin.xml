@@ -6,8 +6,28 @@
          name="Dee nature"
          point="org.eclipse.core.resources.natures">
       <runtime>
-         <run class="mmrnmhrm.core.model.DeeProject"/>
+         <run class="mmrnmhrm.core.model.DeeNature"/>
       </runtime>
+   </extension>
+   <extension
+         id="deebuilder"
+         name="Dee Builder"
+         point="org.eclipse.core.resources.builders">
+      <builder>
+         <run class="mmrnmhrm.core.build.DeeBuilder">
+            <parameter
+                  name="comment"
+                  value="Builder comment"/>
+         </run>
+      </builder>
+   </extension>
+   <extension
+         id="deeproblem"
+         name="Dee Problem Name"
+         point="org.eclipse.core.resources.markers">
+      <super type="org.eclipse.core.resources.problemmarker"/>
+      <super type="org.eclipse.core.resources.textmarker"/>
+      <persistent value="true"/>
    </extension>
    <extension
          point="org.eclipse.core.runtime.contentTypes">
@@ -16,8 +36,15 @@
             default-charset="UTF-8"
             file-extensions="dm"
             id="mmrnmhrm.core.dmsource"
-            name="D M Source"
+            name="D Source (Mmrnmhrm)"
             priority="high"/>
+   </extension>
+   <extension
+         point="org.eclipse.ui.ide.projectNatureImages">
+      <image
+            icon="icons/ovr16/d-dark_ovr.gif"
+            id="mmrnmhrm.ui.deeProjectNatureImage"
+            natureId="mmrnmhrm.deenature"/>
    </extension>
    <extension
          point="org.eclipse.ui.newWizards">
@@ -39,63 +66,9 @@
             contributorClass="mmrnmhrm.ui.deditor.DeeEditorNullActionContributor"
             icon="icons/obj16/dm.gif"
             id="Mmrnmhrm.editors.DeeEditor"
-            name="Dee M Editor">
+            name="Dee Editor (Mmrnmhrm)">
          <contentTypeBinding contentTypeId="mmrnmhrm.core.dmsource"/>
       </editor>
-   </extension>
-
-   <extension
-         point="org.eclipse.ui.actionSets">
-      <actionSet
-            label="Mmrnmhrm Action Set"
-            visible="true"
-            id="mmrnmhrm.actionSet">
-          <action
-               id="openType"
-               toolbarPath="org.eclipse.search.searchActionSet/Search"
-               class="mmrnmhrm.ui.actions.SampleActionDelegate"
-               icon="icons/action16e/opentype.gif"
-               helpContextId="org.eclipse.jdt.ui.open_type_action"
-               label="%OpenTypeAction.label"
-               menubarPath="navigate/open.ext2"
-               tooltip="%OpenTypeAction.tooltip">
-         </action>
-         
-     </actionSet>
-   </extension>
-   <extension
-         point="org.eclipse.ui.popupMenus">
-      <objectContribution
-            id="Mmrnmhrm.contribution1"
-            objectClass="java.lang.Object">
-         <menu
-               id="Mmrnmhrm.menu1"
-               label="Object Contrib Menu"
-               path="additions">
-            <separator name="group1"/>
-         </menu>
-         <action
-               class="mmrnmhrm.ui.actions.SampleActionDelegate"
-               enablesFor="1"
-               id="Mmrnmhrm.newAction"
-               label="New Action"
-               menubarPath="Mmrnmhrm.menu1/group1"/>
-      </objectContribution>
-      <viewerContribution
-            id="Mmrnmhrm.editorContribution"
-            targetID="#DeeEditorContext">
-         <menu
-               id="Mmrnmhrm.editorMenu"
-               label="Declarative Menu"
-               path="additions321">
-            <groupMarker name="content"/>
-         </menu>
-         <action
-               class="mmrnmhrm.ui.actions.SampleActionDelegate"
-               id="Mmrnmhrm.action1"
-               label="=Declarative Action"
-               menubarPath="Mmrnmhrm.editorMenu/content"/>
-      </viewerContribution>
    </extension>
    <extension
          point="org.eclipse.ui.editorActions">
@@ -129,6 +102,76 @@
                menubarPath="Mmrnmhrm.menu/content"
                toolbarPath="additions"/>
       </editorContribution>
+   </extension>
+
+   <extension
+         point="org.eclipse.ui.actionSets">
+      <actionSet
+            label="Mmrnmhrm Action Set"
+            visible="true"
+            id="mmrnmhrm.actionSet">
+          <action
+               id="openType"
+               toolbarPath="org.eclipse.search.searchActionSet/Search"
+               class="mmrnmhrm.ui.actions.SampleActionDelegate"
+               icon="icons/action16e/opentype.gif"
+               helpContextId="org.eclipse.jdt.ui.open_type_action"
+               label="%OpenTypeAction.label"
+               menubarPath="navigate/open.ext2"
+               tooltip="%OpenTypeAction.tooltip">
+         </action>
+          <action
+                class="mmrnmhrm.ui.actions.XptoTestAction"
+                icon="icons/action16e/spathi.16.gif"
+                id="testAction2"
+                label="Test XPTO"
+                toolbarPath="ZZZ/additions"/>         
+     </actionSet>
+   </extension>
+   <extension
+         point="org.eclipse.ui.popupMenus">
+      <objectContribution
+            id="mmrnmhrm.ctxmenu.buildpath"
+            objectClass="org.eclipse.core.resources.IFolder">
+         <menu
+               id="mmrnmhrm.buildpathMenu"
+               label="Dee Builld Path"
+               path="group.build">
+            <separator name="content"/>
+            <separator name="additions"/>
+         </menu>
+         <action
+               class="mmrnmhrm.ui.actions.AddFolderToBuildPath"
+               enablesFor="1"
+               icon="icons/lcl16e/add_as_source_folder.gif"
+               id="mmrnmhrm.actions.buildpathAdd"
+               label="Build Path Action"
+               menubarPath="mmrnmhrm.buildpathMenu/content"/>
+         <action
+               class="mmrnmhrm.ui.actions.SampleActionDelegate"
+               icon="icons/lcl16e/configure_build_path.gif"
+               id="mmrnmhrm.actions.buildpath.Setup"
+               label="Configure Build Path (TODO)"
+               menubarPath="mmrnmhrm.buildpathMenu/content"/>
+         <filter
+               name="projectNature"
+               value="mmrnmhrm.deenature"/>
+      </objectContribution>
+      <viewerContribution
+            id="mmrnmhrm.TEST.editorContribution"
+            targetID="#DeeEditorContext">
+         <menu
+               id="Mmrnmhrm.editorMenu"
+               label="Declarative Menu"
+               path="additions321">
+            <groupMarker name="content"/>
+         </menu>
+         <action
+               class="mmrnmhrm.ui.actions.SampleActionDelegate"
+               id="Mmrnmhrm.action1"
+               label="=Declarative Action"
+               menubarPath="Mmrnmhrm.editorMenu/content"/>
+      </viewerContribution>
    </extension>
 
 </plugin>

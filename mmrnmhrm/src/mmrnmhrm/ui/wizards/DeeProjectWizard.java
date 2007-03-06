@@ -39,12 +39,7 @@ public class DeeProjectWizard extends NewElementWizard {
 		project.create(monitor);
 		project.open(monitor);
 
-		IFolder srcFolder = project.getFolder("src");
-		srcFolder.create(false, true, monitor);
-		IFolder binFolder = project.getFolder("bin");
-		binFolder.create(false, true, monitor);
-
-		DeeModel.getDefault().createDeeProject(project);
+		DeeModel.getInstance().createDeeProject(project);
 
 	}
 

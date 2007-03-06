@@ -1,5 +1,6 @@
 package mmrnmhrm.core;
 
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
@@ -10,7 +11,7 @@ import org.osgi.framework.BundleContext;
 public abstract class DeePluginActivator extends AbstractUIPlugin {
 
 	// The plug-in ID XXX: Watch for changes
-	public static final String PLUGIN_ID = "Mmrnmhrm";
+	public static final String PLUGIN_ID = "mmrnmhrm";
 
 	// The shared instance
 	private static DeeCore plugin;
@@ -50,9 +51,9 @@ public abstract class DeePluginActivator extends AbstractUIPlugin {
 		return imageDescriptorFromPlugin(PLUGIN_ID, path);
 	}
 	
-	/**************************************************/
+	/* *********************************************** */
 
-	void initPlugin() {
+	void initPlugin() throws CoreException {
 	}
 	
 }

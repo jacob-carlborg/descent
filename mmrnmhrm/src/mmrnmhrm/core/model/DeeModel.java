@@ -1,20 +1,44 @@
 package mmrnmhrm.core.model;
 
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+
+import mmrnmhrm.core.DeeCore;
+
+import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
 import org.eclipse.core.runtime.CoreException;
 
 import util.ArrayUtil;
+import util.Assert;
 
 
-
+/**
+ * Represents the root of the D Model.
+ * TODO: must use Resource listener 
+ */
 public class DeeModel {
 	private static DeeModel deemodel = new DeeModel();
 	
-	private DeeModel() {}
+	public Map<String, DeeProject0> deeProjects;
+	
+	private DeeModel() {
+		deeProjects = new HashMap<String, DeeProject0>();
+	}
+
+	/** Inits the D model. */
+	public static void initDeeModel() throws CoreException {
+		// Init the model with existing D projects.
+		for(IProject proj : DeeCore.getWorkspaceRoot().getProjects()) {
+			if(proj.hasNature(DeeNature.NATURE_FQID));
+			getInstance().addDeeProjectToDeeModel(proj);
+		}
+	}
 	
 	/** @return the shared instance */
-	public static DeeModel getDefault() {
+	public static DeeModel getInstance() {
 		return deemodel;
 	}
 
@@ -22,8 +46,41 @@ public class DeeModel {
 	public void createDeeProject(IProject project) throws CoreException {
 		IProjectDescription description = project.getDescription();
 		String[] natures = description.getNatureIds();
-		String[] newNatures = ArrayUtil.append(natures, DeeProject.NATURE_FQID);
+		Assert.isTrue(ArrayUtil.contains(natures, DeeNature.NATURE_FQID) == false);
+		String[] newNatures = ArrayUtil.append(natures, DeeNature.NATURE_FQID);
 		description.setNatureIds(newNatures);
-		project.setDescription(description, null);
+		project.setDescription(description, null); // Add nature
+
+		addDeeProjectToDeeModel(project);
+
+		setDefaultBuildPath(project);
+	}
+
+	/** Adds D project to Dee Model. */
+	private DeeProject0 addDeeProjectToDeeModel(IProject project) {
+		DeeProject0 deeproj = new DeeProject0();
+		deeproj.setProject(project);
+		deeProjects.put(project.getName(), deeproj);
+		return deeproj;
+	}
+	
+
+	private void setDefaultBuildPath(IProject project) throws CoreException {
+		IFolder srcFolder = project.getFolder("src");
+		srcFolder.create(false, true, null);
+		IFolder binFolder = project.getFolder("bin");
+		binFolder.create(false, true, null);
+	}
+
+	public DeeProject0 getDeeProject(IProject project) {
+		return deeProjects.get(project.getName());
+	}
+
+	/**
+	 * folder must exist.
+	 */
+	public void addToBuildPath(IFolder folder) throws CoreException {
+		IProject project = folder.getProject();
+		getDeeProject(project).addSourceFolder(folder);
 	}
 }

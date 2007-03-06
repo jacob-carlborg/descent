@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: Mmrnmhrm Plug-in
-Bundle-SymbolicName: Mmrnmhrm;singleton:=true
+Bundle-Name: Mmrnmhrm Core & UI
+Bundle-SymbolicName: mmrnmhrm;singleton:=true
 Bundle-Version: 0.1.0
 Bundle-Activator: mmrnmhrm.core.DeeCore
 Bundle-Localization: plugin
@@ -11,8 +11,10 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.ui.editors,
  org.eclipse.ui.workbench.texteditor,
  org.eclipse.ui.views,
- DTool,
+ dtool,
  org.eclipse.core.resources,
- org.eclipse.ui.ide
+ org.eclipse.ui.ide,
+ org.eclipse.ui.navigator
 Eclipse-LazyStart: true
 Bundle-ClassPath: .
+Bundle-Vendor: Mother Ark

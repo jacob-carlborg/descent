@@ -12,7 +12,7 @@ import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IWorkbenchWindow;
 
 import util.Assert;
-import util.Logger;
+import util.Logg;
 import dtool.dom.ast.ASTPrinter;
 import dtool.dom.base.ASTNode;
 import dtool.dom.base.DefUnit;
@@ -31,8 +31,10 @@ public class GoToDefinition implements IEditorActionDelegate {
 	}
 
 	public void setActiveEditor(IAction action, IEditorPart newEditor) {
-		Assert.isTrue(newEditor instanceof DeeEditor, "Not a Mmrnmhrm DeeEditor.");
 		editor = newEditor;
+		if(editor == null)
+			return;
+		Assert.isTrue(newEditor instanceof DeeEditor, "Not a Mmrnmhrm DeeEditor.");
 		window = editor.getSite().getWorkbenchWindow(); 
 	}
 
@@ -43,8 +45,8 @@ public class GoToDefinition implements IEditorActionDelegate {
 		
 		TextSelection sel = deeEditor.getSelection();
 		int offset = sel.getOffset();
-		Logger.println("[" + sel.getOffset() +","+ sel.getLength() + "] =>" + offset);
-		Logger.println(sel.getText());
+		Logg.println("[" + sel.getOffset() +","+ sel.getLength() + "] =>" + offset);
+		Logg.println(sel.getText());
 		
 		CompilationUnit cunit = deeEditor.getDocument().getCompilationUnit();
 
@@ -83,7 +85,6 @@ public class GoToDefinition implements IEditorActionDelegate {
 	public void selectionChanged(IAction action, ISelection selection) {
 	}
 
-	public void dispose() {
-	}
+
 
 }

@@ -111,6 +111,7 @@ public abstract class NewElementWizard extends Wizard implements INewWizard {
 				}
 			}
 		};
+
 		try {
 			ISchedulingRule rule= null;
 			Job job= Job.getJobManager().currentJob();
@@ -131,29 +132,7 @@ public abstract class NewElementWizard extends Wizard implements INewWizard {
 		return true;
 	}
 	
-	public boolean performFinish2() {
-		IWorkspaceRunnable op= new IWorkspaceRunnable() {
-			public void run(IProgressMonitor monitor) throws CoreException, OperationCanceledException {
-				try {
-					finishPage(monitor);
-				} catch (InterruptedException e) {
-					throw new OperationCanceledException(e.getMessage());
-				}
-			}
-		};
-		try {
-			getContainer().run(canRunForked(), true, new WorkbenchRunnableAdapter(op, getSchedulingRule()));
-		} catch (InvocationTargetException e) {
-			handleFinishException(getShell(), e);
-			return false;
-		} catch  (InterruptedException e) {
-			return false;
-		}
-		return true;
-	}
-	
 	//public abstract IJavaElement getCreatedElement();
-	
 
 	/*protected void warnAboutTypeCommentDeprecation() {
 		String key= IUIConstants.DIALOGSTORE_TYPECOMMENT_DEPRECATED;

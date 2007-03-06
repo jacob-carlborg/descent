@@ -6,7 +6,7 @@ import org.eclipse.jface.text.ITypedRegion;
 import org.eclipse.jface.text.rules.FastPartitioner;
 import org.eclipse.jface.text.rules.IPartitionTokenScanner;
 
-import util.Logger;
+import util.Logg;
 
 
 /**
@@ -25,7 +25,7 @@ public class DebugPartitioner extends FastPartitioner
 		super.connect(document, delayInitialization);
 		// TODO: learn partitioning lifecycle
 			
-		Logger.printDebug(toStringPartitions(document));
+		Logg.print(toStringPartitions(document));
 	}
 
 	public static String toStringPartitions(IDocument document) {

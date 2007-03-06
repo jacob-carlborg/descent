@@ -26,6 +26,7 @@ public class PrintPartitions implements IEditorActionDelegate {
 	/** {@inheritDoc} */
 	public void run(IAction action) {
 		IWorkbenchWindow window = editor.getSite().getWorkbenchWindow();
+		
 
 		if(editor instanceof DeeEditor) {
 			DeeEditor deeEditor = (DeeEditor) editor;
