@@ -1,7 +1,14 @@
 package dtool;
 
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.List;
+
 import util.ExceptionAdapter;
+import util.FileUtil;
 import util.StringUtil;
 import dtool.dom.ast.ASTChecker;
 import dtool.dom.ast.ASTPrinter;
@@ -10,7 +17,7 @@ import dtool.dom.base.DefUnit;
 import dtool.dom.base.Entity;
 import dtool.model.ModelException;
 import dtool.project.CompilationUnit;
-import dtool.project.DeeProject;
+import dtool.project.DToolProject;
 
 
 public class Main {
@@ -18,25 +25,48 @@ public class Main {
 	private Main() { }
 	
 
-    public static DeeProject dproj;
+    public static DToolProject dproj;
 
 	public static void main(String[] args) throws Exception {
 		System.out.println("======== DTool ========");
-		
+
+		List<String> command = new ArrayList<String>();
+		command.add("dmd");
+		// command.add(System.getenv("windir") +"\\system32\\"+"tree.com");
+		// command.add("-v");
+
+		ProcessBuilder builder = new ProcessBuilder(command);
+		// Map<String, String> environ = builder.environment();
+		// builder.directory(getProject().);
+
+		Process process;
 		try {
-			dproj = DeeProject.newTestProject();
-			testDtool(args);
-			//testDtool(args);
+			process = builder.start();
+		} catch (IOException e) {
+			throw ExceptionAdapter.unchecked(e);
+		}
+		InputStream is = process.getInputStream();
+		InputStreamReader isr = new InputStreamReader(is);
+		System.out.println(FileUtil.readStringFromReader(isr));
 			
+				
+		System.exit(0);
+
+		try {
+			dproj = DToolProject.newTestProject();
+			testDtool(args);
+			// testDtool(args);
+
 		} catch (Exception e) {
 			// For annoying flushing problems in Eclipse console
 			System.out.flush();
 			System.err.flush();
-				
+
 			throw e;
-		} 
+		}
 		System.out.println("= THE END =");
 	}
+
 
     public static void testDtool(String[] args) {
 		

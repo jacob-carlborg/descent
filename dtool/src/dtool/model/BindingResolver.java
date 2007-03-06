@@ -4,13 +4,13 @@ import java.util.List;
 
 import util.StringUtil;
 import dtool.dom.base.DefUnit;
-import dtool.project.DeeProject;
+import dtool.project.DToolProject;
 
 public class BindingResolver {
 	
-	private DeeProject project;
+	private DToolProject project;
 	
-	public BindingResolver(DeeProject project) {
+	public BindingResolver(DToolProject project) {
 		this.project = project;
 	}
 

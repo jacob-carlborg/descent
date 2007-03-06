@@ -1,49 +1,73 @@
 package util;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
 
 /**
  * Excepetion adapter to make checked exceptions less annoying. 
- * Idea from Bruce Eckel's article:
+ * Based on Bruce Eckel's article:
  * http://www.mindview.net/Etc/Discussions/CheckedExceptions
  */
 @SuppressWarnings("serial")
 public class ExceptionAdapter extends RuntimeException {
 
-	private final String stackTrace;
-	public Exception originalException;
+	// The original checked exception
+	private Exception originalException;
+	// Number of frames that originalException traveled while checked
+	private int checkedLength; 
 
-	private ExceptionAdapter(Exception e) {
+	public ExceptionAdapter(Exception e) {
 		super(e.toString());
 		originalException = e;
-		StringWriter sw = new StringWriter();
-		e.printStackTrace(new PrintWriter(sw));
-		stackTrace = sw.toString();
+		
+		// Determine checkedLength based on the difference to this stack trace
+		StackTraceElement[] est = e.getStackTrace();
+		checkedLength = est.length - getStackTrace().length;
+		
+		StackTraceElement ste = getStackTrace()[0];
+		String firstMethod = ste.getClassName() +"."+ ste.getMethodName();
+		// Adjust checkedLength if EA was created in method unchecked
+		if(firstMethod.endsWith("ExceptionAdapter.unchecked"))
+			checkedLength++;
+		
 	}
 
-	public void printStackTrace() {
-		printStackTrace(System.err);
+/*	public ExceptionAdapter(String string) {
+		this(new Exception(string));
+	}
+*/
+	
+	protected void printStackTrace(util.IPrinter pr) {
+        synchronized (pr) {
+            pr.println(this);
+            StackTraceElement[] trace = originalException.getStackTrace();
+            for (int i=0; i < trace.length; i++) {
+                pr.print("\tat " + trace[i]);
+            	if(i == checkedLength)
+            		pr.print(" [UNCHECKED]");
+                pr.println();
+            }
+        }
+	}
+	
+	public void printStackTrace(java.io.PrintStream ps) {
+		printStackTrace(new util.StreamPrinter(ps));
 	}
 
-	public void printStackTrace(java.io.PrintStream s) {
-		synchronized (s) {
-			s.print(getClass().getName() + ": ");
-			s.print(stackTrace);
-		}
+	public void printStackTrace(java.io.PrintWriter pw) {
+		printStackTrace(new util.WriterPrinter(pw));
 	}
 
-	public void printStackTrace(java.io.PrintWriter s) {
-		synchronized (s) {
-			s.print(getClass().getName() + ": ");
-			s.print(stackTrace);
-		}
-	}
 
 	public void rethrow() throws Exception {
 		throw originalException;
 	}
 
+	public String toString() {
+        //String name = getClass().getName();
+        //return name + "\n>> " + getLocalizedMessage();
+        return "[UE] " + getLocalizedMessage();
+	}
+	
+	/** Creates an unchecked Throwable, if not unchecked already. */
 	public static RuntimeException unchecked(Throwable e) {
 		if(e instanceof RuntimeException)
 			return (RuntimeException) e;

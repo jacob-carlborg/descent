@@ -56,9 +56,7 @@ public final class StringUtil {
 	}
 
 	
-	/**
-	 * Prints an array with given separator String
-	 */	
+	/** Prints an array with given separator String */	
 	public static String collToString(Object[] coll, String sep) {
 		StringBuilder sb = new StringBuilder();
 		boolean first = true;

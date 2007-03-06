@@ -10,13 +10,13 @@ import dtool.model.BindingResolver;
 import dtool.model.IScope;
 import dtool.model.ModelException;
 
-public class DeeProject implements IScope {
+public class DToolProject implements IScope {
 
 	public CompilationUnit testcu;
 	private BindingResolver bresolver = new BindingResolver(this);
 	
-	public static DeeProject newTestProject() {
-		DeeProject dproj = new DeeProject();
+	public static DToolProject newTestProject() {
+		DToolProject dproj = new DToolProject();
 		try {
 			String source = FileUtil.readStringFromFile(new File("testinput/test.d"));
 			dproj.testcu = new CompilationUnit(source);

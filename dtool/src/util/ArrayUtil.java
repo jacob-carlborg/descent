@@ -31,4 +31,13 @@ public class ArrayUtil {
                      Math.min(original.length, newLength));
     	return copy;*/
 	}
+
+	/** Return true if array contains an element equal to obj. */
+	public static <T> boolean contains(T[] array, T obj) {
+		for(T elem: array) {
+			if(elem.equals(obj))
+				return true;
+		}
+		return false;
+	}
 }

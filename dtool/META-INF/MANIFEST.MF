@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: DTool
-Bundle-SymbolicName: DTool;singleton:=true
+Bundle-SymbolicName: dtool;singleton:=true
 Bundle-Version: 0.1.0
 Bundle-ClassPath: DTool.jar,
  libs/antlr-3.0b5.jar
@@ -23,3 +23,4 @@ Export-Package: descent.core,
  dtool.parser,
  dtool.project,
  util
+Bundle-Vendor: Mother Ark
