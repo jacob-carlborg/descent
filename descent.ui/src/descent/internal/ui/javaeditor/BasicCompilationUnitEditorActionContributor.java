@@ -134,7 +134,7 @@ public class BasicCompilationUnitEditorActionContributor extends BasicJavaEditor
 			editMenu.appendToGroup(ITextEditorActionConstants.GROUP_ASSIST, fQuickAssistAction);
 		}
 	}
-
+	
 	/*
 	 * @see IEditorActionBarContributor#setActiveEditor(IEditorPart)
 	 */

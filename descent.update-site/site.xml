@@ -5,7 +5,7 @@
    </feature>
    <category-def name="Descent plugin for Eclipse" label="Descent">
       <description>
-         The Descent plugin is still a work in progress towards a fully
+         The Descent plugin is a work in progress towards a fully
 functional Eclipse plugin for the D Digital Mars language.
       </description>
    </category-def>

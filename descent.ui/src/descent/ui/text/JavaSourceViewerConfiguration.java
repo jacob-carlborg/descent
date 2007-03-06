@@ -26,6 +26,7 @@ import org.eclipse.jface.text.ITextDoubleClickStrategy;
 import org.eclipse.jface.text.ITextHover;
 import org.eclipse.jface.text.ITextViewerExtension2;
 import org.eclipse.jface.text.contentassist.ContentAssistant;
+import org.eclipse.jface.text.contentassist.IContentAssistProcessor;
 import org.eclipse.jface.text.contentassist.IContentAssistant;
 import org.eclipse.jface.text.formatter.IContentFormatter;
 import org.eclipse.jface.text.formatter.MultiPassContentFormatter;
@@ -56,10 +57,12 @@ import descent.core.IJavaElement;
 import descent.core.IJavaProject;
 import descent.core.JavaCore;
 import descent.core.formatter.DefaultCodeFormatterConstants;
+import descent.internal.corext.util.CodeFormatterUtil;
 import descent.internal.ui.JavaPlugin;
 import descent.internal.ui.javaeditor.ICompilationUnitDocumentProvider;
 import descent.internal.ui.javaeditor.JavaElementHyperlinkDetector;
 import descent.internal.ui.text.AbstractJavaScanner;
+import descent.internal.ui.text.ContentAssistPreference;
 import descent.internal.ui.text.HTMLAnnotationHover;
 import descent.internal.ui.text.HTMLTextPresenter;
 import descent.internal.ui.text.JavaCommentScanner;
@@ -69,9 +72,13 @@ import descent.internal.ui.text.JavaOutlineInformationControl;
 import descent.internal.ui.text.JavaPresentationReconciler;
 import descent.internal.ui.text.JavaReconciler;
 import descent.internal.ui.text.SingleTokenJavaScanner;
+import descent.internal.ui.text.comment.CommentFormattingStrategy;
+import descent.internal.ui.text.java.ContentAssistProcessor;
 import descent.internal.ui.text.java.JavaAutoIndentStrategy;
 import descent.internal.ui.text.java.JavaCodeScanner;
+import descent.internal.ui.text.java.JavaCompletionProcessor;
 import descent.internal.ui.text.java.JavaDoubleClickSelector;
+import descent.internal.ui.text.java.JavaFormattingStrategy;
 import descent.internal.ui.text.java.JavaStringAutoIndentStrategy;
 import descent.internal.ui.text.java.JavaStringDoubleClickSelector;
 import descent.internal.ui.text.java.JavadocDoubleClickStrategy;
@@ -81,6 +88,7 @@ import descent.internal.ui.text.java.hover.JavaEditorTextHoverProxy;
 import descent.internal.ui.text.java.hover.JavaInformationProvider;
 import descent.internal.ui.text.javadoc.JavaDocAutoIndentStrategy;
 import descent.internal.ui.text.javadoc.JavaDocScanner;
+import descent.internal.ui.text.javadoc.JavadocCompletionProcessor;
 import descent.ui.PreferenceConstants;
 import descent.ui.actions.IJavaEditorActionDefinitionIds;
 
@@ -394,7 +402,6 @@ public class JavaSourceViewerConfiguration extends TextSourceViewerConfiguration
 
 			assistant.setRestoreCompletionProposalSize(getSettings("completion_proposal_size")); //$NON-NLS-1$
 
-			/* TODO JDT UI code completion
 			IContentAssistProcessor javaProcessor= new JavaCompletionProcessor(getEditor(), assistant, IDocument.DEFAULT_CONTENT_TYPE);
 			assistant.setContentAssistProcessor(javaProcessor, IDocument.DEFAULT_CONTENT_TYPE);
 
@@ -411,7 +418,6 @@ public class JavaSourceViewerConfiguration extends TextSourceViewerConfiguration
 			assistant.setContentAssistProcessor(javadocProcessor, IJavaPartitions.JAVA_DOC);
 
 			ContentAssistPreference.configure(assistant, fPreferenceStore);
-			*/
 
 			assistant.setContextInformationPopupOrientation(IContentAssistant.CONTEXT_INFO_ABOVE);
 			assistant.setInformationControlCreator(getInformationControlCreator(sourceViewer));
@@ -510,12 +516,8 @@ public class JavaSourceViewerConfiguration extends TextSourceViewerConfiguration
 		// prefix[0] is either '\t' or ' ' x tabWidth, depending on useSpaces
 
 		IJavaProject project= getProject();
-		/* TODO JDT UI format
 		final int tabWidth= CodeFormatterUtil.getTabWidth(project);
 		final int indentWidth= CodeFormatterUtil.getIndentWidth(project);
-		*/
-		final int tabWidth= 4;
-		final int indentWidth= 4;
 		int spaceEquivalents= Math.min(tabWidth, indentWidth);
 		boolean useSpaces;
 		if (project == null)
@@ -577,10 +579,7 @@ public class JavaSourceViewerConfiguration extends TextSourceViewerConfiguration
 	 * @see SourceViewerConfiguration#getTabWidth(ISourceViewer)
 	 */
 	public int getTabWidth(ISourceViewer sourceViewer) {
-		/* TODO JDT UI format
 		return CodeFormatterUtil.getTabWidth(getProject());
-		*/
-		return 4;
 	}
 
 	/*
@@ -691,12 +690,10 @@ public class JavaSourceViewerConfiguration extends TextSourceViewerConfiguration
 	public IContentFormatter getContentFormatter(ISourceViewer sourceViewer) {
 		final MultiPassContentFormatter formatter= new MultiPassContentFormatter(getConfiguredDocumentPartitioning(sourceViewer), IDocument.DEFAULT_CONTENT_TYPE);
 
-		/* TODO JDT UI format
 		formatter.setMasterStrategy(new JavaFormattingStrategy());
 		formatter.setSlaveStrategy(new CommentFormattingStrategy(), IJavaPartitions.JAVA_DOC);
 		formatter.setSlaveStrategy(new CommentFormattingStrategy(), IJavaPartitions.JAVA_SINGLE_LINE_COMMENT);
 		formatter.setSlaveStrategy(new CommentFormattingStrategy(), IJavaPartitions.JAVA_MULTI_LINE_COMMENT);
-		*/
 
 		return formatter;
 	}

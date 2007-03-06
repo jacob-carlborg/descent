@@ -2,7 +2,17 @@
 <?eclipse version="3.2"?>
 <plugin>
 
+   <extension-point id="javaElementFilters" name="%elementFiltersName" schema="schema/javaElementFilters.exsd"/>
+   <extension-point id="javaEditorTextHovers" name="%javaEditorTextHoversName" schema="schema/javaEditorTextHovers.exsd"/>
+   <extension-point id="javadocCompletionProcessor" name="%javadocCompletionProcessor" schema="schema/javadocCompletionProcessor.exsd"/>
+   <extension-point id="quickFixProcessors" name="%quickFixProcessorExtensionPoint" schema="schema/quickFixProcessors.exsd"/>
+   <extension-point id="quickAssistProcessors" name="%quickAssistProcessorExtensionPoint" schema="schema/quickAssistProcessors.exsd"/>
+   <extension-point id="classpathContainerPage" name="%classpathContainerPageExtensionPoint" schema="schema/classpathContainerPage.exsd"/>
    <extension-point id="foldingStructureProviders" name="%foldingStructureProvidersExtensionPoint" schema="schema/foldingStructureProviders.exsd"/>
+   <extension-point id="queryParticipants" name="%queryParticipantsExtensionPoint" schema="schema/queryParticipants.exsd"/>
+   <extension-point id="javaCompletionProposalComputer" name="%javaCompletionProposalComputer" schema="schema/javaCompletionProposalComputer.exsd"/>
+   <extension-point id="javaCompletionProposalSorters" name="%javaCompletionProposalSorters" schema="schema/javaCompletionProposalSorters.exsd"/>
+   <extension-point id="internal_refactoringElementFilter" name="%internal_refactoringElementFilter" schema="schema/internal_refactoringElementFilter.exsd"/>
 
    <extension point="org.eclipse.core.runtime.adapters">
 		<factory 
@@ -2143,28 +2153,29 @@
          </description>
       </wizard>
       <wizard
-            name="%NewJavaPackage.label"
-            icon="$nl$/icons/full/etool16/newpack_wiz.gif"
             category="descent.ui.java"
             class="descent.internal.ui.wizards.NewPackageCreationWizard"
-            id="descent.ui.wizards.NewPackageCreationWizard">
+            icon="$nl$/icons/full/etool16/newpack_wiz.gif"
+            id="descent.ui.wizards.NewPackageCreationWizard"
+            name="%NewJavaPackage.label"
+            >
          <description>
             %NewJavaPackage.description
          </description>
       </wizard>
-      <!--
       <wizard
-            name="%NewJavaClass.label"
-            icon="$nl$/icons/full/etool16/newclass_wiz.gif"
+            name="%NewDModule.label"
+            icon="$nl$/icons/full/etool16/newmodule_wiz.gif"
             category="descent.ui.java"
-            id="descent.ui.wizards.NewClassCreationWizard">
-         <class class="descent.internal.ui.wizards.NewClassCreationWizard">
+            id="descent.ui.wizards.NewModuleCreationWizard">
+         <class class="descent.internal.ui.wizards.NewModuleCreationWizard">
             <parameter name="javatype" value="true"/>
          </class>
          <description>
-            %NewJavaClass.description
+            %NewDModule.description
          </description>
       </wizard>
+      <!--
       <wizard
             name="%NewJavaInterface.label"
             icon="$nl$/icons/full/etool16/newint_wiz.gif"
@@ -2367,12 +2378,11 @@
 		  <commonWizard
 		        menuGroupId="descent.ui.java"
 		        type="new"
-		        wizardId="descent.ui.wizards.NewClassCreationWizard">
+		        wizardId="descent.ui.wizards.NewModuleCreationWizard">
 		     <enablement>
 		        <or>
 		           <instanceof value="descent.core.IPackageFragment"/>
 		           <instanceof value="descent.core.IPackageFragmentRoot"/>
-		           <instanceof value="descent.core.ICompilationUnit"/>
 		           <adapt type="org.eclipse.core.resources.IProject">
 		              <test
 		                    property="org.eclipse.core.resources.projectNature"
@@ -2381,7 +2391,7 @@
 		        </or>
 		     </enablement>
 		  </commonWizard>
-
+		  <!--
    	      <commonWizard
 		        menuGroupId="descent.ui.java"
 		        type="new"
@@ -2433,7 +2443,8 @@
 				           </adapt>
 				        </or>
 				     </enablement>
-		    </commonWizard>	 
+		    </commonWizard>
+		    -->
 		    <commonWizard
 		          menuGroupId="descent.ui.java"
 		          type="new"
@@ -2449,6 +2460,40 @@
 				        </or>
 				     </enablement>
 			 </commonWizard>
+			 <!--
+			 <commonWizard
+		        menuGroupId="descent.ui.java"
+		        type="new"
+		        wizardId="org.eclipse.ui.wizards.new.file">
+		     <enablement>
+		        <or>
+		           <instanceof value="descent.core.IPackageFragment"/>
+		           <instanceof value="descent.core.IPackageFragmentRoot"/>
+		           <adapt type="org.eclipse.core.resources.IProject">
+		              <test
+		                    property="org.eclipse.core.resources.projectNature"
+		                    value="descent.core.javanature"/>
+		           </adapt>
+		        </or>
+		     </enablement>
+		  </commonWizard>
+		  <commonWizard
+		        menuGroupId="descent.ui.java"
+		        type="new"
+		        wizardId="org.eclipse.ui.wizards.new.folder">
+		     <enablement>
+		        <or>
+		           <instanceof value="descent.core.IPackageFragment"/>
+		           <instanceof value="descent.core.IPackageFragmentRoot"/>
+		           <adapt type="org.eclipse.core.resources.IProject">
+		              <test
+		                    property="org.eclipse.core.resources.projectNature"
+		                    value="descent.core.javanature"/>
+		           </adapt>
+		        </or>
+		     </enablement>
+		  </commonWizard>
+		  -->
 	      <dropAssistant
             class="descent.internal.ui.navigator.JavaDropAdapterAssistant"
             id="descent.ui.dropAssistant">
@@ -2607,6 +2652,39 @@
           <test property="org.eclipse.core.resources.projectNature" value="descent.core.javanature" />
       </enablement>
    </extension>
+   
+   <extension
+		point="descent.ui.javaCompletionProposalComputer"
+		id="templateProposalCategory"
+		name="%TemplateProposalCategory">
+		<proposalCategory
+			icon="$nl$/icons/full/elcl16/templateprop_co.gif"/>
+	</extension>
+   
+   <!-- template proposals -->
+	<extension
+		point="descent.ui.javaCompletionProposalComputer"
+		id="TemplateProposalComputer">
+		<javaCompletionProposalComputer
+			class="descent.internal.ui.text.java.TemplateCompletionProposalComputer"
+			categoryId="descent.ui.templateProposalCategory">
+			<partition type="__dftl_partition_content_type"/>
+			<partition type="__java_singleline_comment"/> <!-- to get NLS templates -->
+			<partition type="__java_javadoc"/>
+		</javaCompletionProposalComputer>
+	</extension>
+	
+	<extension
+		point="descent.ui.javaCompletionProposalSorters">
+		<proposalSorter
+			id="descent.ui.RelevanceSorter"
+			name="%RelevanceSorter.name"
+			class="descent.internal.ui.text.java.RelevanceSorter"/>
+		<proposalSorter
+			id="descent.ui.AlphabeticSorter"
+			name="%AlphabeticSorter.name"
+			class="descent.internal.ui.text.java.AlphabeticSorter"/>
+	</extension>
    
    <!-- =========================================================================== -->
 <!-- Templates                                                                   -->

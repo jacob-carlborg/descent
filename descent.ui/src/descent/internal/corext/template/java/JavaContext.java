@@ -15,12 +15,8 @@ import java.lang.reflect.InvocationTargetException;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
-
-import org.eclipse.swt.widgets.Shell;
-
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.preference.IPreferenceStore;
-
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.BadPositionCategoryException;
 import org.eclipse.jface.text.DefaultPositionUpdater;
@@ -36,25 +32,22 @@ import org.eclipse.jface.text.templates.TemplateContextType;
 import org.eclipse.jface.text.templates.TemplateException;
 import org.eclipse.jface.text.templates.TemplateTranslator;
 import org.eclipse.jface.text.templates.TemplateVariable;
+import org.eclipse.swt.widgets.Shell;
 
 import descent.core.ICompilationUnit;
 import descent.core.IJavaProject;
-import descent.core.JavaModelException;
 import descent.core.NamingConventions;
 import descent.core.Signature;
 import descent.core.dom.rewrite.ImportRewrite;
-
 import descent.internal.corext.codemanipulation.StubUtility;
 import descent.internal.corext.template.java.CompilationUnitCompletion.LocalVariable;
 import descent.internal.corext.util.JavaModelUtil;
 import descent.internal.corext.util.Strings;
-
-import descent.ui.JavaUI;
-import descent.ui.PreferenceConstants;
-
 import descent.internal.ui.JavaPlugin;
 import descent.internal.ui.text.template.contentassist.MultiVariable;
 import descent.internal.ui.util.ExceptionHandler;
+import descent.ui.JavaUI;
+import descent.ui.PreferenceConstants;
 
 /**
  * A context for java source.
@@ -134,10 +127,8 @@ public class JavaContext extends CompilationUnitContext {
 
 		IJavaProject project= getCompilationUnit() != null ? getCompilationUnit().getJavaProject() : null;
 		
-		/* TODO JDT UI format
 		JavaFormatter formatter= new JavaFormatter(TextUtilities.getDefaultLineDelimiter(getDocument()), getIndentation(), useCodeFormatter, project);
 		formatter.format(buffer, this);
-		*/
 
 		return buffer;
 	}

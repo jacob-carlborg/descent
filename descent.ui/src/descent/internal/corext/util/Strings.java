@@ -145,21 +145,6 @@ public class Strings {
 		else
 			return line.substring(0, end);
 	}
-		
-	/**
-	 * Returns the indent of the given string in indentation units. Odd spaces
-	 * are not counted.
-	 * 
-	 * @param line the text line
-	 * @param project the java project from which to get the formatter
-	 *        preferences, or <code>null</code> for global preferences
-	 * @since 3.1
-	 */
-	/* TODO JDT UI format
-	public static int computeIndentUnits(String line, IJavaProject project) {
-		return IndentManipulation.measureIndentUnits(line, CodeFormatterUtil.getTabWidth(project), CodeFormatterUtil.getIndentWidth(project));
-	}
-	*/
 	
 	/**
 	 * Returns the indent of the given string in indentation units. Odd spaces

@@ -155,6 +155,17 @@ public final class NewWizardMessages extends NLS {
 	public static String NewClassWizardPage_methods_constructors;
 	public static String NewClassWizardPage_methods_inherited;
 	
+	public static String NewModuleCreationWizard_title;
+	public static String NewModuleWizardPage_title;
+	public static String NewModuleWizardPage_description;
+	public static String NewModuleWizardPage_operationdesc;
+	public static String NewModuleWizardPage_error_EnterModuleName;
+	public static String NewModuleWizardPage_error_QualifiedName;
+	public static String NewModuleWizardPage_error_InvalidModuleName;
+	public static String NewModuleWizardPage_error_ModuleNameExists;
+	public static String NewModuleWizardPage_error_ModuleNameExistsDifferentCase;
+	public static String NewModuleWizardPage_error_uri_location_unkown;	
+	
 	public static String NewInterfaceCreationWizard_title;
 	public static String NewInterfaceWizardPage_title;
 	public static String NewInterfaceWizardPage_description;

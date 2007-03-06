@@ -74,7 +74,7 @@ public class JavaPerspectiveFactory implements IPerspectiveFactory {
 				
 		// new actions - Java project creation wizard
 		layout.addNewWizardShortcut("descent.ui.wizards.NewPackageCreationWizard"); //$NON-NLS-1$
-		//layout.addNewWizardShortcut("descent.ui.wizards.NewClassCreationWizard"); //$NON-NLS-1$
+		layout.addNewWizardShortcut("descent.ui.wizards.NewModuleCreationWizard"); //$NON-NLS-1$
 		//layout.addNewWizardShortcut("descent.ui.wizards.NewInterfaceCreationWizard"); //$NON-NLS-1$
 		//layout.addNewWizardShortcut("descent.ui.wizards.NewEnumCreationWizard"); //$NON-NLS-1$
 		//layout.addNewWizardShortcut("descent.ui.wizards.NewAnnotationCreationWizard"); //$NON-NLS-1$

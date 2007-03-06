@@ -1,9 +1,12 @@
 package descent.internal.corext.codemanipulation;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.StringTokenizer;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ProjectScope;
@@ -34,6 +37,7 @@ import descent.core.IPackageFragment;
 import descent.core.ITypeParameter;
 import descent.core.JavaCore;
 import descent.core.JavaModelException;
+import descent.core.NamingConventions;
 import descent.core.Signature;
 import descent.core.compiler.CharOperation;
 import descent.core.dom.AST;
@@ -55,6 +59,7 @@ import descent.internal.ui.JavaPlugin;
 import descent.internal.ui.JavaUIStatus;
 import descent.internal.ui.viewsupport.ProjectTemplateStore;
 import descent.ui.CodeStyleConfiguration;
+import descent.ui.PreferenceConstants;
 
 // TODO JDT ui stub utility: it's a stub
 public class StubUtility {
@@ -153,15 +158,15 @@ public class StubUtility {
 	
 	/*
 	 * Don't use this method directly, use CodeGeneration.
-	 * @see org.eclipse.jdt.ui.CodeGeneration#getCompilationUnitContent(ICompilationUnit, String, String, String, String)
+	 * @see org.eclipse.jdt.ui.CodeGeneration#getCompilationUnitContent(ICompilationUnit, String, String)
 	 */	
-	public static String getCompilationUnitContent(ICompilationUnit cu, String fileComment, String typeComment, String typeContent, String lineDelimiter) throws CoreException {
+	public static String getCompilationUnitContent(ICompilationUnit cu, String fileComment, String lineDelimiter) throws CoreException {
 		IPackageFragment pack= (IPackageFragment) cu.getParent();
 		String packDecl= pack.isDefaultPackage() ? "" : "module " + pack.getElementName() + ';'; //$NON-NLS-1$ //$NON-NLS-2$
-		return getCompilationUnitContent(cu, packDecl, fileComment, typeComment, typeContent, lineDelimiter);
+		return getCompilationUnitContent(cu, packDecl, fileComment, lineDelimiter);
 	}
 	
-	public static String getCompilationUnitContent(ICompilationUnit cu, String packDecl, String fileComment, String typeComment, String typeContent, String lineDelimiter) throws CoreException {
+	public static String getCompilationUnitContent(ICompilationUnit cu, String packDecl, String fileComment, String lineDelimiter) throws CoreException {
 		Template template= getCodeTemplate(CodeTemplateContextType.NEWTYPE_ID, cu.getJavaProject());
 		if (template == null) {
 			return null;
@@ -171,10 +176,7 @@ public class StubUtility {
 		CodeTemplateContext context= new CodeTemplateContext(template.getContextTypeId(), project, lineDelimiter);
 		context.setCompilationUnitVariables(cu);
 		context.setVariable(CodeTemplateContextType.PACKAGE_DECLARATION, packDecl);
-		context.setVariable(CodeTemplateContextType.TYPE_COMMENT, typeComment != null ? typeComment : ""); //$NON-NLS-1$
 		context.setVariable(CodeTemplateContextType.FILE_COMMENT, fileComment != null ? fileComment : ""); //$NON-NLS-1$
-		context.setVariable(CodeTemplateContextType.TYPE_DECLARATION, typeContent);
-		context.setVariable(CodeTemplateContextType.TYPENAME, JavaCore.removeJavaLikeExtension(cu.getElementName()));
 		
 		String[] fullLine= { CodeTemplateContextType.PACKAGE_DECLARATION, CodeTemplateContextType.FILE_COMMENT, CodeTemplateContextType.TYPE_COMMENT };
 		return evaluateTemplate(context, template, fullLine);
@@ -770,5 +772,99 @@ public class StubUtility {
 	public static ImportRewrite createImportRewrite(CompilationUnit astRoot, boolean restoreExistingImports) {
 		return CodeStyleConfiguration.createImportRewrite(astRoot, restoreExistingImports);
 	}
+	
+	public static String suggestArgumentName(IJavaProject project, String baseName, String[] excluded) {
+		String[] argnames= getArgumentNameSuggestions(project, baseName, 0, excluded);
+		if (argnames.length > 0) {
+			return argnames[0];
+		}
+		return baseName;
+	}
+	
+	public static String[] suggestArgumentNames(IJavaProject project, String[] paramNames) {
+		String prefixes= project.getOption(JavaCore.CODEASSIST_ARGUMENT_PREFIXES, true);
+		if (prefixes == null) {
+			prefixes= ""; //$NON-NLS-1$
+		}
+		String suffixes= project.getOption(JavaCore.CODEASSIST_ARGUMENT_SUFFIXES, true);
+		if (suffixes == null) {
+			suffixes= ""; //$NON-NLS-1$
+		}
+		if (prefixes.length() + suffixes.length() == 0) {
+			return paramNames;
+		}
+		
+		String[] newNames= new String[paramNames.length];
+		// Ensure that the code generation preferences are respected
+		for (int i= 0; i < paramNames.length; i++) {
+			String curr= paramNames[i];
+			if (!hasPrefixOrSuffix(prefixes, suffixes, curr)) {
+				newNames[i]= suggestArgumentName(project, paramNames[i], null);
+			} else {
+				newNames[i]= curr;
+			}
+		}
+		return newNames;
+	}
+	
+	/*
+	 * Workarounds for bug 38111
+	 */
+	public static String[] getArgumentNameSuggestions(IJavaProject project, String baseName, int dimensions, String[] excluded) {
+		String name= workaround38111(baseName);
+		String[] res= NamingConventions.suggestArgumentNames(project, "", name, dimensions, excluded); //$NON-NLS-1$
+		return sortByLength(res); // longest first
+	}
+	
+	private static String workaround38111(String baseName) {
+		if (BASE_TYPES.contains(baseName))
+			return baseName;
+		return Character.toUpperCase(baseName.charAt(0)) + baseName.substring(1);
+	}
+	
+	private static final List BASE_TYPES= Arrays.asList(
+			new String[] {"boolean", "byte", "char", "double", "float", "int", "long", "short"});  //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$
+	
+	private static String[] sortByLength(String[] proposals) {
+		Arrays.sort(proposals, new Comparator() {
+			public int compare(Object o1, Object o2) {
+				return ((String) o2).length() - ((String) o1).length();
+			}
+		});
+		return proposals;
+	}
+	
+	private static boolean hasPrefixOrSuffix(String prefixes, String suffixes, String name) {
+		final String listSeparartor= ","; //$NON-NLS-1$
 
+		StringTokenizer tok= new StringTokenizer(prefixes, listSeparartor);
+		while (tok.hasMoreTokens()) {
+			String curr= tok.nextToken();
+			if (name.startsWith(curr)) {
+				return true;
+			}
+		}
+
+		tok= new StringTokenizer(suffixes, listSeparartor);
+		while (tok.hasMoreTokens()) {
+			String curr= tok.nextToken();
+			if (name.endsWith(curr)) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	public static boolean useThisForFieldAccess(IJavaProject project) {
+		return Boolean.valueOf(PreferenceConstants.getPreference(PreferenceConstants.CODEGEN_KEYWORD_THIS, project)).booleanValue(); 
+	}
+	
+	public static boolean useIsForBooleanGetters(IJavaProject project) {
+		return Boolean.valueOf(PreferenceConstants.getPreference(PreferenceConstants.CODEGEN_IS_FOR_GETTERS, project)).booleanValue(); 
+	}
+	
+	public static boolean doAddComments(IJavaProject project) {
+		return Boolean.valueOf(PreferenceConstants.getPreference(PreferenceConstants.CODEGEN_ADD_COMMENTS, project)).booleanValue(); 
+	}
+	
 }

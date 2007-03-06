@@ -226,7 +226,7 @@ public class JavaElementImageProvider {
 					IField field= (IField) element;
 					if (field.isVariable() || field.isEnumConstant()) {
 						IType declType= field.getDeclaringType();
-						return getVariableImageDescriptor(JavaModelUtil.isInterfaceOrAnnotation(declType), field.getFlags());
+						return getFieldImageDescriptor(JavaModelUtil.isInterfaceOrAnnotation(declType), field.getFlags());
 					} else if (field.isAlias()) {
 						return getAliasImageDescriptor(field.getFlags());
 					} else if (field.isTypedef()) {
@@ -420,7 +420,7 @@ public class JavaElementImageProvider {
 		return JavaPluginImages.DESC_MISC_PUBLIC;
 	}
 		
-	public static ImageDescriptor getVariableImageDescriptor(boolean isInInterfaceOrAnnotation, int flags) {
+	public static ImageDescriptor getFieldImageDescriptor(boolean isInInterfaceOrAnnotation, int flags) {
 		if (Flags.isEnum(flags))
 			return JavaPluginImages.DESC_FIELD_PUBLIC;
 		if (Flags.isPackage(flags))

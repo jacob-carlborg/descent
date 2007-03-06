@@ -26,11 +26,27 @@ import org.eclipse.text.edits.TextEdit;
 
 import descent.core.IJavaProject;
 import descent.core.JavaCore;
+import descent.core.ToolFactory;
+import descent.core.dom.ASTNode;
 import descent.core.formatter.DefaultCodeFormatterConstants;
 import descent.internal.ui.JavaPlugin;
 
-// TODO JDT UI format: some methods were removed
 public class CodeFormatterUtil {
+				
+	/**
+	 * Creates a string that represents the given number of indentation units.
+	 * The returned string can contain tabs and/or spaces depending on the core
+	 * formatter preferences.
+	 * 
+	 * @param indentationUnits the number of indentation units to generate
+	 * @param project the project from which to get the formatter settings,
+	 *        <code>null</code> if the workspace default should be used
+	 * @return the indent string
+	 */
+	public static String createIndentString(int indentationUnits, IJavaProject project) {
+		Map options= project != null ? project.getOptions(true) : JavaCore.getOptions();		
+		return ToolFactory.createCodeFormatter(options).createIndentationString(indentationUnits);
+	} 
 		
 	/**
 	 * Gets the current tab width.
@@ -109,6 +125,47 @@ public class CodeFormatterUtil {
 			return def;
 		}
 	}
+
+	// transition code
+
+	/**
+	 * Old API. Consider to use format2 (TextEdit)
+	 */	
+	public static String format(int kind, String string, int indentationLevel, int[] positions, String lineSeparator, Map options) {
+		return format(kind, string, 0, string.length(), indentationLevel, positions, lineSeparator, options);
+	}
+	
+	public static String format(int kind, String string, int indentationLevel, int[] positions, String lineSeparator, IJavaProject project) {
+		Map options= project != null ? project.getOptions(true) : null;
+		return format(kind, string, 0, string.length(), indentationLevel, positions, lineSeparator, options);
+	}
+	
+
+	/**
+	 * Old API. Consider to use format2 (TextEdit)
+	 */	
+	public static String format(int kind, String string, int offset, int length, int indentationLevel, int[] positions, String lineSeparator, Map options) {
+		TextEdit edit= format2(kind, string, offset, length, indentationLevel, lineSeparator, options);
+		if (edit == null) {
+			//JavaPlugin.logErrorMessage("formatter failed to format (no edit returned). Will use unformatted text instead. kind: " + kind + ", string: " + string); //$NON-NLS-1$ //$NON-NLS-2$
+			return string.substring(offset, offset + length);
+		}
+		String formatted= getOldAPICompatibleResult(string, edit, indentationLevel, positions, lineSeparator, options);
+		return formatted.substring(offset, formatted.length() - (string.length() - (offset + length)));
+	}
+	
+	/**
+	 * Old API. Consider to use format2 (TextEdit)
+	 */	
+	public static String format(ASTNode node, String string, int indentationLevel, int[] positions, String lineSeparator, Map options) {
+		
+		TextEdit edit= format2(node, string, indentationLevel, lineSeparator, options);
+		if (edit == null) {
+			//JavaPlugin.logErrorMessage("formatter failed to format (no edit returned). Will use unformatted text instead. node: " + node.getNodeType() + ", string: " + string); //$NON-NLS-1$ //$NON-NLS-2$
+			return string;
+		}
+		return getOldAPICompatibleResult(string, edit, indentationLevel, positions, lineSeparator, options);
+	}
 	
 	private static String getOldAPICompatibleResult(String string, TextEdit edit, int indentationLevel, int[] positions, String lineSeparator, Map options) {
 		Position[] p= null;
@@ -151,6 +208,126 @@ public class CodeFormatterUtil {
 		}
 		return null;
 	}
+	
+	/**
+	 * Creates edits that describe how to format the given string. Returns <code>null</code> if the code could not be formatted for the given kind.
+	 * @throws IllegalArgumentException If the offset and length are not inside the string, a
+	 *  IllegalArgumentException is thrown.
+	 */
+	public static TextEdit format2(int kind, String string, int offset, int length, int indentationLevel, String lineSeparator, Map options) {
+		if (offset < 0 || length < 0 || offset + length > string.length()) {
+			throw new IllegalArgumentException("offset or length outside of string. offset: " + offset + ", length: " + length + ", string size: " + string.length());   //$NON-NLS-1$//$NON-NLS-2$//$NON-NLS-3$
+		}
+		return ToolFactory.createCodeFormatter(options).format(kind, string, offset, length, indentationLevel, lineSeparator);
+	}
+	
+	public static TextEdit format2(int kind, String string, int indentationLevel, String lineSeparator, Map options) {
+		return format2(kind, string, 0, string.length(), indentationLevel, lineSeparator, options);
+	}
+	
+	/**
+	 * Creates edits that describe how to format the given string. Returns <code>null</code> if the code could not be formatted for the given kind.
+	 * @throws IllegalArgumentException If the offset and length are not inside the string, a
+	 *  IllegalArgumentException is thrown.
+	 */
+	public static TextEdit format2(ASTNode node, String str, int indentationLevel, String lineSeparator, Map options) {
+		return null;
+		/* TODO JDT UI format
+		int code;
+		String prefix= ""; //$NON-NLS-1$
+		String suffix= ""; //$NON-NLS-1$
+		if (node instanceof Statement) {
+			code= CodeFormatter.K_STATEMENTS;
+			if (node.getNodeType() == ASTNode.SWITCH_CASE) {
+				prefix= "switch(1) {"; //$NON-NLS-1$
+				suffix= "}"; //$NON-NLS-1$
+				code= CodeFormatter.K_STATEMENTS;
+			}
+		} else if (node instanceof Expression && node.getNodeType() != ASTNode.VARIABLE_DECLARATION_EXPRESSION) {
+			code= CodeFormatter.K_EXPRESSION;
+		} else if (node instanceof BodyDeclaration) {
+			code= CodeFormatter.K_CLASS_BODY_DECLARATIONS;
+		} else {
+			switch (node.getNodeType()) {
+				case ASTNode.ARRAY_TYPE:
+				case ASTNode.PARAMETERIZED_TYPE:
+				case ASTNode.PRIMITIVE_TYPE:
+				case ASTNode.QUALIFIED_TYPE:
+				case ASTNode.SIMPLE_TYPE:
+					suffix= " x;"; //$NON-NLS-1$
+					code= CodeFormatter.K_CLASS_BODY_DECLARATIONS;
+					break;
+				case ASTNode.WILDCARD_TYPE:
+					prefix= "A<"; //$NON-NLS-1$
+					suffix= "> x;"; //$NON-NLS-1$
+					code= CodeFormatter.K_CLASS_BODY_DECLARATIONS;
+					break;
+				case ASTNode.COMPILATION_UNIT:
+					code= CodeFormatter.K_COMPILATION_UNIT;
+					break;
+				case ASTNode.VARIABLE_DECLARATION_EXPRESSION:
+				case ASTNode.SINGLE_VARIABLE_DECLARATION:
+					suffix= ";"; //$NON-NLS-1$
+					code= CodeFormatter.K_STATEMENTS;
+					break;
+				case ASTNode.VARIABLE_DECLARATION_FRAGMENT:
+					prefix= "A "; //$NON-NLS-1$
+					suffix= ";"; //$NON-NLS-1$
+					code= CodeFormatter.K_STATEMENTS;
+					break;			
+				case ASTNode.PACKAGE_DECLARATION:
+				case ASTNode.IMPORT_DECLARATION:
+					suffix= "\nclass A {}"; //$NON-NLS-1$
+					code= CodeFormatter.K_COMPILATION_UNIT;
+					break;
+				case ASTNode.JAVADOC:
+					suffix= "void foo();"; //$NON-NLS-1$
+					code= CodeFormatter.K_CLASS_BODY_DECLARATIONS;
+					break;
+				case ASTNode.CATCH_CLAUSE:
+					prefix= "try {}"; //$NON-NLS-1$
+					code= CodeFormatter.K_STATEMENTS;
+					break;
+				case ASTNode.ANONYMOUS_CLASS_DECLARATION:
+					prefix= "new A()"; //$NON-NLS-1$
+					suffix= ";"; //$NON-NLS-1$
+					code= CodeFormatter.K_STATEMENTS;
+					break;
+				case ASTNode.MEMBER_VALUE_PAIR:
+					prefix= "@Author("; //$NON-NLS-1$
+					suffix= ") class x {}"; //$NON-NLS-1$
+					code= CodeFormatter.K_COMPILATION_UNIT;
+					break;
+				case ASTNode.MODIFIER:
+					suffix= " class x {}"; //$NON-NLS-1$
+					code= CodeFormatter.K_COMPILATION_UNIT;				
+					break;
+				case ASTNode.TYPE_PARAMETER:
+					prefix= "class X<"; //$NON-NLS-1$
+					suffix= "> {}"; //$NON-NLS-1$
+					code= CodeFormatter.K_COMPILATION_UNIT;
+					break;
+				case ASTNode.MEMBER_REF:
+				case ASTNode.METHOD_REF:
+				case ASTNode.METHOD_REF_PARAMETER:
+				case ASTNode.TAG_ELEMENT:
+				case ASTNode.TEXT_ELEMENT:
+					// Javadoc formatting not yet supported:
+				    return null;
+				default:
+					//Assert.isTrue(false, "Node type not covered: " + node.getClass().getName()); //$NON-NLS-1$
+					return null;
+			}
+		}
+		
+		String concatStr= prefix + str + suffix;
+		TextEdit edit= ToolFactory.createCodeFormatter(options).format(code, concatStr, prefix.length(), str.length(), indentationLevel, lineSeparator);
+		if (prefix.length() > 0) {
+			edit= shifEdit(edit, prefix.length());
+		}		
+		return edit;
+		*/
+	}	
 			
 	private static TextEdit shifEdit(TextEdit oldEdit, int diff) {
 		TextEdit newEdit;

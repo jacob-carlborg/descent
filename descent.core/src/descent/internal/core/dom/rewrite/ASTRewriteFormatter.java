@@ -27,6 +27,7 @@ import org.eclipse.text.edits.ReplaceEdit;
 import org.eclipse.text.edits.TextEdit;
 
 import descent.core.JavaCore;
+import descent.core.ToolFactory;
 import descent.core.dom.ASTNode;
 import descent.core.dom.Block;
 import descent.core.formatter.CodeFormatter;
@@ -266,10 +267,7 @@ import descent.core.formatter.IndentManipulation;
 	}
 		
 	public static TextEdit formatString(int kind, String string, int indentationLevel, String lineSeparator, Map options) {
-		/* TODO JDT format
 		return ToolFactory.createCodeFormatter(options).format(kind, string, 0, string.length(), indentationLevel, lineSeparator);
-		*/
-		return null;
 	}
 	
 	/**

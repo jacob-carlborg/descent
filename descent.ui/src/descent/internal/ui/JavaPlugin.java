@@ -7,6 +7,7 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -47,6 +48,7 @@ import descent.core.WorkingCopyOwner;
 import descent.internal.corext.template.java.CodeTemplateContextType;
 import descent.internal.corext.template.java.JavaContextType;
 import descent.internal.corext.template.java.JavaDocContextType;
+import descent.internal.corext.util.QualifiedTypeNameHistory;
 import descent.internal.corext.util.TypeFilter;
 import descent.internal.ui.javaeditor.ASTProvider;
 import descent.internal.ui.javaeditor.CompilationUnitDocumentProvider;
@@ -57,6 +59,7 @@ import descent.internal.ui.javaeditor.WorkingCopyManager;
 import descent.internal.ui.preferences.MembersOrderPreferenceCache;
 import descent.internal.ui.text.PreferencesAdapter;
 import descent.internal.ui.text.folding.JavaFoldingStructureProviderRegistry;
+import descent.internal.ui.text.java.ContentAssistHistory;
 import descent.internal.ui.text.java.hover.JavaEditorTextHoverDescriptor;
 import descent.internal.ui.viewsupport.ImageDescriptorRegistry;
 import descent.internal.ui.viewsupport.ProblemMarkerManager;
@@ -194,9 +197,7 @@ public class JavaPlugin extends AbstractUIPlugin {
 	 * 
 	 * @since 3.2
 	 */
-	/* TODO JDT UI code completion
 	private ContentAssistHistory fContentAssistHistory;
-	*/
 
 	public static JavaPlugin getDefault() {
 		return fgJavaPlugin;
@@ -528,11 +529,11 @@ public class JavaPlugin extends AbstractUIPlugin {
 				fMembersOrderPreferenceCache= null;
 			}
 			
-			/* TODO JDT UI history
+			
 			QualifiedTypeNameHistory.getDefault().save();
 			
 			// must add here to guarantee that it is the first in the listener list
-
+			/* TODO JDT UI history
 			OpenTypeHistory.shutdown();
 			*/
 		} finally {	
@@ -854,7 +855,6 @@ public class JavaPlugin extends AbstractUIPlugin {
 	 * @return the Java content assist history
 	 * @since 3.2
 	 */
-	/* TODO JDT code completion
 	public ContentAssistHistory getContentAssistHistory() {
 		if (fContentAssistHistory == null) {
 			try {
@@ -868,7 +868,6 @@ public class JavaPlugin extends AbstractUIPlugin {
 
 		return fContentAssistHistory;
 	}
-	*/
 	
 	/**
 	 * Returns a section in the Java plugin's dialog settings. If the section doesn't exist yet, it is created.

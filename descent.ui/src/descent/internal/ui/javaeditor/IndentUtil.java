@@ -18,6 +18,7 @@ import org.eclipse.jface.text.TextUtilities;
 import org.eclipse.jface.text.source.ILineRange;
 
 import descent.core.IJavaProject;
+import descent.internal.corext.util.CodeFormatterUtil;
 import descent.internal.ui.text.JavaHeuristicScanner;
 import descent.internal.ui.text.JavaIndenter;
 import descent.ui.text.IJavaPartitions;
@@ -88,8 +89,7 @@ public final class IndentUtil {
 		JavaHeuristicScanner scanner= new JavaHeuristicScanner(document);
 		JavaIndenter indenter= new JavaIndenter(document, scanner, project);
 		boolean changed= false;
-		// TODO JDT UI format int tabSize= CodeFormatterUtil.getTabWidth(project);
-		int tabSize = 4;
+		int tabSize= CodeFormatterUtil.getTabWidth(project);
 		for (int line= lines.getStartLine(), last= line + numberOfLines, i= 0; line < last; line++) {
 			changed |= indentLine(document, line, indenter, scanner, result.commentLinesAtColumnZero, i++, tabSize);
 		}
@@ -137,8 +137,7 @@ public final class IndentUtil {
 		if (correct == null)
 			return result; // bail out
 		
-//		 TODO JDT UI format int tabSize= CodeFormatterUtil.getTabWidth(project);
-		int tabSize = 4;
+		int tabSize= CodeFormatterUtil.getTabWidth(project);
 		StringBuffer addition= new StringBuffer();
 		int difference= subtractIndent(correct, current, addition, tabSize);
 		

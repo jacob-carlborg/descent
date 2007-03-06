@@ -55,10 +55,7 @@
  */</template>
 
 <template name="newtype" id="descent.ui.text.codetemplates.newtype" description="%CodeTemplates.newfile" context="newtype_context" enabled="true">${filecomment}
-${package_declaration}
-
-${typecomment}
-${type_declaration}</template>
+${package_declaration}</template>
 
 <template name="classbody" id="descent.ui.text.codetemplates.classbody" description="%CodeTemplates.classbody" context="classbody_context" enabled="true">
 </template>

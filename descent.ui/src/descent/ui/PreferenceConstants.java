@@ -26,6 +26,9 @@ import descent.core.IJavaProject;
 import descent.core.JavaCore;
 import descent.internal.ui.JavaPlugin;
 import descent.internal.ui.javaeditor.SemanticHighlightings;
+import descent.internal.ui.preferences.NewJavaProjectPreferencePage;
+import descent.internal.ui.preferences.WorkInProgressPreferencePage;
+import descent.internal.ui.text.java.ProposalSorterRegistry;
 import descent.internal.ui.text.spelling.engine.ISpellCheckPreferenceKeys;
 import descent.ui.text.IJavaColorConstants;
 
@@ -3762,7 +3765,6 @@ public class PreferenceConstants {
 		store.setDefault(PreferenceConstants.PROPERTIES_FILE_COLORING_COMMENT_BOLD, false);
 		store.setDefault(PreferenceConstants.PROPERTIES_FILE_COLORING_COMMENT_ITALIC, false);
 		
-		/* TODO JDT UI miscelaneous
 		// semantic highlighting
 		SemanticHighlightings.initDefaults(store);
 
@@ -3771,7 +3773,6 @@ public class PreferenceConstants {
 		
 		// work in progress
 		WorkInProgressPreferencePage.initDefaults(store);
-		*/
 
 		// reset preferences that are not settable by editor any longer
 		// see AbstractDecoratedTextEditorPreferenceConstants
@@ -3819,10 +3820,7 @@ public class PreferenceConstants {
 	 * @return the encoded string.
 	*/
 	public static String encodeJRELibrary(String description, IClasspathEntry[] entries) {
-		/* TODO jdk
 		return NewJavaProjectPreferencePage.encodeJRELibrary(description, entries);
-		*/
-		return "";
 	}
 	
 	/**
@@ -3833,10 +3831,7 @@ public class PreferenceConstants {
 	 * @see #encodeJRELibrary(String, IClasspathEntry[])
 	 */
 	public static String decodeJRELibraryDescription(String encodedLibrary) {
-		/* TODO jdk
 		return NewJavaProjectPreferencePage.decodeJRELibraryDescription(encodedLibrary);
-		*/
-		return "";
 	}
 	
 	/**
@@ -3847,10 +3842,7 @@ public class PreferenceConstants {
 	 * @see #encodeJRELibrary(String, IClasspathEntry[])
 	 */
 	public static IClasspathEntry[] decodeJRELibraryClasspathEntries(String encodedLibrary) {
-		/* TODO JDT UI jdk
 		return NewJavaProjectPreferencePage.decodeJRELibraryClasspathEntries(encodedLibrary);
-		*/
-		return new IClasspathEntry[0];
 	}
 	
 	/**
@@ -3864,10 +3856,7 @@ public class PreferenceConstants {
 	 * @see #NEWPROJECT_JRELIBRARY_INDEX
 	 */
 	public static IClasspathEntry[] getDefaultJRELibrary() {
-		/* TODO JDT UI jdk
 		return NewJavaProjectPreferencePage.getDefaultJRELibrary();
-		*/
-		return new IClasspathEntry[0];
 	}
 
 	/**

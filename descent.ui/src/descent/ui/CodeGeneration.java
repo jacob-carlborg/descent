@@ -71,8 +71,8 @@ public class CodeGeneration {
 	 * @return Returns the new content or <code>null</code> if the template is undefined or empty.
 	 * @throws CoreException Thrown when the evaluation of the code template fails.
 	 */
-	public static String getCompilationUnitContent(ICompilationUnit cu, String typeComment, String typeContent, String lineDelimiter) throws CoreException {	
-		return getCompilationUnitContent(cu, getFileComment(cu, lineDelimiter), typeComment, typeContent, lineDelimiter);
+	public static String getCompilationUnitContent(ICompilationUnit cu, String lineDelimiter) throws CoreException {	
+		return getCompilationUnitContent(cu, getFileComment(cu, lineDelimiter), lineDelimiter);
 	}
 	
 	/**
@@ -88,8 +88,8 @@ public class CodeGeneration {
 	 * @throws CoreException Thrown when the evaluation of the code template fails.
 	 * @since 3.1
 	 */
-	public static String getCompilationUnitContent(ICompilationUnit cu, String fileComment, String typeComment, String typeContent, String lineDelimiter) throws CoreException {	
-		return StubUtility.getCompilationUnitContent(cu, fileComment, typeComment, typeContent, lineDelimiter);
+	public static String getCompilationUnitContent(ICompilationUnit cu, String fileComment, String lineDelimiter) throws CoreException {	
+		return StubUtility.getCompilationUnitContent(cu, fileComment, lineDelimiter);
 	}
 	
 	/**

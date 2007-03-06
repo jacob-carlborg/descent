@@ -47,6 +47,7 @@ import descent.core.dom.IfStatement;
 import descent.core.dom.Statement;
 import descent.core.dom.WhileStatement;
 import descent.internal.corext.dom.NodeFinder;
+import descent.internal.corext.util.CodeFormatterUtil;
 import descent.internal.ui.JavaPlugin;
 import descent.internal.ui.javaeditor.ASTProvider;
 import descent.internal.ui.text.JavaHeuristicScanner;
@@ -884,10 +885,7 @@ public class JavaAutoIndentStrategy extends DefaultIndentLineAutoEditStrategy {
 	 * @return the number of spaces displayed for a tabulator in the editor
 	 */
 	private int getVisualTabLengthPreference() {
-		/* TODO JDT UI format
 		return CodeFormatterUtil.getTabWidth(fProject);
-		*/
-		return 4;
 	}
 
 	private int getPeerPosition(IDocument document, DocumentCommand command) {

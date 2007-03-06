@@ -262,7 +262,7 @@ public class NewVariableEntryDialog extends StatusDialog {
 	}
 	
 	private IPath[] chooseExtensions(CPVariableElement elem) {
-		/* TODO JDT ui jar
+		/* TODO JDT UI jar
 		File file= elem.getPath().toFile();
 
 		JARFileSelectionDialog dialog= new JARFileSelectionDialog(getShell(), true, false);

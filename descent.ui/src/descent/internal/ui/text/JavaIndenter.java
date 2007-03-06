@@ -18,6 +18,7 @@ import org.eclipse.jface.text.IRegion;
 import descent.core.IJavaProject;
 import descent.core.JavaCore;
 import descent.core.formatter.DefaultCodeFormatterConstants;
+import descent.internal.corext.util.CodeFormatterUtil;
 
 
 /**
@@ -163,17 +164,11 @@ public final class JavaIndenter {
 		}
 
 		private int prefTabSize() {
-			/* TODO JDT UI format
 			return CodeFormatterUtil.getTabWidth(fProject);
-			*/
-			return 4;
 		}
 
 		private int prefIndentationSize() {
-			/* TODO JDT UI format
 			return CodeFormatterUtil.getIndentWidth(fProject);
-			*/
-			return 4;
 		}
 
 		private boolean prefArrayDimensionsDeepIndent() {
