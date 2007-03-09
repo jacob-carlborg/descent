@@ -1,5 +1,6 @@
 package descent.internal.core.dom;
 
+import util.tree.TreeVisitor;
 import descent.core.dom.IConditionExpression;
 import descent.core.dom.IExpression;
 import descent.core.domX.ASTVisitor;
@@ -37,9 +38,9 @@ public class CondExp extends Expression implements IConditionExpression {
 	public void accept0(ASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
-			acceptChild(visitor, cond);
-			acceptChild(visitor, t);
-			acceptChild(visitor, f);
+			TreeVisitor.acceptChild(visitor, cond);
+			TreeVisitor.acceptChild(visitor, t);
+			TreeVisitor.acceptChild(visitor, f);
 		}
 		visitor.endVisit(this);
 	}

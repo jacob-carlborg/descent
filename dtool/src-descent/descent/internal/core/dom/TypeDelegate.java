@@ -1,5 +1,6 @@
 package descent.internal.core.dom;
 
+import util.tree.TreeVisitor;
 import descent.core.domX.ASTVisitor;
 
 public class TypeDelegate extends Type {
@@ -24,8 +25,8 @@ public class TypeDelegate extends Type {
 	public void accept0(ASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
-			acceptChild(visitor, getReturnType());
-			acceptChildren(visitor, getArguments());
+			TreeVisitor.acceptChild(visitor, getReturnType());
+			TreeVisitor.acceptChildren(visitor, getArguments());
 		}
 		visitor.endVisit(this);
 	}

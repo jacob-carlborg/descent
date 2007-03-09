@@ -3,6 +3,8 @@ package descent.internal.core.dom;
 import java.util.ArrayList;
 import java.util.List;
 
+import util.tree.TreeVisitor;
+
 import descent.core.dom.IInitializer;
 import descent.core.dom.IName;
 import descent.core.domX.ASTVisitor;
@@ -37,8 +39,8 @@ public class StructInitializer extends Initializer {
 	public void accept0(ASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) { 
-			acceptChildren(visitor, ids);
-			acceptChildren(visitor, values);
+			TreeVisitor.acceptChildren(visitor, ids);
+			TreeVisitor.acceptChildren(visitor, values);
 		}
 		visitor.endVisit(this);
 	}

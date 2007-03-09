@@ -1,5 +1,6 @@
 package descent.internal.core.dom;
 
+import util.tree.TreeVisitor;
 import descent.core.dom.IType;
 import descent.core.domX.ASTVisitor;
 import descent.core.domX.AbstractElement;
@@ -38,8 +39,8 @@ public class TypeInstance extends TypeQualified implements IType {
 	public void accept0(ASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
-			acceptChild(visitor, qName);
-			acceptChildren(visitor, tempinst.getTemplateArguments());
+			TreeVisitor.acceptChild(visitor, qName);
+			TreeVisitor.acceptChildren(visitor, tempinst.getTemplateArguments());
 		}
 		visitor.endVisit(this);
 	}

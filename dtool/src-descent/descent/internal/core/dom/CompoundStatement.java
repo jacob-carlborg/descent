@@ -2,6 +2,8 @@ package descent.internal.core.dom;
 
 import java.util.List;
 
+import util.tree.TreeVisitor;
+
 import descent.core.dom.ICompoundStatement;
 import descent.core.dom.IStatement;
 import descent.core.domX.ASTVisitor;
@@ -26,7 +28,7 @@ public class CompoundStatement extends Statement implements ICompoundStatement {
 	public void accept0(ASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
-			acceptChildren(visitor, as);
+			TreeVisitor.acceptChildren(visitor, as);
 		}
 		visitor.endVisit(this);
 	}

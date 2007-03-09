@@ -1,5 +1,6 @@
 package descent.internal.core.dom;
 
+import util.tree.TreeVisitor;
 import descent.core.dom.IExpression;
 import descent.core.dom.IName;
 import descent.core.dom.IType;
@@ -42,10 +43,10 @@ public class TemplateValueParameter extends TemplateParameter {
 	public void accept0(ASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
-			acceptChild(visitor, tp_valtype);
-			acceptChild(visitor, id);
-			acceptChild(visitor, tp_specvalue);
-			acceptChild(visitor, tp_defaultvalue);
+			TreeVisitor.acceptChild(visitor, tp_valtype);
+			TreeVisitor.acceptChild(visitor, id);
+			TreeVisitor.acceptChild(visitor, tp_specvalue);
+			TreeVisitor.acceptChild(visitor, tp_defaultvalue);
 		}
 		visitor.endVisit(this);
 	}

@@ -3,6 +3,8 @@ package descent.internal.core.dom;
 import java.util.ArrayList;
 import java.util.List;
 
+import util.tree.TreeVisitor;
+
 import descent.core.dom.IModifiersContainer;
 import descent.core.dom.IName;
 import descent.core.domX.ASTVisitor;
@@ -48,9 +50,9 @@ public class Import extends Dsymbol implements IModifiersContainer {
 	public void accept0(ASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
-			acceptChild(visitor, alias);
-			acceptChild(visitor, qName);
-			acceptChildren(visitor, selectiveImports);
+			TreeVisitor.acceptChild(visitor, alias);
+			TreeVisitor.acceptChild(visitor, qName);
+			TreeVisitor.acceptChildren(visitor, selectiveImports);
 		}
 		visitor.endVisit(this);
 	}

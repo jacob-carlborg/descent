@@ -2,6 +2,8 @@ package descent.internal.core.dom;
 
 import java.util.List;
 
+import util.tree.TreeVisitor;
+
 import descent.core.dom.IDebugDeclaration;
 import descent.core.dom.IDeclaration;
 import descent.core.dom.IIftypeDeclaration;
@@ -74,29 +76,29 @@ public class ConditionalDeclaration extends Dsymbol implements IVersionDeclarati
 		case Condition.DEBUG: 
 			children = visitor.visit((IDebugDeclaration) this);
 			if (children) {
-				acceptChild(visitor, ((DebugCondition) condition).id); 
-				acceptChildren(visitor, a);
-				acceptChildren(visitor, aelse);
+				TreeVisitor.acceptChild(visitor, ((DebugCondition) condition).id); 
+				TreeVisitor.acceptChildren(visitor, a);
+				TreeVisitor.acceptChildren(visitor, aelse);
 			}
 			visitor.endVisit((IDebugDeclaration) this);
 			break;
 		case Condition.VERSION:
 			children = visitor.visit((IVersionDeclaration) this);
 			if (children) {
-				acceptChild(visitor, ((VersionCondition) condition).id); 
-				acceptChildren(visitor, a);
-				acceptChildren(visitor, aelse);
+				TreeVisitor.acceptChild(visitor, ((VersionCondition) condition).id); 
+				TreeVisitor.acceptChildren(visitor, a);
+				TreeVisitor.acceptChildren(visitor, aelse);
 			}
 			visitor.endVisit((IVersionDeclaration) this);
 			break;
 		case Condition.IFTYPE:
 			children = visitor.visit((IIftypeDeclaration) this);
 			if (children) {
-				acceptChild(visitor, ((IftypeCondition) condition).ident);
-				acceptChild(visitor, ((IftypeCondition) condition).targ);
-				acceptChild(visitor, ((IftypeCondition) condition).tspec); 
-				acceptChildren(visitor, a);
-				acceptChildren(visitor, aelse);
+				TreeVisitor.acceptChild(visitor, ((IftypeCondition) condition).ident);
+				TreeVisitor.acceptChild(visitor, ((IftypeCondition) condition).targ);
+				TreeVisitor.acceptChild(visitor, ((IftypeCondition) condition).tspec); 
+				TreeVisitor.acceptChildren(visitor, a);
+				TreeVisitor.acceptChildren(visitor, aelse);
 			}
 			visitor.endVisit((IIftypeDeclaration) this);
 			break;

@@ -1,5 +1,6 @@
 package descent.internal.core.dom;
 
+import util.tree.TreeVisitor;
 import descent.core.dom.IName;
 import descent.core.dom.IType;
 import descent.core.dom.ITypeDotIdentifierExpression;
@@ -33,8 +34,8 @@ public class TypeDotIdExp extends Expression implements ITypeDotIdentifierExpres
 	public void accept0(ASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
-			acceptChild(visitor, t);
-			acceptChild(visitor, ident);
+			TreeVisitor.acceptChild(visitor, t);
+			TreeVisitor.acceptChild(visitor, ident);
 		}
 		visitor.endVisit(this);
 	}

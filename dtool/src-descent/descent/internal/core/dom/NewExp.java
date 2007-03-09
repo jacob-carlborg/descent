@@ -2,6 +2,8 @@ package descent.internal.core.dom;
 
 import java.util.List;
 
+import util.tree.TreeVisitor;
+
 import descent.core.dom.IExpression;
 import descent.core.dom.IType;
 import descent.core.domX.ASTVisitor;
@@ -31,8 +33,8 @@ public class NewExp extends Expression {
 	public void accept0(ASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
-			acceptChild(visitor, type);
-			acceptChildren(visitor, arguments);
+			TreeVisitor.acceptChild(visitor, type);
+			TreeVisitor.acceptChildren(visitor, arguments);
 		}
 		visitor.endVisit(this);
 	}

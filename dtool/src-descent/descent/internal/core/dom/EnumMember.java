@@ -1,5 +1,6 @@
 package descent.internal.core.dom;
 
+import util.tree.TreeVisitor;
 import descent.core.dom.IEnumMember;
 import descent.core.dom.IExpression;
 import descent.core.dom.IName;
@@ -35,8 +36,8 @@ public class EnumMember extends Dsymbol implements IEnumMember {
 	public void accept0(ASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
-			acceptChild(visitor, ident);
-			acceptChild(visitor, value);
+			TreeVisitor.acceptChild(visitor, ident);
+			TreeVisitor.acceptChild(visitor, value);
 		}
 		visitor.endVisit(this);
 	}

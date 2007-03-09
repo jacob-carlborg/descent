@@ -3,6 +3,8 @@ package descent.internal.core.dom;
 import java.util.Arrays;
 import java.util.List;
 
+import util.tree.TreeVisitor;
+
 import descent.core.dom.IDeclaration;
 import descent.core.dom.IName;
 import descent.core.dom.ITemplateDeclaration;
@@ -43,9 +45,9 @@ public class TemplateDeclaration extends Declaration implements ITemplateDeclara
 		boolean children = visitor.visit(this);
 		if (children) {
 			
-			acceptChild(visitor, ident);
-			acceptChildren(visitor, tpl);
-			acceptChildren(visitor, Arrays.asList(declDefs));
+			TreeVisitor.acceptChild(visitor, ident);
+			TreeVisitor.acceptChildren(visitor, tpl);
+			TreeVisitor.acceptChildren(visitor, Arrays.asList(declDefs));
 		}
 		
 		visitor.endVisit(this);

@@ -1,5 +1,6 @@
 package descent.internal.core.dom;
 
+import util.tree.TreeVisitor;
 import descent.core.dom.IExpression;
 import descent.core.dom.IForStatement;
 import descent.core.dom.IStatement;
@@ -42,10 +43,10 @@ public class ForStatement extends Statement implements IForStatement {
 	public void accept0(ASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
-			acceptChild(visitor, init);
-			acceptChild(visitor, condition);
-			acceptChild(visitor, increment);
-			acceptChild(visitor, body);
+			TreeVisitor.acceptChild(visitor, init);
+			TreeVisitor.acceptChild(visitor, condition);
+			TreeVisitor.acceptChild(visitor, increment);
+			TreeVisitor.acceptChild(visitor, body);
 		}
 		visitor.endVisit(this);
 	}

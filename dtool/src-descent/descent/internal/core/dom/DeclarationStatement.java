@@ -1,5 +1,6 @@
 package descent.internal.core.dom;
 
+import util.tree.TreeVisitor;
 import descent.core.domX.ASTVisitor;
 
 public class DeclarationStatement extends Statement {
@@ -21,7 +22,7 @@ public class DeclarationStatement extends Statement {
 	public void accept0(ASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
-			acceptChild(visitor, d);
+			TreeVisitor.acceptChild(visitor, d);
 		}
 		visitor.endVisit(this);
 	}

@@ -2,6 +2,8 @@ package descent.internal.core.dom;
 
 import java.util.List;
 
+import util.tree.TreeVisitor;
+
 import descent.core.dom.IStatement;
 import descent.core.dom.ITryStatement;
 import descent.core.domX.ASTVisitor;
@@ -35,8 +37,8 @@ public class TryCatchStatement extends Statement implements ITryStatement {
 	public void accept0(ASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
-			acceptChild(visitor, body);
-			acceptChildren(visitor, catches);
+			TreeVisitor.acceptChild(visitor, body);
+			TreeVisitor.acceptChildren(visitor, catches);
 		}
 		visitor.endVisit(this);
 	}

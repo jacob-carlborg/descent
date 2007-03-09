@@ -1,5 +1,6 @@
 package descent.internal.core.dom;
 
+import util.tree.TreeVisitor;
 import descent.core.dom.IInitializer;
 import descent.core.dom.IName;
 import descent.core.dom.IType;
@@ -36,9 +37,9 @@ public class TypedefDeclaration extends Declaration implements ITypedefDeclarati
 	public void accept0(ASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
-			acceptChild(visitor, ident);
-			acceptChild(visitor, type);
-			acceptChild(visitor, init);
+			TreeVisitor.acceptChild(visitor, ident);
+			TreeVisitor.acceptChild(visitor, type);
+			TreeVisitor.acceptChild(visitor, init);
 		}
 		visitor.endVisit(this);
 	}

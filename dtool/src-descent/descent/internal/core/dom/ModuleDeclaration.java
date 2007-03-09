@@ -2,6 +2,8 @@ package descent.internal.core.dom;
 
 import java.util.List;
 
+import util.tree.TreeVisitor;
+
 import descent.core.dom.ICommented;
 import descent.core.dom.IDeclaration;
 import descent.core.domX.ASTVisitor;
@@ -28,7 +30,7 @@ public class ModuleDeclaration extends Declaration implements IDeclaration, ICom
 	public void accept0(ASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
-			acceptChild(visitor, qName);
+			TreeVisitor.acceptChild(visitor, qName);
 		}
 		visitor.endVisit(this);
 	}

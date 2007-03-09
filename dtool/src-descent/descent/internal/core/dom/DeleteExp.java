@@ -1,5 +1,6 @@
 package descent.internal.core.dom;
 
+import util.tree.TreeVisitor;
 import descent.core.dom.IExpression;
 import descent.core.domX.ASTVisitor;
 
@@ -22,7 +23,7 @@ public class DeleteExp extends Expression {
 	public void accept0(ASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
-			acceptChild(visitor, e);
+			TreeVisitor.acceptChild(visitor, e);
 		}
 		visitor.endVisit(this);
 	}

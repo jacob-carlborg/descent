@@ -2,6 +2,8 @@ package descent.internal.core.dom;
 
 import java.util.List;
 
+import util.tree.TreeVisitor;
+
 import descent.core.compiler.IProblem;
 import descent.core.dom.ICompilationUnit;
 import descent.core.dom.IDeclaration;
@@ -36,8 +38,8 @@ public class Module extends ScopeDsymbol implements ICompilationUnit {
 	public void accept0(ASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
-			acceptChild(visitor, md);
-			acceptChildren(visitor, members);
+			TreeVisitor.acceptChild(visitor, md);
+			TreeVisitor.acceptChildren(visitor, members);
 		}
 		visitor.endVisit(this);
 	}

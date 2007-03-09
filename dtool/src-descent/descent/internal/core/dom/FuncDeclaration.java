@@ -1,5 +1,6 @@
 package descent.internal.core.dom;
 
+import util.tree.TreeVisitor;
 import descent.core.dom.IDeclaration;
 import descent.core.dom.IModifiersContainer;
 import descent.core.dom.IName;
@@ -82,14 +83,14 @@ public class FuncDeclaration extends Declaration implements IDeclaration, IModif
 	public void accept0(ASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
-			acceptChild(visitor, getReturnType());
-			acceptChild(visitor, ident);
-			acceptChildren(visitor, templateParameters);
-			acceptChildren(visitor, getArguments());
-			acceptChild(visitor, fbody);
-			acceptChild(visitor, frequire);
-			acceptChild(visitor, fensure);
-			acceptChild(visitor, outId);
+			TreeVisitor.acceptChild(visitor, getReturnType());
+			TreeVisitor.acceptChild(visitor, ident);
+			TreeVisitor.acceptChildren(visitor, templateParameters);
+			TreeVisitor.acceptChildren(visitor, getArguments());
+			TreeVisitor.acceptChild(visitor, fbody);
+			TreeVisitor.acceptChild(visitor, frequire);
+			TreeVisitor.acceptChild(visitor, fensure);
+			TreeVisitor.acceptChild(visitor, outId);
 		}
 		visitor.endVisit(this);
 	}

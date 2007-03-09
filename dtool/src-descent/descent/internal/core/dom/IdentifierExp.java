@@ -1,5 +1,6 @@
 package descent.internal.core.dom;
 
+import util.tree.TreeVisitor;
 import descent.core.dom.IIdentifierExpression;
 import descent.core.dom.IName;
 import descent.core.domX.ASTVisitor;
@@ -25,7 +26,7 @@ public class IdentifierExp extends Expression implements IIdentifierExpression {
 	public void accept0(ASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
-			acceptChild(visitor, id);
+			TreeVisitor.acceptChild(visitor, id);
 		}
 		visitor.endVisit(this);
 	}

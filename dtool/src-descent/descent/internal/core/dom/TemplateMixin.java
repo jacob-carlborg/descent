@@ -2,6 +2,8 @@ package descent.internal.core.dom;
 
 import java.util.List;
 
+import util.tree.TreeVisitor;
+
 import descent.core.dom.IElement;
 import descent.core.dom.IMixinDeclaration;
 import descent.core.dom.IName;
@@ -47,9 +49,9 @@ public class TemplateMixin extends Declaration implements IMixinDeclaration {
 	public void accept0(ASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
-			acceptChild(visitor, tqual);
-			acceptChild(visitor, ident);
-			acceptChildren(visitor, tiargs);
+			TreeVisitor.acceptChild(visitor, tqual);
+			TreeVisitor.acceptChild(visitor, ident);
+			TreeVisitor.acceptChildren(visitor, tiargs);
 		}
 		visitor.endVisit(this);
 	}

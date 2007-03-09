@@ -2,6 +2,8 @@ package descent.internal.core.dom;
 
 import java.util.List;
 
+import util.tree.TreeVisitor;
+
 import descent.core.dom.IEnumDeclaration;
 import descent.core.dom.IEnumMember;
 import descent.core.dom.IName;
@@ -38,9 +40,9 @@ public class EnumDeclaration extends Dsymbol implements IEnumDeclaration {
 	public void accept0(ASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
-			acceptChild(visitor, ident);
-			acceptChild(visitor, type);
-			acceptChildren(visitor, members);
+			TreeVisitor.acceptChild(visitor, ident);
+			TreeVisitor.acceptChild(visitor, type);
+			TreeVisitor.acceptChildren(visitor, members);
 		}
 		visitor.endVisit(this);
 	}

@@ -1,5 +1,6 @@
 package descent.internal.core.dom;
 
+import util.tree.TreeVisitor;
 import descent.core.dom.IExpression;
 import descent.core.dom.ISliceType;
 import descent.core.dom.IType;
@@ -36,9 +37,9 @@ public class TypeSlice extends Type implements ISliceType {
 	public void accept0(ASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
-			acceptChild(visitor, next);
-			acceptChild(visitor, from);
-			acceptChild(visitor, to);
+			TreeVisitor.acceptChild(visitor, next);
+			TreeVisitor.acceptChild(visitor, from);
+			TreeVisitor.acceptChild(visitor, to);
 		}
 		visitor.endVisit(this);
 	}

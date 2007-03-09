@@ -2,6 +2,8 @@ package descent.internal.core.dom;
 
 import java.util.List;
 
+import util.tree.TreeVisitor;
+
 import descent.core.dom.IExpression;
 import descent.core.dom.IName;
 import descent.core.dom.IPragmaStatement;
@@ -40,9 +42,9 @@ public class PragmaStatement extends Statement implements IPragmaStatement {
 	public void accept0(ASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
-			acceptChild(visitor, ident);
-			acceptChildren(visitor, expressions);
-			acceptChild(visitor, body);
+			TreeVisitor.acceptChild(visitor, ident);
+			TreeVisitor.acceptChildren(visitor, expressions);
+			TreeVisitor.acceptChild(visitor, body);
 		}
 		visitor.endVisit(this);
 	}

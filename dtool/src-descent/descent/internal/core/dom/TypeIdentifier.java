@@ -1,5 +1,6 @@
 package descent.internal.core.dom;
 
+import util.tree.TreeVisitor;
 import descent.core.dom.IElement;
 import descent.core.dom.IIdentifierType;
 import descent.core.dom.IType;
@@ -71,8 +72,8 @@ public class TypeIdentifier extends TypeQualified implements IIdentifierType, IT
 		boolean children;
 		children = visitor.visit(this);
 		if (children) {
-			acceptChild(visitor, ident);
-			acceptChildren(visitor, idents);
+			TreeVisitor.acceptChild(visitor, ident);
+			TreeVisitor.acceptChildren(visitor, idents);
 		}
 		visitor.endVisit(this);
 		

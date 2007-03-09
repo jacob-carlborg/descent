@@ -1,5 +1,6 @@
 package descent.internal.core.dom;
 
+import util.tree.TreeVisitor;
 import descent.core.dom.ILabelStatement;
 import descent.core.dom.IName;
 import descent.core.dom.IStatement;
@@ -30,8 +31,8 @@ public class LabelStatement extends Statement implements ILabelStatement {
 	public void accept0(ASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
-			acceptChild(visitor, ident);
-			acceptChild(visitor, s);
+			TreeVisitor.acceptChild(visitor, ident);
+			TreeVisitor.acceptChild(visitor, s);
 		}
 		visitor.endVisit(this);
 	}

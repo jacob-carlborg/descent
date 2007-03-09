@@ -1,5 +1,6 @@
 package descent.internal.core.dom;
 
+import util.tree.TreeVisitor;
 import descent.core.dom.IExpression;
 import descent.core.dom.IName;
 import descent.core.dom.IType;
@@ -57,9 +58,9 @@ public class Argument extends AbstractElement {
 	public void accept0(ASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
-			acceptChild(visitor, type);
-			acceptChild(visitor, id);
-			acceptChild(visitor, defaultValue);
+			TreeVisitor.acceptChild(visitor, type);
+			TreeVisitor.acceptChild(visitor, id);
+			TreeVisitor.acceptChild(visitor, defaultValue);
 		}
 		visitor.endVisit(this);
 	}

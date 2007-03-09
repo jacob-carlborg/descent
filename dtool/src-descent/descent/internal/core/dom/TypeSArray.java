@@ -3,6 +3,8 @@ package descent.internal.core.dom;
 import java.util.ArrayList;
 import java.util.List;
 
+import util.tree.TreeVisitor;
+
 import descent.core.dom.IExpression;
 import descent.core.dom.IType;
 import descent.core.domX.ASTVisitor;
@@ -40,7 +42,7 @@ public class TypeSArray extends TypeArray implements IType {
 	public void accept0(ASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
-			acceptChild(visitor, dim);
+			TreeVisitor.acceptChild(visitor, dim);
 		}
 		visitor.endVisit(this);
 	}

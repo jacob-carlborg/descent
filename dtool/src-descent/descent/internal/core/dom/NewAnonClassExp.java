@@ -2,6 +2,8 @@ package descent.internal.core.dom;
 
 import java.util.List;
 
+import util.tree.TreeVisitor;
+
 import descent.core.dom.IDeclaration;
 import descent.core.dom.INewAnonymousClassExpression;
 import descent.core.domX.ASTVisitor;
@@ -50,10 +52,10 @@ public class NewAnonClassExp extends Expression implements INewAnonymousClassExp
 	public void accept0(ASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
-			acceptChildren(visitor, newargs);
-			acceptChildren(visitor, arguments);
-			acceptChildren(visitor, cd.getBaseClasses());
-			acceptChildren(visitor, (AbstractElement[]) cd.getDeclarationDefinitions());
+			TreeVisitor.acceptChildren(visitor, newargs);
+			TreeVisitor.acceptChildren(visitor, arguments);
+			TreeVisitor.acceptChildren(visitor, cd.getBaseClasses());
+			TreeVisitor.acceptChildren(visitor, (AbstractElement[]) cd.getDeclarationDefinitions());
 		}
 		visitor.visit(this);
 	}

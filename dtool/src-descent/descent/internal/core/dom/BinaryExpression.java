@@ -1,5 +1,6 @@
 package descent.internal.core.dom;
 
+import util.tree.TreeVisitor;
 import descent.core.dom.IExpression;
 import descent.core.domX.ASTVisitor;
 
@@ -71,8 +72,8 @@ public abstract class BinaryExpression extends Expression implements IExpression
 	public void accept0(ASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
-			acceptChild(visitor, e1);
-			acceptChild(visitor, e2);
+			TreeVisitor.acceptChild(visitor, e1);
+			TreeVisitor.acceptChild(visitor, e2);
 		}
 		visitor.endVisit(this);
 	}

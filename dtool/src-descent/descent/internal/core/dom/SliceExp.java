@@ -1,5 +1,6 @@
 package descent.internal.core.dom;
 
+import util.tree.TreeVisitor;
 import descent.core.dom.IExpression;
 import descent.core.dom.ISliceExpression;
 import descent.core.domX.ASTVisitor;
@@ -35,9 +36,9 @@ public class SliceExp extends Expression implements ISliceExpression {
 	public void accept0(ASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
-			acceptChild(visitor, e);
-			acceptChild(visitor, from);
-			acceptChild(visitor, to);
+			TreeVisitor.acceptChild(visitor, e);
+			TreeVisitor.acceptChild(visitor, from);
+			TreeVisitor.acceptChild(visitor, to);
 		}
 		visitor.endVisit(this);
 	}

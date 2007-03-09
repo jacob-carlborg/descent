@@ -2,6 +2,8 @@ package descent.internal.core.dom;
 
 import java.util.List;
 
+import util.tree.TreeVisitor;
+
 import descent.core.dom.ICallExpression;
 import descent.core.dom.IExpression;
 import descent.core.domX.ASTVisitor;
@@ -31,8 +33,8 @@ public class CallExp extends Expression implements ICallExpression {
 	public void accept0(ASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
-			acceptChild(visitor, e);
-			acceptChildren(visitor, args);
+			TreeVisitor.acceptChild(visitor, e);
+			TreeVisitor.acceptChildren(visitor, args);
 		}
 		visitor.endVisit(this);
 	}

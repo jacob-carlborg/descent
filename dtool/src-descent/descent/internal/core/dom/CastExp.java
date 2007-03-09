@@ -1,5 +1,6 @@
 package descent.internal.core.dom;
 
+import util.tree.TreeVisitor;
 import descent.core.dom.ICastExpression;
 import descent.core.dom.IExpression;
 import descent.core.dom.IType;
@@ -30,8 +31,8 @@ public class CastExp extends Expression implements ICastExpression {
 	public void accept0(ASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
-			acceptChild(visitor, t);
-			acceptChild(visitor, e);
+			TreeVisitor.acceptChild(visitor, t);
+			TreeVisitor.acceptChild(visitor, e);
 		}
 		visitor.endVisit(this);
 	}

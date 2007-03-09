@@ -1,5 +1,6 @@
 package descent.internal.core.dom;
 
+import util.tree.TreeVisitor;
 import descent.core.dom.IContinueStatement;
 import descent.core.dom.IName;
 import descent.core.domX.ASTVisitor;
@@ -23,7 +24,7 @@ public class ContinueStatement extends Statement implements IContinueStatement {
 	public void accept0(ASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
-			acceptChild(visitor, id);
+			TreeVisitor.acceptChild(visitor, id);
 		}
 		visitor.endVisit(this);
 	}

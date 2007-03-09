@@ -1,5 +1,6 @@
 package descent.internal.core.dom;
 
+import util.tree.TreeVisitor;
 import descent.core.dom.IName;
 import descent.core.dom.IStatement;
 import descent.core.dom.IType;
@@ -37,9 +38,9 @@ public class Catch extends AbstractElement  {
 	public void accept0(ASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
-			acceptChild(visitor, t);
-			acceptChild(visitor, id);
-			acceptChild(visitor, handler);
+			TreeVisitor.acceptChild(visitor, t);
+			TreeVisitor.acceptChild(visitor, id);
+			TreeVisitor.acceptChild(visitor, handler);
 		}
 		visitor.endVisit(this);
 	}

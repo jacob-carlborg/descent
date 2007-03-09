@@ -3,6 +3,8 @@ package descent.internal.core.dom;
 import java.util.ArrayList;
 import java.util.List;
 
+import util.tree.TreeVisitor;
+
 import descent.core.dom.IArrayInitializer;
 import descent.core.dom.IExpression;
 import descent.core.dom.IInitializer;
@@ -38,8 +40,8 @@ public class ArrayInitializer extends Initializer implements IArrayInitializer {
 	public void accept0(ASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) { 
-			acceptChildren(visitor, exps);
-			acceptChildren(visitor, values);
+			TreeVisitor.acceptChildren(visitor, exps);
+			TreeVisitor.acceptChildren(visitor, values);
 		}
 		visitor.endVisit(this);
 	}

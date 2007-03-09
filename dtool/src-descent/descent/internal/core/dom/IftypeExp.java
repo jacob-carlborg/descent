@@ -1,5 +1,6 @@
 package descent.internal.core.dom;
 
+import util.tree.TreeVisitor;
 import descent.core.dom.IIsExpression;
 import descent.core.dom.IName;
 import descent.core.dom.IType;
@@ -46,10 +47,10 @@ public class IftypeExp extends Expression implements IIsExpression {
 	public void accept0(ASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
-			acceptChild(visitor, targ);
-			acceptChild(visitor, targ);
-			acceptChild(visitor, ident);
-			acceptChild(visitor, typeSpecialization);
+			TreeVisitor.acceptChild(visitor, targ);
+			TreeVisitor.acceptChild(visitor, targ);
+			TreeVisitor.acceptChild(visitor, ident);
+			TreeVisitor.acceptChild(visitor, typeSpecialization);
 		}
 		visitor.endVisit(this);
 	}

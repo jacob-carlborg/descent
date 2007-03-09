@@ -1,5 +1,6 @@
 package descent.internal.core.dom;
 
+import util.tree.TreeVisitor;
 import descent.core.dom.IConditionAssignment;
 import descent.core.dom.IName;
 import descent.core.domX.ASTVisitor;
@@ -27,7 +28,7 @@ public class DebugSymbol extends Dsymbol implements IConditionAssignment {
 	public void accept0(ASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
-			acceptChild(visitor, ident);
+			TreeVisitor.acceptChild(visitor, ident);
 		}
 		visitor.endVisit(this);
 	}

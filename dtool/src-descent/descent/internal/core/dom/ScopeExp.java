@@ -1,5 +1,6 @@
 package descent.internal.core.dom;
 
+import util.tree.TreeVisitor;
 import descent.core.dom.IElement;
 import descent.core.dom.IName;
 import descent.core.dom.IScopeExpression;
@@ -29,8 +30,8 @@ public class ScopeExp extends Expression implements IScopeExpression {
 	public void accept0(ASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
-			acceptChild(visitor, tempinst);
-			acceptChildren(visitor, tempinst.tiargs);
+			TreeVisitor.acceptChild(visitor, tempinst);
+			TreeVisitor.acceptChildren(visitor, tempinst.tiargs);
 		}
 		visitor.endVisit(this);
 	}

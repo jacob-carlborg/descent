@@ -2,6 +2,8 @@ package descent.internal.core.dom;
 
 import java.util.List;
 
+import util.tree.TreeVisitor;
+
 import descent.core.dom.IDeclaration;
 import descent.core.domX.ASTVisitor;
 import descent.core.domX.AbstractElement;
@@ -34,7 +36,7 @@ public class AlignDeclaration extends Dsymbol implements IDeclaration {
 	public void accept0(ASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
-			acceptChildren(visitor, (AbstractElement[])declDefs);
+			TreeVisitor.acceptChildren(visitor, (AbstractElement[])declDefs);
 		}
 		visitor.endVisit(this);
 	}

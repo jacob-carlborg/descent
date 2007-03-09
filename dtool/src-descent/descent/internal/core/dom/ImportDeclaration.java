@@ -2,6 +2,8 @@ package descent.internal.core.dom;
 
 import java.util.List;
 
+import util.tree.TreeVisitor;
+
 import descent.core.dom.IDeclaration;
 import descent.core.dom.IModifiersContainer;
 import descent.core.domX.ASTVisitor;
@@ -36,7 +38,7 @@ public class ImportDeclaration extends Declaration implements IDeclaration, IMod
 	public void accept0(ASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
-			acceptChildren(visitor, imports);
+			TreeVisitor.acceptChildren(visitor, imports);
 		}
 		visitor.endVisit(this);
 	}

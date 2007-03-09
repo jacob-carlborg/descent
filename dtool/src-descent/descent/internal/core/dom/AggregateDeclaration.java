@@ -2,6 +2,8 @@ package descent.internal.core.dom;
 
 import java.util.List;
 
+import util.tree.TreeVisitor;
+
 import descent.core.dom.IAggregateDeclaration;
 import descent.core.dom.IDeclaration;
 import descent.core.domX.ASTVisitor;
@@ -54,10 +56,10 @@ public abstract class AggregateDeclaration extends ScopeDsymbol implements IAggr
 	public void accept0(ASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
-			acceptChild(visitor, ident);
-			acceptChildren(visitor, templateParameters);
-			acceptChildren(visitor, baseClasses);
-			acceptChildren(visitor, members);
+			TreeVisitor.acceptChild(visitor, ident);
+			TreeVisitor.acceptChildren(visitor, templateParameters);
+			TreeVisitor.acceptChildren(visitor, baseClasses);
+			TreeVisitor.acceptChildren(visitor, members);
 		}
 		visitor.endVisit(this);
 	}

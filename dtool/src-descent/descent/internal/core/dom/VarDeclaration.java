@@ -1,5 +1,6 @@
 package descent.internal.core.dom;
 
+import util.tree.TreeVisitor;
 import descent.core.dom.IInitializer;
 import descent.core.dom.IName;
 import descent.core.dom.IType;
@@ -36,9 +37,9 @@ public class VarDeclaration extends Declaration implements IVariableDeclaration 
 	public void accept0(ASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
-			acceptChild(visitor, type);
-			acceptChild(visitor, ident);
-			acceptChild(visitor, init);
+			TreeVisitor.acceptChild(visitor, type);
+			TreeVisitor.acceptChild(visitor, ident);
+			TreeVisitor.acceptChild(visitor, init);
 		}
 		visitor.endVisit(this);
 	}

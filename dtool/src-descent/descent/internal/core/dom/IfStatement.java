@@ -1,5 +1,6 @@
 package descent.internal.core.dom;
 
+import util.tree.TreeVisitor;
 import descent.core.dom.IExpression;
 import descent.core.dom.IStatement;
 import descent.core.domX.ASTVisitor;
@@ -41,10 +42,10 @@ public class IfStatement extends Statement {
 	public void accept0(ASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
-			acceptChild(visitor, arg);
-			acceptChild(visitor, expr);
-			acceptChild(visitor, ifbody);
-			acceptChild(visitor, elsebody);
+			TreeVisitor.acceptChild(visitor, arg);
+			TreeVisitor.acceptChild(visitor, expr);
+			TreeVisitor.acceptChild(visitor, ifbody);
+			TreeVisitor.acceptChild(visitor, elsebody);
 		}
 		visitor.endVisit(this);
 	}

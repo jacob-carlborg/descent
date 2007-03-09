@@ -1,5 +1,6 @@
 package descent.internal.core.dom;
 
+import util.tree.TreeVisitor;
 import descent.core.dom.IPointerType;
 import descent.core.dom.IType;
 import descent.core.domX.ASTVisitor;
@@ -33,15 +34,15 @@ public class TypePointer extends Type implements IPointerType {
 		case ElementTypes.POINTER_TO_FUNCTION_TYPE:
 			children = visitor.visit(this);
 			if (children) {
-				acceptChild(visitor, getReturnType());
-				acceptChildren(visitor, getArguments());
+				TreeVisitor.acceptChild(visitor, getReturnType());
+				TreeVisitor.acceptChildren(visitor, getArguments());
 			}
 			visitor.endVisit(this);
 			break;
 		case ElementTypes.POINTER_TYPE:
 			children = visitor.visit((IPointerType) this);
 			if (children) {
-				acceptChild(visitor, next);
+				TreeVisitor.acceptChild(visitor, next);
 			}
 			visitor.endVisit((IPointerType) this);
 			break;

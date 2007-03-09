@@ -1,5 +1,6 @@
 package descent.internal.core.dom;
 
+import util.tree.TreeVisitor;
 import descent.core.dom.IType;
 import descent.core.domX.ASTVisitor;
 
@@ -30,7 +31,7 @@ public class TypeAArray extends TypeArray implements IType {
 	public void accept0(ASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
-			acceptChild(visitor, index);
+			TreeVisitor.acceptChild(visitor, index);
 		}
 		visitor.endVisit(this);
 	}

@@ -1,5 +1,8 @@
 package descent.core.domX;
 
+import javax.lang.model.element.ElementVisitor;
+
+import util.tree.TreeVisitor;
 import descent.core.dom.IDebugDeclaration;
 import descent.core.dom.IDebugStatement;
 import descent.core.dom.IElement;
@@ -12,7 +15,6 @@ import descent.core.dom.ITrueExpression;
 import descent.core.dom.IVersionDeclaration;
 import descent.core.dom.IVersionStatement;
 import descent.internal.core.dom.*;
-import dtool.dom.ast.CommonVisitor;
 import dtool.dom.base.ASTNode;
 
 
@@ -56,7 +58,7 @@ import dtool.dom.base.ASTNode;
  * 
  * @see descent.core.IElement#accept(ElementVisitor)
  */
-public abstract class ASTVisitor extends CommonVisitor<ASTNode> {
+public abstract class ASTVisitor extends TreeVisitor<ASTNode> {
 
 	public void preVisit(ASTNode elem) {
 		// Default implementation: do nothing
@@ -79,38 +81,32 @@ public abstract class ASTVisitor extends CommonVisitor<ASTNode> {
 	
 	/* -----------  Abstract Classes  ----------- */
 	public boolean visit(AbstractElement element) {
-		ensureVisitIsNotDirectVisit(element);
+		//ensureVisitIsNotDirectVisit(element);
 		return visitAsSuperType(element, AbstractElement.class);
 	}
 
 
 	public boolean visit(Dsymbol element) {
-		ensureVisitIsNotDirectVisit(element);
 		return visitAsSuperType(element, Dsymbol.class);
 	}
 
 	public boolean visit(Declaration element) {
-		ensureVisitIsNotDirectVisit(element);
 		return visitAsSuperType(element, Declaration.class);
 	}
 
 	public boolean visit(Initializer element) {
-		ensureVisitIsNotDirectVisit(element);
 		return visitAsSuperType(element, Initializer.class);
 	}
 
 	public boolean visit(TemplateParameter element) {
-		ensureVisitIsNotDirectVisit(element);
 		return visitAsSuperType(element, TemplateParameter.class);
 	}
 
 	public boolean visit(AggregateDeclaration element) {
-		ensureVisitIsNotDirectVisit(element);
 		return visitAsSuperType(element, AggregateDeclaration.class);
 	}
 
 	public boolean visit(Statement element) {
-		ensureVisitIsNotDirectVisit(element);
 		return visitAsSuperType(element, Statement.class);
 	}
 
@@ -119,17 +115,14 @@ public abstract class ASTVisitor extends CommonVisitor<ASTNode> {
 	}
 	
 	public boolean visit(Expression element) {
-		ensureVisitIsNotDirectVisit(element);
 		return visitAsSuperType(element, Expression.class);
 	}
 
 	public boolean visit(BinaryExpression element) {
-		ensureVisitIsNotDirectVisit(element);
 		return visitAsSuperType(element, BinaryExpression.class);
 	}
 
 	public boolean visit(UnaryExpression element) {
-		ensureVisitIsNotDirectVisit(element);
 		return visitAsSuperType(element, UnaryExpression.class);
 	}
 
@@ -848,6 +841,6 @@ public abstract class ASTVisitor extends CommonVisitor<ASTNode> {
 	}
 	
 	public void endVisit(IElement element) {
-		endVisit((ASTNode) element);
+		endVisit((ASTNode)element);
 	}
 }
