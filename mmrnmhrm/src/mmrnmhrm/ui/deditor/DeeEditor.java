@@ -4,7 +4,7 @@ import mmrnmhrm.core.DeeCore;
 import mmrnmhrm.text.DeeDocument;
 import mmrnmhrm.text.DeeDocumentProvider;
 import mmrnmhrm.ui.actions.SampleAction;
-import mmrnmhrm.ui.outline.DeeOutlinePage;
+import mmrnmhrm.ui.outline.DeeContentOutlinePage;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.action.IMenuManager;
@@ -17,7 +17,7 @@ public class DeeEditor extends AbstractDecoratedTextEditor {
 	
 	DeeDocumentProvider documentProvider;
 	DeeDocument document;
-	DeeOutlinePage outlinePage;
+	DeeContentOutlinePage outlinePage;
 	public DeeSourceViewerConfiguration sourceViewerConfiguration;
 
 	public DeeEditor() {
@@ -71,7 +71,7 @@ public class DeeEditor extends AbstractDecoratedTextEditor {
 		
 		if (IContentOutlinePage.class.equals(required)) {
 			if (outlinePage == null) {
-				outlinePage = new DeeOutlinePage(this);
+				outlinePage = new DeeContentOutlinePage(this);
 			}
 			return outlinePage;
 		}

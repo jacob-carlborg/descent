@@ -7,7 +7,7 @@ import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 
-public class DeeProject0 {
+public class DeeProject {
 
 
 	public IProject project;
@@ -15,7 +15,7 @@ public class DeeProject0 {
 	public IFolder outputDir;
 
 	
-	public DeeProject0() {
+	public DeeProject() {
 		sourceFolders = new ArrayList<DeeSourceFolder>();
 	}
 	
@@ -57,5 +57,12 @@ public class DeeProject0 {
 		outputDir = project.getFolder("bin");
 	}
 
+	public boolean containsElement(Object element) {
+		for(DeeSourceFolder sourceFolder : sourceFolders) {
+			if(sourceFolder.folder.equals(element))
+				return true;
+		}
+		return false;
+	}
 	
 }

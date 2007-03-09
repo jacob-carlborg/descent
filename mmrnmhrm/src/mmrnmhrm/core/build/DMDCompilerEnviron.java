@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import mmrnmhrm.core.DeeCore;
-import mmrnmhrm.core.model.DeeProject0;
+import mmrnmhrm.core.model.DeeProject;
 import mmrnmhrm.core.model.DeeSourceFolder;
 
 import org.eclipse.core.resources.IResource;
@@ -24,9 +24,9 @@ import util.StringUtil;
  */
 public class DMDCompilerEnviron implements IDeeCompilerEnviron {
 	
-	private DeeProject0 deeProject;
+	private DeeProject deeProject;
 
-	public DMDCompilerEnviron(DeeProject0 project) {
+	public DMDCompilerEnviron(DeeProject project) {
 		this.deeProject = project;
 	}
 	

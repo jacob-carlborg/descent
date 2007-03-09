@@ -1,6 +1,5 @@
 package mmrnmhrm.core.model;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -22,17 +21,17 @@ import util.Assert;
 public class DeeModel {
 	private static DeeModel deemodel = new DeeModel();
 	
-	public Map<String, DeeProject0> deeProjects;
+	public Map<String, DeeProject> deeProjects;
 	
 	private DeeModel() {
-		deeProjects = new HashMap<String, DeeProject0>();
+		deeProjects = new HashMap<String, DeeProject>();
 	}
 
 	/** Inits the D model. */
 	public static void initDeeModel() throws CoreException {
 		// Init the model with existing D projects.
 		for(IProject proj : DeeCore.getWorkspaceRoot().getProjects()) {
-			if(proj.hasNature(DeeNature.NATURE_FQID));
+			if(proj.hasNature(DeeNature.NATURE_FQID))
 			getInstance().addDeeProjectToDeeModel(proj);
 		}
 	}
@@ -57,8 +56,8 @@ public class DeeModel {
 	}
 
 	/** Adds D project to Dee Model. */
-	private DeeProject0 addDeeProjectToDeeModel(IProject project) {
-		DeeProject0 deeproj = new DeeProject0();
+	private DeeProject addDeeProjectToDeeModel(IProject project) {
+		DeeProject deeproj = new DeeProject();
 		deeproj.setProject(project);
 		deeProjects.put(project.getName(), deeproj);
 		return deeproj;
@@ -72,8 +71,9 @@ public class DeeModel {
 		binFolder.create(false, true, null);
 	}
 
-	public DeeProject0 getDeeProject(IProject project) {
-		return deeProjects.get(project.getName());
+	/** Returns the D project for given IProject, or null of none. */
+	public static DeeProject getDeeProject(IProject project) {
+		return getInstance().deeProjects.get(project.getName());
 	}
 
 	/**

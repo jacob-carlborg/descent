@@ -29,7 +29,7 @@ public class DeeNature implements IProjectNature {
 
 	/** {@inheritDoc} */
 	public void setProject(IProject project) {
-		Assert.isTrue(DeeModel.getInstance().getDeeProject(project) != null);
+		Assert.isTrue(DeeModel.getDeeProject(project) != null);
 		this.project = project;
 	}
 

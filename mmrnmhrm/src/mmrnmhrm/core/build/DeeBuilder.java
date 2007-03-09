@@ -6,7 +6,7 @@ import java.util.Map;
 
 import mmrnmhrm.core.model.DeeModel;
 import mmrnmhrm.core.model.DeeNature;
-import mmrnmhrm.core.model.DeeProject0;
+import mmrnmhrm.core.model.DeeProject;
 import mmrnmhrm.core.model.DeeSourceFolder;
 
 import org.eclipse.core.resources.IMarker;
@@ -35,10 +35,10 @@ public class DeeBuilder extends IncrementalProjectBuilder {
 		}
 	}
 	
-	private DeeProject0 deeProject;
+	private DeeProject deeProject;
 	
-	public DeeProject0 getDeeProject() {
-		deeProject = DeeModel.getInstance().getDeeProject(getProject());
+	public DeeProject getDeeProject() {
+		deeProject = DeeModel.getDeeProject(getProject());
 		return deeProject;
 	}
 

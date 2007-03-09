@@ -3,7 +3,6 @@ package mmrnmhrm.ui.wizards;
 import mmrnmhrm.core.DeeCore;
 import mmrnmhrm.core.model.DeeModel;
 
-import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.runtime.CoreException;

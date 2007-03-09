@@ -8,12 +8,12 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.views.contentoutline.ContentOutlinePage;
 
-public class DeeOutlinePage extends ContentOutlinePage {
+public class DeeContentOutlinePage extends ContentOutlinePage {
 
 	private IEditorInput input;
 	//private ITextEditor editor;
 	
-	public DeeOutlinePage(DeeEditor editor) {
+	public DeeContentOutlinePage(DeeEditor editor) {
 		super();
 		this.input = editor.getEditorInput();
 		//this.editor = editor;

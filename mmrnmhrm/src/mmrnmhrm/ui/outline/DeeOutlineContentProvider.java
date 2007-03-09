@@ -7,7 +7,8 @@ import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.ui.IEditorInput;
 
-import dtool.dom.ast.tree.TreeDepthRecon;
+import util.tree.TreeDepthRecon;
+
 import dtool.dom.base.ASTNode;
 import dtool.project.CompilationUnit;
 

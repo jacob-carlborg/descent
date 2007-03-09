@@ -82,21 +82,14 @@
          </menu>
          <action
                class="mmrnmhrm.ui.actions.GoToDefinition"
-               icon="icons/action16e/sample2.gif"
+               icon="icons/action16e/gotodef.gif"
                id="Mmrnmhrm.actions.GotoDef"
                label="Go to Definition"
                menubarPath="Mmrnmhrm.menu/content"
                toolbarPath="additions"/>
          <action
-               class="mmrnmhrm.ui.actions.PrintAST"
-               icon="icons/action16e/sample.gif"
-               id="Mmrnmhrm.actions.PrintAST"
-               label="Print AST"
-               menubarPath="Mmrnmhrm.menu/content"
-               toolbarPath="additions"/>
-         <action
                class="mmrnmhrm.ui.actions.PrintPartitions"
-               icon="icons/action16e/sample.gif"
+               icon="icons/action16e/editorfoo.gif"
                id="Mmrnmhrm.actions.PrintPartition"
                label="Print Partitions"
                menubarPath="Mmrnmhrm.menu/content"
@@ -172,6 +165,43 @@
                label="=Declarative Action"
                menubarPath="Mmrnmhrm.editorMenu/content"/>
       </viewerContribution>
+   </extension>
+   <extension
+         point="org.eclipse.ui.navigator.viewer">
+      <viewerContentBinding viewerId="org.eclipse.ui.navigator.ProjectExplorer">
+         <includes>
+            <contentExtension pattern="mmrnmhrm.ui.navigatorContent"/>
+         </includes>
+      </viewerContentBinding>
+   </extension>
+   <extension
+         point="org.eclipse.ui.navigator.navigatorContent">
+      <navigatorContent
+            activeByDefault="true"
+            contentProvider="mmrnmhrm.ui.navigator.DeeNavigatorContentProvider"
+            icon="icons/sample.gif"
+            id="mmrnmhrm.ui.navigatorContent"
+            labelProvider="mmrnmhrm.ui.navigator.DeeNavigatorLabelProvider"
+            name="mmrnmhrm.navigatorContent"
+            priority="highest">
+         <triggerPoints>
+            <or>
+               <adapt type="org.eclipse.core.resources.IProject">
+                  <test
+                        property="org.eclipse.core.resources.projectNature"
+                        value="mmrnmhrm.deenature"/>
+               </adapt>
+               <instanceof value="mmrnmhrm.core.model.DeeSourceFolder"/>
+            </or>
+         </triggerPoints>
+         <possibleChildren>
+            <or>
+               <adapt type="org.eclipse.core.resources.IProject"/>
+               <instanceof value="mmrnmhrm.core.model.DeeSourceFolder"/>
+               <instanceof value="org.eclipse.core.resources.IResource"/>
+            </or>
+         </possibleChildren>
+      </navigatorContent>
    </extension>
 
 </plugin>

@@ -19,9 +19,6 @@ public class DeeOutlineLabelProvider implements ILabelProvider {
 		return ASTPrinter.toStringElement((ASTNode) elem);
 	}
 
-	public void addListener(ILabelProviderListener listener) {
-	}
-
 	public void dispose() {
 	}
 
@@ -29,7 +26,10 @@ public class DeeOutlineLabelProvider implements ILabelProvider {
 		return false;
 	}
 
-	public void removeListener(ILabelProviderListener listener) {
+
+	public void addListener(ILabelProviderListener listener) {
 	}
 	
+	public void removeListener(ILabelProviderListener listener) {
+	}
 }
