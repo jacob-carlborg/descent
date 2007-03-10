@@ -22,12 +22,12 @@ import dtool.project.CompilationUnit;
 /**
  * Opens sets the editor cursor to the definition of the selected entity.
  */
-public class GoToDefinition implements IEditorActionDelegate {
+public class GoToDefinitionActionDg implements IEditorActionDelegate {
 	private IEditorPart editor;
 	private IWorkbenchWindow window;
 
 
-	public GoToDefinition() {
+	public GoToDefinitionActionDg() {
 	}
 
 	public void setActiveEditor(IAction action, IEditorPart newEditor) {

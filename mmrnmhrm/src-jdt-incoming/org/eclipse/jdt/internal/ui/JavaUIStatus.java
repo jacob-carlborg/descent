@@ -10,7 +10,7 @@
  *******************************************************************************/
 package org.eclipse.jdt.internal.ui;
 
-import mmrnmhrm.core.JavaPlugin;
+import mmrnmhrm.ui.JavaPlugin;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;

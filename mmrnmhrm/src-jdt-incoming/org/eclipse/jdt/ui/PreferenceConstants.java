@@ -10,7 +10,8 @@
  *******************************************************************************/
 package org.eclipse.jdt.ui;
 
-import mmrnmhrm.core.JavaPlugin;
+import mmrnmhrm.ui.JavaPlugin;
+import mmrnmhrm.ui.JavaUI;
 
 import org.eclipse.jdt.ui.text.IJavaColorConstants;
 import org.eclipse.jface.action.Action;

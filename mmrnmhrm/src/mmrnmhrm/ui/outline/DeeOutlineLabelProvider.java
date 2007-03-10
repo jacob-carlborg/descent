@@ -10,16 +10,18 @@ import dtool.dom.base.ASTNode;
 
 public class DeeOutlineLabelProvider implements ILabelProvider {
 
+	public void addListener(ILabelProviderListener listener) {
+	}
+	
+	public void removeListener(ILabelProviderListener listener) {
+	}
+
 	public Image getImage(Object element) {
-		// TODO Auto-generated method stub
-		return null;
+		return DeeElementImageProvider.getLabelImage(element);
 	}
 
 	public String getText(Object elem) {
 		return ASTPrinter.toStringElement((ASTNode) elem);
-	}
-
-	public void dispose() {
 	}
 
 	public boolean isLabelProperty(Object element, String property) {
@@ -27,9 +29,8 @@ public class DeeOutlineLabelProvider implements ILabelProvider {
 	}
 
 
-	public void addListener(ILabelProviderListener listener) {
+	
+	public void dispose() {
 	}
 	
-	public void removeListener(ILabelProviderListener listener) {
-	}
 }

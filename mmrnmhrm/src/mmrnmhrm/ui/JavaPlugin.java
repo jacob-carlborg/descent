@@ -8,7 +8,9 @@
  * Contributors:
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
-package mmrnmhrm.core;
+package mmrnmhrm.ui;
+
+import mmrnmhrm.core.DeePluginActivator;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.MultiStatus;

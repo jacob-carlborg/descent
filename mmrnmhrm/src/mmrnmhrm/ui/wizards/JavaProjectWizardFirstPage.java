@@ -14,9 +14,10 @@ import java.io.File;
 import java.util.Observable;
 import java.util.Observer;
 
-import mmrnmhrm.core.JavaPlugin;
 import mmrnmhrm.launch.DeeRE;
 import mmrnmhrm.launch.DeeRuntime;
+import mmrnmhrm.ui.JavaPlugin;
+import mmrnmhrm.ui.JavaUI;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
@@ -35,7 +36,6 @@ import org.eclipse.jdt.internal.ui.wizards.dialogfields.LayoutUtil;
 import org.eclipse.jdt.internal.ui.wizards.dialogfields.SelectionButtonDialogField;
 import org.eclipse.jdt.internal.ui.wizards.dialogfields.StringButtonDialogField;
 import org.eclipse.jdt.internal.ui.wizards.dialogfields.StringDialogField;
-import org.eclipse.jdt.ui.JavaUI;
 import org.eclipse.jdt.ui.PreferenceConstants;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;

@@ -47,11 +47,7 @@ public class DeeDocumentProvider extends FileDocumentProvider {
 	
 
 	
-	public void changed(Object element) {
-		// TODO Auto-generated method stub
-		super.changed(element);
-	}
-	
+
 	protected void doSaveDocument(IProgressMonitor monitor, Object element,
 			IDocument document, boolean overwrite) throws CoreException {
 		super.doSaveDocument(monitor, element, document, overwrite);

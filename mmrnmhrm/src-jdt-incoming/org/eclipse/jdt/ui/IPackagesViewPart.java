@@ -10,6 +10,8 @@
  *******************************************************************************/
 package org.eclipse.jdt.ui;
 
+import mmrnmhrm.ui.JavaUI;
+
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.ui.IViewPart;
 

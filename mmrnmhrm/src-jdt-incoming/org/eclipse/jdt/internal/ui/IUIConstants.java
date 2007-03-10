@@ -10,7 +10,7 @@
  *******************************************************************************/
 package org.eclipse.jdt.internal.ui;
 
-import org.eclipse.jdt.ui.JavaUI;
+import mmrnmhrm.ui.JavaUI;
 
 
 public interface IUIConstants {

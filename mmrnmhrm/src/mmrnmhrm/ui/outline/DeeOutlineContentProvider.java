@@ -8,20 +8,15 @@ import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.ui.IEditorInput;
 
 import util.tree.TreeDepthRecon;
-
 import dtool.dom.base.ASTNode;
 import dtool.project.CompilationUnit;
 
 public class DeeOutlineContentProvider implements ITreeContentProvider {
 
-	private IEditorInput input;
+	private CompilationUnit root;
+
 
 	public Object[] getChildren(Object parentElement) {
-		
-		if (parentElement == input) {
-			return new String[] { new String("INPUT") };
-		}
-
 		ASTNode elem = (ASTNode) parentElement;
 		return elem.getChildren();
 	}
@@ -37,26 +32,22 @@ public class DeeOutlineContentProvider implements ITreeContentProvider {
 	}
 
 	public Object[] getElements(Object inputElement) {
-		
-		if(inputElement instanceof IEditorInput) {
-			input = (IEditorInput) inputElement;
-	    	
-	    	DeeDocumentProvider documentProvider = DeeCore.getDeeDocumentProvider();
-	    	CompilationUnit cunit = documentProvider.getCompilationUnit(input);
-	    	
-	    	return cunit.getModule().getChildren();
-	    }
-		
-		ASTNode elem = (ASTNode) inputElement;
-		return elem.getChildren();
-		
-	}
-
-	public void dispose() {
+		return root.getModule().getChildren();
 	}
 
 	public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
-		//Assert.isTrue(newInput == null);
+		
+		if(newInput instanceof IEditorInput) {
+			IEditorInput input = (IEditorInput) newInput;
+	    	DeeDocumentProvider docProvider = DeeCore.getDeeDocumentProvider();
+	    	root = docProvider.getCompilationUnit(input);
+	    } else {
+	    	root = null;
+	    }
+	}
+
+
+	public void dispose() {
 	}
 
 }

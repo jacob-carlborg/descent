@@ -1,6 +1,6 @@
 package mmrnmhrm.ui.actions;
 
-import mmrnmhrm.core.DeeUI;
+import mmrnmhrm.ui.DeeUI;
 
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.IWorkspaceRunnable;

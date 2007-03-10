@@ -10,6 +10,8 @@
  *******************************************************************************/
 package org.eclipse.jdt.ui;
 
+import mmrnmhrm.ui.JavaUI;
+
 /**
  * Search scope constants for Java selection dialogs.
  * <p>

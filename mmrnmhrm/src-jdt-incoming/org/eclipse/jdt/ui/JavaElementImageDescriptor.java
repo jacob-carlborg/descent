@@ -11,7 +11,7 @@
 package org.eclipse.jdt.ui;
 
 
-import mmrnmhrm.core.JavaPlugin;
+import mmrnmhrm.ui.JavaPlugin;
 
 import org.eclipse.core.runtime.Assert;
 

@@ -3,7 +3,7 @@ package org.eclipse.jdt.internal.ui.actions;
 
 import java.lang.reflect.InvocationTargetException;
 
-import mmrnmhrm.core.JavaCore;
+import mmrnmhrm.core.jdtadapt.JavaCore;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;

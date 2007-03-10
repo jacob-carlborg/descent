@@ -1,6 +1,5 @@
-package org.eclipse.jdt.ui;
+package mmrnmhrm.ui;
 
-import mmrnmhrm.core.DeeUI;
 
 public class JavaUI {
 

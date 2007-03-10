@@ -15,10 +15,10 @@ import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
 
 public class DeeEditor extends AbstractDecoratedTextEditor {
 	
-	DeeDocumentProvider documentProvider;
-	DeeDocument document;
-	DeeContentOutlinePage outlinePage;
-	public DeeSourceViewerConfiguration sourceViewerConfiguration;
+	private DeeDocumentProvider documentProvider;
+	private DeeDocument document;
+	private DeeContentOutlinePage outlinePage; // Instantiated lazily
+	private DeeSourceViewerConfiguration sourceViewerConfiguration;
 
 	public DeeEditor() {
 		super();
@@ -26,6 +26,7 @@ public class DeeEditor extends AbstractDecoratedTextEditor {
 		setDocumentProvider(documentProvider);
 	}
 	
+	@Override
 	protected void initializeEditor() {
 		super.initializeEditor();
 		sourceViewerConfiguration = new DeeSourceViewerConfiguration();
@@ -37,25 +38,27 @@ public class DeeEditor extends AbstractDecoratedTextEditor {
 		//configureInsertMode(SMART_INSERT, false);
 		setInsertMode(INSERT);
 	}
-	
-	public void dispose() { 
-	 	super.dispose(); 
-	}
+
 	@Override
 	protected void createActions() {
 		// TODO Auto-generated method stub
 		super.createActions();
 	}
 
-	
+	public void dispose() { 
+	 	super.dispose(); 
+	}
 
 	public DeeDocument getDocument() {
 		return document;
 	}
-	
 
 	public TextSelection getSelection() {
 		return (TextSelection) getSelectionProvider().getSelection();
+	}
+	
+	public void setSelection(int offset, int length) {
+		getSelectionProvider().setSelection(new TextSelection(offset, length)); 
 	}
 	
 	
@@ -66,7 +69,7 @@ public class DeeEditor extends AbstractDecoratedTextEditor {
 		menu.add(new SampleAction(": <> action"));
 	}
 	
-	
+
 	public Object getAdapter(Class required) {
 		
 		if (IContentOutlinePage.class.equals(required)) {
@@ -82,6 +85,8 @@ public class DeeEditor extends AbstractDecoratedTextEditor {
 	protected void doSetInput(IEditorInput input) throws CoreException {
 		super.doSetInput(input);
 		document = (DeeDocument) documentProvider.getDocument(input);
+		if (outlinePage != null)
+			outlinePage.updateInput();
 	}
 	
 	protected void editorSaved() {

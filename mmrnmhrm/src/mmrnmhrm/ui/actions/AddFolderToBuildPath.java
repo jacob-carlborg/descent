@@ -1,8 +1,8 @@
 package mmrnmhrm.ui.actions;
 
 import mmrnmhrm.core.DeeCore;
-import mmrnmhrm.core.DeeUI;
 import mmrnmhrm.core.model.DeeModel;
+import mmrnmhrm.ui.DeeUI;
 
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IWorkspaceRunnable;

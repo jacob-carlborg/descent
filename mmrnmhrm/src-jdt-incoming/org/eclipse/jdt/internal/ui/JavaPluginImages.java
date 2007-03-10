@@ -14,7 +14,7 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Iterator;
 
-import mmrnmhrm.core.JavaPlugin;
+import mmrnmhrm.ui.JavaPlugin;
 
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IPath;

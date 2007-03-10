@@ -13,7 +13,7 @@ package org.eclipse.jdt.internal.ui.util;
 import java.io.StringWriter;
 import java.lang.reflect.InvocationTargetException;
 
-import mmrnmhrm.core.JavaPlugin;
+import mmrnmhrm.ui.JavaPlugin;
 
 import org.eclipse.swt.widgets.Shell;
 

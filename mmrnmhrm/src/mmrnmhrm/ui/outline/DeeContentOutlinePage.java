@@ -2,92 +2,80 @@ package mmrnmhrm.ui.outline;
 
 import mmrnmhrm.ui.deditor.DeeEditor;
 
+import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
-import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.views.contentoutline.ContentOutlinePage;
 
+import dtool.dom.base.ASTNode;
+
+/**
+ * D outline page. 
+ * XXX: Does an input change in the outlines lifecycle??
+ */
 public class DeeContentOutlinePage extends ContentOutlinePage {
 
-	private IEditorInput input;
-	//private ITextEditor editor;
+	private DeeEditor editor;
 	
 	public DeeContentOutlinePage(DeeEditor editor) {
 		super();
-		this.input = editor.getEditorInput();
-		//this.editor = editor;
+		this.editor = editor;
 	}
 
 	public void createControl(Composite parent) {
 		super.createControl(parent);
+
 		TreeViewer viewer = getTreeViewer();
-		
-		DeeOutlineContentProvider contentProvider;
-		DeeOutlineLabelProvider labelProvider;
-	
-		contentProvider = new DeeOutlineContentProvider();
-		viewer.setContentProvider(contentProvider);
-		
-		labelProvider = new DeeOutlineLabelProvider();
-		viewer.setLabelProvider(labelProvider);
-		
-		viewer.addSelectionChangedListener(this);
-		//control is created after input is set
-		viewer.setInput(input);
+		viewer.setContentProvider(new DeeOutlineContentProvider());
+		viewer.setLabelProvider(new DeeOutlineLabelProvider());
+
+		//viewer.addSelectionChangedListener(this);
+		updateInput();
+	}
+
+	public void updateInput() {
+		getTreeViewer().setInput(editor.getEditorInput());
 		update();
-		
 	}
 	
-	
-	/**
-	 * Sets the input of the outline page
-	 */
-	/*public void setInput(Object input) {
-		this.input = (IEditorInput) input;
-		update();
-	}*/
-
 	public void update() {
 		TreeViewer viewer = getTreeViewer();
-		if (viewer != null) {
-			Control control = viewer.getControl();
-			if (control != null && !control.isDisposed()) {
-				control.setRedraw(false);
-				viewer.setInput(input);
-				viewer.expandAll();
-				control.setRedraw(true);
-			}
-		}
-	
+		viewer.getControl().setRedraw(false);
+		viewer.refresh();
+		viewer.expandAll();
+		viewer.getControl().setRedraw(true);
 	}
 	
-	/*
-	  public void selectionChanged(SelectionChangedEvent event)
-	{
-    super.selectionChanged(event);
-    // find out which item in tree viewer we have selected, and set
-    // highlight range accordingly
+	
+	public void selectionChanged(SelectionChangedEvent event) {
+		// fire event
+		super.selectionChanged(event);
+		// react to event
+		onSelectionChanged(event);
+	}
 
-    ISelection selection = event.getSelection();
-    if (selection.isEmpty())
-        editor.resetHighlightRange();
-    else
-    {
-        IStructuredSelection sel = (IStructuredSelection) selection;
-        XMLElement element = (XMLElement) sel.getFirstElement();
+	private void onSelectionChanged(SelectionChangedEvent event) {
+		ISelection selection = event.getSelection();
+		if (selection.isEmpty())
+			editor.resetHighlightRange();
+		else {
+			IStructuredSelection sel = (IStructuredSelection) selection;
+			ASTNode element = (ASTNode) sel.getFirstElement();
 
-        int start = element.getPosition().getOffset();
-        int length = element.getPosition().getLength();
-        try
-        {
-            editor.setHighlightRange(start, length, true);
-        }
-        catch (IllegalArgumentException x)
-        {
-            editor.resetHighlightRange();
-        }
-    } }*/
-
-
+			// Use parent for source range
+			while(element.hasNoSourceRangeInfo())
+				element = element.parent;
+			
+			int start = element.getOffset();
+			int offset = element.getLength();
+			try {
+				editor.setHighlightRange(start, offset, true);
+				editor.setSelection(start, offset);
+			} catch (IllegalArgumentException x) {
+				editor.resetHighlightRange();
+			}
+		}
+	}
 }

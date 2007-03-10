@@ -81,7 +81,7 @@
             <groupMarker name="content"/>
          </menu>
          <action
-               class="mmrnmhrm.ui.actions.GoToDefinition"
+               class="mmrnmhrm.ui.actions.GoToDefinitionActionDg"
                icon="icons/action16e/gotodef.gif"
                id="Mmrnmhrm.actions.GotoDef"
                label="Go to Definition"
@@ -89,7 +89,7 @@
                toolbarPath="additions"/>
          <action
                class="mmrnmhrm.ui.actions.PrintPartitions"
-               icon="icons/action16e/editorfoo.gif"
+               icon="icons/action16e/declipse.gif"
                id="Mmrnmhrm.actions.PrintPartition"
                label="Print Partitions"
                menubarPath="Mmrnmhrm.menu/content"
@@ -183,7 +183,7 @@
             id="mmrnmhrm.ui.navigatorContent"
             labelProvider="mmrnmhrm.ui.navigator.DeeNavigatorLabelProvider"
             name="mmrnmhrm.navigatorContent"
-            priority="highest">
+            priority="high">
          <triggerPoints>
             <or>
                <adapt type="org.eclipse.core.resources.IProject">
