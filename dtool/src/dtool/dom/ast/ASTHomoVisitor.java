@@ -19,11 +19,16 @@ public abstract class ASTHomoVisitor extends ASTNeoVisitor {
 	abstract void leaveNode(TreeNode elem);
 	
 	public final void preVisit(ASTNode elem) {
-		enterNode((TreeNode)elem);
 	}
 
 	public final void postVisit(ASTNode elem) {
-		leaveNode((TreeNode)elem);
+	}
+	
+	public final boolean visit(ASTNode elem) {
+		return enterNode((TreeNode)elem);
 	}
 
+	public final void endVisit(ASTNode elem) {
+		leaveNode(elem);
+	}
 }
