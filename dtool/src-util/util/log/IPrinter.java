@@ -1,4 +1,4 @@
-package util;
+package util.log;
 
 /**
  * Interface for an object that allows printing of String's. 

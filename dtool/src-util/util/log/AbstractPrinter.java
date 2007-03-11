@@ -1,4 +1,4 @@
-package util;
+package util.log;
 
 public abstract class AbstractPrinter implements IPrinter {
 

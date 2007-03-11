@@ -35,7 +35,7 @@ public class ExceptionAdapter extends RuntimeException {
 	}
 */
 	
-	protected void printStackTrace(util.IPrinter pr) {
+	protected void printStackTrace(util.log.IPrinter pr) {
         synchronized (pr) {
             pr.println(this);
             StackTraceElement[] trace = originalException.getStackTrace();
@@ -49,11 +49,11 @@ public class ExceptionAdapter extends RuntimeException {
 	}
 	
 	public void printStackTrace(java.io.PrintStream ps) {
-		printStackTrace(new util.StreamPrinter(ps));
+		printStackTrace(new util.log.StreamPrinter(ps));
 	}
 
 	public void printStackTrace(java.io.PrintWriter pw) {
-		printStackTrace(new util.WriterPrinter(pw));
+		printStackTrace(new util.log.WriterPrinter(pw));
 	}
 
 
