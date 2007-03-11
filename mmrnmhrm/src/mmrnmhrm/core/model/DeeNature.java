@@ -9,7 +9,6 @@ import org.eclipse.core.resources.IProjectNature;
 import org.eclipse.core.runtime.CoreException;
 
 import util.ArrayUtil;
-import util.Assert;
 
 public class DeeNature implements IProjectNature {
 
@@ -29,7 +28,6 @@ public class DeeNature implements IProjectNature {
 
 	/** {@inheritDoc} */
 	public void setProject(IProject project) {
-		Assert.isTrue(DeeModel.getDeeProject(project) != null);
 		this.project = project;
 	}
 

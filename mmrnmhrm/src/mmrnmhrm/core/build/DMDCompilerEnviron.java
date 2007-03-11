@@ -16,8 +16,8 @@ import org.eclipse.core.runtime.IPath;
 
 import util.ExceptionAdapter;
 import util.FileUtil;
-import util.Logg;
 import util.StringUtil;
+import util.log.Logg;
 /**
  * Compiles a project in a /certain/ D compile environment  
  *
@@ -31,11 +31,11 @@ public class DMDCompilerEnviron implements IDeeCompilerEnviron {
 	}
 	
 	private void prepOutputDir() throws CoreException {
-		IPath outputPath = deeProject.outputDir.getFullPath();
-		IResource[] oldResources = deeProject.outputDir.members();
+		IPath outputPath = deeProject.getOutputDir().getFullPath();
+		IResource[] oldResources = deeProject.getOutputDir().members();
 		DeeCore.getWorkspace().delete(oldResources, false, null);
 
-		for(DeeSourceFolder dsf : deeProject.sourceFolders) {
+		for(DeeSourceFolder dsf : deeProject.getSourceFolders()) {
 			//dsf.folder.copy(outputPath, IResource.NONE, null);
 			IResource[] resources = new IResource[]{ dsf.folder };
 			DeeCore.getWorkspace().copy(resources, outputPath, 0, null);
@@ -66,7 +66,7 @@ public class DMDCompilerEnviron implements IDeeCompilerEnviron {
 		}
 
 		File file = new File(deeProject.getOutputDirLocationString());
-		Logg.println( StringUtil.collToString(cmdstr, "\n "));
+		Logg.println(StringUtil.collToString(cmdstr, "\n "));
 
 		Process process = null;
 		try {
@@ -75,7 +75,7 @@ public class DMDCompilerEnviron implements IDeeCompilerEnviron {
 		} catch (IOException e) {
 			throw ExceptionAdapter.unchecked(e);
 		} finally {
-			deeProject.project.refreshLocal(IResource.DEPTH_INFINITE, null);
+			deeProject.getProject().refreshLocal(IResource.DEPTH_INFINITE, null);
 		}
 
 		// Capture Output

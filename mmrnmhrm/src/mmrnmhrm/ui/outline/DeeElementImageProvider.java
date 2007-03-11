@@ -23,8 +23,8 @@ import dtool.dom.base.Entity;
 import dtool.dom.base.Module.DeclarationModule;
 
 public class DeeElementImageProvider {
-	
-	/*private DeeElementImageProvider instance = new DeeElementImageProvider();
+	/*
+	private DeeElementImageProvider instance = new DeeElementImageProvider();
 	
 	public DeeElementImageProvider() {}
 	

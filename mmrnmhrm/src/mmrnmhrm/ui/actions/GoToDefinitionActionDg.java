@@ -12,7 +12,7 @@ import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IWorkbenchWindow;
 
 import util.Assert;
-import util.Logg;
+import util.log.Logg;
 import dtool.dom.ast.ASTPrinter;
 import dtool.dom.base.ASTNode;
 import dtool.dom.base.DefUnit;

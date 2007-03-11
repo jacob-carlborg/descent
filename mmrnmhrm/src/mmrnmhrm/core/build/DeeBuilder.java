@@ -18,7 +18,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 
 import util.Assert;
-import util.Logg;
+import util.log.Logg;
 
 public class DeeBuilder extends IncrementalProjectBuilder {
 
@@ -56,7 +56,7 @@ public class DeeBuilder extends IncrementalProjectBuilder {
 		
 		DeeModuleCollector visitor = new DeeModuleCollector();
 
-		for(DeeSourceFolder dsf : getDeeProject().sourceFolders) {
+		for(DeeSourceFolder dsf : getDeeProject().getSourceFolders()) {
 			dsf.folder.accept(visitor, IResource.DEPTH_INFINITE, IResource.NONE);
 		}
 		

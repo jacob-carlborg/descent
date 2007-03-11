@@ -43,22 +43,24 @@ public class DeeModel {
 
 	/** Creates a D project in the given workspace project. */
 	public void createDeeProject(IProject project) throws CoreException {
+		addNature(project, DeeNature.NATURE_FQID);
+		addDeeProjectToDeeModel(project);
+		setDefaultBuildPath(project);
+	}
+
+	private void addNature(IProject project, String natureID) throws CoreException {
 		IProjectDescription description = project.getDescription();
 		String[] natures = description.getNatureIds();
-		Assert.isTrue(ArrayUtil.contains(natures, DeeNature.NATURE_FQID) == false);
-		String[] newNatures = ArrayUtil.append(natures, DeeNature.NATURE_FQID);
+		Assert.isTrue(ArrayUtil.contains(natures, natureID) == false);
+		String[] newNatures = ArrayUtil.append(natures, natureID);
 		description.setNatureIds(newNatures);
-		project.setDescription(description, null); // Add nature
-
-		addDeeProjectToDeeModel(project);
-
-		setDefaultBuildPath(project);
+		project.setDescription(description, null); 
 	}
 
 	/** Adds D project to Dee Model. */
 	private DeeProject addDeeProjectToDeeModel(IProject project) {
 		DeeProject deeproj = new DeeProject();
-		deeproj.setProject(project);
+		deeproj.loadDeeProject(project);
 		deeProjects.put(project.getName(), deeproj);
 		return deeproj;
 	}

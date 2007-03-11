@@ -5,7 +5,7 @@ import org.eclipse.jface.text.rules.IToken;
 import org.eclipse.jface.text.rules.ITokenScanner;
 
 import util.AssertIn;
-import util.Logg;
+import util.log.Logg;
 
 import descent.internal.core.dom.Lexer;
 import descent.internal.core.dom.TOK;
@@ -32,8 +32,8 @@ public class DeeCodeScanner_Native implements ITokenScanner {
 
 	public IToken nextToken() {
 		TOK tok = lexer.nextToken();
-		Token token = lexer.token;
-		Logg.println("Token: " + token +"["+ token.ptr +","+ token.len +"]");
+		//Token token = lexer.token;
+		//Logg.println("Token: " + token +"["+ token.ptr +","+ token.len +"]");
 		if(tok == TOK.TOKeof)
 			return EOFToken.getDefault();
 

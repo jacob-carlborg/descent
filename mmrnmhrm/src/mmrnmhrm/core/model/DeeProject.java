@@ -7,40 +7,50 @@ import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 
+/**
+ * Class for a D project. 
+ */
 public class DeeProject {
 
-
-	public IProject project;
-	public List<DeeSourceFolder> sourceFolders;
-	public IFolder outputDir;
+	private IProject project;
+	private List<DeeSourceFolder> sourceFolders;
+	private IFolder outputDir;
 
 	
 	public DeeProject() {
 		sourceFolders = new ArrayList<DeeSourceFolder>();
 	}
 	
-	/** {@inheritDoc} */
 	public IProject getProject() {
 		return project;
 	}
-
-	/** {@inheritDoc} */
-	public void setProject(IProject project) {
-		this.project = project;
-		loadBuildPathFromFile();
-	}
 	
-
-	public String getOutputDirLocationString() {
-		return outputDir.getLocation().toString();
+	public IFolder getOutputDir() {
+		return outputDir;
 	}
+
+
+	public List<DeeSourceFolder> getSourceFolders() {
+		return sourceFolders;
+	}
+
 	
-	@Override
 	public String toString() {
 		return project.getName();
 	}
 
-	
+	public String getOutputDirLocationString() {
+		return outputDir.getLocation().toString();
+	}
+
+	/*public void setOutputDir(IFolder outputDir) {
+		this.outputDir = outputDir;
+	}*/
+
+	public void loadDeeProject(IProject project) {
+		this.project = project;
+		loadProjectFromFile();
+	}	
 	
 	public void addSourceFolder(IFolder folder) throws CoreException {
 		sourceFolders.add(new DeeSourceFolder(folder));
@@ -50,7 +60,9 @@ public class DeeProject {
 		sourceFolders.remove(new DeeSourceFolder(folder));
 	}
 
-	private void loadBuildPathFromFile() {
+	private void loadProjectFromFile() {
+		//Ini ini = new Ini(new FileReader("projc"));
+
 		// TODO read from actual file
 		DeeSourceFolder deesf = new DeeSourceFolder(project.getFolder("src"));
 		sourceFolders.add(deesf);
@@ -64,5 +76,5 @@ public class DeeProject {
 		}
 		return false;
 	}
-	
+
 }

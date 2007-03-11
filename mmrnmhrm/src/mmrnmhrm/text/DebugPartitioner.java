@@ -6,7 +6,7 @@ import org.eclipse.jface.text.ITypedRegion;
 import org.eclipse.jface.text.rules.FastPartitioner;
 import org.eclipse.jface.text.rules.IPartitionTokenScanner;
 
-import util.Logg;
+import util.log.Logg;
 
 
 /**
