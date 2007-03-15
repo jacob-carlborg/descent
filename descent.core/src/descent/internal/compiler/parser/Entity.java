@@ -5,7 +5,7 @@ import descent.core.compiler.IProblem;
 
 public class Entity {
 	
-	public static int HtmlNamedEntity(char[] input, int p, int length, int lineNumber, IProblemRequestor problemRequestor) {
+	public static int HtmlNamedEntity(char[] input, int p, int length, int lineNumber, IProblemRequestor requestor) {
 		String s = new String(input, p, length);
 
 		int tableIndex = Character.toLowerCase(input[p]) - 'a';
@@ -19,7 +19,7 @@ public class Entity {
 				}
 			}
 		}
-		problemRequestor.acceptProblem(Problem.newSyntaxError(
+		requestor.acceptProblem(Problem.newSyntaxError(
 				"Unrecognized character entity", 
 				IProblem.UnrecognizedCharacterEntity, lineNumber, p - 1, length + 2));
 		return -1;

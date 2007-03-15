@@ -2,52 +2,58 @@ package descent.internal.compiler.parser;
 
 public enum TY {
 	
-    Tarray,		// dynamic array
-    Tsarray,		// static array
-    Taarray,		// associative array
-    Tpointer,
-    Treference,
-    Tfunction,
-    Tident,
-    Tclass,
-    Tstruct,
-    Tenum,
-    Ttypedef,
-    Tdelegate,
+    Tarray('A'),		// dynamic array
+    Tsarray('G'),		// static array
+    Taarray('H'),		// associative array
+    Tpointer('P'),
+    Treference('R'),
+    Tfunction('F'),
+    Tident('I'),
+    Tclass('C'),
+    Tstruct('S'),
+    Tenum('E'),
+    Ttypedef('T'),
+    Tdelegate('D'),
 
-    Tnone,
-    Tvoid,
-    Tint8,
-    Tuns8,
-    Tint16,
-    Tuns16,
-    Tint32,
-    Tuns32,
-    Tint64,
-    Tuns64,
-    Tfloat32,
-    Tfloat64,
-    Tfloat80,
+    Tnone('n'),
+    Tvoid('v'),
+    Tint8('g'),
+    Tuns8('h'),
+    Tint16('s'),
+    Tuns16('t'),
+    Tint32('i'),
+    Tuns32('k'),
+    Tint64('l'),
+    Tuns64('m'),
+    Tfloat32('f'),
+    Tfloat64('d'),
+    Tfloat80('e'),
 
-    Timaginary32,
-    Timaginary64,
-    Timaginary80,
+    Timaginary32('o'),
+    Timaginary64('p'),
+    Timaginary80('j'),
+    Tcomplex32('q'),
+    Tcomplex64('r'),
+    Tcomplex80('c'),
 
-    Tcomplex32,
-    Tcomplex64,
-    Tcomplex80,
-
-    Tbit,
-    Tbool,
-    Tchar,
-    Twchar,
-    Tdchar,
-
-    Terror,
-    Tinstance,
-    Ttypeof,
-    Ttuple,
-    Tslice,
-    TMAX
+    Tbool('b'),
+    Tchar('a'),
+    Twchar('u'),
+    Tdchar('w'),
+    
+    Tbit('@'),
+    Tinstance('@'),
+    Terror('@'),    
+    Ttypeof('@'),
+    Ttuple('B'),
+    Tslice('@'),
+    
+    ;
+    
+    public char mangleChar;
+    
+    TY(char mangleChar) {
+    	this.mangleChar = mangleChar;
+    }
 
 }

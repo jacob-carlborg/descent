@@ -173,6 +173,7 @@ public abstract class ASTNode {
 	public final static int TYPE_TYPEOF = 163;
 	public final static int TYPE_S_ARRAY = 164;
 	public final static int TYPE_SLICE = 165;
+	public final static int TYPE_TYPEDEF = 166;
 	
 	public int start;
 	public int length;

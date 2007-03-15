@@ -883,10 +883,10 @@ public class ASTConverter {
 	public descent.core.dom.TypedefDeclarationFragment convert(TypedefDeclaration a) {
 		descent.core.dom.TypedefDeclarationFragment b = new descent.core.dom.TypedefDeclarationFragment(ast);
 		b.setName(convert(a.ident));
-		if (a.initializer == null) {
+		if (a.init == null) {
 			b.setSourceRange(a.ident.start, a.ident.length);
 		} else {
-			descent.core.dom.Initializer init = convert(a.initializer);
+			descent.core.dom.Initializer init = convert(a.init);
 			b.setInitializer(init);
 			b.setSourceRange(a.ident.start, init.getStartPosition() + init.getLength() - a.ident.start);
 		}
@@ -2151,8 +2151,8 @@ public class ASTConverter {
 				while(symbol.kind() == ASTNode.TYPEDEF_DECLARATION) {
 					TypedefDeclaration a = (TypedefDeclaration) symbol;
 					if (first) {
-						if (a.type != null) {
-							b.setType(convert(a.type));
+						if (a.basetype != null) {
+							b.setType(convert(a.basetype));
 						}
 						convertModifiers(b.modifiers(), a.modifiers);
 						if (a.postDdoc != null) {

@@ -2,8 +2,6 @@ package descent.internal.compiler.parser;
 
 import java.util.List;
 
-import descent.core.IProblemRequestor;
-
 public class ClassDeclaration extends AggregateDeclaration {
 
 	public List<BaseClass> baseClasses;
@@ -14,11 +12,11 @@ public class ClassDeclaration extends AggregateDeclaration {
 	}
 	
 	@Override
-	public void semantic(Scope scope, IProblemRequestor problemRequestor) {
+	public void semantic(Scope scope, SemanticContext context) {
 		// TODO stub
 		symtab = new DsymbolTable();
 		for(Dsymbol s : members) {
-    		s.addMember(null, this, 1, problemRequestor);
+    		s.addMember(null, this, 1, context);
     	}
 	}
 	

@@ -15,6 +15,27 @@ public class StorageClassDeclaration extends AttribDeclaration {
 		this.single = single;
 		this.modifier = modifier;
 	}
+	
+	@Override
+	public void semantic(Scope sc, SemanticContext context) {
+		if (decl != null && decl.size() > 0) {	
+			int stc_save = sc.stc;
+
+			if ((stc & (STC.STCauto | STC.STCscope | STC.STCstatic | STC.STCextern)) != 0) {
+			    sc.stc &= ~(STC.STCauto | STC.STCscope | STC.STCstatic | STC.STCextern);
+			}
+			
+			sc.stc |= stc;
+			
+			for(Dsymbol s : decl) {
+	    		s.semantic(sc, context);
+	    	}
+			
+			sc.stc = stc_save;
+	    } else {
+	    	sc.stc = stc;
+	    }
+	}
 
 	@Override
 	public int kind() {

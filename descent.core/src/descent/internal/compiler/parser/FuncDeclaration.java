@@ -20,6 +20,11 @@ public class FuncDeclaration extends Declaration {
 	}
 	
 	@Override
+	public boolean isFuncDeclaration() {
+		return true;
+	}
+	
+	@Override
 	public int kind() {
 		return FUNC_DECLARATION;
 	}

@@ -1,6 +1,5 @@
 package descent.internal.compiler.parser;
 
-
 public abstract class Type extends ASTNode {
 	
 	public final static Type tvoid = new TypeBasic(TY.Tvoid);
@@ -29,10 +28,55 @@ public abstract class Type extends ASTNode {
 	
 	public TY ty;
 	public Type next;
+	public String deco;
 	
 	public Type(TY ty, Type next) {
 		this.ty = ty;
 		this.next = next;
+	}
+	
+	public Type semantic(Scope sc, SemanticContext context) {
+		if (next != null) {
+			next = next.semantic(sc, context);
+		}
+		return merge(context);
+	}
+	
+	public Type merge(SemanticContext context) {
+		Type t;
+
+	    //printf("merge(%s)\n", toChars());
+	    t = this;
+	    if (deco == null) {
+			OutBuffer buf = new OutBuffer();
+			StringValue sv;
+	
+			if (next != null) {
+			    next = next.merge(context);
+			}
+			toDecoBuffer(buf);
+			sv = context.typeStringTable.update(buf.toString());
+			if (sv.ptrvalue != null)
+			{   
+				t = (Type ) sv.ptrvalue;
+			    assert t.deco != null;
+			}
+			else
+			{
+			    sv.ptrvalue = this;
+			    deco = sv.lstring;
+			}
+	    }
+	    return t;
+	}
+	
+	public void toDecoBuffer(OutBuffer buf) {
+		buf.writeByte(ty.mangleChar);
+	    if (next != null)
+	    {
+	    	assert next != this;
+	    	next.toDecoBuffer(buf);
+	    }
 	}
 	
 	public Expression toExpression() {

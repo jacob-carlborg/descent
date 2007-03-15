@@ -25,6 +25,7 @@ import descent.internal.compiler.IProblemFactory;
 import descent.internal.compiler.env.INameEnvironment;
 import descent.internal.compiler.impl.CompilerOptions;
 import descent.internal.compiler.parser.Module;
+import descent.internal.compiler.parser.SemanticContext;
 
 public class CompilationUnitResolver extends descent.internal.compiler.Compiler {
 	
@@ -142,7 +143,7 @@ public class CompilationUnitResolver extends descent.internal.compiler.Compiler 
 	}
 	
 	public static Module semantic1(final Module module) {
-		module.semantic(new IProblemRequestor() {
+		module.semantic(new SemanticContext(new IProblemRequestor() {
 			public void acceptProblem(IProblem problem) {
 				module.problems.add(problem);
 			}
@@ -153,7 +154,7 @@ public class CompilationUnitResolver extends descent.internal.compiler.Compiler 
 			public boolean isActive() {
 				return true;
 			}
-		});
+		}));
 		return module;
 	}
 	

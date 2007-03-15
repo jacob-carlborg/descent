@@ -268,6 +268,7 @@ public interface IProblem {
 	int BaseTypeMustBeOfIntegralType = 301;
 	int DuplicatedSymbol = 302;
 	int PropertyCanNotBeRedefined = 303;
+	int CircularDefinition = 304;
 	
 	/* Others, needed by JDT */
 	int ForbiddenReference = 2001;
@@ -275,8 +276,6 @@ public interface IProblem {
 	
 	int Task = 1000;
 	int UndefinedType = 10000;
-	int IsClassPathCorrect = 10001;
-	
-	
+	int IsClassPathCorrect = 10001;	
 
 }

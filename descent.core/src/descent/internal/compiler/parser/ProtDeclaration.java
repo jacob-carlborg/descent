@@ -2,8 +2,6 @@ package descent.internal.compiler.parser;
 
 import java.util.List;
 
-import descent.core.IProblemRequestor;
-
 public class ProtDeclaration extends AttribDeclaration {
 
 	public Modifier modifier;
@@ -18,18 +16,23 @@ public class ProtDeclaration extends AttribDeclaration {
 	}
 	
 	@Override
-	public void semantic(Scope sc, IProblemRequestor problemRequestor) {
-		List<Dsymbol> d = include(sc, null);
+	public void semantic(Scope sc, SemanticContext context) {
+		if (decl != null && decl.size() > 0) {	
+			PROT protection_save = sc.protection;
+			int explicitProtection_save = sc.explicitProtection;
 
-	    //printf("\tAttribDeclaration::semantic '%s'\n",toChars());
-	    if (d)
-	    {
-		for (unsigned i = 0; i < d->dim; i++)
-		{
-		    Dsymbol *s = (Dsymbol *)d->data[i];
-
-		    s->semantic(sc);
-		}
+			sc.protection = protection;
+			sc.explicitProtection = 1;
+			
+			for(Dsymbol s : decl) {
+	    		s.semantic(sc, context);
+	    	}
+			
+			sc.protection = protection_save;
+			sc.explicitProtection = explicitProtection_save;
+	    } else {	
+	    	sc.protection = protection;
+	    	sc.explicitProtection = 1;
 	    }
 	}
 

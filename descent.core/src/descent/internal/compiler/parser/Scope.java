@@ -1,6 +1,5 @@
 package descent.internal.compiler.parser;
 
-import descent.core.IProblemRequestor;
 
 public class Scope {
 	
@@ -10,6 +9,9 @@ public class Scope {
 	public ScopeDsymbol sd; // if in static if, and declaring new symbols,
 	public Dsymbol parent; // parent to use
 	public int callSuper; // primitive flow analysis for constructors
+	PROT protection;	// protection for class members
+    int explicitProtection;	// set if in an explicit protection attribute
+    int stc;		// storage class
 	
 	public Scope() {
 		
@@ -22,7 +24,7 @@ public class Scope {
 		// TODO
 	}
 
-	public static Scope createGlobal(Module module, IProblemRequestor problemRequestor) {
+	public static Scope createGlobal(Module module, SemanticContext context) {
 		Scope sc;
 
 	    sc = new Scope();
@@ -36,7 +38,7 @@ public class Scope {
 	    	m = m.parent;
 	    }
 	    
-	    m.addMember(null, sc.scopesym, 1, problemRequestor);
+	    m.addMember(null, sc.scopesym, 1, context);
 	    m.parent = null;			// got changed by addMember()
 
 	    // Create the module scope underneath the global scope

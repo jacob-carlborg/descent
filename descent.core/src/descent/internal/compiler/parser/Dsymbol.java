@@ -1,6 +1,5 @@
 package descent.internal.compiler.parser;
 
-import descent.core.IProblemRequestor;
 import descent.core.compiler.IProblem;
 
 public abstract class Dsymbol extends ASTNode {
@@ -31,7 +30,11 @@ public abstract class Dsymbol extends ASTNode {
 		return kind() == ENUM_DECLARATION;
 	}
 	
-	public boolean addMember(Scope sc, ScopeDsymbol sd, int memnum, IProblemRequestor requestor) {
+	public boolean isFuncDeclaration() {
+		return false;
+	}
+	
+	public int addMember(Scope sc, ScopeDsymbol sd, int memnum, SemanticContext context) {
 		parent = sd;
 		if (!isAnonymous()) // no name, so can't add it to symbol table
 		{
@@ -41,26 +44,34 @@ public abstract class Dsymbol extends ASTNode {
 
 				s2 = sd.symtab.lookup(ident);
 				if (!s2.overloadInsert(this)) {
-					sd.multiplyDefined(this, s2, requestor);
+					sd.multiplyDefined(this, s2, context.problemRequestor);
 				}
 			}
 			if (sd.isAggregateDeclaration() || sd.isEnumDeclaration()) {
 				if (ident.ident == Id.__sizeof 
 						|| ident.ident == Id.alignof 
 						|| ident.ident == Id.mangleof) {
-					requestor.acceptProblem(Problem.newSemanticMemberError("Property " + ident.ident.string + " cannot be redefined", IProblem.PropertyCanNotBeRedefined, 0, ident.start, ident.length));
+					context.problemRequestor.acceptProblem(Problem.newSemanticMemberError("Property " + ident.ident.string + " cannot be redefined", IProblem.PropertyCanNotBeRedefined, 0, ident.start, ident.length));
 				}
 			}
-			return true;
+			return 1;
 		}
-		return false;
+		return 0;
 	}
 	
 	private boolean overloadInsert(Dsymbol dsymbol) {
 		return false;
 	}
 
-	public void semantic(Scope scope, IProblemRequestor problemRequestor) {
+	public void semantic(Scope sc, SemanticContext context) {
+		
+	}
+	
+	public void semantic2(Scope sc, SemanticContext context) {
+		
+	}
+	
+	public void semantic3(Scope sc, SemanticContext context) {
 		
 	}
 

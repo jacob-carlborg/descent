@@ -2,7 +2,6 @@ package descent.internal.compiler.parser;
 
 import java.util.List;
 
-import descent.core.IProblemRequestor;
 import descent.core.compiler.IProblem;
 import descent.core.dom.AST;
 import descent.core.dom.Comment;
@@ -21,12 +20,12 @@ public class Module extends Package {
 	public int semanticstarted;	// has semantic() been started?
 	public int semanticdone; // has semantic() been done?
 	
-	public void semantic(IProblemRequestor problemRequestor) {
-		semantic(null, problemRequestor);
+	public void semantic(SemanticContext context) {
+		semantic(null, context);
 	}
 	
 	@Override
-	public void semantic(Scope scope, IProblemRequestor problemRequestor) {
+	public void semantic(Scope scope, SemanticContext context) {
 		if (semanticstarted != 0)
 			return;
 		
@@ -35,7 +34,7 @@ public class Module extends Package {
 		// Note that modules get their own scope, from scratch.
 	    // This is so regardless of where in the syntax a module
 	    // gets imported, it is unaffected by context.
-		Scope sc = Scope.createGlobal(this, problemRequestor);
+		Scope sc = Scope.createGlobal(this, context);
 		
 		/* TODO
 		// Add import of "object" if this module isn't "object"
@@ -51,12 +50,12 @@ public class Module extends Package {
 	    	
 	    	// Add all symbols into module's symbol table
 	    	for(Dsymbol s : members) {
-	    		s.addMember(null, sc.scopesym, 1, problemRequestor);
+	    		s.addMember(null, sc.scopesym, 1, context);
 	    	}
 	    	
 	    	// Pass 1 semantic routines: do public side of the definition
 	    	for(Dsymbol s : members) {
-    			s.semantic(sc, problemRequestor);
+    			s.semantic(sc, context);
 	    	}
 	    	/* TODO
 	    	runDeferredSemantic();
