@@ -264,12 +264,19 @@ public interface IProblem {
 	int VariadicTemplateParameterMustBeTheLastOne = 125;
 	int NeedSizeOfRightmostArray = 126;
 	
+	/* Semantic problems */
+	int BaseTypeMustBeOfIntegralType = 301;
+	int DuplicatedSymbol = 302;
+	int PropertyCanNotBeRedefined = 303;
+	
 	/* Others, needed by JDT */
-	int ForbiddenReference = 201;
-	int DiscouragedReference = 202;
+	int ForbiddenReference = 2001;
+	int DiscouragedReference = 2002;
 	
 	int Task = 1000;
 	int UndefinedType = 10000;
 	int IsClassPathCorrect = 10001;
+	
+	
 
 }

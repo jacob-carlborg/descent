@@ -10,25 +10,27 @@
  *******************************************************************************/
 package descent.core.dom;
 
-import java.util.List;
 import java.util.Map;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 
 import descent.core.IJavaProject;
+import descent.core.IProblemRequestor;
 import descent.core.JavaModelException;
 import descent.core.WorkingCopyOwner;
+import descent.core.compiler.IProblem;
 import descent.internal.compiler.ICompilerRequestor;
 import descent.internal.compiler.IErrorHandlingPolicy;
 import descent.internal.compiler.IProblemFactory;
 import descent.internal.compiler.env.INameEnvironment;
 import descent.internal.compiler.impl.CompilerOptions;
+import descent.internal.compiler.parser.Module;
 
-class CompilationUnitResolver extends descent.internal.compiler.Compiler {
+public class CompilationUnitResolver extends descent.internal.compiler.Compiler {
 	
 	boolean hasCompilationAborted;
 	
-	private IProgressMonitor monitor;
+	//private IProgressMonitor monitor;
 	
 	/**
 	 * Answer a new CompilationUnitVisitor using the given name environment and compiler options.
@@ -75,10 +77,10 @@ class CompilationUnitResolver extends descent.internal.compiler.Compiler {
 
 		super(environment, policy, compilerOptions, requestor, problemFactory);
 		this.hasCompilationAborted = false;
-		this.monitor =monitor;
+		//this.monitor =monitor;
 	}
 	
-	public static CompilationUnit parse(int apiLevel,
+	public static Module parse(int apiLevel,
 			descent.internal.compiler.env.ICompilationUnit sourceUnit, 
 			Map options, 
 			boolean statementsRecovery) {
@@ -86,16 +88,23 @@ class CompilationUnitResolver extends descent.internal.compiler.Compiler {
 		AST ast = AST.newAST(apiLevel);
 		
 		// Mark all nodes created by the parser as originals
+		/*
 		int savedDefaultNodeFlag = ast.getDefaultNodeFlag();
 		ast.setDefaultNodeFlag(ASTNode.ORIGINAL);
 		ast.internalParserMode = true;
+		*/
 		
 		char[] source = sourceUnit.getContents();
-		Parser parser = new Parser(ast, source, 0, source.length);
+		descent.internal.compiler.parser.Parser parser = new descent.internal.compiler.parser.Parser(ast, source, 0, source.length);
 		
 		PublicScanner scanner = new PublicScanner(true, true, true, true, ast.apiLevel);
 		scanner.setLexerAndSource(parser, source);
 		
+		Module module = parser.parseModuleObj();
+		module.scanner = scanner;
+		module.setSourceRange(0, source.length);
+		
+		/*
 		List<Declaration> declDefs = parser.parseModule();
 		
 		CompilationUnit result = parser.compilationUnit;		
@@ -106,7 +115,7 @@ class CompilationUnitResolver extends descent.internal.compiler.Compiler {
 		result.setCommentTable(parser.comments.toArray(new Comment[parser.comments.size()]));
 		result.setPragmaTable(parser.pragmas.toArray(new Pragma[parser.pragmas.size()]));
 		result.setLineEndTable(parser.getLineEnds());
-		result.initCommentMapper(scanner);		
+		result.initCommentMapper(scanner);
 		result.problems = parser.problems;
 		
 		ast.setOriginalModificationCount(ast.modificationCount());
@@ -115,11 +124,12 @@ class CompilationUnitResolver extends descent.internal.compiler.Compiler {
 		
 		// TODO JDT PRIORITY remove if we do semantic analysis
 		// parser.compilationUnit.problems.clear();
+		*/
 		
-		return result;
+		return module;
 	}
 	
-	public static CompilationUnit resolve(int apiLevel,
+	public static Module resolve(int apiLevel,
 			descent.internal.compiler.env.ICompilationUnit sourceUnit,
 			IJavaProject javaProject,
 			Map options,
@@ -127,15 +137,85 @@ class CompilationUnitResolver extends descent.internal.compiler.Compiler {
 			boolean statementsRecovery,
 			IProgressMonitor monitor) throws JavaModelException {
 		
-		CompilationUnit unit = parse(apiLevel, sourceUnit, options, statementsRecovery);
+		final Module module = parse(apiLevel, sourceUnit, options, statementsRecovery);
+		return semantic1(module);
+	}
+	
+	public static Module semantic1(final Module module) {
+		module.semantic(new IProblemRequestor() {
+			public void acceptProblem(IProblem problem) {
+				module.problems.add(problem);
+			}
+			public void beginReporting() {
+			}
+			public void endReporting() {
+			}
+			public boolean isActive() {
+				return true;
+			}
+		});
+		return module;
+	}
+	
+	public static CompilationUnit convert(Module module, IProgressMonitor monitor) {
+		int savedDefaultNodeFlag = module.ast.getDefaultNodeFlag();
+		module.ast.setDefaultNodeFlag(ASTNode.ORIGINAL);
 		
-		//CancelableNameEnvironment environment = null;
-		//CancelableProblemFactory problemFactory = null;
+		ASTConverter converter = new ASTConverter(monitor);
+		converter.setAST(module.ast);
+		CompilationUnit result = converter.convert(module);
+		result.setCommentTable(module.comments);
+		result.setPragmaTable(module.pragmas);
+		result.setLineEndTable(module.lineEnds);
+		result.problems = module.problems;
+		result.initCommentMapper(module.scanner);
 		
-		//SemanticComputer computer = new SemanticComputer(owner, new DefaultBindingResolver.BindingTables());
-		//unit.accept(computer);
+		module.ast.setOriginalModificationCount(module.ast.modificationCount());
+		module.ast.setDefaultNodeFlag(savedDefaultNodeFlag);
 		
-		return unit;
+		return result;
+	}
+
+	public static ASTNode convert(AST ast, descent.internal.compiler.parser.Initializer initializer) {
+		int savedDefaultNodeFlag = ast.getDefaultNodeFlag();
+		ast.setDefaultNodeFlag(ASTNode.ORIGINAL);
+		
+		ASTConverter converter = new ASTConverter(null);
+		converter.setAST(ast);
+		Initializer init = converter.convert(initializer);
+		
+		ast.setOriginalModificationCount(ast.modificationCount());
+		ast.setDefaultNodeFlag(savedDefaultNodeFlag);
+		
+		return init;
+	}
+	
+	public static ASTNode convert(AST ast, descent.internal.compiler.parser.Expression expression) {
+		int savedDefaultNodeFlag = ast.getDefaultNodeFlag();
+		ast.setDefaultNodeFlag(ASTNode.ORIGINAL);
+		
+		ASTConverter converter = new ASTConverter(null);
+		converter.setAST(ast);
+		Expression exp = converter.convert(expression);
+		
+		ast.setOriginalModificationCount(ast.modificationCount());
+		ast.setDefaultNodeFlag(savedDefaultNodeFlag);
+		
+		return exp;
+	}
+	
+	public static ASTNode convert(AST ast, descent.internal.compiler.parser.Statement statement) {
+		int savedDefaultNodeFlag = ast.getDefaultNodeFlag();
+		ast.setDefaultNodeFlag(ASTNode.ORIGINAL);
+		
+		ASTConverter converter = new ASTConverter(null);
+		converter.setAST(ast);
+		Statement stm = converter.convert(statement);
+		
+		ast.setOriginalModificationCount(ast.modificationCount());
+		ast.setDefaultNodeFlag(savedDefaultNodeFlag);
+		
+		return stm;
 	}
 
 }

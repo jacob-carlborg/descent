@@ -103,7 +103,7 @@
          point=&quot;descent.ui.queryParticipants&quot;&gt;
       &lt;queryParticipant
             label=&quot;Example Query Participant&quot;
-            nature=&quot;descent.core.javanature&quot;
+            nature=&quot;descent.core.dnature&quot;
             class=&quot;descent.ui.example.TestParticipant&quot;
             id=&quot;descent.ui.example.TestParticipant&quot;&gt;
       &lt;/queryParticipant&gt;

@@ -202,7 +202,43 @@ public class Type_Test extends Parser_Test {
 		
 		assertEquals("Temp", type2.getName().getFullyQualifiedName());
 		assertEquals(1, type2.arguments().size());
+	}
+	
+	public void testTemplateType4() {
+		QualifiedType qType = (QualifiedType) getType("Temp!(int).b");
+		assertPosition(qType, 1, 12);
 		
+		SimpleType sType = (SimpleType) qType.getType();
+		assertEquals("b", sType.getName().getFullyQualifiedName());
+		assertPosition(sType, 12, 1);
+		
+		TemplateType type = (TemplateType) qType.getQualifier();
+		
+		assertEquals("Temp", type.getName().getFullyQualifiedName());
+		assertEquals(1, type.arguments().size());
+		assertPosition(type, 1, 10);
+	}
+	
+	public void testTemplateType5() {
+		QualifiedType type = (QualifiedType) getType("Temp!(int).Temp2!(long)");
+		assertPosition(type, 1, 23);
+		
+		TemplateType qType = (TemplateType) type.getQualifier();
+		assertPosition(qType, 1, 10);
+		
+		TemplateType sType = (TemplateType) type.getType();
+		assertPosition(sType, 12, 12);
+	}
+	
+	public void testTemplateType6() {
+		QualifiedType type = (QualifiedType) getType("typeof(33).Temp2!(long)");
+		assertPosition(type, 1, 23);
+		
+		TypeofType qType = (TypeofType) type.getQualifier();
+		assertPosition(qType, 1, 10);
+		
+		TemplateType sType = (TemplateType) type.getType();
+		assertPosition(sType, 12, 12);
 	}
 	
 	private ASTNode getType(String type) {

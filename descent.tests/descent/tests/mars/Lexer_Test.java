@@ -1,11 +1,9 @@
 package descent.tests.mars;
 
-import java.math.BigInteger;
-
 import junit.framework.TestCase;
 import descent.core.dom.AST;
-import descent.core.dom.Lexer;
-import descent.internal.core.parser.TOK;
+import descent.internal.compiler.parser.Lexer;
+import descent.internal.compiler.parser.TOK;
 
 public class Lexer_Test extends TestCase {
 	

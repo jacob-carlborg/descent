@@ -257,12 +257,16 @@ public class Expression_Test extends Parser_Test {
 			String s = " 1 " + pair[0] + " 1.0";
 			InfixExpression expr = (InfixExpression) parseExpression(s);
 			
-			assertEquals(ASTNode.INFIX_EXPRESSION, expr.getNodeType());
-			assertEquals(pair[1], expr.getOperator());
-			assertEquals(pair[0], pair[1].toString());
-			assertEquals(ASTNode.NUMBER_LITERAL, expr.getLeftOperand().getNodeType());
-			assertEquals(ASTNode.NUMBER_LITERAL, expr.getRightOperand().getNodeType());
-			assertPosition(expr, 1, 6 + ((String) pair[0]).length());
+			try {
+				assertEquals(ASTNode.INFIX_EXPRESSION, expr.getNodeType());
+				assertEquals(pair[1], expr.getOperator());
+				assertEquals(pair[0], pair[1].toString());
+				assertEquals(ASTNode.NUMBER_LITERAL, expr.getLeftOperand().getNodeType());
+				assertEquals(ASTNode.NUMBER_LITERAL, expr.getRightOperand().getNodeType());
+				assertPosition(expr, 1, 6 + ((String) pair[0]).length());
+			} catch (Exception e) {
+				fail(s);
+			}
 		}
 	}
 	
@@ -331,10 +335,14 @@ public class Expression_Test extends Parser_Test {
 			String s = " " + pair[0] + "1";
 			PrefixExpression expr = (PrefixExpression) parseExpression(s);
 			
-			assertEquals(ASTNode.PREFIX_EXPRESSION, expr.getNodeType());
-			assertEquals(pair[1], expr.getOperator());
-			assertEquals(ASTNode.NUMBER_LITERAL, expr.getOperand().getNodeType());
-			assertPosition(expr, 1, 1 + ((String) pair[0]).length());
+			try {
+				assertEquals(ASTNode.PREFIX_EXPRESSION, expr.getNodeType());
+				assertEquals(pair[1], expr.getOperator());
+				assertEquals(ASTNode.NUMBER_LITERAL, expr.getOperand().getNodeType());
+				assertPosition(expr, 1, 1 + ((String) pair[0]).length());
+			} catch (Throwable e) {
+				fail((String) pair[0]);
+			}
 		}
 	}
 	

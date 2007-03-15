@@ -946,16 +946,9 @@ public class ASTRewriteFlattener extends ASTVisitor {
 		visitList(node, ModifierDeclaration.PRE_D_DOCS_PROPERTY, LINE_END, EMPTY, LINE_END);
 		visitList(node, ModifierDeclaration.MODIFIERS_PROPERTY, " ", EMPTY, " ");
 		visitChild(node, ModifierDeclaration.MODIFIER_PROPERTY);
-		ModifierDeclaration.Syntax syntax = (ModifierDeclaration.Syntax) getAttribute(node, ModifierDeclaration.SYNTAX_PROPERTY);
-		if (syntax.equals(ModifierDeclaration.Syntax.CURLY_BRACES)) {
-			this.result.append(" {\n");
-		} else {
-			this.result.append(":\n");
-		}
+		this.result.append(" {\n");
 		visitList(node, ModifierDeclaration.DECLARATIONS_PROPERTY, LINE_END, EMPTY, LINE_END);
-		if (syntax.equals(ModifierDeclaration.Syntax.CURLY_BRACES)) {
-			this.result.append("}");
-		}
+		this.result.append("}");
 		visitChild(node, ModifierDeclaration.POST_D_DOC_PROPERTY, " ", EMPTY);
 		return false;
 	}

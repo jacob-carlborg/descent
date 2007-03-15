@@ -1096,17 +1096,11 @@ class NaiveASTFlattener extends ASTVisitor {
 		printIndent();
 		visitModifiers(node.modifiers());
 		node.getModifier().accept(this);
-		if (node.getSyntax().equals(ModifierDeclaration.Syntax.CURLY_BRACES)) {
-			this.buffer.append(" {\n");
-		} else {
-			this.buffer.append(":\n");
-		}
+		this.buffer.append(" {\n");
 		this.indent++;
 		visitList(node.declarations(), LINE_END, EMPTY, LINE_END);
 		this.indent--;
-		if (node.getSyntax().equals(ModifierDeclaration.Syntax.CURLY_BRACES)) {
-			this.buffer.append("}");
-		}
+		this.buffer.append("}");
 		if (node.getPostDDoc() != null) {
 			this.buffer.append(" ");
 			node.getPostDDoc().accept(this);
@@ -1765,6 +1759,33 @@ class NaiveASTFlattener extends ASTVisitor {
 		node.getExpression().accept(this);
 		this.buffer.append(") ");
 		node.getBody().accept(this);
+		return false;
+	}
+	
+	@Override
+	public boolean visit(FileImportExpression node) {
+		printIndent();
+		this.buffer.append("import(");
+		node.getExpression().accept(this);
+		this.buffer.append(");");
+		return false;
+	}
+	
+	@Override
+	public boolean visit(MixinDeclaration node) {
+		printIndent();
+		this.buffer.append("mixin(");
+		node.getExpression().accept(this);
+		this.buffer.append(");");
+		return false;
+	}
+	
+	@Override
+	public boolean visit(MixinExpression node) {
+		printIndent();
+		this.buffer.append("mixin(");
+		node.getExpression().accept(this);
+		this.buffer.append(");");
 		return false;
 	}
 	

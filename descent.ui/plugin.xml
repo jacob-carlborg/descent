@@ -161,7 +161,7 @@
             id="descent.ui.propertyPages.JavaCategoryPropertyPage">
          <filter
                name="nature"
-               value="descent.core.javanature">
+               value="descent.core.dnature">
          </filter>
       </page>
       <page
@@ -171,7 +171,7 @@
             id="descent.ui.propertyPages.JavaCategoryPropertyPage">
          <filter
                name="nature"
-               value="descent.core.javanature">
+               value="descent.core.dnature">
          </filter>
       </page>
 -->
@@ -182,7 +182,7 @@
             id="descent.ui.propertyPages.BuildPathsPropertyPage">
          <filter
                name="nature"
-               value="descent.core.javanature">
+               value="descent.core.dnature">
          </filter>
          <keywordReference id="descent.ui.buildpath"/>
       </page>
@@ -193,7 +193,7 @@
             id="descent.ui.propertyPages.BuildPathsPropertyPage">
          <filter
                name="nature"
-               value="descent.core.javanature">
+               value="descent.core.dnature">
          </filter>
          <keywordReference id="descent.ui.buildpath"/>
       </page>
@@ -204,7 +204,7 @@
             id="descent.ui.propertyPages.CodeStylePreferencePage">
          <filter
                name="nature"
-               value="descent.core.javanature">
+               value="descent.core.dnature">
          </filter>
          <keywordReference id="descent.ui.codestyle"/>
       </page>
@@ -215,7 +215,7 @@
             id="descent.ui.propertyPages.CodeStylePreferencePage">
          <filter
                name="nature"
-               value="descent.core.javanature">
+               value="descent.core.dnature">
          </filter>
          <keywordReference id="descent.ui.codestyle"/>
       </page>
@@ -228,7 +228,7 @@
             id="descent.ui.propertyPages.ImportOrganizePreferencePage">
          <filter
                name="nature"
-               value="descent.core.javanature">
+               value="descent.core.dnature">
          </filter>
          <keywordReference id="descent.ui.organizeimports"/>
       </page>
@@ -240,7 +240,7 @@
             id="descent.ui.propertyPages.ImportOrganizePreferencePage">
          <filter
                name="nature"
-               value="descent.core.javanature">
+               value="descent.core.dnature">
          </filter>
           <keywordReference id="descent.ui.organizeimports"/>
       </page>
@@ -252,7 +252,7 @@
             id="descent.ui.propertyPages.CodeFormatterPreferencePage">
          <filter
                name="nature"
-               value="descent.core.javanature">
+               value="descent.core.dnature">
          </filter>
          <keywordReference id="descent.ui.formatter"/>
       </page>
@@ -264,7 +264,7 @@
             id="descent.ui.propertyPages.CodeFormatterPreferencePage">
          <filter
                name="nature"
-               value="descent.core.javanature">
+               value="descent.core.dnature">
          </filter>
          <keywordReference id="descent.ui.formatter"/>
       </page>
@@ -277,7 +277,7 @@
             id="descent.ui.propertyPages.CodeTemplatePreferencePage">
          <filter
                name="nature"
-               value="descent.core.javanature">
+               value="descent.core.dnature">
          </filter>
          <keywordReference id="descent.ui.codetemplates"/>
       </page>
@@ -289,7 +289,7 @@
             id="descent.ui.propertyPages.CodeTemplatePreferencePage">
          <filter
                name="nature"
-               value="descent.core.javanature">
+               value="descent.core.dnature">
          </filter>
          <keywordReference id="descent.ui.codetemplates"/>
       </page>
@@ -303,7 +303,7 @@
             id="descent.ui.propertyPages.CompliancePreferencePage">
           <filter
                name="nature"
-               value="descent.core.javanature">
+               value="descent.core.dnature">
           </filter>
           <keywordReference id="descent.ui.compliance"/>
       </page>
@@ -314,7 +314,7 @@
             id="descent.ui.propertyPages.CompliancePreferencePage">
           <filter
                name="nature"
-               value="descent.core.javanature">
+               value="descent.core.dnature">
           </filter>
           <keywordReference id="descent.ui.compliance"/>
       </page>
@@ -326,7 +326,7 @@
             id="descent.ui.propertyPages.ProblemSeveritiesPreferencePage">
          <filter
                name="nature"
-               value="descent.core.javanature">
+               value="descent.core.dnature">
          </filter>
          <keywordReference id="descent.ui.severities"/>
       </page>
@@ -338,7 +338,7 @@
             id="descent.ui.propertyPages.ProblemSeveritiesPreferencePage">
          <filter
                name="nature"
-               value="descent.core.javanature">
+               value="descent.core.dnature">
          </filter>
          <keywordReference id="descent.ui.severities"/>
       </page>
@@ -350,7 +350,7 @@
             id="descent.ui.propertyPages.JavadocProblemsPreferencePage">
          <filter
                name="nature"
-               value="descent.core.javanature">
+               value="descent.core.dnature">
          </filter>
          <keywordReference id="descent.ui.javadocproblems"/>
       </page>
@@ -362,7 +362,7 @@
             id="descent.ui.propertyPages.JavadocProblemsPreferencePage">
          <filter
                name="nature"
-               value="descent.core.javanature">
+               value="descent.core.dnature">
          </filter>
          <keywordReference id="descent.ui.javadocproblems"/>
       </page>
@@ -374,7 +374,7 @@
             id="descent.ui.propertyPages.JavaBuildPreferencePage">
          <filter
                name="nature"
-               value="descent.core.javanature">
+               value="descent.core.dnature">
          </filter>
          <keywordReference id="descent.ui.building"/>
       </page>
@@ -386,7 +386,7 @@
             id="descent.ui.propertyPages.JavaBuildPreferencePage">
          <filter
                name="nature"
-               value="descent.core.javanature">
+               value="descent.core.dnature">
          </filter>
          <keywordReference id="descent.ui.building"/>
       </page>
@@ -399,7 +399,7 @@
             id="descent.ui.propertyPages.TodoTaskPreferencePage">
          <filter
                name="nature"
-               value="descent.core.javanature">
+               value="descent.core.dnature">
          </filter>
          <keywordReference id="descent.ui.todo"/>
       </page>
@@ -411,7 +411,7 @@
             id="descent.ui.propertyPages.TodoTaskPreferencePage">
          <filter
                name="nature"
-               value="descent.core.javanature">
+               value="descent.core.dnature">
          </filter>
          <keywordReference id="descent.ui.todo"/>
       </page>
@@ -435,7 +435,7 @@
             id="descent.internal.ui.preferences.JavadocConfigurationPropertyPage1">
          <filter
                name="nature"
-               value="descent.core.javanature">
+               value="descent.core.dnature">
          </filter>
       </page>
       <page
@@ -445,7 +445,7 @@
             id="descent.internal.ui.preferences.JavadocConfigurationPropertyPage4">
          <filter
                name="nature"
-               value="descent.core.javanature">
+               value="descent.core.dnature">
          </filter>
       </page>
       <page
@@ -722,7 +722,7 @@
       <image
             icon="icons/d_ovr.gif"
             id="descent.ui.dProjectNatureImage"
-            natureId="descent.core.javanature"/>
+            natureId="descent.core.dnature"/>
    </extension>
    <!-- commands to surface java elements given handle id encoded parameter -->
 	<extension
@@ -2242,7 +2242,7 @@
 							type="org.eclipse.core.resources.IProject" >
 						<test
 							property="org.eclipse.core.resources.projectNature"
-							value="descent.core.javanature" />
+							value="descent.core.dnature" />
 					</adapt>
 					<instanceof
 							value="org.eclipse.core.resources.IWorkspaceRoot" />
@@ -2370,7 +2370,7 @@
 		           <adapt type="org.eclipse.core.resources.IProject">
 		              <test
 		                    property="org.eclipse.core.resources.projectNature"
-		                    value="descent.core.javanature"/>
+		                    value="descent.core.dnature"/>
 		           </adapt>
 		        </or>
 		     </enablement>
@@ -2386,7 +2386,7 @@
 		           <adapt type="org.eclipse.core.resources.IProject">
 		              <test
 		                    property="org.eclipse.core.resources.projectNature"
-		                    value="descent.core.javanature"/>
+		                    value="descent.core.dnature"/>
 		           </adapt>
 		        </or>
 		     </enablement>
@@ -2404,7 +2404,7 @@
 		           <adapt type="org.eclipse.core.resources.IProject">
 		              <test
 		                    property="org.eclipse.core.resources.projectNature"
-		                    value="descent.core.javanature"/>
+		                    value="descent.core.dnature"/>
 		           </adapt>
 		        </or>
 		     </enablement>
@@ -2421,7 +2421,7 @@
 		           <adapt type="org.eclipse.core.resources.IProject">
 		              <test
 		                    property="org.eclipse.core.resources.projectNature"
-		                    value="descent.core.javanature"/>
+		                    value="descent.core.dnature"/>
 		           </adapt>
 		        </or>
 		     </enablement>
@@ -2439,7 +2439,7 @@
 				           <adapt type="org.eclipse.core.resources.IProject">
 				              <test
 				                    property="org.eclipse.core.resources.projectNature"
-				                    value="descent.core.javanature"/>
+				                    value="descent.core.dnature"/>
 				           </adapt>
 				        </or>
 				     </enablement>
@@ -2455,7 +2455,7 @@
 				           <adapt type="org.eclipse.core.resources.IProject">
 				              <test
 				                    property="org.eclipse.core.resources.projectNature"
-				                    value="descent.core.javanature"/>
+				                    value="descent.core.dnature"/>
 				           </adapt>
 				        </or>
 				     </enablement>
@@ -2472,7 +2472,7 @@
 		           <adapt type="org.eclipse.core.resources.IProject">
 		              <test
 		                    property="org.eclipse.core.resources.projectNature"
-		                    value="descent.core.javanature"/>
+		                    value="descent.core.dnature"/>
 		           </adapt>
 		        </or>
 		     </enablement>
@@ -2488,7 +2488,7 @@
 		           <adapt type="org.eclipse.core.resources.IProject">
 		              <test
 		                    property="org.eclipse.core.resources.projectNature"
-		                    value="descent.core.javanature"/>
+		                    value="descent.core.dnature"/>
 		           </adapt>
 		        </or>
 		     </enablement>
@@ -2649,7 +2649,7 @@
             class="descent.internal.ui.model.JavaModelProvider"/>
       <extends-model id="org.eclipse.core.resources.modelProvider"/>
       <enablement>
-          <test property="org.eclipse.core.resources.projectNature" value="descent.core.javanature" />
+          <test property="org.eclipse.core.resources.projectNature" value="descent.core.dnature" />
       </enablement>
    </extension>
    

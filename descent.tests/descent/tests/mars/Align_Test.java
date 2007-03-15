@@ -2,7 +2,7 @@ package descent.tests.mars;
 
 import descent.core.dom.ASTNode;
 import descent.core.dom.AlignDeclaration;
-import descent.internal.core.parser.global;
+import descent.internal.compiler.parser.global;
 
 public class Align_Test extends Parser_Test {
 	

@@ -22,6 +22,19 @@ public class Union_Test extends Parser_Test {
 		assertEquals(0, c.baseClasses().size());
 	}
 	
+	public void testAnnonymous() {
+		String s = " union { }";
+		
+		AggregateDeclaration c = (AggregateDeclaration) getSingleDeclarationNoProblems(s);
+		assertEquals(ASTNode.AGGREGATE_DECLARATION, c.getNodeType());
+		assertEquals(AggregateDeclaration.Kind.UNION, c.getKind());
+		assertPosition(c, 1, 9);
+		
+		assertNull(c.getName());
+		
+		assertEquals(0, c.baseClasses().size());
+	}
+	
 	public void testSemicolon() {
 		String s = " union Clazz;";
 		AggregateDeclaration c = (AggregateDeclaration) getSingleDeclarationNoProblems(s);

@@ -3,7 +3,7 @@
 <plugin>
 
    <extension
-         id="javanature"
+         id="dnature"
          name="D"
          point="org.eclipse.core.resources.natures">
       <runtime>

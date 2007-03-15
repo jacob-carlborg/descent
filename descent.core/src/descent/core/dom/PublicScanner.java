@@ -3,7 +3,7 @@ package descent.core.dom;
 import descent.core.compiler.CharOperation;
 import descent.core.compiler.IScanner;
 import descent.core.compiler.InvalidInputException;
-import descent.internal.core.parser.TOK;
+import descent.internal.compiler.parser.TOK;
 
 /**
  * Implementation of an IScanner for the D language.
@@ -21,7 +21,7 @@ public class PublicScanner implements IScanner {
 	private final boolean recordLineSeparator;
 	private final int apiLevel;
 	private char[] source;
-	public Lexer lexer;
+	public descent.internal.compiler.parser.Lexer lexer;
 
 	public PublicScanner(boolean tokenizeComments, boolean tokenizePragmas, boolean tokenizeWhiteSpace, boolean recordLineSeparator, int apiLevel) {
 		this.tokenizeComments = tokenizeComments;
@@ -178,7 +178,7 @@ public class PublicScanner implements IScanner {
 
 	public void resetTo(int startPosition, int endPosition) {
 		if (this.lexer == null) {
-			this.lexer = new Lexer(source, startPosition, endPosition - startPosition, tokenizeComments, tokenizePragmas, tokenizeWhiteSpace, recordLineSeparator, apiLevel);
+			this.lexer = new descent.internal.compiler.parser.Lexer(source, startPosition, endPosition - startPosition, tokenizeComments, tokenizePragmas, tokenizeWhiteSpace, recordLineSeparator, apiLevel);
 		} else {
 			this.lexer.reset(startPosition, endPosition - startPosition);
 		}
@@ -187,7 +187,7 @@ public class PublicScanner implements IScanner {
 	public void setSource(char[] source) {
 		this.source = source;
 		if (this.lexer == null) {
-			this.lexer = new Lexer(source, 0, source.length, tokenizeComments, tokenizePragmas, tokenizeWhiteSpace, recordLineSeparator, apiLevel);
+			this.lexer = new descent.internal.compiler.parser.Lexer(source, 0, source.length, tokenizeComments, tokenizePragmas, tokenizeWhiteSpace, recordLineSeparator, apiLevel);
 		} else {
 			this.lexer.reset(source, 0, source.length, tokenizeComments, tokenizePragmas, tokenizeWhiteSpace, recordLineSeparator);
 		}
@@ -198,7 +198,7 @@ public class PublicScanner implements IScanner {
 	 * This method allows this scanner to reuse the lexer that is used
 	 * to parse a compilation unit.
 	 */
-	public void setLexerAndSource(Lexer lexer, char[] source) {
+	public void setLexerAndSource(descent.internal.compiler.parser.Lexer lexer, char[] source) {
 		this.lexer = lexer;
 		this.source = source;
 	}

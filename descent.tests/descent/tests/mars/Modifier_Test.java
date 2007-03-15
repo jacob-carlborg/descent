@@ -23,11 +23,13 @@ public class Modifier_Test extends Parser_Test {
 	
 	public void testAllModifiersAsJava() {
 		Object[][] objs = {
+				/*
 				{ "private", Modifier.ModifierKeyword.PRIVATE_KEYWORD },
 				{ "package", Modifier.ModifierKeyword.PACKAGE_KEYWORD },
 				{ "protected", Modifier.ModifierKeyword.PROTECTED_KEYWORD },
 				{ "public", Modifier.ModifierKeyword.PUBLIC_KEYWORD },
 				{ "export", Modifier.ModifierKeyword.EXPORT_KEYWORD },
+				*/
 				{ "const", Modifier.ModifierKeyword.CONST_KEYWORD },
 				{ "final", Modifier.ModifierKeyword.FINAL_KEYWORD },
 				{ "auto", Modifier.ModifierKeyword.AUTO_KEYWORD },
@@ -204,7 +206,6 @@ public class Modifier_Test extends Parser_Test {
 			assertEquals(pair[1], modifierDeclaration.getModifier().getModifierKeyword());
 			assertPosition(modifierDeclaration.getModifier(), 1, ((String) pair[0]).length());
 			assertEquals(1, modifierDeclaration.declarations().size());
-			assertEquals(ModifierDeclaration.Syntax.CURLY_BRACES, modifierDeclaration.getSyntax());
 			assertEquals(0, modifierDeclaration.modifiers().size());
 		}
 	}
@@ -232,7 +233,6 @@ public class Modifier_Test extends Parser_Test {
 			assertEquals(pair[1], modifierDeclaration.getModifier().getModifierKeyword());
 			assertPosition(modifierDeclaration.getModifier(), 1, ((String) pair[0]).length());
 			assertEquals(1, modifierDeclaration.declarations().size());
-			assertEquals(ModifierDeclaration.Syntax.COLON, modifierDeclaration.getSyntax());
 			assertEquals(0, modifierDeclaration.modifiers().size());
 		}
 	}

@@ -151,7 +151,7 @@ If no handled marker type are specified, the processor will get problems of type
    &lt;enablement&gt;
       &lt;with variable=&quot;projectNatures&quot;&gt;
          &lt;iterate operator=&quot;or&quot;&gt;
-            &lt;equals value=&quot;descent.core.javanature&quot;/&gt;
+            &lt;equals value=&quot;descent.core.dnature&quot;/&gt;
          &lt;/iterate&gt;
       &lt;/with&gt;
    &lt;/enablement&gt;

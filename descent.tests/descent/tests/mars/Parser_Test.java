@@ -7,11 +7,14 @@ import descent.core.compiler.IProblem;
 import descent.core.dom.AST;
 import descent.core.dom.ASTNode;
 import descent.core.dom.CompilationUnit;
+import descent.core.dom.CompilationUnitResolver;
 import descent.core.dom.Declaration;
 import descent.core.dom.Expression;
 import descent.core.dom.Initializer;
 import descent.core.dom.ModuleDeclaration;
 import descent.core.dom.Statement;
+import descent.internal.compiler.parser.Module;
+import descent.internal.compiler.parser.Parser;
 
 public abstract class Parser_Test extends TestCase {
 	
@@ -86,6 +89,21 @@ public abstract class Parser_Test extends TestCase {
 	protected CompilationUnit getCompilationUnit(String source, int apiLevel) {
 		CompilationUnit unit = new ParserFacade().parseCompilationUnit(source, apiLevel);
 		return unit;
+	}
+	
+	protected Module getModule(String source) {
+		Parser parser = new Parser(AST.newAST(AST.D2), source);
+		return parser.parseModuleObj();
+	}
+	
+	protected Module getModuleSemantic(String source) {
+		Module module = getModule(source);
+		return CompilationUnitResolver.semantic1(module);
+	}
+	
+	protected IProblem[] getModuleProblems(String source) {
+		Module module = getModuleSemantic(source);
+		return module.problems.toArray(new IProblem[module.problems.size()]);
 	}
 	
 	protected void assertOriginal(ASTNode elem) {

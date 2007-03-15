@@ -18,30 +18,6 @@ import java.util.List;
 public class ModifierDeclaration extends Declaration {
 	
 	/**
-	 * The syntax used in the declaration.
-	 */
-	public static enum Syntax {
-		/** 
-		 * The syntax is:
-		 * 
-		 * <pre>
-		 * ProtectionDeclaration:
-		 *    Modifier <b>{</b> { Declaration } <b>}</b> 
-		 * </pre>
-		 */ 
-		CURLY_BRACES,
-		/** 
-		 * The syntax is:
-		 * 
-		 * <pre>
-		 * ProtectionDeclaration:
-		 *    Modifier <b>:</b> { Declaration } 
-		 * </pre>
-		 */
-		COLON
-	}
-	
-	/**
 	 * The "preDDocs" structural property of this node type.
 	 */
 	public static final ChildListPropertyDescriptor PRE_D_DOCS_PROPERTY =
@@ -52,12 +28,6 @@ public class ModifierDeclaration extends Declaration {
 	 */
 	public static final ChildListPropertyDescriptor MODIFIERS_PROPERTY =
 	internalModifiersPropertyFactory(ModifierDeclaration.class); //$NON-NLS-1$
-
-	/**
-	 * The "syntax" structural property of this node type.
-	 */
-	public static final SimplePropertyDescriptor SYNTAX_PROPERTY =
-		new SimplePropertyDescriptor(ModifierDeclaration.class, "syntax", Syntax.class, OPTIONAL); //$NON-NLS-1$
 
 	/**
 	 * The "modifier" structural property of this node type.
@@ -89,8 +59,6 @@ public class ModifierDeclaration extends Declaration {
 		createPropertyList(ModifierDeclaration.class, properyList);
 		addProperty(PRE_D_DOCS_PROPERTY, properyList);
 		addProperty(MODIFIERS_PROPERTY, properyList);
-		addProperty(SYNTAX_PROPERTY, properyList);
-		addProperty(MODIFIER_PROPERTY, properyList);
 		addProperty(DECLARATIONS_PROPERTY, properyList);
 		addProperty(POST_D_DOC_PROPERTY, properyList);
 		PROPERTY_DESCRIPTORS = reapPropertyList(properyList);
@@ -110,11 +78,6 @@ public class ModifierDeclaration extends Declaration {
 	public static List propertyDescriptors(int apiLevel) {
 		return PROPERTY_DESCRIPTORS;
 	}
-
-	/**
-	 * The syntax.
-	 */
-	private Syntax syntax = Syntax.CURLY_BRACES;
 
 	/**
 	 * The modifier.
@@ -147,22 +110,6 @@ public class ModifierDeclaration extends Declaration {
 	 */
 	final List internalStructuralPropertiesForType(int apiLevel) {
 		return propertyDescriptors(apiLevel);
-	}
-
-	/* (omit javadoc for this method)
-	 * Method declared on ASTNode.
-	 */
-	final Object internalGetSetObjectProperty(SimplePropertyDescriptor property, boolean get, Object value) {
-		if (property == SYNTAX_PROPERTY) {
-			if (get) {
-				return getSyntax();
-			} else {
-				setSyntax((Syntax) value);
-				return null;
-			}
-		}
-		// allow default implementation to flag the error
-		return super.internalGetSetObjectProperty(property, get, value);
 	}
 
 	/* (omit javadoc for this method)
@@ -236,7 +183,6 @@ public class ModifierDeclaration extends Declaration {
 		result.setSourceRange(this.getStartPosition(), this.getLength());
 		result.preDDocs.addAll(ASTNode.copySubtrees(target, preDDocs()));
 		result.modifiers.addAll(ASTNode.copySubtrees(target, modifiers()));
-		result.setSyntax(getSyntax());
 		result.setModifier((Modifier) getModifier().clone(target));
 		result.declarations.addAll(ASTNode.copySubtrees(target, declarations()));
 	result.setPostDDoc((DDocComment) ASTNode.copySubtree(target, getPostDDoc()));
@@ -265,30 +211,6 @@ public class ModifierDeclaration extends Declaration {
 			acceptChild(visitor, getPostDDoc());
 		}
 		visitor.endVisit(this);
-	}
-
-	/**
-	 * Returns the syntax of this modifier declaration.
-	 * 
-	 * @return the syntax
-	 */ 
-	public Syntax getSyntax() {
-		return this.syntax;
-	}
-
-	/**
-	 * Sets the syntax of this modifier declaration.
-	 * 
-	 * @param syntax the syntax
-	 * @exception IllegalArgumentException if the argument is incorrect
-	 */ 
-	public void setSyntax(Syntax syntax) {
-		if (syntax == null) {
-			throw new IllegalArgumentException();
-		}
-		preValueChange(SYNTAX_PROPERTY);
-		this.syntax = syntax;
-		postValueChange(SYNTAX_PROPERTY);
 	}
 
 	/**
@@ -346,7 +268,7 @@ public class ModifierDeclaration extends Declaration {
 	 * Method declared on ASTNode.
 	 */
 	int memSize() {
-		return BASE_NODE_SIZE + 6 * 4;
+		return BASE_NODE_SIZE + 5 * 4;
 	}
 
 	/* (omit javadoc for this method)

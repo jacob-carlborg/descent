@@ -17,5 +17,6 @@ Export-Package: descent.core,
  descent.core.dom.rewrite,
  descent.core.formatter,
  descent.core.search,
- descent.internal.core.parser;x-friends:="descent.tests"
+ descent.internal.compiler,
+ descent.internal.compiler.parser
 Eclipse-BuddyPolicy: registered

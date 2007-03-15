@@ -1831,6 +1831,18 @@ public final class AST {
 		QualifiedType node = new QualifiedType(this);
 		return node;
 	}
+	
+	/**
+	 * Creates an unparented qualified type node owned by this AST.
+	 * 
+	 * @return the new unparented qualified type node
+	 */
+	public QualifiedType newQualifiedType(Type qualifier, Type type) {
+		QualifiedType node = new QualifiedType(this);
+		node.setQualifier(qualifier);
+		node.setType(type);
+		return node;
+	}
 
 	/**
 	 * Creates an unparented return statement node owned by this AST.

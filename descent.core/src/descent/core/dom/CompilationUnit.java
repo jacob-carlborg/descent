@@ -785,7 +785,7 @@ public class CompilationUnit extends ASTNode {
 	
 	public IProblem[] getProblems() {
 		if (problems == null) return new IProblem[0];
-		return problems.toArray(new IProblem[0]);
+		return problems.toArray(new IProblem[problems.size()]);
 	}
 
 }

@@ -11,25 +11,20 @@
 package descent.core.dom;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.eclipse.core.runtime.IProgressMonitor;
-import descent.core.dom.CompilationUnitResolver;
-
-import descent.core.JavaModelException;
-import descent.internal.compiler.util.SuffixConstants;
-import descent.internal.core.BasicCompilationUnit;
-import descent.internal.core.PackageFragment;
-import descent.internal.core.util.Util;
 
 import descent.core.IClassFile;
 import descent.core.ICompilationUnit;
 import descent.core.IJavaElement;
 import descent.core.IJavaProject;
 import descent.core.JavaCore;
+import descent.core.JavaModelException;
 import descent.core.WorkingCopyOwner;
 import descent.core.compiler.CharOperation;
+import descent.internal.compiler.parser.Module;
+import descent.internal.core.BasicCompilationUnit;
 import descent.internal.core.DefaultWorkingCopyOwner;
 
 /**
@@ -809,7 +804,7 @@ public class ASTParser {
 			}
 			break;
 		case K_COMPILATION_UNIT :
-			CompilationUnit result = null;
+			Module result = null;
 			descent.internal.compiler.env.ICompilationUnit sourceUnit = null;
 			IJavaElement element = null;
 			if (this.compilationUnitSource != null) {
@@ -889,8 +884,9 @@ public class ASTParser {
 				}
 			}
 			
-			result.setJavaElement(element);
-			return result;
+			CompilationUnit unit = CompilationUnitResolver.convert(result, monitor);
+			unit.setJavaElement(element);
+			return unit;
 		}		
 		throw new IllegalStateException();
 	}
@@ -914,24 +910,24 @@ public class ASTParser {
 		}
 		
 		try {
-			Parser parser = null;
+			descent.internal.compiler.parser.Parser parser = null;
 			ASTNode result = null;
 			switch(this.astKind) {
 			case K_INITIALIZER :
-				parser = new Parser(ast, rawSource, sourceOffset, sourceLength);
-				result = parser.parseInitializer();
+				parser = new descent.internal.compiler.parser.Parser(ast, rawSource, sourceOffset, sourceLength);
+				result = CompilationUnitResolver.convert(ast, parser.parseInitializer());
 				return result;
 			case K_EXPRESSION :
-				parser = new Parser(ast, rawSource, sourceOffset, sourceLength);
-				result = parser.parseExpression();
+				parser = new descent.internal.compiler.parser.Parser(ast, rawSource, sourceOffset, sourceLength);
+				result = CompilationUnitResolver.convert(ast, parser.parseExpression());
 				return result;
 			case K_STATEMENT :
-				parser = new Parser(ast, rawSource, sourceOffset, sourceLength);
-				result = parser.parseStatement(0);
+				parser = new descent.internal.compiler.parser.Parser(ast, rawSource, sourceOffset, sourceLength);
+				result = CompilationUnitResolver.convert(ast, parser.parseStatement(0));
 				return result;
 			case K_STATEMENTS:
-				parser = new Parser(ast, rawSource, sourceOffset, sourceLength);
-				result = parser.parseStatement(0);
+				parser = new descent.internal.compiler.parser.Parser(ast, rawSource, sourceOffset, sourceLength);
+				result = CompilationUnitResolver.convert(ast, parser.parseStatement(0));
 				for(Statement statement : ((Block) result).statements()) {
 					statement.accept(new GenericVisitor() {
 						protected boolean visitNode(ASTNode node) {

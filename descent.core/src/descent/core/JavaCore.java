@@ -157,13 +157,13 @@ public final class JavaCore extends Plugin {
 
 	/**
 	 * The identifier for the Java nature
-	 * (value <code>"descent.core.javanature"</code>).
+	 * (value <code>"descent.core.dnature"</code>).
 	 * The presence of this nature on a project indicates that it is 
 	 * Java-capable.
 	 *
 	 * @see org.eclipse.core.resources.IProject#hasNature(java.lang.String)
 	 */
-	public static final String NATURE_ID = PLUGIN_ID + ".javanature" ; //$NON-NLS-1$
+	public static final String NATURE_ID = PLUGIN_ID + ".dnature" ; //$NON-NLS-1$
 
 	/**
 	 * Name of the handle id attribute in a Java marker.
