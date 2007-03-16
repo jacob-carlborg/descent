@@ -59,7 +59,7 @@ public class Semantic1_Test extends Parser_Test {
 		assertError(p[2], IProblem.PropertyCanNotBeRedefined, 39, 8);
 	}
 	
-	/*
+	/* TODO semantic test
 	public void testTypedefCircularDefinition() {
 		String s = "typedef int a; typedef a b; typedef b a;";
 		IProblem[] p = getModuleProblems(s);
@@ -69,5 +69,53 @@ public class Semantic1_Test extends Parser_Test {
 		assertError(p[1], IProblem.CircularDefinition, 14, 6);
 	}
 	*/
+	
+	public void testEnumBaseTypeMustBeOfIntegralType() {
+		String s = "enum x : double { a }";
+		IProblem[] p = getModuleProblems(s);
+		assertEquals(1, p.length);
+		
+		assertError(p[0], IProblem.EnumBaseTypeMustBeOfIntegralType, 9, 6);
+	}
+	
+	public void testEnumBaseTypeMustBeOfIntegralType_OK() {
+		assertNoSemanticErrors("enum x : int { a }");
+	}
+	
+	public void testEnumMustHaveAtLeastOneMember() {
+		String s = "enum x { }";
+		IProblem[] p = getModuleProblems(s);
+		assertEquals(1, p.length);
+		
+		assertError(p[0], IProblem.EnumMustHaveAtLeastOneMember, 5, 1);
+	}
+	
+	public void testEnumAnonMustHaveAtLeastOneMember2() {
+		String s = " enum { }";
+		IProblem[] p = getModuleProblems(s);
+		assertEquals(1, p.length);
+		
+		assertError(p[0], IProblem.EnumMustHaveAtLeastOneMember, 1, 4);
+	}
+	
+	public void testEnumMustHaveAtLeastOneMember_OK() {
+		assertNoSemanticErrors("enum x { a }");
+	}
+	
+	public void testEnumOverflowWithBool() {
+		String s = "enum x : bool { a, b, c }";
+		IProblem[] p = getModuleProblems(s);
+		assertEquals(1, p.length);
+		
+		assertError(p[0], IProblem.EnumValueOverflow, 22, 1);
+	}
+	
+	public void testEnumOverflowWithBool2() {
+		String s = "enum x : bool { a = 1, b }";
+		IProblem[] p = getModuleProblems(s);
+		assertEquals(1, p.length);
+		
+		assertError(p[0], IProblem.EnumValueOverflow, 23, 1);
+	}
 
 }

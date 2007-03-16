@@ -98,12 +98,21 @@ public abstract class Parser_Test extends TestCase {
 	
 	protected Module getModuleSemantic(String source) {
 		Module module = getModule(source);
-		return CompilationUnitResolver.semantic1(module);
+		module = CompilationUnitResolver.semantic1(module);
+		
+		// Just to make sure an exception is not thrown in ASTConverter
+		CompilationUnitResolver.convert(module, null);
+		
+		return module;
 	}
 	
 	protected IProblem[] getModuleProblems(String source) {
 		Module module = getModuleSemantic(source);
 		return module.problems.toArray(new IProblem[module.problems.size()]);
+	}
+	
+	protected void assertNoSemanticErrors(String source) {
+		assertEquals(0, getModuleProblems(source).length);
 	}
 	
 	protected void assertOriginal(ASTNode elem) {

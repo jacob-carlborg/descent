@@ -14,6 +14,16 @@ public class TypeTypedef extends Type {
 		 sym.semantic(sc, context);
 		 return merge(context);
 	}
+	
+	@Override
+	public boolean isintegral() {
+		return sym.basetype.isintegral();
+	}
+	
+	@Override
+	public boolean isunsigned() {
+		return sym.basetype.isunsigned();
+	}
 
 	@Override
 	public int kind() {

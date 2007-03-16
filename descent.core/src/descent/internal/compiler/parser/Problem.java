@@ -43,16 +43,20 @@ public class Problem implements IProblem {
 		return p;
 	}
 	
-	public static Problem newSemanticTypeError(String message, int id, CompilationUnit unit, ASTNode node) {
+	public static Problem newSemanticTypeError(String message, int id, int line, int sourceStart, int length) {
 		Problem p = new Problem();
 		p.message = message;
 		p.isError = true;
 		p.id = id;
 		p.categoryId = CAT_TYPE;
-		p.sourceLineNumber = unit.getLineNumber(node.getStartPosition());
-		p.sourceStart = node.getStartPosition();
-		p.sourceEnd = p.sourceStart + node.getLength() - 1;
+		p.sourceLineNumber = line;
+		p.sourceStart = sourceStart;
+		p.sourceEnd = sourceStart + length - 1;
 		return p;
+	}
+	
+	public static Problem newSemanticTypeError(String message, int id, CompilationUnit unit, ASTNode node) {
+		return newSemanticTypeError(message, id, unit.getLineNumber(node.getStartPosition()), node.getStartPosition(), node.getStartPosition() + node.getLength() - 1);
 	}
 	
 	public int getID() {

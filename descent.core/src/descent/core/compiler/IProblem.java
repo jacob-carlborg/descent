@@ -265,10 +265,14 @@ public interface IProblem {
 	int NeedSizeOfRightmostArray = 126;
 	
 	/* Semantic problems */
-	int BaseTypeMustBeOfIntegralType = 301;
 	int DuplicatedSymbol = 302;
 	int PropertyCanNotBeRedefined = 303;
 	int CircularDefinition = 304;
+	int EnumValueOverflow = 305;
+	int EnumMustHaveAtLeastOneMember = 306;
+	int EnumBaseTypeMustBeOfIntegralType = 307;
+	int ForwardReference = 308;
+	int IntegerConstantExpressionExpected = 309;	
 	
 	/* Others, needed by JDT */
 	int ForbiddenReference = 2001;

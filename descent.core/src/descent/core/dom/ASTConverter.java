@@ -1071,7 +1071,7 @@ public class ASTConverter {
 	public descent.core.dom.EnumMember convert(EnumMember a) {
 		descent.core.dom.EnumMember b = new descent.core.dom.EnumMember(ast);
 		b.setName(convert(a.ident));
-		if (a.value == null) {
+		if (a.value == null || a.value.synthetic) {
 			b.setSourceRange(a.ident.start, a.ident.length);
 		} else {
 			b.setValue(convert(a.value));

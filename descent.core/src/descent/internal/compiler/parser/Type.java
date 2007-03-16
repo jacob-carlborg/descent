@@ -82,5 +82,22 @@ public abstract class Type extends ASTNode {
 	public Expression toExpression() {
 		return null;
 	}
+	
+	public Type toBasetype(SemanticContext context) {
+		return this;
+	}
+
+	public Dsymbol toDsymbol(Scope sc) {
+		// TODO
+		return null;
+	}
+
+	public boolean isintegral() {
+		return false;
+	}
+
+	public boolean isunsigned() {
+		return false;
+	}
 
 }

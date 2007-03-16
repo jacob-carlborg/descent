@@ -174,6 +174,7 @@ public abstract class ASTNode {
 	public final static int TYPE_S_ARRAY = 164;
 	public final static int TYPE_SLICE = 165;
 	public final static int TYPE_TYPEDEF = 166;
+	public final static int TYPE_ENUM = 167;
 	
 	public int start;
 	public int length;
@@ -182,6 +183,12 @@ public abstract class ASTNode {
 	public List<DDocComment> preDdocs;
 	public List<Modifier> modifiers;
 	public DDocComment postDdoc;
+	
+	/**
+	 * Denotes a node created during the semantic pass, must be ignored
+	 * by ASTConverter.
+	 */ 
+	public boolean synthetic;  
 	
 	public void setSourceRange(int startPosition, int length) {
 		this.start = startPosition;

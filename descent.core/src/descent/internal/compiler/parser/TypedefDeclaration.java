@@ -30,7 +30,7 @@ public class TypedefDeclaration extends Declaration {
 			    semantic2(sc, context);
 			}
 		} else if (sem == 1) {
-			context.problemRequestor.acceptProblem(Problem.newSemanticMemberError("Circular definition", IProblem.CircularDefinition, 0, ident.start, ident.length));
+			context.problemRequestor.acceptProblem(Problem.newSemanticTypeError("Circular definition", IProblem.CircularDefinition, 0, ident.start, ident.length));
 	    }
 	}
 	

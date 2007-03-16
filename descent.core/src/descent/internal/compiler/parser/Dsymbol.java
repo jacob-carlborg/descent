@@ -5,7 +5,7 @@ import descent.core.compiler.IProblem;
 public abstract class Dsymbol extends ASTNode {
 	
 	public Dsymbol parent;
-	public IdentifierExp ident;	
+	public IdentifierExp ident;
 	
 	public Dsymbol() {
 	}
@@ -18,16 +18,16 @@ public abstract class Dsymbol extends ASTNode {
 		return ident == null;
 	}
 	
-	public boolean isAggregateDeclaration() {
-		int k = kind();
-		return k == CLASS_DECLARATION || 
-			k == STRUCT_DECLARATION ||
-			k == INTERFACE_DECLARATION ||
-			k == UNION_DECLARATION;		
+	public AggregateDeclaration isAggregateDeclaration() {
+		return null;	
 	}
 	
-	public boolean isEnumDeclaration() {
-		return kind() == ENUM_DECLARATION;
+	public EnumDeclaration isEnumDeclaration() {
+		return null;
+	}
+	
+	public EnumMember isEnumMember() {
+		return null;
 	}
 	
 	public boolean isFuncDeclaration() {
@@ -47,7 +47,7 @@ public abstract class Dsymbol extends ASTNode {
 					sd.multiplyDefined(this, s2, context.problemRequestor);
 				}
 			}
-			if (sd.isAggregateDeclaration() || sd.isEnumDeclaration()) {
+			if (sd.isAggregateDeclaration() != null || sd.isEnumDeclaration() != null) {
 				if (ident.ident == Id.__sizeof 
 						|| ident.ident == Id.alignof 
 						|| ident.ident == Id.mangleof) {

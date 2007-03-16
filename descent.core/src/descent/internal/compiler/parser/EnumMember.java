@@ -10,6 +10,11 @@ public class EnumMember extends Dsymbol {
 	}
 	
 	@Override
+	public EnumMember isEnumMember() {
+		return this;
+	}
+	
+	@Override
 	public int kind() {
 		return ENUM_MEMBER;
 	}

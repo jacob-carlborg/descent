@@ -7,6 +7,16 @@ public class TypePointer extends Type {
 	}
 	
 	@Override
+	public Type semantic(Scope sc, SemanticContext context) {
+	    Type n = next.semantic(sc, context);
+	    if (n != next) {
+	    	deco = null;
+	    }
+	    next = n;
+	    return merge(context);
+	}
+	
+	@Override
 	public int kind() {
 		return TYPE_POINTER;
 	}
