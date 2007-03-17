@@ -281,6 +281,7 @@ public interface IProblem {
 	int ClassHasNoBaseClass = 315;
 	int AliasCannotBeConst = 316;
 	int RecursiveDeclaration = 317;
+	int MemberIsPrivate = 318;
 	
 	/* Others, needed by JDT */
 	int ForbiddenReference = 2001;

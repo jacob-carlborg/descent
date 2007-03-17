@@ -3,6 +3,8 @@ package descent.internal.compiler.parser;
 
 public class Identifier {
 	
+	public final static boolean DYNCAST_IDENTIFIER = true;
+	
 	public int startPosition;
 	public int length;
 	public int lineNumber;
@@ -24,6 +26,10 @@ public class Identifier {
 	
 	public String getIdentifier() {
 		return string;
+	}
+	
+	public boolean dyncast() {
+		return true;
 	}
 
 }

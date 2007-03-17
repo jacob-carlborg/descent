@@ -15,6 +15,11 @@ public class TemplateDeclaration extends ScopeDsymbol {
 	}
 	
 	@Override
+	public TemplateDeclaration isTemplateDeclaration() {
+		return this;
+	}
+	
+	@Override
 	public int kind() {
 		return TEMPLATE_DECLARATION;
 	}

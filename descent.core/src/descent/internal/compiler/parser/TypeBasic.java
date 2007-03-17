@@ -51,5 +51,35 @@ public class TypeBasic extends Type {
 	public int kind() {
 		return TYPE_BASIC;
 	}
+	
+	@Override
+	public String toString() {
+		switch(ty) {
+		case Tbit: return "bit";
+		case Tbool: return "bool";
+		case Tchar: return "char";
+		case Tdchar: return "dchar";
+		case Tcomplex32: return "cfloat";
+		case Tcomplex64: return "cdouble";
+		case Tcomplex80: return "creal";
+		case Tfloat32: return "float";
+		case Tfloat64: return "double";
+		case Tfloat80: return "real";
+		case Timaginary32: return "ifloat";
+		case Timaginary64: return "idouble";
+		case Timaginary80: return "ireal";
+		case Tint8: return "byte";
+		case Tint16: return "short";
+		case Tint32: return "int";
+		case Tint64: return "long";
+		case Tuns8: return "ubyte";
+		case Tuns16: return "ushort";
+		case Tuns32: return "uint";
+		case Tuns64: return "ulong";
+		case Tvoid: return "void";
+		case Twchar: return "wchar";
+		}
+		return "?";
+	}
 
 }

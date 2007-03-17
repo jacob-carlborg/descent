@@ -73,7 +73,7 @@ public class EnumDeclaration extends ScopeDsymbol {
 		 * Check to see if memtype is forward referenced
 		 */
 		if (memtype.ty == TY.Tenum) {
-			EnumDeclaration sym = (EnumDeclaration) memtype.toDsymbol(sc);
+			EnumDeclaration sym = (EnumDeclaration) memtype.toDsymbol(sc, context);
 			if (sym.memtype == null) {
 				context.acceptProblem(Problem
 						.newSemanticTypeError(

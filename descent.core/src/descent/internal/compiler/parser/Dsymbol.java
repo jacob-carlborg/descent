@@ -14,8 +14,24 @@ public abstract class Dsymbol extends ASTNode {
 		this.ident = ident;
 	}
 	
+	public boolean isDeprecated() {
+		return false;
+	}
+	
 	public boolean isAnonymous() {
 		return ident == null;
+	}
+	
+	public TemplateDeclaration isTemplateDeclaration() {
+		return null;
+	}
+	
+	public Import isImport() {
+		return null;
+	}
+	
+	public Declaration isDeclaration() {
+		return null;
 	}
 	
 	public AggregateDeclaration isAggregateDeclaration() {
@@ -127,7 +143,7 @@ public abstract class Dsymbol extends ASTNode {
 	
 	public boolean overloadInsert(Dsymbol dsymbol) {
 		return false;
-	}
+	} 
 
 	public void semantic(Scope sc, SemanticContext context) {
 		
@@ -141,7 +157,7 @@ public abstract class Dsymbol extends ASTNode {
 		
 	}
 	
-	public Dsymbol search(IdentifierExp ident, int flags) {
+	public Dsymbol search(IdentifierExp ident, int flags, SemanticContext context) {
 		return null;
 	}
 

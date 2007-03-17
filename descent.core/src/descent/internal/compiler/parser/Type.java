@@ -91,8 +91,7 @@ public abstract class Type extends ASTNode {
 		return this;
 	}
 
-	public Dsymbol toDsymbol(Scope sc) {
-		// TODO
+	public Dsymbol toDsymbol(Scope sc, SemanticContext context) {
 		return null;
 	}
 

@@ -23,7 +23,7 @@ public class AliasDeclaration extends Declaration {
 		if (inSemantic != 0) {
 			context.acceptProblem(Problem.newSemanticTypeError(
 					"Recursive alias declaration",
-					IProblem.RecursiveDeclaration, 0, start, length));
+					IProblem.RecursiveDeclaration, 0, ident.start, ident.length));
 		}
 		Dsymbol s = aliassym != null ? aliassym.toAlias(context) : this;
 		return s;
@@ -68,11 +68,12 @@ public class AliasDeclaration extends Declaration {
 		if (type.ty == TY.Tident) {
 			TypeIdentifier ti = (TypeIdentifier) type;
 
-			s = ti.toDsymbol(sc);
-			if (s != null)
+			s = ti.toDsymbol(sc, context);
+			if (s != null) {
 				// goto L2;
 				semantic_L2(sc, context, s); // it's a symbolic alias
-			return;
+				return;
+			}
 		} else if (type.ty == TY.Tinstance) {
 			// Handle forms like:
 			// alias instance TFoo(int).bar.abc def;
@@ -87,7 +88,7 @@ public class AliasDeclaration extends Declaration {
 					s.semantic2(sc, context);
 
 				for (IdentifierExp id : ti.idents) {
-					s = s.search(id, 0);
+					s = s.search(id, 0, context);
 					if (s == null) { // failed to find a symbol
 						semantic_L1(sc, context); // it must be a type
 						return;
@@ -111,12 +112,16 @@ public class AliasDeclaration extends Declaration {
 	}
 
 	public void semantic_L2(Scope sc, SemanticContext context, Dsymbol s) {
+		Type tempType = type;
 		type = null;
 		VarDeclaration v = s.isVarDeclaration();
 		if (v != null && v.linkage == LINK.LINKdefault) {
 			context.acceptProblem(Problem.newSemanticTypeError(
-					"Forward reference of " + v.ident.ident.string,
-					IProblem.ForwardReference, 0, start, length));
+					"Forward reference",
+					IProblem.ForwardReference, 0, tempType.start, tempType.length));
+			context.acceptProblem(Problem.newSemanticTypeError(
+					v.ident + " is being forward referenced",
+					IProblem.ForwardReference, 0, v.ident.start, v.ident.length));
 			s = null;
 		} else {
 			FuncDeclaration f = s.isFuncDeclaration();
@@ -144,6 +149,11 @@ public class AliasDeclaration extends Declaration {
 	@Override
 	public int kind() {
 		return ALIAS_DECLARATION;
+	}
+	
+	@Override
+	public String toString() {
+		return "alias " + type + " " + ident + ";";
 	}
 
 }

@@ -125,5 +125,34 @@ public class Semantic1_Test extends Parser_Test {
 		
 		assertError(p[0], IProblem.AliasCannotBeConst, 6, 5);
 	}
+	
+	public void testRecursiveAliasDeclaration() {
+		String s = "alias one two; alias two one;";
+		IProblem[] p = getModuleProblems(s);
+		assertEquals(1, p.length);
+		
+		assertError(p[0], IProblem.RecursiveDeclaration, 25, 3);
+	}
+	
+	public void testRecursiveAliasDeclaration2() {
+		String s = "alias one two; alias two three; alias three one;";
+		IProblem[] p = getModuleProblems(s);
+		assertEquals(1, p.length);
+		
+		assertError(p[0], IProblem.RecursiveDeclaration, 44, 3);
+	}
+	
+	public void testRecursiveAliasDeclaration_Not() {
+		assertNoSemanticErrors("alias one two; alias two three;");
+	}
+	
+	public void testAliasForwardReference() {
+		String s = "alias x y; int x = 2;";
+		IProblem[] p = getModuleProblems(s);
+		assertEquals(2, p.length);
+		
+		assertError(p[0], IProblem.ForwardReference, 6, 1);
+		assertError(p[1], IProblem.ForwardReference, 15, 1);
+	}
 
 }

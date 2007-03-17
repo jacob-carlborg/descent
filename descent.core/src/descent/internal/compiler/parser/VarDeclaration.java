@@ -14,7 +14,7 @@ public class VarDeclaration extends Declaration {
 	public VarDeclaration(Type type, IdentifierExp ident, Initializer init) {
 		this.type = type;
 		this.ident = ident;
-		this.init = init;		
+		this.init = init;
 	}
 	
 	@Override
@@ -62,6 +62,11 @@ public class VarDeclaration extends Declaration {
 	@Override
 	public int kind() {
 		return VAR_DECLARATION;
+	}
+	
+	@Override
+	public String toString() {
+		return type + " " + ident + ";";
 	}
 
 }

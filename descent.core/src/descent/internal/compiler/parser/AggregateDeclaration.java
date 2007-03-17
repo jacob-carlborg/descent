@@ -4,6 +4,7 @@ public abstract class AggregateDeclaration extends ScopeDsymbol {
 	
 	public Type type;
 	public int storage_class;
+	public boolean isdeprecated;
 	
 	public AggregateDeclaration(IdentifierExp id) {
 		super(id);
@@ -12,6 +13,11 @@ public abstract class AggregateDeclaration extends ScopeDsymbol {
 	@Override
 	public AggregateDeclaration isAggregateDeclaration() {
 		return this;
+	}
+	
+	@Override
+	public boolean isDeprecated() {
+		return isdeprecated;
 	}
 
 }

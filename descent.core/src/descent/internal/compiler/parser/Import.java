@@ -20,6 +20,11 @@ public class Import extends Dsymbol {
 	}
 	
 	@Override
+	public Import isImport() {
+		return this;
+	}
+	
+	@Override
 	public Dsymbol toAlias(SemanticContext context) {
 		if (aliasId != null)
 			return mod;

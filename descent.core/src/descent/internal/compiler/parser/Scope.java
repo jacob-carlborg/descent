@@ -77,5 +77,59 @@ public class Scope {
 
 	    return enc;
 	}
+	
+	public Dsymbol search(IdentifierExp ident, Dsymbol[] pscopesym,
+			SemanticContext context) {
+		Dsymbol s;
+		Scope sc;
+
+		//printf("Scope::search(%p, '%s')\n", this, ident.toChars());
+		if (ident.ident == Id.empty) {
+			// Look for module scope
+			for (sc = this; sc != null; sc = sc.enclosing) {
+				assert (sc != sc.enclosing);
+				if (sc.scopesym != null) {
+					s = sc.scopesym.isModule();
+					if (s != null) {
+						//printf("\tfound %s.%s\n", s.parent ? s.parent.toChars() : "", s.toChars());
+						if (pscopesym != null)
+							pscopesym[0] = sc.scopesym;
+						return s;
+					}
+				}
+			}
+			return null;
+		}
+
+		for (sc = this; sc != null; sc = sc.enclosing) {
+			assert (sc != sc.enclosing);
+			if (sc.scopesym != null) {
+				//printf("\tlooking in scopesym '%s', kind = '%s'\n", sc.scopesym.toChars(), sc.scopesym.kind());
+				s = sc.scopesym.search(ident, 0, context);
+				if (s != null) {
+					/* TODO semantic
+					 if ((global.params.warnings ||
+					 global.params.Dversion > 1) &&
+					 ident == Id.length &&
+					 sc.scopesym.isArrayScopeSymbol() &&
+					 sc.enclosing &&
+					 sc.enclosing.search(ident, null, context))
+					 {
+					 if (global.params.warnings)
+					 fprintf(stdmsg, "warning - ");
+					 error("array 'length' hides other 'length' name in outer scope");
+					 }
+					 */
+
+					//printf("\tfound %s.%s, kind = '%s'\n", s.parent ? s.parent.toChars() : "", s.toChars(), s.kind());
+					if (pscopesym != null)
+						pscopesym[0] = sc.scopesym;
+					return s;
+				}
+			}
+		}
+
+		return null;
+	}
 
 }

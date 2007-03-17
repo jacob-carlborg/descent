@@ -10,8 +10,10 @@ public class TemplateInstance extends ScopeDsymbol {
 	
 	public List<IdentifierExp> idents;
 	public List<ASTNode> tiargs;
-	public TemplateInstance inst;		// refer to existing instance
-	public AliasDeclaration aliasdecl;	// != null if instance is an alias for its
+	public TemplateDeclaration tempdecl;	// referenced by foo.bar.abc
+	public TemplateInstance inst;			// refer to existing instance
+	public AliasDeclaration aliasdecl;		// != null if instance is an alias for its
+	public boolean semanticdone; 			// has semantic() been done?
 
 	public TemplateInstance(IdentifierExp id) {
 		super(null);
