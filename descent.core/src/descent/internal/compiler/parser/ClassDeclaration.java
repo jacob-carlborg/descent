@@ -21,9 +21,11 @@ public class ClassDeclaration extends AggregateDeclaration {
 	public void semantic(Scope scope, SemanticContext context) {
 		// TODO stub
 		symtab = new DsymbolTable();
-		for(Dsymbol s : members) {
-    		s.addMember(null, this, 1, context);
-    	}
+		if (members != null) {
+			for(Dsymbol s : members) {
+	    		s.addMember(null, this, 1, context);
+	    	}
+		}
 	}
 	
 	@Override

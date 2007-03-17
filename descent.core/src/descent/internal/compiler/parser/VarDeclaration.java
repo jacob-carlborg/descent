@@ -59,6 +59,22 @@ public class VarDeclaration extends Declaration {
 		}
 	}
 	
+	public ExpInitializer getExpInitializer() {
+		ExpInitializer ei;
+
+		if (init != null) {
+			ei = init.isExpInitializer();
+		} else {
+			Expression e = type.defaultInit();
+			if (e != null) {
+				ei = new ExpInitializer(e);
+			} else {
+				ei = null;
+			}
+		}
+		return ei;
+	}
+	
 	@Override
 	public int kind() {
 		return VAR_DECLARATION;

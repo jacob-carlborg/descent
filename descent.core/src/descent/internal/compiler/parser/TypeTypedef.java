@@ -7,6 +7,7 @@ public class TypeTypedef extends Type {
 	public TypeTypedef(TypedefDeclaration sym) {
 		super(TY.Ttypedef, null);
 		this.sym = sym;
+		this.synthetic = true;
 	}
 	
 	@Override

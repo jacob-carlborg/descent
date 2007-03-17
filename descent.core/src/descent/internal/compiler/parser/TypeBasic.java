@@ -1,7 +1,11 @@
 package descent.internal.compiler.parser;
 
+import java.math.BigInteger;
 
 public class TypeBasic extends Type {
+	
+	private final static BigInteger N_0xFF = new BigInteger("FF", 16);
+	private final static BigInteger N_0xFFFF = new BigInteger("FFFF", 16); 
 	
 	public TypeBasic(TY ty) {
 		super(ty, null);
@@ -45,6 +49,34 @@ public class TypeBasic extends Type {
 		default:
 			return false;
 		}
+	}
+	
+	@Override
+	public Expression defaultInit() {
+		BigInteger value = BigInteger.ZERO;
+
+		switch (ty) {
+		case Tchar:
+			value = N_0xFF;
+			break;
+
+		case Twchar:
+		case Tdchar:
+			value = N_0xFFFF;
+			break;
+
+		case Timaginary32:
+		case Timaginary64:
+		case Timaginary80:
+		case Tfloat32:
+		case Tfloat64:
+		case Tfloat80:
+		case Tcomplex32:
+		case Tcomplex64:
+		case Tcomplex80:
+			return getProperty(Id.nan);
+		}
+		return new IntegerExp(value.toString(), value, this);
 	}
 	
 	@Override

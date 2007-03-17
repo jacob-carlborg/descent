@@ -22,6 +22,10 @@ public class IdentifierExp extends Expression {
 		this.length = token.len;
 	}
 	
+	public boolean dyncast() {
+		return Identifier.DYNCAST_IDENTIFIER;
+	}
+	
 	@Override
 	public int kind() {
 		return IDENTIFIER_EXP;

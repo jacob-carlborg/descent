@@ -5,6 +5,7 @@ import descent.core.compiler.IProblem;
 public class TypedefDeclaration extends Declaration {
 	
 	public boolean last; // is this the last declaration in a multi declaration?
+	public Type originalBasetype; // copy of basetype, because it will change
 	public Type basetype;
 	public Initializer init;
 	int sem;			// 0: semantic() has not been run
@@ -16,12 +17,18 @@ public class TypedefDeclaration extends Declaration {
 		super(id);
 		this.type = new TypeTypedef(this);
 		this.basetype = basetype;
+		this.originalBasetype = basetype;
 		this.init = init;				
 	}
 	
 	@Override
+	public Type getType() {
+		return type;
+	}
+	
+	@Override
 	public void semantic(Scope sc, SemanticContext context) {
-		if (sem == 0) {	
+		if (sem == 0) {
 			sem = 1;
 			basetype = basetype.semantic(sc, context);
 			sem = 2;
@@ -37,6 +44,11 @@ public class TypedefDeclaration extends Declaration {
 	@Override
 	public int kind() {
 		return TYPEDEF_DECLARATION;
+	}
+	
+	@Override
+	public String toString() {
+		return "typedef " + basetype + " " + ident + ";";
 	}
 
 }

@@ -38,6 +38,11 @@ public class EnumDeclaration extends ScopeDsymbol {
 	}
 	
 	@Override
+	public Type getType() {
+		return type;
+	}
+	
+	@Override
 	public void semantic(Scope sc, SemanticContext context) {
 		BigInteger number;
 		Type t;

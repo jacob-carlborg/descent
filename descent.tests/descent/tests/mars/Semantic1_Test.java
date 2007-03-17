@@ -49,6 +49,15 @@ public class Semantic1_Test extends Parser_Test {
 		assertError(p[1], IProblem.DuplicatedSymbol, 20, 1);
 	}
 	
+	public void testDuplicatedSymbolWithLink() {
+		String s = "int a; extern { int a; }";
+		IProblem[] p = getModuleProblems(s);
+		assertEquals(2, p.length);
+		
+		assertError(p[0], IProblem.DuplicatedSymbol, 4, 1);
+		assertError(p[1], IProblem.DuplicatedSymbol, 20, 1);
+	}
+	
 	public void testPropertiesCannotBeRedefined() {
 		String s = "class C { int sizeof; int alignof; int mangleof; }";
 		IProblem[] p = getModuleProblems(s);
@@ -59,16 +68,13 @@ public class Semantic1_Test extends Parser_Test {
 		assertError(p[2], IProblem.PropertyCanNotBeRedefined, 39, 8);
 	}
 	
-	/* TODO semantic test
 	public void testTypedefCircularDefinition() {
-		String s = "typedef int a; typedef a b; typedef b a;";
+		String s = "typedef one two; typedef two one;";
 		IProblem[] p = getModuleProblems(s);
-		assertEquals(2, p.length);
+		assertEquals(1, p.length);
 		
-		assertError(p[0], IProblem.CircularDefinition, 12, 1);
-		assertError(p[1], IProblem.CircularDefinition, 14, 6);
+		assertError(p[0], IProblem.CircularDefinition, 29, 3);
 	}
-	*/
 	
 	public void testEnumBaseTypeMustBeOfIntegralType() {
 		String s = "enum x : double { a }";
@@ -126,23 +132,23 @@ public class Semantic1_Test extends Parser_Test {
 		assertError(p[0], IProblem.AliasCannotBeConst, 6, 5);
 	}
 	
-	public void testRecursiveAliasDeclaration() {
+	public void testAliasCircularDeclaration() {
 		String s = "alias one two; alias two one;";
 		IProblem[] p = getModuleProblems(s);
 		assertEquals(1, p.length);
 		
-		assertError(p[0], IProblem.RecursiveDeclaration, 25, 3);
+		assertError(p[0], IProblem.CircularDefinition, 25, 3);
 	}
 	
-	public void testRecursiveAliasDeclaration2() {
+	public void testAliasCircularDeclaration2() {
 		String s = "alias one two; alias two three; alias three one;";
 		IProblem[] p = getModuleProblems(s);
 		assertEquals(1, p.length);
 		
-		assertError(p[0], IProblem.RecursiveDeclaration, 44, 3);
+		assertError(p[0], IProblem.CircularDefinition, 44, 3);
 	}
 	
-	public void testRecursiveAliasDeclaration_Not() {
+	public void testAliasCircularDeclaration_Not() {
 		assertNoSemanticErrors("alias one two; alias two three;");
 	}
 	

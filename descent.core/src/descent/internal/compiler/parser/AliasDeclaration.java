@@ -16,14 +16,19 @@ public class AliasDeclaration extends Declaration {
 		super(ident);
 		this.type = type;
 	}
+	
+	@Override
+	public Type getType() {
+		return type;
+	}
 
 	@Override
 	public Dsymbol toAlias(SemanticContext context) {
 		Assert.isTrue(this != aliassym);
 		if (inSemantic != 0) {
 			context.acceptProblem(Problem.newSemanticTypeError(
-					"Recursive alias declaration",
-					IProblem.RecursiveDeclaration, 0, ident.start, ident.length));
+					"Circular alias declaration",
+					IProblem.CircularDefinition, 0, ident.start, ident.length));
 		}
 		Dsymbol s = aliassym != null ? aliassym.toAlias(context) : this;
 		return s;

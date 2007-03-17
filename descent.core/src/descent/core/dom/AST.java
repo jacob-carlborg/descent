@@ -169,15 +169,6 @@ public final class AST {
 	private int defaultNodeFlag = 0;
 	
 	/**
-	 * This flag is a workaround for the following problem:
-	 * the parser build the AST nodes in a way that ASTNode.checkNewChild
-	 * fails sometimes. This flag is set to true by ASTParser to
-	 * bypass certain checks. After the parsing, the flag is set
-	 * back to false.
-	 */
-	boolean internalParserMode = false;
-	
-	/**
 	 * Creates a new Java abstract syntax tree
      * (AST) following the specified set of API rules. 
      * 

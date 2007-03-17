@@ -2227,7 +2227,7 @@ public abstract class ASTNode {
 			throw new IllegalArgumentException();
 		}	
 		/* see AST.internalParserMode */
-		if (!node.ast.internalParserMode && newChild.getParent() != null) {
+		if (newChild.getParent() != null) {
 			// new child currently has a different parent
 			throw new IllegalArgumentException();
 		}

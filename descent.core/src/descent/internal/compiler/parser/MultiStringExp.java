@@ -14,6 +14,7 @@ public class MultiStringExp extends StringExp {
 	public void doneParsing() {
 		StringBuilder sb = new StringBuilder();
 		if (strings != null) {
+			this.postfix = strings.get(0).postfix;
 			for(StringExp se : strings) {
 				sb.append(se.string);
 			}

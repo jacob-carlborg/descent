@@ -27,9 +27,5 @@ public class Identifier {
 	public String getIdentifier() {
 		return string;
 	}
-	
-	public boolean dyncast() {
-		return true;
-	}
 
 }

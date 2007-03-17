@@ -1,5 +1,7 @@
 package descent.internal.compiler.parser;
 
+import descent.core.compiler.IProblem;
+
 public class TypeIdentifier extends TypeQualified {
 
 	public IdentifierExp ident;
@@ -23,6 +25,45 @@ public class TypeIdentifier extends TypeQualified {
 	}
 	
 	@Override
+	public Type semantic(Scope sc, SemanticContext context) {
+		Type[] t = { null };
+	    Expression[] e = { null };
+	    Dsymbol[] s = { null };
+
+	    //printf("TypeIdentifier::semantic(%s)\n", toChars());
+	    resolve(sc, e, t, s, context);
+	    if (t[0] != null)
+	    {
+		//printf("\tit's a type %d, %s, %s\n", t.ty, t.toChars(), t.deco);
+
+		if (t[0].ty == TY.Ttypedef)
+		{   TypeTypedef tt = (TypeTypedef) t[0];
+
+		    if (tt.sym.sem == 1) {
+		    	context.acceptProblem(Problem.newSemanticTypeError("Circular reference of typedef " + tt.sym.ident, IProblem.CircularDefinition, 0, tt.sym.ident.start, tt.sym.ident.length));
+		    }
+		}
+	    }
+	    else
+	    {
+		if (s != null)
+		{
+			/* TODO semantic
+		    s.error(loc, "is used as a type");
+		    */
+		}
+		else {
+			/* TODO semantic
+		    error(loc, "%s is used as a type", toChars());
+		    */
+		}
+		t[0] = tvoid;
+	    }
+	    //t.print();
+	    return t[0];
+	}
+	
+	@Override
 	public Dsymbol toDsymbol(Scope sc, SemanticContext context) {
 		Dsymbol s;
 		Dsymbol[] scopesym = { null };
@@ -38,7 +79,7 @@ public class TypeIdentifier extends TypeQualified {
 				for (IdentifierExp id : idents) {
 					Dsymbol sm;
 					// printf("\tid = '%s'\n", id.toChars());
-					if (id.ident.dyncast() != Identifier.DYNCAST_IDENTIFIER) {
+					if (id.dyncast() != Identifier.DYNCAST_IDENTIFIER) {
 						// It's a template instance
 						// printf("\ttemplate instance id\n");
 						TemplateDeclaration td;
@@ -79,6 +120,21 @@ public class TypeIdentifier extends TypeQualified {
 		return s;
 	}
 	
+	@Override
+	public void resolve(Scope sc, Expression[] pe, Type[] pt, Dsymbol[] ps, SemanticContext context) {
+		Dsymbol s;
+	    Dsymbol[] scopesym = { null };
+
+	    //printf("TypeIdentifier::resolve(sc = %p, idents = '%s')\n", sc, toChars());
+	    s = sc.search(ident, scopesym, context);
+	    resolveHelper(sc, s, scopesym[0], pe, pt, ps, context);
+	}
+	
+	@Override
+	public Type reliesOnTident() {
+		return this;
+	}
+
 	@Override
 	public int kind() {
 		return TYPE_IDENTIFIER;

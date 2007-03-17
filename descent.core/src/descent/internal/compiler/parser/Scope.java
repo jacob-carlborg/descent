@@ -17,20 +17,23 @@ public class Scope {
 	public ScopeDsymbol sd; 			// if in static if, and declaring new symbols,
 	public Dsymbol parent; 				// parent to use
 	public int callSuper; 				// primitive flow analysis for constructors
+	public LINK linkage;
 	public PROT protection;				// protection for class members
 	public int explicitProtection;		// set if in an explicit protection attribute
     public int stc;						// storage class
     public boolean intypeof;			// in typeof(exp)
 	
 	public Scope() {
-		
+		this.linkage = LINK.LINKd;
+		this.protection = PROT.PROTpublic;
+		this.stc = 0;
 	}
 	
 	public Scope(Scope enclosing) {
+		this();
 		this.module = enclosing.module;
 		this.parent = enclosing.parent;
 		this.enclosing = enclosing;
-		// TODO
 	}
 
 	public static Scope createGlobal(Module module, SemanticContext context) {

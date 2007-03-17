@@ -1,6 +1,8 @@
 package descent.tests.mars;
 
 import descent.core.dom.ASTNode;
+import descent.core.dom.PrimitiveType;
+import descent.core.dom.SimpleType;
 import descent.core.dom.TypedefDeclaration;
 import descent.core.dom.TypedefDeclarationFragment;
 
@@ -12,6 +14,30 @@ public class Typedef_Test extends Parser_Test {
 		TypedefDeclaration t = (TypedefDeclaration) getSingleDeclarationNoProblems(s);
 		assertEquals(ASTNode.TYPEDEF_DECLARATION, t.getNodeType());
 		assertPosition(t, 1, 16);
+		
+		PrimitiveType p = (PrimitiveType) t.getType();
+		assertEquals(PrimitiveType.Code.INT, p.getPrimitiveTypeCode());
+		assertPosition(p, 9, 3);
+		
+		assertEquals(1, t.fragments().size());
+		
+		TypedefDeclarationFragment fragment = t.fragments().get(0);
+		
+		assertEquals("Bla", fragment.getName().getFullyQualifiedName());
+		assertNull(fragment.getInitializer());
+		assertPosition(fragment.getName(), 13, 3);
+	}
+	
+	public void testOne2() {
+		String s = " typedef bla Bla;";
+		
+		TypedefDeclaration t = (TypedefDeclaration) getSingleDeclarationNoProblems(s);
+		assertEquals(ASTNode.TYPEDEF_DECLARATION, t.getNodeType());
+		assertPosition(t, 1, 16);
+		
+		SimpleType p = (SimpleType) t.getType();
+		assertEquals("bla", p.getName().getFullyQualifiedName());
+		assertPosition(p, 9, 3);
 		
 		assertEquals(1, t.fragments().size());
 		

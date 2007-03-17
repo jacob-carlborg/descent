@@ -37,6 +37,10 @@ public abstract class Expression extends ASTNode implements Cloneable {
 		return this;
 	}
 	
+	public boolean isBool(boolean result) {
+		return false;
+	}
+	
 	public BigInteger toInteger(SemanticContext context) {
 		context.acceptProblem(Problem
 				.newSemanticTypeError(

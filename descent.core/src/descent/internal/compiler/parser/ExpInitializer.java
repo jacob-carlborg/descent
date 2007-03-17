@@ -11,6 +11,11 @@ public class ExpInitializer extends Initializer {
 	}
 	
 	@Override
+	public ExpInitializer isExpInitializer() {
+		return this;
+	}
+	
+	@Override
 	public int kind() {
 		return EXP_INITIALIZER;
 	}

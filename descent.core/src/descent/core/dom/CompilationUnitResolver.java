@@ -86,16 +86,16 @@ public class CompilationUnitResolver extends descent.internal.compiler.Compiler 
 			Map options, 
 			boolean statementsRecovery) {
 		
+		return parse(apiLevel, sourceUnit.getContents(), options, statementsRecovery);
+	}
+	
+	public static Module parse(int apiLevel,
+			char[] source, 
+			Map options, 
+			boolean statementsRecovery) {
+		
 		AST ast = AST.newAST(apiLevel);
 		
-		// Mark all nodes created by the parser as originals
-		/*
-		int savedDefaultNodeFlag = ast.getDefaultNodeFlag();
-		ast.setDefaultNodeFlag(ASTNode.ORIGINAL);
-		ast.internalParserMode = true;
-		*/
-		
-		char[] source = sourceUnit.getContents();
 		descent.internal.compiler.parser.Parser parser = new descent.internal.compiler.parser.Parser(ast, source, 0, source.length);
 		
 		PublicScanner scanner = new PublicScanner(true, true, true, true, ast.apiLevel);
@@ -104,28 +104,6 @@ public class CompilationUnitResolver extends descent.internal.compiler.Compiler 
 		Module module = parser.parseModuleObj();
 		module.scanner = scanner;
 		module.setSourceRange(0, source.length);
-		
-		/*
-		List<Declaration> declDefs = parser.parseModule();
-		
-		CompilationUnit result = parser.compilationUnit;		
-		if (declDefs != null) {
-			result.declarations().addAll(declDefs);
-		}
-		result.setSourceRange(0, source.length);
-		result.setCommentTable(parser.comments.toArray(new Comment[parser.comments.size()]));
-		result.setPragmaTable(parser.pragmas.toArray(new Pragma[parser.pragmas.size()]));
-		result.setLineEndTable(parser.getLineEnds());
-		result.initCommentMapper(scanner);
-		result.problems = parser.problems;
-		
-		ast.setOriginalModificationCount(ast.modificationCount());
-		ast.setDefaultNodeFlag(savedDefaultNodeFlag);
-		ast.internalParserMode = false;
-		
-		// TODO JDT PRIORITY remove if we do semantic analysis
-		// parser.compilationUnit.problems.clear();
-		*/
 		
 		return module;
 	}

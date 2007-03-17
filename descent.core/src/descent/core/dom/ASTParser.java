@@ -897,7 +897,6 @@ public class ASTParser {
 		// Mark all nodes created by the parser as originals
 		int savedDefaultNodeFlag = ast.getDefaultNodeFlag();
 		ast.setDefaultNodeFlag(ASTNode.ORIGINAL);
-		ast.internalParserMode = true;		
 		ast.setBindingResolver(new BindingResolver());
 		
 		if (this.astKind == K_STATEMENTS) {
@@ -940,7 +939,6 @@ public class ASTParser {
 			}
 		} finally {
 			ast.setDefaultNodeFlag(savedDefaultNodeFlag);
-			ast.internalParserMode = false;
 		}
 		throw new IllegalStateException();
 	}

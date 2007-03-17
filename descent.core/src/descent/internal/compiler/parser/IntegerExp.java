@@ -18,6 +18,11 @@ public class IntegerExp extends Expression {
 	}
 	
 	@Override
+	public boolean isBool(boolean result) {
+		return result ? value.compareTo(BigInteger.ZERO) != 0 : value.compareTo(BigInteger.ZERO) == 0;
+	}
+	
+	@Override
 	public Expression semantic(Scope sc, SemanticContext context) {
 		if (type == null) {
 			// Determine what the type of this number is

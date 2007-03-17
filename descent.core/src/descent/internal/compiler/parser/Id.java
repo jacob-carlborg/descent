@@ -19,6 +19,7 @@ public interface Id {
 	Identifier __sizeof = new Identifier("sizeof", TOK.TOKidentifier);
 	Identifier alignof = new Identifier("alignof", TOK.TOKidentifier);
 	Identifier mangleof = new Identifier("mangleof", TOK.TOKidentifier);
+	Identifier stringof = new Identifier("stringof", TOK.TOKidentifier);
 	Identifier length = new Identifier("length", TOK.TOKidentifier);
 	Identifier remove = new Identifier("remove", TOK.TOKidentifier);
 	Identifier ptr = new Identifier("ptr", TOK.TOKidentifier);

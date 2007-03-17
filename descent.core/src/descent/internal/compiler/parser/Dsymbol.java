@@ -14,6 +14,10 @@ public abstract class Dsymbol extends ASTNode {
 		this.ident = ident;
 	}
 	
+	public Type getType() {
+		return null;
+	}
+	
 	public boolean isDeprecated() {
 		return false;
 	}
@@ -31,6 +35,10 @@ public abstract class Dsymbol extends ASTNode {
 	}
 	
 	public Declaration isDeclaration() {
+		return null;
+	}
+	
+	public TupleDeclaration isTupleDeclaration() {
 		return null;
 	}
 	

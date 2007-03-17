@@ -175,6 +175,10 @@ public abstract class ASTNode {
 	public final static int TYPE_SLICE = 165;
 	public final static int TYPE_TYPEDEF = 166;
 	public final static int TYPE_ENUM = 167;
+	public final static int TUPLE_DECLARATION = 168;
+	public final static int TYPE_TUPLE = 169;
+	public final static int VAR_EXP = 170;
+	public final static int DOT_VAR_EXP = 171;
 	
 	public int start;
 	public int length;

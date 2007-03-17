@@ -11,6 +11,11 @@ public abstract class AggregateDeclaration extends ScopeDsymbol {
 	}
 	
 	@Override
+	public Type getType() {
+		return type;
+	}
+	
+	@Override
 	public AggregateDeclaration isAggregateDeclaration() {
 		return this;
 	}

@@ -14,7 +14,6 @@ import descent.core.dom.Initializer;
 import descent.core.dom.ModuleDeclaration;
 import descent.core.dom.Statement;
 import descent.internal.compiler.parser.Module;
-import descent.internal.compiler.parser.Parser;
 
 public abstract class Parser_Test extends TestCase {
 	
@@ -26,7 +25,7 @@ public abstract class Parser_Test extends TestCase {
 	}
 	
 	protected List<Declaration> getDeclarationsWithProblems(String source, int numberOfProblems, int apiLevel) {
-		CompilationUnit unit = new ParserFacade().parseCompilationUnit(source, apiLevel);
+		CompilationUnit unit = getCompilationUnit(source, apiLevel);
 		assertEquals(numberOfProblems, unit.getProblems().length);
 		return unit.declarations();
 	}
@@ -87,27 +86,22 @@ public abstract class Parser_Test extends TestCase {
 	}
 	
 	protected CompilationUnit getCompilationUnit(String source, int apiLevel) {
-		CompilationUnit unit = new ParserFacade().parseCompilationUnit(source, apiLevel);
-		return unit;
+		Module module = getModuleSemantic(source, apiLevel);
+		return CompilationUnitResolver.convert(module, null);
 	}
 	
-	protected Module getModule(String source) {
-		Parser parser = new Parser(AST.newAST(AST.D2), source);
-		return parser.parseModuleObj();
+	protected Module getModule(String source, int apiLevel) {
+		return CompilationUnitResolver.parse(apiLevel, source.toCharArray(), null, true);
 	}
 	
-	protected Module getModuleSemantic(String source) {
-		Module module = getModule(source);
-		module = CompilationUnitResolver.semantic1(module);
-		
-		// Just to make sure an exception is not thrown in ASTConverter
-		CompilationUnitResolver.convert(module, null);
-		
+	protected Module getModuleSemantic(String source, int apiLevel) {
+		Module module = getModule(source, apiLevel);
+		module = CompilationUnitResolver.semantic1(module);		
 		return module;
 	}
 	
 	protected IProblem[] getModuleProblems(String source) {
-		Module module = getModuleSemantic(source);
+		Module module = getModuleSemantic(source, AST.D2);
 		return module.problems.toArray(new IProblem[module.problems.size()]);
 	}
 	

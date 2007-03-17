@@ -280,8 +280,8 @@ public interface IProblem {
 	int ClassHasNoSuper = 314;
 	int ClassHasNoBaseClass = 315;
 	int AliasCannotBeConst = 316;
-	int RecursiveDeclaration = 317;
-	int MemberIsPrivate = 318;
+	int MemberIsPrivate = 317;
+	int UsedAsAType = 318;
 	
 	/* Others, needed by JDT */
 	int ForbiddenReference = 2001;

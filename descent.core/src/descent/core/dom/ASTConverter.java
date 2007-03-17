@@ -2046,8 +2046,8 @@ public class ASTConverter {
 		case ASTNode.TYPEDEF_DECLARATION: {
 			TypedefDeclaration a = (TypedefDeclaration) symbol;
 			descent.core.dom.TypedefDeclaration b = new descent.core.dom.TypedefDeclaration(ast);
-			if (a.type != null) {
-				b.setType(convert(a.type));
+			if (a.originalBasetype != null) {
+				b.setType(convert(a.originalBasetype));
 			}
 			b.fragments().add(convert(a));
 			fillDeclaration(b, a);
@@ -2151,8 +2151,8 @@ public class ASTConverter {
 				while(symbol.kind() == ASTNode.TYPEDEF_DECLARATION) {
 					TypedefDeclaration a = (TypedefDeclaration) symbol;
 					if (first) {
-						if (a.basetype != null) {
-							b.setType(convert(a.basetype));
+						if (a.originalBasetype != null) {
+							b.setType(convert(a.originalBasetype));
 						}
 						convertModifiers(b.modifiers(), a.modifiers);
 						if (a.postDdoc != null) {

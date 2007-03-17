@@ -257,8 +257,8 @@ public class Problems_Test extends Parser_Test {
 	}
 
 	public void test_ENUM_MEMBER_EXPECTED() {
-		IProblem p = getProblem(" enum Bla { class }");
-		assertError(p, IProblem.ParsingErrorInsertToComplete, 10, 1);
+		IProblem p = getProblem(" enum Bla { a, class }");
+		assertError(p, IProblem.ParsingErrorInsertToComplete, 13, 1);
 	}
 
 	public void test_ENUM_DECLARATION_INVALID() {
@@ -437,7 +437,7 @@ public class Problems_Test extends Parser_Test {
 	}
 
 	public void test_ENUM_DECLARATION_IS_INVALID() {
-		IProblem p = getProblem(" enum {");
+		IProblem p = getProblems(" enum {", 2)[0]; // The second one is "it dosen't have members"
 		assertError(p, IProblem.EnumDeclarationIsInvalid, 1, 4);
 	}
 

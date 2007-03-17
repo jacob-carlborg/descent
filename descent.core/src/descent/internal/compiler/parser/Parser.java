@@ -5572,7 +5572,7 @@ public class Parser extends Lexer {
 	}
 	
 	private StringExp newStringExpForCurrentToken() {
-		StringExp string = new StringExp(token.string);
+		StringExp string = new StringExp(token.string, (char) token.postfix);
 		string.setSourceRange(token.ptr, token.len);
 		return string;
 	}
