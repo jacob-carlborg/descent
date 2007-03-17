@@ -2,8 +2,6 @@ package descent.internal.compiler.parser;
 
 import descent.core.compiler.CharOperation;
 import descent.core.compiler.IProblem;
-import descent.core.dom.ASTNode;
-import descent.core.dom.CompilationUnit;
 
 public class Problem implements IProblem {
 	
@@ -53,10 +51,6 @@ public class Problem implements IProblem {
 		p.sourceStart = sourceStart;
 		p.sourceEnd = sourceStart + length - 1;
 		return p;
-	}
-	
-	public static Problem newSemanticTypeError(String message, int id, CompilationUnit unit, ASTNode node) {
-		return newSemanticTypeError(message, id, unit.getLineNumber(node.getStartPosition()), node.getStartPosition(), node.getStartPosition() + node.getLength() - 1);
 	}
 	
 	public int getID() {

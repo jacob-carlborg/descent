@@ -3,6 +3,9 @@ package descent.internal.compiler.parser;
 import java.math.BigInteger;
 
 public class IntegerExp extends Expression {
+	
+	private final static BigInteger N_0x8000000000000000 = new BigInteger("8000000000000000", 16);
+	private final static BigInteger N_0xFFFFFFFF80000000 = new BigInteger("FFFFFFFF80000000", 16);
 
 	public String str;
 	public BigInteger value;
@@ -12,6 +15,24 @@ public class IntegerExp extends Expression {
 		this.str = str;
 		this.value = value;
 		this.type = type;
+	}
+	
+	@Override
+	public Expression semantic(Scope sc, SemanticContext context) {
+		if (type == null) {
+			// Determine what the type of this number is
+			BigInteger number = value;
+
+			if (number.compareTo(N_0x8000000000000000) >= 0)
+				type = Type.tuns64;
+			else if (number.compareTo(N_0xFFFFFFFF80000000) >= 0)
+				type = Type.tint64;
+			else
+				type = Type.tint32;
+		} else {
+			type = type.semantic(sc, context);
+		}
+		return this;
 	}
 	
 	@Override

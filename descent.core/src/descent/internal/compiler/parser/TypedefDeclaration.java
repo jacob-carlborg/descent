@@ -26,11 +26,11 @@ public class TypedefDeclaration extends Declaration {
 			basetype = basetype.semantic(sc, context);
 			sem = 2;
 			type = type.semantic(sc, context);
-			if (sc.parent.isFuncDeclaration() && init != null) {
+			if (sc.parent.isFuncDeclaration() != null && init != null) {
 			    semantic2(sc, context);
 			}
 		} else if (sem == 1) {
-			context.problemRequestor.acceptProblem(Problem.newSemanticTypeError("Circular definition", IProblem.CircularDefinition, 0, ident.start, ident.length));
+			context.acceptProblem(Problem.newSemanticTypeError("Circular definition", IProblem.CircularDefinition, 0, ident.start, ident.length));
 	    }
 	}
 	

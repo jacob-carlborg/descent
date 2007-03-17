@@ -5,10 +5,16 @@ import java.util.List;
 public class ClassDeclaration extends AggregateDeclaration {
 
 	public List<BaseClass> baseClasses;
+	public ClassDeclaration baseClass;	// null only if this is Object
 
 	public ClassDeclaration(IdentifierExp id, List<BaseClass> baseClasses) {
 		super(id);
 		this.baseClasses = baseClasses;
+	}
+	
+	@Override
+	public ClassDeclaration isClassDeclaration() {
+		return this;
 	}
 	
 	@Override

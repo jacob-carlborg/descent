@@ -20,6 +20,11 @@ public class Module extends Package {
 	public int semanticstarted;	// has semantic() been started?
 	public int semanticdone; // has semantic() been done?
 	
+	@Override
+	public Module isModule() {
+		return this;
+	}
+	
 	public void semantic(SemanticContext context) {
 		semantic(null, context);
 	}

@@ -272,7 +272,15 @@ public interface IProblem {
 	int EnumMustHaveAtLeastOneMember = 306;
 	int EnumBaseTypeMustBeOfIntegralType = 307;
 	int ForwardReference = 308;
-	int IntegerConstantExpressionExpected = 309;	
+	int IntegerConstantExpressionExpected = 309;
+	int ThisNotInClassOrStruct = 310;
+	int ThisOnlyAllowedInNonStaticMemberFunctions = 311;
+	int SuperOnlyAllowedInNonStaticMemberFunctions = 312;
+	int SuperNotInClass = 313;
+	int ClassHasNoSuper = 314;
+	int ClassHasNoBaseClass = 315;
+	int AliasCannotBeConst = 316;
+	int RecursiveDeclaration = 317;
 	
 	/* Others, needed by JDT */
 	int ForbiddenReference = 2001;

@@ -117,5 +117,13 @@ public class Semantic1_Test extends Parser_Test {
 		
 		assertError(p[0], IProblem.EnumValueOverflow, 23, 1);
 	}
+	
+	public void testAliasCannotBeConst() {
+		String s = "alias const int x;";
+		IProblem[] p = getModuleProblems(s);
+		assertEquals(1, p.length);
+		
+		assertError(p[0], IProblem.AliasCannotBeConst, 6, 5);
+	}
 
 }

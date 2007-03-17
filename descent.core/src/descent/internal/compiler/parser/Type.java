@@ -25,10 +25,14 @@ public abstract class Type extends ASTNode {
 	public final static Type tchar = new TypeBasic(TY.Tchar);
 	public final static Type twchar = new TypeBasic(TY.Twchar);
 	public final static Type tdchar = new TypeBasic(TY.Tdchar);
+	public final static Type terror = new TypeBasic(TY.Terror); // for error recovery
 	
 	public TY ty;
 	public Type next;
 	public String deco;
+	public Type pto;		// merged pointer to this type
+	public Type rto;		// reference to this type
+	public Type arrayof;	// array of this type
 	
 	public Type(TY ty, Type next) {
 		this.ty = ty;
@@ -98,6 +102,24 @@ public abstract class Type extends ASTNode {
 
 	public boolean isunsigned() {
 		return false;
+	}
+
+	public Type pointerTo(SemanticContext context) {
+		if (pto == null) {
+			Type t;
+
+			t = new TypePointer(this);
+			pto = t.merge(context);
+		}
+		return pto;
+	}
+	
+	public Type referenceTo() {
+		return null;
+	}
+	
+	public Type arrayOf() {
+		return null;
 	}
 
 }

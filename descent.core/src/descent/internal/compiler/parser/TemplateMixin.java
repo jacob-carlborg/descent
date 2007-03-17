@@ -24,6 +24,11 @@ public class TemplateMixin extends TemplateInstance {
 	}
 	
 	@Override
+	public TemplateMixin isTemplateMixin() {
+		return this;
+	}
+	
+	@Override
 	public int kind() {
 		return TEMPLATE_MIXIN;
 	}

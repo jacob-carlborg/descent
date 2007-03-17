@@ -7,6 +7,14 @@ public class NullExp extends Expression {
 	}
 	
 	@Override
+	public Expression semantic(Scope sc, SemanticContext context) {
+		 // NULL is the same as (void *)0
+	    if (type == null)
+	    	type = Type.tvoid.pointerTo(context);
+	    return this;
+	}
+	
+	@Override
 	public int kind() {
 		return NULL_EXP;
 	}

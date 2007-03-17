@@ -5,7 +5,7 @@ public class FuncLiteralDeclaration extends FuncDeclaration {
 	public TOK tok; // TOKfunction or TOKdelegate
 	
 	public FuncLiteralDeclaration(Type type, TOK tok, ForeachStatement fes) {
-		super(null, type);
+		super(null, STC.STCundefined, type);
 		this.tok = tok;
 	}
 	

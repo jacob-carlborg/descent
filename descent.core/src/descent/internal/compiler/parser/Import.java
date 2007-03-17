@@ -11,11 +11,19 @@ public class Import extends Dsymbol {
 	
 	public List<IdentifierExp> names;
 	public List<IdentifierExp> aliases;
+	public Module mod;
 	
 	public Import(List<IdentifierExp> packages, IdentifierExp id, IdentifierExp aliasId) {
 		this.packages = packages;
 		this.id = id;
 		this.aliasId = aliasId;
+	}
+	
+	@Override
+	public Dsymbol toAlias(SemanticContext context) {
+		if (aliasId != null)
+			return mod;
+		return this;
 	}
 
 	public void addAlias(IdentifierExp name, IdentifierExp alias) {

@@ -3,15 +3,24 @@ package descent.internal.compiler.parser;
 
 public class Scope {
 	
-	public Scope enclosing; // enclosing Scope
-	public Module module; // Root module
-	public ScopeDsymbol scopesym; // current symbol
-	public ScopeDsymbol sd; // if in static if, and declaring new symbols,
-	public Dsymbol parent; // parent to use
-	public int callSuper; // primitive flow analysis for constructors
-	PROT protection;	// protection for class members
-    int explicitProtection;	// set if in an explicit protection attribute
-    int stc;		// storage class
+	public final static int CSXthis_ctor = 	0x0001;
+	public final static int CSXsuper_ctor = 0x0002;
+	public final static int CSXthis = 		0x0004;
+	public final static int CSXsuper = 		0x0008;
+	public final static int CSXlabel = 		0x0010;
+	public final static int CSXreturn = 	0x0020;
+	public final static int CSXany_ctor = 	0x0040;
+	
+	public Scope enclosing; 			// enclosing Scope
+	public Module module; 				// Root module
+	public ScopeDsymbol scopesym; 		// current symbol
+	public ScopeDsymbol sd; 			// if in static if, and declaring new symbols,
+	public Dsymbol parent; 				// parent to use
+	public int callSuper; 				// primitive flow analysis for constructors
+	public PROT protection;				// protection for class members
+	public int explicitProtection;		// set if in an explicit protection attribute
+    public int stc;						// storage class
+    public boolean intypeof;			// in typeof(exp)
 	
 	public Scope() {
 		

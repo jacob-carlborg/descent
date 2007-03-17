@@ -30,8 +30,74 @@ public abstract class Dsymbol extends ASTNode {
 		return null;
 	}
 	
-	public boolean isFuncDeclaration() {
-		return false;
+	public FuncDeclaration isFuncDeclaration() {
+		return null;
+	}
+	
+	public ClassDeclaration isClassDeclaration() {
+		return null;
+	}
+	
+	public StructDeclaration isStructDeclaration() {
+		return null;
+	}
+	
+	public TemplateInstance isTemplateInstance() {
+		return null;
+	}
+	
+	public TemplateMixin isTemplateMixin() {
+		return null;
+	}
+	
+	public VarDeclaration isVarDeclaration() {
+		return null;
+	}
+	
+	public FuncAliasDeclaration isFuncAliasDeclaration() {
+		return null;
+	}
+	
+	public Module isModule() {
+		return null;
+	}
+	
+	/**
+	 * Is a 'this' required to access the member?
+	 */
+	public AggregateDeclaration isThis() {
+		return null;
+	}
+	
+	/**
+	 * Is this symbol a member of an AggregateDeclaration?
+	 */
+	public AggregateDeclaration isMember() {
+		Dsymbol parent = toParent();
+	    return parent != null ? parent.isAggregateDeclaration() : null;
+	}
+	
+	public Dsymbol toParent() {
+		return parent != null ? parent.pastMixin() : null;
+	}
+	
+	public Dsymbol toParent2() {
+		Dsymbol s = parent;
+		while (s != null && s.isTemplateInstance() != null)
+			s = s.parent;
+		return s;
+	}
+	
+	public Dsymbol pastMixin() {
+		Dsymbol s = this;
+		while (s != null && s.isTemplateMixin() != null)
+			s = s.parent;
+		return s;
+	}
+	
+	// resolve real symbol
+	public Dsymbol toAlias(SemanticContext context) {
+		return this;
 	}
 	
 	public int addMember(Scope sc, ScopeDsymbol sd, int memnum, SemanticContext context) {
@@ -44,14 +110,14 @@ public abstract class Dsymbol extends ASTNode {
 
 				s2 = sd.symtab.lookup(ident);
 				if (!s2.overloadInsert(this)) {
-					sd.multiplyDefined(this, s2, context.problemRequestor);
+					context.multiplyDefined(this, s2);
 				}
 			}
 			if (sd.isAggregateDeclaration() != null || sd.isEnumDeclaration() != null) {
 				if (ident.ident == Id.__sizeof 
 						|| ident.ident == Id.alignof 
 						|| ident.ident == Id.mangleof) {
-					context.problemRequestor.acceptProblem(Problem.newSemanticMemberError("Property " + ident.ident.string + " cannot be redefined", IProblem.PropertyCanNotBeRedefined, 0, ident.start, ident.length));
+					context.acceptProblem(Problem.newSemanticMemberError("Property " + ident.ident.string + " cannot be redefined", IProblem.PropertyCanNotBeRedefined, 0, ident.start, ident.length));
 				}
 			}
 			return 1;
@@ -59,7 +125,7 @@ public abstract class Dsymbol extends ASTNode {
 		return 0;
 	}
 	
-	private boolean overloadInsert(Dsymbol dsymbol) {
+	public boolean overloadInsert(Dsymbol dsymbol) {
 		return false;
 	}
 
@@ -73,6 +139,10 @@ public abstract class Dsymbol extends ASTNode {
 	
 	public void semantic3(Scope sc, SemanticContext context) {
 		
+	}
+	
+	public Dsymbol search(IdentifierExp ident, int flags) {
+		return null;
 	}
 
 }

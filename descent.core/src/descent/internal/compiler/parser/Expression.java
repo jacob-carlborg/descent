@@ -38,7 +38,7 @@ public abstract class Expression extends ASTNode implements Cloneable {
 	}
 	
 	public BigInteger toInteger(SemanticContext context) {
-		context.problemRequestor.acceptProblem(Problem
+		context.acceptProblem(Problem
 				.newSemanticTypeError(
 						"Integer constant expression expected",
 						IProblem.EnumValueOverflow, 0,

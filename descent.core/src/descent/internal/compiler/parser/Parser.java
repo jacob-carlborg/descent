@@ -617,6 +617,7 @@ public class Parser extends Lexer {
 		    nextToken();
 		    Initializer init = parseInitializer();
 		    VarDeclaration v = new VarDeclaration(null, ident, init);
+		    v.storage_class = stc;
 		    v.addModifiers(modifiers);
 		    v.storage_class = stc;
 		    v.last = true;
@@ -2142,6 +2143,8 @@ public class Parser extends Lexer {
 	
 	@SuppressWarnings("unchecked")
 	private List<Dsymbol> parseDeclarations(List<DDocComment> lastComments) {
+		int storage_class;
+		int stc;
 		Type ts;
 		Type t;
 		Type tfirst;
@@ -2166,6 +2169,7 @@ public class Parser extends Lexer {
 			break;
 		}
 
+		storage_class = STC.STCundefined;
 		while (true) {
 			switch (token.value) {
 			case TOKconst:
@@ -2177,26 +2181,28 @@ public class Parser extends Lexer {
 			case TOKabstract:
 			case TOKsynchronized:
 			case TOKdeprecated:
+				stc = STC.fromTOK(token.value);
+				
 				Modifier currentModifier = new Modifier(token.value);
 				currentModifier.setSourceRange(token.ptr, token.len);
-				for(Modifier previousModifier : modifiers) {
-					if (previousModifier.tok.equals(currentModifier.tok)) {
-						error("Redundant storage class", IProblem.RedundantStorageClass, token.lineNumber, currentModifier);
-					}
+				if ((storage_class & stc) != 0) {
+					error("Redundant storage class", IProblem.RedundantStorageClass, token.lineNumber, currentModifier);
 				}
+				storage_class = storage_class | stc;
 				modifiers.add(currentModifier);
 				nextToken();
 				continue;
 
 			case TOKextern:
 				if (peek(token).value != TOKlparen) {
+					stc = STC.fromTOK(token.value);
+					
 					currentModifier = new Modifier(token.value);
 					currentModifier.setSourceRange(token.ptr, token.len);
-					for(Modifier previousModifier : modifiers) {
-						if (previousModifier.tok.equals(currentModifier.tok)) {
-							error("Redundant storage class", IProblem.RedundantStorageClass, token.lineNumber, currentModifier);
-						}
+					if ((storage_class & stc) != 0) {
+						error("Redundant storage class", IProblem.RedundantStorageClass, token.lineNumber, currentModifier);
 					}
+					storage_class = storage_class | stc;
 					modifiers.add(currentModifier);
 					nextToken();
 					continue;
@@ -2216,7 +2222,7 @@ public class Parser extends Lexer {
 		/*
 		 * Look for auto initializers: storage_class identifier = initializer;
 		 */
-		if (modifiers.size() > 0 && token.value == TOKidentifier
+		if (storage_class != 0 && token.value == TOKidentifier
 				&& peek(token).value == TOKassign) {
 			ident = new IdentifierExp(token);
 			lineNumber = token.lineNumber;
@@ -2226,6 +2232,7 @@ public class Parser extends Lexer {
 			Initializer init = parseInitializer();
 
 			VarDeclaration v = new VarDeclaration(null, ident, init);
+			v.storage_class = storage_class;
 			v.addModifiers(modifiers);
 			v.last = true;
 			a.add(v);
@@ -2249,6 +2256,7 @@ public class Parser extends Lexer {
 			AggregateDeclaration s;
 
 			s = (AggregateDeclaration) parseAggregate();
+			s.storage_class = storage_class;
 			s.addModifiers(modifiers);
 			a.add(s);
 			s.preDdocs = lastComments;
@@ -2314,6 +2322,8 @@ public class Parser extends Lexer {
 					ad = new AliasDeclaration(ident, t);
 					v = ad;
 				}
+				v.addModifiers(modifiers);
+				v.storage_class = storage_class;
 				a.add(v);
 				switch (token.value) {
 				case TOKsemicolon:
@@ -2341,7 +2351,7 @@ public class Parser extends Lexer {
 			} else if (t.ty == Tfunction) {
 				TypeFunction typeFunction = (TypeFunction) t;
 				
-				FuncDeclaration function = new FuncDeclaration(ident, typeFunction);
+				FuncDeclaration function = new FuncDeclaration(ident, storage_class, typeFunction);
 				parseContracts(function);
 				function.setSourceRange(t.start, prevToken.ptr + prevToken.len - t.start);
 				
@@ -2377,6 +2387,7 @@ public class Parser extends Lexer {
 				}
 				
 				v = new VarDeclaration(t, ident, init);
+				v.storage_class = storage_class;
 				a.add(v);
 				
 				switch (token.value) {
@@ -4493,7 +4504,8 @@ public class Parser extends Lexer {
 			}
 			
 			if (moreThanOne) {
-				stringsExpression.setSourceRange(start, prevToken.ptr + prevToken.len - start);			
+				stringsExpression.doneParsing();
+				stringsExpression.setSourceRange(start, prevToken.ptr + prevToken.len - start);	
 				e = stringsExpression;
 			} else {
 				e = stringExp;

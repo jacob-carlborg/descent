@@ -75,7 +75,7 @@ public class EnumDeclaration extends ScopeDsymbol {
 		if (memtype.ty == TY.Tenum) {
 			EnumDeclaration sym = (EnumDeclaration) memtype.toDsymbol(sc);
 			if (sym.memtype == null) {
-				context.problemRequestor.acceptProblem(Problem
+				context.acceptProblem(Problem
 						.newSemanticTypeError(
 								"Base enum is forward reference",
 								IProblem.ForwardReference, 0,
@@ -85,7 +85,7 @@ public class EnumDeclaration extends ScopeDsymbol {
 		}
 
 		if (!memtype.isintegral()) {
-			context.problemRequestor.acceptProblem(Problem
+			context.acceptProblem(Problem
 					.newSemanticTypeError(
 							"Base type must be of integral type",
 							IProblem.EnumBaseTypeMustBeOfIntegralType, 0,
@@ -103,7 +103,7 @@ public class EnumDeclaration extends ScopeDsymbol {
 		}
 
 		if (members.size() == 0) {
-			context.problemRequestor.acceptProblem(Problem
+			context.acceptProblem(Problem
 					.newSemanticTypeError(
 							"Enum must have at least one member",
 							IProblem.EnumMustHaveAtLeastOneMember, 0,
@@ -142,7 +142,7 @@ public class EnumDeclaration extends ScopeDsymbol {
 					switch (t.toBasetype(context).ty) {
 					case Tbool:
 						if (number.equals(N_2)) {
-							context.problemRequestor.acceptProblem(Problem
+							context.acceptProblem(Problem
 									.newSemanticTypeError(
 											"Overflow of enum value",
 											IProblem.EnumValueOverflow, 0,
@@ -152,7 +152,7 @@ public class EnumDeclaration extends ScopeDsymbol {
 
 					case Tint8:
 						if (number.equals(N_128)) {
-							context.problemRequestor.acceptProblem(Problem
+							context.acceptProblem(Problem
 									.newSemanticTypeError(
 											"Overflow of enum value",
 											IProblem.EnumValueOverflow, 0,
@@ -163,7 +163,7 @@ public class EnumDeclaration extends ScopeDsymbol {
 					case Tchar:
 					case Tuns8:
 						if (number.equals(N_256)) {
-							context.problemRequestor.acceptProblem(Problem
+							context.acceptProblem(Problem
 									.newSemanticTypeError(
 											"Overflow of enum value",
 											IProblem.EnumValueOverflow, 0,
@@ -173,7 +173,7 @@ public class EnumDeclaration extends ScopeDsymbol {
 
 					case Tint16:
 						if (number.equals(N_0x8000)) {
-							context.problemRequestor.acceptProblem(Problem
+							context.acceptProblem(Problem
 									.newSemanticTypeError(
 											"Overflow of enum value",
 											IProblem.EnumValueOverflow, 0,
@@ -184,7 +184,7 @@ public class EnumDeclaration extends ScopeDsymbol {
 					case Twchar:
 					case Tuns16:
 						if (number.equals(N_0x10000)) {
-							context.problemRequestor.acceptProblem(Problem
+							context.acceptProblem(Problem
 									.newSemanticTypeError(
 											"Overflow of enum value",
 											IProblem.EnumValueOverflow, 0,
@@ -194,7 +194,7 @@ public class EnumDeclaration extends ScopeDsymbol {
 
 					case Tint32:
 						if (number.equals(N_0x80000000)) {
-							context.problemRequestor.acceptProblem(Problem
+							context.acceptProblem(Problem
 									.newSemanticTypeError(
 											"Overflow of enum value",
 											IProblem.EnumValueOverflow, 0,
@@ -205,7 +205,7 @@ public class EnumDeclaration extends ScopeDsymbol {
 					case Tdchar:
 					case Tuns32:
 						if (number.equals(N_0x100000000)) {
-							context.problemRequestor.acceptProblem(Problem
+							context.acceptProblem(Problem
 									.newSemanticTypeError(
 											"Overflow of enum value",
 											IProblem.EnumValueOverflow, 0,
@@ -215,7 +215,7 @@ public class EnumDeclaration extends ScopeDsymbol {
 
 					case Tint64:
 						if (number.equals(N_0x8000000000000000)) {
-							context.problemRequestor.acceptProblem(Problem
+							context.acceptProblem(Problem
 									.newSemanticTypeError(
 											"Overflow of enum value",
 											IProblem.EnumValueOverflow, 0,
@@ -226,7 +226,7 @@ public class EnumDeclaration extends ScopeDsymbol {
 					case Tuns64:
 						// TODO incorrect comparison in Java
 						if (number.equals(BigInteger.ZERO)) {
-							context.problemRequestor.acceptProblem(Problem
+							context.acceptProblem(Problem
 									.newSemanticTypeError(
 											"Overflow of enum value",
 											IProblem.EnumValueOverflow, 0,
