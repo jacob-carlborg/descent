@@ -1,9 +1,13 @@
 package util.log;
 
+import java.io.PrintStream;
+
 public class Logg {
 
 	public static boolean debug = true;
 
+	public static PrintStream err = System.out; 
+	
 	static {
 	}
 

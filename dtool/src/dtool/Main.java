@@ -22,7 +22,6 @@ public class Main {
 
 	public static void main(String[] args) throws Exception {
 		System.out.println("======== DTool ========");
-
 		try {
 			dproj = DToolProject.newTestProject();
 			testDtool(args);
