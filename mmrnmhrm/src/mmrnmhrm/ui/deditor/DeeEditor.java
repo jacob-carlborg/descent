@@ -1,10 +1,10 @@
 package mmrnmhrm.ui.deditor;
 
 import mmrnmhrm.core.DeeCore;
-import mmrnmhrm.text.DeeDocument;
-import mmrnmhrm.text.DeeDocumentProvider;
 import mmrnmhrm.ui.actions.SampleAction;
 import mmrnmhrm.ui.outline.DeeContentOutlinePage;
+import mmrnmhrm.ui.text.DeeDocument;
+import mmrnmhrm.ui.text.DeeDocumentProvider;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.action.IMenuManager;
@@ -12,6 +12,8 @@ import org.eclipse.jface.text.TextSelection;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.texteditor.AbstractDecoratedTextEditor;
 import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
+
+import util.log.Logg;
 
 public class DeeEditor extends AbstractDecoratedTextEditor {
 	
@@ -41,7 +43,7 @@ public class DeeEditor extends AbstractDecoratedTextEditor {
 
 	@Override
 	protected void createActions() {
-		// TODO Auto-generated method stub
+		// TODO Auto-generated method stub createActions
 		super.createActions();
 	}
 
@@ -71,7 +73,6 @@ public class DeeEditor extends AbstractDecoratedTextEditor {
 	
 
 	public Object getAdapter(Class required) {
-		
 		if (IContentOutlinePage.class.equals(required)) {
 			if (outlinePage == null) {
 				outlinePage = new DeeContentOutlinePage(this);
@@ -84,6 +85,7 @@ public class DeeEditor extends AbstractDecoratedTextEditor {
 	
 	protected void doSetInput(IEditorInput input) throws CoreException {
 		super.doSetInput(input);
+		Logg.println("Got input:" + input + " : " + input.getName());
 		document = (DeeDocument) documentProvider.getDocument(input);
 		if (outlinePage != null)
 			outlinePage.updateInput();

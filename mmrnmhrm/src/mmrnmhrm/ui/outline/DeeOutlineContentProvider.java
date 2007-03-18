@@ -1,7 +1,7 @@
 package mmrnmhrm.ui.outline;
 
 import mmrnmhrm.core.DeeCore;
-import mmrnmhrm.text.DeeDocumentProvider;
+import mmrnmhrm.ui.text.DeeDocumentProvider;
 
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.Viewer;

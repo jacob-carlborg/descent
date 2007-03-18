@@ -1,7 +1,7 @@
 package mmrnmhrm.ui.actions;
 
-import mmrnmhrm.text.DebugPartitioner;
 import mmrnmhrm.ui.deditor.DeeEditor;
+import mmrnmhrm.ui.text.DebugPartitioner;
 
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.dialogs.MessageDialog;

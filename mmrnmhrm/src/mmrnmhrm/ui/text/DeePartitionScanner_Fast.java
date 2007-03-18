@@ -1,4 +1,4 @@
-package mmrnmhrm.text;
+package mmrnmhrm.ui.text;
 
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.rules.IPartitionTokenScanner;

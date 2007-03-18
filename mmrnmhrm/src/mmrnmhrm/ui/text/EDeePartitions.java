@@ -1,4 +1,4 @@
-package mmrnmhrm.text;
+package mmrnmhrm.ui.text;
 
 public interface EDeePartitions {
 	

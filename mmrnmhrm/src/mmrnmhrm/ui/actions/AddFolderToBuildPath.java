@@ -34,7 +34,7 @@ public class AddFolderToBuildPath implements IObjectActionDelegate {
 			final IFolder folder = (IFolder) sel.getFirstElement();
 			IWorkspaceRunnable op = new IWorkspaceRunnable() {
 				public void run(IProgressMonitor monitor) throws CoreException {
-					DeeModel.getInstance().addToBuildPath(folder);
+					DeeModel.getInstance().addSourceFolderToBuildPath(folder);
 				}
 			};			
 			

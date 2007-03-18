@@ -13,7 +13,7 @@ import dtool.dom.base.ASTNode;
 
 /**
  * D outline page. 
- * XXX: Does an input change in the outlines lifecycle??
+ * XXX: Does an input change in the outlines lifecycle?? -> Yes it can
  */
 public class DeeContentOutlinePage extends ContentOutlinePage {
 
@@ -31,7 +31,6 @@ public class DeeContentOutlinePage extends ContentOutlinePage {
 		viewer.setContentProvider(new DeeOutlineContentProvider());
 		viewer.setLabelProvider(new DeeOutlineLabelProvider());
 
-		//viewer.addSelectionChangedListener(this);
 		updateInput();
 	}
 

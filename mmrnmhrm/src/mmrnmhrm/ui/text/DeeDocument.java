@@ -1,4 +1,4 @@
-package mmrnmhrm.text;
+package mmrnmhrm.ui.text;
 
 import org.eclipse.jface.text.Document;
 import org.eclipse.ui.IPathEditorInput;

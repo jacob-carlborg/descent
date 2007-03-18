@@ -1,4 +1,4 @@
-package mmrnmhrm.text;
+package mmrnmhrm.ui.text;
 
 import mmrnmhrm.ui.preferences.ColorConstants;
 import mmrnmhrm.ui.preferences.ColorManager;

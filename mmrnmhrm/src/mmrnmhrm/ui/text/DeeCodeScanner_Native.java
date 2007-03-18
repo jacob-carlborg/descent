@@ -1,4 +1,4 @@
-package mmrnmhrm.text;
+package mmrnmhrm.ui.text;
 
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.rules.IToken;
@@ -6,10 +6,8 @@ import org.eclipse.jface.text.rules.ITokenScanner;
 
 import util.AssertIn;
 import util.log.Logg;
-
 import descent.internal.core.dom.Lexer;
 import descent.internal.core.dom.TOK;
-import descent.internal.core.dom.Token;
 
 public class DeeCodeScanner_Native implements ITokenScanner {
 	Lexer lexer;

@@ -3,6 +3,7 @@ package mmrnmhrm.ui.outline;
 import mmrnmhrm.core.model.DeeModel;
 import mmrnmhrm.core.model.DeeProject;
 import mmrnmhrm.core.model.DeeSourceFolder;
+import mmrnmhrm.core.model.IBuildPathEntry;
 import mmrnmhrm.ui.DeePluginImages;
 
 import org.eclipse.core.resources.IFolder;
@@ -38,8 +39,12 @@ public class DeeElementImageProvider {
 		else if(element instanceof IFolder) {
 			IFolder folder = (IFolder) element;
 			DeeProject deeproj = DeeModel.getDeeProject(folder.getProject());
-
-			if(deeproj != null && deeproj.containsElement(element))
+			if(deeproj == null)
+				return null;
+			
+			IBuildPathEntry bpentry = deeproj.getEntry(folder.getProjectRelativePath());
+			
+			if(bpentry instanceof DeeSourceFolder)
 				return getImage(DeePluginImages.IMAGE_PACKAGEFOLDER);
 			else 
 				return null;

@@ -9,7 +9,9 @@ import java.util.List;
 import mmrnmhrm.core.DeeCore;
 import mmrnmhrm.core.model.DeeProject;
 import mmrnmhrm.core.model.DeeSourceFolder;
+import mmrnmhrm.core.model.IBuildPathEntry;
 
+import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
@@ -31,14 +33,20 @@ public class DMDCompilerEnviron implements IDeeCompilerEnviron {
 	}
 	
 	private void prepOutputDir() throws CoreException {
-		IPath outputPath = deeProject.getOutputDir().getFullPath();
-		IResource[] oldResources = deeProject.getOutputDir().members();
+		// Does not support project location as output dir
+		IFolder outputDir = (IFolder) deeProject.getOutputDir();
+		outputDir.create(false, true, null);
+		IResource[] oldResources = outputDir.members();
 		DeeCore.getWorkspace().delete(oldResources, false, null);
 
-		for(DeeSourceFolder dsf : deeProject.getSourceFolders()) {
-			//dsf.folder.copy(outputPath, IResource.NONE, null);
-			IResource[] resources = new IResource[]{ dsf.folder };
-			DeeCore.getWorkspace().copy(resources, outputPath, 0, null);
+		IPath outputPath = outputDir.getFullPath();
+
+		for(IBuildPathEntry bpentry : deeProject.getSourceFolders()) {
+			if(bpentry instanceof DeeSourceFolder) {
+				DeeSourceFolder dsf = (DeeSourceFolder) bpentry;
+				IResource[] resources = new IResource[]{ dsf.folder };
+				DeeCore.getWorkspace().copy(resources, outputPath, 0, null);
+			}
 		}
 	}
 	

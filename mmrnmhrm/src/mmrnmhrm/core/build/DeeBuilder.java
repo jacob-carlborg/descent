@@ -8,6 +8,7 @@ import mmrnmhrm.core.model.DeeModel;
 import mmrnmhrm.core.model.DeeNature;
 import mmrnmhrm.core.model.DeeProject;
 import mmrnmhrm.core.model.DeeSourceFolder;
+import mmrnmhrm.core.model.IBuildPathEntry;
 
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
@@ -56,9 +57,14 @@ public class DeeBuilder extends IncrementalProjectBuilder {
 		
 		DeeModuleCollector visitor = new DeeModuleCollector();
 
-		for(DeeSourceFolder dsf : getDeeProject().getSourceFolders()) {
-			dsf.folder.accept(visitor, IResource.DEPTH_INFINITE, IResource.NONE);
+		for(IBuildPathEntry bpentry : getDeeProject().getSourceFolders()) {
+			if(bpentry instanceof DeeSourceFolder) {
+				DeeSourceFolder dsf = (DeeSourceFolder) bpentry;
+				dsf.folder.accept(visitor, IResource.DEPTH_INFINITE, IResource.NONE);
+			}
 		}
+		
+
 		
 		DMDCompilerEnviron dce = new DMDCompilerEnviron(getDeeProject());
 		dce.compileModules(visitor.dmodules);

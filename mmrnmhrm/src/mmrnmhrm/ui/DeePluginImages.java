@@ -32,6 +32,7 @@ public class DeePluginImages {
 	public static final ImageDescriptor ENT_FUNCTION = createImage_Obj("ent_function.gif");;
 	public static final ImageDescriptor ELEM_MODULE = createImage_Obj("ent_module.gif");;
 
+	// TODO, use JFACE ImageRegistry ?
 	private static ImageDescriptorRegistry registry = DeeUI.getImageDescriptorRegistry();
 
 

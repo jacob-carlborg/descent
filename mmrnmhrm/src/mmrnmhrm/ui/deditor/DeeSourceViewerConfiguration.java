@@ -1,8 +1,8 @@
 package mmrnmhrm.ui.deditor;
 
 import mmrnmhrm.core.DeeCore;
-import mmrnmhrm.text.EDeePartitions;
 import mmrnmhrm.ui.deditor.text.DeeHyperlinkDetector;
+import mmrnmhrm.ui.text.EDeePartitions;
 
 import org.eclipse.jface.text.hyperlink.IHyperlinkDetector;
 import org.eclipse.jface.text.presentation.IPresentationReconciler;

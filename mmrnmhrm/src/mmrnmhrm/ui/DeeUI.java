@@ -14,7 +14,7 @@ public class DeeUI extends DeePluginActivator {
 	public static synchronized ImageDescriptorRegistry getImageDescriptorRegistry() {
 		if (imageDescriptorRegistry == null)
 			imageDescriptorRegistry= new ImageDescriptorRegistry();
-		return imageDescriptorRegistry;	
+		return imageDescriptorRegistry;
 	}
 	
 	public static IWorkbenchWindow getActiveWorkbenchWindow() {
