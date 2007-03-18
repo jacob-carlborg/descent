@@ -38,6 +38,10 @@ public abstract class Dsymbol extends ASTNode {
 		return null;
 	}
 	
+	public AnonymousAggregateDeclaration isAnonymousAggregateDeclaration() {
+		return null;
+	}
+	
 	public TupleDeclaration isTupleDeclaration() {
 		return null;
 	}
@@ -59,6 +63,10 @@ public abstract class Dsymbol extends ASTNode {
 	}
 	
 	public ClassDeclaration isClassDeclaration() {
+		return null;
+	}
+	
+	public InterfaceDeclaration isInterfaceDeclaration() {
 		return null;
 	}
 	
@@ -84,6 +92,27 @@ public abstract class Dsymbol extends ASTNode {
 	
 	public Module isModule() {
 		return null;
+	}
+	
+	public void checkDeprecated(Scope sc, SemanticContext context) {
+		/* TODO semantic
+		if (!global.params.useDeprecated && isDeprecated())
+	    {
+		// Don't complain if we're inside a deprecated symbol's scope
+		for (Dsymbol *sp = sc->parent; sp; sp = sp->parent)
+		{   if (sp->isDeprecated())
+			return;
+		}
+
+		for (; sc; sc = sc->enclosing)
+		{
+		    if (sc->scopesym && sc->scopesym->isDeprecated())
+			return;
+		}
+
+		error(loc, "is deprecated");
+	    }
+	    */
 	}
 	
 	/**

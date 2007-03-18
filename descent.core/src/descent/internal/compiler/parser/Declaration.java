@@ -51,6 +51,10 @@ public abstract class Declaration extends Dsymbol {
 	public boolean isScope() {
 		return (storage_class & (STC.STCscope | STC.STCauto)) != 0;
 	}
+	
+	public boolean isStatic() {
+		return (storage_class & STC.STCstatic) != 0;
+	}
 
 	public boolean isSynchronized() {
 		return (storage_class & STC.STCsynchronized) != 0;

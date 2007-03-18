@@ -149,7 +149,7 @@ public class Semantic1_Test extends Parser_Test {
 	}
 	
 	public void testAliasCircularDeclaration_Not() {
-		assertNoSemanticErrors("alias one two; alias two three;");
+		assertNoSemanticErrors("int one = 2; alias one two; alias two three;");
 	}
 	
 	public void testAliasForwardReference() {
@@ -159,6 +159,46 @@ public class Semantic1_Test extends Parser_Test {
 		
 		assertError(p[0], IProblem.ForwardReference, 6, 1);
 		assertError(p[1], IProblem.ForwardReference, 15, 1);
+	}
+	
+	public void testAliasForwardReference_Not() {
+		assertNoSemanticErrors("int x = 2; alias x y;");
+	}
+	
+	public void testTypedefUsedAsAType() {
+		String s = "typedef x y; int x = 2;";
+		IProblem[] p = getModuleProblems(s);
+		assertEquals(1, p.length);
+		
+		assertError(p[0], IProblem.UsedAsAType, 8, 1);
+	}
+	
+	public void testExternSymbolsCannotHaveInitializers() {
+		String s = "extern int x = 1;";
+		IProblem[] p = getModuleProblems(s);
+		assertEquals(1, p.length);
+		
+		assertError(p[0], IProblem.ExternSymbolsCannotHaveInitializers, 15, 1);
+	}
+	
+	public void testVoidsHaveNoValue() {
+		String s = " void x;";
+		IProblem[] p = getModuleProblems(s);
+		assertEquals(1, p.length);
+		
+		assertError(p[0], IProblem.VoidsHaveNoValue, 1, 4);
+	}
+	
+	public void testUsedAsAType() {
+		String s = " class X  { } Y y;";
+		IProblem[] p = getModuleProblems(s);
+		assertEquals(1, p.length);
+		
+		assertError(p[0], IProblem.UsedAsAType, 14, 1);
+	}
+	
+	public void testUsedAsAType_Not() {
+		assertNoSemanticErrors(" class X { } X x;");
 	}
 
 }

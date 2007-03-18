@@ -15,13 +15,22 @@ public class Scope {
 	public Module module; 				// Root module
 	public ScopeDsymbol scopesym; 		// current symbol
 	public ScopeDsymbol sd; 			// if in static if, and declaring new symbols,
+	public FuncDeclaration func;		// function we are in
 	public Dsymbol parent; 				// parent to use
 	public int callSuper; 				// primitive flow analysis for constructors
+	public int structalign;				// alignment for struct members
+	public int offset;		// next offset to use in aggregate
 	public LINK linkage;
 	public PROT protection;				// protection for class members
 	public int explicitProtection;		// set if in an explicit protection attribute
     public int stc;						// storage class
     public boolean intypeof;			// in typeof(exp)
+    public boolean inunion;		// we're processing members of a union
+    public boolean incontract;		// we're inside contract code
+    public boolean nofree;			// set if shouldn't free it
+    public boolean noctor;			// set if constructor calls aren't allowed
+    
+    public AnonymousAggregateDeclaration anonAgg;	// for temporary analysis
 	
 	public Scope() {
 		this.linkage = LINK.LINKd;

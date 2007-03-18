@@ -27,40 +27,40 @@ public class TypeIdentifier extends TypeQualified {
 	@Override
 	public Type semantic(Scope sc, SemanticContext context) {
 		Type[] t = { null };
-	    Expression[] e = { null };
-	    Dsymbol[] s = { null };
+		Expression[] e = { null };
+		Dsymbol[] s = { null };
 
-	    //printf("TypeIdentifier::semantic(%s)\n", toChars());
-	    resolve(sc, e, t, s, context);
-	    if (t[0] != null)
-	    {
-		//printf("\tit's a type %d, %s, %s\n", t.ty, t.toChars(), t.deco);
+		// printf("TypeIdentifier::semantic(%s)\n", toChars());
+		resolve(sc, e, t, s, context);
+		if (t[0] != null) {
+			// printf("\tit's a type %d, %s, %s\n", t.ty, t.toChars(), t.deco);
 
-		if (t[0].ty == TY.Ttypedef)
-		{   TypeTypedef tt = (TypeTypedef) t[0];
+			if (t[0].ty == TY.Ttypedef) {
+				TypeTypedef tt = (TypeTypedef) t[0];
 
-		    if (tt.sym.sem == 1) {
-		    	context.acceptProblem(Problem.newSemanticTypeError("Circular reference of typedef " + tt.sym.ident, IProblem.CircularDefinition, 0, tt.sym.ident.start, tt.sym.ident.length));
-		    }
+				if (tt.sym.sem == 1) {
+					context.acceptProblem(Problem.newSemanticTypeError(
+							"Circular reference of typedef " + tt.sym.ident,
+							IProblem.CircularDefinition, 0, tt.sym.ident.start,
+							tt.sym.ident.length));
+				}
+			}
+		} else {
+			if (s[0] != null) {
+				context.acceptProblem(Problem.newSemanticTypeError(s[0].ident
+						+ " cannot be resolved to a type", IProblem.UsedAsAType, 0,
+						s[0].ident.start, s[0].ident.length));
+			} else {
+				context.acceptProblem(Problem.newSemanticTypeError(this.ident
+						+ " cannot be resolved to a type", IProblem.UsedAsAType, 0,
+						this.ident.start, this.ident.length));
+			}
+			// TODO see if this change is ok, I change it to error to get
+			// just one error on things like "Clazz x;" where "Clazz is not defined".
+			// (otherwise I get "voids have no value" also).
+			t[0] = terror;
 		}
-	    }
-	    else
-	    {
-		if (s != null)
-		{
-			/* TODO semantic
-		    s.error(loc, "is used as a type");
-		    */
-		}
-		else {
-			/* TODO semantic
-		    error(loc, "%s is used as a type", toChars());
-		    */
-		}
-		t[0] = tvoid;
-	    }
-	    //t.print();
-	    return t[0];
+		return t[0];
 	}
 	
 	@Override
@@ -68,17 +68,14 @@ public class TypeIdentifier extends TypeQualified {
 		Dsymbol s;
 		Dsymbol[] scopesym = { null };
 
-		// printf("TypeIdentifier::toDsymbol('%s')\n", toChars());
 		if (sc == null)
 			return null;
-		// printf("ident = '%s'\n", ident.toChars());
 		s = sc.search(ident, scopesym, context);
 		if (s != null) {
 			s = s.toAlias(context);
 			if (idents != null) {
 				for (IdentifierExp id : idents) {
 					Dsymbol sm;
-					// printf("\tid = '%s'\n", id.toChars());
 					if (id.dyncast() != Identifier.DYNCAST_IDENTIFIER) {
 						// It's a template instance
 						// printf("\ttemplate instance id\n");
@@ -87,18 +84,19 @@ public class TypeIdentifier extends TypeQualified {
 						id = (IdentifierExp) ti.idents.get(0);
 						sm = s.search(id, 0, context);
 						if (sm == null) {
-							/* TODO semantic
-							error("template identifier %s is not a member of %s",
-									id.toChars(), s.toChars());
-							*/
+							/*
+							 * TODO semantic error("template identifier %s is
+							 * not a member of %s", id.toChars(), s.toChars());
+							 */
 							break;
 						}
 						sm = sm.toAlias(context);
 						td = sm.isTemplateDeclaration();
 						if (td == null) {
-							/* TODO semantic
-							error("%s is not a template", id.toChars());
-							*/
+							/*
+							 * TODO semantic error("%s is not a template",
+							 * id.toChars());
+							 */
 							break;
 						}
 						ti.tempdecl = td;
@@ -108,9 +106,9 @@ public class TypeIdentifier extends TypeQualified {
 					} else
 						sm = s.search(id, 0, context);
 					s = sm;
-	
+
 					if (s == null) // failed to find a symbol
-					{ // printf("\tdidn't find a symbol\n");
+					{
 						break;
 					}
 					s = s.toAlias(context);

@@ -282,6 +282,8 @@ public interface IProblem {
 	int AliasCannotBeConst = 316;
 	int MemberIsPrivate = 317;
 	int UsedAsAType = 318;
+	int ExternSymbolsCannotHaveInitializers = 319;
+	int VoidsHaveNoValue = 320;
 	
 	/* Others, needed by JDT */
 	int ForbiddenReference = 2001;

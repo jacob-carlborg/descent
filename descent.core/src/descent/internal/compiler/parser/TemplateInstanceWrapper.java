@@ -9,6 +9,11 @@ public class TemplateInstanceWrapper extends IdentifierExp {
 	}
 	
 	@Override
+	public boolean dyncast() {
+		return Identifier.NOT_DYNCAST_IDENTIFIER;
+	}
+	
+	@Override
 	public int kind() {
 		return TEMPLATE_INSTANCE_WRAPPER;
 	}

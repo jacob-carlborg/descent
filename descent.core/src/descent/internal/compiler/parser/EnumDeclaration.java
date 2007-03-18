@@ -1,7 +1,5 @@
 package descent.internal.compiler.parser;
 
-import static descent.internal.compiler.parser.Expression.WANTvalue;
-
 import java.math.BigInteger;
 
 import descent.core.compiler.IProblem;
@@ -133,11 +131,11 @@ public class EnumDeclaration extends ScopeDsymbol {
 			if (e != null) {
 				// assert(e.dyncast() == DYNCAST_EXPRESSION);
 				e = e.semantic(sce, context);
-				e = e.optimize(WANTvalue);
+				e = e.optimize(Expression.WANTvalue);
 				// Need to copy it because we're going to change the type
 				e = e.copy();
 				e = e.implicitCastTo(sc, memtype);
-				e = e.optimize(WANTvalue);
+				e = e.optimize(Expression.WANTvalue);
 				number = e.toInteger(context);
 				e.type = t;
 			} else { // Default is the previous number plus 1

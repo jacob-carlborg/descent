@@ -1894,7 +1894,7 @@ public class ASTConverter {
 	
 	public descent.core.dom.Type convert(TypeIdentifier a) {
 		descent.core.dom.SimpleType b;
-		if (a.ident != null) {
+		if (a.ident != null && a.ident.ident != Id.empty) {
 			b = new descent.core.dom.SimpleType(ast);
 			b.setName(convert(a.ident));
 			b.setSourceRange(a.ident.start, a.ident.length);
@@ -2026,8 +2026,8 @@ public class ASTConverter {
 		case ASTNode.VAR_DECLARATION: {
 			VarDeclaration a = (VarDeclaration) symbol;
 			descent.core.dom.VariableDeclaration b = new descent.core.dom.VariableDeclaration(ast);
-			if (a.type != null) {
-				b.setType(convert(a.type));
+			if (a.originalType != null) {
+				b.setType(convert(a.originalType));
 			}
 			b.fragments().add(convert(a));
 			fillDeclaration(b, a);
@@ -2071,8 +2071,8 @@ public class ASTConverter {
 				while(symbol.kind() == ASTNode.VAR_DECLARATION) {
 					VarDeclaration a = (VarDeclaration) symbol;
 					if (first) {
-						if (a.type != null) {
-							b.setType(convert(a.type));
+						if (a.originalType != null) {
+							b.setType(convert(a.originalType));
 						}
 						convertModifiers(b.modifiers(), a.modifiers);
 						if (a.postDdoc != null) {
@@ -2254,6 +2254,8 @@ public class ASTConverter {
 	}
 	
 	public descent.core.dom.SimpleName convert(IdentifierExp a) {
+		if (a.ident == Id.empty) return null;
+		
 		descent.core.dom.SimpleName b = new descent.core.dom.SimpleName(ast);
 		b.internalSetIdentifier(a.ident.string);
 		b.setSourceRange(a.start, a.length);
@@ -2268,7 +2270,7 @@ public class ASTConverter {
 		
 		for(int i = 0; i < ids.size(); i++) {
 			IdentifierExp id = ids.get(i);
-			if (id == null) continue;
+			if (id == null || id.ident == Id.empty) continue;
 			
 			descent.core.dom.Type second;
 			if (i == ids.size() - 1) {

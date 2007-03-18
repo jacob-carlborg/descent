@@ -18,6 +18,32 @@ public class ArrayInitializer extends Initializer {
 	}
 	
 	@Override
+	public Type inferType(Scope sc, SemanticContext context) {
+		if (value != null) {
+			for (int i = 0; i < value.size(); i++) {
+				if (index.get(i) != null) {
+					// goto Lno;
+					error("cannot infer type from this array initializer");
+					return Type.terror;
+				}
+			}
+			if (value.size() > 0) {
+				Initializer iz = (Initializer) value.get(0);
+				if (iz != null) {
+					Type t = iz.inferType(sc, context);
+					t = new TypeSArray(t, new IntegerExp(value.size()));
+					t = t.semantic(sc, context);
+					return t;
+				}
+			}
+		}
+
+		// Lno:
+		error("cannot infer type from this array initializer");
+		return Type.terror;
+	}
+	
+	@Override
 	public int kind() {
 		return ARRAY_INITIALIZER;
 	}

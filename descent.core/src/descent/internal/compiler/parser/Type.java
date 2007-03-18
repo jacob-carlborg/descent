@@ -30,6 +30,7 @@ public abstract class Type extends ASTNode {
 	public final static Type twchar = new TypeBasic(TY.Twchar);
 	public final static Type tdchar = new TypeBasic(TY.Tdchar);
 	public final static Type terror = new TypeBasic(TY.Terror); // for error recovery
+	public final static Type tindex = tint32;
 	
 	public TY ty;
 	public Type next;
@@ -113,6 +114,10 @@ public abstract class Type extends ASTNode {
 	}
 
 	public boolean isunsigned() {
+		return false;
+	}
+	
+	public boolean isauto() {
 		return false;
 	}
 
@@ -208,6 +213,18 @@ public abstract class Type extends ASTNode {
 		}
 	}
 	
+	public void checkDeprecated(Scope sc, SemanticContext context) {
+		Type t;
+	    Dsymbol s;
+
+	    for (t = this; t != null; t = t.next)
+	    {
+		s = t.toDsymbol(sc, context);
+		if (s != null)
+		    s.checkDeprecated(sc, context);
+	    }
+	}
+	
 	public Expression dotExp(Scope sc, Expression e, IdentifierExp ident,
 			SemanticContext context) {
 		VarDeclaration v = null;
@@ -280,6 +297,25 @@ public abstract class Type extends ASTNode {
 			 */
 		}
 		return getProperty(ident.ident);
+	}
+
+	public int size() {
+		// TODO semantic
+		return 0;
+	}
+
+	public int alignsize() {
+		// TODO semantic
+		return 0;
+	}
+
+	public int memalign(int structalign) {
+		// TODO
+		return 0;
+	}
+
+	public boolean isBaseOf(Type type, int[] posffset) {
+		return false;
 	}
 
 }

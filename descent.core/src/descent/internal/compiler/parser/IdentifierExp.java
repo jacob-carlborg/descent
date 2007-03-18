@@ -33,7 +33,7 @@ public class IdentifierExp extends Expression {
 	
 	@Override
 	public String toString() {
-		return ident.string;
+		return ident.toString();
 	}
 
 }

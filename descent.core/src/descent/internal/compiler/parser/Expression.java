@@ -17,6 +17,10 @@ public abstract class Expression extends ASTNode implements Cloneable {
 		this.op = op;
 	}
 	
+	public void checkDeprecated(Scope sc, Dsymbol s, SemanticContext context) {
+		s.checkDeprecated(sc, context);
+	}
+	
 	public Expression semantic(Scope sc, SemanticContext context) {
 		return this;
 	}
@@ -48,6 +52,10 @@ public abstract class Expression extends ASTNode implements Cloneable {
 						IProblem.EnumValueOverflow, 0,
 						start, length));
 		return BigInteger.ZERO;
+	}
+
+	public boolean implicitConvTo(Type t, SemanticContext context) {
+		return false;
 	}
 
 }

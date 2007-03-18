@@ -17,6 +17,18 @@ public class IntegerExp extends Expression {
 		this.type = type;
 	}
 	
+	public IntegerExp(String str, int value, Type type) {
+		this(str, new BigInteger(String.valueOf(value)), type);
+	}
+	
+	public IntegerExp(BigInteger value) {
+		this(value.toString(), value, Type.tint32);
+	}
+	
+	public IntegerExp(int value) {
+		this(new BigInteger(String.valueOf(value)));
+	}
+	
 	@Override
 	public boolean isBool(boolean result) {
 		return result ? value.compareTo(BigInteger.ZERO) != 0 : value.compareTo(BigInteger.ZERO) == 0;

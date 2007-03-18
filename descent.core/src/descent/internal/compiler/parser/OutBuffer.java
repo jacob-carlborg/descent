@@ -7,6 +7,12 @@ public class OutBuffer {
 	public OutBuffer() {
 		data = new StringBuilder();
 	}
+	
+	public String extractData() {
+		String s = data.toString();
+		data.setLength(0);
+		return s;
+	}
 
 	public void reset() {
 		data.delete(0, data.length());

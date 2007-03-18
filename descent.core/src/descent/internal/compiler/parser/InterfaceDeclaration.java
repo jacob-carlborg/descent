@@ -12,6 +12,11 @@ public class InterfaceDeclaration extends AggregateDeclaration {
 	}
 	
 	@Override
+	public InterfaceDeclaration isInterfaceDeclaration() {
+		return this;
+	}
+	
+	@Override
 	public int kind() {
 		return INTERFACE_DECLARATION;
 	}

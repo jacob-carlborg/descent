@@ -179,6 +179,9 @@ public abstract class ASTNode {
 	public final static int TYPE_TUPLE = 169;
 	public final static int VAR_EXP = 170;
 	public final static int DOT_VAR_EXP = 171;
+	public final static int TYPE_STRUCT = 172;
+	public final static int DSYMBOL_EXP = 173;
+	public final static int TYPE_CLASS = 174;
 	
 	public int start;
 	public int length;
@@ -214,5 +217,17 @@ public abstract class ASTNode {
 	}
 	
 	public abstract int kind();
+	
+	protected void error(String s) {
+		throw new IllegalStateException("Problem reporting not implemented");
+	}
+	
+	protected void error(String s, String s2) {
+		throw new IllegalStateException("Problem reporting not implemented");
+	}
+	
+	protected String toChars() {
+		throw new IllegalStateException("Must not call this method");
+	}
 
 }

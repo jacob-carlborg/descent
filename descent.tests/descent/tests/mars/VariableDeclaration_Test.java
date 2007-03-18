@@ -138,7 +138,8 @@ public class VariableDeclaration_Test extends Parser_Test {
 	
 	public void testExtern() {
 		String s = " extern x = 1;";
-		VariableDeclaration var = (VariableDeclaration) getSingleDeclarationNoProblems(s);
+		// Extern symbols cannot have initializers
+		VariableDeclaration var = (VariableDeclaration) getSingleDeclarationWithProblems(s, 1);
 		assertEquals(ASTNode.VARIABLE_DECLARATION, var.getNodeType());
 		assertNull(var.getType());
 		assertEquals(1, var.modifiers().size());

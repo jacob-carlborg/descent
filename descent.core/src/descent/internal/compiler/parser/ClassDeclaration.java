@@ -10,6 +10,7 @@ public class ClassDeclaration extends AggregateDeclaration {
 	public ClassDeclaration(IdentifierExp id, List<BaseClass> baseClasses) {
 		super(id);
 		this.baseClasses = baseClasses;
+		this.type = new TypeClass(this);
 	}
 	
 	@Override

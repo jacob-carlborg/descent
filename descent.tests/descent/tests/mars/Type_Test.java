@@ -42,7 +42,13 @@ public class Type_Test extends Parser_Test {
 		};
 		
 		for(Object[] tri : objs) {
-			PrimitiveType type = (PrimitiveType) getType(tri[0].toString());
+			PrimitiveType type;
+			if (tri[0].equals("void")) {
+				// Voids have no value
+				type = (PrimitiveType) getType(tri[0].toString(), 1);
+			} else {
+				type = (PrimitiveType) getType(tri[0].toString());
+			}			
 			assertEquals(tri[0].toString(), type.toString());
 			assertEquals(ASTNode.PRIMITIVE_TYPE, type.getNodeType());
 			assertEquals(tri[1], type.getPrimitiveTypeCode());
@@ -81,14 +87,17 @@ public class Type_Test extends Parser_Test {
 	}
 	
 	public void testIdentifierTypeSingle() {
-		SimpleType type = (SimpleType) getType("Clazz");
+		// 1. Clazz is used as a type
+		SimpleType type = (SimpleType) getType("Clazz", 1);
 		assertEquals(ASTNode.SIMPLE_TYPE, type.getNodeType());
 		assertEquals("Clazz", type.getName().getFullyQualifiedName());
 		assertPosition(type, 1, 5);
 	}
 	
 	public void testIdentifierTypeMany() {
-		QualifiedType type = (QualifiedType) getType("mod.bla.Clazz");
+		// 1. mod is used as a type
+		// TODO get back to this when search is done in other modules
+		QualifiedType type = (QualifiedType) getType("mod.bla.Clazz", 1);
 		assertEquals(ASTNode.QUALIFIED_TYPE, type.getNodeType());
 		
 		assertEquals("Clazz", ((SimpleType) type.getType()).getName().getFullyQualifiedName());
@@ -165,7 +174,9 @@ public class Type_Test extends Parser_Test {
 	}
 	
 	public void testTemplateType() {
-		QualifiedType type = (QualifiedType) getType("a.b.Temp!(int)");
+		// 1. a is used as a type
+		// TODO get back to this when search is done in other modules
+		QualifiedType type = (QualifiedType) getType("a.b.Temp!(int)", 1);
 		assertPosition(type, 1, 14);
 		
 		TemplateType templateType = (TemplateType) type.getType();
@@ -193,7 +204,9 @@ public class Type_Test extends Parser_Test {
 	}
 	
 	public void testTemplateType3() {
-		QualifiedType type = (QualifiedType) getType(".Temp!(int)");
+		// 1.  is used as a type
+		// TODO get back to this when search is done in other modules
+		QualifiedType type = (QualifiedType) getType(".Temp!(int)", 1);
 		
 		assertNull(type.getQualifier());
 		assertPosition(type, 1, 11);
@@ -242,9 +255,17 @@ public class Type_Test extends Parser_Test {
 	}
 	
 	private ASTNode getType(String type) {
-		String s = " " + type + " x;";
+		return getType(type, "", 0);
+	}
+	
+	private ASTNode getType(String type, int problems) {
+		return getType(type, "", problems);
+	}
+	
+	private ASTNode getType(String type, String extra, int problems) {
+		String s = " " + type + " x; " + extra;
 		
-		VariableDeclaration var = (VariableDeclaration) getSingleDeclarationNoProblems(s);
+		VariableDeclaration var = (VariableDeclaration) getSingleDeclarationWithProblems(s, problems);
 		return var.getType();
 	}
 

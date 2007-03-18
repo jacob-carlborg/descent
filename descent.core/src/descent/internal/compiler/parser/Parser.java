@@ -1494,7 +1494,7 @@ public class Parser extends Lexer {
 
 		tqual = null;
 		if (token.value == TOKdot) {
-			id = null; // Id::empty
+			id = new IdentifierExp(Id.empty); // Id::empty
 		} else {
 			if (token.value == TOKtypeof) {
 				Expression exp;
@@ -1787,7 +1787,8 @@ public class Parser extends Lexer {
 			}
 			break;
 
-		case TOKdot:			
+		case TOKdot:
+			id = new IdentifierExp(Id.empty);
 			// goto Lident;
 			tid = new TypeIdentifier(id);
 			{
@@ -4423,8 +4424,7 @@ public class Parser extends Lexer {
 
 		case TOKdot:
 		    // Signal global scope '.' operator with "" identifier
-			e = null;
-		    // e = new PIdentifier(new Identifier(Id.empty, TOKidentifier));
+			e = new IdentifierExp(Id.empty);
 		    break;
 
 		case TOKthis:
