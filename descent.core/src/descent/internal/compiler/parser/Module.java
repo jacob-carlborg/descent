@@ -1,5 +1,6 @@
 package descent.internal.compiler.parser;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import descent.core.compiler.IProblem;
@@ -19,6 +20,7 @@ public class Module extends Package {
 	public PublicScanner scanner;
 	public int semanticstarted;	// has semantic() been started?
 	public int semanticdone; // has semantic() been done?
+	public List<Dsymbol> deferred;
 	
 	@Override
 	public Module isModule() {
@@ -76,6 +78,22 @@ public class Module extends Package {
 	@Override
 	public int kind() {
 		return MODULE;
+	}
+
+	public void addDeferredSemantic(Dsymbol s) {
+		if (deferred == null) {
+			deferred = new ArrayList<Dsymbol>();
+		}
+
+		// Don't add it if it is already there
+		for (int i = 0; i < deferred.size(); i++) {
+			Dsymbol sd = (Dsymbol) deferred.get(i);
+
+			if (sd == s)
+				return;
+		}
+
+		deferred.add(s);
 	}
 
 }

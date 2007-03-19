@@ -96,6 +96,10 @@ public class Semantic1_Test extends Parser_Test {
 		assertError(p[0], IProblem.EnumMustHaveAtLeastOneMember, 5, 1);
 	}
 	
+	public void testEnumMustHaveAtLeastOneMember_Not() {
+		assertNoSemanticErrors("enum x;");
+	}
+	
 	public void testEnumAnonMustHaveAtLeastOneMember2() {
 		String s = " enum { }";
 		IProblem[] p = getModuleProblems(s);
@@ -129,7 +133,7 @@ public class Semantic1_Test extends Parser_Test {
 		IProblem[] p = getModuleProblems(s);
 		assertEquals(1, p.length);
 		
-		assertError(p[0], IProblem.AliasCannotBeConst, 6, 5);
+		assertError(p[0], IProblem.IllegalModifier, 6, 5);
 	}
 	
 	public void testAliasCircularDeclaration() {
@@ -192,13 +196,102 @@ public class Semantic1_Test extends Parser_Test {
 	public void testUsedAsAType() {
 		String s = " class X  { } Y y;";
 		IProblem[] p = getModuleProblems(s);
-		assertEquals(1, p.length);
+		assertEquals(2, p.length);
 		
-		assertError(p[0], IProblem.UsedAsAType, 14, 1);
+		assertError(p[0], IProblem.IdentifierNotDefined, 14, 1);
+		assertError(p[1], IProblem.UsedAsAType, 14, 1);
 	}
 	
 	public void testUsedAsAType_Not() {
 		assertNoSemanticErrors(" class X { } X x;");
+	}
+	
+	public void testCannotInferTypeFromArrayInitializer() {
+		String s = " auto x = [];";
+		IProblem[] p = getModuleProblems(s);
+		assertEquals(1, p.length);
+		
+		assertError(p[0], IProblem.CannotInferType, 10, 2);
+	}
+	
+	public void testCannotInferTypeFromArrayInitializer2() {
+		String s = " auto x = [ 1 : 1 ];";
+		IProblem[] p = getModuleProblems(s);
+		assertEquals(1, p.length);
+		
+		assertError(p[0], IProblem.CannotInferType, 10, 9);
+	}
+	
+	public void testVariableCannotBeSynchronized() {
+		String s = " synchronized int x;";
+		IProblem[] p = getModuleProblems(s);
+		assertEquals(1, p.length);
+		
+		assertError(p[0], IProblem.IllegalModifier, 18, 1);
+	}
+	
+	public void testVariableCannotBeOverride() {
+		String s = " override int x;";
+		IProblem[] p = getModuleProblems(s);
+		assertEquals(1, p.length);
+		
+		assertError(p[0], IProblem.IllegalModifier, 14, 1);
+	}
+	
+	public void testVariableCannotBeAbstract() {
+		String s = " abstract int x;";
+		IProblem[] p = getModuleProblems(s);
+		assertEquals(1, p.length);
+		
+		assertError(p[0], IProblem.IllegalModifier, 14, 1);
+	}
+	
+	public void testNoDefinitionOfStruct() {
+		String s = " struct s; s x;";
+		IProblem[] p = getModuleProblems(s);
+		assertEquals(1, p.length);
+		
+		assertError(p[0], IProblem.NoDefinition, 11, 1);
+	}
+	
+	public void testDuplicatedInterfaceInheritance() {
+		String s = " interface A { } class B : A, A { }";
+		IProblem[] p = getModuleProblems(s);
+		assertEquals(1, p.length);
+		
+		assertError(p[0], IProblem.DuplicatedInterfaceInheritance, 30, 1);
+	}
+	
+	public void testCircularInterfaceInheritance() {
+		String s = " class A : A { }";
+		IProblem[] p = getModuleProblems(s);
+		assertEquals(1, p.length);
+		
+		assertError(p[0], IProblem.CircularDefinition, 11, 1);
+	}
+	
+	public void testBaseTypeWrong() {
+		String s = " int x; class A : x { }";
+		IProblem[] p = getModuleProblems(s);
+		assertEquals(1, p.length);
+		
+		assertError(p[0], IProblem.UsedAsAType, 18, 1);
+	}
+	
+	public void testInterfaceTypeWrong() {
+		String s = " class B { } int x; class A : B, x { }";
+		IProblem[] p = getModuleProblems(s);
+		assertEquals(1, p.length);
+		
+		assertError(p[0], IProblem.UsedAsAType, 33, 1);
+	}
+	
+	public void testInterfaceCannotDeclareFields() {
+		String s = " interface A { int x; }";
+		IProblem[] p = getModuleProblems(s);
+		assertEquals(1, p.length);
+		
+		assertError(p[0], IProblem.FieldsNotAllowedInInterfaces, 19, 1);
 	}
 
 }

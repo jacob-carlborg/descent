@@ -5,7 +5,7 @@ import descent.core.compiler.IProblem;
 public class TypedefDeclaration extends Declaration {
 	
 	public boolean last; // is this the last declaration in a multi declaration?
-	public Type originalBasetype; // copy of basetype, because it will change
+	public Type sourceBasetype; // copy of basetype, because it will change
 	public Type basetype;
 	public Initializer init;
 	int sem;			// 0: semantic() has not been run
@@ -17,7 +17,7 @@ public class TypedefDeclaration extends Declaration {
 		super(id);
 		this.type = new TypeTypedef(this);
 		this.basetype = basetype;
-		this.originalBasetype = basetype;
+		this.sourceBasetype = basetype;
 		this.init = init;				
 	}
 	

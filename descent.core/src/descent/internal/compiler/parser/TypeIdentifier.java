@@ -11,6 +11,10 @@ public class TypeIdentifier extends TypeQualified {
 		this.ident = ident;
 	}
 	
+	public TypeIdentifier(Identifier ident) {
+		this(new IdentifierExp(ident));
+	}
+	
 	@Override
 	public Expression toExpression() {
 		Expression e = new IdentifierExp(ident.ident);
@@ -47,13 +51,19 @@ public class TypeIdentifier extends TypeQualified {
 			}
 		} else {
 			if (s[0] != null) {
-				context.acceptProblem(Problem.newSemanticTypeError(s[0].ident
-						+ " cannot be resolved to a type", IProblem.UsedAsAType, 0,
-						s[0].ident.start, s[0].ident.length));
+				// TODO semantic remove the following if but leave the body
+				if (s[0].ident.ident != Id.Object) {
+					context.acceptProblem(Problem.newSemanticTypeError(s[0].ident
+							+ " cannot be resolved to a type", IProblem.UsedAsAType, 0,
+							s[0].ident.start, s[0].ident.length));
+				}
 			} else {
-				context.acceptProblem(Problem.newSemanticTypeError(this.ident
-						+ " cannot be resolved to a type", IProblem.UsedAsAType, 0,
-						this.ident.start, this.ident.length));
+				// TODO semantic remove the following if but leave the body
+				if (ident.ident != Id.Object) {
+					context.acceptProblem(Problem.newSemanticTypeError(this.ident
+							+ " cannot be resolved to a type", IProblem.UsedAsAType, 0,
+							this.ident.start, this.ident.length));
+				}
 			}
 			// TODO see if this change is ok, I change it to error to get
 			// just one error on things like "Clazz x;" where "Clazz is not defined".
@@ -84,19 +94,13 @@ public class TypeIdentifier extends TypeQualified {
 						id = (IdentifierExp) ti.idents.get(0);
 						sm = s.search(id, 0, context);
 						if (sm == null) {
-							/*
-							 * TODO semantic error("template identifier %s is
-							 * not a member of %s", id.toChars(), s.toChars());
-							 */
+							error("template identifier %s is not a member of %s", id.toChars(), s.toChars());
 							break;
 						}
 						sm = sm.toAlias(context);
 						td = sm.isTemplateDeclaration();
 						if (td == null) {
-							/*
-							 * TODO semantic error("%s is not a template",
-							 * id.toChars());
-							 */
+							error("%s is not a template", id.toChars());
 							break;
 						}
 						ti.tempdecl = td;

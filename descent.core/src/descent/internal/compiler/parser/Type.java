@@ -139,11 +139,11 @@ public abstract class Type extends ASTNode {
 		return null;
 	}
 	
-	public Expression defaultInit() {
+	public Expression defaultInit(SemanticContext context) {
 		return null;
 	}
 	
-	public Expression getProperty(Identifier ident) {
+	public Expression getProperty(Identifier ident, SemanticContext context) {
 		Expression e = null;
 
 	    if (ident == Id.__sizeof)
@@ -175,16 +175,14 @@ public abstract class Type extends ASTNode {
 	    }
 	    else if (ident == Id.init)
 	    {
-	    	e = defaultInit();
+	    	e = defaultInit(context);
 	    }
 	    else if (ident == Id.mangleof)
 	    {
 	    	Assert.isNotNull(deco);
 	    	e = new StringExp(deco, 'c');
-	    	/* TODO semantic
-			Scope sc;
-			e = e.semantic(&sc);
-			*/
+			Scope sc = new Scope();
+			e = e.semantic(sc, context);
 	    }
 	    else if (ident == Id.stringof)
 	    {	
@@ -259,7 +257,7 @@ public abstract class Type extends ASTNode {
 						 error(e.loc, "%s.init is void", v.toChars());
 						 */
 					} else {
-						e = v.init.toExpression();
+						e = v.init.toExpression(context);
 						if (e.op == TOK.TOKassign || e.op == TOK.TOKconstruct) {
 							e = ((AssignExp) e).e2;
 
@@ -270,7 +268,7 @@ public abstract class Type extends ASTNode {
 							if (e.type == Type.tint32
 									&& e.isBool(false)
 									&& v.type.toBasetype(context).ty == TY.Tstruct) {
-								e = v.type.defaultInit();
+								e = v.type.defaultInit(context);
 							}
 						}
 					}
@@ -296,7 +294,7 @@ public abstract class Type extends ASTNode {
 			 return e;
 			 */
 		}
-		return getProperty(ident.ident);
+		return getProperty(ident.ident, context);
 	}
 
 	public int size() {

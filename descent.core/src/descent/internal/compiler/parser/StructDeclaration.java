@@ -6,6 +6,7 @@ public class StructDeclaration extends AggregateDeclaration {
 
 	public StructDeclaration(IdentifierExp id) {
 		super(id);
+		this.type = new TypeStruct(this);
 	}
 	
 	@Override

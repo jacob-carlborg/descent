@@ -27,7 +27,7 @@ public class ScopeDsymbol extends Dsymbol {
 	}
 	
 	@Override
-	public Dsymbol search(IdentifierExp ident, int flags, SemanticContext context) {
+	public Dsymbol search(Identifier ident, int flags, SemanticContext context) {
 		Dsymbol s;
 		int i;
 
@@ -85,7 +85,7 @@ public class ScopeDsymbol extends Dsymbol {
 	
 	@Override
 	public int kind() {
-		return -1;
+		return SCOPE_DSYMBOL;
 	}
 
 }

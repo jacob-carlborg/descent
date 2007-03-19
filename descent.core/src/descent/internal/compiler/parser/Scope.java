@@ -119,21 +119,21 @@ public class Scope {
 				//printf("\tlooking in scopesym '%s', kind = '%s'\n", sc.scopesym.toChars(), sc.scopesym.kind());
 				s = sc.scopesym.search(ident, 0, context);
 				if (s != null) {
-					/* TODO semantic
-					 if ((global.params.warnings ||
-					 global.params.Dversion > 1) &&
-					 ident == Id.length &&
-					 sc.scopesym.isArrayScopeSymbol() &&
-					 sc.enclosing &&
-					 sc.enclosing.search(ident, null, context))
-					 {
-					 if (global.params.warnings)
-					 fprintf(stdmsg, "warning - ");
-					 error("array 'length' hides other 'length' name in outer scope");
-					 }
-					 */
+					 if ((context.global.params.warnings || context.global.params.Dversion > 1)
+							&& ident.ident == Id.length
+							&& sc.scopesym.isArrayScopeSymbol() != null
+							&& sc.enclosing != null
+							&& sc.enclosing.search(ident, null, context) != null) {
+						/* TODO semantic
+						if (context.global.params.warnings) {
+							fprintf(stdmsg, "warning - ");
+						}
+						error("array 'length' hides other 'length' name in outer scope");
+						*/
+					}
 
-					//printf("\tfound %s.%s, kind = '%s'\n", s.parent ? s.parent.toChars() : "", s.toChars(), s.kind());
+					// printf("\tfound %s.%s, kind = '%s'\n", s.parent ?
+					// s.parent.toChars() : "", s.toChars(), s.kind());
 					if (pscopesym != null)
 						pscopesym[0] = sc.scopesym;
 					return s;
@@ -142,6 +142,13 @@ public class Scope {
 		}
 
 		return null;
+	}
+	
+	public void setNoFree() {
+		Scope sc;
+		for (sc = this; sc != null; sc = sc.enclosing) {
+			sc.nofree = true;
+		}
 	}
 
 }

@@ -2,7 +2,7 @@ package descent.tests.mars;
 
 import descent.core.dom.ASTNode;
 import descent.core.dom.AlignDeclaration;
-import descent.internal.compiler.parser.global;
+import descent.internal.compiler.parser.Global;
 
 public class Align_Test extends Parser_Test {
 	
@@ -19,7 +19,7 @@ public class Align_Test extends Parser_Test {
 		String s = " align: class Pub { }";
 		AlignDeclaration align = (AlignDeclaration) getSingleDeclarationNoProblems(s);
 		assertEquals(ASTNode.ALIGN_DECLARATION, align.getNodeType());
-		assertEquals(global.structalign, align.getAlign());
+		assertEquals(Global.structalign, align.getAlign());
 		
 		assertEquals(1, align.declarations().size());
 	}

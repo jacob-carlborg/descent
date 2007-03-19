@@ -18,5 +18,9 @@ public class DsymbolTable {
 	public Dsymbol lookup(IdentifierExp ident) {
 		return map.get(ident.ident.string);
 	}
+	
+	public Dsymbol lookup(Identifier ident) {
+		return map.get(ident.string);
+	}
 
 }

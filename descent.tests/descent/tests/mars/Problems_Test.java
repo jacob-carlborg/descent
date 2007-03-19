@@ -212,8 +212,8 @@ public class Problems_Test extends Parser_Test {
 	 }
 
 	public void test_HEX_DIGIT_EXPECTED() {
-		// 3. X is used as a type
-		IProblem p = getProblems(" int a = 0xX c = new C();", 3)[0];
+		// 3, 4. X is used as a type
+		IProblem p = getProblems(" int a = 0xX c = new X();", 4)[0];
 		assertError(p, IProblem.HexDigitExpected, 11, 1);
 	}
 
@@ -493,14 +493,14 @@ public class Problems_Test extends Parser_Test {
 	}
 
 	public void test_COMMA_EXPECTED_SEPARATING_STRUCT_INITIALIZER() {
-		// 2. X is used as a type
-		IProblem p = getProblems(" X x = { a b };", 2)[0];
+		// 2, 3. X is used as a type
+		IProblem p = getProblems(" X x = { a b };", 3)[0];
 		assertError(p, IProblem.ParsingErrorInsertTokenAfter, 9, 1);
 	}
 
 	public void test_COMMA_EXPECTED_SEPARATING_ARRAY_INITIALIZER() {
-		// 4. X is used as a type
-		IProblem p = getProblems(" X x = [ 1 2 ];", 4)[0];
+		// 4, 5. X is used as a type
+		IProblem p = getProblems(" X x = [ 1 2 ];", 5)[0];
 		assertError(p, IProblem.ParsingErrorInsertTokenAfter, 9, 1);
 	}
 

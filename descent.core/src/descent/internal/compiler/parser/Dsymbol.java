@@ -90,29 +90,29 @@ public abstract class Dsymbol extends ASTNode {
 		return null;
 	}
 	
+	public ArrayScopeSymbol isArrayScopeSymbol() {
+		return null;
+	}
+	
 	public Module isModule() {
 		return null;
 	}
 	
 	public void checkDeprecated(Scope sc, SemanticContext context) {
-		/* TODO semantic
-		if (!global.params.useDeprecated && isDeprecated())
-	    {
-		// Don't complain if we're inside a deprecated symbol's scope
-		for (Dsymbol *sp = sc->parent; sp; sp = sp->parent)
-		{   if (sp->isDeprecated())
-			return;
-		}
+		if (!context.global.params.useDeprecated && isDeprecated()) {
+			// Don't complain if we're inside a deprecated symbol's scope
+			for (Dsymbol sp = sc.parent; sp != null; sp = sp.parent) {
+				if (sp.isDeprecated())
+					return;
+			}
 
-		for (; sc; sc = sc->enclosing)
-		{
-		    if (sc->scopesym && sc->scopesym->isDeprecated())
-			return;
-		}
+			for (; sc != null; sc = sc.enclosing) {
+				if (sc.scopesym != null && sc.scopesym.isDeprecated())
+					return;
+			}
 
-		error(loc, "is deprecated");
-	    }
-	    */
+			error("is deprecated");
+		}
 	}
 	
 	/**
@@ -194,7 +194,11 @@ public abstract class Dsymbol extends ASTNode {
 		
 	}
 	
-	public Dsymbol search(IdentifierExp ident, int flags, SemanticContext context) {
+	public final Dsymbol search(IdentifierExp ident, int flags, SemanticContext context) {
+		return search(ident.ident, flags, context);
+	}
+	
+	public Dsymbol search(Identifier ident, int flags, SemanticContext context) {
 		return null;
 	}
 

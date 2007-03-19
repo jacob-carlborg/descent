@@ -87,17 +87,17 @@ public class Type_Test extends Parser_Test {
 	}
 	
 	public void testIdentifierTypeSingle() {
-		// 1. Clazz is used as a type
-		SimpleType type = (SimpleType) getType("Clazz", 1);
+		// 1, 2. Clazz is used as a type
+		SimpleType type = (SimpleType) getType("Clazz", 2);
 		assertEquals(ASTNode.SIMPLE_TYPE, type.getNodeType());
 		assertEquals("Clazz", type.getName().getFullyQualifiedName());
 		assertPosition(type, 1, 5);
 	}
 	
 	public void testIdentifierTypeMany() {
-		// 1. mod is used as a type
+		// 1, 2. mod is used as a type
 		// TODO get back to this when search is done in other modules
-		QualifiedType type = (QualifiedType) getType("mod.bla.Clazz", 1);
+		QualifiedType type = (QualifiedType) getType("mod.bla.Clazz", 2);
 		assertEquals(ASTNode.QUALIFIED_TYPE, type.getNodeType());
 		
 		assertEquals("Clazz", ((SimpleType) type.getType()).getName().getFullyQualifiedName());
@@ -174,9 +174,9 @@ public class Type_Test extends Parser_Test {
 	}
 	
 	public void testTemplateType() {
-		// 1. a is used as a type
+		// 1, 2. a is used as a type
 		// TODO get back to this when search is done in other modules
-		QualifiedType type = (QualifiedType) getType("a.b.Temp!(int)", 1);
+		QualifiedType type = (QualifiedType) getType("a.b.Temp!(int)", 2);
 		assertPosition(type, 1, 14);
 		
 		TemplateType templateType = (TemplateType) type.getType();
@@ -204,9 +204,9 @@ public class Type_Test extends Parser_Test {
 	}
 	
 	public void testTemplateType3() {
-		// 1.  is used as a type
+		// 1, 2.  is used as a type
 		// TODO get back to this when search is done in other modules
-		QualifiedType type = (QualifiedType) getType(".Temp!(int)", 1);
+		QualifiedType type = (QualifiedType) getType(".Temp!(int)", 2);
 		
 		assertNull(type.getQualifier());
 		assertPosition(type, 1, 11);

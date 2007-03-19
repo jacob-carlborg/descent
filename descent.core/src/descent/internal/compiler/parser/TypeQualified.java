@@ -5,6 +5,8 @@ import java.util.List;
 
 import org.eclipse.core.runtime.Assert;
 
+import descent.core.compiler.IProblem;
+
 public abstract class TypeQualified extends Type {
 	
 	public List<IdentifierExp> idents;
@@ -45,19 +47,13 @@ public abstract class TypeQualified extends Type {
 						id = (IdentifierExp) ti.idents.get(0);
 						sm = s.search(id, 0, context);
 						if (sm == null) {
-							/*
-							 * TODO semantic error(loc, "template identifier %s is
-							 * not a member of %s", id.toChars(), s.toChars());
-							 */
+							context.acceptProblem(Problem.newSemanticTypeError("Template identifier " + id + " is not a member of this module", IProblem.NotAMember, 0, id.start, id.length));
 							return;
 						}
 						sm = sm.toAlias(context);
 						td = sm.isTemplateDeclaration();
 						if (td == null) {
-							/*
-							 * TODO semantic error(loc, "%s is not a template",
-							 * id.toChars());
-							 */
+							error("%s is not a template", id.toChars());
 							return;
 						}
 						ti.tempdecl = td;
@@ -73,8 +69,8 @@ public abstract class TypeQualified extends Type {
 					if (sm == null) {
 						v = s.isVarDeclaration();
 						if (v != null && id.ident == Id.length) {
-							if (v.isConst() && v.getExpInitializer() != null) {
-								e = v.getExpInitializer().exp;
+							if (v.isConst() && v.getExpInitializer(context) != null) {
+								e = v.getExpInitializer(context).exp;
 							} else
 								e = new VarExp(v);
 							t = e.type;
@@ -99,7 +95,7 @@ public abstract class TypeQualified extends Type {
 									continue;
 								}
 							}
-							e = t.getProperty(id.ident);
+							e = t.getProperty(id.ident, context);
 							resolveHelper_L3(sc, pe, e, context);
 						} else {
 							// Lerror:
@@ -116,8 +112,8 @@ public abstract class TypeQualified extends Type {
 			v = s.isVarDeclaration();
 			if (v != null) {
 				// It's not a type, it's an expression
-				if (v.isConst() && v.getExpInitializer() != null) {
-					ExpInitializer ei = v.getExpInitializer();
+				if (v.isConst() && v.getExpInitializer(context) != null) {
+					ExpInitializer ei = v.getExpInitializer(context);
 					Assert.isNotNull(ei);
 					pe[0] = ei.exp.copy(); // make copy so we can change loc
 				} else {
@@ -136,10 +132,10 @@ public abstract class TypeQualified extends Type {
 			return;
 		}
 		if (s == null) {
-			/*
-			 * TODO semantic error(loc, "identifier '%s' is not defined",
-			 * toChars());
-			 */
+			// TODO semantic remove if and leave body
+			if (!toString().equals("Object")) {
+				context.acceptProblem(Problem.newSemanticTypeError("Identifier '" + this + "' is not defined", IProblem.IdentifierNotDefined, 0, start, length));
+			}
 		}
 	}
 	
@@ -163,10 +159,7 @@ public abstract class TypeQualified extends Type {
 			return;
 		}
 		if (t.ty == TY.Tinstance && t != this && t.deco == null) {
-			/*
-			 * TODO semantic error(loc, "forward reference to '%s'",
-			 * t.toChars());
-			 */
+			error("forward reference to '%s'", t.toChars());
 			return;
 		}
 
@@ -176,10 +169,7 @@ public abstract class TypeQualified extends Type {
 
 				for (scx = sc; true; scx = scx.enclosing) {
 					if (scx == null) {
-						/*
-						 * TODO semantic error(loc, "forward reference to '%s'",
-						 * t.toChars());
-						 */
+						error("forward reference to '%s'", t.toChars());
 						return;
 					}
 					if (scx.scopesym == scopesym)
@@ -194,10 +184,7 @@ public abstract class TypeQualified extends Type {
 		else
 			pt[0] = t.merge(context);
 		if (s == null) {
-			/*
-			 * TODO semantic error(loc, "identifier '%s' is not defined",
-			 * toChars());
-			 */
+			error("identifier '%s' is not defined", toChars());
 		}
 	}
 	
@@ -209,10 +196,7 @@ public abstract class TypeQualified extends Type {
 	}
 	
 	public void resolveHelper_Lerror(IdentifierExp id) {
-		/* TODO semantic
-        Lerror:
-	    error(loc, "identifier '%s' of '%s' is not defined", id.toChars(), toChars());
-	    */
+	    error("identifier '%s' of '%s' is not defined", id.toChars(), toChars());
 	}
 
 }

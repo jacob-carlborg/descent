@@ -3,6 +3,8 @@ package descent.internal.compiler.parser;
 import java.util.ArrayList;
 import java.util.List;
 
+import descent.core.compiler.IProblem;
+
 public class ArrayInitializer extends Initializer {
 	
 	public List<Expression> index;
@@ -23,7 +25,7 @@ public class ArrayInitializer extends Initializer {
 			for (int i = 0; i < value.size(); i++) {
 				if (index.get(i) != null) {
 					// goto Lno;
-					error("cannot infer type from this array initializer");
+					context.acceptProblem(Problem.newSemanticTypeError("Cannot infer type from this array initializer", IProblem.CannotInferType, 0, start, length));
 					return Type.terror;
 				}
 			}
@@ -37,9 +39,8 @@ public class ArrayInitializer extends Initializer {
 				}
 			}
 		}
-
-		// Lno:
-		error("cannot infer type from this array initializer");
+		
+		context.acceptProblem(Problem.newSemanticTypeError("Cannot infer type from this array initializer", IProblem.CannotInferType, 0, start, length));
 		return Type.terror;
 	}
 	

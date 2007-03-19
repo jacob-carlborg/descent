@@ -11,7 +11,7 @@ import descent.core.compiler.IProblem;
 public class VarDeclaration extends Declaration {
 
 	public boolean last;		// is this the last declaration in a multi declaration?
-	public Type originalType;
+	public Type sourceType;
 	public Type type;
 	public Initializer init;
 	public Dsymbol aliassym;	// if redone as alias to another symbol
@@ -23,9 +23,13 @@ public class VarDeclaration extends Declaration {
 
 	public VarDeclaration(Type type, IdentifierExp ident, Initializer init) {
 		this.type = type;
-		this.originalType = type;
+		this.sourceType = type;
 		this.ident = ident;
 		this.init = init;
+	}
+	
+	public VarDeclaration(Type type, Identifier ident, Initializer init) {
+		this(type, new IdentifierExp(ident), init);
 	}
 	
 	@Override
@@ -70,13 +74,13 @@ public class VarDeclaration extends Declaration {
 		}
 	}
 	
-	public ExpInitializer getExpInitializer() {
+	public ExpInitializer getExpInitializer(SemanticContext context) {
 		ExpInitializer ei;
 
 		if (init != null) {
 			ei = init.isExpInitializer();
 		} else {
-			Expression e = type.defaultInit();
+			Expression e = type.defaultInit(context);
 			if (e != null) {
 				ei = new ExpInitializer(e);
 			} else {
@@ -123,7 +127,7 @@ public class VarDeclaration extends Declaration {
 
 		Type tb = type.toBasetype(context);
 		if (tb.ty == TY.Tvoid && (storage_class & STC.STClazy) == 0) {
-			context.acceptProblem(Problem.newSemanticTypeError("Voids have no value", IProblem.VoidsHaveNoValue, 0, originalType.start, originalType.length));
+			context.acceptProblem(Problem.newSemanticTypeError("Voids have no value", IProblem.VoidsHaveNoValue, 0, sourceType.start, sourceType.length));
 			type = Type.terror;
 			tb = type;
 		}
@@ -136,7 +140,7 @@ public class VarDeclaration extends Declaration {
 			TypeStruct ts = (TypeStruct) tb;
 
 			if (ts.sym.members == null) {
-				error("no definition of struct %s", ts.toChars());
+				context.acceptProblem(Problem.newSemanticTypeError("No definition of struct " + ts.sym.ident, IProblem.NoDefinition, 0, sourceType.start, sourceType.length));
 			}
 		}
 
@@ -184,11 +188,11 @@ public class VarDeclaration extends Declaration {
 		if (isConst()) {
 		} else if (isStatic()) {
 		} else if (isSynchronized()) {
-			error("variable %s cannot be synchronized", toChars());
+			context.acceptProblem(Problem.newSemanticTypeError("synchronized cannot be applied to variables", IProblem.IllegalModifier, 0, ident.start, ident.length));
 		} else if (isOverride()) {
-			error("override cannot be applied to variable");
+			context.acceptProblem(Problem.newSemanticTypeError("override cannot be applied to variables", IProblem.IllegalModifier, 0, ident.start, ident.length));
 		} else if (isAbstract()) {
-			error("abstract cannot be applied to variable");
+			context.acceptProblem(Problem.newSemanticTypeError("abstract cannot be applied to variables", IProblem.IllegalModifier, 0, ident.start, ident.length));
 		} else if ((storage_class & STC.STCtemplateparameter) != 0) {
 		} else {
 			AggregateDeclaration aad = sc.anonAgg;
@@ -200,7 +204,7 @@ public class VarDeclaration extends Declaration {
 
 			InterfaceDeclaration id = parent.isInterfaceDeclaration();
 			if (id != null) {
-				error("field not allowed in interface");
+				context.acceptProblem(Problem.newSemanticTypeError("Fields are not allowed in interfaces", IProblem.FieldsNotAllowedInInterfaces, 0, ident.start, ident.length));
 			}
 
 			TemplateInstance ti = parent.isTemplateInstance();
@@ -260,9 +264,9 @@ public class VarDeclaration extends Declaration {
 						// Make copy so we can modify it
 						init = new ExpInitializer(ie.exp);
 				} else
-					init = getExpInitializer();
+					init = getExpInitializer(context);
 			} else {
-				init = getExpInitializer();
+				init = getExpInitializer(context);
 			}
 		}
 
@@ -292,10 +296,10 @@ public class VarDeclaration extends Declaration {
 
 					//printf("fd = '%s', var = '%s'\n", fd.toChars(), toChars());
 					if (ei == null) {
-						Expression e = init.toExpression();
+						Expression e = init.toExpression(context);
 						if (e == null) {
 							init = init.semantic(sc, type, context);
-							e = init.toExpression();
+							e = init.toExpression(context);
 							if (e == null) {
 								error("is not a static and cannot have static initializer");
 								return;

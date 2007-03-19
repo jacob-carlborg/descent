@@ -18,6 +18,10 @@ public abstract class AggregateDeclaration extends ScopeDsymbol {
 	public boolean com;				// !=0 if this is a COM class
 	public boolean isauto;				// !=0 if this is an auto class
 	public boolean isabstract;			// !=0 if abstract class
+	public Scope scope;		// !=NULL means context to use
+	public Type handle;		// 'this' type
+	public NewDeclaration aggNew;		// allocator
+	public DeleteDeclaration aggDelete;	// deallocator
 	public List<VarDeclaration> fields;
 	
 	public AggregateDeclaration(IdentifierExp id) {

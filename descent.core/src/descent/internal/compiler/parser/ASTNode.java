@@ -182,6 +182,9 @@ public abstract class ASTNode {
 	public final static int TYPE_STRUCT = 172;
 	public final static int DSYMBOL_EXP = 173;
 	public final static int TYPE_CLASS = 174;
+	public final static int THIS_DECLARATION = 175;
+	public final static int ARRAY_SCOPE_SYMBOL = 176;
+	public final static int SCOPE_DSYMBOL = 177;
 	
 	public int start;
 	public int length;
@@ -218,16 +221,16 @@ public abstract class ASTNode {
 	
 	public abstract int kind();
 	
-	protected void error(String s) {
-		throw new IllegalStateException("Problem reporting not implemented");
-	}
-	
-	protected void error(String s, String s2) {
+	protected void error(String s, String ... s2) {
 		throw new IllegalStateException("Problem reporting not implemented");
 	}
 	
 	protected String toChars() {
-		throw new IllegalStateException("Must not call this method");
+		throw new IllegalStateException("Problem reporting not implemented");
+	}
+	
+	protected void fatal() {
+		throw new IllegalStateException("Problem reporting not implemented");
 	}
 
 }

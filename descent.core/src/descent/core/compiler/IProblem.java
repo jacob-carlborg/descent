@@ -279,11 +279,18 @@ public interface IProblem {
 	int SuperNotInClass = 313;
 	int ClassHasNoSuper = 314;
 	int ClassHasNoBaseClass = 315;
-	int AliasCannotBeConst = 316;
+	int IllegalModifier = 316;
 	int MemberIsPrivate = 317;
 	int UsedAsAType = 318;
 	int ExternSymbolsCannotHaveInitializers = 319;
 	int VoidsHaveNoValue = 320;
+	int CannotInferType = 321;
+	int NoDefinition = 322;
+	int DuplicatedInterfaceInheritance = 323;
+	int BaseTypeMustBeClassOrInterface = 324;
+	int FieldsNotAllowedInInterfaces = 325;
+	int IdentifierNotDefined = 326;
+	int NotAMember = 327;
 	
 	/* Others, needed by JDT */
 	int ForbiddenReference = 2001;

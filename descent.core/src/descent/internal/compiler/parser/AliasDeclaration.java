@@ -50,7 +50,7 @@ public class AliasDeclaration extends Declaration {
 				for(Modifier modifier : modifiers) {
 					if (modifier.tok == TOK.TOKconst) {
 						context.acceptProblem(Problem.newSemanticTypeError(
-								"alias cannot be const", IProblem.AliasCannotBeConst, 0, modifier.start,
+								"alias cannot be const", IProblem.IllegalModifier, 0, modifier.start,
 								modifier.length));
 					}
 				}

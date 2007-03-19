@@ -786,7 +786,7 @@ public class ASTConverter {
 		}
 		convertExpressions(b.newArguments(), a.newargs);
 		convertExpressions(b.constructorArguments(), a.arguments);
-		convertBaseClasses(b.baseClasses(), a.cd.baseClasses);
+		convertBaseClasses(b.baseClasses(), a.cd.baseclasses);
 		convertDeclarations(b.declarations(), a.cd.members);
 		b.setSourceRange(a.start, a.length);
 		return b;
@@ -1700,11 +1700,11 @@ public class ASTConverter {
 		descent.core.dom.BaseClass b = new descent.core.dom.BaseClass(ast);
 		if (a.modifier != null) {
 			b.setModifier(convert(a.modifier));
-			b.setSourceRange(a.modifier.start, a.type.start + a.type.length - a.modifier.start);
+			b.setSourceRange(a.modifier.start, a.sourceType.start + a.sourceType.length - a.modifier.start);
 		} else {
-			b.setSourceRange(a.type.start, a.type.length);
+			b.setSourceRange(a.sourceType.start, a.sourceType.length);
 		}
-		b.setType(convert(a.type));
+		b.setType(convert(a.sourceType));
 		return b;
 	}
 	
@@ -1766,7 +1766,7 @@ public class ASTConverter {
 		if (a.ident != null) {
 			b.setName(convert(a.ident));
 		}
-		convertBaseClasses(b.baseClasses(), a.baseClasses);
+		convertBaseClasses(b.baseClasses(), a.sourceBaseclasses);
 		convertDeclarations(b.declarations(), a.members);
 		fillDeclaration(b, a);
 		b.setSourceRange(a.start, a.length);
@@ -1779,7 +1779,7 @@ public class ASTConverter {
 		if (a.ident != null) {
 			b.setName(convert(a.ident));
 		}
-		convertBaseClasses(b.baseClasses(), a.baseClasses);
+		convertBaseClasses(b.baseClasses(), a.sourceBaseclasses);
 		convertDeclarations(b.declarations(), a.members);
 		fillDeclaration(b, a);
 		b.setSourceRange(a.start, a.length);
@@ -2026,8 +2026,8 @@ public class ASTConverter {
 		case ASTNode.VAR_DECLARATION: {
 			VarDeclaration a = (VarDeclaration) symbol;
 			descent.core.dom.VariableDeclaration b = new descent.core.dom.VariableDeclaration(ast);
-			if (a.originalType != null) {
-				b.setType(convert(a.originalType));
+			if (a.sourceType != null) {
+				b.setType(convert(a.sourceType));
 			}
 			b.fragments().add(convert(a));
 			fillDeclaration(b, a);
@@ -2046,8 +2046,8 @@ public class ASTConverter {
 		case ASTNode.TYPEDEF_DECLARATION: {
 			TypedefDeclaration a = (TypedefDeclaration) symbol;
 			descent.core.dom.TypedefDeclaration b = new descent.core.dom.TypedefDeclaration(ast);
-			if (a.originalBasetype != null) {
-				b.setType(convert(a.originalBasetype));
+			if (a.sourceBasetype != null) {
+				b.setType(convert(a.sourceBasetype));
 			}
 			b.fragments().add(convert(a));
 			fillDeclaration(b, a);
@@ -2071,8 +2071,8 @@ public class ASTConverter {
 				while(symbol.kind() == ASTNode.VAR_DECLARATION) {
 					VarDeclaration a = (VarDeclaration) symbol;
 					if (first) {
-						if (a.originalType != null) {
-							b.setType(convert(a.originalType));
+						if (a.sourceType != null) {
+							b.setType(convert(a.sourceType));
 						}
 						convertModifiers(b.modifiers(), a.modifiers);
 						if (a.postDdoc != null) {
@@ -2151,8 +2151,8 @@ public class ASTConverter {
 				while(symbol.kind() == ASTNode.TYPEDEF_DECLARATION) {
 					TypedefDeclaration a = (TypedefDeclaration) symbol;
 					if (first) {
-						if (a.originalBasetype != null) {
-							b.setType(convert(a.originalBasetype));
+						if (a.sourceBasetype != null) {
+							b.setType(convert(a.sourceBasetype));
 						}
 						convertModifiers(b.modifiers(), a.modifiers);
 						if (a.postDdoc != null) {

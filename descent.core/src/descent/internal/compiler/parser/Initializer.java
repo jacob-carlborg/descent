@@ -3,7 +3,7 @@ package descent.internal.compiler.parser;
 
 public abstract class Initializer extends ASTNode {
 	
-	public Expression toExpression() {
+	public Expression toExpression(SemanticContext context) {
 		return null;
 	}
 	

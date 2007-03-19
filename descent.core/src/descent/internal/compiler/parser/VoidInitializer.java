@@ -7,7 +7,7 @@ public class VoidInitializer extends Initializer {
 	public Type type;
 	
 	@Override
-	public Expression toExpression() {
+	public Expression toExpression(SemanticContext context) {
 		error("void initializer has no value");
 	    return new IntegerExp("0", BigInteger.ZERO, Type.tint32);
 	}
