@@ -17,7 +17,7 @@ public class StaticAssert extends Dsymbol {
 	}
 	
 	@Override
-	public int kind() {
+	public int getNodeType() {
 		return STATIC_ASSERT;
 	}
 

@@ -7,7 +7,7 @@ public class MinExp extends BinExp {
 	}
 	
 	@Override
-	public int kind() {
+	public int getNodeType() {
 		return MIN_EXP;
 	}
 

@@ -45,7 +45,7 @@ public class ArrayInitializer extends Initializer {
 	}
 	
 	@Override
-	public int kind() {
+	public int getNodeType() {
 		return ARRAY_INITIALIZER;
 	}
 

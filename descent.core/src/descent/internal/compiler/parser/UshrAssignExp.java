@@ -7,7 +7,7 @@ public class UshrAssignExp extends BinExp {
 	}
 	
 	@Override
-	public int kind() {
+	public int getNodeType() {
 		return USHR_ASSIGN_EXP;
 	}
 

@@ -9,7 +9,7 @@ public class PostExp extends BinExp {
 	}
 	
 	@Override
-	public int kind() {
+	public int getNodeType() {
 		return POST_EXP;
 	}
 

@@ -14,7 +14,7 @@ public class TemplateInstanceWrapper extends IdentifierExp {
 	}
 	
 	@Override
-	public int kind() {
+	public int getNodeType() {
 		return TEMPLATE_INSTANCE_WRAPPER;
 	}
 

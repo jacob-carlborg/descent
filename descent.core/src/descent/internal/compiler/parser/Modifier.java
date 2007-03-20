@@ -9,7 +9,7 @@ public class Modifier extends ASTNode {
 	}
 	
 	@Override
-	public int kind() {
+	public int getNodeType() {
 		return MODIFIER;
 	}
 

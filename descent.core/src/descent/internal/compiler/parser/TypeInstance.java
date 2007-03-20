@@ -10,7 +10,7 @@ public class TypeInstance extends TypeQualified {
 	}
 	
 	@Override
-	public int kind() {
+	public int getNodeType() {
 		return TYPE_INSTANCE;
 	}
 

@@ -7,7 +7,7 @@ public class CatAssignExp extends BinExp {
 	}
 	
 	@Override
-	public int kind() {
+	public int getNodeType() {
 		return CAT_ASSIGN_EXP;
 	}
 

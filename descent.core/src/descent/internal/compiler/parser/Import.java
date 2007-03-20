@@ -41,7 +41,7 @@ public class Import extends Dsymbol {
 	}
 	
 	@Override
-	public int kind() {
+	public int getNodeType() {
 		return IMPORT;
 	}
 

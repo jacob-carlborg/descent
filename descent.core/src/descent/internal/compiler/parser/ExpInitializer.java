@@ -18,37 +18,8 @@ public class ExpInitializer extends Initializer {
 	@Override
 	public Type inferType(Scope sc, SemanticContext context) {
 	    exp = exp.semantic(sc, context);
-	    exp = resolveProperties(sc, exp, context);
+	    exp = Expression.resolveProperties(sc, exp, context);
 	    return exp.type;
-	}
-	
-	public static Expression resolveProperties(Scope sc, Expression e,
-			SemanticContext context) {
-		if (e.type != null) {
-			Type t = e.type.toBasetype(context);
-
-			if (t.ty == TY.Tfunction) {
-				e = new CallExp(e);
-				e = e.semantic(sc, context);
-			}
-
-			/*
-			 * Look for e being a lazy parameter; rewrite as delegate call
-			 */
-			else if (e.op == TOK.TOKvar) {
-				VarExp ve = (VarExp) e;
-
-				if ((ve.var.storage_class & STC.STClazy) != 0) {
-					e = new CallExp(e);
-					e = e.semantic(sc, context);
-				}
-			}
-
-			else if (e.op == TOK.TOKdotexp) {
-				e.error("expression has no value");
-			}
-		}
-		return e;
 	}
 	
 	@Override
@@ -92,7 +63,7 @@ public class ExpInitializer extends Initializer {
 	}
 	
 	@Override
-	public int kind() {
+	public int getNodeType() {
 		return EXP_INITIALIZER;
 	}
 

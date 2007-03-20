@@ -8,11 +8,12 @@ public class SemanticContext {
 	private IProblemRequestor problemRequestor;
 	public StringTable typeStringTable;
 	public Global global = new Global();
-	public ClassDeclaration object = new ClassDeclaration(null, null); // ClassDeclaration::object
+	public ClassDeclaration object; // ClassDeclaration::object
 	
 	public SemanticContext(IProblemRequestor problemRequestor) {
 		this.problemRequestor = problemRequestor;
 		this.typeStringTable = new StringTable();
+		this.object = new ClassDeclaration(null, null);
 	}
 	
 	public void acceptProblem(IProblem problem) {

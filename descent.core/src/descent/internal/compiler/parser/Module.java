@@ -21,6 +21,7 @@ public class Module extends Package {
 	public int semanticstarted;	// has semantic() been started?
 	public int semanticdone; // has semantic() been done?
 	public List<Dsymbol> deferred;
+	public boolean needmoduleinfo;
 	
 	@Override
 	public Module isModule() {
@@ -76,7 +77,7 @@ public class Module extends Package {
 	}
 	
 	@Override
-	public int kind() {
+	public int getNodeType() {
 		return MODULE;
 	}
 

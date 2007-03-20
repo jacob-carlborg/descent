@@ -11,7 +11,7 @@ public class WhileStatement extends Statement {
 	}
 	
 	@Override
-	public int kind() {
+	public int getNodeType() {
 		return WHILE_STATEMENT;
 	}
 

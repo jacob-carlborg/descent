@@ -24,7 +24,7 @@ public class VoidInitializer extends Initializer {
 	}
 	
 	@Override
-	public int kind() {
+	public int getNodeType() {
 		return VOID_INITIALIZER;
 	}
 

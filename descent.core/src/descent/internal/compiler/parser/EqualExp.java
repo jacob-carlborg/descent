@@ -8,7 +8,7 @@ public class EqualExp extends BinExp {
 	}
 	
 	@Override
-	public int kind() {
+	public int getNodeType() {
 		return EQUAL_EXP;
 	}
 

@@ -12,7 +12,7 @@ public class AlignDeclaration extends AttribDeclaration {
 	}
 	
 	@Override
-    public int kind() {
+    public int getNodeType() {
     	return ALIGN_DECLARATION;
     }
 

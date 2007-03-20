@@ -36,8 +36,7 @@ public class Class_Test extends Parser_Test {
 	
 	public void testBaseClasses() {
 		String s = " class Clazz : None, private Private, package Package, protected Protected, public Public { }";
-		// None, Private, Package, Protected and Public cannot be resolved to types
-		AggregateDeclaration c = (AggregateDeclaration) getSingleDeclarationWithProblems(s, 10);
+		AggregateDeclaration c = (AggregateDeclaration) getSingleDeclarationNoProblems(s);
 		List<BaseClass> bs = c.baseClasses();
 		assertEquals(5, bs.size());
 		

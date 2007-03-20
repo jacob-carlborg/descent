@@ -2,18 +2,20 @@ package descent.internal.compiler.parser;
 
 import java.util.List;
 
-import descent.core.dom.Argument.PassageMode;
-
 public class Argument extends ASTNode {
 	
-	public PassageMode inout;
+	public InOut inout;
 	public Type type;
 	public IdentifierExp ident;
 	public Expression defaultArg;
     
-    public Argument(PassageMode inout, Type type, IdentifierExp ident, Expression defaultArg) {
+    public Argument(InOut inout, Type type, IdentifierExp ident, Expression defaultArg) {
 		this.inout = inout;
-		this.type = type;
+		if (type == null) {
+			this.type = Type.terror;
+		} else {
+			this.type = type;
+		}
 		this.ident = ident;
 		this.defaultArg = defaultArg;
 	}
@@ -35,7 +37,7 @@ public class Argument extends ASTNode {
     }
     
     public static Argument getNth(List<Argument> args, int nth, SemanticContext context) {
-    	return getNth(args, nth, null);
+    	return getNth(args, nth, null, context);
     }
     
     public static Argument getNth(List<Argument> args, int nth, int[] pn, SemanticContext context) {
@@ -66,7 +68,7 @@ public class Argument extends ASTNode {
     }
     
     @Override
-    public int kind() {
+    public int getNodeType() {
     	return ARGUMENT;
     }
 

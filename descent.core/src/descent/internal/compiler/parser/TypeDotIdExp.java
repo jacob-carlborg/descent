@@ -11,7 +11,7 @@ public class TypeDotIdExp extends Expression {
 	}
 	
 	@Override
-	public int kind() {
+	public int getNodeType() {
 		return TYPE_DOT_ID_EXP;
 	}
 

@@ -13,7 +13,7 @@ public class LabelStatement extends Statement {
 	}
 	
 	@Override
-	public int kind() {
+	public int getNodeType() {
 		return LABEL_STATEMENT;
 	}
 	

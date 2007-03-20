@@ -219,13 +219,25 @@ public abstract class ASTNode {
 		modifiers.addAll(someModifiers);
 	}
 	
-	public abstract int kind();
+	public abstract int getNodeType();
+	
+	protected void error(String s) {
+		throw new IllegalStateException("Problem reporting not implemented");
+	}
 	
 	protected void error(String s, String ... s2) {
 		throw new IllegalStateException("Problem reporting not implemented");
 	}
 	
+	protected void error(String s, int ... s2) {
+		throw new IllegalStateException("Problem reporting not implemented");
+	}
+	
 	protected String toChars() {
+		throw new IllegalStateException("Problem reporting not implemented");
+	}
+	
+	protected String toPrettyChars() {
 		throw new IllegalStateException("Problem reporting not implemented");
 	}
 	

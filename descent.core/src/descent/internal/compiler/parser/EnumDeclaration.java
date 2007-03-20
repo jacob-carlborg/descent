@@ -287,7 +287,7 @@ public class EnumDeclaration extends ScopeDsymbol {
 	}
 	
 	@Override
-	public int kind() {
+	public int getNodeType() {
 		return ENUM_DECLARATION;
 	}
 

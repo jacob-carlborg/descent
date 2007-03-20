@@ -11,7 +11,7 @@ public class WithStatement extends Statement {
 	}
 	
 	@Override
-	public int kind() {
+	public int getNodeType() {
 		return WITH_STATEMENT;
 	}
 

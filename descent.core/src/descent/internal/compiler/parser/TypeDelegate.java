@@ -16,7 +16,7 @@ public class TypeDelegate extends Type {
 	}
 	
 	@Override
-	public int kind() {
+	public int getNodeType() {
 		return TYPE_DELEGATE;
 	}
 

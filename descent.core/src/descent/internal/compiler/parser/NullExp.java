@@ -15,7 +15,7 @@ public class NullExp extends Expression {
 	}
 	
 	@Override
-	public int kind() {
+	public int getNodeType() {
 		return NULL_EXP;
 	}
 

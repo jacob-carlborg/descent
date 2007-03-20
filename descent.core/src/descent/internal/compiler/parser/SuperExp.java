@@ -97,7 +97,7 @@ public class SuperExp extends ThisExp {
 	}
 	
 	@Override
-	public int kind() {
+	public int getNodeType() {
 		return SUPER_EXP;
 	}
 

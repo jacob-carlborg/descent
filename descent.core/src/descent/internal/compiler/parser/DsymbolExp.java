@@ -10,7 +10,7 @@ public class DsymbolExp extends Expression {
 	}
 
 	@Override
-	public int kind() {
+	public int getNodeType() {
 		return DSYMBOL_EXP;
 	}
 

@@ -108,7 +108,7 @@ public class IntegerExp extends Expression {
 	}
 	
 	@Override
-	public int kind() {
+	public int getNodeType() {
 		return INTEGER_EXP;
 	}
 

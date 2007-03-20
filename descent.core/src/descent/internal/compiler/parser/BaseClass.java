@@ -21,7 +21,7 @@ public class BaseClass extends ASTNode {
 	}
 	
 	@Override
-	public int kind() {
+	public int getNodeType() {
 		return BASE_CLASS;
 	}
 

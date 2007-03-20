@@ -15,7 +15,7 @@ public class TemplateAliasParameter extends TemplateParameter {
 	}
 	
 	@Override
-	public int kind() {
+	public int getNodeType() {
 		return TEMPLATE_ALIAS_PARAMETER;
 	}
 

@@ -7,7 +7,7 @@ public class UnionDeclaration extends AggregateDeclaration {
 	}
 	
 	@Override
-	public int kind() {
+	public int getNodeType() {
 		return UNION_DECLARATION;
 	}
 

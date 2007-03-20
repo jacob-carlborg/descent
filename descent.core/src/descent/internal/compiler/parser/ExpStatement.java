@@ -9,7 +9,7 @@ public class ExpStatement extends Statement {
 	}
 	
 	@Override
-	public int kind() {
+	public int getNodeType() {
 		return EXP_STATEMENT;
 	}
 

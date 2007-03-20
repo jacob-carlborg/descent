@@ -9,7 +9,7 @@ public class StaticAssertStatement extends Statement {
 	}
 	
 	@Override
-	public int kind() {
+	public int getNodeType() {
 		return STATIC_ASSERT_STATEMENT;
 	}
 

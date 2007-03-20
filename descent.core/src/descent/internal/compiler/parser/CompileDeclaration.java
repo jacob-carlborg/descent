@@ -10,7 +10,7 @@ public class CompileDeclaration extends AttribDeclaration {
 	}
 	
 	@Override
-	public int kind() {
+	public int getNodeType() {
 		return COMPILE_DECLARATION;
 	}
 

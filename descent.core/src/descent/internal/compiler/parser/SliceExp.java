@@ -12,7 +12,7 @@ public class SliceExp extends UnaExp {
 	}
 	
 	@Override
-	public int kind() {
+	public int getNodeType() {
 		return SLICE_EXP;
 	}
 

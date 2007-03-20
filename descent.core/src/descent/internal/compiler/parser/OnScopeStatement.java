@@ -12,7 +12,7 @@ public class OnScopeStatement extends Statement {
 	}
 	
 	@Override
-	public int kind() {
+	public int getNodeType() {
 		return ON_SCOPE_STATEMENT;
 	}
 

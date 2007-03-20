@@ -8,7 +8,7 @@ public class CompileStatement extends Statement {
 		this.exp = exp;	}
 
 	@Override
-	public int kind() {
+	public int getNodeType() {
 		return COMPILE_STATEMENT;
 	}
 

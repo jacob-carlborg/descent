@@ -1,6 +1,5 @@
 package descent.internal.compiler.parser;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import descent.core.compiler.IProblem;
@@ -16,13 +15,11 @@ public class ScopeDsymbol extends Dsymbol {
 	}
 	
 	public ScopeDsymbol(IdentifierExp id) {
+		this();
 		this.ident = id;
 	}
 	
 	public void addMember(Dsymbol symbol) {
-		if (members == null) {
-			members = new ArrayList<Dsymbol>();
-		}
 		members.add(symbol);
 	}
 	
@@ -84,7 +81,7 @@ public class ScopeDsymbol extends Dsymbol {
 	}
 	
 	@Override
-	public int kind() {
+	public int getNodeType() {
 		return SCOPE_DSYMBOL;
 	}
 

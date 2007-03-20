@@ -7,7 +7,7 @@ public class AddrExp extends UnaExp {
 	}
 	
 	@Override
-	public int kind() {
+	public int getNodeType() {
 		return ADDR_EXP;
 	}
 

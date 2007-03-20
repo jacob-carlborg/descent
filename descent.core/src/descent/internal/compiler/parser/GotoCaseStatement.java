@@ -9,7 +9,7 @@ public class GotoCaseStatement extends Statement {
 	}
 	
 	@Override
-	public int kind() {
+	public int getNodeType() {
 		return GOTO_CASE_STATEMENT;
 	}
 

@@ -12,7 +12,7 @@ public class AnonDeclaration extends AttribDeclaration {
 	}
 	
 	@Override
-	public int kind() {
+	public int getNodeType() {
 		return ANON_DECLARATION;
 	}
 

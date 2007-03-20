@@ -27,7 +27,7 @@ public class IdentifierExp extends Expression {
 	}
 	
 	@Override
-	public int kind() {
+	public int getNodeType() {
 		return IDENTIFIER_EXP;
 	}
 	

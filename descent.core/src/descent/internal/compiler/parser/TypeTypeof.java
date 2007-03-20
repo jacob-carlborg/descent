@@ -12,7 +12,7 @@ public class TypeTypeof extends TypeQualified {
 	}
 	
 	@Override
-	public int kind() {
+	public int getNodeType() {
 		return TYPE_TYPEOF;
 	}
 	

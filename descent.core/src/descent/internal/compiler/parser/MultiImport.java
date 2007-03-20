@@ -16,7 +16,7 @@ public class MultiImport extends Dsymbol {
 	}
 	
 	@Override
-	public int kind() {
+	public int getNodeType() {
 		return MULTI_IMPORT;
 	}
 

@@ -11,7 +11,7 @@ public class VarExp extends Expression {
 	}
 
 	@Override
-	public int kind() {
+	public int getNodeType() {
 		return VAR_EXP;
 	}
 

@@ -7,7 +7,7 @@ public class UAddExp extends UnaExp {
 	}
 	
 	@Override
-	public int kind() {
+	public int getNodeType() {
 		return UADD_EXP;
 	}
 

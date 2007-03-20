@@ -9,7 +9,7 @@ public class DefaultStatement extends Statement {
 	}
 	
 	@Override
-	public int kind() {
+	public int getNodeType() {
 		return DEFAULT_STATEMENT;
 	}
 

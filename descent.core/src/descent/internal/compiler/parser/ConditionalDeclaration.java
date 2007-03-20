@@ -14,7 +14,7 @@ public class ConditionalDeclaration extends AttribDeclaration {
 	}
 	
 	@Override
-	public int kind() {
+	public int getNodeType() {
 		return CONDITIONAL_DECLARATION;
 	}
 

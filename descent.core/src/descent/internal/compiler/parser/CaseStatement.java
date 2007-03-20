@@ -11,7 +11,7 @@ public class CaseStatement extends Statement {
 	}
 	
 	@Override
-	public int kind() {
+	public int getNodeType() {
 		return CASE_STATEMENT;
 	}
 

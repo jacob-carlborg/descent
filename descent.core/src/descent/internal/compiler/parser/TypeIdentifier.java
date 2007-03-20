@@ -138,7 +138,7 @@ public class TypeIdentifier extends TypeQualified {
 	}
 
 	@Override
-	public int kind() {
+	public int getNodeType() {
 		return TYPE_IDENTIFIER;
 	}
 	

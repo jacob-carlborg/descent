@@ -11,6 +11,9 @@ public class Scope {
 	public final static int CSXreturn = 	0x0020;
 	public final static int CSXany_ctor = 	0x0040;
 	
+	public final static int SCOPEctor = 	0x0001; // constructor type
+	public final static int SCOPEstaticif = 0x0002; // inside static if
+	
 	public Scope enclosing; 			// enclosing Scope
 	public Module module; 				// Root module
 	public ScopeDsymbol scopesym; 		// current symbol
@@ -26,9 +29,10 @@ public class Scope {
     public int stc;						// storage class
     public boolean intypeof;			// in typeof(exp)
     public boolean inunion;		// we're processing members of a union
-    public boolean incontract;		// we're inside contract code
+    public int incontract;		// we're inside contract code
     public boolean nofree;			// set if shouldn't free it
     public boolean noctor;			// set if constructor calls aren't allowed
+    public int flags;
     
     public AnonymousAggregateDeclaration anonAgg;	// for temporary analysis
 	

@@ -13,7 +13,7 @@ public class PragmaDeclaration extends AttribDeclaration {
 	}
 	
 	@Override
-	public int kind() {
+	public int getNodeType() {
 		return PRAGMA_DECLARATION;
 	}
 

@@ -12,7 +12,7 @@ public class ArrayExp extends UnaExp {
 	}
 	
 	@Override
-	public int kind() {
+	public int getNodeType() {
 		return ARRAY_EXP;
 	}
 

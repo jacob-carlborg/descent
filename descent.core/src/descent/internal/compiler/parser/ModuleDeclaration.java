@@ -13,7 +13,7 @@ public class ModuleDeclaration extends ASTNode {
 	}
 	
 	@Override
-	public int kind() {
+	public int getNodeType() {
 		return MODULE_DECLARATION;
 	}
 	

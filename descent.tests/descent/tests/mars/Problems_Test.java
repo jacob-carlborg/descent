@@ -212,8 +212,7 @@ public class Problems_Test extends Parser_Test {
 	 }
 
 	public void test_HEX_DIGIT_EXPECTED() {
-		// 3, 4. X is used as a type
-		IProblem p = getProblems(" int a = 0xX c = new X();", 4)[0];
+		IProblem p = getProblems(" int a = 0xX c = new X();", 2)[0];
 		assertError(p, IProblem.HexDigitExpected, 11, 1);
 	}
 
@@ -438,7 +437,7 @@ public class Problems_Test extends Parser_Test {
 	}
 
 	public void test_ENUM_DECLARATION_IS_INVALID() {
-		IProblem p = getProblems(" enum {", 2)[0]; // The second one is "it dosen't have members"
+		IProblem p = getProblem(" enum {");
 		assertError(p, IProblem.EnumDeclarationIsInvalid, 1, 4);
 	}
 
@@ -493,14 +492,12 @@ public class Problems_Test extends Parser_Test {
 	}
 
 	public void test_COMMA_EXPECTED_SEPARATING_STRUCT_INITIALIZER() {
-		// 2, 3. X is used as a type
-		IProblem p = getProblems(" X x = { a b };", 3)[0];
+		IProblem p = getProblem(" X x = { a b };");
 		assertError(p, IProblem.ParsingErrorInsertTokenAfter, 9, 1);
 	}
 
 	public void test_COMMA_EXPECTED_SEPARATING_ARRAY_INITIALIZER() {
-		// 4, 5. X is used as a type
-		IProblem p = getProblems(" X x = [ 1 2 ];", 5)[0];
+		IProblem p = getProblems(" X x = [ 1 2 ];", 3)[0];
 		assertError(p, IProblem.ParsingErrorInsertTokenAfter, 9, 1);
 	}
 

@@ -12,7 +12,7 @@ public class ArrayLiteralExp extends Expression {
 	}
 	
 	@Override
-	public int kind() {
+	public int getNodeType() {
 		return ARRAY_LITERAL_EXP;
 	}
 

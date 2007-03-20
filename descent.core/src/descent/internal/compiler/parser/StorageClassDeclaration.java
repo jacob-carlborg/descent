@@ -38,7 +38,7 @@ public class StorageClassDeclaration extends AttribDeclaration {
 	}
 
 	@Override
-	public int kind() {
+	public int getNodeType() {
 		return STORAGE_CLASS_DECLARATION;
 	}
 

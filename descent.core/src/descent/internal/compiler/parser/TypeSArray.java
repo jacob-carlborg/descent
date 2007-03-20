@@ -25,7 +25,7 @@ public class TypeSArray extends Type {
 	}
 	
 	@Override
-	public int kind() {
+	public int getNodeType() {
 		return TYPE_S_ARRAY;
 	}
 

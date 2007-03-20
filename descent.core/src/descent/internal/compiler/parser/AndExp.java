@@ -7,7 +7,7 @@ public class AndExp extends BinExp {
 	}
 	
 	@Override
-	public int kind() {
+	public int getNodeType() {
 		return AND_EXP;
 	}
 

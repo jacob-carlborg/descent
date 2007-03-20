@@ -29,7 +29,7 @@ public class TemplateMixin extends TemplateInstance {
 	}
 	
 	@Override
-	public int kind() {
+	public int getNodeType() {
 		return TEMPLATE_MIXIN;
 	}
 

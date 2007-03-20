@@ -7,7 +7,7 @@ public class XorExp extends BinExp {
 	}
 	
 	@Override
-	public int kind() {
+	public int getNodeType() {
 		return XOR_EXP;
 	}
 

@@ -13,7 +13,7 @@ public class ConditionalStatement extends Statement {
 	}
 	
 	@Override
-	public int kind() {
+	public int getNodeType() {
 		return CONDITIONAL_STATEMENT;
 	}
 

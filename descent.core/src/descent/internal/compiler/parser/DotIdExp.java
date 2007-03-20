@@ -10,7 +10,7 @@ public class DotIdExp extends UnaExp {
 	}
 	
 	@Override
-	public int kind() {
+	public int getNodeType() {
 		return DOT_ID_EXP;
 	}
 

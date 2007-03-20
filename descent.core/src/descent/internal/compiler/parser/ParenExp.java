@@ -7,7 +7,7 @@ public class ParenExp extends UnaExp {
 	}
 	
 	@Override
-	public int kind() {
+	public int getNodeType() {
 		return PAREN_EXP;
 	}
 

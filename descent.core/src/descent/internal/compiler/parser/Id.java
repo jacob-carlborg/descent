@@ -116,6 +116,7 @@ public interface Id {
 	Identifier ushr_r = new Identifier("opUShr_r", TOK.TOKidentifier);
 	Identifier cat = new Identifier("opCat", TOK.TOKidentifier);
 	Identifier cat_r = new Identifier("opCat_r", TOK.TOKidentifier);
+	Identifier assign = new Identifier("opAssign", TOK.TOKidentifier);
 	Identifier addass = new Identifier("opAddAssign", TOK.TOKidentifier);
 	Identifier subass = new Identifier("opSubAssign", TOK.TOKidentifier);
 	Identifier mulass = new Identifier("opMulAssign", TOK.TOKidentifier);
@@ -148,8 +149,12 @@ public interface Id {
 	Identifier GNU_asm = new Identifier("GNU_asm", TOK.TOKidentifier);
 	Identifier tohash = new Identifier("toHash", TOK.TOKidentifier);
 	Identifier alloca = new Identifier("alloca", TOK.TOKidentifier);
+	Identifier main = new Identifier("main", TOK.TOKidentifier);
+	Identifier WinMain = new Identifier("WinMain", TOK.TOKidentifier);
+	Identifier DllMain = new Identifier("DllMain", TOK.TOKidentifier);
 	Identifier toIdentifier = new Identifier("toIdentifier", TOK.TOKidentifier);
 	
+	/*
 	Identifier[] VALUES = {
 		IUnknown,
 		Object,
@@ -168,6 +173,7 @@ public interface Id {
 		__sizeof,
 		alignof,
 		mangleof,
+		stringof,
 		length,
 		remove,
 		ptr,
@@ -298,5 +304,6 @@ public interface Id {
 		alloca,
 		toIdentifier,
 	};
+	*/
 
 }

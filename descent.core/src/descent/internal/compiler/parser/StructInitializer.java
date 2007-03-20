@@ -18,7 +18,7 @@ public class StructInitializer extends Initializer {
 	}
 	
 	@Override
-	public int kind() {
+	public int getNodeType() {
 		return STRUCT_INITIALIZER;
 	}
 

@@ -57,5 +57,34 @@ public abstract class Expression extends ASTNode implements Cloneable {
 	public boolean implicitConvTo(Type t, SemanticContext context) {
 		return false;
 	}
+	
+	public static Expression resolveProperties(Scope sc, Expression e,
+			SemanticContext context) {
+		if (e.type != null) {
+			Type t = e.type.toBasetype(context);
+
+			if (t.ty == TY.Tfunction) {
+				e = new CallExp(e);
+				e = e.semantic(sc, context);
+			}
+
+			/*
+			 * Look for e being a lazy parameter; rewrite as delegate call
+			 */
+			else if (e.op == TOK.TOKvar) {
+				VarExp ve = (VarExp) e;
+
+				if ((ve.var.storage_class & STC.STClazy) != 0) {
+					e = new CallExp(e);
+					e = e.semantic(sc, context);
+				}
+			}
+
+			else if (e.op == TOK.TOKdotexp) {
+				e.error("expression has no value");
+			}
+		}
+		return e;
+	}
 
 }

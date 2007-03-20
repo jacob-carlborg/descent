@@ -28,7 +28,7 @@ public class LinkDeclaration extends AttribDeclaration {
 	}
 	
 	@Override
-	public int kind() {
+	public int getNodeType() {
 		return LINK_DECLARATION;
 	}
 

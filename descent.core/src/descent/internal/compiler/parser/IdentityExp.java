@@ -8,7 +8,7 @@ public class IdentityExp extends BinExp {
 	}
 	
 	@Override
-	public int kind() {
+	public int getNodeType() {
 		return IDENTITY_EXP;
 	}
 

@@ -13,7 +13,7 @@ public class Catch extends ASTNode {
 	}
 	
 	@Override
-    public int kind() {
+    public int getNodeType() {
     	return CATCH;
     }
 

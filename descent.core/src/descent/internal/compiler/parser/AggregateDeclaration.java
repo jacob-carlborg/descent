@@ -20,8 +20,12 @@ public abstract class AggregateDeclaration extends ScopeDsymbol {
 	public boolean isabstract;			// !=0 if abstract class
 	public Scope scope;		// !=NULL means context to use
 	public Type handle;		// 'this' type
+	
+	// Special member functions
+	public InvariantDeclaration inv;		// invariant
 	public NewDeclaration aggNew;		// allocator
 	public DeleteDeclaration aggDelete;	// deallocator
+	
 	public List<VarDeclaration> fields;
 	
 	public AggregateDeclaration(IdentifierExp id) {

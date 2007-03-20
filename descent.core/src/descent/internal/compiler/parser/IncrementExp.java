@@ -7,7 +7,7 @@ public class IncrementExp extends AddAssignExp {
 	}
 	
 	@Override
-	public int kind() {
+	public int getNodeType() {
 		return INCREMENT_EXP;
 	}
 

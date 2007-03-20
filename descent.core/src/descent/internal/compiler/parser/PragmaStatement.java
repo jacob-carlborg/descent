@@ -15,7 +15,7 @@ public class PragmaStatement extends Statement {
 	}
 	
 	@Override
-	public int kind() {
+	public int getNodeType() {
 		return PRAGMA_STATEMENT;
 	}
 

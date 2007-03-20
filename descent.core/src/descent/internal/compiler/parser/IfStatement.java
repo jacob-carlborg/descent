@@ -15,7 +15,7 @@ public class IfStatement extends Statement {
 	}
 	
 	@Override
-	public int kind() {
+	public int getNodeType() {
 		return IF_STATEMENT;
 	}
 

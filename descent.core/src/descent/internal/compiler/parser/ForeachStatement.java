@@ -18,7 +18,7 @@ public class ForeachStatement extends Statement {
 	}
 	
 	@Override
-	public int kind() {
+	public int getNodeType() {
 		return FOREACH_STATEMENT;
 	}
 

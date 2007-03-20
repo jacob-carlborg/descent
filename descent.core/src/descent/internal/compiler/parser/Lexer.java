@@ -2,6 +2,7 @@ package descent.internal.compiler.parser;
 
 import static descent.internal.compiler.parser.TOK.*;
 
+import java.lang.reflect.Field;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -2361,13 +2362,18 @@ public class Lexer implements IProblemRequestor {
 	}
 	
 	private void initId() {
-		StringValue sv;
-		for(Identifier id : Id.VALUES) {
-			sv = stringtable.update(id.string);
-			sv.ptrvalue = id;
+		try {
+			Field[] idFields = Id.class.getFields();			
+			StringValue sv;
+			for(Field idField : idFields) {
+				Identifier id = (Identifier) idField.get(null);
+				sv = stringtable.update(id.string);
+				sv.ptrvalue = id;
+			}
+		} catch (IllegalAccessException e) {
+			throw new RuntimeException("Bug!");
 		}
-	}
-	
+	}	
 	
 	protected void newline(boolean inComment) {
 		if (recordLineSeparator && linnum - 1 == lineEnds.size()) {

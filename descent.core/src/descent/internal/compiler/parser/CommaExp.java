@@ -7,7 +7,7 @@ public class CommaExp extends BinExp {
 	}
 	
 	@Override
-	public int kind() {
+	public int getNodeType() {
 		return COMMA_EXP;
 	}
 

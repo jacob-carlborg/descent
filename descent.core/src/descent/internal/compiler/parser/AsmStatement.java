@@ -12,7 +12,7 @@ public class AsmStatement extends Statement {
 	}
 	
 	@Override
-	public int kind() {
+	public int getNodeType() {
 		return ASM_STATEMENT;
 	}
 

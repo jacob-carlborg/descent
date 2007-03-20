@@ -45,7 +45,7 @@ public class TemplateInstance extends ScopeDsymbol {
 	}
 	
 	@Override
-	public int kind() {
+	public int getNodeType() {
 		return TEMPLATE_INSTANCE;
 	}
 	

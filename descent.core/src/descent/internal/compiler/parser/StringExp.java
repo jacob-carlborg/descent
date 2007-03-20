@@ -18,7 +18,7 @@ public class StringExp extends Expression {
 	}
 	
 	@Override
-	public int kind() {
+	public int getNodeType() {
 		return STRING_EXP;
 	}
 

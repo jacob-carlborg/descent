@@ -27,7 +27,7 @@ public class TypeTypedef extends Type {
 	}
 
 	@Override
-	public int kind() {
+	public int getNodeType() {
 		return TYPE_TYPEDEF;
 	}
 

@@ -9,7 +9,7 @@ public class ReturnStatement extends Statement {
 	}	
 	
 	@Override
-	public int kind() {
+	public int getNodeType() {
 		return RETURN_STATEMENT;
 	}
 

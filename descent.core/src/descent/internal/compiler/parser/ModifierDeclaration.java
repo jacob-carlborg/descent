@@ -13,7 +13,7 @@ public class ModifierDeclaration extends Dsymbol  {
 	}
 	
 	@Override
-	public int kind() {
+	public int getNodeType() {
 		return MODIFIER_DECLARATION;
 	}
 

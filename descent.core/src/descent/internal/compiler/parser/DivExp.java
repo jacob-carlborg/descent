@@ -7,7 +7,7 @@ public class DivExp extends BinExp {
 	}
 	
 	@Override
-	public int kind() {
+	public int getNodeType() {
 		return DIV_EXP;
 	}
 

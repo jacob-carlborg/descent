@@ -15,7 +15,7 @@ public class ForStatement extends Statement {
 	}
 	
 	@Override
-	public int kind() {
+	public int getNodeType() {
 		return FOR_STATEMENT;
 	}
 

@@ -121,7 +121,7 @@ public class ThisExp extends Expression {
 	}
 		
 	@Override
-	public int kind() {
+	public int getNodeType() {
 		return THIS_EXP;
 	}
 

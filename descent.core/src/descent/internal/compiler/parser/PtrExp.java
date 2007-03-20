@@ -7,7 +7,7 @@ public class PtrExp extends UnaExp {
 	}
 	
 	@Override
-	public int kind() {
+	public int getNodeType() {
 		return PTR_EXP;
 	}
 

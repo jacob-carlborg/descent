@@ -14,7 +14,7 @@ public class TemplateValueParameter extends TemplateParameter {
 	}
 	
 	@Override
-	public int kind() {
+	public int getNodeType() {
 		return TEMPLATE_VALUE_PARAMETER;
 	}
 

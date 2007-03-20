@@ -10,7 +10,7 @@ public class TypeStruct extends Type {
 	}
 
 	@Override
-	public int kind() {
+	public int getNodeType() {
 		return TYPE_STRUCT;
 	}
 

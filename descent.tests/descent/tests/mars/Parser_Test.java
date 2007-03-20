@@ -3,6 +3,7 @@ package descent.tests.mars;
 import java.util.List;
 
 import junit.framework.TestCase;
+import descent.core.IProblemRequestor;
 import descent.core.compiler.IProblem;
 import descent.core.dom.AST;
 import descent.core.dom.ASTNode;
@@ -14,6 +15,7 @@ import descent.core.dom.Initializer;
 import descent.core.dom.ModuleDeclaration;
 import descent.core.dom.Statement;
 import descent.internal.compiler.parser.Module;
+import descent.internal.compiler.parser.SemanticContext;
 
 public abstract class Parser_Test extends TestCase {
 	
@@ -86,7 +88,20 @@ public abstract class Parser_Test extends TestCase {
 	}
 	
 	protected CompilationUnit getCompilationUnit(String source, int apiLevel) {
-		Module module = getModuleSemantic(source, apiLevel);
+		Module module = getModule(source, apiLevel);
+		// For syntaxis analysis do semantic to see if this breaks
+		// something in ASTConverter while keeping only syntaxis problems
+		module.semantic(new SemanticContext(new IProblemRequestor() {
+			public void acceptProblem(IProblem problem) {
+			}
+			public void beginReporting() {
+			}
+			public void endReporting() {
+			}
+			public boolean isActive() {
+				return false;
+			}
+		}));
 		return CompilationUnitResolver.convert(module, null);
 	}
 	

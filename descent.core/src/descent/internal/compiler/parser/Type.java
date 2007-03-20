@@ -54,38 +54,34 @@ public abstract class Type extends ASTNode {
 	public Type merge(SemanticContext context) {
 		Type t;
 
-	    //printf("merge(%s)\n", toChars());
-	    t = this;
-	    if (deco == null) {
+		// printf("merge(%s)\n", toChars());
+		t = this;
+		if (deco == null) {
 			OutBuffer buf = new OutBuffer();
 			StringValue sv;
-	
+
 			if (next != null) {
-			    next = next.merge(context);
+				next = next.merge(context);
 			}
 			toDecoBuffer(buf);
 			sv = context.typeStringTable.update(buf.toString());
-			if (sv.ptrvalue != null)
-			{   
-				t = (Type ) sv.ptrvalue;
-			    assert t.deco != null;
+			if (sv.ptrvalue != null) {
+				t = (Type) sv.ptrvalue;
+				assert t.deco != null;
+			} else {
+				sv.ptrvalue = this;
+				deco = sv.lstring;
 			}
-			else
-			{
-			    sv.ptrvalue = this;
-			    deco = sv.lstring;
-			}
-	    }
-	    return t;
+		}
+		return t;
 	}
 	
 	public void toDecoBuffer(OutBuffer buf) {
 		buf.writeByte(ty.mangleChar);
-	    if (next != null)
-	    {
-	    	assert next != this;
-	    	next.toDecoBuffer(buf);
-	    }
+	    if (next != null) {
+			Assert.isTrue(next != this);
+			next.toDecoBuffer(buf);
+		}
 	}
 	
 	public void resolve(Scope sc, Expression[] pe, Type[] pt, Dsymbol[] ps, SemanticContext context) {
@@ -314,6 +310,102 @@ public abstract class Type extends ASTNode {
 
 	public boolean isBaseOf(Type type, int[] posffset) {
 		return false;
+	}
+	
+	@Override
+	public boolean equals(Object o) {
+		if (!(o instanceof Type))
+			return false;
+
+		Type t = (Type) o;
+
+		// deco strings are unique and semantic() has been run
+		if (this == o || (t != null && deco.equals(t.deco)) && deco != null) {
+			return true;
+		}
+		return false;
+	}
+	
+	public MATCH implicitConvTo(Type to, SemanticContext context) {
+		if (this == to) {
+			return MATCH.MATCHexact;
+		}
+		return MATCH.MATCHnomatch;
+	}
+	
+	private final static int COVARIANT = 1;
+	private final static int DISTINCT = 0;
+	private final static int NOT_COVARIANT = 2;
+	private final static int OTHER = 3;
+	
+	public int covariant(Type t, SemanticContext context) {
+		boolean inoutmismatch = false;
+
+		if (equals(t)) {
+			return COVARIANT;
+		}
+		if (ty != TY.Tfunction || t.ty != TY.Tfunction) {
+			return DISTINCT;
+		}
+
+		TypeFunction t1 = (TypeFunction) this;
+		TypeFunction t2 = (TypeFunction) t;
+
+		if (t1.varargs != t2.varargs) {
+			return DISTINCT;
+		}
+
+		if (t1.parameters != null && t2.parameters != null) {
+			int dim = Argument.dim(t1.parameters, context);
+			if (dim != Argument.dim(t2.parameters, context)) {
+				return DISTINCT;
+			}
+
+			for (int i = 0; i < dim; i++) {
+				Argument arg1 = Argument.getNth(t1.parameters, i, context);
+				Argument arg2 = Argument.getNth(t2.parameters, i, context);
+
+				if (!arg1.type.equals(arg2.type)) {
+					return DISTINCT;
+				}
+				if (arg1.inout != arg2.inout) {
+					inoutmismatch = true;
+				}
+			}
+		} else if (t1.parameters != t2.parameters) {
+			return DISTINCT;
+		}
+
+		// The argument lists match
+		if (inoutmismatch) {
+			return NOT_COVARIANT;
+		}
+		if (t1.linkage != t2.linkage) {
+			return NOT_COVARIANT;
+		}
+
+		Type t1n = t1.next;
+		Type t2n = t2.next;
+
+		if (t1n.equals(t2n)) {
+			return COVARIANT;
+		}
+		if (t1n.ty != TY.Tclass || t2n.ty != TY.Tclass) {
+			return NOT_COVARIANT;
+		}
+
+		// If t1n is forward referenced:
+		ClassDeclaration cd = ((TypeClass) t1n).sym;
+		if (cd.baseClass == null && cd.baseclasses != null
+				&& cd.baseclasses.size() > 0
+				&& cd.isInterfaceDeclaration() == null) {
+			return OTHER;
+		}
+
+		if (t1n.implicitConvTo(t2n, context) != MATCH.MATCHnomatch) {
+			return COVARIANT;
+		}
+		return NOT_COVARIANT;
 	}
 
 }

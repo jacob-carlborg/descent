@@ -8,7 +8,7 @@ public class CmpExp extends BinExp {
 	}
 	
 	@Override
-	public int kind() {
+	public int getNodeType() {
 		return CMP_EXP;
 	}
 

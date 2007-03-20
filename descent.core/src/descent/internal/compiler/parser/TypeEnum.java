@@ -42,7 +42,7 @@ public class TypeEnum extends Type {
 	}
 
 	@Override
-	public int kind() {
+	public int getNodeType() {
 		return TYPE_ENUM;
 	}
 

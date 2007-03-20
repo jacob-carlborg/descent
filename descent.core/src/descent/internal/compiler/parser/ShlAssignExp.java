@@ -7,7 +7,7 @@ public class ShlAssignExp extends BinExp {
 	}
 	
 	@Override
-	public int kind() {
+	public int getNodeType() {
 		return SHL_ASSIGN_EXP;
 	}
 

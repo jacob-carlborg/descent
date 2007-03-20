@@ -10,7 +10,7 @@ public class AssertExp extends UnaExp {
 	}
 	
 	@Override
-	public int kind() {
+	public int getNodeType() {
 		return ASSERT_EXP;
 	}
 

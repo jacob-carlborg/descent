@@ -105,7 +105,7 @@ public class ASTConverter {
 	}
 	
 	public descent.core.dom.ASTNode convert(descent.internal.compiler.parser.ASTNode symbol) {
-		switch(symbol.kind()) {
+		switch(symbol.getNodeType()) {
 		case ASTNode.ADD_ASSIGN_EXP:
 			return convert((BinExp) symbol, Assignment.Operator.PLUS_ASSIGN);
 		case ASTNode.ADD_EXP:
@@ -747,9 +747,16 @@ public class ASTConverter {
 	
 	public descent.core.dom.Declaration convert(TemplateDeclaration a) {
 		if (a.wrapper) {
-			AggregateDeclaration b = (AggregateDeclaration) convert(a.members.get(0));
-			convertTemplateParameters(b.templateParameters(), a.parameters);
-			return b;
+			Dsymbol wrappedSymbol = a.members.get(0);
+			if (wrappedSymbol.getNodeType() == ASTNode.CLASS_DECLARATION) {
+				AggregateDeclaration b = (AggregateDeclaration) convert(wrappedSymbol);
+				convertTemplateParameters(b.templateParameters(), a.parameters);
+				return b;
+			} else {
+				FunctionDeclaration b = (FunctionDeclaration) convert(wrappedSymbol);
+				convertTemplateParameters(b.templateParameters(), a.parameters);
+				return b;
+			}
 		} else {
 			descent.core.dom.TemplateDeclaration b = new descent.core.dom.TemplateDeclaration(ast);
 			b.setName(convert(a.ident));
@@ -819,7 +826,7 @@ public class ASTConverter {
 			b.setFunctionPointer(true);
 			b.setReturnType(convert(((TypeFunction) a.next).next));
 			b.setVariadic(((TypeFunction) a.next).varargs);
-			convertArguments(b.arguments(), ((TypeFunction) a.next).arguments);
+			convertArguments(b.arguments(), ((TypeFunction) a.next).parameters);
 			b.setSourceRange(a.start, a.length);
 			return b;
 		} else {
@@ -847,7 +854,7 @@ public class ASTConverter {
 		b.setFunctionPointer(false);
 		b.setReturnType(convert(((TypeFunction) a.next).next));
 		b.setVariadic(((TypeFunction) a.next).varargs);
-		convertArguments(b.arguments(), ((TypeFunction) a.next).arguments);
+		convertArguments(b.arguments(), ((TypeFunction) a.next).parameters);
 		b.setSourceRange(a.start, a.length);
 		return b;
 	}
@@ -1021,7 +1028,7 @@ public class ASTConverter {
 			b.setSyntax(Syntax.EMPTY);
 		}
 		b.setVariadic(((TypeFunction) a.fd.type).varargs);
-		convertArguments(b.arguments(), ((TypeFunction) a.fd.type).arguments);
+		convertArguments(b.arguments(), ((TypeFunction) a.fd.type).parameters);
 		fillFunction(b, a.fd);
 		b.setSourceRange(a.start, a.length);
 		return b;
@@ -1031,9 +1038,8 @@ public class ASTConverter {
 		descent.core.dom.FunctionDeclaration b = new descent.core.dom.FunctionDeclaration(ast);
 		b.setVariadic(((TypeFunction) a.type).varargs);
 		b.setReturnType(convert(((TypeFunction) a.type).next));
-		convertTemplateParameters(b.templateParameters(), a.templateParameters);
 		b.setName(convert(a.ident));
-		convertArguments(b.arguments(), ((TypeFunction) a.type).arguments);
+		convertArguments(b.arguments(), ((TypeFunction) a.type).parameters);
 		fillFunction(b, a);
 		fillDeclaration(b, a);
 		b.setSourceRange(a.start, a.length);
@@ -1592,7 +1598,13 @@ public class ASTConverter {
 	
 	public descent.core.dom.Argument convert(Argument a) {
 		descent.core.dom.Argument b = new descent.core.dom.Argument(ast);
-		b.setPassageMode(a.inout);
+		switch(a.inout) {
+		case In: b.setPassageMode(descent.core.dom.Argument.PassageMode.IN); break;
+		case InOut: b.setPassageMode(descent.core.dom.Argument.PassageMode.INOUT); break;
+		case Lazy: b.setPassageMode(descent.core.dom.Argument.PassageMode.LAZY); break;
+		case None: b.setPassageMode(descent.core.dom.Argument.PassageMode.DEFAULT); break;
+		case Out: b.setPassageMode(descent.core.dom.Argument.PassageMode.OUT); break;
+		}
 		if (a.type != null) {
 			b.setType(convert(a.type));
 		}
@@ -2022,7 +2034,7 @@ public class ASTConverter {
 	}
 	
 	public descent.core.dom.Declaration convertDeclaration(Dsymbol symbol) {
-		switch(symbol.kind()) {
+		switch(symbol.getNodeType()) {
 		case ASTNode.VAR_DECLARATION: {
 			VarDeclaration a = (VarDeclaration) symbol;
 			descent.core.dom.VariableDeclaration b = new descent.core.dom.VariableDeclaration(ast);
@@ -2062,13 +2074,13 @@ public class ASTConverter {
 		if (source == null || source.isEmpty()) return;
 		for(int i = 0; i < source.size(); i++) {
 			Dsymbol symbol = source.get(i);
-			switch(symbol.kind()) {
+			switch(symbol.getNodeType()) {
 			case ASTNode.VAR_DECLARATION: {
 				descent.core.dom.VariableDeclaration b = new descent.core.dom.VariableDeclaration(ast);
 				int start = -1;
 				int end = -1;
 				boolean first = true;
-				while(symbol.kind() == ASTNode.VAR_DECLARATION) {
+				while(symbol.getNodeType() == ASTNode.VAR_DECLARATION) {
 					VarDeclaration a = (VarDeclaration) symbol;
 					if (first) {
 						if (a.sourceType != null) {
@@ -2108,7 +2120,7 @@ public class ASTConverter {
 				int start = -1;
 				int end = -1;
 				boolean first = true;
-				while(symbol.kind() == ASTNode.ALIAS_DECLARATION) {
+				while(symbol.getNodeType() == ASTNode.ALIAS_DECLARATION) {
 					AliasDeclaration a = (AliasDeclaration) symbol;
 					if (first) {
 						if (a.type != null) {
@@ -2148,7 +2160,7 @@ public class ASTConverter {
 				int start = -1;
 				int end = -1;
 				boolean first = true;
-				while(symbol.kind() == ASTNode.TYPEDEF_DECLARATION) {
+				while(symbol.getNodeType() == ASTNode.TYPEDEF_DECLARATION) {
 					TypedefDeclaration a = (TypedefDeclaration) symbol;
 					if (first) {
 						if (a.sourceBasetype != null) {

@@ -7,7 +7,7 @@ public class DeleteExp extends UnaExp {
 	}
 	
 	@Override
-	public int kind() {
+	public int getNodeType() {
 		return DELETE_EXP;
 	}
 

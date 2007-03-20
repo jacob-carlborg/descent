@@ -98,6 +98,8 @@ public class Parser extends Lexer {
 	List<Pragma> pragmas;
 	private int lastDocCommentRead = 0;
 	private boolean appendLeadingComments = true;
+	
+	private LINK linkage = LINK.LINKd;
 
 	public Parser(AST ast, String source) {
 		this(ast, source, 0, source.length());
@@ -396,9 +398,11 @@ public class Parser extends Lexer {
 					break;
 				}
 				{
+					LINK linksave = linkage;
 					LINK linkage = parseLinkage();
 					a = parseBlock();
 					s = new LinkDeclaration(linkage, a);
+					linkage = linksave;
 					break;
 				}
 			case TOKprivate:
@@ -932,7 +936,7 @@ public class Parser extends Lexer {
 		int[] varargs = new int[1];
 		List<Argument> arguments = parseParameters(varargs);
 		
-		NewDeclaration f = new NewDeclaration(arguments, varargs[0]);
+		NewDeclaration f = new NewDeclaration(arguments, varargs[0] != 0);
 	    parseContracts(f);
 	    f.setSourceRange(start, prevToken.ptr + prevToken.len - start);
 	    return f;
@@ -973,13 +977,13 @@ public class Parser extends Lexer {
 			IdentifierExp ai;
 			Type at;
 			Argument a;
-			descent.core.dom.Argument.PassageMode inout;
+			InOut inout;
 			Expression ae;
 			
 			int firstTokenStart = token.ptr;
 			
 			ai = null;
-			inout = descent.core.dom.Argument.PassageMode.DEFAULT;
+			inout = InOut.None;
 			
 			if (token.value == TOKrparen) {
 				break;
@@ -994,19 +998,19 @@ public class Parser extends Lexer {
 				
 				switch(token.value) {
 					case TOKin:
-						inout = descent.core.dom.Argument.PassageMode.IN;
+						inout = InOut.In;
 						nextToken();
 						break;
 					case TOKout:
-						inout = descent.core.dom.Argument.PassageMode.OUT;
+						inout = InOut.Out;
 						nextToken();
 						break;
 					case TOKinout:
-						inout = descent.core.dom.Argument.PassageMode.INOUT;
+						inout = InOut.InOut;
 						nextToken();
 						break;
 					case TOKlazy:
-						inout = descent.core.dom.Argument.PassageMode.LAZY;
+						inout = InOut.Lazy;
 						nextToken();
 						break;
 				}
@@ -1032,7 +1036,7 @@ public class Parser extends Lexer {
 					/*
 					 * This is: at ai ...
 					 */
-					if (inout == descent.core.dom.Argument.PassageMode.OUT || inout == descent.core.dom.Argument.PassageMode.INOUT) {
+					if (inout == InOut.Out || inout == InOut.InOut) {
 						error("Variadic argument cannot be out or inout", IProblem.VariadicArgumentCannotBeOutOrInout, inoutTokenLine, inoutTokenStart, inoutTokenLength);
 					}
 					varargs = 2;
@@ -1989,7 +1993,7 @@ public class Parser extends Lexer {
 
 				int saveStart = t.start;
 
-				t = new TypeFunction(arguments, t, varargs != 0);
+				t = new TypeFunction(arguments, t, varargs != 0, linkage);
 				if (save == TOKdelegate) {
 					t = new TypeDelegate(t);
 				} else {
@@ -2120,7 +2124,7 @@ public class Parser extends Lexer {
 			arguments = parseParameters(pointer2_varargs);
 			varargs = pointer2_varargs[0];
 			
-			ta = new TypeFunction(arguments, t, varargs != 0);
+			ta = new TypeFunction(arguments, t, varargs != 0, linkage);
 			ta.setSourceRange(t.start, t.length);
 			
 			if (ts != t) {
@@ -2153,6 +2157,7 @@ public class Parser extends Lexer {
 		int lineNumber = 0;
 		List a;
 		TOK tok;
+		LINK link = linkage;
 		
 		List<Modifier> modifiers = new ArrayList<Modifier>();
 		
@@ -2209,7 +2214,7 @@ public class Parser extends Lexer {
 					continue;
 				}
 
-				parseLinkage();
+				link = parseLinkage();
 				continue;
 
 			default:
@@ -2350,27 +2355,32 @@ public class Parser extends Lexer {
 					break;
 				}
 			} else if (t.ty == Tfunction) {
+				Dsymbol s;
+				
 				TypeFunction typeFunction = (TypeFunction) t;
 				
-				FuncDeclaration function = new FuncDeclaration(ident, storage_class, typeFunction);
-				parseContracts(function);
-				function.setSourceRange(t.start, prevToken.ptr + prevToken.len - t.start);
+				FuncDeclaration f = new FuncDeclaration(ident, storage_class, typeFunction);
+				parseContracts(f);
+				f.setSourceRange(t.start, prevToken.ptr + prevToken.len - t.start);
 				
-				Declaration s = function;				
-				if (tpl != null) // it's a function template
-				{
-					function.templateParameters = tpl;
-					/*
+				if (link == linkage) {
+					s = f;
+				} else {
+					List<Dsymbol> ax = new ArrayList<Dsymbol>();
+					ax.add(f);
+					s = new LinkDeclaration(link, ax);
+				}
+					
+				if (tpl != null) { // it's a function template
 					List decldefs;
 					TemplateDeclaration tempdecl;
 
 					// Wrap a template around the aggregate declaration
 					decldefs = new ArrayList();
 					decldefs.add(s);
-					tempdecl = new TemplateDeclaration(loc, s.ident, tpl,
-							decldefs);
+					tempdecl = new TemplateDeclaration(s.ident, tpl, decldefs);
+					tempdecl.wrapper = true;
 					s = tempdecl;
-					*/
 				}
 				s.preDdocs = lastComments;
 				adjustLastDocComment();
@@ -2420,6 +2430,12 @@ public class Parser extends Lexer {
 	}
 	
 	private void parseContracts(FuncDeclaration f) {
+	    LINK linksave = linkage;
+
+	    // The following is irrelevant, as it is overridden by sc->linkage in
+	    // TypeFunction::semantic
+	    linkage = LINKd;		// nested functions have D linkage
+		
 		boolean repeat = true;
 		while (repeat) {
 			repeat = false;
@@ -2499,6 +2515,8 @@ public class Parser extends Lexer {
 				break;
 			}
 		}
+		
+		linkage = linksave;
 	}
 	
 	public Initializer parseInitializer() {
@@ -2989,14 +3007,14 @@ public class Parser extends Lexer {
 				Type tb;
 				IdentifierExp ai = null;
 				Type at;
-				descent.core.dom.Argument.PassageMode inout;
+				InOut inout;
 				Argument a;
 				
 				int argumentStart = token.ptr;
 
-				inout = descent.core.dom.Argument.PassageMode.DEFAULT;
+				inout = InOut.None;
 				if (token.value == TOKinout) {
-					inout = descent.core.dom.Argument.PassageMode.INOUT;
+					inout = InOut.InOut;
 					nextToken();
 				}
 				if (token.value == TOKidentifier) {
@@ -3062,7 +3080,7 @@ public class Parser extends Lexer {
 				if (token.value == TOKidentifier) {
 					Token t2 = peek(token);
 					if (t2.value == TOKassign) {
-						arg = new Argument(descent.core.dom.Argument.PassageMode.DEFAULT, null, new IdentifierExp(token), null);
+						arg = new Argument(InOut.None, null, new IdentifierExp(token), null);
 						arg.setSourceRange(autoTokenStart, token.ptr + token.len - autoTokenStart);
 						
 						nextToken();
@@ -3104,7 +3122,7 @@ public class Parser extends Lexer {
 					at = parseDeclarator(tb, pointer2_ai);
 					ai = pointer2_ai[0];
 
-					arg = new Argument(descent.core.dom.Argument.PassageMode.DEFAULT, at, ai, null);
+					arg = new Argument(InOut.In, at, ai, null);
 					arg.setSourceRange(argTokenStart, prevToken.ptr + prevToken.len - argTokenStart);
 					
 					check(TOKassign);					
@@ -3114,7 +3132,7 @@ public class Parser extends Lexer {
 				else if (token.value == TOKidentifier) {
 					Token t2 = peek(token);
 					if (t2.value == TOKcomma || t2.value == TOKsemicolon) {
-						arg = new Argument(descent.core.dom.Argument.PassageMode.DEFAULT, null, new IdentifierExp(token), null);
+						arg = new Argument(InOut.In, null, new IdentifierExp(token), null);
 						arg.setSourceRange(argTokenStart, token.ptr + token.len - argTokenStart);
 						
 						nextToken();
@@ -5068,7 +5086,7 @@ public class Parser extends Lexer {
 			varargs = pointer2_varargs[0];
 		}
 		
-		t = new TypeFunction(arguments, t, varargs != 0);
+		t = new TypeFunction(arguments, t, varargs != 0, linkage);
 		fd = new FuncLiteralDeclaration(t, save, null);
 		parseContracts(fd);
 		e[0] = new FuncExp(fd);

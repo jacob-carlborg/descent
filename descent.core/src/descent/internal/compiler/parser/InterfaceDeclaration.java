@@ -18,7 +18,7 @@ public class InterfaceDeclaration extends ClassDeclaration {
 	}
 	
 	@Override
-	public int kind() {
+	public int getNodeType() {
 		return INTERFACE_DECLARATION;
 	}
 

@@ -24,7 +24,7 @@ public class RealExp extends Expression {
 	}
 	
 	@Override
-	public int kind() {
+	public int getNodeType() {
 		return REAL_EXP;
 	}
 

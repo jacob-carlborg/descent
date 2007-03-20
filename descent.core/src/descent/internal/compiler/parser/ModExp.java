@@ -7,7 +7,7 @@ public class ModExp extends BinExp {
 	}
 	
 	@Override
-	public int kind() {
+	public int getNodeType() {
 		return MOD_EXP;
 	}
 

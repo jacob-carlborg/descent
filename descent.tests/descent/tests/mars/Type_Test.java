@@ -42,13 +42,7 @@ public class Type_Test extends Parser_Test {
 		};
 		
 		for(Object[] tri : objs) {
-			PrimitiveType type;
-			if (tri[0].equals("void")) {
-				// Voids have no value
-				type = (PrimitiveType) getType(tri[0].toString(), 1);
-			} else {
-				type = (PrimitiveType) getType(tri[0].toString());
-			}			
+			PrimitiveType type = (PrimitiveType) getType(tri[0].toString());
 			assertEquals(tri[0].toString(), type.toString());
 			assertEquals(ASTNode.PRIMITIVE_TYPE, type.getNodeType());
 			assertEquals(tri[1], type.getPrimitiveTypeCode());
@@ -87,17 +81,14 @@ public class Type_Test extends Parser_Test {
 	}
 	
 	public void testIdentifierTypeSingle() {
-		// 1, 2. Clazz is used as a type
-		SimpleType type = (SimpleType) getType("Clazz", 2);
+		SimpleType type = (SimpleType) getType("Clazz");
 		assertEquals(ASTNode.SIMPLE_TYPE, type.getNodeType());
 		assertEquals("Clazz", type.getName().getFullyQualifiedName());
 		assertPosition(type, 1, 5);
 	}
 	
 	public void testIdentifierTypeMany() {
-		// 1, 2. mod is used as a type
-		// TODO get back to this when search is done in other modules
-		QualifiedType type = (QualifiedType) getType("mod.bla.Clazz", 2);
+		QualifiedType type = (QualifiedType) getType("mod.bla.Clazz");
 		assertEquals(ASTNode.QUALIFIED_TYPE, type.getNodeType());
 		
 		assertEquals("Clazz", ((SimpleType) type.getType()).getName().getFullyQualifiedName());
@@ -174,9 +165,7 @@ public class Type_Test extends Parser_Test {
 	}
 	
 	public void testTemplateType() {
-		// 1, 2. a is used as a type
-		// TODO get back to this when search is done in other modules
-		QualifiedType type = (QualifiedType) getType("a.b.Temp!(int)", 2);
+		QualifiedType type = (QualifiedType) getType("a.b.Temp!(int)");
 		assertPosition(type, 1, 14);
 		
 		TemplateType templateType = (TemplateType) type.getType();
@@ -204,9 +193,7 @@ public class Type_Test extends Parser_Test {
 	}
 	
 	public void testTemplateType3() {
-		// 1, 2.  is used as a type
-		// TODO get back to this when search is done in other modules
-		QualifiedType type = (QualifiedType) getType(".Temp!(int)", 2);
+		QualifiedType type = (QualifiedType) getType(".Temp!(int)");
 		
 		assertNull(type.getQualifier());
 		assertPosition(type, 1, 11);

@@ -7,7 +7,7 @@ public class TypeDArray extends Type {
 	}
 	
 	@Override
-	public int kind() {
+	public int getNodeType() {
 		return TYPE_D_ARRAY;
 	}
 

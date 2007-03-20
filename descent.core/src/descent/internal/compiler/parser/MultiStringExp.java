@@ -23,7 +23,7 @@ public class MultiStringExp extends StringExp {
 	}
 	
 	@Override
-	public int kind() {
+	public int getNodeType() {
 		return MULTI_STRING_EXP;
 	}
 

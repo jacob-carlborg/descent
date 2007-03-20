@@ -15,7 +15,7 @@ public class EnumMember extends Dsymbol {
 	}
 	
 	@Override
-	public int kind() {
+	public int getNodeType() {
 		return ENUM_MEMBER;
 	}
 

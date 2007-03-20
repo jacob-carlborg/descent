@@ -11,7 +11,7 @@ public class DeclarationStatement extends ExpStatement {
 	}
 	
 	@Override
-	public int kind() {
+	public int getNodeType() {
 		return DECLARATION_STATEMENT;
 	}
 

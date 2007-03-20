@@ -7,7 +7,7 @@ public class TemplateTupleParameter extends TemplateParameter {
 	}
 	
 	@Override
-	public int kind() {
+	public int getNodeType() {
 		return TEMPLATE_TUPLE_PARAMETER;
 	}
 

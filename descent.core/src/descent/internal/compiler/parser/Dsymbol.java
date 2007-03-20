@@ -26,6 +26,30 @@ public abstract class Dsymbol extends ASTNode {
 		return ident == null;
 	}
 	
+	public AliasDeclaration isAliasDeclaration() {
+		return null;
+	}
+	
+	public CtorDeclaration isCtorDeclaration() {
+		return null;
+	}
+	
+	public DtorDeclaration isDtorDeclaration() {
+		return null;
+	}
+	
+	public InvariantDeclaration isInvariantDeclaration() {
+		return null;
+	}
+	
+	public UnitTestDeclaration isUnitTestDeclaration() {
+		return null;
+	}
+	
+	public NewDeclaration isNewDeclaration() {
+		return null;
+	}
+	
 	public TemplateDeclaration isTemplateDeclaration() {
 		return null;
 	}
@@ -130,6 +154,14 @@ public abstract class Dsymbol extends ASTNode {
 	    return parent != null ? parent.isAggregateDeclaration() : null;
 	}
 	
+	public ClassDeclaration isClassMember() { // are we a member of a class?
+		Dsymbol parent = toParent();
+		if (parent != null && parent.isClassDeclaration() != null) {
+			return (ClassDeclaration) parent;
+		}
+		return null;
+	}
+	
 	public Dsymbol toParent() {
 		return parent != null ? parent.pastMixin() : null;
 	}
@@ -153,6 +185,21 @@ public abstract class Dsymbol extends ASTNode {
 		return this;
 	}
 	
+	public Module getModule() {
+		Module m;
+		Dsymbol s;
+
+		s = this;
+		while (s != null) {
+			m = s.isModule();
+			if (m != null) {
+				return m;
+			}
+			s = s.parent;
+		}
+		return null;
+	}
+	
 	public int addMember(Scope sc, ScopeDsymbol sd, int memnum, SemanticContext context) {
 		parent = sd;
 		if (!isAnonymous()) // no name, so can't add it to symbol table
@@ -162,7 +209,7 @@ public abstract class Dsymbol extends ASTNode {
 				Dsymbol s2;
 
 				s2 = sd.symtab.lookup(ident);
-				if (!s2.overloadInsert(this)) {
+				if (!s2.overloadInsert(this, context)) {
 					context.multiplyDefined(this, s2);
 				}
 			}
@@ -178,7 +225,7 @@ public abstract class Dsymbol extends ASTNode {
 		return 0;
 	}
 	
-	public boolean overloadInsert(Dsymbol dsymbol) {
+	public boolean overloadInsert(Dsymbol s, SemanticContext context) {
 		return false;
 	} 
 

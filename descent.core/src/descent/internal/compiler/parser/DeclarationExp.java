@@ -10,7 +10,7 @@ public class DeclarationExp extends Expression {
 	}
 	
 	@Override
-	public int kind() {
+	public int getNodeType() {
 		return DECLARATION_EXP;
 	}
 

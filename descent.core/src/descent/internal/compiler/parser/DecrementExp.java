@@ -7,7 +7,7 @@ public class DecrementExp extends MinAssignExp {
 	}
 	
 	@Override
-	public int kind() {
+	public int getNodeType() {
 		return DECREMENT_EXP;
 	}
 

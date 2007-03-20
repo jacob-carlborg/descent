@@ -8,7 +8,7 @@ public class ArrayScopeSymbol extends ScopeDsymbol {
 	}
 	
 	@Override
-	public int kind() {
+	public int getNodeType() {
 		return ARRAY_SCOPE_SYMBOL;
 	}
 

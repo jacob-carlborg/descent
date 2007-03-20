@@ -15,7 +15,7 @@ public class TypeClass extends Type {
 	}
 	
 	@Override
-	public int kind() {
+	public int getNodeType() {
 		return TYPE_CLASS;
 	}
 

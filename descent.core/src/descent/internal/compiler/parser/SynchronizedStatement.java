@@ -11,7 +11,7 @@ public class SynchronizedStatement extends Statement {
 	}
 	
 	@Override
-	public int kind() {
+	public int getNodeType() {
 		return SYNCHRONIZED_STATEMENT;
 	}
 

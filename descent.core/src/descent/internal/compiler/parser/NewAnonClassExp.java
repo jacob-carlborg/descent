@@ -18,7 +18,7 @@ public class NewAnonClassExp extends Expression {
 	}
 	
 	@Override
-	public int kind() {
+	public int getNodeType() {
 		return NEW_ANON_CLASS_EXP;
 	}
 

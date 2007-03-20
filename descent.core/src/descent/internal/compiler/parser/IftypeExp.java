@@ -18,7 +18,7 @@ public class IftypeExp extends Expression {
 	}
 	
 	@Override
-	public int kind() {
+	public int getNodeType() {
 		return IFTYPE_EXP;
 	}
 

@@ -9,7 +9,7 @@ public class BreakStatement extends Statement {
 	}
 	
 	@Override
-	public int kind() {
+	public int getNodeType() {
 		return BREAK_STATEMENT;
 	}
 

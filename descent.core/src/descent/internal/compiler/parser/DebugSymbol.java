@@ -9,7 +9,7 @@ public class DebugSymbol extends Dsymbol {
 	}
 	
 	@Override
-	public int kind() {
+	public int getNodeType() {
 		return DEBUG_SYMBOL;
 	}
 

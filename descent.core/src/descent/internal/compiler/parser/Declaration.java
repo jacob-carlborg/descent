@@ -24,6 +24,10 @@ public abstract class Declaration extends Dsymbol {
 		return this;
 	}
 	
+	public boolean isDelete() {
+		return false;
+	}
+	
 	public boolean isDataseg(SemanticContext context) {
 		return false;
 	}

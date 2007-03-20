@@ -9,6 +9,11 @@ public class TypeBasic extends Type {
 	
 	public TypeBasic(TY ty) {
 		super(ty, null);
+		
+		// HACK to get deco ready
+		OutBuffer out = new OutBuffer();
+		toDecoBuffer(out);
+		deco = out.extractData();
 	}
 	
 	@Override
@@ -80,7 +85,7 @@ public class TypeBasic extends Type {
 	}
 	
 	@Override
-	public int kind() {
+	public int getNodeType() {
 		return TYPE_BASIC;
 	}
 	

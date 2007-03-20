@@ -11,7 +11,7 @@ public class SwitchStatement extends Statement {
 	}
 	
 	@Override
-	public int kind() {
+	public int getNodeType() {
 		return SWITCH_STATEMENT;
 	}
 

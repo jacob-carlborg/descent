@@ -12,7 +12,7 @@ public class TypeSlice extends Type {
 	}
 	
 	@Override
-	public int kind() {
+	public int getNodeType() {
 		return TYPE_SLICE;
 	}
 

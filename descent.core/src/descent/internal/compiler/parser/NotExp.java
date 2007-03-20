@@ -7,7 +7,7 @@ public class NotExp extends UnaExp {
 	}
 	
 	@Override
-	public int kind() {
+	public int getNodeType() {
 		return NOT_EXP;
 	}
 

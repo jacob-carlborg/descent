@@ -11,7 +11,7 @@ public class DoStatement extends Statement {
 	}
 	
 	@Override
-	public int kind() {
+	public int getNodeType() {
 		return DO_STATEMENT;
 	}
 

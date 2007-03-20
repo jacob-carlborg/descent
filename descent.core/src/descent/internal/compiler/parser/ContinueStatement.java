@@ -9,7 +9,7 @@ public class ContinueStatement extends Statement {
 	}
 	
 	@Override
-	public int kind() {
+	public int getNodeType() {
 		return CONTINUE_STATEMENT;
 	}
 

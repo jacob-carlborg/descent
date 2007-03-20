@@ -19,7 +19,7 @@ public class NewExp extends Expression {
 	}
 	
 	@Override
-	public int kind() {
+	public int getNodeType() {
 		return NEW_EXP;
 	}
 

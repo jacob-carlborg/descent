@@ -379,7 +379,7 @@ public class VarDeclaration extends Declaration {
 	}
 	
 	@Override
-	public int kind() {
+	public int getNodeType() {
 		return VAR_DECLARATION;
 	}
 	

@@ -9,7 +9,7 @@ public class VolatileStatement extends Statement {
 	}
 	
 	@Override
-	public int kind() {
+	public int getNodeType() {
 		return VOLATILE_STATEMENT;
 	}
 

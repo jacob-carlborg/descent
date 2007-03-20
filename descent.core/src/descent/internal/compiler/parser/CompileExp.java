@@ -7,7 +7,7 @@ public class CompileExp extends UnaExp {
 	}
 	
 	@Override
-	public int kind() {
+	public int getNodeType() {
 		return COMPILE_EXP;
 	}
 

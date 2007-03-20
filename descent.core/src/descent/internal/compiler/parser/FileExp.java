@@ -7,7 +7,7 @@ public class FileExp extends UnaExp {
 	}
 	
 	@Override
-	public int kind() {
+	public int getNodeType() {
 		return FILE_EXP;
 	}
 

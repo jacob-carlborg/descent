@@ -31,8 +31,7 @@ public class Typedef_Test extends Parser_Test {
 	public void testOne2() {
 		String s = " typedef bla Bla;";
 		
-		// 1, 2. bla is used as a type
-		TypedefDeclaration t = (TypedefDeclaration) getSingleDeclarationWithProblems(s, 2);
+		TypedefDeclaration t = (TypedefDeclaration) getSingleDeclarationNoProblems(s);
 		assertEquals(ASTNode.TYPEDEF_DECLARATION, t.getNodeType());
 		assertPosition(t, 1, 16);
 		

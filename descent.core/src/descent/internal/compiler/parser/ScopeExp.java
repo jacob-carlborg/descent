@@ -10,7 +10,7 @@ public class ScopeExp extends Expression {
 	}
 	
 	@Override
-	public int kind() {
+	public int getNodeType() {
 		return SCOPE_EXP;
 	}
 

@@ -22,7 +22,7 @@ public class TupleDeclaration extends Declaration {
 	}
 
 	@Override
-	public int kind() {
+	public int getNodeType() {
 		return TUPLE_DECLARATION;
 	}
 

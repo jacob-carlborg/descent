@@ -10,7 +10,7 @@ public class FuncExp extends Expression {
 	}
 	
 	@Override
-	public int kind() {
+	public int getNodeType() {
 		return FUNC_EXP;
 	}
 

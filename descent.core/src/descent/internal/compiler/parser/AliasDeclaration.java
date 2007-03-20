@@ -18,6 +18,11 @@ public class AliasDeclaration extends Declaration {
 	}
 	
 	@Override
+	public AliasDeclaration isAliasDeclaration() {
+		return this;
+	}
+	
+	@Override
 	public Type getType() {
 		return type;
 	}
@@ -32,6 +37,20 @@ public class AliasDeclaration extends Declaration {
 		}
 		Dsymbol s = aliassym != null ? aliassym.toAlias(context) : this;
 		return s;
+	}
+	
+	@Override
+	public boolean overloadInsert(Dsymbol s, SemanticContext context) {
+		/* Don't know yet what the aliased symbol is, so assume it can
+	     * be overloaded and check later for correctness.
+	     */
+
+	    if (overnext == null) {
+			overnext = s;
+			return true;
+		} else {
+			return overnext.overloadInsert(s, context);
+		}
 	}
 
 	@Override
@@ -133,7 +152,7 @@ public class AliasDeclaration extends Declaration {
 			if (f != null) {
 				if (overnext != null) {
 					FuncAliasDeclaration fa = new FuncAliasDeclaration(f);
-					if (!fa.overloadInsert(overnext)) {
+					if (!fa.overloadInsert(overnext, context)) {
 						context.multiplyDefined(f, overnext);
 					}
 					overnext = null;
@@ -152,7 +171,7 @@ public class AliasDeclaration extends Declaration {
 	}
 
 	@Override
-	public int kind() {
+	public int getNodeType() {
 		return ALIAS_DECLARATION;
 	}
 	

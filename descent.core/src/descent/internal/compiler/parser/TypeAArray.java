@@ -12,7 +12,7 @@ public class TypeAArray extends Type {
 	}
 	
 	@Override
-	public int kind() {
+	public int getNodeType() {
 		return TYPE_A_ARRAY;
 	}
 

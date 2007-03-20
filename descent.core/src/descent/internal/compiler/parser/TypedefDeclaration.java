@@ -42,7 +42,7 @@ public class TypedefDeclaration extends Declaration {
 	}
 	
 	@Override
-	public int kind() {
+	public int getNodeType() {
 		return TYPEDEF_DECLARATION;
 	}
 	

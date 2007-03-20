@@ -7,7 +7,7 @@ public class NegExp extends UnaExp {
 	}
 	
 	@Override
-	public int kind() {
+	public int getNodeType() {
 		return NEG_EXP;
 	}
 

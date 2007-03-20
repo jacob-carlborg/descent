@@ -10,7 +10,7 @@ public class DotTemplateInstanceExp extends UnaExp {
 	}
 	
 	@Override
-	public int kind() {
+	public int getNodeType() {
 		return DOT_TEMPLATE_INSTANCE_EXP;
 	}
 

@@ -10,7 +10,7 @@ public class DotVarExp extends UnaExp {
 	}
 
 	@Override
-	public int kind() {
+	public int getNodeType() {
 		return DOT_VAR_EXP;
 	}
 

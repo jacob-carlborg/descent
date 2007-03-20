@@ -9,7 +9,7 @@ public class Version extends Dsymbol {
 	}
 	
 	@Override
-	public int kind() {
+	public int getNodeType() {
 		return VERSION;
 	}
 

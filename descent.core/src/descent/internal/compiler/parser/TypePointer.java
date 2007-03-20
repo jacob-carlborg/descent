@@ -17,7 +17,7 @@ public class TypePointer extends Type {
 	}
 	
 	@Override
-	public int kind() {
+	public int getNodeType() {
 		return TYPE_POINTER;
 	}
 

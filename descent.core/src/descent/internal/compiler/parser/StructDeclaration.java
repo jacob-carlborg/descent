@@ -10,7 +10,7 @@ public class StructDeclaration extends AggregateDeclaration {
 	}
 	
 	@Override
-	public int kind() {
+	public int getNodeType() {
 		return STRUCT_DECLARATION;
 	}
 

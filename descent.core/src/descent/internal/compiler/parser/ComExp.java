@@ -7,7 +7,7 @@ public class ComExp extends UnaExp {
 	}
 	
 	@Override
-	public int kind() {
+	public int getNodeType() {
 		return COM_EXP;
 	}
 

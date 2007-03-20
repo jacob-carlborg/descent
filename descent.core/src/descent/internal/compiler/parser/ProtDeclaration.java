@@ -37,7 +37,7 @@ public class ProtDeclaration extends AttribDeclaration {
 	}
 
 	@Override
-	public int kind() {
+	public int getNodeType() {
 		return PROT_DECLARATION;
 	}
 

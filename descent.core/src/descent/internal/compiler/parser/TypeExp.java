@@ -8,7 +8,7 @@ public class TypeExp extends Expression {
 	}
 	
 	@Override
-	public int kind() {
+	public int getNodeType() {
 		return TYPE_EXP;
 	}
 

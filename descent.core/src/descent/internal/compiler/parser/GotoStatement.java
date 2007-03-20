@@ -9,7 +9,7 @@ public class GotoStatement extends Statement {
 	}
 	
 	@Override
-	public int kind() {
+	public int getNodeType() {
 		return GOTO_STATEMENT;
 	}
 

@@ -15,7 +15,7 @@ public class TryStatement extends Statement {
 	}
 	
 	@Override
-	public int kind() {
+	public int getNodeType() {
 		return TRY_STATEMENT;
 	}
 

@@ -10,7 +10,7 @@ public class CondExp extends BinExp {
 	}
 	
 	@Override
-	public int kind() {
+	public int getNodeType() {
 		return COND_EXP;
 	}
 

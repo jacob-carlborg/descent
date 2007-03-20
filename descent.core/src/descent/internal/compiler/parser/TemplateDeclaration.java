@@ -20,7 +20,7 @@ public class TemplateDeclaration extends ScopeDsymbol {
 	}
 	
 	@Override
-	public int kind() {
+	public int getNodeType() {
 		return TEMPLATE_DECLARATION;
 	}
 

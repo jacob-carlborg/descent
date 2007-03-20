@@ -291,6 +291,17 @@ public interface IProblem {
 	int FieldsNotAllowedInInterfaces = 325;
 	int IdentifierNotDefined = 326;
 	int NotAMember = 327;
+	int NewAllocatorsOnlyForClassOrStruct = 328;
+	int DeleteDeallocatorsOnlyForClassOrStruct = 329;
+	int IllegalParameters = 330;
+	int ConstructorsOnlyForClass = 331;
+	int DestructorsOnlyForClass = 332;
+	int InvariantsOnlyForClassStructUnion = 333;
+	int FunctionDoesNotOverrideAny = 334;
+	int CannotOverrideFinalFunctions = 335;
+	int OverrideOnlyForClassMemberFunctions = 336;
+	int IllegalReturnType = 337;
+	int MoreThanOneInvariant = 338;
 	
 	/* Others, needed by JDT */
 	int ForbiddenReference = 2001;

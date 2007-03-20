@@ -10,7 +10,7 @@ public class CastExp extends UnaExp {
 	}
 	
 	@Override
-	public int kind() {
+	public int getNodeType() {
 		return CAST_EXP;
 	}
 

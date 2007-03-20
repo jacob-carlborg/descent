@@ -9,7 +9,7 @@ public class AsmBlock extends CompoundStatement {
 	}
 	
 	@Override
-	public int kind() {
+	public int getNodeType() {
 		return ASM_BLOCK;
 	}
 

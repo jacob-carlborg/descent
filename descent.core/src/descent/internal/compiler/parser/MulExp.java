@@ -7,7 +7,7 @@ public class MulExp extends BinExp {
 	}
 	
 	@Override
-	public int kind() {
+	public int getNodeType() {
 		return MUL_EXP;
 	}
 
