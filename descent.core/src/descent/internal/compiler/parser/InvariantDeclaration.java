@@ -41,6 +41,17 @@ public class InvariantDeclaration extends FuncDeclaration {
 	}
 	
 	@Override
+	public boolean isVirtual() {
+		return false;
+	}
+	
+	@Override
+	public boolean overloadInsert(Dsymbol s, SemanticContext context) {
+		// TODO semantic this isn't in DMD but it makes sense
+		return true;
+	}
+	
+	@Override
 	public int getNodeType() {
 		return INVARIANT_DECLARATION;
 	}

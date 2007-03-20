@@ -485,7 +485,7 @@ public class Semantic1_Test extends Parser_Test {
 		IProblem[] p = getModuleProblems(s);
 		assertEquals(1, p.length);
 
-		assertError(p[0], IProblem.IllegalParameters, 25, 9);
+		assertError(p[0], IProblem.MoreThanOneInvariant, 25, 9);
 	}
 
 }
