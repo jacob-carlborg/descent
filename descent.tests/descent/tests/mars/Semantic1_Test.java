@@ -487,5 +487,37 @@ public class Semantic1_Test extends Parser_Test {
 
 		assertError(p[0], IProblem.MoreThanOneInvariant, 25, 9);
 	}
+	
+	public void testStructsCannotBeAbstract() {
+		String s = " abstract struct x { }";
+		IProblem[] p = getModuleProblems(s);
+		assertEquals(1, p.length);
+
+		assertError(p[0], IProblem.IllegalModifier, 17, 1);
+	}
+	
+	public void testUnionsCannotBeAbstract() {
+		String s = " abstract union x { }";
+		IProblem[] p = getModuleProblems(s);
+		assertEquals(1, p.length);
+
+		assertError(p[0], IProblem.IllegalModifier, 16, 1);
+	}
+	
+	public void testConstructorNotAllowedInStruct() {
+		String s = " struct x { this() { } }";
+		IProblem[] p = getModuleProblems(s);
+		assertEquals(1, p.length);
+
+		assertError(p[0], IProblem.ConstructorsOnlyForClass, 12, 4);
+	}
+	
+	public void testDesstructorNotAllowedInStruct() {
+		String s = " struct x { ~this() { } }";
+		IProblem[] p = getModuleProblems(s);
+		assertEquals(1, p.length);
+
+		assertError(p[0], IProblem.DestructorsOnlyForClass, 12, 5);
+	}
 
 }

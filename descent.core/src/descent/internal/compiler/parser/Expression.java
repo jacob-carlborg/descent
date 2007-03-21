@@ -86,5 +86,28 @@ public abstract class Expression extends ASTNode implements Cloneable {
 		}
 		return e;
 	}
+	
+	public static Dsymbol search_function(AggregateDeclaration ad, Identifier funcid, SemanticContext context) {
+		Dsymbol s;
+		FuncDeclaration fd;
+		TemplateDeclaration td;
+
+		s = ad.search(funcid, 0, context);
+		if (s != null) {
+			Dsymbol s2;
+
+			s2 = s.toAlias(context);
+			fd = s2.isFuncDeclaration();
+			if (fd != null && fd.type.ty == TY.Tfunction) {
+				return fd;
+			}
+
+			td = s2.isTemplateDeclaration();
+			if (td != null) {
+				return td;
+			}
+		}
+		return null;
+	}
 
 }

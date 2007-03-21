@@ -6,6 +6,7 @@ import java.util.List;
 public abstract class AggregateDeclaration extends ScopeDsymbol {
 	
 	public Type type;
+	PROT protection;
 	public int storage_class;
 	public boolean isdeprecated;
 	public int structsize;	// size of struct
@@ -30,6 +31,7 @@ public abstract class AggregateDeclaration extends ScopeDsymbol {
 	
 	public AggregateDeclaration(IdentifierExp id) {
 		super(id);
+		fields = new ArrayList<VarDeclaration>(0);
 	}
 	
 	@Override

@@ -19,6 +19,11 @@ public class ScopeDsymbol extends Dsymbol {
 		this.ident = id;
 	}
 	
+	@Override
+	public ScopeDsymbol isScopeDsymbol() {
+		return this;
+	}
+	
 	public void addMember(Dsymbol symbol) {
 		members.add(symbol);
 	}

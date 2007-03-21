@@ -407,5 +407,9 @@ public abstract class Type extends ASTNode {
 		}
 		return NOT_COVARIANT;
 	}
+	
+	public boolean isZeroInit() {
+		return false;
+	}
 
 }

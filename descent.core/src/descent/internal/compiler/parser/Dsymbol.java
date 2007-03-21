@@ -26,6 +26,10 @@ public abstract class Dsymbol extends ASTNode {
 		return ident == null;
 	}
 	
+	public ScopeDsymbol isScopeDsymbol() {
+		return null;
+	}
+	
 	public AliasDeclaration isAliasDeclaration() {
 		return null;
 	}
@@ -71,6 +75,10 @@ public abstract class Dsymbol extends ASTNode {
 	}
 	
 	public AggregateDeclaration isAggregateDeclaration() {
+		return null;	
+	}
+	
+	public UnionDeclaration isUnionDeclaration() {
 		return null;	
 	}
 	
@@ -230,7 +238,7 @@ public abstract class Dsymbol extends ASTNode {
 	} 
 
 	public void semantic(Scope sc, SemanticContext context) {
-		
+		// throw new IllegalStateException("No semantic routine for " + this);
 	}
 	
 	public void semantic2(Scope sc, SemanticContext context) {

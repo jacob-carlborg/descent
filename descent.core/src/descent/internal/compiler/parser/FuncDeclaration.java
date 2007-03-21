@@ -112,13 +112,14 @@ public class FuncDeclaration extends Declaration {
 		sd = parent.isStructDeclaration();
 		if (sd != null) {
 			// Verify no constructors, destructors, etc.
-			if (isCtorDeclaration() != null || isDtorDeclaration() != null
-			// || isInvariantDeclaration()
-			// || isUnitTestDeclaration()
-			) {
-				error("special member functions not allowed for %ss", sd.getNodeType());
+			/* removed since this is in CtorDeclaration::semantic and DtorDeclaration::semantic
+			if (isCtorDeclaration() != null) {
+				context.acceptProblem(Problem.newSemanticTypeError("Constructors only are for class definitions", IProblem.ConstructorsOnlyForClass, 0, start, "this".length()));
 			}
-
+			if (isDtorDeclaration() != null) {
+				context.acceptProblem(Problem.newSemanticTypeError("Destructors only are for class definitions", IProblem.ConstructorsOnlyForClass, 0, start, "~this".length()));
+			}
+			*/
 		}
 
 		id = parent.isInterfaceDeclaration();
