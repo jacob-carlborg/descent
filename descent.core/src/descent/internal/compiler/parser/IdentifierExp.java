@@ -35,5 +35,15 @@ public class IdentifierExp extends Expression {
 	public String toString() {
 		return ident.toString();
 	}
+	
+	@Override
+	public boolean equals(Object o) {
+		if (!(o instanceof IdentifierExp)) {
+			return false;
+		}
+		
+		IdentifierExp i = (IdentifierExp) o;
+		return ident.equals(i.ident);
+	}
 
 }

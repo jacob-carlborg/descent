@@ -33,5 +33,14 @@ public class Identifier {
 	public String toString() {
 		return string;
 	}
+	
+	@Override
+	public boolean equals(Object o) {
+		if (!(o instanceof Identifier)) {
+			return false;
+		}
+		
+		return string.equals(((Identifier) o).string);
+	}
 
 }
