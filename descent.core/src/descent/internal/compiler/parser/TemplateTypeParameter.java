@@ -1,5 +1,7 @@
 package descent.internal.compiler.parser;
 
+import descent.core.compiler.IProblem;
+
 public class TemplateTypeParameter extends TemplateParameter {
 	
 	public Type specType;
@@ -9,6 +11,19 @@ public class TemplateTypeParameter extends TemplateParameter {
 		super(ident);
 		this.specType = specType;
 	    this.defaultType = defaultType;
+	}
+	
+	@Override
+	public void semantic(Scope sc, SemanticContext context) {
+		TypeIdentifier ti = new TypeIdentifier(ident);
+		Declaration sparam = new AliasDeclaration(ident, ti);
+		if (sc.insert(sparam) == null) {
+			context.acceptProblem(Problem.newSemanticTypeError("Duplicate parameter " + ident, IProblem.DuplicatedParameter, 0, ident.start, ident.length));
+		}
+
+		if (specType != null) {
+			specType = specType.semantic(sc, context);
+		}
 	}
 	
 	@Override

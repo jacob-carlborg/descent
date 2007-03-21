@@ -302,6 +302,8 @@ public interface IProblem {
 	int OverrideOnlyForClassMemberFunctions = 336;
 	int IllegalReturnType = 337;
 	int MoreThanOneInvariant = 338;
+	int DuplicatedParameter = 339;
+	int SymbolNotFound = 340;
 	
 	/* Others, needed by JDT */
 	int ForbiddenReference = 2001;

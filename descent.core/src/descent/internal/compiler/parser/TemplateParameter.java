@@ -7,5 +7,7 @@ public abstract class TemplateParameter extends ASTNode {
 	public TemplateParameter(IdentifierExp ident) {
 		this.ident = ident;
 	}
+	
+	public abstract void semantic(Scope sc, SemanticContext context);
 
 }

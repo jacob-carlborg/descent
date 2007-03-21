@@ -512,12 +512,56 @@ public class Semantic1_Test extends Parser_Test {
 		assertError(p[0], IProblem.ConstructorsOnlyForClass, 12, 4);
 	}
 	
-	public void testDesstructorNotAllowedInStruct() {
+	public void testDestructorNotAllowedInStruct() {
 		String s = " struct x { ~this() { } }";
 		IProblem[] p = getModuleProblems(s);
 		assertEquals(1, p.length);
 
 		assertError(p[0], IProblem.DestructorsOnlyForClass, 12, 5);
+	}
+	
+	public void testDuplicatedTypeTemplateParameter() {
+		String s = " template T(X, X) { }";
+		IProblem[] p = getModuleProblems(s);
+		assertEquals(1, p.length);
+
+		assertError(p[0], IProblem.DuplicatedParameter, 15, 1);
+	}
+	
+	public void testDuplicatedAliasTemplateParameter() {
+		String s = " template T(X, alias X) { }";
+		IProblem[] p = getModuleProblems(s);
+		assertEquals(1, p.length);
+
+		assertError(p[0], IProblem.DuplicatedParameter, 21, 1);
+	}
+	
+	public void testDuplicatedValueTemplateParameter() {
+		String s = " template T(X, int X) { }";
+		IProblem[] p = getModuleProblems(s);
+		assertEquals(1, p.length);
+
+		assertError(p[0], IProblem.DuplicatedParameter, 19, 1);
+	}
+	
+	public void testDuplicatedTupleTemplateParameter() {
+		String s = " template T(X, X ...) { }";
+		IProblem[] p = getModuleProblems(s);
+		assertEquals(1, p.length);
+
+		assertError(p[0], IProblem.DuplicatedParameter, 15, 1);
+	}
+	
+	public void testSpecAliasTemplateParameterSymbolNotFound() {
+		String s = " template T(alias X : Y) { }";
+		IProblem[] p = getModuleProblems(s);
+		assertEquals(1, p.length);
+
+		assertError(p[0], IProblem.SymbolNotFound, 22, 1);
+	}
+	
+	public void testSpecAliasTemplateParameterSymbolNotFound_Not() {
+		assertNoSemanticErrors(" int Y; template T(alias X : Y) { }");
 	}
 
 }

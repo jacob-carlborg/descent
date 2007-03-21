@@ -9,6 +9,11 @@ public class VersionSymbol extends Dsymbol {
 	}
 	
 	@Override
+	public void semantic(Scope sc, SemanticContext context) {
+		
+	}
+	
+	@Override
 	public int getNodeType() {
 		return VERSION_SYMBOL;
 	}

@@ -1,5 +1,9 @@
 package descent.internal.compiler.parser;
 
+import java.util.List;
+
+import org.eclipse.core.runtime.Assert;
+
 import descent.core.compiler.IProblem;
 
 public abstract class Dsymbol extends ASTNode {
@@ -238,7 +242,7 @@ public abstract class Dsymbol extends ASTNode {
 	} 
 
 	public void semantic(Scope sc, SemanticContext context) {
-		// throw new IllegalStateException("No semantic routine for " + this);
+		//throw new IllegalStateException("No semantic routine for " + this);
 	}
 	
 	public void semantic2(Scope sc, SemanticContext context) {
@@ -255,6 +259,36 @@ public abstract class Dsymbol extends ASTNode {
 	
 	public Dsymbol search(Identifier ident, int flags, SemanticContext context) {
 		return null;
+	}
+	
+	private boolean oneMember(Dsymbol[] ps) {
+	    ps[0] = this;
+	    return true;
+	}
+	
+	public static boolean oneMembers(List<Dsymbol> members, Dsymbol[] ps) {
+	    Dsymbol s = null;
+
+		if (members != null) {
+			for (int i = 0; i < members.size(); i++) {
+				Dsymbol sx = (Dsymbol) members.get(i);
+
+				boolean x = sx.oneMember(ps);
+				if (!x) {
+					Assert.isTrue(ps[0] == null);
+					return false;
+				}
+				if (ps[0] != null) {
+					if (s != null) { // more than one symbol
+						ps[0] = null;
+						return false;
+					}
+					s = ps[0];
+				}
+			}
+		}
+		ps[0] = s; // s is the one symbol, NULL if none
+		return true;
 	}
 
 }

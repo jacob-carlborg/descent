@@ -408,6 +408,14 @@ public abstract class Type extends ASTNode {
 		return NOT_COVARIANT;
 	}
 	
+	public boolean isfloating() {
+		return false;
+	}
+	
+	public boolean isString() {
+		return false;
+	}
+	
 	public boolean isZeroInit() {
 		return false;
 	}

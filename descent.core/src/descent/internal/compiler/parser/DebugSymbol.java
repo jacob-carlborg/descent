@@ -9,6 +9,11 @@ public class DebugSymbol extends Dsymbol {
 	}
 	
 	@Override
+	public void semantic(Scope sc, SemanticContext context) {
+		
+	}
+	
+	@Override
 	public int getNodeType() {
 		return DEBUG_SYMBOL;
 	}

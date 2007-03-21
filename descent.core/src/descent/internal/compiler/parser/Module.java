@@ -96,5 +96,13 @@ public class Module extends Package {
 
 		deferred.add(s);
 	}
+	
+	public void toModuleArray() {
+		// TODO semantic
+	}
+
+	public void toModuleAssert() {
+		// TODO semantic
+	}
 
 }

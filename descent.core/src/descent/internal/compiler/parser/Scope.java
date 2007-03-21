@@ -1,5 +1,7 @@
 package descent.internal.compiler.parser;
 
+import org.eclipse.core.runtime.Assert;
+
 
 public class Scope {
 	
@@ -145,6 +147,20 @@ public class Scope {
 			}
 		}
 
+		return null;
+	}
+	
+	public Dsymbol insert(Dsymbol s) {
+		Scope sc;
+
+		for (sc = this; sc != null; sc = sc.enclosing) {
+			if (sc.scopesym != null) {
+				if (sc.scopesym.symtab == null)
+					sc.scopesym.symtab = new DsymbolTable();
+				return sc.scopesym.symtab.insert(s);
+			}
+		}
+		Assert.isTrue(false);
 		return null;
 	}
 	
