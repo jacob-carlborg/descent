@@ -446,6 +446,11 @@ public class FuncDeclaration extends Declaration {
 		return;
 	}
 	
+	@Override
+	public void semantic2(Scope sc, SemanticContext context) {
+		
+	}
+	
 	public FuncDeclaration overloadExactMatch(Type t, SemanticContext context) {
 		FuncDeclaration f;
 		Declaration d;

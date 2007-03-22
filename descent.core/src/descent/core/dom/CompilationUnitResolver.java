@@ -117,10 +117,10 @@ public class CompilationUnitResolver extends descent.internal.compiler.Compiler 
 			IProgressMonitor monitor) throws JavaModelException {
 		
 		final Module module = parse(apiLevel, sourceUnit, options, statementsRecovery);
-		return semantic1(module);
+		return resolve(module);
 	}
 	
-	public static Module semantic1(final Module module) {
+	public static Module resolve(final Module module) {
 		module.semantic(new SemanticContext(new IProblemRequestor() {
 			public void acceptProblem(IProblem problem) {
 				module.problems.add(problem);

@@ -42,6 +42,22 @@ public class TypedefDeclaration extends Declaration {
 	}
 	
 	@Override
+	public void semantic2(Scope sc, SemanticContext context) {
+	    if (sem == 2) {
+			sem = 3;
+			if (init != null) {
+				init = init.semantic(sc, basetype, context);
+
+				ExpInitializer ie = init.isExpInitializer();
+				if (ie != null) {
+					if (ie.exp.type == basetype)
+						ie.exp.type = type;
+				}
+			}
+		}
+	}
+	
+	@Override
 	public int getNodeType() {
 		return TYPEDEF_DECLARATION;
 	}

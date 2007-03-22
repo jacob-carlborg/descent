@@ -40,6 +40,8 @@ public class Module extends Package {
 
 	public void semantic(SemanticContext context) {
 		semantic(null, context);
+		semantic2(null, context);
+		semantic3(null, context);
 	}
 
 	@Override

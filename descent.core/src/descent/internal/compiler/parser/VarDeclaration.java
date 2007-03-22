@@ -379,6 +379,15 @@ public class VarDeclaration extends Declaration {
 	}
 	
 	@Override
+	public void semantic2(Scope sc, SemanticContext context) {
+	    if (init != null && toParent().isFuncDeclaration() == null) {
+			inuse++;
+			init = init.semantic(sc, type, context);
+			inuse--;
+		}
+	}
+	
+	@Override
 	public int getNodeType() {
 		return VAR_DECLARATION;
 	}
