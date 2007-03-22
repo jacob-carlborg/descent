@@ -304,6 +304,7 @@ public interface IProblem {
 	int MoreThanOneInvariant = 338;
 	int DuplicatedParameter = 339;
 	int SymbolNotFound = 340;
+	int StaticAssertIsFalse = 341;
 	
 	/* Others, needed by JDT */
 	int ForbiddenReference = 2001;

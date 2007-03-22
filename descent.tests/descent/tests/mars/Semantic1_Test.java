@@ -563,5 +563,13 @@ public class Semantic1_Test extends Parser_Test {
 	public void testSpecAliasTemplateParameterSymbolNotFound_Not() {
 		assertNoSemanticErrors(" int Y; template T(alias X : Y) { }");
 	}
+	
+	public void testStaticAssert() {
+		String s = " static assert(false);";
+		IProblem[] p = getModuleProblems(s);
+		assertEquals(1, p.length);
+
+		assertError(p[0], IProblem.SymbolNotFound, 22, 1);
+	}
 
 }
