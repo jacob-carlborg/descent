@@ -35,6 +35,11 @@ public class Scope {
     public boolean nofree;			// set if shouldn't free it
     public boolean noctor;			// set if constructor calls aren't allowed
     public int flags;
+    public Statement sbreak;		// enclosing statement that supports "break"
+    public Statement scontinue;	// enclosing statement that supports "continue"
+    public SwitchStatement sw;	// enclosing switch statement
+    public ForeachStatement fes;	// if nested function for ForeachStatement, this is it
+    public TryFinallyStatement tf;	// enclosing try finally statement
     
     public AnonymousAggregateDeclaration anonAgg;	// for temporary analysis
 	

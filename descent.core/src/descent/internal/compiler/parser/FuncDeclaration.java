@@ -1,5 +1,7 @@
 package descent.internal.compiler.parser;
 
+import org.eclipse.core.runtime.Assert;
+
 import descent.core.compiler.IProblem;
 
 public class FuncDeclaration extends Declaration {
@@ -18,6 +20,10 @@ public class FuncDeclaration extends Declaration {
 								// this one is overriding
 	public Declaration overnext;		// next in overload list
 	public Scope scope;		// !=NULL means context to use
+	public int semanticRun;			// !=0 if semantic3() had been run
+	public DsymbolTable localsymtab;		// used to prevent symbols in different
+											// scopes from having the same name
+	public ForeachStatement fes;		// if foreach body, this is the foreach
 	
 	public FuncDeclaration(IdentifierExp ident, int storage_class, Type type) {
 		super(ident);
@@ -449,6 +455,625 @@ public class FuncDeclaration extends Declaration {
 	@Override
 	public void semantic2(Scope sc, SemanticContext context) {
 		
+	}
+	
+	@Override
+	public void semantic3(Scope sc, SemanticContext context) {
+		TypeFunction f;
+	    AggregateDeclaration ad;
+	    VarDeclaration argptr = null;
+	    VarDeclaration _arguments = null;
+
+	    if (parent == null)
+	    {
+	    	Assert.isTrue(false);
+	    }
+
+	    if (semanticRun != 0)
+		return;
+	    semanticRun = 1;
+
+	    if (type == null || type.ty != TY.Tfunction)
+		return;
+	    f = (TypeFunction) (type);
+	    int nparams = Argument.dim(f.parameters, context);
+
+	    // Check the 'throws' clause
+	    /* throws not used right now
+	    if (fthrows)
+	    {	int i;
+
+		for (i = 0; i < fthrows.dim; i++)
+		{
+		    Type *t = (Type *)fthrows.data[i];
+
+		    t = t.semantic(loc, sc);
+		    if (!t.isClassHandle())
+			error("can only throw classes, not %s", t.toChars());
+		}
+	    }
+	    */
+
+	    if (fbody != null || frequire != null)
+	    {
+		// Establish function scope
+		ScopeDsymbol ss;
+		Scope sc2;
+
+		localsymtab = new DsymbolTable();
+
+		ss = new ScopeDsymbol();
+		ss.parent = sc.scopesym;
+		sc2 = sc.push(ss);
+		sc2.func = this;
+		sc2.parent = this;
+		sc2.callSuper = 0;
+		sc2.sbreak = null;
+		sc2.scontinue = null;
+		sc2.sw = null;
+		sc2.fes = fes;
+		sc2.linkage = LINK.LINKd;
+		sc2.stc &= ~(STC.STCauto | STC.STCscope | STC.STCstatic | STC.STCabstract | STC.STCdeprecated);
+		sc2.protection = PROT.PROTpublic;
+		sc2.explicitProtection = 0;
+		sc2.structalign = 8;
+		sc2.incontract = 0;
+		sc2.tf = null;
+
+		// Declare 'this'
+		ad = isThis();
+		if (ad)
+		{   VarDeclaration *v;
+
+		    if (isFuncLiteralDeclaration() && isNested())
+		    {
+			error("literals cannot be class members");
+			return;
+		    }
+		    else
+		    {
+			assert(!isNested());	// can't be both member and nested
+			assert(ad.handle);
+			v = new ThisDeclaration(ad.handle);
+			v.storage_class |= STCparameter | STCin;
+			v.semantic(sc2);
+			if (!sc2.insert(v))
+			    assert(0);
+			v.parent = this;
+			vthis = v;
+		    }
+		}
+		else if (isNested())
+		{
+		    VarDeclaration *v;
+
+		    v = new ThisDeclaration(Type::tvoid.pointerTo());
+		    v.storage_class |= STCparameter | STCin;
+		    v.semantic(sc2);
+		    if (!sc2.insert(v))
+			assert(0);
+		    v.parent = this;
+		    vthis = v;
+		}
+
+		// Declare hidden variable _arguments[] and _argptr
+		if (f.varargs == 1)
+		{   Type *t;
+
+		    if (f.linkage == LINKd)
+		    {	// Declare _arguments[]
+	#if BREAKABI
+			v_arguments = new VarDeclaration(0, Type::typeinfotypelist.type, Id::_arguments_typeinfo, NULL);
+			v_arguments.storage_class = STCparameter | STCin;
+			v_arguments.semantic(sc2);
+			sc2.insert(v_arguments);
+			v_arguments.parent = this;
+
+			t = Type::typeinfo.type.arrayOf();
+			_arguments = new VarDeclaration(0, t, Id::_arguments, NULL);
+			_arguments.semantic(sc2);
+			sc2.insert(_arguments);
+			_arguments.parent = this;
+	#else
+			t = Type::typeinfo.type.arrayOf();
+			v_arguments = new VarDeclaration(0, t, Id::_arguments, NULL);
+			v_arguments.storage_class = STCparameter | STCin;
+			v_arguments.semantic(sc2);
+			sc2.insert(v_arguments);
+			v_arguments.parent = this;
+	#endif
+		    }
+		    if (f.linkage == LINKd || (parameters && parameters.dim))
+		    {	// Declare _argptr
+	#if IN_GCC
+			t = d_gcc_builtin_va_list_d_type;
+	#else
+			t = Type::tvoid.pointerTo();
+	#endif
+			argptr = new VarDeclaration(0, t, Id::_argptr, NULL);
+			argptr.semantic(sc2);
+			sc2.insert(argptr);
+			argptr.parent = this;
+		    }
+		}
+
+		// Propagate storage class from tuple arguments to their sub-arguments.
+		if (f.parameters)
+		{
+		    for (size_t i = 0; i < f.parameters.dim; i++)
+		    {	Argument *arg = (Argument *)f.parameters.data[i];
+
+			if (arg.type.ty == Ttuple)
+			{   TypeTuple *t = (TypeTuple *)arg.type;
+			    size_t dim = Argument::dim(t.arguments);
+			    for (size_t j = 0; j < dim; j++)
+			    {	Argument *narg = Argument::getNth(t.arguments, j);
+				narg.inout = arg.inout;
+			    }
+			}
+		    }
+		}
+
+		// Declare all the function parameters as variables
+		if (nparams)
+		{   // parameters[] has all the tuples removed, as the back end
+		    // doesn't know about tuples
+		    parameters = new Dsymbols();
+		    parameters.reserve(nparams);
+		    for (size_t i = 0; i < nparams; i++)
+		    {
+			Argument *arg = Argument::getNth(f.parameters, i);
+			Identifier *id = arg.ident;
+			if (!id)
+			{
+			    //error("no identifier for parameter %d of %s", i + 1, toChars());
+			    OutBuffer buf;
+			    buf.printf("_param_%zu", i);
+			    char *name = (char *)buf.extractData();
+			    id = new Identifier(name, TOKidentifier);
+			    arg.ident = id;
+			}
+			VarDeclaration *v = new VarDeclaration(0, arg.type, id, NULL);
+			//printf("declaring parameter %s of type %s\n", v.toChars(), v.type.toChars());
+			v.storage_class |= STCparameter;
+			if (f.varargs == 2 && i + 1 == nparams)
+			    v.storage_class |= STCvariadic;
+			switch (arg.inout)
+			{   case In:    v.storage_class |= STCin;		break;
+			    case Out:   v.storage_class |= STCout;		break;
+			    case InOut: v.storage_class |= STCin | STCout;	break;
+			    case Lazy:  v.storage_class |= STCin | STClazy; break;
+			    default: assert(0);
+			}
+			v.semantic(sc2);
+			if (!sc2.insert(v))
+			    error("parameter %s.%s is already defined", toChars(), v.toChars());
+			else
+			    parameters.push(v);
+			localsymtab.insert(v);
+			v.parent = this;
+		    }
+		}
+
+		// Declare the tuple symbols and put them in the symbol table,
+		// but not in parameters[].
+		if (f.parameters)
+		{
+		    for (size_t i = 0; i < f.parameters.dim; i++)
+		    {	Argument *arg = (Argument *)f.parameters.data[i];
+
+			if (!arg.ident)
+			    continue;			// never used, so ignore
+			if (arg.type.ty == Ttuple)
+			{   TypeTuple *t = (TypeTuple *)arg.type;
+			    size_t dim = Argument::dim(t.arguments);
+			    Objects *exps = new Objects();
+			    exps.setDim(dim);
+			    for (size_t j = 0; j < dim; j++)
+			    {	Argument *narg = Argument::getNth(t.arguments, j);
+				assert(narg.ident);
+				VarDeclaration *v = sc2.search(0, narg.ident, NULL).isVarDeclaration();
+				assert(v);
+				Expression *e = new VarExp(0, v);
+				exps.data[j] = (void *)e;
+			    }
+			    assert(arg.ident);
+			    TupleDeclaration *v = new TupleDeclaration(0, arg.ident, exps);
+			    //printf("declaring tuple %s\n", v.toChars());
+			    v.isexp = 1;
+			    if (!sc2.insert(v))
+				error("parameter %s.%s is already defined", toChars(), v.toChars());
+			    localsymtab.insert(v);
+			    v.parent = this;
+			}
+		    }
+		}
+
+		sc2.incontract++;
+
+		if (frequire)
+		{
+		    // BUG: need to error if accessing out parameters
+		    // BUG: need to treat parameters as const
+		    // BUG: need to disallow returns and throws
+		    // BUG: verify that all in and inout parameters are read
+		    frequire = frequire.semantic(sc2);
+		    labtab = NULL;		// so body can't refer to labels
+		}
+
+		if (fensure || addPostInvariant())
+		{
+		    ScopeDsymbol *sym;
+
+		    sym = new ScopeDsymbol();
+		    sym.parent = sc2.scopesym;
+		    sc2 = sc2.push(sym);
+
+		    assert(type.next);
+		    if (type.next.ty == Tvoid)
+		    {
+			if (outId)
+			    error("void functions have no result");
+		    }
+		    else
+		    {
+			if (!outId)
+			    outId = Id::result;		// provide a default
+		    }
+
+		    if (outId)
+		    {	// Declare result variable
+			VarDeclaration *v;
+			Loc loc = this.loc;
+
+			if (fensure)
+			    loc = fensure.loc;
+
+			v = new VarDeclaration(loc, type.next, outId, NULL);
+			v.noauto = 1;
+			sc2.incontract--;
+			v.semantic(sc2);
+			sc2.incontract++;
+			if (!sc2.insert(v))
+			    error("out result %s is already defined", v.toChars());
+			v.parent = this;
+			vresult = v;
+
+			// vresult gets initialized with the function return value
+			// in ReturnStatement::semantic()
+		    }
+
+		    // BUG: need to treat parameters as const
+		    // BUG: need to disallow returns and throws
+		    if (fensure)
+		    {	fensure = fensure.semantic(sc2);
+			labtab = NULL;		// so body can't refer to labels
+		    }
+
+		    if (!global.params.useOut)
+		    {	fensure = NULL;		// discard
+			vresult = NULL;
+		    }
+
+		    // Postcondition invariant
+		    if (addPostInvariant())
+		    {
+			Expression *e = NULL;
+			if (isCtorDeclaration())
+			{
+			    // Call invariant directly only if it exists
+			    InvariantDeclaration *inv = ad.inv;
+			    ClassDeclaration *cd = ad.isClassDeclaration();
+
+			    while (!inv && cd)
+			    {
+				cd = cd.baseClass;
+				if (!cd)
+				    break;
+				inv = cd.inv;
+			    }
+			    if (inv)
+			    {
+				e = new DsymbolExp(0, inv);
+				e = new CallExp(0, e);
+				e = e.semantic(sc2);
+			    }
+			}
+			else
+			{   // Call invariant virtually
+			    ThisExp *v = new ThisExp(0);
+			    v.type = vthis.type;
+			    e = new AssertExp(0, v);
+			}
+			if (e)
+			{
+			    ExpStatement *s = new ExpStatement(0, e);
+			    if (fensure)
+				fensure = new CompoundStatement(0, s, fensure);
+			    else
+				fensure = s;
+			}
+		    }
+
+		    if (fensure)
+		    {	returnLabel = new LabelDsymbol(Id::returnLabel);
+			LabelStatement *ls = new LabelStatement(0, Id::returnLabel, fensure);
+			ls.isReturnLabel = 1;
+			returnLabel.statement = ls;
+		    }
+		    sc2 = sc2.pop();
+		}
+
+		sc2.incontract--;
+
+		if (fbody)
+		{   ClassDeclaration *cd = isClassMember();
+
+		    if (isCtorDeclaration() && cd)
+		    {
+			for (int i = 0; i < cd.fields.dim; i++)
+			{   VarDeclaration *v = (VarDeclaration *)cd.fields.data[i];
+
+			    v.ctorinit = 0;
+			}
+		    }
+
+		    if (inferRetType || f.retStyle() != RETstack)
+			nrvo_can = 0;
+
+		    fbody = fbody.semantic(sc2);
+
+		    if (inferRetType)
+		    {	// If no return type inferred yet, then infer a void
+			if (!type.next)
+			{
+			    type.next = Type::tvoid;
+			    type = type.semantic(loc, sc);
+			}
+			f = (TypeFunction *)type;
+		    }
+
+		    int offend = fbody ? fbody.fallOffEnd() : TRUE;
+
+		    if (isStaticCtorDeclaration())
+		    {	/* It's a static constructor. Ensure that all
+			 * ctor consts were initialized.
+			 */
+
+			ScopeDsymbol *ad = toParent().isScopeDsymbol();
+			assert(ad);
+			for (int i = 0; i < ad.members.dim; i++)
+			{   Dsymbol *s = (Dsymbol *)ad.members.data[i];
+
+			    s.checkCtorConstInit();
+			}
+		    }
+
+		    if (isCtorDeclaration() && cd)
+		    {
+			//printf("callSuper = x%x\n", sc2.callSuper);
+
+			// Verify that all the ctorinit fields got initialized
+			if (!(sc2.callSuper & CSXthis_ctor))
+			{
+			    for (int i = 0; i < cd.fields.dim; i++)
+			    {   VarDeclaration *v = (VarDeclaration *)cd.fields.data[i];
+
+				if (v.ctorinit == 0 && v.isCtorinit())
+				    error("missing initializer for const field %s", v.toChars());
+			    }
+			}
+
+			if (!(sc2.callSuper & CSXany_ctor) &&
+			    cd.baseClass && cd.baseClass.ctor)
+			{
+			    sc2.callSuper = 0;
+
+			    // Insert implicit super() at start of fbody
+			    Expression *e1 = new SuperExp(0);
+			    Expression *e = new CallExp(0, e1);
+
+			    unsigned errors = global.errors;
+			    global.gag++;
+			    e = e.semantic(sc2);
+			    global.gag--;
+			    if (errors != global.errors)
+				error("no match for implicit super() call in constructor");
+
+			    Statement *s = new ExpStatement(0, e);
+			    fbody = new CompoundStatement(0, s, fbody);
+			}
+		    }
+		    else if (fes)
+		    {	// For foreach(){} body, append a return 0;
+			Expression *e = new IntegerExp(0);
+			Statement *s = new ReturnStatement(0, e);
+			fbody = new CompoundStatement(0, fbody, s);
+			assert(!returnLabel);
+		    }
+		    else if (!hasReturnExp && type.next.ty != Tvoid)
+			error("expected to return a value of type %s", type.next.toChars());
+		    else if (!inlineAsm)
+		    {
+			if (type.next.ty == Tvoid)
+			{
+			    if (offend && isMain())
+			    {	// Add a return 0; statement
+				Statement *s = new ReturnStatement(0, new IntegerExp(0));
+				fbody = new CompoundStatement(0, fbody, s);
+			    }
+			}
+			else
+			{
+			    if (offend)
+			    {   Expression *e;
+
+				if (global.params.warnings)
+				{   fprintf(stdmsg, "warning - ");
+				    error("no return at end of function");
+				}
+
+				if (global.params.useAssert &&
+				    !global.params.useInline)
+				{   /* Add an assert(0, msg); where the missing return
+				     * should be.
+				     */
+				    e = new AssertExp(
+					  endloc,
+					  new IntegerExp(0),
+					  new StringExp(0, "missing return expression")
+					);
+				}
+				else
+				    e = new HaltExp(endloc);
+				e = new CommaExp(0, e, type.next.defaultInit());
+				e = e.semantic(sc2);
+				Statement *s = new ExpStatement(0, e);
+				fbody = new CompoundStatement(0, fbody, s);
+			    }
+			}
+		    }
+		}
+
+		{
+		    Statements *a = new Statements();
+
+		    // Merge in initialization of 'out' parameters
+		    if (parameters)
+		    {	for (size_t i = 0; i < parameters.dim; i++)
+			{   VarDeclaration *v;
+
+			    v = (VarDeclaration *)parameters.data[i];
+			    if ((v.storage_class & (STCout | STCin)) == STCout)
+			    {
+				assert(v.init);
+				ExpInitializer *ie = v.init.isExpInitializer();
+				assert(ie);
+				a.push(new ExpStatement(0, ie.exp));
+			    }
+			}
+		    }
+
+		    if (argptr)
+		    {	// Initialize _argptr to point past non-variadic arg
+	#if IN_GCC
+			// Handled in FuncDeclaration::toObjFile
+			v_argptr = argptr;
+			v_argptr.init = new VoidInitializer(loc);
+	#else
+			Expression *e1;
+			Expression *e;
+			Type *t = argptr.type;
+			VarDeclaration *p;
+			unsigned offset;
+
+			e1 = new VarExp(0, argptr);
+			if (parameters && parameters.dim)
+			    p = (VarDeclaration *)parameters.data[parameters.dim - 1];
+			else
+			    p = v_arguments;		// last parameter is _arguments[]
+			offset = p.type.size();
+			offset = (offset + 3) & ~3;	// assume stack aligns on 4
+			e = new SymOffExp(0, p, offset);
+			e = new AssignExp(0, e1, e);
+			e.type = t;
+			a.push(new ExpStatement(0, e));
+	#endif
+		    }
+
+		    if (_arguments)
+		    {
+			/* Advance to elements[] member of TypeInfo_Tuple with:
+			 *  _arguments = v_arguments.elements;
+			 */
+			Expression *e = new VarExp(0, v_arguments);
+			e = new DotIdExp(0, e, Id::elements);
+			Expression *e1 = new VarExp(0, _arguments);
+			e = new AssignExp(0, e1, e);
+			e = e.semantic(sc);
+			a.push(new ExpStatement(0, e));
+		    }
+
+		    // Merge contracts together with body into one compound statement
+
+	#ifdef _DH
+		    if (frequire && global.params.useIn)
+		    {	frequire.incontract = 1;
+			a.push(frequire);
+		    }
+	#else
+		    if (frequire && global.params.useIn)
+			a.push(frequire);
+	#endif
+
+		    // Precondition invariant
+		    if (addPreInvariant())
+		    {
+			Expression *e = NULL;
+			if (isDtorDeclaration())
+			{
+			    // Call invariant directly only if it exists
+			    InvariantDeclaration *inv = ad.inv;
+			    ClassDeclaration *cd = ad.isClassDeclaration();
+
+			    while (!inv && cd)
+			    {
+				cd = cd.baseClass;
+				if (!cd)
+				    break;
+				inv = cd.inv;
+			    }
+			    if (inv)
+			    {
+				e = new DsymbolExp(0, inv);
+				e = new CallExp(0, e);
+				e = e.semantic(sc2);
+			    }
+			}
+			else
+			{   // Call invariant virtually
+			    ThisExp *v = new ThisExp(0);
+			    v.type = vthis.type;
+			    Expression *se = new StringExp(0, "null this");
+			    se = se.semantic(sc);
+			    se.type = Type::tchar.arrayOf();
+			    e = new AssertExp(loc, v, se);
+			}
+			if (e)
+			{
+			    ExpStatement *s = new ExpStatement(0, e);
+			    a.push(s);
+			}
+		    }
+
+		    if (fbody)
+			a.push(fbody);
+
+		    if (fensure)
+		    {
+			a.push(returnLabel.statement);
+
+			if (type.next.ty != Tvoid)
+			{
+			    // Create: return vresult;
+			    assert(vresult);
+			    Expression *e = new VarExp(0, vresult);
+			    if (tintro)
+			    {	e = e.implicitCastTo(sc, tintro.next);
+				e = e.semantic(sc);
+			    }
+			    ReturnStatement *s = new ReturnStatement(0, e);
+			    a.push(s);
+			}
+		    }
+
+		    fbody = new CompoundStatement(0, a);
+		}
+
+		sc2.callSuper = 0;
+		sc2.pop();
+	    }
+	    semanticRun = 2;
 	}
 	
 	public FuncDeclaration overloadExactMatch(Type t, SemanticContext context) {

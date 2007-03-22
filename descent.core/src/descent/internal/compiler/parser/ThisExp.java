@@ -119,6 +119,11 @@ public class ThisExp extends Expression {
     	type = Type.tint32;
 	    return this;
 	}
+	
+	@Override
+	public boolean isBool(boolean result) {
+		return result;
+	}
 		
 	@Override
 	public int getNodeType() {

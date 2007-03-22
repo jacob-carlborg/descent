@@ -16,10 +16,11 @@ public class RealExp extends Expression {
 	
 	@Override
 	public Expression semantic(Scope sc, SemanticContext context) {
-		if (type == null)
+		if (type == null) {
 			type = Type.tfloat64;
-		else
+		} else {
 			type = type.semantic(sc, context);
+		}
 		return this;
 	}
 	

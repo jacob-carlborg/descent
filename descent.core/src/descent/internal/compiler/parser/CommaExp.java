@@ -7,6 +7,11 @@ public class CommaExp extends BinExp {
 	}
 	
 	@Override
+	public boolean isBool(boolean result) {
+		return e2.isBool(result);
+	}
+	
+	@Override
 	public int getNodeType() {
 		return COMMA_EXP;
 	}

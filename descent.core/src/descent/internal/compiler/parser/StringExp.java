@@ -21,6 +21,11 @@ public class StringExp extends Expression {
 	public int getNodeType() {
 		return STRING_EXP;
 	}
+	
+	@Override
+	public boolean isBool(boolean result) {
+		return result;
+	}
 
 	public Expression castTo(Scope sc, Type t, SemanticContext context) {
 		// TODO semantic

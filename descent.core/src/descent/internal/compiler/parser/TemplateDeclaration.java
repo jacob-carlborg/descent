@@ -9,6 +9,8 @@ public class TemplateDeclaration extends ScopeDsymbol {
 	public List<TemplateParameter> parameters;
 	public Scope scope;
 	public Dsymbol onemember;
+	public TemplateDeclaration overnext;	// next overloaded TemplateDeclaration
+	public TemplateDeclaration overroot;	// first in overnext list
 	
 	public TemplateDeclaration(IdentifierExp id, List<TemplateParameter> parameters, List<Dsymbol> decldefs) {
 		super(id);

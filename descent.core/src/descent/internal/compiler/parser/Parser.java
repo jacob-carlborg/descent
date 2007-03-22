@@ -439,7 +439,7 @@ public class Parser extends Lexer {
 					nextToken();
 					check(TOKrparen);
 				} else {
-					n = Global.structalign; // default
+					n = new Global().structalign; // default
 				}
 				a = parseBlock();
 				s = new AlignDeclaration((int) n, a);

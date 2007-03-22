@@ -2,8 +2,8 @@ package descent.internal.compiler.parser;
 
 public class Global {
 	
-	public static int structalign;
+	public int structalign;
 	public String version;
-	Param params = new Param();
+	public Param params = new Param();
 
 }

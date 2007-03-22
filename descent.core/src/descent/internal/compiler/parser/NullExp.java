@@ -15,6 +15,11 @@ public class NullExp extends Expression {
 	}
 	
 	@Override
+	public boolean isBool(boolean result) {
+		return !result;
+	}
+	
+	@Override
 	public int getNodeType() {
 		return NULL_EXP;
 	}

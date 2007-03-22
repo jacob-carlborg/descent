@@ -22,6 +22,11 @@ public abstract class Expression extends ASTNode implements Cloneable {
 	}
 	
 	public Expression semantic(Scope sc, SemanticContext context) {
+		if (type != null) {
+			type = type.semantic(sc, context);
+		} else {
+			type = Type.tvoid;
+		}
 		return this;
 	}
 	

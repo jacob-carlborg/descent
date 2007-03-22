@@ -19,7 +19,7 @@ public class Align_Test extends Parser_Test {
 		String s = " align: class Pub { }";
 		AlignDeclaration align = (AlignDeclaration) getSingleDeclarationNoProblems(s);
 		assertEquals(ASTNode.ALIGN_DECLARATION, align.getNodeType());
-		assertEquals(Global.structalign, align.getAlign());
+		assertEquals(new Global().structalign, align.getAlign());
 		
 		assertEquals(1, align.declarations().size());
 	}

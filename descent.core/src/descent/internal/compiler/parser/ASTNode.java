@@ -361,6 +361,10 @@ public abstract class ASTNode {
 	public final static int ARRAY_SCOPE_SYMBOL = 176;
 
 	public final static int SCOPE_DSYMBOL = 177;
+	
+	public final static int TEMPLATE_EXP = 178;
+	
+	public final static int TRY_FINALLY_STATEMENT = 179;
 
 	public int start;
 

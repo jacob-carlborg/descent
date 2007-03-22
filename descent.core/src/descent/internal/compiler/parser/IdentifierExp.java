@@ -22,6 +22,75 @@ public class IdentifierExp extends Expression {
 		this.length = token.len;
 	}
 	
+	@Override
+	public Expression semantic(Scope sc, SemanticContext context) {
+		Dsymbol s;
+		Dsymbol[] scopesym = { null };
+
+		s = sc.search(this, scopesym, context);
+		if (s != null) {
+			Expression e;
+			WithScopeSymbol withsym;
+
+			// See if it was a with class
+			withsym = scopesym[0].isWithScopeSymbol();
+			if (withsym != null) {
+				s = s.toAlias(context);
+
+				// Same as wthis.ident
+				if (s.needThis() || s.isTemplateDeclaration() != null) {
+					e = new VarExp(withsym.withstate.wthis);
+					e = new DotIdExp(e, this);
+				} else {
+					Type t = withsym.withstate.wthis.type;
+					if (t.ty == TY.Tpointer) {
+						t = t.next;
+					}
+					e = new TypeDotIdExp(t, this);
+				}
+			} else {
+				if (s.parent == null
+						&& scopesym[0].isArrayScopeSymbol() != null) { // Kludge
+																		// to
+																		// run
+																		// semantic()
+																		// here
+																		// because
+					// ArrayScopeSymbol::search() doesn't have access to sc.
+					s.semantic(sc, context);
+				}
+				// Look to see if f is really a function template
+				FuncDeclaration f = s.isFuncDeclaration();
+				if (f != null && f.parent != null) {
+					TemplateInstance ti = f.parent.isTemplateInstance();
+
+					if (ti != null
+							&& ti.isTemplateMixin() == null
+							&& (ti.idents.get(ti.idents.size()).ident == f.ident.ident || ti
+									.toAlias(context).ident == f.ident)
+							&& ti.tempdecl != null
+							&& ti.tempdecl.onemember != null) {
+						TemplateDeclaration tempdecl = ti.tempdecl;
+						if (tempdecl.overroot != null) { // if not start of
+														// overloaded list of
+														// TemplateDeclaration's
+							tempdecl = tempdecl.overroot; // then get the
+															// start
+						}
+						e = new TemplateExp(tempdecl);
+						e = e.semantic(sc, context);
+						return e;
+					}
+				}
+				e = new DsymbolExp(s);
+			}
+			return e.semantic(sc, context);
+		}
+		error("undefined identifier %s", this.toChars());
+		type = Type.terror;
+		return this;
+	}
+	
 	public boolean dyncast() {
 		return Identifier.DYNCAST_IDENTIFIER;
 	}

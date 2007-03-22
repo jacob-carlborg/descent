@@ -305,6 +305,10 @@ public abstract class Dsymbol extends ASTNode {
 	public VarDeclaration isVarDeclaration() {
 		return null;
 	}
+	
+	public WithScopeSymbol isWithScopeSymbol() {
+		return null;
+	}
 
 	public String kind() {
 		return "symbol";

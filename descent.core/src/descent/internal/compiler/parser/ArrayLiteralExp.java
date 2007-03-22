@@ -12,6 +12,12 @@ public class ArrayLiteralExp extends Expression {
 	}
 	
 	@Override
+	public boolean isBool(boolean result) {
+		int dim = elements != null ? elements.size() : 0;
+	    return result ? (dim != 0) : (dim == 0);
+	}
+	
+	@Override
 	public int getNodeType() {
 		return ARRAY_LITERAL_EXP;
 	}
