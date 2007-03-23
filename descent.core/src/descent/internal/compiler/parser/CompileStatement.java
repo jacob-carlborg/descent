@@ -5,7 +5,36 @@ public class CompileStatement extends Statement {
 	public Expression exp;
 
 	public CompileStatement(Expression exp) {
-		this.exp = exp;	}
+		this.exp = exp;	
+	}
+	
+	@Override
+	public Statement semantic(Scope sc, SemanticContext context) {
+		return super.semantic(sc, context);
+		/* TODO semantic
+		exp = exp.semantic(sc, context);
+	    exp = Expression.resolveProperties(sc, exp, context);
+	    exp = exp.optimize(Expression.WANTvalue | Expression.WANTinterpret);
+	    if (exp.op != TOK.TOKstring)
+	    {	error("argument to mixin must be a string, not (%s)", exp.toChars());
+		return this;
+	    }
+	    StringExp se = (StringExp) exp;
+	    se = se.toUTF8(sc);
+	    Parser p(sc.module, (unsigned char *)se.string, se.len, 0);
+	    p.loc = loc;
+
+	    Statements *statements = new Statements();
+	    while (p.token.value != TOKeof)
+	    {
+		Statement *s = p.parseStatement(PSsemi | PScurlyscope);
+		statements.push(s);
+	    }
+
+	    Statement *s = new CompoundStatement(loc, statements);
+	    return s.semantic(sc);
+	    */
+	}
 
 	@Override
 	public int getNodeType() {

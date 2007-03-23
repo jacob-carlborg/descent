@@ -28,5 +28,10 @@ public class TypePointer extends Type {
 	public int getNodeType() {
 		return TYPE_POINTER;
 	}
+	
+	@Override
+	public String toString() {
+		return next + "*";
+	}
 
 }

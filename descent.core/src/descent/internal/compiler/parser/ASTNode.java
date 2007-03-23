@@ -371,6 +371,8 @@ public abstract class ASTNode {
 	public final static int HALT_EXP = 182;
 	
 	public final static int SYM_OFF_EXP = 183;
+	
+	public final static int SCOPE_STATEMENT = 184;
 
 	public int start;
 

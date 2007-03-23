@@ -17,6 +17,11 @@ public abstract class Expression extends ASTNode implements Cloneable {
 		this.op = op;
 	}
 	
+	public int checkSideEffect(int flags) {
+		// TODO semantic
+		return 1;
+	}
+	
 	public void checkDeprecated(Scope sc, Dsymbol s, SemanticContext context) {
 		s.checkDeprecated(sc, context);
 	}
