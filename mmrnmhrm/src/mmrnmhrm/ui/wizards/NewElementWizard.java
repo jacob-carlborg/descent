@@ -13,21 +13,17 @@ package mmrnmhrm.ui.wizards;
 
 import java.lang.reflect.InvocationTargetException;
 
-import org.eclipse.core.resources.IWorkspaceRunnable;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.core.runtime.jobs.ISchedulingRule;
-import org.eclipse.core.runtime.jobs.Job;
-import org.eclipse.jdt.internal.ui.actions.WorkbenchRunnableAdapter;
 import org.eclipse.jdt.internal.ui.util.ExceptionHandler;
-import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.INewWizard;
 import org.eclipse.ui.IWorkbench;
+import org.eclipse.ui.actions.WorkspaceModifyOperation;
 
 public abstract class NewElementWizard extends Wizard implements INewWizard {
 
@@ -78,7 +74,6 @@ public abstract class NewElementWizard extends Wizard implements INewWizard {
 	/**
 	 * Subclasses should override to perform the actions of the wizard.
 	 * This method is run in the wizard container's context as a workspace runnable.
-	 * @param monitor
 	 * @throws InterruptedException
 	 * @throws CoreException
 	 */
@@ -86,23 +81,38 @@ public abstract class NewElementWizard extends Wizard implements INewWizard {
 	
 	/** Returns the scheduling rule for creating the element. */
 	protected ISchedulingRule getSchedulingRule() {
-		return ResourcesPlugin.getWorkspace().getRoot(); // look all by default
+		return ResourcesPlugin.getWorkspace().getRoot(); // lock all by default
 	}
 	
 	
 	protected boolean canRunForked() {
 		return true;
 	}
-	
-	protected void handleFinishException(Shell shell, InvocationTargetException e) {
-		String title= NewWizardMessages.NewElementWizard_op_error_title; 
-		String message= NewWizardMessages.NewElementWizard_op_error_message; 
-		ExceptionHandler.handle(e, shell, title, message);
-	}
+
 	
 	/** {@inheritDoc} */	
 	public boolean performFinish() {
-		IWorkspaceRunnable op= new IWorkspaceRunnable() {
+		WorkspaceModifyOperation opx;
+		opx = new WorkspaceModifyOperation(getSchedulingRule()) {
+			protected void execute(IProgressMonitor monitor)
+					throws CoreException, InvocationTargetException,
+					InterruptedException {
+				finishPage(monitor);
+			}
+		};
+		
+		try {
+			getContainer().run(canRunForked(), true, opx);
+		} catch (InvocationTargetException e) {
+			handleFinishException(getShell(), e);
+			return false;
+		} catch (InterruptedException e) {
+			return false;
+		}
+		
+		return true;
+		
+		/*IWorkspaceRunnable op= new IWorkspaceRunnable() {
 			public void run(IProgressMonitor monitor) throws CoreException, OperationCanceledException {
 				try {
 					finishPage(monitor);
@@ -126,10 +136,16 @@ public abstract class NewElementWizard extends Wizard implements INewWizard {
 		} catch (InvocationTargetException e) {
 			handleFinishException(getShell(), e);
 			return false;
-		} catch  (InterruptedException e) {
+		} catch (InterruptedException e) {
 			return false;
 		}
-		return true;
+		return true;*/
+	}
+	
+	protected void handleFinishException(Shell shell, InvocationTargetException e) {
+		String title= NewWizardMessages.NewElementWizard_op_error_title; 
+		String message= NewWizardMessages.NewElementWizard_op_error_message; 
+		ExceptionHandler.handle(e, shell, title, message);
 	}
 	
 	//public abstract IJavaElement getCreatedElement();

@@ -26,7 +26,7 @@ public class DeeCore extends DeePluginActivator {
 	
 	
 	public static ITokenScanner getDefaultDeeCodeScanner() {
-		return getDefault().defaultDeeCodeScanner;
+		return getInstance().defaultDeeCodeScanner;
 	}
 	protected void initPlugin() throws CoreException {
 		deeDocumentProvider = new DeeDocumentProvider();
@@ -39,7 +39,7 @@ public class DeeCore extends DeePluginActivator {
 	}
 	
 	public static DeeDocumentProvider getDeeDocumentProvider() {
-		return getDefault().deeDocumentProvider;
+		return getInstance().deeDocumentProvider;
 	}
 
 

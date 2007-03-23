@@ -7,7 +7,6 @@ import mmrnmhrm.core.model.IBuildPathEntry;
 import mmrnmhrm.ui.DeePluginImages;
 
 import org.eclipse.core.resources.IFolder;
-import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.graphics.Image;
 
 import descent.internal.core.dom.ClassDeclaration;
@@ -85,7 +84,7 @@ public class DeeElementImageProvider {
 	}
 
 
-	private static Image getImage(ImageDescriptor imageDesc) {
-		return DeePluginImages.getImage(imageDesc);
+	private static Image getImage(String imageKey) {
+		return DeePluginImages.getImage(imageKey);
 	}
 }

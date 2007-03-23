@@ -40,6 +40,10 @@
             priority="high"/>
    </extension>
    <extension
+         point="org.eclipse.core.runtime.preferences">
+      <initializer class="mmrnmhrm.ui.DeeUIPreferenceInitializer"/>
+   </extension>
+   <extension
          point="org.eclipse.ui.ide.projectNatureImages">
       <image
             icon="icons/ovr16/d-dark_ovr.gif"

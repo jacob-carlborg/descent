@@ -2,23 +2,15 @@ package mmrnmhrm.ui;
 
 import mmrnmhrm.core.DeePluginActivator;
 
-import org.eclipse.jdt.internal.ui.viewsupport.ImageDescriptorRegistry;
+import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IWorkbenchWindow;
 
 public class DeeUI extends DeePluginActivator {
 
-
-	private static ImageDescriptorRegistry imageDescriptorRegistry;
-
-	public static synchronized ImageDescriptorRegistry getImageDescriptorRegistry() {
-		if (imageDescriptorRegistry == null)
-			imageDescriptorRegistry= new ImageDescriptorRegistry();
-		return imageDescriptorRegistry;
-	}
 	
 	public static IWorkbenchWindow getActiveWorkbenchWindow() {
-		return getDefault().getWorkbench().getActiveWorkbenchWindow();
+		return getInstance().getWorkbench().getActiveWorkbenchWindow();
 	}
 	
 	public static Shell getActiveWorkbenchShell() {
@@ -27,6 +19,15 @@ public class DeeUI extends DeePluginActivator {
 		 	return window.getShell();
 		 }
 		 return null;
+	}
+	
+
+	/**
+	 * Returns an image descriptor for the image file at the given
+	 * plug-in relative path
+	 */
+	public static ImageDescriptor getImageDescriptor(String path) {
+		return imageDescriptorFromPlugin(PLUGIN_ID, path);
 	}
 
 }

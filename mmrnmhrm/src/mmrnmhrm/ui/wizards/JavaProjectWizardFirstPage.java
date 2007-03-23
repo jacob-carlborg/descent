@@ -10,14 +10,13 @@
  *******************************************************************************/
 package mmrnmhrm.ui.wizards;
 
+
 import java.io.File;
 import java.util.Observable;
 import java.util.Observer;
 
 import mmrnmhrm.launch.DeeRE;
 import mmrnmhrm.launch.DeeRuntime;
-import mmrnmhrm.ui.JavaPlugin;
-import mmrnmhrm.ui.JavaUI;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
@@ -28,6 +27,8 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.jdt.internal.ui.IJavaHelpContextIds;
+import org.eclipse.jdt.internal.ui.JavaPlugin;
+import org.eclipse.jdt.ui.JavaUI;
 import org.eclipse.jdt.internal.ui.wizards.dialogfields.ComboDialogField;
 import org.eclipse.jdt.internal.ui.wizards.dialogfields.DialogField;
 import org.eclipse.jdt.internal.ui.wizards.dialogfields.IDialogFieldListener;
@@ -53,6 +54,7 @@ import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Link;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.dialogs.PreferencesUtil;
+
 
 /**
  * JAVA STUB
@@ -202,7 +204,7 @@ public class JavaProjectWizardFirstPage extends WizardPage {
 			dialog.setMessage(NewWizardMessages.JavaProjectWizardFirstPage_directory_message); 
 			String directoryName = fLocation.getText().trim();
 			if (directoryName.length() == 0) {
-				String prevLocation= JavaPlugin.getDefault().getDialogSettings().get(DIALOGSTORE_LAST_EXTERNAL_LOC);
+				String prevLocation= JavaPlugin.getInstance().getDialogSettings().get(DIALOGSTORE_LAST_EXTERNAL_LOC);
 				if (prevLocation != null) {
 					directoryName= prevLocation;
 				}
@@ -216,7 +218,7 @@ public class JavaProjectWizardFirstPage extends WizardPage {
 			final String selectedDirectory = dialog.open();
 			if (selectedDirectory != null) {
 				fLocation.setText(selectedDirectory);
-				JavaPlugin.getDefault().getDialogSettings().put(DIALOGSTORE_LAST_EXTERNAL_LOC, selectedDirectory);
+				JavaPlugin.getInstance().getDialogSettings().put(DIALOGSTORE_LAST_EXTERNAL_LOC, selectedDirectory);
 			}
 		}
 

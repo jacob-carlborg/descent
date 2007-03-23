@@ -2,27 +2,22 @@ package mmrnmhrm.ui.wizards;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.ModifyEvent;
-import org.eclipse.swt.events.ModifyListener;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Text;
 
 /**
- * TODO
- * @see org.eclipse.jdt.internal.ui.wizards.JavaProjectWizardFirstPage 
+ * DeeProjectWizardFirstPage
  */
 public class DeeProjectWizardFirstPage extends WizardPage {
 
 	private Text containerText;
-
 	private Text fileText;
 	
 	protected DeeProjectWizardFirstPage(String pageName) {
@@ -31,7 +26,6 @@ public class DeeProjectWizardFirstPage extends WizardPage {
 		setDescription("Mmnmhrm: New Dee Project.");
 	}
 	
-
 	public void createControl(Composite parent) {
 		initializeDialogUnits(parent);
 		
@@ -41,38 +35,13 @@ public class DeeProjectWizardFirstPage extends WizardPage {
 		composite.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_FILL));
 
 		
-		Composite container = new Composite(parent, SWT.NULL);
-		GridLayout layout = new GridLayout();
-		container.setLayout(layout);
-		layout.numColumns = 3;
-		layout.verticalSpacing = 9;
-		Label label = new Label(container, SWT.NULL);
-		label.setText("&Container:");
+		Button button = new Button(composite, SWT.RADIO);
+		button.setText("BUTTON");
 
-		containerText = new Text(container, SWT.BORDER | SWT.SINGLE);
-		GridData gd = new GridData(GridData.FILL_HORIZONTAL);
-		containerText.setLayoutData(gd);
-		containerText.addModifyListener(new ModifyListener() {
-			public void modifyText(ModifyEvent e) {
-				//dialogChanged();
-			}
-		});
+		Button button2 = new Button(composite, SWT.RADIO);
+		button2.setText("BUTTON2");
 
-		Button button = new Button(container, SWT.PUSH);
-		button.setText("Browse...");
-		button.addSelectionListener(new SelectionAdapter() {
-			public void widgetSelected(SelectionEvent e) {
-				//handleBrowse();
-			}
-		});
-		label = new Label(container, SWT.NULL);
-		label.setText("&File name:");
-
-		fileText = new Text(container, SWT.BORDER | SWT.SINGLE);
-		gd = new GridData(GridData.FILL_HORIZONTAL);
-		fileText.setLayoutData(gd);
-
-		setControl(container);		
+		setControl(composite);		
 	}
 
 
@@ -89,18 +58,6 @@ public class DeeProjectWizardFirstPage extends WizardPage {
 			layout.marginHeight= 0;
 		}*/
 		return layout;
-	}
-
-
-	public void performFinish(IProgressMonitor monitor) {
-		
-		getShell().getDisplay().asyncExec(new Runnable() {
-			public void run() {
-				MessageDialog.openInformation(getShell(),
-						"Partitions",
-						"Project Created");
-			}
-		});		
 	}
 
 

@@ -10,10 +10,10 @@
  *******************************************************************************/
 package org.eclipse.jdt.internal.ui.util;
 
+
 import java.io.StringWriter;
 import java.lang.reflect.InvocationTargetException;
 
-import mmrnmhrm.ui.JavaPlugin;
 
 import org.eclipse.swt.widgets.Shell;
 
@@ -22,9 +22,11 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 
 import org.eclipse.jdt.internal.ui.IJavaStatusConstants;
+import org.eclipse.jdt.internal.ui.JavaPlugin;
 import org.eclipse.jdt.internal.ui.JavaUIMessages;
 import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.dialogs.MessageDialog;
+
 
 /**
  * The default exception handler shows an error dialog when one of its handle methods

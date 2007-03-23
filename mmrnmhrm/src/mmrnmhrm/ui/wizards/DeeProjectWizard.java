@@ -8,18 +8,21 @@ import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 
+import util.ExceptionAdapter;
+
 public class DeeProjectWizard extends NewElementWizard {
 
     private JavaProjectWizardFirstPage fFirstPage;
-    //private DeeProjectWizardSecondPage fSecondPage;
+    private DeeProjectWizardFirstPage fSecondPage;
 	
 	public DeeProjectWizard() {
 	}
 	
     public void addPages() {
         super.addPages();
-        //fFirstPage= new DeeProjectWizardFirstPage("Foo");
         fFirstPage= new JavaProjectWizardFirstPage();
+        fSecondPage= new DeeProjectWizardFirstPage("Foo");
+        addPage(fSecondPage);
         addPage(fFirstPage);
     }
 
@@ -27,7 +30,6 @@ public class DeeProjectWizard extends NewElementWizard {
 	@Override
 	protected void finishPage(IProgressMonitor monitor) throws CoreException {
 		//fFirstPage.performFinish(monitor);
-		
 		createDeeProject(monitor);
 	}
 
