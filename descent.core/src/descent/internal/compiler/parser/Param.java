@@ -17,16 +17,16 @@ public class Param {
     char isWindows;	// generate code for Windows
     char scheduler;	// which scheduler to use
     boolean useDeprecated = false;	// allow use of deprecated features
-    char useAssert;	// generate runtime code for assert()'s
-    char useInvariants;	// generate class invariant checks
-    char useIn;		// generate precondition checks
-    char useOut;	// generate postcondition checks
-    char useArrayBounds; // generate array bounds checks
-    char useSwitchError; // check for switches without a default
+    boolean useAssert;	// generate runtime code for assert()'s
+    boolean useInvariants;	// generate class invariant checks
+    boolean useIn;		// generate precondition checks
+    boolean useOut;	// generate postcondition checks
+    boolean useArrayBounds; // generate array bounds checks
+    boolean useSwitchError; // check for switches without a default
     boolean useUnitTests = true;	// generate unittest code
-    char useInline;	// inline expand functions
-    char release;	// build release version
-    char preservePaths;	// !=0 means don't strip path from source file
+    boolean useInline;	// inline expand functions
+    boolean release;	// build release version
+    boolean preservePaths;	// !=0 means don't strip path from source file
     boolean warnings;	// enable warnings
     char pic;		// generate position-independent-code for shared libs
     char cov;		// generate code coverage data

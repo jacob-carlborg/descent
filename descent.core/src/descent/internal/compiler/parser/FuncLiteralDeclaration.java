@@ -10,6 +10,11 @@ public class FuncLiteralDeclaration extends FuncDeclaration {
 	}
 	
 	@Override
+	public FuncLiteralDeclaration isFuncLiteralDeclaration() {
+		return this;
+	}
+	
+	@Override
 	public int getNodeType() {
 		return FUNC_LITERAL_DECLARATION;
 	}

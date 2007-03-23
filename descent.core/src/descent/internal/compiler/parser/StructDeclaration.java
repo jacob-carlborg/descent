@@ -96,7 +96,7 @@ public class StructDeclaration extends AggregateDeclaration {
 					Id.p), null);
 
 			arguments.add(arg);
-			tfeqptr = new TypeFunction(arguments, Type.tint32, false,
+			tfeqptr = new TypeFunction(arguments, Type.tint32, 0,
 					LINK.LINKd);
 			tfeqptr = (TypeFunction) tfeqptr.semantic(sc, context);
 		}
@@ -107,7 +107,7 @@ public class StructDeclaration extends AggregateDeclaration {
 			Argument arg = new Argument(InOut.In, type, null, null);
 
 			arguments.add(arg);
-			tfeq = new TypeFunction(arguments, Type.tint32, false, LINK.LINKd);
+			tfeq = new TypeFunction(arguments, Type.tint32, 0, LINK.LINKd);
 			tfeq = (TypeFunction) tfeq.semantic(sc, context);
 		}
 

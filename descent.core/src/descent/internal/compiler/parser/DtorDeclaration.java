@@ -36,7 +36,7 @@ public class DtorDeclaration extends FuncDeclaration {
 			}
 			cd.dtors.add(this);
 		}
-		type = new TypeFunction(null, Type.tvoid, false, LINK.LINKd);
+		type = new TypeFunction(null, Type.tvoid, 0, LINK.LINKd);
 
 		sc = sc.push();
 		sc.stc &= ~STC.STCstatic; // not a static destructor

@@ -8,7 +8,7 @@ public class StaticDtorDeclaration extends FuncDeclaration {
 	
 	@Override
 	public void semantic(Scope sc, SemanticContext context) {
-		type = new TypeFunction(null, Type.tvoid, false, LINK.LINKd);
+		type = new TypeFunction(null, Type.tvoid, 0, LINK.LINKd);
 
 		super.semantic(sc, context);
 

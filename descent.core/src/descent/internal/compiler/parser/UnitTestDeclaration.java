@@ -21,7 +21,7 @@ public class UnitTestDeclaration extends FuncDeclaration {
 		if (context.global.params.useUnitTests) {
 			// Type tret;
 
-			type = new TypeFunction(null, Type.tvoid, false, LINK.LINKd);
+			type = new TypeFunction(null, Type.tvoid, 0, LINK.LINKd);
 			super.semantic(sc, context);
 		}
 

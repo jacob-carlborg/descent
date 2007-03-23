@@ -20,6 +20,7 @@ public class VarDeclaration extends Declaration {
 	public boolean noauto;			// no auto semantics
 	public int onstack;		// 1: it has been allocated on the stack
 							// 2: on stack, run destructor anyway
+	public boolean ctorinit;
 
 	public VarDeclaration(Type type, IdentifierExp ident, Initializer init) {
 		this.type = type;

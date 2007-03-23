@@ -7,9 +7,9 @@ import descent.core.compiler.IProblem;
 public class NewDeclaration extends FuncDeclaration {
 	
 	public List<Argument> arguments;
-	public boolean varargs;
+	public int varargs;
 	
-	public NewDeclaration(List<Argument> arguments, boolean varargs) {
+	public NewDeclaration(List<Argument> arguments, int varargs) {
 		super(new IdentifierExp(Id.classNew), STC.STCstatic, null);
 		this.arguments = arguments;
 		this.varargs = varargs;

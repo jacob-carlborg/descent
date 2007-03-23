@@ -3,6 +3,10 @@ package descent.internal.compiler.parser;
 public class AssertExp extends UnaExp {
 
 	public Expression msg;
+	
+	public AssertExp(Expression e) {
+		this(e, null);
+	}
 
 	public AssertExp(Expression e, Expression msg) {
 		super(TOK.TOKassert, e);

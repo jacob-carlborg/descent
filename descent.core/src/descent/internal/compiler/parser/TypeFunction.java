@@ -7,11 +7,11 @@ import descent.core.compiler.IProblem;
 public class TypeFunction extends Type {
 	
 	public List<Argument> parameters;
-	public boolean varargs;
+	public int varargs;
 	public LINK linkage;	// calling convention
 	public int inuse;
 
-	public TypeFunction(List<Argument> parameters, Type treturn, boolean varargs, LINK linkage) {
+	public TypeFunction(List<Argument> parameters, Type treturn, int varargs, LINK linkage) {
 		super(TY.Tfunction, treturn);
 		this.parameters = parameters;
 		this.varargs = varargs;
@@ -92,7 +92,7 @@ public class TypeFunction extends Type {
 			return terror;
 		}
 
-		if (varargs && linkage != LINK.LINKd
+		if (varargs != 0 && linkage != LINK.LINKd
 				&& Argument.dim(parameters, context) == 0) {
 			error("variadic functions with non-D linkage must have at least one parameter");
 		}

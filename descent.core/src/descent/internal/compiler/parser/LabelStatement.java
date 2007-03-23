@@ -4,6 +4,7 @@ public class LabelStatement extends Statement {
 	
 	public IdentifierExp ident;
 	public Statement statement;
+	public boolean isReturnLabel;
 
 	public LabelStatement(IdentifierExp ident, Statement statement) {
 		this.ident = ident;

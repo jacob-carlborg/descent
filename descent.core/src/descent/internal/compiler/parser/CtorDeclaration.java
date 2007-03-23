@@ -7,9 +7,9 @@ import descent.core.compiler.IProblem;
 public class CtorDeclaration extends FuncDeclaration {
 	
 	public List<Argument> arguments;
-	public boolean varargs;
+	public int varargs;
 	
-	public CtorDeclaration(List<Argument> arguments, boolean varags) {
+	public CtorDeclaration(List<Argument> arguments, int varags) {
 		super(new IdentifierExp(Id.ctor), STC.STCundefined, null);
 		this.arguments = arguments;
 		this.varargs = varags;

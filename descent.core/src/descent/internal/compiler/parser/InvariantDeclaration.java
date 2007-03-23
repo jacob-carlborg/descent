@@ -28,7 +28,7 @@ public class InvariantDeclaration extends FuncDeclaration {
 			context.acceptProblem(Problem.newSemanticTypeError("More than one invariant for " + ad.ident, IProblem.MoreThanOneInvariant, 0, start, "invariant".length()));
 		}
 		ad.inv = this;
-		type = new TypeFunction(null, Type.tvoid, false, LINK.LINKd);
+		type = new TypeFunction(null, Type.tvoid, 0, LINK.LINKd);
 
 		sc = sc.push();
 		sc.stc &= ~STC.STCstatic; // not a static invariant

@@ -5,10 +5,25 @@ import descent.core.compiler.IProblem;
 
 public class SemanticContext {
 	
+	public final static boolean BREAKABI = true;
 	private IProblemRequestor problemRequestor;
 	public StringTable typeStringTable;
 	public Global global = new Global();
+	
 	public ClassDeclaration object; // ClassDeclaration::object
+	public ClassDeclaration typeinfo;
+	public ClassDeclaration typeinfoclass;
+	public ClassDeclaration typeinfointerface;
+	public ClassDeclaration typeinfostruct;
+	public ClassDeclaration typeinfotypedef;
+	public ClassDeclaration typeinfopointer;
+	public ClassDeclaration typeinfoarray;
+	public ClassDeclaration typeinfostaticarray;
+	public ClassDeclaration typeinfoassociativearray;
+	public ClassDeclaration typeinfoenum;
+	public ClassDeclaration typeinfofunction;
+	public ClassDeclaration typeinfodelegate;
+	public ClassDeclaration typeinfotypelist;
 	
 	public SemanticContext(IProblemRequestor problemRequestor) {
 		this.problemRequestor = problemRequestor;

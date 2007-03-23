@@ -399,9 +399,8 @@ public class ClassDeclaration extends AggregateDeclaration {
 		// a constructor:
 		// this() { }
 		if (ctor == null && baseClass != null && baseClass.ctor != null) {
-			// printf("Creating default this(){} for class %s\n",
 			// toChars());
-			ctor = new CtorDeclaration(null, false);
+			ctor = new CtorDeclaration(null, 0);
 			ctor.fbody = new CompoundStatement(new ArrayList<Statement>());
 			members.add(ctor);
 			ctor.addMember(sc, this, 1, context);

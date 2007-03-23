@@ -54,7 +54,6 @@ import descent.internal.compiler.parser.SynchronizedStatement;
 import descent.internal.compiler.parser.TemplateDeclaration;
 import descent.internal.compiler.parser.TemplateParameter;
 import descent.internal.compiler.parser.ThrowStatement;
-import descent.internal.compiler.parser.TryStatement;
 import descent.internal.compiler.parser.Type;
 import descent.internal.compiler.parser.TypedefDeclaration;
 import descent.internal.compiler.parser.UnitTestDeclaration;
@@ -375,8 +374,10 @@ public class ASTConverter {
 			return convert((ThisExp) symbol);
 		case ASTNode.THROW_STATEMENT:
 			return convert((ThrowStatement) symbol);
-		case ASTNode.TRY_STATEMENT:
-			return convert((TryStatement) symbol);
+		case ASTNode.TRY_CATCH_STATEMENT:
+			return convert((TryCatchStatement) symbol);
+		case ASTNode.TRY_FINALLY_STATEMENT:
+			return convert((TryFinallyStatement) symbol);
 		case ASTNode.TYPEID_EXP:
 			return convert((TypeidExp) symbol);
 		case ASTNode.TYPEDEF_DECLARATION:
@@ -515,7 +516,7 @@ public class ASTConverter {
 		return b;
 	}
 	
-	public descent.core.dom.TryStatement convert(TryStatement a) {
+	public descent.core.dom.TryStatement convert(TryCatchStatement a) {
 		descent.core.dom.TryStatement b = new descent.core.dom.TryStatement(ast);
 		b.setBody((Block) convert(a.body));
 		if (a.catches != null) {
@@ -524,6 +525,19 @@ public class ASTConverter {
 			}
 		}
 		b.setSourceRange(a.start, a.length);
+		return b;
+	}
+	
+	public descent.core.dom.TryStatement convert(TryFinallyStatement a) {
+		TryStatement b;
+		if (a.isTryCatchFinally) {
+			b = (TryStatement) convert(a.body);			
+		} else {
+			b = new descent.core.dom.TryStatement(ast);
+			b.setBody((Block) convert(a.body));
+			b.setSourceRange(a.start, a.length);
+		}
+		b.setFinally((Block) convert(a.finalbody));
 		return b;
 	}
 	
@@ -825,7 +839,7 @@ public class ASTConverter {
 			descent.core.dom.DelegateType b = new descent.core.dom.DelegateType(ast);
 			b.setFunctionPointer(true);
 			b.setReturnType(convert(((TypeFunction) a.next).next));
-			b.setVariadic(((TypeFunction) a.next).varargs);
+			b.setVariadic(((TypeFunction) a.next).varargs != 0);
 			convertArguments(b.arguments(), ((TypeFunction) a.next).parameters);
 			b.setSourceRange(a.start, a.length);
 			return b;
@@ -853,7 +867,7 @@ public class ASTConverter {
 		descent.core.dom.DelegateType b = new descent.core.dom.DelegateType(ast);
 		b.setFunctionPointer(false);
 		b.setReturnType(convert(((TypeFunction) a.next).next));
-		b.setVariadic(((TypeFunction) a.next).varargs);
+		b.setVariadic(((TypeFunction) a.next).varargs != 0);
 		convertArguments(b.arguments(), ((TypeFunction) a.next).parameters);
 		b.setSourceRange(a.start, a.length);
 		return b;
@@ -1027,7 +1041,7 @@ public class ASTConverter {
 		} else {
 			b.setSyntax(Syntax.EMPTY);
 		}
-		b.setVariadic(((TypeFunction) a.fd.type).varargs);
+		b.setVariadic(((TypeFunction) a.fd.type).varargs != 0);
 		convertArguments(b.arguments(), ((TypeFunction) a.fd.type).parameters);
 		fillFunction(b, a.fd);
 		b.setSourceRange(a.start, a.length);
@@ -1036,7 +1050,7 @@ public class ASTConverter {
 	
 	public descent.core.dom.FunctionDeclaration convert(FuncDeclaration a) {
 		descent.core.dom.FunctionDeclaration b = new descent.core.dom.FunctionDeclaration(ast);
-		b.setVariadic(((TypeFunction) a.type).varargs);
+		b.setVariadic(((TypeFunction) a.type).varargs != 0);
 		b.setReturnType(convert(((TypeFunction) a.type).next));
 		b.setName(convert(a.ident));
 		convertArguments(b.arguments(), ((TypeFunction) a.type).parameters);
@@ -1116,7 +1130,7 @@ public class ASTConverter {
 	public descent.core.dom.ConstructorDeclaration convert(CtorDeclaration a) {
 		descent.core.dom.ConstructorDeclaration b = new descent.core.dom.ConstructorDeclaration(ast);
 		b.setKind(ConstructorDeclaration.Kind.CONSTRUCTOR);
-		b.setVariadic(a.varargs);
+		b.setVariadic(a.varargs != 0);
 		convertArguments(b.arguments(), a.arguments);
 		fillFunction(b, a);
 		fillDeclaration(b, a);

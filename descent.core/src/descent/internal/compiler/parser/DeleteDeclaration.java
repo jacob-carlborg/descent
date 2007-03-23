@@ -38,7 +38,7 @@ public class DeleteDeclaration extends FuncDeclaration {
 			// TODO semantic point out the "delete" token
 			context.acceptProblem(Problem.newSemanticTypeError("Delete deallocators only are for class or struct definitions", IProblem.DeleteDeallocatorsOnlyForClassOrStruct, 0, start, "delete".length()));
 		}
-		type = new TypeFunction(arguments, Type.tvoid, false, LINK.LINKd);
+		type = new TypeFunction(arguments, Type.tvoid, 0, LINK.LINKd);
 
 		type = type.semantic(sc, context);
 		Assert.isTrue(type.ty == TY.Tfunction);

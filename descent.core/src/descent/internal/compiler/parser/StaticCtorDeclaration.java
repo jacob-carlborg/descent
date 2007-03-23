@@ -7,8 +7,13 @@ public class StaticCtorDeclaration extends FuncDeclaration {
 	}
 	
 	@Override
+	public StaticCtorDeclaration isStaticCtorDeclaration() {
+		return this;
+	}
+	
+	@Override
 	public void semantic(Scope sc, SemanticContext context) {
-	    type = new TypeFunction(null, Type.tvoid, false, LINK.LINKd);
+	    type = new TypeFunction(null, Type.tvoid, 0, LINK.LINKd);
 
 		super.semantic(sc, context);
 

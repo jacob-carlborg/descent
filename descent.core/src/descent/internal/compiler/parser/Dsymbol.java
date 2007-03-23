@@ -222,6 +222,10 @@ public abstract class Dsymbol extends ASTNode {
 	public FuncAliasDeclaration isFuncAliasDeclaration() {
 		return null;
 	}
+	
+	public FuncLiteralDeclaration isFuncLiteralDeclaration() {
+		return null;
+	}
 
 	public FuncDeclaration isFuncDeclaration() {
 		return null;
@@ -264,6 +268,10 @@ public abstract class Dsymbol extends ASTNode {
 	}
 
 	public ScopeDsymbol isScopeDsymbol() {
+		return null;
+	}
+	
+	public StaticCtorDeclaration isStaticCtorDeclaration() {
 		return null;
 	}
 

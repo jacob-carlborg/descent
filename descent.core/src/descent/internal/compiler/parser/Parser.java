@@ -862,7 +862,7 @@ public class Parser extends Lexer {
 		int[] varargs = new int[1];
 	    nextToken();
 	    List<Argument> arguments = parseParameters(varargs);
-	    CtorDeclaration f = new CtorDeclaration(arguments, varargs[0] != 0);
+	    CtorDeclaration f = new CtorDeclaration(arguments, varargs[0]);
 	    parseContracts(f);
 	    f.setSourceRange(start, prevToken.ptr + prevToken.len - start);
 	    return f;
@@ -936,7 +936,7 @@ public class Parser extends Lexer {
 		int[] varargs = new int[1];
 		List<Argument> arguments = parseParameters(varargs);
 		
-		NewDeclaration f = new NewDeclaration(arguments, varargs[0] != 0);
+		NewDeclaration f = new NewDeclaration(arguments, varargs[0]);
 	    parseContracts(f);
 	    f.setSourceRange(start, prevToken.ptr + prevToken.len - start);
 	    return f;
@@ -1993,7 +1993,7 @@ public class Parser extends Lexer {
 
 				int saveStart = t.start;
 
-				t = new TypeFunction(arguments, t, varargs != 0, linkage);
+				t = new TypeFunction(arguments, t, varargs, linkage);
 				if (save == TOKdelegate) {
 					t = new TypeDelegate(t);
 				} else {
@@ -2124,7 +2124,7 @@ public class Parser extends Lexer {
 			arguments = parseParameters(pointer2_varargs);
 			varargs = pointer2_varargs[0];
 			
-			ta = new TypeFunction(arguments, t, varargs != 0, linkage);
+			ta = new TypeFunction(arguments, t, varargs, linkage);
 			ta.setSourceRange(t.start, t.length);
 			
 			if (ts != t) {
@@ -3531,7 +3531,15 @@ public class Parser extends Lexer {
 			if (catches == null && finalbody == null) {
 				parsingErrorInsertToComplete(prevToken, "Catch or finally", "TryStatement");
 			} else {
-				s = new TryStatement(body, catches, finalbody);
+				if (catches != null) {
+					s = new TryCatchStatement(body, catches);
+				}
+				if (finalbody != null) {
+					if (catches != null) {
+						s.setSourceRange(start, prevToken.ptr + prevToken.len - start);
+					}
+					s = new TryFinallyStatement(s, finalbody, catches != null);
+				}
 			}
 			break;
 		}
@@ -5086,7 +5094,7 @@ public class Parser extends Lexer {
 			varargs = pointer2_varargs[0];
 		}
 		
-		t = new TypeFunction(arguments, t, varargs != 0, linkage);
+		t = new TypeFunction(arguments, t, varargs, linkage);
 		fd = new FuncLiteralDeclaration(t, save, null);
 		parseContracts(fd);
 		e[0] = new FuncExp(fd);

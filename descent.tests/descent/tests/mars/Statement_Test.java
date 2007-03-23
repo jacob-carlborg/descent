@@ -344,6 +344,17 @@ public class Statement_Test extends Parser_Test {
 		assertPosition(stm, 1, s.length() - 1);
 	}
 	
+	public void testTryCatch() {
+		String s = " try { } catch(Bla b) { } catch { }";
+		TryStatement stm = (TryStatement) parseStatement(s);
+		
+		assertEquals(ASTNode.TRY_STATEMENT, stm.getNodeType());
+		assertPosition(stm, 1, s.length() - 1);
+		
+		assertEquals(2, stm.catchClauses().size());
+		assertPosition((CatchClause) stm.catchClauses().get(0), 9, 16);
+	}
+	
 	public void testTryCatchFinally() {
 		String s = " try { } catch(Bla b) { } catch { } finally { }";
 		TryStatement stm = (TryStatement) parseStatement(s);

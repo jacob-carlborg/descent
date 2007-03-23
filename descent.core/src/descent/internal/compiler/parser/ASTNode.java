@@ -300,8 +300,6 @@ public abstract class ASTNode {
 
 	public final static int THROW_STATEMENT = 146;
 
-	public final static int TRY_STATEMENT = 147;
-
 	public final static int VOLATILE_STATEMENT = 148;
 
 	public final static int WHILE_STATEMENT = 149;
@@ -365,6 +363,10 @@ public abstract class ASTNode {
 	public final static int TEMPLATE_EXP = 178;
 	
 	public final static int TRY_FINALLY_STATEMENT = 179;
+	
+	public final static int TRY_CATCH_STATEMENT = 180;
+	
+	public final static int LABEL_DSYMBOL = 181;
 
 	public int start;
 
