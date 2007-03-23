@@ -149,7 +149,7 @@ public enum TOK implements ITerminalSymbols {
 	TOKtype, TOKaddress, TOKdotti, TOKuadd, 
 	TOKcall, TOKarray, TOKnewanonclass, TOKnotis,
 	TOKvar, TOKdotvar, TOKconstruct, TOKdsymbol,
-	TOKdotexp,
+	TOKdotexp, TOKhalt, TOKsymoff,
 
 	//TOKMAX
 	;

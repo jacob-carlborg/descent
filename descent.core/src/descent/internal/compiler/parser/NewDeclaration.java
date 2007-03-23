@@ -53,6 +53,16 @@ public class NewDeclaration extends FuncDeclaration {
 	}
 	
 	@Override
+	public boolean addPreInvariant(SemanticContext context) {
+		return false;
+	}
+	
+	@Override
+	public boolean addPostInvariant(SemanticContext context) {
+		return false;
+	}
+	
+	@Override
 	public int getNodeType() {
 		return NEW_DECLARATION;
 	}

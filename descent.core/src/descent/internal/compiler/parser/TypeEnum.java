@@ -40,6 +40,14 @@ public class TypeEnum extends Type {
 	public boolean isunsigned() {
 		return sym.memtype.isunsigned();
 	}
+	
+	@Override
+	public Expression defaultInit(SemanticContext context) {
+		// Initialize to first member of enum
+		Expression e;
+	    e = new IntegerExp(sym.defaultval, this);
+	    return e;
+	}
 
 	@Override
 	public int getNodeType() {

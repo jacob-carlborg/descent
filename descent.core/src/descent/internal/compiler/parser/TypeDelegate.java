@@ -16,6 +16,14 @@ public class TypeDelegate extends Type {
 	}
 	
 	@Override
+	public Expression defaultInit(SemanticContext context) {
+		Expression e;
+	    e = new NullExp();
+	    e.type = this;
+	    return e;
+	}
+	
+	@Override
 	public int getNodeType() {
 		return TYPE_DELEGATE;
 	}

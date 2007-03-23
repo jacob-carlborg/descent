@@ -13,6 +13,11 @@ public class TypeSArray extends Type {
 	}
 	
 	@Override
+	public Expression defaultInit(SemanticContext context) {
+		return next.defaultInit(context);
+	}
+	
+	@Override
 	public Expression toExpression() {
 		Expression e = next.toExpression();
 		if (e != null) {

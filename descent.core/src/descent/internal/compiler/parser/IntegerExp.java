@@ -10,6 +10,10 @@ public class IntegerExp extends Expression {
 	public String str;
 	public BigInteger value;
 	
+	public IntegerExp(BigInteger value, Type type) {
+		this(null, value, type);
+	}
+	
 	public IntegerExp(String str, BigInteger value, Type type) {
 		super(TOK.TOKint64);
 		this.str = str;
@@ -55,51 +59,48 @@ public class IntegerExp extends Expression {
 	@Override
 	public BigInteger toInteger(SemanticContext context) {
 		Type t;
-		
-	    t = type;
-	    while (t != null)
-	    {
-		switch (t.ty)
-		{
-		    case Tbit:
-		    case Tbool:		
-		    	value = (value.compareTo(BigInteger.ZERO) != 0) ? BigInteger.ONE : BigInteger.ZERO;	
-		    	break;
-		    case Tint8:
-		    case Tchar:
-		    case Tuns8:
-		    case Tint16:
-		    case Twchar:
-		    case Tuns16:
-		    case Tint32:
-		    case Tpointer:
-		    case Tdchar:
-		    case Tuns32:
-		    case Tint64:
-		    case Tuns64:
-		    	value = cast(value, t.ty);	
-		    	break;
 
-		    case Tenum:
-		    {
-		    	TypeEnum te = (TypeEnum) t;
-		    	t = te.sym.memtype;
-		    	continue;
-		    }
+		t = type;
+		while (t != null) {
+			switch (t.ty) {
+			case Tbit:
+			case Tbool:
+				value = (value.compareTo(BigInteger.ZERO) != 0) ? BigInteger.ONE
+						: BigInteger.ZERO;
+				break;
+			case Tint8:
+			case Tchar:
+			case Tuns8:
+			case Tint16:
+			case Twchar:
+			case Tuns16:
+			case Tint32:
+			case Tpointer:
+			case Tdchar:
+			case Tuns32:
+			case Tint64:
+			case Tuns64:
+				value = cast(value, t.ty);
+				break;
 
-		    case Ttypedef:
-		    {
-		    	TypeTypedef tt = (TypeTypedef) t;
-		    	t = tt.sym.basetype;
-		    	continue;
-		    }
+			case Tenum: {
+				TypeEnum te = (TypeEnum) t;
+				t = te.sym.memtype;
+				continue;
+			}
 
-		    default:
-		    	throw new IllegalStateException();
+			case Ttypedef: {
+				TypeTypedef tt = (TypeTypedef) t;
+				t = tt.sym.basetype;
+				continue;
+			}
+
+			default:
+				throw new IllegalStateException();
+			}
+			break;
 		}
-		break;
-	    }
-	    return value;
+		return value;
 	}
 	
 	private BigInteger cast(BigInteger num, TY ty) {

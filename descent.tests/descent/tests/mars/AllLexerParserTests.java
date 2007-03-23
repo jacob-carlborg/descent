@@ -40,6 +40,7 @@ public class AllLexerParserTests {
 		suite.addTestSuite(Invariant_Test.class);
 		suite.addTestSuite(ExtendedSourceRange_Test.class);
 		suite.addTestSuite(Semantic1_Test.class);
+		suite.addTestSuite(ASTConvertion_Test.class);
 		//$JUnit-END$
 		return suite;
 	}

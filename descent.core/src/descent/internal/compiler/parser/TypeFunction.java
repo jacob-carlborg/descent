@@ -104,6 +104,10 @@ public class TypeFunction extends Type {
 		return this;
 	}
 	
+	public RET retStyle() {
+		return RET.RETstack;
+	}
+	
 	@Override
 	public int getNodeType() {
 		return TYPE_FUNCTION;

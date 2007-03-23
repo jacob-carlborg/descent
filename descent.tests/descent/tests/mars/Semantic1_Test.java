@@ -339,7 +339,7 @@ public class Semantic1_Test extends Parser_Test {
 	}
 
 	public void testNewAllocatorsOnlyForClassOrStruct() {
-		String s = " new(uint x) { }";
+		String s = " new(uint x) { return null; }";
 		IProblem[] p = getModuleProblems(s);
 		assertEquals(1, p.length);
 
@@ -441,7 +441,7 @@ public class Semantic1_Test extends Parser_Test {
 	}
 	
 	public void testIllegalMainReturnType() {
-		String s = " long main() { }";
+		String s = " long main() { return 0; }";
 		IProblem[] p = getModuleProblems(s);
 		assertEquals(1, p.length);
 
@@ -449,7 +449,7 @@ public class Semantic1_Test extends Parser_Test {
 	}
 
 	public void testIllegalMainArguments() {
-		String s = " int main(int x) { }";
+		String s = " int main(int x) { return 0; }";
 		IProblem[] p = getModuleProblems(s);
 		assertEquals(1, p.length);
 
@@ -570,6 +570,26 @@ public class Semantic1_Test extends Parser_Test {
 		assertEquals(1, p.length);
 
 		assertError(p[0], IProblem.StaticAssertIsFalse, 15, 5);
+	}
+	
+	public void testFunctionMustReturnLong() {
+		String s = " long bla() { }";
+		IProblem[] p = getModuleProblems(s);
+		assertEquals(1, p.length);
+
+		assertError(p[0], IProblem.IllegalReturnType, 6, 3);
+	}
+	
+	public void testFunctionMustReturnLong_Not() {
+		assertNoSemanticErrors(" long bla() { return 0; }");
+	}
+	
+	public void testVoidFunctionsHaveNoResult() {
+		String s = " void bla() out(id) { } body { }";
+		IProblem[] p = getModuleProblems(s);
+		assertEquals(1, p.length);
+
+		assertError(p[0], IProblem.VoidFunctionsHaveNoResult, 16, 2);
 	}
 
 }

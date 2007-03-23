@@ -63,6 +63,16 @@ public class CtorDeclaration extends FuncDeclaration {
 	}
 	
 	@Override
+	public boolean addPreInvariant(SemanticContext context) {
+		return false;
+	}
+	
+	@Override
+	public boolean addPostInvariant(SemanticContext context) {
+		return (vthis != null && context.global.params.useInvariants);
+	}
+	
+	@Override
 	public int getNodeType() {
 		return CTOR_DECLARATION;
 	}

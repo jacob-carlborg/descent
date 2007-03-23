@@ -1,6 +1,7 @@
 package descent.core.dom;
 
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -1202,7 +1203,10 @@ public class ASTConverter {
 			b.setPostconditionVariableName(convert(a.outId));
 		}
 		if (a.fbody != null) {
-			b.setBody(convert(a.fbody));
+			descent.core.dom.Statement body = convert(a.fbody);
+			if (body != null) {
+				b.setBody(body);
+			}
 		}
 	}
 	
@@ -1557,11 +1561,23 @@ public class ASTConverter {
 		return b;
 	}
 	
-	public descent.core.dom.Block convert(CompoundStatement a) {
-		descent.core.dom.Block b = new descent.core.dom.Block(ast);
-		convertStatements(b.statements(), a.statements);
-		b.setSourceRange(a.start, a.length);
-		return b;
+	public descent.core.dom.Statement convert(CompoundStatement a) {
+		if (a.synthetic) {
+			List<descent.core.dom.Statement> stms = new ArrayList<descent.core.dom.Statement>(1);
+			convertStatements(stms, a.statements);
+			if (stms.size() == 1) {
+				return stms.get(0);
+			} else if (stms.size() == 0) {
+				return null;
+			} else {
+				throw new IllegalStateException("Should not happen");
+			}
+		} else {
+			descent.core.dom.Block b = new descent.core.dom.Block(ast);
+			convertStatements(b.statements(), a.statements);
+			b.setSourceRange(a.start, a.length);
+			return b;
+		}
 	}
 	
 	public descent.core.dom.MixinExpression convert(CompileExp a) {
@@ -2222,7 +2238,12 @@ public class ASTConverter {
 	
 	public void convertStatements(List<descent.core.dom.Statement> destination, List<Statement> source) {
 		if (source == null || source.isEmpty()) return;
-		for(Statement stm : source) destination.add(convert(stm));
+		for(Statement stm : source) {
+			if (stm.synthetic) {
+				continue;
+			}
+			destination.add(convert(stm));
+		}
 	}
 	
 	public void convertBaseClasses(List<descent.core.dom.BaseClass> destination, List<BaseClass> source) {

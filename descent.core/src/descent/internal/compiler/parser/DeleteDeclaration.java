@@ -59,6 +59,16 @@ public class DeleteDeclaration extends FuncDeclaration {
 	}
 	
 	@Override
+	public boolean addPreInvariant(SemanticContext context) {
+		return false;
+	}
+	
+	@Override
+	public boolean addPostInvariant(SemanticContext context) {
+		return false;
+	}
+	
+	@Override
 	public int getNodeType() {
 		return DELETE_DECLARATION;
 	}

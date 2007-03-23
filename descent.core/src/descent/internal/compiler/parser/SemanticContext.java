@@ -5,7 +5,8 @@ import descent.core.compiler.IProblem;
 
 public class SemanticContext {
 	
-	public final static boolean BREAKABI = true;
+	public boolean BREAKABI = true;
+	public boolean _DH = true;
 	private IProblemRequestor problemRequestor;
 	public StringTable typeStringTable;
 	public Global global = new Global();
@@ -28,7 +29,20 @@ public class SemanticContext {
 	public SemanticContext(IProblemRequestor problemRequestor) {
 		this.problemRequestor = problemRequestor;
 		this.typeStringTable = new StringTable();
-		this.object = new ClassDeclaration(null, null);
+		this.object = new ClassDeclaration(Id.Object);
+		this.typeinfo = new ClassDeclaration(Id.TypeInfo);
+		this.typeinfoclass = new ClassDeclaration(Id.TypeInfo_Class);
+		this.typeinfointerface = new ClassDeclaration(Id.TypeInfo_Interface);
+		this.typeinfostruct = new ClassDeclaration(Id.TypeInfo_Struct);
+		this.typeinfotypedef = new ClassDeclaration(Id.TypeInfo_Typedef);
+		this.typeinfopointer = new ClassDeclaration(Id.TypeInfo_Pointer);
+		this.typeinfoarray = new ClassDeclaration(Id.TypeInfo_Array);
+		this.typeinfostaticarray = new ClassDeclaration(Id.TypeInfo_StaticArray);
+		this.typeinfoassociativearray = new ClassDeclaration(Id.TypeInfo_AssociativeArray);
+		this.typeinfoenum = new ClassDeclaration(Id.TypeInfo_Enum);
+		this.typeinfofunction = new ClassDeclaration(Id.TypeInfo_Function);
+		this.typeinfodelegate = new ClassDeclaration(Id.TypeInfo_Delegate);
+		this.typeinfotypelist = new ClassDeclaration(Id.TypeInfo_Tuple);
 	}
 	
 	public void acceptProblem(IProblem problem) {

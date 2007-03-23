@@ -30,7 +30,13 @@ public class FuncDeclaration extends Declaration {
 	public DsymbolTable labtab;		// statement label symbol table
 	public VarDeclaration vresult;		// variable corresponding to outId
 	public LabelDsymbol returnLabel;		// where the return goes
-	public boolean inferReturnType;
+	public boolean inferRetType;
+	public boolean naked;				// !=0 if naked
+	public boolean inlineAsm;			// !=0 if has inline assembler
+	public int hasReturnExp;			// 1 if there's a return exp; statement
+										// 2 if there's a throw statement
+										// 4 if there's an assert(0)
+										// 8 if there's inline asm
 	
 	public FuncDeclaration(IdentifierExp ident, int storage_class, Type type) {
 		super(ident);
@@ -155,9 +161,6 @@ public class FuncDeclaration extends Declaration {
 		cd = parent.isClassDeclaration();
 		if (cd != null) {
 			int vi;
-			CtorDeclaration ctor;
-			DtorDeclaration dtor;
-			InvariantDeclaration inv;
 
 			if (isCtorDeclaration() != null) {
 				// ctor = (CtorDeclaration *)this;
@@ -464,603 +467,668 @@ public class FuncDeclaration extends Declaration {
 		
 	}
 	
-
-	
 	@Override
 	public void semantic3(Scope sc, SemanticContext context) {
 		TypeFunction f;
-	    AggregateDeclaration ad;
-	    VarDeclaration argptr = null;
-	    VarDeclaration _arguments = null;
+		AggregateDeclaration ad;
+		VarDeclaration argptr = null;
+		VarDeclaration _arguments = null;
 
-	    if (parent == null)
-	    {
-	    	Assert.isTrue(false);
-	    }
-
-	    if (semanticRun != 0)
-		return;
-	    semanticRun = 1;
-
-	    if (type == null || type.ty != TY.Tfunction)
-		return;
-	    f = (TypeFunction) (type);
-	    int nparams = Argument.dim(f.parameters, context);
-
-	    // Check the 'throws' clause
-	    /* throws not used right now
-	    if (fthrows)
-	    {	int i;
-
-		for (i = 0; i < fthrows.dim; i++)
-		{
-		    Type *t = (Type *)fthrows.data[i];
-
-		    t = t.semantic(loc, sc);
-		    if (!t.isClassHandle())
-			error("can only throw classes, not %s", t.toChars());
+		if (parent == null) {
+			Assert.isTrue(false);
 		}
-	    }
-	    */
 
-	    if (fbody != null || frequire != null)
-	    {
-		// Establish function scope
-		ScopeDsymbol ss;
-		Scope sc2;
-
-		localsymtab = new DsymbolTable();
-
-		ss = new ScopeDsymbol();
-		ss.parent = sc.scopesym;
-		sc2 = sc.push(ss);
-		sc2.func = this;
-		sc2.parent = this;
-		sc2.callSuper = 0;
-		sc2.sbreak = null;
-		sc2.scontinue = null;
-		sc2.sw = null;
-		sc2.fes = fes;
-		sc2.linkage = LINK.LINKd;
-		sc2.stc &= ~(STC.STCauto | STC.STCscope | STC.STCstatic | STC.STCabstract | STC.STCdeprecated);
-		sc2.protection = PROT.PROTpublic;
-		sc2.explicitProtection = 0;
-		sc2.structalign = 8;
-		sc2.incontract = 0;
-		sc2.tf = null;
-
-		// Declare 'this'
-		ad = isThis();
-		if (ad != null)
-		{   VarDeclaration v;
-
-		    if (isFuncLiteralDeclaration() != null && isNested())
-		    {
-			error("literals cannot be class members");
+		if (semanticRun != 0) {
 			return;
-		    }
-		    else
-		    {
-		    	Assert.isTrue(!isNested()); // can't be both member and nested
-		    	Assert.isNotNull(ad.handle);
-			v = new ThisDeclaration(ad.handle);
-			v.storage_class |= STC.STCparameter | STC.STCin;
-			v.semantic(sc2, context);
-			if (sc2.insert(v) == null) {
-				Assert.isTrue(false);
+		}
+		semanticRun = 1;
+
+		if (type == null || type.ty != TY.Tfunction) {
+			return;
+		}
+		f = (TypeFunction) (type);
+		int nparams = Argument.dim(f.parameters, context);
+
+		// Check the 'throws' clause
+		/*
+		 * throws not used right now if (fthrows) { int i;
+		 * 
+		 * for (i = 0; i < fthrows.dim; i++) { Type *t = (Type
+		 * *)fthrows.data[i];
+		 * 
+		 * t = t.semantic(loc, sc); if (!t.isClassHandle()) error("can only
+		 * throw classes, not %s", t.toChars()); } }
+		 */
+
+		if (fbody != null || frequire != null) {
+			// Establish function scope
+			ScopeDsymbol ss;
+			Scope sc2;
+
+			localsymtab = new DsymbolTable();
+
+			ss = new ScopeDsymbol();
+			ss.parent = sc.scopesym;
+			sc2 = sc.push(ss);
+			sc2.func = this;
+			sc2.parent = this;
+			sc2.callSuper = 0;
+			sc2.sbreak = null;
+			sc2.scontinue = null;
+			sc2.sw = null;
+			sc2.fes = fes;
+			sc2.linkage = LINK.LINKd;
+			sc2.stc &= ~(STC.STCauto | STC.STCscope | STC.STCstatic
+					| STC.STCabstract | STC.STCdeprecated);
+			sc2.protection = PROT.PROTpublic;
+			sc2.explicitProtection = 0;
+			sc2.structalign = 8;
+			sc2.incontract = 0;
+			sc2.tf = null;
+
+			// Declare 'this'
+			ad = isThis();
+			if (ad != null) {
+				VarDeclaration v;
+
+				if (isFuncLiteralDeclaration() != null && isNested()) {
+					error("literals cannot be class members");
+					return;
+				} else {
+					Assert.isTrue(!isNested()); // can't be both member and
+												// nested
+					Assert.isNotNull(ad.handle);
+					v = new ThisDeclaration(ad.handle);
+					v.synthetic = true;
+					v.storage_class |= STC.STCparameter | STC.STCin;
+					v.semantic(sc2, context);
+					if (sc2.insert(v) == null) {
+						Assert.isTrue(false);
+					}
+					v.parent = this;
+					vthis = v;
+				}
+			} else if (isNested()) {
+				VarDeclaration v;
+
+				v = new ThisDeclaration(Type.tvoid.pointerTo(context));
+				v.synthetic = true;
+				v.storage_class |= STC.STCparameter | STC.STCin;
+				v.semantic(sc2, context);
+				if (sc2.insert(v) == null) {
+					Assert.isTrue(false);
+				}
+				v.parent = this;
+				vthis = v;
 			}
-			v.parent = this;
-			vthis = v;
-		    }
-		}
-		else if (isNested())
-		{
-		    VarDeclaration v;
 
-		    v = new ThisDeclaration(Type.tvoid.pointerTo(context));
-		    v.storage_class |= STC.STCparameter | STC.STCin;
-		    v.semantic(sc2, context);
-		    if (sc2.insert(v) == null) {
-		    	Assert.isTrue(false);
-		    }
-		    v.parent = this;
-		    vthis = v;
-		}
+			// Declare hidden variable _arguments[] and _argptr
+			if (f.varargs != 0) {
+				Type t;
 
-		// Declare hidden variable _arguments[] and _argptr
-		if (f.varargs != 0)
-		{   Type t;
+				if (f.linkage == LINK.LINKd) { // Declare _arguments[]
+					if (context.BREAKABI) {
+						v_arguments = new VarDeclaration(
+								context.typeinfotypelist.type,
+								Id._arguments_typeinfo, null);
+						v_arguments.synthetic = true;
+						v_arguments.storage_class = STC.STCparameter
+								| STC.STCin;
+						v_arguments.semantic(sc2, context);
+						sc2.insert(v_arguments);
+						v_arguments.parent = this;
 
-		    if (f.linkage == LINK.LINKd)
-		    {	// Declare _arguments[]
-		    	if (context.BREAKABI) {
-			v_arguments = new VarDeclaration(context.typeinfotypelist.type, Id._arguments_typeinfo, null);
-			v_arguments.storage_class = STC.STCparameter | STC.STCin;
-			v_arguments.semantic(sc2, context);
-			sc2.insert(v_arguments);
-			v_arguments.parent = this;
-
-			t = context.typeinfo.type.arrayOf();
-			_arguments = new VarDeclaration(t, Id._arguments, null);
-			_arguments.semantic(sc2, context);
-			sc2.insert(_arguments);
-			_arguments.parent = this;
-		    	} else {
-			t = context.typeinfo.type.arrayOf();
-			v_arguments = new VarDeclaration(t, Id._arguments, null);
-			v_arguments.storage_class = STC.STCparameter | STC.STCin;
-			v_arguments.semantic(sc2, context);
-			sc2.insert(v_arguments);
-			v_arguments.parent = this;
-	}
-		    }
-		    if (f.linkage == LINK.LINKd || (parameters != null && parameters.size() > 0))
-		    {	// Declare _argptr
-			t = Type.tvoid.pointerTo(context);
-			argptr = new VarDeclaration(t, Id._argptr, null);
-			argptr.semantic(sc2, context);
-			sc2.insert(argptr);
-			argptr.parent = this;
-		    }
-		}
-
-		// Propagate storage class from tuple arguments to their sub-arguments.
-		if (f.parameters != null)
-		{
-		    for (int i = 0; i < f.parameters.size(); i++)
-		    {	Argument arg = (Argument) f.parameters.get(i);
-
-			if (arg.type.ty == TY.Ttuple)
-			{   TypeTuple t = (TypeTuple) arg.type;
-			    int dim = Argument.dim(t.arguments, context);
-			    for (int j = 0; j < dim; j++)
-			    {	Argument narg = Argument.getNth(t.arguments, j, context);
-				narg.inout = arg.inout;
-			    }
+						t = context.typeinfo.type.arrayOf(context);
+						_arguments = new VarDeclaration(t, Id._arguments, null);
+						_arguments.synthetic = true;
+						_arguments.semantic(sc2, context);
+						sc2.insert(_arguments);
+						_arguments.parent = this;
+					} else {
+						t = context.typeinfo.type.arrayOf(context);
+						v_arguments = new VarDeclaration(t, Id._arguments, null);
+						v_arguments.storage_class = STC.STCparameter
+								| STC.STCin;
+						v_arguments.semantic(sc2, context);
+						sc2.insert(v_arguments);
+						v_arguments.parent = this;
+					}
+				}
+				if (f.linkage == LINK.LINKd
+						|| (parameters != null && parameters.size() > 0)) { // Declare
+																			// _argptr
+					t = Type.tvoid.pointerTo(context);
+					argptr = new VarDeclaration(t, Id._argptr, null);
+					argptr.synthetic = true;
+					argptr.semantic(sc2, context);
+					sc2.insert(argptr);
+					argptr.parent = this;
+				}
 			}
-		    }
-		}
 
-		// Declare all the function parameters as variables
-		if (nparams != 0)
-		{   // parameters[] has all the tuples removed, as the back end
-		    // doesn't know about tuples
-		    parameters = new ArrayList<Dsymbol>(nparams);
-		    for (int i = 0; i < nparams; i++)
-		    {
-			Argument arg = Argument.getNth(f.parameters, i, context);
-			IdentifierExp id = arg.ident;
-			if (id == null)
-			{
-				id = new IdentifierExp(new Identifier("_param_" + i + "u", TOK.TOKidentifier));
-			    arg.ident = id;
+			// Propagate storage class from tuple arguments to their
+			// sub-arguments.
+			if (f.parameters != null) {
+				for (int i = 0; i < f.parameters.size(); i++) {
+					Argument arg = (Argument) f.parameters.get(i);
+
+					if (arg.type.ty == TY.Ttuple) {
+						TypeTuple t = (TypeTuple) arg.type;
+						int dim = Argument.dim(t.arguments, context);
+						for (int j = 0; j < dim; j++) {
+							Argument narg = Argument.getNth(t.arguments, j,
+									context);
+							narg.inout = arg.inout;
+						}
+					}
+				}
 			}
-			VarDeclaration v = new VarDeclaration(arg.type, id, null);
-			v.storage_class |= STC.STCparameter;
-			if (f.varargs == 2 && i + 1 == nparams)
-			    v.storage_class |= STC.STCvariadic;
-			switch (arg.inout)
-			{   case In:    v.storage_class |= STC.STCin;		break;
-			    case Out:   v.storage_class |= STC.STCout;		break;
-			    case InOut: v.storage_class |= STC.STCin | STC.STCout;	break;
-			    case Lazy:  v.storage_class |= STC.STCin | STC.STClazy; break;
-			    default: Assert.isTrue(false);
+
+			// Declare all the function parameters as variables
+			if (nparams != 0) { // parameters[] has all the tuples removed, as
+								// the back end
+				// doesn't know about tuples
+				parameters = new ArrayList<Dsymbol>(nparams);
+				for (int i = 0; i < nparams; i++) {
+					Argument arg = Argument.getNth(f.parameters, i, context);
+					IdentifierExp id = arg.ident;
+					if (id == null) {
+						id = new IdentifierExp(new Identifier("_param_" + i
+								+ "u", TOK.TOKidentifier));
+						arg.ident = id;
+					}
+					VarDeclaration v = new VarDeclaration(arg.type, id, null);
+					v.synthetic = true;
+					v.storage_class |= STC.STCparameter;
+					if (f.varargs == 2 && i + 1 == nparams)
+						v.storage_class |= STC.STCvariadic;
+					switch (arg.inout) {
+					case None:
+					case In:
+						v.storage_class |= STC.STCin;
+						break;
+					case Out:
+						v.storage_class |= STC.STCout;
+						break;
+					case InOut:
+						v.storage_class |= STC.STCin | STC.STCout;
+						break;
+					case Lazy:
+						v.storage_class |= STC.STCin | STC.STClazy;
+						break;
+					default:
+						Assert.isTrue(false);
+					}
+					v.semantic(sc2, context);
+					if (sc2.insert(v) == null) {
+						error("parameter %s.%s is already defined", toChars(),
+								v.toChars());
+					} else {
+						parameters.add(v);
+					}
+					localsymtab.insert(v);
+					v.parent = this;
+				}
 			}
-			v.semantic(sc2, context);
-			if (sc2.insert(v) == null)
-			    error("parameter %s.%s is already defined", toChars(), v.toChars());
-			else
-			    parameters.add(v);
-			localsymtab.insert(v);
-			v.parent = this;
-		    }
-		}
 
-		// Declare the tuple symbols and put them in the symbol table,
-		// but not in parameters[].
-		if (f.parameters != null)
-		{
-		    for (int i = 0; i < f.parameters.size(); i++)
-		    {	Argument arg = (Argument) f.parameters.get(i);
+			// Declare the tuple symbols and put them in the symbol table,
+			// but not in parameters[].
+			if (f.parameters != null) {
+				for (int i = 0; i < f.parameters.size(); i++) {
+					Argument arg = (Argument) f.parameters.get(i);
 
-			if (arg.ident == null)
-			    continue;			// never used, so ignore
-			if (arg.type.ty == TY.Ttuple)
-			{   TypeTuple t = (TypeTuple) arg.type;
-			    int dim = Argument.dim(t.arguments, context);
-			    List exps = new ArrayList(dim);
-			    for (int j = 0; j < dim; j++)
-			    {	Argument narg = Argument.getNth(t.arguments, j, context);
-			    Assert.isNotNull(narg.ident);
-				VarDeclaration v = sc2.search(narg.ident, null, context).isVarDeclaration();
-				Assert.isNotNull(v);
-				Expression e = new VarExp(v);
-				exps.add(e);
-			    }
-			    Assert.isNotNull(arg.ident);
-			    TupleDeclaration v = new TupleDeclaration(arg.ident, exps);
-			    v.isexp = true;
-			    if (sc2.insert(v) == null)
-				error("parameter %s.%s is already defined", toChars(), v.toChars());
-			    localsymtab.insert(v);
-			    v.parent = this;
+					if (arg.ident == null) {
+						continue; // never used, so ignore
+					}
+					if (arg.type.ty == TY.Ttuple) {
+						TypeTuple t = (TypeTuple) arg.type;
+						int dim = Argument.dim(t.arguments, context);
+						List exps = new ArrayList(dim);
+						for (int j = 0; j < dim; j++) {
+							Argument narg = Argument.getNth(t.arguments, j,
+									context);
+							Assert.isNotNull(narg.ident);
+							VarDeclaration v = sc2.search(narg.ident, null,
+									context).isVarDeclaration();
+							v.synthetic = true;
+							Assert.isNotNull(v);
+							Expression e = new VarExp(v);
+							exps.add(e);
+						}
+						Assert.isNotNull(arg.ident);
+						TupleDeclaration v = new TupleDeclaration(arg.ident,
+								exps);
+						v.isexp = true;
+						if (sc2.insert(v) == null) {
+							error("parameter %s.%s is already defined",
+									toChars(), v.toChars());
+						}
+						localsymtab.insert(v);
+						v.parent = this;
+					}
+				}
 			}
-		    }
-		}
 
-		sc2.incontract++;
-
-		if (frequire != null)
-		{
-		    // BUG: need to error if accessing out parameters
-		    // BUG: need to treat parameters as const
-		    // BUG: need to disallow returns and throws
-		    // BUG: verify that all in and inout parameters are read
-		    frequire = frequire.semantic(sc2, context);
-		    labtab = null;		// so body can't refer to labels
-		}
-
-		if (fensure != null || addPostInvariant())
-		{
-		    ScopeDsymbol sym;
-
-		    sym = new ScopeDsymbol();
-		    sym.parent = sc2.scopesym;
-		    sc2 = sc2.push(sym);
-
-		    Assert.isNotNull(type.next);
-		    if (type.next.ty == TY.Tvoid)
-		    {
-			if (outId != null)
-			    error("void functions have no result");
-		    }
-		    else
-		    {
-			if (outId == null)
-			    outId = new IdentifierExp(Id.result);		// provide a default
-		    }
-
-		    if (outId != null)
-		    {	// Declare result variable
-			VarDeclaration v;
-
-			v = new VarDeclaration(type.next, outId, null);
-			v.noauto = true;
-			sc2.incontract--;
-			v.semantic(sc2, context);
 			sc2.incontract++;
-			if (sc2.insert(v) == null)
-			    error("out result %s is already defined", v.toChars());
-			v.parent = this;
-			vresult = v;
 
-			// vresult gets initialized with the function return value
-			// in ReturnStatement::semantic()
-		    }
-
-		    // BUG: need to treat parameters as const
-		    // BUG: need to disallow returns and throws
-		    if (fensure != null)
-		    {	fensure = fensure.semantic(sc2, context);
-			labtab = null;		// so body can't refer to labels
-		    }
-
-		    if (!context.global.params.useOut)
-		    {	fensure = null;		// discard
-			vresult = null;
-		    }
-
-		    // Postcondition invariant
-		    if (addPostInvariant())
-		    {
-			Expression e = null;
-			if (isCtorDeclaration() != null)
-			{
-			    // Call invariant directly only if it exists
-			    InvariantDeclaration inv = ad.inv;
-			    ClassDeclaration cd = ad.isClassDeclaration();
-
-			    while (inv == null && cd != null)
-			    {
-				cd = cd.baseClass;
-				if (cd == null)
-				    break;
-				inv = cd.inv;
-			    }
-			    if (inv != null)
-			    {
-				e = new DsymbolExp(inv);
-				e = new CallExp(e);
-				e = e.semantic(sc2, context);
-			    }
-			}
-			else
-			{   // Call invariant virtually
-			    ThisExp v = new ThisExp();
-			    v.type = vthis.type;
-			    e = new AssertExp(v);
-			}
-			if (e != null)
-			{
-			    ExpStatement s = new ExpStatement(e);
-			    if (fensure != null)
-				fensure = new CompoundStatement(s, fensure);
-			    else
-				fensure = s;
-			}
-		    }
-
-		    if (fensure != null)
-		    {	returnLabel = new LabelDsymbol(Id.returnLabel);
-			LabelStatement ls = new LabelStatement(new IdentifierExp(Id.returnLabel), fensure);
-			ls.isReturnLabel = true;
-			returnLabel.statement = ls;
-		    }
-		    sc2 = sc2.pop();
-		}
-
-		sc2.incontract--;
-
-		if (fbody != null)
-		{   ClassDeclaration cd = isClassMember();
-
-		    if (isCtorDeclaration() != null && cd != null)
-		    {
-			for (int i = 0; i < cd.fields.size(); i++)
-			{   VarDeclaration v = (VarDeclaration) cd.fields.get(i);
-
-			    v.ctorinit = false;
-			}
-		    }
-
-		    if (inferRetType || f.retStyle() != RETstack)
-			nrvo_can = 0;
-
-		    fbody = fbody.semantic(sc2, context);
-
-		    if (inferRetType)
-		    {	// If no return type inferred yet, then infer a void
-			if (type.next == null)
-			{
-			    type.next = Type.tvoid;
-			    type = type.semantic(sc, context);
-			}
-			f = (TypeFunction) type;
-		    }
-
-		    int offend = fbody != null ? fbody.fallOffEnd() : true;
-
-		    if (isStaticCtorDeclaration() != null)
-		    {	/* It's a static constructor. Ensure that all
-			 * ctor consts were initialized.
-			 */
-
-			ScopeDsymbol ad = toParent().isScopeDsymbol();
-			assert(ad);
-			for (int i = 0; i < ad.members.size(); i++)
-			{   Dsymbol s = (Dsymbol *)ad.members.get(i);
-
-			    s.checkCtorConstInit();
-			}
-		    }
-
-		    if (isCtorDeclaration() != null && cd != null)
-		    {
-
-			// Verify that all the ctorinit fields got initialized
-			if ((sc2.callSuper & Scope.CSXthis_ctor) == 0)
-			{
-			    for (int i = 0; i < cd.fields.size(); i++)
-			    {   VarDeclaration v = (VarDeclaration) cd.fields.get(i);
-
-				if (!v.ctorinit && v.isCtorinit())
-				    error("missing initializer for const field %s", v.toChars());
-			    }
+			if (frequire != null) {
+				// BUG: need to error if accessing out parameters
+				// BUG: need to treat parameters as const
+				// BUG: need to disallow returns and throws
+				// BUG: verify that all in and inout parameters are read
+				frequire = frequire.semantic(sc2, context);
+				labtab = null; // so body can't refer to labels
 			}
 
-			if ((sc2.callSuper & Scope.CSXany_ctor) == 0 &&
-			    cd.baseClass != null && cd.baseClass.ctor != null)
-			{
-			    sc2.callSuper = 0;
+			if (fensure != null || addPostInvariant(context)) {
+				ScopeDsymbol sym;
 
-			    // Insert implicit super() at start of fbody
-			    Expression e1 = new SuperExp();
-			    Expression e = new CallExp(e1);
+				sym = new ScopeDsymbol();
+				sym.parent = sc2.scopesym;
+				sc2 = sc2.push(sym);
 
-			    unsigned errors = global.errors;
-			    global.gag++;
-			    e = e.semantic(sc2);
-			    global.gag--;
-			    if (errors != global.errors)
-				error("no match for implicit super() call in constructor");
-
-			    Statement s = new ExpStatement(e);
-			    fbody = new CompoundStatement(s, fbody);
-			}
-		    }
-		    else if (fes != null)
-		    {	// For foreach(){} body, append a return 0;
-			Expression e = new IntegerExp(0);
-			Statement s = new ReturnStatement(e);
-			fbody = new CompoundStatement(fbody, s);
-			Assert.isTrue(returnLabel == null);
-		    }
-		    else if (!hasReturnExp && type.next.ty != TY.Tvoid)
-			error("expected to return a value of type %s", type.next.toChars());
-		    else if (!inlineAsm)
-		    {
-			if (type.next.ty == TY.Tvoid)
-			{
-			    if (offend && isMain())
-			    {	// Add a return 0; statement
-				Statement s = new ReturnStatement(new IntegerExp(0));
-				fbody = new CompoundStatement(fbody, s);
-			    }
-			}
-			else
-			{
-			    if (offend)
-			    {   Expression e;
-
-				if (context.global.params.warnings)
-				{   fprintf(stdmsg, "warning - ");
-				    error("no return at end of function");
+				Assert.isNotNull(type.next);
+				if (type.next.ty == TY.Tvoid) {
+					if (outId != null) {
+						context.acceptProblem(Problem.newSemanticTypeError("Void functions have no result", IProblem.VoidFunctionsHaveNoResult, 0, outId.start, outId.length));
+					}
+				} else {
+					if (outId == null) {
+						outId = new IdentifierExp(Id.result); // provide a
+																// default
+					}
 				}
 
-				if (context.global.params.useAssert &&
-				    !context.global.params.useInline)
-				{   /* Add an assert(0, msg); where the missing return
-				     * should be.
-				     */
-				    e = new AssertExp(
-					  new IntegerExp(0),
-					  new StringExp("missing return expression")
-					);
+				if (outId != null) { // Declare result variable
+					VarDeclaration v;
+
+					v = new VarDeclaration(type.next, outId, null);
+					v.synthetic = true;
+					v.noauto = true;
+					sc2.incontract--;
+					v.semantic(sc2, context);
+					sc2.incontract++;
+					if (sc2.insert(v) == null) {
+						error("out result %s is already defined", v.toChars());
+					}
+					v.parent = this;
+					vresult = v;
+
+					// vresult gets initialized with the function return value
+					// in ReturnStatement::semantic()
 				}
-				else
-				    e = new HaltExp(endloc);
-				e = new CommaExp(e, type.next.defaultInit(context));
-				e = e.semantic(sc2, context);
-				Statement s = new ExpStatement(e);
-				fbody = new CompoundStatement(fbody, s);
-			    }
+
+				// BUG: need to treat parameters as const
+				// BUG: need to disallow returns and throws
+				if (fensure != null) {
+					fensure = fensure.semantic(sc2, context);
+					labtab = null; // so body can't refer to labels
+				}
+
+				if (!context.global.params.useOut) {
+					if (fensure != null) {
+						fensure.discarded = true; // discard
+					}
+					if (vresult != null) {
+						vresult.discarded = true;
+					}
+				}
+
+				// Postcondition invariant
+				if (addPostInvariant(context)) {
+					Expression e = null;
+					if (isCtorDeclaration() != null) {
+						// Call invariant directly only if it exists
+						InvariantDeclaration inv = ad.inv;
+						ClassDeclaration cd = ad.isClassDeclaration();
+
+						while (inv == null && cd != null) {
+							cd = cd.baseClass;
+							if (cd == null) {
+								break;
+							}
+							inv = cd.inv;
+						}
+						if (inv != null) {
+							e = new DsymbolExp(inv);
+							e = new CallExp(e);
+							e = e.semantic(sc2, context);
+						}
+					} else { // Call invariant virtually
+						ThisExp v = new ThisExp();
+						v.synthetic = true;
+						v.type = vthis.type;
+						e = new AssertExp(v);
+						e.synthetic = true;
+					}
+					if (e != null) {
+						ExpStatement s = new ExpStatement(e);
+						s.synthetic = true;
+						if (fensure != null) {
+							fensure = new CompoundStatement(s, fensure);
+							fensure.synthetic = true;
+						} else {
+							fensure = s;
+						}
+					}
+				}
+
+				if (fensure != null) {
+					returnLabel = new LabelDsymbol(Id.returnLabel);
+					returnLabel.synthetic = true;
+					LabelStatement ls = new LabelStatement(new IdentifierExp(
+							Id.returnLabel), fensure);
+					ls.synthetic = true;
+					ls.isReturnLabel = true;
+					returnLabel.statement = ls;
+				}
+				sc2 = sc2.pop();
 			}
-		    }
+
+			sc2.incontract--;
+
+			if (fbody != null) {
+				ClassDeclaration cd = isClassMember();
+
+				if (isCtorDeclaration() != null && cd != null) {
+					for (int i = 0; i < cd.fields.size(); i++) {
+						VarDeclaration v = (VarDeclaration) cd.fields.get(i);
+						v.ctorinit = false;
+					}
+				}
+
+				/*
+				 * TODO semantic not used? if (inferRetType || f.retStyle() !=
+				 * RET.RETstack) { nrvo_can = 0; }
+				 */
+
+				fbody = fbody.semantic(sc2, context);
+
+				if (inferRetType) { // If no return type inferred yet, then
+									// infer a void
+					if (type.next == null) {
+						type.next = Type.tvoid;
+						type = type.semantic(sc, context);
+					}
+					f = (TypeFunction) type;
+				}
+
+				boolean offend = fbody != null ? fbody.fallOffEnd() : true;
+
+				if (isStaticCtorDeclaration() != null) { /*
+															 * It's a static
+															 * constructor.
+															 * Ensure that all
+															 * ctor consts were
+															 * initialized.
+															 */
+
+					ScopeDsymbol ad2 = toParent().isScopeDsymbol();
+					Assert.isTrue(ad2 != null);
+					for (int i = 0; i < ad2.members.size(); i++) {
+						Dsymbol s = (Dsymbol) ad2.members.get(i);
+
+						s.checkCtorConstInit();
+					}
+				}
+
+				if (isCtorDeclaration() != null && cd != null) {
+
+					// Verify that all the ctorinit fields got initialized
+					if ((sc2.callSuper & Scope.CSXthis_ctor) == 0) {
+						for (int i = 0; i < cd.fields.size(); i++) {
+							VarDeclaration v = (VarDeclaration) cd.fields
+									.get(i);
+
+							if (!v.ctorinit && v.isCtorinit())
+								error("missing initializer for const field %s",
+										v.toChars());
+						}
+					}
+
+					if ((sc2.callSuper & Scope.CSXany_ctor) == 0
+							&& cd.baseClass != null
+							&& cd.baseClass.ctor != null) {
+						sc2.callSuper = 0;
+
+						// Insert implicit super() at start of fbody
+						Expression e1 = new SuperExp();
+						Expression e = new CallExp(e1);
+
+						/*
+						 * TODO semantic unsigned errors =
+						 * context.global.errors; context.global.gag++; e =
+						 * e.semantic(sc2, context); context.global.gag--; if
+						 * (errors != global.errors) error("no match for
+						 * implicit super() call in constructor");
+						 */
+
+						Statement s = new ExpStatement(e);
+						s.synthetic = true;
+						fbody = new CompoundStatement(s, fbody);
+						fbody.synthetic = true;
+					}
+				} else if (fes != null) { // For foreach(){} body, append a
+											// return 0;
+					Expression e = new IntegerExp(0);
+					e.synthetic = true;
+					Statement s = new ReturnStatement(e);
+					s.synthetic = true;
+					fbody = new CompoundStatement(fbody, s);
+					fbody.synthetic = true;
+					Assert.isTrue(returnLabel == null);
+				} else if (hasReturnExp == 0 && type.next.ty != TY.Tvoid)
+					context.acceptProblem(Problem.newSemanticTypeError("This function must return a result of type " + type.next, IProblem.IllegalReturnType, 0, ident.start, ident.length));
+				else if (!inlineAsm) {
+					if (type.next.ty == TY.Tvoid) {
+						if (offend && isMain()) { // Add a return 0; statement
+							Statement s = new ReturnStatement(new IntegerExp(0));
+							s.synthetic = true;
+							fbody = new CompoundStatement(fbody, s);
+							fbody.synthetic = true;
+						}
+					} else {
+						if (offend) {
+							Expression e;
+
+							if (context.global.params.warnings) {
+								error("warning - no return at end of function");
+							}
+
+							if (context.global.params.useAssert
+									&& !context.global.params.useInline) { /*
+																			 * Add
+																			 * an
+																			 * assert(0,
+																			 * msg);
+																			 * where
+																			 * the
+																			 * missing
+																			 * return
+																			 * should
+																			 * be.
+																			 */
+								e = new AssertExp(new IntegerExp(0),
+										new StringExp(
+												"missing return expression"));
+								e.synthetic = true;
+							} else {
+								e = new HaltExp();
+								e.synthetic = true;
+							}
+							e = new CommaExp(e, type.next.defaultInit(context));
+							e.synthetic = true;
+							e = e.semantic(sc2, context);
+							Statement s = new ExpStatement(e);
+							s.synthetic = true;
+							fbody = new CompoundStatement(fbody, s);
+							fbody.synthetic = true;
+						}
+					}
+				}
+			}
+
+			{
+				List<Statement> a = new ArrayList<Statement>();
+
+				// Merge in initialization of 'out' parameters
+				if (parameters != null) {
+					for (int i = 0; i < parameters.size(); i++) {
+						VarDeclaration v;
+
+						v = (VarDeclaration) parameters.get(i);
+						if ((v.storage_class & (STC.STCout | STC.STCin)) == STC.STCout) {
+							Assert.isNotNull(v.init);
+							ExpInitializer ie = v.init.isExpInitializer();
+							Assert.isNotNull(ie);
+							ExpStatement es = new ExpStatement(ie.exp);
+							es.synthetic = true;
+							a.add(es);
+						}
+					}
+				}
+
+				if (argptr != null) { // Initialize _argptr to point past
+										// non-variadic arg
+					Expression e1;
+					Expression e;
+					Type t = argptr.type;
+					VarDeclaration p;
+					int offset;
+
+					e1 = new VarExp(argptr);
+					if (parameters != null && parameters.size() > 0)
+						p = (VarDeclaration) parameters
+								.get(parameters.size() - 1);
+					else
+						p = v_arguments; // last parameter is _arguments[]
+					offset = p.type.size();
+					offset = (offset + 3) & ~3; // assume stack aligns on 4
+					e = new SymOffExp(p, offset);
+					e.synthetic = true;
+					e = new AssignExp(e1, e);
+					e.synthetic = true;
+					e.type = t;
+					ExpStatement es = new ExpStatement(e);
+					es.synthetic = true;
+					a.add(es);
+				}
+
+				if (_arguments != null) {
+					/*
+					 * Advance to elements[] member of TypeInfo_Tuple with:
+					 * _arguments = v_arguments.elements;
+					 */
+					Expression e = new VarExp(v_arguments);
+					e.synthetic = true;
+					e = new DotIdExp(e, new IdentifierExp(Id.elements));
+					e.synthetic = true;
+					Expression e1 = new VarExp(_arguments);
+					e1.synthetic = true;
+					e = new AssignExp(e1, e);
+					e.synthetic = true;
+					e = e.semantic(sc, context);
+					ExpStatement es = new ExpStatement(e);
+					es.synthetic = true;
+					a.add(es);
+				}
+
+				// Merge contracts together with body into one compound
+				// statement
+
+				if (context._DH) {
+					if (frequire != null && context.global.params.useIn) {
+						frequire.incontract = true;
+						a.add(frequire);
+					}
+				} else {
+					if (frequire != null && context.global.params.useIn)
+						a.add(frequire);
+				}
+
+				// Precondition invariant
+				if (addPreInvariant(context)) {
+					Expression e = null;
+					if (isDtorDeclaration() != null) {
+						// Call invariant directly only if it exists
+						InvariantDeclaration inv = ad.inv;
+						ClassDeclaration cd = ad.isClassDeclaration();
+
+						while (inv == null && cd != null) {
+							cd = cd.baseClass;
+							if (cd == null)
+								break;
+							inv = cd.inv;
+						}
+						if (inv != null) {
+							e = new DsymbolExp(inv);
+							e = new CallExp(e);
+							e = e.semantic(sc2, context);
+						}
+					} else { // Call invariant virtually
+						ThisExp v = new ThisExp();
+						v.type = vthis.type;
+						v.synthetic = true;
+						Expression se = new StringExp("null this");
+						se.synthetic = true;
+						se = se.semantic(sc, context);
+						se.type = Type.tchar.arrayOf(context);
+						e = new AssertExp(v, se);
+						e.synthetic = true;
+					}
+					if (e != null) {
+						ExpStatement s = new ExpStatement(e);
+						s.synthetic = true;
+						a.add(s);
+					}
+				}
+
+				if (fbody != null) {
+					a.add(fbody);
+				}
+
+				if (fensure != null) {
+					a.add(returnLabel.statement);
+
+					if (type.next.ty != TY.Tvoid) {
+						// Create: return vresult;
+						Assert.isNotNull(vresult);
+						Expression e = new VarExp(vresult);
+						e.synthetic = true;
+						if (tintro != null) {
+							e = e.implicitCastTo(sc, tintro.next);
+							e = e.semantic(sc, context);
+						}
+						ReturnStatement s = new ReturnStatement(e);
+						s.synthetic = true;
+						a.add(s);
+					}
+				}
+
+				fbody = new CompoundStatement(a);
+				fbody.synthetic = true;
+			}
+
+			sc2.callSuper = 0;
+			sc2.pop();
 		}
-
-		{
-		    List<Statement> a = new ArrayList<Statement>();
-
-		    // Merge in initialization of 'out' parameters
-		    if (parameters != null)
-		    {	for (int i = 0; i < parameters.size(); i++)
-			{   VarDeclaration v;
-
-			    v = (VarDeclaration) parameters.get(i);
-			    if ((v.storage_class & (STC.STCout | STC.STCin)) == STC.STCout)
-			    {
-			    	Assert.isNotNull(v.init);
-				ExpInitializer ie = v.init.isExpInitializer();
-				Assert.isNotNull(ie);
-				a.push(new ExpStatement(ie.exp));
-			    }
-			}
-		    }
-
-		    if (argptr != null)
-		    {	// Initialize _argptr to point past non-variadic arg
-			Expression e1;
-			Expression e;
-			Type t = argptr.type;
-			VarDeclaration p;
-			int offset;
-
-			e1 = new VarExp(argptr);
-			if (parameters != null && parameters.size() > 0)
-			    p = (VarDeclaration) parameters.get(parameters.size() - 1);
-			else
-			    p = v_arguments;		// last parameter is _arguments[]
-			offset = p.type.size();
-			offset = (offset + 3) & ~3;	// assume stack aligns on 4
-			e = new SymOffExp(p, offset);
-			e = new AssignExp(e1, e);
-			e.type = t;
-			a.add(new ExpStatement(e));
-		    }
-
-		    if (_arguments != null)
-		    {
-			/* Advance to elements[] member of TypeInfo_Tuple with:
-			 *  _arguments = v_arguments.elements;
-			 */
-			Expression *e = new VarExp(0, v_arguments);
-			e = new DotIdExp(0, e, Id::elements);
-			Expression *e1 = new VarExp(0, _arguments);
-			e = new AssignExp(0, e1, e);
-			e = e.semantic(sc);
-			a.push(new ExpStatement(0, e));
-		    }
-
-		    // Merge contracts together with body into one compound statement
-
-	#ifdef _DH
-		    if (frequire && global.params.useIn)
-		    {	frequire.incontract = 1;
-			a.push(frequire);
-		    }
-	#else
-		    if (frequire && global.params.useIn)
-			a.push(frequire);
-	#endif
-
-		    // Precondition invariant
-		    if (addPreInvariant())
-		    {
-			Expression *e = NULL;
-			if (isDtorDeclaration())
-			{
-			    // Call invariant directly only if it exists
-			    InvariantDeclaration *inv = ad.inv;
-			    ClassDeclaration *cd = ad.isClassDeclaration();
-
-			    while (!inv && cd)
-			    {
-				cd = cd.baseClass;
-				if (!cd)
-				    break;
-				inv = cd.inv;
-			    }
-			    if (inv)
-			    {
-				e = new DsymbolExp(0, inv);
-				e = new CallExp(0, e);
-				e = e.semantic(sc2);
-			    }
-			}
-			else
-			{   // Call invariant virtually
-			    ThisExp *v = new ThisExp(0);
-			    v.type = vthis.type;
-			    Expression *se = new StringExp(0, "null this");
-			    se = se.semantic(sc);
-			    se.type = Type::tchar.arrayOf();
-			    e = new AssertExp(loc, v, se);
-			}
-			if (e)
-			{
-			    ExpStatement *s = new ExpStatement(0, e);
-			    a.push(s);
-			}
-		    }
-
-		    if (fbody)
-			a.push(fbody);
-
-		    if (fensure)
-		    {
-			a.push(returnLabel.statement);
-
-			if (type.next.ty != Tvoid)
-			{
-			    // Create: return vresult;
-			    assert(vresult);
-			    Expression *e = new VarExp(0, vresult);
-			    if (tintro)
-			    {	e = e.implicitCastTo(sc, tintro.next);
-				e = e.semantic(sc);
-			    }
-			    ReturnStatement *s = new ReturnStatement(0, e);
-			    a.push(s);
-			}
-		    }
-
-		    fbody = new CompoundStatement(0, a);
-		}
-
-		sc2.callSuper = 0;
-		sc2.pop();
-	    }
-	    semanticRun = 2;
+		semanticRun = 2;
+	}
+	
+	public boolean addPreInvariant(SemanticContext context) {
+		AggregateDeclaration ad = isThis();
+	    return (ad != null &&
+		    context.global.params.useInvariants &&
+		    (protection == PROT.PROTpublic || protection == PROT.PROTexport) &&
+		    !naked);
+	}
+	
+	public boolean addPostInvariant(SemanticContext context) {
+		AggregateDeclaration ad = isThis();
+		return (ad != null
+				&& ad.inv != null
+				&& context.global.params.useInvariants
+				&& (protection == PROT.PROTpublic || protection == PROT.PROTexport) && !naked);
 	}
 	
 	public FuncDeclaration overloadExactMatch(Type t, SemanticContext context) {

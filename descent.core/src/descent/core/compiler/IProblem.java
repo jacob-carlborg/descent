@@ -305,6 +305,7 @@ public interface IProblem {
 	int DuplicatedParameter = 339;
 	int SymbolNotFound = 340;
 	int StaticAssertIsFalse = 341;
+	int VoidFunctionsHaveNoResult = 342;
 	
 	/* Others, needed by JDT */
 	int ForbiddenReference = 2001;

@@ -367,6 +367,10 @@ public abstract class ASTNode {
 	public final static int TRY_CATCH_STATEMENT = 180;
 	
 	public final static int LABEL_DSYMBOL = 181;
+	
+	public final static int HALT_EXP = 182;
+	
+	public final static int SYM_OFF_EXP = 183;
 
 	public int start;
 
@@ -385,6 +389,12 @@ public abstract class ASTNode {
 	 * ASTConverter.
 	 */
 	public boolean synthetic;
+	
+	/**
+	 * Denotes a node descarded during the semantic pass, must not be ignored 
+	 * by ASTConverter.
+	 */
+	public boolean discarded;
 
 	public void setSourceRange(int startPosition, int length) {
 		this.start = startPosition;

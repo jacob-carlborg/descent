@@ -42,6 +42,7 @@ public interface Id {
 	Identifier TypeInfo = new Identifier("TypeInfo", TOK.TOKidentifier);
 	Identifier TypeInfo_Class = new Identifier("TypeInfo_Class", TOK.TOKidentifier);
 	Identifier TypeInfo_Struct = new Identifier("TypeInfo_Struct", TOK.TOKidentifier);
+	Identifier TypeInfo_Interface = new Identifier("TypeInfo_Interface", TOK.TOKidentifier);
 	Identifier TypeInfo_Enum = new Identifier("TypeInfo_Enum", TOK.TOKidentifier);
 	Identifier TypeInfo_Typedef = new Identifier("TypeInfo_Typedef", TOK.TOKidentifier);
 	Identifier TypeInfo_Pointer = new Identifier("TypeInfo_Pointer", TOK.TOKidentifier);
@@ -50,6 +51,7 @@ public interface Id {
 	Identifier TypeInfo_AssociativeArray = new Identifier("TypeInfo_AssociativeArray", TOK.TOKidentifier);
 	Identifier TypeInfo_Function = new Identifier("TypeInfo_Function", TOK.TOKidentifier);
 	Identifier TypeInfo_Delegate = new Identifier("TypeInfo_Delegate", TOK.TOKidentifier);
+	Identifier TypeInfo_Tuple = new Identifier("TypeInfo_Tuple", TOK.TOKidentifier);
 	Identifier _arguments = new Identifier("_arguments", TOK.TOKidentifier);
 	Identifier _argptr = new Identifier("_argptr", TOK.TOKidentifier);
 	Identifier _match = new Identifier("_match", TOK.TOKidentifier);
@@ -154,5 +156,6 @@ public interface Id {
 	Identifier DllMain = new Identifier("DllMain", TOK.TOKidentifier);
 	Identifier toIdentifier = new Identifier("toIdentifier", TOK.TOKidentifier);
 	Identifier _arguments_typeinfo = new Identifier("_arguments_typeinfo", TOK.TOKidentifier);
+	Identifier elements = new Identifier("elements", TOK.TOKidentifier);
 
 }

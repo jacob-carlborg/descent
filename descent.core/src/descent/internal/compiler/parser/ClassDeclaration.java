@@ -24,6 +24,22 @@ public class ClassDeclaration extends AggregateDeclaration {
 	public boolean com;							// !=0 if this is a COM class
 	public List vtbl;			// Array of FuncDeclaration's making up the vtbl[]
     public List vtblFinal;		// More FuncDeclaration's that aren't in vtbl[]
+    
+    public ClassDeclaration(String id) {
+		this(id, null);
+	}
+    
+    public ClassDeclaration(String id, List<BaseClass> baseclasses) {
+		this(new Identifier(id, TOK.TOKidentifier), baseclasses);
+	}
+    
+    public ClassDeclaration(Identifier id) {
+		this(id, null);
+	}
+    
+    public ClassDeclaration(Identifier id, List<BaseClass> baseclasses) {
+		this(new IdentifierExp(id), baseclasses);
+	}
 
 	public ClassDeclaration(IdentifierExp id, List<BaseClass> baseclasses) {
 		super(id);

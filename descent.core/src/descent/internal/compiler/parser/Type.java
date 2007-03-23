@@ -131,8 +131,14 @@ public abstract class Type extends ASTNode {
 		return null;
 	}
 	
-	public Type arrayOf() {
-		return null;
+	public Type arrayOf(SemanticContext context) {
+		if (arrayof == null) {
+			Type t;
+
+			t = new TypeDArray(this);
+			arrayof = t.merge(context);
+		}
+		return arrayof;
 	}
 	
 	public Expression defaultInit(SemanticContext context) {

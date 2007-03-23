@@ -11,6 +11,24 @@ public class TypeTypedef extends Type {
 	}
 	
 	@Override
+	public Expression defaultInit(SemanticContext context) {
+		Expression e;
+		Type bt;
+
+		if (sym.init != null) {
+			return sym.init.toExpression(context);
+		}
+		bt = sym.basetype;
+		e = bt.defaultInit(context);
+		e.type = this;
+		while (bt.ty == TY.Tsarray) {
+			e.type = bt.next;
+			bt = bt.next.toBasetype(context);
+		}
+		return e;
+	}
+	
+	@Override
 	public Type semantic(Scope sc, SemanticContext context) {
 		 sym.semantic(sc, context);
 		 return merge(context);
