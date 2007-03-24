@@ -96,7 +96,7 @@ public class ThisExp extends Expression {
 		fdthis = sc.parent.isFuncDeclaration();
 		fd = hasThis(sc); // fd is the uplevel function with the 'this'
 							// variable
-		if (fd != null) {
+		if (fd == null) {
 			// goto Lerr;
 			return semantic_Lerr(sc, context);
 		}

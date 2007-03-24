@@ -9,6 +9,12 @@ public class StaticAssertStatement extends Statement {
 	}
 	
 	@Override
+	public Statement semantic(Scope sc, SemanticContext context) {
+		sa.semantic2(sc, context);
+	    return null;
+	}
+	
+	@Override
 	public int getNodeType() {
 		return STATIC_ASSERT_STATEMENT;
 	}

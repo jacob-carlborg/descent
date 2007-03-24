@@ -1477,4 +1477,10 @@ public class ASTRewriteFlattener extends ASTVisitor {
 		return false;
 	}
 	
+	@Override
+	public boolean visit(EmptyStatement node) {
+		this.result.append(";");
+		return false;
+	}
+	
 }

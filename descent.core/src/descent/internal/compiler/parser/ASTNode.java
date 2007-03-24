@@ -3,10 +3,18 @@ package descent.internal.compiler.parser;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.core.runtime.Assert;
+
 import descent.core.dom.DDocComment;
+import static descent.internal.compiler.parser.TY.*;
+import static descent.internal.compiler.parser.TOK.*;
 
 // class Object in DMD compiler
 public abstract class ASTNode {
+	
+	public final static int WANTflags = 1;
+	public final static int WANTvalue = 2;
+	public final static int WANTinterpret = 4;
 
 	public final static int ARGUMENT = 1;
 
@@ -373,6 +381,12 @@ public abstract class ASTNode {
 	public final static int SYM_OFF_EXP = 183;
 	
 	public final static int SCOPE_STATEMENT = 184;
+	
+	public final static int DELEGATE_EXP = 185;
+	
+	public final static int TUPLE_EXP = 186;
+	
+	public final static int UNROLLED_LOOP_STATEMENT = 187;
 
 	public int start;
 
@@ -415,6 +429,250 @@ public abstract class ASTNode {
 			modifiers = new ArrayList<Modifier>();
 		}
 		modifiers.addAll(someModifiers);
+	}
+	
+	public static Expression resolveProperties(Scope sc, Expression e,
+			SemanticContext context) {
+		if (e.type != null) {
+			Type t = e.type.toBasetype(context);
+
+			if (t.ty == TY.Tfunction) {
+				e = new CallExp(e);
+				e = e.semantic(sc, context);
+			}
+
+			/*
+			 * Look for e being a lazy parameter; rewrite as delegate call
+			 */
+			else if (e.op == TOK.TOKvar) {
+				VarExp ve = (VarExp) e;
+
+				if ((ve.var.storage_class & STC.STClazy) != 0) {
+					e = new CallExp(e);
+					e = e.semantic(sc, context);
+				}
+			}
+
+			else if (e.op == TOK.TOKdotexp) {
+				e.error("expression has no value");
+			}
+		}
+		return e;
+	}
+	
+	public static Dsymbol search_function(AggregateDeclaration ad, Identifier funcid, SemanticContext context) {
+		Dsymbol s;
+		FuncDeclaration fd;
+		TemplateDeclaration td;
+
+		s = ad.search(funcid, 0, context);
+		if (s != null) {
+			Dsymbol s2;
+
+			s2 = s.toAlias(context);
+			fd = s2.isFuncDeclaration();
+			if (fd != null && fd.type.ty == TY.Tfunction) {
+				return fd;
+			}
+
+			td = s2.isTemplateDeclaration();
+			if (td != null) {
+				return td;
+			}
+		}
+		return null;
+	}
+	
+	public static void inferApplyArgTypes(TOK op, List<Argument> arguments, Expression aggr, SemanticContext context) {
+		if (arguments == null || arguments.isEmpty())
+			return;
+
+		/*
+		 * Return if no arguments need types.
+		 */
+		for (int u = 0; true; u++) {
+			if (u == arguments.size())
+				return;
+			Argument arg = (Argument) arguments.get(u);
+			if (arg.type == null)
+				break;
+		}
+
+		AggregateDeclaration ad;
+		FuncDeclaration fd;
+
+		Argument arg = (Argument) arguments.get(0);
+		Type taggr = aggr.type;
+		if (taggr == null)
+			return;
+		Type tab = taggr.toBasetype(context);
+		switch (tab.ty) {
+		case Tarray:
+		case Tsarray:
+		case Ttuple:
+			if (arguments.size() == 2) {
+				if (arg.type == null) {
+					arg.type = Type.tsize_t; // key type
+				}
+				arg = (Argument) arguments.get(1);
+			}
+			if (arg.type == null && tab.ty != Ttuple) {
+				arg.type = tab.next; // value type
+			}
+			break;
+
+		case Taarray: {
+			TypeAArray taa = (TypeAArray) tab;
+
+			if (arguments.size() == 2) {
+				if (arg.type == null) {
+					arg.type = taa.index; // key type
+				}
+				arg = (Argument) arguments.get(1);
+			}
+			if (arg.type == null) {
+				arg.type = taa.next; // value type
+			}
+			break;
+		}
+
+		case Tclass: {
+			ad = ((TypeClass) tab).sym;
+			// goto Laggr;
+			/*
+			 * Look for an int opApply(int delegate(inout Type [, ...]) dg);
+			 * overload
+			 */
+			Dsymbol s = search_function(ad,
+					(op == TOKforeach_reverse) ? Id.applyReverse : Id.apply,
+					context);
+			if (s != null) {
+				fd = s.isFuncDeclaration();
+				if (fd != null)
+					inferApplyArgTypesX(fd, arguments, context);
+			}
+			break;
+		}
+
+		case Tstruct: {
+			ad = ((TypeStruct) tab).sym;
+			// goto Laggr;
+			/*
+			 * Look for an int opApply(int delegate(inout Type [, ...]) dg);
+			 * overload
+			 */
+			Dsymbol s = search_function(ad,
+					(op == TOKforeach_reverse) ? Id.applyReverse : Id.apply,
+					context);
+			if (s != null) {
+				fd = s.isFuncDeclaration();
+				if (fd != null)
+					inferApplyArgTypesX(fd, arguments, context);
+			}
+			break;
+		}
+
+		case Tdelegate: {
+			if (false && aggr.op == TOKdelegate) {
+				DelegateExp de = (DelegateExp) aggr;
+
+				fd = de.func.isFuncDeclaration();
+				if (fd != null)
+					inferApplyArgTypesX(fd, arguments, context);
+			} else {
+				inferApplyArgTypesY((TypeFunction) tab.next, arguments, context);
+			}
+			break;
+		}
+
+		default:
+			break; // ignore error, caught later
+		}
+	}
+	
+	public static void inferApplyArgTypesX(FuncDeclaration fstart,
+			List<Argument> arguments, SemanticContext context) {
+		Declaration d;
+		Declaration next;
+
+		for (d = fstart; d != null; d = next) {
+			FuncDeclaration f;
+			FuncAliasDeclaration fa;
+			AliasDeclaration a;
+
+			fa = d.isFuncAliasDeclaration();
+			if (fa != null) {
+				inferApplyArgTypesX(fa.funcalias, arguments, context);
+				next = fa.overnext;
+			} else if ((f = d.isFuncDeclaration()) != null) {
+				next = f.overnext;
+
+				TypeFunction tf = (TypeFunction) f.type;
+				if (inferApplyArgTypesY(tf, arguments, context)) {
+					continue;
+				}
+				if (arguments.size() == 0) {
+					return;
+				}
+			} else if ((a = d.isAliasDeclaration()) != null) {
+				Dsymbol s = a.toAlias(context);
+				next = s.isDeclaration();
+				if (next == a) {
+					break;
+				}
+				if (next == fstart) {
+					break;
+				}
+			} else {
+				d.error("is aliased to a function");
+				break;
+			}
+		}
+	}
+	
+	public static boolean inferApplyArgTypesY(TypeFunction tf, List<Argument> arguments, SemanticContext context) {
+		int nparams;
+		Argument p;
+
+		if (Argument.dim(tf.parameters, context) != 1) {
+			return true;
+		}
+		p = Argument.getNth(tf.parameters, 0, context);
+		if (p.type.ty != Tdelegate) {
+			return true;
+		}
+		tf = (TypeFunction) p.type.next;
+		Assert.isTrue(tf.ty == Tfunction);
+
+		/*
+		 * We now have tf, the type of the delegate. Match it against the
+		 * arguments, filling in missing argument types.
+		 */
+		nparams = Argument.dim(tf.parameters, context);
+		if (nparams == 0 || tf.varargs != 0) {
+			return true; // not enough parameters
+		}
+		if (arguments.size() != nparams) {
+			return true; // not enough parameters
+		}
+
+		for (int u = 0; u < nparams; u++) {
+			Argument arg = (Argument) arguments.get(u);
+			Argument param = Argument.getNth(tf.parameters, u, context);
+			if (arg.type != null) {
+				if (!arg.type.equals(param.type)) {
+					/*
+					 * Cannot resolve argument types. Indicate an error by
+					 * setting the number of arguments to 0.
+					 */
+					arguments.clear();
+					return false;
+				}
+				continue;
+			}
+			arg.type = param.type;
+		}
+		return false;
 	}
 
 	public abstract int getNodeType();

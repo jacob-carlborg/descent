@@ -289,7 +289,7 @@ public interface IProblem {
 	int DuplicatedInterfaceInheritance = 323;
 	int BaseTypeMustBeClassOrInterface = 324;
 	int FieldsNotAllowedInInterfaces = 325;
-	int IdentifierNotDefined = 326;
+	int UndefinedIdentifier = 326;
 	int NotAMember = 327;
 	int NewAllocatorsOnlyForClassOrStruct = 328;
 	int DeleteDeallocatorsOnlyForClassOrStruct = 329;
@@ -306,6 +306,9 @@ public interface IProblem {
 	int SymbolNotFound = 340;
 	int StaticAssertIsFalse = 341;
 	int VoidFunctionsHaveNoResult = 342;
+	int ReturnStatementsCannotBeInContracts = 343;
+	int NotAnAggregateType = 344;
+	int UnrecognizedPragma = 345;
 	
 	/* Others, needed by JDT */
 	int ForbiddenReference = 2001;

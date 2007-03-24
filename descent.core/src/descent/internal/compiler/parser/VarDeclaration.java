@@ -59,6 +59,18 @@ public class VarDeclaration extends Declaration {
 		   parent.isTemplateInstance() != null );
 	}
 	
+	public boolean isIn() {
+		return (storage_class & STC.STCin) != 0;
+	}
+
+	public boolean isOut() {
+		return (storage_class & STC.STCout) != 0;
+	}
+
+	public boolean isInOut() {
+		return (storage_class & (STC.STCin | STC.STCout)) == (STC.STCin | STC.STCout);
+	}
+	
 	public void checkNestedReference(Scope sc, SemanticContext context) {
 		if (!isDataseg(context) && parent != sc.parent && parent != null) {
 			FuncDeclaration fdv = toParent().isFuncDeclaration();

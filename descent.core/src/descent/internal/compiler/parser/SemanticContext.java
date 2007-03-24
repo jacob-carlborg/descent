@@ -1,5 +1,7 @@
 package descent.internal.compiler.parser;
 
+import org.eclipse.core.runtime.Assert;
+
 import descent.core.IProblemRequestor;
 import descent.core.compiler.IProblem;
 
@@ -25,6 +27,8 @@ public class SemanticContext {
 	public ClassDeclaration typeinfofunction;
 	public ClassDeclaration typeinfodelegate;
 	public ClassDeclaration typeinfotypelist;
+	
+	public DsymbolTable st;
 	
 	public SemanticContext(IProblemRequestor problemRequestor) {
 		this.problemRequestor = problemRequestor;
@@ -59,6 +63,34 @@ public class SemanticContext {
 		String name = prefix + ++generatedIds;
 		Identifier id = new Identifier(name, TOK.TOKidentifier);
 		return new IdentifierExp(id);
+	}
+	
+	public FuncDeclaration genCfunc(Type treturn, String name) {
+		return genCfunc(treturn, new Identifier(name, TOK.TOKidentifier));
+	}
+
+	public FuncDeclaration genCfunc(Type treturn, Identifier id) {
+		FuncDeclaration fd;
+		TypeFunction tf;
+		Dsymbol s;
+
+		// See if already in table
+		if (st == null)
+			st = new DsymbolTable();
+		s = st.lookup(id);
+		if (s != null) {
+			fd = s.isFuncDeclaration();
+			Assert.isNotNull(fd);
+			Assert.isTrue(fd.type.next.equals(treturn));
+		} else {
+			tf = new TypeFunction(null, treturn, 0, LINK.LINKc);
+			fd = new FuncDeclaration(new IdentifierExp(id), STC.STCstatic, tf);
+			fd.protection = PROT.PROTpublic;
+			fd.linkage = LINK.LINKc;
+
+			st.insert(fd);
+		}
+		return fd;
 	}
 
 }

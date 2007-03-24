@@ -12,6 +12,9 @@ public class FuncDeclaration extends Declaration {
 	public Statement fensure;
 	public Statement frequire;
 	public Statement fbody;
+	public Statement sourceFensure;
+	public Statement sourceFrequire;
+	public Statement sourceFbody;	
 	public IdentifierExp outId;
 	public int vtblIndex;			// for member functions, index into vtbl[]
 	public boolean introducing;			// !=0 if 'introducing' function
@@ -38,6 +41,10 @@ public class FuncDeclaration extends Declaration {
 										// 4 if there's an assert(0)
 										// 8 if there's inline asm
 	
+	 // Support for NRVO (named return value optimization)
+	public int nrvo_can;			// !=0 means we can do it
+    public VarDeclaration nrvo_var;		// variable to replace with shidden
+	
 	public FuncDeclaration(IdentifierExp ident, int storage_class, Type type) {
 		super(ident);
 		this.storage_class = storage_class;
@@ -47,6 +54,21 @@ public class FuncDeclaration extends Declaration {
 	@Override
 	public FuncDeclaration isFuncDeclaration() {
 		return this;
+	}
+	
+	public void setFrequire(Statement frequire) {
+		this.frequire = frequire;
+		sourceFrequire = frequire;
+	}
+	
+	public void setFensure(Statement fensure) {
+		this.fensure = fensure;
+		sourceFensure = fensure;
+	}
+	
+	public void setFbody(Statement fbody) {
+		this.fbody = fbody;
+		sourceFbody = fbody;
 	}
 	
 	public boolean isNested() {

@@ -3,12 +3,9 @@ package descent.internal.compiler.parser;
 import java.math.BigInteger;
 
 import descent.core.compiler.IProblem;
+import static descent.internal.compiler.parser.TY.*;
 
 public abstract class Expression extends ASTNode implements Cloneable {
-	
-	public final static int WANTflags = 1;
-	public final static int WANTvalue = 2;
-	public final static int WANTinterpret = 4;
 	
 	public TOK op;
 	public Type type;
@@ -20,6 +17,14 @@ public abstract class Expression extends ASTNode implements Cloneable {
 	public int checkSideEffect(int flags) {
 		// TODO semantic
 		return 1;
+	}
+	
+	public Expression checkToBoolean(SemanticContext context) {
+		if (type.checkBoolean(context)) {
+			error("expression %s of type %s does not have a boolean value",
+					toChars(), type.toChars());
+		}
+		return this;
 	}
 	
 	public void checkDeprecated(Scope sc, Dsymbol s, SemanticContext context) {
@@ -67,57 +72,40 @@ public abstract class Expression extends ASTNode implements Cloneable {
 	public boolean implicitConvTo(Type t, SemanticContext context) {
 		return false;
 	}
-	
-	public static Expression resolveProperties(Scope sc, Expression e,
-			SemanticContext context) {
-		if (e.type != null) {
-			Type t = e.type.toBasetype(context);
 
-			if (t.ty == TY.Tfunction) {
-				e = new CallExp(e);
-				e = e.semantic(sc, context);
-			}
-
-			/*
-			 * Look for e being a lazy parameter; rewrite as delegate call
-			 */
-			else if (e.op == TOK.TOKvar) {
-				VarExp ve = (VarExp) e;
-
-				if ((ve.var.storage_class & STC.STClazy) != 0) {
-					e = new CallExp(e);
-					e = e.semantic(sc, context);
-				}
-			}
-
-			else if (e.op == TOK.TOKdotexp) {
-				e.error("expression has no value");
-			}
-		}
-		return e;
+	public void checkEscape() {
 	}
 	
-	public static Dsymbol search_function(AggregateDeclaration ad, Identifier funcid, SemanticContext context) {
-		Dsymbol s;
-		FuncDeclaration fd;
-		TemplateDeclaration td;
+	public boolean isBit() {
+		return false;
+	}
+	
+	public Expression castTo(Scope sc, Type t, SemanticContext context) {
+		Expression e;
+		Type tb;
 
-		s = ad.search(funcid, 0, context);
-		if (s != null) {
-			Dsymbol s2;
-
-			s2 = s.toAlias(context);
-			fd = s2.isFuncDeclaration();
-			if (fd != null && fd.type.ty == TY.Tfunction) {
-				return fd;
+		e = this;
+		tb = t.toBasetype(context);
+		type = type.toBasetype(context);
+		if (tb != type) {
+			if (tb.ty == Tbit && isBit()) {
+				;
 			}
 
-			td = s2.isTemplateDeclaration();
-			if (td != null) {
-				return td;
+			// Do (type *) cast of (type [dim])
+			else if (tb.ty == Tpointer && type.ty == Tsarray) {
+
+				if (type.size() == 0) {
+					e = new NullExp();
+				} else {
+					e = new AddrExp(e);
+				}
+			} else {
+				e = new CastExp(e, tb);
 			}
 		}
-		return null;
+		e.type = t;
+		return e;
 	}
 
 }

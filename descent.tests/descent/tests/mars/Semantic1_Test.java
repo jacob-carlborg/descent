@@ -198,7 +198,7 @@ public class Semantic1_Test extends Parser_Test {
 		IProblem[] p = getModuleProblems(s);
 		assertEquals(2, p.length);
 
-		assertError(p[0], IProblem.IdentifierNotDefined, 14, 1);
+		assertError(p[0], IProblem.UndefinedIdentifier, 14, 1);
 		assertError(p[1], IProblem.UsedAsAType, 14, 1);
 	}
 
@@ -590,6 +590,86 @@ public class Semantic1_Test extends Parser_Test {
 		assertEquals(1, p.length);
 
 		assertError(p[0], IProblem.VoidFunctionsHaveNoResult, 16, 2);
+	}
+	
+	public void testReturnInPrecondition() {
+		String s = " void bla() in { return 1; } body { }";
+		IProblem[] p = getModuleProblems(s);
+		assertEquals(1, p.length);
+
+		assertError(p[0], IProblem.ReturnStatementsCannotBeInContracts, 17, 9);
+	}
+	
+	public void testThisOnlyAllowedInNonStaticMemberFunctions() {
+		String s = " void bla() { this; }";
+		IProblem[] p = getModuleProblems(s);
+		assertEquals(1, p.length);
+
+		assertError(p[0], IProblem.ThisOnlyAllowedInNonStaticMemberFunctions, 14, 4);
+	}
+	
+	public void testUndefinedIdentifier() {
+		String s = " int bla() { return a; }";
+		IProblem[] p = getModuleProblems(s);
+		assertEquals(1, p.length);
+
+		assertError(p[0], IProblem.UndefinedIdentifier, 20, 1);
+	}
+	
+	public void testUndefinedIdentifier_NOT() {
+		assertNoSemanticErrors(" int bla() { int a; return a; }");
+	}
+	
+	public void testNotAnAggregateType() {
+		String s = " void bla() { int a; foreach(x; a) { } }";
+		IProblem[] p = getModuleProblems(s);
+		assertEquals(1, p.length);
+
+		assertError(p[0], IProblem.UndefinedIdentifier, 20, 1);
+	}
+	
+	public void testNotAnAggregateType_OK() {
+		assertNoSemanticErrors(" void bla() { int[] a; foreach(x; a) { } }");
+	}
+	
+	public void testStringExpectedForPragmaMsg() {
+		String s = " void bla() { pragma(msg, 1); }";
+		IProblem[] p = getModuleProblems(s);
+		assertEquals(1, p.length);
+
+		assertError(p[0], IProblem.IllegalParameters, 26, 1);
+	}
+	
+	public void testStringExpectedForPragmaMsg_Not() {
+		assertNoSemanticErrors(" void bla() { pragma(msg, \"somelib\"); }");
+	}
+	
+	public void testStringExpectedForPragmaLib() {
+		String s = " void bla() { pragma(lib, 1); }";
+		IProblem[] p = getModuleProblems(s);
+		assertEquals(1, p.length);
+
+		assertError(p[0], IProblem.IllegalParameters, 26, 1);
+	}
+	
+	public void testStringExpectedForPragmaLib_Not() {
+		assertNoSemanticErrors(" void bla() { pragma(lib, \"somelib\"); }");
+	}
+	
+	public void testPragmaIllegalArguments() {
+		String s = " void bla() { pragma(lib); }";
+		IProblem[] p = getModuleProblems(s);
+		assertEquals(1, p.length);
+
+		assertError(p[0], IProblem.IllegalParameters, 14, 6);
+	}
+	
+	public void testUnrecognizedPragma() {
+		String s = " void bla() { pragma(some); }";
+		IProblem[] p = getModuleProblems(s);
+		assertEquals(1, p.length);
+
+		assertError(p[0], IProblem.UnrecognizedPragma, 21, 4);
 	}
 
 }

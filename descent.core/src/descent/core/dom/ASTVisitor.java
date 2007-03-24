@@ -3712,4 +3712,32 @@ public abstract class ASTVisitor {
 
 	}
 	
+	/**
+	 * Visits the given type-specific AST node.
+	 * <p>
+	 * The default implementation does nothing and return true.
+	 * Subclasses may reimplement.
+	 * </p>
+	 * 
+	 * @param node the node to visit
+	 * @return <code>true</code> if the children of this node should be
+	 * visited, and <code>false</code> if the children of this node should
+	 * be skipped
+	 */
+	public boolean visit(EmptyStatement node) {
+		return true;
+	}
+
+	/**
+	 * End of visit the given type-specific AST node.
+	 * <p>
+	 * The default implementation does nothing. Subclasses may reimplement.
+	 * </p>
+	 * 
+	 * @param node the node to visit
+	 */
+	public void endVisit(EmptyStatement node) {
+
+	}
+	
 }

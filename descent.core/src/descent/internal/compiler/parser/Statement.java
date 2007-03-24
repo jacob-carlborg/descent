@@ -20,6 +20,27 @@ public abstract class Statement extends ASTNode {
 	    sfinally[0] = null;
 	}
 	
+	public Statement semanticScope(Scope sc, Statement sbreak, Statement scontinue, SemanticContext context) {
+		Scope scd;
+		Statement s;
+
+		scd = sc.push();
+		if (sbreak != null) {
+			scd.sbreak = sbreak;
+		}
+		if (scontinue != null) {
+			scd.scontinue = scontinue;
+		}
+		s = semantic(scd, context);
+		scd.pop();
+		return s;
+	}
+	
+	public Statement syntaxCopy() {
+		// TODO semantic
+		return this;
+	}
+	
 	public boolean fallOffEnd() {
 		return true;
 	}

@@ -1,5 +1,7 @@
 package descent.internal.compiler.parser;
 
+import descent.core.compiler.IProblem;
+
 /*
  * Identifier + IdentifierExp
  */
@@ -86,7 +88,7 @@ public class IdentifierExp extends Expression {
 			}
 			return e.semantic(sc, context);
 		}
-		error("undefined identifier %s", this.toChars());
+		context.acceptProblem(Problem.newSemanticTypeError(ident.string + " cannot be resolved", IProblem.UndefinedIdentifier, 0, start, length));
 		type = Type.terror;
 		return this;
 	}

@@ -146,6 +146,7 @@ public interface Id {
 	Identifier classNew = new Identifier("new", TOK.TOKidentifier);
 	Identifier classDelete = new Identifier("delete", TOK.TOKidentifier);
 	Identifier apply = new Identifier("opApply", TOK.TOKidentifier);
+	Identifier applyReverse = new Identifier("opApplyReverse", TOK.TOKidentifier);
 	Identifier lib = new Identifier("lib", TOK.TOKidentifier);
 	Identifier msg = new Identifier("msg", TOK.TOKidentifier);
 	Identifier GNU_asm = new Identifier("GNU_asm", TOK.TOKidentifier);

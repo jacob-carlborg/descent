@@ -2445,12 +2445,12 @@ public class Parser extends Lexer {
 				if (f.frequire != null || f.fensure != null) {
 					parsingErrorInsertToComplete(prevToken, "body { ... }", "FunctionDeclaration");
 				}
-				f.fbody = parseStatement(PSsemi);
+				f.setFbody(parseStatement(PSsemi));
 				break;
 
 			case TOKbody:
 				nextToken();
-				f.fbody = parseStatement(PScurly);
+				f.setFbody(parseStatement(PScurly));
 				break;
 
 			case TOKsemicolon:
@@ -2481,7 +2481,7 @@ public class Parser extends Lexer {
 				}
 				nextToken();
 				
-				f.frequire = parseStatement(PScurly | PSscope);
+				f.setFrequire(parseStatement(PScurly | PSscope));
 				repeat = true;
 				break;
 
@@ -2506,7 +2506,7 @@ public class Parser extends Lexer {
 					check(TOKrparen);
 				}
 				
-				f.fensure = parseStatement(PScurly | PSscope);
+				f.setFensure(parseStatement(PScurly | PSscope));
 				repeat = true;
 				break;
 

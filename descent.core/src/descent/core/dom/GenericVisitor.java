@@ -31,6 +31,12 @@ public class GenericVisitor extends ASTVisitor {
 		
 		endVisitNode(node);
 	}
+	
+	@Override
+	public void endVisit(EmptyStatement node) {
+		
+		endVisitNode(node);
+	}
 
 	@Override
 	public void endVisit(AliasDeclaration node) {
@@ -1545,6 +1551,12 @@ public class GenericVisitor extends ASTVisitor {
 	
 	@Override
 	public boolean visit(ConstructorDeclaration node) {
+		
+		return visitNode(node);
+	}
+	
+	@Override
+	public boolean visit(EmptyStatement node) {
 		
 		return visitNode(node);
 	}

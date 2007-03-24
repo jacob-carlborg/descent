@@ -2343,5 +2343,15 @@ public final class AST {
 		FileImportExpression node = new FileImportExpression(this);
 		return node;
 	}
+	
+	/**
+	 * Creates an unparented empty statement node owned by this AST.
+	 * 
+	 * @return the new unparented empty statement node
+	 */
+	public EmptyStatement newEmptyStatement() {
+		EmptyStatement node = new EmptyStatement(this);
+		return node;
+	}
 
 }

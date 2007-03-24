@@ -10,6 +10,10 @@ public class IntegerExp extends Expression {
 	public String str;
 	public BigInteger value;
 	
+	public IntegerExp(int value, Type type) {
+		this(new BigInteger(String.valueOf(value)), type);
+	}
+	
 	public IntegerExp(BigInteger value, Type type) {
 		this(null, value, type);
 	}

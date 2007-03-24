@@ -1789,4 +1789,11 @@ class NaiveASTFlattener extends ASTVisitor {
 		return false;
 	}
 	
+	@Override
+	public boolean visit(EmptyStatement node) {
+		printIndent();
+		this.buffer.append(";");
+		return false;
+	}
+	
 }

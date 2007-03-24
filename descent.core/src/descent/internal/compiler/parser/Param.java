@@ -7,12 +7,12 @@ public class Param {
 	char obj;		// write object file
     char link;		// perform link
     char trace;		// insert profiling hooks
-    char quiet;		// suppress non-error messages
-    char verbose;	// verbose compile
+    boolean quiet;		// suppress non-error messages
+    boolean verbose;	// verbose compile
     char symdebug;	// insert debug symbolic information
     char optimize;	// run optimizer
     char cpu;		// target CPU
-    char isX86_64;	// generate X86_64 bit code
+    boolean isX86_64;	// generate X86_64 bit code
     char isLinux;	// generate code for linux
     char isWindows;	// generate code for Windows
     char scheduler;	// which scheduler to use

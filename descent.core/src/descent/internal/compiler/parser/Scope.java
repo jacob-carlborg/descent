@@ -33,7 +33,7 @@ public class Scope {
     public boolean inunion;		// we're processing members of a union
     public int incontract;		// we're inside contract code
     public boolean nofree;			// set if shouldn't free it
-    public boolean noctor;			// set if constructor calls aren't allowed
+    public int noctor;			// set if constructor calls aren't allowed
     public int flags;
     public Statement sbreak;		// enclosing statement that supports "break"
     public Statement scontinue;	// enclosing statement that supports "continue"
@@ -174,6 +174,36 @@ public class Scope {
 		for (sc = this; sc != null; sc = sc.enclosing) {
 			sc.nofree = true;
 		}
+	}
+
+	public void mergeCallSuper(int cs) {
+		// This does a primitive flow analysis to support the restrictions
+		// regarding when and how constructors can appear.
+		// It merges the results of two paths.
+		// The two paths are callSuper and cs; the result is merged into
+		// callSuper.
+
+		if (cs != callSuper) {
+			boolean a;
+			boolean b;
+
+			callSuper |= cs & (CSXany_ctor | CSXlabel);
+			if ((cs & CSXreturn) != 0) {
+			} else if ((callSuper & CSXreturn) != 0) {
+				callSuper = cs | (callSuper & (CSXany_ctor | CSXlabel));
+			} else {
+				a = (cs & (CSXthis_ctor | CSXsuper_ctor)) != 0;
+				b = (callSuper & (CSXthis_ctor | CSXsuper_ctor)) != 0;
+				if (a != b) {
+					error("one path skips constructor");
+				}
+				callSuper |= cs;
+			}
+		}
+	}
+	    
+	public void error(String s) {
+		throw new IllegalStateException("Problem reporting not implemented");
 	}
 
 }

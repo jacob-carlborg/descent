@@ -31,6 +31,8 @@ public abstract class Type extends ASTNode {
 	public final static Type tdchar = new TypeBasic(TY.Tdchar);
 	public final static Type terror = new TypeBasic(TY.Terror); // for error recovery
 	public final static Type tindex = tint32;
+	public final static Type tboolean = tbool;
+	public final static Type tsize_t = tuns32;
 	
 	public TY ty;
 	public Type next;
@@ -423,6 +425,14 @@ public abstract class Type extends ASTNode {
 	}
 	
 	public boolean isZeroInit() {
+		return false;
+	}
+	
+	public boolean checkBoolean(SemanticContext context) {
+		return isscalar(context);
+	}
+	
+	public boolean isscalar(SemanticContext context) {
 		return false;
 	}
 

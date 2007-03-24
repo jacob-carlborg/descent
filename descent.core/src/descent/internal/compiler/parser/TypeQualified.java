@@ -134,7 +134,7 @@ public abstract class TypeQualified extends Type {
 		if (s == null) {
 			// TODO semantic remove if and leave body
 			if (!toString().equals("Object")) {
-				context.acceptProblem(Problem.newSemanticTypeError("Identifier '" + this + "' is not defined", IProblem.IdentifierNotDefined, 0, start, length));
+				context.acceptProblem(Problem.newSemanticTypeError("Identifier '" + this + "' is not defined", IProblem.UndefinedIdentifier, 0, start, length));
 			}
 		}
 	}

@@ -6,15 +6,20 @@ import java.util.List;
 public class CompoundStatement extends Statement {
 	
 	public List<Statement> statements;
+	public List<Statement> sourceStatements;
 
 	public CompoundStatement(List<Statement> statements) {
 		this.statements = statements;
+		if (statements != null) {
+			this.sourceStatements = new ArrayList<Statement>(statements);
+		}
 	}
 	
 	public CompoundStatement(Statement s1, Statement s2) {
 		this.statements = new ArrayList<Statement>(2);
 		this.statements.add(s1);
 		this.statements.add(s2);
+		this.sourceStatements = new ArrayList<Statement>(statements);
 	}
 	
 	@Override

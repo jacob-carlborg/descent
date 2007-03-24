@@ -1065,6 +1065,13 @@ public abstract class ASTNode {
 	public static final int FILE_IMPORT_EXPRESSION = 130;
 	
 	/**
+	 * Node type constant indicating a node of type 
+	 * <code>EmptyStatement</code>.
+	 * @see EmptyStatement
+	 */
+	public static final int EMPTY_STATEMENT = 131;
+	
+	/**
 	 * Returns the node class for the corresponding node type.
 	 * 
 	 * @param nodeType AST node type
@@ -1335,6 +1342,8 @@ public abstract class ASTNode {
 			return MixinExpression.class;
 		case FILE_IMPORT_EXPRESSION:
 			return FileImportExpression.class;
+		case EMPTY_STATEMENT:
+			return EmptyStatement.class;
 		}
 		return null;
 	}
