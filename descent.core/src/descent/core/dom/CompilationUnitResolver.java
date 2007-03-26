@@ -132,7 +132,7 @@ public class CompilationUnitResolver extends descent.internal.compiler.Compiler 
 			public boolean isActive() {
 				return true;
 			}
-		}));
+		}, module.ast));
 		return module;
 	}
 	

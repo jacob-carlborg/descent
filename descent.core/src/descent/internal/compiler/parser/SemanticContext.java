@@ -4,6 +4,7 @@ import org.eclipse.core.runtime.Assert;
 
 import descent.core.IProblemRequestor;
 import descent.core.compiler.IProblem;
+import descent.core.dom.AST;
 
 public class SemanticContext {
 	
@@ -29,9 +30,11 @@ public class SemanticContext {
 	public ClassDeclaration typeinfotypelist;
 	
 	public DsymbolTable st;
+	public AST ast;
 	
-	public SemanticContext(IProblemRequestor problemRequestor) {
+	public SemanticContext(IProblemRequestor problemRequestor, AST ast) {
 		this.problemRequestor = problemRequestor;
+		this.ast = ast;
 		this.typeStringTable = new StringTable();
 		this.object = new ClassDeclaration(Id.Object);
 		this.typeinfo = new ClassDeclaration(Id.TypeInfo);

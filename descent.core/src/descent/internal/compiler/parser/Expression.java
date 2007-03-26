@@ -59,7 +59,7 @@ public abstract class Expression extends ASTNode implements Cloneable {
 		return a;
 	}
 	
-	private Expression syntaxCopy() {
+	public Expression syntaxCopy() {
 		// TODO semantic
 		return null;
 	}

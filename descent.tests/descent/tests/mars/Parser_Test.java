@@ -116,7 +116,7 @@ public abstract class Parser_Test extends TestCase {
 			public boolean isActive() {
 				return false;
 			}
-		}));
+		}, module.ast));
 		return CompilationUnitResolver.convert(module, null);
 	}
 	

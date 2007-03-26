@@ -32,4 +32,9 @@ public class StringExp extends Expression {
 		return this;
 	}
 
+	public StringExp toUTF8(Scope sc) {
+		// TODO semantic
+		return this;
+	}
+
 }

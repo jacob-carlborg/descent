@@ -217,7 +217,7 @@ public class Parser extends Lexer {
 	}
 
 	@SuppressWarnings("unchecked")
-	private List<Dsymbol> parseDeclDefs(boolean once) {
+	public List<Dsymbol> parseDeclDefs(boolean once) {
 		Dsymbol s = null;
 		List<Dsymbol> decldefs;
 		List<Dsymbol> a = new ArrayList<Dsymbol>();
@@ -349,7 +349,7 @@ public class Parser extends Lexer {
 						nextToken();
 						aelse = parseBlock();
 					}					
-					s = new ConditionalDeclaration(condition, a, aelse);
+					s = new StaticIfDeclaration(condition, a, aelse);
 					break;
 				} else if (token.value == TOKimport) {
 					s = parseImport(true);
