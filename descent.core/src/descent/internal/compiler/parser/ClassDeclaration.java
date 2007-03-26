@@ -1,5 +1,7 @@
 package descent.internal.compiler.parser;
 
+import static descent.internal.compiler.parser.PROT.PROTnone;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -59,6 +61,53 @@ public class ClassDeclaration extends AggregateDeclaration {
 	@Override
 	public ClassDeclaration isClassDeclaration() {
 		return this;
+	}
+	
+	public PROT getAccess(Dsymbol smember) {
+		PROT access_ret = PROTnone;
+
+		if (smember.toParent() == this) {
+			access_ret = smember.prot();
+		} else {
+			PROT access;
+			int i;
+
+			if (smember.isDeclaration().isStatic()) {
+				access_ret = smember.prot();
+			}
+
+			for (i = 0; i < baseclasses.size(); i++) {
+				BaseClass b = (BaseClass) baseclasses.get(i);
+
+				access = b.base.getAccess(smember);
+				switch (access) {
+				case PROTnone:
+					break;
+
+				case PROTprivate:
+					access = PROTnone; // private members of base class not
+										// accessible
+					break;
+
+				case PROTpackage:
+				case PROTprotected:
+				case PROTpublic:
+				case PROTexport:
+					// If access is to be tightened
+					if (b.protection.level < access.level)
+						access = b.protection;
+
+					// Pick path with loosest access
+					if (access.level > access_ret.level)
+						access_ret = access;
+					break;
+
+				default:
+					Assert.isTrue(false);
+				}
+			}
+		}
+		return access_ret;
 	}
 	
 	@Override

@@ -57,4 +57,39 @@ public class LinkDeclaration extends AttribDeclaration {
 		return ld;
 	}
 
+	@Override
+	public void toCBuffer(OutBuffer buf, HdrGenState hgs) {
+		String p = null;
+
+		switch (linkage) {
+		case LINKd:
+			p = "D";
+			break;
+		case LINKc:
+			p = "C";
+			break;
+		case LINKcpp:
+			p = "C++";
+			break;
+		case LINKwindows:
+			p = "Windows";
+			break;
+		case LINKpascal:
+			p = "Pascal";
+			break;
+		default:
+			Assert.isTrue(false);
+			break;
+		}
+		buf.writestring("extern (");
+		buf.writestring(p);
+		buf.writestring(") ");
+		super.toCBuffer(buf, hgs);
+	}
+
+	@Override
+	public String toString() {
+		return "extern ()";
+	}
+
 }

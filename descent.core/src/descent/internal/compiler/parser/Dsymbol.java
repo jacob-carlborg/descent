@@ -53,7 +53,7 @@ public abstract class Dsymbol extends ASTNode {
 		this();
 		this.ident = ident;
 	}
-
+	
 	public void addLocalClass(List<ClassDeclaration> aclasses) {
 
 	}
@@ -148,10 +148,6 @@ public abstract class Dsymbol extends ASTNode {
 
 	public boolean hasPointers() {
 		return false;
-	}
-
-	public void inlineScan(SemanticContext context) {
-
 	}
 
 	public AggregateDeclaration isAggregateDeclaration() {
@@ -266,6 +262,10 @@ public abstract class Dsymbol extends ASTNode {
 	public NewDeclaration isNewDeclaration() {
 		return null;
 	}
+	
+	public Package isPackage() {
+		return null;
+	}
 
 	public ScopeDsymbol isScopeDsymbol() {
 		return null;
@@ -374,6 +374,10 @@ public abstract class Dsymbol extends ASTNode {
 
 	public Dsymbol toAlias(SemanticContext context) {
 		return this;
+	}
+	
+	public void toCBuffer(OutBuffer buf, HdrGenState hgs) {
+		
 	}
 
 	public Dsymbol toParent() {

@@ -309,6 +309,8 @@ public interface IProblem {
 	int ReturnStatementsCannotBeInContracts = 343;
 	int NotAnAggregateType = 344;
 	int UnrecognizedPragma = 345;
+	int AnonCanOnlyBePartOfAnAggregate = 346;
+	int PragmaIsMissingClosingSemicolon = 347;
 	
 	/* Others, needed by JDT */
 	int ForbiddenReference = 2001;

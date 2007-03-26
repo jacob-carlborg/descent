@@ -1,6 +1,8 @@
 package descent.internal.compiler.parser;
 
 import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.List;
 
 import descent.core.compiler.IProblem;
 import static descent.internal.compiler.parser.TY.*;
@@ -44,6 +46,24 @@ public abstract class Expression extends ASTNode implements Cloneable {
 		return this;
 	}
 	
+	public static List<Expression> arraySyntaxCopy(List<Expression> exps) {
+		List<Expression> a = null;
+
+		if (exps != null) {
+			a = new ArrayList<Expression>(exps.size());
+			for (Expression e : exps) {
+				e = e.syntaxCopy();
+				a.add(e);
+			}
+		}
+		return a;
+	}
+	
+	private Expression syntaxCopy() {
+		// TODO semantic
+		return null;
+	}
+
 	public Expression copy() {
 		try {
 			return (Expression) clone();
@@ -106,6 +126,10 @@ public abstract class Expression extends ASTNode implements Cloneable {
 		}
 		e.type = t;
 		return e;
+	}
+
+	public void toCBuffer(OutBuffer buf, HdrGenState hgs) {
+		// TOOD semantic
 	}
 
 }

@@ -6,6 +6,7 @@ import java.util.List;
 import org.eclipse.core.runtime.Assert;
 
 import descent.core.compiler.IProblem;
+import static descent.internal.compiler.parser.PROT.*;
 
 public class StructDeclaration extends AggregateDeclaration {
 	
@@ -19,6 +20,17 @@ public class StructDeclaration extends AggregateDeclaration {
 	@Override
 	public StructDeclaration isStructDeclaration() {
 		return this;
+	}
+	
+	public PROT getAccess(Dsymbol smember) {
+		PROT access_ret = PROTnone;
+
+		if (smember.toParent() == this) {
+			access_ret = smember.prot();
+		} else if (smember.isDeclaration().isStatic()) {
+			access_ret = smember.prot();
+		}
+		return access_ret;
 	}
 	
 	@Override

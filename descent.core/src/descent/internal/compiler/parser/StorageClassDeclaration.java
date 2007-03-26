@@ -1,10 +1,32 @@
 package descent.internal.compiler.parser;
 
 import java.util.List;
+import static descent.internal.compiler.parser.TOK.*;
+import static descent.internal.compiler.parser.STC.*;
 
 import org.eclipse.core.runtime.Assert;
 
 public class StorageClassDeclaration extends AttribDeclaration {
+
+	static class SCstring {
+		int stc;
+		TOK tok;
+
+		public SCstring(int stc, TOK tok) {
+			this.stc = stc;
+			this.tok = tok;
+		}
+	}
+
+	static SCstring[] table = { new SCstring(STCauto, TOKauto),
+			new SCstring(STCscope, TOKscope),
+			new SCstring(STCstatic, TOKstatic),
+			new SCstring(STCextern, TOKextern),
+			new SCstring(STCconst, TOKconst), new SCstring(STCfinal, TOKfinal),
+			new SCstring(STCabstract, TOKabstract),
+			new SCstring(STCsynchronized, TOKsynchronized),
+			new SCstring(STCdeprecated, TOKdeprecated),
+			new SCstring(STCoverride, TOKoverride), };
 
 	public boolean single;
 	public int stc;
@@ -17,6 +39,11 @@ public class StorageClassDeclaration extends AttribDeclaration {
 		this.stc = stc;
 		this.single = single;
 		this.modifier = modifier;
+	}
+
+	@Override
+	public int getNodeType() {
+		return STORAGE_CLASS_DECLARATION;
 	}
 
 	@Override
@@ -41,11 +68,6 @@ public class StorageClassDeclaration extends AttribDeclaration {
 	}
 
 	@Override
-	public int getNodeType() {
-		return STORAGE_CLASS_DECLARATION;
-	}
-
-	@Override
 	public Dsymbol syntaxCopy(Dsymbol s) {
 		StorageClassDeclaration scd;
 
@@ -53,6 +75,22 @@ public class StorageClassDeclaration extends AttribDeclaration {
 		scd = new StorageClassDeclaration(stc, Dsymbol.arraySyntaxCopy(decl),
 				modifier, single);
 		return scd;
+	}
+
+	@Override
+	public void toCBuffer(OutBuffer buf, HdrGenState hgs) {
+		boolean written = false;
+		for (SCstring sc : table) {
+			if ((stc & sc.stc) != 0) {
+				if (written) {
+					buf.writeByte(' ');
+				}
+				written = true;
+				buf.writestring(sc.tok.toString());
+			}
+		}
+
+		super.toCBuffer(buf, hgs);
 	}
 
 }

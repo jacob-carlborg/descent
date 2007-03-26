@@ -22,6 +22,22 @@ public class OutBuffer {
 		data.append((char) b);
 	}
 	
+	public void writeByte(char b) {
+		data.append((char) b);
+	}
+	
+	public void printf(String s) {
+		data.append(s);
+	}
+	
+	public void writenl() {
+		data.append("\n");
+	}
+	
+	public void writestring(String s) {
+		data.append(s);
+	}
+	
 	public void writeUTF8(int b) {
 	    if (b <= 0x7F)
 	    {

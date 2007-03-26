@@ -109,4 +109,21 @@ public abstract class AttribDeclaration extends Dsymbol {
 		}
 	}
 
+	@Override
+	public void toCBuffer(OutBuffer buf, HdrGenState hgs) {
+		if (decl != null) {
+			buf.writenl();
+			buf.writeByte('{');
+			buf.writenl();
+			for (Dsymbol s : decl) {
+				buf.writestring("    ");
+				s.toCBuffer(buf, hgs);
+			}
+			buf.writeByte('}');
+		} else {
+			buf.writeByte(':');
+		}
+		buf.writenl();
+	}
+
 }

@@ -206,4 +206,24 @@ public class Scope {
 		throw new IllegalStateException("Problem reporting not implemented");
 	}
 
+	public AggregateDeclaration getStructClassScope() {
+		Scope sc;
+
+		for (sc = this; sc != null; sc = sc.enclosing) {
+			AggregateDeclaration ad;
+
+			if (sc.scopesym != null) {
+				ad = sc.scopesym.isClassDeclaration();
+				if (ad != null)
+					return ad;
+				else {
+					ad = sc.scopesym.isStructDeclaration();
+					if (ad != null)
+						return ad;
+				}
+			}
+		}
+		return null;
+	}
+
 }

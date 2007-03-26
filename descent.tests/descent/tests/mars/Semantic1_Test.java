@@ -671,5 +671,37 @@ public class Semantic1_Test extends Parser_Test {
 
 		assertError(p[0], IProblem.UnrecognizedPragma, 21, 4);
 	}
+	
+	public void testAnonUnionNotInAggregate() {
+		String s = " union { }";
+		IProblem[] p = getModuleProblems(s);
+		assertEquals(1, p.length);
+
+		assertError(p[0], IProblem.AnonCanOnlyBePartOfAnAggregate, 1, 5);
+	}
+	
+	public void testAnonUnionNotInAggregate_Not() {
+		assertNoSemanticErrors(" class X { union { } }");
+	}
+	
+	public void testAnonStructNotInAggregate() {
+		String s = " struct { }";
+		IProblem[] p = getModuleProblems(s);
+		assertEquals(1, p.length);
+
+		assertError(p[0], IProblem.AnonCanOnlyBePartOfAnAggregate, 1, 6);
+	}
+	
+	public void testAnonStructNotInAggregate_Not() {
+		assertNoSemanticErrors(" class X { struct { } }");
+	}
+	
+	public void testPragmaIsMissingClosingSemicolon() {
+		String s = " pragma(lib, \"a\")";
+		IProblem[] p = getModuleProblems(s);
+		assertEquals(1, p.length);
+
+		assertError(p[0], IProblem.PragmaIsMissingClosingSemicolon, 1, 6);
+	}
 
 }

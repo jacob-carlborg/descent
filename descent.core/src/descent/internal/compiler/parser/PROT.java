@@ -2,15 +2,20 @@ package descent.internal.compiler.parser;
 
 public enum PROT {
 	
-	PROTundefined,
-    PROTnone,		// no access
-    PROTprivate,
-    PROTpackage,
-    PROTprotected,
-    PROTpublic,
-    PROTexport,
+	PROTundefined(0),
+    PROTnone(1),		// no access
+    PROTprivate(2),
+    PROTpackage(3),
+    PROTprotected(4),
+    PROTpublic(5),
+    PROTexport(6),
     
     ;
+	
+	public int level;
+	PROT(int level) {
+		this.level = level;
+	}
 	
 	public static PROT fromTOK(TOK tok) {
 		switch(tok) {
