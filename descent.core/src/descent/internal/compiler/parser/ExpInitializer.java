@@ -52,11 +52,11 @@ public class ExpInitializer extends Initializer {
 		// with a single member.
 		if (tb.ty == TY.Tsarray
 				&& !tb.next.equals(exp.type.toBasetype(context).next)
-				&& exp.implicitConvTo(tb.next, context)) {
+				&& exp.implicitConvTo(tb.next, context) != MATCH.MATCHnomatch) {
 			t = tb.next;
 		}
 
-		exp = exp.implicitCastTo(sc, t);
+		exp = exp.implicitCastTo(sc, t, context);
 		// L1:
 		exp = exp.optimize(Expression.WANTvalue | Expression.WANTinterpret);
 		return this;

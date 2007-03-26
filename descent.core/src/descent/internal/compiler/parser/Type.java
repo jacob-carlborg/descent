@@ -33,6 +33,8 @@ public abstract class Type extends ASTNode {
 	public final static Type tindex = tint32;
 	public final static Type tboolean = tbool;
 	public final static Type tsize_t = tuns32;
+	// TODO fill this field
+	public static boolean impcnvWarn[][];
 	
 	public TY ty;
 	public Type next;

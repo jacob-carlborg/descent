@@ -80,7 +80,7 @@ public class TypeFunction extends Type {
 					arg.defaultArg = Expression.resolveProperties(sc,
 							arg.defaultArg, context);
 					arg.defaultArg = arg.defaultArg
-							.implicitCastTo(sc, arg.type);
+							.implicitCastTo(sc, arg.type, context);
 				}
 			}
 		}

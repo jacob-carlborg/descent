@@ -1118,7 +1118,7 @@ public class FuncDeclaration extends Declaration {
 						Expression e = new VarExp(vresult);
 						e.synthetic = true;
 						if (tintro != null) {
-							e = e.implicitCastTo(sc, tintro.next);
+							e = e.implicitCastTo(sc, tintro.next, context);
 							e = e.semantic(sc, context);
 						}
 						ReturnStatement s = new ReturnStatement(e);

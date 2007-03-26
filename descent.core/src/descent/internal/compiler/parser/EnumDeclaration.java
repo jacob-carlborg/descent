@@ -134,7 +134,7 @@ public class EnumDeclaration extends ScopeDsymbol {
 				e = e.optimize(Expression.WANTvalue);
 				// Need to copy it because we're going to change the type
 				e = e.copy();
-				e = e.implicitCastTo(sc, memtype);
+				e = e.implicitCastTo(sc, memtype, context);
 				e = e.optimize(Expression.WANTvalue);
 				number = e.toInteger(context);
 				e.type = t;

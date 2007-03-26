@@ -311,6 +311,7 @@ public interface IProblem {
 	int UnrecognizedPragma = 345;
 	int AnonCanOnlyBePartOfAnAggregate = 346;
 	int PragmaIsMissingClosingSemicolon = 347;
+	int CannotImplicitlyConvert = 348;
 	
 	/* Others, needed by JDT */
 	int ForbiddenReference = 2001;

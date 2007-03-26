@@ -124,7 +124,7 @@ public class ReturnStatement extends Statement {
 						}
 					}
 				} else if (tbret.ty != Tvoid) {
-					exp = exp.implicitCastTo(sc, tret);
+					exp = exp.implicitCastTo(sc, tret, context);
 				}
 			} else if (fd.inferRetType) {
 				if (fd.type.next != null) {
@@ -148,7 +148,7 @@ public class ReturnStatement extends Statement {
 			Statement s;
 
 			if (exp != null && implicit0 == 0) {
-				exp = exp.implicitCastTo(sc, tret);
+				exp = exp.implicitCastTo(sc, tret, context);
 			}
 			if (exp == null || exp.op == TOKint64 || exp.op == TOKfloat64
 					|| exp.op == TOKimaginary80 || exp.op == TOKcomplex80

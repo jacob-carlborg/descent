@@ -1647,8 +1647,8 @@ public class ASTConverter {
 		if (a.ident != null) {
 			b.setName(convert(a.ident));
 		}
-		if (a.defaultArg != null) {
-			b.setDefaultValue(convert(a.defaultArg));
+		if (a.sourceDefaultArg != null) {
+			b.setDefaultValue(convert(a.sourceDefaultArg));
 		}
 		b.setSourceRange(a.start, a.length);
 		return b;

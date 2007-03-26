@@ -8,6 +8,7 @@ public class Argument extends ASTNode {
 	public Type type;
 	public IdentifierExp ident;
 	public Expression defaultArg;
+	public Expression sourceDefaultArg;
     
     public Argument(InOut inout, Type type, IdentifierExp ident, Expression defaultArg) {
 		this.inout = inout;
@@ -18,6 +19,7 @@ public class Argument extends ASTNode {
 		}
 		this.ident = ident;
 		this.defaultArg = defaultArg;
+		this.sourceDefaultArg = defaultArg;
 	}
     
     public static int dim(List<Argument> args, SemanticContext context) {

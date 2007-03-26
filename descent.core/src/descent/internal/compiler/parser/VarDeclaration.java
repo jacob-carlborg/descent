@@ -343,7 +343,7 @@ public class VarDeclaration extends Declaration {
 						e1 = new SliceExp(e1, null, null);
 					} else if (t.ty == TY.Tstruct) {
 						ei.exp = ei.exp.semantic(sc, context);
-						if (!ei.exp.implicitConvTo(type, context))
+						if (ei.exp.implicitConvTo(type, context) == MATCH.MATCHnomatch)
 							ei.exp = new CastExp(ei.exp, type);
 					}
 					ei.exp = new AssignExp(e1, ei.exp);

@@ -255,7 +255,7 @@ public class ForeachStatement extends Statement {
 
 			if (!value.type.equals(tab.next)) {
 				if (aggr.op == TOKstring)
-					aggr = aggr.implicitCastTo(sc, value.type.arrayOf(context));
+					aggr = aggr.implicitCastTo(sc, value.type.arrayOf(context), context);
 				else
 					error("foreach: %s is not an array of %s", tab.toChars(),
 							value.type.toChars());

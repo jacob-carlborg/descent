@@ -36,7 +36,7 @@ public class TemplateValueParameter extends TemplateParameter {
 			Expression e = specValue;
 
 			e = e.semantic(sc, context);
-			e = e.implicitCastTo(sc, valType);
+			e = e.implicitCastTo(sc, valType, context);
 			e = e.optimize(Expression.WANTvalue | Expression.WANTinterpret);
 			if (e.op == TOK.TOKint64 || e.op == TOK.TOKfloat64
 					|| e.op == TOK.TOKcomplex80 || e.op == TOK.TOKnull
