@@ -1351,6 +1351,7 @@ public class Lexer implements IProblemRequestor {
 			error("Unterminated character constant", 
 					IProblem.UnterminatedCharacterConstant, token.lineNumber, token.ptr, p
 							- token.ptr);
+			t.intValue = BigInteger.ZERO;
 			return tk;
 		}
 
@@ -1364,6 +1365,7 @@ public class Lexer implements IProblemRequestor {
 					error("Unterminated character constant",
 							IProblem.UnterminatedCharacterConstant,
 							token.lineNumber, token.ptr, p - token.ptr);
+					t.intValue = BigInteger.ZERO;
 					return tk;
 				}
 				if (c < 0xD800 || (c >= 0xE000 && c < 0xFFFE))

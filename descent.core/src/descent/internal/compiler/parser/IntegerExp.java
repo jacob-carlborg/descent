@@ -1,8 +1,13 @@
 package descent.internal.compiler.parser;
 
+import static descent.internal.compiler.parser.MATCH.MATCHconvert;
+import static descent.internal.compiler.parser.MATCH.MATCHexact;
+import static descent.internal.compiler.parser.MATCH.MATCHnomatch;
+import static descent.internal.compiler.parser.TY.Tenum;
+import static descent.internal.compiler.parser.TY.Tint32;
+import static descent.internal.compiler.parser.TY.Tuns32;
+
 import java.math.BigInteger;
-import static descent.internal.compiler.parser.MATCH.*;
-import static descent.internal.compiler.parser.TY.*;
 
 public class IntegerExp extends Expression {
 	
@@ -10,7 +15,8 @@ public class IntegerExp extends Expression {
 	private final static BigInteger N_0xFFFFFFFF80000000 = new BigInteger("FFFFFFFF80000000", 16);
 	private final static BigInteger N_0xFF = new BigInteger("FF", 16);
 	private final static BigInteger N_0xFFFF = new BigInteger("FFFF", 16);
-	private final static BigInteger N_0xFFFFFFFF = new BigInteger("FFFFFFFF", 16);	
+	private final static BigInteger N_0xFFFFFFFF = new BigInteger("FFFFFFFF", 16);
+	private final static BigInteger N_0x10FFFF = new BigInteger("10FFFF", 16);
 
 	public String str;
 	public BigInteger value;
@@ -112,9 +118,9 @@ public class IntegerExp extends Expression {
 		return value;
 	}
 	
+	// TODO check the original source file to finish
 	@Override
 	public MATCH implicitConvTo(Type t, SemanticContext context) {
-		/* TODO semantic
 	    if (type.equals(t))
 		return MATCHexact;
 
@@ -133,7 +139,7 @@ public class IntegerExp extends Expression {
 		    break;
 
 		case Tint8:
-		    value = (signed char)value;
+		    value = cast(value, ty);
 		    ty = Tint32;
 		    break;
 
@@ -144,7 +150,7 @@ public class IntegerExp extends Expression {
 		    break;
 
 		case Tint16:
-		    value = (short)value;
+			value = cast(value, ty);
 		    ty = Tint32;
 		    break;
 
@@ -155,7 +161,7 @@ public class IntegerExp extends Expression {
 		    break;
 
 		case Tint32:
-		    value = (int)value;
+			value = cast(value, ty);
 		    break;
 
 		case Tuns32:
@@ -173,58 +179,58 @@ public class IntegerExp extends Expression {
 	    {
 		case Tbit:
 		case Tbool:
-		    if ((value & 1) != value)
-			goto Lno;
-		    goto Lyes;
+		    if (!(value.and(BigInteger.ONE)).equals(value))
+		    	return MATCHnomatch;
+		    return MATCHconvert;
 
 		case Tint8:
-		    if ((signed char)value != value)
-			goto Lno;
-		    goto Lyes;
+		    if (!cast(value, ty).equals(value))
+		    	return MATCHnomatch;
+		    return MATCHconvert;
 
 		case Tchar:
 		case Tuns8:
-		    //printf("value = %llu %llu\n", (integer_t)(unsigned char)value, value);
-		    if ((unsigned char)value != value)
-			goto Lno;
-		    goto Lyes;
+		    if (!cast(value, ty).equals(value))
+		    	return MATCHnomatch;
+		    return MATCHconvert;
 
 		case Tint16:
-		    if ((short)value != value)
-			goto Lno;
-		    goto Lyes;
+		    if (!cast(value, ty).equals(value))
+		    	return MATCHnomatch;
+		    return MATCHconvert;
 
 		case Tuns16:
-		    if ((unsigned short)value != value)
-			goto Lno;
-		    goto Lyes;
+		    if (!cast(value, ty).equals(value))
+		    	return MATCHnomatch;
+		    return MATCHconvert;
 
 		case Tint32:
 		    if (ty == Tuns32)
 		    {
 		    }
-		    else if ((int)value != value)
-			goto Lno;
-		    goto Lyes;
+		    else if (!cast(value, ty).equals(value))
+		    	return MATCHnomatch;
+		    return MATCHconvert;
 
 		case Tuns32:
 		    if (ty == Tint32)
 		    {
 		    }
-		    else if ((unsigned)value != value)
-			goto Lno;
-		    goto Lyes;
+		    else if (!cast(value, ty).equals(value))
+		    	return MATCHnomatch;
+		    return MATCHconvert;
 
 		case Tdchar:
-		    if (value > 0x10FFFFUL)
-			goto Lno;
-		    goto Lyes;
+		    if (value.compareTo(N_0x10FFFF) > 0)
+		    	return MATCHnomatch;
+		    return MATCHconvert;
 
 		case Twchar:
-		    if ((unsigned short)value != value)
-			goto Lno;
-		    goto Lyes;
+		    if (!cast(value, ty).equals(value))
+		    	return MATCHnomatch;
+		    return MATCHconvert;
 
+		    /* TODO semantic
 		case Tfloat32:
 		{
 		    volatile float f;
@@ -278,16 +284,9 @@ public class IntegerExp extends Expression {
 		    }
 		    goto Lyes;
 		}
+		*/
 	    }
-	    return Expression::implicitConvTo(t);
-
-	Lyes:
-	    return MATCHconvert;
-
-	Lno:
-	    return MATCHnomatch;
-	    */
-		return MATCH.MATCHnomatch;
+	    return super.implicitConvTo(t, context);
 	}
 	
 	private BigInteger cast(BigInteger num, TY ty) {
