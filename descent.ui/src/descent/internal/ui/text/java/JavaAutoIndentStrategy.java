@@ -594,6 +594,7 @@ public class JavaAutoIndentStrategy extends DefaultIndentLineAutoEditStrategy {
 									  IJavaPartitions.JAVA_SINGLE_LINE_COMMENT,
 									  IJavaPartitions.JAVA_SINGLE_LINE_DOC_COMMENT,
 									  IJavaPartitions.JAVA_STRING,
+									  IJavaPartitions.JAVA_PRAGMA,
 									  IJavaPartitions.JAVA_CHARACTER,
 									  IDocument.DEFAULT_CONTENT_TYPE
 		};

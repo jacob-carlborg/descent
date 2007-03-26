@@ -161,6 +161,11 @@ public class JavaSourceViewerConfiguration extends TextSourceViewerConfiguration
 	 */
 	private AbstractJavaScanner fStringScanner;
 	/**
+	 * The Java pragma scanner.
+	 * @since 3.0
+	 */
+	private AbstractJavaScanner fPragmaScanner;
+	/**
 	 * The Javadoc scanner.
 	 * @since 3.0
 	 */
@@ -270,6 +275,16 @@ public class JavaSourceViewerConfiguration extends TextSourceViewerConfiguration
 	protected RuleBasedScanner getStringScanner() {
 		return fStringScanner;
 	}
+	
+	/**
+	 * Returns the Java pragma scanner for this configuration.
+	 *
+	 * @return the Java pragma scanner
+	 * @since 2.0
+	 */
+	protected RuleBasedScanner getPragmaScanner() {
+		return fPragmaScanner;
+	}
 
 	/**
 	 * Returns the JavaDoc scanner for this configuration.
@@ -339,6 +354,7 @@ public class JavaSourceViewerConfiguration extends TextSourceViewerConfiguration
 		fSinglelineCommentScanner= new JavaCommentScanner(getColorManager(), fPreferenceStore, IJavaColorConstants.JAVA_SINGLE_LINE_COMMENT);
 		fSinglelineDocCommentScanner= new JavaCommentScanner(getColorManager(), fPreferenceStore, IJavaColorConstants.JAVA_SINGLE_LINE_DOC_COMMENT);
 		fStringScanner= new SingleTokenJavaScanner(getColorManager(), fPreferenceStore, IJavaColorConstants.JAVA_STRING);
+		fPragmaScanner= new SingleTokenJavaScanner(getColorManager(), fPreferenceStore, IJavaColorConstants.JAVA_PRAGMA);
 		fJavaDocScanner= new JavaDocScanner(getColorManager(), fPreferenceStore);
 	}
 
@@ -385,6 +401,10 @@ public class JavaSourceViewerConfiguration extends TextSourceViewerConfiguration
 		dr= new DefaultDamagerRepairer(getStringScanner());
 		reconciler.setDamager(dr, IJavaPartitions.JAVA_CHARACTER);
 		reconciler.setRepairer(dr, IJavaPartitions.JAVA_CHARACTER);
+		
+		dr= new DefaultDamagerRepairer(getPragmaScanner());
+		reconciler.setDamager(dr, IJavaPartitions.JAVA_PRAGMA);
+		reconciler.setRepairer(dr, IJavaPartitions.JAVA_PRAGMA);
 
 
 		return reconciler;
@@ -670,6 +690,7 @@ public class JavaSourceViewerConfiguration extends TextSourceViewerConfiguration
 			IJavaPartitions.JAVA_SINGLE_LINE_COMMENT,
 			IJavaPartitions.JAVA_SINGLE_LINE_DOC_COMMENT,
 			IJavaPartitions.JAVA_STRING,
+			IJavaPartitions.JAVA_PRAGMA,
 			IJavaPartitions.JAVA_CHARACTER
 		};
 	}
@@ -805,6 +826,7 @@ public class JavaSourceViewerConfiguration extends TextSourceViewerConfiguration
 		presenter.setInformationProvider(provider, IJavaPartitions.JAVA_SINGLE_LINE_COMMENT);
 		presenter.setInformationProvider(provider, IJavaPartitions.JAVA_SINGLE_LINE_DOC_COMMENT);
 		presenter.setInformationProvider(provider, IJavaPartitions.JAVA_STRING);
+		presenter.setInformationProvider(provider, IJavaPartitions.JAVA_PRAGMA);
 		presenter.setInformationProvider(provider, IJavaPartitions.JAVA_CHARACTER);
 		presenter.setSizeConstraints(50, 20, true, false);
 		return presenter;
@@ -872,6 +894,7 @@ public class JavaSourceViewerConfiguration extends TextSourceViewerConfiguration
 			|| fSinglelineCommentScanner.affectsBehavior(event)
 			|| fSinglelineDocCommentScanner.affectsBehavior(event)
 			|| fStringScanner.affectsBehavior(event)
+			|| fPragmaScanner.affectsBehavior(event)
 			|| fJavaDocScanner.affectsBehavior(event);
 	}
 
@@ -903,6 +926,8 @@ public class JavaSourceViewerConfiguration extends TextSourceViewerConfiguration
 			fSinglelineDocCommentScanner.adaptToPreferenceChange(event);
 		if (fStringScanner.affectsBehavior(event))
 			fStringScanner.adaptToPreferenceChange(event);
+		if (fPragmaScanner.affectsBehavior(event))
+			fPragmaScanner.adaptToPreferenceChange(event);
 		if (fJavaDocScanner.affectsBehavior(event))
 			fJavaDocScanner.adaptToPreferenceChange(event);
 		if (fJavaDoubleClickSelector != null && JavaCore.COMPILER_SOURCE.equals(event.getProperty()))

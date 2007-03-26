@@ -66,6 +66,11 @@ public interface IJavaColorConstants {
 	 * (value <code>"java_string"</code>).
 	 */
 	String JAVA_STRING= "java_string"; //$NON-NLS-1$
+	
+	/** The color key for pragmas in Java code
+	 * (value <code>"java_pragma"</code>).
+	 */
+	String JAVA_PRAGMA= "java_pragma"; //$NON-NLS-1$
 
 	/** The color key for method names in Java code
 	 * (value <code>"java_method_name"</code>).

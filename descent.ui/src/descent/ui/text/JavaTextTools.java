@@ -51,6 +51,7 @@ public class JavaTextTools {
 		IJavaPartitions.JAVA_SINGLE_LINE_COMMENT,
 		IJavaPartitions.JAVA_SINGLE_LINE_DOC_COMMENT,
 		IJavaPartitions.JAVA_STRING,
+		IJavaPartitions.JAVA_PRAGMA,
 		IJavaPartitions.JAVA_CHARACTER
 	};
 
@@ -76,6 +77,8 @@ public class JavaTextTools {
 	private JavaCommentScanner fSinglelineCommentScanner;
 	/** The Java string scanner. */
 	private SingleTokenJavaScanner fStringScanner;
+	/** The Java pragma scanner. */
+	private SingleTokenJavaScanner fPragmaScanner;
 	/** The JavaDoc scanner. */
 	private JavaDocScanner fJavaDocScanner;
 	/** The Java partitions scanner. */
@@ -167,6 +170,7 @@ public class JavaTextTools {
 		fMultilineCommentScanner= new JavaCommentScanner(fColorManager, store, coreStore, IJavaColorConstants.JAVA_MULTI_LINE_COMMENT);
 		fSinglelineCommentScanner= new JavaCommentScanner(fColorManager, store, coreStore, IJavaColorConstants.JAVA_SINGLE_LINE_COMMENT);
 		fStringScanner= new SingleTokenJavaScanner(fColorManager, store, IJavaColorConstants.JAVA_STRING);
+		fPragmaScanner= new SingleTokenJavaScanner(fColorManager, store, IJavaColorConstants.JAVA_PRAGMA);
 		fJavaDocScanner= new JavaDocScanner(fColorManager, store, coreStore);
 		fPartitionScanner= JavaPartitionScannerFactory.newJavaPartitionScanner();
 	}
@@ -180,6 +184,7 @@ public class JavaTextTools {
 		fMultilineCommentScanner= null;
 		fSinglelineCommentScanner= null;
 		fStringScanner= null;
+		fPragmaScanner= null;
 		fJavaDocScanner= null;
 		fPartitionScanner= null;
 
@@ -255,6 +260,8 @@ public class JavaTextTools {
 			fSinglelineCommentScanner.adaptToPreferenceChange(event);
 		if (fStringScanner.affectsBehavior(event))
 			fStringScanner.adaptToPreferenceChange(event);
+		if (fPragmaScanner.affectsBehavior(event))
+			fPragmaScanner.adaptToPreferenceChange(event);
 		if (fJavaDocScanner.affectsBehavior(event))
 			fJavaDocScanner.adaptToPreferenceChange(event);
 	}

@@ -113,6 +113,7 @@ public class TemplateEditorSourceViewerConfiguration extends SimpleJavaSourceVie
 		assistant.setContentAssistProcessor(fProcessor, IDocument.DEFAULT_CONTENT_TYPE);
 			// Register the same processor for strings and single line comments to get code completion at the start of those partitions.
 		assistant.setContentAssistProcessor(fProcessor, IJavaPartitions.JAVA_STRING);
+		assistant.setContentAssistProcessor(fProcessor, IJavaPartitions.JAVA_PRAGMA);
 		assistant.setContentAssistProcessor(fProcessor, IJavaPartitions.JAVA_CHARACTER);
 		assistant.setContentAssistProcessor(fProcessor, IJavaPartitions.JAVA_SINGLE_LINE_COMMENT);
 		assistant.setContentAssistProcessor(fProcessor, IJavaPartitions.JAVA_SINGLE_LINE_DOC_COMMENT);

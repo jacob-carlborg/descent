@@ -103,6 +103,7 @@ public class JavaFormatter {
 										  IJavaPartitions.JAVA_MULTI_LINE_COMMENT,
 										  IJavaPartitions.JAVA_SINGLE_LINE_COMMENT,
 										  IJavaPartitions.JAVA_STRING,
+										  IJavaPartitions.JAVA_PRAGMA,
 										  IJavaPartitions.JAVA_CHARACTER,
 										  IDocument.DEFAULT_CONTENT_TYPE
 			};

@@ -95,6 +95,7 @@ public class JavaPartitionScanner extends RuleBasedPartitionScanner implements I
 		super();
 
 		// TODO JDT UI update according to D partitions
+		IToken pragma= new Token(JAVA_PRAGMA);
 		IToken string= new Token(JAVA_STRING);
 		IToken character= new Token(JAVA_CHARACTER);
 		IToken javaDoc= new Token(JAVA_DOC);
@@ -105,6 +106,8 @@ public class JavaPartitionScanner extends RuleBasedPartitionScanner implements I
 		IToken multiLinePlusDocComment= new Token(JAVA_MULTI_LINE_PLUS_DOC_COMMENT);
 		
 		List<IPredicateRule> rules = new ArrayList<IPredicateRule>();
+		
+		rules.add(new EndOfLineRule("#", pragma)); //$NON-NLS-1$
 		
 		rules.add(new NestedCommentRule("/++", "/+", "+/", multiLinePlusDocComment, (char) 0, true)); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		rules.add(new NestedCommentRule("/+", "/+", "+/", multiLinePlusComment, (char) 0, true)); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
