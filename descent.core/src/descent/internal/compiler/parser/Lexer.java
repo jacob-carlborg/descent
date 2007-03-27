@@ -2385,11 +2385,11 @@ public class Lexer implements IProblemRequestor {
 	}
 	
 	protected void setMalformed(ASTNode node) {
-		node.flags |= descent.core.dom.ASTNode.MALFORMED;;
+		node.astFlags |= descent.core.dom.ASTNode.MALFORMED;;
 	}
 	
 	protected void setRecovered(ASTNode node) {
-		node.flags |= descent.core.dom.ASTNode.MALFORMED;
+		node.astFlags |= descent.core.dom.ASTNode.MALFORMED;
 	}
 	
 	protected void setMalformed(descent.core.dom.ASTNode node) {

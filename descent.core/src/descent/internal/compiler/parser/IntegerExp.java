@@ -83,20 +83,18 @@ public class IntegerExp extends Expression {
 				value = (value.compareTo(BigInteger.ZERO) != 0) ? BigInteger.ONE
 						: BigInteger.ZERO;
 				break;
-			case Tint8:
+			case Tint8: value = BigIntegerUtils.castToInt8(value); break;
 			case Tchar:
-			case Tuns8:
-			case Tint16:
+			case Tuns8: value = BigIntegerUtils.castToUns8(value); break;
+			case Tint16: value = BigIntegerUtils.castToInt16(value); break;
 			case Twchar:
-			case Tuns16:
-			case Tint32:
+			case Tuns16: value = BigIntegerUtils.castToUns16(value); break;
+			case Tint32: value = BigIntegerUtils.castToInt32(value); break;
 			case Tpointer:
 			case Tdchar:
-			case Tuns32:
-			case Tint64:
-			case Tuns64:
-				value = cast(value, t.ty);
-				break;
+			case Tuns32: value = BigIntegerUtils.castToUns32(value); break;
+			case Tint64: value = BigIntegerUtils.castToInt64(value); break;
+			case Tuns64: value = BigIntegerUtils.castToUns64(value); break;
 
 			case Tenum: {
 				TypeEnum te = (TypeEnum) t;
@@ -117,8 +115,7 @@ public class IntegerExp extends Expression {
 		}
 		return value;
 	}
-	
-	// TODO check the original source file to finish
+
 	@Override
 	public MATCH implicitConvTo(Type t, SemanticContext context) {
 	    if (type.equals(t))
@@ -139,7 +136,7 @@ public class IntegerExp extends Expression {
 		    break;
 
 		case Tint8:
-		    value = cast(value, ty);
+		    value = BigIntegerUtils.castToInt8(value);
 		    ty = Tint32;
 		    break;
 
@@ -150,7 +147,7 @@ public class IntegerExp extends Expression {
 		    break;
 
 		case Tint16:
-			value = cast(value, ty);
+			value = BigIntegerUtils.castToInt16(value);
 		    ty = Tint32;
 		    break;
 
@@ -161,7 +158,7 @@ public class IntegerExp extends Expression {
 		    break;
 
 		case Tint32:
-			value = cast(value, ty);
+			value = BigIntegerUtils.castToInt32(value);
 		    break;
 
 		case Tuns32:
@@ -184,23 +181,23 @@ public class IntegerExp extends Expression {
 		    return MATCHconvert;
 
 		case Tint8:
-		    if (!cast(value, ty).equals(value))
+		    if (!BigIntegerUtils.castToInt8(value).equals(value))
 		    	return MATCHnomatch;
 		    return MATCHconvert;
 
 		case Tchar:
 		case Tuns8:
-		    if (!cast(value, ty).equals(value))
+		    if (!BigIntegerUtils.castToUns8(value).equals(value))
 		    	return MATCHnomatch;
 		    return MATCHconvert;
 
 		case Tint16:
-		    if (!cast(value, ty).equals(value))
+		    if (!BigIntegerUtils.castToInt16(value).equals(value))
 		    	return MATCHnomatch;
 		    return MATCHconvert;
 
 		case Tuns16:
-		    if (!cast(value, ty).equals(value))
+		    if (!BigIntegerUtils.castToUns16(value).equals(value))
 		    	return MATCHnomatch;
 		    return MATCHconvert;
 
@@ -208,7 +205,7 @@ public class IntegerExp extends Expression {
 		    if (ty == Tuns32)
 		    {
 		    }
-		    else if (!cast(value, ty).equals(value))
+		    else if (!BigIntegerUtils.castToInt32(value).equals(value))
 		    	return MATCHnomatch;
 		    return MATCHconvert;
 
@@ -216,7 +213,7 @@ public class IntegerExp extends Expression {
 		    if (ty == Tint32)
 		    {
 		    }
-		    else if (!cast(value, ty).equals(value))
+		    else if (!BigIntegerUtils.castToUns32(value).equals(value))
 		    	return MATCHnomatch;
 		    return MATCHconvert;
 

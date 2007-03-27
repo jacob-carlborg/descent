@@ -10,6 +10,16 @@ public class TupleExp extends Expression {
     	super(TOK.TOKtuple);
     	this.exps = exps;
     }
+    
+    @Override
+    public Expression castTo(Scope sc, Type t, SemanticContext context) {
+		for (int i = 0; i < exps.size(); i++) {
+			Expression e = (Expression) exps.get(i);
+			e = e.castTo(sc, t, context);
+			exps.set(i, e);
+		}
+		return this;
+	}
 
 	@Override
 	public int getNodeType() {

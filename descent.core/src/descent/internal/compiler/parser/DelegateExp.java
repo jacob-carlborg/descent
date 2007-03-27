@@ -10,6 +10,49 @@ public class DelegateExp extends UnaExp {
 		super(TOK.TOKdelegate, e);
 		this.func = func;
 	}
+	
+	@Override
+	public Expression castTo(Scope sc, Type t, SemanticContext context) {
+		Type tb;
+		Expression e = this;
+
+		tb = t.toBasetype(context);
+		type = type.toBasetype(context);
+		if (tb != type) {
+			// Look for delegates to functions where the functions are
+			// overloaded.
+			FuncDeclaration f;
+
+			if (type.ty == Tdelegate && type.next.ty == Tfunction
+					&& tb.ty == Tdelegate && tb.next.ty == Tfunction) {
+				if (func != null) {
+					f = func.overloadExactMatch(tb.next, context);
+					if (f != null) {
+						int[] offset = { 0 };
+						if (f.tintro != null
+								&& f.tintro.next.isBaseOf(f.type.next, offset)
+								&& offset[0] != 0)
+							error("cannot form delegate due to covariant return type");
+						e = new DelegateExp(e1, f);
+						e.type = t;
+						return e;
+					}
+					if (func.tintro != null)
+						error("cannot form delegate due to covariant return type");
+				}
+			}
+			e = super.castTo(sc, t, context);
+		} else {
+			int[] offset = { 0 };
+
+			if (func.tintro != null
+					&& func.tintro.next.isBaseOf(func.type.next, offset)
+					&& offset[0] != 0)
+				error("cannot form delegate due to covariant return type");
+		}
+		e.type = t;
+		return e;
+	}
 
 	@Override
 	public int getNodeType() {

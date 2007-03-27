@@ -53,8 +53,11 @@ public class CtorDeclaration extends FuncDeclaration {
 
 			// TODO semantic, mark as synthetic, make a test to verify it
 			e = new ThisExp();
+			e.synthetic = true;
 			s = new ReturnStatement(e);
+			s.synthetic = true;
 			fbody = new CompoundStatement(fbody, s);
+			fbody.synthetic = true;
 		}
 
 		super.semantic(sc, context);

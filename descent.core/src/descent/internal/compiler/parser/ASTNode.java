@@ -203,6 +203,7 @@ public abstract class ASTNode {
 	public final static int DELEGATE_EXP = 185;
 	public final static int TUPLE_EXP = 186;
 	public final static int UNROLLED_LOOP_STATEMENT = 187;
+	public final static int COMPLEX_EXP = 188;
 	
 	/***************************************************************************
 	 * Helper function for ClassDeclaration::accessCheck() Returns: 0 no access
@@ -497,7 +498,7 @@ public abstract class ASTNode {
 
 	public int length;
 
-	public int flags;
+	public int astFlags;
 
 	public List<DDocComment> preDdocs;
 
@@ -605,6 +606,47 @@ public abstract class ASTNode {
 
 	protected String toPrettyChars() {
 		throw new IllegalStateException("Problem reporting not implemented");
+	}
+	
+	/**
+	 * Determine if 'this' is available.
+	 * If it is, return the FuncDeclaration that has it.
+	 */
+	public FuncDeclaration hasThis(Scope sc) {
+		FuncDeclaration fd;
+		FuncDeclaration fdthis;
+
+		fdthis = sc.parent.isFuncDeclaration();
+
+		// Go upwards until we find the enclosing member function
+		fd = fdthis;
+		while (true) {
+			if (fd == null) {
+				// goto Lno;
+				return null; // don't have 'this' available
+			}
+			if (!fd.isNested())
+				break;
+
+			Dsymbol parent = fd.parent;
+			while (parent != null) {
+				TemplateInstance ti = parent.isTemplateInstance();
+				if (ti != null)
+					parent = ti.parent;
+				else
+					break;
+			}
+
+			fd = fd.parent.isFuncDeclaration();
+		}
+
+		if (fd.isThis() == null) {
+			// goto Lno;
+			return null; // don't have 'this' available
+		}
+
+		Assert.isNotNull(fd.vthis);
+		return fd;
 	}
 
 }

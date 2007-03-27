@@ -17,6 +17,11 @@ public class UnitTestDeclaration extends FuncDeclaration {
 	}
 	
 	@Override
+	public AggregateDeclaration isThis() {
+		return null;
+	}
+	
+	@Override
 	public void semantic(Scope sc, SemanticContext context) {
 		if (context.global.params.useUnitTests) {
 			// Type tret;

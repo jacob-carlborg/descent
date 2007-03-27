@@ -1,61 +1,36 @@
 package descent.internal.compiler.parser;
 
+import static descent.internal.compiler.parser.MATCH.MATCHconvert;
+import static descent.internal.compiler.parser.MATCH.MATCHexact;
+import static descent.internal.compiler.parser.MATCH.MATCHnomatch;
+import static descent.internal.compiler.parser.TY.Tbool;
+import static descent.internal.compiler.parser.TY.Tvoid;
+
 import java.math.BigInteger;
 
+import org.eclipse.core.runtime.Assert;
+
 public class TypeBasic extends Type {
-	
+
 	private final static BigInteger N_0xFF = new BigInteger("FF", 16);
-	private final static BigInteger N_0xFFFF = new BigInteger("FFFF", 16); 
-	
+	private final static BigInteger N_0xFFFF = new BigInteger("FFFF", 16);
+
+	public final static int TFLAGSintegral = 1;
+	public final static int TFLAGSfloating = 2;
+	public final static int TFLAGSunsigned = 4;
+	public final static int TFLAGSreal = 8;
+	public final static int TFLAGSimaginary = 0x10;
+	public final static int TFLAGScomplex = 0x20;
+
 	public TypeBasic(TY ty) {
 		super(ty, null);
-		
+
 		// HACK to get deco ready
 		OutBuffer out = new OutBuffer();
 		toDecoBuffer(out);
 		deco = out.extractData();
 	}
-	
-	@Override
-	public boolean isintegral() {
-		switch(ty) {
-		case Tint8:
-		case Tuns8:
-		case Tint16:
-		case Tuns16:
-		case Tint32:
-		case Tuns32:
-		case Tint64:
-		case Tuns64:
-		case Tbit:
-		case Tbool:
-		case Tchar:
-		case Twchar:
-		case Tdchar:
-			return true;
-		default:
-			return false;
-		}
-	}
-	
-	@Override
-	public boolean isunsigned() {
-		switch(ty) {
-		case Tuns8:
-		case Tuns16:
-		case Tuns32:
-		case Tuns64:
-		case Tbit:
-		case Tbool:
-		case Tchar:
-		case Twchar:
-		case Tdchar:
-			return true;
-		default:
-			return false;
-		}
-	}
-	
+
 	@Override
 	public Expression defaultInit(SemanticContext context) {
 		BigInteger value = BigInteger.ZERO;
@@ -83,40 +58,106 @@ public class TypeBasic extends Type {
 		}
 		return new IntegerExp(value.toString(), value, this);
 	}
-	
+
 	@Override
 	public int getNodeType() {
 		return TYPE_BASIC;
 	}
-	
+
+	@Override
+	public MATCH implicitConvTo(Type to, SemanticContext context) {
+		if (this == to)
+			return MATCHexact;
+
+		if (ty == Tvoid || to.ty == Tvoid)
+			return MATCHnomatch;
+		if (true || context.global.params.Dversion == 1) {
+			if (to.ty == Tbool)
+				return MATCHnomatch;
+		} else {
+			if (ty == Tbool || to.ty == Tbool)
+				return MATCHnomatch;
+		}
+		if (to.isTypeBasic() == null)
+			return MATCHnomatch;
+
+		TypeBasic tob = (TypeBasic) to;
+		if ((ty.flags & TFLAGSintegral) != 0) {
+			// Disallow implicit conversion of integers to imaginary or complex
+			if ((tob.ty.flags & (TFLAGSimaginary | TFLAGScomplex)) != 0)
+				return MATCHnomatch;
+
+			// If converting to integral
+			/* TODO semantic
+			if (false && context.global.params.Dversion > 1 && tob.flags & TFLAGSintegral) {
+				d_uns64 sz = size(0);
+				d_uns64 tosz = tob.size(0);
+
+				if (sz > tosz)
+					return MATCHnomatch;
+			}
+			 */
+		} else if ((ty.flags & TFLAGSfloating) != 0) {
+			// Disallow implicit conversion of floating point to integer
+			if ((tob.ty.flags & TFLAGSintegral) != 0)
+				return MATCHnomatch;
+
+			Assert.isTrue((tob.ty.flags & TFLAGSfloating) != 0);
+
+			// Disallow implicit conversion from complex to non-complex
+			if ((ty.flags & TFLAGScomplex) != 0 && (tob.ty.flags & TFLAGScomplex) == 0)
+				return MATCHnomatch;
+
+			// Disallow implicit conversion of real or imaginary to complex
+			if ((ty.flags & (TFLAGSreal | TFLAGSimaginary)) != 0 && (tob.ty.flags
+					& TFLAGScomplex) != 0)
+				return MATCHnomatch;
+
+			// Disallow implicit conversion to-from real and imaginary
+			if ((ty.flags & (TFLAGSreal | TFLAGSimaginary)) != (tob.ty.flags & (TFLAGSreal | TFLAGSimaginary)))
+				return MATCHnomatch;
+		}
+		return MATCHconvert;
+	}
+
+	@Override
+	public boolean isintegral() {
+		return (ty.flags & TFLAGSintegral) != 0;
+	}
+
+	@Override
+	public TypeBasic isTypeBasic() {
+		return this;
+	}
+
+	@Override
+	public boolean isunsigned() {
+		return (ty.flags & TFLAGSunsigned) != 0;
+	}
+
+	public boolean isfloating() {
+		return (ty.flags & TFLAGSfloating) != 0;
+	}
+
+	public boolean isreal() {
+		return (ty.flags & TFLAGSreal) != 0;
+	}
+
+	public boolean isimaginary() {
+		return (ty.flags & TFLAGSimaginary) != 0;
+	}
+
+	public boolean iscomplex() {
+		return (ty.flags & TFLAGScomplex) != 0;
+	}
+
+	public boolean isscalar() {
+		return (ty.flags & (TFLAGSintegral | TFLAGSfloating)) != 0;
+	}
+
 	@Override
 	public String toString() {
-		switch(ty) {
-		case Tbit: return "bit";
-		case Tbool: return "bool";
-		case Tchar: return "char";
-		case Tdchar: return "dchar";
-		case Tcomplex32: return "cfloat";
-		case Tcomplex64: return "cdouble";
-		case Tcomplex80: return "creal";
-		case Tfloat32: return "float";
-		case Tfloat64: return "double";
-		case Tfloat80: return "real";
-		case Timaginary32: return "ifloat";
-		case Timaginary64: return "idouble";
-		case Timaginary80: return "ireal";
-		case Tint8: return "byte";
-		case Tint16: return "short";
-		case Tint32: return "int";
-		case Tint64: return "long";
-		case Tuns8: return "ubyte";
-		case Tuns16: return "ushort";
-		case Tuns32: return "uint";
-		case Tuns64: return "ulong";
-		case Tvoid: return "void";
-		case Twchar: return "wchar";
-		}
-		return "?";
+		return ty.name;
 	}
 
 }

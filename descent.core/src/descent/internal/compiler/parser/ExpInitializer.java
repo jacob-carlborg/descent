@@ -36,7 +36,7 @@ public class ExpInitializer extends Initializer {
 				&& exp.type.ty == TY.Tsarray) {
 			StringExp se = (StringExp) exp;
 
-			if (se.committed == 0
+			if (!se.committed
 					&& se.type.ty == TY.Tsarray
 					&& ((TypeSArray) se.type).dim.toInteger(context).compareTo(
 							((TypeSArray) t).dim.toInteger(context)) < 0) {

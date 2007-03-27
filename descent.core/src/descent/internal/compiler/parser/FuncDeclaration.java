@@ -96,7 +96,7 @@ public class FuncDeclaration extends Declaration {
 			if (ad != null) {
 				break;
 			}
-			if (s.parent == null || (s.parent.isTemplateInstance() == null)) {
+			if (s.parent == null || s.parent.isTemplateInstance() == null) {
 				break;
 			}
 		}
@@ -859,10 +859,9 @@ public class FuncDeclaration extends Declaration {
 					}
 				}
 
-				/*
-				 * TODO semantic not used? if (inferRetType || f.retStyle() !=
-				 * RET.RETstack) { nrvo_can = 0; }
-				 */
+				if (inferRetType || f.retStyle() != RET.RETstack) {
+					nrvo_can = 0;
+				}
 
 				fbody = fbody.semantic(sc2, context);
 

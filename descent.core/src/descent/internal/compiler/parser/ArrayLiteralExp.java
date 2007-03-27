@@ -12,6 +12,35 @@ public class ArrayLiteralExp extends Expression {
 		super(TOK.TOKarrayliteral);
 		this.elements = elements;
 	}
+	
+	@Override
+	public Expression castTo(Scope sc, Type t, SemanticContext context) {
+		Type typeb = type.toBasetype(context);
+		Type tb = t.toBasetype(context);
+		if ((tb.ty == Tarray || tb.ty == Tsarray)
+				&& (typeb.ty == Tarray || typeb.ty == Tsarray)) {
+			if (tb.ty == Tsarray) {
+				TypeSArray tsa = (TypeSArray) tb;
+				if (elements.size() != tsa.dim.toInteger(context).intValue()) {
+					// goto L1;
+					return super.castTo(sc, t, context);
+				}
+			}
+
+			for (int i = 0; i < elements.size(); i++) {
+				Expression e = elements.get(i);
+				e = e.castTo(sc, tb.next, context);
+				elements.set(i, e);
+			}
+			type = t;
+			return this;
+		}
+		if (tb.ty == Tpointer && typeb.ty == Tsarray) {
+			type = typeb.next.pointerTo(context);
+		}
+		// L1:
+		return super.castTo(sc, t, context);
+	}
 
 	@Override
 	public int getNodeType() {

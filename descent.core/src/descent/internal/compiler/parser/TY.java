@@ -1,5 +1,7 @@
 package descent.internal.compiler.parser;
 
+import static descent.internal.compiler.parser.TypeBasic.*;
+
 public enum TY {
 	
     Tarray('A'),		// dynamic array
@@ -16,32 +18,32 @@ public enum TY {
     Tdelegate('D'),
 
     Tnone('n'),
-    Tvoid('v'),
-    Tint8('g'),
-    Tuns8('h'),
-    Tint16('s'),
-    Tuns16('t'),
-    Tint32('i'),
-    Tuns32('k'),
-    Tint64('l'),
-    Tuns64('m'),
-    Tfloat32('f'),
-    Tfloat64('d'),
-    Tfloat80('e'),
+    Tvoid('v', "void", 0),
+    Tint8('g', "byte", TFLAGSintegral),
+    Tuns8('h', "ubyte", TFLAGSintegral | TFLAGSunsigned),
+    Tint16('s', "short", TFLAGSintegral),
+    Tuns16('t', "ushort", TFLAGSintegral | TFLAGSunsigned),
+    Tint32('i', "int", TFLAGSintegral),
+    Tuns32('k', "uint", TFLAGSintegral | TFLAGSunsigned),
+    Tint64('l', "long", TFLAGSintegral),
+    Tuns64('m', "ulong", TFLAGSintegral | TFLAGSunsigned),
+    Tfloat32('f', "float", TFLAGSfloating | TFLAGSreal),
+    Tfloat64('d', "double", TFLAGSfloating | TFLAGSreal),
+    Tfloat80('e', "real", TFLAGSfloating | TFLAGSreal),
 
-    Timaginary32('o'),
-    Timaginary64('p'),
-    Timaginary80('j'),
-    Tcomplex32('q'),
-    Tcomplex64('r'),
-    Tcomplex80('c'),
+    Timaginary32('o', "ifloat", TFLAGSfloating | TFLAGSimaginary),
+    Timaginary64('p', "idouble", TFLAGSfloating | TFLAGSimaginary),
+    Timaginary80('j', "ireal", TFLAGSfloating | TFLAGSimaginary),
+    Tcomplex32('q', "cfloat", TFLAGSfloating | TFLAGScomplex),
+    Tcomplex64('r', "cdouble", TFLAGSfloating | TFLAGScomplex),
+    Tcomplex80('c', "creal", TFLAGSfloating | TFLAGScomplex),
 
-    Tbool('b'),
-    Tchar('a'),
-    Twchar('u'),
-    Tdchar('w'),
+    Tbool('b', "bool", TFLAGSintegral | TFLAGSunsigned),
+    Tchar('a', "char", TFLAGSintegral | TFLAGSunsigned),
+    Twchar('u', "wchar", TFLAGSintegral | TFLAGSunsigned),
+    Tdchar('w', "dchar", TFLAGSintegral | TFLAGSunsigned),
     
-    Tbit('@'),
+    Tbit('@', "bit", TFLAGSintegral | TFLAGSunsigned),
     Tinstance('@'),
     Terror('@'),    
     Ttypeof('@'),
@@ -50,10 +52,18 @@ public enum TY {
     
     ;
     
+    public int flags;
+    public String name;
     public char mangleChar;
     
     TY(char mangleChar) {
     	this.mangleChar = mangleChar;
+    }
+    
+    TY(char mangleChar, String name, int flags) {
+    	this.mangleChar = mangleChar;
+    	this.name = name;
+    	this.flags = flags;
     }
 
 }

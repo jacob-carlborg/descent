@@ -12,6 +12,29 @@ public class NullExp extends Expression {
 	}
 	
 	@Override
+	public Expression castTo(Scope sc, Type t, SemanticContext context) {
+		Expression e;
+		Type tb;
+
+		committed = true;
+		e = this;
+		tb = t.toBasetype(context);
+		type = type.toBasetype(context);
+		if (tb != type) {
+			// NULL implicitly converts to any pointer type or dynamic array
+			if (type.ty == Tpointer
+					&& type.next.ty == Tvoid
+					&& (tb.ty == Tpointer || tb.ty == Tarray
+							|| tb.ty == Taarray || tb.ty == Tdelegate)) {
+			} else {
+				return super.castTo(sc, t, context);
+			}
+		}
+		e.type = t;
+		return e;
+	}
+	
+	@Override
 	public int getNodeType() {
 		return NULL_EXP;
 	}

@@ -15,6 +15,17 @@ public class RealExp extends Expression {
 	}
 	
 	@Override
+	public Expression castTo(Scope sc, Type t, SemanticContext context) {
+		if (type.isreal() && t.isreal())
+			type = t;
+		else if (type.isimaginary() && t.isimaginary())
+			type = t;
+		else
+			return super.castTo(sc, t, context);
+		return this;
+	}
+	
+	@Override
 	public Expression semantic(Scope sc, SemanticContext context) {
 		if (type == null) {
 			type = Type.tfloat64;

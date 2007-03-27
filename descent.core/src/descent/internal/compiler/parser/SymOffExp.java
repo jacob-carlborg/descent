@@ -15,6 +15,37 @@ public class SymOffExp extends Expression {
 	}
 	
 	@Override
+	public Expression castTo(Scope sc, Type t, SemanticContext context) {
+		Type tb;
+
+		Expression e = this;
+
+		tb = t.toBasetype(context);
+		type = type.toBasetype(context);
+		if (tb != type) {
+			// Look for pointers to functions where the functions are
+			// overloaded.
+			FuncDeclaration f;
+
+			if (type.ty == Tpointer && type.next.ty == Tfunction
+					&& tb.ty == Tpointer && tb.next.ty == Tfunction) {
+				f = var.isFuncDeclaration();
+				if (f != null) {
+					f = f.overloadExactMatch(tb.next, context);
+					if (f != null) {
+						e = new SymOffExp(f, 0);
+						e.type = t;
+						return e;
+					}
+				}
+			}
+			e = super.castTo(sc, t, context);
+		}
+		e.type = t;
+		return e;
+	}
+	
+	@Override
 	public int getNodeType() {
 		return SYM_OFF_EXP;
 	}

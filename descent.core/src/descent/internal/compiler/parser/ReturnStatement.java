@@ -1,6 +1,5 @@
 package descent.internal.compiler.parser;
 
-import static descent.internal.compiler.parser.Expression.WANTvalue;
 import static descent.internal.compiler.parser.Scope.CSXany_ctor;
 import static descent.internal.compiler.parser.Scope.CSXreturn;
 import static descent.internal.compiler.parser.Scope.CSXsuper_ctor;

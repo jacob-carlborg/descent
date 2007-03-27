@@ -48,6 +48,26 @@ public abstract class Type extends ASTNode {
 		this.next = next;
 	}
 	
+	public TypeBasic isTypeBasic() {
+		return null;
+	}
+	
+	public boolean iscomplex() {
+		return false;
+	}
+	
+	public boolean isreal() {
+		return false;
+	}
+	
+	public boolean isimaginary() {
+		return false;
+	}
+	
+	public boolean isscalar() {
+		return false;
+	}
+	
 	public Type semantic(Scope sc, SemanticContext context) {
 		if (next != null) {
 			next = next.semantic(sc, context);
