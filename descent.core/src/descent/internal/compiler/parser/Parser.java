@@ -5614,7 +5614,13 @@ public class Parser extends Lexer {
 	}
 	
 	private DebugSymbol newDebugAssignmentForCurrentToken() {
-		return new DebugSymbol(newVersionForCurrentToken());
+		if (token.value == TOKint32v) {
+			return new DebugSymbol(token.intValue.longValue(), newVersionForCurrentToken());
+		} else if (token.value == TOKidentifier) {
+			return new DebugSymbol(new IdentifierExp(token.ident), newVersionForCurrentToken());
+		} else {
+			throw new RuntimeException("Can't happen");
+		}
 	}
 	
 	private Version newVersionForCurrentToken() {
@@ -5634,7 +5640,13 @@ public class Parser extends Lexer {
 	}
 	
 	private VersionSymbol newVersionAssignmentForCurrentToken() {
-		return new VersionSymbol(newVersionForCurrentToken());
+		if (token.value == TOKint32v) {
+			return new VersionSymbol(token.intValue.longValue(), newVersionForCurrentToken());
+		} else if (token.value == TOKidentifier) {
+			return new VersionSymbol(new IdentifierExp(token.ident), newVersionForCurrentToken());
+		} else {
+			throw new RuntimeException("Can't happen");
+		}
 	}
 	
 	private VoidInitializer newVoidInitializerForToken(Token token) {
