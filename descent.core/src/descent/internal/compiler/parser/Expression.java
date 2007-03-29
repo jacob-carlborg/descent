@@ -30,6 +30,37 @@ public abstract class Expression extends ASTNode implements Cloneable {
 	public Expression(TOK op) {
 		this.op = op;
 	}
+	
+	public boolean isbit() {
+		return false;
+	}
+	
+	public Expression integralPromotions(Scope sc, SemanticContext context) {
+		Expression e;
+
+		e = this;
+		switch (type.toBasetype(context).ty) {
+		case Tvoid:
+			error("void has no value");
+			break;
+
+		case Tint8:
+		case Tuns8:
+		case Tint16:
+		case Tuns16:
+		case Tbit:
+		case Tbool:
+		case Tchar:
+		case Twchar:
+			e = e.castTo(sc, Type.tint32, context);
+			break;
+
+		case Tdchar:
+			e = e.castTo(sc, Type.tuns32, context);
+			break;
+		}
+		return e;
+	}
 
 	public Expression castTo(Scope sc, Type t, SemanticContext context) {
 		Expression e;

@@ -33,8 +33,14 @@ public abstract class Type extends ASTNode {
 	public final static Type tindex = tint32;
 	public final static Type tboolean = tbool;
 	public final static Type tsize_t = tuns32;
-	// TODO fill this field
+	public final static Type tptrdiff_t = tint32;
+	
+	// TODO fill this fields
 	public static boolean impcnvWarn[][];
+	public static TY impcnvResult[][];
+	public static TY impcnvType1[][];
+	public static TY impcnvType2[][];
+	public static Type basic[];
 	
 	public TY ty;
 	public Type next;
@@ -52,6 +58,10 @@ public abstract class Type extends ASTNode {
 		return null;
 	}
 	
+	public boolean isbit() {
+		return false;
+	}
+	
 	public boolean iscomplex() {
 		return false;
 	}
@@ -66,6 +76,10 @@ public abstract class Type extends ASTNode {
 	
 	public boolean isscalar() {
 		return false;
+	}
+	
+	public ClassDeclaration isClassHandle() {
+		return null;
 	}
 	
 	public Type semantic(Scope sc, SemanticContext context) {
@@ -456,6 +470,15 @@ public abstract class Type extends ASTNode {
 	
 	public boolean isscalar(SemanticContext context) {
 		return false;
+	}
+
+	public Type syntaxCopy() {
+		// TODO semantic
+		return this;
+	}
+
+	public void toCBuffer(OutBuffer buf, Object object, HdrGenState hgs) {
+		// TODO semantic
 	}
 
 }

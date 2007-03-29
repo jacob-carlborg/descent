@@ -7,6 +7,11 @@ public class NotExp extends UnaExp {
 	}
 	
 	@Override
+	public boolean isbit() {
+		return true;
+	}
+	
+	@Override
 	public int getNodeType() {
 		return NOT_EXP;
 	}

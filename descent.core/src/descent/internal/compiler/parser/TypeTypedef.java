@@ -11,6 +11,11 @@ public class TypeTypedef extends Type {
 	}
 	
 	@Override
+	public boolean isbit() {
+		return sym.basetype.isbit();
+	}
+	
+	@Override
 	public Expression defaultInit(SemanticContext context) {
 		Expression e;
 		Type bt;

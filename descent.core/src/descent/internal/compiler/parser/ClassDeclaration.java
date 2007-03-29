@@ -59,10 +59,56 @@ public class ClassDeclaration extends AggregateDeclaration {
 	}
 	
 	@Override
+	public Dsymbol syntaxCopy(Dsymbol s) {
+		ClassDeclaration cd;
+
+		if (s != null) {
+			cd = (ClassDeclaration) s;
+		} else {
+			cd = new ClassDeclaration(ident, null);
+		}
+
+		cd.storage_class |= storage_class;
+
+		cd.baseclasses = new ArrayList<BaseClass>(this.baseclasses.size());
+		for (int i = 0; i < cd.baseclasses.size(); i++) {
+			BaseClass b = this.baseclasses.get(i);
+			BaseClass b2 = new BaseClass(b.type.syntaxCopy(), b.protection);
+			cd.baseclasses.add(b2);
+		}
+
+		super.syntaxCopy(cd);
+		return cd;
+	}
+	
+	public boolean isBaseOf(ClassDeclaration cd, int[] poffset, SemanticContext context) {
+	    if (poffset != null) {
+			poffset[0] = 0;
+		}
+		while (cd != null) {
+			if (this == cd.baseClass) {
+				return true;
+			}
+
+			/*
+			 * cd.baseClass might not be set if cd is forward referenced.
+			 */
+			if (cd.baseClass != null && cd.baseclasses.size() > 0
+					&& cd.isInterfaceDeclaration() == null) {
+				cd.error("base class is forward referenced by %s", toChars());
+			}
+
+			cd = cd.baseClass;
+		}
+		return false;
+	}
+	
+	@Override
 	public ClassDeclaration isClassDeclaration() {
 		return this;
 	}
 	
+	@Override
 	public PROT getAccess(Dsymbol smember) {
 		PROT access_ret = PROTnone;
 
@@ -77,7 +123,7 @@ public class ClassDeclaration extends AggregateDeclaration {
 			}
 
 			for (i = 0; i < baseclasses.size(); i++) {
-				BaseClass b = (BaseClass) baseclasses.get(i);
+				BaseClass b = baseclasses.get(i);
 
 				access = b.base.getAccess(smember);
 				switch (access) {
@@ -94,12 +140,14 @@ public class ClassDeclaration extends AggregateDeclaration {
 				case PROTpublic:
 				case PROTexport:
 					// If access is to be tightened
-					if (b.protection.level < access.level)
+					if (b.protection.level < access.level) {
 						access = b.protection;
+					}
 
 					// Pick path with loosest access
-					if (access.level > access_ret.level)
+					if (access.level > access_ret.level) {
 						access_ret = access;
+					}
 					break;
 
 				default:
@@ -122,8 +170,9 @@ public class ClassDeclaration extends AggregateDeclaration {
 
 		if (scope != null) {
 			if (parent == null && sc.parent != null
-					&& sc.parent.isModule() == null)
+					&& sc.parent.isModule() == null) {
 				parent = sc.parent;
+			}
 
 			type = type.semantic(sc, context);
 			handle = handle.semantic(sc, context);
@@ -136,8 +185,9 @@ public class ClassDeclaration extends AggregateDeclaration {
 			if (scope == null) {
 				return; // semantic() already completed
 			}
-		} else
+		} else {
 			symtab = new DsymbolTable();
+		}
 
 		Scope scx = null;
 		if (scope != null) {
@@ -148,7 +198,7 @@ public class ClassDeclaration extends AggregateDeclaration {
 
 		// Expand any tuples in baseclasses[]
 		for (i = 0; i < baseclasses.size();) {
-			BaseClass b = (BaseClass) baseclasses.get(i);
+			BaseClass b = baseclasses.get(i);
 			b.type = b.type.semantic(sc, context);
 			Type tb = b.type.toBasetype(context);
 
@@ -162,8 +212,9 @@ public class ClassDeclaration extends AggregateDeclaration {
 					b = new BaseClass(arg.type, protection);
 					baseclasses.add(i + j, b);
 				}
-			} else
+			} else {
 				i++;
+			}
 		}
 
 		// See if there's a base class as first in baseclasses[]
@@ -172,7 +223,7 @@ public class ClassDeclaration extends AggregateDeclaration {
 			BaseClass b;
 			Type tb;
 
-			b = (BaseClass) baseclasses.get(0);
+			b = baseclasses.get(0);
 			// b.type = b.type.semantic(loc, sc);
 			tb = b.type.toBasetype(context);
 			if (tb.ty != TY.Tclass) {
@@ -186,9 +237,9 @@ public class ClassDeclaration extends AggregateDeclaration {
 				baseclasses.remove(0);
 			} else {
 				tc = (TypeClass) (tb);
-				if (tc.sym.isInterfaceDeclaration() != null)
+				if (tc.sym.isInterfaceDeclaration() != null) {
 					;
-				else {
+				} else {
 					boolean gotoL7 = false;
 					for (ClassDeclaration cdb = tc.sym; cdb != null; cdb = cdb.baseClass) {
 						if (cdb == this) {
@@ -234,13 +285,14 @@ public class ClassDeclaration extends AggregateDeclaration {
 			BaseClass b;
 			Type tb;
 
-			b = (BaseClass) baseclasses.get(i);
+			b = baseclasses.get(i);
 			b.type = b.type.semantic(sc, context);
 			tb = b.type.toBasetype(context);
-			if (tb.ty == TY.Tclass)
+			if (tb.ty == TY.Tclass) {
 				tc = (TypeClass) tb;
-			else
+			} else {
 				tc = null;
+			}
 			if (tc == null || tc.sym.isInterfaceDeclaration() == null) {
 				// If already reported error, don't report it twice
 				if (tb.ty != TY.Terror) {
@@ -254,7 +306,7 @@ public class ClassDeclaration extends AggregateDeclaration {
 			} else {
 				// Check for duplicate interfaces
 				for (int j = (baseClass != null ? 1 : 0); j < i; j++) {
-					BaseClass b2 = (BaseClass) baseclasses.get(j);
+					BaseClass b2 = baseclasses.get(j);
 					if (b2.base == tc.sym) {
 						context.acceptProblem(Problem.newSemanticTypeError(
 								"Duplicated interface " + b.sourceType
@@ -344,13 +396,15 @@ public class ClassDeclaration extends AggregateDeclaration {
 			if (vthis != null) // if inheriting from nested class
 			{ // Use the base class's 'this' member
 				isnested = true;
-				if ((storage_class & STC.STCstatic) != 0)
+				if ((storage_class & STC.STCstatic) != 0) {
 					error("static class cannot inherit from nested class %s",
 							baseClass.toChars());
-				if (toParent2() != baseClass.toParent2())
+				}
+				if (toParent2() != baseClass.toParent2()) {
 					error("super class %s is nested within %s, not %s",
 							baseClass.toChars(), baseClass.toParent2()
 									.toChars(), toParent2().toChars());
+				}
 			} else if ((storage_class & STC.STCstatic) == 0) {
 				Dsymbol s = toParent2();
 				if (s != null) {
@@ -360,18 +414,19 @@ public class ClassDeclaration extends AggregateDeclaration {
 					if (cd != null || fd != null) {
 						isnested = true;
 						Type t = null;
-						if (cd != null)
+						if (cd != null) {
 							t = cd.type;
-						else if (fd != null) {
+						} else if (fd != null) {
 							AggregateDeclaration ad = fd.isMember2();
-							if (ad != null)
+							if (ad != null) {
 								t = ad.handle;
-							else {
+							} else {
 								t = new TypePointer(Type.tvoid);
 								t = t.semantic(sc, context);
 							}
-						} else
+						} else {
 							Assert.isTrue(false);
+						}
 						Assert.isTrue(vthis == null);
 						vthis = new ThisDeclaration(t);
 						members.add(vthis);
@@ -380,12 +435,15 @@ public class ClassDeclaration extends AggregateDeclaration {
 			}
 		}
 
-		if ((storage_class & (STC.STCauto | STC.STCscope)) != 0)
+		if ((storage_class & (STC.STCauto | STC.STCscope)) != 0) {
 			isauto = true;
-		if ((storage_class & STC.STCabstract) != 0)
+		}
+		if ((storage_class & STC.STCabstract) != 0) {
 			isabstract = true;
-		if ((storage_class & STC.STCdeprecated) != 0)
+		}
+		if ((storage_class & STC.STCdeprecated) != 0) {
 			isdeprecated = true;
+		}
 
 		sc = sc.push(this);
 		sc.stc &= ~(STC.STCauto | STC.STCscope | STC.STCstatic
@@ -393,8 +451,9 @@ public class ClassDeclaration extends AggregateDeclaration {
 		sc.parent = this;
 		sc.inunion = false;
 
-		if (isCOMclass())
+		if (isCOMclass()) {
 			sc.linkage = LINK.LINKwindows;
+		}
 		sc.protection = PROT.PROTpublic;
 		sc.explicitProtection = 0;
 		sc.structalign = 8;
@@ -413,7 +472,7 @@ public class ClassDeclaration extends AggregateDeclaration {
 		int members_dim = members.size();
 		sizeok = 0;
 		for (i = 0; i < members_dim; i++) {
-			Dsymbol s = (Dsymbol) members.get(i);
+			Dsymbol s = members.get(i);
 			s.semantic(sc, context);
 		}
 
@@ -445,8 +504,9 @@ public class ClassDeclaration extends AggregateDeclaration {
 		 * a base class.
 		 */
 		ctor = (CtorDeclaration) search(Id.ctor, 0, context);
-		if (ctor != null && ctor.toParent() != this)
+		if (ctor != null && ctor.toParent() != this) {
 			ctor = null;
+		}
 
 		// dtor = (DtorDeclaration *)search(Id::dtor, 0);
 		// if (dtor && dtor.toParent() != this)
@@ -496,6 +556,117 @@ public class ClassDeclaration extends AggregateDeclaration {
 		 */
 
 		sc.pop();
+	}
+	
+	@Override
+	public void toCBuffer(OutBuffer buf, HdrGenState hgs) {
+		if (!isAnonymous()) {
+			buf.printf(kind());
+			buf.writestring(toChars());
+			if (baseclasses.size() > 0) {
+				buf.writestring(" : ");
+			}
+		}
+		for (int i = 0; i < baseclasses.size(); i++) {
+			BaseClass b = baseclasses.get(i);
+
+			if (i != 0) {
+				buf.writeByte(',');
+			}
+			b.type.toCBuffer(buf, null, hgs);
+		}
+		buf.writenl();
+		buf.writeByte('{');
+		buf.writenl();
+		for (int i = 0; i < members.size(); i++) {
+			Dsymbol s = members.get(i);
+
+			buf.writestring("    ");
+			s.toCBuffer(buf, hgs);
+		}
+		buf.writestring("}");
+		buf.writenl();
+	}
+	
+	public boolean isBaseOf2(ClassDeclaration cd) {
+		if (cd == null) {
+			return false;
+		}
+		for (int i = 0; i < cd.baseclasses.size(); i++) {
+			BaseClass b = cd.baseclasses.get(i);
+
+			if (b.base == this || isBaseOf2(b.base)) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	public boolean isBaseOf(ClassDeclaration cd, int[] poffset) {
+	    if (poffset != null) {
+			poffset[0] = 0;
+		}
+		while (cd != null) {
+			if (this == cd.baseClass) {
+				return true;
+			}
+
+			/*
+			 * cd.baseClass might not be set if cd is forward referenced.
+			 */
+			if (cd.baseClass == null && cd.baseclasses.size() > 0
+					&& cd.isInterfaceDeclaration() == null) {
+				cd.error("base class is forward referenced by %s", toChars());
+			}
+
+			cd = cd.baseClass;
+		}
+		return false;
+	}
+	
+	@Override
+	public Dsymbol search(Identifier ident, int flags, SemanticContext context) {
+		Dsymbol s;
+
+		// printf("%s.ClassDeclaration::search('%s')\n", toChars(),
+		// ident.toChars());
+		if (scope != null) {
+			semantic(scope, context);
+		}
+
+		if (members == null || symtab == null || scope != null) {
+			error("is forward referenced when looking for '%s'", ident
+					.toString());
+			// *(char*)0=0;
+			return null;
+		}
+
+		s = super.search(ident, flags, context);
+		if (s == null) {
+			// Search bases classes in depth-first, left to right order
+
+			int i;
+
+			for (i = 0; i < baseclasses.size(); i++) {
+				BaseClass b = baseclasses.get(i);
+
+				if (b.base != null) {
+					if (b.base.symtab == null) {
+						error("base %s is forward referenced", b.base.ident
+								.toChars());
+					} else {
+						s = b.base.search(ident, flags, context);
+						if (s == this) {
+							// derives from this
+							s = null;
+						} else if (s != null) {
+							break;
+						}
+					}
+				}
+			}
+		}
+		return s;
 	}
 	    
 	public void interfaceSemantic(Scope sc, SemanticContext context) {

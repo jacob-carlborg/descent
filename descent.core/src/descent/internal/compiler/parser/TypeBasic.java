@@ -4,6 +4,7 @@ import static descent.internal.compiler.parser.MATCH.MATCHconvert;
 import static descent.internal.compiler.parser.MATCH.MATCHexact;
 import static descent.internal.compiler.parser.MATCH.MATCHnomatch;
 import static descent.internal.compiler.parser.TY.Tbool;
+import static descent.internal.compiler.parser.TY.Tbit;
 import static descent.internal.compiler.parser.TY.Tvoid;
 
 import java.math.BigInteger;
@@ -118,6 +119,11 @@ public class TypeBasic extends Type {
 				return MATCHnomatch;
 		}
 		return MATCHconvert;
+	}
+	
+	@Override
+	public boolean isbit() {
+		return ty == Tbit;
 	}
 
 	@Override
