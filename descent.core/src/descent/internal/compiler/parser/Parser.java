@@ -2853,6 +2853,7 @@ public class Parser extends Lexer {
 			Dsymbol d;
 
 			d = parseAggregate();
+			d.setSourceRange(start, prevToken.ptr + prevToken.len - start);
 			s = new DeclarationStatement(d);
 			break;
 		}
@@ -2861,6 +2862,7 @@ public class Parser extends Lexer {
 			Dsymbol d;
 
 			d = parseEnum();
+			d.setSourceRange(start, prevToken.ptr + prevToken.len - start);
 			s = new DeclarationStatement(d);
 			break;
 		}
@@ -3668,14 +3670,14 @@ public class Parser extends Lexer {
 		if (a.size() > 1) {
 			List<Statement> as = new ArrayList<Statement>(a.size());
 			for (int i = 0; i < a.size(); i++) {
-				Declaration d = (Declaration) a.get(i);
+				Dsymbol d = (Dsymbol) a.get(i);
 				s[0] = new DeclarationStatement(d);
 				as.add(s[0]);
 			}
 			
 			s[0] = newBlock(as);
 		} else if (a.size() == 1) {
-			Declaration d = (Declaration) a.get(0);
+			Dsymbol d = (Dsymbol) a.get(0);
 			s[0] = new DeclarationStatement(d);
 		} else {
 			assert (false);

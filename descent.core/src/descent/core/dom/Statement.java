@@ -13,6 +13,7 @@ package descent.core.dom;
  *    ConditionalStatement
  *    ContinueStatement
  *    DoStatement
+ *    EmptyStatement
  *    ExpressionStatement
  *    ForeachStatement
  *    ForStatement

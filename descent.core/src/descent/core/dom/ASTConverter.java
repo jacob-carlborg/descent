@@ -763,12 +763,12 @@ public class ASTConverter {
 	public descent.core.dom.Declaration convert(TemplateDeclaration a) {
 		if (a.wrapper) {
 			Dsymbol wrappedSymbol = a.members.get(0);
-			if (wrappedSymbol.getNodeType() == ASTNode.CLASS_DECLARATION) {
-				AggregateDeclaration b = (AggregateDeclaration) convert(wrappedSymbol);
+			if (wrappedSymbol.getNodeType() == ASTNode.FUNC_DECLARATION) {
+				FunctionDeclaration b = (FunctionDeclaration) convert(wrappedSymbol);
 				convertTemplateParameters(b.templateParameters(), a.parameters);
 				return b;
 			} else {
-				FunctionDeclaration b = (FunctionDeclaration) convert(wrappedSymbol);
+				AggregateDeclaration b = (AggregateDeclaration) convert(wrappedSymbol);
 				convertTemplateParameters(b.templateParameters(), a.parameters);
 				return b;
 			}

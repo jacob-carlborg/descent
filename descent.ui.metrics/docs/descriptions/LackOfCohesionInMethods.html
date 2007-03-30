@@ -1,0 +1,69 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+	<head>
+		<title>Lack of Cohesion in Methods</title>
+		<link href="style.css" type="text/css" rel="STYLESHEET"/>
+	</head>
+	<body>
+		<h1>Lack of Cohesion in Methods</h1>
+		<p>Cohesion is an important concept in OO programming. It indicates whether a class represents a single abstraction or multiple
+			abstractions. The idea is that if a class represents more than one abstraction, it should be refactored into more than one class,
+			each of which represents a single abstraction.</p>
+		<p>Despite its importance, it is difficult to establish a clear mechanism for measuring it. This is probably due to the fact that good
+			abstractions have deep semantics and a class that is clearly cohesive when viewed from a semantic point of view may not be so when
+			viewed from a purely symbolic point of view.</p>
+		<p>As an aside, the somewhat inelegant name is due to the wish to have lower metric values representing a 'better' situation.</p>
+		<p>I have selected three definitions of lack of cohesion. That of Chidamber and Kemerer, that of Henderson and Sellers, and one I
+			invented myself.</p>
+		<h2>Chidamber and Kemerer</h2>
+		<p>Chidamber and Kemerer define Lack of Cohesion in Methods as the number of pairs of methods in a class that don't have at least one
+			field in common minus the number of pairs of methods in the class that do share at least one field. When this value is negative, the
+			metric value is set to 0.</p>
+		<h2>Henderson-Sellers</h2>
+		<p>Henderson-Sellers defines Lack of Cohesion in Methods as follows. Let:</p>
+		<blockquote>
+			<table>
+				<tr>
+					<td> <b>M</b>
+					</td>
+					<td>be the set of methods defined by the class</td>
+				</tr>
+				<tr>
+					<td> <b>F</b>
+					</td>
+					<td>be the set of fields defined by the class</td>
+				</tr>
+				<tr>
+					<td> <i><font face="Symbol">r</font>(f)</i>
+					</td>
+					<td>be the number of methods that access field <i>f</i>, where <i>f</i> is a member of <b>F</b></td>
+				</tr>
+				<tr>
+					<td> <i>&lt;<font face="Symbol">r</font>&gt;</i>
+					</td>
+					<td>be the mean of <i><font face="Symbol">r</font>(f)</i> over <b>F</b>.</td>
+				</tr>
+			</table>
+		</blockquote>
+		<p>Then:</p>
+		<blockquote>
+			<table>
+				<tr>
+					<td rowspan="2">Lack of Cohesion in Methods</td>
+					<td rowspan="2">=</td>
+					<td align="center"> <u><i>&lt;<font face="Symbol">r</font>&gt;</i> - |<b>M</b>|</u>
+					</td>
+				</tr>
+				<tr>
+					<td align="center">1 - |<b>M</b>|</td>
+				</tr>
+			</table>
+		</blockquote>
+		<hr/>
+		<p><b>Note 1:</b> I have only included methods in <b>M</b> if they access at least one field. The reason for this is that methods that
+			do not access fields are often required to be non-static for reasons of polymorphic dispatch. However, these kinds of methods
+			skew the value of this metric in a way that is not helpful. </p>
+		<p><b>Note 2:</b> I have only included fields in <b>F</b> if they are accessed by at least one method in the class. A good compiler can
+			tell you if fields are unused, and leaving them in the calculation of this metric skews the value.</p>
+	</body>
+</html>

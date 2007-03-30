@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.0"?>
+<plugin>
+   <extension
+         id="MetricsNature"
+         name="Metrics Nature"
+         point="org.eclipse.core.resources.natures">
+      <runtime>
+         <run
+               class="descent.ui.metrics.MetricsNature">
+         </run>
+      </runtime>
+   </extension>
+   <extension
+         id="MetricsBuilder"
+         name="Metrics Builder"
+         point="org.eclipse.core.resources.builders">
+      <builder>
+         <run
+               class="descent.ui.metrics.MetricsBuilder">
+         </run>
+      </builder>
+   </extension>
+   <extension
+         point="org.eclipse.ui.propertyPages">
+      <page
+            objectClass="descent.core.IJavaProject"
+            name="D Metrics"
+            nameFilter="*"
+            class="descent.ui.metrics.properties.MetricsPropertiesPage"
+            id="MetricsProperties">
+      </page>
+   </extension>
+   <extension
+         point="org.eclipse.ui.preferencePages">
+      <page
+            name="D Metrics"
+            class="descent.ui.metrics.MetricsPreferencePage"
+            id="MetricsPreferences">
+      </page>
+   </extension>
+   <extension
+         id="MetricsMarker"
+         name="Metrics Marker"
+         point="org.eclipse.core.resources.markers">
+      <persistent
+            value="true">
+      </persistent>
+      <super
+            type="org.eclipse.core.resources.problemmarker">
+      </super>
+   </extension>
+   <extension
+         name="Metrics"
+         point="org.eclipse.ui.exportWizards">
+      <wizard
+            class="descent.ui.metrics.export.MetricsExportWizard"
+            icon="icons/cview16/ruler.gif"
+            id="MetricsWizard"
+            name="Metrics">
+      </wizard>
+   </extension>
+
+</plugin>

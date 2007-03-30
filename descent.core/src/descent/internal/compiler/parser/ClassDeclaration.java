@@ -10,36 +10,31 @@ import org.eclipse.core.runtime.Assert;
 import descent.core.compiler.IProblem;
 
 public class ClassDeclaration extends AggregateDeclaration {
-	
+
 	public List<BaseClass> sourceBaseclasses;
 
-	public List<BaseClass> baseclasses;	
-	public ClassDeclaration baseClass;			// null only if this is Object
+	public List<BaseClass> baseclasses;
+	public ClassDeclaration baseClass; // null only if this is Object
 	public CtorDeclaration ctor;
-	public List<FuncDeclaration> dtors;		// Array of destructors
+	public List<FuncDeclaration> dtors; // Array of destructors
 	public FuncDeclaration staticCtor;
 	public FuncDeclaration staticDtor;
 	public List<BaseClass> interfaces;
+	public List<BaseClass> vtblInterfaces; // array of base interfaces that
+											// have
+	// their own vtbl[]
 	public PROT protection;
-	public boolean isnested;					// !=0 if is nested
-	public VarDeclaration vthis;				// 'this' parameter if this class is nested
-	public boolean com;							// !=0 if this is a COM class
-	public List vtbl;			// Array of FuncDeclaration's making up the vtbl[]
-    public List vtblFinal;		// More FuncDeclaration's that aren't in vtbl[]
-    
-    public ClassDeclaration(String id) {
+	public boolean isnested; // !=0 if is nested
+	public VarDeclaration vthis; // 'this' parameter if this class is nested
+	public boolean com; // !=0 if this is a COM class
+	public List vtbl; // Array of FuncDeclaration's making up the vtbl[]
+	public List vtblFinal; // More FuncDeclaration's that aren't in vtbl[]
+
+	public ClassDeclaration(Identifier id) {
 		this(id, null);
 	}
-    
-    public ClassDeclaration(String id, List<BaseClass> baseclasses) {
-		this(new Identifier(id, TOK.TOKidentifier), baseclasses);
-	}
-    
-    public ClassDeclaration(Identifier id) {
-		this(id, null);
-	}
-    
-    public ClassDeclaration(Identifier id, List<BaseClass> baseclasses) {
+
+	public ClassDeclaration(Identifier id, List<BaseClass> baseclasses) {
 		this(new IdentifierExp(id), baseclasses);
 	}
 
@@ -49,7 +44,8 @@ public class ClassDeclaration extends AggregateDeclaration {
 			this.baseclasses = new ArrayList<BaseClass>(0);
 		} else {
 			this.baseclasses = baseclasses;
-			this.sourceBaseclasses = new ArrayList<BaseClass>(baseclasses.size());
+			this.sourceBaseclasses = new ArrayList<BaseClass>(baseclasses
+					.size());
 			this.sourceBaseclasses.addAll(baseclasses);
 		}
 		this.type = new TypeClass(this);
@@ -57,57 +53,42 @@ public class ClassDeclaration extends AggregateDeclaration {
 		this.vtblFinal = new ArrayList(0);
 		handle = type;
 	}
-	
-	@Override
-	public Dsymbol syntaxCopy(Dsymbol s) {
-		ClassDeclaration cd;
 
-		if (s != null) {
-			cd = (ClassDeclaration) s;
-		} else {
-			cd = new ClassDeclaration(ident, null);
-		}
-
-		cd.storage_class |= storage_class;
-
-		cd.baseclasses = new ArrayList<BaseClass>(this.baseclasses.size());
-		for (int i = 0; i < cd.baseclasses.size(); i++) {
-			BaseClass b = this.baseclasses.get(i);
-			BaseClass b2 = new BaseClass(b.type.syntaxCopy(), b.protection);
-			cd.baseclasses.add(b2);
-		}
-
-		super.syntaxCopy(cd);
-		return cd;
+	public ClassDeclaration(String id) {
+		this(id, null);
 	}
-	
-	public boolean isBaseOf(ClassDeclaration cd, int[] poffset, SemanticContext context) {
-	    if (poffset != null) {
-			poffset[0] = 0;
-		}
-		while (cd != null) {
-			if (this == cd.baseClass) {
-				return true;
-			}
 
-			/*
-			 * cd.baseClass might not be set if cd is forward referenced.
-			 */
-			if (cd.baseClass != null && cd.baseclasses.size() > 0
-					&& cd.isInterfaceDeclaration() == null) {
-				cd.error("base class is forward referenced by %s", toChars());
-			}
+	public ClassDeclaration(String id, List<BaseClass> baseclasses) {
+		this(new Identifier(id, TOK.TOKidentifier), baseclasses);
+	}
 
+	@Override
+	public void addLocalClass(List<ClassDeclaration> aclasses) {
+		aclasses.add(this);
+	}
+
+	public FuncDeclaration findFunc(IdentifierExp id, TypeFunction tf,
+			SemanticContext context) {
+		ClassDeclaration cd = this;
+		List vtbl = cd.vtbl;
+		while (true) {
+			for (int i = 0; i < vtbl.size(); i++) {
+				FuncDeclaration fd = (FuncDeclaration) vtbl.get(i);
+
+				if (ident == fd.ident && fd.type.covariant(tf, context) == 1) {
+					return fd;
+				}
+			}
+			if (cd == null) {
+				break;
+			}
+			vtbl = cd.vtblFinal;
 			cd = cd.baseClass;
 		}
-		return false;
+
+		return null;
 	}
-	
-	@Override
-	public ClassDeclaration isClassDeclaration() {
-		return this;
-	}
-	
+
 	@Override
 	public PROT getAccess(Dsymbol smember) {
 		PROT access_ret = PROTnone;
@@ -132,7 +113,7 @@ public class ClassDeclaration extends AggregateDeclaration {
 
 				case PROTprivate:
 					access = PROTnone; // private members of base class not
-										// accessible
+					// accessible
 					break;
 
 				case PROTpackage:
@@ -157,7 +138,168 @@ public class ClassDeclaration extends AggregateDeclaration {
 		}
 		return access_ret;
 	}
-	
+
+	@Override
+	public int getNodeType() {
+		return CLASS_DECLARATION;
+	}
+
+	public void interfaceSemantic(Scope sc, SemanticContext context) {
+		int i;
+
+		vtblInterfaces = new ArrayList<BaseClass>(interfaces.size());
+
+		for (i = 0; i < interfaces.size(); i++) {
+			BaseClass b = interfaces.get(i);
+
+			// If this is an interface, and it derives from a COM interface,
+			// then this is a COM interface too.
+			if (b.base.isCOMclass()) {
+				com = true;
+			}
+
+			vtblInterfaces.add(b);
+			b.copyBaseInterfaces(vtblInterfaces);
+		}
+	}
+
+	public boolean isAbstract() {
+		if (isabstract) {
+			return true;
+		}
+		for (int i = 1; i < vtbl.size(); i++) {
+			FuncDeclaration fd = ((Dsymbol) vtbl.get(i)).isFuncDeclaration();
+
+			if (fd == null || fd.isAbstract()) {
+				isabstract |= true;
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public boolean isBaseOf(ClassDeclaration cd, int[] poffset) {
+		if (poffset != null) {
+			poffset[0] = 0;
+		}
+		while (cd != null) {
+			if (this == cd.baseClass) {
+				return true;
+			}
+
+			/*
+			 * cd.baseClass might not be set if cd is forward referenced.
+			 */
+			if (cd.baseClass == null && cd.baseclasses.size() > 0
+					&& cd.isInterfaceDeclaration() == null) {
+				cd.error("base class is forward referenced by %s", toChars());
+			}
+
+			cd = cd.baseClass;
+		}
+		return false;
+	}
+
+	public boolean isBaseOf(ClassDeclaration cd, int[] poffset,
+			SemanticContext context) {
+		if (poffset != null) {
+			poffset[0] = 0;
+		}
+		while (cd != null) {
+			if (this == cd.baseClass) {
+				return true;
+			}
+
+			/*
+			 * cd.baseClass might not be set if cd is forward referenced.
+			 */
+			if (cd.baseClass != null && cd.baseclasses.size() > 0
+					&& cd.isInterfaceDeclaration() == null) {
+				cd.error("base class is forward referenced by %s", toChars());
+			}
+
+			cd = cd.baseClass;
+		}
+		return false;
+	}
+
+	public boolean isBaseOf2(ClassDeclaration cd) {
+		if (cd == null) {
+			return false;
+		}
+		for (int i = 0; i < cd.baseclasses.size(); i++) {
+			BaseClass b = cd.baseclasses.get(i);
+
+			if (b.base == this || isBaseOf2(b.base)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	@Override
+	public ClassDeclaration isClassDeclaration() {
+		return this;
+	}
+
+	public boolean isCOMclass() {
+		return com;
+	}
+
+	public boolean isNested() {
+		return isnested;
+	}
+
+	@Override
+	public String kind() {
+		return "class";
+	}
+
+	@Override
+	public Dsymbol search(Identifier ident, int flags, SemanticContext context) {
+		Dsymbol s;
+
+		// printf("%s.ClassDeclaration::search('%s')\n", toChars(),
+		// ident.toChars());
+		if (scope != null) {
+			semantic(scope, context);
+		}
+
+		if (members == null || symtab == null || scope != null) {
+			error("is forward referenced when looking for '%s'", ident
+					.toString());
+			// *(char*)0=0;
+			return null;
+		}
+
+		s = super.search(ident, flags, context);
+		if (s == null) {
+			// Search bases classes in depth-first, left to right order
+
+			int i;
+
+			for (i = 0; i < baseclasses.size(); i++) {
+				BaseClass b = baseclasses.get(i);
+
+				if (b.base != null) {
+					if (b.base.symtab == null) {
+						error("base %s is forward referenced", b.base.ident
+								.toChars());
+					} else {
+						s = b.base.search(ident, flags, context);
+						if (s == this) {
+							// derives from this
+							s = null;
+						} else if (s != null) {
+							break;
+						}
+					}
+				}
+			}
+		}
+		return s;
+	}
+
 	@Override
 	public void semantic(Scope sc, SemanticContext context) {
 		int i;
@@ -557,7 +699,30 @@ public class ClassDeclaration extends AggregateDeclaration {
 
 		sc.pop();
 	}
-	
+
+	@Override
+	public Dsymbol syntaxCopy(Dsymbol s) {
+		ClassDeclaration cd;
+
+		if (s != null) {
+			cd = (ClassDeclaration) s;
+		} else {
+			cd = new ClassDeclaration(ident, null);
+		}
+
+		cd.storage_class |= storage_class;
+
+		cd.baseclasses = new ArrayList<BaseClass>(this.baseclasses.size());
+		for (int i = 0; i < cd.baseclasses.size(); i++) {
+			BaseClass b = this.baseclasses.get(i);
+			BaseClass b2 = new BaseClass(b.type.syntaxCopy(), b.protection);
+			cd.baseclasses.add(b2);
+		}
+
+		super.syntaxCopy(cd);
+		return cd;
+	}
+
 	@Override
 	public void toCBuffer(OutBuffer buf, HdrGenState hgs) {
 		if (!isAnonymous()) {
@@ -587,100 +752,9 @@ public class ClassDeclaration extends AggregateDeclaration {
 		buf.writestring("}");
 		buf.writenl();
 	}
-	
-	public boolean isBaseOf2(ClassDeclaration cd) {
-		if (cd == null) {
-			return false;
-		}
-		for (int i = 0; i < cd.baseclasses.size(); i++) {
-			BaseClass b = cd.baseclasses.get(i);
 
-			if (b.base == this || isBaseOf2(b.base)) {
-				return true;
-			}
-		}
-		return false;
-	}
-	
-	public boolean isBaseOf(ClassDeclaration cd, int[] poffset) {
-	    if (poffset != null) {
-			poffset[0] = 0;
-		}
-		while (cd != null) {
-			if (this == cd.baseClass) {
-				return true;
-			}
-
-			/*
-			 * cd.baseClass might not be set if cd is forward referenced.
-			 */
-			if (cd.baseClass == null && cd.baseclasses.size() > 0
-					&& cd.isInterfaceDeclaration() == null) {
-				cd.error("base class is forward referenced by %s", toChars());
-			}
-
-			cd = cd.baseClass;
-		}
-		return false;
-	}
-	
-	@Override
-	public Dsymbol search(Identifier ident, int flags, SemanticContext context) {
-		Dsymbol s;
-
-		// printf("%s.ClassDeclaration::search('%s')\n", toChars(),
-		// ident.toChars());
-		if (scope != null) {
-			semantic(scope, context);
-		}
-
-		if (members == null || symtab == null || scope != null) {
-			error("is forward referenced when looking for '%s'", ident
-					.toString());
-			// *(char*)0=0;
-			return null;
-		}
-
-		s = super.search(ident, flags, context);
-		if (s == null) {
-			// Search bases classes in depth-first, left to right order
-
-			int i;
-
-			for (i = 0; i < baseclasses.size(); i++) {
-				BaseClass b = baseclasses.get(i);
-
-				if (b.base != null) {
-					if (b.base.symtab == null) {
-						error("base %s is forward referenced", b.base.ident
-								.toChars());
-					} else {
-						s = b.base.search(ident, flags, context);
-						if (s == this) {
-							// derives from this
-							s = null;
-						} else if (s != null) {
-							break;
-						}
-					}
-				}
-			}
-		}
-		return s;
-	}
-	    
-	public void interfaceSemantic(Scope sc, SemanticContext context) {
-		
-	}
-	
-	public boolean isCOMclass() {
-		return com;
-	}
-	
-	@Override
-	public int getNodeType() {
-		return CLASS_DECLARATION;
+	public int vtblOffset() {
+		return 1;
 	}
 
 }
-

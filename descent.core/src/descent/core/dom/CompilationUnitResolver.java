@@ -117,7 +117,9 @@ public class CompilationUnitResolver extends descent.internal.compiler.Compiler 
 			IProgressMonitor monitor) throws JavaModelException {
 		
 		final Module module = parse(apiLevel, sourceUnit, options, statementsRecovery);
-		return resolve(module);
+		
+		return module;
+		//return resolve(module);
 	}
 	
 	public static Module resolve(final Module module) {
