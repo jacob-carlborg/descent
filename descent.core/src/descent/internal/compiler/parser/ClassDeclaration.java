@@ -10,6 +10,8 @@ import org.eclipse.core.runtime.Assert;
 import descent.core.compiler.IProblem;
 
 public class ClassDeclaration extends AggregateDeclaration {
+	
+	public final static int OFFSET_RUNTIME = 0x76543210;
 
 	public List<BaseClass> sourceBaseclasses;
 
@@ -174,28 +176,6 @@ public class ClassDeclaration extends AggregateDeclaration {
 				isabstract |= true;
 				return true;
 			}
-		}
-		return false;
-	}
-
-	public boolean isBaseOf(ClassDeclaration cd, int[] poffset) {
-		if (poffset != null) {
-			poffset[0] = 0;
-		}
-		while (cd != null) {
-			if (this == cd.baseClass) {
-				return true;
-			}
-
-			/*
-			 * cd.baseClass might not be set if cd is forward referenced.
-			 */
-			if (cd.baseClass == null && cd.baseclasses.size() > 0
-					&& cd.isInterfaceDeclaration() == null) {
-				cd.error("base class is forward referenced by %s", toChars());
-			}
-
-			cd = cd.baseClass;
 		}
 		return false;
 	}

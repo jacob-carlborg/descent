@@ -204,7 +204,7 @@ public abstract class ASTNode {
 	public final static int TUPLE_EXP = 186;
 	public final static int UNROLLED_LOOP_STATEMENT = 187;
 	public final static int COMPLEX_EXP = 188;
-	
+
 	/***************************************************************************
 	 * Helper function for ClassDeclaration::accessCheck() Returns: 0 no access
 	 * 1 access
@@ -603,10 +603,10 @@ public abstract class ASTNode {
 	protected String toPrettyChars() {
 		throw new IllegalStateException("Problem reporting not implemented");
 	}
-	
+
 	/**
-	 * Determine if 'this' is available.
-	 * If it is, return the FuncDeclaration that has it.
+	 * Determine if 'this' is available. If it is, return the FuncDeclaration
+	 * that has it.
 	 */
 	public FuncDeclaration hasThis(Scope sc) {
 		FuncDeclaration fd;
@@ -643,6 +643,18 @@ public abstract class ASTNode {
 
 		Assert.isNotNull(fd.vthis);
 		return fd;
+	}
+
+	public boolean findCondition(List<String> ids, Identifier ident) {
+		if (ids != null) {
+			for (String id : ids) {
+				if (id.equals(ident.string)) {
+					return true;
+				}
+			}
+		}
+
+		return false;
 	}
 
 }

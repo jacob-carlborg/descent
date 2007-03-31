@@ -3,6 +3,8 @@ package descent.internal.compiler.parser;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.core.runtime.Assert;
+
 import descent.core.compiler.IProblem;
 import static descent.internal.compiler.parser.TY.*;
 import static descent.internal.compiler.parser.LINK.*;
@@ -12,7 +14,8 @@ public class InterfaceDeclaration extends ClassDeclaration {
 	public InterfaceDeclaration(IdentifierExp id, List<BaseClass> baseclasses) {
 		super(id, baseclasses);
 		com = false;
-		if (id != null && id.ident == Id.IUnknown) { // IUnknown is the root of all COM
+		if (id != null && id.ident == Id.IUnknown) { // IUnknown is the root
+														// of all COM
 			// objects
 			com = true;
 		}
@@ -23,9 +26,71 @@ public class InterfaceDeclaration extends ClassDeclaration {
 		return INTERFACE_DECLARATION;
 	}
 
+	public boolean isBaseOf(BaseClass bc, int[] poffset) {
+		for (int j = 0; j < bc.baseInterfaces.size(); j++) {
+			BaseClass b = bc.baseInterfaces.get(j);
+
+			if (this == b.base) {
+				if (poffset != null) {
+					poffset[0] = b.offset;
+				}
+				return true;
+			}
+			if (isBaseOf(b, poffset)) {
+				return true;
+			}
+		}
+		if (poffset != null) {
+			poffset[0] = 0;
+		}
+		return false;
+	}
+
+	@Override
+	public boolean isBaseOf(ClassDeclaration cd, int[] poffset,
+			SemanticContext context) {
+		int j;
+
+		Assert.isTrue(baseClass == null);
+		for (j = 0; j < cd.interfaces.size(); j++) {
+			BaseClass b = cd.interfaces.get(j);
+
+			if (this == b.base) {
+				if (poffset != null) {
+					poffset[0] = b.offset;
+					if (j != 0 && cd.isInterfaceDeclaration() != null) {
+						poffset[0] = OFFSET_RUNTIME;
+					}
+				}
+				return true;
+			}
+			if (isBaseOf(b, poffset)) {
+				if (j != 0 && poffset != null
+						&& cd.isInterfaceDeclaration() != null) {
+					poffset[0] = OFFSET_RUNTIME;
+				}
+				return true;
+			}
+		}
+
+		if (cd.baseClass != null && isBaseOf(cd.baseClass, poffset, context)) {
+			return true;
+		}
+
+		if (poffset != null) {
+			poffset[0] = 0;
+		}
+		return false;
+	}
+
 	@Override
 	public InterfaceDeclaration isInterfaceDeclaration() {
 		return this;
+	}
+
+	@Override
+	public String kind() {
+		return "interface";
 	}
 
 	@Override
@@ -92,7 +157,10 @@ public class InterfaceDeclaration extends ClassDeclaration {
 				tc = null;
 			}
 			if (tc == null || tc.sym.isInterfaceDeclaration() == null) {
-				context.acceptProblem(Problem.newSemanticTypeError("Base type must be interface", IProblem.BaseTypeMustBeInterface, 0, b.type.start, b.type.length));
+				context.acceptProblem(Problem.newSemanticTypeError(
+						"Base type must be interface",
+						IProblem.BaseTypeMustBeInterface, 0, b.type.start,
+						b.type.length));
 				baseclasses.remove(i);
 				continue;
 			} else {
@@ -175,7 +243,7 @@ public class InterfaceDeclaration extends ClassDeclaration {
 		}
 		sc.pop();
 	}
-
+	
 	@Override
 	public Dsymbol syntaxCopy(Dsymbol s) {
 		InterfaceDeclaration id;
@@ -188,6 +256,14 @@ public class InterfaceDeclaration extends ClassDeclaration {
 
 		super.syntaxCopy(id);
 		return id;
+	}
+
+	@Override
+	public int vtblOffset() {
+		if (isCOMclass()) {
+			return 0;
+		}
+		return 1;
 	}
 
 }
