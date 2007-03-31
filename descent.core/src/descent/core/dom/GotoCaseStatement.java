@@ -9,7 +9,7 @@ import java.util.List;
  *
  * <pre>
  * GotoCaseStatement:
- *    <b>goto</b> <b>case</b> Identifier <b>;</b>
+ *    <b>goto</b> <b>case</b> [ Expression ] <b>;</b>
  * </pre>
  */
 public class GotoCaseStatement extends Statement {
@@ -18,7 +18,7 @@ public class GotoCaseStatement extends Statement {
 	 * The "label" structural property of this node type.
 	 */
 	public static final ChildPropertyDescriptor LABEL_PROPERTY =
-		new ChildPropertyDescriptor(GotoCaseStatement.class, "label", Expression.class, MANDATORY, NO_CYCLE_RISK); //$NON-NLS-1$
+		new ChildPropertyDescriptor(GotoCaseStatement.class, "label", Expression.class, OPTIONAL, CYCLE_RISK); //$NON-NLS-1$
 
 	/**
 	 * A list of property descriptors (element type: 
@@ -104,7 +104,7 @@ public class GotoCaseStatement extends Statement {
 	ASTNode clone0(AST target) {
 		GotoCaseStatement result = new GotoCaseStatement(target);
 		result.setSourceRange(this.getStartPosition(), this.getLength());
-		result.setLabel((Expression) getLabel().clone(target));
+	result.setLabel((Expression) ASTNode.copySubtree(target, getLabel()));
 		return result;
 	}
 
@@ -134,16 +134,6 @@ public class GotoCaseStatement extends Statement {
 	 * @return the label
 	 */ 
 	public Expression getLabel() {
-		if (this.label == null) {
-			// lazy init must be thread-safe for readers
-			synchronized (this) {
-				if (this.label == null) {
-					preLazyInit();
-					this.label = new SimpleName(this.ast);
-					postLazyInit(this.label, LABEL_PROPERTY);
-				}
-			}
-		}
 		return this.label;
 	}
 
@@ -159,9 +149,6 @@ public class GotoCaseStatement extends Statement {
 	 * </ul>
 	 */ 
 	public void setLabel(Expression label) {
-		if (label == null) {
-			throw new IllegalArgumentException();
-		}
 		ASTNode oldChild = this.label;
 		preReplaceChild(oldChild, label, LABEL_PROPERTY);
 		this.label = label;

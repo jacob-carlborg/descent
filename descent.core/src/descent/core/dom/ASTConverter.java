@@ -794,7 +794,9 @@ public class ASTConverter {
 		if (a.thisexp != null) {
 			b.setExpression(convert(a.thisexp));
 		}
-		b.setType(convert(a.newtype));
+		if (a.newtype != null) {
+			b.setType(convert(a.newtype));
+		}
 		convertExpressions(b.newArguments(), a.newargs);
 		convertExpressions(b.constructorArguments(), a.arguments);
 		b.setSourceRange(a.start, a.length);
@@ -830,7 +832,12 @@ public class ASTConverter {
 	public descent.core.dom.StaticArrayType convert(TypeSArray a) {
 		descent.core.dom.StaticArrayType b = new descent.core.dom.StaticArrayType(ast);
 		b.setComponentType(convert(a.next));
-		b.setSize(convert(a.dim));
+		if (a.dim != null) {
+			descent.core.dom.Expression convertion = convert(a.dim);
+			if (convertion != null) {
+				b.setSize(convertion);
+			}
+		}
 		b.setSourceRange(a.start, a.length);
 		return b;
 	}
@@ -892,10 +899,10 @@ public class ASTConverter {
 	public descent.core.dom.VariableDeclarationFragment convert(VarDeclaration a) {
 		descent.core.dom.VariableDeclarationFragment b = new descent.core.dom.VariableDeclarationFragment(ast);
 		b.setName(convert(a.ident));
-		if (a.init == null) {
+		if (a.sourceInit == null) {
 			b.setSourceRange(a.ident.start, a.ident.length);
 		} else {
-			descent.core.dom.Initializer init2 = convert(a.init);
+			descent.core.dom.Initializer init2 = convert(a.sourceInit);
 			b.setInitializer(init2);
 			b.setSourceRange(a.ident.start, init2.getStartPosition() + init2.getLength() - a.ident.start);
 		}
@@ -1237,7 +1244,9 @@ public class ASTConverter {
 	
 	public descent.core.dom.GotoCaseStatement convert(GotoCaseStatement a) {
 		descent.core.dom.GotoCaseStatement b = new descent.core.dom.GotoCaseStatement(ast);
-		b.setLabel(convert(a.exp));
+		if (a.exp != null) {
+			b.setLabel(convert(a.exp));
+		}
 		b.setSourceRange(a.start, a.length);
 		return b;
 	}
@@ -1264,7 +1273,7 @@ public class ASTConverter {
 	
 	public descent.core.dom.ExpressionInitializer convert(ExpInitializer a) {
 		descent.core.dom.ExpressionInitializer b = new descent.core.dom.ExpressionInitializer(ast);
-		b.setExpression(convert(a.exp));
+		b.setExpression(convert(a.sourceExp));
 		b.setSourceRange(a.start, a.length);
 		return b;
 	}
@@ -1787,7 +1796,9 @@ public class ASTConverter {
 	
 	public descent.core.dom.CastExpression convert(CastExp a) {
 		descent.core.dom.CastExpression b = new descent.core.dom.CastExpression(ast);
-		b.setType(convert(a.to));
+		if (a.to != null) {
+			b.setType(convert(a.to));
+		}
 		b.setExpression(convert(a.e1));
 		b.setSourceRange(a.start, a.length);
 		return b;
@@ -1993,9 +2004,8 @@ public class ASTConverter {
 				descent.core.dom.SimpleName n = convert(idExp);
 				descent.core.dom.SimpleType t = ast.newSimpleType(n);
 				t.setSourceRange(n.getStartPosition(), n.getLength());
-				descent.core.dom.Type temp = q;
 				q = ast.newQualifiedType(q, t);
-				q.setSourceRange(temp.getStartPosition(), idExp.start + idExp.length - temp.getStartPosition());
+				q.setSourceRange(start, idExp.start + idExp.length - start);
 			}
 		}
 		return q;
@@ -2085,7 +2095,10 @@ public class ASTConverter {
 			AliasDeclaration a = (AliasDeclaration) symbol;
 			descent.core.dom.AliasDeclaration b = new descent.core.dom.AliasDeclaration(ast);
 			if (a.type != null) {
-				b.setType(convert(a.type));
+				descent.core.dom.Type convertion = convert(a.type);
+				if (convertion != null) {
+					b.setType(convertion);
+				}
 			}
 			b.fragments().add(convert(a));
 			fillDeclaration(b, a);
@@ -2095,7 +2108,10 @@ public class ASTConverter {
 			TypedefDeclaration a = (TypedefDeclaration) symbol;
 			descent.core.dom.TypedefDeclaration b = new descent.core.dom.TypedefDeclaration(ast);
 			if (a.sourceBasetype != null) {
-				b.setType(convert(a.sourceBasetype));
+				descent.core.dom.Type convertedType = convert(a.sourceBasetype);
+				if (convertedType != null) {
+					b.setType(convertedType);
+				}
 			}
 			b.fragments().add(convert(a));
 			fillDeclaration(b, a);
@@ -2160,7 +2176,10 @@ public class ASTConverter {
 					AliasDeclaration a = (AliasDeclaration) symbol;
 					if (first) {
 						if (a.type != null) {
-							b.setType(convert(a.type));
+							descent.core.dom.Type convertion = convert(a.type);
+							if (convertion != null) {
+								b.setType(convertion);
+							}
 						}
 						convertModifiers(b.modifiers(), a.modifiers);
 						if (a.postDdoc != null) {
@@ -2200,7 +2219,10 @@ public class ASTConverter {
 					TypedefDeclaration a = (TypedefDeclaration) symbol;
 					if (first) {
 						if (a.sourceBasetype != null) {
-							b.setType(convert(a.sourceBasetype));
+							descent.core.dom.Type convertedType = convert(a.sourceBasetype);
+							if (convertedType != null) {
+								b.setType(convertedType);
+							}
 						}
 						convertModifiers(b.modifiers(), a.modifiers);
 						if (a.postDdoc != null) {

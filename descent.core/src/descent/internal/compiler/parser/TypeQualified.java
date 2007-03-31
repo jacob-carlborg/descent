@@ -196,7 +196,9 @@ public abstract class TypeQualified extends Type {
 	}
 	
 	public void resolveHelper_Lerror(IdentifierExp id) {
+		/* TODO semantic
 	    error("identifier '%s' of '%s' is not defined", id.toChars(), toChars());
+	    */
 	}
 
 }

@@ -494,16 +494,12 @@ public abstract class ASTNode {
 		return null;
 	}
 
+	public String filename;
 	public int start;
-
 	public int length;
-
 	public int astFlags;
-
 	public List<DDocComment> preDdocs;
-
 	public List<Modifier> modifiers;
-
 	public DDocComment postDdoc;
 
 	/**

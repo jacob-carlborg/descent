@@ -26,14 +26,17 @@ public class Chars {
 	}
 	
 	public static boolean isidchar(int c) {
+		if (c >= 256) return false;
 		return (cmtable[c] & CMidchar) != 0;
 	}
 	
 	public static boolean ishex(int c) {
+		if (c >= 256) return false;
 		return (cmtable[c] & CMhex) != 0;
 	}
 	
 	public static boolean isoctal(int c) {
+		if (c >= 256) return false;
 		return (cmtable[c] & CMoctal) != 0;
 	}
 	

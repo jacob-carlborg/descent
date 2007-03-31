@@ -648,6 +648,8 @@ public class ASTParser {
 		   	  throw new IllegalStateException("source not specified"); //$NON-NLS-1$
 		   }
 			result = internalCreateAST(monitor);
+		// } catch (Throwable t) {
+		// System.out.println(this.compilationUnitSource);
 		} finally {
 	   	   // re-init defaults to allow reuse (and avoid leaking)
 	   	   initializeDefaults();

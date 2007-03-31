@@ -2351,6 +2351,7 @@ public class Parser extends Lexer {
 				default:
 					if (td != null) td.last = true;
 					if (ad != null) ad.last = true;
+					v.setSourceRange(nextTypdefOrAliasStart, prevToken.ptr + prevToken.len - nextTypdefOrAliasStart);
 					parsingErrorInsertTokenAfter(prevToken, ";");
 					break;
 				}
@@ -2419,6 +2420,7 @@ public class Parser extends Lexer {
 
 				default:
 					v.last = true;
+					v.setSourceRange(nextVarStart, prevToken.ptr + prevToken.len - nextVarStart);
 					parsingErrorInsertTokenAfter(prevToken, ";");
 					break;
 				}
@@ -2680,6 +2682,7 @@ public class Parser extends Lexer {
 		default:
 			// Lexpression:
 			e = parseAssignExp();
+			e.setSourceRange(start, prevToken.ptr + prevToken.len - start);
 			ie = new ExpInitializer(e);
 			return ie;
 		}
@@ -3044,7 +3047,11 @@ public class Parser extends Lexer {
 				at = parseDeclarator(tb, pointer2_ai);
 				ai = pointer2_ai[0];
 				if (ai == null) {
-					error("No identifier for declarator", IProblem.NoIdentifierForDeclarator, lineNumber, at);
+					if (at == null) {
+						error("No identifier for declarator", IProblem.NoIdentifierForDeclarator, lineNumber, prevToken.ptr, prevToken.len);
+					} else {
+						error("No identifier for declarator", IProblem.NoIdentifierForDeclarator, lineNumber, at);
+					}
 				}
 				// Larg:
 				a = new Argument(inout, at, ai, null);
@@ -5560,30 +5567,32 @@ public class Parser extends Lexer {
 		int lineNumber = token.lineNumber;
 		t = parseBasicType();
 		t = parseBasicType2(t);
-		if (t.ty == Taarray) {
-			Type index = (Type) ((TypeAArray) t).index;
-			
-			Expression e2 = index.toExpression();
-			if (e2 != null) {
+		if (t != null) {
+			if (t.ty == Taarray) {
+				Type index = (Type) ((TypeAArray) t).index;
+				
+				Expression e2 = index.toExpression();
+				if (e2 != null) {
+					arguments = new ArrayList<Expression>();
+					arguments.add(e2);				
+					t = new TypeDArray(t.next);
+				} else {
+					error("Need size of rightmost array", IProblem.NeedSizeOfRightmostArray, lineNumber, index);
+					NullExp nullExp = new NullExp();
+					nullExp.setSourceRange(token.ptr, token.len);
+					return nullExp;
+				}
+			} else if (t.ty == Tsarray) {
+				TypeSArray tsa = (TypeSArray) t;
+				Expression e2 = tsa.dim;
+	
 				arguments = new ArrayList<Expression>();
-				arguments.add(e2);				
+				arguments.add(e2);
+				
 				t = new TypeDArray(t.next);
-			} else {
-				error("Need size of rightmost array", IProblem.NeedSizeOfRightmostArray, lineNumber, index);
-				NullExp nullExp = new NullExp();
-				nullExp.setSourceRange(token.ptr, token.len);
-				return nullExp;
+			} else if (token.value == TOKlparen) {
+				arguments = parseArguments();
 			}
-		} else if (t.ty == Tsarray) {
-			TypeSArray tsa = (TypeSArray) t;
-			Expression e2 = tsa.dim;
-
-			arguments = new ArrayList<Expression>();
-			arguments.add(e2);
-			
-			t = new TypeDArray(t.next);
-		} else if (token.value == TOKlparen) {
-			arguments = parseArguments();
 		}
 		/*
 		 * #else t = parseBasicType(); while (token.value == TOKmul) { t = new

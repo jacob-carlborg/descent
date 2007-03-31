@@ -14,6 +14,7 @@ public class VarDeclaration extends Declaration {
 	public Type sourceType;
 	public Type type;
 	public Initializer init;
+	public Initializer sourceInit;
 	public Dsymbol aliassym;	// if redone as alias to another symbol
 	public int inuse;
 	public int offset;
@@ -27,6 +28,7 @@ public class VarDeclaration extends Declaration {
 		this.sourceType = type;
 		this.ident = ident;
 		this.init = init;
+		this.sourceInit = init;
 	}
 	
 	public VarDeclaration(Type type, Identifier ident, Initializer init) {

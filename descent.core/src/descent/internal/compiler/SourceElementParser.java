@@ -49,6 +49,7 @@ import descent.core.dom.StaticAssert;
 import descent.core.dom.StaticIfDeclaration;
 import descent.core.dom.TemplateDeclaration;
 import descent.core.dom.TemplateParameter;
+import descent.core.dom.Type;
 import descent.core.dom.TypedefDeclaration;
 import descent.core.dom.TypedefDeclarationFragment;
 import descent.core.dom.UnitTestDeclaration;
@@ -189,7 +190,12 @@ public class SourceElementParser extends ASTVisitor {
 		
 		char[][] types = new char[arguments.size()][];
 		for(int i = 0; i < arguments.size(); i++) {
-			types[i] = arguments.get(i).getType().toString().toCharArray();
+			Type type = arguments.get(i).getType();
+			if (type == null) {
+				types[i] = CharOperation.NO_CHAR;
+			} else {
+				types[i] = type.toString().toCharArray();
+			}
 		}
 		return types;
 	}
@@ -689,7 +695,8 @@ public class SourceElementParser extends ASTVisitor {
 	
 	@Override
 	public boolean visit(DebugDeclaration node) {
-		return visitConditionalDeclaration(node, Flags.AccDefault, node.getVersion() == null ? "" : node.getVersion().getValue());
+		String displayString = node.getVersion() == null ? "" : node.getVersion().getValue();
+		return visitConditionalDeclaration(node, Flags.AccDefault, displayString);
 	}
 	
 	@Override
@@ -699,7 +706,8 @@ public class SourceElementParser extends ASTVisitor {
 	
 	@Override
 	public boolean visit(StaticIfDeclaration node) {
-		return visitConditionalDeclaration(node, Flags.AccStaticIfDeclaration, node.getExpression().toString());
+		String displayString = node.getExpression() == null ? "" : node.getExpression().toString();
+		return visitConditionalDeclaration(node, Flags.AccStaticIfDeclaration, displayString);
 	}
 	
 	@Override
@@ -720,7 +728,8 @@ public class SourceElementParser extends ASTVisitor {
 	
 	@Override
 	public boolean visit(VersionDeclaration node) {
-		return visitConditionalDeclaration(node, Flags.AccVersionDeclaration, node.getVersion().getValue());
+		String displayString = node.getVersion() == null ? "" : node.getVersion().getValue();
+		return visitConditionalDeclaration(node, Flags.AccVersionDeclaration, displayString);
 	}
 	
 	@Override

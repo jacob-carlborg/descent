@@ -9,9 +9,9 @@ import java.util.List;
  *
  * <pre>
  * TryStatement:
- *     <b>try</b> Block 
+ *     <b>try</b> Statement
  *         { CatchClause }
- *         [ <b>finally</b> Block ]
+ *         [ <b>finally</b> Statement ]
  * </pre>
  */
 public class TryStatement extends Statement {
@@ -21,7 +21,7 @@ public class TryStatement extends Statement {
 	 * @since 3.0
 	 */
 	public static final ChildPropertyDescriptor BODY_PROPERTY = 
-		new ChildPropertyDescriptor(TryStatement.class, "body", Block.class, MANDATORY, CYCLE_RISK); //$NON-NLS-1$
+		new ChildPropertyDescriptor(TryStatement.class, "body", Statement.class, MANDATORY, CYCLE_RISK); //$NON-NLS-1$
 
 	/**
 	 * The "catchClauses" structural property of this node type.
@@ -35,7 +35,7 @@ public class TryStatement extends Statement {
 	 * @since 3.0
 	 */
 	public static final ChildPropertyDescriptor FINALLY_PROPERTY = 
-		new ChildPropertyDescriptor(TryStatement.class, "finally", Block.class, OPTIONAL, CYCLE_RISK); //$NON-NLS-1$
+		new ChildPropertyDescriptor(TryStatement.class, "finally", Statement.class, OPTIONAL, CYCLE_RISK); //$NON-NLS-1$
 
 	/**
 	 * A list of property descriptors (element type: 
@@ -70,7 +70,7 @@ public class TryStatement extends Statement {
 	/**
 	 * The body; lazily initialized; defaults to an empty block.
 	 */
-	private Block body = null;
+	private Statement body = null;
 
 	/**
 	 * The catch clauses (element type: <code>CatchClause</code>).
@@ -83,7 +83,7 @@ public class TryStatement extends Statement {
 	 * The finally block, or <code>null</code> if none.
 	 * Defaults to none.
 	 */
-	private Block optionalFinallyBody = null;
+	private Statement optionalFinallyBody = null;
 
 			
 	/**
@@ -190,7 +190,7 @@ public class TryStatement extends Statement {
 	 * 
 	 * @return the try body
 	 */ 
-	public Block getBody() {
+	public Statement getBody() {
 		if (this.body == null) {
 			// lazy init must be thread-safe for readers
 			synchronized (this) {
@@ -215,7 +215,7 @@ public class TryStatement extends Statement {
 	 * <li>a cycle in would be created</li>
 	 * </ul>
 	 */ 
-	public void setBody(Block body) {
+	public void setBody(Statement body) {
 		if (body == null) {
 			throw new IllegalArgumentException();
 		}
@@ -242,7 +242,7 @@ public class TryStatement extends Statement {
 	 * @return the finally block, or <code>null</code> if this try statement
 	 *    has none
 	 */ 
-	public Block getFinally() {
+	public Statement getFinally() {
 		return this.optionalFinallyBody;
 	}
 
@@ -258,7 +258,7 @@ public class TryStatement extends Statement {
 	 * <li>a cycle in would be created</li>
 	 * </ul>
 	 */ 
-	public void setFinally(Block block) {
+	public void setFinally(Statement block) {
 		ASTNode oldChild = this.optionalFinallyBody;
 		preReplaceChild(oldChild, block, FINALLY_PROPERTY);
 		this.optionalFinallyBody = block;

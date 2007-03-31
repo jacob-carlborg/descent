@@ -3,9 +3,11 @@ package descent.internal.compiler.parser;
 public class ExpInitializer extends Initializer {
 
 	public Expression exp;
+	public Expression sourceExp;
 
 	public ExpInitializer(Expression exp) {
 		this.exp = exp;
+		this.sourceExp = exp;
 		this.start = exp.start;
 		this.length = exp.length;
 	}

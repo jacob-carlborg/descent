@@ -312,6 +312,7 @@ public interface IProblem {
 	int AnonCanOnlyBePartOfAnAggregate = 346;
 	int PragmaIsMissingClosingSemicolon = 347;
 	int CannotImplicitlyConvert = 348;
+	int BaseTypeMustBeInterface = 349;
 	
 	/* Others, needed by JDT */
 	int ForbiddenReference = 2001;

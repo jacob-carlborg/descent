@@ -116,5 +116,45 @@ public class Bugs_Test extends Parser_Test {
 				   "int x;";
 		assertEquals(0, getCompilationUnit(s).getProblems().length);
 	}
+	
+	public void testDstress_run_t_typeof_16_A() {
+		String s = "char[] name = (typeof(o)).classinfo.name;";
+		getCompilationUnit(s);	
+	}
+	
+	public void testDstress_nocompile_t_this_08_B() {
+		String s = "C(int i, int j) : this(i){ } this(int i){ }";
+		getCompilationUnit(s);
+	}
+	
+	public void testDstress_nocompile_new_21() {
+		String s = "class MyClass{ unittest{ new(size_t s){ void* v; return v; } } }";
+		getCompilationUnit(s);
+	}
+	
+	public void testDstress_nocompile_n_new_27_B() {
+		String s = "class A{ void test(){ } } class B : A{ public new void test(){ } }";
+		getCompilationUnit(s);
+	}
+	
+	public void testDstress_compile_extern_07() {
+		String s = "glFunctionFoo = cast(extern(C) int function()) wglGetProcAddress(\"glFunctionFoo\");";
+		getCompilationUnit(s);
+	}
+	
+	public void testDstress_nocompile_foreach_18_D() {
+		String s = "int main(){ char[] string; foreach(out char c; string){ } return 0; }";
+		getCompilationUnit(s);
+	}
+	
+	public void testDstress_nocompile_a_array_initialization_22_F() {
+		String s = "char[.] x;";
+		getCompilationUnit(s);
+	}
+	
+	public void testDstress_nocompile_a_alias_37_D() {
+		String s = "alias short foo(byte);";
+		getCompilationUnit(s);
+	}
 
 }

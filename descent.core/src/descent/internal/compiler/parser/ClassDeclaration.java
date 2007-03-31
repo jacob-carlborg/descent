@@ -266,9 +266,7 @@ public class ClassDeclaration extends AggregateDeclaration {
 		}
 
 		if (members == null || symtab == null || scope != null) {
-			error("is forward referenced when looking for '%s'", ident
-					.toString());
-			// *(char*)0=0;
+			context.acceptProblem(Problem.newSemanticTypeError(this + " is forward reference when looking for " + ident, IProblem.ForwardReference, 0, start, length));
 			return null;
 		}
 

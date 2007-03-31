@@ -17,7 +17,7 @@ public class Alias_Test extends Parser_Test {
 		assertEquals(1, alias.fragments().size());
 		assertEquals("Bla", alias.fragments().get(0).getName().getIdentifier());
 		assertPosition(alias.fragments().get(0), 11, 3);		
-	}
+	}	
 	
 	public void testTwoFragments() {
 		String s = " alias int Bla, Ble;";
