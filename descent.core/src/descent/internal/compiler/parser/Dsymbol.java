@@ -22,7 +22,7 @@ public abstract class Dsymbol extends ASTNode {
 
 		if (members != null) {
 			for (int i = 0; i < members.size(); i++) {
-				Dsymbol sx = (Dsymbol) members.get(i);
+				Dsymbol sx = members.get(i);
 
 				boolean x = sx.oneMember(ps);
 				if (!x) {
@@ -96,13 +96,15 @@ public abstract class Dsymbol extends ASTNode {
 		if (!context.global.params.useDeprecated && isDeprecated()) {
 			// Don't complain if we're inside a deprecated symbol's scope
 			for (Dsymbol sp = sc.parent; sp != null; sp = sp.parent) {
-				if (sp.isDeprecated())
+				if (sp.isDeprecated()) {
 					return;
+				}
 			}
 
 			for (; sc != null; sc = sc.enclosing) {
-				if (sc.scopesym != null && sc.scopesym.isDeprecated())
+				if (sc.scopesym != null && sc.scopesym.isDeprecated()) {
 					return;
+				}
 			}
 
 			error("is deprecated");
@@ -111,6 +113,11 @@ public abstract class Dsymbol extends ASTNode {
 
 	public void defineRef(Dsymbol s) {
 		throw new IllegalStateException("Must be implemented by subclasses");
+	}
+
+	@Override
+	public DYNCAST dyncast() {
+		return DYNCAST.DYNCAST_DSYMBOL;
 	}
 
 	@Override
@@ -146,7 +153,7 @@ public abstract class Dsymbol extends ASTNode {
 		return null;
 	}
 
-	public boolean hasPointers() {
+	public boolean hasPointers(SemanticContext context) {
 		return false;
 	}
 
@@ -214,16 +221,16 @@ public abstract class Dsymbol extends ASTNode {
 	public boolean isForwardRef() {
 		return false;
 	}
-
-	public FuncAliasDeclaration isFuncAliasDeclaration() {
-		return null;
-	}
 	
-	public FuncLiteralDeclaration isFuncLiteralDeclaration() {
+	public FuncAliasDeclaration isFuncAliasDeclaration() {
 		return null;
 	}
 
 	public FuncDeclaration isFuncDeclaration() {
+		return null;
+	}
+
+	public FuncLiteralDeclaration isFuncLiteralDeclaration() {
 		return null;
 	}
 
@@ -258,19 +265,19 @@ public abstract class Dsymbol extends ASTNode {
 	public Module isModule() {
 		return null;
 	}
-
+	
 	public NewDeclaration isNewDeclaration() {
 		return null;
 	}
-	
+
 	public Package isPackage() {
 		return null;
 	}
-
+	
 	public ScopeDsymbol isScopeDsymbol() {
 		return null;
 	}
-	
+
 	public StaticCtorDeclaration isStaticCtorDeclaration() {
 		return null;
 	}
@@ -309,11 +316,11 @@ public abstract class Dsymbol extends ASTNode {
 	public UnitTestDeclaration isUnitTestDeclaration() {
 		return null;
 	}
-
+	
 	public VarDeclaration isVarDeclaration() {
 		return null;
 	}
-	
+
 	public WithScopeSymbol isWithScopeSymbol() {
 		return null;
 	}
@@ -371,11 +378,11 @@ public abstract class Dsymbol extends ASTNode {
 	public Dsymbol syntaxCopy(Dsymbol s) {
 		throw new IllegalStateException("Must be implemented by subclasses");
 	}
-
+	
 	public Dsymbol toAlias(SemanticContext context) {
 		return this;
 	}
-	
+
 	public void toCBuffer(OutBuffer buf, HdrGenState hgs) {
 		
 	}
@@ -383,7 +390,7 @@ public abstract class Dsymbol extends ASTNode {
 	public Dsymbol toParent() {
 		return parent != null ? parent.pastMixin() : null;
 	}
-
+	
 	public Dsymbol toParent2() {
 		Dsymbol s = parent;
 		while (s != null && s.isTemplateInstance() != null) {

@@ -54,6 +54,11 @@ public abstract class Type extends ASTNode {
 		this.next = next;
 	}
 	
+	@Override
+	public DYNCAST dyncast() {
+		return DYNCAST.DYNCAST_TYPE;
+	}
+	
 	public TypeBasic isTypeBasic() {
 		return null;
 	}
@@ -479,6 +484,16 @@ public abstract class Type extends ASTNode {
 
 	public void toCBuffer(OutBuffer buf, Object object, HdrGenState hgs) {
 		// TODO semantic
+	}
+
+	public boolean hasPointers(SemanticContext context) {
+		// TODO semantic
+		return false;
+	}
+
+	public Identifier getTypeInfoIdent(int internal) {
+		// TODO semantic
+		return null;
 	}
 
 }

@@ -93,8 +93,8 @@ public class IdentifierExp extends Expression {
 		return this;
 	}
 	
-	public boolean dyncast() {
-		return Identifier.DYNCAST_IDENTIFIER;
+	public DYNCAST dyncast() {
+		return DYNCAST.DYNCAST_IDENTIFIER;
 	}
 	
 	@Override

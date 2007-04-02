@@ -1,5 +1,8 @@
 package descent.internal.compiler.parser;
 
+import static descent.internal.compiler.parser.PROT.*;
+import static descent.internal.compiler.parser.STC.*;
+
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
@@ -10,85 +13,97 @@ import descent.core.compiler.IProblem;
 
 public class VarDeclaration extends Declaration {
 
-	public boolean last;		// is this the last declaration in a multi declaration?
+	public boolean last; // is this the last declaration in a multi
+	// declaration?
 	public Type sourceType;
 	public Type type;
 	public Initializer init;
 	public Initializer sourceInit;
-	public Dsymbol aliassym;	// if redone as alias to another symbol
+	public Dsymbol aliassym; // if redone as alias to another symbol
+	public Type htype;
+	public Initializer hinit;;
 	public int inuse;
 	public int offset;
-	public boolean noauto;			// no auto semantics
-	public int onstack;		// 1: it has been allocated on the stack
-							// 2: on stack, run destructor anyway
+	public boolean noauto; // no auto semantics
+	public int onstack; // 1: it has been allocated on the stack
+	// 2: on stack, run destructor anyway
+	public int nestedref;
 	public boolean ctorinit;
+	public Expression value; // when interpreting, this is the value
 
-	public VarDeclaration(Type type, IdentifierExp ident, Initializer init) {
-		this.type = type;
-		this.sourceType = type;
-		this.ident = ident;
-		this.init = init;
-		this.sourceInit = init;
-	}
-	
+	// (NULL if value not determinable)
+
 	public VarDeclaration(Type type, Identifier ident, Initializer init) {
 		this(type, new IdentifierExp(ident), init);
 	}
-	
-	@Override
-	public Dsymbol toAlias(SemanticContext context) {
-		Assert.isTrue(this != aliassym);
-	    Dsymbol s = aliassym != null ? aliassym.toAlias(context) : this;
-	    return s;
-	}
-	
-	@Override
-	public VarDeclaration isVarDeclaration() {
-		return this;
-	}
-	
-	@Override
-	public boolean isDataseg(SemanticContext context) {
-	    Dsymbol parent = this.toParent();
-	    if (parent == null && (storage_class & (STC.STCstatic | STC.STCconst)) == 0)
-	    {	
-	    	context.acceptProblem(Problem.newSemanticTypeError("Forward referenced", IProblem.ForwardReference, 0, start, length));
-	    	type = Type.terror;
-	    	return false;
-	    }
-	    return ((storage_class & (STC.STCstatic | STC.STCconst)) != 0 ||
-		   parent.isModule() != null ||
-		   parent.isTemplateInstance() != null );
-	}
-	
-	public boolean isIn() {
-		return (storage_class & STC.STCin) != 0;
+
+	public VarDeclaration(Type type, IdentifierExp id, Initializer init) {
+		super(id);
+
+		Assert.isTrue(type != null || init != null);
+
+		this.type = type;
+		this.sourceType = type;
+		this.init = init;
+		this.sourceInit = init;
+		this.htype = null;
+		this.hinit = null;
+		this.offset = 0;
+		this.noauto = false;
+		this.nestedref = 0;
+		this.inuse = 0;
+		this.ctorinit = false;
+		this.aliassym = null;
+		this.onstack = 0;
+		this.value = null;
 	}
 
-	public boolean isOut() {
-		return (storage_class & STC.STCout) != 0;
+	public Expression callAutoDtor() {
+		Expression e = null;
+
+		if ((storage_class & (STCauto | STCscope)) != 0 && !noauto) {
+			for (ClassDeclaration cd = type.isClassHandle(); cd != null; cd = cd.baseClass) {
+				/*
+				 * We can do better if there's a way with onstack classes to
+				 * determine if there's no way the monitor could be set.
+				 */
+				if (true || onstack != 0 || cd.dtors.size() > 0) // if any
+																	// destructors
+				{
+					// delete this;
+					Expression ec;
+
+					ec = new VarExp(this);
+					e = new DeleteExp(ec);
+					e.type = Type.tvoid;
+					break;
+				}
+			}
+		}
+		return e;
 	}
 
-	public boolean isInOut() {
-		return (storage_class & (STC.STCin | STC.STCout)) == (STC.STCin | STC.STCout);
+	@Override
+	public void checkCtorConstInit() {
+		if (!ctorinit && isCtorinit() && (storage_class & STCfield) == 0) {
+			error("missing initializer in static constructor for const variable");
+		}
 	}
-	
+
 	public void checkNestedReference(Scope sc, SemanticContext context) {
 		if (!isDataseg(context) && parent != sc.parent && parent != null) {
 			FuncDeclaration fdv = toParent().isFuncDeclaration();
 			FuncDeclaration fdthis = sc.parent.isFuncDeclaration();
 
 			if (fdv != null && fdthis != null) {
-				/* TODO loc???
-				if (loc.filename)
-					fdthis.getLevel(loc, fdv);
-				nestedref = 1;
-				fdv.nestedFrameRef = 1;
-				*/
+				/*
+				 * TODO loc??? if (loc.filename) fdthis.getLevel(loc, fdv);
+				 * nestedref = 1; fdv.nestedFrameRef = 1;
+				 */
 			}
 		}
 	}
-	
+
 	public ExpInitializer getExpInitializer(SemanticContext context) {
 		ExpInitializer ei;
 
@@ -104,27 +119,93 @@ public class VarDeclaration extends Declaration {
 		}
 		return ei;
 	}
-	
+
+	@Override
+	public int getNodeType() {
+		return VAR_DECLARATION;
+	}
+
+	@Override
+	public boolean hasPointers(SemanticContext context) {
+		return (!isDataseg(context) && type.hasPointers(context));
+	}
+
+	@Override
+	public boolean isDataseg(SemanticContext context) {
+		Dsymbol parent = this.toParent();
+		if (parent == null
+				&& (storage_class & (STC.STCstatic | STC.STCconst)) == 0) {
+			context.acceptProblem(Problem.newSemanticTypeError(
+					"Forward referenced", IProblem.ForwardReference, 0, start,
+					length));
+			type = Type.terror;
+			return false;
+		}
+		return ((storage_class & (STC.STCstatic | STC.STCconst)) != 0
+				|| parent.isModule() != null || parent.isTemplateInstance() != null);
+	}
+
+	@Override
+	public boolean isImportedSymbol() {
+		if (protection == PROTexport && init == null
+				&& (isStatic() || isConst() || parent.isModule() == null)) {
+			return true;
+		}
+		return false;
+	}
+
+	public boolean isIn() {
+		return (storage_class & STC.STCin) != 0;
+	}
+
+	public boolean isInOut() {
+		return (storage_class & (STC.STCin | STC.STCout)) == (STC.STCin | STC.STCout);
+	}
+
+	public boolean isOut() {
+		return (storage_class & STC.STCout) != 0;
+	}
+
+	@Override
+	public VarDeclaration isVarDeclaration() {
+		return this;
+	}
+
+	@Override
+	public String kind() {
+		return "variable";
+	}
+
+	@Override
+	public boolean needThis() {
+		return (storage_class & STCfield) != 0;
+	}
+
 	@Override
 	public void semantic(Scope sc, SemanticContext context) {
 		storage_class |= sc.stc;
 		if ((storage_class & STC.STCextern) != 0 && init != null) {
-			context.acceptProblem(Problem.newSemanticTypeError("Extern symbols cannot have initializers", IProblem.ExternSymbolsCannotHaveInitializers, 0, init.start, init.length));
+			context.acceptProblem(Problem.newSemanticTypeError(
+					"Extern symbols cannot have initializers",
+					IProblem.ExternSymbolsCannotHaveInitializers, 0,
+					init.start, init.length));
 		}
 
-		/* If auto type inference, do the inference
+		/*
+		 * If auto type inference, do the inference
 		 */
 		int inferred = 0;
 		if (type == null) {
 			inuse++;
-			
+
 			type = init.inferType(sc, context);
 			type.synthetic = true;
-			
+
 			inuse--;
 			inferred = 1;
 
-			/* This is a kludge to support the existing syntax for RAII
+			/*
+			 * This is a kludge to support the existing syntax for RAII
 			 * declarations.
 			 */
 			storage_class &= ~STC.STCauto;
@@ -142,7 +223,9 @@ public class VarDeclaration extends Declaration {
 
 		Type tb = type.toBasetype(context);
 		if (tb.ty == TY.Tvoid && (storage_class & STC.STClazy) == 0) {
-			context.acceptProblem(Problem.newSemanticTypeError("Voids have no value", IProblem.VoidsHaveNoValue, 0, sourceType.start, sourceType.length));
+			context.acceptProblem(Problem.newSemanticTypeError(
+					"Voids have no value", IProblem.VoidsHaveNoValue, 0,
+					sourceType.start, sourceType.length));
 			type = Type.terror;
 			tb = type;
 		}
@@ -155,13 +238,17 @@ public class VarDeclaration extends Declaration {
 			TypeStruct ts = (TypeStruct) tb;
 
 			if (ts.sym.members == null) {
-				context.acceptProblem(Problem.newSemanticTypeError("No definition of struct " + ts.sym.ident, IProblem.NoDefinition, 0, sourceType.start, sourceType.length));
+				context.acceptProblem(Problem.newSemanticTypeError(
+						"No definition of struct " + ts.sym.ident,
+						IProblem.NoDefinition, 0, sourceType.start,
+						sourceType.length));
 			}
 		}
 
-		if (tb.ty == TY.Ttuple) { 
-			/* Instead, declare variables for each of the tuple elements
-			 * and add those.
+		if (tb.ty == TY.Ttuple) {
+			/*
+			 * Instead, declare variables for each of the tuple elements and add
+			 * those.
 			 */
 			TypeTuple tt = (TypeTuple) tb;
 			int nelems = Argument.dim(tt.arguments, context);
@@ -203,23 +290,33 @@ public class VarDeclaration extends Declaration {
 		if (isConst()) {
 		} else if (isStatic()) {
 		} else if (isSynchronized()) {
-			context.acceptProblem(Problem.newSemanticTypeError("synchronized cannot be applied to variables", IProblem.IllegalModifier, 0, ident.start, ident.length));
+			context.acceptProblem(Problem.newSemanticTypeError(
+					"synchronized cannot be applied to variables",
+					IProblem.IllegalModifier, 0, ident.start, ident.length));
 		} else if (isOverride()) {
-			context.acceptProblem(Problem.newSemanticTypeError("override cannot be applied to variables", IProblem.IllegalModifier, 0, ident.start, ident.length));
+			context.acceptProblem(Problem.newSemanticTypeError(
+					"override cannot be applied to variables",
+					IProblem.IllegalModifier, 0, ident.start, ident.length));
 		} else if (isAbstract()) {
-			context.acceptProblem(Problem.newSemanticTypeError("abstract cannot be applied to variables", IProblem.IllegalModifier, 0, ident.start, ident.length));
+			context.acceptProblem(Problem.newSemanticTypeError(
+					"abstract cannot be applied to variables",
+					IProblem.IllegalModifier, 0, ident.start, ident.length));
 		} else if ((storage_class & STC.STCtemplateparameter) != 0) {
 		} else {
 			AggregateDeclaration aad = sc.anonAgg;
-			if (aad == null)
+			if (aad == null) {
 				aad = parent.isAggregateDeclaration();
+			}
 			if (aad != null) {
 				aad.addField(sc, this, context);
 			}
 
 			InterfaceDeclaration id = parent.isInterfaceDeclaration();
 			if (id != null) {
-				context.acceptProblem(Problem.newSemanticTypeError("Fields are not allowed in interfaces", IProblem.FieldsNotAllowedInInterfaces, 0, ident.start, ident.length));
+				context.acceptProblem(Problem.newSemanticTypeError(
+						"Fields are not allowed in interfaces",
+						IProblem.FieldsNotAllowedInInterfaces, 0, ident.start,
+						ident.length));
 			}
 
 			TemplateInstance ti = parent.isTemplateInstance();
@@ -228,8 +325,9 @@ public class VarDeclaration extends Declaration {
 				while (true) {
 					TemplateInstance ti2 = ti.tempdecl.parent
 							.isTemplateInstance();
-					if (ti2 == null)
+					if (ti2 == null) {
 						break;
+					}
 					ti = ti2;
 				}
 
@@ -250,8 +348,9 @@ public class VarDeclaration extends Declaration {
 
 			if ((storage_class & (STC.STCauto | STC.STCscope)) == 0) {
 				if ((storage_class & STC.STCparameter) == 0
-						&& ident.ident != Id.withSym)
+						&& ident.ident != Id.withSym) {
 					error("reference to auto class must be auto");
+				}
 			}
 		}
 
@@ -268,18 +367,20 @@ public class VarDeclaration extends Declaration {
 				e1 = new VarExp(this);
 				e = new AssignExp(e1, e);
 				e.type = e1.type;
-				init = new ExpInitializer(e/*.type.defaultInit()*/);
+				init = new ExpInitializer(e/* .type.defaultInit() */);
 				return;
 			} else if (type.ty == TY.Ttypedef) {
 				TypeTypedef td = (TypeTypedef) type;
 				if (td.sym.init != null) {
 					init = td.sym.init;
 					ExpInitializer ie = init.isExpInitializer();
-					if (ie != null)
+					if (ie != null) {
 						// Make copy so we can modify it
 						init = new ExpInitializer(ie.exp);
-				} else
+					}
+				} else {
 					init = getExpInitializer(context);
+				}
 			} else {
 				init = getExpInitializer(context);
 			}
@@ -294,8 +395,9 @@ public class VarDeclaration extends Declaration {
 				if (!(ne.newargs != null && ne.newargs.size() > 0)) {
 					ne.onstack = true;
 					onstack = 1;
-					if (type.isBaseOf(ne.newtype.semantic(sc, context), null))
+					if (type.isBaseOf(ne.newtype.semantic(sc, context), null)) {
 						onstack = 2;
+					}
 				}
 			}
 
@@ -309,7 +411,8 @@ public class VarDeclaration extends Declaration {
 					Type t;
 					int dim;
 
-					//printf("fd = '%s', var = '%s'\n", fd.toChars(), toChars());
+					// printf("fd = '%s', var = '%s'\n", fd.toChars(),
+					// toChars());
 					if (ei == null) {
 						Expression e = init.toExpression(context);
 						if (e == null) {
@@ -328,85 +431,143 @@ public class VarDeclaration extends Declaration {
 
 					t = type.toBasetype(context);
 					if (t.ty == TY.Tsarray) {
-						dim = ((TypeSArray) t).dim.toInteger(context).intValue();
-						// If multidimensional static array, treat as one large array
+						dim = ((TypeSArray) t).dim.toInteger(context)
+								.intValue();
+						// If multidimensional static array, treat as one large
+						// array
 						while (true) {
 							t = t.next.toBasetype(context);
-							if (t.ty != TY.Tsarray)
+							if (t.ty != TY.Tsarray) {
 								break;
-							if (t.next.toBasetype(context).ty == TY.Tbit)
+							}
+							if (t.next.toBasetype(context).ty == TY.Tbit) {
 								// t.size() gives size in bytes, convert to bits
 								dim *= t.size() * 8;
-							else
-								dim *= ((TypeSArray) t).dim.toInteger(context).intValue();
-							e1.type = new TypeSArray(t.next, new IntegerExp("0",
-									dim, Type.tindex));
+							} else {
+								dim *= ((TypeSArray) t).dim.toInteger(context)
+										.intValue();
+							}
+							e1.type = new TypeSArray(t.next, new IntegerExp(
+									"0", dim, Type.tindex));
 						}
 						e1 = new SliceExp(e1, null, null);
 					} else if (t.ty == TY.Tstruct) {
 						ei.exp = ei.exp.semantic(sc, context);
-						if (ei.exp.implicitConvTo(type, context) == MATCH.MATCHnomatch)
+						if (ei.exp.implicitConvTo(type, context) == MATCH.MATCHnomatch) {
 							ei.exp = new CastExp(ei.exp, type);
+						}
 					}
 					ei.exp = new AssignExp(e1, ei.exp);
 					ei.exp = ei.exp.semantic(sc, context);
-					ei.exp.optimize(Expression.WANTvalue);
+					ei.exp.optimize(ASTNode.WANTvalue);
 				} else {
 					init = init.semantic(sc, type, context);
-					if (fd != null && isConst() && !isStatic()) { // Make it static
+					if (fd != null && isConst() && !isStatic()) { // Make it
+						// static
 						storage_class |= STC.STCstatic;
 					}
 				}
 			} else if (isConst()) {
-				/* Because we may need the results of a const declaration in a
-				 * subsequent type, such as an array dimension, before semantic2()
-				 * gets ordinarily run, try to run semantic2() now.
+				/*
+				 * Because we may need the results of a const declaration in a
+				 * subsequent type, such as an array dimension, before
+				 * semantic2() gets ordinarily run, try to run semantic2() now.
 				 * Ignore failure.
 				 */
 
-				/* TODO semantic
-				if (ei && !global.errors && !inferred) {
-					int errors = global.errors;
-					global.gag++;
-					//printf("+gag\n");
-					Expression e = ei.exp.syntaxCopy();
-					inuse++;
-					e = e.semantic(sc, context);
-					inuse--;
-					e = e.implicitCastTo(sc, type);
-					global.gag--;
-					//printf("-gag\n");
-					if (errors != global.errors) // if errors happened
-					{
-						if (global.gag == 0)
-							global.errors = errors; // act as if nothing happened
-					} else {
-						e = e.optimize(Expression.WANTvalue
-								| Expression.WANTinterpret);
-						if (e.op == TOK.TOKint64 || e.op == TOK.TOKstring) {
-							ei.exp = e; // no errors, keep result
-						}
-					}
-				}
-				*/
+				/*
+				 * TODO semantic if (ei && !global.errors && !inferred) { int
+				 * errors = global.errors; global.gag++; //printf("+gag\n");
+				 * Expression e = ei.exp.syntaxCopy(); inuse++; e =
+				 * e.semantic(sc, context); inuse--; e = e.implicitCastTo(sc,
+				 * type); global.gag--; //printf("-gag\n"); if (errors !=
+				 * global.errors) // if errors happened { if (global.gag == 0)
+				 * global.errors = errors; // act as if nothing happened } else {
+				 * e = e.optimize(Expression.WANTvalue |
+				 * Expression.WANTinterpret); if (e.op == TOK.TOKint64 || e.op ==
+				 * TOK.TOKstring) { ei.exp = e; // no errors, keep result } } }
+				 */
 			}
 		}
 	}
-	
+
 	@Override
 	public void semantic2(Scope sc, SemanticContext context) {
-	    if (init != null && toParent().isFuncDeclaration() == null) {
+		if (init != null && toParent().isFuncDeclaration() == null) {
 			inuse++;
 			init = init.semantic(sc, type, context);
 			inuse--;
 		}
 	}
-	
+
 	@Override
-	public int getNodeType() {
-		return VAR_DECLARATION;
+	public Dsymbol syntaxCopy(Dsymbol s) {
+		VarDeclaration sv;
+		if (s != null) {
+			sv = (VarDeclaration) s;
+		} else {
+			Initializer init = null;
+			if (this.init != null) {
+				init = this.init.syntaxCopy();
+				// init.isExpInitializer().exp.print();
+				// init.isExpInitializer().exp.dump(0);
+			}
+
+			sv = new VarDeclaration(type != null ? type.syntaxCopy() : null,
+					ident, init);
+			sv.storage_class = storage_class;
+		}
+		// Syntax copy for header file
+		if (htype == null) // Don't overwrite original
+		{
+			if (type != null) // Make copy for both old and new instances
+			{
+				htype = type.syntaxCopy();
+				sv.htype = type.syntaxCopy();
+			}
+		} else {
+			// Make copy of original for new instance
+			sv.htype = htype.syntaxCopy();
+		}
+		if (hinit == null) {
+			if (init != null) {
+				hinit = init.syntaxCopy();
+				sv.hinit = init.syntaxCopy();
+			}
+		} else {
+			sv.hinit = hinit.syntaxCopy();
+		}
+		return sv;
 	}
-	
+
+	@Override
+	public Dsymbol toAlias(SemanticContext context) {
+		Assert.isTrue(this != aliassym);
+		Dsymbol s = aliassym != null ? aliassym.toAlias(context) : this;
+		return s;
+	}
+
+	@Override
+	public void toCBuffer(OutBuffer buf, HdrGenState hgs) {
+		if ((storage_class & STCconst) != 0) {
+			buf.writestring("const ");
+		}
+		if ((storage_class & STCstatic) != 0) {
+			buf.writestring("static ");
+		}
+		if (type != null) {
+			type.toCBuffer(buf, ident, hgs);
+		} else {
+			buf.writestring(ident.toChars());
+		}
+		if (init != null) {
+			buf.writestring(" = ");
+			init.toCBuffer(buf, hgs);
+		}
+		buf.writeByte(';');
+		buf.writenl();
+	}
+
 	@Override
 	public String toString() {
 		return type + " " + ident + ";";

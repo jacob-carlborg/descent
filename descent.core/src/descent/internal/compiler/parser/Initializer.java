@@ -24,4 +24,13 @@ public abstract class Initializer extends ASTNode {
 	    return Type.terror;
 	}
 
+	public Initializer syntaxCopy() {
+		// TODO semantic
+		return null;
+	}
+
+	public void toCBuffer(OutBuffer buf, HdrGenState hgs) {
+		// TODO semantic
+	}
+
 }

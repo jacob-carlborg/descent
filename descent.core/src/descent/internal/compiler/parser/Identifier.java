@@ -3,9 +3,6 @@ package descent.internal.compiler.parser;
 
 public class Identifier {
 	
-	public final static boolean DYNCAST_IDENTIFIER = true;
-	public final static boolean NOT_DYNCAST_IDENTIFIER = false;
-	
 	public int startPosition;
 	public int length;
 	public int lineNumber;

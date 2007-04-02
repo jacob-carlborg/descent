@@ -13,10 +13,32 @@ public abstract class Declaration extends Dsymbol {
 	
 	public Declaration(IdentifierExp ident) {
 		this.ident = ident;
-		type = null;
-	    storage_class = STC.STCundefined;
-	    protection = PROT.PROTundefined;
-	    linkage = LINK.LINKdefault;
+		this.type = null;
+		this.storage_class = STC.STCundefined;
+		this.protection = PROT.PROTundefined;
+		this.linkage = LINK.LINKdefault;
+	}
+	
+	@Override
+	public void semantic(Scope sc, SemanticContext context) {
+		
+	}
+	
+	@Override
+	public String kind() {
+		return "declaration";
+	}
+	
+	public int size() {
+		return type.size();
+	}
+	
+	public boolean isStaticConstructor() {
+		return false;
+	}
+	
+	public boolean isStaticDestructor() {
+		return false;
 	}
 	
 	@Override
@@ -30,6 +52,14 @@ public abstract class Declaration extends Dsymbol {
 	
 	public boolean isDataseg(SemanticContext context) {
 		return false;
+	}
+	
+	public boolean isCodepseg() {
+		return false;
+	}
+	
+	public PROT prot() {
+		return protection;
 	}
 	
 	public boolean isCtorinit() {

@@ -45,6 +45,8 @@ public class Lexer implements IProblemRequestor {
 	public Token prevToken = new Token();
 	
 	public List<IProblem> problems;
+	
+	// TODO optimize and use an array of int
 	public List<Integer> lineEnds;
 	
 	private boolean tokenizeComments;

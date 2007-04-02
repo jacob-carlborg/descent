@@ -1,12 +1,10 @@
 package descent.internal.compiler.parser;
 
 
-public class DebugCondition extends Condition {
+public class DebugCondition extends DVCondition {
 	
-	public Identifier id;
-
 	public DebugCondition(long level, Identifier id) {
-		this.id = id;
+		super(level, id);
 	}
 	
 	@Override

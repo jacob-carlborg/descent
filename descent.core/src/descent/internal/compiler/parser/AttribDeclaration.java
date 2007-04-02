@@ -47,12 +47,12 @@ public abstract class AttribDeclaration extends Dsymbol {
 	}
 
 	@Override
-	public boolean hasPointers() {
+	public boolean hasPointers(SemanticContext context) {
 		List<Dsymbol> d = include(null, null);
 
 		if (d != null) {
 			for (Dsymbol s : d) {
-				if (s.hasPointers()) {
+				if (s.hasPointers(context)) {
 					return true;
 				}
 			}

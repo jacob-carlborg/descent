@@ -656,5 +656,9 @@ public abstract class ASTNode {
 
 		return false;
 	}
+	
+	public DYNCAST dyncast() {
+		return DYNCAST.DYNCAST_OBJECT;
+	}
 
 }

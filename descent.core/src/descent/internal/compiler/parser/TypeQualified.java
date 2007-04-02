@@ -39,7 +39,7 @@ public abstract class TypeQualified extends Type {
 				for (IdentifierExp id : idents) {
 					Dsymbol sm;
 	
-					if (id.dyncast() != Identifier.DYNCAST_IDENTIFIER) {
+					if (id.dyncast() != DYNCAST.DYNCAST_IDENTIFIER) {
 						// It's a template instance
 						// printf("\ttemplate instance id\n");
 						TemplateDeclaration td;

@@ -23,12 +23,17 @@ public abstract class Expression extends ASTNode implements Cloneable {
 		}
 		return a;
 	}
+	
 	public TOK op;
-
 	public Type type;
 
 	public Expression(TOK op) {
 		this.op = op;
+	}
+	
+	@Override
+	public DYNCAST dyncast() {
+		return DYNCAST.DYNCAST_EXPRESSION;
 	}
 	
 	public boolean isbit() {

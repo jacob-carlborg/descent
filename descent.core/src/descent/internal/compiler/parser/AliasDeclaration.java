@@ -6,46 +6,68 @@ import descent.core.compiler.IProblem;
 
 public class AliasDeclaration extends Declaration {
 
-	public boolean last; // is this the last declaration in a multi declaration?
+	public boolean last; // is this the last declaration in a multi
+							// declaration?
 	public Type type;
+	public Type htype;
+	public Dsymbol haliassym;
 	public Dsymbol aliassym;
 	public Dsymbol overnext; // next in overload list
 	public int inSemantic;
 
-	public AliasDeclaration(IdentifierExp ident, Type type) {
-		super(ident);
+	public AliasDeclaration(IdentifierExp id, Dsymbol s) {
+		super(id);
+
+		Assert.isTrue(s != this);
+
+		this.type = null;
+		this.aliassym = s;
+		this.htype = null;
+		this.haliassym = null;
+		this.overnext = null;
+		this.inSemantic = 0;
+
+		Assert.isNotNull(s);
+	}
+
+	public AliasDeclaration(IdentifierExp id, Type type) {
+		super(id);
 		this.type = type;
+		this.aliassym = null;
+		this.htype = null;
+		this.haliassym = null;
+		this.overnext = null;
+		this.inSemantic = 0;
 	}
-	
+
 	@Override
-	public AliasDeclaration isAliasDeclaration() {
-		return this;
+	public int getNodeType() {
+		return ALIAS_DECLARATION;
 	}
-	
+
 	@Override
 	public Type getType() {
 		return type;
 	}
 
 	@Override
-	public Dsymbol toAlias(SemanticContext context) {
-		Assert.isTrue(this != aliassym);
-		if (inSemantic != 0) {
-			context.acceptProblem(Problem.newSemanticTypeError(
-					"Circular alias declaration",
-					IProblem.CircularDefinition, 0, ident.start, ident.length));
-		}
-		Dsymbol s = aliassym != null ? aliassym.toAlias(context) : this;
-		return s;
+	public AliasDeclaration isAliasDeclaration() {
+		return this;
+	}
+
+	@Override
+	public String kind() {
+		return "alias";
 	}
 	
 	@Override
 	public boolean overloadInsert(Dsymbol s, SemanticContext context) {
-		/* Don't know yet what the aliased symbol is, so assume it can
-	     * be overloaded and check later for correctness.
-	     */
+		/*
+		 * Don't know yet what the aliased symbol is, so assume it can be
+		 * overloaded and check later for correctness.
+		 */
 
-	    if (overnext == null) {
+		if (overnext == null) {
 			overnext = s;
 			return true;
 		} else {
@@ -57,8 +79,9 @@ public class AliasDeclaration extends Declaration {
 	public void semantic(Scope sc, SemanticContext context) {
 		// printf("AliasDeclaration::semantic() %s\n", toChars());
 		if (aliassym != null) {
-			if (aliassym.isTemplateInstance() != null)
+			if (aliassym.isTemplateInstance() != null) {
 				aliassym.semantic(sc, context);
+			}
 			return;
 		}
 		this.inSemantic = 1;
@@ -66,10 +89,11 @@ public class AliasDeclaration extends Declaration {
 		if ((storage_class & STC.STCconst) != 0) {
 			// Signal better the error using the modifiers (HACK)
 			if (modifiers != null) {
-				for(Modifier modifier : modifiers) {
+				for (Modifier modifier : modifiers) {
 					if (modifier.tok == TOK.TOKconst) {
 						context.acceptProblem(Problem.newSemanticTypeError(
-								"alias cannot be const", IProblem.IllegalModifier, 0, modifier.start,
+								"alias cannot be const",
+								IProblem.IllegalModifier, 0, modifier.start,
 								modifier.length));
 					}
 				}
@@ -108,8 +132,9 @@ public class AliasDeclaration extends Declaration {
 			if (s != null) {
 				s.semantic(sc, context);
 				s = s.toAlias(context);
-				if (sc.parent.isFuncDeclaration() != null)
+				if (sc.parent.isFuncDeclaration() != null) {
 					s.semantic2(sc, context);
+				}
 
 				for (IdentifierExp id : ti.idents) {
 					s = s.search(id, 0, context);
@@ -125,7 +150,7 @@ public class AliasDeclaration extends Declaration {
 		}
 		semantic_L1(sc, context);
 	}
-
+	
 	public void semantic_L1(Scope sc, SemanticContext context) {
 		if (overnext != null) {
 			context.multiplyDefined(this, overnext);
@@ -141,11 +166,13 @@ public class AliasDeclaration extends Declaration {
 		VarDeclaration v = s.isVarDeclaration();
 		if (v != null && v.linkage == LINK.LINKdefault) {
 			context.acceptProblem(Problem.newSemanticTypeError(
-					"Forward reference",
-					IProblem.ForwardReference, 0, tempType.start, tempType.length));
-			context.acceptProblem(Problem.newSemanticTypeError(
-					v.ident + " is being forward referenced",
-					IProblem.ForwardReference, 0, v.ident.start, v.ident.length));
+					"Forward reference", IProblem.ForwardReference, 0,
+					tempType.start, tempType.length));
+			context.acceptProblem(Problem
+					.newSemanticTypeError(v.ident
+							+ " is being forward referenced",
+							IProblem.ForwardReference, 0, v.ident.start,
+							v.ident.length));
 			s = null;
 		} else {
 			FuncDeclaration f = s.isFuncDeclaration();
@@ -160,8 +187,9 @@ public class AliasDeclaration extends Declaration {
 					s.parent = sc.parent;
 				}
 			}
-			if (overnext != null)
+			if (overnext != null) {
 				context.multiplyDefined(s, overnext);
+			}
 			if (s == this) {
 				s = null;
 			}
@@ -171,10 +199,63 @@ public class AliasDeclaration extends Declaration {
 	}
 
 	@Override
-	public int getNodeType() {
-		return ALIAS_DECLARATION;
+	public Dsymbol syntaxCopy(Dsymbol s) {
+		Assert.isTrue(s == null);
+		AliasDeclaration sa;
+		if (type != null) {
+			sa = new AliasDeclaration(ident, type.syntaxCopy());
+		} else {
+			sa = new AliasDeclaration(ident, aliassym.syntaxCopy(null));
+		}
+		// Syntax copy for header file
+		if (htype == null) // Don't overwrite original
+		{
+			if (type != null) // Make copy for both old and new instances
+			{
+				htype = type.syntaxCopy();
+				sa.htype = type.syntaxCopy();
+			}
+		} else {
+			// Make copy of original for new instance
+			sa.htype = htype.syntaxCopy();
+		}
+		if (haliassym == null) {
+			if (aliassym != null) {
+				haliassym = aliassym.syntaxCopy(s);
+				sa.haliassym = aliassym.syntaxCopy(s);
+			}
+		} else {
+			sa.haliassym = haliassym.syntaxCopy(s);
+		}
+		return sa;
 	}
-	
+
+	@Override
+	public Dsymbol toAlias(SemanticContext context) {
+		Assert.isTrue(this != aliassym);
+		if (inSemantic != 0) {
+			context.acceptProblem(Problem.newSemanticTypeError(
+					"Circular alias declaration", IProblem.CircularDefinition,
+					0, ident.start, ident.length));
+		}
+		Dsymbol s = aliassym != null ? aliassym.toAlias(context) : this;
+		return s;
+	}
+
+	@Override
+	public void toCBuffer(OutBuffer buf, HdrGenState hgs) {
+		buf.writestring("alias ");
+		if (aliassym != null) {
+			aliassym.toCBuffer(buf, hgs);
+			buf.writeByte(' ');
+			buf.writestring(ident.toChars());
+		} else {
+			type.toCBuffer(buf, ident, hgs);
+		}
+		buf.writeByte(';');
+		buf.writenl();
+	}
+
 	@Override
 	public String toString() {
 		return "alias " + type + " " + ident + ";";

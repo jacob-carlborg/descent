@@ -9,8 +9,8 @@ public class TemplateInstanceWrapper extends IdentifierExp {
 	}
 	
 	@Override
-	public boolean dyncast() {
-		return Identifier.NOT_DYNCAST_IDENTIFIER;
+	public DYNCAST dyncast() {
+		return DYNCAST.DYNCAST_OBJECT;
 	}
 	
 	@Override

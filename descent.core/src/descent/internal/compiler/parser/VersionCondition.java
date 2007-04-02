@@ -1,13 +1,9 @@
 package descent.internal.compiler.parser;
 
-
-
-public class VersionCondition extends Condition {
+public class VersionCondition extends DVCondition {
 	
-	public Identifier id;
-
 	public VersionCondition(long level, Identifier id) {
-		this.id = id;
+		super(level, id);
 	}
 	
 	@Override

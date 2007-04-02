@@ -15,6 +15,7 @@ public class SemanticContext {
 	public Global global = new Global();
 	
 	public ClassDeclaration object; // ClassDeclaration::object
+	public ClassDeclaration classinfo; // ClassDeclaration::classinfo
 	public ClassDeclaration typeinfo;
 	public ClassDeclaration typeinfoclass;
 	public ClassDeclaration typeinfointerface;
@@ -28,6 +29,8 @@ public class SemanticContext {
 	public ClassDeclaration typeinfofunction;
 	public ClassDeclaration typeinfodelegate;
 	public ClassDeclaration typeinfotypelist;
+	
+	public ClassDeclaration moduleinfo;
 	
 	public DsymbolTable st;
 	public AST ast;
@@ -61,7 +64,7 @@ public class SemanticContext {
 		acceptProblem(Problem.newSemanticMemberError("Duplicated symbol " + s1.ident, IProblem.DuplicatedSymbol, 0, s1.ident.start, s1.ident.length));		
 	}
 	
-	private int generatedIds;
+	private int generatedIds;	
 	public IdentifierExp generateId(String prefix) {
 		String name = prefix + ++generatedIds;
 		Identifier id = new Identifier(name, TOK.TOKidentifier);
