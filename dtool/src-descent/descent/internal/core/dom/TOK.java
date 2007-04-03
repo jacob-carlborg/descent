@@ -140,4 +140,59 @@ public enum TOK {
 		return value;
 	}
 	
+	public static final TOK[] operators = {
+		TOKlt,		TOKgt,
+		TOKle,		TOKge,
+		TOKequal,	TOKnotequal,
+		TOKidentity,	TOKnotidentity,
+		TOKindex,	TOKis,
+		TOKtobool,
+
+		// NCEG floating point compares
+		// !<>=     <>    <>=    !>     !>=   !<     !<=   !<>
+		TOKunord,TOKlg,TOKleg,TOKule,TOKul,TOKuge,TOKug,TOKue,
+
+		TOKshl,		TOKshr,
+		TOKshlass,	TOKshrass,
+		TOKushr,	TOKushrass,
+		TOKcat,		TOKcatass,	
+		TOKadd,		TOKmin,		TOKaddass,	TOKminass,
+		TOKmul,		TOKdiv,		TOKmod,
+		TOKmulass,	TOKdivass,	TOKmodass,
+		TOKand,		TOKor,		TOKxor,
+		TOKandass,	TOKorass,	TOKxorass,
+		TOKassign,	TOKnot,		TOKtilde,
+		TOKplusplus,	TOKminusminus,
+		TOKdot,		TOKarrow,	TOKcomma,
+		TOKquestion,	TOKandand,	TOKoror,
+	};
+	
+	public static final TOK[] literals = {
+		// Other Literals
+		TOKnull,	TOKassert,
+		TOKtrue,	TOKfalse,
+		
+		// Numeric literals
+		TOKint32v, TOKuns32v,
+		TOKint64v, TOKuns64v,
+		TOKfloat32v, TOKfloat64v, TOKfloat80v,
+		TOKimaginary32v, TOKimaginary64v, TOKimaginary80v,
+
+		// Char constants
+		TOKcharv, TOKwcharv, TOKdcharv,
+	};
+	
+	public static final TOK[] basicTypes = {
+			TOKvoid,
+			TOKint8, TOKuns8,
+			TOKint16, TOKuns16,
+			TOKint32, TOKuns32,
+			TOKint64, TOKuns64,
+			TOKfloat32, TOKfloat64, TOKfloat80,
+			TOKimaginary32, TOKimaginary64, TOKimaginary80,
+			TOKcomplex32, TOKcomplex64, TOKcomplex80,
+			TOKchar, TOKwchar, TOKdchar, TOKbit, TOKbool,
+			TOKcent, TOKucent,
+	};	
+	
 }

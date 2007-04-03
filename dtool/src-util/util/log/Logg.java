@@ -4,12 +4,25 @@ import java.io.PrintStream;
 
 public class Logg {
 
+	public static class NullPrinter {
+		public void println(Object string) {
+			// Do nothing
+		}
+
+		public void print(Object string) {
+			// Do nothing
+		}
+
+		public void println() {
+			// Do nothing
+		}
+	}
+
 	public static boolean debug = true;
 
-	public static PrintStream err = System.out; 
-	
-	static {
-	}
+	public static PrintStream out = System.out; 
+	public static PrintStream err = System.err; 
+	public static NullPrinter not = new NullPrinter();
 
 	public static void println(Object string) {
 		print(string);
@@ -21,7 +34,7 @@ public class Logg {
 			System.out.print(string);
 	}
 
-	private static void println() {
+	public static void println() {
 		if (debug)
 			System.out.println();
 	}

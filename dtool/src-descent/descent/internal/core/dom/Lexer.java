@@ -406,6 +406,7 @@ public class Lexer implements IProblemCollector {
 				if (commentToken)
 				{
 				    t.value = TOKcomment;
+				    t.len = p - t.ptr;
 				    return;
 				}
 				else if (doDocComment && input[t.ptr + 2] == '*' && p - 4 != t.ptr)
@@ -434,6 +435,7 @@ public class Lexer implements IProblemCollector {
 					    {
 						p = end;
 						t.value = TOKcomment;
+					    t.len = p - t.ptr;
 						return;
 					    }
 					    if (doDocComment && input[t.ptr + 2] == '/')
@@ -458,6 +460,7 @@ public class Lexer implements IProblemCollector {
 				    p++;
 				    linnum++;
 				    t.value = TOKcomment;
+				    t.len = p - t.ptr;
 				    return;
 				}
 				if (doDocComment && input[t.ptr + 2] == '/')
@@ -528,6 +531,7 @@ public class Lexer implements IProblemCollector {
 				if (commentToken)
 				{
 				    t.value = TOKcomment;
+				    t.len = p - t.ptr;
 				    return;
 				}
 				if (doDocComment && input[t.ptr + 2] == '+' && p - 4 != t.ptr)
