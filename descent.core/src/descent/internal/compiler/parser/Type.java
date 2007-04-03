@@ -496,4 +496,8 @@ public abstract class Type extends ASTNode {
 		return null;
 	}
 
+	public void toCBuffer2(OutBuffer argbuf, Object object, HdrGenState hgs) {
+		// TODO semantic
+	}
+
 }

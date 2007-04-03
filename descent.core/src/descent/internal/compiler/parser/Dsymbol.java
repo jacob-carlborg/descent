@@ -16,7 +16,7 @@ public abstract class Dsymbol extends ASTNode {
 		}
 		return b;
 	}
-	
+
 	public static boolean oneMembers(List<Dsymbol> members, Dsymbol[] ps) {
 		Dsymbol s = null;
 
@@ -41,7 +41,7 @@ public abstract class Dsymbol extends ASTNode {
 		ps[0] = s; // s is the one symbol, NULL if none
 		return true;
 	}
-	
+
 	public IdentifierExp ident;
 	public IdentifierExp c_ident;
 	public Dsymbol parent;
@@ -52,8 +52,10 @@ public abstract class Dsymbol extends ASTNode {
 	public Dsymbol(IdentifierExp ident) {
 		this();
 		this.ident = ident;
+		this.c_ident = null;
+		this.parent = null;
 	}
-	
+
 	public void addLocalClass(List<ClassDeclaration> aclasses) {
 
 	}
@@ -157,6 +159,10 @@ public abstract class Dsymbol extends ASTNode {
 		return false;
 	}
 
+	public void inlineScan(SemanticContext context) {
+
+	}
+
 	public AggregateDeclaration isAggregateDeclaration() {
 		return null;
 	}
@@ -218,10 +224,10 @@ public abstract class Dsymbol extends ASTNode {
 		return false;
 	}
 
-	public boolean isForwardRef() {
+	public boolean isforwardRef() {
 		return false;
 	}
-	
+
 	public FuncAliasDeclaration isFuncAliasDeclaration() {
 		return null;
 	}
@@ -265,7 +271,7 @@ public abstract class Dsymbol extends ASTNode {
 	public Module isModule() {
 		return null;
 	}
-	
+
 	public NewDeclaration isNewDeclaration() {
 		return null;
 	}
@@ -273,7 +279,7 @@ public abstract class Dsymbol extends ASTNode {
 	public Package isPackage() {
 		return null;
 	}
-	
+
 	public ScopeDsymbol isScopeDsymbol() {
 		return null;
 	}
@@ -316,7 +322,7 @@ public abstract class Dsymbol extends ASTNode {
 	public UnitTestDeclaration isUnitTestDeclaration() {
 		return null;
 	}
-	
+
 	public VarDeclaration isVarDeclaration() {
 		return null;
 	}
@@ -375,28 +381,44 @@ public abstract class Dsymbol extends ASTNode {
 
 	}
 
+	public int size() {
+		error("Dsymbol '%s' has no size\n", toChars());
+		return 0;
+	}
+
 	public Dsymbol syntaxCopy(Dsymbol s) {
 		throw new IllegalStateException("Must be implemented by subclasses");
 	}
-	
+
 	public Dsymbol toAlias(SemanticContext context) {
 		return this;
 	}
 
 	public void toCBuffer(OutBuffer buf, HdrGenState hgs) {
-		
+		buf.writestring(toChars());
+	}
+
+	@Override
+	public String toChars() {
+		return ident != null ? ident.toChars() : "__anonymous";
 	}
 
 	public Dsymbol toParent() {
 		return parent != null ? parent.pastMixin() : null;
 	}
-	
+
 	public Dsymbol toParent2() {
 		Dsymbol s = parent;
 		while (s != null && s.isTemplateInstance() != null) {
 			s = s.parent;
 		}
 		return s;
+	}
+
+	@Override
+	public String toPrettyChars() {
+		// TODO semantic
+		return toChars();
 	}
 
 }

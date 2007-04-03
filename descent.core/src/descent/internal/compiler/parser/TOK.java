@@ -1,6 +1,7 @@
 package descent.internal.compiler.parser;
 
 import descent.core.compiler.ITerminalSymbols;
+import static descent.internal.compiler.parser.PREC.*;
 
 public enum TOK implements ITerminalSymbols {
 	TOKreserved,
@@ -9,23 +10,23 @@ public enum TOK implements ITerminalSymbols {
 	TOKlparen("(", TokenNameLPAREN), TOKrparen(")", TokenNameRPAREN), 
 	TOKlbracket("[", TokenNameLBRACKET), TOKrbracket("]", TokenNameRBRACKET), 
 	TOKlcurly("{", TokenNameLBRACE), TOKrcurly("}", TokenNameRBRACE), 
-	TOKcolon(":", TokenNameCOLON), TOKneg("!", TokenNameNOT), 
+	TOKcolon(":", TokenNameCOLON), TOKneg("!", TokenNameNOT, PREC_unary), 
 	TOKsemicolon(";", TokenNameSEMICOLON), TOKdotdotdot("...", TokenNameDOT_DOT_DOT), 
-	TOKeof("EOF", TokenNameEOF), TOKcast("cast", TokenNamecast), 
-	TOKnull("null", TokenNamenull), TOKassert("assert", TokenNameassert), 
+	TOKeof("EOF", TokenNameEOF), TOKcast("cast", TokenNamecast, PREC_unary), 
+	TOKnull("null", TokenNamenull, PREC_primary), TOKassert("assert", TokenNameassert, PREC_primary), 
 	TOKtrue("true", TokenNametrue), TOKfalse("false", TokenNamefalse), 
 	//TOKarray, TOKcall, TOKaddress, TOKtypedot, TOKtype,
-	TOKthrow("throw", TokenNamethrow), TOKnew("new", TokenNamenew), 
-	TOKdelete("delete", TokenNamedelete), TOKstar("*", TokenNameMULTIPLY), 
+	TOKthrow("throw", TokenNamethrow), TOKnew("new", TokenNamenew, PREC_unary), 
+	TOKdelete("delete", TokenNamedelete, PREC_unary), TOKstar("*", TokenNameMULTIPLY, PREC_unary), 
 	//TOKsymoff, TOKvar, TOKdotvar, TOKdotti, TOKdotexp, TOKdottype, 
-	TOKslice("..", TokenNameDOT_DOT), 
+	TOKslice("..", TokenNameDOT_DOT, PREC_primary), 
 	//TOKarraylength, 
 	TOKversion("version", TokenNameversion), TOKmodule("module", TokenNamemodule), 
 	TOKdollar("$", TokenNameDOLLAR), TOKtemplate("template", TokenNametemplate), 
 	//TOKdottd, TOKdeclaration, 
 	TOKtypeof("typeof", TokenNametypeof), TOKpragma("pragma", TokenNamepragma), 
 	//TOKdsymbol, 
-	TOKtypeid("typeid", TokenNametypeid), 
+	TOKtypeid("typeid", TokenNametypeid, PREC_primary), 
 	//TOKuadd, 
 	TOKiftype("iftype", TokenNameiftype), 
 	//TOKremove, TOKnewanonclass, 
@@ -35,40 +36,40 @@ public enum TOK implements ITerminalSymbols {
 	//TOKarrayliteral,
 
 	// Operators
-	TOKlt("<", TokenNameLESS), TOKgt(">", TokenNameGREATER), 
-	TOKle("<=", TokenNameLESS_EQUAL), TOKge(">=", TokenNameGREATER_EQUAL), 
-	TOKequal("==", TokenNameEQUAL_EQUAL), TOKnotequal("!=", TokenNameNOT_EQUAL), 
-	TOKidentity("===", TokenNameEQUAL_EQUAL_EQUAL), TOKnotidentity("!==", TokenNameNOT_EQUAL_EQUAL), 
+	TOKlt("<", TokenNameLESS, PREC_rel), TOKgt(">", TokenNameGREATER, PREC_rel), 
+	TOKle("<=", TokenNameLESS_EQUAL, PREC_rel), TOKge(">=", TokenNameGREATER_EQUAL, PREC_rel), 
+	TOKequal("==", TokenNameEQUAL_EQUAL, PREC_equal), TOKnotequal("!=", TokenNameNOT_EQUAL, PREC_equal), 
+	TOKidentity("===", TokenNameEQUAL_EQUAL_EQUAL, PREC_equal), TOKnotidentity("!==", TokenNameNOT_EQUAL_EQUAL, PREC_equal), 
 	//TOKindex, 
-	TOKis("is", TokenNameis), 
+	TOKis("is", TokenNameis, PREC_primary), 
 	//TOKtobool,
 
 	// NCEG floating point compares
 	// !<>= <> <>= !> !>= !< !<= !<>
-	TOKunord("!<>=", TokenNameNOT_LESS_GREATER_EQUAL), TOKlg("<>", TokenNameLESS_GREATER), 
-	TOKleg("<>=", TokenNameLESS_GREATER_EQUAL), TOKule("!>", TokenNameNOT_GREATER), 
-	TOKul("!>=", TokenNameNOT_GREATER_EQUAL), TOKuge("!<", TokenNameNOT_LESS), 
-	TOKug("!<=", TokenNameNOT_LESS_EQUAL), TOKue("!<>", TokenNameNOT_LESS_GREATER),
+	TOKunord("!<>=", TokenNameNOT_LESS_GREATER_EQUAL, PREC_rel), TOKlg("<>", TokenNameLESS_GREATER, PREC_rel), 
+	TOKleg("<>=", TokenNameLESS_GREATER_EQUAL, PREC_rel), TOKule("!>", TokenNameNOT_GREATER, PREC_rel), 
+	TOKul("!>=", TokenNameNOT_GREATER_EQUAL, PREC_rel), TOKuge("!<", TokenNameNOT_LESS, PREC_rel), 
+	TOKug("!<=", TokenNameNOT_LESS_EQUAL, PREC_rel), TOKue("!<>", TokenNameNOT_LESS_GREATER, PREC_rel),
 
-	TOKshl("<<", TokenNameLEFT_SHIFT), TOKshr(">>", TokenNameRIGHT_SHIFT), 
-	TOKshlass("<<=", TokenNameLEFT_SHIFT_EQUAL), TOKshrass(">>=", TokenNameRIGHT_SHIFT_EQUAL), 
-	TOKushr(">>>", TokenNameUNSIGNED_RIGHT_SHIFT), TOKushrass(">>>=", TokenNameUNSIGNED_RIGHT_SHIFT_EQUAL), 
-	//TOKcat("~", TokenNameTILDE), 
-	TOKcatass("~=", TokenNameTILDE_EQUAL), // ~ ~=
-	TOKadd("+", TokenNamePLUS), TOKmin("-", TokenNameMINUS), 
-	TOKaddass("+=", TokenNamePLUS_EQUAL), TOKminass("-=", TokenNameMINUS_EQUAL), 
-	TOKmul("*", TokenNameMULTIPLY), TOKdiv("/", TokenNameDIVIDE), 
-	TOKmod("%", TokenNameREMAINDER), TOKmulass("*=", TokenNameMULTIPLY_EQUAL), 
-	TOKdivass("/=", TokenNameDIVIDE_EQUAL), TOKmodass("%=", TokenNameREMAINDER_EQUAL), 
-	TOKand("&", TokenNameAND), TOKor("|", TokenNameOR), 
-	TOKxor("^", TokenNameXOR), TOKandass("&=", TokenNameAND_EQUAL), 
-	TOKorass("|=", TokenNameOR_EQUAL), TOKxorass("^=", TokenNameXOR_EQUAL), 
-	TOKassign("=", TokenNameEQUAL), TOKnot("!", TokenNameNOT), 
-	TOKtilde("~", TokenNameTILDE), TOKplusplus("++", TokenNamePLUS_PLUS), 
-	TOKminusminus("--", TokenNameMINUS_MINUS), TOKdot(".", TokenNameDOT), 
+	TOKshl("<<", TokenNameLEFT_SHIFT, PREC_shift), TOKshr(">>", TokenNameRIGHT_SHIFT, PREC_shift), 
+	TOKshlass("<<=", TokenNameLEFT_SHIFT_EQUAL, PREC_assign), TOKshrass(">>=", TokenNameRIGHT_SHIFT_EQUAL, PREC_assign), 
+	TOKushr(">>>", TokenNameUNSIGNED_RIGHT_SHIFT, PREC_shift), TOKushrass(">>>=", TokenNameUNSIGNED_RIGHT_SHIFT_EQUAL, PREC_assign), 
+	TOKcat("~", TokenNameTILDE, PREC_add), 
+	TOKcatass("~=", TokenNameTILDE_EQUAL, PREC_assign), // ~ ~=
+	TOKadd("+", TokenNamePLUS, PREC_add), TOKmin("-", TokenNameMINUS, PREC_add), 
+	TOKaddass("+=", TokenNamePLUS_EQUAL, PREC_assign), TOKminass("-=", TokenNameMINUS_EQUAL, PREC_assign), 
+	TOKmul("*", TokenNameMULTIPLY, PREC_mul), TOKdiv("/", TokenNameDIVIDE, PREC_mul), 
+	TOKmod("%", TokenNameREMAINDER, PREC_mul), TOKmulass("*=", TokenNameMULTIPLY_EQUAL, PREC_assign), 
+	TOKdivass("/=", TokenNameDIVIDE_EQUAL, PREC_assign), TOKmodass("%=", TokenNameREMAINDER_EQUAL, PREC_assign), 
+	TOKand("&", TokenNameAND, PREC_and), TOKor("|", TokenNameOR, PREC_or), 
+	TOKxor("^", TokenNameXOR, PREC_xor), TOKandass("&=", TokenNameAND_EQUAL, PREC_assign), 
+	TOKorass("|=", TokenNameOR_EQUAL, PREC_assign), TOKxorass("^=", TokenNameXOR_EQUAL, PREC_assign), 
+	TOKassign("=", TokenNameEQUAL, PREC_assign), TOKnot("!", TokenNameNOT, PREC_unary), 
+	TOKtilde("~", TokenNameTILDE, PREC_unary), TOKplusplus("++", TokenNamePLUS_PLUS, PREC_primary), 
+	TOKminusminus("--", TokenNameMINUS_MINUS, PREC_primary), TOKdot(".", TokenNameDOT, PREC_primary), 
 	//TOKarrow("->"), 
-	TOKcomma(",", TokenNameCOMMA), TOKquestion("?", TokenNameQUESTION), 
-	TOKandand("&&", TokenNameAND_AND), TOKoror("||", TokenNameOR_OR),
+	TOKcomma(",", TokenNameCOMMA, PREC_expr), TOKquestion("?", TokenNameQUESTION, PREC_cond), 
+	TOKandand("&&", TokenNameAND_AND, PREC_andand), TOKoror("||", TokenNameOR_OR, PREC_oror),
 
 	// Numeric literals
 	TOKint32v(TokenNameIntegerLiteral), TOKuns32v(TokenNameUnsignedIntegerLiteral), 
@@ -82,17 +83,17 @@ public enum TOK implements ITerminalSymbols {
 	TOKdcharv(TokenNameDCharacterLiteral),
 
 	// Leaf operators
-	TOKidentifier(TokenNameIdentifier), TOKstring(TokenNameStringLiteral), 
-	TOKthis("this", TokenNamethis), TOKsuper("super", TokenNamesuper), 
+	TOKidentifier(TokenNameIdentifier, PREC_primary), TOKstring(TokenNameStringLiteral, PREC_primary), 
+	TOKthis("this", TokenNamethis, PREC_primary), TOKsuper("super", TokenNamesuper, PREC_primary), 
 	//TOKhalt, TOKtuple,
 
 	// Basic types
 	TOKvoid("void", TokenNamevoid), TOKint8("byte", TokenNamebyte), 
 	TOKuns8("ubyte", TokenNameubyte), TOKint16("short", TokenNameshort), 
 	TOKuns16("ushort", TokenNameushort), TOKint32("int", TokenNameint), 
-	TOKuns32("uint", TokenNameuint), TOKint64("long", TokenNamelong), 
+	TOKuns32("uint", TokenNameuint), TOKint64("long", TokenNamelong, PREC_primary), 
 	TOKuns64("ulong", TokenNameulong), TOKfloat32("float", TokenNamefloat), 
-	TOKfloat64("double", TokenNamedouble), TOKfloat80("real", TokenNamereal), 
+	TOKfloat64("double", TokenNamedouble, PREC_primary), TOKfloat80("real", TokenNamereal), 
 	TOKimaginary32("ifloat", TokenNameifloat), TOKimaginary64("idouble", TokenNameidouble), 
 	TOKimaginary80("ireal", TokenNameireal), TOKcomplex32("cfloat", TokenNamecfloat), 
 	TOKcomplex64("cdouble", TokenNamecdouble), TOKcomplex80("creal", TokenNamecreal), 
@@ -104,10 +105,10 @@ public enum TOK implements ITerminalSymbols {
 	// Aggregates
 	TOKstruct("struct", TokenNamestruct), TOKclass("class", TokenNameclass), 
 	TOKinterface("interface", TokenNameinterface), TOKunion("union", TokenNameunion), 
-	TOKenum("enum", TokenNameenum), TOKimport("import", TokenNameimport), 
+	TOKenum("enum", TokenNameenum), TOKimport("import", TokenNameimport, PREC_primary), 
 	TOKtypedef("typedef", TokenNametypedef), TOKalias("alias", TokenNamealias), 
 	TOKoverride("override", TokenNameoverride), TOKdelegate("delegate", TokenNamedelegate), 
-	TOKfunction("function", TokenNamefunction), TOKmixin("mixin", TokenNamemixin),
+	TOKfunction("function", TokenNamefunction, PREC_primary), TOKmixin("mixin", TokenNamemixin),
 
 	TOKalign("align", TokenNamealign), TOKextern("extern", TokenNameextern), 
 	TOKprivate("private", TokenNameprivate), TOKprotected("protected", TokenNameprotected), 
@@ -117,7 +118,7 @@ public enum TOK implements ITerminalSymbols {
 	TOKfinal("final", TokenNamefinal), TOKconst("const", TokenNameconst), 
 	TOKabstract("abstract", TokenNameabstract), TOKvolatile("volatile", TokenNamevolatile), 
 	TOKdebug("debug", TokenNamedebug), TOKdeprecated("deprecated", TokenNamedeprecated), 
-	TOKin("in", TokenNamein), TOKout("out", TokenNameout), 
+	TOKin("in", TokenNamein, PREC_rel), TOKout("out", TokenNameout), 
 	TOKinout("inout", TokenNameinout), TOKlazy("lazy", TokenNamelazy), 
 	TOKauto("auto", TokenNameauto), TOKpackage("package", TokenNamepackage),
 
@@ -145,19 +146,20 @@ public enum TOK implements ITerminalSymbols {
 	TOKwhitespace(TokenNameWHITESPACE), TOKPRAGMA(TokenNamePRAGMA),
 	
 	// Extra for "compiling"
-	TOKarrayliteral, TOKdeclaration, TOKtypedot, 
-	TOKtype, TOKaddress, TOKdotti, TOKuadd, 
-	TOKcall, TOKarray, TOKnewanonclass, TOKnotis,
-	TOKvar, TOKdotvar, TOKconstruct, TOKdsymbol,
-	TOKdotexp, TOKhalt, TOKsymoff, TOKtuple,
+	TOKarrayliteral(PREC_primary), TOKdeclaration, TOKtypedot(PREC_primary), 
+	TOKtype, TOKaddress(PREC_unary), TOKdotti(PREC_primary), TOKuadd(PREC_unary), 
+	TOKcall(PREC_primary), TOKarray(PREC_primary), TOKnewanonclass, TOKnotis,
+	TOKvar(PREC_primary), TOKdotvar, TOKconstruct, TOKdsymbol,
+	TOKdotexp, TOKhalt, TOKsymoff, TOKtuple, TOKindex,
+	TOKtobool(PREC_add),
 
 	//TOKMAX
 	;
 
 	public String value;
 	public char[] charArrayValue;
-
 	public int terminalSymbol;
+	public PREC precedence;
 
 	TOK() {
 		value = this.name();
@@ -171,6 +173,22 @@ public enum TOK implements ITerminalSymbols {
 		this.value = value;
 		this.charArrayValue = value.toCharArray();
 		this.terminalSymbol = terminalSymbol;
+	}
+	
+	TOK(int terminalSymbol, PREC precedence) {
+		this.terminalSymbol = terminalSymbol;
+		this.precedence = precedence;
+	}
+	
+	TOK(PREC precedence) {
+		this.precedence = precedence;
+	}
+	
+	TOK(String value, int terminalSymbol, PREC precedence) {
+		this.value = value;
+		this.charArrayValue = value.toCharArray();
+		this.terminalSymbol = terminalSymbol;
+		this.precedence = precedence;
 	}
 	
 	@Override

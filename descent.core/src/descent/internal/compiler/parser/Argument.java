@@ -74,4 +74,9 @@ public class Argument extends ASTNode {
     	return ARGUMENT;
     }
 
+	public Type isLazyArray() {
+		// TODO semantic
+		return null;
+	}
+
 }

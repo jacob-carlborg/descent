@@ -87,4 +87,12 @@ public class OutBuffer {
 		return data.toString();
 	}
 
+	public void write(OutBuffer argbuf) {
+		data.append(argbuf.data);
+	}
+
+	public String toChars() {
+		return data.toString();
+	}
+
 }

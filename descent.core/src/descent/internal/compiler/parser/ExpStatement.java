@@ -13,7 +13,7 @@ public class ExpStatement extends Statement {
 		if (exp != null) {
 			exp = exp.semantic(sc, context);
 			exp = Expression.resolveProperties(sc, exp, context);
-			exp.checkSideEffect(0);
+			exp.checkSideEffect(0, context);
 			exp = exp.optimize(0);
 		}
 		return this;

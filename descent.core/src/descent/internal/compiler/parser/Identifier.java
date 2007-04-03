@@ -9,6 +9,10 @@ public class Identifier {
 	public String string;
 	public TOK value;
 	
+	public Identifier(String string) {
+		this(string, TOK.TOKidentifier);
+	}
+	
 	public Identifier(String string, TOK value) {
 		this.string = string;
 		this.value = value;

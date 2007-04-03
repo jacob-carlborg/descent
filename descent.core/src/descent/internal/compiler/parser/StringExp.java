@@ -9,6 +9,7 @@ public class StringExp extends Expression {
 	public char postfix;
 	public char sz; // 1: char, 2: wchar, 4: dchar
 	public boolean committed; // !=0 if type is committed
+	public int len;
 
 	public StringExp(String string) {
 		this(string, (char) 0);

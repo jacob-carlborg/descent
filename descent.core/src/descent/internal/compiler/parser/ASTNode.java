@@ -9,6 +9,8 @@ import descent.core.dom.DDocComment;
 import static descent.internal.compiler.parser.TY.*;
 import static descent.internal.compiler.parser.TOK.*;
 import static descent.internal.compiler.parser.PROT.*;
+import static descent.internal.compiler.parser.InOut.*;
+import static descent.internal.compiler.parser.LINK.*;
 
 // class Object in DMD compiler
 public abstract class ASTNode {
@@ -205,6 +207,8 @@ public abstract class ASTNode {
 	public final static int UNROLLED_LOOP_STATEMENT = 187;
 	public final static int COMPLEX_EXP = 188;
 
+	private static int idn;
+
 	/***************************************************************************
 	 * Helper function for ClassDeclaration::accessCheck() Returns: 0 no access
 	 * 1 access
@@ -214,19 +218,20 @@ public abstract class ASTNode {
 		Assert.isNotNull(dthis);
 
 		if (dthis.hasPrivateAccess(sfunc) || dthis.isFriendOf(cdscope)) {
-			if (smember.toParent() == dthis)
+			if (smember.toParent() == dthis) {
 				return true;
-			else {
+			} else {
 				ClassDeclaration cdthis = dthis.isClassDeclaration();
 				if (cdthis != null) {
 					for (int i = 0; i < cdthis.baseclasses.size(); i++) {
-						BaseClass b = (BaseClass) cdthis.baseclasses.get(i);
+						BaseClass b = cdthis.baseclasses.get(i);
 						PROT access;
 
 						access = b.base.getAccess(smember);
 						if (access.level >= PROTprotected.level
-								|| accessCheckX(smember, sfunc, b.base, cdscope))
+								|| accessCheckX(smember, sfunc, b.base, cdscope)) {
 							return true;
+						}
 
 					}
 				}
@@ -236,10 +241,11 @@ public abstract class ASTNode {
 				ClassDeclaration cdthis = dthis.isClassDeclaration();
 				if (cdthis != null) {
 					for (int i = 0; i < cdthis.baseclasses.size(); i++) {
-						BaseClass b = (BaseClass) cdthis.baseclasses.get(i);
+						BaseClass b = cdthis.baseclasses.get(i);
 
-						if (accessCheckX(smember, sfunc, b.base, cdscope))
+						if (accessCheckX(smember, sfunc, b.base, cdscope)) {
 							return true;
+						}
 					}
 				}
 			}
@@ -249,27 +255,31 @@ public abstract class ASTNode {
 
 	public static void inferApplyArgTypes(TOK op, List<Argument> arguments,
 			Expression aggr, SemanticContext context) {
-		if (arguments == null || arguments.isEmpty())
+		if (arguments == null || arguments.isEmpty()) {
 			return;
+		}
 
 		/*
 		 * Return if no arguments need types.
 		 */
 		for (int u = 0; true; u++) {
-			if (u == arguments.size())
+			if (u == arguments.size()) {
 				return;
-			Argument arg = (Argument) arguments.get(u);
-			if (arg.type == null)
+			}
+			Argument arg = arguments.get(u);
+			if (arg.type == null) {
 				break;
+			}
 		}
 
 		AggregateDeclaration ad;
 		FuncDeclaration fd;
 
-		Argument arg = (Argument) arguments.get(0);
+		Argument arg = arguments.get(0);
 		Type taggr = aggr.type;
-		if (taggr == null)
+		if (taggr == null) {
 			return;
+		}
 		Type tab = taggr.toBasetype(context);
 		switch (tab.ty) {
 		case Tarray:
@@ -279,7 +289,7 @@ public abstract class ASTNode {
 				if (arg.type == null) {
 					arg.type = Type.tsize_t; // key type
 				}
-				arg = (Argument) arguments.get(1);
+				arg = arguments.get(1);
 			}
 			if (arg.type == null && tab.ty != Ttuple) {
 				arg.type = tab.next; // value type
@@ -293,7 +303,7 @@ public abstract class ASTNode {
 				if (arg.type == null) {
 					arg.type = taa.index; // key type
 				}
-				arg = (Argument) arguments.get(1);
+				arg = arguments.get(1);
 			}
 			if (arg.type == null) {
 				arg.type = taa.next; // value type
@@ -313,8 +323,9 @@ public abstract class ASTNode {
 					context);
 			if (s != null) {
 				fd = s.isFuncDeclaration();
-				if (fd != null)
+				if (fd != null) {
 					inferApplyArgTypesX(fd, arguments, context);
+				}
 			}
 			break;
 		}
@@ -331,8 +342,9 @@ public abstract class ASTNode {
 					context);
 			if (s != null) {
 				fd = s.isFuncDeclaration();
-				if (fd != null)
+				if (fd != null) {
 					inferApplyArgTypesX(fd, arguments, context);
+				}
 			}
 			break;
 		}
@@ -342,8 +354,9 @@ public abstract class ASTNode {
 				DelegateExp de = (DelegateExp) aggr;
 
 				fd = de.func.isFuncDeclaration();
-				if (fd != null)
+				if (fd != null) {
 					inferApplyArgTypesX(fd, arguments, context);
+				}
 			} else {
 				inferApplyArgTypesY((TypeFunction) tab.next, arguments, context);
 			}
@@ -423,7 +436,7 @@ public abstract class ASTNode {
 		}
 
 		for (int u = 0; u < nparams; u++) {
-			Argument arg = (Argument) arguments.get(u);
+			Argument arg = arguments.get(u);
 			Argument param = Argument.getNth(tf.parameters, u, context);
 			if (arg.type != null) {
 				if (!arg.type.equals(param.type)) {
@@ -493,13 +506,13 @@ public abstract class ASTNode {
 		}
 		return null;
 	}
-
 	public String filename;
 	public int start;
 	public int length;
 	public int astFlags;
 	public List<DDocComment> preDdocs;
 	public List<Modifier> modifiers;
+
 	public DDocComment postDdoc;
 
 	/**
@@ -517,27 +530,28 @@ public abstract class ASTNode {
 	public void accessCheck(Scope sc, Expression e, Declaration d) {
 		if (e == null) {
 			if (d.prot() == PROTprivate && d.getModule() != sc.module
-					|| d.prot() == PROTpackage && !hasPackageAccess(sc, d))
-
+					|| d.prot() == PROTpackage && !hasPackageAccess(sc, d)) {
 				error("%s %s.%s is not accessible from %s", d.kind(), d
 						.getModule().toChars(), d.toChars(), sc.module
 						.toChars());
+			}
 		} else if (e.type.ty == Tclass) { // Do access check
 			ClassDeclaration cd;
 
-			cd = (ClassDeclaration) (((TypeClass) e.type).sym);
+			cd = (((TypeClass) e.type).sym);
 			if (e.op == TOKsuper) {
 				ClassDeclaration cd2;
 
 				cd2 = sc.func.toParent().isClassDeclaration();
-				if (cd2 != null)
+				if (cd2 != null) {
 					cd = cd2;
+				}
 			}
 			cd.accessCheck(sc, d);
 		} else if (e.type.ty == Tstruct) { // Do access check
 			StructDeclaration cd;
 
-			cd = (StructDeclaration) (((TypeStruct) e.type).sym);
+			cd = (((TypeStruct) e.type).sym);
 			cd.accessCheck(sc, d);
 		}
 	}
@@ -556,6 +570,60 @@ public abstract class ASTNode {
 		modifiers.addAll(someModifiers);
 	}
 
+	public void argExpTypesToCBuffer(OutBuffer buf, List<Expression> arguments,
+			HdrGenState hgs) {
+		if (arguments != null) {
+			OutBuffer argbuf = new OutBuffer();
+
+			for (int i = 0; i < arguments.size(); i++) {
+				Expression arg = arguments.get(i);
+
+				if (i != 0) {
+					buf.writeByte(',');
+				}
+				argbuf.reset();
+				arg.type.toCBuffer2(argbuf, null, hgs);
+				buf.write(argbuf);
+			}
+		}
+	}
+
+	public void argsToCBuffer(OutBuffer buf, List<Expression> arguments,
+			HdrGenState hgs) {
+		if (arguments != null) {
+			for (int i = 0; i < arguments.size(); i++) {
+				Expression arg = arguments.get(i);
+
+				if (i != 0) {
+					buf.writeByte(',');
+				}
+				expToCBuffer(buf, hgs, arg, PREC.PREC_assign);
+			}
+		}
+	}
+
+	public void arrayExpressionSemantic(List<Expression> exps, Scope sc,
+			SemanticContext context) {
+		if (exps != null) {
+			for (int i = 0; i < exps.size(); i++) {
+				Expression e = exps.get(i);
+
+				e = e.semantic(sc, context);
+				exps.set(i, e);
+			}
+		}
+	}
+
+	private Expression createTypeInfoArray(Scope sc, List<Expression> exps,
+			int dim) {
+		// TODO semantic
+		return null;
+	}
+
+	public DYNCAST dyncast() {
+		return DYNCAST.DYNCAST_OBJECT;
+	}
+
 	protected void error(String s) {
 		throw new IllegalStateException("Problem reporting not implemented");
 	}
@@ -568,8 +636,245 @@ public abstract class ASTNode {
 		throw new IllegalStateException("Problem reporting not implemented");
 	}
 
+	public void expandTuples(List<Expression> exps) {
+		if (exps != null) {
+			for (int i = 0; i < exps.size(); i++) {
+				Expression arg = exps.get(i);
+
+				// Inline expand all the tuples
+				while (arg.op == TOKtuple) {
+					TupleExp te = (TupleExp) arg;
+
+					exps.remove(i); // remove arg
+					exps.addAll(i, te.exps); // replace with tuple contents
+					if (i == exps.size()) {
+						return; // empty tuple, no more arguments
+					}
+					arg = exps.get(i);
+				}
+			}
+		}
+	}
+
+	public void expToCBuffer(OutBuffer buf, HdrGenState hgs, Expression e,
+			PREC pr) {
+		if (e.op.precedence.ordinal() < pr.ordinal()) {
+			buf.writeByte('(');
+			e.toCBuffer(buf, hgs);
+			buf.writeByte(')');
+		} else {
+			e.toCBuffer(buf, hgs);
+		}
+	}
+
 	protected void fatal() {
 		throw new IllegalStateException("Problem reporting not implemented");
+	}
+
+	public boolean findCondition(List<String> ids, Identifier ident) {
+		if (ids != null) {
+			for (String id : ids) {
+				if (id.equals(ident.string)) {
+					return true;
+				}
+			}
+		}
+
+		return false;
+	}
+
+	public void functionArguments(Scope sc, TypeFunction tf,
+			List<Expression> arguments, SemanticContext context) {
+		int n;
+		int done;
+		Type tb;
+
+		Assert.isNotNull(arguments);
+		int nargs = arguments != null ? arguments.size() : 0;
+		int nparams = Argument.dim(tf.parameters, context);
+
+		if (nargs > nparams && tf.varargs == 0) {
+			error("expected %zu arguments, not %zu", nparams, nargs);
+		}
+
+		n = (nargs > nparams) ? nargs : nparams; // n = max(nargs, nparams)
+
+		done = 0;
+		for (int i = 0; i < n; i++) {
+			Expression arg;
+
+			if (i < nargs) {
+				arg = arguments.get(i);
+			} else {
+				arg = null;
+			}
+
+			if (i < nparams) {
+				Argument p = Argument.getNth(tf.parameters, i, context);
+
+				if (arg == null) {
+					if (p.defaultArg == null) {
+						if (tf.varargs == 2 && i + 1 == nparams) {
+							// goto L2;
+						}
+						error("expected %zu arguments, not %zu", nparams, nargs);
+						break;
+					}
+					arg = p.defaultArg.copy();
+					arguments.add(arg);
+					nargs++;
+				}
+
+				if (tf.varargs == 2 && i + 1 == nparams) {
+					if (arg.implicitConvTo(p.type, context) != MATCH.MATCHnomatch) {
+						if (nargs != nparams) {
+							error("expected %zu arguments, not %zu", nparams,
+									nargs);
+						}
+						// goto L1;
+					}
+					// L2:
+					Type tb2 = p.type.toBasetype(context);
+					Type tret = p.isLazyArray();
+					switch (tb2.ty) {
+					case Tsarray:
+					case Tarray: { // Create a static array variable v of type
+						// arg.type
+
+						Identifier id = new Identifier("_arrayArg" + (++idn));
+						Type t = new TypeSArray(tb2.next, new IntegerExp(nargs
+								- i));
+						t = t.semantic(sc, context);
+						VarDeclaration v = new VarDeclaration(t, id,
+								new VoidInitializer());
+						v.semantic(sc, context);
+						v.parent = sc.parent;
+
+						Expression c = new DeclarationExp(v);
+						c.type = v.type;
+
+						for (int u = i; u < nargs; u++) {
+							Expression a = arguments.get(u);
+							if (tret != null && !tb2.next.equals(a.type)) {
+								a = a.toDelegate(sc, tret);
+							}
+
+							Expression e = new VarExp(v);
+							e = new IndexExp(e, new IntegerExp(u + 1 - nparams));
+							e = new AssignExp(e, a);
+							if (c != null) {
+								c = new CommaExp(c, e);
+							} else {
+								c = e;
+							}
+						}
+						arg = new VarExp(v);
+						if (c != null) {
+							arg = new CommaExp(c, arg);
+						}
+						break;
+					}
+					case Tclass: { /*
+									 * Set arg to be: new Tclass(arg0, arg1,
+									 * ..., argn)
+									 */
+						List<Expression> args = new ArrayList<Expression>(
+								nargs - 1);
+						for (int u = i; u < nargs; u++) {
+							args.set(u - i, arguments.get(u));
+						}
+						arg = new NewExp(null, null, p.type, args);
+						break;
+					}
+					default:
+						if (arg == null) {
+							error("not enough arguments");
+							return;
+						}
+						break;
+					}
+					arg = arg.semantic(sc, context);
+					done = 1;
+				}
+
+				L1: if (!(p.inout == Lazy && p.type.ty == Tvoid)) {
+					arg = arg.implicitCastTo(sc, p.type, context);
+				}
+				if (p.inout == Out || p.inout == InOut) {
+					// BUG: should check that argument to inout is type
+					// 'invariant'
+					// BUG: assignments to inout should also be type 'invariant'
+					arg = arg.modifiableLvalue(sc, null);
+
+					// if (arg.op == TOKslice)
+					// arg.error("cannot modify slice %s", arg.toChars());
+
+					// Don't have a way yet to do a pointer to a bit in array
+					if (arg.op == TOKarray
+							&& arg.type.toBasetype(context).ty == Tbit) {
+						error("cannot have out or inout argument of bit in array");
+					}
+				}
+
+				// Convert static arrays to pointers
+				tb = arg.type.toBasetype(context);
+				if (tb.ty == Tsarray) {
+					arg = arg.checkToPointer(context);
+				}
+
+				// Convert lazy argument to a delegate
+				if (p.inout == Lazy) {
+					arg = arg.toDelegate(sc, p.type);
+				}
+			} else {
+
+				// If not D linkage, do promotions
+				if (tf.linkage != LINKd) {
+					// Promote bytes, words, etc., to ints
+					arg = arg.integralPromotions(sc, context);
+
+					// Promote floats to doubles
+					switch (arg.type.ty) {
+					case Tfloat32:
+						arg = arg.castTo(sc, Type.tfloat64, context);
+						break;
+
+					case Timaginary32:
+						arg = arg.castTo(sc, Type.timaginary64, context);
+						break;
+					}
+				}
+
+				// Convert static arrays to dynamic arrays
+				tb = arg.type.toBasetype(context);
+				if (tb.ty == Tsarray) {
+					TypeSArray ts = (TypeSArray) tb;
+					Type ta = tb.next.arrayOf(context);
+					if (ts.size() == 0) {
+						arg = new NullExp();
+						arg.type = ta;
+					} else {
+						arg = arg.castTo(sc, ta, context);
+					}
+				}
+
+				arg.rvalue(context);
+			}
+			arg = arg.optimize(WANTvalue);
+			arguments.set(i, arg);
+			if (done != 0) {
+				break;
+			}
+		}
+
+		// If D linkage and variadic, add _arguments[] as first argument
+		if (tf.linkage == LINKd && tf.varargs == 1) {
+			Expression e;
+			e = createTypeInfoArray(sc, arguments.subList(nparams, arguments
+					.size()
+					- nparams), arguments.size() - nparams);
+			arguments.add(0, e);
+		}
 	}
 
 	public abstract int getNodeType();
@@ -580,8 +885,9 @@ public abstract class ASTNode {
 	public boolean hasPackageAccess(Scope sc, Dsymbol s) {
 
 		for (; s != null; s = s.parent) {
-			if (s.isPackage() != null && s.isModule() == null)
+			if (s.isPackage() != null && s.isModule() == null) {
 				break;
+			}
 		}
 
 		if (s != null && s == sc.module.parent) {
@@ -589,19 +895,6 @@ public abstract class ASTNode {
 		}
 
 		return false;
-	}
-
-	public void setSourceRange(int startPosition, int length) {
-		this.start = startPosition;
-		this.length = length;
-	}
-
-	public String toChars() {
-		return toString();
-	}
-
-	protected String toPrettyChars() {
-		throw new IllegalStateException("Problem reporting not implemented");
 	}
 
 	/**
@@ -621,16 +914,18 @@ public abstract class ASTNode {
 				// goto Lno;
 				return null; // don't have 'this' available
 			}
-			if (!fd.isNested())
+			if (!fd.isNested()) {
 				break;
+			}
 
 			Dsymbol parent = fd.parent;
 			while (parent != null) {
 				TemplateInstance ti = parent.isTemplateInstance();
-				if (ti != null)
+				if (ti != null) {
 					parent = ti.parent;
-				else
+				} else {
 					break;
+				}
 			}
 
 			fd = fd.parent.isFuncDeclaration();
@@ -645,20 +940,36 @@ public abstract class ASTNode {
 		return fd;
 	}
 
-	public boolean findCondition(List<String> ids, Identifier ident) {
-		if (ids != null) {
-			for (String id : ids) {
-				if (id.equals(ident.string)) {
-					return true;
+	public void preFunctionArguments(Scope sc, List<Expression> exps,
+			SemanticContext context) {
+		if (exps != null) {
+			expandTuples(exps);
+
+			for (int i = 0; i < exps.size(); i++) {
+				Expression arg = exps.get(i);
+
+				if (arg.type == null) {
+					arg.error("%s is not an expression", arg.toChars());
+					arg = new IntegerExp(0, Type.tint32);
 				}
+
+				arg = resolveProperties(sc, arg, context);
+				exps.set(i, arg);
 			}
 		}
-
-		return false;
 	}
-	
-	public DYNCAST dyncast() {
-		return DYNCAST.DYNCAST_OBJECT;
+
+	public void setSourceRange(int startPosition, int length) {
+		this.start = startPosition;
+		this.length = length;
+	}
+
+	public String toChars() {
+		return toString();
+	}
+
+	protected String toPrettyChars() {
+		throw new IllegalStateException("Problem reporting not implemented");
 	}
 
 }

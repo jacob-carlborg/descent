@@ -519,7 +519,7 @@ public class ASTConverter {
 	
 	public descent.core.dom.TryStatement convert(TryCatchStatement a) {
 		descent.core.dom.TryStatement b = new descent.core.dom.TryStatement(ast);
-		b.setBody((Block) convert(a.body));
+		b.setBody(convert(a.body));
 		if (a.catches != null) {
 			for(Catch c : a.catches) {
 				b.catchClauses().add(convert(c));
@@ -535,10 +535,10 @@ public class ASTConverter {
 			b = (TryStatement) convert(a.body);			
 		} else {
 			b = new descent.core.dom.TryStatement(ast);
-			b.setBody((Block) convert(a.body));
+			b.setBody(convert(a.body));
 			b.setSourceRange(a.start, a.length);
 		}
-		b.setFinally((Block) convert(a.finalbody));
+		b.setFinally(convert(a.finalbody));
 		return b;
 	}
 	

@@ -1,5 +1,6 @@
 package descent.internal.compiler.parser;
 
+import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,47 +24,21 @@ public abstract class Expression extends ASTNode implements Cloneable {
 		}
 		return a;
 	}
-	
+
 	public TOK op;
 	public Type type;
 
 	public Expression(TOK op) {
 		this.op = op;
+		this.type = null;
 	}
-	
-	@Override
-	public DYNCAST dyncast() {
-		return DYNCAST.DYNCAST_EXPRESSION;
-	}
-	
-	public boolean isbit() {
-		return false;
-	}
-	
-	public Expression integralPromotions(Scope sc, SemanticContext context) {
+
+	public Expression addressOf(Scope sc, SemanticContext context) {
 		Expression e;
 
-		e = this;
-		switch (type.toBasetype(context).ty) {
-		case Tvoid:
-			error("void has no value");
-			break;
-
-		case Tint8:
-		case Tuns8:
-		case Tint16:
-		case Tuns16:
-		case Tbit:
-		case Tbool:
-		case Tchar:
-		case Twchar:
-			e = e.castTo(sc, Type.tint32, context);
-			break;
-
-		case Tdchar:
-			e = e.castTo(sc, Type.tuns32, context);
-			break;
-		}
+		e = toLvalue(sc, null, context);
+		e = new AddrExp(e);
+		e.type = type.pointerTo(context);
 		return e;
 	}
 
@@ -95,6 +70,12 @@ public abstract class Expression extends ASTNode implements Cloneable {
 		return e;
 	}
 
+	public void checkArithmetic(SemanticContext context) {
+		if (!type.isintegral() && !type.isfloating()) {
+			error("'%s' is not an arithmetic type", toChars());
+		}
+	}
+
 	public void checkDeprecated(Scope sc, Dsymbol s, SemanticContext context) {
 		s.checkDeprecated(sc, context);
 	}
@@ -102,9 +83,35 @@ public abstract class Expression extends ASTNode implements Cloneable {
 	public void checkEscape() {
 	}
 
-	public int checkSideEffect(int flags) {
-		// TODO semantic
-		return 1;
+	public Expression checkIntegral(SemanticContext context) {
+		if (!type.isintegral()) {
+			error("'%s' is not of integral type, it is a %s", toChars(), type
+					.toChars());
+			return new IntegerExp(0);
+		}
+		return this;
+	}
+
+	public void checkNoBool(SemanticContext context) {
+		if (type.toBasetype(context).ty == Tbool) {
+			error("operation not allowed on bool '%s'", toChars());
+		}
+	}
+
+	public void checkScalar(SemanticContext context) {
+		if (!type.isscalar()) {
+			error("'%s' is not a scalar, it is a %s", toChars(), type.toChars());
+		}
+	}
+
+	public int checkSideEffect(int flag, SemanticContext context) {
+		if (flag == 0) {
+			/* TODO semantic
+			error("%s has no effect in expression (%s)", op.toString(),
+					toChars());
+					*/
+		}
+		return 0;
 	}
 
 	public Expression checkToBoolean(SemanticContext context) {
@@ -115,12 +122,60 @@ public abstract class Expression extends ASTNode implements Cloneable {
 		return this;
 	}
 
+	public Expression checkToPointer(SemanticContext context) {
+		Expression e;
+		Type tb;
+
+		e = this;
+
+		// If C static array, convert to pointer
+		tb = type.toBasetype(context);
+		if (tb.ty == Tsarray) {
+			TypeSArray ts = (TypeSArray) tb;
+			if (ts.size() == 0) {
+				e = new NullExp();
+			} else {
+				e = new AddrExp(this);
+			}
+			e.type = tb.next.pointerTo(context);
+		}
+		return e;
+	}
+
+	public Expression combine(Expression e1, Expression e2) {
+		if (e1 != null) {
+			if (e2 != null) {
+				e1 = new CommaExp(e1, e2);
+				e1.type = e2.type;
+			}
+		} else {
+			e1 = e2;
+		}
+		return e1;
+	}
+
 	public Expression copy() {
 		try {
 			return (Expression) clone();
 		} catch (CloneNotSupportedException e) {
 			throw new RuntimeException(e);
 		}
+	}
+
+	public Expression deref() {
+		if (type.ty == Treference) {
+			Expression e;
+
+			e = new PtrExp(this);
+			e.type = type.next;
+			return e;
+		}
+		return this;
+	}
+
+	@Override
+	public DYNCAST dyncast() {
+		return DYNCAST.DYNCAST_EXPRESSION;
 	}
 
 	public Expression implicitCastTo(Scope sc, Type t, SemanticContext context) {
@@ -151,11 +206,11 @@ public abstract class Expression extends ASTNode implements Cloneable {
 		}
 
 		if (t.deco == null) { /*
-								 * Can happen with: enum E { One } class A {
-								 * static void fork(EDG dg) { dg(E.One); } alias
-								 * void delegate(E) EDG; } Should eventually
-								 * make it work.
-								 */
+		 * Can happen with: enum E { One } class A {
+		 * static void fork(EDG dg) { dg(E.One); } alias
+		 * void delegate(E) EDG; } Should eventually
+		 * make it work.
+		 */
 			error("forward reference to type %s", t.toChars());
 		} else if (t.reliesOnTident() != null) {
 			error("forward reference to type %s", t.reliesOnTident().toChars());
@@ -188,6 +243,37 @@ public abstract class Expression extends ASTNode implements Cloneable {
 		return MATCHnomatch;
 	}
 
+	public Expression integralPromotions(Scope sc, SemanticContext context) {
+		Expression e;
+
+		e = this;
+		switch (type.toBasetype(context).ty) {
+		case Tvoid:
+			error("void has no value");
+			break;
+
+		case Tint8:
+		case Tuns8:
+		case Tint16:
+		case Tuns16:
+		case Tbit:
+		case Tbool:
+		case Tchar:
+		case Twchar:
+			e = e.castTo(sc, Type.tint32, context);
+			break;
+
+		case Tdchar:
+			e = e.castTo(sc, Type.tuns32, context);
+			break;
+		}
+		return e;
+	}
+
+	public boolean isbit() {
+		return false;
+	}
+
 	public boolean isBit() {
 		return false;
 	}
@@ -196,8 +282,25 @@ public abstract class Expression extends ASTNode implements Cloneable {
 		return false;
 	}
 
+	public Expression modifiableLvalue(Scope sc, Expression e,
+			SemanticContext context) {
+		// See if this expression is a modifiable lvalue (i.e. not const)
+		return toLvalue(sc, e, context);
+	}
+
+	public Expression modifiableLvalue(Scope sc, Object object) {
+		// TODO semantic
+		return null;
+	}
+
 	public Expression optimize(int result) {
 		return this;
+	}
+
+	public void rvalue(SemanticContext context) {
+		if (type != null && type.toBasetype(context).ty == Tvoid) {
+			error("expression %s is void and has no value", toChars());
+		}
 	}
 
 	public Expression semantic(Scope sc, SemanticContext context) {
@@ -210,12 +313,38 @@ public abstract class Expression extends ASTNode implements Cloneable {
 	}
 
 	public Expression syntaxCopy() {
+		return copy();
+	}
+
+	public void toCBuffer(OutBuffer buf, HdrGenState hgs) {
+		buf.writestring(op.toString());
+	}
+
+	@Override
+	public String toChars() {
+		OutBuffer buf;
+		HdrGenState hgs = new HdrGenState();
+
+		buf = new OutBuffer();
+		toCBuffer(buf, hgs);
+		return buf.toChars();
+	}
+
+	public BigDecimal toComplex(SemanticContext context) {
+		error("Floating point constant expression expected instead of %s",
+				toChars());
+		return BigDecimal.ZERO;
+	}
+
+	public Expression toDelegate(Scope sc, Type tret) {
 		// TODO semantic
 		return null;
 	}
 
-	public void toCBuffer(OutBuffer buf, HdrGenState hgs) {
-		// TOOD semantic
+	public BigDecimal toImaginary(SemanticContext context) {
+		error("Floating point constant expression expected instead of %s",
+				toChars());
+		return BigDecimal.ZERO;
 	}
 
 	public BigInteger toInteger(SemanticContext context) {
@@ -223,6 +352,33 @@ public abstract class Expression extends ASTNode implements Cloneable {
 				"Integer constant expression expected",
 				IProblem.IntegerConstantExpressionExpected, 0, start, length));
 		return BigInteger.ZERO;
+	}
+
+	public Expression toLvalue(Scope sc, Expression e, SemanticContext context) {
+		if (e == null) {
+			e = this;
+		}
+		/* TODO semantic
+		 else if (!loc.filename) {
+		 loc = e.loc;
+		 }
+		 */
+		error("%s is not an lvalue", e.toChars());
+		return this;
+	}
+
+	public void toMangleBuffer(OutBuffer buf, SemanticContext context) {
+		error("expression %s is not a valid template value argument", toChars());
+	}
+
+	public BigDecimal toReal(SemanticContext context) {
+		error("Floating point constant expression expected instead of %s",
+				toChars());
+		return BigDecimal.ZERO;
+	}
+
+	public BigInteger toUInteger(SemanticContext context) {
+		return toInteger(context);
 	}
 
 }

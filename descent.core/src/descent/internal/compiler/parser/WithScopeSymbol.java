@@ -12,5 +12,10 @@ public class WithScopeSymbol extends ScopeDsymbol {
 	public WithScopeSymbol isWithScopeSymbol() {
 		return this;
 	}
+	
+	@Override
+	public Dsymbol search(Identifier ident, int flags, SemanticContext context) {
+		return withstate.exp.type.toDsymbol(null, context).search(ident, 0, context);
+	}
 
 }
