@@ -41,7 +41,7 @@
    </extension>
    <extension
          point="org.eclipse.core.runtime.preferences">
-      <initializer class="mmrnmhrm.ui.DeeUIPreferenceInitializer"/>
+      <initializer class="mmrnmhrm.ui.DeePreferences"/>
    </extension>
    <extension
          point="org.eclipse.ui.ide.projectNatureImages">
@@ -206,6 +206,18 @@
             </or>
          </possibleChildren>
       </navigatorContent>
+   </extension>
+   <extension
+         point="org.eclipse.ui.preferencePages">
+      <page
+            class="mmrnmhrm.ui.preferences.DeeBasePreferencePage"
+            id="mmrnmhrm.ui.preferences.DeeBasePreferencePage"
+            name="Dee"/>
+      <page
+            category="mmrnmhrm.ui.preferences.DeeBasePreferencePage"
+            class="mmrnmhrm.ui.preferences.SamplePreferencePage"
+            id="mmrnmhrm.ui.preferences.SyntaxColoring"
+            name="Syntax Coloring"/>
    </extension>
 
 </plugin>

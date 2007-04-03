@@ -46,7 +46,7 @@ public class DeePartitionScanner_Fast implements IPartitionTokenScanner{
 			offset = rangeEnd;
 			return deeDefaultPartitionType;
 		} else {
-			return EOFToken.getDefault();
+			return Token.EOF;
 		}
 			
 	}

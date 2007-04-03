@@ -1,7 +1,7 @@
 package mmrnmhrm.core;
 
 import mmrnmhrm.core.model.DeeModel;
-import mmrnmhrm.ui.text.DeeCodeScanner_Native;
+import mmrnmhrm.ui.text.DeeCodeScanner;
 import mmrnmhrm.ui.text.DeeDocumentProvider;
 
 import org.eclipse.core.resources.IWorkspace;
@@ -12,7 +12,6 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.jobs.ISchedulingRule;
-import org.eclipse.jface.text.rules.ITokenScanner;
 
 import util.Assert;
 import util.log.Logg;
@@ -20,21 +19,23 @@ import util.log.Logg;
 public class DeeCore extends DeePluginActivator {
 
 	private DeeDocumentProvider deeDocumentProvider;
-	private ITokenScanner defaultDeeCodeScanner;
+	private DeeCodeScanner defaultDeeCodeScanner;
 	
 	public final static String BUILDER_ID = PLUGIN_ID + ".deebuilder";
 	
 	
-	public static ITokenScanner getDefaultDeeCodeScanner() {
+	public static DeeCodeScanner getDefaultDeeCodeScanner() {
 		return getInstance().defaultDeeCodeScanner;
 	}
+	
 	protected void initPlugin() throws CoreException {
-		deeDocumentProvider = new DeeDocumentProvider();
-		defaultDeeCodeScanner = new DeeCodeScanner_Native();
-		
+		Logg.println(" =============  Mmrnmhrm INITIALIZING  ============= " );
 		Logg.println("Location: " + Platform.getLocation());
 		Logg.println("Instance Location: " + Platform.getInstanceLocation().getURL());
 
+		deeDocumentProvider = new DeeDocumentProvider();
+		defaultDeeCodeScanner = new DeeCodeScanner();
+		
 		DeeModel.initDeeModel();
 	}
 	

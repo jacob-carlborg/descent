@@ -39,6 +39,8 @@ public class DeeEditor extends AbstractDecoratedTextEditor {
 		//setPreferenceStore(EditorsPlugin.getDefault().getPreferenceStore());
 		//configureInsertMode(SMART_INSERT, false);
 		setInsertMode(INSERT);
+		// Reload when there are preference changes
+
 	}
 
 	@Override

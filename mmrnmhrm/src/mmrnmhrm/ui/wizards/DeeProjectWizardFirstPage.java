@@ -24,6 +24,7 @@ public class DeeProjectWizardFirstPage extends WizardPage {
 		super(pageName);
 		setTitle("New Dee Project");
 		setDescription("Mmnmhrm: New Dee Project.");
+
 	}
 	
 	public void createControl(Composite parent) {
