@@ -1,6 +1,6 @@
 package mmrnmhrm.ui.deditor;
 
-import mmrnmhrm.core.DeeCore;
+import mmrnmhrm.ui.DeePlugin;
 import mmrnmhrm.ui.deditor.text.DeeHyperlinkDetector;
 import mmrnmhrm.ui.text.EDeePartitions;
 
@@ -39,12 +39,14 @@ public class DeeSourceViewerConfiguration extends SourceViewerConfiguration {
 	public IPresentationReconciler getPresentationReconciler(ISourceViewer sourceViewer) {
 	    PresentationReconciler reconciler = new PresentationReconciler();
 
-	    DefaultDamagerRepairer dr = new DefaultDamagerRepairer(DeeCore.getDefaultDeeCodeScanner());
+	    DefaultDamagerRepairer dr = new DefaultDamagerRepairer(DeePlugin.getDefaultDeeCodeScanner());
 	    reconciler.setDamager(dr, EDeePartitions.DEE_CODE);
 	    reconciler.setRepairer(dr, EDeePartitions.DEE_CODE);
 
 	    return reconciler;
 	}
+	
+	
 	
 	@Override
 	public IHyperlinkDetector[] getHyperlinkDetectors(ISourceViewer sourceViewer) {

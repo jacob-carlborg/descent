@@ -1,6 +1,10 @@
 package mmrnmhrm.ui.deditor;
 
-import mmrnmhrm.core.DeeCore;
+import java.util.ArrayList;
+import java.util.List;
+
+import mmrnmhrm.ui.ActualPlugin;
+import mmrnmhrm.ui.DeePlugin;
 import mmrnmhrm.ui.actions.SampleAction;
 import mmrnmhrm.ui.outline.DeeContentOutlinePage;
 import mmrnmhrm.ui.text.DeeDocument;
@@ -8,9 +12,13 @@ import mmrnmhrm.ui.text.DeeDocumentProvider;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.text.TextSelection;
+import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.ui.IEditorInput;
+import org.eclipse.ui.editors.text.EditorsUI;
 import org.eclipse.ui.texteditor.AbstractDecoratedTextEditor;
+import org.eclipse.ui.texteditor.ChainedPreferenceStore;
 import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
 
 import util.log.Logg;
@@ -24,7 +32,7 @@ public class DeeEditor extends AbstractDecoratedTextEditor {
 
 	public DeeEditor() {
 		super();
-		this.documentProvider = DeeCore.getDeeDocumentProvider();
+		this.documentProvider = DeePlugin.getDeeDocumentProvider();
 		setDocumentProvider(documentProvider);
 	}
 	
@@ -36,11 +44,32 @@ public class DeeEditor extends AbstractDecoratedTextEditor {
 		setEditorContextMenuId("#DeeEditorContext"); 
 		setRulerContextMenuId("#DeeRulerContext"); 
 		//setHelpContextId(ITextEditorHelpContextIds.TEXT_EDITOR);
-		//setPreferenceStore(EditorsPlugin.getDefault().getPreferenceStore());
-		//configureInsertMode(SMART_INSERT, false);
 		setInsertMode(INSERT);
-		// Reload when there are preference changes
+		setPreferenceStore(createCombinedPreferenceStore(null));
 
+	}
+	
+
+	private IPreferenceStore createCombinedPreferenceStore(IEditorInput input) {
+		List<IPreferenceStore> stores= new ArrayList<IPreferenceStore>(2);
+
+		// TODO: add project scope
+		/*IJavaProject project= EditorUtility.getJavaProject(input);
+		if (project != null) {
+			stores.add(new EclipsePreferencesAdapter(
+			new ProjectScope(project.getProject()), JavaCore.PLUGIN_ID));
+		}*/
+
+		stores.add(ActualPlugin.getInstance().getPreferenceStore());
+		stores.add(EditorsUI.getPreferenceStore());
+		//stores.toArray(a)
+		return new ChainedPreferenceStore(stores.toArray(new IPreferenceStore[stores.size()]));
+	}
+	
+	@Override
+	protected boolean affectsTextPresentation(PropertyChangeEvent event) {
+		DeePlugin.getDefaultDeeCodeScanner().loadDeeTokens();
+		return true;
 	}
 
 	@Override

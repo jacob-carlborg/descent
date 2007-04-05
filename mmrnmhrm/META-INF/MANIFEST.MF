@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: Mmrnmhrm Core & UI
 Bundle-SymbolicName: mmrnmhrm;singleton:=true
 Bundle-Version: 0.0.1
-Bundle-Activator: mmrnmhrm.core.DeeCore
+Bundle-Activator: mmrnmhrm.ui.DeePlugin
 Bundle-Localization: plugin
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,

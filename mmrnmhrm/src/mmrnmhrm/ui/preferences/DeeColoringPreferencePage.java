@@ -41,7 +41,7 @@ public class DeeColoringPreferencePage extends LangColoringPreferencePage implem
 
 	@Override
 	protected void fireColoringPreferencesChanged() {
-		DeePlugin.getDefaultDeeCodeScanner().loadDeeTokens();
+		//DeePlugin.getDefaultDeeCodeScanner().loadDeeTokens();
 	}
 
 }

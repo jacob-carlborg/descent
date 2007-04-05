@@ -1,6 +1,6 @@
 package mmrnmhrm.ui.outline;
 
-import mmrnmhrm.core.DeeCore;
+import mmrnmhrm.ui.DeePlugin;
 import mmrnmhrm.ui.text.DeeDocumentProvider;
 
 import org.eclipse.jface.viewers.ITreeContentProvider;
@@ -39,7 +39,7 @@ public class DeeOutlineContentProvider implements ITreeContentProvider {
 		
 		if(newInput instanceof IEditorInput) {
 			IEditorInput input = (IEditorInput) newInput;
-	    	DeeDocumentProvider docProvider = DeeCore.getDeeDocumentProvider();
+	    	DeeDocumentProvider docProvider = DeePlugin.getDeeDocumentProvider();
 	    	root = docProvider.getCompilationUnit(input);
 	    } else {
 	    	root = null;

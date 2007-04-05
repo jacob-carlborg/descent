@@ -1,30 +1,22 @@
 package mmrnmhrm.core;
 
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.ui.plugin.AbstractUIPlugin;
+import org.eclipse.core.runtime.Plugin;
 import org.osgi.framework.BundleContext;
 
 /**
- * The activator class controls the plug-in life cycle
+ * Lang Core
  */
-public abstract class DeePluginActivator extends AbstractUIPlugin {
+public abstract class LangCore extends Plugin {
 
-	/// The plug-in ID 
-	// XXX: Watch for changes
-	public static final String PLUGIN_ID = "mmrnmhrm";
 
-	private static DeeCore pluginInstance;
-	
-	/** The constructor */
-	protected DeePluginActivator() {
-		pluginInstance = (DeeCore) this;
-	}
+	protected static LangCore pluginInstance;
 	
 
 	/** @return the shared instance */
-	public static DeeCore getInstance() {
+	/*public static LangCore getInstance() {
 		return pluginInstance;
-	}
+	}*/
 
 	/** {@inheritDoc} */
 	public void start(BundleContext context) throws Exception {
@@ -44,6 +36,5 @@ public abstract class DeePluginActivator extends AbstractUIPlugin {
 
 	void initPlugin() throws CoreException {
 	}
-	
 	
 }

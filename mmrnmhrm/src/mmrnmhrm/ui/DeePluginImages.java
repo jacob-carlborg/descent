@@ -10,7 +10,7 @@ public class DeePluginImages {
 	public static final IPath ICONS_PATH= new Path("$nl$/icons/");
 
 	// Registry must be on top, to be initialized firt 
-	private static ImageRegistry registry = DeeUI.getInstance().getImageRegistry();
+	private static ImageRegistry registry = DeePlugin.getInstance().getImageRegistry();
 
 	
 	public static final String IMAGE_PACKAGEFOLDER = createImage_Obj("dee_packagefolder.gif");;

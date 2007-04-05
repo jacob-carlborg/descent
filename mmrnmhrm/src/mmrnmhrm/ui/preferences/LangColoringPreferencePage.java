@@ -4,14 +4,14 @@ import java.util.ArrayList;
 
 import mmrnmhrm.org.eclipse.ui.internal.editors.text.OverlayPreferenceStore;
 import mmrnmhrm.org.eclipse.ui.internal.editors.text.OverlayPreferenceStore.OverlayKey;
-import mmrnmhrm.ui.SWTDebug;
 import mmrnmhrm.ui.text.color.ILangColorPreferences;
 import mmrnmhrm.ui.text.color.LangColorPreferences;
+import mmrnmhrm.ui.util.SWTDebug;
+import mmrnmhrm.ui.util.SimpleSelectionListener;
 
 import org.eclipse.jface.preference.ColorSelector;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.preference.PreferenceConverter;
-import org.eclipse.jface.preference.PreferencePage;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITreeContentProvider;
@@ -29,7 +29,6 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 
 /** 
@@ -38,7 +37,7 @@ import org.eclipse.ui.plugin.AbstractUIPlugin;
  * The page consists of a tree viewer coloring item selection, and 
  * a respective color editor (enable, color, bold, italic, underline).
  */
-public abstract class LangColoringPreferencePage extends PreferencePage {
+public abstract class LangColoringPreferencePage extends AbstractPreferencePage {
 
 	/** Category: named class to hold a list of ColoringListItem. */
 	class ColoringListCategory {
@@ -160,9 +159,7 @@ public abstract class LangColoringPreferencePage extends PreferencePage {
 	private Button fItalicCheckBox;
 	private Button fUnderlineCheckBox;
 	
-	/** Preference store used to hold temporary values, until the 
-	 * user saves the preference page. */
-	private OverlayPreferenceStore fOverlayPrefStore;
+
 	/** The plugin to which this page belongs. */
 	private AbstractUIPlugin fPlugin;
 
@@ -193,11 +190,6 @@ public abstract class LangColoringPreferencePage extends PreferencePage {
 		return overlayKeys.toArray(new OverlayKey[0]);
 	}
 
-	/** {@inheritDoc} */
-	public void init(IWorkbench workbench) {
-		// Nothing to do
-	}
-
 	/** Initializes the list of coloring items and categories.
 	 * Subclasses should implement. */
 	protected abstract void initColoringItemsList();
@@ -206,12 +198,7 @@ public abstract class LangColoringPreferencePage extends PreferencePage {
 	protected abstract void fireColoringPreferencesChanged();
 
 	
-	/** {@inheritDoc} */ 
-	@Override
-	public IPreferenceStore getPreferenceStore() {
-		return fOverlayPrefStore;
-	}
-	
+
 	/** {@inheritDoc} */
 	@Override
 	protected Control createContents(final Composite parent) {
@@ -366,13 +353,11 @@ public abstract class LangColoringPreferencePage extends PreferencePage {
 		fItalicCheckBox.setSelection(item.getIsItalic());
 		fUnderlineCheckBox.setSelection(item.getIsUnderline());
 	}
-
-
-	@Override
+	
 	public boolean performOk() {
-		fOverlayPrefStore.propagate();
-		fPlugin.savePluginPreferences();
+		super.performOk();
 		fireColoringPreferencesChanged();
-		return super.performOk();
+		return true;
 	}
+
 }

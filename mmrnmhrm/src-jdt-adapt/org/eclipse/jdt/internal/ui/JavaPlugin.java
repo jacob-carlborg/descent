@@ -1,9 +1,7 @@
 package org.eclipse.jdt.internal.ui;
 
 
-import mmrnmhrm.core.DeeCore;
-import mmrnmhrm.core.DeePluginActivator;
-import mmrnmhrm.ui.DeeUI;
+import mmrnmhrm.ui.DeePlugin;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -12,7 +10,7 @@ import org.eclipse.core.runtime.Status;
 /**
  * JDT STUB/Adaptor for JavaPlugin
  */
-public class JavaPlugin extends DeeUI {
+public class JavaPlugin extends DeePlugin {
 	
 	public static void log(IStatus status) {
 		getInstance().getLog().log(status);
@@ -23,10 +21,6 @@ public class JavaPlugin extends DeeUI {
 	}
 
 	public static String getPluginId() {
-		return DeePluginActivator.PLUGIN_ID;
-	}
-	
-	public static DeeCore getDefault() {
-		return DeePluginActivator.getInstance();
+		return DeePlugin.PLUGIN_ID;
 	}
 }

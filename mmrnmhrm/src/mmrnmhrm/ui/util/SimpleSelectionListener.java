@@ -1,4 +1,4 @@
-package mmrnmhrm.ui.preferences;
+package mmrnmhrm.ui.util;
 
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;

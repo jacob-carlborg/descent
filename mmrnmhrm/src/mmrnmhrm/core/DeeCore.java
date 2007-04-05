@@ -1,48 +1,26 @@
 package mmrnmhrm.core;
 
-import mmrnmhrm.core.model.DeeModel;
-import mmrnmhrm.ui.text.DeeCodeScanner;
-import mmrnmhrm.ui.text.DeeDocumentProvider;
-
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.IWorkspaceRunnable;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.jobs.ISchedulingRule;
 
 import util.Assert;
-import util.log.Logg;
 
-public class DeeCore extends DeePluginActivator {
+public class DeeCore extends LangCore {
 
-	private DeeDocumentProvider deeDocumentProvider;
-	private DeeCodeScanner defaultDeeCodeScanner;
-	
+	/** The plug-in ID. XXX: Watch for changes */
+	public static final String PLUGIN_ID = "mmrnmhrm";
+	/** Builder ID */
 	public final static String BUILDER_ID = PLUGIN_ID + ".deebuilder";
-	
-	
-	public static DeeCodeScanner getDefaultDeeCodeScanner() {
-		return getInstance().defaultDeeCodeScanner;
-	}
-	
-	protected void initPlugin() throws CoreException {
-		Logg.println(" =============  Mmrnmhrm INITIALIZING  ============= " );
-		Logg.println("Location: " + Platform.getLocation());
-		Logg.println("Instance Location: " + Platform.getInstanceLocation().getURL());
 
-		deeDocumentProvider = new DeeDocumentProvider();
-		defaultDeeCodeScanner = new DeeCodeScanner();
-		
-		DeeModel.initDeeModel();
+	public DeeCore() {
+		pluginInstance = this;
 	}
 	
-	public static DeeDocumentProvider getDeeDocumentProvider() {
-		return getInstance().deeDocumentProvider;
-	}
-
 
 	/** Convenience method to get WorkspaceRoot. */
 	public static IWorkspaceRoot getWorkspaceRoot() {
@@ -65,6 +43,5 @@ public class DeeCore extends DeePluginActivator {
 			workspace.run(action, rule, IWorkspace.AVOID_UPDATE, monitor);
 		}
 	}
-
 
 }

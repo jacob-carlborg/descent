@@ -3,7 +3,7 @@ package mmrnmhrm.ui.text.color;
 import java.util.HashMap;
 import java.util.Map;
 
-import mmrnmhrm.ui.LangPreferences;
+import mmrnmhrm.ui.ActualPlugin;
 
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.resource.ColorRegistry;
@@ -39,7 +39,7 @@ public class TextAttributeRegistry
     public TextAttributeRegistry()
     {
     	colorManager = new ColorRegistry();
-    	prefStore = LangPreferences.getPreferenceStore(); 
+    	prefStore = ActualPlugin.getInstance().getPreferenceStore(); 
     }
 	
 	/** Creates a Token (textual attribute) for the given color preference key,
