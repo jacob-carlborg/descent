@@ -30,6 +30,10 @@ public class Identifier {
 		return string;
 	}
 	
+	public String toChars() {
+		return string;
+	}
+	
 	@Override
 	public String toString() {
 		return string;
@@ -42,6 +46,11 @@ public class Identifier {
 		}
 		
 		return string.equals(((Identifier) o).string);
+	}
+
+	public String toHChars2() {
+		// TODO semantic
+		return null;
 	}
 
 }

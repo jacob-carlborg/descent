@@ -42,11 +42,11 @@ public class EnumMember extends Dsymbol {
 	}
 
 	@Override
-	public void toCBuffer(OutBuffer buf, HdrGenState hgs) {
+	public void toCBuffer(OutBuffer buf, HdrGenState hgs, SemanticContext context) {
 		buf.writestring(ident.toChars());
 		if (value != null) {
 			buf.writestring(" = ");
-			value.toCBuffer(buf, hgs);
+			value.toCBuffer(buf, hgs, context);
 		}
 	}
 

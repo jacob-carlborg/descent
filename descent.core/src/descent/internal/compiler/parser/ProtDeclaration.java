@@ -55,7 +55,7 @@ public class ProtDeclaration extends AttribDeclaration {
 	}
 
 	@Override
-	public void toCBuffer(OutBuffer buf, HdrGenState hgs) {
+	public void toCBuffer(OutBuffer buf, HdrGenState hgs, SemanticContext context) {
 		String p = null;
 
 		switch (protection) {
@@ -79,7 +79,7 @@ public class ProtDeclaration extends AttribDeclaration {
 			break;
 		}
 		buf.writestring(p);
-		super.toCBuffer(buf, hgs);
+		super.toCBuffer(buf, hgs, context);
 	}
 
 }

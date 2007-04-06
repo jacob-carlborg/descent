@@ -182,6 +182,10 @@ public abstract class Dsymbol extends ASTNode {
 	public ArrayScopeSymbol isArrayScopeSymbol() {
 		return null;
 	}
+	
+	public AttribDeclaration isAttribDeclaration() {
+		return null;
+	}
 
 	public ClassDeclaration isClassDeclaration() {
 		return null;
@@ -394,7 +398,7 @@ public abstract class Dsymbol extends ASTNode {
 		return this;
 	}
 
-	public void toCBuffer(OutBuffer buf, HdrGenState hgs) {
+	public void toCBuffer(OutBuffer buf, HdrGenState hgs, SemanticContext context) {
 		buf.writestring(toChars());
 	}
 

@@ -548,7 +548,7 @@ public class VarDeclaration extends Declaration {
 	}
 
 	@Override
-	public void toCBuffer(OutBuffer buf, HdrGenState hgs) {
+	public void toCBuffer(OutBuffer buf, HdrGenState hgs, SemanticContext context) {
 		if ((storage_class & STCconst) != 0) {
 			buf.writestring("const ");
 		}

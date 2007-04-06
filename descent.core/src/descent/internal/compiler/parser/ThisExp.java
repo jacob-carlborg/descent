@@ -10,6 +10,17 @@ public class ThisExp extends Expression {
 
 	public ThisExp() {
 		super(TOK.TOKthis);
+		this.var = null;
+	}
+	
+	@Override
+	public int getNodeType() {
+		return THIS_EXP;
+	}
+	
+	@Override
+	public boolean isBool(boolean result) {
+		return result ? true : false;
 	}
 	
 	@Override
@@ -80,13 +91,13 @@ public class ThisExp extends Expression {
 	}
 	
 	@Override
-	public boolean isBool(boolean result) {
-		return result;
+	public void toCBuffer(OutBuffer buf, HdrGenState hgs, SemanticContext context) {
+		 buf.writestring("this");
 	}
 		
 	@Override
-	public int getNodeType() {
-		return THIS_EXP;
+	public Expression toLvalue(Scope sc, Expression e, SemanticContext context) {
+		return this;
 	}
 
 }

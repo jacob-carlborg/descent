@@ -589,7 +589,7 @@ public abstract class ASTNode {
 	}
 
 	public void argsToCBuffer(OutBuffer buf, List<Expression> arguments,
-			HdrGenState hgs) {
+			HdrGenState hgs, SemanticContext context) {
 		if (arguments != null) {
 			for (int i = 0; i < arguments.size(); i++) {
 				Expression arg = arguments.get(i);
@@ -597,7 +597,7 @@ public abstract class ASTNode {
 				if (i != 0) {
 					buf.writeByte(',');
 				}
-				expToCBuffer(buf, hgs, arg, PREC.PREC_assign);
+				expToCBuffer(buf, hgs, arg, PREC.PREC_assign, context);
 			}
 		}
 	}
@@ -657,13 +657,13 @@ public abstract class ASTNode {
 	}
 
 	public void expToCBuffer(OutBuffer buf, HdrGenState hgs, Expression e,
-			PREC pr) {
+			PREC pr, SemanticContext context) {
 		if (e.op.precedence.ordinal() < pr.ordinal()) {
 			buf.writeByte('(');
-			e.toCBuffer(buf, hgs);
+			e.toCBuffer(buf, hgs, context);
 			buf.writeByte(')');
 		} else {
-			e.toCBuffer(buf, hgs);
+			e.toCBuffer(buf, hgs, context);
 		}
 	}
 
@@ -797,14 +797,15 @@ public abstract class ASTNode {
 					done = 1;
 				}
 
-				L1: if (!(p.inout == Lazy && p.type.ty == Tvoid)) {
+				// L1: 
+				if (!(p.inout == Lazy && p.type.ty == Tvoid)) {
 					arg = arg.implicitCastTo(sc, p.type, context);
 				}
 				if (p.inout == Out || p.inout == InOut) {
 					// BUG: should check that argument to inout is type
 					// 'invariant'
 					// BUG: assignments to inout should also be type 'invariant'
-					arg = arg.modifiableLvalue(sc, null);
+					arg = arg.modifiableLvalue(sc, null, context);
 
 					// if (arg.op == TOKslice)
 					// arg.error("cannot modify slice %s", arg.toChars());
@@ -957,6 +958,10 @@ public abstract class ASTNode {
 				exps.set(i, arg);
 			}
 		}
+	}
+	
+	public boolean RealEquals(Real r1, Real r2) {
+		return r1.equals(r2);
 	}
 
 	public void setSourceRange(int startPosition, int length) {

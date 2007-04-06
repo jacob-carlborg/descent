@@ -33,6 +33,7 @@ public class BaseClass extends ASTNode {
 
 	public BaseClass(Type type, PROT protection) {
 		this.type = type;
+		this.sourceType = type;
 		this.protection = protection;
 	}
 

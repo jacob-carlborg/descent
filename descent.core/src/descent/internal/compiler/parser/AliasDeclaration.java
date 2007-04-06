@@ -243,10 +243,10 @@ public class AliasDeclaration extends Declaration {
 	}
 
 	@Override
-	public void toCBuffer(OutBuffer buf, HdrGenState hgs) {
+	public void toCBuffer(OutBuffer buf, HdrGenState hgs, SemanticContext context) {
 		buf.writestring("alias ");
 		if (aliassym != null) {
-			aliassym.toCBuffer(buf, hgs);
+			aliassym.toCBuffer(buf, hgs, context);
 			buf.writeByte(' ');
 			buf.writestring(ident.toChars());
 		} else {

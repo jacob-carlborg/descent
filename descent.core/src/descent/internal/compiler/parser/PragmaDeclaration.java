@@ -129,17 +129,17 @@ public class PragmaDeclaration extends AttribDeclaration {
 	}
 
 	@Override
-	public void toCBuffer(OutBuffer buf, HdrGenState hgs) {
+	public void toCBuffer(OutBuffer buf, HdrGenState hgs, SemanticContext context) {
 		buf.printf("pragma(%s");
 		buf.printf(ident.toChars());
 		if (args != null) {
 			for (Expression e : args) {
 				buf.writestring(", ");
-				e.toCBuffer(buf, hgs);
+				e.toCBuffer(buf, hgs, context);
 			}
 		}
 		buf.writestring(")");
-		super.toCBuffer(buf, hgs);
+		super.toCBuffer(buf, hgs, context);
 	}
 
 }

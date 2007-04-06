@@ -1,6 +1,11 @@
 package descent.internal.compiler.parser;
 
+import java.math.BigInteger;
+
 public class Chars {
+	
+	private final static BigInteger N_0x20 = new BigInteger("20", 16);
+	private final static BigInteger N_0x7E = new BigInteger("7E", 16);
 	
 	private static int cmtable[];
 	
@@ -61,6 +66,10 @@ public class Chars {
 	
 	public static boolean isprint(int c) {
 		return 0x20 <= c && c <= 0x7E;
+	}
+	
+	public static boolean isprint(BigInteger c) {
+		return N_0x20.compareTo(c) <= 0 && c.compareTo(N_0x7E) <= 0;
 	}
 
 }

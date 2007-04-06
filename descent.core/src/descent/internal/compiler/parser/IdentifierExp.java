@@ -6,24 +6,44 @@ import descent.core.compiler.IProblem;
  * Identifier + IdentifierExp
  */
 public class IdentifierExp extends Expression {
-	
+
 	public Identifier ident;
-	
+
 	public IdentifierExp() {
 		super(TOK.TOKidentifier);
 	}
-	
+
 	public IdentifierExp(Identifier ident) {
 		this();
 		this.ident = ident;
 	}
-	
+
 	public IdentifierExp(Token token) {
 		this(token.ident);
 		this.start = token.ptr;
 		this.length = token.len;
 	}
+
+	@Override
+	public DYNCAST dyncast() {
+		return DYNCAST.DYNCAST_IDENTIFIER;
+	}
 	
+	@Override
+	public boolean equals(Object o) {
+		if (!(o instanceof IdentifierExp)) {
+			return false;
+		}
+
+		IdentifierExp i = (IdentifierExp) o;
+		return ident.equals(i.ident);
+	}
+
+	@Override
+	public int getNodeType() {
+		return IDENTIFIER_EXP;
+	}
+
 	@Override
 	public Expression semantic(Scope sc, SemanticContext context) {
 		Dsymbol s;
@@ -53,11 +73,11 @@ public class IdentifierExp extends Expression {
 			} else {
 				if (s.parent == null
 						&& scopesym[0].isArrayScopeSymbol() != null) { // Kludge
-																		// to
-																		// run
-																		// semantic()
-																		// here
-																		// because
+					// to
+					// run
+					// semantic()
+					// here
+					// because
 					// ArrayScopeSymbol::search() doesn't have access to sc.
 					s.semantic(sc, context);
 				}
@@ -74,10 +94,10 @@ public class IdentifierExp extends Expression {
 							&& ti.tempdecl.onemember != null) {
 						TemplateDeclaration tempdecl = ti.tempdecl;
 						if (tempdecl.overroot != null) { // if not start of
-														// overloaded list of
-														// TemplateDeclaration's
+							// overloaded list of
+							// TemplateDeclaration's
 							tempdecl = tempdecl.overroot; // then get the
-															// start
+							// start
 						}
 						e = new TemplateExp(tempdecl);
 						e = e.semantic(sc, context);
@@ -88,33 +108,36 @@ public class IdentifierExp extends Expression {
 			}
 			return e.semantic(sc, context);
 		}
-		context.acceptProblem(Problem.newSemanticTypeError(ident.string + " cannot be resolved", IProblem.UndefinedIdentifier, 0, start, length));
+		context.acceptProblem(Problem.newSemanticTypeError(ident.string
+				+ " cannot be resolved", IProblem.UndefinedIdentifier, 0,
+				start, length));
 		type = Type.terror;
 		return this;
 	}
-	
-	public DYNCAST dyncast() {
-		return DYNCAST.DYNCAST_IDENTIFIER;
-	}
-	
+
 	@Override
-	public int getNodeType() {
-		return IDENTIFIER_EXP;
+	public void toCBuffer(OutBuffer buf, HdrGenState hgs,
+			SemanticContext context) {
+		if (hgs.hdrgen) {
+			buf.writestring(ident.toHChars2());
+		} else {
+			buf.writestring(ident.toChars());
+		}
 	}
-	
+
+	@Override
+	public String toChars() {
+		return ident.toChars();
+	}
+
+	@Override
+	public Expression toLvalue(Scope sc, Expression e, SemanticContext context) {
+		return this;
+	}
+
 	@Override
 	public String toString() {
 		return ident.toString();
-	}
-	
-	@Override
-	public boolean equals(Object o) {
-		if (!(o instanceof IdentifierExp)) {
-			return false;
-		}
-		
-		IdentifierExp i = (IdentifierExp) o;
-		return ident.equals(i.ident);
 	}
 
 }

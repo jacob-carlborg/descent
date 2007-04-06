@@ -9,6 +9,7 @@ public class NullExp extends Expression {
 	
 	public NullExp() {
 		super(TOK.TOKnull);
+		this.committed = false;
 	}
 	
 	@Override
@@ -59,7 +60,7 @@ public class NullExp extends Expression {
 	
 	@Override
 	public boolean isBool(boolean result) {
-		return !result;
+		return result ? false : true;
 	}
 	
 	@Override
@@ -69,6 +70,16 @@ public class NullExp extends Expression {
 			type = Type.tvoid.pointerTo(context);
 		}
 	    return this;
+	}
+	
+	@Override
+	public void toCBuffer(OutBuffer buf, HdrGenState hgs, SemanticContext context) {
+		buf.writestring("null");
+	}
+	
+	@Override
+	public void toMangleBuffer(OutBuffer buf, SemanticContext context) {
+		buf.writeByte('n');
 	}
 
 }

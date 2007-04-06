@@ -150,12 +150,12 @@ public class AnonDeclaration extends AttribDeclaration {
 	}
 
 	@Override
-	public void toCBuffer(OutBuffer buf, HdrGenState hgs) {
+	public void toCBuffer(OutBuffer buf, HdrGenState hgs, SemanticContext context) {
 		buf.printf(isunion ? "union" : "struct");
 		buf.writestring("\n{\n");
 		if (decl != null) {
 			for (Dsymbol s : decl) {
-				s.toCBuffer(buf, hgs);
+				s.toCBuffer(buf, hgs, context);
 			}
 		}
 		buf.writestring("}\n");

@@ -6,6 +6,15 @@ import descent.core.compiler.IProblem;
 
 public class SuperExp extends ThisExp {
 	
+	public SuperExp() {
+		op = TOK.TOKsuper;
+	}
+	
+	@Override
+	public int getNodeType() {
+		return SUPER_EXP;
+	}
+	
 	@Override
 	public Expression semantic(Scope sc, SemanticContext context) {
 		FuncDeclaration fd;
@@ -13,8 +22,9 @@ public class SuperExp extends ThisExp {
 		ClassDeclaration cd;
 		Dsymbol s;
 
-		if (type != null)
+		if (type != null) {
 			return this;
+		}
 
 		/*
 		 * Special case for typeof(this) and typeof(super) since both should
@@ -60,8 +70,9 @@ public class SuperExp extends ThisExp {
 		Assert.isNotNull(var.parent);
 
 		s = fd.toParent();
-		while (s != null && s.isTemplateInstance() != null)
+		while (s != null && s.isTemplateInstance() != null) {
 			s = s.toParent();
+		}
 		Assert.isNotNull(s);
 		cd = s.isClassDeclaration();
 		// printf("parent is %s %s\n", fd.toParent().kind(),
@@ -90,6 +101,7 @@ public class SuperExp extends ThisExp {
 		return this;
 	}
 	
+	@Override
 	public Expression semantic_Lerr(Scope sc, SemanticContext context) {
 		context.acceptProblem(Problem.newSemanticTypeError("'super' is only allowed in non-static member functions", IProblem.SuperOnlyAllowedInNonStaticMemberFunctions, 0, start, length));
     	type = Type.tint32;
@@ -97,8 +109,8 @@ public class SuperExp extends ThisExp {
 	}
 	
 	@Override
-	public int getNodeType() {
-		return SUPER_EXP;
+	public void toCBuffer(OutBuffer buf, HdrGenState hgs, SemanticContext context) {
+		buf.writestring("super");
 	}
 
 }

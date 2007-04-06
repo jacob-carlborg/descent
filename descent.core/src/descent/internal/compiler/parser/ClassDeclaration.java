@@ -702,7 +702,7 @@ public class ClassDeclaration extends AggregateDeclaration {
 	}
 
 	@Override
-	public void toCBuffer(OutBuffer buf, HdrGenState hgs) {
+	public void toCBuffer(OutBuffer buf, HdrGenState hgs, SemanticContext context) {
 		if (!isAnonymous()) {
 			buf.printf(kind());
 			buf.writestring(toChars());
@@ -725,7 +725,7 @@ public class ClassDeclaration extends AggregateDeclaration {
 			Dsymbol s = members.get(i);
 
 			buf.writestring("    ");
-			s.toCBuffer(buf, hgs);
+			s.toCBuffer(buf, hgs, context);
 		}
 		buf.writestring("}");
 		buf.writenl();

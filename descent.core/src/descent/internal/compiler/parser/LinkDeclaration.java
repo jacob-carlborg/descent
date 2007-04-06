@@ -58,7 +58,7 @@ public class LinkDeclaration extends AttribDeclaration {
 	}
 
 	@Override
-	public void toCBuffer(OutBuffer buf, HdrGenState hgs) {
+	public void toCBuffer(OutBuffer buf, HdrGenState hgs, SemanticContext context) {
 		String p = null;
 
 		switch (linkage) {
@@ -84,7 +84,7 @@ public class LinkDeclaration extends AttribDeclaration {
 		buf.writestring("extern (");
 		buf.writestring(p);
 		buf.writestring(") ");
-		super.toCBuffer(buf, hgs);
+		super.toCBuffer(buf, hgs, context);
 	}
 
 	@Override

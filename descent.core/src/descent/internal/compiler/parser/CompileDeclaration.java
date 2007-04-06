@@ -53,9 +53,9 @@ public class CompileDeclaration extends AttribDeclaration {
 	}
 
 	@Override
-	public void toCBuffer(OutBuffer buf, HdrGenState hgs) {
+	public void toCBuffer(OutBuffer buf, HdrGenState hgs, SemanticContext context) {
 		buf.writestring("mixin(");
-		exp.toCBuffer(buf, hgs);
+		exp.toCBuffer(buf, hgs, context);
 		buf.writestring(");");
 		buf.writenl();
 	}

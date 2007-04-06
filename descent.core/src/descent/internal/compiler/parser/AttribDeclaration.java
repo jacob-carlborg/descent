@@ -20,6 +20,11 @@ public abstract class AttribDeclaration extends Dsymbol {
 			}
 		}
 	}
+	
+	@Override
+	public AttribDeclaration isAttribDeclaration() {
+		return this;
+	}
 
 	@Override
 	public int addMember(Scope sc, ScopeDsymbol sd, int memnum,
@@ -110,14 +115,14 @@ public abstract class AttribDeclaration extends Dsymbol {
 	}
 
 	@Override
-	public void toCBuffer(OutBuffer buf, HdrGenState hgs) {
+	public void toCBuffer(OutBuffer buf, HdrGenState hgs, SemanticContext context) {
 		if (decl != null) {
 			buf.writenl();
 			buf.writeByte('{');
 			buf.writenl();
 			for (Dsymbol s : decl) {
 				buf.writestring("    ");
-				s.toCBuffer(buf, hgs);
+				s.toCBuffer(buf, hgs, context);
 			}
 			buf.writeByte('}');
 		} else {

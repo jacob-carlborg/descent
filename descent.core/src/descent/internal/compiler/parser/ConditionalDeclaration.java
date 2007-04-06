@@ -48,7 +48,7 @@ public class ConditionalDeclaration extends AttribDeclaration {
 	}
 
 	@Override
-	public void toCBuffer(OutBuffer buf, HdrGenState hgs) {
+	public void toCBuffer(OutBuffer buf, HdrGenState hgs, SemanticContext context) {
 		condition.toCBuffer(buf, hgs);
 		if (decl != null || elsedecl != null) {
 			buf.writenl();
@@ -57,7 +57,7 @@ public class ConditionalDeclaration extends AttribDeclaration {
 			if (decl != null) {
 				for (Dsymbol s : decl) {
 					buf.writestring("    ");
-					s.toCBuffer(buf, hgs);
+					s.toCBuffer(buf, hgs, context);
 				}
 			}
 			buf.writeByte('}');
@@ -69,7 +69,7 @@ public class ConditionalDeclaration extends AttribDeclaration {
 				buf.writenl();
 				for (Dsymbol s : elsedecl) {
 					buf.writestring("    ");
-					s.toCBuffer(buf, hgs);
+					s.toCBuffer(buf, hgs, context);
 				}
 				buf.writeByte('}');
 			}

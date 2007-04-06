@@ -310,7 +310,7 @@ public class EnumDeclaration extends ScopeDsymbol {
 	}
 
 	@Override
-	public void toCBuffer(OutBuffer buf, HdrGenState hgs) {
+	public void toCBuffer(OutBuffer buf, HdrGenState hgs, SemanticContext context) {
 		int i;
 
 		buf.writestring("enum ");
@@ -335,7 +335,7 @@ public class EnumDeclaration extends ScopeDsymbol {
 			if (em == null) {
 				continue;
 			}
-			em.toCBuffer(buf, hgs);
+			em.toCBuffer(buf, hgs, context);
 			buf.writeByte(',');
 			buf.writenl();
 		}

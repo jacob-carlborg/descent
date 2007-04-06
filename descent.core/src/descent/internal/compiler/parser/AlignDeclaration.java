@@ -42,9 +42,9 @@ public class AlignDeclaration extends AttribDeclaration {
 	}
 
 	@Override
-	public void toCBuffer(OutBuffer buf, HdrGenState hgs) {
+	public void toCBuffer(OutBuffer buf, HdrGenState hgs, SemanticContext context) {
 		buf.data.append("align (" + salign + ")");
-		super.toCBuffer(buf, hgs);
+		super.toCBuffer(buf, hgs, context);
 	}
 
 }

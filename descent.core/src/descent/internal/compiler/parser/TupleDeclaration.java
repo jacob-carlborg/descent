@@ -56,7 +56,7 @@ public class TupleDeclaration extends Declaration {
 				args.set(i, arg);
 			}
 
-			tupletype = new TypeTuple(args);
+			tupletype = TypeTuple.newArguments(args);
 		}
 
 		return tupletype;

@@ -7,7 +7,7 @@ public class NotExp extends UnaExp {
 	}
 	
 	@Override
-	public boolean isbit() {
+	public boolean isBit() {
 		return true;
 	}
 	

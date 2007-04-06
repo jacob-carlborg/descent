@@ -69,5 +69,9 @@ public class BigIntegerUtils {
 	public static  BigInteger castToInt8(BigInteger value) {
 		return new BigInteger(String.valueOf(value.byteValue()));
 	}
+	
+	public static boolean isTrue(BigInteger value) {
+		return value.compareTo(BigInteger.ZERO) != 0;
+	}
 
 }

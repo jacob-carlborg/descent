@@ -1025,7 +1025,7 @@ public class FuncDeclaration extends Declaration {
 						p = v_arguments; // last parameter is _arguments[]
 					offset = p.type.size();
 					offset = (offset + 3) & ~3; // assume stack aligns on 4
-					e = new SymOffExp(p, offset);
+					e = new SymOffExp(p, offset, context);
 					e.synthetic = true;
 					e = new AssignExp(e1, e);
 					e.synthetic = true;
@@ -1234,6 +1234,11 @@ public class FuncDeclaration extends Declaration {
 	@Override
 	public int getNodeType() {
 		return FUNC_DECLARATION;
+	}
+
+	public FuncDeclaration overloadResolve(List<Expression> arguments, SemanticContext context) {
+		// TODO semantic
+		return null;
 	}
 
 }

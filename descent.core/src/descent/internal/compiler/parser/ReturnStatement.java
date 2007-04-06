@@ -212,7 +212,7 @@ public class ReturnStatement extends Statement {
 			}
 			//exp.dump(0);
 			//exp.print();
-			exp.checkEscape();
+			exp.checkEscape(context);
 		}
 
 		/* BUG: need to issue an error on:

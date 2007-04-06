@@ -78,7 +78,7 @@ public class StorageClassDeclaration extends AttribDeclaration {
 	}
 
 	@Override
-	public void toCBuffer(OutBuffer buf, HdrGenState hgs) {
+	public void toCBuffer(OutBuffer buf, HdrGenState hgs, SemanticContext context) {
 		boolean written = false;
 		for (SCstring sc : table) {
 			if ((stc & sc.stc) != 0) {
@@ -90,7 +90,7 @@ public class StorageClassDeclaration extends AttribDeclaration {
 			}
 		}
 
-		super.toCBuffer(buf, hgs);
+		super.toCBuffer(buf, hgs, context);
 	}
 
 }

@@ -1,14 +1,20 @@
 package descent.internal.compiler.parser;
 
-import java.math.BigDecimal;
+import static descent.internal.compiler.parser.MATCH.MATCHconvert;
+import static descent.internal.compiler.parser.MATCH.MATCHnomatch;
+import static descent.internal.compiler.parser.TOK.TOKint64;
+import static descent.internal.compiler.parser.TY.Tbit;
+import static descent.internal.compiler.parser.TY.Tbool;
+import static descent.internal.compiler.parser.TY.Tpointer;
+import static descent.internal.compiler.parser.TY.Treference;
+import static descent.internal.compiler.parser.TY.Tsarray;
+import static descent.internal.compiler.parser.TY.Tvoid;
+
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
 import descent.core.compiler.IProblem;
-import static descent.internal.compiler.parser.TY.*;
-import static descent.internal.compiler.parser.TOK.*;
-import static descent.internal.compiler.parser.MATCH.*;
 
 public abstract class Expression extends ASTNode implements Cloneable {
 
@@ -80,7 +86,7 @@ public abstract class Expression extends ASTNode implements Cloneable {
 		s.checkDeprecated(sc, context);
 	}
 
-	public void checkEscape() {
+	public void checkEscape(SemanticContext context) {
 	}
 
 	public Expression checkIntegral(SemanticContext context) {
@@ -270,10 +276,6 @@ public abstract class Expression extends ASTNode implements Cloneable {
 		return e;
 	}
 
-	public boolean isbit() {
-		return false;
-	}
-
 	public boolean isBit() {
 		return false;
 	}
@@ -286,11 +288,6 @@ public abstract class Expression extends ASTNode implements Cloneable {
 			SemanticContext context) {
 		// See if this expression is a modifiable lvalue (i.e. not const)
 		return toLvalue(sc, e, context);
-	}
-
-	public Expression modifiableLvalue(Scope sc, Object object) {
-		// TODO semantic
-		return null;
 	}
 
 	public Expression optimize(int result) {
@@ -316,7 +313,7 @@ public abstract class Expression extends ASTNode implements Cloneable {
 		return copy();
 	}
 
-	public void toCBuffer(OutBuffer buf, HdrGenState hgs) {
+	public void toCBuffer(OutBuffer buf, HdrGenState hgs, SemanticContext context) {
 		buf.writestring(op.toString());
 	}
 
@@ -326,14 +323,15 @@ public abstract class Expression extends ASTNode implements Cloneable {
 		HdrGenState hgs = new HdrGenState();
 
 		buf = new OutBuffer();
-		toCBuffer(buf, hgs);
+		// TODO check this null
+		toCBuffer(buf, hgs, null);
 		return buf.toChars();
 	}
 
-	public BigDecimal toComplex(SemanticContext context) {
+	public Complex toComplex(SemanticContext context) {
 		error("Floating point constant expression expected instead of %s",
 				toChars());
-		return BigDecimal.ZERO;
+		return Complex.ZERO;
 	}
 
 	public Expression toDelegate(Scope sc, Type tret) {
@@ -341,10 +339,10 @@ public abstract class Expression extends ASTNode implements Cloneable {
 		return null;
 	}
 
-	public BigDecimal toImaginary(SemanticContext context) {
+	public Real toImaginary(SemanticContext context) {
 		error("Floating point constant expression expected instead of %s",
 				toChars());
-		return BigDecimal.ZERO;
+		return Real.ZERO;
 	}
 
 	public BigInteger toInteger(SemanticContext context) {
@@ -371,10 +369,10 @@ public abstract class Expression extends ASTNode implements Cloneable {
 		error("expression %s is not a valid template value argument", toChars());
 	}
 
-	public BigDecimal toReal(SemanticContext context) {
+	public Real toReal(SemanticContext context) {
 		error("Floating point constant expression expected instead of %s",
 				toChars());
-		return BigDecimal.ZERO;
+		return Real.ZERO;
 	}
 
 	public BigInteger toUInteger(SemanticContext context) {
