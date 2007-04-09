@@ -1,65 +1,95 @@
+/*******************************************************************************
+ * Copyright (c) 2000, 2006 IBM Corporation and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     IBM Corporation - initial API and implementation
+ *******************************************************************************/
 package mmrnmhrm.ui.wizards;
 
-import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.jface.wizard.IWizardPage;
-import org.eclipse.jface.wizard.WizardPage;
+
+import java.text.MessageFormat;
+import java.util.Observable;
+import java.util.Observer;
+
+import org.eclipse.jdt.internal.ui.wizards.dialogfields.DialogField;
+import org.eclipse.jdt.internal.ui.wizards.dialogfields.SelectionButtonDialogField;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Text;
+import org.eclipse.swt.widgets.Group;
+import org.eclipse.swt.widgets.Link;
+
 
 /**
- * DeeProjectWizardFirstPage
+ * The first page of the New Project Wizard for D.
  */
-public class DeeProjectWizardFirstPage extends WizardPage {
-
-	private Text containerText;
-	private Text fileText;
+public class DeeProjectWizardFirstPage extends LangProjectWizardFirstPage {
 	
-	protected DeeProjectWizardFirstPage(String pageName) {
-		super(pageName);
-		setTitle("New Dee Project");
-		setDescription("Mmnmhrm: New Dee Project.");
+	private final class DCEGroup implements Observer {
 
+		private final SelectionButtonDialogField fUseDefaultDCE;
+		private final Group fGroup;
+		private final Link fPreferenceLink;
+		
+		public DCEGroup(Composite composite) {
+			fGroup= new Group(composite, SWT.NONE);
+			fGroup.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+			fGroup.setLayout(initGridLayout(new GridLayout(3, false), true));
+			fGroup.setText(DeeNewWizardMessages.LangNewProject_Page1_DCEGroup_title); 
+						
+			fUseDefaultDCE= new SelectionButtonDialogField(SWT.RADIO);
+			fUseDefaultDCE.setLabelText(getDefaultJVMLabel());
+			fUseDefaultDCE.doFillIntoGrid(fGroup, 2);
+			
+			fPreferenceLink= new Link(fGroup, SWT.NONE);
+			fPreferenceLink.setFont(fGroup.getFont());
+			fPreferenceLink.setText(DeeNewWizardMessages.LangNewProject_Page1_DCEGroup_link_description);
+			fPreferenceLink.setLayoutData(new GridData(GridData.END, GridData.CENTER, false, false));
+			fPreferenceLink.setVisible(false);
+		
+			DialogField.createEmptySpace(fGroup);
+			
+			fUseDefaultDCE.setSelection(true);
+		}
+
+
+		private String getDefaultJVMName() {
+			return "DMD1.---";
+		}
+
+		private String getDefaultJVMLabel() {
+			return MessageFormat.format(DeeNewWizardMessages.LangNewProject_Page1_DCEGroup_default_compliance, getDefaultJVMName());
+		}
+
+		public void update(Observable o, Object arg) {
+			//updateEnableState(fDetectGroup.mustDetect());
+		}
+
+	}
+
+	private static final String PAGE_NAME = "FNORD (pagename";
+
+	private DCEGroup fDCEGroup;
+
+
+	/**
+	 * Create a new <code>SimpleProjectFirstPage</code>.
+	 */
+	public DeeProjectWizardFirstPage() {
+		super(PAGE_NAME);
+		setTitle(DeeNewWizardMessages.LangNewProject_Page1_pageTitle); 
+		setDescription(DeeNewWizardMessages.LangNewProject_Page1_pageDescription); 
 	}
 	
-	public void createControl(Composite parent) {
-		initializeDialogUnits(parent);
-		
-		final Composite composite= new Composite(parent, SWT.NULL);
-		composite.setFont(parent.getFont());
-		composite.setLayout(initGridLayout(new GridLayout(1, false), true));
-		composite.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_FILL));
+	protected Observer[] createCustomControls(Composite content) {
 
-		
-		Button button = new Button(composite, SWT.RADIO);
-		button.setText("BUTTON");
+		fDCEGroup= new DCEGroup(content);
 
-		Button button2 = new Button(composite, SWT.RADIO);
-		button2.setText("BUTTON2");
-
-		setControl(composite);		
-	}
-
-
-	protected GridLayout initGridLayout(GridLayout layout, boolean margins) {
-		/** XXX: JDT
-		 * Initialize a grid layout with the default Dialog settings. */
-		/*layout.horizontalSpacing= convertHorizontalDLUsToPixels(IDialogConstants.HORIZONTAL_SPACING);
-		layout.verticalSpacing= convertVerticalDLUsToPixels(IDialogConstants.VERTICAL_SPACING);
-		if (margins) {
-			layout.marginWidth= convertHorizontalDLUsToPixels(IDialogConstants.HORIZONTAL_MARGIN);
-			layout.marginHeight= convertVerticalDLUsToPixels(IDialogConstants.VERTICAL_MARGIN);
-		} else {
-			layout.marginWidth= 0;
-			layout.marginHeight= 0;
-		}*/
-		return layout;
-	}
-
-
+		return new Observer[] { fDCEGroup };
+	}	
 }

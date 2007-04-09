@@ -7,6 +7,7 @@ import mmrnmhrm.ui.text.DeeDocumentProvider;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IWorkbenchWindow;
 
@@ -39,19 +40,6 @@ public class DeePlugin extends LangPlugin {
 	public static DeeCodeScanner getDefaultDeeCodeScanner() {
 		return getInstance().defaultDeeCodeScanner;
 	}
-
-	
-	protected void initPlugin() throws CoreException {
-		Logg.println(" =============  Mmrnmhrm INITIALIZING  ============= " );
-		Logg.println("Location: " + Platform.getLocation());
-		Logg.println("Instance Location: " + Platform.getInstanceLocation().getURL());
-
-		deeDocumentProvider = new DeeDocumentProvider();
-		defaultDeeCodeScanner = new DeeCodeScanner();
-		
-		DeeModel.initDeeModel();
-	}
-
 	
 	public static IWorkbenchWindow getActiveWorkbenchWindow() {
 		return DeePlugin.getInstance().getWorkbench().getActiveWorkbenchWindow();
@@ -64,4 +52,21 @@ public class DeePlugin extends LangPlugin {
 		 }
 		 return null;
 	}
+	
+
+	protected void initPlugin() throws CoreException {
+		Logg.println(" =============  Mmrnmhrm INITIALIZING  ============= " );
+		Logg.println("Location: " + Platform.getLocation());
+		Logg.println("Instance Location: " + Platform.getInstanceLocation().getURL());
+
+		deeDocumentProvider = new DeeDocumentProvider();
+		defaultDeeCodeScanner = new DeeCodeScanner();
+		
+		DeeModel.initDeeModel();
+	}
+
+	public static IPreferenceStore getPrefStore() {
+		return getInstance().getPreferenceStore();
+	}
+
 }

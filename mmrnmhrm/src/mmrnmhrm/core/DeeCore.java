@@ -22,12 +22,12 @@ public class DeeCore extends LangCore {
 	}
 	
 
-	/** Convenience method to get WorkspaceRoot. */
+	/** Convenience method to get the WorkspaceRoot. */
 	public static IWorkspaceRoot getWorkspaceRoot() {
 		return ResourcesPlugin.getWorkspace().getRoot();
 	}
 	
-	/** Convenience method to get Workspace. */
+	/** Convenience method to get the Workspace. */
 	public static IWorkspace getWorkspace() {
 		return ResourcesPlugin.getWorkspace();
 	}

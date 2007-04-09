@@ -5,13 +5,14 @@ Bundle-SymbolicName: mmrnmhrm;singleton:=true
 Bundle-Version: 0.0.1
 Bundle-Activator: mmrnmhrm.ui.DeePlugin
 Bundle-Localization: plugin
-Require-Bundle: org.eclipse.ui,
+Require-Bundle: com.ibm.icu,
+ dtool,
+ org.eclipse.ui,
  org.eclipse.core.runtime,
  org.eclipse.jface.text,
  org.eclipse.ui.editors,
  org.eclipse.ui.workbench.texteditor,
  org.eclipse.ui.views,
- dtool,
  org.eclipse.core.resources,
  org.eclipse.ui.ide,
  org.eclipse.ui.navigator

@@ -143,8 +143,8 @@ public abstract class NewElementWizard extends Wizard implements INewWizard {
 	}
 	
 	protected void handleFinishException(Shell shell, InvocationTargetException e) {
-		String title= NewWizardMessages.NewElementWizard_op_error_title; 
-		String message= NewWizardMessages.NewElementWizard_op_error_message; 
+		String title= DeeNewWizardMessages.NewElementWizard_op_error_title; 
+		String message= DeeNewWizardMessages.NewElementWizard_op_error_message; 
 		ExceptionHandler.handle(e, shell, title, message);
 	}
 	

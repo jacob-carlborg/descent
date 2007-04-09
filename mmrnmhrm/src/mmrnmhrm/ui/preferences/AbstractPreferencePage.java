@@ -6,15 +6,23 @@ import mmrnmhrm.ui.ActualPlugin;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.preference.PreferencePage;
 import org.eclipse.ui.IWorkbench;
+import org.eclipse.ui.IWorkbenchPreferencePage;
 
-public abstract class AbstractPreferencePage extends PreferencePage {
+/**
+ * Common preference page class. Manages an OverlayPreferenceStore. 
+ */
+public abstract class AbstractPreferencePage extends PreferencePage implements IWorkbenchPreferencePage{
 
 	/** Preference store used to hold temporary values, until the 
 	 * user saves the preference page. */
 	protected OverlayPreferenceStore fOverlayPrefStore;
-	
+
 	public AbstractPreferencePage(String title) {
 		super(title);
+		setPreferenceStore(getPreferenceStore());
+		fOverlayPrefStore= new OverlayPreferenceStore(
+				getPreferenceStore(), 
+				new OverlayPreferenceStore.OverlayKey[] {});
 	}
 	
 	/** {@inheritDoc} */
@@ -22,12 +30,11 @@ public abstract class AbstractPreferencePage extends PreferencePage {
 		// Nothing to do
 	}
 	
-	/** {@inheritDoc} */ 
-	@Override
+	/** Gets the preference store for this page. */
 	public IPreferenceStore getPreferenceStore() {
-		return fOverlayPrefStore;
+		// return the original one?
+		return ActualPlugin.getPrefStore();
 	}
-
 	
 	@Override
 	public boolean performOk() {

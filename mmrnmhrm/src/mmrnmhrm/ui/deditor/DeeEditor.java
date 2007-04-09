@@ -10,6 +10,8 @@ import mmrnmhrm.ui.outline.DeeContentOutlinePage;
 import mmrnmhrm.ui.text.DeeDocument;
 import mmrnmhrm.ui.text.DeeDocumentProvider;
 
+import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.ProjectScope;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.preference.IPreferenceStore;
@@ -17,6 +19,7 @@ import org.eclipse.jface.text.TextSelection;
 import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.editors.text.EditorsUI;
+import org.eclipse.ui.preferences.ScopedPreferenceStore;
 import org.eclipse.ui.texteditor.AbstractDecoratedTextEditor;
 import org.eclipse.ui.texteditor.ChainedPreferenceStore;
 import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
@@ -53,12 +56,12 @@ public class DeeEditor extends AbstractDecoratedTextEditor {
 	private IPreferenceStore createCombinedPreferenceStore(IEditorInput input) {
 		List<IPreferenceStore> stores= new ArrayList<IPreferenceStore>(2);
 
-		// TODO: add project scope
-		/*IJavaProject project= EditorUtility.getJavaProject(input);
+		//add project scope
+		IProject project = EditorUtility.getProject(input);;
 		if (project != null) {
-			stores.add(new EclipsePreferencesAdapter(
-			new ProjectScope(project.getProject()), JavaCore.PLUGIN_ID));
-		}*/
+			stores.add(new ScopedPreferenceStore(
+			new ProjectScope(project.getProject()), ActualPlugin.PLUGIN_ID));
+		}
 
 		stores.add(ActualPlugin.getInstance().getPreferenceStore());
 		stores.add(EditorsUI.getPreferenceStore());

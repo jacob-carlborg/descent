@@ -6,61 +6,45 @@ import mmrnmhrm.org.eclipse.ui.internal.editors.text.OverlayPreferenceStore;
 import mmrnmhrm.org.eclipse.ui.internal.editors.text.OverlayPreferenceStore.OverlayKey;
 import mmrnmhrm.ui.text.color.ILangColorPreferences;
 import mmrnmhrm.ui.text.color.LangColorPreferences;
-import mmrnmhrm.ui.util.SWTDebug;
+import mmrnmhrm.ui.util.ColumnComposite;
+import mmrnmhrm.ui.util.EmptyLabel;
+import mmrnmhrm.ui.util.ItemSelectionListField;
+import mmrnmhrm.ui.util.RowComposite;
 import mmrnmhrm.ui.util.SimpleSelectionListener;
+import mmrnmhrm.ui.util.ItemSelectionListField.SelectionListCategory;
+import mmrnmhrm.ui.util.ItemSelectionListField.SelectionListItem;
 
+import org.eclipse.jdt.internal.ui.wizards.dialogfields.DialogField;
+import org.eclipse.jdt.internal.ui.wizards.dialogfields.IDialogFieldListener;
+import org.eclipse.jdt.internal.ui.wizards.dialogfields.LayoutUtil;
 import org.eclipse.jface.preference.ColorSelector;
-import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.preference.PreferenceConverter;
-import org.eclipse.jface.viewers.ISelectionChangedListener;
-import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.jface.viewers.ITreeContentProvider;
-import org.eclipse.jface.viewers.LabelProvider;
-import org.eclipse.jface.viewers.SelectionChangedEvent;
-import org.eclipse.jface.viewers.TreeViewer;
-import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.ui.plugin.AbstractUIPlugin;
 
 /** 
  * Generic page to configure syntax highlighting/coloring. 
  * 
  * The page consists of a tree viewer coloring item selection, and 
  * a respective color editor (enable, color, bold, italic, underline).
+ * 
  */
 public abstract class LangColoringPreferencePage extends AbstractPreferencePage {
 
-	/** Category: named class to hold a list of ColoringListItem. */
-	class ColoringListCategory {
-		public String name;
-		public ColoringListItem[] items;
-		
-		public ColoringListCategory(String name, ColoringListItem[] items) {
-			this.name = name;
-			this.items = items;
-		}
-		
-		public String toString() {
-			return name;
-		}
-	}
 
-	/** A configurable unit of code syntax coloring. */
-	class ColoringListItem {
-		public String name;
+	/** A unit of code coloring configuration. */
+	class ColoringListItem extends ItemSelectionListField.SelectionListItem {
 		public String prefKey;
 		
 		public ColoringListItem(String name, String prefKey) {
-			this.name = name;
+			super(name);
 			this.prefKey = prefKey;
 		}
 		
@@ -114,42 +98,16 @@ public abstract class LangColoringPreferencePage extends AbstractPreferencePage 
 		}
 
 	}
-	
-	/** Content provider for the coloring items and categories. */
-	class DeeColoringContentProvider implements ITreeContentProvider {
-
-		public Object[] getElements(Object inputElement) {
-			return catRoot;
-		}
 		
-		public Object[] getChildren(Object parentElement) {
-			if (parentElement instanceof ColoringListCategory) {
-				ColoringListCategory elem = (ColoringListCategory) parentElement;
-				return elem.items;
-			}
-			return null;
-		}
-
-		public Object getParent(Object element) {
-			return null;
-		}
-
-		public boolean hasChildren(Object element) {
-			return element instanceof ColoringListCategory;
-		}
-
-
-		public void dispose() {
-		}
-
-		public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
-		}
+	protected ColoringListItem createSelectionItem(String string, String prefKey) {
+		return new ColoringListItem(string, prefKey);
 	}
 	
-	/** Tree viewer for the item selection */
-	private TreeViewer fTreeViewer;
+
+	/** Coloring item selection list */
+	private ItemSelectionListField fItemSelectionList;
 	/** Root array holding all coloring categories */
-	protected ColoringListCategory[] catRoot;
+	protected SelectionListCategory[] catRoot;
 	
 	/** Coloring Editor controls */ 
 	private Button fEnableCheckbox;
@@ -159,26 +117,22 @@ public abstract class LangColoringPreferencePage extends AbstractPreferencePage 
 	private Button fItalicCheckBox;
 	private Button fUnderlineCheckBox;
 	
-
-	/** The plugin to which this page belongs. */
-	private AbstractUIPlugin fPlugin;
-
+	
 	/** Creates a coloring preference page with the given title and no image. */
-	public LangColoringPreferencePage(String title, AbstractUIPlugin plugin) {
+	public LangColoringPreferencePage(String title) {
 		super(title);
 		initColoringItemsList();
-		fPlugin = plugin;
-		IPreferenceStore parentStore = fPlugin.getPreferenceStore();
-		OverlayKey[] overlayKeys = createOverlayKeys();
-		fOverlayPrefStore = new OverlayPreferenceStore(parentStore, overlayKeys);
+		fOverlayPrefStore = new OverlayPreferenceStore(
+				getPreferenceStore(), createOverlayKeys());
 		fOverlayPrefStore.load();
-		setPreferenceStore(fOverlayPrefStore);
 	}	
+	
 	
 	private OverlayKey[] createOverlayKeys() {
 		ArrayList<OverlayKey> overlayKeys= new ArrayList<OverlayKey>();		
-		for(ColoringListCategory listCat : catRoot) {
-			for(ColoringListItem listItem : listCat.items) {
+		for(SelectionListCategory listCat : catRoot) {
+			for(SelectionListItem listSelItem : listCat.items) {
+				ColoringListItem listItem = (ColoringListItem) listSelItem;
 				overlayKeys.add(listItem.newOverlayKey(listItem.getEnableKey()));
 				overlayKeys.add(listItem.newOverlayKey(listItem.getColorKey()));
 				overlayKeys.add(listItem.newOverlayKey(listItem.getBoldKey()));
@@ -194,95 +148,57 @@ public abstract class LangColoringPreferencePage extends AbstractPreferencePage 
 	 * Subclasses should implement. */
 	protected abstract void initColoringItemsList();
 	
-	/** Fires when the permanent coloring preferences have changed. */
-	protected abstract void fireColoringPreferencesChanged();
-
-	
 
 	/** {@inheritDoc} */
 	@Override
 	protected Control createContents(final Composite parent) {
 		
-		Composite content = new Composite(parent, SWT.NULL);
-	    GridLayout layout = new GridLayout();
-	    layout.marginHeight = 0;
-	    layout.marginWidth = 0;
-	    content.setLayout(layout);
-		SWTDebug.setColor(content, SWT.COLOR_DARK_MAGENTA);
-
+		Composite content = new RowComposite(parent);
 	    
-	    Label label = new Label(content, SWT.LEFT);
-	    label.setText("Element:");
-		label.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+		new EmptyLabel(content);
+		Composite coloringComposite = new ColumnComposite(content, 2);
 
-		Composite coloringComposite = new Composite(content, SWT.NONE);
-		layout = new GridLayout();
-		layout.numColumns = 2;
-		layout.marginWidth = 0;
-		layout.marginHeight = 0;
-		coloringComposite.setLayout(layout);
-		GridData gd = new GridData(SWT.FILL, SWT.BEGINNING, true, false);
-		coloringComposite.setLayoutData(gd);
-		
-		fTreeViewer = new TreeViewer(coloringComposite, SWT.SINGLE | SWT.BORDER);
-	    fTreeViewer.setLabelProvider(new LabelProvider());
-	    fTreeViewer.setContentProvider(new DeeColoringContentProvider());
-	    fTreeViewer.addSelectionChangedListener(new ISelectionChangedListener() {
-			public void selectionChanged(SelectionChangedEvent event) {
+		fItemSelectionList = new ItemSelectionListField(catRoot);
+		fItemSelectionList.setLabelText("Element:");
+		fItemSelectionList.setDialogFieldListener(new IDialogFieldListener() {
+			public void dialogFieldChanged(DialogField field) {
 				handleColoringItemSelectionChange();
 			}
 		});
-	    fTreeViewer.setInput(this); // input doesn't matter
-	    fTreeViewer.expandAll();
-	    
-	    gd = new GridData(SWT.BEGINNING, SWT.BEGINNING, false, true);
-	    gd.verticalSpan = 2;
-	    gd.widthHint = 150;
-	    gd.heightHint = 150;
-	    fTreeViewer.getControl().setLayoutData(gd);
-	    //treeViewer.getControl().setBounds(0, 0, 500, 500);
-	
-		fEnableCheckbox = new Button(coloringComposite, SWT.CHECK);
-	    fEnableCheckbox.setText("Enable");
-	    
-		Composite stylesComposite = new Composite(coloringComposite, SWT.NONE);
-		stylesComposite.setLayout(new GridLayout());
-		gd = new GridData(SWT.FILL, SWT.BEGINNING, false, false);
-		gd.horizontalIndent = 10;
-		stylesComposite.setLayoutData(gd);
-		SWTDebug.setColor(stylesComposite, SWT.COLOR_DARK_GREEN);
-	    
-		Composite colorChooserComposite = new Composite(stylesComposite, SWT.NONE);
-		layout = new GridLayout();
-		layout.numColumns = 2;
-		colorChooserComposite.setLayout(layout);
+		fItemSelectionList.doFillWithoutGrid(coloringComposite);
 		
+		LayoutUtil.setWidthHint(fItemSelectionList.getTreeControl(null), 150);	
+		LayoutUtil.setHeightHint(fItemSelectionList.getTreeControl(null), 150);	
+
+
+		Composite editComposite = new RowComposite(coloringComposite);
+		editComposite.setLayoutData(new GridData(GridData.VERTICAL_ALIGN_BEGINNING));
+		
+		new EmptyLabel(editComposite);
+		fEnableCheckbox = new Button(editComposite, SWT.CHECK);
+	    fEnableCheckbox.setText("Enable");
+    
+   
+		Composite styleComposite = new RowComposite(editComposite);
+		LayoutUtil.setHorizontalIndent(styleComposite, 15);
+	    
+		Composite colorChooserComposite = new ColumnComposite(styleComposite, 2);
 	    fColorSelectorLabel = new Label(colorChooserComposite, SWT.RIGHT);
 	    fColorSelectorLabel.setText("Color:");
 	    fColorSelector = new ColorSelector(colorChooserComposite);
 	
-	    fBoldCheckBox = new Button(stylesComposite, SWT.CHECK);
+	    fBoldCheckBox = new Button(styleComposite, SWT.CHECK);
 	    fBoldCheckBox.setText("Bold");
 	    
-	    fItalicCheckBox = new Button(stylesComposite, SWT.CHECK);
+	    fItalicCheckBox = new Button(styleComposite, SWT.CHECK);
 	    fItalicCheckBox.setText("Italic");
 	    
-	    fUnderlineCheckBox = new Button(stylesComposite, SWT.CHECK);
+	    fUnderlineCheckBox = new Button(styleComposite, SWT.CHECK);
 	    fUnderlineCheckBox.setText("Underline");
 	
-	    
-	    label = new Label(content, SWT.LEFT);
-	    label.setText("Preview:");
-	    
-	    StyledText preview = new StyledText(content, SWT.BORDER);
-	    preview.setText("TODO");
-	    preview.setEditable(false);
-	    gd = new GridData(GridData.FILL_BOTH);
-	    preview.setLayoutData(gd);
-	    
 	    enableEditing(false);
 	    
-    
+	    // controllers
 	    fEnableCheckbox.addSelectionListener(new SimpleSelectionListener() {
 			public void widgetSelected(SelectionEvent e) {
 				ColoringListItem item = getSelectedColoringItem();
@@ -315,20 +231,29 @@ public abstract class LangColoringPreferencePage extends AbstractPreferencePage 
 				fOverlayPrefStore.setValue(item.getUnderlineKey(), fUnderlineCheckBox.getSelection());
 			}
 		});
+		
+
+		// ---  the code previewer  --- 
+	    Label label = new Label(content, SWT.LEFT);
+	    label.setText("Preview:");
+	    
+	    StyledText preview = new StyledText(content, SWT.BORDER);
+	    preview.setText("TODO");
+	    preview.setEditable(false);
+	    preview.setLayoutData(new GridData(GridData.FILL_BOTH));
 
 		return content;
 	}
 
+
 	private ColoringListItem getSelectedColoringItem() {
-		IStructuredSelection selection; 
-		selection = (IStructuredSelection) fTreeViewer.getSelection();
-		Object element = selection.getFirstElement();
+		Object element = fItemSelectionList.getSelectedItem();
 		if (element instanceof ColoringListItem)
 			return (ColoringListItem) element;
 		return null;
 	}
 
-	/** Enables or disables the editing controls. */
+	/** Enables or disables the color editing controls. */
 	private void enableEditing(boolean enable) {
 		fEnableCheckbox.setEnabled(enable);
 		fColorSelector.getButton().setEnabled(enable);
@@ -354,10 +279,4 @@ public abstract class LangColoringPreferencePage extends AbstractPreferencePage 
 		fUnderlineCheckBox.setSelection(item.getIsUnderline());
 	}
 	
-	public boolean performOk() {
-		super.performOk();
-		fireColoringPreferencesChanged();
-		return true;
-	}
-
 }

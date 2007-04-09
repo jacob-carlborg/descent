@@ -215,7 +215,7 @@
             name="Dee"/>
       <page
             category="mmrnmhrm.ui.preferences.DeeBasePreferencePage"
-            class="mmrnmhrm.ui.preferences.SamplePreferencePage"
+            class="mmrnmhrm.ui.preferences.DeeColoringPreferencePage"
             id="mmrnmhrm.ui.preferences.SyntaxColoring"
             name="Syntax Coloring"/>
    </extension>
