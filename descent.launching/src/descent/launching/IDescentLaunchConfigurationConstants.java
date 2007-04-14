@@ -1,5 +1,6 @@
 package descent.launching;
 
+
 /**
  * Constant definitions for Java launch configurations.
  * <p>
@@ -8,6 +9,12 @@ package descent.launching;
  * @since 2.0
  */
 public interface IDescentLaunchConfigurationConstants {
+	
+	/**
+	 * Identifier for the Local Java Application launch configuration type
+	 * (value <code>"descent.launching.localJavaApplication"</code>).
+	 */
+	public static final String ID_D_APPLICATION = DescentLaunching.PLUGIN_ID + ".localDApplication"; //$NON-NLS-1$
 	
 	/**
 	 * Launch configuration attribute key. The value is a string specifying a

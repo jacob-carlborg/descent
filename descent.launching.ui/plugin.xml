@@ -15,5 +15,27 @@
             id="descent.launching.launcConfigurationTabGroup.localDApplication"
             type="descent.launching.localDApplication"/>
    </extension>
+   <extension
+         point="org.eclipse.debug.ui.launchShortcuts">
+      <shortcut
+            class="descent.internal.launching.ui.DescentLaunchShortcut"
+            icon="icons/full/etool16/d_app.gif"
+            id="descent.launching.launchShortcuts.localDApplication"
+            label="D Application"
+            modes="run,debug">
+         <perspective id="descent.ui.JavaPerspective"/>
+         <perspective id="org.eclipse.jdt.ui.JavaPerspective"/>
+         <contextualLaunch>
+            <enablement>
+               <with variable="selection">
+                  <count value="1"/>
+                  <iterate>
+                     <adapt type="org.eclipse.core.resources.IResource"/>
+                  </iterate>
+               </with>
+            </enablement>
+         </contextualLaunch>
+      </shortcut>
+   </extension>
 
 </plugin>
