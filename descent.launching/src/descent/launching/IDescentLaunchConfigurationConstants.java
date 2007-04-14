@@ -1,8 +1,5 @@
 package descent.launching;
 
-
-
-
 /**
  * Constant definitions for Java launch configurations.
  * <p>
@@ -36,6 +33,11 @@ public interface IDescentLaunchConfigurationConstants {
 	 * a Java project associated with a Java launch configuration.
 	 */
 	public static final String ATTR_PROJECT_NAME = DescentLaunching.PLUGIN_ID + ".PROJECT_ATTR"; //$NON-NLS-1$
+	
+	/**
+	 * Launch configuration attribute key. The value is a path to the executable to launch.
+	 */
+	public static final String ATTR_PROGRAM_NAME = DescentLaunching.PLUGIN_ID + ".PROGRAM_NAME";	 //$NON-NLS-1$
 	
 	/**
 	 * Status code indicating the project associated with

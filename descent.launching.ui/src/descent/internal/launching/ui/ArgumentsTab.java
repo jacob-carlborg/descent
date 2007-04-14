@@ -133,8 +133,8 @@ public class ArgumentsTab extends AbstractLaunchConfigurationTab {
 			fPrgmArgumentsText.setText(configuration.getAttribute(IDescentLaunchConfigurationConstants.ATTR_PROGRAM_ARGUMENTS, "")); //$NON-NLS-1$
 			fWorkingDirectoryBlock.initializeFrom(configuration);
 		} catch (CoreException e) {
-			setErrorMessage("Exception occurred reading configuration:" + e.getStatus().getMessage()); 
-			// TODO JDIDebugUIPlugin.log(e);
+			setErrorMessage("Exception occurred reading configuration:" + e.getStatus().getMessage());
+			DescentLaunchingUI.log(e);
 		}
 	}
 	

@@ -30,7 +30,10 @@ import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.dialogs.ContainerSelectionDialog;
 
+import descent.core.IJavaProject;
+import descent.launching.DescentLaunching;
 import descent.launching.IDescentLaunchConfigurationConstants;
+import descent.launching.ui.DescentLaunchingUI;
 
 /**
  * A control for setting the working directory associated with a launch
@@ -260,11 +263,10 @@ public class WorkingDirectoryBlock extends AbstractLaunchConfigurationTab {
 	 * Sets the default working directory
 	 */
 	protected void setDefaultWorkingDir() {
-		/*
 		try {
 			ILaunchConfiguration config = getLaunchConfiguration();
 			if (config != null) {
-				IJavaProject javaProject = JavaRuntime.getJavaProject(config);
+				IJavaProject javaProject = DescentLaunching.getJavaProject(config);
 				if (javaProject != null) {
 					setDefaultWorkingDirectoryText("${workspace_loc:" + javaProject.getPath().makeRelative().toOSString() + "}");  //$NON-NLS-1$//$NON-NLS-2$
 					return;
@@ -273,7 +275,6 @@ public class WorkingDirectoryBlock extends AbstractLaunchConfigurationTab {
 		}//end try 
 		catch (CoreException ce) {}
 		setDefaultWorkingDirectoryText(System.getProperty("user.dir")); //$NON-NLS-1$
-		*/
 	}
 
 	/* (non-Javadoc)
@@ -332,8 +333,8 @@ public class WorkingDirectoryBlock extends AbstractLaunchConfigurationTab {
 			}//end else
 		}//end try 
 		catch (CoreException e) {
-			setErrorMessage("Exception occurred reading configuration:" + e.getStatus().getMessage()); 
-			// TODO JDIDebugUIPlugin.log(e);
+			setErrorMessage("Exception occurred reading configuration:" + e.getStatus().getMessage());
+			DescentLaunchingUI.log(e);
 		}//end catch
 	}
 
