@@ -239,7 +239,7 @@ public abstract class LangProjectWizardFirstPage extends WizardPage {
 					
 					fWarningText.setVisible(true);
 					fWarningText.setText(DeeNewWizardMessages.LangNewProject_Page1_DetectGroup_message);
-					setMessage("Detect group!", INFORMATION);
+					//setMessage("Detect group!", INFORMATION);
 				}
 			}
 		}
@@ -306,15 +306,9 @@ public abstract class LangProjectWizardFirstPage extends WizardPage {
 			}
 
 			// check whether the location has the workspace as prefix
-			IPath projectPath= Path.fromOSString(location);
-			if (!fLocationGroup.isInWorkspace() && Platform.getLocation().isPrefixOf(projectPath)) {
-				setErrorMessage(DeeNewWizardMessages.LangNewProject_Page1_Message_cannotCreateInWorkspace); 
-				setPageComplete(false);
-				return;
-			}
 
-			// If we do not place the contents in the workspace validate the
-			// location.
+			// If we do not place the contents in the workspace validate the location.
+			IPath projectPath= Path.fromOSString(location);
 			if (!fLocationGroup.isInWorkspace()) {
 				final IStatus locationStatus= workspace.validateProjectLocation(handle, projectPath);
 				if (!locationStatus.isOK()) {

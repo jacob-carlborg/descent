@@ -2,27 +2,20 @@ package mmrnmhrm.core.model;
 
 import org.eclipse.core.resources.IFolder;
 
-public class DeeSourceFolder implements IBuildPathEntry {
-	public IFolder folder;
-
-	public DeeSourceFolder(IFolder folder) {
+public class DeeSourceFolder extends LangSourceFolder implements IDeeSourceRoot {
+	
+	public DeeSourceFolder(IFolder folder, DeeProject parent) {
 		this.folder = folder;
-	}
-
-	public String getPathString() {
-		return folder.getProjectRelativePath().toPortableString();
-	}
-
-	public Object getProjectRelativePath() {
-		return folder.getProjectRelativePath();
-	}
-
-	public String getKindString() {
-		return "src";
+		this.parent = parent;
 	}
 	
-	public int getKind() {
-		return TYPE.DEE_SOURCE_FOLDER;
+	@Override
+	public ILangElement[] newChildrenArray(int size) {
+		//TODO finish
+		return new ILangElement[size];
 	}
 
+	public String getSourceRootKindString() {
+		return "src";
+	}
 }

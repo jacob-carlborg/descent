@@ -1,7 +1,7 @@
 package mmrnmhrm.ui.wizards;
 
 import mmrnmhrm.core.DeeCore;
-import mmrnmhrm.core.model.DeeModel;
+import mmrnmhrm.core.model.DeeModelRoot;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IWorkspaceRoot;
@@ -21,8 +21,8 @@ public class DeeProjectWizard extends NewElementWizard {
         super.addPages();
         fFirstPage= new DeeProjectWizardFirstPage();
         fSecondPage= new DeeProjectWizardSecondPage("Foo");
-        addPage(fFirstPage);
         addPage(fSecondPage);
+        addPage(fFirstPage);
     }
 
 	/** {@inheritDoc} */
@@ -39,7 +39,7 @@ public class DeeProjectWizard extends NewElementWizard {
 		project.create(monitor);
 		project.open(monitor);
 
-		DeeModel.getInstance().createDeeProject(project);
+		DeeModelRoot.getInstance().createDeeProject(project);
 
 	}
 

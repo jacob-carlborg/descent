@@ -9,7 +9,7 @@ import org.eclipse.swt.widgets.Display;
 public class SWTDebug {
 		
 	//public static boolean debug = true;
-	public static boolean debug = false;
+	public static boolean debug = true;
 	
 	public static Random rnd = new Random(0);
 

@@ -54,8 +54,6 @@ public final class DeeNewWizardMessages extends NLS {
 		"Enter a location for the project.";
 	public static String LangNewProject_Page1_Message_invalidDirectory = 
 		"Invalid project contents directory";
-	public static String LangNewProject_Page1_Message_cannotCreateInWorkspace = 
-		"Cannot create project content in workspace.";
 
 	
 	public static String LangNewProject_Page1_directory_message = 

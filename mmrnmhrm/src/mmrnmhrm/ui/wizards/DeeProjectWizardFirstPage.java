@@ -17,6 +17,7 @@ import java.util.Observer;
 
 import org.eclipse.jdt.internal.ui.wizards.dialogfields.DialogField;
 import org.eclipse.jdt.internal.ui.wizards.dialogfields.SelectionButtonDialogField;
+import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -72,7 +73,7 @@ public class DeeProjectWizardFirstPage extends LangProjectWizardFirstPage {
 
 	}
 
-	private static final String PAGE_NAME = "FNORD (pagename";
+	private static final String PAGE_NAME = "FNORD (pagename)";
 
 	private DCEGroup fDCEGroup;
 
@@ -91,5 +92,10 @@ public class DeeProjectWizardFirstPage extends LangProjectWizardFirstPage {
 		fDCEGroup= new DCEGroup(content);
 
 		return new Observer[] { fDCEGroup };
-	}	
+	}
+	
+	@Override
+	public IWizardPage getNextPage() {
+		return super.getNextPage();
+	}
 }

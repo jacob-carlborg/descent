@@ -13,12 +13,15 @@ public class DeePluginImages {
 	private static ImageRegistry registry = DeePlugin.getInstance().getImageRegistry();
 
 	
-	public static final String IMAGE_PACKAGEFOLDER = createImage_Obj("dee_packagefolder.gif");;
+	public static final String ELEM_SOURCEFOLDER = createImage_Obj("dee_packagefolder.gif");
+	public static final String ELEM_LIBRARY = createImage_Obj("dee_library.gif");
 
-	public static final String ELEM_OLDAST = createImage_Obj("elem_oldast.gif");
-	public static final String ELEM_IMPORT = createImage_Obj("elem_import.gif");
-	public static final String ELEM_PRE = createImage_Obj("elem_pre.gif");
-	public static final String ELEM_REF = createImage_Obj("elem_ref.gif");
+	
+	
+	public static final String NODE_OLDAST = createImage_Obj("elem_oldast.gif");
+	public static final String NODE_IMPORT = createImage_Obj("elem_import.gif");
+	public static final String NODE_PRE = createImage_Obj("elem_pre.gif");
+	public static final String NODE_REF = createImage_Obj("elem_ref.gif");
 
 	public static final String ENT_ALIAS = createImage_Obj("ent_alias.gif");
 	public static final String ENT_CLASS = createImage_Obj("ent_class.gif");
@@ -44,6 +47,7 @@ public class DeePluginImages {
 		return imageName;
 	}
 
+	/** Gets the shared imaged associated with the given key. */
 	public static Image getImage(String imageKey) {
 		return registry.get(imageKey);
 	}

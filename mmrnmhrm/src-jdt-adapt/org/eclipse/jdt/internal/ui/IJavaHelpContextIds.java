@@ -27,7 +27,6 @@ public interface IJavaHelpContextIds {
 
 		
 	// Wizard pages
-	public static final String NEW_JAVAPROJECT_WIZARD_PAGE= PREFIX + "new_javaproject_wizard_page_context"; //$NON-NLS-1$
 	
 
 }

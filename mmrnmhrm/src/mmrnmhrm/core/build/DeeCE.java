@@ -1,6 +1,6 @@
-package mmrnmhrm.launch;
+package mmrnmhrm.core.build;
 
-public class DeeRE {
+public class DeeCE {
 
 	public String getName() {
 		return "Dee Runtime [TODO]";

@@ -1,9 +1,9 @@
 package mmrnmhrm.ui.outline;
 
-import mmrnmhrm.core.model.DeeModel;
+import mmrnmhrm.core.model.DeeModelManager;
 import mmrnmhrm.core.model.DeeProject;
 import mmrnmhrm.core.model.DeeSourceFolder;
-import mmrnmhrm.core.model.IBuildPathEntry;
+import mmrnmhrm.core.model.IDeeSourceRoot;
 import mmrnmhrm.ui.DeePluginImages;
 
 import org.eclipse.core.resources.IFolder;
@@ -34,17 +34,17 @@ public class DeeElementImageProvider {
 	
 	public static Image getLabelImage(Object element) {
 		if(element instanceof DeeSourceFolder)
-			return getImage(DeePluginImages.IMAGE_PACKAGEFOLDER);
+			return getImage(DeePluginImages.ELEM_SOURCEFOLDER);
 		else if(element instanceof IFolder) {
 			IFolder folder = (IFolder) element;
-			DeeProject deeproj = DeeModel.getDeeProject(folder.getProject());
+			DeeProject deeproj = DeeModelManager.getLangProject(folder.getProject());
 			if(deeproj == null)
 				return null;
 			
-			IBuildPathEntry bpentry = deeproj.getEntry(folder.getProjectRelativePath());
+			IDeeSourceRoot bpentry = deeproj.getRoot(folder);
 			
 			if(bpentry instanceof DeeSourceFolder)
-				return getImage(DeePluginImages.IMAGE_PACKAGEFOLDER);
+				return getImage(DeePluginImages.ELEM_SOURCEFOLDER);
 			else 
 				return null;
 		} else if (element instanceof ASTNode) {
@@ -56,11 +56,11 @@ public class DeeElementImageProvider {
 	
 	public static Image getLabelImage(ASTNode node) {
 		if(node instanceof DeclarationImport) { 
-			return getImage(DeePluginImages.ELEM_IMPORT);
+			return getImage(DeePluginImages.NODE_IMPORT);
 		} else if(node instanceof DeclarationModule) {
 			return getImage(DeePluginImages.ELEM_MODULE);
 		} else if (node instanceof Entity) {
-			return getImage(DeePluginImages.ELEM_REF);
+			return getImage(DeePluginImages.NODE_REF);
 		} else if (node instanceof DefinitionAlias) {
 			return getImage(DeePluginImages.ENT_ALIAS);
 		} else if(node instanceof DefinitionAggregate) {
@@ -80,7 +80,7 @@ public class DeeElementImageProvider {
 		} else if(node instanceof ASTNeoNode) {
 			return getImage(DeePluginImages.ENT_UNKNOWN);
 		} else
-			return getImage(DeePluginImages.ELEM_OLDAST);
+			return getImage(DeePluginImages.NODE_OLDAST);
 	}
 
 

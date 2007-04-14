@@ -9,7 +9,8 @@ import java.util.List;
 import mmrnmhrm.core.DeeCore;
 import mmrnmhrm.core.model.DeeProject;
 import mmrnmhrm.core.model.DeeSourceFolder;
-import mmrnmhrm.core.model.IBuildPathEntry;
+import mmrnmhrm.core.model.IDeeSourceRoot;
+import mmrnmhrm.core.model.LangSourceFolder;
 
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IResource;
@@ -41,9 +42,9 @@ public class DMDCompilerEnviron implements IDeeCompilerEnviron {
 
 		IPath outputPath = outputDir.getFullPath();
 
-		for(IBuildPathEntry bpentry : deeProject.getSourceFolders()) {
+		for(IDeeSourceRoot bpentry : deeProject.getSourceRoots()) {
 			if(bpentry instanceof DeeSourceFolder) {
-				DeeSourceFolder dsf = (DeeSourceFolder) bpentry;
+				LangSourceFolder dsf = (LangSourceFolder) bpentry;
 				IResource[] resources = new IResource[]{ dsf.folder };
 				DeeCore.getWorkspace().copy(resources, outputPath, 0, null);
 			}
@@ -73,7 +74,7 @@ public class DMDCompilerEnviron implements IDeeCompilerEnviron {
 			i++;
 		}
 
-		File file = new File(deeProject.getOutputDirLocationString());
+		File file = new File(deeProject.getOutputDir().getLocation().toString());
 		Logg.println(StringUtil.collToString(cmdstr, "\n "));
 
 		Process process = null;

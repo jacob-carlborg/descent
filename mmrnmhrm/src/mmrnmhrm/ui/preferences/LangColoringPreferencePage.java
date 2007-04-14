@@ -7,6 +7,7 @@ import mmrnmhrm.org.eclipse.ui.internal.editors.text.OverlayPreferenceStore.Over
 import mmrnmhrm.ui.text.color.ILangColorPreferences;
 import mmrnmhrm.ui.text.color.LangColorPreferences;
 import mmrnmhrm.ui.util.ColumnComposite;
+import mmrnmhrm.ui.util.DialogComposite;
 import mmrnmhrm.ui.util.EmptyLabel;
 import mmrnmhrm.ui.util.ItemSelectionListField;
 import mmrnmhrm.ui.util.RowComposite;
@@ -111,11 +112,13 @@ public abstract class LangColoringPreferencePage extends AbstractPreferencePage 
 	
 	/** Coloring Editor controls */ 
 	private Button fEnableCheckbox;
+	private Composite editComposite;
 	private ColorSelector fColorSelector;
 	private Label fColorSelectorLabel;
 	private Button fBoldCheckBox;
 	private Button fItalicCheckBox;
 	private Button fUnderlineCheckBox;
+	private DialogComposite styleComposite;
 	
 	
 	/** Creates a coloring preference page with the given title and no image. */
@@ -171,7 +174,7 @@ public abstract class LangColoringPreferencePage extends AbstractPreferencePage 
 		LayoutUtil.setHeightHint(fItemSelectionList.getTreeControl(null), 150);	
 
 
-		Composite editComposite = new RowComposite(coloringComposite);
+		editComposite = new RowComposite(coloringComposite);
 		editComposite.setLayoutData(new GridData(GridData.VERTICAL_ALIGN_BEGINNING));
 		
 		new EmptyLabel(editComposite);
@@ -179,7 +182,7 @@ public abstract class LangColoringPreferencePage extends AbstractPreferencePage 
 	    fEnableCheckbox.setText("Enable");
     
    
-		Composite styleComposite = new RowComposite(editComposite);
+		styleComposite = new RowComposite(editComposite);
 		LayoutUtil.setHorizontalIndent(styleComposite, 15);
 	    
 		Composite colorChooserComposite = new ColumnComposite(styleComposite, 2);
@@ -203,7 +206,7 @@ public abstract class LangColoringPreferencePage extends AbstractPreferencePage 
 			public void widgetSelected(SelectionEvent e) {
 				ColoringListItem item = getSelectedColoringItem();
 				fOverlayPrefStore.setValue(item.getEnableKey(), fEnableCheckbox.getSelection());
-				enableEditing(fEnableCheckbox.getSelection());
+				enableStyleEditing(fEnableCheckbox.getSelection());
 			}
 	    });
 	    
@@ -253,14 +256,15 @@ public abstract class LangColoringPreferencePage extends AbstractPreferencePage 
 		return null;
 	}
 
-	/** Enables or disables the color editing controls. */
+	/** Enables or disables color editing. */
 	private void enableEditing(boolean enable) {
 		fEnableCheckbox.setEnabled(enable);
-		fColorSelector.getButton().setEnabled(enable);
-		fColorSelectorLabel.setEnabled(enable);
-		fBoldCheckBox.setEnabled(enable);
-		fItalicCheckBox.setEnabled(enable);
-		fUnderlineCheckBox.setEnabled(enable);
+		enableStyleEditing(enable && fEnableCheckbox.getSelection());
+	}
+	
+	/** Enables or disables the color style editing. */
+	private void enableStyleEditing(boolean enable) {
+		styleComposite.setRecursiveEnabled(enable);
 	}
 
 	private void handleColoringItemSelectionChange() {
@@ -270,13 +274,14 @@ public abstract class LangColoringPreferencePage extends AbstractPreferencePage 
 			enableEditing(false);
 			return;
 		}
-		enableEditing(true);
 	
 		fEnableCheckbox.setSelection(item.getIsEnabled());
 		fColorSelector.setColorValue(item.getColor());
 		fBoldCheckBox.setSelection(item.getIsBold());
 		fItalicCheckBox.setSelection(item.getIsItalic());
 		fUnderlineCheckBox.setSelection(item.getIsUnderline());
+
+		enableEditing(true);
 	}
 	
 }

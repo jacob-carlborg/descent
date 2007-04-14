@@ -58,7 +58,7 @@
       <wizard
             category="Mmrnmhrm.category"
             class="mmrnmhrm.ui.wizards.DeeProjectWizard"
-            icon="icons/obj16/dproject.gif"
+            icon="icons/obj16/dee_project.gif"
             id="Mmrnmhrm.wizard.newProject"
             name="Dee Project"
             project="true"/>
@@ -68,7 +68,7 @@
       <editor
             class="mmrnmhrm.ui.deditor.DeeEditor"
             contributorClass="mmrnmhrm.ui.deditor.DeeEditorNullActionContributor"
-            icon="icons/obj16/dm.gif"
+            icon="icons/obj16/dee_file.gif"
             id="Mmrnmhrm.editors.DeeEditor"
             name="Dee Editor (Mmrnmhrm)">
          <contentTypeBinding contentTypeId="mmrnmhrm.core.dmsource"/>
@@ -118,11 +118,18 @@
                tooltip="%OpenTypeAction.tooltip">
          </action>
           <action
-                class="mmrnmhrm.ui.actions.XptoTestAction"
+                class="mmrnmhrm.ui.actions.TestAction2"
                 icon="icons/action16e/spathi.16.gif"
                 id="testAction2"
-                label="Test XPTO"
-                toolbarPath="ZZZ/additions"/>         
+                label="Test 2"
+                style="push"
+                toolbarPath="additions"/>
+          <action
+                class="mmrnmhrm.ui.actions.TestAction1"
+                icon="icons/action16e/spathi.16.gif"
+                id="testAction1"
+                label="Test 1"
+                toolbarPath="additions"/>         
      </actionSet>
    </extension>
    <extension
@@ -218,6 +225,14 @@
             class="mmrnmhrm.ui.preferences.DeeColoringPreferencePage"
             id="mmrnmhrm.ui.preferences.SyntaxColoring"
             name="Syntax Coloring"/>
+   </extension>
+   <extension
+         point="org.eclipse.ui.propertyPages">
+      <page
+            class="mmrnmhrm.ui.properties.ProjConfigPropertyPage"
+            id="mmrnmhrm.ui.properties.samplePropertyPage"
+            name="D Project Config"
+            objectClass="org.eclipse.core.resources.IContainer"/>
    </extension>
 
 </plugin>

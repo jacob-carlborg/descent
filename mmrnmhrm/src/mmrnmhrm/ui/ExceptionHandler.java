@@ -8,7 +8,7 @@
  * Contributors:
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
-package org.eclipse.jdt.internal.ui.util;
+package mmrnmhrm.ui;
 
 
 import java.io.StringWriter;

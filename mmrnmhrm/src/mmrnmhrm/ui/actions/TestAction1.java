@@ -1,19 +1,19 @@
 package mmrnmhrm.ui.actions;
 
 import mmrnmhrm.ui.DeeUI;
+import mmrnmhrm.ui.ExceptionHandler;
 
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.IWorkspaceRunnable;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.jdt.internal.ui.util.ExceptionHandler;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.IWorkbenchWindowActionDelegate;
 
-public class XptoTestAction implements IWorkbenchWindowActionDelegate {
+public class TestAction1 implements IWorkbenchWindowActionDelegate {
 
 	public void init(IWorkbenchWindow window) {
 	}
@@ -23,10 +23,13 @@ public class XptoTestAction implements IWorkbenchWindowActionDelegate {
 
 	public void run(IAction action) {
 		IWorkspaceRunnable op = new IWorkspaceRunnable() {
+
+			
 			public void run(IProgressMonitor monitor) throws CoreException {
 				//DeeCore.getWorkspace().copy(resources, outputPath, 0, null);
 			}
-		};			
+		};
+
 		
 		try {
 			IWorkspace workspace = ResourcesPlugin.getWorkspace();

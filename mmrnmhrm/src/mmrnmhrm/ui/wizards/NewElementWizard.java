@@ -13,11 +13,12 @@ package mmrnmhrm.ui.wizards;
 
 import java.lang.reflect.InvocationTargetException;
 
+import mmrnmhrm.ui.ExceptionHandler;
+
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.jobs.ISchedulingRule;
-import org.eclipse.jdt.internal.ui.util.ExceptionHandler;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.swt.widgets.Shell;

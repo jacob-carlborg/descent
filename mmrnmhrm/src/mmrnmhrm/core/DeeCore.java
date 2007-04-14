@@ -1,7 +1,8 @@
 package mmrnmhrm.core;
 
+import mmrnmhrm.core.model.DeeModelManager;
+
 import org.eclipse.core.resources.IWorkspace;
-import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.IWorkspaceRunnable;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
@@ -17,20 +18,12 @@ public class DeeCore extends LangCore {
 	/** Builder ID */
 	public final static String BUILDER_ID = PLUGIN_ID + ".deebuilder";
 
-	public DeeCore() {
+	public DeeCore() throws CoreException {
 		pluginInstance = this;
+		initPlugin();
 	}
 	
 
-	/** Convenience method to get the WorkspaceRoot. */
-	public static IWorkspaceRoot getWorkspaceRoot() {
-		return ResourcesPlugin.getWorkspace().getRoot();
-	}
-	
-	/** Convenience method to get the Workspace. */
-	public static IWorkspace getWorkspace() {
-		return ResourcesPlugin.getWorkspace();
-	}
 	
 	/**
 	 * Runs the given action as an atomic D model operation. (TODO)
@@ -44,4 +37,8 @@ public class DeeCore extends LangCore {
 		}
 	}
 
+	@Override
+	public void initPlugin() throws CoreException {
+		DeeModelManager.initDeeModel();
+	}
 }

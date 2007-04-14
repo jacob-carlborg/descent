@@ -5,8 +5,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
-import java.util.ArrayList;
-import java.util.List;
 
 import mmrnmhrm.core.DeeCoreException;
 
@@ -28,27 +26,23 @@ import util.log.Logg;
 /**
  * Class for a D project. 
  */
-public class DeeProject {
+public class DeeProject extends LangProject {
 
 	private static final String CFG_FILE_NAME = ".deeproject";
 	private static final String CFG_FILE_SECTION = "buildpath";
 	
 	
-	private IProject project;
-	private List<IBuildPathEntry> buildpath;
-	private IContainer outputDir; // Allowed to not exist.
+	private IContainer outputDir; // The resource is allowed to not exist.
 
 	
-	public DeeProject() {
-		buildpath = new ArrayList<IBuildPathEntry>();
+	public DeeProject(IProject project) {
+		super(project);
+		this.parent = DeeModelRoot.getInstance();
 	}
 	
-	public IProject getProject() {
-		return project;
-	}
-	
-	public void setProject(IProject project) {
-		this.project = project;
+	@Override
+	public IDeeSourceRoot[] newChildrenArray(int size) {
+		return new IDeeSourceRoot[size];
 	}
 	
 	public IContainer getOutputDir() {
@@ -57,35 +51,55 @@ public class DeeProject {
 
 	public void setOutputDir(IFolder outputDir) {
 		this.outputDir = outputDir;
-		//saveProjectConfigFile();
-	}
-	
-	public List<IBuildPathEntry> getSourceFolders() {
-		return buildpath;
-	}
-
-	
-	public String toString() {
-		return project.getName();
-	}
-
-	public String getOutputDirLocationString() {
-		return outputDir.getLocation().toString();
 	}
 
 	/* -------------- ------------------------  -------------- */
 
 	
-	public void addSourceFolder(IFolder folder) throws CoreException {
-		buildpath.add(new DeeSourceFolder(folder));
-		//saveProjectConfigFile();
+	public DeeSourceFolder addSourceFolder(IFolder folder) throws CoreException {
+		DeeSourceFolder srcFolder = new DeeSourceFolder(folder, this);
+		addChild(srcFolder);
+		return srcFolder;
+	}
+	
+	public void addSourceFolder(IDeeSourceRoot entry) throws CoreException {
+		addChild(entry);
 	}
 	
 	public void removeSourceFolder(IFolder folder) throws CoreException {
-		buildpath.remove(new DeeSourceFolder(folder));
-		//saveProjectConfigFile();
+		removeChild(new DeeSourceFolder(folder, this));
+	}
+	
+
+	public IDeeSourceRoot getRoot(IFolder folder) {
+		String name = folder.getProjectRelativePath().toString();
+		return (IDeeSourceRoot) getLangElement(name);
 	}
 
+	
+	public IDeeSourceRoot[] getSourceRoots() {
+		return (IDeeSourceRoot[]) getChildren();
+	}
+
+	/* --------------  persistance -------------- */
+
+	// TODO: sep create and set?
+	public void setDefaultBuildPath() throws CoreException {
+		// CHECK CREATE
+		IFolder srcFolder = project.getFolder("src");
+		srcFolder.create(false, true, null);
+		addSourceFolder(srcFolder);
+
+		IFolder binFolder = project.getFolder(defaultOutputFolder());
+		binFolder.create(false, true, null);
+		setOutputDir(binFolder);
+	}
+	
+	
+	private String defaultOutputFolder() {
+		return "bin";
+	}
+	
 	public void saveProjectConfigFile() throws CoreException {
 		IFile projCfgFile = project.getFile(CFG_FILE_NAME);
 		
@@ -93,9 +107,9 @@ public class DeeProject {
 		Ini.Section section = ini.add(CFG_FILE_SECTION);
 		
 		int count = 1;
-        for(IBuildPathEntry bpentry : buildpath) {
-        	String path = bpentry.getPathString();
-        	section.put(bpentry.getKindString() + count++, path);
+        for(IDeeSourceRoot bpentry : getSourceRoots()) {
+        	String path = bpentry.getProjectRelativePath().toPortableString();
+        	section.put(bpentry.getSourceRootKindString() + count++, path);
         }
     	section.put("out", getOutputDir().getProjectRelativePath().toString());
 		
@@ -103,7 +117,7 @@ public class DeeProject {
 		try {
 			ini.store(writer);
 		} catch (IOException e) {
-			Assert.fail("Never happens a IOE on a StringWriter");
+			Assert.fail("IOE never happens on a StringWriter");
 		}
 		
 		byte[] buf = writer.getBuffer().toString().getBytes();
@@ -114,10 +128,6 @@ public class DeeProject {
 			projCfgFile.setContents(is, IResource.NONE, null);
 		}
 
-	}
-	
-	private String defaultOutputFolder() {
-		return "bin";
 	}
 
 	public void loadProjectConfigFile() throws CoreException {
@@ -154,7 +164,7 @@ public class DeeProject {
 					// TODO: problemize
 					continue;
 				}
-				buildpath.add(new DeeSourceFolder(folder));
+				addSourceFolder(folder);
 				Logg.println("Added srcfolder:" + folder.toString());
 			}
 		}
@@ -165,28 +175,4 @@ public class DeeProject {
 		IFolder outFolder = project.getFolder(Path.fromPortableString(pathstr));
 		setOutputDir(outFolder);
 	}
-	
-
-
-	public IBuildPathEntry getEntry(IPath element) {
-		for(IBuildPathEntry bpentry : buildpath) {
-			if(bpentry.getProjectRelativePath().equals(element))
-				return bpentry;
-		}
-		return null;
-	}
-
-
-	public void setDefaultBuildPath() throws CoreException {
-		// CHECK CREATE
-		IFolder srcFolder = project.getFolder("src");
-		srcFolder.create(false, true, null);
-		addSourceFolder(srcFolder);
-
-		IFolder binFolder = project.getFolder(defaultOutputFolder());
-		binFolder.create(false, true, null);
-		setOutputDir(binFolder);
-	}
-
-
 }

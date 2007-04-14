@@ -4,11 +4,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import mmrnmhrm.core.model.DeeModel;
+import mmrnmhrm.core.model.DeeModelManager;
 import mmrnmhrm.core.model.DeeNature;
 import mmrnmhrm.core.model.DeeProject;
 import mmrnmhrm.core.model.DeeSourceFolder;
-import mmrnmhrm.core.model.IBuildPathEntry;
+import mmrnmhrm.core.model.IDeeSourceRoot;
+import mmrnmhrm.core.model.LangSourceFolder;
 
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
@@ -39,7 +40,7 @@ public class DeeBuilder extends IncrementalProjectBuilder {
 	private DeeProject deeProject;
 	
 	public DeeProject getDeeProject() {
-		deeProject = DeeModel.getDeeProject(getProject());
+		deeProject = DeeModelManager.getLangProject(getProject());
 		return deeProject;
 	}
 
@@ -53,13 +54,13 @@ public class DeeBuilder extends IncrementalProjectBuilder {
 		marker.setAttribute(IMarker.MESSAGE, "Test Marker Message");
 		marker.setAttribute(IMarker.PRIORITY, IMarker.PRIORITY_NORMAL);
 
-		getProject().getNature(DeeNature.NATURE_FQID);
+		getProject().getNature(DeeNature.NATURE_ID);
 		
 		DeeModuleCollector visitor = new DeeModuleCollector();
 
-		for(IBuildPathEntry bpentry : getDeeProject().getSourceFolders()) {
+		for(IDeeSourceRoot bpentry : getDeeProject().getSourceRoots()) {
 			if(bpentry instanceof DeeSourceFolder) {
-				DeeSourceFolder dsf = (DeeSourceFolder) bpentry;
+				LangSourceFolder dsf = (LangSourceFolder) bpentry;
 				dsf.folder.accept(visitor, IResource.DEPTH_INFINITE, IResource.NONE);
 			}
 		}

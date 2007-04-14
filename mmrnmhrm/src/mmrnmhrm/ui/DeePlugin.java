@@ -1,7 +1,6 @@
 package mmrnmhrm.ui;
 
 import mmrnmhrm.core.DeeCore;
-import mmrnmhrm.core.model.DeeModel;
 import mmrnmhrm.ui.text.DeeCodeScanner;
 import mmrnmhrm.ui.text.DeeDocumentProvider;
 
@@ -62,7 +61,7 @@ public class DeePlugin extends LangPlugin {
 		deeDocumentProvider = new DeeDocumentProvider();
 		defaultDeeCodeScanner = new DeeCodeScanner();
 		
-		DeeModel.initDeeModel();
+		new DeeCore(); // Adapt while UI and core isn't separated.
 	}
 
 	public static IPreferenceStore getPrefStore() {
