@@ -4,7 +4,7 @@
    <extension
          point="org.eclipse.debug.core.launchConfigurationTypes">
       <launchConfigurationType
-            delegate="descent.internal.launching.DLaunchConfigurationDelegate"
+            delegate="descent.internal.launching.DescentLaunchConfigurationDelegate"
             id="descent.launching.localDApplication"
             modes="run, debug"
             name="D Application"/>

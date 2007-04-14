@@ -11,7 +11,7 @@
    <extension
          point="org.eclipse.debug.ui.launchConfigurationTabGroups">
       <launchConfigurationTabGroup
-            class="descent.internal.launching.ui.DLaunchConfigurationTabGroup"
+            class="descent.internal.launching.ui.DescentLaunchConfigurationTabGroup"
             id="descent.launching.launcConfigurationTabGroup.localDApplication"
             type="descent.launching.localDApplication"/>
    </extension>
