@@ -46,12 +46,54 @@ public interface IDescentLaunchConfigurationConstants {
 	public static final int ERR_NOT_A_JAVA_PROJECT = 107;
 	
 	/**
+	 * Status code indicating a launch configuration does not
+	 * specify a project when a project is required.
+	 */
+	public static final int ERR_UNSPECIFIED_PROJECT = 100;	
+	
+	/**
 	 * Status code indicating that the project referenced by a launch configuration
 	 * is closed.
 	 * 
 	 * @since 3.0
 	 */
 	public static final int ERR_PROJECT_CLOSED = 124;	
+	
+	/**
+	 * Status code indicating that the program referenced by a launch configuration
+	 * does not exist.
+	 * 
+	 * @since 3.0
+	 */
+	public static final int ERR_PROGRAM_NOT_EXIST = 125;
+	
+	/**
+	 * Status code indicating that the program referenced by a launch configuration
+	 * was unspecified.
+	 * 
+	 * @since 3.0
+	 */
+	public static final int ERR_UNSPECIFIED_PROGRAM = 126;
+	
+	/**
+	 * Status code indicating that the working directory referenced by a launch configuration
+	 * does not exist.
+	 * 
+	 * @since 3.0
+	 */
+	public static final int ERR_WORKING_DIRECTORY_DOES_NOT_EXIST = 126;
+	
+	/**
+	 * Status code indicating that the Eclipse runtime does not support
+	 * launching a program with a working directory. This feature is only
+	 * available if Eclipse is run on a 1.3 runtime or higher.
+	 * <p>
+	 * A status handler may be registered for this error condition,
+	 * and should return a Boolean indicating whether the program
+	 * should be relaunched with the default working directory.
+	 * </p>
+	 */
+	public static final int ERR_WORKING_DIRECTORY_NOT_SUPPORTED = 115;	
 	
 	/**
 	 * Status code indicating an unexpected internal error.
