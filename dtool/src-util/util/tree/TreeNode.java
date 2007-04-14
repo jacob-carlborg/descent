@@ -35,6 +35,11 @@ public abstract class TreeNode<NODE extends TreeNode<NODE,VISITOR>, VISITOR exte
 	
 	/** {@inheritDoc} */
 	public abstract NODE[] getChildren();
+	
+	/** {@inheritDoc} */
+	public boolean hasChildren() {
+		return getChildren().length > 0;
+	}
 
 
 	private static Pattern pattern = Pattern.compile("[A-Za-z0-9\\$]*$");

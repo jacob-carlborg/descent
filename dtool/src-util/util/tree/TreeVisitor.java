@@ -81,20 +81,20 @@ public abstract class TreeVisitor<NODE extends TreeNode> {
 
 	/** Accepts the visitor on child. If child is null, nothing happens. */
 	@SuppressWarnings("unchecked")
-	public static void acceptChild(TreeVisitor visitor, ITreeNode child) {
+	public static void acceptChild(TreeVisitor visitor, IVisitable child) {
 		if (child != null) {
 			child.accept(visitor);
 		}
 	}
 
 	/** Same as {@link #acceptChild(CommonASTVisitor, TreeNode) } */
-	public static void acceptChildren(TreeVisitor visitor, ITreeNode child) {
+	public static void acceptChildren(TreeVisitor visitor, IVisitable child) {
 		TreeVisitor.acceptChild(visitor, child);
 	}
 
 	/** Accepts the visitor on the children. If children is null, nothing
 	 * happens.	*/
-	public static void acceptChildren(TreeVisitor visitor, ITreeNode[] children) {
+	public static void acceptChildren(TreeVisitor visitor, IVisitable[] children) {
 		if (children == null)
 			return;
 		
