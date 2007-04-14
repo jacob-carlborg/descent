@@ -1,7 +1,6 @@
 package descent.internal.compiler.parser;
 
 import java.math.BigInteger;
-import static descent.internal.compiler.parser.Expression.*;
 
 public class ForStatement extends Statement {
 	
@@ -10,7 +9,8 @@ public class ForStatement extends Statement {
 	public Expression increment;
 	public Statement body;
 
-	public ForStatement(Statement init, Expression condition, Expression increment, Statement body) {
+	public ForStatement(Loc loc, Statement init, Expression condition, Expression increment, Statement body) {
+		super(loc);
 		this.init = init;
 		this.condition = condition;
 		this.increment = increment;
@@ -19,7 +19,7 @@ public class ForStatement extends Statement {
 	
 	@Override
 	public Statement semantic(Scope sc, SemanticContext context) {
-		ScopeDsymbol sym = new ScopeDsymbol();
+		ScopeDsymbol sym = new ScopeDsymbol(loc);
 		sym.parent = sc.scopesym;
 		sc = sc.push(sym);
 		if (init != null) {
@@ -27,7 +27,7 @@ public class ForStatement extends Statement {
 		}
 		if (condition == null) {
 			// Use a default value
-			condition = new IntegerExp("1", BigInteger.ONE, Type.tboolean);
+			condition = new IntegerExp(loc, "1", BigInteger.ONE, Type.tboolean);
 		}
 		sc.noctor++;
 		condition = condition.semantic(sc, context);

@@ -19,7 +19,7 @@ public class TypeFunction extends Type {
 	}
 	
 	@Override
-	public Type semantic(Scope sc, SemanticContext context) {
+	public Type semantic(Loc loc, Scope sc, SemanticContext context) {
 		if (deco != null) { // if semantic() already run
 			return this;
 		}
@@ -28,7 +28,7 @@ public class TypeFunction extends Type {
 		if (next == null) {
 			next = tvoid;
 		}
-		next = next.semantic(sc, context);
+		next = next.semantic(loc, sc, context);
 		if (next.toBasetype(context).ty == TY.Tsarray) {
 			context.acceptProblem(Problem.newSemanticTypeError("Functions cannot return static arrays", IProblem.IllegalReturnType, 0, start, length));
 			next = Type.terror;
@@ -52,7 +52,7 @@ public class TypeFunction extends Type {
 				Type t;
 
 				inuse++;
-				arg.type = arg.type.semantic(sc, context);
+				arg.type = arg.type.semantic(loc, sc, context);
 				if (inuse == 1) {
 					inuse--;
 				}

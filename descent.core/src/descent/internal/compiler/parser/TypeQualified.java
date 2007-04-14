@@ -9,10 +9,12 @@ import descent.core.compiler.IProblem;
 
 public abstract class TypeQualified extends Type {
 	
+	public Loc loc;
 	public List<IdentifierExp> idents;
 	
-	public TypeQualified(TY ty) {
+	public TypeQualified(Loc loc, TY ty) {
 		super(ty, null);
+		this.loc = loc;
 	}
 
 	public void addIdent(IdentifierExp ident) {
@@ -45,7 +47,7 @@ public abstract class TypeQualified extends Type {
 						TemplateDeclaration td;
 						TemplateInstance ti = ((TemplateInstanceWrapper) id).tempinst;
 						id = (IdentifierExp) ti.idents.get(0);
-						sm = s.search(id, 0, context);
+						sm = s.search(loc, id, 0, context);
 						if (sm == null) {
 							context.acceptProblem(Problem.newSemanticTypeError("Template identifier " + id + " is not a member of this module", IProblem.NotAMember, 0, id.start, id.length));
 							return;
@@ -62,7 +64,7 @@ public abstract class TypeQualified extends Type {
 						}
 						sm = ti.toAlias(context);
 					} else
-						sm = s.search(id, 0, context);
+						sm = s.search(loc, id, 0, context);
 					// printf("\t3: s = '%s' %p, kind = '%s'\n",s.toChars(), s,
 					// s.kind());
 					// printf("getType = '%s'\n", s.getType().toChars());
@@ -72,7 +74,7 @@ public abstract class TypeQualified extends Type {
 							if (v.isConst() && v.getExpInitializer(context) != null) {
 								e = v.getExpInitializer(context).exp;
 							} else
-								e = new VarExp(v);
+								e = new VarExp(loc, v);
 							t = e.type;
 							if (t == null) {
 								// goto Lerror;
@@ -88,14 +90,14 @@ public abstract class TypeQualified extends Type {
 						if (t != null) {
 							sm = t.toDsymbol(sc, context);
 							if (sm != null) {
-								sm = sm.search(id, 0, context);
+								sm = sm.search(loc, id, 0, context);
 								if (sm != null) {
 									// goto L2;
 									s = sm.toAlias(context);
 									continue;
 								}
 							}
-							e = t.getProperty(id.ident, context);
+							e = t.getProperty(loc, id.ident, context);
 							resolveHelper_L3(sc, pe, e, context);
 						} else {
 							// Lerror:
@@ -117,7 +119,7 @@ public abstract class TypeQualified extends Type {
 					Assert.isNotNull(ei);
 					pe[0] = ei.exp.copy(); // make copy so we can change loc
 				} else {
-					pe[0] = new VarExp(v);
+					pe[0] = new VarExp(loc, v);
 				}
 				return;
 			}
@@ -147,7 +149,7 @@ public abstract class TypeQualified extends Type {
 
 			si = s.isImport();
 			if (si != null) {
-				s = si.search(s.ident, 0, context);
+				s = si.search(loc, s.ident, 0, context);
 				if (s != null && s != si) {
 					// goto L1
 					resolveHelper_L1_plus_end(sc, s, scopesym, pe, pt, ps, e, t, context);
@@ -175,7 +177,7 @@ public abstract class TypeQualified extends Type {
 					if (scx.scopesym == scopesym)
 						break;
 				}
-				t = t.semantic(scx, context);
+				t = t.semantic(loc, scx, context);
 				// ((TypeIdentifier )t).resolve(loc, scx, pe, &t, ps);
 			}
 		}

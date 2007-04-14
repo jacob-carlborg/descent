@@ -460,7 +460,7 @@ public abstract class ASTNode {
 			Type t = e.type.toBasetype(context);
 
 			if (t.ty == TY.Tfunction) {
-				e = new CallExp(e);
+				e = new CallExp(e.loc, e);
 				e = e.semantic(sc, context);
 			}
 
@@ -471,7 +471,7 @@ public abstract class ASTNode {
 				VarExp ve = (VarExp) e;
 
 				if ((ve.var.storage_class & STC.STClazy) != 0) {
-					e = new CallExp(e);
+					e = new CallExp(e.loc, e);
 					e = e.semantic(sc, context);
 				}
 			}
@@ -489,7 +489,7 @@ public abstract class ASTNode {
 		FuncDeclaration fd;
 		TemplateDeclaration td;
 
-		s = ad.search(funcid, 0, context);
+		s = ad.search(Loc.ZERO, funcid, 0, context);
 		if (s != null) {
 			Dsymbol s2;
 
@@ -506,7 +506,6 @@ public abstract class ASTNode {
 		}
 		return null;
 	}
-	public String filename;
 	public int start;
 	public int length;
 	public int astFlags;
@@ -527,7 +526,7 @@ public abstract class ASTNode {
 	 */
 	public boolean discarded;
 
-	public void accessCheck(Scope sc, Expression e, Declaration d) {
+	public void accessCheck(Scope sc, Expression e, Declaration d, SemanticContext context) {
 		if (e == null) {
 			if (d.prot() == PROTprivate && d.getModule() != sc.module
 					|| d.prot() == PROTpackage && !hasPackageAccess(sc, d)) {
@@ -683,7 +682,7 @@ public abstract class ASTNode {
 		return false;
 	}
 
-	public void functionArguments(Scope sc, TypeFunction tf,
+	public void functionArguments(Loc loc, Scope sc, TypeFunction tf,
 			List<Expression> arguments, SemanticContext context) {
 		int n;
 		int done;
@@ -742,15 +741,15 @@ public abstract class ASTNode {
 						// arg.type
 
 						Identifier id = new Identifier("_arrayArg" + (++idn));
-						Type t = new TypeSArray(tb2.next, new IntegerExp(nargs
+						Type t = new TypeSArray(tb2.next, new IntegerExp(loc, nargs
 								- i));
-						t = t.semantic(sc, context);
-						VarDeclaration v = new VarDeclaration(t, id,
-								new VoidInitializer());
+						t = t.semantic(loc, sc, context);
+						VarDeclaration v = new VarDeclaration(loc, t, id,
+								new VoidInitializer(loc));
 						v.semantic(sc, context);
 						v.parent = sc.parent;
 
-						Expression c = new DeclarationExp(v);
+						Expression c = new DeclarationExp(loc, v);
 						c.type = v.type;
 
 						for (int u = i; u < nargs; u++) {
@@ -759,18 +758,18 @@ public abstract class ASTNode {
 								a = a.toDelegate(sc, tret);
 							}
 
-							Expression e = new VarExp(v);
-							e = new IndexExp(e, new IntegerExp(u + 1 - nparams));
-							e = new AssignExp(e, a);
+							Expression e = new VarExp(loc, v);
+							e = new IndexExp(loc, e, new IntegerExp(loc, u + 1 - nparams));
+							e = new AssignExp(loc, e, a);
 							if (c != null) {
-								c = new CommaExp(c, e);
+								c = new CommaExp(loc, c, e);
 							} else {
 								c = e;
 							}
 						}
-						arg = new VarExp(v);
+						arg = new VarExp(loc, v);
 						if (c != null) {
-							arg = new CommaExp(c, arg);
+							arg = new CommaExp(loc, c, arg);
 						}
 						break;
 					}
@@ -783,7 +782,7 @@ public abstract class ASTNode {
 						for (int u = i; u < nargs; u++) {
 							args.set(u - i, arguments.get(u));
 						}
-						arg = new NewExp(null, null, p.type, args);
+						arg = new NewExp(loc, null, null, p.type, args);
 						break;
 					}
 					default:
@@ -851,8 +850,8 @@ public abstract class ASTNode {
 				if (tb.ty == Tsarray) {
 					TypeSArray ts = (TypeSArray) tb;
 					Type ta = tb.next.arrayOf(context);
-					if (ts.size() == 0) {
-						arg = new NullExp();
+					if (ts.size(arg.loc) == 0) {
+						arg = new NullExp(arg.loc);
 						arg.type = ta;
 					} else {
 						arg = arg.castTo(sc, ta, context);
@@ -941,7 +940,7 @@ public abstract class ASTNode {
 		return fd;
 	}
 
-	public void preFunctionArguments(Scope sc, List<Expression> exps,
+	public void preFunctionArguments(Loc loc, Scope sc, List<Expression> exps,
 			SemanticContext context) {
 		if (exps != null) {
 			expandTuples(exps);
@@ -951,7 +950,7 @@ public abstract class ASTNode {
 
 				if (arg.type == null) {
 					arg.error("%s is not an expression", arg.toChars());
-					arg = new IntegerExp(0, Type.tint32);
+					arg = new IntegerExp(arg.loc, 0, Type.tint32);
 				}
 
 				arg = resolveProperties(sc, arg, context);
@@ -975,6 +974,11 @@ public abstract class ASTNode {
 
 	protected String toPrettyChars() {
 		throw new IllegalStateException("Problem reporting not implemented");
+	}
+	
+	public Expression op_overload(Scope sc) {
+		// TODO semantic
+		return null;
 	}
 
 }

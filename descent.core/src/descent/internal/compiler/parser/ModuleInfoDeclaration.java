@@ -6,8 +6,8 @@ public class ModuleInfoDeclaration extends VarDeclaration {
 	
 	public Module mod;
 	
-	public ModuleInfoDeclaration(Module mod, SemanticContext context) {
-		super(context.moduleinfo.type, mod.ident, null);
+	public ModuleInfoDeclaration(Loc loc, Module mod, SemanticContext context) {
+		super(loc, context.moduleinfo.type, mod.ident, null);
 		this.mod = mod;
 	}
 	

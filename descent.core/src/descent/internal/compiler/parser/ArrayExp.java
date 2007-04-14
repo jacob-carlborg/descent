@@ -6,8 +6,8 @@ public class ArrayExp extends UnaExp {
 
 	public List<Expression> arguments;
 
-	public ArrayExp(Expression e, List<Expression> arguments) {
-		super(TOK.TOKarray, e);
+	public ArrayExp(Loc loc, Expression e, List<Expression> arguments) {
+		super(loc, TOK.TOKarray, e);
 		this.arguments = arguments;
 	}
 	

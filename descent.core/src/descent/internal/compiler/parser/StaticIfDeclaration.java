@@ -9,8 +9,8 @@ public class StaticIfDeclaration extends ConditionalDeclaration {
 	public ScopeDsymbol sd;
 	public boolean addisdone;
 
-	public StaticIfDeclaration(Condition condition, List<Dsymbol> decl, List<Dsymbol> elsedecl) {
-		super(condition, decl, elsedecl);
+	public StaticIfDeclaration(Loc loc, Condition condition, List<Dsymbol> decl, List<Dsymbol> elsedecl) {
+		super(loc, condition, decl, elsedecl);
 	}
 	
 	@Override
@@ -62,7 +62,7 @@ public class StaticIfDeclaration extends ConditionalDeclaration {
 		StaticIfDeclaration dd;
 
 		Assert.isTrue(s == null);
-		dd = new StaticIfDeclaration(condition.syntaxCopy(), Dsymbol
+		dd = new StaticIfDeclaration(loc, condition.syntaxCopy(), Dsymbol
 				.arraySyntaxCopy(decl), Dsymbol.arraySyntaxCopy(elsedecl));
 		return dd;
 	}

@@ -19,8 +19,8 @@ public class TypedefDeclaration extends Declaration {
 					// 3: semantic2() has been run
 	public boolean inuse;
 
-	public TypedefDeclaration(IdentifierExp id, Type basetype, Initializer init) {
-		super(id);
+	public TypedefDeclaration(Loc loc, IdentifierExp id, Type basetype, Initializer init) {
+		super(loc, id);
 		this.type = new TypeTypedef(this);
 		this.basetype = basetype;
 		this.sourceBasetype = basetype;
@@ -50,9 +50,9 @@ public class TypedefDeclaration extends Declaration {
 	public void semantic(Scope sc, SemanticContext context) {
 		if (sem == 0) {
 			sem = 1;
-			basetype = basetype.semantic(sc, context);
+			basetype = basetype.semantic(loc, sc, context);
 			sem = 2;
-			type = type.semantic(sc, context);
+			type = type.semantic(loc, sc, context);
 			if (sc.parent.isFuncDeclaration() != null && init != null) {
 				semantic2(sc, context);
 			}
@@ -91,7 +91,7 @@ public class TypedefDeclaration extends Declaration {
 
 		Assert.isTrue(s == null);
 		TypedefDeclaration st;
-		st = new TypedefDeclaration(ident, basetype, init);
+		st = new TypedefDeclaration(loc, ident, basetype, init);
 		// Syntax copy for header file
 		if (htype == null) // Don't overwrite original
 		{

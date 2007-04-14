@@ -12,8 +12,8 @@ public class StructDeclaration extends AggregateDeclaration {
 	
 	public boolean zeroInit;		// !=0 if initialize with 0 fill
 
-	public StructDeclaration(IdentifierExp id) {
-		super(id);
+	public StructDeclaration(Loc loc, IdentifierExp id) {
+		super(loc, id);
 		this.type = new TypeStruct(this);
 	}
 	
@@ -104,13 +104,13 @@ public class StructDeclaration extends AggregateDeclaration {
 		TypeFunction tfeqptr;
 		{
 			List<Argument> arguments = new ArrayList<Argument>();
-			Argument arg = new Argument(InOut.In, handle, new IdentifierExp(
+			Argument arg = new Argument(InOut.In, handle, new IdentifierExp(loc, 
 					Id.p), null);
 
 			arguments.add(arg);
 			tfeqptr = new TypeFunction(arguments, Type.tint32, 0,
 					LINK.LINKd);
-			tfeqptr = (TypeFunction) tfeqptr.semantic(sc, context);
+			tfeqptr = (TypeFunction) tfeqptr.semantic(loc, sc, context);
 		}
 
 		TypeFunction tfeq;
@@ -120,7 +120,7 @@ public class StructDeclaration extends AggregateDeclaration {
 
 			arguments.add(arg);
 			tfeq = new TypeFunction(arguments, Type.tint32, 0, LINK.LINKd);
-			tfeq = (TypeFunction) tfeq.semantic(sc, context);
+			tfeq = (TypeFunction) tfeq.semantic(loc, sc, context);
 		}
 
 		Identifier id = Id.eq;
@@ -132,15 +132,15 @@ public class StructDeclaration extends AggregateDeclaration {
 				if (fd == null) {
 					fd = fdx.overloadExactMatch(tfeq, context);
 					if (fd != null) { // Create the thunk, fdptr
-						FuncDeclaration fdptr = new FuncDeclaration(fdx.ident,
+						FuncDeclaration fdptr = new FuncDeclaration(loc, fdx.ident,
 								STC.STCundefined, tfeqptr);
-						Expression e = new IdentifierExp(Id.p);
-						e = new PtrExp(e);
+						Expression e = new IdentifierExp(loc, Id.p);
+						e = new PtrExp(loc, e);
 						List<Expression> args = new ArrayList<Expression>();
 						args.add(e);
-						e = new IdentifierExp(id);
-						e = new CallExp(e, args);
-						fdptr.fbody = new ReturnStatement(e);
+						e = new IdentifierExp(loc, id);
+						e = new CallExp(loc, e, args);
+						fdptr.fbody = new ReturnStatement(loc, e);
 						ScopeDsymbol s2 = fdx.parent.isScopeDsymbol();
 						Assert.isNotNull(s2);
 						s2.members.add(fdptr);
@@ -206,9 +206,9 @@ public class StructDeclaration extends AggregateDeclaration {
 
 		/* Look for special member functions.
 		 */
-		inv = (InvariantDeclaration) search(Id.classInvariant, 0, context);
-		aggNew = (NewDeclaration) search(Id.classNew, 0, context);
-		aggDelete = (DeleteDeclaration) search(Id.classDelete, 0, context);
+		inv = (InvariantDeclaration) search(loc, Id.classInvariant, 0, context);
+		aggNew = (NewDeclaration) search(loc, Id.classNew, 0, context);
+		aggDelete = (DeleteDeclaration) search(loc, Id.classDelete, 0, context);
 
 		if (sc.func != null) {
 			semantic2(sc, context);

@@ -4,7 +4,8 @@ public class Version extends Dsymbol {
 	
 	public String value;
 	
-	public Version(String value) {
+	public Version(Loc loc, String value) {
+		super(loc);
 		this.value = value;
 	}
 	

@@ -10,8 +10,8 @@ public class VarExp extends Expression {
 
 	public Declaration var;
 
-	public VarExp(Declaration var) {
-		super(TOK.TOKvar);
+	public VarExp(Loc loc, Declaration var) {
+		super(loc, TOK.TOKvar);
 		this.var = var;
 		this.type = var.type;
 	}

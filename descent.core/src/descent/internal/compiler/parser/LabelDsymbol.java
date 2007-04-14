@@ -4,12 +4,12 @@ public class LabelDsymbol extends Dsymbol {
 	
 	public LabelStatement statement;
 	
-	public LabelDsymbol(IdentifierExp ident) {
-		super(ident);
+	public LabelDsymbol(Loc loc, IdentifierExp ident) {
+		super(loc, ident);
 	}
 	
-	public LabelDsymbol(Identifier ident) {
-		super(new IdentifierExp(ident));
+	public LabelDsymbol(Loc loc, Identifier ident) {
+		super(loc, new IdentifierExp(Loc.ZERO, ident));
 	}
 
 	@Override

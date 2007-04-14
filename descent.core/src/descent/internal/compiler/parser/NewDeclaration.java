@@ -9,8 +9,8 @@ public class NewDeclaration extends FuncDeclaration {
 	public List<Argument> arguments;
 	public int varargs;
 	
-	public NewDeclaration(List<Argument> arguments, int varargs) {
-		super(new IdentifierExp(Id.classNew), STC.STCstatic, null);
+	public NewDeclaration(Loc loc, List<Argument> arguments, int varargs) {
+		super(loc, new IdentifierExp(Loc.ZERO, Id.classNew), STC.STCstatic, null);
 		this.arguments = arguments;
 		this.varargs = varargs;
 	}
@@ -34,7 +34,7 @@ public class NewDeclaration extends FuncDeclaration {
 		tret = Type.tvoid.pointerTo(context);
 		type = new TypeFunction(arguments, tret, varargs, LINK.LINKd);
 
-		type = type.semantic(sc, context);
+		type = type.semantic(loc, sc, context);
 		assert (type.ty == TY.Tfunction);
 
 		// Check that there is at least one argument of type uint

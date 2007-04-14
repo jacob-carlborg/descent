@@ -23,7 +23,7 @@ public class TypeSArray extends Type {
 		if (e != null) {
 			List<Expression> arguments = new ArrayList<Expression>(1);
 			arguments.add(dim);
-			e = new ArrayExp(e, arguments);
+			e = new ArrayExp(dim.loc, e, arguments);
 			e.setSourceRange(start, length);
 		}
 		return e;

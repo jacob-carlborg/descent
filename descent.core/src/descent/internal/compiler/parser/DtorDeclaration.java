@@ -6,8 +6,8 @@ import descent.core.compiler.IProblem;
 
 public class DtorDeclaration extends FuncDeclaration {
 	
-	public DtorDeclaration() {
-		super(new IdentifierExp(Id.dtor), STC.STCundefined, null);
+	public DtorDeclaration(Loc loc) {
+		super(loc, new IdentifierExp(Loc.ZERO, Id.dtor), STC.STCundefined, null);
 	}
 
 	@Override

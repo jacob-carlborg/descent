@@ -2,8 +2,8 @@ package descent.internal.compiler.parser;
 
 public class IncrementExp extends AddAssignExp {
 
-	public IncrementExp(Expression e1) {
-		super(e1, null);
+	public IncrementExp(Loc loc, Expression e1) {
+		super(loc, e1, null);
 	}
 	
 	@Override

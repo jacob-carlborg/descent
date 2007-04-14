@@ -61,7 +61,7 @@ public class Scope {
 
 	    sc = new Scope();
 	    sc.module = module;
-	    sc.scopesym = new ScopeDsymbol();
+	    sc.scopesym = new ScopeDsymbol(Loc.ZERO);
 	    sc.scopesym.symtab = new DsymbolTable();
 
 	    // Add top level package as member of this global scope
@@ -101,7 +101,7 @@ public class Scope {
 	    return enc;
 	}
 	
-	public Dsymbol search(IdentifierExp ident, Dsymbol[] pscopesym,
+	public Dsymbol search(Loc loc, IdentifierExp ident, Dsymbol[] pscopesym,
 			SemanticContext context) {
 		Dsymbol s;
 		Scope sc;
@@ -128,13 +128,13 @@ public class Scope {
 			assert (sc != sc.enclosing);
 			if (sc.scopesym != null) {
 				//printf("\tlooking in scopesym '%s', kind = '%s'\n", sc.scopesym.toChars(), sc.scopesym.kind());
-				s = sc.scopesym.search(ident, 0, context);
+				s = sc.scopesym.search(loc, ident, 0, context);
 				if (s != null) {
 					 if ((context.global.params.warnings || context.global.params.Dversion > 1)
 							&& ident.ident == Id.length
 							&& sc.scopesym.isArrayScopeSymbol() != null
 							&& sc.enclosing != null
-							&& sc.enclosing.search(ident, null, context) != null) {
+							&& sc.enclosing.search(loc, ident, null, context) != null) {
 						/* TODO semantic
 						if (context.global.params.warnings) {
 							fprintf(stdmsg, "warning - ");

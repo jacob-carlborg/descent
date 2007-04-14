@@ -8,8 +8,8 @@ public class IftypeExp extends Expression {
 	public Type tspec;
 	public TOK tok2;
 
-	public IftypeExp(Type targ, IdentifierExp ident, TOK tok, Type tspec, TOK tok2) {
-		super(TOK.TOKis);
+	public IftypeExp(Loc loc, Type targ, IdentifierExp ident, TOK tok, Type tspec, TOK tok2) {
+		super(loc, TOK.TOKis);
 		this.targ = targ;
 		this.ident = ident;
 		this.tok = tok;

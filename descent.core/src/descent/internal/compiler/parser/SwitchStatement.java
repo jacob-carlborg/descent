@@ -13,7 +13,8 @@ public class SwitchStatement extends Statement {
 	public List cases;		// array of CaseStatement's
 	public int hasNoDefault;		// !=0 if no default statement
 
-	public SwitchStatement(Expression c, Statement b) {
+	public SwitchStatement(Loc loc, Expression c, Statement b) {
+		super(loc);
 		this.condition = c;
 		this.body = b;		
 	}

@@ -87,9 +87,9 @@ public abstract class Type extends ASTNode {
 		return null;
 	}
 	
-	public Type semantic(Scope sc, SemanticContext context) {
+	public Type semantic(Loc loc, Scope sc, SemanticContext context) {
 		if (next != null) {
-			next = next.semantic(sc, context);
+			next = next.semantic(loc, sc, context);
 		}
 		return merge(context);
 	}
@@ -127,10 +127,10 @@ public abstract class Type extends ASTNode {
 		}
 	}
 	
-	public void resolve(Scope sc, Expression[] pe, Type[] pt, Dsymbol[] ps, SemanticContext context) {
+	public void resolve(Loc loc, Scope sc, Expression[] pe, Type[] pt, Dsymbol[] ps, SemanticContext context) {
 		Type t;
 
-	    t = semantic(sc, context);
+	    t = semantic(loc, sc, context);
 	    pt[0] = t;
 	    pe[0] = null;
 	    ps[0] = null;
@@ -188,7 +188,7 @@ public abstract class Type extends ASTNode {
 		return null;
 	}
 	
-	public Expression getProperty(Identifier ident, SemanticContext context) {
+	public Expression getProperty(Loc loc, Identifier ident, SemanticContext context) {
 		Expression e = null;
 
 	    if (ident == Id.__sizeof)
@@ -225,7 +225,7 @@ public abstract class Type extends ASTNode {
 	    else if (ident == Id.mangleof)
 	    {
 	    	Assert.isNotNull(deco);
-	    	e = new StringExp(deco, 'c');
+	    	e = new StringExp(loc, deco, 'c');
 			Scope sc = new Scope();
 			e = e.semantic(sc, context);
 	    }
@@ -243,7 +243,7 @@ public abstract class Type extends ASTNode {
 	    	/* TODO semantic
 			error(loc, "no property '%s' for type '%s'", ident.toChars(), toChars());
 			*/
-			e = new IntegerExp("1", BigInteger.ONE, Type.tint32);
+			e = new IntegerExp(loc, "1", BigInteger.ONE, Type.tint32);
 	    }
 		return e;
 	}
@@ -256,7 +256,7 @@ public abstract class Type extends ASTNode {
 		}
 	}
 	
-	public void checkDeprecated(Scope sc, SemanticContext context) {
+	public void checkDeprecated(Loc loc, Scope sc, SemanticContext context) {
 		Type t;
 	    Dsymbol s;
 
@@ -339,10 +339,10 @@ public abstract class Type extends ASTNode {
 			 return e;
 			 */
 		}
-		return getProperty(ident.ident, context);
+		return getProperty(e.loc, ident.ident, context);
 	}
 
-	public int size() {
+	public int size(Loc loc) {
 		// TODO semantic
 		return 0;
 	}
@@ -498,6 +498,11 @@ public abstract class Type extends ASTNode {
 
 	public void toCBuffer2(OutBuffer argbuf, Object object, HdrGenState hgs) {
 		// TODO semantic
+	}
+
+	public Expression getTypeInfo(Scope sc) {
+		// TODO semantic
+		return null;
 	}
 
 }

@@ -11,8 +11,8 @@ public class DeleteDeclaration extends FuncDeclaration {
 	public List<Argument> arguments;
 	public int varargs;
 	
-	public DeleteDeclaration(List<Argument> arguments, int varags) {
-		super(new IdentifierExp(Id.classDelete), STC.STCundefined, null);
+	public DeleteDeclaration(Loc loc, List<Argument> arguments, int varags) {
+		super(loc, new IdentifierExp(Loc.ZERO, Id.classDelete), STC.STCundefined, null);
 		this.arguments = arguments;
 		this.varargs = varags;
 	}
@@ -40,7 +40,7 @@ public class DeleteDeclaration extends FuncDeclaration {
 		}
 		type = new TypeFunction(arguments, Type.tvoid, 0, LINK.LINKd);
 
-		type = type.semantic(sc, context);
+		type = type.semantic(loc, sc, context);
 		Assert.isTrue(type.ty == TY.Tfunction);
 
 		// Check that there is only one argument of type void*

@@ -6,10 +6,10 @@ import static descent.internal.compiler.parser.TOK.*;
 
 public class AddrExp extends UnaExp {
 
-	public AddrExp(Expression e) {
-		super(TOK.TOKaddress, e);
+	public AddrExp(Loc loc, Expression e) {
+		super(loc, TOK.TOKaddress, e);
 	}
-	
+
 	@Override
 	public Expression castTo(Scope sc, Type t, SemanticContext context) {
 		Type tb;
@@ -32,9 +32,9 @@ public class AddrExp extends UnaExp {
 				if (f != null) {
 					f = f.overloadExactMatch(tb.next, context);
 					if (f != null) {
-						e = new VarExp(f);
+						e = new VarExp(loc, f);
 						e.type = f.type;
-						e = new AddrExp(e);
+						e = new AddrExp(loc, e);
 						e.type = t;
 						return e;
 					}
@@ -75,6 +75,51 @@ public class AddrExp extends UnaExp {
 			}
 		}
 		return result;
+	}
+
+	@Override
+	public Expression semantic(Scope sc, SemanticContext context) {
+		if (type == null) {
+			super.semantic(sc, context);
+			e1 = e1.toLvalue(sc, null, context);
+			if (e1.type == null) {
+				error("cannot take address of %s", e1.toChars());
+				type = Type.tint32;
+				return this;
+			}
+			type = e1.type.pointerTo(context);
+
+			// See if this should really be a delegate
+			if (e1.op == TOKdotvar) {
+				DotVarExp dve = (DotVarExp) e1;
+				FuncDeclaration f = dve.var.isFuncDeclaration();
+
+				if (f != null) {
+					Expression e;
+
+					e = new DelegateExp(loc, dve.e1, f);
+					e = e.semantic(sc, context);
+					return e;
+				}
+			} else if (e1.op == TOKvar) {
+				VarExp dve = (VarExp) e1;
+				FuncDeclaration f = dve.var.isFuncDeclaration();
+
+				if (f != null && f.isNested()) {
+					Expression e;
+
+					e = new DelegateExp(loc, e1, f);
+					e = e.semantic(sc, context);
+					return e;
+				}
+			} else if (e1.op == TOKarray) {
+				if (e1.type.toBasetype(context).ty == Tbit) {
+					error("cannot take address of bit in array");
+				}
+			}
+			return optimize(WANTvalue);
+		}
+		return this;
 	}
 
 }

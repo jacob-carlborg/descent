@@ -2,8 +2,8 @@ package descent.internal.compiler.parser;
 
 public class MinAssignExp extends BinExp {
 
-	public MinAssignExp(Expression e1, Expression e2) {
-		super(TOK.TOKminass, e1, e2);
+	public MinAssignExp(Loc loc, Expression e1, Expression e2) {
+		super(loc, TOK.TOKminass, e1, e2);
 	}
 	
 	@Override

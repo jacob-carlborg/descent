@@ -8,8 +8,8 @@ public class TemplateAliasParameter extends TemplateParameter {
 	public Type defaultAlias;
 	public Dsymbol specAlias;
 
-	public TemplateAliasParameter(IdentifierExp ident, Type specAliasT, Type defaultAlias) {
-		super(ident);
+	public TemplateAliasParameter(Loc loc, IdentifierExp ident, Type specAliasT, Type defaultAlias) {
+		super(loc, ident);
 		this.specAliasT = specAliasT;
 	    this.defaultAlias = defaultAlias;
 
@@ -18,8 +18,8 @@ public class TemplateAliasParameter extends TemplateParameter {
 	
 	@Override
 	public void semantic(Scope sc, SemanticContext context) {
-		TypeIdentifier ti = new TypeIdentifier(ident);
-		Declaration sparam = new AliasDeclaration(ident, ti);
+		TypeIdentifier ti = new TypeIdentifier(loc, ident);
+		Declaration sparam = new AliasDeclaration(loc, ident, ti);
 		if (sc.insert(sparam) == null) {
 			context.acceptProblem(Problem.newSemanticTypeError("Duplicate parameter " + ident, IProblem.DuplicatedParameter, 0, ident.start, ident.length));
 		}

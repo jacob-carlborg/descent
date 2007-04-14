@@ -6,8 +6,8 @@ public class ComplexExp extends Expression {
 
 	private Complex value;
 
-	public ComplexExp(Complex value) {
-		super(TOK.TOKcomplex80);
+	public ComplexExp(Loc loc, Complex value) {
+		super(loc, TOK.TOKcomplex80);
 		this.value = value;
 	}
 
@@ -47,7 +47,7 @@ public class ComplexExp extends Expression {
 		if (type == null) {
 			type = Type.tcomplex80;
 		} else {
-			type = type.semantic(sc, context);
+			type = type.semantic(loc, sc, context);
 		}
 		return this;
 	}

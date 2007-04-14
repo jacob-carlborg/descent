@@ -3,6 +3,12 @@ package descent.internal.compiler.parser;
 
 public abstract class Initializer extends ASTNode {
 	
+	public Loc loc;
+	
+	public Initializer(Loc loc) {
+		this.loc = loc;
+	}
+	
 	public Expression toExpression(SemanticContext context) {
 		return null;
 	}

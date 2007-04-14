@@ -12,8 +12,8 @@ public class TemplateDeclaration extends ScopeDsymbol {
 	public TemplateDeclaration overnext;	// next overloaded TemplateDeclaration
 	public TemplateDeclaration overroot;	// first in overnext list
 	
-	public TemplateDeclaration(IdentifierExp id, List<TemplateParameter> parameters, List<Dsymbol> decldefs) {
-		super(id);
+	public TemplateDeclaration(Loc loc, IdentifierExp id, List<TemplateParameter> parameters, List<Dsymbol> decldefs) {
+		super(loc, id);
 		this.parameters = parameters;
 		this.members = decldefs;
 	}
@@ -48,7 +48,7 @@ public class TemplateDeclaration extends ScopeDsymbol {
 		this.scope.setNoFree();
 
 		// Set up scope for parameters
-		ScopeDsymbol paramsym = new ScopeDsymbol();
+		ScopeDsymbol paramsym = new ScopeDsymbol(loc);
 		paramsym.parent = sc.parent;
 		Scope paramscope = sc.push(paramsym);
 
@@ -78,6 +78,11 @@ public class TemplateDeclaration extends ScopeDsymbol {
 	@Override
 	public int getNodeType() {
 		return TEMPLATE_DECLARATION;
+	}
+
+	public FuncDeclaration deduce(Scope sc, Object object, List<Expression> arguments, SemanticContext context) {
+		// TODO semantic
+		return null;
 	}
 
 }

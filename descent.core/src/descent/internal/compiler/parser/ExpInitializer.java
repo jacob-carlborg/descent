@@ -5,7 +5,8 @@ public class ExpInitializer extends Initializer {
 	public Expression exp;
 	public Expression sourceExp;
 
-	public ExpInitializer(Expression exp) {
+	public ExpInitializer(Loc loc, Expression exp) {
+		super(loc);
 		this.exp = exp;
 		this.sourceExp = exp;
 		this.start = exp.start;

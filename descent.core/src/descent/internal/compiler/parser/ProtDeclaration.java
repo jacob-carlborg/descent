@@ -10,9 +10,9 @@ public class ProtDeclaration extends AttribDeclaration {
 	public boolean single;
 	public PROT protection;
 
-	public ProtDeclaration(PROT p, List<Dsymbol> decl, Modifier modifier,
+	public ProtDeclaration(Loc loc, PROT p, List<Dsymbol> decl, Modifier modifier,
 			boolean single) {
-		super(decl);
+		super(loc, decl);
 		this.protection = p;
 		this.modifier = modifier;
 		this.single = single;
@@ -49,7 +49,7 @@ public class ProtDeclaration extends AttribDeclaration {
 		ProtDeclaration pd;
 
 		Assert.isTrue(s == null);
-		pd = new ProtDeclaration(protection, Dsymbol.arraySyntaxCopy(decl),
+		pd = new ProtDeclaration(loc, protection, Dsymbol.arraySyntaxCopy(decl),
 				modifier, single);
 		return pd;
 	}

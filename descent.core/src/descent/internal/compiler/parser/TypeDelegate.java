@@ -7,18 +7,18 @@ public class TypeDelegate extends Type {
 	}
 	
 	@Override
-	public Type semantic(Scope sc, SemanticContext context) {
+	public Type semantic(Loc loc, Scope sc, SemanticContext context) {
 		if (deco != null) {			// if semantic() already run
 			return this;
 	    }
-	    next = next.semantic(sc, context);
+	    next = next.semantic(loc, sc, context);
 	    return merge(context);
 	}
 	
 	@Override
 	public Expression defaultInit(SemanticContext context) {
 		Expression e;
-	    e = new NullExp();
+	    e = new NullExp(Loc.ZERO);
 	    e.type = this;
 	    return e;
 	}

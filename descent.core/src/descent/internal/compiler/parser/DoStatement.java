@@ -1,13 +1,13 @@
 package descent.internal.compiler.parser;
 
-import static descent.internal.compiler.parser.Expression.*;
 
 public class DoStatement extends Statement {
 	
 	public Expression condition;
 	public Statement body;
 	
-	public DoStatement(Statement b, Expression c) {
+	public DoStatement(Loc loc, Statement b, Expression c) {
+		super(loc);
 		this.condition = c;
 		this.body = b;
 	}

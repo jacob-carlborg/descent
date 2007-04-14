@@ -13,8 +13,8 @@ public class AnonDeclaration extends AttribDeclaration {
 	public Scope scope; // !=NULL means context to use
 	public int sem; // 1 if successful semantic()
 
-	public AnonDeclaration(boolean isunion, List<Dsymbol> decl) {
-		super(decl);
+	public AnonDeclaration(Loc loc, boolean isunion, List<Dsymbol> decl) {
+		super(loc, decl);
 		this.isunion = isunion;
 	}
 
@@ -53,7 +53,7 @@ public class AnonDeclaration extends AttribDeclaration {
 		}
 
 		if (decl != null) {
-			AnonymousAggregateDeclaration aad = new AnonymousAggregateDeclaration();
+			AnonymousAggregateDeclaration aad = new AnonymousAggregateDeclaration(loc);
 			boolean adisunion;
 
 			if (sc.anonAgg != null) {
@@ -145,7 +145,7 @@ public class AnonDeclaration extends AttribDeclaration {
 		AnonDeclaration ad;
 
 		Assert.isTrue(s == null);
-		ad = new AnonDeclaration(isunion, Dsymbol.arraySyntaxCopy(decl));
+		ad = new AnonDeclaration(loc, isunion, Dsymbol.arraySyntaxCopy(decl));
 		return ad;
 	}
 

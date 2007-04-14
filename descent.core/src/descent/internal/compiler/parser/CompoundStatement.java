@@ -8,14 +8,16 @@ public class CompoundStatement extends Statement {
 	public List<Statement> statements;
 	public List<Statement> sourceStatements;
 
-	public CompoundStatement(List<Statement> statements) {
+	public CompoundStatement(Loc loc, List<Statement> statements) {
+		super(loc);
 		this.statements = statements;
 		if (statements != null) {
 			this.sourceStatements = new ArrayList<Statement>(statements);
 		}
 	}
 	
-	public CompoundStatement(Statement s1, Statement s2) {
+	public CompoundStatement(Loc loc, Statement s1, Statement s2) {
+		super(loc);
 		this.statements = new ArrayList<Statement>(2);
 		this.statements.add(s1);
 		this.statements.add(s2);
@@ -71,25 +73,25 @@ public class CompoundStatement extends Statement {
 								for (int j = i + 1; j < statements.size(); j++) {
 									a2.add(statements.get(j));
 								}
-								body = new CompoundStatement(a2);
-								body = new ScopeStatement(body);
+								body = new CompoundStatement(loc, a2);
+								body = new ScopeStatement(loc, body);
 	
 								Identifier id = new Identifier("__o" + ++num,
 										TOK.TOKidentifier);
 	
-								Statement handler = new ThrowStatement(
-										new IdentifierExp(id));
-								handler = new CompoundStatement(sexception[0],
+								Statement handler = new ThrowStatement(loc, 
+										new IdentifierExp(loc, id));
+								handler = new CompoundStatement(loc, sexception[0],
 										handler);
 	
 								List catches = new ArrayList();
-								Catch ctch = new Catch(null, new IdentifierExp(id),
+								Catch ctch = new Catch(loc, null, new IdentifierExp(loc, id),
 										handler);
 								catches.add(ctch);
-								s = new TryCatchStatement(body, catches);
+								s = new TryCatchStatement(loc, body, catches);
 	
 								if (sfinally[0] != null) {
-									s = new TryFinallyStatement(s, sfinally[0]);
+									s = new TryFinallyStatement(loc, s, sfinally[0]);
 								}
 								s = s.semantic(sc, context);
 								// statements..setDim(i + 1);
@@ -110,8 +112,8 @@ public class CompoundStatement extends Statement {
 								for (int j = i + 1; j < statements.size(); j++) {
 									a2.add(statements.get(j));
 								}
-								body = new CompoundStatement(a2);
-								s = new TryFinallyStatement(body, sfinally[0]);
+								body = new CompoundStatement(loc, a2);
+								s = new TryFinallyStatement(loc, body, sfinally[0]);
 								s = s.semantic(sc, context);
 								// statements.setDim(i + 1);
 								statements.add(s);

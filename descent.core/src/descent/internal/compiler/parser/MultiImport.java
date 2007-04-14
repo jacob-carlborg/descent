@@ -8,6 +8,10 @@ public class MultiImport extends Dsymbol {
 	public List<Import> imports;
 	public boolean isstatic;
 	
+	public MultiImport(Loc loc) {
+		super(loc);
+	}
+	
 	public void addImport(Import imp) {
 		if (imports == null) {
 			imports = new ArrayList<Import>();

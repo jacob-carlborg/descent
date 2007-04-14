@@ -8,8 +8,8 @@ public class AlignDeclaration extends AttribDeclaration {
 
 	public int salign;
 
-	public AlignDeclaration(int sa, List<Dsymbol> decl) {
-		super(decl);
+	public AlignDeclaration(Loc loc, int sa, List<Dsymbol> decl) {
+		super(loc, decl);
 		this.salign = sa;
 	}
 
@@ -37,7 +37,7 @@ public class AlignDeclaration extends AttribDeclaration {
 		AlignDeclaration ad;
 
 		Assert.isTrue(s == null);
-		ad = new AlignDeclaration(salign, Dsymbol.arraySyntaxCopy(decl));
+		ad = new AlignDeclaration(loc, salign, Dsymbol.arraySyntaxCopy(decl));
 		return ad;
 	}
 

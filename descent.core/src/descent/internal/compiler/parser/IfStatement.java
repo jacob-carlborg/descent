@@ -12,7 +12,8 @@ public class IfStatement extends Statement {
 	
 	public VarDeclaration match;	// for MatchExpression results
 
-	public IfStatement(Argument arg, Expression condition, Statement ifbody, Statement elsebody) {
+	public IfStatement(Loc loc, Argument arg, Expression condition, Statement ifbody, Statement elsebody) {
+		super(loc);
 		this.arg = arg;
 		this.condition = condition;
 		this.sourceCondition = condition;
@@ -40,12 +41,12 @@ public class IfStatement extends Statement {
 							 * Declare arg, which we will set to be the result
 							 * of condition.
 							 */
-			ScopeDsymbol sym = new ScopeDsymbol();
+			ScopeDsymbol sym = new ScopeDsymbol(loc);
 			sym.parent = sc.scopesym;
 			scd = sc.push(sym);
 
 			Type t = arg.type != null ? arg.type : condition.type;
-			match = new VarDeclaration(t, arg.ident, null);
+			match = new VarDeclaration(loc, t, arg.ident, null);
 			match.noauto = true;
 			match.semantic(scd, context);
 			if (scd.insert(match) == null) {
@@ -56,8 +57,8 @@ public class IfStatement extends Statement {
 			/*
 			 * Generate: (arg = condition)
 			 */
-			VarExp v = new VarExp(match);
-			condition = new AssignExp(v, condition);
+			VarExp v = new VarExp(loc, match);
+			condition = new AssignExp(loc, v, condition);
 			condition = condition.semantic(scd, context);
 		} else {
 			scd = sc.push();

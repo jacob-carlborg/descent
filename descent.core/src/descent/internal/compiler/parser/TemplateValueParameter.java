@@ -8,8 +8,8 @@ public class TemplateValueParameter extends TemplateParameter {
 	public Expression specValue;
 	public Expression defaultValue;
 	
-	public TemplateValueParameter(IdentifierExp ident, Type valType, Expression specValue, Expression defaultValue) {
-		super(ident);
+	public TemplateValueParameter(Loc loc, IdentifierExp ident, Type valType, Expression specValue, Expression defaultValue) {
+		super(loc, ident);
 		this.valType = valType;
 		this.specValue = specValue;
 		this.defaultValue = defaultValue;
@@ -17,14 +17,14 @@ public class TemplateValueParameter extends TemplateParameter {
 	
 	@Override
 	public void semantic(Scope sc, SemanticContext context) {
-		VarDeclaration sparam = new VarDeclaration(valType, ident, null);
+		VarDeclaration sparam = new VarDeclaration(loc, valType, ident, null);
 		sparam.storage_class = STC.STCtemplateparameter;
 		if (sc.insert(sparam) == null) {
 			context.acceptProblem(Problem.newSemanticTypeError("Duplicate parameter " + ident, IProblem.DuplicatedParameter, 0, ident.start, ident.length));
 		}
 
 		sparam.semantic(sc, context);
-		valType = valType.semantic(sc, context);
+		valType = valType.semantic(loc, sc, context);
 		if (!(valType.isintegral() || valType.isfloating() || valType
 				.isString())
 				&& valType.ty != TY.Tident)

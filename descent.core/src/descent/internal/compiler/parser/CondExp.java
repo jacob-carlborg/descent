@@ -6,8 +6,8 @@ public class CondExp extends BinExp {
 
 	public Expression econd;
 
-	public CondExp(Expression econd, Expression e1, Expression e2) {
-		super(TOK.TOKquestion, e1, e2);
+	public CondExp(Loc loc, Expression econd, Expression e1, Expression e2) {
+		super(loc, TOK.TOKquestion, e1, e2);
 		this.econd = econd;
 	}
 	
@@ -17,7 +17,7 @@ public class CondExp extends BinExp {
 
 		if (type != t) {
 			if (true || e1.op == TOKstring || e2.op == TOKstring) {
-				e = new CondExp(econd, e1.castTo(sc, t, context), e2.castTo(sc,
+				e = new CondExp(loc, econd, e1.castTo(sc, t, context), e2.castTo(sc,
 						t, context));
 				e.type = t;
 			} else

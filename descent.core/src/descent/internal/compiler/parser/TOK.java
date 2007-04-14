@@ -151,7 +151,7 @@ public enum TOK implements ITerminalSymbols {
 	TOKcall(PREC_primary), TOKarray(PREC_primary), TOKnewanonclass, TOKnotis,
 	TOKvar(PREC_primary), TOKdotvar, TOKconstruct, TOKdsymbol,
 	TOKdotexp, TOKhalt, TOKsymoff, TOKtuple, TOKindex,
-	TOKtobool(PREC_add), TOKdottype,
+	TOKtobool(PREC_add), TOKdottype, TOKremove, TOKdottd
 
 	//TOKMAX
 	;

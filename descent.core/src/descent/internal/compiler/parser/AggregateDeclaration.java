@@ -30,8 +30,8 @@ public abstract class AggregateDeclaration extends ScopeDsymbol {
 
 	public List<VarDeclaration> fields;
 
-	public AggregateDeclaration(IdentifierExp id) {
-		super(id);
+	public AggregateDeclaration(Loc loc, IdentifierExp id) {
+		super(loc, id);
 		fields = new ArrayList<VarDeclaration>(0);
 	}
 
@@ -162,7 +162,7 @@ public abstract class AggregateDeclaration extends ScopeDsymbol {
 			return;
 		}
 
-		memsize = v.type.size();
+		memsize = v.type.size(loc);
 		memalignsize = v.type.alignsize();
 		xalign = v.type.memalign(sc.structalign);
 

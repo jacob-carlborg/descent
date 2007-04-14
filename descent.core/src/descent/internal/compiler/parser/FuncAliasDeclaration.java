@@ -4,8 +4,8 @@ public class FuncAliasDeclaration extends FuncDeclaration {
 	
 	public FuncDeclaration funcalias;
 	
-	public FuncAliasDeclaration(FuncDeclaration funcalias) {
-		super(funcalias.ident, funcalias.storage_class, funcalias.type);
+	public FuncAliasDeclaration(Loc loc, FuncDeclaration funcalias) {
+		super(funcalias.loc, funcalias.ident, funcalias.storage_class, funcalias.type);
 		this.funcalias = funcalias;
 	}
 	

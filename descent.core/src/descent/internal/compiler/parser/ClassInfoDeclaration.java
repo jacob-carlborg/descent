@@ -6,8 +6,8 @@ public class ClassInfoDeclaration extends VarDeclaration {
 	
 	public ClassDeclaration cd;
 
-	public ClassInfoDeclaration(ClassDeclaration cd, SemanticContext context) {
-		super(context.classinfo.type, cd.ident, null);
+	public ClassInfoDeclaration(Loc loc, ClassDeclaration cd, SemanticContext context) {
+		super(loc, context.classinfo.type, cd.ident, null);
 		this.cd = cd;
 	}
 	

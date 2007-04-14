@@ -4,7 +4,8 @@ public class DefaultStatement extends Statement {
 
 	public Statement statement;
 
-	public DefaultStatement(Statement s) {
+	public DefaultStatement(Loc loc, Statement s) {
+		super(loc);
 		this.statement = s;		
 	}
 	

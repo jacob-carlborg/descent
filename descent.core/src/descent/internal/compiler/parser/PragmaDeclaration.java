@@ -12,9 +12,9 @@ public class PragmaDeclaration extends AttribDeclaration {
 
 	public List<Expression> args;
 
-	public PragmaDeclaration(IdentifierExp ident, List<Expression> args,
+	public PragmaDeclaration(Loc loc, IdentifierExp ident, List<Expression> args,
 			List<Dsymbol> decl) {
-		super(decl);
+		super(loc, decl);
 		this.ident = ident;
 		this.args = args;
 	}
@@ -123,7 +123,7 @@ public class PragmaDeclaration extends AttribDeclaration {
 		PragmaDeclaration pd;
 
 		Assert.isTrue(s == null);
-		pd = new PragmaDeclaration(ident, Expression.arraySyntaxCopy(args),
+		pd = new PragmaDeclaration(loc, ident, Expression.arraySyntaxCopy(args),
 				arraySyntaxCopy(decl));
 		return pd;
 	}

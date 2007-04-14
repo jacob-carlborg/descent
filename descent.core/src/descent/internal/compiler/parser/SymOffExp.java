@@ -10,8 +10,8 @@ public class SymOffExp extends Expression {
 	public Declaration var;
 	public int offset;
 
-	public SymOffExp(Declaration var, int offset, SemanticContext context) {
-		super(TOK.TOKsymoff);
+	public SymOffExp(Loc loc, Declaration var, int offset, SemanticContext context) {
+		super(loc, TOK.TOKsymoff);
 		Assert.isNotNull(var);
 		this.var = var;
 		this.offset = offset;
@@ -40,7 +40,7 @@ public class SymOffExp extends Expression {
 				if (f != null) {
 					f = f.overloadExactMatch(tb.next, context);
 					if (f != null) {
-						e = new SymOffExp(f, 0, context);
+						e = new SymOffExp(loc, f, 0, context);
 						e.type = t;
 						return e;
 					}

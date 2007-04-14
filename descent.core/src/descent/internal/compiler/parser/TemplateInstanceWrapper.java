@@ -4,7 +4,8 @@ public class TemplateInstanceWrapper extends IdentifierExp {
 
 	public TemplateInstance tempinst;
 
-	public TemplateInstanceWrapper(TemplateInstance tempinst) {
+	public TemplateInstanceWrapper(Loc loc, TemplateInstance tempinst) {
+		super(loc);
 		this.tempinst = tempinst;
 	}
 	

@@ -24,6 +24,10 @@ public class Module extends Package {
 	public int semanticdone; // has semantic() been done?
 	public List<Dsymbol> deferred;
 	public boolean needmoduleinfo;
+	
+	public Module(Loc loc) {
+		super(loc);
+	}
 
 	@Override
 	public Module isModule() {

@@ -4,8 +4,8 @@ public class DeclarationExp extends Expression {
 
 	public Dsymbol declaration;
 
-	public DeclarationExp(Dsymbol declaration) {
-		super(TOK.TOKdeclaration);
+	public DeclarationExp(Loc loc, Dsymbol declaration) {
+		super(loc, TOK.TOKdeclaration);
 		this.declaration = declaration;
 	}
 
@@ -96,7 +96,7 @@ public class DeclarationExp extends Expression {
 	
 	@Override
 	public Expression syntaxCopy() {
-		return new DeclarationExp(declaration.syntaxCopy(null));
+		return new DeclarationExp(loc, declaration.syntaxCopy(null));
 	}
 
 	@Override

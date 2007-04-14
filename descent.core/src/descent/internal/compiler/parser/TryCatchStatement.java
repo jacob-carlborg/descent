@@ -7,7 +7,8 @@ public class TryCatchStatement extends Statement {
 	public Statement body;
 	public List<Catch> catches;
 
-	public TryCatchStatement(Statement body, List<Catch> catches) {
+	public TryCatchStatement(Loc loc, Statement body, List<Catch> catches) {
+		super(loc);
 		this.body = body;
 		this.catches = catches;
 	}

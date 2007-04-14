@@ -7,8 +7,8 @@ public class MultiStringExp extends StringExp {
 	
 	public List<StringExp> strings = new ArrayList<StringExp>(1);
 	
-	public MultiStringExp() {
-		super(null);
+	public MultiStringExp(Loc loc) {
+		super(loc, null);
 	}
 	
 	public void doneParsing() {

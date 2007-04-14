@@ -31,10 +31,12 @@ public abstract class Expression extends ASTNode implements Cloneable {
 		return a;
 	}
 
+	public Loc loc;
 	public TOK op;
 	public Type type;
 
-	public Expression(TOK op) {
+	public Expression(Loc loc, TOK op) {
+		this.loc = loc;
 		this.op = op;
 		this.type = null;
 	}
@@ -43,7 +45,7 @@ public abstract class Expression extends ASTNode implements Cloneable {
 		Expression e;
 
 		e = toLvalue(sc, null, context);
-		e = new AddrExp(e);
+		e = new AddrExp(loc, e);
 		e.type = type.pointerTo(context);
 		return e;
 	}
@@ -63,13 +65,13 @@ public abstract class Expression extends ASTNode implements Cloneable {
 			// Do (type *) cast of (type [dim])
 			else if (tb.ty == Tpointer && type.ty == Tsarray) {
 
-				if (type.size() == 0) {
-					e = new NullExp();
+				if (type.size(loc) == 0) {
+					e = new NullExp(loc);
 				} else {
-					e = new AddrExp(e);
+					e = new AddrExp(loc, e);
 				}
 			} else {
-				e = new CastExp(e, tb);
+				e = new CastExp(loc, e, tb);
 			}
 		}
 		e.type = t;
@@ -93,7 +95,7 @@ public abstract class Expression extends ASTNode implements Cloneable {
 		if (!type.isintegral()) {
 			error("'%s' is not of integral type, it is a %s", toChars(), type
 					.toChars());
-			return new IntegerExp(0);
+			return new IntegerExp(loc, 0);
 		}
 		return this;
 	}
@@ -112,10 +114,8 @@ public abstract class Expression extends ASTNode implements Cloneable {
 
 	public int checkSideEffect(int flag, SemanticContext context) {
 		if (flag == 0) {
-			/* TODO semantic
 			error("%s has no effect in expression (%s)", op.toString(),
 					toChars());
-					*/
 		}
 		return 0;
 	}
@@ -138,10 +138,10 @@ public abstract class Expression extends ASTNode implements Cloneable {
 		tb = type.toBasetype(context);
 		if (tb.ty == Tsarray) {
 			TypeSArray ts = (TypeSArray) tb;
-			if (ts.size() == 0) {
-				e = new NullExp();
+			if (ts.size(loc) == 0) {
+				e = new NullExp(loc);
 			} else {
-				e = new AddrExp(this);
+				e = new AddrExp(loc, this);
 			}
 			e.type = tb.next.pointerTo(context);
 		}
@@ -151,7 +151,7 @@ public abstract class Expression extends ASTNode implements Cloneable {
 	public Expression combine(Expression e1, Expression e2) {
 		if (e1 != null) {
 			if (e2 != null) {
-				e1 = new CommaExp(e1, e2);
+				e1 = new CommaExp(e1.loc, e1, e2);
 				e1.type = e2.type;
 			}
 		} else {
@@ -172,7 +172,7 @@ public abstract class Expression extends ASTNode implements Cloneable {
 		if (type.ty == Treference) {
 			Expression e;
 
-			e = new PtrExp(this);
+			e = new PtrExp(loc, this);
 			e.type = type.next;
 			return e;
 		}
@@ -302,7 +302,7 @@ public abstract class Expression extends ASTNode implements Cloneable {
 
 	public Expression semantic(Scope sc, SemanticContext context) {
 		if (type != null) {
-			type = type.semantic(sc, context);
+			type = type.semantic(loc, sc, context);
 		} else {
 			type = Type.tvoid;
 		}
@@ -313,7 +313,8 @@ public abstract class Expression extends ASTNode implements Cloneable {
 		return copy();
 	}
 
-	public void toCBuffer(OutBuffer buf, HdrGenState hgs, SemanticContext context) {
+	public void toCBuffer(OutBuffer buf, HdrGenState hgs,
+			SemanticContext context) {
 		buf.writestring(op.toString());
 	}
 
@@ -355,12 +356,9 @@ public abstract class Expression extends ASTNode implements Cloneable {
 	public Expression toLvalue(Scope sc, Expression e, SemanticContext context) {
 		if (e == null) {
 			e = this;
+		} else if (loc.filename == null) {
+			loc = e.loc;
 		}
-		/* TODO semantic
-		 else if (!loc.filename) {
-		 loc = e.loc;
-		 }
-		 */
 		error("%s is not an lvalue", e.toChars());
 		return this;
 	}

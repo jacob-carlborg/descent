@@ -45,12 +45,14 @@ public abstract class Dsymbol extends ASTNode {
 	public IdentifierExp ident;
 	public IdentifierExp c_ident;
 	public Dsymbol parent;
+	public Loc loc;
 
-	public Dsymbol() {
+	public Dsymbol(Loc loc) {
+		this.loc = loc;
 	}
 
-	public Dsymbol(IdentifierExp ident) {
-		this();
+	public Dsymbol(Loc loc, IdentifierExp ident) {
+		this(loc);
 		this.ident = ident;
 		this.c_ident = null;
 		this.parent = null;
@@ -364,13 +366,13 @@ public abstract class Dsymbol extends ASTNode {
 		return PROT.PROTpublic;
 	}
 
-	public Dsymbol search(Identifier ident, int flags, SemanticContext context) {
+	public Dsymbol search(Loc loc, Identifier ident, int flags, SemanticContext context) {
 		return null;
 	}
 
-	public final Dsymbol search(IdentifierExp ident, int flags,
+	public final Dsymbol search(Loc loc, IdentifierExp ident, int flags,
 			SemanticContext context) {
-		return search(ident.ident, flags, context);
+		return search(loc, ident.ident, flags, context);
 	}
 
 	public void semantic(Scope sc, SemanticContext context) {

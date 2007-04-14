@@ -4,8 +4,8 @@ import descent.core.compiler.IProblem;
 
 public class InvariantDeclaration extends FuncDeclaration {
 	
-	public InvariantDeclaration() {
-		super(new IdentifierExp(Id.classInvariant), STC.STCundefined, null);
+	public InvariantDeclaration(Loc loc) {
+		super(loc, new IdentifierExp(Loc.ZERO, Id.classInvariant), STC.STCundefined, null);
 	}
 	
 	@Override

@@ -2,8 +2,8 @@ package descent.internal.compiler.parser;
 
 public class StaticCtorDeclaration extends FuncDeclaration {
 	
-	public StaticCtorDeclaration() {
-		super(new IdentifierExp(Id.staticCtor), STC.STCstatic, null);
+	public StaticCtorDeclaration(Loc loc) {
+		super(loc, new IdentifierExp(Loc.ZERO, Id.staticCtor), STC.STCstatic, null);
 	}
 	
 	@Override

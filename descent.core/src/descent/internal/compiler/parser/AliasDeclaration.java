@@ -15,8 +15,8 @@ public class AliasDeclaration extends Declaration {
 	public Dsymbol overnext; // next in overload list
 	public int inSemantic;
 
-	public AliasDeclaration(IdentifierExp id, Dsymbol s) {
-		super(id);
+	public AliasDeclaration(Loc loc, IdentifierExp id, Dsymbol s) {
+		super(loc, id);
 
 		Assert.isTrue(s != this);
 
@@ -30,8 +30,8 @@ public class AliasDeclaration extends Declaration {
 		Assert.isNotNull(s);
 	}
 
-	public AliasDeclaration(IdentifierExp id, Type type) {
-		super(id);
+	public AliasDeclaration(Loc loc, IdentifierExp id, Type type) {
+		super(loc, id);
 		this.type = type;
 		this.aliassym = null;
 		this.htype = null;
@@ -137,7 +137,7 @@ public class AliasDeclaration extends Declaration {
 				}
 
 				for (IdentifierExp id : ti.idents) {
-					s = s.search(id, 0, context);
+					s = s.search(loc, id, 0, context);
 					if (s == null) { // failed to find a symbol
 						semantic_L1(sc, context); // it must be a type
 						return;
@@ -155,7 +155,7 @@ public class AliasDeclaration extends Declaration {
 		if (overnext != null) {
 			context.multiplyDefined(this, overnext);
 		}
-		type = type.semantic(sc, context);
+		type = type.semantic(loc, sc, context);
 		this.inSemantic = 0;
 		return;
 	}
@@ -178,7 +178,7 @@ public class AliasDeclaration extends Declaration {
 			FuncDeclaration f = s.isFuncDeclaration();
 			if (f != null) {
 				if (overnext != null) {
-					FuncAliasDeclaration fa = new FuncAliasDeclaration(f);
+					FuncAliasDeclaration fa = new FuncAliasDeclaration(loc, f);
 					if (!fa.overloadInsert(overnext, context)) {
 						context.multiplyDefined(f, overnext);
 					}
@@ -203,9 +203,9 @@ public class AliasDeclaration extends Declaration {
 		Assert.isTrue(s == null);
 		AliasDeclaration sa;
 		if (type != null) {
-			sa = new AliasDeclaration(ident, type.syntaxCopy());
+			sa = new AliasDeclaration(loc, ident, type.syntaxCopy());
 		} else {
-			sa = new AliasDeclaration(ident, aliassym.syntaxCopy(null));
+			sa = new AliasDeclaration(loc, ident, aliassym.syntaxCopy(null));
 		}
 		// Syntax copy for header file
 		if (htype == null) // Don't overwrite original

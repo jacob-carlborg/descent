@@ -45,8 +45,8 @@ public class FuncDeclaration extends Declaration {
 	public int nrvo_can;			// !=0 means we can do it
     public VarDeclaration nrvo_var;		// variable to replace with shidden
 	
-	public FuncDeclaration(IdentifierExp ident, int storage_class, Type type) {
-		super(ident);
+	public FuncDeclaration(Loc loc, IdentifierExp ident, int storage_class, Type type) {
+		super(loc, ident);
 		this.storage_class = storage_class;
 		this.type = type;
 	}
@@ -121,7 +121,7 @@ public class FuncDeclaration extends Declaration {
 		InterfaceDeclaration id;
 
 		if (type.next != null) {
-			type = type.semantic(sc, context);
+			type = type.semantic(loc, sc, context);
 		}
 
 		if (type.ty != TY.Tfunction) {
@@ -296,7 +296,7 @@ public class FuncDeclaration extends Declaration {
 				if (isFinal()) {
 					// Verify this doesn't override previous final function
 					if (cd.baseClass != null) {
-						Dsymbol s = cd.baseClass.search(ident, 0, context);
+						Dsymbol s = cd.baseClass.search(loc, ident, 0, context);
 						if (s != null) {
 							FuncDeclaration f2 = s.isFuncDeclaration();
 							f2 = f2.overloadExactMatch(type, context);
@@ -529,7 +529,7 @@ public class FuncDeclaration extends Declaration {
 
 			localsymtab = new DsymbolTable();
 
-			ss = new ScopeDsymbol();
+			ss = new ScopeDsymbol(loc);
 			ss.parent = sc.scopesym;
 			sc2 = sc.push(ss);
 			sc2.func = this;
@@ -560,7 +560,7 @@ public class FuncDeclaration extends Declaration {
 					Assert.isTrue(!isNested()); // can't be both member and
 												// nested
 					Assert.isNotNull(ad.handle);
-					v = new ThisDeclaration(ad.handle);
+					v = new ThisDeclaration(loc, ad.handle);
 					v.synthetic = true;
 					v.storage_class |= STC.STCparameter | STC.STCin;
 					v.semantic(sc2, context);
@@ -573,7 +573,7 @@ public class FuncDeclaration extends Declaration {
 			} else if (isNested()) {
 				VarDeclaration v;
 
-				v = new ThisDeclaration(Type.tvoid.pointerTo(context));
+				v = new ThisDeclaration(loc, Type.tvoid.pointerTo(context));
 				v.synthetic = true;
 				v.storage_class |= STC.STCparameter | STC.STCin;
 				v.semantic(sc2, context);
@@ -590,7 +590,7 @@ public class FuncDeclaration extends Declaration {
 
 				if (f.linkage == LINK.LINKd) { // Declare _arguments[]
 					if (context.BREAKABI) {
-						v_arguments = new VarDeclaration(
+						v_arguments = new VarDeclaration(loc, 
 								context.typeinfotypelist.type,
 								Id._arguments_typeinfo, null);
 						v_arguments.synthetic = true;
@@ -601,14 +601,14 @@ public class FuncDeclaration extends Declaration {
 						v_arguments.parent = this;
 
 						t = context.typeinfo.type.arrayOf(context);
-						_arguments = new VarDeclaration(t, Id._arguments, null);
+						_arguments = new VarDeclaration(loc, t, Id._arguments, null);
 						_arguments.synthetic = true;
 						_arguments.semantic(sc2, context);
 						sc2.insert(_arguments);
 						_arguments.parent = this;
 					} else {
 						t = context.typeinfo.type.arrayOf(context);
-						v_arguments = new VarDeclaration(t, Id._arguments, null);
+						v_arguments = new VarDeclaration(loc, t, Id._arguments, null);
 						v_arguments.storage_class = STC.STCparameter
 								| STC.STCin;
 						v_arguments.semantic(sc2, context);
@@ -620,7 +620,7 @@ public class FuncDeclaration extends Declaration {
 						|| (parameters != null && parameters.size() > 0)) { // Declare
 																			// _argptr
 					t = Type.tvoid.pointerTo(context);
-					argptr = new VarDeclaration(t, Id._argptr, null);
+					argptr = new VarDeclaration(loc, t, Id._argptr, null);
 					argptr.synthetic = true;
 					argptr.semantic(sc2, context);
 					sc2.insert(argptr);
@@ -655,11 +655,11 @@ public class FuncDeclaration extends Declaration {
 					Argument arg = Argument.getNth(f.parameters, i, context);
 					IdentifierExp id = arg.ident;
 					if (id == null) {
-						id = new IdentifierExp(new Identifier("_param_" + i
+						id = new IdentifierExp(loc, new Identifier("_param_" + i
 								+ "u", TOK.TOKidentifier));
 						arg.ident = id;
 					}
-					VarDeclaration v = new VarDeclaration(arg.type, id, null);
+					VarDeclaration v = new VarDeclaration(loc, arg.type, id, null);
 					v.synthetic = true;
 					v.storage_class |= STC.STCparameter;
 					if (f.varargs == 2 && i + 1 == nparams)
@@ -710,15 +710,15 @@ public class FuncDeclaration extends Declaration {
 							Argument narg = Argument.getNth(t.arguments, j,
 									context);
 							Assert.isNotNull(narg.ident);
-							VarDeclaration v = sc2.search(narg.ident, null,
+							VarDeclaration v = sc2.search(loc, narg.ident, null,
 									context).isVarDeclaration();
 							v.synthetic = true;
 							Assert.isNotNull(v);
-							Expression e = new VarExp(v);
+							Expression e = new VarExp(loc, v);
 							exps.add(e);
 						}
 						Assert.isNotNull(arg.ident);
-						TupleDeclaration v = new TupleDeclaration(arg.ident,
+						TupleDeclaration v = new TupleDeclaration(loc, arg.ident,
 								exps);
 						v.isexp = true;
 						if (sc2.insert(v) == null) {
@@ -745,7 +745,7 @@ public class FuncDeclaration extends Declaration {
 			if (fensure != null || addPostInvariant(context)) {
 				ScopeDsymbol sym;
 
-				sym = new ScopeDsymbol();
+				sym = new ScopeDsymbol(loc);
 				sym.parent = sc2.scopesym;
 				sc2 = sc2.push(sym);
 
@@ -756,15 +756,20 @@ public class FuncDeclaration extends Declaration {
 					}
 				} else {
 					if (outId == null) {
-						outId = new IdentifierExp(Id.result); // provide a
+						outId = new IdentifierExp(loc, Id.result); // provide a
 																// default
 					}
 				}
 
 				if (outId != null) { // Declare result variable
 					VarDeclaration v;
+					Loc loc = this.loc;
+					
+					if (fensure != null) {
+						fensure.loc = loc;
+					}
 
-					v = new VarDeclaration(type.next, outId, null);
+					v = new VarDeclaration(loc, type.next, outId, null);
 					v.synthetic = true;
 					v.noauto = true;
 					sc2.incontract--;
@@ -812,22 +817,22 @@ public class FuncDeclaration extends Declaration {
 							inv = cd.inv;
 						}
 						if (inv != null) {
-							e = new DsymbolExp(inv);
-							e = new CallExp(e);
+							e = new DsymbolExp(loc, inv);
+							e = new CallExp(loc, e);
 							e = e.semantic(sc2, context);
 						}
 					} else { // Call invariant virtually
-						ThisExp v = new ThisExp();
+						ThisExp v = new ThisExp(loc);
 						v.synthetic = true;
 						v.type = vthis.type;
-						e = new AssertExp(v);
+						e = new AssertExp(loc, v);
 						e.synthetic = true;
 					}
 					if (e != null) {
-						ExpStatement s = new ExpStatement(e);
+						ExpStatement s = new ExpStatement(loc, e);
 						s.synthetic = true;
 						if (fensure != null) {
-							fensure = new CompoundStatement(s, fensure);
+							fensure = new CompoundStatement(loc, s, fensure);
 							fensure.synthetic = true;
 						} else {
 							fensure = s;
@@ -836,9 +841,9 @@ public class FuncDeclaration extends Declaration {
 				}
 
 				if (fensure != null) {
-					returnLabel = new LabelDsymbol(Id.returnLabel);
+					returnLabel = new LabelDsymbol(loc, Id.returnLabel);
 					returnLabel.synthetic = true;
-					LabelStatement ls = new LabelStatement(new IdentifierExp(
+					LabelStatement ls = new LabelStatement(loc, new IdentifierExp(loc, 
 							Id.returnLabel), fensure);
 					ls.synthetic = true;
 					ls.isReturnLabel = true;
@@ -869,7 +874,7 @@ public class FuncDeclaration extends Declaration {
 									// infer a void
 					if (type.next == null) {
 						type.next = Type.tvoid;
-						type = type.semantic(sc, context);
+						type = type.semantic(loc, sc, context);
 					}
 					f = (TypeFunction) type;
 				}
@@ -913,8 +918,8 @@ public class FuncDeclaration extends Declaration {
 						sc2.callSuper = 0;
 
 						// Insert implicit super() at start of fbody
-						Expression e1 = new SuperExp();
-						Expression e = new CallExp(e1);
+						Expression e1 = new SuperExp(loc);
+						Expression e = new CallExp(loc, e1);
 
 						/*
 						 * TODO semantic unsigned errors =
@@ -924,18 +929,18 @@ public class FuncDeclaration extends Declaration {
 						 * implicit super() call in constructor");
 						 */
 
-						Statement s = new ExpStatement(e);
+						Statement s = new ExpStatement(loc, e);
 						s.synthetic = true;
-						fbody = new CompoundStatement(s, fbody);
+						fbody = new CompoundStatement(loc, s, fbody);
 						fbody.synthetic = true;
 					}
 				} else if (fes != null) { // For foreach(){} body, append a
 											// return 0;
-					Expression e = new IntegerExp(0);
+					Expression e = new IntegerExp(loc, 0);
 					e.synthetic = true;
-					Statement s = new ReturnStatement(e);
+					Statement s = new ReturnStatement(loc, e);
 					s.synthetic = true;
-					fbody = new CompoundStatement(fbody, s);
+					fbody = new CompoundStatement(loc, fbody, s);
 					fbody.synthetic = true;
 					Assert.isTrue(returnLabel == null);
 				} else if (hasReturnExp == 0 && type.next.ty != TY.Tvoid)
@@ -943,9 +948,9 @@ public class FuncDeclaration extends Declaration {
 				else if (!inlineAsm) {
 					if (type.next.ty == TY.Tvoid) {
 						if (offend && isMain()) { // Add a return 0; statement
-							Statement s = new ReturnStatement(new IntegerExp(0));
+							Statement s = new ReturnStatement(loc, new IntegerExp(loc, 0));
 							s.synthetic = true;
-							fbody = new CompoundStatement(fbody, s);
+							fbody = new CompoundStatement(loc, fbody, s);
 							fbody.synthetic = true;
 						}
 					} else {
@@ -969,20 +974,20 @@ public class FuncDeclaration extends Declaration {
 																			 * should
 																			 * be.
 																			 */
-								e = new AssertExp(new IntegerExp(0),
-										new StringExp(
+								e = new AssertExp(loc, new IntegerExp(loc, 0),
+										new StringExp(loc, 
 												"missing return expression"));
 								e.synthetic = true;
 							} else {
-								e = new HaltExp();
+								e = new HaltExp(loc);
 								e.synthetic = true;
 							}
-							e = new CommaExp(e, type.next.defaultInit(context));
+							e = new CommaExp(loc, e, type.next.defaultInit(context));
 							e.synthetic = true;
 							e = e.semantic(sc2, context);
-							Statement s = new ExpStatement(e);
+							Statement s = new ExpStatement(loc, e);
 							s.synthetic = true;
-							fbody = new CompoundStatement(fbody, s);
+							fbody = new CompoundStatement(loc, fbody, s);
 							fbody.synthetic = true;
 						}
 					}
@@ -1002,7 +1007,7 @@ public class FuncDeclaration extends Declaration {
 							Assert.isNotNull(v.init);
 							ExpInitializer ie = v.init.isExpInitializer();
 							Assert.isNotNull(ie);
-							ExpStatement es = new ExpStatement(ie.exp);
+							ExpStatement es = new ExpStatement(loc, ie.exp);
 							es.synthetic = true;
 							a.add(es);
 						}
@@ -1017,20 +1022,20 @@ public class FuncDeclaration extends Declaration {
 					VarDeclaration p;
 					int offset;
 
-					e1 = new VarExp(argptr);
+					e1 = new VarExp(loc, argptr);
 					if (parameters != null && parameters.size() > 0)
 						p = (VarDeclaration) parameters
 								.get(parameters.size() - 1);
 					else
 						p = v_arguments; // last parameter is _arguments[]
-					offset = p.type.size();
+					offset = p.type.size(loc);
 					offset = (offset + 3) & ~3; // assume stack aligns on 4
-					e = new SymOffExp(p, offset, context);
+					e = new SymOffExp(loc, p, offset, context);
 					e.synthetic = true;
-					e = new AssignExp(e1, e);
+					e = new AssignExp(loc, e1, e);
 					e.synthetic = true;
 					e.type = t;
-					ExpStatement es = new ExpStatement(e);
+					ExpStatement es = new ExpStatement(loc, e);
 					es.synthetic = true;
 					a.add(es);
 				}
@@ -1040,16 +1045,16 @@ public class FuncDeclaration extends Declaration {
 					 * Advance to elements[] member of TypeInfo_Tuple with:
 					 * _arguments = v_arguments.elements;
 					 */
-					Expression e = new VarExp(v_arguments);
+					Expression e = new VarExp(loc, v_arguments);
 					e.synthetic = true;
-					e = new DotIdExp(e, new IdentifierExp(Id.elements));
+					e = new DotIdExp(loc, e, new IdentifierExp(loc, Id.elements));
 					e.synthetic = true;
-					Expression e1 = new VarExp(_arguments);
+					Expression e1 = new VarExp(loc, _arguments);
 					e1.synthetic = true;
-					e = new AssignExp(e1, e);
+					e = new AssignExp(loc, e1, e);
 					e.synthetic = true;
 					e = e.semantic(sc, context);
-					ExpStatement es = new ExpStatement(e);
+					ExpStatement es = new ExpStatement(loc, e);
 					es.synthetic = true;
 					a.add(es);
 				}
@@ -1082,23 +1087,23 @@ public class FuncDeclaration extends Declaration {
 							inv = cd.inv;
 						}
 						if (inv != null) {
-							e = new DsymbolExp(inv);
-							e = new CallExp(e);
+							e = new DsymbolExp(loc, inv);
+							e = new CallExp(loc, e);
 							e = e.semantic(sc2, context);
 						}
 					} else { // Call invariant virtually
-						ThisExp v = new ThisExp();
+						ThisExp v = new ThisExp(loc);
 						v.type = vthis.type;
 						v.synthetic = true;
-						Expression se = new StringExp("null this");
+						Expression se = new StringExp(loc, "null this");
 						se.synthetic = true;
 						se = se.semantic(sc, context);
 						se.type = Type.tchar.arrayOf(context);
-						e = new AssertExp(v, se);
+						e = new AssertExp(loc, v, se);
 						e.synthetic = true;
 					}
 					if (e != null) {
-						ExpStatement s = new ExpStatement(e);
+						ExpStatement s = new ExpStatement(loc, e);
 						s.synthetic = true;
 						a.add(s);
 					}
@@ -1114,19 +1119,19 @@ public class FuncDeclaration extends Declaration {
 					if (type.next.ty != TY.Tvoid) {
 						// Create: return vresult;
 						Assert.isNotNull(vresult);
-						Expression e = new VarExp(vresult);
+						Expression e = new VarExp(loc, vresult);
 						e.synthetic = true;
 						if (tintro != null) {
 							e = e.implicitCastTo(sc, tintro.next, context);
 							e = e.semantic(sc, context);
 						}
-						ReturnStatement s = new ReturnStatement(e);
+						ReturnStatement s = new ReturnStatement(loc, e);
 						s.synthetic = true;
 						a.add(s);
 					}
 				}
 
-				fbody = new CompoundStatement(a);
+				fbody = new CompoundStatement(loc, a);
 				fbody.synthetic = true;
 			}
 

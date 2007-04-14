@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.2"?>
+<plugin>
+   <extension
+         point="org.eclipse.debug.ui.launchConfigurationTypeImages">
+      <launchConfigurationTypeImage
+            configTypeID="descent.launching.localDApplication"
+            icon="icons/full/etool16/d_app.gif"
+            id="descent.launching.launcConfigurationTypeImage.localDApplication"/>
+   </extension>
+   <extension
+         point="org.eclipse.debug.ui.launchConfigurationTabGroups">
+      <launchConfigurationTabGroup
+            class="descent.internal.launching.ui.DLaunchConfigurationTabGroup"
+            id="descent.launching.launcConfigurationTabGroup.localDApplication"
+            type="descent.launching.localDApplication"/>
+   </extension>
+
+</plugin>

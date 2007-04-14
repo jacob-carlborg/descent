@@ -12,7 +12,7 @@ public class TypeEnum extends Type {
 	}
 	
 	@Override
-	public Type semantic(Scope sc, SemanticContext context) {
+	public Type semantic(Loc loc, Scope sc, SemanticContext context) {
 		sym.semantic(sc, context);
 	    return merge(context);
 	}
@@ -45,7 +45,7 @@ public class TypeEnum extends Type {
 	public Expression defaultInit(SemanticContext context) {
 		// Initialize to first member of enum
 		Expression e;
-	    e = new IntegerExp(sym.defaultval, this);
+	    e = new IntegerExp(Loc.ZERO, sym.defaultval, this);
 	    return e;
 	}
 

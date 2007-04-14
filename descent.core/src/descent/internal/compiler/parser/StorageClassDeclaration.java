@@ -33,9 +33,9 @@ public class StorageClassDeclaration extends AttribDeclaration {
 	public Modifier modifier;
 	public List<Modifier> modifiers;
 
-	public StorageClassDeclaration(int stc, List<Dsymbol> decl,
+	public StorageClassDeclaration(Loc loc, int stc, List<Dsymbol> decl,
 			Modifier modifier, boolean single) {
-		super(decl);
+		super(loc, decl);
 		this.stc = stc;
 		this.single = single;
 		this.modifier = modifier;
@@ -72,7 +72,7 @@ public class StorageClassDeclaration extends AttribDeclaration {
 		StorageClassDeclaration scd;
 
 		Assert.isNotNull(s);
-		scd = new StorageClassDeclaration(stc, Dsymbol.arraySyntaxCopy(decl),
+		scd = new StorageClassDeclaration(loc, stc, Dsymbol.arraySyntaxCopy(decl),
 				modifier, single);
 		return scd;
 	}

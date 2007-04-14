@@ -6,7 +6,8 @@ public class ScopeStatement extends Statement {
 	
 	public Statement statement;
 
-    public ScopeStatement(Statement s) {
+    public ScopeStatement(Loc loc, Statement s) {
+    	super(loc);
     	this.statement = s;
     }
     
@@ -17,13 +18,13 @@ public class ScopeStatement extends Statement {
 		if (statement != null) {
 			List<Statement> a;
 
-			sym = new ScopeDsymbol();
+			sym = new ScopeDsymbol(loc);
 			sym.parent = sc.scopesym;
 			sc = sc.push(sym);
 
 			a = statement.flatten(sc);
 			if (a != null) {
-				statement = new CompoundStatement(a);
+				statement = new CompoundStatement(loc, a);
 			}
 
 			statement = statement.semantic(sc, context);
@@ -34,7 +35,7 @@ public class ScopeStatement extends Statement {
 
 				statement.scopeCode(sentry, sexception, sfinally);
 				if (sfinally[0] != null) {
-					statement = new CompoundStatement(statement, sfinally[0]);
+					statement = new CompoundStatement(loc, statement, sfinally[0]);
 				}
 			}
 

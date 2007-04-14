@@ -7,7 +7,8 @@ public class ModifierDeclaration extends Dsymbol  {
 	public final Modifier modifier;
 	public final List<Dsymbol> declarations;
 
-	public ModifierDeclaration(Modifier modifier, List<Dsymbol> declarations) {
+	public ModifierDeclaration(Loc loc, Modifier modifier, List<Dsymbol> declarations) {
+		super(loc);
 		this.modifier = modifier;
 		this.declarations = declarations;		
 	}

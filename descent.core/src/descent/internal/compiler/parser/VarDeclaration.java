@@ -33,12 +33,12 @@ public class VarDeclaration extends Declaration {
 
 	// (NULL if value not determinable)
 
-	public VarDeclaration(Type type, Identifier ident, Initializer init) {
-		this(type, new IdentifierExp(ident), init);
+	public VarDeclaration(Loc loc, Type type, Identifier ident, Initializer init) {
+		this(loc, type, new IdentifierExp(Loc.ZERO, ident), init);
 	}
 
-	public VarDeclaration(Type type, IdentifierExp id, Initializer init) {
-		super(id);
+	public VarDeclaration(Loc loc, Type type, IdentifierExp id, Initializer init) {
+		super(loc, id);
 
 		Assert.isTrue(type != null || init != null);
 
@@ -73,8 +73,8 @@ public class VarDeclaration extends Declaration {
 					// delete this;
 					Expression ec;
 
-					ec = new VarExp(this);
-					e = new DeleteExp(ec);
+					ec = new VarExp(loc, this);
+					e = new DeleteExp(loc, ec);
 					e.type = Type.tvoid;
 					break;
 				}
@@ -112,7 +112,7 @@ public class VarDeclaration extends Declaration {
 		} else {
 			Expression e = type.defaultInit(context);
 			if (e != null) {
-				ei = new ExpInitializer(e);
+				ei = new ExpInitializer(loc, e);
 			} else {
 				ei = null;
 			}
@@ -210,10 +210,10 @@ public class VarDeclaration extends Declaration {
 			 */
 			storage_class &= ~STC.STCauto;
 		} else {
-			type = type.semantic(sc, context);
+			type = type.semantic(loc, sc, context);
 		}
 
-		type.checkDeprecated(sc, context);
+		type.checkDeprecated(loc, sc, context);
 		linkage = sc.linkage;
 		this.parent = sc.parent;
 		protection = sc.protection;
@@ -261,10 +261,10 @@ public class VarDeclaration extends Declaration {
 				buf.data.append("_").append(ident.ident.string).append(
 						"_field_").append(i).append("u");
 				String name = buf.extractData();
-				IdentifierExp id = new IdentifierExp(new Identifier(name,
+				IdentifierExp id = new IdentifierExp(loc, new Identifier(name,
 						TOK.TOKidentifier));
 
-				VarDeclaration v = new VarDeclaration(arg.type, id, null);
+				VarDeclaration v = new VarDeclaration(loc, arg.type, id, null);
 				v.semantic(sc, context);
 
 				if (sc.scopesym != null) {
@@ -273,10 +273,10 @@ public class VarDeclaration extends Declaration {
 					}
 				}
 
-				Expression e = new DsymbolExp(v);
+				Expression e = new DsymbolExp(loc, v);
 				exps.add(e);
 			}
-			TupleDeclaration v2 = new TupleDeclaration(ident, exps);
+			TupleDeclaration v2 = new TupleDeclaration(loc, ident, exps);
 			v2.isexp = true;
 			aliassym = v2;
 			return;
@@ -362,12 +362,12 @@ public class VarDeclaration extends Declaration {
 				&& (storage_class & (STC.STCfield | STC.STCin | STC.STCforeach)) == 0) {
 			// Provide a default initializer
 			if (type.ty == TY.Tstruct && ((TypeStruct) type).sym.zeroInit) {
-				Expression e = new IntegerExp("0", BigInteger.ZERO, Type.tint32);
+				Expression e = new IntegerExp(loc, "0", BigInteger.ZERO, Type.tint32);
 				Expression e1;
-				e1 = new VarExp(this);
-				e = new AssignExp(e1, e);
+				e1 = new VarExp(loc, this);
+				e = new AssignExp(loc, e1, e);
 				e.type = e1.type;
-				init = new ExpInitializer(e/* .type.defaultInit() */);
+				init = new ExpInitializer(loc, e/* .type.defaultInit() */);
 				return;
 			} else if (type.ty == TY.Ttypedef) {
 				TypeTypedef td = (TypeTypedef) type;
@@ -376,7 +376,7 @@ public class VarDeclaration extends Declaration {
 					ExpInitializer ie = init.isExpInitializer();
 					if (ie != null) {
 						// Make copy so we can modify it
-						init = new ExpInitializer(ie.exp);
+						init = new ExpInitializer(ie.loc, ie.exp);
 					}
 				} else {
 					init = getExpInitializer(context);
@@ -395,7 +395,7 @@ public class VarDeclaration extends Declaration {
 				if (!(ne.newargs != null && ne.newargs.size() > 0)) {
 					ne.onstack = true;
 					onstack = 1;
-					if (type.isBaseOf(ne.newtype.semantic(sc, context), null)) {
+					if (type.isBaseOf(ne.newtype.semantic(loc, sc, context), null)) {
 						onstack = 2;
 					}
 				}
@@ -423,11 +423,11 @@ public class VarDeclaration extends Declaration {
 								return;
 							}
 						}
-						ei = new ExpInitializer(e);
+						ei = new ExpInitializer(init.loc, e);
 						init = ei;
 					}
 
-					e1 = new VarExp(this);
+					e1 = new VarExp(loc, this);
 
 					t = type.toBasetype(context);
 					if (t.ty == TY.Tsarray) {
@@ -442,22 +442,22 @@ public class VarDeclaration extends Declaration {
 							}
 							if (t.next.toBasetype(context).ty == TY.Tbit) {
 								// t.size() gives size in bytes, convert to bits
-								dim *= t.size() * 8;
+								dim *= t.size(loc) * 8;
 							} else {
 								dim *= ((TypeSArray) t).dim.toInteger(context)
 										.intValue();
 							}
-							e1.type = new TypeSArray(t.next, new IntegerExp(
+							e1.type = new TypeSArray(t.next, new IntegerExp(loc, 
 									"0", dim, Type.tindex));
 						}
-						e1 = new SliceExp(e1, null, null);
+						e1 = new SliceExp(loc, e1, null, null);
 					} else if (t.ty == TY.Tstruct) {
 						ei.exp = ei.exp.semantic(sc, context);
 						if (ei.exp.implicitConvTo(type, context) == MATCH.MATCHnomatch) {
-							ei.exp = new CastExp(ei.exp, type);
+							ei.exp = new CastExp(loc, ei.exp, type);
 						}
 					}
-					ei.exp = new AssignExp(e1, ei.exp);
+					ei.exp = new AssignExp(loc, e1, ei.exp);
 					ei.exp = ei.exp.semantic(sc, context);
 					ei.exp.optimize(ASTNode.WANTvalue);
 				} else {
@@ -513,7 +513,7 @@ public class VarDeclaration extends Declaration {
 				// init.isExpInitializer().exp.dump(0);
 			}
 
-			sv = new VarDeclaration(type != null ? type.syntaxCopy() : null,
+			sv = new VarDeclaration(loc, type != null ? type.syntaxCopy() : null,
 					ident, init);
 			sv.storage_class = storage_class;
 		}

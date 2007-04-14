@@ -6,7 +6,8 @@ public class LabelStatement extends Statement {
 	public Statement statement;
 	public boolean isReturnLabel;
 
-	public LabelStatement(IdentifierExp ident, Statement statement) {
+	public LabelStatement(Loc loc, IdentifierExp ident, Statement statement) {
+		super(loc);
 		this.ident = ident;
 		this.statement = statement;
 		this.start = ident.start;

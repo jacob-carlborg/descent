@@ -4,8 +4,8 @@ import java.util.List;
 
 public class AsmBlock extends CompoundStatement {
 
-	public AsmBlock(List<Statement> statements) {
-		super(statements);
+	public AsmBlock(Loc loc, List<Statement> statements) {
+		super(loc, statements);
 	}
 	
 	@Override

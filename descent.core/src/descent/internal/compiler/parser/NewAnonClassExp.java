@@ -9,9 +9,9 @@ public class NewAnonClassExp extends Expression {
 	public ClassDeclaration cd;
 	public List<Expression> arguments;
 
-	public NewAnonClassExp(Expression thisexp, List<Expression> newargs,
+	public NewAnonClassExp(Loc loc, Expression thisexp, List<Expression> newargs,
 			ClassDeclaration cd, List<Expression> arguments) {
-		super(TOK.TOKnewanonclass);
+		super(loc, TOK.TOKnewanonclass);
 		this.thisexp = thisexp;
 		this.newargs = newargs;
 		this.cd = cd;
@@ -30,18 +30,18 @@ public class NewAnonClassExp extends Expression {
 
 	@Override
 	public Expression semantic(Scope sc, SemanticContext context) {
-		Expression d = new DeclarationExp(cd);
+		Expression d = new DeclarationExp(loc, cd);
 		d = d.semantic(sc, context);
 
-		Expression n = new NewExp(thisexp, newargs, cd.type, arguments);
+		Expression n = new NewExp(loc, thisexp, newargs, cd.type, arguments);
 
-		Expression c = new CommaExp(d, n);
+		Expression c = new CommaExp(loc, d, n);
 		return c.semantic(sc, context);
 	}
 
 	@Override
 	public Expression syntaxCopy() {
-		return new NewAnonClassExp(thisexp != null ? thisexp.syntaxCopy()
+		return new NewAnonClassExp(loc, thisexp != null ? thisexp.syntaxCopy()
 				: null, arraySyntaxCopy(newargs), (ClassDeclaration) cd
 				.syntaxCopy(null), arraySyntaxCopy(arguments));
 	}

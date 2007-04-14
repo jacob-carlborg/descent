@@ -4,8 +4,8 @@ public class TypeInstance extends TypeQualified {
 
 	public TemplateInstance tempinst;
 
-	public TypeInstance(TemplateInstance tempinst) {
-		super(TY.Tinstance);
+	public TypeInstance(Loc loc, TemplateInstance tempinst) {
+		super(loc, TY.Tinstance);
 		this.tempinst = tempinst;
 	}
 	

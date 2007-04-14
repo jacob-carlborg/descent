@@ -6,11 +6,11 @@ public class DelegateExp extends UnaExp {
 
 	public FuncDeclaration func;
 
-	public DelegateExp(Expression e, FuncDeclaration func) {
-		super(TOK.TOKdelegate, e);
-		this.func = func;
+	public DelegateExp(Loc loc, Expression e, FuncDeclaration f) {
+		super(loc, TOK.TOKdelegate, e);
+		this.func = f;
 	}
-	
+
 	@Override
 	public Expression castTo(Scope sc, Type t, SemanticContext context) {
 		Type tb;
@@ -31,14 +31,16 @@ public class DelegateExp extends UnaExp {
 						int[] offset = { 0 };
 						if (f.tintro != null
 								&& f.tintro.next.isBaseOf(f.type.next, offset)
-								&& offset[0] != 0)
+								&& offset[0] != 0) {
 							error("cannot form delegate due to covariant return type");
-						e = new DelegateExp(e1, f);
+						}
+						e = new DelegateExp(loc, e1, f);
 						e.type = t;
 						return e;
 					}
-					if (func.tintro != null)
+					if (func.tintro != null) {
 						error("cannot form delegate due to covariant return type");
+					}
 				}
 			}
 			e = super.castTo(sc, t, context);
@@ -47,8 +49,9 @@ public class DelegateExp extends UnaExp {
 
 			if (func.tintro != null
 					&& func.tintro.next.isBaseOf(func.type.next, offset)
-					&& offset[0] != 0)
+					&& offset[0] != 0) {
 				error("cannot form delegate due to covariant return type");
+			}
 		}
 		e.type = t;
 		return e;
@@ -79,6 +82,63 @@ public class DelegateExp extends UnaExp {
 			}
 		}
 		return result;
+	}
+
+	@Override
+	public Expression semantic(Scope sc, SemanticContext context) {
+		if (type == null) {
+			e1 = e1.semantic(sc, context);
+			type = new TypeDelegate(func.type);
+			type = type.semantic(loc, sc, context);
+			//	-----------------
+			/* For func, we need to get the
+			 * right 'this' pointer if func is in an outer class, but our
+			 * existing 'this' pointer is in an inner class.
+			 * This code is analogous to that used for variables
+			 * in DotVarExp::semantic().
+			 */
+			AggregateDeclaration ad = func.toParent().isAggregateDeclaration();
+
+			boolean loop = true;
+			L10: while (loop) {
+				loop = false;
+				Type t = e1.type;
+				if (func.needThis()
+						&& ad != null
+						&& !(t.ty == Tpointer && t.next.ty == Tstruct && ((TypeStruct) t.next).sym == ad)
+						&& !(t.ty == Tstruct && ((TypeStruct) t).sym == ad)) {
+					ClassDeclaration cd = ad.isClassDeclaration();
+					ClassDeclaration tcd = t.isClassHandle();
+
+					if (cd == null || tcd == null
+							|| !(tcd == cd || cd.isBaseOf(tcd, null, context))) {
+						if (tcd != null && tcd.isNested()) { // Try again with outer scope
+
+							e1 = new DotVarExp(loc, e1, tcd.vthis);
+							e1 = e1.semantic(sc, context);
+							// goto L10;
+							loop = true;
+							continue L10;
+						}
+						error("this for %s needs to be type %s not type %s",
+								func.toChars(), ad.toChars(), t.toChars());
+					}
+				}
+			}
+			//	-----------------
+		}
+		return this;
+	}
+
+	@Override
+	public void toCBuffer(OutBuffer buf, HdrGenState hgs,
+			SemanticContext context) {
+		buf.writeByte('&');
+		if (!func.isNested()) {
+			expToCBuffer(buf, hgs, e1, PREC.PREC_primary, context);
+			buf.writeByte('.');
+		}
+		buf.writestring(func.toChars());
 	}
 
 }

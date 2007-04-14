@@ -4,8 +4,8 @@ public class FuncExp extends Expression {
 
 	public FuncLiteralDeclaration fd;
 
-	public FuncExp(FuncLiteralDeclaration fd) {
-		super(TOK.TOKfunction);
+	public FuncExp(Loc loc, FuncLiteralDeclaration fd) {
+		super(loc, TOK.TOKfunction);
 		this.fd = fd;
 	}
 
@@ -38,7 +38,7 @@ public class FuncExp extends Expression {
 			// Type is a "delegate to" or "pointer to" the function literal
 			if (fd.isNested()) {
 				type = new TypeDelegate(fd.type);
-				type = type.semantic(sc, context);
+				type = type.semantic(loc, sc, context);
 			} else {
 				type = fd.type.pointerTo(context);
 			}
@@ -48,7 +48,7 @@ public class FuncExp extends Expression {
 	
 	@Override
 	public Expression syntaxCopy() {
-		return new FuncExp((FuncLiteralDeclaration) fd.syntaxCopy(null));
+		return new FuncExp(loc, (FuncLiteralDeclaration) fd.syntaxCopy(null));
 	}
 	
 	@Override

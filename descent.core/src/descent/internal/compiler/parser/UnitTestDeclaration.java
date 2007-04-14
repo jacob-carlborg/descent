@@ -2,8 +2,8 @@ package descent.internal.compiler.parser;
 
 public class UnitTestDeclaration extends FuncDeclaration {
 	
-	public UnitTestDeclaration() {
-		super(new IdentifierExp(unitTestId()), STC.STCundefined, null);
+	public UnitTestDeclaration(Loc loc) {
+		super(loc, new IdentifierExp(Loc.ZERO, unitTestId()), STC.STCundefined, null);
 	}
 	
 	private static int unitTestId;

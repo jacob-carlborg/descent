@@ -2,8 +2,8 @@ package descent.internal.compiler.parser;
 
 public class MulExp extends BinExp {
 
-	public MulExp(Expression e1, Expression e2) {
-		super(TOK.TOKmul, e1, e2);
+	public MulExp(Loc loc, Expression e1, Expression e2) {
+		super(loc, TOK.TOKmul, e1, e2);
 	}
 	
 	@Override

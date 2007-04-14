@@ -6,7 +6,8 @@ import descent.core.compiler.IProblem;
 
 public class SuperExp extends ThisExp {
 	
-	public SuperExp() {
+	public SuperExp(Loc loc) {
+		super(loc);
 		op = TOK.TOKsuper;
 	}
 	

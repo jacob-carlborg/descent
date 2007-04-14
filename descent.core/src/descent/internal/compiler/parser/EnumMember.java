@@ -4,8 +4,8 @@ public class EnumMember extends Dsymbol {
 
 	public Expression value;
 
-	public EnumMember(IdentifierExp id, Expression value) {
-		super(id);
+	public EnumMember(Loc loc, IdentifierExp id, Expression value) {
+		super(loc, id);
 		this.value = value;
 	}
 
@@ -36,7 +36,7 @@ public class EnumMember extends Dsymbol {
 			em = (EnumMember) s;
 			em.value = e;
 		} else {
-			em = new EnumMember(ident, e);
+			em = new EnumMember(loc, ident, e);
 		}
 		return em;
 	}

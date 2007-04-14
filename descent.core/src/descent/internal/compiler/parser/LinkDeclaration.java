@@ -8,8 +8,8 @@ public class LinkDeclaration extends AttribDeclaration {
 
 	public LINK linkage;
 
-	public LinkDeclaration(LINK linkage, List<Dsymbol> decl) {
-		super(decl);
+	public LinkDeclaration(Loc loc, LINK linkage, List<Dsymbol> decl) {
+		super(loc, decl);
 		this.linkage = linkage;
 	}
 
@@ -53,7 +53,7 @@ public class LinkDeclaration extends AttribDeclaration {
 		LinkDeclaration ld;
 
 		Assert.isNotNull(s);
-		ld = new LinkDeclaration(linkage, Dsymbol.arraySyntaxCopy(decl));
+		ld = new LinkDeclaration(loc, linkage, Dsymbol.arraySyntaxCopy(decl));
 		return ld;
 	}
 

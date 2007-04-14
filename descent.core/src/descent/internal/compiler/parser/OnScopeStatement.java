@@ -6,7 +6,8 @@ public class OnScopeStatement extends Statement {
 	public TOK tok;
 	public Statement statement;
 
-	public OnScopeStatement(TOK tok, Statement statement) {
+	public OnScopeStatement(Loc loc, TOK tok, Statement statement) {
+		super(loc);
 		this.tok = tok;
 		this.statement = statement;		
 	}

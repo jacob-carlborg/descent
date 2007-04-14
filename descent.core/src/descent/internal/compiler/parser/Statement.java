@@ -4,7 +4,12 @@ import java.util.List;
 
 public abstract class Statement extends ASTNode {
 	
+	public Loc loc;
 	public boolean incontract;
+	
+	public Statement(Loc loc) {
+		this.loc = loc;
+	}
 	
 	public Statement semantic(Scope sc, SemanticContext context) {
 		return this;

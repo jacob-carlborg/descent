@@ -7,11 +7,12 @@ public class TryFinallyStatement extends Statement {
 	public Statement finalbody;
 	public boolean isTryCatchFinally;
 	
-	public TryFinallyStatement(Statement body, Statement finalbody) {
-		this(body, finalbody, false);		
+	public TryFinallyStatement(Loc loc, Statement body, Statement finalbody) {
+		this(loc, body, finalbody, false);		
 	}
 
-	public TryFinallyStatement(Statement body, Statement finalbody, boolean isTryCatchFinally) {
+	public TryFinallyStatement(Loc loc, Statement body, Statement finalbody, boolean isTryCatchFinally) {
+		super(loc);
 		this.body = body;
 		this.finalbody = finalbody;
 		this.isTryCatchFinally = isTryCatchFinally;		

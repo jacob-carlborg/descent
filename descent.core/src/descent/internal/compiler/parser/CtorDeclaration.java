@@ -9,8 +9,8 @@ public class CtorDeclaration extends FuncDeclaration {
 	public List<Argument> arguments;
 	public int varargs;
 	
-	public CtorDeclaration(List<Argument> arguments, int varags) {
-		super(new IdentifierExp(Id.ctor), STC.STCundefined, null);
+	public CtorDeclaration(Loc loc, List<Argument> arguments, int varags) {
+		super(loc, new IdentifierExp(Loc.ZERO, Id.ctor), STC.STCundefined, null);
 		this.arguments = arguments;
 		this.varargs = varags;
 	}
@@ -41,7 +41,7 @@ public class CtorDeclaration extends FuncDeclaration {
 		type = new TypeFunction(arguments, tret, varargs, LINK.LINKd);
 
 		sc.flags |= Scope.SCOPEctor;
-		type = type.semantic(sc, context);
+		type = type.semantic(loc, sc, context);
 		sc.flags &= ~Scope.SCOPEctor;
 
 		// Append:
@@ -51,12 +51,11 @@ public class CtorDeclaration extends FuncDeclaration {
 			Expression e;
 			Statement s;
 
-			// TODO semantic, mark as synthetic, make a test to verify it
-			e = new ThisExp();
+			e = new ThisExp(loc);
 			e.synthetic = true;
-			s = new ReturnStatement(e);
+			s = new ReturnStatement(loc, e);
 			s.synthetic = true;
-			fbody = new CompoundStatement(fbody, s);
+			fbody = new CompoundStatement(loc, fbody, s);
 			fbody.synthetic = true;
 		}
 

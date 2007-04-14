@@ -13,15 +13,15 @@ public class StringExp extends Expression {
 	public boolean committed; // !=0 if type is committed
 	public int len;
 
-	public StringExp(String string) {
-		super(TOK.TOKstring);
+	public StringExp(Loc loc, String string) {
+		super(loc, TOK.TOKstring);
 		this.sz = 1;
 		this.committed = false;
 		this.postfix = 0;
 	}
 
-	public StringExp(String string, char postfix) {
-		super(TOK.TOKstring);
+	public StringExp(Loc loc, String string, char postfix) {
+		super(loc, TOK.TOKstring);
 		this.string = string;
 		this.sz = 1;
 		this.committed = false;

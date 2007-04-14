@@ -6,7 +6,8 @@ public class GotoStatement extends Statement {
 	public LabelDsymbol label;
 	public TryFinallyStatement tf;
 
-	public GotoStatement(IdentifierExp ident) {
+	public GotoStatement(Loc loc, IdentifierExp ident) {
+		super(loc);
 		this.ident = ident;		
 	}
 	

@@ -4,8 +4,8 @@ public class TypeDotIdExp extends Expression {
 
 	public IdentifierExp ident;
 
-	public TypeDotIdExp(Type type, IdentifierExp ident) {
-		super(TOK.TOKtypedot);
+	public TypeDotIdExp(Loc loc, Type type, IdentifierExp ident) {
+		super(loc, TOK.TOKtypedot);
 		this.type = type;
 		this.ident = ident;
 	}
@@ -19,14 +19,14 @@ public class TypeDotIdExp extends Expression {
 	public Expression semantic(Scope sc, SemanticContext context) {
 		Expression e;
 
-		e = new DotIdExp(new TypeExp(type), ident);
+		e = new DotIdExp(loc, new TypeExp(loc, type), ident);
 		e = e.semantic(sc, context);
 		return e;
 	}
 	
 	@Override
 	public Expression syntaxCopy() {
-		TypeDotIdExp te = new TypeDotIdExp(type.syntaxCopy(), ident);
+		TypeDotIdExp te = new TypeDotIdExp(loc, type.syntaxCopy(), ident);
 		return te;
 	}
 

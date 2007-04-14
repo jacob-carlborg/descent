@@ -1,13 +1,13 @@
 package descent.internal.compiler.parser;
 
-import static descent.internal.compiler.parser.Expression.*;
 
 public class WhileStatement extends Statement {
 	
 	public Expression condition;
 	public Statement body;
 	
-	public WhileStatement(Expression c, Statement b) {
+	public WhileStatement(Loc loc, Expression c, Statement b) {
+		super(loc);
 		this.condition = c;
 		this.body = b;
 	}

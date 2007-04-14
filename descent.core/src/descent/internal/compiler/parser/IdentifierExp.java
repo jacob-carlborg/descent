@@ -9,17 +9,22 @@ public class IdentifierExp extends Expression {
 
 	public Identifier ident;
 
-	public IdentifierExp() {
-		super(TOK.TOKidentifier);
+	public IdentifierExp(Loc loc) {
+		super(loc, TOK.TOKidentifier);
+	}
+	
+	public IdentifierExp(Loc loc, IdentifierExp ident) {
+		this(loc);
+		this.ident = ident.ident;
 	}
 
-	public IdentifierExp(Identifier ident) {
-		this();
+	public IdentifierExp(Loc loc, Identifier ident) {
+		this(loc);
 		this.ident = ident;
 	}
 
-	public IdentifierExp(Token token) {
-		this(token.ident);
+	public IdentifierExp(Loc loc, Token token) {
+		this(loc, token.ident);
 		this.start = token.ptr;
 		this.length = token.len;
 	}
@@ -49,7 +54,7 @@ public class IdentifierExp extends Expression {
 		Dsymbol s;
 		Dsymbol[] scopesym = { null };
 
-		s = sc.search(this, scopesym, context);
+		s = sc.search(loc, this, scopesym, context);
 		if (s != null) {
 			Expression e;
 			WithScopeSymbol withsym;
@@ -61,14 +66,14 @@ public class IdentifierExp extends Expression {
 
 				// Same as wthis.ident
 				if (s.needThis() || s.isTemplateDeclaration() != null) {
-					e = new VarExp(withsym.withstate.wthis);
-					e = new DotIdExp(e, this);
+					e = new VarExp(loc, withsym.withstate.wthis);
+					e = new DotIdExp(loc, e, this);
 				} else {
 					Type t = withsym.withstate.wthis.type;
 					if (t.ty == TY.Tpointer) {
 						t = t.next;
 					}
-					e = new TypeDotIdExp(t, this);
+					e = new TypeDotIdExp(loc, t, this);
 				}
 			} else {
 				if (s.parent == null
@@ -99,12 +104,12 @@ public class IdentifierExp extends Expression {
 							tempdecl = tempdecl.overroot; // then get the
 							// start
 						}
-						e = new TemplateExp(tempdecl);
+						e = new TemplateExp(loc, tempdecl);
 						e = e.semantic(sc, context);
 						return e;
 					}
 				}
-				e = new DsymbolExp(s);
+				e = new DsymbolExp(loc, s);
 			}
 			return e.semantic(sc, context);
 		}

@@ -4,8 +4,8 @@ public class ScopeExp extends Expression {
 
 	public ScopeDsymbol sds;
 
-	public ScopeExp(ScopeDsymbol pkg) {
-		super(TOK.TOKimport);
+	public ScopeExp(Loc loc, ScopeDsymbol pkg) {
+		super(loc, TOK.TOKimport);
 		this.sds = pkg;
 	}
 
@@ -35,10 +35,10 @@ public class ScopeExp extends Expression {
 
 					if (ti.withsym != null) {
 						// Same as wthis.s
-						e = new VarExp(ti.withsym.withstate.wthis);
-						e = new DotVarExp(e, s.isDeclaration());
+						e = new VarExp(loc, ti.withsym.withstate.wthis);
+						e = new DotVarExp(loc, e, s.isDeclaration());
 					} else {
-						e = new DsymbolExp(s);
+						e = new DsymbolExp(loc, s);
 					}
 					e = e.semantic(sc, context);
 					return e;
@@ -60,7 +60,7 @@ public class ScopeExp extends Expression {
 
 	@Override
 	public Expression syntaxCopy() {
-		ScopeExp se = new ScopeExp((ScopeDsymbol) sds.syntaxCopy(null));
+		ScopeExp se = new ScopeExp(loc, (ScopeDsymbol) sds.syntaxCopy(null));
 		return se;
 	}
 

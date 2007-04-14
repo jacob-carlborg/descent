@@ -7,7 +7,8 @@ public class AsmStatement extends Statement {
 
 	public List<Token> toklist;
 
-	public AsmStatement(List<Token> toklist) {
+	public AsmStatement(Loc loc, List<Token> toklist) {
+		super(loc);
 		this.toklist = toklist;		
 	}
 	

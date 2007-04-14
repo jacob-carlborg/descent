@@ -7,8 +7,8 @@ public class TypePointer extends Type {
 	}
 	
 	@Override
-	public Type semantic(Scope sc, SemanticContext context) {
-	    Type n = next.semantic(sc, context);
+	public Type semantic(Loc loc, Scope sc, SemanticContext context) {
+	    Type n = next.semantic(loc, sc, context);
 	    if (n != next) {
 	    	deco = null;
 	    }
@@ -19,7 +19,7 @@ public class TypePointer extends Type {
 	@Override
 	public Expression defaultInit(SemanticContext context) {
 		Expression e;
-	    e = new NullExp();
+	    e = new NullExp(Loc.ZERO);
 	    e.type = this;
 	    return e;
 	}

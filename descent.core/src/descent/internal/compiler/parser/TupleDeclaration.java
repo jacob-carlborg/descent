@@ -11,8 +11,8 @@ public class TupleDeclaration extends Declaration {
 	public boolean isexp; // true: expression tuple
 	public TypeTuple tupletype; // !=NULL if this is a type tuple
 
-	public TupleDeclaration(IdentifierExp ident, List<ASTNode> objects) {
-		super(ident);
+	public TupleDeclaration(Loc loc, IdentifierExp ident, List<ASTNode> objects) {
+		super(loc, ident);
 		this.type = null;
 		this.objects = objects;
 		this.isexp = false;

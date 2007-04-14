@@ -6,8 +6,8 @@ public class TupleExp extends Expression {
 
 	public List<Expression> exps;
 
-	public TupleExp(List<Expression> exps) {
-		super(TOK.TOKtuple);
+	public TupleExp(Loc loc, List<Expression> exps) {
+		super(loc, TOK.TOKtuple);
 		this.exps = exps;
 		this.type = null;
 	}
@@ -105,7 +105,7 @@ public class TupleExp extends Expression {
 
 	@Override
 	public Expression syntaxCopy() {
-		return new TupleExp(arraySyntaxCopy(exps));
+		return new TupleExp(loc, arraySyntaxCopy(exps));
 	}
 
 	@Override

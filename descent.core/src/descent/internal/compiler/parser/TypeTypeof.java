@@ -6,8 +6,8 @@ public class TypeTypeof extends TypeQualified {
 	public int typeofStart;
 	public int typeofLength;
 
-	public TypeTypeof(Expression exp) {
-		super(TY.Ttypeof);
+	public TypeTypeof(Loc loc, Expression exp) {
+		super(loc, TY.Ttypeof);
 		this.exp = exp;		
 	}
 	

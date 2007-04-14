@@ -6,7 +6,8 @@ public class WithStatement extends Statement {
 	public Statement body;
 	public VarDeclaration wthis;
 
-	public WithStatement(Expression exp, Statement body) {
+	public WithStatement(Loc loc, Expression exp, Statement body) {
+		super(loc);
 		this.exp = exp;
 		this.body = body;
 	}

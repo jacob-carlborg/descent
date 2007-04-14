@@ -12,8 +12,8 @@ public class DsymbolExp extends Expression {
 
 	public Dsymbol s;
 
-	public DsymbolExp(Dsymbol s) {
-		super(TOK.TOKdsymbol);
+	public DsymbolExp(Loc loc, Dsymbol s) {
+		super(loc, TOK.TOKdsymbol);
 		this.s = s;
 	}
 
@@ -64,7 +64,7 @@ public class DsymbolExp extends Expression {
 
 					DotVarExp de;
 
-					de = new DotVarExp(new ThisExp(), s.isDeclaration());
+					de = new DotVarExp(loc, new ThisExp(loc), s.isDeclaration());
 					return de.semantic(sc, context);
 				}
 			}
@@ -98,30 +98,28 @@ public class DsymbolExp extends Expression {
 								e = e.semantic(sc, context);
 							}
 							e = e.implicitCastTo(sc, type, context);
-							// TODO semantic
-							// e.loc = loc;
+							e.loc = loc;
 							return e;
 						}
 					} else {
 						e = type.defaultInit(context);
-						// TODO semantic
-						//e.loc = loc;
+						e.loc = loc;
 						return e;
 					}
 				}
-				e = new VarExp(v);
+				e = new VarExp(loc, v);
 				e.type = type;
 				e = e.semantic(sc, context);
 				return e.deref();
 			}
 			fld = s.isFuncLiteralDeclaration();
 			if (fld != null) {
-				e = new FuncExp(fld);
+				e = new FuncExp(loc, fld);
 				return e.semantic(sc, context);
 			}
 			f = s.isFuncDeclaration();
 			if (f != null) {
-				return new VarExp(f);
+				return new VarExp(loc, f);
 			}
 			cd = s.isClassDeclaration();
 			if (cd != null && thiscd != null
@@ -129,34 +127,34 @@ public class DsymbolExp extends Expression {
 				// We need to add an implicit 'this' if cd is this class or a base class.
 				DotTypeExp dte;
 
-				dte = new DotTypeExp(new ThisExp(), s);
+				dte = new DotTypeExp(loc, new ThisExp(loc), s);
 				return dte.semantic(sc, context);
 			}
 			imp = s.isImport();
 			if (imp != null) {
 				ScopeExp ie;
 
-				ie = new ScopeExp(imp.pkg);
+				ie = new ScopeExp(loc, imp.pkg);
 				return ie.semantic(sc, context);
 			}
 			pkg = s.isPackage();
 			if (pkg != null) {
 				ScopeExp ie;
 
-				ie = new ScopeExp(pkg);
+				ie = new ScopeExp(loc, pkg);
 				return ie.semantic(sc, context);
 			}
 			Module mod = s.isModule();
 			if (mod != null) {
 				ScopeExp ie;
 
-				ie = new ScopeExp(mod);
+				ie = new ScopeExp(loc, mod);
 				return ie.semantic(sc, context);
 			}
 
 			t = s.getType();
 			if (t != null) {
-				return new TypeExp(t);
+				return new TypeExp(loc, t);
 			}
 
 			TupleDeclaration tup = s.isTupleDeclaration();
@@ -173,7 +171,7 @@ public class DsymbolExp extends Expression {
 						exps.add(e2);
 					}
 				}
-				e = new TupleExp(exps);
+				e = new TupleExp(loc, exps);
 				e = e.semantic(sc, context);
 				return e;
 			}
@@ -189,14 +187,14 @@ public class DsymbolExp extends Expression {
 					loop = true;
 					continue Lagain;
 				}
-				e = new ScopeExp(ti);
+				e = new ScopeExp(loc, ti);
 				e = e.semantic(sc, context);
 				return e;
 			}
 
 			TemplateDeclaration td = s.isTemplateDeclaration();
 			if (td != null) {
-				e = new TemplateExp(td);
+				e = new TemplateExp(loc, td);
 				e = e.semantic(sc, context);
 				return e;
 			}

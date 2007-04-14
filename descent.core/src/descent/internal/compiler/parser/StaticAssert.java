@@ -8,7 +8,8 @@ public class StaticAssert extends Dsymbol {
 	public Expression exp;
 	public Expression msg;
 
-	public StaticAssert(Expression exp, Expression msg) {
+	public StaticAssert(Loc loc, Expression exp, Expression msg) {
+		super(loc);
 		this.exp = exp;
 		this.msg = msg;		
 	}

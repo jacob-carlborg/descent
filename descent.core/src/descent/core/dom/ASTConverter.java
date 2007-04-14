@@ -633,7 +633,7 @@ public class ASTConverter {
 	
 	public descent.core.dom.TypeidExpression convert(TypeidExp a) {
 		descent.core.dom.TypeidExpression b = new descent.core.dom.TypeidExpression(ast);
-		b.setType(convert(a.type));
+		b.setType(convert(a.typeidType));
 		b.setSourceRange(a.start, a.length);
 		return b;
 	}
@@ -688,8 +688,8 @@ public class ASTConverter {
 		if (a.e1 != null) {
 			b.setExpression(convert(a.e1));
 		}
-		if (a.tempinst != null) {
-			b.setTemplateType((TemplateType) convert(a.tempinst));
+		if (a.ti != null) {
+			b.setTemplateType((TemplateType) convert(a.ti));
 		}
 		b.setSourceRange(a.start, a.length);
 		return b;

@@ -21,8 +21,8 @@ public class EnumDeclaration extends ScopeDsymbol {
 	BigInteger minval;
 	BigInteger defaultval; // default initializer
 
-	public EnumDeclaration(IdentifierExp id, Type memtype) {
-		super(id);
+	public EnumDeclaration(Loc loc, IdentifierExp id, Type memtype) {
+		super(loc, id);
 		this.type = new TypeEnum(this);
 		this.memtype = memtype;
 		this.maxval = BigInteger.ZERO;
@@ -86,7 +86,7 @@ public class EnumDeclaration extends ScopeDsymbol {
 		}
 
 		parent = sc.scopesym;
-		memtype = memtype.semantic(sc, context);
+		memtype = memtype.semantic(loc, sc, context);
 
 		/*
 		 * Check to see if memtype is forward referenced
@@ -244,7 +244,7 @@ public class EnumDeclaration extends ScopeDsymbol {
 						throw new IllegalStateException();
 					}
 				}
-				e = new IntegerExp(number.toString(), number, t);
+				e = new IntegerExp(em.loc, number.toString(), number, t);
 				e.synthetic = true;
 			}
 			em.value = e;
@@ -303,7 +303,7 @@ public class EnumDeclaration extends ScopeDsymbol {
 			ed = (EnumDeclaration) s;
 			ed.memtype = t;
 		} else {
-			ed = new EnumDeclaration(ident, t);
+			ed = new EnumDeclaration(loc, ident, t);
 		}
 		super.syntaxCopy(ed);
 		return ed;

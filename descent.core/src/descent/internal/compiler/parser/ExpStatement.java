@@ -4,7 +4,8 @@ public class ExpStatement extends Statement {
 	
 	public Expression exp;
 
-	public ExpStatement(Expression exp) {
+	public ExpStatement(Loc loc, Expression exp) {
+		super(loc);
 		this.exp = exp;		
 	}
 	

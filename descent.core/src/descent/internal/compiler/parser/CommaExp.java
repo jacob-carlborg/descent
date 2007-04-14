@@ -2,8 +2,8 @@ package descent.internal.compiler.parser;
 
 public class CommaExp extends BinExp {
 
-	public CommaExp(Expression e1, Expression e2) {
-		super(TOK.TOKcomma, e1, e2);
+	public CommaExp(Loc loc, Expression e1, Expression e2) {
+		super(loc, TOK.TOKcomma, e1, e2);
 	}
 	
 	@Override

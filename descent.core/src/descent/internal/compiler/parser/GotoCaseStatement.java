@@ -4,7 +4,8 @@ public class GotoCaseStatement extends Statement {
 
 	public Expression exp;
 
-	public GotoCaseStatement(Expression exp) {
+	public GotoCaseStatement(Loc loc, Expression exp) {
+		super(loc);
 		this.exp = exp;		
 	}
 	

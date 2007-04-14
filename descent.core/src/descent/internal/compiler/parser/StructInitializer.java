@@ -8,6 +8,10 @@ public class StructInitializer extends Initializer {
 	public List<IdentifierExp> field;
 	public List<Initializer> value;
 	
+	public StructInitializer(Loc loc) {
+		super(loc);
+	}
+	
 	public void addInit(IdentifierExp field, Initializer value) {
 		if (this.field == null) {
 			this.field = new ArrayList<IdentifierExp>();

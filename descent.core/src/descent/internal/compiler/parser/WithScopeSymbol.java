@@ -4,7 +4,8 @@ public class WithScopeSymbol extends ScopeDsymbol {
 	
 	public WithStatement withstate;
 
-	public WithScopeSymbol(WithStatement withstate) {
+	public WithScopeSymbol(Loc loc, WithStatement withstate) {
+		super(loc);
 		this.withstate = withstate;
 	}
 	
@@ -14,8 +15,8 @@ public class WithScopeSymbol extends ScopeDsymbol {
 	}
 	
 	@Override
-	public Dsymbol search(Identifier ident, int flags, SemanticContext context) {
-		return withstate.exp.type.toDsymbol(null, context).search(ident, 0, context);
+	public Dsymbol search(Loc loc, Identifier ident, int flags, SemanticContext context) {
+		return withstate.exp.type.toDsymbol(null, context).search(loc, ident, 0, context);
 	}
 
 }

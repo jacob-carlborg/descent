@@ -2,8 +2,8 @@ package descent.internal.compiler.parser;
 
 public class DecrementExp extends MinAssignExp {
 
-	public DecrementExp(Expression e1) {
-		super(e1, null);
+	public DecrementExp(Loc loc, Expression e1) {
+		super(loc, e1, null);
 	}
 	
 	@Override

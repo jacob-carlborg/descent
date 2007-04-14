@@ -2,8 +2,8 @@ package descent.internal.compiler.parser;
 
 public class ShrExp extends BinExp {
 
-	public ShrExp(Expression e1, Expression e2) {
-		super(TOK.TOKshr, e1, e2);
+	public ShrExp(Loc loc, Expression e1, Expression e2) {
+		super(loc, TOK.TOKshr, e1, e2);
 	}
 	
 	@Override

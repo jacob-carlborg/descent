@@ -9,7 +9,7 @@ public class TypeDArray extends Type {
 	@Override
 	public Expression defaultInit(SemanticContext context) {
 		Expression e;
-	    e = new NullExp();
+	    e = new NullExp(Loc.ZERO);
 	    e.type = this;
 	    return e;
 	}

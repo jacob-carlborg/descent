@@ -8,8 +8,8 @@ public class ArrayLiteralExp extends Expression {
 
 	public List<Expression> elements;
 
-	public ArrayLiteralExp(List<Expression> elements) {
-		super(TOK.TOKarrayliteral);
+	public ArrayLiteralExp(Loc loc, List<Expression> elements) {
+		super(loc, TOK.TOKarrayliteral);
 		this.elements = elements;
 	}
 
@@ -134,14 +134,14 @@ public class ArrayLiteralExp extends Expression {
 		if (t0 == null) {
 			t0 = Type.tvoid;
 		}
-		type = new TypeSArray(t0, new IntegerExp(elements.size()));
-		type = type.semantic(sc, context);
+		type = new TypeSArray(t0, new IntegerExp(loc, elements.size()));
+		type = type.semantic(loc, sc, context);
 		return this;
 	}
 
 	@Override
 	public Expression syntaxCopy() {
-		return new ArrayLiteralExp(arraySyntaxCopy(elements));
+		return new ArrayLiteralExp(loc, arraySyntaxCopy(elements));
 	}
 
 	@Override

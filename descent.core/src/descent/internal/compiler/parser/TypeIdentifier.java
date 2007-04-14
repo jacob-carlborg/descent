@@ -6,22 +6,22 @@ public class TypeIdentifier extends TypeQualified {
 
 	public IdentifierExp ident;
 
-	public TypeIdentifier(IdentifierExp ident) {
-		super(TY.Tident);
+	public TypeIdentifier(Loc loc, IdentifierExp ident) {
+		super(loc, TY.Tident);
 		this.ident = ident;
 	}
 	
-	public TypeIdentifier(Identifier ident) {
-		this(new IdentifierExp(ident));
+	public TypeIdentifier(Loc loc, Identifier ident) {
+		this(loc, new IdentifierExp(loc, ident));
 	}
 	
 	@Override
 	public Expression toExpression() {
-		Expression e = new IdentifierExp(ident.ident);
+		Expression e = new IdentifierExp(loc, ident.ident);
 		e.setSourceRange(ident.start, ident.length);
 		if (idents != null) {
 			for(IdentifierExp id : idents) {
-				e = new DotIdExp(e, id);
+				e = new DotIdExp(loc, e, id);
 				e.setSourceRange(ident.start, id.start + id.length - ident.start);
 			}
 		}
@@ -29,13 +29,13 @@ public class TypeIdentifier extends TypeQualified {
 	}
 	
 	@Override
-	public Type semantic(Scope sc, SemanticContext context) {
+	public Type semantic(Loc loc, Scope sc, SemanticContext context) {
 		Type[] t = { null };
 		Expression[] e = { null };
 		Dsymbol[] s = { null };
 
 		// printf("TypeIdentifier::semantic(%s)\n", toChars());
-		resolve(sc, e, t, s, context);
+		resolve(loc, sc, e, t, s, context);
 		if (t[0] != null) {
 			// printf("\tit's a type %d, %s, %s\n", t.ty, t.toChars(), t.deco);
 
@@ -80,7 +80,7 @@ public class TypeIdentifier extends TypeQualified {
 
 		if (sc == null)
 			return null;
-		s = sc.search(ident, scopesym, context);
+		s = sc.search(loc, ident, scopesym, context);
 		if (s != null) {
 			s = s.toAlias(context);
 			if (idents != null) {
@@ -92,7 +92,7 @@ public class TypeIdentifier extends TypeQualified {
 						TemplateDeclaration td;
 						TemplateInstance ti = ((TemplateInstanceWrapper) id).tempinst;
 						id = (IdentifierExp) ti.idents.get(0);
-						sm = s.search(id, 0, context);
+						sm = s.search(loc, id, 0, context);
 						if (sm == null) {
 							error("template identifier %s is not a member of %s", id.toChars(), s.toChars());
 							break;
@@ -108,7 +108,7 @@ public class TypeIdentifier extends TypeQualified {
 							ti.semantic(sc, context);
 						sm = ti.toAlias(context);
 					} else
-						sm = s.search(id, 0, context);
+						sm = s.search(loc, id, 0, context);
 					s = sm;
 
 					if (s == null) // failed to find a symbol
@@ -123,12 +123,12 @@ public class TypeIdentifier extends TypeQualified {
 	}
 	
 	@Override
-	public void resolve(Scope sc, Expression[] pe, Type[] pt, Dsymbol[] ps, SemanticContext context) {
+	public void resolve(Loc loc, Scope sc, Expression[] pe, Type[] pt, Dsymbol[] ps, SemanticContext context) {
 		Dsymbol s;
 	    Dsymbol[] scopesym = { null };
 
 	    //printf("TypeIdentifier::resolve(sc = %p, idents = '%s')\n", sc, toChars());
-	    s = sc.search(ident, scopesym, context);
+	    s = sc.search(loc, ident, scopesym, context);
 	    resolveHelper(sc, s, scopesym[0], pe, pt, ps, context);
 	}
 	

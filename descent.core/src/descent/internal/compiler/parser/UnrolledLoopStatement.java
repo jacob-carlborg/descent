@@ -6,7 +6,8 @@ public class UnrolledLoopStatement extends Statement {
 	
 	public List<Statement> statements;
 
-    public UnrolledLoopStatement(List<Statement> statements) {
+    public UnrolledLoopStatement(Loc loc, List<Statement> statements) {
+    	super(loc);
     	this.statements = statements;
     }
 

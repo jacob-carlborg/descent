@@ -8,8 +8,8 @@ public class ThisExp extends Expression {
 	
 	public Declaration var;
 
-	public ThisExp() {
-		super(TOK.TOKthis);
+	public ThisExp(Loc loc) {
+		super(loc, TOK.TOKthis);
 		this.var = null;
 	}
 	

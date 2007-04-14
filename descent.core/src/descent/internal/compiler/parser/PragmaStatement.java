@@ -10,7 +10,8 @@ public class PragmaStatement extends Statement {
 	public List<Expression> args;
 	public Statement body;
 
-	public PragmaStatement(IdentifierExp ident, List<Expression> args, Statement body) {
+	public PragmaStatement(Loc loc, IdentifierExp ident, List<Expression> args, Statement body) {
+		super(loc);
 		this.ident = ident;
 		this.args = args;
 		this.body = body;

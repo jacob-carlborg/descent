@@ -8,8 +8,8 @@ public class CompileDeclaration extends AttribDeclaration {
 	public Expression exp;
 	public ScopeDsymbol sd;
 
-	public CompileDeclaration(Expression exp) {
-		super(null);
+	public CompileDeclaration(Loc loc, Expression exp) {
+		super(loc, null);
 		this.exp = exp;
 	}
 
@@ -37,6 +37,7 @@ public class CompileDeclaration extends AttribDeclaration {
 		StringExp se = (StringExp) exp;
 		se = se.toUTF8(sc);
 		Parser p = new Parser(context.ast, se.string);
+		p.loc = loc;
 		decl = p.parseDeclDefs(false);
 		if (p.token.value != TOKeof) {
 			error("incomplete mixin declaration (%s)", se.toChars());
@@ -48,7 +49,7 @@ public class CompileDeclaration extends AttribDeclaration {
 
 	@Override
 	public Dsymbol syntaxCopy(Dsymbol s) {
-		CompileDeclaration sc = new CompileDeclaration(exp.syntaxCopy());
+		CompileDeclaration sc = new CompileDeclaration(loc, exp.syntaxCopy());
 		return sc;
 	}
 

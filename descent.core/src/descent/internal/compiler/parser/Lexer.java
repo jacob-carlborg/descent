@@ -40,6 +40,7 @@ public class Lexer implements IProblemRequestor {
 	public int p;
 	public int end;
 	public char[] input;
+	public Loc loc;
 	
 	public Token token;
 	public Token prevToken = new Token();
@@ -2261,7 +2262,7 @@ public class Lexer implements IProblemRequestor {
 	    keywordsD2.put("double", TOKfloat64);
 	    keywordsD2.put("real", TOKfloat80);
 
-	    keywordsD2.put("bit", TOKbit);
+	    //keywordsD2.put("bit", TOKbit);
 	    keywordsD2.put("bool", TOKbool);
 	    keywordsD2.put("char", TOKchar);
 	    keywordsD2.put("wchar", TOKwchar);

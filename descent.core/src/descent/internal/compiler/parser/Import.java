@@ -14,7 +14,8 @@ public class Import extends Dsymbol {
 	public Module mod;
 	public Package pkg;
 	
-	public Import(List<IdentifierExp> packages, IdentifierExp id, IdentifierExp aliasId) {
+	public Import(Loc loc, List<IdentifierExp> packages, IdentifierExp id, IdentifierExp aliasId) {
+		super(loc);
 		this.packages = packages;
 		this.id = id;
 		this.aliasId = aliasId;

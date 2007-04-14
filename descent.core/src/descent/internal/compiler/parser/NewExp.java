@@ -19,9 +19,9 @@ public class NewExp extends Expression {
 	public NewDeclaration allocator; // allocator function
 	public boolean onstack; // allocate on stack
 
-	public NewExp(Expression thisexp, List<Expression> newargs, Type newtype,
+	public NewExp(Loc loc, Expression thisexp, List<Expression> newargs, Type newtype,
 			List<Expression> arguments) {
-		super(TOK.TOKnew);
+		super(loc, TOK.TOKnew);
 		this.thisexp = thisexp;
 		this.newargs = newargs;
 		this.newtype = newtype;
@@ -58,23 +58,23 @@ public class NewExp extends Expression {
 				cdthis = thisexp.type.isClassHandle();
 				if (cdthis != null) {
 					sc = sc.push(cdthis);
-					type = newtype.semantic(sc, context);
+					type = newtype.semantic(loc, sc, context);
 					sc = sc.pop();
 				} else {
 					error(
 							"'this' for nested class must be a class type, not %s",
 							thisexp.type.toChars());
-					type = newtype.semantic(sc, context);
+					type = newtype.semantic(loc, sc, context);
 				}
 			} else {
-				type = newtype.semantic(sc, context);
+				type = newtype.semantic(loc, sc, context);
 			}
 			tb = type.toBasetype(context);
 
 			arrayExpressionSemantic(newargs, sc, context);
-			preFunctionArguments(sc, newargs, context);
+			preFunctionArguments(loc, sc, newargs, context);
 			arrayExpressionSemantic(arguments, sc, context);
-			preFunctionArguments(sc, arguments, context);
+			preFunctionArguments(loc, sc, arguments, context);
 
 			if (thisexp != null && tb.ty != Tclass) {
 				error("e.new is only for allocating nested classes, not %s", tb
@@ -104,7 +104,7 @@ public class NewExp extends Expression {
 					if (cdn != null) {
 						if (cdthis == null) {
 							// Supply an implicit 'this' and try again
-							thisexp = new ThisExp();
+							thisexp = new ThisExp(loc);
 							for (Dsymbol sp = sc.parent; true; sp = sp.parent) {
 								if (sp == null) {
 									error(
@@ -121,8 +121,8 @@ public class NewExp extends Expression {
 									break;
 								}
 								// Add a '.outer' and try again
-								thisexp = new DotIdExp(thisexp,
-										new IdentifierExp(Id.outer));
+								thisexp = new DotIdExp(loc, thisexp,
+										new IdentifierExp(loc, Id.outer));
 							}
 							if (context.global.errors == 0) {
 								// goto Lagain;
@@ -160,7 +160,7 @@ public class NewExp extends Expression {
 					if (arguments == null) {
 						arguments = new ArrayList<Expression>();
 					}
-					functionArguments(sc, tf, arguments, context);
+					functionArguments(loc, sc, tf, arguments, context);
 				} else {
 					if (arguments != null && arguments.size() > 0) {
 						error("no constructor for %s", cd.toChars());
@@ -173,7 +173,7 @@ public class NewExp extends Expression {
 					f = cd.aggNew;
 
 					// Prepend the uint size argument to newargs[]
-					e = new IntegerExp(cd.size(), Type.tuns32);
+					e = new IntegerExp(loc, cd.size(), Type.tuns32);
 					if (newargs == null) {
 						newargs = new ArrayList<Expression>();
 					}
@@ -184,7 +184,7 @@ public class NewExp extends Expression {
 					Assert.isNotNull(allocator);
 
 					tf = (TypeFunction) f.type;
-					functionArguments(sc, tf, newargs, context);
+					functionArguments(loc, sc, tf, newargs, context);
 				} else {
 					if (newargs != null && newargs.size() > 0) {
 						error("no allocator for %s", cd.toChars());
@@ -205,7 +205,7 @@ public class NewExp extends Expression {
 					Expression e;
 
 					// Prepend the uint size argument to newargs[]
-					e = new IntegerExp(sd.size(), Type.tuns32);
+					e = new IntegerExp(loc, sd.size(), Type.tuns32);
 					if (newargs == null) {
 						newargs = new ArrayList<Expression>();
 					}
@@ -216,10 +216,10 @@ public class NewExp extends Expression {
 					Assert.isNotNull(allocator);
 
 					tf = (TypeFunction) f.type;
-					functionArguments(sc, tf, newargs, context);
+					functionArguments(loc, sc, tf, newargs, context);
 
-					e = new VarExp(f);
-					e = new CallExp(e, newargs);
+					e = new VarExp(loc, f);
+					e = new CallExp(loc, e, newargs);
 					e = e.semantic(sc, context);
 					e.type = type.pointerTo(context);
 					return e;
@@ -268,7 +268,7 @@ public class NewExp extends Expression {
 
 	@Override
 	public Expression syntaxCopy() {
-		return new NewExp(thisexp != null ? thisexp.syntaxCopy() : null,
+		return new NewExp(loc, thisexp != null ? thisexp.syntaxCopy() : null,
 				arraySyntaxCopy(newargs), newtype.syntaxCopy(),
 				arraySyntaxCopy(arguments));
 	}

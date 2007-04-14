@@ -2,8 +2,8 @@ package descent.internal.compiler.parser;
 
 public class XorAssignExp extends BinExp {
 
-	public XorAssignExp(Expression e1, Expression e2) {
-		super(TOK.TOKxorass, e1, e2);
+	public XorAssignExp(Loc loc, Expression e1, Expression e2) {
+		super(loc, TOK.TOKxorass, e1, e2);
 	}
 	
 	@Override

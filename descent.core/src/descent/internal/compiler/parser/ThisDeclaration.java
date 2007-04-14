@@ -4,8 +4,8 @@ import org.eclipse.core.runtime.Assert;
 
 public class ThisDeclaration extends VarDeclaration {
 
-	public ThisDeclaration(Type type) {
-		super(type, Id.This, null);
+	public ThisDeclaration(Loc loc, Type type) {
+		super(loc, type, Id.This, null);
 	}
 	
 	@Override

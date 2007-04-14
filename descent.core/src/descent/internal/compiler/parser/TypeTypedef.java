@@ -34,7 +34,7 @@ public class TypeTypedef extends Type {
 	}
 	
 	@Override
-	public Type semantic(Scope sc, SemanticContext context) {
+	public Type semantic(Loc loc, Scope sc, SemanticContext context) {
 		 sym.semantic(sc, context);
 		 return merge(context);
 	}

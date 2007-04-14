@@ -39,20 +39,22 @@ public class SemanticContext {
 		this.problemRequestor = problemRequestor;
 		this.ast = ast;
 		this.typeStringTable = new StringTable();
-		this.object = new ClassDeclaration(Id.Object);
-		this.typeinfo = new ClassDeclaration(Id.TypeInfo);
-		this.typeinfoclass = new ClassDeclaration(Id.TypeInfo_Class);
-		this.typeinfointerface = new ClassDeclaration(Id.TypeInfo_Interface);
-		this.typeinfostruct = new ClassDeclaration(Id.TypeInfo_Struct);
-		this.typeinfotypedef = new ClassDeclaration(Id.TypeInfo_Typedef);
-		this.typeinfopointer = new ClassDeclaration(Id.TypeInfo_Pointer);
-		this.typeinfoarray = new ClassDeclaration(Id.TypeInfo_Array);
-		this.typeinfostaticarray = new ClassDeclaration(Id.TypeInfo_StaticArray);
-		this.typeinfoassociativearray = new ClassDeclaration(Id.TypeInfo_AssociativeArray);
-		this.typeinfoenum = new ClassDeclaration(Id.TypeInfo_Enum);
-		this.typeinfofunction = new ClassDeclaration(Id.TypeInfo_Function);
-		this.typeinfodelegate = new ClassDeclaration(Id.TypeInfo_Delegate);
-		this.typeinfotypelist = new ClassDeclaration(Id.TypeInfo_Tuple);
+		
+		Loc loc = Loc.ZERO;
+		this.object = new ClassDeclaration(loc, Id.Object);
+		this.typeinfo = new ClassDeclaration(loc, Id.TypeInfo);
+		this.typeinfoclass = new ClassDeclaration(loc, Id.TypeInfo_Class);
+		this.typeinfointerface = new ClassDeclaration(loc, Id.TypeInfo_Interface);
+		this.typeinfostruct = new ClassDeclaration(loc, Id.TypeInfo_Struct);
+		this.typeinfotypedef = new ClassDeclaration(loc, Id.TypeInfo_Typedef);
+		this.typeinfopointer = new ClassDeclaration(loc, Id.TypeInfo_Pointer);
+		this.typeinfoarray = new ClassDeclaration(loc, Id.TypeInfo_Array);
+		this.typeinfostaticarray = new ClassDeclaration(loc, Id.TypeInfo_StaticArray);
+		this.typeinfoassociativearray = new ClassDeclaration(loc, Id.TypeInfo_AssociativeArray);
+		this.typeinfoenum = new ClassDeclaration(loc, Id.TypeInfo_Enum);
+		this.typeinfofunction = new ClassDeclaration(loc, Id.TypeInfo_Function);
+		this.typeinfodelegate = new ClassDeclaration(loc, Id.TypeInfo_Delegate);
+		this.typeinfotypelist = new ClassDeclaration(loc, Id.TypeInfo_Tuple);
 	}
 	
 	public void acceptProblem(IProblem problem) {
@@ -68,7 +70,7 @@ public class SemanticContext {
 	public IdentifierExp generateId(String prefix) {
 		String name = prefix + ++generatedIds;
 		Identifier id = new Identifier(name, TOK.TOKidentifier);
-		return new IdentifierExp(id);
+		return new IdentifierExp(Loc.ZERO, id);
 	}
 	
 	public FuncDeclaration genCfunc(Type treturn, String name) {
@@ -90,7 +92,7 @@ public class SemanticContext {
 			Assert.isTrue(fd.type.next.equals(treturn));
 		} else {
 			tf = new TypeFunction(null, treturn, 0, LINK.LINKc);
-			fd = new FuncDeclaration(new IdentifierExp(id), STC.STCstatic, tf);
+			fd = new FuncDeclaration(Loc.ZERO, new IdentifierExp(Loc.ZERO, id), STC.STCstatic, tf);
 			fd.protection = PROT.PROTpublic;
 			fd.linkage = LINK.LINKc;
 

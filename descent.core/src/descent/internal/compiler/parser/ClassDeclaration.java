@@ -32,16 +32,16 @@ public class ClassDeclaration extends AggregateDeclaration {
 	public List vtbl; // Array of FuncDeclaration's making up the vtbl[]
 	public List vtblFinal; // More FuncDeclaration's that aren't in vtbl[]
 
-	public ClassDeclaration(Identifier id) {
-		this(id, null);
+	public ClassDeclaration(Loc loc, Identifier id) {
+		this(loc, id, null);
 	}
 
-	public ClassDeclaration(Identifier id, List<BaseClass> baseclasses) {
-		this(new IdentifierExp(id), baseclasses);
+	public ClassDeclaration(Loc loc, Identifier id, List<BaseClass> baseclasses) {
+		this(loc, new IdentifierExp(loc, id), baseclasses);
 	}
 
-	public ClassDeclaration(IdentifierExp id, List<BaseClass> baseclasses) {
-		super(id);
+	public ClassDeclaration(Loc loc, IdentifierExp id, List<BaseClass> baseclasses) {
+		super(loc, id);
 		if (baseclasses == null) {
 			this.baseclasses = new ArrayList<BaseClass>(0);
 		} else {
@@ -56,12 +56,12 @@ public class ClassDeclaration extends AggregateDeclaration {
 		handle = type;
 	}
 
-	public ClassDeclaration(String id) {
-		this(id, null);
+	public ClassDeclaration(Loc loc, String id) {
+		this(loc, id, null);
 	}
 
-	public ClassDeclaration(String id, List<BaseClass> baseclasses) {
-		this(new Identifier(id, TOK.TOKidentifier), baseclasses);
+	public ClassDeclaration(Loc loc, String id, List<BaseClass> baseclasses) {
+		this(loc, new Identifier(id, TOK.TOKidentifier), baseclasses);
 	}
 
 	@Override
@@ -236,7 +236,7 @@ public class ClassDeclaration extends AggregateDeclaration {
 	}
 
 	@Override
-	public Dsymbol search(Identifier ident, int flags, SemanticContext context) {
+	public Dsymbol search(Loc loc, Identifier ident, int flags, SemanticContext context) {
 		Dsymbol s;
 
 		// printf("%s.ClassDeclaration::search('%s')\n", toChars(),
@@ -250,7 +250,7 @@ public class ClassDeclaration extends AggregateDeclaration {
 			return null;
 		}
 
-		s = super.search(ident, flags, context);
+		s = super.search(loc, ident, flags, context);
 		if (s == null) {
 			// Search bases classes in depth-first, left to right order
 
@@ -264,7 +264,7 @@ public class ClassDeclaration extends AggregateDeclaration {
 						error("base %s is forward referenced", b.base.ident
 								.toChars());
 					} else {
-						s = b.base.search(ident, flags, context);
+						s = b.base.search(loc, ident, flags, context);
 						if (s == this) {
 							// derives from this
 							s = null;
@@ -294,8 +294,8 @@ public class ClassDeclaration extends AggregateDeclaration {
 				parent = sc.parent;
 			}
 
-			type = type.semantic(sc, context);
-			handle = handle.semantic(sc, context);
+			type = type.semantic(loc, sc, context);
+			handle = handle.semantic(loc, sc, context);
 		}
 		if (members == null) // if forward reference
 		{
@@ -319,7 +319,7 @@ public class ClassDeclaration extends AggregateDeclaration {
 		// Expand any tuples in baseclasses[]
 		for (i = 0; i < baseclasses.size();) {
 			BaseClass b = baseclasses.get(i);
-			b.type = b.type.semantic(sc, context);
+			b.type = b.type.semantic(loc, sc, context);
 			Type tb = b.type.toBasetype(context);
 
 			if (tb.ty == TY.Ttuple) {
@@ -406,7 +406,7 @@ public class ClassDeclaration extends AggregateDeclaration {
 			Type tb;
 
 			b = baseclasses.get(i);
-			b.type = b.type.semantic(sc, context);
+			b.type = b.type.semantic(loc, sc, context);
 			tb = b.type.toBasetype(context);
 			if (tb.ty == TY.Tclass) {
 				tc = (TypeClass) tb;
@@ -455,7 +455,7 @@ public class ClassDeclaration extends AggregateDeclaration {
 		// If no base class, and this is not an Object, use Object as base class
 		if (baseClass == null && ident.ident != Id.Object) {
 			// BUG: what if Object is redefined in an inner scope?
-			Type tbase = new TypeIdentifier(Id.Object);
+			Type tbase = new TypeIdentifier(loc, Id.Object);
 			BaseClass b;
 			TypeClass tc;
 			Type bt;
@@ -464,7 +464,7 @@ public class ClassDeclaration extends AggregateDeclaration {
 				error("missing or corrupt object.d");
 				fatal();
 			}
-			bt = tbase.semantic(sc, context).toBasetype(context);
+			bt = tbase.semantic(loc, sc, context).toBasetype(context);
 			b = new BaseClass(bt, PROT.PROTpublic);
 			baseclasses.add(0, b);
 			/*
@@ -474,7 +474,7 @@ public class ClassDeclaration extends AggregateDeclaration {
 			 * baseClass;
 			 */
 			// TODO semantic remove the following line
-			baseClass = new ClassDeclaration(new IdentifierExp(Id.Object), null);
+			baseClass = new ClassDeclaration(loc, new IdentifierExp(loc, Id.Object), null);
 		}
 
 		interfaces = new ArrayList<BaseClass>(baseclasses.size());
@@ -542,13 +542,13 @@ public class ClassDeclaration extends AggregateDeclaration {
 								t = ad.handle;
 							} else {
 								t = new TypePointer(Type.tvoid);
-								t = t.semantic(sc, context);
+								t = t.semantic(loc, sc, context);
 							}
 						} else {
 							Assert.isTrue(false);
 						}
 						Assert.isTrue(vthis == null);
-						vthis = new ThisDeclaration(t);
+						vthis = new ThisDeclaration(loc, t);
 						members.add(vthis);
 					}
 				}
@@ -623,7 +623,7 @@ public class ClassDeclaration extends AggregateDeclaration {
 		 * Look for special member functions. They must be in this class, not in
 		 * a base class.
 		 */
-		ctor = (CtorDeclaration) search(Id.ctor, 0, context);
+		ctor = (CtorDeclaration) search(loc, Id.ctor, 0, context);
 		if (ctor != null && ctor.toParent() != this) {
 			ctor = null;
 		}
@@ -637,16 +637,16 @@ public class ClassDeclaration extends AggregateDeclaration {
 		// inv = NULL;
 
 		// Can be in base class
-		aggNew = (NewDeclaration) search(Id.classNew, 0, context);
-		aggDelete = (DeleteDeclaration) search(Id.classDelete, 0, context);
+		aggNew = (NewDeclaration) search(loc, Id.classNew, 0, context);
+		aggDelete = (DeleteDeclaration) search(loc, Id.classDelete, 0, context);
 
 		// If this class has no constructor, but base class does, create
 		// a constructor:
 		// this() { }
 		if (ctor == null && baseClass != null && baseClass.ctor != null) {
 			// toChars());
-			ctor = new CtorDeclaration(null, 0);
-			ctor.fbody = new CompoundStatement(new ArrayList<Statement>());
+			ctor = new CtorDeclaration(loc, null, 0);
+			ctor.fbody = new CompoundStatement(loc, new ArrayList<Statement>());
 			members.add(ctor);
 			ctor.addMember(sc, this, 1, context);
 			sc = scsave;
@@ -685,7 +685,7 @@ public class ClassDeclaration extends AggregateDeclaration {
 		if (s != null) {
 			cd = (ClassDeclaration) s;
 		} else {
-			cd = new ClassDeclaration(ident, null);
+			cd = new ClassDeclaration(loc, ident, null);
 		}
 
 		cd.storage_class |= storage_class;

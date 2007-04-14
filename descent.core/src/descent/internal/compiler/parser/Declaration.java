@@ -7,12 +7,12 @@ public abstract class Declaration extends Dsymbol {
 	public LINK linkage;
 	public PROT protection;
 	
-	public Declaration() {
-		this(null);
+	public Declaration(Loc loc) {
+		this(loc, null);
 	}
 	
-	public Declaration(IdentifierExp ident) {
-		this.ident = ident;
+	public Declaration(Loc loc, IdentifierExp ident) {
+		super(loc, ident);
 		this.type = null;
 		this.storage_class = STC.STCundefined;
 		this.protection = PROT.PROTundefined;
@@ -30,7 +30,7 @@ public abstract class Declaration extends Dsymbol {
 	}
 	
 	public int size() {
-		return type.size();
+		return type.size(loc);
 	}
 	
 	public boolean isStaticConstructor() {

@@ -6,7 +6,8 @@ public class ConditionalStatement extends Statement {
 	public final Statement ifbody;
 	public final Statement elsebody;
 
-	public ConditionalStatement(Condition condition, Statement ifbody, Statement elsebody) {
+	public ConditionalStatement(Loc loc, Condition condition, Statement ifbody, Statement elsebody) {
+		super(loc);
 		this.condition = condition;
 		this.ifbody = ifbody;
 		this.elsebody = elsebody;		

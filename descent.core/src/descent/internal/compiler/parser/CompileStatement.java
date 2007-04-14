@@ -4,7 +4,8 @@ public class CompileStatement extends Statement {
 	
 	public Expression exp;
 
-	public CompileStatement(Expression exp) {
+	public CompileStatement(Loc loc, Expression exp) {
+		super(loc);
 		this.exp = exp;	
 	}
 	

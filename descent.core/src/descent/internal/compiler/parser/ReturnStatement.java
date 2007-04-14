@@ -24,7 +24,8 @@ public class ReturnStatement extends Statement {
 	public Expression exp;
 	public Expression sourceExp;
 
-	public ReturnStatement(Expression exp) {
+	public ReturnStatement(Loc loc, Expression exp) {
+		super(loc);
 		this.exp = exp;		
 		this.sourceExp = exp;
 	}
@@ -59,7 +60,7 @@ public class ReturnStatement extends Statement {
 		// main() returns 0, even if it returns void
 		if (exp == null && (tbret == null || tbret.ty == Tvoid) && fd.isMain()) {
 			implicit0 = 1;
-			exp = new IntegerExp(0);
+			exp = new IntegerExp(loc, 0);
 		}
 
 		if (sc.incontract != 0 || scx.incontract != 0) {
@@ -75,7 +76,7 @@ public class ReturnStatement extends Statement {
 			if (exp != null && exp.op != TOKthis) {
 				error("cannot return expression from constructor");
 			}
-			exp = new ThisExp();
+			exp = new ThisExp(loc);
 		}
 
 		if (exp == null)
@@ -116,7 +117,7 @@ public class ReturnStatement extends Statement {
 									exp.type.toChars(), fd.type.next.toChars());
 					} else {
 						fd.type.next = exp.type;
-						fd.type = fd.type.semantic(sc, context);
+						fd.type = fd.type.semantic(loc, sc, context);
 						if (fd.tintro == null) {
 							tret = fd.type.next;
 							tbret = tret.toBasetype(context);
@@ -133,7 +134,7 @@ public class ReturnStatement extends Statement {
 								fd.type.next.toChars());
 				} else {
 					fd.type.next = Type.tvoid;
-					fd.type = fd.type.semantic(sc, context);
+					fd.type = fd.type.semantic(loc, sc, context);
 					if (fd.tintro == null) {
 						tret = Type.tvoid;
 						tbret = tret;
@@ -154,19 +155,19 @@ public class ReturnStatement extends Statement {
 					|| exp.op == TOKthis || exp.op == TOKsuper
 					|| exp.op == TOKnull || exp.op == TOKstring) {
 				sc.fes.cases.add(this);
-				s = new ReturnStatement(new IntegerExp(sc.fes.cases.size() + 1));
+				s = new ReturnStatement(loc, new IntegerExp(loc, sc.fes.cases.size() + 1));
 			} else if (fd.type.next.toBasetype(context) == Type.tvoid) {
 				Statement s1;
 				Statement s2;
 
-				s = new ReturnStatement(null);
+				s = new ReturnStatement(loc, null);
 				sc.fes.cases.add(s);
 
 				// Construct: { exp; return cases.dim + 1; }
-				s1 = new ExpStatement(exp);
-				s2 = new ReturnStatement(
-						new IntegerExp(sc.fes.cases.size() + 1));
-				s = new CompoundStatement(s1, s2);
+				s1 = new ExpStatement(loc, exp);
+				s2 = new ReturnStatement(loc, 
+						new IntegerExp(loc, sc.fes.cases.size() + 1));
+				s = new CompoundStatement(loc, s1, s2);
 			} else {
 				VarExp v;
 				Statement s1;
@@ -176,7 +177,7 @@ public class ReturnStatement extends Statement {
 				if (fd.vresult == null) {
 					VarDeclaration v2;
 
-					v2 = new VarDeclaration(tret, Id.result, null);
+					v2 = new VarDeclaration(loc, tret, Id.result, null);
 					v2.noauto = true;
 					v2.semantic(scx, context);
 					if (scx.insert(v2) == null) {
@@ -186,18 +187,18 @@ public class ReturnStatement extends Statement {
 					fd.vresult = v2;
 				}
 
-				v = new VarExp(fd.vresult);
-				s = new ReturnStatement(v);
+				v = new VarExp(loc, fd.vresult);
+				s = new ReturnStatement(loc, v);
 				sc.fes.cases.add(s);
 
 				// Construct: { vresult = exp; return cases.dim + 1; }
-				v = new VarExp(fd.vresult);
-				exp = new AssignExp(v, exp);
+				v = new VarExp(loc, fd.vresult);
+				exp = new AssignExp(loc, v, exp);
 				exp = exp.semantic(sc, context);
-				s1 = new ExpStatement(exp);
-				s2 = new ReturnStatement(
-						new IntegerExp(sc.fes.cases.size() + 1));
-				s = new CompoundStatement(s1, s2);
+				s1 = new ExpStatement(loc, exp);
+				s2 = new ReturnStatement(loc, 
+						new IntegerExp(loc, sc.fes.cases.size() + 1));
+				s = new CompoundStatement(loc, s1, s2);
 			}
 			return s;
 		}
@@ -205,9 +206,9 @@ public class ReturnStatement extends Statement {
 		if (exp != null) {
 			if (fd.returnLabel != null && tbret.ty != Tvoid) {
 				Assert.isNotNull(fd.vresult);
-				VarExp v = new VarExp(fd.vresult);
+				VarExp v = new VarExp(loc, fd.vresult);
 
-				exp = new AssignExp(v, exp);
+				exp = new AssignExp(loc, v, exp);
 				exp = exp.semantic(sc, context);
 			}
 			//exp.dump(0);
@@ -231,15 +232,15 @@ public class ReturnStatement extends Statement {
 
 		// See if all returns are instead to be replaced with a goto returnLabel;
 		if (fd.returnLabel != null) {
-			GotoStatement gs = new GotoStatement(new IdentifierExp(
+			GotoStatement gs = new GotoStatement(loc, new IdentifierExp(loc, 
 					Id.returnLabel));
 
 			gs.label = fd.returnLabel;
 			if (exp != null) {
 				Statement s;
 
-				s = new ExpStatement(exp);
-				return new CompoundStatement(s, gs);
+				s = new ExpStatement(loc, exp);
+				return new CompoundStatement(loc, s, gs);
 			}
 			return gs;
 		}
@@ -247,9 +248,9 @@ public class ReturnStatement extends Statement {
 		if (exp != null && tbret.ty == Tvoid && !fd.isMain()) {
 			Statement s;
 
-			s = new ExpStatement(exp);
+			s = new ExpStatement(loc, exp);
 			exp = null;
-			return new CompoundStatement(s, this);
+			return new CompoundStatement(loc, s, this);
 		}
 
 		return this;

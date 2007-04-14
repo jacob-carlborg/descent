@@ -54,7 +54,8 @@ public class ForeachStatement extends Statement {
 		  "dc","dw","dd"
 		};
 
-	public ForeachStatement(TOK op, List<Argument> arguments, Expression aggr, Statement body) {
+	public ForeachStatement(Loc loc, TOK op, List<Argument> arguments, Expression aggr, Statement body) {
+		super(loc);
 		this.op = op;
 		this.arguments = arguments;
 		this.aggr = aggr;
@@ -137,12 +138,12 @@ public class ForeachStatement extends Statement {
 						error("foreach: key type must be int or uint, not %s",
 								arg.type.toChars());
 					}
-					Initializer ie = new ExpInitializer(new IntegerExp(k));
-					VarDeclaration var = new VarDeclaration(arg.type,
+					Initializer ie = new ExpInitializer(loc, new IntegerExp(loc, k));
+					VarDeclaration var = new VarDeclaration(loc, arg.type,
 							arg.ident, ie);
 					var.storage_class |= STCconst;
-					DeclarationExp de = new DeclarationExp(var);
-					st.add(new ExpStatement(de));
+					DeclarationExp de = new DeclarationExp(loc, var);
+					st.add(new ExpStatement(loc, de));
 					arg = (Argument) arguments.get(1); // value
 				}
 				// Declare value
@@ -152,21 +153,21 @@ public class ForeachStatement extends Statement {
 				Dsymbol var;
 				if (te != null) {
 					arg.type = e.type;
-					Initializer ie = new ExpInitializer(e);
-					var = new VarDeclaration(arg.type, arg.ident, ie);
+					Initializer ie = new ExpInitializer(loc, e);
+					var = new VarDeclaration(loc, arg.type, arg.ident, ie);
 				} else {
-					var = new AliasDeclaration(arg.ident, t);
+					var = new AliasDeclaration(loc, arg.ident, t);
 				}
-				DeclarationExp de = new DeclarationExp(var);
-				st.add(new ExpStatement(de));
+				DeclarationExp de = new DeclarationExp(loc, var);
+				st.add(new ExpStatement(loc, de));
 
 				st.add(body.syntaxCopy());
-				s = new CompoundStatement(st);
-				s = new ScopeStatement(s);
+				s = new CompoundStatement(loc, st);
+				s = new ScopeStatement(loc, s);
 				statements.add(s);
 			}
 
-			s = new UnrolledLoopStatement(statements);
+			s = new UnrolledLoopStatement(loc, statements);
 			s = s.semantic(sc, context);
 			return s;
 		}
@@ -179,7 +180,7 @@ public class ForeachStatement extends Statement {
 			}
 		}
 
-		sym = new ScopeDsymbol();
+		sym = new ScopeDsymbol(loc);
 		sym.parent = sc.scopesym;
 		sc = sc.push(sym);
 
@@ -203,7 +204,7 @@ public class ForeachStatement extends Statement {
 
 				i = (dim == 1) ? 0 : 1; // index of value
 				arg = (Argument) arguments.get(i);
-				arg.type = arg.type.semantic(sc, context);
+				arg.type = arg.type.semantic(loc, sc, context);
 				tnv = arg.type.toBasetype(context);
 				if (tnv.ty != tn.ty
 						&& (tnv.ty == Tchar || tnv.ty == Twchar || tnv.ty == Tdchar)) {
@@ -226,7 +227,7 @@ public class ForeachStatement extends Statement {
 				Argument arg = (Argument) arguments.get(i);
 				VarDeclaration var;
 
-				var = new VarDeclaration(arg.type, arg.ident, null);
+				var = new VarDeclaration(loc, arg.type, arg.ident, null);
 				var.storage_class |= STCforeach;
 				switch (arg.inout) {
 				case In:
@@ -241,7 +242,7 @@ public class ForeachStatement extends Statement {
 				default:
 					Assert.isTrue(false);
 				}
-				DeclarationExp de = new DeclarationExp(var);
+				DeclarationExp de = new DeclarationExp(loc, var);
 				de.semantic(sc, context);
 				if (dim == 2 && i == 0)
 					key = var;
@@ -330,7 +331,7 @@ public class ForeachStatement extends Statement {
 				&& tret != Type.tvoid) {
 			VarDeclaration v;
 
-			v = new VarDeclaration(tret, Id.result, null);
+			v = new VarDeclaration(loc, tret, Id.result, null);
 			v.noauto = true;
 			v.semantic(sc, context);
 			if (sc.insert(v) == null) {
@@ -348,28 +349,28 @@ public class ForeachStatement extends Statement {
 		for (i = 0; i < dim; i++) {
 			Argument arg = (Argument) arguments.get(i);
 
-			arg.type = arg.type.semantic(sc, context);
+			arg.type = arg.type.semantic(loc, sc, context);
 			if (arg.inout == InOut)
 				id = arg.ident;
 			else { // Make a copy of the inout argument so it isn't
 				// a reference.
 				VarDeclaration v;
 				Initializer ie;
-				id = new IdentifierExp(new Identifier("__applyArg" + i,
+				id = new IdentifierExp(loc, new Identifier("__applyArg" + i,
 						TOK.TOKidentifier));
 
-				ie = new ExpInitializer(id);
-				v = new VarDeclaration(arg.type, arg.ident, ie);
-				s[0] = new DeclarationStatement(v);
-				body = new CompoundStatement(s[0], body);
+				ie = new ExpInitializer(loc, id);
+				v = new VarDeclaration(loc, arg.type, arg.ident, ie);
+				s[0] = new DeclarationStatement(loc, v);
+				body = new CompoundStatement(loc, s[0], body);
 			}
 			a = new Argument(InOut, arg.type, id, null);
 			args.add(a);
 		}
 		t = new TypeFunction(args, Type.tint32, 0, LINK.LINKd);
-		fld = new FuncLiteralDeclaration(t, TOKdelegate, this);
+		fld = new FuncLiteralDeclaration(loc, t, TOKdelegate, this);
 		fld.fbody = body;
-		flde = new FuncExp(fld);
+		flde = new FuncExp(loc, fld);
 		flde = flde.semantic(sc, context);
 
 		// Resolve any forward referenced goto's
@@ -379,8 +380,8 @@ public class ForeachStatement extends Statement {
 
 			if (gs.label.statement == null) { // 'Promote' it to this scope, and replace with a return
 				cases.add(gs);
-				s[0] = new ReturnStatement(
-						new IntegerExp(cases.size() + 1));
+				s[0] = new ReturnStatement(loc, 
+						new IntegerExp(loc, cases.size() + 1));
 				cs.statements.set(0, s[0]);
 			}
 		}
@@ -407,14 +408,14 @@ public class ForeachStatement extends Statement {
 				fdapply = context.genCfunc(Type.tindex, "_aaApply2");
 			else
 				fdapply = context.genCfunc(Type.tindex, "_aaApply");
-			ec = new VarExp(fdapply);
+			ec = new VarExp(loc, fdapply);
 			List<Expression> exps = new ArrayList<Expression>();
 			exps.add(aggr);
-			int keysize = taa.key.size();
+			int keysize = taa.key.size(loc);
 			keysize = (keysize + 3) & ~3;
-			exps.add(new IntegerExp(keysize, Type.tint32));
+			exps.add(new IntegerExp(loc, keysize, Type.tint32));
 			exps.add(flde);
-			e = new CallExp(ec, exps);
+			e = new CallExp(loc, ec, exps);
 			e.type = Type.tindex; // don't run semantic() on e
 		} else if (tab.ty == Tarray || tab.ty == Tsarray) {
 			/*
@@ -454,14 +455,14 @@ public class ForeachStatement extends Statement {
 
 			fdapply = context.genCfunc(Type.tindex, fdname);
 
-			ec = new VarExp(fdapply);
+			ec = new VarExp(loc, fdapply);
 			List<Expression> exps = new ArrayList<Expression>();
 			if (tab.ty == Tsarray) {
 				aggr = aggr.castTo(sc, tn.arrayOf(context), context);
 			}
 			exps.add(aggr);
 			exps.add(flde);
-			e = new CallExp(ec, exps);
+			e = new CallExp(loc, ec, exps);
 			e.type = Type.tindex; // don't run semantic() on e
 		} else if (tab.ty == Tdelegate) {
 			/*
@@ -469,7 +470,7 @@ public class ForeachStatement extends Statement {
 			 */
 			List<Expression> exps = new ArrayList<Expression>();
 			exps.add(flde);
-			e = new CallExp(aggr, exps);
+			e = new CallExp(loc, aggr, exps);
 			e = e.semantic(sc, context);
 			if (e.type != Type.tint32)
 				error("opApply() function for %s must return an int",
@@ -478,12 +479,12 @@ public class ForeachStatement extends Statement {
 			/*
 			 * Call: aggr.apply(flde)
 			 */
-			ec = new DotIdExp(aggr, new IdentifierExp(
+			ec = new DotIdExp(loc, aggr, new IdentifierExp(loc, 
 					(op == TOKforeach_reverse) ? Id.applyReverse
 							: Id.apply));
 			List<Expression> exps = new ArrayList<Expression>();
 			exps.add(flde);
-			e = new CallExp(ec, exps);
+			e = new CallExp(loc, ec, exps);
 			e = e.semantic(sc, context);
 			if (e.type != Type.tint32)
 				error("opApply() function for %s must return an int",
@@ -492,25 +493,25 @@ public class ForeachStatement extends Statement {
 
 		if (cases.size() == 0)
 			// Easy case, a clean exit from the loop
-			s[0] = new ExpStatement(e);
+			s[0] = new ExpStatement(loc, e);
 		else { // Construct a switch statement around the return value
 			// of the apply function.
 			List<Statement> a2 = new ArrayList<Statement>();
 
 			// default: break; takes care of cases 0 and 1
-			s[0] = new BreakStatement(null);
-			s[0] = new DefaultStatement(s[0]);
+			s[0] = new BreakStatement(loc, null);
+			s[0] = new DefaultStatement(loc, s[0]);
 			a2.add(s[0]);
 
 			// cases 2...
 			for (int j = 0; j < cases.size(); j++) {
 				s[0] = (Statement) cases.get(j);
-				s[0] = new CaseStatement(new IntegerExp(i + 2), s[0]);
+				s[0] = new CaseStatement(loc, new IntegerExp(loc, i + 2), s[0]);
 				a2.add(s[0]);
 			}
 
-			s[0] = new CompoundStatement(a2);
-			s[0] = new SwitchStatement(e, s[0]);
+			s[0] = new CompoundStatement(loc, a2);
+			s[0] = new SwitchStatement(loc, e, s[0]);
 			s[0] = s[0].semantic(sc, context);
 		}
 	}

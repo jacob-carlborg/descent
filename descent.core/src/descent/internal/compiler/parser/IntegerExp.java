@@ -28,31 +28,31 @@ public class IntegerExp extends Expression {
 	public String str;
 	public BigInteger value;
 
-	public IntegerExp(BigInteger value) {
-		this(value.toString(), value, Type.tint32);
+	public IntegerExp(Loc loc, BigInteger value) {
+		this(loc, value.toString(), value, Type.tint32);
 	}
 
-	public IntegerExp(BigInteger value, Type type) {
-		this(null, value, type);
+	public IntegerExp(Loc loc, BigInteger value, Type type) {
+		this(loc, null, value, type);
 	}
 
-	public IntegerExp(int value) {
-		this(new BigInteger(String.valueOf(value)));
+	public IntegerExp(Loc loc, int value) {
+		this(loc, new BigInteger(String.valueOf(value)));
 	}
 
-	public IntegerExp(int value, Type type) {
-		this(new BigInteger(String.valueOf(value)), type);
+	public IntegerExp(Loc loc, int value, Type type) {
+		this(loc, new BigInteger(String.valueOf(value)), type);
 	}
 
-	public IntegerExp(String str, BigInteger value, Type type) {
-		super(TOK.TOKint64);
+	public IntegerExp(Loc loc, String str, BigInteger value, Type type) {
+		super(loc, TOK.TOKint64);
 		this.str = str;
 		this.value = value;
 		this.type = type;
 	}
 
-	public IntegerExp(String str, int value, Type type) {
-		this(str, new BigInteger(String.valueOf(value)), type);
+	public IntegerExp(Loc loc, String str, int value, Type type) {
+		this(loc, str, new BigInteger(String.valueOf(value)), type);
 	}
 
 	private BigInteger cast(BigInteger num, TY ty) {
@@ -276,7 +276,7 @@ public class IntegerExp extends Expression {
 				type = Type.tint32;
 			}
 		} else {
-			type = type.semantic(sc, context);
+			type = type.semantic(loc, sc, context);
 		}
 		return this;
 	}
@@ -475,11 +475,9 @@ public class IntegerExp extends Expression {
 	public Expression toLvalue(Scope sc, Expression e, SemanticContext context) {
 		if (e == null) {
 			e = this;
+		} else if (loc.filename == null) {
+			loc = e.loc;
 		}
-		/* TODO semantic
-		 else if (!loc.filename)
-		 loc = e->loc;
-		 */
 		e.error("constant %s is not an lvalue", e.toChars());
 		return this;
 	}

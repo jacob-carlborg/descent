@@ -2,9 +2,11 @@ package descent.internal.compiler.parser;
 
 public abstract class TemplateParameter extends ASTNode {
 	
+	public Loc loc;
 	public IdentifierExp ident;
 	
-	public TemplateParameter(IdentifierExp ident) {
+	public TemplateParameter(Loc loc, IdentifierExp ident) {
+		this.loc = loc;
 		this.ident = ident;
 	}
 	

@@ -14,15 +14,16 @@ public class ScopeDsymbol extends Dsymbol {
 	public List<ScopeDsymbol> imports; // imported ScopeDsymbol's
 	public List<PROT> prots; // PROT for each import
 
-	public ScopeDsymbol() {
+	public ScopeDsymbol(Loc loc) {
+		super(loc);
 		this.members = null;
 		this.symtab = null;
 		this.imports = null;
 		this.prots = null;
 	}
 
-	public ScopeDsymbol(IdentifierExp id) {
-		super(id);
+	public ScopeDsymbol(Loc loc, IdentifierExp id) {
+		super(loc, id);
 		this.members = null;
 		this.symtab = null;
 		this.imports = null;
@@ -112,7 +113,7 @@ public class ScopeDsymbol extends Dsymbol {
 	}
 
 	@Override
-	public Dsymbol search(Identifier ident, int flags, SemanticContext context) {
+	public Dsymbol search(Loc loc, Identifier ident, int flags, SemanticContext context) {
 		Dsymbol s;
 		int i;
 
@@ -132,7 +133,7 @@ public class ScopeDsymbol extends Dsymbol {
 					continue;
 				}
 
-				s2 = ss.search(ident, ss.isModule() != null ? 1 : 0, context);
+				s2 = ss.search(loc, ident, ss.isModule() != null ? 1 : 0, context);
 				if (s == null) {
 					s = s2;
 				} else if (s2 != null && s != s2) {
@@ -176,7 +177,7 @@ public class ScopeDsymbol extends Dsymbol {
 		if (s != null) {
 			sd = (ScopeDsymbol) s;
 		} else {
-			sd = new ScopeDsymbol(ident);
+			sd = new ScopeDsymbol(loc, ident);
 		}
 		sd.members = arraySyntaxCopy(members);
 		return sd;

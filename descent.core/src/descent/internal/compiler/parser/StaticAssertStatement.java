@@ -5,6 +5,7 @@ public class StaticAssertStatement extends Statement {
 	public StaticAssert sa;
 	
 	public StaticAssertStatement(StaticAssert sa) {
+		super(sa.loc);
 		this.sa = sa;
 	}
 	

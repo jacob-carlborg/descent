@@ -12,19 +12,22 @@ public class ArrayScopeSymbol extends ScopeDsymbol {
 	public TupleDeclaration td; // for tuples of objects
 
 	public ArrayScopeSymbol(Expression e) {
+		super(Loc.ZERO);
 		Assert.isTrue(e.op == TOK.TOKindex || e.op == TOK.TOKslice);
 		this.exp = e;
 		this.type = null;
 		this.td = null;
 	}
 
-	public ArrayScopeSymbol(TupleDeclaration s) {
+	public ArrayScopeSymbol(Loc loc, TupleDeclaration s) {
+		super(loc);
 		this.exp = null;
 		this.type = null;
 		this.td = s;
 	}
 
-	public ArrayScopeSymbol(TypeTuple t) {
+	public ArrayScopeSymbol(Loc loc, TypeTuple t) {
+		super(loc);
 		this.exp = null;
 		this.type = t;
 		this.td = null;
@@ -41,7 +44,7 @@ public class ArrayScopeSymbol extends ScopeDsymbol {
 	}
 
 	@Override
-	public Dsymbol search(Identifier ident, int flags, SemanticContext context) {
+	public Dsymbol search(Loc loc, Identifier ident, int flags, SemanticContext context) {
 		if (ident == Id.length || ident == Id.dollar) {
 			Expression pvar;
 			Expression ce;
@@ -53,21 +56,21 @@ public class ArrayScopeSymbol extends ScopeDsymbol {
 				loop = false;
 
 				if (td != null) {
-					VarDeclaration v = new VarDeclaration(Type.tsize_t,
+					VarDeclaration v = new VarDeclaration(loc, Type.tsize_t,
 							Id.dollar, null);
-					Expression e = new IntegerExp(td.objects.size(),
+					Expression e = new IntegerExp(loc, td.objects.size(),
 							Type.tsize_t);
-					v.init = new ExpInitializer(e);
+					v.init = new ExpInitializer(loc, e);
 					v.storage_class |= STCconst;
 					return v;
 				}
 
 				if (type != null) {
-					VarDeclaration v = new VarDeclaration(Type.tsize_t,
+					VarDeclaration v = new VarDeclaration(loc, Type.tsize_t,
 							Id.dollar, null);
-					Expression e = new IntegerExp(type.arguments.size(),
+					Expression e = new IntegerExp(loc, type.arguments.size(),
 							Type.tsize_t);
-					v.init = new ExpInitializer(e);
+					v.init = new ExpInitializer(loc, e);
 					v.storage_class |= STCconst;
 					return v;
 				}
@@ -105,18 +108,18 @@ public class ArrayScopeSymbol extends ScopeDsymbol {
 					enterIf = ((SliceExp) pvar).lengthVar == null;
 				}
 				if (enterIf) {
-					VarDeclaration v = new VarDeclaration(Type.tsize_t,
+					VarDeclaration v = new VarDeclaration(loc, Type.tsize_t,
 							Id.dollar, null);
 
 					if (ce.op == TOKstring) {
-						Expression e = new IntegerExp(((StringExp) ce).len,
+						Expression e = new IntegerExp(loc, ((StringExp) ce).len,
 								Type.tsize_t);
-						v.init = new ExpInitializer(e);
+						v.init = new ExpInitializer(loc, e);
 						v.storage_class |= STCconst;
 					} else if (ce.op == TOKtuple) {
-						Expression e = new IntegerExp(((TupleExp) ce).exps
+						Expression e = new IntegerExp(loc, ((TupleExp) ce).exps
 								.size(), Type.tsize_t);
-						v.init = new ExpInitializer(e);
+						v.init = new ExpInitializer(loc, e);
 						v.storage_class |= STCconst;
 					}
 

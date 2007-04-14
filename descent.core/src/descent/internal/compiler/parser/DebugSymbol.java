@@ -8,12 +8,13 @@ public class DebugSymbol extends Dsymbol {
 	public long level;
 	public Version version;
 
-	public DebugSymbol(IdentifierExp ident, Version version) {
-		super(ident);
+	public DebugSymbol(Loc loc, IdentifierExp ident, Version version) {
+		super(loc, ident);
 		this.version = version;		
 	}
 	
-	public DebugSymbol(long level, Version version) {
+	public DebugSymbol(Loc loc, long level, Version version) {
+		super(loc);
 		this.level = level;
 		this.version = version;		
 	}
@@ -26,7 +27,7 @@ public class DebugSymbol extends Dsymbol {
 	@Override
 	public Dsymbol syntaxCopy(Dsymbol s) {
 		Assert.isTrue(s == null);
-	    DebugSymbol ds = new DebugSymbol(ident, version);
+	    DebugSymbol ds = new DebugSymbol(loc, ident, version);
 	    ds.level = level;
 	    return ds;
 	}

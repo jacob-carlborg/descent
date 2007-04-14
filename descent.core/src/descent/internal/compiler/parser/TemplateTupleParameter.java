@@ -4,14 +4,14 @@ import descent.core.compiler.IProblem;
 
 public class TemplateTupleParameter extends TemplateParameter {
 	
-	public TemplateTupleParameter(IdentifierExp ident) {
-		super(ident);
+	public TemplateTupleParameter(Loc loc, IdentifierExp ident) {
+		super(loc, ident);
 	}
 	
 	@Override
 	public void semantic(Scope sc, SemanticContext context) {
-		TypeIdentifier ti = new TypeIdentifier(ident);
-	    Declaration sparam = new AliasDeclaration(ident, ti);
+		TypeIdentifier ti = new TypeIdentifier(loc, ident);
+	    Declaration sparam = new AliasDeclaration(loc, ident, ti);
 	    if (sc.insert(sparam) == null) {
 	    	context.acceptProblem(Problem.newSemanticTypeError("Duplicate parameter " + ident, IProblem.DuplicatedParameter, 0, ident.start, ident.length));
 	    }

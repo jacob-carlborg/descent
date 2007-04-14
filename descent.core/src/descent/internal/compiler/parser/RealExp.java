@@ -7,8 +7,8 @@ public class RealExp extends Expression {
 	public String str;
 	public Real value;
 
-	public RealExp(String str, Real value, Type type) {
-		super(TOK.TOKfloat64);
+	public RealExp(Loc loc, String str, Real value, Type type) {
+		super(loc, TOK.TOKfloat64);
 		this.str = str;
 		this.value = value;
 		this.type = type;
@@ -57,7 +57,7 @@ public class RealExp extends Expression {
 		if (type == null) {
 			type = Type.tfloat64;
 		} else {
-			type = type.semantic(sc, context);
+			type = type.semantic(loc, sc, context);
 		}
 		return this;
 	}

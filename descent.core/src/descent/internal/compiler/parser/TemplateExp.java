@@ -4,8 +4,8 @@ public class TemplateExp extends Expression {
 	
 	public TemplateDeclaration td;
 
-    public TemplateExp(TemplateDeclaration td) {
-    	super(TOK.TOKtemplate);
+    public TemplateExp(Loc loc, TemplateDeclaration td) {
+    	super(loc, TOK.TOKtemplate);
 		this.td = td;    	
     }
     

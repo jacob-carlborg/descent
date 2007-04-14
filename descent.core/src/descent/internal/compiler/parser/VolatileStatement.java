@@ -4,7 +4,8 @@ public class VolatileStatement extends Statement {
 	
 	public Statement statement;
 	
-	public VolatileStatement(Statement statement) {
+	public VolatileStatement(Loc loc, Statement statement) {
+		super(loc);
 		this.statement = statement;
 	}
 	

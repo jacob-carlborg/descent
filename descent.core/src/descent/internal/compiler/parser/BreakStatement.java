@@ -4,7 +4,8 @@ public class BreakStatement extends Statement {
 
 	public IdentifierExp ident;
 
-	public BreakStatement(IdentifierExp ident) {
+	public BreakStatement(Loc loc, IdentifierExp ident) {
+		super(loc);
 		this.ident = ident;		
 	}
 	

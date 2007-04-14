@@ -20,7 +20,7 @@ public class Type_Test extends Parser_Test {
 	public void testBasicTypes() {
 		Object[][] objs = {
 			{ "void", PrimitiveType.Code.VOID, 4 },
-			{ "bit", PrimitiveType.Code.BIT, 3 },
+			//{ "bit", PrimitiveType.Code.BIT, 3 },
 			{ "bool", PrimitiveType.Code.BOOL, 4 },
 			{ "byte", PrimitiveType.Code.BYTE, 4 },
 			{ "ubyte", PrimitiveType.Code.UBYTE, 5 },

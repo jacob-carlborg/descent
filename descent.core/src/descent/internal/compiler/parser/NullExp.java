@@ -7,8 +7,8 @@ public class NullExp extends Expression {
 	
 	public boolean committed;	// !=0 if type is committed
 	
-	public NullExp() {
-		super(TOK.TOKnull);
+	public NullExp(Loc loc) {
+		super(loc, TOK.TOKnull);
 		this.committed = false;
 	}
 	
