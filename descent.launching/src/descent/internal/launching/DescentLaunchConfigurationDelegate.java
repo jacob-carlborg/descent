@@ -14,15 +14,20 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.debug.core.DebugPlugin;
 import org.eclipse.debug.core.ILaunch;
 import org.eclipse.debug.core.ILaunchConfiguration;
+import org.eclipse.debug.core.ILaunchManager;
 import org.eclipse.debug.core.IStatusHandler;
+import org.eclipse.debug.core.model.IProcess;
 
 import descent.core.IJavaProject;
 import descent.launching.AbstractDescentLaunchConfigurationDelegate;
 import descent.launching.DescentLaunching;
 import descent.launching.IDescentLaunchConfigurationConstants;
+import descent.launching.model.DescentDebugTarget;
 import descent.launching.utils.ProcessFactory;
 
 public class DescentLaunchConfigurationDelegate extends AbstractDescentLaunchConfigurationDelegate {
+	
+	private final static String DDBG = "c:\\ary\\programacion\\d\\ddbg\\ddbg.exe";
 
 	public void launch(ILaunchConfiguration config, String mode, ILaunch launch, IProgressMonitor monitor) throws CoreException {
 		if (monitor == null) {
@@ -47,14 +52,31 @@ public class DescentLaunchConfigurationDelegate extends AbstractDescentLaunchCon
 			if (wd == null) {
 				wd = new File(System.getProperty("user.home", ".")); //$NON-NLS-1$ //$NON-NLS-2$
 			}
-			ArrayList command = new ArrayList(1 + arguments.length);
-			command.add(exePath.toOSString());
-			command.addAll(Arrays.asList(arguments));
-			String[] commandArray = (String[]) command.toArray(new String[command.size()]);
-			monitor.worked(5);
-			Process process = exec(commandArray, getEnvironment(config), wd);
-			monitor.worked(3);
-			DebugPlugin.newProcess(launch, process, renderProcessLabel(commandArray[0]));
+			
+			if (mode.equals(ILaunchManager.DEBUG_MODE)) {
+				ArrayList command = new ArrayList(1);
+				command.add(DDBG);
+				command.add("\"" + exePath.toOSString() + "\"");
+				String[] commandArray = (String[]) command.toArray(new String[command.size()]);
+				monitor.worked(5);
+				Process process = exec(commandArray, getEnvironment(config), wd);
+				monitor.worked(3);
+				
+				IProcess iprocess = DebugPlugin.newProcess(launch, process, renderProcessLabel(commandArray[1]));
+				DescentDebugTarget target = new DescentDebugTarget(launch, iprocess);		
+				launch.addDebugTarget(target);
+				
+				target.started();
+			} else {
+				ArrayList command = new ArrayList(1 + arguments.length);
+				command.add(exePath.toOSString());
+				command.addAll(Arrays.asList(arguments));
+				String[] commandArray = (String[]) command.toArray(new String[command.size()]);
+				monitor.worked(5);
+				Process process = exec(commandArray, getEnvironment(config), wd);
+				monitor.worked(3);
+				DebugPlugin.newProcess(launch, process, renderProcessLabel(commandArray[0]));
+			}
 		} finally {
 			monitor.done();
 		}

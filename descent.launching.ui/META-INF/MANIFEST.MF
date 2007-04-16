@@ -6,12 +6,15 @@ Bundle-Version: 1.0.0
 Bundle-Activator: descent.launching.ui.DescentLaunchingUI
 Bundle-Localization: plugin
 Require-Bundle: org.eclipse.ui,
+ org.eclipse.ui.editors,
  org.eclipse.ui.ide,
+ org.eclipse.ui.workbench.texteditor,
  org.eclipse.core.runtime,
  org.eclipse.core.resources,
  org.eclipse.core.variables,
  org.eclipse.debug.core,
  org.eclipse.debug.ui,
+ org.eclipse.jface.text,
  descent.core,
  descent.ui,
  descent.launching

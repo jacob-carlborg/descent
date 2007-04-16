@@ -17,6 +17,12 @@ public interface IDescentLaunchConfigurationConstants {
 	public static final String ID_D_APPLICATION = DescentLaunching.PLUGIN_ID + ".localDApplication"; //$NON-NLS-1$
 	
 	/**
+	 * Unique identifier for the ddbg debug model (value 
+	 * <code>descent.launching.debug.ddbg</code>).
+	 */
+	public static final String ID_D_DEBUG_MODEL = DescentLaunching.PLUGIN_ID + ".debug.ddbg"; //$NON-NLS-1$
+	
+	/**
 	 * Launch configuration attribute key. The value is a string specifying a
 	 * path to the working directory to use when launching a local VM.
 	 * When specified as an absolute path, the path represents a path in the local
