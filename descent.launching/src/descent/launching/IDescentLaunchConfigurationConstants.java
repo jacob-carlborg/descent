@@ -18,9 +18,9 @@ public interface IDescentLaunchConfigurationConstants {
 	
 	/**
 	 * Unique identifier for the ddbg debug model (value 
-	 * <code>descent.launching.debug.ddbg</code>).
+	 * <code>descent.launching.model</code>).
 	 */
-	public static final String ID_D_DEBUG_MODEL = DescentLaunching.PLUGIN_ID + ".debug.ddbg"; //$NON-NLS-1$
+	public static final String ID_D_DEBUG_MODEL = DescentLaunching.PLUGIN_ID + ".model"; //$NON-NLS-1$
 	
 	/**
 	 * Launch configuration attribute key. The value is a string specifying a

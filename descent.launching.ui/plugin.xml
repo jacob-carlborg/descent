@@ -2,6 +2,12 @@
 <?eclipse version="3.2"?>
 <plugin>
    <extension
+         point="org.eclipse.debug.ui.debugModelPresentations">
+      <debugModelPresentation
+            class="descent.internal.launching.ui.model.DescentDebugModelPresentation"
+            id="descent.launching.model"/>
+   </extension>
+   <extension
          point="org.eclipse.debug.ui.launchConfigurationTypeImages">
       <launchConfigurationTypeImage
             configTypeID="descent.launching.localDApplication"

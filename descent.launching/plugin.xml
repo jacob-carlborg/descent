@@ -7,7 +7,9 @@
             delegate="descent.internal.launching.DescentLaunchConfigurationDelegate"
             id="descent.launching.localDApplication"
             modes="run, debug"
-            name="D Application"/>
+            name="D Application"
+            sourceLocatorId="descent.launching.descentSourceLookupDirector"
+            sourcePathComputerId="descent.launching.descentSourcePathComputer"/>
    </extension>
    <extension
          point="org.eclipse.debug.core.breakpoints">
@@ -22,6 +24,19 @@
          point="org.eclipse.core.resources.markers">
       <super type="org.eclipse.debug.core.lineBreakpointMarker"/>
       <persistent value="true"/>
+   </extension>
+   <extension
+         point="org.eclipse.debug.core.sourceLocators">
+      <sourceLocator
+            class="descent.internal.launching.DescentSourceLookupDirector"
+            id="descent.launching.descentSourceLookupDirector"
+            name="Descent Source Lookup Director"/>
+   </extension>
+   <extension
+         point="org.eclipse.debug.core.sourcePathComputers">
+      <sourcePathComputer
+            class="descent.internal.launching.DescentSourcePathComputerDelegate"
+            id="descent.launching.descentSourcePathComputer"/>
    </extension>
 
 </plugin>

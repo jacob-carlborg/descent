@@ -33,6 +33,8 @@ public class DescentDebugTarget extends DescentDebugElement implements IDebugTar
 	private DescentThread fThread;
 	private DescentThread[] fThreads;
 	
+	private StringBuilder fStreamBuffer;
+	
 	private boolean fSuspended;
 	
 	public DescentDebugTarget(ILaunch launch, IProcess process) {
@@ -42,8 +44,11 @@ public class DescentDebugTarget extends DescentDebugElement implements IDebugTar
 		this.fThread = new DescentThread(this);
 		this.fThreads = new DescentThread[] { fThread };
 		this.fInterpreter = new DdbgInterpreter(this, process.getStreamsProxy());
+		this.fStreamBuffer = new StringBuilder();
 		
-		process.getStreamsProxy().getOutputStreamMonitor().addListener(this);		
+		IStreamMonitor out = process.getStreamsProxy().getOutputStreamMonitor();
+		out.addListener(this);
+		
 		DebugPlugin.getDefault().getBreakpointManager().addBreakpointListener(this);
 	}
 	
@@ -227,29 +232,46 @@ public class DescentDebugTarget extends DescentDebugElement implements IDebugTar
 			e.printStackTrace();
 		}
 	}
-
-	public void streamAppended(String text, IStreamMonitor monitor) {
+	
+	public synchronized void streamAppended(String text, IStreamMonitor monitor) {
+		fStreamBuffer.append(text);
+		
+		int indexOfLine = fStreamBuffer.indexOf("\n");
+		if (indexOfLine == -1) return;
+		
+		text = fStreamBuffer.toString();
+		
+		int lastIndexOfLine = 0;
 		try {
-			String[] lines = text.split("\n");
-			for(String line : lines) {
+			while(indexOfLine != -1) {
+				String line = fStreamBuffer.substring(lastIndexOfLine, indexOfLine);
 				fInterpreter.interpret(line, this);
+				
+				lastIndexOfLine = indexOfLine + 1;
+				indexOfLine = fStreamBuffer.indexOf("\n", lastIndexOfLine);
+			}
+			
+			fStreamBuffer.delete(0, lastIndexOfLine);
+			if (fStreamBuffer.toString().equals("->")) {
+				fInterpreter.interpret("->", this);
+				fStreamBuffer.setLength(0);
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (DebugException e) {
+			e.printStackTrace();
+		} catch (Throwable e) {
 			e.printStackTrace();
 		}
 	}
 	
 	public void suspended(int detail) {
 		fSuspended = true;
-		fireSuspendEvent(detail);
 		fThread.fireSuspendEvent(detail);
 	}
 	
 	public void resumed(int detail) {
 		fSuspended = false;
-		fireResumeEvent(detail);
 		fThread.fireResumeEvent(detail);
 	}
 	
@@ -265,7 +287,6 @@ public class DescentDebugTarget extends DescentDebugElement implements IDebugTar
 	public void terminated() {
 		try {
 			terminate();
-			fireTerminateEvent();
 			fThread.fireTerminateEvent();
 		} catch (DebugException e) {
 			e.printStackTrace();

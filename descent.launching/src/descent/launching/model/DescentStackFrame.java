@@ -16,7 +16,9 @@ public class DescentStackFrame extends DescentDebugElement implements IStackFram
 	private final DescentThread fThread;
 	private final DdbgInterpreter fInterpreter;
 	private String fName;
-	private int fNumber;	
+	private int fNumber;
+	private String fSourceName;
+	private int fLineNumber;
 
 	public DescentStackFrame(DdbgInterpreter interpreter, DescentThread thread, String data) {
 		super((DescentDebugTarget) thread.getDebugTarget());
@@ -26,34 +28,53 @@ public class DescentStackFrame extends DescentDebugElement implements IStackFram
 	}
 	
 	private void init(String data) {
-		if (data.length() > 0 && data.charAt(0) == '#') {
-			int indexOfFirstSpace = data.indexOf(' ');
+		fName = data;
+		fLineNumber = -1;
+		fSourceName = null;
 			
-			this.fNumber = Integer.parseInt(data.substring(1, indexOfFirstSpace));			
-			
-			int indexOfIn = data.indexOf(" in ");
-			int indexOfFrom = data.indexOf(" from ");
-			int indexOfAt = data.indexOf(" at ");
-			if (indexOfIn != -1 && indexOfFrom != -1 && indexOfIn < indexOfFrom) {
-				fName = data.substring(indexOfIn + 4, indexOfFrom + 1);
-			} else if (indexOfIn != -1 && indexOfAt != -1 && indexOfIn < indexOfAt) {
-				fName = data.substring(indexOfIn + 4, indexOfAt + 1);
-			} else {
-				if (indexOfFirstSpace != -1) {
-					if (indexOfAt != -1) {
-						fName = data.substring(indexOfFirstSpace + 1, indexOfAt + 1);
-					} else {
-						int indexOfSecondSpace = data.indexOf(' ', indexOfFirstSpace + 1);
-						if (indexOfSecondSpace != -1) {
-							fName = data.substring(indexOfFirstSpace + 1, indexOfSecondSpace);
-						}
-					}
-				}
-			}
+		if (data.length() == 0 || data.charAt(0) != '#') {
 			return;
 		}
 		
-		fName = data;
+		// Some positions in the string
+		int indexOfFirstSpace = data.indexOf(' ');
+		int indexOfIn = data.indexOf(" in ");
+		int indexOfFrom = data.indexOf(" from ");
+		int indexOfAt = data.indexOf(" at ");
+		int lastIndexOfColon = data.lastIndexOf(':');
+		
+		// Number
+		this.fNumber = Integer.parseInt(data.substring(1, indexOfFirstSpace));		
+		
+		// Name
+		if (indexOfIn != -1 && indexOfFrom != -1 && indexOfIn < indexOfFrom) {
+			fName = data.substring(indexOfIn + 4, indexOfFrom + 1);
+		} else if (indexOfIn != -1 && indexOfAt != -1 && indexOfIn < indexOfAt) {
+			fName = data.substring(indexOfIn + 4, indexOfAt + 1);
+		} else {
+			if (indexOfFirstSpace != -1) {
+				if (indexOfAt != -1) {
+					fName = data.substring(indexOfFirstSpace + 1, indexOfAt + 1);
+				} else {
+					int indexOfSecondSpace = data.indexOf(' ', indexOfFirstSpace + 1);
+					if (indexOfSecondSpace != -1) {
+						fName = data.substring(indexOfFirstSpace + 1, indexOfSecondSpace);
+					}
+				}
+			}
+		}
+		
+		fName = fName.trim();
+		if (fName.endsWith(" ()")) {
+			fName = fName.substring(0, fName.length() - 3) + "()";
+		}
+		
+		
+		// sourceName and lineNumber
+		if (indexOfAt != -1 && lastIndexOfColon != -1) {
+			fSourceName = data.substring(indexOfAt + 4, lastIndexOfColon);
+			fLineNumber = Integer.parseInt(data.substring(lastIndexOfColon + 1));
+		}
 	}
 
 	public int getCharEnd() throws DebugException {
@@ -65,11 +86,21 @@ public class DescentStackFrame extends DescentDebugElement implements IStackFram
 	}
 
 	public int getLineNumber() throws DebugException {
-		return 0;
+		return fLineNumber;
+	}
+	
+	public String getSourceName() {
+		return fSourceName;
 	}
 
 	public String getName() throws DebugException {
-		return fName;
+		StringBuilder sb = new StringBuilder();
+		sb.append(fName);
+		if (fLineNumber != -1) {
+			sb.append(": line ");
+			sb.append(fLineNumber);
+		}
+		return sb.toString();
 	}
 
 	public IRegisterGroup[] getRegisterGroups() throws DebugException {
@@ -157,6 +188,15 @@ public class DescentStackFrame extends DescentDebugElement implements IStackFram
 
 	public void terminate() throws DebugException {
 		getThread().terminate();
+	}
+	
+	@Override
+	public String toString() {
+		try {
+			return getName();
+		} catch (DebugException e) {
+			return super.toString();
+		}
 	}
 
 }

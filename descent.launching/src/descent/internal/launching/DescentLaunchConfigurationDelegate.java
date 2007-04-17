@@ -46,7 +46,7 @@ public class DescentLaunchConfigurationDelegate extends AbstractDescentLaunchCon
 			String arguments[] = getProgramArgumentsArray(config);
 
 			// set the default source locator if required
-			setDefaultSourceLocator(launch, config);
+			// setDefaultSourceLocator(launch, config);
 			
 			File wd = getWorkingDirectory(config);
 			if (wd == null) {
