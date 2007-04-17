@@ -57,6 +57,7 @@ class DmdWindows extends Dmd{
 		}
 
 		public void calcDependencies(){
+			
 			LinkedList<String> cmdline = new LinkedList<String>();
 			cmdline.add( getCompiler() );
 			cmdline.add( "-c" );
@@ -81,7 +82,7 @@ class DmdWindows extends Dmd{
 			for( File inc : dTask.mIncludedModules ){
 				cmdline.add( "-I"+ inc.getAbsolutePath() );
 			}
-			for( File f : dTask.mMainModules ){
+			for( File f : dTask.mMainModules ){				
 				cmdline.add( f.getAbsolutePath() );
 			}
 			StringBuilder sb = new StringBuilder();

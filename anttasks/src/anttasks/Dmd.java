@@ -37,7 +37,8 @@ abstract class Dmd extends Compiler{
 
 		BufferedReader reader = new BufferedReader( new FileReader( modulesFile ));
 		String line = null;
-		Pattern pattern = Pattern.compile("^import +([a-zA-Z0-9_.]+)$");
+		//TODO - optimize this
+		Pattern pattern = Pattern.compile("^import\\s+(.*?)\\s+\\((.*?)\\)");
 		
 		for( File file : dTask.mMainModules ){
 			dTask.mCompileFiles.add( file.getAbsolutePath() );
@@ -48,18 +49,20 @@ abstract class Dmd extends Compiler{
 			if( !matcher.matches() ){
 				continue;
 			}
-			String moduleName = matcher.group(1);
-			if( moduleName.equals("object")){
+			String moduleName = matcher.group(2);
+			if( moduleName.endsWith(".di")){
 				continue;
 			}
-			//System.out.println( "dep mod : "+moduleName );
+			System.out.println( "dep mod : "+moduleName );
 			
-			boolean found = false;
-			found = findModule(dTask.mIncludedModules, moduleName, found);
-			found = findModule(dTask.mIncludePaths   , moduleName, found);
-			if( !found ){
-				throw new BuildException( String.format( "Module %s not found.", moduleName ));
-			}
+			dTask.mCompileFiles.add(moduleName);
+			//boolean found = false;
+			//found = findModule(dTask.mIncludedModules, moduleName, found);
+			//found = findModule(dTask.mIncludePaths   , moduleName, found);
+			//if( !found ){
+			//	throw new BuildException( String.format( "Module %s not found.", moduleName ));
+			//
+			//}
 		}
 	}
 

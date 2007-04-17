@@ -7,9 +7,9 @@
 
 	<property name="compiler.dir" value="C:\" />
 	<property name="compiler.type" value="dmd-windows" />
-	<property name="tango.dir" value="C:\projects\tango" />
+	<property name="tango.dir" value="C:\dmd\tango" />
 	<property name="tango.examples.dir" value="${tango.dir}\example" />
-	<property name="tango.examples.hello" value="${tango.examples.dir}\hello" />
+
 	
 	<target name="resgen" >
 		<!-- convert any file into a d module as a constant array
@@ -34,7 +34,7 @@
 			  type        = "${compiler.type}"
 			  mode        = "executable"
 			  compilerdir = "${compiler.dir}"
-			  destfile    = "${tango.examples.dir}/@{bldtrg}"
+			  destfile    = "${tango.examples.dir}/@{bldtrg}.exe"
 			  cleanup     = "true"
 			>
 <!--				<version value="Posix" /> -->
@@ -58,32 +58,7 @@
 	</macrodef>
 	
 	<target name="compile" >
-		<compile bldtrg="argparser" />
-		<compile bldtrg="chainsaw" />
-		<compile bldtrg="composite" />
-		<compile bldtrg="filebubbler" />
-		<compile bldtrg="filecat" />
-		<compile bldtrg="filecopy" />
-		<compile bldtrg="filescan" />
-		<compile bldtrg="formatalign" />
-		<compile bldtrg="formatindex" />
-		<compile bldtrg="hello" />
-		<compile bldtrg="homepage" />
-		<compile bldtrg="httpget" />
-		<compile bldtrg="httpserver" />
-		<compile bldtrg="lineio" />
-		<compile bldtrg="localetime" />
-		<!--compile bldtrg="localtime" /-->
-		<compile bldtrg="logging" />
-		<compile bldtrg="mmap" />
-		<compile bldtrg="randomio" />
-		<compile bldtrg="servlets" />
-		<compile bldtrg="servletserver" />
-		<compile bldtrg="sockethello" />
-		<compile bldtrg="socketserver" />
-		<compile bldtrg="stdout" />
-		<compile bldtrg="token" />
-		<compile bldtrg="unifile" />
+	<compile bldtrg="console/hello"/>
 	</target>
 
 
