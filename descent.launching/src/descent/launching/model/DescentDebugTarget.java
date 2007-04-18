@@ -57,16 +57,6 @@ public class DescentDebugTarget extends DescentDebugElement implements IDebugTar
 		return this;
 	}
 	
-	/**
-	 * Adds the currently defined breakpoints to the debugger
-	 * interpreter, and starts the session.
-	 */
-	public void started() throws DebugException {
-		fireCreationEvent();
-		installDeferredBreakpoints();
-		resume();
-	}
-	
 	protected void installDeferredBreakpoints() {
 		try {
 			IBreakpointManager manager = DebugPlugin.getDefault().getBreakpointManager();
@@ -209,7 +199,6 @@ public class DescentDebugTarget extends DescentDebugElement implements IDebugTar
 	public void stepOver() {
 		try {
 			fInterpreter.stepOver();
-			fThread.fireSuspendEvent(DebugEvent.STEP_OVER);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -218,7 +207,6 @@ public class DescentDebugTarget extends DescentDebugElement implements IDebugTar
 	public void stepInto() {
 		try {
 			fInterpreter.stepInto();
-			fThread.fireSuspendEvent(DebugEvent.STEP_INTO);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -227,7 +215,6 @@ public class DescentDebugTarget extends DescentDebugElement implements IDebugTar
 	public void stepReturn() {
 		try {
 			fInterpreter.stepReturn();
-			fThread.fireSuspendEvent(DebugEvent.STEP_RETURN);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -245,7 +232,7 @@ public class DescentDebugTarget extends DescentDebugElement implements IDebugTar
 		try {
 			while(indexOfLine != -1) {
 				String line = fStreamBuffer.substring(lastIndexOfLine, indexOfLine);
-				fInterpreter.interpret(line, this);
+				fInterpreter.interpret(line);
 				
 				lastIndexOfLine = indexOfLine + 1;
 				indexOfLine = fStreamBuffer.indexOf("\n", lastIndexOfLine);
@@ -253,7 +240,7 @@ public class DescentDebugTarget extends DescentDebugElement implements IDebugTar
 			
 			fStreamBuffer.delete(0, lastIndexOfLine);
 			if (fStreamBuffer.toString().equals("->")) {
-				fInterpreter.interpret("->", this);
+				fInterpreter.interpret("->");
 				fStreamBuffer.setLength(0);
 			}
 		} catch (IOException e) {
@@ -265,6 +252,16 @@ public class DescentDebugTarget extends DescentDebugElement implements IDebugTar
 		}
 	}
 	
+	/**
+	 * Adds the currently defined breakpoints to the debugger
+	 * interpreter, and starts the session.
+	 */
+	public void started() throws DebugException {
+		fireCreationEvent();
+		installDeferredBreakpoints();
+		resume();
+	}
+	
 	public void suspended(int detail) {
 		fSuspended = true;
 		fThread.fireSuspendEvent(detail);
@@ -272,16 +269,16 @@ public class DescentDebugTarget extends DescentDebugElement implements IDebugTar
 	
 	public void resumed(int detail) {
 		fSuspended = false;
-		fThread.fireResumeEvent(detail);
-	}
-	
-	public void steppedOver(int detail) {
-		try {
-			fInterpreter.stepOver();
-			fThread.fireResumeEvent(DebugEvent.STEP_OVER);
-		} catch (IOException e) {
-			e.printStackTrace();
+		
+		if ((detail & DebugEvent.STEP_INTO) != 0 ||
+				(detail & DebugEvent.STEP_OVER) != 0 ||
+				(detail & DebugEvent.STEP_RETURN) != 0) {
+			fThread.setStepping(true);
+		} else {
+			fThread.setStepping(false);
 		}
+		
+		fThread.fireResumeEvent(detail);
 	}
 	
 	public void terminated() {

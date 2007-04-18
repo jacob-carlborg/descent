@@ -46,7 +46,7 @@ public class DdbgInterpreter {
 		this.proxy = proxy;
 	}
 
-	public void interpret(String text, DescentDebugTarget handler)
+	public void interpret(String text)
 			throws DebugException, IOException {
 		if (fConsultingStackFrames) {
 			if (text.equals("->")) {
@@ -91,9 +91,9 @@ public class DdbgInterpreter {
 			// Ignore
 		} else if (text.startsWith("Breakpoint ")) {
 			// Breakpoint n hit at file:lineNumber address
-			handler.suspended(DebugEvent.BREAKPOINT);
+			fTarget.suspended(DebugEvent.BREAKPOINT);
 		} else if (text.equals("Process terminated")) {
-			handler.terminated();
+			fTarget.terminated();
 		}
 	}
 
@@ -103,6 +103,7 @@ public class DdbgInterpreter {
 		try {
 			proxy.write("r");
 			proxy.write("\n");
+			fTarget.resumed(DebugEvent.UNSPECIFIED);
 		} finally {
 			endOperation();
 		}
@@ -114,6 +115,7 @@ public class DdbgInterpreter {
 		try {
 			proxy.write("q");
 			proxy.write("\n");
+			fTarget.terminated();
 		} finally {
 			endOperation();
 		}
@@ -155,6 +157,7 @@ public class DdbgInterpreter {
 		try {
 			proxy.write("ov");
 			proxy.write("\n");
+			fTarget.resumed(DebugEvent.STEP_OVER);
 		} finally {
 			endOperation();
 		}
@@ -166,6 +169,7 @@ public class DdbgInterpreter {
 		try {
 			proxy.write("in");
 			proxy.write("\n");
+			fTarget.resumed(DebugEvent.STEP_INTO);
 		} finally {
 			endOperation();
 		}
@@ -177,6 +181,7 @@ public class DdbgInterpreter {
 		try {
 			proxy.write("out");
 			proxy.write("\n");
+			fTarget.resumed(DebugEvent.STEP_RETURN);
 		} finally {
 			endOperation();
 		}
@@ -299,11 +304,11 @@ public class DdbgInterpreter {
 
 	private void beginOperation() {
 		sleep();
-		fOperationLock.acquire();
+		//fOperationLock.acquire();
 	}
 
 	private void endOperation() {
-		fOperationLock.release();
+		//fOperationLock.release();
 	}
 
 	private void sleep() {
