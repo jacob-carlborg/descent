@@ -10,7 +10,8 @@
          <run class="descent.internal.core.JavaProject"/>
       </runtime>
    </extension>
-   <extension
+
+ <extension
          id="javabuilder"
          name="D Builder"
          point="org.eclipse.core.resources.builders">
@@ -18,6 +19,7 @@
          <run class="descent.internal.core.builder.JavaBuilder"/>
       </builder>
    </extension>
+   
 
    <extension
          point="org.eclipse.core.runtime.contentTypes">
@@ -51,6 +53,14 @@
          point="org.eclipse.core.resources.markers">
       <super type="org.eclipse.core.resources.taskmarker"/>
       <persistent value="true"/>
+   </extension>
+   <extension
+         id="dAntBuilder"
+         name="D Ant Builder"
+         point="org.eclipse.core.resources.builders">
+      <builder hasNature="false">
+         <run class="descent.internal.core.builder.DAntBuilder"/>
+      </builder>
    </extension>
 
 </plugin>
