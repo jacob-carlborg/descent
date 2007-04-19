@@ -50,7 +50,7 @@ abstract class Dmd extends Compiler{
 				continue;
 			}
 			String moduleName = matcher.group(2);
-			if( moduleName.endsWith(".di")){
+			if( moduleName.endsWith(".di") || moduleName.endsWith("object.d")){
 				continue;
 			}
 			System.out.println( "dep mod : "+moduleName );
