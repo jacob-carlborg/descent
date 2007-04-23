@@ -4,6 +4,8 @@ import java.util.List;
 
 import mmrnmhrm.core.LangCore;
 import mmrnmhrm.core.model.DeeProject;
+import mmrnmhrm.ui.util.RowComposite;
+import mmrnmhrm.ui.util.fields.FolderSelectionDialog;
 
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFolder;
@@ -17,7 +19,6 @@ import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.jface.window.Window;
-import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Shell;
@@ -49,7 +50,7 @@ public abstract class AbstractConfigPage {
 
 	public Control getControl(Composite parent) {
 		converter = new PixelConverter(parent);
-		Composite content = new Composite(parent, SWT.NONE);
+		Composite content = new RowComposite(parent, true);
 		fSWTControl = content;
 		createContents(content);
 		return content;

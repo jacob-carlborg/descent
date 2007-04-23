@@ -1,6 +1,9 @@
 package mmrnmhrm.core.model;
 
+import java.util.ArrayList;
+
 import mmrnmhrm.core.DeeCore;
+import mmrnmhrm.core.IElementChangedListener;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
@@ -9,6 +12,45 @@ import org.eclipse.core.runtime.CoreException;
  * The Dee Model. It's elements are not handle-based, nor cached like JDT.
  */
 public class DeeModelManager {
+	
+	private static DeeModelManager deemodel = new DeeModelManager();
+	
+	/** @return the shared instance */
+	public static DeeModelManager getInstance() {
+		return deemodel;
+	}
+	
+	public ArrayList<IElementChangedListener> elementChangedListeners 
+		= new ArrayList<IElementChangedListener>(5);
+	
+	/** Registers an element change listener. */
+	public synchronized void addElementChangedListener(IElementChangedListener listener, int eventMask) {
+		elementChangedListeners.add(listener);
+	}
+	
+	/** Unregisters an element change listener. */
+	public synchronized void removeElementChangedListener(IElementChangedListener listener) {
+		elementChangedListeners.remove(listener);
+	}
+	
+	/** Notifies element change listener of model changes. */
+	public void fireModelChanged() {
+		// Watch out for listener add/remove while change notification is in progress.
+		IElementChangedListener[] listeners;
+		synchronized(this) {
+			listeners = (IElementChangedListener[]) elementChangedListeners.toArray();
+		}
+		
+		for(IElementChangedListener listener : listeners) {
+			listener.elementChanged(null);
+		}
+	}
+
+	
+	/** Gets the D Model Root */
+	public static DeeModelRoot getRoot() {
+		return DeeModelRoot.getInstance();
+	}
 
 	/** Inits the D model. */
 	public static void initDeeModel() throws CoreException {
@@ -31,13 +73,15 @@ public class DeeModelManager {
 
 	/** Returns the D project for given project */
 	public static DeeProject getLangProject(String name) {
-		return (DeeProject) DeeModelRoot.getInstance().getLangProject(name);
+		return (DeeProject) getRoot().getLangProject(name);
 	}
 	
 	/** Returns the D project for given project */
 	public static DeeProject getLangProject(IProject project) {
-		return (DeeProject) DeeModelRoot.getInstance().getLangProject(project);
+		return (DeeProject) getRoot().getLangProject(project);
 	}
+
+
 	
 
 }

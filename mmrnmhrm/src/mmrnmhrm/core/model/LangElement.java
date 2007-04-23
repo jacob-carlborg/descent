@@ -2,8 +2,6 @@ package mmrnmhrm.core.model;
 
 import java.util.ArrayList;
 
-import mmrnmhrm.core.LangModelException;
-
 import util.Assert;
 
 
@@ -58,7 +56,7 @@ public abstract class LangElement extends LangElementInfo implements ILangElemen
 	/** Returns a collection of (immediate) children of this node of the
 	 * specified element type.
 	 */
-	public ArrayList getChildrenOfType(int type) throws LangModelException {
+	public ArrayList getChildrenOfType(int type) {
 		ILangElement[] children = getChildren();
 		int size = children.length;
 		ArrayList<ILangElement> list = new ArrayList<ILangElement>(size);

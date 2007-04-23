@@ -1,4 +1,4 @@
-package mmrnmhrm.ui.wizards.projconfig;
+package mmrnmhrm.ui.util.fields;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,7 +14,10 @@ import org.eclipse.swt.events.KeyEvent;
 import util.Assert;
 import util.tree.IElement;
 
-public class TreeListEditorDialogField {
+/**
+ * A factory for a TreeListEditorDialogField.
+ */
+public class ListEditorField {
 	
 	public static enum COMMAND {
 		CUSTOM,
@@ -43,71 +46,7 @@ public class TreeListEditorDialogField {
 	public interface IElementCommand {
 		void executeElementCommand(Object element);
 	}
-
-
-/*	public TreeListEditorDialogField(ITreeListAdapter adapter, String[] buttonLabels, ILabelProvider lprovider) {
-		super(adapter, buttonLabels, lprovider);
-	}
-*/
-	public List<EditorFieldCommand> fButtonCmds;
-	private IElementCommand editCmd;
-	private IElementCommand removeCmd;
-	private int editIx;
-	private int removeIx;
 	
-	
-	public TreeListEditorDialogField() {
-		fButtonCmds = new ArrayList<EditorFieldCommand>(10);
-	}
-
-	public void addCommand(String label, IEditorFieldAction action) {
-		fButtonCmds.add(new EditorFieldCommand(COMMAND.CUSTOM, label, action));
-	}
-	
-	public void addEditCommand(String label, IElementCommand cmd) {
-		Assert.isTrue(editCmd == null);
-		fButtonCmds.add(new EditorFieldCommand(COMMAND.EDIT, label, null));
-		editCmd = cmd;
-		editIx = fButtonCmds.size()-1; 
-	}
-	
-	public void addRemoveCommand(String label, IElementCommand cmd) {
-		Assert.isTrue(removeCmd == null);
-		fButtonCmds.add(new EditorFieldCommand(COMMAND.REMOVE, label, null));
-		removeCmd = cmd;
-		removeIx = fButtonCmds.size()-1;
-	}
-
-	
-	/***** */
-	
-
-	private EditorFieldCommand getCommand(int index) {
-		return fButtonCmds.get(index);
-	}
-	
-	public TreeListDialogField createTreeListEditor() {
-		return createTreeListEditor(getTreeListAdapter(), new LabelProvider());
-	}
-	
-	public TreeListDialogField createTreeListEditor(ITreeListAdapter adapter, ILabelProvider lprovider) {
-		
-		String[] buttonLabels = new String[fButtonCmds.size()];
-		for(int i = 0; i < fButtonCmds.size(); i++) {
-			buttonLabels[i] = fButtonCmds.get(i).label;
-		}
-		
-		TreeListDialogField field; 
-		field = new TreeListDialogField(adapter, buttonLabels, lprovider);
-		
-		return field;
-	}
-
-	
-	private ITreeListAdapter getTreeListAdapter() {
-		return new TreeListEditorDialogFieldAdapter();
-	}
-
 	public class TreeListEditorDialogFieldAdapter implements ITreeListAdapter {
 		
 		public Object[] getChildren(TreeListDialogField field, Object element) {
@@ -192,4 +131,71 @@ public class TreeListEditorDialogField {
 			}
 		}
 	}
+
+
+/*	public TreeListEditorDialogField(ITreeListAdapter adapter, String[] buttonLabels, ILabelProvider lprovider) {
+		super(adapter, buttonLabels, lprovider);
+	}
+*/
+	public List<EditorFieldCommand> fButtonCmds;
+	public TreeListDialogField fElementList;
+	private IElementCommand editCmd;
+	private IElementCommand removeCmd;
+	private int editIx;
+	private int removeIx;
+	
+	
+	public ListEditorField() {
+		fButtonCmds = new ArrayList<EditorFieldCommand>(10);
+	}
+
+	public void addCommand(String label, IEditorFieldAction action) {
+		fButtonCmds.add(new EditorFieldCommand(COMMAND.CUSTOM, label, action));
+	}
+	
+	public void addEditCommand(String label, IElementCommand cmd) {
+		Assert.isTrue(editCmd == null);
+		fButtonCmds.add(new EditorFieldCommand(COMMAND.EDIT, label, null));
+		editCmd = cmd;
+		editIx = fButtonCmds.size()-1; 
+	}
+	
+	public void addRemoveCommand(String label, IElementCommand cmd) {
+		Assert.isTrue(removeCmd == null);
+		fButtonCmds.add(new EditorFieldCommand(COMMAND.REMOVE, label, null));
+		removeCmd = cmd;
+		removeIx = fButtonCmds.size()-1;
+	}
+
+	
+	/* ---- */
+	
+
+	private EditorFieldCommand getCommand(int index) {
+		return fButtonCmds.get(index);
+	}
+	
+	public TreeListDialogField createTreeListEditor() {
+		fElementList = createTreeListEditor(getTreeListAdapter(), new LabelProvider());
+		return fElementList;
+	}
+	
+	public TreeListDialogField createTreeListEditor(ITreeListAdapter adapter, ILabelProvider lprovider) {
+		
+		String[] buttonLabels = new String[fButtonCmds.size()];
+		for(int i = 0; i < fButtonCmds.size(); i++) {
+			buttonLabels[i] = fButtonCmds.get(i).label;
+		}
+		 
+		fElementList = new TreeListDialogField(adapter, buttonLabels, lprovider);
+		//fElementList.getTreeControl(parent)
+		fElementList.getTreeViewer().expandToLevel(1);
+		return fElementList;
+	}
+
+	
+	private ITreeListAdapter getTreeListAdapter() {
+		return new TreeListEditorDialogFieldAdapter();
+	}
+
 }

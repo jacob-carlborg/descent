@@ -1,12 +1,12 @@
 package mmrnmhrm.ui.wizards.projconfig;
 
-import java.util.Arrays;
-
 import mmrnmhrm.core.model.DeeProject;
 import mmrnmhrm.core.model.DeeSourceFolder;
 import mmrnmhrm.core.model.LangSourceFolder;
 import mmrnmhrm.ui.ExceptionHandler;
-import mmrnmhrm.ui.wizards.projconfig.TreeListEditorDialogField.IElementCommand;
+import mmrnmhrm.ui.util.fields.IEditorFieldAction;
+import mmrnmhrm.ui.util.fields.ListEditorField;
+import mmrnmhrm.ui.util.fields.ListEditorField.IElementCommand;
 
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFolder;
@@ -38,12 +38,12 @@ public class SourceContainerConfigPage extends AbstractConfigPage {
 	
 	public SourceContainerConfigPage() {
 		
-		TreeListEditorDialogField fSourceFoldersEditor =
-			new TreeListEditorDialogField();
+		ListEditorField fSourceFoldersEditor =
+			new ListEditorField();
 		
 		fSourceFoldersEditor.addCommand("&Add Folder...", new IEditorFieldAction() {
 			public void execute(DialogField field) {
-				addEntry();
+				createEntry();
 			}
 		});
 		//fSourceFoldersEditor.addCommand("&Link Source...", TreeListEditorDialogField.COMMAND.ADD);
@@ -75,12 +75,12 @@ public class SourceContainerConfigPage extends AbstractConfigPage {
 			
 		}; 
 
-		fSrcFoldersList= fSourceFoldersEditor.createTreeListEditor(eAdapter, lprovider);
-		fSrcFoldersList.setLabelText("Source folders on build pat&h:"); 
+		fSrcFoldersList = fSourceFoldersEditor.createTreeListEditor(eAdapter, lprovider);
+		fSrcFoldersList.setLabelText("Source folders:"); 
 		//fSrcFoldersList.setViewerSorter(new BPListElementSorter());
 		
 		
-		OutputLocationAdapter outputLocationAdapter= new OutputLocationAdapter();
+		OutputLocationAdapter outputLocationAdapter = new OutputLocationAdapter();
 		
 		fOutputLocationField = new StringButtonDialogField(outputLocationAdapter);
 		fOutputLocationField.setButtonLabel("Bro&wse..."); 
@@ -106,7 +106,7 @@ public class SourceContainerConfigPage extends AbstractConfigPage {
 
 
 	private void updateView() {
-		fSrcFoldersList.setElements(Arrays.asList(fDeeProject.getSourceRoots()));
+		fSrcFoldersList.setElements(fDeeProject.getSourceFolders());
 		fOutputLocationField.setTextWithoutUpdate(
 				fDeeProject.getOutputDir().getProjectRelativePath().toString());
 	}
@@ -116,7 +116,7 @@ public class SourceContainerConfigPage extends AbstractConfigPage {
 	
  
 
-	private void addEntry() {
+	private void createEntry() {
 		ProjectFolderSelectionDialog containerDialog;
 		containerDialog	= new ProjectFolderSelectionDialog();
 		containerDialog.dialog.setTitle("Choose a folder"); 
@@ -124,19 +124,24 @@ public class SourceContainerConfigPage extends AbstractConfigPage {
 
 		IFolder container = containerDialog.chooseContainer();
 		if (container != null) {
-			DeeSourceFolder sourceFolder = new DeeSourceFolder(container, fDeeProject);
+			addEntry(container);
+		}
+	}
+
+
+	private void addEntry(IFolder container) {
+		DeeSourceFolder sourceFolder = new DeeSourceFolder(container, fDeeProject);
+		try {
 			fSrcFoldersList.addElement(sourceFolder);
-			try {
-				fDeeProject.addSourceFolder(sourceFolder);
-			} catch (CoreException e) {
-				ExceptionHandler.handle(e, null, null);
-			}
+			fDeeProject.addSourceFolder(sourceFolder);
+		} catch (CoreException e) {
+			ExceptionHandler.handle(e, null, null);
 		}
 	}
 	
 
 	private void editElementEntry(Object elem) {
-		MessageDialog.openInformation(getShell(), "TODO", "TODO");
+		MessageDialog.openInformation(getShell(), "Edit Source Folder", "TODO");
 	}
 
 
@@ -144,6 +149,7 @@ public class SourceContainerConfigPage extends AbstractConfigPage {
 		LangSourceFolder entry = (LangSourceFolder) elem;
 		try {
 			fDeeProject.removeSourceFolder(entry.folder);
+			fSrcFoldersList.removeElement(entry);
 		} catch (CoreException e) {
 			ExceptionHandler.handle(e, null, null);
 		}
@@ -158,18 +164,18 @@ public class SourceContainerConfigPage extends AbstractConfigPage {
 		public void changeControlPressed(DialogField field) {
 			ProjectContainerSelectionDialog containerDialog;
 			containerDialog	= new ProjectContainerSelectionDialog();
-			containerDialog.dialog.setTitle("Choose a folder"); 
-			containerDialog.dialog.setMessage("Choose a folder desc.");
+			containerDialog.dialog.setTitle("Folder Selection"); 
+			containerDialog.dialog.setMessage("Choose the output location folder.");
 
-			IResource initSelection= null;
+			IResource initSelection = null;
 			if (fOutputLocationPath != null) {
-				initSelection= fWorkspaceRoot.findMember(fOutputLocationPath);
+				initSelection = fWorkspaceRoot.findMember(fOutputLocationPath);
+				containerDialog.dialog.setInitialSelection(initSelection);
 			}
-			containerDialog.dialog.setInitialSelection(initSelection);
 
 			IContainer container = containerDialog.chooseContainer();
 			if (container != null) {
-				fOutputLocationField.setText(container.getFullPath().toString());
+				fOutputLocationField.setText(container.getProjectRelativePath().toString());
 			}
 			
 		}

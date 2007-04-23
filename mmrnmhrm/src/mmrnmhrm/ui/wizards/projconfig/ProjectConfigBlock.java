@@ -28,7 +28,6 @@ public class ProjectConfigBlock {
 
 	public Control createControl(Composite parent) {
 		final Composite content = parent;
-		//content.setLayoutData(new GridData(GridData.FILL_BOTH));
 		
 		TabFolder folder= new TabFolder(content, SWT.NONE);
 		folder.setLayoutData(new GridData(GridData.FILL_BOTH));

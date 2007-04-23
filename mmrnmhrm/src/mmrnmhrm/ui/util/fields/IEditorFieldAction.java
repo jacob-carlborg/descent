@@ -1,4 +1,4 @@
-package mmrnmhrm.ui.wizards.projconfig;
+package mmrnmhrm.ui.util.fields;
 
 import org.eclipse.jdt.internal.ui.wizards.dialogfields.DialogField;
 

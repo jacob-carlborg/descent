@@ -1,4 +1,4 @@
-package mmrnmhrm.ui.util;
+package mmrnmhrm.ui.util.fields;
 
 import org.eclipse.jdt.internal.ui.util.PixelConverter;
 import org.eclipse.jdt.internal.ui.wizards.dialogfields.DialogField;
@@ -17,9 +17,12 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Tree;
 
+/** 
+ * A field with an item list purely for selection. 
+ * Each selection item can be divided into categories. */
 public class ItemSelectionListField extends DialogField {
 
-	/** Category: named class to hold a list of ColoringListItem. */
+	/** A named category holding a list of SelectionListItem. */
 	public static class SelectionListCategory {
 		public String name;
 		public SelectionListItem[] items;
@@ -34,7 +37,7 @@ public class ItemSelectionListField extends DialogField {
 		}
 	}
 
-	/** A configurable unit of code syntax coloring. */
+	/** A selection element for the item selection list . */
 	public static class SelectionListItem {
 		public String name;
 		
@@ -48,8 +51,8 @@ public class ItemSelectionListField extends DialogField {
 
 	}
 	
-	/** Content provider for the coloring items and categories. */
-	private class DeeColoringContentProvider implements ITreeContentProvider {
+	/** Content provider for the selection items and categories. */
+	private class SelectionListContentProvider implements ITreeContentProvider {
 
 		public Object[] getElements(Object inputElement) {
 			return catRoot;
@@ -138,7 +141,7 @@ public class ItemSelectionListField extends DialogField {
 
 			fTreeViewer = new TreeViewer(parent, SWT.SINGLE | SWT.BORDER);
 		    fTreeViewer.setLabelProvider(new LabelProvider());
-		    fTreeViewer.setContentProvider(new DeeColoringContentProvider());
+		    fTreeViewer.setContentProvider(new SelectionListContentProvider());
 		    fTreeViewer.addSelectionChangedListener(new ISelectionChangedListener() {
 				public void selectionChanged(SelectionChangedEvent event) {
 					dialogFieldChanged();

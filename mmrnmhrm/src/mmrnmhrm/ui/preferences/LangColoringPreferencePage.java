@@ -9,11 +9,11 @@ import mmrnmhrm.ui.text.color.LangColorPreferences;
 import mmrnmhrm.ui.util.ColumnComposite;
 import mmrnmhrm.ui.util.DialogComposite;
 import mmrnmhrm.ui.util.EmptyLabel;
-import mmrnmhrm.ui.util.ItemSelectionListField;
 import mmrnmhrm.ui.util.RowComposite;
 import mmrnmhrm.ui.util.SimpleSelectionListener;
-import mmrnmhrm.ui.util.ItemSelectionListField.SelectionListCategory;
-import mmrnmhrm.ui.util.ItemSelectionListField.SelectionListItem;
+import mmrnmhrm.ui.util.fields.ItemSelectionListField;
+import mmrnmhrm.ui.util.fields.ItemSelectionListField.SelectionListCategory;
+import mmrnmhrm.ui.util.fields.ItemSelectionListField.SelectionListItem;
 
 import org.eclipse.jdt.internal.ui.wizards.dialogfields.DialogField;
 import org.eclipse.jdt.internal.ui.wizards.dialogfields.IDialogFieldListener;
@@ -264,7 +264,7 @@ public abstract class LangColoringPreferencePage extends AbstractPreferencePage 
 	
 	/** Enables or disables the color style editing. */
 	private void enableStyleEditing(boolean enable) {
-		styleComposite.setRecursiveEnabled(enable);
+		styleComposite.recursiveSetEnabled(enable);
 	}
 
 	private void handleColoringItemSelectionChange() {

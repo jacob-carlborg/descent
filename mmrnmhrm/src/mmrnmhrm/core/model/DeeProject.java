@@ -5,6 +5,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
+import java.util.ArrayList;
 
 import mmrnmhrm.core.DeeCoreException;
 
@@ -70,6 +71,10 @@ public class DeeProject extends LangProject {
 		removeChild(new DeeSourceFolder(folder, this));
 	}
 	
+	public void removeSourceFolder(IDeeSourceRoot entry) throws CoreException {
+		removeChild(entry);
+	}
+	
 
 	public IDeeSourceRoot getRoot(IFolder folder) {
 		String name = folder.getProjectRelativePath().toString();
@@ -79,6 +84,16 @@ public class DeeProject extends LangProject {
 	
 	public IDeeSourceRoot[] getSourceRoots() {
 		return (IDeeSourceRoot[]) getChildren();
+	}
+	
+	@SuppressWarnings("unchecked")
+	public ArrayList<DeeSourceFolder> getSourceFolders() {
+		return (ArrayList<DeeSourceFolder>) getChildrenOfType(ELangElementTypes.SOURCEFOLDER);
+	}
+
+	@SuppressWarnings("unchecked")
+	public ArrayList<DeeSourceLib> getSourceLibs() {
+		return (ArrayList<DeeSourceLib>) getChildrenOfType(ELangElementTypes.SOURCELIB);
 	}
 
 	/* --------------  persistance -------------- */

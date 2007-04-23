@@ -6,11 +6,9 @@ import mmrnmhrm.ui.util.RowComposite;
 import mmrnmhrm.ui.wizards.projconfig.ProjectConfigBlock;
 
 import org.eclipse.core.resources.IProject;
-import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -33,7 +31,6 @@ public class DeeProjectWizardSecondPage extends WizardPage {
 	}
 	
 	public void createControl(Composite parent) {
-		initializeDialogUnits(parent);
 		
 		final Composite content= new RowComposite(parent);
 		
@@ -51,21 +48,6 @@ public class DeeProjectWizardSecondPage extends WizardPage {
 		button2.setText("BUTTON2");
 
 		setControl(content);		
-	}
-
-
-	protected GridLayout initGridLayout(GridLayout layout, boolean margins) {
-		// Initialize a grid layout with the default Dialog settings.
-		layout.horizontalSpacing= convertHorizontalDLUsToPixels(IDialogConstants.HORIZONTAL_SPACING);
-		layout.verticalSpacing= convertVerticalDLUsToPixels(IDialogConstants.VERTICAL_SPACING);
-		if (margins) {
-			layout.marginWidth= convertHorizontalDLUsToPixels(IDialogConstants.HORIZONTAL_MARGIN);
-			layout.marginHeight= convertVerticalDLUsToPixels(IDialogConstants.VERTICAL_MARGIN);
-		} else {
-			layout.marginWidth= 0;
-			layout.marginHeight= 0;
-		}
-		return layout;
 	}
 
 

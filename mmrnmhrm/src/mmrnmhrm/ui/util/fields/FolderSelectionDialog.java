@@ -8,7 +8,7 @@
  * Contributors:
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
-package mmrnmhrm.ui.wizards.projconfig;
+package mmrnmhrm.ui.util.fields;
 
 import mmrnmhrm.ui.IActualHelpContextIds;
 import mmrnmhrm.ui.wizards.NewWizardMessages;
@@ -35,7 +35,8 @@ import org.eclipse.ui.dialogs.NewFolderDialog;
 import org.eclipse.ui.views.navigator.ResourceSorter;
 
 /**
-  */
+ * Dialog for the selection of an existing folder. 
+ */
 public class FolderSelectionDialog extends ElementTreeSelectionDialog implements ISelectionChangedListener {
 
 	private Button fNewFolderButton;
