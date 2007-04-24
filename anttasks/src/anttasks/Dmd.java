@@ -65,7 +65,7 @@ abstract class Dmd extends Compiler{
 			//}
 		}
 	}
-
+/*
 	private boolean findModule(LinkedList<File> incpath, String moduleName, boolean found) {
 		for( File root : incpath ){
 			
@@ -100,5 +100,5 @@ abstract class Dmd extends Compiler{
 		}
 		return null;
 	}
-
+*/
 }
