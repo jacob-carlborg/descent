@@ -1,4 +1,4 @@
-package descent.launching.model;
+package descent.internal.launching.model;
 
 import org.eclipse.debug.core.DebugException;
 import org.eclipse.debug.core.model.IBreakpoint;
@@ -85,7 +85,7 @@ public class DescentThread extends DescentDebugElement implements IThread {
 	}
 
 	public boolean canResume() {
-		return isSuspended();
+		return !isTerminated() && isSuspended();
 	}
 
 	public boolean canSuspend() {
@@ -105,15 +105,15 @@ public class DescentThread extends DescentDebugElement implements IThread {
 	}
 
 	public boolean canStepInto() {
-		return isSuspended();
+		return !isTerminated() && isSuspended();
 	}
 
 	public boolean canStepOver() {
-		return isSuspended();
+		return !isTerminated() && isSuspended();
 	}
 
 	public boolean canStepReturn() {
-		return isSuspended();
+		return !isTerminated() && isSuspended();
 	}
 	
 	/**

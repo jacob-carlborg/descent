@@ -1,82 +1,44 @@
-package descent.launching.model;
+package descent.internal.launching.model;
 
 import java.io.IOException;
 
 import org.eclipse.debug.core.DebugException;
+import org.eclipse.debug.core.model.IDebugTarget;
 import org.eclipse.debug.core.model.IRegisterGroup;
 import org.eclipse.debug.core.model.IStackFrame;
 import org.eclipse.debug.core.model.IThread;
 import org.eclipse.debug.core.model.IVariable;
 
-import descent.launching.model.ddbg.DdbgInterpreter;
+import descent.launching.model.ICli;
 
 
 public class DescentStackFrame extends DescentDebugElement implements IStackFrame {
 
-	private final DescentThread fThread;
-	private final DdbgInterpreter fInterpreter;
+	private final IThread fThread;
+	private final ICli fCli;
 	private String fName;
 	private int fNumber;
 	private String fSourceName;
 	private int fLineNumber;
-
-	public DescentStackFrame(DdbgInterpreter interpreter, DescentThread thread, String data) {
-		super((DescentDebugTarget) thread.getDebugTarget());
-		this.fInterpreter = interpreter;
+	
+	public DescentStackFrame(IDebugTarget target, ICli cli, IThread thread, String name, int number, String sourceName, int lineNumber) {
+		super(target);
+		this.fCli = cli;
 		this.fThread = thread;
-		init(data);
+		this.fName = name;
+		this.fNumber = number;
+		this.fSourceName = sourceName;
+		this.fLineNumber = lineNumber;
 	}
 	
-	private void init(String data) {
-		fName = data;
-		fLineNumber = -1;
-		fSourceName = null;
-			
-		if (data.length() == 0 || data.charAt(0) != '#') {
-			return;
-		}
-		
-		// Some positions in the string
-		int indexOfFirstSpace = data.indexOf(' ');
-		int indexOfIn = data.indexOf(" in ");
-		int indexOfFrom = data.indexOf(" from ");
-		int indexOfAt = data.indexOf(" at ");
-		int lastIndexOfColon = data.lastIndexOf(':');
-		
-		// Number
-		this.fNumber = Integer.parseInt(data.substring(1, indexOfFirstSpace));		
-		
-		// Name
-		if (indexOfIn != -1 && indexOfFrom != -1 && indexOfIn < indexOfFrom) {
-			fName = data.substring(indexOfIn + 4, indexOfFrom + 1);
-		} else if (indexOfIn != -1 && indexOfAt != -1 && indexOfIn < indexOfAt) {
-			fName = data.substring(indexOfIn + 4, indexOfAt + 1);
-		} else {
-			if (indexOfFirstSpace != -1) {
-				if (indexOfAt != -1) {
-					fName = data.substring(indexOfFirstSpace + 1, indexOfAt + 1);
-				} else {
-					int indexOfSecondSpace = data.indexOf(' ', indexOfFirstSpace + 1);
-					if (indexOfSecondSpace != -1) {
-						fName = data.substring(indexOfFirstSpace + 1, indexOfSecondSpace);
-					}
-				}
-			}
-		}
-		
-		fName = fName.trim();
-		if (fName.endsWith(" ()")) {
-			fName = fName.substring(0, fName.length() - 3) + "()";
-		}
-		
-		
-		// sourceName and lineNumber
-		if (indexOfAt != -1 && lastIndexOfColon != -1) {
-			fSourceName = data.substring(indexOfAt + 4, lastIndexOfColon);
-			fLineNumber = Integer.parseInt(data.substring(lastIndexOfColon + 1));
-		}
+	public ICli getCli() {
+		return fCli;
 	}
-
+	
+	public int getNumber() {
+		return fNumber;
+	}
+	
 	public int getCharEnd() throws DebugException {
 		return 0;
 	}
@@ -105,7 +67,7 @@ public class DescentStackFrame extends DescentDebugElement implements IStackFram
 
 	public IRegisterGroup[] getRegisterGroups() throws DebugException {
 		return new IRegisterGroup[] {
-				new DescentRegisterGroup((DescentDebugTarget) getDebugTarget(), fInterpreter, fNumber)
+				new DescentRegisterGroup((DescentDebugTarget) getDebugTarget(), fCli, fNumber)
 		};
 	}
 
@@ -115,7 +77,7 @@ public class DescentStackFrame extends DescentDebugElement implements IStackFram
 
 	public IVariable[] getVariables() throws DebugException {
 		try {
-			return fInterpreter.getVariables(fNumber);
+			return fCli.getVariables(fNumber);
 		} catch (IOException e) {
 			e.printStackTrace();
 			return new IVariable[0];

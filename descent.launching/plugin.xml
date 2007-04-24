@@ -2,6 +2,12 @@
 <?eclipse version="3.2"?>
 <plugin>
    <extension
+         id="descentLineBreakpointMarker"
+         point="org.eclipse.core.resources.markers">
+      <super type="org.eclipse.debug.core.lineBreakpointMarker"/>
+      <persistent value="true"/>
+   </extension>
+   <extension
          point="org.eclipse.debug.core.launchConfigurationTypes">
       <launchConfigurationType
             delegate="descent.internal.launching.DescentLaunchConfigurationDelegate"
@@ -20,12 +26,6 @@
             name="Ddbg Line Breakpoint"/>
    </extension>
    <extension
-         id="descentLineBreakpointMarker"
-         point="org.eclipse.core.resources.markers">
-      <super type="org.eclipse.debug.core.lineBreakpointMarker"/>
-      <persistent value="true"/>
-   </extension>
-   <extension
          point="org.eclipse.debug.core.sourceLocators">
       <sourceLocator
             class="descent.internal.launching.DescentSourceLookupDirector"
@@ -37,6 +37,12 @@
       <sourcePathComputer
             class="descent.internal.launching.DescentSourcePathComputerDelegate"
             id="descent.launching.descentSourcePathComputer"/>
+   </extension>
+   <extension
+         point="org.eclipse.debug.core.watchExpressionDelegates">
+      <watchExpressionDelegate
+            debugModel="descent.launching.model"
+            delegateClass="descent.internal.launching.DescentWatchExpressionDelegate"/>
    </extension>
 
 </plugin>

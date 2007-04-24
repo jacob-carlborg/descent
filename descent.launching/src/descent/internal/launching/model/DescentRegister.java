@@ -1,6 +1,7 @@
-package descent.launching.model;
+package descent.internal.launching.model;
 
 import org.eclipse.debug.core.DebugException;
+import org.eclipse.debug.core.model.IDebugTarget;
 import org.eclipse.debug.core.model.IRegister;
 import org.eclipse.debug.core.model.IRegisterGroup;
 
@@ -8,7 +9,7 @@ public class DescentRegister extends DescentVariable implements IRegister, Compa
 
 	private final IRegisterGroup fRegisterGroup;
 
-	public DescentRegister(DescentDebugTarget target, IRegisterGroup registerGroup, String name, String value) {
+	public DescentRegister(IDebugTarget target, IRegisterGroup registerGroup, String name, String value) {
 		super(target, name, value);
 		this.fRegisterGroup = registerGroup;		
 	}

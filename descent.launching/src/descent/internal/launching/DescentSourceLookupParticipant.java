@@ -3,7 +3,7 @@ package descent.internal.launching;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.debug.core.sourcelookup.AbstractSourceLookupParticipant;
 
-import descent.launching.model.DescentStackFrame;
+import descent.internal.launching.model.DescentStackFrame;
 
 public class DescentSourceLookupParticipant extends AbstractSourceLookupParticipant {
 

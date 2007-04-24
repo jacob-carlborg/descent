@@ -4,6 +4,8 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.debug.core.DebugException;
 import org.eclipse.debug.core.model.ILineBreakpoint;
 import org.eclipse.debug.core.model.IValue;
+import org.eclipse.debug.core.model.IVariable;
+import org.eclipse.debug.core.model.IWatchExpression;
 import org.eclipse.debug.ui.IDebugModelPresentation;
 import org.eclipse.debug.ui.IValueDetailListener;
 import org.eclipse.jface.viewers.LabelProvider;
@@ -39,6 +41,42 @@ public class DescentDebugModelPresentation extends LabelProvider implements IDeb
 			return new FileEditorInput((IFile)((ILineBreakpoint)element).getMarker().getResource());
 		}
 		return null;
+	}
+	
+	@Override
+	public String getText(Object element) {
+		if (element instanceof IWatchExpression) {
+			IWatchExpression exp = (IWatchExpression) element;
+			try {
+				StringBuilder sb = new StringBuilder();
+				sb.append("\"");
+				sb.append(exp.getExpressionText());
+				sb.append("\"");
+				if (exp.getValue() != null && exp.getValue().getValueString() != null) {
+					sb.append(" = ");
+					sb.append(exp.getValue().getValueString());
+				}
+				return sb.toString();
+			} catch (DebugException e) {
+				e.printStackTrace();
+			}
+		} else if (element instanceof IVariable) {
+			IVariable variable = (IVariable) element;
+			try {
+				StringBuilder sb = new StringBuilder();
+				sb.append("\"");
+				sb.append(variable.getName());
+				sb.append("\"");
+				if (variable.getValue() != null && variable.getValue().getValueString() != null) {
+					sb.append(" = ");
+					sb.append(variable.getValue().getValueString());
+				}
+				return sb.toString();
+			} catch (DebugException e) {
+				e.printStackTrace();
+			}
+		}
+		return super.getText(element);
 	}
 
 }

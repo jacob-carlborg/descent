@@ -34,5 +34,10 @@ public class DescentLineBreakpoint extends LineBreakpoint {
 	public String getModelIdentifier() {
 		return IDescentLaunchConfigurationConstants.ID_D_DEBUG_MODEL;
 	}
+	
+	@Override
+	public String toString() {
+		return super.toString();
+	}
 
 }

@@ -1,4 +1,4 @@
-package descent.launching.model;
+package descent.internal.launching.model;
 
 import java.io.IOException;
 
@@ -8,14 +8,14 @@ import org.eclipse.debug.core.model.IRegister;
 import org.eclipse.debug.core.model.IRegisterGroup;
 
 import descent.launching.IDescentLaunchConfigurationConstants;
-import descent.launching.model.ddbg.DdbgInterpreter;
+import descent.launching.model.ICli;
 
 public class DescentRegisterGroup extends DebugElement implements IRegisterGroup {
 	
 	private final int stackFrame;
-	private final DdbgInterpreter interpter;
+	private final ICli interpter;
 	
-	public DescentRegisterGroup(DescentDebugTarget target, DdbgInterpreter interpter, int stackFrame) {
+	public DescentRegisterGroup(DescentDebugTarget target, ICli interpter, int stackFrame) {
 		super(target);
 		this.interpter = interpter;
 		this.stackFrame = stackFrame;
@@ -40,6 +40,15 @@ public class DescentRegisterGroup extends DebugElement implements IRegisterGroup
 
 	public String getModelIdentifier() {
 		return IDescentLaunchConfigurationConstants.ID_D_DEBUG_MODEL;
+	}
+	
+	@Override
+	public String toString() {
+		try {
+			return getName();
+		} catch (DebugException e) {
+			return super.toString();
+		}
 	}
 
 }

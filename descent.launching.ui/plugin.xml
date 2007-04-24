@@ -2,6 +2,20 @@
 <?eclipse version="3.2"?>
 <plugin>
    <extension
+         point="org.eclipse.core.runtime.adapters">
+      <factory
+            adaptableType="descent.internal.ui.javaeditor.CompilationUnitEditor"
+            class="descent.internal.launching.ui.adapters.DescentBreakpointAdapterFactory">
+         <adapter type="org.eclipse.debug.ui.actions.IToggleBreakpointsTarget"/>
+      </factory>
+   </extension>
+   <extension
+         point="org.eclipse.debug.ui.debugModelContextBindings">
+      <modelContextBinding
+            contextId="descent.debugging"
+            debugModelId="descent.launching.model"/>
+   </extension>
+   <extension
          point="org.eclipse.debug.ui.debugModelPresentations">
       <debugModelPresentation
             class="descent.internal.launching.ui.model.DescentDebugModelPresentation"
@@ -44,12 +58,12 @@
       </shortcut>
    </extension>
    <extension
-         point="org.eclipse.core.runtime.adapters">
-      <factory
-            adaptableType="descent.internal.ui.javaeditor.CompilationUnitEditor"
-            class="descent.internal.launching.ui.adapters.DescentBreakpointAdapterFactory">
-         <adapter type="org.eclipse.debug.ui.actions.IToggleBreakpointsTarget"/>
-      </factory>
+         point="org.eclipse.ui.contexts">
+      <context
+            description="Debugging D"
+            id="descent.debugging"
+            name="Debugging D"
+            parentId="org.eclipse.debug.ui.debugging"/>
    </extension>
    <extension
          point="org.eclipse.ui.editorActions">
