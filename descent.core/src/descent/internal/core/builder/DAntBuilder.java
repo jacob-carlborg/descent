@@ -2,13 +2,11 @@ package descent.internal.core.builder;
 
 
 import java.io.ByteArrayInputStream;
-import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Map;
 
-import org.apache.tools.ant.DefaultLogger;
+
 import org.apache.tools.ant.Project;
-import org.apache.tools.ant.ProjectHelper;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
@@ -21,58 +19,78 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import descent.internal.core.util.Util;
 import org.eclipse.ui.*;
 import org.eclipse.ui.console.*;
-
+import org.eclipse.ant.core.AntRunner;
+import org.eclipse.core.runtime.IProgressMonitor;
 public class DAntBuilder extends IncrementalProjectBuilder {
 
     public DAntBuilder() {
 	// TODO Auto-generated constructor stub
     }
 
-    private MessageConsole findConsole(String name) {
-	ConsolePlugin plugin = ConsolePlugin.getDefault();
-	IConsoleManager conMan = plugin.getConsoleManager();
-	IConsole[] existing = conMan.getConsoles();
-	for (int i = 0; i < existing.length; i++)
-	    if (name.equals(existing[i].getName()))
-		return (MessageConsole) existing[i];
-	//no console found, so create a new one
-	MessageConsole myConsole = new MessageConsole(name, null);
-	conMan.addConsoles(new IConsole[]{myConsole});
-	return myConsole;
-    }
-    //	 
-    @Override
-	protected IProject[] build(int kind, Map args, IProgressMonitor monitor)
-	throws CoreException {
-	if (kind == INCREMENTAL_BUILD || kind == FULL_BUILD) { // we skip AUTO_BUILDS
 
-	    Util.log(null, "Starting compilation ");
-			
-	    clean(monitor);
-			
-			
+    
+    private IFile createBuildFile(IProgressMonitor monitor)
+    {
 	    IProject project = getProject();
 	    DResourceVisitor visitor;
 	    // for now just delete the file and create
-	    if (true ) { //!project.getFile("build.xml").exists()) {
+	    
 				
 		IFile buildFile = project.getFile("build.xml");
 				
-		buildFile.delete(true, monitor);
-		visitor = new DResourceVisitor();
-				
-		project.accept(visitor);
-				
-				
-		DAntFileCreator dant = new DAntFileCreator(visitor.projectFiles);
-				
-		String buildXml = dant.create(project);
-		Util.log(null, buildXml);
-		Util.log(null, args.toString());				
-		buildFile.create(new ByteArrayInputStream(buildXml.getBytes() ) , true, monitor );
+		try {
+			buildFile.delete(true, monitor);
+			visitor = new DResourceVisitor();
+			
+			project.accept(visitor);
+					
+					
+			DAntFileCreator dant = new DAntFileCreator(visitor.projectFiles);
+					
+			String buildXml = dant.create(project);
+			//Util.log(null, buildXml);
+						
+			buildFile.create(new ByteArrayInputStream(buildXml.getBytes() ) , true, monitor );
+			buildFile.touch(monitor);
+		}
+
+		 catch (CoreException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		return buildFile;
+    	
+	    
+    }
+    //	 
+    
+	protected IProject[] build(int kind, Map args, IProgressMonitor monitor)
+	throws CoreException {
+		
+		
+	if (kind == INCREMENTAL_BUILD || kind == FULL_BUILD) { // we skip AUTO_BUILDS
+
+	    //Util.log(null, "Starting compilation ");
+			
+	    clean(monitor);
+		AntRunner runner = new AntRunner();
+		IFile buildFile = createBuildFile(monitor);
+		runner.setBuildFileLocation(buildFile.getLocation().toOSString());
+		runner.setArguments("-verbose");
+		//runner.addBuildListener("DAntBuildListener");
+		runner.addBuildLogger("org.apache.tools.ant.DefaultLogger");		
+		runner.setMessageOutputLevel(Project.MSG_DEBUG );
+		runner.run(monitor);
+		
+	}
+		
+	    /*
+			
+	    IFile buildFile = createBuildFile(monitor);
+	    Util.log(null, buildFile.getLocation().toOSString() );
 		
 		Project antProject = new Project();
-		antProject.setUserProperty("ant.file",buildFile.getFullPath().toOSString());
+		antProject.setUserProperty("ant.file",buildFile.getLocation().toOSString() );
 		antProject.init();
 		ProjectHelper helper = ProjectHelper.getProjectHelper();
 		antProject.addReference("ant.projecthelper", helper);
@@ -84,8 +102,8 @@ public class DAntBuilder extends IncrementalProjectBuilder {
 		MessageConsole mc = findConsole(IConsoleConstants.ID_CONSOLE_VIEW);
 		MessageConsoleStream ms = new MessageConsoleStream(mc); 
 		PrintStream ps = new PrintStream ( ms );
-		log.setOutputPrintStream( ps);
-		log.setErrorPrintStream(ps);
+		log.setOutputPrintStream( System.out);
+		log.setErrorPrintStream(System.err);
 		antProject.addBuildListener(log);
 				
 		antProject.executeTarget("compileProject");
@@ -94,7 +112,8 @@ public class DAntBuilder extends IncrementalProjectBuilder {
 			
 			
 	    forgetLastBuiltState();
-	}
+	    */
+	
 		
 	return null;
     }
@@ -158,7 +177,7 @@ class DAntFileCreator {
 
 	antText += "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n";
 	antText += "<project name=\"" + project.getName()
-	    + "\" default=\"compile\" basedir=\".\">\n";
+	    + "\" default=\"compileProject\" basedir=\".\">\n";
 	antText += "<taskdef classname=\"anttasks.D\" name=\"D\" />\n\n";
 	antText += "<taskdef classname=\"anttasks.DModuleBuildNumber\" name=\"DBldNum\" />\n";
 	antText += "<taskdef classname=\"anttasks.DModuleBuildNumber\" name=\"foreach\" />\n\n";
