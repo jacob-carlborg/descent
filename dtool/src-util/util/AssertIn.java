@@ -11,15 +11,16 @@ public final class AssertIn {
     private AssertIn() {
     }
     
-	/** Like {@link Assert#isNotNull(Object, String)} but throws 
-	 * IllegalArgumentException instead.
+	/** Like {@link Assert#isNotNull(Object, String)} 
+	 * but throws IllegalArgumentException instead.
 	 */
 	public static void isNotNull(Object object, String message) {
 		if (object == null)
 			throw new IllegalArgumentException("null argument:" + message); //$NON-NLS-1$
 	}
 	
-	/** Like {@link isNotNull(Object object)} with empty message.
+	/** Like {@link #isNotNull(Object object, String message)} , 
+	 * with empty message.
 	 */
 	public static void isNotNull(Object object) {
 		isNotNull(object, ""); //$NON-NLS-1$

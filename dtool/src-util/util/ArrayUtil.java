@@ -1,5 +1,6 @@
 package util;
 
+import java.lang.reflect.Array;
 import java.util.Arrays;
 
 public class ArrayUtil {
@@ -21,15 +22,12 @@ public class ArrayUtil {
 	
 	/** Creates a new array with the given length, and of the same type
 	 * as the given array. */
+	@SuppressWarnings("unchecked")
 	public static <T> T[] createNew(T[] array, int length) {
-		return Arrays.copyOf(array, length);
 		
-        /*T[] copy = ((Object)newType == (Object)Object[].class)
-        	? (T[]) new Object[newLength]
-        	: (T[]) Array.newInstance(newType.getComponentType(), newLength);
-    	System.arraycopy(original, 0, copy, 0,
-                     Math.min(original.length, newLength));
-    	return copy;*/
+        T[] copy = (T[]) Array.newInstance(array.getClass().getComponentType(), length);
+    	System.arraycopy(array, 0, copy, 0, Math.min(array.length, length));
+    	return copy;
 	}
 
 	/** Return true if array contains an element equal to obj. */
