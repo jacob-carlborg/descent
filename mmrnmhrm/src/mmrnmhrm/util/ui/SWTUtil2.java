@@ -1,7 +1,9 @@
-package mmrnmhrm.ui.util;
+package mmrnmhrm.util.ui;
 
 import java.util.Random;
 
+
+import org.eclipse.jdt.internal.ui.util.SWTUtil;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.resource.JFaceResources;
@@ -12,6 +14,7 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Layout;
 
 /**
  * Miscelleanous class with some SWT utils.
@@ -72,6 +75,7 @@ public class SWTUtil2 {
 	/** Inits layout with dialog unit constants. testControl is used to obtain
 	 * FontMetrics */
 	public static void initGridLayout(GridLayout layout, Control testControl) {
+
 		FontMetrics fontMetrics = getFontMetrics(testControl);
 	
 		layout.horizontalSpacing = Dialog.convertHorizontalDLUsToPixels(
@@ -82,6 +86,20 @@ public class SWTUtil2 {
 				IDialogConstants.HORIZONTAL_MARGIN);
 		layout.marginHeight = Dialog.convertHorizontalDLUsToPixels(fontMetrics,
 				IDialogConstants.VERTICAL_MARGIN);
+	}
+
+		/** Creates a new GridLayout with some default settings. FIXME*/
+	public static Layout createGridLayout(int numColumns, Control testControl) {
+		GridLayout gd = new GridLayout(numColumns, false);
+		initGridLayout(gd, testControl);
+		return gd;
+	}
+	
+	/** Creates a new GridLayout with some default settings. FIXME*/
+	public static Layout createGridLayout(int numColumns) {
+		GridLayout gd = new GridLayout(numColumns, false);
+		//initGridLayout(gd, testControl);
+		return gd;
 	}
 
 }

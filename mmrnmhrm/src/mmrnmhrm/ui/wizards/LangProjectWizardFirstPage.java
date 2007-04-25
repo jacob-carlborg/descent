@@ -5,6 +5,10 @@ import java.util.Observable;
 import java.util.Observer;
 
 import mmrnmhrm.ui.ActualPlugin;
+import mmrnmhrm.util.ui.ColumnComposite;
+import mmrnmhrm.util.ui.LayoutUtil;
+import mmrnmhrm.util.ui.SWTUtil2;
+import mmrnmhrm.util.ui.fields.StringDialogField;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
@@ -17,10 +21,8 @@ import org.eclipse.core.runtime.Platform;
 import org.eclipse.jdt.internal.ui.wizards.dialogfields.DialogField;
 import org.eclipse.jdt.internal.ui.wizards.dialogfields.IDialogFieldListener;
 import org.eclipse.jdt.internal.ui.wizards.dialogfields.IStringButtonAdapter;
-import org.eclipse.jdt.internal.ui.wizards.dialogfields.LayoutUtil;
 import org.eclipse.jdt.internal.ui.wizards.dialogfields.SelectionButtonDialogField;
 import org.eclipse.jdt.internal.ui.wizards.dialogfields.StringButtonDialogField;
-import org.eclipse.jdt.internal.ui.wizards.dialogfields.StringDialogField;
 import org.eclipse.jdt.ui.JavaUI;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.wizard.IWizardPage;
@@ -44,10 +46,7 @@ public abstract class LangProjectWizardFirstPage extends WizardPage {
 		protected final StringDialogField fNameField;
 
 		public NameGroup(Composite composite, String initialName) {
-			final Composite nameComposite= new Composite(composite, SWT.NONE);
-			nameComposite.setFont(composite.getFont());
-			nameComposite.setLayout(initGridLayout(new GridLayout(2, false), false));
-			nameComposite.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+			final Composite nameComposite = new ColumnComposite(composite, 2);
 
 			// text field for project name
 			fNameField= new StringDialogField();
@@ -57,7 +56,7 @@ public abstract class LangProjectWizardFirstPage extends WizardPage {
 			setName(initialName);
 
 			fNameField.doFillIntoGrid(nameComposite, 2);
-			LayoutUtil.setHorizontalGrabbing(fNameField.getTextControl(null));
+			LayoutUtil.enableHorizontalGrabbing(fNameField.getTextControl(null));
 		}
 		
 		protected void fireEvent() {
@@ -105,7 +104,8 @@ public abstract class LangProjectWizardFirstPage extends WizardPage {
 
 			final Group group= new Group(composite, SWT.NONE);
 			group.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-			group.setLayout(initGridLayout(new GridLayout(numColumns, false), true));
+			group.setLayout(SWTUtil2.createGridLayout(numColumns, composite));
+			//group.setLayout(initGridLayout(new GridLayout(numColumns, false), true));
 			group.setText(DeeNewWizardMessages.LangNewProject_Page1_LocationGroup_title); 
 
 			fWorkspaceRadio= new SelectionButtonDialogField(SWT.RADIO);
@@ -129,7 +129,7 @@ public abstract class LangProjectWizardFirstPage extends WizardPage {
 			fWorkspaceRadio.doFillIntoGrid(group, numColumns);
 			fExternalRadio.doFillIntoGrid(group, numColumns);
 			fLocation.doFillIntoGrid(group, numColumns);
-			LayoutUtil.setHorizontalGrabbing(fLocation.getTextControl(null));
+			LayoutUtil.enableHorizontalGrabbing(fLocation.getTextControl(null));
 		}
 				
 		protected void fireEvent() {

@@ -6,18 +6,18 @@ import mmrnmhrm.org.eclipse.ui.internal.editors.text.OverlayPreferenceStore;
 import mmrnmhrm.org.eclipse.ui.internal.editors.text.OverlayPreferenceStore.OverlayKey;
 import mmrnmhrm.ui.text.color.ILangColorPreferences;
 import mmrnmhrm.ui.text.color.LangColorPreferences;
-import mmrnmhrm.ui.util.ColumnComposite;
-import mmrnmhrm.ui.util.DialogComposite;
-import mmrnmhrm.ui.util.EmptyLabel;
-import mmrnmhrm.ui.util.RowComposite;
-import mmrnmhrm.ui.util.SimpleSelectionListener;
-import mmrnmhrm.ui.util.fields.ItemSelectionListField;
-import mmrnmhrm.ui.util.fields.ItemSelectionListField.SelectionListCategory;
-import mmrnmhrm.ui.util.fields.ItemSelectionListField.SelectionListItem;
+import mmrnmhrm.util.ui.ColumnComposite;
+import mmrnmhrm.util.ui.DialogComposite;
+import mmrnmhrm.util.ui.EmptyLabel;
+import mmrnmhrm.util.ui.LayoutUtil;
+import mmrnmhrm.util.ui.RowComposite;
+import mmrnmhrm.util.ui.SimpleSelectionListener;
+import mmrnmhrm.util.ui.fields.ItemSelectionListField;
+import mmrnmhrm.util.ui.fields.ItemSelectionListField.SelectionListCategory;
+import mmrnmhrm.util.ui.fields.ItemSelectionListField.SelectionListItem;
 
 import org.eclipse.jdt.internal.ui.wizards.dialogfields.DialogField;
 import org.eclipse.jdt.internal.ui.wizards.dialogfields.IDialogFieldListener;
-import org.eclipse.jdt.internal.ui.wizards.dialogfields.LayoutUtil;
 import org.eclipse.jface.preference.ColorSelector;
 import org.eclipse.jface.preference.PreferenceConverter;
 import org.eclipse.swt.SWT;
@@ -50,7 +50,6 @@ public abstract class LangColoringPreferencePage extends AbstractPreferencePage 
 		}
 		
 		public OverlayKey newOverlayKey(String key) {
-			// XXX: I wonder if we can really treat all preference types as STRING
 			return new OverlayKey(OverlayPreferenceStore.STRING, key);
 		}
 		
@@ -159,6 +158,7 @@ public abstract class LangColoringPreferencePage extends AbstractPreferencePage 
 		Composite content = new RowComposite(parent);
 	    
 		new EmptyLabel(content);
+		
 		Composite coloringComposite = new ColumnComposite(content, 2);
 
 		fItemSelectionList = new ItemSelectionListField(catRoot);
@@ -173,17 +173,21 @@ public abstract class LangColoringPreferencePage extends AbstractPreferencePage 
 		LayoutUtil.setWidthHint(fItemSelectionList.getTreeControl(null), 150);	
 		LayoutUtil.setHeightHint(fItemSelectionList.getTreeControl(null), 150);	
 
-
 		editComposite = new RowComposite(coloringComposite);
-		editComposite.setLayoutData(new GridData(GridData.VERTICAL_ALIGN_BEGINNING));
 		
 		new EmptyLabel(editComposite);
 		fEnableCheckbox = new Button(editComposite, SWT.CHECK);
 	    fEnableCheckbox.setText("Enable");
-    
+	
    
 		styleComposite = new RowComposite(editComposite);
+		GridData gd = new GridData(GridData.HORIZONTAL_ALIGN_FILL | GridData.GRAB_HORIZONTAL);
+		gd.horizontalAlignment = SWT.FILL;
+		gd.verticalAlignment = SWT.FILL;
+		styleComposite.setLayoutData(gd);
 		LayoutUtil.setHorizontalIndent(styleComposite, 15);
+		//styleComposite.setLayoutData(new GridData(GridData.FILL_BOTH));
+		//LayoutUtil.enableHorizontalFilling(styleComposite);
 	    
 		Composite colorChooserComposite = new ColumnComposite(styleComposite, 2);
 	    fColorSelectorLabel = new Label(colorChooserComposite, SWT.RIGHT);

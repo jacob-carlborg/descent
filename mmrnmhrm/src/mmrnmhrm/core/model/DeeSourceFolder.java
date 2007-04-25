@@ -5,14 +5,12 @@ import org.eclipse.core.resources.IFolder;
 public class DeeSourceFolder extends LangSourceFolder implements IDeeSourceRoot {
 	
 	public DeeSourceFolder(IFolder folder, DeeProject parent) {
-		this.folder = folder;
-		this.parent = parent;
+		super(parent, folder);
 	}
 	
 	@Override
 	public ILangElement[] newChildrenArray(int size) {
-		//TODO finish
-		return new ILangElement[size];
+		return null; // no children for now
 	}
 
 	public String getSourceRootKindString() {

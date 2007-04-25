@@ -1,4 +1,4 @@
-package mmrnmhrm.ui.util;
+package mmrnmhrm.util.ui;
 
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;

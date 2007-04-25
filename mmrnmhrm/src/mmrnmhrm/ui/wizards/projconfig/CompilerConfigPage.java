@@ -1,34 +1,67 @@
 package mmrnmhrm.ui.wizards.projconfig;
 
-import mmrnmhrm.ui.util.ColumnComposite;
+import mmrnmhrm.core.build.DeeCEManager;
+import mmrnmhrm.core.build.DeeCompilerOptions;
+import mmrnmhrm.core.build.IDeeCE;
+import mmrnmhrm.core.model.DeeProject;
+import mmrnmhrm.util.ui.LayoutUtil;
+import mmrnmhrm.util.ui.fields.FieldUtil;
+import mmrnmhrm.util.ui.fields.StringDialogField;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Label;
 
 public class CompilerConfigPage extends AbstractConfigPage {
 
-	SelectionComboDialogField fBuildType;
+	protected SelectionComboDialogField<DeeCompilerOptions.EBuildTypes> fBuildType;
+	protected SelectionComboDialogField<IDeeCE> fCompiler;
+	protected StringDialogField fCompilerOptions;
+	protected StringDialogField fOptionsPreview;
 	
-	
-	enum BuildTypes {
-		BINARY,
-		LIB_STATIC,
-		LIB_DYNAMIC
-	}
 	
 	public CompilerConfigPage() {
-		fBuildType = new SelectionComboDialogField();
-		fBuildType.setObjectItems(BuildTypes.values());
-		fBuildType.setLabelText("Build Type");
+		fBuildType = new SelectionComboDialogField<DeeCompilerOptions.EBuildTypes>();
+		fBuildType.setLabelText("Build Type:");
+		fBuildType.setObjectItems(DeeCompilerOptions.EBuildTypes.values());
+		
+		fCompiler = new SelectionComboDialogField<IDeeCE>();
+		fCompiler.setLabelText("Compiler:");
+		fCompiler.setObjectItems(DeeCEManager.getAvailableDCEs());
+		
+		fCompilerOptions = new StringDialogField(SWT.BORDER | SWT.SINGLE);
+		fCompilerOptions.setLabelText("Extra Compiler Options (newline separated):");
+
+		fOptionsPreview = new StringDialogField(SWT.WRAP | SWT.BORDER | SWT.READ_ONLY);
+		fOptionsPreview.setLabelText("Compiler Options Preview:");
 	}
 	
 	@Override
 	protected void createContents(Composite content) {
-		Label label = new Label(content, SWT.NONE);
-		label.setText("TEST");
-		Composite content2 = new ColumnComposite(content, 2);
-		fBuildType.doFillIntoGrid(content2, 2);
+		Composite comp;
+
+		comp = FieldUtil.createCompose(content, false, fBuildType);
+
+		comp = FieldUtil.createCompose(content, false, fCompiler);
+
+		comp = FieldUtil.createCompose(content, true, fCompilerOptions);
+		LayoutUtil.setDiagonalExpand(comp);
+		LayoutUtil.setDiagonalExpand(fCompilerOptions.getTextControl(null));
+		
+		comp = FieldUtil.createCompose(content, true, fOptionsPreview);
+		LayoutUtil.setDiagonalExpand(comp);
+		LayoutUtil.setDiagonalExpand(fOptionsPreview.getTextControl(null));
 	}
 	
+	public void init(DeeProject project) {
+		super.init(project);
+		updateView();
+	}
+	
+	private void updateView() {
+		DeeCompilerOptions options = fDeeProject.compilerOptions;
+		fBuildType.selectItem(options.buildType.toString());
+		fCompiler.selectItem(options.compiler.toString());
+		fCompilerOptions.setText(options.extraOptions);
+	}
+
 }

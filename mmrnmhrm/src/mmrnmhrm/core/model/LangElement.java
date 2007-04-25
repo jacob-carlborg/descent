@@ -13,6 +13,10 @@ public abstract class LangElement extends LangElementInfo implements ILangElemen
 	
 	protected LangElement parent;
 	
+	public LangElement(LangElement parent) {
+		this.parent = parent;
+	}
+	
 	public ILangElement getParent() {
 		return parent;
 	}
@@ -27,17 +31,20 @@ public abstract class LangElement extends LangElementInfo implements ILangElemen
 	 * element if they are identical or if they represent the same type
 	 * of element, have equal names, parents, and occurrence counts.
 	 */
-	public boolean equals(Object o) {
+	public boolean equals(Object obj) {
 		
-		if (this == o) return true;
+		if (this == obj) return true;
 	
-		// Only Lang model parent is null, but it's a singleton
+		// Only lang model root's parent is null
+		if (this.parent == null) 
+			return (this == obj); // model root is a singleton
+
 		Assert.isNotNull(this.parent);
-	
-		if(!(o instanceof LangElement))
+
+		if(!(obj instanceof LangElement))
 			return false;
 
-		LangElement other = (LangElement) o;		
+		LangElement other = (LangElement) obj;		
 		return getElementName().equals(other.getElementName()) &&
 				this.parent.equals(other.parent);
 	}

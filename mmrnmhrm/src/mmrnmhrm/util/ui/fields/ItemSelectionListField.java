@@ -1,4 +1,4 @@
-package mmrnmhrm.ui.util.fields;
+package mmrnmhrm.util.ui.fields;
 
 import org.eclipse.jdt.internal.ui.util.PixelConverter;
 import org.eclipse.jdt.internal.ui.wizards.dialogfields.DialogField;

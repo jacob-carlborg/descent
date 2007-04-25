@@ -21,8 +21,8 @@ public class DeeProjectWizard extends NewElementWizard {
         super.addPages();
         fFirstPage= new DeeProjectWizardFirstPage();
         fSecondPage= new DeeProjectWizardSecondPage("Foo");
-        addPage(fSecondPage);
         addPage(fFirstPage);
+        addPage(fSecondPage);
     }
 
 	/** {@inheritDoc} */

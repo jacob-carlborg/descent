@@ -5,6 +5,9 @@ import org.eclipse.core.resources.IProject;
 
 public abstract class LangModelRoot extends LangElement {
 	
+	public LangModelRoot() {
+		super(null);
+	}
 
 	/** Returns all Lang projects. */
 	private ILangProject[] getLangProjects() {

@@ -74,6 +74,7 @@ public class DeeCore extends LangCore {
 		}
 	}	
 	
+	/** See {@link #run(IWorkspaceRunnable, ISchedulingRule, IProgressMonitor) }*/
 	public static void run(IWorkspaceRunnable action, IProgressMonitor monitor) throws CoreException {
 		run(action, ResourcesPlugin.getWorkspace().getRoot(), monitor);
 	}

@@ -8,6 +8,7 @@ import java.io.StringWriter;
 import java.util.ArrayList;
 
 import mmrnmhrm.core.DeeCoreException;
+import mmrnmhrm.core.build.DeeCompilerOptions;
 
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
@@ -35,10 +36,11 @@ public class DeeProject extends LangProject {
 	
 	private IContainer outputDir; // The resource is allowed to not exist.
 
+	public DeeCompilerOptions compilerOptions;
 	
 	public DeeProject(IProject project) {
-		super(project);
-		this.parent = DeeModelRoot.getInstance();
+		super(DeeModelRoot.getInstance(), project);
+		this.compilerOptions = new DeeCompilerOptions();
 	}
 	
 	@Override
@@ -63,7 +65,7 @@ public class DeeProject extends LangProject {
 		return srcFolder;
 	}
 	
-	public void addSourceFolder(IDeeSourceRoot entry) throws CoreException {
+	public void addSourceRoot(ILangSourceRoot entry) throws CoreException {
 		addChild(entry);
 	}
 	
@@ -71,7 +73,7 @@ public class DeeProject extends LangProject {
 		removeChild(new DeeSourceFolder(folder, this));
 	}
 	
-	public void removeSourceFolder(IDeeSourceRoot entry) throws CoreException {
+	public void removeSourceRoot(IDeeSourceRoot entry) throws CoreException {
 		removeChild(entry);
 	}
 	
@@ -92,9 +94,10 @@ public class DeeProject extends LangProject {
 	}
 
 	@SuppressWarnings("unchecked")
-	public ArrayList<DeeSourceLib> getSourceLibs() {
+	public ArrayList<DeeSourceLib> getSourceLibraries() {
 		return (ArrayList<DeeSourceLib>) getChildrenOfType(ELangElementTypes.SOURCELIB);
 	}
+	
 
 	/* --------------  persistance -------------- */
 
@@ -190,4 +193,5 @@ public class DeeProject extends LangProject {
 		IFolder outFolder = project.getFolder(Path.fromPortableString(pathstr));
 		setOutputDir(outFolder);
 	}
+
 }

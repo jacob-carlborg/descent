@@ -10,8 +10,17 @@ public class DeeCEManager {
 				public String getName() {
 					return "DMD path default";
 				}
+				
+				@Override
+				public String toString() {
+					return getName();
+				}
 			
 			}
 		};
+	}
+
+	public static IDeeCE getDefaultCompiler() {
+		return getAvailableDCEs()[0];
 	}
 }

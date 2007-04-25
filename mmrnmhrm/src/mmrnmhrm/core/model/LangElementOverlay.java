@@ -7,6 +7,7 @@ public class LangElementOverlay extends LangElement {
 
 	
 	public LangElementOverlay(LangElement rootProj) {
+		super(rootProj.parent);
 		this.rootElement = rootProj;
 	}
 	

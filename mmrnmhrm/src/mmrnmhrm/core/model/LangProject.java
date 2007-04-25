@@ -6,7 +6,8 @@ public abstract class LangProject extends LangElement implements ILangProject {
 
 	protected IProject project;
 	
-	public LangProject(IProject project) {
+	public LangProject(LangElement parent, IProject project) {
+		super(parent);
 		this.project = project;
 	}
 	

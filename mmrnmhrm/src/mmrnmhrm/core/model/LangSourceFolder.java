@@ -7,6 +7,10 @@ public abstract class LangSourceFolder extends LangElement implements ILangSourc
 
 	public IFolder folder;
 
+	public LangSourceFolder(LangElement parent, IFolder folder) {
+		super(parent);
+		this.folder = folder;
+	}
 
 	public String getElementName() {
 		return this.folder.getProjectRelativePath().toString();

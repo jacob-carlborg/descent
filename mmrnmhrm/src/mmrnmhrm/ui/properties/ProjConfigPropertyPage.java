@@ -1,12 +1,16 @@
 package mmrnmhrm.ui.properties;
 
+import mmrnmhrm.core.DeeCore;
 import mmrnmhrm.core.model.DeeModelManager;
 import mmrnmhrm.core.model.DeeProject;
+import mmrnmhrm.ui.ExceptionHandler;
 import mmrnmhrm.ui.wizards.projconfig.ProjectConfigBlock;
 
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IWorkspaceRunnable;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IAdaptable;
-import org.eclipse.jface.preference.PreferencePage;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -16,42 +20,34 @@ import org.eclipse.ui.dialogs.PropertyPage;
 public class ProjConfigPropertyPage extends PropertyPage {
 
 	private ProjectConfigBlock fProjCfg;
+	private DeeProject fDeeProject;
 
-	
 	public ProjConfigPropertyPage() {
 		fProjCfg = new ProjectConfigBlock();
 	}
 	
-	/**
-	 * @see PreferencePage#createContents(Composite)
-	 */
+	/*** {@inheritDoc} */
 	protected Control createContents(Composite parent) {
 		
 		noDefaultAndApplyButton();		
 		
 		IProject project = getProject();
-		//project = DeeModel.getDeeProject("DeeProj").getProject();
-		
-		//Composite content = new RowComposite(parent);
-		
 		if (project == null) {
 			Label label = new Label(parent, SWT.NONE);
-			label.setText("Not an IProject");
-			setVisible(false);
+			label.setText("Target not an IProject. WTH");
+			//setVisible(false);
 			return label;
 		} 
 		
-		DeeProject deeProj = getDeeProject();
-
-		if (deeProj == null) {
+		fDeeProject = getDeeProject();
+		if (fDeeProject == null) {
 			Label label = new Label(parent, SWT.NONE);
-			label.setText("Not an IProject");
-			setVisible(false);
+			label.setText("Target not an D project.");
+			//setVisible(false);
 			return label;
 		} else {
-			fProjCfg.init(DeeModelManager.getLangProject("DeeProj"));
+			fProjCfg.init(fDeeProject);
 			return fProjCfg.createControl(parent);
-			//return content;
 		}
 	}
 	
@@ -68,12 +64,25 @@ public class ProjConfigPropertyPage extends PropertyPage {
 	}
 
 
-	protected void performDefaults() {
-		// Populate the owner text field with the default value
-	}
-	
 	public boolean performOk() {
-		// store the value in the owner text field
+		if(fDeeProject == null) 
+			return true;
+		
+		try {
+			DeeCore.run(new IWorkspaceRunnable() {
+				public void run(IProgressMonitor monitor) throws CoreException {
+					// TODO: Status, err
+					/*throw new LangModelException(new Status(IStatus.ERROR, JavaPlugin.getPluginId(), 
+							IJavaStatusConstants.INTERNAL_ERROR, "Status Message", new NullPointerException()));
+							*/
+					fProjCfg.applyConfig();
+					fDeeProject.saveProjectConfigFile();
+				}
+			}, null);
+		} catch (CoreException e) {
+			ExceptionHandler.handle(e, "D Project Config Error", "Error saving project settings.");
+			return false;
+		}
 		return true;
 	}
 

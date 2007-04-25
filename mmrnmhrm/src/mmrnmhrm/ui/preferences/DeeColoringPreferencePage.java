@@ -1,8 +1,8 @@
 package mmrnmhrm.ui.preferences;
 
 import mmrnmhrm.ui.text.color.IDeeColorPreferences;
-import mmrnmhrm.ui.util.fields.ItemSelectionListField.SelectionListCategory;
-import mmrnmhrm.ui.util.fields.ItemSelectionListField.SelectionListItem;
+import mmrnmhrm.util.ui.fields.ItemSelectionListField.SelectionListCategory;
+import mmrnmhrm.util.ui.fields.ItemSelectionListField.SelectionListItem;
 
 /**
  * Dee Coloring Preference Page, configures syntax highlighting.  
@@ -17,7 +17,6 @@ public class DeeColoringPreferencePage extends LangColoringPreferencePage {
 	
 	protected void initColoringItemsList() {
 		SelectionListItem[] deeCodeCategory = {
-				createSelectionItem("Strings", IDeeColorPreferences.DEE_STRING),
 				createSelectionItem("Strings", IDeeColorPreferences.DEE_STRING),
 				createSelectionItem("Literals", IDeeColorPreferences.DEE_LITERALS),
 				createSelectionItem("Basic Types", IDeeColorPreferences.DEE_BASICTYPES),

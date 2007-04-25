@@ -2,8 +2,8 @@ package mmrnmhrm.ui.wizards;
 
 import mmrnmhrm.core.DeeCore;
 import mmrnmhrm.core.model.DeeModelManager;
-import mmrnmhrm.ui.util.RowComposite;
 import mmrnmhrm.ui.wizards.projconfig.ProjectConfigBlock;
+import mmrnmhrm.util.ui.RowComposite;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.jface.wizard.WizardPage;

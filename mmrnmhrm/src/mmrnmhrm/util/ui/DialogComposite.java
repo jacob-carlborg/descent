@@ -1,4 +1,4 @@
-package mmrnmhrm.ui.util;
+package mmrnmhrm.util.ui;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
@@ -9,7 +9,7 @@ import org.eclipse.swt.widgets.Control;
 /**
  * A Composite which assumes some default layout and layoutdata settings. 
  */
-public class DialogComposite extends Composite implements IGridLayoutComposite {
+public class DialogComposite extends Composite {
 
 	/** Controls whether to use dialog default margins or SWT default margins. */
 	protected static final boolean useDialogDefaults = false;
@@ -31,8 +31,12 @@ public class DialogComposite extends Composite implements IGridLayoutComposite {
 
 		SWTUtil2.setRandomColor(this);
 		
-		if(parent instanceof IGridLayoutComposite) {
-			setLayoutData(new GridData());
+		if(parent.getLayout() instanceof GridLayout) {
+			GridData gd = new GridData();
+			gd.horizontalAlignment = SWT.FILL;
+			gd.verticalAlignment = SWT.FILL;
+			gd.grabExcessHorizontalSpace = true;
+			setLayoutData(gd);
 		}
 	}
 
@@ -44,10 +48,10 @@ public class DialogComposite extends Composite implements IGridLayoutComposite {
 		if(!margins) {
 			gl.marginWidth = 0;
 			gl.marginHeight = 0;
-			
 		}
 	}
 
+	/** Sets the enable state of this control and of all children. */
 	public void recursiveSetEnabled(boolean enabled) {
 		super.setEnabled(enabled);
 		SWTUtil2.recursiveSetEnabled(this, enabled);
