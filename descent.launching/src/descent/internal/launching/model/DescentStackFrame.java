@@ -21,6 +21,9 @@ public class DescentStackFrame extends DescentDebugElement implements IStackFram
 	private String fSourceName;
 	private int fLineNumber;
 	
+	private IVariable[] fVariables;
+	private IRegisterGroup[] fRegisterGroups;
+	
 	public DescentStackFrame(IDebugTarget target, ICli cli, IThread thread, String name, int number, String sourceName, int lineNumber) {
 		super(target);
 		this.fCli = cli;
@@ -66,9 +69,12 @@ public class DescentStackFrame extends DescentDebugElement implements IStackFram
 	}
 
 	public IRegisterGroup[] getRegisterGroups() throws DebugException {
-		return new IRegisterGroup[] {
-				new DescentRegisterGroup((DescentDebugTarget) getDebugTarget(), fCli, fNumber)
-		};
+		if (fRegisterGroups == null) {
+			fRegisterGroups = new IRegisterGroup[] {
+					new DescentRegisterGroup((DescentDebugTarget) getDebugTarget(), fCli, fNumber)
+			};
+		}
+		return fRegisterGroups;
 	}
 
 	public IThread getThread() {
@@ -76,12 +82,15 @@ public class DescentStackFrame extends DescentDebugElement implements IStackFram
 	}
 
 	public IVariable[] getVariables() throws DebugException {
-		try {
-			return fCli.getVariables(fNumber);
-		} catch (IOException e) {
-			e.printStackTrace();
-			return new IVariable[0];
+		if (fVariables == null) {
+			try {
+				fVariables = fCli.getVariables(fNumber);
+			} catch (IOException e) {
+				e.printStackTrace();
+				return new IVariable[0];
+			}
 		}
+		return fVariables; 
 	}
 
 	public boolean hasRegisterGroups() throws DebugException {

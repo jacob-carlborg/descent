@@ -12,13 +12,14 @@ import descent.launching.model.ICli;
 
 public class DescentRegisterGroup extends DebugElement implements IRegisterGroup {
 	
-	private final int stackFrame;
-	private final ICli interpter;
+	private final int fStackFrame;
+	private final ICli fCli;
+	private IRegister[] fRegisters;
 	
 	public DescentRegisterGroup(DescentDebugTarget target, ICli interpter, int stackFrame) {
 		super(target);
-		this.interpter = interpter;
-		this.stackFrame = stackFrame;
+		this.fCli = interpter;
+		this.fStackFrame = stackFrame;
 	}
 
 	public String getName() throws DebugException {
@@ -26,12 +27,15 @@ public class DescentRegisterGroup extends DebugElement implements IRegisterGroup
 	}
 
 	public IRegister[] getRegisters() throws DebugException {
-		try {
-			return interpter.getRegisters(stackFrame, this);
-		} catch (IOException e) {
-			e.printStackTrace();
-			return new IRegister[0];
+		if (fRegisters == null) {
+			try {
+				fRegisters = fCli.getRegisters(fStackFrame, this);
+			} catch (IOException e) {
+				e.printStackTrace();
+				return new IRegister[0];
+			}
 		}
+		return fRegisters;
 	}
 
 	public boolean hasRegisters() throws DebugException {

@@ -1,0 +1,18 @@
+JDI:
+------------------------------------------
+start:
+	Thread -> CREATE
+	DebugTarget -> CREATE
+	DebugTarget -> RESUME - CLIENT_REQUEST
+
+on breakpoint:
+	Thread -> CHANGE - CONTENT ??
+	Thread -> SUSPEND - BREAKPOINT
+	
+Descent:
+------------------------------------------
+start:
+	DebugTarget -> CREATE
+	
+on breakpoint:
+	Thread -> SUSPEND - BREAKPOINT

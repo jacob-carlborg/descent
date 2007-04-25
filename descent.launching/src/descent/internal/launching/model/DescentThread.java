@@ -18,6 +18,8 @@ public class DescentThread extends DescentDebugElement implements IThread {
 	 */
 	private boolean fStepping = false;
 	
+	private IStackFrame[] fStackFrames;
+	
 	public DescentThread(DescentDebugTarget target) {
 		super(target);
 	}
@@ -66,7 +68,10 @@ public class DescentThread extends DescentDebugElement implements IThread {
 
 	public IStackFrame[] getStackFrames() throws DebugException {
 		if (isSuspended() && !isTerminated()) {
-			return ((DescentDebugTarget)getDebugTarget()).getStackFrames();
+			//if (fStackFrames == null) {
+				fStackFrames = ((DescentDebugTarget)getDebugTarget()).getStackFrames();
+			//}
+			return fStackFrames;
 		} else {
 			return new IStackFrame[0];
 		}

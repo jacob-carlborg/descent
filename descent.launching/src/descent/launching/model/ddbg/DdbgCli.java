@@ -45,18 +45,6 @@ public class DdbgCli implements ICli {
 		
 	}
 	
-	private class Terminating implements IState {
-		
-		public void interpret(String text) throws DebugException, IOException {
-		}
-		
-		@Override
-		public String toString() {
-			return "terminating";
-		}
-		
-	}
-	
 	private class AddingBreakpoint implements IState {
 	
 		public void interpret(String text) throws DebugException, IOException {
@@ -447,10 +435,7 @@ public class DdbgCli implements ICli {
 		beginOperation();
 
 		try {
-			setState(new Terminating());
-			
-			fProxy.write("q\n");		
-			//fTarget.terminated();
+			fProxy.write("q\n");
 		} finally {
 			endOperation();
 		}
@@ -537,7 +522,7 @@ public class DdbgCli implements ICli {
 			
 			try {
 				synchronized (fWaitLock) {
-					fWaitLock.wait(1000);
+					fWaitLock.wait();
 				}
 			} catch (InterruptedException e) {
 				e.printStackTrace();
@@ -578,7 +563,7 @@ public class DdbgCli implements ICli {
 			
 			try {
 				synchronized (fWaitLock) {
-					fWaitLock.wait(1000);
+					fWaitLock.wait();
 				}
 			} catch (InterruptedException e) {
 				e.printStackTrace();
@@ -606,7 +591,7 @@ public class DdbgCli implements ICli {
 
 			try {
 				synchronized (fWaitLock) {
-					fWaitLock.wait(1000);
+					fWaitLock.wait();
 				}
 			} catch (InterruptedException e) {
 				e.printStackTrace();
@@ -634,7 +619,7 @@ public class DdbgCli implements ICli {
 			
 			try {
 				synchronized (fWaitLock) {
-					fWaitLock.wait(1000);
+					fWaitLock.wait();
 				}
 			} catch (InterruptedException e) {
 				e.printStackTrace();
@@ -656,7 +641,7 @@ public class DdbgCli implements ICli {
 
 	private void sleep() {
 		try {
-			Thread.sleep(100);
+			Thread.sleep(1000);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
