@@ -125,7 +125,7 @@ public class DescentDebugTarget extends DescentDebugElement implements IDebugTar
 			e.printStackTrace();
 		}
 		
-		cleanup();
+		internalTerminate();
 	}
 
 	public boolean canResume() {
@@ -149,8 +149,10 @@ public class DescentDebugTarget extends DescentDebugElement implements IDebugTar
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		
+		fireResumeEvent(DebugEvent.CLIENT_REQUEST);
 	}
-
+	
 	public void suspend() throws DebugException {
 		
 	}
@@ -287,6 +289,7 @@ public class DescentDebugTarget extends DescentDebugElement implements IDebugTar
 	public void started() throws DebugException {
 		System.out.println("STARTED");
 		fireCreationEvent();
+		fThread.fireCreationEvent();
 		installDeferredBreakpoints();
 		resume();
 	}
@@ -324,10 +327,10 @@ public class DescentDebugTarget extends DescentDebugElement implements IDebugTar
 		}
 		
 		System.out.println("TERMINATED");
-		cleanup();
+		internalTerminate();
 	}
 	
-	private void cleanup() {
+	private void internalTerminate() {
 		fThread.fireTerminateEvent();
 		
 		fProcess.getStreamsProxy().getOutputStreamMonitor().removeListener(this);		

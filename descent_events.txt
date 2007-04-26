@@ -16,3 +16,6 @@ start:
 	
 on breakpoint:
 	Thread -> SUSPEND - BREAKPOINT
+
+EventHandlerModelProxy
+JavaThreadEventHandler

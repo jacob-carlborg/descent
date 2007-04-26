@@ -641,7 +641,7 @@ public class DdbgCli implements ICli {
 
 	private void sleep() {
 		try {
-			Thread.sleep(1000);
+			Thread.sleep(80);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
