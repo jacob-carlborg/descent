@@ -50,6 +50,26 @@ abstract class Dmd extends Compiler{
 				continue;
 			}
 			String moduleName = matcher.group(2);
+			
+			
+			String dirSeperator = "\\\\";
+			if (System.getProperty("os.name").toUpperCase().indexOf("WINDOWS") == -1) {
+			    dirSeperator = "/";
+			}
+			
+			
+			
+			for ( D.ExcludePackage exclude : dTask.excludeflags)
+			{
+				String excludeDir = exclude.value.replaceAll("\\.", dirSeperator);
+				
+				if ( moduleName.indexOf(excludeDir) != -1 )
+				{
+					System.out.println( "Excluding " + moduleName);
+					continue;
+				}
+				
+			}
 			if( moduleName.endsWith(".di") || moduleName.endsWith("object.d")){
 				continue;
 			}

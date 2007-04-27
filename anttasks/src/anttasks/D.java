@@ -259,6 +259,12 @@ public class D extends Task {
 		versionflags.add( result );
 		return result;
 	}
+	LinkedList<ExcludePackage> excludeflags= new LinkedList<ExcludePackage>();
+	public ExcludePackage createExcludePackage(){
+		ExcludePackage result = new ExcludePackage();
+		excludeflags.add( result );
+		return result;
+	}
 	LinkedList<Debug> debugflags = new LinkedList<Debug>();
 	public Debug createDebug(){
 		Debug result = new Debug();
@@ -463,6 +469,12 @@ public class D extends Task {
 	}
 	
 	public class Version {
+		String value;
+		public void setValue(String value ){
+			this.value = value;
+		}
+	}
+	public class ExcludePackage{
 		String value;
 		public void setValue(String value ){
 			this.value = value;
