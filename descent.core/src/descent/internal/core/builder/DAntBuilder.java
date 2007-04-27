@@ -208,6 +208,7 @@ class DAntFileCreator {
 	    }
 	macrodef += "</mainmodules>\n";
 	macrodef += "\n";
+	macrodef += "<excludePackage value=\"std.\" />\n";  
 	macrodef += "<!-- Modules for compilation and linking, if imported -->\n";
 	macrodef += "<includemodules>\n";
 	macrodef += "<dirset file=\"${project.dir}\" />\n";
