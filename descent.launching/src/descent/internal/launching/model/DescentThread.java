@@ -1,8 +1,5 @@
 package descent.internal.launching.model;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.eclipse.debug.core.DebugException;
 import org.eclipse.debug.core.model.IBreakpoint;
 import org.eclipse.debug.core.model.IStackFrame;
@@ -21,7 +18,7 @@ public class DescentThread extends DescentDebugElement implements IThread {
 	 */
 	private boolean fStepping = false;
 	
-	private List<IStackFrame> fStackFrames;
+	private IStackFrame[] fStackFrames;
 	
 	public DescentThread(DescentDebugTarget target) {
 		super(target);
@@ -58,37 +55,23 @@ public class DescentThread extends DescentDebugElement implements IThread {
 		sb.append(")");
 		return sb.toString();
 	}
-	
-	private String getStatus() {
-		if (isSuspended()) return "Suspended";
-		if (isTerminated()) return "Terminated";
-		return "Running";
-	}
 
 	public int getPriority() throws DebugException {
 		return 0;
 	}
+	
+	public void invalidateStackFrames() {
+		fStackFrames = null;
+	}
 
 	public IStackFrame[] getStackFrames() throws DebugException {
 		if (isSuspended() && !isTerminated()) {
-			IStackFrame[] newStackFrames = ((DescentDebugTarget)getDebugTarget()).getStackFrames();
-			fStackFrames = mergeStackFrames(fStackFrames, newStackFrames);
-			return fStackFrames.toArray(new IStackFrame[fStackFrames.size()]);
+			if (fStackFrames == null) {
+				fStackFrames = ((DescentDebugTarget)getDebugTarget()).getStackFrames();	
+			}
+			return fStackFrames;
 		} else {
 			return new IStackFrame[0];
-		}
-	}
-
-	private List<IStackFrame> mergeStackFrames(List<IStackFrame> oldStackFrames, IStackFrame[] newStackFrames) {
-		if (oldStackFrames == null) {
-			List<IStackFrame> stackFrames = new ArrayList<IStackFrame>();
-			for(IStackFrame stackFrame : newStackFrames) {
-				stackFrames.add(stackFrame);
-			}
-			return stackFrames;
-		} else {
-			// TODO: change
-			return oldStackFrames;
 		}
 	}
 

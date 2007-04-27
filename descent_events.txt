@@ -17,5 +17,5 @@ start:
 on breakpoint:
 	Thread -> SUSPEND - BREAKPOINT
 
-EventHandlerModelProxy
-JavaThreadEventHandler
+Thread - RESUME - STEP_OVER
+Thread - SUSPEND - STEP_END

@@ -1,4 +1,4 @@
-package descent.launching.model;
+package descent.internal.launching.model;
 
 import java.io.IOException;
 
@@ -9,6 +9,11 @@ import org.eclipse.debug.core.model.IRegisterGroup;
 import org.eclipse.debug.core.model.IStackFrame;
 import org.eclipse.debug.core.model.IStreamsProxy;
 import org.eclipse.debug.core.model.IVariable;
+
+import descent.launching.model.ICli;
+import descent.launching.model.ICliRequestor;
+import descent.launching.model.IDescentDebugElementFactory;
+import descent.launching.model.IDescentVariable;
 
 public class SingleThreadCli implements ICli {
 	
@@ -22,6 +27,10 @@ public class SingleThreadCli implements ICli {
 	
 	public boolean isSingleThread() {
 		return true;
+	}
+	
+	public String getEndCommunicationString() {
+		return fCli.getEndCommunicationString();
 	}
 
 	public void addBreakpoint(IResource resource, int lineNumber) throws DebugException, IOException {
@@ -99,9 +108,9 @@ public class SingleThreadCli implements ICli {
 	}
 
 	public void terminate() throws DebugException, IOException {
-		synchronized (fLock) {
+		//synchronized (fLock) {
 			fCli.terminate();
-		}
+		//}
 	}
 
 }

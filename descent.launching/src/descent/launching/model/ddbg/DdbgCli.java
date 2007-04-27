@@ -1,7 +1,6 @@
 package descent.launching.model.ddbg;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -21,387 +20,26 @@ import descent.launching.model.IDescentVariable;
 
 public class DdbgCli implements ICli {
 	
-	private interface IState {
-		
-		void interpret(String text) throws DebugException, IOException;
-		
-	}
-	
-	private class DefaultState implements IState {
+	IState fState;
+	IState fDefaultState = new DefaultState(this);
 
-		public void interpret(String text) throws DebugException, IOException {
-			if (text.equals("Process terminated")) {
-				 fCliRequestor.terminated();
-			} else if (text.startsWith("Breakpoint ")) {
-				// Breakpoint n hit at file:lineNumber address
-				fCliRequestor.suspended(DebugEvent.BREAKPOINT);
-			}
-		}
-		
-		@Override
-		public String toString() {
-			return "default";
-		}
-		
-	}
-	
-	private class AddingBreakpoint implements IState {
-	
-		public void interpret(String text) throws DebugException, IOException {
-			if ("->".equals(text)) {
-				setState(new DefaultState());
-			}
-		}
-		
-		@Override
-		public String toString() {
-			return "adding breakpoing";
-		}
-		
-	}
-	
-	private class RemovingBreakpoint implements IState {
-		
-		public void interpret(String text) throws DebugException, IOException {
-			if ("->".equals(text)) {
-				setState(new DefaultState());
-			}
-		}
-		
-		@Override
-		public String toString() {
-			return "removing breakpoint";
-		}
-		
-	}
+	ICliRequestor fCliRequestor;
+	IDescentDebugElementFactory fFactory;
+	IStreamsProxy fProxy;
 
-	private class SteppingOver implements IState {
-		
-		public void interpret(String text) throws DebugException, IOException {
-			if ("->".equals(text)) {
-				setState(new DefaultState());
-			}
-		}
-		
-		@Override
-		public String toString() {
-			return "stepping over";
-		}
-		
-	}
+	Object fWaitLock = new Object();
 	
-	private class SteppingInto implements IState {
-		
-		public void interpret(String text) throws DebugException, IOException {
-			if ("->".equals(text)) {
-				setState(new DefaultState());
-			}
-		}
-		
-		@Override
-		public String toString() {
-			return "stepping into";
-		}
-		
-	}
-	
-	private class SteppingReturn implements IState {
-		
-		public void interpret(String text) throws DebugException, IOException {
-			if ("->".equals(text)) {
-				setState(new DefaultState());
-			}
-		}
-		
-		@Override
-		public String toString() {
-			return "stepping return";
-		}
-		
-	}
-	
-	private class SettingStackFrame implements IState {
-		
-		public void interpret(String text) throws DebugException, IOException {
-			if ("->".equals(text)) {
-				setState(new DefaultState());
-			}
-		}
-		
-		@Override
-		public String toString() {
-			return "setting stack frame";
-		}
-		
-	}
-	
-	private class ConsultingStackFrames implements IState {
-		
-		public List<IStackFrame> fStackFrames = new ArrayList<IStackFrame>();
-		
-		public ConsultingStackFrames() {
-		}
-		
-		public void interpret(String text) throws DebugException, IOException {
-			if (text.equals("->")) {
-				synchronized (fWaitLock) {
-					fWaitLock.notify();
-				}
-				return;
-			} else if (text.startsWith("#")) {
-				fStackFrames.add(parseStackFrame(text));
-				return;
-			}
-		}
-		
-		private IStackFrame parseStackFrame(String data) {
-			String name = data;
-			int lineNumber = -1;
-			int number = -1;
-			String sourceName = null;
-				
-			if (data.length() == 0 || data.charAt(0) != '#') {
-				return fFactory.newStackFrame(name, number, sourceName, lineNumber);
-			}
-			
-			// Some positions in the string
-			int indexOfFirstSpace = data.indexOf(' ');
-			int indexOfIn = data.indexOf(" in ");
-			int indexOfFrom = data.indexOf(" from ");
-			int indexOfAt = data.indexOf(" at ");
-			int lastIndexOfColon = data.lastIndexOf(':');
-			
-			// Number
-			number = Integer.parseInt(data.substring(1, indexOfFirstSpace));		
-			
-			// Name
-			if (indexOfIn != -1 && indexOfFrom != -1 && indexOfIn < indexOfFrom) {
-				name = data.substring(indexOfIn + 4, indexOfFrom + 1);
-			} else if (indexOfIn != -1 && indexOfAt != -1 && indexOfIn < indexOfAt) {
-				name = data.substring(indexOfIn + 4, indexOfAt + 1);
-			} else {
-				if (indexOfFirstSpace != -1) {
-					if (indexOfAt != -1) {
-						name = data.substring(indexOfFirstSpace + 1, indexOfAt + 1);
-					} else {
-						int indexOfSecondSpace = data.indexOf(' ', indexOfFirstSpace + 1);
-						if (indexOfSecondSpace != -1) {
-							name = data.substring(indexOfFirstSpace + 1, indexOfSecondSpace);
-						}
-					}
-				}
-			}
-			
-			name = name.trim();
-			if (name.endsWith(" ()")) {
-				name = name.substring(0, name.length() - 3) + "()";
-			}
-			
-			
-			// sourceName and lineNumber
-			if (indexOfAt != -1 && lastIndexOfColon != -1) {
-				sourceName = data.substring(indexOfAt + 4, lastIndexOfColon);
-				lineNumber = Integer.parseInt(data.substring(lastIndexOfColon + 1));
-			}
-			
-			return fFactory.newStackFrame(name, number, sourceName, lineNumber);
-		}
-		
-		@Override
-		public String toString() {
-			return "consulting stack frame";
-		}
-		
-	}
-	
-	private class ConsultingRegisters implements IState {
-		
-		public List<IRegister> fRegisters = new ArrayList<IRegister>();
-		private final IRegisterGroup fRegisterGroup;
-		
-		public ConsultingRegisters(IRegisterGroup registerGroup) {
-			this.fRegisterGroup = registerGroup;
-		}
-		
-		public void interpret(String text) throws DebugException, IOException {
-			if (text.equals("->")) {
-				synchronized (fWaitLock) {
-					fWaitLock.notify();
-				}
-			} else {
-				parseRegisters(text, fRegisterGroup);
-			}
-		}
-		
-		private void parseRegisters(String text, IRegisterGroup group) {
-			for (int i = 0; i < 4; i++) {
-				String sub;
-				if (i == 3) {
-					sub = text.substring(13*i);
-				} else {
-					sub = text.substring(13*i, 13*(i + 1));
-				}
-				int indexOfEqual = sub.indexOf('=');
-				String name = sub.substring(0, indexOfEqual).trim();
-				String value = sub.substring(indexOfEqual + 1).trim();
-				fRegisters.add(fFactory.newRegister(group, name, value));
-			}
-		}
-		
-		@Override
-		public String toString() {
-			return "consulting registers";
-		}
-		
-	}
-	
-	private class ConsultingVariables implements IState {
-		
-		public List<IDescentVariable> fVariables = new ArrayList<IDescentVariable>();
-		private IDescentVariable fVariable;
-
-		public void interpret(String text) throws DebugException, IOException {
-			if (text.equals("->")) {
-				synchronized (fWaitLock) {
-					fWaitLock.notify();
-				}
-			} else {
-				parseVariable(text);
-			}
-		}
-		
-		/*
-		 * Variables come in two flavors:
-		 * var = value
-		 * var = {
-		 *    subValue1 = ...,
-		 *    subValue2 = ...,
-		 *    (recursively)
-		 * }
-		 */
-		private void parseVariable(String text) {
-			if ("}".equals(text.trim())) {
-				fVariable = fVariable.getParent();
-				return;
-			}
-			
-			int indexOfEquals = text.indexOf('=');
-			if (indexOfEquals == -1) return;
-			
-			String name = text.substring(0, indexOfEquals).trim();
-			String value = text.substring(indexOfEquals + 1).trim();
-			if ("{".equals(value.trim())) {
-				IDescentVariable newVariable = fFactory.newVariable(name, null);
-				if (fVariable == null) {
-					fVariables.add(newVariable);
-					fVariable = newVariable;
-				} else {
-					fVariable.addChild(newVariable);
-					fVariable = newVariable;
-				}
-			} else {
-				if (fVariable != null) {
-					value = value.trim();
-					if (value.length() > 0 && value.charAt(value.length() - 1) == ',') {
-						value = value.substring(0, value.length() - 1);; 
-					}
-				}
-				
-				IDescentVariable newVariable = fFactory.newVariable(name, value);
-				if (fVariable == null) {
-					fVariables.add(newVariable);
-				} else {
-					fVariable.addChild(newVariable);
-				}
-			}
-		}
-		
-		@Override
-		public String toString() {
-			return "consulting variables";
-		}
-		
-	}
-	
-	private class EvaluatingExpression implements IState {
-
-		public IDescentVariable fVariable;
-		private final String fExpression;
-		
-		public EvaluatingExpression(String expression) {
-			this.fExpression = expression;
-		}
-
-		public void interpret(String text) throws DebugException, IOException {
-			if (text.equals("->")) {
-				synchronized (fWaitLock) {
-					fWaitLock.notify();
-				}
-			} else {
-				parseVariable(text);
-			}
-		}
-
-		private void parseVariable(String text) {
-			if ("{".equals(text.trim())) {
-				fVariable = fFactory.newVariable(fExpression, null);
-				return;
-			}
-			
-			if ("}".equals(text.trim())) {
-				if (fVariable.getParent() != null) {
-					fVariable = fVariable.getParent();
-				}
-				return;
-			}
-			
-			int indexOfEquals = text.indexOf('=');
-			if (indexOfEquals == -1) {
-				fVariable = fFactory.newVariable(fExpression, text);
-				return;
-			}
-			
-			String name = text.substring(0, indexOfEquals).trim();
-			String value = text.substring(indexOfEquals + 1).trim();
-			if ("{".equals(value.trim())) {
-				IDescentVariable newVariable = fFactory.newVariable(name, null);
-				if (fVariable != null) {
-					fVariable.addChild(newVariable);
-				}
-				fVariable = newVariable;
-			} else {
-				if (fVariable != null) {
-					value = value.trim();
-					if (value.length() > 0 && value.charAt(value.length() - 1) == ',') {
-						value = value.substring(0, value.length() - 1);; 
-					}
-				}
-				
-				IDescentVariable newVariable = fFactory.newVariable(name, value);
-				if (fVariable == null) {
-					fVariable = newVariable;
-				} else {
-					fVariable.addChild(newVariable);
-				}
-			}
-		}
-		
-	}
-	
-	private IState fState;
-
-	private ICliRequestor fCliRequestor;
-	private IDescentDebugElementFactory fFactory;
-	private IStreamsProxy fProxy;
-
-	private Object fWaitLock = new Object();
 
 	public DdbgCli() {
-		setState(new DefaultState());
+		setState(fDefaultState);
 	}
 	
 	public boolean isSingleThread() {
 		return true;
+	}
+	
+	public String getEndCommunicationString() {
+		return "->";
 	}
 	
 	public void initialize(ICliRequestor requestor, IDescentDebugElementFactory factory, IStreamsProxy out) {
@@ -410,15 +48,13 @@ public class DdbgCli implements ICli {
 		this.fProxy = out;
 	}
 	
-	private void setState(IState state) {
-		System.out.println("State: " + state);
+	void setState(IState state) {
 		this.fState = state;
 	}
 
 	public void interpret(String text)
 			throws DebugException, IOException {
 		
-		System.out.println(">" + text);
 		fState.interpret(text);
 	}
 
@@ -426,11 +62,9 @@ public class DdbgCli implements ICli {
 		beginOperation();
 
 		try {
-			setState(new DefaultState());
-			
-			fProxy.write("r\n");		
-			//fTarget.resumed(DebugEvent.UNSPECIFIED);
+			fProxy.write("r\n");
 		} finally {
+			setState(fDefaultState);
 			endOperation();
 		}
 	}
@@ -441,6 +75,7 @@ public class DdbgCli implements ICli {
 		try {
 			fProxy.write("q\n");
 		} finally {
+			setState(fDefaultState);
 			endOperation();
 		}
 	}
@@ -449,14 +84,17 @@ public class DdbgCli implements ICli {
 		beginOperation();
 
 		try {
-			setState(new AddingBreakpoint());
+			setState(new AddingBreakpoint(this));
 			
 			fProxy.write("bp ");
 			fProxy.write(resource.getLocation().toOSString());
 			fProxy.write(":");
 			fProxy.write(String.valueOf(lineNumber));
 			fProxy.write("\n");
+			
+			waitStateReturn();
 		} finally {
+			setState(fDefaultState);
 			endOperation();
 		}
 	}
@@ -465,53 +103,44 @@ public class DdbgCli implements ICli {
 		beginOperation();
 
 		try {
-			setState(new RemovingBreakpoint());
+			setState(new RemovingBreakpoint(this));
 			
 			fProxy.write("dbp ");
 			fProxy.write(resource.getLocation().toOSString());
 			fProxy.write(":");
 			fProxy.write(String.valueOf(lineNumber));
 			fProxy.write("\n");
+			
+			waitStateReturn();
 		} finally {
+			setState(fDefaultState);
 			endOperation();
 		}
 	}
 
 	public void stepOver() throws IOException {
-		beginOperation();
-
-		try {
-			setState(new SteppingOver());
-			
-			fProxy.write("ov\n");
-			//fTarget.suspended(DebugEvent.STEP_OVER);
-		} finally {
-			endOperation();
-		}
+		step("ov", DebugEvent.STEP_OVER);
 	}
 
 	public void stepInto() throws IOException {
-		beginOperation();
-
-		try {
-			setState(new SteppingInto());
-			
-			fProxy.write("in\n");
-			// fTarget.suspended(DebugEvent.STEP_INTO);
-		} finally {
-			endOperation();
-		}
+		step("in", DebugEvent.STEP_INTO);
 	}
 
 	public void stepReturn() throws IOException {
+		step("out", DebugEvent.STEP_RETURN);
+	}
+	
+	private void step(String cmd, int debugEvent) throws IOException {
 		beginOperation();
 
 		try {
-			setState(new SteppingReturn());
+			setState(new Stepping(this, debugEvent));
 			
-			fProxy.write("out\n");
-			// fTarget.suspended(DebugEvent.STEP_RETURN);
+			fProxy.write(cmd + "\n");
+			
+			waitStateReturn();
 		} finally {
+			setState(fDefaultState);
 			endOperation();
 		}
 	}
@@ -521,21 +150,16 @@ public class DdbgCli implements ICli {
 		beginOperation();
 
 		try {
-			setState(new ConsultingStackFrames());
+			setState(new ConsultingStackFrames(this));
+			
 			fProxy.write("us\n");
 			
-			try {
-				synchronized (fWaitLock) {
-					fWaitLock.wait();
-				}
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
+			waitStateReturn();
 			
 			List<IStackFrame> stackFrames = ((ConsultingStackFrames) fState).fStackFrames;
 			return stackFrames.toArray(new IStackFrame[stackFrames.size()]);
 		} finally {
-			setState(new DefaultState());
+			setState(fDefaultState);
 			endOperation();
 		}
 	}
@@ -544,12 +168,15 @@ public class DdbgCli implements ICli {
 		beginOperation();
 
 		try {
-			setState(new SettingStackFrame());
+			setState(new SettingStackFrame(this));
 			
 			fProxy.write("f ");
 			fProxy.write(String.valueOf(stackFrame));
 			fProxy.write("\n");
+			
+			waitStateReturn();
 		} finally {
+			setState(fDefaultState);
 			endOperation();
 		}
 	}
@@ -561,24 +188,18 @@ public class DdbgCli implements ICli {
 		beginOperation();
 
 		try {
-			setState(new ConsultingRegisters(registerGroup));
+			setState(new ConsultingRegisters(this, registerGroup));
 			
 			fProxy.write("dr\n");
 			
-			try {
-				synchronized (fWaitLock) {
-					fWaitLock.wait();
-				}
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
+			waitStateReturn();
 			
 			List<IRegister> registers = ((ConsultingRegisters) fState).fRegisters;
 			IRegister[] registersArray = registers.toArray(new IRegister[registers.size()]);
 			Arrays.sort(registersArray);
 			return registersArray;
 		} finally {
-			setState(new DefaultState());
+			setState(fDefaultState);
 			endOperation();			
 		}
 	}
@@ -589,22 +210,17 @@ public class DdbgCli implements ICli {
 		beginOperation();
 
 		try {
-			setState(new ConsultingVariables());
+			setState(new ConsultingVariables(this));
 			
 			fProxy.write("lsv\n");
 
-			try {
-				synchronized (fWaitLock) {
-					fWaitLock.wait();
-				}
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
+			waitStateReturn();
 			
-			List<IDescentVariable> variables = ((ConsultingVariables) fState).fVariables;
-			return variables.toArray(new IVariable[variables.size()]);
+			List<DdbgVariable> variables = ((ConsultingVariables) fState).fVariables;
+			completeTypes(variables);
+			return ddbgVariablesToDescentVariables(variables);
 		} finally {
-			setState(new DefaultState());
+			setState(fDefaultState);
 			endOperation();
 		}
 	}
@@ -615,25 +231,61 @@ public class DdbgCli implements ICli {
 		beginOperation();
 
 		try {
-			setState(new EvaluatingExpression(expression));
+			setState(new EvaluatingExpression(this, expression));
 			
 			fProxy.write("= ");
 			fProxy.write(expression);
 			fProxy.write("\n");
 			
-			try {
-				synchronized (fWaitLock) {
-					fWaitLock.wait();
-				}
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
+			waitStateReturn();
 			
 			return ((EvaluatingExpression) fState).fVariable;
 		} finally {
-			setState(new DefaultState());
+			setState(fDefaultState);
 			endOperation();			
 		}
+	}
+	
+	public String getType(String expression) throws IOException {
+		try {
+			setState(new ConsultingType(this));
+			
+			fProxy.write("t ");
+			fProxy.write(expression);
+			fProxy.write("\n");
+			
+			waitStateReturn();
+			
+			return ((ConsultingType) fState).fType;
+		} finally {
+			setState(fDefaultState);
+			endOperation();			
+		}
+	}
+	
+	private void completeTypes(List<DdbgVariable> variables) throws IOException {
+		completeTypes(variables, "");
+	}
+	
+	private void completeTypes(List<DdbgVariable> variables, String prefix) throws IOException {
+		for(DdbgVariable var : variables) {
+			if (var.getValue() == null) {
+				String name = prefix + var.getName();
+				var.setValue(getType(name));
+			}
+			completeTypes(var.getChildren(), prefix + var.getName() + ".");
+		}
+	}
+	
+	private IDescentVariable[] ddbgVariablesToDescentVariables(List<DdbgVariable> ddbgVars) {
+		IDescentVariable[] vars = new IDescentVariable[ddbgVars.size()];
+		for(int i = 0; i < ddbgVars.size(); i++) {
+			DdbgVariable ddbgVar = ddbgVars.get(i);
+			IDescentVariable var = fFactory.newVariable(ddbgVar.getName(), ddbgVar.getValue());
+			var.addChildren(ddbgVariablesToDescentVariables(ddbgVar.getChildren()));
+			vars[i] = var ;
+		}
+		return vars;
 	}
 
 	private void beginOperation() {
@@ -641,6 +293,22 @@ public class DdbgCli implements ICli {
 	}
 
 	private void endOperation() {
+	}
+	
+	void waitStateReturn() {
+		try {
+			synchronized (fWaitLock) {
+				fWaitLock.wait();
+			}
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	void notifyStateReturn() {
+		synchronized (fWaitLock) {
+			fWaitLock.notify();
+		}
 	}
 
 	private void sleep() {

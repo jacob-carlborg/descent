@@ -6,6 +6,8 @@ public interface IDescentVariable extends IVariable {
 	
 	void addChild(IDescentVariable variable);
 	
+	void addChildren(IDescentVariable[] variables);
+	
 	IDescentVariable getParent();
 
 }

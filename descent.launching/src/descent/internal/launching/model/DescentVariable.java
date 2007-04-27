@@ -57,6 +57,12 @@ public class DescentVariable extends DescentDebugElement implements IDescentVari
 		fValue.addVariable(variable);
 	}
 	
+	public void addChildren(IDescentVariable[] variables) {
+		for(IDescentVariable variable : variables) {
+			addChild(variable);
+		}
+	}
+	
 	public IDescentVariable getParent() {
 		return fParent;
 	}

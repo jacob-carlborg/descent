@@ -14,6 +14,8 @@ public interface ICli {
 	
 	boolean isSingleThread();
 	
+	String getEndCommunicationString();
+	
 	void initialize(ICliRequestor requestor, IDescentDebugElementFactory factory, IStreamsProxy out);
 	
 	void interpret(String text) throws DebugException, IOException;
