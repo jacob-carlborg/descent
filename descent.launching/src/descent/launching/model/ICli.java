@@ -12,6 +12,8 @@ import org.eclipse.debug.core.model.IVariable;
 
 public interface ICli {
 	
+	boolean isSingleThread();
+	
 	void initialize(ICliRequestor requestor, IDescentDebugElementFactory factory, IStreamsProxy out);
 	
 	void interpret(String text) throws DebugException, IOException;

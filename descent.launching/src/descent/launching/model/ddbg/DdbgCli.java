@@ -400,6 +400,10 @@ public class DdbgCli implements ICli {
 		setState(new DefaultState());
 	}
 	
+	public boolean isSingleThread() {
+		return true;
+	}
+	
 	public void initialize(ICliRequestor requestor, IDescentDebugElementFactory factory, IStreamsProxy out) {
 		this.fCliRequestor = requestor;
 		this.fFactory = factory;
@@ -641,7 +645,7 @@ public class DdbgCli implements ICli {
 
 	private void sleep() {
 		try {
-			Thread.sleep(80);
+			Thread.sleep(100);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
