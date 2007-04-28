@@ -106,6 +106,8 @@ import org.apache.tools.ant.types.FileSet;
 	<includepath>
 		<dirset file="${dater.dir}/dater/lib/duit" />
 	</includepath>
+	
+	<excludePackage value="std." />
 
 	<!-- list flags for the linker -->
 	<linkflag value="-L/usr/lib" />
@@ -331,14 +333,13 @@ public class D extends Task {
 		log( String.format("D Task: cleanup     = %s\n", cleanup     ), Project.MSG_VERBOSE );
 		log( String.format("D Task: warnings    = %s\n", warnings    ), Project.MSG_VERBOSE );
 		log( String.format("D Task: stdargs     = %s\n", stdargs     ), Project.MSG_VERBOSE );
-		if( mapfile != null ){
-			log( String.format("D Task: mapfile     = %s\n", mapfile     ), Project.MSG_VERBOSE );
-		}
-		if( deffile != null ){
-			log( String.format("D Task: deffile     = %s\n", deffile     ), Project.MSG_VERBOSE );
-		}
-		if( resfile != null ){
-			log( String.format("D Task: resfile     = %s\n", resfile     ), Project.MSG_VERBOSE );
+		log( String.format("D Task: mapfile     = %s\n", mapfile     ), Project.MSG_VERBOSE );
+		log( String.format("D Task: deffile     = %s\n", deffile     ), Project.MSG_VERBOSE );
+		log( String.format("D Task: resfile     = %s\n", resfile     ), Project.MSG_VERBOSE );
+
+		for ( ExcludePackage exclude : excludeflags)
+		{
+			log("Excluding: " + exclude.value,Project.MSG_VERBOSE );
 		}
 		
 		for( MainModules mainModules : mainModuless ){

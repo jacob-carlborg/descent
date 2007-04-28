@@ -44,6 +44,7 @@ abstract class Dmd extends Compiler{
 			dTask.mCompileFiles.add( file.getAbsolutePath() );
 		}
 		
+		boolean excludePackage = false;
 		while( (line=reader.readLine()) != null ){
 			Matcher matcher = pattern.matcher(line);
 			if( !matcher.matches() ){
@@ -58,24 +59,28 @@ abstract class Dmd extends Compiler{
 			}
 			
 			
-			
+			excludePackage = false;
 			for ( D.ExcludePackage exclude : dTask.excludeflags)
 			{
 				String excludeDir = exclude.value.replaceAll("\\.", dirSeperator);
 				
 				if ( moduleName.indexOf(excludeDir) != -1 )
 				{
-					System.out.println( "Excluding " + moduleName);
-					continue;
+					System.out.println( "Excluding: " + moduleName);
+					excludePackage = true;
 				}
 				
 			}
 			if( moduleName.endsWith(".di") || moduleName.endsWith("object.d")){
-				continue;
+				excludePackage = true;
 			}
-			System.out.println( "dep mod : "+moduleName );
 			
-			dTask.mCompileFiles.add(moduleName);
+			
+			if ( !excludePackage ) 
+				{
+					System.out.println( "dep mod : "+moduleName );
+					dTask.mCompileFiles.add(moduleName);
+				}
 			//boolean found = false;
 			//found = findModule(dTask.mIncludedModules, moduleName, found);
 			//found = findModule(dTask.mIncludePaths   , moduleName, found);
