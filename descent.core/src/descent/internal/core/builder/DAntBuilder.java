@@ -191,27 +191,66 @@ class DAntFileCreator {
 		
 	String macrodef = "<macrodef name=\"compile\" >\n";		
 	macrodef += "<sequential>\n";
+  	macrodef += "<!--   <D \n";
+  	macrodef += "       type        = \"dmd-linux|dmd-windows|gdb\"\n";
+	macrodef += "  		mode        = \"objects|executable|library-static|library-dynamic\"\n";
+	macrodef += "  		compilerdir = \"path\"\n";
+	macrodef += "  	  	header      = \"true|false*\"\n";
+	macrodef += "  	  	headerdir   = \"~/hdrdir\"\n";
+	macrodef += "  	  	headername  = \"filename.di\" \n";
+	macrodef += "  	  	ddoc        = \"true|false\"\n";
+	macrodef += "  	  	ddocdir     = \"~/ddoc\"\n";
+	macrodef += "  	  	ddocname    = \"filename.html\"\n";
+	macrodef += "  	  	debuginfo   = \"true|false*\"\n";
+	macrodef += "  	  	debuginfo_c = \"true|false*\"\n";
+	macrodef += "  	  	optimize    = \"true|false*\"\n";
+	macrodef += "  	  	profile     = \"true|false*\"\n";
+	macrodef += "  	  	quiet       = \"true|false*\"\n";
+	macrodef += "  	  	release     = \"true|false*\"\n";
+	macrodef += "  	  	unittest    = \"true|false*\"\n";
+	macrodef += "  	  	verbose     = \"true|false*\"\n";
+	macrodef += "  	  	warnings    = \"true|false*\"\n";
+	macrodef += "  	  	cleanup     = \"true*|false\"\n";
+	macrodef += "  	  	stdargs     = \"true*|false\"\n";
+	macrodef += "  	  	unittest    = \"true|false*\"\n";
+	macrodef += "  	  	mapfile     = \"file.map\"\n";
+	macrodef += "  	  	deffile     = \"file.def\"\n";
+	macrodef += "  	  	resfile     = \"file.res\"\n";
+	macrodef += "  	  	destfile    = \"target_file_name.exe\"\n -->";
 	macrodef += "<D \n";
 	macrodef += "type        = \"${compiler.type}\"\n";
 	macrodef += "mode        = \"executable\"\n";
 	macrodef += "compilerdir = \"${compiler.dir}\"\n";
-	macrodef += "destfile    = \"${project.dir}/" + project.getName() + ".exe\"\n";
+	macrodef += "destfile    = \"${project.dir}/" + project.getName() + "/" + project.getName() + ".exe\"\n";
 	macrodef += "cleanup     = \"true\"\n";
+
 	macrodef += ">\n";
+	
+	
+	macrodef += "<!-- <debug   value=\"1\"/> -->\n\n ";
+	macrodef += "<!-- list flags for the linker\n";
+	macrodef += "<linkflag value=\"-L/usr/lib\" /> -->\n\n";
+	
+	macrodef += "<!-- list the libs, the linker shall link \n";
+	macrodef += "<linklib type=\"static|dynamic\" name=\"name\" /> -->\n\n";
+	
 	if ( !isWindows ) macrodef += "<version value=\"Posix\" />\n";
+	else macrodef += "<!-- <version value=\"YourVersion\"/> --> \n";
+	
 	macrodef += "\n";
 	macrodef += "<!-- The main modules -->\n";
 	macrodef += "<mainmodules>\n";
 	for ( IPath path : files )
 	    {
-		macrodef += "<fileset file=\"${project.dir}" + path.toOSString() + "\"/>\n";
+		macrodef += "<fileset file=\"${project.dir}" + path.toOSString()+ "\"/>\n";
 	    }
 	macrodef += "</mainmodules>\n";
-	macrodef += "\n";
-	macrodef += "<excludePackage value=\"std.\" />\n";  
+	macrodef += "\n\n<!-- Any packages you want to exclude -->";
+	macrodef += "<excludePackage value=\"phobos\" />\n\n\n";  
 	macrodef += "<!-- Modules for compilation and linking, if imported -->\n";
 	macrodef += "<includemodules>\n";
 	macrodef += "<dirset file=\"${project.dir}\" />\n";
+	macrodef += "<dirset file=\"${project.dir}/" + project.getName() + "\" />\n";
 	macrodef += "<dirset file=\"${tango.dir}\" />\n";
 	macrodef += "</includemodules>\n";
 	macrodef += "\n";
@@ -229,6 +268,8 @@ class DAntFileCreator {
 	antText += "<compile/>\n";
 	antText += "</target>\n";
 	antText += "</project>\n";
+	
+	
 
 	
 	
