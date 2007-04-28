@@ -22,7 +22,6 @@ public class DescentStackFrame extends DescentDebugElement implements IStackFram
 	private int fLineNumber;
 	
 	private IVariable[] fVariables;
-	private IRegisterGroup[] fRegisterGroups;
 	
 	public DescentStackFrame(IDebugTarget target, ICli cli, IThread thread, String name, int number, String sourceName, int lineNumber) {
 		super(target);
@@ -69,12 +68,7 @@ public class DescentStackFrame extends DescentDebugElement implements IStackFram
 	}
 
 	public IRegisterGroup[] getRegisterGroups() throws DebugException {
-		if (fRegisterGroups == null) {
-			fRegisterGroups = new IRegisterGroup[] {
-					new DescentRegisterGroup((DescentDebugTarget) getDebugTarget(), fCli, fNumber)
-			};
-		}
-		return fRegisterGroups;
+		return ((DescentThread) getThread()).getRegisterGroups();
 	}
 
 	public IThread getThread() {
@@ -82,15 +76,39 @@ public class DescentStackFrame extends DescentDebugElement implements IStackFram
 	}
 
 	public IVariable[] getVariables() throws DebugException {
-		if (fVariables == null) {
-			try {
-				fVariables = fCli.getVariables(fNumber);
-			} catch (IOException e) {
-				e.printStackTrace();
-				return new IVariable[0];
+		try {
+			IVariable[] newVariables = fCli.getVariables(fNumber);
+			fVariables = mergeVariables(fVariables, newVariables);
+			return fVariables;
+		} catch (IOException e) {
+			e.printStackTrace();
+			return new IVariable[0];
+		}
+	}
+
+	private IVariable[] mergeVariables(IVariable[] variables, IVariable[] newVariables) throws DebugException {
+		if (variables == null) {
+			return newVariables;
+		}
+		
+		for(int i = 0; i < variables.length && i < newVariables.length; i++) {
+			DescentVariable oldVar = (DescentVariable) variables[i];
+			DescentVariable newVar = (DescentVariable) newVariables[i];
+			if (oldVar.getName().equals(newVar.getName())) {
+				if (oldVar.getValue() != null && newVar.getValue() != null && 
+						oldVar.getValue().getValueString() != null && newVar.getValue().getValueString() != null) {
+				
+					if (!oldVar.getValue().getValueString().equals(newVar.getValue().getValueString())) {
+						newVar.setValue(oldVar.getValue());
+						newVar.setHasValueChanged(true);
+					}
+					if (oldVar.getValue().hasVariables() &&  oldVar.getValue().hasVariables() == newVar.getValue().hasVariables()) {
+						mergeVariables(oldVar.getValue().getVariables(), newVar.getValue().getVariables());
+					}
+				}
 			}
 		}
-		return fVariables; 
+		return newVariables;
 	}
 
 	public boolean hasRegisterGroups() throws DebugException {
@@ -161,6 +179,19 @@ public class DescentStackFrame extends DescentDebugElement implements IStackFram
 		getThread().terminate();
 	}
 	
+	public boolean isInSameFunction(DescentStackFrame other) {
+		return fName != null && other.fName != null && fName.equals(other.fName) && 
+			fSourceName != null && other.fSourceName != null && fSourceName.equals(other.fSourceName) &&
+			fNumber == other.fNumber;
+	}
+	
+	public void merge(DescentStackFrame other) {
+		this.fLineNumber = other.fLineNumber;
+		this.fName = other.fName;
+		this.fNumber = other.fNumber;
+		this.fSourceName = other.fSourceName;
+	}
+	
 	@Override
 	public String toString() {
 		try {
@@ -169,5 +200,7 @@ public class DescentStackFrame extends DescentDebugElement implements IStackFram
 			return super.toString();
 		}
 	}
+
+	
 
 }

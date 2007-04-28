@@ -20,6 +20,10 @@ public class ConsultingStackFrames  implements IState {
 	}
 	
 	public void interpret(String text) throws DebugException, IOException {
+		// Fix
+		if (text.startsWith("->#")) {
+			text = text.substring(2);
+		}
 		if (text.equals("->")) {
 			if (fBuffer.length() > 0) {
 				fStackFrames.add(parseStackFrame(fBuffer.toString()));

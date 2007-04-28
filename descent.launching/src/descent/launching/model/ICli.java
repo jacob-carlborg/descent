@@ -4,7 +4,6 @@ import java.io.IOException;
 
 import org.eclipse.core.resources.IResource;
 import org.eclipse.debug.core.DebugException;
-import org.eclipse.debug.core.model.IMemoryBlock;
 import org.eclipse.debug.core.model.IRegister;
 import org.eclipse.debug.core.model.IRegisterGroup;
 import org.eclipse.debug.core.model.IStackFrame;
@@ -33,7 +32,7 @@ public interface ICli {
 	
 	void setStackFrame(int stackFrameNumber) throws DebugException, IOException;
 	
-	IRegister[] getRegisters(int stackFrameNumber, IRegisterGroup registerGroup) throws IOException;
+	IRegister[] getRegisters(IRegisterGroup registerGroup) throws IOException;
 	
 	IVariable[] getVariables(int stackFrameNumber) throws IOException;
 	

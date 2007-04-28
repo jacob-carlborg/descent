@@ -1,9 +1,13 @@
 package descent.internal.launching.model;
 
+import org.eclipse.debug.core.DebugEvent;
 import org.eclipse.debug.core.DebugException;
 import org.eclipse.debug.core.model.IBreakpoint;
+import org.eclipse.debug.core.model.IRegisterGroup;
 import org.eclipse.debug.core.model.IStackFrame;
 import org.eclipse.debug.core.model.IThread;
+
+import descent.launching.model.ICli;
 
 public class DescentThread extends DescentDebugElement implements IThread {
 	
@@ -18,10 +22,16 @@ public class DescentThread extends DescentDebugElement implements IThread {
 	 */
 	private boolean fStepping = false;
 	
+	private boolean fStackFramesInvalid;
 	private IStackFrame[] fStackFrames;
 	
-	public DescentThread(DescentDebugTarget target) {
+	private IRegisterGroup[] fRegisterGroups;
+
+	private final ICli fCli;
+	
+	public DescentThread(DescentDebugTarget target, ICli cli) {
 		super(target);
+		this.fCli = cli;
 	}
 
 	public IBreakpoint[] getBreakpoints() {
@@ -50,19 +60,49 @@ public class DescentThread extends DescentDebugElement implements IThread {
 		return 0;
 	}
 	
-	public void invalidateStackFrames() {
-		fStackFrames = null;
+	public void invalidateChildren() {
+		invalidateStackFrames();
+		invalidateRegisters();
+	}
+	
+	private void invalidateStackFrames() {
+		fStackFramesInvalid = true;
+	}
+	
+	private void invalidateRegisters() {
+		if (fRegisterGroups != null) {
+			((DescentRegisterGroup) fRegisterGroups[0]).invalidate();
+		}
 	}
 
 	public IStackFrame[] getStackFrames() throws DebugException {
 		if (isSuspended() && !isTerminated()) {
-			if (fStackFrames == null) {
-				fStackFrames = ((DescentDebugTarget)getDebugTarget()).getStackFrames();	
+			if (fStackFramesInvalid) {
+				IStackFrame[] newStackFrames = ((DescentDebugTarget)getDebugTarget()).getStackFrames(); 
+				fStackFrames = mergeStackFrames(fStackFrames, newStackFrames);	
+				fStackFramesInvalid = false;
+				fireChangeEvent(DebugEvent.CONTENT);
 			}
 			return fStackFrames;
 		} else {
 			return new IStackFrame[0];
 		}
+	}
+
+	private IStackFrame[] mergeStackFrames(IStackFrame[] stackFrames, IStackFrame[] newStackFrames) {
+		if (stackFrames == null || (stackFrames.length != newStackFrames.length)) {
+			return newStackFrames;
+		}
+		for(int i = 0; i < stackFrames.length; i++) {
+			DescentStackFrame oldSF = (DescentStackFrame) stackFrames[i];
+			DescentStackFrame newSF = (DescentStackFrame) newStackFrames[i];
+			if (oldSF.isInSameFunction(newSF)) {
+				oldSF.merge(newSF);
+			} else {
+				stackFrames[i] = newSF;
+			}
+		}
+		return stackFrames;
 	}
 
 	public IStackFrame getTopStackFrame() throws DebugException {
@@ -75,6 +115,15 @@ public class DescentThread extends DescentDebugElement implements IThread {
 
 	public boolean hasStackFrames() throws DebugException {
 		return isSuspended();
+	}
+	
+	public IRegisterGroup[] getRegisterGroups() {
+		if (fRegisterGroups == null) {
+			fRegisterGroups = new IRegisterGroup[] {
+					new DescentRegisterGroup((DescentDebugTarget) getDebugTarget(), fCli)
+			};
+		}
+		return fRegisterGroups;
 	}
 
 	public boolean canResume() {

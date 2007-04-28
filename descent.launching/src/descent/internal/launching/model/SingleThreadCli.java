@@ -54,10 +54,10 @@ public class SingleThreadCli implements ICli {
 		}
 	}
 
-	public IRegister[] getRegisters(int stackFrameNumber, IRegisterGroup registerGroup) throws IOException {
+	public IRegister[] getRegisters(IRegisterGroup registerGroup) throws IOException {
 		fWriteLock.lock();
 		try {
-			return fCli.getRegisters(stackFrameNumber, registerGroup);
+			return fCli.getRegisters(registerGroup);
 		} finally {
 			fWriteLock.unlock();
 		}

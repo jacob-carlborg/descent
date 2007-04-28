@@ -9,8 +9,9 @@ import descent.launching.model.IDescentVariable;
 public class DescentVariable extends DescentDebugElement implements IDescentVariable {
 
 	private final String fName;
-	private final DescentValue fValue;
+	private DescentValue fValue;
 	private DescentVariable fParent;
+	private boolean fHasValueChanged;
 
 	public DescentVariable(IDebugTarget target, String name, String value) {
 		super(target);
@@ -29,9 +30,13 @@ public class DescentVariable extends DescentDebugElement implements IDescentVari
 	public IValue getValue() throws DebugException {
 		return fValue;
 	}
+	
+	public void setHasValueChanged(boolean hasValueChanged) {
+		fHasValueChanged = hasValueChanged;
+	}
 
 	public boolean hasValueChanged() throws DebugException {
-		return false;
+		return fHasValueChanged;
 	}
 
 	public void setValue(String expression) throws DebugException {
@@ -66,5 +71,24 @@ public class DescentVariable extends DescentDebugElement implements IDescentVari
 	public IDescentVariable getParent() {
 		return fParent;
 	}
+	
+	/*
+	@Override
+	public boolean equals(Object obj) {
+		if (!(obj instanceof DescentVariable)) {
+			return false;
+		}
+		
+		DescentVariable other = (DescentVariable) obj;
+		if (fName.equals(other.fName)) {
+			if (fParent == null && other.fParent == null) {
+				return true;
+			} else if (fParent != null && other.fParent != null) {
+				return fParent.equals(other.fParent);
+			}
+		}
+		return false;
+	}
+	*/
 
 }

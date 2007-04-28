@@ -12,14 +12,14 @@ import descent.launching.model.ICli;
 
 public class DescentRegisterGroup extends DebugElement implements IRegisterGroup {
 	
-	private final int fStackFrame;
 	private final ICli fCli;
+	
+	private boolean fRegistersInvalid;
 	private IRegister[] fRegisters;
 	
-	public DescentRegisterGroup(DescentDebugTarget target, ICli interpter, int stackFrame) {
+	public DescentRegisterGroup(DescentDebugTarget target, ICli interpter) {
 		super(target);
 		this.fCli = interpter;
-		this.fStackFrame = stackFrame;
 	}
 
 	public String getName() throws DebugException {
@@ -27,19 +27,41 @@ public class DescentRegisterGroup extends DebugElement implements IRegisterGroup
 	}
 
 	public IRegister[] getRegisters() throws DebugException {
-		if (fRegisters == null) {
-			try {
-				fRegisters = fCli.getRegisters(fStackFrame, this);
-			} catch (IOException e) {
-				e.printStackTrace();
-				return new IRegister[0];
+		try {
+			if (fRegisters == null || fRegistersInvalid) {
+				IRegister[] newRegisters = fCli.getRegisters(this);
+				fRegisters = mergeRegisters(fRegisters, newRegisters);
+				fRegistersInvalid = false;
+			}
+			return fRegisters;
+		} catch (IOException e) {
+			e.printStackTrace();
+			return new IRegister[0];
+		}
+	}
+
+	private IRegister[] mergeRegisters(IRegister[] registers, IRegister[] newRegisters) throws DebugException {
+		if (registers == null || registers.length != newRegisters.length) {
+			return newRegisters;
+		}
+		
+		for(int i = 0; i < registers.length; i++) {
+			DescentRegister oldR = (DescentRegister) registers[i];
+			DescentRegister newR = (DescentRegister) newRegisters[i];
+			
+			if (!oldR.getValue().getValueString().equals(newR.getValue().getValueString())) {
+				newR.setHasValueChanged(true);
 			}
 		}
-		return fRegisters;
+		return newRegisters;
 	}
 
 	public boolean hasRegisters() throws DebugException {
 		return true;
+	}
+	
+	public void invalidate() {
+		fRegistersInvalid = true;
 	}
 
 	public String getModelIdentifier() {

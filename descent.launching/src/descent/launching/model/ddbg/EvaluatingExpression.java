@@ -16,8 +16,6 @@ public class EvaluatingExpression implements IState {
 	}
 
 	public void interpret(String text) throws DebugException, IOException {
-		System.out.println("EVALUATING: " + text);
-		
 		if (text.equals("->")) {
 			fCli.notifyStateReturn();
 		} else {

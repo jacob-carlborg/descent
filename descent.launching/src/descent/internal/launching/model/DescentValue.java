@@ -12,22 +12,22 @@ import descent.launching.model.IDescentVariable;
 
 public class DescentValue extends DescentDebugElement implements IValue {
 
-	private final String name;
-	private final String value;
+	private final String fName;
+	private final String fValue;
 	private List<IDescentVariable> variables;
 
 	public DescentValue(IDebugTarget target, String name, String value) {
 		super(target);
-		this.name = name;
-		this.value = value;
+		this.fName = name;
+		this.fValue = value;
 	}
 
 	public String getReferenceTypeName() throws DebugException {
-		return name;
+		return fName;
 	}
 
 	public String getValueString() throws DebugException {
-		return value;
+		return fValue;
 	}
 
 	public IVariable[] getVariables() throws DebugException {

@@ -20,8 +20,10 @@ import descent.launching.model.IDescentVariable;
 
 public class DdbgCli implements ICli {
 	
+	private final static boolean DEBUG = false;
+	
 	IState fState;
-	IState fDefaultState = new DefaultState(this);
+	IState fRunningState = new Running(this);
 
 	ICliRequestor fCliRequestor;
 	IDescentDebugElementFactory fFactory;
@@ -31,7 +33,7 @@ public class DdbgCli implements ICli {
 	volatile boolean fWaitLockUsed;
 
 	public DdbgCli() {
-		setState(fDefaultState);
+		setState(fRunningState);
 	}
 	
 	public boolean isSingleThread() {
@@ -50,40 +52,35 @@ public class DdbgCli implements ICli {
 	
 	void setState(IState state) {
 		this.fState = state;
-		System.out.println("STATE: " + state);
 	}
 
 	public void interpret(String text)
 			throws DebugException, IOException {
 		
+		if (DEBUG) {
+			System.out.println("~" + text);
+		}
+		
 		fState.interpret(text);
 	}
 
 	public void resume() throws IOException {
-		beginOperation();
-
 		try {
 			fProxy.write("r\n");
 		} finally {
-			setState(fDefaultState);
-			endOperation();
+			setState(fRunningState);
 		}
 	}
 
 	public void terminate() throws IOException {
-		beginOperation();
-
 		try {
 			fProxy.write("q\n");
 		} finally {
-			setState(fDefaultState);
-			endOperation();
+			setState(fRunningState);
 		}
 	}
 
 	public void addBreakpoint(IResource resource, int lineNumber) throws IOException {
-		beginOperation();
-
 		try {
 			setState(new AddingBreakpoint(this));
 			
@@ -97,14 +94,11 @@ public class DdbgCli implements ICli {
 			
 			waitStateReturn();
 		} finally {
-			setState(fDefaultState);
-			endOperation();
+			setState(fRunningState);
 		}
 	}
 
 	public void removeBreakpoint(IResource resource, int lineNumber) throws IOException {
-		beginOperation();
-
 		try {
 			setState(new RemovingBreakpoint(this));
 			
@@ -118,8 +112,7 @@ public class DdbgCli implements ICli {
 			
 			waitStateReturn();
 		} finally {
-			setState(fDefaultState);
-			endOperation();
+			setState(fRunningState);
 		}
 	}
 
@@ -136,8 +129,6 @@ public class DdbgCli implements ICli {
 	}
 	
 	private void step(String cmd, int debugEvent) throws IOException {
-		beginOperation();
-
 		try {
 			setState(new Stepping(this, debugEvent));
 			
@@ -147,15 +138,17 @@ public class DdbgCli implements ICli {
 			
 			waitStateReturn();
 		} finally {
-			setState(fDefaultState);
-			endOperation();
+			setState(fRunningState);
 		}
 	}
 
 	public IStackFrame[] getStackFrames()
 			throws IOException {
-		beginOperation();
-
+		
+		if (DEBUG) {
+			System.out.println("*getStackFrames()");
+		}
+		
 		try {
 			setState(new ConsultingStackFrames(this));
 			
@@ -168,14 +161,11 @@ public class DdbgCli implements ICli {
 			List<IStackFrame> stackFrames = ((ConsultingStackFrames) fState).fStackFrames;
 			return stackFrames.toArray(new IStackFrame[stackFrames.size()]);
 		} finally {
-			setState(fDefaultState);
-			endOperation();
+			setState(fRunningState);
 		}
 	}
 
 	public void setStackFrame(int stackFrame) throws IOException {
-		beginOperation();
-
 		try {
 			setState(new SettingStackFrame(this));
 			
@@ -187,17 +177,12 @@ public class DdbgCli implements ICli {
 			
 			waitStateReturn();
 		} finally {
-			setState(fDefaultState);
-			endOperation();
+			setState(fRunningState);
 		}
 	}
 
-	public IRegister[] getRegisters(int stackFrame, IRegisterGroup registerGroup)
+	public IRegister[] getRegisters(IRegisterGroup registerGroup)
 			throws IOException {
-		// setStackFrame(stackFrame);
-
-		beginOperation();
-
 		try {
 			setState(new ConsultingRegisters(this, registerGroup));
 			
@@ -212,15 +197,12 @@ public class DdbgCli implements ICli {
 			Arrays.sort(registersArray);
 			return registersArray;
 		} finally {
-			setState(fDefaultState);
-			endOperation();			
+			setState(fRunningState);
 		}
 	}
 	
 	public IVariable[] getVariables(int stackFrame) throws IOException {
 		setStackFrame(stackFrame);
-
-		beginOperation();
 
 		try {
 			setState(new ConsultingVariables(this));
@@ -235,14 +217,11 @@ public class DdbgCli implements ICli {
 			completeTypes(variables);
 			return ddbgVariablesToDescentVariables(variables);
 		} finally {
-			setState(fDefaultState);
-			endOperation();
+			setState(fRunningState);
 		}
 	}
 	
 	public byte[] getMemoryBlock(long startAddress, long length) throws IOException {
-		beginOperation();
-
 		try {
 			setState(new ConsultingMemoryBlock(this, length));
 			
@@ -258,15 +237,12 @@ public class DdbgCli implements ICli {
 			
 			return ((ConsultingMemoryBlock) fState).fBytes;
 		} finally {
-			setState(fDefaultState);
-			endOperation();
+			setState(fRunningState);
 		}
 	}
 	
 	public IDescentVariable evaluateExpression(int stackFrame, String expression) throws IOException {
 		setStackFrame(stackFrame);
-
-		beginOperation();
 
 		try {
 			setState(new EvaluatingExpression(this, expression));
@@ -281,8 +257,7 @@ public class DdbgCli implements ICli {
 			completeType(ddbgVar);
 			return ddbgVariableToDescentVariable(ddbgVar);
 		} finally {
-			setState(fDefaultState);
-			endOperation();			
+			setState(fRunningState);
 		}
 	}
 	
@@ -300,8 +275,7 @@ public class DdbgCli implements ICli {
 			
 			return ((ConsultingType) fState).fType;
 		} finally {
-			setState(fDefaultState);
-			endOperation();			
+			setState(fRunningState);
 		}
 	}
 	
@@ -340,13 +314,6 @@ public class DdbgCli implements ICli {
 		var.addChildren(ddbgVariablesToDescentVariables(ddbgVar.getChildren()));
 		return var;
 	}
-
-	private void beginOperation() {
-		sleep();
-	}
-
-	private void endOperation() {
-	}
 	
 	void beforeWaitStateReturn() {
 		fWaitLockUsed = false;
@@ -369,14 +336,6 @@ public class DdbgCli implements ICli {
 		synchronized (fWaitLock) {
 			fWaitLock.notify();
 		}		
-	}
-
-	private void sleep() {
-		try {
-			Thread.sleep(40);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
 	}
 
 }
