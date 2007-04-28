@@ -28,7 +28,7 @@ public class DdbgCli implements ICli {
 	IStreamsProxy fProxy;
 
 	Object fWaitLock = new Object();
-	
+	volatile boolean fWaitLockUsed;
 
 	public DdbgCli() {
 		setState(fDefaultState);
@@ -50,6 +50,7 @@ public class DdbgCli implements ICli {
 	
 	void setState(IState state) {
 		this.fState = state;
+		System.out.println("STATE: " + state);
 	}
 
 	public void interpret(String text)
@@ -86,6 +87,8 @@ public class DdbgCli implements ICli {
 		try {
 			setState(new AddingBreakpoint(this));
 			
+			beforeWaitStateReturn();
+			
 			fProxy.write("bp ");
 			fProxy.write(resource.getLocation().toOSString());
 			fProxy.write(":");
@@ -104,6 +107,8 @@ public class DdbgCli implements ICli {
 
 		try {
 			setState(new RemovingBreakpoint(this));
+			
+			beforeWaitStateReturn();
 			
 			fProxy.write("dbp ");
 			fProxy.write(resource.getLocation().toOSString());
@@ -136,6 +141,8 @@ public class DdbgCli implements ICli {
 		try {
 			setState(new Stepping(this, debugEvent));
 			
+			beforeWaitStateReturn();
+			
 			fProxy.write(cmd + "\n");
 			
 			waitStateReturn();
@@ -151,6 +158,8 @@ public class DdbgCli implements ICli {
 
 		try {
 			setState(new ConsultingStackFrames(this));
+			
+			beforeWaitStateReturn();
 			
 			fProxy.write("us\n");
 			
@@ -169,6 +178,8 @@ public class DdbgCli implements ICli {
 
 		try {
 			setState(new SettingStackFrame(this));
+			
+			beforeWaitStateReturn();
 			
 			fProxy.write("f ");
 			fProxy.write(String.valueOf(stackFrame));
@@ -189,6 +200,8 @@ public class DdbgCli implements ICli {
 
 		try {
 			setState(new ConsultingRegisters(this, registerGroup));
+			
+			beforeWaitStateReturn();
 			
 			fProxy.write("dr\n");
 			
@@ -212,6 +225,8 @@ public class DdbgCli implements ICli {
 		try {
 			setState(new ConsultingVariables(this));
 			
+			beforeWaitStateReturn();
+			
 			fProxy.write("lsv\n");
 
 			waitStateReturn();
@@ -230,6 +245,8 @@ public class DdbgCli implements ICli {
 
 		try {
 			setState(new ConsultingMemoryBlock(this, length));
+			
+			beforeWaitStateReturn();
 			
 			fProxy.write("dm ");
 			fProxy.write(Long.toHexString(startAddress));
@@ -254,9 +271,9 @@ public class DdbgCli implements ICli {
 		try {
 			setState(new EvaluatingExpression(this, expression));
 			
-			fProxy.write("= ");
-			fProxy.write(expression);
-			fProxy.write("\n");
+			beforeWaitStateReturn();
+			
+			fProxy.write("= " + expression + "\n");
 			
 			waitStateReturn();
 			
@@ -272,6 +289,8 @@ public class DdbgCli implements ICli {
 	public String getType(String expression) throws IOException {
 		try {
 			setState(new ConsultingType(this));
+			
+			beforeWaitStateReturn();
 			
 			fProxy.write("t ");
 			fProxy.write(expression);
@@ -329,10 +348,16 @@ public class DdbgCli implements ICli {
 	private void endOperation() {
 	}
 	
+	void beforeWaitStateReturn() {
+		fWaitLockUsed = false;
+	}
+	
 	void waitStateReturn() {
 		try {
 			synchronized (fWaitLock) {
-				fWaitLock.wait();
+				if (!fWaitLockUsed) {
+					fWaitLock.wait(500);
+				}
 			}
 		} catch (InterruptedException e) {
 			e.printStackTrace();
@@ -340,14 +365,15 @@ public class DdbgCli implements ICli {
 	}
 	
 	void notifyStateReturn() {
+		fWaitLockUsed = true;
 		synchronized (fWaitLock) {
 			fWaitLock.notify();
-		}
+		}		
 	}
 
 	private void sleep() {
 		try {
-			Thread.sleep(120);
+			Thread.sleep(40);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}

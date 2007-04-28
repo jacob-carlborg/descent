@@ -124,6 +124,9 @@ public class DescentDebugTarget extends DescentDebugElement implements IDebugTar
 	public boolean isTerminated() {
 		return fProcess.isTerminated();
 	}
+	
+	public void suspend() throws DebugException {
+	}
 
 	public void terminate() throws DebugException {
 		if (isTerminated()) return;
@@ -160,10 +163,6 @@ public class DescentDebugTarget extends DescentDebugElement implements IDebugTar
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-	}
-	
-	public void suspend() throws DebugException {
-		
 	}
 
 	public void breakpointAdded(IBreakpoint breakpoint) {
@@ -260,7 +259,7 @@ public class DescentDebugTarget extends DescentDebugElement implements IDebugTar
 		}
 	}
 	
-	public void streamAppended(String text, IStreamMonitor monitor) {
+	public void streamAppended(String text, IStreamMonitor monitor) {		
 		try {
 			fStreamBuffer.append(text);
 			
@@ -310,12 +309,50 @@ public class DescentDebugTarget extends DescentDebugElement implements IDebugTar
 		resume();
 	}
 	
-	public void suspended(int detail) {
+	public void stepEnded() {
 		fSuspended = true;
+		fThread.setBreakpoints(null);
 		fThread.invalidateStackFrames();
-		fThread.fireSuspendEvent(detail);
+		fThread.fireSuspendEvent(DebugEvent.STEP_END);
 	}
 	
+	public void breakpointHit() throws DebugException {
+		breakpointHit(null, -1);
+	}
+	
+	public void breakpointHit(String fileName, int lineNumber) throws DebugException {
+		fSuspended = true;
+		
+		if (fileName != null) {
+			IBreakpoint breakpoint = findBreakpoint(fileName, lineNumber);
+			if (breakpoint != null) {
+				fThread.setBreakpoints(new IBreakpoint[] { breakpoint });
+			}
+		}
+		
+		fThread.invalidateStackFrames();
+		fThread.fireSuspendEvent(DebugEvent.BREAKPOINT);
+	}
+	
+	private IBreakpoint findBreakpoint(String fileName, int lineNumber) {
+		IBreakpoint[] breakpoints = DebugPlugin.getDefault().getBreakpointManager().getBreakpoints(IDescentLaunchConfigurationConstants.ID_D_DEBUG_MODEL);
+		for (int i = 0; i < breakpoints.length; i++) {
+			IBreakpoint breakpoint = breakpoints[i];
+			if (supportsBreakpoint(breakpoint)) {
+				if (breakpoint instanceof ILineBreakpoint) {
+					ILineBreakpoint lineBreakpoint = (ILineBreakpoint) breakpoint;
+					try {
+						if (lineBreakpoint.getLineNumber() == lineNumber) {
+							return breakpoint;
+						}
+					} catch (CoreException e) {
+					}
+				}
+			}
+		}
+		return null;
+	}
+
 	public void resumed(int detail) {
 		fSuspended = false;
 		

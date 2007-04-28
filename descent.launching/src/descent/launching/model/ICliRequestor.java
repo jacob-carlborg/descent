@@ -6,7 +6,11 @@ public interface ICliRequestor {
 	
 	void started() throws DebugException;
 	
-	void suspended(int detail) throws DebugException;
+	void stepEnded() throws DebugException;
+	
+	void breakpointHit() throws DebugException;
+	
+	void breakpointHit(String fileName, int lineNumber) throws DebugException;
 	
 	void resumed(int detail) throws DebugException;
 	

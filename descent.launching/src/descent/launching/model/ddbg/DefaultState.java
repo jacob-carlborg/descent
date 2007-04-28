@@ -2,7 +2,6 @@ package descent.launching.model.ddbg;
 
 import java.io.IOException;
 
-import org.eclipse.debug.core.DebugEvent;
 import org.eclipse.debug.core.DebugException;
 
 public class DefaultState implements IState {
@@ -18,7 +17,19 @@ public class DefaultState implements IState {
 			fCli.fCliRequestor.terminated();
 		} else if (text.startsWith("Breakpoint ")) {
 			// Breakpoint n hit at file:lineNumber address
-			fCli.fCliRequestor.suspended(DebugEvent.BREAKPOINT);
+			int indexOfColon = text.lastIndexOf(':');
+			if (indexOfColon != -1) {
+				int indexOfSpaceBefore = text.lastIndexOf(' ', indexOfColon - 1);
+				int indexOfSpaceAfter = text.indexOf(' ', indexOfColon + 1);
+				if (indexOfSpaceBefore != -1 && indexOfSpaceAfter != -1) {
+					String fileName = text.substring(indexOfSpaceBefore + 1, indexOfColon);
+					int lineNumber = Integer.parseInt(text.substring(indexOfColon + 1, indexOfSpaceAfter));
+					fCli.fCliRequestor.breakpointHit(fileName, lineNumber);
+					return;
+				}
+			}
+			
+			fCli.fCliRequestor.breakpointHit();
 		}
 	}
 	

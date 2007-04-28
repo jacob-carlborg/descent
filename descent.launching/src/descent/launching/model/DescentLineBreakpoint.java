@@ -15,15 +15,17 @@ public class DescentLineBreakpoint extends LineBreakpoint {
 	public DescentLineBreakpoint() {
 	}
 	
-	public DescentLineBreakpoint(final IResource resource, final int lineNumber) throws CoreException {
+	public DescentLineBreakpoint(final IResource resource, final int lineNumber, final int charStart, final int charEnd) throws CoreException {
 		IWorkspaceRunnable runnable = new IWorkspaceRunnable() {
 			public void run(IProgressMonitor monitor) throws CoreException {
 				IMarker marker = resource
 						.createMarker("descent.launching.descentLineBreakpointMarker");
 				setMarker(marker);
+				marker.setAttribute(IBreakpoint.ID, getModelIdentifier());
 				marker.setAttribute(IBreakpoint.ENABLED, Boolean.TRUE);
 				marker.setAttribute(IMarker.LINE_NUMBER, lineNumber);
-				marker.setAttribute(IBreakpoint.ID, getModelIdentifier());
+				marker.setAttribute(IMarker.CHAR_START, charStart);
+				marker.setAttribute(IMarker.CHAR_END, charEnd);
 				marker.setAttribute(IMarker.MESSAGE, "Line Breakpoint: "
 						+ resource.getName() + " [line: " + lineNumber + "]");
 			}

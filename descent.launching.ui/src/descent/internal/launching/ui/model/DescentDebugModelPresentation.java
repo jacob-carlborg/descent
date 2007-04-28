@@ -1,5 +1,7 @@
 package descent.internal.launching.ui.model;
 
+import java.util.Stack;
+
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.debug.core.DebugException;
@@ -15,6 +17,11 @@ import org.eclipse.debug.ui.IValueDetailListener;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.part.FileEditorInput;
+
+import descent.core.IJavaElement;
+import descent.core.IMember;
+import descent.internal.launching.ui.BreakpointUtils;
+import descent.ui.JavaElementLabels;
 
 public class DescentDebugModelPresentation extends LabelProvider implements IDebugModelPresentation {
 
@@ -78,28 +85,15 @@ public class DescentDebugModelPresentation extends LabelProvider implements IDeb
 		StringBuilder sb = new StringBuilder();
 		appendFileName(breakpoint, sb);
 		appendLineNumber(breakpoint, sb);
-		return sb.toString();
-		/*
-		String typeName= breakpoint.getTypeName();
-		IMember member= BreakpointUtils.getMember(breakpoint);
-		StringBuffer label= new StringBuffer();
-		label.append(getQualifiedName(typeName));
-		appendLineNumber(breakpoint, label);
-		appendHitCount(breakpoint, label);
-		appendSuspendPolicy(breakpoint,label);
-		appendThreadFilter(breakpoint, label);
-		appendConditional(breakpoint, label);
-		appendInstanceFilter(breakpoint, label);
 		
+		IMember member = BreakpointUtils.getMember(breakpoint);
 		if (member != null) {
-			label.append(" - "); //$NON-NLS-1$
-			label.append(getJavaLabelProvider().getText(member));
+			sb.append(" - ");
+			appendElementPath(breakpoint, member, sb);
 		}
-		
-		return label.toString();
-		*/
+		return sb.toString();
 	}
-
+	
 	private String getThreadText(IThread thread) throws CoreException {
 		StringBuilder sb = new StringBuilder();
 		sb.append("Thread [");
@@ -168,5 +162,22 @@ public class DescentDebugModelPresentation extends LabelProvider implements IDeb
 		}
 		return label;
 	}
+	
+	private void appendElementPath(ILineBreakpoint breakpoint, IJavaElement element, StringBuilder sb) {
+		Stack<IJavaElement> elements = new Stack<IJavaElement>();
+		while(element != null && element.getElementType() != IJavaElement.COMPILATION_UNIT) {
+			elements.add(element);
+			element = element.getParent();
+		}
+		
+		while(!elements.isEmpty()) {
+			IJavaElement popped = elements.pop();
+			sb.append(JavaElementLabels.getElementLabel(popped, JavaElementLabels.M_PARAMETER_TYPES));
+			if (!elements.isEmpty()) {
+				sb.append(".");
+			}
+		}
+	}
+
 
 }

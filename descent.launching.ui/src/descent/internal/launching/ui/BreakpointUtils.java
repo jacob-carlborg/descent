@@ -1,9 +1,13 @@
 package descent.internal.launching.ui;
 
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.debug.core.model.ILineBreakpoint;
 
+import descent.core.ICompilationUnit;
+import descent.core.IJavaElement;
 import descent.core.IMember;
+import descent.core.JavaCore;
 
 /**
  * Utility class for Descent breakpoints 
@@ -21,27 +25,29 @@ public class BreakpointUtils {
 	 *  the breakpoint
 	 */
 	public static IMember getMember(ILineBreakpoint breakpoint) throws CoreException {
-		/*
 		int start = breakpoint.getCharStart();
 		int end = breakpoint.getCharEnd();
 		
-		IType type = getType(breakpoint);
-	
-		if (start == -1 && end == -1) {
-			start= breakpoint.getMarker().getAttribute(MEMBER_START, -1);
-			end= breakpoint.getMarker().getAttribute(MEMBER_END, -1);
+		if (start == -1 || end == -1) {
+			return null;
 		}
 		
-		IMember member = null;
-		if ((type != null && type.exists()) && (end >= start) && (start >= 0)) {
-			member= binSearch(type, start, end);
+		int length = end - start;
+		
+		IResource resource = breakpoint.getMarker().getResource();
+		IJavaElement element = JavaCore.create(resource);
+		if (!(element instanceof ICompilationUnit)) {
+			return null;
 		}
-		if (member == null) {
-			member= type;
+		
+		// TODO Descent debug: dosen't always match the desired function
+		ICompilationUnit unit = (ICompilationUnit) element;
+		IJavaElement elementAt = unit.getElementAt(start + length / 2);
+		if (elementAt instanceof IMember) {
+			return (IMember) elementAt;
+		} else {
+			return null;
 		}
-		return member;
-		*/
-		return null;
 	}
 
 }

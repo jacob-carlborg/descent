@@ -26,7 +26,7 @@ public class Stepping implements IState {
 			fCli.notifyStateReturn();
 		}
 		if ("->".equals(text)) {
-			fCli.fCliRequestor.suspended(DebugEvent.STEP_END);
+			fCli.fCliRequestor.stepEnded();
 			fCli.notifyStateReturn();
 		}
 	}

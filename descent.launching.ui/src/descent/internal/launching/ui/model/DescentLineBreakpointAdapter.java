@@ -6,9 +6,13 @@ import org.eclipse.debug.core.DebugPlugin;
 import org.eclipse.debug.core.model.IBreakpoint;
 import org.eclipse.debug.core.model.ILineBreakpoint;
 import org.eclipse.debug.ui.actions.IToggleBreakpointsTarget;
+import org.eclipse.jface.text.BadLocationException;
+import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.ITextSelection;
 import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IWorkbenchPart;
+import org.eclipse.ui.texteditor.IDocumentProvider;
 import org.eclipse.ui.texteditor.ITextEditor;
 
 import descent.core.JavaCore;
@@ -19,7 +23,7 @@ public class DescentLineBreakpointAdapter implements IToggleBreakpointsTarget {
 
 	public void toggleLineBreakpoints(IWorkbenchPart part, ISelection selection) throws CoreException {
 		ITextEditor textEditor = getEditor(part);
-		if (textEditor != null) {
+		if (textEditor != null && selection instanceof ITextSelection) {
 			IResource resource = (IResource) textEditor.getEditorInput().getAdapter(IResource.class);
 			ITextSelection textSelection = (ITextSelection) selection;
 			int lineNumber = textSelection.getStartLine();
@@ -34,8 +38,29 @@ public class DescentLineBreakpointAdapter implements IToggleBreakpointsTarget {
 					}
 				}
 			}
+			
+			IEditorInput editorInput = textEditor.getEditorInput();
+            IDocumentProvider documentProvider = textEditor.getDocumentProvider();
+            if (documentProvider == null) {
+                return;
+            }
+            IDocument document = documentProvider.getDocument(editorInput);
+            int lines = document.getNumberOfLines();
+            int charStart = -1;
+            int charEnd = -1;
+            try {
+				charStart = document.getLineOffset(lineNumber);
+				if (lineNumber == lines - 1) {
+					charEnd = document.getLength() - 1; 
+				} else {
+					charEnd = document.getLineOffset(lineNumber + 1);
+				}
+			} catch (BadLocationException e) {
+				e.printStackTrace();
+			}
+			
 			// create line breakpoint (doc line numbers start at 0)
-			DescentLineBreakpoint lineBreakpoint = new DescentLineBreakpoint(resource, lineNumber + 1);
+			DescentLineBreakpoint lineBreakpoint = new DescentLineBreakpoint(resource, lineNumber + 1, charStart, charEnd);
 			DebugPlugin.getDefault().getBreakpointManager().addBreakpoint(lineBreakpoint);
 		}
 	}

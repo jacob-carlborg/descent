@@ -1,6 +1,7 @@
 package descent.internal.launching.model;
 
 import java.io.IOException;
+import java.util.concurrent.locks.ReentrantLock;
 
 import org.eclipse.core.resources.IResource;
 import org.eclipse.debug.core.DebugException;
@@ -18,11 +19,13 @@ import descent.launching.model.IDescentVariable;
 public class SingleThreadCli implements ICli {
 	
 	private final ICli fCli;
-	private Object fLock;
+	private ReentrantLock fReadLock;
+	private ReentrantLock fWriteLock;
 
 	public SingleThreadCli(ICli cli) {
 		this.fCli = cli;
-		this.fLock = new Object();
+		this.fReadLock = new ReentrantLock(true);
+		this.fWriteLock = new ReentrantLock(true);
 	}
 	
 	public boolean isSingleThread() {
@@ -34,38 +37,56 @@ public class SingleThreadCli implements ICli {
 	}
 
 	public void addBreakpoint(IResource resource, int lineNumber) throws DebugException, IOException {
-		synchronized (fLock) {
+		fWriteLock.lock();
+		try {
 			fCli.addBreakpoint(resource, lineNumber);
+		} finally {
+			fWriteLock.unlock();
 		}
 	}
 
 	public IDescentVariable evaluateExpression(int stackFrameNumber, String expression) throws IOException {
-		synchronized (fLock) {
+		fWriteLock.lock();
+		try {
 			return fCli.evaluateExpression(stackFrameNumber, expression);
+		} finally {
+			fWriteLock.unlock();
 		}
 	}
 
 	public IRegister[] getRegisters(int stackFrameNumber, IRegisterGroup registerGroup) throws IOException {
-		synchronized (fLock) {
+		fWriteLock.lock();
+		try {
 			return fCli.getRegisters(stackFrameNumber, registerGroup);
+		} finally {
+			fWriteLock.unlock();
 		}
 	}
 
 	public IStackFrame[] getStackFrames() throws DebugException, IOException {
-		synchronized (fLock) {
+		fWriteLock.lock();
+		try {
 			return fCli.getStackFrames();
+		} finally {
+			fWriteLock.unlock();
 		}
 	}
 
 	public IVariable[] getVariables(int stackFrameNumber) throws IOException {
-		synchronized (fLock) {
+		fWriteLock.lock();
+		try {
 			return fCli.getVariables(stackFrameNumber);
+		} finally {
+			fWriteLock.unlock();
 		}
 	}
 	
 	public byte[] getMemoryBlock(long startAddress, long length) throws IOException {
-		synchronized (fLock) {
+		fWriteLock.lock();
+		try {
 			return fCli.getMemoryBlock(startAddress, length);
+		} finally {
+			fWriteLock.unlock();
 		}
 	}
 
@@ -74,49 +95,70 @@ public class SingleThreadCli implements ICli {
 	}
 
 	public void interpret(String text) throws DebugException, IOException {
-		fCli.interpret(text);
+		fReadLock.lock();
+		try {
+			fCli.interpret(text);
+		} finally {
+			fReadLock.unlock();
+		}
 	}
 
 	public void removeBreakpoint(IResource resource, int lineNumber) throws DebugException, IOException {
-		synchronized (fLock) {
+		fWriteLock.lock();
+		try {
 			fCli.removeBreakpoint(resource, lineNumber);
+		} finally {
+			fWriteLock.unlock();
 		}
 	}
 
 	public void resume() throws DebugException, IOException {
-		synchronized (fLock) {
+		fWriteLock.lock();
+		try {
 			fCli.resume();
+		} finally {
+			fWriteLock.unlock();
 		}
 	}
 
 	public void setStackFrame(int stackFrameNumber) throws DebugException, IOException {
-		synchronized (fLock) {
+		fWriteLock.lock();
+		try {
 			fCli.setStackFrame(stackFrameNumber);
+		} finally {
+			fWriteLock.unlock();
 		}
 	}
 
 	public void stepInto() throws IOException {
-		synchronized (fLock) {
+		fWriteLock.lock();
+		try {
 			fCli.stepInto();
+		} finally {
+			fWriteLock.unlock();
 		}
 	}
 
 	public void stepOver() throws IOException {
-		synchronized (fLock) {
+		fWriteLock.lock();
+		try {
 			fCli.stepOver();
+		} finally {
+			fWriteLock.unlock();
 		}
 	}
 
 	public void stepReturn() throws IOException {
-		synchronized (fLock) {
+		fWriteLock.lock();
+		try {
 			fCli.stepReturn();
+		} finally {
+			fWriteLock.unlock();
 		}
 	}
 
 	public void terminate() throws DebugException, IOException {
-		//synchronized (fLock) {
-			fCli.terminate();
-		//}
+		fCli.terminate();
 	}
 
 }
