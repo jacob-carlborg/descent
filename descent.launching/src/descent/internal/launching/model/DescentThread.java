@@ -43,17 +43,7 @@ public class DescentThread extends DescentDebugElement implements IThread {
 	}
 
 	public String getName() throws DebugException {
-		StringBuilder sb = new StringBuilder();
-		sb.append("Thread [main] (");
-		if (isSuspended()) {
-			sb.append("Suspended");
-		} else if (isTerminated()) {
-			sb.append("Terminated");
-		} else {
-			sb.append("Running");
-		}
-		sb.append(")");
-		return sb.toString();
+		return "main";
 	}
 
 	public int getPriority() throws DebugException {

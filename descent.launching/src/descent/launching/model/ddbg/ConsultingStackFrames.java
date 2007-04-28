@@ -48,6 +48,7 @@ public class ConsultingStackFrames  implements IState {
 		
 		// Some positions in the string
 		int indexOfFirstSpace = data.indexOf(' ');
+		int indexOfFirstParen = data.indexOf("(");
 		int indexOfIn = data.indexOf(" in ");
 		int indexOfFrom = data.lastIndexOf(" from ");
 		int indexOfAt = data.lastIndexOf(" at ");
@@ -57,15 +58,28 @@ public class ConsultingStackFrames  implements IState {
 		number = Integer.parseInt(data.substring(1, indexOfFirstSpace));		
 		
 		// Name
-		if (indexOfIn != -1 && indexOfFrom != -1 && indexOfIn < indexOfFrom) {
+		if (indexOfIn != -1 && indexOfFirstParen != -1 && indexOfIn < indexOfFirstParen) {
+			// in ... <name> ... from
+			name = data.substring(indexOfIn + 4, indexOfFirstParen - 1).trim() + "()";
+		} else if (indexOfIn != -1 && indexOfFrom != -1 && indexOfIn < indexOfFrom) {
+			// in ... <name> ... from
 			name = data.substring(indexOfIn + 4, indexOfFrom + 1);
 		} else if (indexOfIn != -1 && indexOfAt != -1 && indexOfIn < indexOfAt) {
+			// in ... <name> ... at
 			name = data.substring(indexOfIn + 4, indexOfAt + 1);
+		} else if (indexOfIn != -1 && indexOfFirstParen != -1 && indexOfIn < indexOfFirstParen) {
+			// in ... <name> ... (
+			name = data.substring(indexOfIn + 4, indexOfFirstParen - 1).trim() + "()";
+		} else if (indexOfFirstSpace != -1 && indexOfFirstParen != -1 && indexOfFirstSpace < indexOfFirstParen) {
+			// ... <name> ... (
+			name = data.substring(indexOfFirstSpace + 1, indexOfFirstParen - 1).trim() + "()";
 		} else {
 			if (indexOfFirstSpace != -1) {
 				if (indexOfAt != -1) {
+					//  ... <name> ... at
 					name = data.substring(indexOfFirstSpace + 1, indexOfAt + 1);
 				} else {
+					// ... <name> ...
 					int indexOfSecondSpace = data.indexOf(' ', indexOfFirstSpace + 1);
 					if (indexOfSecondSpace != -1) {
 						name = data.substring(indexOfFirstSpace + 1, indexOfSecondSpace);

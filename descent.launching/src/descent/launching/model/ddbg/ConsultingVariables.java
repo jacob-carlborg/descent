@@ -10,7 +10,7 @@ public class ConsultingVariables implements IState {
 	
 	public List<DdbgVariable> fVariables = new ArrayList<DdbgVariable>();
 	private DdbgVariable fVariable;
-	private final DdbgCli fCli;
+	private final DdbgCli fCli;	
 	
 	public ConsultingVariables(DdbgCli cli) {
 		this.fCli = cli;

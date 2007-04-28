@@ -114,7 +114,7 @@ public class DescentDebugTarget extends DescentDebugElement implements IDebugTar
 	}
 
 	public boolean supportsBreakpoint(IBreakpoint breakpoint) {
-		return false;
+		return true;
 	}
 
 	public boolean canTerminate() {
@@ -152,14 +152,14 @@ public class DescentDebugTarget extends DescentDebugElement implements IDebugTar
 	public void resume() throws DebugException {
 		if (isTerminated()) return;
 		
+		fireResumeEvent(DebugEvent.CLIENT_REQUEST);
+		
 		try {
 			fSuspended = false;
 			fInterpreter.resume();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		
-		fireResumeEvent(DebugEvent.CLIENT_REQUEST);
 	}
 	
 	public void suspend() throws DebugException {
@@ -179,6 +179,16 @@ public class DescentDebugTarget extends DescentDebugElement implements IDebugTar
 	}
 
 	public void breakpointChanged(IBreakpoint breakpoint, IMarkerDelta delta) {
+		if (supportsBreakpoint(breakpoint)) {
+			try {
+				if (breakpoint.isEnabled()) {
+					breakpointAdded(breakpoint);
+				} else {
+					breakpointRemoved(breakpoint, null);
+				}
+			} catch (CoreException e) {
+			}
+		}
 	}
 
 	public void breakpointRemoved(IBreakpoint breakpoint, IMarkerDelta delta) {
@@ -205,11 +215,13 @@ public class DescentDebugTarget extends DescentDebugElement implements IDebugTar
 	}
 
 	public IMemoryBlock getMemoryBlock(long startAddress, long length) throws DebugException {
-		return null;
+		if (isTerminated()) return null;
+		
+		return new DescentMemoryBlock(this, fInterpreter, startAddress, length);
 	}
 
 	public boolean supportsStorageRetrieval() {
-		return false;
+		return true;
 	}
 	
 	public IStackFrame[] getStackFrames() {

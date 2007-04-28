@@ -183,7 +183,7 @@ public class DdbgCli implements ICli {
 
 	public IRegister[] getRegisters(int stackFrame, IRegisterGroup registerGroup)
 			throws IOException {
-		setStackFrame(stackFrame);
+		// setStackFrame(stackFrame);
 
 		beginOperation();
 
@@ -225,6 +225,27 @@ public class DdbgCli implements ICli {
 		}
 	}
 	
+	public byte[] getMemoryBlock(long startAddress, long length) throws IOException {
+		beginOperation();
+
+		try {
+			setState(new ConsultingMemoryBlock(this, length));
+			
+			fProxy.write("dm ");
+			fProxy.write(Long.toHexString(startAddress));
+			fProxy.write(" ");
+			fProxy.write(String.valueOf(length));
+			fProxy.write("\n");
+
+			waitStateReturn();
+			
+			return ((ConsultingMemoryBlock) fState).fBytes;
+		} finally {
+			setState(fDefaultState);
+			endOperation();
+		}
+	}
+	
 	public IDescentVariable evaluateExpression(int stackFrame, String expression) throws IOException {
 		setStackFrame(stackFrame);
 
@@ -239,7 +260,9 @@ public class DdbgCli implements ICli {
 			
 			waitStateReturn();
 			
-			return ((EvaluatingExpression) fState).fVariable;
+			DdbgVariable ddbgVar = ((EvaluatingExpression) fState).fVariable;
+			completeType(ddbgVar);
+			return ddbgVariableToDescentVariable(ddbgVar);
 		} finally {
 			setState(fDefaultState);
 			endOperation();			
@@ -269,23 +292,34 @@ public class DdbgCli implements ICli {
 	
 	private void completeTypes(List<DdbgVariable> variables, String prefix) throws IOException {
 		for(DdbgVariable var : variables) {
-			if (var.getValue() == null) {
-				String name = prefix + var.getName();
-				var.setValue(getType(name));
-			}
-			completeTypes(var.getChildren(), prefix + var.getName() + ".");
+			completeType(var, prefix);			
 		}
+	}
+	
+	private void completeType(DdbgVariable var) throws IOException {
+		completeType(var, "");
+	}
+	
+	private void completeType(DdbgVariable var, String prefix) throws IOException {
+		if (var.getValue() == null) {
+			String name = prefix + var.getName();
+			var.setValue(getType(name));
+		}
+		completeTypes(var.getChildren(), prefix + var.getName() + ".");
 	}
 	
 	private IDescentVariable[] ddbgVariablesToDescentVariables(List<DdbgVariable> ddbgVars) {
 		IDescentVariable[] vars = new IDescentVariable[ddbgVars.size()];
 		for(int i = 0; i < ddbgVars.size(); i++) {
-			DdbgVariable ddbgVar = ddbgVars.get(i);
-			IDescentVariable var = fFactory.newVariable(ddbgVar.getName(), ddbgVar.getValue());
-			var.addChildren(ddbgVariablesToDescentVariables(ddbgVar.getChildren()));
-			vars[i] = var ;
+			vars[i] = ddbgVariableToDescentVariable(ddbgVars.get(i));
 		}
 		return vars;
+	}
+	
+	private IDescentVariable ddbgVariableToDescentVariable(DdbgVariable ddbgVar) {
+		IDescentVariable var = fFactory.newVariable(ddbgVar.getName(), ddbgVar.getValue());
+		var.addChildren(ddbgVariablesToDescentVariables(ddbgVar.getChildren()));
+		return var;
 	}
 
 	private void beginOperation() {
@@ -313,7 +347,7 @@ public class DdbgCli implements ICli {
 
 	private void sleep() {
 		try {
-			Thread.sleep(100);
+			Thread.sleep(120);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}

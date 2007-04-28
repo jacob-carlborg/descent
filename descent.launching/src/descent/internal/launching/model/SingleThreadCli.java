@@ -62,6 +62,12 @@ public class SingleThreadCli implements ICli {
 			return fCli.getVariables(stackFrameNumber);
 		}
 	}
+	
+	public byte[] getMemoryBlock(long startAddress, long length) throws IOException {
+		synchronized (fLock) {
+			return fCli.getMemoryBlock(startAddress, length);
+		}
+	}
 
 	public void initialize(ICliRequestor requestor, IDescentDebugElementFactory factory, IStreamsProxy out) {
 		fCli.initialize(requestor, factory, out);

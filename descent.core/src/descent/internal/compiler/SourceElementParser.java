@@ -368,7 +368,7 @@ public class SourceElementParser extends ASTVisitor {
 			
 			requestor.enterConstructor(info);
 		}
-		return false;
+		return true;
 	}
 	
 	@Override
@@ -398,7 +398,7 @@ public class SourceElementParser extends ASTVisitor {
 		info.typeParameters = getTypeParameters(node.templateParameters());
 		
 		requestor.enterMethod(info);
-		return false;
+		return true;
 	}
 	
 	@Override

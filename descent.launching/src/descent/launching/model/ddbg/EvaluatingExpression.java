@@ -4,11 +4,9 @@ import java.io.IOException;
 
 import org.eclipse.debug.core.DebugException;
 
-import descent.launching.model.IDescentVariable;
-
 public class EvaluatingExpression implements IState {
 
-	public IDescentVariable fVariable;
+	public DdbgVariable fVariable;
 	private final String fExpression;
 	private final DdbgCli fCli;
 	
@@ -27,7 +25,7 @@ public class EvaluatingExpression implements IState {
 
 	private void parseVariable(String text) {
 		if ("{".equals(text.trim())) {
-			fVariable = fCli.fFactory.newVariable(fExpression, null);
+			fVariable = new DdbgVariable(fExpression);
 			return;
 		}
 		
@@ -40,14 +38,14 @@ public class EvaluatingExpression implements IState {
 		
 		int indexOfEquals = text.indexOf('=');
 		if (indexOfEquals == -1) {
-			fVariable = fCli.fFactory.newVariable(fExpression, text);
+			fVariable = new DdbgVariable(fExpression, text);
 			return;
 		}
 		
 		String name = text.substring(0, indexOfEquals).trim();
 		String value = text.substring(indexOfEquals + 1).trim();
 		if ("{".equals(value.trim())) {
-			IDescentVariable newVariable = fCli.fFactory.newVariable(name, null);
+			DdbgVariable newVariable = new DdbgVariable(name, null);
 			if (fVariable != null) {
 				fVariable.addChild(newVariable);
 			}
@@ -60,7 +58,7 @@ public class EvaluatingExpression implements IState {
 				}
 			}
 			
-			IDescentVariable newVariable = fCli.fFactory.newVariable(name, value);
+			DdbgVariable newVariable = new DdbgVariable(name, value);
 			if (fVariable == null) {
 				fVariable = newVariable;
 			} else {

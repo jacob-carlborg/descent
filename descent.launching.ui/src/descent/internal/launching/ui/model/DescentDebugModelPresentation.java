@@ -1,8 +1,12 @@
 package descent.internal.launching.ui.model;
 
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.debug.core.DebugException;
+import org.eclipse.debug.core.model.IBreakpoint;
 import org.eclipse.debug.core.model.ILineBreakpoint;
+import org.eclipse.debug.core.model.IStackFrame;
+import org.eclipse.debug.core.model.IThread;
 import org.eclipse.debug.core.model.IValue;
 import org.eclipse.debug.core.model.IVariable;
 import org.eclipse.debug.core.model.IWatchExpression;
@@ -45,38 +49,124 @@ public class DescentDebugModelPresentation extends LabelProvider implements IDeb
 	
 	@Override
 	public String getText(Object element) {
-		if (element instanceof IWatchExpression) {
-			IWatchExpression exp = (IWatchExpression) element;
-			try {
-				StringBuilder sb = new StringBuilder();
-				sb.append("\"");
-				sb.append(exp.getExpressionText());
-				sb.append("\"");
-				if (exp.getValue() != null && exp.getValue().getValueString() != null) {
-					sb.append(" = ");
-					sb.append(exp.getValue().getValueString());
-				}
-				return sb.toString();
-			} catch (DebugException e) {
-				e.printStackTrace();
+		try {
+			if (element instanceof IWatchExpression) {
+				return getWatchExpressionText((IWatchExpression) element);
+			} else if (element instanceof IVariable) {
+				return getVariableText((IVariable) element);
+			} else if (element instanceof IStackFrame) {
+				return getStackFrameText((IStackFrame) element);
+			} else if (element instanceof IThread) {
+				return getThreadText((IThread) element);
+			} else if (element instanceof IBreakpoint) {
+				return getBreakpointText((IBreakpoint) element);
 			}
-		} else if (element instanceof IVariable) {
-			IVariable variable = (IVariable) element;
-			try {
-				StringBuilder sb = new StringBuilder();
-				sb.append("\"");
-				sb.append(variable.getName());
-				sb.append("\"");
-				if (variable.getValue() != null && variable.getValue().getValueString() != null) {
-					sb.append(" = ");
-					sb.append(variable.getValue().getValueString());
-				}
-				return sb.toString();
-			} catch (DebugException e) {
-				e.printStackTrace();
-			}
+		} catch (CoreException e) {
+			return super.getText(element);
 		}
 		return super.getText(element);
+	}
+
+	private String getBreakpointText(IBreakpoint breakpoint) throws CoreException {
+		if (breakpoint instanceof ILineBreakpoint) {
+			return getLineBreakpointText((ILineBreakpoint) breakpoint);
+		}
+		return "";
+	}
+
+	private String getLineBreakpointText(ILineBreakpoint breakpoint) throws CoreException {
+		StringBuilder sb = new StringBuilder();
+		appendFileName(breakpoint, sb);
+		appendLineNumber(breakpoint, sb);
+		return sb.toString();
+		/*
+		String typeName= breakpoint.getTypeName();
+		IMember member= BreakpointUtils.getMember(breakpoint);
+		StringBuffer label= new StringBuffer();
+		label.append(getQualifiedName(typeName));
+		appendLineNumber(breakpoint, label);
+		appendHitCount(breakpoint, label);
+		appendSuspendPolicy(breakpoint,label);
+		appendThreadFilter(breakpoint, label);
+		appendConditional(breakpoint, label);
+		appendInstanceFilter(breakpoint, label);
+		
+		if (member != null) {
+			label.append(" - "); //$NON-NLS-1$
+			label.append(getJavaLabelProvider().getText(member));
+		}
+		
+		return label.toString();
+		*/
+	}
+
+	private String getThreadText(IThread thread) throws CoreException {
+		StringBuilder sb = new StringBuilder();
+		sb.append("Thread [");
+		sb.append(thread.getName());
+		sb.append("]");
+		if (thread.isSuspended()) {
+			IBreakpoint[] breakpoints = thread.getBreakpoints();
+			if (breakpoints.length > 0) {
+				sb.append(" (Suspended at breakpoint ");
+				sb.append(getBreakpointText(breakpoints[0]));
+				sb.append(")");
+			} else {
+				sb.append(" (Suspended)");
+			}
+			
+		} else if (thread.isTerminated()) {
+			sb.append(" (Terminated)");
+		} else {
+			sb.append(" (Running)");
+		}
+		return sb.toString();
+	}
+
+	private String getWatchExpressionText(IWatchExpression exp) throws CoreException {
+		StringBuilder sb = new StringBuilder();
+		sb.append("\"");
+		sb.append(exp.getExpressionText());
+		sb.append("\"");
+		if (exp.getValue() != null && exp.getValue().getValueString() != null) {
+			sb.append(" = ");
+			sb.append(exp.getValue().getValueString());
+		}
+		return sb.toString();
+	}
+	
+	private String getVariableText(IVariable variable) throws DebugException {
+		StringBuilder sb = new StringBuilder();
+		sb.append("\"");
+		sb.append(variable.getName());
+		sb.append("\"");
+		if (variable.getValue() != null && variable.getValue().getValueString() != null) {
+			sb.append(" = ");
+			sb.append(variable.getValue().getValueString());
+		}
+		return sb.toString();
+	}
+	
+	private String getStackFrameText(IStackFrame frame) {
+		return frame.toString();		
+	}
+	
+	protected StringBuilder appendFileName(ILineBreakpoint breakpoint, StringBuilder label) throws CoreException {
+		label.append(breakpoint.getMarker().getResource().getName());
+		return label;
+	}
+	
+	protected StringBuilder appendLineNumber(ILineBreakpoint breakpoint, StringBuilder label) throws CoreException {
+		int lineNumber= breakpoint.getLineNumber();
+		if (lineNumber > 0) {
+			label.append(" ["); //$NON-NLS-1$
+			label.append("line:"); 
+			label.append(' ');
+			label.append(lineNumber);
+			label.append(']');
+
+		}
+		return label;
 	}
 
 }
