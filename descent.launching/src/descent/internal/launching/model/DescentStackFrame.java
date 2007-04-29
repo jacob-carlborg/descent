@@ -42,11 +42,11 @@ public class DescentStackFrame extends DescentDebugElement implements IStackFram
 	}
 	
 	public int getCharEnd() throws DebugException {
-		return 0;
+		return -1;
 	}
 
 	public int getCharStart() throws DebugException {
-		return 0;
+		return -1;
 	}
 
 	public int getLineNumber() throws DebugException {
