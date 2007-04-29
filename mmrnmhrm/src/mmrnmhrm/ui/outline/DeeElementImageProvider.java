@@ -12,15 +12,15 @@ import org.eclipse.swt.graphics.Image;
 import descent.internal.core.dom.ClassDeclaration;
 import descent.internal.core.dom.InterfaceDeclaration;
 import descent.internal.core.dom.TypedefDeclaration;
-import dtool.dom.base.ASTNeoNode;
-import dtool.dom.base.ASTNode;
-import dtool.dom.base.DeclarationImport;
-import dtool.dom.base.DefinitionAggregate;
-import dtool.dom.base.DefinitionAlias;
-import dtool.dom.base.DefinitionFunction;
-import dtool.dom.base.DefinitionVariable;
+import dtool.dom.ast.ASTNeoNode;
+import dtool.dom.ast.ASTNode;
 import dtool.dom.base.Entity;
-import dtool.dom.base.Module.DeclarationModule;
+import dtool.dom.declarations.DeclarationImport;
+import dtool.dom.declarations.DefinitionAggregate;
+import dtool.dom.declarations.DefinitionAlias;
+import dtool.dom.declarations.DefinitionFunction;
+import dtool.dom.declarations.DefinitionVariable;
+import dtool.dom.declarations.Module.DeclarationModule;
 
 public class DeeElementImageProvider {
 	/*

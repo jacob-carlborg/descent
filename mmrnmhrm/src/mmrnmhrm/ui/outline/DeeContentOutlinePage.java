@@ -9,7 +9,7 @@ import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.views.contentoutline.ContentOutlinePage;
 
-import dtool.dom.base.ASTNode;
+import dtool.dom.ast.ASTNode;
 
 /**
  * D outline page. 
@@ -63,9 +63,9 @@ public class DeeContentOutlinePage extends ContentOutlinePage {
 			IStructuredSelection sel = (IStructuredSelection) selection;
 			ASTNode element = (ASTNode) sel.getFirstElement();
 
-			// Use parent for source range
-			while(element.hasNoSourceRangeInfo())
-				element = element.parent;
+			
+			if(element.hasNoSourceRangeInfo())
+				return;
 			
 			int start = element.getOffset();
 			int offset = element.getLength();

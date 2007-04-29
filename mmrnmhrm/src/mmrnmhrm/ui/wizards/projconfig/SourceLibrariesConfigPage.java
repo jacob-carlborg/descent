@@ -7,7 +7,7 @@ import mmrnmhrm.util.ui.LayoutUtil;
 import mmrnmhrm.util.ui.fields.ElementContentProvider;
 import mmrnmhrm.util.ui.fields.FieldUtil;
 import mmrnmhrm.util.ui.fields.IElementCommand;
-import mmrnmhrm.util.ui.fields.ListEditorField;
+import mmrnmhrm.util.ui.fields.TreeListField;
 
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.jdt.internal.ui.wizards.dialogfields.TreeListDialogField;
@@ -50,7 +50,7 @@ public class SourceLibrariesConfigPage extends AbstractConfigPage {
  
 	private void createSourceFoldersSection() {
 		
-		ListEditorField fSourceFoldersEditor = new ListEditorField();
+		TreeListField fSourceFoldersEditor = new TreeListField();
 		
 		fSourceFoldersEditor.addElementOperation("&Add Library...", new IElementCommand() {
 			public void executeCommand(Object element) {
@@ -77,7 +77,7 @@ public class SourceLibrariesConfigPage extends AbstractConfigPage {
 		}; 
 		
 		ILabelProvider lprovider = new BPListLabelProvider();
-		fSrcLibrariesList = fSourceFoldersEditor.createTreeListEditor(lprovider);
+		fSrcLibrariesList = fSourceFoldersEditor.createTreeList(lprovider);
 		fSrcLibrariesList.setLabelText("Source libraries:"); 
 		//fSrcFoldersList.setViewerSorter(new BPListElementSorter());
 	}

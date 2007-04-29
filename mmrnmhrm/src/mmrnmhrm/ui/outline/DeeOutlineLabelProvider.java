@@ -4,8 +4,8 @@ import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.swt.graphics.Image;
 
+import dtool.dom.ast.ASTNode;
 import dtool.dom.ast.ASTPrinter;
-import dtool.dom.base.ASTNode;
 
 
 public class DeeOutlineLabelProvider implements ILabelProvider {

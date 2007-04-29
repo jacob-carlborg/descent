@@ -8,7 +8,7 @@ import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.ui.IEditorInput;
 
 import util.tree.TreeDepthRecon;
-import dtool.dom.base.ASTNode;
+import dtool.dom.ast.ASTNode;
 import dtool.project.CompilationUnit;
 
 public class DeeOutlineContentProvider implements ITreeContentProvider {

@@ -19,9 +19,9 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
 
-//Converting from BuildPathsBlock
 /**
- * 
+ * An UI section for project configuration. Consists of a TabFolder with 
+ * pages of other configuration sections.
  */
 public class ProjectConfigBlock {
 
@@ -104,7 +104,7 @@ public class ProjectConfigBlock {
 
 			options.extraOptions = fCompilerPage.fCompilerOptions.getText();
 		} catch (RuntimeException e) {
-			throw new DeeCoreException("Error on save config", e);
+			throw new DeeCoreException("Error on apply configuration.", e);
 		}
 
 	}

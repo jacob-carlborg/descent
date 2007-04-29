@@ -13,10 +13,10 @@ import org.eclipse.ui.IWorkbenchWindow;
 
 import util.Assert;
 import util.log.Logg;
+import dtool.dom.ast.ASTNode;
 import dtool.dom.ast.ASTPrinter;
-import dtool.dom.base.ASTNode;
-import dtool.dom.base.DefUnit;
 import dtool.dom.base.Entity;
+import dtool.dom.declarations.DefUnit;
 import dtool.project.CompilationUnit;
 
 /**

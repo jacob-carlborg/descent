@@ -25,9 +25,7 @@ public class BatchOperation extends LangModelOperation {
 		this.runnable = runnable;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.jdt.internal.core.JavaModelOperation#executeOperation()
-	 */
+	/** Runs the BatchOperation. */
 	protected void executeOperation() throws LangModelException {
 		try {
 			this.runnable.run(this.progressMonitor);
@@ -45,6 +43,5 @@ public class BatchOperation extends LangModelOperation {
 			}
 		}
 	}
-	
 	
 }

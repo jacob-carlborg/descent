@@ -6,7 +6,7 @@ import mmrnmhrm.util.ui.LayoutUtil;
 import mmrnmhrm.util.ui.fields.ElementContentProvider;
 import mmrnmhrm.util.ui.fields.FieldUtil;
 import mmrnmhrm.util.ui.fields.IElementCommand;
-import mmrnmhrm.util.ui.fields.ListEditorField;
+import mmrnmhrm.util.ui.fields.TreeListField;
 
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFolder;
@@ -63,7 +63,7 @@ public class SourceFoldersConfigPage extends AbstractConfigPage {
  
 	private void createSourceFoldersSection() {
 		
-		ListEditorField fSourceFoldersEditor = new ListEditorField();
+		TreeListField fSourceFoldersEditor = new TreeListField();
 		
 		fSourceFoldersEditor.addElementOperation("&Add Folder...", new IElementCommand() {
 			public void executeCommand(Object element) {
@@ -89,7 +89,7 @@ public class SourceFoldersConfigPage extends AbstractConfigPage {
 		}; 
 		
 		ILabelProvider lprovider = new BPListLabelProvider();
-		fSrcFoldersList = fSourceFoldersEditor.createTreeListEditor(lprovider);
+		fSrcFoldersList = fSourceFoldersEditor.createTreeList(lprovider);
 		fSrcFoldersList.setLabelText("Source folders:"); 
 		//fSrcFoldersList.setViewerSorter(new BPListElementSorter());
 	}

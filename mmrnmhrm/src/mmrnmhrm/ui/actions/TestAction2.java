@@ -1,7 +1,6 @@
 package mmrnmhrm.ui.actions;
 
 import mmrnmhrm.core.DeeCore;
-import mmrnmhrm.core.LangModelException;
 import mmrnmhrm.core.model.DeeModelManager;
 import mmrnmhrm.ui.DeeUI;
 import mmrnmhrm.ui.ExceptionHandler;
@@ -10,10 +9,6 @@ import mmrnmhrm.ui.wizards.projconfig.ProjectConfigBlock;
 import org.eclipse.core.resources.IWorkspaceRunnable;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
-import org.eclipse.jdt.internal.ui.IJavaStatusConstants;
-import org.eclipse.jdt.internal.ui.JavaPlugin;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.dialogs.TrayDialog;
 import org.eclipse.jface.viewers.ISelection;
@@ -47,10 +42,7 @@ public class TestAction2 implements IWorkbenchWindowActionDelegate {
 			try {
 				DeeCore.run(new IWorkspaceRunnable() {
 					public void run(IProgressMonitor monitor) throws CoreException {
-						// TODO: Status, err
-						throw new LangModelException(new Status(IStatus.ERROR, JavaPlugin.getPluginId(), 
-								IJavaStatusConstants.INTERNAL_ERROR, "Status Message", new NullPointerException()));
-						//fProjCfg.saveConfig();
+						fProjCfg.applyConfig();
 					}
 				}, null);
 			} catch (CoreException e) {

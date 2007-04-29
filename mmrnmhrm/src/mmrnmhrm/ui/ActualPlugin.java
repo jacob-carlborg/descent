@@ -1,5 +1,6 @@
 package mmrnmhrm.ui;
 
-public class ActualPlugin extends DeePlugin {
-
-}
+/**
+ * Alias for the actual running plugin, used by Lang code. 
+ */
+public final class ActualPlugin extends DeePlugin { }

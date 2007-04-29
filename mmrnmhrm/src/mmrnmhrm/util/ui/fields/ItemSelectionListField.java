@@ -1,5 +1,7 @@
 package mmrnmhrm.util.ui.fields;
 
+import mmrnmhrm.util.ui.RowComposite;
+
 import org.eclipse.jdt.internal.ui.util.PixelConverter;
 import org.eclipse.jdt.internal.ui.wizards.dialogfields.DialogField;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
@@ -11,7 +13,6 @@ import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
@@ -19,7 +20,8 @@ import org.eclipse.swt.widgets.Tree;
 
 /** 
  * A field with an item list purely for selection. 
- * Each selection item can be divided into categories. */
+ * Each selection item can be divided into categories. 
+ */
 public class ItemSelectionListField extends DialogField {
 
 	/** A named category holding a list of SelectionListItem. */
@@ -108,19 +110,13 @@ public class ItemSelectionListField extends DialogField {
 		assertEnoughColumns(nColumns);
 		
 		Composite content = createContent(parent);
-		GridData gd = new GridData();
-		gd.horizontalSpan= nColumns;
-		gd.horizontalAlignment= GridData.FILL;
-		content.setLayoutData(gd);
+		GridData gd = (GridData) content.getLayoutData();
+		gd.horizontalSpan = nColumns;
 		return new Control[] { content };
 	}
 
 	private Composite createContent(Composite parent) {
-		Composite content = new Composite(parent, SWT.NULL);
-		GridLayout gl = new GridLayout(1, false);
-		gl.marginWidth = 0;
-		gl.marginHeight = 0;
-		content.setLayout(gl);
+		Composite content = new RowComposite(parent, false);
 		
 		Label label= getLabelControl(content);
 		label.setLayoutData(gridDataForLabel(1));
@@ -135,6 +131,7 @@ public class ItemSelectionListField extends DialogField {
 		return content;
 	}
 
+	/** Gets the field's TreeViewer. */
 	public TreeViewer getSelectionTreeViewer(Composite parent) {
 		if(fTreeViewer == null) {
 			assertCompositeNotNull(parent);
@@ -154,6 +151,7 @@ public class ItemSelectionListField extends DialogField {
 		
 	}
 	
+	/** Gets the field's Tree Control. */
 	public Tree getTreeControl(Composite parent) {
 		return (Tree) getSelectionTreeViewer(parent).getControl();
 	}

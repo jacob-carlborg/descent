@@ -14,51 +14,35 @@ package mmrnmhrm.ui;
 import java.io.StringWriter;
 import java.lang.reflect.InvocationTargetException;
 
-
-import org.eclipse.swt.widgets.Shell;
-
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
-
-import org.eclipse.jdt.internal.ui.IJavaStatusConstants;
-import org.eclipse.jdt.internal.ui.JavaPlugin;
-import org.eclipse.jdt.internal.ui.JavaUIMessages;
 import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.swt.widgets.Shell;
 
 
 /**
- * The default exception handler shows an error dialog when one of its handle methods
- * is called. If the passed exception is a <code>CoreException</code> an error dialog
- * pops up showing the exception's status information. For a <code>InvocationTargetException</code>
- * a normal message dialog pops up showing the exception's message. Additionally the exception
- * is written to the platform log.
+ * The default exception handler shows an error dialog when one of its handle
+ * methods is called. If the passed exception is a <code>CoreException</code>
+ * an error dialog pops up showing the exception's status information. For a
+ * <code>InvocationTargetException</code> a normal message dialog pops up
+ * showing the exception's message. Additionally the exception is written to the
+ * platform log.
  */
 public class ExceptionHandler {
 
 	private static ExceptionHandler fgInstance= new ExceptionHandler();
 	
 	/**
-	 * Logs the given exception using the platform's logging mechanism. The
-	 * exception is logged as an error with the error code
-	 * <code>JavaStatusConstants.INTERNAL_ERROR</code>.
-	 */
-	public static void log(Throwable t, String message) {
-		JavaPlugin.log(new Status(IStatus.ERROR, JavaPlugin.getPluginId(), 
-			IJavaStatusConstants.INTERNAL_ERROR, message, t));
-	}
-
-	/**
 	 * Handles the given <code>CoreException</code>. The workbench shell is
 	 * used as a parent for the dialog window.
 	 * 
 	 * @param e the <code>CoreException</code> to be handled
 	 * @param title the dialog window's window title
-	 * @param message message to be displayed by the dialog window
+	 * @param message the message to be displayed by the dialog window
 	 */
 	public static void handle(CoreException e, String title, String message) {
-		handle(e, JavaPlugin.getActiveWorkbenchShell(), title, message);
+		handle(e, DeePlugin.getActiveWorkbenchShell(), title, message);
 	}
 	
 	/**
@@ -82,7 +66,7 @@ public class ExceptionHandler {
 	 * @param message message to be displayed by the dialog window
 	 */
 	public static void handle(InvocationTargetException e, String title, String message) {
-		handle(e, JavaPlugin.getActiveWorkbenchShell(), title, message);
+		handle(e, DeePlugin.getActiveWorkbenchShell(), title, message);
 	}
 	
 	/**
@@ -100,7 +84,7 @@ public class ExceptionHandler {
 	//---- Hooks for subclasses to control exception handling ------------------------------------
 	
 	protected void perform(CoreException e, Shell shell, String title, String message) {
-		JavaPlugin.log(e);
+		DeePlugin.log(e);
 		IStatus status= e.getStatus();
 		if (status != null) {
 			ErrorDialog.openError(shell, title, message, status);
@@ -110,11 +94,11 @@ public class ExceptionHandler {
 	}
 
 	protected void perform(InvocationTargetException e, Shell shell, String title, String message) {
-		Throwable target= e.getTargetException();
+		Throwable target= e.getCause();
 		if (target instanceof CoreException) {
 			perform((CoreException)target, shell, title, message);
 		} else {
-			JavaPlugin.log(e);
+			DeePlugin.log(e);
 			if (e.getMessage() != null && e.getMessage().length() > 0) {
 				displayMessageDialog(e, e.getMessage(), shell, title, message);
 			} else {
@@ -125,14 +109,15 @@ public class ExceptionHandler {
 
 	//---- Helper methods -----------------------------------------------------------------------
 	
-	private void displayMessageDialog(Throwable t, String exceptionMessage, Shell shell, String title, String message) {
+	private void displayMessageDialog(Throwable t, String exceptionMessage,
+			Shell shell, String title, String message) {
 		StringWriter msg= new StringWriter();
 		if (message != null) {
 			msg.write(message);
 			msg.write("\n\n"); //$NON-NLS-1$
 		}
 		if (exceptionMessage == null || exceptionMessage.length() == 0)
-			msg.write(JavaUIMessages.ExceptionDialog_seeErrorLogMessage); 
+			msg.write(LangUIMessages.ExceptionDialog_seeErrorLogMessage); 
 		else
 			msg.write(exceptionMessage);
 		MessageDialog.openError(shell, title, msg.toString());			

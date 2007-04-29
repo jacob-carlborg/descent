@@ -4,6 +4,7 @@ import java.util.List;
 
 import mmrnmhrm.core.LangCore;
 import mmrnmhrm.core.model.DeeProject;
+import mmrnmhrm.ui.DeePlugin;
 import mmrnmhrm.util.ui.RowComposite;
 import mmrnmhrm.util.ui.fields.FolderSelectionDialog;
 
@@ -11,7 +12,6 @@ import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IWorkspaceRoot;
-import org.eclipse.jdt.internal.ui.JavaPlugin;
 import org.eclipse.jdt.internal.ui.util.PixelConverter;
 import org.eclipse.jdt.internal.ui.wizards.TypedElementSelectionValidator;
 import org.eclipse.jdt.internal.ui.wizards.TypedViewerFilter;
@@ -62,7 +62,7 @@ public abstract class AbstractConfigPage {
 		if (fSWTControl != null) {
 			return fSWTControl.getShell();
 		}
-		return JavaPlugin.getActiveWorkbenchShell();
+		return DeePlugin.getActiveWorkbenchShell();
 	}
 
 	protected class ProjectFolderSelectionDialog extends ProjectContainerSelectionDialog {

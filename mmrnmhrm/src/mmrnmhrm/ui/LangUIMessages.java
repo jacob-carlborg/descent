@@ -8,26 +8,25 @@
  * Contributors:
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
-package org.eclipse.jdt.internal.ui;
+package mmrnmhrm.ui;
 
 import org.eclipse.osgi.util.NLS;
 
-public final class JavaUIMessages extends NLS {
+public final class LangUIMessages extends NLS {
 
 	private static final String BUNDLE_NAME= "org.eclipse.jdt.internal.ui.JavaUIMessages";//$NON-NLS-1$
 
-	private JavaUIMessages() {
+	private LangUIMessages() {
 		// Do not instantiate
 	}
 
 	public static String JavaPlugin_internal_error;
 	
-
 	public static String ExceptionDialog_seeErrorLogMessage;
 	
 	
 	static {
-		NLS.initializeMessages(BUNDLE_NAME, JavaUIMessages.class);
+		NLS.initializeMessages(BUNDLE_NAME, LangUIMessages.class);
 	}
 
 }

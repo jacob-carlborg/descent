@@ -2,7 +2,7 @@ package mmrnmhrm.ui.deditor;
 
 import org.eclipse.jface.text.TextSelection;
 
-import dtool.dom.base.DefUnit;
+import dtool.dom.declarations.DefUnit;
 
 public class EditorUtil {
 

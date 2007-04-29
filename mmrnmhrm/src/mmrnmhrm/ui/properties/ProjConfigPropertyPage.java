@@ -71,16 +71,13 @@ public class ProjConfigPropertyPage extends PropertyPage {
 		try {
 			DeeCore.run(new IWorkspaceRunnable() {
 				public void run(IProgressMonitor monitor) throws CoreException {
-					// TODO: Status, err
-					/*throw new LangModelException(new Status(IStatus.ERROR, JavaPlugin.getPluginId(), 
-							IJavaStatusConstants.INTERNAL_ERROR, "Status Message", new NullPointerException()));
-							*/
 					fProjCfg.applyConfig();
 					fDeeProject.saveProjectConfigFile();
 				}
 			}, null);
 		} catch (CoreException e) {
-			ExceptionHandler.handle(e, "D Project Config Error", "Error saving project settings.");
+			ExceptionHandler.handle(e, "D Project Config Error",
+					"Error applying project settings.");
 			return false;
 		}
 		return true;

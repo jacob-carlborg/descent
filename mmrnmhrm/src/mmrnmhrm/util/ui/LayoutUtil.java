@@ -18,7 +18,7 @@ import util.Assert;
 
 /**
  * SWT Layout Utils.
- * TODO: WIP
+ * Work in progress.
  */
 public class LayoutUtil {
 

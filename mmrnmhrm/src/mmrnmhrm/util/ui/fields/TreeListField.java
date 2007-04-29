@@ -18,7 +18,7 @@ import util.Assert;
  * instantiante, add commands, createTreeListEditor.
  * Note that the created TreeListEditor elements should implement IElement.
  */
-public class ListEditorField {
+public class TreeListField {
 	
 	protected static class FieldOperation {
 		public String label;
@@ -47,7 +47,7 @@ public class ListEditorField {
 
 	
 
-	public ListEditorField() {
+	public TreeListField() {
 		fOperations = new ArrayList<FieldOperation>(10);
 		provider = new ElementContentProvider();
 	}
@@ -108,7 +108,7 @@ public class ListEditorField {
 	
 	/** Creates the TreeListDialogField, based on how this ListEditorField 
 	 * was configured. */
-	public TreeListDialogField createTreeListEditor(ILabelProvider lprovider) {
+	public TreeListDialogField createTreeList(ILabelProvider lprovider) {
 		
 		String[] buttonLabels = new String[fOperations.size()];
 		for(int i = 0; i < fOperations.size(); i++) {

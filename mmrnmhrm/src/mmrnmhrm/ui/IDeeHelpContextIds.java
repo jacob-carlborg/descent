@@ -9,24 +9,16 @@
  *     IBM Corporation - initial API and implementation
  *     Sebastian Davids <sdavids@gmx.de> bug 38692
  *******************************************************************************/
-package org.eclipse.jdt.internal.ui;
+package mmrnmhrm.ui;
 
-import org.eclipse.jdt.ui.JavaUI;
 
 
 /**
- * Help context ids for the Java UI.
- * <p>
- * This interface contains constants only; it is not intended to be implemented
- * or extended.
- * </p>
- * 
+ * Help context ids for the Lang UI.
  */
-public interface IJavaHelpContextIds {
-	public static final String PREFIX= JavaUI.ID_PLUGIN + '.';
+public interface IDeeHelpContextIds {
+	public static final String PREFIX = DeeUI.PLUGIN_ID + '.';
 
-		
 	// Wizard pages
-	
 
 }

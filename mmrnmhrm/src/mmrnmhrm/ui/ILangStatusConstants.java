@@ -8,7 +8,7 @@
  * Contributors:
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
-package org.eclipse.jdt.internal.ui;
+package mmrnmhrm.ui;
 
 /**
  * Defines status codes relevant to the Java UI plug-in. When a 
@@ -16,7 +16,7 @@ package org.eclipse.jdt.internal.ui;
  * the cause of the exception. The status objects originating from the
  * Java UI plug-in use the codes defined in this interface.
   */
-public interface IJavaStatusConstants {
+public interface ILangStatusConstants {
 
 	// Java UI status constants start at 10000 to make sure that we don't
 	// collide with resource and java model constants.

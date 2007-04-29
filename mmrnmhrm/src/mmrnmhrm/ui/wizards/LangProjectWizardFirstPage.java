@@ -23,7 +23,6 @@ import org.eclipse.jdt.internal.ui.wizards.dialogfields.IDialogFieldListener;
 import org.eclipse.jdt.internal.ui.wizards.dialogfields.IStringButtonAdapter;
 import org.eclipse.jdt.internal.ui.wizards.dialogfields.SelectionButtonDialogField;
 import org.eclipse.jdt.internal.ui.wizards.dialogfields.StringButtonDialogField;
-import org.eclipse.jdt.ui.JavaUI;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.jface.wizard.WizardPage;
@@ -96,7 +95,7 @@ public abstract class LangProjectWizardFirstPage extends WizardPage {
 		
 		private String fPreviousExternalLocation;
 		
-		private static final String DIALOGSTORE_LAST_EXTERNAL_LOC= JavaUI.ID_PLUGIN + ".last.external.project"; //$NON-NLS-1$
+		private static final String DIALOGSTORE_LAST_EXTERNAL_LOC= ActualPlugin.PLUGIN_ID + ".last.external.project"; //$NON-NLS-1$
 
 		public LocationGroup(Composite composite) {
 
@@ -167,7 +166,7 @@ public abstract class LangProjectWizardFirstPage extends WizardPage {
 			dialog.setMessage(DeeNewWizardMessages.LangNewProject_Page1_directory_message); 
 			String directoryName = fLocation.getText().trim();
 			if (directoryName.length() == 0) {
-				String prevLocation= ActualPlugin.getInstance().getDialogSettings().get(DIALOGSTORE_LAST_EXTERNAL_LOC);
+				String prevLocation = ActualPlugin.getInstance().getDialogSettings().get(DIALOGSTORE_LAST_EXTERNAL_LOC);
 				if (prevLocation != null) {
 					directoryName= prevLocation;
 				}

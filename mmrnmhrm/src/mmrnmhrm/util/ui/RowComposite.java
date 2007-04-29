@@ -9,14 +9,16 @@ import org.eclipse.swt.widgets.Composite;
  */
 public class RowComposite extends DialogComposite {
 
+	/** Creates a 1 column composite with no margins and SWT default spacing. */
 	public RowComposite(Composite parent) {
 		this(parent, false);
 	}
 
+	/** Creates a 1 column composite with optional margins and default spacing. */
 	public RowComposite(Composite parent, boolean margins) {
 		super(parent);
 		GridLayout gl = new GridLayout();
-		initGridLayout(gl, margins, useDialogDefaults ? parent : null);
+		SWTUtil2.initGridLayout(gl, margins, useDialogDefaults ? parent : null);
 		setLayout(gl);
 	}
 

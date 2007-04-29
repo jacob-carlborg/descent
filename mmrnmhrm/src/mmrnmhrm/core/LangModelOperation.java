@@ -23,7 +23,7 @@ public abstract class LangModelOperation implements IWorkspaceRunnable{
 	protected static ThreadLocal<List<LangModelOperation>> operationStacks 
 		= new ThreadLocal<List<LangModelOperation>>();
 
-	/* Default constructor. */
+	/** Default constructor. */
 	protected LangModelOperation() {
 	}
 	
@@ -37,12 +37,9 @@ public abstract class LangModelOperation implements IWorkspaceRunnable{
 			pushOperation(this);
 			executeOperation();
 		} finally {
-			try {
-				if(isTopLevelOperation()) {
-					DeeModelManager.getInstance().fireModelChanged();
-				}
-			} finally {
-				popOperation();
+			popOperation();
+			if(isTopLevelOperation()) {
+				DeeModelManager.getInstance().fireModelChanged();
 			}
 		}
 		

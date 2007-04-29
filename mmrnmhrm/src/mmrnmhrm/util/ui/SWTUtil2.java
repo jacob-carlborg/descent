@@ -71,10 +71,33 @@ public class SWTUtil2 {
 			control.setEnabled(enabled);
 		}
 	}
+	
 
-	/** Inits layout with dialog unit constants. testControl is used to obtain
-	 * FontMetrics */
-	public static void initGridLayout(GridLayout layout, Control testControl) {
+	/** Creates a new GridLayout with numColumns and initializes it. */
+	public static Layout createGridLayout(int numColumns, Control testControl) {
+		GridLayout gd = new GridLayout(numColumns, false);
+		initGridLayoutWithDLUs(gd, testControl);
+		return gd;
+	}
+	
+	/** Initializes a GridLayout with some default settings.
+	 * @param margins if the layout should have margins
+	 * @param testControl the control used to obtain FontMetrics. If null then 
+	 * SWT defaults will be used
+	 */
+	public static void initGridLayout(GridLayout gl, boolean margins, Control testControl) {
+		if(testControl != null)
+			initGridLayoutWithDLUs(gl, testControl);
+	
+		if(!margins) {
+			gl.marginWidth = 0;
+			gl.marginHeight = 0;
+		}
+	}
+
+	/** Initializes a layout with dialog unit settings. 
+	 * @param testControl the control used to obtain FontMetrics. */
+	public static void initGridLayoutWithDLUs(GridLayout layout, Control testControl) {
 
 		FontMetrics fontMetrics = getFontMetrics(testControl);
 	
@@ -88,18 +111,6 @@ public class SWTUtil2 {
 				IDialogConstants.VERTICAL_MARGIN);
 	}
 
-		/** Creates a new GridLayout with some default settings. FIXME*/
-	public static Layout createGridLayout(int numColumns, Control testControl) {
-		GridLayout gd = new GridLayout(numColumns, false);
-		initGridLayout(gd, testControl);
-		return gd;
-	}
-	
-	/** Creates a new GridLayout with some default settings. FIXME*/
-	public static Layout createGridLayout(int numColumns) {
-		GridLayout gd = new GridLayout(numColumns, false);
-		//initGridLayout(gd, testControl);
-		return gd;
-	}
+
 
 }

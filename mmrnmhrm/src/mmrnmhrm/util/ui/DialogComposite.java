@@ -4,7 +4,6 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
 
 /**
  * A Composite which assumes some default layout and layoutdata settings. 
@@ -37,17 +36,6 @@ public class DialogComposite extends Composite {
 			gd.verticalAlignment = SWT.FILL;
 			gd.grabExcessHorizontalSpace = true;
 			setLayoutData(gd);
-		}
-	}
-
-	
-	protected void initGridLayout(GridLayout gl, boolean margins, Control testControl) {
-		if(testControl != null)
-			SWTUtil2.initGridLayout(gl, testControl);
-
-		if(!margins) {
-			gl.marginWidth = 0;
-			gl.marginHeight = 0;
 		}
 	}
 
