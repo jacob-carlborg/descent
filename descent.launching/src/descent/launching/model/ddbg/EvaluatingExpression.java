@@ -58,7 +58,14 @@ public class EvaluatingExpression implements IState {
 				}
 			}
 			
-			DdbgVariable newVariable = new DdbgVariable(name, value);
+			DdbgVariable newVariable;
+			
+			if ("...".equals(value)) {
+				newVariable = new DdbgVariable(name);
+				newVariable.setLazy(true);
+			} else {
+				newVariable = new DdbgVariable(name, value);
+			}
 			if (fVariable == null) {
 				fVariable = newVariable;
 			} else {

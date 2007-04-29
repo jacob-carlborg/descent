@@ -313,6 +313,13 @@ public class DescentDebugTarget extends DescentDebugElement implements IDebugTar
 		fireCreationEvent();
 		fThread.fireCreationEvent();
 		installDeferredBreakpoints();
+		
+		try {
+			fCli.start();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
 		resume();
 	}
 	
@@ -403,11 +410,15 @@ public class DescentDebugTarget extends DescentDebugElement implements IDebugTar
 	}
 
 	public IRegister newRegister(IRegisterGroup registerGroup, String name, String value) {
-		return new DescentRegister(this, registerGroup, name, value);
+		return new DescentRegister(this, fCli, registerGroup, name, value);
 	}
 
-	public IDescentVariable newVariable(String name, String value) {
-		return new DescentVariable(this, name, value);
+	public IDescentVariable newVariable(int stackFrame, String name, String value) {
+		return new DescentVariable(this, fCli, stackFrame, name, value);
+	}
+	
+	public IDescentVariable newLazyVariable(int stackFrame, String name, String value, String expression) {
+		return new DescentVariable(this, fCli, stackFrame, name, value, expression);
 	}
 	
 	public IStackFrame newStackFrame(String name, int number, String sourceName, int lineNumber) {

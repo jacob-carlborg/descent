@@ -129,6 +129,15 @@ public class SingleThreadCli implements ICli {
 			fWriteLock.unlock();
 		}
 	}
+	
+	public void start() throws DebugException, IOException {
+		fWriteLock.lock();
+		try {
+			fCli.start();
+		} finally {
+			fWriteLock.unlock();
+		}
+	}
 
 	public void stepInto() throws IOException {
 		fWriteLock.lock();

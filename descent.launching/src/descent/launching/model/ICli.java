@@ -20,6 +20,8 @@ public interface ICli {
 	
 	void interpret(String text) throws DebugException, IOException;
 	
+	void start() throws DebugException, IOException;
+	
 	void resume() throws DebugException, IOException;
 	
 	void terminate() throws DebugException, IOException;

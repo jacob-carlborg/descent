@@ -8,7 +8,9 @@ public interface IDescentDebugElementFactory {
 	
 	IRegister newRegister(IRegisterGroup registerGroup, String name, String value);
 	
-	IDescentVariable newVariable(String name, String value);
+	IDescentVariable newVariable(int stackFrame, String name, String value);
+	
+	IDescentVariable newLazyVariable(int stackFrame, String name, String value, String expression);
 	
 	IStackFrame newStackFrame(String name, int number, String sourceName, int lineNumber);
 

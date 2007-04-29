@@ -66,6 +66,21 @@ public class DdbgCli implements ICli {
 		
 		fState.interpret(text);
 	}
+	
+	public void start() throws DebugException, IOException {
+		// Turn off recursive expression evaluation
+		try {
+			setState(new TogglingRecursiveExpressionEvaluation(this));
+			
+			beforeWaitStateReturn();
+			
+			fProxy.write("er\n");
+			
+			waitStateReturn();
+		} finally {
+			setState(fRunningState);
+		}
+	}
 
 	public void resume() throws IOException {
 		try {
@@ -218,7 +233,7 @@ public class DdbgCli implements ICli {
 			
 			List<DdbgVariable> variables = ((ConsultingVariables) fState).fVariables;
 			completeTypes(variables);
-			return ddbgVariablesToDescentVariables(variables);
+			return ddbgVariablesToDescentVariables(variables, stackFrame);
 		} finally {
 			setState(fRunningState);
 		}
@@ -258,7 +273,7 @@ public class DdbgCli implements ICli {
 			
 			DdbgVariable ddbgVar = ((EvaluatingExpression) fState).fVariable;
 			completeType(ddbgVar);
-			return ddbgVariableToDescentVariable(ddbgVar);
+			return ddbgVariableToDescentVariable(ddbgVar, stackFrame);
 		} finally {
 			setState(fRunningState);
 		}
@@ -304,17 +319,22 @@ public class DdbgCli implements ICli {
 		completeTypes(var.getChildren(), prefix + var.getName() + ".");
 	}
 	
-	private IDescentVariable[] ddbgVariablesToDescentVariables(List<DdbgVariable> ddbgVars) {
+	private IDescentVariable[] ddbgVariablesToDescentVariables(List<DdbgVariable> ddbgVars, int stackFrame) {
 		IDescentVariable[] vars = new IDescentVariable[ddbgVars.size()];
 		for(int i = 0; i < ddbgVars.size(); i++) {
-			vars[i] = ddbgVariableToDescentVariable(ddbgVars.get(i));
+			vars[i] = ddbgVariableToDescentVariable(ddbgVars.get(i), stackFrame);
 		}
 		return vars;
 	}
 	
-	private IDescentVariable ddbgVariableToDescentVariable(DdbgVariable ddbgVar) {
-		IDescentVariable var = fFactory.newVariable(ddbgVar.getName(), ddbgVar.getValue());
-		var.addChildren(ddbgVariablesToDescentVariables(ddbgVar.getChildren()));
+	private IDescentVariable ddbgVariableToDescentVariable(DdbgVariable ddbgVar, int stackFrame) {
+		IDescentVariable var;
+		if (ddbgVar.isLazy()) {
+			var = fFactory.newLazyVariable(stackFrame, ddbgVar.getName(), ddbgVar.getValue(), ddbgVar.getExpression());
+		} else {
+			var = fFactory.newVariable(stackFrame, ddbgVar.getName(), ddbgVar.getValue());
+		}
+		var.addChildren(ddbgVariablesToDescentVariables(ddbgVar.getChildren(), stackFrame));
 		return var;
 	}
 	

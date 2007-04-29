@@ -9,6 +9,7 @@ public class DdbgVariable {
 	private String fValue;
 	private DdbgVariable fParent;
 	private List<DdbgVariable> fVariables;
+	private boolean fLazy;
 	
 	public DdbgVariable(String name) {
 		this(name, null);
@@ -48,5 +49,21 @@ public class DdbgVariable {
 	public List<DdbgVariable> getChildren() {
 		return fVariables;
 	}
+	
+	public void setLazy(boolean lazy) {
+		fLazy = lazy;
+	}
+	
+	public boolean isLazy() {
+		return fLazy;
+	}
+	
+	public String getExpression() {
+		if (fParent == null) {
+			return fName;
+		} else {
+			return fParent.getExpression() + "." + fName;
+		}
+	}	
 
 }

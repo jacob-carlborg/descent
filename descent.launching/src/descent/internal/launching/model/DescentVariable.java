@@ -4,19 +4,24 @@ import org.eclipse.debug.core.DebugException;
 import org.eclipse.debug.core.model.IDebugTarget;
 import org.eclipse.debug.core.model.IValue;
 
+import descent.launching.model.ICli;
 import descent.launching.model.IDescentVariable;
 
 public class DescentVariable extends DescentDebugElement implements IDescentVariable {
 
 	private final String fName;
-	private DescentValue fValue;
+	private final DescentValue fValue;
 	private DescentVariable fParent;
 	private boolean fHasValueChanged;
+	
+	public DescentVariable(IDebugTarget target, ICli cli, int stackFrame, String name, String value) {
+		this(target, cli, stackFrame, name, value, null);
+	}
 
-	public DescentVariable(IDebugTarget target, String name, String value) {
+	public DescentVariable(IDebugTarget target, ICli cli, int stackFrame, String name, String value, String expression) {
 		super(target);
 		this.fName = name;
-		this.fValue = new DescentValue(target, name, value);
+		this.fValue = new DescentValue(target, cli, stackFrame, name, value, expression);
 	}
 
 	public String getName() throws DebugException {
@@ -71,24 +76,5 @@ public class DescentVariable extends DescentDebugElement implements IDescentVari
 	public IDescentVariable getParent() {
 		return fParent;
 	}
-	
-	/*
-	@Override
-	public boolean equals(Object obj) {
-		if (!(obj instanceof DescentVariable)) {
-			return false;
-		}
-		
-		DescentVariable other = (DescentVariable) obj;
-		if (fName.equals(other.fName)) {
-			if (fParent == null && other.fParent == null) {
-				return true;
-			} else if (fParent != null && other.fParent != null) {
-				return fParent.equals(other.fParent);
-			}
-		}
-		return false;
-	}
-	*/
 
 }
