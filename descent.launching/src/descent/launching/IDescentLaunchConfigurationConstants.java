@@ -56,13 +56,13 @@ public interface IDescentLaunchConfigurationConstants {
 	 * Status code indicating the project associated with
 	 * a launch configuration is not a Java project.
 	 */
-	public static final int ERR_NOT_A_JAVA_PROJECT = 107;
+	public static final int ERR_NOT_A_JAVA_PROJECT = 100;
 	
 	/**
 	 * Status code indicating a launch configuration does not
 	 * specify a project when a project is required.
 	 */
-	public static final int ERR_UNSPECIFIED_PROJECT = 100;	
+	public static final int ERR_UNSPECIFIED_PROJECT = 101;	
 	
 	/**
 	 * Status code indicating that the project referenced by a launch configuration
@@ -70,7 +70,7 @@ public interface IDescentLaunchConfigurationConstants {
 	 * 
 	 * @since 3.0
 	 */
-	public static final int ERR_PROJECT_CLOSED = 124;	
+	public static final int ERR_PROJECT_CLOSED = 102;	
 	
 	/**
 	 * Status code indicating that the program referenced by a launch configuration
@@ -78,7 +78,7 @@ public interface IDescentLaunchConfigurationConstants {
 	 * 
 	 * @since 3.0
 	 */
-	public static final int ERR_PROGRAM_NOT_EXIST = 125;
+	public static final int ERR_PROGRAM_NOT_EXIST = 103;
 	
 	/**
 	 * Status code indicating that the program referenced by a launch configuration
@@ -86,7 +86,7 @@ public interface IDescentLaunchConfigurationConstants {
 	 * 
 	 * @since 3.0
 	 */
-	public static final int ERR_UNSPECIFIED_PROGRAM = 126;
+	public static final int ERR_UNSPECIFIED_PROGRAM = 104;
 	
 	/**
 	 * Status code indicating that the working directory referenced by a launch configuration
@@ -94,7 +94,7 @@ public interface IDescentLaunchConfigurationConstants {
 	 * 
 	 * @since 3.0
 	 */
-	public static final int ERR_WORKING_DIRECTORY_DOES_NOT_EXIST = 126;
+	public static final int ERR_WORKING_DIRECTORY_DOES_NOT_EXIST = 105;
 	
 	/**
 	 * Status code indicating that the Eclipse runtime does not support
@@ -106,7 +106,19 @@ public interface IDescentLaunchConfigurationConstants {
 	 * should be relaunched with the default working directory.
 	 * </p>
 	 */
-	public static final int ERR_WORKING_DIRECTORY_NOT_SUPPORTED = 115;	
+	public static final int ERR_WORKING_DIRECTORY_NOT_SUPPORTED = 106;
+	
+	/**
+	 * Status code indicating that the path for the ddbg executable
+	 * is not defined.
+	 */
+	public static final int ERR_DDBG_EXECUTABLE_NOT_DEFINED = 107;
+	
+	/**
+	 * Status code indicating that the path for the ddbg executable
+	 * is invalid.
+	 */
+	public static final int ERR_DDBG_EXECUTABLE_NOT_EXIST = 108;
 	
 	/**
 	 * Status code indicating an unexpected internal error.

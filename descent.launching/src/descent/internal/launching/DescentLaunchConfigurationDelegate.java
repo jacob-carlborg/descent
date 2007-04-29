@@ -23,6 +23,7 @@ import descent.internal.launching.model.DescentDebugTarget;
 import descent.launching.AbstractDescentLaunchConfigurationDelegate;
 import descent.launching.DescentLaunching;
 import descent.launching.IDescentLaunchConfigurationConstants;
+import descent.launching.IDescentLaunchingPreferenceConstants;
 import descent.launching.utils.ProcessFactory;
 
 public class DescentLaunchConfigurationDelegate extends AbstractDescentLaunchConfigurationDelegate {
@@ -54,8 +55,10 @@ public class DescentLaunchConfigurationDelegate extends AbstractDescentLaunchCon
 			}
 			
 			if (mode.equals(ILaunchManager.DEBUG_MODE)) {
+				String ddbgPath = verifyDdbgPath();
+				
 				ArrayList command = new ArrayList(1);
-				command.add(DDBG);
+				command.add(ddbgPath);
 				command.add("\"" + exePath.toOSString() + "\"");
 				String[] commandArray = (String[]) command.toArray(new String[command.size()]);
 				monitor.worked(5);

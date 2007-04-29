@@ -276,6 +276,20 @@ public abstract class AbstractDescentLaunchConfigurationDelegate extends LaunchC
 		return programPath;
 	}
 	
+	protected String verifyDdbgPath() throws CoreException {
+		String ddbgPath = DescentLaunching.getDefault().getPreferenceStore().getString(IDescentLaunchingPreferenceConstants.DDBG_PATH);
+		if (ddbgPath == null || ddbgPath.trim().length() == 0) {
+			abort("Ddbg executable must be defined in Window -> Preferences -> D -> Debug.", null,
+					IDescentLaunchConfigurationConstants.ERR_DDBG_EXECUTABLE_NOT_DEFINED);
+		}
+		if (!new File(ddbgPath).exists()) {
+			abort("Ddbg executable file does not exist", 
+					new FileNotFoundException(ddbgPath + " not found"),
+					IDescentLaunchConfigurationConstants.ERR_DDBG_EXECUTABLE_NOT_EXIST);
+		}
+		return ddbgPath;
+	}
+	
 	/**
 	 * @param config
 	 * @return

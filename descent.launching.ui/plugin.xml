@@ -58,6 +58,14 @@
       </shortcut>
    </extension>
    <extension
+         point="org.eclipse.debug.ui.memoryRenderings">
+      <renderingBindings renderingIds="org.eclipse.debug.ui.rendering.raw_memory, org.eclipse.debug.ui.rendering.ascii, org.eclipse.debug.ui.rendering.signedint, org.eclipse.debug.ui.rendering.unsignedint">
+         <enablement>
+            <instanceof value="descent.internal.launching.model.DescentMemoryBlock"/>
+         </enablement>
+      </renderingBindings>
+   </extension>
+   <extension
          point="org.eclipse.ui.contexts">
       <context
             description="Debugging D"
@@ -79,12 +87,12 @@
       </editorContribution>
    </extension>
    <extension
-         point="org.eclipse.debug.ui.memoryRenderings">
-      <renderingBindings renderingIds="org.eclipse.debug.ui.rendering.raw_memory, org.eclipse.debug.ui.rendering.ascii, org.eclipse.debug.ui.rendering.signedint, org.eclipse.debug.ui.rendering.unsignedint">
-         <enablement>
-            <instanceof value="descent.internal.launching.model.DescentMemoryBlock"/>
-         </enablement>
-      </renderingBindings>
+         point="org.eclipse.ui.preferencePages">
+      <page
+            category="descent.ui.preferences.JavaBasePreferencePage"
+            class="descent.internal.launching.ui.preferences.DescentDebugPreferencesPage"
+            id="descent.launching.ui.DescentDebugPreferencesPage"
+            name="Debug"/>
    </extension>
 
 </plugin>

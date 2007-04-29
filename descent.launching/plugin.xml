@@ -44,5 +44,9 @@
             debugModel="descent.launching.model"
             delegateClass="descent.internal.launching.DescentWatchExpressionDelegate"/>
    </extension>
+   <extension
+         point="org.eclipse.core.runtime.preferences">
+      <initializer class="descent.internal.launching.preferences.DescentDebugPreferencesInitializer"/>
+   </extension>
 
 </plugin>

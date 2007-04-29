@@ -1,5 +1,7 @@
 package descent.internal.launching.ui;
 
+import java.io.File;
+
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
@@ -30,7 +32,9 @@ import descent.core.IJavaModel;
 import descent.core.IJavaProject;
 import descent.core.JavaCore;
 import descent.core.JavaModelException;
+import descent.launching.DescentLaunching;
 import descent.launching.IDescentLaunchConfigurationConstants;
+import descent.launching.IDescentLaunchingPreferenceConstants;
 import descent.launching.ui.DescentLaunchingUI;
 import descent.ui.JavaElementLabelProvider;
 
@@ -269,6 +273,17 @@ public class MainTab extends AbstractLaunchConfigurationTab {
 
 		setErrorMessage(null);
 		setMessage(null);
+		
+		// Check if ddbg's executable is set
+		String ddbgPath = DescentLaunching.getDefault().getPreferenceStore().getString(IDescentLaunchingPreferenceConstants.DDBG_PATH);
+		if (ddbgPath == null || ddbgPath.trim().length() == 0) {
+			setErrorMessage("Ddbg executable must be defined in Window -> Preferences -> D -> Debug."); //$NON-NLS-1$
+			return false;
+		}
+		if (!new File(ddbgPath).exists()) {
+			setErrorMessage("Ddbg executable file (" + ddbgPath + ") does not exist");
+			return false;
+		}
 
 		String name = fProjText.getText().trim();
 		if (name.length() == 0) {

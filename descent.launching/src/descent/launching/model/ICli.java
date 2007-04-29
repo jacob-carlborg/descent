@@ -16,7 +16,7 @@ public interface ICli {
 	
 	String getEndCommunicationString();
 	
-	void initialize(ICliRequestor requestor, IDescentDebugElementFactory factory, IStreamsProxy out);
+	void initialize(ICliRequestor requestor, IDescentDebugElementFactory factory, IStreamsProxy out, int timeout);
 	
 	void interpret(String text) throws DebugException, IOException;
 	

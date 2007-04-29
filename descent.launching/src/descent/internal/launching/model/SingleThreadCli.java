@@ -90,8 +90,8 @@ public class SingleThreadCli implements ICli {
 		}
 	}
 
-	public void initialize(ICliRequestor requestor, IDescentDebugElementFactory factory, IStreamsProxy out) {
-		fCli.initialize(requestor, factory, out);
+	public void initialize(ICliRequestor requestor, IDescentDebugElementFactory factory, IStreamsProxy out, int timeout) {
+		fCli.initialize(requestor, factory, out, timeout);
 	}
 
 	public void interpret(String text) throws DebugException, IOException {

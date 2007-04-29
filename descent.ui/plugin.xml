@@ -13,6 +13,34 @@
    <extension-point id="javaCompletionProposalComputer" name="%javaCompletionProposalComputer" schema="schema/javaCompletionProposalComputer.exsd"/>
    <extension-point id="javaCompletionProposalSorters" name="%javaCompletionProposalSorters" schema="schema/javaCompletionProposalSorters.exsd"/>
    <extension-point id="internal_refactoringElementFilter" name="%internal_refactoringElementFilter" schema="schema/internal_refactoringElementFilter.exsd"/>
+   <extension
+         point="org.eclipse.core.filebuffers.documentSetup">
+      <participant
+            class="descent.internal.ui.javaeditor.JavaDocumentSetupParticipant"
+            contentTypeId="descent.core.dSource"/>
+   </extension>
+	
+	<extension
+         id="JavaDocumentSetupParticipant"
+         name="%javaDocumentSetupParticipant"
+         point="org.eclipse.core.filebuffers.documentSetup">
+      <participant
+            contentTypeId="descent.core.dSource"
+            class="descent.internal.ui.javaeditor.JavaDocumentSetupParticipant">
+      </participant>
+   </extension>
+   
+   <extension
+         id="modelProvider"
+         name="%JavaModelProvider.name"
+         point="org.eclipse.core.resources.modelProviders">
+      <modelProvider
+            class="descent.internal.ui.model.JavaModelProvider"/>
+      <extends-model id="org.eclipse.core.resources.modelProvider"/>
+      <enablement>
+          <test property="org.eclipse.core.resources.projectNature" value="descent.core.dnature" />
+      </enablement>
+   </extension>
 
    <extension point="org.eclipse.core.runtime.adapters">
 		<factory 
@@ -93,6 +121,10 @@
         </factory>
         -->
 
+   </extension>
+   <extension
+         point="org.eclipse.core.runtime.preferences">
+      <initializer class="descent.internal.ui.JavaUIPreferenceInitializer"/>
    </extension>
    <extension
          point="org.eclipse.ui.perspectives">
@@ -2064,10 +2096,6 @@
 
    </extension>
    <extension
-         point="org.eclipse.core.runtime.preferences">
-      <initializer class="descent.internal.ui.JavaUIPreferenceInitializer"/>
-   </extension>
-   <extension
          point="org.eclipse.ui.editors.annotationTypes">
       <type
             markerSeverity="2"
@@ -2101,10 +2129,25 @@
             />
    </extension>
    <extension
-         point="org.eclipse.core.filebuffers.documentSetup">
-      <participant
-            class="descent.internal.ui.javaeditor.JavaDocumentSetupParticipant"
-            contentTypeId="descent.core.dSource"/>
+         point="org.eclipse.ui.editors.templates">
+      <contextType
+            name="%templates.java.contextType.name"
+            class="descent.internal.corext.template.java.JavaContextType"
+            id="java">
+      </contextType>
+      <contextType
+            name="%templates.javadoc.contextType.name"
+            class="descent.internal.corext.template.java.JavaDocContextType"
+            id="javadoc">
+      </contextType>
+      <include
+      		file="templates/default-templates.xml"
+      		translations="$nl$/templates/default-templates.properties">
+      </include>
+      <include
+      		file="templates/default-codetemplates.xml"
+      		translations="$nl$/templates/default-templates.properties">
+      </include>
    </extension>
    <extension
          point="org.eclipse.ui.contexts">
@@ -2630,28 +2673,6 @@
 			preferencesClass="descent.internal.ui.text.folding.DefaultJavaFoldingPreferenceBlock">
 		</provider>
 	</extension>
-	
-	<extension
-         id="JavaDocumentSetupParticipant"
-         name="%javaDocumentSetupParticipant"
-         point="org.eclipse.core.filebuffers.documentSetup">
-      <participant
-            contentTypeId="descent.core.dSource"
-            class="descent.internal.ui.javaeditor.JavaDocumentSetupParticipant">
-      </participant>
-   </extension>
-   
-   <extension
-         id="modelProvider"
-         name="%JavaModelProvider.name"
-         point="org.eclipse.core.resources.modelProviders">
-      <modelProvider
-            class="descent.internal.ui.model.JavaModelProvider"/>
-      <extends-model id="org.eclipse.core.resources.modelProvider"/>
-      <enablement>
-          <test property="org.eclipse.core.resources.projectNature" value="descent.core.dnature" />
-      </enablement>
-   </extension>
    
    <extension
 		point="descent.ui.javaCompletionProposalComputer"
@@ -2689,26 +2710,5 @@
    <!-- =========================================================================== -->
 <!-- Templates                                                                   -->
 <!-- =========================================================================== -->
-   <extension
-         point="org.eclipse.ui.editors.templates">
-      <contextType
-            name="%templates.java.contextType.name"
-            class="descent.internal.corext.template.java.JavaContextType"
-            id="java">
-      </contextType>
-      <contextType
-            name="%templates.javadoc.contextType.name"
-            class="descent.internal.corext.template.java.JavaDocContextType"
-            id="javadoc">
-      </contextType>
-      <include
-      		file="templates/default-templates.xml"
-      		translations="$nl$/templates/default-templates.properties">
-      </include>
-      <include
-      		file="templates/default-codetemplates.xml"
-      		translations="$nl$/templates/default-templates.properties">
-      </include>
-   </extension>
 	
 </plugin>

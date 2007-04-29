@@ -22,15 +22,17 @@ public class DdbgCli implements ICli {
 	
 	private final static boolean DEBUG = false;
 	
-	IState fState;
-	IState fRunningState = new Running(this);
-
+	private int fTimeout;
+	
 	ICliRequestor fCliRequestor;
 	IDescentDebugElementFactory fFactory;
-	IStreamsProxy fProxy;
+	
+	private IState fState;
+	private IState fRunningState = new Running(this);
+	private IStreamsProxy fProxy;
 
-	Object fWaitLock = new Object();
-	volatile boolean fWaitLockUsed;
+	private Object fWaitLock = new Object();
+	private volatile boolean fWaitLockUsed;
 
 	public DdbgCli() {
 		setState(fRunningState);
@@ -44,10 +46,11 @@ public class DdbgCli implements ICli {
 		return "->";
 	}
 	
-	public void initialize(ICliRequestor requestor, IDescentDebugElementFactory factory, IStreamsProxy out) {
+	public void initialize(ICliRequestor requestor, IDescentDebugElementFactory factory, IStreamsProxy out, int timeout) {
 		this.fCliRequestor = requestor;
 		this.fFactory = factory;
 		this.fProxy = out;
+		this.fTimeout = timeout;
 	}
 	
 	void setState(IState state) {
@@ -323,7 +326,7 @@ public class DdbgCli implements ICli {
 		try {
 			synchronized (fWaitLock) {
 				if (!fWaitLockUsed) {
-					fWaitLock.wait(500);
+					fWaitLock.wait(fTimeout);
 				}
 			}
 		} catch (InterruptedException e) {

@@ -180,9 +180,12 @@ public class DescentStackFrame extends DescentDebugElement implements IStackFram
 	}
 	
 	public boolean isInSameFunction(DescentStackFrame other) {
-		return fName != null && other.fName != null && fName.equals(other.fName) && 
-			fSourceName != null && other.fSourceName != null && fSourceName.equals(other.fSourceName) &&
-			fNumber == other.fNumber;
+		if (fName != null && other.fName != null && fName.equals(other.fName) && fNumber == other.fNumber) {
+			if (fSourceName != null && other.fSourceName != null && fSourceName.equals(other.fSourceName)) {
+				return true;
+			}
+		}
+		return false;
 	}
 	
 	public void merge(DescentStackFrame other) {

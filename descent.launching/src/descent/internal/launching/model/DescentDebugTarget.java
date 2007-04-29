@@ -21,7 +21,9 @@ import org.eclipse.debug.core.model.IStackFrame;
 import org.eclipse.debug.core.model.IStreamMonitor;
 import org.eclipse.debug.core.model.IThread;
 
+import descent.launching.DescentLaunching;
 import descent.launching.IDescentLaunchConfigurationConstants;
+import descent.launching.IDescentLaunchingPreferenceConstants;
 import descent.launching.model.ICli;
 import descent.launching.model.ICliRequestor;
 import descent.launching.model.IDescentDebugElementFactory;
@@ -57,7 +59,8 @@ public class DescentDebugTarget extends DescentDebugElement implements IDebugTar
 			this.fCli = new SingleThreadCli(this.fCli);
 		}
 		
-		this.fCli.initialize(this, this, process.getStreamsProxy());
+		int timeout = DescentLaunching.getDefault().getPreferenceStore().getInt(IDescentLaunchingPreferenceConstants.DDBG_TIMEOUT);
+		this.fCli.initialize(this, this, process.getStreamsProxy(), timeout);
 		
 		this.fThread = new DescentThread(this, fCli);
 		this.fThreads = new DescentThread[] { fThread };

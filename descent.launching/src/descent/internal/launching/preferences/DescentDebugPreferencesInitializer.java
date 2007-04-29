@@ -1,0 +1,18 @@
+package descent.internal.launching.preferences;
+
+import org.eclipse.core.runtime.preferences.AbstractPreferenceInitializer;
+import org.eclipse.jface.preference.IPreferenceStore;
+
+import descent.launching.DescentLaunching;
+import descent.launching.IDescentLaunchingPreferenceConstants;
+
+public class DescentDebugPreferencesInitializer extends AbstractPreferenceInitializer {
+
+	@Override
+	public void initializeDefaultPreferences() {
+		IPreferenceStore prefs = DescentLaunching.getDefault().getPreferenceStore();
+		
+		prefs.setDefault(IDescentLaunchingPreferenceConstants.DDBG_TIMEOUT, 3000);
+	}
+
+}
