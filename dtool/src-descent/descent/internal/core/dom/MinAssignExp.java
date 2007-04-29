@@ -1,12 +1,11 @@
 package descent.internal.core.dom;
 
 import util.tree.TreeVisitor;
-import descent.core.dom.IExpression;
-import descent.core.domX.ASTVisitor;
+import descent.core.domX.IASTVisitor;
 
 public class MinAssignExp extends BinaryExpression {
 
-	private final boolean isUnary;
+	public final boolean isUnary;
 
 	public MinAssignExp(Expression e, Expression exp) {
 		this(e, exp, false);
@@ -29,12 +28,12 @@ public class MinAssignExp extends BinaryExpression {
 		return UnaryExpression.IUnaryExpression2.PRE_DECREMENT;
 	}
 	
-	public IExpression getInnerExpression() {
+	public Expression getInnerExpression() {
 		return getLeftExpression();
 	}
 	
 	@Override
-	public void accept0(ASTVisitor visitor) {
+	public void accept0(IASTVisitor visitor) {
 		if (isUnary) {
 			boolean children = visitor.visit( this);
 			if (children) {

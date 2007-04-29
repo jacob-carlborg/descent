@@ -1,6 +1,8 @@
 package util;
 
 /**
+ * (Based on org.eclipse.core.runtime.Assert)
+ * 
  * <code>Assert</code> is useful for for embedding runtime sanity checks
  * in code. The static predicate methods all test a condition and throw some
  * type of unchecked exception if the condition does not hold.
@@ -12,7 +14,6 @@ package util;
  * position where you need to catch an assertion failure, you have most 
  * certainly written your program incorrectly.</b>
  * </p>
- * (Based on {@link org.eclipse.core.runtime.Assert})
  */
 public abstract class Assert {
 

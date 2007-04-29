@@ -3,7 +3,7 @@ package descent.internal.core.dom;
 import util.tree.TreeVisitor;
 import descent.core.dom.IOnScopeStatement;
 import descent.core.dom.IStatement;
-import descent.core.domX.ASTVisitor;
+import descent.core.domX.IASTVisitor;
 
 public class OnScopeStatement extends Statement implements IOnScopeStatement  {
 
@@ -32,7 +32,7 @@ public class OnScopeStatement extends Statement implements IOnScopeStatement  {
 		return ElementTypes.ON_SCOPE_STATEMENT;
 	}
 	
-	public void accept0(ASTVisitor visitor) {
+	public void accept0(IASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
 			TreeVisitor.acceptChild(visitor, st);

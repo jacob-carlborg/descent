@@ -3,7 +3,7 @@ package dtool.model;
 import java.util.List;
 
 import util.StringUtil;
-import dtool.dom.base.DefUnit;
+import dtool.dom.declarations.DefUnit;
 import dtool.project.DToolProject;
 
 public class BindingResolver {
@@ -16,7 +16,7 @@ public class BindingResolver {
 
 	public static DefUnit getDefUnit(List<DefUnit> defunits, String name) {
 		for (DefUnit defunit : defunits) {
-			if (defunit.symbol.equalsStr(name))
+			if (defunit.defname.equals(name))
 				return defunit;
 		}
 		return null;

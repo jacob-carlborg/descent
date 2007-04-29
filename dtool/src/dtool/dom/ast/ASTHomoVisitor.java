@@ -1,14 +1,13 @@
 package dtool.dom.ast;
 
 import util.tree.TreeNode;
-import dtool.dom.base.ASTNode;
 
 /** 
  * An abstract visitor that visits nodes in a homogenous way, 
  * i.e., without any type-specific methods. Uses the accept0 mechanism and
  * not getChildren().
  */
-public abstract class ASTHomoVisitor extends ASTNeoVisitor {
+public abstract class ASTHomoVisitor extends ASTNeoUpTreeVisitor {
 
 	@SuppressWarnings("unchecked")
 	public void traverse(TreeNode elem) {

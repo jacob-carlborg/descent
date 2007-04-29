@@ -3,7 +3,7 @@ package descent.internal.core.dom;
 import util.tree.TreeVisitor;
 import descent.core.dom.IIdentifierExpression;
 import descent.core.dom.IName;
-import descent.core.domX.ASTVisitor;
+import descent.core.domX.IASTVisitor;
 
 public class IdentifierExp extends Expression implements IIdentifierExpression {
 	
@@ -23,7 +23,7 @@ public class IdentifierExp extends Expression implements IIdentifierExpression {
 		return id;
 	}
 	
-	public void accept0(ASTVisitor visitor) {
+	public void accept0(IASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
 			TreeVisitor.acceptChild(visitor, id);

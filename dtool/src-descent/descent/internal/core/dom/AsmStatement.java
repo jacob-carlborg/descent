@@ -1,6 +1,6 @@
 package descent.internal.core.dom;
 
-import descent.core.domX.ASTVisitor;
+import descent.core.domX.IASTVisitor;
 
 public class AsmStatement extends Statement {
 
@@ -8,7 +8,7 @@ public class AsmStatement extends Statement {
 		// TODO Auto-generated constructor stub
 	}
 	
-	public void accept0(ASTVisitor visitor) {
+	public void accept0(IASTVisitor visitor) {
 		visitor.visit(this);
 		visitor.endVisit(this);
 	}

@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import util.tree.TreeNode;
-import dtool.dom.base.ASTNode;
 
 
 /**

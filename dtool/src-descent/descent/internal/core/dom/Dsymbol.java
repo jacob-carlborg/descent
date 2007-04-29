@@ -7,5 +7,7 @@ public abstract class Dsymbol extends AbstractElement implements IElement {
 
 	public Identifier ident;
 	public Dsymbol parent;
+	
+	public void XPTO() {}
 
 }

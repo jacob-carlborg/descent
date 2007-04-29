@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
-import java.util.Arrays;
 /**
  * Miscelleanous file utilities 
  */
@@ -60,7 +59,7 @@ public final class FileUtil {
 
 	    int numRead = 0;
 	    while ( (numRead = reader.read(buffer, 0, 1024)) >= 0) {
-	    	chars = Arrays.copyOf(chars, offset + numRead);
+	    	chars = ArrayUtil.createNew(chars, offset + numRead);
 	    	System.arraycopy(buffer, 0, chars, offset, numRead);
 	    	offset += numRead;
 	    }

@@ -5,4 +5,6 @@ package descent.core.dom;
  */
 public interface IDeclaration extends IElement {
 
+	
+	public void XPTO();
 }

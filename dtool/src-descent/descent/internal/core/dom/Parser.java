@@ -93,9 +93,8 @@ import java.util.List;
 import descent.core.compiler.IProblem;
 import descent.core.dom.IDeclaration;
 import descent.core.dom.IElement;
-import descent.core.dom.IEnumMember;
 import descent.core.domX.AbstractElement;
-import dtool.dom.base.ASTNode;
+import dtool.dom.ast.ASTNode;
 
 public class Parser extends Lexer {
 	
@@ -590,7 +589,7 @@ public class Parser extends Lexer {
 			}
 			if (s != null) {
 				decldefs.add((IDeclaration) s);
-				addComment(s, comment, commentStart);
+				addComment((Dsymbol) s, comment, commentStart);
 			}
 		} while (!once);
 		return decldefs;
@@ -1137,7 +1136,7 @@ public class Parser extends Lexer {
 			nextToken();			  
 		} else if (token.value == TOKlcurly) {
 			// printf("enum definition\n");
-			e.members = new ArrayList<IEnumMember>();
+			e.members = new ArrayList<EnumMember>();
 			nextToken();
 			String comment = token.blockComment;
 			while (token.value != TOKrcurly) {
@@ -1587,7 +1586,7 @@ public class Parser extends Lexer {
 		TemplateMixin tm;
 		Identifier id = null;
 		TypeTypeof tqual;
-		List<IElement> tiargs;
+		List<ASTNode> tiargs;
 		List<Identifier> idents;
 		
 		Token firstToken = new Token(token);
@@ -1676,9 +1675,9 @@ public class Parser extends Lexer {
 	}
 	
 	@SuppressWarnings("unchecked")
-	private List<IElement> parseTemplateArgumentList() {
+	private List<ASTNode> parseTemplateArgumentList() {
 		// printf("Parser::parseTemplateArgumentList()\n");
-	    List<IElement> tiargs = new ArrayList<IElement>();
+	    List<ASTNode> tiargs = new ArrayList<ASTNode>();
 	    if (token.value != TOKlparen)
 	    {   
 	    	problem("!(TemplateArgumentList) expected following TemplateIdentifier", IProblem.SEVERITY_ERROR, IProblem.TEMPLATE_ARGUMENT_LIST_EXPECTED, token.ptr, token.len);
@@ -5713,11 +5712,11 @@ public class Parser extends Lexer {
 		return e;
 	}
 	
-	private void addComment(AbstractElement s, String blockComment) {
+	private void addComment(Dsymbol s, String blockComment) {
 		addComment(s, blockComment, -1);
 	}
 
-	private void addComment(AbstractElement s, String blockComment, int blockCommentStart) {
+	private void addComment(Dsymbol s, String blockComment, int blockCommentStart) {
 		s.addComment(combineComments(blockComment, token.lineComment), blockComment == null ? - 1 : blockCommentStart);
 	}
 	

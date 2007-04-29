@@ -1,19 +1,13 @@
 package dtool.dom.ast;
 
 import util.tree.TreeDepthRecon;
-import dtool.dom.base.ASTNeoNode;
-import dtool.dom.base.ASTNode;
-import dtool.dom.base.DefUnit;
-import dtool.dom.base.Def_Modifiers;
-import dtool.dom.base.Definition;
 import dtool.dom.base.Entity;
-import dtool.dom.base.EntitySingle;
 
 /**
  * Simple class for printing the AST in indented tree form.
  * DMD AST nodes are printed with a "#" prefix.
  */
-public class ASTPrinter extends ASTNeoVisitor {
+public class ASTPrinter extends ASTNeoUpTreeVisitor {
 	
 	// print source range
 	public boolean printRangeInfo = true;
@@ -79,7 +73,7 @@ public class ASTPrinter extends ASTNeoVisitor {
 	}	
 	
 	/** Gets a String representation of the single elem only. */
-	public static synchronized String toStringElement(ASTNode elem) {
+	public static String toStringElement(ASTNode elem) {
 		// use singleton for optimization purposes
 		singletonPrinter.visitChildren = false;
 		singletonPrinter.strbuffer = new StringBuffer();
@@ -104,10 +98,6 @@ public class ASTPrinter extends ASTNeoVisitor {
 		strbuffer.append("\n");
 	}	
 
-	
-	private String trailString(String str, String strtrail) {
-		return util.StringUtil.trailString(str, strtrail);
-	}
 	
 	private void printIndent() {
 		print(util.StringUtil.newFilledString(indent, "  "));
@@ -174,7 +164,7 @@ public class ASTPrinter extends ASTNeoVisitor {
 	/* ---------------- Neo ------------------ */
 	
 	public boolean visit(ASTNeoNode elem) {
-		printGenericElement(elem, toStringElementExtra(elem) + "");
+		printGenericElement(elem, toStringElementExtra(elem) +" "+ elem);
 		return visitChildren;
 	}
 	
@@ -182,25 +172,6 @@ public class ASTPrinter extends ASTNeoVisitor {
 		printGenericElement(elem, toStringElementExtra(elem) 
 				+ " ID: " + elem.toString());
 		return visitChildren && visitQualifiedNameChildren;
-	}
-	
-	public boolean visit(DefUnit elem) {
-		printGenericElement(elem, toStringElementExtra(elem) 
-				+ " " + elem.symbol);
-		return visitChildren;
-	}
-	public boolean visit(EntitySingle.Identifier elem) {
-		printGenericElement(elem, toStringElementExtra(elem) 
-				+ " " + elem.name);
-		return visitChildren;
-	}
-
-	public boolean visit(Definition elem) {
-		printGenericElement(elem, toStringElementExtra(elem) + " "
-				+ trailString(elem.protection.toString(), " ")
-				+ trailString(Def_Modifiers.toString(elem.modifiers), " ")
-				+ "=> " + elem.symbol.name);
-		return visitChildren;
 	}
 	
 	

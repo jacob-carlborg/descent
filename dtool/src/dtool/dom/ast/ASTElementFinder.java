@@ -1,6 +1,5 @@
 package dtool.dom.ast;
 
-import dtool.dom.base.ASTNode;
 
 
 /**
@@ -8,7 +7,7 @@ import dtool.dom.base.ASTNode;
  * A source range starts at element.startPos (inclusive), and ends at 
  * element.endPos (not inclusive).   
  */
-public class ASTElementFinder extends ASTNeoVisitor {
+public class ASTElementFinder extends ASTNeoUpTreeVisitor {
 	
 	private int offset; 
 	private ASTNode match;

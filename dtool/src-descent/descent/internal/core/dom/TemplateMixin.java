@@ -7,8 +7,9 @@ import util.tree.TreeVisitor;
 import descent.core.dom.IElement;
 import descent.core.dom.IMixinDeclaration;
 import descent.core.dom.IName;
-import descent.core.domX.ASTVisitor;
+import descent.core.domX.IASTVisitor;
 import descent.core.domX.AbstractElement;
+import dtool.dom.ast.ASTNode;
 
 public class TemplateMixin extends Declaration implements IMixinDeclaration {
 
@@ -16,7 +17,7 @@ public class TemplateMixin extends Declaration implements IMixinDeclaration {
 	private TypeTypeof tqual;
 	private AbstractElement[] tiargs;
 
-	public TemplateMixin(Identifier id, TypeTypeof tqual, List<Identifier> idents, List<IElement> tiargs) {
+	public TemplateMixin(Identifier id, TypeTypeof tqual, List<Identifier> idents, List<ASTNode> tiargs) {
 		super(id);
 		this.tqual = tqual;
 		this.qName = new QualifiedName(idents);
@@ -46,7 +47,7 @@ public class TemplateMixin extends Declaration implements IMixinDeclaration {
 		return tiargs;
 	}
 	
-	public void accept0(ASTVisitor visitor) {
+	public void accept0(IASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
 			TreeVisitor.acceptChild(visitor, tqual);

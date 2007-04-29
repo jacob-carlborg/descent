@@ -1,17 +1,15 @@
 package dtool.dom.expressions;
 
 import util.tree.TreeVisitor;
-import dtool.dom.ast.ASTNeoVisitor;
+import descent.internal.core.dom.BinaryExpression;
+import descent.internal.core.dom.UnaryExpression;
+import dtool.descentadapter.DescentASTConverter;
+import dtool.dom.ast.ASTNode;
+import dtool.dom.ast.IASTNeoVisitor;
 
-public abstract class PrefixExpression extends Expression {
+public class PrefixExpression extends Expression {
 	
-	public Expression exp;
-
-	public PrefixExpression(Expression exp) {
-		this.exp = exp;
-	}
-	
-	public interface PrefixExpressionTypes {
+	public interface Type {
 		
 		int ADDRESS = 1;
 		int PRE_INCREMENT = 2;
@@ -21,12 +19,27 @@ public abstract class PrefixExpression extends Expression {
 		int POSITIVE = 6;
 		int NOT = 7;
 		int INVERT = 8;
-		int POST_INCREMENT = 9;
-		int POST_DECREMENT = 10;
+	}
+	
+	public Expression exp;
+
+	public int kind;
+
+
+	public PrefixExpression(UnaryExpression elem, int kind) {
+		setSourceRange((ASTNode) elem);
+		this.exp = (Expression) DescentASTConverter.convertElem(elem.exp);
+		this.kind = kind;
+	}
+
+	public PrefixExpression(BinaryExpression elem, int kind) {
+		setSourceRange((ASTNode) elem);
+		this.exp = (Expression) DescentASTConverter.convertElem(elem.e1);
+		this.kind = kind;
 	}
 	
 	@Override
-	public void accept0(ASTNeoVisitor visitor) {
+	public void accept0(IASTNeoVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
 			TreeVisitor.acceptChild(visitor, exp);

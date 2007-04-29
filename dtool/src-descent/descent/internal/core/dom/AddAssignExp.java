@@ -2,11 +2,11 @@ package descent.internal.core.dom;
 
 import util.tree.TreeVisitor;
 import descent.core.dom.IExpression;
-import descent.core.domX.ASTVisitor;
+import descent.core.domX.IASTVisitor;
 
 public class AddAssignExp extends BinaryExpression implements IExpression {
 	
-	private final boolean isUnary;
+	public final boolean isUnary;
 
 	public AddAssignExp(Expression e, Expression exp) {
 		this(e, exp, false);
@@ -34,7 +34,7 @@ public class AddAssignExp extends BinaryExpression implements IExpression {
 	}
 	
 	@Override
-	public void accept0(ASTVisitor visitor) {
+	public void accept0(IASTVisitor visitor) {
 		if (isUnary) {
 			boolean children = visitor.visit(this);
 			if (children) {

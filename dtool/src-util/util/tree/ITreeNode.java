@@ -3,7 +3,7 @@ package util.tree;
 /**
  * Interface for the node of a heterogenous tree.
  */
-public interface ITreeNode<NODE extends ITreeNode, VISITOR extends TreeVisitor>
+public interface ITreeNode<NODE extends ITreeNode, VISITOR extends ITreeVisitor>
 		extends IElement, IVisitable<VISITOR> {
 
 	/** {@inheritDoc} */

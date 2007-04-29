@@ -5,7 +5,7 @@ import descent.core.dom.IDeclaration;
 import descent.core.dom.IModifiersContainer;
 import descent.core.dom.IName;
 import descent.core.dom.IType;
-import descent.core.domX.ASTVisitor;
+import descent.core.domX.IASTVisitor;
 
 public class AliasDeclaration extends Declaration implements IDeclaration, IModifiersContainer {
 	
@@ -28,7 +28,7 @@ public class AliasDeclaration extends Declaration implements IDeclaration, IModi
 		return ElementTypes.ALIAS_DECLARATION;
 	}
 	
-	public void accept0(ASTVisitor visitor) {
+	public void accept0(IASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
 			TreeVisitor.acceptChild(visitor, ident);

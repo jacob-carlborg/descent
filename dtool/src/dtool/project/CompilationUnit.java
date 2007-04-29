@@ -4,13 +4,13 @@ import java.io.File;
 
 import util.AssertIn;
 import descent.core.compiler.IProblem;
-import descent.core.domX.AbstractElement;
 import descent.internal.core.dom.ParserFacade;
 import dtool.descentadapter.DescentASTConverter;
 import dtool.dom.ast.ASTElementFinder;
-import dtool.dom.ast.TreeParentizer_ASTNode;
-import dtool.dom.base.ASTNode;
-import dtool.dom.base.Module;
+import dtool.dom.ast.ASTNode;
+import dtool.dom.ast.ASTNodeParentizer;
+import dtool.dom.declarations.Module;
+
 /**
  * Similar to Module 
  */
@@ -60,10 +60,10 @@ public class CompilationUnit {
 	}
 	
 	
-	public void adaptDOM() {
+	public void adaptAST() {
 		DescentASTConverter domadapter = new DescentASTConverter();
-		this.cumodule = domadapter.convert((AbstractElement) cumodule); 
-		TreeParentizer_ASTNode.parentize(this.cumodule);
+		this.cumodule = domadapter.convertModule(cumodule); 
+		ASTNodeParentizer.parentize(this.cumodule);
 	}
 	
 	public void parse(){
@@ -73,7 +73,7 @@ public class CompilationUnit {
 		preParseCompilationUnit();
 		if(hasErrors())
 			return;
-		adaptDOM();
+		adaptAST();
 	}
 
 	/* === bindings === */

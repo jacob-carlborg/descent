@@ -3,7 +3,7 @@ package descent.internal.core.dom;
 import util.tree.TreeVisitor;
 import descent.core.dom.IExpression;
 import descent.core.dom.IParenthesizedExpression;
-import descent.core.domX.ASTVisitor;
+import descent.core.domX.IASTVisitor;
 
 public class ParenthesizedExpression extends Expression implements IParenthesizedExpression {
 	
@@ -21,7 +21,7 @@ public class ParenthesizedExpression extends Expression implements IParenthesize
 		return e;
 	}
 	
-	public void accept0(ASTVisitor visitor) {
+	public void accept0(IASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
 			TreeVisitor.acceptChild(visitor, e);

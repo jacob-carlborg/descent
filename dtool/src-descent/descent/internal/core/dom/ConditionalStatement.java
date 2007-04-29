@@ -7,7 +7,7 @@ import descent.core.dom.IName;
 import descent.core.dom.IStatement;
 import descent.core.dom.IStaticIfStatement;
 import descent.core.dom.IVersionStatement;
-import descent.core.domX.ASTVisitor;
+import descent.core.domX.IASTVisitor;
 
 public class ConditionalStatement extends Statement implements IStaticIfStatement, IDebugStatement, IVersionStatement {
 
@@ -51,7 +51,7 @@ public class ConditionalStatement extends Statement implements IStaticIfStatemen
 	}
 	
 	@Override
-	public void accept0(ASTVisitor visitor) {
+	public void accept0(IASTVisitor visitor) {
 		boolean children;
 		switch(this.condition.getConditionType()) {
 		case Condition.DEBUG: 

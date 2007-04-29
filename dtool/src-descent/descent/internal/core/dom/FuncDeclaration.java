@@ -5,7 +5,7 @@ import descent.core.dom.IDeclaration;
 import descent.core.dom.IModifiersContainer;
 import descent.core.dom.IName;
 import descent.core.dom.IStatement;
-import descent.core.domX.ASTVisitor;
+import descent.core.domX.IASTVisitor;
 
 public class FuncDeclaration extends Declaration implements IDeclaration, IModifiersContainer {
 
@@ -80,10 +80,11 @@ public class FuncDeclaration extends Declaration implements IDeclaration, IModif
 		return outId;
 	}
 	
-	public void accept0(ASTVisitor visitor) {
+	public void accept0(IASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
 			TreeVisitor.acceptChild(visitor, getReturnType());
+			//TreeVisitor.acceptChild(visitor, type);
 			TreeVisitor.acceptChild(visitor, ident);
 			TreeVisitor.acceptChildren(visitor, templateParameters);
 			TreeVisitor.acceptChildren(visitor, getArguments());

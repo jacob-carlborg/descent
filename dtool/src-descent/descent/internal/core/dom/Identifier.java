@@ -1,7 +1,7 @@
 package descent.internal.core.dom;
 
 import descent.core.dom.IName;
-import descent.core.domX.ASTVisitor;
+import descent.core.domX.IASTVisitor;
 import descent.core.domX.AbstractElement;
 
 public class Identifier extends AbstractElement implements IName {
@@ -26,7 +26,7 @@ public class Identifier extends AbstractElement implements IName {
 		return string;
 	}
 
-	public void accept0(ASTVisitor visitor) {
+	public void accept0(IASTVisitor visitor) {
 		visitor.visit(this);
 		visitor.endVisit(this);
 	}

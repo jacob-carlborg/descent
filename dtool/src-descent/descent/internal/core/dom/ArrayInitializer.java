@@ -4,13 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import util.tree.TreeVisitor;
-
-import descent.core.dom.IArrayInitializer;
-import descent.core.dom.IExpression;
 import descent.core.dom.IInitializer;
-import descent.core.domX.ASTVisitor;
+import descent.core.domX.IASTVisitor;
 
-public class ArrayInitializer extends Initializer implements IArrayInitializer {
+public class ArrayInitializer extends Initializer {
 	
 	private List<Expression> exps;
 	private List<Initializer> values;
@@ -25,8 +22,8 @@ public class ArrayInitializer extends Initializer implements IArrayInitializer {
 		this.values.add(value);
 	}
 	
-	public IExpression[] getLengths() {
-		return exps.toArray(new IExpression[exps.size()]);
+	public Expression[] getLengths() {
+		return exps.toArray(new Expression[exps.size()]);
 	}
 	
 	public IInitializer[] getValues() {
@@ -37,7 +34,7 @@ public class ArrayInitializer extends Initializer implements IArrayInitializer {
 		return ElementTypes.ARRAY_INITIALIZER;
 	}
 	
-	public void accept0(ASTVisitor visitor) {
+	public void accept0(IASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) { 
 			TreeVisitor.acceptChildren(visitor, exps);

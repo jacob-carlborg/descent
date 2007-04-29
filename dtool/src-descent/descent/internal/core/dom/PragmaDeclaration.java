@@ -8,7 +8,7 @@ import descent.core.dom.IDeclaration;
 import descent.core.dom.IExpression;
 import descent.core.dom.IName;
 import descent.core.dom.IPragmaDeclaration;
-import descent.core.domX.ASTVisitor;
+import descent.core.domX.IASTVisitor;
 import descent.core.domX.AbstractElement;
 
 public class PragmaDeclaration extends Dsymbol implements IPragmaDeclaration {
@@ -42,7 +42,7 @@ public class PragmaDeclaration extends Dsymbol implements IPragmaDeclaration {
 		return ElementTypes.PRAGMA_DECLARATION;
 	}
 	
-	public void accept0(ASTVisitor visitor) {
+	public void accept0(IASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
 			TreeVisitor.acceptChild(visitor, ident);

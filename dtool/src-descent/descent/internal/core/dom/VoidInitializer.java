@@ -1,7 +1,7 @@
 package descent.internal.core.dom;
 
 import descent.core.dom.IVoidInitializer;
-import descent.core.domX.ASTVisitor;
+import descent.core.domX.IASTVisitor;
 
 public class VoidInitializer extends Initializer implements IVoidInitializer {
 
@@ -13,7 +13,7 @@ public class VoidInitializer extends Initializer implements IVoidInitializer {
 		return ElementTypes.VOID_INITIALIZER;
 	}
 	
-	public void accept0(ASTVisitor visitor) {
+	public void accept0(IASTVisitor visitor) {
 		visitor.visit(this);
 		visitor.endVisit(this);
 	}

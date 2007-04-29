@@ -5,7 +5,7 @@ import descent.core.dom.IInitializer;
 import descent.core.dom.IName;
 import descent.core.dom.IType;
 import descent.core.dom.IVariableDeclaration;
-import descent.core.domX.ASTVisitor;
+import descent.core.domX.IASTVisitor;
 
 public class VarDeclaration extends Declaration implements IVariableDeclaration {
 	
@@ -34,7 +34,7 @@ public class VarDeclaration extends Declaration implements IVariableDeclaration 
 		return init;
 	}
 	
-	public void accept0(ASTVisitor visitor) {
+	public void accept0(IASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
 			TreeVisitor.acceptChild(visitor, type);

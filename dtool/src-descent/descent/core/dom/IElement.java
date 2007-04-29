@@ -1,14 +1,14 @@
 package descent.core.dom;
 
 import util.tree.ITreeNode;
-import descent.core.domX.ASTVisitor;
-import dtool.dom.base.ASTNode;
+import descent.core.domX.IASTVisitor;
+import dtool.dom.ast.ASTNode;
 
 
 /**
  * Represents an element in the D model.
  */
-public interface IElement extends ITreeNode<ASTNode, ASTVisitor> {
+public interface IElement extends ITreeNode<ASTNode, IASTVisitor> {
 	
 	public interface ElementTypes {
 

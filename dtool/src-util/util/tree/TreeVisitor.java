@@ -7,14 +7,13 @@ import java.util.List;
 import util.ExceptionAdapter;
 
 /** Abstract visitor for a heterogenous tree with some utility methods. */
-public abstract class TreeVisitor<NODE extends TreeNode> {
+public abstract class TreeVisitor<NODE extends TreeNode> implements ITreeVisitor<NODE> {
+	
 
-	/** Generic visit start. */
 	public void preVisit(NODE elem) {
 		// Default implementation: do nothing
 	}
 
-	/** Generic visit end. */
 	public void postVisit(NODE elem) {
 		// Default implementation: do nothing
 	}
@@ -78,23 +77,23 @@ public abstract class TreeVisitor<NODE extends TreeNode> {
 			this.acceptElement(nodes[i]);
 		}
 	}
-
+	
 	/** Accepts the visitor on child. If child is null, nothing happens. */
 	@SuppressWarnings("unchecked")
-	public static void acceptChild(TreeVisitor visitor, IVisitable child) {
+	public static void acceptChild(ITreeVisitor visitor, IVisitable child) {
 		if (child != null) {
 			child.accept(visitor);
 		}
 	}
 
 	/** Same as {@link #acceptChild(CommonASTVisitor, TreeNode) } */
-	public static void acceptChildren(TreeVisitor visitor, IVisitable child) {
+	public static void acceptChildren(ITreeVisitor visitor, IVisitable child) {
 		TreeVisitor.acceptChild(visitor, child);
 	}
 
 	/** Accepts the visitor on the children. If children is null, nothing
 	 * happens.	*/
-	public static void acceptChildren(TreeVisitor visitor, IVisitable[] children) {
+	public static void acceptChildren(ITreeVisitor visitor, IVisitable[] children) {
 		if (children == null)
 			return;
 		
@@ -105,7 +104,7 @@ public abstract class TreeVisitor<NODE extends TreeNode> {
 
 	/** Accepts the visitor on the children. If children is null, nothing
 	 * happens. */
-	public static void acceptChildren(TreeVisitor visitor, List<? extends ITreeNode> children) {
+	public static void acceptChildren(ITreeVisitor visitor, List<? extends ITreeNode> children) {
 		if (children == null)
 			return;
 		
@@ -113,5 +112,7 @@ public abstract class TreeVisitor<NODE extends TreeNode> {
 			TreeVisitor.acceptChild(visitor, children.get(i));
 		}
 	}
+
+
 
 }

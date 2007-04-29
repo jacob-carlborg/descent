@@ -1,7 +1,7 @@
 package descent.internal.core.dom;
 
 import descent.core.dom.IThisExpression;
-import descent.core.domX.ASTVisitor;
+import descent.core.domX.IASTVisitor;
 
 public class ThisExp extends Expression implements IThisExpression {
 
@@ -19,7 +19,7 @@ public class ThisExp extends Expression implements IThisExpression {
 	}
 	
 	@Override
-	public void accept0(ASTVisitor visitor) {
+	public void accept0(IASTVisitor visitor) {
 		visitor.visit(this);
 		visitor.endVisit(this);
 	}

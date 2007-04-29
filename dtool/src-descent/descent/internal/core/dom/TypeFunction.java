@@ -2,7 +2,7 @@ package descent.internal.core.dom;
 
 import java.util.List;
 
-import descent.core.domX.ASTVisitor;
+import descent.core.domX.IASTVisitor;
 
 public class TypeFunction extends Type {
 	
@@ -27,7 +27,7 @@ public class TypeFunction extends Type {
 	}
 	
 	@Override
-	public void accept0(ASTVisitor visitor) {
+	public void accept0(IASTVisitor visitor) {
 		// TODO Auto-generated method stub
 		
 	}

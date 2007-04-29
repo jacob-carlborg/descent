@@ -7,7 +7,7 @@ import util.tree.TreeVisitor;
 import descent.core.compiler.IProblem;
 import descent.core.dom.ICompilationUnit;
 import descent.core.dom.IDeclaration;
-import descent.core.domX.ASTVisitor;
+import descent.core.domX.IASTVisitor;
 import descent.core.domX.AbstractElement;
 
 public class Module extends ScopeDsymbol implements ICompilationUnit {
@@ -35,7 +35,7 @@ public class Module extends ScopeDsymbol implements ICompilationUnit {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public void accept0(ASTVisitor visitor) {
+	public void accept0(IASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
 			TreeVisitor.acceptChild(visitor, md);

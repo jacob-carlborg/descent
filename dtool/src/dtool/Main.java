@@ -4,10 +4,10 @@ package dtool;
 import util.ExceptionAdapter;
 import util.StringUtil;
 import dtool.dom.ast.ASTChecker;
+import dtool.dom.ast.ASTNode;
 import dtool.dom.ast.ASTPrinter;
-import dtool.dom.base.ASTNode;
-import dtool.dom.base.DefUnit;
 import dtool.dom.base.Entity;
+import dtool.dom.declarations.DefUnit;
 import dtool.model.ModelException;
 import dtool.project.CompilationUnit;
 import dtool.project.DToolProject;
@@ -22,10 +22,10 @@ public class Main {
 
 	public static void main(String[] args) throws Exception {
 		System.out.println("======== DTool ========");
+
 		try {
 			dproj = DToolProject.newTestProject();
 			testDtool(args);
-			// testDtool(args);
 
 		} catch (Exception e) {
 			// For annoying flushing problems in Eclipse console
@@ -57,12 +57,13 @@ public class Main {
 		}
 		
 		System.out.println("====== Neo AST Tree: ======");
-		cu.adaptDOM();
+		cu.adaptAST();
 		System.out.println(ASTPrinter.toStringNeoAST(cu.getNeoModule()));
 		
 		System.out.println("====== Neo AST Consistency check: ======");
 		ASTChecker.checkConsistency(cu.getNeoModule());
 		
+		if(true) return;
 		testFindEntityByName();
 		ASTNode elem = testFindEntityByOffset(44);
 		testFindDef(elem); 

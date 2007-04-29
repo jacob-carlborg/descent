@@ -2,11 +2,11 @@ package dtool.formater;
 
 import java.io.OutputStream;
 
-import descent.core.domX.ASTVisitor;
-import dtool.dom.base.ASTNeoNode;
+import descent.core.domX.ASTUpTreeVisitor;
+import dtool.dom.ast.ASTNeoNode;
 
 
-public class FormaterVisitor extends ASTVisitor {
+public class FormaterVisitor extends ASTUpTreeVisitor {
 	
 	FormaterScribe scribe; 
 	

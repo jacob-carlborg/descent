@@ -1,13 +1,12 @@
 package dtool.dom.ast;
 
-import dtool.dom.base.ASTNode;
 
 
 /**
  * Checks for AST validity. Namely:
  * Source range consistency. 
  */
-public class ASTChecker extends ASTNeoVisitor {
+public class ASTChecker extends ASTNeoUpTreeVisitor {
 	
 	private int offsetCursor;
 	protected StringBuffer strbuffer;

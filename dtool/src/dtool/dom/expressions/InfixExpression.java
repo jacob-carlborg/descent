@@ -1,16 +1,15 @@
 package dtool.dom.expressions;
 
 import util.tree.TreeVisitor;
-import dtool.dom.ast.ASTNeoVisitor;
+import descent.internal.core.dom.BinaryExpression;
+import dtool.descentadapter.DescentASTConverter;
+import dtool.dom.ast.ASTNode;
+import dtool.dom.ast.IASTNeoVisitor;
 
-public abstract class InfixExpression extends Expression {
+public class InfixExpression extends Expression {
 	
-	public Expression leftExp;
-	public Expression rightExp;
-
-
-	// TODO: link with token
-	public interface InfixExpressionTypes {
+	// XXX: link with token ?
+	public interface Type {
 		
 		int MUL = 11;
 		int DIV = 12;
@@ -41,17 +40,28 @@ public abstract class InfixExpression extends Expression {
 		int XOR_ASSIGN = 38;
 		int SHIFT_LEFT_ASSIGN = 39;
 		int SHIFT_RIGHT_ASSIGN = 40;
-		int UNSIGNED_SHIFT_RIGHT_ASSIGN = 40;
-		int CAT_ASSIGN = 41;
+		int UNSIGNED_SHIFT_RIGHT_ASSIGN = 41;
+		int CAT_ASSIGN = 42;
 		int COMMA = 44;
 		int NOT_IDENTITY = 45;
-		
+	}
+
+	public Expression leftExp;
+	public Expression rightExp;
+	
+	public int kind;
+
+	
+	public InfixExpression(BinaryExpression elem, int kind) {
+		setSourceRange((ASTNode) elem);
+		this.leftExp = (Expression) DescentASTConverter.convertElem(elem.e1);
+		this.rightExp = (Expression) DescentASTConverter.convertElem(elem.e2);
+		this.kind = kind;
 	}
 
 	
-	
 	@Override
-	public void accept0(ASTNeoVisitor visitor) {
+	public void accept0(IASTNeoVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
 			TreeVisitor.acceptChild(visitor, leftExp);

@@ -4,7 +4,7 @@ import util.tree.TreeVisitor;
 import descent.core.dom.ICaseStatement;
 import descent.core.dom.IExpression;
 import descent.core.dom.IStatement;
-import descent.core.domX.ASTVisitor;
+import descent.core.domX.IASTVisitor;
 
 public class CaseStatement extends Statement implements ICaseStatement {
 
@@ -28,7 +28,7 @@ public class CaseStatement extends Statement implements ICaseStatement {
 		return ElementTypes.CASE_STATEMENT;
 	}
 	
-	public void accept0(ASTVisitor visitor) {
+	public void accept0(IASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
 			TreeVisitor.acceptChild(visitor, exp);

@@ -4,7 +4,7 @@ import util.tree.TreeVisitor;
 import descent.core.dom.IExpression;
 import descent.core.dom.IName;
 import descent.core.dom.IType;
-import descent.core.domX.ASTVisitor;
+import descent.core.domX.IASTVisitor;
 import descent.core.domX.AbstractElement;
 
 public class Argument extends AbstractElement {
@@ -55,7 +55,7 @@ public class Argument extends AbstractElement {
 		} 
 	}
 
-	public void accept0(ASTVisitor visitor) {
+	public void accept0(IASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
 			TreeVisitor.acceptChild(visitor, type);

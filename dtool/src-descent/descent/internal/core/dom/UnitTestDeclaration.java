@@ -3,7 +3,7 @@ package descent.internal.core.dom;
 import util.tree.TreeVisitor;
 import descent.core.dom.IName;
 import descent.core.dom.IStatement;
-import descent.core.domX.ASTVisitor;
+import descent.core.domX.IASTVisitor;
 
 public class UnitTestDeclaration extends Dsymbol {
 
@@ -25,7 +25,7 @@ public class UnitTestDeclaration extends Dsymbol {
 		return ElementTypes.UNITTEST_DECLARATION;
 	}
 	
-	public void accept0(ASTVisitor visitor) {
+	public void accept0(IASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
 			TreeVisitor.acceptChild(visitor, fbody);

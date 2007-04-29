@@ -4,7 +4,7 @@ import util.tree.TreeVisitor;
 import descent.core.dom.IEnumMember;
 import descent.core.dom.IExpression;
 import descent.core.dom.IName;
-import descent.core.domX.ASTVisitor;
+import descent.core.domX.IASTVisitor;
 
 public class EnumMember extends Dsymbol implements IEnumMember {
 	
@@ -33,7 +33,7 @@ public class EnumMember extends Dsymbol implements IEnumMember {
 		return ElementTypes.ENUM_MEMBER;
 	}
 	
-	public void accept0(ASTVisitor visitor) {
+	public void accept0(IASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
 			TreeVisitor.acceptChild(visitor, ident);

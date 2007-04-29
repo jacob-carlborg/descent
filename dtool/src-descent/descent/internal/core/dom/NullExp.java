@@ -1,7 +1,7 @@
 package descent.internal.core.dom;
 
 import descent.core.dom.INullExpression;
-import descent.core.domX.ASTVisitor;
+import descent.core.domX.IASTVisitor;
 
 public class NullExp extends Expression implements INullExpression {
 
@@ -14,7 +14,7 @@ public class NullExp extends Expression implements INullExpression {
 	}
 	
 	@Override
-	public void accept0(ASTVisitor visitor) {
+	public void accept0(IASTVisitor visitor) {
 		visitor.visit(this);
 		visitor.endVisit(this);
 	}

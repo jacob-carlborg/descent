@@ -8,11 +8,11 @@ import descent.core.dom.IEnumDeclaration;
 import descent.core.dom.IEnumMember;
 import descent.core.dom.IName;
 import descent.core.dom.IType;
-import descent.core.domX.ASTVisitor;
+import descent.core.domX.IASTVisitor;
 
 public class EnumDeclaration extends Dsymbol implements IEnumDeclaration {
 
-	public List<IEnumMember> members;
+	public List<EnumMember> members;
 	public Type type;
 
 	public EnumDeclaration(Identifier id, Type type) {
@@ -37,7 +37,7 @@ public class EnumDeclaration extends Dsymbol implements IEnumDeclaration {
 		return members.toArray(new IEnumMember[members.size()]);
 	}
 	
-	public void accept0(ASTVisitor visitor) {
+	public void accept0(IASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
 			TreeVisitor.acceptChild(visitor, ident);

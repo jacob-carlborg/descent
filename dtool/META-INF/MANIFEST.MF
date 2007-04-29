@@ -17,7 +17,9 @@ Export-Package: descent.core,
  dtool.descentadapter,
  dtool.dom.ast,
  dtool.dom.base,
+ dtool.dom.declarations,
  dtool.dom.expressions,
+ dtool.dom.statements,
  dtool.formater,
  dtool.model,
  dtool.parser,
@@ -28,3 +30,4 @@ Export-Package: descent.core,
  util.log,
  util.tree
 Bundle-Vendor: Mother Ark
+Require-Bundle: org.eclipse.core.runtime

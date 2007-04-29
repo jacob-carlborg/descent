@@ -3,7 +3,7 @@ package descent.internal.core.dom;
 import util.tree.TreeVisitor;
 import descent.core.dom.IName;
 import descent.core.dom.IType;
-import descent.core.domX.ASTVisitor;
+import descent.core.domX.IASTVisitor;
 
 public class TemplateAliasParameter extends TemplateParameter {
 
@@ -33,7 +33,7 @@ public class TemplateAliasParameter extends TemplateParameter {
 		return tp_defaulttype;
 	}
 
-	public void accept0(ASTVisitor visitor) {
+	public void accept0(IASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
 			TreeVisitor.acceptChild(visitor, tp_ident);

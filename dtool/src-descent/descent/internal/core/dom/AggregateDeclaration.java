@@ -6,7 +6,7 @@ import util.tree.TreeVisitor;
 
 import descent.core.dom.IAggregateDeclaration;
 import descent.core.dom.IDeclaration;
-import descent.core.domX.ASTVisitor;
+import descent.core.domX.IASTVisitor;
 import descent.core.domX.AbstractElement;
 
 public abstract class AggregateDeclaration extends ScopeDsymbol implements IAggregateDeclaration {
@@ -53,16 +53,14 @@ public abstract class AggregateDeclaration extends ScopeDsymbol implements IAggr
 	}
 	
 	@SuppressWarnings("unchecked")
-	public void accept0(ASTVisitor visitor) {
-		boolean children = visitor.visit(this);
-		if (children) {
-			TreeVisitor.acceptChild(visitor, ident);
-			TreeVisitor.acceptChildren(visitor, templateParameters);
-			TreeVisitor.acceptChildren(visitor, baseClasses);
-			TreeVisitor.acceptChildren(visitor, members);
-		}
-		visitor.endVisit(this);
+	public void acceptCommonChildren(IASTVisitor visitor) {
+		TreeVisitor.acceptChild(visitor, ident);
+		TreeVisitor.acceptChildren(visitor, templateParameters);
+		TreeVisitor.acceptChildren(visitor, baseClasses);
+		TreeVisitor.acceptChildren(visitor, members);
 	}
+	
+
 	
 	public int getElementType() {
 		return ElementTypes.AGGREGATE_DECLARATION;

@@ -2,11 +2,11 @@ package descent.internal.core.dom;
 
 import util.tree.TreeVisitor;
 import descent.core.dom.IExpression;
-import descent.core.domX.ASTVisitor;
+import descent.core.domX.IASTVisitor;
 
 public class ExpStatement extends Statement {
 	
-	private Expression exp;
+	public Expression exp;
 
 	public ExpStatement(Expression exp) {
 		this.exp = exp;
@@ -20,7 +20,7 @@ public class ExpStatement extends Statement {
 		return exp;
 	}
 	
-	public void accept0(ASTVisitor visitor) {
+	public void accept0(IASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
 			TreeVisitor.acceptChild(visitor, exp);

@@ -1,12 +1,17 @@
 package dtool.dom.base;
 
-import dtool.dom.ast.ASTNeoVisitor;
+import dtool.dom.ast.IASTNeoVisitor;
+import dtool.dom.declarations.DefUnit;
 
 // TODO
 public class TypeFunction extends Entity {
 	// expression , const
 
-	public void accept0(ASTNeoVisitor visitor) {
+	public TypeFunction(descent.internal.core.dom.TypeFunction elem) {
+		// TODO Auto-generated constructor stub
+	}
+
+	public void accept0(IASTNeoVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
 		}

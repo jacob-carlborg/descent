@@ -1,118 +1,180 @@
 package dtool.descentadapter;
 
-import descent.internal.core.dom.Identifier;
-import dtool.dom.base.ASTNode;
+import util.Assert;
+import descent.core.domX.AbstractElement;
+import descent.internal.core.dom.AggregateDeclaration;
+import descent.internal.core.dom.Declaration;
+import descent.internal.core.dom.Dsymbol;
+import descent.internal.core.dom.Expression;
+import descent.internal.core.dom.FuncLiteralDeclaration;
+import descent.internal.core.dom.Initializer;
+import descent.internal.core.dom.ModuleDeclaration;
+import descent.internal.core.dom.QualifiedName;
+import descent.internal.core.dom.ScopeDsymbol;
+import descent.internal.core.dom.SelectiveImport;
+import descent.internal.core.dom.Statement;
+import descent.internal.core.dom.Type;
+import descent.internal.core.dom.TypeArray;
+import descent.internal.core.dom.TypeExp;
+import descent.internal.core.dom.TypeInstance;
+import descent.internal.core.dom.TypeQualified;
+import dtool.dom.ast.ASTNode;
 import dtool.dom.base.Entity;
 import dtool.dom.base.EntitySingle;
+import dtool.dom.base.TypeDelegate;
 import dtool.dom.base.TypeDynArray;
+import dtool.dom.base.TypeFunction;
+import dtool.dom.base.TypeMapArray;
+import dtool.dom.base.TypePointer;
+import dtool.dom.base.TypeSlice;
+import dtool.dom.base.TypeStaticArray;
+import dtool.dom.base.TypeStruct;
 import dtool.dom.base.TypeTypeof;
-import dtool.dom.base.DefUnit.Symbol;
 
 /**
  * This class is a mixin. 
- * Do not use it, instead use it's subclass: {@link DefConverter}
+ * Do not use it, instead use it's subclass: {@link DeclarationConverter}
  */
-public abstract class BaseConverter extends ASTCommonConverter {
+abstract class BaseConverter extends ASTCommonConverter {
 
-	public BaseConverter() {
-		super();
-	}
-	
-	protected Symbol convertIdentifierToSymbol(Identifier ident) {
-		if(ident == null)
-			return null;
-		Symbol newelem = new Symbol(ident.string);
-		rangeAdapt(newelem, ident);
-		return newelem;
-	}
-	
 	/*  =======================================================  */
 
+
+	public boolean visit(AbstractElement elem) {
+		Assert.fail("Error visited abstract class."); return false;
+	}
+
+	public boolean visit(Dsymbol elem) {
+		Assert.fail("Error visited abstract class."); return false;
+	}
+
+	public boolean visit(Declaration elem) {
+		Assert.fail("Error visited abstract class."); return false;
+	}
+
+	public boolean visit(Initializer elem) {
+		Assert.fail("Error visited abstract class."); return false;
+	}
+
+	public boolean visit(AggregateDeclaration elem) {
+		Assert.fail("Error visited abstract class."); return false;
+	}
+
+	public boolean visit(Statement elem) {
+		Assert.fail("Error visited abstract class."); return false;
+	}
+
+	public boolean visit(Type elem) {
+		Assert.fail("Error visited abstract class."); return false;
+	}
+
+	public boolean visit(Expression elem) {
+		Assert.fail("Error visited abstract class."); return false;
+	}
+
+
+	public boolean visit(ModuleDeclaration elem) {
+		Assert.fail("visited supervised class."); return false;
+	}
+	public boolean visit(SelectiveImport elem) {
+		Assert.fail("visited supervised class."); return false;
+	}
+
+	public boolean visit(ScopeDsymbol elem) {
+		Assert.fail("Error visited abstract class."); return false;
+	}
+
+
+	public boolean visit(TypeArray elem) {
+		Assert.fail("Error visited abstract class."); return false;
+	}
+
+
+	public boolean visit(TypeQualified elem) {
+		Assert.fail("Error visited abstract class."); return false;
+	}
+
+
+	public boolean visit(QualifiedName elem) {
+		Assert.fail("WHAT IS THIS?"); return false;
+	}
+	
+	public boolean visit(FuncLiteralDeclaration elem) {
+		Assert.fail("WHAT IS THIS?"); return false;
+	}
+	
+	public boolean visit(TypeExp elem) {
+		Assert.fail("WHAT IS THIS?"); return false;
+	}
+
+	
 	/* ---- Entities Core ---- */
 	public boolean visit(descent.internal.core.dom.Identifier elem) {
-		EntitySingle.Identifier newelem = new EntitySingle.Identifier(elem.string);
-		rangeAdapt(newelem, elem);
-		return endAdapt(newelem);
+		return endAdapt(new EntitySingle.Identifier(elem));
 	}
-	
 	
 	public boolean visit(descent.internal.core.dom.TypeBasic elem) {
-		EntitySingle.Identifier newelem = new EntitySingle.Identifier();
-		newelem.name = elem.toString();
-		rangeAdapt(newelem, elem); 
-		//TODO set binding to intrinsic?
-		return endAdapt(newelem);
-	}
-	
-	
-	private Entity convertIdents(Entity rootent,
-			descent.internal.core.dom.TypeQualified elem, int endix) {
-		if (endix > 0-1) { 
-			Entity.QualifiedEnt entref = new Entity.QualifiedEnt();
-			entref.topent = convertIdents(rootent,elem, endix-1);
-			entref.baseent = (EntitySingle) convert(elem.idents.get(endix));
-
-			entref.startPos = rootent.startPos;
-			entref.setEndPos(entref.baseent.getEndPos());
-			return entref;
-		} else if( endix == 0-1 ) {
-			return rootent;
-		}
-		return null;
+		return endAdapt(new EntitySingle.Identifier(elem));
 	}
 	
 	public boolean visit(descent.internal.core.dom.TypeIdentifier elem) {
-		
-		Entity rootent;
-		
-		if(elem.startPos == -1 ) { 
-			assert(elem.ident.string.equals(""));
-			rootent = new Entity.ModuleRootEnt();
-
-			rootent.startPos = elem.idents.get(0).startPos-1;
-			rootent.setEndPos(rootent.startPos+1);
-		} else {
-			rootent = (EntitySingle.Identifier) convert(elem.ident);
-		}
-		
-		Entity newelem; 
-		if(elem.idents.size() > 0){
-			newelem = convertIdents(rootent, elem, elem.idents.size()-1);
-		} else {
-			newelem = rootent;
-		}
-		
-		return endAdapt(newelem);
+		Entity rootent = Entity.convertTypeIdentifierRoot(elem);
+		return endAdapt(Entity.convertQualified(rootent, elem));
 	}
 
+	public boolean visit(descent.internal.core.dom.TemplateInstance elem) {
+		return endAdapt(new EntitySingle.TemplateInstance(elem));
+	}
+	
+	public boolean visit(TypeInstance elem) {
+		Entity rootent = Entity.convertTypeInstanceRoot(elem);
+		return endAdapt(Entity.convertQualified(rootent, elem));
+	}
+	
+	
 	public boolean visit(descent.internal.core.dom.TypeTypeof elem) {
-
-		Entity rootent = new TypeTypeof();
-		rangeAdapt(rootent, elem); //FIXME end range
+		Entity rootent = new TypeTypeof(elem);
 		
-		Entity newelem; 
-		if(elem.idents.size() > 0){
-			newelem = convertIdents(rootent, elem, elem.idents.size()-1);
-		} else {
-			newelem = rootent;
-		}
-		
-		return endAdapt(newelem);
+		return endAdapt(Entity.convertQualified(rootent, elem));
 	}
 
 	
-	public boolean visit(descent.internal.core.dom.TypeDArray elem) {
-		
-		TypeDynArray newelem = new TypeDynArray();
-		rangeAdapt(newelem, elem); //FIXME end range
-
-		newelem.elemtype = (Entity) convert(elem.next);
-
-		return endAdapt(newelem);
+	public boolean visit(descent.internal.core.dom.TypeAArray elem) {
+		return endAdapt(new TypeMapArray(elem));
 	}
+	
+	public boolean visit(descent.internal.core.dom.TypeDArray elem) {
+		return endAdapt(new TypeDynArray(elem));
+	}
+	
+	public boolean visit(descent.internal.core.dom.TypeSArray elem) {
+		return endAdapt(new TypeStaticArray(elem));
+	}
+	
+	
+	public boolean visit(descent.internal.core.dom.TypeDelegate elem) {
+		return endAdapt(new TypeDelegate(elem));
+	}
+	
+	public boolean visit(descent.internal.core.dom.TypeFunction elem) {
+		return endAdapt(new TypeFunction(elem));
+	}
+	
+	public boolean visit(descent.internal.core.dom.TypePointer elem) {
+		return endAdapt(new TypePointer(elem));
+	}
+	
+	public boolean visit(descent.internal.core.dom.TypeSlice elem) {
+		return endAdapt(new TypeSlice(elem));
+	}
+	
+	public boolean visit(descent.internal.core.dom.TypeStruct elem) {
+		return endAdapt(new TypeStruct(elem));
+	}
+
 	
 	/*  -------------------------------------  */
 	
-	public void endVisit(ASTNode element) {
+	public void endVisit(ASTNode elem) {
 	}
 }

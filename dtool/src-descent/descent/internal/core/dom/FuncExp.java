@@ -3,7 +3,7 @@ package descent.internal.core.dom;
 import descent.core.dom.IExpression;
 import descent.core.dom.IName;
 import descent.core.dom.IStatement;
-import descent.core.domX.ASTVisitor;
+import descent.core.domX.IASTVisitor;
 
 public class FuncExp extends Expression implements IExpression {
 
@@ -41,7 +41,7 @@ public class FuncExp extends Expression implements IExpression {
 		return fd.isVariadic();
 	}
 	
-	public void accept0(ASTVisitor visitor) {
+	public void accept0(IASTVisitor visitor) {
 		fd.accept(visitor);
 	}
 

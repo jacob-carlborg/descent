@@ -3,7 +3,7 @@ package descent.internal.core.dom;
 import util.tree.TreeVisitor;
 import descent.core.dom.IConditionExpression;
 import descent.core.dom.IExpression;
-import descent.core.domX.ASTVisitor;
+import descent.core.domX.IASTVisitor;
 
 public class CondExp extends Expression implements IConditionExpression {
 	
@@ -35,7 +35,7 @@ public class CondExp extends Expression implements IConditionExpression {
 		return ElementTypes.CONDITION_EXPRESSION;
 	}
 	
-	public void accept0(ASTVisitor visitor) {
+	public void accept0(IASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
 			TreeVisitor.acceptChild(visitor, cond);

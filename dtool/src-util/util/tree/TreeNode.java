@@ -1,10 +1,7 @@
 package util.tree;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import util.AssertIn;
-import dtool.dom.base.ASTNode;
+import dtool.dom.ast.ASTNode;
 
 /**
  * Generic type for a tree node. The erasure TreeNode represents a homogenous tree
@@ -17,7 +14,7 @@ import dtool.dom.base.ASTNode;
  *
  * @author BrunoM
   */
-public abstract class TreeNode<NODE extends TreeNode<NODE,VISITOR>, VISITOR extends TreeVisitor<NODE>>
+public abstract class TreeNode<NODE extends TreeNode<NODE,VISITOR>, VISITOR extends ITreeVisitor<NODE>>
 		implements ITreeNode<NODE, VISITOR> {
 
 	/** AST node parent, null if the node is the tree root. */
@@ -42,23 +39,7 @@ public abstract class TreeNode<NODE extends TreeNode<NODE,VISITOR>, VISITOR exte
 	}
 
 
-	private static Pattern pattern = Pattern.compile("[A-Za-z0-9\\$]*$");
 
-	/** Gets the node's classname striped of package qualifier. */
-	public final String toStringClassName() {
-		//String name = this.getClass().getName().replaceAll("^.*dom\\.base\\.", "");
-		// XXX: This is a temporary solution to strip the package
-		Matcher matcher = pattern.matcher(this.getClass().getName());
-		matcher.find();
-		return matcher.group();
-	}
-
-	/** Gets a string representation of the node. */
-	public String toString() {
-		return toStringClassName();
-	}
-	
-	
 	/** {@inheritDoc} */
 	@SuppressWarnings("unchecked")
 	public void accept(VISITOR visitor) {
@@ -88,4 +69,16 @@ public abstract class TreeNode<NODE extends TreeNode<NODE,VISITOR>, VISITOR exte
 	 * </p>
 	 */
 	protected abstract void accept0(VISITOR visitor);
+	
+	/** Gets the node's classname striped of package qualifier. */
+	public final String toStringClassName() {
+		String str = this.getClass().getName();
+		int lastIx = str.lastIndexOf('.');
+		return str.substring(lastIx+1);
+	}
+
+	/** Gets a string representation of the node. */
+	public String toString() {
+		return toStringClassName();
+	}
 }

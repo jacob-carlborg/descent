@@ -5,7 +5,7 @@ import java.math.BigInteger;
 import descent.core.dom.IFalseExpression;
 import descent.core.dom.IIntegerExpression;
 import descent.core.dom.ITrueExpression;
-import descent.core.domX.ASTVisitor;
+import descent.core.domX.IASTVisitor;
 
 public class IntegerExp extends Expression implements IIntegerExpression, IFalseExpression, ITrueExpression {
 	
@@ -30,7 +30,7 @@ public class IntegerExp extends Expression implements IIntegerExpression, IFalse
 	}
 	
 	@Override
-	public void accept0(ASTVisitor visitor) {
+	public void accept0(IASTVisitor visitor) {
 		switch(expressionType) {
 		case ElementTypes.TRUE_EXPRESSION:
 			visitor.visit((ITrueExpression) this);

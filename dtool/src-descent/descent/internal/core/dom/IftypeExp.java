@@ -1,13 +1,12 @@
 package descent.internal.core.dom;
 
 import util.tree.TreeVisitor;
-import descent.core.dom.IIsExpression;
 import descent.core.dom.IName;
 import descent.core.dom.IType;
 import descent.core.dom.ITypeSpecialization;
-import descent.core.domX.ASTVisitor;
+import descent.core.domX.IASTVisitor;
 
-public class IftypeExp extends Expression implements IIsExpression {
+public class IftypeExp extends Expression {
 
 	private Type targ;
 	private Type tspec;
@@ -44,7 +43,7 @@ public class IftypeExp extends Expression implements IIsExpression {
 	}
 	
 	@Override
-	public void accept0(ASTVisitor visitor) {
+	public void accept0(IASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
 			TreeVisitor.acceptChild(visitor, targ);

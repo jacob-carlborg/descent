@@ -3,7 +3,7 @@ package descent.internal.core.dom;
 import java.math.BigInteger;
 
 import descent.core.dom.IRealExpression;
-import descent.core.domX.ASTVisitor;
+import descent.core.domX.IASTVisitor;
 
 public class RealExp extends Expression implements IRealExpression {
 
@@ -16,7 +16,7 @@ public class RealExp extends Expression implements IRealExpression {
 	}
 	
 	@Override
-	public void accept0(ASTVisitor visitor) {
+	public void accept0(IASTVisitor visitor) {
 		visitor.visit(this);
 		visitor.endVisit(this);
 	}

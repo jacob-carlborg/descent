@@ -3,7 +3,7 @@ package descent.internal.core.dom;
 import util.tree.TreeVisitor;
 import descent.core.dom.IExpression;
 import descent.core.dom.IStaticAssertStatement;
-import descent.core.domX.ASTVisitor;
+import descent.core.domX.IASTVisitor;
 
 public class StaticAssertStatement extends Statement implements IStaticAssertStatement {
 
@@ -25,7 +25,7 @@ public class StaticAssertStatement extends Statement implements IStaticAssertSta
 		return ElementTypes.STATIC_ASSERT_STATEMENT;
 	}
 	
-	public void accept0(ASTVisitor visitor) {
+	public void accept0(IASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
 			TreeVisitor.acceptChild(visitor, staticAssert.exp);

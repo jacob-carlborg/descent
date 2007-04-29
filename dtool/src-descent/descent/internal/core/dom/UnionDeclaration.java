@@ -1,5 +1,7 @@
 package descent.internal.core.dom;
 
+import descent.core.domX.IASTVisitor;
+
 
 public class UnionDeclaration extends AggregateDeclaration {
 
@@ -11,4 +13,11 @@ public class UnionDeclaration extends AggregateDeclaration {
 		return UNION_DECLARATION;
 	}
 
+	public void accept0(IASTVisitor visitor) {
+		boolean children = visitor.visit(this);
+		if (children) {
+			acceptCommonChildren(visitor);
+		}
+		visitor.endVisit(this);
+	}
 }

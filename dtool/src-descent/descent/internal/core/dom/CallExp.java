@@ -4,11 +4,10 @@ import java.util.List;
 
 import util.tree.TreeVisitor;
 
-import descent.core.dom.ICallExpression;
 import descent.core.dom.IExpression;
-import descent.core.domX.ASTVisitor;
+import descent.core.domX.IASTVisitor;
 
-public class CallExp extends Expression implements ICallExpression {
+public class CallExp extends Expression {
 	
 	Expression e;
 	Expression[] args;
@@ -30,7 +29,7 @@ public class CallExp extends Expression implements ICallExpression {
 		return ElementTypes.CALL_EXPRESSION;
 	}
 	
-	public void accept0(ASTVisitor visitor) {
+	public void accept0(IASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
 			TreeVisitor.acceptChild(visitor, e);

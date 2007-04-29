@@ -6,11 +6,11 @@ import util.tree.TreeVisitor;
 
 import descent.core.dom.ICompoundStatement;
 import descent.core.dom.IStatement;
-import descent.core.domX.ASTVisitor;
+import descent.core.domX.IASTVisitor;
 
 public class CompoundStatement extends Statement implements ICompoundStatement {
 
-	private final List<Statement> as;
+	public final List<Statement> as;
 
 	public CompoundStatement(List<Statement> as) {
 		this.as = as;
@@ -25,7 +25,7 @@ public class CompoundStatement extends Statement implements ICompoundStatement {
 		return ElementTypes.COMPOUND_STATEMENT;
 	}
 	
-	public void accept0(ASTVisitor visitor) {
+	public void accept0(IASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
 			TreeVisitor.acceptChildren(visitor, as);

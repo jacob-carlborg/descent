@@ -2,12 +2,12 @@ package descent.internal.core.dom;
 
 import util.tree.TreeVisitor;
 import descent.core.dom.IExpression;
-import descent.core.domX.ASTVisitor;
+import descent.core.domX.IASTVisitor;
 
 public abstract class BinaryExpression extends Expression implements IExpression {
 	
-	protected Expression e1;
-	protected Expression e2;
+	public Expression e1;
+	public Expression e2;
 	
 	public interface BinaryExpressionTypes {
 
@@ -40,8 +40,8 @@ public abstract class BinaryExpression extends Expression implements IExpression
 		int XOR_ASSIGN = 38;
 		int SHIFT_LEFT_ASSIGN = 39;
 		int SHIFT_RIGHT_ASSIGN = 40;
-		int UNSIGNED_SHIFT_RIGHT_ASSIGN = 40;
-		int CAT_ASSIGN = 41;
+		int UNSIGNED_SHIFT_RIGHT_ASSIGN = 41;
+		int CAT_ASSIGN = 42;
 		int COMMA = 44;
 		int NOT_IDENTITY = 45;
 		
@@ -61,15 +61,17 @@ public abstract class BinaryExpression extends Expression implements IExpression
 		return ElementTypes.BINARY_EXPRESSION;
 	}
 	
-	public IExpression getLeftExpression() {
+	public abstract int getBinaryExpressionType();
+	
+	public Expression getLeftExpression() {
 		return e1;
 	}
 	
-	public IExpression getRightExpression() {
+	public Expression getRightExpression() {
 		return e2;
 	}
 	
-	public void accept0(ASTVisitor visitor) {
+	public void accept0(IASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
 			TreeVisitor.acceptChild(visitor, e1);

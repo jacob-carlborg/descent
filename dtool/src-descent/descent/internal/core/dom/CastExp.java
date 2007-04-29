@@ -4,7 +4,7 @@ import util.tree.TreeVisitor;
 import descent.core.dom.ICastExpression;
 import descent.core.dom.IExpression;
 import descent.core.dom.IType;
-import descent.core.domX.ASTVisitor;
+import descent.core.domX.IASTVisitor;
 
 public class CastExp extends Expression implements ICastExpression {
 
@@ -28,7 +28,7 @@ public class CastExp extends Expression implements ICastExpression {
 		return ElementTypes.CAST_EXPRESSION;
 	}
 	
-	public void accept0(ASTVisitor visitor) {
+	public void accept0(IASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
 			TreeVisitor.acceptChild(visitor, t);

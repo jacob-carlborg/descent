@@ -3,12 +3,9 @@ package descent.internal.core.dom;
 import java.util.List;
 
 import util.tree.TreeVisitor;
+import descent.core.domX.IASTVisitor;
 
-import descent.core.dom.IArrayExpression;
-import descent.core.dom.IExpression;
-import descent.core.domX.ASTVisitor;
-
-public class ArrayExp extends Expression implements IArrayExpression {
+public class ArrayExp extends Expression  {
 
 	Expression e;
 	Expression[] args;
@@ -18,11 +15,11 @@ public class ArrayExp extends Expression implements IArrayExpression {
 		this.args = arguments.toArray(new Expression[arguments.size()]);
 	}
 
-	public IExpression[] getArguments() {
+	public Expression[] getArguments() {
 		return args;
 	}
 
-	public IExpression getExpression() {
+	public Expression getExpression() {
 		return e;
 	}
 	
@@ -30,7 +27,7 @@ public class ArrayExp extends Expression implements IArrayExpression {
 		return ElementTypes.ARRAY_EXPRESSION;
 	}
 	
-	public void accept0(ASTVisitor visitor) {
+	public void accept0(IASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
 			TreeVisitor.acceptChild(visitor, e);

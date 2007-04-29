@@ -6,7 +6,7 @@ import java.io.PrintStream;
 import util.ExceptionAdapter;
 import util.StringUtil;
 import descent.internal.core.dom.Token;
-import dtool.dom.base.ASTNeoNode;
+import dtool.dom.ast.ASTNeoNode;
 
 
 public class FormaterScribe {

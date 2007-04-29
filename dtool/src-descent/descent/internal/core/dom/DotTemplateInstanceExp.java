@@ -1,6 +1,6 @@
 package descent.internal.core.dom;
 
-import descent.core.domX.ASTVisitor;
+import descent.core.domX.IASTVisitor;
 
 public class DotTemplateInstanceExp extends Expression {
 
@@ -14,7 +14,7 @@ public class DotTemplateInstanceExp extends Expression {
 	}
 	
 	@Override
-	public void accept0(ASTVisitor visitor) {
+	public void accept0(IASTVisitor visitor) {
 		// TODO Auto-generated method stub
 	}
 

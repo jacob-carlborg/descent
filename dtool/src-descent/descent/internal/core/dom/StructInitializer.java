@@ -7,7 +7,7 @@ import util.tree.TreeVisitor;
 
 import descent.core.dom.IInitializer;
 import descent.core.dom.IName;
-import descent.core.domX.ASTVisitor;
+import descent.core.domX.IASTVisitor;
 
 public class StructInitializer extends Initializer {
 	
@@ -36,7 +36,7 @@ public class StructInitializer extends Initializer {
 		return ElementTypes.STRUCT_INITIALIZER;
 	}
 	
-	public void accept0(ASTVisitor visitor) {
+	public void accept0(IASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) { 
 			TreeVisitor.acceptChildren(visitor, ids);

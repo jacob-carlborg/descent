@@ -4,7 +4,7 @@ import util.tree.TreeVisitor;
 import descent.core.dom.IExpression;
 import descent.core.dom.IForStatement;
 import descent.core.dom.IStatement;
-import descent.core.domX.ASTVisitor;
+import descent.core.domX.IASTVisitor;
 
 public class ForStatement extends Statement implements IForStatement {
 
@@ -40,7 +40,7 @@ public class ForStatement extends Statement implements IForStatement {
 		return ElementTypes.FOR_STATEMENT;
 	}
 	
-	public void accept0(ASTVisitor visitor) {
+	public void accept0(IASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
 			TreeVisitor.acceptChild(visitor, init);

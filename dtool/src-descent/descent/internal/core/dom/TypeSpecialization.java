@@ -1,7 +1,7 @@
 package descent.internal.core.dom;
 
 import descent.core.dom.ITypeSpecialization;
-import descent.core.domX.ASTVisitor;
+import descent.core.domX.IASTVisitor;
 import descent.core.domX.AbstractElement;
 
 public class TypeSpecialization extends AbstractElement implements ITypeSpecialization {
@@ -25,7 +25,7 @@ public class TypeSpecialization extends AbstractElement implements ITypeSpeciali
 		this.length = token.len;
 	}
 
-	public void accept0(ASTVisitor visitor) {
+	public void accept0(IASTVisitor visitor) {
 		visitor.visit(this);
 		visitor.endVisit(this);
 	}

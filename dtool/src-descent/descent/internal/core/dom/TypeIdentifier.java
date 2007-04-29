@@ -4,7 +4,7 @@ import util.tree.TreeVisitor;
 import descent.core.dom.IElement;
 import descent.core.dom.IIdentifierType;
 import descent.core.dom.IType;
-import descent.core.domX.ASTVisitor;
+import descent.core.domX.IASTVisitor;
 
 public class TypeIdentifier extends TypeQualified implements IIdentifierType, IType {
 
@@ -68,7 +68,7 @@ public class TypeIdentifier extends TypeQualified implements IIdentifierType, IT
 	}
 	
 	@Override
-	public void accept0(ASTVisitor visitor) {
+	public void accept0(IASTVisitor visitor) {
 		boolean children;
 		children = visitor.visit(this);
 		if (children) {

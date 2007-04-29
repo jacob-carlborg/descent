@@ -5,7 +5,7 @@ import java.util.List;
 
 import util.ExceptionAdapter;
 import util.FileUtil;
-import dtool.dom.base.DefUnit;
+import dtool.dom.declarations.DefUnit;
 import dtool.model.BindingResolver;
 import dtool.model.IScope;
 import dtool.model.ModelException;
@@ -18,8 +18,11 @@ public class DToolProject implements IScope {
 	public static DToolProject newTestProject() {
 		DToolProject dproj = new DToolProject();
 		try {
-			String source = FileUtil.readStringFromFile(new File("testinput/test.d"));
+			File file = new File("testinput/test.d");
+			String source = FileUtil.readStringFromFile(file);
 			dproj.testcu = new CompilationUnit(source);
+			dproj.testcu.file = file;
+			
 			System.out.println(">> read: " + dproj.testcu.file + " ");
 			//System.out.println(testcu.source);
 			

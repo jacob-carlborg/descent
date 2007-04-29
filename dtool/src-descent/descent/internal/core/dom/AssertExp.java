@@ -1,8 +1,7 @@
 package descent.internal.core.dom;
 
 import util.tree.TreeVisitor;
-import descent.core.dom.IExpression;
-import descent.core.domX.ASTVisitor;
+import descent.core.domX.IASTVisitor;
 
 public class AssertExp extends Expression {
 	
@@ -18,15 +17,15 @@ public class AssertExp extends Expression {
 		return ElementTypes.ASSERT_EXPRESSION;
 	}
 	
-	public IExpression getExpression() {
+	public Expression getExpression() {
 		return e;
 	}
 	
-	public IExpression getMessage() {
+	public Expression getMessage() {
 		return msg;
 	}
 	
-	public void accept0(ASTVisitor visitor) {
+	public void accept0(IASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
 			TreeVisitor.acceptChild(visitor, e);
