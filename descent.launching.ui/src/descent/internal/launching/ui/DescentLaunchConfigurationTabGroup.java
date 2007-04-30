@@ -11,7 +11,7 @@ public class DescentLaunchConfigurationTabGroup extends AbstractLaunchConfigurat
 
 	public void createTabs(ILaunchConfigurationDialog dialog, String mode) {
 		ILaunchConfigurationTab[] tabs = new ILaunchConfigurationTab[] {
-				new MainTab(),
+				new MainTab(mode),
 				new ArgumentsTab(),
 				new EnvironmentTab(),
 				new SourceLookupTab(),

@@ -9,6 +9,7 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
+import org.eclipse.debug.core.ILaunchManager;
 import org.eclipse.debug.ui.AbstractLaunchConfigurationTab;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ILabelProvider;
@@ -50,6 +51,11 @@ public class MainTab extends AbstractLaunchConfigurationTab {
 	protected Text fProgText;
 	
 	protected static final String EMPTY_STRING = ""; //$NON-NLS-1$
+	private final String fMode;
+	
+	public MainTab(String mode) {
+		this.fMode = mode;
+	}
 	
 	public void createControl(Composite parent) {
 		Composite comp = new Composite(parent, SWT.NONE);
@@ -274,15 +280,17 @@ public class MainTab extends AbstractLaunchConfigurationTab {
 		setErrorMessage(null);
 		setMessage(null);
 		
-		// Check if ddbg's executable is set
-		String ddbgPath = DescentLaunching.getDefault().getPreferenceStore().getString(IDescentLaunchingPreferenceConstants.DDBG_PATH);
-		if (ddbgPath == null || ddbgPath.trim().length() == 0) {
-			setErrorMessage("Ddbg executable must be defined in Window -> Preferences -> D -> Debug."); //$NON-NLS-1$
-			return false;
-		}
-		if (!new File(ddbgPath).exists()) {
-			setErrorMessage("Ddbg executable file (" + ddbgPath + ") does not exist");
-			return false;
+		if (fMode.equals(ILaunchManager.DEBUG_MODE)) {
+			// Check if ddbg's executable is set
+			String ddbgPath = DescentLaunching.getDefault().getPreferenceStore().getString(IDescentLaunchingPreferenceConstants.DDBG_PATH);
+			if (ddbgPath == null || ddbgPath.trim().length() == 0) {
+				setErrorMessage("Ddbg executable must be defined in Window -> Preferences -> D -> Debug."); //$NON-NLS-1$
+				return false;
+			}
+			if (!new File(ddbgPath).exists()) {
+				setErrorMessage("Ddbg executable file (" + ddbgPath + ") does not exist");
+				return false;
+			}
 		}
 
 		String name = fProjText.getText().trim();

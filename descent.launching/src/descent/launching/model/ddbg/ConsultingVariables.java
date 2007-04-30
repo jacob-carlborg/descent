@@ -57,7 +57,7 @@ public class ConsultingVariables implements IState {
 			if (fVariable != null) {
 				value = value.trim();
 				if (value.length() > 0 && value.charAt(value.length() - 1) == ',') {
-					value = value.substring(0, value.length() - 1);; 
+					value = value.substring(0, value.length() - 1);
 				}
 			}
 			

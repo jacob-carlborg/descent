@@ -60,6 +60,7 @@ public class DescentLaunchConfigurationDelegate extends AbstractDescentLaunchCon
 				ArrayList command = new ArrayList(1);
 				command.add(ddbgPath);
 				command.add("\"" + exePath.toOSString() + "\"");
+				command.addAll(Arrays.asList(arguments));
 				String[] commandArray = (String[]) command.toArray(new String[command.size()]);
 				monitor.worked(5);
 				Process process = exec(commandArray, getEnvironment(config), wd);
