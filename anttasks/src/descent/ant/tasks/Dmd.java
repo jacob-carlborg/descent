@@ -14,11 +14,8 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.LinkedList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import org.apache.tools.ant.BuildException;
 
 abstract class Dmd extends Compiler{
 	
@@ -44,18 +41,43 @@ abstract class Dmd extends Compiler{
 			dTask.mCompileFiles.add( file.getAbsolutePath() );
 		}
 		
+		boolean excludePackage = false;
 		while( (line=reader.readLine()) != null ){
 			Matcher matcher = pattern.matcher(line);
 			if( !matcher.matches() ){
 				continue;
 			}
 			String moduleName = matcher.group(2);
-			if( moduleName.endsWith(".di") || moduleName.endsWith("object.d")){
-				continue;
-			}
-			System.out.println( "dep mod : "+moduleName );
 			
-			dTask.mCompileFiles.add(moduleName);
+			
+			String dirSeperator = "\\\\";
+			if (System.getProperty("os.name").toUpperCase().indexOf("WINDOWS") == -1) {
+			    dirSeperator = "/";
+			}
+			
+			
+			excludePackage = false;
+			for ( D.ExcludePackage exclude : dTask.excludeflags)
+			{
+				String excludeDir = exclude.value.replaceAll("\\.", dirSeperator);
+				
+				if ( moduleName.indexOf(excludeDir) != -1 )
+				{
+					System.out.println( "Excluding: " + moduleName);
+					excludePackage = true;
+				}
+				
+			}
+			if( moduleName.endsWith(".di") || moduleName.endsWith("object.d")){
+				excludePackage = true;
+			}
+			
+			
+			if ( !excludePackage ) 
+				{
+					System.out.println( "dep mod : "+moduleName );
+					dTask.mCompileFiles.add(moduleName);
+				}
 			//boolean found = false;
 			//found = findModule(dTask.mIncludedModules, moduleName, found);
 			//found = findModule(dTask.mIncludePaths   , moduleName, found);

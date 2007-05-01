@@ -239,8 +239,6 @@ class DAntFileCreator {
 		macrodef += "<fileset file=\"${project.dir}" + path.toOSString()+ "\"/>\n";
 	    }
 	macrodef += "</mainmodules>\n";
-	// TODO charles, the following two lines gives an error saying that this tag is not allowed here,
-	// please check it
 	macrodef += "\n\n<!-- Any packages you want to exclude -->";
 	macrodef += "<excludePackage value=\"phobos\" />\n\n\n";  
 	macrodef += "<!-- Modules for compilation and linking, if imported -->\n";
