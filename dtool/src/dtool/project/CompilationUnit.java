@@ -12,25 +12,24 @@ import dtool.dom.ast.ASTNodeParentizer;
 import dtool.dom.declarations.Module;
 
 /**
- * Similar to Module 
+ * Module Wrapper 
  */
 public class CompilationUnit {
 	public String source;
 	public File file;
 	
 	private ASTNode cumodule;
-	public IProblem[] problems;
 	private boolean astUpdated;
 
-	public CompilationUnit(String source) {
-		update(source);
+	public IProblem[] problems;
 
+	public CompilationUnit(String source) {
+		setSource(source);
 	}
 	
-	public void update(String source) {
+	public void setSource(String source) {
 		this.source = source;
 		astUpdated = false;
-		parse();	
 	}
 
 	
@@ -66,7 +65,7 @@ public class CompilationUnit {
 		ASTNodeParentizer.parentize(this.cumodule);
 	}
 	
-	public void parse(){
+	public void parseAST(){
 		if(astUpdated)
 			return;
 		astUpdated = true;
@@ -81,5 +80,4 @@ public class CompilationUnit {
 		AssertIn.isTrue(offset < source.length());
 		return ASTElementFinder.findElement(getModule(), offset);
 	}
-
 }

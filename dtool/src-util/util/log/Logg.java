@@ -1,41 +1,38 @@
 package util.log;
 
-import java.io.PrintStream;
 
 public class Logg {
 
-	public static class NullPrinter {
-		public void println(Object string) {
-			// Do nothing
-		}
+	public static boolean masterLoggEnabled = true;
 
-		public void print(Object string) {
-			// Do nothing
-		}
+	public static Logg main = new Logg();
+	public static Logg nolog = new Logg(false);
+	public static Logg dtool = new Logg(); 
+	public static Logg codeScanner = new Logg(false); 
+	public static Logg builder = new Logg(); 
+	public static Logg model = new Logg(); 
 
-		public void println() {
-			// Do nothing
-		}
+	public boolean enabled = true;
+	
+	public Logg(boolean enabled) {
+		this.enabled = enabled;
+	}
+	public Logg() {
+		this(true);
 	}
 
-	public static boolean debug = true;
-
-	public static PrintStream out = System.out; 
-	public static PrintStream err = System.err; 
-	public static NullPrinter not = new NullPrinter();
-
-	public static void println(Object string) {
+	public void println(Object string) {
 		print(string);
 		println();
 	}
 
-	public static void print(Object string) {
-		if (debug)
+	public void print(Object string) {
+		if (masterLoggEnabled && enabled)
 			System.out.print(string);
 	}
 
-	public static void println() {
-		if (debug)
+	public void println() {
+		if (masterLoggEnabled && enabled)
 			System.out.println();
 	}
 
