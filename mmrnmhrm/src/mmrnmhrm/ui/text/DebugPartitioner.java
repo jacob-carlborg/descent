@@ -25,7 +25,7 @@ public class DebugPartitioner extends FastPartitioner
 		super.connect(document, delayInitialization);
 		// TODO: learn partitioning lifecycle
 			
-		Logg.print(toStringPartitions(document));
+		Logg.codeScanner.print(toStringPartitions(document));
 	}
 
 	public static String toStringPartitions(IDocument document) {

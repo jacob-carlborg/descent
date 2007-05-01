@@ -19,3 +19,22 @@ Require-Bundle: com.ibm.icu,
 Eclipse-LazyStart: true
 Bundle-ClassPath: .
 Bundle-Vendor: Mother Ark
+Eclipse-RegisterBuddy: mmrnmhrm.tests; 
+Export-Package: mmrnmhrm.core,
+ mmrnmhrm.core.build,
+ mmrnmhrm.core.model,
+ mmrnmhrm.org.eclipse.ui.internal.editors.text,
+ mmrnmhrm.ui,
+ mmrnmhrm.ui.actions,
+ mmrnmhrm.ui.deditor,
+ mmrnmhrm.ui.deditor.text,
+ mmrnmhrm.ui.navigator,
+ mmrnmhrm.ui.outline,
+ mmrnmhrm.ui.preferences,
+ mmrnmhrm.ui.properties,
+ mmrnmhrm.ui.text,
+ mmrnmhrm.ui.text.color,
+ mmrnmhrm.ui.wizards,
+ mmrnmhrm.ui.wizards.projconfig,
+ mmrnmhrm.util.ui,
+ mmrnmhrm.util.ui.fields

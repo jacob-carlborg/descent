@@ -15,6 +15,13 @@ import java.text.MessageFormat;
 import java.util.Observable;
 import java.util.Observer;
 
+import mmrnmhrm.core.DeeCore;
+import mmrnmhrm.core.model.DeeModelRoot;
+
+import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IWorkspaceRoot;
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jdt.internal.ui.wizards.dialogfields.DialogField;
 import org.eclipse.jdt.internal.ui.wizards.dialogfields.SelectionButtonDialogField;
 import org.eclipse.jface.wizard.IWizardPage;
@@ -73,7 +80,7 @@ public class DeeProjectWizardFirstPage extends LangProjectWizardFirstPage {
 
 	}
 
-	private static final String PAGE_NAME = "FNORD (pagename)";
+	public static final String PAGE_NAME = "DeeProjectWizardPage1";
 
 	private DCEGroup fDCEGroup;
 
@@ -97,5 +104,18 @@ public class DeeProjectWizardFirstPage extends LangProjectWizardFirstPage {
 	@Override
 	public IWizardPage getNextPage() {
 		return super.getNextPage();
+		// TODO: create project
+		// set next page Project
+	}
+	
+	public void createDeeProject(final IProgressMonitor monitor) throws CoreException {
+
+		IWorkspaceRoot workspaceRoot = DeeCore.getWorkspaceRoot();
+		IProject project = workspaceRoot.getProject(getProjectName());
+		project.create(monitor);
+		project.open(monitor);
+
+		DeeModelRoot.getInstance().createDeeProject(project);
+
 	}
 }

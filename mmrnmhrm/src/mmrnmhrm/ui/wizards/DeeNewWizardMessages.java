@@ -19,7 +19,7 @@ public final class DeeNewWizardMessages extends NLS {
 	}
 	
 	public static String NewElementWizard_op_error_title =
-		"New Element Wizard Erro";
+		"New Element Wizard Error";
 	public static String NewElementWizard_op_error_message = 
 		"Creation of element failed.";
 

@@ -45,8 +45,8 @@ public class GoToDefinitionActionDg implements IEditorActionDelegate {
 		
 		TextSelection sel = deeEditor.getSelection();
 		int offset = sel.getOffset();
-		Logg.println("[" + sel.getOffset() +","+ sel.getLength() + "] =>" + offset);
-		Logg.println(sel.getText());
+		Logg.main.println("[" + sel.getOffset() +","+ sel.getLength() + "] =>" + offset);
+		Logg.main.println(sel.getText());
 		
 		CompilationUnit cunit = deeEditor.getDocument().getCompilationUnit();
 

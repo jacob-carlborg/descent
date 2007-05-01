@@ -150,7 +150,7 @@ public class DeeProject extends LangProject {
 
 	public void loadProjectConfigFile() throws CoreException {
 		IFile projCfgFile = project.getFile(CFG_FILE_NAME);
-		Logg.println(projCfgFile.getLocationURI());
+		Logg.main.println(projCfgFile.getLocationURI());
 
 		Ini ini = new Ini();
  
@@ -177,13 +177,13 @@ public class DeeProject extends LangProject {
 				IPath path = Path.fromPortableString(section.get(key));
 				IFolder folder = project.getFolder(path);
 				if (folder.exists() == false) {
-					Logg.err.println("Error: src folder does not exist:"
+					Logg.model.println("Error: src folder does not exist:"
 							+ folder.toString());
 					// TODO: problemize
 					continue;
 				}
 				addSourceFolder(folder);
-				Logg.println("Added srcfolder:" + folder.toString());
+				Logg.model.println("Added srcfolder:" + folder.toString());
 			}
 		}
 		

@@ -40,16 +40,15 @@ public class DeeDocumentProvider extends FileDocumentProvider {
 		CompilationUnit cunit = new CompilationUnit(deedocument.get());
 		deedocument.setCompilationUnit(cunit);
 		deedocument.setFileInput(element);
+		deedocument.updateCompilationUnit();
 	}
-	
-	
-
 	
 
 	protected void doSaveDocument(IProgressMonitor monitor, Object element,
 			IDocument document, boolean overwrite) throws CoreException {
 		super.doSaveDocument(monitor, element, document, overwrite);
-		// TODO: update model here
+		DeeDocument deedocument = (DeeDocument) document;
+		deedocument.updateCompilationUnit();
 	}
 
 

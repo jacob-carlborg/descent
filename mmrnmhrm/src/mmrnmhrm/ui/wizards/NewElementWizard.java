@@ -50,16 +50,16 @@ public abstract class NewElementWizard extends Wizard implements INewWizard {
 	}
 			
 	/*protected void openResource(final IFile resource) {
-		final IWorkbenchPage activePage= JavaPlugin.getActivePage();
+		final IWorkbenchPage activePage = DeePlugin.getActivePage();
 		if (activePage != null) {
-			final Display display= getShell().getDisplay();
+			final Display display = getShell().getDisplay();
 			if (display != null) {
 				display.asyncExec(new Runnable() {
 					public void run() {
 						try {
 							IDE.openEditor(activePage, resource, true);
 						} catch (PartInitException e) {
-							JavaPlugin.log(e);
+							DeePlugin.log(e);
 						}
 					}
 				});

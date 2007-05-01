@@ -25,8 +25,8 @@ public class DeeDocument extends Document {
 	}
 
 	public void updateCompilationUnit() {
-		cunit.update(get());
-		cunit.parse();
+		cunit.setSource(get());
+		cunit.parseAST();
 	}
 	
 }

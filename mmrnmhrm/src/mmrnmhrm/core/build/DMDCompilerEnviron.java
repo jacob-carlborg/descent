@@ -75,7 +75,7 @@ public class DMDCompilerEnviron implements IDeeCompilerEnviron {
 		}
 
 		File file = new File(deeProject.getOutputDir().getLocation().toString());
-		Logg.println(StringUtil.collToString(cmdstr, "\n "));
+		Logg.main.println(StringUtil.collToString(cmdstr, "\n "));
 
 		Process process = null;
 		try {

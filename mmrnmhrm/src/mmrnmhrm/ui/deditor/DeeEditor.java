@@ -119,7 +119,7 @@ public class DeeEditor extends AbstractDecoratedTextEditor {
 	
 	protected void doSetInput(IEditorInput input) throws CoreException {
 		super.doSetInput(input);
-		Logg.println("Got input:" + input + " : " + input.getName());
+		Logg.main.println("Got input:" + input + " : " + input.getName());
 		document = (DeeDocument) documentProvider.getDocument(input);
 		if (outlinePage != null)
 			outlinePage.updateInput();
@@ -127,7 +127,6 @@ public class DeeEditor extends AbstractDecoratedTextEditor {
 	
 	protected void editorSaved() {
 		super.editorSaved();
-		document.updateCompilationUnit();
 		if (outlinePage != null)
 			outlinePage.update(); 
 	}

@@ -50,11 +50,11 @@ public class DeeCodeScanner implements ITokenScanner {
 	}
 
 	public void setRange(IDocument document, int offset, int length) {
-		Logg.println("DeeCodeScanner#setRange: " + offset + ","+ length);
+		Logg.codeScanner.println("DeeCodeScanner#setRange: " + offset + ","+ length);
 		AssertIn.isTrue(offset >= 0 && length >= 1);
 		AssertIn.isTrue(offset + length <= document.get().length());
 		try {
-			Logg.println(" " + document.get(offset, length) );
+			Logg.codeScanner.println(" " + document.get(offset, length) );
 		} catch (BadLocationException e) {
 			throw ExceptionAdapter.unchecked(e);
 		}
@@ -100,7 +100,7 @@ public class DeeCodeScanner implements ITokenScanner {
 			wslength = token.ptr - wsoffset;
 			return org.eclipse.jface.text.rules.Token.WHITESPACE;
 		}
-		Logg.out.println("Token: " +token+ "["+ token.ptr +","+ token.len +"]");
+		Logg.codeScanner.println("Token: " +token+ "["+ token.ptr +","+ token.len +"]");
 		
 		wsoffset = token.ptr;
 		wslength = token.len;

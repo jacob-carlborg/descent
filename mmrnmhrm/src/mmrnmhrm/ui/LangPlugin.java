@@ -5,6 +5,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
@@ -69,6 +70,14 @@ public abstract class LangPlugin extends AbstractUIPlugin {
 		 	return window.getShell();
 		 }
 		 return null;
+	}
+	
+	/** Gets the active workbench page. */
+	public static IWorkbenchPage getActivePage() {
+		IWorkbenchWindow window = getActiveWorkbenchWindow();
+		if (window == null)
+			return null;
+		return window.getActivePage();
 	}
 
 	/** Gets the plugins preference store. */

@@ -28,9 +28,9 @@ public class DeePlugin extends LangPlugin {
 	
 	
 	protected void initPlugin() throws CoreException {
-		Logg.println(" =============  Mmrnmhrm INITIALIZING  ============= " );
-		Logg.println("Location: " + Platform.getLocation());
-		Logg.println("Instance Location: " + Platform.getInstanceLocation().getURL());
+		Logg.main.println(" =============  Mmrnmhrm INITIALIZING  ============= " );
+		Logg.main.println("Location: " + Platform.getLocation());
+		Logg.main.println("Instance Location: " + Platform.getInstanceLocation().getURL());
 
 		new DeeCore(); // Instance DeeCoret while UI and core isn't separated.
 

@@ -41,11 +41,11 @@ public abstract class AbstractConfigPage {
 
 	public AbstractConfigPage() {
 		super();
+		this.fWorkspaceRoot = LangCore.getWorkspaceRoot();
 	}
 
 	public void init(DeeProject project) {
 		this.fDeeProject = project;
-		this.fWorkspaceRoot = LangCore.getWorkspaceRoot();
 	}
 
 	public Control getControl(Composite parent) {
