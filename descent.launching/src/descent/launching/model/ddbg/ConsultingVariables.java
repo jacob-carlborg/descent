@@ -10,10 +10,12 @@ public class ConsultingVariables implements IState {
 	
 	public List<DdbgVariable> fVariables = new ArrayList<DdbgVariable>();
 	private DdbgVariable fVariable;
-	private final DdbgCli fCli;	
+	private final DdbgCli fCli;
+	private final boolean fColapseBaseMembers;	
 	
-	public ConsultingVariables(DdbgCli cli) {
+	public ConsultingVariables(DdbgCli cli, boolean colapseBaseMembers) {
 		this.fCli = cli;
+		this.fColapseBaseMembers = colapseBaseMembers;
 	}
 
 	public void interpret(String text) throws DebugException, IOException {
@@ -34,7 +36,7 @@ public class ConsultingVariables implements IState {
 	 * }
 	 */
 	private void parseVariable(String text) {
-		if ("}".equals(text.trim())) {
+		if ("}".equals(text.trim()) || "},".equals(text.trim())) {
 			fVariable = fVariable.getParent();
 			return;
 		}
@@ -44,8 +46,12 @@ public class ConsultingVariables implements IState {
 		
 		String name = text.substring(0, indexOfEquals).trim();
 		String value = text.substring(indexOfEquals + 1).trim();
+		
+		boolean nameIsBase = name.indexOf('.') != -1;
+		
 		if ("{".equals(value.trim())) {
 			DdbgVariable newVariable = new DdbgVariable(name);
+			newVariable.setIsBase(nameIsBase);
 			if (fVariable == null) {
 				fVariables.add(newVariable);
 				fVariable = newVariable;
@@ -66,8 +72,10 @@ public class ConsultingVariables implements IState {
 			if ("...".equals(value)) {
 				newVariable = new DdbgVariable(name);
 				newVariable.setLazy(true);
+				newVariable.setIsBase(nameIsBase);
 			} else {
 				newVariable= new DdbgVariable(name, value);
+				newVariable.setIsBase(nameIsBase);
 			}
 			if (fVariable == null) {
 				fVariables.add(newVariable);

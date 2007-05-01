@@ -122,7 +122,7 @@ public class DescentDebugModelPresentation extends LabelProvider implements IDeb
 		sb.append("\"");
 		sb.append(exp.getExpressionText());
 		sb.append("\"");
-		if (exp.getValue() != null && exp.getValue().getValueString() != null) {
+		if (exp.getValue() != null && exp.getValue().getValueString() != null && exp.getValue().getValueString().length() > 0) {
 			sb.append(" = ");
 			sb.append(exp.getValue().getValueString());
 		}
@@ -134,7 +134,7 @@ public class DescentDebugModelPresentation extends LabelProvider implements IDeb
 		sb.append("\"");
 		sb.append(variable.getName());
 		sb.append("\"");
-		if (variable.getValue() != null && variable.getValue().getValueString() != null) {
+		if (variable.getValue() != null && variable.getValue().getValueString() != null && variable.getValue().getValueString().length() > 0) {
 			sb.append(" = ");
 			sb.append(variable.getValue().getValueString());
 		}

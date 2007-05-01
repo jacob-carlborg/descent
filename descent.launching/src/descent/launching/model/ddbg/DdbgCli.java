@@ -23,6 +23,7 @@ public class DdbgCli implements ICli {
 	private final static boolean DEBUG = false;
 	
 	private int fTimeout;
+	private boolean fshowBaseMembersInSameLevel;
 	
 	ICliRequestor fCliRequestor;
 	IDescentDebugElementFactory fFactory;
@@ -46,11 +47,12 @@ public class DdbgCli implements ICli {
 		return "->";
 	}
 	
-	public void initialize(ICliRequestor requestor, IDescentDebugElementFactory factory, IStreamsProxy out, int timeout) {
+	public void initialize(ICliRequestor requestor, IDescentDebugElementFactory factory, IStreamsProxy out, int timeout, boolean showBaseMembersInSameLevel) {
 		this.fCliRequestor = requestor;
 		this.fFactory = factory;
 		this.fProxy = out;
 		this.fTimeout = timeout;
+		this.fshowBaseMembersInSameLevel = showBaseMembersInSameLevel;
 	}
 	
 	void setState(IState state) {
@@ -223,7 +225,7 @@ public class DdbgCli implements ICli {
 		setStackFrame(stackFrame);
 
 		try {
-			setState(new ConsultingVariables(this));
+			setState(new ConsultingVariables(this, fshowBaseMembersInSameLevel));
 			
 			beforeWaitStateReturn();
 			
@@ -263,7 +265,7 @@ public class DdbgCli implements ICli {
 		setStackFrame(stackFrame);
 
 		try {
-			setState(new EvaluatingExpression(this, expression));
+			setState(new EvaluatingExpression(this, expression, fshowBaseMembersInSameLevel));
 			
 			beforeWaitStateReturn();
 			
@@ -312,11 +314,19 @@ public class DdbgCli implements ICli {
 	}
 	
 	private void completeType(DdbgVariable var, String prefix) throws IOException {
-		if (var.getValue() == null) {
-			String name = prefix + var.getName();
-			var.setValue(getType(name));
+		try {
+			if (var.getValue() == null && !var.isBase()) {
+				String name = prefix + var.getName();
+				var.setValue(getType(name));
+			} else if (var.isBase()) {
+				var.setValue("");
+			}
+		} catch (NullPointerException e) {
+			e.printStackTrace();
 		}
-		completeTypes(var.getChildren(), prefix + var.getName() + ".");
+		
+		prefix = var.isBase() ? prefix : prefix + var.getName() + ".";
+		completeTypes(var.getChildren(), prefix);
 	}
 	
 	private IDescentVariable[] ddbgVariablesToDescentVariables(List<DdbgVariable> ddbgVars, int stackFrame) {
@@ -334,8 +344,29 @@ public class DdbgCli implements ICli {
 		} else {
 			var = fFactory.newVariable(stackFrame, ddbgVar.getName(), ddbgVar.getValue());
 		}
-		var.addChildren(ddbgVariablesToDescentVariables(ddbgVar.getChildren(), stackFrame));
+		
+		if (fshowBaseMembersInSameLevel) {
+			addVariablesChildren(var, ddbgVar.getChildren(), stackFrame);
+		} else {
+			var.addChildren(ddbgVariablesToDescentVariables(ddbgVar.getChildren(), stackFrame));
+		}
+		
 		return var;
+	}
+	
+	private void addVariablesChildren(IDescentVariable var, List<DdbgVariable> children, int stackFrame) {
+		// The first child may be the base clase
+		if (children.size() > 0) {
+			DdbgVariable first = children.get(0);
+			if (first.isBase()) {
+				// Add the children's base
+				addVariablesChildren(var, first.getChildren(), stackFrame);
+				// Add the rest
+				var.addChildren(ddbgVariablesToDescentVariables(children.subList(1, children.size()), stackFrame));
+			} else {
+				var.addChildren(ddbgVariablesToDescentVariables(children, stackFrame));
+			}
+		}
 	}
 	
 	void beforeWaitStateReturn() {

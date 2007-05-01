@@ -10,6 +10,7 @@ public class DdbgVariable {
 	private DdbgVariable fParent;
 	private List<DdbgVariable> fVariables;
 	private boolean fLazy;
+	private boolean fIsBase;
 	
 	public DdbgVariable(String name) {
 		this(name, null);
@@ -58,7 +59,19 @@ public class DdbgVariable {
 		return fLazy;
 	}
 	
+	public void setIsBase(boolean isBase) {
+		fIsBase = isBase;
+	}
+	
+	public boolean isBase() {
+		return fIsBase;
+	}
+	
 	public String getExpression() {
+		if (fIsBase) {
+			return fParent.getExpression();
+		}
+		
 		if (fParent == null) {
 			return fName;
 		} else {

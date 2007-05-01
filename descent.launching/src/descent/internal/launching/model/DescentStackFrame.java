@@ -7,6 +7,7 @@ import org.eclipse.debug.core.model.IDebugTarget;
 import org.eclipse.debug.core.model.IRegisterGroup;
 import org.eclipse.debug.core.model.IStackFrame;
 import org.eclipse.debug.core.model.IThread;
+import org.eclipse.debug.core.model.IValue;
 import org.eclipse.debug.core.model.IVariable;
 
 import descent.launching.model.ICli;
@@ -95,15 +96,16 @@ public class DescentStackFrame extends DescentDebugElement implements IStackFram
 			DescentVariable oldVar = (DescentVariable) variables[i];
 			DescentVariable newVar = (DescentVariable) newVariables[i];
 			if (oldVar.getName().equals(newVar.getName())) {
-				if (oldVar.getValue() != null && newVar.getValue() != null && 
-						oldVar.getValue().getValueString() != null && newVar.getValue().getValueString() != null) {
+				IValue oldValue = oldVar.getValue();
+				IValue newValue = newVar.getValue();
 				
-					if (!oldVar.getValue().getValueString().equals(newVar.getValue().getValueString())) {
-						newVar.setValue(oldVar.getValue());
+				if (oldValue != null && newValue != null && oldValue.getValueString() != null && newValue.getValueString() != null) {				
+					if (!oldValue.getValueString().equals(newValue.getValueString())) {
+						newVar.setValue(oldValue);
 						newVar.setHasValueChanged(true);
 					}
-					if (oldVar.getValue().hasVariables() &&  oldVar.getValue().hasVariables() == newVar.getValue().hasVariables()) {
-						mergeVariables(oldVar.getValue().getVariables(), newVar.getValue().getVariables());
+					if (oldValue.hasVariables() &&  oldValue.hasVariables() == newValue.hasVariables()) {
+						mergeVariables(oldValue.getVariables(), newValue.getVariables());
 					}
 				}
 			}

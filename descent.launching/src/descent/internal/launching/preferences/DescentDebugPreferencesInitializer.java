@@ -13,6 +13,7 @@ public class DescentDebugPreferencesInitializer extends AbstractPreferenceInitia
 		IPreferenceStore prefs = DescentLaunching.getDefault().getPreferenceStore();
 		
 		prefs.setDefault(IDescentLaunchingPreferenceConstants.DDBG_TIMEOUT, 3000);
+		prefs.setDefault(IDescentLaunchingPreferenceConstants.SHOW_BASE_MEMBERS_IN_SAME_LEVEL, false);
 	}
 
 }
