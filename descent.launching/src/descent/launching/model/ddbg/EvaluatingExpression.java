@@ -9,12 +9,10 @@ public class EvaluatingExpression implements IState {
 	public DdbgVariable fVariable;
 	private final String fExpression;
 	private final DdbgCli fCli;
-	private final boolean fColapseBaseMembers;	
 	
-	public EvaluatingExpression(DdbgCli cli, String expression, boolean colapseBaseMembers) {
+	public EvaluatingExpression(DdbgCli cli, String expression) {
 		this.fCli = cli;
 		this.fExpression = expression;
-		this.fColapseBaseMembers = colapseBaseMembers;
 	}
 
 	public void interpret(String text) throws DebugException, IOException {

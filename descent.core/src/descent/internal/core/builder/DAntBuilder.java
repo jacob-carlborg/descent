@@ -5,8 +5,8 @@ import java.io.ByteArrayInputStream;
 import java.util.ArrayList;
 import java.util.Map;
 
-
 import org.apache.tools.ant.Project;
+import org.eclipse.ant.core.AntRunner;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
@@ -14,12 +14,6 @@ import org.eclipse.core.resources.IResourceVisitor;
 import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
-import org.eclipse.core.runtime.IProgressMonitor;
-
-import descent.internal.core.util.Util;
-import org.eclipse.ui.*;
-import org.eclipse.ui.console.*;
-import org.eclipse.ant.core.AntRunner;
 import org.eclipse.core.runtime.IProgressMonitor;
 public class DAntBuilder extends IncrementalProjectBuilder {
 
@@ -178,9 +172,9 @@ class DAntFileCreator {
 	antText += "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n";
 	antText += "<project name=\"" + project.getName()
 	    + "\" default=\"compileProject\" basedir=\".\">\n";
-	antText += "<taskdef classname=\"anttasks.D\" name=\"D\" />\n\n";
-	antText += "<taskdef classname=\"anttasks.DModuleBuildNumber\" name=\"DBldNum\" />\n";
-	antText += "<taskdef classname=\"anttasks.DModuleBuildNumber\" name=\"foreach\" />\n\n";
+	antText += "<taskdef classname=\"descent.ant.tasks.D\" name=\"D\" />\n\n";
+	antText += "<taskdef classname=\"descent.ant.tasks.DModuleBuildNumber\" name=\"DBldNum\" />\n";
+	antText += "<taskdef classname=\"descent.ant.tasks.DModuleBuildNumber\" name=\"foreach\" />\n\n";
 	antText += "<property name=\"compiler.dir\" value=\"C:\\\" />\n";
 	antText += "<property name=\"compiler.type\" value=\""
 	    + compilerType + "\"/>\n";
@@ -245,6 +239,8 @@ class DAntFileCreator {
 		macrodef += "<fileset file=\"${project.dir}" + path.toOSString()+ "\"/>\n";
 	    }
 	macrodef += "</mainmodules>\n";
+	// TODO charles, the following two lines gives an error saying that this tag is not allowed here,
+	// please check it
 	macrodef += "\n\n<!-- Any packages you want to exclude -->";
 	macrodef += "<excludePackage value=\"phobos\" />\n\n\n";  
 	macrodef += "<!-- Modules for compilation and linking, if imported -->\n";

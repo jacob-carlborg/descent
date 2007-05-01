@@ -155,7 +155,7 @@ public class DescentDebugTarget extends DescentDebugElement implements IDebugTar
 	}
 
 	public boolean canSuspend() {
-		return !isTerminated() && !isSuspended();
+		return false;
 	}
 
 	public boolean isSuspended() {

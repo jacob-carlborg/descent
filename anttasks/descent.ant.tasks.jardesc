@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jardesc>
+<jar path="C:/Documents and Settings/Ary/Escritorio/descent-ant.jar"/>
+<options buildIfNeeded="true" compress="true" descriptionLocation="/AntTasks/descent.ant.tasks.jardesc" exportErrors="false" exportWarnings="false" includeDirectoryEntries="true" overwrite="false" saveDescription="true" storeRefactorings="false" useSourceFolders="false"/>
+<storedRefactorings deprecationInfo="true" structuralOnly="false"/>
+<selectedProjects/>
+<manifest generateManifest="true" manifestLocation="" manifestVersion="1.0" reuseManifest="false" saveManifest="false" usesManifest="true">
+<sealing sealJar="false">
+<packagesToSeal/>
+<packagesToUnSeal/>
+</sealing>
+</manifest>
+<selectedElements exportClassFiles="false" exportJavaFiles="false" exportOutputFolder="true">
+<javaElement handleIdentifier="=AntTasks/src&lt;descent.ant.tasks"/>
+</selectedElements>
+</jardesc>

@@ -9,7 +9,7 @@
  *  Public Domain
  */
 
-package anttasks;
+package descent.ant.tasks;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -21,10 +21,11 @@ import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.taskdefs.Execute;
 
-import anttasks.D.Debug;
-import anttasks.D.LinkFlag;
-import anttasks.D.LinkLib;
-import anttasks.D.Version;
+import descent.ant.tasks.D.Debug;
+import descent.ant.tasks.D.LinkFlag;
+import descent.ant.tasks.D.LinkLib;
+import descent.ant.tasks.D.Version;
+
 
 class DmdWindows extends Dmd{
 
@@ -90,7 +91,7 @@ class DmdWindows extends Dmd{
 				sb.append( " " + s );
 			}
 			
-			dTask.log( "Calling compiler to get dependencies: " + sb.toString() , Project.MSG_INFO );
+			dTask.log( String.format("Calling compiler to get dependencies: ( %s ) ",sb.toString() ), Project.MSG_INFO );
 
 			File output = dTask.executeCmdCreateOutputFile( cmdline, Pattern.compile(DMD_VERBOSE_ERRORFILTER) );
 			
@@ -159,7 +160,7 @@ class DmdWindows extends Dmd{
 		
 			
 			
-			dTask.log(  "Calling compiler " + cmdline.toString(), Project.MSG_INFO );
+			dTask.log(  "Calling compiler", Project.MSG_INFO );
 			Execute.runCommand(dTask, cmdline.toArray(new String[0]));
 			
 			
@@ -213,7 +214,6 @@ class DmdWindows extends Dmd{
 				objectBuilder.delete(objectBuilder.length() - 1	, objectBuilder.length());
 			}
 			
-			objectBuilder.append("/noi;");
 			
 			if ( dTask.deffile != null ) {
 				objectBuilder.append("," + dTask.deffile );
@@ -258,7 +258,7 @@ class DmdWindows extends Dmd{
 			Execute exec = new Execute();
 			exec.setEnvironment(libOpts);
 			
-			dTask.log( "Calling linker " + cmdline.toString() , Project.MSG_INFO );
+			dTask.log( "Calling linker " , Project.MSG_INFO );
 			exec.setCommandline(cmdline.toArray(new String[0]));
 			try {
 				exec.execute();
@@ -284,7 +284,7 @@ class DmdWindows extends Dmd{
 			for( String objName : objFiles ){
 				cmdline.add( objName );
 			}
-			dTask.log( "Calling lib " + cmdline.toString(), Project.MSG_INFO );
+			dTask.log( "Calling lib " , Project.MSG_INFO );
 			
 			Execute.runCommand(dTask, cmdline.toArray(new String[0]));
 			

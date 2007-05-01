@@ -7,7 +7,7 @@
  * License:
  *  Public Domain
  */
-package anttasks;
+package descent.ant.tasks;
 
 abstract class Compiler{
 	protected final D dTask;

@@ -1,6 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.2"?>
 <plugin>
+   <extension
+         point="org.eclipse.ant.core.antTasks">
+      <antTask
+            class="descent.ant.tasks.BinToD"
+            library="ant_tasks/descent-ant.jar"
+            name="descent.ant.tasks.BinToD"/>
+      <antTask
+            class="descent.ant.tasks.D"
+            library="ant_tasks/descent-ant.jar"
+            name="descent.ant.tasks.D"/>
+      <antTask
+            class="descent.ant.tasks.DModuleBuildNumber"
+            library="ant_tasks/descent-ant.jar"
+            name="descent.ant.tasks.DModuleBuildNumber"/>
+   </extension>
+   <extension
+         point="org.eclipse.ant.core.extraClasspathEntries">
+      <extraClasspathEntry library="ant_tasks/descent-ant.jar"/>
+   </extension>
 
    <extension
          id="dnature"

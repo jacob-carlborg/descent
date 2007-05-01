@@ -7,7 +7,7 @@
  * License:
  *  Public Domain
  */
-package anttasks;
+package descent.ant.tasks;
 
 import java.io.BufferedReader;
 import java.io.File;

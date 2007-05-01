@@ -7,7 +7,7 @@
  * License:
  *  Public Domain
  */
-package anttasks;
+package descent.ant.tasks;
 
 import java.io.File;
 import java.io.IOException;
@@ -18,10 +18,11 @@ import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.taskdefs.Execute;
 
-import anttasks.D.Debug;
-import anttasks.D.LinkFlag;
-import anttasks.D.LinkLib;
-import anttasks.D.Version;
+import descent.ant.tasks.D.Debug;
+import descent.ant.tasks.D.LinkFlag;
+import descent.ant.tasks.D.LinkLib;
+import descent.ant.tasks.D.Version;
+
 
 class DmdLinux extends Dmd{
 

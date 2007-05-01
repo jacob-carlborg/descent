@@ -89,7 +89,7 @@ public ReconcileContext(ReconcileWorkingCopyOperation operation, CompilationUnit
 public descent.core.dom.CompilationUnit getAST3() throws JavaModelException {
 	if (this.operation.astLevel != AST.LATEST || !this.operation.resolveBindings) {
 		// create AST (optionally resolving bindings)
-		ASTParser parser = ASTParser.newParser(AST.D1);
+		ASTParser parser = ASTParser.newParser(AST.D2);
 		parser.setCompilerOptions(workingCopy.getJavaProject().getOptions(true));
 		if (JavaProject.hasJavaNature(workingCopy.getJavaProject().getProject()))
 			parser.setResolveBindings(true);

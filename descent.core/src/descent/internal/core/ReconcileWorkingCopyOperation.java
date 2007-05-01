@@ -28,6 +28,7 @@ import descent.core.WorkingCopyOwner;
 import descent.core.compiler.CompilationParticipant;
 import descent.core.compiler.IProblem;
 import descent.core.compiler.ReconcileContext;
+import descent.core.dom.AST;
 import descent.core.dom.ASTParser;
 import descent.internal.core.util.Messages;
 import descent.internal.core.util.Util;
@@ -153,7 +154,8 @@ public class ReconcileWorkingCopyOperation extends JavaModelOperation {
 					problemMap = this.problems;
 				}
 				
-				ASTParser parser = ASTParser.newParser(this.astLevel);
+				// TODO JDT verify this
+				ASTParser parser = ASTParser.newParser(this.astLevel == ICompilationUnit.NO_AST ? AST.D2 : this.astLevel);
 				parser.setKind(ASTParser.K_COMPILATION_UNIT);
 				parser.setSource(workingCopy.getContents());
 				

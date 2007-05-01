@@ -8,7 +8,7 @@
  *  Public Domain
  */
 
-package anttasks;
+package descent.ant.tasks;
 
 import org.apache.tools.ant.BuildException;
 

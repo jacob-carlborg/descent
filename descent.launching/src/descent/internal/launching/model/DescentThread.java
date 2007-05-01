@@ -131,7 +131,7 @@ public class DescentThread extends DescentDebugElement implements IThread {
 	}
 
 	public boolean canSuspend() {
-		return !isTerminated() && !isSuspended();
+		return getDebugTarget().canSuspend();
 	}
 
 	public boolean isSuspended() {

@@ -8,7 +8,7 @@
  *  Public Domain
  */
 
-package anttasks;
+package descent.ant.tasks;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -44,43 +44,18 @@ abstract class Dmd extends Compiler{
 			dTask.mCompileFiles.add( file.getAbsolutePath() );
 		}
 		
-		boolean excludePackage = false;
 		while( (line=reader.readLine()) != null ){
 			Matcher matcher = pattern.matcher(line);
 			if( !matcher.matches() ){
 				continue;
 			}
 			String moduleName = matcher.group(2);
-			
-			
-			String dirSeperator = "\\\\";
-			if (System.getProperty("os.name").toUpperCase().indexOf("WINDOWS") == -1) {
-			    dirSeperator = "/";
-			}
-			
-			
-			excludePackage = false;
-			for ( D.ExcludePackage exclude : dTask.excludeflags)
-			{
-				String excludeDir = exclude.value.replaceAll("\\.", dirSeperator);
-				
-				if ( moduleName.indexOf(excludeDir) != -1 )
-				{
-					System.out.println( "Excluding: " + moduleName);
-					excludePackage = true;
-				}
-				
-			}
 			if( moduleName.endsWith(".di") || moduleName.endsWith("object.d")){
-				excludePackage = true;
+				continue;
 			}
+			System.out.println( "dep mod : "+moduleName );
 			
-			
-			if ( !excludePackage ) 
-				{
-					System.out.println( "dep mod : "+moduleName );
-					dTask.mCompileFiles.add(moduleName);
-				}
+			dTask.mCompileFiles.add(moduleName);
 			//boolean found = false;
 			//found = findModule(dTask.mIncludedModules, moduleName, found);
 			//found = findModule(dTask.mIncludePaths   , moduleName, found);

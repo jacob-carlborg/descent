@@ -11,11 +11,9 @@ public class ConsultingVariables implements IState {
 	public List<DdbgVariable> fVariables = new ArrayList<DdbgVariable>();
 	private DdbgVariable fVariable;
 	private final DdbgCli fCli;
-	private final boolean fColapseBaseMembers;	
 	
-	public ConsultingVariables(DdbgCli cli, boolean colapseBaseMembers) {
+	public ConsultingVariables(DdbgCli cli) {
 		this.fCli = cli;
-		this.fColapseBaseMembers = colapseBaseMembers;
 	}
 
 	public void interpret(String text) throws DebugException, IOException {

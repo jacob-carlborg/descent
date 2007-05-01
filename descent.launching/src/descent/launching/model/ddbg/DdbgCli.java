@@ -225,7 +225,7 @@ public class DdbgCli implements ICli {
 		setStackFrame(stackFrame);
 
 		try {
-			setState(new ConsultingVariables(this, fshowBaseMembersInSameLevel));
+			setState(new ConsultingVariables(this));
 			
 			beforeWaitStateReturn();
 			
@@ -265,7 +265,7 @@ public class DdbgCli implements ICli {
 		setStackFrame(stackFrame);
 
 		try {
-			setState(new EvaluatingExpression(this, expression, fshowBaseMembersInSameLevel));
+			setState(new EvaluatingExpression(this, expression));
 			
 			beforeWaitStateReturn();
 			

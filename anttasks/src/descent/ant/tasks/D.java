@@ -8,7 +8,7 @@
  * License:
  *  Public Domain
  */
-package anttasks;
+package descent.ant.tasks;
 
 /**
  * To use this anttask, it must be in the classpath of ANT.
@@ -106,8 +106,6 @@ import org.apache.tools.ant.types.FileSet;
 	<includepath>
 		<dirset file="${dater.dir}/dater/lib/duit" />
 	</includepath>
-	
-	<excludePackage value="std." />
 
 	<!-- list flags for the linker -->
 	<linkflag value="-L/usr/lib" />
@@ -261,12 +259,6 @@ public class D extends Task {
 		versionflags.add( result );
 		return result;
 	}
-	LinkedList<ExcludePackage> excludeflags= new LinkedList<ExcludePackage>();
-	public ExcludePackage createExcludePackage(){
-		ExcludePackage result = new ExcludePackage();
-		excludeflags.add( result );
-		return result;
-	}
 	LinkedList<Debug> debugflags = new LinkedList<Debug>();
 	public Debug createDebug(){
 		Debug result = new Debug();
@@ -333,13 +325,14 @@ public class D extends Task {
 		log( String.format("D Task: cleanup     = %s\n", cleanup     ), Project.MSG_VERBOSE );
 		log( String.format("D Task: warnings    = %s\n", warnings    ), Project.MSG_VERBOSE );
 		log( String.format("D Task: stdargs     = %s\n", stdargs     ), Project.MSG_VERBOSE );
-		log( String.format("D Task: mapfile     = %s\n", mapfile     ), Project.MSG_VERBOSE );
-		log( String.format("D Task: deffile     = %s\n", deffile     ), Project.MSG_VERBOSE );
-		log( String.format("D Task: resfile     = %s\n", resfile     ), Project.MSG_VERBOSE );
-
-		for ( ExcludePackage exclude : excludeflags)
-		{
-			log("Excluding: " + exclude.value,Project.MSG_VERBOSE );
+		if( mapfile != null ){
+			log( String.format("D Task: mapfile     = %s\n", mapfile     ), Project.MSG_VERBOSE );
+		}
+		if( deffile != null ){
+			log( String.format("D Task: deffile     = %s\n", deffile     ), Project.MSG_VERBOSE );
+		}
+		if( resfile != null ){
+			log( String.format("D Task: resfile     = %s\n", resfile     ), Project.MSG_VERBOSE );
 		}
 		
 		for( MainModules mainModules : mainModuless ){
@@ -470,12 +463,6 @@ public class D extends Task {
 	}
 	
 	public class Version {
-		String value;
-		public void setValue(String value ){
-			this.value = value;
-		}
-	}
-	public class ExcludePackage{
 		String value;
 		public void setValue(String value ){
 			this.value = value;
