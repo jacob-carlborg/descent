@@ -15,6 +15,8 @@ import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
+
+import descent.core.JavaCore;
 public class DAntBuilder extends IncrementalProjectBuilder {
 
     public DAntBuilder() {
@@ -165,9 +167,14 @@ class DAntFileCreator {
 	    }
 		
 		
+	
+	String compilerLocation=JavaCore.getPlugin().
+		getPluginPreferences().getString("descent.ui.preferences.DCompilerSettings.compilerLocation");
 
+	compilerType = JavaCore.getPlugin().
+	getPluginPreferences().getString("descent.ui.preferences.DCompilerSettings.compilerType");
 
-		
+	
 
 	antText += "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n";
 	antText += "<project name=\"" + project.getName()
@@ -175,7 +182,7 @@ class DAntFileCreator {
 	antText += "<taskdef classname=\"descent.ant.tasks.D\" name=\"D\" />\n\n";
 	antText += "<taskdef classname=\"descent.ant.tasks.DModuleBuildNumber\" name=\"DBldNum\" />\n";
 	antText += "<taskdef classname=\"descent.ant.tasks.DModuleBuildNumber\" name=\"foreach\" />\n\n";
-	antText += "<property name=\"compiler.dir\" value=\"C:\\\" />\n";
+	antText += "<property name=\"compiler.dir\" value=\""+ compilerLocation + "\" />\n";
 	antText += "<property name=\"compiler.type\" value=\""
 	    + compilerType + "\"/>\n";
 
