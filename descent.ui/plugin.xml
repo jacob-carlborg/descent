@@ -125,6 +125,7 @@
    <extension
          point="org.eclipse.core.runtime.preferences">
       <initializer class="descent.internal.ui.JavaUIPreferenceInitializer"/>
+      <initializer class="descent.ui.preferences.PreferenceInitializer"/>
    </extension>
    <extension
          point="org.eclipse.ui.perspectives">
@@ -694,6 +695,11 @@
             id="descent.ui.preferences.CodeTemplatePreferencePage">
             <keywordReference id="descent.ui.codetemplates"/>
       </page>
+      <page
+            category="descent.ui.preferences.JavaBasePreferencePage"
+            class="descent.ui.preferences.DCompilerSettings"
+            id="descent.ui.preferences.DCompilerSettings"
+            name="D Compiler Settings"/>
       <!--
       <page
             name="%memberSortPrefName"
