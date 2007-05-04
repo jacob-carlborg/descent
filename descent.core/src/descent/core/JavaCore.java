@@ -95,6 +95,7 @@ import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Plugin;
 import org.eclipse.core.runtime.QualifiedName;
 import org.eclipse.core.runtime.jobs.ISchedulingRule;
+import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 
 import descent.core.compiler.CharOperation;
@@ -133,9 +134,9 @@ import descent.internal.core.util.Util;
  * automatically if not already active.
  * </p>
  */
-public final class JavaCore extends Plugin {
+public final class JavaCore extends AbstractUIPlugin {
 	
-	private static Plugin JAVA_CORE_PLUGIN = null; 
+	private static AbstractUIPlugin JAVA_CORE_PLUGIN = null; 
 	
 	/**
 	 * The plug-in identifier of the Java core support
@@ -145,9 +146,9 @@ public final class JavaCore extends Plugin {
 
 	/**
 	 * The identifier for the Java builder
-	 * (value <code>"descent.core.javabuilder"</code>).
+	 * (value <code>"descent.core.dAntBuilder"</code>).
 	 */
-	//public static final String BUILDER_ID = PLUGIN_ID + ".javabuilder" ; //$NON-NLS-1$
+	//public static final String BUILDER_ID = PLUGIN_ID + ".dbuilder" ; //$NON-NLS-1$
 	public static final String BUILDER_ID = PLUGIN_ID + ".dAntBuilder" ; //$NON-NLS-1$
 
 	/**
@@ -2649,7 +2650,7 @@ public final class JavaCore extends Plugin {
 	 * 
 	 * @return the single instance of the Java core plug-in runtime class
 	 */
-	public static Plugin getPlugin() {
+	public static AbstractUIPlugin getPlugin() {
 		return JAVA_CORE_PLUGIN;
 	}
 

@@ -34,9 +34,10 @@
    <extension
          point="org.eclipse.ui.preferencePages">
       <page
-            name="D Metrics"
+            category="descent.ui.preferences.JavaBasePreferencePage"
             class="descent.ui.metrics.MetricsPreferencePage"
-            id="MetricsPreferences">
+            id="descent.ui.metrics.MetricsPreferences"
+            name="Metrics">
       </page>
    </extension>
    <extension

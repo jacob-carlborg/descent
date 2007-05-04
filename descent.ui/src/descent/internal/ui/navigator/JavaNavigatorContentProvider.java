@@ -19,6 +19,7 @@ import java.util.Set;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspaceRoot;
+import org.eclipse.core.runtime.IAdaptable;
 
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.util.IPropertyChangeListener;
@@ -133,6 +134,27 @@ public class JavaNavigatorContentProvider extends
 		for (Iterator iter = currentElements.iterator(); iter.hasNext();)
 			if (iter.next() instanceof IResource)
 				iter.remove();
+		
+		// The following is a fix for not showing duplicated projects
+		// TODO (ary) I wonder if this is a bug in the original (JDT's) class.
+		/*
+		for(Object child : children) {
+			boolean found = false;
+			for(Object currentElement : currentElements) {
+				if (currentElement instanceof IAdaptable) {
+					IAdaptable adaptable = (IAdaptable) currentElement;
+					IResource resource = (IResource) adaptable.getAdapter(IResource.class);
+					if (resource.equals(child)) {
+						found = true;
+						break;
+					}
+				}
+			}
+			if (!found) {
+				currentElements.add(child);
+			}
+		}
+		*/
 
 		currentElements.addAll(Arrays.asList(children));
 	}

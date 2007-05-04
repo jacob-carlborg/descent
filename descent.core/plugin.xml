@@ -31,7 +31,7 @@
    </extension>
 
  <extension
-         id="javabuilder"
+         id="dbuilder"
          name="D Builder"
          point="org.eclipse.core.resources.builders">
       <builder>

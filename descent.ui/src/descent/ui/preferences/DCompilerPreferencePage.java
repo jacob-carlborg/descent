@@ -11,6 +11,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 
+import descent.core.JavaCore;
 import descent.internal.ui.JavaPlugin;
 
 public class DCompilerPreferencePage extends FieldEditorPreferencePage implements IWorkbenchPreferencePage {
@@ -20,7 +21,7 @@ public class DCompilerPreferencePage extends FieldEditorPreferencePage implement
 	public DCompilerPreferencePage() {
 		super(FieldEditorPreferencePage.GRID);
 		
-		IPreferenceStore store = JavaPlugin.getDefault().getPreferenceStore();
+		IPreferenceStore store = JavaCore.getPlugin().getPreferenceStore();
 		setPreferenceStore(store);
 	}
 	
