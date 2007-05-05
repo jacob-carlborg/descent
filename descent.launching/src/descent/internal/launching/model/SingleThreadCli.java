@@ -1,6 +1,7 @@
 package descent.internal.launching.model;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.concurrent.locks.ReentrantLock;
 
 import org.eclipse.core.resources.IResource;
@@ -34,6 +35,14 @@ public class SingleThreadCli implements ICli {
 	
 	public String getEndCommunicationString() {
 		return fCli.getEndCommunicationString();
+	}
+	
+	public List<String> getDebugeeCommandLineArguments(String[] arguments) {
+		return fCli.getDebugeeCommandLineArguments(arguments);
+	}
+	
+	public List<String> getDebuggerCommandLineArguments() {
+		return fCli.getDebuggerCommandLineArguments();
 	}
 
 	public void addBreakpoint(IResource resource, int lineNumber) throws DebugException, IOException {

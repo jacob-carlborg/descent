@@ -29,7 +29,6 @@ import descent.launching.model.ICli;
 import descent.launching.model.ICliRequestor;
 import descent.launching.model.IDescentDebugElementFactory;
 import descent.launching.model.IDescentVariable;
-import descent.launching.model.ddbg.DdbgCli;
 
 public class DescentDebugTarget extends DescentDebugElement implements IDebugTarget, IStreamListener, ICliRequestor, IDescentDebugElementFactory {
 	
@@ -47,11 +46,11 @@ public class DescentDebugTarget extends DescentDebugElement implements IDebugTar
 	
 	private boolean fSuspended;
 	
-	public DescentDebugTarget(ILaunch launch, IProcess process) {
+	public DescentDebugTarget(ILaunch launch, IProcess process, ICli cli) {
 		super(null);
 		this.fLaunch = launch;
 		this.fProcess = process;
-		this.fCli = new DdbgCli();
+		this.fCli = cli;
 		this.fEndCommunicationString = fCli.getEndCommunicationString();
 		
 		// If it's a single thread interpreter, 
@@ -317,13 +316,14 @@ public class DescentDebugTarget extends DescentDebugElement implements IDebugTar
 		fThread.fireCreationEvent();
 		installDeferredBreakpoints();
 		
+		fireResumeEvent(DebugEvent.CLIENT_REQUEST);
+		
 		try {
 			fCli.start();
+			fSuspended = false;
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		
-		resume();
 	}
 	
 	public void stepEnded() {

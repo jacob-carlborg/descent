@@ -1,6 +1,7 @@
 package descent.launching.model.ddbg;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -47,6 +48,14 @@ public class DdbgCli implements ICli {
 		return "->";
 	}
 	
+	public List<String> getDebuggerCommandLineArguments() {
+		return new ArrayList<String>(0);
+	}
+	
+	public List<String> getDebugeeCommandLineArguments(String[] arguments) {
+		return Arrays.asList(arguments);
+	}
+	
 	public void initialize(ICliRequestor requestor, IDescentDebugElementFactory factory, IStreamsProxy out, int timeout, boolean showBaseMembersInSameLevel) {
 		this.fCliRequestor = requestor;
 		this.fFactory = factory;
@@ -82,6 +91,9 @@ public class DdbgCli implements ICli {
 		} finally {
 			setState(fRunningState);
 		}
+		
+		// And start
+		resume();
 	}
 
 	public void resume() throws IOException {

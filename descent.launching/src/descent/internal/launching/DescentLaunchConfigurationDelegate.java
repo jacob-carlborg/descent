@@ -24,6 +24,8 @@ import descent.launching.AbstractDescentLaunchConfigurationDelegate;
 import descent.launching.DescentLaunching;
 import descent.launching.IDescentLaunchConfigurationConstants;
 import descent.launching.IDescentLaunchingPreferenceConstants;
+import descent.launching.model.ICli;
+import descent.launching.model.ddbg.DdbgCli;
 import descent.launching.utils.ProcessFactory;
 
 public class DescentLaunchConfigurationDelegate extends AbstractDescentLaunchConfigurationDelegate {
@@ -43,8 +45,10 @@ public class DescentLaunchConfigurationDelegate extends AbstractDescentLaunchCon
 			monitor.worked(1);
 			IPath exePath = verifyProgramPath(config);
 			IJavaProject project = verifyJavaProject(config);
+			
+			ICli cli = new DdbgCli();
 
-			String arguments[] = getProgramArgumentsArray(config);
+			String[] arguments = getProgramArgumentsArray(config);
 
 			// set the default source locator if required
 			// setDefaultSourceLocator(launch, config);
@@ -60,14 +64,20 @@ public class DescentLaunchConfigurationDelegate extends AbstractDescentLaunchCon
 				ArrayList command = new ArrayList(1);
 				command.add(ddbgPath);
 				command.add("\"" + exePath.toOSString() + "\"");
-				command.addAll(Arrays.asList(arguments));
+				
+				command.addAll(cli.getDebuggerCommandLineArguments());
+				
+				if (arguments.length > 0) {
+					command.addAll(cli.getDebugeeCommandLineArguments(arguments));
+				}
+				
 				String[] commandArray = (String[]) command.toArray(new String[command.size()]);
 				monitor.worked(5);
 				Process process = exec(commandArray, getEnvironment(config), wd);
 				monitor.worked(3);
 				
 				IProcess iprocess = DebugPlugin.newProcess(launch, process, renderProcessLabel(commandArray[1]));
-				DescentDebugTarget target = new DescentDebugTarget(launch, iprocess);		
+				DescentDebugTarget target = new DescentDebugTarget(launch, iprocess, new DdbgCli());		
 				launch.addDebugTarget(target);
 				
 				target.started();

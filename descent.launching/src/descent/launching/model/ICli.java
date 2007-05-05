@@ -1,6 +1,7 @@
 package descent.launching.model;
 
 import java.io.IOException;
+import java.util.List;
 
 import org.eclipse.core.resources.IResource;
 import org.eclipse.debug.core.DebugException;
@@ -11,6 +12,10 @@ import org.eclipse.debug.core.model.IStreamsProxy;
 import org.eclipse.debug.core.model.IVariable;
 
 public interface ICli {
+	
+	List<String> getDebuggerCommandLineArguments();
+	
+	List<String> getDebugeeCommandLineArguments(String[] arguments);
 	
 	boolean isSingleThread();
 	
