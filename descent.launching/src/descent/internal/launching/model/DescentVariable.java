@@ -32,7 +32,7 @@ public class DescentVariable extends DescentDebugElement implements IDescentVari
 		return fName;
 	}
 
-	public IValue getValue() throws DebugException {
+	public DescentValue getValue() throws DebugException {
 		return fValue;
 	}
 	
@@ -75,6 +75,10 @@ public class DescentVariable extends DescentDebugElement implements IDescentVari
 	
 	public IDescentVariable getParent() {
 		return fParent;
+	}
+	
+	public boolean isLazy() {
+		return fValue.isLazy();
 	}
 
 }

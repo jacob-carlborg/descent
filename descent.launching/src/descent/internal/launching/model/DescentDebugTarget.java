@@ -30,7 +30,7 @@ import descent.launching.model.ICliRequestor;
 import descent.launching.model.IDescentDebugElementFactory;
 import descent.launching.model.IDescentVariable;
 
-public class DescentDebugTarget extends DescentDebugElement implements IDebugTarget, IStreamListener, ICliRequestor, IDescentDebugElementFactory {
+public class DescentDebugTarget extends DescentDebugElement implements IDebugTarget, ICliRequestor, IDescentDebugElementFactory {
 	
 	private ILaunch fLaunch;
 	private IProcess fProcess;
@@ -42,7 +42,8 @@ public class DescentDebugTarget extends DescentDebugElement implements IDebugTar
 	private DescentThread fThread;
 	private DescentThread[] fThreads;
 	
-	private StringBuilder fStreamBuffer;
+	private IStreamListener fOutStreamListener;
+	private IStreamListener fErrorStreamListener;
 	
 	private boolean fSuspended;
 	
@@ -53,7 +54,7 @@ public class DescentDebugTarget extends DescentDebugElement implements IDebugTar
 		this.fCli = cli;
 		this.fEndCommunicationString = fCli.getEndCommunicationString();
 		
-		// If it's a single thread interpreter, 
+		// If it's a single thread cli, 
 		// force sending one request at a time
 		if (this.fCli.isSingleThread()) {
 			this.fCli = new SingleThreadCli(this.fCli);
@@ -67,10 +68,11 @@ public class DescentDebugTarget extends DescentDebugElement implements IDebugTar
 		this.fThread = new DescentThread(this, fCli);
 		this.fThreads = new DescentThread[] { fThread };
 		
-		this.fStreamBuffer = new StringBuilder();
+		this.fOutStreamListener = new MyStreamListener(false);
+		this.fErrorStreamListener = new MyStreamListener(true);
 		
-		IStreamMonitor out = process.getStreamsProxy().getOutputStreamMonitor();
-		out.addListener(this);
+		process.getStreamsProxy().getOutputStreamMonitor().addListener(fOutStreamListener);
+		process.getStreamsProxy().getErrorStreamMonitor().addListener(fErrorStreamListener);
 		
 		DebugPlugin.getDefault().getBreakpointManager().addBreakpointListener(this);
 	}
@@ -268,42 +270,65 @@ public class DescentDebugTarget extends DescentDebugElement implements IDebugTar
 		}
 	}
 	
-	public void streamAppended(String text, IStreamMonitor monitor) {		
-		try {
-			fStreamBuffer.append(text);
-			
-			if (fStreamBuffer.toString().equals(fEndCommunicationString)) {
-				fCli.interpret(fEndCommunicationString);
-				fStreamBuffer.setLength(0);
-			}
-			
-			int indexOfLine = fStreamBuffer.indexOf("\n");
-			if (indexOfLine == -1) return;
-			
-			text = fStreamBuffer.toString();
-			
-			int lastIndexOfLine = 0;
-			
-			while(indexOfLine != -1) {
-				String line = fStreamBuffer.substring(lastIndexOfLine, indexOfLine);
-				fCli.interpret(line);
+	class MyStreamListener implements IStreamListener {
+		
+		private StringBuilder fStreamBuffer;
+		private boolean fIsError;
+		
+		public MyStreamListener(boolean isError) {
+			this.fIsError = isError;
+			this.fStreamBuffer = new StringBuilder();
+		}
+		
+		public void streamAppended(String text, IStreamMonitor monitor) {
+			try {
+				fStreamBuffer.append(text);
 				
-				lastIndexOfLine = indexOfLine + 1;
-				indexOfLine = fStreamBuffer.indexOf("\n", lastIndexOfLine);
+				if (fStreamBuffer.toString().equals(fEndCommunicationString)) {
+					if (fIsError) {
+						fCli.interpretError(fEndCommunicationString);
+					} else {
+						fCli.interpret(fEndCommunicationString);
+					}
+					fStreamBuffer.setLength(0);
+				}
+				
+				int indexOfLine = fStreamBuffer.indexOf("\n");
+				if (indexOfLine == -1) return;
+				
+				text = fStreamBuffer.toString();
+				
+				int lastIndexOfLine = 0;
+				
+				while(indexOfLine != -1) {
+					String line = fStreamBuffer.substring(lastIndexOfLine, indexOfLine);
+					if (fIsError) {
+						fCli.interpretError(line);
+					} else {
+						fCli.interpret(line);
+					}
+					
+					lastIndexOfLine = indexOfLine + 1;
+					indexOfLine = fStreamBuffer.indexOf("\n", lastIndexOfLine);
+				}
+				
+				fStreamBuffer.delete(0, lastIndexOfLine);
+				
+				if (fStreamBuffer.toString().equals(fEndCommunicationString)) {
+					if (fIsError) {
+						fCli.interpretError(fEndCommunicationString);
+					} else {
+						fCli.interpret(fEndCommunicationString);
+					}
+					fStreamBuffer.setLength(0);
+				}
+			} catch (IOException e) {
+				e.printStackTrace();
+			} catch (DebugException e) {
+				e.printStackTrace();
+			} catch (Throwable e) {
+				e.printStackTrace();
 			}
-			
-			fStreamBuffer.delete(0, lastIndexOfLine);
-			
-			if (fStreamBuffer.toString().equals(fEndCommunicationString)) {
-				fCli.interpret(fEndCommunicationString);
-				fStreamBuffer.setLength(0);
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (DebugException e) {
-			e.printStackTrace();
-		} catch (Throwable e) {
-			e.printStackTrace();
 		}
 	}
 	
@@ -399,7 +424,8 @@ public class DescentDebugTarget extends DescentDebugElement implements IDebugTar
 	private void internalTerminate() {
 		fThread.fireTerminateEvent();
 		
-		fProcess.getStreamsProxy().getOutputStreamMonitor().removeListener(this);		
+		fProcess.getStreamsProxy().getOutputStreamMonitor().removeListener(fOutStreamListener);		
+		fProcess.getStreamsProxy().getErrorStreamMonitor().removeListener(fErrorStreamListener);
 		DebugPlugin.getDefault().getBreakpointManager().removeBreakpointListener(this);
 	}
 	

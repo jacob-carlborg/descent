@@ -7,11 +7,9 @@ import org.eclipse.debug.core.model.IDebugTarget;
 import org.eclipse.debug.core.model.IRegisterGroup;
 import org.eclipse.debug.core.model.IStackFrame;
 import org.eclipse.debug.core.model.IThread;
-import org.eclipse.debug.core.model.IValue;
 import org.eclipse.debug.core.model.IVariable;
 
 import descent.launching.model.ICli;
-
 
 public class DescentStackFrame extends DescentDebugElement implements IStackFrame {
 
@@ -96,15 +94,15 @@ public class DescentStackFrame extends DescentDebugElement implements IStackFram
 			DescentVariable oldVar = (DescentVariable) variables[i];
 			DescentVariable newVar = (DescentVariable) newVariables[i];
 			if (oldVar.getName().equals(newVar.getName())) {
-				IValue oldValue = oldVar.getValue();
-				IValue newValue = newVar.getValue();
+				DescentValue oldValue = oldVar.getValue();
+				DescentValue newValue = newVar.getValue();
 				
 				if (oldValue != null && newValue != null && oldValue.getValueString() != null && newValue.getValueString() != null) {				
 					if (!oldValue.getValueString().equals(newValue.getValueString())) {
 						newVar.setValue(oldValue);
 						newVar.setHasValueChanged(true);
 					}
-					if (oldValue.hasVariables() &&  oldValue.hasVariables() == newValue.hasVariables()) {
+					if (!oldValue.isLazy() && !newValue.isLazy() && oldValue.hasVariables() &&  oldValue.hasVariables() == newValue.hasVariables()) {
 						mergeVariables(oldValue.getVariables(), newValue.getVariables());
 					}
 				}

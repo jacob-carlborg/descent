@@ -20,12 +20,14 @@ import descent.launching.model.IDescentVariable;
 public class SingleThreadCli implements ICli {
 	
 	private final ICli fCli;
-	private ReentrantLock fReadLock;
+	private ReentrantLock fReadOutLock;
+	private ReentrantLock fReadErrorLock;
 	private ReentrantLock fWriteLock;
 
 	public SingleThreadCli(ICli cli) {
 		this.fCli = cli;
-		this.fReadLock = new ReentrantLock(true);
+		this.fReadOutLock = new ReentrantLock(true);
+		this.fReadErrorLock = new ReentrantLock(true);
 		this.fWriteLock = new ReentrantLock(true);
 	}
 	
@@ -104,11 +106,20 @@ public class SingleThreadCli implements ICli {
 	}
 
 	public void interpret(String text) throws DebugException, IOException {
-		fReadLock.lock();
+		fReadOutLock.lock();
 		try {
 			fCli.interpret(text);
 		} finally {
-			fReadLock.unlock();
+			fReadOutLock.unlock();
+		}
+	}
+	
+	public void interpretError(String text) throws DebugException, IOException {
+		fReadErrorLock.lock();
+		try {
+			fCli.interpretError(text);
+		} finally {
+			fReadErrorLock.unlock();
 		}
 	}
 

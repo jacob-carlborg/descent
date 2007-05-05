@@ -1,4 +1,4 @@
-package descent.launching.model.ddbg;
+package descent.launching.model.gdb;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -8,26 +8,30 @@ import org.eclipse.debug.core.DebugException;
 
 public class ConsultingMemoryBlock implements IState {
 	
-	private final DdbgCli fCli;
+	private final GdbCli fCli;
 	private final long length;
 	
 	private List<String> fLines;
 	
 	public byte[] fBytes;
 
-	public ConsultingMemoryBlock(DdbgCli cli, long length) {
+	public ConsultingMemoryBlock(GdbCli cli, long length) {
 		this.fCli = cli;
 		this.length = length;
 		this.fLines = new ArrayList<String>();
 	}
 
 	public void interpret(String text) throws DebugException, IOException {
-		if ("->".equals(text)) {
+		if ("(gdb) ".equals(text)) {
 			createMemoryBlock();
 			fCli.notifyStateReturn();
 		} else {
 			fLines.add(text);
 		}
+	}
+	
+	public void interpretError(String text) throws DebugException, IOException {
+		// Nothing to do
 	}
 
 	private void createMemoryBlock() {
@@ -38,19 +42,23 @@ public class ConsultingMemoryBlock implements IState {
 			fBytes = new byte[(int) length];
 			int byteNum = 0;
 			
+			
 			for(String line : fLines) {
-				int lineLength = line.length();
+				String[] blocks = line.split("\\t");
 				
-				// Skip the first 10 chars: the address
-				for(int i = 10; i < lineLength; ) {
-					for(int b = 0; b < 4 && i < lineLength; b++, i+=2) {
-						String aByte = line.substring(i, i + 2);
-						fBytes[byteNum] = (byte) Integer.parseInt(aByte, 16);
+				// Skip the first: the address
+				for(int i = 1; i < blocks.length; i++) {
+					String block = blocks[i].trim();
+					
+					if (block.length() != 0) {
+						if (block.startsWith("0x") || block.startsWith("0X")) {
+							fBytes[byteNum] = (byte) Integer.parseInt(block.substring(2), 16);
+						} else {
+							fBytes[byteNum] = (byte) Integer.parseInt(block);
+						}
 						byteNum++;
-					}
-					// Skip the separator
-					i++;
-				}				
+					}					
+				}		
 			}
 		}
 	}

@@ -18,6 +18,10 @@ public class AddingBreakpoint implements IState {
 		}
 	}
 	
+	public void interpretError(String text) throws DebugException, IOException {
+		// Nothing to do
+	}
+	
 	@Override
 	public String toString() {
 		return "adding breakpoing";

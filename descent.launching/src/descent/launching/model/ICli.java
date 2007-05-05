@@ -25,6 +25,8 @@ public interface ICli {
 	
 	void interpret(String text) throws DebugException, IOException;
 	
+	void interpretError(String text) throws DebugException, IOException;
+	
 	void start() throws DebugException, IOException;
 	
 	void resume() throws DebugException, IOException;

@@ -13,6 +13,8 @@ import descent.launching.model.ICli;
 import descent.launching.model.IDescentVariable;
 
 public class DescentValue extends DescentDebugElement implements IValue {
+	
+	private final static IVariable[] NO_VARIABLES = new IVariable[0];
 
 	private final String fName;
 	private final String fValue;
@@ -50,6 +52,10 @@ public class DescentValue extends DescentDebugElement implements IValue {
 		if (fExpression != null) {
 			try {
 				IDescentVariable variable = fCli.evaluateExpression(fStackFrame, fExpression);
+				if (variable == null) {
+					return NO_VARIABLES;
+				}
+				
 				if (variable.getValue().hasVariables()) {
 					IVariable[] subVariables = variable.getValue().getVariables();
 					fVariables = new ArrayList<IDescentVariable>(subVariables.length);
@@ -58,11 +64,11 @@ public class DescentValue extends DescentDebugElement implements IValue {
 					}
 					return subVariables;
 				} else {
-					return new IVariable[0];
+					return NO_VARIABLES;
 				}
 			} catch (IOException e) {
 				e.printStackTrace();
-				return new IVariable[0];
+				return NO_VARIABLES;
 			}
 		}
 		
@@ -82,6 +88,10 @@ public class DescentValue extends DescentDebugElement implements IValue {
 			this.fVariables = new ArrayList<IDescentVariable>();
 		}
 		this.fVariables.add(variable);
+	}
+	
+	public boolean isLazy() {
+		return fExpression != null;
 	}
 
 }

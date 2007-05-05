@@ -40,6 +40,10 @@ public class ConsultingStackFrames  implements IState {
 		}
 	}
 	
+	public void interpretError(String text) throws DebugException, IOException {
+		// Nothing to do
+	}
+	
 	private IStackFrame parseStackFrame(String data) {
 		String name = data;
 		int lineNumber = -1;

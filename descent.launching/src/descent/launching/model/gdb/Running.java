@@ -49,6 +49,10 @@ public class Running implements IState {
 		}
 	}
 	
+	public void interpretError(String text) throws DebugException, IOException {
+		// Nothing to do
+	}
+	
 	@Override
 	public String toString() {
 		return "default";

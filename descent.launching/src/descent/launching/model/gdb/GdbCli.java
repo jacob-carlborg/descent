@@ -21,7 +21,7 @@ import descent.launching.model.IDescentVariable;
 
 public class GdbCli implements ICli {
 	
-	private final static boolean DEBUG = false;
+	private final static boolean DEBUG = true;
 	
 	private int fTimeout;
 	private boolean fshowBaseMembersInSameLevel;
@@ -68,9 +68,28 @@ public class GdbCli implements ICli {
 		}
 	}
 
-	public IDescentVariable evaluateExpression(int stackFrameNumber, String expression) throws IOException {
-		// TODO
-		return null;
+	public IDescentVariable evaluateExpression(int stackFrame, String expression) throws IOException {
+		setStackFrame(stackFrame);
+
+		try {
+			setState(new EvaluatingExpression(this, expression));
+			
+			beforeWaitStateReturn();
+			
+			fProxy.write("print " + expression + "\n");
+			
+			waitStateReturn();
+			
+			GdbVariable gdbVar = ((EvaluatingExpression) fState).fVariable;
+			if (gdbVar == null) {
+				return null;
+			}
+			
+			completeType(gdbVar);
+			return gdbVariableToDescentVariable(gdbVar, stackFrame);
+		} finally {
+			setState(fRunningState);
+		}
 	}
 
 	public String getEndCommunicationString() {
@@ -78,13 +97,40 @@ public class GdbCli implements ICli {
 	}
 
 	public byte[] getMemoryBlock(long startAddress, long length) throws IOException {
-		// TODO
-		return new byte[0];
+		try {
+			setState(new ConsultingMemoryBlock(this, length));
+			
+			beforeWaitStateReturn();
+			
+			fProxy.write("x/" + String.valueOf(length) + "b ");
+			fProxy.write(String.valueOf(startAddress));
+			fProxy.write("\n");
+
+			waitStateReturn();
+			
+			return ((ConsultingMemoryBlock) fState).fBytes;
+		} finally {
+			setState(fRunningState);
+		}
 	}
 
 	public IRegister[] getRegisters(IRegisterGroup registerGroup) throws IOException {
-		// TODO
-		return new IRegister[0];
+		try {
+			setState(new ConsultingRegisters(this, registerGroup));
+			
+			beforeWaitStateReturn();
+			
+			fProxy.write("info all-registers\n");
+			
+			waitStateReturn();
+			
+			List<IRegister> registers = ((ConsultingRegisters) fState).fRegisters;
+			IRegister[] registersArray = registers.toArray(new IRegister[registers.size()]);
+			Arrays.sort(registersArray);
+			return registersArray;
+		} finally {
+			setState(fRunningState);
+		}
 	}
 
 	public IStackFrame[] getStackFrames() throws DebugException, IOException {
@@ -108,9 +154,30 @@ public class GdbCli implements ICli {
 		}
 	}
 
-	public IVariable[] getVariables(int stackFrameNumber) throws IOException {
-		// TODO
-		return new IVariable[0];
+	public IVariable[] getVariables(int stackFrame) throws IOException {
+		setStackFrame(stackFrame);
+		
+		List<GdbVariable> retVariables = new ArrayList<GdbVariable>();
+		
+		String[] args = { "args", "locals" };
+		for(String arg : args) {
+			try {
+				setState(new ConsultingVariables(this));
+				
+				beforeWaitStateReturn();
+				
+				fProxy.write("info " + arg + "\n");
+	
+				waitStateReturn();
+				
+				retVariables.addAll(((ConsultingVariables) fState).fVariables);				
+			} finally {
+				setState(fRunningState);
+			}
+		}
+		
+		completeTypes(retVariables);
+		return gdbVariablesToDescentVariables(retVariables, stackFrame);
 	}
 
 	public void initialize(ICliRequestor requestor, IDescentDebugElementFactory factory, IStreamsProxy out, int timeout, boolean showBaseMembersInSameLevel) {
@@ -127,6 +194,14 @@ public class GdbCli implements ICli {
 		}
 		
 		fState.interpret(text);
+	}
+	
+	public void interpretError(String text) throws DebugException, IOException {
+		if (DEBUG) {
+			System.out.println("~!" + text);
+		}
+		
+		fState.interpretError(text);
 	}
 
 	public boolean isSingleThread() {
@@ -159,7 +234,7 @@ public class GdbCli implements ICli {
 		}
 	}
 
-	public void setStackFrame(int stackFrame) throws DebugException, IOException {
+	public void setStackFrame(int stackFrame) throws IOException {
 		try {
 			setState(new SettingStackFrame(this));
 			
@@ -177,6 +252,7 @@ public class GdbCli implements ICli {
 
 	public void start() throws DebugException, IOException {
 		try {
+			fProxy.write("set print pretty on\n");
 			fProxy.write("r\n");
 		} finally {
 			setState(fRunningState);
@@ -215,6 +291,94 @@ public class GdbCli implements ICli {
 			fProxy.write("y\n");
 		} finally {
 			setState(fRunningState);
+		}
+	}
+	
+	public String getType(String expression) throws IOException {
+		try {
+			setState(new ConsultingType(this));
+			
+			beforeWaitStateReturn();
+			
+			fProxy.write("whatis ");
+			fProxy.write(expression);
+			fProxy.write("\n");
+			
+			waitStateReturn();
+			
+			return ((ConsultingType) fState).fType;
+		} finally {
+			setState(fRunningState);
+		}
+	}
+	
+	private void completeTypes(List<GdbVariable> variables) throws IOException {
+		completeTypes(variables, "");
+	}
+	
+	private void completeTypes(List<GdbVariable> variables, String prefix) throws IOException {
+		for(GdbVariable var : variables) {
+			completeType(var, prefix);			
+		}
+	}
+	
+	private void completeType(GdbVariable var) throws IOException {
+		completeType(var, "");
+	}
+	
+	private void completeType(GdbVariable var, String prefix) throws IOException {
+		try {
+			if (var.getValue() == null && !var.isBase()) {
+				String name = prefix + var.getName();
+				var.setValue(getType(name));
+			} else if (var.isBase()) {
+				var.setValue("");
+			}
+		} catch (NullPointerException e) {
+			e.printStackTrace();
+		}
+		
+		prefix = var.isBase() ? prefix : prefix + var.getName() + ".";
+		completeTypes(var.getChildren(), prefix);
+	}
+	
+	private IDescentVariable[] gdbVariablesToDescentVariables(List<GdbVariable> ddbgVars, int stackFrame) {
+		IDescentVariable[] vars = new IDescentVariable[ddbgVars.size()];
+		for(int i = 0; i < ddbgVars.size(); i++) {
+			vars[i] = gdbVariableToDescentVariable(ddbgVars.get(i), stackFrame);
+		}
+		return vars;
+	}
+	
+	private IDescentVariable gdbVariableToDescentVariable(GdbVariable ddbgVar, int stackFrame) {
+		IDescentVariable var;
+		if (ddbgVar.isLazy()) {
+			var = fFactory.newLazyVariable(stackFrame, ddbgVar.getName(), ddbgVar.getValue(), ddbgVar.getExpression());
+		} else {
+			var = fFactory.newVariable(stackFrame, ddbgVar.getName(), ddbgVar.getValue());
+		}
+		
+		if (fshowBaseMembersInSameLevel) {
+			addVariablesChildren(var, ddbgVar.getChildren(), stackFrame);
+		} else {
+			var.addChildren(gdbVariablesToDescentVariables(ddbgVar.getChildren(), stackFrame));
+		}
+		
+		return var;
+	}
+	
+	private void addVariablesChildren(IDescentVariable var, List<GdbVariable> children, int stackFrame) {
+		// The first child may be the base clase
+		if (children.size() > 0) {
+			GdbVariable first = children.get(0);
+			if (first.isBase()) {
+				// Add the children's base
+				addVariablesChildren(var, first.getChildren(), stackFrame);
+				// Add the rest
+				var.addChildren(gdbVariablesToDescentVariables(children.subList(1, children.size()), stackFrame));
+			} else {
+				var.addChildren(gdbVariablesToDescentVariables(children, stackFrame));
+			}
 		}
 	}
 	

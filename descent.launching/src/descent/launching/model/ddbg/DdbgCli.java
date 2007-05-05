@@ -78,6 +78,10 @@ public class DdbgCli implements ICli {
 		fState.interpret(text);
 	}
 	
+	public void interpretError(String text) throws DebugException, IOException {
+		// Nothing to do
+	}
+	
 	public void start() throws DebugException, IOException {
 		// Turn off recursive expression evaluation
 		try {

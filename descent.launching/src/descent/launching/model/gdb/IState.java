@@ -7,5 +7,7 @@ import org.eclipse.debug.core.DebugException;
 public interface IState {
 	
 	void interpret(String text) throws DebugException, IOException;
+	
+	void interpretError(String text) throws DebugException, IOException;
 
 }

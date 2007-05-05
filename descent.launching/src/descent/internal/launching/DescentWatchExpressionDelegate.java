@@ -21,28 +21,48 @@ public class DescentWatchExpressionDelegate implements IWatchExpressionDelegate 
 			final ICli cli = stackFrame.getCli();
 			try {
 				final IDescentVariable variable = cli.evaluateExpression(stackFrame.getNumber(), expression);
-				listener.watchEvaluationFinished(new IWatchExpressionResult() {
-					public String[] getErrorMessages() {
-						return null;
-					}
-					public DebugException getException() {
-						return null;
-					}
-					public String getExpressionText() {
-						return expression;
-					}
-					public IValue getValue() {
-						try {
-							return variable.getValue();
-						} catch (DebugException e) {
-							e.printStackTrace();
+				if (variable == null) {
+					listener.watchEvaluationFinished(new IWatchExpressionResult() {
+						public String[] getErrorMessages() {
+							return new String[] { "\"" + expression + "\" cannot be evaluated" };
+						}
+						public DebugException getException() {
 							return null;
 						}
-					}
-					public boolean hasErrors() {
-						return false;
-					}
-				});
+						public String getExpressionText() {
+							return null;
+						}
+						public IValue getValue() {
+							return null;
+						}
+						public boolean hasErrors() {
+							return true;
+						}
+					});
+				} else {
+					listener.watchEvaluationFinished(new IWatchExpressionResult() {
+						public String[] getErrorMessages() {
+							return null;
+						}
+						public DebugException getException() {
+							return null;
+						}
+						public String getExpressionText() {
+							return expression;
+						}
+						public IValue getValue() {
+							try {
+								return variable.getValue();
+							} catch (DebugException e) {
+								e.printStackTrace();
+								return null;
+							}
+						}
+						public boolean hasErrors() {
+							return false;
+						}
+					});
+				}
 			} catch (final IOException e) {
 				e.printStackTrace();
 				listener.watchEvaluationFinished(new IWatchExpressionResult() {

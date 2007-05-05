@@ -1,4 +1,4 @@
-package descent.launching.model.ddbg;
+package descent.launching.model.gdb;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -8,20 +8,24 @@ import org.eclipse.debug.core.DebugException;
 
 public class ConsultingVariables implements IState {
 	
-	public List<DdbgVariable> fVariables = new ArrayList<DdbgVariable>();
-	private DdbgVariable fVariable;
-	private final DdbgCli fCli;
+	public List<GdbVariable> fVariables = new ArrayList<GdbVariable>();
+	private GdbVariable fVariable;
+	private final GdbCli fCli;
 	
-	public ConsultingVariables(DdbgCli cli) {
+	public ConsultingVariables(GdbCli cli) {
 		this.fCli = cli;
 	}
 
 	public void interpret(String text) throws DebugException, IOException {
-		if (text.equals("->")) {
+		if (text.equals("(gdb) ")) {
 			fCli.notifyStateReturn();
 		} else {
 			parseVariable(text);
 		}
+	}
+	
+	public void interpretError(String text) throws DebugException, IOException {
+		// Nothing to do
 	}
 	
 	/*
@@ -47,10 +51,10 @@ public class ConsultingVariables implements IState {
 		String name = text.substring(0, indexOfEquals).trim();
 		String value = text.substring(indexOfEquals + 1).trim();
 		
-		boolean nameIsBase = name.indexOf('.') != -1;
+		boolean nameIsBase = name.indexOf('<') != -1;
 		
-		if ("{".equals(value)) {
-			DdbgVariable newVariable = new DdbgVariable(name);
+		if (value.length() > 0 && value.charAt(value.length() - 1) == '{') {
+			GdbVariable newVariable = new GdbVariable(name);
 			newVariable.setIsBase(nameIsBase);
 			if (fVariable == null) {
 				fVariables.add(newVariable);
@@ -67,14 +71,14 @@ public class ConsultingVariables implements IState {
 				}
 			}
 			
-			DdbgVariable newVariable;
+			GdbVariable newVariable;
 			
-			if ("...".equals(value)) {
-				newVariable = new DdbgVariable(name);
+			if (value.length() > 0 && value.charAt(0) == '@') {
+				newVariable = new GdbVariable(name);
 				newVariable.setLazy(true);
 				newVariable.setIsBase(nameIsBase);
 			} else {
-				newVariable= new DdbgVariable(name, value);
+				newVariable= new GdbVariable(name, value);
 				newVariable.setIsBase(nameIsBase);
 			}
 			if (fVariable == null) {
@@ -84,7 +88,7 @@ public class ConsultingVariables implements IState {
 			}
 		}
 	}
-	
+
 	@Override
 	public String toString() {
 		return "consulting variables";
