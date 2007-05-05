@@ -10,7 +10,7 @@ import org.eclipse.debug.core.model.IWatchExpressionListener;
 import org.eclipse.debug.core.model.IWatchExpressionResult;
 
 import descent.internal.launching.model.DescentStackFrame;
-import descent.launching.model.ICli;
+import descent.launching.model.IDebugger;
 import descent.launching.model.IDescentVariable;
 
 public class DescentWatchExpressionDelegate implements IWatchExpressionDelegate {
@@ -18,9 +18,9 @@ public class DescentWatchExpressionDelegate implements IWatchExpressionDelegate 
 	public void evaluateExpression(final String expression, final IDebugElement context, IWatchExpressionListener listener) {
 		if (context instanceof DescentStackFrame) {
 			final DescentStackFrame stackFrame = (DescentStackFrame) context;
-			final ICli cli = stackFrame.getCli();
+			final IDebugger debugger = stackFrame.getDebugger();
 			try {
-				final IDescentVariable variable = cli.evaluateExpression(stackFrame.getNumber(), expression);
+				final IDescentVariable variable = debugger.evaluateExpression(stackFrame.getNumber(), expression);
 				if (variable == null) {
 					listener.watchEvaluationFinished(new IWatchExpressionResult() {
 						public String[] getErrorMessages() {

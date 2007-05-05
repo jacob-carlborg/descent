@@ -7,14 +7,14 @@ import org.eclipse.debug.core.DebugException;
 
 public class Stepping implements IState {
 	
-	private final GdbCli fCli;
+	private final GdbDebugger fCli;
 	private final int fDebugEvent;
 	
-	public Stepping(GdbCli cli, int debugEvent) {
+	public Stepping(GdbDebugger cli, int debugEvent) {
 		this.fCli = cli;
 		this.fDebugEvent = debugEvent;
 		try {
-			fCli.fCliRequestor.resumed(debugEvent);
+			fCli.fListener.resumed(debugEvent);
 		} catch (DebugException e) {
 			e.printStackTrace();
 		}
@@ -22,11 +22,11 @@ public class Stepping implements IState {
 	
 	public void interpret(String text) throws DebugException, IOException {
 		if ("Process terminated".equals(text)) {
-			fCli.fCliRequestor.terminated();
+			fCli.fListener.terminated();
 			fCli.notifyStateReturn();
 		}
 		if ("(gdb) ".equals(text)) {
-			fCli.fCliRequestor.stepEnded();
+			fCli.fListener.stepEnded();
 			fCli.notifyStateReturn();
 		}
 	}

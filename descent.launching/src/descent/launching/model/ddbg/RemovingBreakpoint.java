@@ -6,9 +6,9 @@ import org.eclipse.debug.core.DebugException;
 
 public class RemovingBreakpoint implements IState {
 	
-	private final DdbgCli fCli;
+	private final DdbgDebugger fCli;
 
-	public RemovingBreakpoint(DdbgCli cli) {
+	public RemovingBreakpoint(DdbgDebugger cli) {
 		this.fCli = cli;		
 	}
 	

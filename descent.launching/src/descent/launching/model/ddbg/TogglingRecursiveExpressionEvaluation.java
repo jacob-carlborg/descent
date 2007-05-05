@@ -6,9 +6,9 @@ import org.eclipse.debug.core.DebugException;
 
 public class TogglingRecursiveExpressionEvaluation implements IState {
 	
-	private final DdbgCli fCli;
+	private final DdbgDebugger fCli;
 
-	public TogglingRecursiveExpressionEvaluation(DdbgCli cli) {
+	public TogglingRecursiveExpressionEvaluation(DdbgDebugger cli) {
 		this.fCli = cli;		
 	}
 	

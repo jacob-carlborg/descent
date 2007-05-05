@@ -2,7 +2,7 @@ package descent.launching.model;
 
 import org.eclipse.debug.core.DebugException;
 
-public interface ICliRequestor {
+public interface IDebuggerListener {
 	
 	void started() throws DebugException;
 	

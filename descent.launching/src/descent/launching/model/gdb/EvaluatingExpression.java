@@ -8,9 +8,9 @@ public class EvaluatingExpression implements IState {
 
 	public GdbVariable fVariable;
 	private final String fExpression;
-	private final GdbCli fCli;
+	private final GdbDebugger fCli;
 	
-	public EvaluatingExpression(GdbCli cli, String expression) {
+	public EvaluatingExpression(GdbDebugger cli, String expression) {
 		this.fCli = cli;
 		this.fExpression = expression;
 	}

@@ -11,17 +11,15 @@ import org.eclipse.debug.core.model.IStackFrame;
 import org.eclipse.debug.core.model.IStreamsProxy;
 import org.eclipse.debug.core.model.IVariable;
 
-public interface ICli {
+public interface IDebugger {
 	
 	List<String> getDebuggerCommandLineArguments();
 	
 	List<String> getDebugeeCommandLineArguments(String[] arguments);
 	
-	boolean isSingleThread();
-	
 	String getEndCommunicationString();
 	
-	void initialize(ICliRequestor requestor, IDescentDebugElementFactory factory, IStreamsProxy out, int timeout, boolean showBaseMembersInSameLevel);
+	void initialize(IDebuggerListener listener, IDescentDebugElementFactory factory, IStreamsProxy out, int timeout, boolean showBaseMembersInSameLevel);
 	
 	void interpret(String text) throws DebugException, IOException;
 	

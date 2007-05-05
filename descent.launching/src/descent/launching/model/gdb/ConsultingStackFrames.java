@@ -9,12 +9,12 @@ import org.eclipse.debug.core.model.IStackFrame;
 
 public class ConsultingStackFrames  implements IState {
 	
-	private final GdbCli fCli;
+	private final GdbDebugger fCli;
 
 	private StringBuilder fBuffer;
 	public List<IStackFrame> fStackFrames = new ArrayList<IStackFrame>();
 	
-	public ConsultingStackFrames(GdbCli cli) {
+	public ConsultingStackFrames(GdbDebugger cli) {
 		this.fCli = cli;
 		this.fBuffer = new StringBuilder();
 	}

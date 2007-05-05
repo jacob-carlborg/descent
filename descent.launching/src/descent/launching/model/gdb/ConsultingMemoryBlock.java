@@ -8,14 +8,14 @@ import org.eclipse.debug.core.DebugException;
 
 public class ConsultingMemoryBlock implements IState {
 	
-	private final GdbCli fCli;
+	private final GdbDebugger fCli;
 	private final long length;
 	
 	private List<String> fLines;
 	
 	public byte[] fBytes;
 
-	public ConsultingMemoryBlock(GdbCli cli, long length) {
+	public ConsultingMemoryBlock(GdbDebugger cli, long length) {
 		this.fCli = cli;
 		this.length = length;
 		this.fLines = new ArrayList<String>();

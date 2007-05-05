@@ -6,24 +6,24 @@ import org.eclipse.debug.core.DebugException;
 import org.eclipse.debug.core.model.IDebugTarget;
 import org.eclipse.debug.core.model.IMemoryBlock;
 
-import descent.launching.model.ICli;
+import descent.launching.model.IDebugger;
 
 public class DescentMemoryBlock extends DescentDebugElement implements IMemoryBlock {
 
 	private final long fStartAddress;
 	private final long fLength;
-	private final ICli fCli;
+	private final IDebugger fDebugger;
 
-	public DescentMemoryBlock(IDebugTarget target, ICli cli, long startAddress, long length) {
+	public DescentMemoryBlock(IDebugTarget target, IDebugger debugger, long startAddress, long length) {
 		super(target);
-		this.fCli = cli;
+		this.fDebugger = debugger;
 		this.fStartAddress = startAddress;
 		this.fLength = length;
 	}
 
 	public byte[] getBytes() throws DebugException {
 		try {
-			return fCli.getMemoryBlock(fStartAddress, fLength);
+			return fDebugger.getMemoryBlock(fStartAddress, fLength);
 		} catch (IOException e) {
 			e.printStackTrace();
 			return new byte[0];

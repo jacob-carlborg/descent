@@ -8,9 +8,9 @@ public class EvaluatingExpression implements IState {
 
 	public DdbgVariable fVariable;
 	private final String fExpression;
-	private final DdbgCli fCli;
+	private final DdbgDebugger fCli;
 	
-	public EvaluatingExpression(DdbgCli cli, String expression) {
+	public EvaluatingExpression(DdbgDebugger cli, String expression) {
 		this.fCli = cli;
 		this.fExpression = expression;
 	}

@@ -6,13 +6,13 @@ import org.eclipse.debug.core.DebugException;
 
 public class Running implements IState {
 	
-	private final GdbCli fCli;
+	private final GdbDebugger fCli;
 	
 	private int fLastWasBreakpointHit = 0;
 	private String fBreakpointFileName;
 	private int fBreakpointLineNumber;
 
-	public Running(GdbCli cli) {
+	public Running(GdbDebugger cli) {
 		this.fCli = cli;
 	}
 
@@ -21,14 +21,14 @@ public class Running implements IState {
 			fLastWasBreakpointHit--;
 			if (fLastWasBreakpointHit == 0) {
 				if (fBreakpointFileName != null) {
-					fCli.fCliRequestor.breakpointHit(fBreakpointFileName, fBreakpointLineNumber);
+					fCli.fListener.breakpointHit(fBreakpointFileName, fBreakpointLineNumber);
 				} else {
-					fCli.fCliRequestor.breakpointHit();
+					fCli.fListener.breakpointHit();
 				}
 			}
 		}
 		if (text.trim().equals("Program exited normally.")) {
-			fCli.fCliRequestor.terminated();
+			fCli.fListener.terminated();
 		} else if (text.startsWith("Breakpoint ")) {
 			// Breakpoint n hit at file:lineNumber address
 			

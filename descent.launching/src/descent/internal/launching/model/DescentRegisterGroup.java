@@ -8,18 +8,18 @@ import org.eclipse.debug.core.model.IRegister;
 import org.eclipse.debug.core.model.IRegisterGroup;
 
 import descent.launching.IDescentLaunchConfigurationConstants;
-import descent.launching.model.ICli;
+import descent.launching.model.IDebugger;
 
 public class DescentRegisterGroup extends DebugElement implements IRegisterGroup {
 	
-	private final ICli fCli;
+	private final IDebugger fDebugger;
 	
 	private boolean fRegistersInvalid;
 	private IRegister[] fRegisters;
 	
-	public DescentRegisterGroup(DescentDebugTarget target, ICli interpter) {
+	public DescentRegisterGroup(DescentDebugTarget target, IDebugger debugger) {
 		super(target);
-		this.fCli = interpter;
+		this.fDebugger = debugger;
 	}
 
 	public String getName() throws DebugException {
@@ -29,7 +29,7 @@ public class DescentRegisterGroup extends DebugElement implements IRegisterGroup
 	public IRegister[] getRegisters() throws DebugException {
 		try {
 			if (fRegisters == null || fRegistersInvalid) {
-				IRegister[] newRegisters = fCli.getRegisters(this);
+				IRegister[] newRegisters = fDebugger.getRegisters(this);
 				fRegisters = mergeRegisters(fRegisters, newRegisters);
 				fRegistersInvalid = false;
 			}

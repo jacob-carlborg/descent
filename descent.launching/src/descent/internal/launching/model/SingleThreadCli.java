@@ -12,20 +12,20 @@ import org.eclipse.debug.core.model.IStackFrame;
 import org.eclipse.debug.core.model.IStreamsProxy;
 import org.eclipse.debug.core.model.IVariable;
 
-import descent.launching.model.ICli;
-import descent.launching.model.ICliRequestor;
+import descent.launching.model.IDebugger;
+import descent.launching.model.IDebuggerListener;
 import descent.launching.model.IDescentDebugElementFactory;
 import descent.launching.model.IDescentVariable;
 
-public class SingleThreadCli implements ICli {
+public class SingleThreadCli implements IDebugger {
 	
-	private final ICli fCli;
+	private final IDebugger fDebugger;
 	private ReentrantLock fReadOutLock;
 	private ReentrantLock fReadErrorLock;
 	private ReentrantLock fWriteLock;
 
-	public SingleThreadCli(ICli cli) {
-		this.fCli = cli;
+	public SingleThreadCli(IDebugger debugger) {
+		this.fDebugger = debugger;
 		this.fReadOutLock = new ReentrantLock(true);
 		this.fReadErrorLock = new ReentrantLock(true);
 		this.fWriteLock = new ReentrantLock(true);
@@ -36,21 +36,21 @@ public class SingleThreadCli implements ICli {
 	}
 	
 	public String getEndCommunicationString() {
-		return fCli.getEndCommunicationString();
+		return fDebugger.getEndCommunicationString();
 	}
 	
 	public List<String> getDebugeeCommandLineArguments(String[] arguments) {
-		return fCli.getDebugeeCommandLineArguments(arguments);
+		return fDebugger.getDebugeeCommandLineArguments(arguments);
 	}
 	
 	public List<String> getDebuggerCommandLineArguments() {
-		return fCli.getDebuggerCommandLineArguments();
+		return fDebugger.getDebuggerCommandLineArguments();
 	}
 
 	public void addBreakpoint(IResource resource, int lineNumber) throws DebugException, IOException {
 		fWriteLock.lock();
 		try {
-			fCli.addBreakpoint(resource, lineNumber);
+			fDebugger.addBreakpoint(resource, lineNumber);
 		} finally {
 			fWriteLock.unlock();
 		}
@@ -59,7 +59,7 @@ public class SingleThreadCli implements ICli {
 	public IDescentVariable evaluateExpression(int stackFrameNumber, String expression) throws IOException {
 		fWriteLock.lock();
 		try {
-			return fCli.evaluateExpression(stackFrameNumber, expression);
+			return fDebugger.evaluateExpression(stackFrameNumber, expression);
 		} finally {
 			fWriteLock.unlock();
 		}
@@ -68,7 +68,7 @@ public class SingleThreadCli implements ICli {
 	public IRegister[] getRegisters(IRegisterGroup registerGroup) throws IOException {
 		fWriteLock.lock();
 		try {
-			return fCli.getRegisters(registerGroup);
+			return fDebugger.getRegisters(registerGroup);
 		} finally {
 			fWriteLock.unlock();
 		}
@@ -77,7 +77,7 @@ public class SingleThreadCli implements ICli {
 	public IStackFrame[] getStackFrames() throws DebugException, IOException {
 		fWriteLock.lock();
 		try {
-			return fCli.getStackFrames();
+			return fDebugger.getStackFrames();
 		} finally {
 			fWriteLock.unlock();
 		}
@@ -86,7 +86,7 @@ public class SingleThreadCli implements ICli {
 	public IVariable[] getVariables(int stackFrameNumber) throws IOException {
 		fWriteLock.lock();
 		try {
-			return fCli.getVariables(stackFrameNumber);
+			return fDebugger.getVariables(stackFrameNumber);
 		} finally {
 			fWriteLock.unlock();
 		}
@@ -95,20 +95,20 @@ public class SingleThreadCli implements ICli {
 	public byte[] getMemoryBlock(long startAddress, long length) throws IOException {
 		fWriteLock.lock();
 		try {
-			return fCli.getMemoryBlock(startAddress, length);
+			return fDebugger.getMemoryBlock(startAddress, length);
 		} finally {
 			fWriteLock.unlock();
 		}
 	}
 
-	public void initialize(ICliRequestor requestor, IDescentDebugElementFactory factory, IStreamsProxy out, int timeout, boolean showBaseMembersInSameLevel) {
-		fCli.initialize(requestor, factory, out, timeout, showBaseMembersInSameLevel);
+	public void initialize(IDebuggerListener listener, IDescentDebugElementFactory factory, IStreamsProxy out, int timeout, boolean showBaseMembersInSameLevel) {
+		fDebugger.initialize(listener, factory, out, timeout, showBaseMembersInSameLevel);
 	}
 
 	public void interpret(String text) throws DebugException, IOException {
 		fReadOutLock.lock();
 		try {
-			fCli.interpret(text);
+			fDebugger.interpret(text);
 		} finally {
 			fReadOutLock.unlock();
 		}
@@ -117,7 +117,7 @@ public class SingleThreadCli implements ICli {
 	public void interpretError(String text) throws DebugException, IOException {
 		fReadErrorLock.lock();
 		try {
-			fCli.interpretError(text);
+			fDebugger.interpretError(text);
 		} finally {
 			fReadErrorLock.unlock();
 		}
@@ -126,7 +126,7 @@ public class SingleThreadCli implements ICli {
 	public void removeBreakpoint(IResource resource, int lineNumber) throws DebugException, IOException {
 		fWriteLock.lock();
 		try {
-			fCli.removeBreakpoint(resource, lineNumber);
+			fDebugger.removeBreakpoint(resource, lineNumber);
 		} finally {
 			fWriteLock.unlock();
 		}
@@ -135,7 +135,7 @@ public class SingleThreadCli implements ICli {
 	public void resume() throws DebugException, IOException {
 		fWriteLock.lock();
 		try {
-			fCli.resume();
+			fDebugger.resume();
 		} finally {
 			fWriteLock.unlock();
 		}
@@ -144,7 +144,7 @@ public class SingleThreadCli implements ICli {
 	public void setStackFrame(int stackFrameNumber) throws DebugException, IOException {
 		fWriteLock.lock();
 		try {
-			fCli.setStackFrame(stackFrameNumber);
+			fDebugger.setStackFrame(stackFrameNumber);
 		} finally {
 			fWriteLock.unlock();
 		}
@@ -153,7 +153,7 @@ public class SingleThreadCli implements ICli {
 	public void start() throws DebugException, IOException {
 		fWriteLock.lock();
 		try {
-			fCli.start();
+			fDebugger.start();
 		} finally {
 			fWriteLock.unlock();
 		}
@@ -162,7 +162,7 @@ public class SingleThreadCli implements ICli {
 	public void stepInto() throws IOException {
 		fWriteLock.lock();
 		try {
-			fCli.stepInto();
+			fDebugger.stepInto();
 		} finally {
 			fWriteLock.unlock();
 		}
@@ -171,7 +171,7 @@ public class SingleThreadCli implements ICli {
 	public void stepOver() throws IOException {
 		fWriteLock.lock();
 		try {
-			fCli.stepOver();
+			fDebugger.stepOver();
 		} finally {
 			fWriteLock.unlock();
 		}
@@ -180,14 +180,14 @@ public class SingleThreadCli implements ICli {
 	public void stepReturn() throws IOException {
 		fWriteLock.lock();
 		try {
-			fCli.stepReturn();
+			fDebugger.stepReturn();
 		} finally {
 			fWriteLock.unlock();
 		}
 	}
 
 	public void terminate() throws DebugException, IOException {
-		fCli.terminate();
+		fDebugger.terminate();
 	}
 
 }

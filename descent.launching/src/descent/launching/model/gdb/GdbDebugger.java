@@ -14,19 +14,19 @@ import org.eclipse.debug.core.model.IStackFrame;
 import org.eclipse.debug.core.model.IStreamsProxy;
 import org.eclipse.debug.core.model.IVariable;
 
-import descent.launching.model.ICli;
-import descent.launching.model.ICliRequestor;
+import descent.launching.model.IDebugger;
+import descent.launching.model.IDebuggerListener;
 import descent.launching.model.IDescentDebugElementFactory;
 import descent.launching.model.IDescentVariable;
 
-public class GdbCli implements ICli {
+public class GdbDebugger implements IDebugger {
 	
 	private final static boolean DEBUG = true;
 	
 	private int fTimeout;
 	private boolean fshowBaseMembersInSameLevel;
 	
-	ICliRequestor fCliRequestor;
+	IDebuggerListener fListener;
 	IDescentDebugElementFactory fFactory;
 	
 	private IState fState;
@@ -180,8 +180,8 @@ public class GdbCli implements ICli {
 		return gdbVariablesToDescentVariables(retVariables, stackFrame);
 	}
 
-	public void initialize(ICliRequestor requestor, IDescentDebugElementFactory factory, IStreamsProxy out, int timeout, boolean showBaseMembersInSameLevel) {
-		this.fCliRequestor = requestor;
+	public void initialize(IDebuggerListener listener, IDescentDebugElementFactory factory, IStreamsProxy out, int timeout, boolean showBaseMembersInSameLevel) {
+		this.fListener = listener;
 		this.fFactory = factory;
 		this.fProxy = out;
 		this.fTimeout = timeout;
@@ -202,10 +202,6 @@ public class GdbCli implements ICli {
 		}
 		
 		fState.interpretError(text);
-	}
-
-	public boolean isSingleThread() {
-		return true;
 	}
 
 	public void removeBreakpoint(IResource resource, int lineNumber) throws DebugException, IOException {

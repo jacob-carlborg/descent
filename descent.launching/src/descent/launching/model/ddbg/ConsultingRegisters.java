@@ -12,9 +12,9 @@ public class ConsultingRegisters implements IState {
 	
 	public List<IRegister> fRegisters = new ArrayList<IRegister>();
 	private final IRegisterGroup fRegisterGroup;
-	private final DdbgCli fCli;
+	private final DdbgDebugger fCli;
 	
-	public ConsultingRegisters(DdbgCli cli, IRegisterGroup registerGroup) {
+	public ConsultingRegisters(DdbgDebugger cli, IRegisterGroup registerGroup) {
 		this.fCli = cli;
 		this.fRegisterGroup = registerGroup;
 	}

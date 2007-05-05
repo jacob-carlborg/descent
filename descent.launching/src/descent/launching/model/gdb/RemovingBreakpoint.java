@@ -6,9 +6,9 @@ import org.eclipse.debug.core.DebugException;
 
 public class RemovingBreakpoint implements IState {
 	
-	private final GdbCli fCli;
+	private final GdbDebugger fCli;
 
-	public RemovingBreakpoint(GdbCli cli) {
+	public RemovingBreakpoint(GdbDebugger cli) {
 		this.fCli = cli;		
 	}
 	

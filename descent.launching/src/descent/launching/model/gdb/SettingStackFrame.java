@@ -6,9 +6,9 @@ import org.eclipse.debug.core.DebugException;
 
 public class SettingStackFrame implements IState {
 	
-	private final GdbCli fCli;
+	private final GdbDebugger fCli;
 
-	public SettingStackFrame(GdbCli cli) {
+	public SettingStackFrame(GdbDebugger cli) {
 		this.fCli = cli;
 	}
 	

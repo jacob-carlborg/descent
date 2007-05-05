@@ -6,10 +6,10 @@ import org.eclipse.debug.core.DebugException;
 
 public class ConsultingType implements IState {
 	
-	private final GdbCli fCli;
+	private final GdbDebugger fCli;
 	public String fType;
 	
-	public ConsultingType(GdbCli cli) {
+	public ConsultingType(GdbDebugger cli) {
 		this.fCli = cli;
 	}
 

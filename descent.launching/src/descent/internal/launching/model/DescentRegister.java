@@ -5,14 +5,14 @@ import org.eclipse.debug.core.model.IDebugTarget;
 import org.eclipse.debug.core.model.IRegister;
 import org.eclipse.debug.core.model.IRegisterGroup;
 
-import descent.launching.model.ICli;
+import descent.launching.model.IDebugger;
 
 public class DescentRegister extends DescentVariable implements IRegister, Comparable<DescentRegister> {
 
 	private final IRegisterGroup fRegisterGroup;
 
-	public DescentRegister(IDebugTarget target, ICli cli, IRegisterGroup registerGroup, String name, String value) {
-		super(target, cli, -1, name, value);
+	public DescentRegister(IDebugTarget target, IDebugger debugger, IRegisterGroup registerGroup, String name, String value) {
+		super(target, debugger, -1, name, value);
 		this.fRegisterGroup = registerGroup;		
 	}
 

@@ -7,7 +7,7 @@ import org.eclipse.debug.core.model.IRegisterGroup;
 import org.eclipse.debug.core.model.IStackFrame;
 import org.eclipse.debug.core.model.IThread;
 
-import descent.launching.model.ICli;
+import descent.launching.model.IDebugger;
 
 public class DescentThread extends DescentDebugElement implements IThread {
 	
@@ -27,11 +27,11 @@ public class DescentThread extends DescentDebugElement implements IThread {
 	
 	private IRegisterGroup[] fRegisterGroups;
 
-	private final ICli fCli;
+	private final IDebugger fDebugger;
 	
-	public DescentThread(DescentDebugTarget target, ICli cli) {
+	public DescentThread(DescentDebugTarget target, IDebugger debugger) {
 		super(target);
-		this.fCli = cli;
+		this.fDebugger = debugger;
 	}
 
 	public IBreakpoint[] getBreakpoints() {
@@ -120,7 +120,7 @@ public class DescentThread extends DescentDebugElement implements IThread {
 	public IRegisterGroup[] getRegisterGroups() {
 		if (fRegisterGroups == null) {
 			fRegisterGroups = new IRegisterGroup[] {
-					new DescentRegisterGroup((DescentDebugTarget) getDebugTarget(), fCli)
+					new DescentRegisterGroup((DescentDebugTarget) getDebugTarget(), fDebugger)
 			};
 		}
 		return fRegisterGroups;

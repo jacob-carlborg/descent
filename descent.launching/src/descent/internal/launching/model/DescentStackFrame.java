@@ -9,12 +9,12 @@ import org.eclipse.debug.core.model.IStackFrame;
 import org.eclipse.debug.core.model.IThread;
 import org.eclipse.debug.core.model.IVariable;
 
-import descent.launching.model.ICli;
+import descent.launching.model.IDebugger;
 
 public class DescentStackFrame extends DescentDebugElement implements IStackFrame {
 
 	private final IThread fThread;
-	private final ICli fCli;
+	private final IDebugger fDebugger;
 	private String fName;
 	private int fNumber;
 	private String fSourceName;
@@ -22,9 +22,9 @@ public class DescentStackFrame extends DescentDebugElement implements IStackFram
 	
 	private IVariable[] fVariables;
 	
-	public DescentStackFrame(IDebugTarget target, ICli cli, IThread thread, String name, int number, String sourceName, int lineNumber) {
+	public DescentStackFrame(IDebugTarget target, IDebugger debugger, IThread thread, String name, int number, String sourceName, int lineNumber) {
 		super(target);
-		this.fCli = cli;
+		this.fDebugger = debugger;
 		this.fThread = thread;
 		this.fName = name;
 		this.fNumber = number;
@@ -32,8 +32,8 @@ public class DescentStackFrame extends DescentDebugElement implements IStackFram
 		this.fLineNumber = lineNumber;
 	}
 	
-	public ICli getCli() {
-		return fCli;
+	public IDebugger getDebugger() {
+		return fDebugger;
 	}
 	
 	public int getNumber() {
@@ -76,7 +76,7 @@ public class DescentStackFrame extends DescentDebugElement implements IStackFram
 
 	public IVariable[] getVariables() throws DebugException {
 		try {
-			IVariable[] newVariables = fCli.getVariables(fNumber);
+			IVariable[] newVariables = fDebugger.getVariables(fNumber);
 			fVariables = mergeVariables(fVariables, newVariables);
 			return fVariables;
 		} catch (IOException e) {

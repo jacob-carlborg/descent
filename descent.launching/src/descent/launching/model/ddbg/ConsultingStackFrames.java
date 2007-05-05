@@ -9,12 +9,12 @@ import org.eclipse.debug.core.model.IStackFrame;
 
 public class ConsultingStackFrames  implements IState {
 	
-	private final DdbgCli fCli;
+	private final DdbgDebugger fCli;
 
 	private StringBuilder fBuffer;
 	public List<IStackFrame> fStackFrames = new ArrayList<IStackFrame>();
 	
-	public ConsultingStackFrames(DdbgCli cli) {
+	public ConsultingStackFrames(DdbgDebugger cli) {
 		this.fCli = cli;
 		this.fBuffer = new StringBuilder();
 	}

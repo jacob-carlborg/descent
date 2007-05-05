@@ -12,9 +12,9 @@ public class ConsultingRegisters implements IState {
 	
 	public List<IRegister> fRegisters = new ArrayList<IRegister>();
 	private final IRegisterGroup fRegisterGroup;
-	private final GdbCli fCli;
+	private final GdbDebugger fCli;
 	
-	public ConsultingRegisters(GdbCli cli, IRegisterGroup registerGroup) {
+	public ConsultingRegisters(GdbDebugger cli, IRegisterGroup registerGroup) {
 		this.fCli = cli;
 		this.fRegisterGroup = registerGroup;
 	}

@@ -25,18 +25,18 @@ import org.eclipse.jface.preference.IPreferenceStore;
 import descent.launching.DescentLaunching;
 import descent.launching.IDescentLaunchConfigurationConstants;
 import descent.launching.IDescentLaunchingPreferenceConstants;
-import descent.launching.model.ICli;
-import descent.launching.model.ICliRequestor;
+import descent.launching.model.IDebugger;
+import descent.launching.model.IDebuggerListener;
 import descent.launching.model.IDescentDebugElementFactory;
 import descent.launching.model.IDescentVariable;
 
-public class DescentDebugTarget extends DescentDebugElement implements IDebugTarget, ICliRequestor, IDescentDebugElementFactory {
+public class DescentDebugTarget extends DescentDebugElement implements IDebugTarget, IDebuggerListener, IDescentDebugElementFactory {
 	
 	private ILaunch fLaunch;
 	private IProcess fProcess;
 	private String fName;
 	
-	private ICli fCli;
+	private IDebugger fDebugger;
 	private String fEndCommunicationString;
 	
 	private DescentThread fThread;
@@ -47,25 +47,22 @@ public class DescentDebugTarget extends DescentDebugElement implements IDebugTar
 	
 	private boolean fSuspended;
 	
-	public DescentDebugTarget(ILaunch launch, IProcess process, ICli cli) {
+	public DescentDebugTarget(ILaunch launch, IProcess process, IDebugger debugger) {
 		super(null);
 		this.fLaunch = launch;
 		this.fProcess = process;
-		this.fCli = cli;
-		this.fEndCommunicationString = fCli.getEndCommunicationString();
+		this.fDebugger = debugger;
+		this.fEndCommunicationString = fDebugger.getEndCommunicationString();
 		
-		// If it's a single thread cli, 
-		// force sending one request at a time
-		if (this.fCli.isSingleThread()) {
-			this.fCli = new SingleThreadCli(this.fCli);
-		}
+		// Force sending one request at a time
+		this.fDebugger = new SingleThreadCli(this.fDebugger);
 		
 		IPreferenceStore preferenceStore = DescentLaunching.getDefault().getPreferenceStore();
 		int timeout = preferenceStore.getInt(IDescentLaunchingPreferenceConstants.DDBG_TIMEOUT);
 		boolean showBaseMembersInSameLevel = preferenceStore.getBoolean(IDescentLaunchingPreferenceConstants.SHOW_BASE_MEMBERS_IN_SAME_LEVEL);
-		this.fCli.initialize(this, this, process.getStreamsProxy(), timeout, showBaseMembersInSameLevel);
+		this.fDebugger.initialize(this, this, process.getStreamsProxy(), timeout, showBaseMembersInSameLevel);
 		
-		this.fThread = new DescentThread(this, fCli);
+		this.fThread = new DescentThread(this, fDebugger);
 		this.fThreads = new DescentThread[] { fThread };
 		
 		this.fOutStreamListener = new MyStreamListener(false);
@@ -88,7 +85,7 @@ public class DescentDebugTarget extends DescentDebugElement implements IDebugTar
 			IBreakpoint[] breakpoints = manager.getBreakpoints(IDescentLaunchConfigurationConstants.ID_D_DEBUG_MODEL);
 			for(IBreakpoint breakpoint : breakpoints) {
 				if (breakpoint.isEnabled()) {
-					fCli.addBreakpoint(breakpoint.getMarker().getResource(), ((ILineBreakpoint) breakpoint).getLineNumber());
+					fDebugger.addBreakpoint(breakpoint.getMarker().getResource(), ((ILineBreakpoint) breakpoint).getLineNumber());
 				}
 			}
 		} catch (IOException e) {
@@ -143,7 +140,7 @@ public class DescentDebugTarget extends DescentDebugElement implements IDebugTar
 		if (isTerminated()) return;
 		
 		try {
-			fCli.terminate();
+			fDebugger.terminate();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -170,7 +167,7 @@ public class DescentDebugTarget extends DescentDebugElement implements IDebugTar
 		
 		try {
 			fSuspended = false;
-			fCli.resume();
+			fDebugger.resume();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -180,7 +177,7 @@ public class DescentDebugTarget extends DescentDebugElement implements IDebugTar
 		if (isTerminated()) return;
 		
 		try {
-			fCli.addBreakpoint(breakpoint.getMarker().getResource(), ((ILineBreakpoint) breakpoint).getLineNumber());
+			fDebugger.addBreakpoint(breakpoint.getMarker().getResource(), ((ILineBreakpoint) breakpoint).getLineNumber());
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (CoreException e) {
@@ -205,7 +202,7 @@ public class DescentDebugTarget extends DescentDebugElement implements IDebugTar
 		if (isTerminated()) return;
 		
 		try {
-			fCli.removeBreakpoint(breakpoint.getMarker().getResource(), ((ILineBreakpoint) breakpoint).getLineNumber());
+			fDebugger.removeBreakpoint(breakpoint.getMarker().getResource(), ((ILineBreakpoint) breakpoint).getLineNumber());
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (CoreException e) {
@@ -227,7 +224,7 @@ public class DescentDebugTarget extends DescentDebugElement implements IDebugTar
 	public IMemoryBlock getMemoryBlock(long startAddress, long length) throws DebugException {
 		if (isTerminated()) return null;
 		
-		return new DescentMemoryBlock(this, fCli, startAddress, length);
+		return new DescentMemoryBlock(this, fDebugger, startAddress, length);
 	}
 
 	public boolean supportsStorageRetrieval() {
@@ -236,7 +233,7 @@ public class DescentDebugTarget extends DescentDebugElement implements IDebugTar
 	
 	public IStackFrame[] getStackFrames() {
 		try {
-			return fCli.getStackFrames();
+			return fDebugger.getStackFrames();
 		} catch (IOException e) {
 			e.printStackTrace();
 			return new IStackFrame[0];
@@ -248,7 +245,7 @@ public class DescentDebugTarget extends DescentDebugElement implements IDebugTar
 	
 	public void stepOver() {
 		try {
-			fCli.stepOver();
+			fDebugger.stepOver();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -256,7 +253,7 @@ public class DescentDebugTarget extends DescentDebugElement implements IDebugTar
 	
 	public void stepInto() {
 		try {
-			fCli.stepInto();
+			fDebugger.stepInto();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -264,7 +261,7 @@ public class DescentDebugTarget extends DescentDebugElement implements IDebugTar
 	
 	public void stepReturn() {
 		try {
-			fCli.stepReturn();
+			fDebugger.stepReturn();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -286,9 +283,9 @@ public class DescentDebugTarget extends DescentDebugElement implements IDebugTar
 				
 				if (fStreamBuffer.toString().equals(fEndCommunicationString)) {
 					if (fIsError) {
-						fCli.interpretError(fEndCommunicationString);
+						fDebugger.interpretError(fEndCommunicationString);
 					} else {
-						fCli.interpret(fEndCommunicationString);
+						fDebugger.interpret(fEndCommunicationString);
 					}
 					fStreamBuffer.setLength(0);
 				}
@@ -303,9 +300,9 @@ public class DescentDebugTarget extends DescentDebugElement implements IDebugTar
 				while(indexOfLine != -1) {
 					String line = fStreamBuffer.substring(lastIndexOfLine, indexOfLine);
 					if (fIsError) {
-						fCli.interpretError(line);
+						fDebugger.interpretError(line);
 					} else {
-						fCli.interpret(line);
+						fDebugger.interpret(line);
 					}
 					
 					lastIndexOfLine = indexOfLine + 1;
@@ -316,9 +313,9 @@ public class DescentDebugTarget extends DescentDebugElement implements IDebugTar
 				
 				if (fStreamBuffer.toString().equals(fEndCommunicationString)) {
 					if (fIsError) {
-						fCli.interpretError(fEndCommunicationString);
+						fDebugger.interpretError(fEndCommunicationString);
 					} else {
-						fCli.interpret(fEndCommunicationString);
+						fDebugger.interpret(fEndCommunicationString);
 					}
 					fStreamBuffer.setLength(0);
 				}
@@ -344,7 +341,7 @@ public class DescentDebugTarget extends DescentDebugElement implements IDebugTar
 		fireResumeEvent(DebugEvent.CLIENT_REQUEST);
 		
 		try {
-			fCli.start();
+			fDebugger.start();
 			fSuspended = false;
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -411,7 +408,7 @@ public class DescentDebugTarget extends DescentDebugElement implements IDebugTar
 	
 	public void terminated() {
 		try {
-			fCli.terminate();
+			fDebugger.terminate();
 		} catch (DebugException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
@@ -439,19 +436,19 @@ public class DescentDebugTarget extends DescentDebugElement implements IDebugTar
 	}
 
 	public IRegister newRegister(IRegisterGroup registerGroup, String name, String value) {
-		return new DescentRegister(this, fCli, registerGroup, name, value);
+		return new DescentRegister(this, fDebugger, registerGroup, name, value);
 	}
 
 	public IDescentVariable newVariable(int stackFrame, String name, String value) {
-		return new DescentVariable(this, fCli, stackFrame, name, value);
+		return new DescentVariable(this, fDebugger, stackFrame, name, value);
 	}
 	
 	public IDescentVariable newLazyVariable(int stackFrame, String name, String value, String expression) {
-		return new DescentVariable(this, fCli, stackFrame, name, value, expression);
+		return new DescentVariable(this, fDebugger, stackFrame, name, value, expression);
 	}
 	
 	public IStackFrame newStackFrame(String name, int number, String sourceName, int lineNumber) {
-		return new DescentStackFrame(this, fCli, fThreads[0], name, number, sourceName, lineNumber);
+		return new DescentStackFrame(this, fDebugger, fThreads[0], name, number, sourceName, lineNumber);
 	}
 	
 }

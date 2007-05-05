@@ -6,9 +6,9 @@ import org.eclipse.debug.core.DebugException;
 
 public class AddingBreakpoint implements IState {
 	
-	private final DdbgCli fCli;
+	private final DdbgDebugger fCli;
 
-	public AddingBreakpoint(DdbgCli cli) {
+	public AddingBreakpoint(DdbgDebugger cli) {
 		this.fCli = cli;		
 	}
 	

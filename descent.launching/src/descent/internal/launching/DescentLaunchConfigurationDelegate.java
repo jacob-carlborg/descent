@@ -23,8 +23,8 @@ import descent.internal.launching.model.DescentDebugTarget;
 import descent.launching.AbstractDescentLaunchConfigurationDelegate;
 import descent.launching.DescentLaunching;
 import descent.launching.IDescentLaunchConfigurationConstants;
-import descent.launching.model.ICli;
-import descent.launching.model.gdb.GdbCli;
+import descent.launching.model.IDebugger;
+import descent.launching.model.gdb.GdbDebugger;
 import descent.launching.utils.ProcessFactory;
 
 public class DescentLaunchConfigurationDelegate extends AbstractDescentLaunchConfigurationDelegate {
@@ -45,7 +45,7 @@ public class DescentLaunchConfigurationDelegate extends AbstractDescentLaunchCon
 			IPath exePath = verifyProgramPath(config);
 			IJavaProject project = verifyJavaProject(config);
 			
-			ICli cli = new GdbCli();
+			IDebugger cli = new GdbDebugger();
 
 			String[] arguments = getProgramArgumentsArray(config);
 

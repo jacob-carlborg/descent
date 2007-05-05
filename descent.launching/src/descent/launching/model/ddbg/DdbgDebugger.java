@@ -14,19 +14,19 @@ import org.eclipse.debug.core.model.IStackFrame;
 import org.eclipse.debug.core.model.IStreamsProxy;
 import org.eclipse.debug.core.model.IVariable;
 
-import descent.launching.model.ICli;
-import descent.launching.model.ICliRequestor;
+import descent.launching.model.IDebugger;
+import descent.launching.model.IDebuggerListener;
 import descent.launching.model.IDescentDebugElementFactory;
 import descent.launching.model.IDescentVariable;
 
-public class DdbgCli implements ICli {
+public class DdbgDebugger implements IDebugger {
 	
 	private final static boolean DEBUG = false;
 	
 	private int fTimeout;
 	private boolean fshowBaseMembersInSameLevel;
 	
-	ICliRequestor fCliRequestor;
+	IDebuggerListener fListener;
 	IDescentDebugElementFactory fFactory;
 	
 	private IState fState;
@@ -36,12 +36,8 @@ public class DdbgCli implements ICli {
 	private Object fWaitLock = new Object();
 	private volatile boolean fWaitLockUsed;
 
-	public DdbgCli() {
+	public DdbgDebugger() {
 		setState(fRunningState);
-	}
-	
-	public boolean isSingleThread() {
-		return true;
 	}
 	
 	public String getEndCommunicationString() {
@@ -56,8 +52,8 @@ public class DdbgCli implements ICli {
 		return Arrays.asList(arguments);
 	}
 	
-	public void initialize(ICliRequestor requestor, IDescentDebugElementFactory factory, IStreamsProxy out, int timeout, boolean showBaseMembersInSameLevel) {
-		this.fCliRequestor = requestor;
+	public void initialize(IDebuggerListener listener, IDescentDebugElementFactory factory, IStreamsProxy out, int timeout, boolean showBaseMembersInSameLevel) {
+		this.fListener = listener;
 		this.fFactory = factory;
 		this.fProxy = out;
 		this.fTimeout = timeout;

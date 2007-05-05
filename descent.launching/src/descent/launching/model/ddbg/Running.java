@@ -6,13 +6,13 @@ import org.eclipse.debug.core.DebugException;
 
 public class Running implements IState {
 	
-	private final DdbgCli fCli;
+	private final DdbgDebugger fCli;
 	
 	private int fLastWasBreakpointHit = 0;
 	private String fBreakpointFileName;
 	private int fBreakpointLineNumber;
 
-	public Running(DdbgCli cli) {
+	public Running(DdbgDebugger cli) {
 		this.fCli = cli;
 	}
 
@@ -21,14 +21,14 @@ public class Running implements IState {
 			fLastWasBreakpointHit--;
 			if (fLastWasBreakpointHit == 0) {
 				if (fBreakpointFileName != null) {
-					fCli.fCliRequestor.breakpointHit(fBreakpointFileName, fBreakpointLineNumber);
+					fCli.fListener.breakpointHit(fBreakpointFileName, fBreakpointLineNumber);
 				} else {
-					fCli.fCliRequestor.breakpointHit();
+					fCli.fListener.breakpointHit();
 				}
 			}
 		}
 		if (text.equals("Process terminated")) {
-			fCli.fCliRequestor.terminated();
+			fCli.fListener.terminated();
 		} else if (text.startsWith("Breakpoint ")) {
 			// Breakpoint n hit at file:lineNumber address
 			

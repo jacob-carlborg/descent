@@ -6,9 +6,9 @@ import org.eclipse.debug.core.DebugException;
 
 public class SettingStackFrame implements IState {
 	
-	private final DdbgCli fCli;
+	private final DdbgDebugger fCli;
 
-	public SettingStackFrame(DdbgCli cli) {
+	public SettingStackFrame(DdbgDebugger cli) {
 		this.fCli = cli;
 	}
 	

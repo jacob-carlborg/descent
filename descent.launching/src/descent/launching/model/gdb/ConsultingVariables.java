@@ -10,9 +10,9 @@ public class ConsultingVariables implements IState {
 	
 	public List<GdbVariable> fVariables = new ArrayList<GdbVariable>();
 	private GdbVariable fVariable;
-	private final GdbCli fCli;
+	private final GdbDebugger fCli;
 	
-	public ConsultingVariables(GdbCli cli) {
+	public ConsultingVariables(GdbDebugger cli) {
 		this.fCli = cli;
 	}
 

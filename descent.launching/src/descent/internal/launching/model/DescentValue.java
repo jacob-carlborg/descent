@@ -9,7 +9,7 @@ import org.eclipse.debug.core.model.IDebugTarget;
 import org.eclipse.debug.core.model.IValue;
 import org.eclipse.debug.core.model.IVariable;
 
-import descent.launching.model.ICli;
+import descent.launching.model.IDebugger;
 import descent.launching.model.IDescentVariable;
 
 public class DescentValue extends DescentDebugElement implements IValue {
@@ -19,17 +19,17 @@ public class DescentValue extends DescentDebugElement implements IValue {
 	private final String fName;
 	private final String fValue;
 	private final String fExpression;
-	private final ICli fCli;
+	private final IDebugger fDebugger;
 	private List<IDescentVariable> fVariables;
 	private final int fStackFrame;	
 	
-	public DescentValue(IDebugTarget target, ICli cli, int stackFrame, String name, String value) {
-		this(target, cli, stackFrame, name, value, null);
+	public DescentValue(IDebugTarget target, IDebugger debugger, int stackFrame, String name, String value) {
+		this(target, debugger, stackFrame, name, value, null);
 	}
 
-	public DescentValue(IDebugTarget target, ICli cli, int stackFrame, String name, String value, String expression) {
+	public DescentValue(IDebugTarget target, IDebugger debugger, int stackFrame, String name, String value, String expression) {
 		super(target);
-		this.fCli = cli;
+		this.fDebugger = debugger;
 		this.fStackFrame = stackFrame;
 		this.fName = name;
 		this.fValue = value;
@@ -51,7 +51,7 @@ public class DescentValue extends DescentDebugElement implements IValue {
 		
 		if (fExpression != null) {
 			try {
-				IDescentVariable variable = fCli.evaluateExpression(fStackFrame, fExpression);
+				IDescentVariable variable = fDebugger.evaluateExpression(fStackFrame, fExpression);
 				if (variable == null) {
 					return NO_VARIABLES;
 				}

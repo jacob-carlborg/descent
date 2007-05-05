@@ -8,14 +8,14 @@ import org.eclipse.debug.core.DebugException;
 
 public class ConsultingMemoryBlock implements IState {
 	
-	private final DdbgCli fCli;
+	private final DdbgDebugger fCli;
 	private final long length;
 	
 	private List<String> fLines;
 	
 	public byte[] fBytes;
 
-	public ConsultingMemoryBlock(DdbgCli cli, long length) {
+	public ConsultingMemoryBlock(DdbgDebugger cli, long length) {
 		this.fCli = cli;
 		this.length = length;
 		this.fLines = new ArrayList<String>();
