@@ -10,7 +10,7 @@ import org.eclipse.debug.core.model.IValue;
 import org.eclipse.debug.core.model.IVariable;
 
 import descent.launching.model.IDebugger;
-import descent.launching.model.IDescentVariable;
+import descent.launching.model.IParentVariable;
 
 public class DescentValue extends DescentDebugElement implements IValue {
 	
@@ -20,7 +20,7 @@ public class DescentValue extends DescentDebugElement implements IValue {
 	private final String fValue;
 	private final String fExpression;
 	private final IDebugger fDebugger;
-	private List<IDescentVariable> fVariables;
+	private List<IVariable> fVariables;
 	private final int fStackFrame;	
 	
 	public DescentValue(IDebugTarget target, IDebugger debugger, int stackFrame, String name, String value) {
@@ -51,16 +51,16 @@ public class DescentValue extends DescentDebugElement implements IValue {
 		
 		if (fExpression != null) {
 			try {
-				IDescentVariable variable = fDebugger.evaluateExpression(fStackFrame, fExpression);
+				IVariable variable = fDebugger.evaluateExpression(fStackFrame, fExpression);
 				if (variable == null) {
 					return NO_VARIABLES;
 				}
 				
 				if (variable.getValue().hasVariables()) {
 					IVariable[] subVariables = variable.getValue().getVariables();
-					fVariables = new ArrayList<IDescentVariable>(subVariables.length);
+					fVariables = new ArrayList<IVariable>(subVariables.length);
 					for(IVariable var : subVariables) {
-						fVariables.add((IDescentVariable) var);
+						fVariables.add((IParentVariable) var);
 					}
 					return subVariables;
 				} else {
@@ -83,9 +83,9 @@ public class DescentValue extends DescentDebugElement implements IValue {
 		return true;
 	}
 	
-	public void addVariable(IDescentVariable variable) {
+	public void addVariable(IVariable variable) {
 		if (this.fVariables == null) {
-			this.fVariables = new ArrayList<IDescentVariable>();
+			this.fVariables = new ArrayList<IVariable>();
 		}
 		this.fVariables.add(variable);
 	}

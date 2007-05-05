@@ -27,10 +27,10 @@ import descent.launching.IDescentLaunchConfigurationConstants;
 import descent.launching.IDescentLaunchingPreferenceConstants;
 import descent.launching.model.IDebugger;
 import descent.launching.model.IDebuggerListener;
-import descent.launching.model.IDescentDebugElementFactory;
-import descent.launching.model.IDescentVariable;
+import descent.launching.model.IDebugElementFactory;
+import descent.launching.model.IParentVariable;
 
-public class DescentDebugTarget extends DescentDebugElement implements IDebugTarget, IDebuggerListener, IDescentDebugElementFactory {
+public class DescentDebugTarget extends DescentDebugElement implements IDebugTarget, IDebuggerListener, IDebugElementFactory {
 	
 	private ILaunch fLaunch;
 	private IProcess fProcess;
@@ -439,11 +439,11 @@ public class DescentDebugTarget extends DescentDebugElement implements IDebugTar
 		return new DescentRegister(this, fDebugger, registerGroup, name, value);
 	}
 
-	public IDescentVariable newVariable(int stackFrame, String name, String value) {
+	public IParentVariable newParentVariable(int stackFrame, String name, String value) {
 		return new DescentVariable(this, fDebugger, stackFrame, name, value);
 	}
 	
-	public IDescentVariable newLazyVariable(int stackFrame, String name, String value, String expression) {
+	public IParentVariable newLazyVariable(int stackFrame, String name, String value, String expression) {
 		return new DescentVariable(this, fDebugger, stackFrame, name, value, expression);
 	}
 	

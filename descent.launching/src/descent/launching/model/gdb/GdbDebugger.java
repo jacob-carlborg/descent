@@ -16,8 +16,8 @@ import org.eclipse.debug.core.model.IVariable;
 
 import descent.launching.model.IDebugger;
 import descent.launching.model.IDebuggerListener;
-import descent.launching.model.IDescentDebugElementFactory;
-import descent.launching.model.IDescentVariable;
+import descent.launching.model.IDebugElementFactory;
+import descent.launching.model.IParentVariable;
 
 public class GdbDebugger implements IDebugger {
 	
@@ -27,7 +27,7 @@ public class GdbDebugger implements IDebugger {
 	private boolean fshowBaseMembersInSameLevel;
 	
 	IDebuggerListener fListener;
-	IDescentDebugElementFactory fFactory;
+	IDebugElementFactory fFactory;
 	
 	private IState fState;
 	private IState fRunningState = new Running(this);
@@ -68,7 +68,7 @@ public class GdbDebugger implements IDebugger {
 		}
 	}
 
-	public IDescentVariable evaluateExpression(int stackFrame, String expression) throws IOException {
+	public IVariable evaluateExpression(int stackFrame, String expression) throws IOException {
 		setStackFrame(stackFrame);
 
 		try {
@@ -180,7 +180,7 @@ public class GdbDebugger implements IDebugger {
 		return gdbVariablesToDescentVariables(retVariables, stackFrame);
 	}
 
-	public void initialize(IDebuggerListener listener, IDescentDebugElementFactory factory, IStreamsProxy out, int timeout, boolean showBaseMembersInSameLevel) {
+	public void initialize(IDebuggerListener listener, IDebugElementFactory factory, IStreamsProxy out, int timeout, boolean showBaseMembersInSameLevel) {
 		this.fListener = listener;
 		this.fFactory = factory;
 		this.fProxy = out;
@@ -338,20 +338,20 @@ public class GdbDebugger implements IDebugger {
 		completeTypes(var.getChildren(), prefix);
 	}
 	
-	private IDescentVariable[] gdbVariablesToDescentVariables(List<GdbVariable> ddbgVars, int stackFrame) {
-		IDescentVariable[] vars = new IDescentVariable[ddbgVars.size()];
+	private IVariable[] gdbVariablesToDescentVariables(List<GdbVariable> ddbgVars, int stackFrame) {
+		IVariable[] vars = new IParentVariable[ddbgVars.size()];
 		for(int i = 0; i < ddbgVars.size(); i++) {
 			vars[i] = gdbVariableToDescentVariable(ddbgVars.get(i), stackFrame);
 		}
 		return vars;
 	}
 	
-	private IDescentVariable gdbVariableToDescentVariable(GdbVariable ddbgVar, int stackFrame) {
-		IDescentVariable var;
+	private IVariable gdbVariableToDescentVariable(GdbVariable ddbgVar, int stackFrame) {
+		IParentVariable var;
 		if (ddbgVar.isLazy()) {
-			var = fFactory.newLazyVariable(stackFrame, ddbgVar.getName(), ddbgVar.getValue(), ddbgVar.getExpression());
+			return fFactory.newLazyVariable(stackFrame, ddbgVar.getName(), ddbgVar.getValue(), ddbgVar.getExpression());
 		} else {
-			var = fFactory.newVariable(stackFrame, ddbgVar.getName(), ddbgVar.getValue());
+			var = fFactory.newParentVariable(stackFrame, ddbgVar.getName(), ddbgVar.getValue());
 		}
 		
 		if (fshowBaseMembersInSameLevel) {
@@ -363,7 +363,7 @@ public class GdbDebugger implements IDebugger {
 		return var;
 	}
 	
-	private void addVariablesChildren(IDescentVariable var, List<GdbVariable> children, int stackFrame) {
+	private void addVariablesChildren(IParentVariable var, List<GdbVariable> children, int stackFrame) {
 		// The first child may be the base clase
 		if (children.size() > 0) {
 			GdbVariable first = children.get(0);

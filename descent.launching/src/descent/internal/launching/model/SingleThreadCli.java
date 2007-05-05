@@ -14,8 +14,8 @@ import org.eclipse.debug.core.model.IVariable;
 
 import descent.launching.model.IDebugger;
 import descent.launching.model.IDebuggerListener;
-import descent.launching.model.IDescentDebugElementFactory;
-import descent.launching.model.IDescentVariable;
+import descent.launching.model.IDebugElementFactory;
+import descent.launching.model.IParentVariable;
 
 public class SingleThreadCli implements IDebugger {
 	
@@ -56,7 +56,7 @@ public class SingleThreadCli implements IDebugger {
 		}
 	}
 
-	public IDescentVariable evaluateExpression(int stackFrameNumber, String expression) throws IOException {
+	public IVariable evaluateExpression(int stackFrameNumber, String expression) throws IOException {
 		fWriteLock.lock();
 		try {
 			return fDebugger.evaluateExpression(stackFrameNumber, expression);
@@ -101,7 +101,7 @@ public class SingleThreadCli implements IDebugger {
 		}
 	}
 
-	public void initialize(IDebuggerListener listener, IDescentDebugElementFactory factory, IStreamsProxy out, int timeout, boolean showBaseMembersInSameLevel) {
+	public void initialize(IDebuggerListener listener, IDebugElementFactory factory, IStreamsProxy out, int timeout, boolean showBaseMembersInSameLevel) {
 		fDebugger.initialize(listener, factory, out, timeout, showBaseMembersInSameLevel);
 	}
 
@@ -136,15 +136,6 @@ public class SingleThreadCli implements IDebugger {
 		fWriteLock.lock();
 		try {
 			fDebugger.resume();
-		} finally {
-			fWriteLock.unlock();
-		}
-	}
-
-	public void setStackFrame(int stackFrameNumber) throws DebugException, IOException {
-		fWriteLock.lock();
-		try {
-			fDebugger.setStackFrame(stackFrameNumber);
 		} finally {
 			fWriteLock.unlock();
 		}

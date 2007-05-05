@@ -5,13 +5,13 @@ import java.io.IOException;
 import org.eclipse.debug.core.DebugException;
 import org.eclipse.debug.core.model.IDebugElement;
 import org.eclipse.debug.core.model.IValue;
+import org.eclipse.debug.core.model.IVariable;
 import org.eclipse.debug.core.model.IWatchExpressionDelegate;
 import org.eclipse.debug.core.model.IWatchExpressionListener;
 import org.eclipse.debug.core.model.IWatchExpressionResult;
 
 import descent.internal.launching.model.DescentStackFrame;
 import descent.launching.model.IDebugger;
-import descent.launching.model.IDescentVariable;
 
 public class DescentWatchExpressionDelegate implements IWatchExpressionDelegate {
 
@@ -20,7 +20,7 @@ public class DescentWatchExpressionDelegate implements IWatchExpressionDelegate 
 			final DescentStackFrame stackFrame = (DescentStackFrame) context;
 			final IDebugger debugger = stackFrame.getDebugger();
 			try {
-				final IDescentVariable variable = debugger.evaluateExpression(stackFrame.getNumber(), expression);
+				final IVariable variable = debugger.evaluateExpression(stackFrame.getNumber(), expression);
 				if (variable == null) {
 					listener.watchEvaluationFinished(new IWatchExpressionResult() {
 						public String[] getErrorMessages() {

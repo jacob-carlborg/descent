@@ -3,15 +3,15 @@ package descent.internal.launching.model;
 import org.eclipse.debug.core.DebugException;
 import org.eclipse.debug.core.model.IDebugTarget;
 import org.eclipse.debug.core.model.IValue;
+import org.eclipse.debug.core.model.IVariable;
 
 import descent.launching.model.IDebugger;
-import descent.launching.model.IDescentVariable;
+import descent.launching.model.IParentVariable;
 
-public class DescentVariable extends DescentDebugElement implements IDescentVariable {
+public class DescentVariable extends DescentDebugElement implements IParentVariable {
 
 	private final String fName;
 	private final DescentValue fValue;
-	private DescentVariable fParent;
 	private boolean fHasValueChanged;
 	
 	public DescentVariable(IDebugTarget target, IDebugger debugger, int stackFrame, String name, String value) {
@@ -62,19 +62,14 @@ public class DescentVariable extends DescentDebugElement implements IDescentVari
 		return false;
 	}
 	
-	public void addChild(IDescentVariable variable) {
-		((DescentVariable) variable).fParent = this;
+	public void addChild(IVariable variable) {
 		fValue.addVariable(variable);
 	}
 	
-	public void addChildren(IDescentVariable[] variables) {
-		for(IDescentVariable variable : variables) {
+	public void addChildren(IVariable[] variables) {
+		for(IVariable variable : variables) {
 			addChild(variable);
 		}
-	}
-	
-	public IDescentVariable getParent() {
-		return fParent;
 	}
 	
 	public boolean isLazy() {
