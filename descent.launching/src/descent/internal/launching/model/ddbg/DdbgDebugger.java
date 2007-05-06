@@ -1,4 +1,4 @@
-package descent.launching.model.ddbg;
+package descent.internal.launching.model.ddbg;
 
 import java.io.IOException;
 import java.util.ArrayList;

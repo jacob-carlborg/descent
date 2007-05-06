@@ -1,4 +1,4 @@
-package descent.launching.model.gdb;
+package descent.internal.launching.model.ddbg;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -12,39 +12,34 @@ public class ConsultingRegisters implements IState {
 	
 	public List<IRegister> fRegisters = new ArrayList<IRegister>();
 	private final IRegisterGroup fRegisterGroup;
-	private final GdbDebugger fCli;
+	private final DdbgDebugger fCli;
 	
-	public ConsultingRegisters(GdbDebugger cli, IRegisterGroup registerGroup) {
+	public ConsultingRegisters(DdbgDebugger cli, IRegisterGroup registerGroup) {
 		this.fCli = cli;
 		this.fRegisterGroup = registerGroup;
 	}
 	
 	public void interpret(String text) throws DebugException, IOException {
-		if (text.equals("(gdb) ")) {
+		if (text.equals("->")) {
 			fCli.notifyStateReturn();
 		} else {
 			parseRegisters(text, fRegisterGroup);
 		}
 	}
 	
-	public void interpretError(String text) throws DebugException, IOException {
-		// Nothing to do
-	}
-	
 	private void parseRegisters(String text, IRegisterGroup group) {
-		String[] splits = text.split("\\p{Space}");
-		
-		if (splits.length < 3) return;
-		
-		String name = splits[0];
-		for(int i = 1; i < splits.length; i++) {
-			String value = splits[i].trim();
-			if (value.length() != 0) {
-				fRegisters.add(fCli.fFactory.newRegister(group, name, value));
-				return;
+		for (int i = 0; i < 4; i++) {
+			String sub;
+			if (i == 3) {
+				sub = text.substring(13*i);
+			} else {
+				sub = text.substring(13*i, 13*(i + 1));
 			}
+			int indexOfEqual = sub.indexOf('=');
+			String name = sub.substring(0, indexOfEqual).trim();
+			String value = sub.substring(indexOfEqual + 1).trim();
+			fRegisters.add(fCli.fFactory.newRegister(group, name, value));
 		}
-		
 	}
 	
 	@Override

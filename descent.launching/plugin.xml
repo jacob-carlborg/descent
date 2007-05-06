@@ -52,11 +52,11 @@
    <extension
          point="descent.launching.debuggers">
       <debugger
-            class="descent.launching.model.ddbg.DdbgDebugger"
+            class="descent.internal.launching.model.ddbg.DdbgDebugger"
             id="descent.launching.debugger.ddbg"
             name="Ddbg"/>
       <debugger
-            class="descent.launching.model.gdb.GdbDebugger"
+            class="descent.internal.launching.model.gdb.GdbDebugger"
             id="descent.launching.debugger.gdb"
             name="Gdb"/>
    </extension>

@@ -1,14 +1,14 @@
-package descent.launching.model.ddbg;
+package descent.internal.launching.model.ddbg;
 
 import java.io.IOException;
 
 import org.eclipse.debug.core.DebugException;
 
-public class RemovingBreakpoint implements IState {
+public class AddingBreakpoint implements IState {
 	
 	private final DdbgDebugger fCli;
 
-	public RemovingBreakpoint(DdbgDebugger cli) {
+	public AddingBreakpoint(DdbgDebugger cli) {
 		this.fCli = cli;		
 	}
 	
@@ -20,7 +20,7 @@ public class RemovingBreakpoint implements IState {
 	
 	@Override
 	public String toString() {
-		return "removing breakpoint";
+		return "adding breakpoing";
 	}
 	
 }

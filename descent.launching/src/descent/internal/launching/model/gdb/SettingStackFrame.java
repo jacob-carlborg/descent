@@ -1,4 +1,4 @@
-package descent.launching.model.ddbg;
+package descent.internal.launching.model.gdb;
 
 import java.io.IOException;
 
@@ -6,16 +6,20 @@ import org.eclipse.debug.core.DebugException;
 
 public class SettingStackFrame implements IState {
 	
-	private final DdbgDebugger fCli;
+	private final GdbDebugger fCli;
 
-	public SettingStackFrame(DdbgDebugger cli) {
+	public SettingStackFrame(GdbDebugger cli) {
 		this.fCli = cli;
 	}
 	
 	public void interpret(String text) throws DebugException, IOException {
-		if ("->".equals(text)) {
+		if ("(gdb) ".equals(text)) {
 			fCli.notifyStateReturn();
 		}
+	}
+	
+	public void interpretError(String text) throws DebugException, IOException {
+		// Nothing to do
 	}
 	
 	@Override

@@ -1,4 +1,4 @@
-package descent.launching.model.gdb;
+package descent.internal.launching.model.gdb;
 
 import java.io.IOException;
 

@@ -1,4 +1,4 @@
-package descent.launching.model.ddbg;
+package descent.internal.launching.model.ddbg;
 
 import java.util.ArrayList;
 import java.util.List;

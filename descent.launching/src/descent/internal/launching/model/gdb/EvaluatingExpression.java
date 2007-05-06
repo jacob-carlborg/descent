@@ -1,4 +1,4 @@
-package descent.launching.model.ddbg;
+package descent.internal.launching.model.gdb;
 
 import java.io.IOException;
 
@@ -6,28 +6,36 @@ import org.eclipse.debug.core.DebugException;
 
 public class EvaluatingExpression implements IState {
 
-	public DdbgVariable fVariable;
+	public GdbVariable fVariable;
 	private final String fExpression;
-	private final DdbgDebugger fCli;
+	private final GdbDebugger fCli;
 	
-	public EvaluatingExpression(DdbgDebugger cli, String expression) {
+	public EvaluatingExpression(GdbDebugger cli, String expression) {
 		this.fCli = cli;
 		this.fExpression = expression;
 	}
 
 	public void interpret(String text) throws DebugException, IOException {
-		if (text.equals("->")) {
+		if (text.equals("(gdb) ")) {
 			fCli.notifyStateReturn();
 		} else {
 			parseVariable(text);
 		}
 	}
+	
+	public void interpretError(String text) throws DebugException, IOException {
+		fCli.notifyStateReturn();
+	}
 
 	private void parseVariable(String text) {
 		text = text.trim();
 		
+		if (text.startsWith("members of ")) {
+			return;
+		}
+		
 		if ("{".equals(text)) {
-			fVariable = new DdbgVariable(fExpression);
+			fVariable = new GdbVariable(fExpression);
 			return;
 		}
 		
@@ -40,17 +48,17 @@ public class EvaluatingExpression implements IState {
 		
 		int indexOfEquals = text.indexOf('=');
 		if (indexOfEquals == -1) {
-			fVariable = new DdbgVariable(fExpression, text);
+			fVariable = new GdbVariable(fExpression, text);
 			return;
 		}
 		
 		String name = text.substring(0, indexOfEquals).trim();
 		String value = text.substring(indexOfEquals + 1).trim();
 		
-		boolean nameIsBase = name.indexOf('.') != -1;
+		boolean nameIsBase = name.indexOf('<') != -1;
 		
-		if ("{".equals(value)) {
-			DdbgVariable newVariable = new DdbgVariable(name, null);
+		if (value.length() > 0 && value.charAt(value.length() - 1) == '{') {
+			GdbVariable newVariable = new GdbVariable(name, null);
 			newVariable.setIsBase(nameIsBase);
 			if (fVariable != null) {
 				fVariable.addChild(newVariable);
@@ -64,14 +72,14 @@ public class EvaluatingExpression implements IState {
 				}
 			}
 			
-			DdbgVariable newVariable;
+			GdbVariable newVariable;
 			
-			if ("...".equals(value)) {
-				newVariable = new DdbgVariable(name);
+			if (value.length() > 0 && value.charAt(0) == '@') {
+				newVariable = new GdbVariable(name);
 				newVariable.setLazy(true);
 				newVariable.setIsBase(nameIsBase);
 			} else {
-				newVariable = new DdbgVariable(name, value);
+				newVariable = new GdbVariable(name, value);
 				newVariable.setIsBase(nameIsBase);
 			}
 			if (fVariable == null) {

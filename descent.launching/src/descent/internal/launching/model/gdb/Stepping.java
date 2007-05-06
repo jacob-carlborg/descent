@@ -1,4 +1,4 @@
-package descent.launching.model.ddbg;
+package descent.internal.launching.model.gdb;
 
 import java.io.IOException;
 
@@ -7,10 +7,10 @@ import org.eclipse.debug.core.DebugException;
 
 public class Stepping implements IState {
 	
-	private final DdbgDebugger fCli;
+	private final GdbDebugger fCli;
 	private final int fDebugEvent;
 	
-	public Stepping(DdbgDebugger cli, int debugEvent) {
+	public Stepping(GdbDebugger cli, int debugEvent) {
 		this.fCli = cli;
 		this.fDebugEvent = debugEvent;
 		try {
@@ -25,10 +25,14 @@ public class Stepping implements IState {
 			fCli.fListener.terminated();
 			fCli.notifyStateReturn();
 		}
-		if ("->".equals(text)) {
+		if ("(gdb) ".equals(text)) {
 			fCli.fListener.stepEnded();
 			fCli.notifyStateReturn();
 		}
+	}
+	
+	public void interpretError(String text) throws DebugException, IOException {
+		// Nothing to do
 	}
 	
 	@Override
