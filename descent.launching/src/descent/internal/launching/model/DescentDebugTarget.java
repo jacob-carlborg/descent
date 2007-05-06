@@ -58,7 +58,7 @@ public class DescentDebugTarget extends DescentDebugElement implements IDebugTar
 		this.fDebugger = new SingleThreadCli(this.fDebugger);
 		
 		IPreferenceStore preferenceStore = DescentLaunching.getDefault().getPreferenceStore();
-		int timeout = preferenceStore.getInt(IDescentLaunchingPreferenceConstants.DDBG_TIMEOUT);
+		int timeout = preferenceStore.getInt(IDescentLaunchingPreferenceConstants.DEBUGGER_TIMEOUT);
 		boolean showBaseMembersInSameLevel = preferenceStore.getBoolean(IDescentLaunchingPreferenceConstants.SHOW_BASE_MEMBERS_IN_SAME_LEVEL);
 		this.fDebugger.initialize(this, this, process.getStreamsProxy(), timeout, showBaseMembersInSameLevel);
 		

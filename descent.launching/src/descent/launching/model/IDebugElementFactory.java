@@ -6,8 +6,12 @@ import org.eclipse.debug.core.model.IStackFrame;
 import org.eclipse.debug.core.model.IVariable;
 
 /**
- * A debug element factory is provided to a {@link IDebugger} to create
- * the different objects it must return.
+ * <p>A debug element factory is provided to a {@link IDebugger} to create
+ * the different objects it must return.</p>
+ * 
+ * <p>
+ * This interface is not intended to be implemented by clients.
+ * </p>
  */
 public interface IDebugElementFactory {
 	

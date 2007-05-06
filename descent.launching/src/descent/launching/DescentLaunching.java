@@ -13,6 +13,8 @@ import org.osgi.framework.BundleContext;
 import descent.core.IJavaModel;
 import descent.core.IJavaProject;
 import descent.core.JavaCore;
+import descent.internal.launching.DebuggerRegistry;
+import descent.launching.model.IDebugger;
 
 /**
  * The activator class controls the plug-in life cycle
@@ -24,6 +26,7 @@ public class DescentLaunching extends AbstractUIPlugin {
 
 	// The shared instance
 	private static DescentLaunching plugin;
+	private static IDebuggerRegistry debuggerRegistry;
 	
 	/**
 	 * The constructor
@@ -85,6 +88,25 @@ public class DescentLaunching extends AbstractUIPlugin {
 			abort(MessageFormat.format("Launch configuration {0} references non-existing project {1}.", new String[] {configuration.getName(), projectName}), IDescentLaunchConfigurationConstants.ERR_NOT_A_JAVA_PROJECT, null); 
 		}
 		return javaProject;
+	}
+	
+	/**
+	 * Returns the debugger registry.
+	 * @return the debugger registry
+	 */
+	public static IDebuggerRegistry getDebuggerRegistry() {
+		if (debuggerRegistry == null) {
+			debuggerRegistry = new DebuggerRegistry();
+		}
+		return debuggerRegistry;
+	}
+	
+	/**
+	 * Returns the current configured debugger.
+	 */
+	public static IDebuggerDescriptor getCurrentDebugger() {
+		String debuggerId = getDefault().getPluginPreferences().getString(IDescentLaunchingPreferenceConstants.DEBUGGER_ID);
+		return getDebuggerRegistry().findDebugger(debuggerId);
 	}
 	
 	/**

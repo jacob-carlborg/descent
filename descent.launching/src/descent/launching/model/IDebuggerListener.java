@@ -5,6 +5,10 @@ import org.eclipse.debug.core.DebugException;
 
 /**
  * Listens events notified by an {@link IDebugger}.
+ * 
+ * <p>
+ * This interface is not intended to be implemented by clients.
+ * </p>
  */
 public interface IDebuggerListener {
 	

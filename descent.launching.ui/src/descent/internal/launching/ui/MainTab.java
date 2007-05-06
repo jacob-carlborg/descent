@@ -34,6 +34,7 @@ import descent.core.IJavaProject;
 import descent.core.JavaCore;
 import descent.core.JavaModelException;
 import descent.launching.DescentLaunching;
+import descent.launching.IDebuggerDescriptor;
 import descent.launching.IDescentLaunchConfigurationConstants;
 import descent.launching.IDescentLaunchingPreferenceConstants;
 import descent.launching.ui.DescentLaunchingUI;
@@ -281,14 +282,20 @@ public class MainTab extends AbstractLaunchConfigurationTab {
 		setMessage(null);
 		
 		if (fMode.equals(ILaunchManager.DEBUG_MODE)) {
-			// Check if ddbg's executable is set
-			String ddbgPath = DescentLaunching.getDefault().getPreferenceStore().getString(IDescentLaunchingPreferenceConstants.DDBG_PATH);
+			// Check the debugger
+			IDebuggerDescriptor debugger = DescentLaunching.getCurrentDebugger();
+			if (debugger == null) {
+				setErrorMessage("Debugger must be defined in Window -> Preferences -> D -> Debug.");
+				return false;
+			}
+			
+			String ddbgPath = DescentLaunching.getDefault().getPreferenceStore().getString(IDescentLaunchingPreferenceConstants.DEBUGGER_PATH);
 			if (ddbgPath == null || ddbgPath.trim().length() == 0) {
-				setErrorMessage("Ddbg executable must be defined in Window -> Preferences -> D -> Debug."); //$NON-NLS-1$
+				setErrorMessage("Debugger executable must be defined in Window -> Preferences -> D -> Debug."); //$NON-NLS-1$
 				return false;
 			}
 			if (!new File(ddbgPath).exists()) {
-				setErrorMessage("Ddbg executable file (" + ddbgPath + ") does not exist");
+				setErrorMessage("Debugger executable file (" + ddbgPath + ") does not exist");
 				return false;
 			}
 		}

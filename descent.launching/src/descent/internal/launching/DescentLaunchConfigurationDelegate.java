@@ -18,19 +18,15 @@ import org.eclipse.debug.core.ILaunchManager;
 import org.eclipse.debug.core.IStatusHandler;
 import org.eclipse.debug.core.model.IProcess;
 
-import descent.core.IJavaProject;
 import descent.internal.launching.model.DescentDebugTarget;
 import descent.launching.AbstractDescentLaunchConfigurationDelegate;
 import descent.launching.DescentLaunching;
 import descent.launching.IDescentLaunchConfigurationConstants;
 import descent.launching.model.IDebugger;
-import descent.launching.model.gdb.GdbDebugger;
 import descent.launching.utils.ProcessFactory;
 
 public class DescentLaunchConfigurationDelegate extends AbstractDescentLaunchConfigurationDelegate {
 	
-	private final static String DDBG = "c:\\ary\\programacion\\d\\ddbg\\ddbg.exe";
-
 	public void launch(ILaunchConfiguration config, String mode, ILaunch launch, IProgressMonitor monitor) throws CoreException {
 		if (monitor == null) {
 			monitor = new NullProgressMonitor();
@@ -43,9 +39,9 @@ public class DescentLaunchConfigurationDelegate extends AbstractDescentLaunchCon
 		try {
 			monitor.worked(1);
 			IPath exePath = verifyProgramPath(config);
-			IJavaProject project = verifyJavaProject(config);
+			verifyJavaProject(config);
 			
-			IDebugger cli = new GdbDebugger();
+			IDebugger debugger = verifyDebugger();
 
 			String[] arguments = getProgramArgumentsArray(config);
 
@@ -58,16 +54,16 @@ public class DescentLaunchConfigurationDelegate extends AbstractDescentLaunchCon
 			}
 			
 			if (mode.equals(ILaunchManager.DEBUG_MODE)) {
-				String ddbgPath = verifyDdbgPath();
+				String debuggerPath = verifyDebuggerPath();
 				
 				ArrayList command = new ArrayList(1);
-				command.add(ddbgPath);
+				command.add(debuggerPath);
 				command.add("\"" + exePath.toOSString() + "\"");
 				
-				command.addAll(cli.getDebuggerCommandLineArguments());
+				command.addAll(debugger.getDebuggerCommandLineArguments());
 				
 				if (arguments.length > 0) {
-					command.addAll(cli.getDebugeeCommandLineArguments(arguments));
+					command.addAll(debugger.getDebugeeCommandLineArguments(arguments));
 				}
 				
 				String[] commandArray = (String[]) command.toArray(new String[command.size()]);
@@ -76,7 +72,7 @@ public class DescentLaunchConfigurationDelegate extends AbstractDescentLaunchCon
 				monitor.worked(3);
 				
 				IProcess iprocess = DebugPlugin.newProcess(launch, process, renderProcessLabel(commandArray[1]));
-				DescentDebugTarget target = new DescentDebugTarget(launch, iprocess, cli);		
+				DescentDebugTarget target = new DescentDebugTarget(launch, iprocess, debugger);		
 				launch.addDebugTarget(target);
 				
 				target.started();

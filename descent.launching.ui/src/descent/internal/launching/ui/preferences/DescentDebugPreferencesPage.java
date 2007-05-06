@@ -8,7 +8,9 @@ import org.eclipse.jface.preference.IntegerFieldEditor;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 
+import descent.internal.launching.ui.util.ComboFieldEditor;
 import descent.launching.DescentLaunching;
+import descent.launching.IDebuggerDescriptor;
 import descent.launching.IDescentLaunchingPreferenceConstants;
 
 public class DescentDebugPreferencesPage extends FieldEditorPreferencePage implements IWorkbenchPreferencePage {
@@ -23,13 +25,20 @@ public class DescentDebugPreferencesPage extends FieldEditorPreferencePage imple
 
 	@Override
 	protected void createFieldEditors() {
-		 addField(new FileFieldEditor(IDescentLaunchingPreferenceConstants.DDBG_PATH, "Ddbg executable:", getFieldEditorParent()));
+		IDebuggerDescriptor[] debuggers = DescentLaunching.getDebuggerRegistry().getDebuggers();
+		String[][] comboValues = new String[debuggers.length][];
+		for(int i = 0; i < debuggers.length; i++) {
+			comboValues[i] = new String[] { debuggers[i].getName(), debuggers[i].getId() };
+		}
+		addField(new ComboFieldEditor(IDescentLaunchingPreferenceConstants.DEBUGGER_ID, "Debugger:", comboValues, getFieldEditorParent()));
+		
+		addField(new FileFieldEditor(IDescentLaunchingPreferenceConstants.DEBUGGER_PATH, "Debugger executable:", getFieldEditorParent()));
 		 
-		 IntegerFieldEditor timeout = new IntegerFieldEditor(IDescentLaunchingPreferenceConstants.DDBG_TIMEOUT, "Ddbg timeout (ms):", getFieldEditorParent());
-		 timeout.setValidRange(0, Integer.MAX_VALUE);
-		 addField(timeout);
+		IntegerFieldEditor timeout = new IntegerFieldEditor(IDescentLaunchingPreferenceConstants.DEBUGGER_TIMEOUT, "Debugger timeout (ms):", getFieldEditorParent());
+		timeout.setValidRange(0, Integer.MAX_VALUE);
+		addField(timeout);
 		 
-		 addField(new BooleanFieldEditor(IDescentLaunchingPreferenceConstants.SHOW_BASE_MEMBERS_IN_SAME_LEVEL, "Show base members in the same level as the parent class", getFieldEditorParent()));
+		addField(new BooleanFieldEditor(IDescentLaunchingPreferenceConstants.SHOW_BASE_MEMBERS_IN_SAME_LEVEL, "Show base members in the same level as the parent class", getFieldEditorParent()));
 	}
 
 	public void init(IWorkbench workbench) {

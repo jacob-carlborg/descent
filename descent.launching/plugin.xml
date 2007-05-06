@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.2"?>
 <plugin>
+   <extension-point id="descent.launching.debuggers" name="Debuggers" schema="schema/descent.launching.debuggers.exsd"/>
    <extension
          id="descentLineBreakpointMarker"
          point="org.eclipse.core.resources.markers">
@@ -47,6 +48,17 @@
    <extension
          point="org.eclipse.core.runtime.preferences">
       <initializer class="descent.internal.launching.preferences.DescentDebugPreferencesInitializer"/>
+   </extension>
+   <extension
+         point="descent.launching.debuggers">
+      <debugger
+            class="descent.launching.model.ddbg.DdbgDebugger"
+            id="descent.launching.debugger.ddbg"
+            name="Ddbg"/>
+      <debugger
+            class="descent.launching.model.gdb.GdbDebugger"
+            id="descent.launching.debugger.gdb"
+            name="Gdb"/>
    </extension>
 
 </plugin>

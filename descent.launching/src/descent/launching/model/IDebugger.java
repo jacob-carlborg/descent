@@ -11,6 +11,44 @@ import org.eclipse.debug.core.model.IStackFrame;
 import org.eclipse.debug.core.model.IStreamsProxy;
 import org.eclipse.debug.core.model.IVariable;
 
+import descent.launching.IDebuggerRegistry;
+
+
+/**
+ * <p>A console debugger. A debugger communicates with an underlying
+ * program that controles the debuggee's execution by sending requests (i.e. step into,
+ * step out, add breakpoint, etc.) and by recieving responses (i.e. breakpoint hit, end, etc.).</p>
+ * 
+ * <p>A debugger shall not worry about synchronizing the requests sent
+ * to the underyling program, nor worry about synchronizing the responses.
+ * This is handled by the Descent Launching platform.</p>
+ * 
+ * <p>
+ * A debugger extension is defined in <code>plugin.xml</code>.
+ * Following is an example definition of a debugger extension.
+ * <pre>
+ * &lt;extension point="descent.launching.debuggers"&gt;
+ *   &lt;debugger 
+ *      id="com.example.debuggerIdentifier"
+ *      class="com.example.ExampleDebugger"
+ *      name="Example Debugger"&gt;
+ *   &lt;/debugger&gt;
+ * &lt;/extension&gt;
+ * </pre>
+ * The attributes are specified as follows:
+ * <ul>
+ * <li><code>id</code> specifies a unique identifier for the debugger - see {@link IDebuggerRegistry}</li>
+ * <li><code>class</code> specifies the fully qualified name of the Java class
+ *   that implements this interface.</li>
+ * <li><code>name</code> the name of the debugger.</li>
+ * </ul>
+ * </p>
+ * 
+ * <p>Clients may implement this interface.</p>
+ * 
+ * @see IDebugElementFactory
+ * @see IDebuggerRegistry
+ */
 public interface IDebugger {
 	
 	/**

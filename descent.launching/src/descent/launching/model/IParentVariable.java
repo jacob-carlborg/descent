@@ -4,6 +4,10 @@ import org.eclipse.debug.core.model.IVariable;
 
 /**
  * A variable that can have children.
+ * 
+ * <p>
+ * This interface is not intended to be implemented by clients.
+ * </p>
  */
 public interface IParentVariable extends IVariable {
 	

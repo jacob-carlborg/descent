@@ -109,16 +109,22 @@ public interface IDescentLaunchConfigurationConstants {
 	public static final int ERR_WORKING_DIRECTORY_NOT_SUPPORTED = 106;
 	
 	/**
-	 * Status code indicating that the path for the ddbg executable
+	 * Status code indicating that the debugger
 	 * is not defined.
 	 */
-	public static final int ERR_DDBG_EXECUTABLE_NOT_DEFINED = 107;
+	public static final int ERR_DEBUGGER_NOT_DEFINED = 107;
+	
+	/**
+	 * Status code indicating that the path for the debugger executable
+	 * is not defined.
+	 */
+	public static final int ERR_DEBUGGER_EXECUTABLE_NOT_DEFINED = 108;
 	
 	/**
 	 * Status code indicating that the path for the ddbg executable
 	 * is invalid.
 	 */
-	public static final int ERR_DDBG_EXECUTABLE_NOT_EXIST = 108;
+	public static final int ERR_DEBUGGER_EXECUTABLE_NOT_EXIST = 109;
 	
 	/**
 	 * Status code indicating an unexpected internal error.

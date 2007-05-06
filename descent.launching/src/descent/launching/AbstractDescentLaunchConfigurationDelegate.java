@@ -32,6 +32,7 @@ import org.eclipse.debug.core.model.LaunchConfigurationDelegate;
 
 import descent.core.IJavaProject;
 import descent.core.JavaCore;
+import descent.launching.model.IDebugger;
 
 public abstract class AbstractDescentLaunchConfigurationDelegate extends LaunchConfigurationDelegate {
 	
@@ -276,16 +277,25 @@ public abstract class AbstractDescentLaunchConfigurationDelegate extends LaunchC
 		return programPath;
 	}
 	
-	protected String verifyDdbgPath() throws CoreException {
-		String ddbgPath = DescentLaunching.getDefault().getPreferenceStore().getString(IDescentLaunchingPreferenceConstants.DDBG_PATH);
+	protected IDebugger verifyDebugger() throws CoreException {
+		IDebuggerDescriptor debugger = DescentLaunching.getCurrentDebugger();
+		if (debugger == null) {
+			abort("Debugger must be defined in Window -> Preferences -> D -> Debug.", null,
+					IDescentLaunchConfigurationConstants.ERR_DEBUGGER_NOT_DEFINED);
+		}
+		return debugger.createDebugger();
+	}
+	
+	protected String verifyDebuggerPath() throws CoreException {
+		String ddbgPath = DescentLaunching.getDefault().getPreferenceStore().getString(IDescentLaunchingPreferenceConstants.DEBUGGER_PATH);
 		if (ddbgPath == null || ddbgPath.trim().length() == 0) {
-			abort("Ddbg executable must be defined in Window -> Preferences -> D -> Debug.", null,
-					IDescentLaunchConfigurationConstants.ERR_DDBG_EXECUTABLE_NOT_DEFINED);
+			abort("Debugger executable must be defined in Window -> Preferences -> D -> Debug.", null,
+					IDescentLaunchConfigurationConstants.ERR_DEBUGGER_EXECUTABLE_NOT_DEFINED);
 		}
 		if (!new File(ddbgPath).exists()) {
-			abort("Ddbg executable file does not exist", 
+			abort("Debugger executable file does not exist", 
 					new FileNotFoundException(ddbgPath + " not found"),
-					IDescentLaunchConfigurationConstants.ERR_DDBG_EXECUTABLE_NOT_EXIST);
+					IDescentLaunchConfigurationConstants.ERR_DEBUGGER_EXECUTABLE_NOT_EXIST);
 		}
 		return ddbgPath;
 	}
