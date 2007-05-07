@@ -1,5 +1,6 @@
 package dtool.dom.ast;
 
+import util.Assert;
 import descent.core.domX.IASTVisitor;
 
 public abstract class ASTNeoNode extends ASTNode {
@@ -26,8 +27,8 @@ public abstract class ASTNeoNode extends ASTNode {
 	}
 
 	public final void accept0(IASTVisitor visitor) {
-		// Neo AST elements cannot use ASTVisitor
-		assert false;
+		Assert.fail("NEO AST elements should not use IASTVisitor");
+		
 	}
 
 	// Neo AST elements use ASTNeoVisitor

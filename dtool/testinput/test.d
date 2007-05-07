@@ -15,6 +15,7 @@ int a;
 int x1, x2;
 
 char[] func() {
+	Foo foo;
 	asf!(int, Foo, 23)++;
 	a++;
 	a.a++;

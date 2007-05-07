@@ -5,7 +5,7 @@ import descent.core.domX.IASTVisitor;
 
 public class DeclarationStatement extends Statement {
 
-	private final Dsymbol d;
+	public final Dsymbol d;
 
 	public DeclarationStatement(Dsymbol d) {
 		this.d = d;
