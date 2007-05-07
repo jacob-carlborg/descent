@@ -20,7 +20,7 @@ public class ConsultingRegisters implements IState {
 	}
 	
 	public void interpret(String text) throws DebugException, IOException {
-		if (text.equals("(gdb) ")) {
+		if (text.equals("(gdb)")) {
 			fCli.notifyStateReturn();
 		} else {
 			parseRegisters(text, fRegisterGroup);

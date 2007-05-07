@@ -21,10 +21,10 @@ public class ConsultingStackFrames  implements IState {
 	
 	public void interpret(String text) throws DebugException, IOException {
 		// Fix
-		if (text.startsWith("(gdb) #")) {
+		if (text.startsWith("(gdb)#")) {
 			text = text.substring(2);
 		}
-		if (text.equals("(gdb) ")) {
+		if (text.equals("(gdb)")) {
 			if (fBuffer.length() > 0) {
 				fStackFrames.add(parseStackFrame(fBuffer.toString()));
 			}

@@ -94,5 +94,22 @@
             id="descent.launching.ui.DescentDebugPreferencesPage"
             name="Debug"/>
    </extension>
+   <extension
+         point="org.eclipse.ui.perspectiveExtensions">
+      <perspectiveExtension targetID="org.eclipse.debug.ui.DebugPerspective">
+         <view
+               id="org.eclipse.debug.ui.RegisterView"
+               relationship="stack"
+               relative="org.eclipse.debug.ui.VariableView"
+               visible="true"/>
+         <view
+               id="org.eclipse.debug.ui.MemoryView"
+               relationship="stack"
+               relative="org.eclipse.debug.ui.VariableView"
+               visible="true"/>
+         <viewShortcut id="org.eclipse.debug.ui.RegisterView"/>
+         <viewShortcut id="org.eclipse.debug.ui.MemoryView"/>
+      </perspectiveExtension>
+   </extension>
 
 </plugin>

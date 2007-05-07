@@ -81,11 +81,24 @@ public class DdbgDebugger implements IDebugger {
 	public void start() throws DebugException, IOException {
 		// Turn off recursive expression evaluation
 		try {
-			setState(new TogglingRecursiveExpressionEvaluation(this));
+			setState(new WaitingConfirmation(this));
 			
 			beforeWaitStateReturn();
 			
 			fProxy.write("er\n");
+			
+			waitStateReturn();
+		} finally {
+			setState(fRunningState);
+		}
+		
+		// Redirect debuggees output to new console
+		try {
+			setState(new WaitingConfirmation(this));
+			
+			beforeWaitStateReturn();
+			
+			fProxy.write("nc\n");
 			
 			waitStateReturn();
 		} finally {
@@ -114,7 +127,7 @@ public class DdbgDebugger implements IDebugger {
 
 	public void addBreakpoint(IResource resource, int lineNumber) throws IOException {
 		try {
-			setState(new AddingBreakpoint(this));
+			setState(new WaitingConfirmation(this));
 			
 			beforeWaitStateReturn();
 			
@@ -132,7 +145,7 @@ public class DdbgDebugger implements IDebugger {
 
 	public void removeBreakpoint(IResource resource, int lineNumber) throws IOException {
 		try {
-			setState(new RemovingBreakpoint(this));
+			setState(new WaitingConfirmation(this));
 			
 			beforeWaitStateReturn();
 			
@@ -199,7 +212,7 @@ public class DdbgDebugger implements IDebugger {
 
 	public void setStackFrame(int stackFrame) throws IOException {
 		try {
-			setState(new SettingStackFrame(this));
+			setState(new WaitingConfirmation(this));
 			
 			beforeWaitStateReturn();
 			

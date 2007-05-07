@@ -11,21 +11,27 @@ public class ConsultingVariables implements IState {
 	public List<GdbVariable> fVariables = new ArrayList<GdbVariable>();
 	private GdbVariable fVariable;
 	private final GdbDebugger fCli;
+	private boolean fTextRecieved = false;
 	
 	public ConsultingVariables(GdbDebugger cli) {
 		this.fCli = cli;
 	}
 
 	public void interpret(String text) throws DebugException, IOException {
-		if (text.equals("(gdb) ")) {
+		if (text.equals("(gdb)")) {
 			fCli.notifyStateReturn();
 		} else {
 			parseVariable(text);
 		}
+		
+		fTextRecieved = true;
 	}
 	
 	public void interpretError(String text) throws DebugException, IOException {
-		// Nothing to do
+		if (!fTextRecieved) {
+			// May happen if requesting locals, and there are no locals
+			fCli.notifyStateReturn();
+		}
 	}
 	
 	/*
@@ -40,13 +46,22 @@ public class ConsultingVariables implements IState {
 	private void parseVariable(String text) {
 		text = text.trim();
 		
+		boolean notifyEnd = false;
+		if (text.indexOf("(gdb)") != -1) {
+			notifyEnd = true;
+		}
+		
 		if ("}".equals(text) || "},".equals(text)) {
 			fVariable = fVariable.getParent();
+			if (notifyEnd) fCli.notifyStateReturn();
 			return;
 		}
 		
 		int indexOfEquals = text.indexOf('=');
-		if (indexOfEquals == -1) return;
+		if (indexOfEquals == -1) {
+			if (notifyEnd) fCli.notifyStateReturn();
+			return;
+		}
 		
 		String name = text.substring(0, indexOfEquals).trim();
 		String value = text.substring(indexOfEquals + 1).trim();
@@ -87,6 +102,8 @@ public class ConsultingVariables implements IState {
 				fVariable.addChild(newVariable);
 			}
 		}
+		
+		if (notifyEnd) fCli.notifyStateReturn();
 	}
 
 	@Override

@@ -21,7 +21,7 @@ import descent.launching.model.IParentVariable;
 
 public class GdbDebugger implements IDebugger {
 	
-	private final static boolean DEBUG = true;
+	private final static boolean DEBUG = false;
 	
 	private int fTimeout;
 	private boolean fshowBaseMembersInSameLevel;
@@ -52,7 +52,7 @@ public class GdbDebugger implements IDebugger {
 
 	public void addBreakpoint(IResource resource, int lineNumber) throws DebugException, IOException {
 		try {
-			setState(new AddingBreakpoint(this));
+			setState(new WaitingConfirmation(this));
 			
 			beforeWaitStateReturn();
 			
@@ -93,7 +93,7 @@ public class GdbDebugger implements IDebugger {
 	}
 
 	public String getEndCommunicationString() {
-		return "(gdb) ";
+		return "(gdb)";
 	}
 
 	public byte[] getMemoryBlock(long startAddress, long length) throws IOException {
@@ -206,7 +206,7 @@ public class GdbDebugger implements IDebugger {
 
 	public void removeBreakpoint(IResource resource, int lineNumber) throws DebugException, IOException {
 		try {
-			setState(new RemovingBreakpoint(this));
+			setState(new WaitingConfirmation(this));
 			
 			beforeWaitStateReturn();
 			
@@ -232,7 +232,7 @@ public class GdbDebugger implements IDebugger {
 
 	public void setStackFrame(int stackFrame) throws IOException {
 		try {
-			setState(new SettingStackFrame(this));
+			setState(new WaitingConfirmation(this));
 			
 			beforeWaitStateReturn();
 			

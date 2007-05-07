@@ -52,7 +52,7 @@ public class DescentDebugTarget extends DescentDebugElement implements IDebugTar
 		this.fLaunch = launch;
 		this.fProcess = process;
 		this.fDebugger = debugger;
-		this.fEndCommunicationString = fDebugger.getEndCommunicationString();
+		this.fEndCommunicationString = fDebugger.getEndCommunicationString().trim();
 		
 		// Force sending one request at a time
 		this.fDebugger = new SingleThreadCli(this.fDebugger);
@@ -311,10 +311,24 @@ public class DescentDebugTarget extends DescentDebugElement implements IDebugTar
 				
 				fStreamBuffer.delete(0, lastIndexOfLine);
 				
-				if (fStreamBuffer.toString().equals(fEndCommunicationString)) {
+				String reminder = fStreamBuffer.toString().trim();
+				
+				if (reminder.equals(fEndCommunicationString)) {
 					if (fIsError) {
 						fDebugger.interpretError(fEndCommunicationString);
 					} else {
+						fDebugger.interpret(fEndCommunicationString);
+					}
+					fStreamBuffer.setLength(0);
+					
+				// Special case, may happen
+				} else if (reminder.endsWith(fEndCommunicationString)) {
+					int index = reminder.length() - fEndCommunicationString.length();
+					if (fIsError) {
+						fDebugger.interpretError(reminder.substring(0, index));
+						fDebugger.interpretError(fEndCommunicationString);
+					} else {
+						fDebugger.interpret(reminder.substring(0, index));
 						fDebugger.interpret(fEndCommunicationString);
 					}
 					fStreamBuffer.setLength(0);

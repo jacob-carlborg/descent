@@ -17,7 +17,7 @@ public class DescentValue extends DescentDebugElement implements IValue {
 	private final static IVariable[] NO_VARIABLES = new IVariable[0];
 
 	private final String fName;
-	private final String fValue;
+	protected String fValue;
 	private final String fExpression;
 	private final IDebugger fDebugger;
 	private List<IVariable> fVariables;

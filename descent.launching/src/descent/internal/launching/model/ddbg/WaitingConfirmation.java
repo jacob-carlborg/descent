@@ -4,11 +4,11 @@ import java.io.IOException;
 
 import org.eclipse.debug.core.DebugException;
 
-public class TogglingRecursiveExpressionEvaluation implements IState {
+public class WaitingConfirmation implements IState {
 	
 	private final DdbgDebugger fCli;
 
-	public TogglingRecursiveExpressionEvaluation(DdbgDebugger cli) {
+	public WaitingConfirmation(DdbgDebugger cli) {
 		this.fCli = cli;		
 	}
 	
@@ -20,7 +20,7 @@ public class TogglingRecursiveExpressionEvaluation implements IState {
 	
 	@Override
 	public String toString() {
-		return "toggling recursive expression evaluation";
+		return "waiting confirmation";
 	}
 	
 }

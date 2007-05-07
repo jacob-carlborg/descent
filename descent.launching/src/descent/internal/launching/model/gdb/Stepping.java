@@ -24,8 +24,7 @@ public class Stepping implements IState {
 		if ("Process terminated".equals(text)) {
 			fCli.fListener.terminated();
 			fCli.notifyStateReturn();
-		}
-		if ("(gdb) ".equals(text)) {
+		} else if ("(gdb)".equals(text)) {
 			fCli.fListener.stepEnded();
 			fCli.notifyStateReturn();
 		}

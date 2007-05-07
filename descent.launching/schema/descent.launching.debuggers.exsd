@@ -76,7 +76,7 @@
          <meta.section type="since"/>
       </appInfo>
       <documentation>
-         [Enter the first release in which this extension point appears.]
+         
       </documentation>
    </annotation>
 
@@ -85,7 +85,7 @@
          <meta.section type="examples"/>
       </appInfo>
       <documentation>
-         [Enter extension point usage example here.]
+         The descent.launching plugin comes with two debuggers: Ddbg and Gdb.
       </documentation>
    </annotation>
 
@@ -94,7 +94,7 @@
          <meta.section type="apiInfo"/>
       </appInfo>
       <documentation>
-         [Enter API information here.]
+         The debuggers registry (obtained by calling &lt;code&gt;descent.launching.DescentLaunching.getDebuggerRegistry()&lt;/code&gt;) lists all the registered debuggers.
       </documentation>
    </annotation>
 
@@ -103,7 +103,7 @@
          <meta.section type="implementation"/>
       </appInfo>
       <documentation>
-         [Enter information about supplied implementation of this extension point.]
+         
       </documentation>
    </annotation>
 

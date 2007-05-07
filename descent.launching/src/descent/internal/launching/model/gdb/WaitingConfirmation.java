@@ -4,16 +4,16 @@ import java.io.IOException;
 
 import org.eclipse.debug.core.DebugException;
 
-public class AddingBreakpoint implements IState {
+public class WaitingConfirmation implements IState {
 	
 	private final GdbDebugger fCli;
 
-	public AddingBreakpoint(GdbDebugger cli) {
+	public WaitingConfirmation(GdbDebugger cli) {
 		this.fCli = cli;		
 	}
 	
 	public void interpret(String text) throws DebugException, IOException {
-		if ("(gdb) ".equals(text)) {
+		if ("(gdb)".equals(text)) {
 			fCli.notifyStateReturn();
 		}
 	}
@@ -24,7 +24,7 @@ public class AddingBreakpoint implements IState {
 	
 	@Override
 	public String toString() {
-		return "adding breakpoing";
+		return "waiting confirmation";
 	}
 	
 }

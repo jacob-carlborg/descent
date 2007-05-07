@@ -72,9 +72,9 @@ public interface IDebugger {
 	List<String> getDebugeeCommandLineArguments(String[] arguments);
 	
 	/**
-	 * Returns the string that is used by this debugger to indicate
+	 * <p>Returns the string that is used by this debugger to indicate
 	 * that a single communication has ended. This string may be,
-	 * for example "->" (in ddbg) or "(gdb) " (in gdb).
+	 * for example "->" (in ddbg) or "(gdb)" (in gdb).</p>
 	 * @return an end-communication string
 	 */
 	String getEndCommunicationString();

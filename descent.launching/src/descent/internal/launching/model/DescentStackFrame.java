@@ -85,13 +85,13 @@ public class DescentStackFrame extends DescentDebugElement implements IStackFram
 		}
 	}
 
-	private IVariable[] mergeVariables(IVariable[] variables, IVariable[] newVariables) throws DebugException {
-		if (variables == null) {
+	private IVariable[] mergeVariables(IVariable[] oldVariables, IVariable[] newVariables) throws DebugException {
+		if (oldVariables == null) {
 			return newVariables;
 		}
 		
-		for(int i = 0; i < variables.length && i < newVariables.length; i++) {
-			DescentVariable oldVar = (DescentVariable) variables[i];
+		for(int i = 0; i < oldVariables.length && i < newVariables.length; i++) {
+			DescentVariable oldVar = (DescentVariable) oldVariables[i];
 			DescentVariable newVar = (DescentVariable) newVariables[i];
 			if (oldVar.getName().equals(newVar.getName())) {
 				DescentValue oldValue = oldVar.getValue();
@@ -99,7 +99,6 @@ public class DescentStackFrame extends DescentDebugElement implements IStackFram
 				
 				if (oldValue != null && newValue != null && oldValue.getValueString() != null && newValue.getValueString() != null) {				
 					if (!oldValue.getValueString().equals(newValue.getValueString())) {
-						newVar.setValue(oldValue);
 						newVar.setHasValueChanged(true);
 					}
 					if (!oldValue.isLazy() && !newValue.isLazy() && oldValue.hasVariables() &&  oldValue.hasVariables() == newValue.hasVariables()) {
@@ -108,6 +107,7 @@ public class DescentStackFrame extends DescentDebugElement implements IStackFram
 				}
 			}
 		}
+		
 		return newVariables;
 	}
 
