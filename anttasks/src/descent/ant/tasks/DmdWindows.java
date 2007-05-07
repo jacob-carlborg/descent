@@ -105,12 +105,22 @@ class DmdWindows extends Dmd{
 		}
 
 		private String getCompiler(){
-			File compiler = new File( dTask.compilerdir, "dmd\\bin\\dmd.exe" );
+			File compiler = new File( dTask.compilerdir, "dmd.exe" );
 			if( !compiler.isFile() ){
-				throw new BuildException( String.format( "Compiler %s is not an existing file", compiler.getAbsolutePath() ));
+				throw new BuildException( String.format( "Could not find compiler at %s", compiler.getAbsolutePath() ));
 			}
 			return compiler.getAbsolutePath();
 		}
+		
+		private String getLinker()
+		{
+			File linker = new File( dTask.compilerdir ,"..\\..\\dm\\bin\\link.exe");
+			if( !linker .isFile() ){
+				throw new BuildException( String.format( "Could not find linker  at %s", linker .getAbsolutePath() ));
+			}
+			return linker .getAbsolutePath();
+		}
+		
 		private void compile() {
 			LinkedList<String> cmdline = new LinkedList<String>();
 			cmdline.add( getCompiler() );
@@ -171,7 +181,7 @@ class DmdWindows extends Dmd{
 			if ( dTask.destfile == null ) throw new BuildException("You must specify a target name for your executable via 'destfile' property");
 			
 			LinkedList<String> cmdline = new LinkedList<String>();
-			cmdline.add( dTask.compilerdir + "dm\\bin\\link.exe");
+			cmdline.add( getLinker() );
 			
 			StringBuilder objectBuilder = new StringBuilder();
 			
@@ -250,7 +260,7 @@ class DmdWindows extends Dmd{
 			for( String s : cmdline ){
 				sb.append( " " + s );
 			}
-			String libraryPath = dTask.compilerdir + "dmd\\lib;" + dTask.compilerdir + "dm\\lib";
+			String libraryPath = dTask.compilerdir + "\\..\\lib;" + dTask.compilerdir + "\\..\\..\\dm\\lib";
 			
 			dTask.log( String.format("Setting Library path to : %s", libraryPath) , Project.MSG_INFO );
 			String[] libOpts = new String[1];
