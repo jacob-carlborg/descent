@@ -151,28 +151,29 @@ class DAntFileCreator {
 		
 	String antText = "";
 	String compilerType = "";
-		
+	
+	String compilerLocation=JavaCore.getPlugin().
+	getPluginPreferences().getString("descent.ui.preferences.DCompilerSettings.compilerLocation");
+
+	compilerType = JavaCore.getPlugin().
+	getPluginPreferences().getString("descent.ui.preferences.DCompilerSettings.compilerType");
+
 	boolean isWindows = true;
 		
 	if (System.getProperty("os.name").toUpperCase().indexOf("WINDOWS") == -1) {
 	    isWindows = false;
 	}
 
-	if (isWindows) {
-	    compilerType = "dmd-windows";
+	if ( isWindows && compilerType.equals("dmd") )
+	{
+		compilerType = "dmd-windows";
 	}
-	else
-	    {
-		compilerType = "dmd-linux";
-	    }
-		
-		
+	else if ( compilerType.equals("dmd") )
+	{
+		compilerType = "gdc";
+	}
 	
-	String compilerLocation=JavaCore.getPlugin().
-		getPluginPreferences().getString("descent.ui.preferences.DCompilerSettings.compilerLocation");
-
-	compilerType = JavaCore.getPlugin().
-	getPluginPreferences().getString("descent.ui.preferences.DCompilerSettings.compilerType");
+	
 
 	
 
