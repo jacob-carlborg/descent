@@ -1,4 +1,4 @@
-package mmrnmhrm.ui.deditor;
+package mmrnmhrm.ui.editor;
 
 import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.IEditorPart;

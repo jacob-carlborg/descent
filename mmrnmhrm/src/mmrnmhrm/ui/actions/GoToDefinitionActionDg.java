@@ -1,7 +1,7 @@
 package mmrnmhrm.ui.actions;
 
-import mmrnmhrm.ui.deditor.DeeEditor;
-import mmrnmhrm.ui.deditor.EditorUtil;
+import mmrnmhrm.ui.editor.DeeEditor;
+import mmrnmhrm.ui.editor.EditorUtil;
 
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.dialogs.MessageDialog;

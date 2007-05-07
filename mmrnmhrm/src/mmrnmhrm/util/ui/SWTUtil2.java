@@ -73,10 +73,10 @@ public class SWTUtil2 {
 	}
 	
 
-	/** Creates a new GridLayout with numColumns and initializes it. */
+	/** Creates and initializes a new GridLayout with numColumns and margins. */
 	public static Layout createGridLayout(int numColumns, Control testControl) {
 		GridLayout gd = new GridLayout(numColumns, false);
-		initGridLayoutWithDLUs(gd, testControl);
+		initGridLayout(gd, true, testControl);
 		return gd;
 	}
 	

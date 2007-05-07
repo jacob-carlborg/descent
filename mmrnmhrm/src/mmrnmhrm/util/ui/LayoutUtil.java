@@ -116,4 +116,13 @@ public class LayoutUtil {
 		}
 		return gd;
 	}
+
+	/** Creates a GridData that is used by default in fields. */
+	public static GridData createDefaultGridData() {
+		GridData gd = new GridData();
+		gd.horizontalAlignment = SWT.FILL;
+		gd.verticalAlignment = SWT.FILL;
+		gd.grabExcessHorizontalSpace = true;
+		return gd;
+	}
 }

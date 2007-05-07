@@ -1,7 +1,6 @@
 package mmrnmhrm.util.ui;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 
@@ -31,11 +30,7 @@ public class DialogComposite extends Composite {
 		SWTUtil2.setRandomColor(this);
 		
 		if(parent.getLayout() instanceof GridLayout) {
-			GridData gd = new GridData();
-			gd.horizontalAlignment = SWT.FILL;
-			gd.verticalAlignment = SWT.FILL;
-			gd.grabExcessHorizontalSpace = true;
-			setLayoutData(gd);
+			setLayoutData(LayoutUtil.createDefaultGridData());
 		}
 	}
 

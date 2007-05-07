@@ -23,13 +23,14 @@ public class DeeModelRoot extends LangModelRoot {
 	}
 
 	/** Creates a D project in the given existing workspace project. */
-	public void createDeeProject(IProject project) throws CoreException {
+	public DeeProject createDeeProject(IProject project) throws CoreException {
 		DeeNature.addNature(project, DeeNature.NATURE_ID);
 	
 		DeeProject deeproj = new DeeProject(project);
 		deeproj.setDefaultBuildPath();
 		deeproj.saveProjectConfigFile();
 		addChild(deeproj);
+		return deeproj;
 	}
 	
 	/** Returns all D projects in the D model. */
@@ -37,4 +38,8 @@ public class DeeModelRoot extends LangModelRoot {
 		return (DeeProject[]) getChildren();
 	}
 
+	/** Removes a D project from the model. Does not delete workspace project. */
+	public void removeDeeProject(DeeProject deeproject) throws CoreException {
+		removeChild(deeproject);
+	}
 }

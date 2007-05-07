@@ -1,4 +1,4 @@
-package mmrnmhrm.ui.deditor;
+package mmrnmhrm.ui.editor;
 
 import java.util.ArrayList;
 import java.util.List;

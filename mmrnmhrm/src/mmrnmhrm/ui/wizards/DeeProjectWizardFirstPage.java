@@ -16,7 +16,11 @@ import java.util.Observable;
 import java.util.Observer;
 
 import mmrnmhrm.core.DeeCore;
+import mmrnmhrm.core.model.DeeModelManager;
 import mmrnmhrm.core.model.DeeModelRoot;
+import mmrnmhrm.core.model.DeeProject;
+import mmrnmhrm.util.ui.LayoutUtil;
+import mmrnmhrm.util.ui.SWTUtil2;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IWorkspaceRoot;
@@ -27,7 +31,6 @@ import org.eclipse.jdt.internal.ui.wizards.dialogfields.SelectionButtonDialogFie
 import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Link;
@@ -46,8 +49,8 @@ public class DeeProjectWizardFirstPage extends LangProjectWizardFirstPage {
 		
 		public DCEGroup(Composite composite) {
 			fGroup= new Group(composite, SWT.NONE);
-			fGroup.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-			fGroup.setLayout(initGridLayout(new GridLayout(3, false), true));
+			fGroup.setLayoutData(LayoutUtil.createDefaultGridData());
+			fGroup.setLayout(SWTUtil2.createGridLayout(3, null));
 			fGroup.setText(DeeNewWizardMessages.LangNewProject_Page1_DCEGroup_title); 
 						
 			fUseDefaultDCE= new SelectionButtonDialogField(SWT.RADIO);
@@ -101,21 +104,31 @@ public class DeeProjectWizardFirstPage extends LangProjectWizardFirstPage {
 		return new Observer[] { fDCEGroup };
 	}
 	
+	
+	public DeeProjectWizard getWizard() {
+		return (DeeProjectWizard) super.getWizard();
+	}
+	
 	@Override
 	public IWizardPage getNextPage() {
 		return super.getNextPage();
-		// TODO: create project
-		// set next page Project
+		// TODO: execute createDeeProject
 	}
 	
 	public void createDeeProject(final IProgressMonitor monitor) throws CoreException {
-
 		IWorkspaceRoot workspaceRoot = DeeCore.getWorkspaceRoot();
 		IProject project = workspaceRoot.getProject(getProjectName());
 		project.create(monitor);
 		project.open(monitor);
 
-		DeeModelRoot.getInstance().createDeeProject(project);
+		getWizard().deeProject = DeeModelManager.createDeeProject(project);
+	}
 
+	
+	public void deleteDeeProject(final IProgressMonitor monitor) throws CoreException {
+		DeeProject deeProject = getWizard().deeProject;
+		deeProject.getProject().delete(false, monitor);
+
+		DeeModelManager.getRoot().removeDeeProject(deeProject);
 	}
 }

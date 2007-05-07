@@ -1,6 +1,6 @@
 package mmrnmhrm.ui.outline;
 
-import mmrnmhrm.ui.deditor.DeeEditor;
+import mmrnmhrm.ui.editor.DeeEditor;
 
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;

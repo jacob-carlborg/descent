@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Mmrnmhrm Core & UI
 Bundle-SymbolicName: mmrnmhrm;singleton:=true
-Bundle-Version: 0.0.1
+Bundle-Version: 0.0.2
 Bundle-Activator: mmrnmhrm.ui.DeePlugin
 Bundle-Localization: plugin
 Require-Bundle: com.ibm.icu,
@@ -17,7 +17,6 @@ Require-Bundle: com.ibm.icu,
  org.eclipse.ui.ide,
  org.eclipse.ui.navigator
 Eclipse-LazyStart: true
-Bundle-ClassPath: .
 Bundle-Vendor: Mother Ark
 Eclipse-RegisterBuddy: mmrnmhrm.tests; 
 Export-Package: mmrnmhrm.core,
@@ -26,8 +25,8 @@ Export-Package: mmrnmhrm.core,
  mmrnmhrm.org.eclipse.ui.internal.editors.text,
  mmrnmhrm.ui,
  mmrnmhrm.ui.actions,
- mmrnmhrm.ui.deditor,
- mmrnmhrm.ui.deditor.text,
+ mmrnmhrm.ui.editor,
+ mmrnmhrm.ui.editor.text,
  mmrnmhrm.ui.navigator,
  mmrnmhrm.ui.outline,
  mmrnmhrm.ui.preferences,
@@ -38,3 +37,4 @@ Export-Package: mmrnmhrm.core,
  mmrnmhrm.ui.wizards.projconfig,
  mmrnmhrm.util.ui,
  mmrnmhrm.util.ui.fields
+Bundle-ClassPath: .

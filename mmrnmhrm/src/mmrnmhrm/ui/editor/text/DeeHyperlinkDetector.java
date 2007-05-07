@@ -1,4 +1,4 @@
-package mmrnmhrm.ui.deditor.text;
+package mmrnmhrm.ui.editor.text;
 
 import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.ITextViewer;

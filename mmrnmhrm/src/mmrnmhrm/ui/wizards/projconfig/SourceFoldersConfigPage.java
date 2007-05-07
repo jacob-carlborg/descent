@@ -54,8 +54,9 @@ public class SourceFoldersConfigPage extends AbstractConfigPage {
 
 	private void updateView() {
 		fSrcFoldersList.setElements(fDeeProject.getSourceFolders());
-		fOutputLocationField.setTextWithoutUpdate(
-				fDeeProject.getOutputDir().getProjectRelativePath().toString());
+		// TODO MAKE TESTCASE FOR THIS
+		fOutputLocationPath = fDeeProject.getOutputDir().getProjectRelativePath();
+		fOutputLocationField.setTextWithoutUpdate(fOutputLocationPath.toString());
 	}
 
 	

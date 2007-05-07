@@ -1,7 +1,7 @@
-package mmrnmhrm.ui.deditor;
+package mmrnmhrm.ui.editor;
 
 import mmrnmhrm.ui.DeePlugin;
-import mmrnmhrm.ui.deditor.text.DeeHyperlinkDetector;
+import mmrnmhrm.ui.editor.text.DeeHyperlinkDetector;
 import mmrnmhrm.ui.text.EDeePartitions;
 
 import org.eclipse.jface.text.hyperlink.IHyperlinkDetector;

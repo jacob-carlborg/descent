@@ -1,5 +1,7 @@
 package mmrnmhrm.ui.wizards;
 
+import mmrnmhrm.core.model.DeeProject;
+
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 
@@ -7,6 +9,7 @@ public class DeeProjectWizard extends NewElementWizard {
 
     public DeeProjectWizardFirstPage fFirstPage;
     protected DeeProjectWizardSecondPage fSecondPage;
+    protected DeeProject deeProject;
 	
 	public DeeProjectWizard() {
 		setWindowTitle(DeeNewWizardMessages.LangNewProject_wizardTitle);
@@ -15,7 +18,7 @@ public class DeeProjectWizard extends NewElementWizard {
     public void addPages() {
         super.addPages();
         fFirstPage = new DeeProjectWizardFirstPage();
-        fSecondPage = new DeeProjectWizardSecondPage();
+        //fSecondPage = new DeeProjectWizardSecondPage();
         addPage(fFirstPage);
         //addPage(fSecondPage);
     }
@@ -23,8 +26,15 @@ public class DeeProjectWizard extends NewElementWizard {
 	/** {@inheritDoc} */
 	@Override
 	protected void finishPage(IProgressMonitor monitor) throws CoreException {
-		fFirstPage.createDeeProject(monitor);
+		if(deeProject == null) {
+			fFirstPage.createDeeProject(monitor);
+		}
+		
+		//TODO: select and reveal?
 	}
 
+	public DeeProject getDeeProject() {
+		return deeProject;
+	}
 
 }

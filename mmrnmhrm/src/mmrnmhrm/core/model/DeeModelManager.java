@@ -38,7 +38,8 @@ public class DeeModelManager {
 		// Watch out for listener add/remove while change notification is in progress.
 		IElementChangedListener[] listeners;
 		synchronized(this) {
-			listeners = (IElementChangedListener[]) elementChangedListeners.toArray();
+			listeners = new IElementChangedListener[elementChangedListeners.size()];
+			listeners = elementChangedListeners.toArray(listeners);
 		}
 		
 		for(IElementChangedListener listener : listeners) {
@@ -81,7 +82,10 @@ public class DeeModelManager {
 		return (DeeProject) getRoot().getLangProject(project);
 	}
 
-
+	/** Creates a D project in the given existing workspace project. */
+	public static DeeProject createDeeProject(IProject project) throws CoreException {
+		return getRoot().createDeeProject(project);
+	}
 	
 
 }

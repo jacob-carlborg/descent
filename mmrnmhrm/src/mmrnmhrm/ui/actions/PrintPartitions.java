@@ -1,6 +1,6 @@
 package mmrnmhrm.ui.actions;
 
-import mmrnmhrm.ui.deditor.DeeEditor;
+import mmrnmhrm.ui.editor.DeeEditor;
 import mmrnmhrm.ui.text.DebugPartitioner;
 
 import org.eclipse.jface.action.IAction;

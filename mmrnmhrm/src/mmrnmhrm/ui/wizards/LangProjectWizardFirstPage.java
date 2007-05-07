@@ -7,6 +7,7 @@ import java.util.Observer;
 import mmrnmhrm.ui.ActualPlugin;
 import mmrnmhrm.util.ui.ColumnComposite;
 import mmrnmhrm.util.ui.LayoutUtil;
+import mmrnmhrm.util.ui.RowComposite;
 import mmrnmhrm.util.ui.SWTUtil2;
 import mmrnmhrm.util.ui.fields.StringDialogField;
 
@@ -343,10 +344,7 @@ public abstract class LangProjectWizardFirstPage extends WizardPage {
 		//initializeDialogUnits(parent); 		// dunno about
 
 		// Content composite
-		final Composite content= new Composite(parent, SWT.NULL);
-		content.setFont(parent.getFont());
-		content.setLayout(initGridLayout(new GridLayout(1, false), true));
-		content.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_FILL));
+		final Composite content = new RowComposite(parent, true);
 		setControl(content);
 		
 		// create UI elements
@@ -393,20 +391,4 @@ public abstract class LangProjectWizardFirstPage extends WizardPage {
 		return super.getNextPage();
 	}
 	
-	/** Initialize a grid layout with the default Dialog settings. 
-	 * XXX: bruno_m: Commented because I don't know what this does. */
-	protected GridLayout initGridLayout(GridLayout layout, boolean margins) {
-		/*layout.horizontalSpacing= convertHorizontalDLUsToPixels(IDialogConstants.HORIZONTAL_SPACING);
-		layout.verticalSpacing= convertVerticalDLUsToPixels(IDialogConstants.VERTICAL_SPACING);
-		if (margins) {
-			layout.marginWidth= convertHorizontalDLUsToPixels(IDialogConstants.HORIZONTAL_MARGIN);
-			layout.marginHeight= convertVerticalDLUsToPixels(IDialogConstants.VERTICAL_MARGIN);
-		} else {
-			layout.marginWidth= 0;
-			layout.marginHeight= 0;
-		}*/
-		return layout;
-	}
-
-
 }

@@ -66,8 +66,8 @@
    <extension
          point="org.eclipse.ui.editors">
       <editor
-            class="mmrnmhrm.ui.deditor.DeeEditor"
-            contributorClass="mmrnmhrm.ui.deditor.DeeEditorNullActionContributor"
+            class="mmrnmhrm.ui.editor.DeeEditor"
+            contributorClass="mmrnmhrm.ui.editor.DeeEditorNullActionContributor"
             icon="icons/obj16/dee_file.gif"
             id="Mmrnmhrm.editors.DeeEditor"
             name="Dee Editor (Mmrnmhrm)">

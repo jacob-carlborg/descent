@@ -1,4 +1,4 @@
-package mmrnmhrm.ui.deditor;
+package mmrnmhrm.ui.editor;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.ui.IEditorInput;
