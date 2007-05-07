@@ -699,7 +699,7 @@
             category="descent.ui.preferences.JavaBasePreferencePage"
             class="descent.ui.preferences.DCompilerSettings"
             id="descent.ui.preferences.DCompilerSettings"
-            name="D Compiler Settings"/>
+            name="Compiler Settings "/>
       <!--
       <page
             name="%memberSortPrefName"

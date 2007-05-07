@@ -5,6 +5,8 @@ import java.io.File;
 import org.eclipse.jface.preference.*;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 import org.eclipse.ui.IWorkbench;
+
+import descent.core.JavaCore;
 import descent.internal.ui.JavaPlugin;
 
 /**
@@ -29,8 +31,8 @@ public class DCompilerSettings
 	RadioGroupFieldEditor compilerType;
 	public DCompilerSettings() {
 		super(GRID);
-		setPreferenceStore(JavaPlugin.getDefault().getPreferenceStore());
-		setDescription("A demonstration of a preference page implementation");
+		setPreferenceStore(JavaCore.getPlugin().getPreferenceStore());
+		setDescription("Location of D Compiler");
 	}
 	
 	/**
@@ -59,22 +61,9 @@ public class DCompilerSettings
 	@Override
 	public void checkState()
 	{
-		/*
-		if ( !isValid() ) return;
 		
 		
-		if ( !( new File(compilerLocation.getStringValue()) ).isDirectory() ) 
-		{
-			setErrorMessage("Your compiler location appears to be invalid.");
-			setValid(false);
-			return;
-		}
 		
-		
-			setErrorMessage(null);
-			setValid(true);
-		
-		*/
 	}
 
 	/* (non-Javadoc)
