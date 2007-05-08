@@ -125,7 +125,9 @@
    <extension
          point="org.eclipse.core.runtime.preferences">
       <initializer class="descent.internal.ui.JavaUIPreferenceInitializer"/>
+      <!--
       <initializer class="descent.ui.preferences.PreferenceInitializer"/>
+      -->
    </extension>
    <extension
          point="org.eclipse.ui.perspectives">
@@ -695,11 +697,13 @@
             id="descent.ui.preferences.CodeTemplatePreferencePage">
             <keywordReference id="descent.ui.codetemplates"/>
       </page>
+      <!--
       <page
             category="descent.ui.preferences.JavaBasePreferencePage"
             class="descent.ui.preferences.DCompilerSettings"
             id="descent.ui.preferences.DCompilerSettings"
             name="Compiler Settings "/>
+            -->
       <!--
       <page
             name="%memberSortPrefName"
@@ -1600,76 +1604,76 @@
 <!-- edit -->
       <key
             sequence="M2+M3+ARROW_UP"
-            contextId="descent.ui.javaEditorScope"
+            contextId="descent.ui.dEditorScope"
             commandId="descent.ui.edit.text.java.select.enclosing"
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
       <key
             platform="carbon"
             sequence="M2+M3+ARROW_UP"
-            contextId="descent.ui.javaEditorScope"
+            contextId="descent.ui.dEditorScope"
             commandId=""
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
       <key
             platform="carbon"
             sequence="CTRL+SHIFT+ARROW_UP"
-            contextId="descent.ui.javaEditorScope"
+            contextId="descent.ui.dEditorScope"
             commandId="descent.ui.edit.text.java.select.enclosing"
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
             
       <key
             sequence="M2+M3+ARROW_RIGHT"
-            contextId="descent.ui.javaEditorScope"
+            contextId="descent.ui.dEditorScope"
             commandId="descent.ui.edit.text.java.select.next"
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
       <key
             platform="carbon"
             sequence="M2+M3+ARROW_RIGHT"
-            contextId="descent.ui.javaEditorScope"
+            contextId="descent.ui.dEditorScope"
             commandId=""
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
       <key
             platform="carbon"
             sequence="CTRL+SHIFT+ARROW_RIGHT"
-            contextId="descent.ui.javaEditorScope"
+            contextId="descent.ui.dEditorScope"
             commandId="descent.ui.edit.text.java.select.next"
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
       <key
             sequence="M2+M3+ARROW_LEFT"
-            contextId="descent.ui.javaEditorScope"
+            contextId="descent.ui.dEditorScope"
             commandId="descent.ui.edit.text.java.select.previous"
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
       <key
             platform="carbon"
             sequence="M2+M3+ARROW_LEFT"
-            contextId="descent.ui.javaEditorScope"
+            contextId="descent.ui.dEditorScope"
             commandId=""
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
       <key
             platform="carbon"
             sequence="CTRL+SHIFT+ARROW_LEFT"
-            contextId="descent.ui.javaEditorScope"
+            contextId="descent.ui.dEditorScope"
             commandId="descent.ui.edit.text.java.select.previous"
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
       <key
             sequence="M2+M3+ARROW_DOWN"
-            contextId="descent.ui.javaEditorScope"
+            contextId="descent.ui.dEditorScope"
             commandId="descent.ui.edit.text.java.select.last"
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
       <key
             platform="carbon"
             sequence="M2+M3+ARROW_DOWN"
-            contextId="descent.ui.javaEditorScope"
+            contextId="descent.ui.dEditorScope"
             commandId=""
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
       <key
             platform="carbon"
             sequence="CTRL+SHIFT+ARROW_DOWN"
-            contextId="descent.ui.javaEditorScope"
+            contextId="descent.ui.dEditorScope"
             commandId="descent.ui.edit.text.java.select.last"
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
       <key
             sequence="F2"
-            contextId="descent.ui.javaEditorScope"
+            contextId="descent.ui.dEditorScope"
             commandId="descent.ui.edit.text.java.show.javadoc"
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
 
@@ -1691,43 +1695,43 @@
             
       <key
             sequence="M1+M2+C"
-            contextId="descent.ui.javaEditorScope"
+            contextId="descent.ui.dEditorScope"
             commandId="descent.ui.edit.text.java.toggle.comment"
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
       <key
             sequence="M1+7"
-            contextId="descent.ui.javaEditorScope"
+            contextId="descent.ui.dEditorScope"
             commandId="descent.ui.edit.text.java.toggle.comment"
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
       <key
             sequence="M1+/"
-            contextId="descent.ui.javaEditorScope"
+            contextId="descent.ui.dEditorScope"
             commandId="descent.ui.edit.text.java.toggle.comment"
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
       <!-- alternative for some gtk input modes -->
       <key
             platform="gtk"
             sequence="ESC CTRL+C"
-            contextId="descent.ui.javaEditorScope"
+            contextId="descent.ui.dEditorScope"
             commandId="descent.ui.edit.text.java.toggle.comment"
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
             
       <key
             sequence="M1+M2+F"
-            contextId="descent.ui.javaEditorScope"
+            contextId="descent.ui.dEditorScope"
             commandId="descent.ui.edit.text.java.format"
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
       <!-- alternative for some gtk input modes -->
       <key
             platform="gtk"
             sequence="ESC CTRL+F"
-            contextId="descent.ui.javaEditorScope"
+            contextId="descent.ui.dEditorScope"
             commandId="descent.ui.edit.text.java.format"
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
             
       <key
             sequence="M1+M2+M"
-            contextId="descent.ui.javaEditorScope"
+            contextId="descent.ui.dEditorScope"
             commandId="descent.ui.edit.text.java.add.import"
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
       <key
@@ -1751,76 +1755,76 @@
       
       <key
             sequence="M1+M2+/"
-            contextId="descent.ui.javaEditorScope"
+            contextId="descent.ui.dEditorScope"
             commandId="descent.ui.edit.text.java.add.block.comment"
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
       <!-- free this on MAC, see: https://bugs.eclipse.org/bugs/show_bug.cgi?id=113981 -->
       <key
             platform="carbon"
             sequence="M1+M2+/"
-            contextId="descent.ui.javaEditorScope"
+            contextId="descent.ui.dEditorScope"
             commandId=""
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
 
       <key
             sequence="M1+M2+\"
-            contextId="descent.ui.javaEditorScope"
+            contextId="descent.ui.dEditorScope"
             commandId="descent.ui.edit.text.java.remove.block.comment"
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
       <key
             sequence="M1+I"
-            contextId="descent.ui.javaEditorScope"
+            contextId="descent.ui.dEditorScope"
             commandId="descent.ui.edit.text.java.indent"
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
 	  <key
 	        sequence="M2+M3+O"
-	        contextId="descent.ui.javaEditorScope"
+	        contextId="descent.ui.dEditorScope"
 	        commandId="descent.ui.edit.text.java.toggleMarkOccurrences"
 	        schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
       <key
             platform="carbon"
             sequence="M2+M3+O"
-            contextId="descent.ui.javaEditorScope"
+            contextId="descent.ui.dEditorScope"
             commandId=""
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
       <key
             platform="carbon"
             sequence="COMMAND+ALT+O"
-            contextId="descent.ui.javaEditorScope"
+            contextId="descent.ui.dEditorScope"
             commandId="descent.ui.edit.text.java.toggleMarkOccurrences"
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
             
       <key
             sequence="M2+M3+U"
-            contextId="descent.ui.javaEditorScope"
+            contextId="descent.ui.dEditorScope"
             commandId="descent.ui.edit.text.remove.occurrence.annotations"
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
       <key
             platform="carbon"
             sequence="M2+M3+U"
-            contextId="descent.ui.javaEditorScope"
+            contextId="descent.ui.dEditorScope"
             commandId=""
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
       <key
             platform="carbon"
             sequence="COMMAND+ALT+U"
-            contextId="descent.ui.javaEditorScope"
+            contextId="descent.ui.dEditorScope"
             commandId="descent.ui.edit.text.remove.occurrence.annotations"
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
             
        <key
             sequence="M1+2 R"
-            contextId="descent.ui.javaEditorScope"
+            contextId="descent.ui.dEditorScope"
             commandId="descent.ui.correction.renameInFile.assist"
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
        <key
             sequence="M1+2 L"
-            contextId="descent.ui.javaEditorScope"
+            contextId="descent.ui.dEditorScope"
             commandId="descent.ui.correction.assignToLocal.assist"
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"/>            
        <key
             sequence="M1+2 F"
-            contextId="descent.ui.javaEditorScope"
+            contextId="descent.ui.dEditorScope"
             commandId="descent.ui.correction.assignToField.assist"
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"/>              
        <key
@@ -1946,80 +1950,86 @@
 <!-- navigate -->
       <key
             sequence="M1+M2+ARROW_DOWN"
-            contextId="descent.ui.javaEditorScope"
+            contextId="descent.ui.dEditorScope"
             commandId="descent.ui.edit.text.java.goto.next.member"
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
       <key
             platform="carbon"
             sequence="M1+M2+ARROW_DOWN"
-            contextId="descent.ui.javaEditorScope"
+            contextId="descent.ui.dEditorScope"
             commandId=""
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
       <key
             platform="carbon"
             sequence="CTRL+ALT+ARROW_DOWN"
-            contextId="descent.ui.javaEditorScope"
+            contextId="descent.ui.dEditorScope"
             commandId="descent.ui.edit.text.java.goto.next.member"
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
       <key
             sequence="M1+M2+ARROW_UP"
-            contextId="descent.ui.javaEditorScope"
+            contextId="descent.ui.dEditorScope"
             commandId="descent.ui.edit.text.java.goto.previous.member"
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
       <key
             platform="carbon"
             sequence="M1+M2+ARROW_UP"
-            contextId="descent.ui.javaEditorScope"
+            contextId="descent.ui.dEditorScope"
             commandId=""
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
       <key
             platform="carbon"
             sequence="CTRL+ALT+ARROW_UP"
-            contextId="descent.ui.javaEditorScope"
+            contextId="descent.ui.dEditorScope"
             commandId="descent.ui.edit.text.java.goto.previous.member"
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
       <key
             sequence="M1+M2+P"
-            contextId="descent.ui.javaEditorScope"
+            contextId="descent.ui.dEditorScope"
             commandId="descent.ui.edit.text.java.goto.matching.bracket"
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
       <key
             sequence="M1+O"
-            contextId="descent.ui.javaEditorScope"
+            contextId="descent.ui.dEditorScope"
             commandId="descent.ui.edit.text.java.show.outline"
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
       <key
             sequence="M1+T"
-            contextId="descent.ui.javaEditorScope"
+            contextId="descent.ui.dEditorScope"
             commandId="descent.ui.edit.text.java.open.hierarchy"
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
       <key
             sequence="M1+F3"
-            contextId="descent.ui.javaEditorScope"
+            contextId="descent.ui.dEditorScope"
             commandId="descent.ui.navigate.java.open.structure"
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
       <key
             sequence="M1+M2+T"
+            contextId="descent.ui.dEditorScope"
             commandId="descent.ui.navigate.open.type"
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
       <key
             sequence="M1+M2+H"
+            contextId="descent.ui.dEditorScope"
             commandId="descent.ui.navigate.open.type.in.hierarchy"
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
       <key
             sequence="F3"
+            contextId="descent.ui.dEditorScope"
             commandId="descent.ui.edit.text.java.open.editor"
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
       <key
             sequence="M2+F2"
+            contextId="descent.ui.dEditorScope"
             commandId="descent.ui.edit.text.java.open.external.javadoc"
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
       <key
             sequence="F4"
+            contextId="descent.ui.dEditorScope"
             commandId="descent.ui.edit.text.java.open.type.hierarchy"
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
       <key
             sequence="CTRL+ALT+H"
+            contextId="descent.ui.dEditorScope"
             commandId="descent.ui.edit.text.java.open.call.hierarchy"
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
 	  <!-- COMMAND+ALT+H is "Hide Others" on carbon, so don't overwrite it -->
@@ -2029,14 +2039,17 @@
 <!-- search -->
       <key
             sequence="M1+M2+G"
+            contextId="descent.ui.dEditorScope"
             commandId="descent.ui.edit.text.java.search.references.in.workspace"
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
       <key
             sequence="M1+G"
+            contextId="descent.ui.dEditorScope"
             commandId="descent.ui.edit.text.java.search.declarations.in.workspace"
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
       <key
             sequence="M1+M2+U"
+            contextId="descent.ui.dEditorScope"
             commandId="descent.ui.edit.text.java.search.occurrences.in.file.quickMenu"
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
 
@@ -2045,58 +2058,70 @@
 <!-- views -->
       <key
             sequence="M2+M3+Q T"
+            contextId="descent.ui.dEditorScope"
             commandId="descent.ui.TypeHierarchy"
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
       <key
             platform="carbon"
             sequence="M2+M3+Q T"
+            contextId="descent.ui.dEditorScope"
             commandId=""
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
       <key
             platform="carbon"
             sequence="COMMAND+ALT+Q T"
+            contextId="descent.ui.dEditorScope"
             commandId="descent.ui.TypeHierarchy"
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
       <key
             sequence="M2+M3+Q P"
+            contextId="descent.ui.dEditorScope"
             commandId="descent.ui.PackageExplorer"
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
       <key
             platform="carbon"
             sequence="M2+M3+Q P"
+            contextId="descent.ui.dEditorScope"
             commandId=""
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
       <key
             platform="carbon"
             sequence="COMMAND+ALT+Q P"
+            contextId="descent.ui.dEditorScope"
             commandId="descent.ui.PackageExplorer"
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
       <key
             sequence="M2+M3+Q D"
+            contextId="descent.ui.dEditorScope"
             commandId="descent.ui.SourceView"
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
       <key
             platform="carbon"
             sequence="M2+M3+Q D"
+            contextId="descent.ui.dEditorScope"
             commandId=""
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
       <key
             platform="carbon"
             sequence="COMMAND+ALT+Q D"
+            contextId="descent.ui.dEditorScope"
             commandId="descent.ui.SourceView"
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
       <key
             sequence="M2+M3+Q J"
+            contextId="descent.ui.dEditorScope"
             commandId="descent.ui.JavadocView"
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
       <key
             platform="carbon"
             sequence="M2+M3+Q J"
+            contextId="descent.ui.dEditorScope"
             commandId=""
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
       <key
             platform="carbon"
             sequence="COMMAND+ALT+Q J"
+            contextId="descent.ui.dEditorScope"
             commandId="descent.ui.JavadocView"
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
 
@@ -2159,7 +2184,7 @@
          point="org.eclipse.ui.contexts">
       <context
             description="Editing D Source"
-            id="descent.ui.javaEditorScope"
+            id="descent.ui.dEditorScope"
             name="Editing D Source"
             parentId="org.eclipse.ui.textEditorScope"/>
    </extension>

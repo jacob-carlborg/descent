@@ -2,11 +2,11 @@
 <feature
       id="descent.ui"
       label="Descent"
-      version="0.2.20070305">
+      version="0.3.20070507">
 
    <description url="http://dsource.org/projects/descent">
-      The Descent plugin is a work in progress towards a fully
-functional Eclipse plugin for the D Digital Mars language.
+      The Descent plugin provides an IDE for writing, launching and
+debugging code in the D programming language from Digital Mars.
    </description>
 
    <license url="http://opensource.org/licenses/eclipse-1.0.txt">
@@ -132,6 +132,20 @@ This Agreement is governed by the laws of the State of New York and the intellec
 
    <plugin
          id="descent.astview"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="descent.launching"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="descent.launching.ui"
          download-size="0"
          install-size="0"
          version="0.0.0"

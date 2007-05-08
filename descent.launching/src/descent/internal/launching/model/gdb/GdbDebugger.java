@@ -14,14 +14,12 @@ import org.eclipse.debug.core.model.IStackFrame;
 import org.eclipse.debug.core.model.IStreamsProxy;
 import org.eclipse.debug.core.model.IVariable;
 
+import descent.launching.model.IDebugElementFactory;
 import descent.launching.model.IDebugger;
 import descent.launching.model.IDebuggerListener;
-import descent.launching.model.IDebugElementFactory;
 import descent.launching.model.IParentVariable;
 
 public class GdbDebugger implements IDebugger {
-	
-	private final static boolean DEBUG = false;
 	
 	private int fTimeout;
 	private boolean fshowBaseMembersInSameLevel;
@@ -134,10 +132,6 @@ public class GdbDebugger implements IDebugger {
 	}
 
 	public IStackFrame[] getStackFrames() throws DebugException, IOException {
-		if (DEBUG) {
-			System.out.println("*getStackFrames()");
-		}
-		
 		try {
 			setState(new ConsultingStackFrames(this));
 			
@@ -189,18 +183,10 @@ public class GdbDebugger implements IDebugger {
 	}
 
 	public void interpret(String text) throws DebugException, IOException {
-		if (DEBUG) {
-			System.out.println("~" + text);
-		}
-		
 		fState.interpret(text);
 	}
 	
 	public void interpretError(String text) throws DebugException, IOException {
-		if (DEBUG) {
-			System.out.println("~!" + text);
-		}
-		
 		fState.interpretError(text);
 	}
 

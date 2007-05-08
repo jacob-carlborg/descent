@@ -73,6 +73,7 @@
       <super type="org.eclipse.core.resources.taskmarker"/>
       <persistent value="true"/>
    </extension>
+   <!--
    <extension
          id="dAntBuilder"
          name="D Ant Builder"
@@ -81,5 +82,6 @@
          <run class="descent.internal.core.builder.DAntBuilder"/>
       </builder>
    </extension>
+   -->
 
 </plugin>

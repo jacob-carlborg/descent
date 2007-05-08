@@ -21,8 +21,6 @@ import descent.launching.model.IParentVariable;
 
 public class DdbgDebugger implements IDebugger {
 	
-	private final static boolean DEBUG = false;
-	
 	private int fTimeout;
 	private boolean fshowBaseMembersInSameLevel;
 	
@@ -66,11 +64,6 @@ public class DdbgDebugger implements IDebugger {
 
 	public void interpret(String text)
 			throws DebugException, IOException {
-		
-		if (DEBUG) {
-			System.out.println("~" + text);
-		}
-		
 		fState.interpret(text);
 	}
 	
@@ -189,10 +182,6 @@ public class DdbgDebugger implements IDebugger {
 
 	public IStackFrame[] getStackFrames()
 			throws IOException {
-		
-		if (DEBUG) {
-			System.out.println("*getStackFrames()");
-		}
 		
 		try {
 			setState(new ConsultingStackFrames(this));
