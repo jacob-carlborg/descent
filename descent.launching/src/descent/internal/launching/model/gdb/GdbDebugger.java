@@ -54,11 +54,11 @@ public class GdbDebugger implements IDebugger {
 			
 			beforeWaitStateReturn();
 			
-			fProxy.write("break ");
-			fProxy.write(toGdbPath(resource.getLocation().toOSString()) + "´");
+			fProxy.write("break \"");
+			fProxy.write(toGdbPath(resource.getLocation().toOSString()));
 			fProxy.write(":");
 			fProxy.write(String.valueOf(lineNumber));
-			fProxy.write("\n");
+			fProxy.write("\"\n");
 			
 			waitStateReturn();
 		} finally {
@@ -196,11 +196,11 @@ public class GdbDebugger implements IDebugger {
 			
 			beforeWaitStateReturn();
 			
-			fProxy.write("clear ");
+			fProxy.write("clear \"");
 			fProxy.write("\"" + toGdbPath(resource.getLocation().toOSString()) + "\"");
 			fProxy.write(":");
 			fProxy.write(String.valueOf(lineNumber));
-			fProxy.write("\n");
+			fProxy.write("\"\n");
 			
 			waitStateReturn();
 		} finally {
