@@ -125,7 +125,7 @@ public class DdbgDebugger implements IDebugger {
 			beforeWaitStateReturn();
 			
 			fProxy.write("bp ");
-			fProxy.write(resource.getLocation().toOSString());
+			fProxy.write("\"" + resource.getLocation().toOSString() + "\"");
 			fProxy.write(":");
 			fProxy.write(String.valueOf(lineNumber));
 			fProxy.write("\n");
@@ -143,7 +143,7 @@ public class DdbgDebugger implements IDebugger {
 			beforeWaitStateReturn();
 			
 			fProxy.write("dbp ");
-			fProxy.write(resource.getLocation().toOSString());
+			fProxy.write("\"" + resource.getLocation().toOSString() + "\"");
 			fProxy.write(":");
 			fProxy.write(String.valueOf(lineNumber));
 			fProxy.write("\n");

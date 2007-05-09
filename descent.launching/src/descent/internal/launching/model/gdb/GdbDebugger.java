@@ -55,7 +55,7 @@ public class GdbDebugger implements IDebugger {
 			beforeWaitStateReturn();
 			
 			fProxy.write("break ");
-			fProxy.write(toGdbPath(resource.getLocation().toOSString()));
+			fProxy.write(toGdbPath(resource.getLocation().toOSString()) + "´");
 			fProxy.write(":");
 			fProxy.write(String.valueOf(lineNumber));
 			fProxy.write("\n");
@@ -197,7 +197,7 @@ public class GdbDebugger implements IDebugger {
 			beforeWaitStateReturn();
 			
 			fProxy.write("clear ");
-			fProxy.write(toGdbPath(resource.getLocation().toOSString()));
+			fProxy.write("\"" + toGdbPath(resource.getLocation().toOSString()) + "\"");
 			fProxy.write(":");
 			fProxy.write(String.valueOf(lineNumber));
 			fProxy.write("\n");
@@ -365,6 +365,7 @@ public class GdbDebugger implements IDebugger {
 	}
 	
 	private String toGdbPath(String path) {
+		// TODO How to escape white spaces? It dosen't seem to work in GDB (mingw). 
 		return path.replace('\\', '/');
 	}
 	
