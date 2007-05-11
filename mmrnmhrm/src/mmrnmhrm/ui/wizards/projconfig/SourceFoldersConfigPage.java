@@ -24,8 +24,8 @@ import org.eclipse.swt.widgets.Composite;
 
 public class SourceFoldersConfigPage extends AbstractConfigPage {
 
-	TreeListDialogField fSrcFoldersList;
-	private StringButtonDialogField fOutputLocationField;
+	protected TreeListDialogField fSrcFoldersList;
+	protected StringButtonDialogField fOutputLocationField;
 	
 	IPath fOutputLocationPath;	
 	
@@ -33,7 +33,6 @@ public class SourceFoldersConfigPage extends AbstractConfigPage {
 		createSourceFoldersSection();
 		createOutputLocationSection(); 
 	}
-
 
 
 	public void init(DeeProject project) {
@@ -52,7 +51,7 @@ public class SourceFoldersConfigPage extends AbstractConfigPage {
 	}
 
 
-	private void updateView() {
+	protected void updateView() {
 		fSrcFoldersList.setElements(fDeeProject.getSourceFolders());
 		// TODO MAKE TESTCASE FOR THIS
 		fOutputLocationPath = fDeeProject.getOutputDir().getProjectRelativePath();
@@ -107,18 +106,18 @@ public class SourceFoldersConfigPage extends AbstractConfigPage {
 		}
 	}
 	
-	private void addEntry(IFolder container) {
+	protected void addEntry(IFolder container) {
 		DeeSourceFolder sourceFolder = new DeeSourceFolder(container, fDeeProject);
 		fSrcFoldersList.addElement(sourceFolder);
 		//fDeeProject.addSourceRoot(sourceFolder);
 	}
 
-	public void editElementEntry(Object element) {
+	protected void editElementEntry(Object element) {
 		// TODO
 		MessageDialog.openInformation(getShell(), "Edit Source Folder", "TODO");
 	}
 
-	public void removeEntry(Object element) {
+	protected void removeEntry(Object element) {
 		DeeSourceFolder entry = (DeeSourceFolder) element;
 		fSrcFoldersList.removeElement(entry);
 		//fDeeProject.removeSourceRoot(entry);
@@ -139,7 +138,6 @@ public class SourceFoldersConfigPage extends AbstractConfigPage {
 	}
 	
 	private class OutputLocationAdapter implements IStringButtonAdapter, IDialogFieldListener {
-		
 
 		public void changeControlPressed(DialogField field) {
 			ProjectContainerSelectionDialog containerDialog;

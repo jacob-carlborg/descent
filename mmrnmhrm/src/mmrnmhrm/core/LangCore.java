@@ -70,7 +70,7 @@ public abstract class LangCore /*extends Plugin */{
 			Assert.fail("DUNNO: if workspace is locked, then don't run Lang ops?");
 			//new BatchOperation(action).run(monitor);
 		} else {
-			// use IWorkspace.run(...) to ensure that a build will be done in autobuild mode
+			// note: IWorkspace.AVOID_UPDATE ensure atomicity I think
 			workspace.run(new BatchOperation(action), rule, IWorkspace.AVOID_UPDATE, monitor);
 		}
 	}

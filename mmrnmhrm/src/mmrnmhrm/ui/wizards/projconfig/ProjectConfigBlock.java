@@ -13,7 +13,6 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.TabFolder;
@@ -25,11 +24,11 @@ import org.eclipse.swt.widgets.TabItem;
  */
 public class ProjectConfigBlock {
 
-	private DeeProject fDeeProject;
+	protected DeeProject fDeeProject;
 
-	private SourceFoldersConfigPage fSourceFoldersPage;
-	private SourceLibrariesConfigPage fSourceLibrariesPage;
-	private CompilerConfigPage fCompilerPage;
+	protected SourceFoldersConfigPage fSourceFoldersPage;
+	protected SourceLibrariesConfigPage fSourceLibrariesPage;
+	protected CompilerConfigPage fCompilerPage;
 	
 	public ProjectConfigBlock() {
 		fSourceFoldersPage = new SourceFoldersConfigPage();
@@ -37,18 +36,16 @@ public class ProjectConfigBlock {
 		fCompilerPage = new CompilerConfigPage();
 	}
 	
-	public void init(DeeProject jproject) {
-		fDeeProject = jproject;
+	public void init(DeeProject project) {
+		fDeeProject = project;
 		fSourceFoldersPage.init(fDeeProject);
 		fSourceLibrariesPage.init(fDeeProject);
 		fCompilerPage.init(fDeeProject);
 	}
 
 	public Control createControl(Composite parent) {
-		final Composite content = parent;
 		
-		TabFolder folder= new TabFolder(content, SWT.NONE);
-		folder.setLayoutData(new GridData(GridData.FILL_BOTH));
+		TabFolder folder = new TabFolder(parent, SWT.NONE);
 
 		TabItem item;
 		// Folders config
@@ -75,7 +72,7 @@ public class ProjectConfigBlock {
 		item.setData(fCompilerPage);     
         item.setControl(fCompilerPage.getControl(folder));
         
-        return content;
+        return folder;
 	}
 	
 	@SuppressWarnings("unchecked")

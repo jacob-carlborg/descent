@@ -18,13 +18,17 @@ import mmrnmhrm.ui.ExceptionHandler;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.jobs.ISchedulingRule;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.INewWizard;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.actions.WorkspaceModifyOperation;
+
+import util.Assert;
 
 public abstract class NewElementWizard extends Wizard implements INewWizard {
 
@@ -78,7 +82,7 @@ public abstract class NewElementWizard extends Wizard implements INewWizard {
 	 * @throws InterruptedException
 	 * @throws CoreException
 	 */
-	protected abstract void finishPage(IProgressMonitor monitor) throws InterruptedException, CoreException;
+	protected abstract void doFinish(IProgressMonitor monitor) throws InterruptedException, CoreException;
 	
 	/** Returns the scheduling rule for creating the element. */
 	protected ISchedulingRule getSchedulingRule() {
@@ -90,20 +94,23 @@ public abstract class NewElementWizard extends Wizard implements INewWizard {
 		return true;
 	}
 
+	protected abstract class WizardOperation extends WorkspaceModifyOperation {
+		public WizardOperation() {
+			super(getSchedulingRule());
+		}
+	}
 	
-	/** {@inheritDoc} */	
-	public boolean performFinish() {
-		WorkspaceModifyOperation opx;
-		opx = new WorkspaceModifyOperation(getSchedulingRule()) {
-			protected void execute(IProgressMonitor monitor)
-					throws CoreException, InvocationTargetException,
-					InterruptedException {
-				finishPage(monitor);
-			}
-		};
+	/** Runs the given WorkspaceModifyOperation in the wizard. 
+	 * Presents a UI dialog if the any exceptions ocurred. 
+	 * @return true if the operation succeed or false otherwise. */	
+	protected boolean performWizardOperation(WorkspaceModifyOperation op) {
+		Job job = Platform.getJobManager().currentJob();
+		if(job != null)
+			Assert.fail("The effect of running this operation inside a job " +
+					"is unknown. TODO"); //TODO: learn why
 		
 		try {
-			getContainer().run(canRunForked(), true, opx);
+			getContainer().run(canRunForked(), true, op);
 		} catch (InvocationTargetException e) {
 			handleFinishException(getShell(), e);
 			return false;
@@ -112,35 +119,20 @@ public abstract class NewElementWizard extends Wizard implements INewWizard {
 		}
 		
 		return true;
-		
-		/*IWorkspaceRunnable op= new IWorkspaceRunnable() {
-			public void run(IProgressMonitor monitor) throws CoreException, OperationCanceledException {
-				try {
-					finishPage(monitor);
-				} catch (InterruptedException e) {
-					throw new OperationCanceledException(e.getMessage());
-				}
-			}
-		};
+	}
 
-		try {
-			ISchedulingRule rule= null;
-			Job job= Job.getJobManager().currentJob();
-			if (job != null)
-				rule= job.getRule();
-			IRunnableWithProgress runnable= null;
-			if (rule != null)
-				runnable= new WorkbenchRunnableAdapter(op, rule, true);
-			else
-				runnable= new WorkbenchRunnableAdapter(op, getSchedulingRule());
-			getContainer().run(canRunForked(), true, runnable);
-		} catch (InvocationTargetException e) {
-			handleFinishException(getShell(), e);
-			return false;
-		} catch (InterruptedException e) {
-			return false;
-		}
-		return true;*/
+	
+	/** {@inheritDoc} */	
+	public boolean performFinish() {
+
+		return performWizardOperation(new WizardOperation() {
+			protected void execute(IProgressMonitor monitor)
+					throws CoreException, InvocationTargetException,
+					InterruptedException {
+				doFinish(monitor);
+			}
+		});
+
 	}
 	
 	protected void handleFinishException(Shell shell, InvocationTargetException e) {

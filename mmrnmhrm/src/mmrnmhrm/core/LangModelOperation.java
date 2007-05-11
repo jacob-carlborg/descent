@@ -51,7 +51,7 @@ public abstract class LangModelOperation implements IWorkspaceRunnable{
 	}
 
 	
-	/*
+	/**
 	 * Returns the stack of operations running in the current thread.
 	 * Returns an empty stack if no operations are currently running in this thread. 
 	 */

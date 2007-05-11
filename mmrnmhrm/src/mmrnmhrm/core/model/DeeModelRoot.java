@@ -42,4 +42,10 @@ public class DeeModelRoot extends LangModelRoot {
 	public void removeDeeProject(DeeProject deeproject) throws CoreException {
 		removeChild(deeproject);
 	}
+	
+	/** Delete D project. Removes workspace project. */
+	public void deleteDeeProject(DeeProject deeproject) throws CoreException {
+		removeDeeProject(deeproject);
+		deeproject.getProject().delete(false, null);
+	}
 }

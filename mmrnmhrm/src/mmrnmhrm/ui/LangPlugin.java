@@ -54,7 +54,7 @@ public abstract class LangPlugin extends AbstractUIPlugin {
 	public static void log(Throwable e) {
 		log(new Status(IStatus.ERROR, getPluginId(),
 				ILangStatusConstants.INTERNAL_ERROR,
-				LangUIMessages.JavaPlugin_internal_error, e)); 
+				LangUIMessages.LangPlugin_internal_error, e)); 
 	}
 	
 

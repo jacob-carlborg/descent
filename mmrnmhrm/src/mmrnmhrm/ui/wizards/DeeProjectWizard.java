@@ -1,9 +1,15 @@
 package mmrnmhrm.ui.wizards;
 
+import mmrnmhrm.core.DeeCore;
+import mmrnmhrm.core.DeeCoreException;
+import mmrnmhrm.core.model.DeeModelManager;
 import mmrnmhrm.core.model.DeeProject;
 
+import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.swt.widgets.Display;
 
 public class DeeProjectWizard extends NewElementWizard {
 
@@ -15,26 +21,79 @@ public class DeeProjectWizard extends NewElementWizard {
 		setWindowTitle(DeeNewWizardMessages.LangNewProject_wizardTitle);
 	}
 	
+	
     public void addPages() {
         super.addPages();
         fFirstPage = new DeeProjectWizardFirstPage();
-        //fSecondPage = new DeeProjectWizardSecondPage();
+        fSecondPage = new DeeProjectWizardSecondPage();
         addPage(fFirstPage);
-        //addPage(fSecondPage);
+        addPage(fSecondPage);
     }
-
-	/** {@inheritDoc} */
-	@Override
-	protected void finishPage(IProgressMonitor monitor) throws CoreException {
-		if(deeProject == null) {
-			fFirstPage.createDeeProject(monitor);
-		}
-		
-		//TODO: select and reveal?
-	}
+    
 
 	public DeeProject getDeeProject() {
 		return deeProject;
 	}
 
+	/** {@inheritDoc} */ @Override
+	public boolean performCancel() {
+		if(deeProject != null)
+			performPage2GoBack();
+		return true;
+	}
+
+	
+	boolean performPage2Entry() {
+		boolean result = performWizardOperation(new WizardOperation() {
+			protected void execute(IProgressMonitor monitor) throws CoreException {
+				createDeeProject(monitor);
+			}
+		});
+		if(deeProject != null)
+			fSecondPage.init(deeProject);
+		return result;
+	}
+
+	public void createDeeProject(final IProgressMonitor monitor) throws CoreException {
+		IWorkspaceRoot workspaceRoot = DeeCore.getWorkspaceRoot();
+		IProject project;
+		project = workspaceRoot.getProject(fFirstPage.getProjectName());
+		if(!fFirstPage.fLocationGroup.isInWorkspace()) {
+			//TODO: allow creating in external location
+			throw new DeeCoreException("external location creation TODO", null);
+		}
+		
+		project.create(monitor);
+		project.open(monitor);
+		deeProject = DeeModelManager.createDeeProject(project);
+	}
+	
+	
+	boolean performPage2GoBack() {
+		return performWizardOperation(new WizardOperation() {
+			protected void execute(IProgressMonitor monitor) throws CoreException {
+				if(deeProject != null)
+					deleteDeeProject(monitor);
+			}
+		});
+	}
+	
+	public void deleteDeeProject(final IProgressMonitor monitor) throws CoreException {
+		try {
+			DeeModelManager.getRoot().removeDeeProject(deeProject);
+			deeProject.getProject().delete(false, monitor);
+		} finally {
+			deeProject = null;
+		}
+	}
+	
+	
+	/** {@inheritDoc} */ @Override
+	protected void doFinish(IProgressMonitor monitor) throws CoreException {
+		if(deeProject == null) {
+			createDeeProject(monitor);
+		} else {
+			fSecondPage.projectConfigBlock.applyConfig();
+		}
+	}
 }

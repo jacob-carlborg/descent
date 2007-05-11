@@ -14,13 +14,13 @@ import org.eclipse.osgi.util.NLS;
 
 public final class LangUIMessages extends NLS {
 
-	private static final String BUNDLE_NAME= "org.eclipse.jdt.internal.ui.JavaUIMessages";//$NON-NLS-1$
+	private static final String BUNDLE_NAME= "mmrnmhrm.ui.LangUIMessages"; //$NON-NLS-1$
 
 	private LangUIMessages() {
 		// Do not instantiate
 	}
 
-	public static String JavaPlugin_internal_error;
+	public static String LangPlugin_internal_error;
 	
 	public static String ExceptionDialog_seeErrorLogMessage;
 	

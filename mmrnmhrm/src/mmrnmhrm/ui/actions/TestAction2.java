@@ -13,6 +13,7 @@ import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.dialogs.TrayDialog;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Shell;
@@ -33,7 +34,9 @@ public class TestAction2 implements IWorkbenchWindowActionDelegate {
 		@Override
 		protected Control createDialogArea(Composite parent) {
 			fProjCfg.init(DeeModelManager.getLangProject("DeeProj"));
-			return fProjCfg.createControl(parent);		
+			Control control = fProjCfg.createControl(parent); 
+			control.setLayoutData(new GridData(GridData.FILL_BOTH));
+			return control;
 		}
 		
 		@Override

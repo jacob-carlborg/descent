@@ -29,7 +29,6 @@ import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.Group;
@@ -150,7 +149,7 @@ public abstract class LangProjectWizardFirstPage extends WizardPage {
 			fireEvent();
 		}
 
-		public IPath getLocation() {
+		public IPath getProjectLocation() {
 			if (isInWorkspace()) {
 				return Platform.getLocation();
 			}
@@ -209,7 +208,6 @@ public abstract class LangProjectWizardFirstPage extends WizardPage {
 		private boolean fDetect;
 		
 		public DetectGroup(Composite composite) {
-			
 			fWarningText = new Link(composite, SWT.WRAP);
 			GridData gridData= new GridData(GridData.FILL, SWT.FILL, true, true);
 			gridData.widthHint= convertWidthInCharsToPixels(50);
@@ -225,11 +223,11 @@ public abstract class LangProjectWizardFirstPage extends WizardPage {
 					if (name.length() == 0 || ResourcesPlugin.getWorkspace().getRoot().findMember(name) != null) {
 						fDetect= false;
 					} else {
-						final File directory= fLocationGroup.getLocation().append(getProjectName()).toFile();
+						final File directory= fLocationGroup.getProjectLocation().append(getProjectName()).toFile();
 						fDetect= directory.isDirectory();
 					}
 				} else {
-					final File directory= fLocationGroup.getLocation().toFile();
+					final File directory= fLocationGroup.getProjectLocation().toFile();
 					fDetect= directory.isDirectory();
 				}
 				
@@ -237,7 +235,7 @@ public abstract class LangProjectWizardFirstPage extends WizardPage {
 					setChanged();
 					notifyObservers();
 					
-					fWarningText.setVisible(true);
+					fWarningText.setVisible(fDetect);
 					fWarningText.setText(DeeNewWizardMessages.LangNewProject_Page1_DetectGroup_message);
 					//setMessage("Detect group!", INFORMATION);
 				}
@@ -247,9 +245,7 @@ public abstract class LangProjectWizardFirstPage extends WizardPage {
 		public boolean mustDetect() {
 			return fDetect;
 		}
-		
-		public void handlePossibleJVMChange() {
-		}
+
 
 	}
 	
@@ -288,7 +284,7 @@ public abstract class LangProjectWizardFirstPage extends WizardPage {
 				return;
 			}
 
-			final String location= fLocationGroup.getLocation().toOSString();
+			final String location= fLocationGroup.getProjectLocation().toOSString();
 
 			// check whether location is empty
 			if (location.length() == 0) {

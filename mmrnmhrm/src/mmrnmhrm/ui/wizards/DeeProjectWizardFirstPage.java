@@ -15,17 +15,9 @@ import java.text.MessageFormat;
 import java.util.Observable;
 import java.util.Observer;
 
-import mmrnmhrm.core.DeeCore;
-import mmrnmhrm.core.model.DeeModelManager;
-import mmrnmhrm.core.model.DeeModelRoot;
-import mmrnmhrm.core.model.DeeProject;
 import mmrnmhrm.util.ui.LayoutUtil;
 import mmrnmhrm.util.ui.SWTUtil2;
 
-import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.IWorkspaceRoot;
-import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jdt.internal.ui.wizards.dialogfields.DialogField;
 import org.eclipse.jdt.internal.ui.wizards.dialogfields.SelectionButtonDialogField;
 import org.eclipse.jface.wizard.IWizardPage;
@@ -98,7 +90,6 @@ public class DeeProjectWizardFirstPage extends LangProjectWizardFirstPage {
 	}
 	
 	protected Observer[] createCustomControls(Composite content) {
-
 		fDCEGroup= new DCEGroup(content);
 
 		return new Observer[] { fDCEGroup };
@@ -109,26 +100,31 @@ public class DeeProjectWizardFirstPage extends LangProjectWizardFirstPage {
 		return (DeeProjectWizard) super.getWizard();
 	}
 	
+	/* XXX: Unclean hack: getNextPage used to prevent page advancement on errors.
+	 * This means getNextPage should only be called by nextPressed() and not by
+	 * others like canFlipToNextPage().*/ 
 	@Override
 	public IWizardPage getNextPage() {
-		return super.getNextPage();
-		// TODO: execute createDeeProject
+		if(getWizard().performPage2Entry())
+			return super.getNextPage();
+		else
+			return this;
 	}
 	
-	public void createDeeProject(final IProgressMonitor monitor) throws CoreException {
-		IWorkspaceRoot workspaceRoot = DeeCore.getWorkspaceRoot();
-		IProject project = workspaceRoot.getProject(getProjectName());
-		project.create(monitor);
-		project.open(monitor);
-
-		getWizard().deeProject = DeeModelManager.createDeeProject(project);
+	@Override
+	public boolean canFlipToNextPage() {
+		// Use the original getNextPage
+        return isPageComplete() && super.getNextPage() != null;
 	}
-
 	
-	public void deleteDeeProject(final IProgressMonitor monitor) throws CoreException {
-		DeeProject deeProject = getWizard().deeProject;
-		deeProject.getProject().delete(false, monitor);
-
-		DeeModelManager.getRoot().removeDeeProject(deeProject);
+	@Override
+	public void setVisible(boolean visible) {
+		if (visible) {
+			// Clean up the project if we came from page 2
+			if(getWizard().deeProject != null)
+				getWizard().performPage2GoBack();
+		} 
+		super.setVisible(visible);
 	}
+	
 }
