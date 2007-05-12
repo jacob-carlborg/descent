@@ -293,7 +293,13 @@ public class JavaDocAutoIndentStrategy extends DefaultIndentLineAutoEditStrategy
 			return false;
 		int srcOffset= sourceRange.getOffset();
 		int srcLength= sourceRange.getLength();
-		int nameRelativeOffset= member.getNameRange().getOffset() - srcOffset;
+		ISourceRange nameRange = member.getNameRange();
+		int nameRelativeOffset;
+		if (nameRange == null) {
+			nameRelativeOffset = srcOffset;
+		} else {
+			nameRelativeOffset = nameRange.getOffset() - srcOffset;
+		}
 		int partitionRelativeOffset= partition.getOffset() - srcOffset;
 		String token= ignoreNonJavadoc ? "/**" :  "/*"; //$NON-NLS-1$ //$NON-NLS-2$
 		return document.get(srcOffset, srcLength).lastIndexOf(token, nameRelativeOffset) == partitionRelativeOffset; 

@@ -13,13 +13,21 @@ package descent.internal.core;
 import org.eclipse.core.runtime.Assert;
 
 import descent.core.Flags;
+import descent.core.IBuffer;
+import descent.core.ICompilationUnit;
 import descent.core.IJavaElement;
 import descent.core.IMethod;
+import descent.core.ISourceRange;
 import descent.core.IType;
 import descent.core.ITypeParameter;
 import descent.core.JavaModelException;
 import descent.core.Signature;
+import descent.core.ToolFactory;
 import descent.core.compiler.CharOperation;
+import descent.core.compiler.IScanner;
+import descent.core.compiler.ITerminalSymbols;
+import descent.core.compiler.InvalidInputException;
+import descent.core.dom.AST;
 import descent.internal.core.util.Util;
 
 /**
@@ -264,6 +272,64 @@ public boolean isSimilar(IMethod method) {
 			this.getElementName(), this.getParameterTypes(),
 			method.getElementName(), method.getParameterTypes(),
 			null);
+}
+
+@Override
+public ISourceRange getNameRange() throws JavaModelException {
+	if (isConstructor() || isDestructor() || isNew() || isDelete()) {
+		int token = 0;
+		if (isConstructor()) {
+			token = ITerminalSymbols.TokenNamethis;
+		} else if (isDestructor()) {
+			token = ITerminalSymbols.TokenNameTILDE;
+		} else if (isNew()) {
+			token = ITerminalSymbols.TokenNamenew;
+		} else if (isDelete()) {
+			token = ITerminalSymbols.TokenNamedelete;
+		}
+		
+		ISourceRange range= this.getSourceRange();
+		if (range == null) return null;
+		IBuffer buf= null;
+		if (this.isBinary()) {
+			buf = this.getClassFile().getBuffer();
+		} else {
+			ICompilationUnit compilationUnit = this.getCompilationUnit();
+			if (!compilationUnit.isConsistent()) {
+				return null;
+			}
+			buf = compilationUnit.getBuffer();
+		}
+		final int start= range.getOffset();
+		final int length= range.getLength();
+		
+		if (length > 0) {
+			IScanner scanner= ToolFactory.createScanner(true, false, false, false, AST.LATEST);
+			scanner.setSource(buf.getText(start, length).toCharArray());
+			try {
+				int nameOffset= -1;
+				int nameEnd= -1;
+				
+				int terminal= scanner.getNextToken();
+				while (terminal != ITerminalSymbols.TokenNameEOF) {
+					if (terminal == token) {
+						nameOffset = scanner.getCurrentTokenStartPosition();
+						nameEnd = scanner.getCurrentTokenEndPosition();
+						if (token == ITerminalSymbols.TokenNameTILDE) {
+							nameEnd += 4; // ~this
+						}
+						return new SourceRange(nameOffset + start, nameEnd - nameOffset + 1);
+					}
+					
+					terminal = scanner.getNextToken();
+				}
+			} catch (InvalidInputException ex) {
+				// try if there is inherited Javadoc
+			}
+		}		
+		return null;
+	}
+	return super.getNameRange();
 }
 
 /**
