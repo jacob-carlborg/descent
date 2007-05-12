@@ -502,13 +502,13 @@ public class JavaAutoIndentStrategy extends DefaultIndentLineAutoEditStrategy {
 			return false;
 		}
 
+		/* TODO JDT problems
 		IProblem[] problems= compilationUnit.getProblems();
 		for (int i= 0; i != problems.length; ++i) {
-			/* TODO JDT problems
 			if (problems[i].getID() == IProblem.UnmatchedBracket)
 				return true;
-			*/
 		}
+		*/
 
 		final int relativeOffset= offset - info.delta;
 

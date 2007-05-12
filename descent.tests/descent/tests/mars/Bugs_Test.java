@@ -1,5 +1,6 @@
 package descent.tests.mars;
 
+import descent.core.compiler.IProblem;
 import descent.core.dom.CompilationUnit;
 
 
@@ -115,6 +116,21 @@ public class Bugs_Test extends Parser_Test {
 				   "/** */\n" +
 				   "int x;";
 		assertEquals(0, getCompilationUnit(s).getProblems().length);
+	}
+	
+	public void testBug15() {
+		String s = "this ";
+		getCompilationUnit(s);
+	}
+	
+	public void testBug16() {
+		String s = "class ____C{void ____m(){\r\n" + 
+				"	invariant {\r\n" + 
+				"		\r\n" + 
+				"	}\r\n" + 
+				"}}";
+		CompilationUnit unit = getCompilationUnit(s);
+		assertEquals(1, unit.declarations().size());
 	}
 	
 	public void testDstress_run_t_typeof_16_A() {

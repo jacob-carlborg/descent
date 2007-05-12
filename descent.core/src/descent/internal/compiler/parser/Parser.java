@@ -204,16 +204,16 @@ public class Parser extends Lexer {
 		if (token.value != TOKeof) {
 			parsingErrorDeleteToken(token);
 			// goto Lerr;
-			return parseModule_LErr();
+			return parseModule_LErr(decldefs);
 		}
 		return decldefs;
 	}
 	
-	private List parseModule_LErr() {
+	private List parseModule_LErr(List decldefs) {
 		while (token.value != TOKsemicolon && token.value != TOKeof)
 	    	nextToken();
 	    nextToken();
-	    return new ArrayList();
+	    return decldefs;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -1048,9 +1048,11 @@ public class Parser extends Lexer {
 					break;
 				}
 				
-				a = new Argument(inout, at, ai, ae);
-				a.setSourceRange(firstTokenStart, prevToken.ptr + prevToken.len - firstTokenStart);
-				arguments.add(a);
+				if (at != null || ai != null || ae != null) {
+					a = new Argument(inout, at, ai, ae);
+					a.setSourceRange(firstTokenStart, prevToken.ptr + prevToken.len - firstTokenStart);
+					arguments.add(a);
+				}
 				if (token.value == TOKcomma) {
 					nextToken();
 				} else {

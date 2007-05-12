@@ -137,7 +137,7 @@ public class MemberFilterActionGroup extends ActionGroup {
 			hideFields.setDescription(ActionMessages.MemberFilterActionGroup_hide_fields_description); 
 			hideFields.setToolTipText(ActionMessages.MemberFilterActionGroup_hide_fields_tooltip); 
 			JavaPluginImages.setLocalImageDescriptors(hideFields, "fields_co.gif"); //$NON-NLS-1$
-			actions.add(hideFields);
+			//actions.add(hideFields);
 		}
 			
 		// static
@@ -185,7 +185,7 @@ public class MemberFilterActionGroup extends ActionGroup {
 			hideLocalTypes.setDescription(ActionMessages.MemberFilterActionGroup_hide_localtypes_description); 
 			hideLocalTypes.setToolTipText(ActionMessages.MemberFilterActionGroup_hide_localtypes_tooltip); 
 			JavaPluginImages.setLocalImageDescriptors(hideLocalTypes, "localtypes_co.gif"); //$NON-NLS-1$
-			actions.add(hideLocalTypes);
+			//actions.add(hideLocalTypes);
 		}
 		
 		// order corresponds to order in toolbar

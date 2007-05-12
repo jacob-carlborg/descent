@@ -85,7 +85,10 @@ public class MemberFilter extends ViewerFilter {
 				if (hasFilter(FILTER_STATIC) && (Flags.isStatic(flags) || isFieldInInterfaceOrAnnotation(member)) && memberType != IJavaElement.TYPE) {
 					return false;
 				}
-				if (hasFilter(FILTER_NONPUBLIC) && !Flags.isPublic(flags) && !isMemberInInterfaceOrAnnotation(member) && !isTopLevelType(member) && !isEnumConstant(member)) {
+				if (hasFilter(FILTER_NONPUBLIC) &&
+						// Public is the default, so check that any of the others is not present (changed from JDT)
+						(Flags.isPrivate(flags) || Flags.isProtected(flags) || Flags.isPackage(flags)) 
+						&& !isMemberInInterfaceOrAnnotation(member) && /* !isTopLevelType(member) && */ !isEnumConstant(member)) {
 					return false;
 				}
 			}			
@@ -111,7 +114,7 @@ public class MemberFilter extends ViewerFilter {
 	
 	private boolean isTopLevelType(IMember member) {
 		IType parent= member.getDeclaringType();
-		return parent == null;
+		return parent == null && member instanceof IType;
 	}
 	
 	private boolean isEnumConstant(IMember member) throws JavaModelException {
