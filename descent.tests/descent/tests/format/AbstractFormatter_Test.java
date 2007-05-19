@@ -12,11 +12,11 @@ import descent.core.formatter.CodeFormatter;
 
 public abstract class AbstractFormatter_Test extends TestCase {
 	
-	protected void assertFormat(String original, String expected) throws Exception {
-		assertFormat(original, null, expected);
+	protected void assertFormat(String expected, String original) throws Exception {
+		assertFormat(expected, original, null);
 	}
 	
-	protected void assertFormat(String original, Map options, String expected) throws Exception {
+	protected void assertFormat(String expected, String original, Map options) throws Exception {
 		Document document = new Document(original);
 		
 		CodeFormatter formatter =  ToolFactory.createCodeFormatter(null);
