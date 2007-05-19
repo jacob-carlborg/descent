@@ -5,7 +5,8 @@ import java.util.List;
 /**
  * Abstract subclass for function declarations.
  */
-public abstract class AbstractFunctionDeclaration extends Declaration {
+public abstract class AbstractFunctionDeclaration extends Declaration
+	implements IFunctionDeclaration {
 	
 	/**
 	 * The arguments

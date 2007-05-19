@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+﻿<?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.2"?>
 <plugin>
 
@@ -279,6 +279,7 @@
          </filter>
           <keywordReference id="descent.ui.organizeimports"/>
       </page>
+      -->
             <page
             objectClass="org.eclipse.core.resources.IProject"
             name="%codeFormatterPageName"
@@ -303,7 +304,6 @@
          </filter>
          <keywordReference id="descent.ui.formatter"/>
       </page>
-      -->
       <page
             objectClass="org.eclipse.core.resources.IProject"
             name="%codeTemplatePageName"
@@ -548,6 +548,7 @@
             id="descent.ui.preferences.TypeFilterPreferencePage">
             <keywordReference id="descent.ui.typefilter"/>
       </page>
+      -->
       <page
             name="%codeFormatterPrefName"
             category="descent.ui.preferences.CodeStylePreferencePage"
@@ -555,7 +556,6 @@
             id="descent.ui.preferences.CodeFormatterPreferencePage">
             <keywordReference id="descent.ui.formatter"/>
       </page>
-      -->
       <page
             name="%buildPathPrefName"
             category="descent.ui.preferences.JavaBasePreferencePage"

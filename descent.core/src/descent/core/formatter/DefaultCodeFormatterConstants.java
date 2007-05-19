@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2006 IBM Corporation and others.
+ * Copyright (c) 2000, 2007 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -14,7 +14,7 @@ import java.util.Map;
 
 import descent.core.JavaCore;
 import descent.internal.formatter.DefaultCodeFormatterOptions;
-import descent.internal.formatter.align.Alignment;
+import descent.internal.formatter.align.Alignment2;
 
 /**
  * Constants used to set up the options of the code formatter.
@@ -385,6 +385,19 @@ public class DefaultCodeFormatterConstants {
 	public static final String FORMATTER_BLANK_LINES_BEFORE_PACKAGE = JavaCore.PLUGIN_ID + ".formatter.blank_lines_before_package";	//$NON-NLS-1$
 	/**
 	 * <pre>
+	 * FORMATTER / Option to add blank lines between import groups
+	 *     - option id:         "descent.core.formatter.blank_lines_between_import_groups"
+	 *     - possible values:   "&lt;n&gt;", where n is zero or a positive integer
+	 *     - default:           "1"
+	 * </pre>
+	 * Note: Import groups are defined once "Organize Import" operation has been executed. The code formatter itself
+	 * doesn't define the import groups.
+	 *
+	 * @since 3.3
+	 */
+	public static final String FORMATTER_BLANK_LINES_BETWEEN_IMPORT_GROUPS = JavaCore.PLUGIN_ID + ".formatter.blank_lines_between_import_groups";	//$NON-NLS-1$
+	/**
+	 * <pre>
 	 * FORMATTER / Option to add blank lines between type declarations
 	 *     - option id:         "descent.core.formatter.blank_lines_between_type_declarations"
 	 *     - possible values:   "&lt;n&gt;", where n is zero or a positive integer
@@ -559,9 +572,36 @@ public class DefaultCodeFormatterConstants {
 	 * @see #TRUE
 	 * @see #FALSE
 	 * @since 3.1
+	 * @deprecated Use {@link #FORMATTER_COMMENT_CLEAR_BLANK_LINES_IN_BLOCK_COMMENT} and {@link #FORMATTER_COMMENT_CLEAR_BLANK_LINES_IN_JAVADOC_COMMENT}
 	 */	
 	public final static String FORMATTER_COMMENT_CLEAR_BLANK_LINES = "descent.core.formatter.comment.clear_blank_lines"; //$NON-NLS-1$
 	
+	/**
+	 * <pre>
+	 * FORMATTER / Option to control whether blank lines are cleared inside javadoc comments
+	 *     - option id:         "descent.core.formatter.comment.clear_blank_lines_in_javadoc_comment"
+	 *     - possible values:   { TRUE, FALSE }
+	 *     - default:           FALSE
+	 * </pre>
+	 * @see #TRUE
+	 * @see #FALSE
+	 * @since 3.3
+	 */	
+	public final static String FORMATTER_COMMENT_CLEAR_BLANK_LINES_IN_JAVADOC_COMMENT = "descent.core.formatter.comment.clear_blank_lines_in_javadoc_comment"; //$NON-NLS-1$
+
+	/**
+	 * <pre>
+	 * FORMATTER / Option to control whether blank lines are cleared inside block comments
+	 *     - option id:         "descent.core.formatter.comment.clear_blank_lines_in_block_comment"
+	 *     - possible values:   { TRUE, FALSE }
+	 *     - default:           FALSE
+	 * </pre>
+	 * @see #TRUE
+	 * @see #FALSE
+	 * @since 3.3
+	 */	
+	public final static String FORMATTER_COMMENT_CLEAR_BLANK_LINES_IN_BLOCK_COMMENT = "descent.core.formatter.comment.clear_blank_lines_in_block_comment"; //$NON-NLS-1$
+
 	/**
 	 * <pre>
 	 * FORMATTER / Option to control whether comments are formatted
@@ -572,8 +612,49 @@ public class DefaultCodeFormatterConstants {
 	 * @see #TRUE
 	 * @see #FALSE
 	 * @since 3.1
+	 * @deprecated Use multiple settings for each kind of comments. See {@link #FORMATTER_COMMENT_FORMAT_BLOCK_COMMENT},
+	 * {@link #FORMATTER_COMMENT_FORMAT_JAVADOC_COMMENT} and {@link #FORMATTER_COMMENT_FORMAT_LINE_COMMENT}.
 	 */	
 	public final static String FORMATTER_COMMENT_FORMAT = "descent.core.formatter.comment.format_comments"; //$NON-NLS-1$
+
+	/**
+	 * <pre>
+	 * FORMATTER / Option to control whether single line comments are formatted
+	 *     - option id:         "descent.core.formatter.comment.format_line_comments"
+	 *     - possible values:   { TRUE, FALSE }
+	 *     - default:           TRUE
+	 * </pre>
+	 * @see #TRUE
+	 * @see #FALSE
+	 * @since 3.3
+	 */	
+	public final static String FORMATTER_COMMENT_FORMAT_LINE_COMMENT = "descent.core.formatter.comment.format_line_comments"; //$NON-NLS-1$
+
+	/**
+	 * <pre>
+	 * FORMATTER / Option to control whether multiple comments are formatted
+	 *     - option id:         "descent.core.formatter.comment.format_block_comments"
+	 *     - possible values:   { TRUE, FALSE }
+	 *     - default:           TRUE
+	 * </pre>
+	 * @see #TRUE
+	 * @see #FALSE
+	 * @since 3.3
+	 */	
+	public final static String FORMATTER_COMMENT_FORMAT_BLOCK_COMMENT = "descent.core.formatter.comment.format_block_comments"; //$NON-NLS-1$
+
+	/**
+	 * <pre>
+	 * FORMATTER / Option to control whether javadoc comments are formatted
+	 *     - option id:         "descent.core.formatter.comment.format_javadoc_comments"
+	 *     - possible values:   { TRUE, FALSE }
+	 *     - default:           TRUE
+	 * </pre>
+	 * @see #TRUE
+	 * @see #FALSE
+	 * @since 3.3
+	 */	
+	public final static String FORMATTER_COMMENT_FORMAT_JAVADOC_COMMENT = "descent.core.formatter.comment.format_javadoc_comments"; //$NON-NLS-1$
 
 	/**
 	 * <pre>
@@ -2686,6 +2767,19 @@ public class DefaultCodeFormatterConstants {
 	public static final String FORMATTER_INSERT_SPACE_BEFORE_PARENTHESIZED_EXPRESSION_IN_RETURN  = JavaCore.PLUGIN_ID + ".formatter.insert_space_before_parenthesized_expression_in_return";	//$NON-NLS-1$
 	/**
 	 * <pre>
+	 * FORMATTER / Option to insert a space before parenthesized expression in throw statement
+	 *     - option id:         "descent.core.formatter.insert_space_before_parenthesized_expression_in_throw"
+	 *     - possible values:   { INSERT, DO_NOT_INSERT }
+	 *     - default:           INSERT
+	 * </pre>
+	 * 
+	 * @see JavaCore#INSERT
+	 * @see JavaCore#DO_NOT_INSERT
+	 * @since 3.3
+	 */
+	public static final String FORMATTER_INSERT_SPACE_BEFORE_PARENTHESIZED_EXPRESSION_IN_THROW  = JavaCore.PLUGIN_ID + ".formatter.insert_space_before_parenthesized_expression_in_throw";	//$NON-NLS-1$
+	/**
+	 * <pre>
 	 * FORMATTER / Option to insert a space before a postfix operator
 	 *     - option id:         "descent.core.formatter.insert_space_before_postfix_operator"
 	 *     - possible values:   { INSERT, DO_NOT_INSERT }
@@ -2936,7 +3030,30 @@ public class DefaultCodeFormatterConstants {
 	 * @since 3.0
 	 */
 	public static final String FORMATTER_LINE_SPLIT = JavaCore.PLUGIN_ID + ".formatter.lineSplit"; //$NON-NLS-1$
-
+	/**
+	 * <pre>
+	 * FORMATTER / Option to indent block comments that start on the first column
+	 *     - option id:         "descent.core.formatter.formatter.never_indent_block_comments_on_first_column"
+	 *     - possible values:   { TRUE, FALSE }
+	 *     - default:           TRUE
+	 * </pre>
+	 * @see #TRUE
+	 * @see #FALSE
+	 * @since 3.3
+	 */
+	public static final String FORMATTER_NEVER_INDENT_BLOCK_COMMENTS_ON_FIRST_COLUMN = JavaCore.PLUGIN_ID + ".formatter.never_indent_block_comments_on_first_column"; //$NON-NLS-1$	
+	/**
+	 * <pre>
+	 * FORMATTER / Option to indent line comments that start on the first column
+	 *     - option id:         "descent.core.formatter.formatter.never_indent_line_comments_on_first_column"
+	 *     - possible values:   { TRUE, FALSE }
+	 *     - default:           TRUE
+	 * </pre>
+	 * @see #TRUE
+	 * @see #FALSE
+	 * @since 3.3
+	 */
+	public static final String FORMATTER_NEVER_INDENT_LINE_COMMENTS_ON_FIRST_COLUMN = JavaCore.PLUGIN_ID + ".formatter.never_indent_line_comments_on_first_column"; //$NON-NLS-1$	
 	/**
 	 * <pre>
 	 * FORMATTER / Option to specify the number of empty lines to preserve
@@ -2997,7 +3114,19 @@ public class DefaultCodeFormatterConstants {
 	 * @since 3.1
 	 */
 	public static final String FORMATTER_USE_TABS_ONLY_FOR_LEADING_INDENTATIONS = JavaCore.PLUGIN_ID + ".formatter.use_tabs_only_for_leading_indentations"; //$NON-NLS-1$
-
+	/**
+	 * <pre>
+	 * FORMATTER / Option to wrap before the binary operator
+	 *     - option id:         "descent.core.formatter.wrap_before_binary_operator"
+	 *     - possible values:   { TRUE, FALSE }
+	 *     - default:           FALSE
+	 * </pre>
+	 * This option is used only if the option {@link #FORMATTER_ALIGNMENT_FOR_BINARY_EXPRESSION} is set.
+	 * @see #TRUE
+	 * @see #FALSE
+	 * @since 3.3
+	 */
+	public static final String FORMATTER_WRAP_BEFORE_BINARY_OPERATOR = JavaCore.PLUGIN_ID + ".formatter.wrap_before_binary_operator"; //$NON-NLS-1$
 	/**
 	 * <pre>
 	 * FORMATTER / The wrapping is done by indenting by one compare to the current indentation.
@@ -3148,30 +3277,30 @@ public class DefaultCodeFormatterConstants {
 		int alignmentValue = 0; 
 		switch(wrapStyle) {
 			case WRAP_COMPACT :
-				alignmentValue |= Alignment.M_COMPACT_SPLIT;
+				alignmentValue |= Alignment2.M_COMPACT_SPLIT;
 				break;
 			case WRAP_COMPACT_FIRST_BREAK :
-				alignmentValue |= Alignment.M_COMPACT_FIRST_BREAK_SPLIT;
+				alignmentValue |= Alignment2.M_COMPACT_FIRST_BREAK_SPLIT;
 				break;
 			case WRAP_NEXT_PER_LINE :
-				alignmentValue |= Alignment.M_NEXT_PER_LINE_SPLIT;
+				alignmentValue |= Alignment2.M_NEXT_PER_LINE_SPLIT;
 				break;
 			case WRAP_NEXT_SHIFTED :
-				alignmentValue |= Alignment.M_NEXT_SHIFTED_SPLIT;
+				alignmentValue |= Alignment2.M_NEXT_SHIFTED_SPLIT;
 				break;
 			case WRAP_ONE_PER_LINE :
-				alignmentValue |= Alignment.M_ONE_PER_LINE_SPLIT;
+				alignmentValue |= Alignment2.M_ONE_PER_LINE_SPLIT;
 				break;
 		}		
 		if (forceSplit) {
-			alignmentValue |= Alignment.M_FORCE;
+			alignmentValue |= Alignment2.M_FORCE;
 		}
 		switch(indentStyle) {
 			case INDENT_BY_ONE :
-				alignmentValue |= Alignment.M_INDENT_BY_ONE;
+				alignmentValue |= Alignment2.M_INDENT_BY_ONE;
 				break;
 			case INDENT_ON_COLUMN :
-				alignmentValue |= Alignment.M_INDENT_ON_COLUMN;
+				alignmentValue |= Alignment2.M_INDENT_ON_COLUMN;
 		}
 		return String.valueOf(alignmentValue);
 	}
@@ -3215,7 +3344,7 @@ public class DefaultCodeFormatterConstants {
 		}
 		try {
 			int existingValue = Integer.parseInt(value);
-			return (existingValue & Alignment.M_FORCE) != 0;
+			return (existingValue & Alignment2.M_FORCE) != 0;
 		} catch (NumberFormatException e) {
 			throw WRONG_ARGUMENT;
 		}
@@ -3239,9 +3368,9 @@ public class DefaultCodeFormatterConstants {
 		}
 		try {
 			int existingValue = Integer.parseInt(value);
-			if ((existingValue & Alignment.M_INDENT_BY_ONE) != 0) {
+			if ((existingValue & Alignment2.M_INDENT_BY_ONE) != 0) {
 				return INDENT_BY_ONE;
-			} else if ((existingValue & Alignment.M_INDENT_ON_COLUMN) != 0) {
+			} else if ((existingValue & Alignment2.M_INDENT_ON_COLUMN) != 0) {
 				return INDENT_ON_COLUMN;
 			} else {
 				return INDENT_DEFAULT;
@@ -3277,17 +3406,17 @@ public class DefaultCodeFormatterConstants {
 			throw WRONG_ARGUMENT;
 		}
 		try {
-			int existingValue = Integer.parseInt(value) & Alignment.SPLIT_MASK;
+			int existingValue = Integer.parseInt(value) & Alignment2.SPLIT_MASK;
 			switch(existingValue) {
-				case Alignment.M_COMPACT_SPLIT :
+				case Alignment2.M_COMPACT_SPLIT :
 					return WRAP_COMPACT;
-				case Alignment.M_COMPACT_FIRST_BREAK_SPLIT :
+				case Alignment2.M_COMPACT_FIRST_BREAK_SPLIT :
 					return WRAP_COMPACT_FIRST_BREAK;
-				case Alignment.M_NEXT_PER_LINE_SPLIT :
+				case Alignment2.M_NEXT_PER_LINE_SPLIT :
 					return WRAP_NEXT_PER_LINE;
-				case Alignment.M_NEXT_SHIFTED_SPLIT :
+				case Alignment2.M_NEXT_SHIFTED_SPLIT :
 					return WRAP_NEXT_SHIFTED;
-				case Alignment.M_ONE_PER_LINE_SPLIT :
+				case Alignment2.M_ONE_PER_LINE_SPLIT :
 					return WRAP_ONE_PER_LINE;
 				default:
 					return WRAP_NO_SPLIT;
@@ -3316,9 +3445,9 @@ public class DefaultCodeFormatterConstants {
 		try {
 			int existingValue = Integer.parseInt(value);
 			// clear existing force bit
-			existingValue &= ~Alignment.M_FORCE;
+			existingValue &= ~Alignment2.M_FORCE;
 			if (force) {
-				existingValue |= Alignment.M_FORCE;
+				existingValue |= Alignment2.M_FORCE;
 			}
 			return String.valueOf(existingValue);
 		} catch (NumberFormatException e) {
@@ -3358,13 +3487,13 @@ public class DefaultCodeFormatterConstants {
 		try {
 			int existingValue = Integer.parseInt(value);
 			// clear existing indent bits
-			existingValue &= ~(Alignment.M_INDENT_BY_ONE | Alignment.M_INDENT_ON_COLUMN);
+			existingValue &= ~(Alignment2.M_INDENT_BY_ONE | Alignment2.M_INDENT_ON_COLUMN);
 			switch(indentStyle) {
 				case INDENT_BY_ONE :
-					existingValue |= Alignment.M_INDENT_BY_ONE;
+					existingValue |= Alignment2.M_INDENT_BY_ONE;
 					break;
 				case INDENT_ON_COLUMN :
-					existingValue |= Alignment.M_INDENT_ON_COLUMN;
+					existingValue |= Alignment2.M_INDENT_ON_COLUMN;
 			}
 			return String.valueOf(existingValue);
 		} catch (NumberFormatException e) {
@@ -3409,22 +3538,22 @@ public class DefaultCodeFormatterConstants {
 		try {
 			int existingValue = Integer.parseInt(value);
 			// clear existing split bits
-			existingValue &= ~(Alignment.SPLIT_MASK);
+			existingValue &= ~(Alignment2.SPLIT_MASK);
 			switch(wrappingStyle) {
 				case WRAP_COMPACT :
-					existingValue |= Alignment.M_COMPACT_SPLIT;
+					existingValue |= Alignment2.M_COMPACT_SPLIT;
 					break;
 				case WRAP_COMPACT_FIRST_BREAK :
-					existingValue |= Alignment.M_COMPACT_FIRST_BREAK_SPLIT;
+					existingValue |= Alignment2.M_COMPACT_FIRST_BREAK_SPLIT;
 					break;
 				case WRAP_NEXT_PER_LINE :
-					existingValue |= Alignment.M_NEXT_PER_LINE_SPLIT;
+					existingValue |= Alignment2.M_NEXT_PER_LINE_SPLIT;
 					break;
 				case WRAP_NEXT_SHIFTED :
-					existingValue |= Alignment.M_NEXT_SHIFTED_SPLIT;
+					existingValue |= Alignment2.M_NEXT_SHIFTED_SPLIT;
 					break;
 				case WRAP_ONE_PER_LINE :
-					existingValue |= Alignment.M_ONE_PER_LINE_SPLIT;
+					existingValue |= Alignment2.M_ONE_PER_LINE_SPLIT;
 					break;
 			}
 			return String.valueOf(existingValue);

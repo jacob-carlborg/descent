@@ -8,7 +8,9 @@ import java.util.List;
  * An expression that declares an annonymous function.
  * TODO comment better, Syntax as well
  */
-public class FunctionLiteralDeclarationExpression extends Expression {
+public class FunctionLiteralDeclarationExpression extends Expression
+		implements IFunctionDeclaration
+{
 	
 	public static enum Syntax {
 		EMPTY,

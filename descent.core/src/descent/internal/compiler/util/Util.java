@@ -445,4 +445,6 @@ public class Util implements SuffixConstants {
 		return buffer.toString();
 	}
 	
+	public static final String EMPTY_STRING = "";
+	
 }

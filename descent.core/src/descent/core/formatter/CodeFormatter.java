@@ -10,9 +10,8 @@
  *******************************************************************************/
 package descent.core.formatter;
 
+import descent.internal.compiler.util.Util;
 import org.eclipse.text.edits.TextEdit;
-
-import descent.internal.formatter.Scribe2;
 
 /**
  * Specification for a generic source code formatter.
@@ -100,6 +99,6 @@ public abstract class CodeFormatter {
 	 * @since 3.2
 	 */
 	public String createIndentationString(int indentationLevel) {
-		return Scribe2.EMPTY_STRING;
+		return Util.EMPTY_STRING;
 	}
 }

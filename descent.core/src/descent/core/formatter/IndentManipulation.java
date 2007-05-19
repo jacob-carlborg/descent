@@ -14,14 +14,15 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Map;
 
+import descent.core.formatter.DefaultCodeFormatterConstants;
+import descent.internal.compiler.parser.ScannerHelper;
+import descent.internal.compiler.util.Util;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.DefaultLineTracker;
 import org.eclipse.jface.text.ILineTracker;
 import org.eclipse.jface.text.IRegion;
-import org.eclipse.text.edits.ReplaceEdit;
 
-import descent.internal.compiler.parser.ScannerHelper;
-import descent.internal.formatter.Scribe2;
+import org.eclipse.text.edits.ReplaceEdit;
 
 /**
  * Helper class to provide String manipulation functions dealing with indentations.
@@ -162,7 +163,7 @@ public final class IndentManipulation {
 			}
 		}
 		if (end == 0) {
-			return Scribe2.EMPTY_STRING;
+			return Util.EMPTY_STRING;
 		} else if (end == size) {
 			return line;
 		} else {
@@ -230,7 +231,7 @@ public final class IndentManipulation {
 		}
 		String trimmed;
 		if (start == size)
-			trimmed= Scribe2.EMPTY_STRING;
+			trimmed= Util.EMPTY_STRING;
 		else
 			trimmed= line.substring(start);
 		
