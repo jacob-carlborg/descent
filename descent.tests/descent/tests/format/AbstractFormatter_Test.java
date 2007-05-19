@@ -24,11 +24,6 @@ public abstract class AbstractFormatter_Test extends TestCase {
 		edit.apply(document);
 		
 		String string = document.get();
-		int lastNotSpace;
-		for(lastNotSpace = string.length() - 1; lastNotSpace >= 0 && Character.isWhitespace(string.charAt(lastNotSpace)); lastNotSpace--) {
-		}
-		string = string.substring(0, lastNotSpace + 1);
-		
 		assertEquals(expected, string);
 	}
 
