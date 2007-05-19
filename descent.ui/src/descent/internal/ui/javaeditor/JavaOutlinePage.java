@@ -112,6 +112,7 @@ import descent.ui.JavaElementSorter;
 import descent.ui.JavaUI;
 import descent.ui.PreferenceConstants;
 import descent.ui.ProblemsLabelDecorator.ProblemsLabelChangedEvent;
+import descent.ui.actions.GenerateActionGroup;
 import descent.ui.actions.JdtActionConstants;
 import descent.ui.actions.MemberFilterActionGroup;
 
@@ -1099,11 +1100,12 @@ public class JavaOutlinePage extends Page implements IContentOutlinePage, IAdapt
 		
 		updateSelectionProvider(site);
 		
+		// TODO JDT UI actions
 		// we must create the groups after we have set the selection provider to the site
 		fActionGroups= new CompositeActionGroup(new ActionGroup[] {
 				// new OpenViewActionGroup(this),
 				// new CCPActionGroup(this),
-				// new GenerateActionGroup(this),
+				new GenerateActionGroup(this),
 				// new RefactorActionGroup(this),
 				// new JavaSearchActionGroup(this)
 				});

@@ -2741,5 +2741,83 @@
    <!-- =========================================================================== -->
 <!-- Templates                                                                   -->
 <!-- =========================================================================== -->
+
+<!-- =========================================================================== -->
+<!-- Java and Coding Action Set (Adding the source, refactor and navigate menu)  -->
+<!-- =========================================================================== -->
+<extension
+         point="org.eclipse.ui.actionSets">
+         <actionSet
+            label="%CodingActionSet.label"
+            description="%CodingActionSet.description"
+            visible="false"
+            id="descent.ui.CodingActionSet">
+        <!-- =========================================================================== -->
+		<!-- Source Menu                                                                 -->
+		<!-- =========================================================================== -->
+         <menu
+               label="%SourceMenu.label"
+               path="edit"
+               id="descent.ui.source.menu">
+		    <separator
+                  name="commentGroup">
+            </separator>
+            <separator
+                  name="editGroup">
+            </separator>
+            <separator
+                  name="importGroup">
+            </separator>
+            <separator
+                  name="generateGroup">
+            </separator>
+            <separator
+                  name="codeGroup">
+            </separator>
+            <separator
+                  name="externalizeGroup">
+            </separator>
+            <separator
+                  name="convertGroup">
+            </separator>
+         </menu>
+        <!-- edit group -->
+         <action
+               definitionId="descent.ui.edit.text.java.quick.format"
+               label="%FormatElementAction.label"
+               retarget="true"
+               menubarPath="descent.ui.source.menu/editGroup"
+               id="descent.ui.actions.FormatElement">
+         </action>
+         <action
+               definitionId="descent.ui.edit.text.java.format"
+               label="%FormatAction.label"
+               retarget="true"
+               menubarPath="descent.ui.source.menu/editGroup"
+               id="descent.ui.actions.Format">
+         </action>
+         <action
+               definitionId="descent.ui.edit.text.java.indent"
+               label="%IndentAction.label"
+               retarget="true"
+               menubarPath="descent.ui.source.menu/editGroup"
+               id="descent.ui.actions.Indent">
+         </action>
+         <action
+               definitionId="org.eclipse.ui.edit.text.shiftLeft"
+               label="%ShiftLeftAction.label"
+               retarget="true"
+               menubarPath="descent.ui.source.menu/editGroup"
+               id="descent.ui.actions.ShiftLeft">
+         </action>
+         <action
+               definitionId="org.eclipse.ui.edit.text.shiftRight"
+               label="%ShiftRightAction.label"
+               retarget="true"
+               menubarPath="descent.ui.source.menu/editGroup"
+               id="descent.ui.actions.ShiftRight">
+         </action>
+     </actionSet>
+</extension>
 	
 </plugin>

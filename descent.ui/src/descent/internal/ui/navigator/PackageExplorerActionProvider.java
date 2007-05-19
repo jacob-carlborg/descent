@@ -21,6 +21,7 @@ import org.eclipse.ui.navigator.IExtensionStateModel;
 
 import descent.internal.ui.JavaPlugin;
 import descent.internal.ui.navigator.IExtensionStateConstants.Values;
+import descent.ui.actions.GenerateActionGroup;
 import descent.ui.actions.OpenViewActionGroup;
 
 // TODO JDT UI actions: remove comments
@@ -42,7 +43,7 @@ public class PackageExplorerActionProvider extends CommonActionProvider {
 
 	//private GenerateBuildPathActionGroup fBuildPathGroup;
 
-	//private GenerateActionGroup fGenerateGroup;
+	private GenerateActionGroup fGenerateGroup;
 
 	private boolean fInViewPart = false;
 	private boolean fHasFilledViewMenu = false;
@@ -55,7 +56,7 @@ public class PackageExplorerActionProvider extends CommonActionProvider {
 		if (fInViewPart) {
 			fOpenViewGroup.fillActionBars(actionBars); 
 			//fBuildPathGroup.fillActionBars(actionBars);
-			//fGenerateGroup.fillActionBars(actionBars); 
+			fGenerateGroup.fillActionBars(actionBars); 
 			//fSearchGroup.fillActionBars(actionBars);
 		}
 
@@ -66,7 +67,7 @@ public class PackageExplorerActionProvider extends CommonActionProvider {
 		if (fInViewPart) {
 			fOpenViewGroup.fillContextMenu(menu); 
 			//fBuildPathGroup.fillContextMenu(menu);
-			//fGenerateGroup.fillContextMenu(menu); 
+			fGenerateGroup.fillContextMenu(menu); 
 			//fSearchGroup.fillContextMenu(menu);
 		}
 	}
@@ -90,7 +91,7 @@ public class PackageExplorerActionProvider extends CommonActionProvider {
 						return false;
 					}
 				}; 
-				//fGenerateGroup = new GenerateActionGroup(viewPart);
+				fGenerateGroup = new GenerateActionGroup(viewPart);
 				//fSearchGroup = new JavaSearchActionGroup(viewPart);
 				//fBuildPathGroup = new GenerateBuildPathActionGroup(viewPart);
 				
@@ -105,7 +106,7 @@ public class PackageExplorerActionProvider extends CommonActionProvider {
 		super.setContext(context);
 		if (fInViewPart) {
 			fOpenViewGroup.setContext(context); 
-			//fGenerateGroup.setContext(context);
+			fGenerateGroup.setContext(context);
 			//fSearchGroup.setContext(context);
 			//fBuildPathGroup.setContext(context);
 		}

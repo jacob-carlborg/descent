@@ -109,6 +109,7 @@ import descent.internal.ui.text.comment.CommentFormattingContext;
 import descent.internal.ui.text.java.IJavaReconcilingListener;
 import descent.ui.IWorkingCopyManager;
 import descent.ui.PreferenceConstants;
+import descent.ui.actions.GenerateActionGroup;
 import descent.ui.actions.IJavaEditorActionDefinitionIds;
 import descent.ui.text.IJavaPartitions;
 
@@ -1097,7 +1098,7 @@ public class CompilationUnitEditor extends JavaEditor implements IJavaReconcilin
 	private BracketInserter fBracketInserter= new BracketInserter();
 
 	/** The standard action groups added to the menu */
-	// TODO JDT UI private GenerateActionGroup fGenerateActionGroup;
+	private GenerateActionGroup fGenerateActionGroup;
 	private CompositeActionGroup fContextMenuGroup;
 	
 	// TODO JDT UI private CorrectionCommandInstaller fCorrectionCommands;
@@ -1236,19 +1237,18 @@ public class CompilationUnitEditor extends JavaEditor implements IJavaReconcilin
 			setActionActivationCode("IndentOnTab", '\t', -1, SWT.NONE); //$NON-NLS-1$
 		}
 
-		/* TODO JDT UI actions
 		fGenerateActionGroup= new GenerateActionGroup(this, ITextEditorActionConstants.GROUP_EDIT);
-		ActionGroup rg= new RefactorActionGroup(this, ITextEditorActionConstants.GROUP_EDIT);
-		ActionGroup surroundWith= new SurroundWithActionGroup(this, ITextEditorActionConstants.GROUP_EDIT);
 		
-		fActionGroups.addGroup(surroundWith);
-		fActionGroups.addGroup(rg);
+//		ActionGroup rg= new RefactorActionGroup(this, ITextEditorActionConstants.GROUP_EDIT);
+//		ActionGroup surroundWith= new SurroundWithActionGroup(this, ITextEditorActionConstants.GROUP_EDIT);
+		
+//		fActionGroups.addGroup(surroundWith);
+//		fActionGroups.addGroup(rg);
 		fActionGroups.addGroup(fGenerateActionGroup);
-		*/
 
 		// We have to keep the context menu group separate to have better control over positioning
 		fContextMenuGroup= new CompositeActionGroup(new ActionGroup[] {
-			//fGenerateActionGroup,
+			fGenerateActionGroup,
 			//rg,
 			//surroundWith,
 			//new LocalHistoryActionGroup(this, ITextEditorActionConstants.GROUP_EDIT)
@@ -1767,9 +1767,7 @@ public class CompilationUnitEditor extends JavaEditor implements IJavaReconcilin
 
 	protected void updateStateDependentActions() {
 		super.updateStateDependentActions();
-		/* TODO JDT UI actions
 		fGenerateActionGroup.editorStateChanged();
-		*/
 	}
 
 	/*
