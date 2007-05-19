@@ -3,6 +3,7 @@ package descent.tests.format;
 import java.util.HashMap;
 import java.util.Map;
 
+import descent.core.JavaCore;
 import descent.core.formatter.DefaultCodeFormatterConstants;
 
 public class FormatModuleDeclaration_Tests extends AbstractFormatter_Test {
@@ -94,6 +95,17 @@ public class FormatModuleDeclaration_Tests extends AbstractFormatter_Test {
 		options.put(DefaultCodeFormatterConstants.FORMATTER_BLANK_LINES_AFTER_PACKAGE, "3");
 		assertFormat(
 				"module foo.bar;\r\n\r\n\r\n\r\n", 
+				
+				"module foo.bar;",
+				
+				options);
+	}
+	
+	public void testSpaceBeforeSemicolon() throws Exception {
+		Map options = new HashMap();
+		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_SEMICOLON, JavaCore.INSERT);
+		assertFormat(
+				"module foo.bar ;\r\n", 
 				
 				"module foo.bar;",
 				

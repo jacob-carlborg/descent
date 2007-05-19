@@ -1436,6 +1436,7 @@ public class Scribe2 {	private static final int INITIAL_SIZE = 100;
 	public void printModifiers(List<Modifier> modifiers)
 	{
 			int modifiersIndex = 0;
+			int modifiersSize = modifiers.size();
 			boolean isFirstModifier = true;
 			int currentTokenStartPosition = this.lexer.p;
 			boolean hasComment = false;

@@ -4,11 +4,11 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.text.edits.TextEdit;
+
 import descent.core.dom.*;
 import descent.internal.compiler.parser.Lexer;
 import descent.internal.compiler.parser.TOK;
-
-import org.eclipse.text.edits.TextEdit;
 
 /**
  * The class that visits everything in the source tree and formats it by sending
@@ -878,11 +878,19 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 	public boolean visit(ImportDeclaration node)
 	{
 		formatModifiers(node.modifiers()); // Will slurp up a "static" modifer
+		
+		// So, if it's static and has no modifiers, print the "static" token
+		// (otherwise it was already printed in formatModifiers)
+		if (node.isStatic() && node.modifiers().size() == 0) {
+			this.scribe.printNextToken(TOK.TOKstatic);
+			this.scribe.space();
+		}
 		// Print the "import" keyword
 		scribe.printNextToken(TOK.TOKimport);
 		scribe.space();
 		formatCSV(node.imports(), true);
-		scribe.printNextToken(TOK.TOKsemicolon);
+		scribe.printNextToken(TOK.TOKsemicolon, this.preferences.insert_space_before_semicolon);
+		scribe.printTrailingComment();
 		scribe.printNewLine();
 		return false;
 	}
