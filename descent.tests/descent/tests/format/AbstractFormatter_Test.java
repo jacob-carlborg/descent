@@ -19,7 +19,7 @@ public abstract class AbstractFormatter_Test extends TestCase {
 	protected void assertFormat(String expected, String original, Map options) throws Exception {
 		Document document = new Document(original);
 		
-		CodeFormatter formatter =  ToolFactory.createCodeFormatter(null);
+		CodeFormatter formatter =  ToolFactory.createCodeFormatter(options);
 		TextEdit edit = formatter.format(CodeFormatter.K_COMPILATION_UNIT, original, 0, original.length(), 0, null);
 		edit.apply(document);
 		

@@ -397,15 +397,33 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 	
 	public boolean visit(CompilationUnit node)
 	{
-		scribe.lastNumberOfNewLines = 1;
-		ModuleDeclaration module = node.getModuleDeclaration();
-		if(module != null)
-		{
-			module.accept(this);
-			scribe.printEmptyLines(1);
-		}
-		else
+		// fake new line to handle empty lines before package declaration or import declarations
+		this.scribe.lastNumberOfNewLines = 1;
+		/* 
+		 * Module declaration
+		 */
+		final ModuleDeclaration moduleDeclaration = node.getModuleDeclaration();
+		final boolean hasModule = moduleDeclaration != null;
+		if(hasModule) {
+			if (hasComments()) {
+				this.scribe.printComment();
+			}
+			int blankLinesBeforePackage = this.preferences.blank_lines_before_package;
+			if (blankLinesBeforePackage > 0) {
+				this.scribe.printEmptyLines(blankLinesBeforePackage);
+			}
+			
+			moduleDeclaration.accept(this);
+			
+			int blankLinesAfterPackage = this.preferences.blank_lines_after_package;
+			if (blankLinesAfterPackage > 0) {
+				this.scribe.printEmptyLines(blankLinesAfterPackage);
+			} else {
+				this.scribe.printNewLine();
+			}
+		} else {
 			scribe.printComment();
+		}
 		formatDeclarations(node.declarations());
 		scribe.printEndOfCompilationUnit();
 		return false;
@@ -981,7 +999,8 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 		scribe.printNextToken(TOK.TOKmodule);
 		scribe.space();
 		node.getName().accept(this);
-		scribe.printNextToken(TOK.TOKsemicolon);
+		scribe.printNextToken(TOK.TOKsemicolon, this.preferences.insert_space_before_semicolon);
+		scribe.printTrailingComment();
 		return false;
 	}
 	

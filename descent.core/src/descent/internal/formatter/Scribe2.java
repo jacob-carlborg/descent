@@ -1412,7 +1412,7 @@ public class Scribe2 {	private static final int INITIAL_SIZE = 100;
 	{
 		try
 		{
-			return lexer.input[++lexer.p];
+			return lexer.input[lexer.p++];
 		}
 		catch(IndexOutOfBoundsException e)
 		{
