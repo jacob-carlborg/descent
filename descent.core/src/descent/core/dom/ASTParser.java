@@ -17,6 +17,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 
 import descent.core.IClassFile;
 import descent.core.ICompilationUnit;
+import descent.core.IInitializer;
 import descent.core.IJavaElement;
 import descent.core.IJavaProject;
 import descent.core.JavaCore;
@@ -917,15 +918,15 @@ public class ASTParser {
 			case K_INITIALIZER :
 				parser = new descent.internal.compiler.parser.Parser(ast, rawSource, sourceOffset, sourceLength);
 				result = CompilationUnitResolver.convert(ast, parser.parseInitializer());
-				return result;
+				return rootNodeToAst(ast, result);
 			case K_EXPRESSION :
 				parser = new descent.internal.compiler.parser.Parser(ast, rawSource, sourceOffset, sourceLength);
 				result = CompilationUnitResolver.convert(ast, parser.parseExpression());
-				return result;
+				return rootNodeToAst(ast, result);
 			case K_STATEMENT :
 				parser = new descent.internal.compiler.parser.Parser(ast, rawSource, sourceOffset, sourceLength);
 				result = CompilationUnitResolver.convert(ast, parser.parseStatement(0));
-				return result;
+				return rootNodeToAst(ast, result);
 			case K_STATEMENTS:
 				parser = new descent.internal.compiler.parser.Parser(ast, rawSource, sourceOffset, sourceLength);
 				result = CompilationUnitResolver.convert(ast, parser.parseStatement(0));
@@ -937,12 +938,36 @@ public class ASTParser {
 						}
 					});
 				}
-				return result;
+				return rootNodeToAst(ast, result);
 			}
 		} finally {
 			ast.setDefaultNodeFlag(savedDefaultNodeFlag);
 		}
 		throw new IllegalStateException();
+	}
+
+	private ASTNode rootNodeToAst(AST ast, ASTNode result) {
+		ASTNode node = result;
+		if (node instanceof Initializer) {
+			VariableDeclarationFragment fragment = ast.newVariableDeclarationFragment();
+			fragment.setInitializer((Initializer) node);
+			VariableDeclaration var = ast.newVariableDeclaration(fragment);
+			CompilationUnit unit = ast.newCompilationUnit();
+			unit.declarations().add(var);
+		} else {
+			if (node instanceof Expression) {
+				node = ast.newExpressionStatement((Expression) node);
+			}		
+			if (node instanceof Statement) {
+				Block block = ast.newBlock();
+				block.statements().add((Statement) node);
+				FunctionDeclaration function = ast.newFunctionDeclaration();
+				function.setBody(block);
+				CompilationUnit unit = ast.newCompilationUnit();
+				unit.declarations().add(function);
+			}
+		}
+		return result;
 	}
 	
 }

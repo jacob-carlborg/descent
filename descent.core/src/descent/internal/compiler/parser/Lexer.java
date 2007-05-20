@@ -462,7 +462,7 @@ public class Lexer implements IProblemRequestor {
 				
 				if (tokenizeComments) {
 					t.value = input[t.ptr + 2] == '/' ? TOKdoclinecomment : TOKlinecomment;
-					t.len = p - t.ptr + 1;
+					t.len = p - t.ptr;
 					t.string = new String(input, t.ptr, t.len);
 					
 					newline(NOT_IN_COMMENT);

@@ -11,29 +11,21 @@
 package descent.internal.formatter;
 
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
-import descent.core.compiler.CharOperation;
-import descent.core.compiler.IScanner;
-import descent.core.dom.ASTVisitor;
-import descent.core.dom.Modifier;
-//import descent.core.dom.Annotation;
-import descent.core.dom.AST;
-import descent.core.dom.Comment;
-import descent.core.dom.CompilationUnit;
-import descent.internal.compiler.parser.Lexer;
-import descent.internal.compiler.parser.Scanner;
-import descent.internal.compiler.parser.ScannerHelper;
-import descent.internal.compiler.parser.TOK;
-import descent.core.compiler.ITerminalSymbols;
-import descent.internal.compiler.util.Util;
-import descent.internal.formatter.align.Alignment2;
-import descent.internal.formatter.align.AlignmentException;
 import org.eclipse.text.edits.MultiTextEdit;
 import org.eclipse.text.edits.ReplaceEdit;
 import org.eclipse.text.edits.TextEdit;
+
+import descent.core.dom.AST;
+import descent.core.dom.CompilationUnit;
+import descent.core.dom.Modifier;
+import descent.internal.compiler.parser.Lexer;
+import descent.internal.compiler.parser.ScannerHelper;
+import descent.internal.compiler.parser.TOK;
+import descent.internal.compiler.util.Util;
+import descent.internal.formatter.align.Alignment2;
+import descent.internal.formatter.align.AlignmentException;
 
 /**
  * This class is responsible for dumping formatted source
@@ -662,7 +654,7 @@ public class Scribe2 {	private static final int INITIAL_SIZE = 100;
 				this.currentToken = lexer.nextToken();
 				switch(this.currentToken) {
 					case TOKwhitespace :
-						char[] whiteSpaces = lexer.token.string.toCharArray();
+						char[] whiteSpaces = lexer.token.getRawTokenSource();
 						count = 0;
 						for (int i = 0, max = whiteSpaces.length; i < max; i++) {
 							switch(whiteSpaces[i]) {
@@ -708,7 +700,7 @@ public class Scribe2 {	private static final int INITIAL_SIZE = 100;
 							space();
 						} 
 						hasWhitespace = false;
-						this.printCommentLine(lexer.token.string.toCharArray());
+						this.printCommentLine(lexer.token.getRawTokenSource());
 						currentTokenStartPosition = lexer.p;
 						hasLineComment = true;		
 						count = 0;
@@ -727,14 +719,14 @@ public class Scribe2 {	private static final int INITIAL_SIZE = 100;
 							space();
 						} 
 						hasWhitespace = false;
-						this.printBlockComment(lexer.token.string.toCharArray(), false);
+						this.printBlockComment(lexer.token.getRawTokenSource(), false);
 						currentTokenStartPosition = lexer.p;
 						hasLineComment = false;
 						hasComment = true;
 						count = 0;
 						break;
 					case TOKsemicolon:
-						char[] currentTokenSource = lexer.token.string.toCharArray();
+						char[] currentTokenSource = lexer.token.getRawTokenSource();
 						this.print(currentTokenSource, this.formatter.preferences.insert_space_before_semicolon);
 						break;
 					case TOKeof:
@@ -760,7 +752,7 @@ public class Scribe2 {	private static final int INITIAL_SIZE = 100;
 			while ((this.currentToken = this.lexer.nextToken()) != TOK.TOKeof) {
 				switch(this.currentToken) {
 					case TOKwhitespace :
-						char[] whiteSpaces = this.lexer.token.string.toCharArray();
+						char[] whiteSpaces = this.lexer.token.getRawTokenSource();
 						count = 0;
 						for (int i = 0, max = whiteSpaces.length; i < max; i++) {
 							switch(whiteSpaces[i]) {
@@ -808,7 +800,7 @@ public class Scribe2 {	private static final int INITIAL_SIZE = 100;
 							space();
 						} 
 						hasWhitespace = false;
-						this.printCommentLine(lexer.token.string.toCharArray());
+						this.printCommentLine(lexer.token.getRawTokenSource());
 						currentTokenStartPosition = lexer.p;
 						hasLineComment = true;		
 						count = 0;
@@ -827,7 +819,7 @@ public class Scribe2 {	private static final int INITIAL_SIZE = 100;
 							space();
 						} 
 						hasWhitespace = false;
-						this.printBlockComment(lexer.token.string.toCharArray(), false);
+						this.printBlockComment(lexer.token.getRawTokenSource(), false);
 						currentTokenStartPosition = lexer.p;
 						hasLineComment = false;
 						hasComment = true;
@@ -1025,7 +1017,7 @@ public class Scribe2 {	private static final int INITIAL_SIZE = 100;
 					case ITerminalSymbols.TokenNametransient :
 					case ITerminalSymbols.TokenNamevolatile :
 					case ITerminalSymbols.TokenNamestrictfp :
-						this.print(lexer.token.string.toCharArray(), !isFirstModifier);
+						this.print(lexer.token.getRawTokenSource(), !isFirstModifier);
 						isFirstModifier = false;
 						currentTokenStartPosition = lexer.p;
 						modifiersIndex++;
@@ -1044,23 +1036,23 @@ public class Scribe2 {	private static final int INITIAL_SIZE = 100;
 						modifiersIndex++;
 						break;
 					case ITerminalSymbols.TokenNameCOMMENT_BLOCK :
-						this.printBlockComment(lexer.token.string.toCharArray(), false);
+						this.printBlockComment(lexer.token.getRawTokenSource(), false);
 						currentTokenStartPosition = lexer.p;
 						hasComment = true;
 						break;
 					case ITerminalSymbols.TokenNameCOMMENT_JAVADOC :
-						this.printBlockComment(lexer.token.string.toCharArray(), true);
+						this.printBlockComment(lexer.token.getRawTokenSource(), true);
 						currentTokenStartPosition = lexer.p;
 						hasComment = true;
 						break;
 					case ITerminalSymbols.TokenNameCOMMENT_LINE :
-						this.printCommentLine(lexer.token.string.toCharArray());
+						this.printCommentLine(lexer.token.getRawTokenSource());
 						currentTokenStartPosition = lexer.p;
 						break;
 					case TOKwhitespace :
 						addDeleteEdit(lexer.token.ptr, currentTokenEndPosition());
 						int count = 0;
-						char[] whiteSpaces = lexer.token.string.toCharArray();
+						char[] whiteSpaces = lexer.token.getRawTokenSource();
 						for (int i = 0, max = whiteSpaces.length; i < max; i++) {
 							switch(whiteSpaces[i]) {
 								case '\r' :
@@ -1136,7 +1128,7 @@ public class Scribe2 {	private static final int INITIAL_SIZE = 100;
 	public void printNextToken(TOK[] expectedTokenTypes, boolean considerSpaceIfAny){
 		printComment();
 			this.currentToken = lexer.nextToken();
-			char[] currentTokenSource = lexer.token.string.toCharArray();
+			char[] currentTokenSource = lexer.token.getRawTokenSource();
 			if (Arrays.binarySearch(expectedTokenTypes, this.currentToken) < 0) {
 				StringBuffer expectations = new StringBuffer(5);
 				for (int i = 0; i < expectedTokenTypes.length; i++){
@@ -1166,16 +1158,16 @@ public class Scribe2 {	private static final int INITIAL_SIZE = 100;
 					case TOKdocblockcomment:
 					case TOKpluscomment:
 					case TOKdocpluscomment:
-						this.printBlockComment(lexer.token.string.toCharArray(), false);
+						this.printBlockComment(lexer.token.getRawTokenSource(), false);
 						currentTokenStartPosition = lexer.p;
 						break;
 					case TOKlinecomment:
 					case TOKdoclinecomment:
-						this.printCommentLine(lexer.token.string.toCharArray());
+						this.printCommentLine(lexer.token.getRawTokenSource());
 						currentTokenStartPosition = lexer.p;
 						break;
 					case ITerminalSymbols.TokenNameIdentifier :
-						this.print(lexer.token.string.toCharArray(), false);
+						this.print(lexer.token.getRawTokenSource(), false);
 						currentTokenStartPosition = lexer.p;
 						if (++ numberOfIdentifiers == numberOfTokens) {
 							lexer.reset(currentTokenStartPosition, this.scannerEndPosition - 1);
@@ -1183,7 +1175,7 @@ public class Scribe2 {	private static final int INITIAL_SIZE = 100;
 						}
 						break;						
 					case ITerminalSymbols.TokenNameDOT :
-						this.print(lexer.token.string.toCharArray(), false);
+						this.print(lexer.token.getRawTokenSource(), false);
 						currentTokenStartPosition = lexer.p;
 						break;
 					default:
@@ -1208,16 +1200,16 @@ public class Scribe2 {	private static final int INITIAL_SIZE = 100;
 						break;
 					case ITerminalSymbols.TokenNameCOMMENT_BLOCK :
 					case ITerminalSymbols.TokenNameCOMMENT_JAVADOC :
-						this.printBlockComment(lexer.token.string.toCharArray(), false);
+						this.printBlockComment(lexer.token.getRawTokenSource(), false);
 						currentTokenStartPosition = lexer.p;
 						break;
 					case ITerminalSymbols.TokenNameCOMMENT_LINE :
-						this.printCommentLine(lexer.token.string.toCharArray());
+						this.printCommentLine(lexer.token.getRawTokenSource());
 						currentTokenStartPosition = lexer.p;
 						break;
 					case ITerminalSymbols.TokenNameIdentifier :
 					case ITerminalSymbols.TokenNameDOT :
-						this.print(lexer.token.string.toCharArray(), false);
+						this.print(lexer.token.getRawTokenSource(), false);
 						currentTokenStartPosition = lexer.p;
 						break;
 					default:
@@ -1256,7 +1248,7 @@ public class Scribe2 {	private static final int INITIAL_SIZE = 100;
 				switch(this.currentToken) {
 					case TOKwhitespace :
 						int count = 0;
-						char[] whiteSpaces = lexer.token.string.toCharArray();
+						char[] whiteSpaces = lexer.token.getRawTokenSource();
 						for (int i = 0, max = whiteSpaces.length; i < max; i++) {
 							switch(whiteSpaces[i]) {
 								case '\r' :
@@ -1299,7 +1291,7 @@ public class Scribe2 {	private static final int INITIAL_SIZE = 100;
 						if (hasWhitespaces) {
 							space();
 						}
-						this.printCommentLine(lexer.token.string.toCharArray());
+						this.printCommentLine(lexer.token.getRawTokenSource());
 						currentTokenStartPosition = lexer.p;
 						hasLineComment = true;
 						break;
@@ -1310,7 +1302,7 @@ public class Scribe2 {	private static final int INITIAL_SIZE = 100;
 						if (hasWhitespaces) {
 							space();
 						}
-						this.printBlockComment(lexer.token.string.toCharArray(), false);
+						this.printBlockComment(lexer.token.getRawTokenSource(), false);
 						currentTokenStartPosition = lexer.p;
 						hasComment = true;
 						break;
@@ -1467,19 +1459,19 @@ public class Scribe2 {	private static final int INITIAL_SIZE = 100;
 					case TOKdocblockcomment:
 					case TOKpluscomment:
 					case TOKdocpluscomment:
-						this.printBlockComment(lexer.token.string.toCharArray(), false);
+						this.printBlockComment(lexer.token.getRawTokenSource(), false);
 						currentTokenStartPosition = lexer.p;
 						hasComment = true;
 						break;
 					case TOKlinecomment:
 					case TOKdoclinecomment:
-						this.printCommentLine(lexer.token.string.toCharArray());
+						this.printCommentLine(lexer.token.getRawTokenSource());
 						currentTokenStartPosition = lexer.p;
 						break;
 					case TOKwhitespace:
 						addDeleteEdit(lexer.token.ptr, currentTokenEndPosition());
 						int count = 0;
-						char[] whiteSpaces = lexer.token.string.toCharArray();
+						char[] whiteSpaces = lexer.token.getRawTokenSource();
 						for (int i = 0, max = whiteSpaces.length; i < max; i++) {
 							switch(whiteSpaces[i]) {
 								case '\r' :

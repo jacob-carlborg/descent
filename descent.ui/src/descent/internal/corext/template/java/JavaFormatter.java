@@ -335,7 +335,7 @@ public class JavaFormatter {
 			options= JavaCore.getOptions();
 
 		String contents= doc.get();
-		int[] kinds= { CodeFormatter.K_EXPRESSION, CodeFormatter.K_STATEMENTS, CodeFormatter.K_UNKNOWN};
+		int[] kinds= { CodeFormatter.K_STATEMENTS, CodeFormatter.K_EXPRESSION, CodeFormatter.K_UNKNOWN};
 		TextEdit edit= null;
 		for (int i= 0; i < kinds.length && edit == null; i++) {
 			edit= CodeFormatterUtil.format2(kinds[i], contents, fInitialIndentLevel, fLineDelimiter, options);

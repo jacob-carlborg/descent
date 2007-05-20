@@ -105,71 +105,11 @@ public class PublicScanner implements IScanner {
 	}
 
 	public char[] getRawTokenSource() {
-		switch(lexer.token.value) {
-			case TOKeof:
-				return EMPTY_CHAR_ARRAY;
-			case TOKint32v:
-			case TOKuns32v:
-			case TOKint64v:
-			case TOKuns64v:
-			case TOKfloat32v:
-			case TOKfloat64v:
-			case TOKfloat80v:
-			case TOKimaginary32v:
-			case TOKimaginary64v:
-			case TOKimaginary80v:
-			case TOKcharv:
-			case TOKwcharv:
-			case TOKdcharv:
-			case TOKstring:
-			case TOKlinecomment:
-			case TOKdoclinecomment:
-			case TOKblockcomment:
-			case TOKdocblockcomment:
-			case TOKpluscomment:
-			case TOKdocpluscomment:
-			case TOKwhitespace:
-			case TOKPRAGMA:
-				return lexer.token.string.toCharArray();
-			case TOKidentifier:
-				return lexer.token.ident.string.toCharArray();
-			default:
-				return lexer.token.value.charArrayValue;
-		}		
+		return lexer.token.getRawTokenSource();
 	}
 	
 	public String getRawTokenSourceAsString() {
-		switch(lexer.token.value) {
-		case TOKeof:
-			return EMPTY_STRING;
-		case TOKint32v:
-		case TOKuns32v:
-		case TOKint64v:
-		case TOKuns64v:
-		case TOKfloat32v:
-		case TOKfloat64v:
-		case TOKfloat80v:
-		case TOKimaginary32v:
-		case TOKimaginary64v:
-		case TOKimaginary80v:
-		case TOKcharv:
-		case TOKwcharv:
-		case TOKdcharv:
-		case TOKstring:
-		case TOKlinecomment:
-		case TOKdoclinecomment:
-		case TOKblockcomment:
-		case TOKdocblockcomment:
-		case TOKpluscomment:
-		case TOKdocpluscomment:
-		case TOKwhitespace:
-		case TOKPRAGMA:
-			return lexer.token.string;
-		case TOKidentifier:
-			return lexer.token.ident.string;
-		default:
-			return lexer.token.value.value;
-	}	
+		return lexer.token.getRawTokenSourceAsString();
 	}
 
 	public char[] getSource() {

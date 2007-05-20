@@ -32,6 +32,14 @@
 	${cursor}
 }</template>
 
+<template name="foreach_reverse" description="%Templates.foreach_reverse_collection" id="descent.ui.templates.foreach_reverse_single" context="java" enabled="true" autoinsert="false">foreach_reverse (${var}; ${iterable}) {
+	${cursor}
+}</template>
+
+<template name="foreach_reverse" description="%Templates.foreach_reverse_dictionary" id="descent.ui.templates.foreach_reverse_dictionary" context="java" enabled="true" autoinsert="false">foreach_reverse (${key}, ${value}; ${iterable}) {
+	${cursor}
+}</template>
+
 <template name="do" description="%Templates.do" id="descent.ui.templates.do" context="java" enabled="true" autoinsert="false">do {
 	${line_selection}${cursor}
 } while (${condition});</template>
@@ -108,11 +116,11 @@
 }</template>
 
 <template name="synchronized" description="%Templates.synchronized" id="descent.ui.templates.synchronized" context="java" enabled="true" autoinsert="false">synchronized (${mutex}) {
-	${line_selection}
+	${line_selection}${cursor}
 }</template>
 
 <template name="volatile" description="%Templates.volatile" id="descent.ui.templates.volatile" context="java" enabled="true" autoinsert="false">volatile (${mutex}) {
-	${line_selection}
+	${line_selection}${cursor}
 }</template>
 
 </templates>
