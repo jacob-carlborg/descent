@@ -3,6 +3,7 @@ package dtool.dom.declarations;
 import java.util.ArrayList;
 import java.util.List;
 
+import util.StringUtil;
 import util.tree.TreeVisitor;
 import descent.internal.core.dom.Identifier;
 import descent.internal.core.dom.ModuleDeclaration;
@@ -36,6 +37,11 @@ public class Module extends DefUnit implements IScope {
 				TreeVisitor.acceptChild(visitor, moduleName);
 			}
 			visitor.endVisit(this);
+		}
+		
+		@Override
+		public String toString() {
+			return StringUtil.collToString(packages, ".") + "." + moduleName;
 		}
 	}
 	

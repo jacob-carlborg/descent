@@ -2,8 +2,8 @@ package dtool.dom.declarations;
 
 import java.util.List;
 
+import util.StringUtil;
 import util.tree.TreeVisitor;
-
 import descent.internal.core.dom.Import;
 import descent.internal.core.dom.ImportDeclaration;
 import dtool.dom.ast.ASTNeoNode;
@@ -29,5 +29,9 @@ public class DeclarationImport extends ASTNeoNode {
 			TreeVisitor.acceptChildren(visitor, imports);
 		}
 		visitor.endVisit(this);
+	}
+	
+	public String toString() {
+		return StringUtil.collToString(imports, ",");
 	}
 }
