@@ -1835,11 +1835,34 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 	{
 		if(isNextToken(TOK.TOKlparen))
 		{
-			scribe.printNextToken(TOK.TOKlparen);
-			formatCSV(node.arguments(), true);
+			boolean spaceBeforeParen = this.preferences.insert_space_before_opening_paren_in_method_declaration;
+			if (node instanceof ConstructorDeclaration) {
+				spaceBeforeParen = this.preferences.insert_space_before_opening_paren_in_constructor_declaration;
+			}			
+			scribe.printNextToken(TOK.TOKlparen, spaceBeforeParen);
+			
+			if (node.arguments().size() > 0) {
+				if (this.preferences.insert_space_after_opening_paren_in_method_declaration) {
+					this.scribe.space();
+				}
+				formatCSV(node.arguments(), true);
+				if (node.isVariadic()) {
+					if (node.arguments().size() > 0) {
+						scribe.printNextToken(TOK.TOKcomma);
+						scribe.space();
+					}
+					scribe.printNextToken(TOK.TOKdotdotdot);	
+				}
+				if (this.preferences.insert_space_before_closing_paren_in_method_declaration) {
+					this.scribe.space();
+				}
+			} else {
+				if (this.preferences.insert_space_between_empty_parens_in_method_declaration) {
+					this.scribe.space();
+				}
+			}
 			scribe.printNextToken(TOK.TOKrparen);
 		}
-		scribe.printNewLine();
 		
 		Block in   = (Block) node.getPrecondition();
 		Block out  = (Block) node.getPostcondition();
@@ -1847,6 +1870,7 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 		
 		if (null != in || null != out)
 		{
+			scribe.printNewLine();
 			scribe.indent();
 			loop: do
 				switch (nextNonCommentToken())
@@ -1879,13 +1903,20 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 		}
 		else if (isNextToken(TOK.TOKbody))
 		{
+			scribe.printNewLine();
 			scribe.indent();
 			scribe.printNextToken(TOK.TOKbody);
 			formatSubStatement(body, true, 0, false, 0);
 			scribe.unIndent();
 		}
-		else
-			formatSubStatement(body, true, 0, false, 0);
+		else {
+			if (body != null) {
+				scribe.printNewLine();
+				formatSubStatement(body, true, 0, false, 0);
+			} else {
+				scribe.printNextToken(TOK.TOKsemicolon, this.preferences.insert_space_before_semicolon);
+			}
+		}
 	}
 	
 	/**

@@ -37,7 +37,7 @@ public abstract class AbstractFunctionDeclaration extends Declaration
 	SimpleName postconditionVariableName;
 	
 	/**
-	 * The body.
+	 * The optional body.
 	 */
 	Statement body;
 	
@@ -206,7 +206,7 @@ public abstract class AbstractFunctionDeclaration extends Declaration
 	 * @return the property descriptor
 	 */
 	static final ChildPropertyDescriptor internalBodyPropertyFactory(Class nodeClass) {
-		return new ChildPropertyDescriptor(nodeClass, "body", Statement.class, MANDATORY, CYCLE_RISK); //$NON-NLS-1$
+		return new ChildPropertyDescriptor(nodeClass, "body", Statement.class, OPTIONAL, CYCLE_RISK); //$NON-NLS-1$
 	}
 	
 	/**
@@ -342,16 +342,6 @@ public abstract class AbstractFunctionDeclaration extends Declaration
 	 * @return the body
 	 */ 
 	public Statement getBody() {
-		if (this.body == null) {
-			// lazy init must be thread-safe for readers
-			synchronized (this) {
-				if (this.body == null) {
-					preLazyInit();
-					this.body = new Block(this.ast);
-					postLazyInit(this.body, getBodyProperty());
-				}
-			}
-		}
 		return this.body;
 	}
 
@@ -367,9 +357,6 @@ public abstract class AbstractFunctionDeclaration extends Declaration
 	 * </ul>
 	 */ 
 	public void setBody(Statement body) {
-		if (body == null) {
-			throw new IllegalArgumentException();
-		}
 		ASTNode oldChild = this.body;
 		preReplaceChild(oldChild, body, getBodyProperty());
 		this.body = body;

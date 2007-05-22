@@ -17,6 +17,7 @@ public class Function_Test extends Parser_Test {
 		assertEquals(ASTNode.CONSTRUCTOR_DECLARATION, f.getNodeType());
 		assertEquals(ConstructorDeclaration.Kind.CONSTRUCTOR, f.getKind());
 		assertEquals(0, f.arguments().size());
+		assertNotNull(f.getBody());
 		
 		assertPosition(f, 1, 10);
 	}
@@ -26,6 +27,7 @@ public class Function_Test extends Parser_Test {
 		ConstructorDeclaration f = (ConstructorDeclaration) getSingleDeclarationNoProblems(s);
 		assertEquals(ASTNode.CONSTRUCTOR_DECLARATION, f.getNodeType());
 		assertEquals(ConstructorDeclaration.Kind.CONSTRUCTOR, f.getKind());
+		assertNull(f.getBody());
 	}
 	
 	public void testDestructor() {
@@ -34,6 +36,7 @@ public class Function_Test extends Parser_Test {
 		assertEquals(ASTNode.CONSTRUCTOR_DECLARATION, f.getNodeType());
 		assertEquals(ConstructorDeclaration.Kind.DESTRUCTOR, f.getKind());
 		assertEquals(0, f.arguments().size());
+		assertNotNull(f.getBody());
 		
 		assertPosition(f, 1, 11);
 	}
@@ -43,6 +46,7 @@ public class Function_Test extends Parser_Test {
 		ConstructorDeclaration f = (ConstructorDeclaration) getSingleDeclarationNoProblems(s);
 		assertEquals(ASTNode.CONSTRUCTOR_DECLARATION, f.getNodeType());
 		assertEquals(ConstructorDeclaration.Kind.DESTRUCTOR, f.getKind());
+		assertNull(f.getBody());
 	}
 	
 	public void testStaticConstructor() {
@@ -109,12 +113,14 @@ public class Function_Test extends Parser_Test {
 		assertPosition(f.getName(), 6, 4);
 		assertEquals(0, f.arguments().size());
 		assertPosition(f, 1, 15);
+		assertNotNull(f.getBody());
 	}
 	
 	public void testFunctionSemicolon() {
 		String s = " void func();";
 		FunctionDeclaration f = (FunctionDeclaration) getSingleDeclarationNoProblems(s);
 		assertPosition(f, 1, 12);
+		assertNull(f.getBody());
 	}
 	
 	public void testFunctionWithArguments() {

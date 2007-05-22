@@ -1114,7 +1114,7 @@ public class Scribe2 {	private static final int INITIAL_SIZE = 100;
 	public void printNextToken(TOK expectedTokenType, boolean considerSpaceIfAny){
 		printComment();
 			this.currentToken = lexer.nextToken();
-			char[] currentTokenSource = lexer.token.toString().toCharArray();
+			char[] currentTokenSource = lexer.token.getRawTokenSource();
 			if (expectedTokenType != this.currentToken) {
 				throw new AbortFormatting("unexpected token type, expecting:"+expectedTokenType+", actual:"+this.currentToken);//$NON-NLS-1$//$NON-NLS-2$
 			}
@@ -1450,7 +1450,7 @@ public class Scribe2 {	private static final int INITIAL_SIZE = 100;
 					case TOKextern:
 					case TOKconst:
 					case TOKscope:
-						this.print(lexer.token.toString().toCharArray(), !isFirstModifier);
+						this.print(lexer.token.getRawTokenSource(), !isFirstModifier);
 						isFirstModifier = false;
 						currentTokenStartPosition = lexer.token.ptr;
 						modifiersIndex++;
