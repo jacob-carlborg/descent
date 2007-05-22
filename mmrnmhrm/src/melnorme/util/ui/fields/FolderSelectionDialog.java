@@ -8,7 +8,7 @@
  * Contributors:
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
-package mmrnmhrm.util.ui.fields;
+package melnorme.util.ui.fields;
 
 import mmrnmhrm.ui.IActualHelpContextIds;
 import mmrnmhrm.ui.wizards.NewWizardMessages;

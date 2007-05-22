@@ -36,7 +36,8 @@ public class DMDCompilerEnviron implements IDeeCompilerEnviron {
 	private void prepOutputDir() throws CoreException {
 		// Does not support project location as output dir
 		IFolder outputDir = (IFolder) deeProject.getOutputDir();
-		outputDir.create(false, true, null);
+		if(!outputDir.exists())
+			outputDir.create(false, true, null);
 		IResource[] oldResources = outputDir.members();
 		DeeCore.getWorkspace().delete(oldResources, false, null);
 

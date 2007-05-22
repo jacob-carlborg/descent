@@ -1,8 +1,8 @@
 package mmrnmhrm.ui.preferences;
 
+import melnorme.util.ui.fields.ItemSelectionListField.SelectionListCategory;
+import melnorme.util.ui.fields.ItemSelectionListField.SelectionListItem;
 import mmrnmhrm.ui.text.color.IDeeColorPreferences;
-import mmrnmhrm.util.ui.fields.ItemSelectionListField.SelectionListCategory;
-import mmrnmhrm.util.ui.fields.ItemSelectionListField.SelectionListItem;
 
 /**
  * Dee Coloring Preference Page, configures syntax highlighting.  

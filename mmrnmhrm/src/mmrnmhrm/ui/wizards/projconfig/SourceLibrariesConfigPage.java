@@ -1,18 +1,19 @@
 package mmrnmhrm.ui.wizards.projconfig;
 
+import melnorme.util.ui.LayoutUtil;
+import melnorme.util.ui.fields.FieldUtil;
+import melnorme.util.ui.fields.IElementCommand;
+import melnorme.util.ui.fields.TreeListEditorField;
+import melnorme.util.ui.fields.TreeListEditorField.TreeListContentProvider;
 import mmrnmhrm.core.model.DeeProject;
 import mmrnmhrm.core.model.DeeSourceFolder;
 import mmrnmhrm.core.model.DeeSourceLib;
-import mmrnmhrm.util.ui.LayoutUtil;
-import mmrnmhrm.util.ui.fields.ElementContentProvider;
-import mmrnmhrm.util.ui.fields.FieldUtil;
-import mmrnmhrm.util.ui.fields.IElementCommand;
-import mmrnmhrm.util.ui.fields.TreeListField;
 
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.jdt.internal.ui.wizards.dialogfields.TreeListDialogField;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ILabelProvider;
+import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 
@@ -50,7 +51,7 @@ public class SourceLibrariesConfigPage extends AbstractConfigPage {
  
 	private void createSourceFoldersSection() {
 		
-		TreeListField fSourceFoldersEditor = new TreeListField();
+		TreeListEditorField fSourceFoldersEditor = new TreeListEditorField();
 		
 		fSourceFoldersEditor.addElementOperation("&Add Library...", new IElementCommand() {
 			public void executeCommand(Object element) {
@@ -70,14 +71,14 @@ public class SourceLibrariesConfigPage extends AbstractConfigPage {
 			}
 		});
 		
-		fSourceFoldersEditor.provider = new ElementContentProvider() {
+		ITreeContentProvider cprovider = new TreeListContentProvider() {
 			public boolean hasChildren(Object element) {
 				return false;
 			}
-		}; 
+		};
+		ILabelProvider lprovider = new SPListLabelProvider();
 		
-		ILabelProvider lprovider = new BPListLabelProvider();
-		fSrcLibrariesList = fSourceFoldersEditor.createTreeList(lprovider);
+		fSrcLibrariesList = fSourceFoldersEditor.createTreeList(cprovider, lprovider);
 		fSrcLibrariesList.setLabelText("Source libraries:"); 
 		//fSrcFoldersList.setViewerSorter(new BPListElementSorter());
 	}

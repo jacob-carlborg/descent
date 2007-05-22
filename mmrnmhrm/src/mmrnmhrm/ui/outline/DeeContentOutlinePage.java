@@ -13,7 +13,7 @@ import dtool.dom.ast.ASTNode;
 
 /**
  * D outline page. 
- * XXX: Does an input change in the outlines lifecycle?? -> Yes it can
+ * XXX: Does an input change in the outline's lifecycle?? -> Yes it can
  */
 public class DeeContentOutlinePage extends ContentOutlinePage {
 
@@ -31,19 +31,19 @@ public class DeeContentOutlinePage extends ContentOutlinePage {
 		viewer.setContentProvider(new DeeOutlineContentProvider());
 		viewer.setLabelProvider(new DeeOutlineLabelProvider());
 
-		updateInput();
+		setInput();
 	}
 
-	public void updateInput() {
+	public void setInput() {
 		getTreeViewer().setInput(editor.getEditorInput());
-		update();
+		updateView();
 	}
 	
-	public void update() {
+	public void updateView() {
 		TreeViewer viewer = getTreeViewer();
 		viewer.getControl().setRedraw(false);
 		viewer.refresh();
-		viewer.expandAll();
+		//viewer.expandAll();
 		viewer.getControl().setRedraw(true);
 	}
 	

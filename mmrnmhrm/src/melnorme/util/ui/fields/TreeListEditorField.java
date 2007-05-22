@@ -1,7 +1,9 @@
-package mmrnmhrm.util.ui.fields;
+package melnorme.util.ui.fields;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import melnorme.util.ui.jface.ElementContentProvider;
 
 import org.eclipse.jdt.internal.ui.wizards.dialogfields.ITreeListAdapter;
 import org.eclipse.jdt.internal.ui.wizards.dialogfields.TreeListDialogField;
@@ -13,12 +15,14 @@ import org.eclipse.swt.events.KeyEvent;
 import util.Assert;
 
 /**
- * A one-time factory and adapterfor a TreeListEditorDialogField.
+ * A one-time factory and adapter for a TreeListEditorDialogField.
  * Usage:
  * instantiante, add commands, createTreeListEditor.
  * Note that the created TreeListEditor elements should implement IElement.
+ * 
+ * XXX: This class may need some redesigning
  */
-public class TreeListField {
+public class TreeListEditorField {
 	
 	protected static class FieldOperation {
 		public String label;
@@ -45,11 +49,16 @@ public class TreeListField {
 	public TreeListDialogField fListField;
 	public ITreeContentProvider provider;
 
-	
 
-	public TreeListField() {
+	public static class TreeListContentProvider extends ElementContentProvider {
+		public Object[] getElements(Object inputElement) {
+			Assert.fail("Unreachable code.");
+			return null;
+		}
+	}
+	
+	public TreeListEditorField() {
 		fOperations = new ArrayList<FieldOperation>(10);
-		provider = new ElementContentProvider();
 	}
 
 	/** Adds a FieldOperation, attaching it to the field. */
@@ -108,15 +117,16 @@ public class TreeListField {
 	
 	/** Creates the TreeListDialogField, based on how this ListEditorField 
 	 * was configured. */
-	public TreeListDialogField createTreeList(ILabelProvider lprovider) {
+	public TreeListDialogField createTreeList(ITreeContentProvider cprovider, 
+			ILabelProvider lprovider) {
 		
 		String[] buttonLabels = new String[fOperations.size()];
 		for(int i = 0; i < fOperations.size(); i++) {
 			buttonLabels[i] = fOperations.get(i).label;
 		}
-		 
-		ITreeListAdapter adapter = new TreeListEditorDialogFieldAdapter();
-		fListField = new TreeListDialogField(adapter, buttonLabels, lprovider);
+		
+		this.provider = cprovider;
+		fListField = new TreeListDialogField(getTreeAdapter(), buttonLabels, lprovider);
 		//fElementList.getTreeControl(parent)
 		//fElementList.getTreeViewer().expandToLevel(1);
 		for(FieldOperation op : fOperations) {
@@ -125,7 +135,11 @@ public class TreeListField {
 		return fListField;
 	}
 	
-	
+	protected ITreeListAdapter getTreeAdapter() {
+		return new TreeListEditorDialogFieldAdapter();
+	}
+
+
 	protected class TreeListEditorDialogFieldAdapter implements ITreeListAdapter {
 		
 		public Object[] getChildren(TreeListDialogField field, Object element) {

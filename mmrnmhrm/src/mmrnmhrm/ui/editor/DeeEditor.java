@@ -122,13 +122,13 @@ public class DeeEditor extends AbstractDecoratedTextEditor {
 		Logg.main.println("Got input:" + input + " : " + input.getName());
 		document = (DeeDocument) documentProvider.getDocument(input);
 		if (outlinePage != null)
-			outlinePage.updateInput();
+			outlinePage.setInput();
 	}
 	
 	protected void editorSaved() {
 		super.editorSaved();
 		if (outlinePage != null)
-			outlinePage.update(); 
+			outlinePage.updateView(); 
 	}
 
 	

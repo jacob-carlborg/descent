@@ -19,7 +19,9 @@ Require-Bundle: com.ibm.icu,
 Eclipse-LazyStart: true
 Bundle-Vendor: Mother Ark
 Eclipse-RegisterBuddy: mmrnmhrm.tests; 
-Export-Package: mmrnmhrm.core,
+Export-Package: melnorme.util.ui,
+ melnorme.util.ui.fields,
+ mmrnmhrm.core,
  mmrnmhrm.core.build,
  mmrnmhrm.core.model,
  mmrnmhrm.org.eclipse.ui.internal.editors.text,
@@ -34,7 +36,5 @@ Export-Package: mmrnmhrm.core,
  mmrnmhrm.ui.text,
  mmrnmhrm.ui.text.color,
  mmrnmhrm.ui.wizards,
- mmrnmhrm.ui.wizards.projconfig,
- mmrnmhrm.util.ui,
- mmrnmhrm.util.ui.fields
+ mmrnmhrm.ui.wizards.projconfig
 Bundle-ClassPath: .

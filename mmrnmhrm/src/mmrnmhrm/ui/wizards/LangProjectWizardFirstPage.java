@@ -4,12 +4,12 @@ import java.io.File;
 import java.util.Observable;
 import java.util.Observer;
 
+import melnorme.util.ui.ColumnComposite;
+import melnorme.util.ui.LayoutUtil;
+import melnorme.util.ui.RowComposite;
+import melnorme.util.ui.SWTUtil2;
+import melnorme.util.ui.fields.StringDialogField;
 import mmrnmhrm.ui.ActualPlugin;
-import mmrnmhrm.util.ui.ColumnComposite;
-import mmrnmhrm.util.ui.LayoutUtil;
-import mmrnmhrm.util.ui.RowComposite;
-import mmrnmhrm.util.ui.SWTUtil2;
-import mmrnmhrm.util.ui.fields.StringDialogField;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;

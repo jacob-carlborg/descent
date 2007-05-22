@@ -1,36 +1,21 @@
 package mmrnmhrm.ui.outline;
 
-import org.eclipse.jface.viewers.ILabelProvider;
-import org.eclipse.jface.viewers.ILabelProviderListener;
+import melnorme.util.ui.jface.SimpleLabelProvider;
+import mmrnmhrm.ui.views.DeeElementImageProvider;
+
 import org.eclipse.swt.graphics.Image;
 
-import dtool.dom.ast.ASTNode;
-import dtool.dom.ast.ASTPrinter;
+import util.tree.IElement;
 
 
-public class DeeOutlineLabelProvider implements ILabelProvider {
-
-	public void addListener(ILabelProviderListener listener) {
-	}
-	
-	public void removeListener(ILabelProviderListener listener) {
-	}
+public class DeeOutlineLabelProvider extends SimpleLabelProvider {
 
 	public Image getImage(Object element) {
-		return DeeElementImageProvider.getLabelImage(element);
+		return DeeElementImageProvider.getElementImage((IElement) element);
 	}
 
 	public String getText(Object elem) {
-		return ASTPrinter.toStringElement((ASTNode) elem);
+		return elem.toString();
 	}
 
-	public boolean isLabelProperty(Object element, String property) {
-		return false;
-	}
-
-
-	
-	public void dispose() {
-	}
-	
 }

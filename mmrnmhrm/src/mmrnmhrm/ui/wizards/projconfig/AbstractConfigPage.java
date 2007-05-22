@@ -2,11 +2,11 @@ package mmrnmhrm.ui.wizards.projconfig;
 
 import java.util.List;
 
+import melnorme.util.ui.RowComposite;
+import melnorme.util.ui.fields.FolderSelectionDialog;
 import mmrnmhrm.core.LangCore;
 import mmrnmhrm.core.model.DeeProject;
 import mmrnmhrm.ui.DeePlugin;
-import mmrnmhrm.util.ui.RowComposite;
-import mmrnmhrm.util.ui.fields.FolderSelectionDialog;
 
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFolder;

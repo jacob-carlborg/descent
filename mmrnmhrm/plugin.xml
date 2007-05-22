@@ -64,6 +64,14 @@
             project="true"/>
    </extension>
    <extension
+         point="org.eclipse.ui.propertyPages">
+      <page
+            class="mmrnmhrm.ui.properties.ProjConfigPropertyPage"
+            id="mmrnmhrm.ui.properties.samplePropertyPage"
+            name="D Project Config"
+            objectClass="org.eclipse.core.resources.IContainer"/>
+   </extension>
+   <extension
          point="org.eclipse.ui.editors">
       <editor
             class="mmrnmhrm.ui.editor.DeeEditor"
@@ -167,7 +175,7 @@
          <menu
                id="Mmrnmhrm.editorMenu"
                label="Declarative Menu"
-               path="additions321">
+               path="additions">
             <groupMarker name="content"/>
          </menu>
          <action
@@ -227,12 +235,26 @@
             name="Syntax Coloring"/>
    </extension>
    <extension
-         point="org.eclipse.ui.propertyPages">
-      <page
-            class="mmrnmhrm.ui.properties.ProjConfigPropertyPage"
-            id="mmrnmhrm.ui.properties.samplePropertyPage"
-            name="D Project Config"
-            objectClass="org.eclipse.core.resources.IContainer"/>
+         point="org.eclipse.ui.views">
+      <category
+            id="mmrnmhrm"
+            name="Dee"/>
+      <view
+            category="mmrnmhrm"
+            class="mmrnmhrm.ui.views.ASTViewer"
+            icon="icons/sample.gif"
+            id="mmrnmhrm.views.ASTViewer"
+            name="D AST Viewer (Mmrnmhrm)"/>
+   </extension>
+   <extension
+         point="org.eclipse.ui.perspectiveExtensions">
+      <perspectiveExtension targetID="org.eclipse.ui.resourcePerspective">
+         <view
+               id="mmrnmhrm.views.SampleView"
+               ratio="0.5"
+               relationship="right"
+               relative="org.eclipse.ui.views.TaskList"/>
+      </perspectiveExtension>
    </extension>
 
 </plugin>

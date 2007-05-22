@@ -15,8 +15,8 @@ import java.text.MessageFormat;
 import java.util.Observable;
 import java.util.Observer;
 
-import mmrnmhrm.util.ui.LayoutUtil;
-import mmrnmhrm.util.ui.SWTUtil2;
+import melnorme.util.ui.LayoutUtil;
+import melnorme.util.ui.SWTUtil2;
 
 import org.eclipse.jdt.internal.ui.wizards.dialogfields.DialogField;
 import org.eclipse.jdt.internal.ui.wizards.dialogfields.SelectionButtonDialogField;

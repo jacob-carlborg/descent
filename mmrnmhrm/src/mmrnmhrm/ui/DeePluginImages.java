@@ -1,7 +1,10 @@
 package mmrnmhrm.ui;
 
+import java.io.FileNotFoundException;
+
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.swt.graphics.Image;
 
@@ -16,7 +19,9 @@ public class DeePluginImages {
 	public static final String ELEM_SOURCEFOLDER = createImage_Obj("dee_packagefolder.gif");
 	public static final String ELEM_LIBRARY = createImage_Obj("dee_library.gif");
 
-	
+	public static final String ELEM_PACKAGE = createImage_Obj("dee_package.gif");
+	public static final String ELEM_MODULE = createImage_Obj("ent_module.gif");
+
 	
 	public static final String NODE_OLDAST = createImage_Obj("elem_oldast.gif");
 	public static final String NODE_IMPORT = createImage_Obj("elem_import.gif");
@@ -33,9 +38,8 @@ public class DeePluginImages {
 	public static final String ENT_UNION = createImage_Obj("ent_union.gif");
 	public static final String ENT_UNKNOWN = createImage_Obj("ent_unknown.gif");
 
-	public static final String ENT_VARIABLE = createImage_Obj("ent_variable.gif");;
-	public static final String ENT_FUNCTION = createImage_Obj("ent_function.gif");;
-	public static final String ELEM_MODULE = createImage_Obj("ent_module.gif");;
+	public static final String ENT_VARIABLE = createImage_Obj("ent_variable.gif");
+	public static final String ENT_FUNCTION = createImage_Obj("ent_function.gif");
 
 
 
@@ -43,7 +47,11 @@ public class DeePluginImages {
 	
 	private static String createImage_Obj(String imageName) {
 		String imgPath = ICONS_PATH + "obj16/" + imageName;
-		registry.put(imageName, DeeUI.getImageDescriptor(imgPath));
+		ImageDescriptor imgDesc = DeeUI.getImageDescriptor(imgPath);
+		if(imgDesc == null) {
+			DeePlugin.log(new FileNotFoundException(imgPath));
+		}
+		registry.put(imageName, imgDesc);
 		return imageName;
 	}
 

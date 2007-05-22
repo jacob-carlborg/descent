@@ -7,8 +7,6 @@ import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 
-import util.Assert;
-
 /**
  * DeeProjectWizardFirstPage
  */

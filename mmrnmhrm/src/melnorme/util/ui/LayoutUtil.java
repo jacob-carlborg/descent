@@ -8,7 +8,7 @@
  * Contributors:
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
-package mmrnmhrm.util.ui;
+package melnorme.util.ui;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;

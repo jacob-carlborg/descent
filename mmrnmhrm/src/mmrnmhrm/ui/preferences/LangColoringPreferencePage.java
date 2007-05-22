@@ -2,19 +2,19 @@ package mmrnmhrm.ui.preferences;
 
 import java.util.ArrayList;
 
+import melnorme.util.ui.ColumnComposite;
+import melnorme.util.ui.DialogComposite;
+import melnorme.util.ui.EmptyLabel;
+import melnorme.util.ui.LayoutUtil;
+import melnorme.util.ui.RowComposite;
+import melnorme.util.ui.SimpleSelectionListener;
+import melnorme.util.ui.fields.ItemSelectionListField;
+import melnorme.util.ui.fields.ItemSelectionListField.SelectionListCategory;
+import melnorme.util.ui.fields.ItemSelectionListField.SelectionListItem;
 import mmrnmhrm.org.eclipse.ui.internal.editors.text.OverlayPreferenceStore;
 import mmrnmhrm.org.eclipse.ui.internal.editors.text.OverlayPreferenceStore.OverlayKey;
 import mmrnmhrm.ui.text.color.ILangColorPreferences;
 import mmrnmhrm.ui.text.color.LangColorPreferences;
-import mmrnmhrm.util.ui.ColumnComposite;
-import mmrnmhrm.util.ui.DialogComposite;
-import mmrnmhrm.util.ui.EmptyLabel;
-import mmrnmhrm.util.ui.LayoutUtil;
-import mmrnmhrm.util.ui.RowComposite;
-import mmrnmhrm.util.ui.SimpleSelectionListener;
-import mmrnmhrm.util.ui.fields.ItemSelectionListField;
-import mmrnmhrm.util.ui.fields.ItemSelectionListField.SelectionListCategory;
-import mmrnmhrm.util.ui.fields.ItemSelectionListField.SelectionListItem;
 
 import org.eclipse.jdt.internal.ui.wizards.dialogfields.DialogField;
 import org.eclipse.jdt.internal.ui.wizards.dialogfields.IDialogFieldListener;

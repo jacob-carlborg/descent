@@ -1,12 +1,12 @@
 package mmrnmhrm.ui.wizards.projconfig;
 
+import melnorme.util.ui.LayoutUtil;
+import melnorme.util.ui.fields.FieldUtil;
+import melnorme.util.ui.fields.StringDialogField;
 import mmrnmhrm.core.build.DeeCEManager;
 import mmrnmhrm.core.build.DeeCompilerOptions;
 import mmrnmhrm.core.build.IDeeCE;
 import mmrnmhrm.core.model.DeeProject;
-import mmrnmhrm.util.ui.LayoutUtil;
-import mmrnmhrm.util.ui.fields.FieldUtil;
-import mmrnmhrm.util.ui.fields.StringDialogField;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;

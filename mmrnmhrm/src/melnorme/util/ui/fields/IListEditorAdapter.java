@@ -1,4 +1,4 @@
-package mmrnmhrm.util.ui.fields;
+package melnorme.util.ui.fields;
 
 public interface IListEditorAdapter {
 	
