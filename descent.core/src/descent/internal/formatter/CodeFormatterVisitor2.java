@@ -1,5 +1,6 @@
 package descent.internal.formatter;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -331,7 +332,42 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 	
 	public boolean visit(Block node)
 	{
-		formatSubStatement(node, true, 0, false, 0);
+		// A varriable declaration list, such as: "int i, j;" will be treated
+		// as a block. All non-braced blocks (for example, case statement
+		// bodies) will have formatSubStatement() called directly on them.
+		// Thus, if a non-braced statement is encountered, it is a variable
+		// declaration with multiple parts.
+		if(!isNextToken(TOK.TOKlcurly))
+		{
+			try
+			{
+				((VariableDeclaration) 
+					((DeclarationStatement) 
+						node.statements().get(0)).getDeclaration())
+					.getType().accept(this);
+				scribe.space();
+				
+				List<VariableDeclarationFragment> fragments = 
+					new ArrayList<VariableDeclarationFragment>();
+				for(Statement stmt : node.statements())
+				{
+					fragments.addAll((
+						(VariableDeclaration) 
+							((DeclarationStatement) stmt).getDeclaration())
+						.fragments());
+				}
+				formatCSV(fragments, true);
+				scribe.printNextToken(TOK.TOKsemicolon);
+			}
+			catch(ClassCastException e)
+			{
+				// If a ClassCastException is ever thrown here, my assumption
+				// above was wrong...
+				formatSubStatement(node, true, 0, false, 0);
+			}
+		}
+		else
+			formatSubStatement(node, true, 0, false, 0);
 		return false;
 	}
 	
@@ -350,7 +386,7 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 			scribe.space();
 			label.accept(this);
 		}
-		scribe.printNextToken(TOK.TOKsemicolon);
+			scribe.printNextToken(TOK.TOKsemicolon);
 		return false;
 	}
 	
@@ -483,7 +519,7 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 		scribe.printNextToken(TOK.TOKcontinue);
 		scribe.space();
 		node.getLabel().accept(this);
-		scribe.printNextToken(TOK.TOKsemicolon);
+			scribe.printNextToken(TOK.TOKsemicolon);
 		return false;
 	}
 	
@@ -495,7 +531,7 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 		scribe.printNextToken(TOK.TOKassign);
 		scribe.space();
 		node.getVersion().accept(this);
-		scribe.printNextToken(TOK.TOKsemicolon);
+			scribe.printNextToken(TOK.TOKsemicolon);
 		return false;
 	}
 	
@@ -636,9 +672,7 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 		}
 		
 		if(isNextToken(TOK.TOKsemicolon))
-		{
 			scribe.printNextToken(TOK.TOKsemicolon);
-		}
 		else
 		{
 			scribe.printNewLine();
@@ -681,7 +715,7 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 	public boolean visit(ExpressionStatement node)
 	{
 		node.getExpression().accept(this);
-		scribe.printNextToken(TOK.TOKsemicolon);
+			scribe.printNextToken(TOK.TOKsemicolon);
 		return false;
 	}
 	
@@ -747,6 +781,7 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 			scribe.printNextToken(TOK.TOKsemicolon);
 			scribe.space();
 		}
+		else
 			scribe.printNextToken(TOK.TOKsemicolon);
 		if(null != increment)
 			increment.accept(this);
@@ -798,7 +833,7 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 			scribe.space();
 			label.accept(this);
 		}
-		scribe.printNextToken(TOK.TOKsemicolon);
+			scribe.printNextToken(TOK.TOKsemicolon);
 		return false;
 	}
 	
@@ -807,7 +842,7 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 		scribe.printNextToken(TOK.TOKgoto);
 		scribe.space();
 		scribe.printNextToken(TOK.TOKdefault);
-		scribe.printNextToken(TOK.TOKsemicolon);
+			scribe.printNextToken(TOK.TOKsemicolon);
 		return false;
 	}
 	
@@ -816,7 +851,7 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 		scribe.printNextToken(TOK.TOKgoto);
 		scribe.space();
 		node.getLabel().accept(this);
-		scribe.printNextToken(TOK.TOKsemicolon);
+			scribe.printNextToken(TOK.TOKsemicolon);
 		return false;
 	}
 	
@@ -1061,7 +1096,17 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 			scribe.printNextToken(TOK.TOKrparen);
 		}
 		scribe.space();
-		node.getType().accept(this);
+		Type type = node.getType();
+		if(type instanceof DynamicArrayType)
+		{
+			DynamicArrayType arr = (DynamicArrayType) type;
+			arr.getComponentType().accept(this);
+			scribe.printNextToken(TOK.TOKlbracket);
+			formatCSV(node.constructorArguments(), true);
+			scribe.printNextToken(TOK.TOKrbracket);
+			return false;
+		}
+		type.accept(this);
 		if(isNextToken(TOK.TOKlparen))
 		{
 			scribe.printNextToken(TOK.TOKlparen);
@@ -1196,7 +1241,12 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 	{
 		scribe.printNextToken(TOK.TOKreturn);
 		scribe.space();
-		node.getExpression().accept(this);
+		Expression exp = node.getExpression();
+		if(null != exp)
+		{
+			scribe.space();
+			exp.accept(this);
+		}
 		scribe.printNextToken(TOK.TOKsemicolon);
 		return false;
 	}
@@ -1229,7 +1279,16 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 	
 	public boolean visit(SimpleName node)
 	{
-		scribe.printNextToken(TOK.TOKidentifier);
+		// If the name is in parentheses, but nothing else is there, the
+		// parser might make it a SimpleName, not a ParenthesizedExpression
+		if(isNextToken(TOK.TOKlparen))
+		{
+			scribe.printNextToken(TOK.TOKlparen);
+			scribe.printNextToken(TOK.TOKidentifier);
+			scribe.printNextToken(TOK.TOKrparen);
+		}
+		else
+			scribe.printNextToken(TOK.TOKidentifier);
 		return false;
 	}
 	
@@ -1462,7 +1521,7 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 		scribe.printNextToken(TOK.TOKthrow);
 		scribe.space();
 		node.getExpression().accept(this);
-		scribe.printNextToken(TOK.TOKsemicolon);
+			scribe.printNextToken(TOK.TOKsemicolon);
 		return false;
 	}
 	
@@ -1606,8 +1665,18 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 	public boolean visit(VariableDeclaration node)
 	{
 		formatModifiers(node.modifiers());
-		node.getType().accept(this);
-		scribe.space();
+		// For some reason, formatModifiers() doesn't seem to grab this
+		if(isNextToken(TOK.TOKstatic))
+		{
+			scribe.printNextToken(TOK.TOKstatic);
+			scribe.space();
+		}
+		Type type = node.getType();
+		if(null != type)
+		{
+			type.accept(this);
+			scribe.space();
+		}
 		formatCSV(node.fragments(), true);
 		if(isNextToken(TOK.TOKsemicolon))
 			scribe.printNextToken(TOK.TOKsemicolon);
@@ -1642,7 +1711,7 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 		scribe.printNextToken(TOK.TOKassign);
 		scribe.space();
 		node.getVersion().accept(this);
-		scribe.printNextToken(TOK.TOKsemicolon);
+			scribe.printNextToken(TOK.TOKsemicolon);
 		return false;
 	}
 
@@ -1715,7 +1784,7 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 		{
 			scribe.printNewLine();
 			scribe.printNextToken(TOK.TOKelse);
-			formatDeclarationBlock(node.thenDeclarations());
+			formatDeclarationBlock(node.elseDeclarations());
 		}
 	}
 	
@@ -1887,7 +1956,7 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 							SimpleName name = node.getPostconditionVariableName();
 							if(null != name)
 								scribe.printNextToken(TOK.TOKidentifier);
-							scribe.printNextToken(TOK.TOKlparen);
+							scribe.printNextToken(TOK.TOKrparen);
 						}
 						formatSubStatement(out, true, 0, false, 0);
 						continue loop;
