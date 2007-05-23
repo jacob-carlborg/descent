@@ -121,7 +121,7 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 		node.getType().accept(this);
 		scribe.space();
 		formatCSV(node.fragments(), true);
-		scribe.printNextToken(TOK.TOKsemicolon);
+		scribe.printNextToken(TOK.TOKsemicolon, this.preferences.insert_space_before_semicolon);
 		scribe.printNewLine();
 		return false;
 	}
@@ -1498,7 +1498,7 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 		scribe.space();
 		formatCSV(node.fragments(), true);
 		if(isNextToken(TOK.TOKsemicolon))
-			scribe.printNextToken(TOK.TOKsemicolon);
+			scribe.printNextToken(TOK.TOKsemicolon, this.preferences.insert_space_before_semicolon);
 		return false;
 	}
 	
