@@ -18,11 +18,9 @@ import descent.internal.compiler.parser.AsmBlock;
 import descent.internal.compiler.parser.AsmStatement;
 import descent.internal.compiler.parser.BaseClass;
 import descent.internal.compiler.parser.BreakStatement;
-import descent.internal.compiler.parser.Condition;
 import descent.internal.compiler.parser.ConditionalDeclaration;
 import descent.internal.compiler.parser.ConditionalStatement;
 import descent.internal.compiler.parser.ContinueStatement;
-import descent.internal.compiler.parser.DebugCondition;
 import descent.internal.compiler.parser.DeclarationStatement;
 import descent.internal.compiler.parser.DefaultStatement;
 import descent.internal.compiler.parser.DoStatement;
@@ -35,7 +33,6 @@ import descent.internal.compiler.parser.GotoCaseStatement;
 import descent.internal.compiler.parser.GotoDefaultStatement;
 import descent.internal.compiler.parser.GotoStatement;
 import descent.internal.compiler.parser.IfStatement;
-import descent.internal.compiler.parser.IftypeCondition;
 import descent.internal.compiler.parser.Import;
 import descent.internal.compiler.parser.Initializer;
 import descent.internal.compiler.parser.InvariantDeclaration;
@@ -48,7 +45,6 @@ import descent.internal.compiler.parser.ReturnStatement;
 import descent.internal.compiler.parser.Statement;
 import descent.internal.compiler.parser.StaticAssert;
 import descent.internal.compiler.parser.StaticAssertStatement;
-import descent.internal.compiler.parser.StaticIfCondition;
 import descent.internal.compiler.parser.StructInitializer;
 import descent.internal.compiler.parser.SwitchStatement;
 import descent.internal.compiler.parser.SynchronizedStatement;
@@ -59,7 +55,6 @@ import descent.internal.compiler.parser.Type;
 import descent.internal.compiler.parser.TypedefDeclaration;
 import descent.internal.compiler.parser.UnitTestDeclaration;
 import descent.internal.compiler.parser.Version;
-import descent.internal.compiler.parser.VersionCondition;
 import descent.internal.compiler.parser.VoidInitializer;
 import descent.internal.compiler.parser.VolatileStatement;
 import descent.internal.compiler.parser.WhileStatement;
@@ -1083,7 +1078,7 @@ public class ASTConverter {
 	public descent.core.dom.ForStatement convert(ForStatement a) {
 		descent.core.dom.ForStatement b = new descent.core.dom.ForStatement(ast);
 		if (a.init != null) {
-			b.setInitializer(convert(a.init));
+			b.setInitializer(convertForInitializer(a.init));
 		}
 		if (a.condition != null) {
 			b.setCondition(convert(a.condition));
@@ -1096,6 +1091,49 @@ public class ASTConverter {
 		return b;
 	}
 	
+	private descent.core.dom.Statement convertForInitializer(Statement init) {
+		if (!(init instanceof CompoundStatement)) {
+			return convert(init);
+		}
+		
+		CompoundStatement block = (CompoundStatement) init;
+		if (block.statements == null || block.statements.size() == 0) {
+			return convert(init);
+		}
+		
+		List<VarDeclaration> varDeclarations = new ArrayList<VarDeclaration>();
+		for(Statement stm : block.statements) {
+			if (stm instanceof DeclarationStatement) {
+				DeclarationStatement declStm = (DeclarationStatement) stm;
+				Dsymbol declaration = ((DeclarationExp) declStm.exp).declaration;
+				if (declaration instanceof VarDeclaration) {
+					varDeclarations.add((VarDeclaration) declaration);
+				}
+			} else {
+				return convert(init);
+			}
+		}
+		
+		VarDeclaration first = varDeclarations.get(0);
+		VarDeclaration last = varDeclarations.get(varDeclarations.size() - 1);
+		
+		VariableDeclaration varToReturn = new VariableDeclaration(ast);
+		if (first.type != null) {
+			varToReturn.setType(convert(first.type));
+		}
+		
+		for(VarDeclaration var : varDeclarations) {
+			varToReturn.fragments().add(convert(var));
+		}
+		
+		varToReturn.setSourceRange(first.start, last.start + last.length - first.start);
+		
+		descent.core.dom.DeclarationStatement declStatement = ast.newDeclarationStatement();
+		declStatement.setDeclaration(varToReturn);
+		declStatement.setSourceRange(varToReturn.getStartPosition(), varToReturn.getLength());
+		return declStatement;
+	}
+
 	public descent.core.dom.EnumMember convert(EnumMember a) {
 		descent.core.dom.EnumMember b = new descent.core.dom.EnumMember(ast);
 		b.setName(convert(a.ident));

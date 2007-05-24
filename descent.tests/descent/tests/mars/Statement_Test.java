@@ -27,6 +27,7 @@ import descent.core.dom.GotoStatement;
 import descent.core.dom.IfStatement;
 import descent.core.dom.LabeledStatement;
 import descent.core.dom.MixinDeclaration;
+import descent.core.dom.PrimitiveType;
 import descent.core.dom.TemplateMixinDeclaration;
 import descent.core.dom.Modifier;
 import descent.core.dom.NumberLiteral;
@@ -43,6 +44,7 @@ import descent.core.dom.SynchronizedStatement;
 import descent.core.dom.ThrowStatement;
 import descent.core.dom.TryStatement;
 import descent.core.dom.VariableDeclaration;
+import descent.core.dom.VariableDeclarationFragment;
 import descent.core.dom.VersionStatement;
 import descent.core.dom.VolatileStatement;
 import descent.core.dom.WhileStatement;
@@ -254,6 +256,33 @@ public class Statement_Test extends Parser_Test {
 	public void testForEmpty() {
 		String s = " for(;;) { }";
 		ForStatement stm = (ForStatement) parseStatement(s);
+		
+		assertEquals(ASTNode.FOR_STATEMENT, stm.getNodeType());
+		assertPosition(stm, 1, s.length() - 1);
+	}
+	
+	public void testForInitializerIsMultiVar() {
+		String s = " for(int i, j; ; ) { }";
+		ForStatement stm = (ForStatement) parseStatement(s);
+		
+		DeclarationStatement declStm = (DeclarationStatement) stm.getInitializer();
+		assertPosition(declStm, 5, 9);
+		
+		VariableDeclaration var = (VariableDeclaration) declStm.getDeclaration();
+		assertEquals(2, var.fragments().size());
+		assertPosition(var, 5, 9);
+		
+		PrimitiveType type = (PrimitiveType) var.getType();
+		assertEquals(PrimitiveType.Code.INT, type.getPrimitiveTypeCode());
+		assertPosition(type, 5, 3);
+		
+		VariableDeclarationFragment f1 = var.fragments().get(0);
+		assertEquals("i", f1.getName().getIdentifier());
+		assertPosition(f1, 9, 1);
+		
+		VariableDeclarationFragment f2 = var.fragments().get(1);
+		assertEquals("j", f2.getName().getIdentifier());
+		assertPosition(f2, 12, 1);
 		
 		assertEquals(ASTNode.FOR_STATEMENT, stm.getNodeType());
 		assertPosition(stm, 1, s.length() - 1);
