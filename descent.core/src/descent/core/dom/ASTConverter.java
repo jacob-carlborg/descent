@@ -1101,6 +1101,23 @@ public class ASTConverter {
 			return convert(init);
 		}
 		
+		Statement firstStatement = block.statements.get(0);
+		if (firstStatement instanceof DeclarationStatement) {
+			DeclarationStatement declStm = (DeclarationStatement) firstStatement;
+			Dsymbol declaration = ((DeclarationExp) declStm.exp).declaration;
+			if (declaration instanceof VarDeclaration) {
+				return convertForInitializerVars(init, block);
+			} else if (declaration instanceof AliasDeclaration) {
+				return convertForInitializerAlias(init, block);
+			} else if (declaration instanceof TypedefDeclaration) {
+				return convertForInitializerTypedef(init, block);
+			}
+		}
+		
+		return convert(init);
+	}
+
+	private descent.core.dom.Statement convertForInitializerVars(Statement init, CompoundStatement block) {
 		List<VarDeclaration> varDeclarations = new ArrayList<VarDeclaration>();
 		for(Statement stm : block.statements) {
 			if (stm instanceof DeclarationStatement) {
@@ -1128,9 +1145,75 @@ public class ASTConverter {
 		
 		varToReturn.setSourceRange(first.start, last.start + last.length - first.start);
 		
+		return wrapWithDeclarationStatement(varToReturn);
+	}
+	
+	private descent.core.dom.Statement convertForInitializerAlias(Statement init, CompoundStatement block) {
+		List<AliasDeclaration> varDeclarations = new ArrayList<AliasDeclaration>();
+		for(Statement stm : block.statements) {
+			if (stm instanceof DeclarationStatement) {
+				DeclarationStatement declStm = (DeclarationStatement) stm;
+				Dsymbol declaration = ((DeclarationExp) declStm.exp).declaration;
+				if (declaration instanceof AliasDeclaration) {
+					varDeclarations.add((AliasDeclaration) declaration);
+				}
+			} else {
+				return convert(init);
+			}
+		}
+		
+		AliasDeclaration first = varDeclarations.get(0);
+		AliasDeclaration last = varDeclarations.get(varDeclarations.size() - 1);
+		
+		descent.core.dom.AliasDeclaration varToReturn = new descent.core.dom.AliasDeclaration(ast);
+		if (first.type != null) {
+			varToReturn.setType(convert(first.type));
+		}
+		
+		for(AliasDeclaration var : varDeclarations) {
+			varToReturn.fragments().add(convert(var));
+		}
+		
+		varToReturn.setSourceRange(first.start, last.start + last.length - first.start);
+		
+		return wrapWithDeclarationStatement(varToReturn);
+	}
+	
+	private descent.core.dom.Statement convertForInitializerTypedef(Statement init, CompoundStatement block) {
+		List<TypedefDeclaration> varDeclarations = new ArrayList<TypedefDeclaration>();
+		for(Statement stm : block.statements) {
+			if (stm instanceof DeclarationStatement) {
+				DeclarationStatement declStm = (DeclarationStatement) stm;
+				Dsymbol declaration = ((DeclarationExp) declStm.exp).declaration;
+				if (declaration instanceof TypedefDeclaration) {
+					varDeclarations.add((TypedefDeclaration) declaration);
+				}
+			} else {
+				return convert(init);
+			}
+		}
+		
+		TypedefDeclaration first = varDeclarations.get(0);
+		TypedefDeclaration last = varDeclarations.get(varDeclarations.size() - 1);
+		
+		descent.core.dom.TypedefDeclaration varToReturn = new descent.core.dom.TypedefDeclaration(ast);
+		if (first.basetype != null) {
+			varToReturn.setType(convert(first.basetype));
+		}
+		
+		for(TypedefDeclaration var : varDeclarations) {
+			varToReturn.fragments().add(convert(var));
+		}
+		
+		varToReturn.setSourceRange(first.start, last.start + last.length - first.start);
+		
+		return wrapWithDeclarationStatement(varToReturn);
+	}
+	
+	private descent.core.dom.DeclarationStatement wrapWithDeclarationStatement(Declaration declaration) {
 		descent.core.dom.DeclarationStatement declStatement = ast.newDeclarationStatement();
-		declStatement.setDeclaration(varToReturn);
-		declStatement.setSourceRange(varToReturn.getStartPosition(), varToReturn.getLength());
+		declStatement.setDeclaration(declaration);
+		declStatement.setSourceRange(declaration.getStartPosition(), declaration.getLength());
 		return declStatement;
 	}
 
