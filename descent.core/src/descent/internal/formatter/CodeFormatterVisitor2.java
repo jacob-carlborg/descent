@@ -1,6 +1,5 @@
 package descent.internal.formatter;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -332,42 +331,7 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 	
 	public boolean visit(Block node)
 	{
-		// A varriable declaration list, such as: "int i, j;" will be treated
-		// as a block. All non-braced blocks (for example, case statement
-		// bodies) will have formatSubStatement() called directly on them.
-		// Thus, if a non-braced statement is encountered, it is a variable
-		// declaration with multiple parts.
-		if(!isNextToken(TOK.TOKlcurly))
-		{
-			try
-			{
-				((VariableDeclaration) 
-					((DeclarationStatement) 
-						node.statements().get(0)).getDeclaration())
-					.getType().accept(this);
-				scribe.space();
-				
-				List<VariableDeclarationFragment> fragments = 
-					new ArrayList<VariableDeclarationFragment>();
-				for(Statement stmt : node.statements())
-				{
-					fragments.addAll((
-						(VariableDeclaration) 
-							((DeclarationStatement) stmt).getDeclaration())
-						.fragments());
-				}
-				formatCSV(fragments, true);
-				scribe.printNextToken(TOK.TOKsemicolon);
-			}
-			catch(ClassCastException e)
-			{
-				// If a ClassCastException is ever thrown here, my assumption
-				// above was wrong...
-				formatSubStatement(node, true, 0, false, 0);
-			}
-		}
-		else
-			formatSubStatement(node, true, 0, false, 0);
+		formatSubStatement(node, true, 0, false, 0);
 		return false;
 	}
 	
@@ -481,6 +445,7 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 	
 	public boolean visit(ConstructorDeclaration node)
 	{
+		formatModifiers(node.modifiers());
 		switch(node.getKind())
 		{
 			case CONSTRUCTOR:
@@ -934,7 +899,16 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 	{
 		node.getLeftOperand().accept(this);
 		scribe.space();
-		scribe.printNextToken(infixOperatorTokenList());
+		
+		// Handle !is (there's TOKnotis, but it doesn't seem to work)
+		if(isNextToken(TOK.TOKnot))
+		{
+			scribe.printNextToken(TOK.TOKnot);
+			if(isNextToken(TOK.TOKis))
+				scribe.printNextToken(TOK.TOKis);
+		} else
+			scribe.printNextToken(infixOperatorTokenList());
+		
 		scribe.space();
 		node.getRightOperand().accept(this);
 		return false;
@@ -1665,12 +1639,19 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 	public boolean visit(VariableDeclaration node)
 	{
 		formatModifiers(node.modifiers());
-		// For some reason, formatModifiers() doesn't seem to grab this
+		
+		// For some reason, formatModifiers() doesn't seem to grab these
 		if(isNextToken(TOK.TOKstatic))
 		{
 			scribe.printNextToken(TOK.TOKstatic);
 			scribe.space();
 		}
+		if(isNextToken(TOK.TOKconst))
+		{
+			scribe.printNextToken(TOK.TOKconst);
+			scribe.space();
+		}
+		
 		Type type = node.getType();
 		if(null != type)
 		{
@@ -2257,7 +2238,7 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 	{
 		if(null == INFIX_OPERATORS)
 		{
-			INFIX_OPERATORS = new TOK[35];
+			INFIX_OPERATORS = new TOK[34];
 			
 			INFIX_OPERATORS[0] = TOK.TOKmul;
 			INFIX_OPERATORS[1] = TOK.TOKdiv;
@@ -2282,18 +2263,17 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 			INFIX_OPERATORS[20] = TOK.TOKcomma;
 			INFIX_OPERATORS[21] = TOK.TOKin;
 			INFIX_OPERATORS[22] = TOK.TOKis;
-			INFIX_OPERATORS[23] = TOK.TOKnotis;
-			INFIX_OPERATORS[24] = TOK.TOKidentity;
-			INFIX_OPERATORS[25] = TOK.TOKnotidentity;
-			INFIX_OPERATORS[26] = TOK.TOKunord;
-			INFIX_OPERATORS[27] = TOK.TOKlg;
-			INFIX_OPERATORS[28] = TOK.TOKleg;
-			INFIX_OPERATORS[29] = TOK.TOKug;
-			INFIX_OPERATORS[30] = TOK.TOKuge;
-			INFIX_OPERATORS[31] = TOK.TOKul;
-			INFIX_OPERATORS[32] = TOK.TOKule;
-			INFIX_OPERATORS[33] = TOK.TOKue;
-			INFIX_OPERATORS[34] = TOK.TOKtilde; //Redundant with TOKcat?
+			INFIX_OPERATORS[23] = TOK.TOKidentity;
+			INFIX_OPERATORS[24] = TOK.TOKnotidentity;
+			INFIX_OPERATORS[25] = TOK.TOKunord;
+			INFIX_OPERATORS[26] = TOK.TOKlg;
+			INFIX_OPERATORS[27] = TOK.TOKleg;
+			INFIX_OPERATORS[28] = TOK.TOKug;
+			INFIX_OPERATORS[29] = TOK.TOKuge;
+			INFIX_OPERATORS[30] = TOK.TOKul;
+			INFIX_OPERATORS[31] = TOK.TOKule;
+			INFIX_OPERATORS[32] = TOK.TOKue;
+			INFIX_OPERATORS[33] = TOK.TOKtilde; //Redundant with TOKcat?
 			Arrays.sort(INFIX_OPERATORS);
 			
 		}
