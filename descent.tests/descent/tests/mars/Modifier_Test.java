@@ -7,6 +7,7 @@ import descent.core.dom.AliasDeclaration;
 import descent.core.dom.Declaration;
 import descent.core.dom.Modifier;
 import descent.core.dom.ModifierDeclaration;
+import descent.core.dom.TypedefDeclaration;
 import descent.core.dom.VariableDeclaration;
 import descent.core.dom.Modifier.ModifierKeyword;
 
@@ -23,13 +24,11 @@ public class Modifier_Test extends Parser_Test {
 	
 	public void testAllModifiersAsJava() {
 		Object[][] objs = {
-				/*
 				{ "private", Modifier.ModifierKeyword.PRIVATE_KEYWORD },
 				{ "package", Modifier.ModifierKeyword.PACKAGE_KEYWORD },
 				{ "protected", Modifier.ModifierKeyword.PROTECTED_KEYWORD },
 				{ "public", Modifier.ModifierKeyword.PUBLIC_KEYWORD },
 				{ "export", Modifier.ModifierKeyword.EXPORT_KEYWORD },
-				*/
 				{ "const", Modifier.ModifierKeyword.CONST_KEYWORD },
 				{ "final", Modifier.ModifierKeyword.FINAL_KEYWORD },
 				{ "auto", Modifier.ModifierKeyword.AUTO_KEYWORD },
@@ -267,6 +266,48 @@ public class Modifier_Test extends Parser_Test {
 		assertEquals(2, declDefs.size());
 		
 		assertPosition(declDefs.get(0), 1, 10);
+	}
+	
+	public void testModifiersBug1_1a() {
+		String s = " public int x, y;";
+		VariableDeclaration decl = (VariableDeclaration) getDeclarationsNoProblems(s).get(0);
+		assertEquals(1, decl.modifiers().size());
+		assertPosition(decl, 1, s.length() - 1);
+	}
+	
+	public void testModifiersBug1_1b() {
+		String s = " final int x, y;";
+		VariableDeclaration decl = (VariableDeclaration) getDeclarationsNoProblems(s).get(0);
+		assertEquals(1, decl.modifiers().size());
+		assertPosition(decl, 1, s.length() - 1);
+	}
+	
+	public void testModifiersBug1_2a() {
+		String s = " public alias int x, y;";
+		AliasDeclaration decl = (AliasDeclaration) getDeclarationsNoProblems(s).get(0);
+		assertEquals(1, decl.modifiers().size());
+		assertPosition(decl, 1, s.length() - 1);
+	}
+	
+	public void testModifiersBug1_2b() {
+		String s = " final alias int x, y;";
+		AliasDeclaration decl = (AliasDeclaration) getDeclarationsNoProblems(s).get(0);
+		assertEquals(1, decl.modifiers().size());
+		assertPosition(decl, 1, s.length() - 1);
+	}
+	
+	public void testModifiersBug1_3a() {
+		String s = " public typedef int x, y;";
+		TypedefDeclaration decl = (TypedefDeclaration) getDeclarationsNoProblems(s).get(0);
+		assertEquals(1, decl.modifiers().size());
+		assertPosition(decl, 1, s.length() - 1);
+	}
+	
+	public void testModifiersBug1_3b() {
+		String s = " final typedef int x, y;";
+		TypedefDeclaration decl = (TypedefDeclaration) getDeclarationsNoProblems(s).get(0);
+		assertEquals(1, decl.modifiers().size());
+		assertPosition(decl, 1, s.length() - 1);
 	}
 
 }

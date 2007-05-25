@@ -436,48 +436,135 @@ public class ASTConverter {
 	public descent.core.dom.Declaration convert(StorageClassDeclaration a) {
 		descent.core.dom.Modifier modifier = convert(a.modifier);
 		
-		if (a.single && a.decl != null && a.decl.size() == 1) {
+		if (a.single && a.decl != null && a.decl.size() >= 1) {
 			Declaration decl = convertDeclaration(a.decl.get(0));
 			
-			int insertAt;
-			if (a.modifiers != null) {
-				insertAt = a.modifiers.size();
-				for(Modifier mod : a.modifiers) {
-					decl.modifiers().add(convert(mod));
+			if (a.decl.size() == 1) {
+				int insertAt;
+				if (a.modifiers != null) {
+					insertAt = a.modifiers.size();
+					for(Modifier mod : a.modifiers) {
+						decl.modifiers().add(convert(mod));
+					}
+				} else {
+					insertAt = 0;
 				}
+				decl.modifiers().add(insertAt, modifier);
+				
+				decl.setSourceRange(a.start, a.length);
+				return decl;
 			} else {
-				insertAt = 0;
+				descent.core.dom.Declaration declaration = tryConvertMany(a.decl, modifier);
+				if (declaration != null) {
+					return declaration;
+				}
 			}
-			decl.modifiers().add(insertAt, modifier);
-			
-			decl.setSourceRange(a.start, a.length);
-			return decl;
-		} else {
-			descent.core.dom.ModifierDeclaration b = new descent.core.dom.ModifierDeclaration(ast);			
-			b.setModifier(modifier);
-			convertDeclarations(b.declarations(), a.decl);
-			b.setSourceRange(a.start, a.length);
-			return b;
 		}
+		
+		descent.core.dom.ModifierDeclaration b = new descent.core.dom.ModifierDeclaration(ast);			
+		b.setModifier(modifier);
+		convertDeclarations(b.declarations(), a.decl);
+		b.setSourceRange(a.start, a.length);
+		return b;
 	}
 	
+	
+
 	public descent.core.dom.Declaration convert(ProtDeclaration a) {
 		descent.core.dom.Modifier modifier = convert(a.modifier);
 		
-		if (a.single && a.decl != null && a.decl.size() == 1) {
-			Declaration decl = convertDeclaration(a.decl.get(0));
-			decl.modifiers().add(0, modifier);
-			decl.setSourceRange(a.start, a.length);
-			return decl;
+		if (a.single && a.decl != null && a.decl.size() >= 1) {
+			if (a.decl.size() == 1) {
+				Declaration decl = convertDeclaration(a.decl.get(0));
+				decl.modifiers().add(0, modifier);
+				decl.setSourceRange(a.start, a.length);
+				return decl;
+			} else {
+				descent.core.dom.Declaration declaration = tryConvertMany(a.decl, modifier);
+				if (declaration != null) {
+					return declaration;
+				}
+			}
+		}
+		
+		descent.core.dom.ModifierDeclaration b = new descent.core.dom.ModifierDeclaration(ast);			
+		b.setModifier(modifier);
+		convertDeclarations(b.declarations(), a.decl);
+		b.setSourceRange(a.start, a.length);
+		return b;
+	}
+	
+	private Declaration tryConvertMany(List<Dsymbol> decl, descent.core.dom.Modifier modifier) {
+		Dsymbol dsymbol = decl.get(0);
+		descent.core.dom.Declaration declaration = null;
+		if (dsymbol instanceof VarDeclaration) {
+			declaration = convertManyVarDeclarations(decl);
+		} else if (dsymbol instanceof AliasDeclaration) {
+			declaration = convertManyAliasDeclarations(decl);
+		} else if (dsymbol instanceof TypedefDeclaration) {
+			declaration =convertManyTypedefDeclarations(decl);
+		}
+		
+		if (declaration != null) {
+			declaration.modifiers().add(modifier);
+			declaration.setSourceRange(modifier.getStartPosition(), declaration.getStartPosition() + declaration.getLength() - modifier.getStartPosition());
+			return declaration;
 		} else {
-			descent.core.dom.ModifierDeclaration b = new descent.core.dom.ModifierDeclaration(ast);			
-			b.setModifier(modifier);
-			convertDeclarations(b.declarations(), a.decl);
-			b.setSourceRange(a.start, a.length);
-			return b;
+			return null;
 		}
 	}
 	
+	private descent.core.dom.VariableDeclaration convertManyVarDeclarations(List decls) {
+		VarDeclaration first = (VarDeclaration) decls.get(0);
+		VarDeclaration last = (VarDeclaration) decls.get(decls.size() - 1);
+		
+		descent.core.dom.VariableDeclaration varToReturn = new VariableDeclaration(ast);
+		if (first.type != null) {
+			varToReturn.setType(convert(first.type));
+		}
+		
+		for(Object var : decls) {
+			varToReturn.fragments().add(convert((VarDeclaration) var));
+		}
+		
+		varToReturn.setSourceRange(first.start, last.start + last.length - first.start);
+		return varToReturn;
+	}
+	
+	private descent.core.dom.AliasDeclaration convertManyAliasDeclarations(List decls) {
+		AliasDeclaration first = (AliasDeclaration) decls.get(0);
+		AliasDeclaration last = (AliasDeclaration) decls.get(decls.size() - 1);
+		
+		descent.core.dom.AliasDeclaration varToReturn = new descent.core.dom.AliasDeclaration(ast);
+		if (first.type != null) {
+			varToReturn.setType(convert(first.type));
+		}
+		
+		for(Object var : decls) {
+			varToReturn.fragments().add(convert((AliasDeclaration) var));
+		}
+		
+		varToReturn.setSourceRange(first.start, last.start + last.length - first.start);
+		return varToReturn;
+	}
+	
+	private descent.core.dom.TypedefDeclaration convertManyTypedefDeclarations(List decls) {
+		TypedefDeclaration first = (TypedefDeclaration) decls.get(0);
+		TypedefDeclaration last = (TypedefDeclaration) decls.get(decls.size() - 1);
+		
+		descent.core.dom.TypedefDeclaration varToReturn = new descent.core.dom.TypedefDeclaration(ast);
+		if (first.basetype != null) {
+			varToReturn.setType(convert(first.basetype));
+		}
+		
+		for(Object var : decls) {
+			varToReturn.fragments().add(convert((TypedefDeclaration)var));
+		}
+		
+		varToReturn.setSourceRange(first.start, last.start + last.length - first.start);
+		return varToReturn;
+	}
+
 	public descent.core.dom.ScopeStatement convert(OnScopeStatement a) {
 		descent.core.dom.ScopeStatement b = new descent.core.dom.ScopeStatement(ast);
 		switch(a.tok) {
@@ -1131,21 +1218,7 @@ public class ASTConverter {
 			}
 		}
 		
-		VarDeclaration first = varDeclarations.get(0);
-		VarDeclaration last = varDeclarations.get(varDeclarations.size() - 1);
-		
-		VariableDeclaration varToReturn = new VariableDeclaration(ast);
-		if (first.type != null) {
-			varToReturn.setType(convert(first.type));
-		}
-		
-		for(VarDeclaration var : varDeclarations) {
-			varToReturn.fragments().add(convert(var));
-		}
-		
-		varToReturn.setSourceRange(first.start, last.start + last.length - first.start);
-		
-		return wrapWithDeclarationStatement(varToReturn);
+		return wrapWithDeclarationStatement(convertManyVarDeclarations(varDeclarations));
 	}
 	
 	private descent.core.dom.Statement convertForInitializerAlias(Statement init, CompoundStatement block) {
@@ -1162,21 +1235,7 @@ public class ASTConverter {
 			}
 		}
 		
-		AliasDeclaration first = varDeclarations.get(0);
-		AliasDeclaration last = varDeclarations.get(varDeclarations.size() - 1);
-		
-		descent.core.dom.AliasDeclaration varToReturn = new descent.core.dom.AliasDeclaration(ast);
-		if (first.type != null) {
-			varToReturn.setType(convert(first.type));
-		}
-		
-		for(AliasDeclaration var : varDeclarations) {
-			varToReturn.fragments().add(convert(var));
-		}
-		
-		varToReturn.setSourceRange(first.start, last.start + last.length - first.start);
-		
-		return wrapWithDeclarationStatement(varToReturn);
+		return wrapWithDeclarationStatement(convertManyAliasDeclarations(varDeclarations));
 	}
 	
 	private descent.core.dom.Statement convertForInitializerTypedef(Statement init, CompoundStatement block) {
@@ -1193,23 +1252,9 @@ public class ASTConverter {
 			}
 		}
 		
-		TypedefDeclaration first = varDeclarations.get(0);
-		TypedefDeclaration last = varDeclarations.get(varDeclarations.size() - 1);
-		
-		descent.core.dom.TypedefDeclaration varToReturn = new descent.core.dom.TypedefDeclaration(ast);
-		if (first.basetype != null) {
-			varToReturn.setType(convert(first.basetype));
-		}
-		
-		for(TypedefDeclaration var : varDeclarations) {
-			varToReturn.fragments().add(convert(var));
-		}
-		
-		varToReturn.setSourceRange(first.start, last.start + last.length - first.start);
-		
-		return wrapWithDeclarationStatement(varToReturn);
+		return wrapWithDeclarationStatement(convertManyTypedefDeclarations(varDeclarations));
 	}
-	
+
 	private descent.core.dom.DeclarationStatement wrapWithDeclarationStatement(Declaration declaration) {
 		descent.core.dom.DeclarationStatement declStatement = ast.newDeclarationStatement();
 		declStatement.setDeclaration(declaration);

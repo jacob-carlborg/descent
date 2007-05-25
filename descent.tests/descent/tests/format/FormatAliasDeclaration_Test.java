@@ -62,9 +62,7 @@ public class FormatAliasDeclaration_Test extends AbstractFormatter_Test {
 				"alias   int   x  ,   y   ,  z  ;");
 	}
 	
-	/*
-	public void testFragmentsInsertSpaceBeforeCommand() throws Exception {
-		// TODO Descent formatter make specific to alias
+	public void testFragmentsInsertSpaceBeforeComma() throws Exception {
 		Map options = new HashMap();
 		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_COMMA_IN_MULTIPLE_FIELD_DECLARATIONS, JavaCore.INSERT);
 		assertFormat(
@@ -74,6 +72,23 @@ public class FormatAliasDeclaration_Test extends AbstractFormatter_Test {
 				
 				options);
 	}
-	*/
+	
+	public void testFragmentsDontInsertSpaceAfterComma() throws Exception {
+		Map options = new HashMap();
+		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_AFTER_COMMA_IN_MULTIPLE_FIELD_DECLARATIONS, JavaCore.DO_NOT_INSERT);
+		assertFormat(
+				"alias int x,y,z;\r\n",
+				
+				"alias   int   x  ,   y   ,  z  ;",
+				
+				options);
+	}
+	
+	public void testModifiers() throws Exception {
+		assertFormat(
+				"public final static alias int x, y, z;\r\n",
+				
+				"public   final   static    alias   int   x  ,   y   ,  z  ;");
+	}
 
 }

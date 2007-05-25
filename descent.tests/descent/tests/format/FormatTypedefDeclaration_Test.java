@@ -61,5 +61,27 @@ public class FormatTypedefDeclaration_Test extends AbstractFormatter_Test {
 				
 				"typedef   int   x  ,   y   ,  z  ;");
 	}
+	
+	public void testFragmentsInsertSpaceBeforeComma() throws Exception {
+		Map options = new HashMap();
+		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_COMMA_IN_MULTIPLE_FIELD_DECLARATIONS, JavaCore.INSERT);
+		assertFormat(
+				"typedef int x , y , z;\r\n",
+				
+				"typedef   int   x  ,   y   ,  z  ;",
+				
+				options);
+	}
+	
+	public void testFragmentsDontInsertSpaceAfterComma() throws Exception {
+		Map options = new HashMap();
+		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_AFTER_COMMA_IN_MULTIPLE_FIELD_DECLARATIONS, JavaCore.DO_NOT_INSERT);
+		assertFormat(
+				"typedef int x,y,z;\r\n",
+				
+				"typedef   int   x  ,   y   ,  z  ;",
+				
+				options);
+	}
 
 }
