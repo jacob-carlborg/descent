@@ -452,7 +452,7 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 				scribe.printNextToken(TOK.TOKthis);
 				break;
 			case DESTRUCTOR:
-				scribe.printNextToken(tildeOrCatTokenList());
+				scribe.printNextToken(TOK.TOKtilde);
 				scribe.printNextToken(TOK.TOKthis);
 				break;
 			case STATIC_CONSTRUCTOR:
@@ -461,7 +461,7 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 				scribe.printNextToken(TOK.TOKthis);
 				break;
 			case STATIC_DESTRUCTOR:
-				scribe.printNextToken(tildeOrCatTokenList());
+				scribe.printNextToken(TOK.TOKtilde);
 				scribe.printNextToken(TOK.TOKstatic);
 				scribe.space();
 				scribe.printNextToken(TOK.TOKthis);
@@ -1477,7 +1477,7 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 	public boolean visit(TemplateType node)
 	{
 		node.getName().accept(this);
-		scribe.printNextToken(negOrNotTokenList());
+		scribe.printNextToken(TOK.TOKnot);
 		scribe.printNextToken(TOK.TOKlparen);
 		formatCSV(node.arguments(), true);
 		scribe.printNextToken(TOK.TOKrparen);
@@ -2177,8 +2177,6 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 	private static TOK[] CHARACTER_LITERALS;
 	private static TOK[] NUMERIC_LITERALS;
 	private static TOK[] TYPE_SPECIALIZATIONS;
-	private static TOK[] NEG_OR_NOT;
-	private static TOK[] TILDE_OR_CAT;
 	
 	private static TOK[] assignmentOperatorTokenList()
 	{
@@ -2238,14 +2236,14 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 	{
 		if(null == INFIX_OPERATORS)
 		{
-			INFIX_OPERATORS = new TOK[34];
+			INFIX_OPERATORS = new TOK[33];
 			
 			INFIX_OPERATORS[0] = TOK.TOKmul;
 			INFIX_OPERATORS[1] = TOK.TOKdiv;
 			INFIX_OPERATORS[2] = TOK.TOKmod;
 			INFIX_OPERATORS[3] = TOK.TOKadd;
 			INFIX_OPERATORS[4] = TOK.TOKmin;
-			INFIX_OPERATORS[5] = TOK.TOKcat;
+			INFIX_OPERATORS[5] = TOK.TOKtilde;
 			INFIX_OPERATORS[6] = TOK.TOKshl;
 			INFIX_OPERATORS[7] = TOK.TOKshr;
 			INFIX_OPERATORS[8] = TOK.TOKushr;
@@ -2273,7 +2271,6 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 			INFIX_OPERATORS[30] = TOK.TOKul;
 			INFIX_OPERATORS[31] = TOK.TOKule;
 			INFIX_OPERATORS[32] = TOK.TOKue;
-			INFIX_OPERATORS[33] = TOK.TOKtilde; //Redundant with TOKcat?
 			Arrays.sort(INFIX_OPERATORS);
 			
 		}
@@ -2335,19 +2332,6 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 		return MODIFIERS;
 	}
 	
-	private static TOK[] negOrNotTokenList()
-	{
-		if(null == NEG_OR_NOT)
-		{
-			NEG_OR_NOT = new TOK[2];
-			
-			NEG_OR_NOT[0] = TOK.TOKneg;
-			NEG_OR_NOT[1] = TOK.TOKnot;
-			Arrays.sort(NEG_OR_NOT);
-		}
-		return NEG_OR_NOT;
-	}
-	
 	private static TOK[] numericLiteralTokenList()
 	{
 		if(null == NUMERIC_LITERALS)
@@ -2386,7 +2370,7 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 	{
 		if(null == PREFIX_OPERATORS)
 		{
-			PREFIX_OPERATORS = new TOK[10];
+			PREFIX_OPERATORS = new TOK[8];
 			
 			PREFIX_OPERATORS[0] = TOK.TOKplusplus;
 			PREFIX_OPERATORS[1] = TOK.TOKminusminus;
@@ -2396,8 +2380,6 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 			PREFIX_OPERATORS[5] = TOK.TOKmin;
 			PREFIX_OPERATORS[6] = TOK.TOKtilde;
 			PREFIX_OPERATORS[7] = TOK.TOKnot;
-			PREFIX_OPERATORS[8] = TOK.TOKcat; // Redundant with TOKtilde?
-			PREFIX_OPERATORS[9] = TOK.TOKneg; // Redundant with TOKnot?
 			Arrays.sort(PREFIX_OPERATORS);
 		}
 		return PREFIX_OPERATORS;
@@ -2437,19 +2419,6 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 			Arrays.sort(PRIMITIVE_TYPES_LIST);
 		}
 		return PRIMITIVE_TYPES_LIST;
-	}
-	
-	private static TOK[] tildeOrCatTokenList()
-	{
-		if(null == TILDE_OR_CAT)
-		{
-			TILDE_OR_CAT = new TOK[2];
-			
-			TILDE_OR_CAT[0] = TOK.TOKtilde;
-			TILDE_OR_CAT[1] = TOK.TOKcat;
-			Arrays.sort(TILDE_OR_CAT);
-		}
-		return TILDE_OR_CAT;
 	}
 	
 	private static TOK[] typeSpecializationTokenList()
