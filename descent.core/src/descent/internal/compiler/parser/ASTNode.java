@@ -319,7 +319,7 @@ public abstract class ASTNode {
 			 * overload
 			 */
 			Dsymbol s = search_function(ad,
-					(op == TOKforeach_reverse) ? Id.applyReverse : Id.apply,
+					(op == TOKforeach_reverse) ? Id.applyReverse.string : Id.apply.string,
 					context);
 			if (s != null) {
 				fd = s.isFuncDeclaration();
@@ -338,7 +338,7 @@ public abstract class ASTNode {
 			 * overload
 			 */
 			Dsymbol s = search_function(ad,
-					(op == TOKforeach_reverse) ? Id.applyReverse : Id.apply,
+					(op == TOKforeach_reverse) ? Id.applyReverse.string : Id.apply.string,
 					context);
 			if (s != null) {
 				fd = s.isFuncDeclaration();
@@ -484,7 +484,7 @@ public abstract class ASTNode {
 	}
 
 	public static Dsymbol search_function(AggregateDeclaration ad,
-			Identifier funcid, SemanticContext context) {
+			String funcid, SemanticContext context) {
 		Dsymbol s;
 		FuncDeclaration fd;
 		TemplateDeclaration td;

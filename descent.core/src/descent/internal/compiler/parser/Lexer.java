@@ -1,13 +1,91 @@
 package descent.internal.compiler.parser;
 
-import static descent.internal.compiler.parser.TOK.*;
+import static descent.internal.compiler.parser.TOK.TOKPRAGMA;
+import static descent.internal.compiler.parser.TOK.TOKadd;
+import static descent.internal.compiler.parser.TOK.TOKaddass;
+import static descent.internal.compiler.parser.TOK.TOKand;
+import static descent.internal.compiler.parser.TOK.TOKandand;
+import static descent.internal.compiler.parser.TOK.TOKandass;
+import static descent.internal.compiler.parser.TOK.TOKassign;
+import static descent.internal.compiler.parser.TOK.TOKblockcomment;
+import static descent.internal.compiler.parser.TOK.TOKcatass;
+import static descent.internal.compiler.parser.TOK.TOKcharv;
+import static descent.internal.compiler.parser.TOK.TOKcolon;
+import static descent.internal.compiler.parser.TOK.TOKcomma;
+import static descent.internal.compiler.parser.TOK.TOKdcharv;
+import static descent.internal.compiler.parser.TOK.TOKdiv;
+import static descent.internal.compiler.parser.TOK.TOKdivass;
+import static descent.internal.compiler.parser.TOK.TOKdocblockcomment;
+import static descent.internal.compiler.parser.TOK.TOKdoclinecomment;
+import static descent.internal.compiler.parser.TOK.TOKdocpluscomment;
+import static descent.internal.compiler.parser.TOK.TOKdot;
+import static descent.internal.compiler.parser.TOK.TOKdotdotdot;
+import static descent.internal.compiler.parser.TOK.TOKeof;
+import static descent.internal.compiler.parser.TOK.TOKequal;
+import static descent.internal.compiler.parser.TOK.TOKfloat32v;
+import static descent.internal.compiler.parser.TOK.TOKfloat64v;
+import static descent.internal.compiler.parser.TOK.TOKfloat80v;
+import static descent.internal.compiler.parser.TOK.TOKge;
+import static descent.internal.compiler.parser.TOK.TOKgt;
+import static descent.internal.compiler.parser.TOK.TOKidentity;
+import static descent.internal.compiler.parser.TOK.TOKimaginary32v;
+import static descent.internal.compiler.parser.TOK.TOKimaginary64v;
+import static descent.internal.compiler.parser.TOK.TOKimaginary80v;
+import static descent.internal.compiler.parser.TOK.TOKint32v;
+import static descent.internal.compiler.parser.TOK.TOKint64v;
+import static descent.internal.compiler.parser.TOK.TOKlbracket;
+import static descent.internal.compiler.parser.TOK.TOKlcurly;
+import static descent.internal.compiler.parser.TOK.TOKle;
+import static descent.internal.compiler.parser.TOK.TOKleg;
+import static descent.internal.compiler.parser.TOK.TOKlg;
+import static descent.internal.compiler.parser.TOK.TOKlinecomment;
+import static descent.internal.compiler.parser.TOK.TOKlparen;
+import static descent.internal.compiler.parser.TOK.TOKlt;
+import static descent.internal.compiler.parser.TOK.TOKmin;
+import static descent.internal.compiler.parser.TOK.TOKminass;
+import static descent.internal.compiler.parser.TOK.TOKminusminus;
+import static descent.internal.compiler.parser.TOK.TOKmod;
+import static descent.internal.compiler.parser.TOK.TOKmodass;
+import static descent.internal.compiler.parser.TOK.TOKmul;
+import static descent.internal.compiler.parser.TOK.TOKmulass;
+import static descent.internal.compiler.parser.TOK.TOKnot;
+import static descent.internal.compiler.parser.TOK.TOKnotequal;
+import static descent.internal.compiler.parser.TOK.TOKnotidentity;
+import static descent.internal.compiler.parser.TOK.TOKor;
+import static descent.internal.compiler.parser.TOK.TOKorass;
+import static descent.internal.compiler.parser.TOK.TOKoror;
+import static descent.internal.compiler.parser.TOK.TOKpluscomment;
+import static descent.internal.compiler.parser.TOK.TOKplusplus;
+import static descent.internal.compiler.parser.TOK.TOKquestion;
+import static descent.internal.compiler.parser.TOK.TOKrbracket;
+import static descent.internal.compiler.parser.TOK.TOKrcurly;
+import static descent.internal.compiler.parser.TOK.TOKrparen;
+import static descent.internal.compiler.parser.TOK.TOKsemicolon;
+import static descent.internal.compiler.parser.TOK.TOKshl;
+import static descent.internal.compiler.parser.TOK.TOKshlass;
+import static descent.internal.compiler.parser.TOK.TOKshr;
+import static descent.internal.compiler.parser.TOK.TOKshrass;
+import static descent.internal.compiler.parser.TOK.TOKslice;
+import static descent.internal.compiler.parser.TOK.TOKstring;
+import static descent.internal.compiler.parser.TOK.TOKtilde;
+import static descent.internal.compiler.parser.TOK.TOKue;
+import static descent.internal.compiler.parser.TOK.TOKug;
+import static descent.internal.compiler.parser.TOK.TOKuge;
+import static descent.internal.compiler.parser.TOK.TOKul;
+import static descent.internal.compiler.parser.TOK.TOKule;
+import static descent.internal.compiler.parser.TOK.TOKunord;
+import static descent.internal.compiler.parser.TOK.TOKuns32v;
+import static descent.internal.compiler.parser.TOK.TOKuns64v;
+import static descent.internal.compiler.parser.TOK.TOKushr;
+import static descent.internal.compiler.parser.TOK.TOKushrass;
+import static descent.internal.compiler.parser.TOK.TOKwcharv;
+import static descent.internal.compiler.parser.TOK.TOKwhitespace;
+import static descent.internal.compiler.parser.TOK.TOKxor;
+import static descent.internal.compiler.parser.TOK.TOKxorass;
 
-import java.lang.reflect.Field;
 import java.math.BigInteger;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import descent.core.IProblemRequestor;
 import descent.core.compiler.IProblem;
@@ -17,6 +95,8 @@ import descent.core.dom.AST;
  * Internal lexer class.
  */
 public class Lexer implements IProblemRequestor {
+	
+	private static final int[] EMPTY_LINE_ENDS = new int[0];
 	
 	private final static boolean IN_COMMENT = true;
 	private final static boolean NOT_IN_COMMENT = false;
@@ -30,11 +110,8 @@ public class Lexer implements IProblemRequestor {
 	private final static int LS = 0x2028;
 	private final static int PS = 0x2029;
 	
-	private StringTable stringtable = new StringTable();
 	private OutBuffer stringbuffer = new OutBuffer();
 	private Token freelist;
-	
-	public int linnum;
 	
 	public int base;
 	public int p;
@@ -47,8 +124,11 @@ public class Lexer implements IProblemRequestor {
 	
 	public List<IProblem> problems;
 	
-	// TODO optimize and use an array of int
-	public List<Integer> lineEnds;
+	// support for the  poor-line-debuggers ....
+	// remember the position of the cr/lf
+	private int[] lineEnds;
+	private int linnum = 1;
+	private int maxLinnum = 1;
 	
 	private boolean tokenizeComments;
 	public boolean tokenizeWhiteSpace;
@@ -58,8 +138,8 @@ public class Lexer implements IProblemRequestor {
 	
 	/* package */ Lexer(int apiLevel) {
 		this.apiLevel = apiLevel;
-		initId();
-		initKeywords();		
+		//initId();
+		//initKeywords();		
 	}
 	
 	public void reset(char[] source, int offset, int length, boolean tokenizeComments, boolean tokenizePragmas, boolean tokenizeWhiteSpace, boolean recordLineSeparator) {
@@ -74,7 +154,7 @@ public class Lexer implements IProblemRequestor {
 	    this.tokenizePragmas = tokenizePragmas;
 		this.tokenizeWhiteSpace = tokenizeWhiteSpace;
 		this.recordLineSeparator = recordLineSeparator;
-		this.lineEnds = new ArrayList<Integer>();
+		this.lineEnds = new int[250];
 		if (token == null) {
 			token = new Token();
 		} else {
@@ -913,23 +993,1753 @@ public class Lexer implements IProblemRequestor {
 	}
 
 	private void case_ident(Token t) {
-		char c;
-		StringValue sv;
-		Identifier id;
-
-		do
-		{
-			c = input[++p];
-		} while (c > 0 && Chars.isidchar(c) || (c >= 0x80 && UniAlpha.isUniAlpha(decodeUTF())));
-		sv = stringtable.update(input, t.ptr, p - t.ptr);
-		id = (Identifier) sv.ptrvalue;
-		if (id == null)
-		{   id = new Identifier(sv.lstring, TOKidentifier);
-		    sv.ptrvalue = id;
+		switch(input[p]) {
+		// a:
+		case 'a':
+			p++;
+			switch(input[p]) {
+			case 'b':
+				p++;
+				if (input[p] == 's') {
+					p++;
+					if (input[p] == 't') {
+						p++;
+						if (input[p] == 'r') {
+							p++;
+							if (input[p] == 'a') {
+								p++;
+								if (input[p] == 'c') {
+									p++;
+									if (input[p] == 't' && !Chars.isidchar(input[p+1])) {
+										t.value = TOK.TOKabstract;
+										t.len = 8;
+										p++;
+										return;
+									}
+								}
+							}
+						}
+					}
+				}
+				break;
+			case 'l':
+				p++;
+				if (input[p] == 'i') {
+					p++;
+					switch(input[p]) {
+					case 'a':
+						p++;
+						if (input[p] == 's' && !Chars.isidchar(input[p+1])) {
+							t.value = TOK.TOKalias;
+							t.len = 5;
+							p++;
+							return;
+						}
+						break;
+					case 'g':
+						p++;
+						if (input[p] == 'n' && !Chars.isidchar(input[p+1])) {
+							t.value = TOK.TOKalign;
+							t.len = 5;
+							p++;
+							return;
+						}
+						break;
+					}
+				}
+				break;
+			case 's':
+				p++;
+				switch(input[p]) {
+				case 'm':
+					if (!Chars.isidchar(input[p+1])) {
+						t.value = TOK.TOKasm;
+						t.len = 3;
+						p++;
+						return;
+					}
+					break;
+				case 's':
+					p++;
+					if (input[p] == 'e') {
+						p++;
+						if (input[p] == 'r') {
+							p++;
+							if (input[p] == 't' && !Chars.isidchar(input[p+1])) {
+								t.value = TOK.TOKassert;
+								t.len = 6;
+								p++;
+								return;
+							}
+						}
+					}
+					break;
+				}
+				break;
+			case 'u':
+				p++;
+				if (input[p] == 't') {
+					p++;
+					if (input[p] == 'o' && !Chars.isidchar(input[p+1])) {
+						t.value = TOK.TOKauto;
+						t.len = 4;
+						p++;
+						return;
+					}
+				}
+				break;
+			}
+			break;
+		// b:
+		case 'b':
+			p++;
+			switch(input[p]) {
+			case 'o':
+				p++;
+				switch(input[p]) {
+				case 'd':
+					p++;
+					if (input[p] == 'y' && !Chars.isidchar(input[p+1])) {
+						t.value = TOK.TOKbody;
+						t.len = 4;
+						p++;
+						return;
+					}
+					break;
+				case 'o':
+					p++;
+					if (input[p] == 'l' && !Chars.isidchar(input[p+1])) {
+						t.value = TOK.TOKbool;
+						t.len = 4;
+						p++;
+						return;
+					}
+					break;
+				}
+				break;
+			case 'r':
+				p++;
+				if (input[p] == 'e') {
+					p++;
+					if (input[p] == 'a') {
+						p++;
+						if (input[p] == 'k' && !Chars.isidchar(input[p+1])) {
+							t.value = TOK.TOKbreak;
+							t.len = 5;
+							p++;
+							return;
+						}
+					}
+				}
+				break;
+			case 'y':
+				p++;
+				if (input[p] == 't') {
+					p++;
+					if (input[p] == 'e' && !Chars.isidchar(input[p+1])) {
+						t.value = TOK.TOKint8;
+						t.len = 4;p++;
+						return;
+					}
+				}
+				break;
+			}
+			break;
+		// c:
+		case 'c':
+			p++;
+			switch(input[p]) {
+			case 'a':
+				p++;
+				switch(input[p]) {
+				case 's':
+					p++;
+					switch(input[p]) {
+					case 'e':
+						if (!Chars.isidchar(input[p+1])) {
+							t.value = TOK.TOKcase;
+							t.len = 4;
+							p++;
+							return;
+						}
+						break;
+					case 't':
+						if (!Chars.isidchar(input[p+1])) {
+							t.value = TOK.TOKcast;
+							t.len = 4;
+							p++;
+							return;
+						}
+						break;
+					}
+					break;
+				case 't':
+					p++;
+					if (input[p] == 'c') {
+						p++;
+						if (input[p] == 'h' && !Chars.isidchar(input[p+1])) {
+							t.value = TOK.TOKcatch;
+							t.len = 5;
+							p++;
+							return;
+						}
+					}
+					break;
+				}
+				break;
+			case 'e':
+				p++;
+				if (input[p] == 'n') {
+					p++;
+					if (input[p] == 't' && !Chars.isidchar(input[p+1])) {
+						t.value = TOK.TOKcent;
+						t.len = 4;
+						p++;
+						return;
+					}
+				}
+				break;
+			case 'd':
+				p++;
+				if (input[p] == 'o') {
+					p++;
+					if (input[p] == 'u') {
+						p++;
+						if (input[p] == 'b') {
+							p++;
+							if (input[p] == 'l') {
+								p++;
+								if (input[p] == 'e' && !Chars.isidchar(input[p+1])) {
+									t.value = TOK.TOKcomplex64;
+									t.len = 7;
+									p++;
+									return;
+								}
+							}
+						}
+					}
+				}
+				break;
+			case 'f':
+				p++;
+				if (input[p] == 'l') {
+					p++;
+					if (input[p] == 'o') {
+						p++;
+						if (input[p] == 'a') {
+							p++;
+							if (input[p] == 't' && !Chars.isidchar(input[p+1])) {
+								t.value = TOK.TOKcomplex32;
+								t.len = 6;
+								p++;
+								return;
+							}
+						}
+					}
+				}
+				break;
+			case 'h':
+				p++;
+				if (input[p] == 'a') {
+					p++;
+					if (input[p] == 'r' && !Chars.isidchar(input[p+1])) {
+						t.value = TOK.TOKchar;
+						t.len = 4;
+						p++;
+						return;
+					}
+				}
+				break;
+			case 'l':
+				p++;
+				if (input[p] == 'a') {
+					p++;
+					if (input[p] == 's') {
+						p++;
+						if (input[p] == 's' && !Chars.isidchar(input[p+1])) {
+							t.value = TOK.TOKclass;
+							t.len = 5;
+							p++;
+							return;
+						}
+					}
+				}
+				break;
+			case 'o':
+				p++;
+				if (input[p] == 'n') {
+					p++;
+					switch(input[p]) {
+					case 's':
+						p++;
+						if (input[p] == 't' && !Chars.isidchar(input[p+1])) {
+							t.value = TOK.TOKconst;
+							t.len = 5;
+							p++;
+							return;
+						}
+						break;
+					case 't':
+						p++;
+						if (input[p] == 'i') {
+							p++;
+							if (input[p] == 'n') {
+								p++;
+								if (input[p] == 'u') {
+									p++;
+									if (input[p] == 'e' && !Chars.isidchar(input[p+1])) {
+										t.value = TOK.TOKcontinue;
+										t.len = 8;
+										p++;
+										return;
+									}
+								}
+							}
+						}
+						break;
+					}
+				}
+				break;
+			case 'r':
+				p++;
+				if (input[p] == 'e') {
+					p++;
+					if (input[p] == 'a') {
+						p++;
+						if (input[p] == 'l' && !Chars.isidchar(input[p+1])) {
+							t.value = TOK.TOKcomplex80;
+							t.len = 5;
+							p++;
+							return;
+						}
+					}
+				}
+				break;
+			}
+			break;
+		// d:
+		case 'd':
+			p++;
+			switch(input[p]) {
+			case 'c':
+				p++;
+				if (input[p] == 'h') {
+					p++;
+					if (input[p] == 'a') {
+						p++;
+						if (input[p] == 'r' && !Chars.isidchar(input[p+1])) {
+							t.value = TOK.TOKdchar;
+							t.len = 5;
+							p++;
+							return;
+						}
+					}
+				}
+				break;
+			case 'e':
+				p++;
+				switch(input[p]) {
+				case 'b':
+					p++;
+					if (input[p] == 'u') {
+						p++;
+						if (input[p] == 'g' && !Chars.isidchar(input[p+1])) {
+							t.value = TOK.TOKdebug;
+							t.len = 5;
+							p++;
+							return;
+						}
+					}
+					break;
+				case 'f':
+					p++;
+					if (input[p] == 'a') {
+						p++;
+						if (input[p] == 'u') {
+							p++;
+							if (input[p] == 'l') {
+								p++;
+								if (input[p] == 't' && !Chars.isidchar(input[p+1])) {
+									t.value = TOK.TOKdefault;
+									t.len = 7;
+									p++;
+									return;
+								}
+							}
+						}
+					}
+					break;
+				case 'l':
+					p++;
+					if (input[p] == 'e') {
+						p++;
+						switch(input[p]) {
+						case 'g':
+							p++;
+							if (input[p] == 'a') {
+								p++;
+								if (input[p] == 't') {
+									p++;
+									if (input[p] == 'e' && !Chars.isidchar(input[p+1])) {
+										t.value = TOK.TOKdelegate;
+										t.len = 8;
+										p++;
+										return;
+									}
+								}
+							}
+							break;
+						case 't':
+							p++;
+							if (input[p] == 'e' && !Chars.isidchar(input[p+1])) {
+								t.value = TOK.TOKdelete;
+								t.len = 6;
+								p++;
+								return;
+							}
+							break;
+						}
+					}
+					break;
+				case 'p':
+					p++;
+					if (input[p] == 'r') {
+						p++;
+						if (input[p] == 'e') {
+							p++;
+							if (input[p] == 'c') {
+								p++;
+								if (input[p] == 'a') {
+									p++;
+									if (input[p] == 't') {
+										p++;
+										if (input[p] == 'e') {
+											p++;
+											if (input[p] == 'd' && !Chars.isidchar(input[p+1])) {
+												t.value = TOK.TOKdeprecated;
+												t.len = 10;
+												p++;
+												return;
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+					break;
+				}
+				break;
+			case 'o':
+				if (!Chars.isidchar(input[p+1])) {
+					t.value = TOK.TOKdo;
+					t.len = 2;
+					p++;
+					return;
+				}
+				
+				p++;
+				if (input[p] == 'u') {
+					p++;
+					if (input[p] == 'b') {
+						p++;
+						if (input[p] == 'l') {
+							p++;
+							if (input[p] == 'e' && !Chars.isidchar(input[p+1])) {
+								t.value = TOK.TOKfloat64;
+								t.len = 6;
+								p++;
+								return;
+							}
+						}
+					}
+				}
+				break;
+			}
+			break;
+		// e:
+		case 'e':
+			p++;
+			switch(input[p]) {
+			case 'l':
+				p++;
+				if (input[p] == 's') {
+					p++;
+					if (input[p] == 'e' && !Chars.isidchar(input[p+1])) {
+						t.value = TOK.TOKelse;
+						t.len = 4;
+						p++;
+						return;
+					}
+				}
+				break;
+			case 'n':
+				p++;
+				if (input[p] == 'u') {
+					p++;
+					if (input[p] == 'm' && !Chars.isidchar(input[p+1])) {
+						t.value = TOK.TOKenum;
+						t.len = 4;
+						p++;
+						return;
+					}
+				}
+				break;
+			case 'x':
+				p++;
+				switch(input[p]) {
+				case 'p':
+					p++;
+					if (input[p] == 'o') {
+						p++;
+						if (input[p] == 'r') {
+							p++;
+							if (input[p] == 't' && !Chars.isidchar(input[p+1])) {
+								t.value = TOK.TOKexport;
+								t.len = 6;
+								p++;
+								return;
+							}
+						}
+					}
+					break;
+				case 't':
+					p++;
+					if (input[p] == 'e') {
+						p++;
+						if (input[p] == 'r') {
+							p++;
+							if (input[p] == 'n' && !Chars.isidchar(input[p+1])) {
+								t.value = TOK.TOKextern;
+								t.len = 6;
+								p++;
+								return;
+							}
+						}
+					}
+					break;
+				}
+				break;
+			}
+			break;
+		// f:
+		case 'f':
+			p++;
+			switch(input[p]) {
+			case 'a':
+				p++;
+				if (input[p] == 'l') {
+					p++;
+					if (input[p] == 's') {
+						p++;
+						if (input[p] == 'e' && !Chars.isidchar(input[p+1])) {
+							t.value = TOK.TOKfalse;
+							t.len = 5;
+							p++;
+							return;
+						}
+					}
+				}
+				break;
+			case 'i':
+				p++;
+				if (input[p] == 'n') {
+					p++;
+					if (input[p] == 'a') {
+						p++;
+						if (input[p] == 'l') {
+							if (!Chars.isidchar(input[p+1])) {
+								t.value = TOK.TOKfinal;
+								t.len = 5;
+								p++;
+								return;
+							}
+							
+							p++;
+							if (input[p] == 'l') {
+								p++;
+								if (input[p] == 'y' && !Chars.isidchar(input[p+1])) {
+									t.value = TOK.TOKfinally;
+									t.len = 7;
+									p++;
+									return;
+								}
+							}
+						}
+					}
+				}
+				break;
+			case 'l':
+				p++;
+				if (input[p] == 'o') {
+					p++;
+					if (input[p] == 'a') {
+						p++;
+						if (input[p] == 't' && !Chars.isidchar(input[p+1])) {
+							t.value = TOK.TOKfloat32;
+							t.len = 5;
+							p++;
+							return;
+						}
+					}
+				}
+				break;
+			case 'o':
+				p++;
+				if (input[p] == 'r') {
+					if (!Chars.isidchar(input[p+1])) {
+						t.value = TOK.TOKfor;
+						t.len = 3;
+						p++;
+						return;
+					}
+					
+					p++;
+					if (input[p] == 'e') {
+						p++;
+						if (input[p] == 'a') {
+							p++;
+							if (input[p] == 'c') {
+								p++;
+								if (input[p] == 'h') {
+									if (!Chars.isidchar(input[p+1])) {
+										t.value = TOK.TOKforeach;
+										t.len = 7;
+										p++;
+										return;
+									}
+									
+									p++;
+									if (input[p] == '_') {
+										p++;
+										if (input[p] == 'r') {
+											p++;
+											if (input[p] == 'e') {
+												p++;
+												if (input[p] == 'v') {
+													p++;
+													if (input[p] == 'e') {
+														p++;
+														if (input[p] == 'r') {
+															p++;
+															if (input[p] == 's') {
+																p++;
+																if (input[p] == 'e' && !Chars.isidchar(input[p+1])) {
+																	t.value = TOK.TOKforeach_reverse;
+																	t.len = 15;
+																	p++;
+																	return;
+																}
+															}
+														}
+													}
+												}
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+				break;
+			case 'u':
+				p++;
+				if (input[p] == 'n') {
+					p++;
+					if (input[p] == 'c') {
+						p++;
+						if (input[p] == 't') {
+							p++;
+							if (input[p] == 'i') {
+								p++;
+								if (input[p] == 'o') {
+									p++;
+									if (input[p] == 'n' && !Chars.isidchar(input[p+1])) {
+										t.value = TOK.TOKfunction;
+										t.len = 8;
+										p++;
+										return;
+									}
+								}
+							}
+						}
+					}
+				}
+				break;
+			}
+			break;
+		// g:
+		case 'g':
+			p++;
+			if (input[p] == 'o') {
+				p++;
+				if (input[p] == 't') {
+					p++;
+					if (input[p] == 'o' && !Chars.isidchar(input[p+1])) {
+						t.value = TOK.TOKgoto;
+						t.len = 4;
+						p++;
+						return;
+					}
+				}
+			}
+			break;
+		// i:
+		case 'i':
+			p++;
+			switch(input[p]) {
+			case 'd':
+				p++;
+				if (input[p] == 'o') {
+					p++;
+					if (input[p] == 'u') {
+						p++;
+						if (input[p] == 'b') {
+							p++;
+							if (input[p] == 'l') {
+								p++;
+								if (input[p] == 'e' && !Chars.isidchar(input[p+1])) {
+									t.value = TOK.TOKimaginary64;
+									t.len = 7;
+									p++;
+									return;
+								}
+							}
+						}
+					}
+				}
+				break;
+			case 'f':
+				if (!Chars.isidchar(input[p+1])) {
+					t.value = TOK.TOKif;
+					t.len = 2;
+					p++;
+					return;
+				}
+				
+				p++;
+				if (input[p] == 'l') {
+					p++;
+					if (input[p] == 'o') {
+						p++;
+						if (input[p] == 'a') {
+							p++;
+							if (input[p] == 't' && !Chars.isidchar(input[p+1])) {
+								t.value = TOK.TOKimaginary32;
+								t.len = 6;
+								p++;
+								return;
+							}
+						}
+					}
+				} else if (apiLevel == AST.D1 && input[p] == 't') {
+					p++;
+					if (input[p] == 'y') {
+						p++;
+						if (input[p] == 'p') {
+							p++;
+							if (input[p] == 'e' && !Chars.isidchar(input[p+1])) {
+								t.value = TOK.TOKiftype;
+								t.len = 6;
+								p++;
+								return;
+							}
+						}
+					}
+				}
+				break;
+			case 'm':
+				p++;
+				if (input[p] == 'p') {
+					p++;
+					if (input[p] == 'o') {
+						p++;
+						if (input[p] == 'r') {
+							p++;
+							if (input[p] == 't' && !Chars.isidchar(input[p+1])) {
+								t.value = TOK.TOKimport;
+								t.len = 6;
+								p++;
+								return;
+							}
+						}
+					}
+				}
+				break;
+			case 'n':
+				if (!Chars.isidchar(input[p+1])) {
+					t.value = TOK.TOKin;
+					t.len = 2;
+					p++;
+					return;
+				}
+				
+				p++;
+				switch(input[p]) {
+				case 'o':
+					p++;
+					if (input[p] == 'u') {
+						p++;
+						if (input[p] == 't' && !Chars.isidchar(input[p+1])) {
+							t.value = TOK.TOKinout;
+							t.len = 5;
+							p++;
+							return;
+						}
+					}
+					break;
+				case 't':
+					if (!Chars.isidchar(input[p+1])) {
+						t.value = TOK.TOKint32;
+						t.len = 3;
+						p++;
+						return;
+					}
+					
+					p++;
+					if (input[p] == 'e') {
+						p++;
+						if (input[p] == 'r') {
+							p++;
+							if (input[p] == 'f') {
+								p++;
+								if (input[p] == 'a') {
+									p++;
+									if (input[p] == 'c') {
+										p++;
+										if (input[p] == 'e' && !Chars.isidchar(input[p+1])) {
+											t.value = TOK.TOKinterface;
+											t.len = 9;
+											p++;
+											return;
+										}
+									}
+								}
+							}
+						}
+					}
+					break;
+				case 'v':
+					p++;
+					if (input[p] == 'a') {
+						p++;
+						if (input[p] == 'r') {
+							p++;
+							if (input[p] == 'i') {
+								p++;
+								if (input[p] == 'a') {
+									p++;
+									if (input[p] == 'n') {
+										p++;
+										if (input[p] == 't' && !Chars.isidchar(input[p+1])) {
+											t.value = TOK.TOKinvariant;
+											t.len = 9;
+											p++;
+											return;
+										}
+									}
+								}
+							}
+						}
+					}
+					break;
+				}
+				break;
+			case 'r':
+				p++;
+				if (input[p] == 'e') {
+					p++;
+					if (input[p] == 'a') {
+						p++;
+						if (input[p] == 'l' && !Chars.isidchar(input[p+1])) {
+							t.value = TOK.TOKimaginary80;
+							t.len = 5;
+							p++;
+							return;
+						}
+					}
+				}
+				break;
+			case 's':
+				if (!Chars.isidchar(input[p+1])) {
+					t.value = TOK.TOKis;
+					t.len = 2;
+					p++;
+					return;
+				}
+				break;
+			}
+			break;
+		// l:
+		case 'l':
+			p++;
+			switch(input[p]) {
+			case 'a':
+				p++;
+				if (input[p] == 'z') {
+					p++;
+					if (input[p] == 'y' && !Chars.isidchar(input[p+1])) {
+						t.value = TOK.TOKlazy;
+						t.len = 4;
+						p++;
+						return;
+					}
+				}
+				break;
+			case 'o':
+				p++;
+				if (input[p] == 'n') {
+					p++;
+					if (input[p] == 'g' && !Chars.isidchar(input[p+1])) {
+						t.value = TOK.TOKint64;
+						t.len = 4;
+						p++;
+						return;
+					}
+				}
+				break;
+			}
+			break;
+		// m:
+		case 'm':
+			p++;
+			switch(input[p]) {
+			case 'i':
+				p++;
+				if (input[p] == 'x') {
+					p++;
+					if (input[p] == 'i') {
+						p++;
+						if (input[p] == 'n' && !Chars.isidchar(input[p+1])) {
+							t.value = TOK.TOKmixin;
+							t.len = 5;
+							p++;
+							return;
+						}
+					}
+				}
+				break;
+			case 'o':
+				p++;
+				if (input[p] == 'd') {
+					p++;
+					if (input[p] == 'u') {
+						p++;
+						if (input[p] == 'l') {
+							p++;
+							if (input[p] == 'e' && !Chars.isidchar(input[p+1])) {
+								t.value = TOK.TOKmodule;
+								t.len = 6;
+								p++;
+								return;
+							}
+						}
+					}
+				}
+				break;
+			}
+			break;
+		// n:
+		case 'n':
+			p++;
+			switch(input[p]) {
+			case 'e':
+				p++;
+				if (input[p] == 'w' && !Chars.isidchar(input[p+1])) {
+					t.value = TOK.TOKnew;
+					t.len = 3;
+					p++;
+					return;
+				}
+				break;
+			case 'u':
+				p++;
+				if (input[p] == 'l') {
+					p++;
+					if (input[p] == 'l' && !Chars.isidchar(input[p+1])) {
+						t.value = TOK.TOKnull;
+						t.len = 4;
+						p++;
+						return;
+					}
+				}
+				break;
+			}
+			break;
+		// o:
+		case 'o':
+			p++;
+			switch(input[p]) {
+			case 'n':
+				if (apiLevel == AST.D1) {
+					p++;
+					if (input[p] == '_') {
+						p++;
+						if (input[p] == 's') {
+							p++;
+							if (input[p] == 'c') {
+								p++;
+								if (input[p] == 'o') {
+									p++;
+									if (input[p] == 'p') {
+										p++;
+										if (input[p] == 'e') {
+											p++;
+											if (input[p] == '_') {
+												p++;
+												switch(input[p]) {
+												case 'e':
+													p++;
+													if (input[p] == 'x') {
+														p++;
+														if (input[p] == 'i') {
+															p++;
+															if (input[p] == 't' && !Chars.isidchar(input[p+1])) {
+																t.value = TOK.TOKon_scope_exit;
+																t.len = 13;
+																p++;
+																return;
+															}
+														}
+													}
+													break;
+												case 'f':
+													p++;
+													if (input[p] == 'a') {
+														p++;
+														if (input[p] == 'i') {
+															p++;
+															if (input[p] == 'l') {
+																p++;
+																if (input[p] == 'u') {
+																	p++;
+																	if (input[p] == 'r') {
+																		p++;
+																		if (input[p] == 'e' && !Chars.isidchar(input[p+1])) {
+																			t.value = TOK.TOKon_scope_failure;
+																			t.len = 16;
+																			p++;
+																			return;
+																		}
+																	}
+																}
+															}
+														}
+													}
+													break;
+												case 's':
+													p++;
+													if (input[p] == 'u') {
+														p++;
+														if (input[p] == 'c') {
+															p++;
+															if (input[p] == 'c') {
+																p++;
+																if (input[p] == 'e') {
+																	p++;
+																	if (input[p] == 's') {
+																		p++;
+																		if (input[p] == 's' && !Chars.isidchar(input[p+1])) {
+																			t.value = TOK.TOKon_scope_success;
+																			t.len = 16;
+																			p++;
+																			return;
+																		}
+																	}
+																}
+															}
+														}
+													}
+													break;
+												}
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+				break;
+			case 'u':
+				p++;
+				if (input[p] == 't' && !Chars.isidchar(input[p+1])) {
+					t.value = TOK.TOKout;
+					t.len = 3;
+					p++;
+					return;
+				}
+				break;
+			case 'v':
+				p++;
+				if (input[p] == 'e') {
+					p++;
+					if (input[p] == 'r') {
+						p++;
+						if (input[p] == 'r') {
+							p++;
+							if (input[p] == 'i') {
+								p++;
+								if (input[p] == 'd') {
+									p++;
+									if (input[p] == 'e' && !Chars.isidchar(input[p+1])) {
+										t.value = TOK.TOKoverride;
+										t.len = 8;
+										p++;
+										return;
+									}
+								}
+							}
+						}
+					}
+				}
+				break;
+			}
+			break;
+		// p:
+		case 'p':
+			p++;
+			switch(input[p]) {
+			case 'a':
+				p++;
+				if (input[p] == 'c') {
+					p++;
+					if (input[p] == 'k') {
+						p++;
+						if (input[p] == 'a') {
+							p++;
+							if (input[p] == 'g') {
+								p++;
+								if (input[p] == 'e' && !Chars.isidchar(input[p+1])) {
+									t.value = TOK.TOKpackage;
+									t.len = 7;
+									p++;
+									return;
+								}
+							}
+						}
+					}
+				}
+				break;
+			case 'r':
+				p++;
+				switch(input[p]) {
+				case 'a':
+					p++;
+					if (input[p] == 'g') {
+						p++;
+						if (input[p] == 'm') {
+							p++;
+							if (input[p] == 'a' && !Chars.isidchar(input[p+1])) {
+								t.value = TOK.TOKpragma;
+								t.len = 6;
+								p++;
+								return;
+							}
+						}
+					}
+					break;
+				case 'i':
+					p++;
+					if (input[p] == 'v') {
+						p++;
+						if (input[p] == 'a') {
+							p++;
+							if (input[p] == 't') {
+								p++;
+								if (input[p] == 'e' && !Chars.isidchar(input[p+1])) {
+									t.value = TOK.TOKprivate;
+									t.len = 7;
+									p++;
+									return;
+								}
+							}
+						}
+					}
+					break;
+				case 'o':
+					p++;
+					if (input[p] == 't') {
+						p++;
+						if (input[p] == 'e') {
+							p++;
+							if (input[p] == 'c') {
+								p++;
+								if (input[p] == 't') {
+									p++;
+									if (input[p] == 'e') {
+										p++;
+										if (input[p] == 'd' && !Chars.isidchar(input[p+1])) {
+											t.value = TOK.TOKprotected;
+											t.len = 9;
+											p++;
+											return;
+										}
+									}
+								}
+							}
+						}
+					}
+					break;
+				}
+				break;
+			case 'u':
+				p++;
+				if (input[p] == 'b') {
+					p++;
+					if (input[p] == 'l') {
+						p++;
+						if (input[p] == 'i') {
+							p++;
+							if (input[p] == 'c' && !Chars.isidchar(input[p+1])) {
+								t.value = TOK.TOKpublic;
+								t.len = 6;
+								p++;
+								return;
+							}
+						}
+					}
+				}
+				break;
+			}
+			break;
+		// r:
+		case 'r':
+			p++;
+			if (input[p] == 'e') {
+				p++;
+				switch(input[p]) {
+				case 'a':
+					p++;
+					if (input[p] == 'l' && !Chars.isidchar(input[p+1])) {
+						t.value = TOK.TOKfloat80;
+						t.len = 4;
+						p++;
+						return;
+					}
+					break;
+				case 't':
+					p++;
+					if (input[p] == 'u') {
+						p++;
+						if (input[p] == 'r') {
+							p++;
+							if (input[p] == 'n' && !Chars.isidchar(input[p+1])) {
+								t.value = TOK.TOKreturn;
+								t.len = 6;
+								p++;
+								return;
+							}
+						}
+					}
+					break;
+				}
+			}
+			break;
+		// s:
+		case 's':
+			p++;
+			switch(input[p]) {
+			case 'c':
+				p++;
+				if (input[p] == 'o') {
+					p++;
+					if (input[p] == 'p') {
+						p++;
+						if (input[p] == 'e' && !Chars.isidchar(input[p+1])) {
+							t.value = TOK.TOKscope;
+							t.len = 5;
+							p++;
+							return;
+						}
+					}
+				}
+				break;
+			case 'h':
+				p++;
+				if (input[p] == 'o') {
+					p++;
+					if (input[p] == 'r') {
+						p++;
+						if (input[p] == 't' && !Chars.isidchar(input[p+1])) {
+							t.value = TOK.TOKint16;
+							t.len = 5;
+							p++;
+							return;
+						}
+					}
+				}
+				break;
+			case 't':
+				p++;
+				switch(input[p]) {
+				case 'a':
+					p++;
+					if (input[p] == 't') {
+						p++;
+						if (input[p] == 'i') {
+							p++;
+							if (input[p] == 'c' && !Chars.isidchar(input[p+1])) {
+								t.value = TOK.TOKstatic;
+								t.len = 6;
+								p++;
+								return;
+							}
+						}
+					}
+					break;
+				case 'r':
+					p++;
+					if (input[p] == 'u') {
+						p++;
+						if (input[p] == 'c') {
+							p++;
+							if (input[p] == 't' && !Chars.isidchar(input[p+1])) {
+								t.value = TOK.TOKstruct;
+								t.len = 6;
+								p++;
+								return;
+							}
+						}
+					}
+					break;
+				}
+				break;
+			case 'u':
+				p++;
+				if (input[p] == 'p') {
+					p++;
+					if (input[p] == 'e') {
+						p++;
+						if (input[p] == 'r' && !Chars.isidchar(input[p+1])) {
+							t.value = TOK.TOKsuper;
+							t.len = 5;
+							p++;
+							return;
+						}
+					}
+				}
+				break;
+			case 'w':
+				p++;
+				if (input[p] == 'i') {
+					p++;
+					if (input[p] == 't') {
+						p++;
+						if (input[p] == 'c') {
+							p++;
+							if (input[p] == 'h' && !Chars.isidchar(input[p+1])) {
+								t.value = TOK.TOKswitch;
+								t.len = 6;
+								p++;
+								return;
+							}
+						}
+					}
+				}
+				break;
+			case 'y':
+				p++;
+				if (input[p] == 'n') {
+					p++;
+					if (input[p] == 'c') {
+						p++;
+						if (input[p] == 'h') {
+							p++;
+							if (input[p] == 'r') {
+								p++;
+								if (input[p] == 'o') {
+									p++;
+									if (input[p] == 'n') {
+										p++;
+										if (input[p] == 'i') {
+											p++;
+											if (input[p] == 'z') {
+												p++;
+												if (input[p] == 'e') {
+													p++;
+													if (input[p] == 'd' && !Chars.isidchar(input[p+1])) {
+														t.value = TOK.TOKsynchronized;
+														t.len = 12;
+														p++;
+														return;
+													}
+												}
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+				break;
+			}
+			break;
+		// t:
+		case 't':
+			p++;
+			switch(input[p]) {
+			case 'e':
+				p++;
+				if (input[p] == 'm') {
+					p++;
+					if (input[p] == 'p') {
+						p++;
+						if (input[p] == 'l') {
+							p++;
+							if (input[p] == 'a') {
+								p++;
+								if (input[p] == 't') {
+									p++;
+									if (input[p] == 'e' && !Chars.isidchar(input[p+1])) {
+										t.value = TOK.TOKtemplate;
+										t.len = 8;
+										p++;
+										return;
+									}
+								}
+							}
+						}
+					}
+				}
+				break;
+			case 'h':
+				p++;
+				switch(input[p]) {
+				case 'i':
+					p++;
+					if (input[p] == 's' && !Chars.isidchar(input[p+1])) {
+						t.value = TOK.TOKthis;
+						t.len = 4;
+						p++;
+						return;
+					}
+					break;
+				case 'r':
+					p++;
+					if (input[p] == 'o') {
+						p++;
+						if (input[p] == 'w' && !Chars.isidchar(input[p+1])) {
+							t.value = TOK.TOKthrow;
+							t.len = 5;
+							p++;
+							return;
+						}
+					}
+					break;
+				}
+				break;
+			case 'r':
+				p++;
+				switch(input[p]) {
+				case 'u':
+					p++;
+					if (input[p] == 'e' && !Chars.isidchar(input[p+1])) {
+						t.value = TOK.TOKtrue;
+						t.len = 4;
+						p++;
+						return;
+					}
+					break;
+				case 'y':
+					if (!Chars.isidchar(input[p+1])) {
+						t.value = TOK.TOKtry;
+						t.len = 3;
+						p++;
+						return;
+					}
+					break;
+				}
+				break;
+			case 'y':
+				p++;
+				if (input[p] == 'p') {
+					p++;
+					if (input[p] == 'e') {
+						p++;
+						switch(input[p]) {
+						case 'd':
+							p++;
+							if (input[p] == 'e') {
+								p++;
+								if (input[p] == 'f' && !Chars.isidchar(input[p+1])) {
+									t.value = TOK.TOKtypedef;
+									t.len = 7;
+									p++;
+									return;
+								}
+							}
+							break;
+						case 'i':
+							p++;
+							if (input[p] == 'd' && !Chars.isidchar(input[p+1])) {
+								t.value = TOK.TOKtypeid;
+								t.len = 6;
+								p++;
+								return;
+							}
+							break;
+						case 'o':
+							p++;
+							if (input[p] == 'f' && !Chars.isidchar(input[p+1])) {
+								t.value = TOK.TOKtypeof;
+								t.len = 6;
+								p++;
+								return;
+							}
+							break;
+						}
+					}
+				}
+				break;
+			}
+			break;
+		// u:
+		case 'u':
+			p++;
+			switch(input[p]) {
+			case 'b':
+				p++;
+				if (input[p] == 'y') {
+					p++;
+					if (input[p] == 't') {
+						p++;
+						if (input[p] == 'e' && !Chars.isidchar(input[p+1])) {
+							t.value = TOK.TOKuns8;
+							t.len = 5;
+							p++;
+							return;
+						}
+					}
+				}
+				break;
+			case 'c':
+				p++;
+				if (input[p] == 'e') {
+					p++;
+					if (input[p] == 'n') {
+						p++;
+						if (input[p] == 't' && !Chars.isidchar(input[p+1])) {
+							t.value = TOK.TOKucent;
+							t.len = 5;
+							p++;
+							return;
+						}
+					}
+				}
+				break;
+			case 'i':
+				p++;
+				if (input[p] == 'n') {
+					p++;
+					if (input[p] == 't' && !Chars.isidchar(input[p+1])) {
+						t.value = TOK.TOKuns32;
+						t.len = 4;
+						p++;
+						return;
+					}
+				}
+				break;
+			case 'l':
+				p++;
+				if (input[p] == 'o') {
+					p++;
+					if (input[p] == 'n') {
+						p++;
+						if (input[p] == 'g' && !Chars.isidchar(input[p+1])) {
+							t.value = TOK.TOKuns64;
+							t.len = 5;
+							p++;
+							return;
+						}
+					}
+				}
+				break;
+			case 'n':
+				p++;
+				if (input[p] == 'i') {
+					p++;
+					switch(input[p]) {
+					case 'o':
+						p++;
+						if (input[p] == 'n' && !Chars.isidchar(input[p+1])) {
+							t.value = TOK.TOKunion;
+							t.len = 5;
+							p++;
+							return;
+						}
+						break;
+					case 't':
+						p++;
+						if (input[p] == 't') {
+							p++;
+							if (input[p] == 'e') {
+								p++;
+								if (input[p] == 's') {
+									p++;
+									if (input[p] == 't' && !Chars.isidchar(input[p+1])) {
+										t.value = TOK.TOKunittest;
+										t.len = 8;
+										p++;
+										return;
+									}
+								}
+							}
+						}
+						break;
+					}
+				}
+				break;
+			case 's':
+				p++;
+				if (input[p] == 'h') {
+					p++;
+					if (input[p] == 'o') {
+						p++;
+						if (input[p] == 'r') {
+							p++;
+							if (input[p] == 't' && !Chars.isidchar(input[p+1])) {
+								t.value = TOK.TOKuns16;
+								t.len = 6;
+								p++;
+								return;
+							}
+						}
+					}
+				}
+				break;
+			}
+			break;
+		// v:
+		case 'v':
+			p++;
+			switch(input[p]) {
+			case 'e':
+				p++;
+				if (input[p] == 'r') {
+					p++;
+					if (input[p] == 's') {
+						p++;
+						if (input[p] == 'i') {
+							p++;
+							if (input[p] == 'o') {
+								p++;
+								if (input[p] == 'n' && !Chars.isidchar(input[p+1])) {
+									t.value = TOK.TOKversion;
+									t.len = 7;
+									p++;
+									return;
+								}
+							}
+						}
+					}
+				}
+				break;
+			case 'o':
+				p++;
+				switch(input[p]) {
+				case 'i':
+					p++;
+					if (input[p] == 'd' && !Chars.isidchar(input[p+1])) {
+						t.value = TOK.TOKvoid;
+						t.len = 4;
+						p++;
+						return;
+					}
+					break;
+				case 'l':
+					p++;
+					if (input[p] == 'a') {
+						p++;
+						if (input[p] == 't') {
+							p++;
+							if (input[p] == 'i') {
+								p++;
+								if (input[p] == 'l') {
+									p++;
+									if (input[p] == 'e' && !Chars.isidchar(input[p+1])) {
+										t.value = TOK.TOKvolatile;
+										t.len = 8;
+										p++;
+										return;
+									}
+								}
+							}
+						}
+					}
+					break;
+				}
+				break;
+			}
+			break;
+		// w:
+		case 'w':
+			p++;
+			switch(input[p]) {
+			case 'c':
+				p++;
+				if (input[p] == 'h') {
+					p++;
+					if (input[p] == 'a') {
+						p++;
+						if (input[p] == 'r' && !Chars.isidchar(input[p+1])) {
+							t.value = TOK.TOKwchar;
+							t.len = 5;
+							p++;
+							return;
+						}
+					}
+				}
+				break;
+			case 'h':
+				p++;
+				if (input[p] == 'i') {
+					p++;
+					if (input[p] == 'l') {
+						p++;
+						if (input[p] == 'e' && !Chars.isidchar(input[p+1])) {
+							t.value = TOK.TOKwhile;
+							t.len = 5;
+							p++;
+							return;
+						}
+					}
+				}
+				break;
+			case 'i':
+				p++;
+				if (input[p] == 't') {
+					p++;
+					if (input[p] == 'h' && !Chars.isidchar(input[p+1])) {
+						t.value = TOK.TOKwith;
+						t.len = 4;
+						p++;
+						return;
+					}
+				}
+				break;
+			}
+			break;
 		}
-		t.ident = id;
-		t.value = id.value;
-		t.len = id.string.length();
+		
+		case_ident_other(t);
+	}
+	
+	private void case_ident_other(Token t) {
+		char c = input[p];
+
+		if (c > 0 && Chars.isidchar(c) || (c >= 0x80 && UniAlpha.isUniAlpha(decodeUTF()))) {
+			do
+			{
+				c = input[++p];
+			} while (c > 0 && Chars.isidchar(c) || (c >= 0x80 && UniAlpha.isUniAlpha(decodeUTF())));
+		}
+		
+		t.value = TOK.TOKidentifier;
+		t.len = p - t.ptr;
+		t.string = new String(input, t.ptr, t.len);
 		return;
 	}
 	
@@ -2226,165 +4036,18 @@ public class Lexer implements IProblemRequestor {
 	}
 	*/
 	
-	private static Map<String, TOK> keywordsD2;
-	private static Map<String, TOK> keywordsD1;
-	
-	static {
-		keywordsD2 = new HashMap<String, TOK>();
-		keywordsD2.put("this", TOKthis);
-		keywordsD2.put("super", TOKsuper);
-		keywordsD2.put("assert", TOKassert);
-		keywordsD2.put("null", TOKnull);
-		keywordsD2.put("true", TOKtrue);
-		keywordsD2.put("false", TOKfalse);
-		keywordsD2.put("cast", TOKcast);
-		keywordsD2.put("new", TOKnew);
-		keywordsD2.put("delete", TOKdelete);
-		keywordsD2.put("throw", TOKthrow);
-		keywordsD2.put("module", TOKmodule);
-		keywordsD2.put("pragma", TOKpragma);
-		keywordsD2.put("typeof", TOKtypeof);
-		keywordsD2.put("typeid", TOKtypeid);
-		keywordsD2.put("template", TOKtemplate);
-		keywordsD2.put("void", TOKvoid);
-		keywordsD2.put("byte", TOKint8);
-		keywordsD2.put("ubyte", TOKuns8);
-
-		keywordsD2.put("short", TOKint16);
-		keywordsD2.put("ushort", TOKuns16);
-		keywordsD2.put("int",	 TOKint32);
-		keywordsD2.put("uint", TOKuns32);
-		keywordsD2.put("long", TOKint64);
-		keywordsD2.put("ulong", TOKuns64);
-	    keywordsD2.put("cent", TOKcent);
-	    keywordsD2.put("ucent", TOKucent);
-	    keywordsD2.put("float", TOKfloat32);
-	    keywordsD2.put("double", TOKfloat64);
-	    keywordsD2.put("real", TOKfloat80);
-
-	    //keywordsD2.put("bit", TOKbit);
-	    keywordsD2.put("bool", TOKbool);
-	    keywordsD2.put("char", TOKchar);
-	    keywordsD2.put("wchar", TOKwchar);
-	    keywordsD2.put("dchar", TOKdchar);
-
-	    keywordsD2.put("ifloat", TOKimaginary32);
-	    keywordsD2.put("idouble", TOKimaginary64);
-	    keywordsD2.put("ireal", TOKimaginary80);
-
-	    keywordsD2.put("cfloat", TOKcomplex32);
-	    keywordsD2.put("cdouble", TOKcomplex64);
-	    keywordsD2.put("creal", TOKcomplex80);
-
-	    keywordsD2.put("delegate", TOKdelegate);
-	    keywordsD2.put("function", TOKfunction);
-
-	    keywordsD2.put("is", TOKis);
-	    keywordsD2.put("if", TOKif);
-	    keywordsD2.put("else", TOKelse);
-	    keywordsD2.put("while", TOKwhile);
-	    keywordsD2.put("for", TOKfor);
-	    keywordsD2.put("do", TOKdo);
-	    keywordsD2.put("switch", TOKswitch);
-	    keywordsD2.put("case", TOKcase);
-	    keywordsD2.put("default", TOKdefault);
-	    keywordsD2.put("break", TOKbreak);
-	    keywordsD2.put("continue", TOKcontinue);
-	    keywordsD2.put("synchronized", TOKsynchronized);
-	    keywordsD2.put("return", TOKreturn);
-	    keywordsD2.put("goto", TOKgoto);
-	    keywordsD2.put("try", TOKtry);
-	    keywordsD2.put("catch", TOKcatch);
-	    keywordsD2.put("finally", TOKfinally);
-	    keywordsD2.put("with", TOKwith);
-	    keywordsD2.put("asm", TOKasm);
-	    keywordsD2.put("foreach", TOKforeach);
-	    keywordsD2.put("foreach_reverse", TOKforeach_reverse);
-	    keywordsD2.put("scope", TOKscope);
-
-	    keywordsD2.put("struct", TOKstruct);
-	    keywordsD2.put("class", TOKclass);
-	    keywordsD2.put("interface", TOKinterface);
-	    keywordsD2.put("union", TOKunion);
-	    keywordsD2.put("enum", TOKenum);
-	    keywordsD2.put("import", TOKimport);
-	    keywordsD2.put("mixin", TOKmixin);
-	    keywordsD2.put("static", TOKstatic);
-	    keywordsD2.put("final", TOKfinal);
-	    keywordsD2.put("const", TOKconst);
-	    keywordsD2.put("typedef", TOKtypedef);
-	    keywordsD2.put("alias", TOKalias);
-	    keywordsD2.put("override", TOKoverride);
-	    keywordsD2.put("abstract", TOKabstract);
-	    keywordsD2.put("volatile", TOKvolatile);
-	    keywordsD2.put("debug", TOKdebug);
-	    keywordsD2.put("deprecated", TOKdeprecated);
-	    keywordsD2.put("in", TOKin);
-	    keywordsD2.put("out", TOKout);
-	    keywordsD2.put("inout", TOKinout);
-	    keywordsD2.put("lazy", TOKlazy);
-	    keywordsD2.put("auto", TOKauto);
-
-	    keywordsD2.put("align", TOKalign);
-	    keywordsD2.put("extern", TOKextern);
-	    keywordsD2.put("private", TOKprivate);
-	    keywordsD2.put("package", TOKpackage);
-	    keywordsD2.put("protected", TOKprotected);
-	    keywordsD2.put("public", TOKpublic);
-	    keywordsD2.put("export", TOKexport);
-
-	    keywordsD2.put("body", TOKbody	);
-	    keywordsD2.put("invariant", TOKinvariant);
-	    keywordsD2.put("unittest", TOKunittest);
-	    keywordsD2.put("version", TOKversion);
-	    
-	    keywordsD1 = new HashMap<String, TOK>();
-	    keywordsD1.putAll(keywordsD2);
-	    keywordsD1.put("iftype", TOKiftype);
-	    keywordsD1.put("on_scope_exit", TOKon_scope_exit);
-	    keywordsD1.put("on_scope_failure", TOKon_scope_failure);
-	    keywordsD1.put("on_scope_success", TOKon_scope_success);
-	}
-	
-	private void initKeywords() {
-		StringValue sv;
-		Map<String, TOK> keys;
-		if (apiLevel == AST.D1) {
-			keys = keywordsD1;
-		} else if (apiLevel == AST.D2) {
-			keys = keywordsD2;
-		} else {
-			throw new IllegalStateException();
-		}
-		for(Map.Entry<String, TOK> entry : keys.entrySet()) {
-			sv = stringtable.update(entry.getKey());
-			if (sv.ptrvalue == null) {
-				sv.ptrvalue = new Identifier(sv.lstring, entry.getValue());
-			} else {
-				((Identifier) sv.ptrvalue).value = entry.getValue();
-			}			
-		}
-	}
-	
-	private void initId() {
-		try {
-			Field[] idFields = Id.class.getFields();			
-			StringValue sv;
-			for(Field idField : idFields) {
-				Identifier id = (Identifier) idField.get(null);
-				sv = stringtable.update(id.string);
-				sv.ptrvalue = id;
-			}
-		} catch (IllegalAccessException e) {
-			throw new RuntimeException("Bug!");
-		}
-	}	
-	
 	protected void newline(boolean inComment) {
-		if (recordLineSeparator && linnum - 1 == lineEnds.size()) {
-			lineEnds.add(p);
+		if (recordLineSeparator && linnum == maxLinnum) {
+			final int INCREMENT = 250;
+			int length = this.lineEnds.length;
+			if (this.linnum - 1 >=  length)
+				System.arraycopy(this.lineEnds, 0, this.lineEnds = new int[length + INCREMENT], 0, length);
+			this.lineEnds[this.linnum - 1] = p;
 		}
-		linnum++;		
+		this.linnum++;
+		if (this.linnum > maxLinnum) {
+			maxLinnum = this.linnum;
+		}
 	}
 	
 	protected void setMalformed(ASTNode node) {
@@ -2403,12 +4066,92 @@ public class Lexer implements IProblemRequestor {
 		node.setFlags(node.getFlags() | descent.core.dom.ASTNode.RECOVERED);
 	}
 	
-	public int[] getLineEnds() {
-		int[] ends = new int[lineEnds.size()];
-		for(int i = 0; i < lineEnds.size(); i++) {
-			ends[i] = lineEnds.get(i);
+	/**
+	 * Search the source position corresponding to the beginning of a given line number
+	 *
+	 * Line numbers are 1-based, and relative to the scanner initialPosition. 
+	 * Character positions are 0-based.
+	 *
+	 * e.g.	getLineStart(1) --> 0	indicates that the first line starts at character 0.
+	 *
+	 * In case the given line number is inconsistent, answers -1.
+	 * 
+	 * @param lineNumber int
+	 * @return int
+	 */
+	public final int getLineStart(int lineNumber) {
+
+		if (this.lineEnds == null || this.linnum == -1) 
+			return -1;
+		if (lineNumber > this.lineEnds.length + 1) 
+			return -1;
+		if (lineNumber <= 0) 
+			return -1;
+		
+		if (lineNumber == 1) 
+			return this.base;
+		return this.lineEnds[lineNumber-2]+1; // next line start one character behind the lineEnd of the previous line
+	}
+	
+	/*
+	 * Search the source position corresponding to the end of a given line number
+	 *
+	 * Line numbers are 1-based, and relative to the scanner initialPosition. 
+	 * Character positions are 0-based.
+	 *
+	 * In case the given line number is inconsistent, answers -1.
+	 */
+	public final int getLineEnd(int lineNumber) {
+
+		if (this.lineEnds == null || this.linnum == -1) 
+			return -1;
+		if (lineNumber > this.lineEnds.length+1) 
+			return -1;
+		if (lineNumber <= 0) 
+			return -1;
+		if (lineNumber == this.lineEnds.length + 1 || lineNumber == this.linnum) 
+			return this.end;
+		return this.lineEnds[lineNumber-1]; // next line start one character behind the lineEnd of the previous line
+	}
+	
+	/**
+	 * Search the line number corresponding to a specific position
+	 * @param position int
+	 * @return int
+	 */
+	public final int getLineNumber(int position) {
+
+		if (this.lineEnds == null)
+			return 1;
+		int length = this.maxLinnum-1;
+		if (length == 0)
+			return 1;
+		int g = 0, d = length - 1;
+		int m = 0;
+		while (g <= d) {
+			m = (g + d) /2;
+			if (position < this.lineEnds[m]) {
+				d = m-1;
+			} else if (position > this.lineEnds[m]) {
+				g = m+1;
+			} else {
+				return m + 1;
+			}
 		}
-		return ends;
+		if (position < this.lineEnds[m]) {
+			return m+1;
+		}
+		return m+2;
+	}
+	
+	public int[] getLineEnds() {
+		// return a bounded copy of this.lineEnds
+		if (this.linnum == -1) {
+			return EMPTY_LINE_ENDS;
+		}
+		int[] copy;
+		System.arraycopy(this.lineEnds, 0, copy = new int[this.linnum - 1], 0, this.linnum - 1);
+		return copy;
 	}
 	
 	// IProblemRequestor members:

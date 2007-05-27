@@ -14,7 +14,7 @@ public class InterfaceDeclaration extends ClassDeclaration {
 	public InterfaceDeclaration(Loc loc, IdentifierExp id, List<BaseClass> baseclasses) {
 		super(loc, id, baseclasses);
 		com = false;
-		if (id != null && id.ident == Id.IUnknown) { // IUnknown is the root
+		if (id != null && id.ident.equals(Id.IUnknown.string)) { // IUnknown is the root
 														// of all COM
 			// objects
 			com = true;

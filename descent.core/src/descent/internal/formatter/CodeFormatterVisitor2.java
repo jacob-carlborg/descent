@@ -1968,7 +1968,9 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 				scribe.printNewLine();
 				formatSubStatement(body, true, 0, false, 0);
 			} else {
+				// no method body
 				scribe.printNextToken(TOK.TOKsemicolon, this.preferences.insert_space_before_semicolon);
+				scribe.printTrailingComment();
 			}
 		}
 	}

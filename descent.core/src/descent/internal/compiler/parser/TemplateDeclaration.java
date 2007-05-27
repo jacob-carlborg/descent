@@ -62,7 +62,7 @@ public class TemplateDeclaration extends ScopeDsymbol {
 			Dsymbol[] s = { null };
 			if (Dsymbol.oneMembers(members, s)) {
 				if (s[0] != null && s[0].ident != null
-						&& s[0].ident.ident.string.equals(ident.ident.string)) {
+						&& s[0].ident.ident.equals(ident.ident)) {
 					onemember = s[0];
 					s[0].parent = this;
 				}

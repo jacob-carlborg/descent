@@ -1,6 +1,5 @@
 package descent.core.dom;
 
-import descent.core.compiler.CharOperation;
 import descent.core.compiler.IScanner;
 import descent.core.compiler.InvalidInputException;
 import descent.internal.compiler.parser.TOK;
@@ -11,9 +10,6 @@ import descent.internal.compiler.parser.TOK;
  * It wraps the internal Lexer class.
  */
 public class PublicScanner implements IScanner {
-	
-	private final static char[] EMPTY_CHAR_ARRAY = CharOperation.NO_CHAR;
-	private final static String EMPTY_STRING = "";
 	
 	private final boolean tokenizeComments;
 	private final boolean tokenizePragmas;
@@ -50,13 +46,7 @@ public class PublicScanner implements IScanner {
 	}
 
 	public int getLineEnd(int lineNumber) {
-		if (lineNumber <= 0) {
-			return -1;
-		}
-		if (lineNumber - 1 < lexer.lineEnds.size()) {
-			return lexer.lineEnds.get(lineNumber - 1);
-		}
-		return lexer.end;
+		return lexer.getLineEnd(lineNumber);
 	}
 
 	public int[] getLineEnds() {
@@ -64,40 +54,11 @@ public class PublicScanner implements IScanner {
 	}
 
 	public int getLineNumber(int position) {
-		if (lexer.lineEnds.size() == 0)
-			return 1;
-		int length = lexer.lineEnds.size();
-		if (length == 0)
-			return 1;
-		int g = 0, d = length - 1;
-		int m = 0;
-		while (g <= d) {
-			m = (g + d) /2;
-			if (position < lexer.lineEnds.get(m)) {
-				d = m-1;
-			} else if (position > lexer.lineEnds.get(m)) {
-				g = m+1;
-			} else {
-				return m + 1;
-			}
-		}
-		if (position < lexer.lineEnds.get(m)) {
-			return m+1;
-		}
-		return m+2;
+		return lexer.getLineNumber(position);
 	}
 
 	public int getLineStart(int lineNumber) {
-		if (lineNumber <= 0) {
-			return -1;
-		}
-		if (lineNumber == 1) {
-			return lexer.base;
-		}
-		if (lineNumber - 1 <= lexer.lineEnds.size()) {
-			return lexer.lineEnds.get(lineNumber - 2) + 1;
-		}
-		return -1;
+		return lexer.getLineStart(lineNumber);
 	}
 
 	public int getNextToken() throws InvalidInputException {

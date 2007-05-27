@@ -1,6 +1,5 @@
 package descent.tests.mars;
 
-import descent.core.compiler.IProblem;
 import descent.core.dom.CompilationUnit;
 
 

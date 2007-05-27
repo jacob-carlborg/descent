@@ -55,7 +55,7 @@ public class TypeBasic extends Type {
 		case Tcomplex32:
 		case Tcomplex64:
 		case Tcomplex80:
-			return getProperty(Loc.ZERO, Id.nan, context);
+			return getProperty(Loc.ZERO, Id.nan.string, context);
 		}
 		return new IntegerExp(Loc.ZERO, value.toString(), value, this);
 	}

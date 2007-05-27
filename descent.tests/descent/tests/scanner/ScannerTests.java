@@ -37,6 +37,38 @@ public class ScannerTests extends TestCase implements ITerminalSymbols {
 			case TOKstring:
 			case TOKwhitespace:
 			case TOKPRAGMA:
+			case TOKiftype:
+			case TOKidentity:
+			case TOKnotidentity:
+			case TOKbit:
+			case TOKon_scope_exit:
+			case TOKon_scope_failure:
+			case TOKon_scope_success:
+			case TOKarrayliteral:
+			case TOKdeclaration:
+			case TOKtypedot:
+			case TOKtype:
+			case TOKaddress:
+			case TOKdotti:
+			case TOKuadd:
+			case TOKcall:
+			case TOKarray:
+			case TOKnewanonclass:
+			case TOKnotis:
+			case TOKvar:
+			case TOKdot:
+			case TOKdotvar:
+			case TOKconstruct:
+			case TOKdsymbol:
+			case TOKdotexp:
+			case TOKhalt:
+			case TOKsymoff:
+			case TOKtuple:
+			case TOKindex:
+			case TOKtobool:
+			case TOKdottype:
+			case TOKremove:
+			case TOKdottd:
 				continue;
 			}
 			
@@ -46,7 +78,34 @@ public class ScannerTests extends TestCase implements ITerminalSymbols {
 			try {
 				assertNextToken(scanner, tok.terminalSymbol, 1, tok.value.length(), tok.value);
 			} catch (Throwable e) {
-				fail(tok.toString());
+				fail(tok.toString() + " (" + tok.name() + ")");
+				throw e;
+			}
+		}
+	}
+	
+	public void testCaste() throws Throwable {
+		IScanner scanner = ToolFactory.createScanner(true, true, true, true, AST.D1);
+		scanner.setSource("caste".toCharArray());
+		assertNextToken(scanner, TokenNameIdentifier, 0, 4, "caste");
+	}
+	
+	public void testIntX() throws Throwable {
+		IScanner scanner = ToolFactory.createScanner(false, false, false, true, AST.D1);
+		scanner.setSource("int x".toCharArray());
+		assertNextToken(scanner, TokenNameint, 0, 2, "int");
+		assertNextToken(scanner, TokenNameIdentifier, 4, 4, "x");
+	}
+	
+	public void testEasyD1() throws Throwable {
+		for(TOK tok : new TOK[] { TOK.TOKiftype, TOK.TOKon_scope_exit, TOK.TOKon_scope_failure, TOK.TOKon_scope_success, TOK.TOKidentity, TOK.TOKnotidentity }) {
+			IScanner scanner = ToolFactory.createScanner(true, true, true, true, AST.D1);
+			scanner.setSource(("$" + tok.value).toCharArray());
+			assertNextToken(scanner, TokenNameDOLLAR, 0, 0, "$");
+			try {
+				assertNextToken(scanner, tok.terminalSymbol, 1, tok.value.length(), tok.value);
+			} catch (Throwable e) {
+				fail(tok.toString() + " (" + tok.name() + ")");
 				throw e;
 			}
 		}
@@ -206,6 +265,39 @@ public class ScannerTests extends TestCase implements ITerminalSymbols {
 		}
 		for(int i = 39; i <= 41; i++) {
 			assertEquals(4, scanner.getLineNumber(i));
+		}
+	}
+	
+	public void testEndLines2() throws Throwable {
+		IScanner scanner = ToolFactory.createScanner(true, true, true, true, AST.LATEST);
+		scanner.setSource((
+				"\n// hola\nalias int Bla;"
+				).toCharArray()
+			);
+		assertEquals(0, scanner.getLineEnds().length);
+		
+		while(scanner.getNextToken() != ITerminalSymbols.TokenNameEOF) {
+		}
+		
+		assertEquals(2, scanner.getLineEnds().length);
+		
+		assertEquals(0, scanner.getLineStart(1));
+		assertEquals(0, scanner.getLineEnd(1));
+		
+		assertEquals(1, scanner.getLineStart(2));
+		assertEquals(8, scanner.getLineEnd(2));
+		
+		assertEquals(9, scanner.getLineStart(3));
+		assertEquals(23, scanner.getLineEnd(3));
+		
+		for(int i = 0; i <= 0; i++) {
+			assertEquals(1, scanner.getLineNumber(i));
+		}
+		for(int i = 1; i <= 8; i++) {
+			assertEquals(2, scanner.getLineNumber(i));
+		}
+		for(int i = 9; i <= 22; i++) {
+			assertEquals(3, scanner.getLineNumber(i));
 		}
 	}
 	

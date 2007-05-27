@@ -27,7 +27,7 @@ public class DotTemplateInstanceExp extends UnaExp {
 		Dsymbol s2;
 		TemplateDeclaration td;
 		Expression e;
-		Identifier id;
+		String id;
 		Type t1;
 		Expression eleft = null;
 		Expression eright;
@@ -84,7 +84,7 @@ public class DotTemplateInstanceExp extends UnaExp {
 		id = ti.idents.get(0).ident;
 		s2 = s.search(loc, id, 0, context);
 		if (s2 == null) {
-			error("template identifier %s is not a member of %s", id.toChars(),
+			error("template identifier %s is not a member of %s", id,
 					s.ident.toChars());
 			// goto Lerr;
 			return new IntegerExp(loc, 0);
@@ -94,7 +94,7 @@ public class DotTemplateInstanceExp extends UnaExp {
 		s = s.toAlias(context);
 		td = s.isTemplateDeclaration();
 		if (td == null) {
-			error("%s is not a template", id.toChars());
+			error("%s is not a template", id);
 			// goto Lerr;
 			return new IntegerExp(loc, 0);
 		}

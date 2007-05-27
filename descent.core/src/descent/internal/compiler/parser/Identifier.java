@@ -19,7 +19,7 @@ public class Identifier {
 	}
 	
 	public Identifier(Token token) {
-		this.string = token.ident.string;
+		this.string = token.string;
 		this.value = token.value;
 		this.startPosition = token.ptr;
 		this.length = token.len;

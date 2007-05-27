@@ -8,19 +8,19 @@ public class DsymbolTable {
 	private Map<String, Dsymbol> map = new HashMap<String, Dsymbol>();
 	
 	public Dsymbol insert(Dsymbol dsymbol) {
-		if (map.containsKey(dsymbol.ident.ident.string)) {
+		if (map.containsKey(dsymbol.ident.ident)) {
 			return null;
 		}
-		map.put(dsymbol.ident.ident.string, dsymbol);
+		map.put(dsymbol.ident.ident, dsymbol);
 		return dsymbol;
 	}
 
 	public Dsymbol lookup(IdentifierExp ident) {
-		return map.get(ident.ident.string);
+		return map.get(ident.ident);
 	}
 	
-	public Dsymbol lookup(Identifier ident) {
-		return map.get(ident.string);
+	public Dsymbol lookup(String ident) {
+		return map.get(ident);
 	}
 
 }

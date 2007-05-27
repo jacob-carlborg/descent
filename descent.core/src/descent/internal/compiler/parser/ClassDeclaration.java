@@ -32,11 +32,15 @@ public class ClassDeclaration extends AggregateDeclaration {
 	public List vtbl; // Array of FuncDeclaration's making up the vtbl[]
 	public List vtblFinal; // More FuncDeclaration's that aren't in vtbl[]
 
-	public ClassDeclaration(Loc loc, Identifier id) {
+	public ClassDeclaration(Loc loc, String id) {
 		this(loc, id, null);
 	}
+	
+	public ClassDeclaration(Loc loc, Identifier id) {
+		this(loc, id.string, null);
+	}
 
-	public ClassDeclaration(Loc loc, Identifier id, List<BaseClass> baseclasses) {
+	public ClassDeclaration(Loc loc, String id, List<BaseClass> baseclasses) {
 		this(loc, new IdentifierExp(loc, id), baseclasses);
 	}
 
@@ -54,14 +58,6 @@ public class ClassDeclaration extends AggregateDeclaration {
 		this.vtbl = new ArrayList(0);
 		this.vtblFinal = new ArrayList(0);
 		handle = type;
-	}
-
-	public ClassDeclaration(Loc loc, String id) {
-		this(loc, id, null);
-	}
-
-	public ClassDeclaration(Loc loc, String id, List<BaseClass> baseclasses) {
-		this(loc, new Identifier(id, TOK.TOKidentifier), baseclasses);
 	}
 
 	@Override
@@ -236,7 +232,7 @@ public class ClassDeclaration extends AggregateDeclaration {
 	}
 
 	@Override
-	public Dsymbol search(Loc loc, Identifier ident, int flags, SemanticContext context) {
+	public Dsymbol search(Loc loc, String ident, int flags, SemanticContext context) {
 		Dsymbol s;
 
 		// printf("%s.ClassDeclaration::search('%s')\n", toChars(),
@@ -453,7 +449,7 @@ public class ClassDeclaration extends AggregateDeclaration {
 		}
 
 		// If no base class, and this is not an Object, use Object as base class
-		if (baseClass == null && ident.ident != Id.Object) {
+		if (baseClass == null && !ident.ident.equals(Id.Object.string)) {
 			// BUG: what if Object is redefined in an inner scope?
 			Type tbase = new TypeIdentifier(loc, Id.Object);
 			BaseClass b;
@@ -474,7 +470,7 @@ public class ClassDeclaration extends AggregateDeclaration {
 			 * baseClass;
 			 */
 			// TODO semantic remove the following line
-			baseClass = new ClassDeclaration(loc, new IdentifierExp(loc, Id.Object), null);
+			baseClass = new ClassDeclaration(loc, new IdentifierExp(loc, Id.Object.string), null);
 		}
 
 		interfaces = new ArrayList<BaseClass>(baseclasses.size());
@@ -623,7 +619,7 @@ public class ClassDeclaration extends AggregateDeclaration {
 		 * Look for special member functions. They must be in this class, not in
 		 * a base class.
 		 */
-		ctor = (CtorDeclaration) search(loc, Id.ctor, 0, context);
+		ctor = (CtorDeclaration) search(loc, Id.ctor.string, 0, context);
 		if (ctor != null && ctor.toParent() != this) {
 			ctor = null;
 		}
@@ -637,8 +633,8 @@ public class ClassDeclaration extends AggregateDeclaration {
 		// inv = NULL;
 
 		// Can be in base class
-		aggNew = (NewDeclaration) search(loc, Id.classNew, 0, context);
-		aggDelete = (DeleteDeclaration) search(loc, Id.classDelete, 0, context);
+		aggNew = (NewDeclaration) search(loc, Id.classNew.string, 0, context);
+		aggDelete = (DeleteDeclaration) search(loc, Id.classDelete.string, 0, context);
 
 		// If this class has no constructor, but base class does, create
 		// a constructor:

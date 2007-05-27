@@ -7,7 +7,7 @@ import descent.core.compiler.IProblem;
  */
 public class IdentifierExp extends Expression {
 
-	public Identifier ident;
+	public String ident;
 
 	public IdentifierExp(Loc loc) {
 		super(loc, TOK.TOKidentifier);
@@ -16,17 +16,25 @@ public class IdentifierExp extends Expression {
 	public IdentifierExp(Loc loc, IdentifierExp ident) {
 		this(loc);
 		this.ident = ident.ident;
+		this.start = ident.start;
+		this.length = ident.length;
 	}
-
+	
 	public IdentifierExp(Loc loc, Identifier ident) {
 		this(loc);
-		this.ident = ident;
+		this.ident = ident.string;
 	}
 
 	public IdentifierExp(Loc loc, Token token) {
-		this(loc, token.ident);
+		this(loc);
+		this.ident = token.string;
 		this.start = token.ptr;
 		this.length = token.len;
+	}
+	
+	public IdentifierExp(Loc loc, String ident) {
+		this(loc);
+		this.ident = ident;
 	}
 
 	@Override
@@ -113,7 +121,7 @@ public class IdentifierExp extends Expression {
 			}
 			return e.semantic(sc, context);
 		}
-		context.acceptProblem(Problem.newSemanticTypeError(ident.string
+		context.acceptProblem(Problem.newSemanticTypeError(ident
 				+ " cannot be resolved", IProblem.UndefinedIdentifier, 0,
 				start, length));
 		type = Type.terror;
@@ -123,16 +131,18 @@ public class IdentifierExp extends Expression {
 	@Override
 	public void toCBuffer(OutBuffer buf, HdrGenState hgs,
 			SemanticContext context) {
+		/* TODO semantic
 		if (hgs.hdrgen) {
 			buf.writestring(ident.toHChars2());
 		} else {
 			buf.writestring(ident.toChars());
 		}
+		*/
 	}
 
 	@Override
 	public String toChars() {
-		return ident.toChars();
+		return ident;
 	}
 
 	@Override

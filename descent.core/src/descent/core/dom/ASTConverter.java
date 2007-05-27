@@ -2119,7 +2119,7 @@ public class ASTConverter {
 	
 	public descent.core.dom.Type convert(TypeIdentifier a) {
 		descent.core.dom.SimpleType b;
-		if (a.ident != null && a.ident.ident != Id.empty) {
+		if (a.ident != null && !a.ident.ident.equals(Id.empty.string)) {
 			b = new descent.core.dom.SimpleType(ast);
 			b.setName(convert(a.ident));
 			b.setSourceRange(a.ident.start, a.ident.length);
@@ -2495,10 +2495,10 @@ public class ASTConverter {
 	}
 	
 	public descent.core.dom.SimpleName convert(IdentifierExp a) {
-		if (a.ident == Id.empty) return null;
+		if (a.ident.equals(Id.empty.string)) return null;
 		
 		descent.core.dom.SimpleName b = new descent.core.dom.SimpleName(ast);
-		b.internalSetIdentifier(a.ident.string);
+		b.internalSetIdentifier(a.ident);
 		b.setSourceRange(a.start, a.length);
 		return b;
 	}
@@ -2511,7 +2511,7 @@ public class ASTConverter {
 		
 		for(int i = 0; i < ids.size(); i++) {
 			IdentifierExp id = ids.get(i);
-			if (id == null || id.ident == Id.empty) continue;
+			if (id == null || (id.ident != null && id.ident.equals(Id.empty.string))) continue;
 			
 			descent.core.dom.Type second;
 			if (i == ids.size() - 1) {

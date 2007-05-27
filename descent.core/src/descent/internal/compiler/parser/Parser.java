@@ -713,19 +713,19 @@ public class Parser extends Lexer {
 		assert (token.value == TOKlparen);
 		nextToken();
 		if (token.value == TOKidentifier) {
-			Identifier id = token.ident;
+			String id = token.string;
 			int start = token.ptr;
 			int length = token.len;
 			int lineNumber = token.lineNumber;
 
 			nextToken();
-			if (id == Id.Windows)
+			if (id.equals(Id.Windows.string))
 				link = LINKwindows;
-			else if (id == Id.Pascal)
+			else if (id.equals(Id.Pascal.string))
 				link = LINKpascal;
-			else if (id == Id.D)
+			else if (id.equals(Id.D.string))
 				link = LINKd;
-			else if (id == Id.C) {
+			else if (id.equals(Id.C.string)) {
 				link = LINKc;
 				if (token.value == TOKplusplus) {
 					link = LINKcpp;
@@ -3197,11 +3197,13 @@ public class Parser extends Lexer {
 			} else {
 				TOK t2 = TOKon_scope_exit;
 
-				if (token.ident == Id.exit)
+				String id = token.string;
+				
+				if (id.equals(Id.exit.string))
 					t2 = TOKon_scope_exit;
-				else if (token.ident == Id.failure)
+				else if (id.equals(Id.failure.string))
 					t2 = TOKon_scope_failure;
-				else if (token.ident == Id.success)
+				else if (id.equals(Id.success.string))
 					t2 = TOKon_scope_success;
 				else {
 					error("Valid scope identifiers are exit, failure, or success", IProblem.InvalidScopeIdentifier, token);
@@ -5630,7 +5632,7 @@ public class Parser extends Lexer {
 		if (token.value == TOKint32v) {
 			return new DebugSymbol(loc, token.intValue.longValue(), newVersionForCurrentToken());
 		} else if (token.value == TOKidentifier) {
-			return new DebugSymbol(loc, new IdentifierExp(loc, token.ident), newVersionForCurrentToken());
+			return new DebugSymbol(loc, new IdentifierExp(loc, token.string), newVersionForCurrentToken());
 		} else {
 			throw new RuntimeException("Can't happen");
 		}
@@ -5643,7 +5645,7 @@ public class Parser extends Lexer {
 			version = new Version(loc, token.string);
 			version.setSourceRange(token.ptr, token.len);
 		} else if (token.value == TOKidentifier) {
-			version = new Version(loc, token.ident.string);
+			version = new Version(loc, token.string);
 			version.setSourceRange(token.ptr, token.len);
 		} else {
 			throw new RuntimeException("Can't happen");
@@ -5656,7 +5658,7 @@ public class Parser extends Lexer {
 		if (token.value == TOKint32v) {
 			return new VersionSymbol(loc, token.intValue.longValue(), newVersionForCurrentToken());
 		} else if (token.value == TOKidentifier) {
-			return new VersionSymbol(loc, new IdentifierExp(loc, token.ident), newVersionForCurrentToken());
+			return new VersionSymbol(loc, new IdentifierExp(loc, token.string), newVersionForCurrentToken());
 		} else {
 			throw new RuntimeException("Can't happen");
 		}
@@ -5862,10 +5864,6 @@ public class Parser extends Lexer {
 	}
 	
 	private IdentifierExp newIdentifierExp() {
-		return new IdentifierExp(loc, token);
-	}
-	
-	private IdentifierExp newIdentifierExp(Token token) {
 		return new IdentifierExp(loc, token);
 	}
 	

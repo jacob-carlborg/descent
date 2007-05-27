@@ -1,7 +1,11 @@
 package descent.internal.compiler.parser;
 
-import static descent.internal.compiler.parser.PROT.*;
-import static descent.internal.compiler.parser.STC.*;
+import static descent.internal.compiler.parser.PROT.PROTexport;
+import static descent.internal.compiler.parser.STC.STCauto;
+import static descent.internal.compiler.parser.STC.STCconst;
+import static descent.internal.compiler.parser.STC.STCfield;
+import static descent.internal.compiler.parser.STC.STCscope;
+import static descent.internal.compiler.parser.STC.STCstatic;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -33,8 +37,12 @@ public class VarDeclaration extends Declaration {
 
 	// (NULL if value not determinable)
 
-	public VarDeclaration(Loc loc, Type type, Identifier ident, Initializer init) {
+	public VarDeclaration(Loc loc, Type type, String ident, Initializer init) {
 		this(loc, type, new IdentifierExp(Loc.ZERO, ident), init);
+	}
+	
+	public VarDeclaration(Loc loc, Type type, Identifier ident, Initializer init) {
+		this(loc, type, ident.string, init);
 	}
 
 	public VarDeclaration(Loc loc, Type type, IdentifierExp id, Initializer init) {
@@ -258,11 +266,10 @@ public class VarDeclaration extends Declaration {
 				Argument arg = Argument.getNth(tt.arguments, i, context);
 
 				OutBuffer buf = new OutBuffer();
-				buf.data.append("_").append(ident.ident.string).append(
+				buf.data.append("_").append(ident.ident).append(
 						"_field_").append(i).append("u");
 				String name = buf.extractData();
-				IdentifierExp id = new IdentifierExp(loc, new Identifier(name,
-						TOK.TOKidentifier));
+				IdentifierExp id = new IdentifierExp(loc, name);
 
 				VarDeclaration v = new VarDeclaration(loc, arg.type, id, null);
 				v.semantic(sc, context);
@@ -348,7 +355,7 @@ public class VarDeclaration extends Declaration {
 
 			if ((storage_class & (STC.STCauto | STC.STCscope)) == 0) {
 				if ((storage_class & STC.STCparameter) == 0
-						&& ident.ident != Id.withSym) {
+						&& ident.ident.equals(Id.withSym.string)) {
 					error("reference to auto class must be auto");
 				}
 			}

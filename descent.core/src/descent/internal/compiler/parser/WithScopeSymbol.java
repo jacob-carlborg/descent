@@ -15,7 +15,7 @@ public class WithScopeSymbol extends ScopeDsymbol {
 	}
 	
 	@Override
-	public Dsymbol search(Loc loc, Identifier ident, int flags, SemanticContext context) {
+	public Dsymbol search(Loc loc, String ident, int flags, SemanticContext context) {
 		return withstate.exp.type.toDsymbol(null, context).search(loc, ident, 0, context);
 	}
 

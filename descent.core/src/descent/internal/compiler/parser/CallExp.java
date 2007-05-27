@@ -100,7 +100,7 @@ public class CallExp extends UnaExp {
 			Assert.isNotNull(dotid.e1);
 			if (dotid.e1.type != null) {
 				TY e1ty = dotid.e1.type.toBasetype(context).ty;
-				if (e1ty == Taarray && dotid.ident.ident == Id.remove) {
+				if (e1ty == Taarray && dotid.ident.ident.equals(Id.remove.string)) {
 					if (arguments == null || arguments.size() != 1) {
 						error("expected key as argument to aa.remove()");
 						// goto Lagain;
@@ -188,7 +188,7 @@ public class CallExp extends UnaExp {
 				}
 				// L1:
 				// Rewrite as e1.call(arguments)
-				Expression e = new DotIdExp(loc, e1, new IdentifierExp(loc, Id.call));
+				Expression e = new DotIdExp(loc, e1, new IdentifierExp(loc, Id.call.string));
 				e = new CallExp(loc, e, arguments);
 				e = e.semantic(sc, context);
 				return e;

@@ -40,7 +40,7 @@ public class PragmaDeclaration extends AttribDeclaration {
 		// merged with
 		// PragmaStatement
 
-		if (ident.ident == Id.msg) {
+		if (ident.ident.equals(Id.msg.string)) {
 			if (args != null) {
 				for (int i = 0; i < args.size(); i++) {
 					Expression e = args.get(i);
@@ -69,7 +69,7 @@ public class PragmaDeclaration extends AttribDeclaration {
 						"pragma".length()));
 			}
 			return;
-		} else if (ident.ident == Id.lib) {
+		} else if (ident.ident.equals(Id.lib.string)) {
 			if (args == null || args.size() != 1) {
 				context
 						.acceptProblem(Problem

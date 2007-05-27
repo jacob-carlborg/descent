@@ -107,7 +107,7 @@ public class Scope {
 		Scope sc;
 
 		//printf("Scope::search(%p, '%s')\n", this, ident.toChars());
-		if (ident.ident == Id.empty) {
+		if (ident.ident.equals(Id.empty.string)) {
 			// Look for module scope
 			for (sc = this; sc != null; sc = sc.enclosing) {
 				assert (sc != sc.enclosing);
@@ -131,7 +131,7 @@ public class Scope {
 				s = sc.scopesym.search(loc, ident, 0, context);
 				if (s != null) {
 					 if ((context.global.params.warnings || context.global.params.Dversion > 1)
-							&& ident.ident == Id.length
+							&& ident.ident.equals(Id.length.string)
 							&& sc.scopesym.isArrayScopeSymbol() != null
 							&& sc.enclosing != null
 							&& sc.enclosing.search(loc, ident, null, context) != null) {

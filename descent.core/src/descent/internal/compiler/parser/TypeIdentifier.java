@@ -52,14 +52,14 @@ public class TypeIdentifier extends TypeQualified {
 		} else {
 			if (s[0] != null) {
 				// TODO semantic remove the following if but leave the body
-				if (s[0].ident.ident != Id.Object) {
+				if (!s[0].ident.ident.equals(Id.Object.string)) {
 					context.acceptProblem(Problem.newSemanticTypeError(s[0].ident
 							+ " cannot be resolved to a type", IProblem.UsedAsAType, 0,
 							s[0].ident.start, s[0].ident.length));
 				}
 			} else {
 				// TODO semantic remove the following if but leave the body
-				if (ident.ident != Id.Object) {
+				if (!ident.ident.equals(Id.Object.string)) {
 					context.acceptProblem(Problem.newSemanticTypeError(this.ident
 							+ " cannot be resolved to a type", IProblem.UsedAsAType, 0,
 							this.ident.start, this.ident.length));

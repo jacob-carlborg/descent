@@ -78,10 +78,10 @@ public abstract class Dsymbol extends ASTNode {
 			}
 			if (sd.isAggregateDeclaration() != null
 					|| sd.isEnumDeclaration() != null) {
-				if (ident.ident == Id.__sizeof || ident.ident == Id.alignof
-						|| ident.ident == Id.mangleof) {
+				if (ident.ident.equals(Id.__sizeof.string) || ident.ident.equals(Id.alignof.string)
+						|| ident.ident.equals(Id.mangleof.string)) {
 					context.acceptProblem(Problem.newSemanticMemberError(
-							"Property " + ident.ident.string
+							"Property " + ident.ident
 									+ " cannot be redefined",
 							IProblem.PropertyCanNotBeRedefined, 0, ident.start,
 							ident.length));
@@ -366,7 +366,7 @@ public abstract class Dsymbol extends ASTNode {
 		return PROT.PROTpublic;
 	}
 
-	public Dsymbol search(Loc loc, Identifier ident, int flags, SemanticContext context) {
+	public Dsymbol search(Loc loc, String ident, int flags, SemanticContext context) {
 		return null;
 	}
 

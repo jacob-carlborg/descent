@@ -188,29 +188,29 @@ public abstract class Type extends ASTNode {
 		return null;
 	}
 	
-	public Expression getProperty(Loc loc, Identifier ident, SemanticContext context) {
+	public Expression getProperty(Loc loc, String ident, SemanticContext context) {
 		Expression e = null;
 
-	    if (ident == Id.__sizeof)
+	    if (ident.equals(Id.__sizeof.string))
 	    {
 	    	/* TODO semantic
 	    	e = new IntegerExp(loc, size(loc), Type.tsize_t);
 	    	*/
 	    }
-	    else if (ident == Id.size)
+	    else if (ident.equals(Id.size.string))
 	    {
 	    	/* TODO semantic
 	    	error(loc, ".size property should be replaced with .sizeof");
 	    	e = new IntegerExp(loc, size(loc), Type.tsize_t);
 	    	*/
 	    }
-	    else if (ident == Id.alignof)
+	    else if (ident.equals(Id.alignof.string))
 	    {
 	    	/* TODO semantic
 	    	e = new IntegerExp(loc, alignsize(), Type.tsize_t);
 	    	*/
 	    }
-	    else if (ident == Id.typeinfo)
+	    else if (ident.equals(Id.typeinfo.string))
 	    {
 	    	/* TODO semantic
 			if (!global.params.useDeprecated)
@@ -218,18 +218,18 @@ public abstract class Type extends ASTNode {
 			e = getTypeInfo(NULL);
 			*/
 	    }
-	    else if (ident == Id.init)
+	    else if (ident.equals(Id.init.string))
 	    {
 	    	e = defaultInit(context);
 	    }
-	    else if (ident == Id.mangleof)
+	    else if (ident.equals(Id.mangleof.string))
 	    {
 	    	Assert.isNotNull(deco);
 	    	e = new StringExp(loc, deco, 'c');
 			Scope sc = new Scope();
 			e = e.semantic(sc, context);
 	    }
-	    else if (ident == Id.stringof)
+	    else if (ident.equals(Id.stringof.string))
 	    {	
 	    	/* TODO semantic
 	    	char *s = toChars();
@@ -280,13 +280,13 @@ public abstract class Type extends ASTNode {
 			v = ve.var.isVarDeclaration();
 		}
 		if (v != null) {
-			if (ident.ident == Id.offset) {
+			if (ident.ident.equals(Id.offset.string)) {
 				/* TODO semantic
 				 if (!global.params.useDeprecated)
 				 error(e.loc, ".offset deprecated, use .offsetof");
 				 goto Loffset;
 				 */
-			} else if (ident.ident == Id.offsetof) {
+			} else if (ident.ident.equals(Id.offsetof.string)) {
 				/* TODO semantic
 				 Loffset:
 				 if (v.storage_class & STC.STCfield)
@@ -295,7 +295,7 @@ public abstract class Type extends ASTNode {
 				 return e;
 				 }
 				 */
-			} else if (ident.ident == Id.init) {
+			} else if (ident.ident.equals(Id.init.string)) {
 				if (v.init != null) {
 					if (v.init.isVoidInitializer() != null) {
 						/* TODO semantic
@@ -321,7 +321,7 @@ public abstract class Type extends ASTNode {
 				}
 			}
 		}
-		if (ident.ident == Id.typeinfo) {
+		if (ident.ident.equals(Id.typeinfo.string)) {
 			/* TODO semantic
 			 if (!global.params.useDeprecated) {
 			 error(e.loc, ".typeinfo deprecated, use typeid(type)");
@@ -330,7 +330,7 @@ public abstract class Type extends ASTNode {
 			 return e;
 			 */
 		}
-		if (ident.ident == Id.stringof) {
+		if (ident.ident.equals(Id.stringof.string)) {
 			/* TODO semantic
 			 char s = e.toChars();
 			 e = new StringExp(e.loc, s, strlen(s), 'c');

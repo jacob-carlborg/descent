@@ -19,7 +19,7 @@ public class PragmaStatement extends Statement {
 	
 	@Override
 	public Statement semantic(Scope sc, SemanticContext context) {
-		if (ident.ident == Id.msg) {
+		if (ident.ident.equals(Id.msg.string)) {
 			if (args != null) {
 				for (int i = 0; i < args.size(); i++) {
 					Expression e = (Expression) args.get(i);
@@ -42,7 +42,7 @@ public class PragmaStatement extends Statement {
 				 fprintf(stdmsg, "\n");
 				 */
 			}
-		} else if (ident.ident == Id.lib) {
+		} else if (ident.ident.equals(Id.lib.string)) {
 			if (args == null || args.size() != 1) {
 				context
 						.acceptProblem(Problem

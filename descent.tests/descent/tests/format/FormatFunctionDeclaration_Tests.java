@@ -75,5 +75,24 @@ public class FormatFunctionDeclaration_Tests extends AbstractFormatter_Test {
 				options
 			);
 	}
+	
+	public void testNoBodyTrailingComment() throws Exception {
+		assertFormat(
+				"void bla(); // comment", 
+				
+				"void  bla  ()  ;   // comment"
+			);
+	}
+	
+	/* TODO
+	public void testBody() throws Exception {
+		assertFormat(
+				"void bla() {\r\n" +
+				"}\r\n", 
+				
+				"void  bla  ()  {   }"
+			);
+	}
+	*/
 
 }

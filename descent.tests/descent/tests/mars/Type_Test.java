@@ -42,11 +42,15 @@ public class Type_Test extends Parser_Test {
 		};
 		
 		for(Object[] tri : objs) {
-			PrimitiveType type = (PrimitiveType) getType(tri[0].toString());
-			assertEquals(tri[0].toString(), type.toString());
-			assertEquals(ASTNode.PRIMITIVE_TYPE, type.getNodeType());
-			assertEquals(tri[1], type.getPrimitiveTypeCode());
-			assertPosition(type, 1, (Integer) tri[2]);
+			try {
+				PrimitiveType type = (PrimitiveType) getType(tri[0].toString());
+				assertEquals(tri[0].toString(), type.toString());
+				assertEquals(ASTNode.PRIMITIVE_TYPE, type.getNodeType());
+				assertEquals(tri[1], type.getPrimitiveTypeCode());
+				assertPosition(type, 1, (Integer) tri[2]);
+			} catch (Exception e) {
+				fail(tri[0].toString());
+			}
 		}
 	}
 	
@@ -243,10 +247,6 @@ public class Type_Test extends Parser_Test {
 	
 	private ASTNode getType(String type) {
 		return getType(type, "", 0);
-	}
-	
-	private ASTNode getType(String type, int problems) {
-		return getType(type, "", problems);
 	}
 	
 	private ASTNode getType(String type, String extra, int problems) {

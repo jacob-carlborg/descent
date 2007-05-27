@@ -16,8 +16,7 @@ public class Token {
 	public int len; // The length of the token
 	public int postfix;
 	public BigInteger intValue;
-	public BigDecimal floatValue; 
-	public Identifier ident;
+	public BigDecimal floatValue;
 	public int lineNumber;
 	public DDocComment leadingComment;
 	
@@ -39,7 +38,6 @@ public class Token {
 		string = null;
 		len = 0;
 		postfix = 0;
-		ident = null;
 		lineNumber = 0;
 		leadingComment = null;
 		intValue = null;
@@ -53,7 +51,6 @@ public class Token {
 		to.len = from.len;
 		to.postfix = from.postfix;
 		to.intValue = from.intValue;
-		to.ident = from.ident;
 		to.lineNumber = from.lineNumber;
 		to.leadingComment = from.leadingComment;
 	}
@@ -92,7 +89,7 @@ public class Token {
 			case TOKPRAGMA:
 				return string.toCharArray();
 			case TOKidentifier:
-				return ident.string.toCharArray();
+				return string.toCharArray();
 			default:
 				return value.charArrayValue;
 		}		
@@ -127,7 +124,7 @@ public class Token {
 		case TOKPRAGMA:
 			return string;
 		case TOKidentifier:
-			return ident.string;
+			return string;
 		default:
 			return value.value;
 	}	

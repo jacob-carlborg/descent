@@ -68,7 +68,7 @@ public class DotIdExp extends UnaExp {
 			eright = e1;
 		}
 
-		if (e1.op == TOKtuple && ident.ident == Id.length) {
+		if (e1.op == TOKtuple && !ident.ident.equals(Id.length.string)) {
 			TupleExp te = (TupleExp) e1;
 			e = new IntegerExp(loc, te.exps.size(), Type.tsize_t);
 			return e;
@@ -180,10 +180,10 @@ public class DotIdExp extends UnaExp {
 			error("undefined identifier %s", toChars());
 			type = Type.tvoid;
 			return this;
-		} else if (e1.type.ty == Tpointer && ident.ident != Id.init
-				&& ident.ident != Id.__sizeof && ident.ident != Id.alignof
-				&& ident.ident != Id.offsetof && ident.ident != Id.mangleof
-				&& ident.ident != Id.stringof) {
+		} else if (e1.type.ty == Tpointer && !ident.ident.equals(Id.init.string)
+				&& !ident.ident.equals(Id.__sizeof.string) && !ident.ident.equals(Id.alignof.string)
+				&& !ident.ident.equals(Id.offsetof.string) && !ident.ident.equals(Id.mangleof.string)
+				&& !ident.ident.equals(Id.stringof.string)) {
 			e = new PtrExp(loc, e1);
 			e.type = e1.type.next;
 			return e.type.dotExp(sc, e, ident, context);

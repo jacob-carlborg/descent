@@ -44,8 +44,8 @@ public class ArrayScopeSymbol extends ScopeDsymbol {
 	}
 
 	@Override
-	public Dsymbol search(Loc loc, Identifier ident, int flags, SemanticContext context) {
-		if (ident == Id.length || ident == Id.dollar) {
+	public Dsymbol search(Loc loc, String ident, int flags, SemanticContext context) {
+		if (ident.equals(Id.length.string) || ident.equals(Id.dollar.string)) {
 			Expression pvar;
 			Expression ce;
 

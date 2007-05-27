@@ -70,7 +70,7 @@ public abstract class TypeQualified extends Type {
 					// printf("getType = '%s'\n", s.getType().toChars());
 					if (sm == null) {
 						v = s.isVarDeclaration();
-						if (v != null && id.ident == Id.length) {
+						if (v != null && id.ident.equals(Id.length.string)) {
 							if (v.isConst() && v.getExpInitializer(context) != null) {
 								e = v.getExpInitializer(context).exp;
 							} else

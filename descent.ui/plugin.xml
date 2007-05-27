@@ -330,7 +330,6 @@
       </page>
       -->
 
-	  <!--
       <page
             objectClass="org.eclipse.core.resources.IProject"
             name="%compliancePageName"
@@ -353,6 +352,7 @@
           </filter>
           <keywordReference id="descent.ui.compliance"/>
       </page>
+      <!--
       <page
             objectClass="org.eclipse.core.resources.IProject"
             name="%problemSeveritiesPageName"
@@ -425,7 +425,7 @@
          </filter>
          <keywordReference id="descent.ui.building"/>
       </page>
-
+	  -->
       <page
             objectClass="org.eclipse.core.resources.IProject"
             name="%todoPageName"
@@ -450,6 +450,7 @@
          </filter>
          <keywordReference id="descent.ui.todo"/>
       </page>
+      <!--
       <page
             objectClass="descent.core.IPackageFragmentRoot"
             name="%sourceAttachmentPageName"
@@ -594,6 +595,7 @@
             id="descent.ui.preferences.PropertiesFileEditorPreferencePage">
             <keywordReference id="descent.ui.propertieseditor"/>
       </page>
+      -->
       <page
             name="%compliancePrefName"
             category="descent.ui.preferences.JavaBasePreferencePage"
@@ -601,6 +603,7 @@
             id="descent.ui.preferences.CompliancePreferencePage">
             <keywordReference id="descent.ui.compliance"/>
       </page>
+      <!--
       <page
             name="%problemSeveritiesPrefName"
             category="descent.ui.preferences.CompliancePreferencePage"
@@ -622,6 +625,7 @@
             id="descent.ui.preferences.JavaBuildPreferencePage">
             <keywordReference id="descent.ui.building"/>
       </page>
+      -->
       <page
             name="%todoTaskPrefName"
             category="descent.ui.preferences.CompliancePreferencePage"
@@ -629,7 +633,6 @@
             id="descent.ui.preferences.TodoTaskPreferencePage">
             <keywordReference id="descent.ui.todo"/>
       </page>
-      -->
       <page
             name="%templatePageName"
             category="descent.ui.preferences.JavaEditorPreferencePage"

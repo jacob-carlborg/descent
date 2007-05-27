@@ -85,7 +85,7 @@ public class SemanticContext {
 		// See if already in table
 		if (st == null)
 			st = new DsymbolTable();
-		s = st.lookup(id);
+		s = st.lookup(id.string);
 		if (s != null) {
 			fd = s.isFuncDeclaration();
 			Assert.isNotNull(fd);

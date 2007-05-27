@@ -442,7 +442,7 @@ public class FuncDeclaration extends Declaration {
 			}
 		}
 
-		if (ident.ident == Id.assign && (sd != null || cd != null)) { // Disallow
+		if (ident.ident.equals(Id.assign.string) && (sd != null || cd != null)) { // Disallow
 																		// identity
 																		// assignment
 																		// operator.
@@ -655,8 +655,7 @@ public class FuncDeclaration extends Declaration {
 					Argument arg = Argument.getNth(f.parameters, i, context);
 					IdentifierExp id = arg.ident;
 					if (id == null) {
-						id = new IdentifierExp(loc, new Identifier("_param_" + i
-								+ "u", TOK.TOKidentifier));
+						id = new IdentifierExp(loc, "_param_" + i + "u");
 						arg.ident = id;
 					}
 					VarDeclaration v = new VarDeclaration(loc, arg.type, id, null);
@@ -1197,7 +1196,7 @@ public class FuncDeclaration extends Declaration {
 	}
 	
 	public boolean isMain() {
-		return ident.ident == Id.main &&
+		return ident.ident.equals(Id.main.string) &&
 			linkage != LINK.LINKc && isMember() == null && !isNested();
 	}
 	
