@@ -430,7 +430,7 @@ public class SourceAttachmentBlock {
 	}
 	
 	private IPath chooseExtension() {
-		/* TODO JDT har
+		/* TODO JDT jar
 		IPath currPath= getFilePath();
 		if (currPath.segmentCount() == 0) {
 			currPath= fEntry.getPath();

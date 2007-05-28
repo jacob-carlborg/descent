@@ -200,6 +200,13 @@ public class SourceElementParser extends ASTVisitor {
 		return types;
 	}
 	
+	private boolean isFieldContainer(ASTNode parent) {
+		return !((parent != null 
+				&& parent.getNodeType() != ASTNode.COMPILATION_UNIT
+				&& parent.getNodeType() != ASTNode.AGGREGATE_DECLARATION
+				&& parent.getNodeType() != ASTNode.TEMPLATE_DECLARATION));
+	}
+	
 	@Override
 	public boolean visit(ModuleDeclaration node) {
 		requestor.acceptPackage(startOf(node), endOf(node), node.getName().getFullyQualifiedName().toCharArray());
@@ -411,6 +418,11 @@ public class SourceElementParser extends ASTVisitor {
 		// TODO JDT Java -> D
 		VariableDeclaration var = (VariableDeclaration) node.getParent();
 		
+		ASTNode parent = var.getParent();
+		if (!isFieldContainer(parent)) {
+			return false;
+		}
+		
 		FieldInfo info = new FieldInfo();
 		info.annotationPositions = NO_LONG;
 		info.categories = CharOperation.NO_CHAR_CHAR;
@@ -440,6 +452,11 @@ public class SourceElementParser extends ASTVisitor {
 	public void endVisit(VariableDeclarationFragment node) {
 		VariableDeclaration var = (VariableDeclaration) node.getParent();
 		
+		ASTNode parent = var.getParent();
+		if (!isFieldContainer(parent)) {
+			return;
+		}
+		
 		int initializerStart = node.getInitializer() == null ? - 1 : startOf(node.getInitializer());
 		int declarationSourceEnd = endOf(var);
 		int declarationEnd = endOf(node.getName());
@@ -451,6 +468,11 @@ public class SourceElementParser extends ASTVisitor {
 	public boolean visit(AliasDeclarationFragment node) {
 		// TODO JDT Java -> D
 		AliasDeclaration var = (AliasDeclaration) node.getParent();
+		
+		ASTNode parent = var.getParent();
+		if (!isFieldContainer(parent)) {
+			return false;
+		}
 		
 		FieldInfo info = new FieldInfo();
 		info.annotationPositions = NO_LONG;
@@ -478,6 +500,11 @@ public class SourceElementParser extends ASTVisitor {
 	public void endVisit(AliasDeclarationFragment node) {
 		AliasDeclaration var = (AliasDeclaration) node.getParent();
 		
+		ASTNode parent = var.getParent();
+		if (!isFieldContainer(parent)) {
+			return;
+		}
+		
 		int initializerStart = endOf(node.getName());
 		int declarationSourceEnd = endOf(var);
 		int declarationEnd = endOf(node.getName());
@@ -489,6 +516,11 @@ public class SourceElementParser extends ASTVisitor {
 	public boolean visit(TypedefDeclarationFragment node) {
 		// TODO JDT Java -> D
 		TypedefDeclaration var = (TypedefDeclaration) node.getParent();
+		
+		ASTNode parent = var.getParent();
+		if (!isFieldContainer(parent)) {
+			return false;
+		}
 		
 		FieldInfo info = new FieldInfo();
 		info.annotationPositions = NO_LONG;
@@ -515,6 +547,11 @@ public class SourceElementParser extends ASTVisitor {
 	@Override
 	public void endVisit(TypedefDeclarationFragment node) {
 		TypedefDeclaration var = (TypedefDeclaration) node.getParent();
+		
+		ASTNode parent = var.getParent();
+		if (!isFieldContainer(parent)) {
+			return;
+		}
 		
 		int initializerStart = node.getInitializer() == null ? - 1 : startOf(node.getInitializer());
 		int declarationSourceEnd = endOf(var);
