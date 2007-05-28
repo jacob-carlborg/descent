@@ -14,6 +14,10 @@ import descent.core.dom.IVersionStatement;
 import descent.internal.core.dom.*;
 import dtool.dom.ast.ASTNode;
 
+/**
+ * An abstract visitor class that that delegates each visit method, to the visit
+ * method of the element's superclass 
+ */
 public abstract class ASTUpTreeVisitor extends TreeVisitor<ASTNode> implements IASTVisitor {
 
 	/* ====================================================== */

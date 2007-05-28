@@ -3,16 +3,18 @@ package dtool.dom.base;
 import dtool.dom.ast.ASTNeoNode;
 import dtool.dom.ast.IASTNeoVisitor;
 
+/**
+ * XXX: what is this?
+ */
 public class TypeStruct extends ASTNeoNode {
 
 	public TypeStruct(descent.internal.core.dom.TypeStruct elem) {
-		// TODO Auto-generated constructor stub
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
 	public void accept0(IASTNeoVisitor visitor) {
-		// TODO Auto-generated method stub
-
+		throw new UnsupportedOperationException();
 	}
 
 }

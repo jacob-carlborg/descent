@@ -7,9 +7,9 @@ import descent.core.domX.IASTVisitor;
 
 public class SliceExp extends Expression implements ISliceExpression {
 
-	private final Expression e;
-	private final Expression from;
-	private final Expression to;
+	public final Expression e;
+	public final Expression from;
+	public final Expression to;
 
 	public SliceExp(Expression e, Expression from, Expression to) {
 		this.e = e;

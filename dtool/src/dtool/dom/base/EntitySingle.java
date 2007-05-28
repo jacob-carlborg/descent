@@ -2,6 +2,8 @@ package dtool.dom.base;
 
 import java.util.List;
 
+import util.tree.TreeVisitor;
+
 import dtool.descentadapter.DescentASTConverter;
 import dtool.dom.ast.ASTNeoNode;
 import dtool.dom.ast.ASTNode;
@@ -69,7 +71,7 @@ public abstract class EntitySingle extends Entity {
 		public void accept0(IASTNeoVisitor visitor) {
 			boolean children = visitor.visit(this);
 			if (children) {
-				// TODO: accept children
+				TreeVisitor.acceptChildren(visitor, tiargs);
 			}
 			visitor.endVisit(this);
 		}

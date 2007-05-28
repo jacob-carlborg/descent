@@ -13,13 +13,13 @@ public class DefinitionEnum extends Definition {
 
 	public static class EnumMember extends DefUnit {
 		
-		Expression value;
+		public Expression value;
 
 		public EnumMember(descent.internal.core.dom.EnumMember elem) {
-			super(elem.ident);
+			convertDsymbol(elem);
 			this.value = Expression.convert(elem.value);
-		
 		}
+
 		@Override
 		public void accept0(IASTNeoVisitor visitor) {
 			boolean children = visitor.visit(this);
@@ -47,7 +47,7 @@ public class DefinitionEnum extends Definition {
 	private List<EnumMember> members;
 	
 	public DefinitionEnum(EnumDeclaration elem) {
-		super(elem);
+		convertDsymbol(elem);
 		this.members = DescentASTConverter.convertMany(elem.members, this.members) ;
 	}
 

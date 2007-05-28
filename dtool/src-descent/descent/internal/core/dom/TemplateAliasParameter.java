@@ -7,7 +7,7 @@ import descent.core.domX.IASTVisitor;
 
 public class TemplateAliasParameter extends TemplateParameter {
 
-	private final Identifier tp_ident;
+	public final Identifier tp_ident;
 	private final Type tp_spectype;
 	private final Type tp_defaulttype;
 

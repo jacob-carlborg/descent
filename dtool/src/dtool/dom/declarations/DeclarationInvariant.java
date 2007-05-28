@@ -1,20 +1,27 @@
 package dtool.dom.declarations;
 
+import util.tree.TreeVisitor;
 import descent.internal.core.dom.InvariantDeclaration;
 import dtool.dom.ast.ASTNeoNode;
 import dtool.dom.ast.IASTNeoVisitor;
+import dtool.dom.statements.Statement;
 
 public class DeclarationInvariant extends ASTNeoNode {
 
-	public DeclarationInvariant(InvariantDeclaration element) {
-		setSourceRange(element);
-		// TODO Auto-generated constructor stub
+	public Statement body;
+	
+	public DeclarationInvariant(InvariantDeclaration elem) {
+		setSourceRange(elem);
+		this.body = Statement.convert(elem.fbody);
 	}
 
 	@Override
 	public void accept0(IASTNeoVisitor visitor) {
-		// TODO Auto-generated method stub
-
+		boolean children = visitor.visit(this);
+		if (children) {
+			TreeVisitor.acceptChildren(visitor, body);
+		}
+		visitor.endVisit(this);
 	}
 
 }

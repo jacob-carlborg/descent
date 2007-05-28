@@ -32,7 +32,7 @@ public class DefinitionFunction extends Definition {
 
 
 	public DefinitionFunction(FuncDeclaration elem) {
-		super(elem);
+		convertDsymbol(elem);
 		this.frequire = Statement.convert(elem.frequire);
 		this.fensure = Statement.convert(elem.fensure);
 		this.fbody = Statement.convert(elem.fbody);

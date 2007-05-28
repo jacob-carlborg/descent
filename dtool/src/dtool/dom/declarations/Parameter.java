@@ -13,13 +13,15 @@ public class Parameter extends DefUnit {
 	public descent.internal.core.dom.InOut inout;
 	public Expression defaultValue;
 	
-	public Parameter(descent.internal.core.dom.Argument argument) {
-		super(argument.id);
-		setSourceRange(argument);
+	public Parameter(descent.internal.core.dom.Argument elem) {
+		super();
+		setSourceRange(elem);
+		convertIdentifier(elem.id);
+		setSourceRange(elem);
 		
-		this.type = Entity.convertType(argument.type);
-		this.inout = argument.inout;
-		this.defaultValue = Expression.convert(argument.defaultValue);
+		this.type = Entity.convertType(elem.type);
+		this.inout = elem.inout;
+		this.defaultValue = Expression.convert(elem.defaultValue);
 			
 	}
 	

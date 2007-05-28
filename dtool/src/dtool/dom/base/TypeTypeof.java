@@ -25,12 +25,11 @@ public class TypeTypeof extends Entity {
 	}
 	
 	public String toString() {
-		return "typeof(" + "???" +")";
+		return "typeof(" + expression +")";
 	}
 
 	@Override
 	public DefUnit getTargetDefUnit() {
-		// TODO: return INTRISINC
 		// return expression.getType().getDefUnits();
 		return null;
 	}

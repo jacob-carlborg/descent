@@ -10,13 +10,11 @@ import dtool.model.IScope;
 public class DefinitionMixin extends DefUnit {
 
 	public DefinitionMixin(TemplateMixin elem) {
-		super(elem.ident);
+		convertDsymbol(elem);
 	}
 
 	@Override
 	public void accept0(IASTNeoVisitor visitor) {
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override
@@ -26,7 +24,6 @@ public class DefinitionMixin extends DefUnit {
 
 	@Override
 	public IScope getScope() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 

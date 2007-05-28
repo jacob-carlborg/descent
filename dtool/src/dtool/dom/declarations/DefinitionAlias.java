@@ -16,7 +16,7 @@ public class DefinitionAlias extends Definition {
 	public EntityConstrainedRef.NoConstraint target;
 	
 	public DefinitionAlias(AliasDeclaration elem) {
-		super(elem);
+		convertDsymbol(elem);
 		this.target = Entity.convertAnyEnt(elem.type);
 	}
 	

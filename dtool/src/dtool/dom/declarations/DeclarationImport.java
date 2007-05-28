@@ -10,7 +10,7 @@ import dtool.dom.ast.ASTNeoNode;
 import dtool.dom.ast.IASTNeoVisitor;
 
 /**
- * TODO An Import Declaration 
+ * TODO An import Declaration 
  */
 public class DeclarationImport extends ASTNeoNode {
 
@@ -21,6 +21,7 @@ public class DeclarationImport extends ASTNeoNode {
 		setSourceRange(elem);
 		this.imports = elem.imports;
 		this.imports.get(0).getSelectiveImports();
+		this.isStatic = elem.isStatic;
 	}
 
 	public void accept0(IASTNeoVisitor visitor) {

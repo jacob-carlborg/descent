@@ -16,7 +16,7 @@ public class DefinitionVariable extends Definition {
 	public Initializer init;
 
 	public DefinitionVariable(descent.internal.core.dom.VarDeclaration elem) {
-		super(elem);
+		convertDsymbol(elem);
 		this.type = Entity.convertType(elem.type);
 		this.init = Initializer.convert(elem.init);
 	}

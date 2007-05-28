@@ -1,5 +1,6 @@
 package descent.internal.core.dom;
 
+
 public abstract class Condition {
 	
 	public final static int DEBUG = 1;

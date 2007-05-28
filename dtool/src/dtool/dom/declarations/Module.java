@@ -46,12 +46,13 @@ public class Module extends DefUnit implements IScope {
 	}
 	
 	public DeclarationModule md;
-	public ASTNode[] members; //FIXME
+	public Declaration[] members; //FIXME
 	
 
 	public Module(descent.internal.core.dom.Module elem) {
-		super(new Identifier(null, TOK.TOKidentifier));
+		convertNode(elem); // elem not a full formed Dsymbol
 		setSourceRange(elem);
+		convertIdentifier(new Identifier(null, TOK.TOKidentifier));
 		//newelem.name = (elem.ident != null) ? elem.ident.string : null; 
 		if(elem.md != null){
 			// If there is md there is this	elem.ident
@@ -65,7 +66,7 @@ public class Module extends DefUnit implements IScope {
 				this.md.packages = new EntitySingle.Identifier[0];
 			}
 		}
-		this.members = DescentASTConverter.convertMany(elem.getDeclarationDefinitions());
+		this.members = Declaration.convertMany(elem.getDeclarationDefinitions());
 	}
 
 	public EArcheType getArcheType() {

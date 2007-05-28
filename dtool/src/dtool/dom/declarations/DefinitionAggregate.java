@@ -24,7 +24,7 @@ public class DefinitionAggregate extends Definition implements IScope {
 		public EntityConstrainedRef.TypeConstraint type;
 		
 		public BaseClass(descent.internal.core.dom.BaseClass elem) {
-			setSourceRange(elem);
+			convertNode(elem);
 			this.prot = elem.prot;
 			this.type = Entity.convertType(elem.type);
 		}
@@ -46,10 +46,10 @@ public class DefinitionAggregate extends Definition implements IScope {
 	
 	@SuppressWarnings("unchecked")
 	public DefinitionAggregate(AggregateDeclaration elem) {
-		super(elem);
+		convertDsymbol(elem);
 		this.members = DescentASTConverter.convertMany(elem.members, this.members);
 		this.baseClasses = DescentASTConverter.convertMany(elem.baseClasses, this.baseClasses);
-		this.templateParameters = TemplateParameter.convert(elem.templateParameters);
+		this.templateParameters = TemplateParameter.convertMany(elem.templateParameters);
 	}
 	
 	public EArcheType getArcheType() {

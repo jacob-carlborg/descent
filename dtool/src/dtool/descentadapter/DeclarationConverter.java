@@ -13,9 +13,9 @@ import descent.internal.core.dom.TemplateAliasParameter;
 import descent.internal.core.dom.TemplateTupleParameter;
 import descent.internal.core.dom.TemplateTypeParameter;
 import descent.internal.core.dom.TemplateValueParameter;
-import dtool.dom.declarations.DebugSymbolDefinition;
 import dtool.dom.declarations.DeclarationAlign;
 import dtool.dom.declarations.DeclarationConditional;
+import dtool.dom.declarations.DeclarationConditionalDefinition;
 import dtool.dom.declarations.DeclarationImport;
 import dtool.dom.declarations.DeclarationInvariant;
 import dtool.dom.declarations.DeclarationLinkage;
@@ -25,7 +25,6 @@ import dtool.dom.declarations.DeclarationStaticAssert;
 import dtool.dom.declarations.DeclarationStaticIf;
 import dtool.dom.declarations.DeclarationStorageClass;
 import dtool.dom.declarations.DeclarationUnitTest;
-import dtool.dom.declarations.DeclarationVersion;
 import dtool.dom.declarations.DefinitionAggregate;
 import dtool.dom.declarations.DefinitionAlias;
 import dtool.dom.declarations.DefinitionEnum;
@@ -35,6 +34,10 @@ import dtool.dom.declarations.DefinitionTemplate;
 import dtool.dom.declarations.DefinitionTypedef;
 import dtool.dom.declarations.DefinitionVariable;
 import dtool.dom.declarations.Parameter;
+import dtool.dom.declarations.TemplateParamAlias;
+import dtool.dom.declarations.TemplateParamTuple;
+import dtool.dom.declarations.TemplateParamType;
+import dtool.dom.declarations.TemplateParamValue;
 
 /**
  * Converts from DMD's AST to a nicer AST ("Neo AST")
@@ -153,7 +156,7 @@ abstract class DeclarationConverter extends BaseConverter {
 	}
 
 	public boolean visit(descent.internal.core.dom.VersionSymbol elem) {
-		return endAdapt(new DeclarationVersion(elem));
+		return endAdapt(new DeclarationConditionalDefinition(elem));
 	}
 	
 	
@@ -240,32 +243,24 @@ abstract class DeclarationConverter extends BaseConverter {
 	/* ---- other ---- */
 	
 	public boolean visit(DebugSymbol elem) {
-		return endAdapt(new DebugSymbolDefinition(elem));
+		return endAdapt(new DeclarationConditionalDefinition(elem));
 	}
 
 	
-	public boolean visit(TemplateAliasParameter element) {
-		Assert.fail();
-		// TODO Auto-generated method stub
-		return false;
+	public boolean visit(TemplateAliasParameter elem) {
+		return endAdapt(new TemplateParamAlias(elem));
 	}
 
-	public boolean visit(TemplateTupleParameter element) {
-		Assert.fail();
-		// TODO Auto-generated method stub
-		return false;
+	public boolean visit(TemplateTupleParameter elem) {
+		return endAdapt(new TemplateParamTuple(elem));
 	}
 
-	public boolean visit(TemplateTypeParameter element) {
-		Assert.fail();
-		// TODO Auto-generated method stub
-		return false;
+	public boolean visit(TemplateTypeParameter elem) {
+		return endAdapt(new TemplateParamType(elem));
 	}
 
-	public boolean visit(TemplateValueParameter element) {
-		Assert.fail();
-		// TODO Auto-generated method stub
-		return false;
+	public boolean visit(TemplateValueParameter elem) {
+		return endAdapt(new TemplateParamValue(elem));
 	}
 
 }

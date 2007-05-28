@@ -3,20 +3,22 @@
  */
 package dtool.dom.base;
 
+import util.tree.TreeVisitor;
 import dtool.dom.ast.IASTNeoVisitor;
 import dtool.dom.declarations.DefUnit;
 
 public class TypePointer extends Entity {
-	public Entity elemtype;
+	public EntityConstrainedRef.TypeConstraint elemtype;
 	
 	public TypePointer(descent.internal.core.dom.TypePointer elem) {
-		// TODO Auto-generated constructor stub
+		setSourceRange(elem);
+		this.elemtype = Entity.convertType(elem.next);
 	}
 
 	public void accept0(IASTNeoVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
-			// TODO: accept children
+			TreeVisitor.acceptChildren(visitor, elemtype);
 		}
 		visitor.endVisit(this);
 	}

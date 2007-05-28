@@ -26,10 +26,10 @@ import dtool.dom.base.TypeDynArray;
 import dtool.dom.base.TypeFunction;
 import dtool.dom.base.TypeMapArray;
 import dtool.dom.base.TypePointer;
-import dtool.dom.base.TypeSlice;
 import dtool.dom.base.TypeStaticArray;
 import dtool.dom.base.TypeStruct;
 import dtool.dom.base.TypeTypeof;
+import dtool.dom.expressions.ExpSlice;
 
 /**
  * This class is a mixin. 
@@ -165,7 +165,7 @@ abstract class BaseConverter extends ASTCommonConverter {
 	}
 	
 	public boolean visit(descent.internal.core.dom.TypeSlice elem) {
-		return endAdapt(new TypeSlice(elem));
+		return endAdapt(new ExpSlice(elem));
 	}
 	
 	public boolean visit(descent.internal.core.dom.TypeStruct elem) {

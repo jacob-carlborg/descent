@@ -8,8 +8,8 @@ import descent.core.domX.IASTVisitor;
 
 public class TypeSlice extends Type implements ISliceType {
 
-	private Expression from;
-	private Expression to;
+	public Expression from;
+	public Expression to;
 
 	public TypeSlice(Type t, Expression from, Expression to) {
 		super(TY.Tslice, t);

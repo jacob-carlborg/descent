@@ -6,7 +6,7 @@ import descent.core.domX.IASTVisitor;
 
 public class TemplateTupleParameter extends TemplateParameter {
 
-	private final Identifier ident;
+	public final Identifier ident;
 
 	public TemplateTupleParameter(Identifier ident) {
 		this.ident = ident;

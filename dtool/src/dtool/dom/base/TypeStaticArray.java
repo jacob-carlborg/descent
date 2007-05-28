@@ -3,23 +3,27 @@
  */
 package dtool.dom.base;
 
+import util.tree.TreeVisitor;
 import descent.internal.core.dom.TypeSArray;
-import dtool.dom.ast.ASTNode;
 import dtool.dom.ast.IASTNeoVisitor;
 import dtool.dom.declarations.DefUnit;
+import dtool.dom.expressions.Expression;
 
 public class TypeStaticArray extends Entity {
-	public Entity elemtype;
-	public ASTNode sizeExp;
+	public EntityConstrainedRef.TypeConstraint elemtype;
+	public Expression sizeexp;
 
 	public TypeStaticArray(TypeSArray elem) {
-		// TODO Auto-generated constructor stub
+		setSourceRange(elem);
+		this.elemtype = Entity.convertType(elem.next);
+		this.sizeexp = Expression.convert(elem.dim); 
 	}
 
 	public void accept0(IASTNeoVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
-			// TODO: accept children
+			TreeVisitor.acceptChildren(visitor, elemtype);
+			TreeVisitor.acceptChildren(visitor, sizeexp);
 		}
 		visitor.endVisit(this);
 	}

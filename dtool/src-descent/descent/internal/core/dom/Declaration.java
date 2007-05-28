@@ -1,5 +1,6 @@
 package descent.internal.core.dom;
 
+
 public abstract class Declaration extends Dsymbol {
 
 	public String comments;

@@ -14,7 +14,7 @@ public class DefinitionTypedef extends Definition {
 	Initializer initializer;
 	
 	public DefinitionTypedef(TypedefDeclaration elem) {
-		super(elem);
+		convertDsymbol(elem);
 		this.type = Entity.convertType(elem.type);
 		this.initializer = Initializer.convert(elem.init);
 	}
@@ -23,6 +23,7 @@ public class DefinitionTypedef extends Definition {
 	public void accept0(IASTNeoVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
+			TreeVisitor.acceptChild(visitor, defname);
 			TreeVisitor.acceptChild(visitor, type);
 			TreeVisitor.acceptChildren(visitor, initializer);
 		}

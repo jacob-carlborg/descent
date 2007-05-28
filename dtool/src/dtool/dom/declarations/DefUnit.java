@@ -1,6 +1,7 @@
 package dtool.dom.declarations;
 
 import util.Assert;
+import descent.internal.core.dom.Dsymbol;
 import descent.internal.core.dom.Identifier;
 import dtool.dom.ast.ASTNeoNode;
 import dtool.dom.ast.IASTNeoVisitor;
@@ -63,14 +64,18 @@ public abstract class DefUnit extends ASTNeoNode {
 		}
 	}
 	
-	
 	public Symbol defname;
-	
 	public EArcheType archeType;
-	
-	public DefUnit(Identifier id) {
-		this.defname = new Symbol(id);
+
+	protected void convertDsymbol(Dsymbol elem) {
+		convertNode(elem);
+		convertIdentifier(elem.ident);
 	}
+
+	protected void convertIdentifier(Identifier id) {
+		this.defname = new Symbol(id);
+	}		
+
 	
 	public abstract EArcheType getArcheType() ;
 	
@@ -79,7 +84,6 @@ public abstract class DefUnit extends ASTNeoNode {
 		return "=> " + defname.name;
 	}
 
-	public abstract IScope getScope() ;
-
+	public abstract IScope getScope();
 
 }

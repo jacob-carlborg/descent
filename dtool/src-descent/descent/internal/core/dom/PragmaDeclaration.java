@@ -13,8 +13,8 @@ import descent.core.domX.AbstractElement;
 
 public class PragmaDeclaration extends Dsymbol implements IPragmaDeclaration {
 	
-	private Expression[] expressions;
-	private IDeclaration[] declDefs;
+	public Expression[] expressions;
+	public IDeclaration[] declDefs;
 
 	public PragmaDeclaration(Identifier ident, List<Expression> args, List<IDeclaration> a) {
 		this.ident = ident;

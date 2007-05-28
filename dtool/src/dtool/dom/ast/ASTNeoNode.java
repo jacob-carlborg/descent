@@ -5,6 +5,11 @@ import descent.core.domX.IASTVisitor;
 
 public abstract class ASTNeoNode extends ASTNode {
 
+
+	protected void convertNode(ASTNode elem) {
+		setSourceRange(elem);
+	}
+
 	public int getElementType() {
 		return 0; // TODO Not DMD element
 	}
@@ -32,15 +37,16 @@ public abstract class ASTNeoNode extends ASTNode {
 	}
 
 	// Neo AST elements use ASTNeoVisitor
-	public abstract void accept0(IASTNeoVisitor visitor);
 	/* Template:
-		boolean children = visitor.visit(this);
-		if (children) {
-			TreeVisitor.acceptChild(visitor, md);
-			TreeVisitor.acceptChildren(visitor, members);
-		}
-		visitor.endVisit(this);	 
-	 */
+	boolean children = visitor.visit(this);
+	if (children) {
+		TreeVisitor.acceptChild(visitor, md);
+		TreeVisitor.acceptChildren(visitor, members);
+	}
+	visitor.endVisit(this);
+	*/
+	public abstract void accept0(IASTNeoVisitor visitor);
+
 	 
 
 

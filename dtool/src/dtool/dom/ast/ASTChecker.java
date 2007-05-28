@@ -1,7 +1,6 @@
 package dtool.dom.ast;
 
 
-
 /**
  * Checks for AST validity. Namely:
  * Source range consistency. 
