@@ -23,7 +23,7 @@ import descent.core.compiler.IProblem;
  * Note: The factory is responsible for computing and storing a localized error message.
  */
 
-//TODO JDT local: begin to use to support localized messages
+//TODO JDT locale: begin to use to support localized messages
 public interface IProblemFactory {
 
 	IProblem createProblem(

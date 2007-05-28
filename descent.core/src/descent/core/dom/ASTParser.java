@@ -881,8 +881,6 @@ public class ASTParser {
 							this.statementsRecovery);
 					needToResolveBindings = false;
 				} catch (IllegalArgumentException e) {
-					// TODO JDT remove... this is for debugging purposes
-					System.out.println(sourceUnit.getContents());
 					throw e;
 				}
 			}

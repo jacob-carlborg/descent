@@ -40,6 +40,7 @@ import descent.core.Signature;
 import descent.internal.corext.util.JavaModelUtil;
 import descent.internal.corext.util.JdtFlags;
 import descent.internal.ui.JavaPlugin;
+import descent.internal.ui.packageview.ClassPathContainer;
 import descent.internal.ui.preferences.MembersOrderPreferenceCache;
 
 
@@ -175,11 +176,9 @@ public class JavaElementSorter extends ViewerSorter {
 		} else if (element instanceof IStorage) {
 			return STORAGE;
 		}
-		/* TODO JDT UI classpath container
 		else if (element instanceof ClassPathContainer) {
 			return PACKAGEFRAGMENTROOTS;
 		}
-		*/
 		return OTHERS;
 	}
 	
@@ -294,7 +293,6 @@ public class JavaElementSorter extends ViewerSorter {
 	
 
 	private IPackageFragmentRoot getPackageFragmentRoot(Object element) {
-		/* TODO JDT UI classpath container
 		if (element instanceof ClassPathContainer) {
 			// return first package fragment root from the container
 			ClassPathContainer cp= (ClassPathContainer)element;
@@ -304,7 +302,6 @@ public class JavaElementSorter extends ViewerSorter {
 			// non resolvable - return null
 			return null;
 		}
-		*/
 		return JavaModelUtil.getPackageFragmentRoot((IJavaElement)element);
 	}
 	
@@ -377,11 +374,9 @@ public class JavaElementSorter extends ViewerSorter {
 		if (element instanceof IJavaElement) {
 			return ((IJavaElement)element).getJavaProject();
 		}
-		/* TODO JDT UI classpath container
 		else if (element instanceof ClassPathContainer) {
 			return ((ClassPathContainer)element).getJavaProject();
 		}
-		*/
 		return null;
 	}
 	
@@ -389,11 +384,9 @@ public class JavaElementSorter extends ViewerSorter {
 		if (element instanceof IJavaElement) {
 			return ((IJavaElement)element).getElementName();
 		}
-		/* TODO JDT UI classpath container
 		else if (element instanceof ClassPathContainer) {
 			return ((ClassPathContainer)element).getLabel(element);
 		}
-		*/ 
 		else {
 			return element.toString();
 		}

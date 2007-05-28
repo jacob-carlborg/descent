@@ -149,10 +149,8 @@ public class PackageExplorerContentProvider extends StandardJavaElementContentPr
 			if (parentElement instanceof IJavaModel) 
 				return concatenate(getJavaProjects((IJavaModel)parentElement), getNonJavaProjects((IJavaModel)parentElement));
 
-			/* TODO JDT UI classpath
 			if (parentElement instanceof ClassPathContainer)
 				return getContainerPackageFragmentRoots((ClassPathContainer)parentElement);
-			*/
 				
 			if (parentElement instanceof IProject) 
 				return ((IProject)parentElement).members();
@@ -199,20 +197,16 @@ public class PackageExplorerContentProvider extends StandardJavaElementContentPr
 				result.add(roots[i]);
 			}
 		}
-		/* TODO JDT UI classpath
 		for (Iterator each= containers.iterator(); each.hasNext();) {
 			IClasspathEntry element= (IClasspathEntry) each.next();
 			result.add(new ClassPathContainer(project, element));
 		}
-		*/	
 		return result.toArray();
 	}
 
-	/* TODO JDT UI classpath
 	private Object[] getContainerPackageFragmentRoots(ClassPathContainer container) {
 		return container.getChildren(container);
 	}
-	*/
 
 	private Object[] getNonJavaProjects(IJavaModel model) throws JavaModelException {
 		return model.getNonJavaResources();
@@ -238,21 +232,17 @@ public class PackageExplorerContentProvider extends StandardJavaElementContentPr
 				for (int i= 0; i < entries.length; i++) {
 					IClasspathEntry entry= entries[i];
 					if (entry.getEntryKind() == IClasspathEntry.CPE_CONTAINER) {
-						/* TODO JDT UI classpath
 						if (ClassPathContainer.contains(project, entry, root)) 
 							return new ClassPathContainer(project, entry);
-						*/
 					}
 				}
 			} catch (JavaModelException e) {
 				// fall through
 			}
 		}
-		/* TODO JDT UI classpath
 		if (element instanceof ClassPathContainer) {
 			return ((ClassPathContainer)element).getJavaProject();
 		}
-		*/
 		return super.internalGetParent(element);
 	}
 	
