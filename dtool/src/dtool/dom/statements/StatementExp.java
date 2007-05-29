@@ -14,7 +14,7 @@ public class StatementExp extends ASTNeoNode {
 		if(element.hasNoSourceRangeInfo())
 			setSourceRange(element.exp);
 		else
-			setSourceRange(element);
+			convertNode(element);
 		
 		this.exp = Expression.convert(element.exp);
 	}

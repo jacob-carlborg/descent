@@ -3,6 +3,7 @@ package dtool.dom.declarations;
 import java.util.List;
 
 import descent.core.dom.IDeclaration;
+import descent.internal.core.dom.Dsymbol;
 import dtool.descentadapter.DescentASTConverter;
 import dtool.dom.ast.ASTNeoNode;
 import dtool.dom.ast.ASTNode;
@@ -30,4 +31,7 @@ public abstract class Declaration extends ASTNeoNode {
 		return (Declaration) DescentASTConverter.convertElem((ASTNode) decl);
 	}
 
+	public static Declaration convert(Dsymbol decl) {
+		return (Declaration) DescentASTConverter.convertElem((ASTNode) decl);
+	}
 }

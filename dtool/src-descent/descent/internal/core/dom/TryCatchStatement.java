@@ -10,8 +10,8 @@ import descent.core.domX.IASTVisitor;
 
 public class TryCatchStatement extends Statement implements ITryStatement {
 
-	private final Statement body;
-	private final List<Catch> catches;
+	public final Statement body;
+	public final List<Catch> catches;
 
 	public TryCatchStatement(Statement body, List<Catch> catches) {
 		this.body = body;

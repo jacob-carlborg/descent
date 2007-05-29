@@ -9,8 +9,8 @@ import descent.core.domX.IASTVisitor;
 
 public class ArrayInitializer extends Initializer {
 	
-	private List<Expression> exps;
-	private List<Initializer> values;
+	public List<Expression> exps;
+	public List<Initializer> values;
 
 	public ArrayInitializer() {
 		this.exps = new ArrayList<Expression>();

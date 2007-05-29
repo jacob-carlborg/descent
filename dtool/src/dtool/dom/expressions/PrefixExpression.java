@@ -27,7 +27,7 @@ public class PrefixExpression extends Expression {
 
 
 	public PrefixExpression(UnaryExpression elem, int kind) {
-		setSourceRange((ASTNode) elem);
+		convertNode(elem);
 		this.exp = (Expression) DescentASTConverter.convertElem(elem.exp);
 		this.kind = kind;
 	}

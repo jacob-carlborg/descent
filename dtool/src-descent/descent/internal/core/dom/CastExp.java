@@ -8,8 +8,8 @@ import descent.core.domX.IASTVisitor;
 
 public class CastExp extends Expression implements ICastExpression {
 
-	private final Expression e;
-	private final Type t;
+	public final Expression e;
+	public final Type t;
 
 	public CastExp(Expression e, Type t) {
 		this.e = e;

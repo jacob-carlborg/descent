@@ -13,9 +13,9 @@ public class ExpEntityRef extends Expression {
 	
 	public EntityConstrainedRef.ValueConstraint entity;
 	
-	public ExpEntityRef(IdentifierExp element) {
-		setSourceRange(element);
-		Entity entity = (Entity) DescentASTConverter.convertElem(element.id);
+	public ExpEntityRef(IdentifierExp elem) {
+		convertNode(elem);
+		Entity entity = (Entity) DescentASTConverter.convertElem(elem.id);
 		this.entity = new EntityConstrainedRef.ValueConstraint(entity);
 	}
 	

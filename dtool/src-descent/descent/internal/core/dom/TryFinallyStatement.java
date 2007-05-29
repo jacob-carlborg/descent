@@ -7,8 +7,8 @@ import descent.core.domX.IASTVisitor;
 
 public class TryFinallyStatement extends Statement implements ITryStatement {
 
-	private final Statement s;
-	private final Statement finalbody;
+	public final Statement s;
+	public final Statement finalbody;
 
 	public TryFinallyStatement(Statement s, Statement finalbody) {
 		this.s = s;

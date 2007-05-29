@@ -8,12 +8,12 @@ public class StatementGotoDefault extends ASTNeoNode {
 
 	public StatementGotoDefault(GotoDefaultStatement element) {
 		// TODO Auto-generated constructor stub
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
 	public void accept0(IASTNeoVisitor visitor) {
-		// TODO Auto-generated method stub
-
+		throw new UnsupportedOperationException();
 	}
 
 }

@@ -11,9 +11,9 @@ import descent.core.domX.AbstractElement;
 
 public class NewAnonClassExp extends Expression implements INewAnonymousClassExpression {
 
-	private ClassDeclaration cd;
-	private Expression[] newargs;
-	private Expression[] arguments;
+	public ClassDeclaration cd;
+	public Expression[] newargs;
+	public Expression[] arguments;
 
 	public NewAnonClassExp(Expression thisexp, List<Expression> newargs, ClassDeclaration cd, List<Expression> arguments) {
 		if (newargs == null) {

@@ -8,10 +8,10 @@ import descent.core.domX.IASTVisitor;
 
 public class TemplateValueParameter extends TemplateParameter {
 
-	private final Identifier id;
-	private final Type tp_valtype;
-	private final Expression tp_specvalue;
-	private final Expression tp_defaultvalue;
+	public final Identifier id;
+	public final Type tp_valtype;
+	public final Expression tp_specvalue;
+	public final Expression tp_defaultvalue;
 
 	public TemplateValueParameter(Identifier id, Type tp_valtype, Expression tp_specvalue, Expression tp_defaultvalue) {
 		this.id = id;

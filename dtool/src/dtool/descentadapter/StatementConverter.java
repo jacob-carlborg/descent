@@ -3,6 +3,7 @@ package dtool.descentadapter;
 import descent.internal.core.dom.AsmStatement;
 import descent.internal.core.dom.BreakStatement;
 import descent.internal.core.dom.CaseStatement;
+import descent.internal.core.dom.Catch;
 import descent.internal.core.dom.ConditionalStatement;
 import descent.internal.core.dom.ContinueStatement;
 import descent.internal.core.dom.DeclarationStatement;
@@ -54,8 +55,7 @@ import dtool.dom.statements.StatementStaticAssert;
 import dtool.dom.statements.StatementSwitch;
 import dtool.dom.statements.StatementSynchronized;
 import dtool.dom.statements.StatementThrow;
-import dtool.dom.statements.StatementTryCatch;
-import dtool.dom.statements.StatementTryFinally;
+import dtool.dom.statements.StatementTry;
 import dtool.dom.statements.StatementVolatile;
 import dtool.dom.statements.StatementWhile;
 import dtool.dom.statements.StatementWith;
@@ -163,11 +163,11 @@ public class StatementConverter extends ExpressionConverter {
 	}
 
 	public boolean visit(TryCatchStatement element) {
-		return endAdapt(new StatementTryCatch(element));
+		return endAdapt(new StatementTry(element));
 	}
 
 	public boolean visit(TryFinallyStatement element) {
-		return endAdapt(new StatementTryFinally(element));
+		return endAdapt(new StatementTry(element));
 	}
 
 	public boolean visit(VolatileStatement element) {
@@ -180,6 +180,10 @@ public class StatementConverter extends ExpressionConverter {
 
 	public boolean visit(WithStatement element) {
 		return endAdapt(new StatementWith(element));
+	}
+	
+	public boolean visit(Catch element) {
+		return endAdapt(new StatementTry.CatchClause(element));
 	}
 
 }

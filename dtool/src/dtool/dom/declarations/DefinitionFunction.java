@@ -20,7 +20,7 @@ public class DefinitionFunction extends Definition {
 	//public Identifier outId;
 	public descent.internal.core.dom.LINK linkage;
 	public EntityConstrainedRef.TypeConstraint rettype;
-	public descent.internal.core.dom.TemplateParameter[] templateParameters;	
+	public TemplateParameter[] templateParameters;	
 	public List<Parameter> arguments;
 	public int varargs;
 
@@ -37,7 +37,7 @@ public class DefinitionFunction extends Definition {
 		this.fensure = Statement.convert(elem.fensure);
 		this.fbody = Statement.convert(elem.fbody);
 
-		this.templateParameters = elem.templateParameters;
+		this.templateParameters = TemplateParameter.convertMany(elem.templateParameters);
 		this.arguments = DescentASTConverter.convertMany(elem.getArguments(), this.arguments); 
 		
 		if(elem.type != null) {
@@ -54,7 +54,6 @@ public class DefinitionFunction extends Definition {
 	public void accept0(IASTNeoVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
-			// TODO... ah shit, the symbol is in the middle of the type
 			TreeVisitor.acceptChildren(visitor, rettype);
 			TreeVisitor.acceptChildren(visitor, defname);
 			TreeVisitor.acceptChildren(visitor, templateParameters);

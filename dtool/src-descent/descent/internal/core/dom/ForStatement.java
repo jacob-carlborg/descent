@@ -8,10 +8,10 @@ import descent.core.domX.IASTVisitor;
 
 public class ForStatement extends Statement implements IForStatement {
 
-	private final Statement init;
-	private final Expression condition;
-	private final Expression increment;
-	private final Statement body;
+	public final Statement init;
+	public final Expression condition;
+	public final Expression increment;
+	public final Statement body;
 
 	public ForStatement(Statement init, Expression condition, Expression increment, Statement body) {
 		this.init = init;

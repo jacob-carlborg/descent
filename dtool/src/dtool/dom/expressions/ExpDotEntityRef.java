@@ -12,10 +12,10 @@ public class ExpDotEntityRef extends Expression {
 	public Expression exp;
 	public EntitySingle entity;
 
-	public ExpDotEntityRef(DotIdExp element) {
-		setSourceRange(element);
-		this.exp = Expression.convert(element.e);
-		this.entity = EntitySingle.convert(element.id);
+	public ExpDotEntityRef(DotIdExp elem) {
+		convertNode(elem);
+		this.exp = Expression.convert(elem.e);
+		this.entity = EntitySingle.convert(elem.id);
 	}
 	
 	public Entity convertRef(IdentifierExp exp) {

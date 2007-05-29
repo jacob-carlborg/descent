@@ -5,14 +5,14 @@ import dtool.dom.ast.IASTNeoVisitor;
 
 public class ExpThis extends Expression {
 
-	public ExpThis(ThisExp element) {
-		// TODO Auto-generated constructor stub
+	public ExpThis(ThisExp elem) {
+		convertNode(elem);
 	}
 
 	@Override
 	public void accept0(IASTNeoVisitor visitor) {
-		// TODO Auto-generated method stub
-
+		visitor.visit(this);
+		visitor.endVisit(this);
 	}
 
 }

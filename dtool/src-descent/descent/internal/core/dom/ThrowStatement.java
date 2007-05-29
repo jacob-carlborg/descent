@@ -7,7 +7,7 @@ import descent.core.domX.IASTVisitor;
 
 public class ThrowStatement extends Statement implements IStatement {
 
-	private final Expression exp;
+	public final Expression exp;
 
 	public ThrowStatement(Expression exp) {
 		this.exp = exp;

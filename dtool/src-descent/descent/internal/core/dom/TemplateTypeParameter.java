@@ -7,9 +7,9 @@ import descent.core.domX.IASTVisitor;
 
 public class TemplateTypeParameter extends TemplateParameter {
 
-	private final Identifier ident;
-	private final Type tp_spectype;
-	private final Type tp_defaulttype;
+	public final Identifier ident;
+	public final Type tp_spectype;
+	public final Type tp_defaulttype;
 
 	public TemplateTypeParameter(Identifier ident, Type tp_spectype, Type tp_defaulttype) {
 		this.ident = ident;

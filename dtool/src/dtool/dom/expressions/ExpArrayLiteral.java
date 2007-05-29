@@ -8,8 +8,9 @@ public class ExpArrayLiteral extends Expression {
 	
 	public Expression[] args;
 
-	public ExpArrayLiteral(ArrayLiteralExp element) {
-		this.args = Expression.convertMany(element.getArguments());
+	public ExpArrayLiteral(ArrayLiteralExp elem) {
+		convertNode(elem);
+		this.args = Expression.convertMany(elem.getArguments());
 	}
 
 	@Override

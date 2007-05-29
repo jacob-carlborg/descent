@@ -7,7 +7,7 @@ import descent.core.domX.IASTVisitor;
 
 public class GotoStatement extends Statement implements IGotoStatement {
 
-	private final Identifier ident;
+	public final Identifier ident;
 
 	public GotoStatement(Identifier ident) {
 		this.ident = ident;

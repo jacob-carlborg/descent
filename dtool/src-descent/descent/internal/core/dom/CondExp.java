@@ -7,9 +7,9 @@ import descent.core.domX.IASTVisitor;
 
 public class CondExp extends Expression implements IConditionExpression {
 	
-	private Expression cond;
-	private Expression t;
-	private Expression f;
+	public Expression cond;
+	public Expression t;
+	public Expression f;
 
 	public CondExp(Expression cond, Expression t, Expression f) {
 		this.cond = cond;

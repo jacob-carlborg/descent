@@ -1,19 +1,26 @@
 package dtool.dom.statements;
 
+import util.tree.TreeVisitor;
 import descent.internal.core.dom.DefaultStatement;
 import dtool.dom.ast.ASTNeoNode;
 import dtool.dom.ast.IASTNeoVisitor;
 
 public class StatementDefault extends ASTNeoNode {
 
-	public StatementDefault(DefaultStatement element) {
-		// TODO Auto-generated constructor stub
+	public Statement st;
+	
+	public StatementDefault(DefaultStatement elem) {
+		convertNode(elem);
+		this.st = Statement.convert(elem.s);
 	}
 
 	@Override
 	public void accept0(IASTNeoVisitor visitor) {
-		// TODO Auto-generated method stub
-
+		boolean children = visitor.visit(this);
+		if (children) {
+			TreeVisitor.acceptChildren(visitor, st);
+		}
+		visitor.endVisit(this);
 	}
 
 }

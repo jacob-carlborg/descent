@@ -9,8 +9,8 @@ import descent.core.domX.IASTVisitor;
 
 public class IntegerExp extends Expression implements IIntegerExpression, IFalseExpression, ITrueExpression {
 	
-	private int expressionType;
-	private BigInteger number;
+	public int expressionType;
+	public BigInteger number;
 	
 	public IntegerExp(BigInteger number, Type type) {
 		if (type == Type.tbool) {

@@ -3,7 +3,6 @@ package dtool.dom.expressions;
 import util.tree.TreeVisitor;
 import descent.internal.core.dom.BinaryExpression;
 import dtool.descentadapter.DescentASTConverter;
-import dtool.dom.ast.ASTNode;
 import dtool.dom.ast.IASTNeoVisitor;
 
 public class InfixExpression extends Expression {
@@ -53,7 +52,7 @@ public class InfixExpression extends Expression {
 
 	
 	public InfixExpression(BinaryExpression elem, int kind) {
-		setSourceRange((ASTNode) elem);
+		convertNode(elem);
 		this.leftExp = (Expression) DescentASTConverter.convertElem(elem.e1);
 		this.rightExp = (Expression) DescentASTConverter.convertElem(elem.e2);
 		this.kind = kind;

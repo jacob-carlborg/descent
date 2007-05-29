@@ -93,19 +93,15 @@ abstract class DeclarationConverter extends BaseConverter {
 	}
 	
 	public boolean visit(descent.internal.core.dom.BaseClass elem) {
-		Assert.fail(); return false;
+		return endAdapt(new DefinitionAggregate.BaseClass(elem));
 	}
 	
-	public boolean visit(descent.internal.core.dom.Catch elem) {
-		Assert.fail(); return false;
-	}
-
 	public boolean visit(descent.internal.core.dom.TypeSpecialization elem) {
-		Assert.fail(); return false;
+		Assert.fail(); return false; // singleuse
 	}
 	
 	public boolean visit(descent.internal.core.dom.TemplateParameter elem) {
-		Assert.fail(); return false;
+		Assert.fail(); return false; // abstract class
 	}
 
 	/*  ---------  Decls  --------  */

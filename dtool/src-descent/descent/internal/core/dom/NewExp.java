@@ -10,8 +10,8 @@ import descent.core.domX.IASTVisitor;
 
 public class NewExp extends Expression {
 	
-	private Expression[] arguments;
-	private Type type;
+	public Expression[] arguments;
+	public Type type;
 
 	public NewExp(Expression thisexp, List<Expression> newargs, Type t, List<Expression> arguments) {
 		this.type = t;

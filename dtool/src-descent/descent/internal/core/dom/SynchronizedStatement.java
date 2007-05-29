@@ -8,8 +8,8 @@ import descent.core.domX.IASTVisitor;
 
 public class SynchronizedStatement extends Statement implements ISynchronizedStatement {
 
-	private final Expression exp;
-	private final Statement body;
+	public final Expression exp;
+	public final Statement body;
 
 	public SynchronizedStatement(Expression exp, Statement body) {
 		this.exp = exp;

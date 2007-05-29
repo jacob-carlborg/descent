@@ -9,8 +9,8 @@ import descent.core.domX.IASTVisitor;
 
 public class CallExp extends Expression {
 	
-	Expression e;
-	Expression[] args;
+	public Expression e;
+	public Expression[] args;
 
 	public CallExp(Expression e, List<Expression> arguments) {
 		this.e = e;
@@ -21,7 +21,7 @@ public class CallExp extends Expression {
 		return args;
 	}
 
-	public IExpression getExpression() {
+	public Expression getExpression() {
 		return e;
 	}
 	

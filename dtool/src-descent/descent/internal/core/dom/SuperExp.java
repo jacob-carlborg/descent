@@ -6,7 +6,6 @@ import descent.core.domX.IASTVisitor;
 public class SuperExp extends Expression implements ISuperExpression {
 
 	public SuperExp() {
-		
 	}
 	
 	public int getElementType() {

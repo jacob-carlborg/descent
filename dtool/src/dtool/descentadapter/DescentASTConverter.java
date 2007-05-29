@@ -56,19 +56,19 @@ public class DescentASTConverter {
 	
 	public static ASTNode[] convertMany(Object[] children) {
 		ASTNode[] rets = new ASTNode[children.length];
-		convertMany(rets, children);
+		convertMany(children, rets);
 		return rets;
 	}
 	
 	@SuppressWarnings("unchecked")
-	public static <T extends ASTNode> void convertMany(T[] rets, Object[] children) {
+	public static <T extends ASTNode> T[] convertMany(Object[] children, T[] rets) {
 		StatementConverter conv = new StatementConverter();
 		for(int i = 0; i < children.length; ++i) {
 			ASTNode elem = (ASTNode) children[i];
 			elem.accept(conv);
 			rets[i] = (T) conv.ret;
 		}
+		return rets;	
 	}
-
 	
 }

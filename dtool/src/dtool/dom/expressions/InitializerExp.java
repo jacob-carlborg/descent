@@ -8,9 +8,9 @@ public class InitializerExp extends Initializer {
 	
 	public Expression exp;
 
-	public InitializerExp(ExpInitializer element) {
-		setSourceRange(element);
-		this.exp = Expression.convert(element.e); 
+	public InitializerExp(ExpInitializer elem) {
+		convertNode(elem);
+		this.exp = Expression.convert(elem.e); 
 	}
 
 	@Override

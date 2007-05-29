@@ -13,6 +13,9 @@ public class Parameter extends DefUnit {
 	public descent.internal.core.dom.InOut inout;
 	public Expression defaultValue;
 	
+	public Parameter() {
+	}
+	
 	public Parameter(descent.internal.core.dom.Argument elem) {
 		super();
 		setSourceRange(elem);

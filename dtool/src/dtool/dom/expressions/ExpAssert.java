@@ -9,8 +9,10 @@ public class ExpAssert extends Expression {
 	public Expression exp;
 	public Expression msg;
 
-	public ExpAssert(AssertExp element) {
-		// TODO Auto-generated constructor stub
+	public ExpAssert(AssertExp elem) {
+		convertNode(elem);
+		this.exp = Expression.convert(elem.getExpression());
+		this.msg = Expression.convert(elem.getMessage());
 	}
 
 	@Override

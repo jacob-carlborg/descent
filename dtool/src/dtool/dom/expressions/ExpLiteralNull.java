@@ -5,13 +5,14 @@ import dtool.dom.ast.IASTNeoVisitor;
 
 public class ExpLiteralNull extends Expression {
 
-	public ExpLiteralNull(NullExp element) {
-		// TODO Auto-generated constructor stub
+	public ExpLiteralNull(NullExp elem) {
+		convertNode(elem);
 	}
 
 	@Override
 	public void accept0(IASTNeoVisitor visitor) {
-		// TODO Auto-generated method stub
+		visitor.visit(this);
+		visitor.endVisit(this);
 	}
 
 }

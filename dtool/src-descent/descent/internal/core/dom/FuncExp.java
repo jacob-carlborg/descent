@@ -7,7 +7,7 @@ import descent.core.domX.IASTVisitor;
 
 public class FuncExp extends Expression implements IExpression {
 
-	private final FuncLiteralDeclaration fd;
+	public final FuncLiteralDeclaration fd;
 
 	public FuncExp(FuncLiteralDeclaration fd) {
 		this.fd = fd;

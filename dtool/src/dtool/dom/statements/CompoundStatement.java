@@ -12,9 +12,8 @@ public class CompoundStatement extends Statement {
 
 	@SuppressWarnings("unchecked")
 	public CompoundStatement(descent.internal.core.dom.CompoundStatement elem) {
-		setSourceRange(elem);
-
-		statements = DescentASTConverter.convertMany(elem.as, statements); 
+		convertNode(elem);
+		this.statements = DescentASTConverter.convertMany(elem.as, statements); 
 	}
 
 

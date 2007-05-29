@@ -7,8 +7,8 @@ import descent.core.domX.IASTVisitor;
 
 public class SwitchStatement extends Statement {
 
-	private final Expression expr;
-	private final Statement body;
+	public final Expression expr;
+	public final Statement body;
 
 	public SwitchStatement(Expression expr, Statement body) {
 		this.expr = expr;

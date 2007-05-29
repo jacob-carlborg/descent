@@ -8,8 +8,8 @@ import descent.core.domX.IASTVisitor;
 
 public class CaseStatement extends Statement implements ICaseStatement {
 
-	private final Expression exp;
-	private final Statement s;
+	public final Expression exp;
+	public final Statement s;
 
 	public CaseStatement(Expression exp, Statement s) {
 		this.exp = exp;

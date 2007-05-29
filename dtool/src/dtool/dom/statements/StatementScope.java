@@ -8,12 +8,12 @@ public class StatementScope extends ASTNeoNode {
 
 	public StatementScope(ScopeStatement element) {
 		// TODO Auto-generated constructor stub
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
 	public void accept0(IASTNeoVisitor visitor) {
-		// TODO Auto-generated method stub
-
+		throw new UnsupportedOperationException();
 	}
 
 }

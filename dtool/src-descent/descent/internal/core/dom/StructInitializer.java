@@ -11,8 +11,8 @@ import descent.core.domX.IASTVisitor;
 
 public class StructInitializer extends Initializer {
 	
-	private List<Identifier> ids;
-	private List<Initializer> values;
+	public List<Identifier> ids;
+	public List<Initializer> values;
 
 	public StructInitializer() {
 		this.ids = new ArrayList<Identifier>();

@@ -81,7 +81,7 @@ import descent.internal.core.dom.UnaryExpression.IUnaryExpression2;
 import dtool.dom.expressions.ExpArrayIndex;
 import dtool.dom.expressions.ExpArrayLiteral;
 import dtool.dom.expressions.ExpAssert;
-import dtool.dom.expressions.ExpBoolLiteral;
+import dtool.dom.expressions.ExpLiteralBool;
 import dtool.dom.expressions.ExpCall;
 import dtool.dom.expressions.ExpCast;
 import dtool.dom.expressions.ExpCond;
@@ -243,11 +243,11 @@ abstract class ExpressionConverter extends DeclarationConverter {
 	
 	
 	public boolean visit(ITrueExpression elem) {
-		return endAdapt(new ExpBoolLiteral(elem));
+		return endAdapt(new ExpLiteralBool(elem));
 	}
 
 	public boolean visit(IFalseExpression elem) {
-		return endAdapt(new ExpBoolLiteral(elem));
+		return endAdapt(new ExpLiteralBool(elem));
 	}
 
 	public boolean visit(IIntegerExpression elem) {

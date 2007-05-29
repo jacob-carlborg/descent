@@ -5,13 +5,14 @@ import dtool.dom.ast.IASTNeoVisitor;
 
 public class InitializerVoid extends Initializer {
 
-	public InitializerVoid(VoidInitializer element) {
-		// TODO Auto-generated constructor stub
+	public InitializerVoid(VoidInitializer elem) {
+		convertNode(elem);
 	}
 
 	@Override
 	public void accept0(IASTNeoVisitor visitor) {
-		// TODO Auto-generated method stub
+		visitor.visit(this);
+		visitor.endVisit(this);
 
 	}
 

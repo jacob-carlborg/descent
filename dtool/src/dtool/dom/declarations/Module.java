@@ -61,7 +61,7 @@ public class Module extends DefUnit implements IScope {
 
 			if(elem.md.packages != null) {
 				this.md.packages = new EntitySingle.Identifier[elem.md.packages.size()];
-				DescentASTConverter.convertMany(this.md.packages, elem.md.packages.toArray());
+				DescentASTConverter.convertMany(elem.md.packages.toArray(),this.md.packages);
 			} else {
 				this.md.packages = new EntitySingle.Identifier[0];
 			}

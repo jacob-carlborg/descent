@@ -12,8 +12,8 @@ import descent.core.domX.IASTVisitor;
 public class PragmaStatement extends Statement implements IPragmaStatement {
 	
 	public Identifier ident;
-	private Expression[] expressions;
-	private Statement body;
+	public Expression[] expressions;
+	public Statement body;
 
 	public PragmaStatement(Identifier ident, List<Expression> args, Statement body) {
 		this.ident = ident;

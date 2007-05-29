@@ -6,7 +6,7 @@ import descent.core.domX.IASTVisitor;
 
 public class DefaultStatement extends Statement {
 
-	private final Statement s;
+	public final Statement s;
 
 	public DefaultStatement(Statement s) {
 		this.s = s;

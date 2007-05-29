@@ -7,7 +7,7 @@ import descent.core.domX.IASTVisitor;
 
 public class ParenthesizedExpression extends Expression implements IParenthesizedExpression {
 	
-	private Expression e;
+	public Expression e;
 
 	public ParenthesizedExpression(Expression e) {
 		this.e = e;

@@ -7,7 +7,7 @@ import descent.core.domX.IASTVisitor;
 
 public class VolatileStatement extends Statement implements IVolatileStatement {
 
-	private final Statement s;
+	public final Statement s;
 
 	public VolatileStatement(Statement s) {
 		this.s = s;

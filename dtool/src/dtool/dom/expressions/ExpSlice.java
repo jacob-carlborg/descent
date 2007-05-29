@@ -12,6 +12,7 @@ public class ExpSlice extends Expression {
 	public Expression to;
 	
 	public ExpSlice(SliceExp elem) {
+		convertNode(elem);
 		slicee = Expression.convert(elem.e);
 		from = Expression.convert(elem.from);
 		to = Expression.convert(elem.to);
@@ -21,6 +22,7 @@ public class ExpSlice extends Expression {
 		//slicee = Expression.convert(elem.next);
 		from = Expression.convert(elem.from);
 		to = Expression.convert(elem.to);
+		throw new UnsupportedOperationException(); //TODO
 	}
 	
 

@@ -2,26 +2,24 @@ package dtool.dom.statements;
 
 import util.tree.TreeVisitor;
 import descent.internal.core.dom.DeclarationStatement;
-import dtool.descentadapter.DescentASTConverter;
 import dtool.dom.ast.ASTNeoNode;
 import dtool.dom.ast.IASTNeoVisitor;
-import dtool.dom.declarations.Definition;
+import dtool.dom.declarations.Declaration;
 
 public class StatementDeclaration extends ASTNeoNode {
 	
-	Definition definition;
+	Declaration decl;
 
 	public StatementDeclaration(DeclarationStatement elem) {
-		setSourceRange(elem);
-		
-		this.definition = (Definition) DescentASTConverter.convertElem(elem.d);  
+		convertNode(elem);
+		this.decl = Declaration.convert(elem.d);  
 	}
 
 	@Override
 	public void accept0(IASTNeoVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
-			TreeVisitor.acceptChild(visitor, definition);
+			TreeVisitor.acceptChild(visitor, decl);
 		}
 		visitor.endVisit(this);	 
 	}

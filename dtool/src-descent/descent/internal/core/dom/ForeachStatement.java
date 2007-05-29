@@ -10,10 +10,10 @@ import descent.core.domX.IASTVisitor;
 
 public class ForeachStatement extends Statement implements IStatement {
 	
-	private Argument[] arguments;
-	private Expression aggr;
-	private Statement body;
-	private boolean reverse;
+	public Argument[] arguments;
+	public Expression aggr;
+	public Statement body;
+	public boolean reverse;
 
 	public ForeachStatement(TOK op, List<Argument> arguments, Expression aggr, Statement body) {
 		this.body = body;

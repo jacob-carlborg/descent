@@ -6,7 +6,7 @@ import descent.core.domX.IASTVisitor;
 
 public class DeleteExp extends Expression {
 
-	private final Expression e;
+	public final Expression e;
 
 	public DeleteExp(Expression e) {
 		this.e = e;

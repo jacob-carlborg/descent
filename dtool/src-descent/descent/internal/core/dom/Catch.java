@@ -9,9 +9,9 @@ import descent.core.domX.AbstractElement;
 
 public class Catch extends AbstractElement  {
 
-	private final Type t;
-	private final Identifier id;
-	private final Statement handler;
+	public final Type t;
+	public final Identifier id;
+	public final Statement handler;
 
 	public Catch(Type t, Identifier id, Statement handler) {
 		this.t = t;

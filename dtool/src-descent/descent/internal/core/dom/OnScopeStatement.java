@@ -8,7 +8,7 @@ import descent.core.domX.IASTVisitor;
 public class OnScopeStatement extends Statement implements IOnScopeStatement  {
 
 	private final TOK t2;
-	private final Statement st;
+	public final Statement st;
 
 	public OnScopeStatement(TOK t2, Statement st) {
 		this.t2 = t2;

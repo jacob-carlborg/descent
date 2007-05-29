@@ -7,7 +7,7 @@ import descent.core.domX.IASTVisitor;
 
 public class TypeidExp extends Expression implements ITypeidExpression {
 
-	private final Type type;
+	public final Type type;
 
 	public TypeidExp(Type type) {
 		this.type = type;

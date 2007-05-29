@@ -7,10 +7,10 @@ import descent.core.domX.IASTVisitor;
 
 public class IfStatement extends Statement {
 
-	private final Argument arg;
-	private final Expression expr;
-	private final Statement ifbody;
-	private final Statement elsebody;
+	public final Argument arg;
+	public final Expression expr;
+	public final Statement ifbody;
+	public final Statement elsebody;
 
 	public IfStatement(Argument arg, Expression expr, Statement ifbody, Statement elsebody) {
 		this.arg = arg;

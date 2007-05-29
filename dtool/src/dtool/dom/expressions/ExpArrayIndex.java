@@ -9,10 +9,10 @@ public class ExpArrayIndex extends Expression {
 	public Expression array;
 	public Expression[] args;
 	
-	
-	public ExpArrayIndex(ArrayExp element) {
-		this.array = Expression.convert(element.getExpression());
-		this.args = Expression.convertMany(element.getArguments());
+	public ExpArrayIndex(ArrayExp elem) {
+		convertNode(elem);
+		this.array = Expression.convert(elem.getExpression());
+		this.args = Expression.convertMany(elem.getArguments());
 	}
 
 	@Override
