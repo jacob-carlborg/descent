@@ -5,6 +5,9 @@ import java.util.List;
 
 public class CompoundStatement extends Statement {
 	
+	public boolean manyVars; // if true, the block is just to group variable declarations,
+	                         // alias declarations or typedef declarations
+	
 	public List<Statement> statements;
 	public List<Statement> sourceStatements;
 

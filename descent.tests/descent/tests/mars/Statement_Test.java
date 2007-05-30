@@ -698,6 +698,33 @@ public class Statement_Test extends Parser_Test {
 		assertEquals(1, var.modifiers().size());
 	}
 	
+	public void testVars() {
+		String s = " int x, y, z;";
+		DeclarationStatement stm = (DeclarationStatement) parseStatement(s);
+		
+		VariableDeclaration var = (VariableDeclaration) stm.getDeclaration();
+		assertNotNull(var);
+		assertEquals(3, var.fragments().size());
+	}
+	
+	public void testAliases() {
+		String s = " alias x, y, z;";
+		DeclarationStatement stm = (DeclarationStatement) parseStatement(s);
+		
+		AliasDeclaration var = (AliasDeclaration) stm.getDeclaration();
+		assertNotNull(var);
+		assertEquals(3, var.fragments().size());
+	}
+	
+	public void testTypedefs() {
+		String s = " typedef x, y, z;";
+		DeclarationStatement stm = (DeclarationStatement) parseStatement(s);
+		
+		TypedefDeclaration var = (TypedefDeclaration) stm.getDeclaration();
+		assertNotNull(var);
+		assertEquals(3, var.fragments().size());
+	}
+	
 	public void testModifiersWithVar() {
 		Object[][] objs = {
 			{ "const", Modifier.ModifierKeyword.CONST_KEYWORD },

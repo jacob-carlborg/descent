@@ -3686,7 +3686,7 @@ public class Parser extends Lexer {
 				as.add(s[0]);
 			}
 			
-			s[0] = newBlock(as);
+			s[0] = newManyVarsBlock(as);
 		} else if (a.size() == 1) {
 			Dsymbol d = (Dsymbol) a.get(0);
 			s[0] = new DeclarationStatement(loc, d);
@@ -5626,6 +5626,12 @@ public class Parser extends Lexer {
 	
 	private CompoundStatement newBlock(List<Statement> statements) {
 		return new CompoundStatement(loc, statements);
+	}
+	
+	private CompoundStatement newManyVarsBlock(List<Statement> statements) {
+		CompoundStatement statement = new CompoundStatement(loc, statements);
+		statement.manyVars = true;
+		return statement;
 	}
 	
 	private DebugSymbol newDebugAssignmentForCurrentToken() {

@@ -1165,7 +1165,7 @@ public class ASTConverter {
 	public descent.core.dom.ForStatement convert(ForStatement a) {
 		descent.core.dom.ForStatement b = new descent.core.dom.ForStatement(ast);
 		if (a.init != null) {
-			b.setInitializer(convertForInitializer(a.init));
+			b.setInitializer(convert(a.init));
 		}
 		if (a.condition != null) {
 			b.setCondition(convert(a.condition));
@@ -1177,34 +1177,8 @@ public class ASTConverter {
 		b.setSourceRange(a.start, a.length);
 		return b;
 	}
-	
-	private descent.core.dom.Statement convertForInitializer(Statement init) {
-		if (!(init instanceof CompoundStatement)) {
-			return convert(init);
-		}
-		
-		CompoundStatement block = (CompoundStatement) init;
-		if (block.statements == null || block.statements.size() == 0) {
-			return convert(init);
-		}
-		
-		Statement firstStatement = block.statements.get(0);
-		if (firstStatement instanceof DeclarationStatement) {
-			DeclarationStatement declStm = (DeclarationStatement) firstStatement;
-			Dsymbol declaration = ((DeclarationExp) declStm.exp).declaration;
-			if (declaration instanceof VarDeclaration) {
-				return convertForInitializerVars(init, block);
-			} else if (declaration instanceof AliasDeclaration) {
-				return convertForInitializerAlias(init, block);
-			} else if (declaration instanceof TypedefDeclaration) {
-				return convertForInitializerTypedef(init, block);
-			}
-		}
-		
-		return convert(init);
-	}
 
-	private descent.core.dom.Statement convertForInitializerVars(Statement init, CompoundStatement block) {
+	private descent.core.dom.Statement convertBlockVars(CompoundStatement block) {
 		List<VarDeclaration> varDeclarations = new ArrayList<VarDeclaration>();
 		for(Statement stm : block.statements) {
 			if (stm instanceof DeclarationStatement) {
@@ -1214,14 +1188,14 @@ public class ASTConverter {
 					varDeclarations.add((VarDeclaration) declaration);
 				}
 			} else {
-				return convert(init);
+				throw new RuntimeException("Can't happen");
 			}
 		}
 		
 		return wrapWithDeclarationStatement(convertManyVarDeclarations(varDeclarations));
 	}
 	
-	private descent.core.dom.Statement convertForInitializerAlias(Statement init, CompoundStatement block) {
+	private descent.core.dom.Statement convertBlockAlias(CompoundStatement block) {
 		List<AliasDeclaration> varDeclarations = new ArrayList<AliasDeclaration>();
 		for(Statement stm : block.statements) {
 			if (stm instanceof DeclarationStatement) {
@@ -1231,14 +1205,14 @@ public class ASTConverter {
 					varDeclarations.add((AliasDeclaration) declaration);
 				}
 			} else {
-				return convert(init);
+				throw new RuntimeException("Can't happen");
 			}
 		}
 		
 		return wrapWithDeclarationStatement(convertManyAliasDeclarations(varDeclarations));
 	}
 	
-	private descent.core.dom.Statement convertForInitializerTypedef(Statement init, CompoundStatement block) {
+	private descent.core.dom.Statement convertBlockTypedef(CompoundStatement block) {
 		List<TypedefDeclaration> varDeclarations = new ArrayList<TypedefDeclaration>();
 		for(Statement stm : block.statements) {
 			if (stm instanceof DeclarationStatement) {
@@ -1248,7 +1222,7 @@ public class ASTConverter {
 					varDeclarations.add((TypedefDeclaration) declaration);
 				}
 			} else {
-				return convert(init);
+				throw new RuntimeException("Can't happen");
 			}
 		}
 		
@@ -1754,10 +1728,31 @@ public class ASTConverter {
 				throw new IllegalStateException("Should not happen");
 			}
 		} else {
-			descent.core.dom.Block b = new descent.core.dom.Block(ast);
-			convertStatements(b.statements(), a.sourceStatements);
-			b.setSourceRange(a.start, a.length);
-			return b;
+			if (a.manyVars) {
+				Statement firstStatement = a.statements.get(0);
+				
+				if (!(firstStatement instanceof DeclarationStatement)) {
+					throw new RuntimeException("Can't happen");
+				}
+				
+				DeclarationStatement declStm = (DeclarationStatement) firstStatement;
+				Dsymbol declaration = ((DeclarationExp) declStm.exp).declaration;
+				if (declaration instanceof VarDeclaration) {
+					return convertBlockVars(a);
+				} else if (declaration instanceof AliasDeclaration) {
+					return convertBlockAlias(a);
+				} else {
+					if (!(declaration instanceof TypedefDeclaration)) {
+						throw new RuntimeException("Can't happen");
+					}
+					return convertBlockTypedef(a);
+				}
+			} else {
+				descent.core.dom.Block b = new descent.core.dom.Block(ast);
+				convertStatements(b.statements(), a.sourceStatements);
+				b.setSourceRange(a.start, a.length);
+				return b;
+			}
 		}
 	}
 	
