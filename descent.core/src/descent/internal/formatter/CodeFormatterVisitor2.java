@@ -113,7 +113,7 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 		
 		return false;
 	}
-	
+
 	public boolean visit(AliasDeclaration node)
 	{
 		formatModifiers(node.modifiers(), false);
@@ -262,28 +262,13 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 		return false;
 	}
 	
+	// TODO pretty up ASM formatting (i.e., indentations, modifiers, etc.)
 	public boolean visit(AsmBlock node)
 	{
-		scribe.printNextToken(TOK.TOKasm);
-		scribe.printNewLine();
-		scribe.printNextToken(TOK.TOKlcurly);
-		scribe.indent();
-		formatStatements(node.statements(), true);
-		scribe.unIndent();
-		scribe.printNextToken(TOK.TOKrcurly);
+		scribe.printComment();
+		scribe.dontFormat(node.getStartPosition(), node.getLength());
+		scribe.printTrailingComment();
 		return false;
-	}
-	
-	public boolean visit(AsmStatement node)
-	{
-		// TODO asm
-		throw new UnsupportedOperationException();
-	}
-	
-	public boolean visit(AsmToken node)
-	{
-		// TODO asm
-		throw new UnsupportedOperationException();
 	}
 	
 	public boolean visit(AssertExpression node)
@@ -1027,7 +1012,7 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 	public boolean visit(ModifierDeclaration node)
 	{
 		formatModifiers(node.modifiers(), false);
-		node.getModifier().accept(this);
+		//node.getModifier().accept(this);
 		formatDeclarationBlock(node.declarations());
 		return false;
 	}
@@ -1168,6 +1153,8 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 		}
 		scribe.printNextToken(TOK.TOKrparen);
 		formatDeclarationBlock(node.declarations());
+		if(isNextToken(TOK.TOKsemicolon))
+			scribe.printNextToken(TOK.TOKsemicolon);
 		return false;
 	}
 	
@@ -1332,8 +1319,11 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 	public boolean visit(StaticAssert node)
 	{
 		formatModifiers(node.modifiers(), false);
-		scribe.printNextToken(TOK.TOKstatic);
-		scribe.space();
+		if(isNextToken(TOK.TOKstatic))
+		{
+			scribe.printNextToken(TOK.TOKstatic);
+			scribe.space();
+		}
 		scribe.printNextToken(TOK.TOKassert);
 		scribe.printNextToken(TOK.TOKlparen);
 		node.getExpression().accept(this);
@@ -1359,8 +1349,11 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 	public boolean visit(StaticIfDeclaration node)
 	{
 		formatModifiers(node.modifiers(), false);
-		scribe.printNextToken(TOK.TOKstatic);
-		scribe.space();
+		if(isNextToken(TOK.TOKstatic))
+		{
+			scribe.printNextToken(TOK.TOKstatic);
+			scribe.space();
+		}
 		scribe.printNextToken(TOK.TOKif);
 		scribe.printNextToken(TOK.TOKlparen);
 		node.getExpression().accept(this);
@@ -1573,7 +1566,14 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 	
 	public boolean visit(TypeDotIdentifierExpression node)
 	{
-		node.getType().accept(this);
+		if(isNextToken(TOK.TOKlparen))
+		{
+			scribe.printNextToken(TOK.TOKlparen);
+			node.getType().accept(this);
+			scribe.printNextToken(TOK.TOKrparen);
+		}
+		else
+			node.getType().accept(this);
 		scribe.printNextToken(TOK.TOKdot);
 		node.getName().accept(this);
 		return false;
@@ -1638,6 +1638,8 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 	
 	public boolean visit(ValueTemplateParameter node)
 	{
+		node.getType().accept(this);
+		scribe.space();
 		node.getName().accept(this);
 		Expression specificValue = node.getSpecificValue();
 		if(null != specificValue)
@@ -1758,7 +1760,14 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 	public boolean visit(VolatileStatement node)
 	{
 		scribe.printNextToken(TOK.TOKvolatile);
-		formatSubStatement(node.getBody(), true, 0, false, 0);
+		Statement body = node.getBody();
+		if(body instanceof Block)
+			formatSubStatement(body, true, 0, false, 0);
+		else
+		{
+			scribe.space();
+			body.accept(this);
+		}
 		return false;
 	}
 

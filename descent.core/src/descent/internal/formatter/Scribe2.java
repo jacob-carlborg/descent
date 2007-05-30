@@ -570,7 +570,63 @@ public class Scribe2 {	private static final int INITIAL_SIZE = 100;
 		column += s.length;
 		needSpace = true;
 	}
+	
+	public void dontFormat(int startPosition, int length)
+	{
+		int endPosition = startPosition + length;
+		
+		lexer.reset(startPosition, endPosition - 1);
+		int currentCharacter;
+		boolean isNewLine = false;
+		int start = startPosition;
+		int nextCharacterStart = startPosition;
+		printIndentationIfNecessary();
+		if (this.pendingSpace)
+			this.addInsertEdit(startPosition, " "); //$NON-NLS-1$
+		this.needSpace = false;		
+		this.pendingSpace = false;		
+		int previousStart = startPosition;
 
+		while (nextCharacterStart <= endPosition && (currentCharacter = nextChar()) != -1) {
+			nextCharacterStart = lexer.p;
+
+			switch(currentCharacter) {
+				case '\r' :
+					start = previousStart;
+					isNewLine = true;
+					if (isNextChar('\n')) {
+						currentCharacter = '\n';
+						nextCharacterStart = lexer.p;
+					}
+					break;
+				case '\n' :
+					start = previousStart;
+					isNewLine = true;
+					break;
+				default:
+					if (isNewLine) {
+						if (ScannerHelper.isWhitespace((char) currentCharacter)) {
+							int previousStartPosition = lexer.p;
+							if (currentCharacter == '\r' || currentCharacter == '\n') {
+								nextCharacterStart = previousStartPosition;
+							}
+						}
+						this.column = 1;
+						this.line++;
+						addReplaceEdit(start, previousStart - 1, lineSeparator);
+					} else {
+						this.column += (nextCharacterStart - previousStart);
+					}
+					isNewLine = false;
+			}
+			previousStart = nextCharacterStart;
+			lexer.p = nextCharacterStart;
+		}
+		this.lastNumberOfNewLines = 0;
+		needSpace = false;
+		lexer.reset(endPosition, this.scannerEndPosition - 1);
+	}
+	
 	private void printBlockComment(char[] s, boolean isJavadoc) {
 		int currentTokenStartPosition = lexer.token.ptr;
 		int currentTokenEndPosition = currentTokenEndPosition() + 1;
@@ -1020,7 +1076,19 @@ public class Scribe2 {	private static final int INITIAL_SIZE = 100;
 		needSpace = false;
 		this.pendingSpace = false;
 	}
-
+	
+	public void printAnyToken()
+	{
+		printAnyToken(false);
+	}
+	
+	public void printAnyToken(boolean considerSpaceIfAny)
+	{
+		printComment();
+		char[] currentTokenSource = lexer.token.getRawTokenSource();
+		this.print(currentTokenSource, considerSpaceIfAny);
+	}
+	
 	public void printNextToken(TOK expectedTokenType){
 		printNextToken(expectedTokenType, false);
 	}
