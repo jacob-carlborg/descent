@@ -692,10 +692,20 @@ public class Statement_Test extends Parser_Test {
 	public void testScope() {
 		String s = " scope int x;";
 		DeclarationStatement stm = (DeclarationStatement) parseStatement(s);
+		assertPosition(stm, 1, s.length() - 1);
+		
+		VariableDeclaration var = (VariableDeclaration) stm.getDeclaration();
+		assertPosition(var, 1, s.length() - 1);
+		assertEquals(1, var.modifiers().size());
+	}
+	
+	public void testScopeFinal() {
+		String s = " scope final int x;";
+		DeclarationStatement stm = (DeclarationStatement) parseStatement(s);
 		
 		VariableDeclaration var = (VariableDeclaration) stm.getDeclaration();
 		assertNotNull(var);
-		assertEquals(1, var.modifiers().size());
+		assertEquals(2, var.modifiers().size());
 	}
 	
 	public void testVars() {
@@ -708,7 +718,7 @@ public class Statement_Test extends Parser_Test {
 	}
 	
 	public void testAliases() {
-		String s = " alias x, y, z;";
+		String s = " alias int x, y, z;";
 		DeclarationStatement stm = (DeclarationStatement) parseStatement(s);
 		
 		AliasDeclaration var = (AliasDeclaration) stm.getDeclaration();
@@ -717,12 +727,23 @@ public class Statement_Test extends Parser_Test {
 	}
 	
 	public void testTypedefs() {
-		String s = " typedef x, y, z;";
+		String s = " typedef int x, y, z;";
 		DeclarationStatement stm = (DeclarationStatement) parseStatement(s);
 		
 		TypedefDeclaration var = (TypedefDeclaration) stm.getDeclaration();
 		assertNotNull(var);
 		assertEquals(3, var.fragments().size());
+	}
+	
+	public void testStaticVar() {
+		String s = " static int x;";
+		DeclarationStatement stm = (DeclarationStatement) parseStatement(s);
+		
+		VariableDeclaration var = (VariableDeclaration) stm.getDeclaration();
+		assertNotNull(var);
+		assertEquals(1, var.fragments().size());
+		assertEquals(1, var.modifiers().size());
+		assertEquals(Modifier.ModifierKeyword.STATIC_KEYWORD, var.modifiers().get(0).getModifierKeyword());
 	}
 	
 	public void testModifiersWithVar() {

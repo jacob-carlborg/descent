@@ -1670,7 +1670,11 @@ public class ASTConverter {
 	
 	public descent.core.dom.DeclarationStatement convert(DeclarationStatement a) {
 		descent.core.dom.DeclarationStatement b = new descent.core.dom.DeclarationStatement(ast);
-		b.setDeclaration(convertDeclaration(((DeclarationExp) a.exp).declaration));
+		
+		Declaration declaration = convertDeclaration(((DeclarationExp) a.exp).declaration);
+		b.setDeclaration(declaration);		
+		declaration.setSourceRange(a.start, a.length);
+		
 		b.setSourceRange(a.start, a.length);
 		return b;
 	}

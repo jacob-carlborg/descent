@@ -74,6 +74,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.StringTokenizer;
 
+import org.eclipse.core.runtime.Assert;
+
 import descent.core.compiler.IProblem;
 import descent.core.dom.AST;
 import descent.core.dom.CodeComment;
@@ -710,7 +712,9 @@ public class Parser extends Lexer {
 	private LINK parseLinkage() {
 		LINK link = LINKdefault;
 		nextToken();
-		assert (token.value == TOKlparen);
+		
+		Assert.isTrue(token.value == TOKlparen);
+		
 		nextToken();
 		if (token.value == TOKidentifier) {
 			String id = token.string;
@@ -2293,7 +2297,7 @@ public class Parser extends Lexer {
 			t = parseDeclarator(ts, pointer2_ident, pointer2_tpl, identStart);
 			ident = pointer2_ident[0];
 			tpl = pointer2_tpl[0];
-			assert (t != null);
+			Assert.isTrue(t != null);
 			if (tfirst == null)
 				tfirst = t;
 			else if (t != tfirst) {
@@ -2402,6 +2406,7 @@ public class Parser extends Lexer {
 				
 				v = new VarDeclaration(loc, t, ident, init);
 				v.storage_class = storage_class;
+				v.modifiers = modifiers;
 				a.add(v);
 				
 				switch (token.value) {
@@ -3171,14 +3176,9 @@ public class Parser extends Lexer {
 		    if (peek(token).value != TOKlparen) {
 		    	// goto Ldeclaration
 		    	// scope used as storage class
-		    	Modifier modifier = new Modifier(token.value);
-		    	modifier.setSourceRange(token.ptr, token.len);
 				Statement[] ps = { s };
 				parseStatement_Ldeclaration(ps, flags);
 				s = ps[0];
-				if (s instanceof DeclarationStatement) {
-					((DeclarationExp) ((DeclarationStatement) s).exp).declaration.addModifier(modifier);
-				}
 				break;
 		    }
 			
@@ -3691,7 +3691,7 @@ public class Parser extends Lexer {
 			Dsymbol d = (Dsymbol) a.get(0);
 			s[0] = new DeclarationStatement(loc, d);
 		} else {
-			assert (false);
+			Assert.isTrue(false);
 			s[0] = null;
 		}
 		/*
@@ -5077,7 +5077,7 @@ public class Parser extends Lexer {
 			e = parsePrimaryExp();
 			break;
 		}
-		assert (e != null);
+		Assert.isTrue(e != null);
 
 		e.setSourceRange(start, prevToken.ptr + prevToken.len - start);
 
