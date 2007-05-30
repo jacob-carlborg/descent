@@ -994,92 +994,6 @@ public class Scribe2 {	private static final int INITIAL_SIZE = 100;
 				break;
 		}
 	}
-
-	/**
-	 * @param modifiers list of IExtendedModifiers
-	 * @param visitor
-	 */
-	/* public void printModifiers(List modifiers, ASTVisitor visitor) {
-			int modifiersIndex = 0;
-			boolean isFirstModifier = true;
-			int currentTokenStartPosition = lexer.p;
-			boolean hasComment = false;
-			while ((this.currentToken = lexer.nextToken()) != ITerminalSymbols.TokenNameEOF) {
-				switch(this.currentToken) {
-					case ITerminalSymbols.TokenNamepublic :
-					case ITerminalSymbols.TokenNameprotected :
-					case ITerminalSymbols.TokenNameprivate :
-					case ITerminalSymbols.TokenNamestatic :
-					case ITerminalSymbols.TokenNameabstract :
-					case ITerminalSymbols.TokenNamefinal :
-					case ITerminalSymbols.TokenNamenative :
-					case ITerminalSymbols.TokenNamesynchronized :
-					case ITerminalSymbols.TokenNametransient :
-					case ITerminalSymbols.TokenNamevolatile :
-					case ITerminalSymbols.TokenNamestrictfp :
-						this.print(lexer.token.getRawTokenSource(), !isFirstModifier);
-						isFirstModifier = false;
-						currentTokenStartPosition = lexer.p;
-						modifiersIndex++;
-						break;
-					case ITerminalSymbols.TokenNameAT :
-						if (!isFirstModifier) {
-							this.space();
-						}
-						lexer.reset(lexer.token.ptr, this.scannerEndPosition - 1);
-						((Annotation) modifiers.get(modifiersIndex)).accept(visitor);
-						if (this.formatter.preferences.insert_new_line_after_annotation) {
-							this.printNewLine();
-						}
-						isFirstModifier = false;
-						currentTokenStartPosition = lexer.p;
-						modifiersIndex++;
-						break;
-					case ITerminalSymbols.TokenNameCOMMENT_BLOCK :
-						this.printBlockComment(lexer.token.getRawTokenSource(), false);
-						currentTokenStartPosition = lexer.p;
-						hasComment = true;
-						break;
-					case ITerminalSymbols.TokenNameCOMMENT_JAVADOC :
-						this.printBlockComment(lexer.token.getRawTokenSource(), true);
-						currentTokenStartPosition = lexer.p;
-						hasComment = true;
-						break;
-					case ITerminalSymbols.TokenNameCOMMENT_LINE :
-						this.printCommentLine(lexer.token.getRawTokenSource());
-						currentTokenStartPosition = lexer.p;
-						break;
-					case TOKwhitespace :
-						addDeleteEdit(lexer.token.ptr, currentTokenEndPosition());
-						int count = 0;
-						char[] whiteSpaces = lexer.token.getRawTokenSource();
-						for (int i = 0, max = whiteSpaces.length; i < max; i++) {
-							switch(whiteSpaces[i]) {
-								case '\r' :
-									if ((i + 1) < max) {
-										if (whiteSpaces[i + 1] == '\n') {
-											i++;
-										}
-									}
-									count++;
-									break;
-								case '\n' :
-									count++;
-							}
-						}
-						if (count >= 1 && hasComment) {
-							printNewLine();
-						}
-						currentTokenStartPosition = lexer.p;
-						hasComment = false;
-						break;
-					default:
-						// step back one token
-						lexer.reset(currentTokenStartPosition, this.scannerEndPosition - 1);
-						return;					
-				}
-			}
-	} */
 	
 	public void printNewLine() {
 		if (lastNumberOfNewLines >= 1) {
@@ -1141,87 +1055,7 @@ public class Scribe2 {	private static final int INITIAL_SIZE = 100;
 			}
 			this.print(currentTokenSource, considerSpaceIfAny);
 	}
-
-	/* public void printArrayQualifiedReference(int numberOfTokens, int sourceEnd) {
-		int currentTokenStartPosition = lexer.p;
-		int numberOfIdentifiers = 0;
-			do {
-				this.printComment();
-				switch(this.currentToken = lexer.nextToken()) {
-					case ITerminalSymbols.TOKeof :
-						return;
-					case TOKwhitespace :
-						addDeleteEdit(lexer.token.ptr, currentTokenEndPosition());
-						currentTokenStartPosition = lexer.p;
-						break;
-					case TOKblockcomment:
-					case TOKdocblockcomment:
-					case TOKpluscomment:
-					case TOKdocpluscomment:
-						this.printBlockComment(lexer.token.getRawTokenSource(), false);
-						currentTokenStartPosition = lexer.p;
-						break;
-					case TOKlinecomment:
-					case TOKdoclinecomment:
-						this.printCommentLine(lexer.token.getRawTokenSource());
-						currentTokenStartPosition = lexer.p;
-						break;
-					case ITerminalSymbols.TokenNameIdentifier :
-						this.print(lexer.token.getRawTokenSource(), false);
-						currentTokenStartPosition = lexer.p;
-						if (++ numberOfIdentifiers == numberOfTokens) {
-							lexer.reset(currentTokenStartPosition, this.scannerEndPosition - 1);
-							return;
-						}
-						break;						
-					case ITerminalSymbols.TokenNameDOT :
-						this.print(lexer.token.getRawTokenSource(), false);
-						currentTokenStartPosition = lexer.p;
-						break;
-					default:
-						lexer.reset(currentTokenStartPosition, this.scannerEndPosition - 1);
-						return;
-				}
-			} while (lexer.p <= sourceEnd);
-	} */
-/*
-	public void printQualifiedReference(Name name) {
-		final int sourceEnd = name.getStartPosition() + name.getLength() - 1;
-		int currentTokenStartPosition = lexer.p;
-		try {
-			do {
-				this.printComment();
-				switch(this.currentToken = lexer.nextToken()) {
-					case ITerminalSymbols.TokenNameEOF :
-						return;
-					case TOKwhitespace :
-						addDeleteEdit(lexer.token.ptr, currentTokenEndPosition());
-						currentTokenStartPosition = lexer.p;
-						break;
-					case ITerminalSymbols.TokenNameCOMMENT_BLOCK :
-					case ITerminalSymbols.TokenNameCOMMENT_JAVADOC :
-						this.printBlockComment(lexer.token.getRawTokenSource(), false);
-						currentTokenStartPosition = lexer.p;
-						break;
-					case ITerminalSymbols.TokenNameCOMMENT_LINE :
-						this.printCommentLine(lexer.token.getRawTokenSource());
-						currentTokenStartPosition = lexer.p;
-						break;
-					case ITerminalSymbols.TokenNameIdentifier :
-					case ITerminalSymbols.TokenNameDOT :
-						this.print(lexer.token.getRawTokenSource(), false);
-						currentTokenStartPosition = lexer.p;
-						break;
-					default:
-						lexer.reset(currentTokenStartPosition, this.scannerEndPosition - 1);
-						return;
-				}
-			} while (lexer.p <= sourceEnd);
-		} catch(InvalidInputException e) {
-			throw new AbortFormatting(e);
-		}
-	}
-*/
+	
 	private void printRule(StringBuffer stringBuffer) {
 		for (int i = 0; i < this.pageWidth; i++){
 			if ((i % this.tabLength) == 0) { 
@@ -1322,7 +1156,7 @@ public class Scribe2 {	private static final int INITIAL_SIZE = 100;
 		} 
 		// reset scribe/scanner to restart at this given location
 		this.resetAt(this.currentAlignment.location);
-		lexer.reset(this.currentAlignment.location.inputOffset, lexer.end); //TODO this.scanner.eofPosition);
+		lexer.reset(this.currentAlignment.location.inputOffset, lexer.end); //this.scanner.eofPosition);
 		// clean alignment chunkKind so it will think it is a new chunk again
 		this.currentAlignment.chunkKind = 0;
 	}
@@ -1330,7 +1164,7 @@ public class Scribe2 {	private static final int INITIAL_SIZE = 100;
 	void redoMemberAlignment(AlignmentException e){
 		// reset scribe/scanner to restart at this given location
 		this.resetAt(this.memberAlignment.location);
-		lexer.reset(this.memberAlignment.location.inputOffset, lexer.end); //TODO this.scanner.eofPosition);
+		lexer.reset(this.memberAlignment.location.inputOffset, lexer.end); //this.scanner.eofPosition);
 		// clean alignment chunkKind so it will think it is a new chunk again
 		this.memberAlignment.chunkKind = 0;
 	}
@@ -1425,16 +1259,22 @@ public class Scribe2 {	private static final int INITIAL_SIZE = 100;
 		return lexer.p - 1;
 	}
 	
-	public void printModifiers(List<Modifier> modifiers)
+	public void printModifiers(List<Modifier> modifiers, boolean endAtExtern)
 	{
 			int modifiersIndex = 0;
-			int modifiersSize = modifiers.size();
+			//int modifiersSize = modifiers.size();
 			boolean isFirstModifier = true;
 			int currentTokenStartPosition = this.lexer.p;
 			boolean hasComment = false;
 			while ((this.currentToken = this.lexer.nextToken()) != TOK.TOKeof)
 			{
 				switch(this.currentToken) {
+					case TOKextern:
+						if(endAtExtern)
+						{
+							lexer.reset(currentTokenStartPosition, this.scannerEndPosition - 1);
+							return;
+						}
 					case TOKprivate:
 					case TOKprotected:
 					case TOKpackage:
@@ -1447,7 +1287,6 @@ public class Scribe2 {	private static final int INITIAL_SIZE = 100;
 					case TOKauto:
 					case TOKsynchronized:
 					case TOKdeprecated:
-					case TOKextern:
 					case TOKconst:
 					case TOKscope:
 						this.print(lexer.token.getRawTokenSource(), !isFirstModifier);
