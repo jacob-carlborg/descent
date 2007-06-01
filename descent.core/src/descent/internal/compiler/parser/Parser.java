@@ -231,6 +231,7 @@ public class Parser extends Lexer {
 		decldefs = new ArrayList<Dsymbol>();
 		do {
 			List<DDocComment> lastComments = getLastDocComments();
+			isSingle[0] = false;
 			
 			int start = token.ptr;
 			switch (token.value) {

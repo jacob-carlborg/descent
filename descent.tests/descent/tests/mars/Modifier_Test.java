@@ -5,6 +5,7 @@ import java.util.List;
 
 import descent.core.dom.AliasDeclaration;
 import descent.core.dom.Declaration;
+import descent.core.dom.FunctionDeclaration;
 import descent.core.dom.Modifier;
 import descent.core.dom.ModifierDeclaration;
 import descent.core.dom.TypedefDeclaration;
@@ -308,6 +309,21 @@ public class Modifier_Test extends Parser_Test {
 		TypedefDeclaration decl = (TypedefDeclaration) getDeclarationsNoProblems(s).get(0);
 		assertEquals(1, decl.modifiers().size());
 		assertPosition(decl, 1, s.length() - 1);
+	}
+	
+	public void testModifiersBug2() {
+		String s = " private int x; private { real fn() { } }";
+		List<Declaration> decl = (List<Declaration>) getDeclarationsNoProblems(s);
+		assertEquals(2, decl.size());
+		
+		VariableDeclaration var = (VariableDeclaration) decl.get(0);
+		assertEquals(1, var.getModifiers());
+		assertEquals(ModifierKeyword.PRIVATE_KEYWORD, var.modifiers().get(0).getModifierKeyword());
+		
+		ModifierDeclaration mod = (ModifierDeclaration) decl.get(1);
+		assertEquals(ModifierKeyword.PRIVATE_KEYWORD, mod.getModifier().getModifierKeyword());
+		FunctionDeclaration func = (FunctionDeclaration) mod.declarations().get(0);
+		assertNotNull(func);
 	}
 
 }
