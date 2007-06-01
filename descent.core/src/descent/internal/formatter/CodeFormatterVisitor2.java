@@ -96,10 +96,16 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 				throw new UnsupportedOperationException();
 		}
 		
-		scribe.space();
-		node.getName().accept(this);
-		formatTemplateParams(node.templateParameters());
+		// Handle anonymous types (I think just anonymous unions; anonymous
+		// classes are handled elsewhere).
+		SimpleName name = node.getName();
+		if(name != null)
+		{
+			scribe.space();
+			node.getName().accept(this);
+		}
 		
+		formatTemplateParams(node.templateParameters());
 		List<BaseClass> baseClasses = node.baseClasses();
 		if(!baseClasses.isEmpty())
 		{
@@ -207,6 +213,7 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 		SimpleName name = node.getName();
 		if(null != name)
 			name.accept(this);
+		checkPostfixedDeclarations();
 		
 		Expression defaultValue = node.getDefaultValue();
 		if (null != defaultValue)
@@ -583,7 +590,11 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 	
 	public boolean visit(DotIdentifierExpression node)
 	{
-		node.getExpression().accept(this);
+		// Handle module-scoped dot-identifier expressions (".name")
+		Expression exp = node.getExpression();
+		if(null != exp)
+			exp.accept(this);
+		
 		scribe.printNextToken(TOK.TOKdot);
 		node.getName().accept(this);
 		return false;
@@ -883,14 +894,15 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 	
 	public boolean visit(ImportDeclaration node)
 	{
-		formatModifiers(node.modifiers(), false); // Will slurp up a "static" modifer
+		formatModifiers(node.modifiers(), false);
 		
-		// So, if it's static and has no modifiers, print the "static" token
-		// (otherwise it was already printed in formatModifiers)
-		if (node.isStatic() && node.modifiers().size() == 0) {
-			this.scribe.printNextToken(TOK.TOKstatic);
-			this.scribe.space();
+		// formatModifiers() may slurp up a "static" keyword; if not, print it
+		if(isNextToken(TOK.TOKstatic))
+		{
+			scribe.printNextToken(TOK.TOKstatic);
+			scribe.space();
 		}
+		
 		// Print the "import" keyword
 		scribe.printNextToken(TOK.TOKimport);
 		scribe.space();
@@ -1285,11 +1297,16 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 	{
 		node.getExpression().accept(this);
 		scribe.printNextToken(TOK.TOKlbracket);
-		node.getFromExpression().accept(this);
-		scribe.space();
-		scribe.printNextToken(TOK.TOKslice);
-		scribe.space();
-		node.getToExpression().accept(this);
+		// Make sure it's not a slice of the whole array, i.e. arr[]
+		Expression fromExpression = node.getFromExpression();
+		if(null != fromExpression)
+		{
+			node.getFromExpression().accept(this);
+			scribe.space();
+			scribe.printNextToken(TOK.TOKslice);
+			scribe.space();
+			node.getToExpression().accept(this);
+		}
 		scribe.printNextToken(TOK.TOKrbracket);
 		return false;
 	}
@@ -1678,21 +1695,7 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 	public boolean visit(VariableDeclarationFragment node)
 	{
 		node.getName().accept(this);
-		
-		// Check for a postfixed * or []
-		while(true) // I miss goto so much...
-		{
-			if(isNextToken(TOK.TOKlbracket))
-			{
-				scribe.printNextToken(TOK.TOKlbracket);
-				scribe.printNextToken(TOK.TOKrbracket);
-			}
-			else if(isNextToken(TOK.TOKmul))
-				scribe.printNextToken(TOK.TOKmul);
-			else
-				break;
-		}
-		
+		checkPostfixedDeclarations();
 		Initializer init = node.getInitializer();
 		if(null != init)
 		{
@@ -2131,6 +2134,22 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 		scribe.printNextToken(TOK.TOKlparen);
 		formatCSV(tp, false, true);
 		scribe.printNextToken(TOK.TOKrparen);
+	}
+	
+	private void checkPostfixedDeclarations()
+	{
+		while(true)
+		{
+			if(isNextToken(TOK.TOKlbracket))
+			{
+				scribe.printNextToken(TOK.TOKlbracket);
+				scribe.printNextToken(TOK.TOKrbracket);
+			}
+			else if(isNextToken(TOK.TOKmul))
+				scribe.printNextToken(TOK.TOKmul);
+			else
+				break;
+		}
 	}
 	
 	private TextEdit failedToFormat(Throwable e)
