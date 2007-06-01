@@ -799,6 +799,12 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 			default:
 				break;
 		}
+		
+		if (node.getReturnType() != null) {
+			node.getReturnType().accept(this);
+			scribe.space();
+		}
+		
 		formatFunction(node);
 		return false;
 	}
@@ -1932,6 +1938,12 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 			}			
 			scribe.printNextToken(TOK.TOKlparen, spaceBeforeParen);
 			
+			if (node.arguments().size() == 0 && !node.isVariadic())
+			{
+				if (this.preferences.insert_space_between_empty_parens_in_method_declaration) {
+					this.scribe.space();
+				}
+			}
 			if (node.arguments().size() > 0)
 			{
 				if (this.preferences.insert_space_after_opening_paren_in_method_declaration) {

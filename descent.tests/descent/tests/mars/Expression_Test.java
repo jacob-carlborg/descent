@@ -29,6 +29,7 @@ import descent.core.dom.NumberLiteral;
 import descent.core.dom.ParenthesizedExpression;
 import descent.core.dom.PostfixExpression;
 import descent.core.dom.PrefixExpression;
+import descent.core.dom.PrimitiveType;
 import descent.core.dom.SimpleName;
 import descent.core.dom.SimpleType;
 import descent.core.dom.SliceExpression;
@@ -668,6 +669,22 @@ public class Expression_Test extends Parser_Test {
 		assertPosition(expr, 1, s.length() - 1);
 		
 		assertEquals(0, expr.arguments().size());
+		
+		assertNull(expr.getReturnType());
+	}
+	
+	public void testFunctionLiteralDelegateWithReturnType() {
+		String s = " delegate int { }";
+		FunctionLiteralDeclarationExpression expr = (FunctionLiteralDeclarationExpression) parseExpression(s);
+		assertEquals(Syntax.DELEGATE, expr.getSyntax());
+		
+		assertPosition(expr, 1, s.length() - 1);
+		
+		assertEquals(0, expr.arguments().size());
+		
+		PrimitiveType type = (PrimitiveType) expr.getReturnType();
+		assertEquals(PrimitiveType.Code.INT, type.getPrimitiveTypeCode());
+		assertPosition(type, 10, 3);
 	}
 	
 	public void testFunctionLiteralEmpty() {

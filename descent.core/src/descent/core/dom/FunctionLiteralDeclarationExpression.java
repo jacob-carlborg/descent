@@ -23,6 +23,12 @@ public class FunctionLiteralDeclarationExpression extends Expression
 	 */
 	public static final SimplePropertyDescriptor SYNTAX_PROPERTY =
 		new SimplePropertyDescriptor(FunctionLiteralDeclarationExpression.class, "syntax", Syntax.class, OPTIONAL); //$NON-NLS-1$
+	
+	/**
+	 * The "returnType" structural property of this node type.
+	 */
+	public static final ChildPropertyDescriptor RETURN_TYPE_PROPERTY =
+		new ChildPropertyDescriptor(FunctionLiteralDeclarationExpression.class, "returnType", Type.class, OPTIONAL, CYCLE_RISK); //$NON-NLS-1$
 
 	/**
 	 * The "arguments" structural property of this node type.
@@ -71,6 +77,7 @@ public class FunctionLiteralDeclarationExpression extends Expression
 		List properyList = new ArrayList(7);
 		createPropertyList(FunctionLiteralDeclarationExpression.class, properyList);
 		addProperty(SYNTAX_PROPERTY, properyList);
+		addProperty(RETURN_TYPE_PROPERTY, properyList);
 		addProperty(ARGUMENTS_PROPERTY, properyList);
 		addProperty(VARIADIC_PROPERTY, properyList);
 		addProperty(PRECONDITION_PROPERTY, properyList);
@@ -99,6 +106,11 @@ public class FunctionLiteralDeclarationExpression extends Expression
 	 * The syntax.
 	 */
 	private Syntax syntax;
+	
+	/**
+	 * The returnType.
+	 */
+	private Type returnType;
 
 	/**
 	 * The arguments
@@ -189,6 +201,14 @@ public class FunctionLiteralDeclarationExpression extends Expression
 	 * Method declared on ASTNode.
 	 */
 	final ASTNode internalGetSetChildProperty(ChildPropertyDescriptor property, boolean get, ASTNode child) {
+		if (property == RETURN_TYPE_PROPERTY) {
+			if (get) {
+				return getReturnType();
+			} else {
+				setReturnType((Type) child);
+				return null;
+			}
+		}
 		if (property == PRECONDITION_PROPERTY) {
 			if (get) {
 				return getPrecondition();
@@ -250,6 +270,7 @@ public class FunctionLiteralDeclarationExpression extends Expression
 		FunctionLiteralDeclarationExpression result = new FunctionLiteralDeclarationExpression(target);
 		result.setSourceRange(this.getStartPosition(), this.getLength());
 		result.setSyntax(getSyntax());
+		result.setReturnType((Type) getReturnType().clone(target));
 		result.arguments.addAll(ASTNode.copySubtrees(target, arguments()));
 		result.setVariadic(isVariadic());
 	result.setPrecondition((Statement) ASTNode.copySubtree(target, getPrecondition()));
@@ -305,6 +326,33 @@ public class FunctionLiteralDeclarationExpression extends Expression
 		preValueChange(SYNTAX_PROPERTY);
 		this.syntax = syntax;
 		postValueChange(SYNTAX_PROPERTY);
+	}
+	
+	/**
+	 * Returns the return type of this function declaration.
+	 * 
+	 * @return the return type
+	 */ 
+	public Type getReturnType() {
+		return this.returnType;
+	}
+
+	/**
+	 * Sets the return type of this function declaration.
+	 * 
+	 * @param returnType the return type
+	 * @exception IllegalArgumentException if:
+	 * <ul>
+	 * <li>the node belongs to a different AST</li>
+	 * <li>the node already has a parent</li>
+	 * <li>a cycle in would be created</li>
+	 * </ul>
+	 */ 
+	public void setReturnType(Type returnType) {
+		ASTNode oldChild = this.returnType;
+		preReplaceChild(oldChild, returnType, RETURN_TYPE_PROPERTY);
+		this.returnType = returnType;
+		postReplaceChild(oldChild, returnType, RETURN_TYPE_PROPERTY);
 	}
 
 	/**
@@ -473,6 +521,7 @@ public class FunctionLiteralDeclarationExpression extends Expression
 	int treeSize() {
 		return
 			memSize()
+			+ (this.returnType == null ? 0 : getReturnType().treeSize())
 			+ (this.arguments.listSize())
 			+ (this.precondition == null ? 0 : getPrecondition().treeSize())
 			+ (this.postcondition == null ? 0 : getPostcondition().treeSize())

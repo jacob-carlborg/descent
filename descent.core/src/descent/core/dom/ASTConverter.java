@@ -1124,6 +1124,7 @@ public class ASTConverter {
 	
 	public descent.core.dom.FunctionLiteralDeclarationExpression convert(FuncExp a) {
 		descent.core.dom.FunctionLiteralDeclarationExpression b = new descent.core.dom.FunctionLiteralDeclarationExpression(ast);
+		
 		if (a.fd.tok == TOK.TOKdelegate) {
 			b.setSyntax(Syntax.DELEGATE);
 		} else if (a.fd.tok == TOK.TOKfunction) {
@@ -1131,8 +1132,12 @@ public class ASTConverter {
 		} else {
 			b.setSyntax(Syntax.EMPTY);
 		}
-		b.setVariadic(((TypeFunction) a.fd.type).varargs != 0);
-		convertArguments(b.arguments(), ((TypeFunction) a.fd.type).parameters);
+		TypeFunction typeFunction = (TypeFunction) a.fd.type;
+		if (typeFunction.next != null) {
+			b.setReturnType(convert(typeFunction.next));
+		}
+		b.setVariadic(typeFunction.varargs != 0);
+		convertArguments(b.arguments(), typeFunction.parameters);
 		fillFunction(b, a.fd);
 		b.setSourceRange(a.start, a.length);
 		return b;
