@@ -2,6 +2,7 @@ package descent.internal.formatter;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -20,9 +21,11 @@ import descent.internal.compiler.parser.TOK;
 public class CodeFormatterVisitor2 extends ASTVisitor
 {
 	public DefaultCodeFormatterOptions	preferences;
-	
 	public Scribe2						scribe;
 	public Lexer						lexer;
+	
+	private List<Type>                  postfixes = new LinkedList<Type>();
+	
 	public CodeFormatterVisitor2(DefaultCodeFormatterOptions $preferences,
 			Map settings, int offset, int length, CompilationUnit unit)
 	{
@@ -213,7 +216,8 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 		SimpleName name = node.getName();
 		if(null != name)
 			name.accept(this);
-		checkPostfixedDeclarations();
+		formatPostfixedDeclarations();
+		postfixes.clear();
 		
 		Expression defaultValue = node.getDefaultValue();
 		if (null != defaultValue)
@@ -307,9 +311,10 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 	public boolean visit(AssociativeArrayType node)
 	{
 		node.getComponentType().accept(this);
-		scribe.printNextToken(TOK.TOKlbracket);
-		node.getKeyType().accept(this);
-		scribe.printNextToken(TOK.TOKrbracket);
+		if(isNextToken(TOK.TOKlbracket))
+			formatPostfix(node, false);
+		else
+			postfixes.add(node);
 		return false;
 	}
 	
@@ -612,10 +617,9 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 	{
 		node.getComponentType().accept(this);
 		if(isNextToken(TOK.TOKlbracket))
-		{
-			scribe.printNextToken(TOK.TOKlbracket);
-			scribe.printNextToken(TOK.TOKrbracket);
-		}
+			formatPostfix(node, false);
+		else
+			postfixes.add(node);
 		return false;
 	}
 	
@@ -1320,22 +1324,20 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 	public boolean visit(SliceType node)
 	{
 		node.getComponentType().accept(this);
-		scribe.printNextToken(TOK.TOKlbracket);
-		node.getFromExpression().accept(this);
-		scribe.space();
-		scribe.printNextToken(TOK.TOKslice);
-		scribe.space();
-		node.getToExpression().accept(this);
-		scribe.printNextToken(TOK.TOKrbracket);
+		if(isNextToken(TOK.TOKlbracket))
+			formatPostfix(node, false);
+		else
+			postfixes.add(node);
 		return false;
 	}
 	
 	public boolean visit(StaticArrayType node)
 	{
 		node.getComponentType().accept(this);
-		scribe.printNextToken(TOK.TOKlbracket);
-		node.getSize().accept(this);
-		scribe.printNextToken(TOK.TOKrbracket);
+		if(isNextToken(TOK.TOKlbracket))
+			formatPostfix(node, false);
+		else
+			postfixes.add(node);
 		return false;
 	}
 	
@@ -1693,6 +1695,7 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 			scribe.space();
 		}
 		formatCSV(node.fragments(), false, true);
+		postfixes.clear();
 		if(isNextToken(TOK.TOKsemicolon))
 			scribe.printNextToken(TOK.TOKsemicolon);
 		return false;
@@ -1701,7 +1704,7 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 	public boolean visit(VariableDeclarationFragment node)
 	{
 		node.getName().accept(this);
-		checkPostfixedDeclarations();
+		formatPostfixedDeclarations();
 		Initializer init = node.getInitializer();
 		if(null != init)
 		{
@@ -2148,20 +2151,69 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 		scribe.printNextToken(TOK.TOKrparen);
 	}
 	
-	private void checkPostfixedDeclarations()
+	private void formatPostfixedDeclarations()
 	{
-		while(true)
+		if (postfixes.isEmpty())
+			return;
+
+		for (Type node : postfixes)
 		{
-			if(isNextToken(TOK.TOKlbracket))
+			if (null != node)
 			{
-				scribe.printNextToken(TOK.TOKlbracket);
-				scribe.printNextToken(TOK.TOKrbracket);
+				if (node instanceof DynamicArrayType)
+					formatPostfix((DynamicArrayType) node, true);
+				else if (node instanceof AssociativeArrayType)
+					formatPostfix((AssociativeArrayType) node, true);
+				else if (node instanceof StaticArrayType)
+					formatPostfix((StaticArrayType) node, true);
+				else if (node instanceof SliceType)
+					formatPostfix((SliceType) node, true);
 			}
-			else if(isNextToken(TOK.TOKmul))
-				scribe.printNextToken(TOK.TOKmul);
-			else
-				break;
 		}
+		
+		/**
+		 * The list of postfixes can't be emptied here, in the rare case that there are
+		 * multiple variable declarations in a declaration list (which all must be the
+		 * same according to the D spec), for example: "char v1[][3], v2[][3];". The list
+		 * is cleared after it's used.
+		 */
+		
+		/**
+		 * TODO JDT formatter known bug: this won't work properly with combined prefix and
+		 *      postfixed declarations. For example, consider: "char[] var[3];". Why anyone
+		 *      would want to do this beyond me, but it should format correctly.
+		 */
+	}
+
+	private void formatPostfix(DynamicArrayType node, boolean postfixed)
+	{
+		scribe.printNextToken(TOK.TOKlbracket);
+		scribe.printNextToken(TOK.TOKrbracket);
+	}
+
+	private void formatPostfix(AssociativeArrayType node, boolean postfixed)
+	{
+		scribe.printNextToken(TOK.TOKlbracket);
+		node.getKeyType().accept(this);
+		scribe.printNextToken(TOK.TOKrbracket);
+	}
+
+	private void formatPostfix(StaticArrayType node, boolean postfixed)
+	{
+		scribe.printNextToken(TOK.TOKlbracket);
+		node.getSize().accept(this);
+		scribe.printNextToken(TOK.TOKrbracket);
+	}
+
+	private void formatPostfix(SliceType node, boolean postfixed)
+	{
+		scribe.printNextToken(TOK.TOKlbracket);
+		node.getFromExpression().accept(this);
+		scribe.space();
+		scribe.printNextToken(TOK.TOKslice);
+		scribe.space();
+		node.getToExpression().accept(this);
+		scribe.printNextToken(TOK.TOKrbracket);
 	}
 	
 	private TextEdit failedToFormat(Throwable e)
@@ -2640,7 +2692,7 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 	/**
 	 * A workaround for a problem in the ASTConverter that doesn't put modifiers
 	 * in DeclarationStatements. Again, this is ideally a temporary workaround,
-	 * as it doesn't have the options and niceties that Scrive2#printModifiers
+	 * as it doesn't have the options and niceties that Scribe2#printModifiers
 	 * provides.
 	 * 
 	 * @param node the DeclarationStatement that needs the workaround
