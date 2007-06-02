@@ -319,14 +319,14 @@ public class JavaProject
 	protected void addToBuildSpec(String builderID) throws CoreException {
 
 		IProjectDescription description = this.project.getDescription();
-		int javaCommandIndex = getJavaCommandIndex(description.getBuildSpec());
+		int javaCommandIndex = getJavaCommandIndex(description.getBuildSpec(), builderID);
 
 		if (javaCommandIndex == -1) {
 
 			// Add a Java command to the build spec
 			ICommand command = description.newCommand();
 			command.setBuilderName(builderID);
-			setJavaCommand(description, command);
+			setJavaCommand(description, command, builderID);
 		}
 	}
 
@@ -664,6 +664,7 @@ public class JavaProject
 		/* XXX PUT BACK
 		addToBuildSpec(JavaCore.BUILDER_ID);
 		*/
+		addToBuildSpec(JavaCore.TASK_BUILDER_ID);
 	}
 	/*
 	 * Returns whether the given resource is accessible through the children or the non-Java resources of this project.
@@ -903,6 +904,7 @@ public class JavaProject
 		/* XXX PUT BACK
 		removeFromBuildSpec(JavaCore.BUILDER_ID);
 		*/
+		removeFromBuildSpec(JavaCore.TASK_BUILDER_ID);
 	}
 
 	/**
@@ -1629,10 +1631,10 @@ public class JavaProject
 	 * Find the specific Java command amongst the given build spec
 	 * and return its index or -1 if not found.
 	 */
-	private int getJavaCommandIndex(ICommand[] buildSpec) {
+	private int getJavaCommandIndex(ICommand[] buildSpec, String builderId) {
 
 		for (int i = 0; i < buildSpec.length; ++i) {
-			if (buildSpec[i].getBuilderName().equals(JavaCore.BUILDER_ID)) {
+			if (buildSpec[i].getBuilderName().equals(builderId)) {
 				return i;
 			}
 		}
@@ -2848,11 +2850,11 @@ public class JavaProject
 	 */
 	private void setJavaCommand(
 		IProjectDescription description,
-		ICommand newCommand)
+		ICommand newCommand, String builderId)
 		throws CoreException {
 
 		ICommand[] oldBuildSpec = description.getBuildSpec();
-		int oldJavaCommandIndex = getJavaCommandIndex(oldBuildSpec);
+		int oldJavaCommandIndex = getJavaCommandIndex(oldBuildSpec, builderId);
 		ICommand[] newCommands;
 
 		if (oldJavaCommandIndex == -1) {

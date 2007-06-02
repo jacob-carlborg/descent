@@ -82,6 +82,14 @@
          <run class="descent.internal.core.builder.DAntBuilder"/>
       </builder>
    </extension>
-
+   
+   <extension
+         id="dTaskBuilder"
+         name="D Task Builder"
+         point="org.eclipse.core.resources.builders">
+      <builder hasNature="false">
+         <run class="descent.internal.core.builder.DTaskBuilder"/>
+      </builder>
+   </extension>
 
 </plugin>

@@ -147,10 +147,14 @@ public final class JavaConventions {
 		// file in which to store package annotations and
 		// the package-level spec (replaces package.html)
 		if (!identifier.equals(PACKAGE_INFO)) {
+			// TODO Descent what to do? In tango there's a "cast.d" file, and "cast" is not a valid identifier
+			// Skip validation meanwhile...
+			/*
 			IStatus status = validateIdentifier(identifier);
 			if (!status.isOK()) {
 				return status;
 			}
+			*/
 		}
 		IStatus status = ResourcesPlugin.getWorkspace().validateName(name, IResource.FILE);
 		if (!status.isOK()) {

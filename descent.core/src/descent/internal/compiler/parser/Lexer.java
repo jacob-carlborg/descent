@@ -88,6 +88,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import descent.core.IProblemRequestor;
+import descent.core.compiler.CharOperation;
 import descent.core.compiler.IProblem;
 import descent.core.dom.AST;
 
@@ -129,6 +130,16 @@ public class Lexer implements IProblemRequestor {
 	private int[] lineEnds;
 	private int linnum = 1;
 	private int maxLinnum = 1;
+	
+	// task tag support
+	public char[][] foundTaskTags = null;
+	public char[][] foundTaskMessages;
+	public char[][] foundTaskPriorities = null;
+	public int[][] foundTaskPositions;
+	public int foundTaskCount = 0;
+	public char[][] taskTags = null;
+	public char[][] taskPriorities = null;
+	public boolean isTaskCaseSensitive = true;
 	
 	private boolean tokenizeComments;
 	public boolean tokenizeWhiteSpace;
@@ -498,6 +509,9 @@ public class Lexer implements IProblemRequestor {
 					t.value = (input[t.ptr + 2] == '*' && p - 4 != t.ptr) ? TOKdocblockcomment : TOKblockcomment;
 					t.len = p - t.ptr;
 					t.string = new String(input, t.ptr, t.len);
+					if (this.taskTags != null) {
+						checkTaskTag(t.ptr, t.ptr + t.len);
+					}
 					return;
 				} else {
 					continue;
@@ -524,6 +538,9 @@ public class Lexer implements IProblemRequestor {
 							t.value = input[t.ptr + 2] == '/' ? TOKdoclinecomment : TOKlinecomment;
 							t.len = p - t.ptr;
 							t.string = new String(input, t.ptr, t.len);
+							if (this.taskTags != null) {
+								checkTaskTag(t.ptr, t.ptr + t.len);
+							}
 							return;
 						}
 						t.value = TOKeof;
@@ -544,6 +561,9 @@ public class Lexer implements IProblemRequestor {
 					t.value = input[t.ptr + 2] == '/' ? TOKdoclinecomment : TOKlinecomment;
 					t.len = p - t.ptr;
 					t.string = new String(input, t.ptr, t.len);
+					if (this.taskTags != null) {
+						checkTaskTag(t.ptr, t.ptr + t.len);
+					}
 					
 					newline(NOT_IN_COMMENT);
 					p++;					
@@ -618,6 +638,9 @@ public class Lexer implements IProblemRequestor {
 					t.value = (input[t.ptr + 2] == '+' && p - 4 != t.ptr) ? TOKdocpluscomment : TOKpluscomment;
 					t.len = p - t.ptr;
 					t.string = new String(input, t.ptr, t.len);
+					if (this.taskTags != null) {
+						checkTaskTag(t.ptr, t.ptr + t.len);
+					}
 					return;
 				} else {
 					continue;
@@ -4168,6 +4191,144 @@ public class Lexer implements IProblemRequestor {
 	}
 	
 	public void endReporting() {
+	}
+	
+	// task tags
+	
+	// check presence of task: tags
+	// TODO (frederic, from JDT) see if we need to take unicode characters into account...
+	public void checkTaskTag(int commentStart, int commentEnd) {
+		char[] src = this.input;
+		
+		// only look for newer task: tags
+		if (this.foundTaskCount > 0
+			&& this.foundTaskPositions[this.foundTaskCount - 1][0] >= commentStart) {
+			return;
+		}
+		int foundTaskIndex = this.foundTaskCount;
+		char previous = src[commentStart+1]; // should be '*' or '/'
+		for (
+			int i = commentStart + 2; i < commentEnd && i < this.end; i++) {
+			char[] tag = null;
+			char[] priority = null;
+			// check for tag occurrence only if not ambiguous with javadoc tag
+			// TODO remove this check for D
+			if (previous != '@') {
+				nextTag : for (int itag = 0; itag < this.taskTags.length; itag++) {
+					tag = this.taskTags[itag];
+					int tagLength = tag.length;
+					if (tagLength == 0) continue nextTag;
+		
+					// ensure tag is not leaded with letter if tag starts with a letter
+					if (ScannerHelper.isJavaIdentifierStart(tag[0])) {
+						if (ScannerHelper.isJavaIdentifierPart(previous)) {
+							continue nextTag;
+						}
+					}
+		
+					for (int t = 0; t < tagLength; t++) {
+						char sc, tc;
+						int x = i+t;
+						if (x >= this.end || x >= commentEnd) continue nextTag;
+						if ((sc = src[i + t]) != (tc = tag[t])) { 																					// case sensitive check
+							if (this.isTaskCaseSensitive || (ScannerHelper.toLowerCase(sc) != ScannerHelper.toLowerCase(tc))) { 	// case insensitive check
+								continue nextTag;
+							}
+						}
+					}
+					// ensure tag is not followed with letter if tag finishes with a letter
+					if (i+tagLength < commentEnd && ScannerHelper.isJavaIdentifierPart(src[i+tagLength-1])) {
+						if (ScannerHelper.isJavaIdentifierPart(src[i + tagLength]))
+							continue nextTag;
+					}
+					if (this.foundTaskTags == null) {
+						this.foundTaskTags = new char[5][];
+						this.foundTaskMessages = new char[5][];
+						this.foundTaskPriorities = new char[5][];
+						this.foundTaskPositions = new int[5][];
+					} else if (this.foundTaskCount == this.foundTaskTags.length) {
+						System.arraycopy(this.foundTaskTags, 0, this.foundTaskTags = new char[this.foundTaskCount * 2][], 0, this.foundTaskCount);
+						System.arraycopy(this.foundTaskMessages, 0, this.foundTaskMessages = new char[this.foundTaskCount * 2][], 0, this.foundTaskCount);
+						System.arraycopy(this.foundTaskPriorities, 0, this.foundTaskPriorities = new char[this.foundTaskCount * 2][], 0, this.foundTaskCount);
+						System.arraycopy(this.foundTaskPositions, 0, this.foundTaskPositions = new int[this.foundTaskCount * 2][], 0, this.foundTaskCount);
+					}
+					
+					priority = this.taskPriorities != null && itag < this.taskPriorities.length
+								? this.taskPriorities[itag]
+								: null;
+					
+					this.foundTaskTags[this.foundTaskCount] = tag;
+					this.foundTaskPriorities[this.foundTaskCount] = priority;
+					this.foundTaskPositions[this.foundTaskCount] = new int[] { i, i + tagLength - 1 };
+					this.foundTaskMessages[this.foundTaskCount] = CharOperation.NO_CHAR;
+					this.foundTaskCount++;
+					i += tagLength - 1; // will be incremented when looping
+					break nextTag;
+				}
+			}
+			previous = src[i];
+		}
+		boolean containsEmptyTask = false;
+		for (int i = foundTaskIndex; i < this.foundTaskCount; i++) {
+			// retrieve message start and end positions
+			int msgStart = this.foundTaskPositions[i][0] + this.foundTaskTags[i].length;
+			int max_value = i + 1 < this.foundTaskCount
+					? this.foundTaskPositions[i + 1][0] - 1
+					: commentEnd - 1;
+			// at most beginning of next task
+			if (max_value < msgStart) {
+				max_value = msgStart; // would only occur if tag is before EOF.
+			}
+			int end = -1;
+			char c;
+			for (int j = msgStart; j < max_value; j++) {
+				if ((c = src[j]) == '\n' || c == '\r') {
+					end = j - 1;
+					break;
+				}
+			}
+			if (end == -1) {
+				for (int j = max_value; j > msgStart; j--) {
+					if ((c = src[j]) == '*') {
+						end = j - 1;
+						break;
+					}
+				}
+				if (end == -1)
+					end = max_value;
+			}
+			if (msgStart == end) {
+				// if the description is empty, we might want to see if two tags are not sharing the same message
+				// see https://bugs.eclipse.org/bugs/show_bug.cgi?id=110797
+				containsEmptyTask = true;
+				continue;
+			}
+			// trim the message
+			while (CharOperation.isWhitespace(src[end]) && msgStart <= end)
+				end--;
+			while (CharOperation.isWhitespace(src[msgStart]) && msgStart <= end)
+				msgStart++;
+			// update the end position of the task
+			this.foundTaskPositions[i][1] = end;
+			// get the message source
+			final int messageLength = end - msgStart + 1;
+			char[] message = new char[messageLength];
+			System.arraycopy(src, msgStart, message, 0, messageLength);
+			this.foundTaskMessages[i] = message;
+		}
+		if (containsEmptyTask) {
+			for (int i = foundTaskIndex, max = this.foundTaskCount; i < max; i++) {
+				if (this.foundTaskMessages[i].length == 0) {
+					loop: for (int j = i + 1; j < max; j++) {
+						if (this.foundTaskMessages[j].length != 0) {
+							this.foundTaskMessages[i] = this.foundTaskMessages[j];
+							this.foundTaskPositions[i][1] = this.foundTaskPositions[j][1];
+							break loop;
+						}
+					}
+				}
+			}
+		}
 	}
 
 }

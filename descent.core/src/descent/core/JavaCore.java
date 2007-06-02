@@ -150,6 +150,8 @@ public final class JavaCore extends AbstractUIPlugin {
 	 */
 	//public static final String BUILDER_ID = PLUGIN_ID + ".dbuilder" ; //$NON-NLS-1$
 	public static final String BUILDER_ID = PLUGIN_ID + ".dAntBuilder" ; //$NON-NLS-1$
+	
+	public static final String TASK_BUILDER_ID = PLUGIN_ID + ".dTaskBuilder" ; //$NON-NLS-1$
 
 	/**
 	 * The identifier for the Java model
