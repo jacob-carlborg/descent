@@ -450,6 +450,11 @@
          </filter>
          <keywordReference id="descent.ui.todo"/>
       </page>
+      <page
+            class="descent.internal.ui.preferences.DProjectProperties"
+            id="descent.ui.preferences.DProjectProperties"
+            name="D Project Properties"
+            objectClass="descent.core.IJavaProject"/>
       <!--
       <page
             objectClass="descent.core.IPackageFragmentRoot"
