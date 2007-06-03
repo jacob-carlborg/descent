@@ -118,7 +118,7 @@
           <action
                id="openType"
                toolbarPath="org.eclipse.search.searchActionSet/Search"
-               class="mmrnmhrm.ui.actions.SampleActionDelegate"
+               class="melnorme.util.ui.actions.SampleActionDelegate"
                icon="icons/action16e/opentype.gif"
                helpContextId="org.eclipse.jdt.ui.open_type_action"
                label="%OpenTypeAction.label"
@@ -160,7 +160,7 @@
                label="Build Path Action"
                menubarPath="mmrnmhrm.buildpathMenu/content"/>
          <action
-               class="mmrnmhrm.ui.actions.SampleActionDelegate"
+               class="melnorme.util.ui.actions.SampleActionDelegate"
                icon="icons/lcl16e/configure_build_path.gif"
                id="mmrnmhrm.actions.buildpath.Setup"
                label="Configure Build Path (TODO)"
@@ -179,7 +179,7 @@
             <groupMarker name="content"/>
          </menu>
          <action
-               class="mmrnmhrm.ui.actions.SampleActionDelegate"
+               class="melnorme.util.ui.actions.SampleActionDelegate"
                id="Mmrnmhrm.action1"
                label="=Declarative Action"
                menubarPath="Mmrnmhrm.editorMenu/content"/>

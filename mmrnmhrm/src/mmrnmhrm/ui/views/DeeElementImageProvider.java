@@ -11,13 +11,14 @@ import descent.internal.core.dom.TypedefDeclaration;
 import dtool.dom.ast.ASTNeoNode;
 import dtool.dom.ast.ASTNode;
 import dtool.dom.base.Entity;
+import dtool.dom.base.EntityConstrainedRef;
 import dtool.dom.declarations.DeclarationImport;
-import dtool.dom.declarations.DefinitionAggregate;
-import dtool.dom.declarations.DefinitionAlias;
-import dtool.dom.declarations.DefinitionFunction;
-import dtool.dom.declarations.DefinitionTemplate;
-import dtool.dom.declarations.DefinitionVariable;
-import dtool.dom.declarations.Module.DeclarationModule;
+import dtool.dom.definitions.DefinitionAggregate;
+import dtool.dom.definitions.DefinitionAlias;
+import dtool.dom.definitions.DefinitionFunction;
+import dtool.dom.definitions.DefinitionTemplate;
+import dtool.dom.definitions.DefinitionVariable;
+import dtool.dom.definitions.Module.DeclarationModule;
 
 public class DeeElementImageProvider {
 	
@@ -38,7 +39,9 @@ public class DeeElementImageProvider {
 			return getImage(DeePluginImages.NODE_IMPORT);
 		} else if(node instanceof DeclarationModule) {
 			return getImage(DeePluginImages.ELEM_PACKAGE);
-		} else if (node instanceof Entity) {
+		} else if (node instanceof EntityConstrainedRef) {
+			return getImage(DeePluginImages.NODE_BASEREF);
+		}else if (node instanceof Entity) {
 			return getImage(DeePluginImages.NODE_REF);
 		} else if (node instanceof DefinitionAlias) {
 			return getImage(DeePluginImages.ENT_ALIAS);
@@ -56,10 +59,10 @@ public class DeeElementImageProvider {
 			return getImage(DeePluginImages.ENT_CLASS);
 		} else if(node instanceof TypedefDeclaration) {
 			return getImage(DeePluginImages.ENT_TYPEDEF);
-		} else if(node instanceof ASTNeoNode) {
-			return getImage(DeePluginImages.ENT_UNKNOWN);
-		} else
+		} else if(!(node instanceof ASTNeoNode)) {
 			return getImage(DeePluginImages.NODE_OLDAST);
+		} else
+			return getImage(DeePluginImages.NODE_OTHER);
 	}
 
 

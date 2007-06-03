@@ -1,10 +1,10 @@
 package mmrnmhrm.ui.wizards.projconfig;
 
-import melnorme.util.ui.LayoutUtil;
 import melnorme.util.ui.fields.FieldUtil;
 import melnorme.util.ui.fields.IElementCommand;
 import melnorme.util.ui.fields.TreeListEditorField;
 import melnorme.util.ui.fields.TreeListEditorField.TreeListContentProvider;
+import melnorme.util.ui.swt.LayoutUtil;
 import mmrnmhrm.core.model.DeeProject;
 import mmrnmhrm.core.model.DeeSourceFolder;
 import mmrnmhrm.core.model.DeeSourceLib;

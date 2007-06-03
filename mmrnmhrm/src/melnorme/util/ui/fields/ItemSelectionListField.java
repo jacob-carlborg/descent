@@ -1,6 +1,6 @@
 package melnorme.util.ui.fields;
 
-import melnorme.util.ui.RowComposite;
+import melnorme.util.ui.swt.RowComposite;
 
 import org.eclipse.jdt.internal.ui.util.PixelConverter;
 import org.eclipse.jdt.internal.ui.wizards.dialogfields.DialogField;

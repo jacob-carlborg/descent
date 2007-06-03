@@ -10,7 +10,7 @@ import mmrnmhrm.core.DeeCore;
 import mmrnmhrm.core.model.DeeProject;
 import mmrnmhrm.core.model.DeeSourceFolder;
 import mmrnmhrm.core.model.IDeeSourceRoot;
-import mmrnmhrm.core.model.LangSourceFolder;
+import mmrnmhrm.core.model.lang.LangSourceFolder;
 
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IResource;
@@ -76,7 +76,7 @@ public class DMDCompilerEnviron implements IDeeCompilerEnviron {
 		}
 
 		File file = new File(deeProject.getOutputDir().getLocation().toString());
-		Logg.main.println(StringUtil.collToString(cmdstr, "\n "));
+		Logg.builder.println(StringUtil.collToString(cmdstr, "\n "));
 
 		Process process = null;
 		try {

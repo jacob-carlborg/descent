@@ -3,16 +3,17 @@ package mmrnmhrm.ui.editor;
 import java.util.ArrayList;
 import java.util.List;
 
+import melnorme.lang.ui.EditorUtil;
 import mmrnmhrm.ui.ActualPlugin;
 import mmrnmhrm.ui.DeePlugin;
-import mmrnmhrm.ui.actions.SampleAction;
-import mmrnmhrm.ui.outline.DeeContentOutlinePage;
+import mmrnmhrm.ui.editor.outline.DeeContentOutlinePage;
 import mmrnmhrm.ui.text.DeeDocument;
 import mmrnmhrm.ui.text.DeeDocumentProvider;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ProjectScope;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.text.TextSelection;
@@ -57,7 +58,7 @@ public class DeeEditor extends AbstractDecoratedTextEditor {
 		List<IPreferenceStore> stores= new ArrayList<IPreferenceStore>(2);
 
 		//add project scope
-		IProject project = EditorUtility.getProject(input);;
+		IProject project = EditorUtil.getProject(input);
 		if (project != null) {
 			stores.add(new ScopedPreferenceStore(
 			new ProjectScope(project.getProject()), ActualPlugin.PLUGIN_ID));
@@ -101,8 +102,8 @@ public class DeeEditor extends AbstractDecoratedTextEditor {
 	@Override
 	protected void editorContextMenuAboutToShow(IMenuManager menu) {
 		super.editorContextMenuAboutToShow(menu);
-		menu.appendToGroup("additions", new SampleAction(": <additions> action"));
-		menu.add(new SampleAction(": <> action"));
+		menu.appendToGroup("additions", new Action(": <additions> action") {});
+		menu.add(new Action(": <> action") {});
 	}
 	
 

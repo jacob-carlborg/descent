@@ -6,7 +6,6 @@ Bundle-Version: 0.0.2
 Bundle-Activator: mmrnmhrm.ui.DeePlugin
 Bundle-Localization: plugin
 Require-Bundle: com.ibm.icu,
- dtool,
  org.eclipse.ui,
  org.eclipse.core.runtime,
  org.eclipse.jface.text,
@@ -15,12 +14,13 @@ Require-Bundle: com.ibm.icu,
  org.eclipse.ui.views,
  org.eclipse.core.resources,
  org.eclipse.ui.ide,
- org.eclipse.ui.navigator
+ org.eclipse.ui.navigator,
+ dtool
 Eclipse-LazyStart: true
 Bundle-Vendor: Mother Ark
 Eclipse-RegisterBuddy: mmrnmhrm.tests; 
-Export-Package: melnorme.util.ui,
- melnorme.util.ui.fields,
+Export-Package: melnorme.util.ui.fields,
+ melnorme.util.ui.swt,
  mmrnmhrm.core,
  mmrnmhrm.core.build,
  mmrnmhrm.core.model,
@@ -28,9 +28,9 @@ Export-Package: melnorme.util.ui,
  mmrnmhrm.ui,
  mmrnmhrm.ui.actions,
  mmrnmhrm.ui.editor,
+ mmrnmhrm.ui.editor.outline,
  mmrnmhrm.ui.editor.text,
  mmrnmhrm.ui.navigator,
- mmrnmhrm.ui.outline,
  mmrnmhrm.ui.preferences,
  mmrnmhrm.ui.properties,
  mmrnmhrm.ui.text,

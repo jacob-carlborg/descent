@@ -10,13 +10,16 @@ import util.tree.IElement;
  */
 public abstract class ElementContentProvider implements ITreeContentProvider {
 
+	public void dispose() {
+	}
+	
 	public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
 	}
 
-/*	public Object[] getElements(Object inputElement) {
+	public Object[] getElements(Object inputElement) {
 		return getChildren(inputElement);
 	}
-*/
+
 	public boolean hasChildren(Object element) {
 		return ((IElement) element).hasChildren();
 	}
@@ -29,6 +32,4 @@ public abstract class ElementContentProvider implements ITreeContentProvider {
 		return ((IElement) parentElement).getChildren();
 	}
 
-	public void dispose() {
-	}
 }

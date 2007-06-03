@@ -1,7 +1,7 @@
 package melnorme.util.ui.fields;
 
-import melnorme.util.ui.ColumnComposite;
-import melnorme.util.ui.LayoutUtil;
+import melnorme.util.ui.swt.ColumnComposite;
+import melnorme.util.ui.swt.LayoutUtil;
 
 import org.eclipse.jdt.internal.ui.wizards.dialogfields.DialogField;
 import org.eclipse.swt.SWT;

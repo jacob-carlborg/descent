@@ -9,6 +9,9 @@ import java.util.ArrayList;
 
 import mmrnmhrm.core.DeeCoreException;
 import mmrnmhrm.core.build.DeeCompilerOptions;
+import mmrnmhrm.core.model.lang.ELangElementTypes;
+import mmrnmhrm.core.model.lang.ILangSourceRoot;
+import mmrnmhrm.core.model.lang.LangProject;
 
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;

@@ -1,6 +1,6 @@
 package mmrnmhrm.ui.preferences;
 
-import melnorme.util.ui.RowComposite;
+import melnorme.util.ui.swt.RowComposite;
 import mmrnmhrm.org.eclipse.ui.internal.editors.text.OverlayPreferenceStore;
 import mmrnmhrm.ui.DeePlugin;
 

@@ -2,15 +2,15 @@ package mmrnmhrm.ui.preferences;
 
 import java.util.ArrayList;
 
-import melnorme.util.ui.ColumnComposite;
-import melnorme.util.ui.DialogComposite;
-import melnorme.util.ui.EmptyLabel;
-import melnorme.util.ui.LayoutUtil;
-import melnorme.util.ui.RowComposite;
-import melnorme.util.ui.SimpleSelectionListener;
 import melnorme.util.ui.fields.ItemSelectionListField;
 import melnorme.util.ui.fields.ItemSelectionListField.SelectionListCategory;
 import melnorme.util.ui.fields.ItemSelectionListField.SelectionListItem;
+import melnorme.util.ui.swt.ColumnComposite;
+import melnorme.util.ui.swt.DialogComposite;
+import melnorme.util.ui.swt.EmptyLabel;
+import melnorme.util.ui.swt.LayoutUtil;
+import melnorme.util.ui.swt.RowComposite;
+import melnorme.util.ui.swt.SimpleSelectionListener;
 import mmrnmhrm.org.eclipse.ui.internal.editors.text.OverlayPreferenceStore;
 import mmrnmhrm.org.eclipse.ui.internal.editors.text.OverlayPreferenceStore.OverlayKey;
 import mmrnmhrm.ui.text.color.ILangColorPreferences;

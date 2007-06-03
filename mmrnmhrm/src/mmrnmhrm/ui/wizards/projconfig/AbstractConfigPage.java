@@ -2,8 +2,8 @@ package mmrnmhrm.ui.wizards.projconfig;
 
 import java.util.List;
 
-import melnorme.util.ui.RowComposite;
 import melnorme.util.ui.fields.FolderSelectionDialog;
+import melnorme.util.ui.swt.RowComposite;
 import mmrnmhrm.core.LangCore;
 import mmrnmhrm.core.model.DeeProject;
 import mmrnmhrm.ui.DeePlugin;

@@ -1,41 +1,28 @@
 package mmrnmhrm.ui.actions;
 
+import melnorme.util.ui.actions.EditorActionDelegate;
+import mmrnmhrm.core.model.CompilationUnit;
 import mmrnmhrm.ui.editor.DeeEditor;
-import mmrnmhrm.ui.editor.EditorUtil;
 
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.text.TextSelection;
-import org.eclipse.jface.viewers.ISelection;
-import org.eclipse.ui.IEditorActionDelegate;
 import org.eclipse.ui.IEditorPart;
-import org.eclipse.ui.IWorkbenchWindow;
 
 import util.Assert;
 import util.log.Logg;
 import dtool.dom.ast.ASTNode;
 import dtool.dom.ast.ASTPrinter;
-import dtool.dom.base.Entity;
-import dtool.dom.declarations.DefUnit;
-import dtool.project.CompilationUnit;
 
 /**
  * Opens sets the editor cursor to the definition of the selected entity.
  */
-public class GoToDefinitionActionDg implements IEditorActionDelegate {
-	private IEditorPart editor;
-	private IWorkbenchWindow window;
-
-
-	public GoToDefinitionActionDg() {
-	}
+public class GoToDefinitionActionDg extends EditorActionDelegate {
 
 	public void setActiveEditor(IAction action, IEditorPart newEditor) {
-		editor = newEditor;
-		if(editor == null)
-			return;
+		super.setActiveEditor(action, newEditor);
+		if(editor != null)
 		Assert.isTrue(newEditor instanceof DeeEditor, "Not a Mmrnmhrm DeeEditor.");
-		window = editor.getSite().getWorkbenchWindow(); 
 	}
 
 	/** {@inheritDoc} */
@@ -55,36 +42,14 @@ public class GoToDefinitionActionDg implements IEditorActionDelegate {
 			dialogWarning("No element found at pos: " + offset);
 			return;
 		}
-		System.out.println("FOUND: " + ASTPrinter.toStringElement(elem));
-		if(elem instanceof Entity) {
-			DefUnit defunit = ((Entity)elem).getTargetDefUnit();
-			if(defunit == null) {
-				dialogWarning("Definition not found for entity: " + elem);
-				return;
-			}
-			EditorUtil.setSelection(deeEditor, defunit);
-		} else if(elem instanceof DefUnit.Symbol) {
-			dialogInfo("Already at definition of element: " + elem);
-		} else {
-			dialogInfo("Element is not an entity reference. (" + elem +")");
-		} 
-
+		System.out.println("FOUND: " + ASTPrinter.toStringNodeExtra(elem));
+		GoToDefinitionOperation.execute(window, elem);
+	
 	}
 
 	private void dialogWarning(String string) {
 		MessageDialog.openWarning(window.getShell(),
 				"Go to Definition",	string);
 	}
-
-	private void dialogInfo(String string) {
-		MessageDialog.openInformation(window.getShell(),
-				"Go to Definition",	string);
-	}
 	
-
-	public void selectionChanged(IAction action, ISelection selection) {
-	}
-
-
-
 }

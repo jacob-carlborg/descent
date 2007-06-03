@@ -13,7 +13,7 @@ import org.eclipse.swt.widgets.Display;
 import descent.core.domX.AbstractElement;
 import dtool.dom.ast.ASTNode;
 import dtool.dom.ast.ASTPrinter;
-import dtool.dom.declarations.DefUnit;
+import dtool.dom.definitions.DefUnit;
 
 public class ASTViewerLabelProvider extends SimpleLabelProvider implements IColorProvider, IFontProvider {
 
@@ -36,7 +36,7 @@ public class ASTViewerLabelProvider extends SimpleLabelProvider implements IColo
 	}
 
 	public String getText(Object elem) {
-		return ASTPrinter.toStringElement((ASTNode) elem);
+		return ASTPrinter.toStringNodeExtra((ASTNode) elem);
 	}
 
 	public Color getBackground(Object element) {

@@ -1,9 +1,10 @@
 package mmrnmhrm.ui.text;
 
-import org.eclipse.jface.text.Document;
-import org.eclipse.ui.IPathEditorInput;
+import mmrnmhrm.core.model.CompilationUnit;
 
-import dtool.project.CompilationUnit;
+import org.eclipse.jface.text.Document;
+import org.eclipse.ui.IFileEditorInput;
+
 
 public class DeeDocument extends Document {
 
@@ -18,10 +19,6 @@ public class DeeDocument extends Document {
 	
 	public void setCompilationUnit(CompilationUnit cunit) {
 		this.cunit = cunit;
-	}
-
-	public void setFileInput(IPathEditorInput input) {
-		cunit.file = input.getPath().toFile();
 	}
 
 	public void updateCompilationUnit() {

@@ -1,6 +1,7 @@
 package mmrnmhrm.core.model;
 
 import mmrnmhrm.core.DeeCore;
+import mmrnmhrm.core.model.lang.AbstractLangNature;
 
 import org.eclipse.core.runtime.CoreException;
 

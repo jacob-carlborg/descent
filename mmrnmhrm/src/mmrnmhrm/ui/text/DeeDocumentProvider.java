@@ -1,19 +1,23 @@
 package mmrnmhrm.ui.text;
 
 
+import mmrnmhrm.core.model.CompilationUnit;
+
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IDocumentPartitioner;
 import org.eclipse.jface.text.rules.FastPartitioner;
 import org.eclipse.ui.IEditorInput;
-import org.eclipse.ui.IPathEditorInput;
+import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.editors.text.FileDocumentProvider;
 
 import util.Assert;
-import dtool.project.CompilationUnit;
+import util.log.Logg;
 
-/// JDT uses TextFileDocumentProvider
+/* XXX: JDT uses TextFileDocumentProvider, WHY?
+ * 
+ */
 public class DeeDocumentProvider extends FileDocumentProvider {
 
 	public DeeDocumentProvider() {
@@ -27,19 +31,21 @@ public class DeeDocumentProvider extends FileDocumentProvider {
 	protected IDocument createDocument(Object element) throws CoreException {
 		IDocument document = super.createDocument(element);
 		DeeDocument deedocument = (DeeDocument) document;
-		setupDocument((IPathEditorInput) element, deedocument);
+		// AbstractDecoratedTextEditor uses FileEditorInput
+		setupDeeDocument((IFileEditorInput) element, deedocument);
 		return deedocument;
 	}
 
-	private void setupDocument(IPathEditorInput element, DeeDocument deedocument) {
+	private void setupDeeDocument(IFileEditorInput input, DeeDocument deedocument) {
 		IDocumentPartitioner partitioner = new FastPartitioner(
 				new DeePartitionScanner_Fast(), EDeePartitions.legalContentTypes);
 		partitioner.connect(deedocument);
 		deedocument.setDocumentPartitioner(partitioner);
 
-		CompilationUnit cunit = new CompilationUnit(deedocument.get());
+		CompilationUnit cunit = new CompilationUnit(input.getFile());
+		cunit.setSource(deedocument.get());
 		deedocument.setCompilationUnit(cunit);
-		deedocument.setFileInput(element);
+		Logg.model.println("Got Editor Input: ", input);
 		deedocument.updateCompilationUnit();
 	}
 	

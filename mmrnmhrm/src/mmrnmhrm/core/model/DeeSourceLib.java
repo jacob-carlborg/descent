@@ -1,5 +1,9 @@
 package mmrnmhrm.core.model;
 
+import mmrnmhrm.core.model.lang.ELangElementTypes;
+import mmrnmhrm.core.model.lang.ILangElement;
+import mmrnmhrm.core.model.lang.LangElement;
+
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.runtime.IPath;
 

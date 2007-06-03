@@ -1,5 +1,7 @@
 package mmrnmhrm.core.model;
 
+import mmrnmhrm.core.model.lang.LangModelRoot;
+
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 

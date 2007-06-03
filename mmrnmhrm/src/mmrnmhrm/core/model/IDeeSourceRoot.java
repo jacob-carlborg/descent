@@ -1,5 +1,7 @@
 package mmrnmhrm.core.model;
 
+import mmrnmhrm.core.model.lang.ILangSourceRoot;
+
 
 public interface IDeeSourceRoot extends ILangSourceRoot {
 	interface TYPE {

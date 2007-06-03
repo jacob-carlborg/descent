@@ -1,8 +1,8 @@
 package mmrnmhrm.ui.actions;
 
+import melnorme.util.ui.actions.WorkbenchWindowActionDelegate;
 import mmrnmhrm.core.DeeCore;
 import mmrnmhrm.core.model.DeeModelManager;
-import mmrnmhrm.ui.DeeUI;
 import mmrnmhrm.ui.ExceptionHandler;
 import mmrnmhrm.ui.wizards.projconfig.ProjectConfigBlock;
 
@@ -11,18 +11,15 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.dialogs.TrayDialog;
-import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.ui.IWorkbenchWindow;
-import org.eclipse.ui.IWorkbenchWindowActionDelegate;
 
-public class TestAction2 implements IWorkbenchWindowActionDelegate {
+public class TestAction2 extends WorkbenchWindowActionDelegate {
 	
-	class TestDialog extends TrayDialog {
+	static class TestDialog extends TrayDialog {
 		private ProjectConfigBlock fProjCfg;
 		
 		protected TestDialog(Shell shell) {
@@ -57,21 +54,9 @@ public class TestAction2 implements IWorkbenchWindowActionDelegate {
 		
 	}
 
-	public void init(IWorkbenchWindow window) {
-	}
-
-	public void dispose() {
-	}
-
 	public void run(IAction action) {
-				  
-		TestDialog foo = new TestDialog(DeeUI.getActiveWorkbenchShell());
+		TestDialog foo = new TestDialog(window.getShell());
 		foo.open();
-		
-	}
-
-	public void selectionChanged(IAction action, ISelection selection) {
-		
 	}
 
 }

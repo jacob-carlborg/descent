@@ -1,8 +1,8 @@
 package mmrnmhrm.ui.wizards.projconfig;
 
-import melnorme.util.ui.LayoutUtil;
 import melnorme.util.ui.fields.FieldUtil;
 import melnorme.util.ui.fields.StringDialogField;
+import melnorme.util.ui.swt.LayoutUtil;
 import mmrnmhrm.core.build.DeeCEManager;
 import mmrnmhrm.core.build.DeeCompilerOptions;
 import mmrnmhrm.core.build.IDeeCE;

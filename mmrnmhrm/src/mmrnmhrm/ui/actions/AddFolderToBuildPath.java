@@ -24,6 +24,10 @@ public class AddFolderToBuildPath implements IObjectActionDelegate {
 	private ISelection selection;
 	IFolder folder;
 
+	public void selectionChanged(IAction action, ISelection selection) {
+		this.selection = selection;
+	}
+	
 	public void setActivePart(IAction action, IWorkbenchPart targetPart) {
 		// TODO Check it is Project Explorer part?
 	}
@@ -54,8 +58,6 @@ public class AddFolderToBuildPath implements IObjectActionDelegate {
 		}		
 	}
 
-	public void selectionChanged(IAction action, ISelection selection) {
-		this.selection = selection;
-	}
+
 	
 }
