@@ -6,7 +6,7 @@ import dtool.descentadapter.DescentASTConverter;
 import dtool.dom.ast.ASTNode;
 import dtool.dom.ast.IASTNeoVisitor;
 import dtool.dom.declarations.Declaration;
-import dtool.dom.declarations.DefinitionAggregate;
+import dtool.dom.definitions.DefinitionAggregate;
 
 public class ExpLiteralNewAnonClass extends Expression {
 	

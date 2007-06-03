@@ -1,18 +1,19 @@
-package dtool.project;
+package dtool;
 
 import java.io.File;
 import java.util.List;
 
 import util.ExceptionAdapter;
 import util.FileUtil;
-import dtool.dom.declarations.DefUnit;
+import dtool.dom.definitions.DefUnit;
 import dtool.model.BindingResolver;
+import dtool.model.DToolCompilationUnit;
 import dtool.model.IScope;
 import dtool.model.ModelException;
 
 public class DToolProject implements IScope {
 
-	public CompilationUnit testcu;
+	public DToolCompilationUnit testcu;
 	private BindingResolver bresolver = new BindingResolver(this);
 	
 	public static DToolProject newTestProject() {
@@ -20,7 +21,7 @@ public class DToolProject implements IScope {
 		try {
 			File file = new File("testinput/test.d");
 			String source = FileUtil.readStringFromFile(file);
-			dproj.testcu = new CompilationUnit(source);
+			dproj.testcu = new DToolCompilationUnit(source);
 			dproj.testcu.file = file;
 			
 			System.out.println(">> read: " + dproj.testcu.file + " ");
@@ -45,5 +46,4 @@ public class DToolProject implements IScope {
 		ASTNode elem = ASTElementFinder.findElement(cunit.getModule(), offset);
 		return elem;
 	}*/
-
 }

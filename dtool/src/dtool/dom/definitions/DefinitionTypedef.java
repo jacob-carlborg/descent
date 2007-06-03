@@ -1,4 +1,4 @@
-package dtool.dom.declarations;
+package dtool.dom.definitions;
 
 import util.tree.TreeVisitor;
 import descent.internal.core.dom.TypedefDeclaration;

@@ -6,7 +6,7 @@ import util.tree.TreeVisitor;
 import descent.internal.core.dom.Argument;
 import descent.internal.core.dom.TypeFunction;
 import dtool.dom.ast.IASTNeoVisitor;
-import dtool.dom.declarations.DefUnit;
+import dtool.dom.definitions.DefUnit;
 
 /**
  * A delegate type;

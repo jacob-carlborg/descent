@@ -1,6 +1,7 @@
 package dtool.antlr_parser;
 import java.io.FileReader;
 
+
 import org.antlr.runtime.ANTLRReaderStream;
 import org.antlr.runtime.ANTLRStringStream;
 import org.antlr.runtime.CommonTokenStream;
@@ -10,9 +11,9 @@ import org.antlr.runtime.tree.CommonTree;
 import util.ExceptionAdapter;
 import util.StringUtil;
 import dtool.Main;
+import dtool.model.DToolCompilationUnit;
 import dtool.parser.DParser;
 import dtool.parser.DParserLexer;
-import dtool.project.CompilationUnit;
 
 
 public class Model {
@@ -20,7 +21,7 @@ public class Model {
 	public static CommonTokenStream tokens;
 	public static DParser.dmodule_return root;
 	
-	public static void createModel(CompilationUnit cu) {
+	public static void createModel(DToolCompilationUnit cu) {
 		try {
 			FileReader fr = new java.io.FileReader(cu.file);
 			ANTLRStringStream afs = new ANTLRReaderStream(fr);

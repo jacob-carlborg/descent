@@ -1,4 +1,4 @@
-package dtool.dom.declarations;
+package dtool.dom.definitions;
 
 import java.util.List;
 
@@ -10,7 +10,6 @@ import dtool.descentadapter.DescentASTConverter;
  */
 public abstract class Definition extends DefUnit {
 	
-	public String comments;
 	public Def_EProtection protection;
 	public int modifiers;
 	

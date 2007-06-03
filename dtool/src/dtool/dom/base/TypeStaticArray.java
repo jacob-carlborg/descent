@@ -6,7 +6,7 @@ package dtool.dom.base;
 import util.tree.TreeVisitor;
 import descent.internal.core.dom.TypeSArray;
 import dtool.dom.ast.IASTNeoVisitor;
-import dtool.dom.declarations.DefUnit;
+import dtool.dom.definitions.DefUnit;
 import dtool.dom.expressions.Expression;
 
 public class TypeStaticArray extends Entity {

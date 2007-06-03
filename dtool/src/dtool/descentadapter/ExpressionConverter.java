@@ -81,7 +81,6 @@ import descent.internal.core.dom.UnaryExpression.IUnaryExpression2;
 import dtool.dom.expressions.ExpArrayIndex;
 import dtool.dom.expressions.ExpArrayLiteral;
 import dtool.dom.expressions.ExpAssert;
-import dtool.dom.expressions.ExpLiteralBool;
 import dtool.dom.expressions.ExpCall;
 import dtool.dom.expressions.ExpCast;
 import dtool.dom.expressions.ExpCond;
@@ -91,6 +90,7 @@ import dtool.dom.expressions.ExpDotEntityRef;
 import dtool.dom.expressions.ExpDotTemplateInstance;
 import dtool.dom.expressions.ExpEntityRef;
 import dtool.dom.expressions.ExpIftype;
+import dtool.dom.expressions.ExpLiteralBool;
 import dtool.dom.expressions.ExpLiteralFunc;
 import dtool.dom.expressions.ExpLiteralInteger;
 import dtool.dom.expressions.ExpLiteralNewAnonClass;
@@ -99,7 +99,6 @@ import dtool.dom.expressions.ExpLiteralReal;
 import dtool.dom.expressions.ExpLiteralString;
 import dtool.dom.expressions.ExpNew;
 import dtool.dom.expressions.ExpParenthesized;
-import dtool.dom.expressions.ExpScope;
 import dtool.dom.expressions.ExpSlice;
 import dtool.dom.expressions.ExpSuper;
 import dtool.dom.expressions.ExpThis;
@@ -213,7 +212,7 @@ abstract class ExpressionConverter extends DeclarationConverter {
 	}
 	
 	public boolean visit(ScopeExp element) {
-		return endAdapt(new ExpScope(element));
+		return endAdapt(new ExpEntityRef(element));
 	}
 	
 	public boolean visit(SliceExp element) {

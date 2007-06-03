@@ -8,7 +8,7 @@ import dtool.descentadapter.DescentASTConverter;
 import dtool.dom.ast.ASTNeoNode;
 import dtool.dom.ast.ASTNode;
 import dtool.dom.ast.IASTNeoVisitor;
-import dtool.dom.declarations.DefUnit;
+import dtool.dom.definitions.DefUnit;
 import dtool.model.BindingResolver;
 import dtool.model.IScope;
 

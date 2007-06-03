@@ -3,15 +3,16 @@ package dtool.dom.declarations;
 import util.tree.TreeVisitor;
 import descent.internal.core.dom.PragmaDeclaration;
 import dtool.dom.ast.ASTNeoNode;
+import dtool.dom.ast.ASTNode;
 import dtool.dom.ast.IASTNeoVisitor;
-import dtool.dom.declarations.DefUnit.Symbol;
+import dtool.dom.definitions.DefUnit.Symbol;
 import dtool.dom.expressions.Expression;
 
 public class DeclarationPragma extends ASTNeoNode {
 
 	public Symbol ident;
 	public Expression[] expressions;
-	public Declaration[] decls;	// can be null?
+	public ASTNode[] decls;	// can be null?
 
 	
 	public DeclarationPragma(PragmaDeclaration elem) {

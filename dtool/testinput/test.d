@@ -25,8 +25,8 @@ char[] func() {
 	a = (Foo).sizeof;
 	a = typeid(Foo);
 	
-	try { 
-	a++;
+	try {
+	return;
 	} catch(E e) {
 	} finally {
 	b++;

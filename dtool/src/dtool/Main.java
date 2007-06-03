@@ -7,17 +7,15 @@ import dtool.dom.ast.ASTChecker;
 import dtool.dom.ast.ASTNode;
 import dtool.dom.ast.ASTPrinter;
 import dtool.dom.base.Entity;
-import dtool.dom.declarations.DefUnit;
+import dtool.dom.definitions.DefUnit;
+import dtool.model.DToolCompilationUnit;
 import dtool.model.ModelException;
-import dtool.project.CompilationUnit;
-import dtool.project.DToolProject;
 
 
 public class Main {
 	
 	private Main() { }
 	
-
     public static DToolProject dproj;
 
 	public static void main(String[] args) throws Exception {
@@ -42,7 +40,7 @@ public class Main {
 		
 		System.out.println("== Descent Parsing... ==");
 		
-		CompilationUnit cu = dproj.testcu;
+		DToolCompilationUnit cu = dproj.testcu;
 		cu.preParseCompilationUnit();
 		
 		System.out.println("====== Descent AST Tree: ======");
@@ -58,7 +56,7 @@ public class Main {
 		
 		System.out.println("====== Neo AST Tree: ======");
 		cu.adaptAST();
-		System.out.println(ASTPrinter.toStringNeoAST(cu.getNeoModule()));
+		System.out.println(ASTPrinter.toStringAST(cu.getNeoModule(), false));
 		
 		System.out.println("====== Neo AST Consistency check: ======");
 		ASTChecker.checkConsistency(cu.getNeoModule());
@@ -90,7 +88,7 @@ public class Main {
 			ShellUI.println("No element found at pos: " + offset);
 			return null;
 		}
-		ShellUI.println("FOUND: " + ASTPrinter.toStringElement(elem));
+		ShellUI.println("FOUND: " + ASTPrinter.toStringNodeExtra(elem));
 		return elem;
 	}
 

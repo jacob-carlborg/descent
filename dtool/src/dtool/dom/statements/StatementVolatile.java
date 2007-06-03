@@ -2,10 +2,9 @@ package dtool.dom.statements;
 
 import util.tree.TreeVisitor;
 import descent.internal.core.dom.VolatileStatement;
-import dtool.dom.ast.ASTNeoNode;
 import dtool.dom.ast.IASTNeoVisitor;
 
-public class StatementVolatile extends ASTNeoNode {
+public class StatementVolatile extends Statement {
 	
 	public Statement st;
 

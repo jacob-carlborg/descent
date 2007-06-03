@@ -1,4 +1,4 @@
-package dtool.dom.declarations;
+package dtool.dom.definitions;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,6 +13,8 @@ import dtool.dom.ast.ASTNeoNode;
 import dtool.dom.ast.ASTNode;
 import dtool.dom.ast.IASTNeoVisitor;
 import dtool.dom.base.EntitySingle;
+import dtool.dom.declarations.Declaration;
+import dtool.model.IDeeCompilationUnit;
 import dtool.model.IScope;
 
 /**
@@ -44,9 +46,11 @@ public class Module extends DefUnit implements IScope {
 			return StringUtil.collToString(packages, ".") + "." + moduleName;
 		}
 	}
-	
+
+	public IDeeCompilationUnit cunit;
+
 	public DeclarationModule md;
-	public Declaration[] members; //FIXME
+	public ASTNode[] members;
 	
 
 	public Module(descent.internal.core.dom.Module elem) {

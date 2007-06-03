@@ -2,11 +2,10 @@ package dtool.dom.statements;
 
 import util.tree.TreeVisitor;
 import descent.internal.core.dom.SynchronizedStatement;
-import dtool.dom.ast.ASTNeoNode;
 import dtool.dom.ast.IASTNeoVisitor;
 import dtool.dom.expressions.Expression;
 
-public class StatementSynchronized extends ASTNeoNode {
+public class StatementSynchronized extends Statement {
 
 	public Expression exp;
 	public Statement body;

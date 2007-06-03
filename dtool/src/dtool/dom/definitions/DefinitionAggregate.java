@@ -1,4 +1,4 @@
-package dtool.dom.declarations;
+package dtool.dom.definitions;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -49,6 +49,7 @@ public class DefinitionAggregate extends Definition implements IScope {
 		convertDsymbol(elem);
 		this.members = DescentASTConverter.convertMany(elem.members, this.members);
 		this.baseClasses = DescentASTConverter.convertMany(elem.baseClasses, this.baseClasses);
+		if(elem.templateParameters != null)
 		this.templateParameters = TemplateParameter.convertMany(elem.templateParameters);
 	}
 	
@@ -59,6 +60,8 @@ public class DefinitionAggregate extends Definition implements IScope {
 	public void accept0(IASTNeoVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
+			TreeVisitor.acceptChildren(visitor, defname);
+
 			TreeVisitor.acceptChildren(visitor, members);
 			TreeVisitor.acceptChildren(visitor, baseClasses);
 			TreeVisitor.acceptChildren(visitor, templateParameters);

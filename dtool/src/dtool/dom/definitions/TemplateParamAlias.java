@@ -1,23 +1,21 @@
-package dtool.dom.declarations;
+package dtool.dom.definitions;
 
 import util.tree.TreeVisitor;
-import descent.internal.core.dom.TemplateTupleParameter;
+import descent.internal.core.dom.TemplateAliasParameter;
 import dtool.dom.ast.IASTNeoVisitor;
 import dtool.model.IScope;
 
-public class TemplateParamTuple extends DefUnit {
+public class TemplateParamAlias extends TemplateParameter {
 
-	
-	
-	public TemplateParamTuple(TemplateTupleParameter elem) {
+
+	public TemplateParamAlias(TemplateAliasParameter elem) {
 		convertNode(elem);
-		convertIdentifier(elem.ident);
+		convertIdentifier(elem.tp_ident);
 	}
 
 	@Override
 	public EArcheType getArcheType() {
-		// TODO Auto-generated method stub
-		return null;
+		return EArcheType.Alias;
 	}
 
 	@Override
@@ -25,6 +23,7 @@ public class TemplateParamTuple extends DefUnit {
 		// TODO Auto-generated method stub
 		return null;
 	}
+
 
 	@Override
 	public void accept0(IASTNeoVisitor visitor) {

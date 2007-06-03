@@ -2,10 +2,9 @@ package dtool.dom.statements;
 
 import util.tree.TreeVisitor;
 import descent.internal.core.dom.OnScopeStatement;
-import dtool.dom.ast.ASTNeoNode;
 import dtool.dom.ast.IASTNeoVisitor;
 
-public class StatementOnScope extends ASTNeoNode {
+public class StatementOnScope extends Statement {
 	
 	public Statement st;
 

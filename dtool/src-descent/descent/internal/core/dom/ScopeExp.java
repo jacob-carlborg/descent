@@ -8,7 +8,7 @@ import descent.core.domX.IASTVisitor;
 
 public class ScopeExp extends Expression implements IScopeExpression {
 
-	private final TemplateInstance tempinst;
+	public final TemplateInstance tempinst;
 
 	public ScopeExp(TemplateInstance tempinst) {
 		this.tempinst = tempinst;

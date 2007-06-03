@@ -2,11 +2,10 @@ package dtool.dom.statements;
 
 import util.tree.TreeVisitor;
 import descent.internal.core.dom.CaseStatement;
-import dtool.dom.ast.ASTNeoNode;
 import dtool.dom.ast.IASTNeoVisitor;
 import dtool.dom.expressions.Expression;
 
-public class StatementCase extends ASTNeoNode {
+public class StatementCase extends Statement {
 
 	public Expression exp;
 	public Statement st;

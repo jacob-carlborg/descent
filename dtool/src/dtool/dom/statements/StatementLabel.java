@@ -2,11 +2,10 @@ package dtool.dom.statements;
 
 import util.tree.TreeVisitor;
 import descent.internal.core.dom.LabelStatement;
-import dtool.dom.ast.ASTNeoNode;
 import dtool.dom.ast.IASTNeoVisitor;
-import dtool.dom.declarations.DefUnit.Symbol;
+import dtool.dom.definitions.DefUnit.Symbol;
 
-public class StatementLabel extends ASTNeoNode {
+public class StatementLabel extends Statement {
 
 	public Symbol label;
 	

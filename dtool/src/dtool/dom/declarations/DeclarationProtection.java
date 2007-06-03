@@ -4,12 +4,13 @@ import util.tree.TreeVisitor;
 import descent.internal.core.dom.PROT;
 import descent.internal.core.dom.ProtDeclaration;
 import dtool.dom.ast.ASTNeoNode;
+import dtool.dom.ast.ASTNode;
 import dtool.dom.ast.IASTNeoVisitor;
 
 public class DeclarationProtection extends ASTNeoNode {
 
 	public PROT prot;
-	public Declaration[] decls;	// can be null?
+	public ASTNode[] decls;	// can be null?
 	
 	public DeclarationProtection(ProtDeclaration elem) {
 		convertNode(elem);

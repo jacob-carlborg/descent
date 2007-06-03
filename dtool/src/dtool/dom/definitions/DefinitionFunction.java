@@ -1,7 +1,8 @@
-package dtool.dom.declarations;
+package dtool.dom.definitions;
 
 import java.util.List;
 
+import util.StringUtil;
 import util.tree.TreeVisitor;
 import descent.internal.core.dom.FuncDeclaration;
 import dtool.descentadapter.DescentASTConverter;
@@ -20,8 +21,8 @@ public class DefinitionFunction extends Definition {
 	//public Identifier outId;
 	public descent.internal.core.dom.LINK linkage;
 	public EntityConstrainedRef.TypeConstraint rettype;
-	public TemplateParameter[] templateParameters;	
-	public List<Parameter> arguments;
+	public TemplateParameter[] templateParams;	
+	public List<Parameter> params;
 	public int varargs;
 
 	public Statement frequire;
@@ -37,8 +38,9 @@ public class DefinitionFunction extends Definition {
 		this.fensure = Statement.convert(elem.fensure);
 		this.fbody = Statement.convert(elem.fbody);
 
-		this.templateParameters = TemplateParameter.convertMany(elem.templateParameters);
-		this.arguments = DescentASTConverter.convertMany(elem.getArguments(), this.arguments); 
+		if(elem.templateParameters != null)
+			this.templateParams = TemplateParameter.convertMany(elem.templateParameters);
+		this.params = DescentASTConverter.convertMany(elem.getArguments(), this.params); 
 		
 		if(elem.type != null) {
 			this.type = elem.type;
@@ -56,8 +58,8 @@ public class DefinitionFunction extends Definition {
 		if (children) {
 			TreeVisitor.acceptChildren(visitor, rettype);
 			TreeVisitor.acceptChildren(visitor, defname);
-			TreeVisitor.acceptChildren(visitor, templateParameters);
-			TreeVisitor.acceptChildren(visitor, arguments);
+			TreeVisitor.acceptChildren(visitor, templateParams);
+			TreeVisitor.acceptChildren(visitor, params);
 			TreeVisitor.acceptChildren(visitor, type);
 			TreeVisitor.acceptChild(visitor, frequire);
 			TreeVisitor.acceptChild(visitor, fbody);
@@ -70,5 +72,10 @@ public class DefinitionFunction extends Definition {
 	public IScope getScope() {
 		// TODO Auto-generated method stub
 		return null;
+	}
+	
+	@Override
+	public String toString() {
+		return super.toString() +"("+ StringUtil.collToString(params, ",") +")";
 	}
 }

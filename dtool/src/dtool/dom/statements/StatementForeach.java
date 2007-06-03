@@ -3,12 +3,11 @@ package dtool.dom.statements;
 import util.tree.TreeVisitor;
 import descent.internal.core.dom.ForeachStatement;
 import dtool.descentadapter.DescentASTConverter;
-import dtool.dom.ast.ASTNeoNode;
 import dtool.dom.ast.IASTNeoVisitor;
-import dtool.dom.declarations.Parameter;
+import dtool.dom.definitions.Parameter;
 import dtool.dom.expressions.Expression;
 
-public class StatementForeach extends ASTNeoNode {
+public class StatementForeach extends Statement {
 
 	public boolean reverse;
 	public Parameter[] params;

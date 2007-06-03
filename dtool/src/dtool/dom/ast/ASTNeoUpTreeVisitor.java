@@ -4,9 +4,9 @@ import util.Assert;
 import descent.core.domX.ASTUpTreeVisitor;
 import dtool.dom.base.Entity;
 import dtool.dom.base.EntitySingle;
-import dtool.dom.declarations.DefUnit;
-import dtool.dom.declarations.Definition;
-import dtool.dom.declarations.Module;
+import dtool.dom.definitions.DefUnit;
+import dtool.dom.definitions.Definition;
+import dtool.dom.definitions.Module;
 
 public abstract class ASTNeoUpTreeVisitor extends ASTUpTreeVisitor implements IASTNeoVisitor {
 

@@ -1,4 +1,4 @@
-package dtool.project;
+package dtool.model;
 
 import java.io.File;
 
@@ -8,13 +8,13 @@ import descent.internal.core.dom.ParserFacade;
 import dtool.descentadapter.DescentASTConverter;
 import dtool.dom.ast.ASTElementFinder;
 import dtool.dom.ast.ASTNode;
-import dtool.dom.ast.ASTNodeParentizer;
-import dtool.dom.declarations.Module;
+import dtool.dom.definitions.Module;
+import dtool.model.IDeeCompilationUnit;
 
 /**
  * Module Wrapper 
  */
-public class CompilationUnit {
+public class DToolCompilationUnit implements IDeeCompilationUnit {
 	public String source;
 	public File file;
 	
@@ -22,8 +22,9 @@ public class CompilationUnit {
 	private boolean astUpdated;
 
 	public IProblem[] problems;
-
-	public CompilationUnit(String source) {
+	public int status;
+	
+	public DToolCompilationUnit(String source) {
 		setSource(source);
 	}
 	
@@ -61,8 +62,9 @@ public class CompilationUnit {
 	
 	public void adaptAST() {
 		DescentASTConverter domadapter = new DescentASTConverter();
-		this.cumodule = domadapter.convertModule(cumodule); 
-		ASTNodeParentizer.parentize(this.cumodule);
+		Module module = domadapter.convertModule(cumodule);
+		module.cunit = this;
+		cumodule = module;
 	}
 	
 	public void parseAST(){

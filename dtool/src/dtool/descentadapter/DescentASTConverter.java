@@ -4,7 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import dtool.dom.ast.ASTNode;
-import dtool.dom.declarations.Module;
+import dtool.dom.ast.ASTNodeParentizer;
+import dtool.dom.definitions.Module;
 
 public class DescentASTConverter {
 
@@ -15,7 +16,9 @@ public class DescentASTConverter {
 	}
 	
 	public Module convertModule(ASTNode cumodule) {
-		return new Module((descent.internal.core.dom.Module) cumodule);
+		Module module = new Module((descent.internal.core.dom.Module) cumodule);
+		ASTNodeParentizer.parentize(module);
+		return module;
 	}
 	
 	public ASTNode convert(ASTNode elem) {
@@ -70,5 +73,4 @@ public class DescentASTConverter {
 		}
 		return rets;	
 	}
-	
 }

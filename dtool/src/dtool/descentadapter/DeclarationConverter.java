@@ -25,19 +25,19 @@ import dtool.dom.declarations.DeclarationStaticAssert;
 import dtool.dom.declarations.DeclarationStaticIf;
 import dtool.dom.declarations.DeclarationStorageClass;
 import dtool.dom.declarations.DeclarationUnitTest;
-import dtool.dom.declarations.DefinitionAggregate;
-import dtool.dom.declarations.DefinitionAlias;
-import dtool.dom.declarations.DefinitionEnum;
-import dtool.dom.declarations.DefinitionFunction;
-import dtool.dom.declarations.DefinitionMixin;
-import dtool.dom.declarations.DefinitionTemplate;
-import dtool.dom.declarations.DefinitionTypedef;
-import dtool.dom.declarations.DefinitionVariable;
-import dtool.dom.declarations.Parameter;
-import dtool.dom.declarations.TemplateParamAlias;
-import dtool.dom.declarations.TemplateParamTuple;
-import dtool.dom.declarations.TemplateParamType;
-import dtool.dom.declarations.TemplateParamValue;
+import dtool.dom.definitions.DefinitionAggregate;
+import dtool.dom.definitions.DefinitionAlias;
+import dtool.dom.definitions.DefinitionEnum;
+import dtool.dom.definitions.DefinitionFunction;
+import dtool.dom.definitions.DefinitionMixin;
+import dtool.dom.definitions.DefinitionTemplate;
+import dtool.dom.definitions.DefinitionTypedef;
+import dtool.dom.definitions.DefinitionVariable;
+import dtool.dom.definitions.Parameter;
+import dtool.dom.definitions.TemplateParamAlias;
+import dtool.dom.definitions.TemplateParamTuple;
+import dtool.dom.definitions.TemplateParamType;
+import dtool.dom.definitions.TemplateParamValue;
 
 /**
  * Converts from DMD's AST to a nicer AST ("Neo AST")

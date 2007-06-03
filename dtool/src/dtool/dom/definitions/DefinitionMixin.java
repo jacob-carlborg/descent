@@ -1,4 +1,4 @@
-package dtool.dom.declarations;
+package dtool.dom.definitions;
 
 import descent.internal.core.dom.TemplateMixin;
 import dtool.dom.ast.IASTNeoVisitor;

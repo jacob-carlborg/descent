@@ -10,4 +10,9 @@ public abstract class Dsymbol extends AbstractElement implements IElement {
 	
 	public void XPTO() {}
 
+	
+/*	public String toString() {
+		return ((ident != null) ? ident.string : "<null>")
+	}
+	*/
 }

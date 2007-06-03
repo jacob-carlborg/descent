@@ -3,11 +3,12 @@ package dtool.dom.declarations;
 import util.tree.TreeVisitor;
 import descent.internal.core.dom.AlignDeclaration;
 import dtool.dom.ast.ASTNeoNode;
+import dtool.dom.ast.ASTNode;
 import dtool.dom.ast.IASTNeoVisitor;
 
 public class DeclarationAlign extends ASTNeoNode {
 	
-	public Declaration[] decls;
+	public ASTNode[] decls;
 	public long alignnum;
 
 	public DeclarationAlign(AlignDeclaration elem) {

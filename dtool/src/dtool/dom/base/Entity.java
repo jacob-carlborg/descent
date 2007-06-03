@@ -10,8 +10,8 @@ import dtool.dom.ast.ASTNeoNode;
 import dtool.dom.ast.ASTNode;
 import dtool.dom.ast.IASTNeoVisitor;
 import dtool.dom.base.EntitySingle.Identifier;
-import dtool.dom.declarations.DefUnit;
-import dtool.dom.declarations.Module;
+import dtool.dom.definitions.DefUnit;
+import dtool.dom.definitions.Module;
 import dtool.model.BindingResolver;
 import dtool.model.IScope;
 
@@ -44,7 +44,7 @@ public abstract class Entity extends ASTNeoNode {
 		}
 		
 		public String toString() {
-			return topent + " ." + baseent;
+			return topent + "." + baseent;
 		}
 
 	}
@@ -62,7 +62,7 @@ public abstract class Entity extends ASTNeoNode {
 		}
 
 		public String toString() {
-			return ".";
+			return "";
 		}
 
 		@Override

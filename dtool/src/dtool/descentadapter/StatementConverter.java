@@ -50,7 +50,6 @@ import dtool.dom.statements.StatementLabel;
 import dtool.dom.statements.StatementOnScope;
 import dtool.dom.statements.StatementPragma;
 import dtool.dom.statements.StatementReturn;
-import dtool.dom.statements.StatementScope;
 import dtool.dom.statements.StatementStaticAssert;
 import dtool.dom.statements.StatementSwitch;
 import dtool.dom.statements.StatementSynchronized;
@@ -143,7 +142,7 @@ public class StatementConverter extends ExpressionConverter {
 	}
 
 	public boolean visit(ScopeStatement element) {
-		return endAdapt(new StatementScope(element));
+		return endAdapt(new CompoundStatement(element));
 	}
 
 	public boolean visit(StaticAssertStatement element) {

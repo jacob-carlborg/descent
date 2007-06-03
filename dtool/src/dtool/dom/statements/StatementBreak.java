@@ -2,11 +2,10 @@ package dtool.dom.statements;
 
 import util.tree.TreeVisitor;
 import descent.internal.core.dom.BreakStatement;
-import dtool.dom.ast.ASTNeoNode;
 import dtool.dom.ast.IASTNeoVisitor;
-import dtool.dom.declarations.DefUnit.Symbol;
+import dtool.dom.definitions.DefUnit.Symbol;
 
-public class StatementBreak extends ASTNeoNode {
+public class StatementBreak extends Statement {
 
 	public Symbol id;
 	

@@ -21,8 +21,9 @@ public class Logg {
 		this(true);
 	}
 
-	public void println(Object string) {
-		print(string);
+	public void println(Object... objs) {
+		for(Object obj : objs)
+			print(obj);
 		println();
 	}
 

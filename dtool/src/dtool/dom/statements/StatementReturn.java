@@ -2,11 +2,10 @@ package dtool.dom.statements;
 
 import util.tree.TreeVisitor;
 import descent.internal.core.dom.ReturnStatement;
-import dtool.dom.ast.ASTNeoNode;
 import dtool.dom.ast.IASTNeoVisitor;
 import dtool.dom.expressions.Expression;
 
-public class StatementReturn extends ASTNeoNode {
+public class StatementReturn extends Statement {
 
 	public Expression exp;
 

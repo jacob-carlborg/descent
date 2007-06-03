@@ -3,9 +3,13 @@ package dtool.dom.statements;
 import java.util.List;
 
 import util.tree.TreeVisitor;
+import descent.internal.core.dom.ScopeStatement;
 import dtool.descentadapter.DescentASTConverter;
 import dtool.dom.ast.IASTNeoVisitor;
 
+/**
+ * A compound statement. Allways introduces a new Scope.
+ */
 public class CompoundStatement extends Statement {
 	
 	public List<Statement> statements;
@@ -14,6 +18,13 @@ public class CompoundStatement extends Statement {
 	public CompoundStatement(descent.internal.core.dom.CompoundStatement elem) {
 		convertNode(elem);
 		this.statements = DescentASTConverter.convertMany(elem.as, statements); 
+	}
+
+	public CompoundStatement(ScopeStatement elem) {
+		convertNode(elem);
+		descent.internal.core.dom.CompoundStatement compoundStat = 
+			(descent.internal.core.dom.CompoundStatement) elem.s;
+		this.statements = DescentASTConverter.convertMany(compoundStat.as, statements); 
 	}
 
 

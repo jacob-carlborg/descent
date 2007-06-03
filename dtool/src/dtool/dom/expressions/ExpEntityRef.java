@@ -2,6 +2,7 @@ package dtool.dom.expressions;
 
 import util.tree.TreeVisitor;
 import descent.internal.core.dom.IdentifierExp;
+import descent.internal.core.dom.ScopeExp;
 import descent.internal.core.dom.TypeDotIdExp;
 import dtool.descentadapter.DescentASTConverter;
 import dtool.dom.ast.IASTNeoVisitor;
@@ -19,12 +20,18 @@ public class ExpEntityRef extends Expression {
 		this.entity = new EntityConstrainedRef.ValueConstraint(entity);
 	}
 	
-	public ExpEntityRef(TypeDotIdExp element) {
-		setSourceRange(element);
+	public ExpEntityRef(TypeDotIdExp elem) {
+		convertNode(elem);
 		Entity.QualifiedEnt qent = new Entity.QualifiedEnt();
-		qent.topent = (Entity) DescentASTConverter.convertElem(element.t);
-		qent.baseent = EntitySingle.convert(element.ident);
+		qent.topent = (Entity) DescentASTConverter.convertElem(elem.t);
+		qent.baseent = EntitySingle.convert(elem.ident);
 		this.entity = new EntityConstrainedRef.ValueConstraint(qent);
+	}
+	
+	public ExpEntityRef(ScopeExp elem) {
+		convertNode(elem);
+		Entity entity = (Entity) DescentASTConverter.convertElem(elem.tempinst);
+		this.entity = new EntityConstrainedRef.ValueConstraint(entity);
 	}
 	
 

@@ -7,7 +7,7 @@ import descent.core.domX.IASTVisitor;
 
 public class ScopeStatement extends Statement implements IScopeStatement {
 
-	private final Statement s;
+	public final Statement s;
 
 	public ScopeStatement(Statement s) {
 		this.s = s;

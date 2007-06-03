@@ -3,7 +3,7 @@ package dtool.dom.expressions;
 import util.tree.TreeVisitor;
 import descent.internal.core.dom.StructInitializer;
 import dtool.dom.ast.IASTNeoVisitor;
-import dtool.dom.declarations.DefUnit.Symbol;
+import dtool.dom.definitions.DefUnit.Symbol;
 
 public class InitializerStruct extends Initializer {
 

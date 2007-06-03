@@ -1,9 +1,11 @@
-package dtool.dom.declarations;
+package dtool.dom.definitions;
 
 import util.tree.TreeVisitor;
 import descent.internal.core.dom.TemplateDeclaration;
 import dtool.dom.ast.ASTNeoNode;
+import dtool.dom.ast.ASTNode;
 import dtool.dom.ast.IASTNeoVisitor;
+import dtool.dom.declarations.Declaration;
 
 /*
  * TODO TEMPLATE
@@ -11,7 +13,7 @@ import dtool.dom.ast.IASTNeoVisitor;
 public class DefinitionTemplate extends ASTNeoNode {
 
 	public TemplateParameter[] templateParams; 
-	public Declaration[] decls;
+	public ASTNode[] decls;
 
 	
 	public DefinitionTemplate(TemplateDeclaration elem) {

@@ -1,10 +1,9 @@
 package dtool.dom.statements;
 
 import descent.internal.core.dom.GotoDefaultStatement;
-import dtool.dom.ast.ASTNeoNode;
 import dtool.dom.ast.IASTNeoVisitor;
 
-public class StatementGotoDefault extends ASTNeoNode {
+public class StatementGotoDefault extends Statement {
 
 	public StatementGotoDefault(GotoDefaultStatement element) {
 		// TODO Auto-generated constructor stub

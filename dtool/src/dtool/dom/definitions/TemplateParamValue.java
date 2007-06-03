@@ -1,4 +1,4 @@
-package dtool.dom.declarations;
+package dtool.dom.definitions;
 
 import util.tree.TreeVisitor;
 import descent.internal.core.dom.TemplateValueParameter;
@@ -8,7 +8,7 @@ import dtool.dom.base.EntityConstrainedRef;
 import dtool.dom.expressions.Expression;
 import dtool.model.IScope;
 
-public class TemplateParamValue extends DefUnit {
+public class TemplateParamValue extends TemplateParameter {
 
 	public EntityConstrainedRef.TypeConstraint type;
 	public Expression specvalue;

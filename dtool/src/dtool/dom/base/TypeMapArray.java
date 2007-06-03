@@ -3,7 +3,7 @@ package dtool.dom.base;
 import util.tree.TreeVisitor;
 import descent.internal.core.dom.TypeAArray;
 import dtool.dom.ast.IASTNeoVisitor;
-import dtool.dom.declarations.DefUnit;
+import dtool.dom.definitions.DefUnit;
 
 public class TypeMapArray extends Entity {
 	public EntityConstrainedRef.TypeConstraint keytype;

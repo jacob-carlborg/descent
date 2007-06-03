@@ -3,8 +3,8 @@ package dtool.model;
 import java.util.List;
 
 import util.StringUtil;
-import dtool.dom.declarations.DefUnit;
-import dtool.project.DToolProject;
+import dtool.DToolProject;
+import dtool.dom.definitions.DefUnit;
 
 public class BindingResolver {
 	

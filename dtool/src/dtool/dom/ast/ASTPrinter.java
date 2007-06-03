@@ -1,6 +1,7 @@
 package dtool.dom.ast;
 
 import util.tree.TreeDepthRecon;
+import descent.core.domX.AbstractElement;
 import dtool.dom.base.Entity;
 
 /**
@@ -8,6 +9,46 @@ import dtool.dom.base.Entity;
  * DMD AST nodes are printed with a "#" prefix.
  */
 public class ASTPrinter extends ASTNeoUpTreeVisitor {
+
+	/** => #toStringNodeExtra(node, true) */
+	public static String toStringNodeExtra(ASTNode node) {
+		return toStringNodeExtra(node, true);
+	}
+
+	/** Gets an extended String representation of given node. */
+	public static String toStringNodeExtra(ASTNode node, boolean printRangeInfo) {
+		String name = node.toStringClassName();
+		if(node instanceof AbstractElement)
+			name = "#" + name;
+		if(printRangeInfo)
+			name += " [" + node.startPos+"+"+node.length+"]";
+		return name += " " + node.toString();
+	}
+	
+	
+	/** #toStringAST(elem, true) */
+	public static String toStringAST(ASTNode elem) {
+		return toStringAST(elem, true);
+	}	
+	
+
+	/** Gets a String representation of the whole AST tree. */
+	public static String toStringAST(ASTNode elem, boolean recurseUnconverted) {
+		ASTPrinter astPrinter = new ASTPrinter();
+		astPrinter.recurseUnconverted = recurseUnconverted;
+		return astPrinter.getStringRep(elem);
+	}
+
+//	private static ASTPrinter singletonPrinter = new ASTPrinter();
+	
+	/** Gets a String representation of given node. */
+/*	public static String toStringElement(ASTNode node) {
+		// use singleton for optimization purposes
+		singletonPrinter.visitChildren = false;
+		singletonPrinter.strbuffer = new StringBuffer();
+		return singletonPrinter.getStringRep(node);
+	}
+*/
 	
 	// print source range
 	public boolean printRangeInfo = true;
@@ -23,7 +64,6 @@ public class ASTPrinter extends ASTNeoUpTreeVisitor {
 	private int indent;
 	private boolean allSiblingsAreLeafs;
 	
-	private static ASTPrinter singletonPrinter = new ASTPrinter();
 	
 	// A string buffer to where the string representation is written 
 	protected StringBuffer strbuffer;
@@ -38,54 +78,16 @@ public class ASTPrinter extends ASTNeoUpTreeVisitor {
 	}*/
 
 	
-	public ASTPrinter setOptions(
-			boolean printRangeInfo, 
-			boolean collapseLeafs, 
-			boolean recurseUnconverted, 
-			boolean visitChildren, 
-			boolean visitQualifiedNameChildren) {
-		this.printRangeInfo = printRangeInfo;
-		this.collapseLeafs = collapseLeafs;
-		this.recurseUnconverted = recurseUnconverted;
-		this.visitChildren = visitChildren;
-		this.visitQualifiedNameChildren = visitQualifiedNameChildren;
-		return this;
-	}
-
 	/** Gets a String represesention according to this printer */
 	public String getStringRep(ASTNode elem) {
 		elem.accept(this);
 		return strbuffer.toString();
 	}
 
-	/** Gets a String representation of the whole elem tree. */
-	public static String toStringAST(ASTNode elem) {
-		ASTPrinter astPrinter = new ASTPrinter();
-		return astPrinter.getStringRep(elem);
-	}	
-
-	/** Gets a String representation of the whole elem tree, but don't recurse 
-	 * unconverted AST nodes. */
-	public static String toStringNeoAST(ASTNode elem) {
-		ASTPrinter astPrinter = new ASTPrinter();
-		astPrinter.recurseUnconverted = false;
-		return astPrinter.getStringRep(elem);
-	}	
-	
-	/** Gets a String representation of the single elem only. */
-	public static String toStringElement(ASTNode elem) {
-		// use singleton for optimization purposes
-		singletonPrinter.visitChildren = false;
-		singletonPrinter.strbuffer = new StringBuffer();
-		return singletonPrinter.getStringRep(elem);
-	}
 	
 	/** Gets a String representation of elem only, with extra info. */
 	private String toStringElementExtra(ASTNode elem) {
-		String name = elem.toStringClassName();
-		if(printRangeInfo) 
-			name += " [" + elem.startPos+"+"+elem.length+"]";
-		return name;
+		return toStringNodeExtra(elem, printRangeInfo);
 	}
 
 
@@ -127,50 +129,20 @@ public class ASTPrinter extends ASTNeoUpTreeVisitor {
 	/* ====================================================== */
 
 	public boolean visit(ASTNode elem) {
-		printGenericElement(elem, "#"+toStringElementExtra(elem) + "");
+		printGenericElement(elem, toStringElementExtra(elem));
 		return visitChildren && recurseUnconverted;
 	}
 
-	public boolean visit(descent.internal.core.dom.Identifier elem) {
-		printGenericElement(elem, "#"+toStringElementExtra(elem) 
-				+ " " + elem.string);
-		return visitChildren && recurseUnconverted;
-	}
-	
-	public boolean visit(descent.internal.core.dom.QualifiedName elem) {
-		printGenericElement(elem, "#"+toStringElementExtra(elem) 
-				+ " " + elem.toString());
-		return visitChildren && recurseUnconverted;
-	}	
-	
-	public boolean visit(descent.internal.core.dom.Dsymbol elem) {
-		printGenericElement(elem, "#"+toStringElementExtra(elem) 
-				+ " " + ((elem.ident != null) ? elem.ident.string : "<null>"));
-		return visitChildren && recurseUnconverted;
-	}	
-	
-	public boolean visit(descent.internal.core.dom.Type elem) {
-		printGenericElement(elem, "#"+toStringElementExtra(elem) 
-				+ " TYPE: " + elem.toString());
-		return visitChildren && recurseUnconverted;
-	}	
-	
-	public boolean visit(descent.internal.core.dom.TypeQualified elem) {
-		printGenericElement(elem, "#"+toStringElementExtra(elem) 
-				+ " TYPE: " + elem.toString());
-		return visitChildren && recurseUnconverted;
-	}
 	
 	/* ---------------- Neo ------------------ */
 	
 	public boolean visit(ASTNeoNode elem) {
-		printGenericElement(elem, toStringElementExtra(elem) +" "+ elem);
+		printGenericElement(elem, toStringElementExtra(elem) );
 		return visitChildren;
 	}
 	
 	public boolean visit(Entity.QualifiedEnt elem) {
-		printGenericElement(elem, toStringElementExtra(elem) 
-				+ " ID: " + elem.toString());
+		printGenericElement(elem, toStringElementExtra(elem));
 		return visitChildren && visitQualifiedNameChildren;
 	}
 	

@@ -3,12 +3,13 @@ package dtool.dom.declarations;
 import util.tree.TreeVisitor;
 import descent.internal.core.dom.StorageClassDeclaration;
 import dtool.dom.ast.ASTNeoNode;
+import dtool.dom.ast.ASTNode;
 import dtool.dom.ast.IASTNeoVisitor;
 
 public class DeclarationStorageClass extends ASTNeoNode {
 
 	public int stclass;
-	public Declaration[] decls;	// can be null?
+	public ASTNode[] decls;	// can be null?
 	
 	public DeclarationStorageClass(StorageClassDeclaration elem) {
 		convertNode(elem);

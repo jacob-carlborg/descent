@@ -1,4 +1,4 @@
-package dtool.dom.declarations;
+package dtool.dom.definitions;
 
 import util.tree.TreeVisitor;
 import descent.internal.core.dom.TemplateTypeParameter;
@@ -7,7 +7,7 @@ import dtool.dom.base.Entity;
 import dtool.dom.base.EntityConstrainedRef;
 import dtool.model.IScope;
 
-public class TemplateParamType extends DefUnit {
+public class TemplateParamType extends TemplateParameter {
 
 
 	public EntityConstrainedRef.TypeConstraint specType;

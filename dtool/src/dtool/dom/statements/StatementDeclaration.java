@@ -2,13 +2,13 @@ package dtool.dom.statements;
 
 import util.tree.TreeVisitor;
 import descent.internal.core.dom.DeclarationStatement;
-import dtool.dom.ast.ASTNeoNode;
+import dtool.dom.ast.ASTNode;
 import dtool.dom.ast.IASTNeoVisitor;
 import dtool.dom.declarations.Declaration;
 
-public class StatementDeclaration extends ASTNeoNode {
+public class StatementDeclaration extends Statement {
 	
-	Declaration decl;
+	ASTNode decl;
 
 	public StatementDeclaration(DeclarationStatement elem) {
 		convertNode(elem);

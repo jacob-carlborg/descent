@@ -4,13 +4,14 @@ import util.tree.TreeVisitor;
 import descent.internal.core.dom.Condition;
 import descent.internal.core.dom.ConditionalDeclaration;
 import dtool.dom.ast.ASTNeoNode;
+import dtool.dom.ast.ASTNode;
 import dtool.dom.ast.IASTNeoVisitor;
 
 public class DeclarationConditional extends ASTNeoNode {
 	
 	public Condition condition; // TODO convert Condition
-	public Declaration[] thendecls;
-	public Declaration[] elsedecls;
+	public ASTNode[] thendecls;
+	public ASTNode[] elsedecls;
 
 	public DeclarationConditional(ConditionalDeclaration elem) {
 		setSourceRange(elem);

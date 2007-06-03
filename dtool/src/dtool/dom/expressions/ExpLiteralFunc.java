@@ -3,8 +3,8 @@ package dtool.dom.expressions;
 import util.tree.TreeVisitor;
 import descent.internal.core.dom.FuncExp;
 import dtool.dom.ast.IASTNeoVisitor;
-import dtool.dom.declarations.Definition;
-import dtool.dom.declarations.DefinitionFunction;
+import dtool.dom.definitions.Definition;
+import dtool.dom.definitions.DefinitionFunction;
 
 public class ExpLiteralFunc extends Expression {
 	

@@ -8,7 +8,7 @@ import descent.core.domX.AbstractElement;
 
 public class QualifiedName extends AbstractElement implements IName  {
 	
-	private String name;
+	public String name;
 	
 	public QualifiedName(Identifier id) {
 		this.name = id.string;

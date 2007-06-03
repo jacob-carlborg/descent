@@ -1,4 +1,4 @@
-package dtool.dom.declarations;
+package dtool.dom.definitions;
 
 import util.Assert;
 import descent.internal.core.dom.Dsymbol;
@@ -81,7 +81,7 @@ public abstract class DefUnit extends ASTNeoNode {
 	
 	@Override
 	public String toString() {
-		return "=> " + defname.name;
+		return defname.name;
 	}
 
 	public abstract IScope getScope();

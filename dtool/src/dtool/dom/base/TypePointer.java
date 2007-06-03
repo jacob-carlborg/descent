@@ -5,7 +5,7 @@ package dtool.dom.base;
 
 import util.tree.TreeVisitor;
 import dtool.dom.ast.IASTNeoVisitor;
-import dtool.dom.declarations.DefUnit;
+import dtool.dom.definitions.DefUnit;
 
 public class TypePointer extends Entity {
 	public EntityConstrainedRef.TypeConstraint elemtype;

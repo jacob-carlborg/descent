@@ -8,10 +8,10 @@ import dtool.descentadapter.DescentASTConverter;
 import dtool.dom.ast.ASTNeoNode;
 import dtool.dom.ast.IASTNeoVisitor;
 import dtool.dom.base.Entity;
-import dtool.dom.declarations.Parameter;
-import dtool.dom.declarations.DefUnit.Symbol;
+import dtool.dom.definitions.Parameter;
+import dtool.dom.definitions.DefUnit.Symbol;
 
-public class StatementTry extends ASTNeoNode {
+public class StatementTry extends Statement {
 	
 	public static class CatchClause extends ASTNeoNode {
 		

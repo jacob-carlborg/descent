@@ -30,19 +30,19 @@ public class ASTChecker extends ASTNeoUpTreeVisitor {
 
 	private boolean eventSourceRangeNoInfo(ASTNode elem) {
 		print("Source range no info on: ");
-		println(ASTPrinter.toStringElement(elem));
+		println(ASTPrinter.toStringNodeExtra(elem));
 		return false;
 	}
 	
 	private boolean eventSourceRangeStartPosBreach(ASTNode elem) {
 		print("Source range start pos error on: ");
-		println(ASTPrinter.toStringElement(elem));
+		println(ASTPrinter.toStringNodeExtra(elem));
 		return false;
 	}
 	
 	private void eventSourceRangeEndPosBreach(ASTNode elem) {
 		print("Source range end pos error on: ");
-		println(ASTPrinter.toStringElement(elem));
+		println(ASTPrinter.toStringNodeExtra(elem));
 	}
 	
 	/* ====================================================== */

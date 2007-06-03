@@ -73,4 +73,14 @@ public abstract class ASTNode extends TreeNode<ASTNode, IASTVisitor> implements 
 	public String toString() {
 		return "";
 	}
+	
+	/** => #toStringNodeExtra(node, true) */
+	public String toStringNodeExtra() {
+		return ASTPrinter.toStringNodeExtra(this,true);
+	}
+
+	/** Gets an extended String representation of given node. (for debugging) */
+	public String toStringNodeExtra(boolean printRangeInfo) {
+		return ASTPrinter.toStringNodeExtra(this, printRangeInfo);
+	}
 }
