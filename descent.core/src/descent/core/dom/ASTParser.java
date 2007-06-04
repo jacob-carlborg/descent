@@ -236,7 +236,8 @@ public class ASTParser {
 		this.project = null;
 		//this.partial = false;
 		Map options = JavaCore.getOptions();
-		options.remove(JavaCore.COMPILER_TASK_TAGS); // no need to parse task tags
+		// TODO check this
+		//options.remove(JavaCore.COMPILER_TASK_TAGS); // no need to parse task tags
 		this.compilerOptions = options;
 	}
 	   
@@ -272,7 +273,8 @@ public class ASTParser {
 			// copy client's options so as to not do any side effect on them
 			options = new HashMap(options);
 		}
-		options.remove(JavaCore.COMPILER_TASK_TAGS); // no need to parse task tags
+		// TODO check this
+		//options.remove(JavaCore.COMPILER_TASK_TAGS); // no need to parse task tags
 		this.compilerOptions = options;
 	}
 	
@@ -493,7 +495,8 @@ public class ASTParser {
 		if (source != null) {
 			this.project = source.getJavaProject();
 			Map options = this.project.getOptions(true);
-			options.remove(JavaCore.COMPILER_TASK_TAGS); // no need to parse task tags
+			// TODO check this
+			//options.remove(JavaCore.COMPILER_TASK_TAGS); // no need to parse task tags
 			this.compilerOptions = options;
 		}
 	}
@@ -619,7 +622,8 @@ public class ASTParser {
 		this.project = project;
 		if (project != null) {
 			Map options = project.getOptions(true);
-			options.remove(JavaCore.COMPILER_TASK_TAGS); // no need to parse task tags
+			// TODO check this
+			//options.remove(JavaCore.COMPILER_TASK_TAGS); // no need to parse task tags
 			this.compilerOptions = options;
 		}
 	}

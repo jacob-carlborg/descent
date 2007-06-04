@@ -76,6 +76,7 @@ import java.util.StringTokenizer;
 
 import org.eclipse.core.runtime.Assert;
 
+import descent.core.compiler.CharOperation;
 import descent.core.compiler.IProblem;
 import descent.core.dom.AST;
 import descent.core.dom.CodeComment;
@@ -117,6 +118,11 @@ public class Parser extends Lexer {
 	
 	public Parser(AST ast, char[] source, int offset, 
 			int length) {
+		this(ast, source, offset, length, null, null, false);
+	}
+	
+	public Parser(AST ast, char[] source, int offset, 
+			int length, char[][] taskTags, char[][] taskPriorities, boolean isTaskCaseSensitive) {
 		super(source, offset, length, 
 				true /* tokenize comments */, 
 				true /* tokenize pragmas */,
@@ -127,6 +133,9 @@ public class Parser extends Lexer {
 		this.ast = ast;
 		comments = new ArrayList<Comment>();
 		pragmas = new ArrayList<Pragma>();
+		this.taskTags = taskTags;
+		this.taskPriorities = taskPriorities;
+		this.isTaskCaseSensitive = isTaskCaseSensitive;
 		nextToken();
 	}
 	
@@ -137,13 +146,29 @@ public class Parser extends Lexer {
 		module.comments = comments.toArray(new Comment[comments.size()]);
 		module.pragmas = pragmas.toArray(new Pragma[pragmas.size()]);
 		module.lineEnds = getLineEnds();
+		
+		if (taskTags != null) {
+			addTaskTagsToProblems();
+		}
+		
 		module.problems = problems;
 		module.ast = ast;
 		return module;
 	}
 	
+	private void addTaskTagsToProblems() {
+		for(int i = 0; i < foundTaskCount; i++) {
+			IProblem problem = Problem.newTask(
+					new String(CharOperation.concat(foundTaskTags[i], foundTaskMessages[i], ' ')), 
+					getLineNumber(foundTaskPositions[i][0]), 
+					foundTaskPositions[i][0], 
+					foundTaskPositions[i][1] - foundTaskPositions[i][0]);
+			problems.add(problem);
+		}
+	}
+	
 	@SuppressWarnings("unchecked")
-	public List<Dsymbol> parseModule() {
+	protected List<Dsymbol> parseModule() {
 	    List<Dsymbol> decldefs = new ArrayList<Dsymbol>();
 
 		// ModuleDeclation leads off

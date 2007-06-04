@@ -53,6 +53,18 @@ public class Problem implements IProblem {
 		return p;
 	}
 	
+	public static Problem newTask(String message, int line, int sourceStart, int length) {
+		Problem p = new Problem();
+		p.message = message;
+		p.isError = false;
+		p.id = IProblem.Task;
+		p.categoryId = CAT_UNSPECIFIED;
+		p.sourceLineNumber = line;
+		p.sourceStart = sourceStart;
+		p.sourceEnd = sourceStart + length - 1;
+		return p;
+	}
+	
 	public int getID() {
 		return id;
 	}

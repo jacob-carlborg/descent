@@ -505,13 +505,14 @@ public class Lexer implements IProblemRequestor {
 					break;
 				}
 				
+				if (this.taskTags != null) {
+					checkTaskTag(t.ptr, p - t.ptr);
+				}
+				
 				if (tokenizeComments) {
 					t.value = (input[t.ptr + 2] == '*' && p - 4 != t.ptr) ? TOKdocblockcomment : TOKblockcomment;
 					t.len = p - t.ptr;
 					t.string = new String(input, t.ptr, t.len);
-					if (this.taskTags != null) {
-						checkTaskTag(t.ptr, t.ptr + t.len);
-					}
 					return;
 				} else {
 					continue;
@@ -534,13 +535,13 @@ public class Lexer implements IProblemRequestor {
 
 					case 0:
 					case 0x1A:
+						if (this.taskTags != null) {
+							checkTaskTag(t.ptr, p - t.ptr);
+						}
 						if (tokenizeComments) {
 							t.value = input[t.ptr + 2] == '/' ? TOKdoclinecomment : TOKlinecomment;
 							t.len = p - t.ptr;
 							t.string = new String(input, t.ptr, t.len);
-							if (this.taskTags != null) {
-								checkTaskTag(t.ptr, t.ptr + t.len);
-							}
 							return;
 						}
 						t.value = TOKeof;
@@ -557,13 +558,13 @@ public class Lexer implements IProblemRequestor {
 				    break;
 				}
 				
+				if (this.taskTags != null) {
+					checkTaskTag(t.ptr, p - t.ptr);
+				}
 				if (tokenizeComments) {
 					t.value = input[t.ptr + 2] == '/' ? TOKdoclinecomment : TOKlinecomment;
 					t.len = p - t.ptr;
 					t.string = new String(input, t.ptr, t.len);
-					if (this.taskTags != null) {
-						checkTaskTag(t.ptr, t.ptr + t.len);
-					}
 					
 					newline(NOT_IN_COMMENT);
 					p++;					
@@ -634,13 +635,13 @@ public class Lexer implements IProblemRequestor {
 				    break;
 				}
 				
+				if (this.taskTags != null) {
+					checkTaskTag(t.ptr, p - t.ptr);
+				}
 				if (tokenizeComments) {
 					t.value = (input[t.ptr + 2] == '+' && p - 4 != t.ptr) ? TOKdocpluscomment : TOKpluscomment;
 					t.len = p - t.ptr;
 					t.string = new String(input, t.ptr, t.len);
-					if (this.taskTags != null) {
-						checkTaskTag(t.ptr, t.ptr + t.len);
-					}
 					return;
 				} else {
 					continue;

@@ -16,6 +16,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 
 import descent.core.IJavaProject;
 import descent.core.IProblemRequestor;
+import descent.core.JavaCore;
 import descent.core.JavaModelException;
 import descent.core.WorkingCopyOwner;
 import descent.core.compiler.IProblem;
@@ -25,7 +26,9 @@ import descent.internal.compiler.IProblemFactory;
 import descent.internal.compiler.env.INameEnvironment;
 import descent.internal.compiler.impl.CompilerOptions;
 import descent.internal.compiler.parser.Module;
+import descent.internal.compiler.parser.Parser;
 import descent.internal.compiler.parser.SemanticContext;
+import descent.internal.core.util.Util;
 
 public class CompilationUnitResolver extends descent.internal.compiler.Compiler {
 	
@@ -96,7 +99,21 @@ public class CompilationUnitResolver extends descent.internal.compiler.Compiler 
 		
 		AST ast = AST.newAST(apiLevel);
 		
-		descent.internal.compiler.parser.Parser parser = new descent.internal.compiler.parser.Parser(ast, source, 0, source.length);
+		descent.internal.compiler.parser.Parser parser;
+		if (options != null) {
+			String taskTags = (String) options.get(JavaCore.COMPILER_TASK_TAGS);
+			if (taskTags != null) {
+				parser = new Parser(ast, source, 0, source.length, 
+						Util.toCharArrays(taskTags.split(",")),
+						Util.toCharArrays(((String) options.get(JavaCore.COMPILER_TASK_PRIORITIES)).split(",")),
+						JavaCore.ENABLED.equals(options.get(JavaCore.COMPILER_TASK_CASE_SENSITIVE))
+						);
+			} else {
+				parser = new Parser(ast, source, 0, source.length);
+			}
+		} else {
+			parser = new Parser(ast, source, 0, source.length);
+		}
 		
 		PublicScanner scanner = new PublicScanner(true, true, true, true, ast.apiLevel);
 		scanner.setLexerAndSource(parser, source);
