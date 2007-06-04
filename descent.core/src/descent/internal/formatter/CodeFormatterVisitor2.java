@@ -187,14 +187,15 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 		switch (node.getPassageMode())
 		{
 			case IN:
-				scribe.printNextToken(TOK.TOKin);
+				if(isNextToken(TOK.TOKin)) // TODO JDT formatter workaround for parser bug
+					scribe.printNextToken(TOK.TOKin);
 				scribe.space();
 				break;
 			case OUT:
 				scribe.printNextToken(TOK.TOKout);
 				scribe.space();
 				break;
-			case INOUT:
+			case INOUT: // TODO D version 1.11+: "ref" parameter passing
 				scribe.printNextToken(TOK.TOKinout);
 				scribe.space();
 				break;
@@ -336,8 +337,7 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 	
 	public boolean visit(Block node)
 	{
-		//if(isNextToken(TOK.TOKlcurly) || !workaroundDeclarationBlock(node))
-			formatSubStatement(node, true, 0, false, 0);
+		formatSubStatement(node, true, 0, false, 0);
 		return false;
 	}
 	
@@ -459,18 +459,11 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 		switch(node.getKind())
 		{
 			case CONSTRUCTOR:
+			case STATIC_CONSTRUCTOR: // "static" will be picked up in formatModifiers()
 				scribe.printNextToken(TOK.TOKthis);
 				break;
 			case DESTRUCTOR:
-				scribe.printNextToken(TOK.TOKtilde);
-				scribe.printNextToken(TOK.TOKthis);
-				break;
-			case STATIC_CONSTRUCTOR:
-				// "static" will be picked up in formatModifiers()
-				scribe.printNextToken(TOK.TOKthis);
-				break;
 			case STATIC_DESTRUCTOR:
-				// "static" will be picked up in formatModifiers()
 				scribe.printNextToken(TOK.TOKtilde);
 				scribe.printNextToken(TOK.TOKthis);
 				break;
@@ -480,8 +473,6 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 			case DELETE:
 				scribe.printNextToken(TOK.TOKdelete);
 				break;
-			default:
-				throw new AbortFormatting("Unknown constructor declaration");
 		}
 		formatFunction(node);
 		return false;
@@ -780,7 +771,17 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 		node.getReturnType().accept(this);
 		scribe.space();
 		node.getName().accept(this);
-		formatTemplateParams(node.templateParameters());
+		List<TemplateParameter> tp = node.templateParameters();
+		if(null != tp && !tp.isEmpty())
+			formatTemplateParams(node.templateParameters());
+		else
+		{
+			if(hasEmptyTemplateParamList(node))
+			{
+				scribe.printNextToken(TOK.TOKlparen);
+				scribe.printNextToken(TOK.TOKrparen);
+			}
+		}
 		formatFunction(node);
 		return false;
 	}
@@ -994,12 +995,12 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 
 	public boolean visit(MixinDeclaration node)
 	{
-		formatModifiers(true); // just in case; there shouldn't be any
+		formatModifiers(true);
 		scribe.printNextToken(TOK.TOKmixin);
 		scribe.printNextToken(TOK.TOKlparen);
 		node.getExpression().accept(this);
 		scribe.printNextToken(TOK.TOKrparen);
-		if(isNextToken(TOK.TOKsemicolon)) // The D spec requires it, Descent doesn't
+		if(isNextToken(TOK.TOKsemicolon))
 			scribe.printNextToken(TOK.TOKsemicolon);
 		return false;
 	}
@@ -2289,6 +2290,37 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 	{
 		lexer.reset(scribe.lexer.base, scribe.scannerEndPosition - 1);
 		return isComment(lexer.nextToken());
+	}
+	
+	/**
+	 * This method exists because it's legal to have a function with an empty
+	 * template parameter list. Consider:
+	 *     int fn()() // Totally legal in D, believe it or not!
+	 * The only way I can think of to handle formatting this is to look ahead
+	 * three tokens for "()(", which is what this method does.
+	 * 
+	 * @param node the function declaration to check
+	 */
+	private boolean hasEmptyTemplateParamList(FunctionDeclaration node)
+	{
+		lexer.reset(scribe.lexer.p, scribe.scannerEndPosition - 1);
+		TOK tok1;
+		do
+			tok1 = lexer.nextToken();
+		while (isComment(tok1));
+		
+		TOK tok2;
+		do
+			tok2 = lexer.nextToken();
+		while (isComment(tok2));
+		
+		TOK tok3;
+		do
+			tok3 = lexer.nextToken();
+		while (isComment(tok3));
+		
+		return(tok1 == TOK.TOKlparen && tok2 == TOK.TOKrparen &&
+			   tok3 == TOK.TOKlparen);
 	}
 	
 	/**
