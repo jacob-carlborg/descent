@@ -1,6 +1,5 @@
 package descent.internal.formatter;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
@@ -20,6 +19,8 @@ import descent.internal.compiler.parser.TOK;
  */
 public class CodeFormatterVisitor2 extends ASTVisitor
 {
+	public final static boolean	        DEBUG = true;
+	
 	public DefaultCodeFormatterOptions	preferences;
 	public Scribe2						scribe;
 	public Lexer						lexer;
@@ -79,7 +80,7 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 	
 	public boolean visit(AggregateDeclaration node)
 	{
-		formatModifiers(node.modifiers(), false);
+		formatModifiers(true);
 		
 		switch(node.getKind())
 		{
@@ -120,12 +121,15 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 		
 		formatDeclarationBlock(node.declarations());
 		
+		if(isNextToken(TOK.TOKsemicolon))
+			scribe.printNextToken(TOK.TOKsemicolon);
+		
 		return false;
 	}
 
 	public boolean visit(AliasDeclaration node)
 	{
-		formatModifiers(node.modifiers(), false);
+		formatModifiers(true);
 		scribe.printNextToken(TOK.TOKalias);
 		scribe.space();
 		node.getType().accept(this);
@@ -168,7 +172,7 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 	
 	public boolean visit(AlignDeclaration node)
 	{
-		formatModifiers(node.modifiers(), false);
+		formatModifiers(true);
 		scribe.printNextToken(TOK.TOKalign);
 		scribe.printNextToken(TOK.TOKlparen);
 		scribe.printNextToken(literalOrIdentiferTokenList());
@@ -321,7 +325,7 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 	public boolean visit(BaseClass node)
 	{
 		Modifier modifier = node.getModifier();
-		if(null != modifier)
+		if(null != modifier && !isNextToken(TOK.TOKidentifier))
 		{
 			modifier.accept(this);
 			scribe.space();
@@ -332,7 +336,7 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 	
 	public boolean visit(Block node)
 	{
-		if(isNextToken(TOK.TOKlcurly) || !workaroundDeclarationBlock(node))
+		//if(isNextToken(TOK.TOKlcurly) || !workaroundDeclarationBlock(node))
 			formatSubStatement(node, true, 0, false, 0);
 		return false;
 	}
@@ -451,7 +455,7 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 	
 	public boolean visit(ConstructorDeclaration node)
 	{
-		formatModifiers(node.modifiers(), false);
+		formatModifiers(true);
 		switch(node.getKind())
 		{
 			case CONSTRUCTOR:
@@ -462,16 +466,11 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 				scribe.printNextToken(TOK.TOKthis);
 				break;
 			case STATIC_CONSTRUCTOR:
-				// "static" might have been slurped up in modifiers
-				if(isNextToken(TOK.TOKstatic))
-					scribe.printNextToken(TOK.TOKstatic);
-				scribe.space();
+				// "static" will be picked up in formatModifiers()
 				scribe.printNextToken(TOK.TOKthis);
 				break;
 			case STATIC_DESTRUCTOR:
-				if(isNextToken(TOK.TOKstatic))
-					scribe.printNextToken(TOK.TOKstatic);
-				scribe.space();
+				// "static" will be picked up in formatModifiers()
 				scribe.printNextToken(TOK.TOKtilde);
 				scribe.printNextToken(TOK.TOKthis);
 				break;
@@ -491,15 +490,19 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 	public boolean visit(ContinueStatement node)
 	{
 		scribe.printNextToken(TOK.TOKcontinue);
-		scribe.space();
-		node.getLabel().accept(this);
-			scribe.printNextToken(TOK.TOKsemicolon);
+		SimpleName label = node.getLabel();
+		if(null != label)
+		{
+			scribe.space();
+			node.getLabel().accept(this);
+		}
+		scribe.printNextToken(TOK.TOKsemicolon);
 		return false;
 	}
 	
 	public boolean visit(DebugAssignment node)
 	{
-		formatModifiers(node.modifiers(), false);
+		formatModifiers(true);
 		scribe.printNextToken(TOK.TOKdebug);
 		scribe.space();
 		scribe.printNextToken(TOK.TOKassign);
@@ -511,7 +514,7 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 	
 	public boolean visit(DebugDeclaration node)
 	{
-		formatModifiers(node.modifiers(), false);
+		formatModifiers(true);
 		scribe.printNextToken(TOK.TOKdebug);
 		Version version = node.getVersion();
 		if(null != version)
@@ -632,7 +635,7 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 	
 	public boolean visit(EnumDeclaration node)
 	{
-		formatModifiers(node.modifiers(), false);
+		formatModifiers(true);
 		scribe.printNextToken(TOK.TOKenum);
 		
 		Name name = node.getName();
@@ -703,12 +706,7 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 	
 	public boolean visit(ExternDeclaration node)
 	{
-		formatModifiers(node.modifiers(), true);
-		
-		// The extern itself is sometimes slurped up as a modifier by the scribe
-		if(isNextToken(TOK.TOKextern))
-			scribe.printNextToken(TOK.TOKextern);
-		
+		formatModifiers(false); // Picks up the "extern"
 		if(isNextToken(TOK.TOKlparen))
 		{
 			scribe.printNextToken(TOK.TOKlparen);
@@ -778,7 +776,7 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 	
 	public boolean visit(FunctionDeclaration node)
 	{
-		formatModifiers(node.modifiers(), false);
+		formatModifiers(true);
 		node.getReturnType().accept(this);
 		scribe.space();
 		node.getName().accept(this);
@@ -904,16 +902,7 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 	
 	public boolean visit(ImportDeclaration node)
 	{
-		formatModifiers(node.modifiers(), false);
-		
-		// formatModifiers() may slurp up a "static" keyword; if not, print it
-		if(isNextToken(TOK.TOKstatic))
-		{
-			scribe.printNextToken(TOK.TOKstatic);
-			scribe.space();
-		}
-		
-		// Print the "import" keyword
+		formatModifiers(true);
 		scribe.printNextToken(TOK.TOKimport);
 		scribe.space();
 		formatCSV(node.imports(), false, true);
@@ -928,7 +917,6 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 		node.getLeftOperand().accept(this);
 		scribe.space();
 		
-		// Handle !is (there's TOKnotis, but it doesn't seem to work)
 		if(isNextToken(TOK.TOKnot))
 		{
 			scribe.printNextToken(TOK.TOKnot);
@@ -944,7 +932,7 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 	
 	public boolean visit(InvariantDeclaration node)
 	{
-		formatModifiers(node.modifiers(), false);
+		formatModifiers(true);
 		scribe.printNextToken(TOK.TOKinvariant);
 		scribe.space();
 		node.getBody().accept(this);
@@ -1006,7 +994,7 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 
 	public boolean visit(MixinDeclaration node)
 	{
-		formatModifiers(node.modifiers(), false); // just in case; there shouldn't be any
+		formatModifiers(true); // just in case; there shouldn't be any
 		scribe.printNextToken(TOK.TOKmixin);
 		scribe.printNextToken(TOK.TOKlparen);
 		node.getExpression().accept(this);
@@ -1033,8 +1021,9 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 	
 	public boolean visit(ModifierDeclaration node)
 	{
-		formatModifiers(node.modifiers(), false);
-		//node.getModifier().accept(this);
+		formatModifiers(false);
+		if(!isNextToken(TOK.TOKcolon)) // "private:" instead of "private :"
+			scribe.space();
 		formatDeclarationBlock(node.declarations());
 		return false;
 	}
@@ -1141,8 +1130,7 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 	public boolean visit(PointerType node)
 	{
 		node.getComponentType().accept(this);
-		if(isNextToken(TOK.TOKmul)) // It might be postfixed
-			scribe.printNextToken(TOK.TOKmul);
+		scribe.printNextToken(TOK.TOKmul);
 		return false;
 	}
 	
@@ -1162,7 +1150,7 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 	
 	public boolean visit(PragmaDeclaration node)
 	{
-		formatModifiers(node.modifiers(), false);
+		formatModifiers(true);
 		scribe.printNextToken(TOK.TOKpragma);
 		scribe.printNextToken(TOK.TOKlparen);
 		node.getName().accept(this);
@@ -1343,12 +1331,7 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 	
 	public boolean visit(StaticAssert node)
 	{
-		formatModifiers(node.modifiers(), false);
-		if(isNextToken(TOK.TOKstatic))
-		{
-			scribe.printNextToken(TOK.TOKstatic);
-			scribe.space();
-		}
+		formatModifiers(true); // Picks up the "static"
 		scribe.printNextToken(TOK.TOKassert);
 		scribe.printNextToken(TOK.TOKlparen);
 		node.getExpression().accept(this);
@@ -1373,12 +1356,7 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 	
 	public boolean visit(StaticIfDeclaration node)
 	{
-		formatModifiers(node.modifiers(), false);
-		if(isNextToken(TOK.TOKstatic))
-		{
-			scribe.printNextToken(TOK.TOKstatic);
-			scribe.space();
-		}
+		formatModifiers(true); //Picks up the "static"
 		scribe.printNextToken(TOK.TOKif);
 		scribe.printNextToken(TOK.TOKlparen);
 		node.getExpression().accept(this);
@@ -1485,7 +1463,7 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 	
 	public boolean visit(TemplateDeclaration node)
 	{
-		formatModifiers(node.modifiers(), false);
+		formatModifiers(true);
 		scribe.printNextToken(TOK.TOKtemplate);
 		scribe.space();
 		node.getName().accept(this);
@@ -1499,7 +1477,7 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 	
 	public boolean visit(TemplateMixinDeclaration node)
 	{
-		formatModifiers(node.modifiers(), false);
+		formatModifiers(true);
 		scribe.printNextToken(TOK.TOKmixin);
 		scribe.space();
 		node.getType().accept(this);
@@ -1564,7 +1542,7 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 	
 	public boolean visit(TypedefDeclaration node)
 	{
-		formatModifiers(node.modifiers(), false);
+		formatModifiers(true);
 		scribe.printNextToken(TOK.TOKtypedef);
 		scribe.space();
 		node.getType().accept(this);
@@ -1652,7 +1630,7 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 	
 	public boolean visit(UnitTestDeclaration node)
 	{
-		formatModifiers(node.modifiers(), false);
+		formatModifiers(true);
 		scribe.printNextToken(TOK.TOKunittest);
 		scribe.space();
 		node.getBody().accept(this);
@@ -1687,7 +1665,7 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 
 	public boolean visit(VariableDeclaration node)
 	{
-		formatModifiers(node.modifiers(), false);
+		formatModifiers(true);
 		Type type = node.getType();
 		if(null != type)
 		{
@@ -1724,7 +1702,7 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 	
 	public boolean visit(VersionAssignment node)
 	{
-		formatModifiers(node.modifiers(), false);
+		formatModifiers(true);
 		scribe.printNextToken(TOK.TOKversion);
 		scribe.space();
 		scribe.printNextToken(TOK.TOKassign);
@@ -1736,7 +1714,7 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 
 	public boolean visit(VersionDeclaration node)
 	{
-		formatModifiers(node.modifiers(), false);
+		formatModifiers(true);
 		scribe.printNextToken(TOK.TOKversion);
 		Version version = node.getVersion();
 		if(null != version)
@@ -2032,18 +2010,102 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 	}
 	
 	/**
-	 * Asks the scribe to print modifers if there are any (this is here to
-	 * prevent extra spaces from being put in).
+	 * Prints all modifiers (which may include ones that are normally part of
+	 * the declaration, such as a "static if").
+	 * 
+	 * @param spaceAtEnd insert a space after the last modifier is printed (if
+	 *                   no modifiers were printed, no space will be inserted,
+	 *                   regardless of the value of the parameter).
 	 */
-	private void formatModifiers(List<Modifier> modifiers, boolean endAtExtern)
+	private void formatModifiers(boolean spaceAtEnd)
 	{
-		if (!modifiers.isEmpty())
+		boolean isFirst = true;  // Is the first modifier?
+		boolean printed = false; // Has anything been printed?
+		loop: while(true)
 		{
-			scribe.printModifiers(modifiers, endAtExtern);
-			scribe.space();
+			switch(nextNonCommentToken())
+			{
+				case TOKprivate:
+					scribe.printNextToken(TOK.TOKprivate, !isFirst);
+					isFirst = false;
+					printed = true;
+					break;
+				case TOKprotected:
+					scribe.printNextToken(TOK.TOKprotected, !isFirst);
+					isFirst = false;
+					printed = true;
+					break;
+				case TOKpackage:
+					scribe.printNextToken(TOK.TOKpackage, !isFirst);
+					isFirst = false;
+					printed = true;
+					break;
+				case TOKpublic:
+					scribe.printNextToken(TOK.TOKpublic, !isFirst);
+					isFirst = false;
+					printed = true;
+					break;
+				case TOKexport:
+					scribe.printNextToken(TOK.TOKexport, !isFirst);
+					isFirst = false;
+					printed = true;
+					break;
+				case TOKfinal:
+					scribe.printNextToken(TOK.TOKfinal, !isFirst);
+					isFirst = false;
+					printed = true;
+					break;
+				case TOKdeprecated:
+					scribe.printNextToken(TOK.TOKdeprecated, !isFirst);
+					isFirst = false;
+					printed = true;
+					break;
+				case TOKconst:
+					scribe.printNextToken(TOK.TOKconst, !isFirst);
+					isFirst = false;
+					printed = true;
+					break;
+				case TOKscope:
+					scribe.printNextToken(TOK.TOKscope, !isFirst);
+					isFirst = false;
+					printed = true;
+					break;
+				case TOKstatic:
+					scribe.printNextToken(TOK.TOKstatic, !isFirst);
+					isFirst = false;
+					printed = true;
+					break;
+				case TOKabstract:
+					scribe.printNextToken(TOK.TOKabstract, !isFirst);
+					isFirst = false;
+					printed = true;
+					break;
+				case TOKoverride:
+					scribe.printNextToken(TOK.TOKoverride, !isFirst);
+					isFirst = false;
+					printed = true;
+					break;
+				case TOKauto:
+					scribe.printNextToken(TOK.TOKauto, !isFirst);
+					isFirst = false;
+					printed = true;
+					break;
+				case TOKsynchronized:
+					scribe.printNextToken(TOK.TOKsynchronized, !isFirst);
+					isFirst = false;
+					printed = true;
+					break;
+				case TOKextern:
+					scribe.printNextToken(TOK.TOKextern, !isFirst);
+					isFirst = false;
+					printed = true;
+					break;
+				default:
+					break loop;
+			}
 		}
-		else
-			workaroundDeclarationStatementModifiers();
+		if(printed && spaceAtEnd)
+			scribe.space();
 	}
 	
 	/**
@@ -2292,8 +2354,6 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 		restartLexer(src);
 		scribe.initializeScanner(src);
 	}
-	
-	public final static boolean	        DEBUG = true;
 	
 	private static TOK[] PRIMITIVE_TYPES_LIST;
 	private static TOK[] LITERAL_OR_IDENTIFIER;
@@ -2569,179 +2629,5 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 			Arrays.sort(TYPE_SPECIALIZATIONS);
 		}
 		return TYPE_SPECIALIZATIONS;
-	}
-	
-	//--------------------------------------------------------------------------
-	
-	/**
-	 * This is a workaround for a bug in the ASTConverter that parses multiple
-	 * variable declarations, aliases or typedefs within a statement as a single
-	 * statement, rather than a set of fragments. For example, "int x, y, z;"
-	 * would be parsed as "{ int x; int y; int z; }" in the internal AST and
-	 * passed on to the external DOM in the same way.
-	 * 
-	 * If the external DOM is changed, this method will no longer be necessary,
-	 * so should be removed. Thus, this should be considered a temporary
-	 * workaround, and not part of the final release. It also repeats much of
-	 * the logic of #visit(VariableDeclaration) et al, as well as being quite
-	 * repetitive itself, so at the very minimum it needs some serious
-	 * refactoring.
-	 * 
-	 * @param node the Block node that needs the workaround
-	 * @return     true if this printed stuff, false if the normal calls should
-	 *             be made and the block treated like an actual block
-	 */
-	private boolean workaroundDeclarationBlock(Block node)
-	{
-		ASTNode parent = node.getParent();
-		if(parent instanceof SwitchCase || parent instanceof DefaultStatement)
-			return false;
-		if(node.statements().isEmpty())
-			return false;
-		
-		Declaration first;
-		try
-		{
-			first = ((DeclarationStatement) node.statements().get(0))
-						.getDeclaration();
-		}
-		catch(ClassCastException e)
-		{
-			// This should nevevr be reached, but just in case we made a wrong
-			// assumption, return false, meaning that the normal
-			// formatSubStatement call should be made. If the first statement in
-			// a block just happened to be a DeclarationStatement, then we're
-			// screwed.
-			return false;
-		}
-		
-		// Varriable declaration
-		if(first instanceof VariableDeclaration)
-		{
-			((VariableDeclaration) first).getType().accept(this);
-			scribe.space();
-				
-			List<VariableDeclarationFragment> fragments = 
-				new ArrayList<VariableDeclarationFragment>();
-			
-			for(Statement stmt : node.statements())
-			{
-				fragments.addAll((
-					(VariableDeclaration) 
-						((DeclarationStatement) stmt).getDeclaration())
-					.fragments());
-			}
-			formatCSV(fragments, this.preferences.insert_space_before_comma_in_multiple_field_declarations, this.preferences.insert_space_after_comma_in_multiple_field_declarations);
-			scribe.printNextToken(TOK.TOKsemicolon, this.preferences.insert_space_before_semicolon);
-			return true;
-		}
-		
-		// Alias declaration
-		else if(first instanceof AliasDeclaration)
-		{
-			scribe.printNextToken(TOK.TOKalias);
-			scribe.space();
-			((AliasDeclaration) first).getType().accept(this);
-			scribe.space();
-				
-			List<AliasDeclarationFragment> fragments = 
-				new ArrayList<AliasDeclarationFragment>();
-			
-			for(Statement stmt : node.statements())
-			{
-				fragments.addAll((
-					(AliasDeclaration) 
-						((DeclarationStatement) stmt).getDeclaration())
-					.fragments());
-			}
-			formatCSV(fragments, this.preferences.insert_space_before_comma_in_multiple_field_declarations, this.preferences.insert_space_after_comma_in_multiple_field_declarations);
-			scribe.printNextToken(TOK.TOKsemicolon, this.preferences.insert_space_before_semicolon);
-			return true;
-		}
-		
-		// Typedef declaration
-		else if(first instanceof TypedefDeclaration)
-		{
-			scribe.printNextToken(TOK.TOKtypedef);
-			scribe.space();
-			((TypedefDeclaration) first).getType().accept(this);
-			scribe.space();
-				
-			List<TypedefDeclarationFragment> fragments = 
-				new ArrayList<TypedefDeclarationFragment>();
-			
-			for(Statement stmt : node.statements())
-			{
-				fragments.addAll((
-					(TypedefDeclaration) 
-						((DeclarationStatement) stmt).getDeclaration())
-					.fragments());
-			}
-			formatCSV(fragments, this.preferences.insert_space_before_comma_in_multiple_field_declarations, this.preferences.insert_space_after_comma_in_multiple_field_declarations);
-			scribe.printNextToken(TOK.TOKsemicolon, this.preferences.insert_space_before_semicolon);
-			return true;
-		}
-		
-		// A declaration that can't be mangled to a block, so why are we here?
-		else
-		{
-			return false;
-		}
-	}
-	
-	/**
-	 * A workaround for a problem in the ASTConverter that doesn't put modifiers
-	 * in DeclarationStatements. Again, this is ideally a temporary workaround,
-	 * as it doesn't have the options and niceties that Scribe2#printModifiers
-	 * provides.
-	 * 
-	 * @param node the DeclarationStatement that needs the workaround
-	 */
-	private void workaroundDeclarationStatementModifiers()
-	{
-		loop: while(true)
-		{
-			switch(nextNonCommentToken())
-			{
-				case TOKprivate:
-					scribe.printNextToken(TOK.TOKprivate);
-					scribe.space();
-					break;
-				case TOKprotected:
-					scribe.printNextToken(TOK.TOKprotected);
-					scribe.space();
-					break;
-				case TOKpublic:
-					scribe.printNextToken(TOK.TOKpublic);
-					scribe.space();
-					break;
-				case TOKexport:
-					scribe.printNextToken(TOK.TOKexport);
-					scribe.space();
-					break;
-				case TOKfinal:
-					scribe.printNextToken(TOK.TOKfinal);
-					scribe.space();
-					break;
-				case TOKdeprecated:
-					scribe.printNextToken(TOK.TOKdeprecated);
-					scribe.space();
-					break;
-				case TOKconst:
-					scribe.printNextToken(TOK.TOKconst);
-					scribe.space();
-					break;
-				case TOKscope:
-					scribe.printNextToken(TOK.TOKscope);
-					scribe.space();
-					break;
-				case TOKstatic:
-					scribe.printNextToken(TOK.TOKstatic);
-					scribe.space();
-					break;
-				default:
-					break loop;
-			}
-		}
 	}
 }
