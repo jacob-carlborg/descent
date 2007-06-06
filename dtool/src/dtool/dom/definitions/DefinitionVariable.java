@@ -1,9 +1,11 @@
 package dtool.dom.definitions;
 
+import java.util.List;
+
 import util.tree.TreeVisitor;
 import dtool.dom.ast.IASTNeoVisitor;
 import dtool.dom.base.Entity;
-import dtool.dom.base.EntityConstrainedRef;
+import dtool.dom.base.BaseEntityRef;
 import dtool.dom.expressions.Initializer;
 import dtool.model.IScope;
 
@@ -12,7 +14,7 @@ import dtool.model.IScope;
  */
 public class DefinitionVariable extends Definition {
 	
-	public EntityConstrainedRef.TypeConstraint type;
+	public BaseEntityRef.TypeConstraint type;
 	public Initializer init;
 
 	public DefinitionVariable(descent.internal.core.dom.VarDeclaration elem) {
@@ -39,6 +41,10 @@ public class DefinitionVariable extends Definition {
 	@Override
 	public IScope getScope() {
 		return type.entity.getTargetDefUnit().getScope();
+	}
+
+	public List<DefUnit> getDefUnits() {
+		return getScope().getDefUnits();
 	}
 
 }

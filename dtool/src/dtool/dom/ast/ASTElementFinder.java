@@ -18,7 +18,7 @@ public class ASTElementFinder extends ASTNeoUpTreeVisitor {
 	}
 	
 	public static ASTNode findElement(ASTNode root, int offset){
-		if(offset < root.getStartPos() || offset >= root.getEndPos()  ) 
+		if(offset < root.getStartPos() || offset > root.getEndPos() ) 
 			return null;
 		
 		ASTElementFinder aef = new ASTElementFinder(offset);
@@ -30,16 +30,13 @@ public class ASTElementFinder extends ASTNeoUpTreeVisitor {
 		if(elem.hasNoSourceRangeInfo()) {
 			//Assert.fail();
 			return false;
-		} else if(offset >= elem.getEndPos() ) {
-			// Match not here, don't bother descending. Search ahead;
+		} else if(offset < elem.getStartPos() || offset > elem.getEndPos()) {
+			// Match not here, don't bother descending.
 			return false; 
-		} else if(offset < elem.getStartPos()) {
-			// Already past match, so don't descend. Bail out.			
-			return false;
 		} else {
 			// This node is the match, or is parent of the match.
 			match = elem;
-			return true; // Search children.
+			return true; // Descend and search children.
 		}
 		
 	}

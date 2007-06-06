@@ -6,6 +6,8 @@ import util.tree.TreeVisitor;
 import descent.internal.core.dom.EnumDeclaration;
 import dtool.descentadapter.DescentASTConverter;
 import dtool.dom.ast.IASTNeoVisitor;
+import dtool.dom.base.Entity;
+import dtool.dom.base.BaseEntityRef.TypeConstraint;
 import dtool.dom.expressions.Expression;
 import dtool.model.IScope;
 
@@ -41,14 +43,15 @@ public class DefinitionEnum extends Definition {
 			return null;
 		}
 
-
 	}
 
-	private List<EnumMember> members;
+	private List<DefUnit> members;
+	private TypeConstraint type;
 	
 	public DefinitionEnum(EnumDeclaration elem) {
 		convertDsymbol(elem);
 		this.members = DescentASTConverter.convertMany(elem.members, this.members) ;
+		this.type = Entity.convertType(elem.type);  
 	}
 
 	@Override
@@ -56,6 +59,7 @@ public class DefinitionEnum extends Definition {
 		boolean children = visitor.visit(this);
 		if (children) {
 			TreeVisitor.acceptChildren(visitor, defname);
+			TreeVisitor.acceptChildren(visitor, type);
 			TreeVisitor.acceptChildren(visitor, members);
 		}
 		visitor.endVisit(this);	
@@ -69,9 +73,11 @@ public class DefinitionEnum extends Definition {
 
 	@Override
 	public IScope getScope() {
-		// TODO Auto-generated method stub
-		return null;
+		return this;
 	}
-
+	
+	public List<DefUnit> getDefUnits() {
+		return members;
+	}
 	
 }

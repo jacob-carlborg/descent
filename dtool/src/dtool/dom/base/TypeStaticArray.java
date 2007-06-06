@@ -10,7 +10,7 @@ import dtool.dom.definitions.DefUnit;
 import dtool.dom.expressions.Expression;
 
 public class TypeStaticArray extends Entity {
-	public EntityConstrainedRef.TypeConstraint elemtype;
+	public BaseEntityRef.TypeConstraint elemtype;
 	public Expression sizeexp;
 
 	public TypeStaticArray(TypeSArray elem) {

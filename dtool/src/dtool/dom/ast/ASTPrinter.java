@@ -2,7 +2,7 @@ package dtool.dom.ast;
 
 import util.tree.TreeDepthRecon;
 import descent.core.domX.AbstractElement;
-import dtool.dom.base.Entity;
+import dtool.dom.base.EntQualified;
 
 /**
  * Simple class for printing the AST in indented tree form.
@@ -141,7 +141,7 @@ public class ASTPrinter extends ASTNeoUpTreeVisitor {
 		return visitChildren;
 	}
 	
-	public boolean visit(Entity.QualifiedEnt elem) {
+	public boolean visit(EntQualified elem) {
 		printGenericElement(elem, toStringElementExtra(elem));
 		return visitChildren && visitQualifiedNameChildren;
 	}

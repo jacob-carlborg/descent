@@ -3,7 +3,7 @@ package util.log;
 
 public class Logg {
 
-	public static boolean masterLoggEnabled = true;
+	protected static boolean masterLoggEnabled = true;
 
 	public static Logg main = new Logg();
 	public static Logg nolog = new Logg(false);
@@ -12,7 +12,7 @@ public class Logg {
 	public static Logg builder = new Logg(); 
 	public static Logg model = new Logg(); 
 
-	public boolean enabled = true;
+	protected boolean enabled = true;
 	
 	public Logg(boolean enabled) {
 		this.enabled = enabled;

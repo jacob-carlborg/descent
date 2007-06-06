@@ -3,13 +3,13 @@ package dtool.dom.definitions;
 import util.tree.TreeVisitor;
 import dtool.dom.ast.IASTNeoVisitor;
 import dtool.dom.base.Entity;
-import dtool.dom.base.EntityConstrainedRef;
+import dtool.dom.base.BaseEntityRef;
 import dtool.dom.expressions.Expression;
 import dtool.model.IScope;
 
 public class Parameter extends DefUnit {
 	
-	public EntityConstrainedRef.TypeConstraint type;
+	public BaseEntityRef.TypeConstraint type;
 	public descent.internal.core.dom.InOut inout;
 	public Expression defaultValue;
 	

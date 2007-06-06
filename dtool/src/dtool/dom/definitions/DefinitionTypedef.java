@@ -1,16 +1,18 @@
 package dtool.dom.definitions;
 
+import java.util.List;
+
 import util.tree.TreeVisitor;
 import descent.internal.core.dom.TypedefDeclaration;
 import dtool.dom.ast.IASTNeoVisitor;
 import dtool.dom.base.Entity;
-import dtool.dom.base.EntityConstrainedRef;
+import dtool.dom.base.BaseEntityRef;
 import dtool.dom.expressions.Initializer;
 import dtool.model.IScope;
 
 public class DefinitionTypedef extends Definition {
 
-	EntityConstrainedRef.TypeConstraint type;
+	BaseEntityRef.TypeConstraint type;
 	Initializer initializer;
 	
 	public DefinitionTypedef(TypedefDeclaration elem) {
@@ -37,8 +39,11 @@ public class DefinitionTypedef extends Definition {
 
 	@Override
 	public IScope getScope() {
-		// TODO Auto-generated method stub
-		return null;
+		return type.entity.getTargetDefUnit().getScope();
+	}
+
+	public List<DefUnit> getDefUnits() {
+		return getScope().getDefUnits();
 	}
 
 }

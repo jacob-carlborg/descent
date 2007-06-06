@@ -16,13 +16,13 @@ public class Main {
 	
 	private Main() { }
 	
-    public static DToolProject dproj;
+    public static DToolProject testdproj;
 
 	public static void main(String[] args) throws Exception {
 		System.out.println("======== DTool ========");
 
 		try {
-			dproj = DToolProject.newTestProject();
+			testdproj = DToolProject.newTestProject();
 			testDtool(args);
 
 		} catch (Exception e) {
@@ -40,7 +40,7 @@ public class Main {
 		
 		System.out.println("== Descent Parsing... ==");
 		
-		DToolCompilationUnit cu = dproj.testcu;
+		DToolCompilationUnit cu = testdproj.testcu;
 		cu.preParseCompilationUnit();
 		
 		System.out.println("====== Descent AST Tree: ======");
@@ -70,7 +70,7 @@ public class Main {
 	private static void testFindEntityByName() {
 		try {
 			System.out.println("====== findEntity by name: ======");
-			DefUnit defunit = dproj.findEntity("%%.Foo");
+			DefUnit defunit = testdproj.findEntity("%%.Foo");
 			System.out.println(defunit);
 			System.out.println(" == def units: == ");
 			System.out.println(StringUtil.collToString(defunit.getScope().getDefUnits(), "\n"));
@@ -83,7 +83,7 @@ public class Main {
 	private static ASTNode testFindEntityByOffset(int offset) {
 		ShellUI.println("===== findEntity by offset: "+offset+ " =====");
 		
-		ASTNode elem = dproj.testcu.findEntity(offset);
+		ASTNode elem = testdproj.testcu.findEntity(offset);
 		if(elem == null) {
 			ShellUI.println("No element found at pos: " + offset);
 			return null;

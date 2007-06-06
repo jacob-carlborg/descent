@@ -4,13 +4,13 @@ import util.tree.TreeVisitor;
 import descent.internal.core.dom.NewExp;
 import dtool.dom.ast.IASTNeoVisitor;
 import dtool.dom.base.Entity;
-import dtool.dom.base.EntityConstrainedRef;
+import dtool.dom.base.BaseEntityRef;
 
 public class ExpNew extends Expression {
 
 	Expression[] args;
 	Expression[] allocargs;
-	EntityConstrainedRef.TypeConstraint type;
+	BaseEntityRef.TypeConstraint type;
 
 	public ExpNew(NewExp elem) {
 		convertNode(elem);

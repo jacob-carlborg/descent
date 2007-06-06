@@ -4,14 +4,14 @@ import util.tree.TreeVisitor;
 import descent.internal.core.dom.TemplateTypeParameter;
 import dtool.dom.ast.IASTNeoVisitor;
 import dtool.dom.base.Entity;
-import dtool.dom.base.EntityConstrainedRef;
+import dtool.dom.base.BaseEntityRef;
 import dtool.model.IScope;
 
 public class TemplateParamType extends TemplateParameter {
 
 
-	public EntityConstrainedRef.TypeConstraint specType;
-	public EntityConstrainedRef.TypeConstraint defaultType;
+	public BaseEntityRef.TypeConstraint specType;
+	public BaseEntityRef.TypeConstraint defaultType;
 
 	public TemplateParamType(TemplateTypeParameter elem) {
 		convertNode(elem);

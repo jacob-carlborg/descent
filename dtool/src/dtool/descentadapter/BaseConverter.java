@@ -20,7 +20,8 @@ import descent.internal.core.dom.TypeInstance;
 import descent.internal.core.dom.TypeQualified;
 import dtool.dom.ast.ASTNode;
 import dtool.dom.base.Entity;
-import dtool.dom.base.EntitySingle;
+import dtool.dom.base.EntIdentifier;
+import dtool.dom.base.EntTemplateInstance;
 import dtool.dom.base.TypeDelegate;
 import dtool.dom.base.TypeDynArray;
 import dtool.dom.base.TypeFunction;
@@ -110,11 +111,11 @@ abstract class BaseConverter extends ASTCommonConverter {
 	
 	/* ---- Entities Core ---- */
 	public boolean visit(descent.internal.core.dom.Identifier elem) {
-		return endAdapt(new EntitySingle.Identifier(elem));
+		return endAdapt(new EntIdentifier(elem));
 	}
 	
 	public boolean visit(descent.internal.core.dom.TypeBasic elem) {
-		return endAdapt(new EntitySingle.Identifier(elem));
+		return endAdapt(new EntIdentifier(elem));
 	}
 	
 	public boolean visit(descent.internal.core.dom.TypeIdentifier elem) {
@@ -123,7 +124,7 @@ abstract class BaseConverter extends ASTCommonConverter {
 	}
 
 	public boolean visit(descent.internal.core.dom.TemplateInstance elem) {
-		return endAdapt(new EntitySingle.TemplateInstance(elem));
+		return endAdapt(new EntTemplateInstance(elem));
 	}
 	
 	public boolean visit(TypeInstance elem) {

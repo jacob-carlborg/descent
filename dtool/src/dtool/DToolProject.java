@@ -5,6 +5,7 @@ import java.util.List;
 
 import util.ExceptionAdapter;
 import util.FileUtil;
+import util.tree.IElement;
 import dtool.dom.definitions.DefUnit;
 import dtool.model.BindingResolver;
 import dtool.model.DToolCompilationUnit;
@@ -14,7 +15,7 @@ import dtool.model.ModelException;
 public class DToolProject implements IScope {
 
 	public DToolCompilationUnit testcu;
-	private BindingResolver bresolver = new BindingResolver(this);
+	private BindingResolver bresolver = new BindingResolver();
 	
 	public static DToolProject newTestProject() {
 		DToolProject dproj = new DToolProject();
@@ -41,9 +42,20 @@ public class DToolProject implements IScope {
 		return bresolver.findEntity(string);
 	}
 
-	/*public ASTNode findEntity(CompilationUnit cunit, int offset) {
-		AssertIn.isTrue(offset < cunit.source.length());
-		ASTNode elem = ASTElementFinder.findElement(cunit.getModule(), offset);
-		return elem;
-	}*/
+	public IElement[] getChildren() {
+		return null;
+	}
+
+	public int getElementType() {
+		return 0;
+	}
+
+	public IElement getParent() {
+		return null;
+	}
+
+	public boolean hasChildren() {
+		return false;
+	}
+
 }

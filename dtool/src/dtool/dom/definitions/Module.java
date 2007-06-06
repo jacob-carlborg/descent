@@ -12,7 +12,7 @@ import dtool.descentadapter.DescentASTConverter;
 import dtool.dom.ast.ASTNeoNode;
 import dtool.dom.ast.ASTNode;
 import dtool.dom.ast.IASTNeoVisitor;
-import dtool.dom.base.EntitySingle;
+import dtool.dom.base.EntIdentifier;
 import dtool.dom.declarations.Declaration;
 import dtool.model.IDeeCompilationUnit;
 import dtool.model.IScope;
@@ -24,7 +24,7 @@ public class Module extends DefUnit implements IScope {
 
 	public static class DeclarationModule extends ASTNeoNode {
 
-		public EntitySingle.Identifier[] packages;
+		public EntIdentifier[] packages;
 		public Symbol moduleName;
 
 		public DeclarationModule(ModuleDeclaration md) {
@@ -64,10 +64,10 @@ public class Module extends DefUnit implements IScope {
 			this.md = new DeclarationModule(elem.md);
 
 			if(elem.md.packages != null) {
-				this.md.packages = new EntitySingle.Identifier[elem.md.packages.size()];
+				this.md.packages = new EntIdentifier[elem.md.packages.size()];
 				DescentASTConverter.convertMany(elem.md.packages.toArray(),this.md.packages);
 			} else {
-				this.md.packages = new EntitySingle.Identifier[0];
+				this.md.packages = new EntIdentifier[0];
 			}
 		}
 		this.members = Declaration.convertMany(elem.getDeclarationDefinitions());

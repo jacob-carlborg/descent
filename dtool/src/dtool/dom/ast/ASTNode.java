@@ -55,8 +55,7 @@ public abstract class ASTNode extends TreeNode<ASTNode, IASTVisitor> implements 
 	 * fragment corresponding to this node was found.
 	 */
 	public final void setSourceRange(int startPosition, int length) {
-		AssertIn.isTrue(startPosition >= 0 && length < 0);
-		AssertIn.isTrue(startPosition < 0 && length != 0);
+		AssertIn.isTrue(startPosition >= 0 && length > 0);
 		// source positions are not considered a structural property
 		// but we protect them nevertheless
 		//checkModifiable();

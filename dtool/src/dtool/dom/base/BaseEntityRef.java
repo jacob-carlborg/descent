@@ -5,9 +5,9 @@ import dtool.dom.ast.ASTNeoNode;
 import dtool.dom.ast.IASTNeoVisitor;
 
 /**
- * A qualified entity/name reference
+ * A qualified entity/name reference with a semantic constraint
  */
-public abstract class EntityConstrainedRef extends ASTNeoNode {
+public abstract class BaseEntityRef extends ASTNeoNode {
 
 	public Entity entity;
 	
@@ -19,7 +19,7 @@ public abstract class EntityConstrainedRef extends ASTNeoNode {
 		EXPVALUE,
 	}
 	
-	public EntityConstrainedRef(Entity entity) {
+	public BaseEntityRef(Entity entity) {
 		setSourceRange(entity);
 		this.entity = entity;
 	}
@@ -33,7 +33,7 @@ public abstract class EntityConstrainedRef extends ASTNeoNode {
 		visitor.endVisit(this);
 	}
 	
-	public static class TypeConstraint extends EntityConstrainedRef {
+	public static class TypeConstraint extends BaseEntityRef {
 		public TypeConstraint(Entity entity) { 
 			super(entity); 
 			refConstraint = EReferenceConstraint.EXPVALUE;
@@ -41,29 +41,18 @@ public abstract class EntityConstrainedRef extends ASTNeoNode {
 
 
 	}
-	public static class ValueConstraint extends EntityConstrainedRef {
+	public static class ValueConstraint extends BaseEntityRef {
 		public ValueConstraint(Entity entity) { 
 			super(entity); 
 			refConstraint = EReferenceConstraint.TYPE;
 		}
 	}	
-	public static class NoConstraint extends EntityConstrainedRef {
+	public static class NoConstraint extends BaseEntityRef {
 		public NoConstraint(Entity entity) { 
 			super(entity); 
 			refConstraint = EReferenceConstraint.NONE;
 		}
 	}
 	
-	public static class TypeEntity extends ASTNeoNode {
-		Entity ent;
-		
-		public void accept0(IASTNeoVisitor visitor) {
-			boolean children = visitor.visit(this);
-			if (children) {
-				TreeVisitor.acceptChildren(visitor, ent);
-			}
-			visitor.endVisit(this);
-		}
-	}
 
 }

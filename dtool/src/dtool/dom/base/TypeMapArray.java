@@ -6,8 +6,8 @@ import dtool.dom.ast.IASTNeoVisitor;
 import dtool.dom.definitions.DefUnit;
 
 public class TypeMapArray extends Entity {
-	public EntityConstrainedRef.TypeConstraint keytype;
-	public EntityConstrainedRef.TypeConstraint valuetype;
+	public BaseEntityRef.TypeConstraint keytype;
+	public BaseEntityRef.TypeConstraint valuetype;
 
 	public TypeMapArray(TypeAArray elem) {
 		setSourceRange(elem);

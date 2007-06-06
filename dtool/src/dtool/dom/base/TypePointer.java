@@ -8,7 +8,7 @@ import dtool.dom.ast.IASTNeoVisitor;
 import dtool.dom.definitions.DefUnit;
 
 public class TypePointer extends Entity {
-	public EntityConstrainedRef.TypeConstraint elemtype;
+	public BaseEntityRef.TypeConstraint elemtype;
 	
 	public TypePointer(descent.internal.core.dom.TypePointer elem) {
 		setSourceRange(elem);

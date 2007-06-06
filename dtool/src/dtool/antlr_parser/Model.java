@@ -70,7 +70,7 @@ public class Model {
 	public static void testDtool(String[] args) {
 		System.out.println("== ANTLR Parsing... ==");
 		
-		createModel(Main.dproj.testcu);
+		createModel(Main.testdproj.testcu);
 		printModel();
 		//Engine.testRefactor();
 	}

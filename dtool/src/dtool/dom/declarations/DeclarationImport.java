@@ -8,7 +8,7 @@ import descent.internal.core.dom.ImportDeclaration;
 import descent.internal.core.dom.SelectiveImport;
 import dtool.dom.ast.ASTNeoNode;
 import dtool.dom.ast.IASTNeoVisitor;
-import dtool.dom.base.EntitySingle.Identifier;
+import dtool.dom.base.EntIdentifier;
 import dtool.dom.definitions.DefUnit.Symbol;
 
 /**
@@ -68,14 +68,14 @@ public class DeclarationImport extends ASTNeoNode {
 	}
 	
 	public static abstract class ImportFragment extends ASTNeoNode {
-		protected Identifier moduleName;
+		protected EntIdentifier moduleName;
 	}
 	
 	public static class ImportStatic extends ImportFragment {
 		
 		public ImportStatic(Import elem) {
 			convertNode(elem);
-			this.moduleName = new Identifier(elem.qName.name);
+			this.moduleName = new EntIdentifier(elem.qName.name);
 		}
 
 		@Override
@@ -102,7 +102,7 @@ public class DeclarationImport extends ASTNeoNode {
 		public ImportAliasing(Import elem) {
 			convertNode(elem);
 			this.ident = new Symbol(elem.ident);
-			this.moduleName = new Identifier(elem.qName.name);
+			this.moduleName = new EntIdentifier(elem.qName.name);
 		}
 
 		@Override
@@ -122,7 +122,7 @@ public class DeclarationImport extends ASTNeoNode {
 		
 		public ImportSelective(Import selImport) {
 			convertNode(selImport);
-			this.moduleName = new Identifier(selImport.qName.name);
+			this.moduleName = new EntIdentifier(selImport.qName.name);
 			
 			int importsSize = selImport.getSelectiveImports().length; 
 			this.aliases = new ImportSelectiveFragment[importsSize];
@@ -145,7 +145,7 @@ public class DeclarationImport extends ASTNeoNode {
 	
 	public static class ImportSelectiveFragment extends ASTNeoNode {
 		Symbol aliasname;
-		Identifier targetname;
+		EntIdentifier targetname;
 
 		public ImportSelectiveFragment(SelectiveImport imprt) {
 			convertNode(imprt);
@@ -153,7 +153,7 @@ public class DeclarationImport extends ASTNeoNode {
 				this.aliasname = new Symbol(imprt.name);
 			} else {
 				this.aliasname = new Symbol(imprt.alias);
-				this.targetname = new Identifier(imprt.name);
+				this.targetname = new EntIdentifier(imprt.name);
 			}
 		}
 

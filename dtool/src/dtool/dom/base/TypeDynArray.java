@@ -9,7 +9,7 @@ import dtool.dom.ast.IASTNeoVisitor;
 import dtool.dom.definitions.DefUnit;
 
 public class TypeDynArray extends Entity {
-	public EntityConstrainedRef.TypeConstraint elemtype;
+	public BaseEntityRef.TypeConstraint elemtype;
 
 	public TypeDynArray(TypeDArray elem) {
 		setSourceRange(elem);

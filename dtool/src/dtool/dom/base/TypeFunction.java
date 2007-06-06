@@ -14,7 +14,7 @@ import dtool.dom.definitions.DefUnit;
  */
 public class TypeFunction extends Entity {
 	
-	public EntityConstrainedRef.TypeConstraint rettype;
+	public BaseEntityRef.TypeConstraint rettype;
 	public List<Argument> arguments;
 	public int varargs;
 	public LINK linkage;

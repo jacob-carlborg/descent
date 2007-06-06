@@ -4,12 +4,12 @@ import util.tree.TreeVisitor;
 import descent.internal.core.dom.CastExp;
 import dtool.dom.ast.IASTNeoVisitor;
 import dtool.dom.base.Entity;
-import dtool.dom.base.EntityConstrainedRef;
+import dtool.dom.base.BaseEntityRef;
 
 public class ExpCast extends Expression {
 	
 	Expression exp;
-	EntityConstrainedRef.TypeConstraint type;
+	BaseEntityRef.TypeConstraint type;
 
 	public ExpCast(CastExp elem) {
 		convertNode(elem);
