@@ -1,5 +1,6 @@
 /*
- * This file has been automatically generated.
+ * This file has been automatically generated. Edit the template file to
+ * make permanant changes.
  */
 package descent.core.formatter;
 
@@ -20,17 +21,19 @@ import descent.internal.formatter.align.Alignment2;
 public class DefaultCodeFormatterConstants2 {
 	
 	// Boolean mappings
-	public static final String FALSE = "false"; //$NON-NLS-1$
-	public static final String TRUE = "true"; //$NON-NLS-1$
+	public static final String FALSE = "false";
+	public static final String TRUE = "true";
 	
 	// Brace positions
-	public static final String END_OF_LINE = "end_of_line";	//$NON-NLS-1$
-	public static final String NEXT_LINE = "next_line"; //$NON-NLS-1$
-	public static final String NEXT_LINE_ON_WRAP = "next_line_on_wrap"; //$NON-NLS-1$
-	public static final String NEXT_LINE_SHIFTED = "next_line_shifted";	//$NON-NLS-1$
+	public static final String END_OF_LINE = "end_of_line";
+	public static final String NEXT_LINE = "next_line";
+	public static final String NEXT_LINE_ON_WRAP = "next_line_on_wrap";
+	public static final String NEXT_LINE_SHIFTED = "next_line_shifted";
 	
-	// Not really sure
-	public static final String MIXED = "mixed"; //$NON-NLS-1$
+	// Indentation type
+	public static final String MIXED = "mixed";
+	public static final String SPACE = JavaCore.SPACE;
+	public static final String TAB = JavaCore.TAB;
 	
 	// Indentation options
 	public static final int INDENT_DEFAULT= 0;
@@ -51,10 +54,10 @@ public class DefaultCodeFormatterConstants2 {
 	public static final String FORMATTER_INSERT_SPACE_BEFORE_SEMICOLON = JavaCore.PLUGIN_ID + ".formatter.insert_space_before_semicolon";
 	public static final String FORMATTER_INSERT_SPACE_BEFORE_COMMA_IN_MULTIPLE_FIELD_DECLARATIONS = JavaCore.PLUGIN_ID + ".formatter.insert_space_before_comma_in_multiple_field_declarations";
 	public static final String FORMATTER_INSERT_SPACE_AFTER_COMMA_IN_MULTIPLE_FIELD_DECLARATIONS = JavaCore.PLUGIN_ID + ".formatter.insert_space_after_comma_in_multiple_field_declarations";
-	public static final String FORMATTER_INSERT_SPACE_BETWEEN_EMPTY_PARENS_IN_METHOD_DECLARATION = JavaCore.PLUGIN_ID + ".formatter.insert_space_between_empty_parens_in_method_declaration";
+	public static final String FORMATTER_INSERT_SPACE_BETWEEN_EMPTY_PARENS_IN_FUNCTION_DECLARATION = JavaCore.PLUGIN_ID + ".formatter.insert_space_between_empty_parens_in_function_declaration";
+	public static final String FORMATTER_INSERT_SPACE_BEFORE_OPENING_PAREN_IN_FUNCTION_DECLARATION = JavaCore.PLUGIN_ID + ".formatter.insert_space_before_opening_paren_in_function_declaration";
 	public static final String FORMATTER_INSERT_SPACE_AFTER_OPENING_PAREN_IN_FUNCTION_DECLARATION = JavaCore.PLUGIN_ID + ".formatter.insert_space_after_opening_paren_in_function_declaration";
 	public static final String FORMATTER_INSERT_SPACE_BEFORE_CLOSING_PAREN_IN_FUNCTION_DECLARATION = JavaCore.PLUGIN_ID + ".formatter.insert_space_before_closing_paren_in_function_declaration";
-	public static final String FORMATTER_INSERT_SPACE_BEFORE_OPENING_PAREN_IN_FUNCTION_DECLARATION = JavaCore.PLUGIN_ID + ".formatter.insert_space_before_opening_paren_in_function_declaration";
 	public static final String FORMATTER_PAGE_WIDTH = JavaCore.PLUGIN_ID + ".formatter.page_width";
 	public static final String FORMATTER_TAB_SIZE = JavaCore.PLUGIN_ID + ".formatter.tab_size";
 	public static final String FORMATTER_USE_TABS_ONLY_FOR_LEADING_INDENTATIONS = JavaCore.PLUGIN_ID + ".formatter.use_tabs_only_for_leading_indentations";

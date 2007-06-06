@@ -1,22 +1,100 @@
+# This file contains the definitions used to create the options used by the code
+# formatter (and autocomplete, and a few other things). The file is fed into
+# formatter_options.pl, which generates the options by processing inlined Perl
+# in the template files. Here are the templates currently in use:
+#
+# DefaultCodeFormatterConstants2.template.java -> ../src/descent/core/formatter/DefaultCodeFormatterConstants2.java
+# DefaultCodeFormatterOptions2.template.java -> ../src/descent/internal/formatter/DefaultCodeFormatterOptions2.java
+#
+# The syntax for inlined perl in the template files is fairly strict - to
+# evaluate a block of Perl for each option encountered in this file, start a
+# block comment with "/* EVAL-FOR-EACH", which must be on the same line.
+# Any lines until a line containing "*/" that start with a "* " (note the space)
+# will be evaled as perl. This implies that the line with the "*/" on it is not
+# evaled. It's a bit hackish, but it works, right?
+#
+# The syntax of this file is also pretty strict. If a line starts with a #, that
+# line is ignored (or if the line is blank), otherwise it is processed. Lines
+# without an "=" are treated as the beginnings of definitions, lines with an "="
+# are treated as parts of the definition, with name=value pairings. The first
+# line of the definition (the onw ithout the "=" is considered the option name,
+# accessed with the key "optName". There's also "constName", which is the
+# uppercase version of "optName", with "FORMAT_" appended.
+#
+# In the inlined perl, DST is the destination file handle, and $_ is a hash
+# reference to the settings for that option. So, $$_{'optName') is the option
+# name and if the option definition had a "type" property, $$_{'type'} is used
+# to access it.
+#
+# Hopefully that isn't too hard to understand (you know, I porbably spent longer
+# typing this up than it would have taken me to fix the damn script).
+#
+#
+#
+# For options, these are the meanings of the various hash keys used so far:
+#     optName       The name of the option used in an instance of DefaultCodeFormatterOptions2
+#     constName     The name of the constant string for Java map keys used in DefaultCodeFormatterConstants2
+#     type          The type of the option in DefaultCodeFormatterOptions2
+#     default       The default value (we may want to have multiple profiles...?)
+#
+# The hope is this can be expanded for use in UI, etc., etc.
+
 # Currently in use in the visitor
-int       blank_lines_before_module                                             0
-int       blank_lines_after_module                                              1
-boolean   insert_space_before_semicolon                                         false
-boolean   insert_space_before_comma_in_multiple_field_declarations              false
-boolean   insert_space_after_comma_in_multiple_field_declarations               true
-boolean   insert_space_between_empty_parens_in_method_declaration               false
-boolean   insert_space_after_opening_paren_in_function_declaration              false
-boolean   insert_space_before_closing_paren_in_function_declaration             false
-boolean   insert_space_before_opening_paren_in_function_declaration             false
+blank_lines_before_module
+	type=int
+	default=0
+blank_lines_after_module
+	type=int
+	default=1
+insert_space_before_semicolon
+	type=boolean
+	default=false
+insert_space_before_comma_in_multiple_field_declarations
+	type=boolean
+	default=false
+insert_space_after_comma_in_multiple_field_declarations
+	type=boolean
+	default=true
+insert_space_between_empty_parens_in_function_declaration
+	type=boolean
+	default=false
+insert_space_before_opening_paren_in_function_declaration
+	type=boolean
+	default=false
+insert_space_after_opening_paren_in_function_declaration
+	type=boolean
+	default=false
+insert_space_before_closing_paren_in_function_declaration
+	type=boolean
+	default=false
 
 
 # Preserved from their JDT roots for the scribe
-int       page_width                                                            80
-int       tab_size                                                              4
-boolean   use_tabs_only_for_leading_indentations                                false
-boolean   indent_empty_lines                                                    true
-int       tab_char                                                              TAB
-int       indentation_size                                                      4
-int       continuation_indentation                                              2
-int       number_of_empty_lines_to_preserve                                     1
-boolean   insert_new_line_at_end_of_file_if_missing                             true
+page_width
+	type=int
+	default=80
+tab_size
+	type=int
+	default=4
+use_tabs_only_for_leading_indentations
+	type=boolean
+	default=false
+indent_empty_lines
+	type=boolean
+	default=true
+tab_char
+	type=int
+	default=TAB
+indentation_size
+	type=int
+	default=4
+continuation_indentation
+	type=int
+	default=2
+number_of_empty_lines_to_preserve
+	type=int
+	default=1
+insert_new_line_at_end_of_file_if_missing
+	type=boolean
+	default=true
+

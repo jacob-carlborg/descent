@@ -17,17 +17,19 @@ import descent.internal.formatter.align.Alignment2;
 public class DefaultCodeFormatterConstants2 {
 	
 	// Boolean mappings
-	public static final String FALSE = "false"; //$NON-NLS-1$
-	public static final String TRUE = "true"; //$NON-NLS-1$
+	public static final String FALSE = "false";
+	public static final String TRUE = "true";
 	
 	// Brace positions
-	public static final String END_OF_LINE = "end_of_line";	//$NON-NLS-1$
-	public static final String NEXT_LINE = "next_line"; //$NON-NLS-1$
-	public static final String NEXT_LINE_ON_WRAP = "next_line_on_wrap"; //$NON-NLS-1$
-	public static final String NEXT_LINE_SHIFTED = "next_line_shifted";	//$NON-NLS-1$
+	public static final String END_OF_LINE = "end_of_line";
+	public static final String NEXT_LINE = "next_line";
+	public static final String NEXT_LINE_ON_WRAP = "next_line_on_wrap";
+	public static final String NEXT_LINE_SHIFTED = "next_line_shifted";
 	
-	// Not really sure
-	public static final String MIXED = "mixed"; //$NON-NLS-1$
+	// Indentation type
+	public static final String MIXED = "mixed";
+	public static final String SPACE = JavaCore.SPACE;
+	public static final String TAB = JavaCore.TAB;
 	
 	// Indentation options
 	public static final int INDENT_DEFAULT= 0;
@@ -45,7 +47,7 @@ public class DefaultCodeFormatterConstants2 {
 	// Formatter value names
 	/* EVAL-FOR-EACH
 	 * 
-	 * print DST "\tpublic static final String $constName = JavaCore.PLUGIN_ID + \".formatter.$optName\";\n";
+	 * print DST "\tpublic static final String $$_{'constName'} = JavaCore.PLUGIN_ID + \".formatter.$$_{'optName'}\";\n";
 	 * 
 	 */
 	
