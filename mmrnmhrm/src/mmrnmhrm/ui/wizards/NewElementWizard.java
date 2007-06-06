@@ -13,7 +13,7 @@ package mmrnmhrm.ui.wizards;
 
 import java.lang.reflect.InvocationTargetException;
 
-import mmrnmhrm.ui.ExceptionHandler;
+import melnorme.lang.ui.ExceptionHandler;
 
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;

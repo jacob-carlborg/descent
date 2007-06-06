@@ -13,6 +13,7 @@ import org.eclipse.swt.widgets.Display;
 import descent.core.domX.AbstractElement;
 import dtool.dom.ast.ASTNode;
 import dtool.dom.ast.ASTPrinter;
+import dtool.dom.base.Entity;
 import dtool.dom.definitions.DefUnit;
 
 public class ASTViewerLabelProvider extends SimpleLabelProvider implements IColorProvider, IFontProvider {
@@ -20,12 +21,15 @@ public class ASTViewerLabelProvider extends SimpleLabelProvider implements IColo
 	
 	protected final Color cNoSourceRangeColor;
 	protected final Color cDefUnitColor;
+	protected final Color cEntityColor;
 	protected final Color cOldAstColor;
 	
 	public ASTViewerLabelProvider() {
 		cNoSourceRangeColor = Display.getDefault().getSystemColor(SWT.COLOR_RED);
-		cDefUnitColor = Display.getDefault().getSystemColor(SWT.COLOR_BLUE);
 		cOldAstColor = Display.getDefault().getSystemColor(SWT.COLOR_GRAY);
+
+		cDefUnitColor = Display.getDefault().getSystemColor(SWT.COLOR_DARK_MAGENTA);
+		cEntityColor = Display.getDefault().getSystemColor(SWT.COLOR_BLUE);
 	}
 	
 	public void dispose() {
@@ -51,6 +55,9 @@ public class ASTViewerLabelProvider extends SimpleLabelProvider implements IColo
 	public Color getForeground(Object element) {
 		if(element instanceof DefUnit) {
 			return cDefUnitColor;
+		}
+		if(element instanceof Entity) {
+			return cEntityColor;
 		}
 		return null;
 	}

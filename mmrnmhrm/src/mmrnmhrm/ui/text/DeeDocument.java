@@ -3,7 +3,6 @@ package mmrnmhrm.ui.text;
 import mmrnmhrm.core.model.CompilationUnit;
 
 import org.eclipse.jface.text.Document;
-import org.eclipse.ui.IFileEditorInput;
 
 
 public class DeeDocument extends Document {

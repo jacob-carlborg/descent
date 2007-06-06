@@ -15,5 +15,16 @@ public class DeeUI  extends DeePlugin {
 	public static ImageDescriptor getImageDescriptor(String path) {
 		return DeePlugin.imageDescriptorFromPlugin(DeePlugin.PLUGIN_ID, path);
 	}
+	
+	/**
+	 * Returns an image descriptor for the image file at the given
+	 * plug-in relative path, optionally using the missing image descriptor.
+	 */
+	public static ImageDescriptor getImageDescriptor(String path, boolean useMissingDesc) {
+		ImageDescriptor imgDesc = getImageDescriptor(path);
+		if(imgDesc == null)
+			return ImageDescriptor.getMissingImageDescriptor();
+		return imgDesc;
+	}
 
 }

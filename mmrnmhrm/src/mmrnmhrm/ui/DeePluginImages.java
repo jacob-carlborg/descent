@@ -2,8 +2,11 @@ package mmrnmhrm.ui;
 
 import java.io.FileNotFoundException;
 
+import melnorme.lang.ui.LangPluginImages;
+
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.swt.graphics.Image;
@@ -60,5 +63,22 @@ public class DeePluginImages {
 	/** Gets the shared imaged associated with the given key. */
 	public static Image getImage(String imageKey) {
 		return registry.get(imageKey);
+	}
+
+
+	public static ImageDescriptor createImageDesc(String prefix, String name, boolean useMissingImageDescriptor) {
+		//return DeeUI.getImageDescriptor(prefix + "/"+name, true);
+		IPath path= ICONS_PATH.append(prefix).append(name);
+		return createImageDescriptor(path, useMissingImageDescriptor);
+	}
+
+	public static ImageDescriptor createImageDescriptor(IPath path, boolean useMissingImageDescriptor) {
+		return LangPluginImages.createImageDescriptor(DeePlugin.getInstance().getBundle(),
+				path, useMissingImageDescriptor);
+	}
+
+	public static void setupActionImages(IAction action, String file) {
+		ImageDescriptor imgDesc = DeePluginImages.createImageDesc("action16e", file, true); 
+		action.setImageDescriptor(imgDesc);
 	}
 }

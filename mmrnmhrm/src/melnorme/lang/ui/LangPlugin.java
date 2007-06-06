@@ -1,4 +1,7 @@
-package mmrnmhrm.ui;
+package melnorme.lang.ui;
+
+import mmrnmhrm.ui.ActualPlugin;
+import mmrnmhrm.ui.DeePlugin;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
@@ -37,7 +40,7 @@ public abstract class LangPlugin extends AbstractUIPlugin {
 	
 	/* *********************************************** */
 
-	abstract void initPlugin() throws CoreException;
+	public abstract void initPlugin() throws CoreException;
 
 	//abstract void getPluginId();
 

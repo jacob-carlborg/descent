@@ -8,11 +8,13 @@
  * Contributors:
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
-package mmrnmhrm.ui;
+package melnorme.lang.ui;
 
 
 import java.io.StringWriter;
 import java.lang.reflect.InvocationTargetException;
+
+import mmrnmhrm.ui.DeePlugin;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
@@ -84,7 +86,7 @@ public class ExceptionHandler {
 	//---- Hooks for subclasses to control exception handling ------------------------------------
 	
 	protected void perform(CoreException e, Shell shell, String title, String message) {
-		DeePlugin.log(e);
+		LangPlugin.log(e);
 		IStatus status= e.getStatus();
 		if (status != null) {
 			ErrorDialog.openError(shell, title, message, status);
@@ -98,7 +100,7 @@ public class ExceptionHandler {
 		if (target instanceof CoreException) {
 			perform((CoreException)target, shell, title, message);
 		} else {
-			DeePlugin.log(e);
+			LangPlugin.log(e);
 			if (e.getMessage() != null && e.getMessage().length() > 0) {
 				displayMessageDialog(e, e.getMessage(), shell, title, message);
 			} else {

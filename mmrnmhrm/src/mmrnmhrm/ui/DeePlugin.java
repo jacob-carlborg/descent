@@ -1,5 +1,6 @@
 package mmrnmhrm.ui;
 
+import melnorme.lang.ui.LangPlugin;
 import mmrnmhrm.core.DeeCore;
 import mmrnmhrm.ui.text.DeeCodeScanner;
 import mmrnmhrm.ui.text.DeeDocumentProvider;
@@ -27,7 +28,7 @@ public class DeePlugin extends LangPlugin {
 	private DeeCodeScanner defaultDeeCodeScanner;
 	
 	
-	protected void initPlugin() throws CoreException {
+	public void initPlugin() throws CoreException {
 		Logg.main.println(" =============  Mmrnmhrm INITIALIZING  ============= " );
 		Logg.main.println("Location: " + Platform.getLocation());
 		Logg.main.println("Instance Location: " + Platform.getInstanceLocation().getURL());

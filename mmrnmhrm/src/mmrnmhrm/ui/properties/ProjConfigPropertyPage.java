@@ -1,9 +1,9 @@
 package mmrnmhrm.ui.properties;
 
+import melnorme.lang.ui.ExceptionHandler;
 import mmrnmhrm.core.DeeCore;
 import mmrnmhrm.core.model.DeeModelManager;
 import mmrnmhrm.core.model.DeeProject;
-import mmrnmhrm.ui.ExceptionHandler;
 import mmrnmhrm.ui.wizards.projconfig.ProjectConfigBlock;
 
 import org.eclipse.core.resources.IProject;

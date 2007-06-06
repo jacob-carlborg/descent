@@ -3,7 +3,8 @@ package mmrnmhrm.ui.views;
 import melnorme.lang.ui.EditorUtil;
 import mmrnmhrm.core.model.CompilationUnit;
 import mmrnmhrm.core.model.EModelStatus;
-import mmrnmhrm.ui.actions.GoToDefinitionOperation;
+import mmrnmhrm.ui.DeePluginImages;
+import mmrnmhrm.ui.actions.GoToDefinitionAction;
 import mmrnmhrm.ui.text.DeeDocument;
 
 import org.eclipse.jface.action.Action;
@@ -18,7 +19,9 @@ import org.eclipse.jface.text.IDocumentListener;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
@@ -35,8 +38,8 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.DrillDownAdapter;
 import org.eclipse.ui.part.ViewPart;
+import org.eclipse.ui.texteditor.AbstractTextEditor;
 import org.eclipse.ui.texteditor.ITextEditor;
-
 
 import dtool.dom.ast.ASTNode;
 
@@ -45,12 +48,12 @@ import dtool.dom.ast.ASTNode;
  * D AST viewer
  */
 public class ASTViewer extends ViewPart implements ISelectionListener,
-		IDocumentListener {
+		IDocumentListener, ISelectionChangedListener, IDoubleClickListener {
 
 	protected TreeViewer viewer;
 	private DrillDownAdapter drillDownAdapter;
-	private Action action1;
-	private Action action2;
+	private Action actionExpand;
+	private Action actionCollapse;
 
 	
 	//protected MultiListener fMultiListener;
@@ -58,6 +61,8 @@ public class ASTViewer extends ViewPart implements ISelectionListener,
 	protected ITextEditor fEditor;
 	protected DeeDocument fDeeDocument;
 	protected CompilationUnit fCUnit;
+	private Action actionToggle;
+	protected boolean fUseOldAst = false;
 
 
 	public ASTViewer() {
@@ -87,10 +92,12 @@ public class ASTViewer extends ViewPart implements ISelectionListener,
 		drillDownAdapter = new DrillDownAdapter(viewer);
 		viewer.setContentProvider(new ASTViewerContentProvider(this));
 		viewer.setLabelProvider(new ASTViewerLabelProvider());
+		viewer.addSelectionChangedListener(this);
+		viewer.addDoubleClickListener(this);
+		
 		makeActions();
 		contributeToActionBars();
 		hookContextMenu();
-		hookDoubleClickAction();
 		
 		selectionChanged(EditorUtil.getActiveEditor(), null);
 	}
@@ -101,11 +108,9 @@ public class ASTViewer extends ViewPart implements ISelectionListener,
 		if(page == null)
 			return;
 		
-		part = page.getActiveEditor();
-		
 		if(part instanceof ITextEditor) {
 			setInput((ITextEditor)part);
-		} else { 
+		} else if(part == null || page.getActiveEditor() == null){ 
 			setInput(null);
 		}
 
@@ -152,8 +157,11 @@ public class ASTViewer extends ViewPart implements ISelectionListener,
 		if(fCUnit.parseStatus == EModelStatus.OK) {
 			setContentDescription("");
 			viewer.getControl().setVisible(true);
-			viewer.setInput(this.fCUnit.getModule());
 			viewer.getControl().setRedraw(false);
+			if(fUseOldAst == true)
+				viewer.setInput(this.fCUnit.getOldModule());
+			else
+				viewer.setInput(this.fCUnit.getNeoModule());
 			viewer.refresh();
 			viewer.getControl().setRedraw(true);
 			return;
@@ -168,9 +176,11 @@ public class ASTViewer extends ViewPart implements ISelectionListener,
 	public void setFocus() {
 		viewer.getControl().setFocus();
 	}
+	
+	/* ================== Action construction ==================== */
 
 	private void hookContextMenu() {
-		MenuManager menuMgr = new MenuManager("#PopupMenu");
+		MenuManager menuMgr = new MenuManager("#DeeASTViewerContext");
 		menuMgr.setRemoveAllWhenShown(true);
 		menuMgr.addMenuListener(new IMenuListener() {
 			public void menuAboutToShow(IMenuManager manager) {
@@ -179,7 +189,7 @@ public class ASTViewer extends ViewPart implements ISelectionListener,
 		});
 		Menu menu = menuMgr.createContextMenu(viewer.getControl());
 		viewer.getControl().setMenu(menu);
-		getSite().registerContextMenu(menuMgr, viewer);
+		getSite().registerContextMenu("#DeeASTViewerContext", menuMgr, viewer);
 	}
 
 	private void contributeToActionBars() {
@@ -189,21 +199,22 @@ public class ASTViewer extends ViewPart implements ISelectionListener,
 	}
 	
 	private void fillLocalToolBar(IToolBarManager manager) {
-		manager.add(action1);
-		manager.add(action2);
+		manager.add(actionCollapse);
+		manager.add(actionExpand);
+		manager.add(actionToggle);
 		manager.add(new Separator());
 		drillDownAdapter.addNavigationActions(manager);
 	}
 
 	private void fillLocalPullDown(IMenuManager manager) {
-		manager.add(action1);
-		manager.add(action2);
+		manager.add(actionCollapse);
+		manager.add(actionExpand);
 		manager.add(new Separator());
 	}
 
 	private void fillContextMenu(IMenuManager manager) {
-		manager.add(action1);
-		manager.add(action2);
+		manager.add(actionCollapse);
+		manager.add(actionExpand);
 		manager.add(new Separator());
 		drillDownAdapter.addNavigationActions(manager);
 		// Other plug-ins can contribute there actions here
@@ -212,39 +223,46 @@ public class ASTViewer extends ViewPart implements ISelectionListener,
 
 
 	private void makeActions() {
-		action1 = new Action() {
+		actionExpand = new Action() {
 			public void run() {
 				viewer.expandAll();
 			}
 		};
-		action1.setText("Expand All");
-		action1.setToolTipText("Expand all nodes");
-		action1.setImageDescriptor(PlatformUI.getWorkbench().getSharedImages().
-			getImageDescriptor(ISharedImages.IMG_OBJS_INFO_TSK));
+		actionExpand.setText("Expand All");
+		actionExpand.setToolTipText("Expand all nodes");
+		DeePluginImages.setupActionImages(actionExpand, "expandall.gif");
 		
-		action2 = new Action() {
+		actionCollapse = new Action() {
 			public void run() {
 				viewer.collapseAll();
 			}
 		};
-		action2.setText("Collapse All");
-		action2.setToolTipText("Collapse All nodes");
-		action2.setImageDescriptor(PlatformUI.getWorkbench().getSharedImages().
+		actionCollapse.setText("Collapse All");
+		actionCollapse.setToolTipText("Collapse All nodes");
+		DeePluginImages.setupActionImages(actionCollapse, "collapseall.gif");
+		
+		actionToggle = new Action() {
+			public void run() {
+				fUseOldAst  = !fUseOldAst; updateViewer();
+			}
+		};
+		actionToggle.setText("Toggle Neo/Old AST");
+		actionToggle.setToolTipText("Toggle Neo/Old AST");
+		actionToggle.setImageDescriptor(PlatformUI.getWorkbench().getSharedImages().
 				getImageDescriptor(ISharedImages.IMG_OBJS_INFO_TSK));
 	}
 
-	private void hookDoubleClickAction() {
-		viewer.addDoubleClickListener(new IDoubleClickListener() {
-			public void doubleClick(DoubleClickEvent event) {
-				handleDoubleClick();
-			}
-		});
-	}
-	
 
-	private void handleDoubleClick() {
+
+	public void doubleClick(DoubleClickEvent event) {
 		ISelection selection = viewer.getSelection();
 		ASTNode node = (ASTNode) ((IStructuredSelection)selection).getFirstElement();
-		GoToDefinitionOperation.execute(getSite().getWorkbenchWindow(), node);
+		GoToDefinitionAction.execute(getSite().getWorkbenchWindow(), node);
+	}
+
+	public void selectionChanged(SelectionChangedEvent event) {
+		if(fEditor == null)
+			return;
+		EditorUtil.selectNodeInEditor((AbstractTextEditor)fEditor, event);
 	}
 }

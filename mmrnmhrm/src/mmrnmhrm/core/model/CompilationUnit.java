@@ -22,7 +22,8 @@ public class CompilationUnit implements IDeeCompilationUnit {
 	public String source;
 	public IFile file;
 	
-	private ASTNode module;
+	private descent.internal.core.dom.Module oldModule;
+	private Module module;
 	private boolean astUpdated;
 
 	public IProblem[] problems;
@@ -41,14 +42,16 @@ public class CompilationUnit implements IDeeCompilationUnit {
 
 	
 	public descent.internal.core.dom.Module getOldModule() {
-		return (descent.internal.core.dom.Module) module;
+		return oldModule;
 	}
 	
 	public Module getNeoModule() {
-		return (Module) module;
+		return module;
 	}
 	
 	public ASTNode getModule() {
+		if(module == null || parseStatus == EModelStatus.PARSER_SYNTAX_ERRORS)
+			return oldModule;
 		return module;
 	}
 
@@ -60,6 +63,7 @@ public class CompilationUnit implements IDeeCompilationUnit {
 		if(astUpdated)
 			return;
 		astUpdated = true;
+		module = null;
 		
 		clearErrorMarkers();
 		preParseCompilationUnit();
@@ -76,6 +80,7 @@ public class CompilationUnit implements IDeeCompilationUnit {
 			parseStatus = EModelStatus.PARSER_AST_UNSUPPORTED_NODE;
 		} catch (RuntimeException re) {
 			parseStatus = EModelStatus.PARSER_INTERNAL_ERROR;
+			throw re;
 		}
 		parseStatus = EModelStatus.OK;
 	}
@@ -105,14 +110,14 @@ public class CompilationUnit implements IDeeCompilationUnit {
 		this.module = null;
 		this.problems = null;
 		ParserFacade parser = new descent.internal.core.dom.ParserFacade();
-		this.module = parser.parseCompilationUnit(source).mod;
+		this.oldModule = parser.parseCompilationUnit(source).mod;
 		this.problems = getOldModule().getProblems();
 	}
 	
 	
 	private void adaptAST() {
 		DescentASTConverter domadapter = new DescentASTConverter();
-		Module neoModule = domadapter.convertModule(module);
+		Module neoModule = domadapter.convertModule(oldModule);
 		neoModule.cunit = this;
 		module = neoModule;
 	}
@@ -132,7 +137,7 @@ public class CompilationUnit implements IDeeCompilationUnit {
 
 	/* === bindings === */
 	public ASTNode findEntity(int offset) {
-		AssertIn.isTrue(offset < source.length());
+		AssertIn.isTrue(offset >= 0 && offset <= source.length());
 		return ASTElementFinder.findElement(getModule(), offset);
 	}
 	

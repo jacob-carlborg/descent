@@ -10,7 +10,6 @@
  *******************************************************************************/
 package melnorme.util.ui.fields;
 
-import mmrnmhrm.ui.IActualHelpContextIds;
 import mmrnmhrm.ui.wizards.NewWizardMessages;
 
 import org.eclipse.core.resources.IContainer;
@@ -29,7 +28,6 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.dialogs.ElementTreeSelectionDialog;
 import org.eclipse.ui.dialogs.NewFolderDialog;
 import org.eclipse.ui.views.navigator.ResourceSorter;
@@ -67,7 +65,7 @@ public class FolderSelectionDialog extends ElementTreeSelectionDialog implements
 		
 		applyDialogFont(result);
 
-		PlatformUI.getWorkbench().getHelpSystem().setHelp(parent, IActualHelpContextIds.BP_SELECT_DEFAULT_OUTPUT_FOLDER_DIALOG);
+		//PlatformUI.getWorkbench().getHelpSystem().setHelp(parent, IActualHelpContextIds.BP_SELECT_DEFAULT_OUTPUT_FOLDER_DIALOG);
 		
 		return result;
 	}
@@ -87,7 +85,7 @@ public class FolderSelectionDialog extends ElementTreeSelectionDialog implements
 	protected void newFolderButtonPressed() {
 		NewFolderDialog dialog= new NewFolderDialog(getShell(), fSelectedContainer) {
 			protected Control createContents(Composite parent) {
-				PlatformUI.getWorkbench().getHelpSystem().setHelp(parent, IActualHelpContextIds.BP_CREATE_NEW_FOLDER);
+				//PlatformUI.getWorkbench().getHelpSystem().setHelp(parent, IActualHelpContextIds.BP_CREATE_NEW_FOLDER);
 				return super.createContents(parent);
 			}
 		};

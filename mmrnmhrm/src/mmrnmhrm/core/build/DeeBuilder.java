@@ -30,7 +30,7 @@ public class DeeBuilder extends IncrementalProjectBuilder {
 		public boolean visit(IResource resource) throws CoreException {
 			if(resource.getFullPath().lastSegment().endsWith(".d")) {
 				dmodules.add(resource);
-				Logg.builder.println(resource.getFullPath());
+				//Logg.builder.println(resource.getFullPath());
 			}
 			return true;
 		}

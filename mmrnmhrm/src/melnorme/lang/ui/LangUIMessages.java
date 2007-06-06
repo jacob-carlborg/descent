@@ -8,7 +8,7 @@
  * Contributors:
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
-package mmrnmhrm.ui;
+package melnorme.lang.ui;
 
 import org.eclipse.osgi.util.NLS;
 

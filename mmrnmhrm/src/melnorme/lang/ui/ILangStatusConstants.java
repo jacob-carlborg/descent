@@ -8,7 +8,7 @@
  * Contributors:
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
-package mmrnmhrm.ui;
+package melnorme.lang.ui;
 
 /**
  * Defines status codes relevant to the Java UI plug-in. When a 

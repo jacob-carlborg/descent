@@ -76,12 +76,11 @@ public class ProjectConfigBlock {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public void applyConfig() throws CoreException{
+	public void applyConfig() throws CoreException {
 		try {
 			IProject project = fDeeProject.getProject();
 			IResource outputDir = project.findMember(fSourceFoldersPage.fOutputLocationPath);
 			fDeeProject.setOutputDir((IFolder) outputDir);
-			
 			
 			List<IDeeSourceRoot> roots; 
 			roots = fSourceFoldersPage.fSrcFoldersList.getElements();

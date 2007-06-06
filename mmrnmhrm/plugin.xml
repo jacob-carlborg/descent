@@ -75,7 +75,7 @@
          point="org.eclipse.ui.editors">
       <editor
             class="mmrnmhrm.ui.editor.DeeEditor"
-            contributorClass="mmrnmhrm.ui.editor.DeeEditorNullActionContributor"
+            contributorClass="mmrnmhrm.ui.editor.DeeEditorActionContributor"
             icon="icons/obj16/dee_file.gif"
             id="Mmrnmhrm.editors.DeeEditor"
             name="Dee Editor (Mmrnmhrm)">
@@ -87,24 +87,12 @@
       <editorContribution
             id="Mmrnmhrm.editorContribution1"
             targetID="Mmrnmhrm.editors.DeeEditor">
-         <menu
-               id="Mmrnmhrm.menu"
-               label="Mmrnmhrm">
-            <groupMarker name="content"/>
-         </menu>
          <action
-               class="mmrnmhrm.ui.actions.GoToDefinitionActionDg"
+               class="mmrnmhrm.ui.actions.GoToDefinitionAction"
                icon="icons/action16e/gotodef.gif"
                id="Mmrnmhrm.actions.GotoDef"
                label="Go to Definition"
-               menubarPath="Mmrnmhrm.menu/content"
-               toolbarPath="additions"/>
-         <action
-               class="mmrnmhrm.ui.actions.PrintPartitions"
-               icon="icons/action16e/declipse.gif"
-               id="Mmrnmhrm.actions.PrintPartition"
-               label="Print Partitions"
-               menubarPath="Mmrnmhrm.menu/content"
+               menubarPath="Mmrnmhrm.menu/additions"
                toolbarPath="additions"/>
       </editorContribution>
    </extension>
@@ -126,14 +114,14 @@
                tooltip="%OpenTypeAction.tooltip">
          </action>
           <action
-                class="mmrnmhrm.ui.actions.TestAction2"
+                class="mmrnmhrm.ui.actions.TestActionDg2"
                 icon="icons/action16e/spathi.16.gif"
                 id="testAction2"
                 label="Test 2"
                 style="push"
                 toolbarPath="additions"/>
           <action
-                class="mmrnmhrm.ui.actions.TestAction1"
+                class="mmrnmhrm.ui.actions.TestActionDg1"
                 icon="icons/action16e/spathi.16.gif"
                 id="testAction1"
                 label="Test 1"
@@ -153,7 +141,7 @@
             <separator name="additions"/>
          </menu>
          <action
-               class="mmrnmhrm.ui.actions.AddFolderToBuildPath"
+               class="mmrnmhrm.ui.actions.AddSourceFolderActionDg"
                enablesFor="1"
                icon="icons/lcl16e/add_as_source_folder.gif"
                id="mmrnmhrm.actions.buildpathAdd"
@@ -171,7 +159,7 @@
       </objectContribution>
       <viewerContribution
             id="mmrnmhrm.TEST.editorContribution"
-            targetID="#DeeEditorContext">
+            targetID="#DeeASTViewerContext">
          <menu
                id="Mmrnmhrm.editorMenu"
                label="Declarative Menu"

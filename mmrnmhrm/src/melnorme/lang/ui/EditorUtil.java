@@ -1,9 +1,11 @@
 package melnorme.lang.ui;
 
-import mmrnmhrm.ui.LangPlugin;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.jface.text.TextSelection;
+import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IFileEditorInput;
@@ -38,6 +40,29 @@ public class EditorUtil {
 		}
 		return null;
 	}
+
+	public static void selectNodeInEditor(AbstractTextEditor editor, SelectionChangedEvent event) {
+		ISelection selection = event.getSelection();
+		if (selection.isEmpty())
+			editor.resetHighlightRange();
+		else {
+			IStructuredSelection sel = (IStructuredSelection) selection;
+			ASTNode element = (ASTNode) sel.getFirstElement();
+			
+			if(element.hasNoSourceRangeInfo())
+				return;
+			
+			int start = element.getOffset();
+			int end = element.getLength();
+			try {
+				editor.setHighlightRange(start, end, true);
+				setSelection(editor, start, end);
+			} catch (IllegalArgumentException x) {
+				editor.resetHighlightRange();
+			}
+		}
+	}
+	
 	
 	// ------------  Used by editor ------------ 
 	

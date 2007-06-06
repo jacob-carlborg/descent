@@ -1,10 +1,10 @@
 package mmrnmhrm.ui.actions;
 
+import melnorme.lang.ui.ExceptionHandler;
 import mmrnmhrm.core.DeeCore;
 import mmrnmhrm.core.model.DeeModelManager;
 import mmrnmhrm.core.model.DeeProject;
 import mmrnmhrm.ui.DeeUI;
-import mmrnmhrm.ui.ExceptionHandler;
 
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
@@ -19,7 +19,7 @@ import org.eclipse.ui.IWorkbenchPart;
 
 import util.Assert;
 
-public class AddFolderToBuildPath implements IObjectActionDelegate {
+public class AddSourceFolderActionDg implements IObjectActionDelegate {
 	
 	private ISelection selection;
 	IFolder folder;
@@ -29,7 +29,6 @@ public class AddFolderToBuildPath implements IObjectActionDelegate {
 	}
 	
 	public void setActivePart(IAction action, IWorkbenchPart targetPart) {
-		// TODO Check it is Project Explorer part?
 	}
 
 	public void run(IAction action) {

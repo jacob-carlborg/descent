@@ -11,7 +11,7 @@ import descent.internal.core.dom.TypedefDeclaration;
 import dtool.dom.ast.ASTNeoNode;
 import dtool.dom.ast.ASTNode;
 import dtool.dom.base.Entity;
-import dtool.dom.base.EntityConstrainedRef;
+import dtool.dom.base.BaseEntityRef;
 import dtool.dom.declarations.DeclarationImport;
 import dtool.dom.definitions.DefinitionAggregate;
 import dtool.dom.definitions.DefinitionAlias;
@@ -39,7 +39,7 @@ public class DeeElementImageProvider {
 			return getImage(DeePluginImages.NODE_IMPORT);
 		} else if(node instanceof DeclarationModule) {
 			return getImage(DeePluginImages.ELEM_PACKAGE);
-		} else if (node instanceof EntityConstrainedRef) {
+		} else if (node instanceof BaseEntityRef) {
 			return getImage(DeePluginImages.NODE_BASEREF);
 		}else if (node instanceof Entity) {
 			return getImage(DeePluginImages.NODE_REF);

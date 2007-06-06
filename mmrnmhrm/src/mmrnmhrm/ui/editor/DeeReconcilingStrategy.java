@@ -5,24 +5,21 @@ import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.reconciler.DirtyRegion;
 import org.eclipse.jface.text.reconciler.IReconcilingStrategy;
 
+import util.log.Logg;
+
 public class DeeReconcilingStrategy implements IReconcilingStrategy {
 
 	public void reconcile(IRegion partition) {
-
-		// TODO Auto-generated method stub
-
+		Logg.model.println("Reconcile:", partition);
 	}
 
 	public void reconcile(DirtyRegion dirtyRegion, IRegion subRegion) {
-
-		// TODO Auto-generated method stub
+		Logg.model.println("Reconcile:", dirtyRegion, " , ", subRegion);
 
 	}
 
 	public void setDocument(IDocument document) {
-
 		// TODO Auto-generated method stub
- 
 	}
 
 }
