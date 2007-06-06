@@ -1,0 +1,22 @@
+# Currently in use in the visitor
+int       blank_lines_before_module                                             0
+int       blank_lines_after_module                                              1
+boolean   insert_space_before_semicolon                                         false
+boolean   insert_space_before_comma_in_multiple_field_declarations              false
+boolean   insert_space_after_comma_in_multiple_field_declarations               true
+boolean   insert_space_between_empty_parens_in_method_declaration               false
+boolean   insert_space_after_opening_paren_in_function_declaration              false
+boolean   insert_space_before_closing_paren_in_function_declaration             false
+boolean   insert_space_before_opening_paren_in_function_declaration             false
+
+
+# Preserved from their JDT roots for the scribe
+int       page_width                                                            80
+int       tab_size                                                              4
+boolean   use_tabs_only_for_leading_indentations                                false
+boolean   indent_empty_lines                                                    true
+int       tab_char                                                              TAB
+int       indentation_size                                                      4
+int       continuation_indentation                                              2
+int       number_of_empty_lines_to_preserve                                     1
+boolean   insert_new_line_at_end_of_file_if_missing                             true
