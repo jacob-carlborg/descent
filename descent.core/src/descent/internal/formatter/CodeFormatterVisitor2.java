@@ -26,6 +26,7 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 	public Lexer						lexer;
 	
 	private List<Type>                  postfixes = new LinkedList<Type>();
+	private boolean                     nameAlreadyPrinted = false;
 	
 	public CodeFormatterVisitor2(DefaultCodeFormatterOptions $preferences,
 			Map settings, int offset, int length, CompilationUnit unit)
@@ -109,7 +110,14 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 			node.getName().accept(this);
 		}
 		
-		formatTemplateParams(node.templateParameters());
+		List<TemplateParameter> templateParams = node.templateParameters();
+		if(!templateParams.isEmpty())
+			formatTemplateParams(node.templateParameters());
+		else if(isNextToken(TOK.TOKlparen))
+		{
+			scribe.printNextToken(TOK.TOKlparen);
+			scribe.printNextToken(TOK.TOKrparen);
+		}
 		List<BaseClass> baseClasses = node.baseClasses();
 		if(!baseClasses.isEmpty())
 		{
@@ -142,7 +150,10 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 	
 	public boolean visit(AliasDeclarationFragment node)
 	{
-		node.getName().accept(this);
+		if(!nameAlreadyPrinted)
+			node.getName().accept(this);
+		else
+			nameAlreadyPrinted = false;
 		return false;
 	}
 	
@@ -174,9 +185,12 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 	{
 		formatModifiers(true);
 		scribe.printNextToken(TOK.TOKalign);
-		scribe.printNextToken(TOK.TOKlparen);
-		scribe.printNextToken(literalOrIdentiferTokenList());
-		scribe.printNextToken(TOK.TOKrparen);
+		if(isNextToken(TOK.TOKlparen))
+		{
+			scribe.printNextToken(TOK.TOKlparen);
+			scribe.printNextToken(literalOrIdentiferTokenList());
+			scribe.printNextToken(TOK.TOKrparen);
+		}
 		formatDeclarationBlock(node.declarations());
 		return false;
 	}
@@ -220,7 +234,10 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 		
 		SimpleName name = node.getName();
 		if(null != name)
-			name.accept(this);
+			if(!nameAlreadyPrinted)
+				name.accept(this);
+			else
+				nameAlreadyPrinted = false;
 		formatPostfixedDeclarations();
 		postfixes.clear();
 		
@@ -337,7 +354,7 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 	
 	public boolean visit(Block node)
 	{
-		formatSubStatement(node, true, 0, false, 0);
+		formatSubStatement(node, true, false, true);
 		return false;
 	}
 	
@@ -395,7 +412,7 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 			}
 			scribe.printNextToken(TOK.TOKrparen);
 		}
-		formatSubStatement(node.getBody(), true, 0, false, 1);
+		formatSubStatement(node.getBody(), true, false, true);
 		return false;
 	}
 	
@@ -551,10 +568,24 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 	{
 		node.getReturnType().accept(this);
 		scribe.space();
-		if(node.isFunctionPointer())
-			scribe.printNextToken(TOK.TOKfunction);
+		if(isNextToken(TOK.TOKlparen)) //Handle a C-style function pointer
+		{
+			scribe.printNextToken(TOK.TOKlparen);
+			scribe.printNextToken(TOK.TOKmul);
+			if(isNextToken(TOK.TOKidentifier))
+			{
+				scribe.printNextToken(TOK.TOKidentifier);
+				nameAlreadyPrinted = true;
+			}
+			scribe.printNextToken(TOK.TOKrparen);
+		}
 		else
-			scribe.printNextToken(TOK.TOKdelegate);
+		{
+			if(node.isFunctionPointer())
+				scribe.printNextToken(TOK.TOKfunction);
+			else
+				scribe.printNextToken(TOK.TOKdelegate);
+		}
 		scribe.printNextToken(TOK.TOKlparen);
 		formatCSV(node.arguments(), false, true);
 		scribe.printNextToken(TOK.TOKrparen);
@@ -578,7 +609,7 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 	public boolean visit(DoStatement node)
 	{
 		scribe.printNextToken(TOK.TOKdo);
-		formatSubStatement(node.getBody(), true, 0, false, 0);
+		formatSubStatement(node.getBody(), true, false, true);
 		scribe.printNewLine();
 		scribe.printNextToken(TOK.TOKwhile);
 		scribe.printNextToken(TOK.TOKlparen);
@@ -731,7 +762,7 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 		scribe.space();
 		node.getExpression().accept(this);
 		scribe.printNextToken(TOK.TOKrparen);
-		formatSubStatement(node.getBody(), true, 0, false, 0);
+		formatSubStatement(node.getBody(), true, false, true);
 		return false;
 	}
 	
@@ -761,7 +792,7 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 		if(null != increment)
 			increment.accept(this);
 		scribe.printNextToken(TOK.TOKrparen);
-		formatSubStatement(node.getBody(), true, 0, false, 0);
+		formatSubStatement(node.getBody(), true, false, true);
 		return false;
 	}
 	
@@ -860,7 +891,7 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 		}
 		node.getExpression().accept(this);
 		scribe.printNextToken(TOK.TOKrparen);
-		formatSubStatement(node.getThenBody(), true, 0, false, 0);
+		formatSubStatement(node.getThenBody(), true, false, true);
 		if(isNextToken(TOK.TOKelse))
 		{
 			scribe.printNewLine();
@@ -869,11 +900,11 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 			if(elseBody instanceof IfStatement) // handle "else if"
 			{
 				scribe.space();
-				formatSubStatement(elseBody, false, 0, false, 0, false);
+				formatSubStatement(elseBody, false, false, false);
 			}
 			else
 			{
-				formatSubStatement(elseBody, true, 0, false, 0);
+				formatSubStatement(elseBody, true, false, true);
 			}
 		}
 		return false;
@@ -948,8 +979,13 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 		SimpleName name = node.getName();
 		if(null != name)
 		{
-			scribe.space();
-			name.accept(this);
+			if(!nameAlreadyPrinted)
+			{
+				scribe.space();
+				name.accept(this);
+			}
+			else
+				nameAlreadyPrinted = false;
 		}
 		Type specialization = node.getSpecialization();
 		if(null != specialization)
@@ -972,8 +1008,13 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 		SimpleName name = node.getName();
 		if(null != name)
 		{
-			scribe.space();
-			name.accept(this);
+			if(!nameAlreadyPrinted)
+			{
+				scribe.space();
+				name.accept(this);
+			}
+			else
+				nameAlreadyPrinted = false;
 		}
 		scribe.space();
 		scribe.printNextToken(node.isSameComparison() ? 
@@ -1184,7 +1225,7 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 		scribe.printNextToken(TOK.TOKrparen);
 		Statement body = node.getBody();
 		if(null != body)
-			formatSubStatement(body, true, 0, false, 0);
+			formatSubStatement(body, true, false, true);
 		if(isNextToken(TOK.TOKsemicolon))
 			scribe.printNextToken(TOK.TOKsemicolon);
 		return false;
@@ -1251,7 +1292,7 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 		scribe.printNextToken(TOK.TOKlparen);
 		scribe.printNextToken(TOK.TOKidentifier);
 		scribe.printNextToken(TOK.TOKrparen);
-		formatSubStatement(node.getBody(), true, 0, false, 0);
+		formatSubStatement(node.getBody(), true, false, true);
 		return false;
 	}
 	
@@ -1444,7 +1485,7 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 		scribe.printNextToken(TOK.TOKlparen);
 		node.getExpression().accept(this);
 		scribe.printNextToken(TOK.TOKrparen);
-		formatSubStatement(node.getBody(), true, 0, false, 0, false);
+		formatSubStatement(node.getBody(), true, false, false);
 		return false;
 	}
 	
@@ -1458,7 +1499,7 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 			expression.accept(this);
 			scribe.printNextToken(TOK.TOKrparen);
 		}
-		formatSubStatement(node.getBody(), true, 0, false, 0);
+		formatSubStatement(node.getBody(), true, false, true);
 		return false;
 	}
 	
@@ -1521,7 +1562,7 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 	public boolean visit(TryStatement node)
 	{
 		scribe.printNextToken(TOK.TOKtry);
-		formatSubStatement(node.getBody(), true, 0, true, 0);
+		formatSubStatement(node.getBody(), true, true, true);
 		List<CatchClause> catchClauses = node.catchClauses();
 		for(CatchClause c : catchClauses)
 			c.accept(this);
@@ -1529,7 +1570,7 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 		if(null != $finally)
 		{
 			scribe.printNextToken(TOK.TOKfinally);
-			formatSubStatement($finally, true, 0, false, 0);
+			formatSubStatement($finally, true, false, true);
 		}
 		return false;
 	}
@@ -1556,7 +1597,10 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 	
 	public boolean visit(TypedefDeclarationFragment node)
 	{
-		node.getName().accept(this);
+		if(!nameAlreadyPrinted)
+			node.getName().accept(this);
+		else
+			nameAlreadyPrinted = false;
 		Initializer init = node.getInitializer();
 		if(null != init)
 		{
@@ -1644,7 +1688,10 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 	{
 		node.getType().accept(this);
 		scribe.space();
-		node.getName().accept(this);
+		if(!nameAlreadyPrinted)
+			node.getName().accept(this);
+		else
+			nameAlreadyPrinted = false;
 		Expression specificValue = node.getSpecificValue();
 		if(null != specificValue)
 		{
@@ -1682,7 +1729,10 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 
 	public boolean visit(VariableDeclarationFragment node)
 	{
-		node.getName().accept(this);
+		if(!nameAlreadyPrinted)
+			node.getName().accept(this);
+		else
+			nameAlreadyPrinted = false;
 		formatPostfixedDeclarations();
 		Initializer init = node.getInitializer();
 		if(null != init)
@@ -1753,7 +1803,7 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 		scribe.printNextToken(TOK.TOKvolatile);
 		Statement body = node.getBody();
 		if(body instanceof Block)
-			formatSubStatement(body, true, 0, false, 0);
+			formatSubStatement(body, true, false, true);
 		else
 		{
 			scribe.space();
@@ -1768,7 +1818,7 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 		scribe.printNextToken(TOK.TOKlparen);
 		node.getExpression().accept(this);
 		scribe.printNextToken(TOK.TOKrparen);
-		formatSubStatement(node.getBody(), true, 0, false, 0);
+		formatSubStatement(node.getBody(), true, false, true);
 		return false;
 	}
 
@@ -1778,7 +1828,7 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 		scribe.printNextToken(TOK.TOKlparen);
 		node.getExpression().accept(this);
 		scribe.printNextToken(TOK.TOKrparen);
-		formatSubStatement(node.getBody(), true, 0, false, 0);
+		formatSubStatement(node.getBody(), true, false, true);
 		return false;
 	}
 
@@ -1795,12 +1845,12 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 	
 	private void formatConditionalStatement(ConditionalStatement node)
 	{
-		formatSubStatement(node.getThenBody(), true, 0, false, 0);
+		formatSubStatement(node.getThenBody(), true, false, true);
 		if(isNextToken(TOK.TOKelse))
 		{
 			scribe.printNewLine();
 			scribe.printNextToken(TOK.TOKelse);
-			formatSubStatement(node.getElseBody(), true, 0, false, 0);
+			formatSubStatement(node.getElseBody(), true, false, true);
 		}
 	}
 	
@@ -1966,7 +2016,7 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 				{
 					case TOKin:
 						scribe.printNextToken(TOK.TOKin);
-						formatSubStatement(in, true, 0, false, 0);
+						formatSubStatement(in, true, false, true);
 						continue loop;
 					case TOKout:
 						scribe.printNextToken(TOK.TOKout);
@@ -1978,11 +2028,11 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 								scribe.printNextToken(TOK.TOKidentifier);
 							scribe.printNextToken(TOK.TOKrparen);
 						}
-						formatSubStatement(out, true, 0, false, 0);
+						formatSubStatement(out, true, false, true);
 						continue loop;
 					case TOKbody:
 						scribe.printNextToken(TOK.TOKbody);
-						formatSubStatement(body, true, 0, false, 0);
+						formatSubStatement(body, true, false, true);
 						continue loop;
 					default:
 						break loop;
@@ -1995,13 +2045,13 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 			scribe.printNewLine();
 			scribe.indent();
 			scribe.printNextToken(TOK.TOKbody);
-			formatSubStatement(body, true, 0, false, 0);
+			formatSubStatement(body, true, false, true);
 			scribe.unIndent();
 		}
 		else {
 			if (body != null) {
 				scribe.printNewLine();
-				formatSubStatement(body, true, 0, false, 0);
+				formatSubStatement(body, true, false, true);
 			} else {
 				// no method body
 				scribe.printNextToken(TOK.TOKsemicolon, this.preferences.insert_space_before_semicolon);
@@ -2150,14 +2200,7 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 	}
 	
 	private void formatSubStatement(Statement statement, boolean newLineAtStart,
-			int spacesAtStart, boolean newLineAtEnd, int spacesAtEnd)
-	{
-		formatSubStatement(statement, newLineAtStart, spacesAtStart,
-				newLineAtEnd, spacesAtEnd, true);
-	}
-	
-	private void formatSubStatement(Statement statement, boolean newLineAtStart,
-			int spacesAtStart, boolean newLineAtEnd, int spacesAtEnd, boolean indent)
+			boolean newLineAtEnd, boolean indent)
 	{
 		if(statement instanceof EmptyStatement)
 		{
@@ -2170,8 +2213,16 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 		
 		if(statement instanceof Block)
 		{
-			if(isNextToken(TOK.TOKlcurly)) // Switch statment bodies are blocks,
-				                           // but don't have curly braces.
+			ASTNode parent = statement.getParent();
+			if(parent instanceof SwitchCase || parent instanceof DefaultStatement)
+			{
+				if(indent)
+					scribe.indent();
+				formatStatements(((Block) statement).statements(), true);
+				if(indent)
+					scribe.unIndent();
+			}
+			else
 			{
 				scribe.printNextToken(TOK.TOKlcurly);
 				scribe.printNewLine();
@@ -2181,14 +2232,6 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 				if(indent)
 					scribe.unIndent();
 				scribe.printNextToken(TOK.TOKrcurly);
-			}
-			else
-			{
-				if(indent)
-					scribe.indent();
-				formatStatements(((Block) statement).statements(), true);
-				if(indent)
-					scribe.unIndent();
 			}
 		}
 		
