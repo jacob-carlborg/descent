@@ -802,11 +802,13 @@ class NaiveASTFlattener extends ASTVisitor {
 			this.buffer.append(LINE_END);
 			printIndent();
 		}
-		if (node.getPrecondition() != null || node.getPostcondition() != null) {
-			this.buffer.append("body");
+		if (node.getBody() != null) {
+			if (node.getPrecondition() != null || node.getPostcondition() != null) {
+				this.buffer.append("body");
+			}
+			this.buffer.append(" ");
+			node.getBody().accept(this);
 		}
-		this.buffer.append(" ");
-		node.getBody().accept(this);
 		if (node.getPostDDoc() != null) {
 			this.buffer.append(" ");
 			node.getPostDDoc().accept(this);
