@@ -3,8 +3,7 @@ package descent.tests.format;
 import java.util.HashMap;
 import java.util.Map;
 
-import descent.core.JavaCore;
-import descent.core.formatter.DefaultCodeFormatterConstants;
+import descent.core.formatter.DefaultCodeFormatterConstants2;
 
 public class FormatModuleDeclaration_Tests extends AbstractFormatter_Test {
 	
@@ -81,7 +80,7 @@ public class FormatModuleDeclaration_Tests extends AbstractFormatter_Test {
 	
 	public void testLinesBefore() throws Exception {
 		Map options = new HashMap();
-		options.put(DefaultCodeFormatterConstants.FORMATTER_BLANK_LINES_BEFORE_PACKAGE, "3");
+		options.put(DefaultCodeFormatterConstants2.FORMATTER_BLANK_LINES_BEFORE_MODULE, "3");
 		assertFormat(
 				"\r\n\r\n\r\nmodule foo.bar;\r\n", 
 				
@@ -92,7 +91,7 @@ public class FormatModuleDeclaration_Tests extends AbstractFormatter_Test {
 	
 	public void testLinesAfter() throws Exception {
 		Map options = new HashMap();
-		options.put(DefaultCodeFormatterConstants.FORMATTER_BLANK_LINES_AFTER_PACKAGE, "3");
+		options.put(DefaultCodeFormatterConstants2.FORMATTER_BLANK_LINES_AFTER_MODULE, "3");
 		assertFormat(
 				"module foo.bar;\r\n\r\n\r\n\r\n", 
 				
@@ -103,7 +102,7 @@ public class FormatModuleDeclaration_Tests extends AbstractFormatter_Test {
 	
 	public void testSpaceBeforeSemicolon() throws Exception {
 		Map options = new HashMap();
-		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_SEMICOLON, JavaCore.INSERT);
+		options.put(DefaultCodeFormatterConstants2.FORMATTER_INSERT_SPACE_BEFORE_SEMICOLON, DefaultCodeFormatterConstants2.TRUE);
 		assertFormat(
 				"module foo.bar ;\r\n", 
 				

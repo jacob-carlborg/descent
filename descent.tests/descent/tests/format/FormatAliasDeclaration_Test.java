@@ -3,8 +3,7 @@ package descent.tests.format;
 import java.util.HashMap;
 import java.util.Map;
 
-import descent.core.JavaCore;
-import descent.core.formatter.DefaultCodeFormatterConstants;
+import descent.core.formatter.DefaultCodeFormatterConstants2;
 
 public class FormatAliasDeclaration_Test extends AbstractFormatter_Test {
 	
@@ -46,7 +45,7 @@ public class FormatAliasDeclaration_Test extends AbstractFormatter_Test {
 	
 	public void testInsertSpaceBeforeSemicolon() throws Exception {
 		Map options = new HashMap();
-		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_SEMICOLON, JavaCore.INSERT);
+		options.put(DefaultCodeFormatterConstants2.FORMATTER_INSERT_SPACE_BEFORE_SEMICOLON, DefaultCodeFormatterConstants2.TRUE);
 		assertFormat(
 				"alias int x ;\r\n",
 				
@@ -64,7 +63,7 @@ public class FormatAliasDeclaration_Test extends AbstractFormatter_Test {
 	
 	public void testFragmentsInsertSpaceBeforeComma() throws Exception {
 		Map options = new HashMap();
-		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_COMMA_IN_MULTIPLE_FIELD_DECLARATIONS, JavaCore.INSERT);
+		options.put(DefaultCodeFormatterConstants2.FORMATTER_INSERT_SPACE_BEFORE_COMMA_IN_MULTIPLE_FIELD_DECLARATIONS, DefaultCodeFormatterConstants2.TRUE);
 		assertFormat(
 				"alias int x , y , z;\r\n",
 				
@@ -75,7 +74,7 @@ public class FormatAliasDeclaration_Test extends AbstractFormatter_Test {
 	
 	public void testFragmentsDontInsertSpaceAfterComma() throws Exception {
 		Map options = new HashMap();
-		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_AFTER_COMMA_IN_MULTIPLE_FIELD_DECLARATIONS, JavaCore.DO_NOT_INSERT);
+		options.put(DefaultCodeFormatterConstants2.FORMATTER_INSERT_SPACE_AFTER_COMMA_IN_MULTIPLE_FIELD_DECLARATIONS, DefaultCodeFormatterConstants2.FALSE);
 		assertFormat(
 				"alias int x,y,z;\r\n",
 				

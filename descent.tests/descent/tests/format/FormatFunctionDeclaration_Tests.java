@@ -3,8 +3,7 @@ package descent.tests.format;
 import java.util.HashMap;
 import java.util.Map;
 
-import descent.core.JavaCore;
-import descent.core.formatter.DefaultCodeFormatterConstants;
+import descent.core.formatter.DefaultCodeFormatterConstants2;
 
 public class FormatFunctionDeclaration_Tests extends AbstractFormatter_Test {
 	
@@ -18,7 +17,7 @@ public class FormatFunctionDeclaration_Tests extends AbstractFormatter_Test {
 	
 	public void testEmptyInsertSpaceBeforeSemicolon() throws Exception {
 		Map options = new HashMap();
-		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_SEMICOLON, JavaCore.INSERT);
+		options.put(DefaultCodeFormatterConstants2.FORMATTER_INSERT_SPACE_BEFORE_SEMICOLON, DefaultCodeFormatterConstants2.TRUE);
 		assertFormat(
 				"void bla() ;\r\n", 
 				
@@ -30,7 +29,7 @@ public class FormatFunctionDeclaration_Tests extends AbstractFormatter_Test {
 	
 	public void testEmptyInsertSpaceBeforeOpenParen() throws Exception {
 		Map options = new HashMap();
-		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_OPENING_PAREN_IN_METHOD_DECLARATION, JavaCore.INSERT);
+		options.put(DefaultCodeFormatterConstants2.FORMATTER_INSERT_SPACE_BEFORE_OPENING_PAREN_IN_FUNCTION_DECLARATION, DefaultCodeFormatterConstants2.TRUE);
 		assertFormat(
 				"void bla ();\r\n", 
 				
@@ -42,7 +41,7 @@ public class FormatFunctionDeclaration_Tests extends AbstractFormatter_Test {
 	
 	public void testEmptyInsertSpaceAfterOpenParen() throws Exception {
 		Map options = new HashMap();
-		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_AFTER_OPENING_PAREN_IN_METHOD_DECLARATION, JavaCore.INSERT);
+		options.put(DefaultCodeFormatterConstants2.FORMATTER_INSERT_SPACE_AFTER_OPENING_PAREN_IN_FUNCTION_DECLARATION, DefaultCodeFormatterConstants2.TRUE);
 		assertFormat(
 				"void bla( int x);\r\n", 
 				
@@ -54,7 +53,7 @@ public class FormatFunctionDeclaration_Tests extends AbstractFormatter_Test {
 	
 	public void testEmptyInsertSpaceBeforeCloseParen() throws Exception {
 		Map options = new HashMap();
-		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_CLOSING_PAREN_IN_METHOD_DECLARATION, JavaCore.INSERT);
+		options.put(DefaultCodeFormatterConstants2.FORMATTER_INSERT_SPACE_BEFORE_CLOSING_PAREN_IN_FUNCTION_DECLARATION, DefaultCodeFormatterConstants2.TRUE);
 		assertFormat(
 				"void bla(int x );\r\n", 
 				
@@ -66,7 +65,7 @@ public class FormatFunctionDeclaration_Tests extends AbstractFormatter_Test {
 	
 	public void testEmptyInsertSpaceBetweenEmptyParen() throws Exception {
 		Map options = new HashMap();
-		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BETWEEN_EMPTY_PARENS_IN_METHOD_DECLARATION, JavaCore.INSERT);
+		options.put(DefaultCodeFormatterConstants2.FORMATTER_INSERT_SPACE_BETWEEN_EMPTY_PARENS_IN_FUNCTION_DECLARATION, DefaultCodeFormatterConstants2.TRUE);
 		assertFormat(
 				"void bla( );\r\n", 
 				
