@@ -87,7 +87,7 @@ public class Scribe2 {	private static final int INITIAL_SIZE = 100;
 		this.useTabsOnlyForLeadingIndents = formatter.preferences.use_tabs_only_for_leading_indentations;
         this.indentEmptyLines = formatter.preferences.indent_empty_lines;
 		this.tabChar = formatter.preferences.tab_char;
-		if (this.tabChar == DefaultCodeFormatterOptions.MIXED) {
+		if (this.tabChar == DefaultCodeFormatterOptions2.MIXED) {
 			this.indentationSize = formatter.preferences.indentation_size;
 		} else {
 			this.indentationSize = this.tabLength;
@@ -414,7 +414,7 @@ public class Scribe2 {	private static final int INITIAL_SIZE = 100;
 		int indent = someColumn - 1;
 		if (indent == 0)
 			return this.indentationLevel;
-		if (this.tabChar == DefaultCodeFormatterOptions.TAB) {
+		if (this.tabChar == DefaultCodeFormatterOptions2.TAB) {
 			if (this.useTabsOnlyForLeadingIndents) {
 				return indent;
 			}
@@ -964,7 +964,7 @@ public class Scribe2 {	private static final int INITIAL_SIZE = 100;
 
 	private void printIndentationIfNecessary(StringBuffer buffer) {
 		switch(this.tabChar) {
-			case DefaultCodeFormatterOptions.TAB :
+			case DefaultCodeFormatterOptions2.TAB :
 				boolean useTabsForLeadingIndents = this.useTabsOnlyForLeadingIndents;
 				int numberOfLeadingIndents = this.numberOfIndentations;
 				int indentationsAsTab = 0;
@@ -993,14 +993,14 @@ public class Scribe2 {	private static final int INITIAL_SIZE = 100;
 					}
 				}
 				break;
-			case DefaultCodeFormatterOptions.SPACE :
+			case DefaultCodeFormatterOptions2.SPACE :
 				while (this.column <= this.indentationLevel) {
 					buffer.append(' ');
 					this.column++;
 					this.needSpace = false;
 				}
 				break;
-			case DefaultCodeFormatterOptions.MIXED :
+			case DefaultCodeFormatterOptions2.MIXED :
 				useTabsForLeadingIndents = this.useTabsOnlyForLeadingIndents;
 				numberOfLeadingIndents = this.numberOfIndentations;
 				indentationsAsTab = 0;
@@ -1275,10 +1275,10 @@ public class Scribe2 {	private static final int INITIAL_SIZE = 100;
 		stringBuffer
 			.append("(page width = " + this.pageWidth + ") - (tabChar = ");//$NON-NLS-1$//$NON-NLS-2$
 		switch(this.tabChar) {
-			case DefaultCodeFormatterOptions.TAB :
+			case DefaultCodeFormatterOptions2.TAB :
 				 stringBuffer.append("TAB");//$NON-NLS-1$
 				 break;
-			case DefaultCodeFormatterOptions.SPACE :
+			case DefaultCodeFormatterOptions2.SPACE :
 				 stringBuffer.append("SPACE");//$NON-NLS-1$
 				 break;
 			default :

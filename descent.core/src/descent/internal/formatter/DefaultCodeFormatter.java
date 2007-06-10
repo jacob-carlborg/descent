@@ -21,7 +21,7 @@ import descent.core.dom.ASTParser;
 import descent.core.dom.Block;
 import descent.core.dom.CompilationUnit;
 import descent.core.formatter.CodeFormatter;
-import descent.core.formatter.DefaultCodeFormatterConstants;
+import descent.core.formatter.DefaultCodeFormatterConstants2;
 import descent.internal.compiler.impl.CompilerOptions;
 //import descent.internal.compiler.parser.Scanner;
 import descent.internal.compiler.util.Util;
@@ -71,23 +71,23 @@ public class DefaultCodeFormatter extends CodeFormatter {
 	private CodeFormatterVisitor2 newCodeFormatter2;
 	private Map options;
 	
-	private DefaultCodeFormatterOptions preferences;
+	private DefaultCodeFormatterOptions2 preferences;
 	
 	public DefaultCodeFormatter() {
-		this(new DefaultCodeFormatterOptions(DefaultCodeFormatterConstants.getJavaConventionsSettings()), null);
+		this(new DefaultCodeFormatterOptions2(DefaultCodeFormatterConstants2.getJavaConventionsSettings()), null);
 	}
 	
-	public DefaultCodeFormatter(DefaultCodeFormatterOptions preferences) {
+	public DefaultCodeFormatter(DefaultCodeFormatterOptions2 preferences) {
 		this(preferences, null);
 	}
 
-	public DefaultCodeFormatter(DefaultCodeFormatterOptions defaultCodeFormatterOptions, Map options) {
+	public DefaultCodeFormatter(DefaultCodeFormatterOptions2 defaultCodeFormatterOptions, Map options) {
 		if (options != null) {
 			this.options = options;
-			this.preferences = new DefaultCodeFormatterOptions(options);
+			this.preferences = new DefaultCodeFormatterOptions2(options);
 		} else {
 			this.options = JavaCore.getOptions();
-			this.preferences = new DefaultCodeFormatterOptions(DefaultCodeFormatterConstants.getJavaConventionsSettings());
+			this.preferences = new DefaultCodeFormatterOptions2(DefaultCodeFormatterConstants2.getJavaConventionsSettings());
 		}
 		this.defaultCompilerOptions = getDefaultCompilerOptions();
 		if (defaultCodeFormatterOptions != null) {
@@ -107,13 +107,13 @@ public class DefaultCodeFormatter extends CodeFormatter {
 		int tabs = 0;
 		int spaces = 0;
 		switch(this.preferences.tab_char) {
-			case DefaultCodeFormatterOptions.SPACE :
+			case DefaultCodeFormatterOptions2.SPACE :
 				spaces = indentationLevel * this.preferences.tab_size;
 				break;
-			case DefaultCodeFormatterOptions.TAB :
+			case DefaultCodeFormatterOptions2.TAB :
 				tabs = indentationLevel;
 				break;
-			case DefaultCodeFormatterOptions.MIXED :
+			case DefaultCodeFormatterOptions2.MIXED :
 				int tabSize = this.preferences.tab_size;
 				int spaceEquivalents = indentationLevel * this.preferences.indentation_size;
 				tabs = spaceEquivalents / tabSize;

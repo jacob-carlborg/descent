@@ -96,5 +96,39 @@ number_of_empty_lines_to_preserve
 	default=1
 insert_new_line_at_end_of_file_if_missing
 	type=boolean
+	default=false
+
+
+# Some other ones in descent.core (it might be about time to rearrange this file...)
+line_split
+	type=int
+	default=9999
+never_indent_block_comments_on_first_column
+	type=boolean
+	default=false
+never_indent_line_comments_on_first_column
+	type=boolean
+	default=false
+
+
+# Some ones used in descent.ui
+insert_space_before_opening_paren_in_function_invocation
+	type=boolean
+	default=false
+insert_space_after_opening_paren_in_function_invocation
+	type=boolean
+	default=false
+insert_space_before_comma_in_function_invocation_arguments
+	type=boolean
+	default=false
+insert_space_after_comma_in_function_invocation_arguments
+	type=boolean
 	default=true
+insert_space_before_closing_paren_in_function_invocation
+	type=boolean
+	default=false
+insert_space_between_empty_parens_in_function_invocation
+	type=boolean
+	default=false
+
 

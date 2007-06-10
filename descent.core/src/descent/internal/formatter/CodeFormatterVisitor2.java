@@ -21,14 +21,14 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 {
 	public final static boolean	        DEBUG = true;
 	
-	public DefaultCodeFormatterOptions	preferences;
+	public DefaultCodeFormatterOptions2	preferences;
 	public Scribe2						scribe;
 	public Lexer						lexer;
 	
 	private List<Type>                  postfixes = new LinkedList<Type>();
 	private boolean                     nameAlreadyPrinted = false;
 	
-	public CodeFormatterVisitor2(DefaultCodeFormatterOptions $preferences,
+	public CodeFormatterVisitor2(DefaultCodeFormatterOptions2 $preferences,
 			Map settings, int offset, int length, CompilationUnit unit)
 	{
 		preferences = $preferences;
@@ -435,14 +435,14 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 			if (hasComments()) {
 				this.scribe.printComment();
 			}
-			int blankLinesBeforePackage = this.preferences.blank_lines_before_package;
+			int blankLinesBeforePackage = this.preferences.blank_lines_before_module;
 			if (blankLinesBeforePackage > 0) {
 				this.scribe.printEmptyLines(blankLinesBeforePackage);
 			}
 			
 			moduleDeclaration.accept(this);
 			
-			int blankLinesAfterPackage = this.preferences.blank_lines_after_package;
+			int blankLinesAfterPackage = this.preferences.blank_lines_after_module;
 			if (blankLinesAfterPackage > 0) {
 				this.scribe.printEmptyLines(blankLinesAfterPackage);
 			} else {
@@ -1963,22 +1963,18 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 	{
 		if(isNextToken(TOK.TOKlparen))
 		{
-			boolean spaceBeforeParen = this.preferences.insert_space_before_opening_paren_in_method_declaration;
-			if (node instanceof ConstructorDeclaration)
-			{
-				spaceBeforeParen = this.preferences.insert_space_before_opening_paren_in_constructor_declaration;
-			}			
+			boolean spaceBeforeParen = this.preferences.insert_space_before_opening_paren_in_function_declaration;		
 			scribe.printNextToken(TOK.TOKlparen, spaceBeforeParen);
 			
 			if (node.arguments().size() == 0 && !node.isVariadic())
 			{
-				if (this.preferences.insert_space_between_empty_parens_in_method_declaration) {
+				if (this.preferences.insert_space_between_empty_parens_in_function_declaration) {
 					this.scribe.space();
 				}
 			}
 			if (node.arguments().size() > 0)
 			{
-				if (this.preferences.insert_space_after_opening_paren_in_method_declaration) {
+				if (this.preferences.insert_space_after_opening_paren_in_function_declaration) {
 					this.scribe.space();
 				}
 				formatCSV(node.arguments(), false, true);
@@ -1998,7 +1994,7 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 				}
 				scribe.printNextToken(TOK.TOKdotdotdot);	
 			}
-			if (this.preferences.insert_space_before_closing_paren_in_method_declaration)
+			if (this.preferences.insert_space_before_closing_paren_in_function_declaration)
 				this.scribe.space();
 			scribe.printNextToken(TOK.TOKrparen);
 		}

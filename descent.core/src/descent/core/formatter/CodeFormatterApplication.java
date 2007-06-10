@@ -379,23 +379,23 @@ public class CodeFormatterApplication implements IApplication {
 		if (this.options == null) {
 			this.options = JavaCore.getOptions();
 			this.options.put(
-				DefaultCodeFormatterConstants.FORMATTER_NEVER_INDENT_BLOCK_COMMENTS_ON_FIRST_COLUMN,
-				DefaultCodeFormatterConstants.FALSE);
+				DefaultCodeFormatterConstants2.FORMATTER_NEVER_INDENT_BLOCK_COMMENTS_ON_FIRST_COLUMN,
+				DefaultCodeFormatterConstants2.FALSE);
 			this.options.put(
-					DefaultCodeFormatterConstants.FORMATTER_NEVER_INDENT_LINE_COMMENTS_ON_FIRST_COLUMN,
-					DefaultCodeFormatterConstants.FALSE);
+					DefaultCodeFormatterConstants2.FORMATTER_NEVER_INDENT_LINE_COMMENTS_ON_FIRST_COLUMN,
+					DefaultCodeFormatterConstants2.FALSE);
 		} else {
-			Object option = this.options.get(DefaultCodeFormatterConstants.FORMATTER_NEVER_INDENT_BLOCK_COMMENTS_ON_FIRST_COLUMN);
+			Object option = this.options.get(DefaultCodeFormatterConstants2.FORMATTER_NEVER_INDENT_BLOCK_COMMENTS_ON_FIRST_COLUMN);
 			if (option == null) {
 				this.options.put(
-						DefaultCodeFormatterConstants.FORMATTER_NEVER_INDENT_BLOCK_COMMENTS_ON_FIRST_COLUMN,
-						DefaultCodeFormatterConstants.FALSE);
+						DefaultCodeFormatterConstants2.FORMATTER_NEVER_INDENT_BLOCK_COMMENTS_ON_FIRST_COLUMN,
+						DefaultCodeFormatterConstants2.FALSE);
 			}
-			option = this.options.get(DefaultCodeFormatterConstants.FORMATTER_NEVER_INDENT_LINE_COMMENTS_ON_FIRST_COLUMN);
+			option = this.options.get(DefaultCodeFormatterConstants2.FORMATTER_NEVER_INDENT_LINE_COMMENTS_ON_FIRST_COLUMN);
 			if (option == null) {
 				this.options.put(
-						DefaultCodeFormatterConstants.FORMATTER_NEVER_INDENT_LINE_COMMENTS_ON_FIRST_COLUMN,
-						DefaultCodeFormatterConstants.FALSE);
+						DefaultCodeFormatterConstants2.FORMATTER_NEVER_INDENT_LINE_COMMENTS_ON_FIRST_COLUMN,
+						DefaultCodeFormatterConstants2.FALSE);
 			}
 		}
 		final CodeFormatter codeFormatter = ToolFactory.createCodeFormatter(this.options);

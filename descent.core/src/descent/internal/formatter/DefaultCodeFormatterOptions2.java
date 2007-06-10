@@ -55,6 +55,15 @@ public class DefaultCodeFormatterOptions2
 	public int continuation_indentation;
 	public int number_of_empty_lines_to_preserve;
 	public boolean insert_new_line_at_end_of_file_if_missing;
+	public int line_split;
+	public boolean never_indent_block_comments_on_first_column;
+	public boolean never_indent_line_comments_on_first_column;
+	public boolean insert_space_before_opening_paren_in_function_invocation;
+	public boolean insert_space_after_opening_paren_in_function_invocation;
+	public boolean insert_space_before_comma_in_function_invocation_arguments;
+	public boolean insert_space_after_comma_in_function_invocation_arguments;
+	public boolean insert_space_before_closing_paren_in_function_invocation;
+	public boolean insert_space_between_empty_parens_in_function_invocation;
 	
 	// Set by the caller
 	public String line_separator;
@@ -75,7 +84,8 @@ public class DefaultCodeFormatterOptions2
 	}
 
 	public Map<String, String> getMap() {
-		Map<String, String> options = new HashMap();
+		
+		Map<String, String> options = new HashMap<String, String>();
 		
 		options.put(DefaultCodeFormatterConstants2.FORMATTER_BLANK_LINES_BEFORE_MODULE, Integer.toString(blank_lines_before_module));
 		options.put(DefaultCodeFormatterConstants2.FORMATTER_BLANK_LINES_AFTER_MODULE, Integer.toString(blank_lines_after_module));
@@ -95,12 +105,23 @@ public class DefaultCodeFormatterOptions2
 		options.put(DefaultCodeFormatterConstants2.FORMATTER_CONTINUATION_INDENTATION, Integer.toString(continuation_indentation));
 		options.put(DefaultCodeFormatterConstants2.FORMATTER_NUMBER_OF_EMPTY_LINES_TO_PRESERVE, Integer.toString(number_of_empty_lines_to_preserve));
 		options.put(DefaultCodeFormatterConstants2.FORMATTER_INSERT_NEW_LINE_AT_END_OF_FILE_IF_MISSING, insert_new_line_at_end_of_file_if_missing ? DefaultCodeFormatterConstants2.TRUE : DefaultCodeFormatterConstants2.FALSE);
+		options.put(DefaultCodeFormatterConstants2.FORMATTER_LINE_SPLIT, Integer.toString(line_split));
+		options.put(DefaultCodeFormatterConstants2.FORMATTER_NEVER_INDENT_BLOCK_COMMENTS_ON_FIRST_COLUMN, never_indent_block_comments_on_first_column ? DefaultCodeFormatterConstants2.TRUE : DefaultCodeFormatterConstants2.FALSE);
+		options.put(DefaultCodeFormatterConstants2.FORMATTER_NEVER_INDENT_LINE_COMMENTS_ON_FIRST_COLUMN, never_indent_line_comments_on_first_column ? DefaultCodeFormatterConstants2.TRUE : DefaultCodeFormatterConstants2.FALSE);
+		options.put(DefaultCodeFormatterConstants2.FORMATTER_INSERT_SPACE_BEFORE_OPENING_PAREN_IN_FUNCTION_INVOCATION, insert_space_before_opening_paren_in_function_invocation ? DefaultCodeFormatterConstants2.TRUE : DefaultCodeFormatterConstants2.FALSE);
+		options.put(DefaultCodeFormatterConstants2.FORMATTER_INSERT_SPACE_AFTER_OPENING_PAREN_IN_FUNCTION_INVOCATION, insert_space_after_opening_paren_in_function_invocation ? DefaultCodeFormatterConstants2.TRUE : DefaultCodeFormatterConstants2.FALSE);
+		options.put(DefaultCodeFormatterConstants2.FORMATTER_INSERT_SPACE_BEFORE_COMMA_IN_FUNCTION_INVOCATION_ARGUMENTS, insert_space_before_comma_in_function_invocation_arguments ? DefaultCodeFormatterConstants2.TRUE : DefaultCodeFormatterConstants2.FALSE);
+		options.put(DefaultCodeFormatterConstants2.FORMATTER_INSERT_SPACE_AFTER_COMMA_IN_FUNCTION_INVOCATION_ARGUMENTS, insert_space_after_comma_in_function_invocation_arguments ? DefaultCodeFormatterConstants2.TRUE : DefaultCodeFormatterConstants2.FALSE);
+		options.put(DefaultCodeFormatterConstants2.FORMATTER_INSERT_SPACE_BEFORE_CLOSING_PAREN_IN_FUNCTION_INVOCATION, insert_space_before_closing_paren_in_function_invocation ? DefaultCodeFormatterConstants2.TRUE : DefaultCodeFormatterConstants2.FALSE);
+		options.put(DefaultCodeFormatterConstants2.FORMATTER_INSERT_SPACE_BETWEEN_EMPTY_PARENS_IN_FUNCTION_INVOCATION, insert_space_between_empty_parens_in_function_invocation ? DefaultCodeFormatterConstants2.TRUE : DefaultCodeFormatterConstants2.FALSE);
 		 
 		return options;
 	}
 
 	public void set(Map<String, String> settings) {
+		
 		String current;
+		
 		
 		current = settings.get(DefaultCodeFormatterConstants2.FORMATTER_BLANK_LINES_BEFORE_MODULE);
 		if(null != current) {
@@ -260,7 +281,88 @@ public class DefaultCodeFormatterOptions2
 			try {
 				insert_new_line_at_end_of_file_if_missing = DefaultCodeFormatterConstants2.TRUE.equals(current);
 			} catch(Exception e) {
-				insert_new_line_at_end_of_file_if_missing = true;
+				insert_new_line_at_end_of_file_if_missing = false;
+			}
+		}
+		
+		current = settings.get(DefaultCodeFormatterConstants2.FORMATTER_LINE_SPLIT);
+		if(null != current) {
+			try {
+				line_split = Integer.parseInt(current);
+			} catch(Exception e) {
+				line_split = 9999;
+			}
+		}
+		
+		current = settings.get(DefaultCodeFormatterConstants2.FORMATTER_NEVER_INDENT_BLOCK_COMMENTS_ON_FIRST_COLUMN);
+		if(null != current) {
+			try {
+				never_indent_block_comments_on_first_column = DefaultCodeFormatterConstants2.TRUE.equals(current);
+			} catch(Exception e) {
+				never_indent_block_comments_on_first_column = false;
+			}
+		}
+		
+		current = settings.get(DefaultCodeFormatterConstants2.FORMATTER_NEVER_INDENT_LINE_COMMENTS_ON_FIRST_COLUMN);
+		if(null != current) {
+			try {
+				never_indent_line_comments_on_first_column = DefaultCodeFormatterConstants2.TRUE.equals(current);
+			} catch(Exception e) {
+				never_indent_line_comments_on_first_column = false;
+			}
+		}
+		
+		current = settings.get(DefaultCodeFormatterConstants2.FORMATTER_INSERT_SPACE_BEFORE_OPENING_PAREN_IN_FUNCTION_INVOCATION);
+		if(null != current) {
+			try {
+				insert_space_before_opening_paren_in_function_invocation = DefaultCodeFormatterConstants2.TRUE.equals(current);
+			} catch(Exception e) {
+				insert_space_before_opening_paren_in_function_invocation = false;
+			}
+		}
+		
+		current = settings.get(DefaultCodeFormatterConstants2.FORMATTER_INSERT_SPACE_AFTER_OPENING_PAREN_IN_FUNCTION_INVOCATION);
+		if(null != current) {
+			try {
+				insert_space_after_opening_paren_in_function_invocation = DefaultCodeFormatterConstants2.TRUE.equals(current);
+			} catch(Exception e) {
+				insert_space_after_opening_paren_in_function_invocation = false;
+			}
+		}
+		
+		current = settings.get(DefaultCodeFormatterConstants2.FORMATTER_INSERT_SPACE_BEFORE_COMMA_IN_FUNCTION_INVOCATION_ARGUMENTS);
+		if(null != current) {
+			try {
+				insert_space_before_comma_in_function_invocation_arguments = DefaultCodeFormatterConstants2.TRUE.equals(current);
+			} catch(Exception e) {
+				insert_space_before_comma_in_function_invocation_arguments = false;
+			}
+		}
+		
+		current = settings.get(DefaultCodeFormatterConstants2.FORMATTER_INSERT_SPACE_AFTER_COMMA_IN_FUNCTION_INVOCATION_ARGUMENTS);
+		if(null != current) {
+			try {
+				insert_space_after_comma_in_function_invocation_arguments = DefaultCodeFormatterConstants2.TRUE.equals(current);
+			} catch(Exception e) {
+				insert_space_after_comma_in_function_invocation_arguments = true;
+			}
+		}
+		
+		current = settings.get(DefaultCodeFormatterConstants2.FORMATTER_INSERT_SPACE_BEFORE_CLOSING_PAREN_IN_FUNCTION_INVOCATION);
+		if(null != current) {
+			try {
+				insert_space_before_closing_paren_in_function_invocation = DefaultCodeFormatterConstants2.TRUE.equals(current);
+			} catch(Exception e) {
+				insert_space_before_closing_paren_in_function_invocation = false;
+			}
+		}
+		
+		current = settings.get(DefaultCodeFormatterConstants2.FORMATTER_INSERT_SPACE_BETWEEN_EMPTY_PARENS_IN_FUNCTION_INVOCATION);
+		if(null != current) {
+			try {
+				insert_space_between_empty_parens_in_function_invocation = DefaultCodeFormatterConstants2.TRUE.equals(current);
+			} catch(Exception e) {
+				insert_space_between_empty_parens_in_function_invocation = false;
 			}
 		}
 	}
@@ -283,6 +385,15 @@ public class DefaultCodeFormatterOptions2
 		indentation_size = 4;
 		continuation_indentation = 2;
 		number_of_empty_lines_to_preserve = 1;
-		insert_new_line_at_end_of_file_if_missing = true;
+		insert_new_line_at_end_of_file_if_missing = false;
+		line_split = 9999;
+		never_indent_block_comments_on_first_column = false;
+		never_indent_line_comments_on_first_column = false;
+		insert_space_before_opening_paren_in_function_invocation = false;
+		insert_space_after_opening_paren_in_function_invocation = false;
+		insert_space_before_comma_in_function_invocation_arguments = false;
+		insert_space_after_comma_in_function_invocation_arguments = true;
+		insert_space_before_closing_paren_in_function_invocation = false;
+		insert_space_between_empty_parens_in_function_invocation = false;
 	}
 }

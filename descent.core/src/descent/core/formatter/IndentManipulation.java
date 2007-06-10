@@ -14,7 +14,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Map;
 
-import descent.core.formatter.DefaultCodeFormatterConstants;
+import descent.core.formatter.DefaultCodeFormatterConstants2;
 import descent.internal.compiler.parser.ScannerHelper;
 import descent.internal.compiler.util.Util;
 import org.eclipse.jface.text.BadLocationException;
@@ -393,7 +393,7 @@ public final class IndentManipulation {
 		if (options == null) {
 			throw new IllegalArgumentException();
 		}
-		return getIntValue(options, DefaultCodeFormatterConstants.FORMATTER_TAB_SIZE, 4);
+		return getIntValue(options, DefaultCodeFormatterConstants2.FORMATTER_TAB_SIZE, 4);
 	}
 	
 	/**
@@ -410,9 +410,9 @@ public final class IndentManipulation {
 			throw new IllegalArgumentException();
 		}
 		int tabWidth=getTabWidth(options);
-		boolean isMixedMode= DefaultCodeFormatterConstants.MIXED.equals(options.get(DefaultCodeFormatterConstants.FORMATTER_TAB_CHAR));
+		boolean isMixedMode= DefaultCodeFormatterConstants2.MIXED.equals(options.get(DefaultCodeFormatterConstants2.FORMATTER_TAB_CHAR));
 		if (isMixedMode) {
-			return getIntValue(options, DefaultCodeFormatterConstants.FORMATTER_INDENTATION_SIZE, tabWidth);
+			return getIntValue(options, DefaultCodeFormatterConstants2.FORMATTER_INDENTATION_SIZE, tabWidth);
 		}
 		return tabWidth;
 	}
