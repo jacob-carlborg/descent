@@ -4,7 +4,7 @@ import java.util.List;
 
 import util.tree.TreeVisitor;
 
-import descent.core.dom.IElement;
+import descent.core.dom.IDescentElement;
 import descent.core.dom.IMixinDeclaration;
 import descent.core.dom.IName;
 import descent.core.domX.IASTVisitor;
@@ -13,9 +13,9 @@ import dtool.dom.ast.ASTNode;
 
 public class TemplateMixin extends Declaration implements IMixinDeclaration {
 
-	private QualifiedName qName;
-	private TypeTypeof tqual;
-	private AbstractElement[] tiargs;
+	public QualifiedName qName;
+	public TypeTypeof tqual;
+	public AbstractElement[] tiargs;
 
 	public TemplateMixin(Identifier id, TypeTypeof tqual, List<Identifier> idents, List<ASTNode> tiargs) {
 		super(id);
@@ -42,7 +42,7 @@ public class TemplateMixin extends Declaration implements IMixinDeclaration {
 		return tqual;
 	}
 	
-	public IElement[] getTemplateArguments() {
+	public IDescentElement[] getTemplateArguments() {
 		if (tiargs == null) return AbstractElement.NO_ELEMENTS; 
 		return tiargs;
 	}

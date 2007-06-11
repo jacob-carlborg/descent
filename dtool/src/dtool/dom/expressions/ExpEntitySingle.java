@@ -10,29 +10,29 @@ import dtool.dom.base.EntQualified;
 import dtool.dom.base.Entity;
 import dtool.dom.base.EntitySingle;
 
-public class ExpEntityRef extends Expression {
+public class ExpEntitySingle extends Expression {
 	
 	public Entity entity;
 
 	
-	public ExpEntityRef(IdentifierExp elem) {
+	public ExpEntitySingle(IdentifierExp elem) {
 		convertNode(elem);
 		this.entity = (Entity) DescentASTConverter.convertElem(elem.id);
 		//this.baseEntity = new BaseEntityRef.ValueConstraint(entity);
 	}
 	
-	public ExpEntityRef(TypeDotIdExp elem) {
+	public ExpEntitySingle(TypeDotIdExp elem) {
 		convertNode(elem);
 		EntQualified qent = new EntQualified();
-		qent.topent = (Entity) DescentASTConverter.convertElem(elem.t);
-		qent.baseent = EntitySingle.convert(elem.ident);
-		qent.startPos = qent.topent.startPos;
-		qent.setEndPos(qent.baseent.getEndPos());
+		qent.rootent = (Entity) DescentASTConverter.convertElem(elem.t);
+		qent.subent = EntitySingle.convert(elem.ident);
+		qent.startPos = qent.rootent.startPos;
+		qent.setEndPos(qent.subent.getEndPos());
 		this.entity = qent;
 		//this.baseEntity = new BaseEntityRef.ValueConstraint(qent);
 	}
 	
-	public ExpEntityRef(ScopeExp elem) {
+	public ExpEntitySingle(ScopeExp elem) {
 		convertNode(elem);
 		this.entity = (Entity) DescentASTConverter.convertElem(elem.tempinst);
 	}

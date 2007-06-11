@@ -7,7 +7,6 @@ import dtool.model.IScope;
 
 public class TemplateParamAlias extends TemplateParameter {
 
-
 	public TemplateParamAlias(TemplateAliasParameter elem) {
 		convertNode(elem);
 		convertIdentifier(elem.tp_ident);
@@ -19,8 +18,8 @@ public class TemplateParamAlias extends TemplateParameter {
 	}
 
 	@Override
-	public IScope getScope() {
-		// TODO Auto-generated method stub
+	public IScope getBindingScope() {
+		// TODO return intrinsic universal
 		return null;
 	}
 

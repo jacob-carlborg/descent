@@ -19,7 +19,7 @@ public class EntModuleRoot extends Entity {
 	}
 
 	@Override
-	public DefUnit getTargetDefUnit() {
+	protected DefUnit getTargetDefUnitAsRoot() {
 		ASTNode elem = this;
 		// Search for module elem
 		while((elem instanceof Module) == false)

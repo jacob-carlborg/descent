@@ -3,10 +3,10 @@ package dtool.dom.ast;
 import util.Assert;
 import util.AssertIn;
 import util.tree.TreeNode;
-import descent.core.dom.IElement;
+import descent.core.dom.IDescentElement;
 import descent.core.domX.IASTVisitor;
 
-public abstract class ASTNode extends TreeNode<ASTNode, IASTVisitor> implements IElement  {
+public abstract class ASTNode extends TreeNode<ASTNode, IASTVisitor> implements IDescentElement, IASTNode {
 
 	public static final ASTNode[] NO_ELEMENTS = new ASTNode[0]; 
 	
@@ -55,7 +55,7 @@ public abstract class ASTNode extends TreeNode<ASTNode, IASTVisitor> implements 
 	 * fragment corresponding to this node was found.
 	 */
 	public final void setSourceRange(int startPosition, int length) {
-		AssertIn.isTrue(startPosition >= 0 && length > 0);
+		//AssertIn.isTrue(startPosition >= 0 && length > 0);
 		// source positions are not considered a structural property
 		// but we protect them nevertheless
 		//checkModifiable();

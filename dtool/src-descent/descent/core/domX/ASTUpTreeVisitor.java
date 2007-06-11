@@ -3,7 +3,7 @@ package descent.core.domX;
 import util.tree.TreeVisitor;
 import descent.core.dom.IDebugDeclaration;
 import descent.core.dom.IDebugStatement;
-import descent.core.dom.IElement;
+import descent.core.dom.IDescentElement;
 import descent.core.dom.IFalseExpression;
 import descent.core.dom.IIftypeDeclaration;
 import descent.core.dom.IIntegerExpression;
@@ -783,7 +783,7 @@ public abstract class ASTUpTreeVisitor extends TreeVisitor<ASTNode> implements I
 	public void endVisit(ASTNode elem) {
 	}
 
-	public void endVisit(IElement elem) {
+	public void endVisit(IDescentElement elem) {
 		endVisit((ASTNode) elem);
 	}
 

@@ -97,8 +97,12 @@ public class Module extends DefUnit implements IScope {
 	}
 
 	@Override
-	public IScope getScope() {
+	public IScope getBindingScope() {
 		return this;
+	}
+	
+	public IScope getSuperScope() {
+		return null;
 	}
 
 }

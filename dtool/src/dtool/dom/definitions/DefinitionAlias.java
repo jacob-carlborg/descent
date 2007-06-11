@@ -1,13 +1,11 @@
 package dtool.dom.definitions;
 
 
-import java.util.List;
-
 import util.tree.TreeVisitor;
 import descent.internal.core.dom.AliasDeclaration;
 import dtool.dom.ast.IASTNeoVisitor;
-import dtool.dom.base.Entity;
 import dtool.dom.base.BaseEntityRef;
+import dtool.dom.base.Entity;
 import dtool.model.IScope;
 
 /**
@@ -36,11 +34,8 @@ public class DefinitionAlias extends Definition {
 	}
 
 	@Override
-	public IScope getScope() {
-		return target.entity.getTargetDefUnit().getScope();
+	public IScope getBindingScope() {
+		return target.entity.getTargetScope();
 	}
 
-	public List<DefUnit> getDefUnits() {
-		return getScope().getDefUnits();
-	}
 }

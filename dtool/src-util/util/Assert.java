@@ -78,13 +78,13 @@ public abstract class Assert {
 	/** Causes an inconditional assertion failure, with message msg.
 	 */
 	public static void fail(String msg) {
-		throw new AssertionFailedException("ASSERT FALSE:" + msg);
+		throw new AssertionFailedException("ASSERT FAIL:" + msg);
 	}
 	
 	/** Like {@link #fail(String)} with empty message. 
 	 */
 	public static void fail() {
-		throw new AssertionFailedException("ASSERT FALSE");
+		throw new AssertionFailedException("ASSERT FAIL");
 	}
 
 	public static void unimplemented(String string) {

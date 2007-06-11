@@ -8,6 +8,7 @@ import descent.core.dom.IStaticIfStatement;
 import descent.core.dom.IVersionDeclaration;
 import descent.core.dom.IVersionStatement;
 import descent.internal.core.dom.Argument;
+import descent.internal.core.dom.ConditionalStatement;
 import descent.internal.core.dom.DebugSymbol;
 import descent.internal.core.dom.TemplateAliasParameter;
 import descent.internal.core.dom.TemplateTupleParameter;
@@ -63,22 +64,16 @@ abstract class DeclarationConverter extends BaseConverter {
 		return false;
 	}
 
-	public boolean visit(IDebugStatement element) {
-		Assert.fail();
-		// TODO Auto-generated method stub
-		return false;
+	public boolean visit(IDebugStatement elem) {
+		return endAdapt(new DeclarationConditional((ConditionalStatement) elem));
 	}
 
-	public boolean visit(IVersionStatement element) {
-		Assert.fail();
-		// TODO Auto-generated method stub
-		return false;
+	public boolean visit(IVersionStatement elem) {
+		return endAdapt(new DeclarationConditional((ConditionalStatement) elem));
 	}
 
-	public boolean visit(IStaticIfStatement element) {
-		Assert.fail();
-		// TODO Auto-generated method stub
-		return false;
+	public boolean visit(IStaticIfStatement elem) {
+		return endAdapt(new DeclarationConditional((ConditionalStatement) elem));
 	}
 
 

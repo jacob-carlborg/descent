@@ -11,7 +11,7 @@ import dtool.dom.base.BaseEntityRef.TypeConstraint;
 import dtool.dom.expressions.Expression;
 import dtool.model.IScope;
 
-public class DefinitionEnum extends Definition {
+public class DefinitionEnum extends Definition implements IScope {
 
 	public static class EnumMember extends DefUnit {
 		
@@ -38,7 +38,7 @@ public class DefinitionEnum extends Definition {
 		}
 
 		@Override
-		public IScope getScope() {
+		public IScope getBindingScope() {
 			// TODO Auto-generated method stub
 			return null;
 		}
@@ -72,7 +72,7 @@ public class DefinitionEnum extends Definition {
 	}
 
 	@Override
-	public IScope getScope() {
+	public IScope getBindingScope() {
 		return this;
 	}
 	
@@ -80,4 +80,9 @@ public class DefinitionEnum extends Definition {
 		return members;
 	}
 	
+	
+	public IScope getSuperScope() {
+		// TODO enum super scopes
+		return null;
+	}
 }

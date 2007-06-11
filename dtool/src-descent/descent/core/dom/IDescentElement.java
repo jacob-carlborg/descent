@@ -8,7 +8,7 @@ import dtool.dom.ast.ASTNode;
 /**
  * Represents an element in the D model.
  */
-public interface IElement extends ITreeNode<ASTNode, IASTVisitor> {
+public interface IDescentElement extends ITreeNode<ASTNode, IASTVisitor> {
 	
 	public interface ElementTypes {
 

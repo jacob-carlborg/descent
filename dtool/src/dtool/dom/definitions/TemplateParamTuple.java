@@ -8,7 +8,6 @@ import dtool.model.IScope;
 public class TemplateParamTuple extends TemplateParameter {
 
 	
-	
 	public TemplateParamTuple(TemplateTupleParameter elem) {
 		convertNode(elem);
 		convertIdentifier(elem.ident);
@@ -16,13 +15,12 @@ public class TemplateParamTuple extends TemplateParameter {
 
 	@Override
 	public EArcheType getArcheType() {
-		// TODO Auto-generated method stub
-		return null;
+		return EArcheType.Tuple;
 	}
 
 	@Override
-	public IScope getScope() {
-		// TODO Auto-generated method stub
+	public IScope getBindingScope() {
+		// TODO return intrinsic universal
 		return null;
 	}
 

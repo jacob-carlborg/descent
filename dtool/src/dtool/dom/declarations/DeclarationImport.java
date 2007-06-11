@@ -1,6 +1,5 @@
 package dtool.dom.declarations;
 
-import util.Assert;
 import util.StringUtil;
 import util.tree.TreeVisitor;
 import descent.internal.core.dom.Import;
@@ -23,13 +22,13 @@ public class DeclarationImport extends ASTNeoNode {
 		convertNode(elem);
 		this.isStatic = elem.isStatic;
 
-		int importsSize = elem.imports.size(); 
+		int importsNum = elem.imports.size(); 
 
 		// Selective import are at the end		
 		SelectiveImport[] selectiveImports; 
-		selectiveImports = elem.imports.get(importsSize-1).getSelectiveImports();
+		selectiveImports = elem.imports.get(importsNum-1).getSelectiveImports();
 		if(selectiveImports.length > 0) {
-			if(importsSize != 1)
+			if(importsNum != 1)
 				throw new UnsupportedOperationException();
 			
 			this.imports = new ImportFragment[1];
@@ -37,14 +36,15 @@ public class DeclarationImport extends ASTNeoNode {
 			return;
 		}
 		
-		this.imports = new ImportFragment[importsSize];
-		for(int i = 0; i < importsSize; i++) {
+		this.imports = new ImportFragment[importsNum];
+		for(int i = 0; i < importsNum; i++) {
 			Import imprt = elem.imports.get(i); 
 			ImportFragment imprtFragment = null;
 			if(elem.isStatic) {
 				imprtFragment = new ImportStatic(imprt);
-				Assert.isTrue(imprt.ident == null);
-			} else if(imprt.ident == null) {
+				//Ignore FQN aliasing for now.
+				//Assert.isTrue(imprt.alias == null);
+			} else if(imprt.alias == null) {
 				imprtFragment = new ImportContent(imprt);
 			} else {
 				imprtFragment = new ImportAliasing(imprt);

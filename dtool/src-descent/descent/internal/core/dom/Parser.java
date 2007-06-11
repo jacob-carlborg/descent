@@ -92,7 +92,7 @@ import java.util.List;
 
 import descent.core.compiler.IProblem;
 import descent.core.dom.IDeclaration;
-import descent.core.dom.IElement;
+import descent.core.dom.IDescentElement;
 import descent.core.domX.AbstractElement;
 import dtool.dom.ast.ASTNode;
 
@@ -414,7 +414,7 @@ public class Parser extends Lexer {
 						s.modifiers |= protection;
 					} else {
 						s = new ProtDeclaration(prot, a);
-						for(IElement elem : a) {
+						for(IDescentElement elem : a) {
 							((AbstractElement) elem).modifiers |= protection;
 						}
 					}

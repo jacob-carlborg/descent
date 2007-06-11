@@ -29,7 +29,7 @@ public class TypeTypeof extends Entity {
 	}
 
 	@Override
-	public DefUnit getTargetDefUnit() {
+	protected DefUnit getTargetDefUnitAsRoot() {
 		// return expression.getType().getDefUnits();
 		return null;
 	}

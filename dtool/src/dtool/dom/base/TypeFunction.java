@@ -7,7 +7,9 @@ import util.tree.TreeVisitor;
 import descent.internal.core.dom.Argument;
 import descent.internal.core.dom.LINK;
 import dtool.dom.ast.IASTNeoVisitor;
+import dtool.dom.base.TypeDynArray.IntrinsicDynArray;
 import dtool.dom.definitions.DefUnit;
+import dtool.model.IntrinsicDefUnit;
 
 /**
  * A function pointer type
@@ -36,8 +38,16 @@ public class TypeFunction extends Entity {
 	}
 
 	@Override
-	public DefUnit getTargetDefUnit() {
-		// TODO return INTRINSIC
-		return null;
+	protected DefUnit getTargetDefUnitAsRoot() {
+		return IntrinsicDynArray.instance;
+	}
+	
+	public static class IntrinsicFunction extends IntrinsicDefUnit {
+		public static final IntrinsicFunction instance = new IntrinsicFunction();
+
+		public List<DefUnit> getDefUnits() {
+			// TODO Auto-generated method stub
+			return null;
+		}
 	}
 }

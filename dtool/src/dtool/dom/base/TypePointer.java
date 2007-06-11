@@ -3,9 +3,13 @@
  */
 package dtool.dom.base;
 
+import java.util.List;
+
 import util.tree.TreeVisitor;
 import dtool.dom.ast.IASTNeoVisitor;
+import dtool.dom.base.TypeDynArray.IntrinsicDynArray;
 import dtool.dom.definitions.DefUnit;
+import dtool.model.IntrinsicDefUnit;
 
 public class TypePointer extends Entity {
 	public BaseEntityRef.TypeConstraint elemtype;
@@ -24,8 +28,16 @@ public class TypePointer extends Entity {
 	}
 
 	@Override
-	public DefUnit getTargetDefUnit() {
-		// TODO return intrinsic
-		return null;
+	protected DefUnit getTargetDefUnitAsRoot() {
+		return IntrinsicDynArray.instance;
+	}
+	
+	public static class IntrinsicPointer extends IntrinsicDefUnit {
+		public static final IntrinsicPointer instance = new IntrinsicPointer();
+
+		public List<DefUnit> getDefUnits() {
+			// TODO Auto-generated method stub
+			return null;
+		}
 	}
 }

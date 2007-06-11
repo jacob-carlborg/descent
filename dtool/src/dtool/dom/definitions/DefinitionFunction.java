@@ -16,7 +16,7 @@ import dtool.model.IScope;
  * A definition of a function.
  * TODO: special funcs
  */
-public class DefinitionFunction extends Definition {
+public class DefinitionFunction extends Definition implements IScope {
 
 	//public Identifier outId;
 	public descent.internal.core.dom.LINK linkage;
@@ -69,17 +69,22 @@ public class DefinitionFunction extends Definition {
 	}
 
 	@Override
-	public IScope getScope() {
+	public IScope getBindingScope() {
 		return this;
+	}
+
+	@SuppressWarnings("unchecked")
+	public List<DefUnit> getDefUnits() {
+		return (List<DefUnit>) (List) params;
 	}
 	
 	@Override
 	public String toString() {
 		return super.toString() +"("+ StringUtil.collToString(params, ",") +")";
 	}
-
-	@SuppressWarnings("unchecked")
-	public List<DefUnit> getDefUnits() {
-		return (List<DefUnit>) (List) params;
+	
+	public IScope getSuperScope() {
+		// TODO: function super
+		return null;
 	}
 }

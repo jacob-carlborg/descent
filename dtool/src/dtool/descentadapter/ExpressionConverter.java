@@ -86,9 +86,9 @@ import dtool.dom.expressions.ExpCast;
 import dtool.dom.expressions.ExpCond;
 import dtool.dom.expressions.ExpDelete;
 import dtool.dom.expressions.ExpDollar;
-import dtool.dom.expressions.ExpDotEntityRef;
+import dtool.dom.expressions.ExpEntQualified;
 import dtool.dom.expressions.ExpDotTemplateInstance;
-import dtool.dom.expressions.ExpEntityRef;
+import dtool.dom.expressions.ExpEntitySingle;
 import dtool.dom.expressions.ExpIftype;
 import dtool.dom.expressions.ExpLiteralBool;
 import dtool.dom.expressions.ExpLiteralFunc;
@@ -168,7 +168,7 @@ abstract class ExpressionConverter extends DeclarationConverter {
 	
 	public boolean visit(DotIdExp element) {
 		// TODO Simplify
-		return endAdapt(new ExpDotEntityRef(element));
+		return endAdapt(new ExpEntQualified(element));
 	}
 	
 	public boolean visit(DotTemplateInstanceExp element) {
@@ -180,7 +180,7 @@ abstract class ExpressionConverter extends DeclarationConverter {
 	}
 	
 	public boolean visit(IdentifierExp element) {
-		return endAdapt(new ExpEntityRef(element));
+		return endAdapt(new ExpEntitySingle(element));
 	}
 	
 	public boolean visit(IftypeExp element) {
@@ -212,7 +212,7 @@ abstract class ExpressionConverter extends DeclarationConverter {
 	}
 	
 	public boolean visit(ScopeExp element) {
-		return endAdapt(new ExpEntityRef(element));
+		return endAdapt(new ExpEntitySingle(element));
 	}
 	
 	public boolean visit(SliceExp element) {
@@ -233,7 +233,7 @@ abstract class ExpressionConverter extends DeclarationConverter {
 	}
 	
 	public boolean visit(TypeDotIdExp element) {
-		return endAdapt(new ExpEntityRef(element));
+		return endAdapt(new ExpEntitySingle(element));
 	}	
 	
 	public boolean visit(TypeidExp element) {

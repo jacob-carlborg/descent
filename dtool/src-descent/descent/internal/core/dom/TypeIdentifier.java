@@ -1,7 +1,7 @@
 package descent.internal.core.dom;
 
 import util.tree.TreeVisitor;
-import descent.core.dom.IElement;
+import descent.core.dom.IDescentElement;
 import descent.core.dom.IIdentifierType;
 import descent.core.dom.IType;
 import descent.core.domX.IASTVisitor;
@@ -52,7 +52,7 @@ public class TypeIdentifier extends TypeQualified implements IIdentifierType, IT
 		}
 	}
 	
-	public IElement[] getTemplateArguments() {
+	public IDescentElement[] getTemplateArguments() {
 		return ((TemplateInstance) idents.get(idents.size() - 1)).getTemplateArguments();
 	}
 	

@@ -3,7 +3,7 @@ package descent.core.dom;
 /**
  * A type specialization of an is statement.
  */
-public interface ITypeSpecialization extends IElement {
+public interface ITypeSpecialization extends IDescentElement {
 	
 	int TYPEDEF = 1;
 	int STRUCT = 2;

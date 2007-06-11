@@ -13,6 +13,7 @@ import dtool.dom.ast.ASTNode;
  * @see ASTNode
  *
  * @author BrunoM
+ * XXX: This may be too much complexity for what it's worth
   */
 public abstract class TreeNode<NODE extends TreeNode<NODE,VISITOR>, VISITOR extends ITreeVisitor<NODE>>
 		implements ITreeNode<NODE, VISITOR> {

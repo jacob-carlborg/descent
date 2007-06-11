@@ -11,9 +11,9 @@ import descent.core.domX.IASTVisitor;
 
 public class ConditionalStatement extends Statement implements IStaticIfStatement, IDebugStatement, IVersionStatement {
 
-	private final Condition condition;
-	private final Statement ifbody;
-	private final Statement elsebody;
+	public final Condition condition;
+	public final Statement ifbody;
+	public final Statement elsebody;
 
 	public ConditionalStatement(Condition condition, Statement ifbody, Statement elsebody) {
 		this.condition = condition;

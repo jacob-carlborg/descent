@@ -30,6 +30,6 @@ public interface IMixinDeclaration extends IDeclaration {
 	/**
 	 * Returns the template arguments of the mixin.
 	 */
-	IElement[] getTemplateArguments();
+	IDescentElement[] getTemplateArguments();
 
 }

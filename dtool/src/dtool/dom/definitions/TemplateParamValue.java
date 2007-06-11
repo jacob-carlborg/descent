@@ -24,14 +24,12 @@ public class TemplateParamValue extends TemplateParameter {
 
 	@Override
 	public EArcheType getArcheType() {
-		// TODO Auto-generated method stub
-		return null;
+		return EArcheType.Variable;
 	}
 
 	@Override
-	public IScope getScope() {
-		// TODO Auto-generated method stub
-		return null;
+	public IScope getBindingScope() {
+		return type.entity.getTargetScope();
 	}
 
 	@Override

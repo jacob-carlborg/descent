@@ -28,7 +28,7 @@ public class EntTemplateInstance extends EntitySingle {
 
 	@Override
 	public DefUnit getTargetDefUnit() {
-		// TODO CHANGE
-		return null;
+		// TODO Try to figure which homonym
+		return super.getTargetDefUnit();
 	}
 }

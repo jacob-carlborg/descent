@@ -1,9 +1,9 @@
 package descent.internal.core.dom;
 
-import descent.core.dom.IElement;
+import descent.core.dom.IDescentElement;
 import descent.core.domX.AbstractElement;
 
-public abstract class Dsymbol extends AbstractElement implements IElement {
+public abstract class Dsymbol extends AbstractElement implements IDescentElement {
 
 	public Identifier ident;
 	public Dsymbol parent;

@@ -7,7 +7,7 @@ import descent.internal.core.dom.ModuleDeclaration;
 /**
  * Represents an entire source file.
  */
-public interface ICompilationUnit extends IElement {
+public interface ICompilationUnit extends IDescentElement {
 	
 	/**
 	 * Returns the module declaration in this source file, if any,

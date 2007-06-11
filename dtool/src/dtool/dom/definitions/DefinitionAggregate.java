@@ -9,8 +9,8 @@ import dtool.descentadapter.DescentASTConverter;
 import dtool.dom.ast.ASTNeoNode;
 import dtool.dom.ast.ASTNode;
 import dtool.dom.ast.IASTNeoVisitor;
-import dtool.dom.base.Entity;
 import dtool.dom.base.BaseEntityRef;
+import dtool.dom.base.Entity;
 import dtool.model.IScope;
 
 /**
@@ -70,7 +70,7 @@ public class DefinitionAggregate extends Definition implements IScope {
 	}
 
 	@Override
-	public IScope getScope() {
+	public IScope getBindingScope() {
 		return this;
 	}
 	
@@ -81,5 +81,13 @@ public class DefinitionAggregate extends Definition implements IScope {
 				defunits.add((DefUnit)elem);
 		}
 		return defunits;
+	}
+
+	public IScope getSuperScope() {
+		// TODO: allow multiple scopes
+		if(baseClasses.size() > 0)
+			return baseClasses.get(0).type.entity.getTargetScope();
+		else 
+			return null;
 	}
 }

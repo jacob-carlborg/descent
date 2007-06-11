@@ -47,7 +47,9 @@ public abstract class DefUnit extends ASTNeoNode {
 		Typedef,
 		Enum,
 		Aggregate, 
+		Template,
 		Mixin,
+		Tuple,
 		;
 		
 		public String toString(EArcheType archetype) {
@@ -84,6 +86,6 @@ public abstract class DefUnit extends ASTNeoNode {
 		return defname.name;
 	}
 
-	public abstract IScope getScope();
+	public abstract IScope getBindingScope();
 
 }

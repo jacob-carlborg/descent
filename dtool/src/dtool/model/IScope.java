@@ -10,4 +10,6 @@ public interface IScope extends IElement {
 
 	List<DefUnit> getDefUnits();
 
+	IScope getSuperScope();
+
 }

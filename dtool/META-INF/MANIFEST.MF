@@ -30,4 +30,5 @@ Export-Package: descent.core,
  util.log,
  util.tree
 Bundle-Vendor: Mother Ark
-Require-Bundle: org.eclipse.core.runtime
+Require-Bundle: org.eclipse.core.runtime,
+ org.junit4

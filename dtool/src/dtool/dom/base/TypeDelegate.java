@@ -6,7 +6,9 @@ import util.tree.TreeVisitor;
 import descent.internal.core.dom.Argument;
 import descent.internal.core.dom.TypeFunction;
 import dtool.dom.ast.IASTNeoVisitor;
+import dtool.dom.base.TypeDynArray.IntrinsicDynArray;
 import dtool.dom.definitions.DefUnit;
+import dtool.model.IntrinsicDefUnit;
 
 /**
  * A delegate type;
@@ -37,8 +39,16 @@ public class TypeDelegate extends Entity {
 	}
 
 	@Override
-	public DefUnit getTargetDefUnit() {
-		// TODO return INTRINSIC
-		return null;
+	protected DefUnit getTargetDefUnitAsRoot() {
+		return IntrinsicDynArray.instance;
+	}
+	
+	public static class IntrinsicDelegate extends IntrinsicDefUnit {
+		public static final IntrinsicDelegate instance = new IntrinsicDelegate();
+
+		public List<DefUnit> getDefUnits() {
+			// TODO Auto-generated method stub
+			return null;
+		}
 	}
 }

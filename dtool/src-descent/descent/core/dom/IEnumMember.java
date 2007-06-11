@@ -3,7 +3,7 @@ package descent.core.dom;
 /**
  * A member of an enum.
  */
-public interface IEnumMember extends IElement {
+public interface IEnumMember extends IDescentElement {
 	
 	/**
 	 * The name of this member.

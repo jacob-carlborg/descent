@@ -1,5 +1,6 @@
 package dtool.dom.base;
 
+import util.Assert;
 import descent.internal.core.dom.Type;
 import descent.internal.core.dom.TypeIdentifier;
 import descent.internal.core.dom.TypeInstance;
@@ -7,12 +8,14 @@ import descent.internal.core.dom.TypeQualified;
 import dtool.descentadapter.DescentASTConverter;
 import dtool.dom.ast.ASTNeoNode;
 import dtool.dom.definitions.DefUnit;
+import dtool.model.IEntQualified;
+import dtool.model.IScope;
+import dtool.model.IScopeBinding;
 
 /**
  * A qualified entity/name reference
- * XXX: Consider in the future to be an interface?
  */
-public abstract class Entity extends ASTNeoNode {
+public abstract class Entity extends ASTNeoNode implements IScopeBinding {
 	
 	public static enum EReferenceConstraint {	
 		none,
@@ -20,15 +23,35 @@ public abstract class Entity extends ASTNeoNode {
 		expvalue
 	}
 	
-	//public EntitySingleRef[] ents; 
-	
 	public EReferenceConstraint refConstraint = null;
 	
+		
+	public DefUnit getTargetDefUnit() {
+		
+		if(getParent() instanceof IEntQualified) {
+			IEntQualified parent = (IEntQualified) getParent();
+			if(parent.getSubEnt() == this) {
+				return parent.getTargetDefUnit();
+			} else {
+				Assert.isTrue(parent.getRoot() == this);
+			}
+		}
+		return getTargetDefUnitAsRoot();
+	}
+
 	
-	public abstract DefUnit getTargetDefUnit();
+	protected abstract DefUnit getTargetDefUnitAsRoot();
+
 	
+	public IScope getTargetScope() {
+		return getTargetDefUnit().getBindingScope();
+	}
+	
+	
+	/* -------- Conversion Tools -------- */
 
 	public static BaseEntityRef.TypeConstraint convertType(Type type) {
+		if(type == null) return null;
 		Entity entity = (Entity) DescentASTConverter.convertElem(type);
 		return new BaseEntityRef.TypeConstraint(entity);
 	}
@@ -48,11 +71,11 @@ public abstract class Entity extends ASTNeoNode {
 			descent.internal.core.dom.TypeQualified elem, int endix) {
 		if (endix > 0-1) { 
 			EntQualified entref = new EntQualified();
-			entref.topent = convertIdents(rootent,elem, endix-1);
-			entref.baseent = EntitySingle.convert(elem.idents.get(endix));
+			entref.rootent = convertIdents(rootent,elem, endix-1);
+			entref.subent = EntitySingle.convert(elem.idents.get(endix));
 
 			entref.startPos = rootent.startPos;
-			entref.setEndPos(entref.baseent.getEndPos());
+			entref.setEndPos(entref.subent.getEndPos());
 			return entref;
 		} else if( endix == 0-1 ) {
 			return rootent;

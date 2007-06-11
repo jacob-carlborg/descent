@@ -1,18 +1,17 @@
 package dtool.dom.definitions;
 
-import java.util.List;
-
 import util.tree.TreeVisitor;
 import dtool.dom.ast.IASTNeoVisitor;
-import dtool.dom.base.Entity;
 import dtool.dom.base.BaseEntityRef;
+import dtool.dom.base.Entity;
 import dtool.dom.expressions.Initializer;
+import dtool.dom.statements.IStatement;
 import dtool.model.IScope;
 
 /**
  * A definition of a variable
  */
-public class DefinitionVariable extends Definition {
+public class DefinitionVariable extends Definition implements IStatement {
 	
 	public BaseEntityRef.TypeConstraint type;
 	public Initializer init;
@@ -39,12 +38,8 @@ public class DefinitionVariable extends Definition {
 	}
 
 	@Override
-	public IScope getScope() {
-		return type.entity.getTargetDefUnit().getScope();
-	}
-
-	public List<DefUnit> getDefUnits() {
-		return getScope().getDefUnits();
+	public IScope getBindingScope() {
+		return type.entity.getTargetScope();
 	}
 
 }

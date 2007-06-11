@@ -1,6 +1,6 @@
 package dtool.descentadapter;
 
-import descent.core.dom.IElement;
+import descent.core.dom.IDescentElement;
 import descent.core.domX.IASTVisitor;
 import dtool.dom.ast.ASTNeoNode;
 import dtool.dom.ast.ASTNode;
@@ -24,7 +24,7 @@ public abstract class ASTCommonConverter implements IASTVisitor {
 	public void preVisit(ASTNode elem) {
 	}
 
-	public void endVisit(IElement elem) {
+	public void endVisit(IDescentElement elem) {
 	}
 	
 	

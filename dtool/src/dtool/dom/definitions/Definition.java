@@ -2,12 +2,11 @@ package dtool.dom.definitions;
 
 import descent.internal.core.dom.Dsymbol;
 import dtool.descentadapter.DescentASTConverter;
-import dtool.model.IScope;
 
 /**
  * Abstract classe for all *free standing* definitions. 
  */
-public abstract class Definition extends DefUnit implements IScope {
+public abstract class Definition extends DefUnit  {
 	
 	public Def_EProtection protection;
 	public int modifiers;

@@ -5,6 +5,7 @@ import java.util.List;
 
 import dtool.dom.ast.ASTNode;
 import dtool.dom.ast.ASTNodeParentizer;
+import dtool.dom.ast.IASTNode;
 import dtool.dom.definitions.Module;
 
 public class DescentASTConverter {
@@ -34,7 +35,7 @@ public class DescentASTConverter {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public static <T extends ASTNode> List<T> convertMany(List<? extends ASTNode> children, List<T> dummy) {
+	public static <T extends IASTNode> List<T> convertMany(List<? extends ASTNode> children, List<T> dummy) {
 		StatementConverter conv = new StatementConverter();
 		List<T> rets = new ArrayList<T>(children.size());
 		for (int i = 0; i < children.size(); ++i) {
@@ -46,7 +47,7 @@ public class DescentASTConverter {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public static <T extends ASTNode> List<T> convertMany(ASTNode[] children, List<T> dummy) {
+	public static <T extends IASTNode> List<T> convertMany(ASTNode[] children, List<T> dummy) {
 		StatementConverter conv = new StatementConverter();
 		List<T> rets = new ArrayList<T>(children.length);
 		for (int i = 0; i < children.length; ++i) {
@@ -56,7 +57,7 @@ public class DescentASTConverter {
 		}
 		return rets;
 	}
-	
+
 	public static ASTNode[] convertMany(Object[] children) {
 		ASTNode[] rets = new ASTNode[children.length];
 		convertMany(children, rets);
@@ -64,7 +65,7 @@ public class DescentASTConverter {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public static <T extends ASTNode> T[] convertMany(Object[] children, T[] rets) {
+	public static <T extends IASTNode> T[] convertMany(Object[] children, T[] rets) {
 		StatementConverter conv = new StatementConverter();
 		for(int i = 0; i < children.length; ++i) {
 			ASTNode elem = (ASTNode) children[i];

@@ -3,7 +3,7 @@ package dtool.dom.ast;
 import util.Assert;
 import descent.core.domX.IASTVisitor;
 
-public abstract class ASTNeoNode extends ASTNode {
+public abstract class ASTNeoNode extends ASTNode  {
 
 
 	protected void convertNode(ASTNode elem) {

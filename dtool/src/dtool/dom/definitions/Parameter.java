@@ -34,7 +34,7 @@ public class Parameter extends DefUnit {
 	}
 
 	@Override
-	public IScope getScope() {
+	public IScope getBindingScope() {
 		// TODO Auto-generated method stub
 		return null;
 	}

@@ -3,7 +3,7 @@ package descent.core.domX;
 import util.tree.ITreeVisitor;
 import descent.core.dom.IDebugDeclaration;
 import descent.core.dom.IDebugStatement;
-import descent.core.dom.IElement;
+import descent.core.dom.IDescentElement;
 import descent.core.dom.IFalseExpression;
 import descent.core.dom.IIftypeDeclaration;
 import descent.core.dom.IIntegerExpression;
@@ -398,6 +398,6 @@ public interface IASTVisitor extends ITreeVisitor<ASTNode>{
 	/* ===== End visit  ==== */
 	void endVisit(ASTNode elem);
 
-	void endVisit(IElement elem);
+	void endVisit(IDescentElement elem);
 
 }

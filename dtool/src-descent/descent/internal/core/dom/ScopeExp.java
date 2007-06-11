@@ -1,7 +1,7 @@
 package descent.internal.core.dom;
 
 import util.tree.TreeVisitor;
-import descent.core.dom.IElement;
+import descent.core.dom.IDescentElement;
 import descent.core.dom.IName;
 import descent.core.dom.IScopeExpression;
 import descent.core.domX.IASTVisitor;
@@ -22,8 +22,8 @@ public class ScopeExp extends Expression implements IScopeExpression {
 		return tempinst;
 	}
 	
-	public IElement[] getArguments() {
-		return tempinst.tiargs.toArray(new IElement[tempinst.tiargs.size()]);
+	public IDescentElement[] getArguments() {
+		return tempinst.tiargs.toArray(new IDescentElement[tempinst.tiargs.size()]);
 	}
 	
 	@Override

@@ -19,6 +19,6 @@ public interface IScopeExpression extends IExpression {
 	/**
 	 * Returns the arguments.
 	 */
-	IElement[] getArguments();
+	IDescentElement[] getArguments();
 
 }

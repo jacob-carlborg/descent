@@ -9,7 +9,6 @@ import dtool.model.IScope;
 
 public class TemplateParamType extends TemplateParameter {
 
-
 	public BaseEntityRef.TypeConstraint specType;
 	public BaseEntityRef.TypeConstraint defaultType;
 
@@ -22,14 +21,17 @@ public class TemplateParamType extends TemplateParameter {
 
 	@Override
 	public EArcheType getArcheType() {
-		// TODO Auto-generated method stub
-		return null;
+		return EArcheType.Aggregate;
 	}
 
+	/*
+	 * Can be null
+	 */
 	@Override
-	public IScope getScope() {
-		// TODO Auto-generated method stub
-		return null;
+	public IScope getBindingScope() {
+		if(specType == null)
+			return null;
+		return specType.entity.getTargetScope();
 	}
 
 	@Override

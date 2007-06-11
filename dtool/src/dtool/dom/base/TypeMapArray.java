@@ -1,9 +1,13 @@
 package dtool.dom.base;
 
+import java.util.List;
+
 import util.tree.TreeVisitor;
 import descent.internal.core.dom.TypeAArray;
 import dtool.dom.ast.IASTNeoVisitor;
+import dtool.dom.base.TypeDynArray.IntrinsicDynArray;
 import dtool.dom.definitions.DefUnit;
+import dtool.model.IntrinsicDefUnit;
 
 public class TypeMapArray extends Entity {
 	public BaseEntityRef.TypeConstraint keytype;
@@ -25,8 +29,16 @@ public class TypeMapArray extends Entity {
 	}
 
 	@Override
-	public DefUnit getTargetDefUnit() {
-		// TODO: return INTRISINC
-		return null;
+	protected DefUnit getTargetDefUnitAsRoot() {
+		return IntrinsicDynArray.instance;
+	}
+	
+	public static class IntrinsicMapArray extends IntrinsicDefUnit {
+		public static final IntrinsicMapArray instance = new IntrinsicMapArray();
+
+		public List<DefUnit> getDefUnits() {
+			// TODO Auto-generated method stub
+			return null;
+		}
 	}
 }

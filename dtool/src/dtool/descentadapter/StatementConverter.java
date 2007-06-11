@@ -30,13 +30,14 @@ import descent.internal.core.dom.TryFinallyStatement;
 import descent.internal.core.dom.VolatileStatement;
 import descent.internal.core.dom.WhileStatement;
 import descent.internal.core.dom.WithStatement;
-import dtool.dom.statements.CompoundStatement;
+import dtool.dom.ast.ASTNeoNode;
+import dtool.dom.declarations.Declaration;
+import dtool.dom.declarations.DeclarationConditional;
+import dtool.dom.statements.BlockStatement;
 import dtool.dom.statements.StatementAsm;
 import dtool.dom.statements.StatementBreak;
 import dtool.dom.statements.StatementCase;
-import dtool.dom.statements.StatementConditional;
 import dtool.dom.statements.StatementContinue;
-import dtool.dom.statements.StatementDeclaration;
 import dtool.dom.statements.StatementDefault;
 import dtool.dom.statements.StatementDo;
 import dtool.dom.statements.StatementExp;
@@ -62,7 +63,7 @@ import dtool.dom.statements.StatementWith;
 public class StatementConverter extends ExpressionConverter {
 
 	public boolean visit(descent.internal.core.dom.CompoundStatement elem) {
-		return endAdapt(new CompoundStatement(elem));
+		return endAdapt(new BlockStatement(elem));
 	}
 	
 	public boolean visit(AsmStatement element) {
@@ -78,7 +79,7 @@ public class StatementConverter extends ExpressionConverter {
 	}
 	
 	public boolean visit(ConditionalStatement element) {
-		return endAdapt(new StatementConditional(element));
+		return endAdapt(new DeclarationConditional(element));
 	}
 
 	public boolean visit(ContinueStatement element) {
@@ -86,7 +87,7 @@ public class StatementConverter extends ExpressionConverter {
 	}
 
 	public boolean visit(DeclarationStatement element) {
-		return endAdapt(new StatementDeclaration(element));
+		return endAdapt((ASTNeoNode) Declaration.convert(element.d));
 	}
 
 	public boolean visit(DefaultStatement element) {
@@ -142,7 +143,7 @@ public class StatementConverter extends ExpressionConverter {
 	}
 
 	public boolean visit(ScopeStatement element) {
-		return endAdapt(new CompoundStatement(element));
+		return endAdapt(new BlockStatement(element));
 	}
 
 	public boolean visit(StaticAssertStatement element) {

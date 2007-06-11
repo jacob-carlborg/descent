@@ -104,7 +104,7 @@ public abstract class TreeVisitor<NODE extends TreeNode> implements ITreeVisitor
 
 	/** Accepts the visitor on the children. If children is null, nothing
 	 * happens. */
-	public static void acceptChildren(ITreeVisitor visitor, List<? extends ITreeNode> children) {
+	public static void acceptChildren(ITreeVisitor visitor, List<? extends IVisitable> children) {
 		if (children == null)
 			return;
 		
