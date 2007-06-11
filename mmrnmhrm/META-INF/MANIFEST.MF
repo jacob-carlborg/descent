@@ -15,10 +15,10 @@ Require-Bundle: com.ibm.icu,
  org.eclipse.core.resources,
  org.eclipse.ui.ide,
  org.eclipse.ui.navigator,
- dtool
+ dtool;visibility:=reexport,
+ org.junit4;visibility:=reexport
 Eclipse-LazyStart: true
 Bundle-Vendor: Mother Ark
-Eclipse-RegisterBuddy: mmrnmhrm.tests; 
 Export-Package: melnorme.util.ui.fields,
  melnorme.util.ui.swt,
  mmrnmhrm.core,
@@ -37,4 +37,3 @@ Export-Package: melnorme.util.ui.fields,
  mmrnmhrm.ui.text.color,
  mmrnmhrm.ui.wizards,
  mmrnmhrm.ui.wizards.projconfig
-Bundle-ClassPath: .

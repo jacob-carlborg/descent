@@ -24,8 +24,8 @@ public class DeePlugin extends LangPlugin {
 		pluginInstance = this;
 	}
 
-	private DeeDocumentProvider deeDocumentProvider;
-	private DeeCodeScanner defaultDeeCodeScanner;
+	private static DeeDocumentProvider deeDocumentProvider;
+	private static DeeCodeScanner defaultDeeCodeScanner;
 	
 	
 	public void initPlugin() throws CoreException {
@@ -36,15 +36,16 @@ public class DeePlugin extends LangPlugin {
 		new DeeCore(); // Instance DeeCoret while UI and core isn't separated.
 
 		deeDocumentProvider = new DeeDocumentProvider();
-		defaultDeeCodeScanner = new DeeCodeScanner();
-
+		//defaultDeeCodeScanner = new DeeCodeScanner();
 	}
 
 	public static DeeDocumentProvider getDeeDocumentProvider() {
-		return getInstance().deeDocumentProvider;
+		return deeDocumentProvider;
 	}
 	
 	public static DeeCodeScanner getDefaultDeeCodeScanner() {
-		return getInstance().defaultDeeCodeScanner;
+		if(defaultDeeCodeScanner == null)
+			defaultDeeCodeScanner = new DeeCodeScanner();
+		return defaultDeeCodeScanner;
 	}
 }
