@@ -46,6 +46,7 @@ public class DefaultCodeFormatterOptions2
 	public boolean insert_space_before_opening_paren_in_function_declaration;
 	public boolean insert_space_after_opening_paren_in_function_declaration;
 	public boolean insert_space_before_closing_paren_in_function_declaration;
+	public String brace_position_for_function_declaration;
 	public int page_width;
 	public int tab_size;
 	public boolean use_tabs_only_for_leading_indentations;
@@ -96,6 +97,7 @@ public class DefaultCodeFormatterOptions2
 		options.put(DefaultCodeFormatterConstants2.FORMATTER_INSERT_SPACE_BEFORE_OPENING_PAREN_IN_FUNCTION_DECLARATION, insert_space_before_opening_paren_in_function_declaration ? DefaultCodeFormatterConstants2.TRUE : DefaultCodeFormatterConstants2.FALSE);
 		options.put(DefaultCodeFormatterConstants2.FORMATTER_INSERT_SPACE_AFTER_OPENING_PAREN_IN_FUNCTION_DECLARATION, insert_space_after_opening_paren_in_function_declaration ? DefaultCodeFormatterConstants2.TRUE : DefaultCodeFormatterConstants2.FALSE);
 		options.put(DefaultCodeFormatterConstants2.FORMATTER_INSERT_SPACE_BEFORE_CLOSING_PAREN_IN_FUNCTION_DECLARATION, insert_space_before_closing_paren_in_function_declaration ? DefaultCodeFormatterConstants2.TRUE : DefaultCodeFormatterConstants2.FALSE);
+		options.put(DefaultCodeFormatterConstants2.FORMATTER_BRACE_POSITION_FOR_FUNCTION_DECLARATION, brace_position_for_function_declaration);
 		options.put(DefaultCodeFormatterConstants2.FORMATTER_PAGE_WIDTH, Integer.toString(page_width));
 		options.put(DefaultCodeFormatterConstants2.FORMATTER_TAB_SIZE, Integer.toString(tab_size));
 		options.put(DefaultCodeFormatterConstants2.FORMATTER_USE_TABS_ONLY_FOR_LEADING_INDENTATIONS, use_tabs_only_for_leading_indentations ? DefaultCodeFormatterConstants2.TRUE : DefaultCodeFormatterConstants2.FALSE);
@@ -201,6 +203,15 @@ public class DefaultCodeFormatterOptions2
 				insert_space_before_closing_paren_in_function_declaration = DefaultCodeFormatterConstants2.TRUE.equals(current);
 			} catch(Exception e) {
 				insert_space_before_closing_paren_in_function_declaration = false;
+			}
+		}
+		
+		current = settings.get(DefaultCodeFormatterConstants2.FORMATTER_BRACE_POSITION_FOR_FUNCTION_DECLARATION);
+		if(null != current) {
+			try {
+				brace_position_for_function_declaration = current;
+			} catch(Exception e) {
+				brace_position_for_function_declaration = DefaultCodeFormatterConstants2.NEXT_LINE;
 			}
 		}
 		
@@ -377,6 +388,7 @@ public class DefaultCodeFormatterOptions2
 		insert_space_before_opening_paren_in_function_declaration = false;
 		insert_space_after_opening_paren_in_function_declaration = false;
 		insert_space_before_closing_paren_in_function_declaration = false;
+		brace_position_for_function_declaration = DefaultCodeFormatterConstants2.NEXT_LINE;
 		page_width = 80;
 		tab_size = 4;
 		use_tabs_only_for_leading_indentations = false;

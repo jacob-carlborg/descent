@@ -67,6 +67,9 @@ insert_space_after_opening_paren_in_function_declaration
 insert_space_before_closing_paren_in_function_declaration
 	type=boolean
 	default=false
+brace_position_for_function_declaration
+	type=String
+	default=DefaultCodeFormatterConstants2.NEXT_LINE
 
 
 # Preserved from their JDT roots for the scribe
