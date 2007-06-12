@@ -76,13 +76,13 @@ public class CompilationUnit implements IDeeCompilationUnit {
 
 		try {
 			adaptAST();
+			parseStatus = EModelStatus.OK;
 		} catch (UnsupportedOperationException uoe) {
 			parseStatus = EModelStatus.PARSER_AST_UNSUPPORTED_NODE;
 		} catch (RuntimeException re) {
 			parseStatus = EModelStatus.PARSER_INTERNAL_ERROR;
 			throw re;
 		}
-		parseStatus = EModelStatus.OK;
 	}
 
 	private void clearErrorMarkers() {

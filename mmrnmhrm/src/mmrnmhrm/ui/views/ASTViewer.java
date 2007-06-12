@@ -5,6 +5,7 @@ import mmrnmhrm.core.model.CompilationUnit;
 import mmrnmhrm.core.model.EModelStatus;
 import mmrnmhrm.ui.DeePluginImages;
 import mmrnmhrm.ui.actions.GoToDefinitionAction;
+import mmrnmhrm.ui.editor.LangEditor;
 import mmrnmhrm.ui.text.DeeDocument;
 
 import org.eclipse.jface.action.Action;
@@ -113,7 +114,6 @@ public class ASTViewer extends ViewPart implements ISelectionListener,
 		} else if(part == null || page.getActiveEditor() == null){ 
 			setInput(null);
 		}
-
 	}
 	
 	public void documentAboutToBeChanged(DocumentEvent event) {
@@ -154,20 +154,28 @@ public class ASTViewer extends ViewPart implements ISelectionListener,
 
 
 	private void updateViewer() {
+		Object input;
 		if(fCUnit.parseStatus == EModelStatus.OK) {
-			setContentDescription("");
-			viewer.getControl().setVisible(true);
-			viewer.getControl().setRedraw(false);
+			int offset = ((LangEditor) fEditor).getSelection().getOffset();
+			setContentDescription("AST ok, sel: " + offset);
 			if(fUseOldAst == true)
-				viewer.setInput(this.fCUnit.getOldModule());
+				input = fCUnit.getOldModule();
 			else
-				viewer.setInput(this.fCUnit.getNeoModule());
-			viewer.refresh();
-			viewer.getControl().setRedraw(true);
+				input = fCUnit.getNeoModule();
+		} else {
+			setContentDescription(fCUnit.toStringParseStatus());
+			input = fCUnit.getOldModule();
+		}
+		if(fCUnit.parseStatus == EModelStatus.PARSER_INTERNAL_ERROR) {
+			viewer.getControl().setVisible(false);
 			return;
 		}
-		setContentDescription(fCUnit.toStringParseStatus());
-		viewer.getControl().setVisible(false);
+		
+		viewer.getControl().setVisible(true);
+		viewer.getControl().setRedraw(false);
+		viewer.setInput(input);
+		viewer.refresh();
+		viewer.getControl().setRedraw(true);
 	}
 	
 

@@ -44,12 +44,12 @@ public class CompilerConfigPage extends AbstractConfigPage {
 		comp = FieldUtil.createCompose(content, false, fCompiler);
 
 		comp = FieldUtil.createCompose(content, true, fCompilerOptions);
-		LayoutUtil.setDiagonalExpand(comp);
-		LayoutUtil.setDiagonalExpand(fCompilerOptions.getTextControl(null));
+		LayoutUtil.enableDiagonalExpand(comp);
+		LayoutUtil.enableDiagonalExpand(fCompilerOptions.getTextControl(null));
 		
 		comp = FieldUtil.createCompose(content, true, fOptionsPreview);
-		LayoutUtil.setDiagonalExpand(comp);
-		LayoutUtil.setDiagonalExpand(fOptionsPreview.getTextControl(null));
+		LayoutUtil.enableDiagonalExpand(comp);
+		LayoutUtil.enableDiagonalExpand(fOptionsPreview.getTextControl(null));
 	}
 	
 	public void init(DeeProject project) {

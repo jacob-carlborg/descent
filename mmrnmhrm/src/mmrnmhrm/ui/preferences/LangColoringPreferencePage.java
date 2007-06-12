@@ -111,13 +111,12 @@ public abstract class LangColoringPreferencePage extends AbstractPreferencePage 
 	
 	/** Coloring Editor controls */ 
 	private Button fEnableCheckbox;
-	private Composite editComposite;
 	private ColorSelector fColorSelector;
 	private Label fColorSelectorLabel;
 	private Button fBoldCheckBox;
 	private Button fItalicCheckBox;
 	private Button fUnderlineCheckBox;
-	private DialogComposite styleComposite;
+	private DialogComposite fStyleComposite;
 	
 	
 	/** Creates a coloring preference page with the given title and no image. */
@@ -168,39 +167,39 @@ public abstract class LangColoringPreferencePage extends AbstractPreferencePage 
 				handleColoringItemSelectionChange();
 			}
 		});
-		fItemSelectionList.doFillWithoutGrid(coloringComposite);
-		
+		Composite selComposite;
+		selComposite = fItemSelectionList.doFillWithoutGrid(coloringComposite);
+		LayoutUtil.setHVGrabbing(selComposite, false, true);
 		LayoutUtil.setWidthHint(fItemSelectionList.getTreeControl(null), 150);	
 		LayoutUtil.setHeightHint(fItemSelectionList.getTreeControl(null), 150);	
 
+		Composite editComposite;
 		editComposite = new RowComposite(coloringComposite);
+		//LayoutUtil.enableHorizontalGrabbing(editComposite);
+		//LayoutUtil.disableHorizontalGrabbing(fItemSelectionList);
 		
 		new EmptyLabel(editComposite);
 		fEnableCheckbox = new Button(editComposite, SWT.CHECK);
 	    fEnableCheckbox.setText("Enable");
 	
-   
-		styleComposite = new RowComposite(editComposite);
-		GridData gd = new GridData(GridData.HORIZONTAL_ALIGN_FILL | GridData.GRAB_HORIZONTAL);
-		gd.horizontalAlignment = SWT.FILL;
-		gd.verticalAlignment = SWT.FILL;
-		styleComposite.setLayoutData(gd);
-		LayoutUtil.setHorizontalIndent(styleComposite, 15);
+		fStyleComposite = new RowComposite(editComposite);
+		LayoutUtil.enableDiagonalExpand(fStyleComposite);
+		LayoutUtil.setHorizontalIndent(fStyleComposite, 15);
 		//styleComposite.setLayoutData(new GridData(GridData.FILL_BOTH));
 		//LayoutUtil.enableHorizontalFilling(styleComposite);
 	    
-		Composite colorChooserComposite = new ColumnComposite(styleComposite, 2);
+		Composite colorChooserComposite = new ColumnComposite(fStyleComposite, 2);
 	    fColorSelectorLabel = new Label(colorChooserComposite, SWT.RIGHT);
 	    fColorSelectorLabel.setText("Color:");
 	    fColorSelector = new ColorSelector(colorChooserComposite);
 	
-	    fBoldCheckBox = new Button(styleComposite, SWT.CHECK);
+	    fBoldCheckBox = new Button(fStyleComposite, SWT.CHECK);
 	    fBoldCheckBox.setText("Bold");
 	    
-	    fItalicCheckBox = new Button(styleComposite, SWT.CHECK);
+	    fItalicCheckBox = new Button(fStyleComposite, SWT.CHECK);
 	    fItalicCheckBox.setText("Italic");
 	    
-	    fUnderlineCheckBox = new Button(styleComposite, SWT.CHECK);
+	    fUnderlineCheckBox = new Button(fStyleComposite, SWT.CHECK);
 	    fUnderlineCheckBox.setText("Underline");
 	
 	    enableEditing(false);
@@ -268,7 +267,7 @@ public abstract class LangColoringPreferencePage extends AbstractPreferencePage 
 	
 	/** Enables or disables the color style editing. */
 	private void enableStyleEditing(boolean enable) {
-		styleComposite.recursiveSetEnabled(enable);
+		fStyleComposite.recursiveSetEnabled(enable);
 	}
 
 	private void handleColoringItemSelectionChange() {

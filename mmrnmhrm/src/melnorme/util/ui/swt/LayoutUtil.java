@@ -13,6 +13,7 @@ package melnorme.util.ui.swt;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Tree;
 
 import util.Assert;
 
@@ -93,15 +94,24 @@ public class LayoutUtil {
 	}
 
 
-	/** Sets a diagonal expand GridData (grab and fill in both directions).
+	/** Enables a diagonal expand GridData (grab and fill in both directions).
 	 *  Creates a GridData if one doesn't exist already. */
-	public static void setDiagonalExpand(Control control) {
+	public static void enableDiagonalExpand(Control control) {
 		GridData gd = getGD(control);
 		gd.grabExcessHorizontalSpace = true;
 		gd.grabExcessVerticalSpace = true;
 		gd.horizontalAlignment = SWT.FILL;
 		gd.verticalAlignment = SWT.FILL;
 	}
+	
+	/** Sets horizontal and vertical grabbing.
+	 *  Creates a GridData if one doesn't exist already. */
+	public static void setHVGrabbing(Control control, boolean grabHorizontal, boolean grabVertical) {
+		GridData gd = getGD(control);
+		gd.grabExcessHorizontalSpace = grabHorizontal;
+		gd.grabExcessVerticalSpace = grabVertical;
+	}
+	
 
 	/** Get's the control's GridData. Creates one if one doesn't exist already. */
 	private static GridData getGD(Control control) {
@@ -125,4 +135,6 @@ public class LayoutUtil {
 		gd.grabExcessHorizontalSpace = true;
 		return gd;
 	}
+
+
 }

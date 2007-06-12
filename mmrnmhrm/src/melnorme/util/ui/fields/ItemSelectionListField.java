@@ -99,10 +99,10 @@ public class ItemSelectionListField extends DialogField {
 	}
 	
 	/** Perfoms a fill without specifying layout data. */
-	public Control[] doFillWithoutGrid(Composite parent) {
+	public Composite doFillWithoutGrid(Composite parent) {
 		Composite content = createContent(parent);
 
-		return new Control[] { content };
+		return content;
 	}
 	
 	@Override
