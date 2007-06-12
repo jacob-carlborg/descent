@@ -6,6 +6,7 @@ import descent.internal.core.dom.DotIdExp;
 import descent.internal.core.dom.IdentifierExp;
 import dtool.dom.ast.ASTNode;
 import dtool.dom.ast.IASTNeoVisitor;
+import dtool.dom.base.EntModuleRoot;
 import dtool.dom.base.Entity;
 import dtool.dom.base.EntitySingle;
 import dtool.dom.definitions.DefUnit;
@@ -29,10 +30,21 @@ public class ExpEntQualified extends Expression implements IEntQualified {
 		}
 		Assert.isTrue(this.rootexp instanceof IScopeBinding);
 		this.ent = EntitySingle.convert(elem.id);
+
+		// fix some range discrepancies
+		if(this.rootexp instanceof EntModuleRoot && !this.hasNoSourceRangeInfo()) {
+			// range error here
+			this.rootexp.startPos = this.startPos;
+			this.rootexp.setEndPos(this.ent.getEndPos());
+		}
 		// Fix some DMD missing ranges 
-		if(hasNoSourceRangeInfo())
-			setSourceRange(rootexp.startPos, ent.getEndPos()-rootexp.startPos);
-		
+		if(hasNoSourceRangeInfo()) {
+			try {
+				setSourceRange(rootexp.startPos, ent.getEndPos()-rootexp.startPos);
+			} catch (RuntimeException re) {
+				throw new UnsupportedOperationException(re);
+			}
+		}		
 	}
 	
 	/*ExpDotEntityRef convert(DotIdExp elem) {

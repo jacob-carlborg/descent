@@ -19,6 +19,7 @@ import descent.internal.core.dom.TypeExp;
 import descent.internal.core.dom.TypeInstance;
 import descent.internal.core.dom.TypeQualified;
 import dtool.dom.ast.ASTNode;
+import dtool.dom.base.EntModuleRoot;
 import dtool.dom.base.Entity;
 import dtool.dom.base.EntIdentifier;
 import dtool.dom.base.EntTemplateInstance;
@@ -111,6 +112,14 @@ abstract class BaseConverter extends ASTCommonConverter {
 	
 	/* ---- Entities Core ---- */
 	public boolean visit(descent.internal.core.dom.Identifier elem) {
+		if(elem.string.equals("")) {
+			EntModuleRoot rootent = new EntModuleRoot();
+			if(!elem.hasNoSourceRangeInfo()) {
+				rootent.startPos = elem.startPos;
+				rootent.setEndPos(elem.getEndPos());
+			}
+			return endAdapt(rootent);
+		}
 		return endAdapt(new EntIdentifier(elem));
 	}
 	
