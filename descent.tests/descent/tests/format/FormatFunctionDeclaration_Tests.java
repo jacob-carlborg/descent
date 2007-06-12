@@ -83,15 +83,41 @@ public class FormatFunctionDeclaration_Tests extends AbstractFormatter_Test {
 			);
 	}
 	
-	/* TODO
-	public void testBody() throws Exception {
+	public void testBracesNextLine() throws Exception {
 		assertFormat(
-				"void bla() {\r\n" +
+				"void bla()\r\n" +
+				"{\r\n" +
 				"}\r\n", 
 				
 				"void  bla  ()  {   }"
 			);
 	}
-	*/
+	
+	public void testBracesSameLine() throws Exception {
+		Map options = new HashMap();
+		options.put(DefaultCodeFormatterConstants2.FORMATTER_BRACE_POSITION_FOR_FUNCTION_DECLARATION, DefaultCodeFormatterConstants2.END_OF_LINE);
+		assertFormat(
+				"void bla() {\r\n" +
+				"}\r\n", 
+				
+				"void  bla  ()  {   }",
+				
+				options
+			);
+	}
+	
+	public void testBracesNextLineShifted() throws Exception {
+		Map options = new HashMap();
+		options.put(DefaultCodeFormatterConstants2.FORMATTER_BRACE_POSITION_FOR_FUNCTION_DECLARATION, DefaultCodeFormatterConstants2.NEXT_LINE_SHIFTED);
+		assertFormat(
+				"void bla()\r\n" +
+				"\t{\r\n" +
+				"\t}\r\n", 
+				
+				"void  bla  ()  {   }",
+				
+				options
+			);
+	}
 
 }
