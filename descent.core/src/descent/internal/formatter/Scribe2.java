@@ -19,7 +19,7 @@ import org.eclipse.text.edits.TextEdit;
 
 import descent.core.dom.AST;
 import descent.core.dom.CompilationUnit;
-import descent.core.dom.Modifier;
+import descent.core.formatter.DefaultCodeFormatterConstants;
 import descent.internal.compiler.parser.Lexer;
 import descent.internal.compiler.parser.ScannerHelper;
 import descent.internal.compiler.parser.TOK;
@@ -33,6 +33,8 @@ import descent.internal.formatter.align.AlignmentException;
  */
 public class Scribe2 {	private static final int INITIAL_SIZE = 100;
 	
+	private enum TabChar { TAB, SPACE, MIXED }
+
 	private boolean checkLineWrapping;
 	/** one-based column */
 	public int column;
@@ -60,7 +62,7 @@ public class Scribe2 {	private static final int INITIAL_SIZE = 100;
 	public int indentationSize;	
 	private int textRegionEnd;
 	private int textRegionStart;
-	public int tabChar;
+	private TabChar tabChar;
 	public int numberOfIndentations;
 	private boolean useTabsOnlyForLeadingIndents;
 	CompilationUnit unit;
@@ -86,8 +88,15 @@ public class Scribe2 {	private static final int INITIAL_SIZE = 100;
 		this.numberOfIndentations = 0;
 		this.useTabsOnlyForLeadingIndents = formatter.preferences.use_tabs_only_for_leading_indentations;
         this.indentEmptyLines = formatter.preferences.indent_empty_lines;
-		this.tabChar = formatter.preferences.tab_char;
-		if (this.tabChar == DefaultCodeFormatterOptions2.MIXED) {
+		if(formatter.preferences.tab_char.equals(DefaultCodeFormatterConstants.TAB))
+			tabChar = TabChar.TAB;
+		else if (formatter.preferences.tab_char.equals(DefaultCodeFormatterConstants.SPACE))
+			tabChar = TabChar.SPACE;
+		else if(formatter.preferences.tab_char.equals(DefaultCodeFormatterConstants.MIXED))
+			tabChar = TabChar.MIXED;
+		else
+			throw new IllegalArgumentException("Unknown tab char!");
+		if (this.tabChar == TabChar.MIXED) {
 			this.indentationSize = formatter.preferences.indentation_size;
 		} else {
 			this.indentationSize = this.tabLength;
@@ -414,7 +423,7 @@ public class Scribe2 {	private static final int INITIAL_SIZE = 100;
 		int indent = someColumn - 1;
 		if (indent == 0)
 			return this.indentationLevel;
-		if (this.tabChar == DefaultCodeFormatterOptions2.TAB) {
+		if (this.tabChar == TabChar.TAB) {
 			if (this.useTabsOnlyForLeadingIndents) {
 				return indent;
 			}
@@ -964,7 +973,7 @@ public class Scribe2 {	private static final int INITIAL_SIZE = 100;
 
 	private void printIndentationIfNecessary(StringBuffer buffer) {
 		switch(this.tabChar) {
-			case DefaultCodeFormatterOptions2.TAB :
+			case TAB :
 				boolean useTabsForLeadingIndents = this.useTabsOnlyForLeadingIndents;
 				int numberOfLeadingIndents = this.numberOfIndentations;
 				int indentationsAsTab = 0;
@@ -993,14 +1002,14 @@ public class Scribe2 {	private static final int INITIAL_SIZE = 100;
 					}
 				}
 				break;
-			case DefaultCodeFormatterOptions2.SPACE :
+			case SPACE :
 				while (this.column <= this.indentationLevel) {
 					buffer.append(' ');
 					this.column++;
 					this.needSpace = false;
 				}
 				break;
-			case DefaultCodeFormatterOptions2.MIXED :
+			case MIXED :
 				useTabsForLeadingIndents = this.useTabsOnlyForLeadingIndents;
 				numberOfLeadingIndents = this.numberOfIndentations;
 				indentationsAsTab = 0;
@@ -1275,10 +1284,10 @@ public class Scribe2 {	private static final int INITIAL_SIZE = 100;
 		stringBuffer
 			.append("(page width = " + this.pageWidth + ") - (tabChar = ");//$NON-NLS-1$//$NON-NLS-2$
 		switch(this.tabChar) {
-			case DefaultCodeFormatterOptions2.TAB :
+			case TAB :
 				 stringBuffer.append("TAB");//$NON-NLS-1$
 				 break;
-			case DefaultCodeFormatterOptions2.SPACE :
+			case SPACE :
 				 stringBuffer.append("SPACE");//$NON-NLS-1$
 				 break;
 			default :

@@ -63,8 +63,10 @@ close(FILE);
 #    }
 #}
 
-processFile("DefaultCodeFormatterOptions2.template.java", "../src/descent/internal/formatter/DefaultCodeFormatterOptions2.java");
-processFile("DefaultCodeFormatterConstants2.template.java", "../src/descent/core/formatter/DefaultCodeFormatterConstants2.java");
+processFile("DefaultCodeFormatterOptions.template.java", "../src/descent/internal/formatter/DefaultCodeFormatterOptions.java");
+processFile("DefaultCodeFormatterConstants.template.java", "../src/descent/core/formatter/DefaultCodeFormatterConstants.java");
+processFile("FormatterMessages.template.java", "../../descent.ui/src/descent/internal/ui/preferences/formatter/FormatterMessages.java");
+processFile("FormatterMessages.template.properties", "../../descent.ui/src/descent/internal/ui/preferences/formatter/FormatterMessages.properties");
 
 sub processFile
 {
@@ -73,11 +75,6 @@ sub processFile
 	
 	open(SRC, $_[0]);
 	open(DST, ">" . $_[1]);
-	
-	print DST "/*\n";
-	print DST " * This file has been automatically generated. Edit the template file to\n";
-	print DST " * make permanant changes.\n";
-	print DST " */\n";
 	
 	while(my $line = <SRC>)
 	{
@@ -93,6 +90,7 @@ sub processFile
 				foreach(@options)
 				{
 					eval($evalBlock);
+					print $@ if $@;
 				}
 				$evalBlock = "";
 				$evalForEachActive = 0;

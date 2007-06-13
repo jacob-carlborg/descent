@@ -32,20 +32,21 @@
 #
 #
 # For options, these are the meanings of the various hash keys used so far:
-#     optName       The name of the option used in an instance of DefaultCodeFormatterOptions2
-#     constName     The name of the constant string for Java map keys used in DefaultCodeFormatterConstants2
-#     type          The type of the option in DefaultCodeFormatterOptions2
+#     optName       The name of the option used in an instance of DefaultCodeFormatterOptions
+#     constName     The name of the constant string for Java map keys used in DefaultCodeFormatterConstants
+#     type          The type of the option in DefaultCodeFormatterOptions
 #     default       The default value (we may want to have multiple profiles...?)
 #
 # The hope is this can be expanded for use in UI, etc., etc.
 
-# Currently in use in the visitor
-blank_lines_before_module
-	type=int
-	default=0
-blank_lines_after_module
-	type=int
-	default=1
+# Brace Positioning
+brace_position_for_function_declaration
+	type=String
+	default=DefaultCodeFormatterConstants.NEXT_LINE
+	tab=BracesTabPage
+	uiText=Function Declarations
+
+# White Space Options
 insert_space_before_semicolon
 	type=boolean
 	default=false
@@ -67,54 +68,6 @@ insert_space_after_opening_paren_in_function_declaration
 insert_space_before_closing_paren_in_function_declaration
 	type=boolean
 	default=false
-brace_position_for_function_declaration
-	type=String
-	default=DefaultCodeFormatterConstants2.NEXT_LINE
-
-
-# Preserved from their JDT roots for the scribe
-page_width
-	type=int
-	default=80
-tab_size
-	type=int
-	default=4
-use_tabs_only_for_leading_indentations
-	type=boolean
-	default=false
-indent_empty_lines
-	type=boolean
-	default=true
-tab_char
-	type=int
-	default=TAB
-indentation_size
-	type=int
-	default=4
-continuation_indentation
-	type=int
-	default=2
-number_of_empty_lines_to_preserve
-	type=int
-	default=1
-insert_new_line_at_end_of_file_if_missing
-	type=boolean
-	default=false
-
-
-# Some other ones in descent.core (it might be about time to rearrange this file...)
-line_split
-	type=int
-	default=9999
-never_indent_block_comments_on_first_column
-	type=boolean
-	default=false
-never_indent_line_comments_on_first_column
-	type=boolean
-	default=false
-
-
-# Some ones used in descent.ui
 insert_space_before_opening_paren_in_function_invocation
 	type=boolean
 	default=false
@@ -133,5 +86,53 @@ insert_space_before_closing_paren_in_function_invocation
 insert_space_between_empty_parens_in_function_invocation
 	type=boolean
 	default=false
+
+# New Line Options
+insert_new_line_at_end_of_file_if_missing
+	type=boolean
+	default=false
+
+# Blank Line Options
+blank_lines_before_module
+	type=int
+	default=0
+blank_lines_after_module
+	type=int
+	default=1
+
+# Other
+line_split
+	type=int
+	default=9999
+never_indent_block_comments_on_first_column
+	type=boolean
+	default=false
+never_indent_line_comments_on_first_column
+	type=boolean
+	default=false
+page_width
+	type=int
+	default=80
+tab_size
+	type=int
+	default=4
+use_tabs_only_for_leading_indentations
+	type=boolean
+	default=false
+indent_empty_lines
+	type=boolean
+	default=true
+tab_char
+	type=String
+	default=DefaultCodeFormatterConstants.TAB
+indentation_size
+	type=int
+	default=4
+continuation_indentation
+	type=int
+	default=2
+number_of_empty_lines_to_preserve
+	type=int
+	default=1
 
 

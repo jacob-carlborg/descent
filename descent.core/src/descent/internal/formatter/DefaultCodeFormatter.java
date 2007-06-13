@@ -21,7 +21,7 @@ import descent.core.dom.ASTParser;
 import descent.core.dom.Block;
 import descent.core.dom.CompilationUnit;
 import descent.core.formatter.CodeFormatter;
-import descent.core.formatter.DefaultCodeFormatterConstants2;
+import descent.core.formatter.DefaultCodeFormatterConstants;
 import descent.internal.compiler.impl.CompilerOptions;
 //import descent.internal.compiler.parser.Scanner;
 import descent.internal.compiler.util.Util;
@@ -71,23 +71,23 @@ public class DefaultCodeFormatter extends CodeFormatter {
 	private CodeFormatterVisitor2 newCodeFormatter2;
 	private Map options;
 	
-	private DefaultCodeFormatterOptions2 preferences;
+	private DefaultCodeFormatterOptions preferences;
 	
 	public DefaultCodeFormatter() {
-		this(new DefaultCodeFormatterOptions2(DefaultCodeFormatterConstants2.getJavaConventionsSettings()), null);
+		this(new DefaultCodeFormatterOptions(DefaultCodeFormatterConstants.getJavaConventionsSettings()), null);
 	}
 	
-	public DefaultCodeFormatter(DefaultCodeFormatterOptions2 preferences) {
+	public DefaultCodeFormatter(DefaultCodeFormatterOptions preferences) {
 		this(preferences, null);
 	}
 
-	public DefaultCodeFormatter(DefaultCodeFormatterOptions2 defaultCodeFormatterOptions, Map options) {
+	public DefaultCodeFormatter(DefaultCodeFormatterOptions defaultCodeFormatterOptions, Map options) {
 		if (options != null) {
 			this.options = options;
-			this.preferences = new DefaultCodeFormatterOptions2(options);
+			this.preferences = new DefaultCodeFormatterOptions(options);
 		} else {
 			this.options = JavaCore.getOptions();
-			this.preferences = new DefaultCodeFormatterOptions2(DefaultCodeFormatterConstants2.getJavaConventionsSettings());
+			this.preferences = new DefaultCodeFormatterOptions(DefaultCodeFormatterConstants.getJavaConventionsSettings());
 		}
 		this.defaultCompilerOptions = getDefaultCompilerOptions();
 		if (defaultCodeFormatterOptions != null) {
@@ -106,22 +106,26 @@ public class DefaultCodeFormatter extends CodeFormatter {
 		
 		int tabs = 0;
 		int spaces = 0;
-		switch(this.preferences.tab_char) {
-			case DefaultCodeFormatterOptions2.SPACE :
-				spaces = indentationLevel * this.preferences.tab_size;
-				break;
-			case DefaultCodeFormatterOptions2.TAB :
-				tabs = indentationLevel;
-				break;
-			case DefaultCodeFormatterOptions2.MIXED :
-				int tabSize = this.preferences.tab_size;
-				int spaceEquivalents = indentationLevel * this.preferences.indentation_size;
-				tabs = spaceEquivalents / tabSize;
-				spaces = spaceEquivalents % tabSize;
-				break;
-			default:
-				return Util.EMPTY_STRING;
+		if(DefaultCodeFormatterConstants.SPACE.equals(preferences.tab_char))
+		{
+			spaces = indentationLevel * this.preferences.tab_size;
 		}
+		else if(DefaultCodeFormatterConstants.TAB.equals(preferences.tab_char))
+		{
+			tabs = indentationLevel;
+		}
+		else if(DefaultCodeFormatterConstants.MIXED.equals(preferences.tab_char))
+		{
+			int tabSize = this.preferences.tab_size;
+			int spaceEquivalents = indentationLevel * this.preferences.indentation_size;
+			tabs = spaceEquivalents / tabSize;
+			spaces = spaceEquivalents % tabSize;
+		}
+		else
+		{
+			return Util.EMPTY_STRING;
+		}
+		
 		if (tabs == 0 && spaces == 0) {
 			return Util.EMPTY_STRING;
 		}

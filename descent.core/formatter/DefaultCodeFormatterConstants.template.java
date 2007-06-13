@@ -3,7 +3,7 @@ package descent.core.formatter;
 import java.util.Map;
 
 import descent.core.JavaCore;
-import descent.internal.formatter.DefaultCodeFormatterOptions2;
+import descent.internal.formatter.DefaultCodeFormatterOptions;
 import descent.internal.formatter.align.Alignment2;
 
 /**
@@ -14,7 +14,7 @@ import descent.internal.formatter.align.Alignment2;
  * 
  * @since 3.0
  */
-public class DefaultCodeFormatterConstants2 {
+public class DefaultCodeFormatterConstants {
 	
 	// Boolean mappings
 	public static final String FALSE = "false";
@@ -86,11 +86,11 @@ public class DefaultCodeFormatterConstants2 {
 	}
 
 	public static Map getEclipse21Settings() {
-		return DefaultCodeFormatterOptions2.getDefaultSettings().getMap();
+		return DefaultCodeFormatterOptions.getDefaultSettings().getMap();
 	}
 
 	public static Map getEclipseDefaultSettings() {
-		return DefaultCodeFormatterOptions2.getEclipseDefaultSettings().getMap();
+		return DefaultCodeFormatterOptions.getEclipseDefaultSettings().getMap();
 	}
 
 	public static boolean getForceWrapping(String value) {
@@ -124,7 +124,7 @@ public class DefaultCodeFormatterConstants2 {
 	}
 
 	public static Map getJavaConventionsSettings() {
-		return DefaultCodeFormatterOptions2.getJavaConventionsSettings().getMap();
+		return DefaultCodeFormatterOptions.getJavaConventionsSettings().getMap();
 	}
 
 	public static int getWrappingStyle(String value) {
