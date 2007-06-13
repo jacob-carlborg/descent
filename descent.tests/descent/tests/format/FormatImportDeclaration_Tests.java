@@ -3,7 +3,7 @@ package descent.tests.format;
 import java.util.HashMap;
 import java.util.Map;
 
-import descent.core.formatter.DefaultCodeFormatterConstants2;
+import descent.core.formatter.DefaultCodeFormatterConstants;
 
 
 public class FormatImportDeclaration_Tests extends AbstractFormatter_Test {
@@ -128,7 +128,7 @@ public class FormatImportDeclaration_Tests extends AbstractFormatter_Test {
 	
 	public void testSpaceBeforeSemicolon() throws Exception {
 		Map options = new HashMap();
-		options.put(DefaultCodeFormatterConstants2.FORMATTER_INSERT_SPACE_BEFORE_SEMICOLON, DefaultCodeFormatterConstants2.TRUE);
+		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_SEMICOLON, DefaultCodeFormatterConstants.TRUE);
 		assertFormat(
 				"import foo.bar ;\r\n",
 				

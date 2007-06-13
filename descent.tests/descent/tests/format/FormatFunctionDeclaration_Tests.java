@@ -3,7 +3,7 @@ package descent.tests.format;
 import java.util.HashMap;
 import java.util.Map;
 
-import descent.core.formatter.DefaultCodeFormatterConstants2;
+import descent.core.formatter.DefaultCodeFormatterConstants;
 
 public class FormatFunctionDeclaration_Tests extends AbstractFormatter_Test {
 	
@@ -17,7 +17,7 @@ public class FormatFunctionDeclaration_Tests extends AbstractFormatter_Test {
 	
 	public void testEmptyInsertSpaceBeforeSemicolon() throws Exception {
 		Map options = new HashMap();
-		options.put(DefaultCodeFormatterConstants2.FORMATTER_INSERT_SPACE_BEFORE_SEMICOLON, DefaultCodeFormatterConstants2.TRUE);
+		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_SEMICOLON, DefaultCodeFormatterConstants.TRUE);
 		assertFormat(
 				"void bla() ;\r\n", 
 				
@@ -29,7 +29,7 @@ public class FormatFunctionDeclaration_Tests extends AbstractFormatter_Test {
 	
 	public void testEmptyInsertSpaceBeforeOpenParen() throws Exception {
 		Map options = new HashMap();
-		options.put(DefaultCodeFormatterConstants2.FORMATTER_INSERT_SPACE_BEFORE_OPENING_PAREN_IN_FUNCTION_DECLARATION, DefaultCodeFormatterConstants2.TRUE);
+		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_OPENING_PAREN_IN_FUNCTION_DECLARATION, DefaultCodeFormatterConstants.TRUE);
 		assertFormat(
 				"void bla ();\r\n", 
 				
@@ -41,7 +41,7 @@ public class FormatFunctionDeclaration_Tests extends AbstractFormatter_Test {
 	
 	public void testEmptyInsertSpaceAfterOpenParen() throws Exception {
 		Map options = new HashMap();
-		options.put(DefaultCodeFormatterConstants2.FORMATTER_INSERT_SPACE_AFTER_OPENING_PAREN_IN_FUNCTION_DECLARATION, DefaultCodeFormatterConstants2.TRUE);
+		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_AFTER_OPENING_PAREN_IN_FUNCTION_DECLARATION, DefaultCodeFormatterConstants.TRUE);
 		assertFormat(
 				"void bla( int x);\r\n", 
 				
@@ -53,7 +53,7 @@ public class FormatFunctionDeclaration_Tests extends AbstractFormatter_Test {
 	
 	public void testEmptyInsertSpaceBeforeCloseParen() throws Exception {
 		Map options = new HashMap();
-		options.put(DefaultCodeFormatterConstants2.FORMATTER_INSERT_SPACE_BEFORE_CLOSING_PAREN_IN_FUNCTION_DECLARATION, DefaultCodeFormatterConstants2.TRUE);
+		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_CLOSING_PAREN_IN_FUNCTION_DECLARATION, DefaultCodeFormatterConstants.TRUE);
 		assertFormat(
 				"void bla(int x );\r\n", 
 				
@@ -65,7 +65,7 @@ public class FormatFunctionDeclaration_Tests extends AbstractFormatter_Test {
 	
 	public void testEmptyInsertSpaceBetweenEmptyParen() throws Exception {
 		Map options = new HashMap();
-		options.put(DefaultCodeFormatterConstants2.FORMATTER_INSERT_SPACE_BETWEEN_EMPTY_PARENS_IN_FUNCTION_DECLARATION, DefaultCodeFormatterConstants2.TRUE);
+		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BETWEEN_EMPTY_PARENS_IN_FUNCTION_DECLARATION, DefaultCodeFormatterConstants.TRUE);
 		assertFormat(
 				"void bla( );\r\n", 
 				
@@ -95,7 +95,7 @@ public class FormatFunctionDeclaration_Tests extends AbstractFormatter_Test {
 	
 	public void testBracesSameLine() throws Exception {
 		Map options = new HashMap();
-		options.put(DefaultCodeFormatterConstants2.FORMATTER_BRACE_POSITION_FOR_FUNCTION_DECLARATION, DefaultCodeFormatterConstants2.END_OF_LINE);
+		options.put(DefaultCodeFormatterConstants.FORMATTER_BRACE_POSITION_FOR_FUNCTION_DECLARATION, DefaultCodeFormatterConstants.END_OF_LINE);
 		assertFormat(
 				"void bla() {\r\n" +
 				"}\r\n", 
@@ -108,7 +108,7 @@ public class FormatFunctionDeclaration_Tests extends AbstractFormatter_Test {
 	
 	public void testBracesNextLineShifted() throws Exception {
 		Map options = new HashMap();
-		options.put(DefaultCodeFormatterConstants2.FORMATTER_BRACE_POSITION_FOR_FUNCTION_DECLARATION, DefaultCodeFormatterConstants2.NEXT_LINE_SHIFTED);
+		options.put(DefaultCodeFormatterConstants.FORMATTER_BRACE_POSITION_FOR_FUNCTION_DECLARATION, DefaultCodeFormatterConstants.NEXT_LINE_SHIFTED);
 		assertFormat(
 				"void bla()\r\n" +
 				"\t{\r\n" +

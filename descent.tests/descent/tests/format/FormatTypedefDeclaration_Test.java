@@ -3,7 +3,7 @@ package descent.tests.format;
 import java.util.HashMap;
 import java.util.Map;
 
-import descent.core.formatter.DefaultCodeFormatterConstants2;
+import descent.core.formatter.DefaultCodeFormatterConstants;
 
 public class FormatTypedefDeclaration_Test extends AbstractFormatter_Test {
 	
@@ -45,7 +45,7 @@ public class FormatTypedefDeclaration_Test extends AbstractFormatter_Test {
 	
 	public void testInsertSpaceBeforeSemicolon() throws Exception {
 		Map options = new HashMap();
-		options.put(DefaultCodeFormatterConstants2.FORMATTER_INSERT_SPACE_BEFORE_SEMICOLON, DefaultCodeFormatterConstants2.TRUE);
+		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_SEMICOLON, DefaultCodeFormatterConstants.TRUE);
 		assertFormat(
 				"typedef int x ;\r\n",
 				
@@ -63,7 +63,7 @@ public class FormatTypedefDeclaration_Test extends AbstractFormatter_Test {
 	
 	public void testFragmentsInsertSpaceBeforeComma() throws Exception {
 		Map options = new HashMap();
-		options.put(DefaultCodeFormatterConstants2.FORMATTER_INSERT_SPACE_BEFORE_COMMA_IN_MULTIPLE_FIELD_DECLARATIONS, DefaultCodeFormatterConstants2.TRUE);
+		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_COMMA_IN_MULTIPLE_FIELD_DECLARATIONS, DefaultCodeFormatterConstants.TRUE);
 		assertFormat(
 				"typedef int x , y , z;\r\n",
 				
@@ -74,7 +74,7 @@ public class FormatTypedefDeclaration_Test extends AbstractFormatter_Test {
 	
 	public void testFragmentsDontInsertSpaceAfterComma() throws Exception {
 		Map options = new HashMap();
-		options.put(DefaultCodeFormatterConstants2.FORMATTER_INSERT_SPACE_AFTER_COMMA_IN_MULTIPLE_FIELD_DECLARATIONS, DefaultCodeFormatterConstants2.FALSE);
+		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_AFTER_COMMA_IN_MULTIPLE_FIELD_DECLARATIONS, DefaultCodeFormatterConstants.FALSE);
 		assertFormat(
 				"typedef int x,y,z;\r\n",
 				
