@@ -61,7 +61,8 @@ public class CommentFormattingStrategy extends ContextBasedFormattingStrategy {
 	/** End of the header in the last document. */
 	private int fLastDocumentsHeaderEnd;
 
-
+	// TODO JDT formatter comment formatting preferences
+	
 	/*
 	 * @see org.eclipse.jface.text.formatter.IFormattingStrategyExtension#format()
 	 */
@@ -74,7 +75,7 @@ public class CommentFormattingStrategy extends ContextBasedFormattingStrategy {
 			return;
 
 		Map preferences= getPreferences();
-		final boolean isFormattingHeader= Boolean.toString(true).equals(preferences.get(DefaultCodeFormatterConstants.FORMATTER_COMMENT_FORMAT_HEADER));
+		final boolean isFormattingHeader= false; //Boolean.toString(true).equals(preferences.get(DefaultCodeFormatterConstants.FORMATTER_COMMENT_FORMAT_HEADER));
 		int documentsHeaderEnd= computeHeaderEnd(document);
 
 		if (isFormattingHeader || position.offset >= documentsHeaderEnd) {

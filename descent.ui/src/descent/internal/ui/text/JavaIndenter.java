@@ -174,42 +174,44 @@ public final class JavaIndenter {
 		private boolean prefArrayDimensionsDeepIndent() {
 			return true; // sensible default, no formatter setting
 		}
-
+		
+		// TODO JDT formatter allignment options in JavaIndented
+		
 		private int prefArrayIndent() {
-			String option= getCoreFormatterOption(DefaultCodeFormatterConstants.FORMATTER_ALIGNMENT_FOR_EXPRESSIONS_IN_ARRAY_INITIALIZER);
+			/* String option= getCoreFormatterOption(DefaultCodeFormatterConstants.FORMATTER_ALIGNMENT_FOR_EXPRESSIONS_IN_ARRAY_INITIALIZER);
 			try {
 				if (DefaultCodeFormatterConstants.getIndentStyle(option) == DefaultCodeFormatterConstants.INDENT_BY_ONE)
 					return 1;
 			} catch (IllegalArgumentException e) {
 				// ignore and return default
-			}
+			} */
 
-			return prefContinuationIndent(); // default
+			return prefContinuationIndent();
 		}
 
 		private boolean prefArrayDeepIndent() {
-			String option= getCoreFormatterOption(DefaultCodeFormatterConstants.FORMATTER_ALIGNMENT_FOR_EXPRESSIONS_IN_ARRAY_INITIALIZER);
+			/* String option= getCoreFormatterOption(DefaultCodeFormatterConstants.FORMATTER_ALIGNMENT_FOR_EXPRESSIONS_IN_ARRAY_INITIALIZER);
 			try {
 				return DefaultCodeFormatterConstants.getIndentStyle(option) == DefaultCodeFormatterConstants.INDENT_ON_COLUMN;
 			} catch (IllegalArgumentException e) {
 				// ignore and return default
-			}
+			} */
 
 			return true;
 		}
 
 		private boolean prefTernaryDeepAlign() {
-			String option= getCoreFormatterOption(DefaultCodeFormatterConstants.FORMATTER_ALIGNMENT_FOR_CONDITIONAL_EXPRESSION);
+			/* String option= getCoreFormatterOption(DefaultCodeFormatterConstants.FORMATTER_ALIGNMENT_FOR_CONDITIONAL_EXPRESSION);
 			try {
 				return DefaultCodeFormatterConstants.getIndentStyle(option) == DefaultCodeFormatterConstants.INDENT_ON_COLUMN;
 			} catch (IllegalArgumentException e) {
 				// ignore and return default
-			}
+			} */
 			return false;
 		}
 
 		private int prefTernaryIndent() {
-			String option= getCoreFormatterOption(DefaultCodeFormatterConstants.FORMATTER_ALIGNMENT_FOR_CONDITIONAL_EXPRESSION);
+			/* String option= getCoreFormatterOption(DefaultCodeFormatterConstants.FORMATTER_ALIGNMENT_FOR_CONDITIONAL_EXPRESSION);
 			try {
 				if (DefaultCodeFormatterConstants.getIndentStyle(option) == DefaultCodeFormatterConstants.INDENT_BY_ONE)
 					return 1;
@@ -217,15 +219,15 @@ public final class JavaIndenter {
 					return prefContinuationIndent();
 			} catch (IllegalArgumentException e) {
 				// ignore and return default
-			}
+			} */
 
 			return prefContinuationIndent();
 		}
 
 		private int prefCaseIndent() {
-			if (DefaultCodeFormatterConstants.TRUE.equals(getCoreFormatterOption(DefaultCodeFormatterConstants.FORMATTER_INDENT_SWITCHSTATEMENTS_COMPARE_TO_SWITCH)))
+			/*if (DefaultCodeFormatterConstants.TRUE.equals(getCoreFormatterOption(DefaultCodeFormatterConstants.FORMATTER_INDENT_SWITCHSTATEMENTS_COMPARE_TO_SWITCH)))
 				return prefBlockIndent();
-			else
+			else */
 				return 0;
 		}
 
@@ -234,13 +236,13 @@ public final class JavaIndenter {
 		}
 
 		private int prefCaseBlockIndent() {
-			if (true)
+			//if (true)
 				return prefBlockIndent();
 
-			if (DefaultCodeFormatterConstants.TRUE.equals(getCoreFormatterOption(DefaultCodeFormatterConstants.FORMATTER_INDENT_SWITCHSTATEMENTS_COMPARE_TO_CASES)))
+			/* if (DefaultCodeFormatterConstants.TRUE.equals(getCoreFormatterOption(DefaultCodeFormatterConstants.FORMATTER_INDENT_SWITCHSTATEMENTS_COMPARE_TO_CASES)))
 				return prefBlockIndent();
 			else
-				return 0;
+				return 0; */
 		}
 
 		private int prefSimpleIndent() {
@@ -254,18 +256,18 @@ public final class JavaIndenter {
 		}
 
 		private boolean prefMethodDeclDeepIndent() {
-			String option= getCoreFormatterOption(DefaultCodeFormatterConstants.FORMATTER_ALIGNMENT_FOR_PARAMETERS_IN_METHOD_DECLARATION);
+			/* String option= getCoreFormatterOption(DefaultCodeFormatterConstants.FORMATTER_ALIGNMENT_FOR_PARAMETERS_IN_METHOD_DECLARATION);
 			try {
 				return DefaultCodeFormatterConstants.getIndentStyle(option) == DefaultCodeFormatterConstants.INDENT_ON_COLUMN;
 			} catch (IllegalArgumentException e) {
 				// ignore and return default
-			}
+			} */
 
 			return true;
 		}
 
 		private int prefMethodDeclIndent() {
-			String option= getCoreFormatterOption(DefaultCodeFormatterConstants.FORMATTER_ALIGNMENT_FOR_PARAMETERS_IN_METHOD_DECLARATION);
+			/* String option= getCoreFormatterOption(DefaultCodeFormatterConstants.FORMATTER_ALIGNMENT_FOR_PARAMETERS_IN_METHOD_DECLARATION);
 			try {
 				if (DefaultCodeFormatterConstants.getIndentStyle(option) == DefaultCodeFormatterConstants.INDENT_BY_ONE)
 					return 1;
@@ -273,22 +275,22 @@ public final class JavaIndenter {
 					return prefContinuationIndent();
 			} catch (IllegalArgumentException e) {
 				// ignore and return default
-			}
+			} */
 			return 1;
 		}
 
 		private boolean prefMethodCallDeepIndent() {
-			String option= getCoreFormatterOption(DefaultCodeFormatterConstants.FORMATTER_ALIGNMENT_FOR_ARGUMENTS_IN_METHOD_INVOCATION);
+			/* String option= getCoreFormatterOption(DefaultCodeFormatterConstants.FORMATTER_ALIGNMENT_FOR_ARGUMENTS_IN_METHOD_INVOCATION);
 			try {
 				return DefaultCodeFormatterConstants.getIndentStyle(option) == DefaultCodeFormatterConstants.INDENT_ON_COLUMN;
 			} catch (IllegalArgumentException e) {
 				// ignore and return default
-			}
+			} */
 			return false; // sensible default
 		}
 
 		private int prefMethodCallIndent() {
-			String option= getCoreFormatterOption(DefaultCodeFormatterConstants.FORMATTER_ALIGNMENT_FOR_ARGUMENTS_IN_METHOD_INVOCATION);
+			/* String option= getCoreFormatterOption(DefaultCodeFormatterConstants.FORMATTER_ALIGNMENT_FOR_ARGUMENTS_IN_METHOD_INVOCATION);
 			try {
 				if (DefaultCodeFormatterConstants.getIndentStyle(option) == DefaultCodeFormatterConstants.INDENT_BY_ONE)
 					return 1;
@@ -296,13 +298,13 @@ public final class JavaIndenter {
 					return prefContinuationIndent();
 			} catch (IllegalArgumentException e) {
 				// ignore and return default
-			}
+			} */
 
 			return 1; // sensible default
 		}
 
 		private boolean prefParenthesisDeepIndent() {
-			if (true) // don't do parenthesis deep indentation
+			/* if (true) // don't do parenthesis deep indentation
 				return false;
 
 			String option= getCoreFormatterOption(DefaultCodeFormatterConstants.FORMATTER_CONTINUATION_INDENTATION);
@@ -310,7 +312,7 @@ public final class JavaIndenter {
 				return DefaultCodeFormatterConstants.getIndentStyle(option) == DefaultCodeFormatterConstants.INDENT_ON_COLUMN;
 			} catch (IllegalArgumentException e) {
 				// ignore and return default
-			}
+			} */
 
 			return false; // sensible default
 		}
@@ -320,42 +322,42 @@ public final class JavaIndenter {
 		}
 
 		private int prefBlockIndent() {
-			String option= getCoreFormatterOption(DefaultCodeFormatterConstants.FORMATTER_INDENT_STATEMENTS_COMPARE_TO_BLOCK);
+			/* String option= getCoreFormatterOption(DefaultCodeFormatterConstants.FORMATTER_INDENT_STATEMENTS_COMPARE_TO_BLOCK);
 			if (DefaultCodeFormatterConstants.FALSE.equals(option))
-				return 0;
+				return 0; */
 
 			return 1; // sensible default
 		}
 
 		private int prefMethodBodyIndent() {
-			if (DefaultCodeFormatterConstants.FALSE.equals(getCoreFormatterOption(DefaultCodeFormatterConstants.FORMATTER_INDENT_STATEMENTS_COMPARE_TO_BODY)))
-				return 0;
+			/* if (DefaultCodeFormatterConstants.FALSE.equals(getCoreFormatterOption(DefaultCodeFormatterConstants.FORMATTER_INDENT_STATEMENTS_COMPARE_TO_BODY)))
+				return 0; */
 
 			return 1; // sensible default
 		}
 
 		private int prefTypeIndent() {
-			String option= getCoreFormatterOption(DefaultCodeFormatterConstants.FORMATTER_INDENT_BODY_DECLARATIONS_COMPARE_TO_TYPE_HEADER);
+			/* String option= getCoreFormatterOption(DefaultCodeFormatterConstants.FORMATTER_INDENT_BODY_DECLARATIONS_COMPARE_TO_TYPE_HEADER);
 			if (DefaultCodeFormatterConstants.FALSE.equals(option))
-				return 0;
+				return 0; */
 
 			return 1; // sensible default
 		}
 
 		private boolean prefIndentBracesForBlocks() {
-			return DefaultCodeFormatterConstants.NEXT_LINE_SHIFTED.equals(getCoreFormatterOption(DefaultCodeFormatterConstants.FORMATTER_BRACE_POSITION_FOR_BLOCK));
+			return false; //return DefaultCodeFormatterConstants.NEXT_LINE_SHIFTED.equals(getCoreFormatterOption(DefaultCodeFormatterConstants.FORMATTER_BRACE_POSITION_FOR_BLOCK));
 		}
 
 		private boolean prefIndentBracesForArrays() {
-			return DefaultCodeFormatterConstants.NEXT_LINE_SHIFTED.equals(getCoreFormatterOption(DefaultCodeFormatterConstants.FORMATTER_BRACE_POSITION_FOR_ARRAY_INITIALIZER));
+			return false; //return DefaultCodeFormatterConstants.NEXT_LINE_SHIFTED.equals(getCoreFormatterOption(DefaultCodeFormatterConstants.FORMATTER_BRACE_POSITION_FOR_ARRAY_INITIALIZER));
 		}
 
 		private boolean prefIndentBracesForMethods() {
-			return DefaultCodeFormatterConstants.NEXT_LINE_SHIFTED.equals(getCoreFormatterOption(DefaultCodeFormatterConstants.FORMATTER_BRACE_POSITION_FOR_METHOD_DECLARATION));
+			return false; //return DefaultCodeFormatterConstants.NEXT_LINE_SHIFTED.equals(getCoreFormatterOption(DefaultCodeFormatterConstants.FORMATTER_BRACE_POSITION_FOR_METHOD_DECLARATION));
 		}
 
 		private boolean prefIndentBracesForTypes() {
-			return DefaultCodeFormatterConstants.NEXT_LINE_SHIFTED.equals(getCoreFormatterOption(DefaultCodeFormatterConstants.FORMATTER_BRACE_POSITION_FOR_TYPE_DECLARATION));
+			return false; //return DefaultCodeFormatterConstants.NEXT_LINE_SHIFTED.equals(getCoreFormatterOption(DefaultCodeFormatterConstants.FORMATTER_BRACE_POSITION_FOR_TYPE_DECLARATION));
 		}
 
 		private int prefContinuationIndent() {

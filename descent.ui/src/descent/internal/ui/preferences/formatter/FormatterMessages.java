@@ -24,7 +24,18 @@ final class FormatterMessages extends NLS {
 	private FormatterMessages() {
 		// Do not instantiate
 	}
-
+	
+	// Braces tab page
+	public static String BracesTabPage_preview_header;
+	public static String BracesTabPage_position_same_line;
+	public static String BracesTabPage_position_next_line;
+	public static String BracesTabPage_position_next_line_indented;
+	public static String BracesTabPage_group_brace_positions_title;
+	
+	// Messages for various options (automatically generated)
+	public static String BracesTabPage_brace_position_for_function_declaration;
+	
+	// TODO messages, when the tab page for them gets changed
 	public static String CommentsTabPage_remove_blank_block_comment_lines;
 	public static String ModifyDialog_BuiltIn_Status;
 	public static String ModifyDialog_Duplicate_Status;
@@ -322,24 +333,6 @@ final class FormatterMessages extends NLS {
 	public static String BlankLinesTabPage_class_option_at_beginning_of_method_body;
 	public static String BlankLinesTabPage_blank_lines_group_title;
 	public static String BlankLinesTabPage_blank_lines_option_empty_lines_to_preserve;
-	public static String BracesTabPage_preview_header;
-	public static String BracesTabPage_position_same_line;
-	public static String BracesTabPage_position_next_line;
-	public static String BracesTabPage_position_next_line_indented;
-	public static String BracesTabPage_position_next_line_on_wrap;
-	public static String BracesTabPage_group_brace_positions_title;
-	public static String BracesTabPage_option_class_declaration;
-	public static String BracesTabPage_option_anonymous_class_declaration;
-	public static String BracesTabPage_option_method_declaration;
-	public static String BracesTabPage_option_constructor_declaration;
-	public static String BracesTabPage_option_blocks;
-	public static String BracesTabPage_option_blocks_in_case;
-	public static String BracesTabPage_option_switch_case;
-	public static String BracesTabPage_option_array_initializer;
-	public static String BracesTabPage_option_keep_empty_array_initializer_on_one_line;
-	public static String BracesTabPage_option_enum_declaration;
-	public static String BracesTabPage_option_enumconst_declaration;
-	public static String BracesTabPage_option_annotation_type_declaration;
 	
 	public static String CodingStyleConfigurationBlock_preview_title;
 	

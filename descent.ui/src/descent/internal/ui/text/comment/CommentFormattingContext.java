@@ -24,7 +24,7 @@ public class CommentFormattingContext extends FormattingContext {
 
 	/*
 	 * @see org.eclipse.jface.text.formatter.IFormattingContext#getPreferenceKeys()
-	 */
+	 *
 	public String[] getPreferenceKeys() {
 		return new String[] {
 			    DefaultCodeFormatterConstants.FORMATTER_COMMENT_FORMAT,
@@ -41,15 +41,15 @@ public class CommentFormattingContext extends FormattingContext {
 
 	/*
 	 * @see org.eclipse.jface.text.formatter.IFormattingContext#isBooleanPreference(java.lang.String)
-	 */
+	 *
 	public boolean isBooleanPreference(String key) {
-		return !key.equals(DefaultCodeFormatterConstants.FORMATTER_COMMENT_LINE_LENGTH);
+		return true; //return !key.equals(DefaultCodeFormatterConstants.FORMATTER_COMMENT_LINE_LENGTH);
 	}
 
 	/*
 	 * @see org.eclipse.jface.text.formatter.IFormattingContext#isIntegerPreference(java.lang.String)
-	 */
+	 *
 	public boolean isIntegerPreference(String key) {
 		return key.equals(DefaultCodeFormatterConstants.FORMATTER_COMMENT_LINE_LENGTH);
-	}
+	} */
 }
