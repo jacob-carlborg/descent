@@ -2246,14 +2246,14 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 			if(indent)
 			{
 				scribe.indent();
-				indent = false;
 			}
 		} else {
 			scribe.space();
 		}
 		scribe.printNextToken(TOK.TOKlcurly);
-		if(indent)
+		if (indent) {
 			scribe.indent();
+		}
 		scribe.printTrailingComment();
 	}
 	
@@ -2265,6 +2265,7 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 		{
 			if(DefaultCodeFormatterConstants.NEXT_LINE_SHIFTED.equals(bracePosition))
 			{
+				scribe.unIndent();
 				scribe.printNextToken(TOK.TOKrcurly);
 				scribe.unIndent();
 			}

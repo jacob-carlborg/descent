@@ -10,9 +10,15 @@
  *******************************************************************************/
 package descent.internal.core;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Map;
 
-import org.eclipse.core.runtime.preferences.*;
+import org.eclipse.core.runtime.preferences.AbstractPreferenceInitializer;
+import org.eclipse.core.runtime.preferences.DefaultScope;
+import org.eclipse.core.runtime.preferences.IEclipsePreferences;
+import org.eclipse.core.runtime.preferences.IScopeContext;
+
 import descent.core.JavaCore;
 import descent.core.formatter.DefaultCodeFormatterConstants;
 import descent.internal.compiler.impl.CompilerOptions;

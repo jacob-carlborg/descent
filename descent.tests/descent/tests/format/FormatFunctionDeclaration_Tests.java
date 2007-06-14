@@ -119,5 +119,20 @@ public class FormatFunctionDeclaration_Tests extends AbstractFormatter_Test {
 				options
 			);
 	}
+	
+	public void testBracesNextLineShiftedWithContent() throws Exception {
+		Map options = new HashMap();
+		options.put(DefaultCodeFormatterConstants.FORMATTER_BRACE_POSITION_FOR_FUNCTION_DECLARATION, DefaultCodeFormatterConstants.NEXT_LINE_SHIFTED);
+		assertFormat(
+				"void bla()\r\n" +
+				"\t{\r\n" +
+				"\t\tint x;\r\n" +				
+				"\t}\r\n", 
+				
+				"void  bla  ()  {   int x;  }",
+				
+				options
+			);
+	}
 
 }

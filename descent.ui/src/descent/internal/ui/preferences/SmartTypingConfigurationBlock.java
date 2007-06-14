@@ -12,7 +12,10 @@
 package descent.internal.ui.preferences;
 
 import org.eclipse.core.runtime.Assert;
-
+import org.eclipse.jface.dialogs.Dialog;
+import org.eclipse.jface.preference.IPreferenceStore;
+import org.eclipse.jface.util.IPropertyChangeListener;
+import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -24,23 +27,14 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Link;
-
-import org.eclipse.jface.dialogs.Dialog;
-import org.eclipse.jface.preference.IPreferenceStore;
-import org.eclipse.jface.util.IPropertyChangeListener;
-import org.eclipse.jface.util.PropertyChangeEvent;
-
 import org.eclipse.ui.dialogs.PreferencesUtil;
 
 import descent.core.JavaCore;
 import descent.core.formatter.DefaultCodeFormatterConstants;
-
 import descent.internal.corext.util.CodeFormatterUtil;
 import descent.internal.corext.util.Messages;
-
-import descent.ui.PreferenceConstants;
-
 import descent.internal.ui.JavaPlugin;
+import descent.ui.PreferenceConstants;
 
 /**
  * Configures Java Editor typing preferences.
