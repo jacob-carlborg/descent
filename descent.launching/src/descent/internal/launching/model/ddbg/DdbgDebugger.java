@@ -18,6 +18,7 @@ import descent.launching.model.IDebugElementFactory;
 import descent.launching.model.IDebugger;
 import descent.launching.model.IDebuggerListener;
 import descent.launching.model.IParentVariable;
+import descent.launching.utils.ArgumentUtils;
 
 public class DdbgDebugger implements IDebugger {
 	
@@ -125,7 +126,7 @@ public class DdbgDebugger implements IDebugger {
 			beforeWaitStateReturn();
 			
 			fProxy.write("bp ");
-			fProxy.write("\"" + resource.getLocation().toOSString() + "\"");
+			fProxy.write(ArgumentUtils.toStringArgument(resource.getLocation().toOSString()));
 			fProxy.write(":");
 			fProxy.write(String.valueOf(lineNumber));
 			fProxy.write("\n");
@@ -143,7 +144,7 @@ public class DdbgDebugger implements IDebugger {
 			beforeWaitStateReturn();
 			
 			fProxy.write("dbp ");
-			fProxy.write("\"" + resource.getLocation().toOSString() + "\"");
+			fProxy.write(ArgumentUtils.toStringArgument(resource.getLocation().toOSString()));
 			fProxy.write(":");
 			fProxy.write(String.valueOf(lineNumber));
 			fProxy.write("\n");

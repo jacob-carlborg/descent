@@ -23,6 +23,7 @@ import descent.launching.AbstractDescentLaunchConfigurationDelegate;
 import descent.launching.DescentLaunching;
 import descent.launching.IDescentLaunchConfigurationConstants;
 import descent.launching.model.IDebugger;
+import descent.launching.utils.ArgumentUtils;
 import descent.launching.utils.ProcessFactory;
 
 public class DescentLaunchConfigurationDelegate extends AbstractDescentLaunchConfigurationDelegate {
@@ -58,7 +59,7 @@ public class DescentLaunchConfigurationDelegate extends AbstractDescentLaunchCon
 				
 				ArrayList command = new ArrayList(1);
 				command.add(debuggerPath);
-				command.add("\"" + exePath.toOSString() + "\"");
+				command.add(ArgumentUtils.toStringArgument(exePath.toOSString()));
 				
 				command.addAll(debugger.getDebuggerCommandLineArguments());
 				

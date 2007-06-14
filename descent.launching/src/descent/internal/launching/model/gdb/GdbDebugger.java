@@ -18,6 +18,7 @@ import descent.launching.model.IDebugElementFactory;
 import descent.launching.model.IDebugger;
 import descent.launching.model.IDebuggerListener;
 import descent.launching.model.IParentVariable;
+import descent.launching.utils.ArgumentUtils;
 
 public class GdbDebugger implements IDebugger {
 	
@@ -54,11 +55,13 @@ public class GdbDebugger implements IDebugger {
 			
 			beforeWaitStateReturn();
 			
-			fProxy.write("break \"");
-			fProxy.write(toGdbPath(resource.getLocation().toOSString()));
-			fProxy.write(":");
-			fProxy.write(String.valueOf(lineNumber));
-			fProxy.write("\"\n");
+			fProxy.write("break ");
+			fProxy.write(ArgumentUtils.toStringArgument(
+					toGdbPath(resource.getLocation().toOSString()) +
+					":" +
+					lineNumber
+				));
+			fProxy.write("\n");
 			
 			waitStateReturn();
 		} finally {
@@ -196,11 +199,13 @@ public class GdbDebugger implements IDebugger {
 			
 			beforeWaitStateReturn();
 			
-			fProxy.write("clear \"");
-			fProxy.write("\"" + toGdbPath(resource.getLocation().toOSString()) + "\"");
-			fProxy.write(":");
-			fProxy.write(String.valueOf(lineNumber));
-			fProxy.write("\"\n");
+			fProxy.write("clear ");
+			fProxy.write(ArgumentUtils.toStringArgument(
+					toGdbPath(resource.getLocation().toOSString()) +
+					":" +
+					lineNumber
+					));
+			fProxy.write("\n");
 			
 			waitStateReturn();
 		} finally {
@@ -365,7 +370,6 @@ public class GdbDebugger implements IDebugger {
 	}
 	
 	private String toGdbPath(String path) {
-		// TODO How to escape white spaces? It dosen't seem to work in GDB (mingw). 
 		return path.replace('\\', '/');
 	}
 	
