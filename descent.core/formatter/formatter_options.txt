@@ -43,6 +43,54 @@
 brace_position_for_function_declaration
 	type=BracePosition
 	default=BracePosition.END_OF_LINE
+brace_position_for_type_declaration
+	type=BracePosition
+	default=BracePosition.END_OF_LINE
+brace_position_for_enum_declaration
+	type=BracePosition
+	default=BracePosition.END_OF_LINE
+brace_position_for_template_declarations
+	type=BracePosition
+	default=BracePosition.END_OF_LINE
+brace_position_for_conditional_declaration
+	type=BracePosition
+	default=BracePosition.END_OF_LINE
+brace_position_for_conditional_statement
+	type=BracePosition
+	default=BracePosition.END_OF_LINE
+brace_position_for_loop_statement
+	type=BracePosition
+	default=BracePosition.END_OF_LINE
+brace_position_for_function_literal
+	type=BracePosition
+	default=BracePosition.END_OF_LINE
+brace_position_for_anonymous_type
+	type=BracePosition
+	default=BracePosition.END_OF_LINE
+brace_position_for_switch_statement
+	type=BracePosition
+	default=BracePosition.END_OF_LINE
+brace_position_for_switch_case
+	type=BracePosition
+	default=BracePosition.END_OF_LINE
+brace_position_for_try_catch_finally
+	type=BracePosition
+	default=BracePosition.END_OF_LINE
+brace_position_for_modifiers
+	type=BracePosition
+	default=BracePosition.END_OF_LINE
+brace_position_for_synchronized_statements
+	type=BracePosition
+	default=BracePosition.END_OF_LINE
+brace_position_for_with_statements
+	type=BracePosition
+	default=BracePosition.END_OF_LINE
+brace_position_for_scope_statements
+	type=BracePosition
+	default=BracePosition.END_OF_LINE
+brace_position_for_other_blocks
+	type=BracePosition
+	default=BracePosition.END_OF_LINE
 
 # White Space Options
 insert_space_before_semicolon

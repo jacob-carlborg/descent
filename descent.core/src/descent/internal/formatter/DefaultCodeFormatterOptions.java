@@ -52,6 +52,22 @@ public class DefaultCodeFormatterOptions
 	
 	// User formatting options
 	public BracePosition brace_position_for_function_declaration;
+	public BracePosition brace_position_for_type_declaration;
+	public BracePosition brace_position_for_enum_declaration;
+	public BracePosition brace_position_for_template_declarations;
+	public BracePosition brace_position_for_conditional_declaration;
+	public BracePosition brace_position_for_conditional_statement;
+	public BracePosition brace_position_for_loop_statement;
+	public BracePosition brace_position_for_function_literal;
+	public BracePosition brace_position_for_anonymous_type;
+	public BracePosition brace_position_for_switch_statement;
+	public BracePosition brace_position_for_switch_case;
+	public BracePosition brace_position_for_try_catch_finally;
+	public BracePosition brace_position_for_modifiers;
+	public BracePosition brace_position_for_synchronized_statements;
+	public BracePosition brace_position_for_with_statements;
+	public BracePosition brace_position_for_scope_statements;
+	public BracePosition brace_position_for_other_blocks;
 	public boolean insert_space_before_semicolon;
 	public boolean insert_space_before_comma_in_multiple_field_declarations;
 	public boolean insert_space_after_comma_in_multiple_field_declarations;
@@ -103,6 +119,22 @@ public class DefaultCodeFormatterOptions
 		Map<String, String> options = new HashMap<String, String>();
 		
 		options.put(DefaultCodeFormatterConstants.FORMATTER_BRACE_POSITION_FOR_FUNCTION_DECLARATION, brace_position_for_function_declaration.toString());
+		options.put(DefaultCodeFormatterConstants.FORMATTER_BRACE_POSITION_FOR_TYPE_DECLARATION, brace_position_for_type_declaration.toString());
+		options.put(DefaultCodeFormatterConstants.FORMATTER_BRACE_POSITION_FOR_ENUM_DECLARATION, brace_position_for_enum_declaration.toString());
+		options.put(DefaultCodeFormatterConstants.FORMATTER_BRACE_POSITION_FOR_TEMPLATE_DECLARATIONS, brace_position_for_template_declarations.toString());
+		options.put(DefaultCodeFormatterConstants.FORMATTER_BRACE_POSITION_FOR_CONDITIONAL_DECLARATION, brace_position_for_conditional_declaration.toString());
+		options.put(DefaultCodeFormatterConstants.FORMATTER_BRACE_POSITION_FOR_CONDITIONAL_STATEMENT, brace_position_for_conditional_statement.toString());
+		options.put(DefaultCodeFormatterConstants.FORMATTER_BRACE_POSITION_FOR_LOOP_STATEMENT, brace_position_for_loop_statement.toString());
+		options.put(DefaultCodeFormatterConstants.FORMATTER_BRACE_POSITION_FOR_FUNCTION_LITERAL, brace_position_for_function_literal.toString());
+		options.put(DefaultCodeFormatterConstants.FORMATTER_BRACE_POSITION_FOR_ANONYMOUS_TYPE, brace_position_for_anonymous_type.toString());
+		options.put(DefaultCodeFormatterConstants.FORMATTER_BRACE_POSITION_FOR_SWITCH_STATEMENT, brace_position_for_switch_statement.toString());
+		options.put(DefaultCodeFormatterConstants.FORMATTER_BRACE_POSITION_FOR_SWITCH_CASE, brace_position_for_switch_case.toString());
+		options.put(DefaultCodeFormatterConstants.FORMATTER_BRACE_POSITION_FOR_TRY_CATCH_FINALLY, brace_position_for_try_catch_finally.toString());
+		options.put(DefaultCodeFormatterConstants.FORMATTER_BRACE_POSITION_FOR_MODIFIERS, brace_position_for_modifiers.toString());
+		options.put(DefaultCodeFormatterConstants.FORMATTER_BRACE_POSITION_FOR_SYNCHRONIZED_STATEMENTS, brace_position_for_synchronized_statements.toString());
+		options.put(DefaultCodeFormatterConstants.FORMATTER_BRACE_POSITION_FOR_WITH_STATEMENTS, brace_position_for_with_statements.toString());
+		options.put(DefaultCodeFormatterConstants.FORMATTER_BRACE_POSITION_FOR_SCOPE_STATEMENTS, brace_position_for_scope_statements.toString());
+		options.put(DefaultCodeFormatterConstants.FORMATTER_BRACE_POSITION_FOR_OTHER_BLOCKS, brace_position_for_other_blocks.toString());
 		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_SEMICOLON, insert_space_before_semicolon ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
 		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_COMMA_IN_MULTIPLE_FIELD_DECLARATIONS, insert_space_before_comma_in_multiple_field_declarations ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
 		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_AFTER_COMMA_IN_MULTIPLE_FIELD_DECLARATIONS, insert_space_after_comma_in_multiple_field_declarations ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
@@ -145,6 +177,150 @@ public class DefaultCodeFormatterOptions
 				brace_position_for_function_declaration = DefaultCodeFormatterConstants.NEXT_LINE_SHIFTED.equals(current) ? BracePosition.NEXT_LINE_SHIFTED : DefaultCodeFormatterConstants.NEXT_LINE.equals(current) ? BracePosition.NEXT_LINE : BracePosition.END_OF_LINE;
 			} catch(Exception e) {
 				brace_position_for_function_declaration = BracePosition.END_OF_LINE;
+			}
+		}
+		
+		current = settings.get(DefaultCodeFormatterConstants.FORMATTER_BRACE_POSITION_FOR_TYPE_DECLARATION);
+		if(null != current) {
+			try {
+				brace_position_for_type_declaration = DefaultCodeFormatterConstants.NEXT_LINE_SHIFTED.equals(current) ? BracePosition.NEXT_LINE_SHIFTED : DefaultCodeFormatterConstants.NEXT_LINE.equals(current) ? BracePosition.NEXT_LINE : BracePosition.END_OF_LINE;
+			} catch(Exception e) {
+				brace_position_for_type_declaration = BracePosition.END_OF_LINE;
+			}
+		}
+		
+		current = settings.get(DefaultCodeFormatterConstants.FORMATTER_BRACE_POSITION_FOR_ENUM_DECLARATION);
+		if(null != current) {
+			try {
+				brace_position_for_enum_declaration = DefaultCodeFormatterConstants.NEXT_LINE_SHIFTED.equals(current) ? BracePosition.NEXT_LINE_SHIFTED : DefaultCodeFormatterConstants.NEXT_LINE.equals(current) ? BracePosition.NEXT_LINE : BracePosition.END_OF_LINE;
+			} catch(Exception e) {
+				brace_position_for_enum_declaration = BracePosition.END_OF_LINE;
+			}
+		}
+		
+		current = settings.get(DefaultCodeFormatterConstants.FORMATTER_BRACE_POSITION_FOR_TEMPLATE_DECLARATIONS);
+		if(null != current) {
+			try {
+				brace_position_for_template_declarations = DefaultCodeFormatterConstants.NEXT_LINE_SHIFTED.equals(current) ? BracePosition.NEXT_LINE_SHIFTED : DefaultCodeFormatterConstants.NEXT_LINE.equals(current) ? BracePosition.NEXT_LINE : BracePosition.END_OF_LINE;
+			} catch(Exception e) {
+				brace_position_for_template_declarations = BracePosition.END_OF_LINE;
+			}
+		}
+		
+		current = settings.get(DefaultCodeFormatterConstants.FORMATTER_BRACE_POSITION_FOR_CONDITIONAL_DECLARATION);
+		if(null != current) {
+			try {
+				brace_position_for_conditional_declaration = DefaultCodeFormatterConstants.NEXT_LINE_SHIFTED.equals(current) ? BracePosition.NEXT_LINE_SHIFTED : DefaultCodeFormatterConstants.NEXT_LINE.equals(current) ? BracePosition.NEXT_LINE : BracePosition.END_OF_LINE;
+			} catch(Exception e) {
+				brace_position_for_conditional_declaration = BracePosition.END_OF_LINE;
+			}
+		}
+		
+		current = settings.get(DefaultCodeFormatterConstants.FORMATTER_BRACE_POSITION_FOR_CONDITIONAL_STATEMENT);
+		if(null != current) {
+			try {
+				brace_position_for_conditional_statement = DefaultCodeFormatterConstants.NEXT_LINE_SHIFTED.equals(current) ? BracePosition.NEXT_LINE_SHIFTED : DefaultCodeFormatterConstants.NEXT_LINE.equals(current) ? BracePosition.NEXT_LINE : BracePosition.END_OF_LINE;
+			} catch(Exception e) {
+				brace_position_for_conditional_statement = BracePosition.END_OF_LINE;
+			}
+		}
+		
+		current = settings.get(DefaultCodeFormatterConstants.FORMATTER_BRACE_POSITION_FOR_LOOP_STATEMENT);
+		if(null != current) {
+			try {
+				brace_position_for_loop_statement = DefaultCodeFormatterConstants.NEXT_LINE_SHIFTED.equals(current) ? BracePosition.NEXT_LINE_SHIFTED : DefaultCodeFormatterConstants.NEXT_LINE.equals(current) ? BracePosition.NEXT_LINE : BracePosition.END_OF_LINE;
+			} catch(Exception e) {
+				brace_position_for_loop_statement = BracePosition.END_OF_LINE;
+			}
+		}
+		
+		current = settings.get(DefaultCodeFormatterConstants.FORMATTER_BRACE_POSITION_FOR_FUNCTION_LITERAL);
+		if(null != current) {
+			try {
+				brace_position_for_function_literal = DefaultCodeFormatterConstants.NEXT_LINE_SHIFTED.equals(current) ? BracePosition.NEXT_LINE_SHIFTED : DefaultCodeFormatterConstants.NEXT_LINE.equals(current) ? BracePosition.NEXT_LINE : BracePosition.END_OF_LINE;
+			} catch(Exception e) {
+				brace_position_for_function_literal = BracePosition.END_OF_LINE;
+			}
+		}
+		
+		current = settings.get(DefaultCodeFormatterConstants.FORMATTER_BRACE_POSITION_FOR_ANONYMOUS_TYPE);
+		if(null != current) {
+			try {
+				brace_position_for_anonymous_type = DefaultCodeFormatterConstants.NEXT_LINE_SHIFTED.equals(current) ? BracePosition.NEXT_LINE_SHIFTED : DefaultCodeFormatterConstants.NEXT_LINE.equals(current) ? BracePosition.NEXT_LINE : BracePosition.END_OF_LINE;
+			} catch(Exception e) {
+				brace_position_for_anonymous_type = BracePosition.END_OF_LINE;
+			}
+		}
+		
+		current = settings.get(DefaultCodeFormatterConstants.FORMATTER_BRACE_POSITION_FOR_SWITCH_STATEMENT);
+		if(null != current) {
+			try {
+				brace_position_for_switch_statement = DefaultCodeFormatterConstants.NEXT_LINE_SHIFTED.equals(current) ? BracePosition.NEXT_LINE_SHIFTED : DefaultCodeFormatterConstants.NEXT_LINE.equals(current) ? BracePosition.NEXT_LINE : BracePosition.END_OF_LINE;
+			} catch(Exception e) {
+				brace_position_for_switch_statement = BracePosition.END_OF_LINE;
+			}
+		}
+		
+		current = settings.get(DefaultCodeFormatterConstants.FORMATTER_BRACE_POSITION_FOR_SWITCH_CASE);
+		if(null != current) {
+			try {
+				brace_position_for_switch_case = DefaultCodeFormatterConstants.NEXT_LINE_SHIFTED.equals(current) ? BracePosition.NEXT_LINE_SHIFTED : DefaultCodeFormatterConstants.NEXT_LINE.equals(current) ? BracePosition.NEXT_LINE : BracePosition.END_OF_LINE;
+			} catch(Exception e) {
+				brace_position_for_switch_case = BracePosition.END_OF_LINE;
+			}
+		}
+		
+		current = settings.get(DefaultCodeFormatterConstants.FORMATTER_BRACE_POSITION_FOR_TRY_CATCH_FINALLY);
+		if(null != current) {
+			try {
+				brace_position_for_try_catch_finally = DefaultCodeFormatterConstants.NEXT_LINE_SHIFTED.equals(current) ? BracePosition.NEXT_LINE_SHIFTED : DefaultCodeFormatterConstants.NEXT_LINE.equals(current) ? BracePosition.NEXT_LINE : BracePosition.END_OF_LINE;
+			} catch(Exception e) {
+				brace_position_for_try_catch_finally = BracePosition.END_OF_LINE;
+			}
+		}
+		
+		current = settings.get(DefaultCodeFormatterConstants.FORMATTER_BRACE_POSITION_FOR_MODIFIERS);
+		if(null != current) {
+			try {
+				brace_position_for_modifiers = DefaultCodeFormatterConstants.NEXT_LINE_SHIFTED.equals(current) ? BracePosition.NEXT_LINE_SHIFTED : DefaultCodeFormatterConstants.NEXT_LINE.equals(current) ? BracePosition.NEXT_LINE : BracePosition.END_OF_LINE;
+			} catch(Exception e) {
+				brace_position_for_modifiers = BracePosition.END_OF_LINE;
+			}
+		}
+		
+		current = settings.get(DefaultCodeFormatterConstants.FORMATTER_BRACE_POSITION_FOR_SYNCHRONIZED_STATEMENTS);
+		if(null != current) {
+			try {
+				brace_position_for_synchronized_statements = DefaultCodeFormatterConstants.NEXT_LINE_SHIFTED.equals(current) ? BracePosition.NEXT_LINE_SHIFTED : DefaultCodeFormatterConstants.NEXT_LINE.equals(current) ? BracePosition.NEXT_LINE : BracePosition.END_OF_LINE;
+			} catch(Exception e) {
+				brace_position_for_synchronized_statements = BracePosition.END_OF_LINE;
+			}
+		}
+		
+		current = settings.get(DefaultCodeFormatterConstants.FORMATTER_BRACE_POSITION_FOR_WITH_STATEMENTS);
+		if(null != current) {
+			try {
+				brace_position_for_with_statements = DefaultCodeFormatterConstants.NEXT_LINE_SHIFTED.equals(current) ? BracePosition.NEXT_LINE_SHIFTED : DefaultCodeFormatterConstants.NEXT_LINE.equals(current) ? BracePosition.NEXT_LINE : BracePosition.END_OF_LINE;
+			} catch(Exception e) {
+				brace_position_for_with_statements = BracePosition.END_OF_LINE;
+			}
+		}
+		
+		current = settings.get(DefaultCodeFormatterConstants.FORMATTER_BRACE_POSITION_FOR_SCOPE_STATEMENTS);
+		if(null != current) {
+			try {
+				brace_position_for_scope_statements = DefaultCodeFormatterConstants.NEXT_LINE_SHIFTED.equals(current) ? BracePosition.NEXT_LINE_SHIFTED : DefaultCodeFormatterConstants.NEXT_LINE.equals(current) ? BracePosition.NEXT_LINE : BracePosition.END_OF_LINE;
+			} catch(Exception e) {
+				brace_position_for_scope_statements = BracePosition.END_OF_LINE;
+			}
+		}
+		
+		current = settings.get(DefaultCodeFormatterConstants.FORMATTER_BRACE_POSITION_FOR_OTHER_BLOCKS);
+		if(null != current) {
+			try {
+				brace_position_for_other_blocks = DefaultCodeFormatterConstants.NEXT_LINE_SHIFTED.equals(current) ? BracePosition.NEXT_LINE_SHIFTED : DefaultCodeFormatterConstants.NEXT_LINE.equals(current) ? BracePosition.NEXT_LINE : BracePosition.END_OF_LINE;
+			} catch(Exception e) {
+				brace_position_for_other_blocks = BracePosition.END_OF_LINE;
 			}
 		}
 		
@@ -394,6 +570,22 @@ public class DefaultCodeFormatterOptions
 
 	public void setDefaultSettings() {
 		brace_position_for_function_declaration = BracePosition.END_OF_LINE;
+		brace_position_for_type_declaration = BracePosition.END_OF_LINE;
+		brace_position_for_enum_declaration = BracePosition.END_OF_LINE;
+		brace_position_for_template_declarations = BracePosition.END_OF_LINE;
+		brace_position_for_conditional_declaration = BracePosition.END_OF_LINE;
+		brace_position_for_conditional_statement = BracePosition.END_OF_LINE;
+		brace_position_for_loop_statement = BracePosition.END_OF_LINE;
+		brace_position_for_function_literal = BracePosition.END_OF_LINE;
+		brace_position_for_anonymous_type = BracePosition.END_OF_LINE;
+		brace_position_for_switch_statement = BracePosition.END_OF_LINE;
+		brace_position_for_switch_case = BracePosition.END_OF_LINE;
+		brace_position_for_try_catch_finally = BracePosition.END_OF_LINE;
+		brace_position_for_modifiers = BracePosition.END_OF_LINE;
+		brace_position_for_synchronized_statements = BracePosition.END_OF_LINE;
+		brace_position_for_with_statements = BracePosition.END_OF_LINE;
+		brace_position_for_scope_statements = BracePosition.END_OF_LINE;
+		brace_position_for_other_blocks = BracePosition.END_OF_LINE;
 		insert_space_before_semicolon = false;
 		insert_space_before_comma_in_multiple_field_declarations = false;
 		insert_space_after_comma_in_multiple_field_declarations = true;

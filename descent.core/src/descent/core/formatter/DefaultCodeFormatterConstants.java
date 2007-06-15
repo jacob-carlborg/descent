@@ -46,6 +46,22 @@ public class DefaultCodeFormatterConstants {
 	
 	// Formatter value names
 	public static final String FORMATTER_BRACE_POSITION_FOR_FUNCTION_DECLARATION = JavaCore.PLUGIN_ID + ".formatter.brace_position_for_function_declaration";
+	public static final String FORMATTER_BRACE_POSITION_FOR_TYPE_DECLARATION = JavaCore.PLUGIN_ID + ".formatter.brace_position_for_type_declaration";
+	public static final String FORMATTER_BRACE_POSITION_FOR_ENUM_DECLARATION = JavaCore.PLUGIN_ID + ".formatter.brace_position_for_enum_declaration";
+	public static final String FORMATTER_BRACE_POSITION_FOR_TEMPLATE_DECLARATIONS = JavaCore.PLUGIN_ID + ".formatter.brace_position_for_template_declarations";
+	public static final String FORMATTER_BRACE_POSITION_FOR_CONDITIONAL_DECLARATION = JavaCore.PLUGIN_ID + ".formatter.brace_position_for_conditional_declaration";
+	public static final String FORMATTER_BRACE_POSITION_FOR_CONDITIONAL_STATEMENT = JavaCore.PLUGIN_ID + ".formatter.brace_position_for_conditional_statement";
+	public static final String FORMATTER_BRACE_POSITION_FOR_LOOP_STATEMENT = JavaCore.PLUGIN_ID + ".formatter.brace_position_for_loop_statement";
+	public static final String FORMATTER_BRACE_POSITION_FOR_FUNCTION_LITERAL = JavaCore.PLUGIN_ID + ".formatter.brace_position_for_function_literal";
+	public static final String FORMATTER_BRACE_POSITION_FOR_ANONYMOUS_TYPE = JavaCore.PLUGIN_ID + ".formatter.brace_position_for_anonymous_type";
+	public static final String FORMATTER_BRACE_POSITION_FOR_SWITCH_STATEMENT = JavaCore.PLUGIN_ID + ".formatter.brace_position_for_switch_statement";
+	public static final String FORMATTER_BRACE_POSITION_FOR_SWITCH_CASE = JavaCore.PLUGIN_ID + ".formatter.brace_position_for_switch_case";
+	public static final String FORMATTER_BRACE_POSITION_FOR_TRY_CATCH_FINALLY = JavaCore.PLUGIN_ID + ".formatter.brace_position_for_try_catch_finally";
+	public static final String FORMATTER_BRACE_POSITION_FOR_MODIFIERS = JavaCore.PLUGIN_ID + ".formatter.brace_position_for_modifiers";
+	public static final String FORMATTER_BRACE_POSITION_FOR_SYNCHRONIZED_STATEMENTS = JavaCore.PLUGIN_ID + ".formatter.brace_position_for_synchronized_statements";
+	public static final String FORMATTER_BRACE_POSITION_FOR_WITH_STATEMENTS = JavaCore.PLUGIN_ID + ".formatter.brace_position_for_with_statements";
+	public static final String FORMATTER_BRACE_POSITION_FOR_SCOPE_STATEMENTS = JavaCore.PLUGIN_ID + ".formatter.brace_position_for_scope_statements";
+	public static final String FORMATTER_BRACE_POSITION_FOR_OTHER_BLOCKS = JavaCore.PLUGIN_ID + ".formatter.brace_position_for_other_blocks";
 	public static final String FORMATTER_INSERT_SPACE_BEFORE_SEMICOLON = JavaCore.PLUGIN_ID + ".formatter.insert_space_before_semicolon";
 	public static final String FORMATTER_INSERT_SPACE_BEFORE_COMMA_IN_MULTIPLE_FIELD_DECLARATIONS = JavaCore.PLUGIN_ID + ".formatter.insert_space_before_comma_in_multiple_field_declarations";
 	public static final String FORMATTER_INSERT_SPACE_AFTER_COMMA_IN_MULTIPLE_FIELD_DECLARATIONS = JavaCore.PLUGIN_ID + ".formatter.insert_space_after_comma_in_multiple_field_declarations";

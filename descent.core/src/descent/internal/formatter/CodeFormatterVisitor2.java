@@ -129,7 +129,7 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 			formatCSV(baseClasses, false, true);
 		}
 		
-		formatDeclarationBlock(node.declarations());
+		formatDeclarationBlock(node.declarations(), preferences.brace_position_for_type_declaration, true);
 		
 		if(isNextToken(TOK.TOKsemicolon))
 			scribe.printNextToken(TOK.TOKsemicolon);
@@ -193,7 +193,7 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 			scribe.printNextToken(literalOrIdentiferTokenList());
 			scribe.printNextToken(TOK.TOKrparen);
 		}
-		formatDeclarationBlock(node.declarations());
+		formatDeclarationBlock(node.declarations(), preferences.brace_position_for_modifiers, true);
 		return false;
 	}
 	
@@ -414,7 +414,7 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 			}
 			scribe.printNextToken(TOK.TOKrparen);
 		}
-		formatSubStatement(node.getBody(), false, true, BracePosition.END_OF_LINE);
+		formatSubStatement(node.getBody(), false, true, preferences.brace_position_for_try_catch_finally);
 		return false;
 	}
 	
@@ -493,7 +493,7 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 				scribe.printNextToken(TOK.TOKdelete);
 				break;
 		}
-		formatFunction(node);
+		formatFunction(node, preferences.brace_position_for_function_declaration);
 		return false;
 	}
 	
@@ -611,7 +611,7 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 	public boolean visit(DoStatement node)
 	{
 		scribe.printNextToken(TOK.TOKdo);
-		formatSubStatement(node.getBody(), false, true, BracePosition.END_OF_LINE);
+		formatSubStatement(node.getBody(), false, true, preferences.brace_position_for_loop_statement);
 		scribe.printNewLine();
 		scribe.printNextToken(TOK.TOKwhile);
 		scribe.printNextToken(TOK.TOKlparen);
@@ -682,10 +682,8 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 			scribe.printNextToken(TOK.TOKsemicolon);
 		else
 		{
+			formatOpeningBrace(preferences.brace_position_for_enum_declaration, true);
 			scribe.printNewLine();
-			scribe.printNextToken(TOK.TOKlcurly);
-			scribe.printNewLine();
-			scribe.indent();
 			for(EnumMember member : node.enumMembers())
 			{
 				member.accept(this);
@@ -693,8 +691,7 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 					scribe.printNextToken(TOK.TOKcomma);
 				scribe.printNewLine();
 			}
-			scribe.unIndent();
-			scribe.printNextToken(TOK.TOKrcurly);
+			formatClosingBrace(preferences.brace_position_for_enum_declaration, true);
 		}
 		if(isNextToken(TOK.TOKsemicolon))
 			scribe.printNextToken(TOK.TOKsemicolon);
@@ -738,7 +735,7 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 				scribe.printNextToken(TOK.TOKidentifier);
 			scribe.printNextToken(TOK.TOKrparen);
 		}
-		formatDeclarationBlock(node.declarations());
+		formatDeclarationBlock(node.declarations(), preferences.brace_position_for_modifiers, true);
 		return false;
 	}
 	
@@ -764,7 +761,7 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 		scribe.space();
 		node.getExpression().accept(this);
 		scribe.printNextToken(TOK.TOKrparen);
-		formatSubStatement(node.getBody(), false, true, BracePosition.END_OF_LINE);
+		formatSubStatement(node.getBody(), false, true, preferences.brace_position_for_loop_statement);
 		return false;
 	}
 	
@@ -794,7 +791,7 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 		if(null != increment)
 			increment.accept(this);
 		scribe.printNextToken(TOK.TOKrparen);
-		formatSubStatement(node.getBody(), false, true, BracePosition.END_OF_LINE);
+		formatSubStatement(node.getBody(), false, true, preferences.brace_position_for_loop_statement);
 		return false;
 	}
 	
@@ -815,7 +812,7 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 				scribe.printNextToken(TOK.TOKrparen);
 			}
 		}
-		formatFunction(node);
+		formatFunction(node, preferences.brace_position_for_function_declaration);
 		return false;
 	}
 	
@@ -841,7 +838,7 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 			scribe.space();
 		}
 		
-		formatFunction(node);
+		formatFunction(node, preferences.brace_position_for_function_literal);
 		return false;
 	}
 	
@@ -893,7 +890,7 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 		}
 		node.getExpression().accept(this);
 		scribe.printNextToken(TOK.TOKrparen);
-		formatSubStatement(node.getThenBody(), false, true, BracePosition.END_OF_LINE);
+		formatSubStatement(node.getThenBody(), false, true, preferences.brace_position_for_conditional_statement);
 		if(isNextToken(TOK.TOKelse))
 		{
 			scribe.printNewLine();
@@ -902,11 +899,11 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 			if(elseBody instanceof IfStatement) // handle "else if"
 			{
 				scribe.space();
-				formatSubStatement(elseBody, false, false, BracePosition.END_OF_LINE);
+				formatSubStatement(elseBody, false, false, preferences.brace_position_for_conditional_statement);
 			}
 			else
 			{
-				formatSubStatement(elseBody, false, true, BracePosition.END_OF_LINE);
+				formatSubStatement(elseBody, false, true, preferences.brace_position_for_conditional_statement);
 			}
 		}
 		return false;
@@ -1068,7 +1065,7 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 		formatModifiers(false);
 		if(!isNextToken(TOK.TOKcolon)) // "private:" instead of "private :"
 			scribe.space();
-		formatDeclarationBlock(node.declarations());
+		formatDeclarationBlock(node.declarations(), preferences.brace_position_for_modifiers, true);
 		return false;
 	}
 	
@@ -1111,7 +1108,7 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 			scribe.space();
 			formatCSV(baseClasses, false, true);
 		}
-		formatDeclarationBlock(node.declarations());
+		formatDeclarationBlock(node.declarations(), preferences.brace_position_for_anonymous_type, true);
 		return false;
 	}
 	
@@ -1206,7 +1203,7 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 			formatCSV(args, false, true);
 		}
 		scribe.printNextToken(TOK.TOKrparen);
-		formatDeclarationBlock(node.declarations());
+		formatDeclarationBlock(node.declarations(), preferences.brace_position_for_other_blocks, true);
 		if(isNextToken(TOK.TOKsemicolon))
 			scribe.printNextToken(TOK.TOKsemicolon);
 		return false;
@@ -1227,7 +1224,7 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 		scribe.printNextToken(TOK.TOKrparen);
 		Statement body = node.getBody();
 		if(null != body)
-			formatSubStatement(body, false, true, BracePosition.END_OF_LINE);
+			formatSubStatement(body, false, true, preferences.brace_position_for_other_blocks);
 		if(isNextToken(TOK.TOKsemicolon))
 			scribe.printNextToken(TOK.TOKsemicolon);
 		return false;
@@ -1294,7 +1291,7 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 		scribe.printNextToken(TOK.TOKlparen);
 		scribe.printNextToken(TOK.TOKidentifier);
 		scribe.printNextToken(TOK.TOKrparen);
-		formatSubStatement(node.getBody(), false, true, BracePosition.END_OF_LINE);
+		formatSubStatement(node.getBody(), false, true, preferences.brace_position_for_scope_statements);
 		return false;
 	}
 	
@@ -1487,7 +1484,7 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 		scribe.printNextToken(TOK.TOKlparen);
 		node.getExpression().accept(this);
 		scribe.printNextToken(TOK.TOKrparen);
-		formatSubStatement(node.getBody(), false, false, BracePosition.END_OF_LINE);
+		formatSubStatement(node.getBody(), false, false, preferences.brace_position_for_switch_statement);
 		return false;
 	}
 	
@@ -1501,7 +1498,7 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 			expression.accept(this);
 			scribe.printNextToken(TOK.TOKrparen);
 		}
-		formatSubStatement(node.getBody(), false, true, BracePosition.END_OF_LINE);
+		formatSubStatement(node.getBody(), false, true, preferences.brace_position_for_synchronized_statements);
 		return false;
 	}
 	
@@ -1515,7 +1512,7 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 		scribe.printNextToken(TOK.TOKlparen);
 		formatCSV(node.templateParameters(), false, true);
 		scribe.printNextToken(TOK.TOKrparen);
-		formatDeclarationBlock(node.declarations());
+		formatDeclarationBlock(node.declarations(), preferences.brace_position_for_template_declarations, true);
 		return false;
 	}
 	
@@ -1564,7 +1561,7 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 	public boolean visit(TryStatement node)
 	{
 		scribe.printNextToken(TOK.TOKtry);
-		formatSubStatement(node.getBody(), true, true, BracePosition.END_OF_LINE);
+		formatSubStatement(node.getBody(), true, true, preferences.brace_position_for_try_catch_finally);
 		List<CatchClause> catchClauses = node.catchClauses();
 		for(CatchClause c : catchClauses)
 			c.accept(this);
@@ -1572,7 +1569,7 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 		if(null != $finally)
 		{
 			scribe.printNextToken(TOK.TOKfinally);
-			formatSubStatement($finally, false, true, BracePosition.END_OF_LINE);
+			formatSubStatement($finally, false, true, preferences.brace_position_for_try_catch_finally);
 		}
 		return false;
 	}
@@ -1805,7 +1802,7 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 		scribe.printNextToken(TOK.TOKvolatile);
 		Statement body = node.getBody();
 		if(body instanceof Block)
-			formatSubStatement(body, false, true, BracePosition.END_OF_LINE);
+			formatSubStatement(body, false, true, preferences.brace_position_for_synchronized_statements);
 		else
 		{
 			scribe.space();
@@ -1820,7 +1817,7 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 		scribe.printNextToken(TOK.TOKlparen);
 		node.getExpression().accept(this);
 		scribe.printNextToken(TOK.TOKrparen);
-		formatSubStatement(node.getBody(), false, true, BracePosition.END_OF_LINE);
+		formatSubStatement(node.getBody(), false, true, preferences.brace_position_for_loop_statement);
 		return false;
 	}
 
@@ -1830,29 +1827,29 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 		scribe.printNextToken(TOK.TOKlparen);
 		node.getExpression().accept(this);
 		scribe.printNextToken(TOK.TOKrparen);
-		formatSubStatement(node.getBody(), false, true, BracePosition.END_OF_LINE);
+		formatSubStatement(node.getBody(), false, true, preferences.brace_position_for_with_statements);
 		return false;
 	}
 
 	private void formatConditionalDeclaration(ConditionalDeclaration node)
 	{
-		formatDeclarationBlock(node.thenDeclarations());
+		formatDeclarationBlock(node.thenDeclarations(), preferences.brace_position_for_conditional_declaration, true);
 		if(isNextToken(TOK.TOKelse))
 		{
 			scribe.printNewLine();
 			scribe.printNextToken(TOK.TOKelse);
-			formatDeclarationBlock(node.elseDeclarations());
+			formatDeclarationBlock(node.elseDeclarations(), preferences.brace_position_for_conditional_declaration, true);
 		}
 	}
 	
 	private void formatConditionalStatement(ConditionalStatement node)
 	{
-		formatSubStatement(node.getThenBody(), false, true, BracePosition.END_OF_LINE);
+		formatSubStatement(node.getThenBody(), false, true, preferences.brace_position_for_conditional_declaration);
 		if(isNextToken(TOK.TOKelse))
 		{
 			scribe.printNewLine();
 			scribe.printNextToken(TOK.TOKelse);
-			formatSubStatement(node.getElseBody(), false, true, BracePosition.END_OF_LINE);
+			formatSubStatement(node.getElseBody(), false, true, preferences.brace_position_for_conditional_declaration);
 		}
 	}
 	
@@ -1884,27 +1881,31 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 		
 	}
 	
-	private void formatDeclarationBlock(List<Declaration> declarations)
+	private void formatDeclarationBlock(List<Declaration> declarations, 
+			BracePosition bracePosition, boolean indent)
 	{
 		if(isNextToken(TOK.TOKlcurly))
 		{
+			formatOpeningBrace(bracePosition, indent);
 			scribe.printNewLine();
-			scribe.printNextToken(TOK.TOKlcurly);
-			scribe.printNewLine();
-			scribe.indent();
 			formatDeclarations(declarations);
 			scribe.printNewLine();
-			scribe.unIndent();
-			scribe.printNextToken(TOK.TOKrcurly);
+			formatClosingBrace(bracePosition, indent);
 		}
 		else if(isNextToken(TOK.TOKcolon))
 		{
-			// These are usually rendered as empty in the AST
 			scribe.printNextToken(TOK.TOKcolon);
 			scribe.printNewLine();
-			scribe.indent();
+			
+			// The AST often renders these as empty -- if so, just return
+			if(declarations.isEmpty())
+				return;
+			
+			if(indent)
+				scribe.indent();
 			formatDeclarations(declarations);
-			scribe.unIndent();
+			if(indent)
+				scribe.unIndent();
 		}
 		else
 		{
@@ -1921,8 +1922,8 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 			return;
 		
 		Declaration prev = declarations.get(0);
+		// No blank lines before first (yet; this will be configurable)
 		prev.accept(this);
-		scribe.printNewLine();
 		int len = declarations.size();
 		for (int i = 1; i < len; i++)
 		{
@@ -1960,8 +1961,9 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 	/**
 	 * Formats the given function. This is used because functions will be
 	 * visited as FunctionDeclarations and ConstructorDeclarations.
+	 * @param bracePosition TODO
 	 */
-	private void formatFunction(IFunctionDeclaration node)
+	private void formatFunction(IFunctionDeclaration node, BracePosition bracePosition)
 	{
 		if(isNextToken(TOK.TOKlparen))
 		{
