@@ -69,7 +69,7 @@
             class="mmrnmhrm.ui.properties.ProjConfigPropertyPage"
             id="mmrnmhrm.ui.properties.samplePropertyPage"
             name="D Project Config"
-            objectClass="org.eclipse.core.resources.IContainer"/>
+            objectClass="org.eclipse.core.resources.IProject"/>
    </extension>
    <extension
          point="org.eclipse.ui.editors">
@@ -81,6 +81,18 @@
             name="Dee Editor (Mmrnmhrm)">
          <contentTypeBinding contentTypeId="mmrnmhrm.core.dmsource"/>
       </editor>
+   </extension>
+   <extension
+         point="org.eclipse.ui.preferencePages">
+      <page
+            class="mmrnmhrm.ui.preferences.DeeBasePreferencePage"
+            id="mmrnmhrm.ui.preferences.DeeBasePreferencePage"
+            name="Dee"/>
+      <page
+            category="mmrnmhrm.ui.preferences.DeeBasePreferencePage"
+            class="mmrnmhrm.ui.preferences.DeeColoringPreferencePage"
+            id="mmrnmhrm.ui.preferences.SyntaxColoring"
+            name="Syntax Coloring"/>
    </extension>
    <extension
          point="org.eclipse.ui.editorActions">
@@ -209,18 +221,6 @@
             </or>
          </possibleChildren>
       </navigatorContent>
-   </extension>
-   <extension
-         point="org.eclipse.ui.preferencePages">
-      <page
-            class="mmrnmhrm.ui.preferences.DeeBasePreferencePage"
-            id="mmrnmhrm.ui.preferences.DeeBasePreferencePage"
-            name="Dee"/>
-      <page
-            category="mmrnmhrm.ui.preferences.DeeBasePreferencePage"
-            class="mmrnmhrm.ui.preferences.DeeColoringPreferencePage"
-            id="mmrnmhrm.ui.preferences.SyntaxColoring"
-            name="Syntax Coloring"/>
    </extension>
    <extension
          point="org.eclipse.ui.views">

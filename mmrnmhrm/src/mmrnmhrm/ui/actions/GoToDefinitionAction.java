@@ -1,23 +1,24 @@
 package mmrnmhrm.ui.actions;
 
+import melnorme.lang.ui.EditorUtil;
+import mmrnmhrm.core.model.CompilationUnit;
+import mmrnmhrm.ui.DeePluginImages;
+import mmrnmhrm.ui.editor.DeeEditor;
+
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.text.TextSelection;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.texteditor.AbstractTextEditor;
 
 import util.log.Logg;
 import dtool.dom.ast.ASTNode;
 import dtool.dom.ast.ASTPrinter;
-import dtool.dom.base.Entity;
 import dtool.dom.base.BaseEntityRef;
+import dtool.dom.base.Entity;
 import dtool.dom.definitions.DefUnit;
-import melnorme.lang.ui.EditorUtil;
-import mmrnmhrm.core.model.CompilationUnit;
-import mmrnmhrm.ui.DeePluginImages;
-import mmrnmhrm.ui.editor.DeeEditor;
+import dtool.model.IIntrinsicUnit;
 
 public class GoToDefinitionAction extends DeeEditorAction {
 	
@@ -75,10 +76,12 @@ public class GoToDefinitionAction extends DeeEditorAction {
 		}
 		System.out.println("FOUND: " + ASTPrinter.toStringNodeExtra(elem));
 		
-		GoToDefinitionAction.execute(window, elem);
+		GoToDefinitionAction.execute(deeEditor, elem);
 	}
 
-	public static void execute(IWorkbenchWindow window, ASTNode elem) {
+	public static void execute(AbstractTextEditor deeEditor, ASTNode elem) {
+		IWorkbenchWindow window = deeEditor.getSite().getWorkbenchWindow();
+		
 		if(elem instanceof BaseEntityRef)
 			elem = ((BaseEntityRef) elem).entity;
 			
@@ -88,11 +91,19 @@ public class GoToDefinitionAction extends DeeEditorAction {
 				dialogWarning(window.getShell(), "Definition not found for entity: " + elem);
 				return;
 			}
-			IWorkbenchPage page = window.getActivePage();
-			//Module module = getModule(defunit);
-			//module.cunit
-			//IDE.openEditor(page, resource, true);
-			EditorUtil.setSelection((AbstractTextEditor) page.getActiveEditor(), defunit);
+			if(defunit.hasNoSourceRangeInfo()) {
+				dialogInfo(window.getShell(),
+						"DefUnit: " +defunit+ " has no source range info!");
+			} else if(defunit instanceof IIntrinsicUnit) {
+					dialogInfo(window.getShell(),
+							"DefUnit: " +defunit+ " is languageintrinsic.");
+			} else {
+				//IWorkbenchPage page = window.getActivePage();
+				//Module module = getModule(defunit);
+				//module.cunit
+				//IDE.openEditor(page, resource, true);
+				EditorUtil.setSelection(deeEditor, defunit);
+			}
 		} else if(elem instanceof DefUnit.Symbol) {
 			dialogInfo(window.getShell(),
 					"Already at definition of element: " + elem);

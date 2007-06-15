@@ -34,7 +34,7 @@ public class ProjConfigPropertyPage extends PropertyPage {
 		IProject project = getProject();
 		if (project == null) {
 			Label label = new Label(parent, SWT.NONE);
-			label.setText("Target not an IProject. WTH");
+			label.setText("Target not an IProject. ASSERT FAIL!");
 			//setVisible(false);
 			return label;
 		} 
@@ -43,7 +43,7 @@ public class ProjConfigPropertyPage extends PropertyPage {
 		if (fDeeProject == null) {
 			Label label = new Label(parent, SWT.NONE);
 			label.setText("Target not an D project.");
-			//setVisible(false);
+			setVisible(false);
 			return label;
 		} else {
 			fProjCfg.init(fDeeProject);

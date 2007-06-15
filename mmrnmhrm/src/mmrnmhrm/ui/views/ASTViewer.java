@@ -121,7 +121,7 @@ public class ASTViewer extends ViewPart implements ISelectionListener,
 	}
 
 	public void documentChanged(DocumentEvent event) {
-		updateViewer();
+		refreshViewer();
 	}
 
 	public void setInput(ITextEditor editor) {
@@ -129,6 +129,7 @@ public class ASTViewer extends ViewPart implements ISelectionListener,
 			fDeeDocument.removeDocumentListener(this);
 		}
 		
+		IDocument oldDocument = fDeeDocument;
 		fEditor = null;
 		fDeeDocument = null;
 		
@@ -140,9 +141,15 @@ public class ASTViewer extends ViewPart implements ISelectionListener,
 			IDocument document = fEditor.getDocumentProvider().getDocument(editor.getEditorInput());
 			if(document instanceof DeeDocument) {
 				fDeeDocument = (DeeDocument) document;
-				fDeeDocument.addDocumentListener(this);
 				fCUnit = fDeeDocument.getCompilationUnit();
-				updateViewer();
+
+				fDeeDocument.addDocumentListener(this);
+				if(oldDocument != fDeeDocument) {
+					viewer.setInput(fCUnit);
+					viewer.getControl().setVisible(true);
+				}
+
+				refreshViewer();
 			} else {
 				setContentDescription("No DeeDocument available");
 				viewer.getControl().setVisible(false);
@@ -153,29 +160,22 @@ public class ASTViewer extends ViewPart implements ISelectionListener,
 	}
 
 
-	private void updateViewer() {
-		Object input;
+	private void refreshViewer() {
 		if(fCUnit.parseStatus == EModelStatus.OK) {
 			int offset = ((LangEditor) fEditor).getSelection().getOffset();
 			setContentDescription("AST ok, sel: " + offset);
-			if(fUseOldAst == true)
-				input = fCUnit.getOldModule();
-			else
-				input = fCUnit.getNeoModule();
 		} else {
 			setContentDescription(fCUnit.toStringParseStatus());
-			input = fCUnit.getOldModule();
 		}
 		if(fCUnit.parseStatus == EModelStatus.PARSER_INTERNAL_ERROR) {
 			viewer.getControl().setVisible(false);
 			return;
 		}
-		
-		viewer.getControl().setVisible(true);
-		viewer.getControl().setRedraw(false);
-		viewer.setInput(input);
+
+		//viewer.getControl().setRedraw(false);
+		//viewer.setInput(fCUnit);
 		viewer.refresh();
-		viewer.getControl().setRedraw(true);
+		//viewer.getControl().setRedraw(true);
 	}
 	
 
@@ -251,7 +251,7 @@ public class ASTViewer extends ViewPart implements ISelectionListener,
 		
 		actionToggle = new Action() {
 			public void run() {
-				fUseOldAst  = !fUseOldAst; updateViewer();
+				fUseOldAst  = !fUseOldAst; refreshViewer();
 			}
 		};
 		actionToggle.setText("Toggle Neo/Old AST");
@@ -265,7 +265,7 @@ public class ASTViewer extends ViewPart implements ISelectionListener,
 	public void doubleClick(DoubleClickEvent event) {
 		ISelection selection = viewer.getSelection();
 		ASTNode node = (ASTNode) ((IStructuredSelection)selection).getFirstElement();
-		GoToDefinitionAction.execute(getSite().getWorkbenchWindow(), node);
+		GoToDefinitionAction.execute((AbstractTextEditor)fEditor, node);
 	}
 
 	public void selectionChanged(SelectionChangedEvent event) {

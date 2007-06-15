@@ -36,11 +36,11 @@ public class DeeContentOutlinePage extends ContentOutlinePage {
 	public void updateView() {
 		CompilationUnit cunit = editor.getDocument().getCompilationUnit();
 		TreeViewer viewer = getTreeViewer();
-		//viewer.getControl().setRedraw(false);
+		viewer.getControl().setRedraw(false);
 		viewer.setInput(cunit.getModule());
 		viewer.refresh();
 		//viewer.expandAll();
-		//viewer.getControl().setRedraw(true);
+		viewer.getControl().setRedraw(true);
 	}
 	
 	

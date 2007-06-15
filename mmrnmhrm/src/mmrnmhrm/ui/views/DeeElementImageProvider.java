@@ -7,16 +7,17 @@ import mmrnmhrm.ui.DeePluginImages;
 import org.eclipse.swt.graphics.Image;
 
 import util.tree.IElement;
-import descent.internal.core.dom.TypedefDeclaration;
 import dtool.dom.ast.ASTNeoNode;
 import dtool.dom.ast.ASTNode;
-import dtool.dom.base.Entity;
 import dtool.dom.base.BaseEntityRef;
+import dtool.dom.base.Entity;
 import dtool.dom.declarations.DeclarationImport;
 import dtool.dom.definitions.DefinitionAggregate;
 import dtool.dom.definitions.DefinitionAlias;
+import dtool.dom.definitions.DefinitionEnum;
 import dtool.dom.definitions.DefinitionFunction;
 import dtool.dom.definitions.DefinitionTemplate;
+import dtool.dom.definitions.DefinitionTypedef;
 import dtool.dom.definitions.DefinitionVariable;
 import dtool.dom.definitions.Module.DeclarationModule;
 
@@ -57,8 +58,10 @@ public class DeeElementImageProvider {
 			/*DefinitionAggregate aggregate = (DefinitionAggregate) node;
 			if(aggregate.getElementType() == )*/
 			return getImage(DeePluginImages.ENT_CLASS);
-		} else if(node instanceof TypedefDeclaration) {
+		} else if(node instanceof DefinitionTypedef) {
 			return getImage(DeePluginImages.ENT_TYPEDEF);
+		} else if(node instanceof DefinitionEnum) {
+			return getImage(DeePluginImages.ENT_ENUM);
 		} else if(!(node instanceof ASTNeoNode)) {
 			return getImage(DeePluginImages.NODE_OLDAST);
 		} else
