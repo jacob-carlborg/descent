@@ -10,6 +10,28 @@ public class DefaultCodeFormatterOptions
 {
 	// TODO different default profiles? (or just get rid of the unused ones)
 	
+	public enum TabChar
+	{
+		TAB(DefaultCodeFormatterConstants.TAB),
+		SPACE(DefaultCodeFormatterConstants.SPACE),
+		MIXED(DefaultCodeFormatterConstants.MIXED);
+		
+		private final String constVal;
+		TabChar(String $constVal) { constVal = $constVal; }
+		public String toString() { return constVal; }
+	}
+	
+	public enum BracePosition
+	{
+		END_OF_LINE(DefaultCodeFormatterConstants.END_OF_LINE),
+		NEXT_LINE(DefaultCodeFormatterConstants.NEXT_LINE),
+		NEXT_LINE_SHIFTED(DefaultCodeFormatterConstants.NEXT_LINE_SHIFTED);
+		
+		private final String constVal;
+		BracePosition(String $constVal) { constVal = $constVal; }
+		public String toString() { return constVal; }
+	}
+	
 	public static DefaultCodeFormatterOptions getDefaultSettings() {
 		DefaultCodeFormatterOptions options = new DefaultCodeFormatterOptions();
 		options.setDefaultSettings();
@@ -72,6 +94,14 @@ public class DefaultCodeFormatterOptions
 		 * {
 		 *     $optionsMapInitializer = "$$_{'optName'} ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE";
 		 * }
+		 * elsif($$_{'type'} eq "TabChar")
+		 * {
+		 *     $optionsMapInitializer = "$$_{'optName'}.toString()";
+		 * }
+		 * elsif($$_{'type'} eq "BracePosition")
+		 * {
+		 *     $optionsMapInitializer = "$$_{'optName'}.toString()";
+		 * }
 		 * else
 		 * {
 		 *     $optionsMapInitializer = "null";
@@ -101,6 +131,18 @@ public class DefaultCodeFormatterOptions
 		 * elsif($$_{'type'} eq "boolean")
 		 * {
 		 *     $initializer = "DefaultCodeFormatterConstants.TRUE.equals(current)";
+		 * }
+		 * elsif($$_{'type'} eq "TabChar")
+		 * {
+		 *     $initializer = "DefaultCodeFormatterConstants.MIXED.equals(current) ? " .
+		 *                    "TabChar.MIXED : DefaultCodeFormatterConstants.SPACE.equals(current) ? " .
+		 *                    "TabChar.SPACE : TabChar.TAB";
+		 * }
+		 * elsif($$_{'type'} eq "BracePosition")
+		 * {
+		 *     $initializer = "DefaultCodeFormatterConstants.NEXT_LINE_SHIFTED.equals(current) ? " .
+		 *                    "BracePosition.NEXT_LINE_SHIFTED : DefaultCodeFormatterConstants.NEXT_LINE.equals(current) ? " .
+		 *                    "BracePosition.NEXT_LINE : BracePosition.END_OF_LINE";
 		 * }
 		 * else
 		 * {

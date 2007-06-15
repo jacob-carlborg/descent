@@ -32,8 +32,6 @@ import descent.internal.formatter.align.AlignmentException;
  * @since 2.1
  */
 public class Scribe2 {	private static final int INITIAL_SIZE = 100;
-	
-	private enum TabChar { TAB, SPACE, MIXED }
 
 	private boolean checkLineWrapping;
 	/** one-based column */
@@ -62,7 +60,7 @@ public class Scribe2 {	private static final int INITIAL_SIZE = 100;
 	public int indentationSize;	
 	private int textRegionEnd;
 	private int textRegionStart;
-	private TabChar tabChar;
+	private DefaultCodeFormatterOptions.TabChar tabChar;
 	public int numberOfIndentations;
 	private boolean useTabsOnlyForLeadingIndents;
 	CompilationUnit unit;
@@ -88,15 +86,8 @@ public class Scribe2 {	private static final int INITIAL_SIZE = 100;
 		this.numberOfIndentations = 0;
 		this.useTabsOnlyForLeadingIndents = formatter.preferences.use_tabs_only_for_leading_indentations;
         this.indentEmptyLines = formatter.preferences.indent_empty_lines;
-		if(formatter.preferences.tab_char.equals(DefaultCodeFormatterConstants.TAB))
-			tabChar = TabChar.TAB;
-		else if (formatter.preferences.tab_char.equals(DefaultCodeFormatterConstants.SPACE))
-			tabChar = TabChar.SPACE;
-		else if(formatter.preferences.tab_char.equals(DefaultCodeFormatterConstants.MIXED))
-			tabChar = TabChar.MIXED;
-		else
-			throw new IllegalArgumentException("Unknown tab char!");
-		if (this.tabChar == TabChar.MIXED) {
+		this.tabChar = formatter.preferences.tab_char;
+		if (this.tabChar == DefaultCodeFormatterOptions.TabChar.MIXED) {
 			this.indentationSize = formatter.preferences.indentation_size;
 		} else {
 			this.indentationSize = this.tabLength;
@@ -423,7 +414,7 @@ public class Scribe2 {	private static final int INITIAL_SIZE = 100;
 		int indent = someColumn - 1;
 		if (indent == 0)
 			return this.indentationLevel;
-		if (this.tabChar == TabChar.TAB) {
+		if (this.tabChar == DefaultCodeFormatterOptions.TabChar.TAB) {
 			if (this.useTabsOnlyForLeadingIndents) {
 				return indent;
 			}

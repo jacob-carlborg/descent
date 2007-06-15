@@ -23,7 +23,7 @@ public class DefaultCodeFormatterConstants {
 	// Brace positions
 	public static final String END_OF_LINE = "end_of_line";
 	public static final String NEXT_LINE = "next_line";
-	public static final String NEXT_LINE_ON_WRAP = "next_line_on_wrap";
+	public static final String NEXT_LINE_ON_WRAP ="next_line_on_wrap";
 	public static final String NEXT_LINE_SHIFTED = "next_line_shifted";
 	
 	// Indentation type

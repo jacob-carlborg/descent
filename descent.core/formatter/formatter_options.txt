@@ -41,10 +41,8 @@
 
 # Brace Positioning
 brace_position_for_function_declaration
-	type=String
-	default=DefaultCodeFormatterConstants.NEXT_LINE
-	tab=BracesTabPage
-	uiText=Function Declarations
+	type=BracePosition
+	default=BracePosition.END_OF_LINE
 
 # White Space Options
 insert_space_before_semicolon
@@ -123,8 +121,8 @@ indent_empty_lines
 	type=boolean
 	default=true
 tab_char
-	type=String
-	default=DefaultCodeFormatterConstants.TAB
+	type=TabChar
+	default=TabChar.TAB
 indentation_size
 	type=int
 	default=4

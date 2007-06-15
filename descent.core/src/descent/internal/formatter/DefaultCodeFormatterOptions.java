@@ -10,6 +10,28 @@ public class DefaultCodeFormatterOptions
 {
 	// TODO different default profiles? (or just get rid of the unused ones)
 	
+	public enum TabChar
+	{
+		TAB(DefaultCodeFormatterConstants.TAB),
+		SPACE(DefaultCodeFormatterConstants.SPACE),
+		MIXED(DefaultCodeFormatterConstants.MIXED);
+		
+		private final String constVal;
+		TabChar(String $constVal) { constVal = $constVal; }
+		public String toString() { return constVal; }
+	}
+	
+	public enum BracePosition
+	{
+		END_OF_LINE(DefaultCodeFormatterConstants.END_OF_LINE),
+		NEXT_LINE(DefaultCodeFormatterConstants.NEXT_LINE),
+		NEXT_LINE_SHIFTED(DefaultCodeFormatterConstants.NEXT_LINE_SHIFTED);
+		
+		private final String constVal;
+		BracePosition(String $constVal) { constVal = $constVal; }
+		public String toString() { return constVal; }
+	}
+	
 	public static DefaultCodeFormatterOptions getDefaultSettings() {
 		DefaultCodeFormatterOptions options = new DefaultCodeFormatterOptions();
 		options.setDefaultSettings();
@@ -29,7 +51,7 @@ public class DefaultCodeFormatterOptions
 	}
 	
 	// User formatting options
-	public String brace_position_for_function_declaration;
+	public BracePosition brace_position_for_function_declaration;
 	public boolean insert_space_before_semicolon;
 	public boolean insert_space_before_comma_in_multiple_field_declarations;
 	public boolean insert_space_after_comma_in_multiple_field_declarations;
@@ -53,7 +75,7 @@ public class DefaultCodeFormatterOptions
 	public int tab_size;
 	public boolean use_tabs_only_for_leading_indentations;
 	public boolean indent_empty_lines;
-	public String tab_char;
+	public TabChar tab_char;
 	public int indentation_size;
 	public int continuation_indentation;
 	public int number_of_empty_lines_to_preserve;
@@ -80,7 +102,7 @@ public class DefaultCodeFormatterOptions
 		
 		Map<String, String> options = new HashMap<String, String>();
 		
-		options.put(DefaultCodeFormatterConstants.FORMATTER_BRACE_POSITION_FOR_FUNCTION_DECLARATION, brace_position_for_function_declaration);
+		options.put(DefaultCodeFormatterConstants.FORMATTER_BRACE_POSITION_FOR_FUNCTION_DECLARATION, brace_position_for_function_declaration.toString());
 		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_SEMICOLON, insert_space_before_semicolon ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
 		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_COMMA_IN_MULTIPLE_FIELD_DECLARATIONS, insert_space_before_comma_in_multiple_field_declarations ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
 		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_AFTER_COMMA_IN_MULTIPLE_FIELD_DECLARATIONS, insert_space_after_comma_in_multiple_field_declarations ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
@@ -104,7 +126,7 @@ public class DefaultCodeFormatterOptions
 		options.put(DefaultCodeFormatterConstants.FORMATTER_TAB_SIZE, Integer.toString(tab_size));
 		options.put(DefaultCodeFormatterConstants.FORMATTER_USE_TABS_ONLY_FOR_LEADING_INDENTATIONS, use_tabs_only_for_leading_indentations ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
 		options.put(DefaultCodeFormatterConstants.FORMATTER_INDENT_EMPTY_LINES, indent_empty_lines ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
-		options.put(DefaultCodeFormatterConstants.FORMATTER_TAB_CHAR, tab_char);
+		options.put(DefaultCodeFormatterConstants.FORMATTER_TAB_CHAR, tab_char.toString());
 		options.put(DefaultCodeFormatterConstants.FORMATTER_INDENTATION_SIZE, Integer.toString(indentation_size));
 		options.put(DefaultCodeFormatterConstants.FORMATTER_CONTINUATION_INDENTATION, Integer.toString(continuation_indentation));
 		options.put(DefaultCodeFormatterConstants.FORMATTER_NUMBER_OF_EMPTY_LINES_TO_PRESERVE, Integer.toString(number_of_empty_lines_to_preserve));
@@ -120,9 +142,9 @@ public class DefaultCodeFormatterOptions
 		current = settings.get(DefaultCodeFormatterConstants.FORMATTER_BRACE_POSITION_FOR_FUNCTION_DECLARATION);
 		if(null != current) {
 			try {
-				brace_position_for_function_declaration = current;
+				brace_position_for_function_declaration = DefaultCodeFormatterConstants.NEXT_LINE_SHIFTED.equals(current) ? BracePosition.NEXT_LINE_SHIFTED : DefaultCodeFormatterConstants.NEXT_LINE.equals(current) ? BracePosition.NEXT_LINE : BracePosition.END_OF_LINE;
 			} catch(Exception e) {
-				brace_position_for_function_declaration = DefaultCodeFormatterConstants.NEXT_LINE;
+				brace_position_for_function_declaration = BracePosition.END_OF_LINE;
 			}
 		}
 		
@@ -336,9 +358,9 @@ public class DefaultCodeFormatterOptions
 		current = settings.get(DefaultCodeFormatterConstants.FORMATTER_TAB_CHAR);
 		if(null != current) {
 			try {
-				tab_char = current;
+				tab_char = DefaultCodeFormatterConstants.MIXED.equals(current) ? TabChar.MIXED : DefaultCodeFormatterConstants.SPACE.equals(current) ? TabChar.SPACE : TabChar.TAB;
 			} catch(Exception e) {
-				tab_char = DefaultCodeFormatterConstants.TAB;
+				tab_char = TabChar.TAB;
 			}
 		}
 		
@@ -371,7 +393,7 @@ public class DefaultCodeFormatterOptions
 	}
 
 	public void setDefaultSettings() {
-		brace_position_for_function_declaration = DefaultCodeFormatterConstants.NEXT_LINE;
+		brace_position_for_function_declaration = BracePosition.END_OF_LINE;
 		insert_space_before_semicolon = false;
 		insert_space_before_comma_in_multiple_field_declarations = false;
 		insert_space_after_comma_in_multiple_field_declarations = true;
@@ -395,7 +417,7 @@ public class DefaultCodeFormatterOptions
 		tab_size = 4;
 		use_tabs_only_for_leading_indentations = false;
 		indent_empty_lines = true;
-		tab_char = DefaultCodeFormatterConstants.TAB;
+		tab_char = TabChar.TAB;
 		indentation_size = 4;
 		continuation_indentation = 2;
 		number_of_empty_lines_to_preserve = 1;
