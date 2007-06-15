@@ -15,7 +15,6 @@ import org.eclipse.ui.texteditor.AbstractTextEditor;
 import util.log.Logg;
 import dtool.dom.ast.ASTNode;
 import dtool.dom.ast.ASTPrinter;
-import dtool.dom.base.BaseEntityRef;
 import dtool.dom.base.Entity;
 import dtool.dom.definitions.DefUnit;
 import dtool.model.IIntrinsicUnit;
@@ -82,9 +81,6 @@ public class GoToDefinitionAction extends DeeEditorAction {
 	public static void execute(AbstractTextEditor deeEditor, ASTNode elem) {
 		IWorkbenchWindow window = deeEditor.getSite().getWorkbenchWindow();
 		
-		if(elem instanceof BaseEntityRef)
-			elem = ((BaseEntityRef) elem).entity;
-			
 		if(elem instanceof Entity) {
 			DefUnit defunit = ((Entity)elem).getTargetDefUnit();
 			if(defunit == null) {

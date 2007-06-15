@@ -9,7 +9,6 @@ import org.eclipse.swt.graphics.Image;
 import util.tree.IElement;
 import dtool.dom.ast.ASTNeoNode;
 import dtool.dom.ast.ASTNode;
-import dtool.dom.base.BaseEntityRef;
 import dtool.dom.base.Entity;
 import dtool.dom.declarations.DeclarationImport;
 import dtool.dom.definitions.DefinitionAggregate;
@@ -40,9 +39,7 @@ public class DeeElementImageProvider {
 			return getImage(DeePluginImages.NODE_IMPORT);
 		} else if(node instanceof DeclarationModule) {
 			return getImage(DeePluginImages.ELEM_PACKAGE);
-		} else if (node instanceof BaseEntityRef) {
-			return getImage(DeePluginImages.NODE_BASEREF);
-		}else if (node instanceof Entity) {
+		} else if (node instanceof Entity) {
 			return getImage(DeePluginImages.NODE_REF);
 		} else if (node instanceof DefinitionAlias) {
 			return getImage(DeePluginImages.ENT_ALIAS);
