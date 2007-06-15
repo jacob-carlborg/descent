@@ -9,7 +9,7 @@ package descent.core.dom;
  * 
  * where "label" is optional.
  */
-public interface IBreakStatement extends IStatement {
+public interface IBreakStatement extends IDescentStatement {
 	
 	/**
 	 * Returns the label, if any, or <code>null</code>.

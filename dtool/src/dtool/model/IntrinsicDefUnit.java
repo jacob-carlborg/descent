@@ -8,17 +8,13 @@ public abstract class IntrinsicDefUnit extends DefUnit implements IIntrinsicUnit
 
 	@Override
 	public EArcheType getArcheType() {
-		return null;
+		return EArcheType.Aggregate;
 	}
 
 	@Override
-	public IScope getBindingScope() {
-		return this;
-	}
+	public abstract IScope getMembersScope();
 	
-	public IScope getSuperScope() {
-		return null;
-	}
+	public abstract IScope getSuperScope();
 
 	@Override
 	public void accept0(IASTNeoVisitor visitor) {

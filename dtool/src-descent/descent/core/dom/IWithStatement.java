@@ -9,7 +9,7 @@ package descent.core.dom;
  * }
  * </pre>
  */
-public interface IWithStatement extends IStatement {
+public interface IWithStatement extends IDescentStatement {
 	
 	/**
 	 * Returns the expression to use as with.
@@ -19,6 +19,6 @@ public interface IWithStatement extends IStatement {
 	/**
 	 * Returns the statement used as a body.
 	 */
-	IStatement getStatement();
+	IDescentStatement getStatement();
 
 }

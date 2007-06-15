@@ -9,12 +9,12 @@ package descent.core.dom;
  * }
  * </pre>
  */
-public interface IForStatement extends IStatement {
+public interface IForStatement extends IDescentStatement {
 	
 	/**
 	 * Returns the initializer. May be null.
 	 */
-	IStatement getInitializer();
+	IDescentStatement getInitializer();
 	
 	/**
 	 * Returns the condition. May be null.
@@ -29,6 +29,6 @@ public interface IForStatement extends IStatement {
 	/**
 	 * Returns the body of the for.
 	 */
-	IStatement getBody();
+	IDescentStatement getBody();
 
 }

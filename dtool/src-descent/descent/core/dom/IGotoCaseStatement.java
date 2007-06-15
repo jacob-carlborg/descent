@@ -7,7 +7,7 @@ package descent.core.dom;
  * goto case;
  * </pre>
  */
-public interface IGotoCaseStatement extends IStatement {
+public interface IGotoCaseStatement extends IDescentStatement {
 	
 	/**
 	 * Returns the case to go.

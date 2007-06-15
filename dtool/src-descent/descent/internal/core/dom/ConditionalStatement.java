@@ -4,7 +4,7 @@ import util.tree.TreeVisitor;
 import descent.core.dom.IDebugStatement;
 import descent.core.dom.IExpression;
 import descent.core.dom.IName;
-import descent.core.dom.IStatement;
+import descent.core.dom.IDescentStatement;
 import descent.core.dom.IStaticIfStatement;
 import descent.core.dom.IVersionStatement;
 import descent.core.domX.IASTVisitor;
@@ -25,11 +25,11 @@ public class ConditionalStatement extends Statement implements IStaticIfStatemen
 		return ((StaticIfCondition) condition).exp;
 	}
 	
-	public IStatement getThen() {
+	public IDescentStatement getThen() {
 		return ifbody;
 	}
 	
-	public IStatement getElse() {
+	public IDescentStatement getElse() {
 		return elsebody;
 	}
 	

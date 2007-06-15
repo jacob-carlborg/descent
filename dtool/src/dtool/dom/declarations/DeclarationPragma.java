@@ -7,8 +7,9 @@ import dtool.dom.ast.ASTNode;
 import dtool.dom.ast.IASTNeoVisitor;
 import dtool.dom.definitions.DefUnit.Symbol;
 import dtool.dom.expressions.Expression;
+import dtool.model.IDefinitionContainer;
 
-public class DeclarationPragma extends ASTNeoNode {
+public class DeclarationPragma extends ASTNeoNode implements IDefinitionContainer {
 
 	public Symbol ident;
 	public Expression[] expressions;
@@ -31,6 +32,10 @@ public class DeclarationPragma extends ASTNeoNode {
 			TreeVisitor.acceptChildren(visitor, decls);
 		}
 		visitor.endVisit(this);
+	}
+
+	public ASTNode[] getMembers() {
+		return decls;
 	}
 
 }

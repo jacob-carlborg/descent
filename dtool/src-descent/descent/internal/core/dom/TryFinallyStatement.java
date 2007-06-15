@@ -1,7 +1,7 @@
 package descent.internal.core.dom;
 
 import util.tree.TreeVisitor;
-import descent.core.dom.IStatement;
+import descent.core.dom.IDescentStatement;
 import descent.core.dom.ITryStatement;
 import descent.core.domX.IASTVisitor;
 
@@ -27,11 +27,11 @@ public class TryFinallyStatement extends Statement implements ITryStatement {
 		}
 	}
 
-	public IStatement getFinally() {
+	public IDescentStatement getFinally() {
 		return finalbody;
 	}
 
-	public IStatement getTry() {
+	public IDescentStatement getTry() {
 		if (s instanceof TryCatchStatement) {
 			return ((TryCatchStatement) s).getTry();
 		} else {

@@ -2,7 +2,7 @@ package descent.internal.core.dom;
 
 import util.tree.TreeVisitor;
 import descent.core.dom.IExpression;
-import descent.core.dom.IStatement;
+import descent.core.dom.IDescentStatement;
 import descent.core.dom.IWithStatement;
 import descent.core.domX.IASTVisitor;
 
@@ -20,7 +20,7 @@ public class WithStatement extends Statement implements IWithStatement {
 		return exp;
 	}
 	
-	public IStatement getStatement() {
+	public IDescentStatement getStatement() {
 		return body;
 	}
 	

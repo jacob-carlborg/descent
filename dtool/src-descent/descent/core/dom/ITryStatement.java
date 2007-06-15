@@ -19,12 +19,12 @@ import descent.internal.core.dom.Catch;
  * }
  * </pre>
  */
-public interface ITryStatement extends IStatement {
+public interface ITryStatement extends IDescentStatement {
 	
 	/**
 	 * Returns the statement to try.
 	 */
-	IStatement getTry();
+	IDescentStatement getTry();
 	
 	/**
 	 * Returns the catches of the try statement.
@@ -34,6 +34,6 @@ public interface ITryStatement extends IStatement {
 	/**
 	 * Returns the finally statement, if any, or null.
 	 */
-	IStatement getFinally();
+	IDescentStatement getFinally();
 
 }

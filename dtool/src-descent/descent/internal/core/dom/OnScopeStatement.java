@@ -2,7 +2,7 @@ package descent.internal.core.dom;
 
 import util.tree.TreeVisitor;
 import descent.core.dom.IOnScopeStatement;
-import descent.core.dom.IStatement;
+import descent.core.dom.IDescentStatement;
 import descent.core.domX.IASTVisitor;
 
 public class OnScopeStatement extends Statement implements IOnScopeStatement  {
@@ -15,7 +15,7 @@ public class OnScopeStatement extends Statement implements IOnScopeStatement  {
 		this.st = st;
 	}
 	
-	public IStatement getStatement() {
+	public IDescentStatement getStatement() {
 		return st;
 	}
 	

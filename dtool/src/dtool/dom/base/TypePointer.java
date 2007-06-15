@@ -9,6 +9,7 @@ import util.tree.TreeVisitor;
 import dtool.dom.ast.IASTNeoVisitor;
 import dtool.dom.base.TypeDynArray.IntrinsicDynArray;
 import dtool.dom.definitions.DefUnit;
+import dtool.model.IScope;
 import dtool.model.IntrinsicDefUnit;
 
 public class TypePointer extends Entity {
@@ -28,7 +29,7 @@ public class TypePointer extends Entity {
 	}
 
 	@Override
-	protected DefUnit getTargetDefUnitAsRoot() {
+	public DefUnit getTargetDefUnit() {
 		return IntrinsicDynArray.instance;
 	}
 	
@@ -36,6 +37,18 @@ public class TypePointer extends Entity {
 		public static final IntrinsicPointer instance = new IntrinsicPointer();
 
 		public List<DefUnit> getDefUnits() {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		@Override
+		public IScope getMembersScope() {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		@Override
+		public IScope getSuperScope() {
 			// TODO Auto-generated method stub
 			return null;
 		}

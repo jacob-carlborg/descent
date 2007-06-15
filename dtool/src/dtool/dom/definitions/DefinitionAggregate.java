@@ -1,6 +1,5 @@
 package dtool.dom.definitions;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import util.tree.TreeVisitor;
@@ -11,12 +10,14 @@ import dtool.dom.ast.ASTNode;
 import dtool.dom.ast.IASTNeoVisitor;
 import dtool.dom.base.BaseEntityRef;
 import dtool.dom.base.Entity;
+import dtool.dom.statements.IStatement;
+import dtool.model.EntityResolver;
 import dtool.model.IScope;
 
 /**
  * A definition of a aggregate. TODO.
  */
-public class DefinitionAggregate extends Definition implements IScope {
+public class DefinitionAggregate extends Definition implements IScope, IStatement {
 
 	public static class BaseClass extends ASTNeoNode{
 		
@@ -47,8 +48,8 @@ public class DefinitionAggregate extends Definition implements IScope {
 	@SuppressWarnings("unchecked")
 	public DefinitionAggregate(AggregateDeclaration elem) {
 		convertDsymbol(elem);
-		this.members = DescentASTConverter.convertMany(elem.members, this.members);
-		this.baseClasses = DescentASTConverter.convertMany(elem.baseClasses, this.baseClasses);
+		this.members = DescentASTConverter.convertManyL(elem.members, this.members);
+		this.baseClasses = DescentASTConverter.convertManyL(elem.baseClasses, this.baseClasses);
 		if(elem.templateParameters != null)
 		this.templateParameters = TemplateParameter.convertMany(elem.templateParameters);
 	}
@@ -61,26 +62,20 @@ public class DefinitionAggregate extends Definition implements IScope {
 		boolean children = visitor.visit(this);
 		if (children) {
 			TreeVisitor.acceptChildren(visitor, defname);
-
-			TreeVisitor.acceptChildren(visitor, members);
-			TreeVisitor.acceptChildren(visitor, baseClasses);
 			TreeVisitor.acceptChildren(visitor, templateParameters);
+			TreeVisitor.acceptChildren(visitor, baseClasses);
+			TreeVisitor.acceptChildren(visitor, members);
 		}
 		visitor.endVisit(this);
 	}
 
 	@Override
-	public IScope getBindingScope() {
+	public IScope getMembersScope() {
 		return this;
 	}
 	
 	public List<DefUnit> getDefUnits() {
-		List<DefUnit> defunits = new ArrayList<DefUnit>();
-		for(ASTNode elem: members) {
-			if(elem instanceof DefUnit)
-				defunits.add((DefUnit)elem);
-		}
-		return defunits;
+		return EntityResolver.getDefUnitsFromMembers(members);
 	}
 
 	public IScope getSuperScope() {

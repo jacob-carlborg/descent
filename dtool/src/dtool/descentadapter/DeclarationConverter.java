@@ -23,7 +23,6 @@ import dtool.dom.declarations.DeclarationLinkage;
 import dtool.dom.declarations.DeclarationPragma;
 import dtool.dom.declarations.DeclarationProtection;
 import dtool.dom.declarations.DeclarationStaticAssert;
-import dtool.dom.declarations.DeclarationStaticIf;
 import dtool.dom.declarations.DeclarationStorageClass;
 import dtool.dom.declarations.DeclarationUnitTest;
 import dtool.dom.definitions.DefinitionAggregate;
@@ -46,22 +45,16 @@ import dtool.dom.definitions.TemplateParamValue;
 abstract class DeclarationConverter extends BaseConverter {
 
 
-	public boolean visit(IDebugDeclaration element) {
-		Assert.fail();
-		// TODO Auto-generated method stub
-		return false;
+	public boolean visit(IDebugDeclaration elem) {
+		return endAdapt(new DeclarationConditional(elem));
 	}
 
-	public boolean visit(IVersionDeclaration element) {
-		Assert.fail();
-		// TODO Auto-generated method stub
-		return false;
+	public boolean visit(IVersionDeclaration elem) {
+		return endAdapt(new DeclarationConditional(elem));
 	}
 
-	public boolean visit(IIftypeDeclaration element) {
-		Assert.fail();
-		// TODO Auto-generated method stub
-		return false;
+	public boolean visit(IIftypeDeclaration elem) {
+		return endAdapt(new DeclarationConditional(elem));
 	}
 
 	public boolean visit(IDebugStatement elem) {
@@ -135,7 +128,7 @@ abstract class DeclarationConverter extends BaseConverter {
 	}
 
 	public boolean visit(descent.internal.core.dom.StaticIfDeclaration elem) {
-		return endAdapt(new DeclarationStaticIf(elem));
+		return endAdapt(new DeclarationConditional(elem));
 	}
 
 	public boolean visit(descent.internal.core.dom.StorageClassDeclaration elem) {

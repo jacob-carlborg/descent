@@ -2,7 +2,7 @@ package descent.internal.core.dom;
 
 import util.tree.TreeVisitor;
 import descent.core.dom.IExpression;
-import descent.core.dom.IStatement;
+import descent.core.dom.IDescentStatement;
 import descent.core.domX.IASTVisitor;
 
 public class DoStatement extends Statement {
@@ -19,7 +19,7 @@ public class DoStatement extends Statement {
 		return expr;
 	}
 	
-	public IStatement getBody() {
+	public IDescentStatement getBody() {
 		return body;
 	}
 	

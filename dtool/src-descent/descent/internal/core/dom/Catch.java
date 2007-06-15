@@ -2,7 +2,7 @@ package descent.internal.core.dom;
 
 import util.tree.TreeVisitor;
 import descent.core.dom.IName;
-import descent.core.dom.IStatement;
+import descent.core.dom.IDescentStatement;
 import descent.core.dom.IType;
 import descent.core.domX.IASTVisitor;
 import descent.core.domX.AbstractElement;
@@ -31,7 +31,7 @@ public class Catch extends AbstractElement  {
 		return id;
 	}
 	
-	public IStatement getHandler() {
+	public IDescentStatement getHandler() {
 		return handler;
 	}
 

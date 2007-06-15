@@ -86,6 +86,6 @@ public abstract class DefUnit extends ASTNeoNode {
 		return defname.name;
 	}
 
-	public abstract IScope getBindingScope();
+	public abstract IScope getMembersScope();
 
 }

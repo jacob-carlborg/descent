@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import util.tree.IElement;
+import dtool.dom.ast.ASTNode;
 import dtool.dom.base.EntitySingle;
 import dtool.dom.definitions.DefUnit;
 
@@ -34,7 +35,7 @@ public class EntityResolver {
 	}
 	
 	public static DefUnit getDefUnitFromDefUnit(DefUnit root, String name) {
-		return getDefUnitFromScope(root.getBindingScope(), name);
+		return getDefUnitFromScope(root.getMembersScope(), name);
 	}
 	
 	public static DefUnit getDefUnitFromSurroundingScope(EntitySingle entity) {
@@ -61,6 +62,32 @@ public class EntityResolver {
 		return ((IScope)elem);
 	}
 
+	
+	public static List<DefUnit> getDefUnitsFromMembers(IElement[] members) {
+		List<DefUnit> defunits = new ArrayList<DefUnit>();
+		for(IElement elem: members) {
+			addPossibleDefUnits(elem, defunits);
+		}
+		return defunits;
+	}
+	
+	public static List<DefUnit> getDefUnitsFromMembers(List<? extends IElement> members) {
+		List<DefUnit> defunits = new ArrayList<DefUnit>();
+		for(IElement elem: members) {
+			addPossibleDefUnits(elem, defunits);
+		}
+		return defunits;
+	}
+
+	private static void addPossibleDefUnits(IElement elem, List<DefUnit> defunits) {
+		if(elem instanceof DefUnit) {
+			defunits.add((DefUnit)elem);
+		} else if(elem instanceof IDefinitionContainer) {
+			ASTNode[] otherMembers = ((IDefinitionContainer) elem).getMembers();
+			if(otherMembers != null)
+				defunits.addAll(getDefUnitsFromMembers(otherMembers));
+		}
+	}
 
 	private static DefUnit findDefUnitInImmediateScope(IScope scope, String name) {
 		for (DefUnit defunit : scope.getDefUnits()) {

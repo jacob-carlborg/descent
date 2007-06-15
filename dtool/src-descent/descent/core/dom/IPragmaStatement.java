@@ -7,7 +7,7 @@ package descent.core.dom;
  * pragma(name, arg1, arg2, ..., argN) { }
  * </pre>
  */
-public interface IPragmaStatement extends IStatement {
+public interface IPragmaStatement extends IDescentStatement {
 	
 	/**
 	 * Returns the name of the pragma.
@@ -22,6 +22,6 @@ public interface IPragmaStatement extends IStatement {
 	/**
 	 * Returns the body of the pragma, if any, or null.
 	 */
-	IStatement getBody();
+	IDescentStatement getBody();
 
 }

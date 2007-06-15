@@ -30,6 +30,13 @@ public class ArrayUtil {
 		return newArray;
 	}
 
+	/** Appends two arrays, creating a new array of the same runtime type as original. */
+	public static <T> T[] concat(T[] original, T[] second) {
+		T[] newArray = createNew(original, original.length + second.length);
+    	System.arraycopy(second, 0, original, original.length, second.length);
+		return newArray;
+	}
+	
 	/** Removes the element at index ix from array, creating a new array. */
 	public static <T> T[] removeAt(T[] array, int ix) {
 		T[] newArray = createNew(array, array.length - 1);
@@ -46,4 +53,6 @@ public class ArrayUtil {
 		}
 		return false;
 	}
+
+
 }

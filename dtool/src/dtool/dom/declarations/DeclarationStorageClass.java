@@ -5,8 +5,9 @@ import descent.internal.core.dom.StorageClassDeclaration;
 import dtool.dom.ast.ASTNeoNode;
 import dtool.dom.ast.ASTNode;
 import dtool.dom.ast.IASTNeoVisitor;
+import dtool.model.IDefinitionContainer;
 
-public class DeclarationStorageClass extends ASTNeoNode {
+public class DeclarationStorageClass extends ASTNeoNode implements IDefinitionContainer {
 
 	public int stclass;
 	public ASTNode[] decls;	// can be null?
@@ -25,6 +26,10 @@ public class DeclarationStorageClass extends ASTNeoNode {
 			TreeVisitor.acceptChildren(visitor, decls);
 		}
 		visitor.endVisit(this);
+	}
+
+	public ASTNode[] getMembers() {
+		return decls;
 	}
 
 }

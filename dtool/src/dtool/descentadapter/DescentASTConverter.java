@@ -34,35 +34,12 @@ public class DescentASTConverter {
 		return conv.ret;
 	}
 	
-	@SuppressWarnings("unchecked")
-	public static <T extends IASTNode> List<T> convertMany(List<? extends ASTNode> children, List<T> dummy) {
-		StatementConverter conv = new StatementConverter();
-		List<T> rets = new ArrayList<T>(children.size());
-		for (int i = 0; i < children.size(); ++i) {
-			ASTNode elem = children.get(i);
-			elem.accept(conv);
-			rets.add((T) conv.ret);
-		}
-		return rets;
-	}
-	
-	@SuppressWarnings("unchecked")
-	public static <T extends IASTNode> List<T> convertMany(ASTNode[] children, List<T> dummy) {
-		StatementConverter conv = new StatementConverter();
-		List<T> rets = new ArrayList<T>(children.length);
-		for (int i = 0; i < children.length; ++i) {
-			ASTNode elem = children[i];
-			elem.accept(conv);
-			rets.add((T) conv.ret);
-		}
-		return rets;
-	}
-
 	public static ASTNode[] convertMany(Object[] children) {
 		ASTNode[] rets = new ASTNode[children.length];
 		convertMany(children, rets);
 		return rets;
 	}
+	
 	
 	@SuppressWarnings("unchecked")
 	public static <T extends IASTNode> T[] convertMany(Object[] children, T[] rets) {
@@ -74,4 +51,31 @@ public class DescentASTConverter {
 		}
 		return rets;	
 	}
+	
+	@SuppressWarnings("unchecked")
+	public static <T extends IASTNode> List<T> convertManyL(List<? extends ASTNode> children, List<T> dummy) {
+		StatementConverter conv = new StatementConverter();
+		List<T> rets = new ArrayList<T>(children.size());
+		for (int i = 0; i < children.size(); ++i) {
+			ASTNode elem = children.get(i);
+			elem.accept(conv);
+			rets.add((T) conv.ret);
+		}
+		return rets;
+	}
+	
+	@SuppressWarnings("unchecked")
+	public static <T extends IASTNode> List<T> convertManyL(ASTNode[] children, List<T> dummy) {
+		StatementConverter conv = new StatementConverter();
+		List<T> rets = new ArrayList<T>(children.length);
+		for (int i = 0; i < children.length; ++i) {
+			ASTNode elem = children[i];
+			elem.accept(conv);
+			rets.add((T) conv.ret);
+		}
+		return rets;
+	}
+
+
+
 }

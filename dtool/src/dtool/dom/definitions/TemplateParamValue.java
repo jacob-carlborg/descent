@@ -28,7 +28,7 @@ public class TemplateParamValue extends TemplateParameter {
 	}
 
 	@Override
-	public IScope getBindingScope() {
+	public IScope getMembersScope() {
 		return type.entity.getTargetScope();
 	}
 

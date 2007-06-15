@@ -3,7 +3,7 @@ package descent.internal.core.dom;
 import util.tree.TreeVisitor;
 import descent.core.dom.IExpression;
 import descent.core.dom.IForStatement;
-import descent.core.dom.IStatement;
+import descent.core.dom.IDescentStatement;
 import descent.core.domX.IASTVisitor;
 
 public class ForStatement extends Statement implements IForStatement {
@@ -20,7 +20,7 @@ public class ForStatement extends Statement implements IForStatement {
 		this.body = body;
 	}
 	
-	public IStatement getInitializer() {
+	public IDescentStatement getInitializer() {
 		return init;
 	}
 	
@@ -32,7 +32,7 @@ public class ForStatement extends Statement implements IForStatement {
 		return increment;
 	}
 	
-	public IStatement getBody() {
+	public IDescentStatement getBody() {
 		return body;
 	}
 	

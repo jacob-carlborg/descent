@@ -36,7 +36,7 @@ public class DefinitionTypedef extends Definition {
 	}
 
 	@Override
-	public IScope getBindingScope() {
+	public IScope getMembersScope() {
 		return type.entity.getTargetScope();
 	}
 

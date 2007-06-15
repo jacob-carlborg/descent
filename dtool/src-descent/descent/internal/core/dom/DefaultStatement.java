@@ -1,7 +1,7 @@
 package descent.internal.core.dom;
 
 import util.tree.TreeVisitor;
-import descent.core.dom.IStatement;
+import descent.core.dom.IDescentStatement;
 import descent.core.domX.IASTVisitor;
 
 public class DefaultStatement extends Statement {
@@ -16,7 +16,7 @@ public class DefaultStatement extends Statement {
 		return ElementTypes.DEFAULT_STATEMENT;
 	}
 	
-	public IStatement getStatement() {
+	public IDescentStatement getStatement() {
 		return s;
 	}
 	

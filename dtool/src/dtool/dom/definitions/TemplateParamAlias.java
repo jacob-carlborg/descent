@@ -18,7 +18,7 @@ public class TemplateParamAlias extends TemplateParameter {
 	}
 
 	@Override
-	public IScope getBindingScope() {
+	public IScope getMembersScope() {
 		// TODO return intrinsic universal
 		return null;
 	}

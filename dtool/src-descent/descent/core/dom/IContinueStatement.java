@@ -9,7 +9,7 @@ package descent.core.dom;
  * 
  * where "label" is optional.
  */
-public interface IContinueStatement extends IStatement {
+public interface IContinueStatement extends IDescentStatement {
 	
 	/**
 	 * Returns the label to continue to, if any, or <code>null</code>.

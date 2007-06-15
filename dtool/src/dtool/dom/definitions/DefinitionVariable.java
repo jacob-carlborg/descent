@@ -38,7 +38,7 @@ public class DefinitionVariable extends Definition implements IStatement {
 	}
 
 	@Override
-	public IScope getBindingScope() {
+	public IScope getMembersScope() {
 		return type.entity.getTargetScope();
 	}
 

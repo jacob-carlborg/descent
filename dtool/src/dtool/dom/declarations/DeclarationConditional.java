@@ -1,17 +1,24 @@
 package dtool.dom.declarations;
 
+import util.ArrayUtil;
 import util.tree.TreeVisitor;
-import descent.core.dom.IStatement;
+import descent.core.dom.IConditionalDeclaration;
+import descent.core.dom.IDebugDeclaration;
+import descent.core.dom.IIftypeDeclaration;
+import descent.core.dom.IVersionDeclaration;
 import descent.internal.core.dom.CompoundStatement;
 import descent.internal.core.dom.Condition;
 import descent.internal.core.dom.ConditionalDeclaration;
 import descent.internal.core.dom.ConditionalStatement;
+import descent.internal.core.dom.StaticIfDeclaration;
 import dtool.descentadapter.DescentASTConverter;
 import dtool.dom.ast.ASTNeoNode;
 import dtool.dom.ast.ASTNode;
 import dtool.dom.ast.IASTNeoVisitor;
+import dtool.dom.statements.IStatement;
+import dtool.model.IDefinitionContainer;
 
-public class DeclarationConditional extends ASTNeoNode implements IStatement {
+public class DeclarationConditional extends ASTNeoNode implements IStatement, IDefinitionContainer {
 	
 	public Condition condition; // TODO convert Condition
 	public ASTNode[] thendecls;
@@ -29,10 +36,37 @@ public class DeclarationConditional extends ASTNeoNode implements IStatement {
 		this.condition = elem.condition;
 		CompoundStatement cpst;
 		cpst = (CompoundStatement) elem.ifbody;
-		thendecls = DescentASTConverter.convertMany(cpst.as.toArray(), thendecls);
+		thendecls = DescentASTConverter.convertMany(cpst.as.toArray());
 		cpst = (CompoundStatement) elem.elsebody;
-		elsedecls = DescentASTConverter.convertMany(cpst.as.toArray(), elsedecls);
+		elsedecls = DescentASTConverter.convertMany(cpst.as.toArray());
 	}
+
+	public DeclarationConditional(IDebugDeclaration elem) {
+		convertConditional(elem, Condition.DEBUG);
+	}
+
+	public DeclarationConditional(IVersionDeclaration elem) {
+		convertConditional(elem, Condition.VERSION);
+	}
+
+	public DeclarationConditional(StaticIfDeclaration elem) {
+		convertConditional(elem, Condition.STATIC_IF);
+	}
+	
+	public DeclarationConditional(IIftypeDeclaration elem) {
+		// TODO: here be a definition?
+		convertConditional(elem, Condition.IFTYPE);
+	}
+	
+	
+	private void convertConditional(IConditionalDeclaration elem, int debug) {
+		setSourceRange((ASTNode)elem);
+		thendecls = DescentASTConverter.convertMany(
+				elem.getIfTrueDeclarationDefinitions());
+		elsedecls = DescentASTConverter.convertMany(
+				elem.getIfFalseDeclarationDefinitions());
+	}
+
 
 	@Override
 	public void accept0(IASTNeoVisitor visitor) {
@@ -43,6 +77,15 @@ public class DeclarationConditional extends ASTNeoNode implements IStatement {
 			TreeVisitor.acceptChildren(visitor, elsedecls);
 		}
 		visitor.endVisit(this);
+	}
+
+	public ASTNode[] getMembers() {
+		if(thendecls == null)
+			return elsedecls;
+		if(elsedecls == null)
+			return thendecls;
+		
+		return ArrayUtil.concat(thendecls, elsedecls);
 	}
 
 }

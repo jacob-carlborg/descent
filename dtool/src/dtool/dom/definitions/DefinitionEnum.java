@@ -38,7 +38,7 @@ public class DefinitionEnum extends Definition implements IScope {
 		}
 
 		@Override
-		public IScope getBindingScope() {
+		public IScope getMembersScope() {
 			// TODO Auto-generated method stub
 			return null;
 		}
@@ -50,7 +50,7 @@ public class DefinitionEnum extends Definition implements IScope {
 	
 	public DefinitionEnum(EnumDeclaration elem) {
 		convertDsymbol(elem);
-		this.members = DescentASTConverter.convertMany(elem.members, this.members) ;
+		this.members = DescentASTConverter.convertManyL(elem.members, this.members) ;
 		this.type = Entity.convertType(elem.type);  
 	}
 
@@ -72,7 +72,7 @@ public class DefinitionEnum extends Definition implements IScope {
 	}
 
 	@Override
-	public IScope getBindingScope() {
+	public IScope getMembersScope() {
 		return this;
 	}
 	

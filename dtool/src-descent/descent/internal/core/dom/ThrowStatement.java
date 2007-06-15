@@ -2,10 +2,10 @@ package descent.internal.core.dom;
 
 import util.tree.TreeVisitor;
 import descent.core.dom.IExpression;
-import descent.core.dom.IStatement;
+import descent.core.dom.IDescentStatement;
 import descent.core.domX.IASTVisitor;
 
-public class ThrowStatement extends Statement implements IStatement {
+public class ThrowStatement extends Statement implements IDescentStatement {
 
 	public final Expression exp;
 

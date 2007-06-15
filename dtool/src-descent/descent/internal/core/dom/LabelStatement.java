@@ -3,7 +3,7 @@ package descent.internal.core.dom;
 import util.tree.TreeVisitor;
 import descent.core.dom.ILabelStatement;
 import descent.core.dom.IName;
-import descent.core.dom.IStatement;
+import descent.core.dom.IDescentStatement;
 import descent.core.domX.IASTVisitor;
 
 public class LabelStatement extends Statement implements ILabelStatement {
@@ -20,7 +20,7 @@ public class LabelStatement extends Statement implements ILabelStatement {
 		return ident;
 	}
 	
-	public IStatement getStatement() {
+	public IDescentStatement getStatement() {
 		return s;
 	}
 	

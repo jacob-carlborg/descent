@@ -1,13 +1,10 @@
 package dtool.model;
 
 import dtool.dom.base.EntitySingle;
-import dtool.dom.definitions.DefUnit;
 
-public interface IEntQualified {
+public interface IEntQualified extends IDefUnitReference {
 
-	IScopeBinding getRoot();
+	IDefUnitReference getRoot();
 	EntitySingle getSubEnt();
-	
-	DefUnit getTargetDefUnit();
 	
 }

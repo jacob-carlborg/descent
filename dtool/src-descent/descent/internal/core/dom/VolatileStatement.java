@@ -1,7 +1,7 @@
 package descent.internal.core.dom;
 
 import util.tree.TreeVisitor;
-import descent.core.dom.IStatement;
+import descent.core.dom.IDescentStatement;
 import descent.core.dom.IVolatileStatement;
 import descent.core.domX.IASTVisitor;
 
@@ -13,7 +13,7 @@ public class VolatileStatement extends Statement implements IVolatileStatement {
 		this.s = s;
 	}
 	
-	public IStatement getStatement() {
+	public IDescentStatement getStatement() {
 		return s;
 	}
 	

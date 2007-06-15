@@ -9,6 +9,7 @@ import util.tree.TreeVisitor;
 import descent.internal.core.dom.TypeDArray;
 import dtool.dom.ast.IASTNeoVisitor;
 import dtool.dom.definitions.DefUnit;
+import dtool.model.IScope;
 import dtool.model.IntrinsicDefUnit;
 
 public class TypeDynArray extends Entity {
@@ -32,7 +33,7 @@ public class TypeDynArray extends Entity {
 	}
 
 	@Override
-	protected DefUnit getTargetDefUnitAsRoot() {
+	public DefUnit getTargetDefUnit() {
 		return IntrinsicDynArray.instance;
 	}
 	
@@ -40,6 +41,18 @@ public class TypeDynArray extends Entity {
 		public static final IntrinsicDynArray instance = new IntrinsicDynArray();
 
 		public List<DefUnit> getDefUnits() {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		@Override
+		public IScope getMembersScope() {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		@Override
+		public IScope getSuperScope() {
 			// TODO Auto-generated method stub
 			return null;
 		}

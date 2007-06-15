@@ -27,7 +27,7 @@ public class DefinitionMixin extends DefUnit  {
 	}
 
 	@Override
-	public IScope getBindingScope() {
+	public IScope getMembersScope() {
 		return type.entity.getTargetScope();
 	}
 

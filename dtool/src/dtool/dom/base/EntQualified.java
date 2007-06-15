@@ -4,9 +4,9 @@ import util.tree.TreeVisitor;
 import dtool.dom.ast.IASTNeoVisitor;
 import dtool.dom.definitions.DefUnit;
 import dtool.model.EntityResolver;
+import dtool.model.IDefUnitReference;
 import dtool.model.IEntQualified;
 import dtool.model.IScope;
-import dtool.model.IScopeBinding;
 
 public class EntQualified extends Entity implements IEntQualified {
 	
@@ -23,7 +23,7 @@ public class EntQualified extends Entity implements IEntQualified {
 	}
 	
 	@Override
-	protected DefUnit getTargetDefUnitAsRoot() {
+	public DefUnit getTargetDefUnit() {
 		IScope scope = rootent.getTargetScope();
 		return EntityResolver.getDefUnitFromScope(scope, subent.name);
 	}
@@ -32,7 +32,7 @@ public class EntQualified extends Entity implements IEntQualified {
 		return rootent + "." + subent;
 	}
 
-	public IScopeBinding getRoot() {
+	public IDefUnitReference getRoot() {
 		return rootent;
 	}
 

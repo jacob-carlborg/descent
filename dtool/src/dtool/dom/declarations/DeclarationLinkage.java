@@ -5,8 +5,9 @@ import descent.internal.core.dom.LinkDeclaration;
 import dtool.dom.ast.ASTNeoNode;
 import dtool.dom.ast.ASTNode;
 import dtool.dom.ast.IASTNeoVisitor;
+import dtool.model.IDefinitionContainer;
 
-public class DeclarationLinkage extends ASTNeoNode {
+public class DeclarationLinkage extends ASTNeoNode implements IDefinitionContainer {
 
 	public int linkage;
 	public ASTNode[] decls;
@@ -23,6 +24,10 @@ public class DeclarationLinkage extends ASTNeoNode {
 			TreeVisitor.acceptChildren(visitor, decls);
 		}
 		visitor.endVisit(this);
+	}
+
+	public ASTNode[] getMembers() {
+		return decls;
 	}
 
 }

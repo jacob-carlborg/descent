@@ -5,7 +5,7 @@ import java.util.List;
 import util.tree.TreeVisitor;
 
 import descent.core.dom.ICompoundStatement;
-import descent.core.dom.IStatement;
+import descent.core.dom.IDescentStatement;
 import descent.core.domX.IASTVisitor;
 
 public class CompoundStatement extends Statement implements ICompoundStatement {
@@ -16,9 +16,9 @@ public class CompoundStatement extends Statement implements ICompoundStatement {
 		this.as = as;
 	}
 	
-	public IStatement[] getStatements() {
-		if (as == null) return new IStatement[0];
-		return this.as.toArray(new IStatement[as.size()]);
+	public IDescentStatement[] getStatements() {
+		if (as == null) return new IDescentStatement[0];
+		return this.as.toArray(new IDescentStatement[as.size()]);
 	}
 	
 	public int getElementType() {

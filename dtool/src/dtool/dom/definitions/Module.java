@@ -1,6 +1,5 @@
 package dtool.dom.definitions;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import util.StringUtil;
@@ -14,6 +13,7 @@ import dtool.dom.ast.ASTNode;
 import dtool.dom.ast.IASTNeoVisitor;
 import dtool.dom.base.EntIdentifier;
 import dtool.dom.declarations.Declaration;
+import dtool.model.EntityResolver;
 import dtool.model.IDeeCompilationUnit;
 import dtool.model.IScope;
 
@@ -87,17 +87,11 @@ public class Module extends DefUnit implements IScope {
 	}
 
 	public List<DefUnit> getDefUnits() {
-		//TODO cache
-		List<DefUnit> defunits = new ArrayList<DefUnit>();
-		for(ASTNode elem: members) {
-			if(elem instanceof DefUnit)
-				defunits.add((DefUnit)elem);
-		}
-		return defunits;
+		return EntityResolver.getDefUnitsFromMembers(members);
 	}
 
 	@Override
-	public IScope getBindingScope() {
+	public IScope getMembersScope() {
 		return this;
 	}
 	

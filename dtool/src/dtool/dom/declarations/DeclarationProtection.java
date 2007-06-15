@@ -6,8 +6,9 @@ import descent.internal.core.dom.ProtDeclaration;
 import dtool.dom.ast.ASTNeoNode;
 import dtool.dom.ast.ASTNode;
 import dtool.dom.ast.IASTNeoVisitor;
+import dtool.model.IDefinitionContainer;
 
-public class DeclarationProtection extends ASTNeoNode {
+public class DeclarationProtection extends ASTNeoNode implements IDefinitionContainer {
 
 	public PROT prot;
 	public ASTNode[] decls;	// can be null?
@@ -26,6 +27,10 @@ public class DeclarationProtection extends ASTNeoNode {
 			TreeVisitor.acceptChildren(visitor, decls);
 		}
 		visitor.endVisit(this);
+	}
+	
+	public ASTNode[] getMembers() {
+		return decls;
 	}
 
 }

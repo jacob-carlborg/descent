@@ -2,7 +2,7 @@ package descent.internal.core.dom;
 
 import util.tree.TreeVisitor;
 import descent.core.dom.IExpression;
-import descent.core.dom.IStatement;
+import descent.core.dom.IDescentStatement;
 import descent.core.domX.IASTVisitor;
 
 public class IfStatement extends Statement {
@@ -31,11 +31,11 @@ public class IfStatement extends Statement {
 		return expr;
 	}
 	
-	public IStatement getThen() {
+	public IDescentStatement getThen() {
 		return ifbody;
 	}
 	
-	public IStatement getElse() {
+	public IDescentStatement getElse() {
 		return elsebody;
 	}
 	

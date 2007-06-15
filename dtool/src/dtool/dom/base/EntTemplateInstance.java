@@ -15,7 +15,7 @@ public class EntTemplateInstance extends EntitySingle {
 	public EntTemplateInstance(descent.internal.core.dom.TemplateInstance elem) {
 		setSourceRange(elem);
 		this.name = elem.string;
-		this.tiargs = DescentASTConverter.convertMany(elem.tiargs, tiargs);
+		this.tiargs = DescentASTConverter.convertManyL(elem.tiargs, tiargs);
 	}
 
 	public void accept0(IASTNeoVisitor visitor) {
@@ -31,4 +31,5 @@ public class EntTemplateInstance extends EntitySingle {
 		// TODO Try to figure which homonym
 		return super.getTargetDefUnit();
 	}
+	
 }

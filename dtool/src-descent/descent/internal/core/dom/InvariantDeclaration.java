@@ -3,7 +3,7 @@ package descent.internal.core.dom;
 import util.tree.TreeVisitor;
 import descent.core.dom.IInvariantDeclaration;
 import descent.core.dom.IName;
-import descent.core.dom.IStatement;
+import descent.core.dom.IDescentStatement;
 import descent.core.domX.IASTVisitor;
 
 public class InvariantDeclaration extends Dsymbol implements IInvariantDeclaration {
@@ -18,7 +18,7 @@ public class InvariantDeclaration extends Dsymbol implements IInvariantDeclarati
 		return ident;
 	}
 	
-	public IStatement getStatement() {
+	public IDescentStatement getStatement() {
 		return fbody;
 	}
 	

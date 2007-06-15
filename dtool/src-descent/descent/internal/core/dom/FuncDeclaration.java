@@ -4,7 +4,7 @@ import util.tree.TreeVisitor;
 import descent.core.dom.IDeclaration;
 import descent.core.dom.IModifiersContainer;
 import descent.core.dom.IName;
-import descent.core.dom.IStatement;
+import descent.core.dom.IDescentStatement;
 import descent.core.domX.IASTVisitor;
 
 public class FuncDeclaration extends Declaration implements IDeclaration, IModifiersContainer {
@@ -64,15 +64,15 @@ public class FuncDeclaration extends Declaration implements IDeclaration, IModif
 		return IFunctionDeclaration.FUNCTION;
 	}
 	
-	public IStatement getBody() {
+	public IDescentStatement getBody() {
 		return fbody;
 	}
 	
-	public IStatement getIn() {
+	public IDescentStatement getIn() {
 		return frequire;
 	}
 	
-	public IStatement getOut() {
+	public IDescentStatement getOut() {
 		return fensure;
 	}
 	

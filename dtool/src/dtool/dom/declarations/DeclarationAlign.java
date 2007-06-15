@@ -5,11 +5,12 @@ import descent.internal.core.dom.AlignDeclaration;
 import dtool.dom.ast.ASTNeoNode;
 import dtool.dom.ast.ASTNode;
 import dtool.dom.ast.IASTNeoVisitor;
+import dtool.model.IDefinitionContainer;
 
-public class DeclarationAlign extends ASTNeoNode {
+public class DeclarationAlign extends ASTNeoNode implements IDefinitionContainer {
 	
-	public ASTNode[] decls;
 	public long alignnum;
+	public ASTNode[] decls;
 
 	public DeclarationAlign(AlignDeclaration elem) {
 		setSourceRange(elem);
@@ -24,6 +25,10 @@ public class DeclarationAlign extends ASTNeoNode {
 			TreeVisitor.acceptChildren(visitor, decls);
 		}
 		visitor.endVisit(this);
+	}
+
+	public ASTNode[] getMembers() {
+		return decls;
 	}
 
 }

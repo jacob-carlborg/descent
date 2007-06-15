@@ -9,6 +9,7 @@ import dtool.dom.ast.IASTNeoVisitor;
 import dtool.dom.base.EntQualified;
 import dtool.dom.base.Entity;
 import dtool.dom.base.EntitySingle;
+import dtool.dom.definitions.DefUnit;
 
 public class ExpEntitySingle extends Expression {
 	
@@ -46,6 +47,11 @@ public class ExpEntitySingle extends Expression {
 			TreeVisitor.acceptChildren(visitor, entity);
 		}
 		visitor.endVisit(this);	 
+	}
+	
+	@Override
+	public DefUnit getTargetDefUnit() {
+		return entity.getTargetDefUnit();
 	}
 
 }

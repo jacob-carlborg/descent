@@ -5,10 +5,10 @@ import java.util.List;
 import util.tree.TreeVisitor;
 
 import descent.core.dom.IExpression;
-import descent.core.dom.IStatement;
+import descent.core.dom.IDescentStatement;
 import descent.core.domX.IASTVisitor;
 
-public class ForeachStatement extends Statement implements IStatement {
+public class ForeachStatement extends Statement implements IDescentStatement {
 	
 	public Argument[] arguments;
 	public Expression aggr;
@@ -30,7 +30,7 @@ public class ForeachStatement extends Statement implements IStatement {
 		return aggr;
 	}
 	
-	public IStatement getBody() {
+	public IDescentStatement getBody() {
 		return body;
 	}
 	

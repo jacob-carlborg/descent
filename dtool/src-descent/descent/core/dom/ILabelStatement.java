@@ -7,7 +7,7 @@ package descent.core.dom;
  * label: statement
  * </pre>
  */
-public interface ILabelStatement extends IStatement {
+public interface ILabelStatement extends IDescentStatement {
 	
 	/**
 	 * Returns the name of the label.
@@ -17,6 +17,6 @@ public interface ILabelStatement extends IStatement {
 	/**
 	 * Returns the statement.
 	 */
-	IStatement getStatement();
+	IDescentStatement getStatement();
 
 }

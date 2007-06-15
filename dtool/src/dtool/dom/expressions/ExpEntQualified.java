@@ -13,7 +13,7 @@ import dtool.dom.definitions.DefUnit;
 import dtool.model.EntityResolver;
 import dtool.model.IEntQualified;
 import dtool.model.IScope;
-import dtool.model.IScopeBinding;
+import dtool.model.IDefUnitReference;
 
 public class ExpEntQualified extends Expression implements IEntQualified {
 
@@ -28,7 +28,7 @@ public class ExpEntQualified extends Expression implements IEntQualified {
 		} else {
 			this.rootexp = Expression.convert(elem.e);
 		}
-		Assert.isTrue(this.rootexp instanceof IScopeBinding);
+		Assert.isTrue(this.rootexp instanceof IDefUnitReference);
 		this.ent = EntitySingle.convert(elem.id);
 
 		// fix some range discrepancies
@@ -75,16 +75,17 @@ public class ExpEntQualified extends Expression implements IEntQualified {
 
 	
 	public DefUnit getTargetDefUnit() {
-		if(getParent() instanceof ExpEntQualified) {
-			return ((ExpEntQualified) getParent()).getTargetDefUnit();
-		}
-		
-		IScope scope = ((IScopeBinding) rootexp).getTargetScope();
+		IScope scope = ((IDefUnitReference) rootexp).getTargetScope();
 		return EntityResolver.getDefUnitFromScope(scope, ent.name);
 	}
+	
+	@Override
+	public IScope getTargetScope() {
+		return getTargetDefUnit().getMembersScope();
+	}
 
-	public IScopeBinding getRoot() {
-		return (IScopeBinding) rootexp;
+	public IDefUnitReference getRoot() {
+		return (IDefUnitReference) rootexp;
 	}
 
 	public EntitySingle getSubEnt() {

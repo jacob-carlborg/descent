@@ -7,7 +7,7 @@ package descent.core.dom;
  * static assert(expr, message);
  * </pre>
  */
-public interface IStaticAssertStatement extends IStatement {
+public interface IStaticAssertStatement extends IDescentStatement {
 	
 	/**
 	 * Returns the expression to assert.

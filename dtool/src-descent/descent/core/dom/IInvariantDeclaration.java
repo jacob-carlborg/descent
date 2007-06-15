@@ -17,6 +17,6 @@ public interface IInvariantDeclaration extends IDeclaration {
 	/**
 	 * Returns the statement of the invariant.
 	 */
-	IStatement getStatement();
+	IDescentStatement getStatement();
 
 }

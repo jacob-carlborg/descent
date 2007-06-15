@@ -7,7 +7,7 @@ package descent.core.dom;
  * case expr: statement
  * </pre>
  */
-public interface ICaseStatement extends IStatement {
+public interface ICaseStatement extends IDescentStatement {
 	
 	/**
 	 * Returns the expression.
@@ -17,6 +17,6 @@ public interface ICaseStatement extends IStatement {
 	/**
 	 * Returns the statement.
 	 */
-	IStatement getStatement();
+	IDescentStatement getStatement();
 
 }

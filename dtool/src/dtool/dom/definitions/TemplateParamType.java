@@ -28,7 +28,7 @@ public class TemplateParamType extends TemplateParameter {
 	 * Can be null
 	 */
 	@Override
-	public IScope getBindingScope() {
+	public IScope getMembersScope() {
 		if(specType == null)
 			return null;
 		return specType.entity.getTargetScope();

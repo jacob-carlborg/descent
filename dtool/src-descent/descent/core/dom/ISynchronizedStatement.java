@@ -11,7 +11,7 @@ package descent.core.dom;
  * 
  * where "(expr)" is optional. 
  */
-public interface ISynchronizedStatement extends IStatement {
+public interface ISynchronizedStatement extends IDescentStatement {
 	
 	/**
 	 * Returns the expression to use as a lock, or null.
@@ -21,6 +21,6 @@ public interface ISynchronizedStatement extends IStatement {
 	/**
 	 * Returns the statement to synchronize.
 	 */
-	IStatement getStatement();
+	IDescentStatement getStatement();
 
 }

@@ -34,7 +34,7 @@ public class DefinitionAlias extends Definition {
 	}
 
 	@Override
-	public IScope getBindingScope() {
+	public IScope getMembersScope() {
 		return target.entity.getTargetScope();
 	}
 

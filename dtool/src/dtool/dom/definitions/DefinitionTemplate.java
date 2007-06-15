@@ -8,6 +8,7 @@ import descent.internal.core.dom.TemplateDeclaration;
 import dtool.dom.ast.ASTNode;
 import dtool.dom.ast.IASTNeoVisitor;
 import dtool.dom.declarations.Declaration;
+import dtool.model.EntityResolver;
 import dtool.model.IScope;
 
 /*
@@ -39,7 +40,7 @@ public class DefinitionTemplate extends DefUnit implements IScope {
 	}
 
 	@Override
-	public IScope getBindingScope() {
+	public IScope getMembersScope() {
 		return this;
 	}
 
@@ -50,10 +51,7 @@ public class DefinitionTemplate extends DefUnit implements IScope {
 		for(int i = 0; i < templateParams.length; i++) {
 			defunits.add(templateParams[i]);
 		}
-		for(ASTNode elem: decls) {
-			if(elem instanceof DefUnit)
-				defunits.add((DefUnit)elem);
-		}
+		defunits.addAll(EntityResolver.getDefUnitsFromMembers(decls));
 		return defunits;
 	}
 	

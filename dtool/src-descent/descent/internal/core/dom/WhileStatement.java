@@ -2,7 +2,7 @@ package descent.internal.core.dom;
 
 import util.tree.TreeVisitor;
 import descent.core.dom.IExpression;
-import descent.core.dom.IStatement;
+import descent.core.dom.IDescentStatement;
 import descent.core.dom.IWhileStatement;
 import descent.core.domX.IASTVisitor;
 
@@ -20,7 +20,7 @@ public class WhileStatement extends Statement implements IWhileStatement {
 		return expr;
 	}
 	
-	public IStatement getBody() {
+	public IDescentStatement getBody() {
 		return body;
 	}
 	

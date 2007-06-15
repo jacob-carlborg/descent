@@ -5,7 +5,7 @@ package descent.core.dom;
  * 
  * scope(ident) { }
  */
-public interface IOnScopeStatement extends IStatement {
+public interface IOnScopeStatement extends IDescentStatement {
 	
 	int ON_SCOPE_EXIT = 1;
 	int ON_SCOPE_FAILURE = 2;
@@ -20,6 +20,6 @@ public interface IOnScopeStatement extends IStatement {
 	/**
 	 * Returns the statement inside this scope.
 	 */
-	IStatement getStatement();	
+	IDescentStatement getStatement();	
 
 }

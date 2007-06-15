@@ -9,7 +9,7 @@ package descent.core.dom;
  * }
  * </pre>
  */
-public interface IWhileStatement extends IStatement {
+public interface IWhileStatement extends IDescentStatement {
 	
 	/**
 	 * Returns the condition.
@@ -19,6 +19,6 @@ public interface IWhileStatement extends IStatement {
 	/**
 	 * Returns the body of the while statement.
 	 */
-	IStatement getBody();
+	IDescentStatement getBody();
 
 }

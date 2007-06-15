@@ -1,8 +1,10 @@
 package dtool.dom.base;
 
+import util.Assert;
 import dtool.descentadapter.DescentASTConverter;
 import dtool.dom.definitions.DefUnit;
 import dtool.model.EntityResolver;
+import dtool.model.IEntQualified;
 
 public abstract class EntitySingle extends Entity {
 
@@ -12,8 +14,18 @@ public abstract class EntitySingle extends Entity {
 		return (EntitySingle) DescentASTConverter.convertElem(elem);
 	}
 
-
-	public DefUnit getTargetDefUnitAsRoot() {
+	
+	public DefUnit getTargetDefUnit() {
+		
+		if(getParent() instanceof IEntQualified) {
+			IEntQualified parent = (IEntQualified) getParent();
+			if(parent.getSubEnt() == this) {
+				//Assert.isTrue(!subent.isIntrinsic());
+				return parent.getTargetDefUnit();
+			} else {
+				Assert.isTrue(parent.getRoot() == this);
+			}
+		}
 		return EntityResolver.getDefUnitFromSurroundingScope(this);
 	}
 

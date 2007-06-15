@@ -1,6 +1,5 @@
 package dtool.dom.base;
 
-import util.Assert;
 import descent.internal.core.dom.Type;
 import descent.internal.core.dom.TypeIdentifier;
 import descent.internal.core.dom.TypeInstance;
@@ -8,14 +7,13 @@ import descent.internal.core.dom.TypeQualified;
 import dtool.descentadapter.DescentASTConverter;
 import dtool.dom.ast.ASTNeoNode;
 import dtool.dom.definitions.DefUnit;
-import dtool.model.IEntQualified;
+import dtool.model.IDefUnitReference;
 import dtool.model.IScope;
-import dtool.model.IScopeBinding;
 
 /**
  * A qualified entity/name reference
  */
-public abstract class Entity extends ASTNeoNode implements IScopeBinding {
+public abstract class Entity extends ASTNeoNode implements IDefUnitReference {
 	
 	public static enum EReferenceConstraint {	
 		none,
@@ -25,26 +23,11 @@ public abstract class Entity extends ASTNeoNode implements IScopeBinding {
 	
 	public EReferenceConstraint refConstraint = null;
 	
-		
-	public DefUnit getTargetDefUnit() {
-		
-		if(getParent() instanceof IEntQualified) {
-			IEntQualified parent = (IEntQualified) getParent();
-			if(parent.getSubEnt() == this) {
-				return parent.getTargetDefUnit();
-			} else {
-				Assert.isTrue(parent.getRoot() == this);
-			}
-		}
-		return getTargetDefUnitAsRoot();
-	}
-
 	
-	protected abstract DefUnit getTargetDefUnitAsRoot();
-
+	public abstract DefUnit getTargetDefUnit();
 	
 	public IScope getTargetScope() {
-		return getTargetDefUnit().getBindingScope();
+		return getTargetDefUnit().getMembersScope();
 	}
 	
 	

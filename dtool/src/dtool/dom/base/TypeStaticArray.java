@@ -11,6 +11,7 @@ import dtool.dom.ast.IASTNeoVisitor;
 import dtool.dom.base.TypeDynArray.IntrinsicDynArray;
 import dtool.dom.definitions.DefUnit;
 import dtool.dom.expressions.Expression;
+import dtool.model.IScope;
 import dtool.model.IntrinsicDefUnit;
 
 public class TypeStaticArray extends Entity {
@@ -33,7 +34,7 @@ public class TypeStaticArray extends Entity {
 	}
 
 	@Override
-	protected DefUnit getTargetDefUnitAsRoot() {
+	public DefUnit getTargetDefUnit() {
 		return IntrinsicDynArray.instance;
 	}
 	
@@ -41,6 +42,18 @@ public class TypeStaticArray extends Entity {
 		public static final IntrinsicStaticArray instance = new IntrinsicStaticArray();
 
 		public List<DefUnit> getDefUnits() {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		@Override
+		public IScope getMembersScope() {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		@Override
+		public IScope getSuperScope() {
 			// TODO Auto-generated method stub
 			return null;
 		}

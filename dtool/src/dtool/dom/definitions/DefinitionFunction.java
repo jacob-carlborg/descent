@@ -40,7 +40,7 @@ public class DefinitionFunction extends Definition implements IScope {
 
 		if(elem.templateParameters != null)
 			this.templateParams = TemplateParameter.convertMany(elem.templateParameters);
-		this.params = DescentASTConverter.convertMany(elem.getArguments(), this.params); 
+		this.params = DescentASTConverter.convertManyL(elem.getArguments(), this.params); 
 		
 		if(elem.type != null) {
 			this.type = elem.type;
@@ -69,7 +69,7 @@ public class DefinitionFunction extends Definition implements IScope {
 	}
 
 	@Override
-	public IScope getBindingScope() {
+	public IScope getMembersScope() {
 		return this;
 	}
 

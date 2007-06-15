@@ -7,11 +7,11 @@ package descent.core.dom;
  * volatile statement
  * </pre>
  */
-public interface IVolatileStatement extends IStatement {
+public interface IVolatileStatement extends IDescentStatement {
 	
 	/**
 	 * Returns the statement that is volatile.
 	 */
-	IStatement getStatement();
+	IDescentStatement getStatement();
 
 }

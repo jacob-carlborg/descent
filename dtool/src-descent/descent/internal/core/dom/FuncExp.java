@@ -2,7 +2,7 @@ package descent.internal.core.dom;
 
 import descent.core.dom.IExpression;
 import descent.core.dom.IName;
-import descent.core.dom.IStatement;
+import descent.core.dom.IDescentStatement;
 import descent.core.domX.IASTVisitor;
 
 public class FuncExp extends Expression implements IExpression {
@@ -21,15 +21,15 @@ public class FuncExp extends Expression implements IExpression {
 		return fd.getArguments();
 	}
 
-	public IStatement getBody() {
+	public IDescentStatement getBody() {
 		return fd.getBody();
 	}
 
-	public IStatement getIn() {
+	public IDescentStatement getIn() {
 		return fd.getIn();
 	}
 
-	public IStatement getOut() {
+	public IDescentStatement getOut() {
 		return fd.getOut();
 	}
 

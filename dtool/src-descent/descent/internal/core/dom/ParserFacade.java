@@ -5,7 +5,7 @@ import java.util.List;
 import descent.core.dom.IDeclaration;
 import descent.core.dom.IExpression;
 import descent.core.dom.IInitializer;
-import descent.core.dom.IStatement;
+import descent.core.dom.IDescentStatement;
 
 public class ParserFacade {
 	
@@ -35,7 +35,7 @@ public class ParserFacade {
 		return parser.parseExpression();
 	}
 	
-	public IStatement parseStatement(String source) {
+	public IDescentStatement parseStatement(String source) {
 		Parser parser = new Parser(source);
 		return parser.parseStatement(0);
 	}

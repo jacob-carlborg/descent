@@ -8,6 +8,7 @@ import descent.internal.core.dom.TypeFunction;
 import dtool.dom.ast.IASTNeoVisitor;
 import dtool.dom.base.TypeDynArray.IntrinsicDynArray;
 import dtool.dom.definitions.DefUnit;
+import dtool.model.IScope;
 import dtool.model.IntrinsicDefUnit;
 
 /**
@@ -39,7 +40,7 @@ public class TypeDelegate extends Entity {
 	}
 
 	@Override
-	protected DefUnit getTargetDefUnitAsRoot() {
+	public DefUnit getTargetDefUnit() {
 		return IntrinsicDynArray.instance;
 	}
 	
@@ -47,6 +48,18 @@ public class TypeDelegate extends Entity {
 		public static final IntrinsicDelegate instance = new IntrinsicDelegate();
 
 		public List<DefUnit> getDefUnits() {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		@Override
+		public IScope getMembersScope() {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		@Override
+		public IScope getSuperScope() {
 			// TODO Auto-generated method stub
 			return null;
 		}

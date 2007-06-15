@@ -3,7 +3,7 @@ package descent.internal.core.dom;
 import util.tree.TreeVisitor;
 import descent.core.dom.ICaseStatement;
 import descent.core.dom.IExpression;
-import descent.core.dom.IStatement;
+import descent.core.dom.IDescentStatement;
 import descent.core.domX.IASTVisitor;
 
 public class CaseStatement extends Statement implements ICaseStatement {
@@ -20,7 +20,7 @@ public class CaseStatement extends Statement implements ICaseStatement {
 		return exp;
 	}
 	
-	public IStatement getStatement() {
+	public IDescentStatement getStatement() {
 		return s;
 	}
 	

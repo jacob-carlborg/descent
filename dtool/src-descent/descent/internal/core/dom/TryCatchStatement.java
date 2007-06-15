@@ -4,7 +4,7 @@ import java.util.List;
 
 import util.tree.TreeVisitor;
 
-import descent.core.dom.IStatement;
+import descent.core.dom.IDescentStatement;
 import descent.core.dom.ITryStatement;
 import descent.core.domX.IASTVisitor;
 
@@ -18,7 +18,7 @@ public class TryCatchStatement extends Statement implements ITryStatement {
 		this.catches = catches;
 	}
 	
-	public IStatement getTry() {
+	public IDescentStatement getTry() {
 		return body;
 	}
 	
@@ -26,7 +26,7 @@ public class TryCatchStatement extends Statement implements ITryStatement {
 		return catches.toArray(new Catch[catches.size()]);
 	}
 	
-	public IStatement getFinally() {
+	public IDescentStatement getFinally() {
 		return null;
 	}
 	
