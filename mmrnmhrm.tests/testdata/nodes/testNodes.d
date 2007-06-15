@@ -74,17 +74,8 @@ static ~this() { writeln("Foo"); }
 
 
 // ==============   DebugSpecification   ==============
-//	DebugSpecification
-
-//debug (foo) { printf("Foo\n"); }
-//debug(12) printf("Foo\n");
-debug = foo;
 
 // ==============   VersionSpecification   ==============
-
-//version(foo) printf("Foo\n");
-//version(12) printf("Foo\n");
-version = foo;	
 
 
 

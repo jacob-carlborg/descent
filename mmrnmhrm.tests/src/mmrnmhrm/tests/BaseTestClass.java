@@ -4,8 +4,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
+import org.eclipse.core.runtime.FileLocator;
+import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.Platform;
+import org.osgi.framework.Bundle;
+
 import mmrnmhrm.core.model.CompilationUnit;
 import mmrnmhrm.core.model.EModelStatus;
+import mmrnmhrm.ui.DeePlugin;
 
 import util.FileUtil;
 import util.StringUtil;
@@ -25,6 +31,7 @@ public class BaseTestClass {
 		return FileUtil.readStringFromReader(isr);
 	}
 
+	@Deprecated
 	protected String readStringFromResource(String filename) throws IOException {
 		return readStringFromResource(filename, this.getClass());
 	}
@@ -40,5 +47,15 @@ public class BaseTestClass {
 		return cunit;
 	}
 	
+	protected static String getTestDataFileString(String pathstr) throws IOException {
+		Bundle bundle = Platform.getBundle(DeePlugin.PLUGIN_ID);
+		InputStream is = FileLocator.openStream(bundle, new Path("testdata/"+pathstr), false);
+		InputStreamReader isr = new InputStreamReader(is);
+		String src = FileUtil.readStringFromReader(isr);
+		return src;
+	}
 
+	String str;
+	
+	
 }

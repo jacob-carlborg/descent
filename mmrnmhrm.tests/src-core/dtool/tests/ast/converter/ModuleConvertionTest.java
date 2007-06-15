@@ -61,7 +61,12 @@ public class ModuleConvertionTest extends BaseTestClass {
 	
 	@Test
 	public void testAll() throws IOException {
-		testCUparsing(readStringFromResource("testall.d"));
+		testCUparsing(getTestDataFileString("nodes/testNodes.d"));
+	}
+	
+	@Test
+	public void testAll2() throws IOException {
+		testCUparsing(getTestDataFileString("nodes/conditionals.d"));
 	}
 
 }
