@@ -64,7 +64,7 @@ public class DescentValue extends DescentDebugElement implements IValue {
 					}
 					return subVariables;
 				} else {
-					return NO_VARIABLES;
+					return new IVariable[] { variable };
 				}
 			} catch (IOException e) {
 				e.printStackTrace();

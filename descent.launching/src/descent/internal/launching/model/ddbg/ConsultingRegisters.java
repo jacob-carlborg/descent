@@ -28,16 +28,11 @@ public class ConsultingRegisters implements IState {
 	}
 	
 	private void parseRegisters(String text, IRegisterGroup group) {
-		for (int i = 0; i < 4; i++) {
-			String sub;
-			if (i == 3) {
-				sub = text.substring(13*i);
-			} else {
-				sub = text.substring(13*i, 13*(i + 1));
-			}
-			int indexOfEqual = sub.indexOf('=');
-			String name = sub.substring(0, indexOfEqual).trim();
-			String value = sub.substring(indexOfEqual + 1).trim();
+		String[] pieces = text.split("\t");
+		for(String piece : pieces) {
+			int indexOfEqual = piece.indexOf('=');
+			String name = piece.substring(0, indexOfEqual).trim();
+			String value = piece.substring(indexOfEqual + 1).trim();
 			fRegisters.add(fCli.fFactory.newRegister(group, name, value));
 		}
 	}
