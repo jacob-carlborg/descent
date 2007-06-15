@@ -1,5 +1,5 @@
-int mx;
-class Foo {
+int mz;
+class Fzz {
 	int foox;
 	Xpto xpto;
 	
@@ -7,10 +7,10 @@ class Foo {
 		int innerx;
 	}
 }
-class Xpto {
-	char[] str;
+class Zpto {
+	char[] zzr;
 }
-template Tpl(T) {
+template Zpl(T) {
 	int num;
 	alias int TplType;
 }
@@ -40,3 +40,4 @@ int dummy32 = Foo.Inner.innerx; // 2, identifier (exp)
 // Base Class reference
 class FooBar : Foo { } 
 
+/** Test file for defunits not found (at first scope) */

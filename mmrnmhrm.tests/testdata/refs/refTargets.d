@@ -61,19 +61,11 @@ static if(is(Foo Type : Object)) {
 	Type dummy20;
 }
 
-version = dVersion;
-version = 666;
-version(dVersion) { }
-version(666) { }
+class DummyClass(T) : T {
+	T foo;
+}
 
-debug = dDebug;
-debug = 666;
-debug(dDebug) { }
-debug(666) { }
-
-void func() {
-  Label:
-  
-  goto Label; // LOL, goto...
+struct DummyStruct(T) {
+	T foo;
 }
 

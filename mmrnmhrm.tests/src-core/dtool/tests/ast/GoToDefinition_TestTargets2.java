@@ -10,30 +10,24 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
+// TODO test special defunits (not a priority)
+
+
 @RunWith(Parameterized.class)
-public class GoToDefinition_TestKinds1 extends GoToDefinition_CommonTest  {
+public class GoToDefinition_TestTargets2 extends GoToDefinition_CommonTest  {
 	
-	static final String testfile = "refs/refKinds.d";
+	static final String testfile = "refs/refTargets2.d";
 	
 	@Parameters
     public static Collection<Object[]> data() {
         return Arrays.asList(new Object[][]{
-                {218, 14},
-                {250, 4},
-                {279, 14},
-                {312, 4},
-                {354, 124},
-                {387, 124},
                 
-                {423, 14}, {427, 59},  
-                {459, 14}, {463, 59}, 
-                {495, 124}, {505, 154},
-                {554, 14}, {558, 25},
-                {602, 14}, {606, 25},
-                {652, 14}, {656, 59}, {662, 74},
-                
-                {733, 14},
-
+                // Special symbols
+                //{1293, 1260},
+                //{1315, 1280},
+                //{1360, 1363},
+                //{1378, 1379},
+                //{1421, 1404},
         });
     }
     
@@ -41,16 +35,15 @@ public class GoToDefinition_TestKinds1 extends GoToDefinition_CommonTest  {
 	public static void classSetup() {
 		prepClass(testfile);
 	}
-
-	
-	public GoToDefinition_TestKinds1(int defOffset, int refOffset) throws IOException {
+	        
+	public GoToDefinition_TestTargets2(int defOffset, int refOffset) throws IOException  {
 		super(defOffset, refOffset, testfile);
 	}
+	  
 	
-
-
 	@Test
 	public void test() {
 		assertGoToReF(defOffset, refOffset);
 	}
+	
 }

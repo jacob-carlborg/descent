@@ -5,7 +5,7 @@ import java.io.IOException;
 import mmrnmhrm.tests.BaseTestClass;
 
 import org.junit.After;
-import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 /**
  * Module convertion tests
@@ -13,8 +13,8 @@ import org.junit.Test;
  */
 public class ModuleConvertionTest extends BaseTestClass {
 
-	@Before
-	public void setUp() throws Exception {
+	@BeforeClass
+	public static void setUp() throws Exception {
 		System.out.println("====================  ====================");
 	}
 

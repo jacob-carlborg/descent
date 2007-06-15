@@ -11,28 +11,28 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
 @RunWith(Parameterized.class)
-public class GoToDefinition_TestKinds1 extends GoToDefinition_CommonTest  {
+public class GoToDefinition_TestKinds3 extends GoToDefinition_CommonTest  {
 	
-	static final String testfile = "refs/refKinds.d";
+	static final String testfile = "refs/refKinds3.d";
 	
 	@Parameters
     public static Collection<Object[]> data() {
         return Arrays.asList(new Object[][]{
-                {218, 14},
-                {250, 4},
-                {279, 14},
-                {312, 4},
-                {354, 124},
-                {387, 124},
+                {218, -1},
+                {250, -1},
+                {279, -1},
+                {312, -1},
+                {354, -1},
+                {387, -1},
                 
-                {423, 14}, {427, 59},  
-                {459, 14}, {463, 59}, 
-                {495, 124}, {505, 154},
-                {554, 14}, {558, 25},
-                {602, 14}, {606, 25},
-                {652, 14}, {656, 59}, {662, 74},
+                {423, -1}, {427, -1},  
+                {459, -1}, {463, -1}, 
+                {495, -1}, {505, -1},
+                {554, -1}, {558, -1},
+                {602, -1}, {606, -1},
+                {652, -1}, {656, -1}, {662, -1},
                 
-                {733, 14},
+                {733, -1},
 
         });
     }
@@ -41,9 +41,8 @@ public class GoToDefinition_TestKinds1 extends GoToDefinition_CommonTest  {
 	public static void classSetup() {
 		prepClass(testfile);
 	}
-
 	
-	public GoToDefinition_TestKinds1(int defOffset, int refOffset) throws IOException {
+	public GoToDefinition_TestKinds3(int defOffset, int refOffset) throws IOException {
 		super(defOffset, refOffset, testfile);
 	}
 	

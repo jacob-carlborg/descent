@@ -24,6 +24,12 @@ public class BaseTestClass {
 		Assert.assertTrue(msg, b);
 	}
 	
+	protected static void assertTruePrintln(boolean b, String msg) {
+		if(b == false)
+			System.out.println(msg);
+		Assert.assertTrue(msg, b);
+	}
+	
 
 	protected static String readStringFromResource(String filename, Class clss) throws IOException {
 		InputStream is = clss.getResourceAsStream(filename);

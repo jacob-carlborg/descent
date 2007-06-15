@@ -11,21 +11,21 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
 @RunWith(Parameterized.class)
-public class GoToDefinition_TestScopes extends GoToDefinition_CommonTest  {
+public class GoToDefinition_TestKinds32 extends GoToDefinition_CommonTest  {
 	
-	static final String testfile = "refs/refScopes.d";
+	static final String testfile = "refs/refKinds32.d";
 	
 	@Parameters
     public static Collection<Object[]> data() {
         return Arrays.asList(new Object[][]{
-                {106, 5},
-                {162, 5},
-                {356, 5},
-                {393, 200},
-                {431, 222},
-                {533, 200},
-                {571, 694},
-                {614, 743},
+        		{238, -1},
+                {278, -1},
+                {328, -1},
+                {369, -1}, {379, -1},
+                {423, -1},
+                {462, -1},
+                {485, -1},
+
         });
     }
     
@@ -34,14 +34,14 @@ public class GoToDefinition_TestScopes extends GoToDefinition_CommonTest  {
 		prepClass(testfile);
 	}
 	
-	public GoToDefinition_TestScopes(int defOffset, int refOffset) throws IOException {
+	public GoToDefinition_TestKinds32(int defOffset, int refOffset) throws IOException {
 		super(defOffset, refOffset, testfile);
-	}	    
-	 
+	}
 	
+
+
 	@Test
 	public void test() {
 		assertGoToReF(defOffset, refOffset);
 	}
-	
 }
