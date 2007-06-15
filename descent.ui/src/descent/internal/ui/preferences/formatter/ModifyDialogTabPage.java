@@ -844,6 +844,12 @@ public abstract class ModifyDialogTabPage {
 			preferences.add(pref);
 		}
 		
+		protected void addPreferences(Preference[] prefs)
+		{
+			for(Preference pref : prefs)
+				addPreference(pref);
+		}
+		
 		protected void notify(String option)
 		{
 			for(Preference pref : preferences)

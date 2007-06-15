@@ -32,7 +32,24 @@ final class FormatterMessages extends NLS {
 	public static String BracesTabPage_position_next_line_indented;
 	public static String BracesTabPage_group_brace_positions_title;
 	public static String BracesTabPage_group_set_all_to;
+	
 	public static String BracesTabPage_brace_position_for_function_declaration;
+	public static String BracesTabPage_brace_position_for_type_declaration;
+	public static String BracesTabPage_brace_position_for_enum_declaration;
+	public static String BracesTabPage_brace_position_for_template_declarations;
+	public static String BracesTabPage_brace_position_for_conditional_declaration;
+	public static String BracesTabPage_brace_position_for_conditional_statement;
+	public static String BracesTabPage_brace_position_for_loop_statement;
+	public static String BracesTabPage_brace_position_for_function_literal;
+	public static String BracesTabPage_brace_position_for_anonymous_type;
+	public static String BracesTabPage_brace_position_for_switch_statement;
+	public static String BracesTabPage_brace_position_for_switch_case;
+	public static String BracesTabPage_brace_position_for_try_catch_finally;
+	public static String BracesTabPage_brace_position_for_modifiers;
+	public static String BracesTabPage_brace_position_for_synchronized_statements;
+	public static String BracesTabPage_brace_position_for_with_statements;
+	public static String BracesTabPage_brace_position_for_scope_statements;
+	public static String BracesTabPage_brace_position_for_other_blocks;
 	
 	// TODO messages, when the tab page for them gets changed
 	public static String CommentsTabPage_remove_blank_block_comment_lines;
