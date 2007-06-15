@@ -53,7 +53,7 @@ public abstract class ASTNeoNode extends ASTNode  {
 	/* ===================  Convertion utils  ====================== */
 	
 	/** Sets the source range the same as the given elem. */
-	protected void setSourceRange(ASTNode elem) {
+	public void setSourceRange(ASTNode elem) {
 		startPos = elem.getStartPos();
 		length = elem.getLength();
 	}

@@ -11,8 +11,8 @@ import dtool.model.IScope;
 import dtool.model.IntrinsicDefUnit;
 
 public class TypeMapArray extends Entity {
-	public BaseEntityRef.TypeConstraint keytype;
-	public BaseEntityRef.TypeConstraint valuetype;
+	public Entity keytype;
+	public Entity valuetype;
 
 	public TypeMapArray(TypeAArray elem) {
 		setSourceRange(elem);
@@ -48,8 +48,7 @@ public class TypeMapArray extends Entity {
 			return null;
 		}
 
-		@Override
-		public IScope getSuperScope() {
+		public List<IScope> getSuperScopes() {
 			// TODO Auto-generated method stub
 			return null;
 		}

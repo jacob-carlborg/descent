@@ -2,7 +2,6 @@ package dtool.dom.definitions;
 
 import util.tree.TreeVisitor;
 import dtool.dom.ast.IASTNeoVisitor;
-import dtool.dom.base.BaseEntityRef;
 import dtool.dom.base.Entity;
 import dtool.dom.expressions.Initializer;
 import dtool.dom.statements.IStatement;
@@ -13,7 +12,7 @@ import dtool.model.IScope;
  */
 public class DefinitionVariable extends Definition implements IStatement {
 	
-	public BaseEntityRef.TypeConstraint type;
+	public Entity type;
 	public Initializer init;
 
 	public DefinitionVariable(descent.internal.core.dom.VarDeclaration elem) {
@@ -39,7 +38,7 @@ public class DefinitionVariable extends Definition implements IStatement {
 
 	@Override
 	public IScope getMembersScope() {
-		return type.entity.getTargetScope();
+		return type.getTargetScope();
 	}
 
 }

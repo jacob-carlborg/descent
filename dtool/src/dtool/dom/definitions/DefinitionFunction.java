@@ -7,7 +7,6 @@ import util.tree.TreeVisitor;
 import descent.internal.core.dom.FuncDeclaration;
 import dtool.descentadapter.DescentASTConverter;
 import dtool.dom.ast.IASTNeoVisitor;
-import dtool.dom.base.BaseEntityRef;
 import dtool.dom.base.Entity;
 import dtool.dom.statements.Statement;
 import dtool.model.IScope;
@@ -20,7 +19,7 @@ public class DefinitionFunction extends Definition implements IScope {
 
 	//public Identifier outId;
 	public descent.internal.core.dom.LINK linkage;
-	public BaseEntityRef.TypeConstraint rettype;
+	public Entity rettype;
 	public TemplateParameter[] templateParams;	
 	public List<Parameter> params;
 	public int varargs;
@@ -83,7 +82,7 @@ public class DefinitionFunction extends Definition implements IScope {
 		return super.toString() +"("+ StringUtil.collToString(params, ",") +")";
 	}
 	
-	public IScope getSuperScope() {
+	public List<IScope> getSuperScopes() {
 		// TODO: function super
 		return null;
 	}

@@ -4,11 +4,10 @@ import util.tree.TreeVisitor;
 import descent.internal.core.dom.TypeidExp;
 import dtool.dom.ast.IASTNeoVisitor;
 import dtool.dom.base.Entity;
-import dtool.dom.base.BaseEntityRef;
 
 public class ExpTypeid extends Expression {
 
-	BaseEntityRef.TypeConstraint type;
+	Entity type;
 	
 	public ExpTypeid(TypeidExp elem) {
 		convertNode(elem);

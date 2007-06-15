@@ -3,9 +3,9 @@ package dtool.dom.base;
 import java.util.List;
 
 import util.tree.TreeVisitor;
-
 import descent.internal.core.dom.Argument;
 import descent.internal.core.dom.LINK;
+import dtool.descentadapter.DescentASTConverter;
 import dtool.dom.ast.IASTNeoVisitor;
 import dtool.dom.base.TypeDynArray.IntrinsicDynArray;
 import dtool.dom.definitions.DefUnit;
@@ -17,14 +17,14 @@ import dtool.model.IntrinsicDefUnit;
  */
 public class TypeFunction extends Entity {
 	
-	public BaseEntityRef.TypeConstraint rettype;
+	public Entity rettype;
 	public List<Argument> arguments;
 	public int varargs;
 	public LINK linkage;
 
 	public TypeFunction(descent.internal.core.dom.TypeFunction elem) {
 		setSourceRange(elem);
-		this.rettype = Entity.convertType(elem.getReturnType());
+		this.rettype = (Entity) DescentASTConverter.convertElem(elem.getReturnType());
 		this.varargs = elem.varargs;
 		this.linkage = elem.linkage;
 	}
@@ -57,8 +57,7 @@ public class TypeFunction extends Entity {
 			return null;
 		}
 
-		@Override
-		public IScope getSuperScope() {
+		public List<IScope> getSuperScopes() {
 			// TODO Auto-generated method stub
 			return null;
 		}

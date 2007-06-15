@@ -13,7 +13,7 @@ import dtool.model.IScope;
 import dtool.model.IntrinsicDefUnit;
 
 public class TypeDynArray extends Entity {
-	public BaseEntityRef.TypeConstraint elemtype;
+	public Entity elemtype;
 
 	public TypeDynArray(TypeDArray elem) {
 		setSourceRange(elem);
@@ -51,10 +51,14 @@ public class TypeDynArray extends Entity {
 			return null;
 		}
 
-		@Override
-		public IScope getSuperScope() {
+		public List<IScope> getSuperScopes() {
 			// TODO Auto-generated method stub
 			return null;
+		}
+		
+		@Override
+		public String toString() {
+			return "T[]";
 		}
 	}
 }

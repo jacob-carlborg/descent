@@ -3,14 +3,13 @@ package dtool.dom.definitions;
 import util.tree.TreeVisitor;
 import descent.internal.core.dom.TypedefDeclaration;
 import dtool.dom.ast.IASTNeoVisitor;
-import dtool.dom.base.BaseEntityRef;
 import dtool.dom.base.Entity;
 import dtool.dom.expressions.Initializer;
 import dtool.model.IScope;
 
 public class DefinitionTypedef extends Definition {
 
-	BaseEntityRef.TypeConstraint type;
+	Entity type;
 	Initializer initializer;
 	
 	public DefinitionTypedef(TypedefDeclaration elem) {
@@ -37,7 +36,7 @@ public class DefinitionTypedef extends Definition {
 
 	@Override
 	public IScope getMembersScope() {
-		return type.entity.getTargetScope();
+		return type.getTargetScope();
 	}
 
 }

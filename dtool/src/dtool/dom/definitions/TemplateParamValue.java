@@ -4,13 +4,12 @@ import util.tree.TreeVisitor;
 import descent.internal.core.dom.TemplateValueParameter;
 import dtool.dom.ast.IASTNeoVisitor;
 import dtool.dom.base.Entity;
-import dtool.dom.base.BaseEntityRef;
 import dtool.dom.expressions.Expression;
 import dtool.model.IScope;
 
 public class TemplateParamValue extends TemplateParameter {
 
-	public BaseEntityRef.TypeConstraint type;
+	public Entity type;
 	public Expression specvalue;
 	public Expression defaultvalue;
 
@@ -29,7 +28,7 @@ public class TemplateParamValue extends TemplateParameter {
 
 	@Override
 	public IScope getMembersScope() {
-		return type.entity.getTargetScope();
+		return type.getTargetScope();
 	}
 
 	@Override

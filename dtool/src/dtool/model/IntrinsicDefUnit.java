@@ -14,11 +14,17 @@ public abstract class IntrinsicDefUnit extends DefUnit implements IIntrinsicUnit
 	@Override
 	public abstract IScope getMembersScope();
 	
-	public abstract IScope getSuperScope();
+	//public abstract IScope getSuperScope();
+
 
 	@Override
 	public void accept0(IASTNeoVisitor visitor) {
 		Assert.fail("Intrinsics do not suppport accept.");
+	}
+	
+	@Override
+	public String toString() {
+		return "<intrinsic>";
 	}
 
 }

@@ -1,5 +1,6 @@
 package dtool.dom.definitions;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import util.tree.TreeVisitor;
@@ -8,7 +9,6 @@ import dtool.descentadapter.DescentASTConverter;
 import dtool.dom.ast.ASTNeoNode;
 import dtool.dom.ast.ASTNode;
 import dtool.dom.ast.IASTNeoVisitor;
-import dtool.dom.base.BaseEntityRef;
 import dtool.dom.base.Entity;
 import dtool.dom.statements.IStatement;
 import dtool.model.EntityResolver;
@@ -19,13 +19,16 @@ import dtool.model.IScope;
  */
 public class DefinitionAggregate extends Definition implements IScope, IStatement {
 
-	public static class BaseClass extends ASTNeoNode{
+	public static class BaseClass extends ASTNeoNode {
 		
 		public int prot;
-		public BaseEntityRef.TypeConstraint type;
+		public Entity type;
 		
 		public BaseClass(descent.internal.core.dom.BaseClass elem) {
 			convertNode(elem);
+			if(elem.hasNoSourceRangeInfo()) 
+				convertNode(elem.type); // Try to have some range
+				
 			this.prot = elem.prot;
 			this.type = Entity.convertType(elem.type);
 		}
@@ -78,11 +81,20 @@ public class DefinitionAggregate extends Definition implements IScope, IStatemen
 		return EntityResolver.getDefUnitsFromMembers(members);
 	}
 
-	public IScope getSuperScope() {
-		// TODO: allow multiple scopes
-		if(baseClasses.size() > 0)
-			return baseClasses.get(0).type.entity.getTargetScope();
-		else 
+	public List<IScope> getSuperScopes() {
+		if(baseClasses.size() < 0)
 			return null;
+
+		List<IScope> scopes = new ArrayList<IScope>();
+		for(BaseClass baseclass: baseClasses) {
+			DefUnit defunit = baseclass.type.getTargetDefUnit();
+			if(defunit == null)
+				continue;
+			scopes.add(defunit.getMembersScope());
+		}
+		return scopes; 
+		// TODO add Object super scope.
 	}
+	
+
 }

@@ -13,7 +13,7 @@ import dtool.model.IScope;
 import dtool.model.IntrinsicDefUnit;
 
 public class TypePointer extends Entity {
-	public BaseEntityRef.TypeConstraint elemtype;
+	public Entity elemtype;
 	
 	public TypePointer(descent.internal.core.dom.TypePointer elem) {
 		setSourceRange(elem);
@@ -47,8 +47,7 @@ public class TypePointer extends Entity {
 			return null;
 		}
 
-		@Override
-		public IScope getSuperScope() {
+		public List<IScope> getSuperScopes() {
 			// TODO Auto-generated method stub
 			return null;
 		}

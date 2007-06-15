@@ -15,7 +15,7 @@ import dtool.model.IScope;
 import dtool.model.IntrinsicDefUnit;
 
 public class TypeStaticArray extends Entity {
-	public BaseEntityRef.TypeConstraint elemtype;
+	public Entity elemtype;
 	public Expression sizeexp;
 
 	public TypeStaticArray(TypeSArray elem) {
@@ -52,8 +52,7 @@ public class TypeStaticArray extends Entity {
 			return null;
 		}
 
-		@Override
-		public IScope getSuperScope() {
+		public List<IScope> getSuperScopes() {
 			// TODO Auto-generated method stub
 			return null;
 		}

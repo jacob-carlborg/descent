@@ -2,11 +2,11 @@ package dtool.dom.ast;
 
 import util.Assert;
 import descent.core.domX.ASTUpTreeVisitor;
-import dtool.dom.base.Entity;
-import dtool.dom.base.EntitySingle;
 import dtool.dom.base.EntIdentifier;
 import dtool.dom.base.EntQualified;
 import dtool.dom.base.EntTemplateInstance;
+import dtool.dom.base.Entity;
+import dtool.dom.base.EntitySingle;
 import dtool.dom.definitions.DefUnit;
 import dtool.dom.definitions.Definition;
 import dtool.dom.definitions.Module;

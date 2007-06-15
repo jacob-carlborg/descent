@@ -55,7 +55,7 @@ public class DefinitionTemplate extends DefUnit implements IScope {
 		return defunits;
 	}
 	
-	public IScope getSuperScope() {
+	public List<IScope> getSuperScopes() {
 		// TODO: template super scope
 		return null;
 	}

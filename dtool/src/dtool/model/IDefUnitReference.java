@@ -1,11 +1,12 @@
 package dtool.model;
 
+import dtool.dom.ast.IASTNode;
 import dtool.dom.definitions.DefUnit;
 
-public interface IDefUnitReference {
-	
+/** A node that references a DefUnit. */
+public interface IDefUnitReference extends IASTNode {
+
+	/** Finds the DefUnit referenced by this reference, or null if none found. */
 	public DefUnit getTargetDefUnit();
 	
-	public IScope getTargetScope();
-
 }

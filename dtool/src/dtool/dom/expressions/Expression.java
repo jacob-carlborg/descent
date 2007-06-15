@@ -5,7 +5,6 @@ import java.util.List;
 import dtool.descentadapter.DescentASTConverter;
 import dtool.dom.ast.ASTNeoNode;
 import dtool.dom.definitions.DefUnit;
-import dtool.model.IScope;
 import dtool.model.IDefUnitReference;
 
 public abstract class Expression extends ASTNeoNode implements IDefUnitReference {
@@ -34,8 +33,4 @@ public abstract class Expression extends ASTNeoNode implements IDefUnitReference
 				"Unsupported peering the type/scope of expression: "+toStringClassName());
 	}
 	
-	// SCOPE/TYPE BINDING
-	public IScope getTargetScope() {
-		return getTargetDefUnit().getMembersScope();
-	}
 }

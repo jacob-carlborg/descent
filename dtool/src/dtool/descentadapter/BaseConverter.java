@@ -19,10 +19,9 @@ import descent.internal.core.dom.TypeExp;
 import descent.internal.core.dom.TypeInstance;
 import descent.internal.core.dom.TypeQualified;
 import dtool.dom.ast.ASTNode;
-import dtool.dom.base.EntModuleRoot;
-import dtool.dom.base.Entity;
 import dtool.dom.base.EntIdentifier;
 import dtool.dom.base.EntTemplateInstance;
+import dtool.dom.base.Entity;
 import dtool.dom.base.TypeDelegate;
 import dtool.dom.base.TypeDynArray;
 import dtool.dom.base.TypeFunction;
@@ -113,12 +112,12 @@ abstract class BaseConverter extends ASTCommonConverter {
 	/* ---- Entities Core ---- */
 	public boolean visit(descent.internal.core.dom.Identifier elem) {
 		if(elem.string.equals("")) {
-			EntModuleRoot rootent = new EntModuleRoot();
+			/*EntModuleRoot rootent = new EntModuleRoot();
 			if(!elem.hasNoSourceRangeInfo()) {
 				rootent.startPos = elem.startPos;
 				rootent.setEndPos(elem.getEndPos());
-			}
-			return endAdapt(rootent);
+			}*/
+			return endAdapt(null);
 		}
 		return endAdapt(new EntIdentifier(elem));
 	}
@@ -127,15 +126,15 @@ abstract class BaseConverter extends ASTCommonConverter {
 		return endAdapt(new EntIdentifier(elem));
 	}
 	
+	public boolean visit(descent.internal.core.dom.TemplateInstance elem) {
+		return endAdapt(new EntTemplateInstance(elem));
+	}
+	
 	public boolean visit(descent.internal.core.dom.TypeIdentifier elem) {
 		Entity rootent = Entity.convertTypeIdentifierRoot(elem);
 		return endAdapt(Entity.convertQualified(rootent, elem));
 	}
 
-	public boolean visit(descent.internal.core.dom.TemplateInstance elem) {
-		return endAdapt(new EntTemplateInstance(elem));
-	}
-	
 	public boolean visit(TypeInstance elem) {
 		Entity rootent = Entity.convertTypeInstanceRoot(elem);
 		return endAdapt(Entity.convertQualified(rootent, elem));
@@ -144,7 +143,6 @@ abstract class BaseConverter extends ASTCommonConverter {
 	
 	public boolean visit(descent.internal.core.dom.TypeTypeof elem) {
 		Entity rootent = new TypeTypeof(elem);
-		
 		return endAdapt(Entity.convertQualified(rootent, elem));
 	}
 

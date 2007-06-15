@@ -3,8 +3,8 @@ package dtool.dom.definitions;
 
 import util.tree.TreeVisitor;
 import descent.internal.core.dom.AliasDeclaration;
+import dtool.descentadapter.DescentASTConverter;
 import dtool.dom.ast.IASTNeoVisitor;
-import dtool.dom.base.BaseEntityRef;
 import dtool.dom.base.Entity;
 import dtool.model.IScope;
 
@@ -13,11 +13,11 @@ import dtool.model.IScope;
  */
 public class DefinitionAlias extends Definition {
 	
-	public BaseEntityRef.NoConstraint target;
+	public Entity target;
 	
 	public DefinitionAlias(AliasDeclaration elem) {
 		convertDsymbol(elem);
-		this.target = Entity.convertAnyEnt(elem.type);
+		target = (Entity) DescentASTConverter.convertElem(elem.type);
 	}
 	
 	public EArcheType getArcheType() {
@@ -35,7 +35,7 @@ public class DefinitionAlias extends Definition {
 
 	@Override
 	public IScope getMembersScope() {
-		return target.entity.getTargetScope();
+		return target.getTargetScope();
 	}
 
 }

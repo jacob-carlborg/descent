@@ -7,6 +7,7 @@ import util.tree.IElement;
 import dtool.dom.ast.ASTNode;
 import dtool.dom.base.EntitySingle;
 import dtool.dom.definitions.DefUnit;
+import dtool.dom.definitions.DefinitionAggregate.BaseClass;
 
 public class EntityResolver {
 	
@@ -27,9 +28,14 @@ public class EntityResolver {
 		if(defunit != null)
 			return defunit;
 
-		// Search super scope TODO allow mutiple super scopes
-		if(scope.getSuperScope() != null)
-			return getDefUnitFromScope(scope.getSuperScope(), name);
+		// Search super scope 
+		if(scope.getSuperScopes() != null)
+			for(IScope superscope : scope.getSuperScopes()) {
+				if(superscope != null)
+					defunit = getDefUnitFromScope(superscope, name); 
+				if(defunit != null)
+					return defunit;
+			}
 		
 		return null;
 	}
@@ -41,7 +47,7 @@ public class EntityResolver {
 	public static DefUnit getDefUnitFromSurroundingScope(EntitySingle entity) {
 		String name = entity.name;
 		
-		IScope scope = getOuterScope(entity);;
+		IScope scope = getOuterScope(entity);
 		do {
 			DefUnit defunit;
 			defunit = getDefUnitFromScope(scope, name);
@@ -57,8 +63,23 @@ public class EntityResolver {
 
 	private static IScope getOuterScope(IElement scope) {
 		IElement elem = scope.getParent();
-		while(elem != null && (elem instanceof IScope) == false)
+
+/*		while(elem != null && (elem instanceof IScope) == false)
 			elem = elem.getParent();
+	*/	
+		while(elem != null) {
+			if (elem instanceof IScope)
+				return (IScope) elem;
+			
+			if (elem instanceof BaseClass) {
+				// Skip aggregate defunit scope (this is important) 
+				elem = elem.getParent().getParent();
+				continue;
+			}
+			
+			elem = elem.getParent();
+		}
+		
 		return ((IScope)elem);
 	}
 
@@ -98,20 +119,11 @@ public class EntityResolver {
 	}
 	
 	private static DefUnit findDefUnitInSecondaryScope(IScope scope, String name) {
-		// TODO Auto-generated method stub
+		// TODO search imports
 		return null;
 	}
 	
 	
-	private static List<DefUnit> findDefUnitsInImmediateScope(IScope scope, String name) {
-		List<DefUnit> defunits = new ArrayList<DefUnit>();
-		for (DefUnit defunit : scope.getDefUnits()) {
-			if (defunit.defname.equals(name))
-				defunits.add(defunit);
-		}
-		return defunits;
-	}
-
 	/*
 	public DefUnit findEntity(String fqname) throws ModelException {
 		String names[] = fqname.split("\\.");

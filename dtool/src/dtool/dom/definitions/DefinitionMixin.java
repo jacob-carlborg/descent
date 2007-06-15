@@ -2,7 +2,7 @@ package dtool.dom.definitions;
 
 import descent.internal.core.dom.TemplateMixin;
 import dtool.dom.ast.IASTNeoVisitor;
-import dtool.dom.base.BaseEntityRef;
+import dtool.dom.base.Entity;
 import dtool.model.IScope;
 
 /*
@@ -10,7 +10,7 @@ import dtool.model.IScope;
  */
 public class DefinitionMixin extends DefUnit  {
 	
-	public BaseEntityRef.TypeConstraint type;
+	public Entity type;
 	
 	public DefinitionMixin(TemplateMixin elem) {
 		convertDsymbol(elem);
@@ -28,7 +28,7 @@ public class DefinitionMixin extends DefUnit  {
 
 	@Override
 	public IScope getMembersScope() {
-		return type.entity.getTargetScope();
+		return type.getTargetScope();
 	}
 
 }

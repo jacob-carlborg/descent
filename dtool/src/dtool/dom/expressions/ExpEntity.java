@@ -1,6 +1,7 @@
 package dtool.dom.expressions;
 
 import util.tree.TreeVisitor;
+import descent.internal.core.dom.DotIdExp;
 import descent.internal.core.dom.IdentifierExp;
 import descent.internal.core.dom.ScopeExp;
 import descent.internal.core.dom.TypeDotIdExp;
@@ -11,34 +12,37 @@ import dtool.dom.base.Entity;
 import dtool.dom.base.EntitySingle;
 import dtool.dom.definitions.DefUnit;
 
-public class ExpEntitySingle extends Expression {
+public class ExpEntity extends Expression {
 	
 	public Entity entity;
-
 	
-	public ExpEntitySingle(IdentifierExp elem) {
+	public ExpEntity(IdentifierExp elem) {
 		convertNode(elem);
 		this.entity = (Entity) DescentASTConverter.convertElem(elem.id);
 		//this.baseEntity = new BaseEntityRef.ValueConstraint(entity);
 	}
 	
-	public ExpEntitySingle(TypeDotIdExp elem) {
+	public ExpEntity(TypeDotIdExp elem) {
 		convertNode(elem);
 		EntQualified qent = new EntQualified();
-		qent.rootent = (Entity) DescentASTConverter.convertElem(elem.t);
+		qent.root = (Entity) DescentASTConverter.convertElem(elem.t);
 		qent.subent = EntitySingle.convert(elem.ident);
-		qent.startPos = qent.rootent.startPos;
+		qent.startPos = qent.getRootExp().startPos;
 		qent.setEndPos(qent.subent.getEndPos());
 		this.entity = qent;
 		//this.baseEntity = new BaseEntityRef.ValueConstraint(qent);
 	}
 	
-	public ExpEntitySingle(ScopeExp elem) {
+	public ExpEntity(ScopeExp elem) {
 		convertNode(elem);
 		this.entity = (Entity) DescentASTConverter.convertElem(elem.tempinst);
 	}
 	
 
+	public ExpEntity(DotIdExp elem) {
+		convertNode(elem);
+		this.entity = EntQualified.convertDotIexp(elem);
+	}
 
 	@Override
 	public void accept0(IASTNeoVisitor visitor) {

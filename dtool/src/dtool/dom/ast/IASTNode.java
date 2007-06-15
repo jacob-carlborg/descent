@@ -1,8 +1,8 @@
 package dtool.dom.ast;
 
-import descent.core.domX.IASTVisitor;
 import util.tree.IElement;
 import util.tree.IVisitable;
+import descent.core.domX.IASTVisitor;
 
 /**
  * A token/representation type.

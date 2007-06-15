@@ -33,7 +33,7 @@ public abstract class BaseEntityRef extends ASTNeoNode {
 		visitor.endVisit(this);
 	}
 	
-	public static class TypeConstraint extends BaseEntityRef {
+	/*public static class TypeConstraint extends BaseEntityRef {
 		public TypeConstraint(Entity entity) { 
 			super(entity); 
 			refConstraint = EReferenceConstraint.EXPVALUE;
@@ -52,7 +52,7 @@ public abstract class BaseEntityRef extends ASTNeoNode {
 			super(entity); 
 			refConstraint = EReferenceConstraint.NONE;
 		}
-	}
+	}*/
 	
 
 }

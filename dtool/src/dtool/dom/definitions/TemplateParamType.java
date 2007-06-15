@@ -4,13 +4,12 @@ import util.tree.TreeVisitor;
 import descent.internal.core.dom.TemplateTypeParameter;
 import dtool.dom.ast.IASTNeoVisitor;
 import dtool.dom.base.Entity;
-import dtool.dom.base.BaseEntityRef;
 import dtool.model.IScope;
 
 public class TemplateParamType extends TemplateParameter {
 
-	public BaseEntityRef.TypeConstraint specType;
-	public BaseEntityRef.TypeConstraint defaultType;
+	public Entity specType;
+	public Entity defaultType;
 
 	public TemplateParamType(TemplateTypeParameter elem) {
 		convertNode(elem);
@@ -31,7 +30,7 @@ public class TemplateParamType extends TemplateParameter {
 	public IScope getMembersScope() {
 		if(specType == null)
 			return null;
-		return specType.entity.getTargetScope();
+		return specType.getTargetScope();
 	}
 
 	@Override

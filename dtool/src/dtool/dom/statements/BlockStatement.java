@@ -48,7 +48,7 @@ public class BlockStatement extends Statement implements IScope {
 		return EntityResolver.getDefUnitsFromMembers(statements);
 	}
 
-	public IScope getSuperScope() {
+	public List<IScope> getSuperScopes() {
 		return null;
 	}
 

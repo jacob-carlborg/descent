@@ -8,10 +8,11 @@ import dtool.dom.ast.IASTNeoVisitor;
 import dtool.model.IScope;
 
 /**
- * Abstract class for all AST elements that define a new symbol.
+ * Abstract class for all AST elements that define a new named entity.
  */
 public abstract class DefUnit extends ASTNeoNode {
 	
+	/** A Symbol is node wrapping an identifier, used only in DefUnits names.*/
 	public static class Symbol extends ASTNeoNode {
 		public String name;
 
@@ -78,14 +79,20 @@ public abstract class DefUnit extends ASTNeoNode {
 		this.defname = new Symbol(id);
 	}		
 
-	
+	/** Gets the archtype (the kind) of this DefUnit. */
 	public abstract EArcheType getArcheType() ;
+
+	/** Gets the scope which contains the members of this DefUnit. 
+	 * In the case of aggregate like DefUnits the members scope is contained
+	 * in the DefUnit node, but on other cases the scope is somewhere else.
+	 * May be null if the scope is not found. */
+	public abstract IScope getMembersScope();
+
 	
 	@Override
 	public String toString() {
 		return defname.name;
 	}
 
-	public abstract IScope getMembersScope();
 
 }

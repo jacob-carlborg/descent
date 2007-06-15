@@ -7,7 +7,6 @@ import descent.internal.core.dom.EnumDeclaration;
 import dtool.descentadapter.DescentASTConverter;
 import dtool.dom.ast.IASTNeoVisitor;
 import dtool.dom.base.Entity;
-import dtool.dom.base.BaseEntityRef.TypeConstraint;
 import dtool.dom.expressions.Expression;
 import dtool.model.IScope;
 
@@ -39,14 +38,17 @@ public class DefinitionEnum extends Definition implements IScope {
 
 		@Override
 		public IScope getMembersScope() {
-			// TODO Auto-generated method stub
-			return null;
+			return getType().getTargetScope();
+		}
+
+		private Entity getType() {
+			return ((DefinitionEnum) getParent()).type;
 		}
 
 	}
 
 	private List<DefUnit> members;
-	private TypeConstraint type;
+	private Entity type;
 	
 	public DefinitionEnum(EnumDeclaration elem) {
 		convertDsymbol(elem);
@@ -81,8 +83,8 @@ public class DefinitionEnum extends Definition implements IScope {
 	}
 	
 	
-	public IScope getSuperScope() {
-		// TODO enum super scopes
+	public List<IScope> getSuperScopes() {
+		// TODO Auto-generated method stub
 		return null;
 	}
 }

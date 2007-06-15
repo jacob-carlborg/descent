@@ -5,6 +5,7 @@ import java.util.List;
 import util.tree.TreeVisitor;
 import descent.internal.core.dom.Argument;
 import descent.internal.core.dom.TypeFunction;
+import dtool.descentadapter.DescentASTConverter;
 import dtool.dom.ast.IASTNeoVisitor;
 import dtool.dom.base.TypeDynArray.IntrinsicDynArray;
 import dtool.dom.definitions.DefUnit;
@@ -17,14 +18,14 @@ import dtool.model.IntrinsicDefUnit;
  */
 public class TypeDelegate extends Entity {
 
-	public BaseEntityRef.TypeConstraint rettype;
+	public Entity rettype;
 	public List<Argument> arguments;
 	public int varargs;
 	//public LINK linkage;
 	
 	public TypeDelegate(descent.internal.core.dom.TypeDelegate elem) {
 		setSourceRange(elem);
-		this.rettype = Entity.convertType(elem.getReturnType());
+		this.rettype = (Entity) DescentASTConverter.convertElem(elem.getReturnType());
 		this.varargs = ((TypeFunction) elem.next).varargs;
 		//this.linkage = ((TypeFunction) elem.next).linkage;
 	}
@@ -58,8 +59,7 @@ public class TypeDelegate extends Entity {
 			return null;
 		}
 
-		@Override
-		public IScope getSuperScope() {
+		public List<IScope> getSuperScopes() {
 			// TODO Auto-generated method stub
 			return null;
 		}

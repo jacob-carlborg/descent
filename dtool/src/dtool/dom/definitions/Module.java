@@ -95,7 +95,7 @@ public class Module extends DefUnit implements IScope {
 		return this;
 	}
 	
-	public IScope getSuperScope() {
+	public List<IScope> getSuperScopes() {
 		return null;
 	}
 

@@ -30,13 +30,13 @@ public class ASTElementFinder extends ASTNeoUpTreeVisitor {
 		if(elem.hasNoSourceRangeInfo()) {
 			//Assert.fail();
 			return false;
-		} else if(offset < elem.getStartPos() || offset > elem.getEndPos()) {
-			// Match not here, don't bother descending.
-			return false; 
-		} else {
+		} else if(offset >= elem.getStartPos() && offset <= elem.getEndPos()) {
 			// This node is the match, or is parent of the match.
 			match = elem;
 			return true; // Descend and search children.
+		} else {
+			// Match not here, don't bother descending.
+			return false; 
 		}
 		
 	}
