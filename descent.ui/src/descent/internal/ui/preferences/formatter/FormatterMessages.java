@@ -31,8 +31,7 @@ final class FormatterMessages extends NLS {
 	public static String BracesTabPage_position_next_line;
 	public static String BracesTabPage_position_next_line_indented;
 	public static String BracesTabPage_group_brace_positions_title;
-	
-	// Messages for various options (automatically generated)
+	public static String BracesTabPage_group_set_all_to;
 	public static String BracesTabPage_brace_position_for_function_declaration;
 	
 	// TODO messages, when the tab page for them gets changed

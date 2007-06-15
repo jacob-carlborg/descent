@@ -12,6 +12,8 @@ package descent.internal.ui.preferences.formatter;
  
 import java.util.Map;
 
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Group;
 
@@ -21,7 +23,7 @@ public class BracesTabPage extends ModifyDialogTabPage {
 	
 	private final String PREVIEW=
 	createPreviewHeader(FormatterMessages.BracesTabPage_preview_header) + 
-	"void exampleFunction(){doSomething();}";
+	"void exampleFunction(){doSomething();}"; //$NON-NLS-1$
 	
 	private CompilationUnitPreview fPreview;
 	
@@ -48,8 +50,14 @@ public class BracesTabPage extends ModifyDialogTabPage {
 	}
 	
 	protected void doCreatePreferences(Composite composite, int numColumns) {
-		final Group group= createGroup(numColumns, composite, FormatterMessages.BracesTabPage_group_brace_positions_title); 
-		createBracesCombo(group, numColumns, FormatterMessages.BracesTabPage_brace_position_for_function_declaration, DefaultCodeFormatterConstants.FORMATTER_BRACE_POSITION_FOR_FUNCTION_DECLARATION); 
+		final Group group = createGroup(numColumns, composite, FormatterMessages.BracesTabPage_group_brace_positions_title); 
+		final ComboPreference pref1 = createBracesCombo(group, numColumns, FormatterMessages.BracesTabPage_brace_position_for_function_declaration, DefaultCodeFormatterConstants.FORMATTER_BRACE_POSITION_FOR_FUNCTION_DECLARATION);
+		
+		final SetAllGroup setAll = createSetAllGroup(numColumns, composite, FormatterMessages.BracesTabPage_group_set_all_to);
+		createSetAllOption(setAll, FormatterMessages.BracesTabPage_position_same_line, FormatterMessages.BracesTabPage_position_same_line);
+		createSetAllOption(setAll, FormatterMessages.BracesTabPage_position_next_line, FormatterMessages.BracesTabPage_position_next_line);
+		createSetAllOption(setAll, FormatterMessages.BracesTabPage_position_next_line_indented, FormatterMessages.BracesTabPage_position_next_line_indented);
+		setAll.addPreference(pref1);
 	}
 	
 	protected void initializePage() {

@@ -29,6 +29,7 @@ import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -816,5 +817,77 @@ public abstract class ModifyDialogTabPage {
 	 */
 	protected static String createPreviewHeader(String title) {
 		return "/**\n* " + title + "\n*/\n"; //$NON-NLS-1$ //$NON-NLS-2$
-	}	
+	}
+	
+	protected SetAllGroup createSetAllGroup(int numColumns, Composite parent, String titleText)
+	{
+		return new SetAllGroup(numColumns, parent, titleText);
+	}
+	
+	protected SetAllOption createSetAllOption(SetAllGroup parent, String option, String text)
+	{
+		return new SetAllOption(parent, option, text);
+	}
+	
+	protected final class SetAllGroup
+	{
+		protected final Group group;
+		protected final List<Preference> preferences = new ArrayList<Preference>();
+		
+		private SetAllGroup(int numColumns, Composite parent, String titleText)
+		{
+			group = createGroup(numColumns, parent, titleText);
+		}
+		
+		protected void addPreference(Preference pref)
+		{
+			preferences.add(pref);
+		}
+		
+		protected void notify(String option)
+		{
+			for(Preference pref : preferences)
+			{
+				if(pref instanceof ComboPreference)
+				{
+					ComboPreference cpref = (ComboPreference) pref;
+					Combo ctrl = (Combo) cpref.getControl();
+					int index = ctrl.indexOf(option, 0);
+					ctrl.select(index);
+					cpref.comboSelected(index);
+				}
+			}
+		}
+	}
+	
+	protected static final class SetAllOption implements SelectionListener
+	{
+		private final String option;
+		private final SetAllGroup parent;
+		private final Button button;
+		
+		private SetAllOption(SetAllGroup $parent, String $option, String text)
+		{
+			option = $option;
+			parent = $parent;
+			
+			button = new Button(parent.group, SWT.PUSH);
+			button.setFont(parent.group.getFont());
+			button.setText(text);
+			button.addSelectionListener(this);
+		}
+		
+		public String getOption()
+		{
+			return option;
+		}
+		
+		public void widgetDefaultSelected(SelectionEvent e) {
+			// Shouldn't be called
+		}
+
+		public void widgetSelected(SelectionEvent e) {
+			parent.notify(option);
+		}
+	}
 }
