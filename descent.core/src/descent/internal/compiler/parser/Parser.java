@@ -4490,6 +4490,8 @@ public class Parser extends Lexer {
 		case TOKdot:
 		    // Signal global scope '.' operator with "" identifier
 			e = new IdentifierExp(loc, Id.empty);
+			e.start = token.ptr;
+			e.length = 0;
 		    break;
 
 		case TOKthis:
@@ -4840,6 +4842,8 @@ public class Parser extends Lexer {
 						e = new DotTemplateInstanceExp(loc, e, tempinst);
 					} else {
 						e = new DotIdExp(loc, e, id);
+						e.start = start;
+						e.length = id.start + id.length - start;
 					}
 					continue;
 				} else if (token.value == TOKnew) {

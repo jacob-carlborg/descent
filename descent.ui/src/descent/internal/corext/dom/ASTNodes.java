@@ -22,6 +22,7 @@ import descent.core.compiler.IProblem;
 import descent.core.dom.ASTNode;
 import descent.core.dom.GenericVisitor;
 import descent.core.dom.Modifier;
+import descent.core.dom.Name;
 import descent.core.dom.QualifiedName;
 import descent.core.dom.QualifiedType;
 import descent.core.dom.SimpleType;
@@ -132,6 +133,14 @@ public class ASTNodes {
 		}
 		*/
 		return current;
+	}
+	
+	public static Name getTopMostName(Name name) {
+		Name result= name;
+		while(result.getParent() instanceof Name) {
+			result= (Name)result.getParent();
+		}
+		return result;
 	}
 	
 }

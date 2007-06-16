@@ -184,6 +184,7 @@ import descent.internal.ui.javaeditor.selectionactions.StructureSelectNextAction
 import descent.internal.ui.javaeditor.selectionactions.StructureSelectPreviousAction;
 import descent.internal.ui.javaeditor.selectionactions.StructureSelectionAction;
 import descent.internal.ui.search.BreakContinueTargetFinder;
+import descent.internal.ui.search.NaiveOccurrencesFinder;
 import descent.internal.ui.text.DocumentCharacterIterator;
 import descent.internal.ui.text.HTMLTextPresenter;
 import descent.internal.ui.text.JavaChangeHover;
@@ -3020,8 +3021,16 @@ public abstract class JavaEditor extends AbstractDecoratedTextEditor implements 
 		
 		ASTNode selectedNode= NodeFinder.perform(astRoot, selection.getOffset(), selection.getLength());
 		
+		// TODO JDT UI remove when a more powerfull occurrences finder is implemented
+		NaiveOccurrencesFinder naiveFinder = new NaiveOccurrencesFinder();
+		String message = naiveFinder.initialize(astRoot, selectedNode);
+		if (message == null) {
+			matches= naiveFinder.perform();
+		}
+		
+		/* TODO JDT UI mark ocurrences
 		if (fMarkExceptions || fMarkTypeOccurrences) {
-			/* TODO JDT UI flow
+			
 			ExceptionOccurrencesFinder exceptionFinder= new ExceptionOccurrencesFinder();
 			String message= exceptionFinder.initialize(astRoot, selectedNode);
 			if (message == null) {
@@ -3029,11 +3038,9 @@ public abstract class JavaEditor extends AbstractDecoratedTextEditor implements 
 				if (!fMarkExceptions && !matches.isEmpty())
 					matches.clear();
 			}
-			*/
 		}
 
 		if ((matches == null || matches.isEmpty()) && (fMarkMethodExitPoints || fMarkTypeOccurrences)) {
-			/* TODO JDT UI flow
 			MethodExitsFinder finder= new MethodExitsFinder();
 			String message= finder.initialize(astRoot, selectedNode);
 			if (message == null) {
@@ -3041,7 +3048,6 @@ public abstract class JavaEditor extends AbstractDecoratedTextEditor implements 
 				if (!fMarkMethodExitPoints && !matches.isEmpty())
 					matches.clear();
 			}
-			*/
 		}
 
 		if ((matches == null || matches.isEmpty()) && (fMarkBreakContinueTargets || fMarkTypeOccurrences)) {
@@ -3055,7 +3061,6 @@ public abstract class JavaEditor extends AbstractDecoratedTextEditor implements 
 		}
 
 		if ((matches == null || matches.isEmpty()) && (fMarkImplementors || fMarkTypeOccurrences)) {
-			/* TODO JDT UI implement
 			ImplementOccurrencesFinder finder= new ImplementOccurrencesFinder();
 			String message= finder.initialize(astRoot, selectedNode);
 			if (message == null) {
@@ -3063,10 +3068,8 @@ public abstract class JavaEditor extends AbstractDecoratedTextEditor implements 
 				if (!fMarkImplementors && !matches.isEmpty())
 					matches.clear();
 			}
-			*/
 		}
 
-		/* TODO JDT UI binding
 		if (matches == null) {
 			IBinding binding= null;
 			if (selectedNode instanceof Name)
@@ -3096,9 +3099,9 @@ public abstract class JavaEditor extends AbstractDecoratedTextEditor implements 
 		}
 
 		fOccurrencesFinderJob= new OccurrencesFinderJob(document, positions, selection);
-		//fOccurrencesFinderJob.setPriority(Job.DECORATE);
-		//fOccurrencesFinderJob.setSystem(true);
-		//fOccurrencesFinderJob.schedule();
+		fOccurrencesFinderJob.setPriority(Job.DECORATE);
+		fOccurrencesFinderJob.setSystem(true);
+		fOccurrencesFinderJob.schedule();
 		fOccurrencesFinderJob.run(new NullProgressMonitor());
 	}
 

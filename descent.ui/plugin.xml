@@ -2182,6 +2182,12 @@
             markerType="descent.core.problem"
             name="descent.ui.info"
             super="org.eclipse.ui.workbench.texteditor.info"/>
+       <type
+         name="org.eclipse.jdt.ui.occurrences">
+      </type>
+      <type
+         name="org.eclipse.jdt.ui.overrideIndicator">
+      </type>
    </extension>
    <extension
          point="org.eclipse.ui.editors.markerAnnotationSpecification">
@@ -2197,6 +2203,99 @@
             annotationImageProvider="descent.internal.ui.javaeditor.JavaAnnotationImageProvider"
             annotationType="descent.ui.info"
             />
+       <specification
+            annotationType="descent.ui.occurrences"
+            label="%OccurrenceAnnotation.label"
+            icon="$nl$/icons/full/obj16/searchm_obj.gif"
+            textPreferenceKey="occurrenceIndication"
+            textPreferenceValue="false"
+            highlightPreferenceKey="occurrenceHighlighting"
+            highlightPreferenceValue="true"
+            contributesToHeader="false"
+            overviewRulerPreferenceKey="occurrenceIndicationInOverviewRuler"
+            overviewRulerPreferenceValue="true"
+            verticalRulerPreferenceKey="occurrenceIndicationInVerticalRuler"
+            verticalRulerPreferenceValue="false"
+            colorPreferenceKey="occurrenceIndicationColor"
+            colorPreferenceValue="212,212,212"
+            presentationLayer="4"
+            showInNextPrevDropdownToolbarActionKey="showOccurrenceInNextPrevDropdownToolbarAction"
+            showInNextPrevDropdownToolbarAction="true"
+            isGoToNextNavigationTargetKey="isOccurrenceGoToNextNavigationTarget"
+	        isGoToNextNavigationTarget="false"
+            isGoToPreviousNavigationTargetKey="isOccurrenceGoToPreviousNavigationTarget"
+	        isGoToPreviousNavigationTarget="false">
+	  </specification>
+	  <specification
+            annotationType="descent.ui.overrideIndicator"
+            label="%OverrideIndicator.label"
+            icon="$nl$/icons/full/ovr16/over_co.gif"
+			annotationImageProvider ="descent.internal.ui.javaeditor.OverrideIndicatorImageProvider"
+            textPreferenceKey="overrideIndicator"
+            textPreferenceValue="false"
+            highlightPreferenceKey="overrideIndicatorHighlighting"
+            highlightPreferenceValue="false"
+            contributesToHeader="false"
+            overviewRulerPreferenceKey="overrideIndicatorInOverviewRuler"
+            overviewRulerPreferenceValue="false"
+            verticalRulerPreferenceKey="overrideIndicatorInVerticalRuler"
+            verticalRulerPreferenceValue="true"
+            colorPreferenceKey="overrideIndicatorColor"
+            colorPreferenceValue="180,207,205"
+            presentationLayer="3"
+            showInNextPrevDropdownToolbarActionKey="showoverrideIndicatorInNextPrevDropdownToolbarAction"
+            showInNextPrevDropdownToolbarAction="false"
+            isGoToNextNavigationTargetKey="isOverrideIndicatorGoToNextNavigationTarget"
+	        isGoToNextNavigationTarget="false"
+            isGoToPreviousNavigationTargetKey="isOverrideIndicatorGoToPreviousNavigationTarget"
+	        isGoToPreviousNavigationTarget="false">
+	  </specification>
+   </extension>
+   <extension
+         point="org.eclipse.ui.actionSets">
+      <actionSet
+            label="%javaEditorPresentationActionSet.label"
+            visible="false"
+            id="descent.ui.text.java.actionSet.presentation">
+         <action
+               allowLabelUpdate="true"
+               style="toggle"
+               toolbarPath="org.eclipse.ui.edit.text.actionSet.presentation/Presentation"
+               id="descent.ui.edit.text.java.toggleMarkOccurrences"
+               definitionId="descent.ui.edit.text.java.toggleMarkOccurrences"
+               disabledIcon="$nl$/icons/full/dtool16/mark_occurrences.gif"
+               icon="$nl$/icons/full/etool16/mark_occurrences.gif"
+               helpContextId="toggle_mark_occurrences_action_context"
+               label="%toggleMarkOccurrences.label"
+               retarget="true"
+               tooltip="%toggleMarkOccurrences.tooltip">
+         </action>
+      </actionSet>
+   </extension>
+   <extension
+         point="org.eclipse.ui.actionSetPartAssociations">
+      <actionSetPartAssociation
+            targetID="org.eclipse.ui.edit.text.actionSet.presentation">
+         <part
+               id="descent.ui.CompilationUnitEditor">
+         </part>
+         <!--
+         <part
+               id="descent.ui.ClassFileEditor">
+         </part>
+         -->
+      </actionSetPartAssociation>
+      <actionSetPartAssociation
+            targetID="descent.ui.text.java.actionSet.presentation">
+         <part
+               id="descent.ui.CompilationUnitEditor">
+         </part>
+          <!--
+         <part
+               id="descent.ui.ClassFileEditor">
+         </part>
+         -->
+      </actionSetPartAssociation>
    </extension>
    <extension
          point="org.eclipse.ui.editors.templates">

@@ -1,6 +1,11 @@
 package descent.tests.mars;
 
+import descent.core.dom.Block;
+import descent.core.dom.CallExpression;
 import descent.core.dom.CompilationUnit;
+import descent.core.dom.DotIdentifierExpression;
+import descent.core.dom.ExpressionStatement;
+import descent.core.dom.FunctionDeclaration;
 
 
 public class Bugs_Test extends Parser_Test {
@@ -130,6 +135,32 @@ public class Bugs_Test extends Parser_Test {
 				"}}";
 		CompilationUnit unit = getCompilationUnit(s);
 		assertEquals(1, unit.declarations().size());
+	}
+	
+	public void testBug17() {
+		String s = "void main() { Stdout.formatln(x); }";
+		CompilationUnit unit = getCompilationUnit(s);
+		assertEquals(1, unit.declarations().size());
+		
+		FunctionDeclaration func = (FunctionDeclaration) unit.declarations().get(0);
+		Block block = (Block) func.getBody();
+		ExpressionStatement stm = (ExpressionStatement) block.statements().get(0);
+		CallExpression callExp = (CallExpression) stm.getExpression();
+		DotIdentifierExpression dotId = (DotIdentifierExpression) callExp.getExpression();
+		assertPosition(dotId, 14, 15);
+	}
+	
+	public void testBug18() {
+		String s = "void main() { .formatln(x); }";
+		CompilationUnit unit = getCompilationUnit(s);
+		assertEquals(1, unit.declarations().size());
+		
+		FunctionDeclaration func = (FunctionDeclaration) unit.declarations().get(0);
+		Block block = (Block) func.getBody();
+		ExpressionStatement stm = (ExpressionStatement) block.statements().get(0);
+		CallExpression callExp = (CallExpression) stm.getExpression();
+		DotIdentifierExpression dotId = (DotIdentifierExpression) callExp.getExpression();
+		assertPosition(dotId, 14, 9);
 	}
 	
 	public void testDstress_run_t_typeof_16_A() {
