@@ -90,7 +90,9 @@ import descent.core.compiler.IProblem;
 import descent.internal.corext.util.JavaModelUtil;
 import descent.internal.ui.JavaPlugin;
 import descent.internal.ui.JavaPluginImages;
+import descent.internal.ui.text.correction.JavaCorrectionProcessor;
 import descent.internal.ui.text.java.IProblemRequestorExtension;
+import descent.internal.ui.text.spelling.JavaSpellingReconcileStrategy;
 import descent.ui.JavaUI;
 import descent.ui.PreferenceConstants;
 import descent.ui.text.IJavaPartitions;
@@ -166,13 +168,10 @@ public class CompilationUnitDocumentProvider extends TextFileDocumentProvider im
 				fProblem= problem;
 				fCompilationUnit= cu;
 
-				/* TODO JDT UI spell
 				if (JavaSpellingReconcileStrategy.SPELLING_PROBLEM_ID == fProblem.getID()) {
 					setType(SPELLING_ANNOTATION_TYPE);
 					fLayer= WARNING_LAYER;
-				} else
-				*/ 
-				if (IProblem.Task == fProblem.getID()) {
+				} else if (IProblem.Task == fProblem.getID()) {
 					setType(JavaMarkerAnnotation.TASK_ANNOTATION_TYPE);
 					fLayer= TASK_LAYER;
 				} else if (fProblem.isWarning()) {
@@ -200,9 +199,7 @@ public class CompilationUnitDocumentProvider extends TextFileDocumentProvider im
 					if (!isQuickFixableStateSet())
 						setQuickFixable(isProblem() 
 								&& indicateQuixFixableProblems() 
-								/* TODO JDT UI correction
 								&& JavaCorrectionProcessor.hasCorrections(this)
-								*/
 								); // no light bulb for tasks
 					if (isQuickFixable()) {
 						if (!fgQuickFixImagesInitialized) {

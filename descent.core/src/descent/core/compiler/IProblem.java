@@ -189,7 +189,7 @@ public interface IProblem {
 	/** Category for fatal problems which could not be addressed by external changes, but require an edit to be addressed */
 	int CAT_INTERNAL = 60;	
 	/** Category for optional problems in DDoc */
-	int CAT_DDOC = 70;
+	int CAT_JAVADOC = 70;
 	/** Category for optional problems related to coding style practices */
 	int CAT_CODE_STYLE = 80;
 	/** Category for optional problems related to potential programming flaws */

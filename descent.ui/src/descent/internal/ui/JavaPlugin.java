@@ -505,12 +505,10 @@ public class JavaPlugin extends AbstractUIPlugin {
 				fTypeFilter= null;
 			}
 			
-			/* TODO JDT UI code completion
 			if (fContentAssistHistory != null) {
 				ContentAssistHistory.store(fContentAssistHistory, getPluginPreferences(), PreferenceConstants.CODEASSIST_LRU_HISTORY);
 				fContentAssistHistory= null;
 			}
-			*/
 			
 			uninstallPreferenceStoreBackwardsCompatibility();
 			

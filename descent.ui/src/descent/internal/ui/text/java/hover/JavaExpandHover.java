@@ -41,6 +41,7 @@ import descent.internal.ui.JavaPluginImages;
 import descent.internal.ui.javaeditor.IJavaAnnotation;
 import descent.internal.ui.javaeditor.JavaMarkerAnnotation;
 import descent.internal.ui.javaeditor.CompilationUnitDocumentProvider.ProblemAnnotation;
+import descent.internal.ui.text.correction.JavaCorrectionProcessor;
 import descent.internal.ui.text.java.hover.AnnotationExpansionControl.AnnotationHoverInput;
 import descent.ui.PreferenceConstants;
 
@@ -181,9 +182,7 @@ public class JavaExpandHover extends AnnotationExpandHover {
 			return (!isIncluded(annotation.getOverlay(), showTemporaryProblems));
 		
 		return showTemporaryProblems
-		/* TODO JDT UI correction
 			&& JavaCorrectionProcessor.hasCorrections((Annotation)annotation)
-		*/
 			;
 	}
 

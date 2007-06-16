@@ -122,6 +122,37 @@
         -->
 
    </extension>
+   
+   <extension point="org.eclipse.ui.workbench.texteditor.spellingEngine">
+        <engine
+              preferencesClass="descent.internal.ui.preferences.SpellingPreferenceBlock"
+              label="%defaultSpellingEngine.label"
+              class="descent.internal.ui.text.spelling.DefaultSpellingEngine"
+              default="true"
+              id="descent.internal.ui.text.spelling.DefaultSpellingEngine">
+        </engine>
+    </extension>
+    
+    <extension
+         point="descent.ui.quickFixProcessors">
+      <!--
+      <quickFixProcessor
+            name="%defaultQuickFixProcessor"
+            class="descent.internal.ui.text.correction.QuickFixProcessor"
+            id="descent.ui.text.correction.QuickFixProcessor">
+      </quickFixProcessor>
+      -->
+      <quickFixProcessor
+            name="%spellingQuickFixProcessor"
+            class="descent.internal.ui.text.spelling.WordQuickFixProcessor"
+            id= "descent.ui.text.correction.spelling.QuickFixProcessor">
+            <handledMarkerTypes>
+                <markerType id="descent.internal.spelling"/>
+	        </handledMarkerTypes>
+      </quickFixProcessor>
+   </extension>
+   
+   
    <extension
          point="org.eclipse.core.runtime.preferences">
       <initializer class="descent.internal.ui.JavaUIPreferenceInitializer"/>
@@ -2827,5 +2858,21 @@
          </action>
      </actionSet>
 </extension>
+
+<extension
+         point="org.eclipse.ui.popupMenus">
+      <viewerContribution
+            targetID="#CompilationUnitRulerContext"
+            id="descent.internal.ui.javaeditor.QuickFixRulerMenuAction">
+         <action
+               label="%Dummy.label"
+               helpContextId="descent.ui.quick_fix_action"
+               class="descent.internal.ui.javaeditor.JavaSelectRulerAction"
+               menubarPath="additions"
+               definitionId="descent.ui.edit.text.java.correction.assist.proposals"
+               id="descent.internal.ui.javaeditor.JavaSelectRulerMenuAction">
+         </action>
+      </viewerContribution>
+   </extension>
 	
 </plugin>

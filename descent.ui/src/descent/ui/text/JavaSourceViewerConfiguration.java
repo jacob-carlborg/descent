@@ -73,6 +73,7 @@ import descent.internal.ui.text.JavaPresentationReconciler;
 import descent.internal.ui.text.JavaReconciler;
 import descent.internal.ui.text.SingleTokenJavaScanner;
 import descent.internal.ui.text.comment.CommentFormattingStrategy;
+import descent.internal.ui.text.correction.JavaCorrectionAssistant;
 import descent.internal.ui.text.java.ContentAssistProcessor;
 import descent.internal.ui.text.java.JavaAutoIndentStrategy;
 import descent.internal.ui.text.java.JavaCodeScanner;
@@ -453,10 +454,8 @@ public class JavaSourceViewerConfiguration extends TextSourceViewerConfiguration
 	 * @since 3.2
 	 */
 	public IQuickAssistAssistant getQuickAssistAssistant(ISourceViewer sourceViewer) {
-		/* TODO JDT UI correction
 		if (getEditor() != null)
 			return new JavaCorrectionAssistant(getEditor());
-		*/
 		return null;
 	}
 

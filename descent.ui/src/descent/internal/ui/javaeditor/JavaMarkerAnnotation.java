@@ -44,7 +44,7 @@ public class JavaMarkerAnnotation extends MarkerAnnotation implements IJavaAnnot
 	 * @see IJavaAnnotation#getArguments()
 	 */
 	public String[] getArguments() {
-		/* TODO JDT UI correction
+		/* TODO JDT UI correction engine
 		IMarker marker= getMarker();
 		if (marker != null && marker.exists() && isProblem())
 			return CorrectionEngine.getProblemArguments(marker);

@@ -29,6 +29,7 @@ import descent.internal.ui.javaeditor.SemanticHighlightings;
 import descent.internal.ui.preferences.NewJavaProjectPreferencePage;
 import descent.internal.ui.preferences.WorkInProgressPreferencePage;
 import descent.internal.ui.text.java.ProposalSorterRegistry;
+import descent.internal.ui.text.spelling.SpellCheckEngine;
 import descent.internal.ui.text.spelling.engine.ISpellCheckPreferenceKeys;
 import descent.ui.text.IJavaColorConstants;
 
@@ -3781,9 +3782,7 @@ public class PreferenceConstants {
 		store.setDefault(PreferenceConstants.EDITOR_MARK_IMPLEMENTORS, true);
 		
 		// spell checking
-		/* TODO JDT UI spell
 		store.setDefault(PreferenceConstants.SPELLING_LOCALE, SpellCheckEngine.getDefaultLocale().toString());
-		*/ 
 		store.setDefault(PreferenceConstants.SPELLING_IGNORE_DIGITS, true);
 		store.setDefault(PreferenceConstants.SPELLING_IGNORE_MIXED, true);
 		store.setDefault(PreferenceConstants.SPELLING_IGNORE_SENTENCE, true);

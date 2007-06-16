@@ -11,6 +11,12 @@
 package descent.internal.ui.javaeditor;
 
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+
+import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
@@ -27,6 +33,8 @@ import org.eclipse.ui.texteditor.ITextEditorActionDefinitionIds;
 import org.eclipse.ui.texteditor.RetargetTextEditorAction;
 
 import descent.internal.ui.JavaPluginImages;
+import descent.internal.ui.text.java.CompletionProposalCategory;
+import descent.internal.ui.text.java.CompletionProposalComputerRegistry;
 import descent.ui.actions.JdtActionConstants;
 
 
@@ -44,11 +52,9 @@ public class BasicCompilationUnitEditorActionContributor extends BasicJavaEditor
         }
 
 		public void menuAboutToShow(IMenuManager manager) {
-			/* TODO JDT UI code completion
 	    	for (int i= 0; i < fSpecificAssistActions.length; i++) {
 	            fSpecificAssistActions[i].update();
 	        }
-	        */
 	    }
 		
 		public void dispose() {
@@ -63,10 +69,8 @@ public class BasicCompilationUnitEditorActionContributor extends BasicJavaEditor
 	protected RetargetTextEditorAction fChangeEncodingAction;
 	
 	/* @since 3.2 */
-	/* TODO JDT UI code completion
 	protected SpecificContentAssistAction[] fSpecificAssistActions;
 	private MenuListener fContentAssistMenuListener;
-	*/
 
 
 	public BasicCompilationUnitEditorActionContributor() {
@@ -97,10 +101,8 @@ public class BasicCompilationUnitEditorActionContributor extends BasicJavaEditor
 	public void contributeToMenu(IMenuManager menu) {
 
 		super.contributeToMenu(menu);
-		/* TODO JDT UI code completion
 		if (fContentAssistMenuListener != null)
 			fContentAssistMenuListener.dispose();
-		*/
 
 		IMenuManager editMenu= menu.findMenuUsingPath(IWorkbenchActionConstants.M_EDIT);
 		if (editMenu != null) {
@@ -110,7 +112,6 @@ public class BasicCompilationUnitEditorActionContributor extends BasicJavaEditor
 			
 			caMenu.add(fRetargetContentAssist);
 			
-			/* TODO JDT UI code completion
 			Collection descriptors= CompletionProposalComputerRegistry.getDefault().getProposalCategories();
 			List specificAssistActions= new ArrayList(descriptors.size());
 			for (Iterator it= descriptors.iterator(); it.hasNext();) {
@@ -126,7 +127,6 @@ public class BasicCompilationUnitEditorActionContributor extends BasicJavaEditor
 				fContentAssistMenuListener= new MenuListener(caMenu);
 				caMenu.addMenuListener(fContentAssistMenuListener);
 			}
-			*/
 			
 			caMenu.add(new Separator("context_info")); //$NON-NLS-1$
 			caMenu.add(fContextInformation);
@@ -149,14 +149,12 @@ public class BasicCompilationUnitEditorActionContributor extends BasicJavaEditor
 		fContextInformation.setAction(getAction(textEditor, "ContentAssistContextInformation")); //$NON-NLS-1$
 		fQuickAssistAction.setAction(getAction(textEditor, ITextEditorActionConstants.QUICK_ASSIST));
 		
-		/* TODO JDT UI code completion
 		if (fSpecificAssistActions != null) {
 			for (int i= 0; i < fSpecificAssistActions.length; i++) {
 				SpecificContentAssistAction assistAction= fSpecificAssistActions[i];
 				assistAction.setActiveEditor(part);
 			}
 		}
-		*/
 
 		fChangeEncodingAction.setAction(getAction(textEditor, ITextEditorActionConstants.CHANGE_ENCODING));
 
@@ -186,12 +184,10 @@ public class BasicCompilationUnitEditorActionContributor extends BasicJavaEditor
 			fRetargetContentAssist.dispose();
 			fRetargetContentAssist= null;
 		}
-		/* TODO JDT UI code completion
 		if (fContentAssistMenuListener != null) {
 			fContentAssistMenuListener.dispose();
 			fContentAssistMenuListener= null;
 		}
-		*/
 		super.dispose();
 	}
 }

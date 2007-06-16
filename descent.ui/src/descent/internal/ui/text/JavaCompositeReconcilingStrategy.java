@@ -20,6 +20,7 @@ import org.eclipse.ui.texteditor.ITextEditor;
 import descent.internal.ui.JavaPlugin;
 import descent.internal.ui.text.java.IProblemRequestorExtension;
 import descent.internal.ui.text.java.JavaReconcilingStrategy;
+import descent.internal.ui.text.spelling.JavaSpellingReconcileStrategy;
 
 /**
  * Reconciling strategy for Java code. This is a composite strategy containing the
@@ -43,9 +44,7 @@ public class JavaCompositeReconcilingStrategy  extends CompositeReconcilingStrat
 		fJavaStrategy= new JavaReconcilingStrategy(editor);
 		setReconcilingStrategies(new IReconcilingStrategy[] {
 			fJavaStrategy,
-			/* TODO JDT UI spell
 			new JavaSpellingReconcileStrategy(editor)
-			*/
 		});
 	}
 
