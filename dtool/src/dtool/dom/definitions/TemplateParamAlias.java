@@ -3,7 +3,7 @@ package dtool.dom.definitions;
 import util.tree.TreeVisitor;
 import descent.internal.core.dom.TemplateAliasParameter;
 import dtool.dom.ast.IASTNeoVisitor;
-import dtool.model.IScope;
+import dtool.refmodel.IScope;
 
 public class TemplateParamAlias extends TemplateParameter {
 

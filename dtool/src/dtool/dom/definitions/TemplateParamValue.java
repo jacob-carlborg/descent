@@ -3,9 +3,9 @@ package dtool.dom.definitions;
 import util.tree.TreeVisitor;
 import descent.internal.core.dom.TemplateValueParameter;
 import dtool.dom.ast.IASTNeoVisitor;
-import dtool.dom.base.Entity;
 import dtool.dom.expressions.Expression;
-import dtool.model.IScope;
+import dtool.dom.references.Entity;
+import dtool.refmodel.IScope;
 
 public class TemplateParamValue extends TemplateParameter {
 

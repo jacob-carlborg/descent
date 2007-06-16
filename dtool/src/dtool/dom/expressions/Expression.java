@@ -5,7 +5,7 @@ import java.util.List;
 import dtool.descentadapter.DescentASTConverter;
 import dtool.dom.ast.ASTNeoNode;
 import dtool.dom.definitions.DefUnit;
-import dtool.model.IDefUnitReference;
+import dtool.refmodel.IDefUnitReference;
 
 public abstract class Expression extends ASTNeoNode implements IDefUnitReference {
 

@@ -2,7 +2,7 @@ package dtool.dom.ast;
 
 import util.tree.TreeDepthRecon;
 import descent.core.domX.AbstractElement;
-import dtool.dom.base.EntQualified;
+import dtool.dom.references.EntQualified;
 
 /**
  * Simple class for printing the AST in indented tree form.

@@ -5,57 +5,33 @@ import java.util.List;
 import util.tree.TreeVisitor;
 import descent.internal.core.dom.EnumDeclaration;
 import dtool.descentadapter.DescentASTConverter;
+import dtool.dom.ast.ASTNeoNode;
 import dtool.dom.ast.IASTNeoVisitor;
-import dtool.dom.base.Entity;
-import dtool.dom.expressions.Expression;
-import dtool.model.IScope;
+import dtool.dom.references.Entity;
+import dtool.refmodel.IScope;
 
 public class DefinitionEnum extends Definition implements IScope {
 
-	public static class EnumMember extends DefUnit {
-		
-		public Expression value;
-
-		public EnumMember(descent.internal.core.dom.EnumMember elem) {
-			convertDsymbol(elem);
-			this.value = Expression.convert(elem.value);
-		}
-
-		@Override
-		public void accept0(IASTNeoVisitor visitor) {
-			boolean children = visitor.visit(this);
-			if (children) {
-				TreeVisitor.acceptChild(visitor, defname);
-				TreeVisitor.acceptChild(visitor, value);
-			}
-			visitor.endVisit(this);	 			
-		}
-
-		@Override
-		public EArcheType getArcheType() {
-			return EArcheType.Enum;
-		}
-
-		@Override
-		public IScope getMembersScope() {
-			return getType().getTargetScope();
-		}
-
-		private Entity getType() {
-			return ((DefinitionEnum) getParent()).type;
-		}
-
-	}
-
-	private List<DefUnit> members;
-	private Entity type;
+	public List<EnumMember> members;
+	public Entity type;
 	
-	public DefinitionEnum(EnumDeclaration elem) {
-		convertDsymbol(elem);
-		this.members = DescentASTConverter.convertManyL(elem.members, this.members) ;
-		this.type = Entity.convertType(elem.type);  
+	
+	public static ASTNeoNode convertEnumDecl(EnumDeclaration elem) {
+		if(elem.ident != null) {
+			DefinitionEnum defEnum = new DefinitionEnum();
+			defEnum.convertDsymbol(elem);
+			defEnum.members = DescentASTConverter.convertManyL(elem.members, defEnum.members) ;
+			defEnum.type = Entity.convertType(elem.type); 
+			return defEnum;
+		} else {
+			EnumContainer enumContainer = new EnumContainer();
+			enumContainer.setSourceRange(elem);
+			enumContainer.members = DescentASTConverter.convertManyL(elem.members, enumContainer.members) ;
+			enumContainer.type = Entity.convertType(elem.type); 
+			return enumContainer;
+		}
 	}
-
+	
 	@Override
 	public void accept0(IASTNeoVisitor visitor) {
 		boolean children = visitor.visit(this);
@@ -78,7 +54,7 @@ public class DefinitionEnum extends Definition implements IScope {
 		return this;
 	}
 	
-	public List<DefUnit> getDefUnits() {
+	public List<EnumMember> getDefUnits() {
 		return members;
 	}
 	
@@ -87,4 +63,5 @@ public class DefinitionEnum extends Definition implements IScope {
 		// TODO Auto-generated method stub
 		return null;
 	}
+
 }

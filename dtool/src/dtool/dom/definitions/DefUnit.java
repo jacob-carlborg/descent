@@ -5,7 +5,7 @@ import descent.internal.core.dom.Dsymbol;
 import descent.internal.core.dom.Identifier;
 import dtool.dom.ast.ASTNeoNode;
 import dtool.dom.ast.IASTNeoVisitor;
-import dtool.model.IScope;
+import dtool.refmodel.IScope;
 
 /**
  * Abstract class for all AST elements that define a new named entity.

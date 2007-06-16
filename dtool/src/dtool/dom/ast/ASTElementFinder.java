@@ -4,8 +4,8 @@ package dtool.dom.ast;
 
 /**
  * Finds the innermost element whose source range contains the offset.
- * A source range starts at element.startPos (inclusive), and ends at 
- * element.endPos (not inclusive).   
+ * An element is picked between element.startPos (inclusive) and  
+ * element.endPos (inclusive).   
  */
 public class ASTElementFinder extends ASTNeoUpTreeVisitor {
 	
@@ -29,7 +29,7 @@ public class ASTElementFinder extends ASTNeoUpTreeVisitor {
 	public boolean visit(ASTNode elem) {
 		if(elem.hasNoSourceRangeInfo()) {
 			//Assert.fail();
-			return false;
+			return true; // Descend and search children.
 		} else if(offset >= elem.getStartPos() && offset <= elem.getEndPos()) {
 			// This node is the match, or is parent of the match.
 			match = elem;

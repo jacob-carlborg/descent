@@ -5,7 +5,7 @@ import descent.internal.core.dom.StorageClassDeclaration;
 import dtool.dom.ast.ASTNeoNode;
 import dtool.dom.ast.ASTNode;
 import dtool.dom.ast.IASTNeoVisitor;
-import dtool.model.IDefinitionContainer;
+import dtool.refmodel.IDefinitionContainer;
 
 public class DeclarationStorageClass extends ASTNeoNode implements IDefinitionContainer {
 

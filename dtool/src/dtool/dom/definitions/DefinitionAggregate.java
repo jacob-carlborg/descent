@@ -9,10 +9,10 @@ import dtool.descentadapter.DescentASTConverter;
 import dtool.dom.ast.ASTNeoNode;
 import dtool.dom.ast.ASTNode;
 import dtool.dom.ast.IASTNeoVisitor;
-import dtool.dom.base.Entity;
+import dtool.dom.references.Entity;
 import dtool.dom.statements.IStatement;
-import dtool.model.EntityResolver;
-import dtool.model.IScope;
+import dtool.refmodel.EntityResolver;
+import dtool.refmodel.IScope;
 
 /**
  * A definition of a aggregate. TODO.

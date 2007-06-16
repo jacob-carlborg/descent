@@ -19,18 +19,18 @@ import descent.internal.core.dom.TypeExp;
 import descent.internal.core.dom.TypeInstance;
 import descent.internal.core.dom.TypeQualified;
 import dtool.dom.ast.ASTNode;
-import dtool.dom.base.EntIdentifier;
-import dtool.dom.base.EntTemplateInstance;
-import dtool.dom.base.Entity;
-import dtool.dom.base.TypeDelegate;
-import dtool.dom.base.TypeDynArray;
-import dtool.dom.base.TypeFunction;
-import dtool.dom.base.TypeMapArray;
-import dtool.dom.base.TypePointer;
-import dtool.dom.base.TypeStaticArray;
-import dtool.dom.base.TypeStruct;
-import dtool.dom.base.TypeTypeof;
 import dtool.dom.expressions.ExpSlice;
+import dtool.dom.references.EntIdentifier;
+import dtool.dom.references.EntTemplateInstance;
+import dtool.dom.references.Entity;
+import dtool.dom.references.TypeDelegate;
+import dtool.dom.references.TypeDynArray;
+import dtool.dom.references.TypeFunction;
+import dtool.dom.references.TypeMapArray;
+import dtool.dom.references.TypePointer;
+import dtool.dom.references.TypeStaticArray;
+import dtool.dom.references.TypeStruct;
+import dtool.dom.references.TypeTypeof;
 
 /**
  * This class is a mixin. 

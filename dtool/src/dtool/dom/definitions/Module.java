@@ -11,11 +11,11 @@ import dtool.descentadapter.DescentASTConverter;
 import dtool.dom.ast.ASTNeoNode;
 import dtool.dom.ast.ASTNode;
 import dtool.dom.ast.IASTNeoVisitor;
-import dtool.dom.base.EntIdentifier;
 import dtool.dom.declarations.Declaration;
-import dtool.model.EntityResolver;
-import dtool.model.IDeeCompilationUnit;
-import dtool.model.IScope;
+import dtool.dom.references.EntIdentifier;
+import dtool.modelinterface.IDTool_DeeCompilationUnit;
+import dtool.refmodel.EntityResolver;
+import dtool.refmodel.IScope;
 
 /**
  * D Module
@@ -47,7 +47,7 @@ public class Module extends DefUnit implements IScope {
 		}
 	}
 
-	public IDeeCompilationUnit cunit;
+	public IDTool_DeeCompilationUnit cunit;
 
 	public DeclarationModule md;
 	public ASTNode[] members;

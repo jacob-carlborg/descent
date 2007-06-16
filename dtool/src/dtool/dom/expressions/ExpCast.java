@@ -3,7 +3,7 @@ package dtool.dom.expressions;
 import util.tree.TreeVisitor;
 import descent.internal.core.dom.CastExp;
 import dtool.dom.ast.IASTNeoVisitor;
-import dtool.dom.base.Entity;
+import dtool.dom.references.Entity;
 
 public class ExpCast extends Expression {
 	

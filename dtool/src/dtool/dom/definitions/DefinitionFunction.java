@@ -2,14 +2,13 @@ package dtool.dom.definitions;
 
 import java.util.List;
 
-import util.StringUtil;
 import util.tree.TreeVisitor;
 import descent.internal.core.dom.FuncDeclaration;
 import dtool.descentadapter.DescentASTConverter;
 import dtool.dom.ast.IASTNeoVisitor;
-import dtool.dom.base.Entity;
+import dtool.dom.references.Entity;
 import dtool.dom.statements.Statement;
-import dtool.model.IScope;
+import dtool.refmodel.IScope;
 
 /**
  * A definition of a function.
@@ -21,7 +20,7 @@ public class DefinitionFunction extends Definition implements IScope {
 	public descent.internal.core.dom.LINK linkage;
 	public Entity rettype;
 	public TemplateParameter[] templateParams;	
-	public List<Parameter> params;
+	public List<FunctionParameter> params;
 	public int varargs;
 
 	public Statement frequire;
@@ -79,7 +78,11 @@ public class DefinitionFunction extends Definition implements IScope {
 	
 	@Override
 	public String toString() {
-		return super.toString() +"("+ StringUtil.collToString(params, ",") +")";
+		String str = null;
+		for(FunctionParameter param : params) {
+			str = str + param.type + ",";
+		}
+		return super.toString() +"("+ str +")";
 	}
 	
 	public List<IScope> getSuperScopes() {

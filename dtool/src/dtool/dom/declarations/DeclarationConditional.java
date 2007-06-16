@@ -16,7 +16,7 @@ import dtool.dom.ast.ASTNeoNode;
 import dtool.dom.ast.ASTNode;
 import dtool.dom.ast.IASTNeoVisitor;
 import dtool.dom.statements.IStatement;
-import dtool.model.IDefinitionContainer;
+import dtool.refmodel.IDefinitionContainer;
 
 public class DeclarationConditional extends ASTNeoNode implements IStatement, IDefinitionContainer {
 	

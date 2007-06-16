@@ -7,7 +7,7 @@ import dtool.dom.ast.ASTNode;
 import dtool.dom.ast.IASTNeoVisitor;
 import dtool.dom.definitions.DefUnit.Symbol;
 import dtool.dom.expressions.Expression;
-import dtool.model.IDefinitionContainer;
+import dtool.refmodel.IDefinitionContainer;
 
 public class DeclarationPragma extends ASTNeoNode implements IDefinitionContainer {
 

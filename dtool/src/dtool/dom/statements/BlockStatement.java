@@ -7,8 +7,8 @@ import descent.internal.core.dom.ScopeStatement;
 import dtool.descentadapter.DescentASTConverter;
 import dtool.dom.ast.IASTNeoVisitor;
 import dtool.dom.definitions.DefUnit;
-import dtool.model.EntityResolver;
-import dtool.model.IScope;
+import dtool.refmodel.EntityResolver;
+import dtool.refmodel.IScope;
 
 /**
  * A compound statement. Allways introduces a new Scope.

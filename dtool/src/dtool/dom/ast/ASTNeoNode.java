@@ -6,7 +6,7 @@ import descent.core.domX.IASTVisitor;
 public abstract class ASTNeoNode extends ASTNode  {
 
 
-	protected void convertNode(ASTNode elem) {
+	public void convertNode(ASTNode elem) {
 		setSourceRange(elem);
 	}
 

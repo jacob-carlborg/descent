@@ -7,21 +7,21 @@ import descent.internal.core.dom.TryFinallyStatement;
 import dtool.descentadapter.DescentASTConverter;
 import dtool.dom.ast.ASTNeoNode;
 import dtool.dom.ast.IASTNeoVisitor;
-import dtool.dom.base.Entity;
-import dtool.dom.definitions.Parameter;
+import dtool.dom.definitions.FunctionParameter;
 import dtool.dom.definitions.DefUnit.Symbol;
+import dtool.dom.references.Entity;
 
 public class StatementTry extends Statement {
 	
 	public static class CatchClause extends ASTNeoNode {
 		
-		public Parameter param;
+		public FunctionParameter param;
 		public Statement body;
 
 		public CatchClause(Catch elem) {
 			convertNode(elem);
 			this.body = Statement.convert(elem.handler);
-			this.param = new Parameter();
+			this.param = new FunctionParameter();
 			this.param.type = Entity.convertType(elem.t);
 			this.param.defname = new Symbol(elem.id);
 		}

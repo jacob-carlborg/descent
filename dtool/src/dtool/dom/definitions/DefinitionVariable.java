@@ -2,10 +2,10 @@ package dtool.dom.definitions;
 
 import util.tree.TreeVisitor;
 import dtool.dom.ast.IASTNeoVisitor;
-import dtool.dom.base.Entity;
 import dtool.dom.expressions.Initializer;
+import dtool.dom.references.Entity;
 import dtool.dom.statements.IStatement;
-import dtool.model.IScope;
+import dtool.refmodel.IScope;
 
 /**
  * A definition of a variable

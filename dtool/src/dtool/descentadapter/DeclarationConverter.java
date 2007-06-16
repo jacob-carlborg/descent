@@ -33,7 +33,8 @@ import dtool.dom.definitions.DefinitionMixin;
 import dtool.dom.definitions.DefinitionTemplate;
 import dtool.dom.definitions.DefinitionTypedef;
 import dtool.dom.definitions.DefinitionVariable;
-import dtool.dom.definitions.Parameter;
+import dtool.dom.definitions.EnumMember;
+import dtool.dom.definitions.FunctionParameter;
 import dtool.dom.definitions.TemplateParamAlias;
 import dtool.dom.definitions.TemplateParamTuple;
 import dtool.dom.definitions.TemplateParamType;
@@ -156,7 +157,7 @@ abstract class DeclarationConverter extends BaseConverter {
 	}	
 	
 	public boolean visit(descent.internal.core.dom.TemplateMixin elem) {
-		return endAdapt(new DefinitionMixin(elem));
+		return endAdapt(DefinitionMixin.convertMixinInstance(elem));
 	}	
 	
 	public boolean visit(descent.internal.core.dom.TypedefDeclaration elem) {
@@ -168,11 +169,11 @@ abstract class DeclarationConverter extends BaseConverter {
 	}	
 	
 	public boolean visit(descent.internal.core.dom.EnumDeclaration elem) {
-		return endAdapt(new DefinitionEnum(elem));
+		return endAdapt(DefinitionEnum.convertEnumDecl(elem));
 	}	
 	
 	public boolean visit(descent.internal.core.dom.EnumMember elem) {
-		return endAdapt(new DefinitionEnum.EnumMember(elem));
+		return endAdapt(new EnumMember(elem));
 	}
 
 	/* agregates */
@@ -201,7 +202,7 @@ abstract class DeclarationConverter extends BaseConverter {
 		return endAdapt(new DefinitionFunction(elem));
 	}
 	public boolean visit(Argument elem) {
-		return endAdapt(new Parameter(elem));
+		return endAdapt(new FunctionParameter(elem));
 	}
 	
 

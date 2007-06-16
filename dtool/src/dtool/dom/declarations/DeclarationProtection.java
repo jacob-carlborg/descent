@@ -6,7 +6,7 @@ import descent.internal.core.dom.ProtDeclaration;
 import dtool.dom.ast.ASTNeoNode;
 import dtool.dom.ast.ASTNode;
 import dtool.dom.ast.IASTNeoVisitor;
-import dtool.model.IDefinitionContainer;
+import dtool.refmodel.IDefinitionContainer;
 
 public class DeclarationProtection extends ASTNeoNode implements IDefinitionContainer {
 

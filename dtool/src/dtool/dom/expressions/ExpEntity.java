@@ -7,10 +7,10 @@ import descent.internal.core.dom.ScopeExp;
 import descent.internal.core.dom.TypeDotIdExp;
 import dtool.descentadapter.DescentASTConverter;
 import dtool.dom.ast.IASTNeoVisitor;
-import dtool.dom.base.EntQualified;
-import dtool.dom.base.Entity;
-import dtool.dom.base.EntitySingle;
 import dtool.dom.definitions.DefUnit;
+import dtool.dom.references.EntQualified;
+import dtool.dom.references.Entity;
+import dtool.dom.references.EntitySingle;
 
 public class ExpEntity extends Expression {
 	

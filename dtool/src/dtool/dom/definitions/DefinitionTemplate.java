@@ -8,8 +8,8 @@ import descent.internal.core.dom.TemplateDeclaration;
 import dtool.dom.ast.ASTNode;
 import dtool.dom.ast.IASTNeoVisitor;
 import dtool.dom.declarations.Declaration;
-import dtool.model.EntityResolver;
-import dtool.model.IScope;
+import dtool.refmodel.EntityResolver;
+import dtool.refmodel.IScope;
 
 /*
  */

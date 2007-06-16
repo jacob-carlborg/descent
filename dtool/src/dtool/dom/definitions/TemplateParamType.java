@@ -3,8 +3,8 @@ package dtool.dom.definitions;
 import util.tree.TreeVisitor;
 import descent.internal.core.dom.TemplateTypeParameter;
 import dtool.dom.ast.IASTNeoVisitor;
-import dtool.dom.base.Entity;
-import dtool.model.IScope;
+import dtool.dom.references.Entity;
+import dtool.refmodel.IScope;
 
 public class TemplateParamType extends TemplateParameter {
 
