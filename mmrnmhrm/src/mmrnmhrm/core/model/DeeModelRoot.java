@@ -34,6 +34,12 @@ public class DeeModelRoot extends LangModelRoot {
 		addChild(deeproj);
 		return deeproj;
 	}
+
+	/** Adds an existing D project to the model. Refreshes the project.  */
+	public void addDeeProject(DeeProject deeproj) throws CoreException {
+		addChild(deeproj);
+		deeproj.refreshElementChildren();
+	}
 	
 	/** Returns all D projects in the D model. */
 	public DeeProject[] getDeeProjects() {
@@ -50,4 +56,6 @@ public class DeeModelRoot extends LangModelRoot {
 		removeDeeProject(deeproject);
 		deeproject.getProject().delete(false, null);
 	}
+
+
 }

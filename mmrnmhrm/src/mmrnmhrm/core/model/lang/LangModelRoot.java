@@ -31,7 +31,7 @@ public abstract class LangModelRoot extends LangElement {
 
 	
 	public String getElementName() {
-		return "";
+		return "/";
 	}
 	
 	public int getElementType() {

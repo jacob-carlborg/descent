@@ -46,7 +46,7 @@ public class DMDCompilerEnviron implements IDeeCompilerEnviron {
 		for(IDeeSourceRoot bpentry : deeProject.getSourceRoots()) {
 			if(bpentry instanceof DeeSourceFolder) {
 				LangSourceFolder dsf = (LangSourceFolder) bpentry;
-				IResource[] resources = new IResource[]{ dsf.folder };
+				IResource[] resources = new IResource[]{ dsf.srcfolder };
 				DeeCore.getWorkspace().copy(resources, outputPath, 0, null);
 			}
 		}

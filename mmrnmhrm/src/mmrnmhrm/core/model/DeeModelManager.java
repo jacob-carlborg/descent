@@ -67,12 +67,12 @@ public class DeeModelManager {
 		DeeProject deeproj = new DeeProject(project);
 		// Add the project to the model before loading
 		deeproj.loadProjectConfigFile();
-		DeeModelRoot.getInstance().addChild(deeproj);
+		DeeModelRoot.getInstance().addDeeProject(deeproj);
 		return deeproj;
 	}
 
 
-	/** Returns the D project for given project */
+	/** Returns the D project with the given name, null if none. */
 	public static DeeProject getLangProject(String name) {
 		return (DeeProject) getRoot().getLangProject(name);
 	}

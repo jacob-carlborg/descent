@@ -9,7 +9,6 @@ import org.eclipse.swt.graphics.Image;
 import util.tree.IElement;
 import dtool.dom.ast.ASTNeoNode;
 import dtool.dom.ast.ASTNode;
-import dtool.dom.base.Entity;
 import dtool.dom.declarations.DeclarationImport;
 import dtool.dom.definitions.DefinitionAggregate;
 import dtool.dom.definitions.DefinitionAlias;
@@ -19,6 +18,7 @@ import dtool.dom.definitions.DefinitionTemplate;
 import dtool.dom.definitions.DefinitionTypedef;
 import dtool.dom.definitions.DefinitionVariable;
 import dtool.dom.definitions.Module.DeclarationModule;
+import dtool.dom.references.Entity;
 
 public class DeeElementImageProvider {
 	

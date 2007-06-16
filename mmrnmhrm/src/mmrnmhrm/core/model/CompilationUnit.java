@@ -1,26 +1,29 @@
 package mmrnmhrm.core.model;
 
+import mmrnmhrm.core.model.lang.ELangElementTypes;
+import mmrnmhrm.core.model.lang.ILangElement;
+import mmrnmhrm.core.model.lang.LangElement;
+
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 
-import util.AssertIn;
 import util.ExceptionAdapter;
 import descent.core.compiler.IProblem;
 import descent.internal.core.dom.ParserFacade;
 import dtool.descentadapter.DescentASTConverter;
-import dtool.dom.ast.ASTElementFinder;
 import dtool.dom.ast.ASTNode;
 import dtool.dom.definitions.Module;
-import dtool.model.IDeeCompilationUnit;
+import dtool.modelinterface.IDTool_DeeCompilationUnit;
 
 /**
  * Module Wrapper 
  */
-public class CompilationUnit implements IDeeCompilationUnit {
-	public String source;
+public class CompilationUnit extends LangElement implements IDTool_DeeCompilationUnit, ILangElement {
+
 	public IFile file;
+	public String source; // Document??
 	
 	private descent.internal.core.dom.Module oldModule;
 	private Module module;
@@ -30,9 +33,32 @@ public class CompilationUnit implements IDeeCompilationUnit {
 	public int parseStatus;
 	
 	
-	public CompilationUnit(IFile file) {
+	public CompilationUnit(PackageFragment parent, IFile file) {
+		super(parent);
 		this.file = file;
 		//TODO: update source here?
+	}
+	
+	public CompilationUnit(IFile file) {
+		this(null, file);
+	}
+	
+	@Override
+	public ILangElement[] newChildrenArray(int size) {
+		return null; // No children XXX: Do make it a container element?
+	}
+
+	public String getElementName() {
+		return file.getName();
+	}
+
+	public int getElementType() {
+		return ELangElementTypes.COMPILATION_UNIT;
+	}
+	
+	/** Returns the D project of this compilation unit, null if none. */
+	public DeeProject getProject() {
+		return DeeModelManager.getLangProject(file.getProject().getName());
 	}
 	
 	public void setSource(String source) {
@@ -135,10 +161,5 @@ public class CompilationUnit implements IDeeCompilationUnit {
 			return "Status OK";
 	}
 
-	/* === bindings === */
-	public ASTNode findEntity(int offset) {
-		AssertIn.isTrue(offset >= 0 && offset <= source.length());
-		return ASTElementFinder.findElement(getModule(), offset);
-	}
-	
+
 }

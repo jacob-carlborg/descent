@@ -10,7 +10,6 @@ import java.util.ArrayList;
 import mmrnmhrm.core.DeeCoreException;
 import mmrnmhrm.core.build.DeeCompilerOptions;
 import mmrnmhrm.core.model.lang.ELangElementTypes;
-import mmrnmhrm.core.model.lang.ILangSourceRoot;
 import mmrnmhrm.core.model.lang.LangProject;
 
 import org.eclipse.core.resources.IContainer;
@@ -62,18 +61,15 @@ public class DeeProject extends LangProject {
 	/* -------------- ------------------------  -------------- */
 
 	
-	public DeeSourceFolder addSourceFolder(IFolder folder) throws CoreException {
+	public DeeSourceFolder createAddSourceFolder(IFolder folder) throws CoreException {
 		DeeSourceFolder srcFolder = new DeeSourceFolder(folder, this);
-		addChild(srcFolder);
+		addSourceRoot(srcFolder);
 		return srcFolder;
 	}
 	
-	public void addSourceRoot(ILangSourceRoot entry) throws CoreException {
+	public void addSourceRoot(IDeeSourceRoot entry) throws CoreException {
 		addChild(entry);
-	}
-	
-	public void removeSourceFolder(IFolder folder) throws CoreException {
-		removeChild(new DeeSourceFolder(folder, this));
+		entry.refreshElementChildren();
 	}
 	
 	public void removeSourceRoot(IDeeSourceRoot entry) throws CoreException {
@@ -101,15 +97,21 @@ public class DeeProject extends LangProject {
 		return (ArrayList<DeeSourceLib>) getChildrenOfType(ELangElementTypes.SOURCELIB);
 	}
 	
+	public void refreshElementChildren() throws CoreException {
+		for(IDeeSourceRoot sourceRoot : getSourceRoots()) {
+			sourceRoot.refreshElementChildren();
+		}
+	}
+	
 
-	/* --------------  persistance -------------- */
+	/* =====================  persistence ===================== */
 
 	// TODO: sep create and set?
 	public void setDefaultBuildPath() throws CoreException {
 		// CHECK CREATE
 		IFolder srcFolder = project.getFolder("src");
 		srcFolder.create(false, true, null);
-		addSourceFolder(srcFolder);
+		createAddSourceFolder(srcFolder);
 
 		IFolder binFolder = project.getFolder(defaultOutputFolder());
 		binFolder.create(false, true, null);
@@ -185,7 +187,7 @@ public class DeeProject extends LangProject {
 					// TODO: problemize
 					continue;
 				}
-				addSourceFolder(folder);
+				createAddSourceFolder(folder);
 				Logg.model.println("Added srcfolder:" + folder.toString());
 			}
 		}

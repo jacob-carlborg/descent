@@ -13,8 +13,8 @@ import org.eclipse.swt.widgets.Display;
 import descent.core.domX.AbstractElement;
 import dtool.dom.ast.ASTNode;
 import dtool.dom.ast.ASTPrinter;
-import dtool.dom.base.Entity;
 import dtool.dom.definitions.DefUnit;
+import dtool.dom.references.Entity;
 
 public class ASTViewerLabelProvider extends SimpleLabelProvider implements IColorProvider, IFontProvider {
 

@@ -6,15 +6,15 @@ import org.eclipse.core.runtime.IPath;
 
 public abstract class LangSourceFolder extends LangElement implements ILangSourceRoot {
 
-	public IFolder folder;
+	public IFolder srcfolder;
 
 	public LangSourceFolder(LangElement parent, IFolder folder) {
 		super(parent);
-		this.folder = folder;
+		this.srcfolder = folder;
 	}
 
 	public String getElementName() {
-		return this.folder.getProjectRelativePath().toString();
+		return this.srcfolder.getProjectRelativePath().toString();
 	}
 
 	public String toString() {
@@ -22,12 +22,15 @@ public abstract class LangSourceFolder extends LangElement implements ILangSourc
 	}
 
 	public IPath getProjectRelativePath() {
-		return folder.getProjectRelativePath();
+		return srcfolder.getProjectRelativePath();
 	}
-
 
 	public int getElementType() {
 		return ELangElementTypes.SOURCEFOLDER;
+	}
+	
+	public String getSourceRootKindString() {
+		return "src";
 	}
 
 }

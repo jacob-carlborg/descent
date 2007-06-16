@@ -9,7 +9,7 @@ import org.eclipse.core.runtime.CoreException;
 import util.ArrayUtil;
 import util.Assert;
 
-public abstract class AbstractLangNature implements IProjectNature {
+public abstract class LangNature implements IProjectNature {
 	
 	public IProject project;
 

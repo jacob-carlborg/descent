@@ -85,12 +85,22 @@ public class ProjectConfigBlock {
 			List<IDeeSourceRoot> roots; 
 			roots = fSourceFoldersPage.fSrcFoldersList.getElements();
 			roots.addAll(fSourceLibrariesPage.fSrcLibrariesList.getElements());
+
+			// Removing existing roots;
+			for(IDeeSourceRoot root : fDeeProject.getSourceRoots()) {
+				fDeeProject.removeSourceRoot(root);
+			}
 			
-			IDeeSourceRoot[] children = fDeeProject.newChildrenArray(roots.size());
+			// Add the new ones
+			for(IDeeSourceRoot root : roots) {
+				fDeeProject.addSourceRoot(root);
+			}
+			
+			/*IDeeSourceRoot[] children = fDeeProject.newChildrenArray(roots.size());
 			for(int i = 0; i < roots.size(); i++) {
 				children[i] = roots.get(i);
 			}
-			fDeeProject.setChildren(children);
+			fDeeProject.setChildren(children);*/
 			
 			DeeCompilerOptions options = fDeeProject.compilerOptions;
 

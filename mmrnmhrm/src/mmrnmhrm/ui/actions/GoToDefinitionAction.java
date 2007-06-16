@@ -13,11 +13,12 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.texteditor.AbstractTextEditor;
 
 import util.log.Logg;
+import dtool.dom.ast.ASTElementFinder;
 import dtool.dom.ast.ASTNode;
 import dtool.dom.ast.ASTPrinter;
-import dtool.dom.base.Entity;
 import dtool.dom.definitions.DefUnit;
-import dtool.model.IIntrinsicUnit;
+import dtool.dom.references.Entity;
+import dtool.refmodel.IIntrinsicUnit;
 
 public class GoToDefinitionAction extends DeeEditorAction {
 	
@@ -68,7 +69,8 @@ public class GoToDefinitionAction extends DeeEditorAction {
 		
 		CompilationUnit cunit = deeEditor.getDocument().getCompilationUnit();
 	
-		ASTNode elem = cunit.findEntity(offset);
+		ASTNode elem = ASTElementFinder.findElement(cunit.getModule(), offset);
+		
 		if(elem == null) {
 			dialogWarning(window.getShell(), "No element found at pos: " + offset);
 			return;

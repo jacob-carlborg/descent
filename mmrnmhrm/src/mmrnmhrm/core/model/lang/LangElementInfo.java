@@ -15,7 +15,6 @@ public abstract class LangElementInfo {
 	protected ILangElement[] children;
 
 	protected LangElementInfo() {
-		//this.children = ILangElement.NO_ELEMENTS;
 		this.children = newChildrenArray(0);
 	}
 	
@@ -24,16 +23,16 @@ public abstract class LangElementInfo {
 		return this.children;
 	}
 	
-	public void setChildren(ILangElement[] children) {
+	protected void setChildren(ILangElement[] children) {
 		this.children = children;
 	}
 	
 	/** Creates an array with a runtime type appropriate to store this 
 	 * element's children. */
-	public abstract ILangElement[] newChildrenArray(int size);
+	protected abstract ILangElement[] newChildrenArray(int size);
 
 	/** Adds a child to this element, if it doesn't exist already. */
-	public void addChild(ILangElement child) {
+	protected void addChild(ILangElement child) {
 		int length = this.children.length;
 		if (length == 0) {
 			this.children = newChildrenArray(1);
@@ -51,7 +50,7 @@ public abstract class LangElementInfo {
 
 
 	/** Removes a child from this element, if it exists. */
-	public void removeChild(ILangElement child) {
+	protected void removeChild(ILangElement child) {
 		for (int i = 0, length = this.children.length; i < length; i++) {
 			ILangElement element = this.children[i];
 			if (element.equals(child)) {

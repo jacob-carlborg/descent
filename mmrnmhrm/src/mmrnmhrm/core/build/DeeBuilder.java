@@ -52,7 +52,7 @@ public class DeeBuilder extends IncrementalProjectBuilder {
 		for(IDeeSourceRoot bpentry : getDeeProject().getSourceRoots()) {
 			if(bpentry instanceof DeeSourceFolder) {
 				LangSourceFolder dsf = (LangSourceFolder) bpentry;
-				dsf.folder.accept(visitor, IResource.DEPTH_INFINITE, IResource.NONE);
+				dsf.srcfolder.accept(visitor, IResource.DEPTH_INFINITE, IResource.NONE);
 			}
 		}
 		

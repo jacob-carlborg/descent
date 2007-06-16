@@ -5,6 +5,7 @@ import mmrnmhrm.core.model.lang.ILangElement;
 import mmrnmhrm.core.model.lang.LangElement;
 
 import org.eclipse.core.resources.IFolder;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 
 public class DeeSourceLib extends LangElement implements IDeeSourceRoot {
@@ -39,6 +40,10 @@ public class DeeSourceLib extends LangElement implements IDeeSourceRoot {
 	
 	public String toString() {
 		return getElementName();
+	}
+
+	public void refreshElementChildren() throws CoreException {
+		// TODO Auto-generated method stub
 	}
 
 }

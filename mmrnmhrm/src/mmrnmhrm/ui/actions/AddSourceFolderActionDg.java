@@ -42,7 +42,7 @@ public class AddSourceFolderActionDg implements IObjectActionDelegate {
 					// TODO, envelop in a model operation
 					IProject project = folder.getProject();
 					DeeProject proj = DeeModelManager.getLangProject(project);
-					proj.addSourceFolder(folder);
+					proj.createAddSourceFolder(folder);
 					proj.saveProjectConfigFile();
 				}
 			};			
