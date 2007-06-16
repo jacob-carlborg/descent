@@ -11,14 +11,20 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
 @RunWith(Parameterized.class)
-public class GoToDefinition_TestDefUnitContainer extends GoToDefinition_CommonTest  {
+public class GoToDefinition_TestDefUnitContainer3 extends GoToDefinition_CommonTest  {
 	
-	static final String testfile = "refs/refDefUnitContainers.d";
+	static final String testfile = "refs/refDefUnitContainers3.d";
 	
 	@Parameters
     public static Collection<Object[]> data() {
         return Arrays.asList(new Object[][]{
-        		{62, 143},
+        		{62, 146},
+        		{65, 184},
+        		{68, 214},
+        		{72, 234},
+        		{76, 288},
+        		{79, 292},
+        		{82, 320},
 
         });
     }
@@ -28,7 +34,7 @@ public class GoToDefinition_TestDefUnitContainer extends GoToDefinition_CommonTe
 		prepClass(testfile);
 	}
 	
-	public GoToDefinition_TestDefUnitContainer(int defOffset, int refOffset) throws IOException {
+	public GoToDefinition_TestDefUnitContainer3(int defOffset, int refOffset) throws IOException {
 		super(defOffset, refOffset, testfile);
 	}
 	

@@ -4,3 +4,6 @@ int othervar;
 
 class Other {
 }
+
+template OtherFoo() {
+}

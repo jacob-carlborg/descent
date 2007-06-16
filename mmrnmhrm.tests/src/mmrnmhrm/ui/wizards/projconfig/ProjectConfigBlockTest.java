@@ -36,7 +36,6 @@ public class ProjectConfigBlockTest extends CommonProjectTestClass {
 		initChangeSet1();
 		assertChangeSet1NotApplied();
 	}
-
 	
 	IFolder containerOutput; 
 	IFolder containerSrc1; 
@@ -45,6 +44,7 @@ public class ProjectConfigBlockTest extends CommonProjectTestClass {
 	public void initChangeSet1() throws CoreException {
 		containerOutput = project.getFolder(new Path("bin2/out"));
 		containerSrc1 = project.getFolder(new Path("mysrc"));
+		containerSrc1.create(false, true, null);
 	}
 
 

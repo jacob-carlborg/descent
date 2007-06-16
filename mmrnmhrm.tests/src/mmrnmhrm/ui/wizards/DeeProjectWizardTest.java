@@ -101,7 +101,6 @@ public class DeeProjectWizardTest extends CommonProjectTestClass {
 		wizard.fFirstPage.fNameGroup.setName(NEWPROJNAME);
 		assertTrue(wizard.canFinish());
 		
-		
 		simulateEnterPage2();
 		
 		ProjectConfigBlockTest auxtest = new ProjectConfigBlockTest();

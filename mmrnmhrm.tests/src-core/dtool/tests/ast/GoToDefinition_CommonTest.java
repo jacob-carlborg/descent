@@ -5,9 +5,9 @@ import java.io.IOException;
 import mmrnmhrm.core.model.CompilationUnit;
 import mmrnmhrm.tests.BaseTestClass;
 import dtool.dom.ast.ASTElementFinder;
-import dtool.dom.base.Entity;
 import dtool.dom.definitions.DefUnit;
 import dtool.dom.definitions.Module;
+import dtool.dom.references.Entity;
 
 //@RunWith(Parameterized.class)
 public abstract class GoToDefinition_CommonTest extends BaseTestClass {
