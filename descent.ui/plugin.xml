@@ -713,7 +713,6 @@
             id="descent.ui.preferences.FoldingPreferencePage">
          <keywordReference id="descent.ui.folding"/>
       </page>
-      <!--
       <page
             name="%editorMarkOccurrencesPage"
             category="descent.ui.preferences.JavaEditorPreferencePage"
@@ -721,7 +720,6 @@
             id="descent.ui.preferences.MarkOccurrencesPreferencePage">
          <keywordReference id="descent.ui.markoccurrences"/>
       </page>
-      -->
       <page
             name="%editorTypingPage"
             category="descent.ui.preferences.JavaEditorPreferencePage"
