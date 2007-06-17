@@ -63,7 +63,7 @@ State() {
 	// constructor with no argument
 }
 
-protected State(JavaBuilder javaBuilder) {
+protected State(OriginalJavaBuilder javaBuilder) {
 	this.knownPackageNames = null;
 	this.previousStructuralBuildTime = -1;
 	this.structurallyChangedTypes = null;
@@ -209,10 +209,10 @@ void removeQualifiedTypeName(String qualifiedTypeNameToRemove) {
 }
 
 static State read(IProject project, DataInputStream in) throws IOException {
-	if (JavaBuilder.DEBUG)
+	if (OriginalJavaBuilder.DEBUG)
 		System.out.println("About to read state " + project.getName()); //$NON-NLS-1$
 	if (VERSION != in.readByte()) {
-		if (JavaBuilder.DEBUG)
+		if (OriginalJavaBuilder.DEBUG)
 			System.out.println("Found non-compatible state version... answered null for " + project.getName()); //$NON-NLS-1$
 		return null;
 	}
@@ -220,7 +220,7 @@ static State read(IProject project, DataInputStream in) throws IOException {
 	State newState = new State();
 	newState.javaProjectName = in.readUTF();
 	if (!project.getName().equals(newState.javaProjectName)) {
-		if (JavaBuilder.DEBUG)
+		if (OriginalJavaBuilder.DEBUG)
 			System.out.println("Project's name does not match... answered null"); //$NON-NLS-1$
 		return null;
 	}
@@ -317,7 +317,7 @@ static State read(IProject project, DataInputStream in) throws IOException {
 		}
 		newState.references.put(typeLocator, collection);
 	}
-	if (JavaBuilder.DEBUG)
+	if (OriginalJavaBuilder.DEBUG)
 		System.out.println("Successfully read state for " + newState.javaProjectName); //$NON-NLS-1$
 	return newState;
 }
@@ -475,7 +475,7 @@ void write(DataOutputStream out) throws IOException {
 				out.writeLong(((Long) valueTable[i]).longValue());
 			}
 		}
-		if (JavaBuilder.DEBUG && length != 0)
+		if (OriginalJavaBuilder.DEBUG && length != 0)
 			System.out.println("structuralBuildNumbers table is inconsistent"); //$NON-NLS-1$
 	}
 
@@ -494,7 +494,7 @@ void write(DataOutputStream out) throws IOException {
 				internedTypeLocators.put(key, new Integer(internedTypeLocators.elementSize));
 			}
 		}
-		if (JavaBuilder.DEBUG && length != 0)
+		if (OriginalJavaBuilder.DEBUG && length != 0)
 			System.out.println("references table is inconsistent"); //$NON-NLS-1$
 	}
 
@@ -515,7 +515,7 @@ void write(DataOutputStream out) throws IOException {
 				out.writeInt(index.intValue());
 			}
 		}
-		if (JavaBuilder.DEBUG && length != 0)
+		if (OriginalJavaBuilder.DEBUG && length != 0)
 			System.out.println("typeLocators table is inconsistent"); //$NON-NLS-1$
 	}
 
@@ -617,7 +617,7 @@ void write(DataOutputStream out) throws IOException {
 				}
 			}
 		}
-		if (JavaBuilder.DEBUG && length != 0)
+		if (OriginalJavaBuilder.DEBUG && length != 0)
 			System.out.println("references table is inconsistent"); //$NON-NLS-1$
 	}
 }

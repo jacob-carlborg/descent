@@ -661,10 +661,7 @@ public class JavaProject
 	 * Configure the project with Java nature.
 	 */
 	public void configure() throws CoreException {
-		/* XXX PUT BACK
 		addToBuildSpec(JavaCore.BUILDER_ID);
-		*/
-		addToBuildSpec(JavaCore.TASK_BUILDER_ID);
 	}
 	/*
 	 * Returns whether the given resource is accessible through the children or the non-Java resources of this project.
@@ -899,12 +896,8 @@ public class JavaProject
 	 * Removes the Java nature from the project.
 	 */
 	public void deconfigure() throws CoreException {
-
 		// deregister Java builder
-		/* XXX PUT BACK
 		removeFromBuildSpec(JavaCore.BUILDER_ID);
-		*/
-		removeFromBuildSpec(JavaCore.TASK_BUILDER_ID);
 	}
 
 	/**

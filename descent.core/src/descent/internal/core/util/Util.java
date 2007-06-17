@@ -1979,4 +1979,14 @@ public class Util {
 		return resourceAttributes.isReadOnly();
 	}
 	
+	/**
+	 * Removes the extension from a filename, and returns the filename
+	 * without it.
+	 */
+	public static String removeExtension(String filename) {
+		int index = filename.lastIndexOf('.');
+		if (index == -1) return filename;		
+		return filename.substring(0, index);
+	}
+	
 }

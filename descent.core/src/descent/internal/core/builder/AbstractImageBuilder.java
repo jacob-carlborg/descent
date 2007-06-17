@@ -49,7 +49,7 @@ import descent.internal.core.util.Util;
  */
 public abstract class AbstractImageBuilder implements ICompilerRequestor {
 
-protected JavaBuilder javaBuilder;
+protected OriginalJavaBuilder javaBuilder;
 protected State newState;
 
 // local copies
@@ -92,7 +92,7 @@ public final static Integer P_HIGH = new Integer(IMarker.PRIORITY_HIGH);
 public final static Integer P_NORMAL = new Integer(IMarker.PRIORITY_NORMAL);
 public final static Integer P_LOW = new Integer(IMarker.PRIORITY_LOW);
 
-protected AbstractImageBuilder(JavaBuilder javaBuilder, boolean buildStarting, State newState) {
+protected AbstractImageBuilder(OriginalJavaBuilder javaBuilder, boolean buildStarting, State newState) {
 	// local copies
 	this.javaBuilder = javaBuilder;
 	this.nameEnvironment = javaBuilder.nameEnvironment;
@@ -249,7 +249,7 @@ protected void compile(SourceFile[] units) {
 	this.compiledAllAtOnce = unitsLength <= MAX_AT_ONCE;
 	if (this.compiledAllAtOnce) {
 		// do them all now
-		if (JavaBuilder.DEBUG)
+		if (OriginalJavaBuilder.DEBUG)
 			for (int i = 0; i < unitsLength; i++)
 				System.out.println("About to compile " + units[i].typeLocator()); //$NON-NLS-1$
 		compile(units, null, true);
@@ -267,7 +267,7 @@ protected void compile(SourceFile[] units) {
 				// already been compiled when it was referenced by another unit.
 				SourceFile unit = remainingUnits[remainingIndex];
 				if (unit != null && (compilingFirstGroup || this.workQueue.isWaiting(unit))) {
-					if (JavaBuilder.DEBUG)
+					if (OriginalJavaBuilder.DEBUG)
 						System.out.println("About to compile #" + remainingIndex + " : "+ unit.typeLocator()); //$NON-NLS-1$ //$NON-NLS-2$
 					toCompile[count++] = unit;
 				}
@@ -572,7 +572,7 @@ protected void storeProblemsFor(SourceFile sourceFile, IProblem[] problems) thro
 		IProblem problem = problems[i];
 		int id = problem.getID();
 		if (id == IProblem.IsClassPathCorrect) {
-			JavaBuilder.removeProblemsAndTasksFor(javaBuilder.currentProject); // make this the only problem for this project
+			OriginalJavaBuilder.removeProblemsAndTasksFor(javaBuilder.currentProject); // make this the only problem for this project
 			String[] args = problem.getArguments();
 			missingClassFile = args[0];
 		}

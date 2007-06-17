@@ -218,8 +218,8 @@ class JavaEditorColoringConfigurationBlock extends AbstractConfigurationBlock {
 		}
 	}
 	
-	private final static int JAVADOC_ELEMENTS_COUNT = 4;
-	private final static int COMMENTS_COUNT = 6;
+	private final static int JAVADOC_ELEMENTS_COUNT = 1;
+	private final static int COMMENTS_COUNT = 7;
 
 	/**
 	 * Color list content provider.
@@ -298,11 +298,12 @@ class JavaEditorColoringConfigurationBlock extends AbstractConfigurationBlock {
 	 * The keys of the overlay store. 
 	 */
 	private final String[][] fSyntaxColorListModel= new String[][] {
-			{ PreferencesMessages.JavaEditorPreferencePage_javaDocKeywords, PreferenceConstants.EDITOR_JAVADOC_KEYWORD_COLOR }, 
+			//{ PreferencesMessages.JavaEditorPreferencePage_javaDocKeywords, PreferenceConstants.EDITOR_JAVADOC_KEYWORD_COLOR }, 
 			{ PreferencesMessages.JavaEditorPreferencePage_javaDocHtmlTags, PreferenceConstants.EDITOR_JAVADOC_TAG_COLOR }, 
-			{ PreferencesMessages.JavaEditorPreferencePage_javaDocLinks, PreferenceConstants.EDITOR_JAVADOC_LINKS_COLOR }, 
-			{ PreferencesMessages.JavaEditorPreferencePage_javaDocOthers, PreferenceConstants.EDITOR_JAVADOC_DEFAULT_COLOR }, 
+			//{ PreferencesMessages.JavaEditorPreferencePage_javaDocLinks, PreferenceConstants.EDITOR_JAVADOC_LINKS_COLOR }, 
+			//{ PreferencesMessages.JavaEditorPreferencePage_javaDocOthers, PreferenceConstants.EDITOR_JAVADOC_DEFAULT_COLOR }, 
 			{ PreferencesMessages.JavaEditorPreferencePage_multiLineComment, PreferenceConstants.EDITOR_MULTI_LINE_COMMENT_COLOR },
+			{ PreferencesMessages.JavaEditorPreferencePage_javaDocOthers, PreferenceConstants.EDITOR_JAVADOC_DEFAULT_COLOR },
 			{ PreferencesMessages.JavaEditorPreferencePage_multiLinePlusComment, PreferenceConstants.EDITOR_MULTI_LINE_PLUS_COMMENT_COLOR },
 			{ PreferencesMessages.JavaEditorPreferencePage_multiLinePlusDocComment, PreferenceConstants.EDITOR_MULTI_LINE_PLUS_DOC_COMMENT_COLOR },
 			{ PreferencesMessages.JavaEditorPreferencePage_singleLineComment, PreferenceConstants.EDITOR_SINGLE_LINE_COMMENT_COLOR }, 

@@ -479,7 +479,7 @@ public class CopyResourceElementsOperation extends MultiOperation implements Suf
 						CompilationUnit astCU = (CompilationUnit) this.parser.createAST(this.progressMonitor);
 						AST ast = astCU.getAST();
 						ASTRewrite rewrite = ASTRewrite.create(ast);
-						updatePackageStatement(astCU, newFragName, rewrite);
+						updatePackageStatement(astCU, newFragName, cu.getElementName(), rewrite);
 						IDocument document = getDocument(cu);
 						TextEdit edits = rewrite.rewriteAST(document, null);
 						try {
@@ -584,29 +584,30 @@ public class CopyResourceElementsOperation extends MultiOperation implements Suf
 			AST ast = astCU.getAST();
 			ASTRewrite rewrite = ASTRewrite.create(ast);
 			updateTypeName(cu, astCU, cu.getElementName(), newName, rewrite);
-			updatePackageStatement(astCU, destPackageName, rewrite);
+			updatePackageStatement(astCU, destPackageName, cu.getElementName(), rewrite);
 			return rewrite;
 		}
 	}
-	private void updatePackageStatement(CompilationUnit astCU, String[] pkgName, ASTRewrite rewriter) throws JavaModelException {
-		boolean defaultPackage = pkgName.length == 0;
+	private void updatePackageStatement(CompilationUnit astCU, String[] pkgName, String filename, ASTRewrite rewriter) throws JavaModelException {
+		String moduleName = Util.removeExtension(filename);
+		
+		String[] newPkgName = new String[pkgName.length + 1];
+		System.arraycopy(pkgName, 0, newPkgName, 0, pkgName.length);
+		newPkgName[pkgName.length] = moduleName;
+		
 		AST ast = astCU.getAST();
-		if (defaultPackage) {
-			// remove existing package statement
-			if (astCU.getModuleDeclaration() != null)
-				rewriter.set(astCU, CompilationUnit.MODULE_DECLARATION_PROPERTY, null, null);
+		
+		// The module declaration can always be present in D (as compared to Java)
+		descent.core.dom.ModuleDeclaration pkg = astCU.getModuleDeclaration();
+		if (pkg != null) {
+			// rename package statement
+			Name name = ast.newName(newPkgName);
+			rewriter.set(pkg, ModuleDeclaration.NAME_PROPERTY, name, null);
 		} else {
-			descent.core.dom.ModuleDeclaration pkg = astCU.getModuleDeclaration();
-			if (pkg != null) {
-				// rename package statement
-				Name name = ast.newName(pkgName);
-				rewriter.set(pkg, ModuleDeclaration.NAME_PROPERTY, name, null);
-			} else {
-				// create new package statement
-				pkg = ast.newModuleDeclaration();
-				pkg.setName(ast.newName(pkgName));
-				rewriter.set(astCU, CompilationUnit.MODULE_DECLARATION_PROPERTY, pkg, null);
-			}
+			// create new package statement
+			pkg = ast.newModuleDeclaration();
+			pkg.setName(ast.newName(newPkgName));
+			rewriter.set(astCU, CompilationUnit.MODULE_DECLARATION_PROPERTY, pkg, null);
 		}
 	}
 	

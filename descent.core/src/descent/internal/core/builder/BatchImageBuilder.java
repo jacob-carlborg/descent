@@ -33,7 +33,7 @@ public class BatchImageBuilder extends AbstractImageBuilder {
 	ArrayList secondaryTypes; // qualified names for all secondary types found during batch compile
 	StringSet typeLocatorsWithUndefinedTypes; // type locators for all source files with errors that may be caused by 'not found' secondary types
 
-protected BatchImageBuilder(JavaBuilder javaBuilder, boolean buildStarting) {
+protected BatchImageBuilder(OriginalJavaBuilder javaBuilder, boolean buildStarting) {
 	super(javaBuilder, buildStarting, null);
 	this.nameEnvironment.isIncrementalBuild = false;
 	this.incrementalBuilder = null;
@@ -42,12 +42,12 @@ protected BatchImageBuilder(JavaBuilder javaBuilder, boolean buildStarting) {
 }
 
 public void build() {
-	if (JavaBuilder.DEBUG)
+	if (OriginalJavaBuilder.DEBUG)
 		System.out.println("FULL build"); //$NON-NLS-1$
 
 	try {
 		notifier.subTask(Messages.bind(Messages.build_cleaningOutput, this.javaBuilder.currentProject.getName()));
-		JavaBuilder.removeProblemsAndTasksFor(javaBuilder.currentProject);
+		OriginalJavaBuilder.removeProblemsAndTasksFor(javaBuilder.currentProject);
 		cleanOutputFolders(true);
 		notifier.updateProgressDelta(0.05f);
 

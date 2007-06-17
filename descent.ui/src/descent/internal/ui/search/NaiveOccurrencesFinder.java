@@ -60,15 +60,15 @@ public class NaiveOccurrencesFinder extends ASTVisitor implements IOccurrencesFi
 	}
 
 	public String getJobLabel() {
-		return "Search for naive ocurrences";
+		return "Search for naive ocurrences"; //$NON-NLS-1$
 	}
 
 	public String getUnformattedPluralLabel() {
-		return "''{0}'' - {1} naive occurrences in ''{2}''";
+		return "''{0}'' - {1} naive occurrences in ''{2}''"; //$NON-NLS-1$
 	}
 
 	public String getUnformattedSingularLabel() {
-		return "''{0}'' - 1 naive occurrences in ''{1}''";
+		return "''{0}'' - 1 naive occurrences in ''{1}''"; //$NON-NLS-1$
 	}
 	
 	public List perform() {

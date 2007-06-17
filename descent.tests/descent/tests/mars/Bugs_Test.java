@@ -163,6 +163,16 @@ public class Bugs_Test extends Parser_Test {
 		assertPosition(dotId, 14, 9);
 	}
 	
+	public void testBug19() {
+		for(String typeName : new String[] { "class", "struct", "union", "interface", "enum", "template" }) {
+			String s = "void main() { " + typeName +  " }";
+			CompilationUnit unit = getCompilationUnit(s);
+			FunctionDeclaration func = (FunctionDeclaration) unit.declarations().get(0);
+			Block block = (Block) func.getBody();
+			assertEquals(0, block.statements().size());
+		}
+	}
+	
 	public void testDstress_run_t_typeof_16_A() {
 		String s = "char[] name = (typeof(o)).classinfo.name;";
 		getCompilationUnit(s);	

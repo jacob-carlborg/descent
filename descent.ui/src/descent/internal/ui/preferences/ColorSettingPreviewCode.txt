@@ -1,21 +1,73 @@
+#!/usr/bin/dmd -run
+module HelloWorld;
+
+import std.stdio;
+
 /**
- * This is about <code>ClassName</code>.
- * {@link com.yourCompany.aPackage.Interface}
- * @author author
- * @deprecated use <code>OtherClass</code>
+ * The <b>main</b> function.
+ * TODO: comment better
  */
-public class ClassName<E> implements Interface<String> {
-	enum Color { RED, GREEN, BLUE };
-	/* This comment may span multiple lines. */
-	static Object staticField;
-	// This comment may span only this line
-	private E field;
-	// TASK: refactor
-	@SuppressWarnings(value="all")
-	public int foo(Integer parameter) {
-		abstractMethod();
-		int local= 42*hashCode();
-		staticMethod();
-		return bar(local) + parameter;
+void main(char[][] args) {
+	writefln("Hello World, Reloaded");
+	
+	/*
+	 * A multiline comment.
+	 */
+	foreach(argc, argv ; args) {
+		// A single line comment
+		CmdLin cl = new CmdLin(argc, argv);
+		writefln(cl.argnum, cl.suffix, " arg: %s", cl.argv);
+		delete cl;
 	}
+	/+
+	 + A nested comment.
+	 +/
+	struct specs {
+		int count, allocated;
+	}
+	/++
+	 + A nested documentation comment.
+	 +/
+	specs argspecs() {
+		specs* s = new specs;
+		s.count = args.length;
+		s.allocated = typeof(args).sizeof;
+		foreach(argv ; args)s.allocated += argv.length * typeof(argv[0]).sizeof;
+		return *s;
+	}
+	writefln("argc = %d, " ~ "allocated = %d", argspecs().count, argspecs().allocated);
+}
+
+/// Holds command line arguments
+class CmdLin {
+	private int _argc;private char[] _argv;
+	
+	public:
+		this(int argc, char[] argv) {
+			_argc = argc;
+			_argv = argv;
+		}
+
+		int argnum() {
+			return _argc + 1;
+		}
+		
+		char[] argv() {
+			return _argv;
+		}
+		
+		char[] suffix() {
+			char[] suffix = "th";
+			switch(_argc) {
+			case 0:suffix = "st";
+				break;
+			case 1:suffix = "nd";
+				break;
+			case 2:suffix = "rd";
+				break;
+			default:
+				break;
+			}
+			return suffix;
+		}
 }

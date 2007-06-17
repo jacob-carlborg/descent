@@ -109,7 +109,8 @@ import descent.core.compiler.CharOperation;
 import descent.core.compiler.CompilationParticipant;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.util.HashtableOfObjectToInt;
-import descent.internal.core.builder.JavaBuilder;
+import descent.internal.core.builder.OriginalJavaBuilder;
+import descent.internal.core.builder.OriginalJavaBuilder;
 import descent.internal.core.search.AbstractSearchScope;
 import descent.internal.core.search.JavaWorkspaceScope;
 import descent.internal.core.search.indexing.IndexManager;
@@ -1416,7 +1417,7 @@ public class JavaModelManager implements ISaveParticipant, IContentTypeChangeLis
 	 */
 	public Object getLastBuiltState(IProject project, IProgressMonitor monitor) {
 		if (!JavaProject.hasJavaNature(project)) {
-			if (JavaBuilder.DEBUG)
+			if (OriginalJavaBuilder.DEBUG)
 				System.out.println(project + " is not a Java project"); //$NON-NLS-1$
 			return null; // should never be requested on non-Java projects
 		}
@@ -2658,8 +2659,8 @@ public class JavaModelManager implements ISaveParticipant, IContentTypeChangeLis
 					if (!kind.equals("STATE")) //$NON-NLS-1$
 						throw new IOException(Messages.build_wrongFileFormat); 
 					if (in.readBoolean())
-						return JavaBuilder.readState(project, in);
-					if (JavaBuilder.DEBUG)
+						return OriginalJavaBuilder.readState(project, in);
+					if (OriginalJavaBuilder.DEBUG)
 						System.out.println("Saved state thinks last build failed for " + project.getName()); //$NON-NLS-1$
 				} finally {
 					in.close();
@@ -2668,7 +2669,7 @@ public class JavaModelManager implements ISaveParticipant, IContentTypeChangeLis
 				e.printStackTrace();
 				throw new CoreException(new Status(IStatus.ERROR, JavaCore.PLUGIN_ID, Platform.PLUGIN_ERROR, "Error reading last build state for project "+ project.getName(), e)); //$NON-NLS-1$
 			}
-		} else if (JavaBuilder.DEBUG) {
+		} else if (OriginalJavaBuilder.DEBUG) {
 			if (file == null)
 				System.out.println("Project does not exist: " + project); //$NON-NLS-1$
 			else
@@ -2866,7 +2867,7 @@ public class JavaModelManager implements ISaveParticipant, IContentTypeChangeLis
 	 * Saves the built state for the project.
 	 */
 	private void saveBuiltState(PerProjectInfo info) throws CoreException {
-		if (JavaBuilder.DEBUG)
+		if (OriginalJavaBuilder.DEBUG)
 			System.out.println(Messages.bind(Messages.build_saveStateProgress, info.project.getName())); 
 		File file = getSerializationFile(info.project);
 		if (file == null) return;
@@ -2880,7 +2881,7 @@ public class JavaModelManager implements ISaveParticipant, IContentTypeChangeLis
 					out.writeBoolean(false);
 				} else {
 					out.writeBoolean(true);
-					JavaBuilder.writeState(info.savedState, out);
+					OriginalJavaBuilder.writeState(info.savedState, out);
 				}
 			} finally {
 				out.close();
@@ -2904,7 +2905,7 @@ public class JavaModelManager implements ISaveParticipant, IContentTypeChangeLis
 				new Status(IStatus.ERROR, JavaCore.PLUGIN_ID, Platform.PLUGIN_ERROR,
 					Messages.bind(Messages.build_cannotSaveState, info.project.getName()), e)); 
 		}
-		if (JavaBuilder.DEBUG) {
+		if (OriginalJavaBuilder.DEBUG) {
 			t = System.currentTimeMillis() - t;
 			System.out.println(Messages.bind(Messages.build_saveStateComplete, String.valueOf(t))); 
 		}

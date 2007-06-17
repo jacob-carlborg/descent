@@ -3601,16 +3601,20 @@ public abstract class JavaEditor extends AbstractDecoratedTextEditor implements 
 		if (element.getElementType() == IJavaElement.IMPORT_DECLARATION) {
 
 			IImportDeclaration declaration= (IImportDeclaration) element;
-			IImportContainer container= (IImportContainer) declaration.getParent();
-			ISourceRange srcRange= null;
-
-			try {
-				srcRange= container.getSourceRange();
-			} catch (JavaModelException e) {
+			
+			// In D, it may not be an IImportContainer
+			if (declaration.getParent().getElementType() == IJavaElement.IMPORT_CONTAINER) {
+				IImportContainer container= (IImportContainer) declaration.getParent();
+				ISourceRange srcRange= null;
+	
+				try {
+					srcRange= container.getSourceRange();
+				} catch (JavaModelException e) {
+				}
+	
+				if (srcRange != null && srcRange.getOffset() == caret)
+					return container;
 			}
-
-			if (srcRange != null && srcRange.getOffset() == caret)
-				return container;
 		}
 
 		return (ISourceReference) element;

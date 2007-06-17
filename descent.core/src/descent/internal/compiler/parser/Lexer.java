@@ -506,7 +506,7 @@ public class Lexer implements IProblemRequestor {
 				}
 				
 				if (this.taskTags != null) {
-					checkTaskTag(t.ptr, p - t.ptr);
+					checkTaskTag(t.ptr, p);
 				}
 				
 				if (tokenizeComments) {
@@ -536,7 +536,7 @@ public class Lexer implements IProblemRequestor {
 					case 0:
 					case 0x1A:
 						if (this.taskTags != null) {
-							checkTaskTag(t.ptr, p - t.ptr);
+							checkTaskTag(t.ptr, p);
 						}
 						if (tokenizeComments) {
 							t.value = input[t.ptr + 2] == '/' ? TOKdoclinecomment : TOKlinecomment;
@@ -559,7 +559,7 @@ public class Lexer implements IProblemRequestor {
 				}
 				
 				if (this.taskTags != null) {
-					checkTaskTag(t.ptr, p - t.ptr);
+					checkTaskTag(t.ptr, p);
 				}
 				if (tokenizeComments) {
 					t.value = input[t.ptr + 2] == '/' ? TOKdoclinecomment : TOKlinecomment;
@@ -636,7 +636,7 @@ public class Lexer implements IProblemRequestor {
 				}
 				
 				if (this.taskTags != null) {
-					checkTaskTag(t.ptr, p - t.ptr);
+					checkTaskTag(t.ptr, p);
 				}
 				if (tokenizeComments) {
 					t.value = (input[t.ptr + 2] == '+' && p - 4 != t.ptr) ? TOKdocpluscomment : TOKpluscomment;

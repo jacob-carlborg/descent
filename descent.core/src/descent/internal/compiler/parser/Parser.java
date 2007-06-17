@@ -1159,6 +1159,7 @@ public class Parser extends Lexer {
 			nextToken();
 		} else {
 			error("Enum declaration is invalid", IProblem.EnumDeclarationIsInvalid, enumTokenLineNumber, enumTokenStart, enumTokenLength);
+			return null;
 		}
 		
 		return e;
@@ -2889,8 +2890,10 @@ public class Parser extends Lexer {
 			Dsymbol d;
 
 			d = parseAggregate();
-			d.setSourceRange(start, prevToken.ptr + prevToken.len - start);
-			s = new DeclarationStatement(loc, d);
+			if (d != null) {
+				d.setSourceRange(start, prevToken.ptr + prevToken.len - start);
+				s = new DeclarationStatement(loc, d);
+			}
 			break;
 		}
 
@@ -2898,8 +2901,10 @@ public class Parser extends Lexer {
 			Dsymbol d;
 
 			d = parseEnum();
-			d.setSourceRange(start, prevToken.ptr + prevToken.len - start);
-			s = new DeclarationStatement(loc, d);
+			if (d != null) {
+				d.setSourceRange(start, prevToken.ptr + prevToken.len - start);
+				s = new DeclarationStatement(loc, d);
+			}
 			break;
 		}
 
@@ -2933,7 +2938,11 @@ public class Parser extends Lexer {
 					parsingErrorInsertTokenAfter(prevToken, "}");
 					break;
 				}
-				statements.add(parseStatement(PSsemi | PScurlyscope));
+				
+				Statement subStatement = parseStatement(PSsemi | PScurlyscope);
+				if (subStatement != null) {
+					statements.add(subStatement);
+				}
 			}
 			
 			s = newBlock(statements);
@@ -3692,9 +3701,6 @@ public class Parser extends Lexer {
 		
 		if (s != null) {
 			s.setSourceRange(start, prevToken.ptr + prevToken.len - start);
-		} else {
-			// Changed from DMD... TODO support better syntax recovery and remove it!
-			s = newBlock(null);
 		}
 		
 		return s;

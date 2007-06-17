@@ -11,7 +11,12 @@
 package descent.internal.core;
 
 import java.io.File;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Map;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
@@ -23,11 +28,27 @@ import org.eclipse.core.resources.IResourceDeltaVisitor;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.IWorkspaceRunnable;
 import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.core.runtime.*;
-import descent.core.*;
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.ISafeRunnable;
+import org.eclipse.core.runtime.PerformanceStats;
+import org.eclipse.core.runtime.SafeRunner;
+
+import descent.core.ElementChangedEvent;
+import descent.core.IClasspathEntry;
+import descent.core.IElementChangedListener;
+import descent.core.IJavaElement;
+import descent.core.IJavaElementDelta;
+import descent.core.IJavaModel;
+import descent.core.IJavaProject;
+import descent.core.IPackageFragment;
+import descent.core.IPackageFragmentRoot;
+import descent.core.JavaCore;
+import descent.core.JavaModelException;
 import descent.core.compiler.CharOperation;
 import descent.internal.compiler.SourceElementParser;
-import descent.internal.core.builder.JavaBuilder;
+import descent.internal.core.builder.OriginalJavaBuilder;
 import descent.internal.core.search.AbstractSearchScope;
 import descent.internal.core.search.JavaWorkspaceScope;
 import descent.internal.core.search.indexing.IndexManager;
@@ -336,7 +357,7 @@ public class DeltaProcessor {
 							IProject project = projectsToTouch[i];
 							
 							// touch to force a build of this project
-							if (JavaBuilder.DEBUG)
+							if (OriginalJavaBuilder.DEBUG)
 								System.out.println("Touching project " + project.getName() + " due to external jar file change"); //$NON-NLS-1$ //$NON-NLS-2$
 							project.touch(progressMonitor);
 						}
@@ -1869,13 +1890,13 @@ public class DeltaProcessor {
 				// this.processPostChange = false;
 				if(isAffectedBy(delta)) { // avoid populating for SYNC or MARKER deltas
 					updateClasspathMarkers(delta, updates);
-					JavaBuilder.buildStarting();
+					OriginalJavaBuilder.buildStarting();
 				}
 				// does not fire any deltas
 				return;
 
 			case IResourceChangeEvent.POST_BUILD :
-				JavaBuilder.buildFinished();
+				OriginalJavaBuilder.buildFinished();
 				return;
 		}
 	}
@@ -2114,7 +2135,7 @@ public class DeltaProcessor {
 									);
 									
 								// remove problems and tasks created  by the builder
-								JavaBuilder.removeProblemsAndTasksFor(project);
+								OriginalJavaBuilder.removeProblemsAndTasksFor(project);
 							}
 						} else if (isJavaProject) {
 							// check if all entries exist
@@ -2254,7 +2275,7 @@ public class DeltaProcessor {
 	
 				if (deltaRes.getType() == IResource.PROJECT){			
 					// reset the corresponding project built state, since cannot reuse if added back
-					if (JavaBuilder.DEBUG)
+					if (OriginalJavaBuilder.DEBUG)
 						System.out.println("Clearing last state for removed project : " + deltaRes); //$NON-NLS-1$
 					this.manager.setLastBuiltState((IProject)deltaRes, null /*no state*/);
 					
@@ -2320,7 +2341,7 @@ public class DeltaProcessor {
 								this.manager.indexManager.discardJobs(element.getElementName());
 								this.manager.indexManager.removeIndexFamily(res.getFullPath());
 								// reset the corresponding project built state, since cannot reuse if added back
-								if (JavaBuilder.DEBUG)
+								if (OriginalJavaBuilder.DEBUG)
 									System.out.println("Clearing last state for project loosing Java nature: " + res); //$NON-NLS-1$
 								this.manager.setLastBuiltState(res, null /*no state*/);
 							}

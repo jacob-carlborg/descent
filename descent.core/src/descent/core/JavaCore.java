@@ -107,12 +107,13 @@ import descent.internal.core.ClasspathAccessRule;
 import descent.internal.core.ClasspathAttribute;
 import descent.internal.core.ClasspathEntry;
 import descent.internal.core.DefaultWorkingCopyOwner;
+import descent.internal.core.JavaCorePreferenceInitializer;
 import descent.internal.core.JavaModel;
 import descent.internal.core.JavaModelManager;
 import descent.internal.core.JavaProject;
 import descent.internal.core.Region;
 import descent.internal.core.SetClasspathOperation;
-import descent.internal.core.builder.JavaBuilder;
+import descent.internal.core.builder.OriginalJavaBuilder;
 import descent.internal.core.builder.State;
 import descent.internal.core.util.MementoTokenizer;
 import descent.internal.core.util.Messages;
@@ -148,10 +149,7 @@ public final class JavaCore extends AbstractUIPlugin {
 	 * The identifier for the Java builder
 	 * (value <code>"descent.core.dAntBuilder"</code>).
 	 */
-	//public static final String BUILDER_ID = PLUGIN_ID + ".dbuilder" ; //$NON-NLS-1$
-	public static final String BUILDER_ID = PLUGIN_ID + ".dAntBuilder" ; //$NON-NLS-1$
-	
-	public static final String TASK_BUILDER_ID = PLUGIN_ID + ".dTaskBuilder" ; //$NON-NLS-1$
+	public static final String BUILDER_ID = PLUGIN_ID + ".dbuilder" ; //$NON-NLS-1$
 
 	/**
 	 * The identifier for the Java model
@@ -2916,7 +2914,7 @@ public final class JavaCore extends AbstractUIPlugin {
 			String newVersionNumber = Byte.toString(State.VERSION);
 			if (!newVersionNumber.equals(versionNumber)) {
 				// build state version number has changed: touch every projects to force a rebuild
-				if (JavaBuilder.DEBUG)
+				if (OriginalJavaBuilder.DEBUG)
 					System.out.println("Build state version number has changed"); //$NON-NLS-1$
 				IWorkspaceRunnable runnable = new IWorkspaceRunnable() {
 					public void run(IProgressMonitor progressMonitor2) throws CoreException {
@@ -2930,7 +2928,7 @@ public final class JavaCore extends AbstractUIPlugin {
 							for (int i = 0, length = projects.length; i < length; i++) {
 								IJavaProject project = projects[i];
 								try {
-									if (JavaBuilder.DEBUG)
+									if (OriginalJavaBuilder.DEBUG)
 										System.out.println("Touching " + project.getElementName()); //$NON-NLS-1$
 									project.getProject().touch(progressMonitor2);
 								} catch (CoreException e) {

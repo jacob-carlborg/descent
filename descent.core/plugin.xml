@@ -28,17 +28,7 @@
       <runtime>
          <run class="descent.internal.core.JavaProject"/>
       </runtime>
-   </extension>
-
- <extension
-         id="dbuilder"
-         name="D Builder"
-         point="org.eclipse.core.resources.builders">
-      <builder>
-         <run class="descent.internal.core.builder.JavaBuilder"/>
-      </builder>
-   </extension>
-   
+   </extension>   
 
    <extension
          point="org.eclipse.core.runtime.contentTypes">
@@ -73,22 +63,13 @@
       <super type="org.eclipse.core.resources.taskmarker"/>
       <persistent value="true"/>
    </extension>
-
-   <extension
-         id="dAntBuilder"
-         name="D Ant Builder"
-         point="org.eclipse.core.resources.builders">
-      <builder hasNature="false">
-         <run class="descent.internal.core.builder.DAntBuilder"/>
-      </builder>
-   </extension>
    
    <extension
-         id="dTaskBuilder"
-         name="D Task Builder"
+         id="dbuilder"
+         name="D Builder"
          point="org.eclipse.core.resources.builders">
-      <builder hasNature="false">
-         <run class="descent.internal.core.builder.DTaskBuilder"/>
+      <builder >
+         <run class="descent.internal.core.builder.JavaBuilder"/>
       </builder>
    </extension>
 
