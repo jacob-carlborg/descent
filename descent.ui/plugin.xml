@@ -152,6 +152,22 @@
       </quickFixProcessor>
    </extension>
    
+   <extension
+		point="org.eclipse.ui.commands">
+		<command
+			categoryId="org.eclipse.ui.category.edit"
+			description="%SpecificContentAssist.desc"
+			id="descent.ui.specific_content_assist.command"
+			name="%SpecificContentAssist.name"
+			defaultHandler="descent.internal.ui.text.java.JavaContentAssistHandler">
+			<commandParameter
+				id="descent.ui.specific_content_assist.category_id"
+				name="%SpecificContentAssist.param"
+				optional="false"
+				values="descent.internal.ui.text.java.ContentAssistComputerParameter"/>
+		</command>
+	</extension>
+   
    
    <extension
          point="org.eclipse.core.runtime.preferences">
@@ -2181,10 +2197,10 @@
             name="descent.ui.info"
             super="org.eclipse.ui.workbench.texteditor.info"/>
        <type
-         name="org.eclipse.jdt.ui.occurrences">
+         name="descent.ui.occurrences">
       </type>
       <type
-         name="org.eclipse.jdt.ui.overrideIndicator">
+         name="descent.ui.overrideIndicator">
       </type>
    </extension>
    <extension
