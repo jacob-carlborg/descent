@@ -1,5 +1,6 @@
 package descent.tests.format;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import junit.framework.TestCase;
@@ -15,12 +16,14 @@ import descent.core.formatter.CodeFormatter;
  */
 public abstract class AbstractFormatter_Test extends TestCase {
 	
+	private final static Map EMPTY_MAP = new HashMap();
+	
 	/**
 	 * Formats "original" with the default options (see {@link #getDefaultOptions()})
 	 * and compares the resulting string with the expected string.
 	 */
-	protected void assertFormat(String expected, String original) throws Exception {
-		assertFormat(expected, original, getDefaultOptions());
+	protected final void assertFormat(String expected, String original) throws Exception {
+		assertFormat(expected, original, EMPTY_MAP);
 	}
 	
 	/**

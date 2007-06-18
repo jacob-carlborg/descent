@@ -127,8 +127,8 @@ public class FormatFunctionDeclaration_Tests extends AbstractFormatter_Test {
 		options.put(DefaultCodeFormatterConstants.FORMATTER_BRACE_POSITION_FOR_FUNCTION_DECLARATION, DefaultCodeFormatterConstants.NEXT_LINE_SHIFTED);
 		assertFormat(
 				"void bla()\r\n" +
-				"\t{\r\n" +
-				"\t}", 
+					"\t{\r\n" +
+					"\t}", 
 				
 				"void  bla  ()  {   }",
 				
@@ -141,9 +141,9 @@ public class FormatFunctionDeclaration_Tests extends AbstractFormatter_Test {
 		options.put(DefaultCodeFormatterConstants.FORMATTER_BRACE_POSITION_FOR_FUNCTION_DECLARATION, DefaultCodeFormatterConstants.NEXT_LINE_SHIFTED);
 		assertFormat(
 				"void bla()\r\n" +
-				"\t{\r\n" +
-				"\t\tint x;\r\n" +				
-				"\t}", 
+					"\t{\r\n" +
+						"\t\tint x;\r\n" +				
+					"\t}", 
 				
 				"void  bla  ()  {   int x;  }",
 				

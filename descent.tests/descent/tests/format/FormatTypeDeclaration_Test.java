@@ -61,8 +61,8 @@ public class FormatTypeDeclaration_Test extends AbstractFormatter_Test {
 		for(String type : types) {
 			assertFormat(
 					type + " Class\r\n" +
-					"\t{\r\n" +
-					"\t}", 
+						"\t{\r\n" +
+						"\t}", 
 					
 					type + "  Class  {    }",
 					
@@ -96,9 +96,9 @@ public class FormatTypeDeclaration_Test extends AbstractFormatter_Test {
 		for(String type : types) {
 			assertFormat(
 					type + " Class\r\n" +
-					"\t{\r\n" +
-					"\t\tint x;\r\n" +
-					"\t}", 
+						"\t{\r\n" +
+							"\t\tint x;\r\n" +
+						"\t}", 
 					
 					type + "  Class  {  int x;  }",
 					

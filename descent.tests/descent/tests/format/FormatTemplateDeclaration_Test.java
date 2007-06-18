@@ -42,8 +42,8 @@ public class FormatTemplateDeclaration_Test extends AbstractFormatter_Test {
 		options.put(DefaultCodeFormatterConstants.FORMATTER_BRACE_POSITION_FOR_TEMPLATE_DECLARATION, DefaultCodeFormatterConstants.NEXT_LINE_SHIFTED);
 		assertFormat(
 				"template Class ()\r\n" +
-				"\t{\r\n" +
-				"\t}", 
+					"\t{\r\n" +
+					"\t}", 
 				
 				"template  Class()  {    }",
 				
@@ -73,9 +73,9 @@ public class FormatTemplateDeclaration_Test extends AbstractFormatter_Test {
 		options.put(DefaultCodeFormatterConstants.FORMATTER_BRACE_POSITION_FOR_TEMPLATE_DECLARATION, DefaultCodeFormatterConstants.NEXT_LINE_SHIFTED);
 		assertFormat(
 				"template Class ()\r\n" +
-				"\t{\r\n" +
-				"\t\tint x;\r\n" +
-				"\t}", 
+					"\t{\r\n" +
+						"\t\tint x;\r\n" +
+					"\t}", 
 				
 				"template  Class ()  {  int x;  }",
 				

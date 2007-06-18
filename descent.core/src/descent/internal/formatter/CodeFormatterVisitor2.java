@@ -8,7 +8,6 @@ import java.util.Map;
 import org.eclipse.text.edits.TextEdit;
 
 import descent.core.dom.*;
-import descent.core.formatter.DefaultCodeFormatterConstants;
 import descent.internal.compiler.parser.Lexer;
 import descent.internal.compiler.parser.TOK;
 import descent.internal.formatter.DefaultCodeFormatterOptions.BracePosition;
@@ -760,7 +759,6 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 			scribe.printNextToken(TOK.TOKforeach);
 		scribe.printNextToken(TOK.TOKlparen);
 		formatCSV(node.arguments(), false, true);
-		scribe.space();
 		scribe.printNextToken(TOK.TOKsemicolon);
 		scribe.space();
 		node.getExpression().accept(this);
@@ -1848,12 +1846,12 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 	
 	private void formatConditionalStatement(ConditionalStatement node)
 	{
-		formatSubStatement(node.getThenBody(), false, true, preferences.brace_position_for_conditional_declaration);
+		formatSubStatement(node.getThenBody(), false, true, preferences.brace_position_for_conditional_statement);
 		if(isNextToken(TOK.TOKelse))
 		{
 			scribe.printNewLine();
 			scribe.printNextToken(TOK.TOKelse);
-			formatSubStatement(node.getElseBody(), false, true, preferences.brace_position_for_conditional_declaration);
+			formatSubStatement(node.getElseBody(), false, true, preferences.brace_position_for_conditional_statement);
 		}
 	}
 	
@@ -2020,7 +2018,7 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 				{
 					case TOKin:
 						scribe.printNextToken(TOK.TOKin);
-						formatSubStatement(in, false, true, preferences.brace_position_for_function_declaration);
+						formatSubStatement(in, false, true, bracePosition);
 						continue loop;
 					case TOKout:
 						scribe.printNextToken(TOK.TOKout);
@@ -2032,11 +2030,11 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 								scribe.printNextToken(TOK.TOKidentifier);
 							scribe.printNextToken(TOK.TOKrparen);
 						}
-						formatSubStatement(out, false, true, preferences.brace_position_for_function_declaration);
+						formatSubStatement(out, false, true, bracePosition);
 						continue loop;
 					case TOKbody:
 						scribe.printNextToken(TOK.TOKbody);
-						formatSubStatement(body, false, true, preferences.brace_position_for_function_declaration);
+						formatSubStatement(body, false, true, bracePosition);
 						continue loop;
 					default:
 						break loop;
@@ -2049,12 +2047,12 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 			scribe.printNewLine();
 			scribe.indent();
 			scribe.printNextToken(TOK.TOKbody);
-			formatSubStatement(body, false, true, preferences.brace_position_for_function_declaration);
+			formatSubStatement(body, false, true, bracePosition);
 			scribe.unIndent();
 		}
 		else {
 			if (body != null) {
-				formatSubStatement(body, false, true, preferences.brace_position_for_function_declaration);
+				formatSubStatement(body, false, true, bracePosition);
 			} else {
 				// no method body
 				scribe.printNextToken(TOK.TOKsemicolon, this.preferences.insert_space_before_semicolon);

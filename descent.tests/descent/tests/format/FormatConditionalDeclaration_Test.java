@@ -49,8 +49,8 @@ public class FormatConditionalDeclaration_Test extends AbstractFormatter_Test {
 		for(String cond : conditionals) {
 			assertFormat(
 					cond + "(someVersion)\r\n" +
-					"\t{\r\n" +
-					"\t}", 
+						"\t{\r\n" +
+						"\t}", 
 					
 					cond + "    (   someVersion   )  {    }",
 					
@@ -84,9 +84,9 @@ public class FormatConditionalDeclaration_Test extends AbstractFormatter_Test {
 		for(String cond : conditionals) {
 			assertFormat(
 					cond + "(someVersion)\r\n" +
-					"\t{\r\n" +
-					"\t\tint x;\r\n" +
-					"\t}", 
+						"\t{\r\n" +
+						"\t\tint x;\r\n" +
+						"\t}", 
 					
 					cond + "(someVersion) {  int x;  }",
 					
@@ -146,11 +146,11 @@ public class FormatConditionalDeclaration_Test extends AbstractFormatter_Test {
 		for(String cond : conditionals) {
 			assertFormat(
 					cond + "(someVersion)\r\n" +
-					"\t{\r\n" +
-					"\t}\r\n" +
+						"\t{\r\n" +
+						"\t}\r\n" +
 					"else\r\n" +
-					"\t{\r\n" +
-					"\t}",
+						"\t{\r\n" +
+						"\t}",
 					
 					cond + "    (   someVersion   )  {    }  else  {   }",
 					
@@ -165,13 +165,13 @@ public class FormatConditionalDeclaration_Test extends AbstractFormatter_Test {
 		for(String cond : conditionals) {
 			assertFormat(
 					cond + "(someVersion)\r\n" +
-					"\t{\r\n" +
-					"\t\tint x;\r\n" +
-					"\t}\r\n" +
+						"\t{\r\n" +
+							"\t\tint x;\r\n" +
+						"\t}\r\n" +
 					"else\r\n" +
-					"\t{\r\n" +
-					"\t\tfloat x;\r\n" +
-					"\t}", 
+						"\t{\r\n" +
+							"\t\tfloat x;\r\n" +
+						"\t}", 
 					
 					cond + "(someVersion) {  int x;  }  else   {   float  x ; }",
 					

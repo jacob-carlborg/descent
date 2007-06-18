@@ -51,8 +51,8 @@ public class FormatEnumDeclaration_Test extends AbstractFormatter_Test {
 		options.put(DefaultCodeFormatterConstants.FORMATTER_BRACE_POSITION_FOR_ENUM_DECLARATION, DefaultCodeFormatterConstants.NEXT_LINE_SHIFTED);
 		assertFormat(
 				"enum Enum\r\n" +
-				"\t{\r\n" +
-				"\t}", 
+					"\t{\r\n" +
+					"\t}", 
 				
 				"enum  Enum  {    }",
 				
@@ -63,9 +63,9 @@ public class FormatEnumDeclaration_Test extends AbstractFormatter_Test {
 	public void testMembers() throws Exception {
 		assertFormat(
 				"enum Enum {\r\n" +
-				"\tx,\r\n" +
-				"\ty,\r\n" +
-				"\tz\r\n" +
+					"\tx,\r\n" +
+					"\ty,\r\n" +
+					"\tz\r\n" +
 				"}", 
 				
 				"enum  Enum  {  x  ,   y   ,   z   }"
@@ -77,11 +77,11 @@ public class FormatEnumDeclaration_Test extends AbstractFormatter_Test {
 		options.put(DefaultCodeFormatterConstants.FORMATTER_BRACE_POSITION_FOR_ENUM_DECLARATION, DefaultCodeFormatterConstants.NEXT_LINE_SHIFTED);
 		assertFormat(
 				"enum Enum\r\n" +
-				"\t{\r\n" +
-				"\t\tx,\r\n" +
-				"\t\ty,\r\n" +
-				"\t\tz\r\n" +
-				"\t}", 
+					"\t{\r\n" +
+						"\t\tx,\r\n" +
+						"\t\ty,\r\n" +
+						"\t\tz\r\n" +
+					"\t}", 
 				
 				"enum  Enum  {  x  ,   y   ,   z   }",
 				
@@ -96,9 +96,9 @@ public class FormatEnumDeclaration_Test extends AbstractFormatter_Test {
 				" * comment\r\n" +
 				" */\r\n" +
 				"enum Enum { // comment\r\n" +
-				"\tx, // comment\r\n" +
-				"\ty, // comment\r\n" +
-				"\tz // comment\r\n" +
+					"\tx, // comment\r\n" +
+					"\ty, // comment\r\n" +
+					"\tz // comment\r\n" +
 				"}", 
 				
 				"/*\r\n" +
