@@ -687,14 +687,17 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 			for(EnumMember member : node.enumMembers())
 			{
 				member.accept(this);
-				if(isNextToken(TOK.TOKcomma))
+				if(isNextToken(TOK.TOKcomma)) {
 					scribe.printNextToken(TOK.TOKcomma);
+				}
+				scribe.printTrailingComment();
 				scribe.printNewLine();
 			}
 			formatClosingBrace(preferences.brace_position_for_enum_declaration, true);
 		}
-		if(isNextToken(TOK.TOKsemicolon))
+		if(isNextToken(TOK.TOKsemicolon)) {
 			scribe.printNextToken(TOK.TOKsemicolon);
+		}
 		return false;
 	}
 	
@@ -709,6 +712,7 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 			scribe.space();
 			value.accept(this);
 		}
+		scribe.printTrailingComment();
 		return false;
 	}
 	

@@ -8,6 +8,13 @@ import descent.core.formatter.DefaultCodeFormatterConstants;
 
 public class FormatImportDeclaration_Tests extends AbstractFormatter_Test {
 	
+	@Override
+	protected Map getDefaultOptions() {
+		Map options = new HashMap();
+		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_SEMICOLON, DefaultCodeFormatterConstants.FALSE);
+		return options;
+	}
+	
 	public void testWithLineEnd() throws Exception {
 		assertFormat(
 				"import foo.bar;\r\n",

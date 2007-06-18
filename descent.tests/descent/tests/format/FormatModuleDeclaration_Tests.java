@@ -7,9 +7,18 @@ import descent.core.formatter.DefaultCodeFormatterConstants;
 
 public class FormatModuleDeclaration_Tests extends AbstractFormatter_Test {
 	
+	@Override
+	protected Map getDefaultOptions() {
+		Map options = new HashMap();
+		options.put(DefaultCodeFormatterConstants.FORMATTER_BLANK_LINES_BEFORE_MODULE, "0");
+		options.put(DefaultCodeFormatterConstants.FORMATTER_BLANK_LINES_AFTER_MODULE, "0");
+		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_SEMICOLON, DefaultCodeFormatterConstants.FALSE);
+		return options;
+	}
+	
 	public void testWithLineEnd() throws Exception {
 		assertFormat(
-				"module foo.bar;\r\n\r\n", 
+				"module foo.bar;\r\n", 
 				
 				"module\n" +
 				"foo.bar;"
@@ -18,7 +27,7 @@ public class FormatModuleDeclaration_Tests extends AbstractFormatter_Test {
 	
 	public void testWithSpaces() throws Exception {
 		assertFormat(
-				"module foo.bar;\r\n\r\n", 
+				"module foo.bar;\r\n", 
 				
 				"module    foo  .   bar   ;"
 			);
@@ -27,7 +36,7 @@ public class FormatModuleDeclaration_Tests extends AbstractFormatter_Test {
 	public void testWithPreCommentSingle() throws Exception {
 		assertFormat(
 				"// comment\r\n" +
-				"module foo.bar;\r\n\r\n", 
+				"module foo.bar;\r\n", 
 				
 				"// comment\r\n" +
 				"module foo.bar;"
@@ -39,7 +48,7 @@ public class FormatModuleDeclaration_Tests extends AbstractFormatter_Test {
 				"/* comment\r\n" +
 				" * hola\r\n" +
 				" */\r\n" +
-				"module foo.bar;\r\n\r\n", 
+				"module foo.bar;\r\n", 
 				
 				"/* comment\r\n" +
 				" * hola\r\n" +
@@ -53,7 +62,7 @@ public class FormatModuleDeclaration_Tests extends AbstractFormatter_Test {
 				"/** comment\r\n" +
 				" * hola\r\n" +
 				" */\r\n" +
-				"module foo.bar;\r\n\r\n", 
+				"module foo.bar;\r\n", 
 				
 				"/** comment\r\n" +
 				" * hola\r\n" +
@@ -64,7 +73,7 @@ public class FormatModuleDeclaration_Tests extends AbstractFormatter_Test {
 	
 	public void testWithTrailingComment() throws Exception {
 		assertFormat(
-				"module foo.bar; // comment\r\n", 
+				"module foo.bar; // comment", 
 				
 				"module foo.bar;           // comment"
 			);
@@ -72,7 +81,7 @@ public class FormatModuleDeclaration_Tests extends AbstractFormatter_Test {
 	
 	public void testWithCommentBetweenModuleAndName() throws Exception {
 		assertFormat(
-				"module /* comment */foo.bar;\r\n\r\n", 
+				"module /* comment */foo.bar;\r\n", 
 				
 				"module    /* comment */         foo.bar;"
 			);
@@ -82,7 +91,7 @@ public class FormatModuleDeclaration_Tests extends AbstractFormatter_Test {
 		Map options = new HashMap();
 		options.put(DefaultCodeFormatterConstants.FORMATTER_BLANK_LINES_BEFORE_MODULE, "3");
 		assertFormat(
-				"\r\n\r\n\r\nmodule foo.bar;\r\n\r\n", 
+				"\r\n\r\n\r\nmodule foo.bar;\r\n", 
 				
 				"module foo.bar;",
 				
@@ -104,7 +113,7 @@ public class FormatModuleDeclaration_Tests extends AbstractFormatter_Test {
 		Map options = new HashMap();
 		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_SEMICOLON, DefaultCodeFormatterConstants.TRUE);
 		assertFormat(
-				"module foo.bar ;\r\n\r\n", 
+				"module foo.bar ;\r\n", 
 				
 				"module foo.bar;",
 				

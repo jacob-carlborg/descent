@@ -78,7 +78,7 @@ public class BracesTabPage extends ModifyDialogTabPage {
 				DefaultCodeFormatterConstants.FORMATTER_BRACE_POSITION_FOR_ENUM_DECLARATION);
 		prefs[3] = createBracesCombo(group, numColumns, 
 				FormatterMessages.BracesTabPage_brace_position_for_template_declarations, 
-				DefaultCodeFormatterConstants.FORMATTER_BRACE_POSITION_FOR_TEMPLATE_DECLARATIONS);
+				DefaultCodeFormatterConstants.FORMATTER_BRACE_POSITION_FOR_TEMPLATE_DECLARATION);
 		prefs[4] = createBracesCombo(group, numColumns, 
 				FormatterMessages.BracesTabPage_brace_position_for_conditional_declaration, 
 				DefaultCodeFormatterConstants.FORMATTER_BRACE_POSITION_FOR_CONDITIONAL_DECLARATION);

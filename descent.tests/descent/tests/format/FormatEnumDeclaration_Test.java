@@ -7,6 +7,13 @@ import descent.core.formatter.DefaultCodeFormatterConstants;
 
 public class FormatEnumDeclaration_Test extends AbstractFormatter_Test {
 	
+	@Override
+	protected Map getDefaultOptions() {
+		Map options = new HashMap();
+		options.put(DefaultCodeFormatterConstants.FORMATTER_BRACE_POSITION_FOR_ENUM_DECLARATION, DefaultCodeFormatterConstants.END_OF_LINE);
+		return options;
+	}
+	
 	public void testEmptyAnonymous() throws Exception {
 		assertFormat(
 				"enum {\r\n" +
@@ -64,5 +71,43 @@ public class FormatEnumDeclaration_Test extends AbstractFormatter_Test {
 				"enum  Enum  {  x  ,   y   ,   z   }"
 			);
 	}
+	
+	public void testBracesNextLineShiftedWithMembers() throws Exception {
+		Map options = new HashMap();
+		options.put(DefaultCodeFormatterConstants.FORMATTER_BRACE_POSITION_FOR_ENUM_DECLARATION, DefaultCodeFormatterConstants.NEXT_LINE_SHIFTED);
+		assertFormat(
+				"enum Enum\r\n" +
+				"\t{\r\n" +
+				"\t\tx,\r\n" +
+				"\t\ty,\r\n" +
+				"\t\tz\r\n" +
+				"\t}", 
+				
+				"enum  Enum  {  x  ,   y   ,   z   }",
+				
+				options
+			);
+	}
+	
+	public void testWithComments() throws Exception {
+		assertFormat(
+				"/*\r\n" +
+				" * Some\r\n" +
+				" * comment\r\n" +
+				" */\r\n" +
+				"enum Enum { // comment\r\n" +
+				"\tx, // comment\r\n" +
+				"\ty, // comment\r\n" +
+				"\tz // comment\r\n" +
+				"}", 
+				
+				"/*\r\n" +
+				" * Some\r\n" +
+				" * comment\r\n" +
+				" */\r\n" +
+				"enum  Enum  { // comment\r\n x  , // comment\r\n  y   , // comment\r\n  z  // comment\r\n }"
+			);
+	}
+	
 
 }

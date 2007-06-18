@@ -7,6 +7,15 @@ import descent.core.formatter.DefaultCodeFormatterConstants;
 
 public class FormatAliasDeclaration_Test extends AbstractFormatter_Test {
 	
+	@Override
+	protected Map getDefaultOptions() {
+		Map options = new HashMap();
+		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_SEMICOLON, DefaultCodeFormatterConstants.FALSE);
+		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_COMMA_IN_MULTIPLE_FIELD_DECLARATIONS, DefaultCodeFormatterConstants.FALSE);
+		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_AFTER_COMMA_IN_MULTIPLE_FIELD_DECLARATIONS, DefaultCodeFormatterConstants.TRUE);
+		return options;
+	}
+	
 	public void testWithSpaces() throws Exception {
 		assertFormat(
 				"alias int x;\r\n",

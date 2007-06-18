@@ -48,7 +48,7 @@ public class DefaultCodeFormatterConstants {
 	public static final String FORMATTER_BRACE_POSITION_FOR_FUNCTION_DECLARATION = JavaCore.PLUGIN_ID + ".formatter.brace_position_for_function_declaration";
 	public static final String FORMATTER_BRACE_POSITION_FOR_TYPE_DECLARATION = JavaCore.PLUGIN_ID + ".formatter.brace_position_for_type_declaration";
 	public static final String FORMATTER_BRACE_POSITION_FOR_ENUM_DECLARATION = JavaCore.PLUGIN_ID + ".formatter.brace_position_for_enum_declaration";
-	public static final String FORMATTER_BRACE_POSITION_FOR_TEMPLATE_DECLARATIONS = JavaCore.PLUGIN_ID + ".formatter.brace_position_for_template_declarations";
+	public static final String FORMATTER_BRACE_POSITION_FOR_TEMPLATE_DECLARATION = JavaCore.PLUGIN_ID + ".formatter.brace_position_for_template_declaration";
 	public static final String FORMATTER_BRACE_POSITION_FOR_CONDITIONAL_DECLARATION = JavaCore.PLUGIN_ID + ".formatter.brace_position_for_conditional_declaration";
 	public static final String FORMATTER_BRACE_POSITION_FOR_CONDITIONAL_STATEMENT = JavaCore.PLUGIN_ID + ".formatter.brace_position_for_conditional_statement";
 	public static final String FORMATTER_BRACE_POSITION_FOR_LOOP_STATEMENT = JavaCore.PLUGIN_ID + ".formatter.brace_position_for_loop_statement";
