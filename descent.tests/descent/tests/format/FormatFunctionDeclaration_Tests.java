@@ -9,7 +9,7 @@ public class FormatFunctionDeclaration_Tests extends AbstractFormatter_Test {
 	
 	public void testEmpty() throws Exception {
 		assertFormat(
-				"void bla();\r\n", 
+				"void bla();", 
 				
 				"void  bla  ()  ;"
 			);
@@ -19,7 +19,7 @@ public class FormatFunctionDeclaration_Tests extends AbstractFormatter_Test {
 		Map options = new HashMap();
 		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_SEMICOLON, DefaultCodeFormatterConstants.TRUE);
 		assertFormat(
-				"void bla() ;\r\n", 
+				"void bla() ;", 
 				
 				"void  bla  ()  ;",
 				
@@ -31,7 +31,7 @@ public class FormatFunctionDeclaration_Tests extends AbstractFormatter_Test {
 		Map options = new HashMap();
 		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_OPENING_PAREN_IN_FUNCTION_DECLARATION, DefaultCodeFormatterConstants.TRUE);
 		assertFormat(
-				"void bla ();\r\n", 
+				"void bla ();", 
 				
 				"void  bla  ()  ;",
 				
@@ -43,7 +43,7 @@ public class FormatFunctionDeclaration_Tests extends AbstractFormatter_Test {
 		Map options = new HashMap();
 		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_AFTER_OPENING_PAREN_IN_FUNCTION_DECLARATION, DefaultCodeFormatterConstants.TRUE);
 		assertFormat(
-				"void bla( int x);\r\n", 
+				"void bla( int x);", 
 				
 				"void  bla  (int x)  ;",
 				
@@ -55,7 +55,7 @@ public class FormatFunctionDeclaration_Tests extends AbstractFormatter_Test {
 		Map options = new HashMap();
 		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_CLOSING_PAREN_IN_FUNCTION_DECLARATION, DefaultCodeFormatterConstants.TRUE);
 		assertFormat(
-				"void bla(int x );\r\n", 
+				"void bla(int x );", 
 				
 				"void  bla  (int x)  ;",
 				
@@ -67,7 +67,7 @@ public class FormatFunctionDeclaration_Tests extends AbstractFormatter_Test {
 		Map options = new HashMap();
 		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BETWEEN_EMPTY_PARENS_IN_FUNCTION_DECLARATION, DefaultCodeFormatterConstants.TRUE);
 		assertFormat(
-				"void bla( );\r\n", 
+				"void bla( );", 
 				
 				"void  bla  ()  ;",
 				
@@ -84,12 +84,16 @@ public class FormatFunctionDeclaration_Tests extends AbstractFormatter_Test {
 	}
 	
 	public void testBracesNextLine() throws Exception {
+		Map options = new HashMap();
+		options.put(DefaultCodeFormatterConstants.FORMATTER_BRACE_POSITION_FOR_FUNCTION_DECLARATION, DefaultCodeFormatterConstants.NEXT_LINE);
 		assertFormat(
 				"void bla()\r\n" +
 				"{\r\n" +
-				"}\r\n", 
+				"}", 
 				
-				"void  bla  ()  {   }"
+				"void  bla  ()  {   }",
+				
+				options
 			);
 	}
 	
@@ -98,7 +102,7 @@ public class FormatFunctionDeclaration_Tests extends AbstractFormatter_Test {
 		options.put(DefaultCodeFormatterConstants.FORMATTER_BRACE_POSITION_FOR_FUNCTION_DECLARATION, DefaultCodeFormatterConstants.END_OF_LINE);
 		assertFormat(
 				"void bla() {\r\n" +
-				"}\r\n", 
+				"}", 
 				
 				"void  bla  ()  {   }",
 				
@@ -112,7 +116,7 @@ public class FormatFunctionDeclaration_Tests extends AbstractFormatter_Test {
 		assertFormat(
 				"void bla()\r\n" +
 				"\t{\r\n" +
-				"\t}\r\n", 
+				"\t}", 
 				
 				"void  bla  ()  {   }",
 				
@@ -127,7 +131,7 @@ public class FormatFunctionDeclaration_Tests extends AbstractFormatter_Test {
 				"void bla()\r\n" +
 				"\t{\r\n" +
 				"\t\tint x;\r\n" +				
-				"\t}\r\n", 
+				"\t}", 
 				
 				"void  bla  ()  {   int x;  }",
 				

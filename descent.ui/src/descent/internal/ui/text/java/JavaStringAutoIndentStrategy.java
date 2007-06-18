@@ -166,7 +166,7 @@ public class JavaStringAutoIndentStrategy extends DefaultIndentLineAutoEditStrat
 
 		IPreferenceStore preferenceStore= JavaPlugin.getDefault().getPreferenceStore();
 		if (isLineDelimiter(document, command.text))
-			command.text= "\" +" + command.text + indentation + "\"";  //$NON-NLS-1$//$NON-NLS-2$
+			command.text= "\"" + command.text + indentation + "\"";  //$NON-NLS-1$//$NON-NLS-2$
 		else if (command.text.length() > 1 && preferenceStore.getBoolean(PreferenceConstants.EDITOR_ESCAPE_STRINGS))
 			command.text= getModifiedText(command.text, indentation, delimiter);
 	}

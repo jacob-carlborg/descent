@@ -20,10 +20,6 @@ import java.io.UnsupportedEncodingException;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
-import org.eclipse.core.resources.IResource;
-import org.eclipse.core.resources.ResourceAttributes;
-import org.eclipse.core.runtime.CoreException;
-
 import descent.core.compiler.CharOperation;
 
 public class Util implements SuffixConstants {
