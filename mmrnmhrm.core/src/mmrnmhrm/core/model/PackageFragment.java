@@ -2,30 +2,34 @@ package mmrnmhrm.core.model;
 
 import mmrnmhrm.core.model.lang.ELangElementTypes;
 import mmrnmhrm.core.model.lang.ILangElement;
-import mmrnmhrm.core.model.lang.LangElement;
+import mmrnmhrm.core.model.lang.LangContainerElement;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 
-public class PackageFragment extends LangElement {
+public class PackageFragment extends LangContainerElement {
 
 	IFolder packageFolder;
 	
-	public PackageFragment(LangElement parent, IFolder myfolder) throws CoreException {
+	public PackageFragment(LangContainerElement parent, IFolder myfolder) throws CoreException {
 		super(parent);
 		packageFolder = myfolder;
-		refreshElementChildren();
 	}
 
-	private void refreshElementChildren() throws CoreException {
+	protected void refreshElementChildren() throws CoreException {
 		for(IResource resource : packageFolder.members()) {
 			if(resource.getType() == IResource.FILE) {
 				IFile myfolder = (IFile) resource;
-				addChild(new CompilationUnit(this, myfolder));
+				addCompilationUnit(new CompilationUnit(this, myfolder));
 			}
 		}
+	}
+
+	protected void addCompilationUnit(CompilationUnit unit) {
+		addChild(unit);
+		// dont refresh
 	}
 
 	public String getElementName() {

@@ -4,11 +4,11 @@ package mmrnmhrm.core.model.lang;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.runtime.IPath;
 
-public abstract class LangSourceFolder extends LangElement implements ILangSourceRoot {
+public abstract class LangSourceFolder extends LangContainerElement implements ILangSourceRoot {
 
 	public IFolder srcfolder;
 
-	public LangSourceFolder(LangElement parent, IFolder folder) {
+	public LangSourceFolder(LangContainerElement parent, IFolder folder) {
 		super(parent);
 		this.srcfolder = folder;
 	}

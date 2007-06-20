@@ -8,7 +8,7 @@ import org.eclipse.core.runtime.CoreException;
 public class DeeCore extends LangCore {
 
 	/** The plug-in ID */
-	public static final String PLUGIN_ID = "mmrnmhrm";
+	public static final String PLUGIN_ID = "mmrnmhrm.core";
 	/** The builder ID */
 	public final static String BUILDER_ID = PLUGIN_ID + ".deebuilder";
 

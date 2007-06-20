@@ -31,7 +31,7 @@ public class DeeModelRoot extends LangModelRoot {
 		DeeProject deeproj = new DeeProject(project);
 		deeproj.setDefaultBuildPath();
 		deeproj.saveProjectConfigFile();
-		addChild(deeproj);
+		addDeeProject(deeproj);
 		return deeproj;
 	}
 

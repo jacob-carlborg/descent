@@ -6,14 +6,16 @@ import org.eclipse.core.resources.IWorkspaceRunnable;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.Plugin;
 import org.eclipse.core.runtime.jobs.ISchedulingRule;
+import org.osgi.framework.BundleContext;
 
 import util.Assert;
 
 /**
  * Lang Core
  */
-public abstract class LangCore /*extends Plugin */{
+public abstract class LangCore extends Plugin {
 
 
 	protected static LangCore pluginInstance;
@@ -24,16 +26,16 @@ public abstract class LangCore /*extends Plugin */{
 	}
 
 	/** {@inheritDoc} */
-	/*public void start(BundleContext context) throws Exception {
+	public void start(BundleContext context) throws Exception {
 		super.start(context);
 		initPlugin();
-	}*/
+	}
 
 	/** {@inheritDoc} */
-	/*public void stop(BundleContext context) throws Exception {
+	public void stop(BundleContext context) throws Exception {
 		super.stop(context);
 		pluginInstance = null;
-	}*/
+	}
 
 
 	/* *********************************************** */

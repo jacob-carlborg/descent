@@ -3,11 +3,11 @@ package mmrnmhrm.core.model.lang;
 
 import org.eclipse.core.resources.IProject;
 
-public abstract class LangProject extends LangElement implements ILangProject {
+public abstract class LangProject extends LangContainerElement implements ILangProject {
 
 	protected IProject project;
 	
-	public LangProject(LangElement parent, IProject project) {
+	public LangProject(LangContainerElement parent, IProject project) {
 		super(parent);
 		this.project = project;
 	}

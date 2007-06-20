@@ -2,13 +2,13 @@ package mmrnmhrm.core.model;
 
 import mmrnmhrm.core.model.lang.ELangElementTypes;
 import mmrnmhrm.core.model.lang.ILangElement;
-import mmrnmhrm.core.model.lang.LangElement;
+import mmrnmhrm.core.model.lang.LangContainerElement;
 
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 
-public class DeeSourceLib extends LangElement implements IDeeSourceRoot {
+public class DeeSourceLib extends LangContainerElement implements IDeeSourceRoot {
 
 	public IFolder folder;
 	

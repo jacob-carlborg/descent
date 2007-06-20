@@ -23,14 +23,19 @@ public class DeeSourceFolder extends LangSourceFolder implements IDeeSourceRoot 
 		for(IResource resource : srcfolder.members()) {
 			if(resource.getType() == IResource.FOLDER) {
 				IFolder myfolder = (IFolder) resource;
-				addChild(new PackageFragment(this, myfolder));
+				addPackageFragment(new PackageFragment(this, myfolder));
 			}
 		}
 	}
 	
+	private void addPackageFragment(PackageFragment fragment) throws CoreException {
+		addChild(fragment);
+		fragment.refreshElementChildren();
+	}
+
 	@Override
 	public String toString() {
-		return "["+srcfolder.getProjectRelativePath()+"]";
+		return srcfolder.getProjectRelativePath().toString();
 	}
 
 }

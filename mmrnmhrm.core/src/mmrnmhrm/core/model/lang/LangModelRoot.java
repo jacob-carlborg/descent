@@ -4,7 +4,7 @@ package mmrnmhrm.core.model.lang;
 import org.eclipse.core.resources.IProject;
 
 
-public abstract class LangModelRoot extends LangElement {
+public abstract class LangModelRoot extends LangContainerElement {
 	
 	public LangModelRoot() {
 		super(null);

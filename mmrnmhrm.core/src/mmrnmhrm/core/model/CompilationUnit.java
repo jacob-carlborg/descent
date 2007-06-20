@@ -20,7 +20,7 @@ import dtool.modelinterface.IDTool_DeeCompilationUnit;
 /**
  * Module Wrapper 
  */
-public class CompilationUnit extends LangElement implements IDTool_DeeCompilationUnit, ILangElement {
+public class CompilationUnit extends LangElement implements IDTool_DeeCompilationUnit, IDeeElement {
 
 	public IFile file;
 	public String source; // Document??
@@ -43,10 +43,6 @@ public class CompilationUnit extends LangElement implements IDTool_DeeCompilatio
 		this(null, file);
 	}
 	
-	@Override
-	public ILangElement[] newChildrenArray(int size) {
-		return null; // No children XXX: Do make it a container element?
-	}
 
 	public String getElementName() {
 		return file.getName();
@@ -60,6 +56,15 @@ public class CompilationUnit extends LangElement implements IDTool_DeeCompilatio
 	public DeeProject getProject() {
 		return DeeModelManager.getLangProject(file.getProject().getName());
 	}
+	
+	public void refreshElementChildren() throws CoreException {
+		parseAST();
+	}
+
+	public ILangElement[] getChildren() {
+		return new ILangElement[0];
+	}
+	
 	
 	public void setSource(String source) {
 		this.source = source;
@@ -85,7 +90,7 @@ public class CompilationUnit extends LangElement implements IDTool_DeeCompilatio
 		return problems.length > 0;
 	}
 	
-	public void parseAST(){
+	public void parseAST() {
 		if(astUpdated)
 			return;
 		astUpdated = true;
@@ -160,6 +165,8 @@ public class CompilationUnit extends LangElement implements IDTool_DeeCompilatio
 		} else
 			return "Status OK";
 	}
+
+
 
 
 }
