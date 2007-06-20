@@ -17,6 +17,7 @@ import dtool.dom.ast.ASTElementFinder;
 import dtool.dom.ast.ASTNode;
 import dtool.dom.ast.ASTPrinter;
 import dtool.dom.definitions.DefUnit;
+import dtool.dom.definitions.Symbol;
 import dtool.dom.references.Entity;
 import dtool.refmodel.IIntrinsicUnit;
 
@@ -102,7 +103,7 @@ public class GoToDefinitionAction extends DeeEditorAction {
 				//IDE.openEditor(page, resource, true);
 				EditorUtil.setSelection(deeEditor, defunit);
 			}
-		} else if(elem instanceof DefUnit.Symbol) {
+		} else if(elem instanceof Symbol) {
 			dialogInfo(window.getShell(),
 					"Already at definition of element: " + elem);
 		} else {

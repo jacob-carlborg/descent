@@ -1,7 +1,6 @@
 package mmrnmhrm.ui;
 
 import melnorme.lang.ui.LangPlugin;
-import mmrnmhrm.core.DeeCore;
 import mmrnmhrm.ui.text.DeeCodeScanner;
 import mmrnmhrm.ui.text.DeeDocumentProvider;
 
@@ -13,7 +12,7 @@ import util.log.Logg;
 public class DeePlugin extends LangPlugin {
 
 	// Same id as the core, for now.
-	public static final String PLUGIN_ID = DeeCore.PLUGIN_ID;
+	public static final String PLUGIN_ID ="mmrnmhrm.ui";
 
 	/** Returns the plugin instance. */
 	public static DeePlugin getInstance() {
@@ -32,8 +31,6 @@ public class DeePlugin extends LangPlugin {
 		Logg.main.println(" =============  Mmrnmhrm INITIALIZING  ============= " );
 		Logg.main.println("Location: " + Platform.getLocation());
 		Logg.main.println("Instance Location: " + Platform.getInstanceLocation().getURL());
-
-		new DeeCore(); // Instance DeeCoret while UI and core isn't separated.
 
 		deeDocumentProvider = new DeeDocumentProvider();
 		//defaultDeeCodeScanner = new DeeCodeScanner();

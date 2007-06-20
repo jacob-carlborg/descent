@@ -2,53 +2,15 @@
 <?eclipse version="3.2"?>
 <plugin>
    <extension
-         id="deenature"
-         name="Dee nature"
-         point="org.eclipse.core.resources.natures">
-      <runtime>
-         <run class="mmrnmhrm.core.model.DeeNature"/>
-      </runtime>
-   </extension>
-   <extension
-         id="deebuilder"
-         name="Dee Builder"
-         point="org.eclipse.core.resources.builders">
-      <builder>
-         <run class="mmrnmhrm.core.build.DeeBuilder">
-            <parameter
-                  name="comment"
-                  value="Builder comment"/>
-         </run>
-      </builder>
-   </extension>
-   <extension
-         id="deeproblem"
-         name="Dee Problem Name"
-         point="org.eclipse.core.resources.markers">
-      <super type="org.eclipse.core.resources.problemmarker"/>
-      <super type="org.eclipse.core.resources.textmarker"/>
-      <persistent value="true"/>
-   </extension>
-   <extension
-         point="org.eclipse.core.runtime.contentTypes">
-      <content-type
-            base-type="org.eclipse.core.runtime.text"
-            default-charset="UTF-8"
-            file-extensions="dm, d"
-            id="mmrnmhrm.core.dmsource"
-            name="D Source (Mmrnmhrm)"
-            priority="normal"/>
-   </extension>
-   <extension
          point="org.eclipse.core.runtime.preferences">
-      <initializer class="mmrnmhrm.ui.DeePreferences"/>
+      <initializer class="mmrnmhrm.ui.DeeUIPreferenceInitializer"/>
    </extension>
    <extension
          point="org.eclipse.ui.ide.projectNatureImages">
       <image
             icon="icons/ovr16/d-dark_ovr.gif"
             id="mmrnmhrm.ui.deeProjectNatureImage"
-            natureId="mmrnmhrm.deenature"/>
+            natureId="mmrnmhrm.core.deenature"/>
    </extension>
    <extension
          point="org.eclipse.ui.newWizards">

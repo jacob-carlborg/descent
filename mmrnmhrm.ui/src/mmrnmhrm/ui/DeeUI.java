@@ -7,7 +7,6 @@ import org.eclipse.jface.resource.ImageDescriptor;
  */
 public class DeeUI  extends DeePlugin {
 
-
 	/**
 	 * Returns an image descriptor for the image file at the given
 	 * plug-in relative path

@@ -1,29 +1,26 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: Mmrnmhrm Core & UI
-Bundle-SymbolicName: mmrnmhrm;singleton:=true
-Bundle-Version: 0.0.2
+Bundle-Name: Mmrnmhrm UI
+Bundle-SymbolicName: mmrnmhrm.ui;singleton:=true
+Bundle-Version: 0.0.3
 Bundle-Activator: mmrnmhrm.ui.DeePlugin
 Bundle-Localization: plugin
 Require-Bundle: com.ibm.icu,
- org.eclipse.ui,
  org.eclipse.core.runtime,
+ org.eclipse.ui,
  org.eclipse.jface.text,
  org.eclipse.ui.editors,
  org.eclipse.ui.workbench.texteditor,
  org.eclipse.ui.views,
- org.eclipse.core.resources,
  org.eclipse.ui.ide,
  org.eclipse.ui.navigator,
- dtool;visibility:=reexport,
- org.junit4;visibility:=reexport
+ org.eclipse.core.resources,
+ org.junit4;visibility:=reexport,
+ mmrnmhrm.core
 Eclipse-LazyStart: true
 Bundle-Vendor: Mother Ark
 Export-Package: melnorme.util.ui.fields,
  melnorme.util.ui.swt,
- mmrnmhrm.core,
- mmrnmhrm.core.build,
- mmrnmhrm.core.model,
  mmrnmhrm.org.eclipse.ui.internal.editors.text,
  mmrnmhrm.ui,
  mmrnmhrm.ui.actions,

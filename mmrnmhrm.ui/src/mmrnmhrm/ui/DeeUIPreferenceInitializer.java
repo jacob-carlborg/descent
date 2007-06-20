@@ -5,7 +5,7 @@ import mmrnmhrm.ui.text.color.DeeColorPreferenceInitializer;
 import org.eclipse.core.runtime.preferences.AbstractPreferenceInitializer;
 import org.eclipse.jface.preference.IPreferenceStore;
 
-public class DeePreferences extends AbstractPreferenceInitializer {
+public class DeeUIPreferenceInitializer extends AbstractPreferenceInitializer {
 	
 
 	// Extension point entry point
