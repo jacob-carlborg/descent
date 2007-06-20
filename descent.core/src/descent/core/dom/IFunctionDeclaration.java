@@ -6,8 +6,8 @@ public interface IFunctionDeclaration
 {
 	public List<Argument> arguments();
 	public boolean isVariadic();
-	public Statement getPrecondition();
-	public Statement getPostcondition();
+	public Block getPrecondition();
+	public Block getPostcondition();
 	public SimpleName getPostconditionVariableName();
-	public Statement getBody();
+	public Block getBody();
 }

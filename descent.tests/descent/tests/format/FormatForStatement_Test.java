@@ -4,7 +4,7 @@ import java.util.Map;
 
 import descent.core.formatter.DefaultCodeFormatterConstants;
 
-public class FormatForStatement_Test extends AbstractFormatBraceInsideFunction_Test {
+public class FormatForStatement_Test extends AbstractFormatBraceWithSingleInsideFunction_Test {
 	
 	@Override
 	protected void addMoreOptions(Map options) {
@@ -24,17 +24,6 @@ public class FormatForStatement_Test extends AbstractFormatBraceInsideFunction_T
 	@Override
 	protected String getUnformattedPrefixForBrace() {
 		return "for    (   int  x = 0; i  <  10  ; i  ++   )";
-	}
-	
-	// TODO Descent formatter: make it configurable to write the substatement with an end line
-	// Also, a space is missing after for(int x = 0; i < 10; i++)
-	public void testSingleStatement() throws Exception {
-		assertFormat(
-				"for(int x = 0; i < 10; i++)\r\n" +
-					"\tint x;", 
-				
-					"for    (   int  x = 0; i  <  10  ; i  ++   )  int   x ;"
-			);
 	}
 
 }

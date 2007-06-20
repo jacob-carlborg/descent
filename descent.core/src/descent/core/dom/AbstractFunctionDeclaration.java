@@ -24,12 +24,12 @@ public abstract class AbstractFunctionDeclaration extends Declaration
 	/**
 	 * The precondition.
 	 */
-	Statement precondition;
+	Block precondition;
 	
 	/**
 	 * The postcondition.
 	 */
-	Statement postcondition;
+	Block postcondition;
 	
 	/**
 	 * The postcondition variable name.
@@ -39,7 +39,7 @@ public abstract class AbstractFunctionDeclaration extends Declaration
 	/**
 	 * The optional body.
 	 */
-	Statement body;
+	Block body;
 	
 	/**
 	 * Returns structural property descriptor for the "arguments" property
@@ -176,7 +176,7 @@ public abstract class AbstractFunctionDeclaration extends Declaration
 	 * @return the property descriptor
 	 */
 	static final ChildPropertyDescriptor internalPreconditionPropertyFactory(Class nodeClass) {
-		return new ChildPropertyDescriptor(nodeClass, "precondition", Statement.class, OPTIONAL, CYCLE_RISK); //$NON-NLS-1$
+		return new ChildPropertyDescriptor(nodeClass, "precondition", Block.class, OPTIONAL, CYCLE_RISK); //$NON-NLS-1$
 	}
 	
 	/**
@@ -186,7 +186,7 @@ public abstract class AbstractFunctionDeclaration extends Declaration
 	 * @return the property descriptor
 	 */
 	static final ChildPropertyDescriptor internalPostconditionPropertyFactory(Class nodeClass) {
-		return new ChildPropertyDescriptor(nodeClass, "postcondition", Statement.class, OPTIONAL, CYCLE_RISK); //$NON-NLS-1$
+		return new ChildPropertyDescriptor(nodeClass, "postcondition", Block.class, OPTIONAL, CYCLE_RISK); //$NON-NLS-1$
 	}
 	
 	/**
@@ -206,7 +206,7 @@ public abstract class AbstractFunctionDeclaration extends Declaration
 	 * @return the property descriptor
 	 */
 	static final ChildPropertyDescriptor internalBodyPropertyFactory(Class nodeClass) {
-		return new ChildPropertyDescriptor(nodeClass, "body", Statement.class, OPTIONAL, CYCLE_RISK); //$NON-NLS-1$
+		return new ChildPropertyDescriptor(nodeClass, "body", Block.class, OPTIONAL, CYCLE_RISK); //$NON-NLS-1$
 	}
 	
 	/**
@@ -260,7 +260,7 @@ public abstract class AbstractFunctionDeclaration extends Declaration
 	 * 
 	 * @return the precondition
 	 */ 
-	public Statement getPrecondition() {
+	public Block getPrecondition() {
 		return this.precondition;
 	}
 
@@ -275,7 +275,7 @@ public abstract class AbstractFunctionDeclaration extends Declaration
 	 * <li>a cycle in would be created</li>
 	 * </ul>
 	 */ 
-	public void setPrecondition(Statement precondition) {
+	public void setPrecondition(Block precondition) {
 		ASTNode oldChild = this.precondition;
 		preReplaceChild(oldChild, precondition, getPreconditionProperty());
 		this.precondition = precondition;
@@ -287,7 +287,7 @@ public abstract class AbstractFunctionDeclaration extends Declaration
 	 * 
 	 * @return the postcondition
 	 */ 
-	public Statement getPostcondition() {
+	public Block getPostcondition() {
 		return this.postcondition;
 	}
 
@@ -302,7 +302,7 @@ public abstract class AbstractFunctionDeclaration extends Declaration
 	 * <li>a cycle in would be created</li>
 	 * </ul>
 	 */ 
-	public void setPostcondition(Statement postcondition) {
+	public void setPostcondition(Block postcondition) {
 		ASTNode oldChild = this.postcondition;
 		preReplaceChild(oldChild, postcondition, getPostconditionProperty());
 		this.postcondition = postcondition;
@@ -341,7 +341,7 @@ public abstract class AbstractFunctionDeclaration extends Declaration
 	 * 
 	 * @return the body
 	 */ 
-	public Statement getBody() {
+	public Block getBody() {
 		return this.body;
 	}
 
@@ -356,7 +356,7 @@ public abstract class AbstractFunctionDeclaration extends Declaration
 	 * <li>a cycle in would be created</li>
 	 * </ul>
 	 */ 
-	public void setBody(Statement body) {
+	public void setBody(Block body) {
 		ASTNode oldChild = this.body;
 		preReplaceChild(oldChild, body, getBodyProperty());
 		this.body = body;

@@ -208,7 +208,7 @@ public class FunctionDeclaration extends AbstractFunctionDeclaration {
 			if (get) {
 				return getPrecondition();
 			} else {
-				setPrecondition((Statement) child);
+				setPrecondition((Block) child);
 				return null;
 			}
 		}
@@ -216,7 +216,7 @@ public class FunctionDeclaration extends AbstractFunctionDeclaration {
 			if (get) {
 				return getPostcondition();
 			} else {
-				setPostcondition((Statement) child);
+				setPostcondition((Block) child);
 				return null;
 			}
 		}
@@ -232,7 +232,7 @@ public class FunctionDeclaration extends AbstractFunctionDeclaration {
 			if (get) {
 				return getBody();
 			} else {
-				setBody((Statement) child);
+				setBody((Block) child);
 				return null;
 			}
 		}
@@ -333,10 +333,10 @@ public class FunctionDeclaration extends AbstractFunctionDeclaration {
 		result.templateParameters.addAll(ASTNode.copySubtrees(target, templateParameters()));
 		result.arguments.addAll(ASTNode.copySubtrees(target, arguments()));
 		result.setVariadic(isVariadic());
-	result.setPrecondition((Statement) ASTNode.copySubtree(target, getPrecondition()));
-	result.setPostcondition((Statement) ASTNode.copySubtree(target, getPostcondition()));
+	result.setPrecondition((Block) ASTNode.copySubtree(target, getPrecondition()));
+	result.setPostcondition((Block) ASTNode.copySubtree(target, getPostcondition()));
 	result.setPostconditionVariableName((SimpleName) ASTNode.copySubtree(target, getPostconditionVariableName()));
-		result.setBody((Statement) getBody().clone(target));
+		result.setBody((Block) getBody().clone(target));
 	result.setPostDDoc((DDocComment) ASTNode.copySubtree(target, getPostDDoc()));
 		return result;
 	}

@@ -16,7 +16,7 @@ import descent.core.formatter.CodeFormatter;
  */
 public abstract class AbstractFormatter_Test extends TestCase {
 	
-	private final static Map EMPTY_MAP = new HashMap();
+	protected final static Map EMPTY_MAP = new HashMap();
 	
 	/**
 	 * Formats "original" with the default options (see {@link #getDefaultOptions()})

@@ -1331,31 +1331,31 @@ public class ASTConverter {
 	
 	public void fillFunction(descent.core.dom.FunctionLiteralDeclarationExpression b, FuncDeclaration a) {
 		if (a.frequire != null) {
-			b.setPrecondition(convert(a.frequire));
+			b.setPrecondition((Block) convert(a.frequire));
 		}
 		if (a.fensure != null) {
-			b.setPostcondition(convert(a.fensure));
+			b.setPostcondition((Block) convert(a.fensure));
 		}
 		if (a.outId != null) {
 			b.setPostconditionVariableName(convert(a.outId));
 		}
 		if (a.fbody != null) {
-			b.setBody(convert(a.fbody));
+			b.setBody((Block) convert(a.fbody));
 		}
 	}
 	
 	public void fillFunction(descent.core.dom.AbstractFunctionDeclaration b, FuncDeclaration a) {
 		if (a.sourceFrequire != null) {
-			b.setPrecondition(convert(a.sourceFrequire));
+			b.setPrecondition((Block) convert(a.sourceFrequire));
 		}
 		if (a.sourceFensure != null) {
-			b.setPostcondition(convert(a.sourceFensure));
+			b.setPostcondition((Block) convert(a.sourceFensure));
 		}
 		if (a.outId != null) {
 			b.setPostconditionVariableName(convert(a.outId));
 		}
 		if (a.sourceFbody != null) {
-			descent.core.dom.Statement body = convert(a.sourceFbody);
+			descent.core.dom.Block body = (Block) convert(a.sourceFbody);
 			if (body != null) {
 				b.setBody(body);
 			}

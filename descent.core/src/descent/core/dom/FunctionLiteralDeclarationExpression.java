@@ -46,13 +46,13 @@ public class FunctionLiteralDeclarationExpression extends Expression
 	 * The "precondition" structural property of this node type.
 	 */
 	public static final ChildPropertyDescriptor PRECONDITION_PROPERTY =
-		new ChildPropertyDescriptor(FunctionLiteralDeclarationExpression.class, "precondition", Statement.class, OPTIONAL, CYCLE_RISK); //$NON-NLS-1$
+		new ChildPropertyDescriptor(FunctionLiteralDeclarationExpression.class, "precondition", Block.class, OPTIONAL, CYCLE_RISK); //$NON-NLS-1$
 
 	/**
 	 * The "postcondition" structural property of this node type.
 	 */
 	public static final ChildPropertyDescriptor POSTCONDITION_PROPERTY =
-		new ChildPropertyDescriptor(FunctionLiteralDeclarationExpression.class, "postcondition", Statement.class, OPTIONAL, CYCLE_RISK); //$NON-NLS-1$
+		new ChildPropertyDescriptor(FunctionLiteralDeclarationExpression.class, "postcondition", Block.class, OPTIONAL, CYCLE_RISK); //$NON-NLS-1$
 
 	/**
 	 * The "postconditionVariableName" structural property of this node type.
@@ -64,7 +64,7 @@ public class FunctionLiteralDeclarationExpression extends Expression
 	 * The "body" structural property of this node type.
 	 */
 	public static final ChildPropertyDescriptor BODY_PROPERTY =
-		new ChildPropertyDescriptor(FunctionLiteralDeclarationExpression.class, "body", Statement.class, MANDATORY, CYCLE_RISK); //$NON-NLS-1$
+		new ChildPropertyDescriptor(FunctionLiteralDeclarationExpression.class, "body", Block.class, MANDATORY, CYCLE_RISK); //$NON-NLS-1$
 
 	/**
 	 * A list of property descriptors (element type: 
@@ -127,12 +127,12 @@ public class FunctionLiteralDeclarationExpression extends Expression
 	/**
 	 * The precondition.
 	 */
-	private Statement precondition;
+	private Block precondition;
 
 	/**
 	 * The postcondition.
 	 */
-	private Statement postcondition;
+	private Block postcondition;
 
 	/**
 	 * The postconditionVariableName.
@@ -142,7 +142,7 @@ public class FunctionLiteralDeclarationExpression extends Expression
 	/**
 	 * The body.
 	 */
-	private Statement body;
+	private Block body;
 
 
 	/**
@@ -213,7 +213,7 @@ public class FunctionLiteralDeclarationExpression extends Expression
 			if (get) {
 				return getPrecondition();
 			} else {
-				setPrecondition((Statement) child);
+				setPrecondition((Block) child);
 				return null;
 			}
 		}
@@ -221,7 +221,7 @@ public class FunctionLiteralDeclarationExpression extends Expression
 			if (get) {
 				return getPostcondition();
 			} else {
-				setPostcondition((Statement) child);
+				setPostcondition((Block) child);
 				return null;
 			}
 		}
@@ -237,7 +237,7 @@ public class FunctionLiteralDeclarationExpression extends Expression
 			if (get) {
 				return getBody();
 			} else {
-				setBody((Statement) child);
+				setBody((Block) child);
 				return null;
 			}
 		}
@@ -273,10 +273,10 @@ public class FunctionLiteralDeclarationExpression extends Expression
 		result.setReturnType((Type) getReturnType().clone(target));
 		result.arguments.addAll(ASTNode.copySubtrees(target, arguments()));
 		result.setVariadic(isVariadic());
-	result.setPrecondition((Statement) ASTNode.copySubtree(target, getPrecondition()));
-	result.setPostcondition((Statement) ASTNode.copySubtree(target, getPostcondition()));
+	result.setPrecondition((Block) ASTNode.copySubtree(target, getPrecondition()));
+	result.setPostcondition((Block) ASTNode.copySubtree(target, getPostcondition()));
 	result.setPostconditionVariableName((SimpleName) ASTNode.copySubtree(target, getPostconditionVariableName()));
-		result.setBody((Statement) getBody().clone(target));
+		result.setBody((Block) getBody().clone(target));
 		return result;
 	}
 
@@ -392,7 +392,7 @@ public class FunctionLiteralDeclarationExpression extends Expression
 	 * 
 	 * @return the precondition
 	 */ 
-	public Statement getPrecondition() {
+	public Block getPrecondition() {
 		return this.precondition;
 	}
 
@@ -407,7 +407,7 @@ public class FunctionLiteralDeclarationExpression extends Expression
 	 * <li>a cycle in would be created</li>
 	 * </ul>
 	 */ 
-	public void setPrecondition(Statement precondition) {
+	public void setPrecondition(Block precondition) {
 		ASTNode oldChild = this.precondition;
 		preReplaceChild(oldChild, precondition, PRECONDITION_PROPERTY);
 		this.precondition = precondition;
@@ -419,7 +419,7 @@ public class FunctionLiteralDeclarationExpression extends Expression
 	 * 
 	 * @return the postcondition
 	 */ 
-	public Statement getPostcondition() {
+	public Block getPostcondition() {
 		return this.postcondition;
 	}
 
@@ -434,7 +434,7 @@ public class FunctionLiteralDeclarationExpression extends Expression
 	 * <li>a cycle in would be created</li>
 	 * </ul>
 	 */ 
-	public void setPostcondition(Statement postcondition) {
+	public void setPostcondition(Block postcondition) {
 		ASTNode oldChild = this.postcondition;
 		preReplaceChild(oldChild, postcondition, POSTCONDITION_PROPERTY);
 		this.postcondition = postcondition;
@@ -473,7 +473,7 @@ public class FunctionLiteralDeclarationExpression extends Expression
 	 * 
 	 * @return the body
 	 */ 
-	public Statement getBody() {
+	public Block getBody() {
 		if (this.body == null) {
 			// lazy init must be thread-safe for readers
 			synchronized (this) {
@@ -498,7 +498,7 @@ public class FunctionLiteralDeclarationExpression extends Expression
 	 * <li>a cycle in would be created</li>
 	 * </ul>
 	 */ 
-	public void setBody(Statement body) {
+	public void setBody(Block body) {
 		if (body == null) {
 			throw new IllegalArgumentException();
 		}

@@ -4,7 +4,7 @@ import java.util.Map;
 
 import descent.core.formatter.DefaultCodeFormatterConstants;
 
-public class FormatDebugStatement_Test extends AbstractFormatBraceElseInsideFunction_Test {
+public class FormatDebugStatement_Test extends AbstractFormatBraceElseWithSingleInsideFunction_Test {
 	
 	@Override
 	protected void addMoreOptions(Map options) {
@@ -24,17 +24,6 @@ public class FormatDebugStatement_Test extends AbstractFormatBraceElseInsideFunc
 	@Override
 	protected String getUnformattedPrefixForBrace() {
 		return "debug    (   someVersion   )";
-	}
-	
-	// TODO Descent formatter: make it configurable to write the declaration with an end line
-	// Also, a space is missing after (someVersion)
-	public void testSingleDeclaration() throws Exception {
-		assertFormat(
-				getFormattedPrefixForBrace() + "\r\n" +
-					"\tint x;", 
-				
-				getUnformattedPrefixForBrace() + "  int   x ;"
-			);
 	}
 
 }
