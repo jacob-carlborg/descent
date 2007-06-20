@@ -8,9 +8,9 @@ import dtool.descentadapter.DescentASTConverter;
 import dtool.dom.ast.ASTNeoNode;
 import dtool.dom.ast.IASTNeoVisitor;
 import dtool.dom.references.Entity;
-import dtool.refmodel.IScope;
+import dtool.refmodel.IScopeNode;
 
-public class DefinitionEnum extends Definition implements IScope {
+public class DefinitionEnum extends Definition implements IScopeNode {
 
 	public List<EnumMember> members;
 	public Entity type;
@@ -50,7 +50,7 @@ public class DefinitionEnum extends Definition implements IScope {
 	}
 
 	@Override
-	public IScope getMembersScope() {
+	public IScopeNode getMembersScope() {
 		return this;
 	}
 	
@@ -59,7 +59,7 @@ public class DefinitionEnum extends Definition implements IScope {
 	}
 	
 	
-	public List<IScope> getSuperScopes() {
+	public List<IScopeNode> getSuperScopes() {
 		// TODO Auto-generated method stub
 		return null;
 	}

@@ -5,7 +5,7 @@ import descent.internal.core.dom.TemplateValueParameter;
 import dtool.dom.ast.IASTNeoVisitor;
 import dtool.dom.expressions.Expression;
 import dtool.dom.references.Entity;
-import dtool.refmodel.IScope;
+import dtool.refmodel.IScopeNode;
 
 public class TemplateParamValue extends TemplateParameter {
 
@@ -27,7 +27,7 @@ public class TemplateParamValue extends TemplateParameter {
 	}
 
 	@Override
-	public IScope getMembersScope() {
+	public IScopeNode getMembersScope() {
 		return type.getTargetScope();
 	}
 

@@ -8,12 +8,12 @@ import dtool.descentadapter.DescentASTConverter;
 import dtool.dom.ast.IASTNeoVisitor;
 import dtool.dom.definitions.DefUnit;
 import dtool.refmodel.EntityResolver;
-import dtool.refmodel.IScope;
+import dtool.refmodel.IScopeNode;
 
 /**
  * A compound statement. Allways introduces a new Scope.
  */
-public class BlockStatement extends Statement implements IScope {
+public class BlockStatement extends Statement implements IScopeNode {
 	
 	public List<IStatement> statements;
 
@@ -48,7 +48,7 @@ public class BlockStatement extends Statement implements IScope {
 		return EntityResolver.getDefUnitsFromMembers(statements);
 	}
 
-	public List<IScope> getSuperScopes() {
+	public List<IScopeNode> getSuperScopes() {
 		return null;
 	}
 

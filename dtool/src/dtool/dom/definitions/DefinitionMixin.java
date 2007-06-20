@@ -7,7 +7,7 @@ import dtool.dom.ast.ASTNeoNode;
 import dtool.dom.ast.IASTNeoVisitor;
 import dtool.dom.references.EntTemplateInstance;
 import dtool.dom.references.Entity;
-import dtool.refmodel.IScope;
+import dtool.refmodel.IScopeNode;
 
 /*
  * TODO mixin
@@ -19,7 +19,7 @@ public class DefinitionMixin extends DefUnit  {
 	public static ASTNeoNode convertMixinInstance(TemplateMixin elem) {
 		EntTemplateInstance tplInstance = new EntTemplateInstance();
 		tplInstance.setSourceRange(elem);
-		tplInstance.name = elem.qName.name; // FIXME
+		tplInstance.name = elem.qName.name; // FIXME should be a prof qualified ref
 		tplInstance.tiargs = DescentASTConverter.convertManyL(elem.tiargs, tplInstance.tiargs);
 		if(elem.ident != null) {
 			DefinitionMixin defMixin = new DefinitionMixin();
@@ -50,7 +50,7 @@ public class DefinitionMixin extends DefUnit  {
 	}
 
 	@Override
-	public IScope getMembersScope() {
+	public IScopeNode getMembersScope() {
 		return type.getTargetScope();
 	}
 

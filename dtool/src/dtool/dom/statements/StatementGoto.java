@@ -3,7 +3,7 @@ package dtool.dom.statements;
 import util.tree.TreeVisitor;
 import descent.internal.core.dom.GotoStatement;
 import dtool.dom.ast.IASTNeoVisitor;
-import dtool.dom.definitions.DefUnit.Symbol;
+import dtool.dom.definitions.Symbol;
 
 public class StatementGoto extends Statement {
 

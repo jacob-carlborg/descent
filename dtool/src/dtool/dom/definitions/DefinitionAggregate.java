@@ -12,12 +12,12 @@ import dtool.dom.ast.IASTNeoVisitor;
 import dtool.dom.references.Entity;
 import dtool.dom.statements.IStatement;
 import dtool.refmodel.EntityResolver;
-import dtool.refmodel.IScope;
+import dtool.refmodel.IScopeNode;
 
 /**
  * A definition of a aggregate. TODO.
  */
-public class DefinitionAggregate extends Definition implements IScope, IStatement {
+public class DefinitionAggregate extends Definition implements IScopeNode, IStatement {
 
 	public static class BaseClass extends ASTNeoNode {
 		
@@ -73,7 +73,7 @@ public class DefinitionAggregate extends Definition implements IScope, IStatemen
 	}
 
 	@Override
-	public IScope getMembersScope() {
+	public IScopeNode getMembersScope() {
 		return this;
 	}
 	
@@ -81,11 +81,11 @@ public class DefinitionAggregate extends Definition implements IScope, IStatemen
 		return EntityResolver.getDefUnitsFromMembers(members);
 	}
 
-	public List<IScope> getSuperScopes() {
+	public List<IScopeNode> getSuperScopes() {
 		if(baseClasses.size() < 0)
 			return null;
 
-		List<IScope> scopes = new ArrayList<IScope>();
+		List<IScopeNode> scopes = new ArrayList<IScopeNode>();
 		for(BaseClass baseclass: baseClasses) {
 			DefUnit defunit = baseclass.type.getTargetDefUnit();
 			if(defunit == null)

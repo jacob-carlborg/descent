@@ -13,7 +13,7 @@ import dtool.dom.definitions.DefUnit;
 import dtool.dom.expressions.ExpEntity;
 import dtool.dom.expressions.Expression;
 import dtool.refmodel.IDefUnitReference;
-import dtool.refmodel.IScope;
+import dtool.refmodel.IScopeNode;
 
 /**
  * A qualified entity/name reference
@@ -31,7 +31,7 @@ public abstract class Entity extends ASTNeoNode implements IDefUnitReference {
 	
 	public abstract DefUnit getTargetDefUnit();
 	
-	public IScope getTargetScope() {
+	public IScopeNode getTargetScope() {
 		DefUnit defunit = getTargetDefUnit();
 		if(defunit == null)
 			return null;

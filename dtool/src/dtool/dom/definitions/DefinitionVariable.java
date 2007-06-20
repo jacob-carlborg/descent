@@ -5,7 +5,7 @@ import dtool.dom.ast.IASTNeoVisitor;
 import dtool.dom.expressions.Initializer;
 import dtool.dom.references.Entity;
 import dtool.dom.statements.IStatement;
-import dtool.refmodel.IScope;
+import dtool.refmodel.IScopeNode;
 
 /**
  * A definition of a variable
@@ -37,7 +37,7 @@ public class DefinitionVariable extends Definition implements IStatement {
 	}
 
 	@Override
-	public IScope getMembersScope() {
+	public IScopeNode getMembersScope() {
 		return type.getTargetScope();
 	}
 

@@ -9,7 +9,7 @@ import dtool.dom.definitions.Module;
 import dtool.refmodel.EntityResolver;
 import dtool.refmodel.IDefUnitReference;
 import dtool.refmodel.IEntQualified;
-import dtool.refmodel.IScope;
+import dtool.refmodel.IScopeNode;
 
 public class EntModuleQualified extends Entity implements IEntQualified {
 
@@ -41,8 +41,8 @@ public class EntModuleQualified extends Entity implements IEntQualified {
 	}
 	
 	public DefUnit getTargetDefUnit() {
-		IScope scope = getModuleElem().getMembersScope();
-		return EntityResolver.getDefUnitFromScope(scope, subent.name);
+		IScopeNode scope = getModuleElem().getMembersScope();
+		return EntityResolver.findDefUnitFromScope(scope, subent.name);
 	}
 	
 	public DefUnit getModuleElem() {

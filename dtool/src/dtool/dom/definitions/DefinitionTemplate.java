@@ -9,11 +9,11 @@ import dtool.dom.ast.ASTNode;
 import dtool.dom.ast.IASTNeoVisitor;
 import dtool.dom.declarations.Declaration;
 import dtool.refmodel.EntityResolver;
-import dtool.refmodel.IScope;
+import dtool.refmodel.IScopeNode;
 
 /*
  */
-public class DefinitionTemplate extends DefUnit implements IScope {
+public class DefinitionTemplate extends DefUnit implements IScopeNode {
 
 	public TemplateParameter[] templateParams; 
 	public ASTNode[] decls;
@@ -40,7 +40,7 @@ public class DefinitionTemplate extends DefUnit implements IScope {
 	}
 
 	@Override
-	public IScope getMembersScope() {
+	public IScopeNode getMembersScope() {
 		return this;
 	}
 
@@ -55,7 +55,7 @@ public class DefinitionTemplate extends DefUnit implements IScope {
 		return defunits;
 	}
 	
-	public List<IScope> getSuperScopes() {
+	public List<IScopeNode> getSuperScopes() {
 		// TODO: template super scope
 		return null;
 	}

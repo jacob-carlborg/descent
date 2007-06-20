@@ -7,7 +7,7 @@ import dtool.dom.definitions.DefUnit;
 import dtool.refmodel.EntityResolver;
 import dtool.refmodel.IDefUnitReference;
 import dtool.refmodel.IEntQualified;
-import dtool.refmodel.IScope;
+import dtool.refmodel.IScopeNode;
 
 public class EntQualified extends Entity implements IEntQualified {
 
@@ -49,8 +49,8 @@ public class EntQualified extends Entity implements IEntQualified {
 		DefUnit defunit = root.getTargetDefUnit();
 		if(defunit == null)
 			return null;
-		IScope scope = defunit.getMembersScope();
-		return EntityResolver.getDefUnitFromScope(scope, subent.name);
+		IScopeNode scope = defunit.getMembersScope();
+		return EntityResolver.findDefUnitFromScope(scope, subent.name);
 	}
 
 }

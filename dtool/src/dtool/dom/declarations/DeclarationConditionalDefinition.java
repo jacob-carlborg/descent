@@ -5,7 +5,7 @@ import descent.internal.core.dom.DebugSymbol;
 import descent.internal.core.dom.VersionSymbol;
 import dtool.dom.ast.ASTNeoNode;
 import dtool.dom.ast.IASTNeoVisitor;
-import dtool.dom.definitions.DefUnit.Symbol;
+import dtool.dom.definitions.Symbol;
 
 /**
  * Node of type:

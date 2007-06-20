@@ -4,7 +4,7 @@ import util.tree.TreeVisitor;
 import dtool.dom.ast.IASTNeoVisitor;
 import dtool.dom.expressions.Expression;
 import dtool.dom.references.Entity;
-import dtool.refmodel.IScope;
+import dtool.refmodel.IScopeNode;
 
 public class FunctionParameter extends DefUnit {
 	
@@ -33,7 +33,7 @@ public class FunctionParameter extends DefUnit {
 	}
 
 	@Override
-	public IScope getMembersScope() {
+	public IScopeNode getMembersScope() {
 		// TODO Auto-generated method stub
 		return null;
 	}

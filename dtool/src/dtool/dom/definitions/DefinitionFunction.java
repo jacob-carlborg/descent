@@ -8,13 +8,13 @@ import dtool.descentadapter.DescentASTConverter;
 import dtool.dom.ast.IASTNeoVisitor;
 import dtool.dom.references.Entity;
 import dtool.dom.statements.Statement;
-import dtool.refmodel.IScope;
+import dtool.refmodel.IScopeNode;
 
 /**
  * A definition of a function.
  * TODO: special funcs
  */
-public class DefinitionFunction extends Definition implements IScope {
+public class DefinitionFunction extends Definition implements IScopeNode {
 
 	//public Identifier outId;
 	public descent.internal.core.dom.LINK linkage;
@@ -67,7 +67,7 @@ public class DefinitionFunction extends Definition implements IScope {
 	}
 
 	@Override
-	public IScope getMembersScope() {
+	public IScopeNode getMembersScope() {
 		return this;
 	}
 
@@ -85,7 +85,7 @@ public class DefinitionFunction extends Definition implements IScope {
 		return super.toString() +"("+ str +")";
 	}
 	
-	public List<IScope> getSuperScopes() {
+	public List<IScopeNode> getSuperScopes() {
 		// TODO: function super
 		return null;
 	}

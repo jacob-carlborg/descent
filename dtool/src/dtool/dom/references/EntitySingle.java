@@ -5,6 +5,7 @@ import dtool.descentadapter.DescentASTConverter;
 import dtool.dom.definitions.DefUnit;
 import dtool.refmodel.EntityResolver;
 import dtool.refmodel.IEntQualified;
+import dtool.refmodel.IScopeNode;
 
 public abstract class EntitySingle extends Entity {
 
@@ -26,7 +27,9 @@ public abstract class EntitySingle extends Entity {
 				Assert.isTrue(parent.getRoot() == this);
 			}
 		}
-		return EntityResolver.getDefUnitFromSurroundingScope(this);
+		
+		IScopeNode scope = EntityResolver.getOuterScope(this);
+		return EntityResolver.findDefUnitFromSurroundingScope(scope, this.name);
 	}
 
 }

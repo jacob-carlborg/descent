@@ -3,7 +3,7 @@ package dtool.dom.statements;
 import util.tree.TreeVisitor;
 import descent.internal.core.dom.PragmaStatement;
 import dtool.dom.ast.IASTNeoVisitor;
-import dtool.dom.definitions.DefUnit.Symbol;
+import dtool.dom.definitions.Symbol;
 import dtool.dom.expressions.Expression;
 
 public class StatementPragma extends Statement {

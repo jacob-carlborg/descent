@@ -3,7 +3,7 @@ package dtool.dom.definitions;
 import util.tree.TreeVisitor;
 import descent.internal.core.dom.TemplateTupleParameter;
 import dtool.dom.ast.IASTNeoVisitor;
-import dtool.refmodel.IScope;
+import dtool.refmodel.IScopeNode;
 
 public class TemplateParamTuple extends TemplateParameter {
 
@@ -19,7 +19,7 @@ public class TemplateParamTuple extends TemplateParameter {
 	}
 
 	@Override
-	public IScope getMembersScope() {
+	public IScopeNode getMembersScope() {
 		// TODO return intrinsic universal
 		return null;
 	}

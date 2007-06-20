@@ -7,7 +7,7 @@ import descent.internal.core.dom.ImportDeclaration;
 import descent.internal.core.dom.SelectiveImport;
 import dtool.dom.ast.ASTNeoNode;
 import dtool.dom.ast.IASTNeoVisitor;
-import dtool.dom.definitions.DefUnit.Symbol;
+import dtool.dom.definitions.Symbol;
 import dtool.dom.references.EntIdentifier;
 
 /**

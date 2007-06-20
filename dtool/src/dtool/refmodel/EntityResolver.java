@@ -5,85 +5,17 @@ import java.util.List;
 
 import util.tree.IElement;
 import dtool.dom.ast.ASTNode;
+import dtool.dom.declarations.DeclarationImport;
+import dtool.dom.declarations.DeclarationImport.ImportFragment;
 import dtool.dom.definitions.DefUnit;
 import dtool.dom.definitions.DefinitionAggregate.BaseClass;
-import dtool.dom.references.EntitySingle;
 
 public class EntityResolver {
 	
-	/*public static DefUnit getDefUnit(List<DefUnit> defunits, String name) {
-		for (DefUnit defunit : defunits) {
-			if (defunit.defname.equals(name))
-				return defunit;
-		}
-		return null;
-	}*/
-
-	public static DefUnit getDefUnitFromScope(IScope scope, String name) {
-		DefUnit defunit = findDefUnitInImmediateScope(scope, name);
-		if(defunit != null)
-			return defunit;
-		
-		defunit = findDefUnitInSecondaryScope(scope, name);
-		if(defunit != null)
-			return defunit;
-
-		// Search super scope 
-		if(scope.getSuperScopes() != null)
-			for(IScope superscope : scope.getSuperScopes()) {
-				if(superscope != null)
-					defunit = getDefUnitFromScope(superscope, name); 
-				if(defunit != null)
-					return defunit;
-			}
-		
-		return null;
-	}
+	/* -------- Node Helpers -------- */
 	
-	public static DefUnit getDefUnitFromDefUnit(DefUnit root, String name) {
-		return getDefUnitFromScope(root.getMembersScope(), name);
-	}
-	
-	public static DefUnit getDefUnitFromSurroundingScope(EntitySingle entity) {
-		String name = entity.name;
-		
-		IScope scope = getOuterScope(entity);
-		do {
-			DefUnit defunit;
-			defunit = getDefUnitFromScope(scope, name);
-			if(defunit != null)
-				return defunit;
-			
-			// retry in outer scope
-			scope = getOuterScope(scope);
-		} while (scope != null);
-
-		return null;
-	}
-
-	private static IScope getOuterScope(IElement scope) {
-		IElement elem = scope.getParent();
-
-/*		while(elem != null && (elem instanceof IScope) == false)
-			elem = elem.getParent();
-	*/	
-		while(elem != null) {
-			if (elem instanceof IScope)
-				return (IScope) elem;
-			
-			if (elem instanceof BaseClass) {
-				// Skip aggregate defunit scope (this is important) 
-				elem = elem.getParent().getParent();
-				continue;
-			}
-			
-			elem = elem.getParent();
-		}
-		
-		return ((IScope)elem);
-	}
-
-	
+	/** Gets the DefUnits in the given ASTNode members. 
+	 * Considers direct DefUnit instances as well as DefUnit Containers. */
 	public static List<DefUnit> getDefUnitsFromMembers(IElement[] members) {
 		List<DefUnit> defunits = new ArrayList<DefUnit>();
 		for(IElement elem: members) {
@@ -92,7 +24,8 @@ public class EntityResolver {
 		return defunits;
 	}
 	
-	/** Gets the DefUnits in the given list of ASTNode members. */
+	/** Gets the DefUnits in the given ASTNode members. 
+	 * Considers direct DefUnit instances as well as DefUnit containers. */
 	public static List<DefUnit> getDefUnitsFromMembers(List<? extends IElement> members) {
 		List<DefUnit> defunits = new ArrayList<DefUnit>();
 		for(IElement elem: members) {
@@ -110,8 +43,75 @@ public class EntityResolver {
 			defunits.add((DefUnit)elem);
 		}
 	}
+	
+	/** Finds the first outer scope of the given element, 
+	 * navegating through the element's parents. */
+	public static IScopeNode getOuterScope(IElement startElem) {
+		IElement elem = startElem.getParent();
 
-	private static DefUnit findDefUnitInImmediateScope(IScope scope, String name) {
+/*		while(elem != null && (elem instanceof IScope) == false)
+			elem = elem.getParent();
+	*/	
+		while(elem != null) {
+			if (elem instanceof IScopeNode)
+				return (IScopeNode) elem;
+			
+			if (elem instanceof BaseClass) {
+				// Skip aggregate defunit scope (this is important) 
+				elem = elem.getParent().getParent();
+				continue;
+			}
+			
+			elem = elem.getParent();
+		}
+		
+		return ((IScopeNode)elem);
+	}
+
+	/* --------  -------- */
+
+	/** Searches for the DefUnit with the given name in the given scope,
+	 * and then successively in it's outer scopes. */
+	public static DefUnit findDefUnitFromSurroundingScope(IScopeNode scope, String name) {
+		
+		do {
+			DefUnit defunit;
+			defunit = findDefUnitFromScope(scope, name);
+			if(defunit != null)
+				return defunit;
+			
+			// retry in outer scope
+			scope = getOuterScope(scope);
+		} while (scope != null);
+
+		return null;
+	}
+
+	/** Searches for the DefUnit with the given name, 
+	 * in the scope's immediate, secondary, and super scopes. */
+	public static DefUnit findDefUnitFromScope(IScopeNode scope, String name) {
+		DefUnit defunit = findDefUnitInImmediateScope(scope, name);
+		if(defunit != null)
+			return defunit;
+		
+		defunit = findDefUnitInSecondaryScope(scope, name);
+		if(defunit != null)
+			return defunit;
+
+		// Search super scope 
+		if(scope.getSuperScopes() != null)
+			for(IScopeNode superscope : scope.getSuperScopes()) {
+				if(superscope != null)
+					defunit = findDefUnitFromScope(superscope, name); 
+				if(defunit != null)
+					return defunit;
+			}
+		
+		return null;
+	}
+	
+
+	private static DefUnit findDefUnitInImmediateScope(IScopeNode scope, String name) {
 		for (DefUnit defunit : scope.getDefUnits()) {
 			if (defunit.defname.equals(name))
 				return defunit;
@@ -119,11 +119,23 @@ public class EntityResolver {
 		return null;
 	}
 	
-	private static DefUnit findDefUnitInSecondaryScope(IScope scope, String name) {
-		// TODO search imports
+	private static DefUnit findDefUnitInSecondaryScope(IScopeNode scope, String name) {
+		for (IElement elem : scope.getChildren()) {
+			if(!(elem instanceof DeclarationImport))
+				continue;
+				
+			DeclarationImport declImport = (DeclarationImport) elem;
+			for (ImportFragment impFrag : declImport.imports) {
+			
+			}
+
+			//declImport.imports
+		}
 		return null;
 	}
 	
+	/* --------  -------- */
+
 	
 	/*
 	public DefUnit findEntity(String fqname) throws ModelException {

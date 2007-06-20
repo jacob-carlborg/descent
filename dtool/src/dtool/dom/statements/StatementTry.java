@@ -8,7 +8,7 @@ import dtool.descentadapter.DescentASTConverter;
 import dtool.dom.ast.ASTNeoNode;
 import dtool.dom.ast.IASTNeoVisitor;
 import dtool.dom.definitions.FunctionParameter;
-import dtool.dom.definitions.DefUnit.Symbol;
+import dtool.dom.definitions.Symbol;
 import dtool.dom.references.Entity;
 
 public class StatementTry extends Statement {

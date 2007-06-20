@@ -15,12 +15,12 @@ import dtool.dom.declarations.Declaration;
 import dtool.dom.references.EntIdentifier;
 import dtool.modelinterface.IDTool_DeeCompilationUnit;
 import dtool.refmodel.EntityResolver;
-import dtool.refmodel.IScope;
+import dtool.refmodel.IScopeNode;
 
 /**
  * D Module
  */
-public class Module extends DefUnit implements IScope {
+public class Module extends DefUnit implements IScopeNode {
 
 	public static class DeclarationModule extends ASTNeoNode {
 
@@ -29,7 +29,7 @@ public class Module extends DefUnit implements IScope {
 
 		public DeclarationModule(ModuleDeclaration md) {
 			setSourceRange(md);
-			this.moduleName = new DefUnit.Symbol(md.ident); 
+			this.moduleName = new Symbol(md.ident); 
 		}
 
 		public void accept0(IASTNeoVisitor visitor) {
@@ -60,7 +60,7 @@ public class Module extends DefUnit implements IScope {
 		//newelem.name = (elem.ident != null) ? elem.ident.string : null; 
 		if(elem.md != null){
 			// If there is md there is this	elem.ident
-			this.defname = new DefUnit.Symbol(elem.ident); 
+			this.defname = new Symbol(elem.ident); 
 			this.md = new DeclarationModule(elem.md);
 
 			if(elem.md.packages != null) {
@@ -86,16 +86,16 @@ public class Module extends DefUnit implements IScope {
 		visitor.endVisit(this);
 	}
 
-	public List<DefUnit> getDefUnits() {
+	public List<? extends DefUnit> getDefUnits() {
 		return EntityResolver.getDefUnitsFromMembers(members);
 	}
 
 	@Override
-	public IScope getMembersScope() {
+	public IScopeNode getMembersScope() {
 		return this;
 	}
 	
-	public List<IScope> getSuperScopes() {
+	public List<IScopeNode> getSuperScopes() {
 		return null;
 	}
 

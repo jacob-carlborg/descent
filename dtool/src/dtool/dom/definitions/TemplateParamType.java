@@ -4,7 +4,7 @@ import util.tree.TreeVisitor;
 import descent.internal.core.dom.TemplateTypeParameter;
 import dtool.dom.ast.IASTNeoVisitor;
 import dtool.dom.references.Entity;
-import dtool.refmodel.IScope;
+import dtool.refmodel.IScopeNode;
 
 public class TemplateParamType extends TemplateParameter {
 
@@ -27,7 +27,7 @@ public class TemplateParamType extends TemplateParameter {
 	 * Can be null
 	 */
 	@Override
-	public IScope getMembersScope() {
+	public IScopeNode getMembersScope() {
 		if(specType == null)
 			return null;
 		return specType.getTargetScope();

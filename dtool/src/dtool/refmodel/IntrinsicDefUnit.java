@@ -4,15 +4,19 @@ import util.Assert;
 import dtool.dom.ast.IASTNeoVisitor;
 import dtool.dom.definitions.DefUnit;
 
-public abstract class IntrinsicDefUnit extends DefUnit implements IIntrinsicUnit, IScope {
+public abstract class IntrinsicDefUnit extends DefUnit implements IIntrinsicUnit, IScopeNode {
 
+	public IntrinsicDefUnit() {
+		setSourceRange(0, 0);
+	}
+	
 	@Override
 	public EArcheType getArcheType() {
 		return EArcheType.Aggregate;
 	}
 
 	@Override
-	public abstract IScope getMembersScope();
+	public abstract IScopeNode getMembersScope();
 	
 	//public abstract IScope getSuperScope();
 

@@ -6,7 +6,7 @@ import descent.internal.core.dom.AliasDeclaration;
 import dtool.descentadapter.DescentASTConverter;
 import dtool.dom.ast.IASTNeoVisitor;
 import dtool.dom.references.Entity;
-import dtool.refmodel.IScope;
+import dtool.refmodel.IScopeNode;
 
 /**
  * A definition of an alias.
@@ -34,7 +34,7 @@ public class DefinitionAlias extends Definition {
 	}
 
 	@Override
-	public IScope getMembersScope() {
+	public IScopeNode getMembersScope() {
 		return target.getTargetScope();
 	}
 

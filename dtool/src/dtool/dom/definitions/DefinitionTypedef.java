@@ -5,7 +5,7 @@ import descent.internal.core.dom.TypedefDeclaration;
 import dtool.dom.ast.IASTNeoVisitor;
 import dtool.dom.expressions.Initializer;
 import dtool.dom.references.Entity;
-import dtool.refmodel.IScope;
+import dtool.refmodel.IScopeNode;
 
 public class DefinitionTypedef extends Definition {
 
@@ -35,7 +35,7 @@ public class DefinitionTypedef extends Definition {
 	}
 
 	@Override
-	public IScope getMembersScope() {
+	public IScopeNode getMembersScope() {
 		return type.getTargetScope();
 	}
 

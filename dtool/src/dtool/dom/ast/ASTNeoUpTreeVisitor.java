@@ -5,6 +5,7 @@ import descent.core.domX.ASTUpTreeVisitor;
 import dtool.dom.definitions.DefUnit;
 import dtool.dom.definitions.Definition;
 import dtool.dom.definitions.Module;
+import dtool.dom.definitions.Symbol;
 import dtool.dom.references.EntIdentifier;
 import dtool.dom.references.EntQualified;
 import dtool.dom.references.EntTemplateInstance;
@@ -29,7 +30,7 @@ public abstract class ASTNeoUpTreeVisitor extends ASTUpTreeVisitor implements IA
 		//return visitAsSuperType(elem, DefUnit.class);
 	}
 
-	public boolean visit(DefUnit.Symbol elem) {
+	public boolean visit(Symbol elem) {
 		Assert.isTrue(DefUnit.class.getSuperclass().equals(ASTNeoNode.class));
 		return visit((ASTNeoNode) elem);
 	}

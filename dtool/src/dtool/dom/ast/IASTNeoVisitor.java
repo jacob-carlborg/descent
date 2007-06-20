@@ -4,6 +4,7 @@ import descent.core.domX.IASTVisitor;
 import dtool.dom.definitions.DefUnit;
 import dtool.dom.definitions.Definition;
 import dtool.dom.definitions.Module;
+import dtool.dom.definitions.Symbol;
 import dtool.dom.references.EntIdentifier;
 import dtool.dom.references.EntQualified;
 import dtool.dom.references.EntTemplateInstance;
@@ -16,7 +17,7 @@ public interface IASTNeoVisitor extends IASTVisitor {
 
 	boolean visit(DefUnit elem);
 
-	boolean visit(DefUnit.Symbol elem);
+	boolean visit(Symbol elem);
 
 	boolean visit(Entity elem);
 

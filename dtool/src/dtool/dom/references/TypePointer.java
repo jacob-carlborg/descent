@@ -9,7 +9,7 @@ import util.tree.TreeVisitor;
 import dtool.dom.ast.IASTNeoVisitor;
 import dtool.dom.definitions.DefUnit;
 import dtool.dom.references.TypeDynArray.IntrinsicDynArray;
-import dtool.refmodel.IScope;
+import dtool.refmodel.IScopeNode;
 import dtool.refmodel.IntrinsicDefUnit;
 
 public class TypePointer extends Entity {
@@ -42,12 +42,12 @@ public class TypePointer extends Entity {
 		}
 
 		@Override
-		public IScope getMembersScope() {
+		public IScopeNode getMembersScope() {
 			// TODO Auto-generated method stub
 			return null;
 		}
 
-		public List<IScope> getSuperScopes() {
+		public List<IScopeNode> getSuperScopes() {
 			// TODO Auto-generated method stub
 			return null;
 		}

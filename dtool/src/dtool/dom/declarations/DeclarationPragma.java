@@ -5,7 +5,7 @@ import descent.internal.core.dom.PragmaDeclaration;
 import dtool.dom.ast.ASTNeoNode;
 import dtool.dom.ast.ASTNode;
 import dtool.dom.ast.IASTNeoVisitor;
-import dtool.dom.definitions.DefUnit.Symbol;
+import dtool.dom.definitions.Symbol;
 import dtool.dom.expressions.Expression;
 import dtool.refmodel.IDefinitionContainer;
 
