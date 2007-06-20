@@ -3,7 +3,10 @@ package mmrnmhrm.ui.wizards;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import mmrnmhrm.core.model.DeeModelManager;
+import mmrnmhrm.core.model.DeeModelRoot;
+import mmrnmhrm.core.model.DeeProject;
 import mmrnmhrm.tests.CommonProjectTestClass;
+import mmrnmhrm.tests.Test_WizardDialog;
 import mmrnmhrm.ui.DeePlugin;
 import mmrnmhrm.ui.wizards.projconfig.ProjectConfigBlockTest;
 
@@ -11,7 +14,6 @@ import org.eclipse.core.resources.IWorkspaceRunnable;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.junit.After;
@@ -23,7 +25,7 @@ import org.junit.Test;
 public class DeeProjectWizardTest extends CommonProjectTestClass {
 
 	private DeeProjectWizard wizard;
-	private WizardDialog wizDialog;
+	private Test_WizardDialog wizDialog;
 	
 	final static String NEWPROJNAME = "TestProject";
 	
@@ -36,7 +38,7 @@ public class DeeProjectWizardTest extends CommonProjectTestClass {
 		wizard.init(window.getWorkbench(), null);
 		
         Shell parent = DeePlugin.getActiveWorkbenchShell();
-        wizDialog = new WizardDialog(parent, wizard);
+        wizDialog = new Test_WizardDialog(parent, wizard);
         wizDialog.setBlockOnOpen(false);
 		wizDialog.open();
 
@@ -47,42 +49,42 @@ public class DeeProjectWizardTest extends CommonProjectTestClass {
 
 	@After
 	public void tearDown() throws Exception {
-		wizard.performCancel();
 		// Should undo all wizard actions
 		ResourcesPlugin.getWorkspace().run(new IWorkspaceRunnable() {
 			public void run(IProgressMonitor monitor) throws CoreException {
-				if(getWorkspaceRoot().getProject(NEWPROJNAME).exists());
-					getWorkspaceRoot().getProject(NEWPROJNAME).delete(true, monitor);
+				DeeProject deeproj = DeeModelManager.getLangProject(NEWPROJNAME);
+				if(deeproj != null) {
+					DeeModelRoot.getInstance().removeDeeProject(deeproj);
+					deeproj.getProject().delete(true, monitor);
+				}
 			}
 		}, null);
 	}
 
 
 	private void simulateEnterPage2() {
-		wizard.performPage2Entry();
-		wizDialog.showPage(wizard.fSecondPage);
-		//flushUI();
+		wizDialog.nextPressed();
 	}
 
 	private void simulatePage2GoBack() {
-		wizard.performPage2GoBack();
-		wizDialog.showPage(wizard.fSecondPage);
+		wizDialog.backPressed();
 	}
 	
 	private void simulatePressCancel() {
-		wizard.performCancel();
+		wizDialog.cancelPressed();
 	}
 
 	private void simulatePressFinish() {
-		wizard.performFinish();
+		wizDialog.finishPressed();
 	}
 
 	
 	@Test
 	public void test_P1Validation() throws Throwable {
 		wizard.fFirstPage.fNameGroup.setName(EXISTINGPROJNAME);
-
 		assertFalse(wizard.canFinish());
+
+		simulatePressCancel();
 		assertTrue(checkNoChanges());
 	}
 	
@@ -134,6 +136,7 @@ public class DeeProjectWizardTest extends CommonProjectTestClass {
 	public void test_P1_Cancel() throws Throwable {
 		wizard.fFirstPage.fNameGroup.setName(NEWPROJNAME);
 		assertTrue(wizard.canFinish());
+		
 		
 		simulatePressCancel();
 		assertTrue(checkNoChanges());
