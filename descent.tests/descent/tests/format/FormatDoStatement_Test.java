@@ -8,8 +8,10 @@ import descent.core.formatter.DefaultCodeFormatterConstants;
 public class FormatDoStatement_Test extends AbstractFormatInsideFunction_Test {
 	
 	@Override
-	protected void addMoreOptions(Map options) {
+	protected Map getDefaultOptions() {
+		Map options = super.getDefaultOptions();
 		options.put(DefaultCodeFormatterConstants.FORMATTER_BRACE_POSITION_FOR_LOOP_STATEMENT, DefaultCodeFormatterConstants.END_OF_LINE);
+		return options;
 	}
 	
 	// TODO Descent formatter: make it configurable to write the "while" without an end line

@@ -49,7 +49,7 @@ brace_position_for_type_declaration
 brace_position_for_enum_declaration
 	type=BracePosition
 	default=BracePosition.END_OF_LINE
-brace_position_for_template_declarations
+brace_position_for_template_declaration
 	type=BracePosition
 	default=BracePosition.END_OF_LINE
 brace_position_for_conditional_declaration
@@ -79,13 +79,13 @@ brace_position_for_try_catch_finally
 brace_position_for_modifiers
 	type=BracePosition
 	default=BracePosition.END_OF_LINE
-brace_position_for_synchronized_statements
+brace_position_for_synchronized_statement
 	type=BracePosition
 	default=BracePosition.END_OF_LINE
-brace_position_for_with_statements
+brace_position_for_with_statement
 	type=BracePosition
 	default=BracePosition.END_OF_LINE
-brace_position_for_scope_statements
+brace_position_for_scope_statement
 	type=BracePosition
 	default=BracePosition.END_OF_LINE
 brace_position_for_other_blocks
@@ -134,6 +134,21 @@ insert_space_between_empty_parens_in_function_invocation
 	default=false
 
 # New Line Options
+insert_new_line_in_simple_conditional_statement
+	type=boolean
+	default=true
+insert_new_line_in_simple_loop_statement
+	type=boolean
+	default=true
+insert_new_line_in_simple_synchronized_statement
+	type=boolean
+	default=true
+insert_new_line_in_simple_while_statement
+	type=boolean
+	default=true
+insert_new_line_in_simple_with_statement
+	type=boolean
+	default=true
 insert_new_line_at_end_of_file_if_missing
 	type=boolean
 	default=false
@@ -145,6 +160,14 @@ blank_lines_before_module
 blank_lines_after_module
 	type=int
 	default=1
+	
+# Functions
+keep_functions_with_no_statement_in_one_line
+	type=boolean
+	default=false
+keep_functions_with_one_statement_in_one_line
+	type=boolean
+	default=false
 
 # Other
 line_split

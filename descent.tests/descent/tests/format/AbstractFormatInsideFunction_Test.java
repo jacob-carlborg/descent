@@ -16,17 +16,11 @@ public abstract class AbstractFormatInsideFunction_Test extends AbstractFormatte
 	 * Returns default options for function formatting configuration.
 	 */
 	@Override
-	protected final Map getDefaultOptions() {
+	protected Map getDefaultOptions() {
 		Map options = new HashMap();
 		options.put(DefaultCodeFormatterConstants.FORMATTER_BRACE_POSITION_FOR_FUNCTION_DECLARATION, DefaultCodeFormatterConstants.END_OF_LINE);
-		addMoreOptions(options);
 		return options;
 	}
-
-	/**
-	 * Add more options to the map.
-	 */
-	protected abstract void addMoreOptions(Map options);
 	
 	@Override
 	protected void assertFormat(String expected, String original, Map options) throws Exception {

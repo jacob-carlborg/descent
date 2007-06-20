@@ -108,13 +108,13 @@ public class BracesTabPage extends ModifyDialogTabPage {
 				DefaultCodeFormatterConstants.FORMATTER_BRACE_POSITION_FOR_MODIFIERS);
 		prefs[13] = createBracesCombo(group, numColumns, 
 				FormatterMessages.BracesTabPage_brace_position_for_synchronized_statements, 
-				DefaultCodeFormatterConstants.FORMATTER_BRACE_POSITION_FOR_SYNCHRONIZED_STATEMENTS);
+				DefaultCodeFormatterConstants.FORMATTER_BRACE_POSITION_FOR_SYNCHRONIZED_STATEMENT);
 		prefs[14] = createBracesCombo(group, numColumns, 
 				FormatterMessages.BracesTabPage_brace_position_for_with_statements, 
-				DefaultCodeFormatterConstants.FORMATTER_BRACE_POSITION_FOR_WITH_STATEMENTS);
+				DefaultCodeFormatterConstants.FORMATTER_BRACE_POSITION_FOR_WITH_STATEMENT);
 		prefs[15] = createBracesCombo(group, numColumns, 
 				FormatterMessages.BracesTabPage_brace_position_for_scope_statements, 
-				DefaultCodeFormatterConstants.FORMATTER_BRACE_POSITION_FOR_SCOPE_STATEMENTS);
+				DefaultCodeFormatterConstants.FORMATTER_BRACE_POSITION_FOR_SCOPE_STATEMENT);
 		prefs[16] = createBracesCombo(group, numColumns, 
 				FormatterMessages.BracesTabPage_brace_position_for_other_blocks, 
 				DefaultCodeFormatterConstants.FORMATTER_BRACE_POSITION_FOR_OTHER_BLOCKS);

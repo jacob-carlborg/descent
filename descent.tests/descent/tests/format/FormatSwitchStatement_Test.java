@@ -7,8 +7,10 @@ import descent.core.formatter.DefaultCodeFormatterConstants;
 public class FormatSwitchStatement_Test extends AbstractFormatBraceInsideFunction_Test {
 	
 	@Override
-	protected void addMoreOptions(Map options) {
+	protected Map getDefaultOptions() {
+		Map options = super.getDefaultOptions();
 		options.put(DefaultCodeFormatterConstants.FORMATTER_BRACE_POSITION_FOR_SWITCH_STATEMENT, DefaultCodeFormatterConstants.END_OF_LINE);
+		return options;
 	}
 	
 	@Override
