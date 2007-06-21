@@ -207,7 +207,7 @@ public class ForeachStatement extends Statement {
 	}
 
 	/**
-	 * Returns the reverse of this foreach statement.
+	 * Returns true if this is a foreach_reverse statement.
 	 * 
 	 * @return the reverse
 	 */ 
@@ -216,7 +216,7 @@ public class ForeachStatement extends Statement {
 	}
 
 	/**
-	 * Sets the reverse of this foreach statement.
+	 * Determines wether this is a foreach_reverse statement or not.
 	 * 
 	 * @param reverse the reverse
 	 * @exception IllegalArgumentException if the argument is incorrect

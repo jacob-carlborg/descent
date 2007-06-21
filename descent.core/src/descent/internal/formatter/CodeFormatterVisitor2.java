@@ -29,6 +29,19 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 	private List<Type>                  postfixes = new LinkedList<Type>();
 	private boolean                     nameAlreadyPrinted = false;
 	
+	/**
+	 * Since the initializer of a for is a statement, it contains
+	 * the semicolon. So it's difficult to insert a space before
+	 * that semicolon in a for. The hack is to use a variable indicating
+	 * that we are in a for initializer. Some common statements
+	 * are aware of this (VariableDeclaration, ExpressionStatement
+	 * and others), and print the semicolon only if this variable
+	 * is false. Further, they reset this variable (in case some
+	 * other statement was not taken into account, the formatter
+	 * doesn't die).
+	 */
+	private boolean						inForInitializer = false;
+	
 	public CodeFormatterVisitor2(DefaultCodeFormatterOptions $preferences,
 			Map settings, int offset, int length, CompilationUnit unit)
 	{
@@ -144,8 +157,8 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 		node.getType().accept(this);
 		scribe.space();
 		formatCSV(node.fragments(), this.preferences.insert_space_before_comma_in_multiple_field_declarations, this.preferences.insert_space_after_comma_in_multiple_field_declarations);
-		scribe.printNextToken(TOK.TOKsemicolon, this.preferences.insert_space_before_semicolon);
-		scribe.printNewLine();
+		
+		printSemicolonIfNextIsSemicolonAndNotInForInitializer();
 		return false;
 	}
 	
@@ -724,7 +737,7 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 	public boolean visit(ExpressionStatement node)
 	{
 		node.getExpression().accept(this);
-			scribe.printNextToken(TOK.TOKsemicolon);
+		printSemicolonIfNextIsSemicolonAndNotInForInitializer();
 		return false;
 	}
 	
@@ -758,9 +771,11 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 		else
 			scribe.printNextToken(TOK.TOKforeach);
 		scribe.printNextToken(TOK.TOKlparen);
-		formatCSV(node.arguments(), false, true);
-		scribe.printNextToken(TOK.TOKsemicolon);
-		scribe.space();
+		formatCSV(node.arguments(), preferences.insert_space_before_comma_in_foreach_statement, preferences.insert_space_after_comma_in_foreach_statement);
+		scribe.printNextToken(TOK.TOKsemicolon, preferences.insert_space_before_semicolon_in_foreach_statement);
+		if (preferences.insert_space_after_semicolon_in_foreach_statement) {
+			scribe.space();
+		}
 		node.getExpression().accept(this);
 		scribe.printNextToken(TOK.TOKrparen);
 		formatSubStatement(node.getBody(), false, preferences.insert_new_line_in_simple_loop_statement, preferences.brace_position_for_loop_statement);
@@ -777,21 +792,32 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 		scribe.printNextToken(TOK.TOKlparen);
 		if(null != initializer)
 		{
+			this.inForInitializer = true;
 			initializer.accept(this);
+		}
+		
+		if (!inForInitializer) {
+			scribe.printNextToken(TOK.TOKsemicolon, preferences.insert_space_before_semicolon_in_for_statement);
+		}
+		inForInitializer = false;
+		
+		if (preferences.insert_space_after_semicolon_in_for_statement) {
 			scribe.space();
 		}
-		else
-			scribe.printNextToken(TOK.TOKsemicolon);
+		
 		if(null != condition)
 		{
 			condition.accept(this);
-			scribe.printNextToken(TOK.TOKsemicolon);
+		}
+		
+		scribe.printNextToken(TOK.TOKsemicolon, preferences.insert_space_before_semicolon_in_for_statement);
+		if (preferences.insert_space_after_semicolon_in_for_statement) {
 			scribe.space();
 		}
-		else
-			scribe.printNextToken(TOK.TOKsemicolon);
-		if(null != increment)
+		
+		if(null != increment) {
 			increment.accept(this);
+		}
 		scribe.printNextToken(TOK.TOKrparen);
 		formatSubStatement(node.getBody(), false, preferences.insert_new_line_in_simple_loop_statement, preferences.brace_position_for_loop_statement);
 		return false;
@@ -1591,8 +1617,7 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 		node.getType().accept(this);
 		scribe.space();
 		formatCSV(node.fragments(), this.preferences.insert_space_before_comma_in_multiple_field_declarations, this.preferences.insert_space_after_comma_in_multiple_field_declarations);
-		if(isNextToken(TOK.TOKsemicolon))
-			scribe.printNextToken(TOK.TOKsemicolon, this.preferences.insert_space_before_semicolon);
+		printSemicolonIfNextIsSemicolonAndNotInForInitializer();
 		return false;
 	}
 	
@@ -1721,10 +1746,10 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 			type.accept(this);
 			scribe.space();
 		}
-		formatCSV(node.fragments(), false, true);
+		formatCSV(node.fragments(), this.preferences.insert_space_before_comma_in_multiple_field_declarations, this.preferences.insert_space_after_comma_in_multiple_field_declarations);
 		postfixes.clear();
-		if(isNextToken(TOK.TOKsemicolon))
-			scribe.printNextToken(TOK.TOKsemicolon);
+		
+		printSemicolonIfNextIsSemicolonAndNotInForInitializer();
 		return false;
 	}
 
@@ -1870,10 +1895,7 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 		for (int i = 0; i < len - 1; i++)
 		{
 			values.get(i).accept(this);
-			if(insertSpacesBeforeComma) {
-				scribe.space();
-			}
-			scribe.printNextToken(TOK.TOKcomma);
+			scribe.printNextToken(TOK.TOKcomma, insertSpacesBeforeComma);
 			if(insertSpacesAfterComma) {
 				scribe.space();
 			}
@@ -1969,8 +1991,7 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 	{
 		if(isNextToken(TOK.TOKlparen))
 		{
-			boolean spaceBeforeParen = this.preferences.insert_space_before_opening_paren_in_function_declaration;		
-			scribe.printNextToken(TOK.TOKlparen, spaceBeforeParen);
+			scribe.printNextToken(TOK.TOKlparen, this.preferences.insert_space_before_opening_paren_in_function_declaration);
 			
 			if (node.arguments().size() == 0 && !node.isVariadic())
 			{
@@ -2000,9 +2021,7 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 				}
 				scribe.printNextToken(TOK.TOKdotdotdot);	
 			}
-			if (this.preferences.insert_space_before_closing_paren_in_function_declaration)
-				this.scribe.space();
-			scribe.printNextToken(TOK.TOKrparen);
+			scribe.printNextToken(TOK.TOKrparen, this.preferences.insert_space_before_closing_paren_in_function_declaration);
 		}
 		
 		Block in   = (Block) node.getPrecondition();
@@ -2466,6 +2485,13 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 			token = lexer.nextToken();
 		while (isComment(token));
 		return token;
+	}
+	
+	private void printSemicolonIfNextIsSemicolonAndNotInForInitializer() {
+		if(isNextToken(TOK.TOKsemicolon) && !inForInitializer) {
+			scribe.printNextToken(TOK.TOKsemicolon, preferences.insert_space_before_semicolon);
+		}
+		inForInitializer = false;
 	}
 	
 	/**

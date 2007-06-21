@@ -69,6 +69,10 @@ public class DefaultCodeFormatterOptions
 	public BracePosition brace_position_for_scope_statement;
 	public BracePosition brace_position_for_other_blocks;
 	public boolean insert_space_before_semicolon;
+	public boolean insert_space_before_semicolon_in_for_statement;
+	public boolean insert_space_after_semicolon_in_for_statement;
+	public boolean insert_space_before_semicolon_in_foreach_statement;
+	public boolean insert_space_after_semicolon_in_foreach_statement;
 	public boolean insert_space_before_comma_in_multiple_field_declarations;
 	public boolean insert_space_after_comma_in_multiple_field_declarations;
 	public boolean insert_space_between_empty_parens_in_function_declaration;
@@ -79,6 +83,8 @@ public class DefaultCodeFormatterOptions
 	public boolean insert_space_after_opening_paren_in_function_invocation;
 	public boolean insert_space_before_comma_in_function_invocation_arguments;
 	public boolean insert_space_after_comma_in_function_invocation_arguments;
+	public boolean insert_space_before_comma_in_foreach_statement;
+	public boolean insert_space_after_comma_in_foreach_statement;
 	public boolean insert_space_before_closing_paren_in_function_invocation;
 	public boolean insert_space_between_empty_parens_in_function_invocation;
 	public boolean insert_new_line_in_simple_conditional_statement;
@@ -144,6 +150,10 @@ public class DefaultCodeFormatterOptions
 		options.put(DefaultCodeFormatterConstants.FORMATTER_BRACE_POSITION_FOR_SCOPE_STATEMENT, brace_position_for_scope_statement.toString());
 		options.put(DefaultCodeFormatterConstants.FORMATTER_BRACE_POSITION_FOR_OTHER_BLOCKS, brace_position_for_other_blocks.toString());
 		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_SEMICOLON, insert_space_before_semicolon ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
+		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_SEMICOLON_IN_FOR_STATEMENT, insert_space_before_semicolon_in_for_statement ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
+		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_AFTER_SEMICOLON_IN_FOR_STATEMENT, insert_space_after_semicolon_in_for_statement ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
+		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_SEMICOLON_IN_FOREACH_STATEMENT, insert_space_before_semicolon_in_foreach_statement ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
+		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_AFTER_SEMICOLON_IN_FOREACH_STATEMENT, insert_space_after_semicolon_in_foreach_statement ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
 		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_COMMA_IN_MULTIPLE_FIELD_DECLARATIONS, insert_space_before_comma_in_multiple_field_declarations ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
 		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_AFTER_COMMA_IN_MULTIPLE_FIELD_DECLARATIONS, insert_space_after_comma_in_multiple_field_declarations ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
 		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BETWEEN_EMPTY_PARENS_IN_FUNCTION_DECLARATION, insert_space_between_empty_parens_in_function_declaration ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
@@ -154,6 +164,8 @@ public class DefaultCodeFormatterOptions
 		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_AFTER_OPENING_PAREN_IN_FUNCTION_INVOCATION, insert_space_after_opening_paren_in_function_invocation ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
 		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_COMMA_IN_FUNCTION_INVOCATION_ARGUMENTS, insert_space_before_comma_in_function_invocation_arguments ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
 		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_AFTER_COMMA_IN_FUNCTION_INVOCATION_ARGUMENTS, insert_space_after_comma_in_function_invocation_arguments ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
+		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_COMMA_IN_FOREACH_STATEMENT, insert_space_before_comma_in_foreach_statement ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
+		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_AFTER_COMMA_IN_FOREACH_STATEMENT, insert_space_after_comma_in_foreach_statement ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
 		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_CLOSING_PAREN_IN_FUNCTION_INVOCATION, insert_space_before_closing_paren_in_function_invocation ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
 		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BETWEEN_EMPTY_PARENS_IN_FUNCTION_INVOCATION, insert_space_between_empty_parens_in_function_invocation ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
 		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_NEW_LINE_IN_SIMPLE_CONDITIONAL_STATEMENT, insert_new_line_in_simple_conditional_statement ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
@@ -349,6 +361,42 @@ public class DefaultCodeFormatterOptions
 			}
 		}
 		
+		current = settings.get(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_SEMICOLON_IN_FOR_STATEMENT);
+		if(null != current) {
+			try {
+				insert_space_before_semicolon_in_for_statement = DefaultCodeFormatterConstants.TRUE.equals(current);
+			} catch(Exception e) {
+				insert_space_before_semicolon_in_for_statement = false;
+			}
+		}
+		
+		current = settings.get(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_AFTER_SEMICOLON_IN_FOR_STATEMENT);
+		if(null != current) {
+			try {
+				insert_space_after_semicolon_in_for_statement = DefaultCodeFormatterConstants.TRUE.equals(current);
+			} catch(Exception e) {
+				insert_space_after_semicolon_in_for_statement = true;
+			}
+		}
+		
+		current = settings.get(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_SEMICOLON_IN_FOREACH_STATEMENT);
+		if(null != current) {
+			try {
+				insert_space_before_semicolon_in_foreach_statement = DefaultCodeFormatterConstants.TRUE.equals(current);
+			} catch(Exception e) {
+				insert_space_before_semicolon_in_foreach_statement = false;
+			}
+		}
+		
+		current = settings.get(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_AFTER_SEMICOLON_IN_FOREACH_STATEMENT);
+		if(null != current) {
+			try {
+				insert_space_after_semicolon_in_foreach_statement = DefaultCodeFormatterConstants.TRUE.equals(current);
+			} catch(Exception e) {
+				insert_space_after_semicolon_in_foreach_statement = true;
+			}
+		}
+		
 		current = settings.get(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_COMMA_IN_MULTIPLE_FIELD_DECLARATIONS);
 		if(null != current) {
 			try {
@@ -436,6 +484,24 @@ public class DefaultCodeFormatterOptions
 				insert_space_after_comma_in_function_invocation_arguments = DefaultCodeFormatterConstants.TRUE.equals(current);
 			} catch(Exception e) {
 				insert_space_after_comma_in_function_invocation_arguments = true;
+			}
+		}
+		
+		current = settings.get(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_COMMA_IN_FOREACH_STATEMENT);
+		if(null != current) {
+			try {
+				insert_space_before_comma_in_foreach_statement = DefaultCodeFormatterConstants.TRUE.equals(current);
+			} catch(Exception e) {
+				insert_space_before_comma_in_foreach_statement = false;
+			}
+		}
+		
+		current = settings.get(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_AFTER_COMMA_IN_FOREACH_STATEMENT);
+		if(null != current) {
+			try {
+				insert_space_after_comma_in_foreach_statement = DefaultCodeFormatterConstants.TRUE.equals(current);
+			} catch(Exception e) {
+				insert_space_after_comma_in_foreach_statement = true;
 			}
 		}
 		
@@ -675,6 +741,10 @@ public class DefaultCodeFormatterOptions
 		brace_position_for_scope_statement = BracePosition.END_OF_LINE;
 		brace_position_for_other_blocks = BracePosition.END_OF_LINE;
 		insert_space_before_semicolon = false;
+		insert_space_before_semicolon_in_for_statement = false;
+		insert_space_after_semicolon_in_for_statement = true;
+		insert_space_before_semicolon_in_foreach_statement = false;
+		insert_space_after_semicolon_in_foreach_statement = true;
 		insert_space_before_comma_in_multiple_field_declarations = false;
 		insert_space_after_comma_in_multiple_field_declarations = true;
 		insert_space_between_empty_parens_in_function_declaration = false;
@@ -685,6 +755,8 @@ public class DefaultCodeFormatterOptions
 		insert_space_after_opening_paren_in_function_invocation = false;
 		insert_space_before_comma_in_function_invocation_arguments = false;
 		insert_space_after_comma_in_function_invocation_arguments = true;
+		insert_space_before_comma_in_foreach_statement = false;
+		insert_space_after_comma_in_foreach_statement = true;
 		insert_space_before_closing_paren_in_function_invocation = false;
 		insert_space_between_empty_parens_in_function_invocation = false;
 		insert_new_line_in_simple_conditional_statement = true;

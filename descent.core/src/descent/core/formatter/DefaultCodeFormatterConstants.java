@@ -63,6 +63,10 @@ public class DefaultCodeFormatterConstants {
 	public static final String FORMATTER_BRACE_POSITION_FOR_SCOPE_STATEMENT = JavaCore.PLUGIN_ID + ".formatter.brace_position_for_scope_statement";
 	public static final String FORMATTER_BRACE_POSITION_FOR_OTHER_BLOCKS = JavaCore.PLUGIN_ID + ".formatter.brace_position_for_other_blocks";
 	public static final String FORMATTER_INSERT_SPACE_BEFORE_SEMICOLON = JavaCore.PLUGIN_ID + ".formatter.insert_space_before_semicolon";
+	public static final String FORMATTER_INSERT_SPACE_BEFORE_SEMICOLON_IN_FOR_STATEMENT = JavaCore.PLUGIN_ID + ".formatter.insert_space_before_semicolon_in_for_statement";
+	public static final String FORMATTER_INSERT_SPACE_AFTER_SEMICOLON_IN_FOR_STATEMENT = JavaCore.PLUGIN_ID + ".formatter.insert_space_after_semicolon_in_for_statement";
+	public static final String FORMATTER_INSERT_SPACE_BEFORE_SEMICOLON_IN_FOREACH_STATEMENT = JavaCore.PLUGIN_ID + ".formatter.insert_space_before_semicolon_in_foreach_statement";
+	public static final String FORMATTER_INSERT_SPACE_AFTER_SEMICOLON_IN_FOREACH_STATEMENT = JavaCore.PLUGIN_ID + ".formatter.insert_space_after_semicolon_in_foreach_statement";
 	public static final String FORMATTER_INSERT_SPACE_BEFORE_COMMA_IN_MULTIPLE_FIELD_DECLARATIONS = JavaCore.PLUGIN_ID + ".formatter.insert_space_before_comma_in_multiple_field_declarations";
 	public static final String FORMATTER_INSERT_SPACE_AFTER_COMMA_IN_MULTIPLE_FIELD_DECLARATIONS = JavaCore.PLUGIN_ID + ".formatter.insert_space_after_comma_in_multiple_field_declarations";
 	public static final String FORMATTER_INSERT_SPACE_BETWEEN_EMPTY_PARENS_IN_FUNCTION_DECLARATION = JavaCore.PLUGIN_ID + ".formatter.insert_space_between_empty_parens_in_function_declaration";
@@ -73,6 +77,8 @@ public class DefaultCodeFormatterConstants {
 	public static final String FORMATTER_INSERT_SPACE_AFTER_OPENING_PAREN_IN_FUNCTION_INVOCATION = JavaCore.PLUGIN_ID + ".formatter.insert_space_after_opening_paren_in_function_invocation";
 	public static final String FORMATTER_INSERT_SPACE_BEFORE_COMMA_IN_FUNCTION_INVOCATION_ARGUMENTS = JavaCore.PLUGIN_ID + ".formatter.insert_space_before_comma_in_function_invocation_arguments";
 	public static final String FORMATTER_INSERT_SPACE_AFTER_COMMA_IN_FUNCTION_INVOCATION_ARGUMENTS = JavaCore.PLUGIN_ID + ".formatter.insert_space_after_comma_in_function_invocation_arguments";
+	public static final String FORMATTER_INSERT_SPACE_BEFORE_COMMA_IN_FOREACH_STATEMENT = JavaCore.PLUGIN_ID + ".formatter.insert_space_before_comma_in_foreach_statement";
+	public static final String FORMATTER_INSERT_SPACE_AFTER_COMMA_IN_FOREACH_STATEMENT = JavaCore.PLUGIN_ID + ".formatter.insert_space_after_comma_in_foreach_statement";
 	public static final String FORMATTER_INSERT_SPACE_BEFORE_CLOSING_PAREN_IN_FUNCTION_INVOCATION = JavaCore.PLUGIN_ID + ".formatter.insert_space_before_closing_paren_in_function_invocation";
 	public static final String FORMATTER_INSERT_SPACE_BETWEEN_EMPTY_PARENS_IN_FUNCTION_INVOCATION = JavaCore.PLUGIN_ID + ".formatter.insert_space_between_empty_parens_in_function_invocation";
 	public static final String FORMATTER_INSERT_NEW_LINE_IN_SIMPLE_CONDITIONAL_STATEMENT = JavaCore.PLUGIN_ID + ".formatter.insert_new_line_in_simple_conditional_statement";

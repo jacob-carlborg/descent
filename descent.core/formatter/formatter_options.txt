@@ -96,6 +96,18 @@ brace_position_for_other_blocks
 insert_space_before_semicolon
 	type=boolean
 	default=false
+insert_space_before_semicolon_in_for_statement
+	type=boolean
+	default=false
+insert_space_after_semicolon_in_for_statement
+	type=boolean
+	default=true
+insert_space_before_semicolon_in_foreach_statement
+	type=boolean
+	default=false
+insert_space_after_semicolon_in_foreach_statement
+	type=boolean
+	default=true
 insert_space_before_comma_in_multiple_field_declarations
 	type=boolean
 	default=false
@@ -124,6 +136,12 @@ insert_space_before_comma_in_function_invocation_arguments
 	type=boolean
 	default=false
 insert_space_after_comma_in_function_invocation_arguments
+	type=boolean
+	default=true
+insert_space_before_comma_in_foreach_statement
+	type=boolean
+	default=false
+insert_space_after_comma_in_foreach_statement
 	type=boolean
 	default=true
 insert_space_before_closing_paren_in_function_invocation

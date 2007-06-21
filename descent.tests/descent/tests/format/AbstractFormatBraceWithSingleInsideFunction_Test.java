@@ -21,7 +21,7 @@ public abstract class AbstractFormatBraceWithSingleInsideFunction_Test extends A
 				getFormattedPrefixForBrace() + "\r\n" +
 					"\tint x;", 
 				
-					getUnformattedPrefixForBrace() + "  int   x ;"
+				getUnformattedPrefixForBrace() + "  int   x ;"
 			);
 	}
 	
@@ -31,7 +31,7 @@ public abstract class AbstractFormatBraceWithSingleInsideFunction_Test extends A
 		assertFormat(
 				getFormattedPrefixForBrace() + " int x;", 
 				
-					getUnformattedPrefixForBrace() + "  int   x ;",
+				getUnformattedPrefixForBrace() + "  int   x ;",
 					
 				options
 			);
