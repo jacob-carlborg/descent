@@ -11,8 +11,7 @@ public abstract class AbstractFormatBraceElseInsideFunction_Test extends Abstrac
 	public void testBracesAtEndOfLineWithElse() throws Exception {
 		assertFormat(
 				getFormattedPrefixForBrace() + " {\r\n" +
-				"}\r\n" +
-				"else {\r\n" +
+				"} else {\r\n" +
 				"}", 
 				
 				getUnformattedPrefixForBrace() + "  {    }  else  {   }"
@@ -25,8 +24,7 @@ public abstract class AbstractFormatBraceElseInsideFunction_Test extends Abstrac
 		assertFormat(
 				getFormattedPrefixForBrace() + "\r\n" +
 				"{\r\n" +
-				"}\r\n" +
-				"else\r\n" + 
+				"} else\r\n" + 
 				"{\r\n" +
 				"}", 
 				
@@ -42,8 +40,7 @@ public abstract class AbstractFormatBraceElseInsideFunction_Test extends Abstrac
 		assertFormat(
 				getFormattedPrefixForBrace() + "\r\n" +
 					"\t{\r\n" +
-					"\t}\r\n" +
-				"else\r\n" +
+					"\t} else\r\n" +
 					"\t{\r\n" +
 					"\t}",
 				
@@ -60,8 +57,7 @@ public abstract class AbstractFormatBraceElseInsideFunction_Test extends Abstrac
 				getFormattedPrefixForBrace() + "\r\n" +
 					"\t{\r\n" +
 						"\t\tint x;\r\n" +
-					"\t}\r\n" +
-				"else\r\n" +
+					"\t} else\r\n" +
 					"\t{\r\n" +
 						"\t\tfloat x;\r\n" +
 					"\t}", 

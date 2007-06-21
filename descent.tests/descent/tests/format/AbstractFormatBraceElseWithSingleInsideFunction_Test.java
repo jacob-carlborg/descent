@@ -16,27 +16,50 @@ public abstract class AbstractFormatBraceElseWithSingleInsideFunction_Test exten
 	
 	protected abstract String getInsertNewLineInSimpleStatementOption();
 	
-	public void testIndentSingleStatement() throws Exception {
+	public void testNewLineInSingleStatement() throws Exception {
 		assertFormat(
 				getFormattedPrefixForBrace() + "\r\n" +
 					"\tint x;", 
 				
-					getUnformattedPrefixForBrace() + "  int   x ;"
+				getUnformattedPrefixForBrace() + "  int   x ;"
 			);
 	}
 	
-	public void testDontIndentSingleStatement() throws Exception {
+	public void testNoNewLineInSingleStatement() throws Exception {
 		Map options = getDefaultOptions();
 		options.put(getInsertNewLineInSimpleStatementOption(), DefaultCodeFormatterConstants.FALSE);
 		assertFormat(
 				getFormattedPrefixForBrace() + " int x;", 
 				
-					getUnformattedPrefixForBrace() + "  int   x ;",
+				getUnformattedPrefixForBrace() + "  int   x ;",
 					
 				options
 			);
 	}
 	
-	// TODO make a test for else, as well
+	public void testNewLineInSingleStatementWithElse() throws Exception {
+		assertFormat(
+				getFormattedPrefixForBrace() + "\r\n" +
+					"\tint x;\r\n" +
+				"else\r\n" +
+					"\tfloat x;", 
+				
+				getUnformattedPrefixForBrace() + "  int   x ; else float x;"
+			);
+	}
+	
+	public void testNoNewLineInSingleStatementWithElse() throws Exception {
+		Map options = getDefaultOptions();
+		options.put(getInsertNewLineInSimpleStatementOption(), DefaultCodeFormatterConstants.FALSE);
+		assertFormat(
+				getFormattedPrefixForBrace() + " int x; else float x;", 
+				
+				getUnformattedPrefixForBrace() + "  int   x ; else float x;",
+					
+				options
+			);
+	}
+	
+	// TODO Descent formatter: add "keep else if" in new line option.
 
 }

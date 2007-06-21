@@ -921,7 +921,7 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 		formatSubStatement(node.getThenBody(), false, preferences.insert_new_line_in_simple_conditional_statement, preferences.brace_position_for_conditional_statement);
 		if(isNextToken(TOK.TOKelse))
 		{
-			scribe.printNewLine();
+			scribe.space();
 			scribe.printNextToken(TOK.TOKelse);
 			Statement elseBody = node.getElseBody();
 			if(elseBody instanceof IfStatement) // handle "else if"
@@ -931,7 +931,7 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 			}
 			else
 			{
-				formatSubStatement(elseBody, false, true, preferences.brace_position_for_conditional_statement);
+				formatSubStatement(elseBody, false, preferences.insert_new_line_in_simple_conditional_statement, preferences.brace_position_for_conditional_statement);
 			}
 		}
 		return false;
@@ -1874,9 +1874,9 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 		formatSubStatement(node.getThenBody(), false, preferences.insert_new_line_in_simple_conditional_statement, preferences.brace_position_for_conditional_statement);
 		if(isNextToken(TOK.TOKelse))
 		{
-			scribe.printNewLine();
+			scribe.space();
 			scribe.printNextToken(TOK.TOKelse);
-			formatSubStatement(node.getElseBody(), false, true, preferences.brace_position_for_conditional_statement);
+			formatSubStatement(node.getElseBody(), false, preferences.insert_new_line_in_simple_conditional_statement, preferences.brace_position_for_conditional_statement);
 		}
 	}
 	
