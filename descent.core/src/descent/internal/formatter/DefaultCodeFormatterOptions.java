@@ -83,6 +83,7 @@ public class DefaultCodeFormatterOptions
 	public boolean insert_space_between_empty_parens_in_function_invocation;
 	public boolean insert_new_line_in_simple_conditional_statement;
 	public boolean insert_new_line_in_simple_loop_statement;
+	public boolean insert_new_line_in_simple_switch_statement;
 	public boolean insert_new_line_in_simple_synchronized_statement;
 	public boolean insert_new_line_in_simple_while_statement;
 	public boolean insert_new_line_in_simple_with_statement;
@@ -157,6 +158,7 @@ public class DefaultCodeFormatterOptions
 		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BETWEEN_EMPTY_PARENS_IN_FUNCTION_INVOCATION, insert_space_between_empty_parens_in_function_invocation ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
 		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_NEW_LINE_IN_SIMPLE_CONDITIONAL_STATEMENT, insert_new_line_in_simple_conditional_statement ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
 		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_NEW_LINE_IN_SIMPLE_LOOP_STATEMENT, insert_new_line_in_simple_loop_statement ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
+		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_NEW_LINE_IN_SIMPLE_SWITCH_STATEMENT, insert_new_line_in_simple_switch_statement ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
 		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_NEW_LINE_IN_SIMPLE_SYNCHRONIZED_STATEMENT, insert_new_line_in_simple_synchronized_statement ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
 		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_NEW_LINE_IN_SIMPLE_WHILE_STATEMENT, insert_new_line_in_simple_while_statement ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
 		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_NEW_LINE_IN_SIMPLE_WITH_STATEMENT, insert_new_line_in_simple_with_statement ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
@@ -473,6 +475,15 @@ public class DefaultCodeFormatterOptions
 			}
 		}
 		
+		current = settings.get(DefaultCodeFormatterConstants.FORMATTER_INSERT_NEW_LINE_IN_SIMPLE_SWITCH_STATEMENT);
+		if(null != current) {
+			try {
+				insert_new_line_in_simple_switch_statement = DefaultCodeFormatterConstants.TRUE.equals(current);
+			} catch(Exception e) {
+				insert_new_line_in_simple_switch_statement = true;
+			}
+		}
+		
 		current = settings.get(DefaultCodeFormatterConstants.FORMATTER_INSERT_NEW_LINE_IN_SIMPLE_SYNCHRONIZED_STATEMENT);
 		if(null != current) {
 			try {
@@ -678,6 +689,7 @@ public class DefaultCodeFormatterOptions
 		insert_space_between_empty_parens_in_function_invocation = false;
 		insert_new_line_in_simple_conditional_statement = true;
 		insert_new_line_in_simple_loop_statement = true;
+		insert_new_line_in_simple_switch_statement = true;
 		insert_new_line_in_simple_synchronized_statement = true;
 		insert_new_line_in_simple_while_statement = true;
 		insert_new_line_in_simple_with_statement = true;

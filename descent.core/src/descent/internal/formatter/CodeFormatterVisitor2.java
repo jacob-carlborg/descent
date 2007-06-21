@@ -1486,7 +1486,7 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 		scribe.printNextToken(TOK.TOKlparen);
 		node.getExpression().accept(this);
 		scribe.printNextToken(TOK.TOKrparen);
-		formatSubStatement(node.getBody(), false, false, preferences.brace_position_for_switch_statement);
+		formatSubStatement(node.getBody(), false, preferences.insert_new_line_in_simple_switch_statement, preferences.brace_position_for_switch_statement);
 		return false;
 	}
 	

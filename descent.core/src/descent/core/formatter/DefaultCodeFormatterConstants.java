@@ -77,6 +77,7 @@ public class DefaultCodeFormatterConstants {
 	public static final String FORMATTER_INSERT_SPACE_BETWEEN_EMPTY_PARENS_IN_FUNCTION_INVOCATION = JavaCore.PLUGIN_ID + ".formatter.insert_space_between_empty_parens_in_function_invocation";
 	public static final String FORMATTER_INSERT_NEW_LINE_IN_SIMPLE_CONDITIONAL_STATEMENT = JavaCore.PLUGIN_ID + ".formatter.insert_new_line_in_simple_conditional_statement";
 	public static final String FORMATTER_INSERT_NEW_LINE_IN_SIMPLE_LOOP_STATEMENT = JavaCore.PLUGIN_ID + ".formatter.insert_new_line_in_simple_loop_statement";
+	public static final String FORMATTER_INSERT_NEW_LINE_IN_SIMPLE_SWITCH_STATEMENT = JavaCore.PLUGIN_ID + ".formatter.insert_new_line_in_simple_switch_statement";
 	public static final String FORMATTER_INSERT_NEW_LINE_IN_SIMPLE_SYNCHRONIZED_STATEMENT = JavaCore.PLUGIN_ID + ".formatter.insert_new_line_in_simple_synchronized_statement";
 	public static final String FORMATTER_INSERT_NEW_LINE_IN_SIMPLE_WHILE_STATEMENT = JavaCore.PLUGIN_ID + ".formatter.insert_new_line_in_simple_while_statement";
 	public static final String FORMATTER_INSERT_NEW_LINE_IN_SIMPLE_WITH_STATEMENT = JavaCore.PLUGIN_ID + ".formatter.insert_new_line_in_simple_with_statement";

@@ -4,7 +4,7 @@ import java.util.Map;
 
 import descent.core.formatter.DefaultCodeFormatterConstants;
 
-public class FormatSwitchStatement_Test extends AbstractFormatBraceInsideFunction_Test {
+public class FormatSwitchStatement_Test extends AbstractFormatBraceWithSingleInsideFunction_Test {
 	
 	@Override
 	protected Map getDefaultOptions() {
@@ -19,6 +19,11 @@ public class FormatSwitchStatement_Test extends AbstractFormatBraceInsideFunctio
 	}
 	
 	@Override
+	protected String getInsertNewLineInSimpleStatementOption() {
+		return DefaultCodeFormatterConstants.FORMATTER_INSERT_NEW_LINE_IN_SIMPLE_SWITCH_STATEMENT;
+	}
+	
+	@Override
 	protected String getFormattedPrefixForBrace() {
 		return "switch(1)";
 	}
@@ -27,5 +32,7 @@ public class FormatSwitchStatement_Test extends AbstractFormatBraceInsideFunctio
 	protected String getUnformattedPrefixForBrace() {
 		return "switch   (   1   )";
 	}
+
+	
 
 }

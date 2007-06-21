@@ -140,6 +140,9 @@ insert_new_line_in_simple_conditional_statement
 insert_new_line_in_simple_loop_statement
 	type=boolean
 	default=true
+insert_new_line_in_simple_switch_statement
+	type=boolean
+	default=true
 insert_new_line_in_simple_synchronized_statement
 	type=boolean
 	default=true
