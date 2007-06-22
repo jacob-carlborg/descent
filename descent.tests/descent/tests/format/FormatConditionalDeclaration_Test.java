@@ -13,6 +13,9 @@ public class FormatConditionalDeclaration_Test extends AbstractFormatter_Test {
 	protected Map getDefaultOptions() {
 		Map options = new HashMap();
 		options.put(DefaultCodeFormatterConstants.FORMATTER_BRACE_POSITION_FOR_CONDITIONAL_DECLARATION, DefaultCodeFormatterConstants.END_OF_LINE);
+		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_NEW_LINE_BEFORE_ELSE, DefaultCodeFormatterConstants.FALSE);
+		options.put(DefaultCodeFormatterConstants.FORMATTER_KEEP_SIMPLE_THEN_DECLARATION_ON_SAME_LINE, DefaultCodeFormatterConstants.FALSE);
+		options.put(DefaultCodeFormatterConstants.FORMATTER_KEEP_SIMPLE_ELSE_DECLARATION_ON_SAME_LINE, DefaultCodeFormatterConstants.FALSE);
 		return options;
 	}
 	
@@ -95,7 +98,6 @@ public class FormatConditionalDeclaration_Test extends AbstractFormatter_Test {
 		}
 	}
 	
-	// TODO Descent formatter: make it configurable to write the declaration without an end line
 	public void testSingleDeclaration() throws Exception {
 		for(String cond : conditionals) {
 			assertFormat(
@@ -107,13 +109,11 @@ public class FormatConditionalDeclaration_Test extends AbstractFormatter_Test {
 		}
 	}
 	
-	// TODO Descent formatter: make it configurable to write the "else" without an end line
 	public void testBracesAtEndOfLineWithElse() throws Exception {
 		for(String cond : conditionals) {
 			assertFormat(
 					cond + "(someVersion) {\r\n" +
-					"}\r\n" +
-					"else {\r\n" +
+					"} else {\r\n" +
 					"}", 
 					
 					cond + "    (   someVersion   )  {    }  else  {   }"
@@ -128,8 +128,7 @@ public class FormatConditionalDeclaration_Test extends AbstractFormatter_Test {
 			assertFormat(
 					cond + "(someVersion)\r\n" +
 					"{\r\n" +
-					"}\r\n" +
-					"else\r\n" + 
+					"} else\r\n" + 
 					"{\r\n" +
 					"}", 
 					
@@ -147,8 +146,7 @@ public class FormatConditionalDeclaration_Test extends AbstractFormatter_Test {
 			assertFormat(
 					cond + "(someVersion)\r\n" +
 						"\t{\r\n" +
-						"\t}\r\n" +
-					"else\r\n" +
+						"\t} else\r\n" +
 						"\t{\r\n" +
 						"\t}",
 					
@@ -167,13 +165,131 @@ public class FormatConditionalDeclaration_Test extends AbstractFormatter_Test {
 					cond + "(someVersion)\r\n" +
 						"\t{\r\n" +
 							"\t\tint x;\r\n" +
-						"\t}\r\n" +
-					"else\r\n" +
+						"\t} else\r\n" +
 						"\t{\r\n" +
 							"\t\tfloat x;\r\n" +
 						"\t}", 
 					
 					cond + "(someVersion) {  int x;  }  else   {   float  x ; }",
+					
+					options
+				);
+		}
+	}
+	
+	public void testDontKeepElseConditionalOnOneLine() throws Exception {
+		Map options = new HashMap();
+		options.put(DefaultCodeFormatterConstants.FORMATTER_KEEP_ELSE_CONDITIONAL_ON_ONE_LINE, DefaultCodeFormatterConstants.FALSE);
+		for(String cond : conditionals) {
+			assertFormat(
+					cond + "(someVersion) {\r\n" +
+					"} else\r\n" +
+					cond + "(someVersion) {\r\n" +
+					"}", 
+					
+					cond + "(someVersion)  {    }  else " + cond + "(someVersion) {   }",
+					
+					options
+				);
+		}
+	}
+	
+	public void testKeepElseConditionalOnOneLineWithBraces() throws Exception {
+		for(String cond : conditionals) {
+			assertFormat(
+					cond + "(someVersion) {\r\n" +
+					"} else {\r\n" +
+						"\t" + cond + "(someVersion) {\r\n" +
+						"\t}\r\n" +
+					"}", 
+					
+					cond + "(someVersion)  {    }  else { " + cond + "(someVersion) {   } }"
+				);
+		}
+	}
+	
+	public void testDontKeepSimpleThenInSameLine() throws Exception {
+		for(String cond : conditionals) {
+			assertFormat(
+					cond + "(someVersion)\r\n" +
+						"\tint x;", 
+					
+						cond + "(someVersion)  int   x ;"
+				);
+		}
+	}
+	
+	public void testKeepSimpleThenInSameLine() throws Exception {
+		Map options = new HashMap();
+		options.put(DefaultCodeFormatterConstants.FORMATTER_KEEP_SIMPLE_THEN_DECLARATION_ON_SAME_LINE, DefaultCodeFormatterConstants.TRUE);
+		for(String cond : conditionals) {
+			assertFormat(
+					cond + "(someVersion) int x;", 
+					
+					cond + "(someVersion)  int   x ;",
+						
+					options
+			);
+		}
+	}
+	
+	public void testDontKeepSimpleElseInSameLine() throws Exception {
+		for(String cond : conditionals) {
+			assertFormat(
+					cond + "(someVersion)\r\n" +
+						"\tint x;\r\n" +
+						"else\r\n" +
+						"\tfloat x;", 
+					
+					cond + "(someVersion)  int   x ; else float x;"
+				);
+		}
+	}
+	
+	public void testKeepSimpleElseInSameLine() throws Exception {
+		Map options = new HashMap();
+		options.put(DefaultCodeFormatterConstants.FORMATTER_KEEP_SIMPLE_ELSE_DECLARATION_ON_SAME_LINE, DefaultCodeFormatterConstants.TRUE);
+		for(String cond : conditionals) {
+			assertFormat(
+					cond + "(someVersion)\r\n" +
+						"\tint x;\r\n" +
+						"else float x;", 
+					
+					cond + "(someVersion)  int   x ; else float x;",
+					
+					options
+				);
+		}
+	}
+	
+	public void testInsertNewLineBeforeElse() throws Exception {
+		Map options = new HashMap();
+		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_NEW_LINE_BEFORE_ELSE, DefaultCodeFormatterConstants.TRUE);
+		for(String cond : conditionals) {
+			assertFormat(
+					cond + "(someVersion) {\r\n" +
+					"}\r\n" +
+					"else {\r\n" +
+					"}", 
+					
+					cond + "(someVersion)  {    }  else  {   }",
+					
+					options
+				);
+		}
+	}
+	
+	public void testKeepSimpleElseInSameLineProblem() throws Exception {
+		Map options = new HashMap();
+		options.put(DefaultCodeFormatterConstants.FORMATTER_KEEP_SIMPLE_ELSE_DECLARATION_ON_SAME_LINE, DefaultCodeFormatterConstants.TRUE);
+		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_NEW_LINE_BEFORE_ELSE, DefaultCodeFormatterConstants.TRUE);
+		for(String cond : conditionals) {
+			assertFormat(
+					cond + "(someVersion)\r\n" +
+						"\tint x;\r\n" +
+						"else float x;", 
+					
+					cond + "(someVersion)  int   x ; else float x;",
 					
 					options
 				);

@@ -19,7 +19,7 @@ public abstract class AbstractFormatBraceElseWithSingleInsideFunction_Test exten
 	protected abstract String getKeepSimpleThenInSameLineOption();
 	protected abstract String getSimpleElseStatementInSameLineOption();
 	
-	public void testDontKeepThenInSameLine() throws Exception {
+	public void testDontKeepSimpleThenInSameLine() throws Exception {
 		assertFormat(
 				getFormattedPrefixForBrace() + "\r\n" +
 					"\tint x;", 
@@ -28,7 +28,7 @@ public abstract class AbstractFormatBraceElseWithSingleInsideFunction_Test exten
 			);
 	}
 	
-	public void testKeepThenInSameLine() throws Exception {
+	public void testKeepSimpleThenInSameLine() throws Exception {
 		Map options = new HashMap();
 		options.put(getKeepSimpleThenInSameLineOption(), DefaultCodeFormatterConstants.TRUE);
 		assertFormat(
@@ -40,7 +40,7 @@ public abstract class AbstractFormatBraceElseWithSingleInsideFunction_Test exten
 			);
 	}
 	
-	public void testDontKeepElseInSameLine() throws Exception {
+	public void testDontKeepSimpleElseInSameLine() throws Exception {
 		assertFormat(
 				getFormattedPrefixForBrace() + "\r\n" +
 					"\tint x;\r\n" +
@@ -51,7 +51,7 @@ public abstract class AbstractFormatBraceElseWithSingleInsideFunction_Test exten
 			);
 	}
 	
-	public void testKeepElseInSameLine() throws Exception {
+	public void testKeepSimpleElseInSameLine() throws Exception {
 		Map options = new HashMap();
 		options.put(getSimpleElseStatementInSameLineOption(), DefaultCodeFormatterConstants.TRUE);
 		assertFormat(
@@ -64,7 +64,5 @@ public abstract class AbstractFormatBraceElseWithSingleInsideFunction_Test exten
 				options
 			);
 	}
-	
-	// TODO Descent formatter: add "keep else if/debug/version" in new line option.
 
 }

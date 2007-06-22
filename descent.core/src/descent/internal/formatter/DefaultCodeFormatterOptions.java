@@ -93,6 +93,8 @@ public class DefaultCodeFormatterOptions
 	public boolean insert_new_line_before_while_in_do_statement;
 	public int blank_lines_before_module;
 	public int blank_lines_after_module;
+	public boolean keep_simple_then_declaration_on_same_line;
+	public boolean keep_simple_else_declaration_on_same_line;
 	public boolean keep_simple_then_statement_on_same_line;
 	public boolean keep_simple_else_statement_on_same_line;
 	public boolean keep_simple_try_statement_on_same_line;
@@ -183,6 +185,8 @@ public class DefaultCodeFormatterOptions
 		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_NEW_LINE_BEFORE_WHILE_IN_DO_STATEMENT, insert_new_line_before_while_in_do_statement ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
 		options.put(DefaultCodeFormatterConstants.FORMATTER_BLANK_LINES_BEFORE_MODULE, Integer.toString(blank_lines_before_module));
 		options.put(DefaultCodeFormatterConstants.FORMATTER_BLANK_LINES_AFTER_MODULE, Integer.toString(blank_lines_after_module));
+		options.put(DefaultCodeFormatterConstants.FORMATTER_KEEP_SIMPLE_THEN_DECLARATION_ON_SAME_LINE, keep_simple_then_declaration_on_same_line ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
+		options.put(DefaultCodeFormatterConstants.FORMATTER_KEEP_SIMPLE_ELSE_DECLARATION_ON_SAME_LINE, keep_simple_else_declaration_on_same_line ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
 		options.put(DefaultCodeFormatterConstants.FORMATTER_KEEP_SIMPLE_THEN_STATEMENT_ON_SAME_LINE, keep_simple_then_statement_on_same_line ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
 		options.put(DefaultCodeFormatterConstants.FORMATTER_KEEP_SIMPLE_ELSE_STATEMENT_ON_SAME_LINE, keep_simple_else_statement_on_same_line ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
 		options.put(DefaultCodeFormatterConstants.FORMATTER_KEEP_SIMPLE_TRY_STATEMENT_ON_SAME_LINE, keep_simple_try_statement_on_same_line ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
@@ -595,6 +599,24 @@ public class DefaultCodeFormatterOptions
 			}
 		}
 		
+		current = settings.get(DefaultCodeFormatterConstants.FORMATTER_KEEP_SIMPLE_THEN_DECLARATION_ON_SAME_LINE);
+		if(null != current) {
+			try {
+				keep_simple_then_declaration_on_same_line = DefaultCodeFormatterConstants.TRUE.equals(current);
+			} catch(Exception e) {
+				keep_simple_then_declaration_on_same_line = true;
+			}
+		}
+		
+		current = settings.get(DefaultCodeFormatterConstants.FORMATTER_KEEP_SIMPLE_ELSE_DECLARATION_ON_SAME_LINE);
+		if(null != current) {
+			try {
+				keep_simple_else_declaration_on_same_line = DefaultCodeFormatterConstants.TRUE.equals(current);
+			} catch(Exception e) {
+				keep_simple_else_declaration_on_same_line = true;
+			}
+		}
+		
 		current = settings.get(DefaultCodeFormatterConstants.FORMATTER_KEEP_SIMPLE_THEN_STATEMENT_ON_SAME_LINE);
 		if(null != current) {
 			try {
@@ -864,6 +886,8 @@ public class DefaultCodeFormatterOptions
 		insert_new_line_before_while_in_do_statement = false;
 		blank_lines_before_module = 0;
 		blank_lines_after_module = 1;
+		keep_simple_then_declaration_on_same_line = true;
+		keep_simple_else_declaration_on_same_line = true;
 		keep_simple_then_statement_on_same_line = true;
 		keep_simple_else_statement_on_same_line = true;
 		keep_simple_try_statement_on_same_line = true;

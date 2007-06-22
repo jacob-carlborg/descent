@@ -133,16 +133,6 @@ public abstract class AbstractFormatBraceElseInsideFunction_Test extends Abstrac
 			);
 	}
 	
-	public void testKeepElseConditionalOnOneLine() throws Exception {
-		assertFormat(
-				getFormattedPrefixForBrace() + " {\r\n" +
-				"} else " + getFormattedPrefixForBrace() + " {\r\n" +
-				"}", 
-				
-				getUnformattedPrefixForBrace() + "  {    }  else " + getUnformattedPrefixForBrace() + " {   }"
-			);
-	}
-	
 	public void testDontKeepElseConditionalOnOneLine() throws Exception {
 		Map options = new HashMap();
 		options.put(getKeepElseConditionalOnSameLineOptionName(), DefaultCodeFormatterConstants.FALSE);

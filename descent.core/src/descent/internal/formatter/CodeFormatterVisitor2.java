@@ -1849,12 +1849,33 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 
 	private void formatConditionalDeclaration(ConditionalDeclaration node)
 	{
-		formatDeclarationBlock(node.thenDeclarations(), preferences.brace_position_for_conditional_declaration, true);
+		boolean wasSimple = formatDeclarationBlock(node.thenDeclarations(), preferences.brace_position_for_conditional_declaration, true, !preferences.keep_simple_then_declaration_on_same_line);
 		if(isNextToken(TOK.TOKelse))
 		{
-			scribe.printNewLine();
+			if (wasSimple && !preferences.keep_simple_then_declaration_on_same_line) {
+				scribe.printNewLine();
+			}
+			
+			if (preferences.insert_new_line_before_else) {
+				scribe.printNewLine();
+			} else {
+				scribe.space();
+			}
 			scribe.printNextToken(TOK.TOKelse);
-			formatDeclarationBlock(node.elseDeclarations(), preferences.brace_position_for_conditional_declaration, true);
+			
+			// handle "else if/debug/version"
+			if (node.elseDeclarations().size() == 1 
+					&& node.elseDeclarations().get(0).getClass().equals(node.getClass())
+					&& !isNextToken(TOK.TOKlcurly) && !isNextToken(TOK.TOKcolon)) {
+				if (preferences.keep_else_conditional_on_one_line) {
+					scribe.space();
+				} else {
+					scribe.printNewLine();
+				}
+				node.elseDeclarations().get(0).accept(this);
+			} else {
+				formatDeclarationBlock(node.elseDeclarations(), preferences.brace_position_for_conditional_declaration, true, !preferences.keep_simple_else_declaration_on_same_line);
+			}
 		}
 	}
 	
@@ -1870,7 +1891,9 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 			}
 			scribe.printNextToken(TOK.TOKelse);
 			Statement elseBody = node.getElseBody();
-			if(elseBody.getClass().equals(node.getClass())) // handle "else if/debug/version"
+			
+			// handle "else if/debug/version"
+			if(elseBody.getClass().equals(node.getClass()))
 			{
 				if (preferences.keep_else_conditional_on_one_line) {
 					scribe.space();
@@ -1911,8 +1934,14 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 		
 	}
 	
-	private void formatDeclarationBlock(List<Declaration> declarations, 
-			BracePosition bracePosition, boolean indent)
+	// Returns true if it was a simple declaration block (no "{" or ":") 
+	private boolean formatDeclarationBlock(List<Declaration> declarations, 
+			BracePosition bracePosition, boolean indent) {
+		return formatDeclarationBlock(declarations, bracePosition, indent, true);
+	}
+	
+	private boolean formatDeclarationBlock(List<Declaration> declarations, 
+			BracePosition bracePosition, boolean indent, boolean identIfSimple)
 	{
 		if(isNextToken(TOK.TOKlcurly))
 		{
@@ -1929,7 +1958,7 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 			
 			// The AST often renders these as empty -- if so, just return
 			if(declarations.isEmpty())
-				return;
+				return false;
 			
 			if(indent)
 				scribe.indent();
@@ -1939,11 +1968,20 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 		}
 		else
 		{
-			scribe.printNewLine();
-			scribe.indent();
+			if (identIfSimple) {
+				scribe.printNewLine();
+				scribe.indent();
+			} else {
+				scribe.space();
+			}
 			formatDeclarations(declarations);
-			scribe.unIndent();
+			if (identIfSimple) {
+				scribe.unIndent();
+			}
+			return true;
 		}
+		
+		return false;
 	}
 	
 	private void formatDeclarations(List<Declaration> declarations)

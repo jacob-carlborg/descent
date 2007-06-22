@@ -178,7 +178,13 @@ blank_lines_after_module
 	type=int
 	default=1
 	
-# Keywords on same line
+# Statements and declarations on same line
+keep_simple_then_declaration_on_same_line
+	type=boolean
+	default=true
+keep_simple_else_declaration_on_same_line
+	type=boolean
+	default=true
 keep_simple_then_statement_on_same_line
 	type=boolean
 	default=true

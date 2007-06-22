@@ -87,6 +87,8 @@ public class DefaultCodeFormatterConstants {
 	public static final String FORMATTER_INSERT_NEW_LINE_BEFORE_WHILE_IN_DO_STATEMENT = JavaCore.PLUGIN_ID + ".formatter.insert_new_line_before_while_in_do_statement";
 	public static final String FORMATTER_BLANK_LINES_BEFORE_MODULE = JavaCore.PLUGIN_ID + ".formatter.blank_lines_before_module";
 	public static final String FORMATTER_BLANK_LINES_AFTER_MODULE = JavaCore.PLUGIN_ID + ".formatter.blank_lines_after_module";
+	public static final String FORMATTER_KEEP_SIMPLE_THEN_DECLARATION_ON_SAME_LINE = JavaCore.PLUGIN_ID + ".formatter.keep_simple_then_declaration_on_same_line";
+	public static final String FORMATTER_KEEP_SIMPLE_ELSE_DECLARATION_ON_SAME_LINE = JavaCore.PLUGIN_ID + ".formatter.keep_simple_else_declaration_on_same_line";
 	public static final String FORMATTER_KEEP_SIMPLE_THEN_STATEMENT_ON_SAME_LINE = JavaCore.PLUGIN_ID + ".formatter.keep_simple_then_statement_on_same_line";
 	public static final String FORMATTER_KEEP_SIMPLE_ELSE_STATEMENT_ON_SAME_LINE = JavaCore.PLUGIN_ID + ".formatter.keep_simple_else_statement_on_same_line";
 	public static final String FORMATTER_KEEP_SIMPLE_TRY_STATEMENT_ON_SAME_LINE = JavaCore.PLUGIN_ID + ".formatter.keep_simple_try_statement_on_same_line";
