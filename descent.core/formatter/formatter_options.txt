@@ -39,6 +39,11 @@
 #
 # The hope is this can be expanded for use in UI, etc., etc.
 
+# Note: there may be more options that those really "needed". For those
+# ones, instead of deleting the preference, just set a default and
+# don't show them in the UI. If later in time users request that
+# option, show them in the UI. :-)
+
 # Brace Positioning
 brace_position_for_function_declaration
 	type=BracePosition
@@ -152,25 +157,16 @@ insert_space_between_empty_parens_in_function_invocation
 	default=false
 
 # New Line Options
-insert_new_line_in_simple_conditional_statement
+insert_new_line_before_else
 	type=boolean
-	default=true
-insert_new_line_in_simple_loop_statement
+	default=false
+insert_new_line_before_catch
 	type=boolean
-	default=true
-insert_new_line_in_simple_switch_statement
+	default=false
+insert_new_line_before_finally
 	type=boolean
-	default=true
-insert_new_line_in_simple_synchronized_statement
-	type=boolean
-	default=true
-insert_new_line_in_simple_while_statement
-	type=boolean
-	default=true
-insert_new_line_in_simple_with_statement
-	type=boolean
-	default=true
-insert_new_line_at_end_of_file_if_missing
+	default=false
+insert_new_line_before_while_in_do_statement
 	type=boolean
 	default=false
 
@@ -182,13 +178,52 @@ blank_lines_after_module
 	type=int
 	default=1
 	
-# Functions
+# Keywords on same line
+keep_simple_then_statement_on_same_line
+	type=boolean
+	default=true
+keep_simple_else_statement_on_same_line
+	type=boolean
+	default=true
+keep_simple_try_statement_on_same_line
+	type=boolean
+	default=true
+keep_simple_catch_statement_on_same_line
+	type=boolean
+	default=true
+keep_simple_finally_statement_on_same_line
+	type=boolean
+	default=true
+keep_simple_loop_statement_on_same_line
+	type=boolean
+	default=false
+keep_simple_switch_statement_on_same_line
+	type=boolean
+	default=false
+keep_simple_synchronized_statement_on_same_line
+	type=boolean
+	default=false
+keep_simple_while_statement_on_same_line
+	type=boolean
+	default=false
+keep_simple_with_statement_on_same_line
+	type=boolean
+	default=false
+insert_new_line_at_end_of_file_if_missing
+	type=boolean
+	default=false
+	
+# Keep on one line
 keep_functions_with_no_statement_in_one_line
 	type=boolean
 	default=false
 keep_functions_with_one_statement_in_one_line
 	type=boolean
 	default=false
+# This one is "else if", "else version", "else debug"
+keep_else_conditional_on_one_line
+	type=boolean
+	default=true
 
 # Other
 line_split

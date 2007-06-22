@@ -623,8 +623,7 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 	public boolean visit(DoStatement node)
 	{
 		scribe.printNextToken(TOK.TOKdo);
-		formatSubStatement(node.getBody(), false, true, preferences.brace_position_for_loop_statement);
-		scribe.printNewLine();
+		formatSubStatement(node.getBody(), preferences.insert_new_line_before_while_in_do_statement, true, preferences.brace_position_for_loop_statement);
 		scribe.printNextToken(TOK.TOKwhile);
 		scribe.printNextToken(TOK.TOKlparen);
 		node.getExpression().accept(this);
@@ -778,7 +777,7 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 		}
 		node.getExpression().accept(this);
 		scribe.printNextToken(TOK.TOKrparen);
-		formatSubStatement(node.getBody(), false, preferences.insert_new_line_in_simple_loop_statement, preferences.brace_position_for_loop_statement);
+		formatSubStatement(node.getBody(), false, !preferences.keep_simple_loop_statement_on_same_line, preferences.brace_position_for_loop_statement);
 		return false;
 	}
 	
@@ -819,7 +818,7 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 			increment.accept(this);
 		}
 		scribe.printNextToken(TOK.TOKrparen);
-		formatSubStatement(node.getBody(), false, preferences.insert_new_line_in_simple_loop_statement, preferences.brace_position_for_loop_statement);
+		formatSubStatement(node.getBody(), false, !preferences.keep_simple_loop_statement_on_same_line, preferences.brace_position_for_loop_statement);
 		return false;
 	}
 	
@@ -918,22 +917,7 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 		}
 		node.getExpression().accept(this);
 		scribe.printNextToken(TOK.TOKrparen);
-		formatSubStatement(node.getThenBody(), false, preferences.insert_new_line_in_simple_conditional_statement, preferences.brace_position_for_conditional_statement);
-		if(isNextToken(TOK.TOKelse))
-		{
-			scribe.space();
-			scribe.printNextToken(TOK.TOKelse);
-			Statement elseBody = node.getElseBody();
-			if(elseBody instanceof IfStatement) // handle "else if"
-			{
-				scribe.space();
-				formatSubStatement(elseBody, false, false, preferences.brace_position_for_conditional_statement);
-			}
-			else
-			{
-				formatSubStatement(elseBody, false, preferences.insert_new_line_in_simple_conditional_statement, preferences.brace_position_for_conditional_statement);
-			}
-		}
+		formatConditionalStatement(node);
 		return false;
 	}
 	
@@ -1512,7 +1496,7 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 		scribe.printNextToken(TOK.TOKlparen);
 		node.getExpression().accept(this);
 		scribe.printNextToken(TOK.TOKrparen);
-		formatSubStatement(node.getBody(), false, preferences.insert_new_line_in_simple_switch_statement, preferences.brace_position_for_switch_statement);
+		formatSubStatement(node.getBody(), false, !preferences.keep_simple_switch_statement_on_same_line, preferences.brace_position_for_switch_statement);
 		return false;
 	}
 	
@@ -1526,7 +1510,7 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 			expression.accept(this);
 			scribe.printNextToken(TOK.TOKrparen);
 		}
-		formatSubStatement(node.getBody(), false, preferences.insert_new_line_in_simple_synchronized_statement, preferences.brace_position_for_synchronized_statement);
+		formatSubStatement(node.getBody(), false, !preferences.keep_simple_synchronized_statement_on_same_line, preferences.brace_position_for_synchronized_statement);
 		return false;
 	}
 	
@@ -1589,16 +1573,21 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 	public boolean visit(TryStatement node)
 	{
 		scribe.printNextToken(TOK.TOKtry);
-		formatSubStatement(node.getBody(), true, true, preferences.brace_position_for_try_catch_finally);
+		formatSubStatement(node.getBody(), preferences.insert_new_line_before_catch, true, preferences.brace_position_for_try_catch_finally);
 		List<CatchClause> catchClauses = node.catchClauses();
-		for(CatchClause c : catchClauses)
+		for(CatchClause c : catchClauses) {
 			c.accept(this);
+		}
 		Statement $finally = node.getFinally();
 		if(null != $finally)
 		{
+			if (preferences.insert_new_line_before_finally) {
+				scribe.printNewLine();
+			}
 			scribe.printNextToken(TOK.TOKfinally);
 			formatSubStatement($finally, false, true, preferences.brace_position_for_try_catch_finally);
 		}
+		scribe.printTrailingComment();
 		return false;
 	}
 	
@@ -1844,7 +1833,7 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 		scribe.printNextToken(TOK.TOKlparen);
 		node.getExpression().accept(this);
 		scribe.printNextToken(TOK.TOKrparen);
-		formatSubStatement(node.getBody(), false, preferences.insert_new_line_in_simple_while_statement, preferences.brace_position_for_loop_statement);
+		formatSubStatement(node.getBody(), false, !preferences.keep_simple_while_statement_on_same_line, preferences.brace_position_for_loop_statement);
 		return false;
 	}
 
@@ -1854,7 +1843,7 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 		scribe.printNextToken(TOK.TOKlparen);
 		node.getExpression().accept(this);
 		scribe.printNextToken(TOK.TOKrparen);
-		formatSubStatement(node.getBody(), false, preferences.insert_new_line_in_simple_with_statement, preferences.brace_position_for_with_statement);
+		formatSubStatement(node.getBody(), false, !preferences.keep_simple_with_statement_on_same_line, preferences.brace_position_for_with_statement);
 		return false;
 	}
 
@@ -1871,12 +1860,29 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 	
 	private void formatConditionalStatement(ConditionalStatement node)
 	{
-		formatSubStatement(node.getThenBody(), false, preferences.insert_new_line_in_simple_conditional_statement, preferences.brace_position_for_conditional_statement);
+		formatSubStatement(node.getThenBody(), false, !preferences.keep_simple_then_statement_on_same_line, preferences.brace_position_for_conditional_statement);
 		if(isNextToken(TOK.TOKelse))
 		{
-			scribe.space();
+			if (preferences.insert_new_line_before_else) {
+				scribe.printNewLine();
+			} else {
+				scribe.space();
+			}
 			scribe.printNextToken(TOK.TOKelse);
-			formatSubStatement(node.getElseBody(), false, preferences.insert_new_line_in_simple_conditional_statement, preferences.brace_position_for_conditional_statement);
+			Statement elseBody = node.getElseBody();
+			if(elseBody.getClass().equals(node.getClass())) // handle "else if/debug/version"
+			{
+				if (preferences.keep_else_conditional_on_one_line) {
+					scribe.space();
+				} else {
+					scribe.printNewLine();
+				}
+				formatSubStatement(elseBody, false, false, preferences.brace_position_for_conditional_statement);
+			}
+			else
+			{
+				formatSubStatement(elseBody, false, !preferences.keep_simple_else_statement_on_same_line, preferences.brace_position_for_conditional_statement);
+			}
 		}
 	}
 	
@@ -2243,7 +2249,7 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 	}
 	
 	private void formatSubStatement(Statement statement, boolean newLineAtEnd,
-			boolean indent, BracePosition bracePosition)
+			boolean bodyInNextLineIndented, BracePosition bracePosition)
 	{
 		if(statement instanceof EmptyStatement)
 		{
@@ -2256,36 +2262,41 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 			ASTNode parent = statement.getParent();
 			if(parent instanceof SwitchCase || parent instanceof DefaultStatement)
 			{
-				if(indent)
+				if(bodyInNextLineIndented) {
 					scribe.indent();
+				}
 				formatStatements(((Block) statement).statements(), true);
-				if(indent)
+				if(bodyInNextLineIndented) {
 					scribe.unIndent();
+				}
 			}
 			else
 			{
-				formatOpeningBrace(bracePosition, indent);
+				formatOpeningBrace(bracePosition, bodyInNextLineIndented);
 				scribe.printNewLine();
 				formatStatements(((Block) statement).statements(), true);
-				formatClosingBrace(bracePosition, indent);
+				formatClosingBrace(bracePosition, bodyInNextLineIndented);
 			}
 		}		
 		else
 		{
 			scribe.space();
-			if(indent) {
+			if(bodyInNextLineIndented) {
 				scribe.printNewLine();
 				scribe.indent();
 			}
 			statement.accept(this);
-			if(indent) {
+			if(bodyInNextLineIndented) {
 				scribe.unIndent();
 				scribe.printNewLine();
 			}
 		}
 		
-		if(newLineAtEnd)
+		if(newLineAtEnd) {
 			scribe.printNewLine();
+		} else {
+			scribe.space();
+		}
 	}
 	
 	private void formatOpeningBrace(BracePosition bracePosition, boolean indent)

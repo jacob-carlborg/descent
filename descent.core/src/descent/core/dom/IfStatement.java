@@ -12,7 +12,7 @@ import java.util.List;
  *    <b>if</b> <b>(</b> [ Argument <b>=</b> ] Expression <b>)</b> Statement [ <b>else</b> Statement ]
  * </pre>
  */
-public class IfStatement extends Statement {
+public class IfStatement extends ConditionalStatement {
 
 	/**
 	 * The "argument" structural property of this node type.
@@ -30,13 +30,13 @@ public class IfStatement extends Statement {
 	 * The "thenBody" structural property of this node type.
 	 */
 	public static final ChildPropertyDescriptor THEN_BODY_PROPERTY =
-		new ChildPropertyDescriptor(IfStatement.class, "thenBody", Statement.class, MANDATORY, CYCLE_RISK); //$NON-NLS-1$
+		internalThenBodyPropertyFactory(IfStatement.class); //$NON-NLS-1$
 
 	/**
 	 * The "elseBody" structural property of this node type.
 	 */
 	public static final ChildPropertyDescriptor ELSE_BODY_PROPERTY =
-		new ChildPropertyDescriptor(IfStatement.class, "elseBody", Statement.class, OPTIONAL, CYCLE_RISK); //$NON-NLS-1$
+		internalElseBodyPropertyFactory(IfStatement.class); //$NON-NLS-1$
 
 	/**
 	 * A list of property descriptors (element type: 
@@ -79,16 +79,6 @@ public class IfStatement extends Statement {
 	 * The expression.
 	 */
 	private Expression expression;
-
-	/**
-	 * The thenBody.
-	 */
-	private Statement thenBody;
-
-	/**
-	 * The elseBody.
-	 */
-	private Statement elseBody;
 
 
 	/**
@@ -149,6 +139,16 @@ public class IfStatement extends Statement {
 		}
 		// allow default implementation to flag the error
 		return super.internalGetSetChildProperty(property, get, child);
+	}
+	
+	@Override
+	final ChildPropertyDescriptor internalThenBodyProperty() {
+		return THEN_BODY_PROPERTY;
+	}
+	
+	@Override
+	final ChildPropertyDescriptor internalElseBodyProperty() {
+		return ELSE_BODY_PROPERTY;
 	}
 
 	/* (omit javadoc for this method)
@@ -259,73 +259,6 @@ public class IfStatement extends Statement {
 		preReplaceChild(oldChild, expression, EXPRESSION_PROPERTY);
 		this.expression = expression;
 		postReplaceChild(oldChild, expression, EXPRESSION_PROPERTY);
-	}
-
-	/**
-	 * Returns the thenBody of this if statement.
-	 * 
-	 * @return the thenBody
-	 */ 
-	public Statement getThenBody() {
-		if (this.thenBody == null) {
-			// lazy init must be thread-safe for readers
-			synchronized (this) {
-				if (this.thenBody == null) {
-					preLazyInit();
-					this.thenBody = new Block(this.ast);
-					postLazyInit(this.thenBody, THEN_BODY_PROPERTY);
-				}
-			}
-		}
-		return this.thenBody;
-	}
-
-	/**
-	 * Sets the thenBody of this if statement.
-	 * 
-	 * @param thenBody the thenBody
-	 * @exception IllegalArgumentException if:
-	 * <ul>
-	 * <li>the node belongs to a different AST</li>
-	 * <li>the node already has a parent</li>
-	 * <li>a cycle in would be created</li>
-	 * </ul>
-	 */ 
-	public void setThenBody(Statement thenBody) {
-		if (thenBody == null) {
-			throw new IllegalArgumentException();
-		}
-		ASTNode oldChild = this.thenBody;
-		preReplaceChild(oldChild, thenBody, THEN_BODY_PROPERTY);
-		this.thenBody = thenBody;
-		postReplaceChild(oldChild, thenBody, THEN_BODY_PROPERTY);
-	}
-
-	/**
-	 * Returns the elseBody of this if statement.
-	 * 
-	 * @return the elseBody
-	 */ 
-	public Statement getElseBody() {
-		return this.elseBody;
-	}
-
-	/**
-	 * Sets the elseBody of this if statement.
-	 * 
-	 * @param elseBody the elseBody
-	 * @exception IllegalArgumentException if:
-	 * <ul>
-	 * <li>the node belongs to a different AST</li>
-	 * <li>the node already has a parent</li>
-	 * <li>a cycle in would be created</li>
-	 * </ul>
-	 */ 
-	public void setElseBody(Statement elseBody) {
-		ASTNode oldChild = this.elseBody;
-		preReplaceChild(oldChild, elseBody, ELSE_BODY_PROPERTY);
-		this.elseBody = elseBody;
-		postReplaceChild(oldChild, elseBody, ELSE_BODY_PROPERTY);
 	}
 
 	/* (omit javadoc for this method)

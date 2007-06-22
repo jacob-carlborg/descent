@@ -19,8 +19,8 @@ public class FormatSynchronizedStatement_Test extends AbstractFormatBraceWithSin
 	}
 	
 	@Override
-	protected String getInsertNewLineInSimpleStatementOption() {
-		return DefaultCodeFormatterConstants.FORMATTER_INSERT_NEW_LINE_IN_SIMPLE_SYNCHRONIZED_STATEMENT;
+	protected String getKeepSimpleStatementInSameLineOption() {
+		return DefaultCodeFormatterConstants.FORMATTER_KEEP_SIMPLE_SYNCHRONIZED_STATEMENT_ON_SAME_LINE;
 	}
 	
 	@Override

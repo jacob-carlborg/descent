@@ -1,5 +1,6 @@
 package descent.tests.format;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import descent.core.formatter.DefaultCodeFormatterConstants;
@@ -10,13 +11,15 @@ public abstract class AbstractFormatBraceElseWithSingleInsideFunction_Test exten
 	@Override
 	protected Map getDefaultOptions() {
 		Map options = super.getDefaultOptions();
-		options.put(getInsertNewLineInSimpleStatementOption(), DefaultCodeFormatterConstants.TRUE);
+		options.put(getKeepSimpleThenInSameLineOption(), DefaultCodeFormatterConstants.FALSE);
+		options.put(getSimpleElseStatementInSameLineOption(), DefaultCodeFormatterConstants.FALSE);
 		return options;
 	}
 	
-	protected abstract String getInsertNewLineInSimpleStatementOption();
+	protected abstract String getKeepSimpleThenInSameLineOption();
+	protected abstract String getSimpleElseStatementInSameLineOption();
 	
-	public void testNewLineInSingleStatement() throws Exception {
+	public void testDontKeepThenInSameLine() throws Exception {
 		assertFormat(
 				getFormattedPrefixForBrace() + "\r\n" +
 					"\tint x;", 
@@ -25,9 +28,9 @@ public abstract class AbstractFormatBraceElseWithSingleInsideFunction_Test exten
 			);
 	}
 	
-	public void testNoNewLineInSingleStatement() throws Exception {
-		Map options = getDefaultOptions();
-		options.put(getInsertNewLineInSimpleStatementOption(), DefaultCodeFormatterConstants.FALSE);
+	public void testKeepThenInSameLine() throws Exception {
+		Map options = new HashMap();
+		options.put(getKeepSimpleThenInSameLineOption(), DefaultCodeFormatterConstants.TRUE);
 		assertFormat(
 				getFormattedPrefixForBrace() + " int x;", 
 				
@@ -37,29 +40,31 @@ public abstract class AbstractFormatBraceElseWithSingleInsideFunction_Test exten
 			);
 	}
 	
-	public void testNewLineInSingleStatementWithElse() throws Exception {
+	public void testDontKeepElseInSameLine() throws Exception {
 		assertFormat(
 				getFormattedPrefixForBrace() + "\r\n" +
 					"\tint x;\r\n" +
-				"else\r\n" +
+					"else\r\n" +
 					"\tfloat x;", 
 				
 				getUnformattedPrefixForBrace() + "  int   x ; else float x;"
 			);
 	}
 	
-	public void testNoNewLineInSingleStatementWithElse() throws Exception {
-		Map options = getDefaultOptions();
-		options.put(getInsertNewLineInSimpleStatementOption(), DefaultCodeFormatterConstants.FALSE);
+	public void testKeepElseInSameLine() throws Exception {
+		Map options = new HashMap();
+		options.put(getSimpleElseStatementInSameLineOption(), DefaultCodeFormatterConstants.TRUE);
 		assertFormat(
-				getFormattedPrefixForBrace() + " int x; else float x;", 
+				getFormattedPrefixForBrace() + "\r\n" +
+					"\tint x;\r\n" +
+					"else float x;", 
 				
 				getUnformattedPrefixForBrace() + "  int   x ; else float x;",
-					
+				
 				options
 			);
 	}
 	
-	// TODO Descent formatter: add "keep else if" in new line option.
+	// TODO Descent formatter: add "keep else if/debug/version" in new line option.
 
 }

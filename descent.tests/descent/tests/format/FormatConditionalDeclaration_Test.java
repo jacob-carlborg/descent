@@ -7,7 +7,7 @@ import descent.core.formatter.DefaultCodeFormatterConstants;
 
 public class FormatConditionalDeclaration_Test extends AbstractFormatter_Test {
 	
-	private final String[] conditionals = { "version", "debug" }; 
+	private final String[] conditionals = { "version", "debug", "static if" }; 
 	
 	@Override
 	protected Map getDefaultOptions() {

@@ -5,6 +5,7 @@ package descent.core.dom;
  * Abstract subclass for conditional statements.
  * 
  * ConditionalStatement:
+ *    IfStatement
  *    DebugStatement
  *    IftypeStatement
  *    StaticIfStatement

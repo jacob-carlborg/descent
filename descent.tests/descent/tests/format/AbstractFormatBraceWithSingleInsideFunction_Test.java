@@ -10,11 +10,11 @@ public abstract class AbstractFormatBraceWithSingleInsideFunction_Test extends A
 	@Override
 	protected Map getDefaultOptions() {
 		Map options = super.getDefaultOptions();
-		options.put(getInsertNewLineInSimpleStatementOption(), DefaultCodeFormatterConstants.TRUE);
+		options.put(getKeepSimpleStatementInSameLineOption(), DefaultCodeFormatterConstants.FALSE);
 		return options;
 	}
 	
-	protected abstract String getInsertNewLineInSimpleStatementOption();
+	protected abstract String getKeepSimpleStatementInSameLineOption();
 	
 	public void testIdentSingleStatement() throws Exception {
 		assertFormat(
@@ -27,7 +27,7 @@ public abstract class AbstractFormatBraceWithSingleInsideFunction_Test extends A
 	
 	public void testDontIndentSingleStatement() throws Exception {
 		Map options = getDefaultOptions();
-		options.put(getInsertNewLineInSimpleStatementOption(), DefaultCodeFormatterConstants.FALSE);
+		options.put(getKeepSimpleStatementInSameLineOption(), DefaultCodeFormatterConstants.TRUE);
 		assertFormat(
 				getFormattedPrefixForBrace() + " int x;", 
 				

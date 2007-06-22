@@ -19,8 +19,8 @@ public class FormatSwitchStatement_Test extends AbstractFormatBraceWithSingleIns
 	}
 	
 	@Override
-	protected String getInsertNewLineInSimpleStatementOption() {
-		return DefaultCodeFormatterConstants.FORMATTER_INSERT_NEW_LINE_IN_SIMPLE_SWITCH_STATEMENT;
+	protected String getKeepSimpleStatementInSameLineOption() {
+		return DefaultCodeFormatterConstants.FORMATTER_KEEP_SIMPLE_SWITCH_STATEMENT_ON_SAME_LINE;
 	}
 	
 	@Override

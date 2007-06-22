@@ -19,8 +19,8 @@ public class FormatWithStatement_Test extends AbstractFormatBraceWithSingleInsid
 	}
 	
 	@Override
-	protected String getInsertNewLineInSimpleStatementOption() {
-		return DefaultCodeFormatterConstants.FORMATTER_INSERT_NEW_LINE_IN_SIMPLE_WITH_STATEMENT;
+	protected String getKeepSimpleStatementInSameLineOption() {
+		return DefaultCodeFormatterConstants.FORMATTER_KEEP_SIMPLE_WITH_STATEMENT_ON_SAME_LINE;
 	}
 	
 	@Override

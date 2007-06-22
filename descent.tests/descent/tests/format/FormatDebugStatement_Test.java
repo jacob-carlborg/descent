@@ -19,8 +19,23 @@ public class FormatDebugStatement_Test extends AbstractFormatBraceElseWithSingle
 	}
 	
 	@Override
-	protected String getInsertNewLineInSimpleStatementOption() {
-		return DefaultCodeFormatterConstants.FORMATTER_INSERT_NEW_LINE_IN_SIMPLE_CONDITIONAL_STATEMENT;
+	protected String getKeepSimpleThenInSameLineOption() {
+		return DefaultCodeFormatterConstants.FORMATTER_KEEP_SIMPLE_THEN_STATEMENT_ON_SAME_LINE;
+	}
+	
+	@Override
+	protected String getInsertNewLineBeforeElseOptionName() {
+		return DefaultCodeFormatterConstants.FORMATTER_INSERT_NEW_LINE_BEFORE_ELSE;
+	}
+	
+	@Override
+	protected String getSimpleElseStatementInSameLineOption() {
+		return DefaultCodeFormatterConstants.FORMATTER_KEEP_SIMPLE_ELSE_STATEMENT_ON_SAME_LINE;
+	}
+	
+	@Override
+	protected String getKeepElseConditionalOnSameLineOptionName() {
+		return DefaultCodeFormatterConstants.FORMATTER_KEEP_ELSE_CONDITIONAL_ON_ONE_LINE;
 	}
 	
 	@Override

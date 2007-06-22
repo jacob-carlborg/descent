@@ -24,8 +24,8 @@ public class FormatForeachStatement_Test extends AbstractFormatBraceWithSingleIn
 	}
 	
 	@Override
-	protected String getInsertNewLineInSimpleStatementOption() {
-		return DefaultCodeFormatterConstants.FORMATTER_INSERT_NEW_LINE_IN_SIMPLE_LOOP_STATEMENT;
+	protected String getKeepSimpleStatementInSameLineOption() {
+		return DefaultCodeFormatterConstants.FORMATTER_KEEP_SIMPLE_LOOP_STATEMENT_ON_SAME_LINE;
 	}
 	
 	@Override

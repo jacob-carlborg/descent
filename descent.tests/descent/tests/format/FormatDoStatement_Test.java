@@ -11,15 +11,14 @@ public class FormatDoStatement_Test extends AbstractFormatInsideFunction_Test {
 	protected Map getDefaultOptions() {
 		Map options = super.getDefaultOptions();
 		options.put(DefaultCodeFormatterConstants.FORMATTER_BRACE_POSITION_FOR_LOOP_STATEMENT, DefaultCodeFormatterConstants.END_OF_LINE);
+		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_NEW_LINE_BEFORE_WHILE_IN_DO_STATEMENT, DefaultCodeFormatterConstants.FALSE);
 		return options;
 	}
 	
-	// TODO Descent formatter: make it configurable to write the "while" without an end line
 	public void testBracesAtEndOfLine() throws Exception {
 		assertFormat(
 				"do {\r\n" +
-				"}\r\n" +
-				"while(true);", 
+				"} while(true);", 
 				
 				"do {   }   while   (   true   );"
 			);
@@ -31,8 +30,7 @@ public class FormatDoStatement_Test extends AbstractFormatInsideFunction_Test {
 		assertFormat(
 				"do\r\n" +
 				"{\r\n" +
-				"}\r\n" +
-				"while(true);", 
+				"} while(true);", 
 				
 				"do  {    }   while   (   true   );",
 				
@@ -46,8 +44,7 @@ public class FormatDoStatement_Test extends AbstractFormatInsideFunction_Test {
 		assertFormat(
 				"do\r\n" +
 					"\t{\r\n" +
-					"\t}\r\n" +
-				"while(true);", 
+					"\t} while(true);", 
 				
 				"do  {    }    while   (   true   );",
 				
@@ -62,8 +59,7 @@ public class FormatDoStatement_Test extends AbstractFormatInsideFunction_Test {
 				" * comment\r\n" +
 				" */\r\n" +
 				"do { // comment\r\n" +
-				"}\r\n" +
-				"while(true);", 
+				"} while(true);", 
 				
 				"/*\r\n" +
 				" * Some\r\n" +
@@ -80,10 +76,23 @@ public class FormatDoStatement_Test extends AbstractFormatInsideFunction_Test {
 				"do\r\n" +
 					"\t{\r\n" +
 					"\t\tint x;\r\n" +
-					"\t}\r\n" +
-				"while(true);", 
+					"\t} while(true);", 
 				
 				"do {  int x;  }  while(true);",
+				
+				options
+			);
+	}
+	
+	public void testInsertNewLineBeforeWhileInDoStatementLine() throws Exception {
+		Map options = new HashMap();
+		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_NEW_LINE_BEFORE_WHILE_IN_DO_STATEMENT, DefaultCodeFormatterConstants.TRUE);
+		assertFormat(
+				"do {\r\n" +
+				"}\r\n" +
+				"while(true);", 
+				
+				"do {   }   while   (   true   );",
 				
 				options
 			);

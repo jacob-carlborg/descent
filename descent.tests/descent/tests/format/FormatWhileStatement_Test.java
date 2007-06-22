@@ -19,8 +19,8 @@ public class FormatWhileStatement_Test extends AbstractFormatBraceWithSingleInsi
 	}
 	
 	@Override
-	protected String getInsertNewLineInSimpleStatementOption() {
-		return DefaultCodeFormatterConstants.FORMATTER_INSERT_NEW_LINE_IN_SIMPLE_WHILE_STATEMENT;
+	protected String getKeepSimpleStatementInSameLineOption() {
+		return DefaultCodeFormatterConstants.FORMATTER_KEEP_SIMPLE_WHILE_STATEMENT_ON_SAME_LINE;
 	}
 	
 	@Override
