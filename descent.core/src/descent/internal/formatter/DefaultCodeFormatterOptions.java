@@ -109,16 +109,25 @@ public class DefaultCodeFormatterOptions
 	public boolean keep_functions_with_no_statement_in_one_line;
 	public boolean keep_functions_with_one_statement_in_one_line;
 	public boolean keep_else_conditional_on_one_line;
-	public int line_split;
-	public boolean never_indent_block_comments_on_first_column;
-	public boolean never_indent_line_comments_on_first_column;
-	public int page_width;
-	public int tab_size;
-	public boolean use_tabs_only_for_leading_indentations;
-	public boolean indent_empty_lines;
-	public TabChar tab_char;
 	public int indentation_size;
 	public int continuation_indentation;
+	public boolean indent_empty_lines;
+	public boolean indent_body_declarations_compare_to_type_header;
+	public boolean indent_body_declarations_compare_to_template_header;
+	public boolean indent_body_declarations_compare_to_modifier_header;
+	public boolean indent_statements_compare_to_function_header;
+	public boolean indent_in_out_body_compare_to_function_header;
+	public boolean indent_statements_compare_to_function_in_header;
+	public boolean indent_statements_compare_to_function_out_header;
+	public boolean indent_statements_compare_to_function_body_header;
+	public boolean indent_enum_members_compare_to_enum_header;
+	public TabChar tab_char;
+	public int tab_size;
+	public boolean use_tabs_only_for_leading_indentations;
+	public boolean never_indent_block_comments_on_first_column;
+	public boolean never_indent_line_comments_on_first_column;
+	public int line_split;
+	public int page_width;
 	public int number_of_empty_lines_to_preserve;
 	
 	// Set by the caller
@@ -201,16 +210,25 @@ public class DefaultCodeFormatterOptions
 		options.put(DefaultCodeFormatterConstants.FORMATTER_KEEP_FUNCTIONS_WITH_NO_STATEMENT_IN_ONE_LINE, keep_functions_with_no_statement_in_one_line ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
 		options.put(DefaultCodeFormatterConstants.FORMATTER_KEEP_FUNCTIONS_WITH_ONE_STATEMENT_IN_ONE_LINE, keep_functions_with_one_statement_in_one_line ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
 		options.put(DefaultCodeFormatterConstants.FORMATTER_KEEP_ELSE_CONDITIONAL_ON_ONE_LINE, keep_else_conditional_on_one_line ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
-		options.put(DefaultCodeFormatterConstants.FORMATTER_LINE_SPLIT, Integer.toString(line_split));
-		options.put(DefaultCodeFormatterConstants.FORMATTER_NEVER_INDENT_BLOCK_COMMENTS_ON_FIRST_COLUMN, never_indent_block_comments_on_first_column ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
-		options.put(DefaultCodeFormatterConstants.FORMATTER_NEVER_INDENT_LINE_COMMENTS_ON_FIRST_COLUMN, never_indent_line_comments_on_first_column ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
-		options.put(DefaultCodeFormatterConstants.FORMATTER_PAGE_WIDTH, Integer.toString(page_width));
-		options.put(DefaultCodeFormatterConstants.FORMATTER_TAB_SIZE, Integer.toString(tab_size));
-		options.put(DefaultCodeFormatterConstants.FORMATTER_USE_TABS_ONLY_FOR_LEADING_INDENTATIONS, use_tabs_only_for_leading_indentations ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
-		options.put(DefaultCodeFormatterConstants.FORMATTER_INDENT_EMPTY_LINES, indent_empty_lines ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
-		options.put(DefaultCodeFormatterConstants.FORMATTER_TAB_CHAR, tab_char.toString());
 		options.put(DefaultCodeFormatterConstants.FORMATTER_INDENTATION_SIZE, Integer.toString(indentation_size));
 		options.put(DefaultCodeFormatterConstants.FORMATTER_CONTINUATION_INDENTATION, Integer.toString(continuation_indentation));
+		options.put(DefaultCodeFormatterConstants.FORMATTER_INDENT_EMPTY_LINES, indent_empty_lines ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
+		options.put(DefaultCodeFormatterConstants.FORMATTER_INDENT_BODY_DECLARATIONS_COMPARE_TO_TYPE_HEADER, indent_body_declarations_compare_to_type_header ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
+		options.put(DefaultCodeFormatterConstants.FORMATTER_INDENT_BODY_DECLARATIONS_COMPARE_TO_TEMPLATE_HEADER, indent_body_declarations_compare_to_template_header ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
+		options.put(DefaultCodeFormatterConstants.FORMATTER_INDENT_BODY_DECLARATIONS_COMPARE_TO_MODIFIER_HEADER, indent_body_declarations_compare_to_modifier_header ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
+		options.put(DefaultCodeFormatterConstants.FORMATTER_INDENT_STATEMENTS_COMPARE_TO_FUNCTION_HEADER, indent_statements_compare_to_function_header ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
+		options.put(DefaultCodeFormatterConstants.FORMATTER_INDENT_IN_OUT_BODY_COMPARE_TO_FUNCTION_HEADER, indent_in_out_body_compare_to_function_header ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
+		options.put(DefaultCodeFormatterConstants.FORMATTER_INDENT_STATEMENTS_COMPARE_TO_FUNCTION_IN_HEADER, indent_statements_compare_to_function_in_header ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
+		options.put(DefaultCodeFormatterConstants.FORMATTER_INDENT_STATEMENTS_COMPARE_TO_FUNCTION_OUT_HEADER, indent_statements_compare_to_function_out_header ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
+		options.put(DefaultCodeFormatterConstants.FORMATTER_INDENT_STATEMENTS_COMPARE_TO_FUNCTION_BODY_HEADER, indent_statements_compare_to_function_body_header ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
+		options.put(DefaultCodeFormatterConstants.FORMATTER_INDENT_ENUM_MEMBERS_COMPARE_TO_ENUM_HEADER, indent_enum_members_compare_to_enum_header ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
+		options.put(DefaultCodeFormatterConstants.FORMATTER_TAB_CHAR, tab_char.toString());
+		options.put(DefaultCodeFormatterConstants.FORMATTER_TAB_SIZE, Integer.toString(tab_size));
+		options.put(DefaultCodeFormatterConstants.FORMATTER_USE_TABS_ONLY_FOR_LEADING_INDENTATIONS, use_tabs_only_for_leading_indentations ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
+		options.put(DefaultCodeFormatterConstants.FORMATTER_NEVER_INDENT_BLOCK_COMMENTS_ON_FIRST_COLUMN, never_indent_block_comments_on_first_column ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
+		options.put(DefaultCodeFormatterConstants.FORMATTER_NEVER_INDENT_LINE_COMMENTS_ON_FIRST_COLUMN, never_indent_line_comments_on_first_column ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
+		options.put(DefaultCodeFormatterConstants.FORMATTER_LINE_SPLIT, Integer.toString(line_split));
+		options.put(DefaultCodeFormatterConstants.FORMATTER_PAGE_WIDTH, Integer.toString(page_width));
 		options.put(DefaultCodeFormatterConstants.FORMATTER_NUMBER_OF_EMPTY_LINES_TO_PRESERVE, Integer.toString(number_of_empty_lines_to_preserve));
 		 
 		return options;
@@ -743,39 +761,120 @@ public class DefaultCodeFormatterOptions
 			}
 		}
 		
-		current = settings.get(DefaultCodeFormatterConstants.FORMATTER_LINE_SPLIT);
+		current = settings.get(DefaultCodeFormatterConstants.FORMATTER_INDENTATION_SIZE);
 		if(null != current) {
 			try {
-				line_split = Integer.parseInt(current);
+				indentation_size = Integer.parseInt(current);
 			} catch(Exception e) {
-				line_split = 9999;
+				indentation_size = 4;
 			}
 		}
 		
-		current = settings.get(DefaultCodeFormatterConstants.FORMATTER_NEVER_INDENT_BLOCK_COMMENTS_ON_FIRST_COLUMN);
+		current = settings.get(DefaultCodeFormatterConstants.FORMATTER_CONTINUATION_INDENTATION);
 		if(null != current) {
 			try {
-				never_indent_block_comments_on_first_column = DefaultCodeFormatterConstants.TRUE.equals(current);
+				continuation_indentation = Integer.parseInt(current);
 			} catch(Exception e) {
-				never_indent_block_comments_on_first_column = false;
+				continuation_indentation = 2;
 			}
 		}
 		
-		current = settings.get(DefaultCodeFormatterConstants.FORMATTER_NEVER_INDENT_LINE_COMMENTS_ON_FIRST_COLUMN);
+		current = settings.get(DefaultCodeFormatterConstants.FORMATTER_INDENT_EMPTY_LINES);
 		if(null != current) {
 			try {
-				never_indent_line_comments_on_first_column = DefaultCodeFormatterConstants.TRUE.equals(current);
+				indent_empty_lines = DefaultCodeFormatterConstants.TRUE.equals(current);
 			} catch(Exception e) {
-				never_indent_line_comments_on_first_column = false;
+				indent_empty_lines = true;
 			}
 		}
 		
-		current = settings.get(DefaultCodeFormatterConstants.FORMATTER_PAGE_WIDTH);
+		current = settings.get(DefaultCodeFormatterConstants.FORMATTER_INDENT_BODY_DECLARATIONS_COMPARE_TO_TYPE_HEADER);
 		if(null != current) {
 			try {
-				page_width = Integer.parseInt(current);
+				indent_body_declarations_compare_to_type_header = DefaultCodeFormatterConstants.TRUE.equals(current);
 			} catch(Exception e) {
-				page_width = 80;
+				indent_body_declarations_compare_to_type_header = true;
+			}
+		}
+		
+		current = settings.get(DefaultCodeFormatterConstants.FORMATTER_INDENT_BODY_DECLARATIONS_COMPARE_TO_TEMPLATE_HEADER);
+		if(null != current) {
+			try {
+				indent_body_declarations_compare_to_template_header = DefaultCodeFormatterConstants.TRUE.equals(current);
+			} catch(Exception e) {
+				indent_body_declarations_compare_to_template_header = true;
+			}
+		}
+		
+		current = settings.get(DefaultCodeFormatterConstants.FORMATTER_INDENT_BODY_DECLARATIONS_COMPARE_TO_MODIFIER_HEADER);
+		if(null != current) {
+			try {
+				indent_body_declarations_compare_to_modifier_header = DefaultCodeFormatterConstants.TRUE.equals(current);
+			} catch(Exception e) {
+				indent_body_declarations_compare_to_modifier_header = true;
+			}
+		}
+		
+		current = settings.get(DefaultCodeFormatterConstants.FORMATTER_INDENT_STATEMENTS_COMPARE_TO_FUNCTION_HEADER);
+		if(null != current) {
+			try {
+				indent_statements_compare_to_function_header = DefaultCodeFormatterConstants.TRUE.equals(current);
+			} catch(Exception e) {
+				indent_statements_compare_to_function_header = true;
+			}
+		}
+		
+		current = settings.get(DefaultCodeFormatterConstants.FORMATTER_INDENT_IN_OUT_BODY_COMPARE_TO_FUNCTION_HEADER);
+		if(null != current) {
+			try {
+				indent_in_out_body_compare_to_function_header = DefaultCodeFormatterConstants.TRUE.equals(current);
+			} catch(Exception e) {
+				indent_in_out_body_compare_to_function_header = false;
+			}
+		}
+		
+		current = settings.get(DefaultCodeFormatterConstants.FORMATTER_INDENT_STATEMENTS_COMPARE_TO_FUNCTION_IN_HEADER);
+		if(null != current) {
+			try {
+				indent_statements_compare_to_function_in_header = DefaultCodeFormatterConstants.TRUE.equals(current);
+			} catch(Exception e) {
+				indent_statements_compare_to_function_in_header = true;
+			}
+		}
+		
+		current = settings.get(DefaultCodeFormatterConstants.FORMATTER_INDENT_STATEMENTS_COMPARE_TO_FUNCTION_OUT_HEADER);
+		if(null != current) {
+			try {
+				indent_statements_compare_to_function_out_header = DefaultCodeFormatterConstants.TRUE.equals(current);
+			} catch(Exception e) {
+				indent_statements_compare_to_function_out_header = true;
+			}
+		}
+		
+		current = settings.get(DefaultCodeFormatterConstants.FORMATTER_INDENT_STATEMENTS_COMPARE_TO_FUNCTION_BODY_HEADER);
+		if(null != current) {
+			try {
+				indent_statements_compare_to_function_body_header = DefaultCodeFormatterConstants.TRUE.equals(current);
+			} catch(Exception e) {
+				indent_statements_compare_to_function_body_header = true;
+			}
+		}
+		
+		current = settings.get(DefaultCodeFormatterConstants.FORMATTER_INDENT_ENUM_MEMBERS_COMPARE_TO_ENUM_HEADER);
+		if(null != current) {
+			try {
+				indent_enum_members_compare_to_enum_header = DefaultCodeFormatterConstants.TRUE.equals(current);
+			} catch(Exception e) {
+				indent_enum_members_compare_to_enum_header = true;
+			}
+		}
+		
+		current = settings.get(DefaultCodeFormatterConstants.FORMATTER_TAB_CHAR);
+		if(null != current) {
+			try {
+				tab_char = DefaultCodeFormatterConstants.MIXED.equals(current) ? TabChar.MIXED : DefaultCodeFormatterConstants.SPACE.equals(current) ? TabChar.SPACE : TabChar.TAB;
+			} catch(Exception e) {
+				tab_char = TabChar.TAB;
 			}
 		}
 		
@@ -797,39 +896,39 @@ public class DefaultCodeFormatterOptions
 			}
 		}
 		
-		current = settings.get(DefaultCodeFormatterConstants.FORMATTER_INDENT_EMPTY_LINES);
+		current = settings.get(DefaultCodeFormatterConstants.FORMATTER_NEVER_INDENT_BLOCK_COMMENTS_ON_FIRST_COLUMN);
 		if(null != current) {
 			try {
-				indent_empty_lines = DefaultCodeFormatterConstants.TRUE.equals(current);
+				never_indent_block_comments_on_first_column = DefaultCodeFormatterConstants.TRUE.equals(current);
 			} catch(Exception e) {
-				indent_empty_lines = true;
+				never_indent_block_comments_on_first_column = false;
 			}
 		}
 		
-		current = settings.get(DefaultCodeFormatterConstants.FORMATTER_TAB_CHAR);
+		current = settings.get(DefaultCodeFormatterConstants.FORMATTER_NEVER_INDENT_LINE_COMMENTS_ON_FIRST_COLUMN);
 		if(null != current) {
 			try {
-				tab_char = DefaultCodeFormatterConstants.MIXED.equals(current) ? TabChar.MIXED : DefaultCodeFormatterConstants.SPACE.equals(current) ? TabChar.SPACE : TabChar.TAB;
+				never_indent_line_comments_on_first_column = DefaultCodeFormatterConstants.TRUE.equals(current);
 			} catch(Exception e) {
-				tab_char = TabChar.TAB;
+				never_indent_line_comments_on_first_column = false;
 			}
 		}
 		
-		current = settings.get(DefaultCodeFormatterConstants.FORMATTER_INDENTATION_SIZE);
+		current = settings.get(DefaultCodeFormatterConstants.FORMATTER_LINE_SPLIT);
 		if(null != current) {
 			try {
-				indentation_size = Integer.parseInt(current);
+				line_split = Integer.parseInt(current);
 			} catch(Exception e) {
-				indentation_size = 4;
+				line_split = 9999;
 			}
 		}
 		
-		current = settings.get(DefaultCodeFormatterConstants.FORMATTER_CONTINUATION_INDENTATION);
+		current = settings.get(DefaultCodeFormatterConstants.FORMATTER_PAGE_WIDTH);
 		if(null != current) {
 			try {
-				continuation_indentation = Integer.parseInt(current);
+				page_width = Integer.parseInt(current);
 			} catch(Exception e) {
-				continuation_indentation = 2;
+				page_width = 80;
 			}
 		}
 		
@@ -902,16 +1001,25 @@ public class DefaultCodeFormatterOptions
 		keep_functions_with_no_statement_in_one_line = false;
 		keep_functions_with_one_statement_in_one_line = false;
 		keep_else_conditional_on_one_line = true;
-		line_split = 9999;
-		never_indent_block_comments_on_first_column = false;
-		never_indent_line_comments_on_first_column = false;
-		page_width = 80;
-		tab_size = 4;
-		use_tabs_only_for_leading_indentations = false;
-		indent_empty_lines = true;
-		tab_char = TabChar.TAB;
 		indentation_size = 4;
 		continuation_indentation = 2;
+		indent_empty_lines = true;
+		indent_body_declarations_compare_to_type_header = true;
+		indent_body_declarations_compare_to_template_header = true;
+		indent_body_declarations_compare_to_modifier_header = true;
+		indent_statements_compare_to_function_header = true;
+		indent_in_out_body_compare_to_function_header = false;
+		indent_statements_compare_to_function_in_header = true;
+		indent_statements_compare_to_function_out_header = true;
+		indent_statements_compare_to_function_body_header = true;
+		indent_enum_members_compare_to_enum_header = true;
+		tab_char = TabChar.TAB;
+		tab_size = 4;
+		use_tabs_only_for_leading_indentations = false;
+		never_indent_block_comments_on_first_column = false;
+		never_indent_line_comments_on_first_column = false;
+		line_split = 9999;
+		page_width = 80;
 		number_of_empty_lines_to_preserve = 1;
 	}
 }

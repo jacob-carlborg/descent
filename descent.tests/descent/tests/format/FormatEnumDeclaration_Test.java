@@ -11,6 +11,7 @@ public class FormatEnumDeclaration_Test extends AbstractFormatter_Test {
 	protected Map getDefaultOptions() {
 		Map options = new HashMap();
 		options.put(DefaultCodeFormatterConstants.FORMATTER_BRACE_POSITION_FOR_ENUM_DECLARATION, DefaultCodeFormatterConstants.END_OF_LINE);
+		options.put(DefaultCodeFormatterConstants.FORMATTER_INDENT_ENUM_MEMBERS_COMPARE_TO_ENUM_HEADER, DefaultCodeFormatterConstants.TRUE);
 		return options;
 	}
 	
@@ -109,5 +110,20 @@ public class FormatEnumDeclaration_Test extends AbstractFormatter_Test {
 			);
 	}
 	
+	public void testDontIndentCompareToParent() throws Exception {
+		Map options = new HashMap();
+		options.put(DefaultCodeFormatterConstants.FORMATTER_INDENT_ENUM_MEMBERS_COMPARE_TO_ENUM_HEADER, DefaultCodeFormatterConstants.FALSE);
+		assertFormat(
+				"enum {\r\n" +
+				"x,\r\n" +
+				"y,\r\n" +
+				"z\r\n" +
+				"}", 
+				
+				"enum {  x, y, z  }",
+				
+				options
+			);
+	}
 
 }

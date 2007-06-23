@@ -230,38 +230,71 @@ keep_functions_with_one_statement_in_one_line
 keep_else_conditional_on_one_line
 	type=boolean
 	default=true
-
-# Other
-line_split
-	type=int
-	default=9999
-never_indent_block_comments_on_first_column
-	type=boolean
-	default=false
-never_indent_line_comments_on_first_column
-	type=boolean
-	default=false
-page_width
-	type=int
-	default=80
-tab_size
-	type=int
-	default=4
-use_tabs_only_for_leading_indentations
-	type=boolean
-	default=false
-indent_empty_lines
-	type=boolean
-	default=true
-tab_char
-	type=TabChar
-	default=TabChar.TAB
+	
+# Indent
 indentation_size
 	type=int
 	default=4
 continuation_indentation
 	type=int
 	default=2
+indent_empty_lines
+	type=boolean
+	default=true
+indent_body_declarations_compare_to_type_header
+	type=boolean
+	default=true
+indent_body_declarations_compare_to_template_header
+	type=boolean
+	default=true
+indent_body_declarations_compare_to_modifier_header
+	type=boolean
+	default=true
+indent_statements_compare_to_function_header
+	type=boolean
+	default=true
+indent_in_out_body_compare_to_function_header
+	type=boolean
+	default=false
+indent_statements_compare_to_function_in_header
+	type=boolean
+	default=true
+indent_statements_compare_to_function_out_header
+	type=boolean
+	default=true
+indent_statements_compare_to_function_body_header
+	type=boolean
+	default=true
+indent_enum_members_compare_to_enum_header
+	type=boolean
+	default=true
+	
+# Tabs
+tab_char
+	type=TabChar
+	default=TabChar.TAB
+tab_size
+	type=int
+	default=4
+use_tabs_only_for_leading_indentations
+	type=boolean
+	default=false
+	
+# Comments
+never_indent_block_comments_on_first_column
+	type=boolean
+	default=false
+never_indent_line_comments_on_first_column
+	type=boolean
+	default=false
+
+# Other
+line_split
+	type=int
+	default=9999
+page_width
+	type=int
+	default=80
 number_of_empty_lines_to_preserve
 	type=int
 	default=1

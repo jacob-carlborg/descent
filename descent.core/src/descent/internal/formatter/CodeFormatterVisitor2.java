@@ -141,7 +141,7 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 			formatCSV(baseClasses, false, true);
 		}
 		
-		formatDeclarationBlock(node.declarations(), preferences.brace_position_for_type_declaration, true);
+		formatDeclarationBlock(node.declarations(), preferences.brace_position_for_type_declaration, preferences.indent_body_declarations_compare_to_type_header);
 		
 		if(isNextToken(TOK.TOKsemicolon))
 			scribe.printNextToken(TOK.TOKsemicolon);
@@ -693,7 +693,7 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 			scribe.printNextToken(TOK.TOKsemicolon);
 		else
 		{
-			formatOpeningBrace(preferences.brace_position_for_enum_declaration, true);
+			formatOpeningBrace(preferences.brace_position_for_enum_declaration, preferences.indent_enum_members_compare_to_enum_header);
 			scribe.printNewLine();
 			for(EnumMember member : node.enumMembers())
 			{
@@ -704,7 +704,7 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 				scribe.printTrailingComment();
 				scribe.printNewLine();
 			}
-			formatClosingBrace(preferences.brace_position_for_enum_declaration, true);
+			formatClosingBrace(preferences.brace_position_for_enum_declaration, preferences.indent_enum_members_compare_to_enum_header);
 		}
 		if(isNextToken(TOK.TOKsemicolon)) {
 			scribe.printNextToken(TOK.TOKsemicolon);
@@ -1077,7 +1077,7 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 		formatModifiers(false);
 		if(!isNextToken(TOK.TOKcolon)) // "private:" instead of "private :"
 			scribe.space();
-		formatDeclarationBlock(node.declarations(), preferences.brace_position_for_modifiers, true);
+		formatDeclarationBlock(node.declarations(), preferences.brace_position_for_modifiers, preferences.indent_body_declarations_compare_to_modifier_header);
 		return false;
 	}
 	
@@ -1524,7 +1524,7 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 		scribe.printNextToken(TOK.TOKlparen);
 		formatCSV(node.templateParameters(), false, true);
 		scribe.printNextToken(TOK.TOKrparen);
-		formatDeclarationBlock(node.declarations(), preferences.brace_position_for_template_declaration, true);
+		formatDeclarationBlock(node.declarations(), preferences.brace_position_for_template_declaration, preferences.indent_body_declarations_compare_to_template_header);
 		return false;
 	}
 	
@@ -2072,18 +2072,29 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 		Block out  = (Block) node.getPostcondition();
 		Block body = (Block) node.getBody();
 		
+		boolean lastWasInOrOutOrBody = false;
 		if (null != in || null != out)
 		{
 			scribe.printNewLine();
-			scribe.indent();
+			if (preferences.indent_in_out_body_compare_to_function_header) {
+				scribe.indent();
+			}
 			loop: do
 				switch (nextNonCommentToken())
 				{
 					case TOKin:
+						if (lastWasInOrOutOrBody) {
+							scribe.printNewLine();
+						}
+						lastWasInOrOutOrBody = true;
 						scribe.printNextToken(TOK.TOKin);
-						formatSubStatement(in, false, true, bracePosition);
+						formatSubStatement(in, false, preferences.indent_statements_compare_to_function_in_header, bracePosition);
 						continue loop;
 					case TOKout:
+						if (lastWasInOrOutOrBody) {
+							scribe.printNewLine();
+						}
+						lastWasInOrOutOrBody = true;
 						scribe.printNextToken(TOK.TOKout);
 						if(isNextToken(TOK.TOKlparen))
 						{
@@ -2093,25 +2104,35 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 								scribe.printNextToken(TOK.TOKidentifier);
 							scribe.printNextToken(TOK.TOKrparen);
 						}
-						formatSubStatement(out, false, true, bracePosition);
+						formatSubStatement(out, false, preferences.indent_statements_compare_to_function_out_header, bracePosition);
 						continue loop;
 					case TOKbody:
+						if (lastWasInOrOutOrBody) {
+							scribe.printNewLine();
+						}
+						lastWasInOrOutOrBody = true;
 						scribe.printNextToken(TOK.TOKbody);
-						formatSubStatement(body, false, true, bracePosition);
+						formatSubStatement(body, false, preferences.indent_statements_compare_to_function_body_header, bracePosition);
 						continue loop;
 					default:
 						break loop;
 				}
 			while (true);
-			scribe.unIndent();
+			if (preferences.indent_in_out_body_compare_to_function_header) {
+				scribe.unIndent();
+			}
 		}
 		else if (isNextToken(TOK.TOKbody))
 		{
 			scribe.printNewLine();
-			scribe.indent();
+			if (preferences.indent_in_out_body_compare_to_function_header) {
+				scribe.indent();
+			}
 			scribe.printNextToken(TOK.TOKbody);
-			formatSubStatement(body, false, true, bracePosition);
-			scribe.unIndent();
+			formatSubStatement(body, false, preferences.indent_statements_compare_to_function_body_header, bracePosition);
+			if (preferences.indent_in_out_body_compare_to_function_header) {
+				scribe.unIndent();
+			}
 		}
 		else {
 			if (body != null) {
@@ -2135,7 +2156,7 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 					
 				} else {
 					
-					formatSubStatement(body, false, true, bracePosition);
+					formatSubStatement(body, false, preferences.indent_statements_compare_to_function_header, bracePosition);
 					
 				}
 			} else {

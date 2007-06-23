@@ -5,13 +5,22 @@ import java.util.Map;
 
 import descent.core.formatter.DefaultCodeFormatterConstants;
 
-public abstract class AbstractFormatBraceFunction_Test extends AbstractFormatter_Test {
+public abstract class AbstractFormatBrace_Test extends AbstractFormatter_Test {
 	
 	protected abstract String getFormattedPrefixForBrace();
 	
 	protected abstract String getUnformattedPrefixForBrace();
 	
 	protected abstract String getBracePositionOptionName();
+	
+	protected abstract String getIndentCompareToParentOptionName();
+	
+	@Override
+	protected Map getDefaultOptions() {
+		Map options = new HashMap();
+		options.put(getIndentCompareToParentOptionName(), DefaultCodeFormatterConstants.TRUE);
+		return options;
+	}
 	
 	public void testBracesAtEndOfLine() throws Exception {
 		assertFormat(
@@ -77,6 +86,20 @@ public abstract class AbstractFormatBraceFunction_Test extends AbstractFormatter
 					"\t}", 
 				
 				getUnformattedPrefixForBrace() +  " {  int x;  }",
+				
+				options
+			);
+	}
+	
+	public void testDontIndentCompareToParent() throws Exception {
+		Map options = new HashMap();
+		options.put(getIndentCompareToParentOptionName(), DefaultCodeFormatterConstants.FALSE);
+		assertFormat(
+				getFormattedPrefixForBrace() + " {\r\n" +
+				"int x;\r\n" +
+				"}", 
+				
+				getUnformattedPrefixForBrace() + " {  int x;  }",
 				
 				options
 			);
