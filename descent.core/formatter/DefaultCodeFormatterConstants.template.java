@@ -16,6 +16,9 @@ import descent.internal.formatter.align.Alignment2;
  */
 public class DefaultCodeFormatterConstants {
 	
+	public static final String PROFILE_DESCENT_DEFAULTS = "descent.ui.formatter.defaults.descent_defaults";
+	public static final String DEFAULT_PROFILE = PROFILE_DESCENT_DEFAULTS;
+	
 	// Boolean mappings
 	public static final String FALSE = "false";
 	public static final String TRUE = "true";
@@ -85,12 +88,12 @@ public class DefaultCodeFormatterConstants {
 		return String.valueOf(alignmentValue);
 	}
 
-	public static Map getEclipse21Settings() {
-		return DefaultCodeFormatterOptions.getDefaultSettings().getMap();
+	public static Map getBuiltInProfile(String name) {
+		return DefaultCodeFormatterOptions.getBuiltInProfile(name).getMap();
 	}
-
-	public static Map getEclipseDefaultSettings() {
-		return DefaultCodeFormatterOptions.getEclipseDefaultSettings().getMap();
+	
+	public static Map getDefaultSettings() {
+		return DefaultCodeFormatterOptions.getBuiltInProfile(DEFAULT_PROFILE).getMap();
 	}
 
 	public static boolean getForceWrapping(String value) {
@@ -121,10 +124,6 @@ public class DefaultCodeFormatterConstants {
 		} catch (NumberFormatException e) {
 			throw WRONG_ARGUMENT;
 		}
-	}
-
-	public static Map getJavaConventionsSettings() {
-		return DefaultCodeFormatterOptions.getJavaConventionsSettings().getMap();
 	}
 
 	public static int getWrappingStyle(String value) {

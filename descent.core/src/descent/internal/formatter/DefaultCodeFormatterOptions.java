@@ -7,9 +7,7 @@ import descent.core.formatter.DefaultCodeFormatterConstants;
 import descent.internal.formatter.align.Alignment2;
 
 public class DefaultCodeFormatterOptions
-{
-	// TODO different default profiles? (or just get rid of the unused ones)
-	
+{	
 	public enum TabChar
 	{
 		TAB(DefaultCodeFormatterConstants.TAB),
@@ -33,18 +31,11 @@ public class DefaultCodeFormatterOptions
 	}
 	
 	public static DefaultCodeFormatterOptions getDefaultSettings() {
-		DefaultCodeFormatterOptions options = new DefaultCodeFormatterOptions();
-		options.setDefaultSettings();
-		return options;
+		return getBuiltInProfile(DefaultCodeFormatterConstants.DEFAULT_PROFILE);
 	}
 	
-	public static DefaultCodeFormatterOptions getEclipseDefaultSettings() {
-		DefaultCodeFormatterOptions options = new DefaultCodeFormatterOptions();
-		options.setDefaultSettings();
-		return options;
-	}
-
-	public static DefaultCodeFormatterOptions getJavaConventionsSettings() {
+	public static DefaultCodeFormatterOptions getBuiltInProfile(String name)
+	{
 		DefaultCodeFormatterOptions options = new DefaultCodeFormatterOptions();
 		options.setDefaultSettings();
 		return options;

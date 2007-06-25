@@ -74,7 +74,7 @@ public class DefaultCodeFormatter extends CodeFormatter {
 	private DefaultCodeFormatterOptions preferences;
 	
 	public DefaultCodeFormatter() {
-		this(new DefaultCodeFormatterOptions(DefaultCodeFormatterConstants.getJavaConventionsSettings()), null);
+		this(new DefaultCodeFormatterOptions(DefaultCodeFormatterConstants.getDefaultSettings()), null);
 	}
 	
 	public DefaultCodeFormatter(DefaultCodeFormatterOptions preferences) {
@@ -87,7 +87,7 @@ public class DefaultCodeFormatter extends CodeFormatter {
 			this.preferences = new DefaultCodeFormatterOptions(options);
 		} else {
 			this.options = JavaCore.getOptions();
-			this.preferences = new DefaultCodeFormatterOptions(DefaultCodeFormatterConstants.getJavaConventionsSettings());
+			this.preferences = new DefaultCodeFormatterOptions(DefaultCodeFormatterConstants.getDefaultSettings());
 		}
 		this.defaultCompilerOptions = getDefaultCompilerOptions();
 		if (defaultCodeFormatterOptions != null) {

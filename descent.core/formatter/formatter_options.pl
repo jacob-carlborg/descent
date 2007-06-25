@@ -65,6 +65,8 @@ close(FILE);
 
 processFile("DefaultCodeFormatterOptions.template.java", "../src/descent/internal/formatter/DefaultCodeFormatterOptions.java");
 processFile("DefaultCodeFormatterConstants.template.java", "../src/descent/core/formatter/DefaultCodeFormatterConstants.java");
+processFile("FormatterMessages.template.java", "../../descent.ui/src/descent/internal/ui/preferences/formatter/FormatterMessages.java"); 
+processFile("FormatterMessages.template.properties", "../../descent.ui/src/descent/internal/ui/preferences/formatter/FormatterMessages.properties"); 
 
 sub processFile
 {

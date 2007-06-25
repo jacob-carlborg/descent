@@ -69,7 +69,7 @@ public class JavaCorePreferenceInitializer extends AbstractPreferenceInitializer
 		optionNames.add(JavaCore.CORE_ENCODING);
 
 		// Formatter settings
-		Map codeFormatterOptionsMap = DefaultCodeFormatterConstants.getEclipseDefaultSettings(); // code formatter defaults
+		Map codeFormatterOptionsMap = DefaultCodeFormatterConstants.getDefaultSettings(); // code formatter defaults
 		for (Iterator iter = codeFormatterOptionsMap.entrySet().iterator(); iter.hasNext();) {
 			Map.Entry entry = (Map.Entry) iter.next();
 			String optionName = (String) entry.getKey();
