@@ -77,7 +77,7 @@ public class BracesTabPage extends ModifyDialogTabPage {
 				FormatterMessages.BracesTabPage_brace_position_for_enum_declaration, 
 				DefaultCodeFormatterConstants.FORMATTER_BRACE_POSITION_FOR_ENUM_DECLARATION);
 		prefs[3] = createBracesCombo(group, numColumns, 
-				FormatterMessages.BracesTabPage_brace_position_for_template_declarations, 
+				FormatterMessages.BracesTabPage_brace_position_for_template_declaration, 
 				DefaultCodeFormatterConstants.FORMATTER_BRACE_POSITION_FOR_TEMPLATE_DECLARATION);
 		prefs[4] = createBracesCombo(group, numColumns, 
 				FormatterMessages.BracesTabPage_brace_position_for_conditional_declaration, 
@@ -107,13 +107,13 @@ public class BracesTabPage extends ModifyDialogTabPage {
 				FormatterMessages.BracesTabPage_brace_position_for_modifiers, 
 				DefaultCodeFormatterConstants.FORMATTER_BRACE_POSITION_FOR_MODIFIERS);
 		prefs[13] = createBracesCombo(group, numColumns, 
-				FormatterMessages.BracesTabPage_brace_position_for_synchronized_statements, 
+				FormatterMessages.BracesTabPage_brace_position_for_synchronized_statement, 
 				DefaultCodeFormatterConstants.FORMATTER_BRACE_POSITION_FOR_SYNCHRONIZED_STATEMENT);
 		prefs[14] = createBracesCombo(group, numColumns, 
-				FormatterMessages.BracesTabPage_brace_position_for_with_statements, 
+				FormatterMessages.BracesTabPage_brace_position_for_with_statement, 
 				DefaultCodeFormatterConstants.FORMATTER_BRACE_POSITION_FOR_WITH_STATEMENT);
 		prefs[15] = createBracesCombo(group, numColumns, 
-				FormatterMessages.BracesTabPage_brace_position_for_scope_statements, 
+				FormatterMessages.BracesTabPage_brace_position_for_scope_statement, 
 				DefaultCodeFormatterConstants.FORMATTER_BRACE_POSITION_FOR_SCOPE_STATEMENT);
 		prefs[16] = createBracesCombo(group, numColumns, 
 				FormatterMessages.BracesTabPage_brace_position_for_other_blocks, 

@@ -29,14 +29,8 @@ import descent.internal.ui.preferences.PreferencesAccess;
 
 public class FormatterProfileManager extends ProfileManager {
 	
-	public final static String ECLIPSE21_PROFILE= "descent.ui.default_profile"; //$NON-NLS-1$
-	public final static String ECLIPSE_PROFILE= "descent.ui.default.eclipse_profile"; //$NON-NLS-1$
-	public final static String JAVA_PROFILE= "descent.ui.default.sun_profile"; //$NON-NLS-1$
-	
-	public final static String DEFAULT_PROFILE= ECLIPSE_PROFILE;
-	
 	private final static KeySet[] KEY_SETS= new KeySet[] {
-		new KeySet(JavaCore.PLUGIN_ID, new ArrayList(DefaultCodeFormatterConstants.getJavaConventionsSettings().keySet())),
+		new KeySet(JavaCore.PLUGIN_ID, new ArrayList(DefaultCodeFormatterConstants.getDefaultSettings().keySet())),
 		new KeySet(JavaUI.ID_PLUGIN, Collections.EMPTY_LIST)	
 	};
 	
@@ -48,14 +42,12 @@ public class FormatterProfileManager extends ProfileManager {
     }
 	
 	private static List addBuiltinProfiles(List profiles, IProfileVersioner profileVersioner) {
-		final Profile javaProfile= new BuiltInProfile(JAVA_PROFILE, FormatterMessages.ProfileManager_java_conventions_profile_name, getJavaSettings(), 1, profileVersioner.getCurrentVersion(), profileVersioner.getProfileKind()); 
-		profiles.add(javaProfile);
-		
-		final Profile eclipseProfile= new BuiltInProfile(ECLIPSE_PROFILE, FormatterMessages.ProfileManager_eclipse_profile_name, getEclipseSettings(), 2, profileVersioner.getCurrentVersion(), profileVersioner.getProfileKind()); 
-		profiles.add(eclipseProfile);
-		
-		final Profile eclipse21Profile= new BuiltInProfile(ECLIPSE21_PROFILE, FormatterMessages.ProfileManager_default_profile_name, getEclipse21Settings(), 3, profileVersioner.getCurrentVersion(), profileVersioner.getProfileKind()); 
-		profiles.add(eclipse21Profile);
+		profiles.add(new BuiltInProfile(DefaultCodeFormatterConstants.PROFILE_DESCENT_DEFAULTS,
+				FormatterMessages.ProfileManager_descent_defaults_profile_name,
+				getBuiltInProfile(DefaultCodeFormatterConstants.PROFILE_DESCENT_DEFAULTS),
+				1,
+				profileVersioner.getCurrentVersion(),
+				profileVersioner.getProfileKind())); 
 		return profiles;
 	}
 	
@@ -63,28 +55,8 @@ public class FormatterProfileManager extends ProfileManager {
 	/**
 	 * @return Returns the settings for the default profile.
 	 */	
-	public static Map getEclipse21Settings() {
-		final Map options= DefaultCodeFormatterConstants.getEclipse21Settings();
-
-		ProfileVersioner.setLatestCompliance(options);
-		return options;
-	}
-	
-	/**
-	 * @return Returns the settings for the new eclipse profile.
-	 */	
-	public static Map getEclipseSettings() {
-		final Map options= DefaultCodeFormatterConstants.getEclipseDefaultSettings();
-
-		ProfileVersioner.setLatestCompliance(options);
-		return options;
-	}
-
-	/** 
-	 * @return Returns the settings for the Java Conventions profile.
-	 */
-	public static Map getJavaSettings() {
-		final Map options= DefaultCodeFormatterConstants.getJavaConventionsSettings();
+	public static Map getBuiltInProfile(String name) {
+		final Map options= DefaultCodeFormatterConstants.getBuiltInProfile(name);
 
 		ProfileVersioner.setLatestCompliance(options);
 		return options;
@@ -94,7 +66,7 @@ public class FormatterProfileManager extends ProfileManager {
 	 * @return Returns the default settings.
 	 */
 	public static Map getDefaultSettings() {
-		return getEclipseSettings();
+		return getBuiltInProfile(DefaultCodeFormatterConstants.DEFAULT_PROFILE);
 	}
 
 
@@ -107,12 +79,12 @@ public class FormatterProfileManager extends ProfileManager {
 			// request from bug 129427
 			profileId= new DefaultScope().getNode(JavaUI.ID_PLUGIN).get(PROFILE_KEY, null);
 			// fix for bug 89739
-			if (DEFAULT_PROFILE.equals(profileId)) { // default default: 
+			if (DefaultCodeFormatterConstants.DEFAULT_PROFILE.equals(profileId)) { // default default: 
 				IEclipsePreferences node= instanceScope.getNode(JavaCore.PLUGIN_ID);
 				if (node != null) {
 					String tabSetting= node.get(DefaultCodeFormatterConstants.FORMATTER_TAB_CHAR, null);
 					if (JavaCore.SPACE.equals(tabSetting)) {
-						profileId= JAVA_PROFILE;
+						profileId= DefaultCodeFormatterConstants.PROFILE_DESCENT_DEFAULTS;
 					}
 				}
 			}
@@ -125,7 +97,7 @@ public class FormatterProfileManager extends ProfileManager {
      * @see descent.internal.ui.preferences.formatter.ProfileManager#getDefaultProfile()
      */
     public Profile getDefaultProfile() {
-	    return getProfile(DEFAULT_PROFILE);
+	    return getProfile(DefaultCodeFormatterConstants.DEFAULT_PROFILE);
     }
     
 }
