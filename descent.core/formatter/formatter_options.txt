@@ -306,7 +306,7 @@ indent_in_out_body_compare_to_function_header
 	uiText='in'/'out'/'body' under function:
 indent_statements_compare_to_function_in_header
 	type=boolean
-	default=indent_statements_compare_to_function_header
+	default=true
 	tab=IndentationTabPage
 	uiText=Statements within 'in':
 indent_statements_compare_to_function_out_header
@@ -316,7 +316,7 @@ indent_statements_compare_to_function_out_header
 	uiText=Statements within 'out':
 indent_statements_compare_to_function_body_header
 	type=boolean
-	default=indent_statements_compare_to_function_header
+	default=true
 	tab=IndentationTabPage
 	uiText=Statements within 'body':
 indent_enum_members_compare_to_enum_header
