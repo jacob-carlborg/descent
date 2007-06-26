@@ -12,5 +12,10 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.debug.core,
  descent.core
 Eclipse-LazyStart: true
-Export-Package: descent.launching,
- descent.launching.model
+Export-Package: descent.internal.launching;x-friends:="descent.tests",
+ descent.internal.launching.model;x-friends:="descent.tests",
+ descent.internal.launching.model.ddbg;x-friends:="descent.tests",
+ descent.internal.launching.model.gdb;x-friends:="descent.tests",
+ descent.launching,
+ descent.launching.model,
+ descent.launching.utils

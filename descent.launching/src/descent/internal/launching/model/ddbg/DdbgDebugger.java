@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.eclipse.core.resources.IResource;
 import org.eclipse.debug.core.DebugEvent;
 import org.eclipse.debug.core.DebugException;
 import org.eclipse.debug.core.model.IRegister;
@@ -119,17 +118,16 @@ public class DdbgDebugger implements IDebugger {
 		}
 	}
 
-	public void addBreakpoint(IResource resource, int lineNumber) throws IOException {
+	public void addBreakpoint(String filename, int lineNumber) throws IOException {
 		try {
 			setState(new WaitingConfirmation(this));
 			
 			beforeWaitStateReturn();
 			
-			fProxy.write("bp ");
-			fProxy.write(ArgumentUtils.toStringArgument(resource.getLocation().toOSString()));
-			fProxy.write(":");
-			fProxy.write(String.valueOf(lineNumber));
-			fProxy.write("\n");
+			fProxy.write("bp " +
+				ArgumentUtils.toStringArgument(filename) +
+				":" + lineNumber + "\n"
+				);
 			
 			waitStateReturn();
 		} finally {
@@ -137,17 +135,16 @@ public class DdbgDebugger implements IDebugger {
 		}
 	}
 
-	public void removeBreakpoint(IResource resource, int lineNumber) throws IOException {
+	public void removeBreakpoint(String filename, int lineNumber) throws IOException {
 		try {
 			setState(new WaitingConfirmation(this));
 			
 			beforeWaitStateReturn();
 			
-			fProxy.write("dbp ");
-			fProxy.write(ArgumentUtils.toStringArgument(resource.getLocation().toOSString()));
-			fProxy.write(":");
-			fProxy.write(String.valueOf(lineNumber));
-			fProxy.write("\n");
+			fProxy.write("dbp " +
+				ArgumentUtils.toStringArgument(filename) +
+				":" +lineNumber + "\n"
+				);
 			
 			waitStateReturn();
 		} finally {

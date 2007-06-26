@@ -85,7 +85,7 @@ public class DescentDebugTarget extends DescentDebugElement implements IDebugTar
 			IBreakpoint[] breakpoints = manager.getBreakpoints(IDescentLaunchConfigurationConstants.ID_D_DEBUG_MODEL);
 			for(IBreakpoint breakpoint : breakpoints) {
 				if (breakpoint.isEnabled()) {
-					fDebugger.addBreakpoint(breakpoint.getMarker().getResource(), ((ILineBreakpoint) breakpoint).getLineNumber());
+					fDebugger.addBreakpoint(breakpoint.getMarker().getResource().getLocation().toOSString(), ((ILineBreakpoint) breakpoint).getLineNumber());
 				}
 			}
 		} catch (IOException e) {
@@ -177,7 +177,7 @@ public class DescentDebugTarget extends DescentDebugElement implements IDebugTar
 		if (isTerminated()) return;
 		
 		try {
-			fDebugger.addBreakpoint(breakpoint.getMarker().getResource(), ((ILineBreakpoint) breakpoint).getLineNumber());
+			fDebugger.addBreakpoint(breakpoint.getMarker().getResource().getLocation().toOSString(), ((ILineBreakpoint) breakpoint).getLineNumber());
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (CoreException e) {
@@ -202,7 +202,7 @@ public class DescentDebugTarget extends DescentDebugElement implements IDebugTar
 		if (isTerminated()) return;
 		
 		try {
-			fDebugger.removeBreakpoint(breakpoint.getMarker().getResource(), ((ILineBreakpoint) breakpoint).getLineNumber());
+			fDebugger.removeBreakpoint(breakpoint.getMarker().getResource().getLocation().toOSString(), ((ILineBreakpoint) breakpoint).getLineNumber());
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (CoreException e) {

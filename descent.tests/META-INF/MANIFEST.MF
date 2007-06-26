@@ -8,4 +8,16 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.core.resources,
  descent.core,
  org.junit,
- org.eclipse.jface.text
+ org.eclipse.jface.text,
+ descent.launching,
+ org.eclipse.debug.core
+Bundle-ClassPath: lib/cglib-2.1_3-src.jar,
+ lib/cglib-nodep-2.1_3.jar,
+ lib/hamcrest-api-1.0.jar,
+ lib/hamcrest-library-1.0.jar,
+ lib/jmock-2.1.0.jar,
+ lib/jmock-junit3-2.1.0.jar,
+ lib/jmock-junit4-2.1.0.jar,
+ lib/jmock-legacy-2.1.0.jar,
+ lib/objenesis-1.0.jar,
+ .

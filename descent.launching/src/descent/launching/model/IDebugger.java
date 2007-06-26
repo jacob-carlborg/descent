@@ -3,7 +3,6 @@ package descent.launching.model;
 import java.io.IOException;
 import java.util.List;
 
-import org.eclipse.core.resources.IResource;
 import org.eclipse.debug.core.DebugException;
 import org.eclipse.debug.core.model.IRegister;
 import org.eclipse.debug.core.model.IRegisterGroup;
@@ -143,21 +142,21 @@ public interface IDebugger {
 	
 	/**
 	 * Adds a breakpoint in the given resource at the given line. 
-	 * @param resource the resource in which to add the breakpoint
+	 * @param filename the filename in which to add the breakpoint
 	 * @param lineNumber the line number in the resource
 	 * @throws DebugException
 	 * @throws IOException
 	 */
-	void addBreakpoint(IResource resource, int lineNumber) throws DebugException, IOException;
+	void addBreakpoint(String filename, int lineNumber) throws DebugException, IOException;
 	
 	/**
 	 * Removes a breakpoint from the given resource at the given line. 
-	 * @param resource the resource from which to remove the breakpoint
+	 * @param filename the filename from which to remove the breakpoint
 	 * @param lineNumber the line number in the resource
 	 * @throws DebugException
 	 * @throws IOException
 	 */
-	void removeBreakpoint(IResource resource, int lineNumber) throws DebugException, IOException;
+	void removeBreakpoint(String filename, int lineNumber) throws DebugException, IOException;
 	
 	/**
 	 * Returns the current stack frames.

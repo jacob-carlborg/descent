@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.eclipse.core.resources.IResource;
 import org.eclipse.debug.core.DebugEvent;
 import org.eclipse.debug.core.DebugException;
 import org.eclipse.debug.core.model.IRegister;
@@ -49,7 +48,7 @@ public class GdbDebugger implements IDebugger {
 		return args;
 	}
 
-	public void addBreakpoint(IResource resource, int lineNumber) throws DebugException, IOException {
+	public void addBreakpoint(String filename, int lineNumber) throws DebugException, IOException {
 		try {
 			setState(new WaitingConfirmation(this));
 			
@@ -57,7 +56,7 @@ public class GdbDebugger implements IDebugger {
 			
 			fProxy.write("break ");
 			fProxy.write(ArgumentUtils.toStringArgument(
-					toGdbPath(resource.getLocation().toOSString()) +
+					toGdbPath(filename) +
 					":" +
 					lineNumber
 				));
@@ -193,7 +192,7 @@ public class GdbDebugger implements IDebugger {
 		fState.interpretError(text);
 	}
 
-	public void removeBreakpoint(IResource resource, int lineNumber) throws DebugException, IOException {
+	public void removeBreakpoint(String filename, int lineNumber) throws DebugException, IOException {
 		try {
 			setState(new WaitingConfirmation(this));
 			
@@ -201,7 +200,7 @@ public class GdbDebugger implements IDebugger {
 			
 			fProxy.write("clear ");
 			fProxy.write(ArgumentUtils.toStringArgument(
-					toGdbPath(resource.getLocation().toOSString()) +
+					toGdbPath(filename) +
 					":" +
 					lineNumber
 					));

@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.locks.ReentrantLock;
 
-import org.eclipse.core.resources.IResource;
 import org.eclipse.debug.core.DebugException;
 import org.eclipse.debug.core.model.IRegister;
 import org.eclipse.debug.core.model.IRegisterGroup;
@@ -12,10 +11,9 @@ import org.eclipse.debug.core.model.IStackFrame;
 import org.eclipse.debug.core.model.IStreamsProxy;
 import org.eclipse.debug.core.model.IVariable;
 
+import descent.launching.model.IDebugElementFactory;
 import descent.launching.model.IDebugger;
 import descent.launching.model.IDebuggerListener;
-import descent.launching.model.IDebugElementFactory;
-import descent.launching.model.IParentVariable;
 
 public class SingleThreadCli implements IDebugger {
 	
@@ -47,10 +45,10 @@ public class SingleThreadCli implements IDebugger {
 		return fDebugger.getDebuggerCommandLineArguments();
 	}
 
-	public void addBreakpoint(IResource resource, int lineNumber) throws DebugException, IOException {
+	public void addBreakpoint(String filename, int lineNumber) throws DebugException, IOException {
 		fWriteLock.lock();
 		try {
-			fDebugger.addBreakpoint(resource, lineNumber);
+			fDebugger.addBreakpoint(filename, lineNumber);
 		} finally {
 			fWriteLock.unlock();
 		}
@@ -123,10 +121,10 @@ public class SingleThreadCli implements IDebugger {
 		}
 	}
 
-	public void removeBreakpoint(IResource resource, int lineNumber) throws DebugException, IOException {
+	public void removeBreakpoint(String filename, int lineNumber) throws DebugException, IOException {
 		fWriteLock.lock();
 		try {
-			fDebugger.removeBreakpoint(resource, lineNumber);
+			fDebugger.removeBreakpoint(filename, lineNumber);
 		} finally {
 			fWriteLock.unlock();
 		}
