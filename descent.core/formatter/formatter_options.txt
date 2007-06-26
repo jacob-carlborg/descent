@@ -269,47 +269,73 @@ keep_else_conditional_on_one_line
 indentation_size
 	type=int
 	default=4
+	tab=IndentationTabPage
+	uiText=Indentation Size:
 continuation_indentation
 	type=int
 	default=2
 indent_empty_lines
 	type=boolean
 	default=true
+	tab=IndentationTabPage
+	uiText=Empty Lines:
 indent_body_declarations_compare_to_type_header
 	type=boolean
 	default=true
+	tab=IndentationTabPage
+	uiText=Declarations within type:
 indent_body_declarations_compare_to_template_header
 	type=boolean
 	default=true
+	tab=IndentationTabPage
+	uiText=Declarations within template:
 indent_body_declarations_compare_to_modifier_header
 	type=boolean
 	default=true
+	tab=IndentationTabPage
+	uiText=Declarations within modifier:
 indent_statements_compare_to_function_header
 	type=boolean
 	default=true
+	tab=IndentationTabPage
+	uiText=Statements within function:
 indent_in_out_body_compare_to_function_header
 	type=boolean
 	default=false
+	tab=IndentationTabPage
+	uiText='in'/'out'/'body' under function:
 indent_statements_compare_to_function_in_header
 	type=boolean
-	default=true
+	default=indent_statements_compare_to_function_header
+	tab=IndentationTabPage
+	uiText=Statements within 'in':
 indent_statements_compare_to_function_out_header
 	type=boolean
 	default=true
+	tab=IndentationTabPage
+	uiText=Statements within 'out':
 indent_statements_compare_to_function_body_header
 	type=boolean
-	default=true
+	default=indent_statements_compare_to_function_header
+	tab=IndentationTabPage
+	uiText=Statements within 'body':
 indent_enum_members_compare_to_enum_header
 	type=boolean
 	default=true
+	tab=IndentationTabPage
+	uiText=Enum members:
 	
 # Tabs
 tab_char
 	type=TabChar
 	default=TabChar.TAB
+	tab=IndentationTabPage
+	uiText=Tab polic&y:
 tab_size
 	type=int
 	default=4
+	tab=IndentationTabPage
+	uiText=Tab &size:
 use_tabs_only_for_leading_indentations
 	type=boolean
 	default=false

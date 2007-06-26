@@ -829,7 +829,7 @@ public class DefaultCodeFormatterOptions
 			try {
 				indent_statements_compare_to_function_in_header = DefaultCodeFormatterConstants.TRUE.equals(current);
 			} catch(Exception e) {
-				indent_statements_compare_to_function_in_header = true;
+				indent_statements_compare_to_function_in_header = indent_statements_compare_to_function_header;
 			}
 		}
 		
@@ -847,7 +847,7 @@ public class DefaultCodeFormatterOptions
 			try {
 				indent_statements_compare_to_function_body_header = DefaultCodeFormatterConstants.TRUE.equals(current);
 			} catch(Exception e) {
-				indent_statements_compare_to_function_body_header = true;
+				indent_statements_compare_to_function_body_header = indent_statements_compare_to_function_header;
 			}
 		}
 		
@@ -1000,9 +1000,9 @@ public class DefaultCodeFormatterOptions
 		indent_body_declarations_compare_to_modifier_header = true;
 		indent_statements_compare_to_function_header = true;
 		indent_in_out_body_compare_to_function_header = false;
-		indent_statements_compare_to_function_in_header = true;
+		indent_statements_compare_to_function_in_header = indent_statements_compare_to_function_header;
 		indent_statements_compare_to_function_out_header = true;
-		indent_statements_compare_to_function_body_header = true;
+		indent_statements_compare_to_function_body_header = indent_statements_compare_to_function_header;
 		indent_enum_members_compare_to_enum_header = true;
 		tab_char = TabChar.TAB;
 		tab_size = 4;

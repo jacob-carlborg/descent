@@ -94,6 +94,14 @@ final class FormatterMessages extends NLS {
 	public static String BracesTabPage_group_brace_positions_title;
 	public static String BracesTabPage_group_set_all_to;
 	
+	// Indentation tab page
+	public static String IndentationTabPage_style_tab;
+	public static String IndentationTabPage_style_space;
+	public static String IndentationTabPage_style_mixed;
+	public static String IndentationTabPage_preview_header;
+	public static String IndentationTabPage_general_group_title;
+	public static String IndentationTabPage_indent_group_title;
+	
 	// Messages for various options (automatically generated)
 	/* EVAL-FOR-EACH
 	 * 
