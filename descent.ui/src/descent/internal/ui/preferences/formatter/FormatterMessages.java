@@ -94,6 +94,14 @@ final class FormatterMessages extends NLS {
 	public static String BracesTabPage_group_brace_positions_title;
 	public static String BracesTabPage_group_set_all_to;
 	
+	// Indentation tab page
+	public static String IndentationTabPage_style_tab;
+	public static String IndentationTabPage_style_space;
+	public static String IndentationTabPage_style_mixed;
+	public static String IndentationTabPage_preview_header;
+	public static String IndentationTabPage_general_group_title;
+	public static String IndentationTabPage_indent_group_title;
+	
 	// Messages for various options (automatically generated)
 	public static String BracesTabPage_brace_position_for_function_declaration;
 	public static String BracesTabPage_brace_position_for_type_declaration;
@@ -112,6 +120,19 @@ final class FormatterMessages extends NLS {
 	public static String BracesTabPage_brace_position_for_with_statement;
 	public static String BracesTabPage_brace_position_for_scope_statement;
 	public static String BracesTabPage_brace_position_for_other_blocks;
+	public static String IndentationTabPage_indentation_size;
+	public static String IndentationTabPage_indent_empty_lines;
+	public static String IndentationTabPage_indent_body_declarations_compare_to_type_header;
+	public static String IndentationTabPage_indent_body_declarations_compare_to_template_header;
+	public static String IndentationTabPage_indent_body_declarations_compare_to_modifier_header;
+	public static String IndentationTabPage_indent_statements_compare_to_function_header;
+	public static String IndentationTabPage_indent_in_out_body_compare_to_function_header;
+	public static String IndentationTabPage_indent_statements_compare_to_function_in_header;
+	public static String IndentationTabPage_indent_statements_compare_to_function_out_header;
+	public static String IndentationTabPage_indent_statements_compare_to_function_body_header;
+	public static String IndentationTabPage_indent_enum_members_compare_to_enum_header;
+	public static String IndentationTabPage_tab_char;
+	public static String IndentationTabPage_tab_size;
 
 	static {
 		NLS.initializeMessages(BUNDLE_NAME, FormatterMessages.class);
