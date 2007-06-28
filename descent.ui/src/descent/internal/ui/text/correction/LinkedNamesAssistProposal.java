@@ -2,6 +2,7 @@ package descent.internal.ui.text.correction;
 
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.List;
 
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
@@ -37,6 +38,7 @@ import descent.internal.ui.JavaPluginImages;
 import descent.internal.ui.javaeditor.ASTProvider;
 import descent.internal.ui.javaeditor.EditorHighlightingSynchronizer;
 import descent.internal.ui.javaeditor.JavaEditor;
+import descent.internal.ui.search.NaiveOccurrencesFinder;
 
 /**
  * A template proposal.
@@ -79,9 +81,16 @@ public class LinkedNamesAssistProposal implements IJavaCompletionProposal, IComp
 			ASTNode nameNode= NodeFinder.perform(root, fNode.getStartPosition(), fNode.getLength());
 			final int pos= fNode.getStartPosition();
 
+			
 			ASTNode[] sameNodes;
 			if (nameNode instanceof SimpleName) {
+				/* TODO JDT UI linked names
 				sameNodes= LinkedNodeFinder.findByNode(root, (SimpleName) nameNode);
+				*/
+				NaiveOccurrencesFinder finder = new NaiveOccurrencesFinder();
+				finder.initialize(root, nameNode);
+				List<ASTNode> sameNodesList = finder.perform();
+				sameNodes = sameNodesList.toArray(new ASTNode[sameNodesList.size()]);
 			} else {
 				sameNodes= new ASTNode[] { nameNode };
 			}

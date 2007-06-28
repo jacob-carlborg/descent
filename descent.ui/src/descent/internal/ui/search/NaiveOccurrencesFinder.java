@@ -28,7 +28,7 @@ public class NaiveOccurrencesFinder extends ASTVisitor implements IOccurrencesFi
 	private SimpleName fSelectedName;
 	
 	private ASTNode fStart;
-	private List fResult;
+	private List<ASTNode> fResult;
 	
 	public NaiveOccurrencesFinder() {
 		fResult= new ArrayList();
@@ -71,7 +71,7 @@ public class NaiveOccurrencesFinder extends ASTVisitor implements IOccurrencesFi
 		return "''{0}'' - 1 naive occurrences in ''{1}''"; //$NON-NLS-1$
 	}
 	
-	public List perform() {
+	public List<ASTNode> perform() {
 		fStart.accept(this);
 		if (fSelectedName != null) {
 			fResult.add(fSelectedName);

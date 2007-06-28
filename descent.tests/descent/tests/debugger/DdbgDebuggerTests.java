@@ -1,34 +1,21 @@
 package descent.tests.debugger;
 
-import java.io.IOException;
-
 import org.eclipse.debug.core.DebugEvent;
-import org.eclipse.debug.core.DebugException;
-import org.eclipse.debug.core.model.IStreamsProxy;
 import org.jmock.Expectations;
-import org.jmock.Mockery;
-import org.jmock.integration.junit3.MockObjectTestCase;
 
 import descent.internal.launching.model.ddbg.DdbgDebugger;
-import descent.launching.model.IDebugElementFactory;
 import descent.launching.model.IDebugger;
-import descent.launching.model.IDebuggerListener;
 
-public class DdbgDebuggerTests extends MockObjectTestCase {
+public class DdbgDebuggerTests extends AbstractDebuggerTests {
 	
-	private Mockery mockery = new Mockery();
-	private IDebugger debugger;
-	private IDebugElementFactory factory;
-	private IDebuggerListener listener;
-	private IStreamsProxy proxy;
+	@Override
+	protected IDebugger createDebugger() {
+		return new DdbgDebugger();
+	}
 	
-	public void setUp() {
-		debugger = new DdbgDebugger();		
-		factory = mock(IDebugElementFactory.class);
-		listener = mock(IDebuggerListener.class);
-		proxy = mock(IStreamsProxy.class);
-		
-		debugger.initialize(listener, factory, proxy, 300000, true);
+	@Override
+	protected String getEndCommunicationString() {
+		return "->";
 	}
 	
 	public void testGetDebuggerCommandLineArguments() {
@@ -225,74 +212,266 @@ public class DdbgDebuggerTests extends MockObjectTestCase {
 		mockery.assertIsSatisfied();
 	}
 	
-	abstract class InThreadRunnable {
-		abstract void run() throws Exception;
-	}
-	
-	protected void runInThread(final InThreadRunnable runnable) {
-		new Thread() {
-			@Override
-			public void run() {
-				try {
-					runnable.run();
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		}.start();
-	}
-	
-	protected void interpretTimes(String cmd, int times) {
-		for(int i = 0; i < times; i++) {
-			interpret(cmd);
-		}
-	}
-	
-	protected void interpret(String cmd) {
-		sleep();
-		try {
-			debugger.interpret(cmd);
-		} catch (DebugException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-	
-	protected void endCommunicationTimes(int times) {
-		interpretTimes("->", times);
-	}
-	
-	protected void endCommunication() {
-		interpret("->");
-	}
-	
-	protected void sleep() {
-		try {
-			Thread.sleep(20);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
-	}
-	
-	protected <S> void assertInIterable(Iterable<S> elements, S ... searchElements) {
-		boolean[] found = new boolean[searchElements.length];
-		loop: for(S elem : elements) {
-			for(int i = 0; i < searchElements.length; i++) {
-				if (elem.equals(searchElements[i])) {
-					assertFalse(found[i]);
-					found[i] = true;
-					continue loop;
-				}				
-			}
-			fail("Element was not in search elements: " + elem);
-		}
+	public void testGetStackFramesForm1() throws Exception {
+		checking(new Expectations() {{
+			one(proxy).write("us\n");
+			one(factory).newStackFrame("_Dmain()", 0, null, -1);
+		}});
 		
-		for(int i = 0; i < found.length; i++) {
-			if (!found[i]) {
-				fail("Element was not found: " + searchElements[i]);
+		runInThread(new InThreadRunnable() {
+			void run() throws Exception {
+				debugger.getStackFrames();
 			}
-		}
+		});
+		
+		interpret("#0 _Dmain () from main.obj");
+		endCommunication();
+		
+		mockery.assertIsSatisfied();
+	}
+	
+	public void testGetStackFramesForm2() throws Exception {
+		checking(new Expectations() {{
+			one(proxy).write("us\n");
+			one(factory).newStackFrame("_main()", 1, null, -1);
+		}});
+		
+		runInThread(new InThreadRunnable() {
+			void run() throws Exception {
+				debugger.getStackFrames();
+			}
+		});
+		
+		interpret("#1 0x004020ac in _main () from dmain2");
+		endCommunication();
+		
+		mockery.assertIsSatisfied();
+	}
+	
+	public void testGetStackFramesForm3() throws Exception {
+		checking(new Expectations() {{
+			one(proxy).write("us\n");
+			one(factory).newStackFrame("??()", 2, null, -1);
+		}});
+		
+		runInThread(new InThreadRunnable() {
+			void run() throws Exception {
+				debugger.getStackFrames();
+			}
+		});
+		
+		interpret("#2 0x7c816fd7 in ?? () from KERNEL32.dll");
+		endCommunication();
+		
+		mockery.assertIsSatisfied();
+	}
+	
+	public void testGetStackFramesForm4() throws Exception {
+		checking(new Expectations() {{
+			one(proxy).write("us\n");
+			one(factory).newStackFrame("main.X._ctor()", 4, "main.d", 5);
+		}});
+		
+		runInThread(new InThreadRunnable() {
+			void run() throws Exception {
+				debugger.getStackFrames();
+			}
+		});
+		
+		interpret("#4 main.X._ctor () at main.d:5");
+		endCommunication();
+		
+		mockery.assertIsSatisfied();
+	}
+	
+	public void testGetStackFramesForm5() throws Exception {
+		checking(new Expectations() {{
+			one(proxy).write("us\n");
+			one(factory).newStackFrame("_Dmain()", 1, "main.d", 2);
+		}});
+		
+		runInThread(new InThreadRunnable() {
+			void run() throws Exception {
+				debugger.getStackFrames();
+			}
+		});
+		
+		interpret("#1 0x0040204a in _Dmain () at main.d:2");
+		endCommunication();
+		
+		mockery.assertIsSatisfied();
+	}
+	
+	public void testGetRegisters() throws Exception {
+		checking(new Expectations() {{
+			one(proxy).write("dr cpu fpu mmx sse\n");
+			one(factory).newRegister(registerGroup, "EAX", "00000001");
+			one(factory).newRegister(registerGroup, "EBX", "003903c4");
+			one(factory).newRegister(registerGroup, "ECX", "0012ff4c");
+			one(factory).newRegister(registerGroup, "EDX", "0012ff4c");
+			one(factory).newRegister(registerGroup, "EIP", "004020e4");
+			one(factory).newRegister(registerGroup, "EFL", "00000346");
+			one(factory).newRegister(registerGroup, "FCW", "137f");
+			one(factory).newRegister(registerGroup, "FSW", "0100");
+			one(factory).newRegister(registerGroup, "FTW", "ffff");
+			one(factory).newRegister(registerGroup, "FOP", "06d9");
+			one(factory).newRegister(registerGroup, "ST0", "0.0000000000000000e+00");
+			one(factory).newRegister(registerGroup, "ST7", "inf");
+			one(factory).newRegister(registerGroup, "MM0", "2022201d201c2019\n[1.32243e-19, 1.37326e-19]");
+			one(factory).newRegister(registerGroup, "MM1", "009d0152203a0160\n[1.57553e-19, 1.44186e-38]");
+			one(factory).newRegister(registerGroup, "MXCSR", "00001f80");
+			one(factory).newRegister(registerGroup, "XMM0", "00d900d800d700d600d500d400d300d2\n[1.93776e-38, 1.95613e-38, 1.97449e-38, 1.99286e-38]\n[1.19638397306e-304, 1.4242350129e-304]");
+			one(factory).newRegister(registerGroup, "XMM1", "00c100c000df00de00dd00dc00db00da\n[2.01123e-38, 2.0296e-38, 2.04796e-38, 1.77245e-38]\n[1.65208605274e-304, 4.8425951336e-305]");
+		}});		
+		
+		runInThread(new InThreadRunnable() {
+			void run() throws Exception {
+				debugger.getRegisters(registerGroup);
+			}
+		});
+		
+		
+		interpret("EAX = 00000001\tEBX = 003903c4\tECX = 0012ff4c\tEDX = 0012ff4c");
+		interpret("EIP = 004020e4\tEFL = 00000346");
+		interpret("");
+		interpret("FCW = 137f\tFSW = 0100\tFTW = ffff\tFOP = 06d9");
+		interpret("ST0 =  0.0000000000000000e+00");
+		interpret("ST7 =  inf");
+		interpret("");
+		interpret("MM0 = 2022201d201c2019");
+		interpret("    = [1.32243e-19, 1.37326e-19]");
+		interpret("MM1 = 009d0152203a0160");
+		interpret("    = [1.57553e-19, 1.44186e-38]");
+		interpret("");
+		interpret("MXCSR = 00001f80");
+		interpret("XMM0 = 00d900d800d700d600d500d400d300d2");
+		interpret("     = [1.93776e-38, 1.95613e-38, 1.97449e-38, 1.99286e-38]");
+		interpret("     = [1.19638397306e-304, 1.4242350129e-304]");
+		interpret("XMM1 = 00c100c000df00de00dd00dc00db00da");
+		interpret("     = [2.01123e-38, 2.0296e-38, 2.04796e-38, 1.77245e-38]");
+		interpret("     = [1.65208605274e-304, 4.8425951336e-305]");
+		endCommunication();
+		
+		mockery.assertIsSatisfied();
+	}
+	
+	public void testGetVariablesNoResponse() throws Exception {
+		checking(new Expectations() {{
+			one(proxy).write("f 1\n");
+			one(proxy).write("lsv\n");
+		}});		
+		
+		runInThread(new InThreadRunnable() {
+			void run() throws Exception {
+				debugger.getVariables(1);
+			}
+		});
+		
+		endCommunication();
+		endCommunication();
+		
+		mockery.assertIsSatisfied();
+	}
+	
+	public void testGetVariablesSimpleAnswer() throws Exception {
+		checking(new Expectations() {{
+			one(proxy).write("f 1\n");
+			one(proxy).write("lsv\n");
+			one(factory).newParentVariable(1, "x", "2");
+		}});		
+		
+		runInThread(new InThreadRunnable() {
+			void run() throws Exception {
+				debugger.getVariables(1);
+			}
+		});
+		
+		endCommunication();
+		
+		interpret("x = 2\n");
+		endCommunication();
+		
+		mockery.assertIsSatisfied();
+	}
+	
+	public void testGetVariablesSimpleAnswers() throws Exception {
+		checking(new Expectations() {{
+			one(proxy).write("f 1\n");
+			one(proxy).write("lsv\n");
+			one(factory).newParentVariable(1, "x", "2");
+			one(factory).newParentVariable(1, "y", "3");
+		}});		
+		
+		runInThread(new InThreadRunnable() {
+			void run() throws Exception {
+				debugger.getVariables(1);
+			}
+		});
+		
+		endCommunication();
+		
+		interpret("x = 2\n");
+		interpret("y = 3\n");
+		endCommunication();
+		
+		mockery.assertIsSatisfied();
+	}
+	
+	public void testGetNestedVariables() throws Exception {
+		checking(new Expectations() {{
+			one(proxy).write("f 1\n");
+			one(proxy).write("lsv\n");
+			one(proxy).write("t x\n");
+			one(factory).newParentVariable(1, "x", "class main.X*");
+			one(factory).newParentVariable(1, "y", "2");
+			one(factory).newParentVariable(1, "z", "3");
+		}});		
+		
+		runInThread(new InThreadRunnable() {
+			void run() throws Exception {
+				debugger.getVariables(1);
+			}
+		});
+		
+		endCommunication();
+		
+		interpret("x = {\n");
+		interpret("  y = 2\n");
+		interpret("  z = 3\n");
+		interpret("}\n");
+		endCommunication();
+		
+		interpret("PC4main1Class\n");
+		interpret("class main.X*\n");
+		endCommunication();
+		
+		mockery.assertIsSatisfied();
+	}
+	
+	public void testGetVariablesLazy() throws Exception {
+		checking(new Expectations() {{
+			one(proxy).write("f 1\n");
+			one(proxy).write("lsv\n");
+			one(proxy).write("t x\n");
+			one(factory).newLazyVariable(1, "x", "class main.X*", "x");
+		}});
+		
+		runInThread(new InThreadRunnable() {
+			void run() throws Exception {
+				debugger.getVariables(1);
+			}
+		});
+		
+		endCommunication();
+		
+		interpret("x = ...\n");
+		endCommunication();
+		
+		interpret("PC4main1Class\n");
+		interpret("class main.X*\n");
+		endCommunication();
+		
+		mockery.assertIsSatisfied();
 	}
 
 }

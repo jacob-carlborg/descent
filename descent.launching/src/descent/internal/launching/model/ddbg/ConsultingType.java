@@ -17,7 +17,7 @@ public class ConsultingType implements IState {
 		if ("->".equals(text)) {
 			fCli.notifyStateReturn();
 		} else {
-			fType = text;
+			fType = text.trim();
 		}
 	}
 

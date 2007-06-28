@@ -2987,5 +2987,21 @@
          </action>
       </viewerContribution>
    </extension>
+   
+	<extension
+         point="descent.ui.quickAssistProcessors">
+      <quickAssistProcessor
+            name="%defaultQuickAssistProcessor"
+            class="descent.internal.ui.text.correction.QuickAssistProcessor"
+            id="descent.ui.text.correction.QuickAssistProcessor">
+      </quickAssistProcessor>
+      <!--
+      <quickAssistProcessor
+            name="%advancedQuickAssistProcessor"
+            class="descent.internal.ui.text.correction.AdvancedQuickAssistProcessor"
+            id="descent.ui.text.correction.AdvancedQuickAssistProcessor">
+      </quickAssistProcessor>
+      -->
+   </extension>
 	
 </plugin>

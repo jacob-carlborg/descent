@@ -9,7 +9,7 @@ import org.eclipse.debug.core.model.IVariable;
  * This interface is not intended to be implemented by clients.
  * </p>
  */
-public interface IParentVariable extends IVariable {
+public interface IParentVariable extends IDescentVariable {
 	
 	/**
 	 * Adds a child to this variable.

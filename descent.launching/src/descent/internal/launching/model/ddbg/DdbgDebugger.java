@@ -13,6 +13,7 @@ import org.eclipse.debug.core.model.IStackFrame;
 import org.eclipse.debug.core.model.IStreamsProxy;
 import org.eclipse.debug.core.model.IVariable;
 
+import descent.internal.launching.model.RegisterComparator;
 import descent.launching.model.IDebugElementFactory;
 import descent.launching.model.IDebugger;
 import descent.launching.model.IDebuggerListener;
@@ -203,9 +204,7 @@ public class DdbgDebugger implements IDebugger {
 			
 			beforeWaitStateReturn();
 			
-			fProxy.write("f ");
-			fProxy.write(String.valueOf(stackFrame));
-			fProxy.write("\n");
+			fProxy.write("f " + stackFrame + "\n");
 			
 			waitStateReturn();
 		} finally {
@@ -220,13 +219,13 @@ public class DdbgDebugger implements IDebugger {
 			
 			beforeWaitStateReturn();
 			
-			fProxy.write("dr\n");
+			fProxy.write("dr cpu fpu mmx sse\n");
 			
 			waitStateReturn();
 			
 			List<IRegister> registers = ((ConsultingRegisters) fState).fRegisters;
 			IRegister[] registersArray = registers.toArray(new IRegister[registers.size()]);
-			Arrays.sort(registersArray);
+			Arrays.sort(registersArray, RegisterComparator.getInstance());
 			return registersArray;
 		} finally {
 			setState(fRunningState);
@@ -259,11 +258,9 @@ public class DdbgDebugger implements IDebugger {
 			
 			beforeWaitStateReturn();
 			
-			fProxy.write("dm ");
-			fProxy.write(Long.toHexString(startAddress));
-			fProxy.write(" ");
-			fProxy.write(String.valueOf(length));
-			fProxy.write("\n");
+			fProxy.write("dm " +
+					Long.toHexString(startAddress) +
+					" " + length + "\n");
 
 			waitStateReturn();
 			
@@ -274,6 +271,8 @@ public class DdbgDebugger implements IDebugger {
 	}
 	
 	public IVariable evaluateExpression(int stackFrame, String expression) throws IOException {
+		System.out.println(expression);
+		
 		setStackFrame(stackFrame);
 
 		try {
@@ -299,9 +298,7 @@ public class DdbgDebugger implements IDebugger {
 			
 			beforeWaitStateReturn();
 			
-			fProxy.write("t ");
-			fProxy.write(expression);
-			fProxy.write("\n");
+			fProxy.write("t " + expression + "\n");
 			
 			waitStateReturn();
 			

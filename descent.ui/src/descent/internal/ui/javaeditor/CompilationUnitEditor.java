@@ -106,6 +106,7 @@ import descent.internal.ui.text.JavaHeuristicScanner;
 import descent.internal.ui.text.SmartBackspaceManager;
 import descent.internal.ui.text.Symbols;
 import descent.internal.ui.text.comment.CommentFormattingContext;
+import descent.internal.ui.text.correction.CorrectionCommandInstaller;
 import descent.internal.ui.text.java.IJavaReconcilingListener;
 import descent.ui.IWorkingCopyManager;
 import descent.ui.PreferenceConstants;
@@ -1101,7 +1102,7 @@ public class CompilationUnitEditor extends JavaEditor implements IJavaReconcilin
 	private GenerateActionGroup fGenerateActionGroup;
 	private CompositeActionGroup fContextMenuGroup;
 	
-	// TODO JDT UI private CorrectionCommandInstaller fCorrectionCommands;
+	private CorrectionCommandInstaller fCorrectionCommands;
 
 	/**
 	 * Reconciling listeners.
@@ -1135,7 +1136,7 @@ public class CompilationUnitEditor extends JavaEditor implements IJavaReconcilin
 		fSavePolicy= null;
 
 		fJavaEditorErrorTickUpdater= new JavaEditorErrorTickUpdater(this);
-//		 TODO JDT UI fCorrectionCommands= null;
+		fCorrectionCommands= null;
 	}
 
 	/*
@@ -1254,8 +1255,8 @@ public class CompilationUnitEditor extends JavaEditor implements IJavaReconcilin
 			//new LocalHistoryActionGroup(this, ITextEditorActionConstants.GROUP_EDIT)
 			});
 		
-		//fCorrectionCommands= new CorrectionCommandInstaller(); // allow shortcuts for quick fix/assist
-		//fCorrectionCommands.registerCommands(this);
+		fCorrectionCommands= new CorrectionCommandInstaller(); // allow shortcuts for quick fix/assist
+		fCorrectionCommands.registerCommands(this);
 		
 	}
 
@@ -1530,12 +1531,10 @@ public class CompilationUnitEditor extends JavaEditor implements IJavaReconcilin
 			fActionGroups= null;
 		}
 		
-		/* TODO JDT UI actions
 		if (fCorrectionCommands != null) {
 			fCorrectionCommands.deregisterCommands();
 			fCorrectionCommands= null;
 		}
-		*/
 
 		super.dispose();
 	}

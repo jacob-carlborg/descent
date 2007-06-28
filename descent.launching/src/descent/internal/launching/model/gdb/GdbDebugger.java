@@ -54,13 +54,13 @@ public class GdbDebugger implements IDebugger {
 			
 			beforeWaitStateReturn();
 			
-			fProxy.write("break ");
-			fProxy.write(ArgumentUtils.toStringArgument(
+			fProxy.write("break " + 
+					ArgumentUtils.toStringArgument(
 					toGdbPath(filename) +
 					":" +
 					lineNumber
-				));
-			fProxy.write("\n");
+					) + 
+				"\n");
 			
 			waitStateReturn();
 		} finally {
@@ -102,9 +102,8 @@ public class GdbDebugger implements IDebugger {
 			
 			beforeWaitStateReturn();
 			
-			fProxy.write("x/" + String.valueOf(length) + "b ");
-			fProxy.write(String.valueOf(startAddress));
-			fProxy.write("\n");
+			fProxy.write("x/" + String.valueOf(length) + "b "
+					+ startAddress + "\n");
 
 			waitStateReturn();
 			
@@ -198,13 +197,12 @@ public class GdbDebugger implements IDebugger {
 			
 			beforeWaitStateReturn();
 			
-			fProxy.write("clear ");
-			fProxy.write(ArgumentUtils.toStringArgument(
+			fProxy.write("clear " + ArgumentUtils.toStringArgument(
 					toGdbPath(filename) +
 					":" +
 					lineNumber
-					));
-			fProxy.write("\n");
+					) + 
+				"\n");
 			
 			waitStateReturn();
 		} finally {
@@ -226,9 +224,7 @@ public class GdbDebugger implements IDebugger {
 			
 			beforeWaitStateReturn();
 			
-			fProxy.write("frame ");
-			fProxy.write(String.valueOf(stackFrame));
-			fProxy.write("\n");
+			fProxy.write("frame " + stackFrame + "\n");
 			
 			waitStateReturn();
 		} finally {
@@ -286,9 +282,7 @@ public class GdbDebugger implements IDebugger {
 			
 			beforeWaitStateReturn();
 			
-			fProxy.write("whatis ");
-			fProxy.write(expression);
-			fProxy.write("\n");
+			fProxy.write("whatis " + expression + "\n");
 			
 			waitStateReturn();
 			

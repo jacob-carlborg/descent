@@ -111,5 +111,4 @@
          <viewShortcut id="org.eclipse.debug.ui.MemoryView"/>
       </perspectiveExtension>
    </extension>
-
 </plugin>
