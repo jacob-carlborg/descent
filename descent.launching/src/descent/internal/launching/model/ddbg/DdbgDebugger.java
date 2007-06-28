@@ -271,8 +271,6 @@ public class DdbgDebugger implements IDebugger {
 	}
 	
 	public IVariable evaluateExpression(int stackFrame, String expression) throws IOException {
-		System.out.println(expression);
-		
 		setStackFrame(stackFrame);
 
 		try {
