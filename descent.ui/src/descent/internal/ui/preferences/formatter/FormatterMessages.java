@@ -25,7 +25,7 @@ final class FormatterMessages extends NLS {
 		// Do not instantiate
 	}
 	
-	// Profile management
+	// General messages
 	public static String ModifyDialog_BuiltIn_Status;
 	public static String ModifyDialog_Duplicate_Status;
 	public static String ModifyDialog_EmptyName_Status;
@@ -34,14 +34,6 @@ final class FormatterMessages extends NLS {
 	public static String ModifyDialog_ProfileName_Label;
 	public static String ModifyDialog_Shared_Status;
 	public static String ProfileConfigurationBlock_load_profile_wrong_profile_message;
-	public static String ModifyDialog_tabpage_braces_title;
-	public static String ModifyDialog_tabpage_indentation_title;
-	public static String ModifyDialog_tabpage_whitespace_title;
-	public static String ModifyDialog_tabpage_blank_lines_title;
-	public static String ModifyDialog_tabpage_new_lines_title;
-	public static String ModifyDialog_tabpage_control_statements_title;
-	public static String ModifyDialog_tabpage_line_wrapping_title;
-	public static String ModifyDialog_tabpage_comments_title;
 	public static String JavaPreview_formatter_exception;
 	public static String AlreadyExistsDialog_message_profile_already_exists;
 	public static String AlreadyExistsDialog_message_profile_name_empty;
@@ -87,6 +79,7 @@ final class FormatterMessages extends NLS {
 	public static String ProfileManager_descent_defaults_profile_name;
 	
 	// Braces tab page
+	public static String ModifyDialog_tabpage_braces_title;
 	public static String BracesTabPage_preview_header;
 	public static String BracesTabPage_position_same_line;
 	public static String BracesTabPage_position_next_line;
@@ -95,12 +88,18 @@ final class FormatterMessages extends NLS {
 	public static String BracesTabPage_group_set_all_to;
 	
 	// Indentation tab page
+	public static String ModifyDialog_tabpage_indentation_title;
 	public static String IndentationTabPage_style_tab;
 	public static String IndentationTabPage_style_space;
 	public static String IndentationTabPage_style_mixed;
 	public static String IndentationTabPage_preview_header;
 	public static String IndentationTabPage_general_group_title;
 	public static String IndentationTabPage_indent_group_title;
+	
+	// Succinctness tab page
+	public static String ModifyDialog_tabpage_succinctness_title;
+	public static String SuccinctnessTabPage_preview_header;
+	public static String SuccinctnessTabPage_group_title;
 	
 	// Messages for various options (automatically generated)
 	public static String BracesTabPage_brace_position_for_function_declaration;
@@ -120,6 +119,18 @@ final class FormatterMessages extends NLS {
 	public static String BracesTabPage_brace_position_for_with_statement;
 	public static String BracesTabPage_brace_position_for_scope_statement;
 	public static String BracesTabPage_brace_position_for_other_blocks;
+	public static String SuccinctnessTabPage_keep_simple_then_declaration_on_same_line;
+	public static String SuccinctnessTabPage_keep_simple_else_declaration_on_same_line;
+	public static String SuccinctnessTabPage_keep_simple_then_statement_on_same_line;
+	public static String SuccinctnessTabPage_keep_simple_else_statement_on_same_line;
+	public static String SuccinctnessTabPage_keep_simple_try_statement_on_same_line;
+	public static String SuccinctnessTabPage_keep_simple_catch_statement_on_same_line;
+	public static String SuccinctnessTabPage_keep_simple_finally_statement_on_same_line;
+	public static String SuccinctnessTabPage_keep_simple_loop_statement_on_same_line;
+	public static String SuccinctnessTabPage_keep_simple_synchronized_statement_on_same_line;
+	public static String SuccinctnessTabPage_keep_simple_with_statement_on_same_line;
+	public static String SuccinctnessTabPage_keep_functions_with_no_statement_in_one_line;
+	public static String SuccinctnessTabPage_keep_functions_with_one_statement_in_one_line;
 	public static String IndentationTabPage_indentation_size;
 	public static String IndentationTabPage_indent_empty_lines;
 	public static String IndentationTabPage_indent_body_declarations_compare_to_type_header;
