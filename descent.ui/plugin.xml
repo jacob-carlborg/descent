@@ -3003,5 +3003,36 @@
       </quickAssistProcessor>
       -->
    </extension>
+   
+   <extension
+         point="org.eclipse.ui.views">
+      <category
+            name="%viewCategoryName"
+            id="descent.ui.java">
+      </category>
+      <!--
+      <view
+            name="%packagesViewName"
+            icon="$nl$/icons/full/eview16/package.gif"
+            category="descent.ui.java"
+            class="descent.internal.ui.packageview.PackageExplorerPart"
+            id="descent.ui.PackageExplorer">
+      </view>
+      <view
+            name="%hierarchyViewName"
+            icon="$nl$/icons/full/eview16/class_hi.gif"
+            category="descent.ui.java"
+            class="descent.internal.ui.typehierarchy.TypeHierarchyViewPart"
+            id="descent.ui.TypeHierarchy">
+      </view>
+      -->
+      <view
+            name="%JavadocView"
+            icon="$nl$/icons/full/eview16/javadoc.gif"
+            category="descent.ui.java"
+            class="descent.internal.ui.infoviews.JavadocView"
+            id="descent.ui.JavadocView">
+      </view>
+   </extension>
 	
 </plugin>

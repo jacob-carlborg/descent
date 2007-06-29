@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import descent.core.formatter.IndentManipulation;
 import descent.internal.ui.text.HTMLPrinter;
 import descent.internal.ui.text.SubstitutionTextReader;
 
@@ -45,6 +46,8 @@ public class JavaDoc2HTMLTextReader extends SubstitutionTextReader {
 	private List fSees;
 	private List fSince;
 	private List fRest; // list of Pair objects
+	
+	private int newLinesCount = 0;
 
 	public JavaDoc2HTMLTextReader(Reader reader) {
 		super(reader);
@@ -342,12 +345,23 @@ public class JavaDoc2HTMLTextReader extends SubstitutionTextReader {
 	 * @see SubstitutionTextReaderr#computeSubstitution(int)
 	 */
 	protected String computeSubstitution(int c) throws IOException {
+		/*
 		if (c == '@' && fWasWhiteSpace)
 			return processSimpleTag();
 
 		if (c == '{')
 			return processBlockTag();
-
+		*/
+		
+		if (IndentManipulation.isLineDelimiterChar((char) c)) {
+			newLinesCount++;
+			if (newLinesCount == 2) {
+				return "<br/>"; //$NON-NLS-1$
+			}
+		} else if (!Character.isWhitespace(c)) {
+			newLinesCount = 0;
+		}
+		
 		return null;
 	}
 }

@@ -12,7 +12,7 @@
             id="descent.astview.views.ASTView">
       </view>
       <category
-            id="descent.category"
+            id="descent.ui.java"
             name="D"/>
    </extension>
    

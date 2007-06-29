@@ -43,6 +43,7 @@ public class JavaDocCommentReader extends SingleCharReader {
 		if (fCurrPos < fEndPos) {
 			char ch;
 			if (fWasNewLine) {
+				ch= fBuffer.getChar(fCurrPos++);
 				do {
 					ch= fBuffer.getChar(fCurrPos++);
 				} while (fCurrPos < fEndPos && Character.isWhitespace(ch));
