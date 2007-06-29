@@ -20,7 +20,7 @@ public class FormatWhileStatement_Test extends AbstractFormatBraceWithSingleInsi
 	
 	@Override
 	protected String getKeepSimpleStatementInSameLineOption() {
-		return DefaultCodeFormatterConstants.FORMATTER_KEEP_SIMPLE_WHILE_STATEMENT_ON_SAME_LINE;
+		return DefaultCodeFormatterConstants.FORMATTER_KEEP_SIMPLE_LOOP_STATEMENT_ON_SAME_LINE;
 	}
 	
 	@Override
