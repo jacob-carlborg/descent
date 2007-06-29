@@ -1833,7 +1833,7 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 		scribe.printNextToken(TOK.TOKlparen);
 		node.getExpression().accept(this);
 		scribe.printNextToken(TOK.TOKrparen);
-		formatSubStatement(node.getBody(), false, !preferences.keep_simple_while_statement_on_same_line, preferences.brace_position_for_loop_statement);
+		formatSubStatement(node.getBody(), false, !preferences.keep_simple_loop_statement_on_same_line, preferences.brace_position_for_loop_statement);
 		return false;
 	}
 

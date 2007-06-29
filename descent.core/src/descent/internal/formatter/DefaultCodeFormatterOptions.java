@@ -82,6 +82,7 @@ public class DefaultCodeFormatterOptions
 	public boolean insert_new_line_before_catch;
 	public boolean insert_new_line_before_finally;
 	public boolean insert_new_line_before_while_in_do_statement;
+	public boolean insert_new_line_at_end_of_file_if_missing;
 	public int blank_lines_before_module;
 	public int blank_lines_after_module;
 	public boolean keep_simple_then_declaration_on_same_line;
@@ -92,14 +93,12 @@ public class DefaultCodeFormatterOptions
 	public boolean keep_simple_catch_statement_on_same_line;
 	public boolean keep_simple_finally_statement_on_same_line;
 	public boolean keep_simple_loop_statement_on_same_line;
-	public boolean keep_simple_switch_statement_on_same_line;
 	public boolean keep_simple_synchronized_statement_on_same_line;
-	public boolean keep_simple_while_statement_on_same_line;
 	public boolean keep_simple_with_statement_on_same_line;
-	public boolean insert_new_line_at_end_of_file_if_missing;
 	public boolean keep_functions_with_no_statement_in_one_line;
 	public boolean keep_functions_with_one_statement_in_one_line;
 	public boolean keep_else_conditional_on_one_line;
+	public boolean keep_simple_switch_statement_on_same_line;
 	public int indentation_size;
 	public int continuation_indentation;
 	public boolean indent_empty_lines;
@@ -183,6 +182,7 @@ public class DefaultCodeFormatterOptions
 		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_NEW_LINE_BEFORE_CATCH, insert_new_line_before_catch ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
 		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_NEW_LINE_BEFORE_FINALLY, insert_new_line_before_finally ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
 		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_NEW_LINE_BEFORE_WHILE_IN_DO_STATEMENT, insert_new_line_before_while_in_do_statement ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
+		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_NEW_LINE_AT_END_OF_FILE_IF_MISSING, insert_new_line_at_end_of_file_if_missing ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
 		options.put(DefaultCodeFormatterConstants.FORMATTER_BLANK_LINES_BEFORE_MODULE, Integer.toString(blank_lines_before_module));
 		options.put(DefaultCodeFormatterConstants.FORMATTER_BLANK_LINES_AFTER_MODULE, Integer.toString(blank_lines_after_module));
 		options.put(DefaultCodeFormatterConstants.FORMATTER_KEEP_SIMPLE_THEN_DECLARATION_ON_SAME_LINE, keep_simple_then_declaration_on_same_line ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
@@ -193,14 +193,12 @@ public class DefaultCodeFormatterOptions
 		options.put(DefaultCodeFormatterConstants.FORMATTER_KEEP_SIMPLE_CATCH_STATEMENT_ON_SAME_LINE, keep_simple_catch_statement_on_same_line ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
 		options.put(DefaultCodeFormatterConstants.FORMATTER_KEEP_SIMPLE_FINALLY_STATEMENT_ON_SAME_LINE, keep_simple_finally_statement_on_same_line ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
 		options.put(DefaultCodeFormatterConstants.FORMATTER_KEEP_SIMPLE_LOOP_STATEMENT_ON_SAME_LINE, keep_simple_loop_statement_on_same_line ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
-		options.put(DefaultCodeFormatterConstants.FORMATTER_KEEP_SIMPLE_SWITCH_STATEMENT_ON_SAME_LINE, keep_simple_switch_statement_on_same_line ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
 		options.put(DefaultCodeFormatterConstants.FORMATTER_KEEP_SIMPLE_SYNCHRONIZED_STATEMENT_ON_SAME_LINE, keep_simple_synchronized_statement_on_same_line ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
-		options.put(DefaultCodeFormatterConstants.FORMATTER_KEEP_SIMPLE_WHILE_STATEMENT_ON_SAME_LINE, keep_simple_while_statement_on_same_line ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
 		options.put(DefaultCodeFormatterConstants.FORMATTER_KEEP_SIMPLE_WITH_STATEMENT_ON_SAME_LINE, keep_simple_with_statement_on_same_line ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
-		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_NEW_LINE_AT_END_OF_FILE_IF_MISSING, insert_new_line_at_end_of_file_if_missing ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
 		options.put(DefaultCodeFormatterConstants.FORMATTER_KEEP_FUNCTIONS_WITH_NO_STATEMENT_IN_ONE_LINE, keep_functions_with_no_statement_in_one_line ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
 		options.put(DefaultCodeFormatterConstants.FORMATTER_KEEP_FUNCTIONS_WITH_ONE_STATEMENT_IN_ONE_LINE, keep_functions_with_one_statement_in_one_line ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
 		options.put(DefaultCodeFormatterConstants.FORMATTER_KEEP_ELSE_CONDITIONAL_ON_ONE_LINE, keep_else_conditional_on_one_line ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
+		options.put(DefaultCodeFormatterConstants.FORMATTER_KEEP_SIMPLE_SWITCH_STATEMENT_ON_SAME_LINE, keep_simple_switch_statement_on_same_line ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
 		options.put(DefaultCodeFormatterConstants.FORMATTER_INDENTATION_SIZE, Integer.toString(indentation_size));
 		options.put(DefaultCodeFormatterConstants.FORMATTER_CONTINUATION_INDENTATION, Integer.toString(continuation_indentation));
 		options.put(DefaultCodeFormatterConstants.FORMATTER_INDENT_EMPTY_LINES, indent_empty_lines ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
@@ -590,6 +588,15 @@ public class DefaultCodeFormatterOptions
 			}
 		}
 		
+		current = settings.get(DefaultCodeFormatterConstants.FORMATTER_INSERT_NEW_LINE_AT_END_OF_FILE_IF_MISSING);
+		if(null != current) {
+			try {
+				insert_new_line_at_end_of_file_if_missing = DefaultCodeFormatterConstants.TRUE.equals(current);
+			} catch(Exception e) {
+				insert_new_line_at_end_of_file_if_missing = false;
+			}
+		}
+		
 		current = settings.get(DefaultCodeFormatterConstants.FORMATTER_BLANK_LINES_BEFORE_MODULE);
 		if(null != current) {
 			try {
@@ -613,7 +620,7 @@ public class DefaultCodeFormatterOptions
 			try {
 				keep_simple_then_declaration_on_same_line = DefaultCodeFormatterConstants.TRUE.equals(current);
 			} catch(Exception e) {
-				keep_simple_then_declaration_on_same_line = true;
+				keep_simple_then_declaration_on_same_line = false;
 			}
 		}
 		
@@ -622,7 +629,7 @@ public class DefaultCodeFormatterOptions
 			try {
 				keep_simple_else_declaration_on_same_line = DefaultCodeFormatterConstants.TRUE.equals(current);
 			} catch(Exception e) {
-				keep_simple_else_declaration_on_same_line = true;
+				keep_simple_else_declaration_on_same_line = false;
 			}
 		}
 		
@@ -631,7 +638,7 @@ public class DefaultCodeFormatterOptions
 			try {
 				keep_simple_then_statement_on_same_line = DefaultCodeFormatterConstants.TRUE.equals(current);
 			} catch(Exception e) {
-				keep_simple_then_statement_on_same_line = true;
+				keep_simple_then_statement_on_same_line = false;
 			}
 		}
 		
@@ -640,7 +647,7 @@ public class DefaultCodeFormatterOptions
 			try {
 				keep_simple_else_statement_on_same_line = DefaultCodeFormatterConstants.TRUE.equals(current);
 			} catch(Exception e) {
-				keep_simple_else_statement_on_same_line = true;
+				keep_simple_else_statement_on_same_line = false;
 			}
 		}
 		
@@ -649,7 +656,7 @@ public class DefaultCodeFormatterOptions
 			try {
 				keep_simple_try_statement_on_same_line = DefaultCodeFormatterConstants.TRUE.equals(current);
 			} catch(Exception e) {
-				keep_simple_try_statement_on_same_line = true;
+				keep_simple_try_statement_on_same_line = false;
 			}
 		}
 		
@@ -658,7 +665,7 @@ public class DefaultCodeFormatterOptions
 			try {
 				keep_simple_catch_statement_on_same_line = DefaultCodeFormatterConstants.TRUE.equals(current);
 			} catch(Exception e) {
-				keep_simple_catch_statement_on_same_line = true;
+				keep_simple_catch_statement_on_same_line = false;
 			}
 		}
 		
@@ -667,7 +674,7 @@ public class DefaultCodeFormatterOptions
 			try {
 				keep_simple_finally_statement_on_same_line = DefaultCodeFormatterConstants.TRUE.equals(current);
 			} catch(Exception e) {
-				keep_simple_finally_statement_on_same_line = true;
+				keep_simple_finally_statement_on_same_line = false;
 			}
 		}
 		
@@ -680,15 +687,6 @@ public class DefaultCodeFormatterOptions
 			}
 		}
 		
-		current = settings.get(DefaultCodeFormatterConstants.FORMATTER_KEEP_SIMPLE_SWITCH_STATEMENT_ON_SAME_LINE);
-		if(null != current) {
-			try {
-				keep_simple_switch_statement_on_same_line = DefaultCodeFormatterConstants.TRUE.equals(current);
-			} catch(Exception e) {
-				keep_simple_switch_statement_on_same_line = false;
-			}
-		}
-		
 		current = settings.get(DefaultCodeFormatterConstants.FORMATTER_KEEP_SIMPLE_SYNCHRONIZED_STATEMENT_ON_SAME_LINE);
 		if(null != current) {
 			try {
@@ -698,30 +696,12 @@ public class DefaultCodeFormatterOptions
 			}
 		}
 		
-		current = settings.get(DefaultCodeFormatterConstants.FORMATTER_KEEP_SIMPLE_WHILE_STATEMENT_ON_SAME_LINE);
-		if(null != current) {
-			try {
-				keep_simple_while_statement_on_same_line = DefaultCodeFormatterConstants.TRUE.equals(current);
-			} catch(Exception e) {
-				keep_simple_while_statement_on_same_line = false;
-			}
-		}
-		
 		current = settings.get(DefaultCodeFormatterConstants.FORMATTER_KEEP_SIMPLE_WITH_STATEMENT_ON_SAME_LINE);
 		if(null != current) {
 			try {
 				keep_simple_with_statement_on_same_line = DefaultCodeFormatterConstants.TRUE.equals(current);
 			} catch(Exception e) {
 				keep_simple_with_statement_on_same_line = false;
-			}
-		}
-		
-		current = settings.get(DefaultCodeFormatterConstants.FORMATTER_INSERT_NEW_LINE_AT_END_OF_FILE_IF_MISSING);
-		if(null != current) {
-			try {
-				insert_new_line_at_end_of_file_if_missing = DefaultCodeFormatterConstants.TRUE.equals(current);
-			} catch(Exception e) {
-				insert_new_line_at_end_of_file_if_missing = false;
 			}
 		}
 		
@@ -749,6 +729,15 @@ public class DefaultCodeFormatterOptions
 				keep_else_conditional_on_one_line = DefaultCodeFormatterConstants.TRUE.equals(current);
 			} catch(Exception e) {
 				keep_else_conditional_on_one_line = true;
+			}
+		}
+		
+		current = settings.get(DefaultCodeFormatterConstants.FORMATTER_KEEP_SIMPLE_SWITCH_STATEMENT_ON_SAME_LINE);
+		if(null != current) {
+			try {
+				keep_simple_switch_statement_on_same_line = DefaultCodeFormatterConstants.TRUE.equals(current);
+			} catch(Exception e) {
+				keep_simple_switch_statement_on_same_line = false;
 			}
 		}
 		
@@ -974,24 +963,23 @@ public class DefaultCodeFormatterOptions
 		insert_new_line_before_catch = false;
 		insert_new_line_before_finally = false;
 		insert_new_line_before_while_in_do_statement = false;
+		insert_new_line_at_end_of_file_if_missing = false;
 		blank_lines_before_module = 0;
 		blank_lines_after_module = 1;
-		keep_simple_then_declaration_on_same_line = true;
-		keep_simple_else_declaration_on_same_line = true;
-		keep_simple_then_statement_on_same_line = true;
-		keep_simple_else_statement_on_same_line = true;
-		keep_simple_try_statement_on_same_line = true;
-		keep_simple_catch_statement_on_same_line = true;
-		keep_simple_finally_statement_on_same_line = true;
+		keep_simple_then_declaration_on_same_line = false;
+		keep_simple_else_declaration_on_same_line = false;
+		keep_simple_then_statement_on_same_line = false;
+		keep_simple_else_statement_on_same_line = false;
+		keep_simple_try_statement_on_same_line = false;
+		keep_simple_catch_statement_on_same_line = false;
+		keep_simple_finally_statement_on_same_line = false;
 		keep_simple_loop_statement_on_same_line = false;
-		keep_simple_switch_statement_on_same_line = false;
 		keep_simple_synchronized_statement_on_same_line = false;
-		keep_simple_while_statement_on_same_line = false;
 		keep_simple_with_statement_on_same_line = false;
-		insert_new_line_at_end_of_file_if_missing = false;
 		keep_functions_with_no_statement_in_one_line = false;
 		keep_functions_with_one_statement_in_one_line = false;
 		keep_else_conditional_on_one_line = true;
+		keep_simple_switch_statement_on_same_line = false;
 		indentation_size = 4;
 		continuation_indentation = 2;
 		indent_empty_lines = true;
