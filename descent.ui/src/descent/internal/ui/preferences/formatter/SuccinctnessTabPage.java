@@ -31,7 +31,7 @@ public class SuccinctnessTabPage extends ModifyDialogTabPage {
 	createPreviewHeader(FormatterMessages.SuccinctnessTabPage_preview_header) +
 		"version(Tango)alias toString toUtf8; else alias toUtf8 toString;\n\n" +
 		"void exampleFunction(){" +
-		"if(false)Stdout(\"Happy oppisite day!\");" +
+		"if(false)Stdout(\"Happy opposite day!\");" +
 		"else Stdout(\"Happy regular day!\");\n\n" +
 		"try file.read();catch(IOException e)Stdout(e.toString());" +
 		"finally file.close();\n\n" +
