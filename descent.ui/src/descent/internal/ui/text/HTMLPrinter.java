@@ -186,11 +186,19 @@ public class HTMLPrinter {
 		buffer.append("</head>"); //$NON-NLS-1$
 	}
 
-	private static void appendColor(StringBuffer buffer, RGB rgb) {
+	public static void appendColor(StringBuffer buffer, RGB rgb) {
 		buffer.append('#');
-		buffer.append(Integer.toHexString(rgb.red));
-		buffer.append(Integer.toHexString(rgb.green));
-		buffer.append(Integer.toHexString(rgb.blue));
+		buffer.append(toHexString(rgb.red));
+		buffer.append(toHexString(rgb.green));
+		buffer.append(toHexString(rgb.blue));
+	}
+	
+	private static String toHexString(int value) {
+		String s = Integer.toHexString(value);
+		if (s.length() != 2) {
+			return "0" + s;
+		}
+		return s;
 	}
 
 	public static void insertPageProlog(StringBuffer buffer, int position) {

@@ -6,6 +6,7 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.net.URL;
 
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.ListenerList;
 import org.eclipse.core.runtime.Platform;
@@ -13,6 +14,8 @@ import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.dialogs.MessageDialogWithToggle;
 import org.eclipse.jface.preference.IPreferenceStore;
+import org.eclipse.jface.preference.PreferenceConverter;
+import org.eclipse.jface.resource.StringConverter;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.BadPartitioningException;
 import org.eclipse.jface.text.DefaultInformationControl;
@@ -54,6 +57,7 @@ import org.osgi.framework.Bundle;
 import descent.core.IClassFile;
 import descent.core.ICompilationUnit;
 import descent.core.IJavaElement;
+import descent.core.IJavaProject;
 import descent.core.IMember;
 import descent.core.IPackageFragmentRoot;
 import descent.core.JavaModelException;
@@ -63,7 +67,10 @@ import descent.internal.ui.javaeditor.JavaEditor;
 import descent.internal.ui.text.HTMLPrinter;
 import descent.internal.ui.text.HTMLTextPresenter;
 import descent.ui.JavaElementLabels;
+import descent.ui.JavaUI;
 import descent.ui.JavadocContentAccess;
+import descent.ui.PreferenceConstants;
+import descent.ui.text.IJavaColorConstants;
 import descent.ui.text.IJavaPartitions;
 
 /**
@@ -307,11 +314,80 @@ public class JavadocView extends AbstractInfoView {
 				buffer.append('\n');
 				line= reader.readLine();
 			}
+			
+			addPreferencesFontsAndColorsToStyleSheet(buffer);
+			
 			fgStyleSheet= buffer.toString();
 		} catch (IOException ex) {
 			JavaPlugin.log(ex);
 		}
 		
+	}
+
+	private static void addPreferencesFontsAndColorsToStyleSheet(StringBuffer buffer) {
+		addStyle(buffer, IJavaColorConstants.JAVA_KEYWORD);
+		addStyle(buffer, IJavaColorConstants.JAVA_KEYWORD_RETURN);
+		addStyle(buffer, IJavaColorConstants.JAVA_OPERATOR);
+		addStyle(buffer, IJavaColorConstants.JAVA_DEFAULT);
+		addStyle(buffer, IJavaColorConstants.JAVA_PRAGMA);
+		addStyle(buffer, IJavaColorConstants.JAVA_STRING);
+		addStyle(buffer, IJavaColorConstants.JAVA_SINGLE_LINE_COMMENT);
+		addStyle(buffer, IJavaColorConstants.JAVA_SINGLE_LINE_DOC_COMMENT);
+		addStyle(buffer, IJavaColorConstants.JAVA_MULTI_LINE_COMMENT);
+		addStyle(buffer, IJavaColorConstants.JAVA_MULTI_LINE_PLUS_COMMENT);
+		addStyle(buffer, IJavaColorConstants.JAVA_MULTI_LINE_PLUS_DOC_COMMENT);
+		addStyle(buffer, IJavaColorConstants.JAVADOC_DEFAULT);
+	}
+	
+	private static void addStyle(StringBuffer buffer, String partialPreferenceKey) {
+		IJavaProject javaProject = null;
+		
+		buffer.append("."); //$NON-NLS-1$
+		buffer.append(partialPreferenceKey);
+		buffer.append("{"); //$NON-NLS-1$
+
+		String colorString = PreferenceConstants.getPreference(partialPreferenceKey, javaProject);
+		RGB color = colorString == null ? new RGB(0, 0, 0) : StringConverter.asRGB(colorString);
+		buffer.append("color: "); //$NON-NLS-1$
+		HTMLPrinter.appendColor(buffer, color);
+		buffer.append(";"); //$NON-NLS-1$
+		
+		String boolString;
+		boolean bool, bool2;
+		
+		boolString = PreferenceConstants.getPreference(partialPreferenceKey + PreferenceConstants.EDITOR_BOLD_SUFFIX, javaProject);
+		bool = boolString == null ? false : StringConverter.asBoolean(boolString);
+		if (bool) {
+			buffer.append("font-weight: bold;"); //$NON-NLS-1$
+		}
+		
+		boolString = PreferenceConstants.getPreference(partialPreferenceKey + PreferenceConstants.EDITOR_ITALIC_SUFFIX, javaProject);
+		bool = boolString == null ? false : StringConverter.asBoolean(boolString);
+		if (bool) {
+			buffer.append("font-style: italic;"); //$NON-NLS-1$
+		}
+		
+		boolString = PreferenceConstants.getPreference(partialPreferenceKey + PreferenceConstants.EDITOR_UNDERLINE_SUFFIX, javaProject);
+		bool = boolString == null ? false : StringConverter.asBoolean(boolString);
+		
+		boolString = PreferenceConstants.getPreference(partialPreferenceKey + PreferenceConstants.EDITOR_STRIKETHROUGH_SUFFIX, javaProject);
+		bool2 = boolString == null ? false : StringConverter.asBoolean(boolString);
+		
+		if (bool || bool2) {
+			buffer.append("text-decoration:"); //$NON-NLS-1$
+			if (bool) {
+				buffer.append("underline"); //$NON-NLS-1$
+			}
+			if (bool && bool2) {
+				buffer.append(", "); //$NON-NLS-1$
+			}
+			if (bool2) {
+				buffer.append("line-through"); //$NON-NLS-1$
+			}
+			buffer.append(";"); //$NON-NLS-1$
+		}
+		
+		buffer.append("}\n"); //$NON-NLS-1$
 	}
 
 	/*

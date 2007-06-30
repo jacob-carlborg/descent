@@ -56,7 +56,9 @@ public final class JavaCodeScanner extends AbstractJavaScanner {
 	protected class OperatorRule implements IRule {
 
 		/** Java operators */
-		private final char[] JAVA_OPERATORS= { ';', '(', ')', '{', '}', '.', '=', '/', '\\', '+', '-', '*', '[', ']', '<', '>', ':', '?', '!', ',', '|', '&', '^', '%', '~'};
+		private final char[] JAVA_OPERATORS= { ';', '(', ')', '{', '}', '.', '=', 
+				'/', '\\', '+', '-', '*', '[', ']', '<', '>', ':', '?', '!', ',', 
+				'|', '&', '^', '%', '~'};
 		/** Token to return for this rule */
 		private final IToken fToken;
 
@@ -309,7 +311,7 @@ public final class JavaCodeScanner extends AbstractJavaScanner {
 
 	static String[] fgKeywords= {
 		"abstract", "alias", "align", "asm", "assert", "auto",  //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
-		"body", "break", "byte", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+		"body", "break", //$NON-NLS-1$ //$NON-NLS-2$
 		"case", "cast", "catch", "class", "const", "continue", //$NON-NLS-1$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-4$ //$NON-NLS-3$ //$NON-NLS-2$
 		"debug", "default", "delegate", "delete", "deprecated", "do", //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-1$
 		"else", "enum", "export", "extern", //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-1$

@@ -304,6 +304,27 @@ public class DdocParserTests extends TestCase {
 		assertEquals("Melvin D. Nerd, melvin@mailinator.com", sections[1].getText());
 	}
 	
+	public void testCodeBug() {
+		DdocSection[] sections = parse(
+			"/**\r\n" +
+			" * ---\r\n" +
+			" * class ConduitFilter\r\n" +
+			"   {\r\n" +
+			"   \r\n" +
+			"   int x\r\n" +
+			"   }\r\n" +
+			"   ---\r\n" +
+			" */"
+				);
+		
+		assertEquals(1, sections.length);
+		
+		assertEquals(null, sections[0].getName());
+		assertEquals(DdocSection.CODE_SECTION, sections[0].getKind());
+	}
+	
+	
+	
 	public void testParameters() {
 		DdocSection[] sections = parse(
 			"/**\r\n" +
@@ -370,6 +391,35 @@ public class DdocParserTests extends TestCase {
 		
 		assertEquals("x", sections[0].getParameters()[0].getName());
 		assertEquals("something\n", sections[0].getParameters()[0].getText());
+	}
+	
+	public void testParametersWithSomethingAfter() {
+		DdocSection[] sections = parse(
+			"/**\r\n" +
+			" * Params:\r\n" +
+			" *     x = something\r\n" +
+			" *     y = somethingElse\r\n" +
+			" * Returns:\r\n" +
+			" *     an object" +
+			" */"
+				);
+		
+		assertEquals(2, sections.length);
+		
+		assertEquals("Params", sections[0].getName());
+		assertEquals(DdocSection.PARAMS_SECTION, sections[0].getKind());
+		assertEquals("x = something\ny = somethingElse", sections[0].getText());
+		assertEquals(2, sections[0].getParameters().length);
+		
+		assertEquals("x", sections[0].getParameters()[0].getName());
+		assertEquals("something", sections[0].getParameters()[0].getText());
+		
+		assertEquals("y", sections[0].getParameters()[1].getName());
+		assertEquals("somethingElse", sections[0].getParameters()[1].getText());
+		
+		assertEquals("Returns", sections[1].getName());
+		assertEquals(DdocSection.NORMAL_SECTION, sections[1].getKind());
+		assertEquals("an object", sections[1].getText());
 	}
 	
 	public void testMacros() {

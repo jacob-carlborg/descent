@@ -70,7 +70,10 @@ public class DdocParser {
 		while((line = reader.readLine()) != null) {
 			line = getContentThatMatters(line);
 			
-			if (line.length() == 0 && currentSectionName == null && currentSectionText.length() > 0) {
+			if (line.length() == 0 && 
+					currentSectionName == null && 
+					currentSectionType == DdocSection.NORMAL_SECTION &&
+					currentSectionText.length() > 0) {
 				addCurrentSection();
 				continue;
 			}
@@ -93,7 +96,9 @@ public class DdocParser {
 			
 			int colonIndex = getColonOfSectionIndex(line);
 			if (colonIndex != -1) {
-				currentSectionType = DdocSection.NORMAL_SECTION;
+				if (currentSectionType == DdocSection.CODE_SECTION) {
+					currentSectionType = DdocSection.NORMAL_SECTION;
+				}
 				
 				if (startOfCodeLine != null) {
 					currentSectionText.insert(0, startOfCodeLine + "\n"); //$NON-NLS-1$
@@ -103,6 +108,9 @@ public class DdocParser {
 				if (currentSectionText.length() > 0) {
 					addCurrentSection();
 				}
+				
+				currentSectionType = DdocSection.NORMAL_SECTION;
+				
 				currentSectionName = line.substring(0, colonIndex);
 				currentSectionText.append(line.substring(colonIndex + 1).trim());
 				
