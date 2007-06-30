@@ -1288,6 +1288,7 @@ public class Parser extends Lexer {
 			decldefs = new ArrayList<Dsymbol>();
 			decldefs.add(a);
 			tempdecl = new TemplateDeclaration(loc, id, tpl, decldefs);
+			tempdecl.setSourceRange(a.start, a.length);
 			tempdecl.wrapper = true;
 			return tempdecl;
 	    }

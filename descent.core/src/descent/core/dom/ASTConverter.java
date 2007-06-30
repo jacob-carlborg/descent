@@ -848,10 +848,12 @@ public class ASTConverter {
 			if (wrappedSymbol.getNodeType() == ASTNode.FUNC_DECLARATION) {
 				FunctionDeclaration b = (FunctionDeclaration) convert(wrappedSymbol);
 				convertTemplateParameters(b.templateParameters(), a.parameters);
+				b.setSourceRange(a.start, a.length);
 				return b;
 			} else {
 				AggregateDeclaration b = (AggregateDeclaration) convert(wrappedSymbol);
 				convertTemplateParameters(b.templateParameters(), a.parameters);
+				b.setSourceRange(a.start, a.length);
 				return b;
 			}
 		} else {

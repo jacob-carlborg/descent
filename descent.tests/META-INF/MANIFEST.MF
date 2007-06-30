@@ -10,7 +10,8 @@ Require-Bundle: org.eclipse.core.runtime,
  org.junit,
  org.eclipse.jface.text,
  descent.launching,
- org.eclipse.debug.core
+ org.eclipse.debug.core,
+ descent.ui
 Bundle-ClassPath: lib/cglib-2.1_3-src.jar,
  lib/cglib-nodep-2.1_3.jar,
  lib/hamcrest-api-1.0.jar,

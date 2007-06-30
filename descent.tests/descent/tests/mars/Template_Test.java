@@ -115,6 +115,7 @@ public class Template_Test extends Parser_Test {
 	public void testAggregate() {
 		String s = " class Bla(T) { }";
 		AggregateDeclaration c = (AggregateDeclaration) getSingleDeclarationNoProblems(s);
+		assertPosition(c, 1, s.length() - 1);
 		assertFalse(c.templateParameters().isEmpty());
 		assertEquals(1, c.templateParameters().size());
 	}

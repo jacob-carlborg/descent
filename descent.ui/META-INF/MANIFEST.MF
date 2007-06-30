@@ -30,6 +30,7 @@ Require-Bundle: org.eclipse.ui,
 Eclipse-LazyStart: true
 Eclipse-BuddyPolicy: registered
 Export-Package: descent.internal.ui,
+ descent.internal.ui.infoviews;x-friends:="descent.tests",
  descent.internal.ui.javaeditor,
  descent.ui,
  descent.ui.text

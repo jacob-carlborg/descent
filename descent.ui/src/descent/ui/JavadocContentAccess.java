@@ -12,6 +12,7 @@ package descent.ui;
  
 import java.io.IOException;
 import java.io.Reader;
+import java.io.StringReader;
 
 import descent.core.IBuffer;
 import descent.core.IJavaElement;
@@ -19,7 +20,16 @@ import descent.core.IMember;
 import descent.core.IMethod;
 import descent.core.ISourceRange;
 import descent.core.JavaModelException;
+import descent.core.ToolFactory;
+import descent.core.compiler.IScanner;
+import descent.core.compiler.ITerminalSymbols;
+import descent.core.compiler.InvalidInputException;
 import descent.internal.corext.javadoc.JavaDocCommentReader;
+import descent.internal.ui.infoviews.Ddoc;
+import descent.internal.ui.infoviews.DdocParser;
+import descent.internal.ui.infoviews.DdocSection;
+import descent.internal.ui.infoviews.DdocSection.Parameter;
+import descent.internal.ui.text.HTMLPrinter;
 import descent.internal.ui.text.javadoc.JavaDoc2HTMLTextReader;
 
 /**
@@ -56,11 +66,18 @@ public class JavadocContentAccess {
 		
 		ISourceRange javadocRange= member.getJavadocRange();
 		if (javadocRange != null) {
+			DdocParser parser = new DdocParser(buf.getText(javadocRange.getOffset(), javadocRange.getLength()));
+			Ddoc ddoc = parser.parse();
+			
+			return getDdocReader(ddoc);
+			
+			/*
 			JavaDocCommentReader reader= new JavaDocCommentReader(buf, javadocRange.getOffset(), javadocRange.getOffset() + javadocRange.getLength() - 1);
 			if (!containsOnlyInheritDoc(reader, javadocRange.getLength())) {
 				reader.reset();
 				return reader;
 			}
+			*/
 		}
 
 		if (allowInherited && (member.getElementType() == IJavaElement.METHOD)) {
@@ -68,6 +85,55 @@ public class JavadocContentAccess {
 		}
 		
 		return null;
+	}
+
+	private static Reader getDdocReader(Ddoc ddoc) {
+		return new StringReader(transform(ddoc));
+	}
+
+	private static String transform(Ddoc ddoc) {
+		StringBuffer buffer = new StringBuffer();
+		
+		for(DdocSection section : ddoc.getSections()) 
+		{
+			if (section.getName() != null) {
+				HTMLPrinter.addSmallHeader(buffer, section.getName() + ":");
+			}
+			
+			switch(section.getKind()) {
+			case DdocSection.NORMAL_SECTION:
+				buffer.append(section.getText());
+				break;
+			case DdocSection.PARAMS_SECTION:
+			case DdocSection.MACROS_SECTION:
+				HTMLPrinter.startBulletList(buffer);
+				for(Parameter parameter : section.getParameters()) {
+					HTMLPrinter.addBullet(buffer, parameter.getName() + " = " + parameter.getText()); //$NON-NLS-1$
+				}
+				break;
+			case DdocSection.CODE_SECTION:
+				try {
+					appendCode(buffer, section.getText());
+				} catch (InvalidInputException e) {
+					buffer.append(section.getText());
+				}
+				break;
+			}
+			
+			HTMLPrinter.addParagraph(buffer, "");
+		}
+		
+		return buffer.toString();
+	}
+
+	private static void appendCode(StringBuffer buffer, String text) throws InvalidInputException {
+		IScanner scanner = ToolFactory.createScanner(true, true, true, false);
+		scanner.setSource(text.toCharArray());
+		
+		int token;
+		while((token = scanner.getNextToken()) != ITerminalSymbols.TokenNameEOF) {
+			buffer.append(scanner.getRawTokenSourceAsString());
+		}
 	}
 
 	/**
@@ -107,8 +173,10 @@ public class JavadocContentAccess {
 	 */
 	public static Reader getHTMLContentReader(IMember member, boolean allowInherited, boolean useAttachedJavadoc) throws JavaModelException {
 		Reader contentReader= getContentReader(member, allowInherited);
-		if (contentReader != null)
-			return new JavaDoc2HTMLTextReader(contentReader);
+		if (contentReader != null) {
+			// return new JavaDoc2HTMLTextReader(contentReader);
+			return contentReader;
+		}
 		
 		if (useAttachedJavadoc && member.getOpenable().getBuffer() == null) { // only if no source available
 			/* TODO JDT UI attached javadoc
