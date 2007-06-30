@@ -363,6 +363,8 @@ public class JavadocContentAccess {
 			case ITerminalSymbols.TokenNameCOMMENT_PLUS:
 				styleClassName = IJavaColorConstants.JAVA_MULTI_LINE_PLUS_COMMENT;
 				break;
+			case ITerminalSymbols.TokenNameWHITESPACE:
+				styleClassName = null;
 			default:
 				styleClassName = IJavaColorConstants.JAVA_DEFAULT;
 			}
