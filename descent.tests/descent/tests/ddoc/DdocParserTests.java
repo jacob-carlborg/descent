@@ -297,9 +297,9 @@ public class DdocParserTests extends TestCase {
 		
 		assertEquals(null, sections[0].getName());
 		assertEquals(DdocSection.NORMAL_SECTION, sections[0].getKind());
-		assertEquals("---\nint x = 2;", sections[0].getText());
+		assertEquals("---\n int x = 2;", sections[0].getText());
 		
-		assertEquals("Authors", sections[1].getName());
+		assertEquals(" Authors", sections[1].getName());
 		assertEquals(DdocSection.NORMAL_SECTION, sections[1].getKind());
 		assertEquals("Melvin D. Nerd, melvin@mailinator.com", sections[1].getText());
 	}

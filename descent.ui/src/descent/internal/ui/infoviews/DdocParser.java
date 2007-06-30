@@ -178,7 +178,10 @@ public class DdocParser {
 			while(i >= 0 && line.charAt(i) == '*') {
 				i--;
 			}
-			line = line.substring(0, i + 1).trim();
+			line = line.substring(0, i + 1);
+			if (currentSectionType != DdocSection.CODE_SECTION) {
+				line = line.trim();
+			}
 		}
 		
 		int i = 0;
@@ -186,7 +189,11 @@ public class DdocParser {
 			i++;
 		}
 		
-		return line.substring(i).trim();
+		line = line.substring(i);
+		if (currentSectionType != DdocSection.CODE_SECTION) {
+			line = line.trim();
+		}
+		return line;
 	}
 	
 	/**
@@ -220,6 +227,7 @@ public class DdocParser {
 	}
 	
 	private boolean isCodeStartOrEnd(String line) {
+		line = line.trim();
 		if (line.length() < 3) {
 			return false;
 		}

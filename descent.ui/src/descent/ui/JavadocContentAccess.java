@@ -161,9 +161,11 @@ public class JavadocContentAccess {
 				// If not, try parsing a whole compilation unit
 				edit = formatter.format(CodeFormatter.K_COMPILATION_UNIT, text, 0, text.length(), 0, "\n"); //$NON-NLS-1$
 			}
-			Document doc = new Document(text);
-			edit.apply(doc);
-			text = doc.get();
+			if (edit != null) {
+				Document doc = new Document(text);
+				edit.apply(doc);
+				text = doc.get();
+			}
 		} catch (Exception e) {
 		}
 		
