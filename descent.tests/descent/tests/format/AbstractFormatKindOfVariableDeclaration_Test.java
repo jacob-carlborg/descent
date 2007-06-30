@@ -34,6 +34,22 @@ public abstract class AbstractFormatKindOfVariableDeclaration_Test extends Abstr
 				getPrefixOfKindOfVariableDeclaration() + "int   x    ;");
 	}
 	
+	public void testWithTrailingComments() throws Exception {
+		assertFormat(
+				getPrefixOfKindOfVariableDeclaration() + "int x; // comment",
+				
+				getPrefixOfKindOfVariableDeclaration() + "int   x    ; // comment");
+	}
+	
+	public void testWithTrailingComments2() throws Exception {
+		assertFormat(
+				"debug {\r\n" +
+					"\t" + getPrefixOfKindOfVariableDeclaration() + "int x; // comment\r\n" +
+				"}",
+				
+				"debug { " + getPrefixOfKindOfVariableDeclaration() + "int   x    ; // comment\r\n }");
+	}
+	
 	public void testWithMultiComments() throws Exception {
 		assertFormat(
 				"/*\r\n" +

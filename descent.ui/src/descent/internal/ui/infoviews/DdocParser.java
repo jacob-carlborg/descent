@@ -6,6 +6,7 @@ import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
 
+import descent.core.JavaConventions;
 import descent.internal.ui.infoviews.DdocSection.Parameter;
 
 public class DdocParser {
@@ -95,7 +96,7 @@ public class DdocParser {
 			}
 			
 			int colonIndex = getColonOfSectionIndex(line);
-			if (colonIndex != -1) {
+			if (colonIndex != -1 && JavaConventions.validateIdentifier(line.substring(0, colonIndex)).isOK()) {
 				if (currentSectionType == DdocSection.CODE_SECTION) {
 					currentSectionType = DdocSection.NORMAL_SECTION;
 				}

@@ -143,8 +143,10 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 		
 		formatDeclarationBlock(node.declarations(), preferences.brace_position_for_type_declaration, preferences.indent_body_declarations_compare_to_type_header);
 		
-		if(isNextToken(TOK.TOKsemicolon))
+		if(isNextToken(TOK.TOKsemicolon)) {
 			scribe.printNextToken(TOK.TOKsemicolon);
+		}
+		scribe.printTrailingComment();
 		
 		return false;
 	}
@@ -159,6 +161,7 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 		formatCSV(node.fragments(), this.preferences.insert_space_before_comma_in_multiple_field_declarations, this.preferences.insert_space_after_comma_in_multiple_field_declarations);
 		
 		printSemicolonIfNextIsSemicolonAndNotInForInitializer();
+		scribe.printTrailingComment();
 		return false;
 	}
 	
@@ -168,6 +171,7 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 			node.getName().accept(this);
 		else
 			nameAlreadyPrinted = false;
+		scribe.printTrailingComment();
 		return false;
 	}
 	
@@ -192,6 +196,7 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 			scribe.space();
 			defaultType.accept(this);
 		}
+		scribe.printTrailingComment();
 		return false;
 	}
 	
@@ -206,6 +211,7 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 			scribe.printNextToken(TOK.TOKrparen);
 		}
 		formatDeclarationBlock(node.declarations(), preferences.brace_position_for_modifiers, true);
+		scribe.printTrailingComment();
 		return false;
 	}
 	
@@ -263,7 +269,7 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 			scribe.space();
 			defaultValue.accept(this);
 		}
-		
+		scribe.printTrailingComment();
 		return false;
 	}
 	
@@ -387,7 +393,8 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 			scribe.space();
 			label.accept(this);
 		}
-			scribe.printNextToken(TOK.TOKsemicolon);
+		scribe.printNextToken(TOK.TOKsemicolon);
+		scribe.printTrailingComment();
 		return false;
 	}
 	
@@ -519,6 +526,7 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 			node.getLabel().accept(this);
 		}
 		scribe.printNextToken(TOK.TOKsemicolon);
+		scribe.printTrailingComment();
 		return false;
 	}
 	
@@ -530,7 +538,8 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 		scribe.printNextToken(TOK.TOKassign);
 		scribe.space();
 		node.getVersion().accept(this);
-			scribe.printNextToken(TOK.TOKsemicolon);
+		scribe.printNextToken(TOK.TOKsemicolon);
+		scribe.printTrailingComment();
 		return false;
 	}
 	
@@ -566,6 +575,7 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 	public boolean visit(DeclarationStatement node)
 	{
 		node.getDeclaration().accept(this);
+		scribe.printTrailingComment();
 		return false;
 	}
 	
@@ -663,8 +673,10 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 	
 	public boolean visit(EmptyStatement node)
 	{
-		if(isNextToken(TOK.TOKsemicolon))
+		if(isNextToken(TOK.TOKsemicolon)) {
 			scribe.printNextToken(TOK.TOKsemicolon);
+		}
+		scribe.printTrailingComment();
 		return false;
 	}
 	
@@ -689,8 +701,9 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 			baseType.accept(this);
 		}
 		
-		if(isNextToken(TOK.TOKsemicolon))
+		if(isNextToken(TOK.TOKsemicolon)) {
 			scribe.printNextToken(TOK.TOKsemicolon);
+		}
 		else
 		{
 			formatOpeningBrace(preferences.brace_position_for_enum_declaration, preferences.indent_enum_members_compare_to_enum_header);
@@ -709,6 +722,7 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 		if(isNextToken(TOK.TOKsemicolon)) {
 			scribe.printNextToken(TOK.TOKsemicolon);
 		}
+		scribe.printTrailingComment();
 		return false;
 	}
 	
@@ -737,6 +751,7 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 	{
 		node.getExpression().accept(this);
 		printSemicolonIfNextIsSemicolonAndNotInForInitializer();
+		scribe.printTrailingComment();
 		return false;
 	}
 	
@@ -772,6 +787,7 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 		scribe.printNextToken(TOK.TOKlparen);
 		formatCSV(node.arguments(), preferences.insert_space_before_comma_in_foreach_statement, preferences.insert_space_after_comma_in_foreach_statement);
 		scribe.printNextToken(TOK.TOKsemicolon, preferences.insert_space_before_semicolon_in_foreach_statement);
+		scribe.printTrailingComment();
 		if (preferences.insert_space_after_semicolon_in_foreach_statement) {
 			scribe.space();
 		}
@@ -881,7 +897,8 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 			scribe.space();
 			label.accept(this);
 		}
-			scribe.printNextToken(TOK.TOKsemicolon);
+		scribe.printNextToken(TOK.TOKsemicolon);
+		scribe.printTrailingComment();
 		return false;
 	}
 	
@@ -890,7 +907,8 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 		scribe.printNextToken(TOK.TOKgoto);
 		scribe.space();
 		scribe.printNextToken(TOK.TOKdefault);
-			scribe.printNextToken(TOK.TOKsemicolon);
+		scribe.printNextToken(TOK.TOKsemicolon);
+		scribe.printTrailingComment();
 		return false;
 	}
 	
@@ -899,7 +917,8 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 		scribe.printNextToken(TOK.TOKgoto);
 		scribe.space();
 		node.getLabel().accept(this);
-			scribe.printNextToken(TOK.TOKsemicolon);
+		scribe.printNextToken(TOK.TOKsemicolon);
+		scribe.printTrailingComment();
 		return false;
 	}
 	
@@ -918,6 +937,7 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 		node.getExpression().accept(this);
 		scribe.printNextToken(TOK.TOKrparen);
 		formatConditionalStatement(node);
+		scribe.printTrailingComment();
 		return false;
 	}
 	
@@ -979,6 +999,7 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 		scribe.printNextToken(TOK.TOKinvariant);
 		scribe.space();
 		node.getBody().accept(this);
+		scribe.printTrailingComment();
 		return false;
 	}
 	
@@ -1042,6 +1063,7 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 		scribe.printNextToken(TOK.TOKcolon);
 		scribe.printNewLine();
 		node.getBody().accept(this);
+		scribe.printTrailingComment();
 		return false;
 	}
 
@@ -1052,8 +1074,10 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 		scribe.printNextToken(TOK.TOKlparen);
 		node.getExpression().accept(this);
 		scribe.printNextToken(TOK.TOKrparen);
-		if(isNextToken(TOK.TOKsemicolon))
+		if(isNextToken(TOK.TOKsemicolon)) {
 			scribe.printNextToken(TOK.TOKsemicolon);
+		}
+		scribe.printTrailingComment();
 		return false;
 	}
 
@@ -1078,6 +1102,7 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 		if(!isNextToken(TOK.TOKcolon)) // "private:" instead of "private :"
 			scribe.space();
 		formatDeclarationBlock(node.declarations(), preferences.brace_position_for_modifiers, preferences.indent_body_declarations_compare_to_modifier_header);
+		scribe.printTrailingComment();
 		return false;
 	}
 	
@@ -1216,8 +1241,10 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 		}
 		scribe.printNextToken(TOK.TOKrparen);
 		formatDeclarationBlock(node.declarations(), preferences.brace_position_for_other_blocks, true);
-		if(isNextToken(TOK.TOKsemicolon))
+		if(isNextToken(TOK.TOKsemicolon)) {
 			scribe.printNextToken(TOK.TOKsemicolon);
+		}
+		scribe.printTrailingComment();
 		return false;
 	}
 	
@@ -1237,8 +1264,10 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 		Statement body = node.getBody();
 		if(null != body)
 			formatSubStatement(body, false, true, preferences.brace_position_for_other_blocks);
-		if(isNextToken(TOK.TOKsemicolon))
+		if(isNextToken(TOK.TOKsemicolon)) {
 			scribe.printNextToken(TOK.TOKsemicolon);
+		}
+		scribe.printTrailingComment();
 		return false;
 	}
 	
@@ -1294,6 +1323,7 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 			exp.accept(this);
 		}
 		scribe.printNextToken(TOK.TOKsemicolon);
+		scribe.printTrailingComment();
 		return false;
 	}
 	
@@ -1304,6 +1334,7 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 		scribe.printNextToken(TOK.TOKidentifier);
 		scribe.printNextToken(TOK.TOKrparen);
 		formatSubStatement(node.getBody(), false, true, preferences.brace_position_for_scope_statement);
+		scribe.printTrailingComment();
 		return false;
 	}
 	
@@ -1396,14 +1427,17 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 			message.accept(this);
 		}
 		scribe.printNextToken(TOK.TOKrparen);
-		if(isNextToken(TOK.TOKsemicolon))
+		if(isNextToken(TOK.TOKsemicolon)) {
 			scribe.printNextToken(TOK.TOKsemicolon);
+		}
+		scribe.printTrailingComment();
 		return false;
 	}
 	
 	public boolean visit(StaticAssertStatement node)
 	{
 		node.getStaticAssert().accept(this);
+		scribe.printTrailingComment();
 		return false;
 	}
 	
@@ -1415,6 +1449,7 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 		node.getExpression().accept(this);
 		scribe.printNextToken(TOK.TOKrparen);
 		formatConditionalDeclaration(node);
+		scribe.printTrailingComment();
 		return false;
 	}
 	
@@ -1427,6 +1462,7 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 		node.getExpression().accept(this);
 		scribe.printNextToken(TOK.TOKrparen);
 		formatConditionalStatement(node);
+		scribe.printTrailingComment();
 		return false;
 	}
 	
@@ -1487,6 +1523,7 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 		node.getExpression().accept(this);
 		scribe.printNextToken(TOK.TOKcolon);
 		node.getBody().accept(this);
+		scribe.printTrailingComment();
 		return false;
 	}
 	
@@ -1497,6 +1534,7 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 		node.getExpression().accept(this);
 		scribe.printNextToken(TOK.TOKrparen);
 		formatSubStatement(node.getBody(), false, !preferences.keep_simple_switch_statement_on_same_line, preferences.brace_position_for_switch_statement);
+		scribe.printTrailingComment();
 		return false;
 	}
 	
@@ -1511,6 +1549,7 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 			scribe.printNextToken(TOK.TOKrparen);
 		}
 		formatSubStatement(node.getBody(), false, !preferences.keep_simple_synchronized_statement_on_same_line, preferences.brace_position_for_synchronized_statement);
+		scribe.printTrailingComment();
 		return false;
 	}
 	
@@ -1525,6 +1564,7 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 		formatCSV(node.templateParameters(), false, true);
 		scribe.printNextToken(TOK.TOKrparen);
 		formatDeclarationBlock(node.declarations(), preferences.brace_position_for_template_declaration, preferences.indent_body_declarations_compare_to_template_header);
+		scribe.printTrailingComment();
 		return false;
 	}
 	
@@ -1540,8 +1580,10 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 			scribe.space();
 			name.accept(this);
 		}
-		if(isNextToken(TOK.TOKsemicolon))
+		if(isNextToken(TOK.TOKsemicolon)) {
 			scribe.printNextToken(TOK.TOKsemicolon);
+		}
+		scribe.printTrailingComment();
 		return false;
 	}
 	
@@ -1566,7 +1608,8 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 		scribe.printNextToken(TOK.TOKthrow);
 		scribe.space();
 		node.getExpression().accept(this);
-			scribe.printNextToken(TOK.TOKsemicolon);
+		scribe.printNextToken(TOK.TOKsemicolon);
+		scribe.printTrailingComment();
 		return false;
 	}
 	
@@ -1588,6 +1631,7 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 			formatSubStatement($finally, false, true, preferences.brace_position_for_try_catch_finally);
 		}
 		scribe.printTrailingComment();
+		scribe.printTrailingComment();
 		return false;
 	}
 	
@@ -1607,6 +1651,7 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 		scribe.space();
 		formatCSV(node.fragments(), this.preferences.insert_space_before_comma_in_multiple_field_declarations, this.preferences.insert_space_after_comma_in_multiple_field_declarations);
 		printSemicolonIfNextIsSemicolonAndNotInForInitializer();
+		scribe.printTrailingComment();
 		return false;
 	}
 	
@@ -1694,8 +1739,10 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 		scribe.printNextToken(TOK.TOKunittest);
 		scribe.space();
 		node.getBody().accept(this);
-		if(isNextToken(TOK.TOKsemicolon))
+		if(isNextToken(TOK.TOKsemicolon)) {
 			scribe.printNextToken(TOK.TOKsemicolon);
+		}
+		scribe.printTrailingComment();
 		return false;
 	}
 	
@@ -1739,6 +1786,7 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 		postfixes.clear();
 		
 		printSemicolonIfNextIsSemicolonAndNotInForInitializer();
+		scribe.printTrailingComment();
 		return false;
 	}
 
@@ -1774,7 +1822,8 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 		scribe.printNextToken(TOK.TOKassign);
 		scribe.space();
 		node.getVersion().accept(this);
-			scribe.printNextToken(TOK.TOKsemicolon);
+		scribe.printNextToken(TOK.TOKsemicolon);
+		scribe.printTrailingComment();
 		return false;
 	}
 
@@ -1790,6 +1839,7 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 			scribe.printNextToken(TOK.TOKrparen);
 		}
 		formatConditionalDeclaration(node);
+		scribe.printTrailingComment();
 		return false;
 	}
 
@@ -1804,6 +1854,7 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 			scribe.printNextToken(TOK.TOKrparen);
 		}
 		formatConditionalStatement(node);
+		scribe.printTrailingComment();
 		return false;
 	}
 	
@@ -1824,6 +1875,7 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 			scribe.space();
 			body.accept(this);
 		}
+		scribe.printTrailingComment();
 		return false;
 	}
 
@@ -1834,6 +1886,7 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 		node.getExpression().accept(this);
 		scribe.printNextToken(TOK.TOKrparen);
 		formatSubStatement(node.getBody(), false, !preferences.keep_simple_loop_statement_on_same_line, preferences.brace_position_for_loop_statement);
+		scribe.printTrailingComment();
 		return false;
 	}
 
@@ -1844,6 +1897,7 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 		node.getExpression().accept(this);
 		scribe.printNextToken(TOK.TOKrparen);
 		formatSubStatement(node.getBody(), false, !preferences.keep_simple_with_statement_on_same_line, preferences.brace_position_for_with_statement);
+		scribe.printTrailingComment();
 		return false;
 	}
 

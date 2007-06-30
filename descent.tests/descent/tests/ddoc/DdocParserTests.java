@@ -161,6 +161,19 @@ public class DdocParserTests extends TestCase {
 		assertEquals("Line two A.\nLine two B.\nLine two C.", sections[1].getText());
 	}
 	
+	public void testNamedSectionIsNotIdentifier() {
+		DdocSection[] sections = parse(
+			"/**\r\n" +
+			" * Authors(andothers): Melvin D. Nerd, melvin@mailinator.com\r\n" +
+			" */"
+				);
+		
+		assertEquals(1, sections.length);
+		assertEquals(null, sections[0].getName());
+		assertEquals(DdocSection.NORMAL_SECTION, sections[0].getKind());
+		assertEquals("Authors(andothers): Melvin D. Nerd, melvin@mailinator.com", sections[0].getText());
+	}
+	
 	public void testNamedSectionWithOneLine() {
 		DdocSection[] sections = parse(
 			"/**\r\n" +
