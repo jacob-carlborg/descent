@@ -109,6 +109,12 @@ final class FormatterMessages extends NLS {
 	public static String WhiteSpaceOptions_statements;
 	public static String WhiteSpaceOptions_before_semicolon;
 	
+	// Blank lines tab page
+	public static String ModifyDialog_tabpage_blank_lines_title;
+	public static String BlankLinesTabPage_preview_header;
+	public static String BlankLinesTabPage_blank_lines_group_title;
+	public static String BlankLinesTabPage_compilation_unit_group_title;
+	
 	// Succinctness tab page
 	public static String ModifyDialog_tabpage_succinctness_title;
 	public static String SuccinctnessTabPage_preview_header;
@@ -132,6 +138,9 @@ final class FormatterMessages extends NLS {
 	public static String BracesTabPage_brace_position_for_with_statement;
 	public static String BracesTabPage_brace_position_for_scope_statement;
 	public static String BracesTabPage_brace_position_for_other_blocks;
+	public static String BlankLinesTabPage_blank_lines_before_module;
+	public static String BlankLinesTabPage_blank_lines_after_module;
+	public static String BlankLinesTabPage_number_of_empty_lines_to_preserve;
 	public static String SuccinctnessTabPage_keep_simple_then_declaration_on_same_line;
 	public static String SuccinctnessTabPage_keep_simple_else_declaration_on_same_line;
 	public static String SuccinctnessTabPage_keep_simple_then_statement_on_same_line;

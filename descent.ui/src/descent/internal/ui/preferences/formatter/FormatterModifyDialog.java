@@ -25,8 +25,9 @@ public class FormatterModifyDialog extends ModifyDialog {
 	protected void addPages(Map values) {
 	    addTabPage(FormatterMessages.ModifyDialog_tabpage_indentation_title, new IndentationTabPage(this, values)); 
 		addTabPage(FormatterMessages.ModifyDialog_tabpage_braces_title, new BracesTabPage(this, values)); 
-		addTabPage(FormatterMessages.ModifyDialog_tabpage_succinctness_title, new SuccinctnessTabPage(this, values)); 
 		addTabPage(FormatterMessages.ModifyDialog_tabpage_white_space_title, new WhiteSpaceTabPage(this, values)); 
+		addTabPage(FormatterMessages.ModifyDialog_tabpage_blank_lines_title, new BlankLinesTabPage(this, values)); 
+		addTabPage(FormatterMessages.ModifyDialog_tabpage_succinctness_title, new SuccinctnessTabPage(this, values)); 
     }
 	
 }
