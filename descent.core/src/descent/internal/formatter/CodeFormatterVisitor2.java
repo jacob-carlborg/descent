@@ -433,7 +433,10 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 			}
 			scribe.printNextToken(TOK.TOKrparen);
 		}
-		formatSubStatement(node.getBody(), false, true, preferences.brace_position_for_try_catch_finally);
+		boolean simple = formatSubStatement(node.getBody(), false, !preferences.keep_simple_catch_statement_on_same_line, preferences.brace_position_for_try_catch_finally);
+		if (simple) {
+			scribe.printNewLine();
+		}
 		return false;
 	}
 	
@@ -1616,7 +1619,10 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 	public boolean visit(TryStatement node)
 	{
 		scribe.printNextToken(TOK.TOKtry);
-		formatSubStatement(node.getBody(), preferences.insert_new_line_before_catch, true, preferences.brace_position_for_try_catch_finally);
+		boolean simple = formatSubStatement(node.getBody(), preferences.insert_new_line_before_catch, !preferences.keep_simple_try_statement_on_same_line, preferences.brace_position_for_try_catch_finally);
+		if (simple) {
+			scribe.printNewLine();
+		}
 		List<CatchClause> catchClauses = node.catchClauses();
 		for(CatchClause c : catchClauses) {
 			c.accept(this);
@@ -1628,7 +1634,7 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 				scribe.printNewLine();
 			}
 			scribe.printNextToken(TOK.TOKfinally);
-			formatSubStatement($finally, false, true, preferences.brace_position_for_try_catch_finally);
+			formatSubStatement($finally, false, !preferences.keep_simple_finally_statement_on_same_line, preferences.brace_position_for_try_catch_finally);
 		}
 		scribe.printTrailingComment();
 		scribe.printTrailingComment();
@@ -1903,14 +1909,10 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 
 	private void formatConditionalDeclaration(ConditionalDeclaration node)
 	{
-		boolean wasSimple = formatDeclarationBlock(node.thenDeclarations(), preferences.brace_position_for_conditional_declaration, true, !preferences.keep_simple_then_declaration_on_same_line);
+		boolean simple = formatDeclarationBlock(node.thenDeclarations(), preferences.brace_position_for_conditional_declaration, true, !preferences.keep_simple_then_declaration_on_same_line);
 		if(isNextToken(TOK.TOKelse))
 		{
-			if (wasSimple && !preferences.keep_simple_then_declaration_on_same_line) {
-				scribe.printNewLine();
-			}
-			
-			if (preferences.insert_new_line_before_else) {
+			if (preferences.insert_new_line_before_else || simple) {
 				scribe.printNewLine();
 			} else {
 				scribe.space();
@@ -1935,10 +1937,10 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 	
 	private void formatConditionalStatement(ConditionalStatement node)
 	{
-		formatSubStatement(node.getThenBody(), false, !preferences.keep_simple_then_statement_on_same_line, preferences.brace_position_for_conditional_statement);
+		boolean simple = formatSubStatement(node.getThenBody(), false, !preferences.keep_simple_then_statement_on_same_line, preferences.brace_position_for_conditional_statement);
 		if(isNextToken(TOK.TOKelse))
 		{
-			if (preferences.insert_new_line_before_else) {
+			if (preferences.insert_new_line_before_else || (simple && preferences.keep_simple_then_statement_on_same_line)) {
 				scribe.printNewLine();
 			} else {
 				scribe.space();
@@ -2361,13 +2363,17 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 			scribe.printNewLine();
 	}
 	
-	private void formatSubStatement(Statement statement, boolean newLineAtEnd,
+	/**
+	 * Returns true if this was a simple sub-statement.
+	 */
+	private boolean formatSubStatement(Statement statement, boolean newLineAtEnd,
 			boolean bodyInNextLineIndented, BracePosition bracePosition)
 	{
+		boolean simple = false;
 		if(statement instanceof EmptyStatement)
 		{
 			statement.accept(this);
-			return;
+			simple = true;
 		}
 		
 		if(statement instanceof Block)
@@ -2403,6 +2409,8 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 				scribe.unIndent();
 				scribe.printNewLine();
 			}
+			
+			simple = true;
 		}
 		
 		if(newLineAtEnd) {
@@ -2410,6 +2418,8 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 		} else {
 			scribe.space();
 		}
+		
+		return simple;
 	}
 	
 	private void formatOpeningBrace(BracePosition bracePosition, boolean indent)

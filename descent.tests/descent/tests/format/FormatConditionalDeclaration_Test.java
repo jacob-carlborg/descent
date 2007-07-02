@@ -287,7 +287,7 @@ public class FormatConditionalDeclaration_Test extends AbstractFormatter_Test {
 			assertFormat(
 					cond + "(someVersion)\r\n" +
 						"\tint x;\r\n" +
-						"else float x;", 
+					"else float x;", 
 					
 					cond + "(someVersion)  int   x ; else float x;",
 					
@@ -296,5 +296,20 @@ public class FormatConditionalDeclaration_Test extends AbstractFormatter_Test {
 		}
 	}
 	
+	public void testKeepSimpleThenAndElseInSameLine() throws Exception {
+		Map options = new HashMap();
+		options.put(DefaultCodeFormatterConstants.FORMATTER_KEEP_SIMPLE_THEN_DECLARATION_ON_SAME_LINE, DefaultCodeFormatterConstants.TRUE);
+		options.put(DefaultCodeFormatterConstants.FORMATTER_KEEP_SIMPLE_ELSE_DECLARATION_ON_SAME_LINE, DefaultCodeFormatterConstants.TRUE);
+		for(String cond : conditionals) {
+			assertFormat(
+					cond + "(someVersion) int x;\r\n" +
+					"else float x;", 
+					
+					cond + "(someVersion)  int   x ; else float x;",
+					
+					options
+				);
+		}
+	}	
 
 }

@@ -29,7 +29,7 @@ public class FormatDebugStatement_Test extends AbstractFormatBraceElseWithSingle
 	}
 	
 	@Override
-	protected String getSimpleElseStatementInSameLineOption() {
+	protected String getSimpleElseInSameLineOption() {
 		return DefaultCodeFormatterConstants.FORMATTER_KEEP_SIMPLE_ELSE_STATEMENT_ON_SAME_LINE;
 	}
 	

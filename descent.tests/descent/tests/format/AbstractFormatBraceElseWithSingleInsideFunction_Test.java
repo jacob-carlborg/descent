@@ -12,12 +12,12 @@ public abstract class AbstractFormatBraceElseWithSingleInsideFunction_Test exten
 	protected Map getDefaultOptions() {
 		Map options = super.getDefaultOptions();
 		options.put(getKeepSimpleThenInSameLineOption(), DefaultCodeFormatterConstants.FALSE);
-		options.put(getSimpleElseStatementInSameLineOption(), DefaultCodeFormatterConstants.FALSE);
+		options.put(getSimpleElseInSameLineOption(), DefaultCodeFormatterConstants.FALSE);
 		return options;
 	}
 	
 	protected abstract String getKeepSimpleThenInSameLineOption();
-	protected abstract String getSimpleElseStatementInSameLineOption();
+	protected abstract String getSimpleElseInSameLineOption();
 	
 	public void testDontKeepSimpleThenInSameLine() throws Exception {
 		assertFormat(
@@ -53,10 +53,24 @@ public abstract class AbstractFormatBraceElseWithSingleInsideFunction_Test exten
 	
 	public void testKeepSimpleElseInSameLine() throws Exception {
 		Map options = new HashMap();
-		options.put(getSimpleElseStatementInSameLineOption(), DefaultCodeFormatterConstants.TRUE);
+		options.put(getSimpleElseInSameLineOption(), DefaultCodeFormatterConstants.TRUE);
 		assertFormat(
 				getFormattedPrefixForBrace() + "\r\n" +
 					"\tint x;\r\n" +
+					"else float x;", 
+				
+				getUnformattedPrefixForBrace() + "  int   x ; else float x;",
+				
+				options
+			);
+	}
+	
+	public void testKeepSimpleThenAndElseInSameLine() throws Exception {
+		Map options = new HashMap();
+		options.put(getKeepSimpleThenInSameLineOption(), DefaultCodeFormatterConstants.TRUE);
+		options.put(getSimpleElseInSameLineOption(), DefaultCodeFormatterConstants.TRUE);
+		assertFormat(
+				getFormattedPrefixForBrace() + " int x;\r\n" +
 					"else float x;", 
 				
 				getUnformattedPrefixForBrace() + "  int   x ; else float x;",

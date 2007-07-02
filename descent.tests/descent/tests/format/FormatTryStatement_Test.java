@@ -14,6 +14,9 @@ public class FormatTryStatement_Test extends AbstractFormatInsideFunction_Test {
 		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_NEW_LINE_BEFORE_CATCH, DefaultCodeFormatterConstants.FALSE);
 		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_NEW_LINE_BEFORE_FINALLY, DefaultCodeFormatterConstants.FALSE);
 		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_NEW_LINE_BEFORE_FINALLY, DefaultCodeFormatterConstants.FALSE);
+		options.put(DefaultCodeFormatterConstants.FORMATTER_KEEP_SIMPLE_TRY_STATEMENT_ON_SAME_LINE, DefaultCodeFormatterConstants.FALSE);
+		options.put(DefaultCodeFormatterConstants.FORMATTER_KEEP_SIMPLE_CATCH_STATEMENT_ON_SAME_LINE, DefaultCodeFormatterConstants.FALSE);
+		options.put(DefaultCodeFormatterConstants.FORMATTER_KEEP_SIMPLE_FINALLY_STATEMENT_ON_SAME_LINE, DefaultCodeFormatterConstants.FALSE);
 		return options;
 	}
 	
@@ -132,6 +135,85 @@ public class FormatTryStatement_Test extends AbstractFormatInsideFunction_Test {
 				" * comment\r\n" +
 				" */\r\n" +
 				"try  { // comment\r\n   }  catch {   // comment\r\n   } // trailing"
+			);
+	}
+	
+	public void testDontKeepSimpleTryInSameLine() throws Exception {
+		assertFormat(
+				"try\r\n" +
+					"\tint x;\r\n" +
+				"catch {\r\n" +
+				"} finally {\r\n" +
+				"}", 
+				
+				"try int x;  catch  {   }   finally { }"
+			);
+	}
+	
+	public void testKeepSimpleTryInSameLine() throws Exception {
+		Map options = new HashMap();
+		options.put(DefaultCodeFormatterConstants.FORMATTER_KEEP_SIMPLE_TRY_STATEMENT_ON_SAME_LINE, DefaultCodeFormatterConstants.TRUE);
+		assertFormat(
+				"try int x;\r\n" +
+				"catch {\r\n" +
+				"} finally {\r\n" +
+				"}", 
+				
+				"try int x;  catch  {   }   finally { }",
+				
+				options
+			);
+	}
+	
+	public void testDontKeepSimpleCatchInSameLine() throws Exception {
+		assertFormat(
+				"try {\r\n" +
+				"} catch(Exception e)\r\n" +
+				"\tint x;\r\n" +
+				"finally {\r\n" +
+				"}", 
+				
+				"try { }   catch(Exception e)  int x;   finally { }"
+			);
+	}
+	
+	public void testDpmtKeepSimpleCatchInSameLine() throws Exception {
+		Map options = new HashMap();
+		options.put(DefaultCodeFormatterConstants.FORMATTER_KEEP_SIMPLE_CATCH_STATEMENT_ON_SAME_LINE, DefaultCodeFormatterConstants.TRUE);
+		assertFormat(
+				"try {\r\n" +
+				"} catch(Exception e) int x;\r\n" +
+				"finally {\r\n" +
+				"}", 
+				
+				"try { }   catch(Exception e)  int x;   finally { }",
+				
+				options
+			);
+	}
+	
+	public void testDontKeepSimpleFinallyInSameLine() throws Exception {
+		assertFormat(
+				"try {\r\n" +
+				"} catch {\r\n" +
+				"} finally\r\n" +
+					"\tint x;", 
+				
+				"try { }  catch  {   }   finally int x;"
+			);
+	}
+	
+	public void testKeepSimpleFinallyInSameLine() throws Exception {
+		Map options = new HashMap();
+		options.put(DefaultCodeFormatterConstants.FORMATTER_KEEP_SIMPLE_FINALLY_STATEMENT_ON_SAME_LINE, DefaultCodeFormatterConstants.TRUE);
+		assertFormat(
+				"try {\r\n" +
+				"} catch {\r\n" +
+				"} finally int x;", 
+				
+				"try { }  catch  {   }   finally int x;",
+				
+				options
 			);
 	}
 
