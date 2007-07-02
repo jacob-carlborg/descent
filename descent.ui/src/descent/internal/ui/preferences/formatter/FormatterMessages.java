@@ -115,10 +115,12 @@ final class FormatterMessages extends NLS {
 	public static String BlankLinesTabPage_blank_lines_group_title;
 	public static String BlankLinesTabPage_compilation_unit_group_title;
 	
-	// Succinctness tab page
-	public static String ModifyDialog_tabpage_succinctness_title;
-	public static String SuccinctnessTabPage_preview_header;
-	public static String SuccinctnessTabPage_group_title;
+	// New Lines tab page
+	public static String ModifyDialog_tabpage_new_lines_title;
+	public static String NewLinesTabPage_preview_header;
+	public static String NewLinesTabPage_short_syntax_group_title;
+	public static String NewLinesTabPage_control_statements_title;
+	public static String NewLinesTabPage_other_group_title;
 	
 	// Messages for various options (automatically generated)
 	public static String BracesTabPage_brace_position_for_function_declaration;
@@ -138,21 +140,27 @@ final class FormatterMessages extends NLS {
 	public static String BracesTabPage_brace_position_for_with_statement;
 	public static String BracesTabPage_brace_position_for_scope_statement;
 	public static String BracesTabPage_brace_position_for_other_blocks;
+	public static String NewLinesTabPage_insert_new_line_before_else;
+	public static String NewLinesTabPage_insert_new_line_before_catch;
+	public static String NewLinesTabPage_insert_new_line_before_finally;
+	public static String NewLinesTabPage_insert_new_line_before_while_in_do_statement;
+	public static String NewLinesTabPage_keep_else_conditional_on_one_line;
+	public static String NewLinesTabPage_insert_new_line_at_end_of_file_if_missing;
 	public static String BlankLinesTabPage_blank_lines_before_module;
 	public static String BlankLinesTabPage_blank_lines_after_module;
 	public static String BlankLinesTabPage_number_of_empty_lines_to_preserve;
-	public static String SuccinctnessTabPage_keep_simple_then_declaration_on_same_line;
-	public static String SuccinctnessTabPage_keep_simple_else_declaration_on_same_line;
-	public static String SuccinctnessTabPage_keep_simple_then_statement_on_same_line;
-	public static String SuccinctnessTabPage_keep_simple_else_statement_on_same_line;
-	public static String SuccinctnessTabPage_keep_simple_try_statement_on_same_line;
-	public static String SuccinctnessTabPage_keep_simple_catch_statement_on_same_line;
-	public static String SuccinctnessTabPage_keep_simple_finally_statement_on_same_line;
-	public static String SuccinctnessTabPage_keep_simple_loop_statement_on_same_line;
-	public static String SuccinctnessTabPage_keep_simple_synchronized_statement_on_same_line;
-	public static String SuccinctnessTabPage_keep_simple_with_statement_on_same_line;
-	public static String SuccinctnessTabPage_keep_functions_with_no_statement_in_one_line;
-	public static String SuccinctnessTabPage_keep_functions_with_one_statement_in_one_line;
+	public static String NewLinesTabPage_keep_simple_then_declaration_on_same_line;
+	public static String NewLinesTabPage_keep_simple_else_declaration_on_same_line;
+	public static String NewLinesTabPage_keep_simple_then_statement_on_same_line;
+	public static String NewLinesTabPage_keep_simple_else_statement_on_same_line;
+	public static String NewLinesTabPage_keep_simple_try_statement_on_same_line;
+	public static String NewLinesTabPage_keep_simple_catch_statement_on_same_line;
+	public static String NewLinesTabPage_keep_simple_finally_statement_on_same_line;
+	public static String NewLinesTabPage_keep_simple_loop_statement_on_same_line;
+	public static String NewLinesTabPage_keep_simple_synchronized_statement_on_same_line;
+	public static String NewLinesTabPage_keep_simple_with_statement_on_same_line;
+	public static String NewLinesTabPage_keep_functions_with_no_statement_in_one_line;
+	public static String NewLinesTabPage_keep_functions_with_one_statement_in_one_line;
 	public static String IndentationTabPage_indentation_size;
 	public static String IndentationTabPage_indent_empty_lines;
 	public static String IndentationTabPage_indent_body_declarations_compare_to_type_header;
