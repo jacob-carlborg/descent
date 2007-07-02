@@ -85,6 +85,7 @@ public class DefaultCodeFormatterOptions
 	public boolean insert_new_line_at_end_of_file_if_missing;
 	public int blank_lines_before_module;
 	public int blank_lines_after_module;
+	public int number_of_empty_lines_to_preserve;
 	public boolean keep_simple_then_declaration_on_same_line;
 	public boolean keep_simple_else_declaration_on_same_line;
 	public boolean keep_simple_then_statement_on_same_line;
@@ -118,7 +119,6 @@ public class DefaultCodeFormatterOptions
 	public boolean never_indent_line_comments_on_first_column;
 	public int line_split;
 	public int page_width;
-	public int number_of_empty_lines_to_preserve;
 	
 	// Set by the caller
 	public String line_separator;
@@ -185,6 +185,7 @@ public class DefaultCodeFormatterOptions
 		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_NEW_LINE_AT_END_OF_FILE_IF_MISSING, insert_new_line_at_end_of_file_if_missing ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
 		options.put(DefaultCodeFormatterConstants.FORMATTER_BLANK_LINES_BEFORE_MODULE, Integer.toString(blank_lines_before_module));
 		options.put(DefaultCodeFormatterConstants.FORMATTER_BLANK_LINES_AFTER_MODULE, Integer.toString(blank_lines_after_module));
+		options.put(DefaultCodeFormatterConstants.FORMATTER_NUMBER_OF_EMPTY_LINES_TO_PRESERVE, Integer.toString(number_of_empty_lines_to_preserve));
 		options.put(DefaultCodeFormatterConstants.FORMATTER_KEEP_SIMPLE_THEN_DECLARATION_ON_SAME_LINE, keep_simple_then_declaration_on_same_line ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
 		options.put(DefaultCodeFormatterConstants.FORMATTER_KEEP_SIMPLE_ELSE_DECLARATION_ON_SAME_LINE, keep_simple_else_declaration_on_same_line ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
 		options.put(DefaultCodeFormatterConstants.FORMATTER_KEEP_SIMPLE_THEN_STATEMENT_ON_SAME_LINE, keep_simple_then_statement_on_same_line ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
@@ -218,7 +219,6 @@ public class DefaultCodeFormatterOptions
 		options.put(DefaultCodeFormatterConstants.FORMATTER_NEVER_INDENT_LINE_COMMENTS_ON_FIRST_COLUMN, never_indent_line_comments_on_first_column ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
 		options.put(DefaultCodeFormatterConstants.FORMATTER_LINE_SPLIT, Integer.toString(line_split));
 		options.put(DefaultCodeFormatterConstants.FORMATTER_PAGE_WIDTH, Integer.toString(page_width));
-		options.put(DefaultCodeFormatterConstants.FORMATTER_NUMBER_OF_EMPTY_LINES_TO_PRESERVE, Integer.toString(number_of_empty_lines_to_preserve));
 		 
 		return options;
 	}
@@ -615,6 +615,15 @@ public class DefaultCodeFormatterOptions
 			}
 		}
 		
+		current = settings.get(DefaultCodeFormatterConstants.FORMATTER_NUMBER_OF_EMPTY_LINES_TO_PRESERVE);
+		if(null != current) {
+			try {
+				number_of_empty_lines_to_preserve = Integer.parseInt(current);
+			} catch(Exception e) {
+				number_of_empty_lines_to_preserve = 1;
+			}
+		}
+		
 		current = settings.get(DefaultCodeFormatterConstants.FORMATTER_KEEP_SIMPLE_THEN_DECLARATION_ON_SAME_LINE);
 		if(null != current) {
 			try {
@@ -911,15 +920,6 @@ public class DefaultCodeFormatterOptions
 				page_width = 80;
 			}
 		}
-		
-		current = settings.get(DefaultCodeFormatterConstants.FORMATTER_NUMBER_OF_EMPTY_LINES_TO_PRESERVE);
-		if(null != current) {
-			try {
-				number_of_empty_lines_to_preserve = Integer.parseInt(current);
-			} catch(Exception e) {
-				number_of_empty_lines_to_preserve = 1;
-			}
-		}
 	}
 
 	public void setDefaultSettings() {
@@ -966,6 +966,7 @@ public class DefaultCodeFormatterOptions
 		insert_new_line_at_end_of_file_if_missing = false;
 		blank_lines_before_module = 0;
 		blank_lines_after_module = 1;
+		number_of_empty_lines_to_preserve = 1;
 		keep_simple_then_declaration_on_same_line = false;
 		keep_simple_else_declaration_on_same_line = false;
 		keep_simple_then_statement_on_same_line = false;
@@ -999,6 +1000,5 @@ public class DefaultCodeFormatterOptions
 		never_indent_line_comments_on_first_column = false;
 		line_split = 9999;
 		page_width = 80;
-		number_of_empty_lines_to_preserve = 1;
 	}
 }

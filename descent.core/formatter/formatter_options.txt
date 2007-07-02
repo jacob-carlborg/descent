@@ -211,9 +211,18 @@ insert_new_line_at_end_of_file_if_missing
 blank_lines_before_module
 	type=int
 	default=0
+	tab=BlankLinesTabPage
+	uiText=Before 'module' declaration:
 blank_lines_after_module
 	type=int
 	default=1
+	tab=BlankLinesTabPage
+	uiText=After 'module' declaration:
+number_of_empty_lines_to_preserve
+	type=int
+	default=1
+	tab=BlankLinesTabPage
+	uiText=Number of blank lines to preserve:
 	
 # Statements and declarations on same line
 keep_simple_then_declaration_on_same_line
@@ -300,47 +309,47 @@ indent_empty_lines
 	type=boolean
 	default=true
 	tab=IndentationTabPage
-	uiText=Empty Lines:
+	uiText=Empty Lines
 indent_body_declarations_compare_to_type_header
 	type=boolean
 	default=true
 	tab=IndentationTabPage
-	uiText=Declarations within type:
+	uiText=Declarations within type
 indent_body_declarations_compare_to_template_header
 	type=boolean
 	default=true
 	tab=IndentationTabPage
-	uiText=Declarations within template:
+	uiText=Declarations within template
 indent_body_declarations_compare_to_modifier_header
 	type=boolean
 	default=true
 	tab=IndentationTabPage
-	uiText=Declarations within modifier:
+	uiText=Declarations within modifier
 indent_statements_compare_to_function_header
 	type=boolean
 	default=true
 	tab=IndentationTabPage
-	uiText=Statements within function:
+	uiText=Statements within function
 indent_in_out_body_compare_to_function_header
 	type=boolean
 	default=false
 	tab=IndentationTabPage
-	uiText='in'/'out'/'body' under function:
+	uiText='in'/'out'/'body' under function
 indent_statements_compare_to_function_in_header
 	type=boolean
 	default=true
 	tab=IndentationTabPage
-	uiText=Statements within 'in':
+	uiText=Statements within 'in'
 indent_statements_compare_to_function_out_header
 	type=boolean
 	default=true
 	tab=IndentationTabPage
-	uiText=Statements within 'out':
+	uiText=Statements within 'out'
 indent_statements_compare_to_function_body_header
 	type=boolean
 	default=true
 	tab=IndentationTabPage
-	uiText=Statements within 'body':
+	uiText=Statements within 'body'
 indent_enum_members_compare_to_enum_header
 	type=boolean
 	default=true
@@ -377,8 +386,5 @@ line_split
 page_width
 	type=int
 	default=80
-number_of_empty_lines_to_preserve
-	type=int
-	default=1
 
 
