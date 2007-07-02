@@ -115,10 +115,12 @@ final class FormatterMessages extends NLS {
 	public static String BlankLinesTabPage_blank_lines_group_title;
 	public static String BlankLinesTabPage_compilation_unit_group_title;
 	
-	// Succinctness tab page
-	public static String ModifyDialog_tabpage_succinctness_title;
-	public static String SuccinctnessTabPage_preview_header;
-	public static String SuccinctnessTabPage_group_title;
+	// New Lines tab page
+	public static String ModifyDialog_tabpage_new_lines_title;
+	public static String NewLinesTabPage_preview_header;
+	public static String NewLinesTabPage_short_syntax_group_title;
+	public static String NewLinesTabPage_control_statements_title;
+	public static String NewLinesTabPage_other_group_title;
 	
 	// Messages for various options (automatically generated)
 	/* EVAL-FOR-EACH

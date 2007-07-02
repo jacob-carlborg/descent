@@ -194,18 +194,33 @@ insert_space_between_empty_parens_in_function_invocation
 insert_new_line_before_else
 	type=boolean
 	default=false
+	tab=NewLinesTabPage
+	uiText=Insert new line before 'else'
 insert_new_line_before_catch
 	type=boolean
 	default=false
+	tab=NewLinesTabPage
+	uiText=Insert new line before 'catch'
 insert_new_line_before_finally
 	type=boolean
 	default=false
+	tab=NewLinesTabPage
+	uiText=Insert new line before 'finally'
 insert_new_line_before_while_in_do_statement
 	type=boolean
 	default=false
+	tab=NewLinesTabPage
+	uiText=Insert new line before 'while' in 'do' statement
+keep_else_conditional_on_one_line
+	type=boolean
+	default=true
+	tab=NewLinesTabPage
+	uiText=Keep 'else if' on one line
 insert_new_line_at_end_of_file_if_missing
 	type=boolean
 	default=false
+	tab=NewLinesTabPage
+	uiText=Insert new line at end of file if missing
 
 # Blank Line Options
 blank_lines_before_module
@@ -228,68 +243,63 @@ number_of_empty_lines_to_preserve
 keep_simple_then_declaration_on_same_line
 	type=boolean
 	default=false
-	tab=SuccinctnessTabPage
+	tab=NewLinesTabPage
 	uiText=Then Declarations
 keep_simple_else_declaration_on_same_line
 	type=boolean
 	default=false
-	tab=SuccinctnessTabPage
+	tab=NewLinesTabPage
 	uiText=Else Declarations
 keep_simple_then_statement_on_same_line
 	type=boolean
 	default=false
-	tab=SuccinctnessTabPage
+	tab=NewLinesTabPage
 	uiText=Then Statements
 keep_simple_else_statement_on_same_line
 	type=boolean
 	default=false
-	tab=SuccinctnessTabPage
+	tab=NewLinesTabPage
 	uiText=Else Statements
 keep_simple_try_statement_on_same_line
 	type=boolean
 	default=false
-	tab=SuccinctnessTabPage
+	tab=NewLinesTabPage
 	uiText='try' Statements
 keep_simple_catch_statement_on_same_line
 	type=boolean
 	default=false
-	tab=SuccinctnessTabPage
+	tab=NewLinesTabPage
 	uiText='catch' Statements
 keep_simple_finally_statement_on_same_line
 	type=boolean
 	default=false
-	tab=SuccinctnessTabPage
+	tab=NewLinesTabPage
 	uiText='finally' Statements
 keep_simple_loop_statement_on_same_line
 	type=boolean
 	default=false
-	tab=SuccinctnessTabPage
+	tab=NewLinesTabPage
 	uiText=Loops
 keep_simple_synchronized_statement_on_same_line
 	type=boolean
 	default=false
-	tab=SuccinctnessTabPage
+	tab=NewLinesTabPage
 	uiText='synchronzied'/'volatile' Statements
 keep_simple_with_statement_on_same_line
 	type=boolean
 	default=false
-	tab=SuccinctnessTabPage
+	tab=NewLinesTabPage
 	uiText='with' Statements
 keep_functions_with_no_statement_in_one_line
 	type=boolean
 	default=false
-	tab=SuccinctnessTabPage
+	tab=NewLinesTabPage
 	uiText=Functions with no statement
 keep_functions_with_one_statement_in_one_line
 	type=boolean
 	default=false
-	tab=SuccinctnessTabPage
+	tab=NewLinesTabPage
 	uiText=Functions with one statement
-
-# Maybe put on a separate tab page...?
-keep_else_conditional_on_one_line
-	type=boolean
-	default=true
 
 # Unused (switch statements can't be on one line)
 keep_simple_switch_statement_on_same_line
