@@ -297,6 +297,8 @@ public final class PreferencesMessages extends NLS {
 	public static String AppearancePreferencePage_preferenceOnlyEffectiveForNewPerspectives;
 	public static String AppearancePreferencePage_packageNameCompressionPattern_error_isEmpty;
 	public static String AppearancePreferencePage_foldEmptyPackages;
+	public static String DdocPreferencePage_description;
+	public static String DdocPreferencePage_show_parameter_types;
 	public static String CodeFormatterPreferencePage_title;
 	public static String CodeFormatterPreferencePage_description;
 	public static String TodoTaskPreferencePage_title;

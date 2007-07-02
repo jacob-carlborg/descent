@@ -13,7 +13,11 @@ package descent.ui;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
+import org.eclipse.jface.resource.StringConverter;
 import org.eclipse.jface.text.Document;
 import org.eclipse.text.edits.TextEdit;
 
@@ -26,15 +30,12 @@ import descent.core.JavaModelException;
 import descent.core.ToolFactory;
 import descent.core.compiler.IScanner;
 import descent.core.compiler.ITerminalSymbols;
-import descent.core.compiler.InvalidInputException;
 import descent.core.formatter.CodeFormatter;
-import descent.internal.corext.javadoc.JavaDocCommentReader;
 import descent.internal.ui.infoviews.Ddoc;
 import descent.internal.ui.infoviews.DdocParser;
 import descent.internal.ui.infoviews.DdocSection;
 import descent.internal.ui.infoviews.DdocSection.Parameter;
 import descent.internal.ui.text.HTMLPrinter;
-import descent.internal.ui.text.javadoc.JavaDoc2HTMLTextReader;
 import descent.ui.text.IJavaColorConstants;
 
 /**
@@ -74,7 +75,7 @@ public class JavadocContentAccess {
 			DdocParser parser = new DdocParser(buf.getText(javadocRange.getOffset(), javadocRange.getLength()));
 			Ddoc ddoc = parser.parse();
 			
-			return getDdocReader(ddoc);
+			return getDdocReader(ddoc, member);
 			
 			/*
 			JavaDocCommentReader reader= new JavaDocCommentReader(buf, javadocRange.getOffset(), javadocRange.getOffset() + javadocRange.getLength() - 1);
@@ -92,11 +93,32 @@ public class JavadocContentAccess {
 		return null;
 	}
 
-	private static Reader getDdocReader(Ddoc ddoc) {
-		return new StringReader(transform(ddoc));
+	private static Reader getDdocReader(Ddoc ddoc, IMember member) {
+		return new StringReader(transform(ddoc, member));
 	}
 
-	private static String transform(Ddoc ddoc) {
+	private static String transform(Ddoc ddoc, IMember member) {
+		String showParameterTypesString = PreferenceConstants.getPreference(PreferenceConstants.DDOC_SHOW_PARAMETER_TYPES, null);
+		boolean showParameterTypes = showParameterTypesString == null ? false : StringConverter.asBoolean(showParameterTypesString); 
+		
+		Map<String, String> parameters;
+		if (showParameterTypes && member.getElementType() == IJavaElement.METHOD) {
+			IMethod method = (IMethod) member;
+			try {
+				String[] parameterNames = method.getParameterNames();
+				String[] parameterTypes = method.getRawParameterTypes();
+				
+				parameters = new HashMap<String, String>();
+				for(int i = 0; i < parameterNames.length && i < parameterTypes.length; i++) {
+					parameters.put(parameterNames[i], parameterTypes[i]);
+				}
+			} catch (JavaModelException e) {
+				parameters = Collections.EMPTY_MAP;
+			}
+		} else {
+			parameters = Collections.EMPTY_MAP;
+		}
+		
 		StringBuffer buffer = new StringBuffer();
 		
 		for(DdocSection section : ddoc.getSections()) {
@@ -123,6 +145,13 @@ public class JavadocContentAccess {
 				buffer.append("</dt>"); //$NON-NLS-1$
 				for(Parameter parameter : section.getParameters()) {
 					buffer.append("<dd>"); //$NON-NLS-1$
+					
+					String type = parameters.get(parameter.getName());
+					if (type != null) {
+						buffer.append(type);
+						buffer.append(" "); //$NON-NLS-1$
+					}
+					
 					buffer.append("<b>"); //$NON-NLS-1$
 					buffer.append(parameter.getName());
 					buffer.append("</b>"); //$NON-NLS-1$

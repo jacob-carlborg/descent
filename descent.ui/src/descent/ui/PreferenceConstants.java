@@ -46,6 +46,16 @@ public class PreferenceConstants {
 	}
 	
 	/**
+	 * A named preference that controls wether to show parameter types
+	 * in the ddoc.
+	 * <p>
+	 * Value is of type <code>Boolean</code>: if <code>true</code> parameter types
+	 * are shown
+	 * </p>
+	 */
+	public static final String DDOC_SHOW_PARAMETER_TYPES= "descent.ui.ddocshowparametertypes";//$NON-NLS-1$
+	
+	/**
 	 * A named preference that controls return type rendering of methods in the UI.
 	 * <p>
 	 * Value is of type <code>Boolean</code>: if <code>true</code> return types
@@ -3579,6 +3589,9 @@ public class PreferenceConstants {
 		store.setDefault(PreferenceConstants.BROWSING_STACK_VERTICALLY, false);
 		store.setDefault(PreferenceConstants.APPEARANCE_PKG_NAME_PATTERN_FOR_PKG_VIEW, ""); //$NON-NLS-1$
 		store.setDefault(PreferenceConstants.APPEARANCE_FOLD_PACKAGES_IN_PACKAGE_EXPLORER, true);
+		
+		// DdocPreferencePage
+		store.setDefault(PreferenceConstants.DDOC_SHOW_PARAMETER_TYPES, false);
 
 		// ImportOrganizePreferencePage
 		store.setDefault(PreferenceConstants.ORGIMPORTS_IMPORTORDER, "java;javax;org;com"); //$NON-NLS-1$
