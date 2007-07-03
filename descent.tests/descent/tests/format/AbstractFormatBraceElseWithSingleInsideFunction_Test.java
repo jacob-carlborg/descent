@@ -28,6 +28,16 @@ public abstract class AbstractFormatBraceElseWithSingleInsideFunction_Test exten
 			);
 	}
 	
+	public void testDontKeepSimpleThenInSameLine2() throws Exception {
+		assertFormat(
+				getFormattedPrefixForBrace() + " {\r\n" +
+					"\tint x;\r\n" +
+				"}", 
+				
+				getUnformattedPrefixForBrace() + " {  int   x ;   }" 
+			);
+	}
+	
 	public void testKeepSimpleThenInSameLine() throws Exception {
 		Map options = new HashMap();
 		options.put(getKeepSimpleThenInSameLineOption(), DefaultCodeFormatterConstants.TRUE);
@@ -35,6 +45,20 @@ public abstract class AbstractFormatBraceElseWithSingleInsideFunction_Test exten
 				getFormattedPrefixForBrace() + " int x;", 
 				
 				getUnformattedPrefixForBrace() + "  int   x ;",
+					
+				options
+			);
+	}
+	
+	public void testKeepSimpleThenInSameLine2() throws Exception {
+		Map options = new HashMap();
+		options.put(getKeepSimpleThenInSameLineOption(), DefaultCodeFormatterConstants.TRUE);
+		assertFormat(
+				getFormattedPrefixForBrace() + " {\r\n" +
+					"\tint x;\r\n" +
+				"}", 
+				
+				getUnformattedPrefixForBrace() + " {  int   x ;  }",
 					
 				options
 			);
