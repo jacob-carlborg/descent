@@ -102,12 +102,14 @@ final class FormatterMessages extends NLS {
 	public static String WhiteSpaceTabPage_sort_by_d_element;
 	public static String WhiteSpaceTabPage_sort_by_syntax_element;
 	
-	// White space options
-	public static String WhiteSpaceOptions_semicolon;
-	public static String WhiteSpaceOptions_before;
-	public static String WhiteSpaceOptions_after;
+	// White space options - D elements
 	public static String WhiteSpaceOptions_statements;
+	public static String WhiteSpaceOptions_for_statement;
+	public static String WhiteSpaceOptions_foreach_statement;
+	
+	// White space options - syntax elements
 	public static String WhiteSpaceOptions_before_semicolon;
+	public static String WhiteSpaceOptions_after_semicolon;
 	
 	// Blank lines tab page
 	public static String ModifyDialog_tabpage_blank_lines_title;
@@ -140,15 +142,15 @@ final class FormatterMessages extends NLS {
 	public static String BracesTabPage_brace_position_for_with_statement;
 	public static String BracesTabPage_brace_position_for_scope_statement;
 	public static String BracesTabPage_brace_position_for_other_blocks;
+	public static String BlankLinesTabPage_blank_lines_before_module;
+	public static String BlankLinesTabPage_blank_lines_after_module;
+	public static String BlankLinesTabPage_number_of_empty_lines_to_preserve;
 	public static String NewLinesTabPage_insert_new_line_before_else;
 	public static String NewLinesTabPage_insert_new_line_before_catch;
 	public static String NewLinesTabPage_insert_new_line_before_finally;
 	public static String NewLinesTabPage_insert_new_line_before_while_in_do_statement;
 	public static String NewLinesTabPage_keep_else_conditional_on_one_line;
 	public static String NewLinesTabPage_insert_new_line_at_end_of_file_if_missing;
-	public static String BlankLinesTabPage_blank_lines_before_module;
-	public static String BlankLinesTabPage_blank_lines_after_module;
-	public static String BlankLinesTabPage_number_of_empty_lines_to_preserve;
 	public static String NewLinesTabPage_keep_simple_then_declaration_on_same_line;
 	public static String NewLinesTabPage_keep_simple_else_declaration_on_same_line;
 	public static String NewLinesTabPage_keep_simple_then_statement_on_same_line;
