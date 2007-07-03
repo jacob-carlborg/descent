@@ -78,15 +78,15 @@ public class DefaultCodeFormatterOptions
 	public boolean insert_space_after_comma_in_foreach_statement;
 	public boolean insert_space_before_closing_paren_in_function_invocation;
 	public boolean insert_space_between_empty_parens_in_function_invocation;
+	public int blank_lines_before_module;
+	public int blank_lines_after_module;
+	public int number_of_empty_lines_to_preserve;
 	public boolean insert_new_line_before_else;
 	public boolean insert_new_line_before_catch;
 	public boolean insert_new_line_before_finally;
 	public boolean insert_new_line_before_while_in_do_statement;
 	public boolean keep_else_conditional_on_one_line;
 	public boolean insert_new_line_at_end_of_file_if_missing;
-	public int blank_lines_before_module;
-	public int blank_lines_after_module;
-	public int number_of_empty_lines_to_preserve;
 	public boolean keep_simple_then_declaration_on_same_line;
 	public boolean keep_simple_else_declaration_on_same_line;
 	public boolean keep_simple_then_statement_on_same_line;
@@ -178,15 +178,15 @@ public class DefaultCodeFormatterOptions
 		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_AFTER_COMMA_IN_FOREACH_STATEMENT, insert_space_after_comma_in_foreach_statement ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
 		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_CLOSING_PAREN_IN_FUNCTION_INVOCATION, insert_space_before_closing_paren_in_function_invocation ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
 		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BETWEEN_EMPTY_PARENS_IN_FUNCTION_INVOCATION, insert_space_between_empty_parens_in_function_invocation ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
+		options.put(DefaultCodeFormatterConstants.FORMATTER_BLANK_LINES_BEFORE_MODULE, Integer.toString(blank_lines_before_module));
+		options.put(DefaultCodeFormatterConstants.FORMATTER_BLANK_LINES_AFTER_MODULE, Integer.toString(blank_lines_after_module));
+		options.put(DefaultCodeFormatterConstants.FORMATTER_NUMBER_OF_EMPTY_LINES_TO_PRESERVE, Integer.toString(number_of_empty_lines_to_preserve));
 		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_NEW_LINE_BEFORE_ELSE, insert_new_line_before_else ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
 		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_NEW_LINE_BEFORE_CATCH, insert_new_line_before_catch ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
 		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_NEW_LINE_BEFORE_FINALLY, insert_new_line_before_finally ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
 		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_NEW_LINE_BEFORE_WHILE_IN_DO_STATEMENT, insert_new_line_before_while_in_do_statement ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
 		options.put(DefaultCodeFormatterConstants.FORMATTER_KEEP_ELSE_CONDITIONAL_ON_ONE_LINE, keep_else_conditional_on_one_line ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
 		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_NEW_LINE_AT_END_OF_FILE_IF_MISSING, insert_new_line_at_end_of_file_if_missing ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
-		options.put(DefaultCodeFormatterConstants.FORMATTER_BLANK_LINES_BEFORE_MODULE, Integer.toString(blank_lines_before_module));
-		options.put(DefaultCodeFormatterConstants.FORMATTER_BLANK_LINES_AFTER_MODULE, Integer.toString(blank_lines_after_module));
-		options.put(DefaultCodeFormatterConstants.FORMATTER_NUMBER_OF_EMPTY_LINES_TO_PRESERVE, Integer.toString(number_of_empty_lines_to_preserve));
 		options.put(DefaultCodeFormatterConstants.FORMATTER_KEEP_SIMPLE_THEN_DECLARATION_ON_SAME_LINE, keep_simple_then_declaration_on_same_line ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
 		options.put(DefaultCodeFormatterConstants.FORMATTER_KEEP_SIMPLE_ELSE_DECLARATION_ON_SAME_LINE, keep_simple_else_declaration_on_same_line ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
 		options.put(DefaultCodeFormatterConstants.FORMATTER_KEEP_SIMPLE_THEN_STATEMENT_ON_SAME_LINE, keep_simple_then_statement_on_same_line ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
@@ -552,6 +552,33 @@ public class DefaultCodeFormatterOptions
 			}
 		}
 		
+		current = settings.get(DefaultCodeFormatterConstants.FORMATTER_BLANK_LINES_BEFORE_MODULE);
+		if(null != current) {
+			try {
+				blank_lines_before_module = Integer.parseInt(current);
+			} catch(Exception e) {
+				blank_lines_before_module = 0;
+			}
+		}
+		
+		current = settings.get(DefaultCodeFormatterConstants.FORMATTER_BLANK_LINES_AFTER_MODULE);
+		if(null != current) {
+			try {
+				blank_lines_after_module = Integer.parseInt(current);
+			} catch(Exception e) {
+				blank_lines_after_module = 1;
+			}
+		}
+		
+		current = settings.get(DefaultCodeFormatterConstants.FORMATTER_NUMBER_OF_EMPTY_LINES_TO_PRESERVE);
+		if(null != current) {
+			try {
+				number_of_empty_lines_to_preserve = Integer.parseInt(current);
+			} catch(Exception e) {
+				number_of_empty_lines_to_preserve = 1;
+			}
+		}
+		
 		current = settings.get(DefaultCodeFormatterConstants.FORMATTER_INSERT_NEW_LINE_BEFORE_ELSE);
 		if(null != current) {
 			try {
@@ -603,33 +630,6 @@ public class DefaultCodeFormatterOptions
 				insert_new_line_at_end_of_file_if_missing = DefaultCodeFormatterConstants.TRUE.equals(current);
 			} catch(Exception e) {
 				insert_new_line_at_end_of_file_if_missing = false;
-			}
-		}
-		
-		current = settings.get(DefaultCodeFormatterConstants.FORMATTER_BLANK_LINES_BEFORE_MODULE);
-		if(null != current) {
-			try {
-				blank_lines_before_module = Integer.parseInt(current);
-			} catch(Exception e) {
-				blank_lines_before_module = 0;
-			}
-		}
-		
-		current = settings.get(DefaultCodeFormatterConstants.FORMATTER_BLANK_LINES_AFTER_MODULE);
-		if(null != current) {
-			try {
-				blank_lines_after_module = Integer.parseInt(current);
-			} catch(Exception e) {
-				blank_lines_after_module = 1;
-			}
-		}
-		
-		current = settings.get(DefaultCodeFormatterConstants.FORMATTER_NUMBER_OF_EMPTY_LINES_TO_PRESERVE);
-		if(null != current) {
-			try {
-				number_of_empty_lines_to_preserve = Integer.parseInt(current);
-			} catch(Exception e) {
-				number_of_empty_lines_to_preserve = 1;
 			}
 		}
 		
@@ -959,15 +959,15 @@ public class DefaultCodeFormatterOptions
 		insert_space_after_comma_in_foreach_statement = true;
 		insert_space_before_closing_paren_in_function_invocation = false;
 		insert_space_between_empty_parens_in_function_invocation = false;
+		blank_lines_before_module = 0;
+		blank_lines_after_module = 1;
+		number_of_empty_lines_to_preserve = 1;
 		insert_new_line_before_else = false;
 		insert_new_line_before_catch = false;
 		insert_new_line_before_finally = false;
 		insert_new_line_before_while_in_do_statement = false;
 		keep_else_conditional_on_one_line = true;
 		insert_new_line_at_end_of_file_if_missing = false;
-		blank_lines_before_module = 0;
-		blank_lines_after_module = 1;
-		number_of_empty_lines_to_preserve = 1;
 		keep_simple_then_declaration_on_same_line = false;
 		keep_simple_else_declaration_on_same_line = false;
 		keep_simple_then_statement_on_same_line = false;

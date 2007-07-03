@@ -26,7 +26,12 @@
 # name and if the option definition had a "type" property, $$_{'type'} is used
 # to access it.
 #
-# Hopefully that isn't too hard to understand (you know, I porbably spent longer
+# There's also an EVAL-ONCE now, which forces something to be evaluated only
+# when it is encountered. For this, if you need to access a particular option,
+# use the @options array of hash references (so $$options[0]{'optName'} is the
+# option name. Don't forget to "our" any variables you plan to use again.
+#
+# Hopefully that isn't too hard to understand (you know, I probably spent longer
 # typing this up than it would have taken me to fix the damn script).
 #
 #
@@ -36,9 +41,18 @@
 #     constName     The name of the constant string for Java map keys used in DefaultCodeFormatterConstants
 #     type          The type of the option in DefaultCodeFormatterOptions
 #     default       The default value (we may want to have multiple profiles...?)
+#     wsDElem       The name of the D element a white space option refers to (i.e. for_loops, etc.)
+#     wsSynElem     The name of the syntax element a white space options refers to (i.e. before_semicolon)
+#     wsPreview     The preview used for the syntax element
+#
+# wsSynElem and wsDElem are meant to be used in tandem - for example, if an
+# option is insert_space_before_semicolon_in_for_loops, wsDElem = "for_loops"
+# and wsSynElem = "before_semicolon". The names used here refer to the messages
+# in FormatterMessages.java. wsPreview is the name of the preview snippet in
+# WhiteSpaceOptions.java.
 #
 # The hope is this can be expanded for use in UI, etc., etc.
-
+#
 # Note: there may be more options that those really "needed". For those
 # ones, instead of deleting the preference, just set a default and
 # don't show them in the UI. If later in time users request that
@@ -135,18 +149,33 @@ brace_position_for_other_blocks
 insert_space_before_semicolon
 	type=boolean
 	default=false
+	wsDElem=statements
+	wsSynElem=before_semicolon
+	wsPreview=SEMICOLON_PREVIEW
 insert_space_before_semicolon_in_for_statement
 	type=boolean
 	default=false
+	wsDElem=for_statement
+	wsSynElem=before_semicolon
+	wsPreview=FOR_PREVIEW
 insert_space_after_semicolon_in_for_statement
 	type=boolean
 	default=true
+	wsDElem=for_statement
+	wsSynElem=after_semicolon
+	wsPreview=FOR_PREVIEW
 insert_space_before_semicolon_in_foreach_statement
 	type=boolean
 	default=false
+	wsDElem=foreach_statement
+	wsSynElem=before_semicolon
+	wsPreview=FOR_PREVIEW
 insert_space_after_semicolon_in_foreach_statement
 	type=boolean
 	default=true
+	wsDElem=foreach_statement
+	wsSynElem=after_semicolon
+	wsPreview=FOR_PREVIEW
 insert_space_before_comma_in_multiple_field_declarations
 	type=boolean
 	default=false
@@ -190,6 +219,23 @@ insert_space_between_empty_parens_in_function_invocation
 	type=boolean
 	default=false
 
+# Blank Line Options
+blank_lines_before_module
+	type=int
+	default=0
+	tab=BlankLinesTabPage
+	uiText=Before 'module' declaration:
+blank_lines_after_module
+	type=int
+	default=1
+	tab=BlankLinesTabPage
+	uiText=After 'module' declaration:
+number_of_empty_lines_to_preserve
+	type=int
+	default=1
+	tab=BlankLinesTabPage
+	uiText=Number of blank lines to preserve:
+
 # New Line Options
 insert_new_line_before_else
 	type=boolean
@@ -221,23 +267,6 @@ insert_new_line_at_end_of_file_if_missing
 	default=false
 	tab=NewLinesTabPage
 	uiText=Insert new line at end of file if missing
-
-# Blank Line Options
-blank_lines_before_module
-	type=int
-	default=0
-	tab=BlankLinesTabPage
-	uiText=Before 'module' declaration:
-blank_lines_after_module
-	type=int
-	default=1
-	tab=BlankLinesTabPage
-	uiText=After 'module' declaration:
-number_of_empty_lines_to_preserve
-	type=int
-	default=1
-	tab=BlankLinesTabPage
-	uiText=Number of blank lines to preserve:
 	
 # Statements and declarations on same line
 keep_simple_then_declaration_on_same_line

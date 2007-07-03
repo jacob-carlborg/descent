@@ -67,10 +67,12 @@ processFile("DefaultCodeFormatterOptions.template.java", "../src/descent/interna
 processFile("DefaultCodeFormatterConstants.template.java", "../src/descent/core/formatter/DefaultCodeFormatterConstants.java");
 processFile("FormatterMessages.template.java", "../../descent.ui/src/descent/internal/ui/preferences/formatter/FormatterMessages.java"); 
 processFile("FormatterMessages.template.properties", "../../descent.ui/src/descent/internal/ui/preferences/formatter/FormatterMessages.properties"); 
+processFile("WhiteSpaceOptions.template.java", "../../descent.ui/src/descent/internal/ui/preferences/formatter/WhiteSpaceOptions.java"); 
 
 sub processFile
 {
 	my $evalForEachActive = 0;
+	my $evalOnceActive = 0;
 	my $evalBlock = "";
 	
 	open(SRC, $_[0]);
@@ -79,26 +81,39 @@ sub processFile
 	while(my $line = <SRC>)
 	{
 		chomp($line);
-		if($evalForEachActive)
+		if($evalForEachActive || $evalOnceActive)
 		{
 			if($line =~ /^\s*?\*\s(.*)$/)
 			{
-				$evalBlock .= $1;
+				$evalBlock .= $1 . "\n";
 			}
 			elsif($line =~ /\*\//)
 			{
-				foreach(@options)
+				if($evalForEachActive)
+				{
+					foreach(@options)
+					{
+						eval($evalBlock);
+						print $@ if $@;
+					}
+				}
+				else # $evalOnceActive
 				{
 					eval($evalBlock);
 					print $@ if $@;
 				}
 				$evalBlock = "";
 				$evalForEachActive = 0;
+				$evalOnceActive = 0;
 			}
 		}
 		elsif($line =~ /\/\*\s*EVAL-FOR-EACH/)
 		{
 			$evalForEachActive = 1;
+		}
+		elsif($line =~ /\/\*\s*EVAL-ONCE/)
+		{
+			$evalOnceActive = 1;
 		}
 		else
 		{
