@@ -179,45 +179,87 @@ insert_space_after_semicolon_in_foreach_statement
 insert_space_before_comma_in_multiple_field_declarations
 	type=boolean
 	default=false
+	wsDElem=variable_declaration
+	wsSynElem=before_comma
+	wsPreview=MULT_LOCAL_PREVIEW
 insert_space_after_comma_in_multiple_field_declarations
 	type=boolean
 	default=true
+	wsDElem=variable_declaration
+	wsSynElem=after_comma
+	wsPreview=MULT_LOCAL_PREVIEW
 insert_space_between_empty_parens_in_function_declaration
 	type=boolean
 	default=false
+	wsDElem=function_declaration
+	wsSynElem=between_empty_parens
+	wsPreview=FUNCTION_DECL_PREVIEW
 insert_space_before_opening_paren_in_function_declaration
 	type=boolean
 	default=false
+	wsDElem=function_declaration
+	wsSynElem=before_opening_paren
+	wsPreview=FUNCTION_DECL_PREVIEW
 insert_space_after_opening_paren_in_function_declaration
 	type=boolean
 	default=false
+	wsDElem=function_declaration
+	wsSynElem=after_opening_paren
+	wsPreview=FUNCTION_DECL_PREVIEW
 insert_space_before_closing_paren_in_function_declaration
 	type=boolean
 	default=false
+	wsDElem=function_declaration
+	wsSynElem=before_closing_paren
+	wsPreview=FUNCTION_DECL_PREVIEW
 insert_space_before_opening_paren_in_function_invocation
 	type=boolean
 	default=false
+	wsDElem=function_invocation
+	wsSynElem=before_opening_paren
+	wsPreview=FUNCTION_CALL_PREVIEW
 insert_space_after_opening_paren_in_function_invocation
 	type=boolean
 	default=false
+	wsDElem=function_invocation
+	wsSynElem=after_opening_paren
+	wsPreview=FUNCTION_CALL_PREVIEW
 insert_space_before_comma_in_function_invocation_arguments
 	type=boolean
 	default=false
+	wsDElem=function_arguments
+	wsSynElem=before_comma
+	wsPreview=FUNCTION_CALL_PREVIEW
 insert_space_after_comma_in_function_invocation_arguments
 	type=boolean
 	default=true
+	wsDElem=function_arguments
+	wsSynElem=after_comma
+	wsPreview=FUNCTION_CALL_PREVIEW
 insert_space_before_comma_in_foreach_statement
 	type=boolean
 	default=false
+	wsDElem=foreach_statement
+	wsSynElem=before_comma
+	wsPreview=FOR_PREVIEW
 insert_space_after_comma_in_foreach_statement
 	type=boolean
 	default=true
+	wsDElem=foreach_statement
+	wsSynElem=after_comma
+	wsPreview=FOR_PREVIEW
 insert_space_before_closing_paren_in_function_invocation
 	type=boolean
 	default=false
+	wsDElem=function_invocation
+	wsSynElem=before_closing_paren
+	wsPreview=FUNCTION_CALL_PREVIEW
 insert_space_between_empty_parens_in_function_invocation
 	type=boolean
 	default=false
+	wsDElem=function_invocation
+	wsSynElem=between_empty_parens
+	wsPreview=FUNCTION_CALL_PREVIEW
 
 # Blank Line Options
 blank_lines_before_module

@@ -13,7 +13,7 @@
  * 
  * # These are hashes that contain references to arrays of references to hashes.
  * # If that doesn't boggle your mind, I give up. Basically,
- * # %$@{$dElements{'ELEMENT_NAME'}} is an option for that element. The extra
+ * # %$@{$dElements{'ELEMENT_NAME'}}[n] is an option for that element. The extra
  * # curlies after the @ are nessescary so Perl doesn't treat it as a hash
  * # slice.
  * 
@@ -48,16 +48,6 @@
  *         }
  *     }
  * }
- * 
- * #while (my ($key, $value) = each(%syntaxElements))
- * #{
- * #    print "$key => { ";
- * #    foreach(@$value)
- * #    {
- * #        print $$_{'optName'} . ", ";
- * #    }
- * #    print "}\n";
- * #}
  *
  */
 
@@ -74,7 +64,6 @@ import descent.core.formatter.DefaultCodeFormatterConstants;
 
 import descent.internal.ui.preferences.formatter.SnippetPreview.PreviewSnippet;
 
-
 /**
  * Manage code formatter white space options on a higher level. 
  */
@@ -85,9 +74,6 @@ public final class WhiteSpaceOptions
 	 * Creates the tree for the two-pane view where code elements are associated
 	 * with syntax elements.
 	 */
-	// TODO formatter ui - grouping stuff : we don't want one huge list
-	// Maybe another perl variable defining which group it's in...? Doing this
-	// manually will definitley take too long & be error-prone...
 	public List<Node> createTreeByDElement(Map<String, String> workingValues)
 	{	
 		/* EVAL-ONCE
@@ -110,15 +96,26 @@ public final class WhiteSpaceOptions
 		 *     push(@vars, $element);
 		 *     print DST "\t\t\n";
 		 * }
-		 * 
-		 * print DST "\t\tfinal List<Node> roots = new ArrayList<Node>();\n";
-		 * foreach(sort @vars) # Alphabetical order
-		 * {
-		 *     print DST "\t\troots.add(" . $_ . ");\n";
-		 * }
-		 * print DST "\t\treturn roots;\n";
 		 *
 		 */
+		// Manually seems to be the best way to do this -- just ensure that this
+		// list is updated every time a new white space option is added.
+		final List<Node> roots = new ArrayList<Node>();
+		final InnerNode declarations = new InnerNode(null, workingValues, FormatterMessages.WhiteSpaceOptions_declarations);
+		
+		// Declarations
+		function_declaration.setParent(declarations);
+		variable_declaration.setParent(declarations);
+		roots.add(declarations);
+		
+		// Statements
+		for_statement.setParent(statements);
+		foreach_statement.setParent(statements);
+		function_invocation.setParent(statements);
+		function_arguments.setParent(function_invocation);
+		roots.add(statements);
+		
+		return roots;
 	}
 	
 	/**
@@ -162,52 +159,57 @@ public final class WhiteSpaceOptions
 	/**
 	 * Represents a node in the options tree.
 	 */
-	public abstract static class Node
-	{
-		public int index;
-		protected final List<Node> fChildren;
-		protected final Map<String, String> fWorkingValues;
-		private final String fName;
-		private final InnerNode fParent;
+public abstract static class Node {
+	    
+	    private InnerNode fParent;
+	    private final String fName;
+	    
+	    public int index;
+	    
+	    protected final Map<String, String> fWorkingValues;
+	    protected final ArrayList<Node> fChildren;
+
+	    public Node(InnerNode parent, Map<String, String> workingValues,
+	    		String message) {
+	        if (workingValues == null || message == null)
+	            throw new IllegalArgumentException();
+	        fParent= parent;
+	        fWorkingValues= workingValues;
+	        fName= message;
+	        fChildren= new ArrayList<Node>();
+	        if (fParent != null)
+	            fParent.add(this);
+	    }
+	    
+	    public abstract void setChecked(boolean checked);
 		
-		public Node(InnerNode parent, Map<String, String> workingValues,
-				String message)
+		public final void setParent(InnerNode parent)
 		{
-			if(workingValues == null || message == null)
-				throw new IllegalArgumentException();
+			if(null != fParent)
+				throw new IllegalStateException("Parent can only be set once!");
 			fParent = parent;
-			fWorkingValues = workingValues;
-			fName = message;
-			fChildren = new ArrayList<Node>();
-			if(fParent != null)
-				fParent.add(this);
+			fParent.add(this);
 		}
 		
-		public abstract void getCheckedLeafs(List<Node> list);
-		
-		public List<Node> getChildren()
-		{
-			return Collections.unmodifiableList(fChildren);
-		}
-		
-		public InnerNode getParent()
-		{
-			return fParent;
-		}
-		
-		public abstract List<PreviewSnippet> getSnippets();
-		
-		public boolean hasChildren()
-		{
-			return !fChildren.isEmpty();
-		}
-		
-		public abstract void setChecked(boolean checked);
-		
-		public final String toString()
-		{
-			return fName;
-		}
+	    public boolean hasChildren() { 
+	        return !fChildren.isEmpty();
+	    }
+	    
+	    public List<Node> getChildren() {
+	        return Collections.unmodifiableList(fChildren);
+	    }
+	    
+	    public InnerNode getParent() {
+	        return fParent;
+	    }
+
+	    public final String toString() {
+	        return fName;
+	    }
+	    
+	    public abstract List<PreviewSnippet> getSnippets();
+	    
+	    public abstract void getCheckedLeafs(List<Node> list);
 	}
 	
 	/**
@@ -334,5 +336,24 @@ public final class WhiteSpaceOptions
 			CodeFormatter.K_STATEMENTS, 
 		    "for (int i = 0, j = array.length; i < array.length; i++, j--){}\n\n" +
 		    "foreach(int i,string s;names){}"
+		);
+	
+	private final PreviewSnippet FUNCTION_DECL_PREVIEW =
+		new PreviewSnippet(
+			CodeFormatter.K_COMPILATION_UNIT, 
+			"void foo() {}" +
+		    "int bar(int x, inout int y)in{}out(result){}body{return x + y;}"
+		);
+	
+	private final PreviewSnippet FUNCTION_CALL_PREVIEW =
+		new PreviewSnippet(
+			CodeFormatter.K_STATEMENTS, 
+			"foo();\n" +
+			"bar(x, y);"
+		);
+	
+	private final PreviewSnippet MULT_LOCAL_PREVIEW =
+		new PreviewSnippet(CodeFormatter.K_STATEMENTS, 
+			"int a= 0, b= 1, c= 2, d= 3;"
 		);
 }
