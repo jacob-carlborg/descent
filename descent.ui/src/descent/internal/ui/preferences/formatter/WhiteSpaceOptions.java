@@ -23,7 +23,6 @@ import descent.core.formatter.DefaultCodeFormatterConstants;
 
 import descent.internal.ui.preferences.formatter.SnippetPreview.PreviewSnippet;
 
-
 /**
  * Manage code formatter white space options on a higher level. 
  */
@@ -34,26 +33,58 @@ public final class WhiteSpaceOptions
 	 * Creates the tree for the two-pane view where code elements are associated
 	 * with syntax elements.
 	 */
-	// TODO formatter ui - grouping stuff : we don't want one huge list
-	// Maybe another perl variable defining which group it's in...? Doing this
-	// manually will definitley take too long & be error-prone...
 	public List<Node> createTreeByDElement(Map<String, String> workingValues)
 	{	
 		final InnerNode statements = new InnerNode(null, workingValues, FormatterMessages.WhiteSpaceOptions_statements);
 		createOption(statements, workingValues, FormatterMessages.WhiteSpaceOptions_before_semicolon, DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_SEMICOLON, SEMICOLON_PREVIEW);
 		
+		final InnerNode function_invocation = new InnerNode(null, workingValues, FormatterMessages.WhiteSpaceOptions_function_invocation);
+		createOption(function_invocation, workingValues, FormatterMessages.WhiteSpaceOptions_before_opening_paren, DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_OPENING_PAREN_IN_FUNCTION_INVOCATION, FUNCTION_CALL_PREVIEW);
+		createOption(function_invocation, workingValues, FormatterMessages.WhiteSpaceOptions_after_opening_paren, DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_AFTER_OPENING_PAREN_IN_FUNCTION_INVOCATION, FUNCTION_CALL_PREVIEW);
+		createOption(function_invocation, workingValues, FormatterMessages.WhiteSpaceOptions_before_closing_paren, DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_CLOSING_PAREN_IN_FUNCTION_INVOCATION, FUNCTION_CALL_PREVIEW);
+		createOption(function_invocation, workingValues, FormatterMessages.WhiteSpaceOptions_between_empty_parens, DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BETWEEN_EMPTY_PARENS_IN_FUNCTION_INVOCATION, FUNCTION_CALL_PREVIEW);
+		
+		final InnerNode function_declaration = new InnerNode(null, workingValues, FormatterMessages.WhiteSpaceOptions_function_declaration);
+		createOption(function_declaration, workingValues, FormatterMessages.WhiteSpaceOptions_between_empty_parens, DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BETWEEN_EMPTY_PARENS_IN_FUNCTION_DECLARATION, FUNCTION_DECL_PREVIEW);
+		createOption(function_declaration, workingValues, FormatterMessages.WhiteSpaceOptions_before_opening_paren, DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_OPENING_PAREN_IN_FUNCTION_DECLARATION, FUNCTION_DECL_PREVIEW);
+		createOption(function_declaration, workingValues, FormatterMessages.WhiteSpaceOptions_after_opening_paren, DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_AFTER_OPENING_PAREN_IN_FUNCTION_DECLARATION, FUNCTION_DECL_PREVIEW);
+		createOption(function_declaration, workingValues, FormatterMessages.WhiteSpaceOptions_before_closing_paren, DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_CLOSING_PAREN_IN_FUNCTION_DECLARATION, FUNCTION_DECL_PREVIEW);
+		
+		final InnerNode variable_declaration = new InnerNode(null, workingValues, FormatterMessages.WhiteSpaceOptions_variable_declaration);
+		createOption(variable_declaration, workingValues, FormatterMessages.WhiteSpaceOptions_before_comma, DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_COMMA_IN_MULTIPLE_FIELD_DECLARATIONS, MULT_LOCAL_PREVIEW);
+		createOption(variable_declaration, workingValues, FormatterMessages.WhiteSpaceOptions_after_comma, DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_AFTER_COMMA_IN_MULTIPLE_FIELD_DECLARATIONS, MULT_LOCAL_PREVIEW);
+		
 		final InnerNode foreach_statement = new InnerNode(null, workingValues, FormatterMessages.WhiteSpaceOptions_foreach_statement);
 		createOption(foreach_statement, workingValues, FormatterMessages.WhiteSpaceOptions_before_semicolon, DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_SEMICOLON_IN_FOREACH_STATEMENT, FOR_PREVIEW);
 		createOption(foreach_statement, workingValues, FormatterMessages.WhiteSpaceOptions_after_semicolon, DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_AFTER_SEMICOLON_IN_FOREACH_STATEMENT, FOR_PREVIEW);
+		createOption(foreach_statement, workingValues, FormatterMessages.WhiteSpaceOptions_before_comma, DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_COMMA_IN_FOREACH_STATEMENT, FOR_PREVIEW);
+		createOption(foreach_statement, workingValues, FormatterMessages.WhiteSpaceOptions_after_comma, DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_AFTER_COMMA_IN_FOREACH_STATEMENT, FOR_PREVIEW);
+		
+		final InnerNode function_arguments = new InnerNode(null, workingValues, FormatterMessages.WhiteSpaceOptions_function_arguments);
+		createOption(function_arguments, workingValues, FormatterMessages.WhiteSpaceOptions_before_comma, DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_COMMA_IN_FUNCTION_INVOCATION_ARGUMENTS, FUNCTION_CALL_PREVIEW);
+		createOption(function_arguments, workingValues, FormatterMessages.WhiteSpaceOptions_after_comma, DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_AFTER_COMMA_IN_FUNCTION_INVOCATION_ARGUMENTS, FUNCTION_CALL_PREVIEW);
 		
 		final InnerNode for_statement = new InnerNode(null, workingValues, FormatterMessages.WhiteSpaceOptions_for_statement);
 		createOption(for_statement, workingValues, FormatterMessages.WhiteSpaceOptions_before_semicolon, DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_SEMICOLON_IN_FOR_STATEMENT, FOR_PREVIEW);
 		createOption(for_statement, workingValues, FormatterMessages.WhiteSpaceOptions_after_semicolon, DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_AFTER_SEMICOLON_IN_FOR_STATEMENT, FOR_PREVIEW);
 		
+		// Manually seems to be the best way to do this -- just ensure that this
+		// list is updated every time a new white space option is added.
 		final List<Node> roots = new ArrayList<Node>();
-		roots.add(for_statement);
-		roots.add(foreach_statement);
+		final InnerNode declarations = new InnerNode(null, workingValues, FormatterMessages.WhiteSpaceOptions_declarations);
+		
+		// Declarations
+		function_declaration.setParent(declarations);
+		variable_declaration.setParent(declarations);
+		roots.add(declarations);
+		
+		// Statements
+		for_statement.setParent(statements);
+		foreach_statement.setParent(statements);
+		function_invocation.setParent(statements);
+		function_arguments.setParent(function_invocation);
 		roots.add(statements);
+		
 		return roots;
 	}
 	
@@ -66,14 +97,40 @@ public final class WhiteSpaceOptions
 		final List<Node> roots = new ArrayList<Node>();
 		InnerNode parent;
 		
+		parent = createParentNode(roots, workingValues, FormatterMessages.WhiteSpaceOptions_after_comma);
+		createOption(parent, workingValues, FormatterMessages.WhiteSpaceOptions_variable_declaration, DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_AFTER_COMMA_IN_MULTIPLE_FIELD_DECLARATIONS, MULT_LOCAL_PREVIEW);
+		createOption(parent, workingValues, FormatterMessages.WhiteSpaceOptions_function_arguments, DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_AFTER_COMMA_IN_FUNCTION_INVOCATION_ARGUMENTS, FUNCTION_CALL_PREVIEW);
+		createOption(parent, workingValues, FormatterMessages.WhiteSpaceOptions_foreach_statement, DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_AFTER_COMMA_IN_FOREACH_STATEMENT, FOR_PREVIEW);
+		
+		parent = createParentNode(roots, workingValues, FormatterMessages.WhiteSpaceOptions_after_opening_paren);
+		createOption(parent, workingValues, FormatterMessages.WhiteSpaceOptions_function_declaration, DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_AFTER_OPENING_PAREN_IN_FUNCTION_DECLARATION, FUNCTION_DECL_PREVIEW);
+		createOption(parent, workingValues, FormatterMessages.WhiteSpaceOptions_function_invocation, DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_AFTER_OPENING_PAREN_IN_FUNCTION_INVOCATION, FUNCTION_CALL_PREVIEW);
+		
 		parent = createParentNode(roots, workingValues, FormatterMessages.WhiteSpaceOptions_after_semicolon);
 		createOption(parent, workingValues, FormatterMessages.WhiteSpaceOptions_for_statement, DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_AFTER_SEMICOLON_IN_FOR_STATEMENT, FOR_PREVIEW);
 		createOption(parent, workingValues, FormatterMessages.WhiteSpaceOptions_foreach_statement, DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_AFTER_SEMICOLON_IN_FOREACH_STATEMENT, FOR_PREVIEW);
+		
+		parent = createParentNode(roots, workingValues, FormatterMessages.WhiteSpaceOptions_before_closing_paren);
+		createOption(parent, workingValues, FormatterMessages.WhiteSpaceOptions_function_declaration, DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_CLOSING_PAREN_IN_FUNCTION_DECLARATION, FUNCTION_DECL_PREVIEW);
+		createOption(parent, workingValues, FormatterMessages.WhiteSpaceOptions_function_invocation, DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_CLOSING_PAREN_IN_FUNCTION_INVOCATION, FUNCTION_CALL_PREVIEW);
+		
+		parent = createParentNode(roots, workingValues, FormatterMessages.WhiteSpaceOptions_before_comma);
+		createOption(parent, workingValues, FormatterMessages.WhiteSpaceOptions_variable_declaration, DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_COMMA_IN_MULTIPLE_FIELD_DECLARATIONS, MULT_LOCAL_PREVIEW);
+		createOption(parent, workingValues, FormatterMessages.WhiteSpaceOptions_function_arguments, DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_COMMA_IN_FUNCTION_INVOCATION_ARGUMENTS, FUNCTION_CALL_PREVIEW);
+		createOption(parent, workingValues, FormatterMessages.WhiteSpaceOptions_foreach_statement, DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_COMMA_IN_FOREACH_STATEMENT, FOR_PREVIEW);
+		
+		parent = createParentNode(roots, workingValues, FormatterMessages.WhiteSpaceOptions_before_opening_paren);
+		createOption(parent, workingValues, FormatterMessages.WhiteSpaceOptions_function_declaration, DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_OPENING_PAREN_IN_FUNCTION_DECLARATION, FUNCTION_DECL_PREVIEW);
+		createOption(parent, workingValues, FormatterMessages.WhiteSpaceOptions_function_invocation, DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_OPENING_PAREN_IN_FUNCTION_INVOCATION, FUNCTION_CALL_PREVIEW);
 		
 		parent = createParentNode(roots, workingValues, FormatterMessages.WhiteSpaceOptions_before_semicolon);
 		createOption(parent, workingValues, FormatterMessages.WhiteSpaceOptions_statements, DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_SEMICOLON, SEMICOLON_PREVIEW);
 		createOption(parent, workingValues, FormatterMessages.WhiteSpaceOptions_for_statement, DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_SEMICOLON_IN_FOR_STATEMENT, FOR_PREVIEW);
 		createOption(parent, workingValues, FormatterMessages.WhiteSpaceOptions_foreach_statement, DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_SEMICOLON_IN_FOREACH_STATEMENT, FOR_PREVIEW);
+		
+		parent = createParentNode(roots, workingValues, FormatterMessages.WhiteSpaceOptions_between_empty_parens);
+		createOption(parent, workingValues, FormatterMessages.WhiteSpaceOptions_function_declaration, DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BETWEEN_EMPTY_PARENS_IN_FUNCTION_DECLARATION, FUNCTION_DECL_PREVIEW);
+		createOption(parent, workingValues, FormatterMessages.WhiteSpaceOptions_function_invocation, DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BETWEEN_EMPTY_PARENS_IN_FUNCTION_INVOCATION, FUNCTION_CALL_PREVIEW);
 		
 		return roots;
 	}
@@ -89,52 +146,57 @@ public final class WhiteSpaceOptions
 	/**
 	 * Represents a node in the options tree.
 	 */
-	public abstract static class Node
-	{
-		public int index;
-		protected final List<Node> fChildren;
-		protected final Map<String, String> fWorkingValues;
-		private final String fName;
-		private final InnerNode fParent;
+public abstract static class Node {
+	    
+	    private InnerNode fParent;
+	    private final String fName;
+	    
+	    public int index;
+	    
+	    protected final Map<String, String> fWorkingValues;
+	    protected final ArrayList<Node> fChildren;
+
+	    public Node(InnerNode parent, Map<String, String> workingValues,
+	    		String message) {
+	        if (workingValues == null || message == null)
+	            throw new IllegalArgumentException();
+	        fParent= parent;
+	        fWorkingValues= workingValues;
+	        fName= message;
+	        fChildren= new ArrayList<Node>();
+	        if (fParent != null)
+	            fParent.add(this);
+	    }
+	    
+	    public abstract void setChecked(boolean checked);
 		
-		public Node(InnerNode parent, Map<String, String> workingValues,
-				String message)
+		public final void setParent(InnerNode parent)
 		{
-			if(workingValues == null || message == null)
-				throw new IllegalArgumentException();
+			if(null != fParent)
+				throw new IllegalStateException("Parent can only be set once!");
 			fParent = parent;
-			fWorkingValues = workingValues;
-			fName = message;
-			fChildren = new ArrayList<Node>();
-			if(fParent != null)
-				fParent.add(this);
+			fParent.add(this);
 		}
 		
-		public abstract void getCheckedLeafs(List<Node> list);
-		
-		public List<Node> getChildren()
-		{
-			return Collections.unmodifiableList(fChildren);
-		}
-		
-		public InnerNode getParent()
-		{
-			return fParent;
-		}
-		
-		public abstract List<PreviewSnippet> getSnippets();
-		
-		public boolean hasChildren()
-		{
-			return !fChildren.isEmpty();
-		}
-		
-		public abstract void setChecked(boolean checked);
-		
-		public final String toString()
-		{
-			return fName;
-		}
+	    public boolean hasChildren() { 
+	        return !fChildren.isEmpty();
+	    }
+	    
+	    public List<Node> getChildren() {
+	        return Collections.unmodifiableList(fChildren);
+	    }
+	    
+	    public InnerNode getParent() {
+	        return fParent;
+	    }
+
+	    public final String toString() {
+	        return fName;
+	    }
+	    
+	    public abstract List<PreviewSnippet> getSnippets();
+	    
+	    public abstract void getCheckedLeafs(List<Node> list);
 	}
 	
 	/**
@@ -261,5 +323,24 @@ public final class WhiteSpaceOptions
 			CodeFormatter.K_STATEMENTS, 
 		    "for (int i = 0, j = array.length; i < array.length; i++, j--){}\n\n" +
 		    "foreach(int i,string s;names){}"
+		);
+	
+	private final PreviewSnippet FUNCTION_DECL_PREVIEW =
+		new PreviewSnippet(
+			CodeFormatter.K_COMPILATION_UNIT, 
+			"void foo() {}" +
+		    "int bar(int x, inout int y)in{}out(result){}body{return x + y;}"
+		);
+	
+	private final PreviewSnippet FUNCTION_CALL_PREVIEW =
+		new PreviewSnippet(
+			CodeFormatter.K_STATEMENTS, 
+			"foo();\n" +
+			"bar(x, y);"
+		);
+	
+	private final PreviewSnippet MULT_LOCAL_PREVIEW =
+		new PreviewSnippet(CodeFormatter.K_STATEMENTS, 
+			"int a= 0, b= 1, c= 2, d= 3;"
 		);
 }

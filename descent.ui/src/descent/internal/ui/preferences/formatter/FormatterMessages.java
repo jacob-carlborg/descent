@@ -103,13 +103,24 @@ final class FormatterMessages extends NLS {
 	public static String WhiteSpaceTabPage_sort_by_syntax_element;
 	
 	// White space options - D elements
+	public static String WhiteSpaceOptions_declarations;
 	public static String WhiteSpaceOptions_statements;
 	public static String WhiteSpaceOptions_for_statement;
 	public static String WhiteSpaceOptions_foreach_statement;
+	public static String WhiteSpaceOptions_variable_declaration;
+	public static String WhiteSpaceOptions_function_declaration;
+	public static String WhiteSpaceOptions_function_invocation;
+	public static String WhiteSpaceOptions_function_arguments;
 	
 	// White space options - syntax elements
 	public static String WhiteSpaceOptions_before_semicolon;
 	public static String WhiteSpaceOptions_after_semicolon;
+	public static String WhiteSpaceOptions_before_comma;
+	public static String WhiteSpaceOptions_after_comma;
+	public static String WhiteSpaceOptions_before_opening_paren;
+	public static String WhiteSpaceOptions_after_opening_paren;
+	public static String WhiteSpaceOptions_before_closing_paren;
+	public static String WhiteSpaceOptions_between_empty_parens;
 	
 	// Blank lines tab page
 	public static String ModifyDialog_tabpage_blank_lines_title;
