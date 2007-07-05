@@ -217,6 +217,38 @@ public class DdocParserTests extends TestCase {
 		assertEquals("Melvin D. Nerd, melvin@mailinator.com\n\nAnother author.", sections[0].getText());
 	}
 	
+	public void testNamedSectionEmpty() {
+		DdocSection[] sections = parse(
+			"/**\r\n" +
+			" * Authors:\r\n" +
+			" */"
+				);
+		
+		assertEquals(1, sections.length);
+		assertEquals("Authors", sections[0].getName());
+		assertEquals(DdocSection.NORMAL_SECTION, sections[0].getKind());
+		assertEquals("", sections[0].getText());
+	}
+	
+	public void testNamedSectionEmpty2() {
+		DdocSection[] sections = parse(
+			"/**\r\n" +
+			" * Authors:\r\n" +
+			" * Examples:\r\n" +
+			" */"
+				);
+		
+		assertEquals(2, sections.length);
+		
+		assertEquals("Authors", sections[0].getName());
+		assertEquals(DdocSection.NORMAL_SECTION, sections[0].getKind());
+		assertEquals("", sections[0].getText());
+		
+		assertEquals("Examples", sections[1].getName());
+		assertEquals(DdocSection.NORMAL_SECTION, sections[1].getKind());
+		assertEquals("", sections[1].getText());
+	}
+	
 	public void testCode() {
 		DdocSection[] sections = parse(
 			"/**\r\n" +

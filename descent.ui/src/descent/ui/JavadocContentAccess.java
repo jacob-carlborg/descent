@@ -15,7 +15,10 @@ import java.io.Reader;
 import java.io.StringReader;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 
 import org.eclipse.jface.resource.StringConverter;
 import org.eclipse.jface.text.Document;
@@ -48,6 +51,13 @@ import descent.ui.text.IJavaColorConstants;
  * @since 3.1
  */
 public class JavadocContentAccess {
+	
+	private static Set<String> redSections;
+	static {
+		redSections = new TreeSet<String>();
+		redSections.add("Bugs"); //$NON-NLS-1$
+		redSections.add("Deprecated"); //$NON-NLS-1$
+	}
 	
 	private JavadocContentAccess() {
 		// do not instantiate
@@ -127,7 +137,18 @@ public class JavadocContentAccess {
 				if (section.getName() != null) {
 					buffer.append("<dl>"); //$NON-NLS-1$
 					buffer.append("<dt>"); //$NON-NLS-1$
-					buffer.append(section.getName());
+					
+					boolean red = redSections.contains(section.getName());
+					if (red) {
+						buffer.append("<span style=\"color:red\">"); //$NON-NLS-1$
+					}
+					
+					buffer.append(section.getName().replace('_', ' '));
+					
+					if (red) {
+						buffer.append("</span>"); //$NON-NLS-1$
+					}
+					
 					buffer.append(":"); //$NON-NLS-1$
 					buffer.append("</dt>"); //$NON-NLS-1$
 					buffer.append("<dd>"); //$NON-NLS-1$

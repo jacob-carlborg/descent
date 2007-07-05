@@ -96,7 +96,7 @@ public class DdocParser {
 			}
 			
 			int colonIndex = getColonOfSectionIndex(line);
-			if (colonIndex != -1 && JavaConventions.validateIdentifier(line.substring(0, colonIndex)).isOK()) {
+			if (colonIndex != -1 && JavaConventions.validateIdentifier(line.substring(0, colonIndex).trim()).isOK()) {
 				if (currentSectionType == DdocSection.CODE_SECTION) {
 					currentSectionType = DdocSection.NORMAL_SECTION;
 				}
@@ -158,7 +158,7 @@ public class DdocParser {
 			currentSectionText.append(line);
 		}
 		
-		if (currentSectionText.length() > 0) {
+		if (currentSectionText.length() > 0 || currentSectionName != null) {
 			addCurrentSection();
 		}
 		
