@@ -1,5 +1,9 @@
 package descent.tests.ddoc;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import descent.internal.ui.infoviews.DdocMacros;
 import descent.internal.ui.infoviews.DdocParser;
 import descent.internal.ui.infoviews.DdocSection;
 import junit.framework.TestCase;
@@ -93,7 +97,7 @@ public class DdocParserTests extends TestCase {
 		assertEquals(1, sections.length);
 		assertEquals(null, sections[0].getName());
 		assertEquals(DdocSection.NORMAL_SECTION, sections[0].getKind());
-		assertEquals("Line one.\nLine two.", sections[0].getText());
+		assertEquals("Line one. Line two.", sections[0].getText());
 	}
 	
 	public void testTwoSections() {
@@ -131,11 +135,11 @@ public class DdocParserTests extends TestCase {
 		assertEquals(2, sections.length);
 		assertEquals(null, sections[0].getName());
 		assertEquals(DdocSection.NORMAL_SECTION, sections[0].getKind());
-		assertEquals("Line one A.\nLine one B.\nLine one C.", sections[0].getText());
+		assertEquals("Line one A. Line one B. Line one C.", sections[0].getText());
 		
 		assertEquals(null, sections[1].getName());
 		assertEquals(DdocSection.NORMAL_SECTION, sections[1].getKind());
-		assertEquals("Line two A.\nLine two B.\nLine two C.", sections[1].getText());
+		assertEquals("Line two A. Line two B. Line two C.", sections[1].getText());
 	}
 	
 	public void testTwoSectionsOfManyLinesWithPlus() {
@@ -154,11 +158,11 @@ public class DdocParserTests extends TestCase {
 		assertEquals(2, sections.length);
 		assertEquals(null, sections[0].getName());
 		assertEquals(DdocSection.NORMAL_SECTION, sections[0].getKind());
-		assertEquals("Line one A.\nLine one B.\nLine one C.", sections[0].getText());
+		assertEquals("Line one A. Line one B. Line one C.", sections[0].getText());
 		
 		assertEquals(null, sections[1].getName());
 		assertEquals(DdocSection.NORMAL_SECTION, sections[1].getKind());
-		assertEquals("Line two A.\nLine two B.\nLine two C.", sections[1].getText());
+		assertEquals("Line two A. Line two B. Line two C.", sections[1].getText());
 	}
 	
 	public void testNamedSectionIsNotIdentifier() {
@@ -214,7 +218,7 @@ public class DdocParserTests extends TestCase {
 		assertEquals(1, sections.length);
 		assertEquals("Authors", sections[0].getName());
 		assertEquals(DdocSection.NORMAL_SECTION, sections[0].getKind());
-		assertEquals("Melvin D. Nerd, melvin@mailinator.com\n\nAnother author.", sections[0].getText());
+		assertEquals("Melvin D. Nerd, melvin@mailinator.com  Another author.", sections[0].getText());
 	}
 	
 	public void testNamedSectionEmpty() {
@@ -342,7 +346,7 @@ public class DdocParserTests extends TestCase {
 		
 		assertEquals(null, sections[0].getName());
 		assertEquals(DdocSection.NORMAL_SECTION, sections[0].getKind());
-		assertEquals("---\n int x = 2;", sections[0].getText());
+		assertEquals("---  int x = 2;", sections[0].getText());
 		
 		assertEquals(" Authors", sections[1].getName());
 		assertEquals(DdocSection.NORMAL_SECTION, sections[1].getKind());
@@ -382,14 +386,14 @@ public class DdocParserTests extends TestCase {
 		assertEquals(1, sections.length);
 		assertEquals("Params", sections[0].getName());
 		assertEquals(DdocSection.PARAMS_SECTION, sections[0].getKind());
-		assertEquals("x = something\ny = somethingElse", sections[0].getText());
+		assertEquals("x = something y = somethingElse", sections[0].getText());
 		assertEquals(2, sections[0].getParameters().length);
 		
 		assertEquals("x", sections[0].getParameters()[0].getName());
 		assertEquals("something", sections[0].getParameters()[0].getText());
 		
 		assertEquals("y", sections[0].getParameters()[1].getName());
-		assertEquals("somethingElse\n", sections[0].getParameters()[1].getText());
+		assertEquals("somethingElse ", sections[0].getParameters()[1].getText());
 	}
 	
 	public void testParametersMultiline() {
@@ -405,7 +409,7 @@ public class DdocParserTests extends TestCase {
 		assertEquals(1, sections[0].getParameters().length);
 		
 		assertEquals("x", sections[0].getParameters()[0].getName());
-		assertEquals("something\nand more\n", sections[0].getParameters()[0].getText());
+		assertEquals("something and more ", sections[0].getParameters()[0].getText());
 	}
 	
 	public void testParametersIgnoreBeforeParam() {
@@ -421,7 +425,7 @@ public class DdocParserTests extends TestCase {
 		assertEquals(1, sections[0].getParameters().length);
 		
 		assertEquals("x", sections[0].getParameters()[0].getName());
-		assertEquals("something\n", sections[0].getParameters()[0].getText());
+		assertEquals("something ", sections[0].getParameters()[0].getText());
 	}
 	
 	public void testParametersInline() {
@@ -435,7 +439,7 @@ public class DdocParserTests extends TestCase {
 		assertEquals(1, sections[0].getParameters().length);
 		
 		assertEquals("x", sections[0].getParameters()[0].getName());
-		assertEquals("something\n", sections[0].getParameters()[0].getText());
+		assertEquals("something ", sections[0].getParameters()[0].getText());
 	}
 	
 	public void testParametersWithSomethingAfter() {
@@ -453,7 +457,7 @@ public class DdocParserTests extends TestCase {
 		
 		assertEquals("Params", sections[0].getName());
 		assertEquals(DdocSection.PARAMS_SECTION, sections[0].getKind());
-		assertEquals("x = something\ny = somethingElse", sections[0].getText());
+		assertEquals("x = something y = somethingElse", sections[0].getText());
 		assertEquals(2, sections[0].getParameters().length);
 		
 		assertEquals("x", sections[0].getParameters()[0].getName());
@@ -479,14 +483,149 @@ public class DdocParserTests extends TestCase {
 		assertEquals(1, sections.length);
 		assertEquals("Macros", sections[0].getName());
 		assertEquals(DdocSection.MACROS_SECTION, sections[0].getKind());
-		assertEquals("x = something\ny = somethingElse", sections[0].getText());
+		assertEquals("x = something y = somethingElse", sections[0].getText());
 		assertEquals(2, sections[0].getParameters().length);
 		
 		assertEquals("x", sections[0].getParameters()[0].getName());
 		assertEquals("something", sections[0].getParameters()[0].getText());
 		
 		assertEquals("y", sections[0].getParameters()[1].getName());
-		assertEquals("somethingElse\n", sections[0].getParameters()[1].getText());
+		assertEquals("somethingElse ", sections[0].getParameters()[1].getText());
+	}
+	
+	public void testReplaceMacro() {
+		Map<String, String> macros = new HashMap<String, String>();
+		macros.put("MACRO", "my macro");
+		
+		String actual = DdocMacros.replaceMacros("This is $(MACRO)", macros);
+		assertEquals("This is my macro", actual);
+	}
+	
+	public void testDontReplaceMacro1() {
+		Map<String, String> macros = new HashMap<String, String>();
+		macros.put("MACRO", "my macro");
+		
+		String actual = DdocMacros.replaceMacros("This is $", macros);
+		assertEquals("This is $", actual);
+	}
+	
+	public void testDontReplaceMacro2() {
+		Map<String, String> macros = new HashMap<String, String>();
+		macros.put("MACRO", "my macro");
+		
+		String actual = DdocMacros.replaceMacros("This is $(", macros);
+		assertEquals("This is $(", actual);
+	}
+	
+	public void testReplaceMacroArgumentZero1() {
+		Map<String, String> macros = new HashMap<String, String>();
+		macros.put("MACRO", "my $0");
+		
+		String actual = DdocMacros.replaceMacros("This is $(MACRO macro)", macros);
+		assertEquals("This is my macro", actual);
+	}
+	
+	public void testReplaceMacroArgumentZero2() {
+		Map<String, String> macros = new HashMap<String, String>();
+		macros.put("MACRO", "$0");
+		
+		String actual = DdocMacros.replaceMacros("This is $(MACRO my,macro)", macros);
+		assertEquals("This is my,macro", actual);
+	}
+	
+	public void testReplaceMacroArguments2() {
+		Map<String, String> macros = new HashMap<String, String>();
+		macros.put("MACRO", "$1 $2");
+		
+		String actual = DdocMacros.replaceMacros("This is $(MACRO my,macro)", macros);
+		assertEquals("This is my macro", actual);
+	}
+	
+	public void testReplaceMacroArguments3() {
+		Map<String, String> macros = new HashMap<String, String>();
+		macros.put("MACRO", "$3");
+		
+		String actual = DdocMacros.replaceMacros("This is $(MACRO my,macro)", macros);
+		assertEquals("This is my,macro", actual);
+	}
+	
+	public void testReplaceMacroArgumentsPlus() {
+		Map<String, String> macros = new HashMap<String, String>();
+		macros.put("MACRO", "$+");
+		
+		String actual = DdocMacros.replaceMacros("This is $(MACRO one,two,three)", macros);
+		assertEquals("This is two,three", actual);
+	}
+	
+	public void testReplaceRecursive() {
+		Map<String, String> macros = new HashMap<String, String>();
+		macros.put("ONE", "I use $(TWO)");
+		macros.put("TWO", "two");
+		
+		String actual = DdocMacros.replaceMacros("$(ONE)", macros);
+		assertEquals("I use two", actual);
+	}
+	
+	public void testReplaceRecursive2() {
+		Map<String, String> macros = new HashMap<String, String>();
+		macros.put("I", "<i>$0</i>");
+		macros.put("D_PARAM", "$(I $0)");
+		
+		String actual = DdocMacros.replaceMacros("$(D_PARAM count)", macros);
+		assertEquals("<i>count</i>", actual);
+	}
+	
+	public void testDontHangOnMe() {
+		Map<String, String> macros = new HashMap<String, String>();
+		macros.put("RECURSIVE", "I'm very $(RECURSIVE)");
+		
+		String actual = DdocMacros.replaceMacros("$(RECURSIVE)", macros);
+		assertEquals("I'm very ", actual);
+	}
+	
+	public void testDontHangOnMe2() {
+		Map<String, String> macros = new HashMap<String, String>();
+		macros.put("CHEATER", "I'm very $(TRICKY)");
+		macros.put("TRICKY", "I'm very $(CHEATER)");
+		
+		String actual = DdocMacros.replaceMacros("$(CHEATER)", macros);
+		assertEquals("I'm very I'm very ", actual);
+	}
+	
+	public void testDontHangOnMeButAllowMultiple() {
+		Map<String, String> macros = new HashMap<String, String>();
+		macros.put("THIS", "this");
+		
+		String actual = DdocMacros.replaceMacros("Duplicate $(THIS) $(THIS)", macros);
+		assertEquals("Duplicate this this", actual);
+	}
+	
+	public void testReplaceNested() {
+		Map<String, String> macros = new HashMap<String, String>();
+		macros.put("ONE", "one");
+		macros.put("TWO", "Parameter: $0");
+		
+		String actual = DdocMacros.replaceMacros("$(TWO $(ONE))", macros);
+		assertEquals("Parameter: one", actual);
+	}
+	
+	public void testReplaceNested2() {
+		Map<String, String> macros = new HashMap<String, String>();
+		macros.put("ONE", "one");
+		macros.put("TWO", "Parameter: $0");
+		macros.put("THREE", "Argument: $0");
+		
+		String actual = DdocMacros.replaceMacros("$(THREE $(TWO $(ONE)))", macros);
+		assertEquals("Argument: Parameter: one", actual);
+	}
+	
+	public void testReplaceNestedMany() {
+		Map<String, String> macros = new HashMap<String, String>();
+		macros.put("ONE", "one");
+		macros.put("TWO", "Parameter: $0");
+		
+		String actual = DdocMacros.replaceMacros("$(TWO $(ONE) $(ONE))", macros);
+		assertEquals("Parameter: one one", actual);
 	}
 	
 	private DdocSection[] parse(String text) {

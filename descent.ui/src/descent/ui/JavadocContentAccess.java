@@ -15,7 +15,6 @@ import java.io.Reader;
 import java.io.StringReader;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
@@ -35,6 +34,7 @@ import descent.core.compiler.IScanner;
 import descent.core.compiler.ITerminalSymbols;
 import descent.core.formatter.CodeFormatter;
 import descent.internal.ui.infoviews.Ddoc;
+import descent.internal.ui.infoviews.DdocMacros;
 import descent.internal.ui.infoviews.DdocParser;
 import descent.internal.ui.infoviews.DdocSection;
 import descent.internal.ui.infoviews.DdocSection.Parameter;
@@ -109,7 +109,10 @@ public class JavadocContentAccess {
 
 	private static String transform(Ddoc ddoc, IMember member) {
 		String showParameterTypesString = PreferenceConstants.getPreference(PreferenceConstants.DDOC_SHOW_PARAMETER_TYPES, null);
-		boolean showParameterTypes = showParameterTypesString == null ? false : StringConverter.asBoolean(showParameterTypesString); 
+		boolean showParameterTypes = showParameterTypesString == null ? false : StringConverter.asBoolean(showParameterTypesString);
+		
+		Map<String, String> defaultMacros = DdocMacros.getDefaultMacros();
+		Map<String, String> macros = mergeMacros(ddoc, defaultMacros);
 		
 		Map<String, String> parameters;
 		if (showParameterTypes && member.getElementType() == IJavaElement.METHOD) {
@@ -134,6 +137,8 @@ public class JavadocContentAccess {
 		for(DdocSection section : ddoc.getSections()) {
 			switch(section.getKind()) {
 			case DdocSection.NORMAL_SECTION:
+				String text = DdocMacros.replaceMacros(section.getText(), macros);
+				
 				if (section.getName() != null) {
 					buffer.append("<dl>"); //$NON-NLS-1$
 					buffer.append("<dt>"); //$NON-NLS-1$
@@ -144,19 +149,19 @@ public class JavadocContentAccess {
 					}
 					
 					buffer.append(section.getName().replace('_', ' '));
+					buffer.append(":"); //$NON-NLS-1$
 					
 					if (red) {
 						buffer.append("</span>"); //$NON-NLS-1$
 					}
 					
-					buffer.append(":"); //$NON-NLS-1$
 					buffer.append("</dt>"); //$NON-NLS-1$
 					buffer.append("<dd>"); //$NON-NLS-1$
-					buffer.append(section.getText());
+					buffer.append(text);
 					buffer.append("</dd>"); //$NON-NLS-1$					
 					buffer.append("</dl>"); //$NON-NLS-1$
 				} else {
-					buffer.append(section.getText());
+					buffer.append(text);
 				}
 				break;
 			case DdocSection.PARAMS_SECTION:
@@ -200,6 +205,16 @@ public class JavadocContentAccess {
 		}
 		
 		return buffer.toString();
+	}
+
+	private static Map<String, String> mergeMacros(Ddoc ddoc, Map<String, String> macros) {
+		macros = new HashMap<String, String>(macros);
+		if (ddoc.getMacrosSection() != null) {
+			for(Parameter param : ddoc.getMacrosSection().getParameters()) {
+				macros.put(param.getName(), param.getText());
+			}
+		}
+		return macros;
 	}
 
 	private static void appendCode(StringBuffer buffer, String text) throws Exception {

@@ -102,11 +102,11 @@ public class DdocParser {
 				}
 				
 				if (startOfCodeLine != null) {
-					currentSectionText.insert(0, startOfCodeLine + "\n"); //$NON-NLS-1$
+					currentSectionText.insert(0, startOfCodeLine + " "); //$NON-NLS-1$
 				}
 				startOfCodeLine = null;
 				
-				if (currentSectionText.length() > 0) {
+				if (currentSectionText.length() > 0 || currentSectionName != null) {
 					addCurrentSection();
 				}
 				
@@ -136,7 +136,7 @@ public class DdocParser {
 				if (equalsIndex == -1) {
 					if (currentParameterName != null) {
 						if (currentParameterText.length() > 0) {
-							currentParameterText.append("\n"); //$NON-NLS-1$
+							currentParameterText.append(" "); //$NON-NLS-1$
 						}
 						currentParameterText.append(line);
 					}
@@ -153,7 +153,7 @@ public class DdocParser {
 			}
 			
 			if (currentSectionText.length() > 0) {
-				currentSectionText.append("\n"); //$NON-NLS-1$
+				currentSectionText.append(" "); //$NON-NLS-1$
 			}
 			currentSectionText.append(line);
 		}
