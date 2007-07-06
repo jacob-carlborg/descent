@@ -25,6 +25,14 @@
  *     my $opt = $_;
  *     if($$_{'wsDElem'} && $$_{'wsSynElem'})
  *     {
+ *         if(!$$_{'wsDElemEx'})
+ *         {
+ *             $$_{'wsDElemEx'} = $$_{'wsDElem'}
+ *         }
+ *         if(!$$_{'wsSynElemEx'})
+ *         {
+ *             $$_{'wsSynElemEx'} = $$_{'wsSynElem'}
+ *         }
  *         if($dElements{$$_{'wsDElem'}})
  *         {
  *             push(@{$dElements{$$_{'wsDElem'}}}, $opt);
@@ -89,7 +97,7 @@ public final class WhiteSpaceOptions
 		 *     foreach(@{$dElements{$element}})
 		 *     {
 		 *         print DST "\t\tcreateOption($element, workingValues, " .
-		 *             "FormatterMessages.WhiteSpaceOptions_" . $$_{'wsSynElem'} . ", " .
+		 *             "FormatterMessages.WhiteSpaceOptions_" . $$_{'wsSynElemEx'} . ", " .
 		 *             "DefaultCodeFormatterConstants." . $$_{'constName'} . ", " .
 		 *             $$_{'wsPreview'} . ");\n";
 		 *     }
@@ -138,7 +146,7 @@ public final class WhiteSpaceOptions
 		 *     foreach(@{$syntaxElements{$element}})
 		 *     {
 		 *         print DST "\t\tcreateOption(parent, workingValues, " .
-		 *             "FormatterMessages.WhiteSpaceOptions_" . $$_{'wsDElem'} . ", " .
+		 *             "FormatterMessages.WhiteSpaceOptions_" . $$_{'wsDElemEx'} . ", " .
 		 *             "DefaultCodeFormatterConstants." . $$_{'constName'} . ", " .
 		 *             $$_{'wsPreview'} . ");\n";
 		 *     }

@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import descent.core.formatter.DefaultCodeFormatterConstants;
-import descent.internal.formatter.align.Alignment2;
+import descent.internal.formatter.Alignment;
 
 public class DefaultCodeFormatterOptions
 {	

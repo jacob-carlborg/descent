@@ -8,7 +8,7 @@
  * Contributors:
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
-package descent.internal.formatter.align;
+package descent.internal.formatter;
 
 /**
  * Exception used to backtrack and break available alignments

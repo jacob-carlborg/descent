@@ -4,7 +4,7 @@ import java.util.Map;
 
 import descent.core.JavaCore;
 import descent.internal.formatter.DefaultCodeFormatterOptions;
-import descent.internal.formatter.align.Alignment2;
+import descent.internal.formatter.Alignment;
 
 /**
  * Constants used to set up the options of the code formatter.
@@ -60,30 +60,30 @@ public class DefaultCodeFormatterConstants {
 		int alignmentValue = 0; 
 		switch(wrapStyle) {
 			case WRAP_COMPACT :
-				alignmentValue |= Alignment2.M_COMPACT_SPLIT;
+				alignmentValue |= Alignment.M_COMPACT_SPLIT;
 				break;
 			case WRAP_COMPACT_FIRST_BREAK :
-				alignmentValue |= Alignment2.M_COMPACT_FIRST_BREAK_SPLIT;
+				alignmentValue |= Alignment.M_COMPACT_FIRST_BREAK_SPLIT;
 				break;
 			case WRAP_NEXT_PER_LINE :
-				alignmentValue |= Alignment2.M_NEXT_PER_LINE_SPLIT;
+				alignmentValue |= Alignment.M_NEXT_PER_LINE_SPLIT;
 				break;
 			case WRAP_NEXT_SHIFTED :
-				alignmentValue |= Alignment2.M_NEXT_SHIFTED_SPLIT;
+				alignmentValue |= Alignment.M_NEXT_SHIFTED_SPLIT;
 				break;
 			case WRAP_ONE_PER_LINE :
-				alignmentValue |= Alignment2.M_ONE_PER_LINE_SPLIT;
+				alignmentValue |= Alignment.M_ONE_PER_LINE_SPLIT;
 				break;
 		}		
 		if (forceSplit) {
-			alignmentValue |= Alignment2.M_FORCE;
+			alignmentValue |= Alignment.M_FORCE;
 		}
 		switch(indentStyle) {
 			case INDENT_BY_ONE :
-				alignmentValue |= Alignment2.M_INDENT_BY_ONE;
+				alignmentValue |= Alignment.M_INDENT_BY_ONE;
 				break;
 			case INDENT_ON_COLUMN :
-				alignmentValue |= Alignment2.M_INDENT_ON_COLUMN;
+				alignmentValue |= Alignment.M_INDENT_ON_COLUMN;
 		}
 		return String.valueOf(alignmentValue);
 	}
@@ -102,7 +102,7 @@ public class DefaultCodeFormatterConstants {
 		}
 		try {
 			int existingValue = Integer.parseInt(value);
-			return (existingValue & Alignment2.M_FORCE) != 0;
+			return (existingValue & Alignment.M_FORCE) != 0;
 		} catch (NumberFormatException e) {
 			throw WRONG_ARGUMENT;
 		}
@@ -114,9 +114,9 @@ public class DefaultCodeFormatterConstants {
 		}
 		try {
 			int existingValue = Integer.parseInt(value);
-			if ((existingValue & Alignment2.M_INDENT_BY_ONE) != 0) {
+			if ((existingValue & Alignment.M_INDENT_BY_ONE) != 0) {
 				return INDENT_BY_ONE;
-			} else if ((existingValue & Alignment2.M_INDENT_ON_COLUMN) != 0) {
+			} else if ((existingValue & Alignment.M_INDENT_ON_COLUMN) != 0) {
 				return INDENT_ON_COLUMN;
 			} else {
 				return INDENT_DEFAULT;
@@ -131,17 +131,17 @@ public class DefaultCodeFormatterConstants {
 			throw WRONG_ARGUMENT;
 		}
 		try {
-			int existingValue = Integer.parseInt(value) & Alignment2.SPLIT_MASK;
+			int existingValue = Integer.parseInt(value) & Alignment.SPLIT_MASK;
 			switch(existingValue) {
-				case Alignment2.M_COMPACT_SPLIT :
+				case Alignment.M_COMPACT_SPLIT :
 					return WRAP_COMPACT;
-				case Alignment2.M_COMPACT_FIRST_BREAK_SPLIT :
+				case Alignment.M_COMPACT_FIRST_BREAK_SPLIT :
 					return WRAP_COMPACT_FIRST_BREAK;
-				case Alignment2.M_NEXT_PER_LINE_SPLIT :
+				case Alignment.M_NEXT_PER_LINE_SPLIT :
 					return WRAP_NEXT_PER_LINE;
-				case Alignment2.M_NEXT_SHIFTED_SPLIT :
+				case Alignment.M_NEXT_SHIFTED_SPLIT :
 					return WRAP_NEXT_SHIFTED;
-				case Alignment2.M_ONE_PER_LINE_SPLIT :
+				case Alignment.M_ONE_PER_LINE_SPLIT :
 					return WRAP_ONE_PER_LINE;
 				default:
 					return WRAP_NO_SPLIT;
@@ -158,9 +158,9 @@ public class DefaultCodeFormatterConstants {
 		try {
 			int existingValue = Integer.parseInt(value);
 			// clear existing force bit
-			existingValue &= ~Alignment2.M_FORCE;
+			existingValue &= ~Alignment.M_FORCE;
 			if (force) {
-				existingValue |= Alignment2.M_FORCE;
+				existingValue |= Alignment.M_FORCE;
 			}
 			return String.valueOf(existingValue);
 		} catch (NumberFormatException e) {
@@ -183,13 +183,13 @@ public class DefaultCodeFormatterConstants {
 		try {
 			int existingValue = Integer.parseInt(value);
 			// clear existing indent bits
-			existingValue &= ~(Alignment2.M_INDENT_BY_ONE | Alignment2.M_INDENT_ON_COLUMN);
+			existingValue &= ~(Alignment.M_INDENT_BY_ONE | Alignment.M_INDENT_ON_COLUMN);
 			switch(indentStyle) {
 				case INDENT_BY_ONE :
-					existingValue |= Alignment2.M_INDENT_BY_ONE;
+					existingValue |= Alignment.M_INDENT_BY_ONE;
 					break;
 				case INDENT_ON_COLUMN :
-					existingValue |= Alignment2.M_INDENT_ON_COLUMN;
+					existingValue |= Alignment.M_INDENT_ON_COLUMN;
 			}
 			return String.valueOf(existingValue);
 		} catch (NumberFormatException e) {
@@ -215,22 +215,22 @@ public class DefaultCodeFormatterConstants {
 		try {
 			int existingValue = Integer.parseInt(value);
 			// clear existing split bits
-			existingValue &= ~(Alignment2.SPLIT_MASK);
+			existingValue &= ~(Alignment.SPLIT_MASK);
 			switch(wrappingStyle) {
 				case WRAP_COMPACT :
-					existingValue |= Alignment2.M_COMPACT_SPLIT;
+					existingValue |= Alignment.M_COMPACT_SPLIT;
 					break;
 				case WRAP_COMPACT_FIRST_BREAK :
-					existingValue |= Alignment2.M_COMPACT_FIRST_BREAK_SPLIT;
+					existingValue |= Alignment.M_COMPACT_FIRST_BREAK_SPLIT;
 					break;
 				case WRAP_NEXT_PER_LINE :
-					existingValue |= Alignment2.M_NEXT_PER_LINE_SPLIT;
+					existingValue |= Alignment.M_NEXT_PER_LINE_SPLIT;
 					break;
 				case WRAP_NEXT_SHIFTED :
-					existingValue |= Alignment2.M_NEXT_SHIFTED_SPLIT;
+					existingValue |= Alignment.M_NEXT_SHIFTED_SPLIT;
 					break;
 				case WRAP_ONE_PER_LINE :
-					existingValue |= Alignment2.M_ONE_PER_LINE_SPLIT;
+					existingValue |= Alignment.M_ONE_PER_LINE_SPLIT;
 					break;
 			}
 			return String.valueOf(existingValue);

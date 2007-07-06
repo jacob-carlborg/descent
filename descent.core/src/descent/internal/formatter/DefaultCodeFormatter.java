@@ -68,7 +68,7 @@ public class DefaultCodeFormatter extends CodeFormatter {
 	//private CodeSnippetParsingUtil codeSnippetParsingUtil;
 	private Map defaultCompilerOptions;
 	
-	private CodeFormatterVisitor2 newCodeFormatter2;
+	private CodeFormatterVisitor newCodeFormatter2;
 	private Map options;
 	
 	private DefaultCodeFormatterOptions preferences;
@@ -215,7 +215,7 @@ public class DefaultCodeFormatter extends CodeFormatter {
 		}
 		this.preferences.initial_indentation_level = indentationLevel;
 
-		this.newCodeFormatter2 = new CodeFormatterVisitor2(this.preferences, this.options, offset, length, (CompilationUnit) node.getRoot());
+		this.newCodeFormatter2 = new CodeFormatterVisitor(this.preferences, this.options, offset, length, (CompilationUnit) node.getRoot());
 		return this.newCodeFormatter2.format(source, (CompilationUnit) node);
 	}
 
@@ -235,7 +235,7 @@ public class DefaultCodeFormatter extends CodeFormatter {
 		}
 		this.preferences.initial_indentation_level = indentationLevel;
 
-		this.newCodeFormatter2 = new CodeFormatterVisitor2(this.preferences, this.options, offset, length, (CompilationUnit) node.getRoot());
+		this.newCodeFormatter2 = new CodeFormatterVisitor(this.preferences, this.options, offset, length, (CompilationUnit) node.getRoot());
 		
 		return this.newCodeFormatter2.format(source, (descent.core.dom.Expression) node);
 	}
@@ -255,7 +255,7 @@ public class DefaultCodeFormatter extends CodeFormatter {
 		}
 		this.preferences.initial_indentation_level = indentationLevel;
 
-		this.newCodeFormatter2 = new CodeFormatterVisitor2(this.preferences, this.options, offset, length, (CompilationUnit) node.getRoot());
+		this.newCodeFormatter2 = new CodeFormatterVisitor(this.preferences, this.options, offset, length, (CompilationUnit) node.getRoot());
 			
 		return this.newCodeFormatter2.format(source, (Block) node);
 	}

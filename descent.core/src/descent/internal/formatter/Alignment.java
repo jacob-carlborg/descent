@@ -8,26 +8,24 @@
  * Contributors:
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
-package descent.internal.formatter.align;
+package descent.internal.formatter;
 
-import descent.internal.formatter.Location2;
-import descent.internal.formatter.Scribe2;
 
 /**
  * Alignment management
  * 
  * @since 2.1
  */
-public class Alignment2 {
+public class Alignment {
 
 	// name of alignment
 	public String name;
 	
 	// link to enclosing alignment
-	public Alignment2 enclosing;
+	public Alignment enclosing;
 	 
 	// start location of this alignment
-	public Location2 location;
+	public Location location;
 	
 	// indentation management
 	public int fragmentIndex;
@@ -46,7 +44,7 @@ public class Alignment2 {
 	public int[] fragmentBreaks;
 	public boolean wasSplit;
 
-	public Scribe2 scribe;
+	public Scribe scribe;
 	
 	/* 
 	 * Alignment modes
@@ -132,10 +130,10 @@ public class Alignment2 {
 	public static final int CHUNK_ENUM = 4;
 
 	// location to align and break on.
-	public Alignment2(String name, int mode, int tieBreakRule, Scribe2 scribe, int fragmentCount, int sourceRestart, int continuationIndent){
+	public Alignment(String name, int mode, int tieBreakRule, Scribe scribe, int fragmentCount, int sourceRestart, int continuationIndent){
 		
 		this.name = name;
-		this.location = new Location2(scribe, sourceRestart);
+		this.location = new Location(scribe, sourceRestart);
 		this.mode = mode;
 		this.tieBreakRule = tieBreakRule;
 		this.fragmentCount = fragmentCount;
@@ -210,7 +208,7 @@ public class Alignment2 {
 //				}
 				this.needRedoColumnAlignment = false;
 				int relativeDepth = 0;
-				Alignment2 targetAlignment = this.scribe.memberAlignment;
+				Alignment targetAlignment = this.scribe.memberAlignment;
 				while (targetAlignment != null){
 					if (targetAlignment == this){
 						throw new AlignmentException(AlignmentException.ALIGN_TOO_SMALL, relativeDepth);
@@ -317,7 +315,7 @@ public class Alignment2 {
 		return false; // cannot split better
 	}
 	
-	public Alignment2 getAlignment(String targetName) {
+	public Alignment getAlignment(String targetName) {
 
 		if (targetName.equals(this.name)) return this;
 		if (this.enclosing == null) return null;
@@ -329,11 +327,11 @@ public class Alignment2 {
 	public void performFragmentEffect(){
 		if ((this.mode & M_MULTICOLUMN) == 0) {
 			switch(this.mode & SPLIT_MASK) {
-				case Alignment2.M_COMPACT_SPLIT :
-				case Alignment2.M_COMPACT_FIRST_BREAK_SPLIT :
-				case Alignment2.M_NEXT_PER_LINE_SPLIT :
-				case Alignment2.M_NEXT_SHIFTED_SPLIT :
-				case Alignment2.M_ONE_PER_LINE_SPLIT :
+				case Alignment.M_COMPACT_SPLIT :
+				case Alignment.M_COMPACT_FIRST_BREAK_SPLIT :
+				case Alignment.M_NEXT_PER_LINE_SPLIT :
+				case Alignment.M_NEXT_SHIFTED_SPLIT :
+				case Alignment.M_ONE_PER_LINE_SPLIT :
 					break;
 				default:
 					return;

@@ -43,6 +43,8 @@
 #     default       The default value (we may want to have multiple profiles...?)
 #     wsDElem       The name of the D element a white space option refers to (i.e. for_loops, etc.)
 #     wsSynElem     The name of the syntax element a white space options refers to (i.e. before_semicolon)
+#     wsDElemEx     The D element name displayed in the syntax element tree (defaults to wsDElem)
+#     wsSynElemEx   The Syntax element name displayed in the D element tree (defaults to wsSynElem)
 #     wsPreview     The preview used for the syntax element
 #
 # wsSynElem and wsDElem are meant to be used in tandem - for example, if an
@@ -228,6 +230,7 @@ insert_space_before_comma_in_function_invocation_arguments
 	type=boolean
 	default=false
 	wsDElem=function_arguments
+	wsDElemEx=function_invocation_arguments
 	wsSynElem=before_comma
 	wsPreview=FUNCTION_CALL_PREVIEW
 insert_space_after_comma_in_function_invocation_arguments

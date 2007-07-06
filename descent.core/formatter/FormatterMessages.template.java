@@ -111,6 +111,7 @@ final class FormatterMessages extends NLS {
 	public static String WhiteSpaceOptions_function_declaration;
 	public static String WhiteSpaceOptions_function_invocation;
 	public static String WhiteSpaceOptions_function_arguments;
+	public static String WhiteSpaceOptions_function_invocation_arguments;
 	
 	// White space options - syntax elements
 	public static String WhiteSpaceOptions_before_semicolon;

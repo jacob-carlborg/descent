@@ -14,16 +14,16 @@ import descent.internal.formatter.DefaultCodeFormatterOptions.BracePosition;
 
 /**
  * The class that visits everything in the source tree and formats it by sending
- * it to the Scribe2 class.
+ * it to the Scribe class.
  * 
  * @author Robert Fraser
  */
-public class CodeFormatterVisitor2 extends ASTVisitor
+public class CodeFormatterVisitor extends ASTVisitor
 {
 	public final static boolean	        DEBUG = true;
 	
 	public DefaultCodeFormatterOptions	preferences;
-	public Scribe2						scribe;
+	public Scribe						scribe;
 	public Lexer						lexer;
 	
 	private List<Type>                  postfixes = new LinkedList<Type>();
@@ -42,11 +42,11 @@ public class CodeFormatterVisitor2 extends ASTVisitor
 	 */
 	private boolean						inForInitializer = false;
 	
-	public CodeFormatterVisitor2(DefaultCodeFormatterOptions $preferences,
+	public CodeFormatterVisitor(DefaultCodeFormatterOptions $preferences,
 			Map settings, int offset, int length, CompilationUnit unit)
 	{
 		preferences = $preferences;
-		scribe = new Scribe2(this, 0, offset, length, unit);
+		scribe = new Scribe(this, 0, offset, length, unit);
 	}
 	
 	public TextEdit format(String src, Block block)

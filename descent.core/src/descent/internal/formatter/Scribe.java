@@ -11,7 +11,6 @@
 package descent.internal.formatter;
 
 import java.util.Arrays;
-import java.util.List;
 
 import org.eclipse.text.edits.MultiTextEdit;
 import org.eclipse.text.edits.ReplaceEdit;
@@ -19,38 +18,35 @@ import org.eclipse.text.edits.TextEdit;
 
 import descent.core.dom.AST;
 import descent.core.dom.CompilationUnit;
-import descent.core.formatter.DefaultCodeFormatterConstants;
 import descent.internal.compiler.parser.Lexer;
 import descent.internal.compiler.parser.ScannerHelper;
 import descent.internal.compiler.parser.TOK;
 import descent.internal.compiler.util.Util;
-import descent.internal.formatter.align.Alignment2;
-import descent.internal.formatter.align.AlignmentException;
 
 /**
  * This class is responsible for dumping formatted source
  * @since 2.1
  */
-public class Scribe2 {	private static final int INITIAL_SIZE = 100;
+public class Scribe {	private static final int INITIAL_SIZE = 100;
 
 	private boolean checkLineWrapping;
 	/** one-based column */
 	public int column;
-	private List comments;
+	//private List comments;
 		
 	// Most specific alignment. 
-	public Alignment2 currentAlignment;
+	public Alignment currentAlignment;
 	public TOK currentToken;
 	
 	// edits management
 	private OptimizedReplaceEdit[] edits;
 	public int editsIndex;
-	public CodeFormatterVisitor2 formatter;
+	public CodeFormatterVisitor formatter;
 	public int indentationLevel;	
 	public int lastNumberOfNewLines;
 	public int line;
 	private String lineSeparator;
-	public Alignment2 memberAlignment;
+	public Alignment memberAlignment;
 	public boolean needSpace = false;
 	public int pageWidth;
 	public boolean pendingSpace = false;
@@ -76,7 +72,7 @@ public class Scribe2 {	private static final int INITIAL_SIZE = 100;
 			lexer.reset(source.toCharArray(), 0, source.length(), true, true, false, false);
 	}
     
-	Scribe2(CodeFormatterVisitor2 formatter, long sourceLevel, int offset, int length, CompilationUnit unit)
+	Scribe(CodeFormatterVisitor formatter, long sourceLevel, int offset, int length, CompilationUnit unit)
 	{
 		this.lexer = null;
 		this.formatter = formatter;
@@ -98,7 +94,7 @@ public class Scribe2 {	private static final int INITIAL_SIZE = 100;
 		this.textRegionEnd = offset + length - 1;
 		if (unit != null) {
 			this.unit = unit;
-			this.comments = unit.getCommentList();
+			//this.comments = unit.getCommentList();
 		}
 		reset();
 	}
@@ -132,7 +128,7 @@ public class Scribe2 {	private static final int INITIAL_SIZE = 100;
 			final int previousReplacementLength = previousReplacement.length();
 			if (previousOffset == offset && previousLength == length && (replacementLength == 0 || previousReplacementLength == 0)) {
 				if (this.currentAlignment != null) {
-					final Location2 location = this.currentAlignment.location;
+					final Location location = this.currentAlignment.location;
 					if (location.editsIndex == this.editsIndex) {
 						location.editsIndex--;
 						location.textEdit = previous;
@@ -157,7 +153,7 @@ public class Scribe2 {	private static final int INITIAL_SIZE = 100;
 						}
 						if (canBeRemoved) {
 							if (this.currentAlignment != null) {
-								final Location2 location = this.currentAlignment.location;
+								final Location location = this.currentAlignment.location;
 								if (location.editsIndex == this.editsIndex) {
 									location.editsIndex--;
 									location.textEdit = previous;
@@ -189,7 +185,7 @@ public class Scribe2 {	private static final int INITIAL_SIZE = 100;
 		addOptimizedReplaceEdit(start,  end - start + 1, replacement);
 	}
 
-	public void alignFragment(Alignment2 alignment, int fragmentIndex){
+	public void alignFragment(Alignment alignment, int fragmentIndex){
 		alignment.fragmentIndex = fragmentIndex;
 		alignment.checkColumn();
 		alignment.performFragmentEffect();
@@ -201,44 +197,44 @@ public class Scribe2 {	private static final int INITIAL_SIZE = 100;
 		addDeleteEdit(lexer.token.ptr, currentTokenEndPosition());
 	}
 	
-	public Alignment2 createAlignment(String name, int mode, int count, int sourceRestart){
-		return createAlignment(name, mode, Alignment2.R_INNERMOST, count, sourceRestart);
+	public Alignment createAlignment(String name, int mode, int count, int sourceRestart){
+		return createAlignment(name, mode, Alignment.R_INNERMOST, count, sourceRestart);
 	}
 
-	public Alignment2 createAlignment(String name, int mode, int count, int sourceRestart, boolean adjust){
-		return createAlignment(name, mode, Alignment2.R_INNERMOST, count, sourceRestart, adjust);
+	public Alignment createAlignment(String name, int mode, int count, int sourceRestart, boolean adjust){
+		return createAlignment(name, mode, Alignment.R_INNERMOST, count, sourceRestart, adjust);
 	}
 	
-	public Alignment2 createAlignment(String name, int mode, int tieBreakRule, int count, int sourceRestart){
+	public Alignment createAlignment(String name, int mode, int tieBreakRule, int count, int sourceRestart){
 		return createAlignment(name, mode, tieBreakRule, count, sourceRestart, this.formatter.preferences.continuation_indentation, false);
 	}
 
-	public Alignment2 createAlignment(String name, int mode, int count, int sourceRestart, int continuationIndent, boolean adjust){
-		return createAlignment(name, mode, Alignment2.R_INNERMOST, count, sourceRestart, continuationIndent, adjust);
+	public Alignment createAlignment(String name, int mode, int count, int sourceRestart, int continuationIndent, boolean adjust){
+		return createAlignment(name, mode, Alignment.R_INNERMOST, count, sourceRestart, continuationIndent, adjust);
 	}
 
-	public Alignment2 createAlignment(String name, int mode, int tieBreakRule, int count, int sourceRestart, int continuationIndent, boolean adjust){
-		Alignment2 alignment = new Alignment2(name, mode, tieBreakRule, this, count, sourceRestart, continuationIndent);
+	public Alignment createAlignment(String name, int mode, int tieBreakRule, int count, int sourceRestart, int continuationIndent, boolean adjust){
+		Alignment alignment = new Alignment(name, mode, tieBreakRule, this, count, sourceRestart, continuationIndent);
 		// adjust break indentation
 		if (adjust && this.memberAlignment != null) {
-			Alignment2 current = this.memberAlignment;
+			Alignment current = this.memberAlignment;
 			while (current.enclosing != null) {
 				current = current.enclosing;
 			}
-			if ((current.mode & Alignment2.M_MULTICOLUMN) != 0) {
+			if ((current.mode & Alignment.M_MULTICOLUMN) != 0) {
 				final int indentSize = this.indentationSize;
 				switch(current.chunkKind) {
-					case Alignment2.CHUNK_METHOD :
-					case Alignment2.CHUNK_TYPE :
-						if ((mode & Alignment2.M_INDENT_BY_ONE) != 0) {
+					case Alignment.CHUNK_METHOD :
+					case Alignment.CHUNK_TYPE :
+						if ((mode & Alignment.M_INDENT_BY_ONE) != 0) {
 							alignment.breakIndentationLevel = this.indentationLevel + indentSize;
 						} else {
 							alignment.breakIndentationLevel = this.indentationLevel + continuationIndent * indentSize;
 						}
 						alignment.update();
 						break;
-					case Alignment2.CHUNK_FIELD :
-						if ((mode & Alignment2.M_INDENT_BY_ONE) != 0) {
+					case Alignment.CHUNK_FIELD :
+						if ((mode & Alignment.M_INDENT_BY_ONE) != 0) {
 							alignment.breakIndentationLevel = current.originalIndentationLevel + indentSize;
 						} else {
 							alignment.breakIndentationLevel = current.originalIndentationLevel + continuationIndent * indentSize;
@@ -247,25 +243,25 @@ public class Scribe2 {	private static final int INITIAL_SIZE = 100;
 						break;
 				}
 			} else {
-				switch(current.mode & Alignment2.SPLIT_MASK) {
-					case Alignment2.M_COMPACT_SPLIT :
-					case Alignment2.M_COMPACT_FIRST_BREAK_SPLIT :
-					case Alignment2.M_NEXT_PER_LINE_SPLIT :
-					case Alignment2.M_NEXT_SHIFTED_SPLIT :
-					case Alignment2.M_ONE_PER_LINE_SPLIT :
+				switch(current.mode & Alignment.SPLIT_MASK) {
+					case Alignment.M_COMPACT_SPLIT :
+					case Alignment.M_COMPACT_FIRST_BREAK_SPLIT :
+					case Alignment.M_NEXT_PER_LINE_SPLIT :
+					case Alignment.M_NEXT_SHIFTED_SPLIT :
+					case Alignment.M_ONE_PER_LINE_SPLIT :
 						final int indentSize = this.indentationSize;
 						switch(current.chunkKind) {
-							case Alignment2.CHUNK_METHOD :
-							case Alignment2.CHUNK_TYPE :
-								if ((mode & Alignment2.M_INDENT_BY_ONE) != 0) {
+							case Alignment.CHUNK_METHOD :
+							case Alignment.CHUNK_TYPE :
+								if ((mode & Alignment.M_INDENT_BY_ONE) != 0) {
 									alignment.breakIndentationLevel = this.indentationLevel + indentSize;
 								} else {
 									alignment.breakIndentationLevel = this.indentationLevel + continuationIndent * indentSize;
 								}
 								alignment.update();
 								break;
-							case Alignment2.CHUNK_FIELD :
-								if ((mode & Alignment2.M_INDENT_BY_ONE) != 0) {
+							case Alignment.CHUNK_FIELD :
+								if ((mode & Alignment.M_INDENT_BY_ONE) != 0) {
 									alignment.breakIndentationLevel = current.originalIndentationLevel + indentSize;
 								} else {
 									alignment.breakIndentationLevel = current.originalIndentationLevel + continuationIndent * indentSize;
@@ -280,24 +276,24 @@ public class Scribe2 {	private static final int INITIAL_SIZE = 100;
 		return alignment; 
 	}
 
-	public Alignment2 createMemberAlignment(String name, int mode, int count, int sourceRestart) {
-		Alignment2 mAlignment = createAlignment(name, mode, Alignment2.R_INNERMOST, count, sourceRestart);
+	public Alignment createMemberAlignment(String name, int mode, int count, int sourceRestart) {
+		Alignment mAlignment = createAlignment(name, mode, Alignment.R_INNERMOST, count, sourceRestart);
 		mAlignment.breakIndentationLevel = this.indentationLevel;
 		return mAlignment;
 	}
 	
-	public void enterAlignment(Alignment2 alignment){
+	public void enterAlignment(Alignment alignment){
 		alignment.enclosing = this.currentAlignment;
 		this.currentAlignment = alignment;
 	}
 
-	public void enterMemberAlignment(Alignment2 alignment) {
+	public void enterMemberAlignment(Alignment alignment) {
 		alignment.enclosing = this.memberAlignment;
 		this.memberAlignment = alignment;
 	}
 
-	public void exitAlignment(Alignment2 alignment, boolean discardAlignment){
-		Alignment2 current = this.currentAlignment;
+	public void exitAlignment(Alignment alignment, boolean discardAlignment){
+		Alignment current = this.currentAlignment;
 		while (current != null){
 			if (current == alignment) break;
 			current = current.enclosing;
@@ -312,8 +308,8 @@ public class Scribe2 {	private static final int INITIAL_SIZE = 100;
 		}
 	}
 	
-	public void exitMemberAlignment(Alignment2 alignment){
-		Alignment2 current = this.memberAlignment;
+	public void exitMemberAlignment(Alignment alignment){
+		Alignment current = this.memberAlignment;
 		while (current != null){
 			if (current == alignment) break;
 			current = current.enclosing;
@@ -326,7 +322,7 @@ public class Scribe2 {	private static final int INITIAL_SIZE = 100;
 		this.memberAlignment = current.enclosing;
 	}
 	
-	public Alignment2 getAlignment(String name){
+	public Alignment getAlignment(String name){
 		if (this.currentAlignment != null) {
 			return this.currentAlignment.getAlignment(name);
 		}
@@ -389,7 +385,7 @@ public class Scribe2 {	private static final int INITIAL_SIZE = 100;
 		}
 		return null;
 	}
-	Alignment2 getMemberAlignment() {
+	Alignment getMemberAlignment() {
 		return this.memberAlignment;
 	}
 	
@@ -464,9 +460,9 @@ public class Scribe2 {	private static final int INITIAL_SIZE = 100;
 		// search for closest breakable alignment, using tiebreak rules
 		// look for outermost breakable one
 		int relativeDepth = 0, outerMostDepth = -1;
-		Alignment2 targetAlignment = this.currentAlignment;
+		Alignment targetAlignment = this.currentAlignment;
 		while (targetAlignment != null){
-			if (targetAlignment.tieBreakRule == Alignment2.R_OUTERMOST && targetAlignment.couldBreak()){
+			if (targetAlignment.tieBreakRule == Alignment.R_OUTERMOST && targetAlignment.couldBreak()){
 				outerMostDepth = relativeDepth;
 			}
 			targetAlignment = targetAlignment.enclosing;
@@ -1244,7 +1240,7 @@ public class Scribe2 {	private static final int INITIAL_SIZE = 100;
 		this.editsIndex = 0;
 	}
 		
-	private void resetAt(Location2 location) {
+	private void resetAt(Location location) {
 		this.line = location.outputLine;
 		this.column = location.outputColumn;
 		this.indentationLevel = location.outputIndentationLevel;

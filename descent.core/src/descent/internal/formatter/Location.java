@@ -15,7 +15,7 @@ package descent.internal.formatter;
  * It remembers source offsets, line/column and indentation level.
  * @since 2.1
  */
-public class Location2 {
+public class Location {
 
 	public int inputOffset;
 	public int outputLine;
@@ -33,11 +33,11 @@ public class Location2 {
 	int editsIndex;
 	OptimizedReplaceEdit textEdit;
 	
-	public Location2(Scribe2 scribe, int sourceRestart){
+	public Location(Scribe scribe, int sourceRestart){
 		update(scribe, sourceRestart);
 	}
 	
-	public void update(Scribe2 scribe, int sourceRestart){
+	public void update(Scribe scribe, int sourceRestart){
 		this.outputColumn = scribe.column;
 		this.outputLine = scribe.line;
 		this.inputOffset = sourceRestart;
