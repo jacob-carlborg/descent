@@ -110,18 +110,39 @@ public final class WhiteSpaceOptions
 		// list is updated every time a new white space option is added.
 		final List<Node> roots = new ArrayList<Node>();
 		final InnerNode declarations = new InnerNode(null, workingValues, FormatterMessages.WhiteSpaceOptions_declarations);
+		final InnerNode expressions = new InnerNode(null, workingValues, FormatterMessages.WhiteSpaceOptions_expressions);
 		
 		// Declarations
+		roots.add(declarations);
 		function_declaration.setParent(declarations);
 		variable_declaration.setParent(declarations);
-		roots.add(declarations);
+		version_debug.setParent(declarations);
+		pragma.setParent(declarations);
+		mixin.setParent(declarations);
+		align_declaration.setParent(declarations);
+		aggregate_declaration.setParent(declarations);
 		
 		// Statements
+		roots.add(statements);
 		for_statement.setParent(statements);
 		foreach_statement.setParent(statements);
 		function_invocation.setParent(statements);
 		function_arguments.setParent(function_invocation);
-		roots.add(statements);
+		while_statement.setParent(statements);
+		switch_statement.setParent(statements);
+		synchronized_volatile_statement.setParent(statements);
+		scope_statement.setParent(statements);
+		catch_statement.setParent(statements);
+		assert_statement.setParent(statements);
+		with_statement.setParent(statements);
+		
+		// Expressions
+		roots.add(expressions);
+		function_delegate_type.setParent(expressions);
+		anonymous_function.setParent(expressions);
+		typeof.setParent(expressions);
+		anonymous_class.setParent(expressions);
+		typeid.setParent(expressions);
 		
 		return roots;
 	}
@@ -349,8 +370,8 @@ public abstract static class Node {
 	private final PreviewSnippet FUNCTION_DECL_PREVIEW =
 		new PreviewSnippet(
 			CodeFormatter.K_COMPILATION_UNIT, 
-			"void foo() {}" +
-		    "int bar(int x, inout int y)in{}out(result){}body{return x + y;}"
+			"void foo()() {}" +
+		    "int bar(T, U)(T x, inout U[] y ...)in{}out(result){}body{return x + y;}"
 		);
 	
 	private final PreviewSnippet FUNCTION_CALL_PREVIEW =
@@ -363,5 +384,104 @@ public abstract static class Node {
 	private final PreviewSnippet MULT_LOCAL_PREVIEW =
 		new PreviewSnippet(CodeFormatter.K_STATEMENTS, 
 			"int a= 0, b= 1, c= 2, d= 3;"
+		);
+	
+	private final PreviewSnippet TRY_CATCH_FINALLY_PREVIEW =
+		new PreviewSnippet(CodeFormatter.K_STATEMENTS, 
+			"try{file.open();}catch(Exception e){Stdout(e);}" +
+			"finally{file.close();}"
+		);
+	
+	private final PreviewSnippet WHILE_PREVIEW =
+		new PreviewSnippet(CodeFormatter.K_STATEMENTS, 
+			"while(true){foo();}"
+		);
+	
+	private final PreviewSnippet SYNCHRONIZED_PREVIEW =
+		new PreviewSnippet(CodeFormatter.K_STATEMENTS, 
+			"synchronized(foo){bar(foo);}"
+		);
+	
+	private final PreviewSnippet SWITCH_PREVIEW =
+		new PreviewSnippet(CodeFormatter.K_STATEMENTS, 
+			"switch(x){case 1:foo();break;case 2:bar();break;" +
+			"default:baz();break;}"
+		);
+	
+	private final PreviewSnippet ASSERT_PREVIEW =
+		new PreviewSnippet(CodeFormatter.K_STATEMENTS, 
+			"assert(file.canWrite(), " +
+			"\"File \" ~ file.name ~ \" is read-only\");"
+		);
+	
+	private final PreviewSnippet SCOPE_PREVIEW =
+		new PreviewSnippet(CodeFormatter.K_STATEMENTS, 
+			"Socket s = connect(\"127.0.0.1\");" +
+			"scope(exit){s.close();}"
+		);
+	
+	private final PreviewSnippet WITH_PREVIEW =
+		new PreviewSnippet(CodeFormatter.K_STATEMENTS, 
+			"with(some.hard.to.type.name){func();}"
+		);
+	
+	private final PreviewSnippet TYPEOF_PREVIEW =
+		new PreviewSnippet(CodeFormatter.K_STATEMENTS, 
+			"typeof(s) t;"
+		);
+	
+	private final PreviewSnippet TYPEID_PREVIEW =
+		new PreviewSnippet(CodeFormatter.K_STATEMENTS, 
+			"TypeInfo ti = typeid(k);"
+		);
+	
+	private final PreviewSnippet DELEGATE_PREVIEW =
+		new PreviewSnippet(CodeFormatter.K_STATEMENTS, 
+			"void function(int, string) fp;" +
+			"string delegate() dg;"
+		);
+	
+	private final PreviewSnippet ALIGN_PREVIEW =
+		new PreviewSnippet(
+			CodeFormatter.K_COMPILATION_UNIT, 
+			"struct S{align(3){int* very_misaligned_pointer;}" +
+			"align(15):int* this_one_is_worse;}"
+		);
+	
+	private final PreviewSnippet AGGREGATE_PREVIEW =
+		new PreviewSnippet(
+			CodeFormatter.K_COMPILATION_UNIT, 
+			"class A(){} interface B{} class C(T:int, K...):A,B{}"
+		);
+	
+	private final PreviewSnippet TEMPLATE_DECLARATION_PREVIEW =
+		new PreviewSnippet(
+			CodeFormatter.K_COMPILATION_UNIT, 
+			"template Foo(){} template Bar(T:int, K...){}"
+		);
+	
+	private final PreviewSnippet VERSION_DEBUG_PREVIEW =
+		new PreviewSnippet(
+			CodeFormatter.K_COMPILATION_UNIT, 
+			"version(_32Bit){alias int size_t;}" +
+			"else version(_64Bit){alias long size_t;}" +
+			"debug{}"
+		);
+	
+	private final PreviewSnippet MIXIN_PREVIEW =
+		new PreviewSnippet(
+			CodeFormatter.K_COMPILATION_UNIT, 
+			"mixin(\"int x = 5;\")"
+		);
+	
+	private final PreviewSnippet PRAGMA_PREVIEW =
+		new PreviewSnippet(
+			CodeFormatter.K_COMPILATION_UNIT, 
+			"pragma(msg, \"Compiling...\");"
+		);
+	
+	private final PreviewSnippet NO_PREVIEW =
+		new PreviewSnippet(CodeFormatter.K_STATEMENTS, 
+			""
 		);
 }

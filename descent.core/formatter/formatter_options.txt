@@ -147,7 +147,146 @@ brace_position_for_other_blocks
 	tab=BracesTabPage
 	uiText=Other Blocks
 
-# White Space Options
+# White Space Options - Spaces Before Opening Parenthesis 
+insert_space_before_opening_paren_in_function_declaration
+	type=boolean
+	default=false
+	wsDElem=function_declaration
+	wsSynElem=before_opening_paren
+	wsPreview=FUNCTION_DECL_PREVIEW
+insert_space_before_opening_paren_in_function_invocation
+	type=boolean
+	default=false
+	wsDElem=function_invocation
+	wsSynElem=before_opening_paren
+	wsPreview=FUNCTION_CALL_PREVIEW
+insert_space_before_opening_paren_in_catch
+	type=boolean
+	default=false
+	wsDElem=catch_statement
+	wsSynElem=before_opening_paren
+	wsPreview=TRY_CATCH_FINALLY_PREVIEW
+insert_space_before_opening_paren_in_for_loops
+	type=boolean
+	default=false
+	wsDElem=for_statement
+	wsSynElem=before_opening_paren
+	wsPreview=FOR_PREVIEW
+insert_space_before_opening_paren_in_while_loops
+	type=boolean
+	default=false
+	wsDElem=while_statement
+	wsSynElem=before_opening_paren
+	wsPreview=WHILE_PREVIEW
+insert_space_before_opening_paren_in_foreach_loops
+	type=boolean
+	default=false
+	wsDElem=foreach_statement
+	wsSynElem=before_opening_paren
+	wsPreview=FOR_PREVIEW
+insert_space_before_opening_paren_in_synchronized_statement
+	type=boolean
+	default=false
+	wsDElem=synchronized_volatile_statement
+	wsSynElem=before_opening_paren
+	wsDElemEx=synchronized_statement
+	wsSynElemEx=before_opening_paren_in_synchronized_statement
+	wsPreview=SYNCHRONIZED_PREVIEW
+insert_space_before_opening_paren_in_switch_statements
+	type=boolean
+	default=false
+	wsDElem=switch_statement
+	wsSynElem=before_opening_paren
+	wsPreview=SWITCH_PREVIEW
+insert_space_before_opening_paren_in_align_declarations
+	type=boolean
+	default=false
+	wsDElem=align_declaration
+	wsSynElem=before_opening_paren
+	wsPreview=ALIGN_PREVIEW
+insert_space_before_opening_paren_in_class_template_params
+	type=boolean
+	default=false
+	wsDElem=aggregate_declaration
+	wsSynElem=before_opening_paren
+	wsSynElemEx=before_opening_paren_in_template_argument_list
+	wsPreview=AGGREGATE_PREVIEW
+insert_space_before_opening_paren_in_assert_statements
+	type=boolean
+	default=false
+	wsDElem=assert_statement
+	wsSynElem=before_opening_paren
+	wsPreview=ASSERT_PREVIEW
+insert_space_before_opening_paren_in_version_debug
+	type=boolean
+	default=false
+	wsDElem=version_debug
+	wsSynElem=before_opening_paren
+	wsPreview=VERSION_DEBUG_PREVIEW
+insert_space_before_opening_paren_in_mixins
+	type=boolean
+	default=false
+	wsDElem=mixin
+	wsSynElem=before_opening_paren
+	wsPreview=MIXIN_PREVIEW
+insert_space_before_opening_paren_in_pragmas
+	type=boolean
+	default=false
+	wsDElem=pragma
+	wsSynElem=before_opening_paren
+	wsPreview=PRAGMA_PREVIEW
+insert_space_before_opening_paren_in_scope_statements
+	type=boolean
+	default=false
+	wsDElem=scope_statement
+	wsSynElem=before_opening_paren
+	wsPreview=SCOPE_PREVIEW
+insert_space_before_opening_paren_in_with_statements
+	type=boolean
+	default=false
+	wsDElem=with_statement
+	wsSynElem=before_opening_paren
+	wsPreview=WITH_PREVIEW
+insert_space_before_opening_paren_in_typeof_statements
+	type=boolean
+	default=false
+	wsDElem=typeof
+	wsSynElem=before_opening_paren
+	wsPreview=TYPEOF_PREVIEW
+insert_space_before_opening_paren_in_typeid_statements
+	type=boolean
+	default=false
+	wsDElem=typeid
+	wsSynElem=before_opening_paren
+	wsPreview=TYPEID_PREVIEW
+insert_space_before_opening_paren_in_anon_class
+	type=boolean
+	default=false
+	wsDElem=anonymous_class
+	wsSynElem=before_opening_paren
+	wsPreview=NO_PREVIEW /* TODO */
+insert_space_before_opening_paren_in_anon_function
+	type=boolean
+	default=false
+	wsDElem=anonymous_function
+	wsSynElem=before_opening_paren
+	wsPreview=NO_PREVIEW /* TODO */
+insert_space_before_opening_paren_in_delegate
+	type=boolean
+	default=false
+	wsDElem=function_delegate_type
+	wsSynElem=before_opening_paren
+	wsPreview=DELEGATE_PREVIEW
+
+# Other White Space Options
+insert_space_between_template_and_arg_parens_in_function_declaration
+	type=boolean
+	default=false
+	wsDElem=function_declaration
+	wsSynElem=between_adjacent_parens
+	wsDElemEx=between_template_and_arg_parens
+	wsSynElemEx=between_template_and_arg_parens
+	wsPreview=FUNCTION_DECL_PREVIEW
 insert_space_before_semicolon
 	type=boolean
 	default=false
@@ -196,12 +335,6 @@ insert_space_between_empty_parens_in_function_declaration
 	wsDElem=function_declaration
 	wsSynElem=between_empty_parens
 	wsPreview=FUNCTION_DECL_PREVIEW
-insert_space_before_opening_paren_in_function_declaration
-	type=boolean
-	default=false
-	wsDElem=function_declaration
-	wsSynElem=before_opening_paren
-	wsPreview=FUNCTION_DECL_PREVIEW
 insert_space_after_opening_paren_in_function_declaration
 	type=boolean
 	default=false
@@ -214,12 +347,6 @@ insert_space_before_closing_paren_in_function_declaration
 	wsDElem=function_declaration
 	wsSynElem=before_closing_paren
 	wsPreview=FUNCTION_DECL_PREVIEW
-insert_space_before_opening_paren_in_function_invocation
-	type=boolean
-	default=false
-	wsDElem=function_invocation
-	wsSynElem=before_opening_paren
-	wsPreview=FUNCTION_CALL_PREVIEW
 insert_space_after_opening_paren_in_function_invocation
 	type=boolean
 	default=false
