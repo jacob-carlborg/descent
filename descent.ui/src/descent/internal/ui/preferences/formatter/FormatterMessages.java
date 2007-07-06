@@ -105,6 +105,7 @@ final class FormatterMessages extends NLS {
 	// White space options - D elements
 	public static String WhiteSpaceOptions_declarations;
 	public static String WhiteSpaceOptions_statements;
+	public static String WhiteSpaceOptions_expressions;
 	public static String WhiteSpaceOptions_for_statement;
 	public static String WhiteSpaceOptions_foreach_statement;
 	public static String WhiteSpaceOptions_variable_declaration;
@@ -112,6 +113,25 @@ final class FormatterMessages extends NLS {
 	public static String WhiteSpaceOptions_function_invocation;
 	public static String WhiteSpaceOptions_function_arguments;
 	public static String WhiteSpaceOptions_function_invocation_arguments;
+	public static String WhiteSpaceOptions_catch_statement;
+	public static String WhiteSpaceOptions_while_statement;
+	public static String WhiteSpaceOptions_synchronized_statement;
+	public static String WhiteSpaceOptions_switch_statement;
+	public static String WhiteSpaceOptions_align_declaration;
+	public static String WhiteSpaceOptions_aggregate_declaration;
+	public static String WhiteSpaceOptions_assert_statement;
+	public static String WhiteSpaceOptions_version_debug;
+	public static String WhiteSpaceOptions_mixin;
+	public static String WhiteSpaceOptions_pragma;
+	public static String WhiteSpaceOptions_scope_statement;
+	public static String WhiteSpaceOptions_with_statement;
+	public static String WhiteSpaceOptions_typeof;
+	public static String WhiteSpaceOptions_typeid;
+	public static String WhiteSpaceOptions_between_template_and_arg_parens;
+	public static String WhiteSpaceOptions_function_delegate_type;
+	public static String WhiteSpaceOptions_anonymous_function;
+	public static String WhiteSpaceOptions_anonymous_class;
+	public static String WhiteSpaceOptions_synchronized_volatile_statement;
 	
 	// White space options - syntax elements
 	public static String WhiteSpaceOptions_before_semicolon;
@@ -122,6 +142,9 @@ final class FormatterMessages extends NLS {
 	public static String WhiteSpaceOptions_after_opening_paren;
 	public static String WhiteSpaceOptions_before_closing_paren;
 	public static String WhiteSpaceOptions_between_empty_parens;
+	public static String WhiteSpaceOptions_between_adjacent_parens;
+	public static String WhiteSpaceOptions_before_opening_paren_in_synchronized_statement;
+	public static String WhiteSpaceOptions_before_opening_paren_in_template_argument_list;
 	
 	// Blank lines tab page
 	public static String ModifyDialog_tabpage_blank_lines_title;
