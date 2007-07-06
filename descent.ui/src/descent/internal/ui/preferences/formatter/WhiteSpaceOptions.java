@@ -116,7 +116,7 @@ public final class WhiteSpaceOptions
 		
 		parent = createParentNode(roots, workingValues, FormatterMessages.WhiteSpaceOptions_before_comma);
 		createOption(parent, workingValues, FormatterMessages.WhiteSpaceOptions_variable_declaration, DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_COMMA_IN_MULTIPLE_FIELD_DECLARATIONS, MULT_LOCAL_PREVIEW);
-		createOption(parent, workingValues, FormatterMessages.WhiteSpaceOptions_function_arguments, DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_COMMA_IN_FUNCTION_INVOCATION_ARGUMENTS, FUNCTION_CALL_PREVIEW);
+		createOption(parent, workingValues, FormatterMessages.WhiteSpaceOptions_function_invocation_arguments, DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_COMMA_IN_FUNCTION_INVOCATION_ARGUMENTS, FUNCTION_CALL_PREVIEW);
 		createOption(parent, workingValues, FormatterMessages.WhiteSpaceOptions_foreach_statement, DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_COMMA_IN_FOREACH_STATEMENT, FOR_PREVIEW);
 		
 		parent = createParentNode(roots, workingValues, FormatterMessages.WhiteSpaceOptions_before_opening_paren);
