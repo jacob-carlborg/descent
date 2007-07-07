@@ -33,7 +33,7 @@ public class DdocMacros {
 		map.put("SMALL", "<small>$0</small>"); //$NON-NLS-1$ //$NON-NLS-2$
 		map.put("BR", "<br>"); //$NON-NLS-1$ //$NON-NLS-2$
 		map.put("LINK", "<a href=\"$0\" target=\"_blank\">$0</li>"); //$NON-NLS-1$ //$NON-NLS-2$
-		map.put("LINK2", "<a href=\"$0\" target=\"_blank\">$+</li>"); //$NON-NLS-1$ //$NON-NLS-2$
+		map.put("LINK2", "<a href=\"$1\" target=\"_blank\">$+</li>"); //$NON-NLS-1$ //$NON-NLS-2$
 		
 		map.put("RED", "<font color=red>$0</font>"); //$NON-NLS-1$ //$NON-NLS-2$
 		map.put("BLUE", "<font color=blue>$0</font>"); //$NON-NLS-1$ //$NON-NLS-2$
