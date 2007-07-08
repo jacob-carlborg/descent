@@ -1,6 +1,6 @@
 package dtool.dom.ast;
 
-import util.tree.TreeNode;
+import util.tree.ITreeNode;
 
 
 /**
@@ -10,7 +10,7 @@ public class ASTNodeParentizer extends ASTHomoVisitor {
 	
 	private static ASTNodeParentizer singleton = new ASTNodeParentizer();
 	
-	private TreeNode parent = null;
+	private ASTNode parent = null;
 	private boolean firstvisit = true;
 	
 	private void initialize() {
@@ -18,23 +18,23 @@ public class ASTNodeParentizer extends ASTHomoVisitor {
 		firstvisit = true;
 	}
 	
-	public static void parentize(TreeNode elem){
+	public static void parentize(ASTNode elem){
 		singleton.initialize();
 		singleton.traverse(elem);
 	}
 
-	protected void leaveNode(TreeNode elem) {
-		parent = elem.getParent(); // Restore parent
+	protected void leaveNode(ITreeNode elem) {
+		parent = (ASTNode)elem.getParent(); // Restore parent
 	}
 
 	@SuppressWarnings("unchecked")
-	protected boolean enterNode(TreeNode elem) {
+	protected boolean enterNode(ITreeNode elem) {
 		if (firstvisit) {
 			firstvisit = false;
 		} else {
-			elem.setParent(parent); // Set parent to current parent
+			((ASTNode)elem).setParent(parent); // Set parent to current parent
 		}
-		parent = elem; // Set as new parent
+		parent = (ASTNode)elem; // Set as new parent
 		return true; 
 	}
 

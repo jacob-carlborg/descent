@@ -7,7 +7,7 @@ public class ArrayUtil {
 	/** Creates a new array with the given length, and of the same type
 	 * as the given array. */
 	@SuppressWarnings("unchecked")
-	public static <T> T[] createNew(T[] array, int length) {
+	public static <T> T[] copyFrom(T[] array, int length) {
 		
         T[] copy = (T[]) Array.newInstance(array.getClass().getComponentType(), length);
     	System.arraycopy(array, 0, copy, 0, Math.min(array.length, length));
@@ -25,21 +25,21 @@ public class ArrayUtil {
 
 	/** Appends an element to array, creating a new array. */
 	public static <T> T[] append(T[] array, T element) {
-		T[] newArray = createNew(array, array.length + 1);
+		T[] newArray = copyFrom(array, array.length + 1);
 		newArray[array.length] = element;
 		return newArray;
 	}
 
 	/** Appends two arrays, creating a new array of the same runtime type as original. */
 	public static <T> T[] concat(T[] original, T[] second) {
-		T[] newArray = createNew(original, original.length + second.length);
-    	System.arraycopy(second, 0, original, original.length, second.length);
+		T[] newArray = copyFrom(original, original.length + second.length);
+    	System.arraycopy(second, 0, newArray, original.length, second.length);
 		return newArray;
 	}
 	
 	/** Removes the element at index ix from array, creating a new array. */
 	public static <T> T[] removeAt(T[] array, int ix) {
-		T[] newArray = createNew(array, array.length - 1);
+		T[] newArray = copyFrom(array, array.length - 1);
 		System.arraycopy(array, 0, newArray, 0, ix);
 		System.arraycopy(array, ix + 1, newArray, ix, array.length - ix - 1);	
 		return newArray;

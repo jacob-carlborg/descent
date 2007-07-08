@@ -1,6 +1,7 @@
 package descent.core.dom;
 
-import util.tree.ITreeNode;
+import util.tree.ITreeNodeGeneric;
+import util.tree.IVisitable;
 import descent.core.domX.IASTVisitor;
 import dtool.dom.ast.ASTNode;
 
@@ -8,7 +9,7 @@ import dtool.dom.ast.ASTNode;
 /**
  * Represents an element in the D model.
  */
-public interface IDescentElement extends ITreeNode<ASTNode, IASTVisitor> {
+public interface IDescentElement extends ITreeNodeGeneric<ASTNode>, IVisitable<IASTVisitor> {
 	
 	public interface ElementTypes {
 

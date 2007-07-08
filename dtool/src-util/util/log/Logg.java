@@ -5,12 +5,11 @@ public class Logg {
 
 	protected static boolean masterLoggEnabled = true;
 
-	public static Logg main = new Logg();
 	public static Logg nolog = new Logg(false);
-	public static Logg dtool = new Logg(); 
+	public static Logg main = new Logg();
+	public static Logg model = new Logg(); 
 	public static Logg codeScanner = new Logg(false); 
 	public static Logg builder = new Logg(false); 
-	public static Logg model = new Logg(); 
 
 	protected boolean enabled = true;
 	

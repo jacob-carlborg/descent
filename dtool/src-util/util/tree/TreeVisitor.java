@@ -7,23 +7,14 @@ import java.util.List;
 import util.ExceptionAdapter;
 
 /** Abstract visitor for a heterogenous tree with some utility methods. */
-public abstract class TreeVisitor<NODE extends TreeNode> implements ITreeVisitor<NODE> {
+public abstract class TreeVisitor {
 	
-
-	public void preVisit(NODE elem) {
-		// Default implementation: do nothing
-	}
-
-	public void postVisit(NODE elem) {
-		// Default implementation: do nothing
-	}
-
 	
 	protected boolean visitingAsSuper = false;
 	
 	/** Utility method that visits an element as if it were of it's base class. */
-	public boolean visitAsSuperType(NODE element, Class elemclass)  {
-		Class elemsuper = elemclass.getSuperclass();
+	public <T> boolean visitAsSuperType(ITreeNode element, Class<T> elemclass)  {
+		Class<? super T> elemsuper = elemclass.getSuperclass();
 		Method method;
 		try {
 			method = this.getClass().getMethod("visit", new Class[]{elemsuper});
@@ -41,16 +32,14 @@ public abstract class TreeVisitor<NODE extends TreeNode> implements ITreeVisitor
 	
 
 	
-	@SuppressWarnings("unchecked")
 	/** Accepts the visitor on node. If node is null, nothing happens. */
-	public void acceptElement(NODE node) {
+	public void acceptElement(IVisitable<TreeVisitor> node) {
 		if(node != null)
 			node.accept(this);
 	}
 	
 	/** Accepts the visitor on node. If node is null, nothing happens. */
-	@SuppressWarnings("unchecked")
-	public void acceptMany(NODE node) {
+	public void acceptMany(IVisitable<TreeVisitor> node) {
 		if (node != null) {
 			node.accept(this);
 		}
@@ -58,7 +47,7 @@ public abstract class TreeVisitor<NODE extends TreeNode> implements ITreeVisitor
 	
 	/** Accepts the visitor on the children. If children is null, nothing
 	 * happens. */
-	public void acceptMany(List<? extends NODE> nodes) {
+	public void acceptMany(List<? extends IVisitable<TreeVisitor>> nodes) {
 		if (nodes == null)
 			return;
 		
@@ -69,7 +58,7 @@ public abstract class TreeVisitor<NODE extends TreeNode> implements ITreeVisitor
 
 	/** Accepts the visitor on the children. If children is null, nothing
 	 * happens.	*/
-	public void acceptMany(NODE[] nodes) {
+	public void acceptMany(IVisitable<TreeVisitor>[] nodes) {
 		if (nodes == null)
 			return;
 		
@@ -79,21 +68,21 @@ public abstract class TreeVisitor<NODE extends TreeNode> implements ITreeVisitor
 	}
 	
 	/** Accepts the visitor on child. If child is null, nothing happens. */
-	@SuppressWarnings("unchecked")
-	public static void acceptChild(ITreeVisitor visitor, IVisitable child) {
+	//@SuppressWarnings("unchecked")
+	public static <T> void acceptChild(T visitor, IVisitable<T> child) {
 		if (child != null) {
 			child.accept(visitor);
 		}
 	}
 
 	/** Same as {@link #acceptChild(CommonASTVisitor, TreeNode) } */
-	public static void acceptChildren(ITreeVisitor visitor, IVisitable child) {
+	public static <T> void acceptChildren(T visitor, IVisitable<T> child) {
 		TreeVisitor.acceptChild(visitor, child);
 	}
 
 	/** Accepts the visitor on the children. If children is null, nothing
 	 * happens.	*/
-	public static void acceptChildren(ITreeVisitor visitor, IVisitable[] children) {
+	public static <T> void acceptChildren(T visitor, IVisitable<T>[] children) {
 		if (children == null)
 			return;
 		
@@ -104,7 +93,7 @@ public abstract class TreeVisitor<NODE extends TreeNode> implements ITreeVisitor
 
 	/** Accepts the visitor on the children. If children is null, nothing
 	 * happens. */
-	public static void acceptChildren(ITreeVisitor visitor, List<? extends IVisitable> children) {
+	public static <T> void acceptChildren(T visitor, List<? extends IVisitable<T>> children) {
 		if (children == null)
 			return;
 		

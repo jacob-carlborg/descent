@@ -3,6 +3,7 @@ package dtool.descentadapter;
 import java.util.ArrayList;
 import java.util.List;
 
+import descent.core.dom.IDescentElement;
 import dtool.dom.ast.ASTNode;
 import dtool.dom.ast.ASTNodeParentizer;
 import dtool.dom.ast.IASTNode;
@@ -35,8 +36,16 @@ public class DescentASTConverter {
 	}
 	
 	public static ASTNode[] convertMany(Object[] children) {
+		if(children == null) return null;
 		ASTNode[] rets = new ASTNode[children.length];
 		convertMany(children, rets);
+		return rets;
+	}
+	
+	public static ASTNode[] convertMany(List<? extends IDescentElement> children) {
+		if(children == null) return null;
+		ASTNode[] rets = new ASTNode[children.size()];
+		convertMany(children.toArray(), rets);
 		return rets;
 	}
 	

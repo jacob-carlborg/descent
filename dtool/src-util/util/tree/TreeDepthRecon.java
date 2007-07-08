@@ -10,27 +10,27 @@ public class TreeDepthRecon extends TreeWalker {
 	private boolean breakOnChildren = false;
 	
 	
-	public static int findMaxDepth(TreeNode elem) {
+	public static int findMaxDepth(ITreeNode elem) {
 		TreeDepthRecon tdr = new TreeDepthRecon();
 		tdr.traverse(elem);
 		return tdr.maxdepth;
 	}
 
-	public static int findMinLeafDepth(TreeNode elem) {
+	public static int findMinLeafDepth(ITreeNode elem) {
 		TreeDepthRecon tdr = new TreeDepthRecon();
 		tdr.traverse(elem);
 		return tdr.maxdepth;
 	}
 	
-	public static int findMaxDistance(TreeNode elem) {
+	public static int findMaxDistance(ITreeNode elem) {
 		return findMaxDepth(elem)-1;
 	}
 	
-	public static int findMinLeafDistance(TreeNode elem) {
+	public static int findMinLeafDistance(ITreeNode elem) {
 		return findMinLeafDepth(elem)-1;
 	}
 
-	public static boolean isLeaf(TreeNode elem) {
+	public static boolean isLeaf(ITreeNode elem) {
 		TreeDepthRecon tdr = new TreeDepthRecon();
 		tdr.breakOnChildren = true;
 		tdr.traverse(elem);
@@ -38,7 +38,7 @@ public class TreeDepthRecon extends TreeWalker {
 	}	
 	
 	
-	public boolean enterNode(TreeNode element) {
+	public boolean enterNode(ITreeNode element) {
 		depth++;
 
 		if(breakOnChildren && depth == 2) {
@@ -55,7 +55,7 @@ public class TreeDepthRecon extends TreeWalker {
 		
 	}
 	
-	public void leaveNode(TreeNode element) {
+	public void leaveNode(ITreeNode element) {
 		depth--;
 	}
 

@@ -2,13 +2,11 @@ package descent.internal.core.dom;
 
 import java.util.List;
 
-import util.tree.IElement;
 import util.tree.IVisitable;
 import util.tree.TreeVisitor;
-
 import descent.core.dom.IDeclaration;
-import descent.core.domX.IASTVisitor;
 import descent.core.domX.AbstractElement;
+import descent.core.domX.IASTVisitor;
 
 public class AlignDeclaration extends Dsymbol implements IDeclaration {
 	

@@ -2,14 +2,13 @@ package dtool.dom.references;
 
 import util.tree.TreeVisitor;
 import descent.internal.core.dom.Identifier;
-import dtool.dom.ast.ASTNode;
 import dtool.dom.ast.IASTNeoVisitor;
 import dtool.dom.definitions.DefUnit;
-import dtool.dom.definitions.Module;
 import dtool.refmodel.EntityResolver;
 import dtool.refmodel.IDefUnitReference;
 import dtool.refmodel.IEntQualified;
 import dtool.refmodel.IScopeNode;
+import dtool.refmodel.NodeUtil;
 
 public class EntModuleQualified extends Entity implements IEntQualified {
 
@@ -41,17 +40,8 @@ public class EntModuleQualified extends Entity implements IEntQualified {
 	}
 	
 	public DefUnit getTargetDefUnit() {
-		IScopeNode scope = getModuleElem().getMembersScope();
+		IScopeNode scope = NodeUtil.getModule(this).getMembersScope();
 		return EntityResolver.findDefUnitFromScope(scope, subent.name);
-	}
-	
-	public DefUnit getModuleElem() {
-		ASTNode elem = this;
-		// Search for module elem
-		while((elem instanceof Module) == false)
-			elem = elem.getParent();
-		
-		return ((Module)elem);
 	}
 
 }

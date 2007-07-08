@@ -42,7 +42,7 @@ public final class StringUtil {
 	/**
 	 * Prints a Collection with given separator String
 	 */	
-	public static String collToString(Collection coll, String sep) {
+	public static String collToString(Collection<?> coll, String sep) {
 		StringBuilder sb = new StringBuilder();
 		boolean first = true;
 		for(Object item : coll){

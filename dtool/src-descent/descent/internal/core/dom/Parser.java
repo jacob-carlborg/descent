@@ -179,6 +179,7 @@ public class Parser extends Lexer {
 		return decldefs;
 	}
 	
+	@SuppressWarnings("unchecked")
 	private List parseModule_LErr() {
 		while (token.value != TOKsemicolon && token.value != TOKeof)
 	    	nextToken();

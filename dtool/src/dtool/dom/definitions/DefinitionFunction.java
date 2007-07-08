@@ -78,7 +78,7 @@ public class DefinitionFunction extends Definition implements IScopeNode {
 	
 	@Override
 	public String toString() {
-		String str = null;
+		String str = "";
 		for(FunctionParameter param : params) {
 			str = str + param.type + ",";
 		}

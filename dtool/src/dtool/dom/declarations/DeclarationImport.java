@@ -68,21 +68,25 @@ public class DeclarationImport extends ASTNeoNode {
 	}
 	
 	public static abstract class ImportFragment extends ASTNeoNode {
-		protected EntIdentifier moduleName;
+		public EntIdentifier moduleEnt;
+		public EntIdentifier packageEnt;
 	}
 	
 	public static class ImportStatic extends ImportFragment {
 		
 		public ImportStatic(Import elem) {
 			convertNode(elem);
-			this.moduleName = new EntIdentifier(elem.qName.name);
+			int ix = elem.qName.name.lastIndexOf('.');
+			this.moduleEnt = new EntIdentifier(elem.qName.name.substring(ix+1));
+			this.packageEnt = new EntIdentifier(elem.qName.name.substring(0, ix));
 		}
 
 		@Override
 		public void accept0(IASTNeoVisitor visitor) {
 			boolean children = visitor.visit(this);
 			if (children) {
-				TreeVisitor.acceptChildren(visitor, moduleName);
+				TreeVisitor.acceptChildren(visitor, moduleEnt);
+				TreeVisitor.acceptChildren(visitor, packageEnt);
 			}
 			visitor.endVisit(this);
 		}
@@ -102,7 +106,8 @@ public class DeclarationImport extends ASTNeoNode {
 		public ImportAliasing(Import elem) {
 			convertNode(elem);
 			this.ident = new Symbol(elem.ident);
-			this.moduleName = new EntIdentifier(elem.qName.name);
+			this.moduleEnt = new EntIdentifier(elem.qName.name);
+
 		}
 
 		@Override
@@ -110,7 +115,7 @@ public class DeclarationImport extends ASTNeoNode {
 			boolean children = visitor.visit(this);
 			if (children) {
 				TreeVisitor.acceptChildren(visitor, ident);
-				TreeVisitor.acceptChildren(visitor, moduleName);
+				TreeVisitor.acceptChildren(visitor, moduleEnt);
 			}
 			visitor.endVisit(this);
 		}
@@ -122,7 +127,7 @@ public class DeclarationImport extends ASTNeoNode {
 		
 		public ImportSelective(Import selImport) {
 			convertNode(selImport);
-			this.moduleName = new EntIdentifier(selImport.qName.name);
+			this.moduleEnt = new EntIdentifier(selImport.qName.name);
 			
 			int importsSize = selImport.getSelectiveImports().length; 
 			this.aliases = new ImportSelectiveFragment[importsSize];
@@ -136,7 +141,7 @@ public class DeclarationImport extends ASTNeoNode {
 		public void accept0(IASTNeoVisitor visitor) {
 			boolean children = visitor.visit(this);
 			if (children) {
-				TreeVisitor.acceptChildren(visitor, moduleName);
+				TreeVisitor.acceptChildren(visitor, moduleEnt);
 				TreeVisitor.acceptChildren(visitor, aliases);
 			}
 			visitor.endVisit(this);

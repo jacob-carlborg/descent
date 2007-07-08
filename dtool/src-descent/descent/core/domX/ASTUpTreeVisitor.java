@@ -18,8 +18,17 @@ import dtool.dom.ast.ASTNode;
  * An abstract visitor class that that delegates each visit method, to the visit
  * method of the element's superclass 
  */
-public abstract class ASTUpTreeVisitor extends TreeVisitor<ASTNode> implements IASTVisitor {
+public abstract class ASTUpTreeVisitor extends TreeVisitor implements IASTVisitor {
 
+	
+	public void preVisit(ASTNode elem) {
+		// Default implementation: do nothing
+	}
+
+	public void postVisit(ASTNode elem) {
+		// Default implementation: do nothing
+	}
+	
 	/* ====================================================== */
 
 	/**

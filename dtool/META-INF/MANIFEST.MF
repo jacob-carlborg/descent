@@ -6,7 +6,6 @@ Bundle-Version: 0.0.2
 Bundle-ClassPath: DTool.jar,
  libs/antlr-3.0b5.jar,
  libs/ini4j.jar
-Bundle-Localization: plugin
 Export-Package: descent.core,
  descent.core.compiler,
  descent.core.dom,

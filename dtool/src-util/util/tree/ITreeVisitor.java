@@ -1,6 +1,6 @@
 package util.tree;
 
-public interface ITreeVisitor<NODE extends TreeNode> {
+public interface ITreeVisitor<NODE extends ITreeNode> {
 
 	/** Generic visit start. */
 	void preVisit(NODE elem);

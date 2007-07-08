@@ -25,8 +25,8 @@ public abstract class DElementVisitor {
 	}
 
 
-	public boolean visitAsSuperType(Object element, Class elemclass)  {
-		Class elemsuper = elemclass.getSuperclass();
+	public <T> boolean visitAsSuperType(Object element, Class<T> elemclass)  {
+		Class<? super T> elemsuper = elemclass.getSuperclass();
 		Method method;
 		try {
 			method = this.getClass().getMethod("visit", new Class[]{elemsuper});

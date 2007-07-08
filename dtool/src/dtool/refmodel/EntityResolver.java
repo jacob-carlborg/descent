@@ -6,11 +6,21 @@ import java.util.List;
 import util.tree.IElement;
 import dtool.dom.ast.ASTNode;
 import dtool.dom.declarations.DeclarationImport;
+import dtool.dom.declarations.DeclarationImport.ImportContent;
 import dtool.dom.declarations.DeclarationImport.ImportFragment;
 import dtool.dom.definitions.DefUnit;
+import dtool.dom.definitions.Module;
 import dtool.dom.definitions.DefinitionAggregate.BaseClass;
 
 public class EntityResolver {
+	
+	protected static IModuleResolver modResolver;
+
+	/** Initializes the EntityResolver with a ModuleResolver. */
+	public static void initializeEntityResolver(IModuleResolver modResolver) {
+		EntityResolver.modResolver = modResolver;
+	}
+
 	
 	/* -------- Node Helpers -------- */
 	
@@ -126,14 +136,28 @@ public class EntityResolver {
 				
 			DeclarationImport declImport = (DeclarationImport) elem;
 			for (ImportFragment impFrag : declImport.imports) {
-			
+				return findDefUnitInImportFragment(impFrag, name);
 			}
 
 			//declImport.imports
 		}
 		return null;
 	}
-	
+
+	private static DefUnit findDefUnitInImportFragment(ImportFragment impFrag, String name) {
+		if(impFrag instanceof ImportContent) {
+			ImportContent impMembers = (ImportContent) impFrag;
+			Module refModule = NodeUtil.getModule(impMembers);
+			String packageName = impMembers.packageEnt.name;
+			String moduleName = impMembers.moduleEnt.name;
+			Module targetModule;
+			targetModule = modResolver.findModule(refModule, packageName, moduleName);
+			if(targetModule != null)
+				return findDefUnitFromScope(targetModule, name);
+		}
+		return null;
+	}
+
 	/* --------  -------- */
 
 	

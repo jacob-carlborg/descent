@@ -15,8 +15,8 @@ import dtool.dom.ast.ASTNode;
  * @author BrunoM
  * XXX: This may be too much complexity for what it's worth
   */
-public abstract class TreeNode<NODE extends TreeNode<NODE,VISITOR>, VISITOR extends ITreeVisitor<NODE>>
-		implements ITreeNode<NODE, VISITOR> {
+public abstract class TreeNode<NODE extends TreeNode<NODE, VISITOR>, VISITOR extends ITreeVisitor<NODE>>
+		implements ITreeNodeGeneric<NODE>, IVisitable<VISITOR> {
 
 	/** AST node parent, null if the node is the tree root. */
 	public NODE parent = null;
