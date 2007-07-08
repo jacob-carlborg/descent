@@ -1,12 +1,11 @@
 package mmrnmhrm.ui.wizards;
 
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 import mmrnmhrm.core.model.DeeModelManager;
 import mmrnmhrm.core.model.DeeModelRoot;
 import mmrnmhrm.core.model.DeeProject;
 import mmrnmhrm.tests.CommonProjectTestClass;
-import mmrnmhrm.tests.Test_WizardDialog;
+import mmrnmhrm.tests.adapters.Test_WizardDialog;
 import mmrnmhrm.ui.DeePlugin;
 import mmrnmhrm.ui.wizards.projconfig.ProjectConfigBlockTest;
 
@@ -81,7 +80,7 @@ public class DeeProjectWizardTest extends CommonProjectTestClass {
 	
 	@Test
 	public void test_P1Validation() throws Throwable {
-		wizard.fFirstPage.fNameGroup.setName(EXISTINGPROJNAME);
+		wizard.fFirstPage.fNameGroup.setName(SAMPLEPROJNAME);
 		assertFalse(wizard.canFinish());
 
 		simulatePressCancel();

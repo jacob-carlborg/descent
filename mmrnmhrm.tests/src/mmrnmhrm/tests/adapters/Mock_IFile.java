@@ -1,4 +1,4 @@
-package mmrnmhrm.tests;
+package mmrnmhrm.tests.adapters;
 
 import java.io.InputStream;
 import java.io.Reader;
@@ -18,6 +18,7 @@ import org.eclipse.core.resources.ResourceAttributes;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.QualifiedName;
 import org.eclipse.core.runtime.content.IContentDescription;
 import org.eclipse.core.runtime.jobs.ISchedulingRule;
@@ -244,8 +245,7 @@ public class Mock_IFile implements IFile {
 	}
 
 	public IPath getLocation() {
-
-		return null;
+		return new Path("NOEXIST/NOEXIST");
 	}
 
 	public URI getLocationURI() {
@@ -428,6 +428,7 @@ public class Mock_IFile implements IFile {
 		
 	}
 
+	@SuppressWarnings("unchecked")
 	public Object getAdapter(Class adapter) {
 
 		return null;
@@ -441,6 +442,11 @@ public class Mock_IFile implements IFile {
 	public boolean isConflicting(ISchedulingRule rule) {
 
 		return false;
+	}
+
+	public int findMaxProblemSeverity(String type, boolean includeSubtypes,
+			int depth) throws CoreException {
+		return 0;
 	}
 
 }

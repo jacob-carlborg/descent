@@ -1,4 +1,4 @@
-package mmrnmhrm.tests;
+package mmrnmhrm.tests.adapters;
 
 import java.util.Map;
 
@@ -33,6 +33,7 @@ public class Mock_IMarker implements IMarker {
 		return false;
 	}
 
+	@SuppressWarnings("unchecked")
 	public Map getAttributes() throws CoreException {
 
 		return null;
@@ -86,6 +87,7 @@ public class Mock_IMarker implements IMarker {
 
 	}
 
+	@SuppressWarnings("unchecked")
 	public void setAttributes(Map attributes) throws CoreException {
 
 
@@ -97,6 +99,7 @@ public class Mock_IMarker implements IMarker {
 
 	}
 
+	@SuppressWarnings("unchecked")
 	public Object getAdapter(Class adapter) {
 
 		return null;

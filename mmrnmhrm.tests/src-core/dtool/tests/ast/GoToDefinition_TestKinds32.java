@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
 
+import org.eclipse.core.runtime.CoreException;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -34,7 +35,7 @@ public class GoToDefinition_TestKinds32 extends GoToDefinition_CommonTest  {
 		prepClass(testfile);
 	}
 	
-	public GoToDefinition_TestKinds32(int defOffset, int refOffset) throws IOException {
+	public GoToDefinition_TestKinds32(int defOffset, int refOffset) throws IOException, CoreException {
 		super(defOffset, refOffset, testfile);
 	}
 	

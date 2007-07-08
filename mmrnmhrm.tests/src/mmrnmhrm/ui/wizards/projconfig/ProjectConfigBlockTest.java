@@ -2,10 +2,10 @@ package mmrnmhrm.ui.wizards.projconfig;
 
 
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 import mmrnmhrm.core.model.DeeProject;
 import mmrnmhrm.core.model.DeeSourceFolder;
 import mmrnmhrm.tests.CommonProjectTestClass;
+import mmrnmhrm.tests.TestUtils;
 
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
@@ -13,6 +13,8 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.Path;
 import org.junit.After;
 import org.junit.Before;
+
+import util.ArrayUtil;
 
 public class ProjectConfigBlockTest extends CommonProjectTestClass {
 	
@@ -49,7 +51,7 @@ public class ProjectConfigBlockTest extends CommonProjectTestClass {
 
 
 	public void doChangeSet1() throws CoreException {
-		createRecursive(containerOutput, false);
+		TestUtils.createRecursive(containerOutput, false);
 		fProjectConfigBlock.fSourceFoldersPage.fOutputLocationField.setText(containerOutput.getProjectRelativePath().toOSString());
 
 		fProjectConfigBlock.fSourceFoldersPage.addEntry(containerSrc1);
@@ -58,13 +60,19 @@ public class ProjectConfigBlockTest extends CommonProjectTestClass {
 	public void assertChangeSet1Applied() {
 		assertTrue(deeProject.getOutputDir().getProjectRelativePath().equals(containerOutput.getProjectRelativePath()));
 		assertTrue(deeProject.getOutputDir().equals(containerOutput));
-		assertTrue(deeProject.getSourceFolders().contains(new DeeSourceFolder(containerSrc1, deeProject)));
+		
+		DeeSourceFolder obj = new DeeSourceFolder(containerSrc1, deeProject);
+		assertTrue(ArrayUtil.contains(deeProject.getSourceFolders(), obj));
+		assertTrue(deeProject.getSourceRoot(obj.getUnderlyingResource()) != null);
 	}
 	
 	public void assertChangeSet1NotApplied() {
 		assertFalse(deeProject.getOutputDir().getProjectRelativePath().equals(containerOutput.getProjectRelativePath()));
 		assertFalse(deeProject.getOutputDir().equals(containerOutput));
-		assertFalse(deeProject.getSourceFolders().contains(new DeeSourceFolder(containerSrc1, deeProject)));
+
+		DeeSourceFolder obj = new DeeSourceFolder(containerSrc1, deeProject);
+		assertFalse(ArrayUtil.contains(deeProject.getSourceFolders(), obj));
+		assertFalse(deeProject.getSourceRoot(obj.getUnderlyingResource()) != null);
 	}
 
 }

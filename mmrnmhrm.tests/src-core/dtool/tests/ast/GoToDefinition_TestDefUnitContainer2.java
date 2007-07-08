@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
 
+import org.eclipse.core.runtime.CoreException;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -39,7 +40,7 @@ public class GoToDefinition_TestDefUnitContainer2 extends GoToDefinition_CommonT
 		prepClass(testfile);
 	}
 	
-	public GoToDefinition_TestDefUnitContainer2(int defOffset, int refOffset) throws IOException {
+	public GoToDefinition_TestDefUnitContainer2(int defOffset, int refOffset) throws IOException, CoreException {
 		super(defOffset, refOffset, testfile);
 	}
 	

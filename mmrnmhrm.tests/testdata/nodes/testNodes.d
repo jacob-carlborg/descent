@@ -106,3 +106,8 @@ static if(true) {
 	int num;
 }
 
+static if(true) { 
+	String str;
+}
+
+

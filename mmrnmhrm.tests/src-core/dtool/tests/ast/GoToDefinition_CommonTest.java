@@ -2,8 +2,12 @@ package dtool.tests.ast;
 
 import java.io.IOException;
 
+import org.eclipse.core.runtime.CoreException;
+
 import mmrnmhrm.core.model.CompilationUnit;
 import mmrnmhrm.tests.BaseTestClass;
+import mmrnmhrm.tests.CoreTestUtils;
+import mmrnmhrm.tests.TestUtils;
 import dtool.dom.ast.ASTElementFinder;
 import dtool.dom.definitions.DefUnit;
 import dtool.dom.definitions.Module;
@@ -27,11 +31,11 @@ public abstract class GoToDefinition_CommonTest extends BaseTestClass {
 	int defOffset; 
     int refOffset;
 	
-	public GoToDefinition_CommonTest(int defOffset, int refOffset, String testfile) throws IOException {
+	public GoToDefinition_CommonTest(int defOffset, int refOffset, String testfile) throws IOException, CoreException {
 		this.defOffset = defOffset;
 		this.refOffset = refOffset;
 		
-		cunit = testCUparsing(getTestDataFileString(testfile));
+		cunit = CoreTestUtils.testCUparsing(TestUtils.readTestDataFile(testfile));
 		//System.out.println("==== Source length: "+cunit.source.length()+" ====");
 		module = cunit.getNeoModule();	
 	}
@@ -40,8 +44,8 @@ public abstract class GoToDefinition_CommonTest extends BaseTestClass {
 
 	protected void assertGoToReF(int refOffset, int defOffset) {
 		counter++;
-		System.out.print("Find ref case #"+counter+": "+refOffset+" :");
-		System.out.println(cunit.source.substring(refOffset).split("\\s")[0]);
+		System.out.print("Find ref case #"+counter+": "+refOffset+": ");
+		System.out.println(cunit.getSource().substring(refOffset).split("\\s")[0]);
 		Entity ent = (Entity) ASTElementFinder.findElement(module, refOffset);
 		DefUnit defunit = ent.getTargetDefUnit();
 		

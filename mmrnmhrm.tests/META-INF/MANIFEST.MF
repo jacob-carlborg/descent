@@ -4,7 +4,7 @@ Bundle-Name: Mmrnmhrm Tests
 Bundle-SymbolicName: mmrnmhrm.tests
 Bundle-Version: 0.0.2
 Fragment-Host: mmrnmhrm.ui;bundle-version="0.0.3"
-Bundle-Localization: plugin
 Require-Bundle: org.junit4
 Export-Package: dtool.tests.ast.converter
 Bundle-ClassPath: .
+Bundle-RequiredExecutionEnvironment: J2SE-1.5
