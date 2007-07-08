@@ -5,8 +5,10 @@ import java.util.ArrayList;
 import mmrnmhrm.core.DeeCore;
 import mmrnmhrm.core.IElementChangedListener;
 
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
 
 /**
  * The Dee Model. It's elements are not handle-based, nor cached like JDT.
@@ -86,6 +88,49 @@ public class DeeModelManager {
 	public static DeeProject createDeeProject(IProject project) throws CoreException {
 		return getRoot().createDeeProject(project);
 	}
-	
+
+	/** Returns the Compilation for the given file. If the file is not part
+	 * of a source root, returns an out of model Compilation Unit.*/
+	public static CompilationUnit getCompilationUnit(IFile file) {
+		CompilationUnit cunit = findMember(file);
+		return cunit;
+	}
+
+	private static CompilationUnit findMember(IFile file) {
+		IPath filepath = file.getProjectRelativePath();
+		DeeProject deeproj = getLangProject(file.getProject());
+		if(deeproj == null) return null;
+
+		IDeeSourceRoot srcRoot = null;
+		for (IDeeSourceRoot element : deeproj.getSourceRoots()) {
+			IPath path = element.getUnderlyingResource().getProjectRelativePath();
+			if(path.isPrefixOf(filepath)) {
+				srcRoot = element;
+				break;
+			}
+		}
+		if(srcRoot == null) return null;
+
+		PackageFragment pkgFrag = null;
+		for (PackageFragment element : srcRoot.getPackageFragments()) {
+			IPath path = element.getUnderlyingResource().getProjectRelativePath();
+			if(path.isPrefixOf(filepath)) {
+				pkgFrag = element;
+				break;
+			}
+		}
+		if(pkgFrag == null) return null;
+
+		
+		CompilationUnit cunit = null;
+		for (CompilationUnit element : pkgFrag.getCompilationUnits()) {
+			IPath path = element.getUnderlyingResource().getProjectRelativePath();
+			if(path.isPrefixOf(filepath)) {
+				cunit = element;
+				break;
+			}
+		}
+		return cunit;
+	}
 
 }

@@ -1,6 +1,7 @@
 package mmrnmhrm.core.model.lang;
 
 import util.ExceptionAdapter;
+import util.tree.IElement;
 
 
 
@@ -20,8 +21,7 @@ public abstract class LangContainerElement extends LangElement {
 	protected ILangElement[] children;
 
 
-
-	public ILangElement[] getChildren() {
+	public IElement[] getChildren() {
 		return this.children;
 	}
 	

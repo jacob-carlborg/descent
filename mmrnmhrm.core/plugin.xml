@@ -35,7 +35,7 @@
             base-type="org.eclipse.core.runtime.text"
             default-charset="UTF-8"
             file-extensions="dm, d"
-            id="mmrnmhrm.core.dmsource"
+            id="mmrnmhrm.core.content.dsource"
             name="D Source (Mmrnmhrm)"
             priority="normal"/>
    </extension>

@@ -5,6 +5,7 @@ import mmrnmhrm.core.model.lang.ILangElement;
 import mmrnmhrm.core.model.lang.LangContainerElement;
 
 import org.eclipse.core.resources.IFolder;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 
@@ -41,9 +42,23 @@ public class DeeSourceLib extends LangContainerElement implements IDeeSourceRoot
 	public String toString() {
 		return getElementName();
 	}
+	
+	public IResource getUnderlyingResource() {
+		return folder;
+	}
 
-	public void refreshElementChildren() throws CoreException {
+	public void updateElementRecursive() throws CoreException {
 		// TODO Auto-generated method stub
+	}
+
+
+	public void updateElement() throws CoreException {
+		// TODO Auto-generated method stub
+	}
+
+	public PackageFragment[] getPackageFragments() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

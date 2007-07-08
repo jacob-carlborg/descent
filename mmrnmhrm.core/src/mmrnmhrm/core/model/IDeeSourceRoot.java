@@ -9,6 +9,8 @@ public interface IDeeSourceRoot extends IDeeElement, ILangSourceRoot {
 		int DEE_LIB_FOLDER = 2;
 	}
 
+	public PackageFragment[] getPackageFragments();
+	
 	/** Returns a identifying the kind of Source Root XXX refactor? */
 	String getSourceRootKindString();
 

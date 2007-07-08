@@ -4,6 +4,8 @@ import mmrnmhrm.core.model.DeeModelManager;
 
 import org.eclipse.core.runtime.CoreException;
 
+import dtool.refmodel.EntityResolver;
+
 
 public class DeeCore extends LangCore {
 
@@ -21,5 +23,6 @@ public class DeeCore extends LangCore {
 	@Override
 	public void initPlugin() throws CoreException {
 		DeeModelManager.initDeeModel();
+		EntityResolver.initializeEntityResolver(DeeModelManager.getRoot());
 	}
 }

@@ -8,32 +8,30 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
 
-public class PackageFragment extends LangContainerElement {
+public class PackageFragment extends LangContainerElement implements IDeeElement {
 
 	IFolder packageFolder;
 	
-	public PackageFragment(LangContainerElement parent, IFolder myfolder) throws CoreException {
+	public PackageFragment(DeeSourceFolder parent, IFolder myfolder) {
 		super(parent);
 		packageFolder = myfolder;
 	}
 
-	protected void refreshElementChildren() throws CoreException {
-		for(IResource resource : packageFolder.members()) {
-			if(resource.getType() == IResource.FILE) {
-				IFile myfolder = (IFile) resource;
-				addCompilationUnit(new CompilationUnit(this, myfolder));
-			}
-		}
+	public IResource getUnderlyingResource() {
+		return packageFolder;
 	}
-
-	protected void addCompilationUnit(CompilationUnit unit) {
-		addChild(unit);
-		// dont refresh
+	
+	public IDeeSourceRoot getParent() {
+		return (IDeeSourceRoot) parent;
 	}
-
+	
 	public String getElementName() {
-		return this.packageFolder.getProjectRelativePath().toString();
+		IPath packpath = packageFolder.getProjectRelativePath();
+		IPath parentpath = getParent().getProjectRelativePath();
+		IPath newpath = packpath.removeFirstSegments(packpath.matchingFirstSegments(parentpath));
+		return newpath.toString().replace('/', '.');
 	}
 
 	public String toString() {
@@ -47,6 +45,26 @@ public class PackageFragment extends LangContainerElement {
 
 	public int getElementType() {
 		return ELangElementTypes.PACKAGE_FRAGMENT;
+	}
+
+	public void updateElement() throws CoreException {
+		for(IResource resource : packageFolder.members()) {
+			if(resource.getType() == IResource.FILE) {
+				IFile myfolder = (IFile) resource;
+				addChild(new CompilationUnit(this, myfolder));
+			}
+		}
+	}
+
+	public void updateElementRecursive() throws CoreException {
+		updateElement();
+		for(CompilationUnit element : getCompilationUnits()) {
+			element.updateElementRecursive();
+		}
+	}
+
+	public CompilationUnit[] getCompilationUnits() {
+		return (CompilationUnit[]) getChildren();
 	}
 
 }

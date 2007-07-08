@@ -30,7 +30,7 @@ import util.log.Logg;
 /**
  * Class for a D project. 
  */
-public class DeeProject extends LangProject {
+public class DeeProject extends LangProject implements IDeeElement {
 
 	private static final String CFG_FILE_NAME = ".deeproject";
 	private static final String CFG_FILE_SECTION = "buildpath";
@@ -57,6 +57,11 @@ public class DeeProject extends LangProject {
 	public void setOutputDir(IFolder outputDir) {
 		this.outputDir = outputDir;
 	}
+	
+	public IResource getUnderlyingResource() {
+		return project;
+	}
+
 
 	/* -------------- ------------------------  -------------- */
 
@@ -69,7 +74,7 @@ public class DeeProject extends LangProject {
 	
 	public void addSourceRoot(IDeeSourceRoot entry) throws CoreException {
 		addChild(entry);
-		entry.refreshElementChildren();
+		entry.updateElementRecursive();
 	}
 	
 	public void removeSourceRoot(IDeeSourceRoot entry) throws CoreException {
@@ -77,9 +82,12 @@ public class DeeProject extends LangProject {
 	}
 	
 
-	public IDeeSourceRoot getRoot(IFolder folder) {
-		String name = folder.getProjectRelativePath().toString();
-		return (IDeeSourceRoot) getLangElement(name);
+	public IDeeSourceRoot getSourceRoot(IFolder folder) {
+		for (IDeeSourceRoot element : getSourceRoots()) {
+			if(element.getUnderlyingResource().equals(folder))
+				return element;
+		}
+		return null;
 	}
 
 	
@@ -88,8 +96,8 @@ public class DeeProject extends LangProject {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public ArrayList<DeeSourceFolder> getSourceFolders() {
-		return (ArrayList<DeeSourceFolder>) getChildrenOfType(ELangElementTypes.SOURCEFOLDER);
+	public DeeSourceFolder[] getSourceFolders() {
+		return getChildrenOfType(ELangElementTypes.SOURCEFOLDER).toArray(new DeeSourceFolder[0]);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -97,9 +105,15 @@ public class DeeProject extends LangProject {
 		return (ArrayList<DeeSourceLib>) getChildrenOfType(ELangElementTypes.SOURCELIB);
 	}
 	
-	public void refreshElementChildren() throws CoreException {
+	public void updateElement() throws CoreException {
+		// nothing to do, unless maybe reload config file?
+		//loadProjectConfigFile();
+	}
+	
+	public void updateElementRecursive() throws CoreException {
+		updateElement();
 		for(IDeeSourceRoot sourceRoot : getSourceRoots()) {
-			sourceRoot.refreshElementChildren();
+			sourceRoot.updateElementRecursive();
 		}
 	}
 	
@@ -176,6 +190,8 @@ public class DeeProject extends LangProject {
 			// Proceed as if it did exist
 			section = ini.add(CFG_FILE_SECTION);
 		}
+		
+		setChildren(newChildrenArray(0)); // reset children
 		
 		for(String key : section.keySet()) {
 			if(key.startsWith("src")) {

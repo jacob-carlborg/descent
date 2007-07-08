@@ -13,7 +13,6 @@ public interface ILangElement extends IElement {
 	String getElementName();
 
 	/** Returns the children of this element. */
-	public ILangElement[] getChildren();
+	//public ILangElement[] getChildren();
 
-	// TODO: more methods?
 }

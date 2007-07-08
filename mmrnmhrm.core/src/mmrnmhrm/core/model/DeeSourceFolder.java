@@ -18,24 +18,35 @@ public class DeeSourceFolder extends LangSourceFolder implements IDeeSourceRoot 
 		return new PackageFragment[size]; // no children for now
 	}
 
+	@Override
+	public String toString() {
+		return folder.getProjectRelativePath().toString();
+	}
+
+	public IFolder getUnderlyingResource() {
+		return folder;
+	}
 	
-	public void refreshElementChildren() throws CoreException {
-		for(IResource resource : srcfolder.members()) {
+	public PackageFragment[] getPackageFragments() {
+		return (PackageFragment[]) getChildren();
+	}
+	
+	public void updateElement() throws CoreException {
+		// add the empty package
+		addChild(new PackageFragment(this, this.folder));
+		for(IResource resource : folder.members()) {
 			if(resource.getType() == IResource.FOLDER) {
 				IFolder myfolder = (IFolder) resource;
-				addPackageFragment(new PackageFragment(this, myfolder));
+				addChild(new PackageFragment(this, myfolder));
 			}
 		}
 	}
 	
-	private void addPackageFragment(PackageFragment fragment) throws CoreException {
-		addChild(fragment);
-		fragment.refreshElementChildren();
+	public void updateElementRecursive() throws CoreException {
+		updateElement();
+		for(PackageFragment element : getPackageFragments()) {
+			element.updateElementRecursive();
+		}
 	}
-
-	@Override
-	public String toString() {
-		return srcfolder.getProjectRelativePath().toString();
-	}
-
+	
 }

@@ -1,15 +1,21 @@
 package mmrnmhrm.core.model;
 
 import mmrnmhrm.core.model.lang.ELangElementTypes;
-import mmrnmhrm.core.model.lang.ILangElement;
 import mmrnmhrm.core.model.lang.LangElement;
 
+import org.eclipse.core.filebuffers.FileBuffers;
+import org.eclipse.core.filebuffers.ITextFileBuffer;
+import org.eclipse.core.filebuffers.ITextFileBufferManager;
+import org.eclipse.core.filebuffers.LocationKind;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
+import org.eclipse.jface.text.IDocument;
 
 import util.ExceptionAdapter;
+import util.tree.IElement;
 import descent.core.compiler.IProblem;
 import descent.internal.core.dom.ParserFacade;
 import dtool.descentadapter.DescentASTConverter;
@@ -23,7 +29,7 @@ import dtool.modelinterface.IDTool_DeeCompilationUnit;
 public class CompilationUnit extends LangElement implements IDTool_DeeCompilationUnit, IDeeElement {
 
 	public IFile file;
-	public String source; // Document??
+	private IDocument document;
 	
 	private descent.internal.core.dom.Module oldModule;
 	private Module module;
@@ -33,16 +39,19 @@ public class CompilationUnit extends LangElement implements IDTool_DeeCompilatio
 	public int parseStatus;
 	
 	
-	public CompilationUnit(PackageFragment parent, IFile file) {
-		super(parent);
-		this.file = file;
-		//TODO: update source here?
-	}
-	
 	public CompilationUnit(IFile file) {
 		this(null, file);
 	}
-	
+
+	public CompilationUnit(PackageFragment parent, IFile file) {
+		super(parent);
+		this.file = file;
+	}
+
+	public IResource getUnderlyingResource() {
+		return file;
+	}
+
 
 	public String getElementName() {
 		return file.getName();
@@ -52,26 +61,24 @@ public class CompilationUnit extends LangElement implements IDTool_DeeCompilatio
 		return ELangElementTypes.COMPILATION_UNIT;
 	}
 	
+	public IDocument getDocument() {
+		return document;
+	}
+	
+	public String getSource() {
+		return document.get();
+	}
+	
 	/** Returns the D project of this compilation unit, null if none. */
 	public DeeProject getProject() {
 		return DeeModelManager.getLangProject(file.getProject().getName());
 	}
 	
-	public void refreshElementChildren() throws CoreException {
-		parseAST();
+	public IElement[] getChildren() {
+		return getModule().getChildren();
 	}
+	
 
-	public ILangElement[] getChildren() {
-		return new ILangElement[0];
-	}
-	
-	
-	public void setSource(String source) {
-		this.source = source;
-		astUpdated = false;
-	}
-
-	
 	public descent.internal.core.dom.Module getOldModule() {
 		return oldModule;
 	}
@@ -85,14 +92,50 @@ public class CompilationUnit extends LangElement implements IDTool_DeeCompilatio
 			return oldModule;
 		return module;
 	}
+	
+	public boolean isOutOfModel() {
+		return parent == null;
+	}
+
+
+	public void updateElement() {
+		openBuffer();
+	}
+
+	
+	private void openBuffer()  {
+		if(document != null)
+			return;
+		
+		ITextFileBufferManager manager = FileBuffers.getTextFileBufferManager();
+		IPath loc = file.getFullPath();
+		LocationKind fLocationKind = LocationKind.IFILE;
+
+		ITextFileBuffer textFileBuffer;
+		try {
+			manager.connect(loc, fLocationKind, null);
+			//manager.connect(loc, fLocationKind, new NullProgressMonitor());
+			textFileBuffer = manager.getTextFileBuffer(loc, fLocationKind);
+			document = textFileBuffer.getDocument();
+		} catch (CoreException ce) {
+			//fStatus= x.getStatus();
+			document = manager.createEmptyDocument(loc, fLocationKind);
+		}		
+	}
+	
+	public void updateElementRecursive() throws CoreException {
+		updateElement();
+		reconcile();
+	}
 
 	public boolean hasErrors() {
 		return problems.length > 0;
 	}
 	
-	public void parseAST() {
-		if(astUpdated)
-			return;
+	/**
+	 *  Updates this CompilationUnit's AST according to the underlying text. 
+	 */
+	public void reconcile() {
 		astUpdated = true;
 		module = null;
 		
@@ -106,7 +149,7 @@ public class CompilationUnit extends LangElement implements IDTool_DeeCompilatio
 		}
 
 		try {
-			adaptAST();
+			convertAST();
 			parseStatus = EModelStatus.OK;
 		} catch (UnsupportedOperationException uoe) {
 			parseStatus = EModelStatus.PARSER_AST_UNSUPPORTED_NODE;
@@ -141,12 +184,12 @@ public class CompilationUnit extends LangElement implements IDTool_DeeCompilatio
 		this.module = null;
 		this.problems = null;
 		ParserFacade parser = new descent.internal.core.dom.ParserFacade();
-		this.oldModule = parser.parseCompilationUnit(source).mod;
+		this.oldModule = parser.parseCompilationUnit(getSource()).mod;
 		this.problems = getOldModule().getProblems();
 	}
 	
 	
-	private void adaptAST() {
+	private void convertAST() {
 		DescentASTConverter domadapter = new DescentASTConverter();
 		Module neoModule = domadapter.convertModule(oldModule);
 		neoModule.cunit = this;
@@ -165,7 +208,6 @@ public class CompilationUnit extends LangElement implements IDTool_DeeCompilatio
 		} else
 			return "Status OK";
 	}
-
 
 
 

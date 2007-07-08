@@ -3,6 +3,7 @@ package mmrnmhrm.core.model.lang;
 import java.util.ArrayList;
 
 import util.Assert;
+import util.tree.IElement;
 
 
 /**
@@ -11,7 +12,8 @@ import util.Assert;
  */
 public abstract class LangElement extends LangElementInfo implements ILangElement {
 	
-	protected LangElement parent;
+	protected ILangElement parent;
+	protected boolean opened = false;
 	
 	public LangElement(LangElement parent) {
 		this.parent = parent;
@@ -30,6 +32,8 @@ public abstract class LangElement extends LangElementInfo implements ILangElemen
 	 * as the given handle. By default, two handles represent the same
 	 * element if they are identical or if they represent the same type
 	 * of element, have equal names, parents, and occurrence counts.
+	 * 
+	 * XXX: occurrence counts ?
 	 */
 	public boolean equals(Object obj) {
 		
@@ -63,8 +67,8 @@ public abstract class LangElement extends LangElementInfo implements ILangElemen
 	/** Returns a collection of (immediate) children of this node of the
 	 * specified element type.
 	 */
-	public ArrayList getChildrenOfType(int type) {
-		ILangElement[] children = getChildren();
+	public ArrayList<?> getChildrenOfType(int type) {
+		IElement[] children = getChildren();
 		int size = children.length;
 		ArrayList<ILangElement> list = new ArrayList<ILangElement>(size);
 		for (int i = 0; i < size; ++i) {
@@ -76,15 +80,4 @@ public abstract class LangElement extends LangElementInfo implements ILangElemen
 		return list;
 	}
 	
-	/**
-	 * Gets a lang element by its name. If there are elements with the same
-	 * name, returns the first one.
-	 */
-	public ILangElement getLangElement(String name) {
-		for (ILangElement element : getChildren()) {
-			if(element.getElementName().equals(name))
-				return element;
-		}
-		return null;
-	}
 }
