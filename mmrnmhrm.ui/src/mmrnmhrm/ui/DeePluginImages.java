@@ -19,10 +19,12 @@ public class DeePluginImages {
 	private static ImageRegistry registry = DeePlugin.getInstance().getImageRegistry();
 
 	
+	public static final String ELEM_MODULE = createImage_Obj("ent_module.gif");
 	public static final String ELEM_SOURCEFOLDER = createImage_Obj("dee_packagefolder.gif");
 	public static final String ELEM_LIBRARY = createImage_Obj("dee_library.gif");
 	public static final String ELEM_PACKAGE = createImage_Obj("dee_package.gif");
-	public static final String ELEM_MODULE = createImage_Obj("ent_module.gif");
+	public static final String ELEM_FILE = createImage_Obj("dee_file.gif");
+	public static final String ELEM_FILEOUT = createImage_Obj("dee_fileout.gif");
 
 	
 	public static final String ENT_ALIAS = createImage_Obj("ent_alias.gif");

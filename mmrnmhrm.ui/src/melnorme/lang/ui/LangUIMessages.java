@@ -14,7 +14,7 @@ import org.eclipse.osgi.util.NLS;
 
 public final class LangUIMessages extends NLS {
 
-	private static final String BUNDLE_NAME= "mmrnmhrm.ui.LangUIMessages"; //$NON-NLS-1$
+	private static final String BUNDLE_NAME= "melnorme.lang.ui.LangUIMessages"; //$NON-NLS-1$
 
 	private LangUIMessages() {
 		// Do not instantiate

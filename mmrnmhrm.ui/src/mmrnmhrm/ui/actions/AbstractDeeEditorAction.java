@@ -10,11 +10,11 @@ import org.eclipse.ui.IEditorPart;
 
 import util.Assert;
 
-public abstract class DeeEditorAction extends Action implements IEditorActionDelegate {
+public abstract class AbstractDeeEditorAction extends Action implements IEditorActionDelegate {
 
 	public DeeEditor deeEditor;
 	
-	public DeeEditorAction(String text) {
+	public AbstractDeeEditorAction(String text) {
 		super(text);
 	}
 

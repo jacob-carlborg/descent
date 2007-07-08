@@ -7,7 +7,7 @@ import org.eclipse.jface.text.rules.Token;
 /**
  * A D partitioner that allways returns the same partition type.
  */
-public class DeePartitionScanner_Fast implements IPartitionTokenScanner{
+public class DeePartitionScanner implements IPartitionTokenScanner{
 
 	private IToken deeDefaultPartitionType;
 	//private IDocument document;
@@ -16,9 +16,9 @@ public class DeePartitionScanner_Fast implements IPartitionTokenScanner{
 	private int offset;
 	private int lastoffset;
 
-	public DeePartitionScanner_Fast() {
+	public DeePartitionScanner() {
 
-		deeDefaultPartitionType = new Token(EDeePartitions.DEE_CODE);
+		deeDefaultPartitionType = new Token(IDeePartitions.DEE_CODE);
 	}
 	
 

@@ -25,7 +25,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.dialogs.ISelectionStatusValidator;
 import org.eclipse.ui.model.WorkbenchContentProvider;
 import org.eclipse.ui.model.WorkbenchLabelProvider;
-import org.eclipse.ui.views.navigator.ResourceSorter;
+import org.eclipse.ui.views.navigator.ResourceComparator;
 
 import util.ListUtil;
 
@@ -119,7 +119,7 @@ public abstract class AbstractConfigPage {
 			
 			FolderSelectionDialog dialog;
 			dialog = new FolderSelectionDialog(getShell(), lp, cp);
-			dialog.setSorter(new ResourceSorter(ResourceSorter.NAME));
+			dialog.setComparator(new ResourceComparator(ResourceComparator.NAME));
 			dialog.setInput(fWorkspaceRoot);
 			return dialog;
 		}

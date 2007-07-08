@@ -1,5 +1,7 @@
 package mmrnmhrm.ui.wizards.projconfig;
 
+import java.util.Arrays;
+
 import melnorme.util.ui.fields.FieldUtil;
 import melnorme.util.ui.fields.IElementCommand;
 import melnorme.util.ui.fields.TreeListEditorField;
@@ -53,7 +55,7 @@ public class SourceFoldersConfigPage extends AbstractConfigPage {
 
 
 	protected void updateView() {
-		fSrcFoldersList.setElements(fDeeProject.getSourceFolders());
+		fSrcFoldersList.setElements(Arrays.asList(fDeeProject.getSourceFolders()));
 		// TODO MAKE TESTCASE FOR THIS
 		fOutputLocationPath = fDeeProject.getOutputDir().getProjectRelativePath();
 		fOutputLocationField.setTextWithoutUpdate(fOutputLocationPath.toString());

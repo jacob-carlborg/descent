@@ -1,6 +1,7 @@
 package melnorme.lang.ui;
 
 
+
 import org.eclipse.core.resources.IProject;
 import org.eclipse.jface.text.TextSelection;
 import org.eclipse.jface.viewers.ISelection;
@@ -12,12 +13,16 @@ import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.texteditor.AbstractTextEditor;
+import org.eclipse.ui.texteditor.ITextEditor;
 
 import dtool.dom.ast.ASTNode;
 
 public class EditorUtil {
 	
 	// ------------ used to editor ------------ 
+	public static TextSelection getSelection(ITextEditor editor) {
+		return (TextSelection) editor.getSelectionProvider().getSelection();
+	}
 	
 	public static void setSelection(AbstractTextEditor textEditor, ASTNode node) {
 		textEditor.getSelectionProvider().setSelection(
@@ -73,4 +78,5 @@ public class EditorUtil {
 		} 
 		return project;
 	}
+
 }

@@ -18,7 +18,6 @@ import melnorme.lang.ui.ExceptionHandler;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.jobs.ISchedulingRule;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -104,7 +103,7 @@ public abstract class NewElementWizard extends Wizard implements INewWizard {
 	 * Presents a UI dialog if the any exceptions ocurred. 
 	 * @return true if the operation succeed or false otherwise. */	
 	protected boolean performWizardOperation(WorkspaceModifyOperation op) {
-		Job job = Platform.getJobManager().currentJob();
+		Job job = Job.getJobManager().currentJob();
 		if(job != null)
 			Assert.fail("The effect of running this operation inside a job " +
 					"is unknown. TODO"); //TODO: learn why

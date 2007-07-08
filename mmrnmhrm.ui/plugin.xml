@@ -1,6 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.2"?>
-<plugin>
+<plugin
+>
+   <extension
+         id="DeeDocumentSetupParticipant"
+         name="Dee Document Setup Participant"
+         point="org.eclipse.core.filebuffers.documentSetup">
+      <participant
+            class="mmrnmhrm.ui.text.LangDocumentSetupParticipant"
+            contentTypeId="mmrnmhrm.core.content.dsource">
+      </participant>
+   </extension>
    <extension
          point="org.eclipse.core.runtime.preferences">
       <initializer class="mmrnmhrm.ui.DeeUIPreferenceInitializer"/>
@@ -29,9 +39,14 @@
          point="org.eclipse.ui.propertyPages">
       <page
             class="mmrnmhrm.ui.properties.ProjConfigPropertyPage"
-            id="mmrnmhrm.ui.properties.samplePropertyPage"
+            id="mmrnmhrm.ui.properties.projectConfigPage"
             name="D Project Config"
-            objectClass="org.eclipse.core.resources.IProject"/>
+            objectClass="org.eclipse.core.resources.IProject">
+         <filter
+               name="nature"
+               value="mmrnmhrm.core.deenature">
+         </filter>
+      </page>
    </extension>
    <extension
          point="org.eclipse.ui.editors">
@@ -39,9 +54,9 @@
             class="mmrnmhrm.ui.editor.DeeEditor"
             contributorClass="mmrnmhrm.ui.editor.DeeEditorActionContributor"
             icon="icons/obj16/dee_file.gif"
-            id="Mmrnmhrm.editors.DeeEditor"
+            id="mmrnmhrm.ui.editors.DeeEditor"
             name="Dee Editor (Mmrnmhrm)">
-         <contentTypeBinding contentTypeId="mmrnmhrm.core.dmsource"/>
+         <contentTypeBinding contentTypeId="mmrnmhrm.core.content.dsource"/>
       </editor>
    </extension>
    <extension
@@ -57,95 +72,254 @@
             name="Syntax Coloring"/>
    </extension>
    <extension
-         point="org.eclipse.ui.editorActions">
-      <editorContribution
-            id="Mmrnmhrm.editorContribution1"
-            targetID="Mmrnmhrm.editors.DeeEditor">
-         <action
-               class="mmrnmhrm.ui.actions.GoToDefinitionAction"
-               icon="icons/action16e/gotodef.gif"
-               id="Mmrnmhrm.actions.GotoDef"
-               label="Go to Definition"
-               menubarPath="Mmrnmhrm.menu/additions"
-               toolbarPath="additions"/>
-      </editorContribution>
+         point="org.eclipse.ui.views">
+      <category
+            id="mmrnmhrm"
+            name="Dee"/>
+      <view
+            category="mmrnmhrm"
+            class="mmrnmhrm.ui.views.ASTViewer"
+            icon="icons/sample.gif"
+            id="mmrnmhrm.ui.views.ASTViewer"
+            name="D AST Viewer (Mmrnmhrm)"/>
+   </extension>
+   <extension
+         point="org.eclipse.core.expressions.definitions">
+      <definition
+            id="mmrnmhrm.ui.expressions.activeEditor">
+         <with
+               variable="activeEditorId">
+            <equals
+                  value="mmrnmhrm.ui.editors.DeeEditor">
+            </equals>
+         </with>
+      </definition>
+            <definition
+            id="mmrnmhrm.ui.expressions.inView">
+         <with
+               variable="activePartId">
+            <equals
+                  value="mmrnmhrm.ui.editors.DeeEditor">
+            </equals>
+         </with>
+      </definition>
+      <definition
+            id="mmrnmhrm.ui.expressions.inDeeActionSet">
+         <with
+               variable="activeContexts">
+            <iterate
+                  operator="or">
+               <equals
+                     value="mmrnmhrm.ui.deeActionSet">
+               </equals>
+            </iterate>
+         </with>
+      </definition>
+      
+
    </extension>
 
    <extension
          point="org.eclipse.ui.actionSets">
       <actionSet
-            label="Mmrnmhrm Action Set"
-            visible="true"
-            id="mmrnmhrm.actionSet">
-          <action
-               id="openType"
-               toolbarPath="org.eclipse.search.searchActionSet/Search"
+            id="mmrnmhrm.ui.deeActionSet"
+            label="Mmrnmhrm Dee Action Set"
+            visible="true">
+         <action
                class="melnorme.util.ui.actions.SampleActionDelegate"
-               icon="icons/action16e/opentype.gif"
                helpContextId="org.eclipse.jdt.ui.open_type_action"
+               icon="icons/action16e/opentype.gif"
+               id="openType"
                label="%OpenTypeAction.label"
                menubarPath="navigate/open.ext2"
+               toolbarPath="org.eclipse.search.searchActionSet/Search"
                tooltip="%OpenTypeAction.tooltip">
          </action>
-          <action
-                class="mmrnmhrm.ui.actions.TestActionDg2"
-                icon="icons/action16e/spathi.16.gif"
-                id="testAction2"
-                label="Test 2"
-                style="push"
-                toolbarPath="additions"/>
-          <action
-                class="mmrnmhrm.ui.actions.TestActionDg1"
-                icon="icons/action16e/spathi.16.gif"
-                id="testAction1"
-                label="Test 1"
-                toolbarPath="additions"/>         
-     </actionSet>
+      </actionSet>
    </extension>
    <extension
-         point="org.eclipse.ui.popupMenus">
-      <objectContribution
-            id="mmrnmhrm.ctxmenu.buildpath"
-            objectClass="org.eclipse.core.resources.IFolder">
+         point="org.eclipse.ui.commands">
+      <category
+            description="Mmrnmhrm com category"
+            id="mmrnmhrm.ui.commands.category1"
+            name="Mmrnmhrm Com category">
+      </category>
+      <command
+            categoryId="mmrnmhrm.ui.commands.category1"
+            defaultHandler="mmrnmhrm.ui.actions.SampleTest1Handler"
+            id="mmrnmhrm.ui.commands.sampleCommand"
+            name="Test Action">
+      </command>
+      <command
+            categoryId="mmrnmhrm.ui.commands.category1"
+            defaultHandler="mmrnmhrm.ui.actions.SampleTest2Handler"
+            id="mmrnmhrm.ui.commands.sampleCommand2"
+            name="Test Action2">
+      </command>
+      <command
+            categoryId="mmrnmhrm.ui.commands.category1"
+            defaultHandler="mmrnmhrm.ui.actions.RefreshModelHandler"
+            id="mmrnmhrm.ui.commands.refreshModel"
+            name="Refresh Dee Model">
+      </command>
+      <command
+            categoryId="mmrnmhrm.ui.commands.category1"
+            defaultHandler="mmrnmhrm.ui.actions.ConfigureBuildPathHandler"
+            id="mmrnmhrm.ui.commands.configureBuildPath"
+            name="Configure Build Path">
+      </command>
+      <command
+            categoryId="mmrnmhrm.ui.commands.category1"
+            defaultHandler="mmrnmhrm.ui.actions.AddSourceFolderHandler"
+            id="mmrnmhrm.ui.commands.buildPathAddRemove"
+            name="Build Path Add/Remove">
+      </command>
+   </extension>
+   <extension
+         point="org.eclipse.ui.handlers">
+      <handler
+            class="mmrnmhrm.ui.actions.SampleHandler"
+            commandId="org.eclipse.ui.edit.copy">
+        <enabledWhen>
+           <not>
+              <count value="0" />
+           </not>
+        </enabledWhen>
+        <activeWhen>
+           <with variable="activePartId">
+              <equals value="mmrnmhrm.editors.DeeEditor" />
+           </with>
+        </activeWhen>
+         
+      </handler>
+   </extension>
+   <extension
+         point="org.eclipse.ui.menus">
+      <menuContribution
+            locationURI="toolbar:org.eclipse.ui.main.toolbar?before=additions">
+         <toolbar
+               id="mmrnmhrm.ui.toolbars.sampleToolbar">
+            <command
+                  commandId="mmrnmhrm.ui.commands.refreshModel"
+                  icon="icons/action16e/declipse.gif"
+                  label="Refresh D Model"
+                  tooltip="Refresh D Model">
+               <visibleWhen>
+                  <reference
+                        definitionId="mmrnmhrm.ui.expressions.inDeeActionSet">
+                  </reference>
+               </visibleWhen>
+            </command>
+            <command
+                  commandId="mmrnmhrm.ui.commands.sampleCommand"
+                  icon="icons/action16e/spathi.16.gif"
+                  label="Sample Command1">
+               <visibleWhen>
+                  <reference
+                        definitionId="mmrnmhrm.ui.expressions.inDeeActionSet">
+                  </reference>
+               </visibleWhen>
+            </command>
+            <command
+                  commandId="mmrnmhrm.ui.commands.sampleCommand2"
+                  icon="icons/action16e/spathi.16.gif"
+                  label="Sample Command2">
+               <visibleWhen>
+                  <reference
+                        definitionId="mmrnmhrm.ui.expressions.inDeeActionSet">
+                  </reference>
+               </visibleWhen>
+            </command>
+         </toolbar>
+      </menuContribution>
+            <menuContribution
+            locationURI="popup:org.eclipse.ui.popup.any?before=group.build">
          <menu
-               id="mmrnmhrm.buildpathMenu"
-               label="Dee Builld Path"
-               path="group.build">
-            <separator name="content"/>
-            <separator name="additions"/>
+               id="mmrnmhrm.ui.menus.buildpath"
+               label="Dee Builld Path">
+            <visibleWhen>
+               <and>
+                  <with
+                        variable="activeMenuSelection">
+                     <iterate>
+                        <adapt
+                              type="org.eclipse.core.resources.IFolder">
+                           <test
+                                 property="org.eclipse.core.resources.projectNature"
+                                 value="mmrnmhrm.core.deenature">
+                           </test>
+                        </adapt>
+                     </iterate>
+                  </with>
+               </and>
+            </visibleWhen>
+            <separator
+                  name="content">
+            </separator>
+            <separator
+                  name="additions">
+            </separator>
+            <command
+                  commandId="mmrnmhrm.ui.commands.buildPathAddRemove"
+                  icon="icons/lcl16e/add_as_source_folder.gif"
+                  mnemonic="%contributions.view.edit.mnemonic">
+            </command>
+            <command
+                  commandId="mmrnmhrm.ui.commands.configureBuildPath"
+                  icon="icons/lcl16e/configure_build_path.gif"
+                  mnemonic="%contributions.view.edit.mnemonic">
+            </command>
          </menu>
-         <action
-               class="mmrnmhrm.ui.actions.AddSourceFolderActionDg"
-               enablesFor="1"
-               icon="icons/lcl16e/add_as_source_folder.gif"
-               id="mmrnmhrm.actions.buildpathAdd"
-               label="Build Path Action"
-               menubarPath="mmrnmhrm.buildpathMenu/content"/>
-         <action
-               class="melnorme.util.ui.actions.SampleActionDelegate"
-               icon="icons/lcl16e/configure_build_path.gif"
-               id="mmrnmhrm.actions.buildpath.Setup"
-               label="Configure Build Path (TODO)"
-               menubarPath="mmrnmhrm.buildpathMenu/content"/>
-         <filter
-               name="projectNature"
-               value="mmrnmhrm.deenature"/>
-      </objectContribution>
-      <viewerContribution
-            id="mmrnmhrm.TEST.editorContribution"
-            targetID="#DeeASTViewerContext">
-         <menu
-               id="Mmrnmhrm.editorMenu"
-               label="Declarative Menu"
-               path="additions">
-            <groupMarker name="content"/>
-         </menu>
-         <action
-               class="melnorme.util.ui.actions.SampleActionDelegate"
-               id="Mmrnmhrm.action1"
-               label="=Declarative Action"
-               menubarPath="Mmrnmhrm.editorMenu/content"/>
-      </viewerContribution>
+      </menuContribution>
+            <menuContribution
+                  locationURI="menu:mmrnmhrm.ui.menus.buildpath?after=content">
+               <command
+                     commandId="mmrnmhrm.ui.commands.refreshModel"
+                     icon="icons/lcl16e/remove_as_source_folder.gif"
+                     mnemonic="%contributions.view.edit.mnemonic">
+               </command>
+               <command
+                     commandId="mmrnmhrm.ui.commands.buildPathAddRemove"
+                     icon="icons/lcl16e/add_as_source_folder.gif"
+                     mnemonic="%contributions.view.edit.mnemonic">
+                  <visibleWhen>
+                     <and>
+                        <with
+                              variable="activeMenuSelection">
+                           <iterate>
+                              <adapt
+                                    type="org.eclipse.core.resources.IFolder">
+                                 <test
+                                       property="org.eclipse.core.resources.projectNature"
+                                       value="mmrnmhrm.core.deenature">
+                                 </test>
+                              </adapt>
+                           </iterate>
+                        </with>
+                     </and>
+                  </visibleWhen>
+               </command>
+            </menuContribution>
+      
+   </extension>
+   <extension
+         point="org.eclipse.ui.bindings">
+      <key
+            commandId="mmrnmhrm.ui.commands.refreshModel"
+            contextId="org.eclipse.ui.contexts.window"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="ALT+F5">
+      </key>
+   </extension>
+   <extension
+         point="org.eclipse.ui.perspectiveExtensions">
+      <perspectiveExtension targetID="org.eclipse.ui.resourcePerspective">
+         <view
+               id="mmrnmhrm.views.ASTViewer"
+               ratio="0.5"
+               relationship="right"
+               relative="org.eclipse.ui.views.TaskList"/>
+      </perspectiveExtension>
    </extension>
    <extension
          point="org.eclipse.ui.navigator.viewer">
@@ -183,28 +357,6 @@
             </or>
          </possibleChildren>
       </navigatorContent>
-   </extension>
-   <extension
-         point="org.eclipse.ui.views">
-      <category
-            id="mmrnmhrm"
-            name="Dee"/>
-      <view
-            category="mmrnmhrm"
-            class="mmrnmhrm.ui.views.ASTViewer"
-            icon="icons/sample.gif"
-            id="mmrnmhrm.views.ASTViewer"
-            name="D AST Viewer (Mmrnmhrm)"/>
-   </extension>
-   <extension
-         point="org.eclipse.ui.perspectiveExtensions">
-      <perspectiveExtension targetID="org.eclipse.ui.resourcePerspective">
-         <view
-               id="mmrnmhrm.views.SampleView"
-               ratio="0.5"
-               relationship="right"
-               relative="org.eclipse.ui.views.TaskList"/>
-      </perspectiveExtension>
    </extension>
 
 </plugin>

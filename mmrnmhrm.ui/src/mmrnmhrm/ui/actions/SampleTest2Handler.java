@@ -1,25 +1,29 @@
 package mmrnmhrm.ui.actions;
 
 import melnorme.lang.ui.ExceptionHandler;
-import melnorme.util.ui.actions.WorkbenchWindowActionDelegate;
 import mmrnmhrm.core.DeeCore;
 import mmrnmhrm.core.model.DeeModelManager;
 import mmrnmhrm.ui.wizards.projconfig.ProjectConfigBlock;
 
+import org.eclipse.core.commands.AbstractHandler;
+import org.eclipse.core.commands.ExecutionEvent;
+import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.resources.IWorkspaceRunnable;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.dialogs.TrayDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.ui.IWorkbenchWindow;
+import org.eclipse.ui.handlers.HandlerUtil;
 
-public class TestActionDg2 extends WorkbenchWindowActionDelegate {
-	
-	static class TestDialog extends TrayDialog {
+
+public class SampleTest2Handler extends AbstractHandler {
+
+	public static class TestDialog extends TrayDialog {
 		private ProjectConfigBlock fProjCfg;
 		
 		protected TestDialog(Shell shell) {
@@ -55,9 +59,13 @@ public class TestActionDg2 extends WorkbenchWindowActionDelegate {
 		
 	}
 
-	public void run(IAction action) {
+
+	public Object execute(ExecutionEvent event) throws ExecutionException {
+		IWorkbenchWindow window = HandlerUtil.getActiveWorkbenchWindowChecked(event);
+
 		TestDialog foo = new TestDialog(window.getShell());
 		foo.open();
+		return null;
 	}
 
 }

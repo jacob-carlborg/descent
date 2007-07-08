@@ -103,7 +103,7 @@ public class TreeListEditorField {
 			}
 			@Override
 			public void execute() {
-				List selElements = field.getSelectedElements();
+				List<?> selElements = field.getSelectedElements();
 				for (int i = selElements.size() - 1; i >= 0 ; i--) {
 					Object elem = selElements.get(i);
 					cmd.executeCommand(elem);

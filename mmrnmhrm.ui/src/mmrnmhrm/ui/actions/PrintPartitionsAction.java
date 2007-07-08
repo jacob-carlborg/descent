@@ -7,7 +7,7 @@ import mmrnmhrm.ui.DeePluginImages;
 import mmrnmhrm.ui.editor.DeeEditor;
 import mmrnmhrm.ui.text.DebugPartitioner;
 
-public class PrintPartitionsAction extends DeeEditorAction {
+public class PrintPartitionsAction extends AbstractDeeEditorAction {
 	
 	public PrintPartitionsAction() {
 		super("Print Partitions");

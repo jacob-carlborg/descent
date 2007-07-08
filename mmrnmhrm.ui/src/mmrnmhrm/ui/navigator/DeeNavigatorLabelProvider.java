@@ -27,7 +27,7 @@ public class DeeNavigatorLabelProvider implements ILabelProvider {
 			if(deeproj == null)
 				return null;
 			
-			IDeeSourceRoot spentry = deeproj.getRoot(folder);
+			IDeeSourceRoot spentry = deeproj.getSourceRoot(folder);
 			
 			if(spentry instanceof DeeSourceFolder)
 				return getImage(DeePluginImages.ELEM_SOURCEFOLDER);

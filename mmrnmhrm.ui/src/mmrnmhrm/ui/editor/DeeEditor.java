@@ -1,14 +1,17 @@
 package mmrnmhrm.ui.editor;
 
+import mmrnmhrm.core.model.CompilationUnit;
 import mmrnmhrm.ui.DeePlugin;
-import mmrnmhrm.ui.actions.DeeEditorAction;
+import mmrnmhrm.ui.DeePluginImages;
+import mmrnmhrm.ui.actions.AbstractDeeEditorAction;
 import mmrnmhrm.ui.actions.GoToDefinitionAction;
 import mmrnmhrm.ui.editor.outline.DeeContentOutlinePage;
-import mmrnmhrm.ui.text.DeeDocument;
 import mmrnmhrm.ui.text.DeeDocumentProvider;
 
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.texteditor.ITextEditorActionConstants;
@@ -17,13 +20,16 @@ import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
 import util.log.Logg;
 
 public class DeeEditor extends LangEditor {
+
+	public static final String EDITOR_ID = DeePlugin.PLUGIN_ID + ".editors.DeeEditor";
 	
 	private DeeDocumentProvider documentProvider;
-	private DeeDocument document;
+	private IDocument document;
+	private CompilationUnit cunit;
 	private DeeContentOutlinePage outlinePage; // Instantiated lazily
 	private DeeSourceViewerConfiguration sourceViewerConfiguration;
 
-	DeeEditorAction fActionGoToDefinition;
+	AbstractDeeEditorAction fActionGoToDefinition;
 
 	public DeeEditor() {
 		super();
@@ -45,9 +51,23 @@ public class DeeEditor extends LangEditor {
 
 	}
 	
+	@Override
+	protected void createActions() {
+		super.createActions();
+		fActionGoToDefinition = new GoToDefinitionAction(this);
+	}
 
 	public void dispose() { 
 	 	super.dispose(); 
+	}
+	
+
+	public IDocument getDocument() {
+		return document;
+	}
+	
+	public CompilationUnit getCompilationUnit() {
+		return cunit;
 	}
 	
 	@Override
@@ -57,24 +77,23 @@ public class DeeEditor extends LangEditor {
 		return true;
 	}
 
-	@Override
-	protected void createActions() {
-		super.createActions();
-		fActionGoToDefinition = new GoToDefinitionAction(this);
-	}
-
-
-	public DeeDocument getDocument() {
-		return document;
-	}
-
 	protected void doSetInput(IEditorInput input) throws CoreException {
 		super.doSetInput(input);
 		Logg.main.println("Got Editor input:" + input + " : " + input.getName());
-		document = (DeeDocument) documentProvider.getDocument(input);
+		document = documentProvider.getDocument(input);
+		cunit = DeePlugin.getInstance().getCompilationUnit(input);
+		if(cunit.isOutOfModel()) {
+			setTitleImage(DeePluginImages.getImage(DeePluginImages.ELEM_FILEOUT));
+		}
 		
 		if (outlinePage != null)
 			outlinePage.updateView();
+	}
+	
+	@Override
+	protected void performSave(boolean overwrite, IProgressMonitor progressMonitor) {
+		super.performSave(overwrite, progressMonitor);
+		cunit.reconcile();
 	}
 	
 	protected void editorSaved() {
@@ -100,5 +119,4 @@ public class DeeEditor extends LangEditor {
 		menu.prependToGroup(ITextEditorActionConstants.GROUP_OPEN, fActionGoToDefinition);
 	}
 
-	
 }

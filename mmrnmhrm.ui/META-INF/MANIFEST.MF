@@ -16,7 +16,8 @@ Require-Bundle: com.ibm.icu,
  org.eclipse.ui.navigator,
  org.eclipse.core.resources,
  org.junit4;visibility:=reexport,
- mmrnmhrm.core
+ mmrnmhrm.core,
+ org.eclipse.core.expressions
 Eclipse-LazyStart: true
 Bundle-Vendor: Mother Ark
 Export-Package: melnorme.util.ui.fields,
@@ -34,3 +35,4 @@ Export-Package: melnorme.util.ui.fields,
  mmrnmhrm.ui.text.color,
  mmrnmhrm.ui.wizards,
  mmrnmhrm.ui.wizards.projconfig
+Bundle-RequiredExecutionEnvironment: J2SE-1.5

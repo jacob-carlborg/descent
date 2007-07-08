@@ -21,7 +21,7 @@ import dtool.dom.definitions.Symbol;
 import dtool.dom.references.Entity;
 import dtool.refmodel.IIntrinsicUnit;
 
-public class GoToDefinitionAction extends DeeEditorAction {
+public class GoToDefinitionAction extends AbstractDeeEditorAction {
 	
 	public GoToDefinitionAction() {
 		super("Go To Definition");
@@ -34,12 +34,12 @@ public class GoToDefinitionAction extends DeeEditorAction {
 	}
 	
 	public void run() {
-		GoToDefinitionAction.execute(deeEditor);
+		GoToDefinitionAction.execute(deeEditor.getCompilationUnit(), deeEditor);
 	}
 	
 	/** {@inheritDoc} */
 	public void run(IAction action) {
-		GoToDefinitionAction.execute(deeEditor);
+		GoToDefinitionAction.execute(deeEditor.getCompilationUnit(), deeEditor);
 	}
 
 	private static void dialogInfo(Shell shell, String string) {
@@ -60,7 +60,7 @@ public class GoToDefinitionAction extends DeeEditorAction {
 				"Go to Definition",	string);
 	}
 
-	public static void execute(DeeEditor deeEditor) {
+	public static void execute(CompilationUnit cunit, DeeEditor deeEditor) {
 		IWorkbenchWindow window = deeEditor.getSite().getWorkbenchWindow();
 		
 		TextSelection sel = deeEditor.getSelection();
@@ -68,8 +68,7 @@ public class GoToDefinitionAction extends DeeEditorAction {
 		Logg.main.println("[" + sel.getOffset() +","+ sel.getLength() + "] =>" + offset);
 		Logg.main.println(sel.getText());
 		
-		CompilationUnit cunit = deeEditor.getDocument().getCompilationUnit();
-	
+		
 		ASTNode elem = ASTElementFinder.findElement(cunit.getModule(), offset);
 		
 		if(elem == null) {
@@ -95,7 +94,7 @@ public class GoToDefinitionAction extends DeeEditorAction {
 						"DefUnit: " +defunit+ " has no source range info!");
 			} else if(defunit instanceof IIntrinsicUnit) {
 					dialogInfo(window.getShell(),
-							"DefUnit: " +defunit+ " is languageintrinsic.");
+							"DefUnit: " +defunit+ " is language intrinsic.");
 			} else {
 				//IWorkbenchPage page = window.getActivePage();
 				//Module module = getModule(defunit);

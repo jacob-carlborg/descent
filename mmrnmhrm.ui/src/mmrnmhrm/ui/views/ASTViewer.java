@@ -3,10 +3,9 @@ package mmrnmhrm.ui.views;
 import melnorme.lang.ui.EditorUtil;
 import mmrnmhrm.core.model.CompilationUnit;
 import mmrnmhrm.core.model.EModelStatus;
+import mmrnmhrm.ui.DeePlugin;
 import mmrnmhrm.ui.DeePluginImages;
 import mmrnmhrm.ui.actions.GoToDefinitionAction;
-import mmrnmhrm.ui.editor.LangEditor;
-import mmrnmhrm.ui.text.DeeDocument;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuListener;
@@ -28,6 +27,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.ui.IActionBars;
+import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.ISelectionListener;
 import org.eclipse.ui.ISelectionService;
 import org.eclipse.ui.ISharedImages;
@@ -51,6 +51,8 @@ import dtool.dom.ast.ASTNode;
 public class ASTViewer extends ViewPart implements ISelectionListener,
 		IDocumentListener, ISelectionChangedListener, IDoubleClickListener {
 
+	
+	public static final String VIEW_ID = "mmrnmhrm.ui.views.ASTViewer";
 	protected TreeViewer viewer;
 	private DrillDownAdapter drillDownAdapter;
 	private Action actionExpand;
@@ -60,7 +62,7 @@ public class ASTViewer extends ViewPart implements ISelectionListener,
 	//protected MultiListener fMultiListener;
 
 	protected ITextEditor fEditor;
-	protected DeeDocument fDeeDocument;
+	protected IDocument fDocument;
 	protected CompilationUnit fCUnit;
 	private Action actionToggle;
 	protected boolean fUseOldAst = false;
@@ -125,26 +127,26 @@ public class ASTViewer extends ViewPart implements ISelectionListener,
 	}
 
 	public void setInput(ITextEditor editor) {
-		if (fEditor != null && fDeeDocument != null) {
-			fDeeDocument.removeDocumentListener(this);
+		if (fEditor != null && fDocument != null) {
+			fDocument.removeDocumentListener(this);
 		}
 		
-		IDocument oldDocument = fDeeDocument;
+		IDocument oldDocument = fDocument;
 		fEditor = null;
-		fDeeDocument = null;
+		fDocument = null;
 		
 		if (editor == null) {
 			setContentDescription("No Editor available");
 			viewer.getControl().setVisible(false);
 		} else {
 			fEditor = editor;
-			IDocument document = fEditor.getDocumentProvider().getDocument(editor.getEditorInput());
-			if(document instanceof DeeDocument) {
-				fDeeDocument = (DeeDocument) document;
-				fCUnit = fDeeDocument.getCompilationUnit();
-
-				fDeeDocument.addDocumentListener(this);
-				if(oldDocument != fDeeDocument) {
+			IEditorInput input = fEditor.getEditorInput();
+			fCUnit = DeePlugin.getCompilationUnitOperation(input);
+			if(fCUnit != null) {
+				fDocument = fEditor.getDocumentProvider().getDocument(editor.getEditorInput());
+				
+				fDocument.addDocumentListener(this);
+				if(oldDocument != fDocument) {
 					viewer.setInput(fCUnit);
 					viewer.getControl().setVisible(true);
 				}
@@ -153,7 +155,6 @@ public class ASTViewer extends ViewPart implements ISelectionListener,
 			} else {
 				setContentDescription("No DeeDocument available");
 				viewer.getControl().setVisible(false);
-				fCUnit = null;
 			}
 		}
 		
@@ -161,8 +162,11 @@ public class ASTViewer extends ViewPart implements ISelectionListener,
 
 
 	private void refreshViewer() {
+		if(fCUnit == null)
+			return;
+		
 		if(fCUnit.parseStatus == EModelStatus.OK) {
-			int offset = ((LangEditor) fEditor).getSelection().getOffset();
+			int offset = EditorUtil.getSelection(fEditor).getOffset();
 			setContentDescription("AST ok, sel: " + offset);
 		} else {
 			setContentDescription(fCUnit.toStringParseStatus());

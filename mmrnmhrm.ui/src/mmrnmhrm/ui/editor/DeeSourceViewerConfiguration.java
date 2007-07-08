@@ -2,7 +2,7 @@ package mmrnmhrm.ui.editor;
 
 import mmrnmhrm.ui.DeePlugin;
 import mmrnmhrm.ui.editor.text.DeeHyperlinkDetector;
-import mmrnmhrm.ui.text.EDeePartitions;
+import mmrnmhrm.ui.text.IDeePartitions;
 
 import org.eclipse.jface.text.hyperlink.IHyperlinkDetector;
 import org.eclipse.jface.text.presentation.IPresentationReconciler;
@@ -31,22 +31,29 @@ public class DeeSourceViewerConfiguration extends SourceViewerConfiguration {
 	//private IColorManager fColorManager;
 	//private JavaDoubleClickSelector fJavaDoubleClickSelector;
 
+	@Override
+	public String getConfiguredDocumentPartitioning(ISourceViewer sourceViewer) {
+		return IDeePartitions.DEE_PARTITIONING;
+	}
 
+	@Override
 	public String[] getConfiguredContentTypes(ISourceViewer sourceViewer) {
-		return EDeePartitions.legalContentTypes;
+		return IDeePartitions.legalContentTypes;
 	}
 	
 	public IPresentationReconciler getPresentationReconciler(ISourceViewer sourceViewer) {
 	    PresentationReconciler reconciler = new PresentationReconciler();
+	    
+	    reconciler.setDocumentPartitioning(getConfiguredDocumentPartitioning(sourceViewer));
 
 	    DefaultDamagerRepairer dr = new DefaultDamagerRepairer(DeePlugin.getDefaultDeeCodeScanner());
-	    reconciler.setDamager(dr, EDeePartitions.DEE_CODE);
-	    reconciler.setRepairer(dr, EDeePartitions.DEE_CODE);
+	    reconciler.setDamager(dr, IDeePartitions.DEE_CODE);
+	    reconciler.setRepairer(dr, IDeePartitions.DEE_CODE);
 
 	    return reconciler;
 	}
 	
-	
+
 	
 	@Override
 	public IHyperlinkDetector[] getHyperlinkDetectors(ISourceViewer sourceViewer) {

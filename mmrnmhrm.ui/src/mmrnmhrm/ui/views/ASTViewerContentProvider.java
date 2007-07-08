@@ -18,6 +18,10 @@ public class ASTViewerContentProvider extends ElementContentProvider {
 			input = view.fCUnit.getOldModule();
 		else
 			input = view.fCUnit.getModule();
+		if(input == null)
+			return null;
+			//return IElement.NO_ELEMENTS;
+
 		return input.getChildren();
 	}
 

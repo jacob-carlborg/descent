@@ -18,6 +18,8 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.ui.dialogs.PropertyPage;
 
 public class ProjConfigPropertyPage extends PropertyPage {
+	
+	public static final String PAGEID = "mmrnmhrm.ui.properties.projectConfigPage";  
 
 	private ProjectConfigBlock fProjCfg;
 	private DeeProject fDeeProject;
@@ -30,14 +32,6 @@ public class ProjConfigPropertyPage extends PropertyPage {
 	protected Control createContents(Composite parent) {
 		
 		noDefaultAndApplyButton();		
-		
-		IProject project = getProject();
-		if (project == null) {
-			Label label = new Label(parent, SWT.NONE);
-			label.setText("Target not an IProject. ASSERT FAIL!");
-			//setVisible(false);
-			return label;
-		} 
 		
 		fDeeProject = getDeeProject();
 		if (fDeeProject == null) {
