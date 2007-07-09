@@ -3,7 +3,8 @@ package dtool.dom.definitions;
 import java.util.ArrayList;
 import java.util.List;
 
-import util.tree.TreeVisitor;
+import melnorme.miscutil.tree.TreeVisitor;
+
 import descent.internal.core.dom.AggregateDeclaration;
 import dtool.descentadapter.DescentASTConverter;
 import dtool.dom.ast.ASTNeoNode;

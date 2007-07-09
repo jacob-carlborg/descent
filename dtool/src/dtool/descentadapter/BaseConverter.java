@@ -1,6 +1,6 @@
 package dtool.descentadapter;
 
-import util.Assert;
+import melnorme.miscutil.Assert;
 import descent.core.domX.AbstractElement;
 import descent.internal.core.dom.AggregateDeclaration;
 import descent.internal.core.dom.Declaration;

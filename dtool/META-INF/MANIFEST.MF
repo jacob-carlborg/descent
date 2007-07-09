@@ -21,11 +21,11 @@ Export-Package: descent.core,
  dtool.dom.statements,
  dtool.modelinterface,
  dtool.refmodel,
+ melnorme.miscutil,
+ melnorme.miscutil.log,
+ melnorme.miscutil.tree,
  org.ini4j,
- org.ini4j.addon,
- util,
- util.log,
- util.tree
+ org.ini4j.addon
 Bundle-Vendor: Mother Ark
 Require-Bundle: org.eclipse.core.runtime,
  org.junit4

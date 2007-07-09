@@ -1,8 +1,8 @@
 package dtool.dom.ast;
 
-import util.Assert;
-import util.AssertIn;
-import util.tree.TreeNode;
+import melnorme.miscutil.Assert;
+import melnorme.miscutil.AssertIn;
+import melnorme.miscutil.tree.TreeNode;
 import descent.core.dom.IDescentElement;
 import descent.core.domX.IASTVisitor;
 

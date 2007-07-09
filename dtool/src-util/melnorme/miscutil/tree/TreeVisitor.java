@@ -1,10 +1,15 @@
-package util.tree;
+package melnorme.miscutil.tree;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.List;
 
-import util.ExceptionAdapter;
+import melnorme.miscutil.ExceptionAdapter;
+
+import melnorme.miscutil.tree.ITreeNode;
+import melnorme.miscutil.tree.IVisitable;
+import melnorme.miscutil.tree.TreeNode;
+import melnorme.miscutil.tree.TreeVisitor;
 
 /** Abstract visitor for a heterogenous tree with some utility methods. */
 public abstract class TreeVisitor {

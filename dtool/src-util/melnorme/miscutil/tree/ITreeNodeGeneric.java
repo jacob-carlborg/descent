@@ -1,4 +1,4 @@
-package util.tree;
+package melnorme.miscutil.tree;
 
 /**
  * Interface for the node of a heterogeneous tree.

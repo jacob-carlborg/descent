@@ -1,6 +1,6 @@
 package dtool.dom.ast;
 
-import util.tree.ITreeNode;
+import melnorme.miscutil.tree.ITreeNode;
 
 
 /**

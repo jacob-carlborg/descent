@@ -1,6 +1,6 @@
 package descent.internal.core.dom;
 
-import util.tree.TreeVisitor;
+import melnorme.miscutil.tree.TreeVisitor;
 import descent.core.dom.IDeclaration;
 import descent.core.dom.IModifiersContainer;
 import descent.core.dom.IName;

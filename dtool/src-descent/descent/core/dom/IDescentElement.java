@@ -1,7 +1,7 @@
 package descent.core.dom;
 
-import util.tree.ITreeNodeGeneric;
-import util.tree.IVisitable;
+import melnorme.miscutil.tree.ITreeNodeGeneric;
+import melnorme.miscutil.tree.IVisitable;
 import descent.core.domX.IASTVisitor;
 import dtool.dom.ast.ASTNode;
 

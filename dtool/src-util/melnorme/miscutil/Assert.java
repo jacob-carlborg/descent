@@ -1,4 +1,4 @@
-package util;
+package melnorme.miscutil;
 
 /**
  * (Based on org.eclipse.core.runtime.Assert)

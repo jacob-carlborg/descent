@@ -2,7 +2,8 @@ package dtool.dom.definitions;
 
 import java.util.List;
 
-import util.tree.TreeVisitor;
+import melnorme.miscutil.tree.TreeVisitor;
+
 import dtool.dom.ast.ASTNeoNode;
 import dtool.dom.ast.ASTNode;
 import dtool.dom.ast.IASTNeoVisitor;

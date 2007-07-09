@@ -2,7 +2,8 @@ package dtool.dom.statements;
 
 import java.util.List;
 
-import util.tree.TreeVisitor;
+import melnorme.miscutil.tree.TreeVisitor;
+
 import descent.internal.core.dom.ScopeStatement;
 import dtool.descentadapter.DescentASTConverter;
 import dtool.dom.ast.IASTNeoVisitor;

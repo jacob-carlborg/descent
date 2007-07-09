@@ -1,6 +1,6 @@
 package dtool.dom.references;
 
-import util.Assert;
+import melnorme.miscutil.Assert;
 import dtool.descentadapter.DescentASTConverter;
 import dtool.dom.definitions.DefUnit;
 import dtool.refmodel.EntityResolver;

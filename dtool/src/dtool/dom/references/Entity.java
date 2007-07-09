@@ -1,6 +1,6 @@
 package dtool.dom.references;
 
-import util.Assert;
+import melnorme.miscutil.Assert;
 import descent.internal.core.dom.DotIdExp;
 import descent.internal.core.dom.IdentifierExp;
 import descent.internal.core.dom.Type;

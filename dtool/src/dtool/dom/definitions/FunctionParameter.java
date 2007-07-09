@@ -1,6 +1,6 @@
 package dtool.dom.definitions;
 
-import util.tree.TreeVisitor;
+import melnorme.miscutil.tree.TreeVisitor;
 import dtool.dom.ast.IASTNeoVisitor;
 import dtool.dom.expressions.Expression;
 import dtool.dom.references.Entity;

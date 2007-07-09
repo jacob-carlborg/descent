@@ -1,7 +1,7 @@
 package dtool.dom.declarations;
 
-import util.StringUtil;
-import util.tree.TreeVisitor;
+import melnorme.miscutil.StringUtil;
+import melnorme.miscutil.tree.TreeVisitor;
 import descent.internal.core.dom.Import;
 import descent.internal.core.dom.ImportDeclaration;
 import descent.internal.core.dom.SelectiveImport;
@@ -9,6 +9,7 @@ import dtool.dom.ast.ASTNeoNode;
 import dtool.dom.ast.IASTNeoVisitor;
 import dtool.dom.definitions.Symbol;
 import dtool.dom.references.EntIdentifier;
+import dtool.dom.references.EntModule;
 
 /**
  * An import Declaration 
@@ -64,21 +65,24 @@ public class DeclarationImport extends ASTNeoNode {
 	}
 	
 	public String toString() {
-		return StringUtil.collToString(imports, ",");
+		return "[import declaration]";
+		//return StringUtil.collToString(imports, ",");
 	}
 	
 	public static abstract class ImportFragment extends ASTNeoNode {
-		public EntIdentifier moduleEnt;
-		public EntIdentifier packageEnt;
+		public EntModule moduleEnt;
+
+		public ImportFragment(Import elem) {
+			convertNode(elem);
+			this.moduleEnt = new EntModule(elem.qName);
+		}
+
 	}
 	
 	public static class ImportStatic extends ImportFragment {
 		
 		public ImportStatic(Import elem) {
-			convertNode(elem);
-			int ix = elem.qName.name.lastIndexOf('.');
-			this.moduleEnt = new EntIdentifier(elem.qName.name.substring(ix+1));
-			this.packageEnt = new EntIdentifier(elem.qName.name.substring(0, ix));
+			super(elem);
 		}
 
 		@Override
@@ -86,10 +90,10 @@ public class DeclarationImport extends ASTNeoNode {
 			boolean children = visitor.visit(this);
 			if (children) {
 				TreeVisitor.acceptChildren(visitor, moduleEnt);
-				TreeVisitor.acceptChildren(visitor, packageEnt);
 			}
 			visitor.endVisit(this);
 		}
+		
 	}
 	
 	public static class ImportContent extends ImportStatic {
@@ -104,10 +108,8 @@ public class DeclarationImport extends ASTNeoNode {
 		Symbol ident;
 		
 		public ImportAliasing(Import elem) {
-			convertNode(elem);
+			super(elem);
 			this.ident = new Symbol(elem.ident);
-			this.moduleEnt = new EntIdentifier(elem.qName.name);
-
 		}
 
 		@Override
@@ -126,8 +128,7 @@ public class DeclarationImport extends ASTNeoNode {
 		ImportSelectiveFragment aliases[];
 		
 		public ImportSelective(Import selImport) {
-			convertNode(selImport);
-			this.moduleEnt = new EntIdentifier(selImport.qName.name);
+			super(selImport);
 			
 			int importsSize = selImport.getSelectiveImports().length; 
 			this.aliases = new ImportSelectiveFragment[importsSize];

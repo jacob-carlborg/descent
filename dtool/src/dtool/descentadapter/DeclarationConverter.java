@@ -1,6 +1,6 @@
 package dtool.descentadapter;
 
-import util.Assert;
+import melnorme.miscutil.Assert;
 import descent.core.dom.IDebugDeclaration;
 import descent.core.dom.IDebugStatement;
 import descent.core.dom.IIftypeDeclaration;

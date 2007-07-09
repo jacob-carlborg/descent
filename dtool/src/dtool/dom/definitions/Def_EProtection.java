@@ -28,7 +28,7 @@ public enum Def_EProtection {
 
 	public static Def_EProtection adaptFromDescent(int modifiers) {
 
-		if(util.BitFields.countActiveFlags(modifiers, IModifier.protModifiers) > 1)
+		if(melnorme.miscutil.BitFields.countActiveFlags(modifiers, IModifier.protModifiers) > 1)
 			assert false;
 		
     	if ((modifiers & IModifier.PUBLIC) != 0) return Def_EProtection.PROTpublic;

@@ -3,7 +3,8 @@ package dtool.refmodel;
 import java.util.ArrayList;
 import java.util.List;
 
-import util.tree.IElement;
+import melnorme.miscutil.tree.IElement;
+
 import dtool.dom.ast.ASTNode;
 import dtool.dom.declarations.DeclarationImport;
 import dtool.dom.declarations.DeclarationImport.ImportContent;
@@ -11,6 +12,7 @@ import dtool.dom.declarations.DeclarationImport.ImportFragment;
 import dtool.dom.definitions.DefUnit;
 import dtool.dom.definitions.Module;
 import dtool.dom.definitions.DefinitionAggregate.BaseClass;
+import dtool.dom.references.EntModule;
 
 public class EntityResolver {
 	
@@ -21,8 +23,38 @@ public class EntityResolver {
 		EntityResolver.modResolver = modResolver;
 	}
 
+
+	public static Module findModule(Module refModule, String packageName, String moduleName) {
+		return modResolver.findModule(refModule, packageName, moduleName);
+	}
 	
-	/* -------- Node Helpers -------- */
+	/* -------- Node Util -------- */
+	
+	/** Finds the first outer scope of the given element, 
+	 * navegating through the element's parents. */
+	public static IScopeNode getOuterScope(IElement startElem) {
+		IElement elem = startElem.getParent();
+
+/*		while(elem != null && (elem instanceof IScope) == false)
+			elem = elem.getParent();*/
+
+		while(elem != null) {
+			if (elem instanceof IScopeNode)
+				return (IScopeNode) elem;
+			
+			if (elem instanceof BaseClass) {
+				// Skip aggregate defunit scope (this is important) 
+				elem = elem.getParent().getParent();
+				continue;
+			}
+			
+			elem = elem.getParent();
+		}
+		return ((IScopeNode)elem);
+	}
+
+	
+	/* -------- Scope Util -------- */
 	
 	/** Gets the DefUnits in the given ASTNode members. 
 	 * Considers direct DefUnit instances as well as DefUnit Containers. */
@@ -53,32 +85,9 @@ public class EntityResolver {
 			defunits.add((DefUnit)elem);
 		}
 	}
+
 	
-	/** Finds the first outer scope of the given element, 
-	 * navegating through the element's parents. */
-	public static IScopeNode getOuterScope(IElement startElem) {
-		IElement elem = startElem.getParent();
-
-/*		while(elem != null && (elem instanceof IScope) == false)
-			elem = elem.getParent();
-	*/	
-		while(elem != null) {
-			if (elem instanceof IScopeNode)
-				return (IScopeNode) elem;
-			
-			if (elem instanceof BaseClass) {
-				// Skip aggregate defunit scope (this is important) 
-				elem = elem.getParent().getParent();
-				continue;
-			}
-			
-			elem = elem.getParent();
-		}
-		
-		return ((IScopeNode)elem);
-	}
-
-	/* --------  -------- */
+	/* --------  entity find  -------- */
 
 	/** Searches for the DefUnit with the given name in the given scope,
 	 * and then successively in it's outer scopes. */
@@ -143,36 +152,23 @@ public class EntityResolver {
 		}
 		return null;
 	}
-
+	
 	private static DefUnit findDefUnitInImportFragment(ImportFragment impFrag, String name) {
 		if(impFrag instanceof ImportContent) {
 			ImportContent impMembers = (ImportContent) impFrag;
-			Module refModule = NodeUtil.getModule(impMembers);
-			String packageName = impMembers.packageEnt.name;
-			String moduleName = impMembers.moduleEnt.name;
+			Module refModule = NodeUtil.getParentModule(impMembers);
+			String packageName = impMembers.moduleEnt.packageName;
+			String moduleName = impMembers.moduleEnt.moduleName;
 			Module targetModule;
-			targetModule = modResolver.findModule(refModule, packageName, moduleName);
+			targetModule = findModule(refModule, packageName, moduleName);
 			if(targetModule != null)
 				return findDefUnitFromScope(targetModule, name);
 		}
 		return null;
 	}
 
+
 	/* --------  -------- */
 
 	
-	/*
-	public DefUnit findEntity(String fqname) throws ModelException {
-		String names[] = fqname.split("\\.");
-		System.out.println(StringUtil.collToString(names, " . ") );
-		
-		IScope scopeent = Main.testdproj;
-		//DefUnit defunit;
-		if((scopeent instanceof DefUnit) == false) {
-			throw new NotADefUnitModelException();
-		}
-		return (DefUnit) scopeent;
-
-	}*/
-
 }

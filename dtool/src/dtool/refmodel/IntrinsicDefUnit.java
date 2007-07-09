@@ -1,6 +1,6 @@
 package dtool.refmodel;
 
-import util.Assert;
+import melnorme.miscutil.Assert;
 import dtool.dom.ast.IASTNeoVisitor;
 import dtool.dom.definitions.DefUnit;
 

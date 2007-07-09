@@ -1,6 +1,6 @@
 package dtool.dom.declarations;
 
-import util.tree.TreeVisitor;
+import melnorme.miscutil.tree.TreeVisitor;
 import descent.internal.core.dom.InvariantDeclaration;
 import dtool.dom.ast.ASTNeoNode;
 import dtool.dom.ast.IASTNeoVisitor;

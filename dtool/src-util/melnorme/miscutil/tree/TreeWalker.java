@@ -1,4 +1,4 @@
-package util.tree;
+package melnorme.miscutil.tree;
 
 /**
  * Generic tree walker that can walk any TreeNode. Uses TreeNode.getChildren();

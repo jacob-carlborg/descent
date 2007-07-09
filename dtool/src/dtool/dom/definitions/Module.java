@@ -2,8 +2,9 @@ package dtool.dom.definitions;
 
 import java.util.List;
 
-import util.StringUtil;
-import util.tree.TreeVisitor;
+import melnorme.miscutil.StringUtil;
+import melnorme.miscutil.tree.TreeVisitor;
+
 import descent.internal.core.dom.Identifier;
 import descent.internal.core.dom.ModuleDeclaration;
 import descent.internal.core.dom.TOK;

@@ -1,4 +1,4 @@
-package util;
+package melnorme.miscutil;
 
 import java.util.ArrayList;
 import java.util.List;

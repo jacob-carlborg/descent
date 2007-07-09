@@ -1,6 +1,6 @@
 package descent.core.domX;
 
-import util.tree.TreeVisitor;
+import melnorme.miscutil.tree.TreeVisitor;
 import descent.core.dom.IDebugDeclaration;
 import descent.core.dom.IDebugStatement;
 import descent.core.dom.IDescentElement;

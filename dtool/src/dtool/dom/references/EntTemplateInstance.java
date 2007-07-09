@@ -2,8 +2,9 @@ package dtool.dom.references;
 
 import java.util.List;
 
-import util.StringUtil;
-import util.tree.TreeVisitor;
+import melnorme.miscutil.StringUtil;
+import melnorme.miscutil.tree.TreeVisitor;
+
 import dtool.descentadapter.DescentASTConverter;
 import dtool.dom.ast.ASTNeoNode;
 import dtool.dom.ast.IASTNeoVisitor;

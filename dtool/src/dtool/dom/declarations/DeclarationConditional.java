@@ -2,8 +2,9 @@ package dtool.dom.declarations;
 
 import java.util.List;
 
-import util.ArrayUtil;
-import util.tree.TreeVisitor;
+import melnorme.miscutil.ArrayUtil;
+import melnorme.miscutil.tree.TreeVisitor;
+
 import descent.core.dom.IConditionalDeclaration;
 import descent.core.dom.IDebugDeclaration;
 import descent.core.dom.IDeclaration;

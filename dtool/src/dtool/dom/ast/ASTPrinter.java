@@ -1,6 +1,6 @@
 package dtool.dom.ast;
 
-import util.tree.TreeDepthRecon;
+import melnorme.miscutil.tree.TreeDepthRecon;
 import descent.core.domX.AbstractElement;
 import dtool.dom.references.EntQualified;
 
@@ -102,7 +102,7 @@ public class ASTPrinter extends ASTNeoUpTreeVisitor {
 
 	
 	private void printIndent() {
-		print(util.StringUtil.newFilledString(indent, "  "));
+		print(melnorme.miscutil.StringUtil.newFilledString(indent, "  "));
 	}
 
 	private void printGenericElement(ASTNode element, String str) {

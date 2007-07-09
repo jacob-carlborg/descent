@@ -1,6 +1,6 @@
 package dtool.dom.expressions;
 
-import util.tree.TreeVisitor;
+import melnorme.miscutil.tree.TreeVisitor;
 import descent.internal.core.dom.BinaryExpression;
 import descent.internal.core.dom.UnaryExpression;
 import dtool.descentadapter.DescentASTConverter;

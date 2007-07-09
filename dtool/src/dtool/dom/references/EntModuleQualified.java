@@ -1,6 +1,6 @@
 package dtool.dom.references;
 
-import util.tree.TreeVisitor;
+import melnorme.miscutil.tree.TreeVisitor;
 import descent.internal.core.dom.Identifier;
 import dtool.dom.ast.IASTNeoVisitor;
 import dtool.dom.definitions.DefUnit;
@@ -10,6 +10,7 @@ import dtool.refmodel.IEntQualified;
 import dtool.refmodel.IScopeNode;
 import dtool.refmodel.NodeUtil;
 
+/** An entity reference starting at module scope. */
 public class EntModuleQualified extends Entity implements IEntQualified {
 
 	public EntitySingle subent;
@@ -40,7 +41,7 @@ public class EntModuleQualified extends Entity implements IEntQualified {
 	}
 	
 	public DefUnit getTargetDefUnit() {
-		IScopeNode scope = NodeUtil.getModule(this).getMembersScope();
+		IScopeNode scope = NodeUtil.getParentModule(this).getMembersScope();
 		return EntityResolver.findDefUnitFromScope(scope, subent.name);
 	}
 

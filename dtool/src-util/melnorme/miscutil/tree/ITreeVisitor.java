@@ -1,4 +1,4 @@
-package util.tree;
+package melnorme.miscutil.tree;
 
 public interface ITreeVisitor<NODE extends ITreeNode> {
 

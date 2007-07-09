@@ -1,4 +1,4 @@
-package util.log;
+package melnorme.miscutil.log;
 
 
 public class Logg {

@@ -1,4 +1,4 @@
-package util;
+package melnorme.miscutil;
 
 import java.io.File;
 import java.io.FileReader;

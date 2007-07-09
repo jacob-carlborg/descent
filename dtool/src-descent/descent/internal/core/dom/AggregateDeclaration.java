@@ -2,7 +2,8 @@ package descent.internal.core.dom;
 
 import java.util.List;
 
-import util.tree.TreeVisitor;
+import melnorme.miscutil.tree.TreeVisitor;
+
 
 import descent.core.dom.IAggregateDeclaration;
 import descent.core.dom.IDeclaration;

@@ -3,7 +3,8 @@ package dtool.dom.ast;
 import java.util.ArrayList;
 import java.util.List;
 
-import util.tree.ITreeNode;
+import melnorme.miscutil.tree.ITreeNode;
+
 
 
 /**

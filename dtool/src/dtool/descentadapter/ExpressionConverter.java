@@ -1,6 +1,6 @@
 package dtool.descentadapter;
 
-import util.Assert;
+import melnorme.miscutil.Assert;
 import descent.core.dom.IFalseExpression;
 import descent.core.dom.IIntegerExpression;
 import descent.core.dom.ITrueExpression;

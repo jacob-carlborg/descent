@@ -1,6 +1,6 @@
 package dtool.dom.ast;
 
-import util.Assert;
+import melnorme.miscutil.Assert;
 import descent.core.domX.ASTUpTreeVisitor;
 import dtool.dom.definitions.DefUnit;
 import dtool.dom.definitions.Definition;

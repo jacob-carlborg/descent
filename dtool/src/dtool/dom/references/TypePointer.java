@@ -5,7 +5,8 @@ package dtool.dom.references;
 
 import java.util.List;
 
-import util.tree.TreeVisitor;
+import melnorme.miscutil.tree.TreeVisitor;
+
 import dtool.dom.ast.IASTNeoVisitor;
 import dtool.dom.definitions.DefUnit;
 import dtool.dom.references.TypeDynArray.IntrinsicDynArray;

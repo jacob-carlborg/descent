@@ -1,4 +1,4 @@
-package util;
+package melnorme.miscutil;
 
 /**
  * Same as {@link Assert}, but used for function post-conditions.

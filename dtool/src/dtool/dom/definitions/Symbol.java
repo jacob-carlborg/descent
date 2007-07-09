@@ -1,6 +1,6 @@
 package dtool.dom.definitions;
 
-import util.Assert;
+import melnorme.miscutil.Assert;
 import descent.internal.core.dom.Identifier;
 import dtool.dom.ast.ASTNeoNode;
 import dtool.dom.ast.IASTNeoVisitor;

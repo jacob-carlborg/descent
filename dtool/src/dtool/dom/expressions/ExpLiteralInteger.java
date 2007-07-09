@@ -1,6 +1,6 @@
 package dtool.dom.expressions;
 
-import util.Assert;
+import melnorme.miscutil.Assert;
 import descent.internal.core.dom.IntegerExp;
 import dtool.dom.ast.IASTNeoVisitor;
 

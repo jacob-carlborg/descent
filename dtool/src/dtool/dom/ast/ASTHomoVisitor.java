@@ -1,7 +1,7 @@
 package dtool.dom.ast;
 
-import util.tree.ITreeNode;
-import util.tree.IVisitable;
+import melnorme.miscutil.tree.ITreeNode;
+import melnorme.miscutil.tree.IVisitable;
 
 /** 
  * An abstract visitor that visits nodes in a homogeneous way, 

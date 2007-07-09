@@ -1,4 +1,4 @@
-package util.log;
+package melnorme.miscutil.log;
 
 /**
  * Interface for an object that allows printing of String's. 

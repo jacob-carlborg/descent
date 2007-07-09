@@ -1,6 +1,6 @@
 package dtool.dom.expressions;
 
-import util.tree.TreeVisitor;
+import melnorme.miscutil.tree.TreeVisitor;
 import descent.internal.core.dom.SliceExp;
 import descent.internal.core.dom.TypeSlice;
 import dtool.dom.ast.IASTNeoVisitor;

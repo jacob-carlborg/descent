@@ -1,4 +1,4 @@
-package util;
+package melnorme.miscutil;
 
 public class Misc {
 
