@@ -1,9 +1,10 @@
 package mmrnmhrm.tests;
 
+import melnorme.miscutil.ExceptionAdapter;
+
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 
-import util.ExceptionAdapter;
 
 public class UITestUtils {
 

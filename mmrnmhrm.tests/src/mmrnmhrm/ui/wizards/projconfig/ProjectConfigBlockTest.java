@@ -2,6 +2,7 @@ package mmrnmhrm.ui.wizards.projconfig;
 
 
 import static org.junit.Assert.assertFalse;
+import melnorme.miscutil.ArrayUtil;
 import mmrnmhrm.core.model.DeeProject;
 import mmrnmhrm.core.model.DeeSourceFolder;
 import mmrnmhrm.tests.CommonProjectTestClass;
@@ -14,7 +15,6 @@ import org.eclipse.core.runtime.Path;
 import org.junit.After;
 import org.junit.Before;
 
-import util.ArrayUtil;
 
 public class ProjectConfigBlockTest extends CommonProjectTestClass {
 	

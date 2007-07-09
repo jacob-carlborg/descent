@@ -35,7 +35,7 @@ public abstract class GoToDefinition_CommonTest extends BaseTestClass {
 		this.defOffset = defOffset;
 		this.refOffset = refOffset;
 		
-		cunit = CoreTestUtils.testCUparsing(TestUtils.readTestDataFile(testfile));
+		cunit = CoreTestUtils.testParseCUnit(TestUtils.readTestDataFile(testfile));
 		//System.out.println("==== Source length: "+cunit.source.length()+" ====");
 		module = cunit.getNeoModule();	
 	}

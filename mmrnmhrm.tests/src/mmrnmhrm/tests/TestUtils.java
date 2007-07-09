@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
+import melnorme.miscutil.FileUtil;
 import mmrnmhrm.ui.DeePlugin;
 
 import org.eclipse.core.resources.IFile;
@@ -15,7 +16,6 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.osgi.framework.Bundle;
 
-import util.FileUtil;
 
 public class TestUtils {
 
