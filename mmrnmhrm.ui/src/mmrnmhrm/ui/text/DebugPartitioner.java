@@ -1,12 +1,13 @@
 package mmrnmhrm.ui.text;
 
+import melnorme.miscutil.log.Logg;
+
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.ITypedRegion;
 import org.eclipse.jface.text.rules.FastPartitioner;
 import org.eclipse.jface.text.rules.IPartitionTokenScanner;
 
-import util.log.Logg;
 
 
 /**

@@ -1,6 +1,7 @@
 package mmrnmhrm.ui.actions;
 
 import melnorme.lang.ui.ExceptionHandler;
+import melnorme.miscutil.Assert;
 import mmrnmhrm.core.DeeCore;
 import mmrnmhrm.core.model.DeeModelManager;
 import mmrnmhrm.core.model.DeeProject;
@@ -18,7 +19,6 @@ import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.ui.handlers.HandlerUtil;
 
-import util.Assert;
 
 /**
  * Our sample handler extends AbstractHandler, an IHandler base class.

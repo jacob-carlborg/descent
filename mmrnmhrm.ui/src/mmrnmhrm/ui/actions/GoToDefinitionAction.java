@@ -1,6 +1,7 @@
 package mmrnmhrm.ui.actions;
 
 import melnorme.lang.ui.EditorUtil;
+import melnorme.miscutil.log.Logg;
 import mmrnmhrm.core.model.CompilationUnit;
 import mmrnmhrm.ui.DeePluginImages;
 import mmrnmhrm.ui.editor.DeeEditor;
@@ -9,17 +10,21 @@ import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.text.TextSelection;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
+import org.eclipse.ui.PartInitException;
+import org.eclipse.ui.ide.IDE;
 import org.eclipse.ui.texteditor.AbstractTextEditor;
 
-import util.log.Logg;
 import dtool.dom.ast.ASTElementFinder;
 import dtool.dom.ast.ASTNode;
 import dtool.dom.ast.ASTPrinter;
 import dtool.dom.definitions.DefUnit;
+import dtool.dom.definitions.Module;
 import dtool.dom.definitions.Symbol;
 import dtool.dom.references.Entity;
 import dtool.refmodel.IIntrinsicUnit;
+import dtool.refmodel.NodeUtil;
 
 public class GoToDefinitionAction extends AbstractDeeEditorAction {
 	
@@ -77,10 +82,12 @@ public class GoToDefinitionAction extends AbstractDeeEditorAction {
 		}
 		System.out.println("FOUND: " + ASTPrinter.toStringNodeExtra(elem));
 		
-		GoToDefinitionAction.execute(deeEditor, elem);
+
+		
+		GoToDefinitionAction.execute(deeEditor, cunit, elem);
 	}
 
-	public static void execute(AbstractTextEditor deeEditor, ASTNode elem) {
+	public static void execute(AbstractTextEditor deeEditor, CompilationUnit refCUnit, ASTNode elem) {
 		IWorkbenchWindow window = deeEditor.getSite().getWorkbenchWindow();
 		
 		if(elem instanceof Entity) {
@@ -96,11 +103,17 @@ public class GoToDefinitionAction extends AbstractDeeEditorAction {
 					dialogInfo(window.getShell(),
 							"DefUnit: " +defunit+ " is language intrinsic.");
 			} else {
-				//IWorkbenchPage page = window.getActivePage();
-				//Module module = getModule(defunit);
-				//module.cunit
-				//IDE.openEditor(page, resource, true);
-				EditorUtil.setSelection(deeEditor, defunit);
+				try {
+					Module targetModule = NodeUtil.getParentModule(defunit);
+					CompilationUnit targetCUnit = (CompilationUnit) targetModule.cunit;
+					if(deeEditor == null || targetCUnit != refCUnit) {
+						IWorkbenchPage page = window.getActivePage();
+						deeEditor = (AbstractTextEditor) IDE.openEditor(page, targetCUnit.file, DeeEditor.EDITOR_ID);
+					}
+					EditorUtil.setSelection(deeEditor, defunit);
+				} catch (PartInitException e) {
+					e.printStackTrace();
+				}
 			}
 		} else if(elem instanceof Symbol) {
 			dialogInfo(window.getShell(),

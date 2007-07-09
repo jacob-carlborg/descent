@@ -1,6 +1,6 @@
 package mmrnmhrm.ui.views;
 
-import util.tree.IElement;
+import melnorme.miscutil.tree.IElement;
 import melnorme.util.ui.jface.ElementContentProvider;
 
 public class ASTViewerContentProvider extends ElementContentProvider {

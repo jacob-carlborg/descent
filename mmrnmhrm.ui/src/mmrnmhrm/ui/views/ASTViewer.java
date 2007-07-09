@@ -269,7 +269,7 @@ public class ASTViewer extends ViewPart implements ISelectionListener,
 	public void doubleClick(DoubleClickEvent event) {
 		ISelection selection = viewer.getSelection();
 		ASTNode node = (ASTNode) ((IStructuredSelection)selection).getFirstElement();
-		GoToDefinitionAction.execute((AbstractTextEditor)fEditor, node);
+		GoToDefinitionAction.execute((AbstractTextEditor)fEditor, fCUnit, node);
 	}
 
 	public void selectionChanged(SelectionChangedEvent event) {

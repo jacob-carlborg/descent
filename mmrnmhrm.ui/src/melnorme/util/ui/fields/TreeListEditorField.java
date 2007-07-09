@@ -3,6 +3,7 @@ package melnorme.util.ui.fields;
 import java.util.ArrayList;
 import java.util.List;
 
+import melnorme.miscutil.Assert;
 import melnorme.util.ui.jface.ElementContentProvider;
 
 import org.eclipse.jdt.internal.ui.wizards.dialogfields.ITreeListAdapter;
@@ -12,7 +13,6 @@ import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.KeyEvent;
 
-import util.Assert;
 
 /**
  * A one-time factory and adapter for a TreeListEditorDialogField.

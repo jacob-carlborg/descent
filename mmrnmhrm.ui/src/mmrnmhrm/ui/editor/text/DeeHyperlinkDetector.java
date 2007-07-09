@@ -1,12 +1,13 @@
 package mmrnmhrm.ui.editor.text;
 
+import melnorme.miscutil.AssertIn;
+
 import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.ITextViewer;
 import org.eclipse.jface.text.hyperlink.IHyperlink;
 import org.eclipse.jface.text.hyperlink.IHyperlinkDetector;
 import org.eclipse.ui.texteditor.ITextEditor;
 
-import util.AssertIn;
 
 /**
  * Detects hyperlinks for D elements.

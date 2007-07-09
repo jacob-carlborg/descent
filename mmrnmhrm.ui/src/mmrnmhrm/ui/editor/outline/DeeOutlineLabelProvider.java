@@ -1,11 +1,11 @@
 package mmrnmhrm.ui.editor.outline;
 
+import melnorme.miscutil.tree.IElement;
 import melnorme.util.ui.jface.SimpleLabelProvider;
 import mmrnmhrm.ui.views.DeeElementImageProvider;
 
 import org.eclipse.swt.graphics.Image;
 
-import util.tree.IElement;
 
 
 public class DeeOutlineLabelProvider extends SimpleLabelProvider {

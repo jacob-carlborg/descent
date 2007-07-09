@@ -10,11 +10,12 @@
  *******************************************************************************/
 package melnorme.util.ui.swt;
 
+import melnorme.miscutil.Assert;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Control;
 
-import util.Assert;
 
 /**
  * SWT Layout Utils.

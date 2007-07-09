@@ -1,9 +1,10 @@
 package melnorme.util.ui.jface;
 
+import melnorme.miscutil.tree.IElement;
+
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.Viewer;
 
-import util.tree.IElement;
 
 /**
  * A default content provider for IElement's

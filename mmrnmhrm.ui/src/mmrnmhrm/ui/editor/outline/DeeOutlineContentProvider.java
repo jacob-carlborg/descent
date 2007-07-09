@@ -2,11 +2,11 @@ package mmrnmhrm.ui.editor.outline;
 
 import java.util.ArrayList;
 
+import melnorme.miscutil.tree.IElement;
 import melnorme.util.ui.jface.ElementContentProvider;
 
 import org.eclipse.jface.viewers.Viewer;
 
-import util.tree.IElement;
 import dtool.dom.ast.ASTNode;
 import dtool.dom.declarations.DeclarationImport;
 import dtool.dom.definitions.DefUnit;

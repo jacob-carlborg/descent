@@ -1,5 +1,9 @@
 package mmrnmhrm.ui.text;
 
+import melnorme.miscutil.ArrayUtil;
+import melnorme.miscutil.AssertIn;
+import melnorme.miscutil.ExceptionAdapter;
+import melnorme.miscutil.log.Logg;
 import mmrnmhrm.ui.text.color.IDeeColorPreferences;
 import mmrnmhrm.ui.text.color.TextAttributeRegistry;
 
@@ -8,10 +12,6 @@ import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.rules.IToken;
 import org.eclipse.jface.text.rules.ITokenScanner;
 
-import util.ArrayUtil;
-import util.AssertIn;
-import util.ExceptionAdapter;
-import util.log.Logg;
 import descent.core.compiler.DeeToken;
 import descent.internal.core.dom.Lexer;
 import descent.internal.core.dom.TOK;

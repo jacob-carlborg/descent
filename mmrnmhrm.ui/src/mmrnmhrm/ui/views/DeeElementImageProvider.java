@@ -1,12 +1,12 @@
 package mmrnmhrm.ui.views;
 
+import melnorme.miscutil.tree.IElement;
 import mmrnmhrm.core.model.DeeSourceFolder;
 import mmrnmhrm.core.model.DeeSourceLib;
 import mmrnmhrm.ui.DeePluginImages;
 
 import org.eclipse.swt.graphics.Image;
 
-import util.tree.IElement;
 import dtool.dom.ast.ASTNeoNode;
 import dtool.dom.ast.ASTNode;
 import dtool.dom.declarations.DeclarationImport;

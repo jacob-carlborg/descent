@@ -1,5 +1,6 @@
 package mmrnmhrm.ui.editor;
 
+import melnorme.miscutil.log.Logg;
 import mmrnmhrm.core.model.CompilationUnit;
 import mmrnmhrm.ui.DeePlugin;
 import mmrnmhrm.ui.DeePluginImages;
@@ -17,7 +18,6 @@ import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.texteditor.ITextEditorActionConstants;
 import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
 
-import util.log.Logg;
 
 public class DeeEditor extends LangEditor {
 

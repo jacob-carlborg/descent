@@ -14,6 +14,7 @@ package mmrnmhrm.ui.wizards;
 import java.lang.reflect.InvocationTargetException;
 
 import melnorme.lang.ui.ExceptionHandler;
+import melnorme.miscutil.Assert;
 
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
@@ -27,7 +28,6 @@ import org.eclipse.ui.INewWizard;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.actions.WorkspaceModifyOperation;
 
-import util.Assert;
 
 public abstract class NewElementWizard extends Wizard implements INewWizard {
 

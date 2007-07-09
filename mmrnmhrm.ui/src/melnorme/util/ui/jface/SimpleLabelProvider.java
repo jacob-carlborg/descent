@@ -1,9 +1,10 @@
 package melnorme.util.ui.jface;
 
+import melnorme.miscutil.Assert;
+
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.ILabelProviderListener;
 
-import util.Assert;
 
 public abstract class SimpleLabelProvider implements ILabelProvider {
 

@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import melnorme.lang.ui.LangPlugin;
+import melnorme.miscutil.log.Logg;
 import mmrnmhrm.core.model.CompilationUnit;
 import mmrnmhrm.core.model.DeeModelManager;
 import mmrnmhrm.ui.text.DeeCodeScanner;
@@ -15,7 +16,6 @@ import org.eclipse.core.runtime.Platform;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.part.FileEditorInput;
 
-import util.log.Logg;
 
 public class DeePlugin extends LangPlugin {
 

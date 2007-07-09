@@ -2,6 +2,7 @@ package mmrnmhrm.ui.wizards.projconfig;
 
 import java.util.List;
 
+import melnorme.miscutil.ListUtil;
 import melnorme.util.ui.fields.FolderSelectionDialog;
 import melnorme.util.ui.swt.RowComposite;
 import mmrnmhrm.core.LangCore;
@@ -27,7 +28,6 @@ import org.eclipse.ui.model.WorkbenchContentProvider;
 import org.eclipse.ui.model.WorkbenchLabelProvider;
 import org.eclipse.ui.views.navigator.ResourceComparator;
 
-import util.ListUtil;
 
 public abstract class AbstractConfigPage {
 

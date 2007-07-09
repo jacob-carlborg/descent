@@ -1,12 +1,13 @@
 package mmrnmhrm.ui.navigator;
 
+import melnorme.miscutil.ExceptionAdapter;
+
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.Viewer;
 
-import util.ExceptionAdapter;
 
 public class DeeNavigatorContentProvider implements ITreeContentProvider {
 
