@@ -6,6 +6,10 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
+import melnorme.miscutil.ExceptionAdapter;
+import melnorme.miscutil.FileUtil;
+import melnorme.miscutil.StringUtil;
+import melnorme.miscutil.log.Logg;
 import mmrnmhrm.core.DeeCore;
 import mmrnmhrm.core.model.DeeProject;
 import mmrnmhrm.core.model.DeeSourceFolder;
@@ -17,10 +21,6 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 
-import util.ExceptionAdapter;
-import util.FileUtil;
-import util.StringUtil;
-import util.log.Logg;
 /**
  * Compiles a project in a /certain/ D compile environment  
  *

@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import melnorme.miscutil.StringUtil;
+import melnorme.miscutil.log.Logg;
 import mmrnmhrm.core.model.DeeModelManager;
 import mmrnmhrm.core.model.DeeProject;
 import mmrnmhrm.core.model.DeeSourceFolder;
@@ -18,8 +20,6 @@ import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 
-import util.StringUtil;
-import util.log.Logg;
 
 public class DeeBuilder extends IncrementalProjectBuilder {
 

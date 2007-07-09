@@ -14,11 +14,11 @@ public class PackageFragment extends LangContainerElement implements IDeeElement
 
 	IFolder packageFolder;
 	
-	public PackageFragment(DeeSourceFolder parent, IFolder myfolder) {
+	public PackageFragment(IDeeSourceRoot parent, IFolder myfolder) throws CoreException {
 		super(parent);
 		packageFolder = myfolder;
 	}
-
+	
 	public IResource getUnderlyingResource() {
 		return packageFolder;
 	}
@@ -26,12 +26,20 @@ public class PackageFragment extends LangContainerElement implements IDeeElement
 	public IDeeSourceRoot getParent() {
 		return (IDeeSourceRoot) parent;
 	}
-	
+
+
+
+
+	protected void addCompilationUnit(CompilationUnit unit) {
+		addChild(unit);
+		// dont refresh
+	}
+
 	public String getElementName() {
-		IPath packpath = packageFolder.getProjectRelativePath();
-		IPath parentpath = getParent().getProjectRelativePath();
-		IPath newpath = packpath.removeFirstSegments(packpath.matchingFirstSegments(parentpath));
-		return newpath.toString().replace('/', '.');
+		IPath thispath = this.packageFolder.getProjectRelativePath();
+		int common = thispath.matchingFirstSegments(getParent().getProjectRelativePath());
+		String str = thispath.removeFirstSegments(common).toString(); 
+		return str.replace('/', '.');
 	}
 
 	public String toString() {

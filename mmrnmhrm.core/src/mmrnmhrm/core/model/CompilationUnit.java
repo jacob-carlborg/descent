@@ -1,5 +1,7 @@
 package mmrnmhrm.core.model;
 
+import melnorme.miscutil.ExceptionAdapter;
+import melnorme.miscutil.tree.IElement;
 import mmrnmhrm.core.model.lang.ELangElementTypes;
 import mmrnmhrm.core.model.lang.LangElement;
 
@@ -14,8 +16,6 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.jface.text.IDocument;
 
-import util.ExceptionAdapter;
-import util.tree.IElement;
 import descent.core.compiler.IProblem;
 import descent.internal.core.dom.ParserFacade;
 import dtool.descentadapter.DescentASTConverter;
@@ -33,7 +33,7 @@ public class CompilationUnit extends LangElement implements IDTool_DeeCompilatio
 	
 	private descent.internal.core.dom.Module oldModule;
 	private Module module;
-	private boolean astUpdated;
+	//private boolean astUpdated;
 
 	public IProblem[] problems;
 	public int parseStatus;
@@ -54,6 +54,8 @@ public class CompilationUnit extends LangElement implements IDTool_DeeCompilatio
 
 
 	public String getElementName() {
+//		int extStart = file.getName().lastIndexOf('.'); 
+//		return file.getName().substring(0, extStart);
 		return file.getName();
 	}
 
@@ -120,7 +122,7 @@ public class CompilationUnit extends LangElement implements IDTool_DeeCompilatio
 		} catch (CoreException ce) {
 			//fStatus= x.getStatus();
 			document = manager.createEmptyDocument(loc, fLocationKind);
-		}		
+		}
 	}
 	
 	public void updateElementRecursive() throws CoreException {
@@ -136,7 +138,6 @@ public class CompilationUnit extends LangElement implements IDTool_DeeCompilatio
 	 *  Updates this CompilationUnit's AST according to the underlying text. 
 	 */
 	public void reconcile() {
-		astUpdated = true;
 		module = null;
 		
 		clearErrorMarkers();
@@ -159,7 +160,7 @@ public class CompilationUnit extends LangElement implements IDTool_DeeCompilatio
 		}
 	}
 
-	private void clearErrorMarkers() {
+	protected void clearErrorMarkers() {
 		try {
 			file.deleteMarkers(IMarker.PROBLEM, true, IResource.DEPTH_INFINITE);
 		} catch (CoreException e) {
@@ -167,7 +168,7 @@ public class CompilationUnit extends LangElement implements IDTool_DeeCompilatio
 		}
 	}
 	
-	private void createErrorMarkers() {
+	protected void createErrorMarkers() {
 		for (IProblem problem : getOldModule().getProblems()) {
 			try {
 				IMarker marker = file.createMarker(IMarker.PROBLEM);

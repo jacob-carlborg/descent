@@ -1,5 +1,7 @@
 package mmrnmhrm.core;
 
+import melnorme.miscutil.Assert;
+
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.IWorkspaceRunnable;
@@ -10,7 +12,6 @@ import org.eclipse.core.runtime.Plugin;
 import org.eclipse.core.runtime.jobs.ISchedulingRule;
 import org.osgi.framework.BundleContext;
 
-import util.Assert;
 
 /**
  * Lang Core

@@ -1,6 +1,6 @@
 package mmrnmhrm.core.model.lang;
 
-import util.tree.IElement;
+import melnorme.miscutil.tree.IElement;
 
 /** 
  * Work in progress. 

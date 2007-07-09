@@ -7,6 +7,8 @@ import java.io.InputStream;
 import java.io.StringWriter;
 import java.util.ArrayList;
 
+import melnorme.miscutil.Assert;
+import melnorme.miscutil.log.Logg;
 import mmrnmhrm.core.DeeCoreException;
 import mmrnmhrm.core.build.DeeCompilerOptions;
 import mmrnmhrm.core.model.lang.ELangElementTypes;
@@ -23,8 +25,6 @@ import org.eclipse.core.runtime.Path;
 import org.ini4j.Ini;
 import org.ini4j.InvalidIniFormatException;
 
-import util.Assert;
-import util.log.Logg;
 
 
 /**

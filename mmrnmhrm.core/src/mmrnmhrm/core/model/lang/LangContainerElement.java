@@ -1,14 +1,14 @@
 package mmrnmhrm.core.model.lang;
 
-import util.ExceptionAdapter;
-import util.tree.IElement;
+import melnorme.miscutil.ExceptionAdapter;
+import melnorme.miscutil.tree.IElement;
 
 
 
 
 public abstract class LangContainerElement extends LangElement {
 	
-	public LangContainerElement(LangContainerElement parent) {
+	public LangContainerElement(ILangElement parent) {
 		super(parent);
 		this.children = newChildrenArray(0);
 	}
