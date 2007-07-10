@@ -148,19 +148,26 @@ brace_position_for_other_blocks
 	uiText=Other Blocks
 
 # White Space Options - Spaces Before Opening Parenthesis 
-insert_space_before_opening_paren_in_function_declaration
+insert_space_before_opening_paren_in_function_declaration_parameters
 	type=boolean
 	default=false
-	wsDElem=function_declaration
+	wsDElem=function_decl_params
+	wsDElemEx=function_decl_params_ex
+	wsSynElem=before_opening_paren
+	wsPreview=FUNCTION_DECL_PREVIEW
+insert_space_before_opening_paren_in_function_template_args
+	type=boolean
+	default=false
+	wsDElem=function_template_params
+	wsDElemEx=function_template_params_ex
 	wsSynElem=before_opening_paren
 	wsPreview=FUNCTION_DECL_PREVIEW
 insert_space_before_opening_paren_in_function_invocation
 	type=boolean
 	default=false
-	wsDElem=function_invocation
+	wsDElem=function_invocation_args
 	wsSynElem=before_opening_paren
-	wsDElemEx=function_argument_list
-	wsSynElemEx=before_paren_in_function_argument_list
+	wsDElemEx=function_invocation_argument_list
 	wsPreview=FUNCTION_CALL_PREVIEW
 insert_space_before_opening_paren_in_catch
 	type=boolean
@@ -214,14 +221,6 @@ insert_space_before_opening_paren_in_class_template_params
 	wsDElemEx=aggregate_template_args
 	wsSynElemEx=before_opening_paren_in_template_argument_list
 	wsPreview=AGGREGATE_PREVIEW
-insert_space_before_opening_paren_in_function_template_args
-	type=boolean
-	default=false
-	wsDElem=function_invocation
-	wsSynElem=before_opening_paren
-	wsDElemEx=function_template_args
-	wsSynElemEx=before_opening_paren_in_template_argument_list
-	wsPreview=FUNCTION_CALL_PREVIEW
 insert_space_before_opening_paren_in_assert_statements
 	type=boolean
 	default=false
@@ -331,7 +330,7 @@ insert_space_between_name_and_args_in_c_style_fp
 	default=false
 	wsDElem=c_style_function_pointer
 	wsSynElem=between_adjacent_parens
-	wsDElemEx=between_name_and_arg_parens
+	wsDElemEx=name_and_arg_parens_in_c_style_fp
 	wsSynElemEx=between_name_and_arg_parens
 	wsPreview=DELEGATE_PREVIEW
 insert_space_between_template_and_arg_parens_in_function_declaration
@@ -339,7 +338,7 @@ insert_space_between_template_and_arg_parens_in_function_declaration
 	default=false
 	wsDElem=function_declaration
 	wsSynElem=between_adjacent_parens
-	wsDElemEx=between_template_and_arg_parens
+	wsDElemEx=template_and_function_params_in_function_declaration
 	wsSynElemEx=between_template_and_arg_parens
 	wsPreview=FUNCTION_DECL_PREVIEW
 insert_space_between_template_args_and_function_args
@@ -347,7 +346,7 @@ insert_space_between_template_args_and_function_args
 	default=false
 	wsDElem=function_invocation
 	wsSynElem=between_adjacent_parens
-	wsDElemEx=between_template_args_and_function_args
+	wsDElemEx=template_and_function_args_in_function_invocation
 	wsSynElemEx=between_template_args_and_function_args
 	wsPreview=FUNCTION_CALL_PREVIEW
 insert_space_between_succesive_opcalls
@@ -356,7 +355,7 @@ insert_space_between_succesive_opcalls
 	wsDElem=function_invocation
 	wsSynElem=between_adjacent_parens
 	wsSynElemEx=between_succesive_opcalls
-	wsDElemEx=between_succesive_opcalls
+	wsDElemEx=successive_opcalls
 	wsPreview=OPCALL_PREVIEW
 
 # Other White Space Options
@@ -405,38 +404,38 @@ insert_space_after_comma_in_multiple_field_declarations
 insert_space_between_empty_parens_in_function_declaration
 	type=boolean
 	default=false
-	wsDElem=function_declaration
+	wsDElem=function_decl_params
 	wsSynElem=between_empty_parens
 	wsPreview=FUNCTION_DECL_PREVIEW
 insert_space_after_opening_paren_in_function_declaration
 	type=boolean
 	default=false
-	wsDElem=function_declaration
+	wsDElem=function_decl_params
 	wsSynElem=after_opening_paren
 	wsPreview=FUNCTION_DECL_PREVIEW
 insert_space_before_closing_paren_in_function_declaration
 	type=boolean
 	default=false
-	wsDElem=function_declaration
+	wsDElem=function_decl_params
 	wsSynElem=before_closing_paren
 	wsPreview=FUNCTION_DECL_PREVIEW
 insert_space_after_opening_paren_in_function_invocation
 	type=boolean
 	default=false
-	wsDElem=function_invocation
+	wsDElem=function_invocation_args
 	wsSynElem=after_opening_paren
 	wsPreview=FUNCTION_CALL_PREVIEW
 insert_space_before_comma_in_function_invocation_arguments
 	type=boolean
 	default=false
-	wsDElem=function_arguments
+	wsDElem=function_invocation_args
 	wsDElemEx=function_invocation_arguments
 	wsSynElem=before_comma
 	wsPreview=FUNCTION_CALL_PREVIEW
 insert_space_after_comma_in_function_invocation_arguments
 	type=boolean
 	default=true
-	wsDElem=function_arguments
+	wsDElem=function_invocation_args
 	wsSynElem=after_comma
 	wsPreview=FUNCTION_CALL_PREVIEW
 insert_space_before_comma_in_foreach_statement
@@ -454,13 +453,13 @@ insert_space_after_comma_in_foreach_statement
 insert_space_before_closing_paren_in_function_invocation
 	type=boolean
 	default=false
-	wsDElem=function_invocation
+	wsDElem=function_invocation_args
 	wsSynElem=before_closing_paren
 	wsPreview=FUNCTION_CALL_PREVIEW
 insert_space_between_empty_parens_in_function_invocation
 	type=boolean
 	default=false
-	wsDElem=function_invocation
+	wsDElem=function_invocation_args
 	wsSynElem=between_empty_parens
 	wsPreview=FUNCTION_CALL_PREVIEW
 

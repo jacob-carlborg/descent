@@ -12,9 +12,13 @@ import descent.internal.compiler.parser.Lexer;
 import descent.internal.compiler.parser.TOK;
 import descent.internal.formatter.DefaultCodeFormatterOptions.BracePosition;
 
-// TODO space before parens: c-style function pointers, new, extern, file import, if, is, casts, template decl
-// FIXME figure out why is-expressiion isn't formatting
-// TODO space between parens (all)
+// FIXME semicolon after pragma
+// FIXME before-semicolon spacing with C-style function pointer
+// FIXME comma spacing for delegate paramaters
+// FIXME is expressions throwing exception
+// TODO space between template & argument lists in function invocation
+// TODO space between template & parameter lists in function declaration
+// TODO space between succesive opCalls
 
 /**
  * The class that visits everything in the source tree and formats it by sending
@@ -414,7 +418,7 @@ public class CodeFormatterVisitor extends ASTVisitor
 	public boolean visit(CastExpression node)
 	{
 		scribe.printNextToken(TOK.TOKcast);
-		scribe.printNextToken(TOK.TOKlparen);
+		scribe.printNextToken(TOK.TOKlparen, prefs.insert_space_before_opening_paren_in_casts);
 		node.getType().accept(this);
 		scribe.printNextToken(TOK.TOKrparen);
 		scribe.space();
@@ -598,10 +602,11 @@ public class CodeFormatterVisitor extends ASTVisitor
 	public boolean visit(DelegateType node)
 	{
 		node.getReturnType().accept(this);
-		scribe.space();
+		boolean cStyle = false;
 		if(isNextToken(TOK.TOKlparen)) //Handle a C-style function pointer
 		{
-			scribe.printNextToken(TOK.TOKlparen);
+			cStyle = true;
+			scribe.printNextToken(TOK.TOKlparen, prefs.insert_space_before_opening_paren_in_c_style_fp);
 			scribe.printNextToken(TOK.TOKmul);
 			if(isNextToken(TOK.TOKidentifier))
 			{
@@ -612,12 +617,15 @@ public class CodeFormatterVisitor extends ASTVisitor
 		}
 		else
 		{
+			scribe.space();
 			if(node.isFunctionPointer())
 				scribe.printNextToken(TOK.TOKfunction);
 			else
 				scribe.printNextToken(TOK.TOKdelegate);
 		}
-		scribe.printNextToken(TOK.TOKlparen, prefs.insert_space_before_opening_paren_in_delegate);
+		boolean spaceBeforeParen = prefs.insert_space_before_opening_paren_in_delegate ||
+			(cStyle && prefs.insert_space_between_name_and_args_in_c_style_fp);
+		scribe.printNextToken(TOK.TOKlparen, spaceBeforeParen);
 		formatCSV(node.arguments(), false, true);
 		scribe.printNextToken(TOK.TOKrparen);
 		return false;
@@ -767,7 +775,7 @@ public class CodeFormatterVisitor extends ASTVisitor
 		formatModifiers(false); // Picks up the "extern"
 		if(isNextToken(TOK.TOKlparen))
 		{
-			scribe.printNextToken(TOK.TOKlparen);
+			scribe.printNextToken(TOK.TOKlparen, prefs.insert_space_before_opening_paren_in_extern_declarations);
 			if(node.getLinkage() != ExternDeclaration.Linkage.DEFAULT)
 				scribe.printNextToken(TOK.TOKidentifier);
 			scribe.printNextToken(TOK.TOKrparen);
@@ -779,7 +787,7 @@ public class CodeFormatterVisitor extends ASTVisitor
 	public boolean visit(FileImportExpression node)
 	{
 		scribe.printNextToken(TOK.TOKimport);
-		scribe.printNextToken(TOK.TOKlparen);
+		scribe.printNextToken(TOK.TOKlparen, prefs.insert_space_before_opening_paren_in_file_imports);
 		node.getExpression().accept(this);
 		scribe.printNextToken(TOK.TOKrparen);
 		return false;
@@ -853,7 +861,7 @@ public class CodeFormatterVisitor extends ASTVisitor
 		node.getName().accept(this);
 		List<TemplateParameter> tp = node.templateParameters();
 		if(null != tp && !tp.isEmpty())
-			formatTemplateParams(node.templateParameters(), false);
+			formatTemplateParams(node.templateParameters(), prefs.insert_space_before_opening_paren_in_function_template_args);
 		else
 		{
 			if(hasEmptyTemplateParamList(node))
@@ -932,7 +940,7 @@ public class CodeFormatterVisitor extends ASTVisitor
 	public boolean visit(IfStatement node)
 	{
 		scribe.printNextToken(TOK.TOKif);
-		scribe.printNextToken(TOK.TOKlparen);
+		scribe.printNextToken(TOK.TOKlparen, prefs.insert_space_before_opening_paren_in_if_statements);
 		Argument arg = node.getArgument();
 		if(null != arg)
 		{
@@ -1013,7 +1021,7 @@ public class CodeFormatterVisitor extends ASTVisitor
 	public boolean visit(IsTypeExpression node)
 	{
 		scribe.printNextToken(TOK.TOKis);
-		scribe.printNextToken(TOK.TOKlparen);
+		scribe.printNextToken(TOK.TOKlparen, prefs.insert_space_before_opening_paren_in_is_expressions);
 		node.getType().accept(this);
 		SimpleName name = node.getName();
 		if(null != name)
@@ -1042,7 +1050,7 @@ public class CodeFormatterVisitor extends ASTVisitor
 	public boolean visit(IsTypeSpecializationExpression node)
 	{
 		scribe.printNextToken(TOK.TOKis);
-		scribe.printNextToken(TOK.TOKlparen);
+		scribe.printNextToken(TOK.TOKlparen, prefs.insert_space_before_opening_paren_in_is_expressions);
 		node.getType().accept(this);
 		SimpleName name = node.getName();
 		if(null != name)
@@ -1167,7 +1175,7 @@ public class CodeFormatterVisitor extends ASTVisitor
 		scribe.printNextToken(TOK.TOKnew);
 		if(isNextToken(TOK.TOKlparen))
 		{
-			scribe.printNextToken(TOK.TOKlparen);
+			scribe.printNextToken(TOK.TOKlparen, prefs.insert_space_before_opening_paren_in_new_arguments);
 			formatCSV(node.newArguments(), false, true);
 			scribe.printNextToken(TOK.TOKrparen);
 		}
@@ -1185,7 +1193,7 @@ public class CodeFormatterVisitor extends ASTVisitor
 		type.accept(this);
 		if(isNextToken(TOK.TOKlparen))
 		{
-			scribe.printNextToken(TOK.TOKlparen);
+			scribe.printNextToken(TOK.TOKlparen, prefs.insert_space_before_opening_paren_in_function_invocation);
 			formatCSV(node.constructorArguments(), false, true);
 			scribe.printNextToken(TOK.TOKrparen);
 		}
@@ -1466,7 +1474,7 @@ public class CodeFormatterVisitor extends ASTVisitor
 		scribe.printNextToken(TOK.TOKstatic);
 		scribe.space();
 		scribe.printNextToken(TOK.TOKif);
-		scribe.printNextToken(TOK.TOKlparen);
+		scribe.printNextToken(TOK.TOKlparen, prefs.insert_space_before_opening_paren_in_if_statements);
 		node.getExpression().accept(this);
 		scribe.printNextToken(TOK.TOKrparen);
 		formatConditionalStatement(node);
@@ -1568,7 +1576,7 @@ public class CodeFormatterVisitor extends ASTVisitor
 		scribe.space();
 		node.getName().accept(this);
 		scribe.space();
-		scribe.printNextToken(TOK.TOKlparen);
+		scribe.printNextToken(TOK.TOKlparen, prefs.insert_space_before_opening_paren_in_template_declarations);
 		formatCSV(node.templateParameters(), false, true);
 		scribe.printNextToken(TOK.TOKrparen);
 		formatDeclarationBlock(node.declarations(), prefs.brace_position_for_template_declaration, prefs.indent_body_declarations_compare_to_template_header);
@@ -2090,13 +2098,13 @@ public class CodeFormatterVisitor extends ASTVisitor
 	/**
 	 * Formats the given function. This is used because functions will be
 	 * visited as FunctionDeclarations and ConstructorDeclarations.
-	 * @param bracePosition TODO
+	 * @param bracePosition the position to sue for the brace
 	 */
 	private void formatFunction(IFunctionDeclaration node, BracePosition bracePosition)
 	{
 		if(isNextToken(TOK.TOKlparen))
 		{
-			scribe.printNextToken(TOK.TOKlparen, this.prefs.insert_space_before_opening_paren_in_function_declaration);
+			scribe.printNextToken(TOK.TOKlparen, this.prefs.insert_space_before_opening_paren_in_function_declaration_parameters);
 			
 			if (node.arguments().size() == 0 && !node.isVariadic())
 			{

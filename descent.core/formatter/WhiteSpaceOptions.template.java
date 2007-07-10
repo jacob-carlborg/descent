@@ -115,6 +115,8 @@ public final class WhiteSpaceOptions
 		// Declarations
 		roots.add(declarations);
 		function_declaration.setParent(declarations);
+		function_template_params.setParent(function_declaration);
+		function_decl_params.setParent(function_declaration);
 		variable_declaration.setParent(declarations);
 		version_debug.setParent(declarations);
 		pragma.setParent(declarations);
@@ -129,7 +131,7 @@ public final class WhiteSpaceOptions
 		for_statement.setParent(statements);
 		foreach_statement.setParent(statements);
 		function_invocation.setParent(statements);
-		function_arguments.setParent(function_invocation);
+		function_invocation_args.setParent(function_invocation);
 		new_params.setParent(function_invocation);
 		while_statement.setParent(statements);
 		switch_statement.setParent(statements);
