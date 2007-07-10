@@ -132,6 +132,17 @@ final class FormatterMessages extends NLS {
 	public static String WhiteSpaceOptions_anonymous_function;
 	public static String WhiteSpaceOptions_anonymous_class;
 	public static String WhiteSpaceOptions_synchronized_volatile_statement;
+	public static String WhiteSpaceOptions_c_style_function_pointer;
+	public static String WhiteSpaceOptions_new_params;
+	public static String WhiteSpaceOptions_extern_declarations;
+	public static String WhiteSpaceOptions_file_import_declarations;
+	public static String WhiteSpaceOptions_if_statements;
+	public static String WhiteSpaceOptions_is_expressions;
+	public static String WhiteSpaceOptions_casts;
+	public static String WhiteSpaceOptions_template_declaration;
+	public static String WhiteSpaceOptions_function_argument_list;
+	public static String WhiteSpaceOptions_aggregate_template_args;
+	public static String WhiteSpaceOptions_function_template_args;
 	
 	// White space options - syntax elements
 	public static String WhiteSpaceOptions_before_semicolon;
@@ -145,6 +156,10 @@ final class FormatterMessages extends NLS {
 	public static String WhiteSpaceOptions_between_adjacent_parens;
 	public static String WhiteSpaceOptions_before_opening_paren_in_synchronized_statement;
 	public static String WhiteSpaceOptions_before_opening_paren_in_template_argument_list;
+	public static String WhiteSpaceOptions_between_name_and_arg_parens;
+	public static String WhiteSpaceOptions_between_template_args_and_function_args;
+	public static String WhiteSpaceOptions_between_succesive_opcalls;
+	public static String WhiteSpaceOptions_before_paren_in_function_argument_list;
 	
 	// Blank lines tab page
 	public static String ModifyDialog_tabpage_blank_lines_title;
