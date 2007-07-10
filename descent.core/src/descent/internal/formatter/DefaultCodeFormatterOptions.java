@@ -69,6 +69,7 @@ public class DefaultCodeFormatterOptions
 	public boolean insert_space_before_opening_paren_in_switch_statements;
 	public boolean insert_space_before_opening_paren_in_align_declarations;
 	public boolean insert_space_before_opening_paren_in_class_template_params;
+	public boolean insert_space_before_opening_paren_in_function_template_args;
 	public boolean insert_space_before_opening_paren_in_assert_statements;
 	public boolean insert_space_before_opening_paren_in_version_debug;
 	public boolean insert_space_before_opening_paren_in_mixins;
@@ -77,10 +78,19 @@ public class DefaultCodeFormatterOptions
 	public boolean insert_space_before_opening_paren_in_with_statements;
 	public boolean insert_space_before_opening_paren_in_typeof_statements;
 	public boolean insert_space_before_opening_paren_in_typeid_statements;
-	public boolean insert_space_before_opening_paren_in_anon_class;
-	public boolean insert_space_before_opening_paren_in_anon_function;
 	public boolean insert_space_before_opening_paren_in_delegate;
+	public boolean insert_space_before_opening_paren_in_c_style_fp;
+	public boolean insert_space_before_opening_paren_in_new_arguments;
+	public boolean insert_space_before_opening_paren_in_extern_declarations;
+	public boolean insert_space_before_opening_paren_in_file_imports;
+	public boolean insert_space_before_opening_paren_in_if_statements;
+	public boolean insert_space_before_opening_paren_in_is_expressions;
+	public boolean insert_space_before_opening_paren_in_casts;
+	public boolean insert_space_before_opening_paren_in_template_declarations;
+	public boolean insert_space_between_name_and_args_in_c_style_fp;
 	public boolean insert_space_between_template_and_arg_parens_in_function_declaration;
+	public boolean insert_space_between_template_args_and_function_args;
+	public boolean insert_space_between_succesive_opcalls;
 	public boolean insert_space_before_semicolon;
 	public boolean insert_space_before_semicolon_in_for_statement;
 	public boolean insert_space_after_semicolon_in_for_statement;
@@ -189,6 +199,7 @@ public class DefaultCodeFormatterOptions
 		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_OPENING_PAREN_IN_SWITCH_STATEMENTS, insert_space_before_opening_paren_in_switch_statements ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
 		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_OPENING_PAREN_IN_ALIGN_DECLARATIONS, insert_space_before_opening_paren_in_align_declarations ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
 		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_OPENING_PAREN_IN_CLASS_TEMPLATE_PARAMS, insert_space_before_opening_paren_in_class_template_params ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
+		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_OPENING_PAREN_IN_FUNCTION_TEMPLATE_ARGS, insert_space_before_opening_paren_in_function_template_args ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
 		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_OPENING_PAREN_IN_ASSERT_STATEMENTS, insert_space_before_opening_paren_in_assert_statements ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
 		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_OPENING_PAREN_IN_VERSION_DEBUG, insert_space_before_opening_paren_in_version_debug ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
 		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_OPENING_PAREN_IN_MIXINS, insert_space_before_opening_paren_in_mixins ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
@@ -197,10 +208,19 @@ public class DefaultCodeFormatterOptions
 		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_OPENING_PAREN_IN_WITH_STATEMENTS, insert_space_before_opening_paren_in_with_statements ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
 		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_OPENING_PAREN_IN_TYPEOF_STATEMENTS, insert_space_before_opening_paren_in_typeof_statements ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
 		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_OPENING_PAREN_IN_TYPEID_STATEMENTS, insert_space_before_opening_paren_in_typeid_statements ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
-		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_OPENING_PAREN_IN_ANON_CLASS, insert_space_before_opening_paren_in_anon_class ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
-		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_OPENING_PAREN_IN_ANON_FUNCTION, insert_space_before_opening_paren_in_anon_function ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
 		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_OPENING_PAREN_IN_DELEGATE, insert_space_before_opening_paren_in_delegate ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
+		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_OPENING_PAREN_IN_C_STYLE_FP, insert_space_before_opening_paren_in_c_style_fp ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
+		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_OPENING_PAREN_IN_NEW_ARGUMENTS, insert_space_before_opening_paren_in_new_arguments ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
+		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_OPENING_PAREN_IN_EXTERN_DECLARATIONS, insert_space_before_opening_paren_in_extern_declarations ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
+		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_OPENING_PAREN_IN_FILE_IMPORTS, insert_space_before_opening_paren_in_file_imports ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
+		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_OPENING_PAREN_IN_IF_STATEMENTS, insert_space_before_opening_paren_in_if_statements ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
+		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_OPENING_PAREN_IN_IS_EXPRESSIONS, insert_space_before_opening_paren_in_is_expressions ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
+		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_OPENING_PAREN_IN_CASTS, insert_space_before_opening_paren_in_casts ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
+		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_OPENING_PAREN_IN_TEMPLATE_DECLARATIONS, insert_space_before_opening_paren_in_template_declarations ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
+		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BETWEEN_NAME_AND_ARGS_IN_C_STYLE_FP, insert_space_between_name_and_args_in_c_style_fp ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
 		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BETWEEN_TEMPLATE_AND_ARG_PARENS_IN_FUNCTION_DECLARATION, insert_space_between_template_and_arg_parens_in_function_declaration ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
+		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BETWEEN_TEMPLATE_ARGS_AND_FUNCTION_ARGS, insert_space_between_template_args_and_function_args ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
+		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BETWEEN_SUCCESIVE_OPCALLS, insert_space_between_succesive_opcalls ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
 		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_SEMICOLON, insert_space_before_semicolon ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
 		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_SEMICOLON_IN_FOR_STATEMENT, insert_space_before_semicolon_in_for_statement ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
 		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_AFTER_SEMICOLON_IN_FOR_STATEMENT, insert_space_after_semicolon_in_for_statement ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
@@ -511,6 +531,15 @@ public class DefaultCodeFormatterOptions
 			}
 		}
 		
+		current = settings.get(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_OPENING_PAREN_IN_FUNCTION_TEMPLATE_ARGS);
+		if(null != current) {
+			try {
+				insert_space_before_opening_paren_in_function_template_args = DefaultCodeFormatterConstants.TRUE.equals(current);
+			} catch(Exception e) {
+				insert_space_before_opening_paren_in_function_template_args = false;
+			}
+		}
+		
 		current = settings.get(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_OPENING_PAREN_IN_ASSERT_STATEMENTS);
 		if(null != current) {
 			try {
@@ -583,24 +612,6 @@ public class DefaultCodeFormatterOptions
 			}
 		}
 		
-		current = settings.get(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_OPENING_PAREN_IN_ANON_CLASS);
-		if(null != current) {
-			try {
-				insert_space_before_opening_paren_in_anon_class = DefaultCodeFormatterConstants.TRUE.equals(current);
-			} catch(Exception e) {
-				insert_space_before_opening_paren_in_anon_class = false;
-			}
-		}
-		
-		current = settings.get(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_OPENING_PAREN_IN_ANON_FUNCTION);
-		if(null != current) {
-			try {
-				insert_space_before_opening_paren_in_anon_function = DefaultCodeFormatterConstants.TRUE.equals(current);
-			} catch(Exception e) {
-				insert_space_before_opening_paren_in_anon_function = false;
-			}
-		}
-		
 		current = settings.get(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_OPENING_PAREN_IN_DELEGATE);
 		if(null != current) {
 			try {
@@ -610,12 +621,111 @@ public class DefaultCodeFormatterOptions
 			}
 		}
 		
+		current = settings.get(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_OPENING_PAREN_IN_C_STYLE_FP);
+		if(null != current) {
+			try {
+				insert_space_before_opening_paren_in_c_style_fp = DefaultCodeFormatterConstants.TRUE.equals(current);
+			} catch(Exception e) {
+				insert_space_before_opening_paren_in_c_style_fp = true;
+			}
+		}
+		
+		current = settings.get(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_OPENING_PAREN_IN_NEW_ARGUMENTS);
+		if(null != current) {
+			try {
+				insert_space_before_opening_paren_in_new_arguments = DefaultCodeFormatterConstants.TRUE.equals(current);
+			} catch(Exception e) {
+				insert_space_before_opening_paren_in_new_arguments = false;
+			}
+		}
+		
+		current = settings.get(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_OPENING_PAREN_IN_EXTERN_DECLARATIONS);
+		if(null != current) {
+			try {
+				insert_space_before_opening_paren_in_extern_declarations = DefaultCodeFormatterConstants.TRUE.equals(current);
+			} catch(Exception e) {
+				insert_space_before_opening_paren_in_extern_declarations = false;
+			}
+		}
+		
+		current = settings.get(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_OPENING_PAREN_IN_FILE_IMPORTS);
+		if(null != current) {
+			try {
+				insert_space_before_opening_paren_in_file_imports = DefaultCodeFormatterConstants.TRUE.equals(current);
+			} catch(Exception e) {
+				insert_space_before_opening_paren_in_file_imports = false;
+			}
+		}
+		
+		current = settings.get(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_OPENING_PAREN_IN_IF_STATEMENTS);
+		if(null != current) {
+			try {
+				insert_space_before_opening_paren_in_if_statements = DefaultCodeFormatterConstants.TRUE.equals(current);
+			} catch(Exception e) {
+				insert_space_before_opening_paren_in_if_statements = false;
+			}
+		}
+		
+		current = settings.get(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_OPENING_PAREN_IN_IS_EXPRESSIONS);
+		if(null != current) {
+			try {
+				insert_space_before_opening_paren_in_is_expressions = DefaultCodeFormatterConstants.TRUE.equals(current);
+			} catch(Exception e) {
+				insert_space_before_opening_paren_in_is_expressions = false;
+			}
+		}
+		
+		current = settings.get(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_OPENING_PAREN_IN_CASTS);
+		if(null != current) {
+			try {
+				insert_space_before_opening_paren_in_casts = DefaultCodeFormatterConstants.TRUE.equals(current);
+			} catch(Exception e) {
+				insert_space_before_opening_paren_in_casts = false;
+			}
+		}
+		
+		current = settings.get(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_OPENING_PAREN_IN_TEMPLATE_DECLARATIONS);
+		if(null != current) {
+			try {
+				insert_space_before_opening_paren_in_template_declarations = DefaultCodeFormatterConstants.TRUE.equals(current);
+			} catch(Exception e) {
+				insert_space_before_opening_paren_in_template_declarations = false;
+			}
+		}
+		
+		current = settings.get(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BETWEEN_NAME_AND_ARGS_IN_C_STYLE_FP);
+		if(null != current) {
+			try {
+				insert_space_between_name_and_args_in_c_style_fp = DefaultCodeFormatterConstants.TRUE.equals(current);
+			} catch(Exception e) {
+				insert_space_between_name_and_args_in_c_style_fp = false;
+			}
+		}
+		
 		current = settings.get(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BETWEEN_TEMPLATE_AND_ARG_PARENS_IN_FUNCTION_DECLARATION);
 		if(null != current) {
 			try {
 				insert_space_between_template_and_arg_parens_in_function_declaration = DefaultCodeFormatterConstants.TRUE.equals(current);
 			} catch(Exception e) {
 				insert_space_between_template_and_arg_parens_in_function_declaration = false;
+			}
+		}
+		
+		current = settings.get(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BETWEEN_TEMPLATE_ARGS_AND_FUNCTION_ARGS);
+		if(null != current) {
+			try {
+				insert_space_between_template_args_and_function_args = DefaultCodeFormatterConstants.TRUE.equals(current);
+			} catch(Exception e) {
+				insert_space_between_template_args_and_function_args = false;
+			}
+		}
+		
+		current = settings.get(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BETWEEN_SUCCESIVE_OPCALLS);
+		if(null != current) {
+			try {
+				insert_space_between_succesive_opcalls = DefaultCodeFormatterConstants.TRUE.equals(current);
+			} catch(Exception e) {
+				insert_space_between_succesive_opcalls = false;
 			}
 		}
 		
@@ -1170,6 +1280,7 @@ public class DefaultCodeFormatterOptions
 		insert_space_before_opening_paren_in_switch_statements = false;
 		insert_space_before_opening_paren_in_align_declarations = false;
 		insert_space_before_opening_paren_in_class_template_params = false;
+		insert_space_before_opening_paren_in_function_template_args = false;
 		insert_space_before_opening_paren_in_assert_statements = false;
 		insert_space_before_opening_paren_in_version_debug = false;
 		insert_space_before_opening_paren_in_mixins = false;
@@ -1178,10 +1289,19 @@ public class DefaultCodeFormatterOptions
 		insert_space_before_opening_paren_in_with_statements = false;
 		insert_space_before_opening_paren_in_typeof_statements = false;
 		insert_space_before_opening_paren_in_typeid_statements = false;
-		insert_space_before_opening_paren_in_anon_class = false;
-		insert_space_before_opening_paren_in_anon_function = false;
 		insert_space_before_opening_paren_in_delegate = false;
+		insert_space_before_opening_paren_in_c_style_fp = true;
+		insert_space_before_opening_paren_in_new_arguments = false;
+		insert_space_before_opening_paren_in_extern_declarations = false;
+		insert_space_before_opening_paren_in_file_imports = false;
+		insert_space_before_opening_paren_in_if_statements = false;
+		insert_space_before_opening_paren_in_is_expressions = false;
+		insert_space_before_opening_paren_in_casts = false;
+		insert_space_before_opening_paren_in_template_declarations = false;
+		insert_space_between_name_and_args_in_c_style_fp = false;
 		insert_space_between_template_and_arg_parens_in_function_declaration = false;
+		insert_space_between_template_args_and_function_args = false;
+		insert_space_between_succesive_opcalls = false;
 		insert_space_before_semicolon = false;
 		insert_space_before_semicolon_in_for_statement = false;
 		insert_space_after_semicolon_in_for_statement = true;

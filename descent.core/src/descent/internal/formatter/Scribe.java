@@ -76,20 +76,20 @@ public class Scribe {	private static final int INITIAL_SIZE = 100;
 	{
 		this.lexer = null;
 		this.formatter = formatter;
-		this.pageWidth = formatter.preferences.page_width;
-		this.tabLength = formatter.preferences.tab_size;
+		this.pageWidth = formatter.prefs.page_width;
+		this.tabLength = formatter.prefs.tab_size;
 		this.indentationLevel= 0; // initialize properly
 		this.numberOfIndentations = 0;
-		this.useTabsOnlyForLeadingIndents = formatter.preferences.use_tabs_only_for_leading_indentations;
-        this.indentEmptyLines = formatter.preferences.indent_empty_lines;
-		this.tabChar = formatter.preferences.tab_char;
+		this.useTabsOnlyForLeadingIndents = formatter.prefs.use_tabs_only_for_leading_indentations;
+        this.indentEmptyLines = formatter.prefs.indent_empty_lines;
+		this.tabChar = formatter.prefs.tab_char;
 		if (this.tabChar == DefaultCodeFormatterOptions.TabChar.MIXED) {
-			this.indentationSize = formatter.preferences.indentation_size;
+			this.indentationSize = formatter.prefs.indentation_size;
 		} else {
 			this.indentationSize = this.tabLength;
 		}
-		this.lineSeparator = formatter.preferences.line_separator;
-		this.indentationLevel = formatter.preferences.initial_indentation_level * this.indentationSize;
+		this.lineSeparator = formatter.prefs.line_separator;
+		this.indentationLevel = formatter.prefs.initial_indentation_level * this.indentationSize;
 		this.textRegionStart = offset;
 		this.textRegionEnd = offset + length - 1;
 		if (unit != null) {
@@ -206,7 +206,7 @@ public class Scribe {	private static final int INITIAL_SIZE = 100;
 	}
 	
 	public Alignment createAlignment(String name, int mode, int tieBreakRule, int count, int sourceRestart){
-		return createAlignment(name, mode, tieBreakRule, count, sourceRestart, this.formatter.preferences.continuation_indentation, false);
+		return createAlignment(name, mode, tieBreakRule, count, sourceRestart, this.formatter.prefs.continuation_indentation, false);
 	}
 
 	public Alignment createAlignment(String name, int mode, int count, int sourceRestart, int continuationIndent, boolean adjust){
@@ -424,8 +424,8 @@ public class Scribe {	private static final int INITIAL_SIZE = 100;
 
 	private String getPreserveEmptyLines(int count) {
 		if (count > 0) {
-			if (this.formatter.preferences.number_of_empty_lines_to_preserve != 0) {
-				int linesToPreserve = Math.min(count, this.formatter.preferences.number_of_empty_lines_to_preserve);
+			if (this.formatter.prefs.number_of_empty_lines_to_preserve != 0) {
+				int linesToPreserve = Math.min(count, this.formatter.prefs.number_of_empty_lines_to_preserve);
 				return this.getEmptyLines(linesToPreserve);
 			} else {
 				return getNewLine();
@@ -540,8 +540,8 @@ public class Scribe {	private static final int INITIAL_SIZE = 100;
 
 	private void preserveEmptyLines(int count, int insertPosition) {
 		if (count > 0) {
-			if (this.formatter.preferences.number_of_empty_lines_to_preserve != 0) {
-				int linesToPreserve = Math.min(count, this.formatter.preferences.number_of_empty_lines_to_preserve);
+			if (this.formatter.prefs.number_of_empty_lines_to_preserve != 0) {
+				int linesToPreserve = Math.min(count, this.formatter.prefs.number_of_empty_lines_to_preserve);
 				this.printEmptyLines(linesToPreserve, insertPosition);
 			} else {
 				printNewLine(insertPosition);
@@ -779,10 +779,10 @@ public class Scribe {	private static final int INITIAL_SIZE = 100;
 						break;
 					case TOKsemicolon:
 						char[] currentTokenSource = lexer.token.getRawTokenSource();
-						this.print(currentTokenSource, this.formatter.preferences.insert_space_before_semicolon);
+						this.print(currentTokenSource, this.formatter.prefs.insert_space_before_semicolon);
 						break;
 					case TOKeof:
-						if (count >= 1 || this.formatter.preferences.insert_new_line_at_end_of_file_if_missing) {
+						if (count >= 1 || this.formatter.prefs.insert_new_line_at_end_of_file_if_missing) {
 							this.printNewLine(this.scannerEndPosition);
 						}
 						return;
@@ -833,7 +833,7 @@ public class Scribe {	private static final int INITIAL_SIZE = 100;
 						} else if (hasLineComment) {
 							this.preserveEmptyLines(count, lexer.token.ptr);
 							addDeleteEdit(lexer.token.ptr, currentTokenEndPosition());
-						} else if (count != 0 && this.formatter.preferences.number_of_empty_lines_to_preserve != 0) {
+						} else if (count != 0 && this.formatter.prefs.number_of_empty_lines_to_preserve != 0) {
 							addReplaceEdit(lexer.token.ptr, currentTokenEndPosition(), this.getPreserveEmptyLines(count - 1));
 						} else {
 							addDeleteEdit(lexer.token.ptr, currentTokenEndPosition());

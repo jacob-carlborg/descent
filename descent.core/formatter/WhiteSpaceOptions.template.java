@@ -121,6 +121,8 @@ public final class WhiteSpaceOptions
 		mixin.setParent(declarations);
 		align_declaration.setParent(declarations);
 		aggregate_declaration.setParent(declarations);
+		template_declaration.setParent(declarations);
+		extern_declarations.setParent(declarations);
 		
 		// Statements
 		roots.add(statements);
@@ -128,6 +130,7 @@ public final class WhiteSpaceOptions
 		foreach_statement.setParent(statements);
 		function_invocation.setParent(statements);
 		function_arguments.setParent(function_invocation);
+		new_params.setParent(function_invocation);
 		while_statement.setParent(statements);
 		switch_statement.setParent(statements);
 		synchronized_volatile_statement.setParent(statements);
@@ -135,14 +138,17 @@ public final class WhiteSpaceOptions
 		catch_statement.setParent(statements);
 		assert_statement.setParent(statements);
 		with_statement.setParent(statements);
+		if_statements.setParent(statements);
 		
 		// Expressions
 		roots.add(expressions);
 		function_delegate_type.setParent(expressions);
-		anonymous_function.setParent(expressions);
+		c_style_function_pointer.setParent(function_delegate_type);
 		typeof.setParent(expressions);
-		anonymous_class.setParent(expressions);
 		typeid.setParent(expressions);
+		is_expressions.setParent(expressions);
+		file_import_declarations.setParent(expressions);
+		casts.setParent(expressions);
 		
 		return roots;
 	}
@@ -370,15 +376,19 @@ public abstract static class Node {
 	private final PreviewSnippet FUNCTION_DECL_PREVIEW =
 		new PreviewSnippet(
 			CodeFormatter.K_COMPILATION_UNIT, 
-			"void foo()() {}" +
-		    "int bar(T, U)(T x, inout U[] y ...)in{}out(result){}body{return x + y;}"
+			"void foo() {}" +
+		    "int bar(int x, inout long[] y ...)in{}out(result){}body{return x + y;}" +
+		    "void bar()() {}" +
+		    "void quux(T, U : T*)(int a, int b){}"
 		);
 	
 	private final PreviewSnippet FUNCTION_CALL_PREVIEW =
 		new PreviewSnippet(
 			CodeFormatter.K_STATEMENTS, 
 			"foo();\n" +
-			"bar(x, y);"
+			"bar(x, y);" +
+			"baz!()();" +
+			"quux!(int, long)(z, t);"
 		);
 	
 	private final PreviewSnippet MULT_LOCAL_PREVIEW =
@@ -438,7 +448,8 @@ public abstract static class Node {
 	private final PreviewSnippet DELEGATE_PREVIEW =
 		new PreviewSnippet(CodeFormatter.K_STATEMENTS, 
 			"void function(int, string) fp;" +
-			"string delegate() dg;"
+			"string delegate() dg;" +
+			"int(*c_style)(int);"
 		);
 	
 	private final PreviewSnippet ALIGN_PREVIEW =
@@ -478,6 +489,50 @@ public abstract static class Node {
 		new PreviewSnippet(
 			CodeFormatter.K_COMPILATION_UNIT, 
 			"pragma(msg, \"Compiling...\");"
+		);
+	
+	private final PreviewSnippet CONSTRUCTOR_PREVIEW =
+		new PreviewSnippet(CodeFormatter.K_STATEMENTS, 
+			"auto x = new(10) WalterBright!(int)(25);"
+		);
+	
+	private final PreviewSnippet EXTERN_PREVIEW =
+		new PreviewSnippet(CodeFormatter.K_COMPILATION_UNIT, 
+			"extern(C) int c_int;" +
+			"extern(Windows): int win_int;" +
+			"extern(Pascal){int pasc_int;}"
+		);
+	
+	private final PreviewSnippet FILE_IMPORT_PREVIEW =
+		new PreviewSnippet(CodeFormatter.K_STATEMENTS, 
+			"ubyte[] image = cast(ubyte) import(\"funny_looking_cat.jpg\");"
+		);
+	
+	private final PreviewSnippet IF_PREVIEW =
+		new PreviewSnippet(CodeFormatter.K_STATEMENTS, 
+			"if(true){writef(\"true\");}" +
+			"else if(false){writef(\"false\");}" +
+			"else{writef(\"logic bomb\");}"
+		);
+	
+	private final PreviewSnippet IS_PREVIEW =
+		new PreviewSnippet(CodeFormatter.K_STATEMENTS, 
+			"const bool a = is(T);" +
+			"const bool b = is(T : U);" +
+			"const bool c = is(T == U);" +
+			"const bool d = is(T U);" +
+			"const bool e = is(T U : return);" +
+			"const bool f = is(T U : U*);"
+		);
+	
+	private final PreviewSnippet CAST_PREVIEW =
+		new PreviewSnippet(CodeFormatter.K_STATEMENTS, 
+			"int a = cast(int) b;"
+		);
+	
+	private final PreviewSnippet OPCALL_PREVIEW =
+		new PreviewSnippet(CodeFormatter.K_STATEMENTS, 
+			"Stdout(\"x = \")(x)(\" right now.\").newline;"
 		);
 	
 	private final PreviewSnippet NO_PREVIEW =
