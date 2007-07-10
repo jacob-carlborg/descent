@@ -142,7 +142,17 @@ final class FormatterMessages extends NLS {
 	public static String WhiteSpaceOptions_template_declaration;
 	public static String WhiteSpaceOptions_function_argument_list;
 	public static String WhiteSpaceOptions_aggregate_template_args;
-	public static String WhiteSpaceOptions_function_template_args;
+	public static String WhiteSpaceOptions_function_declaration_parameter_list;
+	public static String WhiteSpaceOptions_function_invocation_argument_list;
+	public static String WhiteSpaceOptions_name_and_arg_parens_in_c_style_fp;
+	public static String WhiteSpaceOptions_template_and_function_params_in_function_declaration;
+	public static String WhiteSpaceOptions_template_and_function_args_in_function_invocation;
+	public static String WhiteSpaceOptions_successive_opcalls;
+	public static String WhiteSpaceOptions_function_invocation_args;
+	public static String WhiteSpaceOptions_function_decl_params;
+	public static String WhiteSpaceOptions_function_decl_params_ex;
+	public static String WhiteSpaceOptions_function_template_params;
+	public static String WhiteSpaceOptions_function_template_params_ex;
 	
 	// White space options - syntax elements
 	public static String WhiteSpaceOptions_before_semicolon;
@@ -159,7 +169,8 @@ final class FormatterMessages extends NLS {
 	public static String WhiteSpaceOptions_between_name_and_arg_parens;
 	public static String WhiteSpaceOptions_between_template_args_and_function_args;
 	public static String WhiteSpaceOptions_between_succesive_opcalls;
-	public static String WhiteSpaceOptions_before_paren_in_function_argument_list;
+	public static String WhiteSpaceOptions_before_paren_in_argument_list;
+	public static String WhiteSpaceOptions_before_opening_paren_in_parameter_list;
 	
 	// Blank lines tab page
 	public static String ModifyDialog_tabpage_blank_lines_title;
