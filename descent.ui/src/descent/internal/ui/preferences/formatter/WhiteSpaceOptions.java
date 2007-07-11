@@ -614,7 +614,7 @@ public abstract static class Node {
 			"const bool b = is(T : U);" +
 			"const bool c = is(T == U);" +
 			"const bool d = is(T U);" +
-			"const bool e = is(T U : return);" +
+			"const bool e = is(T U == return);" +
 			"const bool f = is(T U : U*);"
 		);
 	
