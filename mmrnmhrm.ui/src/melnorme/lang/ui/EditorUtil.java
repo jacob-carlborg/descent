@@ -24,12 +24,12 @@ public class EditorUtil {
 		return (TextSelection) editor.getSelectionProvider().getSelection();
 	}
 	
-	public static void setSelection(AbstractTextEditor textEditor, ASTNode node) {
+	public static void setSelection(ITextEditor textEditor, ASTNode node) {
 		textEditor.getSelectionProvider().setSelection(
 				new TextSelection(node.getStartPos(), node.getLength())); 
 	}
 	
-	public static void setSelection(AbstractTextEditor textEditor, int offset, int length) {
+	public static void setSelection(ITextEditor textEditor, int offset, int length) {
 		textEditor.getSelectionProvider().setSelection(
 				new TextSelection(offset, length)); 
 	}

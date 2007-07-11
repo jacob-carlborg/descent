@@ -4,8 +4,6 @@ import melnorme.miscutil.log.Logg;
 import mmrnmhrm.core.model.CompilationUnit;
 import mmrnmhrm.ui.DeePlugin;
 import mmrnmhrm.ui.DeePluginImages;
-import mmrnmhrm.ui.actions.AbstractDeeEditorAction;
-import mmrnmhrm.ui.actions.GoToDefinitionAction;
 import mmrnmhrm.ui.editor.outline.DeeContentOutlinePage;
 import mmrnmhrm.ui.text.DeeDocumentProvider;
 
@@ -22,6 +20,7 @@ import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
 public class DeeEditor extends LangEditor {
 
 	public static final String EDITOR_ID = DeePlugin.PLUGIN_ID + ".editors.DeeEditor";
+	public static final String CONTEXTS_DEE_EDITOR = DeePlugin.PLUGIN_ID + ".contexts.DeeEditor";
 	
 	private DeeDocumentProvider documentProvider;
 	private IDocument document;
@@ -29,7 +28,6 @@ public class DeeEditor extends LangEditor {
 	private DeeContentOutlinePage outlinePage; // Instantiated lazily
 	private DeeSourceViewerConfiguration sourceViewerConfiguration;
 
-	AbstractDeeEditorAction fActionGoToDefinition;
 
 	public DeeEditor() {
 		super();
@@ -54,7 +52,7 @@ public class DeeEditor extends LangEditor {
 	@Override
 	protected void createActions() {
 		super.createActions();
-		fActionGoToDefinition = new GoToDefinitionAction(this);
+		//fActionGoToDefinition = new GoToDefinitionAction(this);
 	}
 
 	public void dispose() { 
@@ -114,9 +112,16 @@ public class DeeEditor extends LangEditor {
 
 	
 	@Override
+	protected void initializeKeyBindingScopes() {
+		setKeyBindingScopes(new String[] { CONTEXTS_DEE_EDITOR });  //$NON-NLS-1$
+	}
+	
+	@Override
 	protected void editorContextMenuAboutToShow(IMenuManager menu) {
 		super.editorContextMenuAboutToShow(menu);
-		menu.prependToGroup(ITextEditorActionConstants.GROUP_OPEN, fActionGoToDefinition);
+		//menu.prependToGroup(ITextEditorActionConstants.GROUP_OPEN, fActionGoToDefinition);
+		menu.prependToGroup(ITextEditorActionConstants.GROUP_OPEN,
+				DeeEditorActionContributor.getCommand_FindDefinition());
 	}
 
 }

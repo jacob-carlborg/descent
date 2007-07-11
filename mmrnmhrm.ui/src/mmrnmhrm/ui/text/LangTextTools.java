@@ -19,7 +19,7 @@ public class LangTextTools {
 	}
 
 
-	public void setupJavaDocumentPartitioner(IDocument document, String partitioning) {
+	public void setupLangDocumentPartitioner(IDocument document, String partitioning) {
 		if (document instanceof IDocumentExtension3) {
 			IDocumentExtension3 extension3 = (IDocumentExtension3) document;
 			IDocumentPartitioner partitioner = createDocumentPartitioner();

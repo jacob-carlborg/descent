@@ -5,7 +5,7 @@ import mmrnmhrm.core.model.CompilationUnit;
 import mmrnmhrm.core.model.EModelStatus;
 import mmrnmhrm.ui.DeePlugin;
 import mmrnmhrm.ui.DeePluginImages;
-import mmrnmhrm.ui.actions.GoToDefinitionAction;
+import mmrnmhrm.ui.actions.GoToDefinitionHandler;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuListener;
@@ -20,7 +20,6 @@ import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
-import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
@@ -41,8 +40,6 @@ import org.eclipse.ui.part.DrillDownAdapter;
 import org.eclipse.ui.part.ViewPart;
 import org.eclipse.ui.texteditor.AbstractTextEditor;
 import org.eclipse.ui.texteditor.ITextEditor;
-
-import dtool.dom.ast.ASTNode;
 
 
 /**
@@ -267,9 +264,7 @@ public class ASTViewer extends ViewPart implements ISelectionListener,
 
 
 	public void doubleClick(DoubleClickEvent event) {
-		ISelection selection = viewer.getSelection();
-		ASTNode node = (ASTNode) ((IStructuredSelection)selection).getFirstElement();
-		GoToDefinitionAction.execute((AbstractTextEditor)fEditor, fCUnit, node);
+		GoToDefinitionHandler.executeChecked((AbstractTextEditor)fEditor, true);
 	}
 
 	public void selectionChanged(SelectionChangedEvent event) {

@@ -12,6 +12,15 @@
       </participant>
    </extension>
    <extension
+         id="DeeDocumentSetupParticipant"
+         name="Dee Document Setup Participant"
+         point="org.eclipse.core.filebuffers.documentSetup">
+      <participant
+            class="mmrnmhrm.ui.text.LangDocumentSetupParticipant"
+            extensions="d, di, dh">
+      </participant>
+   </extension>
+   <extension
          point="org.eclipse.core.runtime.preferences">
       <initializer class="mmrnmhrm.ui.DeeUIPreferenceInitializer"/>
    </extension>
@@ -49,17 +58,6 @@
       </page>
    </extension>
    <extension
-         point="org.eclipse.ui.editors">
-      <editor
-            class="mmrnmhrm.ui.editor.DeeEditor"
-            contributorClass="mmrnmhrm.ui.editor.DeeEditorActionContributor"
-            icon="icons/obj16/dee_file.gif"
-            id="mmrnmhrm.ui.editors.DeeEditor"
-            name="Dee Editor (Mmrnmhrm)">
-         <contentTypeBinding contentTypeId="mmrnmhrm.core.content.dsource"/>
-      </editor>
-   </extension>
-   <extension
          point="org.eclipse.ui.preferencePages">
       <page
             class="mmrnmhrm.ui.preferences.DeeBasePreferencePage"
@@ -70,6 +68,17 @@
             class="mmrnmhrm.ui.preferences.DeeColoringPreferencePage"
             id="mmrnmhrm.ui.preferences.SyntaxColoring"
             name="Syntax Coloring"/>
+   </extension>
+   <extension
+         point="org.eclipse.ui.editors">
+      <editor
+            class="mmrnmhrm.ui.editor.DeeEditor"
+            contributorClass="mmrnmhrm.ui.editor.DeeEditorActionContributor"
+            icon="icons/obj16/dee_file.gif"
+            id="mmrnmhrm.ui.editors.DeeEditor"
+            name="Dee Editor (Mmrnmhrm)">
+         <contentTypeBinding contentTypeId="mmrnmhrm.core.content.dsource"/>
+      </editor>
    </extension>
    <extension
          point="org.eclipse.ui.views">
@@ -84,9 +93,18 @@
             name="D AST Viewer (Mmrnmhrm)"/>
    </extension>
    <extension
+         point="org.eclipse.ui.contexts">
+      <context
+            description="Editing Dee Source"
+            id="mmrnmhrm.ui.contexts.DeeEditor"
+            name="Editing Dee Source"
+            parentId="org.eclipse.ui.textEditorScope">
+      </context>
+   </extension>
+   <extension
          point="org.eclipse.core.expressions.definitions">
       <definition
-            id="mmrnmhrm.ui.expressions.activeEditor">
+            id="mmrnmhrm.ui.expressions.activeEditorIsDeeEditor">
          <with
                variable="activeEditorId">
             <equals
@@ -174,23 +192,38 @@
             id="mmrnmhrm.ui.commands.buildPathAddRemove"
             name="Build Path Add/Remove">
       </command>
+	<command
+       categoryId="mmrnmhrm.ui.commands.category1"
+       id="mmrnmhrm.ui.commands.openDefinition"
+       name="Open Definition">
+      </command>
    </extension>
    <extension
          point="org.eclipse.ui.handlers">
       <handler
             class="mmrnmhrm.ui.actions.SampleHandler"
             commandId="org.eclipse.ui.edit.copy">
-        <enabledWhen>
-           <not>
-              <count value="0" />
-           </not>
-        </enabledWhen>
         <activeWhen>
-           <with variable="activePartId">
-              <equals value="mmrnmhrm.editors.DeeEditor" />
+           <with
+                 variable="activePartId">
+              <equals
+                    value="mmrnmhrm.ui.editors.DeeEditor">
+              </equals>
            </with>
         </activeWhen>
          
+      </handler>
+      <handler
+            class="mmrnmhrm.ui.actions.GoToDefinitionHandler"
+            commandId="mmrnmhrm.ui.commands.openDefinition">
+         <enabledWhen>
+            <with
+                  variable="activePart">
+               <instanceof
+                     value="org.eclipse.ui.texteditor.ITextEditor">
+               </instanceof>
+            </with>
+         </enabledWhen>
       </handler>
    </extension>
    <extension
@@ -229,6 +262,10 @@
                         definitionId="mmrnmhrm.ui.expressions.inDeeActionSet">
                   </reference>
                </visibleWhen>
+            </command>
+            <command
+                  commandId="mmrnmhrm.ui.commands.openDefinition"
+                  icon="icons/action16e/gotodef.gif">
             </command>
          </toolbar>
       </menuContribution>
@@ -278,27 +315,6 @@
                      icon="icons/lcl16e/remove_as_source_folder.gif"
                      mnemonic="%contributions.view.edit.mnemonic">
                </command>
-               <command
-                     commandId="mmrnmhrm.ui.commands.buildPathAddRemove"
-                     icon="icons/lcl16e/add_as_source_folder.gif"
-                     mnemonic="%contributions.view.edit.mnemonic">
-                  <visibleWhen>
-                     <and>
-                        <with
-                              variable="activeMenuSelection">
-                           <iterate>
-                              <adapt
-                                    type="org.eclipse.core.resources.IFolder">
-                                 <test
-                                       property="org.eclipse.core.resources.projectNature"
-                                       value="mmrnmhrm.core.deenature">
-                                 </test>
-                              </adapt>
-                           </iterate>
-                        </with>
-                     </and>
-                  </visibleWhen>
-               </command>
             </menuContribution>
       
    </extension>
@@ -310,12 +326,18 @@
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
             sequence="ALT+F5">
       </key>
+      <key
+            commandId="mmrnmhrm.ui.commands.openDefinition"
+            contextId="mmrnmhrm.ui.contexts.DeeEditor"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="F3">
+      </key>
    </extension>
    <extension
          point="org.eclipse.ui.perspectiveExtensions">
       <perspectiveExtension targetID="org.eclipse.ui.resourcePerspective">
          <view
-               id="mmrnmhrm.views.ASTViewer"
+               id="mmrnmhrm.ui.views.ASTViewer"
                ratio="0.5"
                relationship="right"
                relative="org.eclipse.ui.views.TaskList"/>

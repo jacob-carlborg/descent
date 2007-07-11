@@ -13,7 +13,10 @@ import org.eclipse.swt.graphics.Image;
 
 public class DeePluginImages {
 	
+
 	public static final IPath ICONS_PATH= new Path("$nl$/icons/");
+
+	private static final String ACTIONS_PATH = "action16e";
 
 	// Registry must be on top, to be initialized firt 
 	private static ImageRegistry registry = DeePlugin.getInstance().getImageRegistry();
@@ -68,19 +71,26 @@ public class DeePluginImages {
 	}
 
 
-	public static ImageDescriptor createImageDesc(String prefix, String name, boolean useMissingImageDescriptor) {
-		//return DeeUI.getImageDescriptor(prefix + "/"+name, true);
+	private static ImageDescriptor createImageDescriptor(String prefix,
+			String name, boolean useMissingImageDescriptor) {
 		IPath path= ICONS_PATH.append(prefix).append(name);
 		return createImageDescriptor(path, useMissingImageDescriptor);
 	}
 
-	public static ImageDescriptor createImageDescriptor(IPath path, boolean useMissingImageDescriptor) {
+	private static ImageDescriptor createImageDescriptor(IPath path,
+			boolean useMissingImageDescriptor) {
 		return LangPluginImages.createImageDescriptor(DeePlugin.getInstance().getBundle(),
 				path, useMissingImageDescriptor);
 	}
+	
+	public static ImageDescriptor createActionImageDescriptor(String file,
+			boolean useMissingImageDescriptor) {
+		return DeePluginImages.createImageDescriptor(ACTIONS_PATH, file, true);
+	}
 
 	public static void setupActionImages(IAction action, String file) {
-		ImageDescriptor imgDesc = DeePluginImages.createImageDesc("action16e", file, true); 
+		ImageDescriptor imgDesc = createActionImageDescriptor(file, true); 
 		action.setImageDescriptor(imgDesc);
 	}
+
 }
