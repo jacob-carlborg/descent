@@ -131,7 +131,6 @@ final class FormatterMessages extends NLS {
 	public static String WhiteSpaceOptions_function_delegate_type;
 	public static String WhiteSpaceOptions_anonymous_function;
 	public static String WhiteSpaceOptions_anonymous_class;
-	public static String WhiteSpaceOptions_synchronized_volatile_statement;
 	public static String WhiteSpaceOptions_c_style_function_pointer;
 	public static String WhiteSpaceOptions_new_params;
 	public static String WhiteSpaceOptions_extern_declarations;
@@ -153,6 +152,9 @@ final class FormatterMessages extends NLS {
 	public static String WhiteSpaceOptions_function_decl_params_ex;
 	public static String WhiteSpaceOptions_function_template_params;
 	public static String WhiteSpaceOptions_function_template_params_ex;
+	public static String WhiteSpaceOptions_out_declaration;
+	public static String WhiteSpaceOptions_aggregate_template_params;
+	public static String WhiteSpaceOptions_aggregate_template_params_ex;
 	
 	// White space options - syntax elements
 	public static String WhiteSpaceOptions_before_semicolon;
@@ -164,8 +166,6 @@ final class FormatterMessages extends NLS {
 	public static String WhiteSpaceOptions_before_closing_paren;
 	public static String WhiteSpaceOptions_between_empty_parens;
 	public static String WhiteSpaceOptions_between_adjacent_parens;
-	public static String WhiteSpaceOptions_before_opening_paren_in_synchronized_statement;
-	public static String WhiteSpaceOptions_before_opening_paren_in_template_argument_list;
 	public static String WhiteSpaceOptions_between_name_and_arg_parens;
 	public static String WhiteSpaceOptions_between_template_args_and_function_args;
 	public static String WhiteSpaceOptions_between_succesive_opcalls;

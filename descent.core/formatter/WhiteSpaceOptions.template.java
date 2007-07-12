@@ -112,17 +112,22 @@ public final class WhiteSpaceOptions
 		final InnerNode declarations = new InnerNode(null, workingValues, FormatterMessages.WhiteSpaceOptions_declarations);
 		final InnerNode expressions = new InnerNode(null, workingValues, FormatterMessages.WhiteSpaceOptions_expressions);
 		
+		// TODO remove when there's actual options in aggregate_declaration
+		final InnerNode aggregate_declaration = new InnerNode(null, workingValues, FormatterMessages.WhiteSpaceOptions_aggregate_declaration);
+		
 		// Declarations
 		roots.add(declarations);
 		function_declaration.setParent(declarations);
 		function_template_params.setParent(function_declaration);
 		function_decl_params.setParent(function_declaration);
+		out_declaration.setParent(function_declaration);
 		variable_declaration.setParent(declarations);
 		version_debug.setParent(declarations);
 		pragma.setParent(declarations);
 		mixin.setParent(declarations);
 		align_declaration.setParent(declarations);
 		aggregate_declaration.setParent(declarations);
+		aggregate_template_params.setParent(aggregate_declaration);
 		template_declaration.setParent(declarations);
 		extern_declarations.setParent(declarations);
 		
@@ -135,7 +140,7 @@ public final class WhiteSpaceOptions
 		new_params.setParent(function_invocation);
 		while_statement.setParent(statements);
 		switch_statement.setParent(statements);
-		synchronized_volatile_statement.setParent(statements);
+		synchronized_statement.setParent(statements);
 		scope_statement.setParent(statements);
 		catch_statement.setParent(statements);
 		assert_statement.setParent(statements);
