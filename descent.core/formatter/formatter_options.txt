@@ -758,6 +758,77 @@ insert_space_before_closing_paren_in_type_dot_identifier_expression
 
 
 
+# White Space Options - Spaces Between Empty Parentheses
+insert_space_between_empty_parens_in_function_declaration_parameters
+	type=boolean
+	default=false
+	wsDElem=function_decl_params
+	wsDElemEx=function_decl_params_ex
+	wsSynElem=between_empty_parens
+	wsPreview=FUNCTION_DECL_PREVIEW
+insert_space_between_empty_parens_in_function_template_args
+	type=boolean
+	default=false
+	wsDElem=function_template_params
+	wsDElemEx=function_template_params_ex
+	wsSynElem=between_empty_parens
+	wsPreview=FUNCTION_DECL_PREVIEW
+insert_space_between_empty_parens_in_function_invocation
+	type=boolean
+	default=false
+	wsDElem=function_invocation_args
+	wsSynElem=between_empty_parens
+	wsDElemEx=function_invocation_argument_list
+	wsPreview=FUNCTION_CALL_PREVIEW
+insert_space_between_empty_parens_in_out_declaration
+	type=boolean
+	default=false
+	wsDElem=out_declaration
+	wsSynElem=between_empty_parens
+	wsPreview=FUNCTION_DECL_PREVIEW
+insert_space_between_empty_parens_in_class_template_params
+	type=boolean
+	default=false
+	wsDElem=aggregate_template_params
+	wsDElemEx=aggregate_template_params_ex
+	wsSynElem=between_empty_parens
+	wsPreview=AGGREGATE_PREVIEW
+insert_space_between_empty_parens_in_delegate
+	type=boolean
+	default=false
+	wsDElem=function_delegate_type
+	wsSynElem=between_empty_parens
+	wsPreview=DELEGATE_PREVIEW
+insert_space_between_empty_parens_in_new_arguments
+	type=boolean
+	default=false
+	wsDElem=new_params
+	wsSynElem=between_empty_parens
+	wsPreview=CONSTRUCTOR_PREVIEW
+insert_space_between_empty_parens_in_extern_declarations
+	type=boolean
+	default=false
+	wsDElem=extern_declarations
+	wsSynElem=between_empty_parens
+	wsPreview=EXTERN_PREVIEW
+insert_space_between_empty_parens_in_template_declarations
+	type=boolean
+	default=false
+	wsDElem=template_declaration
+	wsSynElem=between_empty_parens
+	wsPreview=TEMPLATE_DECLARATION_PREVIEW
+insert_space_between_empty_parens_in_template_invocation
+	type=boolean
+	default=false
+	wsDElem=template_invocation
+	wsSynElem=between_empty_parens
+	wsPreview=TEMPLATE_INVOCATION_PREVIEW
+
+
+
+
+
+
 # White Space Options - Spaces Between Adjacent Parentheses
 insert_space_between_name_and_args_in_c_style_fp
 	type=boolean
@@ -845,12 +916,6 @@ insert_space_after_comma_in_multiple_field_declarations
 	wsDElem=variable_declaration
 	wsSynElem=after_comma
 	wsPreview=MULT_LOCAL_PREVIEW
-insert_space_between_empty_parens_in_function_declaration
-	type=boolean
-	default=false
-	wsDElem=function_decl_params
-	wsSynElem=between_empty_parens
-	wsPreview=FUNCTION_DECL_PREVIEW
 insert_space_before_comma_in_function_invocation_arguments
 	type=boolean
 	default=false
@@ -876,12 +941,6 @@ insert_space_after_comma_in_foreach_statement
 	wsDElem=foreach_statement
 	wsSynElem=after_comma
 	wsPreview=FOR_PREVIEW
-insert_space_between_empty_parens_in_function_invocation
-	type=boolean
-	default=false
-	wsDElem=function_invocation_args
-	wsSynElem=between_empty_parens
-	wsPreview=FUNCTION_CALL_PREVIEW
 
 
 

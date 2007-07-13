@@ -386,7 +386,7 @@ public abstract static class Node {
 	private final PreviewSnippet FUNCTION_DECL_PREVIEW =
 		new PreviewSnippet(
 			CodeFormatter.K_COMPILATION_UNIT, 
-			"void foo() {}" +
+			"void foo()out(){}body{}" +
 		    "int bar(int x, inout long[] y ...)in{}out(result){}body{return x + y;}" +
 		    "void bar()() {}" +
 		    "void quux(T, U : T*)(int a, int b){}"
@@ -503,14 +503,15 @@ public abstract static class Node {
 	
 	private final PreviewSnippet CONSTRUCTOR_PREVIEW =
 		new PreviewSnippet(CodeFormatter.K_STATEMENTS, 
-			"auto x = new(10) WalterBright!(int)(25);"
+			"auto x = new(10) Foo!(int)(25);" +
+			"auto y = new() Bar!()();"
 		);
 	
 	private final PreviewSnippet EXTERN_PREVIEW =
 		new PreviewSnippet(CodeFormatter.K_COMPILATION_UNIT, 
 			"extern(C) int c_int;" +
 			"extern(Windows): int win_int;" +
-			"extern(Pascal){int pasc_int;}"
+			"extern(){int d_int;}"
 		);
 	
 	private final PreviewSnippet FILE_IMPORT_PREVIEW =
@@ -545,11 +546,6 @@ public abstract static class Node {
 			"Stdout(\"x = \")(x)(\" right now.\").newline;"
 		);
 	
-	private final PreviewSnippet NO_PREVIEW =
-		new PreviewSnippet(CodeFormatter.K_STATEMENTS, 
-			""
-		);
-	
 	private final PreviewSnippet TYPE_DOT_IDENTIFIER_PREVIEW =
 		new PreviewSnippet(CodeFormatter.K_STATEMENTS, 
 			"assert(int.init == 0);" +
@@ -565,5 +561,10 @@ public abstract static class Node {
 	private final PreviewSnippet EXPRESSION_PREVIEW =
 		new PreviewSnippet(CodeFormatter.K_STATEMENTS, 
 			"x+=(a++*3)+((8-2)-(--6%4&8));"
+		);
+	
+	private final PreviewSnippet NO_PREVIEW =
+		new PreviewSnippet(CodeFormatter.K_STATEMENTS, 
+			""
 		);
 }
