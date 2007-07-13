@@ -156,6 +156,9 @@ public final class WhiteSpaceOptions
 		is_expressions.setParent(expressions);
 		file_import_declarations.setParent(expressions);
 		casts.setParent(expressions);
+		parenthesized_expressions.setParent(expressions);
+		template_invocation.setParent(expressions);
+		type_dot_identifier_expression.setParent(expressions);
 		
 		return roots;
 	}
@@ -545,5 +548,22 @@ public abstract static class Node {
 	private final PreviewSnippet NO_PREVIEW =
 		new PreviewSnippet(CodeFormatter.K_STATEMENTS, 
 			""
+		);
+	
+	private final PreviewSnippet TYPE_DOT_IDENTIFIER_PREVIEW =
+		new PreviewSnippet(CodeFormatter.K_STATEMENTS, 
+			"assert(int.init == 0);" +
+			"const ubyte creal_size = (creal).sizeof;"
+		);
+	
+	private final PreviewSnippet TEMPLATE_INVOCATION_PREVIEW =
+		new PreviewSnippet(CodeFormatter.K_STATEMENTS, 
+			"alias Tuple!(int, long, TypeInfo, wchar[]) tp;" +
+			"int x = Foo!().bar;"
+		);
+	
+	private final PreviewSnippet EXPRESSION_PREVIEW =
+		new PreviewSnippet(CodeFormatter.K_STATEMENTS, 
+			"x+=(a++*3)+((8-2)-(--6%4&8));"
 		);
 }

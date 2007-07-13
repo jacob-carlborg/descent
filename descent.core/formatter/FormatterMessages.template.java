@@ -155,6 +155,10 @@ final class FormatterMessages extends NLS {
 	public static String WhiteSpaceOptions_out_declaration;
 	public static String WhiteSpaceOptions_aggregate_template_params;
 	public static String WhiteSpaceOptions_aggregate_template_params_ex;
+	public static String WhiteSpaceOptions_type_dot_identifier_expression;
+	public static String WhiteSpaceOptions_parenthesized_expressions;
+	public static String WhiteSpaceOptions_template_invocation;
+	public static String WhiteSpaceOptions_type_dot_identifier_expression_parens;
 	
 	// White space options - syntax elements
 	public static String WhiteSpaceOptions_before_semicolon;
@@ -164,6 +168,7 @@ final class FormatterMessages extends NLS {
 	public static String WhiteSpaceOptions_before_opening_paren;
 	public static String WhiteSpaceOptions_after_opening_paren;
 	public static String WhiteSpaceOptions_before_closing_paren;
+	public static String WhiteSpaceOptions_after_closing_paren;
 	public static String WhiteSpaceOptions_between_empty_parens;
 	public static String WhiteSpaceOptions_between_adjacent_parens;
 	public static String WhiteSpaceOptions_between_name_and_arg_parens;

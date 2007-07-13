@@ -128,13 +128,14 @@ public class CodeFormatterVisitor extends ASTVisitor
 		if(!templateParams.isEmpty())
 			formatTemplateParams(node.templateParameters(),
 					prefs.insert_space_before_opening_paren_in_class_template_params,
-					prefs.insert_space_after_opening_paren_in_class_template_params);
+					prefs.insert_space_after_opening_paren_in_class_template_params,
+					prefs.insert_space_before_closing_paren_in_class_template_params);
 		else if(isNextToken(TOK.TOKlparen))
 		{
 			scribe.printNextToken(TOK.TOKlparen, prefs.insert_space_before_opening_paren_in_class_template_params);
 			if(prefs.insert_space_after_opening_paren_in_class_template_params)
 				scribe.space();
-			scribe.printNextToken(TOK.TOKrparen);
+			scribe.printNextToken(TOK.TOKrparen, prefs.insert_space_before_closing_paren_in_class_template_params);
 		}
 		List<BaseClass> baseClasses = node.baseClasses();
 		if(!baseClasses.isEmpty())
@@ -215,7 +216,7 @@ public class CodeFormatterVisitor extends ASTVisitor
 			if(prefs.insert_space_after_opening_paren_in_align_declarations)
 				scribe.space();
 			scribe.printNextToken(literalOrIdentiferTokenList());
-			scribe.printNextToken(TOK.TOKrparen);
+			scribe.printNextToken(TOK.TOKrparen, prefs.insert_space_before_closing_paren_in_align_declarations);
 		}
 		formatDeclarationBlock(node.declarations(), prefs.brace_position_for_modifiers, true);
 		scribe.printTrailingComment();
@@ -347,7 +348,7 @@ public class CodeFormatterVisitor extends ASTVisitor
 			scribe.space();
 			message.accept(this);
 		}
-		scribe.printNextToken(TOK.TOKrparen);
+		scribe.printNextToken(TOK.TOKrparen, prefs.insert_space_before_closing_paren_in_assert_statements);
 		return false;
 	}
 	
@@ -416,7 +417,7 @@ public class CodeFormatterVisitor extends ASTVisitor
 		if(prefs.insert_space_after_opening_paren_in_function_invocation)
 			scribe.space();
 		formatCSV(node.arguments(), false, true);
-		scribe.printNextToken(TOK.TOKrparen);
+		scribe.printNextToken(TOK.TOKrparen, prefs.insert_space_before_closing_paren_in_function_invocation);
 		if(isNextToken(TOK.TOKlparen) && prefs.insert_space_between_succesive_opcalls)
 			scribe.space();
 		return false;
@@ -429,8 +430,9 @@ public class CodeFormatterVisitor extends ASTVisitor
 		if(prefs.insert_space_after_opening_paren_in_casts)
 			scribe.space();
 		node.getType().accept(this);
-		scribe.printNextToken(TOK.TOKrparen);
-		scribe.space();
+		scribe.printNextToken(TOK.TOKrparen, prefs.insert_space_before_closing_paren_in_casts);
+		if(prefs.insert_space_after_closing_paren_in_casts)
+			scribe.space();
 		node.getExpression().accept(this);
 		return false;
 	}
@@ -450,7 +452,7 @@ public class CodeFormatterVisitor extends ASTVisitor
 				scribe.space();
 				node.getName().accept(this);
 			}
-			scribe.printNextToken(TOK.TOKrparen);
+			scribe.printNextToken(TOK.TOKrparen, prefs.insert_space_before_closing_paren_in_catch);
 		}
 		boolean simple = formatSubStatement(node.getBody(), false, true, !prefs.keep_simple_catch_statement_on_same_line, prefs.brace_position_for_try_catch_finally);
 		if (simple) {
@@ -576,7 +578,7 @@ public class CodeFormatterVisitor extends ASTVisitor
 			if(prefs.insert_space_after_opening_paren_in_version_debug)
 				scribe.space();
 			version.accept(this);
-			scribe.printNextToken(TOK.TOKrparen);
+			scribe.printNextToken(TOK.TOKrparen, prefs.insert_space_before_closing_paren_in_version_debug);
 		}
 		formatConditionalDeclaration(node);
 		return false;
@@ -592,7 +594,7 @@ public class CodeFormatterVisitor extends ASTVisitor
 			if(prefs.insert_space_after_opening_paren_in_version_debug)
 				scribe.space();
 			version.accept(this);
-			scribe.printNextToken(TOK.TOKrparen);
+			scribe.printNextToken(TOK.TOKrparen, prefs.insert_space_before_closing_paren_in_version_debug);
 		}
 		formatConditionalStatement(node);
 		return false;
@@ -630,7 +632,7 @@ public class CodeFormatterVisitor extends ASTVisitor
 				scribe.printNextToken(TOK.TOKidentifier);
 				nameAlreadyPrinted = true;
 			}
-			scribe.printNextToken(TOK.TOKrparen);
+			scribe.printNextToken(TOK.TOKrparen, prefs.insert_space_before_closing_paren_in_c_style_fp);
 		}
 		else
 		{
@@ -646,7 +648,7 @@ public class CodeFormatterVisitor extends ASTVisitor
 		if(prefs.insert_space_after_opening_paren_in_delegate)
 			scribe.space();
 		formatCSV(node.arguments(), false, true);
-		scribe.printNextToken(TOK.TOKrparen);
+		scribe.printNextToken(TOK.TOKrparen, prefs.insert_space_before_closing_paren_in_delegate);
 		return false;
 	}
 	
@@ -673,7 +675,7 @@ public class CodeFormatterVisitor extends ASTVisitor
 		if(prefs.insert_space_after_opening_paren_in_while_loops)
 			scribe.space();
 		node.getExpression().accept(this);
-		scribe.printNextToken(TOK.TOKrparen);
+		scribe.printNextToken(TOK.TOKrparen, prefs.insert_space_before_closing_paren_in_while_loops);
 		return false;
 	}
 	
@@ -801,7 +803,7 @@ public class CodeFormatterVisitor extends ASTVisitor
 				scribe.space();
 			if(node.getLinkage() != ExternDeclaration.Linkage.DEFAULT)
 				scribe.printNextToken(TOK.TOKidentifier);
-			scribe.printNextToken(TOK.TOKrparen);
+			scribe.printNextToken(TOK.TOKrparen, prefs.insert_space_before_closing_paren_in_extern_declarations);
 		}
 		formatDeclarationBlock(node.declarations(), prefs.brace_position_for_modifiers, true);
 		return false;
@@ -814,7 +816,7 @@ public class CodeFormatterVisitor extends ASTVisitor
 		if(prefs.insert_space_after_opening_paren_in_file_imports)
 			scribe.space();
 		node.getExpression().accept(this);
-		scribe.printNextToken(TOK.TOKrparen);
+		scribe.printNextToken(TOK.TOKrparen, prefs.insert_space_before_closing_paren_in_file_imports);
 		return false;
 	}
 	
@@ -834,7 +836,7 @@ public class CodeFormatterVisitor extends ASTVisitor
 			scribe.space();
 		}
 		node.getExpression().accept(this);
-		scribe.printNextToken(TOK.TOKrparen);
+		scribe.printNextToken(TOK.TOKrparen, prefs.insert_space_before_closing_paren_in_foreach_loops);
 		formatSubStatement(node.getBody(), false, true, !prefs.keep_simple_loop_statement_on_same_line, prefs.brace_position_for_loop_statement);
 		return false;
 	}
@@ -877,7 +879,7 @@ public class CodeFormatterVisitor extends ASTVisitor
 		if(null != increment) {
 			increment.accept(this);
 		}
-		scribe.printNextToken(TOK.TOKrparen);
+		scribe.printNextToken(TOK.TOKrparen, prefs.insert_space_before_closing_paren_in_for_loops);
 		formatSubStatement(node.getBody(), false, true, !prefs.keep_simple_loop_statement_on_same_line, prefs.brace_position_for_loop_statement);
 		return false;
 	}
@@ -894,7 +896,8 @@ public class CodeFormatterVisitor extends ASTVisitor
 		{
 			formatTemplateParams(node.templateParameters(),
 					prefs.insert_space_before_opening_paren_in_function_template_args,
-					prefs.insert_space_after_opening_paren_in_function_template_args);
+					prefs.insert_space_after_opening_paren_in_function_template_args,
+					prefs.insert_space_before_closing_paren_in_function_template_args);
 			templated = true;
 		}
 		else if(hasEmptyTemplateParamList(node))
@@ -902,7 +905,7 @@ public class CodeFormatterVisitor extends ASTVisitor
 			scribe.printNextToken(TOK.TOKlparen, prefs.insert_space_before_opening_paren_in_function_template_args);
 			if(prefs.insert_space_after_opening_paren_in_function_template_args)
 				scribe.space();
-			scribe.printNextToken(TOK.TOKrparen);
+			scribe.printNextToken(TOK.TOKrparen, prefs.insert_space_before_closing_paren_in_function_template_args);
 			templated = true;
 		}
 		if(templated && prefs.insert_space_between_template_and_arg_parens_in_function_declaration)
@@ -989,7 +992,7 @@ public class CodeFormatterVisitor extends ASTVisitor
 			scribe.space();
 		}
 		node.getExpression().accept(this);
-		scribe.printNextToken(TOK.TOKrparen);
+		scribe.printNextToken(TOK.TOKrparen, prefs.insert_space_before_closing_paren_in_if_statements);
 		formatConditionalStatement(node);
 		scribe.printTrailingComment();
 		return false;
@@ -1084,7 +1087,7 @@ public class CodeFormatterVisitor extends ASTVisitor
 			scribe.space();
 			specialization.accept(this);
 		}
-		scribe.printNextToken(TOK.TOKrparen);
+		scribe.printNextToken(TOK.TOKrparen, prefs.insert_space_before_closing_paren_in_is_expressions);
 		return false;
 	}
 	
@@ -1111,7 +1114,7 @@ public class CodeFormatterVisitor extends ASTVisitor
 				TOK.TOKequal : TOK.TOKcolon);
 		scribe.space();
 		scribe.printNextToken(typeSpecializationTokenList());
-		scribe.printNextToken(TOK.TOKrparen);
+		scribe.printNextToken(TOK.TOKrparen, prefs.insert_space_before_closing_paren_in_is_expressions);
 		return false;
 	}
 	
@@ -1133,7 +1136,7 @@ public class CodeFormatterVisitor extends ASTVisitor
 		if(prefs.insert_space_after_opening_paren_in_mixins)
 			scribe.space();
 		node.getExpression().accept(this);
-		scribe.printNextToken(TOK.TOKrparen);
+		scribe.printNextToken(TOK.TOKrparen, prefs.insert_space_before_closing_paren_in_mixins);
 		if(isNextToken(TOK.TOKsemicolon)) {
 			scribe.printNextToken(TOK.TOKsemicolon);
 		}
@@ -1148,7 +1151,7 @@ public class CodeFormatterVisitor extends ASTVisitor
 		if(prefs.insert_space_after_opening_paren_in_mixins)
 			scribe.space();
 		node.getExpression().accept(this);
-		scribe.printNextToken(TOK.TOKrparen);
+		scribe.printNextToken(TOK.TOKrparen, prefs.insert_space_before_closing_paren_in_mixins);
 		return false;
 	}
 	
@@ -1193,7 +1196,7 @@ public class CodeFormatterVisitor extends ASTVisitor
 			if(prefs.insert_space_after_opening_paren_in_new_arguments)
 				scribe.space();
 			formatCSV(node.newArguments(), false, true);
-			scribe.printNextToken(TOK.TOKrparen);
+			scribe.printNextToken(TOK.TOKrparen, prefs.insert_space_before_closing_paren_in_new_arguments);
 		}
 		scribe.space();
 		scribe.printNextToken(TOK.TOKclass);
@@ -1203,7 +1206,7 @@ public class CodeFormatterVisitor extends ASTVisitor
 			if(prefs.insert_space_after_opening_paren_in_function_invocation)
 				scribe.space();
 			formatCSV(node.constructorArguments(), false, true);
-			scribe.printNextToken(TOK.TOKrparen);
+			scribe.printNextToken(TOK.TOKrparen, prefs.insert_space_before_closing_paren_in_function_invocation);
 		}
 		List<BaseClass> baseClasses = node.baseClasses();
 		if(null != baseClasses && !baseClasses.isEmpty());
@@ -1230,7 +1233,7 @@ public class CodeFormatterVisitor extends ASTVisitor
 			if(prefs.insert_space_after_opening_paren_in_new_arguments)
 				scribe.space();
 			formatCSV(node.newArguments(), false, true);
-			scribe.printNextToken(TOK.TOKrparen);
+			scribe.printNextToken(TOK.TOKrparen, prefs.insert_space_before_closing_paren_in_new_arguments);
 		}
 		scribe.space();
 		Type type = node.getType();
@@ -1250,7 +1253,7 @@ public class CodeFormatterVisitor extends ASTVisitor
 			if(prefs.insert_space_after_opening_paren_in_function_invocation)
 				scribe.space();
 			formatCSV(node.constructorArguments(), false, true);
-			scribe.printNextToken(TOK.TOKrparen);
+			scribe.printNextToken(TOK.TOKrparen, prefs.insert_space_before_closing_paren_in_function_invocation);
 		}
 		return false;
 	}
@@ -1269,9 +1272,11 @@ public class CodeFormatterVisitor extends ASTVisitor
 	
 	public boolean visit(ParenthesizedExpression node)
 	{
-		scribe.printNextToken(TOK.TOKlparen);
+		scribe.printNextToken(TOK.TOKlparen, prefs.insert_space_before_opening_paren_in_parenthesized_expressions);
+		if(prefs.insert_space_after_opening_paren_in_parenthesized_expressions)
+			scribe.space();
 		node.getExpression().accept(this);
-		scribe.printNextToken(TOK.TOKrparen);
+		scribe.printNextToken(TOK.TOKrparen, prefs.insert_space_before_closing_paren_in_parenthesized_expressions);
 		return false;
 	}
 	
@@ -1311,7 +1316,7 @@ public class CodeFormatterVisitor extends ASTVisitor
 			scribe.space();
 			formatCSV(args, false, true);
 		}
-		scribe.printNextToken(TOK.TOKrparen);
+		scribe.printNextToken(TOK.TOKrparen, prefs.insert_space_before_closing_paren_in_pragmas);
 		if(!node.declarations().isEmpty())
 			formatDeclarationBlock(node.declarations(), prefs.brace_position_for_other_blocks, true);
 		if(isNextToken(TOK.TOKsemicolon))
@@ -1334,7 +1339,7 @@ public class CodeFormatterVisitor extends ASTVisitor
 			scribe.space();
 			formatCSV(args, false, true);
 		}
-		scribe.printNextToken(TOK.TOKrparen);
+		scribe.printNextToken(TOK.TOKrparen, prefs.insert_space_before_closing_paren_in_pragmas);
 		Statement body = node.getBody();
 		if(null != body) {
 			formatSubStatement(body, false, true, true, prefs.brace_position_for_other_blocks);
@@ -1409,7 +1414,7 @@ public class CodeFormatterVisitor extends ASTVisitor
 		if(prefs.insert_space_after_opening_paren_in_scope_statements)
 			scribe.space();
 		scribe.printNextToken(TOK.TOKidentifier);
-		scribe.printNextToken(TOK.TOKrparen);
+		scribe.printNextToken(TOK.TOKrparen, prefs.insert_space_before_closing_paren_in_scope_statements);
 		formatSubStatement(node.getBody(), false, true, true, prefs.brace_position_for_scope_statement);
 		scribe.printTrailingComment();
 		return false;
@@ -1437,9 +1442,11 @@ public class CodeFormatterVisitor extends ASTVisitor
 		// parser might make it a SimpleName, not a ParenthesizedExpression
 		if(isNextToken(TOK.TOKlparen))
 		{
-			scribe.printNextToken(TOK.TOKlparen);
+			scribe.printNextToken(TOK.TOKlparen, prefs.insert_space_before_opening_paren_in_parenthesized_expressions);
+			if(prefs.insert_space_after_opening_paren_in_parenthesized_expressions)
+				scribe.space();
 			scribe.printNextToken(TOK.TOKidentifier);
-			scribe.printNextToken(TOK.TOKrparen);
+			scribe.printNextToken(TOK.TOKrparen, prefs.insert_space_before_closing_paren_in_parenthesized_expressions);
 		}
 		else
 			scribe.printNextToken(TOK.TOKidentifier);
@@ -1505,7 +1512,7 @@ public class CodeFormatterVisitor extends ASTVisitor
 			scribe.space();
 			message.accept(this);
 		}
-		scribe.printNextToken(TOK.TOKrparen);
+		scribe.printNextToken(TOK.TOKrparen, prefs.insert_space_before_closing_paren_in_assert_statements);
 		if(isNextToken(TOK.TOKsemicolon)) {
 			scribe.printNextToken(TOK.TOKsemicolon);
 		}
@@ -1528,7 +1535,7 @@ public class CodeFormatterVisitor extends ASTVisitor
 		if(prefs.insert_space_after_opening_paren_in_if_statements)
 			scribe.space();
 		node.getExpression().accept(this);
-		scribe.printNextToken(TOK.TOKrparen);
+		scribe.printNextToken(TOK.TOKrparen, prefs.insert_space_before_closing_paren_in_if_statements);
 		formatConditionalDeclaration(node);
 		scribe.printTrailingComment();
 		return false;
@@ -1543,7 +1550,7 @@ public class CodeFormatterVisitor extends ASTVisitor
 		if(prefs.insert_space_after_opening_paren_in_if_statements)
 			scribe.space();
 		node.getExpression().accept(this);
-		scribe.printNextToken(TOK.TOKrparen);
+		scribe.printNextToken(TOK.TOKrparen, prefs.insert_space_before_closing_paren_in_if_statements);
 		formatConditionalStatement(node);
 		scribe.printTrailingComment();
 		return false;
@@ -1617,8 +1624,8 @@ public class CodeFormatterVisitor extends ASTVisitor
 		if(prefs.insert_space_after_opening_paren_in_switch_statements)
 			scribe.space();
 		node.getExpression().accept(this);
-		scribe.printNextToken(TOK.TOKrparen);
-		formatSubStatement(node.getBody(), false, true, !prefs.keep_simple_switch_statement_on_same_line, prefs.brace_position_for_switch_statement);
+		scribe.printNextToken(TOK.TOKrparen, prefs.insert_space_before_closing_paren_in_switch_statements);
+		formatSubStatement(node.getBody(), false, true, true, prefs.brace_position_for_switch_statement);
 		scribe.printTrailingComment();
 		return false;
 	}
@@ -1633,7 +1640,7 @@ public class CodeFormatterVisitor extends ASTVisitor
 			if(prefs.insert_space_after_opening_paren_in_synchronized_statement)
 				scribe.space();
 			expression.accept(this);
-			scribe.printNextToken(TOK.TOKrparen);
+			scribe.printNextToken(TOK.TOKrparen, prefs.insert_space_before_closing_paren_in_synchronized_statement);
 		}
 		formatSubStatement(node.getBody(), false, true, !prefs.keep_simple_synchronized_statement_on_same_line, prefs.brace_position_for_synchronized_statement);
 		scribe.printTrailingComment();
@@ -1650,7 +1657,7 @@ public class CodeFormatterVisitor extends ASTVisitor
 		if(prefs.insert_space_after_opening_paren_in_template_declarations)
 			scribe.space();
 		formatCSV(node.templateParameters(), false, true);
-		scribe.printNextToken(TOK.TOKrparen);
+		scribe.printNextToken(TOK.TOKrparen, prefs.insert_space_before_closing_paren_in_template_declarations);
 		formatDeclarationBlock(node.declarations(), prefs.brace_position_for_template_declaration, prefs.indent_body_declarations_compare_to_template_header);
 		scribe.printTrailingComment();
 		return false;
@@ -1680,8 +1687,11 @@ public class CodeFormatterVisitor extends ASTVisitor
 		node.getName().accept(this);
 		scribe.printNextToken(TOK.TOKnot);
 		scribe.printNextToken(TOK.TOKlparen);
+		if(prefs.insert_space_after_opening_paren_in_template_invocation)
+			scribe.space();
+		
 		formatCSV(node.arguments(), false, true);
-		scribe.printNextToken(TOK.TOKrparen);
+		scribe.printNextToken(TOK.TOKrparen, prefs.insert_space_before_closing_paren_in_template_invocation);
 		if(isNextToken(TOK.TOKlparen) && prefs.insert_space_between_template_args_and_function_args)
 			scribe.space();
 		return false;
@@ -1770,9 +1780,11 @@ public class CodeFormatterVisitor extends ASTVisitor
 	{
 		if(isNextToken(TOK.TOKlparen))
 		{
-			scribe.printNextToken(TOK.TOKlparen);
+			scribe.printNextToken(TOK.TOKlparen, prefs.insert_space_before_opening_paren_in_type_dot_identifier_expression);
+			if(prefs.insert_space_after_opening_paren_in_type_dot_identifier_expression)
+				scribe.space();
 			node.getType().accept(this);
-			scribe.printNextToken(TOK.TOKrparen);
+			scribe.printNextToken(TOK.TOKrparen, prefs.insert_space_before_closing_paren_in_type_dot_identifier_expression);
 		}
 		else
 			node.getType().accept(this);
@@ -1794,7 +1806,7 @@ public class CodeFormatterVisitor extends ASTVisitor
 		if(prefs.insert_space_after_opening_paren_in_typeid_statements)
 			scribe.space();
 		node.getType().accept(this);
-		scribe.printNextToken(TOK.TOKrparen);
+		scribe.printNextToken(TOK.TOKrparen, prefs.insert_space_before_closing_paren_in_typeid_statements);
 		return false;
 	}
 	
@@ -1805,7 +1817,7 @@ public class CodeFormatterVisitor extends ASTVisitor
 		if(prefs.insert_space_after_opening_paren_in_typeof_statements)
 			scribe.space();
 		node.getExpression().accept(this);
-		scribe.printNextToken(TOK.TOKrparen);
+		scribe.printNextToken(TOK.TOKrparen, prefs.insert_space_before_closing_paren_in_typeof_statements);
 		return false;
 	}
 	
@@ -1939,7 +1951,7 @@ public class CodeFormatterVisitor extends ASTVisitor
 			if(prefs.insert_space_after_opening_paren_in_version_debug)
 				scribe.space();
 			version.accept(this);
-			scribe.printNextToken(TOK.TOKrparen);
+			scribe.printNextToken(TOK.TOKrparen, prefs.insert_space_before_closing_paren_in_version_debug);
 		}
 		formatConditionalDeclaration(node);
 		scribe.printTrailingComment();
@@ -1956,7 +1968,7 @@ public class CodeFormatterVisitor extends ASTVisitor
 			if(prefs.insert_space_after_opening_paren_in_version_debug)
 				scribe.space();
 			version.accept(this);
-			scribe.printNextToken(TOK.TOKrparen);
+			scribe.printNextToken(TOK.TOKrparen, prefs.insert_space_before_closing_paren_in_version_debug);
 		}
 		formatConditionalStatement(node);
 		scribe.printTrailingComment();
@@ -1991,7 +2003,7 @@ public class CodeFormatterVisitor extends ASTVisitor
 		if(prefs.insert_space_after_opening_paren_in_while_loops)
 			scribe.space();
 		node.getExpression().accept(this);
-		scribe.printNextToken(TOK.TOKrparen);
+		scribe.printNextToken(TOK.TOKrparen, prefs.insert_space_before_closing_paren_in_while_loops);
 		formatSubStatement(node.getBody(), false, true, !prefs.keep_simple_loop_statement_on_same_line, prefs.brace_position_for_loop_statement);
 		scribe.printTrailingComment();
 		return false;
@@ -2004,7 +2016,7 @@ public class CodeFormatterVisitor extends ASTVisitor
 		if(prefs.insert_space_after_opening_paren_in_with_statements)
 			scribe.space();
 		node.getExpression().accept(this);
-		scribe.printNextToken(TOK.TOKrparen);
+		scribe.printNextToken(TOK.TOKrparen, prefs.insert_space_before_closing_paren_in_with_statements);
 		formatSubStatement(node.getBody(), false, true, !prefs.keep_simple_with_statement_on_same_line, prefs.brace_position_for_with_statement);
 		scribe.printTrailingComment();
 		return false;
@@ -2226,7 +2238,7 @@ public class CodeFormatterVisitor extends ASTVisitor
 				}
 				scribe.printNextToken(TOK.TOKdotdotdot);	
 			}
-			scribe.printNextToken(TOK.TOKrparen, this.prefs.insert_space_before_closing_paren_in_function_declaration);
+			scribe.printNextToken(TOK.TOKrparen, this.prefs.insert_space_before_closing_paren_in_function_declaration_parameters);
 		}
 		
 		Block in   = (Block) node.getPrecondition();
@@ -2265,7 +2277,7 @@ public class CodeFormatterVisitor extends ASTVisitor
 							SimpleName name = node.getPostconditionVariableName();
 							if(null != name)
 								scribe.printNextToken(TOK.TOKidentifier);
-							scribe.printNextToken(TOK.TOKrparen);
+							scribe.printNextToken(TOK.TOKrparen, prefs.insert_space_before_closing_paren_in_out_declaration);
 						}
 						formatSubStatement(out, false, prefs.indent_statements_compare_to_function_out_header, true, bracePosition);
 						continue loop;
@@ -2571,7 +2583,8 @@ public class CodeFormatterVisitor extends ASTVisitor
 	
 	private void formatTemplateParams(List<TemplateParameter> tp,
 			boolean spaceBeforeOpeningParen,
-			boolean spaceAfterOpeningParen)
+			boolean spaceAfterOpeningParen,
+			boolean spaceBeforeClosingParen)
 	{
 		if(tp.isEmpty())
 			return;
@@ -2579,7 +2592,7 @@ public class CodeFormatterVisitor extends ASTVisitor
 		if(spaceAfterOpeningParen)
 			scribe.space();
 		formatCSV(tp, false, true);
-		scribe.printNextToken(TOK.TOKrparen);
+		scribe.printNextToken(TOK.TOKrparen, spaceBeforeClosingParen);
 	}
 	
 	private void formatPostfixedDeclarations()
