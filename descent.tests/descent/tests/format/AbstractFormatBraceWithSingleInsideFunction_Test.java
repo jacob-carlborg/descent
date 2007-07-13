@@ -27,14 +27,18 @@ public abstract class AbstractFormatBraceWithSingleInsideFunction_Test extends A
 	
 	public void testDontIndentSingleStatement() throws Exception {
 		Map options = getDefaultOptions();
-		options.put(getKeepSimpleStatementInSameLineOption(), DefaultCodeFormatterConstants.TRUE);
-		assertFormat(
-				getFormattedPrefixForBrace() + " int x;", 
+		String option = getKeepSimpleStatementInSameLineOption();
+		if(null != option)
+		{
+			options.put(option, DefaultCodeFormatterConstants.TRUE);
+			assertFormat(
+					getFormattedPrefixForBrace() + " int x;", 
 				
-				getUnformattedPrefixForBrace() + "  int   x ;",
+					getUnformattedPrefixForBrace() + "  int   x ;",
 					
-				options
-			);
+					options
+				);
+		}
 	}
 
 }

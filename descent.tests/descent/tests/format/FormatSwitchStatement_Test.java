@@ -20,7 +20,7 @@ public class FormatSwitchStatement_Test extends AbstractFormatBraceWithSingleIns
 	
 	@Override
 	protected String getKeepSimpleStatementInSameLineOption() {
-		return DefaultCodeFormatterConstants.FORMATTER_KEEP_SIMPLE_SWITCH_STATEMENT_ON_SAME_LINE;
+		return null;
 	}
 	
 	@Override
