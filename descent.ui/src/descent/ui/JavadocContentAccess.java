@@ -80,20 +80,19 @@ public class JavadocContentAccess {
 			return null; // no source attachment found
 		}
 		
-		ISourceRange javadocRange= member.getJavadocRange();
-		if (javadocRange != null) {
-			DdocParser parser = new DdocParser(buf.getText(javadocRange.getOffset(), javadocRange.getLength()));
-			Ddoc ddoc = parser.parse();
-			
+		ISourceRange[] javadocRanges= member.getJavadocRanges();
+		if (javadocRanges.length > 0) {
+			Ddoc ddoc = null;
+			for(ISourceRange javadocRange : javadocRanges) {
+				DdocParser parser = new DdocParser(buf.getText(javadocRange.getOffset(), javadocRange.getLength()));
+				Ddoc ddoc2 = parser.parse();
+				if (ddoc == null) {
+					ddoc = ddoc2;
+				} else {
+					ddoc.merge(ddoc2);
+				}
+			}			
 			return getDdocReader(ddoc, member);
-			
-			/*
-			JavaDocCommentReader reader= new JavaDocCommentReader(buf, javadocRange.getOffset(), javadocRange.getOffset() + javadocRange.getLength() - 1);
-			if (!containsOnlyInheritDoc(reader, javadocRange.getLength())) {
-				reader.reset();
-				return reader;
-			}
-			*/
 		}
 
 		if (allowInherited && (member.getElementType() == IJavaElement.METHOD)) {

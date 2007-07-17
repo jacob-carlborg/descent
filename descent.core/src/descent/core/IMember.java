@@ -93,7 +93,7 @@ int getFlags() throws JavaModelException;
  * @see IOpenable#isConsistent()
  * @since 3.2
  */
-ISourceRange getJavadocRange() throws JavaModelException;
+ISourceRange[] getJavadocRanges() throws JavaModelException;
 /**
  * Returns the source range of this member's simple name,
  * or <code>null</code> if this member does not have a name

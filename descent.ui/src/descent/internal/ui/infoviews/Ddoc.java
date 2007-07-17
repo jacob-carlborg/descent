@@ -35,4 +35,19 @@ public class Ddoc {
 		return macrosSection;
 	}
 
+	public void merge(Ddoc other) {
+		for(DdocSection otherSection : other.getSections()) {
+			switch(otherSection.getKind()) {
+			case DdocSection.NORMAL_SECTION:
+			case DdocSection.CODE_SECTION:
+				addSection(otherSection);
+				break;
+			case DdocSection.PARAMS_SECTION:
+			case DdocSection.MACROS_SECTION:
+				paramsSection.addParameters(otherSection.getParameters());
+				break;
+			}
+		}
+	}
+
 }

@@ -11,6 +11,7 @@
 package descent.internal.core;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import descent.core.Flags;
 import descent.core.IBuffer;
@@ -23,12 +24,11 @@ import descent.core.ISourceRange;
 import descent.core.IType;
 import descent.core.JavaModelException;
 import descent.core.Signature;
-import descent.core.ToolFactory;
 import descent.core.WorkingCopyOwner;
-import descent.core.compiler.IScanner;
-import descent.core.compiler.ITerminalSymbols;
-import descent.core.compiler.InvalidInputException;
 import descent.core.dom.AST;
+import descent.core.dom.ASTParser;
+import descent.core.dom.DDocComment;
+import descent.core.dom.Declaration;
 import descent.internal.core.util.MementoTokenizer;
 
 /**
@@ -263,7 +263,7 @@ public Member getOuterMostLocalContext() {
 	} 
 	return lastLocalContext;
 }
-public ISourceRange getJavadocRange() throws JavaModelException {
+public ISourceRange[] getJavadocRanges() throws JavaModelException {
 	ISourceRange range= this.getSourceRange();
 	if (range == null) return null;
 	IBuffer buf= null;
@@ -278,42 +278,25 @@ public ISourceRange getJavadocRange() throws JavaModelException {
 	}
 	final int start= range.getOffset();
 	final int length= range.getLength();
-	if (length > 0 && buf.getChar(start) == '/') {
-		IScanner scanner= ToolFactory.createScanner(true, false, false, false, AST.LATEST);
-		scanner.setSource(buf.getText(start, length).toCharArray());
-		try {
-			int docOffset= -1;
-			int docEnd= -1;
-			
-			int terminal= scanner.getNextToken();
-			loop: while (true) {
-				switch(terminal) {
-					case ITerminalSymbols.TokenNameCOMMENT_DOC_LINE:
-					case ITerminalSymbols.TokenNameCOMMENT_DOC_BLOCK:
-					case ITerminalSymbols.TokenNameCOMMENT_DOC_PLUS:
-						if (docEnd == -1) {
-							docOffset= scanner.getCurrentTokenStartPosition();
-						}
-						docEnd= scanner.getCurrentTokenEndPosition();
-						terminal= scanner.getNextToken();
-						continue loop;
-					case ITerminalSymbols.TokenNameCOMMENT_LINE :
-					case ITerminalSymbols.TokenNameCOMMENT_BLOCK :
-					case ITerminalSymbols.TokenNameCOMMENT_PLUS :
-						terminal= scanner.getNextToken();
-						continue loop;
-					default :
-						break loop;
-				}
-			}
-			if (docOffset != -1) {
-				return new SourceRange(docOffset + start, docEnd - docOffset + 1);
-			}
-		} catch (InvalidInputException ex) {
-			// try if there is inherited Javadoc
-		}
+	
+	ASTParser parser = ASTParser.newParser(AST.LATEST);
+	parser.setSource(buf.getText(start, length).toCharArray());
+	parser.setKind(ASTParser.K_COMPILATION_UNIT);
+	descent.core.dom.CompilationUnit unit = (descent.core.dom.CompilationUnit) parser.createAST(null);
+	Declaration declaration = unit.declarations().get(0);
+	
+	List<ISourceRange> sourceRanges = new ArrayList<ISourceRange>(1);
+	for(DDocComment ddoc : declaration.preDDocs()) {
+		sourceRanges.add(new SourceRange(start + ddoc.getStartPosition(),
+					ddoc.getLength()));
 	}
-	return null;
+	
+	if (declaration.getPostDDoc() != null) {
+		sourceRanges.add(new SourceRange(start + declaration.preDDocs().get(0).getStartPosition(),
+				declaration.preDDocs().get(0).getLength()));
+	}
+
+	return sourceRanges.toArray(new ISourceRange[sourceRanges.size()]);
 }
 /**
  * @see IMember

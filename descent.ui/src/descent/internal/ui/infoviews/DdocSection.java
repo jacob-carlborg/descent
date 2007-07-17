@@ -65,5 +65,14 @@ public class DdocSection {
 		}		
 		return parameters;
 	}
+	
+	void addParameters(Parameter[] others) {
+		if (others.length == 0) return;
+		
+		Parameter[] newParameters = new Parameter[parameters.length + others.length];
+		System.arraycopy(parameters, 0, newParameters, 0, parameters.length);
+		System.arraycopy(others, 0, newParameters, parameters.length, others.length);
+		parameters = newParameters;
+	}
 
 }
