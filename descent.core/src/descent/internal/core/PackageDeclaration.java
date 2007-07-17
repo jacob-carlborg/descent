@@ -10,8 +10,14 @@
  *******************************************************************************/
 package descent.internal.core;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import descent.core.*;
-import descent.core.IPackageDeclaration;
+import descent.core.compiler.IScanner;
+import descent.core.compiler.ITerminalSymbols;
+import descent.core.compiler.InvalidInputException;
+import descent.core.dom.AST;
 
 /**
  * @see IPackageDeclaration
@@ -51,6 +57,51 @@ public IJavaElement getPrimaryElement(boolean checkOwner) {
 	CompilationUnit cu = (CompilationUnit)getAncestor(COMPILATION_UNIT);
 	if (checkOwner && cu.isPrimary()) return this;
 	return cu.getPackageDeclaration(this.name);
+}
+public ISourceRange[] getJavadocRanges() throws JavaModelException {
+	ISourceRange range= this.getSourceRange();
+	if (range == null) return null;
+	IBuffer buf= null;
+	ICompilationUnit compilationUnit = this.getCompilationUnit();
+	if (!compilationUnit.isConsistent()) {
+		return null;
+	}
+	buf = compilationUnit.getBuffer();
+	
+	List<ISourceRange> sourceRanges = new ArrayList<ISourceRange>();
+	
+	final int start= range.getOffset();
+	final int length= range.getLength();
+	if (length > 0 && buf.getChar(start) == '/') {
+		IScanner scanner= ToolFactory.createScanner(true, false, false, false, AST.LATEST);
+		scanner.setSource(buf.getText(start, length).toCharArray());
+		try {
+			int terminal= scanner.getNextToken();
+			loop: while (true) {
+				switch(terminal) {
+					case ITerminalSymbols.TokenNameCOMMENT_DOC_LINE:
+					case ITerminalSymbols.TokenNameCOMMENT_DOC_BLOCK:
+					case ITerminalSymbols.TokenNameCOMMENT_DOC_PLUS:
+						sourceRanges.add(new SourceRange(
+								scanner.getCurrentTokenStartPosition(),
+								scanner.getCurrentTokenEndPosition() - scanner.getCurrentTokenStartPosition()
+								));
+						terminal= scanner.getNextToken();
+						continue loop;
+					case ITerminalSymbols.TokenNameCOMMENT_LINE :
+					case ITerminalSymbols.TokenNameCOMMENT_BLOCK :
+					case ITerminalSymbols.TokenNameCOMMENT_PLUS :
+						terminal= scanner.getNextToken();
+						continue loop;
+					default :
+						break loop;
+				}
+			}
+		} catch (InvalidInputException ex) {
+			// try if there is inherited Javadoc
+		}
+	}
+	return sourceRanges.toArray(new ISourceRange[sourceRanges.size()]);
 }
 /**
  * @private Debugging purposes

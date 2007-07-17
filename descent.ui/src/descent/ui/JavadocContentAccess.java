@@ -27,6 +27,7 @@ import descent.core.IBuffer;
 import descent.core.IJavaElement;
 import descent.core.IMember;
 import descent.core.IMethod;
+import descent.core.IPackageDeclaration;
 import descent.core.ISourceRange;
 import descent.core.JavaModelException;
 import descent.core.ToolFactory;
@@ -80,7 +81,30 @@ public class JavadocContentAccess {
 			return null; // no source attachment found
 		}
 		
-		ISourceRange[] javadocRanges= member.getJavadocRanges();
+		return getContentReader(buf, member.getJavadocRanges(), member);
+	}
+	
+	/**
+	 * Gets a reader for an IPackageDeclaration's Javadoc comment content from the source attachment.
+	 * The content does contain only the text from the comment without the Javadoc leading star characters.
+	 * Returns <code>null</code> if the member does not contain a Javadoc comment or if no source is available.
+	 * @param member The member to get the Javadoc of.
+	 * @param allowInherited For methods with no (Javadoc) comment, the comment of the overridden class
+	 * is returned if <code>allowInherited</code> is <code>true</code>.
+	 * @return Returns a reader for the Javadoc comment content or <code>null</code> if the member
+	 * does not contain a Javadoc comment or if no source is available
+	 * @throws JavaModelException is thrown when the elements javadoc can not be accessed
+	 */
+	public static Reader getContentReader(IPackageDeclaration member) throws JavaModelException {
+		IBuffer buf= member.getOpenable().getBuffer();
+		if (buf == null) {
+			return null; // no source attachment found
+		}
+		
+		return getContentReader(buf, member.getJavadocRanges(), null);
+	}
+	
+	public static Reader getContentReader(IBuffer buf, ISourceRange[] javadocRanges, IMember member) throws JavaModelException {
 		if (javadocRanges.length > 0) {
 			Ddoc ddoc = null;
 			for(ISourceRange javadocRange : javadocRanges) {
@@ -93,10 +117,6 @@ public class JavadocContentAccess {
 				}
 			}			
 			return getDdocReader(ddoc, member);
-		}
-
-		if (allowInherited && (member.getElementType() == IJavaElement.METHOD)) {
-			return findDocInHierarchy((IMethod) member);
 		}
 		
 		return null;
@@ -114,7 +134,7 @@ public class JavadocContentAccess {
 		Map<String, String> macros = mergeMacros(ddoc, defaultMacros);
 		
 		Map<String, String> parameters;
-		if (showParameterTypes && member.getElementType() == IJavaElement.METHOD) {
+		if (showParameterTypes && member != null && member.getElementType() == IJavaElement.METHOD) {
 			IMethod method = (IMethod) member;
 			try {
 				String[] parameterNames = method.getParameterNames();
@@ -503,23 +523,34 @@ public class JavadocContentAccess {
 		return null;
 	}
 	
-	
-
 	/**
-	 * Gets a reader for an IMember's Javadoc comment content from the source attachment.
+	 * Gets a reader for an IPackageDeclaration's Javadoc comment content from the source attachment.
 	 * and renders the tags in HTML. 
 	 * Returns <code>null</code> if the member does not contain a Javadoc comment or if no source is available.
 	 * 
-	 * @param member The member to get the Javadoc of.
-	 * @param allowInherited For methods with no (Javadoc) comment, the comment of the overridden class
-	 * is returned if <code>allowInherited</code> is <code>true</code>.
-	 * @return Returns a reader for the Javadoc comment content in HTML or <code>null</code> if the member
-	 * does not contain a Javadoc comment or if no source is available
-	 * @throws JavaModelException is thrown when the elements javadoc can not be accessed
-	 * @deprecated As of 3.2, replaced by {@link #getHTMLContentReader(IMember, boolean, boolean)}
+	 * @param member				the member to get the Javadoc of.
+	 * @param useAttachedJavadoc	if <code>true</code> Javadoc will be extracted from attached Javadoc
+	 * 									if there's no source
+	 * @return a reader for the Javadoc comment content in HTML or <code>null</code> if the member
+	 * 			does not contain a Javadoc comment or if no source is available
+	 * @throws JavaModelException is thrown when the elements Javadoc can not be accessed
+	 * @since 3.2
 	 */
-	public static Reader getHTMLContentReader(IMember member, boolean allowInherited) throws JavaModelException {
-		return getHTMLContentReader(member, allowInherited, false);
+	public static Reader getHTMLContentReader(IPackageDeclaration member, boolean useAttachedJavadoc) throws JavaModelException {
+		Reader contentReader= getContentReader(member);
+		if (contentReader != null) {
+			// return new JavaDoc2HTMLTextReader(contentReader);
+			return contentReader;
+		}
+		
+		if (useAttachedJavadoc && member.getOpenable().getBuffer() == null) { // only if no source available
+			/* TODO JDT UI attached javadoc
+			String s= member.getAttachedJavadoc(null);
+			if (s != null)
+				return new StringReader(s);
+			*/
+		}
+		return null;
 	}
 
 	private static Reader findDocInHierarchy(IMethod method) throws JavaModelException {

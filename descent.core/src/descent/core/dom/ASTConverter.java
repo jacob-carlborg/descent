@@ -450,6 +450,8 @@ public class ASTConverter {
 					insertAt = 0;
 				}
 				decl.modifiers().add(insertAt, modifier);
+				decl.preDDocs().addAll(a.preDdocs);
+				decl.postDDoc = a.postDdoc;
 				
 				decl.setSourceRange(a.start, a.length);
 				return decl;

@@ -43,8 +43,18 @@ public class Ddoc {
 				addSection(otherSection);
 				break;
 			case DdocSection.PARAMS_SECTION:
+				if (paramsSection == null) {
+					paramsSection = otherSection;
+				} else {
+					paramsSection.addParameters(otherSection.getParameters());
+				}
+				break;
 			case DdocSection.MACROS_SECTION:
-				paramsSection.addParameters(otherSection.getParameters());
+				if (macrosSection == null) {
+					macrosSection = otherSection;
+				} else {
+					macrosSection.addParameters(otherSection.getParameters());
+				}
 				break;
 			}
 		}

@@ -6,7 +6,6 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.net.URL;
 
-import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.ListenerList;
 import org.eclipse.core.runtime.Platform;
@@ -14,7 +13,6 @@ import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.dialogs.MessageDialogWithToggle;
 import org.eclipse.jface.preference.IPreferenceStore;
-import org.eclipse.jface.preference.PreferenceConverter;
 import org.eclipse.jface.resource.StringConverter;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.BadPartitioningException;
@@ -59,7 +57,7 @@ import descent.core.ICompilationUnit;
 import descent.core.IJavaElement;
 import descent.core.IJavaProject;
 import descent.core.IMember;
-import descent.core.IPackageFragmentRoot;
+import descent.core.IPackageDeclaration;
 import descent.core.JavaModelException;
 import descent.internal.ui.IJavaHelpContextIds;
 import descent.internal.ui.JavaPlugin;
@@ -67,7 +65,6 @@ import descent.internal.ui.javaeditor.JavaEditor;
 import descent.internal.ui.text.HTMLPrinter;
 import descent.internal.ui.text.HTMLTextPresenter;
 import descent.ui.JavaElementLabels;
-import descent.ui.JavaUI;
 import descent.ui.JavadocContentAccess;
 import descent.ui.PreferenceConstants;
 import descent.ui.text.IJavaColorConstants;
@@ -483,7 +480,7 @@ public class JavadocView extends AbstractInfoView {
 		switch (je.getElementType()) {
 			case IJavaElement.COMPILATION_UNIT:
 				try {
-					javadocHtml= getJavadocHtml(((ICompilationUnit)je).getTypes());
+					javadocHtml= getJavadocHtml(((ICompilationUnit) je).getPackageDeclarations());
 				} catch (JavaModelException ex) {
 					javadocHtml= null;
 				}
@@ -562,28 +559,46 @@ public class JavadocView extends AbstractInfoView {
 		} else {
 
 			IJavaElement curr= result[0];
+			
+			Reader reader = null;
 			if (curr instanceof IMember) {
 				IMember member= (IMember) curr;
 //				HTMLPrinter.addSmallHeader(buffer, getInfoText(member));
-				Reader reader;
 				try {
 					reader= JavadocContentAccess.getHTMLContentReader(member, true, true);
 					
+					/* TODO JDT UI attached javadoc
 					// Provide hint why there's no Javadoc
 					if (reader == null && member.isBinary()) {
 						IPackageFragmentRoot root= (IPackageFragmentRoot)member.getAncestor(IJavaElement.PACKAGE_FRAGMENT_ROOT);
-						/* TODO JDT UI attached javadoc
 						if (root != null && root.getSourceAttachmentPath() == null && root.getAttachedJavadoc(null) == null)
 							reader= new StringReader(InfoViewMessages.JavadocView_noAttachedInformation);
-						*/
 					}
+					*/					
+				} catch (JavaModelException ex) {
+					return null;
+				}				
+			} else if (curr instanceof IPackageDeclaration) {
+				IPackageDeclaration member= (IPackageDeclaration) curr;
+//				HTMLPrinter.addSmallHeader(buffer, getInfoText(member));
+				try {
+					reader= JavadocContentAccess.getHTMLContentReader(member, true);
 					
+					/* TODO JDT UI attached javadoc
+					// Provide hint why there's no Javadoc
+					if (reader == null && member.isBinary()) {
+						IPackageFragmentRoot root= (IPackageFragmentRoot)member.getAncestor(IJavaElement.PACKAGE_FRAGMENT_ROOT);
+						if (root != null && root.getSourceAttachmentPath() == null && root.getAttachedJavadoc(null) == null)
+							reader= new StringReader(InfoViewMessages.JavadocView_noAttachedInformation);
+					}
+					*/					
 				} catch (JavaModelException ex) {
 					return null;
 				}
-				if (reader != null) {
-					HTMLPrinter.addParagraph(buffer, reader);
-				}
+			}
+			
+			if (reader != null) {
+				HTMLPrinter.addParagraph(buffer, reader);
 			}
 		}
 
