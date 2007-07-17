@@ -159,6 +159,16 @@ final class FormatterMessages extends NLS {
 	public static String WhiteSpaceOptions_parenthesized_expressions;
 	public static String WhiteSpaceOptions_template_invocation;
 	public static String WhiteSpaceOptions_type_dot_identifier_expression_parens;
+	public static String WhiteSpaceOptions_array_literal;
+	public static String WhiteSpaceOptions_alias_typedef_declaration;
+	public static String WhiteSpaceOptions_struct_initalizer;
+	public static String WhiteSpaceOptions_array_slice;
+	public static String WhiteSpaceOptions_import_declaration;
+	public static String WhiteSpaceOptions_base_class_lists;
+	public static String WhiteSpaceOptions_multiple_imports;
+	public static String WhiteSpaceOptions_selective_imports;
+	public static String WhiteSpaceOptions_before_trailing_comma;
+	public static String WhiteSpaceOptions_after_trailing_comma;
 	
 	// White space options - syntax elements
 	public static String WhiteSpaceOptions_before_semicolon;
@@ -176,6 +186,13 @@ final class FormatterMessages extends NLS {
 	public static String WhiteSpaceOptions_between_succesive_opcalls;
 	public static String WhiteSpaceOptions_before_paren_in_argument_list;
 	public static String WhiteSpaceOptions_before_opening_paren_in_parameter_list;
+	public static String WhiteSpaceOptions_before_comma_in_multiple_imports;
+	public static String WhiteSpaceOptions_before_comma_in_selective_imports;
+	public static String WhiteSpaceOptions_after_comma_in_multiple_imports;
+	public static String WhiteSpaceOptions_after_comma_in_selective_imports;
+	public static String WhiteSpaceOptions_before_comma_in_base_class_lists;
+	public static String WhiteSpaceOptions_after_comma_in_base_class_lists;
+	public static String WhiteSpaceOptions_trailing_comma_in_array_literal;
 	
 	// Blank lines tab page
 	public static String ModifyDialog_tabpage_blank_lines_title;
