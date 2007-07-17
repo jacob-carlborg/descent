@@ -19,6 +19,7 @@ public abstract class AbstractFormatBrace_Test extends AbstractFormatter_Test {
 	protected Map getDefaultOptions() {
 		Map options = new HashMap();
 		options.put(getIndentCompareToParentOptionName(), DefaultCodeFormatterConstants.TRUE);
+		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_OPENING_PAREN_IN_TEMPLATE_DECLARATIONS, DefaultCodeFormatterConstants.TRUE);
 		return options;
 	}
 	

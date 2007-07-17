@@ -136,7 +136,7 @@ public class DdocParser {
 				if (equalsIndex == -1) {
 					if (currentParameterName != null) {
 						if (currentParameterText.length() > 0) {
-							currentParameterText.append(" "); //$NON-NLS-1$
+							appendSpace(currentParameterText);
 						}
 						currentParameterText.append(line);
 					}
@@ -153,7 +153,7 @@ public class DdocParser {
 			}
 			
 			if (currentSectionText.length() > 0) {
-				currentSectionText.append(" "); //$NON-NLS-1$
+				appendSpace(currentSectionText);
 			}
 			currentSectionText.append(line);
 		}
@@ -240,6 +240,14 @@ public class DdocParser {
 		}
 		
 		return true;
+	}
+	
+	private void appendSpace(StringBuilder sb) {
+		if (currentSectionType == DdocSection.CODE_SECTION) {
+			sb.append("\n"); //$NON-NLS-1$
+		} else {
+			sb.append(" "); //$NON-NLS-1$
+		}
 	}
 	
 	private void addCurrentSection() {
