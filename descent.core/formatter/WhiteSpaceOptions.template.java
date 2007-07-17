@@ -112,9 +112,6 @@ public final class WhiteSpaceOptions
 		final InnerNode declarations = new InnerNode(null, workingValues, FormatterMessages.WhiteSpaceOptions_declarations);
 		final InnerNode expressions = new InnerNode(null, workingValues, FormatterMessages.WhiteSpaceOptions_expressions);
 		
-		// TODO remove when there's actual options in aggregate_declaration
-		final InnerNode aggregate_declaration = new InnerNode(null, workingValues, FormatterMessages.WhiteSpaceOptions_aggregate_declaration);
-		
 		// Declarations
 		roots.add(declarations);
 		function_declaration.setParent(declarations);
@@ -130,6 +127,7 @@ public final class WhiteSpaceOptions
 		aggregate_template_params.setParent(aggregate_declaration);
 		template_declaration.setParent(declarations);
 		extern_declarations.setParent(declarations);
+		import_declaration.setParent(declarations);
 		
 		// Statements
 		roots.add(statements);
@@ -159,6 +157,9 @@ public final class WhiteSpaceOptions
 		parenthesized_expressions.setParent(expressions);
 		template_invocation.setParent(expressions);
 		type_dot_identifier_expression.setParent(expressions);
+		array_literal.setParent(expressions);
+		struct_initalizer.setParent(expressions);
+		array_slice.setParent(expressions);
 		
 		return roots;
 	}
@@ -498,12 +499,12 @@ public abstract static class Node {
 	private final PreviewSnippet PRAGMA_PREVIEW =
 		new PreviewSnippet(
 			CodeFormatter.K_COMPILATION_UNIT, 
-			"pragma(msg, \"Compiling...\");"
+			"pragma(msg,\"Compiling...\");"
 		);
 	
 	private final PreviewSnippet CONSTRUCTOR_PREVIEW =
 		new PreviewSnippet(CodeFormatter.K_STATEMENTS, 
-			"auto x = new(10) Foo!(int)(25);" +
+			"auto x = new(10,15,20) Foo!(int)(25,30,35);" +
 			"auto y = new() Bar!()();"
 		);
 	
@@ -563,8 +564,39 @@ public abstract static class Node {
 			"x+=(a++*3)+((8-2)-(--6%4&8));"
 		);
 	
-	private final PreviewSnippet NO_PREVIEW =
-		new PreviewSnippet(CodeFormatter.K_STATEMENTS, 
-			""
+	private final PreviewSnippet IMPORT_PREVIEW =
+		new PreviewSnippet(CodeFormatter.K_COMPILATION_UNIT, 
+			"public static import x.y,x.z,foo:bar,baz;"
 		);
+	
+	private final PreviewSnippet ALIAS_TYPEDEF_PREVIEW =
+		new PreviewSnippet(CodeFormatter.K_COMPILATION_UNIT, 
+			"alias toString toUtf8, toUtf16;"
+		);
+	
+	private final PreviewSnippet STRUCT_INITIALIZER_PREVIEW =
+		new PreviewSnippet(CodeFormatter.K_STATEMENTS, 
+			"static S a = {x:15, y:20, z:25};" +
+			"static S b = {15, 20, 25};" +
+			"static S c = {};"
+		);
+	
+	private final PreviewSnippet ARRAY_INITIALIZER_PREVIEW =
+		new PreviewSnippet(CodeFormatter.K_STATEMENTS, 
+			"int[] foo = [18, 156, 27,289];" +
+			"int[] bar = [27, 18,];" +
+			"int[] baz = [];"
+		);
+	
+	private final PreviewSnippet ARRAY_ACCESS_PREVIEW =
+		new PreviewSnippet(CodeFormatter.K_STATEMENTS, 
+			"x[1,3,5]=7;" +
+			"x[9..$]=11;" +
+			"x[]=13;"
+		);
+	
+	//private final PreviewSnippet NO_PREVIEW =
+	//	new PreviewSnippet(CodeFormatter.K_STATEMENTS, 
+	//		""
+	//	);
 }

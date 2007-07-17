@@ -867,6 +867,265 @@ insert_space_between_succesive_opcalls
 
 
 
+# White Space Options - Spaces before comma
+insert_space_before_comma_in_base_class_lists
+	type=boolean
+	default=false
+	wsDElem=aggregate_declaration
+	wsDElemEx=base_class_lists
+	wsSynElem=before_comma
+	wsSynElemEx=before_comma_in_base_class_lists
+	wsPreview=AGGREGATE_PREVIEW
+insert_space_before_comma_in_array_literal
+	type=boolean
+	default=false
+	wsDElem=array_literal
+	wsSynElem=before_comma
+	wsPreview=ARRAY_INITIALIZER_PREVIEW
+insert_space_before_comma_in_function_invocation_arguments
+	type=boolean
+	default=false
+	wsDElem=function_invocation_args
+	wsSynElem=before_comma
+	wsPreview=FUNCTION_CALL_PREVIEW
+insert_space_before_comma_in_function_declaration_parameters
+	type=boolean
+	default=false
+	wsDElem=function_decl_params
+	wsDElemEx=function_decl_params_ex
+	wsSynElem=before_comma
+	wsPreview=FUNCTION_DECL_PREVIEW
+insert_space_before_comma_in_function_template_parameters
+	type=boolean
+	default=false
+	wsDElem=function_template_params
+	wsDElemEx=function_template_params_ex
+	wsSynElem=before_comma
+	wsPreview=FUNCTION_DECL_PREVIEW
+insert_space_before_comma_in_aggregate_template_parameters
+	type=boolean
+	default=false
+	wsDElem=aggregate_template_params
+	wsDElemEx=aggregate_template_params_ex
+	wsSynElem=before_comma
+	wsPreview=AGGREGATE_PREVIEW
+insert_space_before_comma_in_foreach_statement
+	type=boolean
+	default=false
+	wsDElem=foreach_statement
+	wsSynElem=before_comma
+	wsPreview=FOR_PREVIEW
+insert_space_before_comma_in_multiple_imports
+	type=boolean
+	default=false
+	wsDElem=import_declaration
+	wsDElemEx=multiple_imports
+	wsSynElem=before_comma
+	wsSynElemEx=before_comma_in_multiple_imports
+	wsPreview=IMPORT_PREVIEW
+insert_space_before_comma_in_selective_imports
+	type=boolean
+	default=false
+	wsDElem=import_declaration
+	wsDElemEx=selective_imports
+	wsSynElem=before_comma
+	wsSynElemEx=before_comma_in_selective_imports
+	wsPreview=IMPORT_PREVIEW
+insert_space_before_comma_in_pragmas
+	type=boolean
+	default=false
+	wsDElem=pragma
+	wsSynElem=before_comma
+	wsPreview=PRAGMA_PREVIEW
+insert_space_before_comma_in_struct_initializer
+	type=boolean
+	default=false
+	wsDElem=struct_initalizer
+	wsSynElem=before_comma
+	wsPreview=STRUCT_INITIALIZER_PREVIEW
+insert_space_before_comma_in_template_declaration
+	type=boolean
+	default=false
+	wsDElem=template_declaration
+	wsSynElem=before_comma
+	wsPreview=TEMPLATE_DECLARATION_PREVIEW
+insert_space_before_comma_in_template_invocation
+	type=boolean
+	default=false
+	wsDElem=template_invocation
+	wsSynElem=before_comma
+	wsPreview=TEMPLATE_INVOCATION_PREVIEW
+insert_space_before_comma_in_multiple_field_declarations
+	type=boolean
+	default=false
+	wsDElem=variable_declaration
+	wsSynElem=before_comma
+	wsPreview=MULT_LOCAL_PREVIEW
+insert_space_before_comma_in_array_access
+	type=boolean
+	default=false
+	wsDElem=array_slice
+	wsSynElem=before_comma
+	wsPreview=ARRAY_ACCESS_PREVIEW
+insert_space_before_comma_in_delegates
+	type=boolean
+	default=false
+	wsDElem=function_delegate_type
+	wsSynElem=before_comma
+	wsPreview=DELEGATE_PREVIEW
+insert_space_before_comma_in_new_arguments
+	type=boolean
+	default=false
+	wsDElem=new_params
+	wsSynElem=before_comma
+	wsPreview=CONSTRUCTOR_PREVIEW
+insert_space_before_trailing_comma_in_array_initializer
+	type=boolean
+	default=false
+	wsDElem=array_literal
+	wsDElemEx=trailing_comma_in_array_literal
+	wsSynElem=before_comma
+	wsSynElemEx=before_trailing_comma
+	wsPreview=ARRAY_INITIALIZER_PREVIEW
+insert_space_before_comma_in_assert_statements
+	type=boolean
+	default=false
+	wsDElem=assert_statement
+	wsSynElem=before_comma
+	wsPreview=ASSERT_PREVIEW
+
+
+
+
+# White Space Options - Spaces after comma
+insert_space_after_comma_in_base_class_lists
+	type=boolean
+	default=true
+	wsDElem=aggregate_declaration
+	wsDElemEx=base_class_lists
+	wsSynElem=after_comma
+	wsSynElemEx=after_comma_in_base_class_lists
+	wsPreview=AGGREGATE_PREVIEW
+insert_space_after_comma_in_array_literal
+	type=boolean
+	default=true
+	wsDElem=array_literal
+	wsSynElem=after_comma
+	wsPreview=ARRAY_INITIALIZER_PREVIEW
+insert_space_after_comma_in_function_invocation_arguments
+	type=boolean
+	default=true
+	wsDElem=function_invocation_args
+	wsSynElem=after_comma
+	wsPreview=FUNCTION_CALL_PREVIEW
+insert_space_after_comma_in_function_declaration_parameters
+	type=boolean
+	default=true
+	wsDElem=function_decl_params
+	wsDElemEx=function_decl_params_ex
+	wsSynElem=after_comma
+	wsPreview=FUNCTION_DECL_PREVIEW
+insert_space_after_comma_in_function_template_parameters
+	type=boolean
+	default=true
+	wsDElem=function_template_params
+	wsDElemEx=function_template_params_ex
+	wsSynElem=after_comma
+	wsPreview=FUNCTION_DECL_PREVIEW
+insert_space_after_comma_in_aggregate_template_parameters
+	type=boolean
+	default=true
+	wsDElem=aggregate_template_params
+	wsDElemEx=aggregate_template_params_ex
+	wsSynElem=after_comma
+	wsPreview=AGGREGATE_PREVIEW
+insert_space_after_comma_in_foreach_statement
+	type=boolean
+	default=true
+	wsDElem=foreach_statement
+	wsSynElem=after_comma
+	wsPreview=FOR_PREVIEW
+insert_space_after_comma_in_multiple_imports
+	type=boolean
+	default=true
+	wsDElem=import_declaration
+	wsDElemEx=multiple_imports
+	wsSynElem=after_comma
+	wsSynElemEx=after_comma_in_multiple_imports
+	wsPreview=IMPORT_PREVIEW
+insert_space_after_comma_in_selective_imports
+	type=boolean
+	default=true
+	wsDElem=import_declaration
+	wsDElemEx=selective_imports
+	wsSynElem=after_comma
+	wsSynElemEx=after_comma_in_selective_imports
+	wsPreview=IMPORT_PREVIEW
+insert_space_after_comma_in_pragmas
+	type=boolean
+	default=true
+	wsDElem=pragma
+	wsSynElem=after_comma
+	wsPreview=PRAGMA_PREVIEW
+insert_space_after_comma_in_struct_initializer
+	type=boolean
+	default=true
+	wsDElem=struct_initalizer
+	wsSynElem=after_comma
+	wsPreview=STRUCT_INITIALIZER_PREVIEW
+insert_space_after_comma_in_template_declaration
+	type=boolean
+	default=true
+	wsDElem=template_declaration
+	wsSynElem=after_comma
+	wsPreview=TEMPLATE_DECLARATION_PREVIEW
+insert_space_after_comma_in_template_invocation
+	type=boolean
+	default=true
+	wsDElem=template_invocation
+	wsSynElem=after_comma
+	wsPreview=TEMPLATE_INVOCATION_PREVIEW
+insert_space_after_comma_in_multiple_field_declarations
+	type=boolean
+	default=true
+	wsDElem=variable_declaration
+	wsSynElem=after_comma
+	wsPreview=MULT_LOCAL_PREVIEW
+insert_space_after_comma_in_array_access
+	type=boolean
+	default=true
+	wsDElem=array_slice
+	wsSynElem=after_comma
+	wsPreview=ARRAY_ACCESS_PREVIEW
+insert_space_after_comma_in_delegates
+	type=boolean
+	default=true
+	wsDElem=function_delegate_type
+	wsSynElem=after_comma
+	wsPreview=DELEGATE_PREVIEW
+insert_space_after_comma_in_new_arguments
+	type=boolean
+	default=true
+	wsDElem=new_params
+	wsSynElem=after_comma
+	wsPreview=CONSTRUCTOR_PREVIEW
+insert_space_after_trailing_comma_in_array_initializer
+	type=boolean
+	default=true
+	wsDElem=array_literal
+	wsDElemEx=trailing_comma_in_array_literal
+	wsSynElem=after_comma
+	wsSynElemEx=after_trailing_comma
+	wsPreview=ARRAY_INITIALIZER_PREVIEW
+insert_space_after_comma_in_assert_statements
+	type=boolean
+	default=true
+	wsDElem=assert_statement
+	wsSynElem=after_comma
+	wsPreview=ASSERT_PREVIEW
+
+
+
 # Other White Space Options
 insert_space_after_closing_paren_in_casts
 	type=boolean
@@ -903,43 +1162,6 @@ insert_space_after_semicolon_in_foreach_statement
 	default=true
 	wsDElem=foreach_statement
 	wsSynElem=after_semicolon
-	wsPreview=FOR_PREVIEW
-insert_space_before_comma_in_multiple_field_declarations
-	type=boolean
-	default=false
-	wsDElem=variable_declaration
-	wsSynElem=before_comma
-	wsPreview=MULT_LOCAL_PREVIEW
-insert_space_after_comma_in_multiple_field_declarations
-	type=boolean
-	default=true
-	wsDElem=variable_declaration
-	wsSynElem=after_comma
-	wsPreview=MULT_LOCAL_PREVIEW
-insert_space_before_comma_in_function_invocation_arguments
-	type=boolean
-	default=false
-	wsDElem=function_invocation_args
-	wsDElemEx=function_invocation_arguments
-	wsSynElem=before_comma
-	wsPreview=FUNCTION_CALL_PREVIEW
-insert_space_after_comma_in_function_invocation_arguments
-	type=boolean
-	default=true
-	wsDElem=function_invocation_args
-	wsSynElem=after_comma
-	wsPreview=FUNCTION_CALL_PREVIEW
-insert_space_before_comma_in_foreach_statement
-	type=boolean
-	default=false
-	wsDElem=foreach_statement
-	wsSynElem=before_comma
-	wsPreview=FOR_PREVIEW
-insert_space_after_comma_in_foreach_statement
-	type=boolean
-	default=true
-	wsDElem=foreach_statement
-	wsSynElem=after_comma
 	wsPreview=FOR_PREVIEW
 
 

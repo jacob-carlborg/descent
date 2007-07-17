@@ -129,7 +129,9 @@ public class CodeFormatterVisitor extends ASTVisitor
 			formatTemplateParams(node.templateParameters(),
 					prefs.insert_space_before_opening_paren_in_class_template_params,
 					prefs.insert_space_after_opening_paren_in_class_template_params,
-					prefs.insert_space_before_closing_paren_in_class_template_params);
+					prefs.insert_space_before_closing_paren_in_class_template_params,
+					prefs.insert_space_before_comma_in_aggregate_template_parameters,
+					prefs.insert_space_after_comma_in_aggregate_template_parameters);
 		else if(isNextToken(TOK.TOKlparen))
 		{
 			scribe.printNextToken(TOK.TOKlparen, prefs.insert_space_before_opening_paren_in_class_template_params);
@@ -144,7 +146,9 @@ public class CodeFormatterVisitor extends ASTVisitor
 			scribe.space();
 			scribe.printNextToken(TOK.TOKcolon);
 			scribe.space();
-			formatCSV(baseClasses, false, true);
+			formatCSV(baseClasses,
+					prefs.insert_space_before_comma_in_base_class_lists,
+					prefs.insert_space_after_comma_in_base_class_lists);
 		}
 		
 		formatDeclarationBlock(node.declarations(), prefs.brace_position_for_type_declaration, prefs.indent_body_declarations_compare_to_type_header);
@@ -165,7 +169,9 @@ public class CodeFormatterVisitor extends ASTVisitor
 		node.getType().accept(this);
 		if(!nameAlreadyPrinted)
 			scribe.space();
-		formatCSV(node.fragments(), this.prefs.insert_space_before_comma_in_multiple_field_declarations, this.prefs.insert_space_after_comma_in_multiple_field_declarations);
+		formatCSV(node.fragments(),
+				this.prefs.insert_space_before_comma_in_multiple_field_declarations,
+				this.prefs.insert_space_after_comma_in_multiple_field_declarations);
 		
 		printSemicolonIfNextIsSemicolonAndNotInForInitializer();
 		scribe.printTrailingComment();
@@ -284,22 +290,32 @@ public class CodeFormatterVisitor extends ASTVisitor
 		return false;
 	}
 	
+	// TODO What is this...?
 	public boolean visit(ArrayAccess node)
 	{
 		node.getArray().accept(this);
 		scribe.printNextToken(TOK.TOKlbracket);
-		formatCSV(node.indexes(), false, false);
+		formatCSV(node.indexes(),
+				prefs.insert_space_before_comma_in_array_access,
+				prefs.insert_space_after_comma_in_array_access);
 		scribe.printNextToken(TOK.TOKrbracket);
 		return false;
 	}
 	
+	// TODO this too (how is this different from an array literal?)
 	public boolean visit(ArrayInitializer node)
 	{
 		scribe.printNextToken(TOK.TOKlbracket);
-		formatCSV(node.fragments(), false, true);
-		// Support trailing cooma
+		formatCSV(node.fragments(),
+				prefs.insert_space_before_comma_in_array_literal,
+				prefs.insert_space_after_comma_in_array_literal);
+		// Support trailing comma
 		if(isNextToken(TOK.TOKcomma))
-			scribe.printNextToken(TOK.TOKcomma, true);
+		{
+			scribe.printNextToken(TOK.TOKcomma, prefs.insert_space_before_trailing_comma_in_array_initializer);
+			if(prefs.insert_space_after_trailing_comma_in_array_initializer)
+				scribe.space();
+		}
 		scribe.printNextToken(TOK.TOKrbracket);
 		return false;
 	}
@@ -321,7 +337,9 @@ public class CodeFormatterVisitor extends ASTVisitor
 	public boolean visit(ArrayLiteral node)
 	{
 		scribe.printNextToken(TOK.TOKlbracket);
-		formatCSV(node.arguments(), false, false);
+		formatCSV(node.arguments(),
+				prefs.insert_space_before_comma_in_array_literal,
+				prefs.insert_space_after_comma_in_array_literal);
 		scribe.printNextToken(TOK.TOKrbracket);
 		return false;
 	}
@@ -345,8 +363,9 @@ public class CodeFormatterVisitor extends ASTVisitor
 		Expression message = node.getMessage();
 		if(null != message)
 		{
-			scribe.printNextToken(TOK.TOKcomma);
-			scribe.space();
+			scribe.printNextToken(TOK.TOKcomma, prefs.insert_space_before_comma_in_assert_statements);
+			if(prefs.insert_space_after_comma_in_assert_statements)
+				scribe.space();
 			message.accept(this);
 		}
 		scribe.printNextToken(TOK.TOKrparen, prefs.insert_space_before_closing_paren_in_assert_statements);
@@ -419,7 +438,9 @@ public class CodeFormatterVisitor extends ASTVisitor
 			scribe.space();
 		List<Expression> arguments = node.arguments();
 		if(null != arguments && !arguments.isEmpty())
-			formatCSV(arguments, false, true);
+			formatCSV(arguments,
+					prefs.insert_space_before_comma_in_function_invocation_arguments,
+					prefs.insert_space_after_comma_in_function_invocation_arguments);
 		else if(prefs.insert_space_between_empty_parens_in_function_invocation)
 			scribe.space();
 		scribe.printNextToken(TOK.TOKrparen, prefs.insert_space_before_closing_paren_in_function_invocation);
@@ -654,7 +675,9 @@ public class CodeFormatterVisitor extends ASTVisitor
 			scribe.space();
 		List<Argument> arguments = node.arguments();
 		if(null != arguments && !arguments.isEmpty())
-			formatCSV(arguments, false, true);
+			formatCSV(arguments,
+					prefs.insert_space_before_comma_in_delegates,
+					prefs.insert_space_after_comma_in_delegates);
 		else if(prefs.insert_space_between_empty_parens_in_delegate)
 			scribe.space();
 		scribe.printNextToken(TOK.TOKrparen, prefs.insert_space_before_closing_paren_in_delegate);
@@ -727,6 +750,7 @@ public class CodeFormatterVisitor extends ASTVisitor
 		return false;
 	}
 	
+	// TODO options for enum formatting
 	public boolean visit(EnumDeclaration node)
 	{
 		formatModifiers(true);
@@ -840,7 +864,9 @@ public class CodeFormatterVisitor extends ASTVisitor
 		scribe.printNextToken(TOK.TOKlparen, prefs.insert_space_before_opening_paren_in_foreach_loops);
 		if(prefs.insert_space_after_opening_paren_in_foreach_loops)
 			scribe.space();
-		formatCSV(node.arguments(), prefs.insert_space_before_comma_in_foreach_statement, prefs.insert_space_after_comma_in_foreach_statement);
+		formatCSV(node.arguments(),
+				prefs.insert_space_before_comma_in_foreach_statement,
+				prefs.insert_space_after_comma_in_foreach_statement);
 		scribe.printNextToken(TOK.TOKsemicolon, prefs.insert_space_before_semicolon_in_foreach_statement);
 		scribe.printTrailingComment();
 		if (prefs.insert_space_after_semicolon_in_foreach_statement) {
@@ -908,7 +934,9 @@ public class CodeFormatterVisitor extends ASTVisitor
 			formatTemplateParams(node.templateParameters(),
 					prefs.insert_space_before_opening_paren_in_function_template_args,
 					prefs.insert_space_after_opening_paren_in_function_template_args,
-					prefs.insert_space_before_closing_paren_in_function_template_args);
+					prefs.insert_space_before_closing_paren_in_function_template_args,
+					prefs.insert_space_before_comma_in_function_template_parameters,
+					prefs.insert_space_after_comma_in_function_template_parameters);
 			templated = true;
 		}
 		else if(hasEmptyTemplateParamList(node))
@@ -1027,7 +1055,9 @@ public class CodeFormatterVisitor extends ASTVisitor
 			scribe.space();
 			scribe.printNextToken(TOK.TOKcolon);
 			scribe.space();
-			formatCSV(imports, false, true);
+			formatCSV(imports,
+					prefs.insert_space_before_comma_in_selective_imports,
+					prefs.insert_space_after_comma_in_selective_imports);
 		}
 		return false;
 	}
@@ -1037,7 +1067,9 @@ public class CodeFormatterVisitor extends ASTVisitor
 		formatModifiers(true);
 		scribe.printNextToken(TOK.TOKimport);
 		scribe.space();
-		formatCSV(node.imports(), false, true);
+		formatCSV(node.imports(),
+				prefs.insert_space_before_comma_in_multiple_imports,
+				prefs.insert_space_after_comma_in_multiple_imports);
 		scribe.printNextToken(TOK.TOKsemicolon, this.prefs.insert_space_before_semicolon);
 		scribe.printTrailingComment();
 		scribe.printNewLine();
@@ -1209,7 +1241,9 @@ public class CodeFormatterVisitor extends ASTVisitor
 				scribe.space();
 			List<Expression> newArguments = node.newArguments();
 			if(null != newArguments && !newArguments.isEmpty())
-				formatCSV(node.newArguments(), false, true);
+				formatCSV(node.newArguments(),
+						prefs.insert_space_before_comma_in_new_arguments,
+						prefs.insert_space_after_comma_in_new_arguments);
 			else if(prefs.insert_space_between_empty_parens_in_new_arguments)
 				scribe.space();
 			scribe.printNextToken(TOK.TOKrparen, prefs.insert_space_before_closing_paren_in_new_arguments);
@@ -1223,7 +1257,9 @@ public class CodeFormatterVisitor extends ASTVisitor
 				scribe.space();
 			List<Expression> constructorArguments = node.constructorArguments();
 			if(null != constructorArguments && !constructorArguments.isEmpty())
-				formatCSV(node.constructorArguments(), false, true);
+				formatCSV(node.constructorArguments(),
+						prefs.insert_space_before_comma_in_function_invocation_arguments,
+						prefs.insert_space_after_comma_in_function_invocation_arguments);
 			else if(prefs.insert_space_between_empty_parens_in_function_invocation)
 				scribe.space();
 			scribe.printNextToken(TOK.TOKrparen, prefs.insert_space_before_closing_paren_in_function_invocation);
@@ -1232,7 +1268,9 @@ public class CodeFormatterVisitor extends ASTVisitor
 		if(null != baseClasses && !baseClasses.isEmpty());
 		{
 			scribe.space();
-			formatCSV(baseClasses, false, true);
+			formatCSV(baseClasses,
+					prefs.insert_space_before_comma_in_base_class_lists,
+					prefs.insert_space_after_comma_in_base_class_lists);
 		}
 		formatDeclarationBlock(node.declarations(), prefs.brace_position_for_anonymous_type, true);
 		return false;
@@ -1254,7 +1292,9 @@ public class CodeFormatterVisitor extends ASTVisitor
 				scribe.space();
 			List<Expression> newArguments = node.newArguments();
 			if(null != newArguments && !newArguments.isEmpty())
-				formatCSV(node.newArguments(), false, true);
+				formatCSV(node.newArguments(),
+						prefs.insert_space_before_comma_in_new_arguments,
+						prefs.insert_space_after_comma_in_new_arguments);
 			else if(prefs.insert_space_between_empty_parens_in_new_arguments)
 				scribe.space();
 			scribe.printNextToken(TOK.TOKrparen, prefs.insert_space_before_closing_paren_in_new_arguments);
@@ -1266,7 +1306,9 @@ public class CodeFormatterVisitor extends ASTVisitor
 			DynamicArrayType arr = (DynamicArrayType) type;
 			arr.getComponentType().accept(this);
 			scribe.printNextToken(TOK.TOKlbracket);
-			formatCSV(node.constructorArguments(), false, true);
+			formatCSV(node.constructorArguments(),
+					prefs.insert_space_before_comma_in_function_invocation_arguments,
+					prefs.insert_space_after_comma_in_function_invocation_arguments);
 			scribe.printNextToken(TOK.TOKrbracket);
 			return false;
 		}
@@ -1278,7 +1320,9 @@ public class CodeFormatterVisitor extends ASTVisitor
 				scribe.space();
 			List<Expression> constructorArguments = node.constructorArguments();
 			if(null != constructorArguments && !constructorArguments.isEmpty())
-				formatCSV(node.constructorArguments(), false, true);
+				formatCSV(node.constructorArguments(),
+						prefs.insert_space_before_comma_in_function_invocation_arguments,
+						prefs.insert_space_after_comma_in_function_invocation_arguments);
 			else if(prefs.insert_space_between_empty_parens_in_function_invocation)
 				scribe.space();
 			scribe.printNextToken(TOK.TOKrparen, prefs.insert_space_before_closing_paren_in_function_invocation);
@@ -1340,9 +1384,12 @@ public class CodeFormatterVisitor extends ASTVisitor
 		List<Expression> args = node.arguments();
 		if(!args.isEmpty())
 		{
-			scribe.printNextToken(TOK.TOKcomma);
-			scribe.space();
-			formatCSV(args, false, true);
+			scribe.printNextToken(TOK.TOKcomma, prefs.insert_space_before_comma_in_pragmas);
+			if(prefs.insert_space_after_comma_in_pragmas)
+				scribe.space();
+			formatCSV(args,
+					prefs.insert_space_before_comma_in_pragmas,
+					prefs.insert_space_after_comma_in_pragmas);
 		}
 		scribe.printNextToken(TOK.TOKrparen, prefs.insert_space_before_closing_paren_in_pragmas);
 		if(!node.declarations().isEmpty())
@@ -1363,9 +1410,12 @@ public class CodeFormatterVisitor extends ASTVisitor
 		List<Expression> args = node.arguments();
 		if(!args.isEmpty())
 		{
-			scribe.printNextToken(TOK.TOKcomma);
-			scribe.space();
-			formatCSV(args, false, true);
+			scribe.printNextToken(TOK.TOKcomma, prefs.insert_space_before_comma_in_pragmas);
+			if(prefs.insert_space_after_comma_in_pragmas)
+				scribe.space();
+			formatCSV(args,
+					prefs.insert_space_before_comma_in_pragmas,
+					prefs.insert_space_after_comma_in_pragmas);
 		}
 		scribe.printNextToken(TOK.TOKrparen, prefs.insert_space_before_closing_paren_in_pragmas);
 		Statement body = node.getBody();
@@ -1536,8 +1586,9 @@ public class CodeFormatterVisitor extends ASTVisitor
 		Expression message = node.getMessage();
 		if(null != message)
 		{
-			scribe.printNextToken(TOK.TOKcomma);
-			scribe.space();
+			scribe.printNextToken(TOK.TOKcomma, prefs.insert_space_before_comma_in_assert_statements);
+			if(prefs.insert_space_after_comma_in_assert_statements)
+				scribe.space();
 			message.accept(this);
 		}
 		scribe.printNextToken(TOK.TOKrparen, prefs.insert_space_before_closing_paren_in_assert_statements);
@@ -1609,7 +1660,9 @@ public class CodeFormatterVisitor extends ASTVisitor
 	public boolean visit(StructInitializer node)
 	{
 		scribe.printNextToken(TOK.TOKlcurly);
-		formatCSV(node.fragments(), false, true);
+		formatCSV(node.fragments(),
+				prefs.insert_space_before_comma_in_struct_initializer,
+				prefs.insert_space_after_comma_in_struct_initializer);
 		scribe.printNextToken(TOK.TOKrcurly);
 		return false;
 	}
@@ -1686,7 +1739,9 @@ public class CodeFormatterVisitor extends ASTVisitor
 			scribe.space();
 		List<TemplateParameter> templateParameters = node.templateParameters();
 		if(null != templateParameters && !templateParameters.isEmpty())
-			formatCSV(node.templateParameters(), false, true);
+			formatCSV(node.templateParameters(),
+					prefs.insert_space_before_comma_in_template_declaration,
+					prefs.insert_space_after_comma_in_template_declaration);
 		else if(prefs.insert_space_between_empty_parens_in_template_declarations)
 			scribe.space();
 		scribe.printNextToken(TOK.TOKrparen, prefs.insert_space_before_closing_paren_in_template_declarations);
@@ -1724,7 +1779,9 @@ public class CodeFormatterVisitor extends ASTVisitor
 		
 		List<ASTNode> arguments = node.arguments();
 		if(null != arguments && !arguments.isEmpty())
-			formatCSV(node.arguments(), false, true);
+			formatCSV(node.arguments(),
+					prefs.insert_space_before_comma_in_template_invocation,
+					prefs.insert_space_after_comma_in_template_invocation);
 		else if(prefs.insert_space_between_empty_parens_in_template_invocation)
 			scribe.space();
 		scribe.printNextToken(TOK.TOKrparen, prefs.insert_space_before_closing_paren_in_template_invocation);
@@ -1789,7 +1846,9 @@ public class CodeFormatterVisitor extends ASTVisitor
 		node.getType().accept(this);
 		if(!nameAlreadyPrinted)
 			scribe.space();
-		formatCSV(node.fragments(), this.prefs.insert_space_before_comma_in_multiple_field_declarations, this.prefs.insert_space_after_comma_in_multiple_field_declarations);
+		formatCSV(node.fragments(),
+				prefs.insert_space_before_comma_in_multiple_field_declarations,
+				prefs.insert_space_after_comma_in_multiple_field_declarations);
 		printSemicolonIfNextIsSemicolonAndNotInForInitializer();
 		scribe.printTrailingComment();
 		return false;
@@ -1931,7 +1990,9 @@ public class CodeFormatterVisitor extends ASTVisitor
 			if(!nameAlreadyPrinted)
 				scribe.space();
 		}
-		formatCSV(node.fragments(), this.prefs.insert_space_before_comma_in_multiple_field_declarations, this.prefs.insert_space_after_comma_in_multiple_field_declarations);
+		formatCSV(node.fragments(), 
+				prefs.insert_space_before_comma_in_multiple_field_declarations,
+				prefs.insert_space_after_comma_in_multiple_field_declarations);
 		postfixes.clear();
 		
 		printSemicolonIfNextIsSemicolonAndNotInForInitializer();
@@ -2257,7 +2318,9 @@ public class CodeFormatterVisitor extends ASTVisitor
 				if (this.prefs.insert_space_after_opening_paren_in_function_declaration_parameters) {
 					this.scribe.space();
 				}
-				formatCSV(node.arguments(), false, true);
+				formatCSV(node.arguments(),
+						prefs.insert_space_before_comma_in_function_declaration_parameters,
+						prefs.insert_space_after_comma_in_function_declaration_parameters);
 			}
 			if (node.isVariadic())
 			{
@@ -2268,8 +2331,9 @@ public class CodeFormatterVisitor extends ASTVisitor
 					// preceded by a comma as in void foo(int x, ...)
 					if(isNextToken(TOK.TOKcomma))
 					{
-						scribe.printNextToken(TOK.TOKcomma);
-						scribe.space();
+						scribe.printNextToken(TOK.TOKcomma, prefs.insert_space_before_comma_in_function_declaration_parameters);
+						if(prefs.insert_space_after_comma_in_function_declaration_parameters)
+							scribe.space();
 					}
 				}
 				scribe.printNextToken(TOK.TOKdotdotdot);	
@@ -2622,14 +2686,14 @@ public class CodeFormatterVisitor extends ASTVisitor
 	private void formatTemplateParams(List<TemplateParameter> tp,
 			boolean spaceBeforeOpeningParen,
 			boolean spaceAfterOpeningParen,
-			boolean spaceBeforeClosingParen)
+			boolean spaceBeforeClosingParen, boolean spaceBeforeComma, boolean spaceAfterComma)
 	{
 		if(tp.isEmpty())
 			return;
 		scribe.printNextToken(TOK.TOKlparen, spaceBeforeOpeningParen);
 		if(spaceAfterOpeningParen)
 			scribe.space();
-		formatCSV(tp, false, true);
+		formatCSV(tp, spaceBeforeComma, spaceAfterComma);
 		scribe.printNextToken(TOK.TOKrparen, spaceBeforeClosingParen);
 	}
 	
@@ -2657,13 +2721,10 @@ public class CodeFormatterVisitor extends ASTVisitor
 		 * The list of postfixes can't be emptied here, in the rare case that there are
 		 * multiple variable declarations in a declaration list (which all must be the
 		 * same according to the D spec), for example: "char v1[][3], v2[][3];". The list
-		 * is cleared after it's used.
-		 */
-		
-		/**
-		 * TODO JDT formatter known bug: this won't work properly with combined prefix and
-		 *      postfixed declarations. For example, consider: "char[] var[3];". Why anyone
-		 *      would want to do this beyond me, but it should format correctly.
+		 * is cleared after it's used. This also allows combined prefix and postfix
+		 * declarations, i.e.:
+		 * 
+		 * char[] var[3];
 		 */
 	}
 
