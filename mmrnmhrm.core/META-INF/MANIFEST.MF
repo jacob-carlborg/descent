@@ -10,7 +10,8 @@ Require-Bundle: com.ibm.icu,
  org.eclipse.core.runtime,
  org.eclipse.core.resources,
  org.eclipse.core.filebuffers,
- org.eclipse.jface.text
+ org.eclipse.jface.text,
+ org.eclipse.core.expressions
 Eclipse-LazyStart: true
 Bundle-Vendor: Mother Ark
 Export-Package: mmrnmhrm.core,

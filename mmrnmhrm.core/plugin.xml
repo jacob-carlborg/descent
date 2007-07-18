@@ -39,5 +39,18 @@
             name="D Source (Mmrnmhrm)"
             priority="normal"/>
    </extension>
+   <extension
+         point="org.eclipse.core.expressions.definitions">
+      <definition
+            id="mmrnmhrm.core.expressions.isDeeNature">
+         <adapt
+               type="org.eclipse.core.resources.IProject">
+            <test
+                  property="org.eclipse.core.resources.projectNature"
+                  value="mmrnmhrm.core.deenature">
+            </test>
+         </adapt>
+      </definition>
+   </extension>
 
 </plugin>
