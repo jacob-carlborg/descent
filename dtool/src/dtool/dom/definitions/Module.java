@@ -14,8 +14,8 @@ import dtool.dom.ast.ASTNode;
 import dtool.dom.ast.IASTNeoVisitor;
 import dtool.dom.declarations.Declaration;
 import dtool.dom.references.EntIdentifier;
-import dtool.modelinterface.IDTool_DeeCompilationUnit;
 import dtool.refmodel.EntityResolver;
+import dtool.refmodel.IDTool_DeeCompilationUnit;
 import dtool.refmodel.IScopeNode;
 
 /**
@@ -48,7 +48,7 @@ public class Module extends DefUnit implements IScopeNode {
 		}
 	}
 
-	public IDTool_DeeCompilationUnit cunit;
+	private IDTool_DeeCompilationUnit cunit;
 
 	public DeclarationModule md;
 	public ASTNode[] members;
@@ -78,6 +78,14 @@ public class Module extends DefUnit implements IScopeNode {
 		return EArcheType.Module;
 	}
 	
+	public void setCUnit(IDTool_DeeCompilationUnit cunit) {
+		this.cunit = cunit;
+	}
+
+	public IDTool_DeeCompilationUnit getCUnit() {
+		return cunit;
+	}
+
 	public void accept0(IASTNeoVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {

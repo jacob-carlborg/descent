@@ -4,15 +4,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 import melnorme.miscutil.tree.IElement;
-
 import dtool.dom.ast.ASTNode;
 import dtool.dom.declarations.DeclarationImport;
+import dtool.dom.declarations.DeclarationImport.ImportAliasing;
 import dtool.dom.declarations.DeclarationImport.ImportContent;
 import dtool.dom.declarations.DeclarationImport.ImportFragment;
+import dtool.dom.declarations.DeclarationImport.ImportSelective;
+import dtool.dom.declarations.DeclarationImport.ImportStatic;
 import dtool.dom.definitions.DefUnit;
 import dtool.dom.definitions.Module;
 import dtool.dom.definitions.DefinitionAggregate.BaseClass;
-import dtool.dom.references.EntModule;
 
 public class EntityResolver {
 	
@@ -87,7 +88,7 @@ public class EntityResolver {
 	}
 
 	
-	/* --------  entity find  -------- */
+	/* ====================  entity find  ==================== */
 
 	/** Searches for the DefUnit with the given name in the given scope,
 	 * and then successively in it's outer scopes. */
@@ -139,31 +140,47 @@ public class EntityResolver {
 	}
 	
 	private static DefUnit findDefUnitInSecondaryScope(IScopeNode scope, String name) {
+		// Look for Import Declarations in the scope  TODO: cache?
 		for (IElement elem : scope.getChildren()) {
 			if(!(elem instanceof DeclarationImport))
 				continue;
 				
 			DeclarationImport declImport = (DeclarationImport) elem;
 			for (ImportFragment impFrag : declImport.imports) {
-				return findDefUnitInImportFragment(impFrag, name);
+				DefUnit defunit = impFrag.searchDefUnit(name);
+				if(defunit != null)
+					return defunit;
 			}
 
-			//declImport.imports
 		}
 		return null;
 	}
 	
-	private static DefUnit findDefUnitInImportFragment(ImportFragment impFrag, String name) {
-		if(impFrag instanceof ImportContent) {
-			ImportContent impMembers = (ImportContent) impFrag;
-			Module refModule = NodeUtil.getParentModule(impMembers);
-			String packageName = impMembers.moduleEnt.packageName;
-			String moduleName = impMembers.moduleEnt.moduleName;
-			Module targetModule;
-			targetModule = findModule(refModule, packageName, moduleName);
-			if(targetModule != null)
-				return findDefUnitFromScope(targetModule, name);
-		}
+	public static DefUnit searchDefUnit(ImportContent impContent, String name) {
+		Module refModule = NodeUtil.getParentModule(impContent);
+		String packageName = impContent.moduleEnt.packageName;
+		String moduleName = impContent.moduleEnt.moduleName;
+		Module targetModule;
+		targetModule = findModule(refModule, packageName, moduleName);
+		if (targetModule != null)
+			return findDefUnitFromScope(targetModule, name);
+		return null;
+	}
+
+	public static DefUnit searchDefUnit(ImportStatic importStatic, String name) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public static DefUnit searchDefUnit(ImportAliasing importAliasing,
+			String name) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+
+	public static DefUnit searchDefUnit(ImportSelective importSelective, String name) {
+		// TODO Auto-generated method stub
 		return null;
 	}
 

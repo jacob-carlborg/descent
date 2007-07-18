@@ -1,15 +1,16 @@
 package dtool.dom.declarations;
 
-import melnorme.miscutil.StringUtil;
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.internal.core.dom.Import;
 import descent.internal.core.dom.ImportDeclaration;
 import descent.internal.core.dom.SelectiveImport;
 import dtool.dom.ast.ASTNeoNode;
 import dtool.dom.ast.IASTNeoVisitor;
+import dtool.dom.definitions.DefUnit;
 import dtool.dom.definitions.Symbol;
 import dtool.dom.references.EntIdentifier;
 import dtool.dom.references.EntModule;
+import dtool.refmodel.EntityResolver;
 
 /**
  * An import Declaration 
@@ -73,9 +74,12 @@ public class DeclarationImport extends ASTNeoNode {
 		public EntModule moduleEnt;
 
 		public ImportFragment(Import elem) {
-			convertNode(elem);
+			// Use elem.qName instead of elem to fix range
+			convertNode(elem.qName); 
 			this.moduleEnt = new EntModule(elem.qName);
 		}
+
+		public abstract DefUnit searchDefUnit(String name);
 
 	}
 	
@@ -93,6 +97,11 @@ public class DeclarationImport extends ASTNeoNode {
 			}
 			visitor.endVisit(this);
 		}
+
+		@Override
+		public DefUnit searchDefUnit(String name) {
+			return EntityResolver.searchDefUnit(this, name);
+		}
 		
 	}
 	
@@ -100,6 +109,11 @@ public class DeclarationImport extends ASTNeoNode {
 
 		public ImportContent(Import elem) {
 			super(elem);
+		}
+		
+		@Override
+		public DefUnit searchDefUnit(String name) {
+			return EntityResolver.searchDefUnit(this, name);
 		}
 	}
 	
@@ -109,6 +123,9 @@ public class DeclarationImport extends ASTNeoNode {
 		
 		public ImportAliasing(Import elem) {
 			super(elem);
+			// Fix Import fragment range
+			//elem.startPos = elem.ident.getStartPos();
+			//elem.setEndPos(elem.qName.getEndPos());
 			this.ident = new Symbol(elem.ident);
 		}
 
@@ -120,6 +137,11 @@ public class DeclarationImport extends ASTNeoNode {
 				TreeVisitor.acceptChildren(visitor, moduleEnt);
 			}
 			visitor.endVisit(this);
+		}
+
+		@Override
+		public DefUnit searchDefUnit(String name) {
+			return EntityResolver.searchDefUnit(this, name);
 		}
 	}
 	
@@ -146,6 +168,11 @@ public class DeclarationImport extends ASTNeoNode {
 				TreeVisitor.acceptChildren(visitor, aliases);
 			}
 			visitor.endVisit(this);
+		}
+
+		@Override
+		public DefUnit searchDefUnit(String name) {
+			return EntityResolver.searchDefUnit(this, name);
 		}
 	}
 	
