@@ -1,6 +1,6 @@
 package mmrnmhrm.ui.editor;
 
-import mmrnmhrm.tests.CommonProjectTestClass;
+import mmrnmhrm.tests.SampleProjectTest;
 import mmrnmhrm.ui.DeePlugin;
 import mmrnmhrm.ui.views.ASTViewer;
 
@@ -13,9 +13,8 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-public class DeeEditorTest extends CommonProjectTestClass {
+public class DeeEditorTest extends SampleProjectTest {
 
-	
 	@Before
 	public void setUp() throws Exception {
 	}
@@ -32,12 +31,32 @@ public class DeeEditorTest extends CommonProjectTestClass {
 		
 		IWorkbenchPage page = DeePlugin.getActivePage();
 		IEditorPart editor = IDE.openEditor(page, file, DeeEditor.EDITOR_ID);
-		
 		assertTrue(editor instanceof DeeEditor);
-		page.showView("org.eclipse.ui.views.ContentOutline");
-		
-		page.showView(ASTViewer.VIEW_ID);
 
+		page.showView("org.eclipse.ui.views.ContentOutline");
+		page.showView(ASTViewer.VIEW_ID);
+	}
+	
+	@Test
+	public void testDeeEditor2() throws CoreException {
+		IFile file = sampleOutOfModelFile;
+		
+		IWorkbenchPage page = DeePlugin.getActivePage();
+		IEditorPart editor = IDE.openEditor(page, file, DeeEditor.EDITOR_ID);
+		assertTrue(editor instanceof DeeEditor);
+
+		page.showView("org.eclipse.ui.views.ContentOutline");
+		page.showView(ASTViewer.VIEW_ID);
+	}
+	
+	@Test
+	public void testDeeEditor3() throws CoreException {
+		IWorkbenchPage page = DeePlugin.getActivePage();
+		IEditorPart editor = 
+			IDE.openEditor(page, sampleNonExistantFile, DeeEditor.EDITOR_ID);
+		assertTrue(!(editor instanceof DeeEditor));
+		assertTrue(exceptionThrown == true);
+		exceptionThrown = false;
 	}
 
 }

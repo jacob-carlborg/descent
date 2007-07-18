@@ -2,7 +2,7 @@ package dtool.tests.ast.converter;
 
 import java.io.IOException;
 
-import mmrnmhrm.tests.BaseTestClass;
+import mmrnmhrm.tests.BaseTest;
 import mmrnmhrm.tests.CoreTestUtils;
 import mmrnmhrm.tests.TestUtils;
 
@@ -14,7 +14,7 @@ import org.junit.Test;
  * Module convertion tests
  * http://www.digitalmars.com/d/module.html
  */
-public class ModuleConvertionTest extends BaseTestClass {
+public class ModuleConvertionTest extends BaseTest {
 
 	@BeforeClass
 	public static void setUp() throws Exception {

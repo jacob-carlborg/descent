@@ -5,7 +5,7 @@ import static org.junit.Assert.assertFalse;
 import melnorme.miscutil.ArrayUtil;
 import mmrnmhrm.core.model.DeeProject;
 import mmrnmhrm.core.model.DeeSourceFolder;
-import mmrnmhrm.tests.CommonProjectTestClass;
+import mmrnmhrm.tests.SampleProjectTest;
 import mmrnmhrm.tests.TestUtils;
 
 import org.eclipse.core.resources.IFolder;
@@ -16,7 +16,7 @@ import org.junit.After;
 import org.junit.Before;
 
 
-public class ProjectConfigBlockTest extends CommonProjectTestClass {
+public class ProjectConfigBlockTest extends SampleProjectTest {
 	
 	protected ProjectConfigBlock fProjectConfigBlock;
 	protected DeeProject deeProject;

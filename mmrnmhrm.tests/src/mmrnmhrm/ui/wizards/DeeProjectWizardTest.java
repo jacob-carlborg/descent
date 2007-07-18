@@ -4,7 +4,7 @@ import static org.junit.Assert.assertFalse;
 import mmrnmhrm.core.model.DeeModelManager;
 import mmrnmhrm.core.model.DeeModelRoot;
 import mmrnmhrm.core.model.DeeProject;
-import mmrnmhrm.tests.CommonProjectTestClass;
+import mmrnmhrm.tests.SampleProjectTest;
 import mmrnmhrm.tests.adapters.Test_WizardDialog;
 import mmrnmhrm.ui.DeePlugin;
 import mmrnmhrm.ui.wizards.projconfig.ProjectConfigBlockTest;
@@ -21,7 +21,7 @@ import org.junit.Test;
 
 
 
-public class DeeProjectWizardTest extends CommonProjectTestClass {
+public class DeeProjectWizardTest extends SampleProjectTest {
 
 	private DeeProjectWizard wizard;
 	private Test_WizardDialog wizDialog;
@@ -40,9 +40,6 @@ public class DeeProjectWizardTest extends CommonProjectTestClass {
         wizDialog = new Test_WizardDialog(parent, wizard);
         wizDialog.setBlockOnOpen(false);
 		wizDialog.open();
-
-		exceptionThrown = false;
-		exception = null;
 	}
 	
 
