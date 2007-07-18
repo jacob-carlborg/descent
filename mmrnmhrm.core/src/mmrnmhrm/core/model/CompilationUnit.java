@@ -21,7 +21,7 @@ import descent.internal.core.dom.ParserFacade;
 import dtool.descentadapter.DescentASTConverter;
 import dtool.dom.ast.ASTNode;
 import dtool.dom.definitions.Module;
-import dtool.modelinterface.IDTool_DeeCompilationUnit;
+import dtool.refmodel.IDTool_DeeCompilationUnit;
 
 /**
  * Module Wrapper 
@@ -193,7 +193,7 @@ public class CompilationUnit extends LangElement implements IDTool_DeeCompilatio
 	private void convertAST() {
 		DescentASTConverter domadapter = new DescentASTConverter();
 		Module neoModule = domadapter.convertModule(oldModule);
-		neoModule.cunit = this;
+		neoModule.setCUnit(this);
 		module = neoModule;
 	}
 	

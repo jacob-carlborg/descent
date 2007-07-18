@@ -86,7 +86,7 @@ public class DeeModelRoot extends LangModelRoot implements IDeeElement, IModuleR
 	}
 
 	public Module findModule(Module refModule, String packageName, String moduleName) {
-		CompilationUnit refcunit = (CompilationUnit) refModule.cunit;
+		CompilationUnit refcunit = (CompilationUnit) refModule.getCUnit();
 		
 		DeeProject deeproj = refcunit.getProject();
 		
@@ -99,7 +99,7 @@ public class DeeModelRoot extends LangModelRoot implements IDeeElement, IModuleR
 					for (CompilationUnit cunit : pkgFrag.getCompilationUnits()) {
 						String str = cunit.getElementName();
 						str = str.substring(0, str.lastIndexOf('.'));
-						if(moduleName.equals(str));
+						if(moduleName.equals(str))
 							return cunit.getNeoModule();
 	
 					}

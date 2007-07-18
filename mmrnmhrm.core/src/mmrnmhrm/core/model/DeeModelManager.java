@@ -114,18 +114,17 @@ public class DeeModelManager {
 		PackageFragment pkgFrag = null;
 		for (PackageFragment element : srcRoot.getPackageFragments()) {
 			IPath path = element.getUnderlyingResource().getProjectRelativePath();
-			if(path.isPrefixOf(filepath)) {
+			if(path.equals(filepath.removeLastSegments(1))) {
 				pkgFrag = element;
 				break;
 			}
 		}
 		if(pkgFrag == null) return null;
 
-		
 		CompilationUnit cunit = null;
 		for (CompilationUnit element : pkgFrag.getCompilationUnits()) {
 			IPath path = element.getUnderlyingResource().getProjectRelativePath();
-			if(path.isPrefixOf(filepath)) {
+			if(path.equals(filepath)) {
 				cunit = element;
 				break;
 			}

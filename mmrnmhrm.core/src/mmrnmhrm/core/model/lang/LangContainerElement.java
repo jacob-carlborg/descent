@@ -29,6 +29,10 @@ public abstract class LangContainerElement extends LangElement {
 		this.children = children;
 	}
 	
+	protected void clearChildren() {
+		setChildren(newChildrenArray(0));
+	}
+	
 	/** Creates an array with a runtime type appropriate to store this 
 	 * element's children. */
 	protected abstract ILangElement[] newChildrenArray(int size);
@@ -79,4 +83,6 @@ public abstract class LangContainerElement extends LangElement {
 			throw ExceptionAdapter.unchecked(e);
 		}
 	}
+
+
 }

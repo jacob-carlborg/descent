@@ -33,15 +33,22 @@ public class DeeSourceFolder extends LangSourceFolder implements IDeeSourceRoot 
 	
 	public void updateElement() throws CoreException {
 		// add the empty package
+		clearChildren();
 		addChild(new PackageFragment(this, this.folder));
-		for(IResource resource : folder.members()) {
+		addPackageFragments(folder);
+	}
+	
+	/** Add package fragments found in the given parentfolder. */
+	private void addPackageFragments(IFolder parent) throws CoreException {
+		for(IResource resource : parent.members()) {
 			if(resource.getType() == IResource.FOLDER) {
-				IFolder myfolder = (IFolder) resource;
-				addChild(new PackageFragment(this, myfolder));
+				IFolder folder = (IFolder) resource;
+				addChild(new PackageFragment(this, folder));
+				addPackageFragments(folder);
 			}
 		}
 	}
-	
+
 	public void updateElementRecursive() throws CoreException {
 		updateElement();
 		for(PackageFragment element : getPackageFragments()) {

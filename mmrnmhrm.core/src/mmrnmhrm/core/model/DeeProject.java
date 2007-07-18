@@ -106,7 +106,7 @@ public class DeeProject extends LangProject implements IDeeElement {
 	}
 	
 	public void updateElement() throws CoreException {
-		// nothing to do, unless maybe reload config file?
+		// FIXME: nothing to do, unless maybe reload config file?
 		//loadProjectConfigFile();
 	}
 	

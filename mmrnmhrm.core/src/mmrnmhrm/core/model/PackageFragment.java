@@ -27,9 +27,6 @@ public class PackageFragment extends LangContainerElement implements IDeeElement
 		return (IDeeSourceRoot) parent;
 	}
 
-
-
-
 	protected void addCompilationUnit(CompilationUnit unit) {
 		addChild(unit);
 		// dont refresh
@@ -56,6 +53,7 @@ public class PackageFragment extends LangContainerElement implements IDeeElement
 	}
 
 	public void updateElement() throws CoreException {
+		clearChildren();
 		for(IResource resource : packageFolder.members()) {
 			if(resource.getType() == IResource.FILE) {
 				IFile myfolder = (IFile) resource;

@@ -8,7 +8,7 @@ public class DeeCEManager {
 			new IDeeCE() {
 
 				public String getName() {
-					return "DMD path default";
+					return "DMD path default (DMD 0.178)";
 				}
 				
 				@Override
