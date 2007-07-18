@@ -7,5 +7,6 @@ public interface IListEditorAdapter {
 	void editElementEntry(Object element);
 
 	void removeEntry(Object element);
-
+	
+	
 }

@@ -26,7 +26,7 @@ public class LangTextTools {
 			extension3.setDocumentPartitioner(partitioning, partitioner);
 			partitioner.connect(document);
 			String str = document.get();
-			Logg.model.println(" Setup Document Partitioning: ", 
+			Logg.codeScanner.println(" Setup Document Partitioning: ", 
 					str.length() > 20 ? str.subSequence(0, 20) : str);
 		}
 	}

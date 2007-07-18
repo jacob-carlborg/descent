@@ -63,6 +63,7 @@ public class GoToDefinitionHandler extends AbstractHandler  {
 		
 		IEditorInput input = srcEditor.getEditorInput();
 		CompilationUnit srcCUnit = DeePlugin.getInstance().getCompilationUnit(input);
+		srcCUnit.reconcile();
 		
 		TextSelection sel = EditorUtil.getSelection(srcEditor);
 		int offset = sel.getOffset();
@@ -111,7 +112,7 @@ public class GoToDefinitionHandler extends AbstractHandler  {
 		ITextEditor targetEditor;
 
 		Module targetModule = NodeUtil.getParentModule(defunit);
-		CompilationUnit targetCUnit = (CompilationUnit) targetModule.cunit;
+		CompilationUnit targetCUnit = (CompilationUnit) targetModule.getCUnit();
 
 		if(openNewEditor || srcCUnit != targetCUnit) {
 			IWorkbenchPage page = window.getActivePage();
