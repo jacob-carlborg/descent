@@ -83,7 +83,7 @@ public ISourceRange[] getJavadocRanges() throws JavaModelException {
 					case ITerminalSymbols.TokenNameCOMMENT_DOC_BLOCK:
 					case ITerminalSymbols.TokenNameCOMMENT_DOC_PLUS:
 						sourceRanges.add(new SourceRange(
-								scanner.getCurrentTokenStartPosition(),
+								start + scanner.getCurrentTokenStartPosition(),
 								scanner.getCurrentTokenEndPosition() - scanner.getCurrentTokenStartPosition()
 								));
 						terminal= scanner.getNextToken();
