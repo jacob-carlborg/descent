@@ -28,6 +28,7 @@ import descent.core.IDocumented;
 import descent.core.IJavaElement;
 import descent.core.IMethod;
 import descent.core.IPackageDeclaration;
+import descent.core.IParent;
 import descent.core.ISourceRange;
 import descent.core.JavaModelException;
 import descent.core.ToolFactory;
@@ -77,6 +78,7 @@ public class JavadocContentAccess {
 	 */
 	public static Reader getContentReader(IDocumented member, boolean allowInherited) throws JavaModelException {
 		Ddoc ddoc = getDdoc(member);
+		// Merge parents macros
 		if (ddoc != null) {
 			IJavaElement parent = member.getParent();
 			while(parent instanceof IDocumented) {
@@ -96,7 +98,7 @@ public class JavadocContentAccess {
 				}
 			}
 			return getDdocReader(ddoc, member);
-		}		
+		}
 		return null;
 	}
 	
@@ -118,12 +120,38 @@ public class JavadocContentAccess {
 					ddoc.merge(ddoc2);
 				}
 			}
+			if (ddoc.isDitto()) {
+				return findDittoOwner(member, ddoc);
+			}
 			return ddoc;
 		}
 		
 		return null;
 	}
 	
+	private static Ddoc findDittoOwner(IJavaElement member, Ddoc ddoc) throws JavaModelException {
+		IJavaElement memberParent = member.getParent();
+		if (memberParent instanceof IParent) {
+			IParent parent = (IParent) memberParent;
+			IJavaElement[] siblings = parent.getChildren();
+			for(int i = 0; i < siblings.length; i++) {
+				if (siblings[i].equals(member)) {
+					for(int j = i - 1; j >= 0; j--) {
+						IJavaElement target = siblings[j];
+						if (target instanceof IDocumented) {
+							Ddoc targetDdoc = getDdoc((IDocumented) target);
+							if (targetDdoc != null && !targetDdoc.isDitto()) {
+								return targetDdoc;
+							}
+						}
+					}
+					break;
+				}
+			}
+		}
+		return ddoc;
+	}
+
 	private static Reader getDdocReader(Ddoc ddoc, IDocumented member) {
 		return new StringReader(transform(ddoc, member));
 	}

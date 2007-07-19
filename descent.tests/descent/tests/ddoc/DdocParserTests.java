@@ -3,10 +3,11 @@ package descent.tests.ddoc;
 import java.util.HashMap;
 import java.util.Map;
 
+import junit.framework.TestCase;
+import descent.internal.ui.infoviews.Ddoc;
 import descent.internal.ui.infoviews.DdocMacros;
 import descent.internal.ui.infoviews.DdocParser;
 import descent.internal.ui.infoviews.DdocSection;
-import junit.framework.TestCase;
 
 public class DdocParserTests extends TestCase {
 	
@@ -646,6 +647,37 @@ public class DdocParserTests extends TestCase {
 	
 	private DdocSection[] parse(String text) {
 		return new DdocParser(text).parse().getSections();
+	}
+	
+	public void testDitto() {
+		Ddoc ddoc = new DdocParser(
+			"/**\r\n" +
+			" * ditto\r\n" +
+			" */"
+				).parse();
+		
+		assertTrue(ddoc.isDitto());
+	}
+	
+	public void testNotDitto() {
+		Ddoc ddoc = new DdocParser(
+			"/**\r\n" +
+			" * ditto!\r\n" +
+			" */"
+				).parse();
+		
+		assertFalse(ddoc.isDitto());
+	}
+	
+	public void testNotDitto2() {
+		Ddoc ddoc = new DdocParser(
+			"/**\r\n" +
+			" * Macros:\r\n" +
+			" * ditto\r\n" +
+			" */"
+				).parse();
+		
+		assertFalse(ddoc.isDitto());
 	}
 
 }

@@ -34,6 +34,15 @@ public class Ddoc {
 	public DdocSection getMacrosSection() {
 		return macrosSection;
 	}
+	
+	public boolean isDitto() {
+		if (sections.size() == 1) {
+			DdocSection section = sections.get(0);
+			return section.getKind() == DdocSection.NORMAL_SECTION
+				&& section.getText().trim().equals("ditto"); //$NON-NLS-1$
+		}
+		return false; 
+	}
 
 	public void merge(Ddoc other) {
 		for(DdocSection otherSection : other.getSections()) {
