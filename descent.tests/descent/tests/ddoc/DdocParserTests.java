@@ -533,6 +533,22 @@ public class DdocParserTests extends TestCase {
 		assertEquals("This is my,macro", actual);
 	}
 	
+	public void testReplaceMacroArgumentZero3() {
+		Map<String, String> macros = new HashMap<String, String>();
+		macros.put("MACRO", "my $0");
+		
+		String actual = DdocMacros.replaceMacros("This is $(MACRO macro\nmacro2)", macros);
+		assertEquals("This is my macro\nmacro2", actual);
+	}
+	
+	public void testReplaceMacroArgumentZeroCountParenthesis() {
+		Map<String, String> macros = new HashMap<String, String>();
+		macros.put("ONE", "<a>$0</a>");
+		
+		String actual = DdocMacros.replaceMacros("$(ONE some())", macros);
+		assertEquals("<a>some()</a>", actual);
+	}
+	
 	public void testReplaceMacroArguments2() {
 		Map<String, String> macros = new HashMap<String, String>();
 		macros.put("MACRO", "$1 $2");

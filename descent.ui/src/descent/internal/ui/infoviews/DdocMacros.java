@@ -157,6 +157,7 @@ public class DdocMacros {
 			boolean foundSpace = false;
 			boolean foundComma = false;
 			
+			int parenCount = 0;
 			for(; from[0] < length; from[0]++) {
 				c = string.charAt(from[0]);
 				if (c == '$' && from[0] < length - 1 && string.charAt(from[0] + 1) == '(') {
@@ -176,7 +177,9 @@ public class DdocMacros {
 					currentArgument.setLength(0);
 					temp.append(c);
 					continue;
-				} else if (c == ')') {
+				} else if (c == ')' && parenCount > 0) {
+					parenCount--;
+				} else if (c == ')' && parenCount == 0) {
 					arguments.add(currentArgument.toString());
 					
 					String macroName = arguments.get(0);
@@ -206,6 +209,10 @@ public class DdocMacros {
 					currentArgument.setLength(0);
 					$0.append(c);
 					continue;
+				}
+				
+				if (c == '(') {
+					parenCount++;
 				}
 				
 				currentArgument.append(c);				

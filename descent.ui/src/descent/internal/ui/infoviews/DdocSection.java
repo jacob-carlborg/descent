@@ -66,7 +66,7 @@ public class DdocSection {
 		return parameters;
 	}
 	
-	void addParameters(Parameter[] others) {
+	public void addParameters(Parameter[] others) {
 		if (others.length == 0) return;
 		
 		Parameter[] newParameters = new Parameter[parameters.length + others.length];

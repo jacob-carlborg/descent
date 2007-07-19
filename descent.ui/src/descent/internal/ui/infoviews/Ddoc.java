@@ -60,4 +60,15 @@ public class Ddoc {
 		}
 	}
 
+	public void mergeMacros(Ddoc otherDdoc) {
+		DdocSection otherMacros = otherDdoc.getMacrosSection();
+		if (otherMacros == null) return;
+		
+		if (macrosSection == null) {
+			macrosSection = otherMacros;
+		} else {
+			macrosSection.addParameters(otherMacros.getParameters());
+		}
+	}
+
 }

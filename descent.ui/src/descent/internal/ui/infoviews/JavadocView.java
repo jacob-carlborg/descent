@@ -54,10 +54,10 @@ import org.osgi.framework.Bundle;
 
 import descent.core.IClassFile;
 import descent.core.ICompilationUnit;
+import descent.core.IDocumented;
 import descent.core.IJavaElement;
 import descent.core.IJavaProject;
 import descent.core.IMember;
-import descent.core.IPackageDeclaration;
 import descent.core.JavaModelException;
 import descent.internal.ui.IJavaHelpContextIds;
 import descent.internal.ui.JavaPlugin;
@@ -560,12 +560,11 @@ public class JavadocView extends AbstractInfoView {
 
 			IJavaElement curr= result[0];
 			
-			Reader reader = null;
-			if (curr instanceof IMember) {
-				IMember member= (IMember) curr;
+			if (curr instanceof IDocumented) {
+				IDocumented member= (IDocumented) curr;
 //				HTMLPrinter.addSmallHeader(buffer, getInfoText(member));
 				try {
-					reader= JavadocContentAccess.getHTMLContentReader(member, true, true);
+					Reader reader= JavadocContentAccess.getHTMLContentReader(member, true, true);
 					
 					/* TODO JDT UI attached javadoc
 					// Provide hint why there's no Javadoc
@@ -574,32 +573,17 @@ public class JavadocView extends AbstractInfoView {
 						if (root != null && root.getSourceAttachmentPath() == null && root.getAttachedJavadoc(null) == null)
 							reader= new StringReader(InfoViewMessages.JavadocView_noAttachedInformation);
 					}
-					*/					
-				} catch (JavaModelException ex) {
-					return null;
-				}				
-			} else if (curr instanceof IPackageDeclaration) {
-				IPackageDeclaration member= (IPackageDeclaration) curr;
-//				HTMLPrinter.addSmallHeader(buffer, getInfoText(member));
-				try {
-					reader= JavadocContentAccess.getHTMLContentReader(member, true);
+					*/
 					
-					/* TODO JDT UI attached javadoc
-					// Provide hint why there's no Javadoc
-					if (reader == null && member.isBinary()) {
-						IPackageFragmentRoot root= (IPackageFragmentRoot)member.getAncestor(IJavaElement.PACKAGE_FRAGMENT_ROOT);
-						if (root != null && root.getSourceAttachmentPath() == null && root.getAttachedJavadoc(null) == null)
-							reader= new StringReader(InfoViewMessages.JavadocView_noAttachedInformation);
+					if (reader != null) {
+						HTMLPrinter.addParagraph(buffer, reader);
 					}
-					*/					
 				} catch (JavaModelException ex) {
 					return null;
-				}
-			}
+				}	
+				
+			}			
 			
-			if (reader != null) {
-				HTMLPrinter.addParagraph(buffer, reader);
-			}
 		}
 
 		boolean flushContent= true;

@@ -18,7 +18,7 @@ package descent.core;
  * This interface is not intended to be implemented by clients.
  * </p>
  */
-public interface IMember extends IJavaElement, ISourceReference, ISourceManipulation, IParent {
+public interface IMember extends IJavaElement, ISourceReference, ISourceManipulation, IParent, IDocumented {
 /**
  * Returns the categories defined by this member's Javadoc. A category is the identifier
  * following the tag <code>@category</code> in the member's Javadoc.
@@ -75,25 +75,6 @@ IType getDeclaringType();
  * @see Flags
  */
 int getFlags() throws JavaModelException;
-/**
- * Returns the Javadoc range if this element is from source or if this element
- * is a binary element with an attached source, null otherwise.
- * 
- * <p>If this element is from source, the javadoc range is 
- * extracted from the corresponding source.</p>
- * <p>If this element is from a binary, the javadoc is extracted from the
- * attached source if present.</p>
- * <p>If this element's openable is not consistent, then null is returned.</p>
- *
- * @exception JavaModelException if this element does not exist or if an
- *      exception occurs while accessing its corresponding resource.
- * @return a source range corresponding to the javadoc source or <code>null</code>
- * if no source is available, this element has no javadoc comment or
- * this element's openable is not consistent
- * @see IOpenable#isConsistent()
- * @since 3.2
- */
-ISourceRange[] getJavadocRanges() throws JavaModelException;
 /**
  * Returns the source range of this member's simple name,
  * or <code>null</code> if this member does not have a name
