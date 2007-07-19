@@ -290,7 +290,6 @@ public class CodeFormatterVisitor extends ASTVisitor
 		return false;
 	}
 	
-	// TODO What is this...?
 	public boolean visit(ArrayAccess node)
 	{
 		node.getArray().accept(this);
@@ -302,7 +301,6 @@ public class CodeFormatterVisitor extends ASTVisitor
 		return false;
 	}
 	
-	// TODO this too (how is this different from an array literal?)
 	public boolean visit(ArrayInitializer node)
 	{
 		scribe.printNextToken(TOK.TOKlbracket);
@@ -375,9 +373,10 @@ public class CodeFormatterVisitor extends ASTVisitor
 	public boolean visit(Assignment node)
 	{
 		node.getLeftHandSide().accept(this);
-		scribe.space();
-		scribe.printNextToken(assignmentOperatorTokenList());
-		scribe.space();
+		scribe.printNextToken(assignmentOperatorTokenList(),
+				prefs.insert_space_before_assignment_operator);
+		if(prefs.insert_space_after_assignment_operator)
+			scribe.space();
 		node.getRightHandSide().accept(this);
 		return false;
 	}
@@ -718,15 +717,22 @@ public class CodeFormatterVisitor extends ASTVisitor
 		if(null != exp)
 			exp.accept(this);
 		
-		scribe.printNextToken(TOK.TOKdot);
+		scribe.printNextToken(TOK.TOKdot, 
+				prefs.insert_space_before_dot_in_qualified_names);
+		if(prefs.insert_space_after_dot_in_qualified_names)
+			scribe.space();
 		node.getName().accept(this);
 		return false;
 	}
 	
+	// TODO figure this out
 	public boolean visit(DotTemplateTypeExpression node)
 	{
 		node.getExpression().accept(this);
-		scribe.printNextToken(TOK.TOKdot);
+		scribe.printNextToken(TOK.TOKdot, 
+				prefs.insert_space_before_dot_in_qualified_names);
+		if(prefs.insert_space_after_dot_in_qualified_names)
+			scribe.space();
 		node.getTemplateType().accept(this);
 		return false;
 	}
@@ -1079,17 +1085,19 @@ public class CodeFormatterVisitor extends ASTVisitor
 	public boolean visit(InfixExpression node)
 	{
 		node.getLeftOperand().accept(this);
-		scribe.space();
 		
 		if(isNextToken(TOK.TOKnot))
 		{
-			scribe.printNextToken(TOK.TOKnot);
+			scribe.printNextToken(TOK.TOKnot,
+					prefs.insert_space_before_infix_operator);
 			if(isNextToken(TOK.TOKis))
 				scribe.printNextToken(TOK.TOKis);
-		} else
-			scribe.printNextToken(infixOperatorTokenList());
-		
-		scribe.space();
+		}
+		else
+			scribe.printNextToken(infixOperatorTokenList(),
+					prefs.insert_space_before_infix_operator);
+		if(prefs.insert_space_after_infix_operator)
+			scribe.space();
 		node.getRightOperand().accept(this);
 		return false;
 	}
@@ -1362,7 +1370,10 @@ public class CodeFormatterVisitor extends ASTVisitor
 	public boolean visit(PostfixExpression node)
 	{
 		node.getOperand().accept(this);
-		scribe.printNextToken(postfixOperatorTokenList());
+		scribe.printNextToken(postfixOperatorTokenList(),
+				prefs.insert_space_before_postfix_operator);
+		if(prefs.insert_space_after_postfix_operator)
+			scribe.space();
 		return false;
 	}
 	
@@ -1431,7 +1442,10 @@ public class CodeFormatterVisitor extends ASTVisitor
 	
 	public boolean visit(PrefixExpression node)
 	{
-		scribe.printNextToken(prefixOperatorTokenList());
+		scribe.printNextToken(prefixOperatorTokenList(),
+				prefs.insert_space_before_prefix_operator);
+		if(prefs.insert_space_after_prefix_operator)
+			scribe.space();
 		node.getOperand().accept(this);
 		return false;
 	}
@@ -1455,7 +1469,10 @@ public class CodeFormatterVisitor extends ASTVisitor
 	public boolean visit(QualifiedName node)
 	{
 		node.getQualifier().accept(this);
-		scribe.printNextToken(TOK.TOKdot);
+		scribe.printNextToken(TOK.TOKdot, 
+				prefs.insert_space_before_dot_in_qualified_names);
+		if(prefs.insert_space_after_dot_in_qualified_names)
+			scribe.space();
 		node.getName().accept(this);
 		return false;
 	}
@@ -1465,7 +1482,10 @@ public class CodeFormatterVisitor extends ASTVisitor
 		Type qualifier = node.getQualifier();
 		if(null != qualifier)
 			qualifier.accept(this);
-		scribe.printNextToken(TOK.TOKdot);
+		scribe.printNextToken(TOK.TOKdot, 
+				prefs.insert_space_before_dot_in_qualified_names);
+		if(prefs.insert_space_after_dot_in_qualified_names)
+			scribe.space();
 		node.getType().accept(this);
 		return false;
 	}
@@ -1772,7 +1792,10 @@ public class CodeFormatterVisitor extends ASTVisitor
 	public boolean visit(TemplateType node)
 	{
 		node.getName().accept(this);
-		scribe.printNextToken(TOK.TOKnot);
+		scribe.printNextToken(TOK.TOKnot,
+				prefs.insert_space_before_exclamation_point_in_template_invocation);
+		if(prefs.insert_space_after_exclamation_point_in_template_invocation)
+			scribe.space();
 		scribe.printNextToken(TOK.TOKlparen);
 		if(prefs.insert_space_after_opening_paren_in_template_invocation)
 			scribe.space();
@@ -1883,7 +1906,10 @@ public class CodeFormatterVisitor extends ASTVisitor
 		}
 		else
 			node.getType().accept(this);
-		scribe.printNextToken(TOK.TOKdot);
+		scribe.printNextToken(TOK.TOKdot, 
+				prefs.insert_space_before_dot_in_type_dot_identifier_expressions);
+		if(prefs.insert_space_after_dot_in_type_dot_identifier_expressions)
+			scribe.space();
 		node.getName().accept(this);
 		return false;
 	}

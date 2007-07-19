@@ -167,8 +167,13 @@ final class FormatterMessages extends NLS {
 	public static String WhiteSpaceOptions_base_class_lists;
 	public static String WhiteSpaceOptions_multiple_imports;
 	public static String WhiteSpaceOptions_selective_imports;
-	public static String WhiteSpaceOptions_before_trailing_comma;
-	public static String WhiteSpaceOptions_after_trailing_comma;
+	public static String WhiteSpaceOptions_operators;
+	public static String WhiteSpaceOptions_assignment_operator;
+	public static String WhiteSpaceOptions_prefix_operator;
+	public static String WhiteSpaceOptions_binary_operator;
+	public static String WhiteSpaceOptions_postfix_operator;
+	public static String WhiteSpaceOptions_qualified_names;
+	public static String WhiteSpaceOptions_module_scoped_names;
 	
 	// White space options - syntax elements
 	public static String WhiteSpaceOptions_before_semicolon;
@@ -193,6 +198,24 @@ final class FormatterMessages extends NLS {
 	public static String WhiteSpaceOptions_before_comma_in_base_class_lists;
 	public static String WhiteSpaceOptions_after_comma_in_base_class_lists;
 	public static String WhiteSpaceOptions_trailing_comma_in_array_literal;
+	public static String WhiteSpaceOptions_before_trailing_comma;
+	public static String WhiteSpaceOptions_after_trailing_comma;
+	public static String WhiteSpaceOptions_before_operator;
+	public static String WhiteSpaceOptions_after_operator;
+	public static String WhiteSpaceOptions_before_assignment_operator;
+	public static String WhiteSpaceOptions_before_prefix_operator;
+	public static String WhiteSpaceOptions_before_binary_operator;
+	public static String WhiteSpaceOptions_before_postfix_operator;
+	public static String WhiteSpaceOptions_after_assignment_operator;
+	public static String WhiteSpaceOptions_after_prefix_operator;
+	public static String WhiteSpaceOptions_after_binary_operator;
+	public static String WhiteSpaceOptions_after_postfix_operator;
+	public static String WhiteSpaceOptions_before_exclamation_point;
+	public static String WhiteSpaceOptions_after_exclamation_point;
+	public static String WhiteSpaceOptions_before_dot;
+	public static String WhiteSpaceOptions_after_dot;
+	public static String WhiteSpaceOptions_before_dot_in_module_scoped_names;
+	public static String WhiteSpaceOptions_after_dot_in_module_scoped_names;
 	
 	// Blank lines tab page
 	public static String ModifyDialog_tabpage_blank_lines_title;

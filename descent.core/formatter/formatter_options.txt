@@ -1126,13 +1126,142 @@ insert_space_after_comma_in_assert_statements
 
 
 
-# Other White Space Options
+# White Space  Options - Spaces before operator
+insert_space_before_assignment_operator
+	type=boolean
+	default=true
+	wsDElem=operators
+	wsDElemEx=assignment_operator
+	wsSynElem=before_operator
+	wsSynElemEx=before_assignment_operator
+	wsPreview=OPERATOR_PREVIEW
+insert_space_before_prefix_operator
+	type=boolean
+	default=false
+	wsDElem=operators
+	wsDElemEx=prefix_operator
+	wsSynElem=before_operator
+	wsSynElemEx=before_prefix_operator
+	wsPreview=OPERATOR_PREVIEW
+insert_space_before_infix_operator
+	type=boolean
+	default=true
+	wsDElem=operators
+	wsDElemEx=binary_operator
+	wsSynElem=before_operator
+	wsSynElemEx=before_binary_operator
+	wsPreview=OPERATOR_PREVIEW
+insert_space_before_postfix_operator
+	type=boolean
+	default=false
+	wsDElem=operators
+	wsDElemEx=postfix_operator
+	wsSynElem=before_operator
+	wsSynElemEx=before_postfix_operator
+	wsPreview=OPERATOR_PREVIEW
+
+
+
+
+
+# White Space Options - Spaces After Operator
+insert_space_after_assignment_operator
+	type=boolean
+	default=true
+	wsDElem=operators
+	wsDElemEx=assignment_operator
+	wsSynElem=after_operator
+	wsSynElemEx=after_assignment_operator
+	wsPreview=OPERATOR_PREVIEW
+insert_space_after_prefix_operator
+	type=boolean
+	default=false
+	wsDElem=operators
+	wsDElemEx=prefix_operator
+	wsSynElem=after_operator
+	wsSynElemEx=after_prefix_operator
+	wsPreview=OPERATOR_PREVIEW
+insert_space_after_infix_operator
+	type=boolean
+	default=true
+	wsDElem=operators
+	wsDElemEx=binary_operator
+	wsSynElem=after_operator
+	wsSynElemEx=after_binary_operator
+	wsPreview=OPERATOR_PREVIEW
+insert_space_after_postfix_operator
+	type=boolean
+	default=false
+	wsDElem=operators
+	wsDElemEx=postfix_operator
+	wsSynElem=after_operator
+	wsSynElemEx=after_postfix_operator
+	wsPreview=OPERATOR_PREVIEW
+
+
+
+
+# White space options - !
+insert_space_before_exclamation_point_in_template_invocation
+	type=boolean
+	default=false
+	wsDElem=template_invocation
+	wsSynElem=before_exclamation_point
+	wsPreview=TEMPLATE_INVOCATION_PREVIEW
+insert_space_after_exclamation_point_in_template_invocation
+	type=boolean
+	default=false
+	wsDElem=template_invocation
+	wsSynElem=after_exclamation_point
+	wsPreview=TEMPLATE_INVOCATION_PREVIEW
+
+
+
+
+
+# White Space Options - Spaces After Closing Parenthesis
 insert_space_after_closing_paren_in_casts
 	type=boolean
 	default=true
 	wsDElem=casts
 	wsSynElem=after_closing_paren
 	wsPreview=CAST_PREVIEW
+
+
+
+
+
+# White Space Options - .
+insert_space_before_dot_in_qualified_names
+	type=boolean
+	default=false
+	wsDElem=qualified_names
+	wsSynElem=before_dot
+	wsPreview=DOT_PREVIEW
+insert_space_before_dot_in_type_dot_identifier_expressions
+	type=boolean
+	default=false
+	wsDElem=type_dot_identifier_expression
+	wsSynElem=before_dot
+	wsPreview=TYPE_DOT_IDENTIFIER_PREVIEW
+insert_space_after_dot_in_qualified_names
+	type=boolean
+	default=false
+	wsDElem=qualified_names
+	wsSynElem=after_dot
+	wsPreview=DOT_PREVIEW
+insert_space_after_dot_in_type_dot_identifier_expressions
+	type=boolean
+	default=false
+	wsDElem=type_dot_identifier_expression
+	wsSynElem=after_dot
+	wsPreview=TYPE_DOT_IDENTIFIER_PREVIEW
+
+
+
+
+
+# Other White Space Options
 insert_space_before_semicolon
 	type=boolean
 	default=false

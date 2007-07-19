@@ -147,6 +147,8 @@ public final class WhiteSpaceOptions
 		
 		// Expressions
 		roots.add(expressions);
+		operators.setParent(expressions);
+		qualified_names.setParent(expressions);
 		function_delegate_type.setParent(expressions);
 		c_style_function_pointer.setParent(function_delegate_type);
 		typeof.setParent(expressions);
@@ -564,6 +566,15 @@ public abstract static class Node {
 			"x+=(a++*3)+((8-2)-(--6%4&8));"
 		);
 	
+	private final PreviewSnippet OPERATOR_PREVIEW =
+		new PreviewSnippet(CodeFormatter.K_STATEMENTS, 
+			"(5=6);" +
+			"(++5);" +
+			"(2+2);" +
+			"(5--);\n\n" +
+			"x+=(a++*3)+((8-2)-(--6%4&8));"
+		);
+	
 	private final PreviewSnippet IMPORT_PREVIEW =
 		new PreviewSnippet(CodeFormatter.K_COMPILATION_UNIT, 
 			"public static import x.y,x.z,foo:bar,baz;"
@@ -593,6 +604,14 @@ public abstract static class Node {
 			"x[1,3,5]=7;" +
 			"x[9..$]=11;" +
 			"x[]=13;"
+		);
+	
+	private final PreviewSnippet DOT_PREVIEW =
+		new PreviewSnippet(CodeFormatter.K_STATEMENTS, 
+			"foo.bar = 5;" +
+			"foo.baz(5);" +
+			"foo = new Foo.Quux();" +
+			"foo = (.foo);"
 		);
 	
 	//private final PreviewSnippet NO_PREVIEW =

@@ -206,7 +206,21 @@ public class DefaultCodeFormatterOptions
 	public boolean insert_space_after_comma_in_new_arguments;
 	public boolean insert_space_after_trailing_comma_in_array_initializer;
 	public boolean insert_space_after_comma_in_assert_statements;
+	public boolean insert_space_before_assignment_operator;
+	public boolean insert_space_before_prefix_operator;
+	public boolean insert_space_before_infix_operator;
+	public boolean insert_space_before_postfix_operator;
+	public boolean insert_space_after_assignment_operator;
+	public boolean insert_space_after_prefix_operator;
+	public boolean insert_space_after_infix_operator;
+	public boolean insert_space_after_postfix_operator;
+	public boolean insert_space_before_exclamation_point_in_template_invocation;
+	public boolean insert_space_after_exclamation_point_in_template_invocation;
 	public boolean insert_space_after_closing_paren_in_casts;
+	public boolean insert_space_before_dot_in_qualified_names;
+	public boolean insert_space_before_dot_in_type_dot_identifier_expressions;
+	public boolean insert_space_after_dot_in_qualified_names;
+	public boolean insert_space_after_dot_in_type_dot_identifier_expressions;
 	public boolean insert_space_before_semicolon;
 	public boolean insert_space_before_semicolon_in_for_statement;
 	public boolean insert_space_after_semicolon_in_for_statement;
@@ -439,7 +453,21 @@ public class DefaultCodeFormatterOptions
 		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_AFTER_COMMA_IN_NEW_ARGUMENTS, insert_space_after_comma_in_new_arguments ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
 		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_AFTER_TRAILING_COMMA_IN_ARRAY_INITIALIZER, insert_space_after_trailing_comma_in_array_initializer ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
 		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_AFTER_COMMA_IN_ASSERT_STATEMENTS, insert_space_after_comma_in_assert_statements ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
+		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_ASSIGNMENT_OPERATOR, insert_space_before_assignment_operator ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
+		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_PREFIX_OPERATOR, insert_space_before_prefix_operator ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
+		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_INFIX_OPERATOR, insert_space_before_infix_operator ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
+		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_POSTFIX_OPERATOR, insert_space_before_postfix_operator ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
+		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_AFTER_ASSIGNMENT_OPERATOR, insert_space_after_assignment_operator ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
+		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_AFTER_PREFIX_OPERATOR, insert_space_after_prefix_operator ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
+		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_AFTER_INFIX_OPERATOR, insert_space_after_infix_operator ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
+		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_AFTER_POSTFIX_OPERATOR, insert_space_after_postfix_operator ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
+		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_EXCLAMATION_POINT_IN_TEMPLATE_INVOCATION, insert_space_before_exclamation_point_in_template_invocation ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
+		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_AFTER_EXCLAMATION_POINT_IN_TEMPLATE_INVOCATION, insert_space_after_exclamation_point_in_template_invocation ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
 		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_AFTER_CLOSING_PAREN_IN_CASTS, insert_space_after_closing_paren_in_casts ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
+		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_DOT_IN_QUALIFIED_NAMES, insert_space_before_dot_in_qualified_names ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
+		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_DOT_IN_TYPE_DOT_IDENTIFIER_EXPRESSIONS, insert_space_before_dot_in_type_dot_identifier_expressions ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
+		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_AFTER_DOT_IN_QUALIFIED_NAMES, insert_space_after_dot_in_qualified_names ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
+		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_AFTER_DOT_IN_TYPE_DOT_IDENTIFIER_EXPRESSIONS, insert_space_after_dot_in_type_dot_identifier_expressions ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
 		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_SEMICOLON, insert_space_before_semicolon ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
 		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_SEMICOLON_IN_FOR_STATEMENT, insert_space_before_semicolon_in_for_statement ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
 		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_AFTER_SEMICOLON_IN_FOR_STATEMENT, insert_space_after_semicolon_in_for_statement ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
@@ -1970,12 +1998,138 @@ public class DefaultCodeFormatterOptions
 			}
 		}
 		
+		current = settings.get(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_ASSIGNMENT_OPERATOR);
+		if(null != current) {
+			try {
+				insert_space_before_assignment_operator = DefaultCodeFormatterConstants.TRUE.equals(current);
+			} catch(Exception e) {
+				insert_space_before_assignment_operator = true;
+			}
+		}
+		
+		current = settings.get(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_PREFIX_OPERATOR);
+		if(null != current) {
+			try {
+				insert_space_before_prefix_operator = DefaultCodeFormatterConstants.TRUE.equals(current);
+			} catch(Exception e) {
+				insert_space_before_prefix_operator = false;
+			}
+		}
+		
+		current = settings.get(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_INFIX_OPERATOR);
+		if(null != current) {
+			try {
+				insert_space_before_infix_operator = DefaultCodeFormatterConstants.TRUE.equals(current);
+			} catch(Exception e) {
+				insert_space_before_infix_operator = true;
+			}
+		}
+		
+		current = settings.get(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_POSTFIX_OPERATOR);
+		if(null != current) {
+			try {
+				insert_space_before_postfix_operator = DefaultCodeFormatterConstants.TRUE.equals(current);
+			} catch(Exception e) {
+				insert_space_before_postfix_operator = false;
+			}
+		}
+		
+		current = settings.get(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_AFTER_ASSIGNMENT_OPERATOR);
+		if(null != current) {
+			try {
+				insert_space_after_assignment_operator = DefaultCodeFormatterConstants.TRUE.equals(current);
+			} catch(Exception e) {
+				insert_space_after_assignment_operator = true;
+			}
+		}
+		
+		current = settings.get(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_AFTER_PREFIX_OPERATOR);
+		if(null != current) {
+			try {
+				insert_space_after_prefix_operator = DefaultCodeFormatterConstants.TRUE.equals(current);
+			} catch(Exception e) {
+				insert_space_after_prefix_operator = false;
+			}
+		}
+		
+		current = settings.get(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_AFTER_INFIX_OPERATOR);
+		if(null != current) {
+			try {
+				insert_space_after_infix_operator = DefaultCodeFormatterConstants.TRUE.equals(current);
+			} catch(Exception e) {
+				insert_space_after_infix_operator = true;
+			}
+		}
+		
+		current = settings.get(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_AFTER_POSTFIX_OPERATOR);
+		if(null != current) {
+			try {
+				insert_space_after_postfix_operator = DefaultCodeFormatterConstants.TRUE.equals(current);
+			} catch(Exception e) {
+				insert_space_after_postfix_operator = false;
+			}
+		}
+		
+		current = settings.get(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_EXCLAMATION_POINT_IN_TEMPLATE_INVOCATION);
+		if(null != current) {
+			try {
+				insert_space_before_exclamation_point_in_template_invocation = DefaultCodeFormatterConstants.TRUE.equals(current);
+			} catch(Exception e) {
+				insert_space_before_exclamation_point_in_template_invocation = false;
+			}
+		}
+		
+		current = settings.get(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_AFTER_EXCLAMATION_POINT_IN_TEMPLATE_INVOCATION);
+		if(null != current) {
+			try {
+				insert_space_after_exclamation_point_in_template_invocation = DefaultCodeFormatterConstants.TRUE.equals(current);
+			} catch(Exception e) {
+				insert_space_after_exclamation_point_in_template_invocation = false;
+			}
+		}
+		
 		current = settings.get(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_AFTER_CLOSING_PAREN_IN_CASTS);
 		if(null != current) {
 			try {
 				insert_space_after_closing_paren_in_casts = DefaultCodeFormatterConstants.TRUE.equals(current);
 			} catch(Exception e) {
 				insert_space_after_closing_paren_in_casts = true;
+			}
+		}
+		
+		current = settings.get(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_DOT_IN_QUALIFIED_NAMES);
+		if(null != current) {
+			try {
+				insert_space_before_dot_in_qualified_names = DefaultCodeFormatterConstants.TRUE.equals(current);
+			} catch(Exception e) {
+				insert_space_before_dot_in_qualified_names = false;
+			}
+		}
+		
+		current = settings.get(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_DOT_IN_TYPE_DOT_IDENTIFIER_EXPRESSIONS);
+		if(null != current) {
+			try {
+				insert_space_before_dot_in_type_dot_identifier_expressions = DefaultCodeFormatterConstants.TRUE.equals(current);
+			} catch(Exception e) {
+				insert_space_before_dot_in_type_dot_identifier_expressions = false;
+			}
+		}
+		
+		current = settings.get(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_AFTER_DOT_IN_QUALIFIED_NAMES);
+		if(null != current) {
+			try {
+				insert_space_after_dot_in_qualified_names = DefaultCodeFormatterConstants.TRUE.equals(current);
+			} catch(Exception e) {
+				insert_space_after_dot_in_qualified_names = false;
+			}
+		}
+		
+		current = settings.get(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_AFTER_DOT_IN_TYPE_DOT_IDENTIFIER_EXPRESSIONS);
+		if(null != current) {
+			try {
+				insert_space_after_dot_in_type_dot_identifier_expressions = DefaultCodeFormatterConstants.TRUE.equals(current);
+			} catch(Exception e) {
+				insert_space_after_dot_in_type_dot_identifier_expressions = false;
 			}
 		}
 		
@@ -2550,7 +2704,21 @@ public class DefaultCodeFormatterOptions
 		insert_space_after_comma_in_new_arguments = true;
 		insert_space_after_trailing_comma_in_array_initializer = true;
 		insert_space_after_comma_in_assert_statements = true;
+		insert_space_before_assignment_operator = true;
+		insert_space_before_prefix_operator = false;
+		insert_space_before_infix_operator = true;
+		insert_space_before_postfix_operator = false;
+		insert_space_after_assignment_operator = true;
+		insert_space_after_prefix_operator = false;
+		insert_space_after_infix_operator = true;
+		insert_space_after_postfix_operator = false;
+		insert_space_before_exclamation_point_in_template_invocation = false;
+		insert_space_after_exclamation_point_in_template_invocation = false;
 		insert_space_after_closing_paren_in_casts = true;
+		insert_space_before_dot_in_qualified_names = false;
+		insert_space_before_dot_in_type_dot_identifier_expressions = false;
+		insert_space_after_dot_in_qualified_names = false;
+		insert_space_after_dot_in_type_dot_identifier_expressions = false;
 		insert_space_before_semicolon = false;
 		insert_space_before_semicolon_in_for_statement = false;
 		insert_space_after_semicolon_in_for_statement = true;
