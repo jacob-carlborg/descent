@@ -233,5 +233,40 @@ public class Comment_Test extends Parser_Test {
 		Declaration c = getSingleDeclarationNoProblems(s);
 		assertEquals(1, c.preDDocs().size());
 	}
+	
+	public void testDontGlueComments() {
+		String s = " int x; /// side comment\r\n" +
+				   "/// top comment\r\n" +
+				   "int y;";
+		List<Declaration> decls = getDeclarationsNoProblems(s);
+		assertEquals(2, decls.size());
+		
+		Declaration x = decls.get(0);
+		assertEquals("/// side comment", x.getPostDDoc().getText());
+		assertPosition(x, 1, 23);
+		
+		Declaration y = decls.get(1);
+		assertEquals("/// top comment", y.preDDocs().get(0).getText());
+		assertPosition(y, 26, 23);
+	}
+	
+	public void testDontGlueComments2() {
+		String s = 
+			" class X {\r\n" +
+			"\tint x; /// side comment\r\n" +
+			"\t/// top comment\r\n" +
+			"\tint y;\r\n" +
+			"}";
+		
+		List<Declaration> decls = ((AggregateDeclaration) getSingleDeclarationNoProblems(s)).declarations();
+		
+		Declaration x = decls.get(0);
+		assertEquals("/// side comment", x.getPostDDoc().getText());
+		assertPosition(x, 13, 23);
+		
+		Declaration y = decls.get(1);
+		assertEquals("/// top comment", y.preDDocs().get(0).getText());
+		assertPosition(y, 39, 24);
+	}
 
 }

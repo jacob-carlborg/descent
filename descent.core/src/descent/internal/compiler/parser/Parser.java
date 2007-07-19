@@ -5807,6 +5807,8 @@ public class Parser extends Lexer {
 	
 	@Override
 	public TOK nextToken() {
+		appendLeadingComments = true;
+		
 		TOK tok = super.nextToken();
 		while(tok == TOK.TOKlinecomment || tok == TOK.TOKdoclinecomment ||
 			  tok == TOK.TOKblockcomment || tok == TOK.TOKdocblockcomment ||
@@ -5911,9 +5913,15 @@ public class Parser extends Lexer {
 	}
 	
 	private void attachCommentToCurrentToken(Comment comment) {
-		if (!appendLeadingComments || !comment.isDDocComment()) return;
+		if ((!appendLeadingComments || 
+					!comment.isDDocComment() || 
+					(prevToken.value != TOKsemicolon && 
+						prevToken.value != TOKrcurly))) return;
 		
-		prevToken.leadingComment = (DDocComment) comment;
+		if (prevToken.leadingComment == null) {
+			lastDocCommentRead = comments.size();	
+		}
+		prevToken.leadingComment = (DDocComment) comment;		
 	}
 	
 }

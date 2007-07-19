@@ -292,8 +292,8 @@ public ISourceRange[] getJavadocRanges() throws JavaModelException {
 	}
 	
 	if (declaration.getPostDDoc() != null) {
-		sourceRanges.add(new SourceRange(start + declaration.preDDocs().get(0).getStartPosition(),
-				declaration.preDDocs().get(0).getLength()));
+		sourceRanges.add(new SourceRange(start + declaration.getPostDDoc().getStartPosition(),
+				declaration.getPostDDoc().getLength()));
 	}
 
 	return sourceRanges.toArray(new ISourceRange[sourceRanges.size()]);
