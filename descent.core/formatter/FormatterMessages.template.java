@@ -77,6 +77,8 @@ final class FormatterMessages extends NLS {
 	public static String ModifyDialogTabPage_NumberPreference_error_invalid_key;
 	public static String ModifyDialogTabPage_NumberPreference_error_invalid_value;
 	public static String ProfileManager_descent_defaults_profile_name;
+	public static String ProfileManager_java_defaults_profile_name;
+	public static String ProfileManager_phobos_defaults_profile_name;
 	
 	// Braces tab page
 	public static String ModifyDialog_tabpage_braces_title;
@@ -173,7 +175,10 @@ final class FormatterMessages extends NLS {
 	public static String WhiteSpaceOptions_binary_operator;
 	public static String WhiteSpaceOptions_postfix_operator;
 	public static String WhiteSpaceOptions_qualified_names;
-	public static String WhiteSpaceOptions_module_scoped_names;
+	public static String WhiteSpaceOptions_function_varargs;
+	public static String WhiteSpaceOptions_tuple_parameters;
+	public static String WhiteSpaceOptions_dynamic_arrays;
+	public static String WhiteSpaceOptions_arrays;
 	
 	// White space options - syntax elements
 	public static String WhiteSpaceOptions_before_semicolon;
@@ -214,8 +219,15 @@ final class FormatterMessages extends NLS {
 	public static String WhiteSpaceOptions_after_exclamation_point;
 	public static String WhiteSpaceOptions_before_dot;
 	public static String WhiteSpaceOptions_after_dot;
-	public static String WhiteSpaceOptions_before_dot_in_module_scoped_names;
-	public static String WhiteSpaceOptions_after_dot_in_module_scoped_names;
+	public static String WhiteSpaceOptions_before_slice_operator;
+	public static String WhiteSpaceOptions_after_slice_operator;
+	public static String WhiteSpaceOptions_before_elipsis_in_tuple_parameters;
+	public static String WhiteSpaceOptions_after_elipsis_in_tuple_parameters;
+	public static String WhiteSpaceOptions_before_elipsis_in_varargs;
+	public static String WhiteSpaceOptions_after_elipsis_in_varargs;
+	public static String WhiteSpaceOptions_after_elipsis;
+	public static String WhiteSpaceOptions_before_elipsis;
+	public static String WhiteSpaceOptions_between_empty_brackets;
 	
 	// Blank lines tab page
 	public static String ModifyDialog_tabpage_blank_lines_title;

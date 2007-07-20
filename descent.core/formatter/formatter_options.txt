@@ -46,6 +46,19 @@
 #     wsDElemEx     The D element name displayed in the syntax element tree (defaults to wsDElem)
 #     wsSynElemEx   The Syntax element name displayed in the D element tree (defaults to wsSynElem)
 #     wsPreview     The preview used for the syntax element
+#     javaDefault   Defaults similar to the Java conventions
+#     phobosDefault Defaults similar to the style used in Phobos
+#
+# The "default" is the "Descent Deaults" option and is also propogated to the
+# other defaults if no explicit alternate is given. This means that alternatives
+# only need to be defined if they're actually different than the Descent
+# default. Java Defaults should conform to the Java Style Guide located at:
+# http://java.sun.com/docs/codeconv/html/CodeConvTOC.doc.html
+# ... as much as possible (so constructs that appear in Java should be identical
+# and D-only constructs should use what would logically follow or the Descent
+# defaults). Phobos defaults should represent a style similar to that of the
+# Phobos standard library, as much as possible (it's not very consistent...).
+# Other defaults may be added later.
 #
 # wsSynElem and wsDElem are meant to be used in tandem - for example, if an
 # option is insert_space_before_semicolon_in_for_loops, wsDElem = "for_loops"
@@ -68,86 +81,103 @@
 brace_position_for_function_declaration
 	type=BracePosition
 	default=BracePosition.END_OF_LINE
+	phobosDefault=BracePosition.NEXT_LINE
 	tab=BracesTabPage
 	uiText=Function Declarations
 brace_position_for_type_declaration
 	type=BracePosition
 	default=BracePosition.END_OF_LINE
+	phobosDefault=BracePosition.NEXT_LINE
 	tab=BracesTabPage
 	uiText=Type Declarations
 brace_position_for_enum_declaration
 	type=BracePosition
 	default=BracePosition.END_OF_LINE
+	phobosDefault=BracePosition.NEXT_LINE
 	tab=BracesTabPage
 	uiText=Enum Declarations
 brace_position_for_template_declaration
 	type=BracePosition
 	default=BracePosition.END_OF_LINE
+	phobosDefault=BracePosition.NEXT_LINE
 	tab=BracesTabPage
 	uiText=Template Declarations
 brace_position_for_conditional_declaration
 	type=BracePosition
 	default=BracePosition.END_OF_LINE
+	phobosDefault=BracePosition.NEXT_LINE
 	tab=BracesTabPage
 	uiText='version'/'debug' Declarations
 brace_position_for_conditional_statement
 	type=BracePosition
 	default=BracePosition.END_OF_LINE
+	phobosDefault=BracePosition.NEXT_LINE
 	tab=BracesTabPage
 	uiText='if' Statements
 brace_position_for_loop_statement
 	type=BracePosition
 	default=BracePosition.END_OF_LINE
+	phobosDefault=BracePosition.NEXT_LINE
 	tab=BracesTabPage
 	uiText=Loop Statements
 brace_position_for_function_literal
 	type=BracePosition
 	default=BracePosition.END_OF_LINE
+	phobosDefault=BracePosition.NEXT_LINE
 	tab=BracesTabPage
 	uiText=Function Literals
 brace_position_for_anonymous_type
 	type=BracePosition
 	default=BracePosition.END_OF_LINE
+	phobosDefault=BracePosition.NEXT_LINE
 	tab=BracesTabPage
 	uiText=Anonymous Types
 brace_position_for_switch_statement
 	type=BracePosition
 	default=BracePosition.END_OF_LINE
+	phobosDefault=BracePosition.NEXT_LINE
 	tab=BracesTabPage
 	uiText='switch' Statements
 brace_position_for_switch_case
 	type=BracePosition
 	default=BracePosition.END_OF_LINE
+	phobosDefault=BracePosition.NEXT_LINE
 	tab=BracesTabPage
 	uiText=Switch Cases
 brace_position_for_try_catch_finally
 	type=BracePosition
 	default=BracePosition.END_OF_LINE
+	phobosDefault=BracePosition.NEXT_LINE
 	tab=BracesTabPage
 	uiText='try'/'catch'/'finally' Blocks
 brace_position_for_modifiers
 	type=BracePosition
 	default=BracePosition.END_OF_LINE
+	phobosDefault=BracePosition.NEXT_LINE
 	tab=BracesTabPage
 	uiText=Grouped Modifiers
 brace_position_for_synchronized_statement
 	type=BracePosition
 	default=BracePosition.END_OF_LINE
+	phobosDefault=BracePosition.NEXT_LINE
 	tab=BracesTabPage
 	uiText='synchronized'/'volatile' Blocks
 brace_position_for_with_statement
 	type=BracePosition
 	default=BracePosition.END_OF_LINE
+	phobosDefault=BracePosition.NEXT_LINE
 	tab=BracesTabPage
 	uiText='with' Statements
 brace_position_for_scope_statement
 	type=BracePosition
 	default=BracePosition.END_OF_LINE
+	phobosDefault=BracePosition.NEXT_LINE
 	tab=BracesTabPage
 	uiText='scope' Blocks
-brace_position_for_other_blocks
+brace_position_for_pragmas
 	type=BracePosition
 	default=BracePosition.END_OF_LINE
+	phobosDefault=BracePosition.NEXT_LINE
 	tab=BracesTabPage
 	uiText=Other Blocks
 
@@ -1257,6 +1287,78 @@ insert_space_after_dot_in_type_dot_identifier_expressions
 	wsSynElem=after_dot
 	wsPreview=TYPE_DOT_IDENTIFIER_PREVIEW
 
+
+
+
+
+# White Space Options - ..
+insert_space_before_slice_operator
+	type=boolean
+	default=true
+	wsDElem=array_slice
+	wsSynElem=before_slice_operator
+	wsPreview=ARRAY_ACCESS_PREVIEW
+insert_space_after_slice_operator
+	type=boolean
+	default=true
+	wsDElem=array_slice
+	wsSynElem=after_slice_operator
+	wsPreview=ARRAY_ACCESS_PREVIEW
+
+
+
+
+
+# White space options - ...
+insert_space_before_elipsis_in_function_varargs
+	type=boolean
+	default=false
+	wsDElem=function_decl_params
+	wsDElemEx=function_varargs
+	wsSynElem=before_elipsis
+	wsSynElemEx=before_elipsis_in_varargs
+	wsPreview=FUNCTION_DECL_PREVIEW
+insert_space_before_elipsis_in_tuples
+	type=boolean
+	default=false
+	wsDElem=template_declaration
+	wsDElemEx=tuple_parameters
+	wsSynElem=before_elipsis
+	wsSynElemEx=before_elipsis_in_tuple_parameters
+	wsPreview=TEMPLATE_DECLARATION_PREVIEW
+insert_space_after_elipsis_in_function_varargs
+	type=boolean
+	default=false
+	wsDElem=function_decl_params
+	wsDElemEx=function_varargs
+	wsSynElem=after_elipsis
+	wsSynElemEx=after_elipsis_in_varargs
+	wsPreview=FUNCTION_DECL_PREVIEW
+insert_space_after_elipsis_in_tuples
+	type=boolean
+	default=false
+	wsDElem=template_declaration
+	wsDElemEx=tuple_parameters
+	wsSynElem=after_elipsis
+	wsSynElemEx=after_elipsis_in_tuple_parameters
+	wsPreview=TEMPLATE_DECLARATION_PREVIEW
+
+
+
+
+# White Space Options - Between Empty Brackets
+insert_space_between_empty_brackets_in_slice
+	type=boolean
+	default=false
+	wsDElem=array_slice
+	wsSynElem=between_empty_brackets
+	wsPreview=ARRAY_ACCESS_PREVIEW
+insert_space_between_empty_brackets_in_dynamic_array_type
+	type=boolean
+	default=false
+	wsDElem=dynamic_arrays
+	wsSynElem=between_empty_brackets
+	wsPreview=ARRAYS_PREVIEW
 
 
 

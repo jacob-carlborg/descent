@@ -38,6 +38,27 @@ public class DefaultCodeFormatterOptions
 	{
 		DefaultCodeFormatterOptions options = new DefaultCodeFormatterOptions();
 		options.setDefaultSettings();
+		
+		if(name.equals(DefaultCodeFormatterConstants.PROFILE_JAVA_DEFAULTS))
+		{
+			/* EVAL-FOR-EACH
+			 * if($$_{'javaDefault'})
+			 * {
+		     *     print DST "\t\t\toptions.$$_{'optName'} = $$_{'javaDefault'};\n";
+		     * }
+		     */
+		}
+		
+		else if(name.equals(DefaultCodeFormatterConstants.PROFILE_PHOBOS_DEFAULTS))
+		{
+			/* EVAL-FOR-EACH
+			 * if($$_{'phobosDefault'})
+			 * {
+		     *     print DST "\t\t\toptions.$$_{'optName'} = $$_{'phobosDefault'};\n";
+		     * }
+		     */
+		}
+		
 		return options;
 	}
 	

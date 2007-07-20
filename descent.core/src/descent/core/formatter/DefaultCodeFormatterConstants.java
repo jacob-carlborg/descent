@@ -17,6 +17,8 @@ import descent.internal.formatter.Alignment;
 public class DefaultCodeFormatterConstants {
 	
 	public static final String PROFILE_DESCENT_DEFAULTS = "descent.ui.formatter.defaults.descent_defaults";
+	public static final String PROFILE_JAVA_DEFAULTS = "descent.ui.formatter.defaults.java_defaults";
+	public static final String PROFILE_PHOBOS_DEFAULTS = "decent.ui.formatter.defaults.phobos_defaults";
 	public static final String DEFAULT_PROFILE = PROFILE_DESCENT_DEFAULTS;
 	
 	// Boolean mappings
@@ -64,7 +66,7 @@ public class DefaultCodeFormatterConstants {
 	public static final String FORMATTER_BRACE_POSITION_FOR_SYNCHRONIZED_STATEMENT = JavaCore.PLUGIN_ID + ".formatter.brace_position_for_synchronized_statement";
 	public static final String FORMATTER_BRACE_POSITION_FOR_WITH_STATEMENT = JavaCore.PLUGIN_ID + ".formatter.brace_position_for_with_statement";
 	public static final String FORMATTER_BRACE_POSITION_FOR_SCOPE_STATEMENT = JavaCore.PLUGIN_ID + ".formatter.brace_position_for_scope_statement";
-	public static final String FORMATTER_BRACE_POSITION_FOR_OTHER_BLOCKS = JavaCore.PLUGIN_ID + ".formatter.brace_position_for_other_blocks";
+	public static final String FORMATTER_BRACE_POSITION_FOR_PRAGMAS = JavaCore.PLUGIN_ID + ".formatter.brace_position_for_pragmas";
 	public static final String FORMATTER_INSERT_SPACE_BEFORE_OPENING_PAREN_IN_FUNCTION_DECLARATION_PARAMETERS = JavaCore.PLUGIN_ID + ".formatter.insert_space_before_opening_paren_in_function_declaration_parameters";
 	public static final String FORMATTER_INSERT_SPACE_BEFORE_OPENING_PAREN_IN_FUNCTION_TEMPLATE_ARGS = JavaCore.PLUGIN_ID + ".formatter.insert_space_before_opening_paren_in_function_template_args";
 	public static final String FORMATTER_INSERT_SPACE_BEFORE_OPENING_PAREN_IN_FUNCTION_INVOCATION = JavaCore.PLUGIN_ID + ".formatter.insert_space_before_opening_paren_in_function_invocation";
@@ -227,6 +229,14 @@ public class DefaultCodeFormatterConstants {
 	public static final String FORMATTER_INSERT_SPACE_BEFORE_DOT_IN_TYPE_DOT_IDENTIFIER_EXPRESSIONS = JavaCore.PLUGIN_ID + ".formatter.insert_space_before_dot_in_type_dot_identifier_expressions";
 	public static final String FORMATTER_INSERT_SPACE_AFTER_DOT_IN_QUALIFIED_NAMES = JavaCore.PLUGIN_ID + ".formatter.insert_space_after_dot_in_qualified_names";
 	public static final String FORMATTER_INSERT_SPACE_AFTER_DOT_IN_TYPE_DOT_IDENTIFIER_EXPRESSIONS = JavaCore.PLUGIN_ID + ".formatter.insert_space_after_dot_in_type_dot_identifier_expressions";
+	public static final String FORMATTER_INSERT_SPACE_BEFORE_SLICE_OPERATOR = JavaCore.PLUGIN_ID + ".formatter.insert_space_before_slice_operator";
+	public static final String FORMATTER_INSERT_SPACE_AFTER_SLICE_OPERATOR = JavaCore.PLUGIN_ID + ".formatter.insert_space_after_slice_operator";
+	public static final String FORMATTER_INSERT_SPACE_BEFORE_ELIPSIS_IN_FUNCTION_VARARGS = JavaCore.PLUGIN_ID + ".formatter.insert_space_before_elipsis_in_function_varargs";
+	public static final String FORMATTER_INSERT_SPACE_BEFORE_ELIPSIS_IN_TUPLES = JavaCore.PLUGIN_ID + ".formatter.insert_space_before_elipsis_in_tuples";
+	public static final String FORMATTER_INSERT_SPACE_AFTER_ELIPSIS_IN_FUNCTION_VARARGS = JavaCore.PLUGIN_ID + ".formatter.insert_space_after_elipsis_in_function_varargs";
+	public static final String FORMATTER_INSERT_SPACE_AFTER_ELIPSIS_IN_TUPLES = JavaCore.PLUGIN_ID + ".formatter.insert_space_after_elipsis_in_tuples";
+	public static final String FORMATTER_INSERT_SPACE_BETWEEN_EMPTY_BRACKETS_IN_SLICE = JavaCore.PLUGIN_ID + ".formatter.insert_space_between_empty_brackets_in_slice";
+	public static final String FORMATTER_INSERT_SPACE_BETWEEN_EMPTY_BRACKETS_IN_DYNAMIC_ARRAY_TYPE = JavaCore.PLUGIN_ID + ".formatter.insert_space_between_empty_brackets_in_dynamic_array_type";
 	public static final String FORMATTER_INSERT_SPACE_BEFORE_SEMICOLON = JavaCore.PLUGIN_ID + ".formatter.insert_space_before_semicolon";
 	public static final String FORMATTER_INSERT_SPACE_BEFORE_SEMICOLON_IN_FOR_STATEMENT = JavaCore.PLUGIN_ID + ".formatter.insert_space_before_semicolon_in_for_statement";
 	public static final String FORMATTER_INSERT_SPACE_AFTER_SEMICOLON_IN_FOR_STATEMENT = JavaCore.PLUGIN_ID + ".formatter.insert_space_after_semicolon_in_for_statement";

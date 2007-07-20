@@ -111,6 +111,7 @@ public final class WhiteSpaceOptions
 		final List<Node> roots = new ArrayList<Node>();
 		final InnerNode declarations = new InnerNode(null, workingValues, FormatterMessages.WhiteSpaceOptions_declarations);
 		final InnerNode expressions = new InnerNode(null, workingValues, FormatterMessages.WhiteSpaceOptions_expressions);
+		final InnerNode arrays = new InnerNode(null, workingValues, FormatterMessages.WhiteSpaceOptions_arrays);
 		
 		// Declarations
 		roots.add(declarations);
@@ -159,9 +160,11 @@ public final class WhiteSpaceOptions
 		parenthesized_expressions.setParent(expressions);
 		template_invocation.setParent(expressions);
 		type_dot_identifier_expression.setParent(expressions);
-		array_literal.setParent(expressions);
 		struct_initalizer.setParent(expressions);
-		array_slice.setParent(expressions);
+		arrays.setParent(expressions);
+		dynamic_arrays.setParent(arrays);
+		array_literal.setParent(arrays);
+		array_slice.setParent(arrays);
 		
 		return roots;
 	}
@@ -612,6 +615,13 @@ public abstract static class Node {
 			"foo.baz(5);" +
 			"foo = new Foo.Quux();" +
 			"foo = (.foo);"
+		);
+	
+	private final PreviewSnippet ARRAYS_PREVIEW =
+		new PreviewSnippet(CodeFormatter.K_STATEMENTS, 
+			"int[] dynamicArray = new int[5];" +
+			"int[3] staticArray = [3, 5, 7];" +
+			"int[char[]] associativeArray;"
 		);
 	
 	//private final PreviewSnippet NO_PREVIEW =

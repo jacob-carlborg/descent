@@ -17,6 +17,8 @@ import descent.internal.formatter.Alignment;
 public class DefaultCodeFormatterConstants {
 	
 	public static final String PROFILE_DESCENT_DEFAULTS = "descent.ui.formatter.defaults.descent_defaults";
+	public static final String PROFILE_JAVA_DEFAULTS = "descent.ui.formatter.defaults.java_defaults";
+	public static final String PROFILE_PHOBOS_DEFAULTS = "decent.ui.formatter.defaults.phobos_defaults";
 	public static final String DEFAULT_PROFILE = PROFILE_DESCENT_DEFAULTS;
 	
 	// Boolean mappings

@@ -725,7 +725,6 @@ public class CodeFormatterVisitor extends ASTVisitor
 		return false;
 	}
 	
-	// TODO figure this out
 	public boolean visit(DotTemplateTypeExpression node)
 	{
 		node.getExpression().accept(this);
@@ -1404,7 +1403,7 @@ public class CodeFormatterVisitor extends ASTVisitor
 		}
 		scribe.printNextToken(TOK.TOKrparen, prefs.insert_space_before_closing_paren_in_pragmas);
 		if(!node.declarations().isEmpty())
-			formatDeclarationBlock(node.declarations(), prefs.brace_position_for_other_blocks, true);
+			formatDeclarationBlock(node.declarations(), prefs.brace_position_for_pragmas, true);
 		if(isNextToken(TOK.TOKsemicolon))
 			scribe.printNextToken(TOK.TOKsemicolon);
 		scribe.printTrailingComment();
@@ -1431,7 +1430,7 @@ public class CodeFormatterVisitor extends ASTVisitor
 		scribe.printNextToken(TOK.TOKrparen, prefs.insert_space_before_closing_paren_in_pragmas);
 		Statement body = node.getBody();
 		if(null != body) {
-			formatSubStatement(body, false, true, true, prefs.brace_position_for_other_blocks);
+			formatSubStatement(body, false, true, true, prefs.brace_position_for_pragmas);
 		}
 		if(isNextToken(TOK.TOKsemicolon)) {
 			scribe.printNextToken(TOK.TOKsemicolon);
@@ -1566,11 +1565,14 @@ public class CodeFormatterVisitor extends ASTVisitor
 		if(null != fromExpression)
 		{
 			node.getFromExpression().accept(this);
-			scribe.space();
-			scribe.printNextToken(TOK.TOKslice);
-			scribe.space();
+			scribe.printNextToken(TOK.TOKslice,
+					prefs.insert_space_before_slice_operator);
+			if(prefs.insert_space_after_slice_operator)
+				scribe.space();
 			node.getToExpression().accept(this);
 		}
+		else if(prefs.insert_space_between_empty_brackets_in_slice)
+			scribe.space();
 		scribe.printNextToken(TOK.TOKrbracket);
 		return false;
 	}
@@ -1857,7 +1859,10 @@ public class CodeFormatterVisitor extends ASTVisitor
 	public boolean visit(TupleTemplateParameter node)
 	{
 		node.getName().accept(this);
-		scribe.printNextToken(TOK.TOKdotdotdot);
+		scribe.printNextToken(TOK.TOKdotdotdot,
+				prefs.insert_space_before_elipsis_in_tuples);
+		if(prefs.insert_space_after_elipsis_in_tuples)
+			scribe.space();
 		return false;
 	}
 	
@@ -2362,7 +2367,10 @@ public class CodeFormatterVisitor extends ASTVisitor
 							scribe.space();
 					}
 				}
-				scribe.printNextToken(TOK.TOKdotdotdot);	
+				scribe.printNextToken(TOK.TOKdotdotdot,
+						prefs.insert_space_before_elipsis_in_function_varargs);
+				if(prefs.insert_space_after_elipsis_in_function_varargs)
+					scribe.space();
 			}
 			scribe.printNextToken(TOK.TOKrparen, this.prefs.insert_space_before_closing_paren_in_function_declaration_parameters);
 		}
@@ -2757,7 +2765,8 @@ public class CodeFormatterVisitor extends ASTVisitor
 	private void formatPostfix(DynamicArrayType node, boolean postfixed)
 	{
 		scribe.printNextToken(TOK.TOKlbracket);
-		scribe.printNextToken(TOK.TOKrbracket);
+		scribe.printNextToken(TOK.TOKrbracket, 
+				prefs.insert_space_between_empty_brackets_in_dynamic_array_type);
 	}
 
 	private void formatPostfix(AssociativeArrayType node, boolean postfixed)
@@ -2778,9 +2787,10 @@ public class CodeFormatterVisitor extends ASTVisitor
 	{
 		scribe.printNextToken(TOK.TOKlbracket);
 		node.getFromExpression().accept(this);
-		scribe.space();
-		scribe.printNextToken(TOK.TOKslice);
-		scribe.space();
+		scribe.printNextToken(TOK.TOKslice,
+				prefs.insert_space_before_slice_operator);
+		if(prefs.insert_space_after_slice_operator)
+			scribe.space();
 		node.getToExpression().accept(this);
 		scribe.printNextToken(TOK.TOKrbracket);
 	}
