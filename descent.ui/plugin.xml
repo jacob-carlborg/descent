@@ -2321,12 +2321,12 @@
       <contextType
             name="%templates.java.contextType.name"
             class="descent.internal.corext.template.java.JavaContextType"
-            id="java">
+            id="d">
       </contextType>
       <contextType
             name="%templates.javadoc.contextType.name"
             class="descent.internal.corext.template.java.JavaDocContextType"
-            id="javadoc">
+            id="ddoc">
       </contextType>
       <include
       		file="templates/default-templates.xml"

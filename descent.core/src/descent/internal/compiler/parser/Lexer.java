@@ -564,7 +564,7 @@ public class Lexer implements IProblemRequestor {
 					checkTaskTag(t.ptr, p);
 				}
 				if (tokenizeComments) {
-					p -= back;	
+					p -= back;
 					
 					t.value = input[t.ptr + 2] == '/' ? TOKdoclinecomment : TOKlinecomment;
 					t.len = p - t.ptr;

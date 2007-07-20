@@ -3097,9 +3097,11 @@ public class Parser extends Lexer {
 					}
 				}
 				// Larg:
-				a = new Argument(inout, at, ai, null);
-				a.setSourceRange(argumentStart, prevToken.ptr + prevToken.len - argumentStart);
-				arguments.add(a);
+				if (at != null && ai != null) {
+					a = new Argument(inout, at, ai, null);
+					a.setSourceRange(argumentStart, prevToken.ptr + prevToken.len - argumentStart);
+					arguments.add(a);
+				}
 				if (token.value == TOKcomma) {
 					nextToken();
 					continue;

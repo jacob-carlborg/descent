@@ -173,6 +173,11 @@ public class Bugs_Test extends Parser_Test {
 		}
 	}
 	
+	public void testBug20() {
+		String s = "void bla() { foreach }";
+		getCompilationUnit(s);
+	}
+	
 	public void testDstress_run_t_typeof_16_A() {
 		String s = "char[] name = (typeof(o)).classinfo.name;";
 		getCompilationUnit(s);	

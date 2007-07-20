@@ -1166,7 +1166,9 @@ public class ASTConverter {
 		}
 		convertArguments(b.arguments(), a.arguments);
 		b.setExpression(convert(a.aggr));
-		b.setBody(convert(a.body));
+		if (a.body != null) {
+			b.setBody(convert(a.body));
+		}
 		b.setSourceRange(a.start, a.length);
 		return b;
 	}

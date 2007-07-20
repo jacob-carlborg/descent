@@ -127,6 +127,7 @@ public class FormatTryStatement_Test extends AbstractFormatInsideFunction_Test {
 				" * comment\r\n" +
 				" */\r\n" +
 				"try { // comment\r\n" +
+				"\r\n\t" +
 				"} catch { // comment\r\n" +
 				"} // trailing", 
 				

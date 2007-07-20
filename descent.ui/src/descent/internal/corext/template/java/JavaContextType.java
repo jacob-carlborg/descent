@@ -29,7 +29,7 @@ import descent.internal.ui.text.template.contentassist.*;
  */
 public class JavaContextType extends CompilationUnitContextType {
 
-	public static final String NAME= "java"; //$NON-NLS-1$
+	public static final String NAME= "d"; //$NON-NLS-1$
 
 	protected static class Array extends TemplateVariableResolver {
 		public Array() {

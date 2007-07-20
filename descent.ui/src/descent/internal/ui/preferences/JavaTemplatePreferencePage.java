@@ -134,7 +134,7 @@ public class JavaTemplatePreferencePage extends TemplatePreferencePage implement
 			IDocument doc= viewer.getDocument();
 			
 			String start= null;
-			if ("javadoc".equals(contextId)) { //$NON-NLS-1$
+			if ("ddoc".equals(contextId)) { //$NON-NLS-1$
 				start= "/**" + doc.getLegalLineDelimiters()[0]; //$NON-NLS-1$
 			} else
 				start= ""; //$NON-NLS-1$
