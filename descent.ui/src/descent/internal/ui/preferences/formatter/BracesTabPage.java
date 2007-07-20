@@ -116,8 +116,8 @@ public class BracesTabPage extends ModifyDialogTabPage {
 				FormatterMessages.BracesTabPage_brace_position_for_scope_statement, 
 				DefaultCodeFormatterConstants.FORMATTER_BRACE_POSITION_FOR_SCOPE_STATEMENT);
 		prefs[16] = createBracesCombo(group, numColumns, 
-				FormatterMessages.BracesTabPage_brace_position_for_other_blocks, 
-				DefaultCodeFormatterConstants.FORMATTER_BRACE_POSITION_FOR_OTHER_BLOCKS);
+				FormatterMessages.BracesTabPage_brace_position_for_pragmas, 
+				DefaultCodeFormatterConstants.FORMATTER_BRACE_POSITION_FOR_PRAGMAS);
 		
 		final SetAllGroup setAll = createSetAllGroup(numColumns, composite, FormatterMessages.BracesTabPage_group_set_all_to);
 		createSetAllOption(setAll, FormatterMessages.BracesTabPage_position_same_line, FormatterMessages.BracesTabPage_position_same_line);

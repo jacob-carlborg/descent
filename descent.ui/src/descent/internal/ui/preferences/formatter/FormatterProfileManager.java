@@ -48,6 +48,18 @@ public class FormatterProfileManager extends ProfileManager {
 				1,
 				profileVersioner.getCurrentVersion(),
 				profileVersioner.getProfileKind())); 
+		profiles.add(new BuiltInProfile(DefaultCodeFormatterConstants.PROFILE_JAVA_DEFAULTS,
+				FormatterMessages.ProfileManager_java_defaults_profile_name,
+				getBuiltInProfile(DefaultCodeFormatterConstants.PROFILE_JAVA_DEFAULTS),
+				2,
+				profileVersioner.getCurrentVersion(),
+				profileVersioner.getProfileKind()));
+		profiles.add(new BuiltInProfile(DefaultCodeFormatterConstants.PROFILE_PHOBOS_DEFAULTS,
+				FormatterMessages.ProfileManager_phobos_defaults_profile_name,
+				getBuiltInProfile(DefaultCodeFormatterConstants.PROFILE_PHOBOS_DEFAULTS),
+				3,
+				profileVersioner.getCurrentVersion(),
+				profileVersioner.getProfileKind())); 
 		return profiles;
 	}
 	
