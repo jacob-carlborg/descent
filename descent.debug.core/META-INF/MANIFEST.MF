@@ -1,0 +1,21 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Descent Launching Plug-in
+Bundle-SymbolicName: descent.debug.core;singleton:=true
+Bundle-Version: 0.3.20070507
+Bundle-Activator: descent.debug.core.DescentDebugPlugin
+Bundle-Localization: plugin
+Require-Bundle: org.eclipse.ui,
+ org.eclipse.core.runtime,
+ org.eclipse.core.resources,
+ org.eclipse.core.variables,
+ org.eclipse.debug.core,
+ descent.core
+Eclipse-LazyStart: true
+Export-Package: descent.debug.core;x-friends:="descent.tests",
+ descent.internal.debug.core.model;x-friends:="descent.tests",
+ descent.internal.debug.core.model.ddbg;x-friends:="descent.tests",
+ descent.internal.debug.core.model.gdb;x-friends:="descent.tests",
+ descent.debug.core,
+ descent.debug.core.model,
+ descent.debug.core.utils

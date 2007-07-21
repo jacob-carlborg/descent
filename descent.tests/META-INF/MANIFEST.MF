@@ -9,7 +9,7 @@ Require-Bundle: org.eclipse.core.runtime,
  descent.core,
  org.junit,
  org.eclipse.jface.text,
- descent.launching,
+ descent.debug.core,
  org.eclipse.debug.core,
  descent.ui
 Bundle-ClassPath: lib/cglib-2.1_3-src.jar,

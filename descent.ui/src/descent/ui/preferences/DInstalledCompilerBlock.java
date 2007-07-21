@@ -454,7 +454,7 @@ public class DInstalledCompilerBlock implements InstalledCompilerDlgRequestor {
 	protected void handleAdd() {
 		DInstalledCompiler assoc = null;
 
-		InstalledCompilerDlg dlg = new InstalledCompilerDlg(this, fBtnNew.getParent().getShell(), DCompilerType.getTypes(), null );
+		InstalledCompilersDialog dlg = new InstalledCompilersDialog(this, fBtnNew.getParent().getShell(), DCompilerType.getTypes(), null );
 		
 		if (Window.OK == dlg.open()) {
 //			assoc = createAssociation(dlg.getPattern(), dlg.getContentType());

@@ -3,8 +3,8 @@ package descent.tests.debugger;
 import org.eclipse.debug.core.DebugEvent;
 import org.jmock.Expectations;
 
-import descent.internal.launching.model.ddbg.DdbgDebugger;
-import descent.launching.model.IDebugger;
+import descent.debug.core.model.IDebugger;
+import descent.internal.debug.core.model.ddbg.DdbgDebugger;
 
 public class DdbgDebuggerTests extends AbstractDebuggerTests {
 	

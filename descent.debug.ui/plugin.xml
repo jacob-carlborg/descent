@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.2"?>
+<plugin>
+   <extension
+         point="org.eclipse.core.runtime.adapters">
+      <factory
+            adaptableType="descent.internal.ui.javaeditor.CompilationUnitEditor"
+            class="descent.internal.debug.ui.adapters.DescentBreakpointAdapterFactory">
+         <adapter type="org.eclipse.debug.ui.actions.IToggleBreakpointsTarget"/>
+      </factory>
+   </extension>
+   <extension
+         point="org.eclipse.debug.ui.debugModelContextBindings">
+      <modelContextBinding
+            contextId="descent.debugging"
+            debugModelId="descent.launching.model"/>
+   </extension>
+   <extension
+         point="org.eclipse.debug.ui.debugModelPresentations">
+      <debugModelPresentation
+            class="descent.internal.debug.ui.model.DescentDebugModelPresentation"
+            id="descent.launching.model"/>
+   </extension>
+   <extension
+         point="org.eclipse.debug.ui.launchConfigurationTypeImages">
+      <launchConfigurationTypeImage
+            configTypeID="descent.launching.localDApplication"
+            icon="icons/full/etool16/d_app.gif"
+            id="descent.launching.launcConfigurationTypeImage.localDApplication"/>
+   </extension>
+   <extension
+         point="org.eclipse.debug.ui.launchConfigurationTabGroups">
+      <launchConfigurationTabGroup
+            class="descent.internal.debug.ui.DescentLaunchConfigurationTabGroup"
+            id="descent.launching.launcConfigurationTabGroup.localDApplication"
+            type="descent.launching.localDApplication"/>
+   </extension>
+   <extension
+         point="org.eclipse.debug.ui.launchShortcuts">
+      <shortcut
+            class="descent.internal.debug.ui.DescentLaunchShortcut"
+            icon="icons/full/etool16/d_app.gif"
+            id="descent.launching.launchShortcuts.localDApplication"
+            label="D Application"
+            modes="run,debug">
+         <perspective id="descent.ui.JavaPerspective"/>
+         <perspective id="org.eclipse.jdt.ui.JavaPerspective"/>
+         <contextualLaunch>
+            <enablement>
+               <with variable="selection">
+                  <count value="1"/>
+                  <iterate>
+                     <adapt type="org.eclipse.core.resources.IResource"/>
+                  </iterate>
+               </with>
+            </enablement>
+         </contextualLaunch>
+      </shortcut>
+   </extension>
+   <extension
+         point="org.eclipse.debug.ui.memoryRenderings">
+      <renderingBindings renderingIds="org.eclipse.debug.ui.rendering.raw_memory, org.eclipse.debug.ui.rendering.ascii, org.eclipse.debug.ui.rendering.signedint, org.eclipse.debug.ui.rendering.unsignedint">
+         <enablement>
+            <instanceof value="descent.internal.debug.core.model.DescentMemoryBlock"/>
+         </enablement>
+      </renderingBindings>
+   </extension>
+   <extension
+         point="org.eclipse.ui.contexts">
+      <context
+            description="Debugging D"
+            id="descent.debugging"
+            name="Debugging D"
+            parentId="org.eclipse.debug.ui.debugging"/>
+   </extension>
+   <extension
+         point="org.eclipse.ui.editorActions">
+      <editorContribution
+            id="descent.launching.ui.CompilationUnitEditor.BreakpointRulerActions"
+            targetID="descent.ui.CompilationUnitEditor">
+         <action
+               actionID="RulerDoubleClick"
+               class="org.eclipse.debug.ui.actions.RulerToggleBreakpointActionDelegate"
+               id="descent.launching.ui.actions.ManageBreakpointRulerAction"
+               label="Toggle &amp;Breakpoint"
+               />
+      </editorContribution>
+   </extension>
+   <extension
+         point="org.eclipse.ui.preferencePages">
+      <page
+            category="descent.ui.preferences.JavaBasePreferencePage"
+            class="descent.internal.debug.ui.preferences.DescentDebugPreferencesPage"
+            id="descent.launching.ui.DescentDebugPreferencesPage"
+            name="Debug"/>
+   </extension>
+   <extension
+         point="org.eclipse.ui.perspectiveExtensions">
+      <perspectiveExtension targetID="org.eclipse.debug.ui.DebugPerspective">
+         <view
+               id="org.eclipse.debug.ui.RegisterView"
+               relationship="stack"
+               relative="org.eclipse.debug.ui.VariableView"
+               visible="true"/>
+         <view
+               id="org.eclipse.debug.ui.MemoryView"
+               relationship="stack"
+               relative="org.eclipse.debug.ui.VariableView"
+               visible="true"/>
+         <viewShortcut id="org.eclipse.debug.ui.RegisterView"/>
+         <viewShortcut id="org.eclipse.debug.ui.MemoryView"/>
+      </perspectiveExtension>
+   </extension>
+</plugin>

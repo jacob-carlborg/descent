@@ -8,10 +8,10 @@ import org.eclipse.debug.core.model.IStreamsProxy;
 import org.jmock.Mockery;
 import org.jmock.integration.junit3.MockObjectTestCase;
 
-import descent.internal.launching.model.ddbg.DdbgDebugger;
-import descent.launching.model.IDebugElementFactory;
-import descent.launching.model.IDebugger;
-import descent.launching.model.IDebuggerListener;
+import descent.debug.core.model.IDebugElementFactory;
+import descent.debug.core.model.IDebugger;
+import descent.debug.core.model.IDebuggerListener;
+import descent.internal.debug.core.model.ddbg.DdbgDebugger;
 
 public abstract class AbstractDebuggerTests extends MockObjectTestCase {
 	
