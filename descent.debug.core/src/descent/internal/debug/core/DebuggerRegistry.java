@@ -43,7 +43,7 @@ public class DebuggerRegistry implements IDebuggerRegistry {
 	private void readDescriptors() {
 		List<IDebuggerDescriptor> descriptors = new ArrayList<IDebuggerDescriptor>();
 		
-		IExtensionPoint point = Platform.getExtensionRegistry().getExtensionPoint(DescentDebugPlugin.PLUGIN_ID, "debuggers");
+		IExtensionPoint point = Platform.getExtensionRegistry().getExtensionPoint(DescentDebugPlugin.PLUGIN_ID, "debuggers"); //$NON-NLS-1$
 		IExtension[] extensions = point.getExtensions();
 		
 		for(IExtension extension : extensions) {

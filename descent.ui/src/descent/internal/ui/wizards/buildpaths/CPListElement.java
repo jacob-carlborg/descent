@@ -15,13 +15,12 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
-import org.eclipse.core.runtime.Assert;
-import org.eclipse.core.runtime.IPath;
-import org.eclipse.core.runtime.Path;
-
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.Assert;
+import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.Path;
 
 import descent.core.ClasspathContainerInitializer;
 import descent.core.IAccessRule;
@@ -31,11 +30,8 @@ import descent.core.IClasspathEntry;
 import descent.core.IJavaProject;
 import descent.core.JavaCore;
 import descent.core.JavaModelException;
-
+import descent.core.JavaRuntime;
 import descent.internal.corext.util.JavaModelUtil;
-
-import descent.launching.JavaRuntime;
-
 import descent.internal.ui.JavaPlugin;
 
 public class CPListElement {

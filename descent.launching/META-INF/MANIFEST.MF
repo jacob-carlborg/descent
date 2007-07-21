@@ -1,7 +1,0 @@
-Manifest-Version: 1.0
-Bundle-ManifestVersion: 2
-Bundle-Name: Descent Launching Plug-in
-Bundle-SymbolicName: descent.launching
-Bundle-Version: 1.0.0
-Bundle-Localization: plugin
-Export-Package: descent.launching

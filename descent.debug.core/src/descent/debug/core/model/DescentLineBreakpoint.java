@@ -20,7 +20,7 @@ public class DescentLineBreakpoint extends LineBreakpoint {
 		IWorkspaceRunnable runnable = new IWorkspaceRunnable() {
 			public void run(IProgressMonitor monitor) throws CoreException {
 				IMarker marker = resource
-						.createMarker(DescentDebugPlugin.PLUGIN_ID + ".descentLineBreakpointMarker");
+						.createMarker(DescentDebugPlugin.PLUGIN_ID + ".descentLineBreakpointMarker"); //$NON-NLS-1$
 				setMarker(marker);
 				marker.setAttribute(IBreakpoint.ID, getModelIdentifier());
 				marker.setAttribute(IBreakpoint.ENABLED, Boolean.TRUE);

@@ -1,9 +1,9 @@
-package descent.launching;
+package descent.core;
 
 
 // TODO JDT UI runtime: stub
 public class JavaRuntime {
-
+	
 	public static final String JRELIB_VARIABLE = "JRE_LIB"; //$NON-NLS-1$
 	
 	/**
