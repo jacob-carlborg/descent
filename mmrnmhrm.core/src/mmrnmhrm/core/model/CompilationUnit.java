@@ -21,12 +21,12 @@ import descent.internal.core.dom.ParserFacade;
 import dtool.descentadapter.DescentASTConverter;
 import dtool.dom.ast.ASTNode;
 import dtool.dom.definitions.Module;
-import dtool.refmodel.IDTool_DeeCompilationUnit;
+import dtool.refmodel.pluginadapters.IGenericCompilationUnit;
 
 /**
  * Module Wrapper 
  */
-public class CompilationUnit extends LangElement implements IDTool_DeeCompilationUnit, IDeeElement {
+public class CompilationUnit extends LangElement implements IGenericCompilationUnit, IDeeElement {
 
 	public IFile file;
 	private IDocument document;

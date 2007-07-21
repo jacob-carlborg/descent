@@ -8,7 +8,7 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 
 import dtool.dom.definitions.Module;
-import dtool.refmodel.IModuleResolver;
+import dtool.refmodel.pluginadapters.IModuleResolver;
 
 
 /**

@@ -2,6 +2,13 @@ package mmrnmhrm.core.model.lang;
 
 import java.util.ArrayList;
 
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IFolder;
+import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.IWorkspaceRoot;
+import org.eclipse.core.runtime.Platform;
+
 import melnorme.miscutil.Assert;
 import melnorme.miscutil.tree.IElement;
 
@@ -10,6 +17,7 @@ import melnorme.miscutil.tree.IElement;
 /**
  * Common class for IDE language model elements.
  * Not handle-based nor cached, like JDT.
+ * (XXX: Uses LangElementInfo as mixin only) 
  */
 public abstract class LangElement extends LangElementInfo implements ILangElement {
 	
@@ -81,4 +89,9 @@ public abstract class LangElement extends LangElementInfo implements ILangElemen
 		return list;
 	}
 	
+	
+	
+	public Object getAdapter(Class adapter) {
+		return Platform.getAdapterManager().getAdapter(this, adapter);
+	}
 }
