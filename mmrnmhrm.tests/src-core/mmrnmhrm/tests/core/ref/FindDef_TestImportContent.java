@@ -1,4 +1,4 @@
-package mmrnmhrm.tests.core;
+package mmrnmhrm.tests.core.ref;
 
 import java.util.Arrays;
 import java.util.Collection;

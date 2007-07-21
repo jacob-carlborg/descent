@@ -1,4 +1,4 @@
-package mmrnmhrm.tests.core;
+package mmrnmhrm.tests.core.ref;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -22,11 +22,11 @@ public class FindDef_TestDiamondShaped extends FindDef_CommonImportTest  {
     public static Collection<Object[]> data() {
         return Arrays.asList(new Object[][]{
 
-                {195, 13, "pack2/foopublic.d"},
-                {231, 13, "pack2/foopublic.d"},
+                {195, 55, "pack2/foopublic.d"},
+                {237, 55, "pack2/foopublic.d"},
                 
-                {269, 13, "pack2/foopublic2.d"},
-                {307, 13, "pack2/foopublic2.d"},
+                {281, 30, "pack2/foopublic2.d"},
+                {325, 30, "pack2/foopublic2.d"},
              
         });
     }
@@ -35,6 +35,11 @@ public class FindDef_TestDiamondShaped extends FindDef_CommonImportTest  {
 	public FindDef_TestDiamondShaped(int defOffset, int refOffset, String targetFile) 
 		throws Exception {
 		super(defOffset, refOffset, targetFile);
+	}
+	
+	@Override
+	public void test() throws Exception {
+		super.test();
 	}
 	
 }

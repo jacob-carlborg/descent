@@ -70,6 +70,11 @@ public class GoToDefinition_TestTargets extends FindDef_CommonTest  {
 	public GoToDefinition_TestTargets(int offset, int targetOffset) throws IOException, CoreException  {
 		super(offset, targetOffset, testfile);
 	}
+	
+	@Override
+	public void test() {
+		super.test();
+	}
 	  
 	
 }

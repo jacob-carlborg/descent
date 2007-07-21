@@ -1,4 +1,4 @@
-package mmrnmhrm.tests.core;
+package mmrnmhrm.tests.core.ref;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -31,10 +31,10 @@ public class FindDef_TestSelfImport extends FindDef_CommonImportTest  {
                 {"testSelfImport2.d", 225, 77, "testSelfImport2.d"},
                 {"testSelfImport2.d", 241, 162, "testSelfImport2.d"},
              
-                {"testSelfImport3.d", 114, 77, "testSelfImport3.d"},
-                {"testSelfImport3.d", 162, 77, "testSelfImport3.d"},
-                {"testSelfImport3.d", 211, 77, "testSelfImport3.d"},
-                {"testSelfImport3.d", 227, 138, "testSelfImport3.d"},
+                {"pack/testSelfImport3.d", 114, 82, "pack/testSelfImport3.d"},
+                {"pack/testSelfImport3.d", 162, 82, "pack/testSelfImport3.d"},
+                {"pack/testSelfImport3.d", 211, 82, "pack/testSelfImport3.d"},
+                {"pack/testSelfImport3.d", 227, 138, "pack/testSelfImport3.d"},
         });
     }
     

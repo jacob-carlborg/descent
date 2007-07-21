@@ -6,6 +6,7 @@ import java.util.Collection;
 
 import org.eclipse.core.runtime.CoreException;
 import org.junit.BeforeClass;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
@@ -44,6 +45,11 @@ public class GoToDefinition_TestKinds1 extends FindDef_CommonTest  {
 	
 	public GoToDefinition_TestKinds1(int offset, int targetOffset) throws IOException, CoreException {
 		super(offset, targetOffset, testfile);
+	}
+	
+	@Test
+	public void test() {
+		super.test();
 	}
 
 }

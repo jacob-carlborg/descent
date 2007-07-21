@@ -4,6 +4,7 @@ package mmrnmhrm.tests;
 import java.io.IOException;
 import java.net.URISyntaxException;
 
+import melnorme.miscutil.Assert;
 import mmrnmhrm.core.DeeCore;
 import mmrnmhrm.core.model.CompilationUnit;
 import mmrnmhrm.core.model.DeeModelManager;
@@ -91,6 +92,7 @@ public abstract class SampleProjectTest extends BaseUITest {
 
 	protected static CompilationUnit getCompilationUnit(String filepath) {
 		IFile file = sampleDeeProj.getProject().getFile(TEST_SRC_FOLDER +"/"+ filepath);
+		assertTrue(file.exists(), "Test file not found.");
 		return DeeModelManager.getCompilationUnit(file);
 	}
 	

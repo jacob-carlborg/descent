@@ -1,4 +1,4 @@
-package mmrnmhrm.tests.core;
+package mmrnmhrm.tests.core.ref;
 
 import java.io.IOException;
 
@@ -39,8 +39,11 @@ public abstract class FindDef_CommonImportTest extends SampleProjectTest {
 		if(newCUnit == null)
 			cunit = defaultCUnit;
 		else
-			cunit = newCUnit;		
-		targetCUnit = getCompilationUnit(targetFile);
+			cunit = newCUnit;
+		if(targetFile == null)
+			targetCUnit = null;
+		else
+			targetCUnit = getCompilationUnit(targetFile);
 	}
 
 	@Test
@@ -48,7 +51,5 @@ public abstract class FindDef_CommonImportTest extends SampleProjectTest {
 		FindDef_CommonTest.assertFindReF(cunit, offset, targetCUnit,
 				targetOffset);
 	}
-
-
 
 }

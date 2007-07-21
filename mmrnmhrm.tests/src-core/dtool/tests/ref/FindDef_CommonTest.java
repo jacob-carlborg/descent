@@ -57,8 +57,9 @@ public abstract class FindDef_CommonTest extends BaseTest {
 		ASTNode node = ASTElementFinder.findElement(cunit.getNeoModule(), offset);
 		Entity ent = (Entity) node;
 		
-		// Do the test
-		DefUnit defunit = ent.getTargetDefUnit();
+		// TODO: Assert only one found
+		// Perform the find def
+		DefUnit defunit = ent.findTargetDefUnit();
 		
 		if(targetOffset == -1) {
 			assertTrueP(defunit == null, 

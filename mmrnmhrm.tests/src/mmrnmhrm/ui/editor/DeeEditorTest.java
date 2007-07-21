@@ -24,7 +24,6 @@ public class DeeEditorTest extends SampleProjectTest {
 	}
 
 
-
 	@Test
 	public void testDeeEditor() throws CoreException {
 		IFile file = sampleFile1;

@@ -1,4 +1,4 @@
-package mmrnmhrm.tests.core;
+package mmrnmhrm.tests.core.ref;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -22,7 +22,7 @@ public class FindDef_TestImportSelective extends FindDef_CommonImportTest  {
 	@Parameters
     public static Collection<Object[]> data() {
         return Arrays.asList(new Object[][]{
-
+/*
                 //
                 //
                 {195, 12, "pack/sample.d"},
@@ -48,7 +48,7 @@ public class FindDef_TestImportSelective extends FindDef_CommonImportTest  {
                 {752, -1, null},
                 {803, -1, null},
                 {852, -1, null},
-              
+  */            
         });
     }
     
