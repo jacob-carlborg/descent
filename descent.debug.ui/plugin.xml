@@ -13,34 +13,34 @@
          point="org.eclipse.debug.ui.debugModelContextBindings">
       <modelContextBinding
             contextId="descent.debugging"
-            debugModelId="descent.launching.model"/>
+            debugModelId="descent.debug.core.model"/>
    </extension>
    <extension
          point="org.eclipse.debug.ui.debugModelPresentations">
       <debugModelPresentation
             class="descent.internal.debug.ui.model.DescentDebugModelPresentation"
-            id="descent.launching.model"/>
+            id="descent.debug.core.model"/>
    </extension>
    <extension
          point="org.eclipse.debug.ui.launchConfigurationTypeImages">
       <launchConfigurationTypeImage
-            configTypeID="descent.launching.localDApplication"
+            configTypeID="descent.debug.core.localDApplication"
             icon="icons/full/etool16/d_app.gif"
-            id="descent.launching.launcConfigurationTypeImage.localDApplication"/>
+            id="descent.debug.core.launcConfigurationTypeImage.localDApplication"/>
    </extension>
    <extension
          point="org.eclipse.debug.ui.launchConfigurationTabGroups">
       <launchConfigurationTabGroup
             class="descent.internal.debug.ui.DescentLaunchConfigurationTabGroup"
-            id="descent.launching.launcConfigurationTabGroup.localDApplication"
-            type="descent.launching.localDApplication"/>
+            id="descent.debug.core.launcConfigurationTabGroup.localDApplication"
+            type="descent.debug.core.localDApplication"/>
    </extension>
    <extension
          point="org.eclipse.debug.ui.launchShortcuts">
       <shortcut
             class="descent.internal.debug.ui.DescentLaunchShortcut"
             icon="icons/full/etool16/d_app.gif"
-            id="descent.launching.launchShortcuts.localDApplication"
+            id="descent.debug.core.launchShortcuts.localDApplication"
             label="D Application"
             modes="run,debug">
          <perspective id="descent.ui.JavaPerspective"/>
@@ -76,12 +76,12 @@
    <extension
          point="org.eclipse.ui.editorActions">
       <editorContribution
-            id="descent.launching.ui.CompilationUnitEditor.BreakpointRulerActions"
+            id="descent.debug.core.ui.CompilationUnitEditor.BreakpointRulerActions"
             targetID="descent.ui.CompilationUnitEditor">
          <action
                actionID="RulerDoubleClick"
                class="org.eclipse.debug.ui.actions.RulerToggleBreakpointActionDelegate"
-               id="descent.launching.ui.actions.ManageBreakpointRulerAction"
+               id="descent.debug.core.ui.actions.ManageBreakpointRulerAction"
                label="Toggle &amp;Breakpoint"
                />
       </editorContribution>
@@ -91,7 +91,7 @@
       <page
             category="descent.ui.preferences.JavaBasePreferencePage"
             class="descent.internal.debug.ui.preferences.DescentDebugPreferencesPage"
-            id="descent.launching.ui.DescentDebugPreferencesPage"
+            id="descent.debug.core.ui.DescentDebugPreferencesPage"
             name="Debug"/>
    </extension>
    <extension

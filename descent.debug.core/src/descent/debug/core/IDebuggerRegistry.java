@@ -3,7 +3,7 @@ package descent.debug.core;
 
 /**
  * <p>A debugger registry allows access to the registered debuggers
- * in the <code>descent.launching.debuggers</code> extension.</p>
+ * in the <code>descent.debug.core.debuggers</code> extension.</p>
  * 
  * <p>
  * This interface is not intended to be implemented by clients.

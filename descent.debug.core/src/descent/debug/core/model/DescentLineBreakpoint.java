@@ -8,6 +8,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.debug.core.model.IBreakpoint;
 import org.eclipse.debug.core.model.LineBreakpoint;
 
+import descent.debug.core.DescentDebugPlugin;
 import descent.debug.core.IDescentLaunchConfigurationConstants;
 
 public class DescentLineBreakpoint extends LineBreakpoint {
@@ -19,7 +20,7 @@ public class DescentLineBreakpoint extends LineBreakpoint {
 		IWorkspaceRunnable runnable = new IWorkspaceRunnable() {
 			public void run(IProgressMonitor monitor) throws CoreException {
 				IMarker marker = resource
-						.createMarker("descent.launching.descentLineBreakpointMarker");
+						.createMarker(DescentDebugPlugin.PLUGIN_ID + ".descentLineBreakpointMarker");
 				setMarker(marker);
 				marker.setAttribute(IBreakpoint.ID, getModelIdentifier());
 				marker.setAttribute(IBreakpoint.ENABLED, Boolean.TRUE);

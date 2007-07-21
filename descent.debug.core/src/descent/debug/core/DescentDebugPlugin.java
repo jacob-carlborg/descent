@@ -21,7 +21,7 @@ import descent.internal.debug.core.DebuggerRegistry;
 public class DescentDebugPlugin extends AbstractUIPlugin {
 
 	// The plug-in ID
-	public static final String PLUGIN_ID = "descent.debug.core";
+	public static final String PLUGIN_ID = "descent.debug.core"; //$NON-NLS-1$
 
 	// The shared instance
 	private static DescentDebugPlugin plugin;

@@ -26,7 +26,7 @@ import descent.debug.core.IDebuggerRegistry;
  * A debugger extension is defined in <code>plugin.xml</code>.
  * Following is an example definition of a debugger extension.
  * <pre>
- * &lt;extension point="descent.launching.debuggers"&gt;
+ * &lt;extension point="descent.debug.core.debuggers"&gt;
  *   &lt;debugger 
  *      id="com.example.debuggerIdentifier"
  *      class="com.example.ExampleDebugger"

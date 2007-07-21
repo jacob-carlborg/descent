@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.2"?>
 <plugin>
-   <extension-point id="descent.launching.debuggers" name="Debuggers" schema="schema/descent.launching.debuggers.exsd"/>
+   <extension-point id="descent.debug.core.debuggers" name="Debuggers" schema="schema/descent.debug.core.debuggers.exsd"/>
    <extension
          id="descentLineBreakpointMarker"
          point="org.eclipse.core.resources.markers">
@@ -12,37 +12,37 @@
          point="org.eclipse.debug.core.launchConfigurationTypes">
       <launchConfigurationType
             delegate="descent.internal.debug.core.DescentLaunchConfigurationDelegate"
-            id="descent.launching.localDApplication"
+            id="descent.debug.core.localDApplication"
             modes="run, debug"
             name="D Application"
-            sourceLocatorId="descent.launching.descentSourceLookupDirector"
-            sourcePathComputerId="descent.launching.descentSourcePathComputer"/>
+            sourceLocatorId="descent.debug.core.descentSourceLookupDirector"
+            sourcePathComputerId="descent.debug.core.descentSourcePathComputer"/>
    </extension>
    <extension
          point="org.eclipse.debug.core.breakpoints">
       <breakpoint
             class="descent.debug.core.model.DescentLineBreakpoint"
-            id="descent.launching.descentLineBreakpoint"
-            markerType="descent.launching.descentLineBreakpointMarker"
+            id="descent.debug.core.descentLineBreakpoint"
+            markerType="descent.debug.core.descentLineBreakpointMarker"
             name="Ddbg Line Breakpoint"/>
    </extension>
    <extension
          point="org.eclipse.debug.core.sourceLocators">
       <sourceLocator
             class="descent.internal.debug.core.DescentSourceLookupDirector"
-            id="descent.launching.descentSourceLookupDirector"
+            id="descent.debug.core.descentSourceLookupDirector"
             name="Descent Source Lookup Director"/>
    </extension>
    <extension
          point="org.eclipse.debug.core.sourcePathComputers">
       <sourcePathComputer
             class="descent.internal.debug.core.DescentSourcePathComputerDelegate"
-            id="descent.launching.descentSourcePathComputer"/>
+            id="descent.debug.core.descentSourcePathComputer"/>
    </extension>
    <extension
          point="org.eclipse.debug.core.watchExpressionDelegates">
       <watchExpressionDelegate
-            debugModel="descent.launching.model"
+            debugModel="descent.debug.core.model"
             delegateClass="descent.internal.debug.core.DescentWatchExpressionDelegate"/>
    </extension>
    <extension
@@ -50,14 +50,14 @@
       <initializer class="descent.internal.debug.core.preferences.DescentDebugPreferencesInitializer"/>
    </extension>
    <extension
-         point="descent.launching.debuggers">
+         point="descent.debug.core.debuggers">
       <debugger
             class="descent.internal.debug.core.model.ddbg.DdbgDebugger"
-            id="descent.launching.debugger.ddbg"
+            id="descent.debug.core.debugger.ddbg"
             name="Ddbg"/>
       <debugger
             class="descent.internal.debug.core.model.gdb.GdbDebugger"
-            id="descent.launching.debugger.gdb"
+            id="descent.debug.core.debugger.gdb"
             name="Gdb"/>
    </extension>
 

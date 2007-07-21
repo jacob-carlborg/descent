@@ -42,8 +42,6 @@ public class DescentLaunchConfigurationDelegate extends AbstractDescentLaunchCon
 			IPath exePath = verifyProgramPath(config);
 			verifyJavaProject(config);
 			
-			IDebugger debugger = verifyDebugger();
-
 			String[] arguments = getProgramArgumentsArray(config);
 
 			// set the default source locator if required
@@ -55,6 +53,8 @@ public class DescentLaunchConfigurationDelegate extends AbstractDescentLaunchCon
 			}
 			
 			if (mode.equals(ILaunchManager.DEBUG_MODE)) {
+				IDebugger debugger = verifyDebugger();
+				
 				String debuggerPath = verifyDebuggerPath();
 				
 				ArrayList command = new ArrayList(1);

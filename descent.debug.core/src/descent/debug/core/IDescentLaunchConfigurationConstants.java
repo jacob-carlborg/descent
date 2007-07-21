@@ -12,13 +12,13 @@ public interface IDescentLaunchConfigurationConstants {
 	
 	/**
 	 * Identifier for the Local Java Application launch configuration type
-	 * (value <code>"descent.launching.localJavaApplication"</code>).
+	 * (value <code>"descent.debug.core.localJavaApplication"</code>).
 	 */
 	public static final String ID_D_APPLICATION = DescentDebugPlugin.PLUGIN_ID + ".localDApplication"; //$NON-NLS-1$
 	
 	/**
 	 * Unique identifier for the ddbg debug model (value 
-	 * <code>descent.launching.model</code>).
+	 * <code>descent.debug.core.model</code>).
 	 */
 	public static final String ID_D_DEBUG_MODEL = DescentDebugPlugin.PLUGIN_ID + ".model"; //$NON-NLS-1$
 	
