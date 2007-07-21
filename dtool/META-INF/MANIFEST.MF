@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: DTool
 Bundle-SymbolicName: dtool;singleton:=true
-Bundle-Version: 0.0.2
+Bundle-Version: 0.0.3
 Bundle-ClassPath: DTool.jar,
  libs/antlr-3.0b5.jar,
  libs/ini4j.jar
@@ -20,6 +20,7 @@ Export-Package: descent.core,
  dtool.dom.references,
  dtool.dom.statements,
  dtool.refmodel,
+ dtool.refmodel.pluginadapters,
  melnorme.miscutil,
  melnorme.miscutil.log,
  melnorme.miscutil.tree,

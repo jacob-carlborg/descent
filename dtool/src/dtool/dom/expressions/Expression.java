@@ -1,5 +1,6 @@
 package dtool.dom.expressions;
 
+import java.util.Collection;
 import java.util.List;
 
 import dtool.descentadapter.DescentASTConverter;
@@ -9,6 +10,20 @@ import dtool.refmodel.IDefUnitReference;
 
 public abstract class Expression extends ASTNeoNode implements IDefUnitReference {
 
+	
+	// TYPE BINDING
+	public Collection<DefUnit> findTargetDefUnits(boolean findFirstOnly) {
+		throw new UnsupportedOperationException(
+				"Unsupported peering the type/scope of expression: "+toStringClassName());
+	}
+	
+
+	public Collection<DefUnit> getType() {
+		return findTargetDefUnits(false);
+	}
+	
+	/* ---------------- Conversion Funcs ---------------- */
+	
 	public static Expression convert(descent.internal.core.dom.Expression exp) {
 		return (Expression) DescentASTConverter.convertElem(exp);
 	}
@@ -24,13 +39,6 @@ public abstract class Expression extends ASTNeoNode implements IDefUnitReference
 		
 		DescentASTConverter.convertManyL(rets, elements);
 		return rets;
-	}
-	
-	
-	// SCOPE/TYPE BINDING
-	public DefUnit getTargetDefUnit() {
-		throw new UnsupportedOperationException(
-				"Unsupported peering the type/scope of expression: "+toStringClassName());
 	}
 	
 }

@@ -1,14 +1,17 @@
 package dtool.dom.definitions;
 
+import java.util.Iterator;
 import java.util.List;
 
 import melnorme.miscutil.tree.TreeVisitor;
 
 import descent.internal.core.dom.FuncDeclaration;
 import dtool.descentadapter.DescentASTConverter;
+import dtool.dom.ast.ASTNode;
 import dtool.dom.ast.IASTNeoVisitor;
 import dtool.dom.references.Entity;
 import dtool.dom.statements.Statement;
+import dtool.refmodel.IScope;
 import dtool.refmodel.IScopeNode;
 
 /**
@@ -72,11 +75,7 @@ public class DefinitionFunction extends Definition implements IScopeNode {
 		return this;
 	}
 
-	@SuppressWarnings("unchecked")
-	public List<DefUnit> getDefUnits() {
-		return (List<DefUnit>) (List) params;
-	}
-	
+
 	@Override
 	public String toString() {
 		String str = "";
@@ -86,8 +85,13 @@ public class DefinitionFunction extends Definition implements IScopeNode {
 		return super.toString() +"("+ str +")";
 	}
 	
-	public List<IScopeNode> getSuperScopes() {
+	public List<IScope> getSuperScopes() {
 		// TODO: function super
 		return null;
+	}
+	
+
+	public Iterator<FunctionParameter> getMembersIterator() {
+		return params.iterator();
 	}
 }

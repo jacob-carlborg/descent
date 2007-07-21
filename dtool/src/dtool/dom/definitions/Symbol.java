@@ -15,6 +15,10 @@ public class Symbol extends ASTNeoNode {
 		this.name = id.string;
 	}
 
+	public Symbol(String name) {
+		this.name = name;
+	}
+
 	@Override
 	public boolean equals(Object obj) {
 		return this.name.equals(obj);

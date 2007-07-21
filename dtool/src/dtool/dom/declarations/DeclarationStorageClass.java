@@ -1,13 +1,16 @@
 package dtool.dom.declarations;
 
+import java.util.Arrays;
+import java.util.Iterator;
+
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.internal.core.dom.StorageClassDeclaration;
 import dtool.dom.ast.ASTNeoNode;
 import dtool.dom.ast.ASTNode;
 import dtool.dom.ast.IASTNeoVisitor;
-import dtool.refmodel.IDefinitionContainer;
+import dtool.refmodel.INonScopedBlock;
 
-public class DeclarationStorageClass extends ASTNeoNode implements IDefinitionContainer {
+public class DeclarationStorageClass extends ASTNeoNode implements INonScopedBlock {
 
 	public int stclass;
 	public ASTNode[] decls;	// can be null?
@@ -31,5 +34,10 @@ public class DeclarationStorageClass extends ASTNeoNode implements IDefinitionCo
 	public ASTNode[] getMembers() {
 		return decls;
 	}
+
+	public Iterator<ASTNode> getMembersIterator() {
+		return Arrays.asList(getMembers()).iterator();
+	}
+
 
 }

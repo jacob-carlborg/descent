@@ -3,13 +3,16 @@
  */
 package dtool.dom.references;
 
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 
 import melnorme.miscutil.tree.TreeVisitor;
-
+import dtool.dom.ast.ASTNode;
 import dtool.dom.ast.IASTNeoVisitor;
 import dtool.dom.definitions.DefUnit;
-import dtool.dom.references.TypeDynArray.IntrinsicDynArray;
+import dtool.refmodel.EntitySearch;
+import dtool.refmodel.IScope;
 import dtool.refmodel.IScopeNode;
 import dtool.refmodel.IntrinsicDefUnit;
 
@@ -29,18 +32,14 @@ public class TypePointer extends Entity {
 		visitor.endVisit(this);
 	}
 
-	@Override
-	public DefUnit getTargetDefUnit() {
-		return IntrinsicDynArray.instance;
+	public Collection<DefUnit> findTargetDefUnits(boolean findFirstOnly) {
+		return EntitySearch.wrapResult(IntrinsicPointer.instance);
 	}
+
 	
 	public static class IntrinsicPointer extends IntrinsicDefUnit {
 		public static final IntrinsicPointer instance = new IntrinsicPointer();
 
-		public List<DefUnit> getDefUnits() {
-			// TODO Auto-generated method stub
-			return null;
-		}
 
 		@Override
 		public IScopeNode getMembersScope() {
@@ -48,7 +47,12 @@ public class TypePointer extends Entity {
 			return null;
 		}
 
-		public List<IScopeNode> getSuperScopes() {
+		public List<IScope> getSuperScopes() {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		public Iterator<? extends ASTNode> getMembersIterator() {
 			// TODO Auto-generated method stub
 			return null;
 		}

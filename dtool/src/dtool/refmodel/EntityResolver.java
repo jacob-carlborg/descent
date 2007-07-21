@@ -1,20 +1,31 @@
 package dtool.refmodel;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
+import melnorme.miscutil.Assert;
+import melnorme.miscutil.IteratorUtil;
 import melnorme.miscutil.tree.IElement;
+import descent.internal.core.dom.ModuleDeclaration;
 import dtool.dom.ast.ASTNode;
 import dtool.dom.declarations.DeclarationImport;
-import dtool.dom.declarations.DeclarationImport.ImportAliasing;
-import dtool.dom.declarations.DeclarationImport.ImportContent;
+import dtool.dom.declarations.ImportAliasing;
+import dtool.dom.declarations.ImportContent;
+import dtool.dom.declarations.ImportSelective;
+import dtool.dom.declarations.ImportStatic;
+import dtool.dom.declarations.PartialPackageDefUnitOfPackage;
 import dtool.dom.declarations.DeclarationImport.ImportFragment;
-import dtool.dom.declarations.DeclarationImport.ImportSelective;
-import dtool.dom.declarations.DeclarationImport.ImportStatic;
 import dtool.dom.definitions.DefUnit;
 import dtool.dom.definitions.Module;
-import dtool.dom.definitions.DefinitionAggregate.BaseClass;
+import dtool.dom.definitions.Module.DeclarationModule;
+import dtool.refmodel.pluginadapters.IModuleResolver;
 
+/**
+ * Class with static methods encoding D entity lookup rules.
+ * Uses an {@link EntitySearch} during lookups.
+ * A scope plus it's outer scopes is called an extended scope.
+ */
 public class EntityResolver {
 	
 	protected static IModuleResolver modResolver;
@@ -24,168 +35,197 @@ public class EntityResolver {
 		EntityResolver.modResolver = modResolver;
 	}
 
-
+	/** Convenience method to call mod resolver. */
 	public static Module findModule(Module refModule, String packageName, String moduleName) {
 		return modResolver.findModule(refModule, packageName, moduleName);
 	}
 	
-	/* -------- Node Util -------- */
+	/* ----- Methods for find DefUnits in a collection of ASTNodes ----- */
+
+
 	
-	/** Finds the first outer scope of the given element, 
-	 * navegating through the element's parents. */
-	public static IScopeNode getOuterScope(IElement startElem) {
-		IElement elem = startElem.getParent();
+	/* ====================  entity lookup  ==================== */
 
-/*		while(elem != null && (elem instanceof IScope) == false)
-			elem = elem.getParent();*/
+	/** Searches for DefUnit's with the given name in the given scope,
+	 * and then successively in it's outer scopes. 
+	 * Uses an {@link EntitySearch} to give search options and store the 
+	 * results.
+	 * The set of matched {@link DefUnit}s must all be visible in the same
+	 * non-extended scope, (altough due to imports, they may originate from 
+	 * different scopes XXX: fix this behavior? This is an ambiguity error in D).
+	 */
+	public static void findDefUnitInExtendedScope(IScopeNode scope,
+			EntitySearch search) {
 
-		while(elem != null) {
-			if (elem instanceof IScopeNode)
-				return (IScopeNode) elem;
+		do {
+			findDefUnitInScope(scope, search);
+			if(search.isFinished())
+				return;
+
+			IScopeNode outerscope = NodeUtil.getOuterScope(scope);
+			if(outerscope == null) {
+				findDefUnitInModuleDec(scope, search);
+				return;
+			}
+
+			// retry in outer scope
+			scope = outerscope; 
+		} while (true);
+		
+	}
+
+	private static void findDefUnitInModuleDec(IScopeNode scope,
+			EntitySearch search) {
+		//Module module = NodeUtil.getParentModule((ASTNode)scope);
+		Module module = (Module) scope; 
+		DeclarationModule decMod = module.md;
+		if(decMod != null) {
+			DefUnit defUnit;
 			
-			if (elem instanceof BaseClass) {
-				// Skip aggregate defunit scope (this is important) 
-				elem = elem.getParent().getParent();
-				continue;
+			if(decMod.packages.length == 0 || decMod.packages[0].name == "") {
+				defUnit = module;
+			} else {
+				// Cache this?
+			
+				String[] packNames = new String[decMod.packages.length];
+				for(int i = 0; i< decMod.packages.length; ++i){
+					packNames[i] = decMod.packages[i].name;
+				}
+				
+				defUnit = PartialPackageDefUnitOfPackage.createPartialDefUnits(
+						packNames, null, module);
 			}
 			
-			elem = elem.getParent();
-		}
-		return ((IScopeNode)elem);
-	}
-
-	
-	/* -------- Scope Util -------- */
-	
-	/** Gets the DefUnits in the given ASTNode members. 
-	 * Considers direct DefUnit instances as well as DefUnit Containers. */
-	public static List<DefUnit> getDefUnitsFromMembers(IElement[] members) {
-		List<DefUnit> defunits = new ArrayList<DefUnit>();
-		for(IElement elem: members) {
-			addPossibleDefUnits(elem, defunits);
-		}
-		return defunits;
-	}
-	
-	/** Gets the DefUnits in the given ASTNode members. 
-	 * Considers direct DefUnit instances as well as DefUnit containers. */
-	public static List<DefUnit> getDefUnitsFromMembers(List<? extends IElement> members) {
-		List<DefUnit> defunits = new ArrayList<DefUnit>();
-		for(IElement elem: members) {
-			addPossibleDefUnits(elem, defunits);
-		}
-		return defunits;
-	}
-
-	private static void addPossibleDefUnits(IElement elem, List<DefUnit> defunits) {
-		if(elem instanceof IDefinitionContainer) {
-			ASTNode[] otherMembers = ((IDefinitionContainer) elem).getMembers();
-			if(otherMembers != null)
-				defunits.addAll(getDefUnitsFromMembers(otherMembers));
-		} else if(elem instanceof DefUnit) {
-			defunits.add((DefUnit)elem);
+			if(search.matches(defUnit))
+				search.addResult(defUnit);
 		}
 	}
 
-	
-	/* ====================  entity find  ==================== */
-
-	/** Searches for the DefUnit with the given name in the given scope,
-	 * and then successively in it's outer scopes. */
-	public static DefUnit findDefUnitFromSurroundingScope(IScopeNode scope, String name) {
+	/** Searches for the DefUnit with the given name, in the scope's 
+	 * immediate namespace, secondary namespace (imports), and super scopes. 
+	 * Uses an {@link EntitySearch} to give search options and store the 
+	 * results.
+	 * Does not search, if the scope has alread been searched in this search.
+	 * The set of matched {@link DefUnit}s must all be visible in the same
+	 * non-extended scope, (altough due to imports, they may originate from 
+	 * different scopes XXX: fix this behavior? This is an ambiguity error in D).
+	 */
+	public static void findDefUnitInScope(IScope scope, EntitySearch search) {
+		if(search.hasSearched(scope))
+			return;
 		
-		do {
-			DefUnit defunit;
-			defunit = findDefUnitFromScope(scope, name);
-			if(defunit != null)
-				return defunit;
-			
-			// retry in outer scope
-			scope = getOuterScope(scope);
-		} while (scope != null);
-
-		return null;
-	}
-
-	/** Searches for the DefUnit with the given name, 
-	 * in the scope's immediate, secondary, and super scopes. */
-	public static DefUnit findDefUnitFromScope(IScopeNode scope, String name) {
-		DefUnit defunit = findDefUnitInImmediateScope(scope, name);
-		if(defunit != null)
-			return defunit;
+		search.enterNewScope(scope);
 		
-		defunit = findDefUnitInSecondaryScope(scope, name);
-		if(defunit != null)
-			return defunit;
+		findDefUnitInImmediateScope(scope, search);
+		if(search.isFinished())
+			return;
+		
+		findDefUnitInSecondaryScope(scope, search);
+		if(search.isFinished())
+			return;
 
 		// Search super scope 
-		if(scope.getSuperScopes() != null)
-			for(IScopeNode superscope : scope.getSuperScopes()) {
+		if(scope.getSuperScopes() != null) {
+			for(IScope superscope : scope.getSuperScopes()) {
 				if(superscope != null)
-					defunit = findDefUnitFromScope(superscope, name); 
-				if(defunit != null)
-					return defunit;
+					findDefUnitInScope(superscope, search); 
+				if(search.isFinished())
+					return;
 			}
+		}
 		
-		return null;
 	}
 	
 
-	private static DefUnit findDefUnitInImmediateScope(IScopeNode scope, String name) {
-		for (DefUnit defunit : scope.getDefUnits()) {
-			if (defunit.defname.equals(name))
-				return defunit;
+	private static void findDefUnitInImmediateScope(IScope scope, EntitySearch search) {
+		Iterator<ASTNode> iter = IteratorUtil.recast(scope.getMembersIterator());
+		
+		findDefUnits(search, iter);
+	}
+
+	private static void findDefUnits(EntitySearch search,
+			Iterator<? extends ASTNode> iter) {
+		
+		while(iter.hasNext()) {
+			ASTNode elem = iter.next();
+
+			if(elem instanceof DefUnit) {
+				DefUnit defunit = (DefUnit) elem;
+				if(search.matches(defunit)) {
+					search.addResult(defunit);
+					if(search.isFinished())
+						return; // Return if we only want one match
+				}
+			} else if (elem instanceof INonScopedBlock) {
+				INonScopedBlock container = ((INonScopedBlock) elem);
+				findDefUnits(search, container.getMembersIterator());
+				if(search.isFinished())
+					return; // Return if we only want one match
+			} 
 		}
-		return null;
 	}
 	
-	private static DefUnit findDefUnitInSecondaryScope(IScopeNode scope, String name) {
-		// Look for Import Declarations in the scope  TODO: cache?
-		for (IElement elem : scope.getChildren()) {
-			if(!(elem instanceof DeclarationImport))
-				continue;
+	private static void findDefUnitInSecondaryScope(IScope scope, EntitySearch search) {
+		Iterator<ASTNode> iter = IteratorUtil.recast(scope.getMembersIterator());
 				
-			DeclarationImport declImport = (DeclarationImport) elem;
-			for (ImportFragment impFrag : declImport.imports) {
-				DefUnit defunit = impFrag.searchDefUnit(name);
-				if(defunit != null)
-					return defunit;
-			}
+		Module thisModule = scope.getModule();
+		findSecondaryDefUnits(search, iter, thisModule);
+	}
+
+	private static void findSecondaryDefUnits(EntitySearch search,
+			Iterator<? extends ASTNode> iter, Module thisModule) {
+		
+		Module refsModule = search.getReferenceModule();
+		
+		while(iter.hasNext()) {
+			ASTNode elem = iter.next();
+
+			if(elem instanceof DeclarationImport) {
+				DeclarationImport declImport = (DeclarationImport) elem;
+
+				// save current searchingFromAnImport value
+				boolean searchingFromAnImport = search.searchingFromAnImport;
+				
+				if(refsModule != thisModule && !declImport.isTransitive)
+					continue; // Don't consider private imports
+				
+				search.searchingFromAnImport = true;
+				for (ImportFragment impFrag : declImport.imports) {
+					impFrag.searchDefUnit(search);
+					// continue regardless of search.findOnlyOne because of partial packages
+				}
+				// restore previous searchingFromAnImport value
+				search.searchingFromAnImport = searchingFromAnImport;
+
+			} else if (elem instanceof INonScopedBlock) {
+				INonScopedBlock container = ((INonScopedBlock) elem);
+				findSecondaryDefUnits(search, container.getMembersIterator(), thisModule);
+			} 
 
 		}
-		return null;
 	}
 	
-	public static DefUnit searchDefUnit(ImportContent impContent, String name) {
+	/* ====================  import lookup  ==================== */
+
+	
+	public static void findDefUnitInContentImport(ImportContent impContent, EntitySearch search) {
+		findDefUnitInStaticImport(impContent, search);
+		if(search.isFinished())
+			return;
+
 		Module refModule = NodeUtil.getParentModule(impContent);
 		String packageName = impContent.moduleEnt.packageName;
 		String moduleName = impContent.moduleEnt.moduleName;
 		Module targetModule;
 		targetModule = findModule(refModule, packageName, moduleName);
 		if (targetModule != null)
-			return findDefUnitFromScope(targetModule, name);
-		return null;
+			findDefUnitInScope(targetModule, search);
 	}
 
-	public static DefUnit searchDefUnit(ImportStatic importStatic, String name) {
-		// TODO Auto-generated method stub
-		return null;
+	public static void findDefUnitInStaticImport(ImportStatic importStatic, EntitySearch search) {
+		DefUnit defunit = importStatic.getDefUnit();
+		if(search.matches(defunit))
+			search.addResult(defunit);
 	}
 
-	public static DefUnit searchDefUnit(ImportAliasing importAliasing,
-			String name) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-
-	public static DefUnit searchDefUnit(ImportSelective importSelective, String name) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-
-	/* --------  -------- */
-
-	
 }

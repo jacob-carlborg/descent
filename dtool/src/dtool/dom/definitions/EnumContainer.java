@@ -1,5 +1,7 @@
 package dtool.dom.definitions;
 
+import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 
 import melnorme.miscutil.tree.TreeVisitor;
@@ -8,9 +10,9 @@ import dtool.dom.ast.ASTNeoNode;
 import dtool.dom.ast.ASTNode;
 import dtool.dom.ast.IASTNeoVisitor;
 import dtool.dom.references.Entity;
-import dtool.refmodel.IDefinitionContainer;
+import dtool.refmodel.INonScopedBlock;
 
-public class EnumContainer extends ASTNeoNode implements IDefinitionContainer {
+public class EnumContainer extends ASTNeoNode implements INonScopedBlock {
 
 	public List<EnumMember> members;
 	public Entity type;
@@ -30,4 +32,9 @@ public class EnumContainer extends ASTNeoNode implements IDefinitionContainer {
 	public ASTNode[] getMembers() {
 		return members.toArray(ASTNode.NO_ELEMENTS);
 	}
+
+	public Iterator<EnumMember> getMembersIterator() {
+		return members.iterator();
+	}
+
 }

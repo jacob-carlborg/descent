@@ -1,6 +1,8 @@
 package dtool.dom.definitions;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 
 import melnorme.miscutil.tree.TreeVisitor;
@@ -13,6 +15,7 @@ import dtool.dom.ast.IASTNeoVisitor;
 import dtool.dom.references.Entity;
 import dtool.dom.statements.IStatement;
 import dtool.refmodel.EntityResolver;
+import dtool.refmodel.IScope;
 import dtool.refmodel.IScopeNode;
 
 /**
@@ -78,24 +81,23 @@ public class DefinitionAggregate extends Definition implements IScopeNode, IStat
 		return this;
 	}
 	
-	public List<DefUnit> getDefUnits() {
-		return EntityResolver.getDefUnitsFromMembers(members);
-	}
-
-	public List<IScopeNode> getSuperScopes() {
+	public List<IScope> getSuperScopes() {
 		if(baseClasses.size() < 0)
 			return null;
 
-		List<IScopeNode> scopes = new ArrayList<IScopeNode>();
+		List<IScope> scopes = new ArrayList<IScope>();
 		for(BaseClass baseclass: baseClasses) {
-			DefUnit defunit = baseclass.type.getTargetDefUnit();
+			DefUnit defunit = baseclass.type.findTargetDefUnit();
 			if(defunit == null)
 				continue;
 			scopes.add(defunit.getMembersScope());
 		}
-		return scopes; 
+		return scopes;
 		// TODO add Object super scope.
 	}
-	
+
+	public Iterator<ASTNode> getMembersIterator() {
+		return members.iterator();
+	}
 
 }

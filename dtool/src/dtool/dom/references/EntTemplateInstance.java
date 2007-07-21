@@ -32,10 +32,11 @@ public class EntTemplateInstance extends EntitySingle {
 		visitor.endVisit(this);
 	}
 
+	
 	@Override
-	public DefUnit getTargetDefUnit() {
+	public DefUnit findTargetDefUnit() {
 		// TODO Try to figure which homonym
-		return super.getTargetDefUnit();
+		return super.findTargetDefUnit();
 	}
 	
 	public String toString() {

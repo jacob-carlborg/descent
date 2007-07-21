@@ -43,6 +43,8 @@ public final class StringUtil {
 	 * Prints a Collection with given separator String
 	 */	
 	public static String collToString(Collection<?> coll, String sep) {
+		//if(coll == null) return "<null>";
+		
 		StringBuilder sb = new StringBuilder();
 		boolean first = true;
 		for(Object item : coll){

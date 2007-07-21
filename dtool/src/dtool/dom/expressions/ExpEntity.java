@@ -1,5 +1,7 @@
 package dtool.dom.expressions;
 
+import java.util.Collection;
+
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.internal.core.dom.DotIdExp;
 import descent.internal.core.dom.IdentifierExp;
@@ -54,8 +56,8 @@ public class ExpEntity extends Expression {
 	}
 	
 	@Override
-	public DefUnit getTargetDefUnit() {
-		return entity.getTargetDefUnit();
+	public Collection<DefUnit> findTargetDefUnits(boolean findFirstOnly) {
+		return entity.findTargetDefUnits(findFirstOnly);
 	}
 
 }

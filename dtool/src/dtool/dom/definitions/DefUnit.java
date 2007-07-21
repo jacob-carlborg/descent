@@ -51,6 +51,16 @@ public abstract class DefUnit extends ASTNeoNode {
 		this.defname = new Symbol(id);
 	}		
 
+
+	public String getName() {
+		return defname.name;
+	}
+	
+	@Override
+	public String toString() {
+		return getName();
+	}
+
 	/** Gets the archtype (the kind) of this DefUnit. */
 	public abstract EArcheType getArcheType() ;
 
@@ -59,12 +69,5 @@ public abstract class DefUnit extends ASTNeoNode {
 	 * in the DefUnit node, but on other cases the scope is somewhere else.
 	 * May be null if the scope is not found. */
 	public abstract IScopeNode getMembersScope();
-
-	
-	@Override
-	public String toString() {
-		return defname.name;
-	}
-
 
 }

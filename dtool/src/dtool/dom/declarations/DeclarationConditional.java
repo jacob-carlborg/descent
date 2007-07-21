@@ -1,5 +1,7 @@
 package dtool.dom.declarations;
 
+import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 
 import melnorme.miscutil.ArrayUtil;
@@ -23,9 +25,9 @@ import dtool.dom.statements.IStatement;
 import dtool.dom.statements.MultiNodes;
 import dtool.dom.statements.MultiStatement;
 import dtool.dom.statements.Statement;
-import dtool.refmodel.IDefinitionContainer;
+import dtool.refmodel.INonScopedBlock;
 
-public class DeclarationConditional extends ASTNeoNode implements IStatement, IDefinitionContainer {
+public class DeclarationConditional extends ASTNeoNode implements IStatement, INonScopedBlock {
 	
 	public Condition condition; // TODO convert Condition
 	public ASTNode thendecls;
@@ -131,6 +133,10 @@ public class DeclarationConditional extends ASTNeoNode implements IStatement, ID
 		if(elsedecls instanceof MultiStatement) 
 			return ((MultiStatement)elsedecls).statements.toArray(new ASTNode[0]);
 		return new ASTNode[] { elsedecls };
+	}
+
+	public Iterator<ASTNode> getMembersIterator() {
+		return Arrays.asList(getMembers()).iterator();
 	}
 
 }

@@ -3,6 +3,8 @@
  */
 package dtool.dom.references;
 
+import java.util.Collection;
+
 import melnorme.miscutil.tree.TreeVisitor;
 import dtool.dom.ast.IASTNeoVisitor;
 import dtool.dom.definitions.DefUnit;
@@ -28,9 +30,8 @@ public class TypeTypeof extends Entity {
 		return "typeof(" + expression +")";
 	}
 
-	@Override
-	public DefUnit getTargetDefUnit() {
-		// return expression.getType().getDefUnits();
-		return null;
+	public Collection<DefUnit> findTargetDefUnits(boolean findFirstOnly) {
+		return expression.getType();
 	}
+
 }

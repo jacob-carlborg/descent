@@ -1,5 +1,8 @@
 package dtool.dom.declarations;
 
+import java.util.Arrays;
+import java.util.Iterator;
+
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.internal.core.dom.PragmaDeclaration;
 import dtool.dom.ast.ASTNeoNode;
@@ -7,9 +10,9 @@ import dtool.dom.ast.ASTNode;
 import dtool.dom.ast.IASTNeoVisitor;
 import dtool.dom.definitions.Symbol;
 import dtool.dom.expressions.Expression;
-import dtool.refmodel.IDefinitionContainer;
+import dtool.refmodel.INonScopedBlock;
 
-public class DeclarationPragma extends ASTNeoNode implements IDefinitionContainer {
+public class DeclarationPragma extends ASTNeoNode implements INonScopedBlock {
 
 	public Symbol ident;
 	public Expression[] expressions;
@@ -37,5 +40,8 @@ public class DeclarationPragma extends ASTNeoNode implements IDefinitionContaine
 	public ASTNode[] getMembers() {
 		return decls;
 	}
-
+	
+	public Iterator<ASTNode> getMembersIterator() {
+		return Arrays.asList(getMembers()).iterator();
+	}
 }

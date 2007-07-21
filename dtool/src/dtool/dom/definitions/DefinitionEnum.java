@@ -1,5 +1,7 @@
 package dtool.dom.definitions;
 
+import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 
 import melnorme.miscutil.tree.TreeVisitor;
@@ -7,8 +9,10 @@ import melnorme.miscutil.tree.TreeVisitor;
 import descent.internal.core.dom.EnumDeclaration;
 import dtool.descentadapter.DescentASTConverter;
 import dtool.dom.ast.ASTNeoNode;
+import dtool.dom.ast.ASTNode;
 import dtool.dom.ast.IASTNeoVisitor;
 import dtool.dom.references.Entity;
+import dtool.refmodel.IScope;
 import dtool.refmodel.IScopeNode;
 
 public class DefinitionEnum extends Definition implements IScopeNode {
@@ -55,14 +59,15 @@ public class DefinitionEnum extends Definition implements IScopeNode {
 		return this;
 	}
 	
-	public List<EnumMember> getDefUnits() {
-		return members;
-	}
 	
-	
-	public List<IScopeNode> getSuperScopes() {
+	public List<IScope> getSuperScopes() {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@SuppressWarnings("unchecked")
+	public Iterator<EnumMember> getMembersIterator() {
+		return members.iterator();
 	}
 
 }

@@ -1,5 +1,7 @@
 package dtool.dom.definitions;
 
+import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 
 import melnorme.miscutil.StringUtil;
@@ -14,9 +16,11 @@ import dtool.dom.ast.ASTNode;
 import dtool.dom.ast.IASTNeoVisitor;
 import dtool.dom.declarations.Declaration;
 import dtool.dom.references.EntIdentifier;
+import dtool.dom.references.EntModule;
 import dtool.refmodel.EntityResolver;
-import dtool.refmodel.IDTool_DeeCompilationUnit;
+import dtool.refmodel.IScope;
 import dtool.refmodel.IScopeNode;
+import dtool.refmodel.pluginadapters.IGenericCompilationUnit;
 
 /**
  * D Module
@@ -27,7 +31,7 @@ public class Module extends DefUnit implements IScopeNode {
 
 		public EntIdentifier[] packages;
 		public Symbol moduleName;
-
+		
 		public DeclarationModule(ModuleDeclaration md) {
 			setSourceRange(md);
 			this.moduleName = new Symbol(md.ident); 
@@ -48,7 +52,7 @@ public class Module extends DefUnit implements IScopeNode {
 		}
 	}
 
-	private IDTool_DeeCompilationUnit cunit;
+	private IGenericCompilationUnit cunit;
 
 	public DeclarationModule md;
 	public ASTNode[] members;
@@ -78,11 +82,11 @@ public class Module extends DefUnit implements IScopeNode {
 		return EArcheType.Module;
 	}
 	
-	public void setCUnit(IDTool_DeeCompilationUnit cunit) {
+	public void setCUnit(IGenericCompilationUnit cunit) {
 		this.cunit = cunit;
 	}
 
-	public IDTool_DeeCompilationUnit getCUnit() {
+	public IGenericCompilationUnit getCUnit() {
 		return cunit;
 	}
 
@@ -95,17 +99,17 @@ public class Module extends DefUnit implements IScopeNode {
 		visitor.endVisit(this);
 	}
 
-	public List<? extends DefUnit> getDefUnits() {
-		return EntityResolver.getDefUnitsFromMembers(members);
-	}
-
 	@Override
 	public IScopeNode getMembersScope() {
 		return this;
 	}
 	
-	public List<IScopeNode> getSuperScopes() {
+	public List<IScope> getSuperScopes() {
 		return null;
+	}
+
+	public Iterator<? extends ASTNode> getMembersIterator() {
+		return Arrays.asList(members).iterator();
 	}
 
 }

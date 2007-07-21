@@ -2,6 +2,8 @@ package dtool.dom.ast;
 
 import melnorme.miscutil.Assert;
 import descent.core.domX.IASTVisitor;
+import dtool.dom.definitions.Module;
+import dtool.refmodel.NodeUtil;
 
 public abstract class ASTNeoNode extends ASTNode  {
 
@@ -56,6 +58,10 @@ public abstract class ASTNeoNode extends ASTNode  {
 	public void setSourceRange(ASTNode elem) {
 		startPos = elem.getStartPos();
 		length = elem.getLength();
+	}
+
+	public Module getModule() {
+		return NodeUtil.getParentModule(this);
 	}
 	
 }

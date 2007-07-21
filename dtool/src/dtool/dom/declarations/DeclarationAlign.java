@@ -1,13 +1,17 @@
 package dtool.dom.declarations;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Iterator;
+
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.internal.core.dom.AlignDeclaration;
 import dtool.dom.ast.ASTNeoNode;
 import dtool.dom.ast.ASTNode;
 import dtool.dom.ast.IASTNeoVisitor;
-import dtool.refmodel.IDefinitionContainer;
+import dtool.refmodel.INonScopedBlock;
 
-public class DeclarationAlign extends ASTNeoNode implements IDefinitionContainer {
+public class DeclarationAlign extends ASTNeoNode implements INonScopedBlock {
 	
 	public long alignnum;
 	public ASTNode[] decls;
@@ -29,6 +33,10 @@ public class DeclarationAlign extends ASTNeoNode implements IDefinitionContainer
 
 	public ASTNode[] getMembers() {
 		return decls;
+	}
+
+	public Iterator<ASTNode> getMembersIterator() {
+		return Arrays.asList(decls).iterator();
 	}
 
 }

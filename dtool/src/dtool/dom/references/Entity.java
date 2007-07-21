@@ -1,5 +1,7 @@
 package dtool.dom.references;
 
+import java.util.Collection;
+
 import melnorme.miscutil.Assert;
 import descent.internal.core.dom.DotIdExp;
 import descent.internal.core.dom.IdentifierExp;
@@ -29,17 +31,22 @@ public abstract class Entity extends ASTNeoNode implements IDefUnitReference {
 	public EReferenceConstraint refConstraint = null;
 	
 	
-	public abstract DefUnit getTargetDefUnit();
-	
 	public IScopeNode getTargetScope() {
-		DefUnit defunit = getTargetDefUnit();
+		DefUnit defunit = findTargetDefUnit(); 
 		if(defunit == null)
 			return null;
 		return defunit.getMembersScope();
 	}
 	
+	public DefUnit findTargetDefUnit() {
+		Collection<DefUnit> defunits = findTargetDefUnits(true);
+		if(defunits == null || defunits.isEmpty())
+			return null;
+		return defunits.iterator().next();
+	}
 	
-	/* -------- Conversion Funcs -------- */
+	
+	/* ---------------- Conversion Funcs ---------------- */
 
 	public static Entity convertType(Type type) {
 		if(type == null) return null;

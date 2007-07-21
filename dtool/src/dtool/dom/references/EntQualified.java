@@ -1,9 +1,12 @@
 package dtool.dom.references;
 
+import java.util.Collection;
+
 import melnorme.miscutil.tree.TreeVisitor;
 import dtool.dom.ast.ASTNode;
 import dtool.dom.ast.IASTNeoVisitor;
 import dtool.dom.definitions.DefUnit;
+import dtool.refmodel.EntitySearch;
 import dtool.refmodel.EntityResolver;
 import dtool.refmodel.IDefUnitReference;
 import dtool.refmodel.IEntQualified;
@@ -45,12 +48,20 @@ public class EntQualified extends Entity implements IEntQualified {
 		return subent;
 	}
 	
-	public DefUnit getTargetDefUnit() {
-		DefUnit defunit = root.getTargetDefUnit();
-		if(defunit == null)
+	public Collection<DefUnit> findTargetDefUnits(boolean findOneOnly) {
+		Collection<DefUnit> defunits = root.findTargetDefUnits(false);
+		if(defunits == null)
 			return null;
-		IScopeNode scope = defunit.getMembersScope();
-		return EntityResolver.findDefUnitFromScope(scope, subent.name);
+
+		EntitySearch search = EntitySearch.newSearch(subent.name, this);
+		
+		for (DefUnit unit : defunits) {
+			IScopeNode scope = unit.getMembersScope();
+			EntityResolver.findDefUnitInScope(scope, search);
+			if(search.isFinished())
+				return search.getDefUnits();
+		}
+		return search.getDefUnits();
 	}
 
 }
