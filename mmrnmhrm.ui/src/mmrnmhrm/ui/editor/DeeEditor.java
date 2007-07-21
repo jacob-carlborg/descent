@@ -91,11 +91,11 @@ public class DeeEditor extends LangEditor {
 	@Override
 	protected void performSave(boolean overwrite, IProgressMonitor progressMonitor) {
 		super.performSave(overwrite, progressMonitor);
-		cunit.reconcile();
 	}
 	
 	protected void editorSaved() {
 		super.editorSaved();
+		cunit.reconcile();
 		if (outlinePage != null)
 			outlinePage.updateView(); 
 	}

@@ -49,12 +49,12 @@
       <page
             class="mmrnmhrm.ui.properties.ProjConfigPropertyPage"
             id="mmrnmhrm.ui.properties.projectConfigPage"
-            name="D Project Config"
-            objectClass="org.eclipse.core.resources.IProject">
-         <filter
-               name="nature"
-               value="mmrnmhrm.core.deenature">
-         </filter>
+            name="D Project Config">
+         <enabledWhen>
+            <reference
+                  definitionId="mmrnmhrm.core.expressions.isDeeNature">
+            </reference>
+         </enabledWhen>
       </page>
    </extension>
    <extension
@@ -359,26 +359,45 @@
             icon="icons/sample.gif"
             id="mmrnmhrm.ui.navigatorContent"
             labelProvider="mmrnmhrm.ui.navigator.DeeNavigatorLabelProvider"
-            name="mmrnmhrm.navigatorContent"
+            name="Dee Elements"
             priority="high">
          <triggerPoints>
             <or>
-               <adapt type="org.eclipse.core.resources.IProject">
-                  <test
-                        property="org.eclipse.core.resources.projectNature"
-                        value="mmrnmhrm.deenature"/>
-               </adapt>
-               <instanceof value="mmrnmhrm.core.model.DeeSourceFolder"/>
+               <reference
+                     definitionId="mmrnmhrm.core.expressions.isDeeNature">
+               </reference>
+               <instanceof value="mmrnmhrm.core.model.IDeeElement"/>
             </or>
          </triggerPoints>
          <possibleChildren>
             <or>
-               <adapt type="org.eclipse.core.resources.IProject"/>
-               <instanceof value="mmrnmhrm.core.model.DeeSourceFolder"/>
                <instanceof value="org.eclipse.core.resources.IResource"/>
+               <instanceof
+                     value="mmrnmhrm.core.model.IDeeElement">
+               </instanceof>
             </or>
          </possibleChildren>
       </navigatorContent>
+   </extension>
+   <extension
+         point="org.eclipse.core.runtime.adapters">
+      <factory
+            adaptableType="mmrnmhrm.core.model.lang.ILangElement"
+            class="mmrnmhrm.ui.LangAdapterFactory">
+         <adapter
+               type="org.eclipse.core.resources.IResource">
+         </adapter>
+         <adapter
+               type="org.eclipse.ui.IContributorResourceAdapter">
+         </adapter>
+      </factory>
+      <factory
+            adaptableType="mmrnmhrm.core.model.IDeeSourceRoot"
+            class="mmrnmhrm.ui.LangAdapterFactory">
+         <adapter
+               type="org.eclipse.core.resources.IFolder">
+         </adapter>
+      </factory>
    </extension>
 
 </plugin>

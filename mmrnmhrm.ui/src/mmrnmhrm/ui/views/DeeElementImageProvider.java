@@ -1,8 +1,10 @@
 package mmrnmhrm.ui.views;
 
 import melnorme.miscutil.tree.IElement;
+import mmrnmhrm.core.model.CompilationUnit;
 import mmrnmhrm.core.model.DeeSourceFolder;
 import mmrnmhrm.core.model.DeeSourceLib;
+import mmrnmhrm.core.model.PackageFragment;
 import mmrnmhrm.ui.DeePluginImages;
 
 import org.eclipse.swt.graphics.Image;
@@ -25,6 +27,10 @@ public class DeeElementImageProvider {
 	public static Image getElementImage(IElement element) {
 		if (element instanceof ASTNode) {
 			return getNodeImage((ASTNode) element);
+		} else if(element instanceof PackageFragment) {
+			return getImage(DeePluginImages.ELEM_PACKAGE);
+		} else if(element instanceof CompilationUnit) {
+			return getImage(DeePluginImages.ELEM_FILE);
 		} else if(element instanceof DeeSourceFolder) {
 			return getImage(DeePluginImages.ELEM_SOURCEFOLDER);
 		} else if(element instanceof DeeSourceLib) {

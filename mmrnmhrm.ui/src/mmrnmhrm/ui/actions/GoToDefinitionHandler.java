@@ -1,7 +1,10 @@
 package mmrnmhrm.ui.actions;
 
+import java.util.Collection;
+
 import melnorme.lang.ui.EditorUtil;
 import melnorme.lang.ui.ExceptionHandler;
+import melnorme.miscutil.StringUtil;
 import melnorme.miscutil.log.Logg;
 import mmrnmhrm.core.model.CompilationUnit;
 import mmrnmhrm.ui.DeePlugin;
@@ -29,6 +32,7 @@ import dtool.dom.definitions.DefUnit;
 import dtool.dom.definitions.Module;
 import dtool.dom.definitions.Symbol;
 import dtool.dom.references.Entity;
+import dtool.refmodel.EntitySearch;
 import dtool.refmodel.IIntrinsicUnit;
 import dtool.refmodel.NodeUtil;
 
@@ -90,14 +94,25 @@ public class GoToDefinitionHandler extends AbstractHandler  {
 		} 
 		
 		// find the target
-		DefUnit defunit = ((Entity)elem).getTargetDefUnit();
-		Logg.main.println(" FindDefinition, found: " +  defunit);
+		Collection<DefUnit> defunits = ((Entity)elem).findTargetDefUnits(false);
+		Logg.main.println(" Find Definition, found: " 
+				+ StringUtil.collToString(defunits, " ") );
+
 		
-		if(defunit == null) {
+		if(defunits == null || defunits.size() == 0) {
 			GoToDefinitionHandler.dialogWarning(window.getShell(), 
 					"Definition not found for entity reference: " + elem);
 			return;
 		}
+		if(defunits.size() > 1) {
+			GoToDefinitionHandler.dialogWarning(window.getShell(), 
+					"Multiple definitions fouund: \n" 
+					+ StringUtil.collToString(defunits, "\n"));
+			return;
+		}
+
+		DefUnit defunit = EntitySearch.getResultDefUnit(defunits);
+		
 		if(defunit.hasNoSourceRangeInfo()) {
 			GoToDefinitionHandler.dialogInfo(window.getShell(),
 					"DefUnit: " +defunit+ " has no source range info!");
