@@ -3,7 +3,6 @@ package mmrnmhrm.ui.actions;
 import java.util.Collection;
 
 import melnorme.lang.ui.EditorUtil;
-import melnorme.lang.ui.ExceptionHandler;
 import melnorme.miscutil.StringUtil;
 import melnorme.miscutil.log.Logg;
 import mmrnmhrm.core.model.CompilationUnit;
@@ -13,8 +12,9 @@ import mmrnmhrm.ui.editor.DeeEditor;
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
+import org.eclipse.core.resources.IWorkspaceRunnable;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.text.TextSelection;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IEditorInput;
@@ -47,17 +47,18 @@ public class GoToDefinitionHandler extends AbstractHandler  {
 		try {
 			executeOperation((ITextEditor) editor, false);
 		} catch (CoreException ce) {
-			throw new ExecutionException(GO_TO_DEFINITION_OPNAME,ce);
+			throw new ExecutionException(GO_TO_DEFINITION_OPNAME, ce);
 		}
 		return null;
 	}
 
-	public static void executeChecked(ITextEditor srcEditor, boolean openNewEditor) {
-		try {
-			executeOperation(srcEditor, openNewEditor);
-		} catch (CoreException ce) {
-			ExceptionHandler.handle(ce, GO_TO_DEFINITION_OPNAME, "Execution Error");
-		}
+	public static void executeChecked(final ITextEditor srcEditor,
+			final boolean openNewEditor) {
+		OperationsManager.doOperation2(GO_TO_DEFINITION_OPNAME, new IWorkspaceRunnable() {
+			public void run(IProgressMonitor monitor) throws CoreException {
+				executeOperation(srcEditor, openNewEditor);
+			}
+		});
 	}
 
 	public static void executeOperation(ITextEditor srcEditor,
@@ -82,30 +83,31 @@ public class GoToDefinitionHandler extends AbstractHandler  {
 		Logg.main.println(" Selected Element: " + ASTPrinter.toStringNodeExtra(elem));
 
 		if(elem instanceof Symbol) {
-			GoToDefinitionHandler.dialogInfo(window.getShell(),
+			dialogInfo(window.getShell(),
 					"Element is not an entity reference,"
 					+" it's already a definition: " + elem);
 			return;
 		}
 		if(!(elem instanceof Entity)) {
-			GoToDefinitionHandler.dialogInfo(window.getShell(),
+			dialogInfo(window.getShell(),
 					"Element is not an entity reference: "+ elem);
 			return;
 		} 
 		
 		// find the target
 		Collection<DefUnit> defunits = ((Entity)elem).findTargetDefUnits(false);
-		Logg.main.println(" Find Definition, found: " 
-				+ StringUtil.collToString(defunits, " ") );
-
 		
 		if(defunits == null || defunits.size() == 0) {
-			GoToDefinitionHandler.dialogWarning(window.getShell(), 
+			dialogWarning(window.getShell(), 
 					"Definition not found for entity reference: " + elem);
 			return;
 		}
+
+		Logg.main.println(" Find Definition, found: " 
+				+ StringUtil.collToString(defunits, " ") );
+		
 		if(defunits.size() > 1) {
-			GoToDefinitionHandler.dialogWarning(window.getShell(), 
+			dialogWarning(window.getShell(), 
 					"Multiple definitions fouund: \n" 
 					+ StringUtil.collToString(defunits, "\n"));
 			return;
@@ -114,12 +116,12 @@ public class GoToDefinitionHandler extends AbstractHandler  {
 		DefUnit defunit = EntitySearch.getResultDefUnit(defunits);
 		
 		if(defunit.hasNoSourceRangeInfo()) {
-			GoToDefinitionHandler.dialogInfo(window.getShell(),
+			dialogError(window.getShell(),
 					"DefUnit: " +defunit+ " has no source range info!");
 			return;
 		} 
 		if(defunit instanceof IIntrinsicUnit) {
-			GoToDefinitionHandler.dialogInfo(window.getShell(),
+			dialogInfo(window.getShell(),
 				"DefUnit: " +defunit+ " is a language native.");
 			return;
 		} 
@@ -140,14 +142,19 @@ public class GoToDefinitionHandler extends AbstractHandler  {
 	}
 	
 
-	static void dialogWarning(Shell shell, String string) {
-		MessageDialog.openWarning(shell,
-				GO_TO_DEFINITION_OPNAME, string);
+	private static void dialogError(Shell shell, String msg) {
+		OperationsManager.openError(shell,
+				GO_TO_DEFINITION_OPNAME, msg);
 	}
 
-	static void dialogInfo(Shell shell, String string) {
-		MessageDialog.openInformation(shell,
-				GO_TO_DEFINITION_OPNAME, string);
+	static void dialogWarning(Shell shell, String msg) {
+		OperationsManager.openWarning(shell,
+				GO_TO_DEFINITION_OPNAME, msg);
+	}
+
+	static void dialogInfo(Shell shell, String msg) {
+		OperationsManager.openInfo(shell,
+				GO_TO_DEFINITION_OPNAME, msg);
 	}
 	
 	

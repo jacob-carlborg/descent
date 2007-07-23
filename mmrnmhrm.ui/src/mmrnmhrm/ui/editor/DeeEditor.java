@@ -50,9 +50,8 @@ public class DeeEditor extends LangEditor {
 	}
 	
 	@Override
-	protected void createActions() {
-		super.createActions();
-		//fActionGoToDefinition = new GoToDefinitionAction(this);
+	protected void initializeKeyBindingScopes() {
+		setKeyBindingScopes(new String[] { CONTEXTS_DEE_EDITOR });  //$NON-NLS-1$
 	}
 
 	public void dispose() { 
@@ -110,12 +109,6 @@ public class DeeEditor extends LangEditor {
 		return super.getAdapter(required);
 	}
 
-	
-	@Override
-	protected void initializeKeyBindingScopes() {
-		setKeyBindingScopes(new String[] { CONTEXTS_DEE_EDITOR });  //$NON-NLS-1$
-	}
-	
 	@Override
 	protected void editorContextMenuAboutToShow(IMenuManager menu) {
 		super.editorContextMenuAboutToShow(menu);

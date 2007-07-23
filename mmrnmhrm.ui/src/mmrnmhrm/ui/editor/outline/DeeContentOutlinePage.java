@@ -12,7 +12,6 @@ import org.eclipse.ui.views.contentoutline.ContentOutlinePage;
 
 /**
  * D outline page. 
- * XXX: Does an input change in the outline's lifecycle?? -> Yes it can
  */
 public class DeeContentOutlinePage extends ContentOutlinePage {
 

@@ -60,6 +60,8 @@ public class DeePlugin extends LangPlugin {
 
 	protected Map<IEditorInput, CompilationUnit> cunitMap;
 
+	/** Returns the Compilation for the given file. If the file is not part
+	 * of the model, returns an out of model Compilation Unit.*/
 	public CompilationUnit getCompilationUnit(IEditorInput input) throws CoreException {
 		CompilationUnit cunit = null;
 		if(input instanceof FileEditorInput) {

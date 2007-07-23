@@ -75,6 +75,7 @@ public class ProjConfigPropertyPage extends PropertyPage {
 			return false;
 		}
 		return true;
+		
 	}
 
 }
