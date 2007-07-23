@@ -48,6 +48,10 @@ public class CompilationUnit extends LangElement implements IGenericCompilationU
 		this.file = file;
 	}
 
+	public IFile getFile() {
+		return file;
+	}
+
 	public IResource getUnderlyingResource() {
 		return file;
 	}
@@ -209,7 +213,5 @@ public class CompilationUnit extends LangElement implements IGenericCompilationU
 		} else
 			return "Status OK";
 	}
-
-
 
 }

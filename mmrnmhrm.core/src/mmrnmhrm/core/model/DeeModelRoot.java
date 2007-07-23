@@ -85,10 +85,15 @@ public class DeeModelRoot extends LangModelRoot implements IDeeElement, IModuleR
 		return ResourcesPlugin.getWorkspace().getRoot();
 	}
 
+	
+	/** Finds the module with the given package and module name.
+	 * refModule is used to determine which project/build-path to search. */
 	public Module findModule(Module refModule, String packageName, String moduleName) {
 		CompilationUnit refcunit = (CompilationUnit) refModule.getCUnit();
 		
 		DeeProject deeproj = refcunit.getProject();
+		if(deeproj == null)
+			return null;
 		
 		for (IDeeSourceRoot srcRoot : deeproj.getSourceRoots()) {
 
