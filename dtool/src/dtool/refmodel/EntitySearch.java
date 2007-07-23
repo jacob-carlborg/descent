@@ -4,10 +4,8 @@ import java.util.ArrayDeque;
 import java.util.Collection;
 import java.util.Collections;
 
-import melnorme.miscutil.Assert;
 import dtool.dom.ast.ASTNeoNode;
 import dtool.dom.declarations.PartialPackageDefUnit;
-import dtool.dom.declarations.PartialPackageDefUnitOfModule;
 import dtool.dom.definitions.DefUnit;
 import dtool.dom.definitions.Module;
 import dtool.dom.references.Entity;
@@ -87,7 +85,7 @@ public class EntitySearch {
 	 * If one match is a partial DefUnit, then the search must continue searching
 	 * all scopes, because there could allways be another partial. */
 	public boolean isFinished() {
-		return defunits != null && !findOnlyOne && !matchesArePartialDefUnits;
+		return defunits != null && !matchesArePartialDefUnits;
 	}
 
 	public boolean hasSearched(IScope scope) {

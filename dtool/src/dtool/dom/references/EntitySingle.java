@@ -32,7 +32,7 @@ public abstract class EntitySingle extends Entity {
 				Assert.isTrue(parent.getRoot() == this);
 			}
 		}
-		EntitySearch search = EntitySearch.newSearch(name, this);
+		EntitySearch search = EntitySearch.newSearch(name, this, findOneOnly);
 		IScopeNode scope = NodeUtil.getOuterScope(this);
 		EntityResolver.findDefUnitInExtendedScope(scope, search);
 		return search.getDefUnits();

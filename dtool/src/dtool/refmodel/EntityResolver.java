@@ -146,14 +146,14 @@ public class EntityResolver {
 				DefUnit defunit = (DefUnit) elem;
 				if(search.matches(defunit)) {
 					search.addResult(defunit);
-					if(search.isFinished())
-						return; // Return if we only want one match
+					if(search.isFinished() && search.findOnlyOne)
+						return; // Return if we only want one match in the scope
 				}
 			} else if (elem instanceof INonScopedBlock) {
 				INonScopedBlock container = ((INonScopedBlock) elem);
 				findDefUnits(search, container.getMembersIterator());
-				if(search.isFinished())
-					return; // Return if we only want one match
+				if(search.isFinished() && search.findOnlyOne)
+					return; // Return if we only want one match in the scope
 			} 
 		}
 	}
@@ -208,8 +208,7 @@ public class EntityResolver {
 
 	public static void findDefUnitInContentImport(ImportContent impContent, EntitySearch search) {
 		findDefUnitInStaticImport(impContent, search);
-		if(search.isFinished())
-			return;
+		//if(search.isScopeFinished()) return;
 
 		Module targetModule = findImporTargetModule(impContent);
 		if (targetModule != null)

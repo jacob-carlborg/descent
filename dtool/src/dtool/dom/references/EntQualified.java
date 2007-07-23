@@ -48,6 +48,7 @@ public class EntQualified extends Entity implements IEntQualified {
 		return subent;
 	}
 	
+	/** Finds the target defunits of this qualified reference. */
 	public Collection<DefUnit> findTargetDefUnits(boolean findOneOnly) {
 		Collection<DefUnit> defunits = root.findTargetDefUnits(false);
 		if(defunits == null)
