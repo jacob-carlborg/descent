@@ -107,10 +107,10 @@ public class GoToDefinitionHandler extends AbstractHandler  {
 				+ StringUtil.collToString(defunits, " ") );
 		
 		if(defunits.size() > 1) {
-			dialogWarning(window.getShell(), 
-					"Multiple definitions fouund: \n" 
-					+ StringUtil.collToString(defunits, "\n"));
-			return;
+			dialogInfo(window.getShell(), 
+					"Multiple definitions found: \n" 
+					+ StringUtil.collToString(defunits, "\n")
+					+ "\nGoing to the first one.");
 		}
 
 		DefUnit defunit = EntitySearch.getResultDefUnit(defunits);

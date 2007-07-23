@@ -74,7 +74,7 @@ public class ASTViewer extends ViewPart implements ISelectionListener,
 		super.init(site);
 		
 		ISelectionService service= site.getWorkbenchWindow().getSelectionService();
-		//service.addPostSelectionListener(this);
+		service.addPostSelectionListener(this);
 		//site.getPage().addPartListener(this);
 
 		/*if (fMultiListener == null) {
