@@ -4,7 +4,8 @@ import static org.junit.Assert.assertFalse;
 import mmrnmhrm.core.model.DeeModelManager;
 import mmrnmhrm.core.model.DeeModelRoot;
 import mmrnmhrm.core.model.DeeProject;
-import mmrnmhrm.tests.SampleProjectTest;
+import mmrnmhrm.tests.BaseUITest;
+import mmrnmhrm.tests.SampleProjectBuilder;
 import mmrnmhrm.tests.adapters.Test_WizardDialog;
 import mmrnmhrm.ui.DeePlugin;
 import mmrnmhrm.ui.wizards.projconfig.ProjectConfigBlockTest;
@@ -21,7 +22,7 @@ import org.junit.Test;
 
 
 
-public class DeeProjectWizardTest extends SampleProjectTest {
+public class DeeProjectWizardTest extends BaseUITest {
 
 	private DeeProjectWizard wizard;
 	private Test_WizardDialog wizDialog;
@@ -77,7 +78,7 @@ public class DeeProjectWizardTest extends SampleProjectTest {
 	
 	@Test
 	public void test_P1Validation() throws Throwable {
-		wizard.fFirstPage.fNameGroup.setName(SAMPLEPROJNAME);
+		wizard.fFirstPage.fNameGroup.setName(SampleProjectBuilder.SAMPLEPROJNAME);
 		assertFalse(wizard.canFinish());
 
 		simulatePressCancel();

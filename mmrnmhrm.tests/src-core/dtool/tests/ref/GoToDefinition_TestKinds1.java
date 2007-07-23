@@ -14,7 +14,7 @@ import org.junit.runners.Parameterized.Parameters;
 @RunWith(Parameterized.class)
 public class GoToDefinition_TestKinds1 extends FindDef_CommonTest  {
 	
-	static final String testfile = "refs/refKinds.d";
+	static final String testfile = "refKinds.d";
     
 	@BeforeClass
 	public static void classSetup() {

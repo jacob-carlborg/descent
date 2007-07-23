@@ -3,23 +3,37 @@ package mmrnmhrm.tests.core.ref;
 import java.io.IOException;
 
 import mmrnmhrm.core.model.CompilationUnit;
-import mmrnmhrm.tests.SampleProjectTest;
+import mmrnmhrm.tests.BaseTest;
+import mmrnmhrm.tests.SampleProjectBuilder;
 
 import org.eclipse.core.runtime.CoreException;
+import org.junit.AfterClass;
 import org.junit.Test;
 
 import dtool.tests.ref.FindDef_CommonTest;
 
-public abstract class FindDef_CommonImportTest extends SampleProjectTest {
+public abstract class FindDef_CommonImportTest extends BaseTest {
 
 	public static final String TESTALT_KEY = "/++/";
-	
+	public static final String TEST_SRCFOLDER = SampleProjectBuilder.TEST_SRC3;
+
 	protected static CompilationUnit defaultCUnit;
 
 	protected static void staticTestInit(String testSrcFile) {
 		FindDef_CommonTest.counter = -1;
 		System.out.println("======== " + testSrcFile + " ========");
-		defaultCUnit = getCompilationUnit(testSrcFile);
+		SampleProjectBuilder.commonSetUpUnchecked();
+		defaultCUnit = getTestCompilationUnit(testSrcFile);
+	}
+	
+	@AfterClass
+	public static void staticTestEnd() throws Exception {
+		SampleProjectBuilder.commonTearDown();
+	}
+
+
+	protected static CompilationUnit getTestCompilationUnit(String path) {
+		return SampleProjectBuilder.getCompilationUnit(TEST_SRCFOLDER +"/"+ path);
 	}
 
 	protected int offset;
@@ -43,7 +57,7 @@ public abstract class FindDef_CommonImportTest extends SampleProjectTest {
 		if(targetFile == null)
 			targetCUnit = null;
 		else
-			targetCUnit = getCompilationUnit(targetFile);
+			targetCUnit = getTestCompilationUnit(targetFile);
 	}
 
 	@Test

@@ -2,13 +2,14 @@ package dtool.tests.ref;
 
 import java.io.IOException;
 
-import org.eclipse.core.runtime.CoreException;
-import org.junit.Test;
-
 import mmrnmhrm.core.model.CompilationUnit;
 import mmrnmhrm.tests.BaseTest;
-import mmrnmhrm.tests.CoreTestUtils;
-import mmrnmhrm.tests.TestUtils;
+import mmrnmhrm.tests.SampleProjectBuilder;
+
+import org.eclipse.core.runtime.CoreException;
+import org.junit.AfterClass;
+import org.junit.Test;
+
 import dtool.dom.ast.ASTElementFinder;
 import dtool.dom.ast.ASTNode;
 import dtool.dom.definitions.DefUnit;
@@ -20,10 +21,19 @@ import dtool.refmodel.NodeUtil;
 public abstract class FindDef_CommonTest extends BaseTest {
 
 	public static int counter = -666;
+	
+	public static final String TEST_SRCFOLDER = SampleProjectBuilder.TEST_SRC_REFS;
+	
 
 	protected static void staticTestInit(String testfile) {
 		counter = -1;
 		System.out.println("======== "+ testfile +" ========");
+		SampleProjectBuilder.commonSetUpUnchecked();
+	}
+	
+	@AfterClass
+	public static void staticTestEnd() throws Exception {
+		SampleProjectBuilder.commonTearDown();
 	}
 
 	
@@ -36,8 +46,8 @@ public abstract class FindDef_CommonTest extends BaseTest {
 	public FindDef_CommonTest(int offset, int targetOffset, String testfile) throws IOException, CoreException {
 		this.offset = offset;
 		this.targetOffset = targetOffset;
-		
-		cunit = CoreTestUtils.testParseCUnit(TestUtils.readTestDataFile(testfile));
+		//cunit = CoreTestUtils.testParseCUnit(TestUtils.readTestDataFile(testfile));
+		cunit = SampleProjectBuilder.getCompilationUnit(TEST_SRCFOLDER +"/"+ testfile);
 		//System.out.println("==== Source length: "+cunit.source.length()+" ====");
 		module = cunit.getNeoModule();	
 	}

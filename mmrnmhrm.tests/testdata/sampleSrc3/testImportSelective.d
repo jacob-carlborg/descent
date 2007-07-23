@@ -1,11 +1,11 @@
 /*** Selective import test                                             ***/
 
-import pack.mod1;
+import pack.mod2;
 // XXX: Extra imports before the selective import are not supported 
 import /*pack.mod2,*/ pack.sample : 
  	SampleClass, SampleClassAlias = SampleClassB, 
  	sampleVar, sampleVarAlias = sampleVarB;
-import mod2alias = pack.mod2;
+import mod1alias = pack.mod1;
 
 // XXX: The following is not suppported (aliasing and selective) :
 //  import samplealias = pack.sample : SampleClassB, sampleVarB;

@@ -6,12 +6,12 @@ import pack.sample3; // U side
 
 void func() {
   // top of diamond
-  foopublicVar++; 
-  pack2.foopublic.foopublicVar++;
+  foopublicImportVar++; 
+  pack2.foopublic.foopublicImportVar++;
   
   // top of U
-  foopublic2Var++; 
-  pack2.foopublic2.foopublic2Var++;
+  foopublicImport2Var++; 
+  pack2.foopublic2.foopublicImport2Var++;
 }
 /* Make sure access to pack2.* is not broken with these configurations:
 

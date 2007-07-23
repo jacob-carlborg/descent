@@ -51,7 +51,6 @@ public class CoreTestUtils {
 		Bundle bundle = Platform.getBundle(DeeTestsPlugin.PLUGIN_ID);
 		IPath bundlesrcpath = new Path(DeeTestsPlugin.TESTDATA + srcpath);
 		URL sampleURL = FileLocator.find(bundle, bundlesrcpath, null);
-		parent = SampleProjectTest.sampleDeeProj.getProject(); 
 		IFolder folder = parent.getFolder(new Path("__"+destname+"link"));
 		folder.createLink(FileLocator.toFileURL(sampleURL).toURI(), IResource.NONE, null);
 		

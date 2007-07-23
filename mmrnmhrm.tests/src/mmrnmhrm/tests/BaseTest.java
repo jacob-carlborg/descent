@@ -8,7 +8,7 @@ import junit.framework.Assert;
 public class BaseTest {
 
 	protected static void assertTrue(boolean b) {
-		Assert.assertTrue(b);
+		Assert.assertTrue("Assertion failed.", b);
 	}
 	
 	protected static void assertTrue(boolean b, String msg) {

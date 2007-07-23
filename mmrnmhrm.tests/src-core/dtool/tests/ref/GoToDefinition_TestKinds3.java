@@ -13,7 +13,7 @@ import org.junit.runners.Parameterized.Parameters;
 @RunWith(Parameterized.class)
 public class GoToDefinition_TestKinds3 extends FindDef_CommonTest  {
 	
-	static final String testfile = "refs/refKinds3.d";
+	public static final String testfile = "refKinds3.d";
 	
 	@Parameters
     public static Collection<Object[]> data() {

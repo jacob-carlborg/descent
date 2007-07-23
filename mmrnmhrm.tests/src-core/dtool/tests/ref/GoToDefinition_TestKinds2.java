@@ -13,7 +13,7 @@ import org.junit.runners.Parameterized.Parameters;
 @RunWith(Parameterized.class)
 public class GoToDefinition_TestKinds2 extends FindDef_CommonTest  {
 	
-	static final String testfile = "refs/refKinds2.d";
+	static final String testfile = "refKinds2.d";
 	static final int offsetIncrement = 20;
 
 	@BeforeClass

@@ -1,5 +1,7 @@
 package mmrnmhrm.tests.core.ref;
 
+import static mmrnmhrm.tests.core.ref.FindDef_CommonImportTest.getTestCompilationUnit;
+
 import java.util.Arrays;
 import java.util.Collection;
 
@@ -41,7 +43,7 @@ public class FindDef_TestSelfImport extends FindDef_CommonImportTest  {
 	
 	public FindDef_TestSelfImport(String srcFile, int defOffset, int refOffset, String targetFile) 
 		throws Exception {
-		super(getCompilationUnit(srcFile), defOffset, refOffset, targetFile);
+		super(getTestCompilationUnit(srcFile), defOffset, refOffset, targetFile);
 	}
 	
 	

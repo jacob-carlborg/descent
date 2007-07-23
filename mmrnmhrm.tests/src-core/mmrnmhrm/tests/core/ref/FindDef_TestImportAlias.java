@@ -23,7 +23,7 @@ public class FindDef_TestImportAlias extends FindDef_CommonImportTest  {
     public static Collection<Object[]> data() {
         return Arrays.asList(new Object[][]{
 
- /*
+ 
                 {102, 12, "pack/mod1.d"},
                 {125, 12, "pack/mod2.d"},
                 {150, 12, "pack/sample.d"},
@@ -40,7 +40,7 @@ public class FindDef_TestImportAlias extends FindDef_CommonImportTest  {
                 {491, 55, "pack2/foopublic.d"},
                 {654, -1, null},
               
-  */      });
+        });
     }
     
 	

@@ -6,5 +6,6 @@ class Mod1Class {
 	static int foo;
 }
 
+
 public import pack2.foopublic;
 import pack2.fooprivate;

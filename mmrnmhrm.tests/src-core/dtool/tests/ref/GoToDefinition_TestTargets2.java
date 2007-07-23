@@ -16,7 +16,7 @@ import org.junit.runners.Parameterized.Parameters;
 @RunWith(Parameterized.class)
 public class GoToDefinition_TestTargets2 extends FindDef_CommonTest  {
 	
-	static final String testfile = "refs/refTargets2.d";
+	static final String testfile = "refTargets2.d";
 	
 	@Parameters
     public static Collection<Object[]> data() {

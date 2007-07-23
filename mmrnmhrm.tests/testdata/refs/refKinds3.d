@@ -41,3 +41,5 @@ int dummy32 = Foo.Inner.innerx; // 2, identifier (exp)
 class FooBar : Foo { } 
 
 /** Test file for defunits not found (at first scope) */
+import nonexist; // Make sure it doesn't crash on imports
+import pack.nonexist2;
