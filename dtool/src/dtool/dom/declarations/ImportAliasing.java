@@ -3,7 +3,6 @@
  */
 package dtool.dom.declarations;
 
-import java.util.Arrays;
 import java.util.Iterator;
 
 import melnorme.miscutil.IteratorUtil;
@@ -15,8 +14,6 @@ import dtool.dom.ast.IASTNeoVisitor;
 import dtool.dom.declarations.DeclarationImport.ImportFragment;
 import dtool.dom.definitions.DefUnit;
 import dtool.dom.definitions.Symbol;
-import dtool.dom.definitions.DefUnit.EArcheType;
-import dtool.refmodel.EntityResolver;
 import dtool.refmodel.EntitySearch;
 import dtool.refmodel.INonScopedBlock;
 import dtool.refmodel.IScopeNode;
@@ -29,6 +26,7 @@ public class ImportAliasing extends ImportFragment implements INonScopedBlock {
 
 		public ImportAliasingDefUnit(Identifier ident, ImportAliasing impAlias) {
 			convertNode(impAlias);
+			setSourceRange(ident.startPos, impAlias.getEndPos() - ident.startPos);
 			this.defname = new Symbol(ident);
 			this.impAlias = impAlias;
 		}
@@ -57,7 +55,7 @@ public class ImportAliasing extends ImportFragment implements INonScopedBlock {
 	
 	public ImportAliasing(Import elem) {
 		super(elem);
-		this.aliasDefUnit = new ImportAliasingDefUnit(elem.ident, this);
+		this.aliasDefUnit = new ImportAliasingDefUnit(elem.alias, this);
 		// Fix Import fragment range
 		//elem.startPos = elem.ident.getStartPos();
 		//elem.setEndPos(elem.qName.getEndPos());

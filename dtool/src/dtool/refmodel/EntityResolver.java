@@ -1,18 +1,11 @@
 package dtool.refmodel;
 
-import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
 
-import melnorme.miscutil.Assert;
 import melnorme.miscutil.IteratorUtil;
-import melnorme.miscutil.tree.IElement;
-import descent.internal.core.dom.ModuleDeclaration;
 import dtool.dom.ast.ASTNode;
 import dtool.dom.declarations.DeclarationImport;
-import dtool.dom.declarations.ImportAliasing;
 import dtool.dom.declarations.ImportContent;
-import dtool.dom.declarations.ImportSelective;
 import dtool.dom.declarations.ImportStatic;
 import dtool.dom.declarations.PartialPackageDefUnitOfPackage;
 import dtool.dom.declarations.DeclarationImport.ImportFragment;
@@ -207,25 +200,51 @@ public class EntityResolver {
 	
 	/* ====================  import lookup  ==================== */
 
-	
+	public static void findDefUnitInStaticImport(ImportStatic importStatic, EntitySearch search) {
+		DefUnit defunit = importStatic.getDefUnit();
+		if(defunit != null && search.matches(defunit))
+			search.addResult(defunit);
+	}
+
 	public static void findDefUnitInContentImport(ImportContent impContent, EntitySearch search) {
 		findDefUnitInStaticImport(impContent, search);
 		if(search.isFinished())
 			return;
 
-		Module refModule = NodeUtil.getParentModule(impContent);
-		String packageName = impContent.moduleEnt.packageName;
-		String moduleName = impContent.moduleEnt.moduleName;
-		Module targetModule;
-		targetModule = findModule(refModule, packageName, moduleName);
+		Module targetModule = findImporTargetModule(impContent);
 		if (targetModule != null)
 			findDefUnitInScope(targetModule, search);
 	}
-
-	public static void findDefUnitInStaticImport(ImportStatic importStatic, EntitySearch search) {
-		DefUnit defunit = importStatic.getDefUnit();
-		if(search.matches(defunit))
-			search.addResult(defunit);
+	
+	private static Module findImporTargetModule(ImportFragment impSelective) {
+		Module refModule = NodeUtil.getParentModule(impSelective);
+		String packageName = impSelective.moduleEnt.packageName;
+		String moduleName = impSelective.moduleEnt.moduleName;
+		Module targetModule;
+		targetModule = findModule(refModule, packageName, moduleName);
+		return targetModule;
 	}
+
+/*	public static void findDefUnitInSelectiveImport(
+			ImportSelective impSelective, EntitySearch search) {
+
+		Module targetModule = findImporTargetModule(impSelective);
+		if (targetModule == null)
+			return;
+			
+		for(ASTNode impSelFrag: impSelective.impSelections) {
+			if(impSelFrag instanceof ImportSelectiveSelection) {
+				EntIdentifier sel;
+				sel = ((ImportSelectiveSelection) impSelFrag).targetname;
+				if(search.entname.equals(sel.name)) {
+					DefUnit defunit = sel.findTargetDefUnit();
+					findDefUnitInScope(targetModule, search);
+					if(defunit != null)
+						search.addResult(defunit);
+				}			
+			}
+		}
+	}
+*/
 
 }

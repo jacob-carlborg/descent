@@ -45,8 +45,8 @@ public class ImportStatic extends ImportFragment {
 	}
 
 	@Override
-	public void searchDefUnit(EntitySearch options) {
-		EntityResolver.findDefUnitInStaticImport(this, options);
+	public void searchDefUnit(EntitySearch search) {
+		EntityResolver.findDefUnitInStaticImport(this, search);
 	}
 	
 	

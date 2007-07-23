@@ -1,42 +1,26 @@
-/**
- * 
- */
 package dtool.dom.declarations;
+
+import java.util.Arrays;
+import java.util.Iterator;
 
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.internal.core.dom.Import;
 import descent.internal.core.dom.SelectiveImport;
+import dtool.dom.ast.ASTNode;
 import dtool.dom.ast.IASTNeoVisitor;
 import dtool.dom.declarations.DeclarationImport.ImportFragment;
 import dtool.dom.definitions.DefUnit;
 import dtool.dom.definitions.Symbol;
-import dtool.dom.definitions.DefUnit.EArcheType;
 import dtool.dom.references.EntIdentifier;
-import dtool.dom.references.EntModule;
 import dtool.refmodel.EntityResolver;
 import dtool.refmodel.EntitySearch;
+import dtool.refmodel.INonScopedBlock;
 import dtool.refmodel.IScope;
 import dtool.refmodel.IScopeNode;
 
-public class ImportSelective extends ImportFragment {
+public class ImportSelective extends ImportFragment implements INonScopedBlock {
 	
 	public static class ImportSelectiveFragment extends DefUnit {
-
-		public static ImportSelectiveFragment create(
-				SelectiveImport imprt, ImportSelective impSel) {
-
-			ImportSelectiveFragment impSelfrag = new ImportSelectiveFragment();
-			impSelfrag.convertNode(imprt);
-			impSelfrag.impSel = impSel;
-			
-			if(imprt.alias == null) {
-				impSelfrag.defname = new Symbol(imprt.name);
-			} else {
-				impSelfrag.defname = new Symbol(imprt.alias);
-				impSelfrag.targetname = new EntIdentifier(imprt.name);
-			}
-			return impSelfrag;
-		}
 
 		public EntIdentifier targetname;
 
@@ -75,7 +59,23 @@ public class ImportSelective extends ImportFragment {
 		}
 	}
 	
-	ImportSelectiveFragment aliases[];
+	public static ImportSelectiveFragment create(
+			SelectiveImport imprt, ImportSelective impSel) {
+	
+		ImportSelectiveFragment impSelfrag = new ImportSelectiveFragment();
+		impSelfrag.convertNode(imprt);
+		impSelfrag.impSel = impSel;
+		
+		if(imprt.alias == null) {
+			impSelfrag.defname = new Symbol(imprt.name);
+		} else {
+			impSelfrag.defname = new Symbol(imprt.alias);
+			impSelfrag.targetname = new EntIdentifier(imprt.name);
+		}
+		return impSelfrag;
+	}
+	
+	public ImportSelectiveFragment aliases[];
 	
 	public ImportSelective(Import selImport) {
 		super(selImport);
@@ -84,7 +84,7 @@ public class ImportSelective extends ImportFragment {
 		this.aliases = new ImportSelectiveFragment[importsSize];
 		for(int i = 0; i < importsSize; i++) {
 			SelectiveImport imprt = selImport.getSelectiveImports()[i]; 
-			this.aliases[i] = ImportSelectiveFragment.create(imprt, this);
+			this.aliases[i] = ImportSelective.create(imprt, this);
 		}
 	}
 
@@ -96,10 +96,15 @@ public class ImportSelective extends ImportFragment {
 			TreeVisitor.acceptChildren(visitor, aliases);
 		}
 		visitor.endVisit(this);
+	
+	}
+	public Iterator<? extends ASTNode> getMembersIterator() {
+		return Arrays.asList(aliases).iterator();
 	}
 
 	@Override
 	public void searchDefUnit(EntitySearch options) {
-		// Do nothing. Aliasing imports do not contribute secondary-space DefUnits
+		// Do nothing. Selective imports do not contribute secondary-space DefUnits
 	}
+
 }

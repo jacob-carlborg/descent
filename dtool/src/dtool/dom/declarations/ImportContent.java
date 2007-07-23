@@ -1,6 +1,3 @@
-/**
- * 
- */
 package dtool.dom.declarations;
 
 import descent.internal.core.dom.Import;

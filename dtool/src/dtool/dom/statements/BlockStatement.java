@@ -1,18 +1,13 @@
 package dtool.dom.statements;
 
-import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
 
 import melnorme.miscutil.tree.TreeVisitor;
-
 import descent.internal.core.dom.ScopeStatement;
 import dtool.descentadapter.DescentASTConverter;
 import dtool.dom.ast.ASTNode;
 import dtool.dom.ast.IASTNeoVisitor;
-import dtool.dom.ast.IASTNode;
-import dtool.dom.definitions.DefUnit;
-import dtool.refmodel.EntityResolver;
 import dtool.refmodel.IScope;
 import dtool.refmodel.IScopeNode;
 
