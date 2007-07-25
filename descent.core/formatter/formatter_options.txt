@@ -17,11 +17,11 @@
 # line is ignored (or if the line is blank), otherwise it is processed. Lines
 # without an "=" are treated as the beginnings of definitions, lines with an "="
 # are treated as parts of the definition, with name=value pairings. The first
-# line of the definition (the onw ithout the "=" is considered the option name,
+# line of the definition (the one without the "=" is considered the option name,
 # accessed with the key "optName". There's also "constName", which is the
 # uppercase version of "optName", with "FORMAT_" appended.
 #
-# In the inlined perl, DST is the destination file handle, and $_ is a hash
+# In the inlined Perl, DST is the destination file handle, and $_ is a hash
 # reference to the settings for that option. So, $$_{'optName') is the option
 # name and if the option definition had a "type" property, $$_{'type'} is used
 # to access it.
@@ -49,7 +49,7 @@
 #     javaDefault   Defaults similar to the Java conventions
 #     phobosDefault Defaults similar to the style used in Phobos
 #
-# The "default" is the "Descent Deaults" option and is also propogated to the
+# The "default" is the "Descent Defaults" option and is also propagated to the
 # other defaults if no explicit alternate is given. This means that alternatives
 # only need to be defined if they're actually different than the Descent
 # default. Java Defaults should conform to the Java Style Guide located at:
@@ -179,7 +179,7 @@ brace_position_for_pragmas
 	default=BracePosition.END_OF_LINE
 	phobosDefault=BracePosition.NEXT_LINE
 	tab=BracesTabPage
-	uiText=Other Blocks
+	uiText=Pragmas
 
 
 
@@ -1363,7 +1363,141 @@ insert_space_between_empty_brackets_in_dynamic_array_type
 
 
 
-# Other White Space Options
+
+
+# White Space Options - Before Colon
+insert_space_before_colon_in_base_class_lists
+	type=boolean
+	default=false
+	wsDElem=aggregate_declaration
+	wsDElemEx=base_class_lists
+	wsSynElem=before_colon
+	wsSynElemEx=before_colon_in_base_class_lists
+	wsPreview=AGGREGATE_PREVIEW
+insert_space_before_colon_in_template_specific_type
+	type=boolean
+	default=false
+	wsDElem=template_declaration
+	wsDElemEx=template_parameter_sepcialization
+	wsSynElem=before_colon
+	wsSynElemEx=before_colon_in_parameter_specialization
+	wsPreview=TEMPLATE_DECLARATION_PREVIEW
+insert_space_before_colon_in_array_initializer
+	type=boolean
+	default=false
+	wsDElem=array_literal
+	wsSynElem=before_colon
+	wsPreview=ARRAY_INITIALIZER_PREVIEW
+insert_space_before_colon_in_struct_initializer
+	type=boolean
+	default=false
+	wsDElem=struct_initalizer
+	wsSynElem=before_colon
+	wsPreview=STRUCT_INITIALIZER_PREVIEW
+insert_space_before_colon_in_case_default_statement
+	type=boolean
+	default=false
+	wsDElem=switch_statement
+	wsDElemEx=case_default_label
+	wsSynElem=before_colon
+	wsSynElemEx=before_colon_in_case_default_labels
+	wsPreview=SWITCH_PREVIEW
+insert_space_before_colon_in_selective_imports
+	type=boolean
+	default=false
+	wsDElem=import_declaration
+	wsDElemEx=selective_imports
+	wsSynElem=before_colon
+	wsSynElemEx=before_colon_in_selective_imports
+	wsPreview=IMPORT_PREVIEW
+insert_space_before_colon_in_conditional_expressions
+	type=boolean
+	default=true
+	wsDElem=conditional_expression
+	wsSynElem=before_colon
+	wsPreview=CONDITIONAL_EXPRESSION_PREVIEW
+insert_space_before_colon_in_statement_labels
+	type=boolean
+	default=false
+	wsDElem=statements
+	wsDElemEx=labels
+	wsSynElem=before_colon
+	wsSynElemEx=before_colon_in_labeled_statements
+	wsPreview=LABEL_PREVIEW
+insert_space_before_colon_in_modifiers
+	type=boolean
+	default=false
+	wsDElem=modifier_blocks
+	wsSynElem=before_colon
+	wsPreview=EXTERN_PREVIEW
+
+
+
+
+# White Space Options - After Colon
+insert_space_after_colon_in_base_class_lists
+	type=boolean
+	default=true
+	wsDElem=aggregate_declaration
+	wsDElemEx=base_class_lists
+	wsSynElem=after_colon
+	wsSynElemEx=after_colon_in_base_class_lists
+	wsPreview=AGGREGATE_PREVIEW
+insert_space_after_colon_in_template_specific_type
+	type=boolean
+	default=true
+	wsDElem=template_declaration
+	wsDElemEx=template_parameter_sepcialization
+	wsSynElem=after_colon
+	wsSynElemEx=after_colon_in_parameter_specialization
+	wsPreview=TEMPLATE_DECLARATION_PREVIEW
+insert_space_after_colon_in_array_initializer
+	type=boolean
+	default=true
+	wsDElem=array_literal
+	wsSynElem=after_colon
+	wsPreview=ARRAY_INITIALIZER_PREVIEW
+insert_space_after_colon_in_struct_initializer
+	type=boolean
+	default=true
+	wsDElem=struct_initalizer
+	wsSynElem=after_colon
+	wsPreview=STRUCT_INITIALIZER_PREVIEW
+insert_space_after_colon_in_case_default_statement
+	type=boolean
+	default=true
+	wsDElem=switch_statement
+	wsDElemEx=case_default_label
+	wsSynElem=after_colon
+	wsSynElemEx=after_colon_in_case_default_labels
+	wsPreview=SWITCH_PREVIEW
+insert_space_after_colon_in_selective_imports
+	type=boolean
+	default=true
+	wsDElem=import_declaration
+	wsDElemEx=selective_imports
+	wsSynElem=after_colon
+	wsSynElemEx=after_colon_in_selective_imports
+	wsPreview=IMPORT_PREVIEW
+insert_space_after_colon_in_conditional_expressions
+	type=boolean
+	default=true
+	wsDElem=conditional_expression
+	wsSynElem=after_colon
+	wsPreview=CONDITIONAL_EXPRESSION_PREVIEW
+insert_space_after_colon_in_statement_labels
+	type=boolean
+	default=true
+	wsDElem=statements
+	wsDElemEx=labels
+	wsSynElem=after_colon
+	wsSynElemEx=after_colon_in_labeled_statements
+	wsPreview=LABEL_PREVIEW
+
+
+
+
+# White Space Options - Before Semicolon
 insert_space_before_semicolon
 	type=boolean
 	default=false
@@ -1376,26 +1510,46 @@ insert_space_before_semicolon_in_for_statement
 	wsDElem=for_statement
 	wsSynElem=before_semicolon
 	wsPreview=FOR_PREVIEW
-insert_space_after_semicolon_in_for_statement
-	type=boolean
-	default=true
-	wsDElem=for_statement
-	wsSynElem=after_semicolon
-	wsPreview=FOR_PREVIEW
 insert_space_before_semicolon_in_foreach_statement
 	type=boolean
 	default=false
 	wsDElem=foreach_statement
 	wsSynElem=before_semicolon
 	wsPreview=FOR_PREVIEW
+
+
+
+
+
+# White space Options - After Semicolon
 insert_space_after_semicolon_in_foreach_statement
 	type=boolean
 	default=true
 	wsDElem=foreach_statement
 	wsSynElem=after_semicolon
 	wsPreview=FOR_PREVIEW
+insert_space_after_semicolon_in_for_statement
+	type=boolean
+	default=true
+	wsDElem=for_statement
+	wsSynElem=after_semicolon
+	wsPreview=FOR_PREVIEW
 
 
+
+# White Space Options - ?
+insert_space_before_question_mark_in_conditional_expressions
+	type=boolean
+	default=true
+	wsDElem=conditional_expression
+	wsSynElem=before_question_mark
+	wsPreview=CONDITIONAL_EXPRESSION_PREVIEW
+insert_space_after_question_mark_in_conditional_expressions
+	type=boolean
+	default=true
+	wsDElem=conditional_expression
+	wsSynElem=after_question_mark
+	wsPreview=CONDITIONAL_EXPRESSION_PREVIEW
 
 
 
@@ -1437,6 +1591,16 @@ insert_new_line_before_while_in_do_statement
 	default=false
 	tab=NewLinesTabPage
 	uiText=Insert new line before 'while' in 'do' statement
+insert_new_line_after_case_or_default_statement
+	type=boolean
+	default=true
+	tab=NewLinesTabPage
+	uiText=Insert new line after 'case' or 'default' statement
+insert_new_line_after_label
+	type=boolean
+	default=true
+	tab=NewLinesTabPage
+	uiText=Insert new line after label
 keep_else_conditional_on_one_line
 	type=boolean
 	default=true
@@ -1456,62 +1620,62 @@ insert_new_line_at_end_of_file_if_missing
 keep_simple_then_declaration_on_same_line
 	type=boolean
 	default=false
-	tab=NewLinesTabPage
+	tab=ShortSyntaxTabPage
 	uiText=Then Declarations
 keep_simple_else_declaration_on_same_line
 	type=boolean
 	default=false
-	tab=NewLinesTabPage
+	tab=ShortSyntaxTabPage
 	uiText=Else Declarations
 keep_simple_then_statement_on_same_line
 	type=boolean
 	default=false
-	tab=NewLinesTabPage
+	tab=ShortSyntaxTabPage
 	uiText=Then Statements
 keep_simple_else_statement_on_same_line
 	type=boolean
 	default=false
-	tab=NewLinesTabPage
+	tab=ShortSyntaxTabPage
 	uiText=Else Statements
 keep_simple_try_statement_on_same_line
 	type=boolean
 	default=false
-	tab=NewLinesTabPage
+	tab=ShortSyntaxTabPage
 	uiText='try' Statements
 keep_simple_catch_statement_on_same_line
 	type=boolean
 	default=false
-	tab=NewLinesTabPage
+	tab=ShortSyntaxTabPage
 	uiText='catch' Statements
 keep_simple_finally_statement_on_same_line
 	type=boolean
 	default=false
-	tab=NewLinesTabPage
+	tab=ShortSyntaxTabPage
 	uiText='finally' Statements
 keep_simple_loop_statement_on_same_line
 	type=boolean
 	default=false
-	tab=NewLinesTabPage
+	tab=ShortSyntaxTabPage
 	uiText=Loops
 keep_simple_synchronized_statement_on_same_line
 	type=boolean
 	default=false
-	tab=NewLinesTabPage
+	tab=ShortSyntaxTabPage
 	uiText='synchronzied'/'volatile' Statements
 keep_simple_with_statement_on_same_line
 	type=boolean
 	default=false
-	tab=NewLinesTabPage
+	tab=ShortSyntaxTabPage
 	uiText='with' Statements
 keep_functions_with_no_statement_in_one_line
 	type=boolean
 	default=false
-	tab=NewLinesTabPage
+	tab=ShortSyntaxTabPage
 	uiText=Functions with no statement
 keep_functions_with_one_statement_in_one_line
 	type=boolean
 	default=false
-	tab=NewLinesTabPage
+	tab=ShortSyntaxTabPage
 	uiText=Functions with one statement
 
 
@@ -1576,7 +1740,22 @@ indent_enum_members_compare_to_enum_header
 	type=boolean
 	default=true
 	tab=IndentationTabPage
-	uiText=Enum members:
+	uiText=Enum members
+indent_cases_compare_to_switch
+	type=boolean
+	default=false
+	tab=IndentationTabPage
+	uiText='case'/'default' statements within 'switch'
+indent_statements_compare_to_case
+	type=boolean
+	default=true
+	tab=IndentationTabPage
+	uiText=Statements within 'switch'/'default'
+indent_statements_compare_to_label
+	type=boolean
+	default=true
+	tab=IndentationTabPage
+	uiText=Statements under label
 
 
 

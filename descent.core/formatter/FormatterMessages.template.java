@@ -179,6 +179,11 @@ final class FormatterMessages extends NLS {
 	public static String WhiteSpaceOptions_tuple_parameters;
 	public static String WhiteSpaceOptions_dynamic_arrays;
 	public static String WhiteSpaceOptions_arrays;
+	public static String WhiteSpaceOptions_conditional_expression;
+	public static String WhiteSpaceOptions_case_default_label;
+	public static String WhiteSpaceOptions_labels;
+	public static String WhiteSpaceOptions_modifier_blocks;
+	public static String WhiteSpaceOptions_template_parameter_sepcialization;
 	
 	// White space options - syntax elements
 	public static String WhiteSpaceOptions_before_semicolon;
@@ -228,6 +233,20 @@ final class FormatterMessages extends NLS {
 	public static String WhiteSpaceOptions_after_elipsis;
 	public static String WhiteSpaceOptions_before_elipsis;
 	public static String WhiteSpaceOptions_between_empty_brackets;
+	public static String WhiteSpaceOptions_before_colon;
+	public static String WhiteSpaceOptions_after_colon;
+	public static String WhiteSpaceOptions_before_colon_in_case_default_labels;
+	public static String WhiteSpaceOptions_after_colon_in_case_default_labels;
+	public static String WhiteSpaceOptions_before_colon_in_selective_imports;
+	public static String WhiteSpaceOptions_after_colon_in_selective_imports;
+	public static String WhiteSpaceOptions_before_colon_in_base_class_lists;
+	public static String WhiteSpaceOptions_after_colon_in_base_class_lists;
+	public static String WhiteSpaceOptions_before_colon_in_labeled_statements;
+	public static String WhiteSpaceOptions_after_colon_in_labeled_statements;
+	public static String WhiteSpaceOptions_before_colon_in_parameter_specialization;
+	public static String WhiteSpaceOptions_after_colon_in_parameter_specialization;
+	public static String WhiteSpaceOptions_before_question_mark;
+	public static String WhiteSpaceOptions_after_question_mark;
 	
 	// Blank lines tab page
 	public static String ModifyDialog_tabpage_blank_lines_title;
@@ -241,6 +260,11 @@ final class FormatterMessages extends NLS {
 	public static String NewLinesTabPage_short_syntax_group_title;
 	public static String NewLinesTabPage_control_statements_title;
 	public static String NewLinesTabPage_other_group_title;
+	
+	// Short syntax tab page
+	public static String ModifyDialog_tabpage_short_syntax_title;
+	public static String ShortSyntaxTabPage_preview_header;
+	public static String ShortSyntaxTabPage_short_syntax_group_title;
 	
 	// Messages for various options (automatically generated)
 	/* EVAL-FOR-EACH

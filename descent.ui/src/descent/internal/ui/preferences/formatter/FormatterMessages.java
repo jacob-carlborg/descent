@@ -179,6 +179,11 @@ final class FormatterMessages extends NLS {
 	public static String WhiteSpaceOptions_tuple_parameters;
 	public static String WhiteSpaceOptions_dynamic_arrays;
 	public static String WhiteSpaceOptions_arrays;
+	public static String WhiteSpaceOptions_conditional_expression;
+	public static String WhiteSpaceOptions_case_default_label;
+	public static String WhiteSpaceOptions_labels;
+	public static String WhiteSpaceOptions_modifier_blocks;
+	public static String WhiteSpaceOptions_template_parameter_sepcialization;
 	
 	// White space options - syntax elements
 	public static String WhiteSpaceOptions_before_semicolon;
@@ -228,6 +233,20 @@ final class FormatterMessages extends NLS {
 	public static String WhiteSpaceOptions_after_elipsis;
 	public static String WhiteSpaceOptions_before_elipsis;
 	public static String WhiteSpaceOptions_between_empty_brackets;
+	public static String WhiteSpaceOptions_before_colon;
+	public static String WhiteSpaceOptions_after_colon;
+	public static String WhiteSpaceOptions_before_colon_in_case_default_labels;
+	public static String WhiteSpaceOptions_after_colon_in_case_default_labels;
+	public static String WhiteSpaceOptions_before_colon_in_selective_imports;
+	public static String WhiteSpaceOptions_after_colon_in_selective_imports;
+	public static String WhiteSpaceOptions_before_colon_in_base_class_lists;
+	public static String WhiteSpaceOptions_after_colon_in_base_class_lists;
+	public static String WhiteSpaceOptions_before_colon_in_labeled_statements;
+	public static String WhiteSpaceOptions_after_colon_in_labeled_statements;
+	public static String WhiteSpaceOptions_before_colon_in_parameter_specialization;
+	public static String WhiteSpaceOptions_after_colon_in_parameter_specialization;
+	public static String WhiteSpaceOptions_before_question_mark;
+	public static String WhiteSpaceOptions_after_question_mark;
 	
 	// Blank lines tab page
 	public static String ModifyDialog_tabpage_blank_lines_title;
@@ -241,6 +260,11 @@ final class FormatterMessages extends NLS {
 	public static String NewLinesTabPage_short_syntax_group_title;
 	public static String NewLinesTabPage_control_statements_title;
 	public static String NewLinesTabPage_other_group_title;
+	
+	// Short syntax tab page
+	public static String ModifyDialog_tabpage_short_syntax_title;
+	public static String ShortSyntaxTabPage_preview_header;
+	public static String ShortSyntaxTabPage_short_syntax_group_title;
 	
 	// Messages for various options (automatically generated)
 	public static String BracesTabPage_brace_position_for_function_declaration;
@@ -267,20 +291,22 @@ final class FormatterMessages extends NLS {
 	public static String NewLinesTabPage_insert_new_line_before_catch;
 	public static String NewLinesTabPage_insert_new_line_before_finally;
 	public static String NewLinesTabPage_insert_new_line_before_while_in_do_statement;
+	public static String NewLinesTabPage_insert_new_line_after_case_or_default_statement;
+	public static String NewLinesTabPage_insert_new_line_after_label;
 	public static String NewLinesTabPage_keep_else_conditional_on_one_line;
 	public static String NewLinesTabPage_insert_new_line_at_end_of_file_if_missing;
-	public static String NewLinesTabPage_keep_simple_then_declaration_on_same_line;
-	public static String NewLinesTabPage_keep_simple_else_declaration_on_same_line;
-	public static String NewLinesTabPage_keep_simple_then_statement_on_same_line;
-	public static String NewLinesTabPage_keep_simple_else_statement_on_same_line;
-	public static String NewLinesTabPage_keep_simple_try_statement_on_same_line;
-	public static String NewLinesTabPage_keep_simple_catch_statement_on_same_line;
-	public static String NewLinesTabPage_keep_simple_finally_statement_on_same_line;
-	public static String NewLinesTabPage_keep_simple_loop_statement_on_same_line;
-	public static String NewLinesTabPage_keep_simple_synchronized_statement_on_same_line;
-	public static String NewLinesTabPage_keep_simple_with_statement_on_same_line;
-	public static String NewLinesTabPage_keep_functions_with_no_statement_in_one_line;
-	public static String NewLinesTabPage_keep_functions_with_one_statement_in_one_line;
+	public static String ShortSyntaxTabPage_keep_simple_then_declaration_on_same_line;
+	public static String ShortSyntaxTabPage_keep_simple_else_declaration_on_same_line;
+	public static String ShortSyntaxTabPage_keep_simple_then_statement_on_same_line;
+	public static String ShortSyntaxTabPage_keep_simple_else_statement_on_same_line;
+	public static String ShortSyntaxTabPage_keep_simple_try_statement_on_same_line;
+	public static String ShortSyntaxTabPage_keep_simple_catch_statement_on_same_line;
+	public static String ShortSyntaxTabPage_keep_simple_finally_statement_on_same_line;
+	public static String ShortSyntaxTabPage_keep_simple_loop_statement_on_same_line;
+	public static String ShortSyntaxTabPage_keep_simple_synchronized_statement_on_same_line;
+	public static String ShortSyntaxTabPage_keep_simple_with_statement_on_same_line;
+	public static String ShortSyntaxTabPage_keep_functions_with_no_statement_in_one_line;
+	public static String ShortSyntaxTabPage_keep_functions_with_one_statement_in_one_line;
 	public static String IndentationTabPage_indentation_size;
 	public static String IndentationTabPage_indent_empty_lines;
 	public static String IndentationTabPage_indent_body_declarations_compare_to_type_header;
@@ -292,6 +318,9 @@ final class FormatterMessages extends NLS {
 	public static String IndentationTabPage_indent_statements_compare_to_function_out_header;
 	public static String IndentationTabPage_indent_statements_compare_to_function_body_header;
 	public static String IndentationTabPage_indent_enum_members_compare_to_enum_header;
+	public static String IndentationTabPage_indent_cases_compare_to_switch;
+	public static String IndentationTabPage_indent_statements_compare_to_case;
+	public static String IndentationTabPage_indent_statements_compare_to_label;
 	public static String IndentationTabPage_tab_char;
 	public static String IndentationTabPage_tab_size;
 

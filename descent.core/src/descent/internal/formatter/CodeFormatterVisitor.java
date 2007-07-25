@@ -143,9 +143,9 @@ public class CodeFormatterVisitor extends ASTVisitor
 		List<BaseClass> baseClasses = node.baseClasses();
 		if(!baseClasses.isEmpty())
 		{
-			scribe.space();
-			scribe.printNextToken(TOK.TOKcolon);
-			scribe.space();
+			scribe.printNextToken(TOK.TOKcolon, prefs.insert_space_before_colon_in_base_class_lists);
+			if(prefs.insert_space_after_colon_in_base_class_lists)
+				scribe.space();
 			formatCSV(baseClasses,
 					prefs.insert_space_before_comma_in_base_class_lists,
 					prefs.insert_space_after_comma_in_base_class_lists);
@@ -196,9 +196,9 @@ public class CodeFormatterVisitor extends ASTVisitor
 		Type specificType = node.getSpecificType();
 		if(null != specificType)
 		{
-			scribe.space();
-			scribe.printNextToken(TOK.TOKcolon);
-			scribe.space();
+			scribe.printNextToken(TOK.TOKcolon, prefs.insert_space_before_colon_in_template_specific_type);
+			if(prefs.insert_space_after_colon_in_template_specific_type)
+				scribe.space();
 			specificType.accept(this);
 		}
 		Type defaultType = node.getDefaultType();
@@ -324,9 +324,9 @@ public class CodeFormatterVisitor extends ASTVisitor
 		if(null != expression)
 		{
 			expression.accept(this);
-			scribe.space();
-			scribe.printNextToken(TOK.TOKcolon);
-			scribe.space();
+			scribe.printNextToken(TOK.TOKcolon, prefs.insert_space_before_colon_in_array_initializer);
+			if(prefs.insert_space_after_colon_in_array_initializer)
+				scribe.space();
 		}
 		node.getInitializer().accept(this);
 		return false;
@@ -529,13 +529,13 @@ public class CodeFormatterVisitor extends ASTVisitor
 	public boolean visit(ConditionalExpression node)
 	{
 		node.getExpression().accept(this);
-		scribe.space();
-		scribe.printNextToken(TOK.TOKquestion);
-		scribe.space();
+		scribe.printNextToken(TOK.TOKquestion, prefs.insert_space_before_question_mark_in_conditional_expressions);
+		if(prefs.insert_space_after_question_mark_in_conditional_expressions)
+			scribe.space();
 		node.getThenExpression().accept(this);
-		scribe.space();
-		scribe.printNextToken(TOK.TOKcolon);
-		scribe.space();
+		scribe.printNextToken(TOK.TOKcolon, prefs.insert_space_before_colon_in_conditional_expressions);
+		if(prefs.insert_space_after_colon_in_conditional_expressions)
+			scribe.space();
 		node.getElseExpression().accept(this);
 		return false;
 	}
@@ -635,7 +635,9 @@ public class CodeFormatterVisitor extends ASTVisitor
 	public boolean visit(DefaultStatement node)
 	{
 		scribe.printNextToken(TOK.TOKdefault);
-		scribe.printNextToken(TOK.TOKcolon);
+		scribe.printNextToken(TOK.TOKcolon, prefs.insert_space_before_colon_in_case_default_statement);
+		if(prefs.insert_space_after_colon_in_case_default_statement)
+			scribe.space();
 		scribe.printNewLine();
 		node.getBody().accept(this);
 		return false;
@@ -771,9 +773,9 @@ public class CodeFormatterVisitor extends ASTVisitor
 		Type baseType = node.getBaseType();
 		if(null != baseType)
 		{
-			scribe.space();
-			scribe.printNextToken(TOK.TOKcolon);
-			scribe.space();
+			scribe.printNextToken(TOK.TOKcolon, prefs.insert_space_before_colon_in_base_class_lists);
+			if(prefs.insert_space_after_colon_in_base_class_lists)
+				scribe.space();
 			baseType.accept(this);
 		}
 		
@@ -1057,9 +1059,9 @@ public class CodeFormatterVisitor extends ASTVisitor
 		List<SelectiveImport> imports = node.selectiveImports();
 		if(null != imports && !imports.isEmpty())
 		{
-			scribe.space();
-			scribe.printNextToken(TOK.TOKcolon);
-			scribe.space();
+			scribe.printNextToken(TOK.TOKcolon, prefs.insert_space_before_colon_in_selective_imports);
+			if(prefs.insert_space_after_colon_in_selective_imports)
+				scribe.space();
 			formatCSV(imports,
 					prefs.insert_space_before_comma_in_selective_imports,
 					prefs.insert_space_after_comma_in_selective_imports);
@@ -1172,8 +1174,9 @@ public class CodeFormatterVisitor extends ASTVisitor
 	public boolean visit(LabeledStatement node)
 	{
 		node.getLabel().accept(this);
-		scribe.printNextToken(TOK.TOKcolon);
-		scribe.printNewLine();
+		scribe.printNextToken(TOK.TOKcolon, prefs.insert_space_before_colon_in_statement_labels);
+		if(prefs.insert_space_after_colon_in_statement_labels)
+			scribe.space();
 		node.getBody().accept(this);
 		scribe.printTrailingComment();
 		return false;
@@ -1695,9 +1698,9 @@ public class CodeFormatterVisitor extends ASTVisitor
 		if(null != name)
 		{
 			name.accept(this);
-			scribe.space();
-			scribe.printNextToken(TOK.TOKcolon);
-			scribe.space();
+			scribe.printNextToken(TOK.TOKcolon, prefs.insert_space_before_colon_in_struct_initializer);
+			if(prefs.insert_space_after_colon_in_struct_initializer)
+				scribe.space();
 		}
 		node.getInitializer().accept(this);
 		return false;
@@ -1714,7 +1717,9 @@ public class CodeFormatterVisitor extends ASTVisitor
 		scribe.printNextToken(TOK.TOKcase);
 		scribe.space();
 		node.getExpression().accept(this);
-		scribe.printNextToken(TOK.TOKcolon);
+		scribe.printNextToken(TOK.TOKcolon, prefs.insert_space_before_colon_in_case_default_statement);
+		if(prefs.insert_space_after_colon_in_case_default_statement)
+			scribe.space();
 		node.getBody().accept(this);
 		scribe.printTrailingComment();
 		return false;
@@ -1953,9 +1958,9 @@ public class CodeFormatterVisitor extends ASTVisitor
 		Type specificType = node.getSpecificType();
 		if(null != specificType)
 		{
-			scribe.space();
-			scribe.printNextToken(TOK.TOKcolon);
-			scribe.space();
+			scribe.printNextToken(TOK.TOKcolon, prefs.insert_space_before_colon_in_template_specific_type);
+			if(prefs.insert_space_after_colon_in_template_specific_type)
+				scribe.space();
 			specificType.accept(this);
 		}
 		Type defaultType = node.getDefaultType();
@@ -1995,9 +2000,9 @@ public class CodeFormatterVisitor extends ASTVisitor
 		Expression specificValue = node.getSpecificValue();
 		if(null != specificValue)
 		{
-			scribe.space();
-			scribe.printNextToken(TOK.TOKcolon);
-			scribe.space();
+			scribe.printNextToken(TOK.TOKcolon, prefs.insert_space_before_colon_in_template_specific_type);
+			if(prefs.insert_space_after_colon_in_template_specific_type)
+				scribe.space();
 			specificValue.accept(this);
 		}
 		Expression defaultValue = node.getDefaultValue();
@@ -2252,7 +2257,7 @@ public class CodeFormatterVisitor extends ASTVisitor
 		}
 		else if(isNextToken(TOK.TOKcolon))
 		{
-			scribe.printNextToken(TOK.TOKcolon);
+			scribe.printNextToken(TOK.TOKcolon, prefs.insert_space_before_colon_in_modifiers);
 			scribe.printNewLine();
 			
 			// The AST often renders these as empty -- if so, just return

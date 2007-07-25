@@ -129,6 +129,7 @@ public final class WhiteSpaceOptions
 		template_declaration.setParent(declarations);
 		extern_declarations.setParent(declarations);
 		import_declaration.setParent(declarations);
+		modifier_blocks.setParent(declarations);
 		
 		// Statements
 		roots.add(statements);
@@ -161,6 +162,7 @@ public final class WhiteSpaceOptions
 		template_invocation.setParent(expressions);
 		type_dot_identifier_expression.setParent(expressions);
 		struct_initalizer.setParent(expressions);
+		conditional_expression.setParent(expressions);
 		arrays.setParent(expressions);
 		dynamic_arrays.setParent(arrays);
 		array_literal.setParent(arrays);
@@ -184,11 +186,12 @@ public final class WhiteSpaceOptions
 		 * 
 		 * for my $element (sort (keys %syntaxElements))
 		 * {
-		 *     print DST "\t\tparent = createParentNode(roots, workingValues, " .
-		 *         "FormatterMessages.WhiteSpaceOptions_$element);\n";
+		 *     print DST "\t\tfinal InnerNode " . $element . " = new InnerNode(" .
+		 *         "null, workingValues, FormatterMessages.WhiteSpaceOptions_" .
+		 *         $element . ");\n";
 		 *     foreach(@{$syntaxElements{$element}})
 		 *     {
-		 *         print DST "\t\tcreateOption(parent, workingValues, " .
+		 *         print DST "\t\tcreateOption($element, workingValues, " .
 		 *             "FormatterMessages.WhiteSpaceOptions_" . $$_{'wsDElemEx'} . ", " .
 		 *             "DefaultCodeFormatterConstants." . $$_{'constName'} . ", " .
 		 *             $$_{'wsPreview'} . ");\n";
@@ -196,6 +199,35 @@ public final class WhiteSpaceOptions
 		 *     print DST "\t\t\n";
 		 * }
 		 */
+		
+		roots.add(before_opening_paren);
+		roots.add(after_opening_paren);
+		roots.add(before_closing_paren);
+		roots.add(after_closing_paren);
+		roots.add(between_empty_parens);
+		roots.add(between_adjacent_parens);
+		roots.add(before_comma);
+		roots.add(after_comma);
+		roots.add(before_semicolon);
+		roots.add(after_semicolon);
+		roots.add(before_colon);
+		roots.add(after_colon);
+		//roots.add(before_opening_bracket);
+		//roots.add(after_opening_bracket);
+		//roots.add(before_closing_bracket);
+		roots.add(between_empty_brackets);
+		//roots.add(between_adjacent_brackets);
+		roots.add(before_operator);
+		roots.add(after_operator);
+		roots.add(before_dot);
+		roots.add(after_dot);
+		roots.add(before_slice_operator);
+		roots.add(after_slice_operator);
+		roots.add(before_elipsis);
+		roots.add(after_elipsis);
+		roots.add(before_question_mark);
+		roots.add(after_question_mark);
+		
 		return roots;
 	}
 	
@@ -598,7 +630,7 @@ public abstract static class Node {
 	private final PreviewSnippet ARRAY_INITIALIZER_PREVIEW =
 		new PreviewSnippet(CodeFormatter.K_STATEMENTS, 
 			"int[] foo = [18, 156, 27,289];" +
-			"int[] bar = [27, 18,];" +
+			"int[] bar = [3:27, 15:18,];" +
 			"int[] baz = [];"
 		);
 	
@@ -622,6 +654,16 @@ public abstract static class Node {
 			"int[] dynamicArray = new int[5];" +
 			"int[3] staticArray = [3, 5, 7];" +
 			"int[char[]] associativeArray;"
+		);
+	
+	private final PreviewSnippet LABEL_PREVIEW =
+		new PreviewSnippet(CodeFormatter.K_STATEMENTS, 
+			"infiniteLoop: goto infiniteLoop;"
+		);
+	
+	private final PreviewSnippet CONDITIONAL_EXPRESSION_PREVIEW =
+		new PreviewSnippet(CodeFormatter.K_STATEMENTS, 
+			"max = a > b ? a : b;"
 		);
 	
 	//private final PreviewSnippet NO_PREVIEW =

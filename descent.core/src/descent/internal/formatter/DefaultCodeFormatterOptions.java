@@ -255,11 +255,30 @@ public class DefaultCodeFormatterOptions
 	public boolean insert_space_after_elipsis_in_tuples;
 	public boolean insert_space_between_empty_brackets_in_slice;
 	public boolean insert_space_between_empty_brackets_in_dynamic_array_type;
+	public boolean insert_space_before_colon_in_base_class_lists;
+	public boolean insert_space_before_colon_in_template_specific_type;
+	public boolean insert_space_before_colon_in_array_initializer;
+	public boolean insert_space_before_colon_in_struct_initializer;
+	public boolean insert_space_before_colon_in_case_default_statement;
+	public boolean insert_space_before_colon_in_selective_imports;
+	public boolean insert_space_before_colon_in_conditional_expressions;
+	public boolean insert_space_before_colon_in_statement_labels;
+	public boolean insert_space_before_colon_in_modifiers;
+	public boolean insert_space_after_colon_in_base_class_lists;
+	public boolean insert_space_after_colon_in_template_specific_type;
+	public boolean insert_space_after_colon_in_array_initializer;
+	public boolean insert_space_after_colon_in_struct_initializer;
+	public boolean insert_space_after_colon_in_case_default_statement;
+	public boolean insert_space_after_colon_in_selective_imports;
+	public boolean insert_space_after_colon_in_conditional_expressions;
+	public boolean insert_space_after_colon_in_statement_labels;
 	public boolean insert_space_before_semicolon;
 	public boolean insert_space_before_semicolon_in_for_statement;
-	public boolean insert_space_after_semicolon_in_for_statement;
 	public boolean insert_space_before_semicolon_in_foreach_statement;
 	public boolean insert_space_after_semicolon_in_foreach_statement;
+	public boolean insert_space_after_semicolon_in_for_statement;
+	public boolean insert_space_before_question_mark_in_conditional_expressions;
+	public boolean insert_space_after_question_mark_in_conditional_expressions;
 	public int blank_lines_before_module;
 	public int blank_lines_after_module;
 	public int number_of_empty_lines_to_preserve;
@@ -267,6 +286,8 @@ public class DefaultCodeFormatterOptions
 	public boolean insert_new_line_before_catch;
 	public boolean insert_new_line_before_finally;
 	public boolean insert_new_line_before_while_in_do_statement;
+	public boolean insert_new_line_after_case_or_default_statement;
+	public boolean insert_new_line_after_label;
 	public boolean keep_else_conditional_on_one_line;
 	public boolean insert_new_line_at_end_of_file_if_missing;
 	public boolean keep_simple_then_declaration_on_same_line;
@@ -293,6 +314,9 @@ public class DefaultCodeFormatterOptions
 	public boolean indent_statements_compare_to_function_out_header;
 	public boolean indent_statements_compare_to_function_body_header;
 	public boolean indent_enum_members_compare_to_enum_header;
+	public boolean indent_cases_compare_to_switch;
+	public boolean indent_statements_compare_to_case;
+	public boolean indent_statements_compare_to_label;
 	public TabChar tab_char;
 	public int tab_size;
 	public boolean use_tabs_only_for_leading_indentations;
@@ -510,11 +534,30 @@ public class DefaultCodeFormatterOptions
 		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_AFTER_ELIPSIS_IN_TUPLES, insert_space_after_elipsis_in_tuples ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
 		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BETWEEN_EMPTY_BRACKETS_IN_SLICE, insert_space_between_empty_brackets_in_slice ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
 		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BETWEEN_EMPTY_BRACKETS_IN_DYNAMIC_ARRAY_TYPE, insert_space_between_empty_brackets_in_dynamic_array_type ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
+		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_COLON_IN_BASE_CLASS_LISTS, insert_space_before_colon_in_base_class_lists ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
+		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_COLON_IN_TEMPLATE_SPECIFIC_TYPE, insert_space_before_colon_in_template_specific_type ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
+		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_COLON_IN_ARRAY_INITIALIZER, insert_space_before_colon_in_array_initializer ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
+		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_COLON_IN_STRUCT_INITIALIZER, insert_space_before_colon_in_struct_initializer ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
+		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_COLON_IN_CASE_DEFAULT_STATEMENT, insert_space_before_colon_in_case_default_statement ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
+		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_COLON_IN_SELECTIVE_IMPORTS, insert_space_before_colon_in_selective_imports ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
+		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_COLON_IN_CONDITIONAL_EXPRESSIONS, insert_space_before_colon_in_conditional_expressions ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
+		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_COLON_IN_STATEMENT_LABELS, insert_space_before_colon_in_statement_labels ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
+		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_COLON_IN_MODIFIERS, insert_space_before_colon_in_modifiers ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
+		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_AFTER_COLON_IN_BASE_CLASS_LISTS, insert_space_after_colon_in_base_class_lists ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
+		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_AFTER_COLON_IN_TEMPLATE_SPECIFIC_TYPE, insert_space_after_colon_in_template_specific_type ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
+		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_AFTER_COLON_IN_ARRAY_INITIALIZER, insert_space_after_colon_in_array_initializer ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
+		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_AFTER_COLON_IN_STRUCT_INITIALIZER, insert_space_after_colon_in_struct_initializer ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
+		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_AFTER_COLON_IN_CASE_DEFAULT_STATEMENT, insert_space_after_colon_in_case_default_statement ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
+		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_AFTER_COLON_IN_SELECTIVE_IMPORTS, insert_space_after_colon_in_selective_imports ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
+		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_AFTER_COLON_IN_CONDITIONAL_EXPRESSIONS, insert_space_after_colon_in_conditional_expressions ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
+		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_AFTER_COLON_IN_STATEMENT_LABELS, insert_space_after_colon_in_statement_labels ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
 		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_SEMICOLON, insert_space_before_semicolon ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
 		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_SEMICOLON_IN_FOR_STATEMENT, insert_space_before_semicolon_in_for_statement ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
-		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_AFTER_SEMICOLON_IN_FOR_STATEMENT, insert_space_after_semicolon_in_for_statement ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
 		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_SEMICOLON_IN_FOREACH_STATEMENT, insert_space_before_semicolon_in_foreach_statement ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
 		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_AFTER_SEMICOLON_IN_FOREACH_STATEMENT, insert_space_after_semicolon_in_foreach_statement ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
+		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_AFTER_SEMICOLON_IN_FOR_STATEMENT, insert_space_after_semicolon_in_for_statement ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
+		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_QUESTION_MARK_IN_CONDITIONAL_EXPRESSIONS, insert_space_before_question_mark_in_conditional_expressions ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
+		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_AFTER_QUESTION_MARK_IN_CONDITIONAL_EXPRESSIONS, insert_space_after_question_mark_in_conditional_expressions ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
 		options.put(DefaultCodeFormatterConstants.FORMATTER_BLANK_LINES_BEFORE_MODULE, Integer.toString(blank_lines_before_module));
 		options.put(DefaultCodeFormatterConstants.FORMATTER_BLANK_LINES_AFTER_MODULE, Integer.toString(blank_lines_after_module));
 		options.put(DefaultCodeFormatterConstants.FORMATTER_NUMBER_OF_EMPTY_LINES_TO_PRESERVE, Integer.toString(number_of_empty_lines_to_preserve));
@@ -522,6 +565,8 @@ public class DefaultCodeFormatterOptions
 		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_NEW_LINE_BEFORE_CATCH, insert_new_line_before_catch ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
 		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_NEW_LINE_BEFORE_FINALLY, insert_new_line_before_finally ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
 		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_NEW_LINE_BEFORE_WHILE_IN_DO_STATEMENT, insert_new_line_before_while_in_do_statement ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
+		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_NEW_LINE_AFTER_CASE_OR_DEFAULT_STATEMENT, insert_new_line_after_case_or_default_statement ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
+		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_NEW_LINE_AFTER_LABEL, insert_new_line_after_label ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
 		options.put(DefaultCodeFormatterConstants.FORMATTER_KEEP_ELSE_CONDITIONAL_ON_ONE_LINE, keep_else_conditional_on_one_line ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
 		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_NEW_LINE_AT_END_OF_FILE_IF_MISSING, insert_new_line_at_end_of_file_if_missing ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
 		options.put(DefaultCodeFormatterConstants.FORMATTER_KEEP_SIMPLE_THEN_DECLARATION_ON_SAME_LINE, keep_simple_then_declaration_on_same_line ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
@@ -548,6 +593,9 @@ public class DefaultCodeFormatterOptions
 		options.put(DefaultCodeFormatterConstants.FORMATTER_INDENT_STATEMENTS_COMPARE_TO_FUNCTION_OUT_HEADER, indent_statements_compare_to_function_out_header ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
 		options.put(DefaultCodeFormatterConstants.FORMATTER_INDENT_STATEMENTS_COMPARE_TO_FUNCTION_BODY_HEADER, indent_statements_compare_to_function_body_header ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
 		options.put(DefaultCodeFormatterConstants.FORMATTER_INDENT_ENUM_MEMBERS_COMPARE_TO_ENUM_HEADER, indent_enum_members_compare_to_enum_header ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
+		options.put(DefaultCodeFormatterConstants.FORMATTER_INDENT_CASES_COMPARE_TO_SWITCH, indent_cases_compare_to_switch ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
+		options.put(DefaultCodeFormatterConstants.FORMATTER_INDENT_STATEMENTS_COMPARE_TO_CASE, indent_statements_compare_to_case ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
+		options.put(DefaultCodeFormatterConstants.FORMATTER_INDENT_STATEMENTS_COMPARE_TO_LABEL, indent_statements_compare_to_label ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
 		options.put(DefaultCodeFormatterConstants.FORMATTER_TAB_CHAR, tab_char.toString());
 		options.put(DefaultCodeFormatterConstants.FORMATTER_TAB_SIZE, Integer.toString(tab_size));
 		options.put(DefaultCodeFormatterConstants.FORMATTER_USE_TABS_ONLY_FOR_LEADING_INDENTATIONS, use_tabs_only_for_leading_indentations ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
@@ -2247,6 +2295,159 @@ public class DefaultCodeFormatterOptions
 			}
 		}
 		
+		current = settings.get(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_COLON_IN_BASE_CLASS_LISTS);
+		if(null != current) {
+			try {
+				insert_space_before_colon_in_base_class_lists = DefaultCodeFormatterConstants.TRUE.equals(current);
+			} catch(Exception e) {
+				insert_space_before_colon_in_base_class_lists = false;
+			}
+		}
+		
+		current = settings.get(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_COLON_IN_TEMPLATE_SPECIFIC_TYPE);
+		if(null != current) {
+			try {
+				insert_space_before_colon_in_template_specific_type = DefaultCodeFormatterConstants.TRUE.equals(current);
+			} catch(Exception e) {
+				insert_space_before_colon_in_template_specific_type = false;
+			}
+		}
+		
+		current = settings.get(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_COLON_IN_ARRAY_INITIALIZER);
+		if(null != current) {
+			try {
+				insert_space_before_colon_in_array_initializer = DefaultCodeFormatterConstants.TRUE.equals(current);
+			} catch(Exception e) {
+				insert_space_before_colon_in_array_initializer = false;
+			}
+		}
+		
+		current = settings.get(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_COLON_IN_STRUCT_INITIALIZER);
+		if(null != current) {
+			try {
+				insert_space_before_colon_in_struct_initializer = DefaultCodeFormatterConstants.TRUE.equals(current);
+			} catch(Exception e) {
+				insert_space_before_colon_in_struct_initializer = false;
+			}
+		}
+		
+		current = settings.get(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_COLON_IN_CASE_DEFAULT_STATEMENT);
+		if(null != current) {
+			try {
+				insert_space_before_colon_in_case_default_statement = DefaultCodeFormatterConstants.TRUE.equals(current);
+			} catch(Exception e) {
+				insert_space_before_colon_in_case_default_statement = false;
+			}
+		}
+		
+		current = settings.get(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_COLON_IN_SELECTIVE_IMPORTS);
+		if(null != current) {
+			try {
+				insert_space_before_colon_in_selective_imports = DefaultCodeFormatterConstants.TRUE.equals(current);
+			} catch(Exception e) {
+				insert_space_before_colon_in_selective_imports = false;
+			}
+		}
+		
+		current = settings.get(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_COLON_IN_CONDITIONAL_EXPRESSIONS);
+		if(null != current) {
+			try {
+				insert_space_before_colon_in_conditional_expressions = DefaultCodeFormatterConstants.TRUE.equals(current);
+			} catch(Exception e) {
+				insert_space_before_colon_in_conditional_expressions = true;
+			}
+		}
+		
+		current = settings.get(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_COLON_IN_STATEMENT_LABELS);
+		if(null != current) {
+			try {
+				insert_space_before_colon_in_statement_labels = DefaultCodeFormatterConstants.TRUE.equals(current);
+			} catch(Exception e) {
+				insert_space_before_colon_in_statement_labels = false;
+			}
+		}
+		
+		current = settings.get(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_COLON_IN_MODIFIERS);
+		if(null != current) {
+			try {
+				insert_space_before_colon_in_modifiers = DefaultCodeFormatterConstants.TRUE.equals(current);
+			} catch(Exception e) {
+				insert_space_before_colon_in_modifiers = false;
+			}
+		}
+		
+		current = settings.get(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_AFTER_COLON_IN_BASE_CLASS_LISTS);
+		if(null != current) {
+			try {
+				insert_space_after_colon_in_base_class_lists = DefaultCodeFormatterConstants.TRUE.equals(current);
+			} catch(Exception e) {
+				insert_space_after_colon_in_base_class_lists = true;
+			}
+		}
+		
+		current = settings.get(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_AFTER_COLON_IN_TEMPLATE_SPECIFIC_TYPE);
+		if(null != current) {
+			try {
+				insert_space_after_colon_in_template_specific_type = DefaultCodeFormatterConstants.TRUE.equals(current);
+			} catch(Exception e) {
+				insert_space_after_colon_in_template_specific_type = true;
+			}
+		}
+		
+		current = settings.get(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_AFTER_COLON_IN_ARRAY_INITIALIZER);
+		if(null != current) {
+			try {
+				insert_space_after_colon_in_array_initializer = DefaultCodeFormatterConstants.TRUE.equals(current);
+			} catch(Exception e) {
+				insert_space_after_colon_in_array_initializer = true;
+			}
+		}
+		
+		current = settings.get(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_AFTER_COLON_IN_STRUCT_INITIALIZER);
+		if(null != current) {
+			try {
+				insert_space_after_colon_in_struct_initializer = DefaultCodeFormatterConstants.TRUE.equals(current);
+			} catch(Exception e) {
+				insert_space_after_colon_in_struct_initializer = true;
+			}
+		}
+		
+		current = settings.get(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_AFTER_COLON_IN_CASE_DEFAULT_STATEMENT);
+		if(null != current) {
+			try {
+				insert_space_after_colon_in_case_default_statement = DefaultCodeFormatterConstants.TRUE.equals(current);
+			} catch(Exception e) {
+				insert_space_after_colon_in_case_default_statement = true;
+			}
+		}
+		
+		current = settings.get(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_AFTER_COLON_IN_SELECTIVE_IMPORTS);
+		if(null != current) {
+			try {
+				insert_space_after_colon_in_selective_imports = DefaultCodeFormatterConstants.TRUE.equals(current);
+			} catch(Exception e) {
+				insert_space_after_colon_in_selective_imports = true;
+			}
+		}
+		
+		current = settings.get(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_AFTER_COLON_IN_CONDITIONAL_EXPRESSIONS);
+		if(null != current) {
+			try {
+				insert_space_after_colon_in_conditional_expressions = DefaultCodeFormatterConstants.TRUE.equals(current);
+			} catch(Exception e) {
+				insert_space_after_colon_in_conditional_expressions = true;
+			}
+		}
+		
+		current = settings.get(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_AFTER_COLON_IN_STATEMENT_LABELS);
+		if(null != current) {
+			try {
+				insert_space_after_colon_in_statement_labels = DefaultCodeFormatterConstants.TRUE.equals(current);
+			} catch(Exception e) {
+				insert_space_after_colon_in_statement_labels = true;
+			}
+		}
+		
 		current = settings.get(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_SEMICOLON);
 		if(null != current) {
 			try {
@@ -2265,15 +2466,6 @@ public class DefaultCodeFormatterOptions
 			}
 		}
 		
-		current = settings.get(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_AFTER_SEMICOLON_IN_FOR_STATEMENT);
-		if(null != current) {
-			try {
-				insert_space_after_semicolon_in_for_statement = DefaultCodeFormatterConstants.TRUE.equals(current);
-			} catch(Exception e) {
-				insert_space_after_semicolon_in_for_statement = true;
-			}
-		}
-		
 		current = settings.get(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_SEMICOLON_IN_FOREACH_STATEMENT);
 		if(null != current) {
 			try {
@@ -2289,6 +2481,33 @@ public class DefaultCodeFormatterOptions
 				insert_space_after_semicolon_in_foreach_statement = DefaultCodeFormatterConstants.TRUE.equals(current);
 			} catch(Exception e) {
 				insert_space_after_semicolon_in_foreach_statement = true;
+			}
+		}
+		
+		current = settings.get(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_AFTER_SEMICOLON_IN_FOR_STATEMENT);
+		if(null != current) {
+			try {
+				insert_space_after_semicolon_in_for_statement = DefaultCodeFormatterConstants.TRUE.equals(current);
+			} catch(Exception e) {
+				insert_space_after_semicolon_in_for_statement = true;
+			}
+		}
+		
+		current = settings.get(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_QUESTION_MARK_IN_CONDITIONAL_EXPRESSIONS);
+		if(null != current) {
+			try {
+				insert_space_before_question_mark_in_conditional_expressions = DefaultCodeFormatterConstants.TRUE.equals(current);
+			} catch(Exception e) {
+				insert_space_before_question_mark_in_conditional_expressions = true;
+			}
+		}
+		
+		current = settings.get(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_AFTER_QUESTION_MARK_IN_CONDITIONAL_EXPRESSIONS);
+		if(null != current) {
+			try {
+				insert_space_after_question_mark_in_conditional_expressions = DefaultCodeFormatterConstants.TRUE.equals(current);
+			} catch(Exception e) {
+				insert_space_after_question_mark_in_conditional_expressions = true;
 			}
 		}
 		
@@ -2352,6 +2571,24 @@ public class DefaultCodeFormatterOptions
 				insert_new_line_before_while_in_do_statement = DefaultCodeFormatterConstants.TRUE.equals(current);
 			} catch(Exception e) {
 				insert_new_line_before_while_in_do_statement = false;
+			}
+		}
+		
+		current = settings.get(DefaultCodeFormatterConstants.FORMATTER_INSERT_NEW_LINE_AFTER_CASE_OR_DEFAULT_STATEMENT);
+		if(null != current) {
+			try {
+				insert_new_line_after_case_or_default_statement = DefaultCodeFormatterConstants.TRUE.equals(current);
+			} catch(Exception e) {
+				insert_new_line_after_case_or_default_statement = true;
+			}
+		}
+		
+		current = settings.get(DefaultCodeFormatterConstants.FORMATTER_INSERT_NEW_LINE_AFTER_LABEL);
+		if(null != current) {
+			try {
+				insert_new_line_after_label = DefaultCodeFormatterConstants.TRUE.equals(current);
+			} catch(Exception e) {
+				insert_new_line_after_label = true;
 			}
 		}
 		
@@ -2586,6 +2823,33 @@ public class DefaultCodeFormatterOptions
 				indent_enum_members_compare_to_enum_header = DefaultCodeFormatterConstants.TRUE.equals(current);
 			} catch(Exception e) {
 				indent_enum_members_compare_to_enum_header = true;
+			}
+		}
+		
+		current = settings.get(DefaultCodeFormatterConstants.FORMATTER_INDENT_CASES_COMPARE_TO_SWITCH);
+		if(null != current) {
+			try {
+				indent_cases_compare_to_switch = DefaultCodeFormatterConstants.TRUE.equals(current);
+			} catch(Exception e) {
+				indent_cases_compare_to_switch = false;
+			}
+		}
+		
+		current = settings.get(DefaultCodeFormatterConstants.FORMATTER_INDENT_STATEMENTS_COMPARE_TO_CASE);
+		if(null != current) {
+			try {
+				indent_statements_compare_to_case = DefaultCodeFormatterConstants.TRUE.equals(current);
+			} catch(Exception e) {
+				indent_statements_compare_to_case = true;
+			}
+		}
+		
+		current = settings.get(DefaultCodeFormatterConstants.FORMATTER_INDENT_STATEMENTS_COMPARE_TO_LABEL);
+		if(null != current) {
+			try {
+				indent_statements_compare_to_label = DefaultCodeFormatterConstants.TRUE.equals(current);
+			} catch(Exception e) {
+				indent_statements_compare_to_label = true;
 			}
 		}
 		
@@ -2841,11 +3105,30 @@ public class DefaultCodeFormatterOptions
 		insert_space_after_elipsis_in_tuples = false;
 		insert_space_between_empty_brackets_in_slice = false;
 		insert_space_between_empty_brackets_in_dynamic_array_type = false;
+		insert_space_before_colon_in_base_class_lists = false;
+		insert_space_before_colon_in_template_specific_type = false;
+		insert_space_before_colon_in_array_initializer = false;
+		insert_space_before_colon_in_struct_initializer = false;
+		insert_space_before_colon_in_case_default_statement = false;
+		insert_space_before_colon_in_selective_imports = false;
+		insert_space_before_colon_in_conditional_expressions = true;
+		insert_space_before_colon_in_statement_labels = false;
+		insert_space_before_colon_in_modifiers = false;
+		insert_space_after_colon_in_base_class_lists = true;
+		insert_space_after_colon_in_template_specific_type = true;
+		insert_space_after_colon_in_array_initializer = true;
+		insert_space_after_colon_in_struct_initializer = true;
+		insert_space_after_colon_in_case_default_statement = true;
+		insert_space_after_colon_in_selective_imports = true;
+		insert_space_after_colon_in_conditional_expressions = true;
+		insert_space_after_colon_in_statement_labels = true;
 		insert_space_before_semicolon = false;
 		insert_space_before_semicolon_in_for_statement = false;
-		insert_space_after_semicolon_in_for_statement = true;
 		insert_space_before_semicolon_in_foreach_statement = false;
 		insert_space_after_semicolon_in_foreach_statement = true;
+		insert_space_after_semicolon_in_for_statement = true;
+		insert_space_before_question_mark_in_conditional_expressions = true;
+		insert_space_after_question_mark_in_conditional_expressions = true;
 		blank_lines_before_module = 0;
 		blank_lines_after_module = 1;
 		number_of_empty_lines_to_preserve = 1;
@@ -2853,6 +3136,8 @@ public class DefaultCodeFormatterOptions
 		insert_new_line_before_catch = false;
 		insert_new_line_before_finally = false;
 		insert_new_line_before_while_in_do_statement = false;
+		insert_new_line_after_case_or_default_statement = true;
+		insert_new_line_after_label = true;
 		keep_else_conditional_on_one_line = true;
 		insert_new_line_at_end_of_file_if_missing = false;
 		keep_simple_then_declaration_on_same_line = false;
@@ -2879,6 +3164,9 @@ public class DefaultCodeFormatterOptions
 		indent_statements_compare_to_function_out_header = true;
 		indent_statements_compare_to_function_body_header = true;
 		indent_enum_members_compare_to_enum_header = true;
+		indent_cases_compare_to_switch = false;
+		indent_statements_compare_to_case = true;
+		indent_statements_compare_to_label = true;
 		tab_char = TabChar.TAB;
 		tab_size = 4;
 		use_tabs_only_for_leading_indentations = false;
