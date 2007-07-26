@@ -477,9 +477,11 @@ public class JavaDocLocations {
 				}
 				appendTypePath(mainType, pathBuffer);
 				break;
+				/* TODO JDT IClassFile
 			case IJavaElement.CLASS_FILE :
 				appendTypePath(((IClassFile) element).getType(), pathBuffer);
 				break;
+				*/
 			case IJavaElement.TYPE :
 				appendTypePath((IType) element, pathBuffer);
 				break;

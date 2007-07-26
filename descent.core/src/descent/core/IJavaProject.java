@@ -436,10 +436,7 @@ public interface IJavaProject extends IParent, IJavaElement, IOpenable {
 	 * @param jarPath the jars's file system path
 	 * @return a package fragment root for the JAR at the specified file system path
 	 */
-	/* 
-	TODO JDT jar
 	IPackageFragmentRoot getPackageFragmentRoot(String jarPath);
-	*/
 
 	/**
 	 * Returns a package fragment root for the given resource, which

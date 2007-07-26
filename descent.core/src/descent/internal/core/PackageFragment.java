@@ -22,6 +22,8 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
 
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
+
 import descent.core.IClassFile;
 import descent.core.ICompilationUnit;
 import descent.core.IJavaElement;
@@ -86,12 +88,10 @@ protected boolean buildStructure(OpenableElementInfo info, IProgressMonitor pm, 
 					childElement = new CompilationUnit(this, child.getName(), DefaultWorkingCopyOwner.PRIMARY);
 					vChildren.add(childElement);
 				} 
-				/* TODO JDT jar 
 				else if (kind == IPackageFragmentRoot.K_BINARY && Util.isValidClassFileName(child.getName())) {
 					childElement = getClassFile(child.getName());
 					vChildren.add(childElement);
 				}
-				*/
 			}
 		}
 	} catch (CoreException e) {
@@ -177,18 +177,10 @@ public boolean exists() {
  * @exception IllegalArgumentException if the name does not end with ".class"
  */
 public IClassFile getClassFile(String classFileName) {
-	throw new IllegalArgumentException("Not implemented");
-	/* TODO JDT binary
-	if (!descent.internal.compiler.util.Util.isClassFileName(classFileName)) {
+	if (!descent.internal.compiler.util.Util.isJavaFileName(classFileName)) {
 		throw new IllegalArgumentException(Messages.element_invalidClassFileName); 
 	}
-	// don't hold on the .class file extension to save memory
-	// also make sure to not use substring as the resulting String may hold on the underlying char[] which might be much bigger than necessary
-	int length = classFileName.length() - 6;
-	char[] nameWithoutExtension = new char[length];
-	classFileName.getChars(0, length, nameWithoutExtension, 0);
-	return new ClassFile(this, new String(nameWithoutExtension));
-	*/
+	return new ClassFile(this, new String(classFileName));
 }
 
 /**

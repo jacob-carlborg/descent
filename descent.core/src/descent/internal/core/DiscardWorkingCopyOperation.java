@@ -42,6 +42,10 @@ public class DiscardWorkingCopyOperation extends JavaModelOperation {
 				addDelta(delta);
 				removeReconcileDelta(workingCopy);
 			} else {
+				if (workingCopy.getResource() == null) {
+					return;
+				}
+				
 				if (workingCopy.getResource().isAccessible()) {
 					// report a F_PRIMARY_WORKING_COPY change delta for a primary working copy
 					JavaElementDelta delta = new JavaElementDelta(getJavaModel());

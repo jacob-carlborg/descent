@@ -22,6 +22,7 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.core.filesystem.EFS;
 import org.eclipse.core.filesystem.IFileStore;
@@ -45,10 +46,14 @@ import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.ui.actions.WorkspaceModifyDelegatingOperation;
 
 import descent.core.IClasspathEntry;
+import descent.core.IJavaProject;
 import descent.core.JavaCore;
+import descent.internal.corext.util.JavaModelUtil;
 import descent.internal.corext.util.Messages;
 import descent.internal.ui.util.CoreUtility;
 import descent.internal.ui.util.ExceptionHandler;
+import descent.launching.IVMInstall;
+import descent.launching.JavaRuntime;
 import descent.ui.JavaUI;
 import descent.ui.PreferenceConstants;
 import descent.ui.wizards.JavaCapabilityConfigurationPage;
@@ -236,7 +241,6 @@ public class JavaProjectWizardSecondPage extends JavaCapabilityConfigurationPage
 	
 	private IClasspathEntry[] getDefaultClasspathEntry() {
 		IClasspathEntry[] defaultJRELibrary= PreferenceConstants.getDefaultJRELibrary();
-		/* TODO JDT jre
 		String compliance= fFirstPage.getCompilerCompliance();
 		IPath jreContainerPath= new Path(JavaRuntime.JRE_CONTAINER);
 		if (compliance == null || defaultJRELibrary.length > 1 || !jreContainerPath.isPrefixOf(defaultJRELibrary[0].getPath())) {
@@ -248,7 +252,6 @@ public class JavaProjectWizardSecondPage extends JavaCapabilityConfigurationPage
 			IPath newPath= jreContainerPath.append(inst.getVMInstallType().getId()).append(inst.getName());
 			return new IClasspathEntry[] { JavaCore.newContainerEntry(newPath) };
 		}
-		*/
 		return defaultJRELibrary;
 	}
 	
@@ -348,7 +351,6 @@ public class JavaProjectWizardSecondPage extends JavaCapabilityConfigurationPage
 			configureJavaProject(new SubProgressMonitor(monitor, 2));
 			
 			if (!fKeepContent) {
-				/* TODO JDT jre
 				String compliance= fFirstPage.getCompilerCompliance();
 				if (compliance != null) {
 					IJavaProject project= JavaCore.create(fCurrProject);
@@ -356,7 +358,6 @@ public class JavaProjectWizardSecondPage extends JavaCapabilityConfigurationPage
 					JavaModelUtil.setCompilanceOptions(options, compliance);
 					project.setOptions(options);
 				}
-				*/
 			}
 		} finally {
 			monitor.done();

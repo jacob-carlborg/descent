@@ -21,6 +21,7 @@ import descent.core.JavaModelException;
 import descent.core.search.IJavaSearchScope;
 import descent.core.search.SearchPattern;
 import descent.internal.compiler.util.SimpleSet;
+import descent.internal.core.JarPackageFragmentRoot;
 import descent.internal.core.JavaModelManager;
 import descent.internal.core.JavaProject;
 import descent.internal.core.search.indexing.IndexManager;
@@ -51,10 +52,7 @@ public static boolean canSeeFocus(IJavaElement focus, boolean isPolymorphicSearc
 	try {
 		IClasspathEntry[] focusEntries = null;
 		if (isPolymorphicSearch) {
-			/* TODO JDT jar
 			JavaProject focusProject = focus instanceof JarPackageFragmentRoot ? (JavaProject) focus.getParent() : (JavaProject) focus;
-			*/
-			JavaProject focusProject = (JavaProject) focus;
 			focusEntries = focusProject.getExpandedClasspath(true);
 		}
 		IJavaModel model = focus.getJavaModel();
@@ -94,7 +92,6 @@ public static boolean canSeeFocus(IJavaElement focus, JavaProject javaProject, I
 					return true;
 			}
 		}
-		/* TODO JDT jar
 		if (focus instanceof JarPackageFragmentRoot) {
 			// focus is part of a jar
 			IPath focusPath = focus.getPath();
@@ -106,7 +103,6 @@ public static boolean canSeeFocus(IJavaElement focus, JavaProject javaProject, I
 			}
 			return false;
 		}
-		*/
 		// look for dependent projects
 		IPath focusPath = ((JavaProject) focus).getProject().getFullPath();
 		IClasspathEntry[] entries = javaProject.getExpandedClasspath(true);
@@ -141,10 +137,7 @@ private void initializeIndexLocations() {
 			SimpleSet jarsToCheck = new SimpleSet(length);
 			IClasspathEntry[] focusEntries = null;
 			if (this.pattern != null && MatchLocator.isPolymorphicSearch(this.pattern)) { // isPolymorphicSearch
-				/* TODO JDT jar
 				JavaProject focusProject = focus instanceof JarPackageFragmentRoot ? (JavaProject) focus.getParent() : (JavaProject) focus;
-				*/
-				JavaProject focusProject = (JavaProject) focus;
 				focusEntries = focusProject.getExpandedClasspath(true);
 			}
 			IJavaModel model = JavaModelManager.getJavaModelManager().getJavaModel();

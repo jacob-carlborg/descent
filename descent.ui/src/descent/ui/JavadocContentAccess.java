@@ -231,7 +231,7 @@ public class JavadocContentAccess {
 					buffer.append(parameter.getName());
 					buffer.append("</b>"); //$NON-NLS-1$
 					buffer.append(" "); //$NON-NLS-1$
-					buffer.append(parameter.getText());
+					buffer.append(DdocMacros.replaceMacros(parameter.getText(), macros));
 					buffer.append("</dd>"); //$NON-NLS-1$
 					buffer.append("<br/>"); //$NON-NLS-1$
 				}

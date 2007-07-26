@@ -584,10 +584,8 @@ public final class ASTProvider {
 		
 		if (je.getElementType() == IJavaElement.COMPILATION_UNIT)
 			parser.setSource((ICompilationUnit)je);
-		/* TODO JDT UI binary
 		else if (je.getElementType() == IJavaElement.CLASS_FILE)
 			parser.setSource((IClassFile)je);
-		*/
 
 		if (progressMonitor != null && progressMonitor.isCanceled())
 			return null;

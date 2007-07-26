@@ -771,6 +771,13 @@
          <keywordReference id="descent.ui.sortorder"/>
       </page>
       -->
+      <page
+            name="%installJREPageName"
+            category="descent.ui.preferences.JavaBasePreferencePage"
+            class="descent.internal.debug.ui.jres.JREsPreferencePage"
+            id="descent.debug.ui.preferences.VMPreferencePage">
+         <keywordReference id="org.eclipse.jdt.debug.ui.jres"/>
+      </page>
    </extension>
    <extension
          point="org.eclipse.ui.editors">

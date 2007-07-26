@@ -400,7 +400,7 @@ public final class JavaCodeScanner extends AbstractJavaScanner {
 
 		// Add JLS3 rule for /@\s*interface/ and /@\s*\w+/
 		token= getToken(ANNOTATION_COLOR_KEY);
-		AnnotationRule atInterfaceRule= new AnnotationRule(getToken(IJavaColorConstants.JAVA_KEYWORD), token, JavaCore.VERSION_1_5, version);
+		AnnotationRule atInterfaceRule= new AnnotationRule(getToken(IJavaColorConstants.JAVA_KEYWORD), token, JavaCore.VERSION_1_x, version);
 		rules.add(atInterfaceRule);
 		fVersionDependentRules.add(atInterfaceRule);
 
@@ -410,7 +410,7 @@ public final class JavaCodeScanner extends AbstractJavaScanner {
 		CombinedWordRule combinedWordRule= new CombinedWordRule(wordDetector, token);
 
 		token= getToken(IJavaColorConstants.JAVA_DEFAULT);
-		VersionedWordMatcher j14Matcher= new VersionedWordMatcher(token, JavaCore.VERSION_1_4, version);
+		VersionedWordMatcher j14Matcher= new VersionedWordMatcher(token, JavaCore.VERSION_1_x, version);
 
 		token= getToken(IJavaColorConstants.JAVA_KEYWORD);
 
@@ -418,7 +418,7 @@ public final class JavaCodeScanner extends AbstractJavaScanner {
 		fVersionDependentRules.add(j14Matcher);
 
 		token= getToken(IJavaColorConstants.JAVA_DEFAULT);
-		VersionedWordMatcher j15Matcher= new VersionedWordMatcher(token, JavaCore.VERSION_1_5, version);
+		VersionedWordMatcher j15Matcher= new VersionedWordMatcher(token, JavaCore.VERSION_2_x, version);
 		token= getToken(IJavaColorConstants.JAVA_KEYWORD);
 
 		combinedWordRule.addWordMatcher(j15Matcher);

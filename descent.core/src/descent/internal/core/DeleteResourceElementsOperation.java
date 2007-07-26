@@ -130,10 +130,8 @@ protected void verify(IJavaElement element) throws JavaModelException {
 	int type = element.getElementType();
 	if (type <= IJavaElement.PACKAGE_FRAGMENT_ROOT || type > IJavaElement.COMPILATION_UNIT)
 		error(IJavaModelStatusConstants.INVALID_ELEMENT_TYPES, element);
-	/* TODO JDT jar
 	else if (type == IJavaElement.PACKAGE_FRAGMENT && element instanceof JarPackageFragment)
 		error(IJavaModelStatusConstants.INVALID_ELEMENT_TYPES, element);
-	*/
 	IResource resource = element.getResource();
 	if (resource instanceof IFolder) {
 		if (resource.isLinked()) {

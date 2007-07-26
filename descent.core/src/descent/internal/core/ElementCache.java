@@ -47,14 +47,13 @@ protected boolean close(LRUCacheEntry entry) {
 			return false;
 		} else {
 			// We must close an entire JarPackageFragmentRoot at once.
-			/* TODO JDT jar
 			if (element instanceof JarPackageFragment) {
 				JarPackageFragment packageFragment= (JarPackageFragment) element;
 				JarPackageFragmentRoot root = (JarPackageFragmentRoot) packageFragment.getParent();
 				root.close();
-			} else { */
+			} else {
 				element.close();
-			//}
+			}
 			return true;
 		}
 	} catch (JavaModelException npe) {

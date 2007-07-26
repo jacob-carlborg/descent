@@ -12,11 +12,14 @@ package descent.internal.ui.preferences;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.IAdaptable;
-import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.preferences.IWorkbenchPreferenceContainer;
 
+import descent.internal.ui.IJavaHelpContextIds;
 import descent.internal.ui.JavaPlugin;
+import descent.launching.JavaRuntime;
 
 /**
  * Page used to configure both workspace and project specific compiler settings
@@ -26,41 +29,39 @@ public class CompliancePreferencePage extends PropertyAndPreferencePage {
 	public static final String PREF_ID= "descent.ui.preferences.CompliancePreferencePage"; //$NON-NLS-1$
 	public static final String PROP_ID= "descent.ui.propertyPages.CompliancePreferencePage"; //$NON-NLS-1$
 	
-	//private ComplianceConfigurationBlock fConfigurationBlock;
+	private ComplianceConfigurationBlock fConfigurationBlock;
 
 	public CompliancePreferencePage() {
 		setPreferenceStore(JavaPlugin.getDefault().getPreferenceStore());
-		//setDescription(PreferencesMessages.CompliancePreferencePage_description); 
+		setDescription(PreferencesMessages.CompliancePreferencePage_description); 
 		
 		// only used when page is shown programatically
 		setTitle(PreferencesMessages.CompliancePreferencePage_title);
 		
-		//JavaRuntime.getDefaultVMInstall();	// make sure the default JRE is detected (bug 152384)
+		JavaRuntime.getDefaultVMInstall();	// make sure the default JRE is detected (bug 152384)
 	}
 
 	/*
 	 * @see org.eclipse.jface.dialogs.IDialogPage#createControl(org.eclipse.swt.widgets.Composite)
 	 */
 	public void createControl(Composite parent) {
-		//IWorkbenchPreferenceContainer container= (IWorkbenchPreferenceContainer) getContainer();
-		//fConfigurationBlock= new ComplianceConfigurationBlock(getNewStatusChangedListener(), getProject(), container);
+		IWorkbenchPreferenceContainer container= (IWorkbenchPreferenceContainer) getContainer();
+		fConfigurationBlock= new ComplianceConfigurationBlock(getNewStatusChangedListener(), getProject(), container);
 		
 		super.createControl(parent);
-//		if (isProjectPreferencePage()) {
-//			PlatformUI.getWorkbench().getHelpSystem().setHelp(getControl(), IJavaHelpContextIds.COMPILER_PROPERTY_PAGE);
-//		} else {
-//			PlatformUI.getWorkbench().getHelpSystem().setHelp(getControl(), IJavaHelpContextIds.COMPILER_PREFERENCE_PAGE);
-//		}
+		if (isProjectPreferencePage()) {
+			PlatformUI.getWorkbench().getHelpSystem().setHelp(getControl(), IJavaHelpContextIds.COMPILER_PROPERTY_PAGE);
+		} else {
+			PlatformUI.getWorkbench().getHelpSystem().setHelp(getControl(), IJavaHelpContextIds.COMPILER_PREFERENCE_PAGE);
+		}
 	}
 
 	protected Control createPreferenceContent(Composite composite) {
-//		return fConfigurationBlock.createContents(composite);
-		return new Composite(composite, SWT.NONE);
+		return fConfigurationBlock.createContents(composite);
 	}
 	
 	protected boolean hasProjectSpecificOptions(IProject project) {
-//		return fConfigurationBlock.hasProjectSpecificOptions(project);
-		return false;
+		return fConfigurationBlock.hasProjectSpecificOptions(project);
 	}
 	
 	/* (non-Javadoc)
@@ -80,72 +81,60 @@ public class CompliancePreferencePage extends PropertyAndPreferencePage {
 	/* (non-Javadoc)
 	 * @see org.eclipse.jface.dialogs.DialogPage#dispose()
 	 */
-	/*
 	public void dispose() {
 		if (fConfigurationBlock != null) {
 			fConfigurationBlock.dispose();
 		}
 		super.dispose();
 	}
-	*/
 	
 	/* (non-Javadoc)
 	 * @see descent.internal.ui.preferences.PropertyAndPreferencePage#enableProjectSpecificSettings(boolean)
 	 */
-	/*
 	protected void enableProjectSpecificSettings(boolean useProjectSpecificSettings) {
 		super.enableProjectSpecificSettings(useProjectSpecificSettings);
 		if (fConfigurationBlock != null) {
 			fConfigurationBlock.useProjectSpecificSettings(useProjectSpecificSettings);
 		}
 	}
-	*/
 	
 	/* (non-Javadoc)
 	 * @see descent.internal.ui.preferences.PropertyAndPreferencePage#enablePreferenceContent(boolean)
 	 */
-	/*
 	protected void enablePreferenceContent(boolean enable) {
 		if (fConfigurationBlock != null) {
 			fConfigurationBlock.enablePreferenceContent(enable);
 		}
 	}
-	*/
 	
 	/*
 	 * @see org.eclipse.jface.preference.IPreferencePage#performDefaults()
 	 */
-	/*
 	protected void performDefaults() {
 		super.performDefaults();
 		if (fConfigurationBlock != null) {
 			fConfigurationBlock.performDefaults();
 		}
 	}
-	*/
 
 	/*
 	 * @see org.eclipse.jface.preference.IPreferencePage#performOk()
 	 */
-	/*
 	public boolean performOk() {
 		if (fConfigurationBlock != null && !fConfigurationBlock.performOk()) {
 			return false;
 		}	
 		return super.performOk();
 	}
-	*/
 	
 	/*
 	 * @see org.eclipse.jface.preference.IPreferencePage#performApply()
 	 */
-	/*
 	public void performApply() {
 		if (fConfigurationBlock != null) {
 			fConfigurationBlock.performApply();
 		}
 	}
-	*/
 	
 	/* (non-Javadoc)
 	 * @see descent.internal.ui.preferences.PropertyAndPreferencePage#setElement(org.eclipse.core.runtime.IAdaptable)

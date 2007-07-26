@@ -111,9 +111,9 @@ public abstract class JavaPreview {
 		tools.setupJavaDocumentPartitioner( fPreviewDocument, IJavaPartitions.JAVA_PARTITIONING);	
 		
 		PreferenceStore prioritizedSettings= new PreferenceStore();
-		prioritizedSettings.setValue(JavaCore.COMPILER_SOURCE, JavaCore.VERSION_1_5);
-		prioritizedSettings.setValue(JavaCore.COMPILER_COMPLIANCE, JavaCore.VERSION_1_5);
-		prioritizedSettings.setValue(JavaCore.COMPILER_CODEGEN_TARGET_PLATFORM, JavaCore.VERSION_1_5);
+		prioritizedSettings.setValue(JavaCore.COMPILER_SOURCE, JavaCore.VERSION_1_x);
+		prioritizedSettings.setValue(JavaCore.COMPILER_COMPLIANCE, JavaCore.VERSION_1_x);
+		prioritizedSettings.setValue(JavaCore.COMPILER_CODEGEN_TARGET_PLATFORM, JavaCore.VERSION_1_x);
 		prioritizedSettings.setValue(JavaCore.COMPILER_PB_ASSERT_IDENTIFIER, JavaCore.ERROR);
 		
 		IPreferenceStore[] chain= { prioritizedSettings, JavaPlugin.getDefault().getCombinedPreferenceStore() };

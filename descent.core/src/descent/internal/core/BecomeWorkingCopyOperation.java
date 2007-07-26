@@ -43,7 +43,10 @@ public class BecomeWorkingCopyOperation extends JavaModelOperation {
 			delta.added(workingCopy);
 			addDelta(delta);
 		} else {
-			if (workingCopy.getResource().isAccessible()) {
+			// hack for IClassFile
+			if (workingCopy == null || workingCopy.getResource() == null) {
+				
+			} else if (workingCopy.getResource().isAccessible()) {
 				// report a F_PRIMARY_WORKING_COPY change delta for a primary working copy
 				JavaElementDelta delta = new JavaElementDelta(getJavaModel());
 				delta.changed(workingCopy, IJavaElementDelta.F_PRIMARY_WORKING_COPY);

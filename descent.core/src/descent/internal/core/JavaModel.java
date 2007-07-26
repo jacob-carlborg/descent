@@ -272,12 +272,10 @@ public void move(IJavaElement[] elements, IJavaElement[] containers, IJavaElemen
  * @see IJavaModel#refreshExternalArchives(IJavaElement[], IProgressMonitor)
  */
 public void refreshExternalArchives(IJavaElement[] elementsScope, IProgressMonitor monitor) throws JavaModelException {
-	/* TODO JDT jar
 	if (elementsScope == null){
 		elementsScope = new IJavaElement[] { this };
 	}
 	JavaModelManager.getJavaModelManager().getDeltaProcessor().checkExternalArchiveChanges(elementsScope, monitor);
-	*/
 }
 
 /**
@@ -380,6 +378,31 @@ public static synchronized File getFile(Object target) {
 	if (target instanceof File) {
 		File f = (File) target;
 		if (f.isFile()) {
+			existingExternalConfirmedFiles.add(f);
+			return f;
+		}
+	}
+	
+	return null;
+}
+
+/**
+ * Helper method - returns whether an object is afile (ie. which returns true to {@link java.io.File#isFile()}.
+ */
+public static boolean isDirectory(Object target) {
+	return getDirectory(target) != null;
+}
+
+/**
+ * Helper method - returns the file item (ie. which returns true to {@link java.io.File#isFile()},
+ * or null if unbound
+ */
+public static synchronized File getDirectory(Object target) {
+	if (existingExternalConfirmedFiles.contains(target))
+		return (File) target;
+	if (target instanceof File) {
+		File f = (File) target;
+		if (f.isDirectory()) {
 			existingExternalConfirmedFiles.add(f);
 			return f;
 		}

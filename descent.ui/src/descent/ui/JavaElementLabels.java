@@ -1195,6 +1195,8 @@ public class JavaElementLabels {
 
 	private static void getExternalArchiveLabel(IPackageFragmentRoot root, long flags, StringBuffer buf) {
 		IPath path= root.getPath();
+		buf.append(path.toOSString());
+		/*
 		if (getFlag(flags, REFERENCED_ROOT_POST_QUALIFIED)) {
 			int segements= path.segmentCount();
 			if (segements > 0) {
@@ -1209,6 +1211,7 @@ public class JavaElementLabels {
 		} else {
 			buf.append(path.toOSString());
 		}
+		*/
 	}
 
 	private static void getInternalArchiveLabel(IPackageFragmentRoot root, long flags, StringBuffer buf) {

@@ -228,7 +228,7 @@ public final class JavaPairMatcher implements ICharacterPairMatcher, ISourceVers
 	 * @see descent.internal.ui.text.ISourceVersionDependent#setSourceVersion(java.lang.String)
 	 */
 	public void setSourceVersion(String version) {
-		if (JavaCore.VERSION_1_5.compareTo(version) <= 0)
+		if (JavaCore.VERSION_1_x.compareTo(version) <= 0)
 			fHighlightAngularBrackets= true;
 		else
 			fHighlightAngularBrackets= false;

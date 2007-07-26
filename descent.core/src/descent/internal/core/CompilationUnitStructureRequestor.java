@@ -170,7 +170,8 @@ public void acceptPackage(int declarationStart, int declarationEnd, char[] name)
 		JavaElement parentHandle= (JavaElement) this.handleStack.peek();
 		PackageDeclaration handle = null;
 		
-		if (parentHandle.getElementType() == IJavaElement.COMPILATION_UNIT) {
+		if (parentHandle.getElementType() == IJavaElement.COMPILATION_UNIT || 
+				parentHandle.getElementType() == IJavaElement.CLASS_FILE) {
 			handle = new PackageDeclaration((CompilationUnit) parentHandle, new String(name));
 		}
 		else {

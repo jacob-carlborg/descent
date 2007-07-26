@@ -44,7 +44,6 @@ import descent.core.IJavaModel;
 import descent.core.IJavaProject;
 import descent.core.JavaCore;
 import descent.core.JavaModelException;
-import descent.core.JavaRuntime;
 import descent.internal.ui.JavaPlugin;
 import descent.internal.ui.util.CoreUtility;
 import descent.internal.ui.util.ExceptionHandler;
@@ -54,6 +53,7 @@ import descent.internal.ui.wizards.dialogfields.IDialogFieldListener;
 import descent.internal.ui.wizards.dialogfields.IListAdapter;
 import descent.internal.ui.wizards.dialogfields.LayoutUtil;
 import descent.internal.ui.wizards.dialogfields.ListDialogField;
+import descent.launching.JavaRuntime;
 
 
 public class VariableBlock {

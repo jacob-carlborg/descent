@@ -122,11 +122,9 @@ public class DeltaProcessor {
 					if (target instanceof IResource) {
 						this.root = this.project.getPackageFragmentRoot((IResource)target);
 					} 
-					/* TODO JDT jar 
 					else {
 						this.root = this.project.getPackageFragmentRoot(this.rootPath.toOSString());
 					} 
-					*/
 				}
 			}
 			return this.root;
@@ -594,11 +592,9 @@ public class DeltaProcessor {
 		} else {
 			close(element);
 			int flags = IJavaElementDelta.F_CONTENT;
-			/* TODO JDT jar
 			if (element instanceof JarPackageFragmentRoot){
 				flags |= IJavaElementDelta.F_ARCHIVE_CONTENT_CHANGED;
 			}
-			*/
 			if (isPrimary) {
 				flags |= IJavaElementDelta.F_PRIMARY_RESOURCE;
 			}
@@ -872,7 +868,6 @@ public class DeltaProcessor {
 						}
 					}
 					// according to computed status, generate a delta
-					/* TODO JDT jar
 					status = (String)externalArchivesStatus.get(entryPath);					
 					if (status != null){
 						if (status == EXTERNAL_JAR_ADDED){
@@ -898,7 +893,6 @@ public class DeltaProcessor {
 							hasDelta = true;
 						}
 					}
-					*/
 				}
 			}
 		}
@@ -2374,7 +2368,6 @@ public class DeltaProcessor {
 				}
 				break;
 			case IJavaElement.PACKAGE_FRAGMENT_ROOT :
-				/* TODO JDT jar
 				if (element instanceof JarPackageFragmentRoot) {
 					JarPackageFragmentRoot root = (JarPackageFragmentRoot)element;
 					// index jar file only once (if the root is in its declaring project)
@@ -2398,7 +2391,6 @@ public class DeltaProcessor {
 					}
 					break;
 				}
-				*/
 				int kind = delta.getKind();
 				if (kind == IResourceDelta.ADDED || kind == IResourceDelta.REMOVED) {
 					PackageFragmentRoot root = (PackageFragmentRoot)element;

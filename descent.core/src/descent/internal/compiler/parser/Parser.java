@@ -2414,6 +2414,7 @@ public class Parser extends Lexer {
 					decldefs = new ArrayList();
 					decldefs.add(s);
 					tempdecl = new TemplateDeclaration(loc, s.ident, tpl, decldefs);
+					tempdecl.setSourceRange(s.start, s.length);
 					tempdecl.wrapper = true;
 					s = tempdecl;
 				}

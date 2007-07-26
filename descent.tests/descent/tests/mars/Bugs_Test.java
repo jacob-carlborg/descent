@@ -178,6 +178,13 @@ public class Bugs_Test extends Parser_Test {
 		getCompilationUnit(s);
 	}
 	
+	public void testBug21() throws Exception {
+		String s = "void a(X)() { }\r\n" + 
+				"	/** */\r\n" + 
+				"	void b(X)() { }";
+		getCompilationUnit(s);
+	}
+	
 	public void testDstress_run_t_typeof_16_A() {
 		String s = "char[] name = (typeof(o)).classinfo.name;";
 		getCompilationUnit(s);	

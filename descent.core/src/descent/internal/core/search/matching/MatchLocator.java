@@ -13,6 +13,7 @@ import descent.core.search.SearchDocument;
 import descent.core.search.SearchParticipant;
 import descent.core.search.SearchPattern;
 import descent.core.search.SearchRequestor;
+import descent.internal.core.JarPackageFragmentRoot;
 import descent.internal.core.index.Index;
 import descent.internal.core.search.IndexQueryRequestor;
 import descent.internal.core.search.JavaSearchParticipant;
@@ -46,13 +47,7 @@ public class MatchLocator {
 	}
 	
 	public static IJavaElement getProjectOrJar(IJavaElement element) {
-		/* TODO JDT jar
 		while (!(element instanceof IJavaProject) && !(element instanceof JarPackageFragmentRoot)) {
-			element = element.getParent();
-		}
-		return element;
-		*/
-		while (!(element instanceof IJavaProject)) {
 			element = element.getParent();
 		}
 		return element;

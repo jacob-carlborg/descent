@@ -39,7 +39,7 @@ public class Ddoc {
 		if (sections.size() == 1) {
 			DdocSection section = sections.get(0);
 			return section.getKind() == DdocSection.NORMAL_SECTION
-				&& section.getText().trim().equals("ditto"); //$NON-NLS-1$
+				&& section.getText().trim().equalsIgnoreCase("ditto"); //$NON-NLS-1$
 		}
 		return false; 
 	}

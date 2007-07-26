@@ -64,6 +64,7 @@ import descent.internal.ui.IJavaHelpContextIds;
 import descent.internal.ui.JavaPlugin;
 import descent.internal.ui.dialogs.StatusInfo;
 import descent.internal.ui.dialogs.StatusUtil;
+import descent.launching.JavaRuntime;
 	
 /*
  * The page for defaults for classpath entries in new java projects.
@@ -280,7 +281,7 @@ public class NewJavaProjectPreferencePage extends PreferencePage implements IWor
 	}
 	
 	private static IClasspathEntry getJREContainerEntry() {
-		return JavaCore.newContainerEntry(new Path("descent.launching.JRE_CONTAINER")); //$NON-NLS-1$
+		return JavaCore.newContainerEntry(new Path(JavaRuntime.JRE_CONTAINER)); //$NON-NLS-1$
 	}
 	
 	private static IClasspathEntry getJREVariableEntry() {

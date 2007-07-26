@@ -771,11 +771,14 @@ public class JavaOutlineInformationControl extends AbstractInformationControl {
 	 * if is does not have one
 	 */
 	private IType getMainType(IClassFile classFile) {
+		/* TODO JDT IClassFile
 		try {
 			IType type= classFile.getType();
 			return type != null && type.exists() ? type : null;
 		} catch (JavaModelException e) {
 			return null;
 		}
+		*/
+		return null;
 	}
 }

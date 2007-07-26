@@ -895,6 +895,9 @@ public class CompilationUnitDocumentProvider extends TextFileDocumentProvider im
 			original= createCompilationUnit(input.getFile());
 			if (original == null)
 				return null;
+		} else if (element instanceof IClassFileEditorInput) {
+			IClassFileEditorInput input = (IClassFileEditorInput) element;
+			original = input.getClassFile();
 		}
 		
 		FileInfo info= super.createFileInfo(element);
@@ -1359,6 +1362,22 @@ public class CompilationUnitDocumentProvider extends TextFileDocumentProvider im
 	 */
 	public ILineTracker createLineTracker(Object element) {
 		return new DefaultLineTracker();
+	}
+	
+	@Override
+	public boolean isModifiable(Object element) {
+		if (element instanceof IClassFileEditorInput) {
+			return false;
+		}
+		return super.isModifiable(element);
+	}
+	
+	@Override
+	public boolean isReadOnly(Object element) {
+		if (element instanceof IClassFileEditorInput) {
+			return true;
+		}
+		return super.isReadOnly(element);
 	}
 
 }

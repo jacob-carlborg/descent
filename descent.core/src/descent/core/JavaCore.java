@@ -94,6 +94,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Plugin;
 import org.eclipse.core.runtime.QualifiedName;
+import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.core.runtime.jobs.ISchedulingRule;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
@@ -963,40 +964,24 @@ public final class JavaCore extends AbstractUIPlugin {
 	 * @see #getDefaultOptions()
 	 */
 	public static final String OPTIMIZE_OUT = "optimize out"; //$NON-NLS-1$
+	
 	/**
 	 * Possible  configurable option value.
 	 * @see #getDefaultOptions()
 	 */
-	public static final String VERSION_1_1 = "1.1"; //$NON-NLS-1$
+	public static final String VERSION_0_x = "0."; //$NON-NLS-1$
+	
 	/**
 	 * Possible  configurable option value.
 	 * @see #getDefaultOptions()
 	 */
-	public static final String VERSION_1_2 = "1.2"; //$NON-NLS-1$
+	public static final String VERSION_1_x = "1."; //$NON-NLS-1$
+	
 	/**
 	 * Possible  configurable option value.
 	 * @see #getDefaultOptions()
-	 * @since 2.0
 	 */
-	public static final String VERSION_1_3 = "1.3"; //$NON-NLS-1$
-	/**
-	 * Possible  configurable option value.
-	 * @see #getDefaultOptions()
-	 * @since 2.0
-	 */
-	public static final String VERSION_1_4 = "1.4"; //$NON-NLS-1$
-	/**
-	 * Possible  configurable option value.
-	 * @see #getDefaultOptions()
-	 * @since 3.0
-	 */
-	public static final String VERSION_1_5 = "1.5"; //$NON-NLS-1$
-	/**
-	 * Possible  configurable option value.
-	 * @see #getDefaultOptions()
-	 * @since 3.2
-	 */
-	public static final String VERSION_1_6 = "1.6"; //$NON-NLS-1$
+	public static final String VERSION_2_x = "2."; //$NON-NLS-1$
 	/**
 	 * Possible  configurable option value.
 	 * @see #getDefaultOptions()
@@ -2951,16 +2936,14 @@ public final class JavaCore extends AbstractUIPlugin {
 			}
 			
 			// ensure external jars are refreshed (see https://bugs.eclipse.org/bugs/show_bug.cgi?id=93668
-			/* TODO JDT jar
 			try {
 				model.refreshExternalArchives(
-					null refresh all projects, 
+					null /* refresh all projects */, 
 					monitor == null ? null : new SubProgressMonitor(monitor, 1) // 1% of the time is spent in jar refresh
 				);
 			} catch (JavaModelException e) {
 				// refreshing failed: ignore
 			}
-			*/
 		} finally {
 			if (monitor != null) monitor.done();
 		}
@@ -3008,6 +2991,7 @@ public final class JavaCore extends AbstractUIPlugin {
 			if (element.equals(markerElement)) return true; // external elements may still be equal with different handleIDs.
 			
 			// cycle through enclosing types in case marker is associated with a classfile (15568)
+			/* TODO JDT IClassFile
 			if (markerElement instanceof IClassFile){
 				IType enclosingType = ((IClassFile)markerElement).getType().getDeclaringType();
 				if (enclosingType != null){
@@ -3015,6 +2999,7 @@ public final class JavaCore extends AbstractUIPlugin {
 					continue;
 				}
 			}
+			*/
 			break;
 		}
 		return false;
@@ -3051,6 +3036,7 @@ public final class JavaCore extends AbstractUIPlugin {
 			if (element.equals(markerElement)) return true; // external elements may still be equal with different handleIDs.
 			
 			// cycle through enclosing types in case marker is associated with a classfile (15568)
+			/* TODO JDT IClassFile
 			if (markerElement instanceof IClassFile){
 				IType enclosingType = ((IClassFile)markerElement).getType().getDeclaringType();
 				if (enclosingType != null){
@@ -3058,6 +3044,7 @@ public final class JavaCore extends AbstractUIPlugin {
 					continue;
 				}
 			}
+			*/
 			break;
 		}
 		return false;

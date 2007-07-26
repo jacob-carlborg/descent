@@ -26,6 +26,7 @@ import org.eclipse.jface.text.templates.ContextTypeRegistry;
 import org.eclipse.jface.text.templates.persistence.TemplateStore;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IWorkbenchPage;
@@ -882,4 +883,18 @@ public class JavaPlugin extends AbstractUIPlugin {
 		}
 		return section;
 	}
+	
+	/**
+	 * Returns the standard display to be used. The method first checks, if
+	 * the thread calling this method has an associated display. If so, this
+	 * display is returned. Otherwise the method returns the default display.
+	 */
+	public static Display getStandardDisplay() {
+		Display display;
+		display= Display.getCurrent();
+		if (display == null)
+			display= Display.getDefault();
+		return display;		
+	}
+	
 }

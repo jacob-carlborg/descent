@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.2"?>
+<plugin>
+
+<!-- Extension point definitions -->
+   <extension-point id="vmInstallTypes" name="%vmInstallTypes" schema="schema/vmInstallTypes.exsd"/>
+   <extension-point id="vmInstalls" name="%vmInstalls" schema="schema/vmInstalls.exsd"/>
+   <extension-point id="runtimeClasspathEntryResolvers" name="%runtimeClasspathEntryResolvers" schema="schema/runtimeClasspathEntryResolvers.exsd"/>
+   <extension-point id="runtimeClasspathEntries" name="%runtimeClasspathEntries" schema="schema/runtimeClasspathEntries.exsd"/>
+
+<!-- Extensions -->
+   <extension
+         point="descent.launching.vmInstallTypes">
+      <vmInstallType
+            class="descent.internal.launching.dmd.DmdCompilerType"
+            id="descent.internal.debug.ui.launcher.DmdCompilerType">
+      </vmInstallType>
+      <vmInstallType
+            class="descent.internal.launching.gdc.GdcCompilerType"
+            id="descent.internal.debug.ui.launcher.GdcCompilerType"/>
+   </extension>
+   
+   <extension
+         point="descent.core.classpathVariableInitializer">
+      <classpathVariableInitializer
+            variable="JRE_LIB"
+            class="descent.internal.launching.JavaClasspathVariablesInitializer">
+      </classpathVariableInitializer>
+      <classpathVariableInitializer
+            variable="JRE_SRC"
+            class="descent.internal.launching.JavaClasspathVariablesInitializer">
+      </classpathVariableInitializer>
+      <classpathVariableInitializer
+            variable="JRE_SRCROOT"
+            class="descent.internal.launching.JavaClasspathVariablesInitializer">
+      </classpathVariableInitializer>
+   </extension>
+   <extension
+         point="descent.core.classpathContainerInitializer">
+      <classpathContainerInitializer
+            class="descent.internal.launching.JREContainerInitializer"
+            id="descent.launching.JRE_CONTAINER">
+      </classpathContainerInitializer>
+   </extension>
+   <extension
+         point="descent.launching.runtimeClasspathEntryResolvers">
+      <runtimeClasspathEntryResolver
+            container="descent.launching.JRE_CONTAINER"
+            variable="JRE_LIB"
+            class="descent.internal.launching.JRERuntimeClasspathEntryResolver"
+            id="descent.launching.JRE_RESOLVER">
+      </runtimeClasspathEntryResolver>      
+      <runtimeClasspathEntryResolver
+      		runtimeClasspathEntryId="descent.launching.classpathentry.variableClasspathEntry"
+            class="descent.internal.launching.VariableClasspathResolver"
+            id="descent.launching.variableClasspathResolver">
+      </runtimeClasspathEntryResolver>
+   </extension>
+   <extension
+         point="descent.launching.runtimeClasspathEntries">
+      <runtimeClasspathEntry
+            id="descent.launching.classpathentry.defaultClasspath"
+            class="descent.internal.launching.DefaultProjectClasspathEntry">
+      </runtimeClasspathEntry>
+      <runtimeClasspathEntry
+            id="descent.launching.classpathentry.variableClasspathEntry"
+            class="descent.internal.launching.VariableClasspathEntry">
+      </runtimeClasspathEntry>
+   </extension> 
+
+</plugin>

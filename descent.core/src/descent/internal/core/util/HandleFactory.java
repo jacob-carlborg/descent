@@ -297,7 +297,6 @@ public class HandleFactory {
 		IPath jarPath,
 		Object target,
 		IJavaProject[] projects) {
-		/* TODO JDT jar
 		for (int i= 0, projectCount= projects.length; i < projectCount; i++) {
 			try {
 				JavaProject javaProject= (JavaProject)projects[i];
@@ -317,7 +316,6 @@ public class HandleFactory {
 				// JavaModelException from getResolvedClasspath - a problem occured while accessing project: nothing we can do, ignore
 			}
 		}
-		*/
 		return null;
 	}
 	

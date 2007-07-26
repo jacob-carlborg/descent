@@ -110,7 +110,6 @@ import descent.core.compiler.CompilationParticipant;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.util.HashtableOfObjectToInt;
 import descent.internal.core.builder.OriginalJavaBuilder;
-import descent.internal.core.builder.OriginalJavaBuilder;
 import descent.internal.core.search.AbstractSearchScope;
 import descent.internal.core.search.JavaWorkspaceScope;
 import descent.internal.core.search.indexing.IndexManager;
@@ -2614,7 +2613,6 @@ public class JavaModelManager implements ISaveParticipant, IContentTypeChangeLis
 		// Subsequent resolution against package in the jar would fail as a result.
 		// https://bugs.eclipse.org/bugs/show_bug.cgi?id=102422
 		// (theodora)
-		/* TODO JDT jar
 		for(Iterator it = newElements.entrySet().iterator(); it.hasNext(); ) {
 			Map.Entry entry = (Map.Entry)it.next();
 			IJavaElement element = (IJavaElement)entry.getKey();
@@ -2624,7 +2622,6 @@ public class JavaModelManager implements ISaveParticipant, IContentTypeChangeLis
 				this.cache.putInfo(element, info);
 			}
 		}
-		*/	
 	
 		Iterator iterator = newElements.keySet().iterator();	
 		while (iterator.hasNext()) {
@@ -2637,11 +2634,9 @@ public class JavaModelManager implements ISaveParticipant, IContentTypeChangeLis
 	/*
 	 * Remember the info for the jar binary type
 	 */
-	/* TODO JDT jar
 	protected synchronized void putJarTypeInfo(IJavaElement type, Object info) {
 		this.cache.jarTypeCache.put(type, info);
 	}
-	*/
 
 	/**
 	 * Reads the build state for the relevant project.

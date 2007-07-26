@@ -11,6 +11,12 @@
 package descent.internal.ui.wizards;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -31,6 +37,7 @@ import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.Group;
@@ -38,9 +45,16 @@ import org.eclipse.swt.widgets.Link;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.dialogs.PreferencesUtil;
 
+import descent.core.JavaCore;
+import descent.internal.corext.util.JavaModelUtil;
+import descent.internal.corext.util.Messages;
 import descent.internal.ui.IJavaHelpContextIds;
 import descent.internal.ui.JavaPlugin;
+import descent.internal.ui.preferences.CompliancePreferencePage;
 import descent.internal.ui.preferences.NewJavaProjectPreferencePage;
+import descent.internal.ui.preferences.PropertyAndPreferencePage;
+import descent.internal.ui.wizards.buildpaths.BuildPathSupport;
+import descent.internal.ui.wizards.dialogfields.ComboDialogField;
 import descent.internal.ui.wizards.dialogfields.DialogField;
 import descent.internal.ui.wizards.dialogfields.IDialogFieldListener;
 import descent.internal.ui.wizards.dialogfields.IStringButtonAdapter;
@@ -48,6 +62,10 @@ import descent.internal.ui.wizards.dialogfields.LayoutUtil;
 import descent.internal.ui.wizards.dialogfields.SelectionButtonDialogField;
 import descent.internal.ui.wizards.dialogfields.StringButtonDialogField;
 import descent.internal.ui.wizards.dialogfields.StringDialogField;
+import descent.launching.IVMInstall;
+import descent.launching.IVMInstallType;
+import descent.launching.JavaRuntime;
+import descent.launching.VMStandin;
 import descent.ui.JavaUI;
 import descent.ui.PreferenceConstants;
 
@@ -297,11 +315,10 @@ public class JavaProjectWizardFirstPage extends WizardPage {
 			String id= NewJavaProjectPreferencePage.ID;
 			PreferencesUtil.createPreferenceDialogOn(getShell(), id, new String[] { id }, null).open();
 			fDetectGroup.handlePossibleJVMChange();
-			//fJREGroup.handlePossibleJVMChange();
+			fJREGroup.handlePossibleJVMChange();
 		}
 	}
 	
-	/* TODO JDT UI jre
 	private final class JREGroup implements Observer, SelectionListener, IDialogFieldListener {
 
 		private final SelectionButtonDialogField fUseDefaultJRE, fUseProjectJRE;
@@ -364,16 +381,12 @@ public class JavaProjectWizardFirstPage extends WizardPage {
 				public int compare(Object arg0, Object arg1) {
 					IVMInstall i0= (IVMInstall)arg0;
 					IVMInstall i1= (IVMInstall)arg1;
-					if (i1 instanceof IVMInstall2 && i0 instanceof IVMInstall2) {
-						String cc0= JavaModelUtil.getCompilerCompliance((IVMInstall2) i0, JavaCore.VERSION_1_4);
-						String cc1= JavaModelUtil.getCompilerCompliance((IVMInstall2) i1, JavaCore.VERSION_1_4);
-						int result= cc1.compareTo(cc0);
-						if (result == 0)
-							result= i0.getName().compareTo(i1.getName());
-						return result;
-					} else {
-						return i0.getName().compareTo(i1.getName());
-					}
+					String cc0= JavaModelUtil.getCompilerCompliance(i0, JavaCore.VERSION_1_x);
+					String cc1= JavaModelUtil.getCompilerCompliance(i1, JavaCore.VERSION_1_x);
+					int result= cc1.compareTo(cc0);
+					if (result == 0)
+						result= i0.getName().compareTo(i1.getName());
+					return result;
 				}
 				
 			});
@@ -385,11 +398,7 @@ public class JavaProjectWizardFirstPage extends WizardPage {
 				if (selectedItem != null && fComplianceLabels[i].equals(selectedItem)) {
 					selectionIndex= i;
 				}
-				if (fInstalledJVMs[i] instanceof IVMInstall2) {
-					fComplianceData[i]= JavaModelUtil.getCompilerCompliance((IVMInstall2) fInstalledJVMs[i], JavaCore.VERSION_1_4);
-				} else {
-					fComplianceData[i]= JavaCore.VERSION_1_4;
-				}
+				fComplianceData[i]= JavaModelUtil.getCompilerCompliance(fInstalledJVMs[i], JavaCore.VERSION_1_x);
 			}
 			comboField.setItems(fComplianceLabels);
 			if (selectionIndex == -1) {
@@ -414,7 +423,12 @@ public class JavaProjectWizardFirstPage extends WizardPage {
 		}
 
 		private String getDefaultJVMName() {
-			return JavaRuntime.getDefaultVMInstall().getName();
+			IVMInstall defaultVMInstall = JavaRuntime.getDefaultVMInstall();
+			if (defaultVMInstall == null) {
+				return "(No default compiler)";
+			} else {
+				return defaultVMInstall.getName();
+			}
 		}
 
 		private String getDefaultJVMLabel() {
@@ -484,7 +498,6 @@ public class JavaProjectWizardFirstPage extends WizardPage {
 			return null;
 		}
 	}
-	*/
 
 	
 	/**
@@ -509,7 +522,6 @@ public class JavaProjectWizardFirstPage extends WizardPage {
 		}
 		
 		public void handlePossibleJVMChange() {
-			/* TODO JDT UI jre
 			String selectedCompliance= fJREGroup.getSelectedCompilerCompliance();
 			if (selectedCompliance == null) {
 				selectedCompliance= JavaCore.getOption(JavaCore.COMPILER_COMPLIANCE);
@@ -518,22 +530,20 @@ public class JavaProjectWizardFirstPage extends WizardPage {
 			if (selectedJVM == null) {
 				selectedJVM= JavaRuntime.getDefaultVMInstall();
 			}
-			String jvmCompliance= JavaCore.VERSION_1_4;
-			if (selectedJVM instanceof IVMInstall2) {
-				jvmCompliance= JavaModelUtil.getCompilerCompliance((IVMInstall2) selectedJVM, JavaCore.VERSION_1_4);
-			}
+			/*
+			String jvmCompliance= JavaModelUtil.getCompilerCompliance(selectedJVM, JavaCore.VERSION_1_x);
 			if (!selectedCompliance.equals(jvmCompliance) && (JavaModelUtil.is50OrHigher(selectedCompliance) || JavaModelUtil.is50OrHigher(jvmCompliance))) {
-				if (selectedCompliance.equals(JavaCore.VERSION_1_5))
-					selectedCompliance= "5.0"; //$NON-NLS-1$
-				else if (selectedCompliance.equals(JavaCore.VERSION_1_6))
-					selectedCompliance= "6.0"; //$NON-NLS-1$
+				if (selectedCompliance.equals(JavaCore.VERSION_1_x))
+					selectedCompliance= "1.x"; //$NON-NLS-1$
+				else if (selectedCompliance.equals(JavaCore.VERSION_2_x))
+					selectedCompliance= "2.x"; //$NON-NLS-1$
 				
 				fHintText.setText(Messages.format(NewWizardMessages.JavaProjectWizardFirstPage_DetectGroup_jre_message, new String[] {selectedCompliance, jvmCompliance}));
 				fHintText.setVisible(true);
 			} else {
 				fHintText.setVisible(false);
 			}
-			*/
+			¨*/
 		}
 		
 		public void update(Observable o, Object arg) {
@@ -581,7 +591,6 @@ public class JavaProjectWizardFirstPage extends WizardPage {
 		 * @see org.eclipse.swt.events.SelectionListener#widgetDefaultSelected(org.eclipse.swt.events.SelectionEvent)
 		 */
 		public void widgetDefaultSelected(SelectionEvent e) {
-			/* TODO JDT UI jre
 			String jreID= BuildPathSupport.JRE_PREF_PAGE_ID;
 			String complianceId= CompliancePreferencePage.PREF_ID;
 			Map data= new HashMap();
@@ -590,7 +599,6 @@ public class JavaProjectWizardFirstPage extends WizardPage {
 			
 			fJREGroup.handlePossibleJVMChange();
 			handlePossibleJVMChange();
-			*/
 		}
 	}
 
@@ -676,7 +684,7 @@ public class JavaProjectWizardFirstPage extends WizardPage {
 	private NameGroup fNameGroup;
 	private LocationGroup fLocationGroup;
 	private LayoutGroup fLayoutGroup;
-	//private JREGroup fJREGroup;
+	private JREGroup fJREGroup;
 	private DetectGroup fDetectGroup;
 	private Validator fValidator;
 
@@ -720,14 +728,14 @@ public class JavaProjectWizardFirstPage extends WizardPage {
 		// create UI elements
 		fNameGroup= new NameGroup(composite, fInitialName);
 		fLocationGroup= new LocationGroup(composite);
-		//fJREGroup= new JREGroup(composite);
+		fJREGroup= new JREGroup(composite);
 		fLayoutGroup= new LayoutGroup(composite);
 		fDetectGroup= new DetectGroup(composite);
 		
 		// establish connections
 		fNameGroup.addObserver(fLocationGroup);
 		fDetectGroup.addObserver(fLayoutGroup);
-		//fDetectGroup.addObserver(fJREGroup);
+		fDetectGroup.addObserver(fJREGroup);
 		fLocationGroup.addObserver(fDetectGroup);
 
 		// initialize all elements
@@ -795,20 +803,16 @@ public class JavaProjectWizardFirstPage extends WizardPage {
 	/**
 	 * @return the selected JVM, or <code>null</code> iff the default JVM should be used
 	 */
-	/* TODO JDT UI jre
 	public IVMInstall getJVM() {
 		return fJREGroup.getSelectedJVM();
 	}
-	*/
 	
 	/**
 	 * @return the selected Compiler Compliance, or <code>null</code> iff the default Compiler Compliance should be used
 	 */
-	/* TODO JDT UI jre
 	public String getCompilerCompliance() {
 		return fJREGroup.getSelectedCompilerCompliance();
 	}
-	*/
 	
 	/*
 	 * see @DialogPage.setVisible(boolean)

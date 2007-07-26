@@ -32,7 +32,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
  * @see IPackageFragmentRoot#attachSource(org.eclipse.core.runtime.IPath, org.eclipse.core.runtime.IPath, IProgressMonitor)
  */
  
-public interface IClassFile extends IJavaElement, IParent, IOpenable, ISourceReference
+public interface IClassFile extends ICompilationUnit
 /* TODO JDT code completion
 , ICodeAssist 
 */ 
@@ -106,7 +106,7 @@ IJavaElement getElementAt(int position) throws JavaModelException;
  * @exception JavaModelException if this element does not exist or if an
  *      exception occurs while accessing its corresponding resource
  */
-IType getType() throws JavaModelException;
+//IType getType() throws JavaModelException;
 /**
  * Returns a working copy on the source associated with this class file using the given 
  * owner to create the buffer, or <code>null</code> if there is no source associated
@@ -163,7 +163,7 @@ IJavaElement getWorkingCopy(IProgressMonitor monitor, IBufferFactory factory) th
  * @exception JavaModelException if this element does not exist or if an
  *      exception occurs while accessing its corresponding resource
  */
-boolean isClass() throws JavaModelException;
+//boolean isClass() throws JavaModelException;
 /**
  * Returns whether this type represents an interface. This is not guaranteed to
  * be instantaneous, as it may require parsing the underlying file. 
@@ -173,5 +173,5 @@ boolean isClass() throws JavaModelException;
  * @exception JavaModelException if this element does not exist or if an
  *      exception occurs while accessing its corresponding resource
  */
-boolean isInterface() throws JavaModelException;
+//boolean isInterface() throws JavaModelException;
 }

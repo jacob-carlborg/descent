@@ -52,8 +52,10 @@ public class RefactoringActions {
 			return result;
 		if (element instanceof ICompilationUnit)
 			return ((ICompilationUnit)element).findPrimaryType();
+		/* TODO JDT IClassFile
 		if (element instanceof IClassFile) 
 			return ((IClassFile)element).getType();
+			*/
 		return null;
 	}
 	

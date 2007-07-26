@@ -353,7 +353,6 @@ public class JavaProject
 	}
 
 	protected void closing(Object info) {
-		/* TODO JDT jar
 		// forget source attachment recommendations
 		Object[] children = ((JavaElementInfo)info).children;
 		for (int i = 0, length = children.length; i < length; i++) {
@@ -363,7 +362,6 @@ public class JavaProject
 				((JarPackageFragmentRoot)child).setSourceAttachmentProperty(null); 
 			}
 		}
-		*/
 		
 		super.closing(info);
 	}
@@ -539,11 +537,10 @@ public class JavaProject
 						root = getPackageFragmentRoot((IResource) target);
 					} else {
 						// external target - only JARs allowed
-						/* TODO JDT jar
-						if (JavaModel.isFile(target) && (descent.internal.compiler.util.Util.isArchiveFileName(entryPath.lastSegment()))) {
+						//if (JavaModel.isFile(target) && (descent.internal.compiler.util.Util.isArchiveFileName(entryPath.lastSegment()))) {
+						if (JavaModel.isDirectory(target)) {
 							root = new JarPackageFragmentRoot(entryPath, this);
 						}
-						*/
 					}
 				} else {
 					root = getPackageFragmentRoot(entryPath);
@@ -1773,14 +1770,13 @@ public class JavaProject
 			default:
 				// a path ending with .jar/.zip is still ambiguous and could still resolve to a source/lib folder 
 				// thus will try to guess based on existing resource
-				/* TODO JDT jar
 				if (descent.internal.compiler.util.Util.isArchiveFileName(path.lastSegment())) {
 					IResource resource = this.project.getWorkspace().getRoot().findMember(path); 
 					if (resource != null && resource.getType() == IResource.FOLDER){
 						return getPackageFragmentRoot(resource);
 					}
 					return getPackageFragmentRoot0(path);
-				} else */ if (segmentCount == 1) {
+				} else if (segmentCount == 1) {
 					// lib being another project
 					return getPackageFragmentRoot(this.project.getWorkspace().getRoot().getProject(path.lastSegment()));
 				} else {
@@ -1797,14 +1793,11 @@ public class JavaProject
 
 		switch (resource.getType()) {
 			case IResource.FILE:
-				/* TODO JDT jar
 				if (descent.internal.compiler.util.Util.isArchiveFileName(resource.getName())) {
 					return new JarPackageFragmentRoot(resource, this);
 				} else {
 					return null;
 				}
-				*/
-				return null;
 			case IResource.FOLDER:
 				return new PackageFragmentRoot(resource, this);
 			case IResource.PROJECT:
@@ -1817,22 +1810,18 @@ public class JavaProject
 	/**
 	 * @see IJavaProject
 	 */
-	/* TODO JDT jar
 	public IPackageFragmentRoot getPackageFragmentRoot(String jarPath) {
 
 		return getPackageFragmentRoot0(JavaProject.canonicalizedPath(new Path(jarPath)));
 	}
-	*/
 	
 	/*
 	 * no path canonicalization
 	 */
-	/* TODO JDT jar
 	public IPackageFragmentRoot getPackageFragmentRoot0(IPath jarPath) {
 
 		return new JarPackageFragmentRoot(jarPath, this);
 	}
-	*/
 
 	/**
 	 * @see IJavaProject

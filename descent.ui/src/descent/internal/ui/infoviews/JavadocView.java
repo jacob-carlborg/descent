@@ -52,7 +52,6 @@ import org.eclipse.ui.texteditor.IDocumentProvider;
 import org.eclipse.ui.texteditor.ITextEditor;
 import org.osgi.framework.Bundle;
 
-import descent.core.IClassFile;
 import descent.core.ICompilationUnit;
 import descent.core.IDocumented;
 import descent.core.IJavaElement;
@@ -479,12 +478,14 @@ public class JavadocView extends AbstractInfoView {
 
 		switch (je.getElementType()) {
 			case IJavaElement.COMPILATION_UNIT:
+			case IJavaElement.CLASS_FILE:
 				try {
 					javadocHtml= getJavadocHtml(((ICompilationUnit) je).getPackageDeclarations());
 				} catch (JavaModelException ex) {
 					javadocHtml= null;
 				}
 				break;
+				/*
 			case IJavaElement.CLASS_FILE:
 				try {
 					javadocHtml= getJavadocHtml(new IJavaElement[] {((IClassFile)je).getType()});
@@ -492,6 +493,7 @@ public class JavadocView extends AbstractInfoView {
 					javadocHtml= null;
 				}
 				break;
+			*/
 			default:
 				javadocHtml= getJavadocHtml(new IJavaElement[] { je });
 		}

@@ -30,9 +30,9 @@ import descent.core.IClasspathEntry;
 import descent.core.IJavaProject;
 import descent.core.JavaCore;
 import descent.core.JavaModelException;
-import descent.core.JavaRuntime;
 import descent.internal.corext.util.JavaModelUtil;
 import descent.internal.ui.JavaPlugin;
+import descent.launching.JavaRuntime;
 
 public class CPListElement {
 	

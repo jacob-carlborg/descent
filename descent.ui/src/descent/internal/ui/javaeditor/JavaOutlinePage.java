@@ -952,12 +952,15 @@ public class JavaOutlinePage extends Page implements IContentOutlinePage, IAdapt
 	 * if is does not have one
 	 */
 	protected IType getMainType(IClassFile classFile) {
+		/* TODO JDT IClassFile
 		try {
 			IType type= classFile.getType();
 			return type != null && type.exists() ? type : null;
 		} catch (JavaModelException e) {
 			return null;
 		}
+		*/
+		return null;
 	}
 
 	/* (non-Javadoc)

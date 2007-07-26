@@ -346,20 +346,19 @@ public class EditorUtility {
 
 		return  JavaPlugin.getDefault().getWorkingCopyManager().getWorkingCopy(editorInput, false);
 	}
-
+	
 	private static IEditorInput getEditorInput(IJavaElement element) throws JavaModelException {
 		while (element != null) {
 			if (element instanceof ICompilationUnit) {
 				ICompilationUnit unit= ((ICompilationUnit) element).getPrimary();
-					IResource resource= unit.getResource();
-					if (resource instanceof IFile)
-						return new FileEditorInput((IFile) resource);
+				IResource resource= unit.getResource();
+				if (resource instanceof IFile) {
+					return new FileEditorInput((IFile) resource);
+				}				
 			}
 
-			/* TODO JDT UI binary
 			if (element instanceof IClassFile)
 				return new InternalClassFileEditorInput((IClassFile) element);
-			 */
 
 			element= element.getParent();
 		}

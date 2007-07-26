@@ -283,6 +283,9 @@ public ISourceRange[] getJavadocRanges() throws JavaModelException {
 	parser.setSource(buf.getText(start, length).toCharArray());
 	parser.setKind(ASTParser.K_COMPILATION_UNIT);
 	descent.core.dom.CompilationUnit unit = (descent.core.dom.CompilationUnit) parser.createAST(null);
+	if (unit.declarations().size() == 0) {
+		return null;
+	}
 	Declaration declaration = unit.declarations().get(0);
 	
 	List<ISourceRange> sourceRanges = new ArrayList<ISourceRange>(1);

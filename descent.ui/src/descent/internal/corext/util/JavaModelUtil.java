@@ -62,6 +62,7 @@ import descent.core.compiler.CharOperation;
 import descent.internal.corext.CorextMessages;
 import descent.internal.corext.ValidateEditException;
 import descent.internal.ui.JavaUIStatus;
+import descent.launching.IVMInstall;
 
 /**
  * Utility methods for the Java Model.
@@ -779,34 +780,28 @@ public final class JavaModelUtil {
 	 * Sets all compliance settings in the given map to 5.0
 	 */
 	public static void set50CompilanceOptions(Map map) {
-		setCompilanceOptions(map, JavaCore.VERSION_1_5);
+		setCompilanceOptions(map, JavaCore.VERSION_1_x);
 	}
 	
 	public static void setCompilanceOptions(Map map, String compliance) {
-		if (JavaCore.VERSION_1_6.equals(compliance)) {
-			map.put(JavaCore.COMPILER_COMPLIANCE, JavaCore.VERSION_1_6);
-			map.put(JavaCore.COMPILER_SOURCE, JavaCore.VERSION_1_6);
-			map.put(JavaCore.COMPILER_CODEGEN_TARGET_PLATFORM, JavaCore.VERSION_1_6);
+		if (JavaCore.VERSION_0_x.equals(compliance)) {
+			map.put(JavaCore.COMPILER_COMPLIANCE, JavaCore.VERSION_0_x);
+			map.put(JavaCore.COMPILER_SOURCE, JavaCore.VERSION_0_x);
+			map.put(JavaCore.COMPILER_CODEGEN_TARGET_PLATFORM, JavaCore.VERSION_0_x);
 			map.put(JavaCore.COMPILER_PB_ASSERT_IDENTIFIER, JavaCore.ERROR);
 			map.put(JavaCore.COMPILER_PB_ENUM_IDENTIFIER, JavaCore.ERROR);
-		} else if (JavaCore.VERSION_1_5.equals(compliance)) {
-			map.put(JavaCore.COMPILER_COMPLIANCE, JavaCore.VERSION_1_5);
-			map.put(JavaCore.COMPILER_SOURCE, JavaCore.VERSION_1_5);
-			map.put(JavaCore.COMPILER_CODEGEN_TARGET_PLATFORM, JavaCore.VERSION_1_5);
+		} else if (JavaCore.VERSION_1_x.equals(compliance)) {
+			map.put(JavaCore.COMPILER_COMPLIANCE, JavaCore.VERSION_1_x);
+			map.put(JavaCore.COMPILER_SOURCE, JavaCore.VERSION_1_x);
+			map.put(JavaCore.COMPILER_CODEGEN_TARGET_PLATFORM, JavaCore.VERSION_1_x);
 			map.put(JavaCore.COMPILER_PB_ASSERT_IDENTIFIER, JavaCore.ERROR);
 			map.put(JavaCore.COMPILER_PB_ENUM_IDENTIFIER, JavaCore.ERROR);
-		} else if (JavaCore.VERSION_1_4.equals(compliance)) {
-			map.put(JavaCore.COMPILER_COMPLIANCE, JavaCore.VERSION_1_4);
-			map.put(JavaCore.COMPILER_SOURCE, JavaCore.VERSION_1_3);
-			map.put(JavaCore.COMPILER_CODEGEN_TARGET_PLATFORM, JavaCore.VERSION_1_2);
+		} else if (JavaCore.VERSION_2_x.equals(compliance)) {
+			map.put(JavaCore.COMPILER_COMPLIANCE, JavaCore.VERSION_2_x);
+			map.put(JavaCore.COMPILER_SOURCE, JavaCore.VERSION_2_x);
+			map.put(JavaCore.COMPILER_CODEGEN_TARGET_PLATFORM, JavaCore.VERSION_2_x);
 			map.put(JavaCore.COMPILER_PB_ASSERT_IDENTIFIER, JavaCore.WARNING);
 			map.put(JavaCore.COMPILER_PB_ENUM_IDENTIFIER, JavaCore.WARNING);
-		} else if (JavaCore.VERSION_1_3.equals(compliance)) {
-			map.put(JavaCore.COMPILER_COMPLIANCE, JavaCore.VERSION_1_3);
-			map.put(JavaCore.COMPILER_SOURCE, JavaCore.VERSION_1_3);
-			map.put(JavaCore.COMPILER_CODEGEN_TARGET_PLATFORM, JavaCore.VERSION_1_1);
-			map.put(JavaCore.COMPILER_PB_ASSERT_IDENTIFIER, JavaCore.IGNORE);
-			map.put(JavaCore.COMPILER_PB_ENUM_IDENTIFIER, JavaCore.IGNORE);
 		} else {
 			throw new IllegalArgumentException("Unsupported compliance: " + compliance); //$NON-NLS-1$
 		}
@@ -820,7 +815,7 @@ public final class JavaModelUtil {
 	}
 	
 	public static boolean is50OrHigher(String compliance) {
-		return !isVersionLessThan(compliance, JavaCore.VERSION_1_5);
+		return !isVersionLessThan(compliance, JavaCore.VERSION_1_x);
 	}
 	
 	public static boolean is50OrHigher(IJavaProject project) {
@@ -1016,5 +1011,19 @@ public final class JavaModelUtil {
 			return cu;
 		else
 			return member.getClassFile();
+	}
+	
+	public static String getCompilerCompliance(IVMInstall vMInstall, String defaultCompliance) {
+		String version= vMInstall.getJavaVersion();
+		if (version == null) {
+			return defaultCompliance;
+		} else if (version.startsWith(JavaCore.VERSION_2_x)) {
+			return JavaCore.VERSION_2_x;
+		} else if (version.startsWith(JavaCore.VERSION_1_x)) {
+			return JavaCore.VERSION_1_x;
+		} else if (version.startsWith(JavaCore.VERSION_0_x)) {
+			return JavaCore.VERSION_0_x;
+		}
+		return defaultCompliance;
 	}
 }
