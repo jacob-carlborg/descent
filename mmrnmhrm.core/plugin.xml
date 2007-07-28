@@ -52,5 +52,11 @@
          </adapt>
       </definition>
    </extension>
+   <extension
+         point="org.eclipse.core.runtime.preferences">
+      <initializer
+            class="mmrnmhrm.core.CorePreferenceInitializer">
+      </initializer>
+   </extension>
 
 </plugin>

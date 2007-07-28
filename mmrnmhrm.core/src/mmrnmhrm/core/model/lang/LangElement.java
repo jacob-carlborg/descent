@@ -7,6 +7,7 @@ import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspaceRoot;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.Platform;
 
 import melnorme.miscutil.Assert;
@@ -19,7 +20,7 @@ import melnorme.miscutil.tree.IElement;
  * Not handle-based nor cached, like JDT.
  * (XXX: Uses LangElementInfo as mixin only) 
  */
-public abstract class LangElement extends LangElementInfo implements ILangElement {
+public abstract class LangElement implements ILangElement {
 	
 	protected ILangElement parent;
 	protected boolean opened = false;
@@ -35,7 +36,6 @@ public abstract class LangElement extends LangElementInfo implements ILangElemen
 	public boolean hasChildren() {
 		return getChildren().length > 0;
 	}
-
 	
 	/** Returns true if this handle represents the same Lang element
 	 * as the given handle. By default, two handles represent the same
@@ -89,9 +89,23 @@ public abstract class LangElement extends LangElementInfo implements ILangElemen
 		return list;
 	}
 	
-	
-	
 	public Object getAdapter(Class adapter) {
 		return Platform.getAdapterManager().getAdapter(this, adapter);
+	}
+
+	protected void getElementInfo() throws CoreException {
+		if(!opened) {
+			createStructure();
+			opened = true;
+		}
+	}
+	
+	/** Marks an element as needing update. */
+	public void updateElem() throws CoreException {
+		opened = false; 
+	}
+	
+	public String toString() {
+		return getElementName();
 	}
 }

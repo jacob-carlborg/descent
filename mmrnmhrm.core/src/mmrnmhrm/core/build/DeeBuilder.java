@@ -6,7 +6,7 @@ import java.util.Map;
 
 import melnorme.miscutil.StringUtil;
 import melnorme.miscutil.log.Logg;
-import mmrnmhrm.core.model.DeeModelManager;
+import mmrnmhrm.core.model.DeeModel;
 import mmrnmhrm.core.model.DeeProject;
 import mmrnmhrm.core.model.DeeSourceFolder;
 import mmrnmhrm.core.model.IDeeSourceRoot;
@@ -39,7 +39,7 @@ public class DeeBuilder extends IncrementalProjectBuilder {
 	private DeeProject deeProject;
 	
 	public DeeProject getDeeProject() {
-		deeProject = DeeModelManager.getLangProject(getProject());
+		deeProject = DeeModel.getLangProject(getProject());
 		return deeProject;
 	}
 

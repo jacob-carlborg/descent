@@ -1,8 +1,11 @@
 package mmrnmhrm.core;
 
-import mmrnmhrm.core.model.DeeModelManager;
+import mmrnmhrm.core.model.DeeModel;
 
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.jface.text.BadLocationException;
 
 import dtool.refmodel.EntityResolver;
 
@@ -22,7 +25,14 @@ public class DeeCore extends LangCore {
 
 	@Override
 	public void initPlugin() throws CoreException {
-		DeeModelManager.initDeeModel();
-		EntityResolver.initializeEntityResolver(DeeModelManager.getRoot());
+		EntityResolver.initializeEntityResolver(DeeModel.getRoot());
+		DeeModel.initDeeModel();
+	}
+
+
+	public static void log(Exception e) {
+		getInstance().getLog().log(new Status(IStatus.ERROR, DeeCore.PLUGIN_ID,
+				ILangModelConstants.INTERNAL_ERROR,
+				LangCoreMessages.LangCore_internal_error, e));
 	}
 }

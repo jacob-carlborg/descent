@@ -2,8 +2,13 @@ package mmrnmhrm.core.model;
 
 import melnorme.miscutil.ExceptionAdapter;
 import melnorme.miscutil.tree.IElement;
+import mmrnmhrm.core.CorePreferenceInitializer;
+import mmrnmhrm.core.DeeCore;
+import mmrnmhrm.core.ILangModelConstants;
+import mmrnmhrm.core.LangCoreMessages;
 import mmrnmhrm.core.model.lang.ELangElementTypes;
-import mmrnmhrm.core.model.lang.LangElement;
+import mmrnmhrm.core.model.lang.LangModuleUnit;
+import mmrnmhrm.core.model.lang.LangPackageFragment;
 
 import org.eclipse.core.filebuffers.FileBuffers;
 import org.eclipse.core.filebuffers.ITextFileBuffer;
@@ -14,6 +19,9 @@ import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
 
 import descent.core.compiler.IProblem;
@@ -24,12 +32,12 @@ import dtool.dom.definitions.Module;
 import dtool.refmodel.pluginadapters.IGenericCompilationUnit;
 
 /**
- * Module Wrapper 
+ * Compilation Unit. Bridges the Lang resource elements with ASTNode elements.
+ * The content/structure of this element is allways created when the object
+ * is instantiated.
  */
-public class CompilationUnit extends LangElement implements IGenericCompilationUnit, IDeeElement {
+public class CompilationUnit extends LangModuleUnit implements IGenericCompilationUnit, IDeeElement {
 
-	public IFile file;
-	private IDocument document;
 	
 	private descent.internal.core.dom.Module oldModule;
 	private Module module;
@@ -38,53 +46,26 @@ public class CompilationUnit extends LangElement implements IGenericCompilationU
 	public IProblem[] problems;
 	public int parseStatus;
 	
+
+	public CompilationUnit(LangPackageFragment parent, IFile file) {
+		super(parent);
+		this.file = file;
+		createStructure();
+	}
 	
 	public CompilationUnit(IFile file) {
 		this(null, file);
 	}
 
-	public CompilationUnit(PackageFragment parent, IFile file) {
-		super(parent);
-		this.file = file;
-	}
-
-	public IFile getFile() {
-		return file;
-	}
-
-	public IResource getUnderlyingResource() {
-		return file;
-	}
-
-
-	public String getElementName() {
-//		int extStart = file.getName().lastIndexOf('.'); 
-//		return file.getName().substring(0, extStart);
-		return file.getName();
-	}
-
-	public int getElementType() {
-		return ELangElementTypes.COMPILATION_UNIT;
-	}
-	
-	public IDocument getDocument() {
-		return document;
-	}
-	
-	public String getSource() {
-		return document.get();
-	}
-	
-	/** Returns the D project of this compilation unit, null if none. */
-	public DeeProject getProject() {
-		return DeeModelManager.getLangProject(file.getProject().getName());
-	}
-	
-	public IElement[] getChildren() {
+	public ASTNode[] getChildren() {
+		try {
+			getElementInfo();
+		} catch (CoreException e) {
+			ExceptionAdapter.unchecked(e); // Should not happen
+		}
 		return getModule().getChildren();
 	}
 	
-
 	public descent.internal.core.dom.Module getOldModule() {
 		return oldModule;
 	}
@@ -98,49 +79,12 @@ public class CompilationUnit extends LangElement implements IGenericCompilationU
 			return oldModule;
 		return module;
 	}
-	
-	public boolean isOutOfModel() {
-		return parent == null;
-	}
-
-
-	public void updateElement() {
-		openBuffer();
-	}
-
-	
-	private void openBuffer()  {
-		if(document != null)
-			return;
-		
-		ITextFileBufferManager manager = FileBuffers.getTextFileBufferManager();
-		IPath loc = file.getFullPath();
-		LocationKind fLocationKind = LocationKind.IFILE;
-
-		ITextFileBuffer textFileBuffer;
-		try {
-			manager.connect(loc, fLocationKind, null);
-			//manager.connect(loc, fLocationKind, new NullProgressMonitor());
-			textFileBuffer = manager.getTextFileBuffer(loc, fLocationKind);
-			document = textFileBuffer.getDocument();
-		} catch (CoreException ce) {
-			//fStatus= x.getStatus();
-			document = manager.createEmptyDocument(loc, fLocationKind);
-		}
-	}
-	
-	public void updateElementRecursive() throws CoreException {
-		updateElement();
-		reconcile();
-	}
 
 	public boolean hasErrors() {
 		return problems.length > 0;
 	}
 	
-	/**
-	 *  Updates this CompilationUnit's AST according to the underlying text. 
-	 */
+	/** Updates this CompilationUnit's AST according to the underlying text. */
 	public void reconcile() {
 		module = null;
 		
@@ -148,7 +92,7 @@ public class CompilationUnit extends LangElement implements IGenericCompilationU
 		preParseCompilationUnit();
 
 		if (hasErrors()) {
-			createErrorMarkers();
+			createErrorMarkers(getDocument());
 			parseStatus = EModelStatus.PARSER_SYNTAX_ERRORS;
 			return;
 		}
@@ -167,22 +111,44 @@ public class CompilationUnit extends LangElement implements IGenericCompilationU
 	protected void clearErrorMarkers() {
 		try {
 			file.deleteMarkers(IMarker.PROBLEM, true, IResource.DEPTH_INFINITE);
-		} catch (CoreException e) {
-			throw ExceptionAdapter.unchecked(e);
+		} catch (CoreException ce) {
+			throw ExceptionAdapter.unchecked(ce);
 		}
 	}
 	
-	protected void createErrorMarkers() {
+	protected void createErrorMarkers(IDocument doc) {
+		boolean reportSyntaxErrors;
+		reportSyntaxErrors = DeeCore.getInstance().getPluginPreferences()
+				.getBoolean(CorePreferenceInitializer.REPORT_SYNTAX_ERRORS);
+
 		for (IProblem problem : getOldModule().getProblems()) {
 			try {
-				IMarker marker = file.createMarker(IMarker.PROBLEM);
-				marker.setAttribute(IMarker.MESSAGE, problem.getMessage());
-				marker.setAttribute(IMarker.SEVERITY,
-						IMarker.SEVERITY_ERROR);
+				createMarker(doc, problem, reportSyntaxErrors);
 			} catch (CoreException e) {
 				throw ExceptionAdapter.unchecked(e);
 			}
 		}
+	}
+	
+	private void createMarker(IDocument doc, IProblem problem,
+			boolean reportSyntaxErrors) throws CoreException {
+		IMarker marker = file.createMarker(IMarker.PROBLEM);
+		
+		int lineNum = 0;
+		try {
+			lineNum = doc.getLineOfOffset(problem.getOffset());
+			marker.setAttribute(IMarker.LINE_NUMBER, lineNum);
+		} catch (BadLocationException e) {
+			DeeCore.log(e);
+		}
+		
+		if(reportSyntaxErrors) {
+			marker.setAttribute(IMarker.LOCATION, "Line "+ lineNum);
+			marker.setAttribute(IMarker.CHAR_START, problem.getOffset());
+			marker.setAttribute(IMarker.CHAR_END, problem.getOffset() + problem.getLength());
+		}
+		marker.setAttribute(IMarker.MESSAGE, problem.getMessage());
+		marker.setAttribute(IMarker.SEVERITY, IMarker.SEVERITY_ERROR);
 	}
 
 	private void preParseCompilationUnit() {
@@ -201,8 +167,6 @@ public class CompilationUnit extends LangElement implements IGenericCompilationU
 		module = neoModule;
 	}
 	
-
-
 	public String toStringParseStatus() {
 		if(parseStatus == EModelStatus.PARSER_INTERNAL_ERROR) {
 			return "Parser Internal Error";

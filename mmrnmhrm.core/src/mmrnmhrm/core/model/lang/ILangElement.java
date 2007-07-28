@@ -1,6 +1,7 @@
 package mmrnmhrm.core.model.lang;
 
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IAdaptable;
 
 import melnorme.miscutil.tree.IElement;
@@ -24,4 +25,11 @@ public interface ILangElement extends IElement, IAdaptable {
 	 * in a resource.
 	 */
 	IResource getUnderlyingResource(); 
+	
+	/** Updates the lang model according to the underlying filesystem data. */
+	void updateElementRecursive() throws CoreException;
+
+	/** Update the lang element. */
+	void createStructure() throws CoreException;
+	
 }

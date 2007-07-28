@@ -3,6 +3,8 @@ package mmrnmhrm.core.model;
 import mmrnmhrm.core.model.lang.ELangElementTypes;
 import mmrnmhrm.core.model.lang.ILangElement;
 import mmrnmhrm.core.model.lang.LangContainerElement;
+import mmrnmhrm.core.model.lang.LangElement;
+import mmrnmhrm.core.model.lang.LangPackageFragment;
 
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IResource;
@@ -13,7 +15,7 @@ public class DeeSourceLib extends LangContainerElement implements IDeeSourceRoot
 
 	public IFolder folder;
 	
-	public DeeSourceLib(DeeProject parent, IFolder folder) {
+	public DeeSourceLib(LangElement parent, IFolder folder) {
 		super(parent);
 		this.folder = folder;
 	}
@@ -47,16 +49,13 @@ public class DeeSourceLib extends LangContainerElement implements IDeeSourceRoot
 		return folder;
 	}
 
-	public void updateElementRecursive() throws CoreException {
+
+
+	public void createStructure() throws CoreException {
 		// TODO Auto-generated method stub
 	}
 
-
-	public void updateElement() throws CoreException {
-		// TODO Auto-generated method stub
-	}
-
-	public PackageFragment[] getPackageFragments() {
+	public LangPackageFragment[] getPackageFragments() {
 		// TODO Auto-generated method stub
 		return null;
 	}

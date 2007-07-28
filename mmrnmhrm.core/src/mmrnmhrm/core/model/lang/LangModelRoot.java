@@ -1,7 +1,12 @@
 package mmrnmhrm.core.model.lang;
 
 
+import mmrnmhrm.core.model.DeeProject;
+
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.CoreException;
 
 
 public abstract class LangModelRoot extends LangContainerElement {
@@ -9,10 +14,24 @@ public abstract class LangModelRoot extends LangContainerElement {
 	public LangModelRoot() {
 		super(null);
 	}
+	
+	
+	public String getElementName() {
+		return "/";
+	}
+	
+	public int getElementType() {
+		return ELangElementTypes.MODELROOT;
+	}
+	
+	/** {@inheritDoc} */ @Override
+	public void updateElem() throws CoreException {
+		createStructure();
+	}
 
 	/** Returns all Lang projects. */
-	private ILangProject[] getLangProjects() {
-		return (ILangProject[]) getChildren();
+	public DeeProject[] getLangProjects() {
+		return (DeeProject[]) getChildren();
 	}
 
 	/** Returns the Lang project with the given name, or null if not found. */
@@ -29,13 +48,15 @@ public abstract class LangModelRoot extends LangContainerElement {
 		return getLangProject(project.getName());
 	}
 
-	
-	public String getElementName() {
-		return "/";
+
+	/** Removes a D project from the model. Does not delete workspace project. */
+	public void removeDeeProject(LangElement deeproject) throws CoreException {
+		removeChild(deeproject);
 	}
-	
-	public int getElementType() {
-		return ELangElementTypes.MODELROOT;
+
+	/** {@inheritDoc} */
+	public IResource getUnderlyingResource() {
+		return ResourcesPlugin.getWorkspace().getRoot();
 	}
 	
 }

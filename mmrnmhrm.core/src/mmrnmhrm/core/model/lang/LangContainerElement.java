@@ -1,5 +1,7 @@
 package mmrnmhrm.core.model.lang;
 
+import org.eclipse.core.runtime.CoreException;
+
 import melnorme.miscutil.ExceptionAdapter;
 import melnorme.miscutil.tree.IElement;
 
@@ -20,11 +22,6 @@ public abstract class LangContainerElement extends LangElement {
 	 */
 	protected ILangElement[] children;
 
-
-	public IElement[] getChildren() {
-		return this.children;
-	}
-	
 	protected void setChildren(ILangElement[] children) {
 		this.children = children;
 	}
@@ -32,6 +29,17 @@ public abstract class LangContainerElement extends LangElement {
 	protected void clearChildren() {
 		setChildren(newChildrenArray(0));
 	}
+
+	public ILangElement[] getChildren() {
+		try {
+			getElementInfo();
+		} catch (CoreException e) {
+			ExceptionAdapter.unchecked(e);
+		}
+		return this.children;
+	}
+	
+
 	
 	/** Creates an array with a runtime type appropriate to store this 
 	 * element's children. */
@@ -82,6 +90,16 @@ public abstract class LangContainerElement extends LangElement {
 		} catch (CloneNotSupportedException e) {
 			throw ExceptionAdapter.unchecked(e);
 		}
+	}
+
+	/** {@inheritDoc} */
+	public void updateElementRecursive() throws CoreException {
+		opened = false;
+		/*
+		//updateElement();
+		for(ILangElement deeproj : getChildren()) {
+			deeproj.updateElementRecursive();
+		}*/
 	}
 
 

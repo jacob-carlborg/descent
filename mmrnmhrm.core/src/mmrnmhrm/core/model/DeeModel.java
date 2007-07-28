@@ -4,26 +4,31 @@ import java.util.ArrayList;
 
 import mmrnmhrm.core.DeeCore;
 import mmrnmhrm.core.IElementChangedListener;
+import mmrnmhrm.core.model.lang.LangElement;
+import mmrnmhrm.core.model.lang.LangPackageFragment;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 
 /**
  * The Dee Model. It's elements are not handle-based, nor cached like JDT.
  */
-public class DeeModelManager {
+public class DeeModel {
 	
-	private static DeeModelManager deemodel = new DeeModelManager();
+	private static DeeModel deemodel = new DeeModel();
 	
 	/** @return the shared instance */
-	public static DeeModelManager getInstance() {
+	public static DeeModel getInstance() {
 		return deemodel;
 	}
 	
 	public ArrayList<IElementChangedListener> elementChangedListeners 
 		= new ArrayList<IElementChangedListener>(5);
+	
+
 	
 	/** Registers an element change listener. */
 	public synchronized void addElementChangedListener(IElementChangedListener listener, int eventMask) {
@@ -49,30 +54,20 @@ public class DeeModelManager {
 		}
 	}
 
+	/** Initializes the D model. */
+	public static void initDeeModel() throws CoreException {
+		getRoot().createStructure();
+	}
 	
 	/** Gets the D Model Root */
 	public static DeeModelRoot getRoot() {
 		return DeeModelRoot.getInstance();
 	}
-
-	/** Inits the D model. */
-	public static void initDeeModel() throws CoreException {
-		// Init the model with existing D projects.
-		for(IProject proj : DeeCore.getWorkspaceRoot().getProjects()) {
-			if(proj.hasNature(DeeNature.NATURE_ID))
-			loadDeeProject(proj);
-		}
-	}
 	
 	/** Adds a D project from a resource project to Dee Model. */
-	public static DeeProject loadDeeProject(IProject project) throws CoreException {
-		DeeProject deeproj = new DeeProject(project);
-		// Add the project to the model before loading
-		deeproj.loadProjectConfigFile();
-		DeeModelRoot.getInstance().addDeeProject(deeproj);
-		return deeproj;
+	public static LangElement loadDeeProject(IProject project) throws CoreException {
+		return DeeModelRoot.getInstance().loadDeeProject(project);
 	}
-
 
 	/** Returns the D project with the given name, null if none. */
 	public static DeeProject getLangProject(String name) {
@@ -84,19 +79,14 @@ public class DeeModelManager {
 		return (DeeProject) getRoot().getLangProject(project);
 	}
 
-	/** Creates a D project in the given existing workspace project. */
-	public static DeeProject createDeeProject(IProject project) throws CoreException {
-		return getRoot().createDeeProject(project);
-	}
-
 	/** Returns the Compilation for the given file. If the file is not part
-	 * of a source root, returns an out of model Compilation Unit.*/
-	public static CompilationUnit getCompilationUnit(IFile file) {
+	 * of a source root, returns an out of model Compilation Unit. */
+	public static CompilationUnit findCompilationUnit(IFile file) throws CoreException {
 		CompilationUnit cunit = findMember(file);
 		return cunit;
 	}
 
-	private static CompilationUnit findMember(IFile file) {
+	private static CompilationUnit findMember(IFile file) throws CoreException {
 		IPath filepath = file.getProjectRelativePath();
 		DeeProject deeproj = getLangProject(file.getProject());
 		if(deeproj == null) return null;
@@ -111,8 +101,8 @@ public class DeeModelManager {
 		}
 		if(srcRoot == null) return null;
 
-		PackageFragment pkgFrag = null;
-		for (PackageFragment element : srcRoot.getPackageFragments()) {
+		LangPackageFragment pkgFrag = null;
+		for (LangPackageFragment element : srcRoot.getPackageFragments()) {
 			IPath path = element.getUnderlyingResource().getProjectRelativePath();
 			if(path.equals(filepath.removeLastSegments(1))) {
 				pkgFrag = element;

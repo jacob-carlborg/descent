@@ -7,16 +7,20 @@ import java.io.InputStream;
 import java.io.StringWriter;
 import java.util.ArrayList;
 
+import javax.naming.ldap.SortControl;
+
 import melnorme.miscutil.Assert;
 import melnorme.miscutil.log.Logg;
 import mmrnmhrm.core.DeeCoreException;
 import mmrnmhrm.core.build.DeeCompilerOptions;
 import mmrnmhrm.core.model.lang.ELangElementTypes;
+import mmrnmhrm.core.model.lang.ILangElement;
 import mmrnmhrm.core.model.lang.LangProject;
 
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
+import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
@@ -24,7 +28,6 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.ini4j.Ini;
 import org.ini4j.InvalidIniFormatException;
-
 
 
 /**
@@ -36,7 +39,6 @@ public class DeeProject extends LangProject implements IDeeElement {
 	private static final String CFG_FILE_SECTION = "buildpath";
 	
 	
-	private IContainer outputDir; // The resource is allowed to not exist.
 
 	public DeeCompilerOptions compilerOptions;
 	
@@ -50,72 +52,37 @@ public class DeeProject extends LangProject implements IDeeElement {
 		return new IDeeSourceRoot[size];
 	}
 	
-	public IContainer getOutputDir() {
-		return outputDir;
+
+	/* -------------- Structure  -------------- */
+	
+	/** {@inheritDoc} */
+	public void createStructure() throws CoreException {
+		opened = true;
+		loadProjectConfigFile();
+	}
+	
+	/** {@inheritDoc} */ @Override
+	public void updateElem() throws CoreException {
+		updateErrorMarkers();
 	}
 
-	public void setOutputDir(IFolder outputDir) {
-		this.outputDir = outputDir;
-	}
-	
-	public IResource getUnderlyingResource() {
-		return project;
-	}
-
-
-	/* -------------- ------------------------  -------------- */
-
-	
-	public DeeSourceFolder createAddSourceFolder(IFolder folder) throws CoreException {
-		DeeSourceFolder srcFolder = new DeeSourceFolder(folder, this);
-		addSourceRoot(srcFolder);
-		return srcFolder;
-	}
-	
-	public void addSourceRoot(IDeeSourceRoot entry) throws CoreException {
-		addChild(entry);
-		entry.updateElementRecursive();
-	}
-	
-	public void removeSourceRoot(IDeeSourceRoot entry) throws CoreException {
-		removeChild(entry);
-	}
-	
-
-	public IDeeSourceRoot getSourceRoot(IFolder folder) {
-		for (IDeeSourceRoot element : getSourceRoots()) {
-			if(element.getUnderlyingResource().equals(folder))
-				return element;
-		}
-		return null;
-	}
-
-	
-	public IDeeSourceRoot[] getSourceRoots() {
-		return (IDeeSourceRoot[]) getChildren();
-	}
-	
-	@SuppressWarnings("unchecked")
-	public DeeSourceFolder[] getSourceFolders() {
-		return getChildrenOfType(ELangElementTypes.SOURCEFOLDER).toArray(new DeeSourceFolder[0]);
-	}
-
-	@SuppressWarnings("unchecked")
-	public ArrayList<DeeSourceLib> getSourceLibraries() {
-		return (ArrayList<DeeSourceLib>) getChildrenOfType(ELangElementTypes.SOURCELIB);
-	}
-	
-	public void updateElement() throws CoreException {
-		// FIXME: nothing to do, unless maybe reload config file?
-		//loadProjectConfigFile();
-	}
-	
-	public void updateElementRecursive() throws CoreException {
-		updateElement();
+	private void updateErrorMarkers() throws CoreException {
+		project.deleteMarkers(IMarker.PROBLEM, false, IResource.DEPTH_ZERO);
 		for(IDeeSourceRoot sourceRoot : getSourceRoots()) {
-			sourceRoot.updateElementRecursive();
+			if(sourceRoot.getUnderlyingResource().exists() == false) {
+				createMissingMarker(sourceRoot);
+			}
 		}
 	}
+	
+	private void createMissingMarker(IDeeSourceRoot sourceRoot) throws CoreException {
+		IMarker marker =project.createMarker(IMarker.PROBLEM);
+		marker.setAttribute(IMarker.MESSAGE, 
+				DeeCoreMessages.BUILD_PATH_RESOURCE_MISSING + sourceRoot.getUnderlyingResource());
+		marker.setAttribute(IMarker.SEVERITY, IMarker.SEVERITY_ERROR);
+	}
+
+
 	
 
 	/* =====================  persistence ===================== */

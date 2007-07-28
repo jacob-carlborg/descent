@@ -3,7 +3,7 @@ package mmrnmhrm.core;
 import java.util.ArrayList;
 import java.util.List;
 
-import mmrnmhrm.core.model.DeeModelManager;
+import mmrnmhrm.core.model.DeeModel;
 
 import org.eclipse.core.resources.IWorkspaceRunnable;
 import org.eclipse.core.runtime.CoreException;
@@ -39,7 +39,7 @@ public abstract class LangModelOperation implements IWorkspaceRunnable{
 		} finally {
 			popOperation();
 			if(isTopLevelOperation()) {
-				DeeModelManager.getInstance().fireModelChanged();
+				DeeModel.getInstance().fireModelChanged();
 			}
 		}
 		
