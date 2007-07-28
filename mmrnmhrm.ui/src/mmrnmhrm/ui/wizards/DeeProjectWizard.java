@@ -2,11 +2,15 @@ package mmrnmhrm.ui.wizards;
 
 import mmrnmhrm.core.DeeCore;
 import mmrnmhrm.core.DeeCoreException;
-import mmrnmhrm.core.model.DeeModelManager;
+import mmrnmhrm.core.model.DeeModel;
+import mmrnmhrm.core.model.DeeNature;
 import mmrnmhrm.core.model.DeeProject;
+import mmrnmhrm.core.model.lang.LangElement;
 
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspaceRoot;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 
@@ -30,7 +34,7 @@ public class DeeProjectWizard extends NewElementWizard {
     }
     
 
-	public DeeProject getDeeProject() {
+	public LangElement getDeeProject() {
 		return deeProject;
 	}
 
@@ -59,12 +63,17 @@ public class DeeProjectWizard extends NewElementWizard {
 		project = workspaceRoot.getProject(fFirstPage.getProjectName());
 		if(!fFirstPage.fLocationGroup.isInWorkspace()) {
 			//TODO: allow creating in external location
-			throw new DeeCoreException("external location creation TODO", null);
+			throw new DeeCoreException("External location creation not supported yet", null);
 		}
-		
 		project.create(monitor);
 		project.open(monitor);
-		deeProject = DeeModelManager.createDeeProject(project);
+		DeeNature.addNature(project, DeeNature.NATURE_ID);
+		
+		DeeProject deeproj = new DeeProject(project);
+		deeproj.setDefaultBuildPath();
+		deeproj.saveProjectConfigFile();
+		DeeModel.getRoot().addDeeProject(deeproj);
+		deeProject = deeproj;
 	}
 	
 	
@@ -79,7 +88,7 @@ public class DeeProjectWizard extends NewElementWizard {
 	
 	public void deleteDeeProject(final IProgressMonitor monitor) throws CoreException {
 		try {
-			DeeModelManager.getRoot().removeDeeProject(deeProject);
+			DeeModel.getRoot().removeDeeProject(deeProject);
 			deeProject.getProject().delete(false, monitor);
 		} finally {
 			deeProject = null;

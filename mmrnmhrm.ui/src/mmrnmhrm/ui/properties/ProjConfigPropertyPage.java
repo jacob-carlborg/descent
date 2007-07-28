@@ -2,7 +2,7 @@ package mmrnmhrm.ui.properties;
 
 import melnorme.lang.ui.ExceptionHandler;
 import mmrnmhrm.core.DeeCore;
-import mmrnmhrm.core.model.DeeModelManager;
+import mmrnmhrm.core.model.DeeModel;
 import mmrnmhrm.core.model.DeeProject;
 import mmrnmhrm.ui.wizards.projconfig.ProjectConfigBlock;
 
@@ -46,7 +46,7 @@ public class ProjConfigPropertyPage extends PropertyPage {
 	}
 	
 	private DeeProject getDeeProject() {
-		return DeeModelManager.getLangProject(getProject());
+		return DeeModel.getLangProject(getProject());
 	}
 	
 	private IProject getProject() {

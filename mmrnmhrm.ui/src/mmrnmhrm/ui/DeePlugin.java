@@ -6,7 +6,7 @@ import java.util.Map;
 import melnorme.lang.ui.LangPlugin;
 import melnorme.miscutil.log.Logg;
 import mmrnmhrm.core.model.CompilationUnit;
-import mmrnmhrm.core.model.DeeModelManager;
+import mmrnmhrm.core.model.DeeModel;
 import mmrnmhrm.ui.text.DeeCodeScanner;
 import mmrnmhrm.ui.text.DeeDocumentProvider;
 
@@ -66,14 +66,13 @@ public class DeePlugin extends LangPlugin {
 		CompilationUnit cunit = null;
 		if(input instanceof FileEditorInput) {
 			IFile file = ((FileEditorInput) input).getFile();
-			cunit = DeeModelManager.getCompilationUnit(file);
+			cunit = DeeModel.findCompilationUnit(file);
 			if(cunit == null) {
 				if(cunitMap.containsKey(input))
 					return cunitMap.get(input);
 				
 				cunit = new CompilationUnit(file);
-				cunit.updateElement();
-				cunit.updateElementRecursive();
+				cunit.createStructure();
 				cunitMap.put(input, cunit);
 			}
 		}

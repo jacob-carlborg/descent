@@ -2,6 +2,7 @@ package mmrnmhrm.ui.wizards.projconfig;
 
 import java.util.Arrays;
 
+import melnorme.miscutil.ExceptionAdapter;
 import melnorme.util.ui.fields.FieldUtil;
 import melnorme.util.ui.fields.IElementCommand;
 import melnorme.util.ui.fields.TreeListEditorField;
@@ -13,6 +14,7 @@ import mmrnmhrm.core.model.DeeSourceFolder;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.jdt.internal.ui.wizards.dialogfields.DialogField;
 import org.eclipse.jdt.internal.ui.wizards.dialogfields.IDialogFieldListener;
@@ -55,7 +57,11 @@ public class SourceFoldersConfigPage extends AbstractConfigPage {
 
 
 	protected void updateView() {
-		fSrcFoldersList.setElements(Arrays.asList(fDeeProject.getSourceFolders()));
+		try {
+			fSrcFoldersList.setElements(Arrays.asList(fDeeProject.getSourceFolders()));
+		} catch (CoreException e) {
+			ExceptionAdapter.unchecked(e);
+		}
 		// TODO MAKE TESTCASE FOR THIS
 		fOutputLocationPath = fDeeProject.getOutputDir().getProjectRelativePath();
 		fOutputLocationField.setTextWithoutUpdate(fOutputLocationPath.toString());

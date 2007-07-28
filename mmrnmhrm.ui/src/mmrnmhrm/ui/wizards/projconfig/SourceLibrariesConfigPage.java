@@ -1,5 +1,6 @@
 package mmrnmhrm.ui.wizards.projconfig;
 
+import melnorme.miscutil.ExceptionAdapter;
 import melnorme.util.ui.fields.FieldUtil;
 import melnorme.util.ui.fields.IElementCommand;
 import melnorme.util.ui.fields.TreeListEditorField;
@@ -10,6 +11,7 @@ import mmrnmhrm.core.model.DeeSourceFolder;
 import mmrnmhrm.core.model.DeeSourceLib;
 
 import org.eclipse.core.resources.IFolder;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jdt.internal.ui.wizards.dialogfields.TreeListDialogField;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ILabelProvider;
@@ -43,7 +45,11 @@ public class SourceLibrariesConfigPage extends AbstractConfigPage {
 
 
 	private void updateView() {
-		fSrcLibrariesList.setElements(fDeeProject.getSourceLibraries());
+		try {
+			fSrcLibrariesList.setElements(fDeeProject.getSourceLibraries());
+		} catch (CoreException e) {
+			ExceptionAdapter.unchecked(e);
+		}
 	}
 
 	

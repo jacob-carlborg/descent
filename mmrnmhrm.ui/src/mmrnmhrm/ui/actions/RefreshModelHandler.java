@@ -1,6 +1,6 @@
 package mmrnmhrm.ui.actions;
 
-import mmrnmhrm.core.model.DeeModelManager;
+import mmrnmhrm.core.model.DeeModel;
 
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
@@ -13,7 +13,7 @@ public class RefreshModelHandler extends AbstractHandler {
 
 	public Object execute(ExecutionEvent event) throws ExecutionException {
 		try {
-			DeeModelManager.getRoot().updateElementRecursive();
+			DeeModel.getRoot().updateElementRecursive();
 		} catch (CoreException ce) {
 			throw new ExecutionException("RefreshModelHandler error", ce);
 		}

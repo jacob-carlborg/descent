@@ -16,6 +16,7 @@ public abstract class DeeColorPreferenceInitializer {
 		return Display.getDefault().getSystemColor(colorid).getRGB();
 	}
 	
+	/** Sets the defaults for the color preferences. */ 
 	public static void initializeDefaults(IPreferenceStore store) {
 		DeeColorPreferenceInitializer.store = store;
 

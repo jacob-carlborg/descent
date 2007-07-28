@@ -133,7 +133,7 @@ public class GoToDefinitionHandler extends AbstractHandler  {
 
 		if(openNewEditor || srcCUnit != targetCUnit) {
 			IWorkbenchPage page = window.getActivePage();
-			targetEditor = (ITextEditor) IDE.openEditor(page, targetCUnit.file, DeeEditor.EDITOR_ID);
+			targetEditor = (ITextEditor) IDE.openEditor(page, targetCUnit.getFile(), DeeEditor.EDITOR_ID);
 		} else {
 			targetEditor = srcEditor;
 		}

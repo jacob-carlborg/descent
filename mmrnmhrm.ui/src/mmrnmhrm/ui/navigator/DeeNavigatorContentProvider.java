@@ -1,7 +1,7 @@
 package mmrnmhrm.ui.navigator;
 
 import melnorme.miscutil.tree.IElement;
-import mmrnmhrm.core.model.DeeModelManager;
+import mmrnmhrm.core.model.DeeModel;
 import mmrnmhrm.core.model.DeeProject;
 import mmrnmhrm.core.model.IDeeElement;
 import mmrnmhrm.core.model.lang.ILangElement;
@@ -18,11 +18,19 @@ public class DeeNavigatorContentProvider implements ITreeContentProvider {
 
 	public Object[] getChildren(Object element) {
 		if(element instanceof IProject) {
-			return DeeModelManager.getLangProject((IProject)element).getSourceFolders();
+			try {
+				return DeeModel.getLangProject((IProject)element).getSourceRoots();
+			} catch (CoreException e) {
+				return null;
+			}
 		}
 		
 		if(element instanceof DeeProject) {
-			return ((DeeProject) element).getSourceFolders();
+			try {
+				return ((DeeProject) element).getSourceFolders();
+			} catch (CoreException e) {
+				return null;
+			}
 		}
 		
 		if(element instanceof IDeeElement) {

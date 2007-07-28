@@ -3,7 +3,7 @@ package mmrnmhrm.ui.actions;
 import melnorme.lang.ui.ExceptionHandler;
 import melnorme.miscutil.Assert;
 import mmrnmhrm.core.DeeCore;
-import mmrnmhrm.core.model.DeeModelManager;
+import mmrnmhrm.core.model.DeeModel;
 import mmrnmhrm.core.model.DeeProject;
 import mmrnmhrm.ui.DeeUI;
 
@@ -50,7 +50,7 @@ public class AddSourceFolderHandler extends AbstractHandler {
 			public void run(IProgressMonitor monitor) throws CoreException {
 				// TODO, envelop in a model operation
 				IProject project = folder.getProject();
-				DeeProject proj = DeeModelManager.getLangProject(project);
+				DeeProject proj = DeeModel.getLangProject(project);
 				proj.createAddSourceFolder(folder);
 				proj.saveProjectConfigFile();
 			}

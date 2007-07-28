@@ -25,7 +25,5 @@ public class DeeDocumentProvider extends TextFileDocumentProvider {
 		JavaPlugin.getDefault().getPreferenceStore().addPropertyChangeListener(fPropertyListener);
 		*/
 	}
-
-
 	
 }

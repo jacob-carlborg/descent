@@ -2,7 +2,7 @@ package mmrnmhrm.ui.actions;
 
 import melnorme.lang.ui.ExceptionHandler;
 import mmrnmhrm.core.DeeCore;
-import mmrnmhrm.core.model.DeeModelManager;
+import mmrnmhrm.core.model.DeeModel;
 import mmrnmhrm.ui.wizards.projconfig.ProjectConfigBlock;
 
 import org.eclipse.core.commands.AbstractHandler;
@@ -34,7 +34,7 @@ public class SampleTest2Handler extends AbstractHandler {
 		
 		@Override
 		protected Control createDialogArea(Composite parent) {
-			fProjCfg.init(DeeModelManager.getRoot().getDeeProjects()[0]);
+			fProjCfg.init(DeeModel.getRoot().getLangProjects()[0]);
 			Control control = fProjCfg.createControl(parent); 
 			control.setLayoutData(new GridData(GridData.FILL_BOTH));
 			return control;

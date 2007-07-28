@@ -1,12 +1,14 @@
 package mmrnmhrm.ui.text.color;
 
+import mmrnmhrm.ui.DeePlugin;
+
 /**
  * Color preference constants used in the Dee preference store. 
  */
 public interface IDeeColorPreferences extends ILangColorPreferences {
 
 	/** Prefix for D preference keys. */
-	String PREFIX = "dee_"; 
+	String PREFIX = DeePlugin.PLUGIN_ID + ".color."; 
 
 	String DEE_SPECIAL = PREFIX + "special";
 	String DEE_STRING = PREFIX + "string";
