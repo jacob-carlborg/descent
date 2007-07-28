@@ -3,6 +3,7 @@ package descent.tests.mars;
 import java.util.Arrays;
 import java.util.List;
 
+import descent.core.dom.AST;
 import descent.core.dom.AliasDeclaration;
 import descent.core.dom.Declaration;
 import descent.core.dom.FunctionDeclaration;
@@ -43,6 +44,28 @@ public class Modifier_Test extends Parser_Test {
 		for(Object[] pair : objs) {
 			String s = " " + pair[0] + " alias int Bla;";
 			AliasDeclaration aliasDeclaration = (AliasDeclaration) getSingleDeclarationNoProblems(s);
+			assertPosition(aliasDeclaration, 1, s.length() - 1);
+			
+			try {
+				assertEquals(1, aliasDeclaration.modifiers().size());
+			} catch (Throwable t) {
+				fail(Arrays.toString(pair));
+			}
+			
+			Modifier modifier = aliasDeclaration.modifiers().get(0);
+			assertEquals(pair[1], modifier.getModifierKeyword());
+			assertPosition(modifier, 1, ((String) pair[0]).length());
+		}
+	}
+	
+	public void testAllModifiersAsJava2() {
+		Object[][] objs = {
+				{ "invariant", Modifier.ModifierKeyword.INVARIANT_KEYWORD },
+			};
+		
+		for(Object[] pair : objs) {
+			String s = " " + pair[0] + " alias int Bla;";
+			AliasDeclaration aliasDeclaration = (AliasDeclaration) getSingleDeclarationNoProblems(s, AST.D2);
 			assertPosition(aliasDeclaration, 1, s.length() - 1);
 			
 			try {
@@ -210,6 +233,23 @@ public class Modifier_Test extends Parser_Test {
 		}
 	}
 	
+	/*
+	public void testModifiersWithCurlyBraces2() {
+		Object[][] objs = {
+			{ "invariant", Modifier.ModifierKeyword.INVARIANT_KEYWORD },
+		};
+		
+		for(Object[] pair : objs) {
+			String s = " " + pair[0] + " { class Clazz { } }";
+			ModifierDeclaration modifierDeclaration = (ModifierDeclaration) getSingleDeclarationNoProblems(s, AST.D2);
+			assertEquals(pair[1], modifierDeclaration.getModifier().getModifierKeyword());
+			assertPosition(modifierDeclaration.getModifier(), 1, ((String) pair[0]).length());
+			assertEquals(1, modifierDeclaration.declarations().size());
+			assertEquals(0, modifierDeclaration.modifiers().size());
+		}
+	}
+	*/
+	
 	public void testModifiersWithColon() {
 		Object[][] objs = {
 			{ "private", Modifier.ModifierKeyword.PRIVATE_KEYWORD },
@@ -237,6 +277,21 @@ public class Modifier_Test extends Parser_Test {
 		}
 	}
 	
+	public void testModifiersWithColon2() {
+		Object[][] objs = {
+			{ "invariant", Modifier.ModifierKeyword.INVARIANT_KEYWORD },
+		};
+		
+		for(Object[] pair : objs) {
+			String s = " " + pair[0] + ": class Clazz { }";
+			ModifierDeclaration modifierDeclaration = (ModifierDeclaration) getSingleDeclarationNoProblems(s, AST.D2);
+			assertEquals(pair[1], modifierDeclaration.getModifier().getModifierKeyword());
+			assertPosition(modifierDeclaration.getModifier(), 1, ((String) pair[0]).length());
+			assertEquals(1, modifierDeclaration.declarations().size());
+			assertEquals(0, modifierDeclaration.modifiers().size());
+		}
+	}
+	
 	public void testModifiersWithVar() {
 		Object[][] objs = {
 			{ "const", Modifier.ModifierKeyword.CONST_KEYWORD },
@@ -253,6 +308,22 @@ public class Modifier_Test extends Parser_Test {
 		for(Object[] pair : objs) {
 			String s = " static " + pair[0] + "  x = 1;";
 			VariableDeclaration var = (VariableDeclaration) getSingleDeclarationNoProblems(s);
+			assertEquals(2, var.modifiers().size());
+			assertEquals(ModifierKeyword.STATIC_KEYWORD, var.modifiers().get(0).getModifierKeyword());
+			assertPosition(var.modifiers().get(0), 1, "static".length());
+			assertEquals(pair[1], var.modifiers().get(1).getModifierKeyword());
+			assertPosition(var.modifiers().get(1), 8, ((String) pair[0]).length());
+		}
+	}
+	
+	public void testModifiersWithVar2() {
+		Object[][] objs = {
+			{ "invariant", Modifier.ModifierKeyword.INVARIANT_KEYWORD },
+		};
+		
+		for(Object[] pair : objs) {
+			String s = " static " + pair[0] + "  x = 1;";
+			VariableDeclaration var = (VariableDeclaration) getSingleDeclarationNoProblems(s, AST.D2);
 			assertEquals(2, var.modifiers().size());
 			assertEquals(ModifierKeyword.STATIC_KEYWORD, var.modifiers().get(0).getModifierKeyword());
 			assertPosition(var.modifiers().get(0), 1, "static".length());

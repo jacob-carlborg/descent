@@ -282,7 +282,7 @@ public class Problems_Test extends Parser_Test {
 	}
 
 	public void test_THREE_EQUALS_IS_DEPRECATED() {
-		IProblem p = getProblem(" bool x = 1 === 2;", AST.D1);
+		IProblem p = getProblem(" bool x = 1 === 2;", AST.D0);
 		assertError(p, IProblem.ThreeEqualsIsNoLongerLegal, 12, 3);
 	}
 
@@ -353,7 +353,7 @@ public class Problems_Test extends Parser_Test {
 
 	public void test_VARIADIC_ARGUMENT_CANNOT_BE_OUT_OR_INOUT() {
 		IProblem p = getProblem(" void bla(out int ...) { }");
-		assertError(p, IProblem.VariadicArgumentCannotBeOutOrInout, 10, 3);
+		assertError(p, IProblem.VariadicArgumentCannotBeOutInoutOrRef, 10, 3);
 	}
 
 	public void test_DEFAULT_ARGUMENT_EXPECTED() {
@@ -452,12 +452,12 @@ public class Problems_Test extends Parser_Test {
 	}
 
 	public void test_IFTYPE_DECPRECATED() {
-		IProblem p = getProblem(" iftype(x) { }", AST.D1);
+		IProblem p = getProblem(" iftype(x) { }", AST.D0);
 		assertError(p, IProblem.IftypeDeprecated, 1, 6);
 	}
 
 	public void test_INVALID_IFTYPE_SYNTAX() {
-		IProblem p = getProblems(" iftype int", 2, AST.D1)[0];
+		IProblem p = getProblems(" iftype int", 2, AST.D0)[0];
 		assertError(p, IProblem.ParsingErrorInsertToComplete, 1, 6);
 	}
 
@@ -557,7 +557,7 @@ public class Problems_Test extends Parser_Test {
 	}
 
 	public void test_ON_SCOPE_DEPRECATED() {
-		IProblem p = getProblem(" void bla() { on_scope_exit { } }", AST.D1);
+		IProblem p = getProblem(" void bla() { on_scope_exit { } }", AST.D0);
 		assertError(p, IProblem.OnScopeDeprecated, 14, 13);
 	}
 

@@ -194,6 +194,7 @@ class NaiveASTFlattener extends ASTVisitor {
 		case INOUT: this.buffer.append("inout"); break;
 		case LAZY: this.buffer.append("lazy"); break;
 		case OUT: this.buffer.append("out"); break;
+		case REF: this.buffer.append("ref"); break;
 		}
 		
 		if (node.getType() != null) {

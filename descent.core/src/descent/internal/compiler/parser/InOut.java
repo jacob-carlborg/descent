@@ -6,6 +6,7 @@ public enum InOut {
 	In,
 	Out,
 	InOut,
-	Lazy
+	Lazy,
+	Ref
 
 }

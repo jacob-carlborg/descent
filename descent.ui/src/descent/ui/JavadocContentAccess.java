@@ -331,6 +331,7 @@ public class JavadocContentAccess {
 			case ITerminalSymbols.TokenNameinvariant:
 			case ITerminalSymbols.TokenNameis:
 			case ITerminalSymbols.TokenNamelazy:
+			case ITerminalSymbols.TokenNamemacro:
 			case ITerminalSymbols.TokenNamemixin:
 			case ITerminalSymbols.TokenNamemodule:
 			case ITerminalSymbols.TokenNamenew:
@@ -341,6 +342,7 @@ public class JavadocContentAccess {
 			case ITerminalSymbols.TokenNameprivate:
 			case ITerminalSymbols.TokenNameprotected:
 			case ITerminalSymbols.TokenNamepublic:
+			case ITerminalSymbols.TokenNameref:
 			case ITerminalSymbols.TokenNamescope:
 			case ITerminalSymbols.TokenNamestatic:
 			case ITerminalSymbols.TokenNamestruct:

@@ -506,7 +506,7 @@ public class Statement_Test extends Parser_Test {
 		
 		for(Object[] obj : objs) {
 			String s = " on_scope_" + obj[0] + " { }";
-			ScopeStatement stm = (ScopeStatement) parseStatement(s, AST.D1);
+			ScopeStatement stm = (ScopeStatement) parseStatement(s, AST.D0);
 			
 			assertEquals(ASTNode.SCOPE_STATEMENT, stm.getNodeType());
 			assertPosition(stm, 1, s.length() - 1);

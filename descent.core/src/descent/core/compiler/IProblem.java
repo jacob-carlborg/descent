@@ -246,7 +246,7 @@ public interface IProblem {
 	int AliasCannotHaveInitializer = 107;
 	int CStyleCastIllegal = 108;
 	int InvalidLinkageIdentifier = 109;
-	int VariadicArgumentCannotBeOutOrInout = 110;
+	int VariadicArgumentCannotBeOutInoutOrRef = 110;
 	int VariadicNotAllowedInDelete = 111;
 	int NoIdentifierForTemplateValueParameter = 112;
 	int UnexpectedIdentifierInDeclarator = 113;

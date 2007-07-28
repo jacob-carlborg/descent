@@ -319,10 +319,11 @@ public final class JavaCodeScanner extends AbstractJavaScanner {
 		"goto", //$NON-NLS-1$
 		"if", "iftype", "import", "in", "inout", "interface", "invariant", "is", //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$ //$NON-NLS-4$ //$NON-NLS-3$ //$NON-NLS-2$ //$NON-NLS-1$
 		"lazy",  //$NON-NLS-1$
-		"mixin", "module", //$NON-NLS-1$ //$NON-NLS-2$
+		"macro", "mixin", "module", //$NON-NLS-1$ //$NON-NLS-2$
 		"new", //$NON-NLS-1$
 		"out", "override",  //$NON-NLS-1$ //$NON-NLS-2$
 		"package", "pragma", "private", "protected", "public", //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-3$ //$NON-NLS-2$ //$NON-NLS-1$
+		"ref",  //$NON-NLS-1$
 		"scope", "static", "struct", "super", "switch", "synchronized", //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-3$ //$NON-NLS-2$ //$NON-NLS-1$
 		"template", "this", "throw", "try", "typedef", "typeid", "typeof", //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-4$ //$NON-NLS-3$ //$NON-NLS-2$ //$NON-NLS-1$
 		"union", "unittest",  //$NON-NLS-1$ //$NON-NLS-2$

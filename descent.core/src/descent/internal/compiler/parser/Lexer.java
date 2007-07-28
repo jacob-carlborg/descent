@@ -266,6 +266,7 @@ public class Lexer implements IProblemRequestor {
 	public Token peekPastParen(Token tk)
 	{
 	    int parens = 1;
+	    int curlynest = 0;
 	    while (true) {
 	    	tk = peek(tk);
 	    	switch (tk.value)
@@ -280,6 +281,21 @@ public class Lexer implements IProblemRequestor {
 					    continue;
 					tk = peek(tk);
 					break;
+					
+			    case TOKlcurly:
+					curlynest++;
+					continue;
+
+				    case TOKrcurly:
+					if (--curlynest >= 0)
+					    continue;
+					break;
+
+				    case TOKsemicolon:
+					if (curlynest != 0)
+					    continue;
+					break;
+
 	
 			    case TOKeof:
 			    	break;
@@ -841,7 +857,7 @@ public class Lexer implements IProblemRequestor {
 			p++;
 			if (input[p] == '=')
 			{   p++;
-			    if (input[p] == '=' && apiLevel == AST.D1)
+			    if (input[p] == '=' && apiLevel == AST.D0)
 			    {	p++;
 				t.value = TOKnotidentity;	// !==
 				t.len = 3;
@@ -897,7 +913,7 @@ public class Lexer implements IProblemRequestor {
 			p++;
 			if (input[p] == '=')
 			{   p++;
-			    if (input[p] == '=' && apiLevel == AST.D1)
+			    if (input[p] == '=' && apiLevel == AST.D0)
 			    {	p++;
 				t.value = TOKidentity;		// ===
 				t.len = 3;
@@ -1761,7 +1777,7 @@ public class Lexer implements IProblemRequestor {
 							}
 						}
 					}
-				} else if (apiLevel == AST.D1 && input[p] == 't') {
+				} else if (apiLevel == AST.D0 && input[p] == 't') {
 					p++;
 					if (input[p] == 'y') {
 						p++;
@@ -1933,6 +1949,21 @@ public class Lexer implements IProblemRequestor {
 		case 'm':
 			p++;
 			switch(input[p]) {
+			case 'a':
+				p++;
+				if (input[p] == 'c') {
+					p++;
+					if (input[p] == 'r') {
+						p++;
+						if (input[p] == 'o' && !Chars.isidchar(input[p+1])) {
+							t.value = TOK.TOKmacro;
+							t.len = 5;
+							p++;
+							return;
+						}
+					}
+				}
+				break;
 			case 'i':
 				p++;
 				if (input[p] == 'x') {
@@ -2000,7 +2031,7 @@ public class Lexer implements IProblemRequestor {
 			p++;
 			switch(input[p]) {
 			case 'n':
-				if (apiLevel == AST.D1) {
+				if (apiLevel == AST.D0) {
 					p++;
 					if (input[p] == '_') {
 						p++;
@@ -2243,6 +2274,14 @@ public class Lexer implements IProblemRequestor {
 					if (input[p] == 'l' && !Chars.isidchar(input[p+1])) {
 						t.value = TOK.TOKfloat80;
 						t.len = 4;
+						p++;
+						return;
+					}
+					break;
+				case 'f':
+					if (!Chars.isidchar(input[p+1])) {
+						t.value = TOK.TOKref;
+						t.len = 3;
 						p++;
 						return;
 					}

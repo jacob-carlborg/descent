@@ -9,6 +9,11 @@ public class Modifier extends ASTNode {
 	}
 	
 	@Override
+	public String toString() {
+		return tok.toString();
+	}
+	
+	@Override
 	public int getNodeType() {
 		return MODIFIER;
 	}

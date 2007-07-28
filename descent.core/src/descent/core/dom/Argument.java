@@ -28,7 +28,9 @@ public class Argument extends ASTNode {
 		/** "inout" passage mode */
 		INOUT,
 		/** "lazy" passage mode */
-		LAZY
+		LAZY,
+		/** "ref" passage mode */
+		REF
 	}
 
 	/**

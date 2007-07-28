@@ -31,7 +31,6 @@ public class StorageClassDeclaration extends AttribDeclaration {
 	public boolean single;
 	public int stc;
 	public Modifier modifier;
-	public List<Modifier> modifiers;
 
 	public StorageClassDeclaration(Loc loc, int stc, List<Dsymbol> decl,
 			Modifier modifier, boolean single) {

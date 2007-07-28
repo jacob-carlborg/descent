@@ -135,6 +135,8 @@ public class ASTConverter {
 			return convert((AssertExp) symbol);
 		case ASTNode.ASSIGN_EXP:
 			return convert((BinExp) symbol, Assignment.Operator.ASSIGN);
+		case ASTNode.ASSOC_ARRAY_LITERAL_EXP:
+			return convert((AssocArrayLiteralExp) symbol);
 		case ASTNode.BREAK_STATEMENT:
 			return convert((BreakStatement) symbol);
 		case ASTNode.CALL_EXP:
@@ -433,6 +435,23 @@ public class ASTConverter {
 		return null;
 	}
 	
+	public AssociativeArrayLiteral convert(AssocArrayLiteralExp a) {
+		AssociativeArrayLiteral b = new AssociativeArrayLiteral(ast);
+		if (a.keys != null) {
+			for(int i = 0; i < a.keys.size(); i++) {
+				Expression key = a.keys.get(i);
+				Expression value = a.values.get(i);
+				AssociativeArrayLiteralFragment fragment = new AssociativeArrayLiteralFragment(ast);
+				fragment.setKey(convert(key));
+				fragment.setValue(convert(value));
+				fragment.setSourceRange(key.start, value.start + value.length - key.start);
+				b.fragments().add(fragment);
+			}
+		}
+		b.setSourceRange(a.start, a.length);
+		return b;
+	}
+	
 	public descent.core.dom.Declaration convert(StorageClassDeclaration a) {
 		descent.core.dom.Modifier modifier = convert(a.modifier);
 		
@@ -521,6 +540,13 @@ public class ASTConverter {
 		VarDeclaration last = (VarDeclaration) decls.get(decls.size() - 1);
 		
 		descent.core.dom.VariableDeclaration varToReturn = new VariableDeclaration(ast);
+		
+		int start = first.start;
+		if (first.modifiers != null && first.modifiers.size() > 0) {
+			convertModifiers(varToReturn.modifiers(), first.modifiers);
+			start = first.modifiers.get(0).start;
+		}
+		
 		if (first.type != null) {
 			varToReturn.setType(convert(first.type));
 		}
@@ -529,7 +555,7 @@ public class ASTConverter {
 			varToReturn.fragments().add(convert((VarDeclaration) var));
 		}
 		
-		varToReturn.setSourceRange(first.start, last.start + last.length - first.start);
+		varToReturn.setSourceRange(start, last.start + last.length - first.start);
 		return varToReturn;
 	}
 	
@@ -538,6 +564,10 @@ public class ASTConverter {
 		AliasDeclaration last = (AliasDeclaration) decls.get(decls.size() - 1);
 		
 		descent.core.dom.AliasDeclaration varToReturn = new descent.core.dom.AliasDeclaration(ast);
+		if (first.modifiers != null) {
+			convertModifiers(varToReturn.modifiers(), first.modifiers);
+		}
+		
 		if (first.type != null) {
 			varToReturn.setType(convert(first.type));
 		}
@@ -555,6 +585,10 @@ public class ASTConverter {
 		TypedefDeclaration last = (TypedefDeclaration) decls.get(decls.size() - 1);
 		
 		descent.core.dom.TypedefDeclaration varToReturn = new descent.core.dom.TypedefDeclaration(ast);
+		if (first.modifiers != null) {
+			convertModifiers(varToReturn.modifiers(), first.modifiers);
+		}
+		
 		if (first.basetype != null) {
 			varToReturn.setType(convert(first.basetype));
 		}
@@ -1825,6 +1859,7 @@ public class ASTConverter {
 		case Lazy: b.setPassageMode(descent.core.dom.Argument.PassageMode.LAZY); break;
 		case None: b.setPassageMode(descent.core.dom.Argument.PassageMode.DEFAULT); break;
 		case Out: b.setPassageMode(descent.core.dom.Argument.PassageMode.OUT); break;
+		case Ref: b.setPassageMode(descent.core.dom.Argument.PassageMode.REF); break;
 		}
 		if (a.type != null) {
 			b.setType(convert(a.type));
@@ -2250,6 +2285,9 @@ public class ASTConverter {
 		case TOKextern: b.setModifierKeyword(descent.core.dom.Modifier.ModifierKeyword.EXTERN_KEYWORD); break;
 		case TOKconst: b.setModifierKeyword(descent.core.dom.Modifier.ModifierKeyword.CONST_KEYWORD); break;
 		case TOKscope: b.setModifierKeyword(descent.core.dom.Modifier.ModifierKeyword.SCOPE_KEYWORD); break;
+		case TOKinvariant: b.setModifierKeyword(descent.core.dom.Modifier.ModifierKeyword.INVARIANT_KEYWORD); break;
+		default:
+			throw new IllegalStateException();
 		}
 		b.setSourceRange(a.start, a.length);
 		return b;
@@ -2513,7 +2551,7 @@ public class ASTConverter {
 		return b;
 	}
 	
-	public descent.core.dom.Type convertTemplateMixin(int start, int length, TypeTypeof typeof, List<IdentifierExp> ids, List<ASTNode> tiargs) {
+	public descent.core.dom.Type convertTemplateMixin(int start, int length, Type typeof, List<IdentifierExp> ids, List<ASTNode> tiargs) {
 		descent.core.dom.Type ret = null;
 		if (typeof != null) {
 			ret = convert(typeof);

@@ -155,7 +155,7 @@ public class ReconcileWorkingCopyOperation extends JavaModelOperation {
 				}
 				
 				// TODO JDT verify this
-				ASTParser parser = ASTParser.newParser(this.astLevel == ICompilationUnit.NO_AST ? AST.D2 : this.astLevel);
+				ASTParser parser = ASTParser.newParser(this.astLevel == ICompilationUnit.NO_AST ? AST.D1 : this.astLevel);
 				parser.setKind(ASTParser.K_COMPILATION_UNIT);
 				parser.setSource(workingCopy.getContents());
 				

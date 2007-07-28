@@ -24,7 +24,7 @@ public abstract class Parser_Test extends TestCase {
 	protected final static int SEVERITY_WARNING = 2;
 	
 	protected List<Declaration> getDeclarationsWithProblems(String source, int numberOfProblems) {
-		return getDeclarationsWithProblems(source, numberOfProblems, AST.LATEST);
+		return getDeclarationsWithProblems(source, numberOfProblems, AST.D1);
 	}
 	
 	protected List<Declaration> getDeclarationsWithProblems(String source, int numberOfProblems, int apiLevel) {
@@ -37,8 +37,18 @@ public abstract class Parser_Test extends TestCase {
 		return getDeclarationsWithProblems(source, 0);
 	}
 	
+	protected List<Declaration> getDeclarationsNoProblems(String source, int apiLevel) {
+		return getDeclarationsWithProblems(source, 0, apiLevel);
+	}
+	
 	protected Declaration getSingleDeclarationNoProblems(String source) {
 		List<Declaration> declDefs = getDeclarationsNoProblems(source);
+		assertEquals(1, declDefs.size());		
+		return declDefs.get(0);
+	}
+	
+	protected Declaration getSingleDeclarationNoProblems(String source, int apiLevel) {
+		List<Declaration> declDefs = getDeclarationsNoProblems(source, apiLevel);
 		assertEquals(1, declDefs.size());		
 		return declDefs.get(0);
 	}
@@ -131,7 +141,7 @@ public abstract class Parser_Test extends TestCase {
 	}
 	
 	protected IProblem[] getModuleProblems(String source) {
-		Module module = getModuleSemantic(source, AST.D2);
+		Module module = getModuleSemantic(source, AST.D1);
 		return module.problems.toArray(new IProblem[module.problems.size()]);
 	}
 	

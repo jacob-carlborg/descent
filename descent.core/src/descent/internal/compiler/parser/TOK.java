@@ -143,6 +143,15 @@ public enum TOK implements ITerminalSymbols {
 	// Testing
 	TOKunittest("unittest", TokenNameunittest),
 	
+	// Added after 1.0
+	// TODO: assign string, precedence, etc.
+	TOKref("ref", TokenNameref),
+	TOKmacro("macro", TokenNamemacro),
+	
+	// In 2.0
+	TOKtraits("__traits", TokenName__traits),
+
+	
 	// Additional in Descent
 	TOKwhitespace(TokenNameWHITESPACE), TOKPRAGMA(TokenNamePRAGMA),
 	
@@ -152,7 +161,14 @@ public enum TOK implements ITerminalSymbols {
 	 */
 	TOKcat("~", TokenNameTILDE, PREC_add),
 	TOKneg("!", TokenNameNOT, PREC_unary),
-	TOKarrayliteral(PREC_primary), TOKdeclaration, TOKtypedot(PREC_primary), 
+	TOKarrayliteral(PREC_primary), 	
+	
+	// TODO: assign string, precedence, etc.
+	TOKassocarrayliteral,
+	TOKstructliteral,
+
+	
+	TOKdeclaration, TOKtypedot(PREC_primary), 
 	TOKtype, TOKaddress(PREC_unary), TOKdotti(PREC_primary), TOKuadd(PREC_unary), 
 	TOKcall(PREC_primary), TOKarray(PREC_primary), TOKnewanonclass, TOKnotis,
 	TOKvar(PREC_primary), TOKdotvar, TOKconstruct, TOKdsymbol,

@@ -9,7 +9,8 @@ public enum LINK {
     LINKc,
     LINKcpp,
     LINKwindows,
-    LINKpascal;
+    LINKpascal,
+    LINKsystem;
     
     public Linkage getLinkage() {
     	switch(this) {
@@ -19,6 +20,7 @@ public enum LINK {
     	case LINKcpp: return Linkage.CPP;
     	case LINKwindows: return Linkage.WINDOWS;
     	case LINKpascal: return Linkage.PASCAL;
+    	case LINKsystem: return Linkage.SYSTEM;
     	default: throw new RuntimeException("Can't happen?");
     	}
     }

@@ -7,6 +7,7 @@ import descent.core.dom.Argument;
 import descent.core.dom.ConstructorDeclaration;
 import descent.core.dom.FunctionDeclaration;
 import descent.core.dom.NumberLiteral;
+import descent.core.dom.Argument.PassageMode;
 
 public class Function_Test extends Parser_Test {
 	
@@ -169,6 +170,14 @@ public class Function_Test extends Parser_Test {
 		String s = " void func(int a) { }";
 		FunctionDeclaration f = (FunctionDeclaration) getSingleDeclarationNoProblems(s);
 		assertEquals(1, f.arguments().size());
+	}
+	
+	public void testFunctionWithOneArgument2() {
+		String s = " void func(ref int a) { }";
+		FunctionDeclaration f = (FunctionDeclaration) getSingleDeclarationNoProblems(s);
+		assertEquals(1, f.arguments().size());
+		Argument argument = f.arguments().get(0);
+		assertEquals(PassageMode.REF, argument.getPassageMode());
 	}
 	
 	public void testConstructorWithArguments() {

@@ -1,9 +1,14 @@
 package descent.tests.mars;
 
+import java.util.List;
+
 import descent.core.dom.ASTNode;
 import descent.core.dom.ArrayType;
 import descent.core.dom.AssociativeArrayType;
+import descent.core.dom.DeclarationStatement;
 import descent.core.dom.DelegateType;
+import descent.core.dom.FunctionDeclaration;
+import descent.core.dom.Modifier;
 import descent.core.dom.PointerType;
 import descent.core.dom.PrimitiveType;
 import descent.core.dom.VariableDeclaration;
@@ -51,6 +56,34 @@ public class VariableDeclaration_Test extends Parser_Test {
 		assertEquals("y", fragment.getName().getFullyQualifiedName());
 		assertPosition(fragment.getName(), 8, 1);
 		assertNull(fragment.getInitializer());
+	}
+	
+	public void testWithModifiers() {
+		String s = " const x = 1, y = 2;";
+		
+		VariableDeclaration var = (VariableDeclaration) getSingleDeclarationNoProblems(s);
+		assertEquals(Modifier.ModifierKeyword.CONST_KEYWORD, var.modifiers().get(0).getModifierKeyword());
+		
+		List<VariableDeclarationFragment> frags = var.fragments();
+		assertEquals(2, frags.size());
+		
+		assertPosition(var, 1, s.length() - 1);
+	}
+	
+	public void testWithModifiers2() {
+		String s = " void bla() { static const x = 1, y = 2; }";
+		
+		FunctionDeclaration func = (FunctionDeclaration) getSingleDeclarationNoProblems(s);
+		DeclarationStatement stm = (DeclarationStatement) func.getBody().statements().get(0);
+		
+		VariableDeclaration var = (VariableDeclaration) stm.getDeclaration();
+		assertEquals(2, var.modifiers().size());
+		
+		List<VariableDeclarationFragment> frags = var.fragments();
+		assertEquals(2, frags.size());
+		
+		assertPosition(var, 14, 26);
+		assertPosition(stm, 14, 26);
 	}
 	
 	public void testCStyle() {

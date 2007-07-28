@@ -159,5 +159,6 @@ public interface Id {
 	Identifier _arguments_typeinfo = new Identifier("_arguments_typeinfo");
 	Identifier elements = new Identifier("elements");
 	Identifier outer = new Identifier("outer");
+	Identifier System = new Identifier("System");
 
 }

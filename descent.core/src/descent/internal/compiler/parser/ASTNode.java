@@ -206,6 +206,7 @@ public abstract class ASTNode {
 	public final static int TUPLE_EXP = 186;
 	public final static int UNROLLED_LOOP_STATEMENT = 187;
 	public final static int COMPLEX_EXP = 188;
+	public final static int ASSOC_ARRAY_LITERAL_EXP = 189;
 
 	private static int idn;
 

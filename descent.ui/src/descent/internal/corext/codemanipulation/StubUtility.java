@@ -458,7 +458,7 @@ public class StubUtility {
 	 */
 	private static String[] getParameterTypeNamesForSeeTag(IMethod overridden) {
 		try {
-			ASTParser parser= ASTParser.newParser(AST.D2);
+			ASTParser parser= ASTParser.newParser(AST.D1);
 			parser.setProject(overridden.getJavaProject());
 			IBinding[] bindings= parser.createBindings(new IJavaElement[] { overridden }, null);
 			if (bindings.length == 1 && bindings[0] instanceof IMethodBinding) {

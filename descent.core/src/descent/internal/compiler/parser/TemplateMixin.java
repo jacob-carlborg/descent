@@ -5,12 +5,12 @@ import java.util.List;
 
 public class TemplateMixin extends TemplateInstance {
 
-	public TypeTypeof tqual;
+	public Type tqual;
 	public List<ASTNode> tiargs;
 	public int typeStart;
 	public int typeLength;
 
-	public TemplateMixin(IdentifierExp ident, TypeTypeof tqual, List<IdentifierExp> idents, List<ASTNode> tiargs) {
+	public TemplateMixin(IdentifierExp ident, Type tqual, List<IdentifierExp> idents, List<ASTNode> tiargs) {
 		super(idents.get(idents.size() - 1));
 		this.ident = ident;
 		this.tqual = tqual;

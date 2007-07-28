@@ -1072,6 +1072,20 @@ public abstract class ASTNode {
 	public static final int EMPTY_STATEMENT = 131;
 	
 	/**
+	 * Node type constant indicating a node of type 
+	 * <code>AssociativeArrayLiteral</code>.
+	 * @see AssociativeArrayLiteral
+	 */
+	public static final int ASSOCIATIVE_ARRAY_LITERAL = 132;
+	
+	/**
+	 * Node type constant indicating a node of type 
+	 * <code>AssociativeArrayLiteralFragment</code>.
+	 * @see AssociativeArrayLiteralFragment
+	 */
+	public static final int ASSOCIATIVE_ARRAY_LITERAL_FRAGMENT = 133;
+	
+	/**
 	 * Returns the node class for the corresponding node type.
 	 * 
 	 * @param nodeType AST node type
@@ -1114,6 +1128,10 @@ public abstract class ASTNode {
 			return Assignment.class;
 		case ASSOCIATIVE_ARRAY_TYPE:
 			return AssociativeArrayType.class;
+		case ASSOCIATIVE_ARRAY_LITERAL:
+			return AssociativeArrayLiteral.class;
+		case ASSOCIATIVE_ARRAY_LITERAL_FRAGMENT:
+			return AssociativeArrayLiteralFragment.class;
 		case BASE_CLASS:
 			return BaseClass.class;
 		case BLOCK:

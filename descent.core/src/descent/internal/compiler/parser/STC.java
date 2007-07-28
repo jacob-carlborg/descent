@@ -23,6 +23,8 @@ public class STC {
 	public final static int STCctorinit     = 0x20000;		// can only be set inside constructor
 	public final static int STCtemplateparameter = 0x40000;	// template parameter
 	public final static int STCscope	    = 0x80000;		// template parameter
+	public final static int STCinvariant	= 0x100000;
+	public final static int STCref	    = 0x200000;
 	
 	public static int fromTOK(TOK tok) {
 		switch(tok) {
@@ -36,6 +38,8 @@ public class STC {
 		case TOKsynchronized: return STCsynchronized;
 		case TOKdeprecated: return STCdeprecated;
 		case TOKextern: return STCextern;
+		case TOKinvariant: return STCinvariant;
+		case TOKref: return STCref;
 		}
 		throw new IllegalStateException();
 	}

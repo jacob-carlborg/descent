@@ -25,6 +25,7 @@ import descent.core.Flags;
  *    <b>extern</b>
  *    <b>const</b>
  *    <b>scope</b>
+ *    <b>invariant</b>
  * </pre>
  */
 public class Modifier extends ASTNode {
@@ -49,6 +50,7 @@ public class Modifier extends ASTNode {
 		EXTERN_KEYWORD("extern", EXTERN),
 		CONST_KEYWORD("const", CONST),
 		SCOPE_KEYWORD("scope", SCOPE),
+		INVARIANT_KEYWORD("invariant", INVARIANT),
 		;
 		
 		private String keyword;
@@ -205,6 +207,11 @@ public class Modifier extends ASTNode {
 	 * "scope" modifier constant (bit mask).
 	 */
 	public static final int SCOPE = Flags.AccScope;
+	
+	/**
+	 * "invariant" modifier constant (bit mask).
+	 */
+	public static final int INVARIANT = Flags.AccInvariant;
 	
 	/**
 	 * The "modifierKeyword" structural property of this node type.

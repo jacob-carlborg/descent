@@ -8,6 +8,8 @@ import descent.core.dom.ArrayAccess;
 import descent.core.dom.ArrayLiteral;
 import descent.core.dom.AssertExpression;
 import descent.core.dom.Assignment;
+import descent.core.dom.AssociativeArrayLiteral;
+import descent.core.dom.AssociativeArrayLiteralFragment;
 import descent.core.dom.BooleanLiteral;
 import descent.core.dom.CallExpression;
 import descent.core.dom.CastExpression;
@@ -279,7 +281,7 @@ public class Expression_Test extends Parser_Test {
 		
 		for(Object[] pair : objs) {
 			String s = " 1 " + pair[0] + " 1.0";
-			InfixExpression expr = (InfixExpression) parseExpression(s, AST.D1);
+			InfixExpression expr = (InfixExpression) parseExpression(s, AST.D0);
 			
 			assertEquals(ASTNode.INFIX_EXPRESSION, expr.getNodeType());
 			assertEquals(pair[1], expr.getOperator());
@@ -466,6 +468,29 @@ public class Expression_Test extends Parser_Test {
 		assertEquals("1", ((NumberLiteral) args[0]).getToken());
 		assertEquals("2", ((NumberLiteral) args[1]).getToken());
 		assertEquals("3", ((NumberLiteral) args[2]).getToken());
+		
+		assertPosition(expr, 1, s.length() - 1);
+	}
+	
+	public void testAssociativeArrayLiteral() {
+		String s = " [1:a, 2:b, 3:c]";
+		AssociativeArrayLiteral expr = (AssociativeArrayLiteral) parseExpression(s);
+		assertEquals(ASTNode.ASSOCIATIVE_ARRAY_LITERAL, expr.getNodeType());
+		
+		AssociativeArrayLiteralFragment[] args = expr.fragments().toArray(new AssociativeArrayLiteralFragment[expr.fragments().size()]);
+		assertEquals(3, args.length);
+		
+		assertEquals("1", args[0].getKey().toString());
+		assertEquals("a", args[0].getValue().toString());
+		assertPosition(args[0], 2, 3);
+		
+		assertEquals("2", args[1].getKey().toString());
+		assertEquals("b", args[1].getValue().toString());
+		assertPosition(args[1], 7, 3);
+		
+		assertEquals("3", args[2].getKey().toString());
+		assertEquals("c", args[2].getValue().toString());
+		assertPosition(args[2], 12, 3);
 		
 		assertPosition(expr, 1, s.length() - 1);
 	}

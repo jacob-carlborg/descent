@@ -859,7 +859,7 @@ public class NewModuleWizardPage extends NewContainerWizardPage {
 		IPackageFragment pack= (IPackageFragment) cu.getParent();
 		String content= CodeGeneration.getCompilationUnitContent(cu, fileComment, lineDelimiter);
 		if (content != null) {
-			ASTParser parser= ASTParser.newParser(AST.D2);
+			ASTParser parser= ASTParser.newParser(AST.D1);
 			parser.setProject(cu.getJavaProject());
 			parser.setSource(content.toCharArray());
 			CompilationUnit unit= (CompilationUnit) parser.createAST(null);

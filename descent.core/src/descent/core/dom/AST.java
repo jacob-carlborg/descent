@@ -88,14 +88,20 @@ import descent.core.compiler.IScanner;
 public final class AST {
 	
 	/**
+	 * Constant for indicating the AST API that handles D0
+	 * (D v0.x).
+	 */
+	public static final int D0 = 0;
+	
+	/**
 	 * Constant for indicating the AST API that handles D1
-	 * (D v1.0).
+	 * (D v1.x).
 	 */
 	public static final int D1 = 1;
 	
 	/**
-	 * Constant for indicating the AST API that handles D1.x
-	 * , where x > 0. This is the "in-development" version of D.
+	 * Constant for indicating the AST API that handles D1
+	 * (D v2.x).
 	 */
 	public static final int D2 = 2;
 	
@@ -175,7 +181,7 @@ public final class AST {
  	 * @param level the API level; one of the LEVEL constants
 	 */
 	private AST(int level) {
-		if (level != AST.D1 && level != AST.D2) {
+		if (level != AST.D0 && level != AST.D1 && level != AST.D2) {
 			throw new IllegalArgumentException();
 		}
 		this.apiLevel = level;
@@ -200,7 +206,7 @@ public final class AST {
      * @since 3.0
 	 */
 	public static AST newAST(int level) {
-		if (level != AST.D1 && level != AST.D2) {
+		if (level != AST.D0 && level != AST.D1 && level != AST.D2) {
 			throw new IllegalArgumentException();
 		}
 		return new AST(level);
@@ -1007,6 +1013,26 @@ public final class AST {
 	 */
 	public AssociativeArrayType newAssociativeArrayType() {
 		AssociativeArrayType node = new AssociativeArrayType(this);
+		return node;
+	}
+	
+	/**
+	 * Creates an unparented associative array literal node owned by this AST.
+	 * 
+	 * @return the new unparented associative literal type node
+	 */
+	public AssociativeArrayLiteral newAssociativeArrayLiteral() {
+		AssociativeArrayLiteral node = new AssociativeArrayLiteral(this);
+		return node;
+	}
+	
+	/**
+	 * Creates an unparented associative array literal fragment node owned by this AST.
+	 * 
+	 * @return the new unparented associative literal fragment type node
+	 */
+	public AssociativeArrayLiteralFragment newAssociativeArrayLiteralFragment() {
+		AssociativeArrayLiteralFragment node = new AssociativeArrayLiteralFragment(this);
 		return node;
 	}
 

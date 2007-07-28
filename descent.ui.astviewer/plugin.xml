@@ -7,7 +7,7 @@
       <view
             name="ASTView"
             icon="$nl$/icons/view.gif"
-            category="descent.category"
+            category="descent.ui.java"
             class="descent.astview.views.ASTView"
             id="descent.astview.views.ASTView">
       </view>

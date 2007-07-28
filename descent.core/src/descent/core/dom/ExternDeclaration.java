@@ -30,7 +30,8 @@ public class ExternDeclaration extends Declaration {
 		WINDOWS("Windows"),
 		/** Link to Pascal code */
 		PASCAL("Pascal"),
-		
+		/** Link to System (Windows or C)  code */
+		SYSTEM("System"),		
 		;
 		
 		/**
