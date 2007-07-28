@@ -167,6 +167,7 @@ public final class WhiteSpaceOptions
 		dynamic_arrays.setParent(arrays);
 		array_literal.setParent(arrays);
 		array_slice.setParent(arrays);
+		multidimensional_arrays.setParent(arrays);
 		
 		return roots;
 	}
@@ -216,7 +217,7 @@ public final class WhiteSpaceOptions
 		//roots.add(after_opening_bracket);
 		//roots.add(before_closing_bracket);
 		roots.add(between_empty_brackets);
-		//roots.add(between_adjacent_brackets);
+		roots.add(between_adjacent_brackets);
 		roots.add(before_operator);
 		roots.add(after_operator);
 		roots.add(before_dot);
@@ -653,7 +654,8 @@ public abstract static class Node {
 		new PreviewSnippet(CodeFormatter.K_STATEMENTS, 
 			"int[] dynamicArray = new int[5];" +
 			"int[3] staticArray = [3, 5, 7];" +
-			"int[char[]] associativeArray;"
+			"int[char[]] associativeArray;" +
+			"int[char[]][35][][967][][creal] multiDimensional;"
 		);
 	
 	private final PreviewSnippet LABEL_PREVIEW =

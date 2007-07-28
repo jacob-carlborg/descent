@@ -34,7 +34,10 @@ public class NewLinesTabPage extends ModifyDialogTabPage {
 		"else{Stdout(\"x is a number I haven't learned about yet.\")}\n\n" +
 		"try{file.read();}catch(IOException e){Stdout(e.toString());}" +
 		"finally{file.close();}\n\n" +
-		"do{file.read();}while(file.canRead());}";
+		"do{file.read();}while(file.canRead());\n\n" +
+		"switch(a){case 1:doSomething();break;case 2:throw new" +
+		"Exception();default:doSomethingElse();break;}\n\n" +
+		"endOfFunction:return;}";
 	
 	private CompilationUnitPreview fPreview;
 	
@@ -60,6 +63,12 @@ public class NewLinesTabPage extends ModifyDialogTabPage {
 		createCheckboxPref(controlStatementsGroup, numColumns, 
 				FormatterMessages.NewLinesTabPage_keep_else_conditional_on_one_line,
 				DefaultCodeFormatterConstants.FORMATTER_KEEP_ELSE_CONDITIONAL_ON_ONE_LINE, FALSE_TRUE); 
+		createCheckboxPref(controlStatementsGroup, numColumns, 
+				FormatterMessages.NewLinesTabPage_insert_new_line_after_case_or_default_statement,
+				DefaultCodeFormatterConstants.FORMATTER_INSERT_NEW_LINE_AFTER_CASE_OR_DEFAULT_STATEMENT, FALSE_TRUE); 
+		createCheckboxPref(controlStatementsGroup, numColumns, 
+				FormatterMessages.NewLinesTabPage_insert_new_line_after_label,
+				DefaultCodeFormatterConstants.FORMATTER_INSERT_NEW_LINE_AFTER_LABEL, FALSE_TRUE); 
         
         final Group otherGroup = createGroup(numColumns, composite, FormatterMessages.NewLinesTabPage_control_statements_title);
         createCheckboxPref(otherGroup, numColumns, 

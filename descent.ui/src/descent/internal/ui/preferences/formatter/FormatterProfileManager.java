@@ -54,9 +54,9 @@ public class FormatterProfileManager extends ProfileManager {
 				2,
 				profileVersioner.getCurrentVersion(),
 				profileVersioner.getProfileKind()));
-		profiles.add(new BuiltInProfile(DefaultCodeFormatterConstants.PROFILE_PHOBOS_DEFAULTS,
-				FormatterMessages.ProfileManager_phobos_defaults_profile_name,
-				getBuiltInProfile(DefaultCodeFormatterConstants.PROFILE_PHOBOS_DEFAULTS),
+		profiles.add(new BuiltInProfile(DefaultCodeFormatterConstants.PROFILE_C_SHARP_DEFAULTS,
+				FormatterMessages.ProfileManager_c_sharp_defaults_profile_name,
+				getBuiltInProfile(DefaultCodeFormatterConstants.PROFILE_C_SHARP_DEFAULTS),
 				3,
 				profileVersioner.getCurrentVersion(),
 				profileVersioner.getProfileKind())); 

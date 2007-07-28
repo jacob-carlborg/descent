@@ -49,12 +49,12 @@ public class DefaultCodeFormatterOptions
 		     */
 		}
 		
-		else if(name.equals(DefaultCodeFormatterConstants.PROFILE_PHOBOS_DEFAULTS))
+		else if(name.equals(DefaultCodeFormatterConstants.PROFILE_C_SHARP_DEFAULTS))
 		{
 			/* EVAL-FOR-EACH
-			 * if($$_{'phobosDefault'})
+			 * if($$_{'csDefault'})
 			 * {
-		     *     print DST "\t\t\toptions.$$_{'optName'} = $$_{'phobosDefault'};\n";
+		     *     print DST "\t\t\toptions.$$_{'optName'} = $$_{'csDefault'};\n";
 		     * }
 		     */
 		}

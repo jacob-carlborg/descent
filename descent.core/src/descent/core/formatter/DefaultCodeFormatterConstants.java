@@ -18,7 +18,7 @@ public class DefaultCodeFormatterConstants {
 	
 	public static final String PROFILE_DESCENT_DEFAULTS = "descent.ui.formatter.defaults.descent_defaults";
 	public static final String PROFILE_JAVA_DEFAULTS = "descent.ui.formatter.defaults.java_defaults";
-	public static final String PROFILE_PHOBOS_DEFAULTS = "decent.ui.formatter.defaults.phobos_defaults";
+	public static final String PROFILE_C_SHARP_DEFAULTS = "decent.ui.formatter.defaults.c_sharp_defaults";
 	public static final String DEFAULT_PROFILE = PROFILE_DESCENT_DEFAULTS;
 	
 	// Boolean mappings
@@ -237,6 +237,7 @@ public class DefaultCodeFormatterConstants {
 	public static final String FORMATTER_INSERT_SPACE_AFTER_ELIPSIS_IN_TUPLES = JavaCore.PLUGIN_ID + ".formatter.insert_space_after_elipsis_in_tuples";
 	public static final String FORMATTER_INSERT_SPACE_BETWEEN_EMPTY_BRACKETS_IN_SLICE = JavaCore.PLUGIN_ID + ".formatter.insert_space_between_empty_brackets_in_slice";
 	public static final String FORMATTER_INSERT_SPACE_BETWEEN_EMPTY_BRACKETS_IN_DYNAMIC_ARRAY_TYPE = JavaCore.PLUGIN_ID + ".formatter.insert_space_between_empty_brackets_in_dynamic_array_type";
+	public static final String FORMATTER_INSERT_SPACE_BETWEEN_ADJACENT_BRACKETS_IN_MULTIDIMENSIONAL_ARRAYS = JavaCore.PLUGIN_ID + ".formatter.insert_space_between_adjacent_brackets_in_multidimensional_arrays";
 	public static final String FORMATTER_INSERT_SPACE_BEFORE_COLON_IN_BASE_CLASS_LISTS = JavaCore.PLUGIN_ID + ".formatter.insert_space_before_colon_in_base_class_lists";
 	public static final String FORMATTER_INSERT_SPACE_BEFORE_COLON_IN_TEMPLATE_SPECIFIC_TYPE = JavaCore.PLUGIN_ID + ".formatter.insert_space_before_colon_in_template_specific_type";
 	public static final String FORMATTER_INSERT_SPACE_BEFORE_COLON_IN_ARRAY_INITIALIZER = JavaCore.PLUGIN_ID + ".formatter.insert_space_before_colon_in_array_initializer";
@@ -297,8 +298,8 @@ public class DefaultCodeFormatterConstants {
 	public static final String FORMATTER_INDENT_STATEMENTS_COMPARE_TO_FUNCTION_BODY_HEADER = JavaCore.PLUGIN_ID + ".formatter.indent_statements_compare_to_function_body_header";
 	public static final String FORMATTER_INDENT_ENUM_MEMBERS_COMPARE_TO_ENUM_HEADER = JavaCore.PLUGIN_ID + ".formatter.indent_enum_members_compare_to_enum_header";
 	public static final String FORMATTER_INDENT_CASES_COMPARE_TO_SWITCH = JavaCore.PLUGIN_ID + ".formatter.indent_cases_compare_to_switch";
+	public static final String FORMATTER_INDENT_BREAK_COMPARE_TO_SWITCH = JavaCore.PLUGIN_ID + ".formatter.indent_break_compare_to_switch";
 	public static final String FORMATTER_INDENT_STATEMENTS_COMPARE_TO_CASE = JavaCore.PLUGIN_ID + ".formatter.indent_statements_compare_to_case";
-	public static final String FORMATTER_INDENT_STATEMENTS_COMPARE_TO_LABEL = JavaCore.PLUGIN_ID + ".formatter.indent_statements_compare_to_label";
 	public static final String FORMATTER_TAB_CHAR = JavaCore.PLUGIN_ID + ".formatter.tab_char";
 	public static final String FORMATTER_TAB_SIZE = JavaCore.PLUGIN_ID + ".formatter.tab_size";
 	public static final String FORMATTER_USE_TABS_ONLY_FOR_LEADING_INDENTATIONS = JavaCore.PLUGIN_ID + ".formatter.use_tabs_only_for_leading_indentations";

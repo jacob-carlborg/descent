@@ -44,7 +44,10 @@ public class IndentationTabPage extends ModifyDialogTabPage {
 	"double divide(in double dividend, in double divisor)" +
 	"in{assert(divisor != 0);}" +
 	"out(val){assert(val == dividend / divisor);}" +
-	"body{return dividend / divisor;}\n\n";
+	"body{return dividend / divisor;}\n\n" +
+	"void switchPreview(int a){switch(a){case 1:doSomething();" +
+	"break;case 2:{writefln(\"2 is a bad number.\");" +
+	"throw new Exception();}default:doSomethingElse();break;}}";
 	private CompilationUnitPreview fPreview;
 	private String fOldTabChar= null;
 	
@@ -114,9 +117,28 @@ public class IndentationTabPage extends ModifyDialogTabPage {
 		createCheckboxPref(classGroup, numColumns,
 				FormatterMessages.IndentationTabPage_indent_enum_members_compare_to_enum_header,
 				DefaultCodeFormatterConstants.FORMATTER_INDENT_ENUM_MEMBERS_COMPARE_TO_ENUM_HEADER, FALSE_TRUE); 
-        createCheckboxPref(classGroup, numColumns,
+		createCheckboxPref(classGroup, numColumns,
+	        		FormatterMessages.IndentationTabPage_indent_cases_compare_to_switch,
+	        		DefaultCodeFormatterConstants.FORMATTER_INDENT_CASES_COMPARE_TO_SWITCH, FALSE_TRUE); 
+		CheckboxPreference case_preference = createCheckboxPref(classGroup, numColumns,
+	        		FormatterMessages.IndentationTabPage_indent_statements_compare_to_case,
+	        		DefaultCodeFormatterConstants.FORMATTER_INDENT_STATEMENTS_COMPARE_TO_CASE, FALSE_TRUE); 
+		CheckboxPreference break_preference = createCheckboxPref(classGroup, numColumns,
+	        		FormatterMessages.IndentationTabPage_indent_break_compare_to_switch,
+	        		DefaultCodeFormatterConstants.FORMATTER_INDENT_BREAK_COMPARE_TO_SWITCH, FALSE_TRUE); 
+		createCheckboxPref(classGroup, numColumns,
         		FormatterMessages.IndentationTabPage_indent_empty_lines,
-        		DefaultCodeFormatterConstants.FORMATTER_INDENT_EMPTY_LINES, FALSE_TRUE); 
+        		DefaultCodeFormatterConstants.FORMATTER_INDENT_EMPTY_LINES, FALSE_TRUE);
+		
+		case_preference.addObserver(new Observer()
+			{
+				public void update(Observable o, Object arg)
+				{
+					/* TODO deactivate break_preference if case_preference is
+					       off, activate it if case_preference is on (no
+					       indenting breaks w/o indenting cases. */
+				}
+			});
 	}
 	
 	public void initializePage() {

@@ -188,6 +188,9 @@ public final class WhiteSpaceOptions
 		createOption(out_declaration, workingValues, FormatterMessages.WhiteSpaceOptions_before_closing_paren, DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_CLOSING_PAREN_IN_OUT_DECLARATION, FUNCTION_DECL_PREVIEW);
 		createOption(out_declaration, workingValues, FormatterMessages.WhiteSpaceOptions_between_empty_parens, DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BETWEEN_EMPTY_PARENS_IN_OUT_DECLARATION, FUNCTION_DECL_PREVIEW);
 		
+		final InnerNode multidimensional_arrays = new InnerNode(null, workingValues, FormatterMessages.WhiteSpaceOptions_multidimensional_arrays);
+		createOption(multidimensional_arrays, workingValues, FormatterMessages.WhiteSpaceOptions_between_adjacent_brackets, DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BETWEEN_ADJACENT_BRACKETS_IN_MULTIDIMENSIONAL_ARRAYS, ARRAYS_PREVIEW);
+		
 		final InnerNode function_invocation = new InnerNode(null, workingValues, FormatterMessages.WhiteSpaceOptions_function_invocation);
 		createOption(function_invocation, workingValues, FormatterMessages.WhiteSpaceOptions_between_template_args_and_function_args, DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BETWEEN_TEMPLATE_ARGS_AND_FUNCTION_ARGS, FUNCTION_CALL_PREVIEW);
 		createOption(function_invocation, workingValues, FormatterMessages.WhiteSpaceOptions_between_succesive_opcalls, DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BETWEEN_SUCCESIVE_OPCALLS, OPCALL_PREVIEW);
@@ -382,6 +385,7 @@ public final class WhiteSpaceOptions
 		dynamic_arrays.setParent(arrays);
 		array_literal.setParent(arrays);
 		array_slice.setParent(arrays);
+		multidimensional_arrays.setParent(arrays);
 		
 		return roots;
 	}
@@ -617,6 +621,9 @@ public final class WhiteSpaceOptions
 		final InnerNode before_slice_operator = new InnerNode(null, workingValues, FormatterMessages.WhiteSpaceOptions_before_slice_operator);
 		createOption(before_slice_operator, workingValues, FormatterMessages.WhiteSpaceOptions_array_slice, DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_SLICE_OPERATOR, ARRAY_ACCESS_PREVIEW);
 		
+		final InnerNode between_adjacent_brackets = new InnerNode(null, workingValues, FormatterMessages.WhiteSpaceOptions_between_adjacent_brackets);
+		createOption(between_adjacent_brackets, workingValues, FormatterMessages.WhiteSpaceOptions_multidimensional_arrays, DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BETWEEN_ADJACENT_BRACKETS_IN_MULTIDIMENSIONAL_ARRAYS, ARRAYS_PREVIEW);
+		
 		final InnerNode between_adjacent_parens = new InnerNode(null, workingValues, FormatterMessages.WhiteSpaceOptions_between_adjacent_parens);
 		createOption(between_adjacent_parens, workingValues, FormatterMessages.WhiteSpaceOptions_name_and_arg_parens_in_c_style_fp, DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BETWEEN_NAME_AND_ARGS_IN_C_STYLE_FP, DELEGATE_PREVIEW);
 		createOption(between_adjacent_parens, workingValues, FormatterMessages.WhiteSpaceOptions_template_and_function_params_in_function_declaration, DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BETWEEN_TEMPLATE_AND_ARG_PARENS_IN_FUNCTION_DECLARATION, FUNCTION_DECL_PREVIEW);
@@ -656,7 +663,7 @@ public final class WhiteSpaceOptions
 		//roots.add(after_opening_bracket);
 		//roots.add(before_closing_bracket);
 		roots.add(between_empty_brackets);
-		//roots.add(between_adjacent_brackets);
+		roots.add(between_adjacent_brackets);
 		roots.add(before_operator);
 		roots.add(after_operator);
 		roots.add(before_dot);
@@ -1093,7 +1100,8 @@ public abstract static class Node {
 		new PreviewSnippet(CodeFormatter.K_STATEMENTS, 
 			"int[] dynamicArray = new int[5];" +
 			"int[3] staticArray = [3, 5, 7];" +
-			"int[char[]] associativeArray;"
+			"int[char[]] associativeArray;" +
+			"int[char[]][35][][967][][creal] multiDimensional;"
 		);
 	
 	private final PreviewSnippet LABEL_PREVIEW =

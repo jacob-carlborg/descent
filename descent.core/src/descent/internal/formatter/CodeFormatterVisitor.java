@@ -54,7 +54,7 @@ public class CodeFormatterVisitor extends ASTVisitor
 		try
 		{
 			startup(src, block);
-			formatStatements(block.statements(), false);
+			formatStatements(block.statements(), false, false);
 			if (hasComments())
 				scribe.printNewLine();
 			scribe.printComment();
@@ -298,6 +298,9 @@ public class CodeFormatterVisitor extends ASTVisitor
 				prefs.insert_space_before_comma_in_array_access,
 				prefs.insert_space_after_comma_in_array_access);
 		scribe.printNextToken(TOK.TOKrbracket);
+		if(isNextToken(TOK.TOKlbracket) && 
+				prefs.insert_space_between_adjacent_brackets_in_multidimensional_arrays)
+			scribe.space();
 		return false;
 	}
 	
@@ -315,6 +318,9 @@ public class CodeFormatterVisitor extends ASTVisitor
 				scribe.space();
 		}
 		scribe.printNextToken(TOK.TOKrbracket);
+		if(isNextToken(TOK.TOKlbracket) && 
+				prefs.insert_space_between_adjacent_brackets_in_multidimensional_arrays)
+			scribe.space();
 		return false;
 	}
 	
@@ -339,6 +345,9 @@ public class CodeFormatterVisitor extends ASTVisitor
 				prefs.insert_space_before_comma_in_array_literal,
 				prefs.insert_space_after_comma_in_array_literal);
 		scribe.printNextToken(TOK.TOKrbracket);
+		if(isNextToken(TOK.TOKlbracket) && 
+				prefs.insert_space_between_adjacent_brackets_in_multidimensional_arrays)
+			scribe.space();
 		return false;
 	}
 	
@@ -638,8 +647,7 @@ public class CodeFormatterVisitor extends ASTVisitor
 		scribe.printNextToken(TOK.TOKcolon, prefs.insert_space_before_colon_in_case_default_statement);
 		if(prefs.insert_space_after_colon_in_case_default_statement)
 			scribe.space();
-		scribe.printNewLine();
-		node.getBody().accept(this);
+		formatCaseOrDefaultStatementBody((Block) node.getBody());
 		return false;
 	}
 	
@@ -1177,6 +1185,8 @@ public class CodeFormatterVisitor extends ASTVisitor
 		scribe.printNextToken(TOK.TOKcolon, prefs.insert_space_before_colon_in_statement_labels);
 		if(prefs.insert_space_after_colon_in_statement_labels)
 			scribe.space();
+		if(prefs.insert_new_line_after_label)
+			scribe.printNewLine();
 		node.getBody().accept(this);
 		scribe.printTrailingComment();
 		return false;
@@ -1320,6 +1330,9 @@ public class CodeFormatterVisitor extends ASTVisitor
 					prefs.insert_space_before_comma_in_function_invocation_arguments,
 					prefs.insert_space_after_comma_in_function_invocation_arguments);
 			scribe.printNextToken(TOK.TOKrbracket);
+			if(isNextToken(TOK.TOKlbracket) && 
+					prefs.insert_space_between_adjacent_brackets_in_multidimensional_arrays)
+				scribe.space();
 			return false;
 		}
 		type.accept(this);
@@ -1495,7 +1508,6 @@ public class CodeFormatterVisitor extends ASTVisitor
 	public boolean visit(ReturnStatement node)
 	{
 		scribe.printNextToken(TOK.TOKreturn);
-		scribe.space();
 		Expression exp = node.getExpression();
 		if(null != exp)
 		{
@@ -1577,6 +1589,9 @@ public class CodeFormatterVisitor extends ASTVisitor
 		else if(prefs.insert_space_between_empty_brackets_in_slice)
 			scribe.space();
 		scribe.printNextToken(TOK.TOKrbracket);
+		if(isNextToken(TOK.TOKlbracket) && 
+				prefs.insert_space_between_adjacent_brackets_in_multidimensional_arrays)
+			scribe.space();
 		return false;
 	}
 	
@@ -1720,7 +1735,7 @@ public class CodeFormatterVisitor extends ASTVisitor
 		scribe.printNextToken(TOK.TOKcolon, prefs.insert_space_before_colon_in_case_default_statement);
 		if(prefs.insert_space_after_colon_in_case_default_statement)
 			scribe.space();
-		node.getBody().accept(this);
+		formatCaseOrDefaultStatementBody((Block) node.getBody());
 		scribe.printTrailingComment();
 		return false;
 	}
@@ -1733,7 +1748,13 @@ public class CodeFormatterVisitor extends ASTVisitor
 			scribe.space();
 		node.getExpression().accept(this);
 		scribe.printNextToken(TOK.TOKrparen, prefs.insert_space_before_closing_paren_in_switch_statements);
-		formatSubStatement(node.getBody(), false, true, true, prefs.brace_position_for_switch_statement);
+		formatSubStatement(
+				node.getBody(),
+				false, 
+				prefs.indent_cases_compare_to_switch, 
+				false,
+				prefs.brace_position_for_switch_statement
+			);
 		scribe.printTrailingComment();
 		return false;
 	}
@@ -2153,6 +2174,32 @@ public class CodeFormatterVisitor extends ASTVisitor
 		formatSubStatement(node.getBody(), false, true, !prefs.keep_simple_with_statement_on_same_line, prefs.brace_position_for_with_statement);
 		scribe.printTrailingComment();
 		return false;
+	}
+	
+	private void formatCaseOrDefaultStatementBody(Block body)
+	{
+		if(body.statements().size() == 1 && 
+				body.statements().get(0) instanceof Block)
+		{
+			formatSubStatement(body.statements().get(0),
+					true,
+					prefs.indent_statements_compare_to_case, 
+					false, 
+					prefs.brace_position_for_switch_case);
+		}
+		else
+		{
+			if(prefs.insert_new_line_after_case_or_default_statement)
+				scribe.printNewLine();
+			boolean unIndentBreak = !prefs.indent_break_compare_to_switch
+					&& prefs.indent_statements_compare_to_case;
+			if(prefs.indent_statements_compare_to_case)
+				scribe.indent();
+			formatStatements(body.statements(), true, unIndentBreak);
+			if(prefs.indent_statements_compare_to_case && 
+					prefs.indent_break_compare_to_switch)
+				scribe.unIndent();
+		}
 	}
 
 	private void formatConditionalDeclaration(ConditionalDeclaration node)
@@ -2587,15 +2634,23 @@ public class CodeFormatterVisitor extends ASTVisitor
 	 * Given a series of statements (such as in a function body), formats them
 	 * such that only a single non-empty statement appears per line. Calls
 	 * accept() on each node.
+	 * @param unIndentAtBreak ugly hack to allow break statements to be
+	 *                        indented separately from cases. Seemed better
+	 *                        to do it this way that re-implement this method
+	 *                        in formatCaseOrDefaultStatementBody
 	 */
 	private void formatStatements(final List<Statement> statements,
-			boolean insertNewLineAfterLastStatement)
+			boolean insertNewLineAfterLastStatement, boolean unIndentAtBreak)
 	{
 		int statementsLength = statements.size();
 		if (statementsLength == 0)
 			return;
 		else if (statementsLength == 1)
+		{
+			if(statements.get(0) instanceof BreakStatement && unIndentAtBreak)
+				scribe.unIndent();
 			statements.get(0).accept(this);
+		}
 		else
 		{
 			Statement previousStatement = statements.get(0);
@@ -2616,6 +2671,8 @@ public class CodeFormatterVisitor extends ASTVisitor
 			if ((previousStatementNodeType == ASTNode.EMPTY_STATEMENT && statementNodeType != ASTNode.EMPTY_STATEMENT)
 					|| (previousStatementNodeType != ASTNode.EMPTY_STATEMENT && statementNodeType != ASTNode.EMPTY_STATEMENT))
 				scribe.printNewLine();
+			if(statement instanceof BreakStatement && unIndentAtBreak)
+				scribe.unIndent();
 			statement.accept(this);
 		}
 		
@@ -2638,24 +2695,10 @@ public class CodeFormatterVisitor extends ASTVisitor
 		
 		if(statement instanceof Block)
 		{
-			ASTNode parent = statement.getParent();
-			if(parent instanceof SwitchCase || parent instanceof DefaultStatement)
-			{
-				if(indent) {
-					scribe.indent();
-				}
-				formatStatements(((Block) statement).statements(), true);
-				if(indent) {
-					scribe.unIndent();
-				}
-			}
-			else
-			{
-				formatOpeningBrace(bracePosition, indent);
-				scribe.printNewLine();
-				formatStatements(((Block) statement).statements(), true);
-				formatClosingBrace(bracePosition, indent);
-			}
+			formatOpeningBrace(bracePosition, indent);
+			scribe.printNewLine();
+			formatStatements(((Block) statement).statements(), true, false);
+			formatClosingBrace(bracePosition, indent);
 		}		
 		else
 		{
@@ -2772,6 +2815,9 @@ public class CodeFormatterVisitor extends ASTVisitor
 		scribe.printNextToken(TOK.TOKlbracket);
 		scribe.printNextToken(TOK.TOKrbracket, 
 				prefs.insert_space_between_empty_brackets_in_dynamic_array_type);
+		if(isNextToken(TOK.TOKlbracket) && 
+				prefs.insert_space_between_adjacent_brackets_in_multidimensional_arrays)
+			scribe.space();
 	}
 
 	private void formatPostfix(AssociativeArrayType node, boolean postfixed)
@@ -2779,6 +2825,9 @@ public class CodeFormatterVisitor extends ASTVisitor
 		scribe.printNextToken(TOK.TOKlbracket);
 		node.getKeyType().accept(this);
 		scribe.printNextToken(TOK.TOKrbracket);
+		if(isNextToken(TOK.TOKlbracket) && 
+				prefs.insert_space_between_adjacent_brackets_in_multidimensional_arrays)
+			scribe.space();
 	}
 
 	private void formatPostfix(StaticArrayType node, boolean postfixed)
@@ -2786,6 +2835,9 @@ public class CodeFormatterVisitor extends ASTVisitor
 		scribe.printNextToken(TOK.TOKlbracket);
 		node.getSize().accept(this);
 		scribe.printNextToken(TOK.TOKrbracket);
+		if(isNextToken(TOK.TOKlbracket) && 
+				prefs.insert_space_between_adjacent_brackets_in_multidimensional_arrays)
+			scribe.space();
 	}
 
 	private void formatPostfix(SliceType node, boolean postfixed)
@@ -2798,6 +2850,9 @@ public class CodeFormatterVisitor extends ASTVisitor
 			scribe.space();
 		node.getToExpression().accept(this);
 		scribe.printNextToken(TOK.TOKrbracket);
+		if(isNextToken(TOK.TOKlbracket) && 
+				prefs.insert_space_between_adjacent_brackets_in_multidimensional_arrays)
+			scribe.space();
 	}
 	
 	private TextEdit failedToFormat(Throwable e)

@@ -78,7 +78,7 @@ final class FormatterMessages extends NLS {
 	public static String ModifyDialogTabPage_NumberPreference_error_invalid_value;
 	public static String ProfileManager_descent_defaults_profile_name;
 	public static String ProfileManager_java_defaults_profile_name;
-	public static String ProfileManager_phobos_defaults_profile_name;
+	public static String ProfileManager_c_sharp_defaults_profile_name;
 	
 	// Braces tab page
 	public static String ModifyDialog_tabpage_braces_title;
@@ -184,6 +184,7 @@ final class FormatterMessages extends NLS {
 	public static String WhiteSpaceOptions_labels;
 	public static String WhiteSpaceOptions_modifier_blocks;
 	public static String WhiteSpaceOptions_template_parameter_sepcialization;
+	public static String WhiteSpaceOptions_multidimensional_arrays;
 	
 	// White space options - syntax elements
 	public static String WhiteSpaceOptions_before_semicolon;
@@ -247,6 +248,14 @@ final class FormatterMessages extends NLS {
 	public static String WhiteSpaceOptions_after_colon_in_parameter_specialization;
 	public static String WhiteSpaceOptions_before_question_mark;
 	public static String WhiteSpaceOptions_after_question_mark;
+	public static String WhiteSpaceOptions_between_adjacent_brackets;
+	public static String WhiteSpaceOptions_before_opening_bracket;
+	public static String WhiteSpaceOptions_after_opening_bracket;
+	public static String WhiteSpaceOptions_before_closing_bracket;
+	public static String WhiteSpaceOptions_before_opening_brace;
+	public static String WhiteSpaceOptions_after_opening_brace;
+	public static String WhiteSpaceOptions_before_closing_brace;
+	public static String whiteSpaceOptions_after_closing_brace;
 	
 	// Blank lines tab page
 	public static String ModifyDialog_tabpage_blank_lines_title;
@@ -319,8 +328,8 @@ final class FormatterMessages extends NLS {
 	public static String IndentationTabPage_indent_statements_compare_to_function_body_header;
 	public static String IndentationTabPage_indent_enum_members_compare_to_enum_header;
 	public static String IndentationTabPage_indent_cases_compare_to_switch;
+	public static String IndentationTabPage_indent_break_compare_to_switch;
 	public static String IndentationTabPage_indent_statements_compare_to_case;
-	public static String IndentationTabPage_indent_statements_compare_to_label;
 	public static String IndentationTabPage_tab_char;
 	public static String IndentationTabPage_tab_size;
 
