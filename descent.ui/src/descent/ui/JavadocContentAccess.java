@@ -387,6 +387,8 @@ public class JavadocContentAccess {
 			case ITerminalSymbols.TokenNameushort:
 			case ITerminalSymbols.TokenNamevoid:
 			case ITerminalSymbols.TokenNamewchar:
+				
+			case ITerminalSymbols.TokenName__traits:
 				styleClassName = IJavaColorConstants.JAVA_KEYWORD;
 				break;
 			case ITerminalSymbols.TokenNamereturn:

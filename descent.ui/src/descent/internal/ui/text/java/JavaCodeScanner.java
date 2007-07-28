@@ -319,7 +319,7 @@ public final class JavaCodeScanner extends AbstractJavaScanner {
 		"goto", //$NON-NLS-1$
 		"if", "iftype", "import", "in", "inout", "interface", "invariant", "is", //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$ //$NON-NLS-4$ //$NON-NLS-3$ //$NON-NLS-2$ //$NON-NLS-1$
 		"lazy",  //$NON-NLS-1$
-		"macro", "mixin", "module", //$NON-NLS-1$ //$NON-NLS-2$
+		"macro", "mixin", "module", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		"new", //$NON-NLS-1$
 		"out", "override",  //$NON-NLS-1$ //$NON-NLS-2$
 		"package", "pragma", "private", "protected", "public", //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-3$ //$NON-NLS-2$ //$NON-NLS-1$
@@ -329,6 +329,10 @@ public final class JavaCodeScanner extends AbstractJavaScanner {
 		"union", "unittest",  //$NON-NLS-1$ //$NON-NLS-2$
 		"version", "volatile", //$NON-NLS-1$ //$NON-NLS-2$
 		"while", "with", //$NON-NLS-1$ //$NON-NLS-2$
+	};
+	
+	static String[] fgKeywords2= {
+		"__traits", //$NON-NLS-1$
 	};
 
 	private static final String INTERFACE= "interface";  //$NON-NLS-1$
@@ -440,6 +444,12 @@ public final class JavaCodeScanner extends AbstractJavaScanner {
 		token= getToken(IJavaColorConstants.JAVA_KEYWORD);
 		for (int i=0; i<fgKeywords.length; i++)
 			wordRule.addWord(fgKeywords[i], token);
+		
+		if (version.equals(JavaCore.VERSION_2_x)) {
+			for (int i=0; i<fgKeywords2.length; i++)
+				wordRule.addWord(fgKeywords2[i], token);
+		}
+		
 		for (int i=0; i<fgTypes.length; i++)
 			wordRule.addWord(fgTypes[i], token);
 		for (int i=0; i<fgConstants.length; i++)

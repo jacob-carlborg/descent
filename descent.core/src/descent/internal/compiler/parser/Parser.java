@@ -3820,7 +3820,8 @@ public class Parser extends Lexer {
 			Dsymbol d = (Dsymbol) a.get(0);
 			s[0] = new DeclarationStatement(loc, d);
 		} else {
-			Assert.isTrue(false);
+			parsingErrorDeleteToken(token);
+			nextToken();
 			s[0] = null;
 		}
 		/*

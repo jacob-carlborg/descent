@@ -127,7 +127,6 @@ public class Bugs_Test extends Parser_Test {
 		getCompilationUnit(s);
 	}
 	
-	/* TODO uncomment
 	public void testBug16() {
 		String s = "class ____C{void ____m(){\r\n" + 
 				"	invariant {\r\n" + 
@@ -137,7 +136,6 @@ public class Bugs_Test extends Parser_Test {
 		CompilationUnit unit = getCompilationUnit(s);
 		assertEquals(1, unit.declarations().size());
 	}
-	*/
 	
 	public void testBug17() {
 		String s = "void main() { Stdout.formatln(x); }";
