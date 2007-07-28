@@ -2,6 +2,9 @@ package dtool.refmodel;
 
 import java.util.Iterator;
 
+import org.eclipse.core.runtime.CoreException;
+
+import melnorme.miscutil.ExceptionAdapter;
 import melnorme.miscutil.IteratorUtil;
 import dtool.dom.ast.ASTNode;
 import dtool.dom.declarations.DeclarationImport;
@@ -30,7 +33,12 @@ public class EntityResolver {
 
 	/** Convenience method to call mod resolver. */
 	public static Module findModule(Module refModule, String packageName, String moduleName) {
-		return modResolver.findModule(refModule, packageName, moduleName);
+		try {
+			return modResolver.findModule(refModule, packageName, moduleName);
+		} catch (CoreException ce) {
+			ExceptionAdapter.unchecked(ce);
+			return null;
+		}
 	}
 	
 	/* ----- Methods for find DefUnits in a collection of ASTNodes ----- */

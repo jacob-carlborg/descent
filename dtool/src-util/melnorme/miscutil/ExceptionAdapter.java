@@ -68,7 +68,7 @@ public class ExceptionAdapter extends RuntimeException {
 	}
 	
 	/** Creates an unchecked Throwable, if not unchecked already. */
-	public static RuntimeException unchecked(Throwable e) {
+	public static final RuntimeException unchecked(Throwable e) {
 		if(e instanceof RuntimeException)
 			return (RuntimeException) e;
 		else if(e instanceof Exception)
