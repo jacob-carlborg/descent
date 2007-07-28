@@ -4,8 +4,8 @@ import junit.framework.Assert;
 import melnorme.lang.ui.EditorUtil;
 import mmrnmhrm.core.model.CompilationUnit;
 import mmrnmhrm.tests.BaseUITest;
-import mmrnmhrm.tests.SampleNonDeeProjectBuilder;
-import mmrnmhrm.tests.SampleProjectBuilder;
+import mmrnmhrm.tests.SampleNonDeeProject;
+import mmrnmhrm.tests.SampleMainProject;
 import mmrnmhrm.ui.DeePlugin;
 import mmrnmhrm.ui.editor.DeeEditor;
 
@@ -26,10 +26,10 @@ import org.junit.Test;
 
 public class OpenDefinitionOperationTest extends BaseUITest {
 
-	private static final String TEST_SRCFILE = SampleProjectBuilder.TEST_SRC1 + "/testGoToDefOp.d";
-	private static final String TEST_SRC_TARGETFILE = SampleProjectBuilder.TEST_SRC3 +"/pack/sample.d";
+	private static final String TEST_SRCFILE = SampleMainProject.TEST_SRC1 + "/testGoToDefOp.d";
+	private static final String TEST_SRC_TARGETFILE = SampleMainProject.TEST_SRC3 +"/pack/sample.d";
 
-	private static final String TEST_OUTSRCFILE = SampleProjectBuilder.TEST_OUT_SRC
+	private static final String TEST_OUTSRCFILE = SampleMainProject.TEST_OUT_SRC
 			+ "/testGoToDefOp.d";
 
 	protected IFile file; 
@@ -44,7 +44,7 @@ public class OpenDefinitionOperationTest extends BaseUITest {
 
 	@Before
 	public void setUp() throws Exception {
-		IProject project = SampleProjectBuilder.sampleDeeProj.getProject();
+		IProject project = SampleMainProject.sampleDeeProj.getProject();
 		setupWithFile(project, TEST_SRCFILE);
 	}
 
@@ -63,37 +63,37 @@ public class OpenDefinitionOperationTest extends BaseUITest {
 	@Test
 	public void test1() {
 		// find target in same file
-		doTest(123, IStatus.OK, SampleProjectBuilder.project, TEST_SRCFILE); 
+		doTest(123, IStatus.OK, SampleMainProject.project, TEST_SRCFILE); 
 	}
 	
 	@Test
 	public void test2() {
 		// not found
-		doTest(135, IStatus.WARNING, SampleProjectBuilder.project, TEST_SRCFILE); 
+		doTest(135, IStatus.WARNING, SampleMainProject.project, TEST_SRCFILE); 
 	}
 	
 	@Test
 	public void test3() {		
 		// already a def
-		doTest(54, IStatus.INFO, SampleProjectBuilder.project, TEST_SRCFILE); 
+		doTest(54, IStatus.INFO, SampleMainProject.project, TEST_SRCFILE); 
 	}
 	
 	@Test
 	public void test4() {
 		// find target in other file
-		doTest(157, IStatus.OK, SampleProjectBuilder.project, TEST_SRC_TARGETFILE); 
+		doTest(157, IStatus.OK, SampleMainProject.project, TEST_SRC_TARGETFILE); 
 	}
 
 	@Test
 	public void testOutside() throws CoreException {
-		IProject project = SampleProjectBuilder.project;
+		IProject project = SampleMainProject.project;
 		setupWithFile(project, TEST_OUTSRCFILE);
 		doTest(123, IStatus.OK, project, TEST_OUTSRCFILE);
 	}
 	
 	@Test
 	public void testOutside2() throws CoreException {
-		IProject project = SampleProjectBuilder.project;
+		IProject project = SampleMainProject.project;
 		setupWithFile(project, TEST_OUTSRCFILE);
 		doTest(157, IStatus.OK, project, TEST_SRC_TARGETFILE);
 	}
@@ -101,14 +101,14 @@ public class OpenDefinitionOperationTest extends BaseUITest {
 	
 	@Test
 	public void testReallyOutside() throws CoreException {
-		IProject project = SampleNonDeeProjectBuilder.project;
+		IProject project = SampleNonDeeProject.project;
 		setupWithFile(project, TEST_OUTSRCFILE);
 		doTest(123, IStatus.OK, project, TEST_OUTSRCFILE);
 	}
 	
 	@Test
 	public void testReallyOutside2() throws CoreException {
-		IProject project = SampleNonDeeProjectBuilder.project;
+		IProject project = SampleNonDeeProject.project;
 		setupWithFile(project, TEST_OUTSRCFILE);
 		doTest(157, IStatus.WARNING, project, TEST_OUTSRCFILE);
 	}

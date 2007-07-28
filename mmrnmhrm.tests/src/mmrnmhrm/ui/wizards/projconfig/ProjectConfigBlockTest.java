@@ -57,7 +57,7 @@ public class ProjectConfigBlockTest extends BaseUITest {
 		fProjectConfigBlock.fSourceFoldersPage.addEntry(containerSrc1);
 	}
 
-	public void assertChangeSet1Applied() {
+	public void assertChangeSet1Applied() throws CoreException {
 		assertTrue(deeProject.getOutputDir().getProjectRelativePath().equals(containerOutput.getProjectRelativePath()));
 		assertTrue(deeProject.getOutputDir().equals(containerOutput));
 		
@@ -66,7 +66,7 @@ public class ProjectConfigBlockTest extends BaseUITest {
 		assertTrue(deeProject.getSourceRoot(obj.getUnderlyingResource()) != null);
 	}
 	
-	public void assertChangeSet1NotApplied() {
+	public void assertChangeSet1NotApplied() throws CoreException {
 		assertFalse(deeProject.getOutputDir().getProjectRelativePath().equals(containerOutput.getProjectRelativePath()));
 		assertFalse(deeProject.getOutputDir().equals(containerOutput));
 

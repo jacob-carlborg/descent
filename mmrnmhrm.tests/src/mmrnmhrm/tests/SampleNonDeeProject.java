@@ -7,7 +7,7 @@ import java.net.URISyntaxException;
 import melnorme.miscutil.ExceptionAdapter;
 import mmrnmhrm.core.DeeCore;
 import mmrnmhrm.core.model.CompilationUnit;
-import mmrnmhrm.core.model.DeeModelManager;
+import mmrnmhrm.core.model.DeeModel;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
@@ -17,7 +17,7 @@ import org.eclipse.core.runtime.CoreException;
 /**
  * Builds a simple project with d sources, but that is not a Dee Project
  */
-public abstract class SampleNonDeeProjectBuilder {
+public abstract class SampleNonDeeProject {
 
 
 	public static final String SAMPLEPROJNAME = "SampleNonDeeProj";
@@ -31,11 +31,7 @@ public abstract class SampleNonDeeProjectBuilder {
 	public static IFile sampleOutOfModelFile;
 	public static IFile sampleNonExistantFile;
 
-	public static void commonSetUp() throws Exception {
-		createAndFillSampleProj();
-	}
-
-	public static void commonSetUpUnchecked() {
+	public static void createAndSetupProject() {
 		try {
 			createAndFillSampleProj();
 		} catch (Exception e) {
@@ -48,10 +44,10 @@ public abstract class SampleNonDeeProjectBuilder {
 			URISyntaxException, IOException {
 		IWorkspaceRoot workspaceRoot = DeeCore.getWorkspaceRoot();
 		project = workspaceRoot.getProject(SAMPLEPROJNAME);
+		if(project.exists())
+			project.delete(true, null);
 		project.create(null);
 		project.open(null);
-		
-		// Now fill some data
 		fillSampleProj();
 		return project;
 	}
@@ -78,14 +74,14 @@ public abstract class SampleNonDeeProjectBuilder {
 	/** Gets a IFile from the sample project. */
 	public static IFile getFile(String filepath) {
 		IFile file = project.getProject().getFile(filepath);
-		BaseTest.assertTrue(file.exists(), "Test file not found.");
+		BasePluginTest.assertTrue(file.exists(), "Test file not found.");
 		return file;
 	}
 	
 	/** Gets a CompilationUnit from the sample project. 
 	 * CompilationUnit must be on the build path. */
-	public static CompilationUnit getCompilationUnit(String filepath) {
-		return DeeModelManager.getCompilationUnit(getFile(filepath));
+	public static CompilationUnit getCompilationUnit(String filepath) throws CoreException {
+		return DeeModel.findCompilationUnit(getFile(filepath));
 	}
 	
 }

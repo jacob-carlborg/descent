@@ -19,6 +19,6 @@ void func() {
    /		       \                 |
 pack.sample    pack.sample2     pack.sample3
     \             /                /                   
-   testDiamondImports
+   testDiamondShaped
    
 */

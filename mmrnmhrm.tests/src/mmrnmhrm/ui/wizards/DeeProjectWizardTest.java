@@ -1,15 +1,17 @@
 package mmrnmhrm.ui.wizards;
 
 import static org.junit.Assert.assertFalse;
-import mmrnmhrm.core.model.DeeModelManager;
+import mmrnmhrm.core.DeeCore;
+import mmrnmhrm.core.model.DeeModel;
 import mmrnmhrm.core.model.DeeModelRoot;
 import mmrnmhrm.core.model.DeeProject;
 import mmrnmhrm.tests.BaseUITest;
-import mmrnmhrm.tests.SampleProjectBuilder;
+import mmrnmhrm.tests.SampleMainProject;
 import mmrnmhrm.tests.adapters.Test_WizardDialog;
 import mmrnmhrm.ui.DeePlugin;
 import mmrnmhrm.ui.wizards.projconfig.ProjectConfigBlockTest;
 
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IWorkspaceRunnable;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
@@ -31,7 +33,7 @@ public class DeeProjectWizardTest extends BaseUITest {
 	
 	@Before
 	public void setUp() throws Exception {
-		
+		tearDown();
         //WorkbenchPlugin.getDefault().getNewWizardRegistry().findWizard(id);
 		wizard = new DeeProjectWizard();
 		IWorkbenchWindow window = DeePlugin.getActiveWorkbenchWindow();
@@ -49,11 +51,14 @@ public class DeeProjectWizardTest extends BaseUITest {
 		// Should undo all wizard actions
 		ResourcesPlugin.getWorkspace().run(new IWorkspaceRunnable() {
 			public void run(IProgressMonitor monitor) throws CoreException {
-				DeeProject deeproj = DeeModelManager.getLangProject(NEWPROJNAME);
+				DeeProject deeproj = DeeModel.getLangProject(NEWPROJNAME);
 				if(deeproj != null) {
 					DeeModelRoot.getInstance().removeDeeProject(deeproj);
 					deeproj.getProject().delete(true, monitor);
 				}
+				IProject project = DeeCore.getWorkspaceRoot().getProject(NEWPROJNAME);
+				if(project.exists())
+					project.delete(true, monitor);
 			}
 		}, null);
 	}
@@ -78,7 +83,7 @@ public class DeeProjectWizardTest extends BaseUITest {
 	
 	@Test
 	public void test_P1Validation() throws Throwable {
-		wizard.fFirstPage.fNameGroup.setName(SampleProjectBuilder.SAMPLEPROJNAME);
+		wizard.fFirstPage.fNameGroup.setName(SampleMainProject.SAMPLEPROJNAME);
 		assertFalse(wizard.canFinish());
 
 		simulatePressCancel();
@@ -176,12 +181,12 @@ public class DeeProjectWizardTest extends BaseUITest {
 	protected boolean checkNoChanges() throws Throwable {
 		if(exceptionThrown)
 			throw exception;
-		return DeeModelManager.getLangProject(NEWPROJNAME) == null;
+		return DeeModel.getLangProject(NEWPROJNAME) == null;
 	}
 
 	protected boolean checkProjectCreated() throws Throwable {
 		if(exceptionThrown)
 			throw exception;
-		return DeeModelManager.getLangProject(NEWPROJNAME) != null;
+		return DeeModel.getLangProject(NEWPROJNAME) != null;
 	}
 }

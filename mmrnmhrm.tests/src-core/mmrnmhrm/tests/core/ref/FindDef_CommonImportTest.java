@@ -2,9 +2,10 @@ package mmrnmhrm.tests.core.ref;
 
 import java.io.IOException;
 
+import melnorme.miscutil.ExceptionAdapter;
 import mmrnmhrm.core.model.CompilationUnit;
-import mmrnmhrm.tests.BaseTest;
-import mmrnmhrm.tests.SampleProjectBuilder;
+import mmrnmhrm.tests.BasePluginTest;
+import mmrnmhrm.tests.SampleMainProject;
 
 import org.eclipse.core.runtime.CoreException;
 import org.junit.AfterClass;
@@ -12,28 +13,25 @@ import org.junit.Test;
 
 import dtool.tests.ref.FindDef_CommonTest;
 
-public abstract class FindDef_CommonImportTest extends BaseTest {
+public abstract class FindDef_CommonImportTest extends BasePluginTest {
 
 	public static final String TESTALT_KEY = "/++/";
-	public static final String TEST_SRCFOLDER = SampleProjectBuilder.TEST_SRC3;
+	public static final String TEST_SRCFOLDER = SampleMainProject.TEST_SRC3;
 
 	protected static CompilationUnit defaultCUnit;
 
 	protected static void staticTestInit(String testSrcFile) {
 		FindDef_CommonTest.counter = -1;
 		System.out.println("======== " + testSrcFile + " ========");
-		SampleProjectBuilder.commonSetUpUnchecked();
-		defaultCUnit = getTestCompilationUnit(testSrcFile);
+		try {
+			defaultCUnit = getTestCompilationUnit(testSrcFile);
+		} catch (CoreException ce) {
+			ExceptionAdapter.unchecked(ce);
+		}
 	}
 	
-	@AfterClass
-	public static void staticTestEnd() throws Exception {
-		SampleProjectBuilder.commonTearDown();
-	}
-
-
-	protected static CompilationUnit getTestCompilationUnit(String path) {
-		return SampleProjectBuilder.getCompilationUnit(TEST_SRCFOLDER +"/"+ path);
+	protected static CompilationUnit getTestCompilationUnit(String path) throws CoreException {
+		return SampleMainProject.getCompilationUnit(TEST_SRCFOLDER +"/"+ path);
 	}
 
 	protected int offset;

@@ -6,9 +6,11 @@ import java.net.URL;
 
 import melnorme.miscutil.StringUtil;
 import mmrnmhrm.core.model.CompilationUnit;
+import mmrnmhrm.core.model.DeePackageFragment;
 import mmrnmhrm.core.model.EModelStatus;
 
 import org.eclipse.core.resources.IContainer;
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
@@ -18,34 +20,28 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.osgi.framework.Bundle;
 
+import descent.internal.core.dom.ParserFacade;
+import dtool.descentadapter.DescentASTConverter;
+import dtool.dom.ast.ASTNode;
+import dtool.dom.definitions.Module;
+
 
 public class CoreTestUtils {
 
 	
-	public static CompilationUnit testParseCUnit(final String cunitsource) throws CoreException {
+	public static ASTNode testParser(final String source) throws CoreException {
 
-		// create an orphaned Compilation Unit
-		CompilationUnit cunit = new CompilationUnit(null) {
-			@Override
-			public String getSource() {
-				return cunitsource;
-			}
-			
-			@Override
-			protected void clearErrorMarkers() {
-				// do nothing
-			}
-		};
-		//cunit.updateElement();
-		//cunit.getDocument().set(cunitsource);
-		cunit.reconcile();
-		BaseTest.assertTrue(cunit.parseStatus == EModelStatus.OK,
-				"Module failed to parse Correctly" + 
-				"\n " + StringUtil.collToString(cunit.problems, "\n "));
-		//System.out.print(ASTPrinter.toStringAST(cunit.getModule()));
-		return cunit;
+		ParserFacade parser = new descent.internal.core.dom.ParserFacade();
+		descent.internal.core.dom.Module mod = parser.parseCompilationUnit(source).mod;
+		BasePluginTest.assertTrue(mod.getProblems().length == 0,
+				"Found syntax errors while parsing.");
+
+		DescentASTConverter domadapter = new DescentASTConverter();
+		Module neoModule = domadapter.convertModule(mod);
+		return neoModule;
 	}
 
+	/** FIXME, copy each file ourselfs, to prevent copying .svn files. */
 	static IFolder createWorkspaceFolderFromBundle(String srcpath, IContainer parent, String destname)
 			throws CoreException, URISyntaxException, IOException {
 		Bundle bundle = Platform.getBundle(DeeTestsPlugin.PLUGIN_ID);

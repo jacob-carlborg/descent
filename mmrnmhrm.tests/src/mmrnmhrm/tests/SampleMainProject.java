@@ -7,10 +7,11 @@ import java.net.URISyntaxException;
 import melnorme.miscutil.ExceptionAdapter;
 import mmrnmhrm.core.DeeCore;
 import mmrnmhrm.core.model.CompilationUnit;
-import mmrnmhrm.core.model.DeeModelManager;
+import mmrnmhrm.core.model.DeeModel;
 import mmrnmhrm.core.model.DeeModelRoot;
 import mmrnmhrm.core.model.DeeProject;
 import mmrnmhrm.core.model.DeeSourceFolder;
+import mmrnmhrm.core.model.lang.LangElement;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
@@ -23,7 +24,7 @@ import org.eclipse.core.runtime.Path;
  * This classes creates a sample project 
  * in which tests can be based upon.
  */
-public abstract class SampleProjectBuilder {
+public abstract class SampleMainProject {
 
 
 	public static final String SAMPLEPROJNAME = "SampleProj";
@@ -41,11 +42,7 @@ public abstract class SampleProjectBuilder {
 	public static IFile sampleNonExistantFile;
 
 
-	public static void commonSetUp() throws Exception {
-		createAndFillSampleProj();
-	}
-
-	public static void commonSetUpUnchecked() {
+	public static void createAndSetupSampleProj() {
 		try {
 			createAndFillSampleProj();
 		} catch (Exception e) {
@@ -53,22 +50,38 @@ public abstract class SampleProjectBuilder {
 		}
 	}
 
-
-	public static DeeProject createAndFillSampleProj() throws CoreException,
+	public static LangElement createAndFillSampleProj() throws CoreException,
 			URISyntaxException, IOException {
-		IWorkspaceRoot workspaceRoot = DeeCore.getWorkspaceRoot();
-		IProject project = workspaceRoot.getProject(SAMPLEPROJNAME);
-		project.create(null);
-		project.open(null);
-		DeeModelRoot.getInstance().createDeeProject(project);
-		sampleDeeProj = DeeModelManager.getLangProject(SAMPLEPROJNAME);
-		
-		// Now fill some data
+				
+		sampleDeeProj = createAndOpenDeeProject(SAMPLEPROJNAME);
 		fillSampleProj();
 		return sampleDeeProj;
 	}
+
+	public static DeeProject createAndOpenDeeProject(String name)
+			throws CoreException {
+		IWorkspaceRoot workspaceRoot = DeeCore.getWorkspaceRoot();
+
+		IProject project;
+		project = workspaceRoot.getProject(name);
+		if(project.exists())
+			project.delete(true, null);
+		project.create(null);
+		project.open(null);
+		DeeModelRoot.getInstance().createDeeProject(project);
+		return DeeModel.getLangProject(name);
+	}
 	
-	
+	private static IFolder createFolderInProject(String bundleDir, String destDir, boolean addSrcFolder) throws CoreException,
+			URISyntaxException, IOException {
+		IFolder folder;
+		folder = CoreTestUtils.createWorkspaceFolderFromBundle(bundleDir,
+				project, destDir);
+		if(addSrcFolder)
+			sampleDeeProj.addSourceRoot(new DeeSourceFolder(folder, sampleDeeProj));
+		return folder;
+	}
+
 	public static void fillSampleProj() throws CoreException, URISyntaxException, IOException {
 		// Watch out when changing these values, tests may depend on these paths
 		
@@ -77,44 +90,33 @@ public abstract class SampleProjectBuilder {
 		
 		sampleNonExistantFile = project.getFile(new Path("nonexistant.d"));
 
-		folder = CoreTestUtils.createWorkspaceFolderFromBundle("sampleSrc1",
-				project, TEST_SRC1);
+		folder = createFolderInProject("sampleSrc1", TEST_SRC1, false);
 		sampleFile1 = folder.getFile("foo.d");
 		
 
-		folder = CoreTestUtils.createWorkspaceFolderFromBundle("sampleSrcOut",
-				project, TEST_OUT_SRC);
+		folder = createFolderInProject("sampleSrcOut", TEST_OUT_SRC, false);
 		sampleOutOfModelFile = folder.getFile("outfile.d");
 		
-		folder = CoreTestUtils.createWorkspaceFolderFromBundle("refs",
-				project, TEST_SRC_REFS);
-		sampleDeeProj.addSourceRoot(new DeeSourceFolder(folder, sampleDeeProj));
-		
-		folder = CoreTestUtils.createWorkspaceFolderFromBundle("sampleSrc3",
-				project, TEST_SRC3);
-		sampleDeeProj.addSourceRoot(new DeeSourceFolder(folder, sampleDeeProj));
+		folder = createFolderInProject("refs", TEST_SRC_REFS, true);
 
+		folder = createFolderInProject("sampleSrc3", TEST_SRC3, true);
+		
 		
 		//UITestUtils.runEventLoop(DeePlugin.getActiveWorkbenchShell());
 	}
 
-	public static void commonTearDown() throws Exception {
-		IWorkspaceRoot workspaceRoot = DeeCore.getWorkspaceRoot();
-		IProject project = workspaceRoot.getProject(SAMPLEPROJNAME);
-		project.delete(true, null);
-	}
 	
 	/** Gets a IFile from the sample project. */
 	public static IFile getFile(String filepath) {
 		IFile file = sampleDeeProj.getProject().getFile(filepath);
-		BaseTest.assertTrue(file.exists(), "Test file not found.");
+		BasePluginTest.assertTrue(file.exists(), "Test file not found.");
 		return file;
 	}
 	
 	/** Gets a CompilationUnit from the sample project. 
 	 * CompilationUnit must be on the build path. */
-	public static CompilationUnit getCompilationUnit(String filepath) {
-		return DeeModelManager.getCompilationUnit(getFile(filepath));
+	public static CompilationUnit getCompilationUnit(String filepath) throws CoreException {
+		return DeeModel.findCompilationUnit(getFile(filepath));
 	}
 	
 }

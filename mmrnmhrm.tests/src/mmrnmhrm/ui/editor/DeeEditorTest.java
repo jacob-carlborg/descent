@@ -1,15 +1,17 @@
 package mmrnmhrm.ui.editor;
 
 import mmrnmhrm.tests.BaseUITest;
-import mmrnmhrm.tests.SampleProjectBuilder;
+import mmrnmhrm.tests.SampleMainProject;
 import mmrnmhrm.ui.DeePlugin;
 import mmrnmhrm.ui.views.ASTViewer;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.ui.IEditorPart;
+import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.ide.IDE;
+import org.eclipse.ui.part.FileEditorInput;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -27,7 +29,7 @@ public class DeeEditorTest extends BaseUITest {
 
 	@Test
 	public void testDeeEditor() throws CoreException {
-		IFile file = SampleProjectBuilder.sampleFile1;
+		IFile file = SampleMainProject.sampleFile1;
 		
 		IWorkbenchPage page = DeePlugin.getActivePage();
 		IEditorPart editor = IDE.openEditor(page, file, DeeEditor.EDITOR_ID);
@@ -39,7 +41,7 @@ public class DeeEditorTest extends BaseUITest {
 	
 	@Test
 	public void testDeeEditor2() throws CoreException {
-		IFile file = SampleProjectBuilder.sampleOutOfModelFile;
+		IFile file = SampleMainProject.sampleOutOfModelFile;
 		
 		IWorkbenchPage page = DeePlugin.getActivePage();
 		IEditorPart editor = IDE.openEditor(page, file, DeeEditor.EDITOR_ID);
@@ -52,7 +54,7 @@ public class DeeEditorTest extends BaseUITest {
 	@Test
 	public void testDeeEditor3() throws CoreException {
 		IWorkbenchPage page = DeePlugin.getActivePage();
-		IFile file = SampleProjectBuilder.sampleNonExistantFile;
+		IFile file = SampleMainProject.sampleNonExistantFile;
 		IEditorPart editor = 
 			IDE.openEditor(page, file, DeeEditor.EDITOR_ID);
 		assertTrue(!(editor instanceof DeeEditor));

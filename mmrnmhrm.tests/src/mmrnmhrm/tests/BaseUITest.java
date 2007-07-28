@@ -1,26 +1,30 @@
 package mmrnmhrm.tests;
 
+import mmrnmhrm.ui.DeePlugin;
+
 import org.eclipse.core.runtime.ILogListener;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.ui.IWorkbenchPage;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 
 
-public class BaseUITest extends BaseTest {
+public class BaseUITest extends BasePluginTest {
+	
+	static {
+		IWorkbenchPage page = DeePlugin.getActivePage();
+		page.closeAllEditors(false);
+	}
 
 	@BeforeClass
 	public static void staticTestInit() throws Exception {
-		SampleProjectBuilder.commonSetUp();
-		SampleNonDeeProjectBuilder.commonSetUp();
 	}
 	
 	@AfterClass
 	public static void staticTestEnd() throws Exception {
-		SampleProjectBuilder.commonTearDown();
-		SampleNonDeeProjectBuilder.commonTearDown();
 	}
 	
 	protected boolean exceptionThrown;
