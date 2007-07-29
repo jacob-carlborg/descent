@@ -153,8 +153,8 @@ public class Lexer_Test extends TestCase {
 	}
 	
 	public void testComments() {
-		assertComment(" //hola\n", "//hola", 1, 6, TOK.TOKlinecomment);
-		assertComment(" ///hola\n", "///hola", 1, 7, TOK.TOKdoclinecomment);
+		assertComment(" //hola\n", "//hola", 1, 7, TOK.TOKlinecomment);
+		assertComment(" ///hola\n", "///hola", 1, 8, TOK.TOKdoclinecomment);
 		assertComment(" /*hola*/", "/*hola*/", 1, 8, TOK.TOKblockcomment);
 		assertComment(" /**hola*/", "/**hola*/", 1, 9, TOK.TOKdocblockcomment);
 		assertComment(" /+hola+/", "/+hola+/", 1, 8, TOK.TOKpluscomment);

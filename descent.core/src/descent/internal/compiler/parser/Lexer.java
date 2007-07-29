@@ -536,7 +536,6 @@ public class Lexer implements IProblemRequestor {
 
 			    case '/':		// do // style comments
 				linnum = this.linnum;
-				int back = 0;
 				while (true)
 				{   char c = input[++p];
 				    switch (c)
@@ -547,7 +546,6 @@ public class Lexer implements IProblemRequestor {
 					case '\r':
 					    if (input[p + 1] == '\n') {
 					    	p++;
-					    	back++;
 					    }
 					    break;
 
@@ -580,18 +578,18 @@ public class Lexer implements IProblemRequestor {
 					checkTaskTag(t.ptr, p);
 				}
 				if (tokenizeComments) {
-					p -= back;
+					p++;
 					
 					t.value = input[t.ptr + 2] == '/' ? TOKdoclinecomment : TOKlinecomment;
 					t.len = p - t.ptr;
 					t.string = new String(input, t.ptr, t.len);
 					
-					newline(IN_COMMENT);									
+					newline(IN_COMMENT);
 					return;
 				} else {
-					p -= back;
+					p++;
 					
-					newline(IN_COMMENT);					
+					newline(IN_COMMENT);
 					continue;
 				}
 

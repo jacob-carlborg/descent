@@ -1752,7 +1752,7 @@ public class CodeFormatterVisitor extends ASTVisitor
 				node.getBody(),
 				false, 
 				prefs.indent_cases_compare_to_switch, 
-				false,
+				true,
 				prefs.brace_position_for_switch_statement
 			);
 		scribe.printTrailingComment();

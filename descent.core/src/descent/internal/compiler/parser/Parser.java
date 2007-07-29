@@ -3140,6 +3140,7 @@ public class Parser extends Lexer {
 				Type tb;
 				IdentifierExp ai = null;
 				Type at;
+				@SuppressWarnings("unused")
 				int storageClass;
 				InOut inout;
 				Argument a;
@@ -5942,6 +5943,10 @@ public class Parser extends Lexer {
 	public TOK nextToken() {
 		appendLeadingComments = true;
 		
+		// If many comments come in a rush, only the first
+		// one is to be attached to the previous token as a
+		// leading comment
+		boolean first = true;
 		TOK tok = super.nextToken();
 		while(tok == TOK.TOKlinecomment || tok == TOK.TOKdoclinecomment ||
 			  tok == TOK.TOKblockcomment || tok == TOK.TOKdocblockcomment ||
@@ -5980,9 +5985,12 @@ public class Parser extends Lexer {
 			comment.setSourceRange(token.ptr, token.len);
 			
 			comments.add(comment);
-			attachCommentToCurrentToken(comment);
+			if (first) {
+				attachCommentToCurrentToken(comment);
+			}
 			
 			tok = super.nextToken();
+			first = false;
 		}
 		
 		while(tok == TOK.TOKPRAGMA) {

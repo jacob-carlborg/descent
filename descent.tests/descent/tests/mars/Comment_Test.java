@@ -242,11 +242,11 @@ public class Comment_Test extends Parser_Test {
 		assertEquals(2, decls.size());
 		
 		Declaration x = decls.get(0);
-		assertEquals("/// side comment", x.getPostDDoc().getText());
-		assertPosition(x, 1, 23);
+		assertEquals("/// side comment\r\n", x.getPostDDoc().getText());
+		assertPosition(x, 1, 25);
 		
 		Declaration y = decls.get(1);
-		assertEquals("/// top comment", y.preDDocs().get(0).getText());
+		assertEquals("/// top comment\r\n", y.preDDocs().get(0).getText());
 		assertPosition(y, 26, 23);
 	}
 	
@@ -261,11 +261,11 @@ public class Comment_Test extends Parser_Test {
 		List<Declaration> decls = ((AggregateDeclaration) getSingleDeclarationNoProblems(s)).declarations();
 		
 		Declaration x = decls.get(0);
-		assertEquals("/// side comment", x.getPostDDoc().getText());
-		assertPosition(x, 13, 23);
+		assertEquals("/// side comment\r\n", x.getPostDDoc().getText());
+		assertPosition(x, 13, 25);
 		
 		Declaration y = decls.get(1);
-		assertEquals("/// top comment", y.preDDocs().get(0).getText());
+		assertEquals("/// top comment\r\n", y.preDDocs().get(0).getText());
 		assertPosition(y, 39, 24);
 	}
 

@@ -12,6 +12,7 @@ public class FormatImportDeclaration_Tests extends AbstractFormatter_Test {
 	protected Map getDefaultOptions() {
 		Map options = new HashMap();
 		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_SEMICOLON, DefaultCodeFormatterConstants.FALSE);
+		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_COLON_IN_SELECTIVE_IMPORTS, DefaultCodeFormatterConstants.TRUE);
 		return options;
 	}
 	
