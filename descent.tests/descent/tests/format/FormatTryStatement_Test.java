@@ -17,6 +17,7 @@ public class FormatTryStatement_Test extends AbstractFormatInsideFunction_Test {
 		options.put(DefaultCodeFormatterConstants.FORMATTER_KEEP_SIMPLE_TRY_STATEMENT_ON_SAME_LINE, DefaultCodeFormatterConstants.FALSE);
 		options.put(DefaultCodeFormatterConstants.FORMATTER_KEEP_SIMPLE_CATCH_STATEMENT_ON_SAME_LINE, DefaultCodeFormatterConstants.FALSE);
 		options.put(DefaultCodeFormatterConstants.FORMATTER_KEEP_SIMPLE_FINALLY_STATEMENT_ON_SAME_LINE, DefaultCodeFormatterConstants.FALSE);
+		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_OPENING_PAREN_IN_CATCH, DefaultCodeFormatterConstants.FALSE);
 		return options;
 	}
 	
@@ -212,6 +213,32 @@ public class FormatTryStatement_Test extends AbstractFormatInsideFunction_Test {
 				"} finally int x;", 
 				
 				"try { }  catch  {   }   finally int x;",
+				
+				options
+			);
+	}
+	
+	public void testDontINSERT_SPACE_BEFORE_OPENING_PAREN_IN_CATCH() throws Exception {
+		assertFormat(
+				"try {\r\n" +
+				"} catch(Exception e) {\r\n" +
+				"} finally\r\n" +
+					"\tint x;", 
+				
+				"try { }  catch  (  Exception e  )  {   }   finally int x;"
+			);
+	}
+	
+	public void testINSERT_SPACE_BEFORE_OPENING_PAREN_IN_CATCH() throws Exception {
+		Map options = new HashMap();
+		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_OPENING_PAREN_IN_CATCH, DefaultCodeFormatterConstants.TRUE);
+		assertFormat(
+				"try {\r\n" +
+				"} catch (Exception e) {\r\n" +
+				"} finally\r\n" +
+					"\tint x;", 
+				
+				"try { }  catch  (  Exception e  )  {   }   finally int x;",
 				
 				options
 			);

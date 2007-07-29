@@ -1,5 +1,6 @@
 package descent.tests.format;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import descent.core.formatter.DefaultCodeFormatterConstants;
@@ -10,6 +11,7 @@ public class FormatWhileStatement_Test extends AbstractFormatBraceWithSingleInsi
 	protected Map getDefaultOptions() {
 		Map options = super.getDefaultOptions();
 		options.put(DefaultCodeFormatterConstants.FORMATTER_BRACE_POSITION_FOR_LOOP_STATEMENT, DefaultCodeFormatterConstants.END_OF_LINE);
+		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_OPENING_PAREN_IN_WHILE_LOOPS, DefaultCodeFormatterConstants.FALSE);
 		return options;
 	}
 	
@@ -31,6 +33,19 @@ public class FormatWhileStatement_Test extends AbstractFormatBraceWithSingleInsi
 	@Override
 	protected String getUnformattedPrefixForBrace() {
 		return "while   (   true   )";
+	}
+	
+	public void testINSERT_SPACE_BEFORE_OPENING_PAREN_IN_FOR_LOOPS() throws Exception {
+		Map options = new HashMap();
+		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_OPENING_PAREN_IN_WHILE_LOOPS, DefaultCodeFormatterConstants.TRUE);
+		assertFormat(
+				"while (true) {\r\n" +
+				"}\r\n",
+				
+				"while(true) { }",
+				
+				options
+				);
 	}
 
 }

@@ -13,6 +13,7 @@ public class FormatForStatement_Test extends AbstractFormatBraceWithSingleInside
 		options.put(DefaultCodeFormatterConstants.FORMATTER_BRACE_POSITION_FOR_LOOP_STATEMENT, DefaultCodeFormatterConstants.END_OF_LINE);
 		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_SEMICOLON_IN_FOR_STATEMENT, DefaultCodeFormatterConstants.FALSE);
 		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_AFTER_SEMICOLON_IN_FOR_STATEMENT, DefaultCodeFormatterConstants.TRUE);
+		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_OPENING_PAREN_IN_FOR_LOOPS, DefaultCodeFormatterConstants.FALSE);
 		return options;
 	}
 	
@@ -67,6 +68,19 @@ public class FormatForStatement_Test extends AbstractFormatBraceWithSingleInside
 		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_AFTER_SEMICOLON_IN_FOR_STATEMENT, DefaultCodeFormatterConstants.FALSE);
 		assertFormat(
 				"for(int x = 0;i < 10;i++) {\r\n" +
+				"}\r\n",
+				
+				"for(int x = 0; i < 10; i++) { }",
+				
+				options
+				);
+	}
+	
+	public void testINSERT_SPACE_BEFORE_OPENING_PAREN_IN_FOR_LOOPS() throws Exception {
+		Map options = new HashMap();
+		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_OPENING_PAREN_IN_FOR_LOOPS, DefaultCodeFormatterConstants.TRUE);
+		assertFormat(
+				"for (int x = 0; i < 10; i++) {\r\n" +
 				"}\r\n",
 				
 				"for(int x = 0; i < 10; i++) { }",
