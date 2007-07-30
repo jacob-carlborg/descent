@@ -225,7 +225,7 @@ public class CodeFormatterVisitor extends ASTVisitor
 			scribe.printNextToken(literalOrIdentiferTokenList());
 			scribe.printNextToken(TOK.TOKrparen, prefs.insert_space_before_closing_paren_in_align_declarations);
 		}
-		formatDeclarationBlock(node.declarations(), prefs.brace_position_for_modifiers, true);
+		formatDeclarationBlock(node.declarations(), prefs.brace_position_for_align_declaration, prefs.indent_body_declarations_compare_to_align_header);
 		scribe.printTrailingComment();
 		return false;
 	}
@@ -2340,17 +2340,18 @@ public class CodeFormatterVisitor extends ASTVisitor
 		if(null == declarations || declarations.isEmpty())
 			return;
 		
-		Declaration prev = declarations.get(0);
-		// No blank lines before first (yet; this will be configurable)
-		prev.accept(this);
+		Declaration prev = null;
 		int len = declarations.size();
-		for (int i = 1; i < len; i++)
+		for (int i = 0; i < len; i++)
 		{
 			Declaration cur = declarations.get(i);
 			
 			// Determine how many lines to put above this declararation
 			int blankLines;
-			if((prev instanceof AliasDeclaration && cur instanceof AliasDeclaration) ||
+			
+			// No blank lines before first (yet; this will be configurable)
+			if(prev == null || 
+			   (prev instanceof AliasDeclaration && cur instanceof AliasDeclaration) ||
 			   (prev instanceof AlignDeclaration && cur instanceof AlignDeclaration) ||
 			   (prev instanceof DebugAssignment && cur instanceof DebugAssignment) ||
 			   (prev instanceof ImportDeclaration && cur instanceof ImportDeclaration) ||
@@ -2372,7 +2373,9 @@ public class CodeFormatterVisitor extends ASTVisitor
 				scribe.printEmptyLines(blankLines);
 			
 			cur.accept(this);
-			scribe.printNewLine();
+			if (i != len - 1) {
+				scribe.printNewLine();
+			}
 			prev = cur;
 		}
 	}

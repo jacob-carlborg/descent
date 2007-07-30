@@ -52,6 +52,7 @@ public class DefaultCodeFormatterOptions
 			options.brace_position_for_enum_declaration = BracePosition.NEXT_LINE;
 			options.brace_position_for_template_declaration = BracePosition.NEXT_LINE;
 			options.brace_position_for_conditional_declaration = BracePosition.NEXT_LINE;
+			options.brace_position_for_align_declaration = BracePosition.NEXT_LINE;
 			options.brace_position_for_conditional_statement = BracePosition.NEXT_LINE;
 			options.brace_position_for_loop_statement = BracePosition.NEXT_LINE;
 			options.brace_position_for_function_literal = BracePosition.NEXT_LINE;
@@ -76,6 +77,7 @@ public class DefaultCodeFormatterOptions
 	public BracePosition brace_position_for_enum_declaration;
 	public BracePosition brace_position_for_template_declaration;
 	public BracePosition brace_position_for_conditional_declaration;
+	public BracePosition brace_position_for_align_declaration;
 	public BracePosition brace_position_for_conditional_statement;
 	public BracePosition brace_position_for_loop_statement;
 	public BracePosition brace_position_for_function_literal;
@@ -312,6 +314,7 @@ public class DefaultCodeFormatterOptions
 	public boolean indent_body_declarations_compare_to_type_header;
 	public boolean indent_body_declarations_compare_to_template_header;
 	public boolean indent_body_declarations_compare_to_modifier_header;
+	public boolean indent_body_declarations_compare_to_align_header;
 	public boolean indent_statements_compare_to_function_header;
 	public boolean indent_in_out_body_compare_to_function_header;
 	public boolean indent_statements_compare_to_function_in_header;
@@ -356,6 +359,7 @@ public class DefaultCodeFormatterOptions
 		options.put(DefaultCodeFormatterConstants.FORMATTER_BRACE_POSITION_FOR_ENUM_DECLARATION, brace_position_for_enum_declaration.toString());
 		options.put(DefaultCodeFormatterConstants.FORMATTER_BRACE_POSITION_FOR_TEMPLATE_DECLARATION, brace_position_for_template_declaration.toString());
 		options.put(DefaultCodeFormatterConstants.FORMATTER_BRACE_POSITION_FOR_CONDITIONAL_DECLARATION, brace_position_for_conditional_declaration.toString());
+		options.put(DefaultCodeFormatterConstants.FORMATTER_BRACE_POSITION_FOR_ALIGN_DECLARATION, brace_position_for_align_declaration.toString());
 		options.put(DefaultCodeFormatterConstants.FORMATTER_BRACE_POSITION_FOR_CONDITIONAL_STATEMENT, brace_position_for_conditional_statement.toString());
 		options.put(DefaultCodeFormatterConstants.FORMATTER_BRACE_POSITION_FOR_LOOP_STATEMENT, brace_position_for_loop_statement.toString());
 		options.put(DefaultCodeFormatterConstants.FORMATTER_BRACE_POSITION_FOR_FUNCTION_LITERAL, brace_position_for_function_literal.toString());
@@ -592,6 +596,7 @@ public class DefaultCodeFormatterOptions
 		options.put(DefaultCodeFormatterConstants.FORMATTER_INDENT_BODY_DECLARATIONS_COMPARE_TO_TYPE_HEADER, indent_body_declarations_compare_to_type_header ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
 		options.put(DefaultCodeFormatterConstants.FORMATTER_INDENT_BODY_DECLARATIONS_COMPARE_TO_TEMPLATE_HEADER, indent_body_declarations_compare_to_template_header ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
 		options.put(DefaultCodeFormatterConstants.FORMATTER_INDENT_BODY_DECLARATIONS_COMPARE_TO_MODIFIER_HEADER, indent_body_declarations_compare_to_modifier_header ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
+		options.put(DefaultCodeFormatterConstants.FORMATTER_INDENT_BODY_DECLARATIONS_COMPARE_TO_ALIGN_HEADER, indent_body_declarations_compare_to_align_header ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
 		options.put(DefaultCodeFormatterConstants.FORMATTER_INDENT_STATEMENTS_COMPARE_TO_FUNCTION_HEADER, indent_statements_compare_to_function_header ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
 		options.put(DefaultCodeFormatterConstants.FORMATTER_INDENT_IN_OUT_BODY_COMPARE_TO_FUNCTION_HEADER, indent_in_out_body_compare_to_function_header ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
 		options.put(DefaultCodeFormatterConstants.FORMATTER_INDENT_STATEMENTS_COMPARE_TO_FUNCTION_IN_HEADER, indent_statements_compare_to_function_in_header ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
@@ -659,6 +664,15 @@ public class DefaultCodeFormatterOptions
 				brace_position_for_conditional_declaration = DefaultCodeFormatterConstants.NEXT_LINE_SHIFTED.equals(current) ? BracePosition.NEXT_LINE_SHIFTED : DefaultCodeFormatterConstants.NEXT_LINE.equals(current) ? BracePosition.NEXT_LINE : BracePosition.END_OF_LINE;
 			} catch(Exception e) {
 				brace_position_for_conditional_declaration = BracePosition.END_OF_LINE;
+			}
+		}
+		
+		current = settings.get(DefaultCodeFormatterConstants.FORMATTER_BRACE_POSITION_FOR_ALIGN_DECLARATION);
+		if(null != current) {
+			try {
+				brace_position_for_align_declaration = DefaultCodeFormatterConstants.NEXT_LINE_SHIFTED.equals(current) ? BracePosition.NEXT_LINE_SHIFTED : DefaultCodeFormatterConstants.NEXT_LINE.equals(current) ? BracePosition.NEXT_LINE : BracePosition.END_OF_LINE;
+			} catch(Exception e) {
+				brace_position_for_align_declaration = BracePosition.END_OF_LINE;
 			}
 		}
 		
@@ -2786,6 +2800,15 @@ public class DefaultCodeFormatterOptions
 			}
 		}
 		
+		current = settings.get(DefaultCodeFormatterConstants.FORMATTER_INDENT_BODY_DECLARATIONS_COMPARE_TO_ALIGN_HEADER);
+		if(null != current) {
+			try {
+				indent_body_declarations_compare_to_align_header = DefaultCodeFormatterConstants.TRUE.equals(current);
+			} catch(Exception e) {
+				indent_body_declarations_compare_to_align_header = true;
+			}
+		}
+		
 		current = settings.get(DefaultCodeFormatterConstants.FORMATTER_INDENT_STATEMENTS_COMPARE_TO_FUNCTION_HEADER);
 		if(null != current) {
 			try {
@@ -2937,6 +2960,7 @@ public class DefaultCodeFormatterOptions
 		brace_position_for_enum_declaration = BracePosition.END_OF_LINE;
 		brace_position_for_template_declaration = BracePosition.END_OF_LINE;
 		brace_position_for_conditional_declaration = BracePosition.END_OF_LINE;
+		brace_position_for_align_declaration = BracePosition.END_OF_LINE;
 		brace_position_for_conditional_statement = BracePosition.END_OF_LINE;
 		brace_position_for_loop_statement = BracePosition.END_OF_LINE;
 		brace_position_for_function_literal = BracePosition.END_OF_LINE;
@@ -3173,6 +3197,7 @@ public class DefaultCodeFormatterOptions
 		indent_body_declarations_compare_to_type_header = true;
 		indent_body_declarations_compare_to_template_header = true;
 		indent_body_declarations_compare_to_modifier_header = true;
+		indent_body_declarations_compare_to_align_header = true;
 		indent_statements_compare_to_function_header = true;
 		indent_in_out_body_compare_to_function_header = false;
 		indent_statements_compare_to_function_in_header = true;

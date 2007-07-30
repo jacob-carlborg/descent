@@ -281,6 +281,7 @@ final class FormatterMessages extends NLS {
 	public static String BracesTabPage_brace_position_for_enum_declaration;
 	public static String BracesTabPage_brace_position_for_template_declaration;
 	public static String BracesTabPage_brace_position_for_conditional_declaration;
+	public static String BracesTabPage_brace_position_for_align_declaration;
 	public static String BracesTabPage_brace_position_for_conditional_statement;
 	public static String BracesTabPage_brace_position_for_loop_statement;
 	public static String BracesTabPage_brace_position_for_function_literal;
@@ -321,6 +322,7 @@ final class FormatterMessages extends NLS {
 	public static String IndentationTabPage_indent_body_declarations_compare_to_type_header;
 	public static String IndentationTabPage_indent_body_declarations_compare_to_template_header;
 	public static String IndentationTabPage_indent_body_declarations_compare_to_modifier_header;
+	public static String IndentationTabPage_indent_body_declarations_compare_to_align_header;
 	public static String IndentationTabPage_indent_statements_compare_to_function_header;
 	public static String IndentationTabPage_indent_in_out_body_compare_to_function_header;
 	public static String IndentationTabPage_indent_statements_compare_to_function_in_header;

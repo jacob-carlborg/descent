@@ -55,6 +55,7 @@ public class DefaultCodeFormatterConstants {
 	public static final String FORMATTER_BRACE_POSITION_FOR_ENUM_DECLARATION = JavaCore.PLUGIN_ID + ".formatter.brace_position_for_enum_declaration";
 	public static final String FORMATTER_BRACE_POSITION_FOR_TEMPLATE_DECLARATION = JavaCore.PLUGIN_ID + ".formatter.brace_position_for_template_declaration";
 	public static final String FORMATTER_BRACE_POSITION_FOR_CONDITIONAL_DECLARATION = JavaCore.PLUGIN_ID + ".formatter.brace_position_for_conditional_declaration";
+	public static final String FORMATTER_BRACE_POSITION_FOR_ALIGN_DECLARATION = JavaCore.PLUGIN_ID + ".formatter.brace_position_for_align_declaration";
 	public static final String FORMATTER_BRACE_POSITION_FOR_CONDITIONAL_STATEMENT = JavaCore.PLUGIN_ID + ".formatter.brace_position_for_conditional_statement";
 	public static final String FORMATTER_BRACE_POSITION_FOR_LOOP_STATEMENT = JavaCore.PLUGIN_ID + ".formatter.brace_position_for_loop_statement";
 	public static final String FORMATTER_BRACE_POSITION_FOR_FUNCTION_LITERAL = JavaCore.PLUGIN_ID + ".formatter.brace_position_for_function_literal";
@@ -291,6 +292,7 @@ public class DefaultCodeFormatterConstants {
 	public static final String FORMATTER_INDENT_BODY_DECLARATIONS_COMPARE_TO_TYPE_HEADER = JavaCore.PLUGIN_ID + ".formatter.indent_body_declarations_compare_to_type_header";
 	public static final String FORMATTER_INDENT_BODY_DECLARATIONS_COMPARE_TO_TEMPLATE_HEADER = JavaCore.PLUGIN_ID + ".formatter.indent_body_declarations_compare_to_template_header";
 	public static final String FORMATTER_INDENT_BODY_DECLARATIONS_COMPARE_TO_MODIFIER_HEADER = JavaCore.PLUGIN_ID + ".formatter.indent_body_declarations_compare_to_modifier_header";
+	public static final String FORMATTER_INDENT_BODY_DECLARATIONS_COMPARE_TO_ALIGN_HEADER = JavaCore.PLUGIN_ID + ".formatter.indent_body_declarations_compare_to_align_header";
 	public static final String FORMATTER_INDENT_STATEMENTS_COMPARE_TO_FUNCTION_HEADER = JavaCore.PLUGIN_ID + ".formatter.indent_statements_compare_to_function_header";
 	public static final String FORMATTER_INDENT_IN_OUT_BODY_COMPARE_TO_FUNCTION_HEADER = JavaCore.PLUGIN_ID + ".formatter.indent_in_out_body_compare_to_function_header";
 	public static final String FORMATTER_INDENT_STATEMENTS_COMPARE_TO_FUNCTION_IN_HEADER = JavaCore.PLUGIN_ID + ".formatter.indent_statements_compare_to_function_in_header";
