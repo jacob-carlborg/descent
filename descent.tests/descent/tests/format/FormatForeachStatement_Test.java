@@ -5,10 +5,8 @@ import java.util.Map;
 
 import descent.core.formatter.DefaultCodeFormatterConstants;
 
-// TODO fix
-public class FormatForeachStatement_Test /* extends AbstractFormatBraceWithSingleInsideFunction_Test */ {
+public class FormatForeachStatement_Test extends AbstractFormatBraceWithSingleInsideFunction_Test {
 	
-	/*
 	@Override
 	protected Map getDefaultOptions() {
 		Map options = super.getDefaultOptions();
@@ -106,6 +104,5 @@ public class FormatForeachStatement_Test /* extends AbstractFormatBraceWithSingl
 				options
 				);
 	}
-	*/
-
+	
 }
