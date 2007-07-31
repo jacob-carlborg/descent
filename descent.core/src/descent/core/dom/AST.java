@@ -109,7 +109,7 @@ public final class AST {
 	 * Constant for indicating the AST API that handles the latest version of D.
 	 * Clients should not use this constant.
 	 */
-	public static final int LATEST = D2;
+	public static final int LATEST = D1;
 	
 	/**
 	 * The binding resolver for this AST. Initially a binding resolver that

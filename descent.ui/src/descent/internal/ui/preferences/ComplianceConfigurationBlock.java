@@ -27,7 +27,7 @@ import descent.launching.JavaRuntime;
 public class ComplianceConfigurationBlock extends OptionsConfigurationBlock {
 
 	// Preference store keys, see JavaCore.getOptions
-	private static final Key PREF_COMPLIANCE= getJDTCoreKey(JavaCore.COMPILER_COMPLIANCE);
+	private static final Key PREF_SOURCE= getJDTCoreKey(JavaCore.COMPILER_SOURCE);
 	private static final Key INTR_DEFAULT_COMPLIANCE= getJDTUIKey("internal.default.compliance"); //$NON-NLS-1$
 
 	// values
@@ -58,13 +58,13 @@ public class ComplianceConfigurationBlock extends OptionsConfigurationBlock {
 		fComplianceStatus= new StatusInfo();
 		
 		fRememberedUserCompliance= new String[] { // caution: order depends on IDX_* constants
-			getValue(PREF_COMPLIANCE),
+			getValue(PREF_SOURCE),
 		};
 	}
 	
 	private static Key[] getKeys() {
 		return new Key[] {
-				PREF_COMPLIANCE
+				PREF_SOURCE
 			};
 	}
 		
@@ -144,10 +144,11 @@ public class ComplianceConfigurationBlock extends OptionsConfigurationBlock {
 		group.setLayout(layout);
 	
 		String label= PreferencesMessages.ComplianceConfigurationBlock_compiler_compliance_label; 
-		addComboBox(group, label, PREF_COMPLIANCE, values3456, values3456Labels, 0);
+		addComboBox(group, label, PREF_SOURCE, values3456, values3456Labels, 0);
 
-		label= PreferencesMessages.ComplianceConfigurationBlock_default_settings_label; 
-		addCheckBox(group, label, INTR_DEFAULT_COMPLIANCE, new String[] { DEFAULT_CONF, USER_CONF }, 0);	
+		
+		//label= PreferencesMessages.ComplianceConfigurationBlock_default_settings_label; 
+		//addCheckBox(group, label, INTR_DEFAULT_COMPLIANCE, new String[] { DEFAULT_CONF, USER_CONF }, 0);	
 		
 		return sc1;
 	}
@@ -182,7 +183,7 @@ public class ComplianceConfigurationBlock extends OptionsConfigurationBlock {
 				updateComplianceEnableState();
 				updateComplianceDefaultSettings(true, null);
 				fComplianceStatus= validateCompliance();
-			} else if (PREF_COMPLIANCE.equals(changedKey)) {
+			} else if (PREF_SOURCE.equals(changedKey)) {
 			    // set compliance settings to default
 			    Object oldDefault= setValue(INTR_DEFAULT_COMPLIANCE, DEFAULT_CONF);
 			    updateComplianceEnableState();
@@ -227,7 +228,7 @@ public class ComplianceConfigurationBlock extends OptionsConfigurationBlock {
 	 */	
 	private void updateComplianceDefaultSettings(boolean rememberOld, String oldComplianceLevel) {
 		boolean isDefault= checkValue(INTR_DEFAULT_COMPLIANCE, DEFAULT_CONF);
-		String complianceLevel= getValue(PREF_COMPLIANCE);
+		String complianceLevel= getValue(PREF_SOURCE);
 		
 		if (isDefault) {
 			if (rememberOld) {
@@ -248,7 +249,7 @@ public class ComplianceConfigurationBlock extends OptionsConfigurationBlock {
 	 * Evaluate if the current compliance setting correspond to a default setting
 	 */
 	private String getCurrentCompliance() {
-		return DEFAULT_CONF;
+		return USER_CONF;
 		/*
 		Object complianceLevel= getValue(PREF_COMPLIANCE);
 		if ((VERSION_2_x.equals(complianceLevel)

@@ -7,6 +7,11 @@ public enum InOut {
 	Out,
 	InOut,
 	Lazy,
-	Ref
+	Ref,
+	Scope,
+	Final,
+	Static,
+	Const,
+	Invariant
 
 }

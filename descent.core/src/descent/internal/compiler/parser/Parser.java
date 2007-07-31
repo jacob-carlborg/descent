@@ -215,8 +215,6 @@ public class Parser extends Lexer {
 
 				if (token.value != TOKsemicolon) {
 					setMalformed(md);
-					// TODO ast nodes flags
-					// setRecovered(md.name);
 					parsingErrorInsertTokenAfter(prevToken, ";");
 				} else {
 					nextToken();
@@ -338,22 +336,35 @@ public class Parser extends Lexer {
 				break;
 
 			case TOKinvariant:
-				if (ast.apiLevel() < AST.D2) {
+				if (ast.apiLevel() == AST.D2) {
+					// TODO
+//				    Token t;
+//					t = peek(token);
+//					if (t.value == TOKlparen) {
+//						if (peek(t).value == TOKrparen) {
+//							// invariant() forms start of class invariant
+//							s = parseInvariant();
+//						} else {
+//							// invariant(type)
+//							// goto Ldeclaration;
+//							a = parseDeclarations(lastComments);
+//							decldefs.addAll(a);
+//							continue;
+//						}
+//					} else {
+//						stc = STC.STCinvariant;
+//						
+//						Modifier modifier = new Modifier(token.value);
+//						modifier.setSourceRange(token.ptr, token.len);
+//						
+//						// goto Lstc;
+//						nextToken();
+//						
+//						s= parseDeclDefs_Lstc2(isSingle, modifier, stc, decldefs);
+//					}
 					s = parseInvariant();
 				} else {
-					if (peek(token).value == TOKlcurly) {
-						s = parseInvariant();
-					} else {
-						stc = STC.STCinvariant;
-
-						Modifier modifier = new Modifier(token.value);
-						modifier.setSourceRange(token.ptr, token.len);
-
-						// goto Lstc;
-						nextToken();
-
-						s = parseDeclDefs_Lstc2(isSingle, modifier, stc, decldefs);
-					}
+					s = parseInvariant();
 				}
 				break;
 
@@ -410,6 +421,34 @@ public class Parser extends Lexer {
 				break;
 
 			case TOKconst:
+				if (apiLevel == AST.D2 && peek(token).value == TOKlparen) {
+					// TODO
+//					// goto Ldeclaration
+//					a = parseDeclarations(lastComments);
+//					decldefs.addAll(a);
+//					continue;
+					stc = STC.STCconst;
+					
+					Modifier modifier = new Modifier(token.value);
+					modifier.setSourceRange(token.ptr, token.len);
+					
+					// goto Lstc;
+					nextToken();
+					
+					s= parseDeclDefs_Lstc2(isSingle, modifier, stc, decldefs);
+					break;
+				} else {
+					stc = STC.STCconst;
+					
+					Modifier modifier = new Modifier(token.value);
+					modifier.setSourceRange(token.ptr, token.len);
+					
+					// goto Lstc;
+					nextToken();
+					
+					s= parseDeclDefs_Lstc2(isSingle, modifier, stc, decldefs);
+					break;
+				}
 			case TOKfinal:
 			case TOKauto:
 			case TOKscope:
@@ -635,6 +674,35 @@ public class Parser extends Lexer {
 			switch (token.value)
 			{
 			    case TOKconst:
+			    case TOKinvariant:
+			    	if (apiLevel == AST.D2) {
+			    		// TODO
+//						// If followed by a (, it is not a storage class
+//						if (peek(token).value == TOKlparen) {
+//							repeat = false;
+//						    break;
+//						}
+//						if (token.value == TOK.TOKconst) {
+//						    stc |= STC.STCconst;
+//						} else {
+//						    stc |= STC.STCinvariant;
+//						}
+//						modifier = new Modifier(token.value);
+//				    	modifier.setSourceRange(token.ptr, token.len);
+//				    	modifiers.add(modifier);
+//				    	nextToken();
+//				    	break;
+			    		if (token.value == TOK.TOKinvariant) {
+			    			repeat = false;
+			    			break;
+			    		}
+			    	} else {
+			    		if (token.value == TOK.TOKinvariant) {
+			    			repeat = false;
+			    			break;
+			    		}
+			    		// fall to next case
+			    	}
 			    case TOKfinal:
 			    case TOKauto:
 			    case TOKscope:
@@ -642,11 +710,6 @@ public class Parser extends Lexer {
 			    case TOKabstract:
 			    case TOKsynchronized:
 			    case TOKdeprecated:
-			    case TOKinvariant:
-			    	if (token.value == TOK.TOKinvariant && ast.apiLevel() < AST.D2) {
-			    		repeat = false;
-			    		break;
-			    	}
 			    	stc |= STC.fromTOK(token.value);
 			    	
 			    	modifier = new Modifier(token.value);
@@ -656,7 +719,7 @@ public class Parser extends Lexer {
 			    	break;
 			    default:
 			    	repeat = false;
-				break;
+					break;
 			}
 		}
 
@@ -1051,6 +1114,16 @@ public class Parser extends Lexer {
 	
 	@SuppressWarnings("unchecked")
 	private List<Argument> parseParameters(int[] pvarargs) {
+		if (apiLevel < AST.D2) {
+			return parseParametersD1(pvarargs);
+		} else {
+			// TODO
+			// return parseParametersD2(pvarargs);
+			return parseParametersD1(pvarargs);
+		}
+	}
+	
+	private List<Argument> parseParametersD1(int[] pvarargs) {
 		List<Argument> arguments = new ArrayList<Argument>();
 		int varargs = 0;
 		boolean hasdefault = false;
@@ -1136,7 +1209,6 @@ public class Parser extends Lexer {
 					}
 					varargs = 2;
 					
-					// TODO DMD pass storageClass to constructor
 					a = new Argument(inout, at, ai, ae);
 					a.setSourceRange(firstTokenStart, prevToken.ptr + prevToken.len - firstTokenStart);
 					arguments.add(a);
@@ -1161,6 +1233,138 @@ public class Parser extends Lexer {
 		return arguments;
 	}
 	
+	// TODO: this is not finished
+	private List<Argument> parseParametersD2(int[] pvarargs) {
+		List<Argument> arguments = new ArrayList<Argument>();
+		int varargs = 0;
+		boolean hasdefault = false;
+
+		check(TOKlparen);
+		while (true) {
+			Type tb;
+			IdentifierExp ai;
+			Type at;
+			Argument a;
+			int storageClass;
+			InOut inout;
+			Expression ae;
+			
+			int firstTokenStart = token.ptr;
+			
+			ai = null;
+			storageClass = STC.STCin;
+			inout = InOut.None;
+			
+			if (token.value == TOKrparen) {
+				break;
+			} else if (token.value == TOKdotdotdot) {
+				varargs = 1;
+				nextToken();
+				break;
+			} else {
+				int inoutTokenStart = token.ptr;
+				int inoutTokenLength = token.len;
+				int inoutTokenLine = token.lineNumber;
+				
+				switch(token.value) {
+					case TOKconst:
+					    if (peek(token).value == TOKlparen) {
+					    	// TODO
+							// goto Ldefault;
+					    } else {
+						    storageClass = STC.STCconst;
+						    inout = InOut.Const;
+						    nextToken();
+						    break;
+					    }
+						break;
+					case TOKinvariant:
+					    if (peek(token).value == TOKlparen) {
+							// TODO 
+					    	// goto Ldefault;
+					    } else {
+						    storageClass = STC.STCinvariant;
+						    inout = InOut.Invariant;
+						    nextToken();
+						    break;
+					    }
+						break;
+					case TOKin:
+						storageClass = STC.STCin;
+						inout = InOut.In;
+						nextToken();
+						break;
+					case TOKout:
+						storageClass = STC.STCout;
+						inout = InOut.Out;
+						nextToken();
+						break;
+					case TOKinout:
+						storageClass = STC.STCref;
+						inout = InOut.InOut;
+						nextToken();
+						break;
+					case TOKref:
+						storageClass = STC.STCref;
+						inout = InOut.Ref;
+						nextToken();
+						break;
+					case TOKlazy:
+						storageClass = STC.STClazy;
+						inout = InOut.Lazy;
+						nextToken();
+						break;
+				}				
+				tb = parseBasicType();
+
+				IdentifierExp[] pointer2_ai = { ai };
+				at = parseDeclarator(tb, pointer2_ai);
+				ai = pointer2_ai[0];
+
+				ae = null;
+				if (token.value == TOKassign) // = defaultArg
+				{
+					nextToken();
+					ae = parseAssignExp();
+					hasdefault = true;
+				} else {
+					if (hasdefault) {
+						parsingErrorInsertTokenAfter(prevToken, "default argument");
+					}
+				}
+				if (token.value == TOKdotdotdot) { 
+					/*
+					 * This is: at ai ...
+					 */
+					if ((storageClass & (STC.STCout | STC.STCref)) != 0) {
+						error("Variadic argument cannot be out, inout or ref", IProblem.VariadicArgumentCannotBeOutInoutOrRef, inoutTokenLine, inoutTokenStart, inoutTokenLength);
+					}
+					varargs = 2;
+					
+					a = new Argument(inout, at, ai, ae);
+					a.setSourceRange(firstTokenStart, prevToken.ptr + prevToken.len - firstTokenStart);
+					arguments.add(a);
+					nextToken();
+					break;
+				}
+				
+				if (at != null || ai != null || ae != null) {
+					a = new Argument(inout, at, ai, ae);
+					a.setSourceRange(firstTokenStart, prevToken.ptr + prevToken.len - firstTokenStart);
+					arguments.add(a);
+				}
+				if (token.value == TOKcomma) {
+					nextToken();
+				} else {
+					continue;
+				}
+			}
+		}
+		check(TOKrparen);
+		pvarargs[0] = varargs;
+		return arguments;
+	}
+
 	private EnumDeclaration parseEnum() {
 		int enumTokenStart = token.ptr;
 		int enumTokenLength = token.len;
@@ -1495,14 +1699,28 @@ public class Parser extends Lexer {
 					if (token.value == TOKcolon) // : Type
 					{
 						nextToken();
-						tp_spectype = parseBasicType();
-						tp_spectype = parseDeclarator(tp_spectype, null);
+						if (apiLevel < AST.D2) {
+							tp_spectype = parseBasicType();
+							tp_spectype = parseDeclarator(tp_spectype, null);	
+						} else {
+							// TODO 
+							// tp_spectype = parseType();
+							tp_spectype = parseBasicType();
+							tp_spectype = parseDeclarator(tp_spectype, null);	
+						}
 					}
 					if (token.value == TOKassign) // = Type
 					{
 						nextToken();
-						tp_defaulttype = parseBasicType();
-						tp_defaulttype = parseDeclarator(tp_defaulttype, null);
+						if (apiLevel < AST.D2) {
+							tp_defaulttype = parseBasicType();
+							tp_defaulttype = parseDeclarator(tp_defaulttype, null);
+						} else {
+							// TODO
+							// tp_defaulttype = parseType();
+							tp_defaulttype = parseBasicType();
+							tp_defaulttype = parseDeclarator(tp_defaulttype, null);
+						}
 					}
 					
 					tp = new TemplateAliasParameter(loc, tp_ident, tp_spectype, tp_defaulttype);
@@ -1519,14 +1737,28 @@ public class Parser extends Lexer {
 					if (token.value == TOKcolon) // : Type
 					{
 						nextToken();
-						tp_spectype = parseBasicType();
-						tp_spectype = parseDeclarator(tp_spectype, null);
+						if (apiLevel < AST.D2) {
+							tp_spectype = parseBasicType();
+							tp_spectype = parseDeclarator(tp_spectype, null);
+						} else {
+							// TODO
+							// tp_spectype = parseType();
+							tp_spectype = parseBasicType();
+							tp_spectype = parseDeclarator(tp_spectype, null);
+						}
 					}
 					if (token.value == TOKassign) // = Type
 					{
 						nextToken();
-						tp_defaulttype = parseBasicType();
-						tp_defaulttype = parseDeclarator(tp_defaulttype, null);
+						if (apiLevel < AST.D2) {
+							tp_defaulttype = parseBasicType();
+							tp_defaulttype = parseDeclarator(tp_defaulttype, null);
+						} else {
+							// TODO
+							// tp_defaulttype = parseType();
+							tp_defaulttype = parseBasicType();
+							tp_defaulttype = parseDeclarator(tp_defaulttype, null);
+						}
 					}
 					
 					tp = new TemplateTypeParameter(loc, tp_ident, tp_spectype, tp_defaulttype);
@@ -1544,12 +1776,24 @@ public class Parser extends Lexer {
 					nextToken();
 					
 					tp = new TemplateTupleParameter(loc, tp_ident);
-				} else { // ValueParameter
-					tp_valtype = parseBasicType();
-
-					IdentifierExp[] pointer2_tp_ident = new IdentifierExp[] { tp_ident };
-					tp_valtype = parseDeclarator(tp_valtype, pointer2_tp_ident);
-					tp_ident = pointer2_tp_ident[0];
+				} else { 
+					// ValueParameter
+					if (apiLevel < AST.D2) {
+						tp_valtype = parseBasicType();
+						IdentifierExp[] pointer2_tp_ident = new IdentifierExp[] { tp_ident };
+						tp_valtype = parseDeclarator(tp_valtype, pointer2_tp_ident);
+						tp_ident = pointer2_tp_ident[0];
+					} else {
+						// TODO
+//						IdentifierExp[] pointer2_tp_ident = new IdentifierExp[] { tp_ident };
+//						tp_valtype = parseType(pointer2_tp_ident);
+//						tp_ident = pointer2_tp_ident[0];
+						tp_valtype = parseBasicType();
+						IdentifierExp[] pointer2_tp_ident = new IdentifierExp[] { tp_ident };
+						tp_valtype = parseDeclarator(tp_valtype, pointer2_tp_ident);
+						tp_ident = pointer2_tp_ident[0];
+					}
+					
 					if (tp_ident == null) {
 						error("No identifier for template value parameter", IProblem.NoIdentifierForTemplateValueParameter, t.lineNumber, t.ptr, t.len);
 						// goto Lerr;
@@ -1681,43 +1925,49 @@ public class Parser extends Lexer {
 
 	@SuppressWarnings("unchecked")
 	private List<ASTNode> parseTemplateArgumentList() {
-	    List<ASTNode> tiargs = new ArrayList<ASTNode>();
 	    if (token.value != TOKlparen)
 	    {   
 	    	parsingErrorInsertToComplete(prevToken, "!(TemplateArgumentList)", "TemplateType");
-	    	return tiargs;
+	    	return new ArrayList<ASTNode>();
 	    }
-	    nextToken();
+	    return parseTemplateArgumentList2();
+	}
+	
+	private List<ASTNode> parseTemplateArgumentList2() {
+		List<ASTNode> tiargs = new ArrayList<ASTNode>();
+		nextToken();
 
-	    // Get TemplateArgumentList
-	    if (token.value != TOKrparen)
-	    {
-		while (true)
-		{
-		    // See if it is an Expression or a Type
-		    if (isDeclaration(token, 0, TOKreserved, null))
-		    {	// Type
-			Type ta;
+		// Get TemplateArgumentList
+		if (token.value != TOKrparen) {
+			while (true) {
+				// See if it is an Expression or a Type
+				if (isDeclaration(token, 0, TOKreserved, null)) { // Type
+					Type ta;
 
-			// Get TemplateArgument
-			ta = parseBasicType();
-			ta = parseDeclarator(ta, null);
-			tiargs.add(ta);
-		    }
-		    else
-		    {	// Expression
-			Expression ea;
+					// Get TemplateArgument
+					if (apiLevel < AST.D2) {
+						ta = parseBasicType();
+						ta = parseDeclarator(ta, null);
+					} else {
+						// TODO
+						// ta = parseType();
+						ta = parseBasicType();
+						ta = parseDeclarator(ta, null);
+					}
+					tiargs.add(ta);
+				} else { // Expression
+					Expression ea;
 
-			ea = parseAssignExp();
-			tiargs.add(ea);
-		    }
-		    if (token.value != TOKcomma)
-			break;
-		    nextToken();
+					ea = parseAssignExp();
+					tiargs.add(ea);
+				}
+				if (token.value != TOKcomma)
+					break;
+				nextToken();
+			}
 		}
-	    }
-	    check(TOKrparen);
-	    return tiargs;
+		check(TOKrparen);
+		return tiargs;
 	}
 	
 	private MultiImport parseImport(boolean isstatic) {
@@ -1827,6 +2077,35 @@ public class Parser extends Lexer {
 
 		return multiImport;
 	}
+	
+	// TODO
+//	private Type parseType(IdentifierExp[] pident, List<TemplateParameter> **tpl)
+//	{   Type *t;
+//
+//	    if (token.value == TOKconst && peek(&token)->value != TOKlparen)
+//	    {
+//		nextToken();
+//		/* const type
+//		 */
+//		t = parseType(pident, tpl);
+//		t = t->makeConst();
+//		return t;
+//	    }
+//	    else if (token.value == TOKinvariant && peek(&token)->value != TOKlparen)
+//	    {
+//		nextToken();
+//		/* invariant type
+//		 */
+//		t = parseType(pident, tpl);
+//		t = t->makeInvariant();
+//		return t;
+//	    }
+//	    else
+//		t = parseBasicType();
+//	    t = parseDeclarator(t, pident, tpl);
+//	    return t;
+//	}
+
 	
 	private Type parseBasicType() {
 		Type t = null;
@@ -2959,7 +3238,8 @@ public class Parser extends Lexer {
 		case TOKauto:
 		case TOKextern:
 		case TOKfinal:
-		case TOKinvariant:
+		// TODO
+		// case TOKinvariant:
 		// case TOKtypeof:
 			// Ldeclaration:
 		{
@@ -3165,7 +3445,6 @@ public class Parser extends Lexer {
 						at = null; // infer argument type
 						nextToken();
 						// goto Larg;
-						// TODO: pass storageClass to constructor
 						a = new Argument(inout, at, ai, null);
 						a.setSourceRange(argumentStart, prevToken.ptr + prevToken.len - argumentStart);
 						arguments.add(a);

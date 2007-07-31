@@ -614,6 +614,7 @@ public final class JavaCore extends AbstractUIPlugin {
 	 * @see #getDefaultOptions()
 	 * @since 2.0
 	 */
+	// Not used, use COMPILER_SOURCE
 	public static final String COMPILER_COMPLIANCE = PLUGIN_ID + ".compiler.compliance"; //$NON-NLS-1$
 	/**
 	 * Possible  configurable option ID.
