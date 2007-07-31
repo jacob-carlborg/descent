@@ -236,16 +236,25 @@ public class CodeFormatterVisitor extends ASTVisitor
 		switch (node.getPassageMode())
 		{
 			case IN:
-				if(isNextToken(TOK.TOKin)) // TODO JDT formatter workaround for parser bug
+				// The "in" operator produces arguments with "in" passage mode
+				// for some reason... this conditional ensures there's
+				// actually an "in" there.
+				if(isNextToken(TOK.TOKin))
+				{
 					scribe.printNextToken(TOK.TOKin);
-				scribe.space();
+					scribe.space();
+				}
 				break;
 			case OUT:
 				scribe.printNextToken(TOK.TOKout);
 				scribe.space();
 				break;
-			case INOUT: // TODO D version 1.11+: "ref" parameter passing
+			case INOUT:
 				scribe.printNextToken(TOK.TOKinout);
+				scribe.space();
+				break;
+			case REF:
+				scribe.printNextToken(TOK.TOKref);
 				scribe.space();
 				break;
 			case LAZY:
@@ -258,11 +267,13 @@ public class CodeFormatterVisitor extends ASTVisitor
 		}
 		
 		Type type = node.getType();
+		boolean hasType = false;
 		if(null != type && !((type instanceof PrimitiveType) && 
 				(((PrimitiveType) type).getPrimitiveTypeCode() ==
 					PrimitiveType.Code.VOID) && 
 					!isNextToken(TOK.TOKvoid)))
 		{
+			hasType = true;
 			type.accept(this);
 		}
 		
@@ -270,7 +281,8 @@ public class CodeFormatterVisitor extends ASTVisitor
 		if(null != name)
 			if(!nameAlreadyPrinted)
 			{
-				scribe.space();
+				if(hasType)
+					scribe.space();
 				name.accept(this);
 			}
 			else
@@ -293,11 +305,15 @@ public class CodeFormatterVisitor extends ASTVisitor
 	public boolean visit(ArrayAccess node)
 	{
 		node.getArray().accept(this);
-		scribe.printNextToken(TOK.TOKlbracket);
+		scribe.printNextToken(TOK.TOKlbracket, 
+				prefs.insert_space_before_opening_bracket_in_array_access);
+		if(prefs.insert_space_after_opening_bracket_in_array_access)
+			scribe.space();
 		formatCSV(node.indexes(),
 				prefs.insert_space_before_comma_in_array_access,
 				prefs.insert_space_after_comma_in_array_access);
-		scribe.printNextToken(TOK.TOKrbracket);
+		scribe.printNextToken(TOK.TOKrbracket, 
+				prefs.insert_space_before_closing_bracket_in_array_access);
 		if(isNextToken(TOK.TOKlbracket) && 
 				prefs.insert_space_between_adjacent_brackets_in_multidimensional_arrays)
 			scribe.space();
@@ -307,6 +323,8 @@ public class CodeFormatterVisitor extends ASTVisitor
 	public boolean visit(ArrayInitializer node)
 	{
 		scribe.printNextToken(TOK.TOKlbracket);
+		if(prefs.insert_space_after_opening_bracket_in_array_literals)
+			scribe.space();
 		formatCSV(node.fragments(),
 				prefs.insert_space_before_comma_in_array_literal,
 				prefs.insert_space_after_comma_in_array_literal);
@@ -317,7 +335,8 @@ public class CodeFormatterVisitor extends ASTVisitor
 			if(prefs.insert_space_after_trailing_comma_in_array_initializer)
 				scribe.space();
 		}
-		scribe.printNextToken(TOK.TOKrbracket);
+		scribe.printNextToken(TOK.TOKrbracket,
+				prefs.insert_space_before_closing_bracket_in_array_literals);
 		if(isNextToken(TOK.TOKlbracket) && 
 				prefs.insert_space_between_adjacent_brackets_in_multidimensional_arrays)
 			scribe.space();
@@ -341,10 +360,13 @@ public class CodeFormatterVisitor extends ASTVisitor
 	public boolean visit(ArrayLiteral node)
 	{
 		scribe.printNextToken(TOK.TOKlbracket);
+		if(prefs.insert_space_after_opening_bracket_in_array_literals)
+			scribe.space();
 		formatCSV(node.arguments(),
 				prefs.insert_space_before_comma_in_array_literal,
 				prefs.insert_space_after_comma_in_array_literal);
-		scribe.printNextToken(TOK.TOKrbracket);
+		scribe.printNextToken(TOK.TOKrbracket,
+				prefs.insert_space_before_closing_bracket_in_array_literals);
 		if(isNextToken(TOK.TOKlbracket) && 
 				prefs.insert_space_between_adjacent_brackets_in_multidimensional_arrays)
 			scribe.space();
@@ -390,6 +412,38 @@ public class CodeFormatterVisitor extends ASTVisitor
 		return false;
 	}
 	
+	public boolean visit(AssociativeArrayLiteral node)
+	{
+		scribe.printNextToken(TOK.TOKlbracket);
+		if(prefs.insert_space_after_opening_bracket_in_array_literals)
+			scribe.space();
+		formatCSV(node.fragments(),
+				prefs.insert_space_before_comma_in_array_literal,
+				prefs.insert_space_after_comma_in_array_literal);
+		if(isNextToken(TOK.TOKcomma))
+		{
+			scribe.printNextToken(TOK.TOKcomma, prefs.insert_space_before_trailing_comma_in_array_initializer);
+			if(prefs.insert_space_after_trailing_comma_in_array_initializer)
+				scribe.space();
+		}
+		scribe.printNextToken(TOK.TOKrbracket,
+				prefs.insert_space_before_closing_bracket_in_array_literals);
+		if(isNextToken(TOK.TOKlbracket) && 
+				prefs.insert_space_between_adjacent_brackets_in_multidimensional_arrays)
+			scribe.space();
+		return false;
+	}
+
+	public boolean visit(AssociativeArrayLiteralFragment node)
+	{
+		node.getKey().accept(this);
+		scribe.printNextToken(TOK.TOKcolon, prefs.insert_space_before_colon_in_array_initializer);
+		if(prefs.insert_space_after_colon_in_array_initializer)
+			scribe.space();
+		node.getValue().accept(this);
+		return false;
+	}
+
 	public boolean visit(AssociativeArrayType node)
 	{
 		node.getComponentType().accept(this);
@@ -1325,11 +1379,15 @@ public class CodeFormatterVisitor extends ASTVisitor
 		{
 			DynamicArrayType arr = (DynamicArrayType) type;
 			arr.getComponentType().accept(this);
-			scribe.printNextToken(TOK.TOKlbracket);
+			scribe.printNextToken(TOK.TOKlbracket,
+					prefs.insert_space_before_opening_bracket_in_array_constructors);
+			if(prefs.insert_space_after_opening_bracket_in_array_constructors)
+				scribe.space();
 			formatCSV(node.constructorArguments(),
 					prefs.insert_space_before_comma_in_function_invocation_arguments,
 					prefs.insert_space_after_comma_in_function_invocation_arguments);
-			scribe.printNextToken(TOK.TOKrbracket);
+			scribe.printNextToken(TOK.TOKrbracket, 
+					prefs.insert_space_before_closing_bracket_in_array_constructors);
 			if(isNextToken(TOK.TOKlbracket) && 
 					prefs.insert_space_between_adjacent_brackets_in_multidimensional_arrays)
 				scribe.space();
@@ -1574,7 +1632,10 @@ public class CodeFormatterVisitor extends ASTVisitor
 	public boolean visit(SliceExpression node)
 	{
 		node.getExpression().accept(this);
-		scribe.printNextToken(TOK.TOKlbracket);
+		scribe.printNextToken(TOK.TOKlbracket,
+				prefs.insert_space_before_opening_bracket_in_slices);
+		if(prefs.insert_space_after_opening_bracket_in_slices)
+			scribe.space();
 		// Make sure it's not a slice of the whole array, i.e. arr[]
 		Expression fromExpression = node.getFromExpression();
 		if(null != fromExpression)
@@ -1588,7 +1649,8 @@ public class CodeFormatterVisitor extends ASTVisitor
 		}
 		else if(prefs.insert_space_between_empty_brackets_in_slice)
 			scribe.space();
-		scribe.printNextToken(TOK.TOKrbracket);
+		scribe.printNextToken(TOK.TOKrbracket,
+				prefs.insert_space_before_closing_bracket_in_slices);
 		if(isNextToken(TOK.TOKlbracket) && 
 				prefs.insert_space_between_adjacent_brackets_in_multidimensional_arrays)
 			scribe.space();
@@ -2187,17 +2249,18 @@ public class CodeFormatterVisitor extends ASTVisitor
 					false, 
 					prefs.brace_position_for_switch_case);
 		}
-		else
+		else if(body.statements().size() > 0)
 		{
 			if(prefs.insert_new_line_after_case_or_default_statement)
 				scribe.printNewLine();
 			boolean unIndentBreak = !prefs.indent_break_compare_to_switch
-					&& prefs.indent_statements_compare_to_case;
+					&& prefs.indent_statements_compare_to_case
+					&& body.statements().get(body.statements().size() - 1)
+							instanceof BreakStatement;
 			if(prefs.indent_statements_compare_to_case)
 				scribe.indent();
 			formatStatements(body.statements(), true, unIndentBreak);
-			if(prefs.indent_statements_compare_to_case && 
-					prefs.indent_break_compare_to_switch)
+			if(prefs.indent_statements_compare_to_case && !unIndentBreak)
 				scribe.unIndent();
 		}
 	}
@@ -2825,9 +2888,13 @@ public class CodeFormatterVisitor extends ASTVisitor
 
 	private void formatPostfix(AssociativeArrayType node, boolean postfixed)
 	{
-		scribe.printNextToken(TOK.TOKlbracket);
+		scribe.printNextToken(TOK.TOKlbracket, 
+				prefs.insert_space_before_opening_bracket_in_associative_arrays);
+		if(prefs.insert_space_after_opening_bracket_in_associative_arrays)
+			scribe.space();
 		node.getKeyType().accept(this);
-		scribe.printNextToken(TOK.TOKrbracket);
+		scribe.printNextToken(TOK.TOKrbracket, 
+				prefs.insert_space_before_closing_bracket_in_associative_arrays);
 		if(isNextToken(TOK.TOKlbracket) && 
 				prefs.insert_space_between_adjacent_brackets_in_multidimensional_arrays)
 			scribe.space();
@@ -2835,9 +2902,13 @@ public class CodeFormatterVisitor extends ASTVisitor
 
 	private void formatPostfix(StaticArrayType node, boolean postfixed)
 	{
-		scribe.printNextToken(TOK.TOKlbracket);
+		scribe.printNextToken(TOK.TOKlbracket,
+				prefs.insert_space_before_opening_bracket_in_static_arrays);
+		if(prefs.insert_space_after_opening_bracket_in_static_arrays)
+			scribe.space();
 		node.getSize().accept(this);
-		scribe.printNextToken(TOK.TOKrbracket);
+		scribe.printNextToken(TOK.TOKrbracket,
+				prefs.insert_space_before_closing_bracket_in_static_arrays);
 		if(isNextToken(TOK.TOKlbracket) && 
 				prefs.insert_space_between_adjacent_brackets_in_multidimensional_arrays)
 			scribe.space();
@@ -2845,14 +2916,18 @@ public class CodeFormatterVisitor extends ASTVisitor
 
 	private void formatPostfix(SliceType node, boolean postfixed)
 	{
-		scribe.printNextToken(TOK.TOKlbracket);
+		scribe.printNextToken(TOK.TOKlbracket,
+				prefs.insert_space_before_opening_bracket_in_slices);
+		if(prefs.insert_space_after_opening_bracket_in_slices)
+			scribe.space();
 		node.getFromExpression().accept(this);
 		scribe.printNextToken(TOK.TOKslice,
 				prefs.insert_space_before_slice_operator);
 		if(prefs.insert_space_after_slice_operator)
 			scribe.space();
 		node.getToExpression().accept(this);
-		scribe.printNextToken(TOK.TOKrbracket);
+		scribe.printNextToken(TOK.TOKrbracket,
+				prefs.insert_space_before_closing_bracket_in_slices);
 		if(isNextToken(TOK.TOKlbracket) && 
 				prefs.insert_space_between_adjacent_brackets_in_multidimensional_arrays)
 			scribe.space();

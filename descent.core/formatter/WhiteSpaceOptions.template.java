@@ -163,10 +163,16 @@ public final class WhiteSpaceOptions
 		type_dot_identifier_expression.setParent(expressions);
 		struct_initalizer.setParent(expressions);
 		conditional_expression.setParent(expressions);
-		arrays.setParent(expressions);
+		
+		// Arrays
+		roots.add(arrays);
+		static_array.setParent(arrays);
 		dynamic_arrays.setParent(arrays);
+		associative_array.setParent(arrays);
+		array_access.setParent(arrays);
 		array_literal.setParent(arrays);
 		array_slice.setParent(arrays);
+		array_constructor.setParent(arrays);
 		multidimensional_arrays.setParent(arrays);
 		
 		return roots;
@@ -213,9 +219,9 @@ public final class WhiteSpaceOptions
 		roots.add(after_semicolon);
 		roots.add(before_colon);
 		roots.add(after_colon);
-		//roots.add(before_opening_bracket);
-		//roots.add(after_opening_bracket);
-		//roots.add(before_closing_bracket);
+		roots.add(before_opening_bracket);
+		roots.add(after_opening_bracket);
+		roots.add(before_closing_bracket);
 		roots.add(between_empty_brackets);
 		roots.add(between_adjacent_brackets);
 		roots.add(before_operator);
@@ -630,13 +636,15 @@ public abstract static class Node {
 	
 	private final PreviewSnippet ARRAY_INITIALIZER_PREVIEW =
 		new PreviewSnippet(CodeFormatter.K_STATEMENTS, 
-			"int[] foo = [18, 156, 27,289];" +
+			"int[] foo = [18, 156, 27, 289];" +
 			"int[] bar = [3:27, 15:18,];" +
-			"int[] baz = [];"
+			"int[] baz = [];" +
+			"int[string] numbers = [\"one\"[]:1, \"two\":2, \"three\":3];"
 		);
 	
 	private final PreviewSnippet ARRAY_ACCESS_PREVIEW =
 		new PreviewSnippet(CodeFormatter.K_STATEMENTS, 
+			"x[0]=8;" +
 			"x[1,3,5]=7;" +
 			"x[9..$]=11;" +
 			"x[]=13;"
@@ -667,6 +675,11 @@ public abstract static class Node {
 		new PreviewSnippet(CodeFormatter.K_STATEMENTS, 
 			"max = a > b ? a : b;"
 		);
+	
+	private final PreviewSnippet ARRAY_CONSTRUCTOR_PREVIEW =
+		new PreviewSnippet(CodeFormatter.K_STATEMENTS, 
+				"int[] a = new int[50];"
+			);
 	
 	//private final PreviewSnippet NO_PREVIEW =
 	//	new PreviewSnippet(CodeFormatter.K_STATEMENTS, 

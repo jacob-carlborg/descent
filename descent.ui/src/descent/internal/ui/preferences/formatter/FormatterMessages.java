@@ -185,6 +185,10 @@ final class FormatterMessages extends NLS {
 	public static String WhiteSpaceOptions_modifier_blocks;
 	public static String WhiteSpaceOptions_template_parameter_sepcialization;
 	public static String WhiteSpaceOptions_multidimensional_arrays;
+	public static String WhiteSpaceOptions_associative_array;
+	public static String WhiteSpaceOptions_array_constructor;
+	public static String WhiteSpaceOptions_static_array;
+	public static String WhiteSpaceOptions_array_access;
 	
 	// White space options - syntax elements
 	public static String WhiteSpaceOptions_before_semicolon;

@@ -261,6 +261,23 @@ public class DefaultCodeFormatterOptions
 	public boolean insert_space_between_empty_brackets_in_slice;
 	public boolean insert_space_between_empty_brackets_in_dynamic_array_type;
 	public boolean insert_space_between_adjacent_brackets_in_multidimensional_arrays;
+	public boolean insert_space_before_opening_bracket_in_array_access;
+	public boolean insert_space_before_opening_bracket_in_slices;
+	public boolean insert_space_before_opening_bracket_in_array_constructors;
+	public boolean insert_space_before_opening_bracket_in_associative_arrays;
+	public boolean insert_space_before_opening_bracket_in_static_arrays;
+	public boolean insert_space_after_opening_bracket_in_array_access;
+	public boolean insert_space_after_opening_bracket_in_slices;
+	public boolean insert_space_after_opening_bracket_in_array_literals;
+	public boolean insert_space_after_opening_bracket_in_array_constructors;
+	public boolean insert_space_after_opening_bracket_in_associative_arrays;
+	public boolean insert_space_after_opening_bracket_in_static_arrays;
+	public boolean insert_space_before_closing_bracket_in_array_access;
+	public boolean insert_space_before_closing_bracket_in_slices;
+	public boolean insert_space_before_closing_bracket_in_array_literals;
+	public boolean insert_space_before_closing_bracket_in_array_constructors;
+	public boolean insert_space_before_closing_bracket_in_associative_arrays;
+	public boolean insert_space_before_closing_bracket_in_static_arrays;
 	public boolean insert_space_before_colon_in_base_class_lists;
 	public boolean insert_space_before_colon_in_template_specific_type;
 	public boolean insert_space_before_colon_in_array_initializer;
@@ -543,6 +560,23 @@ public class DefaultCodeFormatterOptions
 		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BETWEEN_EMPTY_BRACKETS_IN_SLICE, insert_space_between_empty_brackets_in_slice ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
 		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BETWEEN_EMPTY_BRACKETS_IN_DYNAMIC_ARRAY_TYPE, insert_space_between_empty_brackets_in_dynamic_array_type ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
 		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BETWEEN_ADJACENT_BRACKETS_IN_MULTIDIMENSIONAL_ARRAYS, insert_space_between_adjacent_brackets_in_multidimensional_arrays ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
+		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_OPENING_BRACKET_IN_ARRAY_ACCESS, insert_space_before_opening_bracket_in_array_access ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
+		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_OPENING_BRACKET_IN_SLICES, insert_space_before_opening_bracket_in_slices ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
+		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_OPENING_BRACKET_IN_ARRAY_CONSTRUCTORS, insert_space_before_opening_bracket_in_array_constructors ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
+		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_OPENING_BRACKET_IN_ASSOCIATIVE_ARRAYS, insert_space_before_opening_bracket_in_associative_arrays ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
+		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_OPENING_BRACKET_IN_STATIC_ARRAYS, insert_space_before_opening_bracket_in_static_arrays ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
+		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_AFTER_OPENING_BRACKET_IN_ARRAY_ACCESS, insert_space_after_opening_bracket_in_array_access ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
+		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_AFTER_OPENING_BRACKET_IN_SLICES, insert_space_after_opening_bracket_in_slices ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
+		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_AFTER_OPENING_BRACKET_IN_ARRAY_LITERALS, insert_space_after_opening_bracket_in_array_literals ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
+		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_AFTER_OPENING_BRACKET_IN_ARRAY_CONSTRUCTORS, insert_space_after_opening_bracket_in_array_constructors ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
+		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_AFTER_OPENING_BRACKET_IN_ASSOCIATIVE_ARRAYS, insert_space_after_opening_bracket_in_associative_arrays ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
+		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_AFTER_OPENING_BRACKET_IN_STATIC_ARRAYS, insert_space_after_opening_bracket_in_static_arrays ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
+		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_CLOSING_BRACKET_IN_ARRAY_ACCESS, insert_space_before_closing_bracket_in_array_access ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
+		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_CLOSING_BRACKET_IN_SLICES, insert_space_before_closing_bracket_in_slices ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
+		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_CLOSING_BRACKET_IN_ARRAY_LITERALS, insert_space_before_closing_bracket_in_array_literals ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
+		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_CLOSING_BRACKET_IN_ARRAY_CONSTRUCTORS, insert_space_before_closing_bracket_in_array_constructors ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
+		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_CLOSING_BRACKET_IN_ASSOCIATIVE_ARRAYS, insert_space_before_closing_bracket_in_associative_arrays ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
+		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_CLOSING_BRACKET_IN_STATIC_ARRAYS, insert_space_before_closing_bracket_in_static_arrays ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
 		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_COLON_IN_BASE_CLASS_LISTS, insert_space_before_colon_in_base_class_lists ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
 		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_COLON_IN_TEMPLATE_SPECIFIC_TYPE, insert_space_before_colon_in_template_specific_type ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
 		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_COLON_IN_ARRAY_INITIALIZER, insert_space_before_colon_in_array_initializer ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
@@ -2323,6 +2357,159 @@ public class DefaultCodeFormatterOptions
 			}
 		}
 		
+		current = settings.get(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_OPENING_BRACKET_IN_ARRAY_ACCESS);
+		if(null != current) {
+			try {
+				insert_space_before_opening_bracket_in_array_access = DefaultCodeFormatterConstants.TRUE.equals(current);
+			} catch(Exception e) {
+				insert_space_before_opening_bracket_in_array_access = false;
+			}
+		}
+		
+		current = settings.get(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_OPENING_BRACKET_IN_SLICES);
+		if(null != current) {
+			try {
+				insert_space_before_opening_bracket_in_slices = DefaultCodeFormatterConstants.TRUE.equals(current);
+			} catch(Exception e) {
+				insert_space_before_opening_bracket_in_slices = false;
+			}
+		}
+		
+		current = settings.get(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_OPENING_BRACKET_IN_ARRAY_CONSTRUCTORS);
+		if(null != current) {
+			try {
+				insert_space_before_opening_bracket_in_array_constructors = DefaultCodeFormatterConstants.TRUE.equals(current);
+			} catch(Exception e) {
+				insert_space_before_opening_bracket_in_array_constructors = false;
+			}
+		}
+		
+		current = settings.get(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_OPENING_BRACKET_IN_ASSOCIATIVE_ARRAYS);
+		if(null != current) {
+			try {
+				insert_space_before_opening_bracket_in_associative_arrays = DefaultCodeFormatterConstants.TRUE.equals(current);
+			} catch(Exception e) {
+				insert_space_before_opening_bracket_in_associative_arrays = false;
+			}
+		}
+		
+		current = settings.get(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_OPENING_BRACKET_IN_STATIC_ARRAYS);
+		if(null != current) {
+			try {
+				insert_space_before_opening_bracket_in_static_arrays = DefaultCodeFormatterConstants.TRUE.equals(current);
+			} catch(Exception e) {
+				insert_space_before_opening_bracket_in_static_arrays = false;
+			}
+		}
+		
+		current = settings.get(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_AFTER_OPENING_BRACKET_IN_ARRAY_ACCESS);
+		if(null != current) {
+			try {
+				insert_space_after_opening_bracket_in_array_access = DefaultCodeFormatterConstants.TRUE.equals(current);
+			} catch(Exception e) {
+				insert_space_after_opening_bracket_in_array_access = false;
+			}
+		}
+		
+		current = settings.get(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_AFTER_OPENING_BRACKET_IN_SLICES);
+		if(null != current) {
+			try {
+				insert_space_after_opening_bracket_in_slices = DefaultCodeFormatterConstants.TRUE.equals(current);
+			} catch(Exception e) {
+				insert_space_after_opening_bracket_in_slices = false;
+			}
+		}
+		
+		current = settings.get(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_AFTER_OPENING_BRACKET_IN_ARRAY_LITERALS);
+		if(null != current) {
+			try {
+				insert_space_after_opening_bracket_in_array_literals = DefaultCodeFormatterConstants.TRUE.equals(current);
+			} catch(Exception e) {
+				insert_space_after_opening_bracket_in_array_literals = false;
+			}
+		}
+		
+		current = settings.get(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_AFTER_OPENING_BRACKET_IN_ARRAY_CONSTRUCTORS);
+		if(null != current) {
+			try {
+				insert_space_after_opening_bracket_in_array_constructors = DefaultCodeFormatterConstants.TRUE.equals(current);
+			} catch(Exception e) {
+				insert_space_after_opening_bracket_in_array_constructors = false;
+			}
+		}
+		
+		current = settings.get(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_AFTER_OPENING_BRACKET_IN_ASSOCIATIVE_ARRAYS);
+		if(null != current) {
+			try {
+				insert_space_after_opening_bracket_in_associative_arrays = DefaultCodeFormatterConstants.TRUE.equals(current);
+			} catch(Exception e) {
+				insert_space_after_opening_bracket_in_associative_arrays = false;
+			}
+		}
+		
+		current = settings.get(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_AFTER_OPENING_BRACKET_IN_STATIC_ARRAYS);
+		if(null != current) {
+			try {
+				insert_space_after_opening_bracket_in_static_arrays = DefaultCodeFormatterConstants.TRUE.equals(current);
+			} catch(Exception e) {
+				insert_space_after_opening_bracket_in_static_arrays = false;
+			}
+		}
+		
+		current = settings.get(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_CLOSING_BRACKET_IN_ARRAY_ACCESS);
+		if(null != current) {
+			try {
+				insert_space_before_closing_bracket_in_array_access = DefaultCodeFormatterConstants.TRUE.equals(current);
+			} catch(Exception e) {
+				insert_space_before_closing_bracket_in_array_access = false;
+			}
+		}
+		
+		current = settings.get(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_CLOSING_BRACKET_IN_SLICES);
+		if(null != current) {
+			try {
+				insert_space_before_closing_bracket_in_slices = DefaultCodeFormatterConstants.TRUE.equals(current);
+			} catch(Exception e) {
+				insert_space_before_closing_bracket_in_slices = false;
+			}
+		}
+		
+		current = settings.get(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_CLOSING_BRACKET_IN_ARRAY_LITERALS);
+		if(null != current) {
+			try {
+				insert_space_before_closing_bracket_in_array_literals = DefaultCodeFormatterConstants.TRUE.equals(current);
+			} catch(Exception e) {
+				insert_space_before_closing_bracket_in_array_literals = false;
+			}
+		}
+		
+		current = settings.get(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_CLOSING_BRACKET_IN_ARRAY_CONSTRUCTORS);
+		if(null != current) {
+			try {
+				insert_space_before_closing_bracket_in_array_constructors = DefaultCodeFormatterConstants.TRUE.equals(current);
+			} catch(Exception e) {
+				insert_space_before_closing_bracket_in_array_constructors = false;
+			}
+		}
+		
+		current = settings.get(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_CLOSING_BRACKET_IN_ASSOCIATIVE_ARRAYS);
+		if(null != current) {
+			try {
+				insert_space_before_closing_bracket_in_associative_arrays = DefaultCodeFormatterConstants.TRUE.equals(current);
+			} catch(Exception e) {
+				insert_space_before_closing_bracket_in_associative_arrays = false;
+			}
+		}
+		
+		current = settings.get(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_CLOSING_BRACKET_IN_STATIC_ARRAYS);
+		if(null != current) {
+			try {
+				insert_space_before_closing_bracket_in_static_arrays = DefaultCodeFormatterConstants.TRUE.equals(current);
+			} catch(Exception e) {
+				insert_space_before_closing_bracket_in_static_arrays = false;
+			}
+		}
+		
 		current = settings.get(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_COLON_IN_BASE_CLASS_LISTS);
 		if(null != current) {
 			try {
@@ -3144,6 +3331,23 @@ public class DefaultCodeFormatterOptions
 		insert_space_between_empty_brackets_in_slice = false;
 		insert_space_between_empty_brackets_in_dynamic_array_type = false;
 		insert_space_between_adjacent_brackets_in_multidimensional_arrays = false;
+		insert_space_before_opening_bracket_in_array_access = false;
+		insert_space_before_opening_bracket_in_slices = false;
+		insert_space_before_opening_bracket_in_array_constructors = false;
+		insert_space_before_opening_bracket_in_associative_arrays = false;
+		insert_space_before_opening_bracket_in_static_arrays = false;
+		insert_space_after_opening_bracket_in_array_access = false;
+		insert_space_after_opening_bracket_in_slices = false;
+		insert_space_after_opening_bracket_in_array_literals = false;
+		insert_space_after_opening_bracket_in_array_constructors = false;
+		insert_space_after_opening_bracket_in_associative_arrays = false;
+		insert_space_after_opening_bracket_in_static_arrays = false;
+		insert_space_before_closing_bracket_in_array_access = false;
+		insert_space_before_closing_bracket_in_slices = false;
+		insert_space_before_closing_bracket_in_array_literals = false;
+		insert_space_before_closing_bracket_in_array_constructors = false;
+		insert_space_before_closing_bracket_in_associative_arrays = false;
+		insert_space_before_closing_bracket_in_static_arrays = false;
 		insert_space_before_colon_in_base_class_lists = false;
 		insert_space_before_colon_in_template_specific_type = false;
 		insert_space_before_colon_in_array_initializer = false;

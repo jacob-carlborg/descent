@@ -1381,9 +1381,123 @@ insert_space_between_adjacent_brackets_in_multidimensional_arrays
 
 
 
+
+
 # White Space Options - Before Opening Bracket
+insert_space_before_opening_bracket_in_array_access
+	type=boolean
+	default=false
+	wsDElem=array_access
+	wsSynElem=before_opening_bracket
+	wsPreview=ARRAY_ACCESS_PREVIEW
+insert_space_before_opening_bracket_in_slices
+	type=boolean
+	default=false
+	wsDElem=array_slice
+	wsSynElem=before_opening_bracket
+	wsPreview=ARRAY_ACCESS_PREVIEW
+insert_space_before_opening_bracket_in_array_constructors
+	type=boolean
+	default=false
+	wsDElem=array_constructor
+	wsSynElem=before_opening_bracket
+	wsPreview=ARRAY_CONSTRUCTOR_PREVIEW
+insert_space_before_opening_bracket_in_associative_arrays
+	type=boolean
+	default=false
+	wsDElem=associative_array
+	wsSynElem=before_opening_bracket
+	wsPreview=ARRAYS_PREVIEW
+insert_space_before_opening_bracket_in_static_arrays
+	type=boolean
+	default=false
+	wsDElem=static_array
+	wsSynElem=before_opening_bracket
+	wsPreview=ARRAYS_PREVIEW
+
+
+
+
 # White Space Options - After Opening Bracket
+insert_space_after_opening_bracket_in_array_access
+	type=boolean
+	default=false
+	wsDElem=array_access
+	wsSynElem=after_opening_bracket
+	wsPreview=ARRAY_ACCESS_PREVIEW
+insert_space_after_opening_bracket_in_slices
+	type=boolean
+	default=false
+	wsDElem=array_slice
+	wsSynElem=after_opening_bracket
+	wsPreview=ARRAY_ACCESS_PREVIEW
+insert_space_after_opening_bracket_in_array_literals
+	type=boolean
+	default=false
+	wsDElem=array_literal
+	wsSynElem=after_opening_bracket
+	wsPreview=ARRAY_INITIALIZER_PREVIEW
+insert_space_after_opening_bracket_in_array_constructors
+	type=boolean
+	default=false
+	wsDElem=array_constructor
+	wsSynElem=after_opening_bracket
+	wsPreview=ARRAY_CONSTRUCTOR_PREVIEW
+insert_space_after_opening_bracket_in_associative_arrays
+	type=boolean
+	default=false
+	wsDElem=associative_array
+	wsSynElem=after_opening_bracket
+	wsPreview=ARRAYS_PREVIEW
+insert_space_after_opening_bracket_in_static_arrays
+	type=boolean
+	default=false
+	wsDElem=static_array
+	wsSynElem=after_opening_bracket
+	wsPreview=ARRAYS_PREVIEW
+
+
+
+
 # White Space Options - Before Closing Bracket
+insert_space_before_closing_bracket_in_array_access
+	type=boolean
+	default=false
+	wsDElem=array_access
+	wsSynElem=before_closing_bracket
+	wsPreview=ARRAY_ACCESS_PREVIEW
+insert_space_before_closing_bracket_in_slices
+	type=boolean
+	default=false
+	wsDElem=array_slice
+	wsSynElem=before_closing_bracket
+	wsPreview=ARRAY_ACCESS_PREVIEW
+insert_space_before_closing_bracket_in_array_literals
+	type=boolean
+	default=false
+	wsDElem=array_literal
+	wsSynElem=before_closing_bracket
+	wsPreview=ARRAY_INITIALIZER_PREVIEW
+insert_space_before_closing_bracket_in_array_constructors
+	type=boolean
+	default=false
+	wsDElem=array_constructor
+	wsSynElem=before_closing_bracket
+	wsPreview=ARRAY_CONSTRUCTOR_PREVIEW
+insert_space_before_closing_bracket_in_associative_arrays
+	type=boolean
+	default=false
+	wsDElem=associative_array
+	wsSynElem=before_closing_bracket
+	wsPreview=ARRAYS_PREVIEW
+insert_space_before_closing_bracket_in_static_arrays
+	type=boolean
+	default=false
+	wsDElem=static_array
+	wsSynElem=before_closing_bracket
+	wsPreview=ARRAYS_PREVIEW
+
+
 
 
 # White Space Options - Before Colon
