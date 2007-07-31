@@ -269,7 +269,7 @@ public class Function_Test extends Parser_Test {
 		assertPosition(f, 1, s.length() - 1);
 	}
 	
-	/*
+	/* TODO D2
 	public void testFunctionWithOneArgumentD2_1() {
 		String s = " void func(invariant(int) a) { }";
 		FunctionDeclaration f = (FunctionDeclaration) getSingleDeclarationNoProblems(s, AST.D2);

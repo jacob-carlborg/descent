@@ -58,7 +58,7 @@ public class Modifier_Test extends Parser_Test {
 		}
 	}
 	
-	/* TODO
+	/* TODO D2
 	public void testAllModifiersAsJava2() {
 		Object[][] objs = {
 				{ "invariant", Modifier.ModifierKeyword.INVARIANT_KEYWORD },
@@ -235,7 +235,7 @@ public class Modifier_Test extends Parser_Test {
 		}
 	}
 	
-	/*
+	/* D2
 	public void testModifiersWithCurlyBraces2() {
 		Object[][] objs = {
 			{ "invariant", Modifier.ModifierKeyword.INVARIANT_KEYWORD },
@@ -320,7 +320,7 @@ public class Modifier_Test extends Parser_Test {
 		}
 	}
 	
-	/* TODO
+	/* TODO D2
 	public void testModifiersWithVar2() {
 		Object[][] objs = {
 			{ "invariant", Modifier.ModifierKeyword.INVARIANT_KEYWORD },

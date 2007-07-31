@@ -92,11 +92,11 @@ public class FormatForeachStatement_Test extends AbstractFormatBraceWithSingleIn
 				);
 	}
 	
-	public void testINSERT_SPACE_BEFORE_OPENING_PAREN_IN_OUT_DECLARATION() throws Exception {
+	public void testINSERT_SPACE_BEFORE_OPENING_PAREN() throws Exception {
 		Map options = new HashMap();
-		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_OPENING_PAREN_IN_OUT_DECLARATION, DefaultCodeFormatterConstants.TRUE);
+		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_OPENING_PAREN_IN_FOREACH_LOOPS, DefaultCodeFormatterConstants.TRUE);
 		assertFormat(
-				"foreach (x,y; z) {\r\n" +
+				"foreach (x, y; z) {\r\n" +
 				"}\r\n",
 				
 				"foreach(x, y; z) { }",

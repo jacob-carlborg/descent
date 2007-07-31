@@ -337,7 +337,7 @@ public class Parser extends Lexer {
 
 			case TOKinvariant:
 				if (ast.apiLevel() == AST.D2) {
-					// TODO
+					// TODO D2
 //				    Token t;
 //					t = peek(token);
 //					if (t.value == TOKlparen) {
@@ -422,7 +422,7 @@ public class Parser extends Lexer {
 
 			case TOKconst:
 				if (apiLevel == AST.D2 && peek(token).value == TOKlparen) {
-					// TODO
+					// TODO D2
 //					// goto Ldeclaration
 //					a = parseDeclarations(lastComments);
 //					decldefs.addAll(a);
@@ -676,7 +676,7 @@ public class Parser extends Lexer {
 			    case TOKconst:
 			    case TOKinvariant:
 			    	if (apiLevel == AST.D2) {
-			    		// TODO
+			    		// TODO D2
 //						// If followed by a (, it is not a storage class
 //						if (peek(token).value == TOKlparen) {
 //							repeat = false;
@@ -1117,7 +1117,7 @@ public class Parser extends Lexer {
 		if (apiLevel < AST.D2) {
 			return parseParametersD1(pvarargs);
 		} else {
-			// TODO
+			// TODO D2
 			// return parseParametersD2(pvarargs);
 			return parseParametersD1(pvarargs);
 		}
@@ -1233,7 +1233,7 @@ public class Parser extends Lexer {
 		return arguments;
 	}
 	
-	// TODO: this is not finished
+	// TODO D2
 	private List<Argument> parseParametersD2(int[] pvarargs) {
 		List<Argument> arguments = new ArrayList<Argument>();
 		int varargs = 0;
@@ -1269,7 +1269,7 @@ public class Parser extends Lexer {
 				switch(token.value) {
 					case TOKconst:
 					    if (peek(token).value == TOKlparen) {
-					    	// TODO
+					    	// TODO D2
 							// goto Ldefault;
 					    } else {
 						    storageClass = STC.STCconst;
@@ -1280,7 +1280,7 @@ public class Parser extends Lexer {
 						break;
 					case TOKinvariant:
 					    if (peek(token).value == TOKlparen) {
-							// TODO 
+							// TODO D2
 					    	// goto Ldefault;
 					    } else {
 						    storageClass = STC.STCinvariant;
@@ -1703,7 +1703,7 @@ public class Parser extends Lexer {
 							tp_spectype = parseBasicType();
 							tp_spectype = parseDeclarator(tp_spectype, null);	
 						} else {
-							// TODO 
+							// TODO D2
 							// tp_spectype = parseType();
 							tp_spectype = parseBasicType();
 							tp_spectype = parseDeclarator(tp_spectype, null);	
@@ -1716,7 +1716,7 @@ public class Parser extends Lexer {
 							tp_defaulttype = parseBasicType();
 							tp_defaulttype = parseDeclarator(tp_defaulttype, null);
 						} else {
-							// TODO
+							// TODO D2
 							// tp_defaulttype = parseType();
 							tp_defaulttype = parseBasicType();
 							tp_defaulttype = parseDeclarator(tp_defaulttype, null);
@@ -1741,7 +1741,7 @@ public class Parser extends Lexer {
 							tp_spectype = parseBasicType();
 							tp_spectype = parseDeclarator(tp_spectype, null);
 						} else {
-							// TODO
+							// TODO D2
 							// tp_spectype = parseType();
 							tp_spectype = parseBasicType();
 							tp_spectype = parseDeclarator(tp_spectype, null);
@@ -1754,7 +1754,7 @@ public class Parser extends Lexer {
 							tp_defaulttype = parseBasicType();
 							tp_defaulttype = parseDeclarator(tp_defaulttype, null);
 						} else {
-							// TODO
+							// TODO D2
 							// tp_defaulttype = parseType();
 							tp_defaulttype = parseBasicType();
 							tp_defaulttype = parseDeclarator(tp_defaulttype, null);
@@ -1784,7 +1784,7 @@ public class Parser extends Lexer {
 						tp_valtype = parseDeclarator(tp_valtype, pointer2_tp_ident);
 						tp_ident = pointer2_tp_ident[0];
 					} else {
-						// TODO
+						// TODO D2
 //						IdentifierExp[] pointer2_tp_ident = new IdentifierExp[] { tp_ident };
 //						tp_valtype = parseType(pointer2_tp_ident);
 //						tp_ident = pointer2_tp_ident[0];
@@ -1949,7 +1949,7 @@ public class Parser extends Lexer {
 						ta = parseBasicType();
 						ta = parseDeclarator(ta, null);
 					} else {
-						// TODO
+						// TODO D2
 						// ta = parseType();
 						ta = parseBasicType();
 						ta = parseDeclarator(ta, null);
@@ -2078,7 +2078,7 @@ public class Parser extends Lexer {
 		return multiImport;
 	}
 	
-	// TODO
+	// TODO D2
 //	private Type parseType(IdentifierExp[] pident, List<TemplateParameter> **tpl)
 //	{   Type *t;
 //
@@ -3238,8 +3238,9 @@ public class Parser extends Lexer {
 		case TOKauto:
 		case TOKextern:
 		case TOKfinal:
-		// TODO
+		// TODO D2
 		// case TOKinvariant:
+			
 		// case TOKtypeof:
 			// Ldeclaration:
 		{
