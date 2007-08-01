@@ -126,10 +126,12 @@ public final class WhiteSpaceOptions
 		align_declaration.setParent(declarations);
 		aggregate_declaration.setParent(declarations);
 		aggregate_template_params.setParent(aggregate_declaration);
+		class_invariants.setParent(aggregate_declaration);
 		template_declaration.setParent(declarations);
 		extern_declarations.setParent(declarations);
 		import_declaration.setParent(declarations);
 		modifier_blocks.setParent(declarations);
+		enums.setParent(declarations);
 		
 		// Statements
 		roots.add(statements);
@@ -224,8 +226,11 @@ public final class WhiteSpaceOptions
 		roots.add(before_closing_bracket);
 		roots.add(between_empty_brackets);
 		roots.add(between_adjacent_brackets);
+		//roots.add(before_brace);
 		roots.add(before_operator);
 		roots.add(after_operator);
+		//roots.add(before_equals);
+		//roots.add(after_equals);
 		roots.add(before_dot);
 		roots.add(after_dot);
 		roots.add(before_slice_operator);
@@ -234,6 +239,7 @@ public final class WhiteSpaceOptions
 		roots.add(after_elipsis);
 		roots.add(before_question_mark);
 		roots.add(after_question_mark);
+		roots.add(after_asterisk);
 		
 		return roots;
 	}
@@ -681,8 +687,27 @@ public abstract static class Node {
 				"int[] a = new int[50];"
 			);
 	
+	private final PreviewSnippet CLASS_INVARIANT_PREVIEW =
+		new PreviewSnippet(CodeFormatter.K_COMPILATION_UNIT, 
+				"class A {int x;invariant{assert(x >= 0);}}" +
+				"class B {int y;invariant(){assert(y <= 0);}}"
+			);
+	
+	private final PreviewSnippet ENUM_PREVIEW =
+		new PreviewSnippet(CodeFormatter.K_COMPILATION_UNIT, 
+				"enum Colors{RED,GREEN,BLUE,}" +
+				"enum{ACCT_ACTIVE=1,ACCT_SUSPENDED=2,ACCT_ADMIN=4}"
+			);
+	
 	//private final PreviewSnippet NO_PREVIEW =
 	//	new PreviewSnippet(CodeFormatter.K_STATEMENTS, 
 	//		""
 	//	);
+	
+	// This PreviewSnippet is used by WhiteSpaceTabPage, so cannot be private
+	final static PreviewSnippet ASTERISK_PREVIEW =
+		new PreviewSnippet(CodeFormatter.K_COMPILATION_UNIT, 
+				"int* a, b; // Both a and b are type int*\n\n" +
+				"void alterPointer(int** x){*x = &a;}"
+			);
 }

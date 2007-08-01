@@ -386,6 +386,12 @@ insert_space_before_opening_paren_in_type_dot_identifier_expression
 	wsDElemEx=type_dot_identifier_expression_parens
 	wsSynElem=before_opening_paren
 	wsPreview=TYPE_DOT_IDENTIFIER_PREVIEW
+insert_space_before_opening_paren_in_class_invariants
+	type=boolean
+	default=false
+	wsDElem=class_invariants
+	wsSynElem=before_opening_paren
+	wsPreview=CLASS_INVARIANT_PREVIEW
 
 
 
@@ -862,6 +868,12 @@ insert_space_between_empty_parens_in_template_invocation
 	wsDElem=template_invocation
 	wsSynElem=between_empty_parens
 	wsPreview=TEMPLATE_INVOCATION_PREVIEW
+insert_space_between_empty_parens_in_class_invariants
+	type=boolean
+	default=false
+	wsDElem=class_invariants
+	wsSynElem=between_empty_parens
+	wsPreview=CLASS_INVARIANT_PREVIEW
 
 
 
@@ -1032,6 +1044,12 @@ insert_space_before_comma_in_assert_statements
 	wsDElem=assert_statement
 	wsSynElem=before_comma
 	wsPreview=ASSERT_PREVIEW
+insert_space_before_comma_in_enum_member_lists
+	type=boolean
+	default=false
+	wsDElem=enums
+	wsSynElem=before_comma
+	wsPreview=ENUM_PREVIEW
 
 
 
@@ -1685,6 +1703,44 @@ insert_space_after_question_mark_in_conditional_expressions
 	wsDElem=conditional_expression
 	wsSynElem=after_question_mark
 	wsPreview=CONDITIONAL_EXPRESSION_PREVIEW
+
+
+# White Space Options - Before =
+#insert_space_before_equals_in_selective_imports
+#	type=boolean
+#	default=true
+#	wsDElem=import_declaration
+#	wsDElemEx=selective_imports
+#	wsSynElem=before_equals
+#	wsSynElemEx=before_equals_in_selective_imports
+#insert_space_before_equals_in_default_arguments
+#insert_space_before_equals_in_default_template_arguments
+#insert_space_before_equals_in_version_debug_assignment
+#insert_space_before_equals_in_enum_constants
+#insert_space_before_equals_in_typedef_inits
+#insert_space_before_equals_in_variable_inits
+
+
+
+
+# White Space Options - *
+insert_space_after_star_in_c_style_fp
+	type=boolean
+	default=false
+	wsDElem=c_style_function_pointer
+	wsSynElem=after_asterisk
+	wsPreview=DELEGATE_PREVIEW
+	
+
+
+
+# Star positioning for pointer types
+asterisk_position_for_pointer_types
+	type=AsteriskPosition
+	default=AsteriskPosition.D_STYLE
+	tab=WhiteSpaceTabPage
+	uiText=Pointer asterisk position
+
 
 
 

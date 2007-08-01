@@ -15,6 +15,8 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Observable;
+import java.util.Observer;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
@@ -24,6 +26,7 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Group;
 
 import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.viewers.ArrayContentProvider;
@@ -47,7 +50,9 @@ import org.eclipse.ui.part.PageBook;
 
 import descent.ui.JavaUI;
 
+import descent.core.formatter.DefaultCodeFormatterConstants;
 import descent.internal.ui.JavaPlugin;
+import descent.internal.ui.preferences.formatter.ModifyDialogTabPage.ComboPreference;
 import descent.internal.ui.preferences.formatter.WhiteSpaceOptions.InnerNode;
 import descent.internal.ui.preferences.formatter.WhiteSpaceOptions.Node;
 import descent.internal.ui.preferences.formatter.WhiteSpaceOptions.OptionNode;
@@ -485,7 +490,21 @@ public class WhiteSpaceTabPage extends ModifyDialogTabPage
 		{ FormatterMessages.WhiteSpaceTabPage_sort_by_d_element,
 				FormatterMessages.WhiteSpaceTabPage_sort_by_syntax_element };
 		
+		private final String[] asteriskPolicyValues = new String[]
+		{
+			DefaultCodeFormatterConstants.D_STYLE,
+			DefaultCodeFormatterConstants.C_STYLE,
+			DefaultCodeFormatterConstants.SPACES_ON_BOTH_SIDES
+		};
+		private final String[] asteriskPolicyLabels = new String[]
+		{
+			FormatterMessages.WhiteSpaceTabPage_asterisk_d_style,
+			FormatterMessages.WhiteSpaceTabPage_asterisk_c_style,
+			FormatterMessages.WhiteSpaceTabPage_asterisk_spaces_on_both_sides
+		};
+		
 		private Combo fSwitchCombo;
+		private ComboPreference asteriskCombo;
 		private PageBook fPageBook;
 		private final SyntaxComponent fSyntaxComponent;
 		private final JavaElementComponent fJavaElementComponent;
@@ -515,6 +534,7 @@ public class WhiteSpaceTabPage extends ModifyDialogTabPage
 		
 		public void createContents(int numColumns, Composite parent)
 		{
+			
 			fSwitchCombo = new Combo(parent, SWT.READ_ONLY);
 			final GridData gd = createGridData(numColumns,
 					GridData.HORIZONTAL_ALIGN_BEGINNING, SWT.DEFAULT);
@@ -527,11 +547,30 @@ public class WhiteSpaceTabPage extends ModifyDialogTabPage
 			
 			fJavaElementComponent.createContents(numColumns, fPageBook);
 			fSyntaxComponent.createContents(numColumns, fPageBook);
+			
+			asteriskCombo = new ComboPreference(
+					parent,
+					numColumns, 
+					fWorkingValues,
+					DefaultCodeFormatterConstants.FORMATTER_ASTERISK_POSITION_FOR_POINTER_TYPES,
+					asteriskPolicyValues,
+					FormatterMessages.WhiteSpaceTabPage_asterisk_position_for_pointer_types,
+					asteriskPolicyLabels);
 		}
 		
 		public void initialize()
 		{
 			fSwitchCombo.addSelectionListener(this);
+			asteriskCombo.addObserver(new Observer()
+			{
+				public void update(Observable o, Object arg)
+				{
+					fPreview.clear();
+					fPreview.add(WhiteSpaceOptions.ASTERISK_PREVIEW);
+					doUpdatePreview();
+					notifyValuesModified();
+				}
+			});
 			fJavaElementComponent.initialize();
 			fSyntaxComponent.initialize();
 			restoreSelection();
@@ -574,8 +613,9 @@ public class WhiteSpaceTabPage extends ModifyDialogTabPage
 		fSwitchComponent = new SwitchComponent();
 	}
 	
+	
 	protected void doCreatePreferences(Composite composite, int numColumns)
-	{
+	{	
 		fSwitchComponent.createContents(numColumns, composite);
 	}
 	

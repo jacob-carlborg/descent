@@ -103,6 +103,9 @@ final class FormatterMessages extends NLS {
 	public static String WhiteSpaceTabPage_insert_space;
 	public static String WhiteSpaceTabPage_sort_by_d_element;
 	public static String WhiteSpaceTabPage_sort_by_syntax_element;
+	public static String WhiteSpaceTabPage_asterisk_d_style;
+	public static String WhiteSpaceTabPage_asterisk_c_style;
+	public static String WhiteSpaceTabPage_asterisk_spaces_on_both_sides;
 	
 	// White space options - D elements
 	public static String WhiteSpaceOptions_declarations;
@@ -189,6 +192,8 @@ final class FormatterMessages extends NLS {
 	public static String WhiteSpaceOptions_array_constructor;
 	public static String WhiteSpaceOptions_static_array;
 	public static String WhiteSpaceOptions_array_access;
+	public static String WhiteSpaceOptions_class_invariants;
+	public static String WhiteSpaceOptions_enums;
 	
 	// White space options - syntax elements
 	public static String WhiteSpaceOptions_before_semicolon;
@@ -259,7 +264,10 @@ final class FormatterMessages extends NLS {
 	public static String WhiteSpaceOptions_before_opening_brace;
 	public static String WhiteSpaceOptions_after_opening_brace;
 	public static String WhiteSpaceOptions_before_closing_brace;
-	public static String whiteSpaceOptions_after_closing_brace;
+	public static String WhiteSpaceOptions_after_closing_brace;
+	public static String WhiteSpaceOptions_after_asterisk;
+	public static String WhiteSpaceOptions_before_equals;
+	public static String WhiteSpaceOptions_after_equals;
 	
 	// Blank lines tab page
 	public static String ModifyDialog_tabpage_blank_lines_title;
@@ -298,6 +306,7 @@ final class FormatterMessages extends NLS {
 	public static String BracesTabPage_brace_position_for_with_statement;
 	public static String BracesTabPage_brace_position_for_scope_statement;
 	public static String BracesTabPage_brace_position_for_pragmas;
+	public static String WhiteSpaceTabPage_asterisk_position_for_pointer_types;
 	public static String BlankLinesTabPage_blank_lines_before_module;
 	public static String BlankLinesTabPage_blank_lines_after_module;
 	public static String BlankLinesTabPage_number_of_empty_lines_to_preserve;

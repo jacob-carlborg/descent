@@ -30,6 +30,17 @@ public class DefaultCodeFormatterOptions
 		public String toString() { return constVal; }
 	}
 	
+	public enum AsteriskPosition
+	{
+		D_STYLE(DefaultCodeFormatterConstants.D_STYLE),
+		C_STYLE(DefaultCodeFormatterConstants.C_STYLE),
+		SPACES_ON_BOTH_SIDES(DefaultCodeFormatterConstants.SPACES_ON_BOTH_SIDES);
+		
+		private final String constVal;
+		AsteriskPosition(String $constVal) { constVal = $constVal; }
+		public String toString() { return constVal; }
+	}
+	
 	public static DefaultCodeFormatterOptions getDefaultSettings() {
 		return getBuiltInProfile(DefaultCodeFormatterConstants.DEFAULT_PROFILE);
 	}
@@ -114,6 +125,10 @@ public class DefaultCodeFormatterOptions
 		 * {
 		 *     $optionsMapInitializer = "$$_{'optName'}.toString()";
 		 * }
+		 * elsif($$_{'type'} eq "AsteriskPosition")
+		 * {
+		 *     $optionsMapInitializer = "$$_{'optName'}.toString()";
+		 * }
 		 * else
 		 * {
 		 *     $optionsMapInitializer = "null";
@@ -155,6 +170,12 @@ public class DefaultCodeFormatterOptions
 		 *     $initializer = "DefaultCodeFormatterConstants.NEXT_LINE_SHIFTED.equals(current) ? " .
 		 *                    "BracePosition.NEXT_LINE_SHIFTED : DefaultCodeFormatterConstants.NEXT_LINE.equals(current) ? " .
 		 *                    "BracePosition.NEXT_LINE : BracePosition.END_OF_LINE";
+		 * }
+		 * elsif($$_{'type'} eq "AsteriskPosition")
+		 * {
+		 *     $initializer = "DefaultCodeFormatterConstants.D_STYLE.equals(current) ? " .
+		 *                    "AsteriskPosition.D_STYLE : DefaultCodeFormatterConstants.C_STYLE.equals(current) ? " .
+		 *                    "AsteriskPosition.C_STYLE : AsteriskPosition.SPACES_ON_BOTH_SIDES";
 		 * }
 		 * else
 		 * {

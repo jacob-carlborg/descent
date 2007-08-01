@@ -49,6 +49,11 @@ public class DefaultCodeFormatterConstants {
 	public static final int WRAP_NO_SPLIT= 0;
 	public static final int WRAP_ONE_PER_LINE= 3;
 	
+	// Asterisk positons
+	public static final String D_STYLE = "d_style";
+	public static final String C_STYLE = "c-style";
+	public static final String SPACES_ON_BOTH_SIDES = "spaces_on_both_sides";
+	
 	// Formatter value names
 	/* EVAL-FOR-EACH
 	 * 

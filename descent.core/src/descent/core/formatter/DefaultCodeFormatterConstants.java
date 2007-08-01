@@ -49,6 +49,11 @@ public class DefaultCodeFormatterConstants {
 	public static final int WRAP_NO_SPLIT= 0;
 	public static final int WRAP_ONE_PER_LINE= 3;
 	
+	// Asterisk positons
+	public static final String D_STYLE = "d_style";
+	public static final String C_STYLE = "c-style";
+	public static final String SPACES_ON_BOTH_SIDES = "spaces_on_both_sides";
+	
 	// Formatter value names
 	public static final String FORMATTER_BRACE_POSITION_FOR_FUNCTION_DECLARATION = JavaCore.PLUGIN_ID + ".formatter.brace_position_for_function_declaration";
 	public static final String FORMATTER_BRACE_POSITION_FOR_TYPE_DECLARATION = JavaCore.PLUGIN_ID + ".formatter.brace_position_for_type_declaration";
@@ -99,6 +104,7 @@ public class DefaultCodeFormatterConstants {
 	public static final String FORMATTER_INSERT_SPACE_BEFORE_OPENING_PAREN_IN_TEMPLATE_DECLARATIONS = JavaCore.PLUGIN_ID + ".formatter.insert_space_before_opening_paren_in_template_declarations";
 	public static final String FORMATTER_INSERT_SPACE_BEFORE_OPENING_PAREN_IN_PARENTHESIZED_EXPRESSIONS = JavaCore.PLUGIN_ID + ".formatter.insert_space_before_opening_paren_in_parenthesized_expressions";
 	public static final String FORMATTER_INSERT_SPACE_BEFORE_OPENING_PAREN_IN_TYPE_DOT_IDENTIFIER_EXPRESSION = JavaCore.PLUGIN_ID + ".formatter.insert_space_before_opening_paren_in_type_dot_identifier_expression";
+	public static final String FORMATTER_INSERT_SPACE_BEFORE_OPENING_PAREN_IN_CLASS_INVARIANTS = JavaCore.PLUGIN_ID + ".formatter.insert_space_before_opening_paren_in_class_invariants";
 	public static final String FORMATTER_INSERT_SPACE_AFTER_OPENING_PAREN_IN_FUNCTION_DECLARATION_PARAMETERS = JavaCore.PLUGIN_ID + ".formatter.insert_space_after_opening_paren_in_function_declaration_parameters";
 	public static final String FORMATTER_INSERT_SPACE_AFTER_OPENING_PAREN_IN_FUNCTION_TEMPLATE_ARGS = JavaCore.PLUGIN_ID + ".formatter.insert_space_after_opening_paren_in_function_template_args";
 	public static final String FORMATTER_INSERT_SPACE_AFTER_OPENING_PAREN_IN_FUNCTION_INVOCATION = JavaCore.PLUGIN_ID + ".formatter.insert_space_after_opening_paren_in_function_invocation";
@@ -173,6 +179,7 @@ public class DefaultCodeFormatterConstants {
 	public static final String FORMATTER_INSERT_SPACE_BETWEEN_EMPTY_PARENS_IN_EXTERN_DECLARATIONS = JavaCore.PLUGIN_ID + ".formatter.insert_space_between_empty_parens_in_extern_declarations";
 	public static final String FORMATTER_INSERT_SPACE_BETWEEN_EMPTY_PARENS_IN_TEMPLATE_DECLARATIONS = JavaCore.PLUGIN_ID + ".formatter.insert_space_between_empty_parens_in_template_declarations";
 	public static final String FORMATTER_INSERT_SPACE_BETWEEN_EMPTY_PARENS_IN_TEMPLATE_INVOCATION = JavaCore.PLUGIN_ID + ".formatter.insert_space_between_empty_parens_in_template_invocation";
+	public static final String FORMATTER_INSERT_SPACE_BETWEEN_EMPTY_PARENS_IN_CLASS_INVARIANTS = JavaCore.PLUGIN_ID + ".formatter.insert_space_between_empty_parens_in_class_invariants";
 	public static final String FORMATTER_INSERT_SPACE_BETWEEN_NAME_AND_ARGS_IN_C_STYLE_FP = JavaCore.PLUGIN_ID + ".formatter.insert_space_between_name_and_args_in_c_style_fp";
 	public static final String FORMATTER_INSERT_SPACE_BETWEEN_TEMPLATE_AND_ARG_PARENS_IN_FUNCTION_DECLARATION = JavaCore.PLUGIN_ID + ".formatter.insert_space_between_template_and_arg_parens_in_function_declaration";
 	public static final String FORMATTER_INSERT_SPACE_BETWEEN_TEMPLATE_ARGS_AND_FUNCTION_ARGS = JavaCore.PLUGIN_ID + ".formatter.insert_space_between_template_args_and_function_args";
@@ -196,6 +203,7 @@ public class DefaultCodeFormatterConstants {
 	public static final String FORMATTER_INSERT_SPACE_BEFORE_COMMA_IN_NEW_ARGUMENTS = JavaCore.PLUGIN_ID + ".formatter.insert_space_before_comma_in_new_arguments";
 	public static final String FORMATTER_INSERT_SPACE_BEFORE_TRAILING_COMMA_IN_ARRAY_INITIALIZER = JavaCore.PLUGIN_ID + ".formatter.insert_space_before_trailing_comma_in_array_initializer";
 	public static final String FORMATTER_INSERT_SPACE_BEFORE_COMMA_IN_ASSERT_STATEMENTS = JavaCore.PLUGIN_ID + ".formatter.insert_space_before_comma_in_assert_statements";
+	public static final String FORMATTER_INSERT_SPACE_BEFORE_COMMA_IN_ENUM_MEMBER_LISTS = JavaCore.PLUGIN_ID + ".formatter.insert_space_before_comma_in_enum_member_lists";
 	public static final String FORMATTER_INSERT_SPACE_AFTER_COMMA_IN_BASE_CLASS_LISTS = JavaCore.PLUGIN_ID + ".formatter.insert_space_after_comma_in_base_class_lists";
 	public static final String FORMATTER_INSERT_SPACE_AFTER_COMMA_IN_ARRAY_LITERAL = JavaCore.PLUGIN_ID + ".formatter.insert_space_after_comma_in_array_literal";
 	public static final String FORMATTER_INSERT_SPACE_AFTER_COMMA_IN_FUNCTION_INVOCATION_ARGUMENTS = JavaCore.PLUGIN_ID + ".formatter.insert_space_after_comma_in_function_invocation_arguments";
@@ -280,6 +288,8 @@ public class DefaultCodeFormatterConstants {
 	public static final String FORMATTER_INSERT_SPACE_AFTER_SEMICOLON_IN_FOR_STATEMENT = JavaCore.PLUGIN_ID + ".formatter.insert_space_after_semicolon_in_for_statement";
 	public static final String FORMATTER_INSERT_SPACE_BEFORE_QUESTION_MARK_IN_CONDITIONAL_EXPRESSIONS = JavaCore.PLUGIN_ID + ".formatter.insert_space_before_question_mark_in_conditional_expressions";
 	public static final String FORMATTER_INSERT_SPACE_AFTER_QUESTION_MARK_IN_CONDITIONAL_EXPRESSIONS = JavaCore.PLUGIN_ID + ".formatter.insert_space_after_question_mark_in_conditional_expressions";
+	public static final String FORMATTER_INSERT_SPACE_AFTER_STAR_IN_C_STYLE_FP = JavaCore.PLUGIN_ID + ".formatter.insert_space_after_star_in_c_style_fp";
+	public static final String FORMATTER_ASTERISK_POSITION_FOR_POINTER_TYPES = JavaCore.PLUGIN_ID + ".formatter.asterisk_position_for_pointer_types";
 	public static final String FORMATTER_BLANK_LINES_BEFORE_MODULE = JavaCore.PLUGIN_ID + ".formatter.blank_lines_before_module";
 	public static final String FORMATTER_BLANK_LINES_AFTER_MODULE = JavaCore.PLUGIN_ID + ".formatter.blank_lines_after_module";
 	public static final String FORMATTER_NUMBER_OF_EMPTY_LINES_TO_PRESERVE = JavaCore.PLUGIN_ID + ".formatter.number_of_empty_lines_to_preserve";
