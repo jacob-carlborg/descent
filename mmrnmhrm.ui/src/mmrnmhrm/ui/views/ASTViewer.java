@@ -20,7 +20,9 @@ import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
+import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
+import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
@@ -40,6 +42,9 @@ import org.eclipse.ui.part.DrillDownAdapter;
 import org.eclipse.ui.part.ViewPart;
 import org.eclipse.ui.texteditor.AbstractTextEditor;
 import org.eclipse.ui.texteditor.ITextEditor;
+
+import dtool.dom.ast.ASTNodeFinder;
+import dtool.dom.ast.ASTNode;
 
 
 /**
@@ -63,6 +68,7 @@ public class ASTViewer extends ViewPart implements ISelectionListener,
 	protected CompilationUnit fCUnit;
 	private Action actionToggle;
 	protected boolean fUseOldAst = false;
+	protected ASTNode selNode;
 
 
 	public ASTViewer() {
@@ -91,7 +97,7 @@ public class ASTViewer extends ViewPart implements ISelectionListener,
 		viewer = new TreeViewer(parent, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL);
 		drillDownAdapter = new DrillDownAdapter(viewer);
 		viewer.setContentProvider(new ASTViewerContentProvider(this));
-		viewer.setLabelProvider(new ASTViewerLabelProvider());
+		viewer.setLabelProvider(new ASTViewerLabelProvider(this));
 		viewer.addSelectionChangedListener(this);
 		viewer.addDoubleClickListener(this);
 		
@@ -159,11 +165,11 @@ public class ASTViewer extends ViewPart implements ISelectionListener,
 
 
 	private void refreshViewer() {
-		if(fCUnit == null)
+		if(fEditor == null || fCUnit == null)
 			return;
 		
+		int offset = EditorUtil.getSelection(fEditor).getOffset();
 		if(fCUnit.parseStatus == EModelStatus.OK) {
-			int offset = EditorUtil.getSelection(fEditor).getOffset();
 			setContentDescription("AST ok, sel: " + offset);
 		} else {
 			setContentDescription(fCUnit.toStringParseStatus());
@@ -172,10 +178,12 @@ public class ASTViewer extends ViewPart implements ISelectionListener,
 			viewer.getControl().setVisible(false);
 			return;
 		}
-
+		
+		selNode = ASTNodeFinder.findElement(fCUnit.getModule(), offset);
 		//viewer.getControl().setRedraw(false);
 		//viewer.setInput(fCUnit);
 		viewer.refresh();
+		viewer.reveal(selNode);
 		//viewer.getControl().setRedraw(true);
 	}
 	

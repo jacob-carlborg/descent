@@ -12,6 +12,7 @@ import org.eclipse.swt.graphics.Image;
 import dtool.dom.ast.ASTNeoNode;
 import dtool.dom.ast.ASTNode;
 import dtool.dom.declarations.DeclarationImport;
+import dtool.dom.declarations.PartialPackageDefUnit;
 import dtool.dom.definitions.DefinitionAggregate;
 import dtool.dom.definitions.DefinitionAlias;
 import dtool.dom.definitions.DefinitionEnum;
@@ -19,6 +20,7 @@ import dtool.dom.definitions.DefinitionFunction;
 import dtool.dom.definitions.DefinitionTemplate;
 import dtool.dom.definitions.DefinitionTypedef;
 import dtool.dom.definitions.DefinitionVariable;
+import dtool.dom.definitions.Module;
 import dtool.dom.definitions.Module.DeclarationModule;
 import dtool.dom.references.Entity;
 
@@ -43,7 +45,9 @@ public class DeeElementImageProvider {
 	public static Image getNodeImage(ASTNode node) {
 		if(node instanceof DeclarationImport) { 
 			return getImage(DeePluginImages.NODE_IMPORT);
-		} else if(node instanceof DeclarationModule) {
+		} else if(node instanceof DeclarationModule || node instanceof Module) {
+			return getImage(DeePluginImages.NODE_MODULE_DEC);
+		} else if(node instanceof PartialPackageDefUnit ) {
 			return getImage(DeePluginImages.NODE_MODULE_DEC);
 		} else if (node instanceof Entity) {
 			return getImage(DeePluginImages.NODE_REF);

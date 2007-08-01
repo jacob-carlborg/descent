@@ -23,14 +23,14 @@ import org.eclipse.ui.handlers.HandlerUtil;
 import org.eclipse.ui.ide.IDE;
 import org.eclipse.ui.texteditor.ITextEditor;
 
-import dtool.dom.ast.ASTElementFinder;
+import dtool.dom.ast.ASTNodeFinder;
 import dtool.dom.ast.ASTNode;
 import dtool.dom.ast.ASTPrinter;
 import dtool.dom.definitions.DefUnit;
 import dtool.dom.definitions.Module;
 import dtool.dom.definitions.Symbol;
 import dtool.dom.references.Entity;
-import dtool.refmodel.EntitySearch;
+import dtool.refmodel.DefUnitSearch;
 import dtool.refmodel.IIntrinsicUnit;
 import dtool.refmodel.NodeUtil;
 
@@ -78,7 +78,7 @@ public class GoToDefinitionHandler extends AbstractHandler  {
 		srcCUnit.reconcile();
 		
 
-		ASTNode elem = ASTElementFinder.findElement(srcCUnit.getModule(), offset);
+		ASTNode elem = ASTNodeFinder.findElement(srcCUnit.getModule(), offset);
 		
 		if(elem == null) {
 			dialogWarning(window.getShell(), "No element found at pos: " + offset);
@@ -118,7 +118,7 @@ public class GoToDefinitionHandler extends AbstractHandler  {
 					+ "\nGoing to the first one.");
 		}
 
-		DefUnit defunit = EntitySearch.getResultDefUnit(defunits);
+		DefUnit defunit = DefUnitSearch.getResultDefUnit(defunits);
 		
 		if(defunit.hasNoSourceRangeInfo()) {
 			dialogError(window.getShell(),

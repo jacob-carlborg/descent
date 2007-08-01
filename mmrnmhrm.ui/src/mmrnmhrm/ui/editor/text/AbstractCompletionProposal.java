@@ -74,6 +74,8 @@ public abstract class AbstractCompletionProposal implements ICompletionProposal 
 
 	/** {@inheritDoc} */
 	public void apply(IDocument document) {
+		if(fReplacementLength == 0 && fReplacementString.length() == 0)
+			return;
 		try {
 			document.replace(fReplacementOffset, fReplacementLength, fReplacementString);
 		} catch (BadLocationException x) {

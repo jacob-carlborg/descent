@@ -17,5 +17,4 @@ public class DeeOutlineLabelProvider extends SimpleLabelProvider {
 	public String getText(Object elem) {
 		return elem.toString();
 	}
-
 }

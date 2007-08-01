@@ -19,16 +19,11 @@ import org.eclipse.swt.custom.StyleRange;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.texteditor.ITextEditor;
 
-import dtool.dom.ast.ASTElementFinder;
-import dtool.dom.ast.ASTNode;
 import dtool.dom.definitions.DefUnit;
-import dtool.dom.references.EntIdentifier;
-import dtool.dom.references.Entity;
-import dtool.refmodel.EntityResolver;
-import dtool.refmodel.EntitySearch;
-import dtool.refmodel.IScopeNode;
-import dtool.refmodel.NodeUtil;
-import dtool.refmodel.PartialEntitySearh;
+import dtool.refmodel.CommonDefUnitSearch;
+import dtool.refmodel.DefUnitSearch;
+import dtool.refmodel.PartialEntitySearch;
+import dtool.refmodel.PartialSearchOptions;
 
 public class DeeCodeContentAssistProcessor implements IContentAssistProcessor {
 
@@ -77,64 +72,30 @@ public class DeeCodeContentAssistProcessor implements IContentAssistProcessor {
 		final ArrayList<ICompletionProposal> results;
 		results = new ArrayList<ICompletionProposal>();
 
-		ASTNode node = ASTElementFinder.findElement(cunit.getModule(), offset);
-		
-		
-		IScopeNode searchScope;
-		final String searchPrefix;
-		final int prefixLen;
-		final int rplOffset = node.getStartPos();
-		final int rplLen /*= offset - node.getStartPos()*/;
-
-		if(node instanceof Entity)  {
-			errorMsg = null;
-			Entity ref = (Entity) node;
-			searchScope = getRootScope(ref);
-			if(node instanceof EntIdentifier) {
-				EntIdentifier refIdent = (EntIdentifier) node;
-				prefixLen = offset - refIdent.getOffset();
-				rplLen = refIdent.getLength() - prefixLen;
-				searchPrefix = refIdent.name.substring(0, prefixLen);
-			} else {
-				// TODO
-				searchPrefix = "";
-				rplLen = 0;
-				prefixLen = 0;
-			}
-	
-		} else if(node instanceof IScopeNode) {
-			errorMsg = null;
-			searchScope = (IScopeNode) node;
-			searchPrefix = "";
-			rplLen = 0;
-			prefixLen = 0;
-		} else {
-			errorMsg = "No Completion Available";
-			return null;
-		}
-		
-		EntitySearch search = new PartialEntitySearh(searchPrefix, searchScope, false) {
+		PartialSearchOptions searchOptions = new PartialSearchOptions();
+		CommonDefUnitSearch search = new PartialEntitySearch(searchOptions) {
 			@Override
 			public void addResult(DefUnit defunit) {
+				String rplStr = defunit.getName().substring(searchOptions.prefixLen);
 				results.add(new DeeCompletionProposal(
-						defunit.getName().substring(prefixLen), 
+						rplStr, 
 						offset, 
-						rplLen, 
-						defunit.getName().length() - prefixLen,
+						searchOptions.rplLen, 
+						rplStr.length(),
 						DeeElementImageProvider.getNodeImage(defunit),
-						defunit.toString(),
+						defunit.toStringAsDefUnit(),
 						null
 						)); 
 			}
 		};
-		EntityResolver.findDefUnitInExtendedScope(searchScope, search);
+		
+		errorMsg = PartialEntitySearch.doCompletionSearch(offset, 
+				cunit.getModule(), searchOptions, search);
+		
+		if(errorMsg != null)
+			return null;
 		
 		return results.toArray(RESULTS_EMPTY_ARRAY);
-	}
-
-
-	private IScopeNode getRootScope(Entity ref) {
-		return NodeUtil.getOuterScope(ref);
 	}
 
 	public IContextInformation[] computeContextInformation(ITextViewer viewer,
