@@ -10,7 +10,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.junit.AfterClass;
 import org.junit.Test;
 
-import dtool.dom.ast.ASTElementFinder;
+import dtool.dom.ast.ASTNodeFinder;
 import dtool.dom.ast.ASTNode;
 import dtool.dom.definitions.DefUnit;
 import dtool.dom.definitions.Module;
@@ -57,7 +57,7 @@ public abstract class FindDef_CommonTest extends BasePluginTest {
 		System.out.print("Find ref case #"+counter+": "+offset+": ");
 		System.out.println(cunit.getSource().substring(offset).split("\\s")[0]);
 		
-		ASTNode node = ASTElementFinder.findElement(cunit.getNeoModule(), offset);
+		ASTNode node = ASTNodeFinder.findElement(cunit.getNeoModule(), offset);
 		Entity ent = (Entity) node;
 		
 		// TODO: Assert only one found
