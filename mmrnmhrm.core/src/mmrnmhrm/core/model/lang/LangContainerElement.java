@@ -34,7 +34,7 @@ public abstract class LangContainerElement extends LangElement {
 		try {
 			getElementInfo();
 		} catch (CoreException e) {
-			ExceptionAdapter.unchecked(e);
+			throw ExceptionAdapter.unchecked(e);
 		}
 		return this.children;
 	}
