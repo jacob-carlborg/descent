@@ -12,9 +12,7 @@ import mmrnmhrm.ui.editor.DeeEditor;
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
-import org.eclipse.core.resources.IWorkspaceRunnable;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.text.TextSelection;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IEditorInput;
@@ -54,8 +52,8 @@ public class GoToDefinitionHandler extends AbstractHandler  {
 
 	public static void executeChecked(final ITextEditor srcEditor,
 			final boolean openNewEditor) {
-		OperationsManager.doOperation2(GO_TO_DEFINITION_OPNAME, new IWorkspaceRunnable() {
-			public void run(IProgressMonitor monitor) throws CoreException {
+		OperationsManager.executeOperation(GO_TO_DEFINITION_OPNAME, new ISimpleRunnable() {
+			public void run() throws CoreException {
 				executeOperation(srcEditor, openNewEditor);
 			}
 		});
@@ -64,15 +62,22 @@ public class GoToDefinitionHandler extends AbstractHandler  {
 	public static void executeOperation(ITextEditor srcEditor,
 			boolean openNewEditor) throws CoreException {
 
-		IWorkbenchWindow window = srcEditor.getSite().getWorkbenchWindow();
+		TextSelection sel = EditorUtil.getSelection(srcEditor);
+		int offset = sel.getOffset();
 		
+		executeOperation(srcEditor, openNewEditor, offset);
+
+	}
+
+	public static void executeOperation(ITextEditor srcEditor,
+			boolean openNewEditor, int offset) throws CoreException {
+		IWorkbenchWindow window = srcEditor.getSite().getWorkbenchWindow();
+
 		IEditorInput input = srcEditor.getEditorInput();
 		CompilationUnit srcCUnit = DeePlugin.getInstance().getCompilationUnit(input);
 		srcCUnit.reconcile();
 		
-		TextSelection sel = EditorUtil.getSelection(srcEditor);
-		int offset = sel.getOffset();
-		
+
 		ASTNode elem = ASTElementFinder.findElement(srcCUnit.getModule(), offset);
 		
 		if(elem == null) {
@@ -137,8 +142,7 @@ public class GoToDefinitionHandler extends AbstractHandler  {
 		} else {
 			targetEditor = srcEditor;
 		}
-		EditorUtil.setSelection(targetEditor, defunit);
-
+		EditorUtil.setSelection(targetEditor, defunit.defname);
 	}
 	
 

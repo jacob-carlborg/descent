@@ -11,6 +11,7 @@ import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.rules.IToken;
 import org.eclipse.jface.text.rules.ITokenScanner;
+import org.eclipse.jface.util.PropertyChangeEvent;
 
 import descent.core.compiler.DeeToken;
 import descent.internal.core.dom.Lexer;
@@ -37,7 +38,8 @@ public class DeeCodeScanner implements ITokenScanner {
 		loadDeeTokens();
 	}
 	
-	public void loadDeeTokens() {
+	/** Updates the color according to current preferences. */
+	private void loadDeeTokens() {
 		manager.loadToken(IDeeColorPreferences.DEE_SPECIAL);
 		manager.loadToken(IDeeColorPreferences.DEE_STRING);
 		manager.loadToken(IDeeColorPreferences.DEE_LITERALS);
@@ -164,6 +166,15 @@ public class DeeCodeScanner implements ITokenScanner {
 			// TO DO: check the exception
 			throw ExceptionAdapter.unchecked(e);
 		}
+	}
+
+	public boolean adaptToPreferenceChange(PropertyChangeEvent event) {
+		String prop = event.getProperty();
+		if(prop.startsWith(IDeeColorPreferences.PREFIX)) {
+			loadDeeTokens();
+			return true;
+		}
+		return false;
 	}
 
 }

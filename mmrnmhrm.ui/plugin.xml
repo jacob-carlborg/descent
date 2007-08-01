@@ -143,24 +143,14 @@
             id="mmrnmhrm.ui.deeActionSet"
             label="Mmrnmhrm Dee Action Set"
             visible="true">
-         <action
-               class="melnorme.util.ui.actions.SampleActionDelegate"
-               helpContextId="org.eclipse.jdt.ui.open_type_action"
-               icon="icons/action16e/opentype.gif"
-               id="openType"
-               label="%OpenTypeAction.label"
-               menubarPath="navigate/open.ext2"
-               toolbarPath="org.eclipse.search.searchActionSet/Search"
-               tooltip="%OpenTypeAction.tooltip">
-         </action>
       </actionSet>
    </extension>
    <extension
          point="org.eclipse.ui.commands">
       <category
-            description="Mmrnmhrm com category"
+            description="Mmrnmhrm Command Category"
             id="mmrnmhrm.ui.commands.category1"
-            name="Mmrnmhrm Com category">
+            name="Mmrnmhrm Command Category">
       </category>
       <command
             categoryId="mmrnmhrm.ui.commands.category1"
@@ -189,14 +179,26 @@
       <command
             categoryId="mmrnmhrm.ui.commands.category1"
             defaultHandler="mmrnmhrm.ui.actions.AddSourceFolderHandler"
-            id="mmrnmhrm.ui.commands.buildPathAddRemove"
-            name="Build Path Add/Remove">
+            id="mmrnmhrm.ui.commands.buildPathAdd"
+            name="Build Path Add">
       </command>
+ <command
+       categoryId="mmrnmhrm.ui.commands.category1"
+       defaultHandler="mmrnmhrm.ui.actions.RemoveSourceFolderHandler"
+       id="mmrnmhrm.ui.commands.buildPathRemove"
+       name="Build Path Remove">
+ </command>
 	<command
        categoryId="mmrnmhrm.ui.commands.category1"
        id="mmrnmhrm.ui.commands.openDefinition"
        name="Open Definition">
       </command>
+ <command
+       categoryId="mmrnmhrm.ui.commands.category1"
+       defaultHandler="mmrnmhrm.ui.actions.DeeContentAssistHandler"
+       id="mmrnmhrm.ui.commands.invokeContentAssist"
+       name="Content Assist (Mmrnmhrm)">
+ </command>
    </extension>
    <extension
          point="org.eclipse.ui.handlers">
@@ -244,16 +246,6 @@
                </visibleWhen>
             </command>
             <command
-                  commandId="mmrnmhrm.ui.commands.sampleCommand"
-                  icon="icons/action16e/spathi.16.gif"
-                  label="Sample Command1">
-               <visibleWhen>
-                  <reference
-                        definitionId="mmrnmhrm.ui.expressions.inDeeActionSet">
-                  </reference>
-               </visibleWhen>
-            </command>
-            <command
                   commandId="mmrnmhrm.ui.commands.sampleCommand2"
                   icon="icons/action16e/spathi.16.gif"
                   label="Sample Command2">
@@ -265,7 +257,13 @@
             </command>
             <command
                   commandId="mmrnmhrm.ui.commands.openDefinition"
-                  icon="icons/action16e/gotodef.gif">
+                  icon="icons/action16e/gotodef.gif"
+                  label="Open Definition">
+               <visibleWhen>
+                  <reference
+                        definitionId="mmrnmhrm.ui.expressions.inDeeActionSet">
+                  </reference>
+               </visibleWhen>
             </command>
          </toolbar>
       </menuContribution>
@@ -275,31 +273,57 @@
                id="mmrnmhrm.ui.menus.buildpath"
                label="Dee Builld Path">
             <visibleWhen>
-               <and>
+               <with
+                     variable="activeMenuSelection">
+                  <iterate>
+                     <or>
+                        <reference
+                              definitionId="mmrnmhrm.core.expressions.isDeeNatureContainer">
+                        </reference>
+                        <instanceof
+                              value="mmrnmhrm.core.model.IDeeSourceRoot">
+                        </instanceof>
+                     </or>
+                  </iterate>
+               </with>
+            </visibleWhen>
+            <separator
+                  name="content"
+                  visible="true">
+            </separator>
+            <separator
+                  name="additions"
+                  visible="true">
+            </separator>
+            <command
+                  commandId="mmrnmhrm.ui.commands.buildPathAdd"
+                  icon="icons/lcl16e/add_as_source_folder.gif"
+                  mnemonic="%contributions.view.edit.mnemonic">
+               <visibleWhen>
                   <with
                         variable="activeMenuSelection">
                      <iterate>
-                        <adapt
-                              type="org.eclipse.core.resources.IFolder">
-                           <test
-                                 property="org.eclipse.core.resources.projectNature"
-                                 value="mmrnmhrm.core.deenature">
-                           </test>
-                        </adapt>
+                        <instanceof
+                              value="org.eclipse.core.resources.IFolder">
+                        </instanceof>
                      </iterate>
                   </with>
-               </and>
-            </visibleWhen>
-            <separator
-                  name="content">
-            </separator>
-            <separator
-                  name="additions">
-            </separator>
+               </visibleWhen>
+            </command>
             <command
-                  commandId="mmrnmhrm.ui.commands.buildPathAddRemove"
-                  icon="icons/lcl16e/add_as_source_folder.gif"
+                  commandId="mmrnmhrm.ui.commands.buildPathRemove"
+                  icon="icons/lcl16e/remove_as_source_folder.gif"
                   mnemonic="%contributions.view.edit.mnemonic">
+               <visibleWhen>
+                  <with
+                        variable="activeMenuSelection">
+                     <iterate>
+                        <instanceof
+                              value="mmrnmhrm.core.model.IDeeSourceRoot">
+                        </instanceof>
+                     </iterate>
+                  </with>
+               </visibleWhen>
             </command>
             <command
                   commandId="mmrnmhrm.ui.commands.configureBuildPath"
@@ -309,11 +333,10 @@
          </menu>
       </menuContribution>
             <menuContribution
-                  locationURI="menu:mmrnmhrm.ui.menus.buildpath?after=content">
+                  locationURI="menu:mmrnmhrm.ui.menus.buildpath?after=additions">
                <command
                      commandId="mmrnmhrm.ui.commands.refreshModel"
-                     icon="icons/lcl16e/remove_as_source_folder.gif"
-                     mnemonic="%contributions.view.edit.mnemonic">
+                     icon="icons/sample.gif">
                </command>
             </menuContribution>
       
@@ -331,6 +354,12 @@
             contextId="mmrnmhrm.ui.contexts.DeeEditor"
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
             sequence="F3">
+      </key>
+      <key
+            commandId="mmrnmhrm.ui.commands.invokeContentAssist"
+            contextId="mmrnmhrm.ui.contexts.DeeEditor"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="Ctrl+Space">
       </key>
    </extension>
    <extension
@@ -377,6 +406,10 @@
                </instanceof>
             </or>
          </possibleChildren>
+         <actionProvider
+               class="mmrnmhrm.ui.navigator.DeeCommonActionProvider"
+               id="mmrnmhrm.ui.actions.navigatorActionProvider">
+         </actionProvider>
       </navigatorContent>
    </extension>
    <extension
@@ -398,6 +431,25 @@
                type="org.eclipse.core.resources.IFolder">
          </adapter>
       </factory>
+   </extension>
+   <extension
+         point="org.eclipse.ui.workbench.texteditor.hyperlinkDetectorTargets">
+      <target
+            id="mmrnmhrm.ui.texteditor.deeCodeTarget"
+            name="Dee Code Target">
+         <context
+               type="org.eclipse.ui.texteditor.ITextEditor">
+         </context>
+      </target>
+   </extension>
+   <extension
+         point="org.eclipse.ui.workbench.texteditor.hyperlinkDetectors">
+      <hyperlinkDetector
+            class="mmrnmhrm.ui.editor.text.DeeHyperlinkDetector2"
+            id="mmrnmhrm.ui.editor.text.DeeHyperlinkDetector2"
+            name="Dee Element"
+            targetId="mmrnmhrm.ui.texteditor.deeCodeTarget">
+      </hyperlinkDetector>
    </extension>
 
 </plugin>

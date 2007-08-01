@@ -42,6 +42,7 @@ public class DeePluginImages {
 	public static final String ENT_VARIABLE = createImage_Obj("ent_variable.gif");
 	public static final String ENT_FUNCTION = createImage_Obj("ent_function.gif");
 
+	public static final String NODE_MODULE_DEC = createImage_Obj("elem_module_dec.gif");
 	public static final String NODE_IMPORT = createImage_Obj("elem_import.gif");
 	public static final String NODE_COND = createImage_Obj("elem_cond.gif");
 	

@@ -6,11 +6,14 @@ import mmrnmhrm.ui.DeePlugin;
 import mmrnmhrm.ui.DeePluginImages;
 import mmrnmhrm.ui.editor.outline.DeeContentOutlinePage;
 import mmrnmhrm.ui.text.DeeDocumentProvider;
+import mmrnmhrm.ui.text.DeeSourceViewerConfiguration;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.text.IDocument;
+import org.eclipse.jface.text.source.SourceViewerConfiguration;
 import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.texteditor.ITextEditorActionConstants;
@@ -22,11 +25,16 @@ public class DeeEditor extends LangEditor {
 	public static final String EDITOR_ID = DeePlugin.PLUGIN_ID + ".editors.DeeEditor";
 	public static final String CONTEXTS_DEE_EDITOR = DeePlugin.PLUGIN_ID + ".contexts.DeeEditor";
 	
+	protected static final boolean CODE_ASSIST_DEBUG = true ||
+	"true".equalsIgnoreCase(Platform.getDebugOption(
+			DeePlugin.PLUGIN_ID+"/debug/ResultCollector"));
+	
 	private DeeDocumentProvider documentProvider;
 	private IDocument document;
 	private CompilationUnit cunit;
 	private DeeContentOutlinePage outlinePage; // Instantiated lazily
-	private DeeSourceViewerConfiguration sourceViewerConfiguration;
+	//private DeeSourceViewerConfiguration sourceViewerConfiguration;
+
 
 
 	public DeeEditor() {
@@ -39,14 +47,17 @@ public class DeeEditor extends LangEditor {
 	@Override
 	protected void initializeEditor() {
 		super.initializeEditor();
-		sourceViewerConfiguration = new DeeSourceViewerConfiguration();
-		setSourceViewerConfiguration(sourceViewerConfiguration);
+		setPreferenceStore(createCombinedPreferenceStore(null));
+		setSourceViewerConfiguration(createLangSourceViewerConfiguration());
 		setEditorContextMenuId("#DeeEditorContext"); 
 		setRulerContextMenuId("#DeeRulerContext"); 
 		//setHelpContextId(ITextEditorHelpContextIds.TEXT_EDITOR);
 		setInsertMode(INSERT);
-		setPreferenceStore(createCombinedPreferenceStore(null));
-
+		
+	}
+	
+	private SourceViewerConfiguration createLangSourceViewerConfiguration() {
+		return new DeeSourceViewerConfiguration(this, getPreferenceStore());
 	}
 	
 	@Override
@@ -68,10 +79,17 @@ public class DeeEditor extends LangEditor {
 	}
 	
 	@Override
+	protected void handlePreferenceStoreChanged(PropertyChangeEvent event) {
+		super.handlePreferenceStoreChanged(event);
+	}
+	
+	@Override
 	protected boolean affectsTextPresentation(PropertyChangeEvent event) {
-		// FIXME properly react to presentation preference changes
-		DeePlugin.getDefaultDeeCodeScanner().loadDeeTokens();
-		return true;
+		return ((DeeSourceViewerConfiguration) getSourceViewerConfiguration())
+				.adaptToPreferenceChange(event)
+				|| super.affectsTextPresentation(event);
+		//return true;
+		//return super.affectsTextPresentation(event);
 	}
 
 	protected void doSetInput(IEditorInput input) throws CoreException {

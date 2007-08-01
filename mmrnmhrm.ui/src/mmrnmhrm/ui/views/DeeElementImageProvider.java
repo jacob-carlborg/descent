@@ -44,7 +44,7 @@ public class DeeElementImageProvider {
 		if(node instanceof DeclarationImport) { 
 			return getImage(DeePluginImages.NODE_IMPORT);
 		} else if(node instanceof DeclarationModule) {
-			return getImage(DeePluginImages.ELEM_PACKAGE);
+			return getImage(DeePluginImages.NODE_MODULE_DEC);
 		} else if (node instanceof Entity) {
 			return getImage(DeePluginImages.NODE_REF);
 		} else if (node instanceof DefinitionAlias) {

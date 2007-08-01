@@ -10,64 +10,55 @@
  *******************************************************************************/
 package mmrnmhrm.ui.editor.text;
 
+import mmrnmhrm.ui.actions.GoToDefinitionHandler;
+import mmrnmhrm.ui.actions.ISimpleRunnable;
+import mmrnmhrm.ui.actions.OperationsManager;
+
 import org.eclipse.core.runtime.Assert;
-
-import org.eclipse.jface.action.IAction;
-
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.hyperlink.IHyperlink;
+import org.eclipse.ui.texteditor.ITextEditor;
 
 
 /**
- * Java element hyperlink.
- * TODO: Port to Dee
- * @since 3.1
+ * Lang element hyperlink.
  */
 public class DeeElementHyperlink implements IHyperlink {
 
 	private final IRegion fRegion;
-	private final IAction fOpenAction;
-
+	private final ITextEditor fTextEditor;
+	private int offset;
 
 	/**
-	 * Creates a new Java element hyperlink.
+	 * Creates a new Lang element hyperlink.
+	 * @param i 
 	 */
-	public DeeElementHyperlink(IRegion region, IAction openAction) {
-		Assert.isNotNull(openAction);
+	public DeeElementHyperlink(int offset, IRegion region, ITextEditor textEditor) {
+		Assert.isNotNull(textEditor);
 		Assert.isNotNull(region);
 
+		this.offset = offset;
 		fRegion= region;
-		fOpenAction= openAction;
+		fTextEditor= textEditor;
 	}
 
-	/*
-	 * @see org.eclipse.jdt.internal.ui.javaeditor.IHyperlink#getHyperlinkRegion()
-	 * @since 3.1
-	 */
 	public IRegion getHyperlinkRegion() {
 		return fRegion;
 	}
 
-	/*
-	 * @see org.eclipse.jdt.internal.ui.javaeditor.IHyperlink#open()
-	 * @since 3.1
-	 */
 	public void open() {
-		fOpenAction.run();
+		OperationsManager.executeOperation("Open Element", new ISimpleRunnable() {
+			public void run() throws CoreException {
+				GoToDefinitionHandler.executeOperation(fTextEditor, true, offset);
+			}
+		});
 	}
 
-	/*
-	 * @see org.eclipse.jdt.internal.ui.javaeditor.IHyperlink#getTypeLabel()
-	 * @since 3.1
-	 */
 	public String getTypeLabel() {
 		return null;
 	}
 
-	/*
-	 * @see org.eclipse.jdt.internal.ui.javaeditor.IHyperlink#getHyperlinkText()
-	 * @since 3.1
-	 */
 	public String getHyperlinkText() {
 		return null;
 	}

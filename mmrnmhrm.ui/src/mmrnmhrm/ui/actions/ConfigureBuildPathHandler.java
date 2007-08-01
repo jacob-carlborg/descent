@@ -1,5 +1,6 @@
 package mmrnmhrm.ui.actions;
 
+import mmrnmhrm.core.model.lang.ILangElement;
 import mmrnmhrm.ui.properties.ProjConfigPropertyPage;
 
 import org.eclipse.core.commands.AbstractHandler;
@@ -22,7 +23,12 @@ public class ConfigureBuildPathHandler extends AbstractHandler {
 			return null;
 
 		IStructuredSelection sel = (IStructuredSelection) selection;
-		IResource res = (IResource) sel.getFirstElement();
+		IResource res;
+		if(sel.getFirstElement() instanceof ILangElement)
+			res = ((ILangElement) sel.getFirstElement()).getUnderlyingResource();
+		else
+			res = (IResource) sel.getFirstElement();
+		
 		IProject proj = res.getProject();
 
 		IWorkbenchWindow window = HandlerUtil.getActiveWorkbenchWindowChecked(event);

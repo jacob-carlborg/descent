@@ -1,6 +1,8 @@
 package mmrnmhrm.ui.navigator;
 
 import melnorme.miscutil.tree.IElement;
+import mmrnmhrm.core.ElementChangedEvent;
+import mmrnmhrm.core.IElementChangedListener;
 import mmrnmhrm.core.model.DeeModel;
 import mmrnmhrm.core.model.DeeProject;
 import mmrnmhrm.core.model.IDeeElement;
@@ -12,10 +14,17 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.Viewer;
+import org.eclipse.swt.widgets.Display;
 
 
-public class DeeNavigatorContentProvider implements ITreeContentProvider {
+public class DeeNavigatorContentProvider implements ITreeContentProvider, IElementChangedListener {
 
+	private Viewer viewer;
+	
+	public DeeNavigatorContentProvider() {
+		DeeModel.addElementChangedListener(this);
+	}
+	
 	public Object[] getChildren(Object element) {
 		if(element instanceof IProject) {
 			try {
@@ -72,7 +81,15 @@ public class DeeNavigatorContentProvider implements ITreeContentProvider {
 	}
 
 	public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
-		// Auto-generated method stub
+		this.viewer = viewer;
+	}
+
+	public void elementChanged(ElementChangedEvent event) {
+		Display.getDefault().asyncExec(new Runnable() {
+			public void run() {
+				viewer.refresh();
+			}
+		});
 	}
 
 }
