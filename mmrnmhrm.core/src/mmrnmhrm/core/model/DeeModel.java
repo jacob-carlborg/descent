@@ -2,14 +2,12 @@ package mmrnmhrm.core.model;
 
 import java.util.ArrayList;
 
-import mmrnmhrm.core.DeeCore;
 import mmrnmhrm.core.IElementChangedListener;
 import mmrnmhrm.core.model.lang.LangElement;
 import mmrnmhrm.core.model.lang.LangPackageFragment;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 
@@ -25,26 +23,26 @@ public class DeeModel {
 		return deemodel;
 	}
 	
-	public ArrayList<IElementChangedListener> elementChangedListeners 
+	public static ArrayList<IElementChangedListener> elementChangedListeners 
 		= new ArrayList<IElementChangedListener>(5);
 	
 
 	
 	/** Registers an element change listener. */
-	public synchronized void addElementChangedListener(IElementChangedListener listener, int eventMask) {
+	public static synchronized void addElementChangedListener(IElementChangedListener listener) {
 		elementChangedListeners.add(listener);
 	}
 	
 	/** Unregisters an element change listener. */
-	public synchronized void removeElementChangedListener(IElementChangedListener listener) {
+	public static synchronized void removeElementChangedListener(IElementChangedListener listener) {
 		elementChangedListeners.remove(listener);
 	}
 	
 	/** Notifies element change listener of model changes. */
-	public void fireModelChanged() {
+	public static void fireModelChanged() {
 		// Watch out for listener add/remove while change notification is in progress.
 		IElementChangedListener[] listeners;
-		synchronized(this) {
+		synchronized(elementChangedListeners) {
 			listeners = new IElementChangedListener[elementChangedListeners.size()];
 			listeners = elementChangedListeners.toArray(listeners);
 		}

@@ -51,6 +51,16 @@
             </test>
          </adapt>
       </definition>
+      <definition
+            id="mmrnmhrm.core.expressions.isDeeNatureContainer">
+         <adapt
+               type="org.eclipse.core.resources.IContainer">
+            <test
+                  property="org.eclipse.core.resources.projectNature"
+                  value="mmrnmhrm.core.deenature">
+            </test>
+         </adapt>
+      </definition>
    </extension>
    <extension
          point="org.eclipse.core.runtime.preferences">

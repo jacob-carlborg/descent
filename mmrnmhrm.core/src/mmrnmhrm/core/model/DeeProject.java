@@ -5,19 +5,13 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
-import java.util.ArrayList;
-
-import javax.naming.ldap.SortControl;
 
 import melnorme.miscutil.Assert;
 import melnorme.miscutil.log.Logg;
 import mmrnmhrm.core.DeeCoreException;
 import mmrnmhrm.core.build.DeeCompilerOptions;
-import mmrnmhrm.core.model.lang.ELangElementTypes;
-import mmrnmhrm.core.model.lang.ILangElement;
 import mmrnmhrm.core.model.lang.LangProject;
 
-import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IMarker;
@@ -64,6 +58,7 @@ public class DeeProject extends LangProject implements IDeeElement {
 	/** {@inheritDoc} */ @Override
 	public void updateElem() throws CoreException {
 		updateErrorMarkers();
+		DeeModel.fireModelChanged();
 	}
 
 	private void updateErrorMarkers() throws CoreException {
@@ -82,8 +77,6 @@ public class DeeProject extends LangProject implements IDeeElement {
 		marker.setAttribute(IMarker.SEVERITY, IMarker.SEVERITY_ERROR);
 	}
 
-
-	
 
 	/* =====================  persistence ===================== */
 
@@ -134,6 +127,19 @@ public class DeeProject extends LangProject implements IDeeElement {
 
 	}
 
+	/** Loads a project config if one exists. If one doesn't 
+	 * exist already, create one with defaults settings. */
+	public void setupNewProjectConfig() throws CoreException {
+		IFile projCfgFile = project.getFile(CFG_FILE_NAME);
+		if(projCfgFile.exists()) {
+			loadProjectConfigFile();
+		} else {
+			setDefaultBuildPath();
+			saveProjectConfigFile();
+		}
+	}
+
+	
 	public void loadProjectConfigFile() throws CoreException {
 		IFile projCfgFile = project.getFile(CFG_FILE_NAME);
 		Logg.main.println(projCfgFile.getLocationURI());

@@ -1,7 +1,6 @@
 package mmrnmhrm.core.model.lang;
 
 import melnorme.miscutil.ArrayUtil;
-import melnorme.miscutil.Assert;
 
 import org.eclipse.core.resources.ICommand;
 import org.eclipse.core.resources.IProject;
@@ -24,11 +23,13 @@ public abstract class LangNature implements IProjectNature {
 		this.project = project;
 	}
 
-	/** Adds a nature to the given project. Nature must not exist already. */
+	/** Adds a nature to the given project if it doesn't exist already.*/
 	public static void addNature(IProject project, String natureID) throws CoreException {
 		IProjectDescription description = project.getDescription();
 		String[] natures = description.getNatureIds();
-		Assert.isTrue(ArrayUtil.contains(natures, natureID) == false);
+		if(ArrayUtil.contains(natures, natureID))
+			return;
+
 		String[] newNatures = ArrayUtil.append(natures, natureID);
 		description.setNatureIds(newNatures);
 		project.setDescription(description, null); 

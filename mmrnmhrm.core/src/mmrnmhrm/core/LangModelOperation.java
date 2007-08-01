@@ -39,7 +39,7 @@ public abstract class LangModelOperation implements IWorkspaceRunnable{
 		} finally {
 			popOperation();
 			if(isTopLevelOperation()) {
-				DeeModel.getInstance().fireModelChanged();
+				DeeModel.fireModelChanged();
 			}
 		}
 		

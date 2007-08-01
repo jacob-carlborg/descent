@@ -61,17 +61,23 @@ public class DeeModelRoot extends LangModelRoot implements IDeeElement, IModuleR
 	}
 
 	/** Creates a D project in the given existing workspace project. 
+	 * May or may not have a Dee nature, if not, one will be added.
 	 * Sets a default build path (src:src, out:bin) on the project. */
 	public DeeProject createDeeProject(IProject project) throws CoreException {
 		DeeNature.addNature(project, DeeNature.NATURE_ID);
 	
 		DeeProject deeproj = new DeeProject(project);
-		deeproj.setDefaultBuildPath();
-		deeproj.saveProjectConfigFile();
+		deeproj.setupNewProjectConfig();
 		addDeeProject(deeproj);
 		return deeproj;
 	}
-	
+
+	/** Adds an existing D project to the model. Refreshes the project.  */
+/*	public void addDeeProject(DeeProject deeproj) throws CoreException {
+		addChild(deeproj);
+		//deeproj.updateElementRecursive();
+	}
+*/	
 	/** Finds the module with the given package and module name.
 	 * refModule is used to determine which project/build-path to search. */
 	public Module findModule(Module refModule, String packageName, String moduleName) throws CoreException {
