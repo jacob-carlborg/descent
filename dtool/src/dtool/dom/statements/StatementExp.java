@@ -10,7 +10,7 @@ public class StatementExp extends Statement {
 	public Expression exp;
 
 	public StatementExp(ExpStatement element) {
-		if(element.hasNoSourceRangeInfo())
+		if(element.hasNoSourceRangeInfo() && element.exp != null)
 			setSourceRange(element.exp);
 		else
 			convertNode(element);

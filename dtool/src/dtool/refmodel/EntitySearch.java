@@ -4,7 +4,6 @@ import java.util.ArrayDeque;
 import java.util.Collection;
 import java.util.Collections;
 
-import dtool.dom.ast.ASTNeoNode;
 import dtool.dom.declarations.PartialPackageDefUnit;
 import dtool.dom.definitions.DefUnit;
 import dtool.dom.definitions.Module;
@@ -13,14 +12,15 @@ import dtool.dom.references.Entity;
 public class EntitySearch {
 	public static final Collection<DefUnit> NO_DEFUNITS = Collections.emptySet();
 
-	public String entname;
-	private Entity searchref;
-	private Module searchRefModule; //cached value
-	boolean findOnlyOne;
+	public String searchName;
+	protected Module searchRefModule; //cached value
+	protected boolean findOnlyOne;
 
+	protected ArrayDeque<IScope> searchedScopes;
+	protected boolean matchesArePartialDefUnits = false;
+
+	private Entity searchRef;
 	private ArrayDeque<DefUnit> defunits;
-	private ArrayDeque<IScope> searchedScopes;
-	private boolean matchesArePartialDefUnits = false;
 
 	//@Deprecated
 	public boolean searchingFromAnImport = false;
@@ -30,9 +30,9 @@ public class EntitySearch {
 		return newSearch(name, searchref, false);
 	}
 	
-	private EntitySearch(String name, Entity searchref, boolean findOneOnly) {
-		this.entname = name;
-		this.searchref = searchref;
+	protected EntitySearch(String name, Entity searchref, boolean findOneOnly) {
+		this.searchName = name;
+		this.searchRef = searchref;
 		this.findOnlyOne = findOneOnly;
 		//defunits = new ArrayDeque<DefUnit>(4);
 		this.searchedScopes = new ArrayDeque<IScope>(4);
@@ -58,13 +58,9 @@ public class EntitySearch {
 		return singletonDefunits.iterator().next();
 	}
 	
-	public ASTNeoNode getSearchReference() {
-		return searchref;
-	}
-	
 	public Module getReferenceModule() {
 		if(searchRefModule == null)
-			searchRefModule = searchref.getModule();
+			searchRefModule = searchRef.getModule();
 		return searchRefModule;
 	}
 	
@@ -101,7 +97,7 @@ public class EntitySearch {
 	}
 
 	public boolean matches(DefUnit defUnit) {
-		return entname.equals(defUnit.getName());
+		return searchName.equals(defUnit.getName());
 	}
 
 
