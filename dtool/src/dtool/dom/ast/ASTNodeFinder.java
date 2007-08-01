@@ -7,12 +7,12 @@ package dtool.dom.ast;
  * An element is picked between element.startPos (inclusive) and  
  * element.endPos (inclusive).   
  */
-public class ASTElementFinder extends ASTNeoUpTreeVisitor {
+public class ASTNodeFinder extends ASTNeoUpTreeVisitor {
 	
 	private int offset; 
 	private ASTNode match;
 	
-	public ASTElementFinder(int offsetCursor) {
+	public ASTNodeFinder(int offsetCursor) {
 		this.offset = offsetCursor;
 		this.match = null;
 	}
@@ -21,7 +21,7 @@ public class ASTElementFinder extends ASTNeoUpTreeVisitor {
 		if(offset < root.getStartPos() || offset > root.getEndPos() ) 
 			return null;
 		
-		ASTElementFinder aef = new ASTElementFinder(offset);
+		ASTNodeFinder aef = new ASTNodeFinder(offset);
 		root.accept(aef);
 		return aef.match;
 	}

@@ -43,6 +43,11 @@ public class DefinitionMixin extends DefUnit  {
 		}
 		visitor.endVisit(this);
 	}
+	
+	@Override
+	public String toStringAsDefUnit() {
+		return toString() + " - " + getModule().md;
+	}
 
 	@Override
 	public EArcheType getArcheType() {

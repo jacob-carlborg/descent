@@ -13,7 +13,7 @@ import descent.internal.core.dom.TypeDArray;
 import dtool.dom.ast.ASTNode;
 import dtool.dom.ast.IASTNeoVisitor;
 import dtool.dom.definitions.DefUnit;
-import dtool.refmodel.EntitySearch;
+import dtool.refmodel.DefUnitSearch;
 import dtool.refmodel.IScope;
 import dtool.refmodel.IScopeNode;
 import dtool.refmodel.IntrinsicDefUnit;
@@ -39,7 +39,7 @@ public class TypeDynArray extends Entity {
 	}
 
 	public Collection<DefUnit> findTargetDefUnits(boolean findFirstOnly) {
-		return EntitySearch.wrapResult(IntrinsicDynArray.instance);
+		return DefUnitSearch.wrapResult(IntrinsicDynArray.instance);
 	}
 	
 	

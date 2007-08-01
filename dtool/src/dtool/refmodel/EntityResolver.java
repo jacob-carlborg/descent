@@ -19,7 +19,7 @@ import dtool.refmodel.pluginadapters.IModuleResolver;
 
 /**
  * Class with static methods encoding D entity lookup rules.
- * Uses an {@link EntitySearch} during lookups.
+ * Uses an {@link DefUnitSearch} during lookups.
  * A scope plus it's outer scopes is called an extended scope.
  */
 public class EntityResolver {
@@ -36,8 +36,7 @@ public class EntityResolver {
 		try {
 			return modResolver.findModule(refModule, packageName, moduleName);
 		} catch (CoreException ce) {
-			ExceptionAdapter.unchecked(ce);
-			return null;
+			throw ExceptionAdapter.unchecked(ce);
 		}
 	}
 	
@@ -49,14 +48,14 @@ public class EntityResolver {
 
 	/** Searches for DefUnit's with the given name in the given scope,
 	 * and then successively in it's outer scopes. 
-	 * Uses an {@link EntitySearch} to give search options and store the 
+	 * Uses an {@link DefUnitSearch} to give search options and store the 
 	 * results.
 	 * The set of matched {@link DefUnit}s must all be visible in the same
 	 * non-extended scope, (altough due to imports, they may originate from 
 	 * different scopes XXX: fix this behavior? This is an ambiguity error in D).
 	 */
 	public static void findDefUnitInExtendedScope(IScopeNode scope,
-			EntitySearch search) {
+			CommonDefUnitSearch search) {
 
 		do {
 			findDefUnitInScope(scope, search);
@@ -76,7 +75,7 @@ public class EntityResolver {
 	}
 
 	private static void findDefUnitInModuleDec(IScopeNode scope,
-			EntitySearch search) {
+			CommonDefUnitSearch search) {
 		//Module module = NodeUtil.getParentModule((ASTNode)scope);
 		Module module = (Module) scope; 
 		DeclarationModule decMod = module.md;
@@ -104,14 +103,14 @@ public class EntityResolver {
 
 	/** Searches for the DefUnit with the given name, in the scope's 
 	 * immediate namespace, secondary namespace (imports), and super scopes. 
-	 * Uses an {@link EntitySearch} to give search options and store the 
+	 * Uses an {@link DefUnitSearch} to give search options and store the 
 	 * results.
 	 * Does not search, if the scope has alread been searched in this search.
 	 * The set of matched {@link DefUnit}s must all be visible in the same
 	 * non-extended scope, (altough due to imports, they may originate from 
 	 * different scopes XXX: fix this behavior? This is an ambiguity error in D).
 	 */
-	public static void findDefUnitInScope(IScope scope, EntitySearch search) {
+	public static void findDefUnitInScope(IScope scope, CommonDefUnitSearch search) {
 		if(search.hasSearched(scope))
 			return;
 		
@@ -138,13 +137,13 @@ public class EntityResolver {
 	}
 	
 
-	private static void findDefUnitInImmediateScope(IScope scope, EntitySearch search) {
+	private static void findDefUnitInImmediateScope(IScope scope, CommonDefUnitSearch search) {
 		Iterator<ASTNode> iter = IteratorUtil.recast(scope.getMembersIterator());
 		
 		findDefUnits(search, iter);
 	}
 
-	private static void findDefUnits(EntitySearch search,
+	private static void findDefUnits(CommonDefUnitSearch search,
 			Iterator<? extends ASTNode> iter) {
 		
 		while(iter.hasNext()) {
@@ -166,14 +165,14 @@ public class EntityResolver {
 		}
 	}
 	
-	private static void findDefUnitInSecondaryScope(IScope scope, EntitySearch search) {
+	private static void findDefUnitInSecondaryScope(IScope scope, CommonDefUnitSearch search) {
 		Iterator<ASTNode> iter = IteratorUtil.recast(scope.getMembersIterator());
 				
 		Module thisModule = scope.getModule();
 		findSecondaryDefUnits(search, iter, thisModule);
 	}
 
-	private static void findSecondaryDefUnits(EntitySearch search,
+	private static void findSecondaryDefUnits(CommonDefUnitSearch search,
 			Iterator<? extends ASTNode> iter, Module thisModule) {
 		
 		Module refsModule = search.getReferenceModule();
@@ -184,19 +183,13 @@ public class EntityResolver {
 			if(elem instanceof DeclarationImport) {
 				DeclarationImport declImport = (DeclarationImport) elem;
 
-				// save current searchingFromAnImport value
-				boolean searchingFromAnImport = search.searchingFromAnImport;
-				
 				if(refsModule != thisModule && !declImport.isTransitive)
 					continue; // Don't consider private imports
 				
-				search.searchingFromAnImport = true;
 				for (ImportFragment impFrag : declImport.imports) {
 					impFrag.searchDefUnit(search);
 					// continue regardless of search.findOnlyOne because of partial packages
 				}
-				// restore previous searchingFromAnImport value
-				search.searchingFromAnImport = searchingFromAnImport;
 
 			} else if (elem instanceof INonScopedBlock) {
 				INonScopedBlock container = ((INonScopedBlock) elem);
@@ -208,13 +201,13 @@ public class EntityResolver {
 	
 	/* ====================  import lookup  ==================== */
 
-	public static void findDefUnitInStaticImport(ImportStatic importStatic, EntitySearch search) {
+	public static void findDefUnitInStaticImport(ImportStatic importStatic, CommonDefUnitSearch search) {
 		DefUnit defunit = importStatic.getDefUnit();
 		if(defunit != null && search.matches(defunit))
 			search.addResult(defunit);
 	}
 
-	public static void findDefUnitInContentImport(ImportContent impContent, EntitySearch search) {
+	public static void findDefUnitInContentImport(ImportContent impContent, CommonDefUnitSearch search) {
 		findDefUnitInStaticImport(impContent, search);
 		//if(search.isScopeFinished()) return;
 

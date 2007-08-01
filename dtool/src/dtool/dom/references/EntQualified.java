@@ -6,7 +6,7 @@ import melnorme.miscutil.tree.TreeVisitor;
 import dtool.dom.ast.ASTNode;
 import dtool.dom.ast.IASTNeoVisitor;
 import dtool.dom.definitions.DefUnit;
-import dtool.refmodel.EntitySearch;
+import dtool.refmodel.DefUnitSearch;
 import dtool.refmodel.EntityResolver;
 import dtool.refmodel.IDefUnitReference;
 import dtool.refmodel.IEntQualified;
@@ -54,7 +54,7 @@ public class EntQualified extends Entity implements IEntQualified {
 		if(defunits == null)
 			return null;
 
-		EntitySearch search = EntitySearch.newSearch(subent.name, this);
+		DefUnitSearch search = new DefUnitSearch(subent.name, this);
 		
 		for (DefUnit unit : defunits) {
 			IScopeNode scope = unit.getMembersScope();

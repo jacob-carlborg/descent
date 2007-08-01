@@ -48,7 +48,11 @@ public class Module extends DefUnit implements IScopeNode {
 		
 		@Override
 		public String toString() {
-			return StringUtil.collToString(packages, ".") + "." + moduleName;
+			String str = StringUtil.collToString(packages, ".");
+			if(str.length() == 0)
+				return moduleName.toString();
+			else
+				return str + "." + moduleName;
 		}
 	}
 
@@ -80,6 +84,10 @@ public class Module extends DefUnit implements IScopeNode {
 
 	public EArcheType getArcheType() {
 		return EArcheType.Module;
+	}
+	
+	public String toStringAsDefUnit() {
+		return toString();
 	}
 	
 	public void setCUnit(IGenericCompilationUnit cunit) {

@@ -12,8 +12,9 @@ import dtool.dom.declarations.DeclarationImport.ImportFragment;
 import dtool.dom.definitions.DefUnit;
 import dtool.dom.definitions.Symbol;
 import dtool.dom.references.EntIdentifier;
+import dtool.refmodel.CommonDefUnitSearch;
 import dtool.refmodel.EntityResolver;
-import dtool.refmodel.EntitySearch;
+import dtool.refmodel.DefUnitSearch;
 import dtool.refmodel.INonScopedBlock;
 import dtool.refmodel.IScope;
 import dtool.refmodel.IScopeNode;
@@ -49,7 +50,7 @@ public class ImportSelective extends ImportFragment implements INonScopedBlock {
 			IScope scope = impSel.moduleEnt.getTargetScope();
 			String name = targetname != null ? targetname.name : defname.name;
 			
-			EntitySearch search = EntitySearch.newSearch(name, impSel.moduleEnt, true);
+			DefUnitSearch search = new DefUnitSearch(name, impSel.moduleEnt, true);
 			EntityResolver.findDefUnitInScope(scope, search);
 			if(search.getDefUnits() == null)
 				return null;
@@ -103,8 +104,9 @@ public class ImportSelective extends ImportFragment implements INonScopedBlock {
 	}
 
 	@Override
-	public void searchDefUnit(EntitySearch options) {
+	public void searchDefUnit(CommonDefUnitSearch options) {
 		// Do nothing. Selective imports do not contribute secondary-space DefUnits
+		// TODO: This is a bug in D, it's not according to the spec.
 	}
 
 }

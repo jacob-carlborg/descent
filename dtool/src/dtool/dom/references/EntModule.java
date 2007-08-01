@@ -9,7 +9,7 @@ import dtool.dom.ast.IASTNeoVisitor;
 import dtool.dom.definitions.DefUnit;
 import dtool.dom.definitions.Module;
 import dtool.refmodel.EntityResolver;
-import dtool.refmodel.EntitySearch;
+import dtool.refmodel.DefUnitSearch;
 import dtool.refmodel.NodeUtil;
 
 /** A module reference (in import declarations only). */
@@ -27,7 +27,7 @@ public class EntModule extends Entity {
 	public Collection<DefUnit> findTargetDefUnits(boolean findOneOnly) {
 		Module originMod = NodeUtil.getParentModule(this);
 		Module targetMod = EntityResolver.findModule(originMod, packageName, moduleName);
-		return EntitySearch.wrapResult(targetMod);
+		return DefUnitSearch.wrapResult(targetMod);
 	}
 	
 	

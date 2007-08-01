@@ -67,4 +67,9 @@ public class DefinitionEnum extends Definition implements IScopeNode {
 		return members.iterator();
 	}
 
+	@Override
+	public String toStringAsDefUnit() {
+		return defname + " - " + getModule().md;
+	}
+
 }

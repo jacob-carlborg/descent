@@ -1,8 +1,9 @@
 package dtool.dom.declarations;
 
 import descent.internal.core.dom.Import;
+import dtool.refmodel.CommonDefUnitSearch;
 import dtool.refmodel.EntityResolver;
-import dtool.refmodel.EntitySearch;
+import dtool.refmodel.DefUnitSearch;
 
 public class ImportContent extends ImportStatic {
 
@@ -11,7 +12,7 @@ public class ImportContent extends ImportStatic {
 	}
 	
 	@Override
-	public void searchDefUnit(EntitySearch options) {
+	public void searchDefUnit(CommonDefUnitSearch options) {
 		EntityResolver.findDefUnitInContentImport(this, options);
 	}
 }

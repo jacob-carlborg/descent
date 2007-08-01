@@ -43,10 +43,19 @@ public abstract class PartialPackageDefUnit extends DefUnit implements IScopeNod
 	public EArcheType getArcheType() {
 		return null;
 	}
+	
+	@Override
+	public String toStringAsDefUnit() {
+		return getName();
+	}
 
 	@Override
 	public void accept0(IASTNeoVisitor visitor) {
-		throw new UnsupportedOperationException();
+	}
+	
+	@Override
+	public Module getModule() {
+		return null;
 	}
 	
 	@Override
@@ -58,6 +67,4 @@ public abstract class PartialPackageDefUnit extends DefUnit implements IScopeNod
 		return null;
 	}
 	
-
-
 }

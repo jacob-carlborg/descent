@@ -6,7 +6,7 @@ import melnorme.miscutil.tree.TreeVisitor;
 import descent.internal.core.dom.Identifier;
 import dtool.dom.ast.IASTNeoVisitor;
 import dtool.dom.definitions.DefUnit;
-import dtool.refmodel.EntitySearch;
+import dtool.refmodel.DefUnitSearch;
 import dtool.refmodel.EntityResolver;
 import dtool.refmodel.IDefUnitReference;
 import dtool.refmodel.IEntQualified;
@@ -44,7 +44,7 @@ public class EntModuleQualified extends Entity implements IEntQualified {
 	}
 	
 	public Collection<DefUnit> findTargetDefUnits(boolean findOneOnly) {
-		EntitySearch search = EntitySearch.newSearch(subent.name, this);
+		DefUnitSearch search = new DefUnitSearch(subent.name, this);
 		IScopeNode scope = NodeUtil.getParentModule(this).getMembersScope();
 		EntityResolver.findDefUnitInScope(scope, search);
 		return search.getDefUnits();

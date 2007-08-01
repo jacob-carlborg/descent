@@ -37,5 +37,11 @@ public class DefinitionAlias extends Definition {
 	public IScopeNode getMembersScope() {
 		return target.getTargetScope();
 	}
+	
+	@Override
+	public String toStringAsDefUnit() {
+		return defname + " -> " + target.toString();
+	}
+
 
 }

@@ -11,7 +11,7 @@ import melnorme.miscutil.tree.TreeVisitor;
 import dtool.dom.ast.ASTNode;
 import dtool.dom.ast.IASTNeoVisitor;
 import dtool.dom.definitions.DefUnit;
-import dtool.refmodel.EntitySearch;
+import dtool.refmodel.DefUnitSearch;
 import dtool.refmodel.IScope;
 import dtool.refmodel.IScopeNode;
 import dtool.refmodel.IntrinsicDefUnit;
@@ -33,7 +33,7 @@ public class TypePointer extends Entity {
 	}
 
 	public Collection<DefUnit> findTargetDefUnits(boolean findFirstOnly) {
-		return EntitySearch.wrapResult(IntrinsicPointer.instance);
+		return DefUnitSearch.wrapResult(IntrinsicPointer.instance);
 	}
 
 	

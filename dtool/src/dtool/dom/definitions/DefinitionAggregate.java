@@ -100,4 +100,10 @@ public class DefinitionAggregate extends Definition implements IScopeNode, IStat
 		return members.iterator();
 	}
 
+	@Override
+	public String toStringAsDefUnit() {
+		return defname + " - " + getModule().md;
+	}
+
+
 }

@@ -11,7 +11,7 @@ import dtool.descentadapter.DescentASTConverter;
 import dtool.dom.ast.ASTNode;
 import dtool.dom.ast.IASTNeoVisitor;
 import dtool.dom.definitions.DefUnit;
-import dtool.refmodel.EntitySearch;
+import dtool.refmodel.DefUnitSearch;
 import dtool.refmodel.IScope;
 import dtool.refmodel.IScopeNode;
 import dtool.refmodel.IntrinsicDefUnit;
@@ -43,7 +43,7 @@ public class TypeFunction extends Entity {
 	}
 
 	public Collection<DefUnit> findTargetDefUnits(boolean findFirstOnly) {
-		return EntitySearch.wrapResult(IntrinsicFunction.instance);
+		return DefUnitSearch.wrapResult(IntrinsicFunction.instance);
 	}
 
 	

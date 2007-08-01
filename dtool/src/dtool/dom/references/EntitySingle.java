@@ -5,7 +5,7 @@ import java.util.Collection;
 import melnorme.miscutil.Assert;
 import dtool.descentadapter.DescentASTConverter;
 import dtool.dom.definitions.DefUnit;
-import dtool.refmodel.EntitySearch;
+import dtool.refmodel.DefUnitSearch;
 import dtool.refmodel.EntityResolver;
 import dtool.refmodel.IEntQualified;
 import dtool.refmodel.IScopeNode;
@@ -32,7 +32,7 @@ public abstract class EntitySingle extends Entity {
 				Assert.isTrue(parent.getRoot() == this);
 			}
 		}
-		EntitySearch search = EntitySearch.newSearch(name, this, findOneOnly);
+		DefUnitSearch search = new DefUnitSearch(name, this, findOneOnly);
 		IScopeNode scope = NodeUtil.getOuterScope(this);
 		EntityResolver.findDefUnitInExtendedScope(scope, search);
 		return search.getDefUnits();

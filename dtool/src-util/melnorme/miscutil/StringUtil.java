@@ -40,7 +40,8 @@ public final class StringUtil {
 	
 	
 	/**
-	 * Prints a Collection with given separator String
+	 * Returns a String of the given Collection elements with the 
+	 * given separator String.
 	 */	
 	public static String collToString(Collection<?> coll, String sep) {
 		//if(coll == null) return "<null>";

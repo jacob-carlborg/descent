@@ -3,6 +3,7 @@ package dtool.dom.definitions;
 import java.util.Iterator;
 import java.util.List;
 
+import melnorme.miscutil.StringUtil;
 import melnorme.miscutil.tree.TreeVisitor;
 
 import descent.internal.core.dom.FuncDeclaration;
@@ -78,11 +79,17 @@ public class DefinitionFunction extends Definition implements IScopeNode {
 
 	@Override
 	public String toString() {
-		String str = "";
-		for(FunctionParameter param : params) {
-			str = str + param.type + ",";
-		}
+		String str = StringUtil.collToString(params, ",");
+		/*for (int i = 0; i < params.length; i++) {
+			str += params.get(i).type ;
+			 str += ",";
+		}*/
 		return super.toString() +"("+ str +")";
+	}
+	
+	@Override
+	public String toStringAsDefUnit() {
+		return toString() + "  " + rettype;
 	}
 	
 	public List<IScope> getSuperScopes() {

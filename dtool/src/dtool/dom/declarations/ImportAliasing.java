@@ -14,7 +14,8 @@ import dtool.dom.ast.IASTNeoVisitor;
 import dtool.dom.declarations.DeclarationImport.ImportFragment;
 import dtool.dom.definitions.DefUnit;
 import dtool.dom.definitions.Symbol;
-import dtool.refmodel.EntitySearch;
+import dtool.refmodel.CommonDefUnitSearch;
+import dtool.refmodel.DefUnitSearch;
 import dtool.refmodel.INonScopedBlock;
 import dtool.refmodel.IScopeNode;
 
@@ -72,8 +73,9 @@ public class ImportAliasing extends ImportFragment implements INonScopedBlock {
 	}
 
 	@Override
-	public void searchDefUnit(EntitySearch options) {
-		// Do nothing. Selective imports do not contribute secondary-space DefUnits
+	public void searchDefUnit(CommonDefUnitSearch options) {
+		// Do nothing. Aliasing imports do not contribute secondary-space DefUnits
+		// TODO: this is a bug in D, it's not according to spec.
 	}
 
 	public Iterator<? extends ASTNode> getMembersIterator() {

@@ -1,5 +1,6 @@
 package dtool.dom.definitions;
 
+import descent.internal.core.dom.AggregateDeclaration;
 import descent.internal.core.dom.Dsymbol;
 import descent.internal.core.dom.Identifier;
 import dtool.dom.ast.ASTNeoNode;
@@ -59,6 +60,11 @@ public abstract class DefUnit extends ASTNeoNode {
 	@Override
 	public String toString() {
 		return getName();
+	}
+	
+	/** Returns a more detailed representation of this defunit. */
+	public String toStringAsDefUnit() {
+		return getName() + " - " + getModule().md;
 	}
 
 	/** Gets the archtype (the kind) of this DefUnit. */

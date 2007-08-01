@@ -33,6 +33,11 @@ public class DefinitionTypedef extends Definition {
 	public EArcheType getArcheType() {
 		return EArcheType.Enum;
 	}
+	
+	@Override
+	public String toStringAsDefUnit() {
+		return defname + " -> " + type.toString() + " - " + getModule().md;
+	}
 
 	@Override
 	public IScopeNode getMembersScope() {

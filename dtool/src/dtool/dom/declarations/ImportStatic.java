@@ -8,8 +8,9 @@ import descent.internal.core.dom.Import;
 import dtool.dom.ast.IASTNeoVisitor;
 import dtool.dom.declarations.DeclarationImport.ImportFragment;
 import dtool.dom.definitions.DefUnit;
+import dtool.refmodel.CommonDefUnitSearch;
 import dtool.refmodel.EntityResolver;
-import dtool.refmodel.EntitySearch;
+import dtool.refmodel.DefUnitSearch;
 
 public class ImportStatic extends ImportFragment {
 	
@@ -45,7 +46,7 @@ public class ImportStatic extends ImportFragment {
 	}
 
 	@Override
-	public void searchDefUnit(EntitySearch search) {
+	public void searchDefUnit(CommonDefUnitSearch search) {
 		EntityResolver.findDefUnitInStaticImport(this, search);
 	}
 	

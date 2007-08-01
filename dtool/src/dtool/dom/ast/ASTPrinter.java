@@ -25,12 +25,10 @@ public class ASTPrinter extends ASTNeoUpTreeVisitor {
 		return name += " " + node.toString();
 	}
 	
-	
 	/** #toStringAST(elem, true) */
 	public static String toStringAST(ASTNode elem) {
 		return toStringAST(elem, true);
 	}	
-	
 
 	/** Gets a String representation of the whole AST tree. */
 	public static String toStringAST(ASTNode elem, boolean recurseUnconverted) {

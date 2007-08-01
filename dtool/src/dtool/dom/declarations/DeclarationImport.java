@@ -17,7 +17,8 @@ import dtool.dom.ast.ASTNode;
 import dtool.dom.ast.IASTNeoVisitor;
 import dtool.dom.definitions.DefUnit;
 import dtool.dom.references.EntModule;
-import dtool.refmodel.EntitySearch;
+import dtool.refmodel.CommonDefUnitSearch;
+import dtool.refmodel.DefUnitSearch;
 import dtool.refmodel.INonScopedBlock;
 
 /**
@@ -91,7 +92,7 @@ public class DeclarationImport extends ASTNeoNode implements INonScopedBlock {
 			this.moduleEnt = new EntModule(elem.qName);
 		}
 
-		public abstract void searchDefUnit(EntitySearch options);
+		public abstract void searchDefUnit(CommonDefUnitSearch options);
 
 	}
 	
