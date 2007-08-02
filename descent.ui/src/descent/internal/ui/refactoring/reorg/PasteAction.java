@@ -248,7 +248,7 @@ public class PasteAction extends SelectionDispatchAction{
 					return;
 				
 				fPackageName= IPackageFragment.DEFAULT_PACKAGE_NAME;
-				ASTParser parser= ASTParser.newParser(AST.LATEST);
+				ASTParser parser= ASTParser.newParser(AST.D2);
 				parser.setProject(fJavaProject);
 				parser.setSource(fText.toCharArray());
 				CompilationUnit unit= (CompilationUnit) parser.createAST(null);

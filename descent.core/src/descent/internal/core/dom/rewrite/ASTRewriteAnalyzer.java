@@ -809,7 +809,7 @@ public final class ASTRewriteAnalyzer extends ASTVisitor {
 		
 	final TokenScanner getScanner() {
 		if (this.tokenScanner == null) {
-			IScanner scanner= ToolFactory.createScanner(true, true, false, false, AST.LATEST);
+			IScanner scanner= ToolFactory.createScanner(true, true, false, false, AST.D2);
 			scanner.setSource(this.content);
 			this.tokenScanner= new TokenScanner(scanner);
 		}

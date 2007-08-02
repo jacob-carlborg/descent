@@ -229,7 +229,7 @@ class DefaultCommentMapper {
 		this.scanner.lexer.tokenizeWhiteSpace = true;
 
 		// Start unit visit
-		DefaultASTVisitor commentVisitor = new CommentMapperVisitor();
+		GenericVisitor commentVisitor = new CommentMapperVisitor();
 		unit.accept(commentVisitor);
 		
 		// Reduce leading arrays if necessary
@@ -534,7 +534,7 @@ class DefaultCommentMapper {
 		return extended;
 	}
 
-	class CommentMapperVisitor extends DefaultASTVisitor {
+	class CommentMapperVisitor extends GenericVisitor {
 
 		HashMap waitingSiblings = new HashMap(10);
 

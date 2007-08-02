@@ -23,6 +23,7 @@ import descent.core.dom.DoStatement;
 import descent.core.dom.EnumDeclaration;
 import descent.core.dom.ExpressionStatement;
 import descent.core.dom.ForStatement;
+import descent.core.dom.ForeachRangeStatement;
 import descent.core.dom.ForeachStatement;
 import descent.core.dom.GotoCaseStatement;
 import descent.core.dom.GotoStatement;
@@ -384,6 +385,20 @@ public class Statement_Test extends Parser_Test {
 		assertEquals("x", ((SimpleName) stm.getExpression()).getIdentifier());
 		
 		assertTrue(stm.isReverse());
+	}
+	
+	public void testForeachRange() {
+		String s = " foreach(a; 1 .. 3) { }";
+		ForeachRangeStatement stm = (ForeachRangeStatement) parseStatement(s, AST.D2);
+		
+		assertEquals(ASTNode.FOREACH_RANGE_STATEMENT, stm.getNodeType());
+		assertPosition(stm, 1, s.length() - 1);
+		
+		assertFalse(stm.isReverse());
+		
+		assertEquals("a", stm.getArgument().getName().toString());
+		assertEquals("1", stm.getFromExpression().toString());
+		assertEquals("3", stm.getToExpression().toString());
 	}
 	
 	public void testForeachWithDeclaration() {
@@ -774,7 +789,7 @@ public class Statement_Test extends Parser_Test {
 	public void testParseStatements() {
 		String s = "if(true) { } if (false) { } if (1) { }";
 		
-		ASTParser parser = ASTParser.newParser(AST.LATEST);
+		ASTParser parser = ASTParser.newParser(AST.D1);
 		parser.setKind(ASTParser.K_STATEMENTS);
 		parser.setSource(s.toCharArray());
 		Block block = (Block) parser.createAST(null);

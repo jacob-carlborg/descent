@@ -91,7 +91,8 @@ import descent.internal.ui.javaeditor.ASTProvider;
 
 public class ASTView extends ViewPart implements IShowInSource {
 	
-	private static final int D1= AST.LATEST;
+	private static final int D1= AST.D1;
+	private static final int D2= AST.D2;
 
 	private class ASTViewSelectionProvider implements ISelectionProvider {
 		ListenerList fListeners= new ListenerList(ListenerList.IDENTITY);
@@ -805,7 +806,8 @@ public class ASTView extends ViewPart implements IShowInSource {
 			
 		fASTVersionToggleActions= new ASTLevelToggle[] {
 				//new ASTLevelToggle("AST Level &2.0", JLS2), //$NON-NLS-1$
-				new ASTLevelToggle("AST Level &3.0", D1) //$NON-NLS-1$
+				new ASTLevelToggle("AST Level &1.0", D1), //$NON-NLS-1$
+				new ASTLevelToggle("AST Level &2.0", D2) //$NON-NLS-1$
 		};
 	}
 	

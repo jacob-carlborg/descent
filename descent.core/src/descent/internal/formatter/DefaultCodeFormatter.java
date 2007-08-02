@@ -313,8 +313,8 @@ public class DefaultCodeFormatter extends CodeFormatter {
 			optionsMap.put(CompilerOptions.OPTION_ReportUnusedDeclaredThrownException, CompilerOptions.IGNORE);
 			optionsMap.put(CompilerOptions.OPTION_ReportUnusedDeclaredThrownExceptionWhenOverriding, CompilerOptions.DISABLED); 
 			optionsMap.put(CompilerOptions.OPTION_ReportUnqualifiedFieldAccess, CompilerOptions.IGNORE);
-			optionsMap.put(CompilerOptions.OPTION_Compliance, CompilerOptions.VERSION_1_4);
-			optionsMap.put(CompilerOptions.OPTION_TargetPlatform, CompilerOptions.VERSION_1_2); 
+			optionsMap.put(CompilerOptions.OPTION_Compliance, CompilerOptions.VERSION_2_x);
+			optionsMap.put(CompilerOptions.OPTION_TargetPlatform, CompilerOptions.VERSION_2_x); 
 			optionsMap.put(CompilerOptions.OPTION_TaskTags, ""); //$NON-NLS-1$
 			optionsMap.put(CompilerOptions.OPTION_TaskPriorities, ""); //$NON-NLS-1$
 			optionsMap.put(CompilerOptions.OPTION_TaskCaseSensitive, CompilerOptions.DISABLED);
@@ -329,7 +329,7 @@ public class DefaultCodeFormatter extends CodeFormatter {
 		if (sourceOption != null) {
 			this.defaultCompilerOptions.put(CompilerOptions.OPTION_Source, sourceOption);
 		} else {
-			this.defaultCompilerOptions.put(CompilerOptions.OPTION_Source, CompilerOptions.VERSION_1_3);
+			this.defaultCompilerOptions.put(CompilerOptions.OPTION_Source, CompilerOptions.VERSION_2_x);
 		}
 		return this.defaultCompilerOptions;		
 	}

@@ -304,7 +304,7 @@ public ISourceRange getNameRange() throws JavaModelException {
 		final int length= range.getLength();
 		
 		if (length > 0) {
-			IScanner scanner= ToolFactory.createScanner(true, false, false, false, AST.LATEST);
+			IScanner scanner= ToolFactory.createScanner(true, false, false, false, AST.D2);
 			scanner.setSource(buf.getText(start, length).toCharArray());
 			try {
 				int nameOffset= -1;

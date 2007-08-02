@@ -97,9 +97,24 @@ public class SourceElementParser extends ASTVisitor {
 		this.requestor = requestor;
 		this.options = options;
 	}
+	
+	private int getASTlevel() {
+		String source = (String) options.getMap().get(CompilerOptions.OPTION_Source);
+		if (source == null || source.length() == 0) {
+			return AST.D2;
+		} else if (source.equals(CompilerOptions.VERSION_2_x)) {
+			return AST.D2;
+		} else if (source.equals(CompilerOptions.VERSION_1_x)) {
+			return AST.D1;
+		} else if (source.equals(CompilerOptions.VERSION_0_x)) {
+			return AST.D0;
+		} else {
+			throw new IllegalStateException();
+		}
+	}
 
 	public CompilationUnit parseCompilationUnit(ICompilationUnit unit, boolean resolveBindings) {
-		ASTParser parser = ASTParser.newParser(AST.LATEST);
+		ASTParser parser = ASTParser.newParser(getASTlevel());
 		parser.setSource(unit);
 		parser.setCompilerOptions(options.getMap());
 		parser.setResolveBindings(resolveBindings);
@@ -113,7 +128,7 @@ public class SourceElementParser extends ASTVisitor {
 	}
 	
 	public CompilationUnit parseCompilationUnit(descent.internal.compiler.env.ICompilationUnit unit, boolean resolveBindings) {
-		ASTParser parser = ASTParser.newParser(AST.LATEST);
+		ASTParser parser = ASTParser.newParser(getASTlevel());
 		parser.setSource(unit.getContents());
 		parser.setCompilerOptions(options.getMap());
 		parser.setResolveBindings(resolveBindings);
@@ -190,12 +205,32 @@ public class SourceElementParser extends ASTVisitor {
 		
 		char[][] types = new char[arguments.size()][];
 		for(int i = 0; i < arguments.size(); i++) {
-			Type type = arguments.get(i).getType();
-			if (type == null) {
-				types[i] = CharOperation.NO_CHAR;
-			} else {
-				types[i] = type.toString().toCharArray();
+			Argument argument = arguments.get(i);
+			
+			StringBuilder sb = new StringBuilder();
+			switch(argument.getPassageMode()) {
+			case DEFAULT: break;
+			case IN: sb.append("in"); break;
+			case INOUT: sb.append("inout"); break;
+			case LAZY: sb.append("lazy"); break;
+			case OUT: sb.append("out"); break;
+			case REF: sb.append("ref"); break;
+			case CONST: sb.append("const"); break;
+			case FINAL: sb.append("final"); break;
+			case INVARIANT: sb.append("invariant"); break;
+			case SCOPE: sb.append("scope"); break;
+			case STATIC: sb.append("static"); break;
 			}
+			
+			Type type = argument.getType();
+			if (type != null) {
+				if (sb.length() > 0) {
+					sb.append(" ");
+				}
+				sb.append(type.toString());
+			}
+			
+			types[i] = sb.toString().toCharArray();
 		}
 		return types;
 	}

@@ -6,6 +6,7 @@ package descent.core.dom;
  * Type:
  *    ArrayType
  *    DelegateType
+ *    ModifiedType
  *    PointerType
  *    PrimitiveType
  *    QualifiedType

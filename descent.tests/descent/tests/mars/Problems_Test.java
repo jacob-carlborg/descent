@@ -612,7 +612,7 @@ public class Problems_Test extends Parser_Test {
 	}
 
 	private IProblem getProblem(String s) {
-		return getProblem(s, AST.LATEST);
+		return getProblem(s, AST.D1);
 	}
 	
 	private IProblem getProblem(String s, int apiLevel) {
@@ -624,7 +624,7 @@ public class Problems_Test extends Parser_Test {
 	}
 
 	private IProblem[] getProblems(String s, int expected) {
-		return getProblems(s, expected, AST.LATEST);
+		return getProblems(s, expected, AST.D1);
 	}
 	
 	private IProblem[] getProblems(String s, int expected, int apiLevel) {

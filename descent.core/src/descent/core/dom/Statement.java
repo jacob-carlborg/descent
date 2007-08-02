@@ -16,6 +16,7 @@ package descent.core.dom;
  *    EmptyStatement
  *    ExpressionStatement
  *    ForeachStatement
+ *    ForeachRangeStatement
  *    ForStatement
  *    GotoCaseStatement
  *    GotoDefaultStatement

@@ -33,6 +33,24 @@ public class GenericVisitor extends ASTVisitor {
 	}
 	
 	@Override
+	public void endVisit(AssociativeArrayLiteral node) {
+		
+		endVisitNode(node);
+	}
+	
+	@Override
+	public void endVisit(AssociativeArrayLiteralFragment node) {
+		
+		endVisitNode(node);
+	}
+	
+	@Override
+	public void endVisit(ForeachRangeStatement node) {
+		
+		endVisitNode(node);
+	}
+	
+	@Override
 	public void endVisit(EmptyStatement node) {
 		
 		endVisitNode(node);
@@ -1559,6 +1577,84 @@ public class GenericVisitor extends ASTVisitor {
 	public boolean visit(EmptyStatement node) {
 		
 		return visitNode(node);
+	}
+	
+	@Override
+	public boolean visit(AssociativeArrayLiteral node) {
+		
+		return visitNode(node);
+	}
+	
+	@Override
+	public boolean visit(AssociativeArrayLiteralFragment node) {
+		
+		return visitNode(node);
+	}
+	
+	@Override
+	public boolean visit(ForeachRangeStatement node) {
+		
+		return visitNode(node);
+	}
+	
+	@Override
+	public boolean visit(FileImportExpression node) {
+		return visitNode(node);
+	}
+	
+	@Override
+	public boolean visit(MixinDeclaration node) {
+		return visitNode(node);
+	}
+	
+	@Override
+	public boolean visit(MixinExpression node) {
+		return visitNode(node);
+	}
+	
+	@Override
+	public boolean visit(TraitsExpression node) {
+		return visitNode(node);
+	}
+	
+	@Override
+	public void endVisit(FileImportExpression node) {
+		endVisitNode(node);
+	}
+	
+	@Override
+	public void endVisit(MixinDeclaration node) {
+		endVisitNode(node);
+	}
+	
+	@Override
+	public void endVisit(MixinExpression node) {
+		endVisitNode(node);
+	}
+	
+	@Override
+	public void endVisit(TraitsExpression node) {
+		endVisitNode(node);
+	}
+	
+	@Override
+	public boolean visit(CastToModifierExpression node) {
+		return visitNode(node);
+	}
+	
+	@Override
+	public void endVisit(CastToModifierExpression node) {
+		endVisitNode(node);
+	}
+	
+	@Override
+	public boolean visit(ModifiedType node) {
+		return visitNode(node);
+	}
+	
+	@Override
+	public void endVisit(ModifiedType node) {
+		endVisitNode(node);
 	}
 
 }

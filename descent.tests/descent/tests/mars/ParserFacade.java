@@ -28,7 +28,7 @@ public class ParserFacade {
 	}
 	
 	public Statement parseStatement(String source) {
-		return parseStatement(source, AST.LATEST);
+		return parseStatement(source, AST.D1);
 	}
 	
 	public Statement parseStatement(String source, int apiLevel) {
@@ -55,7 +55,7 @@ public class ParserFacade {
 	}
 	
 	public Initializer parseInitializer(String source) {
-		ASTParser parser = ASTParser.newParser(AST.LATEST);
+		ASTParser parser = ASTParser.newParser(AST.D1);
 		parser.setKind(ASTParser.K_INITIALIZER);
 		parser.setSource(source.toCharArray());
 		return (Initializer) parser.createAST(null);

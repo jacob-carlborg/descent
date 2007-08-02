@@ -136,177 +136,6 @@ public final class JavaCodeScanner extends AbstractJavaScanner {
 		}
 	}
 
-	/**
-	 * An annotation rule matches the '@' symbol, any following whitespace and
-	 * optionally a following <code>interface</code> keyword.
-	 *
-	 * It does not match if there is a comment between the '@' symbol and
-	 * the identifier. See https://bugs.eclipse.org/bugs/show_bug.cgi?id=82452
-	 *
-	 * @since 3.1
-	 */
-	private static class AnnotationRule implements IRule, ISourceVersionDependent {
-		/**
-		 * A resettable scanner supports marking a position in a scanner and
-		 * unreading back to the marked position.
-		 */
-		private static final class ResettableScanner implements ICharacterScanner {
-			private final ICharacterScanner fDelegate;
-			private int fReadCount;
-
-			/**
-			 * Creates a new resettable scanner that will forward calls
-			 * to <code>scanner</code>, but store a marked position.
-			 *
-			 * @param scanner the delegate scanner
-			 */
-			public ResettableScanner(final ICharacterScanner scanner) {
-				Assert.isNotNull(scanner);
-				fDelegate= scanner;
-				mark();
-			}
-
-			/*
-			 * @see org.eclipse.jface.text.rules.ICharacterScanner#getColumn()
-			 */
-			public int getColumn() {
-				return fDelegate.getColumn();
-			}
-
-			/*
-			 * @see org.eclipse.jface.text.rules.ICharacterScanner#getLegalLineDelimiters()
-			 */
-			public char[][] getLegalLineDelimiters() {
-				return fDelegate.getLegalLineDelimiters();
-			}
-
-			/*
-			 * @see org.eclipse.jface.text.rules.ICharacterScanner#read()
-			 */
-			public int read() {
-				int ch= fDelegate.read();
-				if (ch != ICharacterScanner.EOF)
-					fReadCount++;
-				return ch;
-			}
-
-			/*
-			 * @see org.eclipse.jface.text.rules.ICharacterScanner#unread()
-			 */
-			public void unread() {
-				if (fReadCount > 0)
-					fReadCount--;
-				fDelegate.unread();
-			}
-
-			/**
-			 * Marks an offset in the scanned content.
-			 */
-			public void mark() {
-				fReadCount= 0;
-			}
-
-			/**
-			 * Resets the scanner to the marked position.
-			 */
-			public void reset() {
-				while (fReadCount > 0)
-					unread();
-
-				while (fReadCount < 0)
-					read();
-			}
-		}
-
-		private final IWhitespaceDetector fWhitespaceDetector= new JavaWhitespaceDetector();
-		private final IWordDetector fWordDetector= new JavaWordDetector();
-		private final IToken fInterfaceToken;
-		private final IToken fAtToken;
-		private final String fVersion;
-		private boolean fIsVersionMatch;
-
-		/**
-		 * Creates a new rule.
-		 *
-		 * @param interfaceToken the token to return if
-		 *        <code>'@\s*interface'</code> is matched
-		 * @param atToken the token to return if <code>'@'</code>
-		 *        is matched, but not <code>'@\s*interface'</code>
-		 * @param version the lowest <code>JavaCore.COMPILER_SOURCE</code>
-		 *        version that this rule is enabled
-		 * @param currentVersion the current
-		 *        <code>JavaCore.COMPILER_SOURCE</code> version
-		 */
-		public AnnotationRule(IToken interfaceToken, Token atToken, String version, String currentVersion) {
-			fInterfaceToken= interfaceToken;
-			fAtToken= atToken;
-			fVersion= version;
-			setSourceVersion(currentVersion);
-		}
-
-		/*
-		 * @see org.eclipse.jface.text.rules.IRule#evaluate(org.eclipse.jface.text.rules.ICharacterScanner)
-		 */
-		public IToken evaluate(ICharacterScanner scanner) {
-			if (!fIsVersionMatch)
-				return Token.UNDEFINED;
-
-			ResettableScanner resettable= new ResettableScanner(scanner);
-			if (resettable.read() == '@')
-				return readAnnotation(resettable);
-
-			resettable.reset();
-			return Token.UNDEFINED;
-		}
-
-		private IToken readAnnotation(ResettableScanner scanner) {
-			scanner.mark();
-			skipWhitespace(scanner);
-			if (readInterface(scanner)) {
-				return fInterfaceToken;
-			} else {
-				scanner.reset();
-				return fAtToken;
-			}
-		}
-
-		private boolean readInterface(ICharacterScanner scanner) {
-			int ch= scanner.read();
-			int i= 0;
-			while (i < INTERFACE.length() && INTERFACE.charAt(i) == ch) {
-				i++;
-				ch= scanner.read();
-			}
-			if (i < INTERFACE.length())
-				return false;
-			
-			if (fWordDetector.isWordPart((char) ch))
-				return false;
-			
-			if (ch != ICharacterScanner.EOF)
-				scanner.unread();
-			
-			return true;
-		}
-
-		private boolean skipWhitespace(ICharacterScanner scanner) {
-			while (fWhitespaceDetector.isWhitespace((char) scanner.read())) {
-				// do nothing
-			}
-
-			scanner.unread();
-			return true;
-		}
-
-		/*
-		 * @see descent.internal.ui.text.ISourceVersionDependent#setSourceVersion(java.lang.String)
-		 */
-		public void setSourceVersion(String version) {
-			fIsVersionMatch= fVersion.compareTo(version) <= 0; 
-		}
-
-	}
-
 	private static final String SOURCE_VERSION= JavaCore.COMPILER_SOURCE;
 
 	static String[] fgKeywords= {
@@ -335,7 +164,6 @@ public final class JavaCodeScanner extends AbstractJavaScanner {
 		"__traits", //$NON-NLS-1$
 	};
 
-	private static final String INTERFACE= "interface";  //$NON-NLS-1$
 	private static final String RETURN= "return"; //$NON-NLS-1$
 
 	private static String[] fgTypes= { 
@@ -354,19 +182,15 @@ public final class JavaCodeScanner extends AbstractJavaScanner {
 
 	private static String[] fgConstants= { "false", "null", "true" }; //$NON-NLS-3$ //$NON-NLS-2$ //$NON-NLS-1$
 
-	private static final String ANNOTATION_BASE_KEY= PreferenceConstants.EDITOR_SEMANTIC_HIGHLIGHTING_PREFIX + SemanticHighlightings.ANNOTATION;
-	private static final String ANNOTATION_COLOR_KEY= ANNOTATION_BASE_KEY + PreferenceConstants.EDITOR_SEMANTIC_HIGHLIGHTING_COLOR_SUFFIX;
-
 	private static String[] fgTokenProperties= {
 		IJavaColorConstants.JAVA_KEYWORD,
 		IJavaColorConstants.JAVA_STRING,
 		IJavaColorConstants.JAVA_DEFAULT,
 		IJavaColorConstants.JAVA_KEYWORD_RETURN,
-		IJavaColorConstants.JAVA_OPERATOR,
-		ANNOTATION_COLOR_KEY,
+		IJavaColorConstants.JAVA_OPERATOR
 	};
 
-	private List fVersionDependentRules= new ArrayList(3);
+	private List fVersionDependentRules= new ArrayList(1);
 
 	/**
 	 * Creates a Java code scanner
@@ -403,31 +227,20 @@ public final class JavaCodeScanner extends AbstractJavaScanner {
 
 		String version= getPreferenceStore().getString(SOURCE_VERSION);
 
-		// Add JLS3 rule for /@\s*interface/ and /@\s*\w+/
-		token= getToken(ANNOTATION_COLOR_KEY);
-		AnnotationRule atInterfaceRule= new AnnotationRule(getToken(IJavaColorConstants.JAVA_KEYWORD), token, JavaCore.VERSION_1_x, version);
-		rules.add(atInterfaceRule);
-		fVersionDependentRules.add(atInterfaceRule);
-
 		// Add word rule for new keywords, 4077
 		JavaWordDetector wordDetector= new JavaWordDetector();
 		token= getToken(IJavaColorConstants.JAVA_DEFAULT);
 		CombinedWordRule combinedWordRule= new CombinedWordRule(wordDetector, token);
 
 		token= getToken(IJavaColorConstants.JAVA_DEFAULT);
-		VersionedWordMatcher j14Matcher= new VersionedWordMatcher(token, JavaCore.VERSION_1_x, version);
+		VersionedWordMatcher j2Matcher= new VersionedWordMatcher(token, JavaCore.VERSION_2_x, version);
 
 		token= getToken(IJavaColorConstants.JAVA_KEYWORD);
+		for (int i=0; i<fgKeywords2.length; i++)
+			j2Matcher.addWord(fgKeywords2[i], token);
 
-		combinedWordRule.addWordMatcher(j14Matcher);
-		fVersionDependentRules.add(j14Matcher);
-
-		token= getToken(IJavaColorConstants.JAVA_DEFAULT);
-		VersionedWordMatcher j15Matcher= new VersionedWordMatcher(token, JavaCore.VERSION_2_x, version);
-		token= getToken(IJavaColorConstants.JAVA_KEYWORD);
-
-		combinedWordRule.addWordMatcher(j15Matcher);
-		fVersionDependentRules.add(j15Matcher);
+		combinedWordRule.addWordMatcher(j2Matcher);
+		fVersionDependentRules.add(j2Matcher);
 
 		// Add rule for operators and brackets
 		token= getToken(IJavaColorConstants.JAVA_OPERATOR);
@@ -445,11 +258,6 @@ public final class JavaCodeScanner extends AbstractJavaScanner {
 		for (int i=0; i<fgKeywords.length; i++)
 			wordRule.addWord(fgKeywords[i], token);
 		
-		if (version.equals(JavaCore.VERSION_2_x)) {
-			for (int i=0; i<fgKeywords2.length; i++)
-				wordRule.addWord(fgKeywords2[i], token);
-		}
-		
 		for (int i=0; i<fgTypes.length; i++)
 			wordRule.addWord(fgTypes[i], token);
 		for (int i=0; i<fgConstants.length; i++)
@@ -461,42 +269,6 @@ public final class JavaCodeScanner extends AbstractJavaScanner {
 
 		setDefaultReturnToken(getToken(IJavaColorConstants.JAVA_DEFAULT));
 		return rules;
-	}
-	
-	/*
-	 * @see descent.internal.ui.text.AbstractJavaScanner#getBoldKey(java.lang.String)
-	 */
-	protected String getBoldKey(String colorKey) {
-		if ((ANNOTATION_COLOR_KEY).equals(colorKey))
-			return ANNOTATION_BASE_KEY + PreferenceConstants.EDITOR_SEMANTIC_HIGHLIGHTING_BOLD_SUFFIX;
-		return super.getBoldKey(colorKey);
-	}
-	
-	/*
-	 * @see descent.internal.ui.text.AbstractJavaScanner#getItalicKey(java.lang.String)
-	 */
-	protected String getItalicKey(String colorKey) {
-		if ((ANNOTATION_COLOR_KEY).equals(colorKey))
-			return ANNOTATION_BASE_KEY + PreferenceConstants.EDITOR_SEMANTIC_HIGHLIGHTING_ITALIC_SUFFIX;
-		return super.getItalicKey(colorKey);
-	}
-	
-	/*
-	 * @see descent.internal.ui.text.AbstractJavaScanner#getStrikethroughKey(java.lang.String)
-	 */
-	protected String getStrikethroughKey(String colorKey) {
-		if ((ANNOTATION_COLOR_KEY).equals(colorKey))
-			return ANNOTATION_BASE_KEY + PreferenceConstants.EDITOR_SEMANTIC_HIGHLIGHTING_STRIKETHROUGH_SUFFIX;
-		return super.getStrikethroughKey(colorKey);
-	}
-	
-	/*
-	 * @see descent.internal.ui.text.AbstractJavaScanner#getUnderlineKey(java.lang.String)
-	 */
-	protected String getUnderlineKey(String colorKey) {
-		if ((ANNOTATION_COLOR_KEY).equals(colorKey))
-			return ANNOTATION_BASE_KEY + PreferenceConstants.EDITOR_SEMANTIC_HIGHLIGHTING_UNDERLINE_SUFFIX;
-		return super.getUnderlineKey(colorKey);
 	}
 
 	/*

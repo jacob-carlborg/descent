@@ -1,10 +1,23 @@
 package descent.internal.compiler.parser;
 
 import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.eclipse.core.runtime.Assert;
 
 public abstract class Type extends ASTNode {
+	
+	public static class Modification {
+		public int startPosition;
+		public int length;
+		public TOK tok;
+		public Modification(TOK tok, int startPosition, int length) {
+			this.startPosition = startPosition;
+			this.length = length;
+			this.tok = tok;			
+		}
+	}
 	
 	public final static Type tvoid = new TypeBasic(TY.Tvoid);
 	public final static Type tint8 = new TypeBasic(TY.Tint8);
@@ -48,6 +61,8 @@ public abstract class Type extends ASTNode {
 	public Type pto;		// merged pointer to this type
 	public Type rto;		// reference to this type
 	public Type arrayof;	// array of this type
+	
+	public List<Modification> modifications;
 	
 	public Type(TY ty, Type next) {
 		this.ty = ty;
@@ -503,6 +518,22 @@ public abstract class Type extends ASTNode {
 	public Expression getTypeInfo(Scope sc) {
 		// TODO semantic
 		return null;
+	}
+
+	public Type makeConst(int startPosition, int length) {
+		if (this.modifications == null) {
+			this.modifications = new ArrayList<Modification>();
+		}
+		this.modifications.add(new Modification(TOK.TOKconst, startPosition, length));
+		return this;
+	}
+
+	public Type makeInvariant(int startPosition, int length) {
+		if (this.modifications == null) {
+			this.modifications = new ArrayList<Modification>();
+		}
+		this.modifications.add(new Modification(TOK.TOKinvariant, startPosition, length));
+		return this;
 	}
 
 }

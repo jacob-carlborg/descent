@@ -718,6 +718,8 @@ public abstract class JavaModelOperation implements IWorkspaceRunnable, IProgres
 				}
 				
 				executeOperation();
+			} catch (Exception e) {
+				e.printStackTrace();
 			} finally {
 				if (this.isTopLevelOperation()) {
 					this.runPostActions();

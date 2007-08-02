@@ -84,6 +84,7 @@ public class JavaBuilder extends IncrementalProjectBuilder implements IResourceD
 	public static void build(IResource resource, IProgressMonitor monitor) throws CoreException {
 		if (resource.getType() == IResource.FILE) {
 			monitor.beginTask("", 1);
+			System.out.println(resource);
 			build((IFile) resource);
 			monitor.done();
 		} else if (resource instanceof IContainer) {
@@ -111,7 +112,7 @@ public class JavaBuilder extends IncrementalProjectBuilder implements IResourceD
 			String source = unit.getSource();
 			
 			Parser parser = new Parser(
-					AST.newAST(AST.LATEST), 
+					AST.newAST(getApiLevel(javaProject)), 
 					source.toCharArray(), 
 					0, 
 					source.length(),
@@ -186,6 +187,21 @@ public class JavaBuilder extends IncrementalProjectBuilder implements IResourceD
 			marker.setAttribute(IMarker.CHAR_START, problem.getSourceStart());
 			marker.setAttribute(IMarker.CHAR_END, problem.getSourceEnd()); // for markers it's + 1
 			marker.setAttribute(IMarker.LINE_NUMBER, problem.getSourceLineNumber());
+		}
+	}
+	
+	private static int getApiLevel(IJavaProject project) {
+		String source = project.getOption(JavaCore.COMPILER_SOURCE, true);
+		if (source == null || source.length() == 0) {
+			return AST.D2;
+		} else if (source.equals(JavaCore.VERSION_2_x)) {
+			return AST.D2;
+		} else if (source.equals(JavaCore.VERSION_1_x)) {
+			return AST.D1;
+		} else if (source.equals(JavaCore.VERSION_0_x)) {
+			return AST.D0;
+		} else {
+			throw new IllegalStateException();
 		}
 	}
 	

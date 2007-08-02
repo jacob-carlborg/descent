@@ -279,7 +279,7 @@ public ISourceRange[] getJavadocRanges() throws JavaModelException {
 	final int start= range.getOffset();
 	final int length= range.getLength();
 	
-	ASTParser parser = ASTParser.newParser(AST.LATEST);
+	ASTParser parser = ASTParser.newParser(AST.D2);
 	parser.setSource(buf.getText(start, length).toCharArray());
 	parser.setKind(ASTParser.K_COMPILATION_UNIT);
 	descent.core.dom.CompilationUnit unit = (descent.core.dom.CompilationUnit) parser.createAST(null);

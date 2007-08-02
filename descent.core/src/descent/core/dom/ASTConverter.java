@@ -8,6 +8,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 
 import descent.core.dom.FunctionLiteralDeclarationExpression.Syntax;
 import descent.core.dom.IsTypeSpecializationExpression.TypeSpecialization;
+import descent.core.dom.Modifier.ModifierKeyword;
 import descent.internal.compiler.parser.*;
 import descent.internal.compiler.parser.ASTNode;
 import descent.internal.compiler.parser.AliasDeclaration;
@@ -29,6 +30,7 @@ import descent.internal.compiler.parser.EnumMember;
 import descent.internal.compiler.parser.Expression;
 import descent.internal.compiler.parser.ForStatement;
 import descent.internal.compiler.parser.ForeachStatement;
+import descent.internal.compiler.parser.ForeachRangeStatement;
 import descent.internal.compiler.parser.GotoCaseStatement;
 import descent.internal.compiler.parser.GotoDefaultStatement;
 import descent.internal.compiler.parser.GotoStatement;
@@ -59,6 +61,7 @@ import descent.internal.compiler.parser.VoidInitializer;
 import descent.internal.compiler.parser.VolatileStatement;
 import descent.internal.compiler.parser.WhileStatement;
 import descent.internal.compiler.parser.WithStatement;
+import descent.internal.compiler.parser.Type.Modification;
 
 /**
  * Internal class for converting internal compiler ASTs into public ASTs.
@@ -223,6 +226,8 @@ public class ASTConverter {
 			return convert((ForStatement) symbol);
 		case ASTNode.FOREACH_STATEMENT:
 			return convert((ForeachStatement) symbol);
+		case ASTNode.FOREACH_RANGE_STATEMENT:
+			return convert((ForeachRangeStatement) symbol);
 		case ASTNode.FUNC_DECLARATION:
 			return convert((FuncDeclaration) symbol);
 		case ASTNode.FUNC_EXP:
@@ -372,6 +377,8 @@ public class ASTConverter {
 			return convert((ThisExp) symbol);
 		case ASTNode.THROW_STATEMENT:
 			return convert((ThrowStatement) symbol);
+		case ASTNode.TRAITS_EXP:
+			return convert((TraitsExp) symbol);
 		case ASTNode.TRY_CATCH_STATEMENT:
 			return convert((TryCatchStatement) symbol);
 		case ASTNode.TRY_FINALLY_STATEMENT:
@@ -433,6 +440,18 @@ public class ASTConverter {
 			return convert((BinExp) symbol, InfixExpression.Operator.XOR);
 		}
 		return null;
+	}
+	
+	public descent.core.dom.TraitsExpression convert(TraitsExp a) {
+		descent.core.dom.TraitsExpression b = new descent.core.dom.TraitsExpression(ast);
+		b.setName(convert(a.ident));
+		if (a.args != null) {
+			for(ASTNode node : a.args) {
+				b.arguments().add(convert(node));
+			}
+		}
+		b.setSourceRange(a.start, a.length);
+		return b;
 	}
 	
 	public AssociativeArrayLiteral convert(AssocArrayLiteralExp a) {
@@ -936,7 +955,7 @@ public class ASTConverter {
 		return b;
 	}
 	
-	public descent.core.dom.SliceType convert(TypeSlice a) {
+	public descent.core.dom.Type convert(TypeSlice a) {
 		descent.core.dom.SliceType b = new descent.core.dom.SliceType(ast);
 		b.setComponentType(convert(a.next));
 		if (a.lwr != null) {
@@ -946,10 +965,10 @@ public class ASTConverter {
 			b.setToExpression(convert(a.upr));
 		}
 		b.setSourceRange(a.start, a.length);
-		return b;
+		return convertModifiedType(a, b);
 	}
 	
-	public descent.core.dom.StaticArrayType convert(TypeSArray a) {
+	public descent.core.dom.Type convert(TypeSArray a) {
 		descent.core.dom.StaticArrayType b = new descent.core.dom.StaticArrayType(ast);
 		b.setComponentType(convert(a.next));
 		if (a.dim != null) {
@@ -959,7 +978,7 @@ public class ASTConverter {
 			}
 		}
 		b.setSourceRange(a.start, a.length);
-		return b;
+		return convertModifiedType(a, b);
 	}
 	
 	public descent.core.dom.Type convert(TypePointer a) {
@@ -970,12 +989,12 @@ public class ASTConverter {
 			b.setVariadic(((TypeFunction) a.next).varargs != 0);
 			convertArguments(b.arguments(), ((TypeFunction) a.next).parameters);
 			b.setSourceRange(a.start, a.length);
-			return b;
+			return convertModifiedType(a, b);
 		} else {
 			PointerType b = new PointerType(ast);
 			b.setComponentType(convert(a.next));
 			b.setSourceRange(a.start, a.length);
-			return b;
+			return convertModifiedType(a, b);
 		}
 	}
 	
@@ -991,29 +1010,29 @@ public class ASTConverter {
 		return b;
 	}
 	
-	public descent.core.dom.DelegateType convert(TypeDelegate a) {
+	public descent.core.dom.Type convert(TypeDelegate a) {
 		descent.core.dom.DelegateType b = new descent.core.dom.DelegateType(ast);
 		b.setFunctionPointer(false);
 		b.setReturnType(convert(((TypeFunction) a.next).next));
 		b.setVariadic(((TypeFunction) a.next).varargs != 0);
 		convertArguments(b.arguments(), ((TypeFunction) a.next).parameters);
 		b.setSourceRange(a.start, a.length);
-		return b;
+		return convertModifiedType(a, b);
 	}
 	
-	public descent.core.dom.AssociativeArrayType convert(TypeAArray a) {
+	public descent.core.dom.Type convert(TypeAArray a) {
 		descent.core.dom.AssociativeArrayType b = new descent.core.dom.AssociativeArrayType(ast);
 		b.setComponentType(convert(a.next));
 		b.setKeyType(convert(a.index));
 		b.setSourceRange(a.start, a.length);
-		return b;
+		return convertModifiedType(a, b);
 	}
 	
-	public descent.core.dom.DynamicArrayType convert(TypeDArray a) {
+	public descent.core.dom.Type convert(TypeDArray a) {
 		descent.core.dom.DynamicArrayType b = new descent.core.dom.DynamicArrayType(ast);
 		b.setComponentType(convert(a.next));
 		b.setSourceRange(a.start, a.length);
-		return b;
+		return convertModifiedType(a, b);
 	}
 	
 	public descent.core.dom.VariableDeclarationFragment convert(VarDeclaration a) {
@@ -1108,7 +1127,9 @@ public class ASTConverter {
 	
 	public descent.core.dom.InvariantDeclaration convert(InvariantDeclaration a) {
 		descent.core.dom.InvariantDeclaration b = new descent.core.dom.InvariantDeclaration(ast);
-		b.setBody(convert(a.fbody));
+		if (a.fbody != null) {
+			b.setBody(convert(a.fbody));
+		}
 		fillDeclaration(b, a);
 		b.setSourceRange(a.start, a.length);
 		return b;
@@ -1200,6 +1221,21 @@ public class ASTConverter {
 		}
 		convertArguments(b.arguments(), a.arguments);
 		b.setExpression(convert(a.aggr));
+		if (a.body != null) {
+			b.setBody(convert(a.body));
+		}
+		b.setSourceRange(a.start, a.length);
+		return b;
+	}
+	
+	public descent.core.dom.ForeachRangeStatement convert(ForeachRangeStatement a) {
+		descent.core.dom.ForeachRangeStatement b = new descent.core.dom.ForeachRangeStatement(ast);
+		if (a.op == TOK.TOKforeach_reverse) {
+			b.setReverse(true);
+		}
+		b.setArgument(convert(a.arg));
+		b.setFromExpression(convert(a.lwr));
+		b.setToExpression(convert(a.upr));
 		if (a.body != null) {
 			b.setBody(convert(a.body));
 		}
@@ -1860,6 +1896,11 @@ public class ASTConverter {
 		case None: b.setPassageMode(descent.core.dom.Argument.PassageMode.DEFAULT); break;
 		case Out: b.setPassageMode(descent.core.dom.Argument.PassageMode.OUT); break;
 		case Ref: b.setPassageMode(descent.core.dom.Argument.PassageMode.REF); break;
+		case Const: b.setPassageMode(descent.core.dom.Argument.PassageMode.CONST); break;
+		case Final: b.setPassageMode(descent.core.dom.Argument.PassageMode.FINAL); break;
+		case Invariant: b.setPassageMode(descent.core.dom.Argument.PassageMode.INVARIANT); break;
+		case Scope: b.setPassageMode(descent.core.dom.Argument.PassageMode.SCOPE); break;
+		case Static: b.setPassageMode(descent.core.dom.Argument.PassageMode.STATIC); break;
 		}
 		if (a.type != null) {
 			b.setType(convert(a.type));
@@ -2005,14 +2046,34 @@ public class ASTConverter {
 		return b;
 	}
 	
-	public descent.core.dom.CastExpression convert(CastExp a) {
-		descent.core.dom.CastExpression b = new descent.core.dom.CastExpression(ast);
-		if (a.to != null) {
-			b.setType(convert(a.to));
+	public descent.core.dom.Expression convert(CastExp a) {
+		if (a.tok == null) {
+			descent.core.dom.CastExpression b = new descent.core.dom.CastExpression(ast);
+			if (a.to != null) {
+				b.setType(convert(a.to));
+			}
+			b.setExpression(convert(a.e1));
+			b.setSourceRange(a.start, a.length);
+			return b;
+		} else {
+			descent.core.dom.CastToModifierExpression b = new descent.core.dom.CastToModifierExpression(ast);
+			
+			descent.core.dom.Modifier modifier = new descent.core.dom.Modifier(ast);
+			if (a.tok == TOK.TOKconst) {
+				// const.length() == 5
+				modifier.setModifierKeyword(ModifierKeyword.CONST_KEYWORD);
+				modifier.setSourceRange(a.modifierStart, 5);
+			} else {
+				// invariant.length() == 9
+				modifier.setModifierKeyword(ModifierKeyword.INVARIANT_KEYWORD);
+				modifier.setSourceRange(a.modifierStart, 9);
+			}
+			b.setModifier(modifier);
+			
+			b.setExpression(convert(a.e1));
+			b.setSourceRange(a.start, a.length);
+			return b;
 		}
-		b.setExpression(convert(a.e1));
-		b.setSourceRange(a.start, a.length);
-		return b;
 	}
 	
 	public descent.core.dom.CatchClause convert(Catch a) {
@@ -2172,9 +2233,9 @@ public class ASTConverter {
 			b = null;
 		}
 		if (a.idents == null || a.idents.isEmpty()) {			
-			return b;
+			return convertModifiedType(a, b);
 		} else {
-			return convertQualifiedType(b, a, a.start);
+			return convertModifiedType(a, convertQualifiedType(b, a, a.start));
 		}
 	}
 	
@@ -2183,10 +2244,10 @@ public class ASTConverter {
 		b.setExpression(convert(a.exp));
 		if (a.idents == null || a.idents.size() == 0) {
 			b.setSourceRange(a.start, a.length);
-			return b;
+			return convertModifiedType(a, b);
 		} else {
 			b.setSourceRange(a.typeofStart, a.typeofLength);
-			return convertQualifiedType(b, a, a.start);
+			return convertModifiedType(a, convertQualifiedType(b, a, a.start));
 		}
 	}
 	
@@ -2202,7 +2263,7 @@ public class ASTConverter {
 		if (a.idents != null && a.idents.size() > 0) {
 			return convertQualifiedType(b, a, a.start);
 		}
-		return b;
+		return convertModifiedType(a, b);
 	}
 	
 	public descent.core.dom.Type convertQualifiedType(descent.core.dom.Type q, TypeQualified a, int start) {
@@ -2236,7 +2297,7 @@ public class ASTConverter {
 		return b;
 	}
 	
-	public descent.core.dom.PrimitiveType convert(TypeBasic a) {
+	public descent.core.dom.Type convert(TypeBasic a) {
 		descent.core.dom.PrimitiveType b = new descent.core.dom.PrimitiveType(ast);
 		switch(a.ty) {
 		case Tvoid: b.setPrimitiveTypeCode(PrimitiveType.Code.VOID); break;
@@ -2264,9 +2325,35 @@ public class ASTConverter {
 		case Tdchar: b.setPrimitiveTypeCode(PrimitiveType.Code.DCHAR); break;
 		}
 		b.setSourceRange(a.start, a.length);
-		return b;
+		return convertModifiedType(a, b);
 	}
 	
+	private descent.core.dom.Type convertModifiedType(Type a, descent.core.dom.Type b) {
+		if (a.modifications != null) {
+			for(Modification modification : a.modifications) {
+				ModifiedType c = new ModifiedType(ast);
+				
+				descent.core.dom.Modifier modifier = new descent.core.dom.Modifier(ast);
+				if (modification.tok == TOK.TOKconst) {
+					// const.length() == 5
+					modifier.setModifierKeyword(ModifierKeyword.CONST_KEYWORD);
+					modifier.setSourceRange(modification.startPosition, 5);
+				} else {
+					// invariant.length() == 9
+					modifier.setModifierKeyword(ModifierKeyword.INVARIANT_KEYWORD);
+					modifier.setSourceRange(modification.startPosition, 9);
+				}
+				c.setModifier(modifier);
+				
+				c.setComponentType(b);
+				c.setSourceRange(modification.startPosition, modification.length);
+				b = c;
+			}
+		}
+		
+		return b;
+	}
+
 	public descent.core.dom.Modifier convert(descent.internal.compiler.parser.Modifier a) {
 		descent.core.dom.Modifier b = new descent.core.dom.Modifier(ast);
 		switch(a.tok) {

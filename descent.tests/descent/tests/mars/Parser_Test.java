@@ -66,7 +66,7 @@ public abstract class Parser_Test extends TestCase {
 	}
 	
 	protected Expression parseExpression(String source) {
-		Expression exp = new ParserFacade().parseExpression(source, AST.LATEST);
+		Expression exp = new ParserFacade().parseExpression(source, AST.D1);
 		return exp;
 	}
 	
@@ -81,7 +81,7 @@ public abstract class Parser_Test extends TestCase {
 	}
 	
 	protected Statement parseStatement(String source) {
-		return parseStatement(source, AST.LATEST);
+		return parseStatement(source, AST.D1);
 	}
 	
 	protected Statement parseStatement(String source, int apiLevel) {
@@ -102,12 +102,12 @@ public abstract class Parser_Test extends TestCase {
 	}
 	
 	protected ModuleDeclaration getModuleDeclaration(String source) {
-		ModuleDeclaration md = new ParserFacade().parseCompilationUnit(source, AST.LATEST).getModuleDeclaration();
+		ModuleDeclaration md = new ParserFacade().parseCompilationUnit(source, AST.D1).getModuleDeclaration();
 		return md;
 	}
 	
 	protected CompilationUnit getCompilationUnit(String source) {
-		return getCompilationUnit(source, AST.LATEST);
+		return getCompilationUnit(source, AST.D1);
 	}
 	
 	protected CompilationUnit getCompilationUnit(String source, int apiLevel) {

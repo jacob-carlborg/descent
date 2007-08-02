@@ -990,7 +990,7 @@ public final class ImportRewrite {
 			
 			CompilationUnit usedAstRoot= this.astRoot;
 			if (usedAstRoot == null) {
-				ASTParser parser= ASTParser.newParser(AST.LATEST);
+				ASTParser parser= ASTParser.newParser(AST.D2);
 				parser.setSource(this.compilationUnit);
 				//parser.setFocalPosition(0); // reduced AST
 				parser.setResolveBindings(false);

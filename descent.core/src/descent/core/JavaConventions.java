@@ -23,6 +23,7 @@ import descent.core.compiler.CharOperation;
 import descent.core.compiler.IScanner;
 import descent.core.compiler.ITerminalSymbols;
 import descent.core.compiler.InvalidInputException;
+import descent.core.dom.AST;
 import descent.internal.compiler.lookup.TypeConstants;
 import descent.internal.compiler.parser.ScannerHelper;
 import descent.internal.compiler.util.SuffixConstants;
@@ -41,7 +42,7 @@ public final class JavaConventions {
 
 	private final static char DOT= '.';
 	private static final String PACKAGE_INFO = new String(TypeConstants.PACKAGE_INFO_NAME);
-	private final static IScanner SCANNER = ToolFactory.createScanner(true, true, true, false);
+	private final static IScanner SCANNER = ToolFactory.createScanner(true, true, true, false, AST.D2);
 
 	private JavaConventions() {
 		// Not instantiable

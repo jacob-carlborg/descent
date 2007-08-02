@@ -1,9 +1,11 @@
 package descent.tests.mars;
 
+import descent.core.dom.AST;
 import descent.core.dom.ASTNode;
 import descent.core.dom.AssociativeArrayType;
 import descent.core.dom.DelegateType;
 import descent.core.dom.DynamicArrayType;
+import descent.core.dom.ModifiedType;
 import descent.core.dom.NumberLiteral;
 import descent.core.dom.PointerType;
 import descent.core.dom.PrimitiveType;
@@ -59,6 +61,33 @@ public class Type_Test extends Parser_Test {
 		assertEquals(ASTNode.POINTER_TYPE, type.getNodeType());
 		assertPosition(type, 1, 5);
 		assertPosition(type.getComponentType(), 1, 3);
+	}
+	
+	public void testModifiedTypeInvariant() {
+		ModifiedType type = (ModifiedType) getType("invariant(int)", AST.D2);
+		assertEquals(ASTNode.MODIFIED_TYPE, type.getNodeType());
+		assertEquals("invariant", type.getModifier().toString());
+		assertPosition(type.getModifier(), 1, 9);
+		assertPosition(type, 1, 14);
+		assertPosition(type.getComponentType(), 11, 3);
+	}
+	
+	public void testModifiedTypeConst() {
+		ModifiedType type = (ModifiedType) getType("const(int)", AST.D2);
+		assertEquals(ASTNode.MODIFIED_TYPE, type.getNodeType());
+		assertEquals("const", type.getModifier().toString());
+		assertPosition(type.getModifier(), 1, 5);
+		assertPosition(type, 1, 10);
+		assertPosition(type.getComponentType(), 7, 3);
+	}
+	
+	public void testModifiedTypeRecursive() {
+		ModifiedType type = (ModifiedType) getType("invariant(const(int))", AST.D2);
+		assertEquals(ASTNode.MODIFIED_TYPE, type.getNodeType());
+		assertEquals("invariant", type.getModifier().toString());
+		type = (ModifiedType) type.getComponentType();
+		assertEquals(ASTNode.MODIFIED_TYPE, type.getNodeType());
+		assertEquals("const", type.getModifier().toString());
 	}
 	
 	public void testDynamicArrayType() {
@@ -246,13 +275,17 @@ public class Type_Test extends Parser_Test {
 	}
 	
 	private ASTNode getType(String type) {
-		return getType(type, "", 0);
+		return getType(type, "", 0, AST.D1);
 	}
 	
-	private ASTNode getType(String type, String extra, int problems) {
+	private ASTNode getType(String type, int apiLevel) {
+		return getType(type, "", 0, apiLevel);
+	}
+	
+	private ASTNode getType(String type, String extra, int problems, int apiLevel) {
 		String s = " " + type + " x; " + extra;
 		
-		VariableDeclaration var = (VariableDeclaration) getSingleDeclarationWithProblems(s, problems);
+		VariableDeclaration var = (VariableDeclaration) getSingleDeclarationWithProblems(s, problems, apiLevel);
 		return var.getType();
 	}
 

@@ -7,6 +7,7 @@ import descent.core.dom.ASTNode;
 import descent.core.dom.Argument;
 import descent.core.dom.ConstructorDeclaration;
 import descent.core.dom.FunctionDeclaration;
+import descent.core.dom.ModifiedType;
 import descent.core.dom.NumberLiteral;
 import descent.core.dom.Argument.PassageMode;
 
@@ -269,14 +270,32 @@ public class Function_Test extends Parser_Test {
 		assertPosition(f, 1, s.length() - 1);
 	}
 	
-	/* TODO D2
 	public void testFunctionWithOneArgumentD2_1() {
 		String s = " void func(invariant(int) a) { }";
 		FunctionDeclaration f = (FunctionDeclaration) getSingleDeclarationNoProblems(s, AST.D2);
 		assertEquals(1, f.arguments().size());
 		Argument argument = f.arguments().get(0);
-		assertEquals(PassageMode.REF, argument.getPassageMode());
+ 		ModifiedType type = (ModifiedType) argument.getType();
+ 		assertEquals("invariant", type.getModifier().toString());
 	}
-	*/
+	
+	public void testFunctionWithOneArgumentD2_2() {
+		String s = " void func(const(int) a) { }";
+		FunctionDeclaration f = (FunctionDeclaration) getSingleDeclarationNoProblems(s, AST.D2);
+		assertEquals(1, f.arguments().size());
+		Argument argument = f.arguments().get(0);
+ 		ModifiedType type = (ModifiedType) argument.getType();
+ 		assertEquals("const", type.getModifier().toString());
+	}
+	
+	public void testFunctionWithOneArgumentD2_3() {
+		String s = " void func(static int a) { }";
+		getCompilationUnit(s);
+	}
+	
+	public void testFunctionWithOneArgumentD2_4() {
+		String s = " void func(private int a) { }";
+		getCompilationUnit(s);
+	}
 
 }

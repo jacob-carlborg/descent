@@ -2440,7 +2440,11 @@ public class CodeFormatterVisitor extends ASTVisitor
 			Declaration cur = declarations.get(i);
 			
 			// Determine how many lines to put above this declararation
-			int blankLines;
+			int blankLines = 0;
+			
+			if (i != 0) {
+				blankLines++;
+			}
 			
 			// No blank lines before first (yet; this will be configurable)
 			if(prev == null || 
@@ -2457,18 +2461,20 @@ public class CodeFormatterVisitor extends ASTVisitor
 			   (prev instanceof VersionAssignment && cur instanceof VersionAssignment) ||
 			   (prev instanceof DebugAssignment && cur instanceof VersionAssignment) ||
 			   (prev instanceof VersionAssignment && cur instanceof DebugAssignment)
-			  )
-				blankLines = 0;
-			else
-				blankLines = 1;
+			  ) {
+				// nothing
+			} else {
+				blankLines++;
+			}
 			
-			if(blankLines > 0)
-				scribe.printEmptyLines(blankLines);
+			// I don't know why, but this works
+			if(blankLines == 1) {
+				scribe.printNewLine();
+			} else if (blankLines > 1) {
+				scribe.printEmptyLines(blankLines - 1);
+			}
 			
 			cur.accept(this);
-			if (i != len - 1) {
-				scribe.printNewLine();
-			}
 			prev = cur;
 		}
 	}
@@ -2741,19 +2747,15 @@ public class CodeFormatterVisitor extends ASTVisitor
 		int statementsLength = statements.size();
 		if (statementsLength == 0)
 			return;
-		else if (statementsLength == 1)
-		{
-			if(statements.get(0) instanceof BreakStatement && unIndentAtBreak)
+		else if (statementsLength == 1) {
+			if (statements.get(0) instanceof BreakStatement && unIndentAtBreak)
 				scribe.unIndent();
 			statements.get(0).accept(this);
-		}
-		else
-		{
+		} else {
 			Statement previousStatement = statements.get(0);
 			previousStatement.accept(this);
 			int previousStatementNodeType = previousStatement.getNodeType();
-			for (int i = 1; i < statementsLength - 1; i++)
-			{
+			for (int i = 1; i < statementsLength - 1; i++) {
 				Statement statement = statements.get(i);
 				int statementNodeType = statement.getNodeType();
 				if ((previousStatementNodeType == ASTNode.EMPTY_STATEMENT && statementNodeType != ASTNode.EMPTY_STATEMENT)
@@ -2767,11 +2769,11 @@ public class CodeFormatterVisitor extends ASTVisitor
 			if ((previousStatementNodeType == ASTNode.EMPTY_STATEMENT && statementNodeType != ASTNode.EMPTY_STATEMENT)
 					|| (previousStatementNodeType != ASTNode.EMPTY_STATEMENT && statementNodeType != ASTNode.EMPTY_STATEMENT))
 				scribe.printNewLine();
-			if(statement instanceof BreakStatement && unIndentAtBreak)
+			if (statement instanceof BreakStatement && unIndentAtBreak)
 				scribe.unIndent();
 			statement.accept(this);
 		}
-		
+
 		if (insertNewLineAfterLastStatement)
 			scribe.printNewLine();
 	}

@@ -116,13 +116,9 @@ public class CompilerOptions {
 	public static final String DO_NOT_GENERATE = "do not generate"; //$NON-NLS-1$
 	public static final String PRESERVE = "preserve"; //$NON-NLS-1$
 	public static final String OPTIMIZE_OUT = "optimize out"; //$NON-NLS-1$
-	public static final String VERSION_1_1 = "1.1"; //$NON-NLS-1$
-	public static final String VERSION_1_2 = "1.2"; //$NON-NLS-1$
-	public static final String VERSION_1_3 = "1.3"; //$NON-NLS-1$
-	public static final String VERSION_1_4 = "1.4"; //$NON-NLS-1$
-	public static final String VERSION_JSR14 = "jsr14"; //$NON-NLS-1$
-	public static final String VERSION_1_5 = "1.5"; //$NON-NLS-1$
-	public static final String VERSION_1_6 = "1.6"; //$NON-NLS-1$	
+	public static final String VERSION_0_x = "0.x"; //$NON-NLS-1$
+	public static final String VERSION_1_x = "1.x"; //$NON-NLS-1$
+	public static final String VERSION_2_x = "2.x"; //$NON-NLS-1$
 	public static final String ERROR = "error"; //$NON-NLS-1$
 	public static final String WARNING = "warning"; //$NON-NLS-1$
 	public static final String IGNORE = "ignore"; //$NON-NLS-1$

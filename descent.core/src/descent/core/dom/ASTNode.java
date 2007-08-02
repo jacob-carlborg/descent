@@ -1086,6 +1086,34 @@ public abstract class ASTNode {
 	public static final int ASSOCIATIVE_ARRAY_LITERAL_FRAGMENT = 133;
 	
 	/**
+	 * Node type constant indicating a node of type 
+	 * <code>ForeachRangeStatement</code>.
+	 * @see ForeachRangeStatement
+	 */
+	public static final int FOREACH_RANGE_STATEMENT = 134;
+	
+	/**
+	 * Node type constant indicating a node of type 
+	 * <code>TraitsExpression</code>.
+	 * @see TraitsExpression
+	 */
+	public static final int TRAITS_EXPRESSION = 135;
+	
+	/**
+	 * Node type constant indicating a node of type 
+	 * <code>CastToModifierExpression</code>.
+	 * @see CastToModifierExpression
+	 */
+	public static final int CAST_TO_MODIFIER_EXPRESSION = 136;
+	
+	/**
+	 * Node type constant indicating a node of type 
+	 * <code>ModifiedType</code>.
+	 * @see ModifiedType
+	 */
+	public static final int MODIFIED_TYPE = 137;
+	
+	/**
 	 * Returns the node class for the corresponding node type.
 	 * 
 	 * @param nodeType AST node type
@@ -1144,6 +1172,8 @@ public abstract class ASTNode {
 			return CallExpression.class;
 		case CAST_EXPRESSION:
 			return CastExpression.class;
+		case CAST_TO_MODIFIER_EXPRESSION:
+			return CastToModifierExpression.class;
 		case CATCH_CLAUSE:
 			return CatchClause.class;
 		case CHARACTER_LITERAL:
@@ -1194,6 +1224,8 @@ public abstract class ASTNode {
 			return ExpressionStatement.class;
 		case EXTERN_DECLARATION:
 			return ExternDeclaration.class;
+		case FOREACH_RANGE_STATEMENT:
+			return ForeachRangeStatement.class;
 		case FOREACH_STATEMENT:
 			return ForeachStatement.class;
 		case FOR_STATEMENT:
@@ -1232,6 +1264,8 @@ public abstract class ASTNode {
 			return TemplateMixinDeclaration.class;
 		case MODIFIER:
 			return Modifier.class;
+		case MODIFIED_TYPE:
+			return ModifiedType.class;
 		case MODIFIER_DECLARATION:
 			return ModifierDeclaration.class;
 		case MODULE_DECLARATION:
@@ -1312,6 +1346,8 @@ public abstract class ASTNode {
 			return ThisLiteral.class;
 		case THROW_STATEMENT:
 			return ThrowStatement.class;
+		case TRAITS_EXPRESSION:
+			return TraitsExpression.class;
 		case TRY_STATEMENT:
 			return TryStatement.class;
 		case TUPLE_TEMPLATE_PARAMETER:

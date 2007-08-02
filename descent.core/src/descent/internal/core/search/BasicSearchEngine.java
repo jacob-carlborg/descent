@@ -332,7 +332,7 @@ public class BasicSearchEngine {
 	private ASTParser getParser() {
 		if (this.parser == null) {
 			this.compilerOptions = new CompilerOptions(JavaCore.getOptions());
-			this.parser = ASTParser.newParser(AST.LATEST);
+			this.parser = ASTParser.newParser(AST.D2);
 		}
 		return this.parser;
 	}

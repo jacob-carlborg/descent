@@ -9,9 +9,11 @@ package descent.core.dom;
  *    ArrayAccess
  *    ArrayLiteral
  *    AssertExpression
+ *    AssociativeArrayLiteral
  *    BooleanLiteral
  *    CallExpression
  *    CastExpression
+ *    CastToModifierExpression
  *    CharacterLiteral
  *    ConditionalExpression
  *    DeleteExpression

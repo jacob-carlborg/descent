@@ -1,5 +1,6 @@
 package descent.tests.mars;
 
+import descent.core.dom.AST;
 import descent.core.dom.Block;
 import descent.core.dom.CallExpression;
 import descent.core.dom.CompilationUnit;
@@ -183,6 +184,34 @@ public class Bugs_Test extends Parser_Test {
 				"	/** */\r\n" + 
 				"	void b(X)() { }";
 		getCompilationUnit(s);
+	}
+		
+	public void testBug22() {
+		String s = 
+			"version(Win32)\r\n" + 
+			"	    bool _blocking = false;	/// Property to get or set whether the socket is blocking or nonblocking.\r\n" + 
+			"	\r\n" + 
+			"	\r\n" + 
+			"	// For use with accepting().\r\n" + 
+			"	protected this()\r\n" + 
+			"	{\r\n" + 
+			"	}";
+		
+		getCompilationUnit(s);		
+	}
+	
+	public void testBug23() {
+		String s = 
+			"extern(System)\r\n" + 
+			"	    bool _blocking = false;	/// Property to get or set whether the socket is blocking or nonblocking.\r\n" + 
+			"	\r\n" + 
+			"	\r\n" + 
+			"	// For use with accepting().\r\n" + 
+			"	protected this()\r\n" + 
+			"	{\r\n" + 
+			"	}";
+		
+		getCompilationUnit(s, AST.D2);		
 	}
 	
 	public void testDstress_run_t_typeof_16_A() {

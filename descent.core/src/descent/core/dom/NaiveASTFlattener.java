@@ -195,6 +195,11 @@ class NaiveASTFlattener extends ASTVisitor {
 		case LAZY: this.buffer.append("lazy"); break;
 		case OUT: this.buffer.append("out"); break;
 		case REF: this.buffer.append("ref"); break;
+		case CONST: this.buffer.append("const"); break;
+		case FINAL: this.buffer.append("final"); break;
+		case INVARIANT: this.buffer.append("invariant"); break;
+		case SCOPE: this.buffer.append("scope"); break;
+		case STATIC: this.buffer.append("static"); break;
 		}
 		
 		if (node.getType() != null) {
@@ -310,6 +315,22 @@ class NaiveASTFlattener extends ASTVisitor {
 	}
 	
 	@Override
+	public boolean visit(AssociativeArrayLiteral node) {
+		this.buffer.append("[");
+		visitList(node.fragments(), ", ");
+		this.buffer.append("]");
+		return false;
+	}
+	
+	@Override
+	public boolean visit(AssociativeArrayLiteralFragment node) {
+		node.getKey().accept(this);
+		this.buffer.append(":");
+		node.getValue().accept(this);
+		return false;
+	}
+	
+	@Override
 	public boolean visit(BaseClass node) {
 		if (node.getModifier() != null) {
 			node.getModifier().accept(this);
@@ -372,6 +393,15 @@ class NaiveASTFlattener extends ASTVisitor {
 	public boolean visit(CastExpression node) {
 		this.buffer.append("cast(");
 		node.getType().accept(this);
+		this.buffer.append(") ");
+		node.getExpression().accept(this);
+		return false;
+	}
+	
+	@Override
+	public boolean visit(CastToModifierExpression node) {
+		this.buffer.append("cast(");
+		node.getModifier().accept(this);
 		this.buffer.append(") ");
 		node.getExpression().accept(this);
 		return false;
@@ -746,6 +776,24 @@ class NaiveASTFlattener extends ASTVisitor {
 		if (node.getExpression() != null) {
 			node.getExpression().accept(this);
 		}
+		this.buffer.append(") ");
+		node.getBody().accept(this);
+		return false;
+	}
+	
+	@Override
+	public boolean visit(ForeachRangeStatement node) {
+		printIndent();
+		this.buffer.append("foreach");
+		if (node.isReverse()) {
+			this.buffer.append("_reverse");
+		}
+		this.buffer.append("(");
+		node.getArgument().accept(this);
+		this.buffer.append("; ");
+		node.getFromExpression().accept(this);
+		this.buffer.append(" .. ");
+		node.getToExpression().accept(this);
 		this.buffer.append(") ");
 		node.getBody().accept(this);
 		return false;
@@ -1796,6 +1844,25 @@ class NaiveASTFlattener extends ASTVisitor {
 	public boolean visit(EmptyStatement node) {
 		printIndent();
 		this.buffer.append(";");
+		return false;
+	}
+	
+	@Override
+	public boolean visit(TraitsExpression node) {
+		this.buffer.append("__traits(");
+		node.getName().accept(this);
+		this.buffer.append(", ");
+		visitList(node.arguments(), ", ");
+		this.buffer.append(")");
+		return false;
+	}
+	
+	@Override
+	public boolean visit(ModifiedType node) {
+		node.getModifier().accept(this);
+		this.buffer.append("(");
+		node.getComponentType().accept(this);
+		this.buffer.append(")");
 		return false;
 	}
 	

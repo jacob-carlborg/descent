@@ -244,7 +244,7 @@ public final class ASTProvider {
 		}
 	}
 
-	public static final int SHARED_AST_LEVEL= AST.LATEST;
+	public static final int SHARED_AST_LEVEL= AST.D2;
 	public static final boolean SHARED_AST_STATEMENT_RECOVERY= true;
 
 	private static final String DEBUG_PREFIX= "ASTProvider > "; //$NON-NLS-1$

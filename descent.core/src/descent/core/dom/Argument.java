@@ -30,7 +30,17 @@ public class Argument extends ASTNode {
 		/** "lazy" passage mode */
 		LAZY,
 		/** "ref" passage mode */
-		REF
+		REF,
+		/** "scope" passage mode */
+		SCOPE,
+		/** "final" passage mode */
+		FINAL,
+		/** "static" passage mode */
+		STATIC,
+		/** "const" passage mode */
+		CONST,
+		/** "invariant" passage mode */
+		INVARIANT,
 	}
 
 	/**

@@ -58,7 +58,6 @@ public class Modifier_Test extends Parser_Test {
 		}
 	}
 	
-	/* TODO D2
 	public void testAllModifiersAsJava2() {
 		Object[][] objs = {
 				{ "invariant", Modifier.ModifierKeyword.INVARIANT_KEYWORD },
@@ -80,7 +79,6 @@ public class Modifier_Test extends Parser_Test {
 			assertPosition(modifier, 1, ((String) pair[0]).length());
 		}
 	}
-	*/
 	
 	public void testManyProtectionModifiersAsJava() {
 		String s = " private public alias int Bla;";
@@ -279,7 +277,6 @@ public class Modifier_Test extends Parser_Test {
 		}
 	}
 	
-	/* TODO
 	public void testModifiersWithColon2() {
 		Object[][] objs = {
 			{ "invariant", Modifier.ModifierKeyword.INVARIANT_KEYWORD },
@@ -294,7 +291,6 @@ public class Modifier_Test extends Parser_Test {
 			assertEquals(0, modifierDeclaration.modifiers().size());
 		}
 	}
-	*/
 	
 	public void testModifiersWithVar() {
 		Object[][] objs = {
@@ -320,7 +316,6 @@ public class Modifier_Test extends Parser_Test {
 		}
 	}
 	
-	/* TODO D2
 	public void testModifiersWithVar2() {
 		Object[][] objs = {
 			{ "invariant", Modifier.ModifierKeyword.INVARIANT_KEYWORD },
@@ -336,7 +331,6 @@ public class Modifier_Test extends Parser_Test {
 			assertPosition(var.modifiers().get(1), 8, ((String) pair[0]).length());
 		}
 	}
-	*/
 	
 	public void testPosition_bug() {
 		String s = " this() { } public int bla() { }";

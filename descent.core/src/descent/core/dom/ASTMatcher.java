@@ -3484,5 +3484,108 @@ public class ASTMatcher {
 	public boolean match(EmptyStatement node, Object other) {
 		return other instanceof EmptyStatement;
 	}
+	
+	/**
+	 * Returns whether the given node and the other object match.
+	 * <p>
+	 * The default implementation provided by this class tests whether the
+	 * other object is a node of the same type with structurally isomorphic
+	 * child subtrees. Subclasses may override this method as needed.
+	 * </p>
+	 * 
+	 * @param node the node
+	 * @param other the other object, or <code>null</code>
+	 * @return <code>true</code> if the subtree matches, or 
+	 *   <code>false</code> if they do not match or the other object has a
+	 *   different node type or is <code>null</code>
+	 */
+	public boolean match(ForeachRangeStatement node, Object other) {
+		if (!(other instanceof ForeachRangeStatement)) {
+			return false;
+		}
+		ForeachRangeStatement o = (ForeachRangeStatement) other;
+		return (
+			node.isReverse() == o.isReverse()
+			&& safeSubtreeMatch(node.getArgument(), o.getArgument())
+			&& safeSubtreeMatch(node.getFromExpression(), o.getFromExpression())
+			&& safeSubtreeMatch(node.getToExpression(), o.getToExpression())
+			&& safeSubtreeMatch(node.getBody(), o.getBody())
+			);
+	}
+	
+	/**
+	 * Returns whether the given node and the other object match.
+	 * <p>
+	 * The default implementation provided by this class tests whether the
+	 * other object is a node of the same type with structurally isomorphic
+	 * child subtrees. Subclasses may override this method as needed.
+	 * </p>
+	 * 
+	 * @param node the node
+	 * @param other the other object, or <code>null</code>
+	 * @return <code>true</code> if the subtree matches, or 
+	 *   <code>false</code> if they do not match or the other object has a
+	 *   different node type or is <code>null</code>
+	 */
+	public boolean match(TraitsExpression node, Object other) {
+		if (!(other instanceof TraitsExpression)) {
+			return false;
+		}
+		TraitsExpression o = (TraitsExpression) other;
+		return (
+			safeSubtreeMatch(node.getName(), o.getName())
+			&& safeSubtreeListMatch(node.arguments(), o.arguments())
+			);
+	}
+	
+	/**
+	 * Returns whether the given node and the other object match.
+	 * <p>
+	 * The default implementation provided by this class tests whether the
+	 * other object is a node of the same type with structurally isomorphic
+	 * child subtrees. Subclasses may override this method as needed.
+	 * </p>
+	 * 
+	 * @param node the node
+	 * @param other the other object, or <code>null</code>
+	 * @return <code>true</code> if the subtree matches, or 
+	 *   <code>false</code> if they do not match or the other object has a
+	 *   different node type or is <code>null</code>
+	 */
+	public boolean match(CastToModifierExpression node, Object other) {
+		if (!(other instanceof CastToModifierExpression)) {
+			return false;
+		}
+		CastToModifierExpression o = (CastToModifierExpression) other;
+		return (
+			safeSubtreeMatch(node.getModifier(), o.getModifier())
+			&& safeSubtreeMatch(node.getExpression(), o.getExpression())
+			);
+	}
+	
+	/**
+	 * Returns whether the given node and the other object match.
+	 * <p>
+	 * The default implementation provided by this class tests whether the
+	 * other object is a node of the same type with structurally isomorphic
+	 * child subtrees. Subclasses may override this method as needed.
+	 * </p>
+	 * 
+	 * @param node the node
+	 * @param other the other object, or <code>null</code>
+	 * @return <code>true</code> if the subtree matches, or 
+	 *   <code>false</code> if they do not match or the other object has a
+	 *   different node type or is <code>null</code>
+	 */
+	public boolean match(ModifiedType node, Object other) {
+		if (!(other instanceof ModifiedType)) {
+			return false;
+		}
+		ModifiedType o = (ModifiedType) other;
+		return (
+			safeSubtreeMatch(node.getModifier(), o.getModifier())
+			&& safeSubtreeMatch(node.getComponentType(), o.getComponentType())
+			);
+	}
 
 }

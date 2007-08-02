@@ -13,6 +13,7 @@ import descent.core.dom.AssociativeArrayLiteralFragment;
 import descent.core.dom.BooleanLiteral;
 import descent.core.dom.CallExpression;
 import descent.core.dom.CastExpression;
+import descent.core.dom.CastToModifierExpression;
 import descent.core.dom.CharacterLiteral;
 import descent.core.dom.ConditionalExpression;
 import descent.core.dom.DeleteExpression;
@@ -38,6 +39,7 @@ import descent.core.dom.SliceExpression;
 import descent.core.dom.StringLiteral;
 import descent.core.dom.StringsExpression;
 import descent.core.dom.TemplateType;
+import descent.core.dom.TraitsExpression;
 import descent.core.dom.TypeDotIdentifierExpression;
 import descent.core.dom.TypeExpression;
 import descent.core.dom.TypeidExpression;
@@ -406,6 +408,30 @@ public class Expression_Test extends Parser_Test {
 		assertPosition(expr, 1, 13);
 		
 		assertEquals("float", expr.getType().toString());
+		assertEquals("1", ((NumberLiteral) expr.getExpression()).getToken());
+	}
+	
+	public void testCastToModifier() {
+		String s = " cast(invariant) 1";
+		CastToModifierExpression expr = (CastToModifierExpression) parseExpression(s, AST.D2);
+		
+		assertEquals(ASTNode.CAST_TO_MODIFIER_EXPRESSION, expr.getNodeType());
+		assertPosition(expr, 1, s.length() - 1);
+		
+		assertEquals("invariant", expr.getModifier().toString());
+		assertPosition(expr.getModifier(), 6, 9);
+		assertEquals("1", ((NumberLiteral) expr.getExpression()).getToken());
+	}
+	
+	public void testCastToModifier2() {
+		String s = " cast(const) 1";
+		CastToModifierExpression expr = (CastToModifierExpression) parseExpression(s, AST.D2);
+		
+		assertEquals(ASTNode.CAST_TO_MODIFIER_EXPRESSION, expr.getNodeType());
+		assertPosition(expr, 1, s.length() - 1);
+		
+		assertEquals("const", expr.getModifier().toString());
+		assertPosition(expr.getModifier(), 6, 5);
 		assertEquals("1", ((NumberLiteral) expr.getExpression()).getToken());
 	}
 	
@@ -889,6 +915,16 @@ public class Expression_Test extends Parser_Test {
 		StringLiteral e = (StringLiteral) expr.getExpression();
 		assertEquals("\"something\"", e.getEscapedValue());
 		assertPosition(e, 8, 11);
+	}
+	
+	public void testTraitsExpression() throws Exception {
+		String s = " __traits(isAbstractClass, a, b, c)";
+		
+		TraitsExpression exp = (TraitsExpression) parseExpression(s, AST.D2);
+		assertPosition(exp, 1, s.length() - 1);
+		
+		assertEquals("isAbstractClass", exp.getName().toString());
+		assertEquals(3, exp.arguments().size());
 	}
 
 }

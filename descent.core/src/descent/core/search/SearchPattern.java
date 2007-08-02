@@ -467,7 +467,7 @@ public static SearchPattern createAndPattern(SearchPattern leftPattern, SearchPa
  */
 private static SearchPattern createFieldPattern(String patternString, int limitTo, int matchRule) {
 	// TODO JDT search Java -> D
-	IScanner scanner = ToolFactory.createScanner(false /* comment */, false /* pragma */, true /* whitespace */, false /* line separators */, AST.LATEST);
+	IScanner scanner = ToolFactory.createScanner(false /* comment */, false /* pragma */, true /* whitespace */, false /* line separators */, AST.D2);
 	scanner.setSource(patternString.toCharArray());
 	final int InsideDeclaringPart = 1;
 	final int InsideType = 2;
@@ -626,7 +626,7 @@ private static SearchPattern createFieldPattern(String patternString, int limitT
  */
 private static SearchPattern createMethodOrConstructorPattern(String patternString, int limitTo, int matchRule, boolean isConstructor) {
 	
-	IScanner scanner = ToolFactory.createScanner(false /* comment */, false /* pragma */, true /* whitespace */, false /* line separators */, AST.LATEST); 
+	IScanner scanner = ToolFactory.createScanner(false /* comment */, false /* pragma */, true /* whitespace */, false /* line separators */, AST.D2); 
 	scanner.setSource(patternString.toCharArray());
 	final int InsideSelector = 1;
 	final int InsideTypeArguments = 2;
@@ -1581,7 +1581,7 @@ private static SearchPattern createTypePattern(char[] simpleName, char[] package
  */
 private static SearchPattern createTypePattern(String patternString, int limitTo, int matchRule, char indexSuffix) {
 	
-	IScanner scanner = ToolFactory.createScanner(false /* comment */, false /* pragma */, true /* whitespace */, false /* line separators */, AST.LATEST); 
+	IScanner scanner = ToolFactory.createScanner(false /* comment */, false /* pragma */, true /* whitespace */, false /* line separators */, AST.D2); 
 	scanner.setSource(patternString.toCharArray());
 	String type = null;
 	int token;

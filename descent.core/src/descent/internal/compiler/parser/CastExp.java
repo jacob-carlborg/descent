@@ -6,10 +6,20 @@ import static descent.internal.compiler.parser.TOK.*;
 public class CastExp extends UnaExp {
 
 	public Type to;
+	public TOK tok;
+	public int modifierStart;
 
 	public CastExp(Loc loc, Expression e1, Type t) {
 		super(loc, TOK.TOKcast, e1);
 		this.to = t;
+		this.tok = null;
+	}
+	
+	public CastExp(Loc loc, Expression e1, TOK tok, int modifierStart) {
+		super(loc, TOK.TOKcast, e1);
+		this.modifierStart = modifierStart;
+		this.to = null;
+		this.tok = tok;
 	}
 
 	@Override

@@ -207,6 +207,8 @@ public abstract class ASTNode {
 	public final static int UNROLLED_LOOP_STATEMENT = 187;
 	public final static int COMPLEX_EXP = 188;
 	public final static int ASSOC_ARRAY_LITERAL_EXP = 189;
+	public final static int FOREACH_RANGE_STATEMENT = 190;
+	public final static int TRAITS_EXP = 191;
 
 	private static int idn;
 
@@ -983,3 +985,4 @@ public abstract class ASTNode {
 	}
 
 }
+

@@ -1174,7 +1174,7 @@ public class ReorgPolicyFactory {
 		private CompilationUnit createSourceCuNode(){
 			Assert.isTrue(getSourceCu() != null || getSourceClassFile() != null);
 			Assert.isTrue(getSourceCu() == null || getSourceClassFile() == null);
-			ASTParser parser= ASTParser.newParser(AST.LATEST);
+			ASTParser parser= ASTParser.newParser(AST.D2);
 			if (getSourceCu() != null)
 				parser.setSource(getSourceCu());
 			/* TODO JDT UI binary

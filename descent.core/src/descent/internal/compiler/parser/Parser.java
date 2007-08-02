@@ -170,6 +170,11 @@ public class Parser extends Lexer {
 	@SuppressWarnings("unchecked")
 	protected List<Dsymbol> parseModule() {
 	    List<Dsymbol> decldefs = new ArrayList<Dsymbol>();
+	    
+	    // Special treatment if the file starts with Ddoc
+	    if (token.value == TOK.TOKidentifier && token.string.equals("Ddoc")) {
+	    	return decldefs;
+	    }
 
 		// ModuleDeclation leads off
 		if (token.value == TOKmodule) {
@@ -250,11 +255,13 @@ public class Parser extends Lexer {
 		PROT prot;
 		int stc;
 		boolean[] isSingle = new boolean[1];
+		boolean attachLeadingComments = true;
 		
 		decldefs = new ArrayList<Dsymbol>();
 		do {
 			List<DDocComment> lastComments = getLastDocComments();
 			isSingle[0] = false;
+			attachLeadingComments = true;
 			
 			int start = token.ptr;
 			switch (token.value) {
@@ -337,32 +344,30 @@ public class Parser extends Lexer {
 
 			case TOKinvariant:
 				if (ast.apiLevel() == AST.D2) {
-					// TODO D2
-//				    Token t;
-//					t = peek(token);
-//					if (t.value == TOKlparen) {
-//						if (peek(t).value == TOKrparen) {
-//							// invariant() forms start of class invariant
-//							s = parseInvariant();
-//						} else {
-//							// invariant(type)
-//							// goto Ldeclaration;
-//							a = parseDeclarations(lastComments);
-//							decldefs.addAll(a);
-//							continue;
-//						}
-//					} else {
-//						stc = STC.STCinvariant;
-//						
-//						Modifier modifier = new Modifier(token.value);
-//						modifier.setSourceRange(token.ptr, token.len);
-//						
-//						// goto Lstc;
-//						nextToken();
-//						
-//						s= parseDeclDefs_Lstc2(isSingle, modifier, stc, decldefs);
-//					}
-					s = parseInvariant();
+				    Token t;
+					t = peek(token);
+					if (t.value == TOKlparen) {
+						if (peek(t).value == TOKrparen) {
+							// invariant() forms start of class invariant
+							s = parseInvariant();
+						} else {
+							// invariant(type)
+							// goto Ldeclaration;
+							a = parseDeclarations(lastComments);
+							decldefs.addAll(a);
+							continue;
+						}
+					} else {
+						stc = STC.STCinvariant;
+						
+						Modifier modifier = new Modifier(token.value);
+						modifier.setSourceRange(token.ptr, token.len);
+						
+						// goto Lstc;
+						nextToken();
+						
+						s= parseDeclDefs_Lstc2(isSingle, modifier, stc, decldefs);
+					}
 				} else {
 					s = parseInvariant();
 				}
@@ -394,9 +399,9 @@ public class Parser extends Lexer {
 				else if (token.value == TOKtilde) {
 					s = parseStaticDtor();
 				}
-				else if (token.value == TOKassert)
+				else if (token.value == TOKassert) {
 					s = parseStaticAssert();
-				else if (token.value == TOKif) {
+				} else if (token.value == TOKif) {
 					StaticIfCondition condition = parseStaticIfCondition();
 					a = parseBlock();
 					aelse = null;
@@ -405,6 +410,7 @@ public class Parser extends Lexer {
 						aelse = parseBlock();
 					}					
 					s = new StaticIfDeclaration(loc, condition, a, aelse);
+					attachLeadingComments = prevToken.value == TOK.TOKrcurly;
 					break;
 				} else if (token.value == TOKimport) {
 					s = parseImport(true);
@@ -422,21 +428,10 @@ public class Parser extends Lexer {
 
 			case TOKconst:
 				if (apiLevel == AST.D2 && peek(token).value == TOKlparen) {
-					// TODO D2
-//					// goto Ldeclaration
-//					a = parseDeclarations(lastComments);
-//					decldefs.addAll(a);
-//					continue;
-					stc = STC.STCconst;
-					
-					Modifier modifier = new Modifier(token.value);
-					modifier.setSourceRange(token.ptr, token.len);
-					
-					// goto Lstc;
-					nextToken();
-					
-					s= parseDeclDefs_Lstc2(isSingle, modifier, stc, decldefs);
-					break;
+					// goto Ldeclaration
+					a = parseDeclarations(lastComments);
+					decldefs.addAll(a);
+					continue;
 				} else {
 					stc = STC.STCconst;
 					
@@ -485,6 +480,7 @@ public class Parser extends Lexer {
 					LINK linkage = parseLinkage();
 					a = parseBlock();
 					s = new LinkDeclaration(loc, linkage, a);
+					attachLeadingComments = prevToken.value == TOK.TOKrcurly;
 					linkage = linksave;
 					break;
 				}
@@ -504,6 +500,7 @@ public class Parser extends Lexer {
 				
 				a = parseBlock(isSingle);
 				s = new ProtDeclaration(loc, prot, a, modifier, isSingle[0]);
+				attachLeadingComments = prevToken.value == TOK.TOKrcurly;
 				break;
 				
 			case TOKalign: {
@@ -526,6 +523,7 @@ public class Parser extends Lexer {
 				}
 				a = parseBlock();
 				s = new AlignDeclaration(loc, (int) n, a);
+				attachLeadingComments = prevToken.value == TOK.TOKrcurly;
 				break;
 			}
 
@@ -556,6 +554,7 @@ public class Parser extends Lexer {
 				}
 				
 				s = new PragmaDeclaration(loc, ident, args, a);
+				attachLeadingComments = prevToken.value == TOK.TOKrcurly;
 				break;
 			}
 
@@ -587,6 +586,7 @@ public class Parser extends Lexer {
 				}
 				
 				s = new ConditionalDeclaration(loc, debugCondition, a, aelse);
+				attachLeadingComments = prevToken.value == TOK.TOKrcurly;
 				break;
 
 			case TOKversion:
@@ -617,6 +617,7 @@ public class Parser extends Lexer {
 				}
 				
 				s = new ConditionalDeclaration(loc, versionCondition, a, aelse);
+				attachLeadingComments = prevToken.value == TOK.TOKrcurly;
 				break;
 
 			case TOKiftype:		
@@ -630,6 +631,7 @@ public class Parser extends Lexer {
 				}				
 
 				s = new ConditionalDeclaration(loc, iftypeCondition, a, aelse);
+				attachLeadingComments = prevToken.value == TOK.TOKrcurly;
 				break;
 
 			case TOKsemicolon: // empty declaration
@@ -645,7 +647,9 @@ public class Parser extends Lexer {
 				s.setSourceRange(start, prevToken.ptr + prevToken.len - start);
 				s.preDdocs = lastComments;
 				adjustLastDocComment();
-				attachLeadingComments(s);				
+				if (attachLeadingComments) {
+					attachLeadingComments(s);
+				}
 				adjustPossitionAccordingToComments(s, s.preDdocs, s.postDdoc);
 				decldefs.add(s);
 			}
@@ -676,26 +680,21 @@ public class Parser extends Lexer {
 			    case TOKconst:
 			    case TOKinvariant:
 			    	if (apiLevel == AST.D2) {
-			    		// TODO D2
-//						// If followed by a (, it is not a storage class
-//						if (peek(token).value == TOKlparen) {
-//							repeat = false;
-//						    break;
-//						}
-//						if (token.value == TOK.TOKconst) {
-//						    stc |= STC.STCconst;
-//						} else {
-//						    stc |= STC.STCinvariant;
-//						}
-//						modifier = new Modifier(token.value);
-//				    	modifier.setSourceRange(token.ptr, token.len);
-//				    	modifiers.add(modifier);
-//				    	nextToken();
-//				    	break;
-			    		if (token.value == TOK.TOKinvariant) {
-			    			repeat = false;
-			    			break;
-			    		}
+						// If followed by a (, it is not a storage class
+						if (peek(token).value == TOKlparen) {
+							repeat = false;
+						    break;
+						}
+						if (token.value == TOK.TOKconst) {
+						    stc |= STC.STCconst;
+						} else {
+						    stc |= STC.STCinvariant;
+						}
+						modifier = new Modifier(token.value);
+				    	modifier.setSourceRange(token.ptr, token.len);
+				    	modifiers.add(modifier);
+				    	nextToken();
+				    	break;
 			    	} else {
 			    		if (token.value == TOK.TOKinvariant) {
 			    			repeat = false;
@@ -1117,9 +1116,7 @@ public class Parser extends Lexer {
 		if (apiLevel < AST.D2) {
 			return parseParametersD1(pvarargs);
 		} else {
-			// TODO D2
-			// return parseParametersD2(pvarargs);
-			return parseParametersD1(pvarargs);
+			return parseParametersD2(pvarargs);
 		}
 	}
 	
@@ -1233,7 +1230,8 @@ public class Parser extends Lexer {
 		return arguments;
 	}
 	
-	// TODO D2
+	// TODO the translation of this method is not complete
+	// (some errors are not reported)
 	private List<Argument> parseParametersD2(int[] pvarargs) {
 		List<Argument> arguments = new ArrayList<Argument>();
 		int varargs = 0;
@@ -1314,13 +1312,27 @@ public class Parser extends Lexer {
 						inout = InOut.Lazy;
 						nextToken();
 						break;
+					case TOKscope:
+						storageClass = STC.STCscope;
+						inout = InOut.Scope;
+						nextToken();
+						break;
+					case TOKfinal:
+						storageClass = STC.STCfinal;
+						inout = InOut.Final;
+						nextToken();
+						break;
+					case TOKstatic:
+						storageClass = STC.STCstatic;
+						inout = InOut.Static;
+						nextToken();
+						break;
 				}				
-				tb = parseBasicType();
-
+				
 				IdentifierExp[] pointer2_ai = { ai };
-				at = parseDeclarator(tb, pointer2_ai);
+				at = parseType(pointer2_ai);
 				ai = pointer2_ai[0];
-
+				
 				ae = null;
 				if (token.value == TOKassign) // = defaultArg
 				{
@@ -1703,10 +1715,7 @@ public class Parser extends Lexer {
 							tp_spectype = parseBasicType();
 							tp_spectype = parseDeclarator(tp_spectype, null);	
 						} else {
-							// TODO D2
-							// tp_spectype = parseType();
-							tp_spectype = parseBasicType();
-							tp_spectype = parseDeclarator(tp_spectype, null);	
+							tp_spectype = parseType();
 						}
 					}
 					if (token.value == TOKassign) // = Type
@@ -1716,10 +1725,7 @@ public class Parser extends Lexer {
 							tp_defaulttype = parseBasicType();
 							tp_defaulttype = parseDeclarator(tp_defaulttype, null);
 						} else {
-							// TODO D2
-							// tp_defaulttype = parseType();
-							tp_defaulttype = parseBasicType();
-							tp_defaulttype = parseDeclarator(tp_defaulttype, null);
+							tp_defaulttype = parseType();
 						}
 					}
 					
@@ -1741,10 +1747,7 @@ public class Parser extends Lexer {
 							tp_spectype = parseBasicType();
 							tp_spectype = parseDeclarator(tp_spectype, null);
 						} else {
-							// TODO D2
-							// tp_spectype = parseType();
-							tp_spectype = parseBasicType();
-							tp_spectype = parseDeclarator(tp_spectype, null);
+							tp_spectype = parseType();
 						}
 					}
 					if (token.value == TOKassign) // = Type
@@ -1754,10 +1757,7 @@ public class Parser extends Lexer {
 							tp_defaulttype = parseBasicType();
 							tp_defaulttype = parseDeclarator(tp_defaulttype, null);
 						} else {
-							// TODO D2
-							// tp_defaulttype = parseType();
-							tp_defaulttype = parseBasicType();
-							tp_defaulttype = parseDeclarator(tp_defaulttype, null);
+							tp_defaulttype = parseType();
 						}
 					}
 					
@@ -1784,13 +1784,8 @@ public class Parser extends Lexer {
 						tp_valtype = parseDeclarator(tp_valtype, pointer2_tp_ident);
 						tp_ident = pointer2_tp_ident[0];
 					} else {
-						// TODO D2
-//						IdentifierExp[] pointer2_tp_ident = new IdentifierExp[] { tp_ident };
-//						tp_valtype = parseType(pointer2_tp_ident);
-//						tp_ident = pointer2_tp_ident[0];
-						tp_valtype = parseBasicType();
 						IdentifierExp[] pointer2_tp_ident = new IdentifierExp[] { tp_ident };
-						tp_valtype = parseDeclarator(tp_valtype, pointer2_tp_ident);
+						tp_valtype = parseType(pointer2_tp_ident);
 						tp_ident = pointer2_tp_ident[0];
 					}
 					
@@ -1949,10 +1944,7 @@ public class Parser extends Lexer {
 						ta = parseBasicType();
 						ta = parseDeclarator(ta, null);
 					} else {
-						// TODO D2
-						// ta = parseType();
-						ta = parseBasicType();
-						ta = parseDeclarator(ta, null);
+						ta = parseType();
 					}
 					tiargs.add(ta);
 				} else { // Expression
@@ -2078,34 +2070,40 @@ public class Parser extends Lexer {
 		return multiImport;
 	}
 	
-	// TODO D2
-//	private Type parseType(IdentifierExp[] pident, List<TemplateParameter> **tpl)
-//	{   Type *t;
-//
-//	    if (token.value == TOKconst && peek(&token)->value != TOKlparen)
-//	    {
-//		nextToken();
-//		/* const type
-//		 */
-//		t = parseType(pident, tpl);
-//		t = t->makeConst();
-//		return t;
-//	    }
-//	    else if (token.value == TOKinvariant && peek(&token)->value != TOKlparen)
-//	    {
-//		nextToken();
-//		/* invariant type
-//		 */
-//		t = parseType(pident, tpl);
-//		t = t->makeInvariant();
-//		return t;
-//	    }
-//	    else
-//		t = parseBasicType();
-//	    t = parseDeclarator(t, pident, tpl);
-//	    return t;
-//	}
+	private Type parseType() {
+		return parseType(null, null);
+	}
+	
+	private Type parseType(IdentifierExp[] pident) {
+		return parseType(pident, null);
+	}
+	
+	private Type parseType(IdentifierExp[] pident, List<TemplateParameter>[] tpl) {   
+		Type t;
 
+		if (token.value == TOK.TOKconst && peek(token).value != TOKlparen) {
+			int start = token.ptr;
+			nextToken();
+			/* const type
+			 */
+			t = parseType(pident, tpl);
+			t = t.makeConst(start, prevToken.ptr + prevToken.len - start);
+			return t;
+		} else if (token.value == TOK.TOKinvariant
+				&& peek(token).value != TOKlparen) {
+			int start = token.ptr;
+			nextToken();
+			/* invariant type
+			 */
+			t = parseType(pident, tpl);
+			t = t.makeInvariant(start, prevToken.ptr + prevToken.len - start);
+			return t;
+		} else {
+			t = parseBasicType();
+		}
+		t = parseDeclarator(t, pident, tpl, new int[1]);
+		return t;
+	}
 	
 	private Type parseBasicType() {
 		Type t = null;
@@ -2216,6 +2214,28 @@ public class Parser extends Lexer {
 			}
 			break;
 		}
+			
+		case TOKconst: {
+		    // const(type)
+			int start = token.ptr;
+		    nextToken();
+		    check(TOKlparen);
+		    t = parseType();
+		    check(TOKrparen);
+		    t = t.makeConst(start, prevToken.ptr + prevToken.len - start);
+		    break;
+		}
+
+		case TOKinvariant: {
+		    // invariant(type)
+			int start = token.ptr;
+		    nextToken();
+		    check(TOKlparen);
+		    t = parseType();
+		    check(TOKrparen);
+		    t = t.makeInvariant(start, prevToken.ptr + prevToken.len - start);
+		    break;
+		}
 
 		default:
 			parsingErrorInsertTokenAfter(prevToken, "Type");
@@ -2285,8 +2305,12 @@ public class Parser extends Lexer {
 						subType = t;
 						Type index;
 
-						index = parseBasicType();
-						index = parseDeclarator(index, null); // [ type ]
+						if (apiLevel < AST.D2) {
+							index = parseBasicType();
+							index = parseDeclarator(index, null); // [ type ]
+						} else {
+							index = parseType();                  // [ type ]
+						}
 						
 						t = newTypeAArray(t, index);
 						check(TOKrbracket);
@@ -2452,8 +2476,12 @@ public class Parser extends Lexer {
 			{   // It's an associative array declaration
 			    Type index;
 
-			    index = parseBasicType();
-			    index = parseDeclarator(index, null, null, identStart);	// [ type ]
+			    if (apiLevel < AST.D2) {
+				    index = parseBasicType();
+				    index = parseDeclarator(index, null, null, identStart);	// [ type ]
+			    } else {
+			    	index = parseType();									// [ type ]
+			    }
 			    
 			    ta = newTypeAArray(t, index);
 			    
@@ -2558,6 +2586,11 @@ public class Parser extends Lexer {
 		while (true) {
 			switch (token.value) {
 			case TOKconst:
+			case TOKinvariant:
+				if (apiLevel == AST.D2 && peek(token).value == TOK.TOKlparen) {
+					break;
+				}
+				// fall
 			case TOKstatic:
 			case TOKfinal:
 			case TOKauto:
@@ -3165,6 +3198,8 @@ public class Parser extends Lexer {
 		case TOKtypeid:
 		case TOKis:
 		case TOKlbracket:
+		case TOKtraits: // it's ok not to restrict according to version D2, since
+			            // the traits token is only present in D2
 			// Lexp:
 		{
 			Expression exp = parseExpression();
@@ -3238,8 +3273,7 @@ public class Parser extends Lexer {
 		case TOKauto:
 		case TOKextern:
 		case TOKfinal:
-		// TODO D2
-		// case TOKinvariant:
+		case TOKinvariant:
 			
 		// case TOKtypeof:
 			// Ldeclaration:
@@ -3456,13 +3490,19 @@ public class Parser extends Lexer {
 						break;
 					}
 				}
-				tb = parseBasicType();
-
-				IdentifierExp[] pointer2_ai = { ai };
 				
 				int lineNumber = token.lineNumber;
-				at = parseDeclarator(tb, pointer2_ai);
+				
+				IdentifierExp[] pointer2_ai = { ai };
+				if (apiLevel < AST.D2) {
+					tb = parseBasicType();
+					at = parseDeclarator(tb, pointer2_ai);
+				} else {
+					at = parseType(pointer2_ai);
+				}
 				ai = pointer2_ai[0];
+
+				
 				if (ai == null) {
 					if (at == null) {
 						error("No identifier for declarator", IProblem.NoIdentifierForDeclarator, lineNumber, prevToken.ptr, prevToken.len);
@@ -3472,7 +3512,7 @@ public class Parser extends Lexer {
 				}
 				// Larg:
 				if (at != null && ai != null) {
-//					 TODO: pass STCin to constructor
+					// TODO: pass STCin to constructor
 					a = new Argument(inout, at, ai, null);
 					a.setSourceRange(argumentStart, prevToken.ptr + prevToken.len - argumentStart);
 					arguments.add(a);
@@ -3486,10 +3526,26 @@ public class Parser extends Lexer {
 			check(TOKsemicolon);
 
 			aggr = parseExpression();
-			check(TOKrparen);
-			body = parseStatement(0);
 			
-			s = new ForeachStatement(loc, op, arguments, aggr, body);
+			if (apiLevel < AST.D2) {
+				check(TOKrparen);
+				body = parseStatement(0);
+				
+				s = new ForeachStatement(loc, op, arguments, aggr, body);
+			} else {
+			    if (token.value == TOKslice && arguments.size() == 1) {
+					Argument a = (Argument) arguments.get(0);
+					nextToken();
+					Expression upr = parseExpression();
+					check(TOKrparen);
+					body = parseStatement(0);
+					s = new ForeachRangeStatement(loc, op, a, aggr, upr, body);
+				} else {
+					check(TOKrparen);
+					body = parseStatement(0);
+					s = new ForeachStatement(loc, op, arguments, aggr, body);
+				}
+			}
 			break;
 		}
 
@@ -3546,9 +3602,14 @@ public class Parser extends Lexer {
 					Type at;
 					IdentifierExp ai = null;
 
-					tb = parseBasicType();
+					
 					IdentifierExp[] pointer2_ai = { ai };
-					at = parseDeclarator(tb, pointer2_ai);
+					if (apiLevel < AST.D2) {
+						tb = parseBasicType();
+						at = parseDeclarator(tb, pointer2_ai);
+					} else {
+						at = parseType(pointer2_ai);
+					}
 					ai = pointer2_ai[0];
 
 					arg = new Argument(InOut.In, at, ai, null);
@@ -3929,10 +3990,14 @@ public class Parser extends Lexer {
 					id = null;
 				} else {
 					check(TOKlparen);
-					t2 = parseBasicType();
 					id = null;
 					IdentifierExp[] pointer2_id = { id };
-					t2 = parseDeclarator(t2, pointer2_id);
+					if (apiLevel < AST.D2) {
+						t2 = parseBasicType();
+						t2 = parseDeclarator(t2, pointer2_id);
+					} else {
+						t2 = parseType(pointer2_id);
+					}
 					id = pointer2_id[0];
 					check(TOKrparen);
 				}
@@ -4122,6 +4187,17 @@ public class Parser extends Lexer {
 	
 	private boolean isDeclaration(Token t, int needId, TOK endtok, Token[] pt) {
 		int haveId = 0;
+		
+		if (apiLevel == AST.D2) {
+		    if ((t.value == TOK.TOKconst || t.value == TOK.TOKinvariant)
+					&& peek(t).value != TOKlparen) {
+		    /* const type
+			 * invariant type
+			 */
+				t = peek(t);
+			}
+		}
+
 
 		Token[] pointer2_t = { t };
 
@@ -4167,7 +4243,7 @@ public class Parser extends Lexer {
 			t = peek(t);
 			break;
 
-		case TOKidentifier:
+		case TOKidentifier: {
 			t = peek(t);
 			if (t.value == TOKnot) {
 				// goto L4
@@ -4188,11 +4264,12 @@ public class Parser extends Lexer {
 				pt[0] = t;
 			}
 			return semiResult;
+		}
 
 		case TOKdot: {
 			// goto Ldot;
-			pointer2_t2 = new Token[] { t };
-			semiResult = isBasicType_Ldot(pointer2_t2);
+			Token[] pointer2_t2 = new Token[] { t };
+			boolean semiResult = isBasicType_Ldot(pointer2_t2);
 			t = pointer2_t2[0];
 			if (semiResult) {
 				pt[0] = t;
@@ -4200,7 +4277,7 @@ public class Parser extends Lexer {
 			return semiResult;
 		}
 
-		case TOKtypeof:
+		case TOKtypeof: {
 			/*
 			 * typeof(exp).identifier...
 			 */
@@ -4217,13 +4294,36 @@ public class Parser extends Lexer {
 			t = pointer2_t[0];
 
 			// goto L2;
-			pointer2_t2 = new Token[] { t };
-			semiResult = isBasicType_L2(pointer2_t2);
-			t = pointer2_t2[0];
+			boolean semiResult = isBasicType_L2(pointer2_t);
+			t = pointer2_t[0];
 			if (semiResult) {
 				pt[0] = t;
 			}
-			return semiResult;			
+			return semiResult;
+		}
+			
+		case TOKconst:
+		case TOKinvariant: {
+			if (apiLevel < AST.D2) {
+				return false;
+			}
+			
+		    // const(type)  or  invariant(type)
+		    t = peek(t);
+		    if (t.value != TOKlparen) {
+		    	return false;
+		    }
+		    t = peek(t);
+		    
+		    Token[] pointer2_t = { t };
+		    if (!isDeclaration(t, 0, TOKrparen, pointer2_t)) {
+		    	return false;
+		    }
+		    t = pointer2_t[0];
+		    
+		    t = peek(t);
+		    break;
+		}
 
 		default:
 			return false;
@@ -4568,77 +4668,156 @@ public class Parser extends Lexer {
 	    }
 	}
 	
-	private boolean isParameters(Token[] pt)
-	{   // This code parallels parseParameters()
-	    Token t = pt[0];
-	    int tmp;
+	private boolean isParameters(Token[] pt) {
+		if (apiLevel < AST.D2) {
+			return isParametersD1(pt);
+		} else {
+			return isParametersD2(pt);
+		}
+	}
+	
+	private boolean isParametersD1(Token[] pt) {
+		// This code parallels parseParameters()
+		Token t = pt[0];
+		int tmp;
 
-	    if (t.value != TOKlparen)
-		return false;
+		if (t.value != TOKlparen)
+			return false;
 
-	    t = peek(t);
-	    while (true)
-	    {
-		switch (t.value)
-		{
-		    case TOKrparen:
-			break;
+		t = peek(t);
+		while (true) {
+			switch (t.value) {
+			case TOKrparen:
+				break;
 
-		    case TOKdotdotdot:
-			t = peek(t);
-			break;
+			case TOKdotdotdot:
+				t = peek(t);
+				break;
 
-		    case TOKin:
-		    case TOKout:
-		    case TOKinout:
-		    case TOKref:
-		    case TOKlazy:
-		    	t = peek(t);
-		    default:
-		    	
-		    Token[] pointer2_t = { t };
-			if (!isBasicType(pointer2_t))
-			    return false;
-			
-			t = pointer2_t[0];
-			    
-			tmp = 0;
-			
-			int[] pointer2_tmp = { tmp };
-			
-			if (t.value != TOKdotdotdot &&
-			    !isDeclarator(pointer2_t, pointer2_tmp, TOKreserved))
-			    return false;
-			
-			t = pointer2_t[0];
-			tmp = pointer2_tmp[0];
-			
-			if (t.value == TOKassign)
-			{   t = peek(t);
-				pointer2_t[0] = t;
-			    if (!isExpression(pointer2_t))
-			    	return false;
-			    
-			    t = pointer2_t[0];
-			}
-			if (t.value == TOKdotdotdot)
-			{
-			    t = peek(t);
-			    break;
-			}
-			if (t.value == TOKcomma)
-			{   t = peek(t);
-			    continue;
+			case TOKin:
+			case TOKout:
+			case TOKinout:
+			case TOKref:
+			case TOKlazy:
+				t = peek(t);
+			default:
+
+				Token[] pointer2_t = { t };
+				if (!isBasicType(pointer2_t))
+					return false;
+
+				t = pointer2_t[0];
+
+				tmp = 0;
+
+				int[] pointer2_tmp = { tmp };
+
+				if (t.value != TOKdotdotdot
+						&& !isDeclarator(pointer2_t, pointer2_tmp, TOKreserved))
+					return false;
+
+				t = pointer2_t[0];
+				tmp = pointer2_tmp[0];
+
+				if (t.value == TOKassign) {
+					t = peek(t);
+					pointer2_t[0] = t;
+					if (!isExpression(pointer2_t))
+						return false;
+
+					t = pointer2_t[0];
+				}
+				if (t.value == TOKdotdotdot) {
+					t = peek(t);
+					break;
+				}
+				if (t.value == TOKcomma) {
+					t = peek(t);
+					continue;
+				}
+				break;
 			}
 			break;
 		}
-		break;
-	    }
-	    if (t.value != TOKrparen)
-		return false;
-	    t = peek(t);
-	    pt[0] = t;
-	    return true;
+		if (t.value != TOKrparen)
+			return false;
+		t = peek(t);
+		pt[0] = t;
+		return true;
+	}
+	
+	private boolean isParametersD2(Token[] pt) {
+		// This code parallels parseParameters()
+		Token t = pt[0];
+		int tmp;
+
+		if (t.value != TOKlparen)
+			return false;
+
+		t = peek(t);
+		for(; true; t = peek(t)) {
+			switch (t.value) {
+			case TOKrparen:
+				break;
+
+			case TOKdotdotdot:
+				t = peek(t);
+				break;
+
+			case TOKin:
+			case TOKout:
+			case TOKinout:
+			case TOKref:
+			case TOKlazy:
+			case TOKconst:
+			case TOKinvariant:
+			case TOKfinal:
+			case TOKstatic:
+				continue;
+				
+			default:
+
+				Token[] pointer2_t = { t };
+				if (!isBasicType(pointer2_t))
+					return false;
+
+				t = pointer2_t[0];
+
+				tmp = 0;
+
+				int[] pointer2_tmp = { tmp };
+
+				if (t.value != TOKdotdotdot
+						&& !isDeclarator(pointer2_t, pointer2_tmp, TOKreserved))
+					return false;
+
+				t = pointer2_t[0];
+				tmp = pointer2_tmp[0];
+
+				if (t.value == TOKassign) {
+					t = peek(t);
+					pointer2_t[0] = t;
+					if (!isExpression(pointer2_t))
+						return false;
+
+					t = pointer2_t[0];
+				}
+				if (t.value == TOKdotdotdot) {
+					t = peek(t);
+					break;
+				}
+				if (t.value == TOKcomma) {
+					continue;
+				}
+				break;
+			}
+			break;
+		}
+		if (t.value != TOKrparen)
+			return false;
+		t = peek(t);
+		pt[0] = t;
+		return true;
 	}
 	
 	private boolean isExpression(Token[] pt)
@@ -4650,6 +4829,7 @@ public class Parser extends Lexer {
 	    Token t = pt[0];
 	    int brnest = 0;
 	    int panest = 0;
+	    int curlynest = 0;
 
 	    for (;; t = peek(t))
 	    {
@@ -4677,11 +4857,27 @@ public class Parser extends Lexer {
 			if (--panest >= 0)
 			    continue;
 			break;
+			
+		    case TOKlcurly:
+			curlynest++;
+			continue;
+
+		    case TOKrcurly:
+			if (--curlynest >= 0)
+			    continue;
+			return false;
+
 
 		    case TOKslice:
 			if (brnest != 0)
 			    continue;
 			break;
+			
+		    case TOKsemicolon:
+				if (curlynest != 0)
+				    continue;
+				return false;
+
 
 		    case TOKeof:
 			return false;
@@ -5037,12 +5233,46 @@ public class Parser extends Lexer {
 
 		    nextToken();
 		    check(TOKlparen);
-		    t2 = parseBasicType();
-		    t2 = parseDeclarator(t2, null);	// ( type )
+		    if (apiLevel < AST.D2) {
+			    t2 = parseBasicType();
+			    t2 = parseDeclarator(t2, null);	// ( type )
+		    } else {
+		    	t2 = parseType();				// ( type 
+		    }
 		    check(TOKrparen);
 		    e = new TypeidExp(loc, t2);
 		    e.setSourceRange(start, prevToken.ptr + prevToken.len - start);
 		    break;
+		}
+		
+		case TOKtraits:
+		{   
+			/* __traits(identifier, args...)
+			 */
+			IdentifierExp ident;
+			List<ASTNode> args = null;
+
+			nextToken();
+			check(TOKlparen);
+			if (token.value != TOKidentifier) {
+				parsingErrorInsertToComplete(prevToken, "__traits(identifier, args...) expected", "traits expression");
+				//goto Lerr;
+				// Anything for e, as long as it's not NULL
+				e = new IntegerExp(loc, "0", BigInteger.ZERO, Type.tint32);
+		    	e.setSourceRange(token.ptr, token.len);
+				nextToken();
+				break;
+			}
+			ident = newIdentifierExp();
+			nextToken();
+			if (token.value == TOKcomma) {
+				args = parseTemplateArgumentList2(); // __traits(identifier, args...)
+			} else {
+				check(TOKrparen); // __traits(identifier)
+			}
+
+			e = new TraitsExp(loc, ident, args);
+			break;
 		}
 
 		case TOKis:
@@ -5056,10 +5286,14 @@ public class Parser extends Lexer {
 			nextToken();
 			if (token.value == TOKlparen) {
 				nextToken();
-				targ = parseBasicType();
 
 				IdentifierExp[] pointer2_ident = { ident };
-				targ = parseDeclarator(targ, pointer2_ident);
+				if (apiLevel < AST.D2) {
+					targ = parseBasicType();
+					targ = parseDeclarator(targ, pointer2_ident);
+				} else {
+					targ = parseType(pointer2_ident);
+				}
 				ident = pointer2_ident[0];
 
 				if (token.value == TOKcolon || token.value == TOKequal) {
@@ -5078,8 +5312,12 @@ public class Parser extends Lexer {
 						tok2 = token.value;
 						nextToken();
 					} else {
-						tspec = parseBasicType();
-						tspec = parseDeclarator(tspec, null);
+						if (apiLevel < AST.D2) {
+							tspec = parseBasicType();
+							tspec = parseDeclarator(tspec, null);
+						} else {
+							tspec = parseType();
+						}
 					}
 				}
 				check(TOKrparen);
@@ -5407,12 +5645,30 @@ public class Parser extends Lexer {
 
 			nextToken();
 			check(TOKlparen);
-			t = parseBasicType();
-			t = parseDeclarator(t, null); // ( type )
-			check(TOKrparen);
-
-			e = parseUnaryExp();
-			e = new CastExp(loc, e, t);
+			
+			if (apiLevel < AST.D2) {
+				t = parseBasicType();
+				t = parseDeclarator(t, null); // ( type )
+				check(TOKrparen);
+	
+				e = parseUnaryExp();
+				e = new CastExp(loc, e, t);
+			} else {
+			    if ((token.value == TOK.TOKconst || token.value == TOK.TOKinvariant)
+						&& peek(token).value == TOKrparen) {
+			    	int modifierStart = token.ptr;
+					TOK tok = token.value;
+					nextToken();
+					nextToken();
+					e = parseUnaryExp();
+					e = new CastExp(loc, e, tok, modifierStart);
+				} else {
+					t = parseType(); // ( type )
+					check(TOKrparen);
+					e = parseUnaryExp();
+					e = new CastExp(loc, e, t);
+				}
+			}
 			break;
 		}
 
@@ -5492,8 +5748,13 @@ public class Parser extends Lexer {
 					Type t;
 
 					nextToken();
-					t = parseBasicType();
-					t = parseDeclarator(t, null);
+					
+					if (apiLevel < AST.D2) {
+						t = parseBasicType();
+						t = parseDeclarator(t, null);
+					} else {
+						t = parseType();
+					}
 					check(TOKrparen);
 
 					// if .identifier

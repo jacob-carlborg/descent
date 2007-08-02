@@ -155,7 +155,7 @@ public class TypedSource {
 				return source;
 		} else {
 			if (tuple.node == null) {
-				ASTParser parser= ASTParser.newParser(AST.LATEST);
+				ASTParser parser= ASTParser.newParser(AST.D2);
 				parser.setSource(tuple.unit);
 				tuple.node= (CompilationUnit) parser.createAST(null);
 			}

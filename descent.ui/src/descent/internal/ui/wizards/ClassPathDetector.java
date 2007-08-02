@@ -285,7 +285,7 @@ public class ClassPathDetector implements IResourceProxyVisitor {
 					if (folderPath != null) {
 						addToMap(fSourceFolders, folderPath, relPath.append(cuName));
 					}					
-				}				
+				}
 			} catch (JavaModelException e) {
 				// ignore
 			} catch (InvalidInputException e) {

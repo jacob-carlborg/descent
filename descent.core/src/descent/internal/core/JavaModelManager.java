@@ -714,8 +714,10 @@ public class JavaModelManager implements ISaveParticipant, IContentTypeChangeLis
 			String name = file.getName();
 			if (descent.internal.core.util.Util.isJavaLikeFileName(name))
 				return createCompilationUnitFrom(file, project);
+			/* TODO JDT class file
 			if (descent.internal.compiler.util.Util.isClassFileName(name))
 				return createClassFileFrom(file, project);
+			*/
 			if (descent.internal.compiler.util.Util.isArchiveFileName(name))
 				return createJarPackageFragmentRootFrom(file, project);
 		}

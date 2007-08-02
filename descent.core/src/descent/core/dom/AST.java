@@ -106,12 +106,6 @@ public final class AST {
 	public static final int D2 = 2;
 	
 	/**
-	 * Constant for indicating the AST API that handles the latest version of D.
-	 * Clients should not use this constant.
-	 */
-	public static final int LATEST = D1;
-	
-	/**
 	 * The binding resolver for this AST. Initially a binding resolver that
 	 * does not resolve names at all.
 	 */
@@ -1358,6 +1352,16 @@ public final class AST {
 		ExternDeclaration node = new ExternDeclaration(this);
 		return node;
 	}
+	
+	/**
+	 * Creates an unparented foreach range statement node owned by this AST.
+	 * 
+	 * @return the new unparented foreach range statement node
+	 */
+	public ForeachRangeStatement newForeachRangeStatement() {
+		ForeachRangeStatement node = new ForeachRangeStatement(this);
+		return node;
+	}
 
 	/**
 	 * Creates an unparented foreach statement node owned by this AST.
@@ -1536,6 +1540,16 @@ public final class AST {
 	 */
 	public TemplateMixinDeclaration newTemplateMixinDeclaration() {
 		TemplateMixinDeclaration node = new TemplateMixinDeclaration(this);
+		return node;
+	}
+	
+	/**
+	 * Creates an unparented traits expression node owned by this AST.
+	 * 
+	 * @return the new unparented traits expression node
+	 */
+	public TraitsExpression newTraitsExpression() {
+		TraitsExpression node = new TraitsExpression(this);
 		return node;
 	}
 	
@@ -2377,6 +2391,27 @@ public final class AST {
 	 */
 	public EmptyStatement newEmptyStatement() {
 		EmptyStatement node = new EmptyStatement(this);
+		return node;
+	}
+	
+	/**
+	 * Creates an unparented cast to modifier expression owned by this AST.
+	 * 
+	 * @return the new unparented cast to modifier expression node
+	 */
+	public CastToModifierExpression newCastToModifierExpression(Modifier modifier) {
+		CastToModifierExpression node = new CastToModifierExpression(this);
+		node.setModifier(modifier);
+		return node;
+	}
+	
+	/**
+	 * Creates an unparented modified type node owned by this AST.
+	 * 
+	 * @return the new unparented modified type node
+	 */
+	public ModifiedType newModifiedType() {
+		ModifiedType node = new ModifiedType(this);
 		return node;
 	}
 

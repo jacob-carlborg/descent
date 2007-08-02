@@ -19,7 +19,6 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.core.runtime.SafeRunner;
 import org.eclipse.core.runtime.Status;
-
 import org.eclipse.jface.text.Assert;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IRegion;
@@ -27,25 +26,22 @@ import org.eclipse.jface.text.reconciler.DirtyRegion;
 import org.eclipse.jface.text.reconciler.IReconcilingStrategy;
 import org.eclipse.jface.text.reconciler.IReconcilingStrategyExtension;
 import org.eclipse.jface.text.source.IAnnotationModel;
-
 import org.eclipse.ui.texteditor.IDocumentProvider;
 import org.eclipse.ui.texteditor.ITextEditor;
 
 import descent.core.ICompilationUnit;
+import descent.core.JavaCore;
 import descent.core.JavaModelException;
+import descent.core.dom.AST;
 import descent.core.dom.ASTNode;
 import descent.core.dom.CompilationUnit;
-
 import descent.internal.corext.dom.ASTNodes;
-
-import descent.ui.JavaUI;
-
 import descent.internal.ui.JavaPlugin;
 import descent.internal.ui.javaeditor.ASTProvider;
 import descent.internal.ui.javaeditor.WorkingCopyManager;
+import descent.ui.JavaUI;
 
 public class JavaReconcilingStrategy implements IReconcilingStrategy, IReconcilingStrategyExtension {
-
 
 	private ITextEditor fEditor;
 
@@ -94,7 +90,9 @@ public class JavaReconcilingStrategy implements IReconcilingStrategy, IReconcili
 								boolean isASTNeeded= initialReconcile || JavaPlugin.getDefault().getASTProvider().isActive(unit);
 								// reconcile
 								if (fIsJavaReconcilingListener && isASTNeeded) {
-									ast[0]= unit.reconcile(ASTProvider.SHARED_AST_LEVEL, true, ASTProvider.SHARED_AST_STATEMENT_RECOVERY, null, fProgressMonitor);
+									String option = unit.getJavaProject().getOption(JavaCore.COMPILER_SOURCE, true);
+									int apiLevel = getApiLevel(option);
+									ast[0]= unit.reconcile(apiLevel, true, ASTProvider.SHARED_AST_STATEMENT_RECOVERY, null, fProgressMonitor);
 									if (ast[0] != null) {
 										// mark as unmodifiable
 										ASTNodes.setFlagsToAST(ast[0], ASTNode.PROTECT);
@@ -114,6 +112,19 @@ public class JavaReconcilingStrategy implements IReconcilingStrategy, IReconcili
 							
 						} catch (JavaModelException ex) {
 							handleException(ex);
+						}
+					}
+					private int getApiLevel(String source) {
+						if (source == null || source.length() == 0) {
+							return AST.D2;
+						} else if (source.equals(JavaCore.VERSION_2_x)) {
+							return AST.D2;
+						} else if (source.equals(JavaCore.VERSION_1_x)) {
+							return AST.D1;
+						} else if (source.equals(JavaCore.VERSION_0_x)) {
+							return AST.D0;
+						} else {
+							throw new IllegalStateException();
 						}
 					}
 					public void handleException(Throwable ex) {

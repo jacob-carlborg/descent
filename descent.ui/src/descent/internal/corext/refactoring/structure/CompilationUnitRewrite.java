@@ -239,7 +239,7 @@ public class CompilationUnitRewrite {
 
 	public CompilationUnit getRoot() {
 		if (fRoot == null)
-			fRoot= new RefactoringASTParser(AST.LATEST).parse(fCu, fOwner, fResolveBindings, fStatementsRecovery, null);
+			fRoot= new RefactoringASTParser(AST.D2).parse(fCu, fOwner, fResolveBindings, fStatementsRecovery, null);
 		return fRoot;
 	}
 	
