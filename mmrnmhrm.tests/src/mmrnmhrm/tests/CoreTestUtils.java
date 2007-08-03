@@ -31,13 +31,11 @@ public class CoreTestUtils {
 	
 	public static ASTNode testParser(final String source) throws CoreException {
 
-		ParserFacade parser = new descent.internal.core.dom.ParserFacade();
-		descent.internal.core.dom.Module mod = parser.parseCompilationUnit(source).mod;
+		descent.internal.core.dom.Module mod = ParserFacade.parseCompilationUnit(source).mod;
 		BasePluginTest.assertTrue(mod.getProblems().length == 0,
 				"Found syntax errors while parsing.");
 
-		DescentASTConverter domadapter = new DescentASTConverter();
-		Module neoModule = domadapter.convertModule(mod);
+		Module neoModule = DescentASTConverter.convertModule(mod);
 		return neoModule;
 	}
 
