@@ -12,6 +12,7 @@ import descent.internal.core.dom.Import;
 import dtool.dom.ast.ASTNode;
 import dtool.dom.ast.IASTNeoVisitor;
 import dtool.dom.declarations.DeclarationImport.ImportFragment;
+import dtool.dom.definitions.DefSymbol;
 import dtool.dom.definitions.DefUnit;
 import dtool.dom.definitions.Symbol;
 import dtool.refmodel.CommonDefUnitSearch;
@@ -28,7 +29,7 @@ public class ImportAliasing extends ImportFragment implements INonScopedBlock {
 		public ImportAliasingDefUnit(Identifier ident, ImportAliasing impAlias) {
 			convertNode(impAlias);
 			setSourceRange(ident.startPos, impAlias.getEndPos() - ident.startPos);
-			this.defname = new Symbol(ident);
+			this.defname = new DefSymbol(ident, this);
 			this.impAlias = impAlias;
 		}
 		

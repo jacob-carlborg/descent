@@ -11,21 +11,12 @@ import dtool.dom.definitions.Module;
 
 public class DescentASTConverter {
 
-	public StatementConverter converter;
+	public static StatementConverter converter = new StatementConverter();;
 
-	public DescentASTConverter() {
-		this.converter = new StatementConverter();
-	}
-	
-	public Module convertModule(ASTNode cumodule) {
+	public static Module convertModule(ASTNode cumodule) {
 		Module module = new Module((descent.internal.core.dom.Module) cumodule);
 		ASTNodeParentizer.parentize(module);
 		return module;
-	}
-	
-	public ASTNode convert(ASTNode elem) {
-		elem.accept(converter);
-		return converter.ret;
 	}
 	
 	public static ASTNode convertElem(ASTNode elem) {

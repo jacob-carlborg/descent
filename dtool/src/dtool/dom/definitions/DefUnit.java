@@ -41,7 +41,7 @@ public abstract class DefUnit extends ASTNeoNode {
 	}
 
 	protected void convertIdentifier(Identifier id) {
-		this.defname = new Symbol(id);
+		this.defname = new DefSymbol(id, this);
 	}		
 
 

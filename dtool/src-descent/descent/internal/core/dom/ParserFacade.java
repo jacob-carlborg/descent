@@ -7,9 +7,9 @@ import descent.core.dom.IExpression;
 import descent.core.dom.IInitializer;
 import descent.core.dom.IDescentStatement;
 
-public class ParserFacade {
+public abstract class ParserFacade {
 	
-	public Parser parseCompilationUnit(String source) {
+	public static Parser parseCompilationUnit(String source) {
 		Parser parser = new Parser(source);
 		// parser.commentToken = true; // FIXME: comments not working
 		parser.doDocComment = true;
@@ -32,17 +32,17 @@ public class ParserFacade {
 		return parser;
 	}
 	
-	public IExpression parseExpression(String source) {
+	public static IExpression parseExpression(String source) {
 		Parser parser = new Parser(source);
 		return parser.parseExpression();
 	}
 	
-	public IDescentStatement parseStatement(String source) {
+	public static IDescentStatement parseStatement(String source) {
 		Parser parser = new Parser(source);
 		return parser.parseStatement(0);
 	}
 	
-	public IInitializer parseInitializer(String source) {
+	public static IInitializer parseInitializer(String source) {
 		Parser parser = new Parser(source);
 		return parser.parseInitializer();
 	}

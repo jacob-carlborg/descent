@@ -9,6 +9,7 @@ import descent.internal.core.dom.SelectiveImport;
 import dtool.dom.ast.ASTNode;
 import dtool.dom.ast.IASTNeoVisitor;
 import dtool.dom.declarations.DeclarationImport.ImportFragment;
+import dtool.dom.definitions.DefSymbol;
 import dtool.dom.definitions.DefUnit;
 import dtool.dom.definitions.Symbol;
 import dtool.dom.references.EntIdentifier;
@@ -68,9 +69,9 @@ public class ImportSelective extends ImportFragment implements INonScopedBlock {
 		impSelfrag.impSel = impSel;
 		
 		if(imprt.alias == null) {
-			impSelfrag.defname = new Symbol(imprt.name);
+			impSelfrag.defname = new DefSymbol(imprt.name, impSelfrag);
 		} else {
-			impSelfrag.defname = new Symbol(imprt.alias);
+			impSelfrag.defname = new DefSymbol(imprt.alias,impSelfrag);
 			impSelfrag.targetname = new EntIdentifier(imprt.name);
 		}
 		return impSelfrag;

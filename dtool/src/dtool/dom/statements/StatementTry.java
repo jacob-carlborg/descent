@@ -7,6 +7,7 @@ import descent.internal.core.dom.TryFinallyStatement;
 import dtool.descentadapter.DescentASTConverter;
 import dtool.dom.ast.ASTNeoNode;
 import dtool.dom.ast.IASTNeoVisitor;
+import dtool.dom.definitions.DefSymbol;
 import dtool.dom.definitions.FunctionParameter;
 import dtool.dom.definitions.Symbol;
 import dtool.dom.references.Entity;
@@ -23,7 +24,7 @@ public class StatementTry extends Statement {
 			this.body = Statement.convert(elem.handler);
 			this.param = new FunctionParameter();
 			this.param.type = Entity.convertType(elem.t);
-			this.param.defname = new Symbol(elem.id);
+			this.param.defname = new DefSymbol(elem.id, this.param);
 		}
 
 		@Override

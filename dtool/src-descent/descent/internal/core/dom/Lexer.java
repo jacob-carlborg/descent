@@ -120,6 +120,7 @@ public class Lexer implements IProblemCollector {
 		
 		if (token != null) {
 			prevToken = new Token(token);
+			tokenList.add(prevToken);
 		}
 
 	    if (token.next != null) {
@@ -130,7 +131,7 @@ public class Lexer implements IProblemCollector {
 	    } else {
 	    	scan(token);
 	    }
-	    tokenList.add(token);
+	    
 	    return token.value;
 	}
 	

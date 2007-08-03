@@ -20,7 +20,14 @@ public class ASTNodeFinder extends ASTNeoUpTreeVisitor {
 		this.match = null;
 	}
 	
-	public static ASTNode findElement(ASTNode root, int offset){
+	public static ASTNode findElement(ASTNode root, int offset) {
+		return findElement(root, offset, true);
+	}
+
+	/** Finds the node at the given offset, starting from root.
+	 *  inclusiveEnd controls whether to match nodes whose end position 
+	 *  is the same as the offset.*/
+	public static ASTNode findElement(ASTNode root, int offset, boolean inclusiveEnd){
 		if(offset < root.getStartPos() || offset > root.getEndPos() ) 
 			return null;
 		
