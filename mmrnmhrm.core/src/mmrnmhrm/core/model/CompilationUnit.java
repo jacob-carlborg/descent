@@ -89,7 +89,7 @@ public class CompilationUnit extends LangModuleUnit implements IGenericCompilati
 		module = null;
 		
 		clearErrorMarkers();
-		preParseCompilationUnit();
+		parseCompilationUnit();
 
 		if (hasErrors()) {
 			createErrorMarkers(getDocument());
@@ -151,18 +151,16 @@ public class CompilationUnit extends LangModuleUnit implements IGenericCompilati
 		marker.setAttribute(IMarker.SEVERITY, IMarker.SEVERITY_ERROR);
 	}
 
-	private void preParseCompilationUnit() {
+	private void parseCompilationUnit() {
 		this.module = null;
 		this.problems = null;
-		ParserFacade parser = new descent.internal.core.dom.ParserFacade();
-		this.oldModule = parser.parseCompilationUnit(getSource()).mod;
+		this.oldModule = ParserFacade.parseCompilationUnit(getSource()).mod;
 		this.problems = getOldModule().getProblems();
 	}
 	
 	
 	private void convertAST() {
-		DescentASTConverter domadapter = new DescentASTConverter();
-		Module neoModule = domadapter.convertModule(oldModule);
+		Module neoModule = DescentASTConverter.convertModule(oldModule);
 		neoModule.setCUnit(this);
 		module = neoModule;
 	}
