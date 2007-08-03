@@ -1,14 +1,34 @@
 package mmrnmhrm.ui.editor.text;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.URL;
+
 import org.eclipse.core.runtime.Assert;
+import org.eclipse.core.runtime.FileLocator;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.Platform;
+import org.eclipse.jdt.internal.ui.JavaPlugin;
+import org.eclipse.jdt.ui.PreferenceConstants;
+import org.eclipse.jface.resource.JFaceResources;
+import org.eclipse.jface.text.AbstractReusableInformationControlCreator;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
+import org.eclipse.jface.text.IInformationControl;
+import org.eclipse.jface.text.IInformationControlCreator;
 import org.eclipse.jface.text.contentassist.ICompletionProposal;
+import org.eclipse.jface.text.contentassist.ICompletionProposalExtension3;
 import org.eclipse.jface.text.contentassist.IContextInformation;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.widgets.Shell;
+import org.osgi.framework.Bundle;
 
-public abstract class AbstractCompletionProposal implements ICompletionProposal {
+public abstract class AbstractCompletionProposal implements
+		ICompletionProposal, ICompletionProposalExtension3 {
 
 	/** The string to be displayed in the completion proposal popup. */
 	protected String fDisplayString;
@@ -26,6 +46,11 @@ public abstract class AbstractCompletionProposal implements ICompletionProposal 
 	protected IContextInformation fContextInformation;
 	/** The additional info of this proposal. */
 	protected String fAdditionalProposalInfo;
+	
+	private IInformationControlCreator fCreator;
+	/** The CSS used to format javadoc information. */
+	private static String fgCSSStyles;
+
 
 	/**
 	 * Creates a new completion proposal based on the provided information. The replacement string is
@@ -71,6 +96,30 @@ public abstract class AbstractCompletionProposal implements ICompletionProposal 
 		fContextInformation= contextInformation;
 		fAdditionalProposalInfo= additionalProposalInfo;
 	}
+	
+	
+	private static final class ControlCreator extends AbstractReusableInformationControlCreator {
+
+		@SuppressWarnings("restriction")
+		public IInformationControl doCreateInformationControl(Shell parent) {
+			return new org.eclipse.jface.internal.text.html.BrowserInformationControl(
+					parent, SWT.NO_TRIM | SWT.TOOL, SWT.NONE, null);
+		}
+	}
+	
+	@SuppressWarnings("restriction")
+	public IInformationControlCreator getInformationControlCreator() {
+		Shell shell= JavaPlugin.getActiveWorkbenchShell();
+		if (shell == null
+				|| !org.eclipse.jface.internal.text.html.BrowserInformationControl
+						.isAvailable(shell))
+			return null;
+		
+		if (fCreator == null) {
+			fCreator= new ControlCreator();
+		}
+		return fCreator;
+	}
 
 	/** {@inheritDoc} */
 	public void apply(IDocument document) {
@@ -109,5 +158,61 @@ public abstract class AbstractCompletionProposal implements ICompletionProposal 
 	public String getAdditionalProposalInfo() {
 		return fAdditionalProposalInfo;
 	}
+	
+	@SuppressWarnings("restriction")
+	public Object getAdditionalProposalInfo(IProgressMonitor monitor) {
+		//if (getProposalInfo() != null) {
+			String info= getProposalInfoString(monitor);
+			if (info != null && info.length() > 0) {
+				StringBuffer buffer= new StringBuffer();
+				org.eclipse.jface.internal.text.html.
+				HTMLPrinter.insertPageProlog(buffer, 0, getCSSStyles());
+				buffer.append(info);
+				org.eclipse.jface.internal.text.html.
+				HTMLPrinter.addPageEpilog(buffer);
+				info= buffer.toString();
+			}
+			return info;
+		//}
+	}
+	
+	/**
+	 * Returns the style information for displaying HTML (Javadoc) content.
+	 * 
+	 * @return the CSS styles 
+	 * @since 3.3
+	 */
+	@SuppressWarnings("restriction")
+	protected String getCSSStyles() {
+		if (fgCSSStyles == null) {
+			Bundle bundle= Platform.getBundle(JavaPlugin.getPluginId());
+			URL url= bundle.getEntry("/JavadocHoverStyleSheet.css"); //$NON-NLS-1$
+			if (url != null) {
+				try {
+					url= FileLocator.toFileURL(url);
+					BufferedReader reader= new BufferedReader(new InputStreamReader(url.openStream()));
+					StringBuffer buffer= new StringBuffer(200);
+					String line= reader.readLine();
+					while (line != null) {
+						buffer.append(line);
+						buffer.append('\n');
+						line= reader.readLine();
+					}
+					fgCSSStyles= buffer.toString();
+				} catch (IOException ex) {
+					JavaPlugin.log(ex);
+				}
+			}
+		}
+		String css= fgCSSStyles;
+		if (css != null) {
+			FontData fontData= JFaceResources.getFontRegistry().getFontData(PreferenceConstants.APPEARANCE_JAVADOC_FONT)[0];
+			css= org.eclipse.jface.internal.text.html.
+				HTMLPrinter.convertTopLevelFont(css, fontData);
+		}
+		return css;
+	}
+
+	protected abstract String getProposalInfoString(IProgressMonitor monitor);
 	
 }

@@ -1,6 +1,7 @@
 package mmrnmhrm.ui.navigator;
 
 import melnorme.miscutil.tree.IElement;
+import melnorme.util.ui.swt.SWTUtil2;
 import mmrnmhrm.core.ElementChangedEvent;
 import mmrnmhrm.core.IElementChangedListener;
 import mmrnmhrm.core.model.DeeModel;
@@ -14,7 +15,6 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.Viewer;
-import org.eclipse.swt.widgets.Display;
 
 
 public class DeeNavigatorContentProvider implements ITreeContentProvider, IElementChangedListener {
@@ -85,7 +85,7 @@ public class DeeNavigatorContentProvider implements ITreeContentProvider, IEleme
 	}
 
 	public void elementChanged(ElementChangedEvent event) {
-		Display.getDefault().asyncExec(new Runnable() {
+		SWTUtil2.runInSWTThread(new Runnable() {
 			public void run() {
 				viewer.refresh();
 			}

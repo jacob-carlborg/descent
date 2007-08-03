@@ -21,7 +21,6 @@ import org.eclipse.ui.texteditor.ITextEditor;
 
 import dtool.dom.definitions.DefUnit;
 import dtool.refmodel.CommonDefUnitSearch;
-import dtool.refmodel.DefUnitSearch;
 import dtool.refmodel.PartialEntitySearch;
 import dtool.refmodel.PartialSearchOptions;
 
@@ -83,8 +82,9 @@ public class DeeCodeContentAssistProcessor implements IContentAssistProcessor {
 						searchOptions.rplLen, 
 						rplStr.length(),
 						DeeElementImageProvider.getNodeImage(defunit),
-						defunit.toStringAsDefUnit(),
-						null
+						defunit.toStringAsCodeCompletion(),
+						defunit,
+						null // context information
 						)); 
 			}
 		};

@@ -111,6 +111,17 @@ public class SWTUtil2 {
 				IDialogConstants.VERTICAL_MARGIN);
 	}
 
+	/** Runs the runnable in the SWT thread. 
+	 * (Simply runs the runnable if the current thread is the UI thread,
+	 * otherwise calls the runnable in asyncexec.) */
+	public static void runInSWTThread(Runnable runnable) {
+		if(Display.getCurrent() == null) {
+			Display.getDefault().asyncExec(runnable);
+		} else {
+			runnable.run();
+		}
+	}
+
 
 
 }

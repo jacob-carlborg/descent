@@ -445,7 +445,7 @@
    <extension
          point="org.eclipse.ui.workbench.texteditor.hyperlinkDetectors">
       <hyperlinkDetector
-            class="mmrnmhrm.ui.editor.text.DeeHyperlinkDetector2"
+            class="mmrnmhrm.ui.editor.text.DeeHyperlinkDetector"
             id="mmrnmhrm.ui.editor.text.DeeHyperlinkDetector2"
             name="Dee Element"
             targetId="mmrnmhrm.ui.texteditor.deeCodeTarget">

@@ -2,20 +2,24 @@ package mmrnmhrm.ui.editor.text;
 
 import melnorme.miscutil.ExceptionAdapter;
 
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
-import org.eclipse.jface.text.IInformationControlCreator;
 import org.eclipse.jface.text.contentassist.ICompletionProposalExtension;
-import org.eclipse.jface.text.contentassist.ICompletionProposalExtension3;
+import org.eclipse.jface.text.contentassist.ICompletionProposalExtension5;
 import org.eclipse.jface.text.contentassist.IContextInformation;
 import org.eclipse.swt.graphics.Image;
 
+import dtool.dom.definitions.DefUnit;
+
 public class DeeCompletionProposal extends AbstractCompletionProposal implements
-		ICompletionProposalExtension3
-		, ICompletionProposalExtension
+		ICompletionProposalExtension
+		, ICompletionProposalExtension5
 		{
 
 	
+	private DefUnit defUnit;
+
 	/**
 	 * Creates a new completion proposal. All fields are initialized based on the provided information.
 	 *
@@ -31,14 +35,13 @@ public class DeeCompletionProposal extends AbstractCompletionProposal implements
 	public DeeCompletionProposal(String replacementString,
 			int replacementOffset, int replacementLength, int cursorPosition,
 			Image image, String displayString,
+			DefUnit defUnit,
 			IContextInformation contextInformation) {
 		super(replacementString, replacementOffset, replacementLength,
 				cursorPosition, image, displayString, contextInformation, null);
+		this.defUnit = defUnit;
 	}
 
-	public IInformationControlCreator getInformationControlCreator() {
-		return null; // No custom control creator is available
-	}
 
 	public int getPrefixCompletionStart(IDocument document, int completionOffset) {
 		return fReplacementOffset;
@@ -77,6 +80,16 @@ public class DeeCompletionProposal extends AbstractCompletionProposal implements
 			throw ExceptionAdapter.unchecked(e);
 		}
 		return false;
+	}
+
+	public String getProposalInfoString(IProgressMonitor monitor) {
+		String sig = defUnit.toStringFullSignature();
+		String str = sig.substring(sig.indexOf(' ')+1);
+		str = "<b>" +str+ "</b>" 
+		+"  <span style=\"color: #915F6D;\" >" +
+			"("+defUnit.getArcheType().toString()+")" +"</span>"; 
+		str = str + "<br/> <p>DeeDoc goes here.</p>" ;
+		return str;
 	}
 	
 }

@@ -1,13 +1,17 @@
-package mmrnmhrm.ui.text;
+package mmrnmhrm.ui.editor.text;
 
 import java.util.Map;
 
 import mmrnmhrm.ui.DeePlugin;
 import mmrnmhrm.ui.editor.DeeReconcilingStrategy;
-import mmrnmhrm.ui.editor.text.DeeCodeContentAssistProcessor;
-import mmrnmhrm.ui.editor.text.DeeHyperlinkDetector2;
+import mmrnmhrm.ui.text.DeeCodeScanner;
+import mmrnmhrm.ui.text.IDeePartitions;
 
 import org.eclipse.jface.preference.IPreferenceStore;
+import org.eclipse.jface.text.DefaultInformationControl;
+import org.eclipse.jface.text.IInformationControl;
+import org.eclipse.jface.text.IInformationControlCreator;
+import org.eclipse.jface.text.ITextHover;
 import org.eclipse.jface.text.contentassist.ContentAssistant;
 import org.eclipse.jface.text.contentassist.IContentAssistProcessor;
 import org.eclipse.jface.text.contentassist.IContentAssistant;
@@ -21,6 +25,7 @@ import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.editors.text.TextSourceViewerConfiguration;
 import org.eclipse.ui.texteditor.ITextEditor;
 
@@ -46,7 +51,10 @@ public class DeeSourceViewerConfiguration extends TextSourceViewerConfiguration 
 		fCodeScanner = DeePlugin.getDefaultDeeCodeScanner();
 	}
 	
-
+	public boolean adaptToPreferenceChange(PropertyChangeEvent event) {
+		return fCodeScanner.adaptToPreferenceChange(event);
+	}
+	
 	@Override
 	public String getConfiguredDocumentPartitioning(ISourceViewer sourceViewer) {
 		return IDeePartitions.DEE_PARTITIONING;
@@ -57,6 +65,8 @@ public class DeeSourceViewerConfiguration extends TextSourceViewerConfiguration 
 		return IDeePartitions.legalContentTypes;
 	}
 	
+	
+	@Override
 	public IPresentationReconciler getPresentationReconciler(ISourceViewer sourceViewer) {
 	    PresentationReconciler reconciler = new PresentationReconciler();
 	    
@@ -69,13 +79,14 @@ public class DeeSourceViewerConfiguration extends TextSourceViewerConfiguration 
 	    return reconciler;
 	}
 	
-	@SuppressWarnings("unchecked")
+	@Override @SuppressWarnings("unchecked")
 	protected Map getHyperlinkDetectorTargets(ISourceViewer sourceViewer) {
 		Map targets= super.getHyperlinkDetectorTargets(sourceViewer);
-		targets.put(DeeHyperlinkDetector2.DEE_EDITOR_TARGET, fTextEditor); 
+		targets.put(DeeHyperlinkDetector.DEE_EDITOR_TARGET, fTextEditor); 
 		return targets;
 	}
 	
+	@Override
 	public IReconciler getReconciler(ISourceViewer sourceViewer) {
 		MonoReconciler reconciler = new MonoReconciler(
 				new DeeReconcilingStrategy(), true);
@@ -104,14 +115,27 @@ public class DeeSourceViewerConfiguration extends TextSourceViewerConfiguration 
 		assistant.enableAutoActivation(true);
 		assistant.setAutoActivationDelay(500);
 		assistant.setProposalSelectorBackground(colorWhite);
-		//assistant.setStatusMessage("ASDASD");
+		
+		
+		assistant.setContextInformationPopupOrientation(IContentAssistant.CONTEXT_INFO_ABOVE);
+		assistant.setInformationControlCreator(getInformationControlCreator(sourceViewer));
 		
 		return assistant;
 	}
-
 	
-	public boolean adaptToPreferenceChange(PropertyChangeEvent event) {
-		return fCodeScanner.adaptToPreferenceChange(event);
+	public IInformationControlCreator getInformationControlCreator(ISourceViewer sourceViewer) {
+		return new IInformationControlCreator() {
+			@SuppressWarnings("restriction")
+			public IInformationControl createInformationControl(Shell parent) {
+				return new DefaultInformationControl(parent, SWT.NONE, 
+						new org.eclipse.jface.internal.text.html.HTMLTextPresenter(true));
+			}
+		};
+	}
+
+	@Override
+	public ITextHover getTextHover(ISourceViewer sourceViewer, String contentType) {
+		return new DeeDocTextHover(sourceViewer, fTextEditor);
 	}
 
 }

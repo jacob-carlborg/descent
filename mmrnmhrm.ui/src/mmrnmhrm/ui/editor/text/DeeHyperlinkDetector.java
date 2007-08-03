@@ -13,7 +13,7 @@ import dtool.dom.ast.ASTNodeFinder;
 import dtool.dom.ast.ASTNode;
 import dtool.dom.references.Entity;
 
-public class DeeHyperlinkDetector2 extends AbstractHyperlinkDetector {
+public class DeeHyperlinkDetector extends AbstractHyperlinkDetector {
 
 	public static final String DEE_EDITOR_TARGET = "mmrnmhrm.ui.texteditor.deeCodeTarget";
 

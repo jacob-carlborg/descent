@@ -5,8 +5,8 @@ import mmrnmhrm.core.model.CompilationUnit;
 import mmrnmhrm.ui.DeePlugin;
 import mmrnmhrm.ui.DeePluginImages;
 import mmrnmhrm.ui.editor.outline.DeeContentOutlinePage;
+import mmrnmhrm.ui.editor.text.DeeSourceViewerConfiguration;
 import mmrnmhrm.ui.text.DeeDocumentProvider;
-import mmrnmhrm.ui.text.DeeSourceViewerConfiguration;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
