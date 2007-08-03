@@ -1,14 +1,8 @@
 package mmrnmhrm.ui.editor.text;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.URL;
 
 import org.eclipse.core.runtime.Assert;
-import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.Platform;
 import org.eclipse.jdt.internal.ui.JavaPlugin;
 import org.eclipse.jdt.ui.PreferenceConstants;
 import org.eclipse.jface.resource.JFaceResources;
@@ -25,11 +19,14 @@ import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Shell;
-import org.osgi.framework.Bundle;
 
 public abstract class AbstractCompletionProposal implements
 		ICompletionProposal, ICompletionProposalExtension3 {
 
+	/** The CSS used to format javadoc information. */
+	private static String fgCSSStyles;
+
+	
 	/** The string to be displayed in the completion proposal popup. */
 	protected String fDisplayString;
 	/** The replacement string. */
@@ -48,8 +45,6 @@ public abstract class AbstractCompletionProposal implements
 	protected String fAdditionalProposalInfo;
 	
 	private IInformationControlCreator fCreator;
-	/** The CSS used to format javadoc information. */
-	private static String fgCSSStyles;
 
 
 	/**
@@ -159,23 +154,13 @@ public abstract class AbstractCompletionProposal implements
 		return fAdditionalProposalInfo;
 	}
 	
-	@SuppressWarnings("restriction")
 	public Object getAdditionalProposalInfo(IProgressMonitor monitor) {
 		//if (getProposalInfo() != null) {
 			String info= getProposalInfoString(monitor);
-			if (info != null && info.length() > 0) {
-				StringBuffer buffer= new StringBuffer();
-				org.eclipse.jface.internal.text.html.
-				HTMLPrinter.insertPageProlog(buffer, 0, getCSSStyles());
-				buffer.append(info);
-				org.eclipse.jface.internal.text.html.
-				HTMLPrinter.addPageEpilog(buffer);
-				info= buffer.toString();
-			}
-			return info;
+			return HoverUtil.getCompleteHoverInfo(info, getCSSStyles());
 		//}
 	}
-	
+
 	/**
 	 * Returns the style information for displaying HTML (Javadoc) content.
 	 * 
@@ -185,24 +170,7 @@ public abstract class AbstractCompletionProposal implements
 	@SuppressWarnings("restriction")
 	protected String getCSSStyles() {
 		if (fgCSSStyles == null) {
-			Bundle bundle= Platform.getBundle(JavaPlugin.getPluginId());
-			URL url= bundle.getEntry("/JavadocHoverStyleSheet.css"); //$NON-NLS-1$
-			if (url != null) {
-				try {
-					url= FileLocator.toFileURL(url);
-					BufferedReader reader= new BufferedReader(new InputStreamReader(url.openStream()));
-					StringBuffer buffer= new StringBuffer(200);
-					String line= reader.readLine();
-					while (line != null) {
-						buffer.append(line);
-						buffer.append('\n');
-						line= reader.readLine();
-					}
-					fgCSSStyles= buffer.toString();
-				} catch (IOException ex) {
-					JavaPlugin.log(ex);
-				}
-			}
+			fgCSSStyles= HoverUtil.loadStyleSheet("/JavadocHoverStyleSheet.css");
 		}
 		String css= fgCSSStyles;
 		if (css != null) {

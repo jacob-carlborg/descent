@@ -30,7 +30,7 @@ import org.eclipse.ui.editors.text.TextSourceViewerConfiguration;
 import org.eclipse.ui.texteditor.ITextEditor;
 
 
-/**
+/** Dee SourceViewer Configuration
  */
 public class DeeSourceViewerConfiguration extends TextSourceViewerConfiguration {
 
@@ -115,7 +115,6 @@ public class DeeSourceViewerConfiguration extends TextSourceViewerConfiguration 
 		assistant.enableAutoActivation(true);
 		assistant.setAutoActivationDelay(500);
 		assistant.setProposalSelectorBackground(colorWhite);
-		
 		
 		assistant.setContextInformationPopupOrientation(IContentAssistant.CONTEXT_INFO_ABOVE);
 		assistant.setInformationControlCreator(getInformationControlCreator(sourceViewer));

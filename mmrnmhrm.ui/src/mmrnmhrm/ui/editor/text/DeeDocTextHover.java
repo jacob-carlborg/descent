@@ -5,8 +5,8 @@ import mmrnmhrm.ui.DeePlugin;
 import mmrnmhrm.ui.editor.DeeEditor;
 
 import org.eclipse.core.runtime.Assert;
-import org.eclipse.jface.text.DefaultTextHover;
 import org.eclipse.jface.text.IRegion;
+import org.eclipse.jface.text.ITextHoverExtension;
 import org.eclipse.jface.text.ITextViewer;
 import org.eclipse.jface.text.Region;
 import org.eclipse.jface.text.source.ISourceViewer;
@@ -16,13 +16,17 @@ import org.eclipse.ui.texteditor.ITextEditor;
 
 import dtool.dom.ast.ASTNode;
 import dtool.dom.ast.ASTNodeFinder;
+import dtool.dom.definitions.DefSymbol;
 import dtool.dom.definitions.DefUnit;
 import dtool.dom.definitions.Symbol;
+import dtool.dom.references.Entity;
 
-public class DeeDocTextHover extends DefaultTextHover {
+/** 
+ *  TODO Learn more about DefaultTextHover
+ */
+public class DeeDocTextHover extends AbstractTextHover implements ITextHoverExtension {
 
-	
-	private ITextEditor fEditor;
+
 	
 	public DeeDocTextHover(ISourceViewer sourceViewer, ITextEditor textEditor) {
 		super(sourceViewer);
@@ -49,7 +53,7 @@ public class DeeDocTextHover extends DefaultTextHover {
 		}
 		
 		ASTNode node;
-		node = ASTNodeFinder.findElement(cunit.getModule(), offset);
+		node = ASTNodeFinder.findElement(cunit.getModule(), offset, false);
 		return node;
 	}
 	
@@ -58,8 +62,10 @@ public class DeeDocTextHover extends DefaultTextHover {
 		if(node == null)
 			return null;
 		
-		return new Region(node.getOffset(), node.getLength());
+		if(!(node instanceof DefSymbol || node instanceof Entity))
+			return null;
 		
+		return new Region(node.getOffset(), node.getLength());
 	}
 
 
@@ -69,14 +75,21 @@ public class DeeDocTextHover extends DefaultTextHover {
 		if(node == null)
 			return null;
 		
-		if(node instanceof Symbol) {
-			// TODO, fixe Symbol
-			DefUnit defUnit = ((DefUnit) ((Symbol) node).getParent());
-			if(defUnit.comments != null && !defUnit.comments.equals(""))
-				return defUnit.comments;
+		String info = null;
+		
+		if(node instanceof DefSymbol) {
+			DefUnit defUnit = ((DefSymbol) node).getParent();
+			info= HoverUtil.getDefUnitHoverInfoWithDeeDoc(defUnit);
+		} else if (node instanceof Entity) {
+			DefUnit defUnit = ((Entity) node).findTargetDefUnit();
+			if(defUnit != null)
+				info= HoverUtil.getDefUnitHoverInfoWithDeeDoc(defUnit);
 			else
-				return defUnit.toStringFullSignature();
+				info= "404 DefUnit not found";
 		}
+		if(info != null)
+			return HoverUtil.getCompleteHoverInfo(info, getCSSStyles());
+
 		return null;
 	}
 

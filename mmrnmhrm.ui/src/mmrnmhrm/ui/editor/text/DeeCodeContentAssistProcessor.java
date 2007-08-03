@@ -1,6 +1,7 @@
 package mmrnmhrm.ui.editor.text;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 
 import mmrnmhrm.core.model.CompilationUnit;
 import mmrnmhrm.ui.DeePlugin;
@@ -19,7 +20,13 @@ import org.eclipse.swt.custom.StyleRange;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.texteditor.ITextEditor;
 
+import descent.internal.core.dom.Parser;
+import descent.internal.core.dom.ParserFacade;
+import descent.internal.core.dom.TOK;
+import descent.internal.core.dom.Token;
+import dtool.descentadapter.DescentASTConverter;
 import dtool.dom.definitions.DefUnit;
+import dtool.dom.definitions.Module;
 import dtool.refmodel.CommonDefUnitSearch;
 import dtool.refmodel.PartialEntitySearch;
 import dtool.refmodel.PartialSearchOptions;
@@ -66,7 +73,53 @@ public class DeeCodeContentAssistProcessor implements IContentAssistProcessor {
 		IEditorInput editorInput = textEditor.getEditorInput();
 		CompilationUnit cunit;
 		cunit = DeePlugin.getCompilationUnitOperation(editorInput);
-		cunit.reconcile();
+		String docstr = cunit.getDocument().get();
+		
+		Parser parser = ParserFacade.parseCompilationUnit(docstr);
+		
+		Token token = null;
+		for (Iterator<Token> iter = parser.tokenList.iterator(); iter.hasNext();) {
+			Token newtoken = iter.next();
+			if(newtoken.ptr < offset) {
+				token = newtoken;
+				// continue
+			} else {
+				break;
+			}
+		} // now token is the last token before offset
+		
+		// If completion request is *inside* a token
+		if(token.ptr < offset && (token.ptr + token.len) > offset) {
+			// then only allow if it's an indentifier
+			if(token.value != TOK.TOKidentifier) {
+				errorMsg = "Invalid Context:" + token;
+				return null;
+			}
+		}
+				
+		descent.internal.core.dom.Module dmdModule;
+		dmdModule = parser.mod;
+
+		if(dmdModule.getProblems().length != 0) {
+			if(token != null && token.value == TOK.TOKdot) {
+				// Let's retry parsing without the dot.
+				String newstr = docstr.substring(0, token.ptr) + " " 
+					+ docstr.substring(token.ptr+1, docstr.length());
+				
+				parser = ParserFacade.parseCompilationUnit(newstr);
+				dmdModule = parser.mod;
+				
+				if(dmdModule.getProblems().length != 0) {
+					errorMsg = "Syntax Errors, cannot complete.";
+					return null;
+				}
+			}
+		}
+		
+		Module neoModule = DescentASTConverter.convertModule(dmdModule);
+		neoModule.setCUnit(cunit);
+
+		//cunit.reconcile();
 		
 		final ArrayList<ICompletionProposal> results;
 		results = new ArrayList<ICompletionProposal>();
@@ -77,8 +130,8 @@ public class DeeCodeContentAssistProcessor implements IContentAssistProcessor {
 			public void addResult(DefUnit defunit) {
 				String rplStr = defunit.getName().substring(searchOptions.prefixLen);
 				results.add(new DeeCompletionProposal(
-						rplStr, 
-						offset, 
+						rplStr,
+						offset,
 						searchOptions.rplLen, 
 						rplStr.length(),
 						DeeElementImageProvider.getNodeImage(defunit),
@@ -90,7 +143,7 @@ public class DeeCodeContentAssistProcessor implements IContentAssistProcessor {
 		};
 		
 		errorMsg = PartialEntitySearch.doCompletionSearch(offset, 
-				cunit.getModule(), searchOptions, search);
+				neoModule, searchOptions, search);
 		
 		if(errorMsg != null)
 			return null;

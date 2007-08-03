@@ -61,7 +61,7 @@ public class DeeCompletionProposal extends AbstractCompletionProposal implements
 	}
 	
 	public void apply(IDocument document, char trigger, int offset) {
-		fReplacementLength = offset - fReplacementOffset;
+		fReplacementLength += offset - fReplacementOffset;
 		apply(document);
 	}
 
@@ -83,13 +83,7 @@ public class DeeCompletionProposal extends AbstractCompletionProposal implements
 	}
 
 	public String getProposalInfoString(IProgressMonitor monitor) {
-		String sig = defUnit.toStringFullSignature();
-		String str = sig.substring(sig.indexOf(' ')+1);
-		str = "<b>" +str+ "</b>" 
-		+"  <span style=\"color: #915F6D;\" >" +
-			"("+defUnit.getArcheType().toString()+")" +"</span>"; 
-		str = str + "<br/> <p>DeeDoc goes here.</p>" ;
-		return str;
+		return HoverUtil.getDefUnitHoverInfoWithDeeDoc(defUnit);
 	}
-	
+
 }
