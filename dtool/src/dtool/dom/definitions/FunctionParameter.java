@@ -5,9 +5,11 @@ import dtool.dom.ast.IASTNeoVisitor;
 import dtool.dom.expressions.Expression;
 import dtool.dom.references.Entity;
 import dtool.refmodel.IScopeNode;
+import dtool.refmodel.NodeUtil;
 
-public class FunctionParameter extends DefUnit {
+public class FunctionParameter extends DefUnit implements IFunctionParameter {
 	
+
 	public Entity type;
 	public descent.internal.core.dom.InOut inout;
 	public Expression defaultValue;
@@ -15,9 +17,8 @@ public class FunctionParameter extends DefUnit {
 	public FunctionParameter() {
 	}
 	
-	public FunctionParameter(descent.internal.core.dom.Argument elem) {
-		super();
-		setSourceRange(elem);
+	protected FunctionParameter(descent.internal.core.dom.Argument elem) {
+		convertNode(elem);
 		convertIdentifier(elem.id);
 		setSourceRange(elem);
 		
@@ -27,15 +28,32 @@ public class FunctionParameter extends DefUnit {
 			
 	}
 	
+	public String toStringAsParameter() {
+		return type + " " + defname;
+	}
+	
+	@Override
+	public String toStringFullSignature() {
+		String str = getArcheType().toString() + "  "
+			+ type.toString() + " " + getName();
+		return str;
+	}
+	
 	@Override
 	public EArcheType getArcheType() {
 		return EArcheType.Parameter;
 	}
-
+	
+	@Override
+	public String toStringAsCodeCompletion() {
+		return defname + "   " + type.toString() + " - "
+				+ NodeUtil.getOuterDefUnit(this);
+	}
+		
+	
 	@Override
 	public IScopeNode getMembersScope() {
-		// TODO Auto-generated method stub
-		return null;
+		return type.getTargetScope();
 	}
 
 	@Override

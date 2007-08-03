@@ -6,6 +6,7 @@ import dtool.dom.expressions.Initializer;
 import dtool.dom.references.Entity;
 import dtool.dom.statements.IStatement;
 import dtool.refmodel.IScopeNode;
+import dtool.refmodel.NodeUtil;
 
 /**
  * A definition of a variable
@@ -27,8 +28,16 @@ public class DefinitionVariable extends Definition implements IStatement {
 	}
 	
 	@Override
-	public String toStringAsDefUnit() {
-		return defname + "   " + type.toString() + " - " + getModule().md;
+	public String toStringFullSignature() {
+		String str = getArcheType().toString() + "  "
+			+ type.toString() + " " + getName();
+		return str;
+	}
+	
+	@Override
+	public String toStringAsCodeCompletion() {
+		return defname + "   " + type.toString() + " - "
+				+ NodeUtil.getOuterDefUnit(this);
 	}
 
 	public void accept0(IASTNeoVisitor visitor) {

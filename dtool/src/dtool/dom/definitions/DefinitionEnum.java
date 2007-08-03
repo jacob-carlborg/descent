@@ -9,10 +9,11 @@ import dtool.descentadapter.DescentASTConverter;
 import dtool.dom.ast.ASTNeoNode;
 import dtool.dom.ast.IASTNeoVisitor;
 import dtool.dom.references.Entity;
+import dtool.dom.statements.IStatement;
 import dtool.refmodel.IScope;
 import dtool.refmodel.IScopeNode;
 
-public class DefinitionEnum extends Definition implements IScopeNode {
+public class DefinitionEnum extends Definition implements IScopeNode, IStatement {
 
 	public List<EnumMember> members;
 	public Entity type;
@@ -68,7 +69,7 @@ public class DefinitionEnum extends Definition implements IScopeNode {
 	}
 
 	@Override
-	public String toStringAsDefUnit() {
+	public String toStringAsCodeCompletion() {
 		return defname + " - " + getModule().md;
 	}
 

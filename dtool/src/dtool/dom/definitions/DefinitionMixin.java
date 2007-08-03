@@ -7,12 +7,13 @@ import dtool.dom.ast.ASTNeoNode;
 import dtool.dom.ast.IASTNeoVisitor;
 import dtool.dom.references.EntTemplateInstance;
 import dtool.dom.references.Entity;
+import dtool.dom.statements.IStatement;
 import dtool.refmodel.IScopeNode;
 
 /*
  * TODO mixin
  */
-public class DefinitionMixin extends DefUnit  {
+public class DefinitionMixin extends DefUnit implements IStatement {
 	
 	public Entity type;
 	
@@ -44,11 +45,6 @@ public class DefinitionMixin extends DefUnit  {
 		visitor.endVisit(this);
 	}
 	
-	@Override
-	public String toStringAsDefUnit() {
-		return toString() + " - " + getModule().md;
-	}
-
 	@Override
 	public EArcheType getArcheType() {
 		return EArcheType.Mixin;

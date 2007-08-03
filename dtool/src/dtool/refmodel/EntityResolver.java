@@ -2,11 +2,12 @@ package dtool.refmodel;
 
 import java.util.Iterator;
 
-import org.eclipse.core.runtime.CoreException;
-
 import melnorme.miscutil.ExceptionAdapter;
 import melnorme.miscutil.IteratorUtil;
-import dtool.dom.ast.ASTNode;
+
+import org.eclipse.core.runtime.CoreException;
+
+import dtool.dom.ast.IASTNode;
 import dtool.dom.declarations.DeclarationImport;
 import dtool.dom.declarations.ImportContent;
 import dtool.dom.declarations.ImportStatic;
@@ -138,16 +139,16 @@ public class EntityResolver {
 	
 
 	private static void findDefUnitInImmediateScope(IScope scope, CommonDefUnitSearch search) {
-		Iterator<ASTNode> iter = IteratorUtil.recast(scope.getMembersIterator());
+		Iterator<IASTNode> iter = IteratorUtil.recast(scope.getMembersIterator());
 		
 		findDefUnits(search, iter);
 	}
 
 	private static void findDefUnits(CommonDefUnitSearch search,
-			Iterator<? extends ASTNode> iter) {
+			Iterator<? extends IASTNode> iter) {
 		
 		while(iter.hasNext()) {
-			ASTNode elem = iter.next();
+			IASTNode elem = iter.next();
 
 			if(elem instanceof DefUnit) {
 				DefUnit defunit = (DefUnit) elem;
@@ -166,19 +167,19 @@ public class EntityResolver {
 	}
 	
 	private static void findDefUnitInSecondaryScope(IScope scope, CommonDefUnitSearch search) {
-		Iterator<ASTNode> iter = IteratorUtil.recast(scope.getMembersIterator());
+		Iterator<IASTNode> iter = IteratorUtil.recast(scope.getMembersIterator());
 				
 		Module thisModule = scope.getModule();
 		findSecondaryDefUnits(search, iter, thisModule);
 	}
 
 	private static void findSecondaryDefUnits(CommonDefUnitSearch search,
-			Iterator<? extends ASTNode> iter, Module thisModule) {
+			Iterator<? extends IASTNode> iter, Module thisModule) {
 		
 		Module refsModule = search.getReferenceModule();
 		
 		while(iter.hasNext()) {
-			ASTNode elem = iter.next();
+			IASTNode elem = iter.next();
 
 			if(elem instanceof DeclarationImport) {
 				DeclarationImport declImport = (DeclarationImport) elem;

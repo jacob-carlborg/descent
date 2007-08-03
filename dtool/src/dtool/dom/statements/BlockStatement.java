@@ -30,9 +30,14 @@ public class BlockStatement extends Statement implements IScopeNode {
 
 	public BlockStatement(ScopeStatement elem) {
 		convertNode(elem);
-		descent.internal.core.dom.CompoundStatement compoundStat = 
+		if(elem.s instanceof descent.internal.core.dom.ScopeStatement) {
+			this.statements = DescentASTConverter.convertManyL(
+					new ASTNode[] {elem.s}, statements);		
+		} else {
+			descent.internal.core.dom.CompoundStatement compoundStat = 
 			(descent.internal.core.dom.CompoundStatement) elem.s;
-		this.statements = DescentASTConverter.convertManyL(compoundStat.as, statements); 
+			this.statements = DescentASTConverter.convertManyL(compoundStat.as, statements);
+		}
 	}
 
 

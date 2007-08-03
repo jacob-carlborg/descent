@@ -5,6 +5,7 @@ import descent.internal.core.dom.ForeachStatement;
 import dtool.descentadapter.DescentASTConverter;
 import dtool.dom.ast.IASTNeoVisitor;
 import dtool.dom.definitions.FunctionParameter;
+import dtool.dom.definitions.IFunctionParameter;
 import dtool.dom.expressions.Expression;
 
 public class StatementForeach extends Statement {
@@ -17,7 +18,7 @@ public class StatementForeach extends Statement {
 	public StatementForeach(ForeachStatement elem) {
 		convertNode(elem);
 		this.params = (FunctionParameter[]) DescentASTConverter.convertMany(
-				elem.arguments, new FunctionParameter[elem.arguments.length]);
+				elem.arguments, new IFunctionParameter[elem.arguments.length]);
 		this.iterable = Expression.convert(elem.aggr);
 		this.body = Statement.convert(elem.body);
 		this.reverse = elem.reverse;

@@ -11,6 +11,8 @@ public class ParserFacade {
 	
 	public Parser parseCompilationUnit(String source) {
 		Parser parser = new Parser(source);
+		// parser.commentToken = true; // FIXME: comments not working
+		parser.doDocComment = true;
 		List<IDeclaration> declDefs = parser.parseModule();
 		
 		parser.mod.members = declDefs;

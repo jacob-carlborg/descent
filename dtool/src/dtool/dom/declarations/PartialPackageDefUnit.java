@@ -7,8 +7,6 @@ import dtool.dom.ast.IASTNeoVisitor;
 import dtool.dom.definitions.DefUnit;
 import dtool.dom.definitions.Module;
 import dtool.dom.definitions.Symbol;
-import dtool.dom.definitions.DefUnit.EArcheType;
-import dtool.dom.references.EntIdentifier;
 import dtool.dom.references.EntModule;
 import dtool.refmodel.IScope;
 import dtool.refmodel.IScopeNode;
@@ -41,13 +39,19 @@ public abstract class PartialPackageDefUnit extends DefUnit implements IScopeNod
 	
 	@Override
 	public EArcheType getArcheType() {
-		return null;
+		return EArcheType.Package;
 	}
 	
 	@Override
-	public String toStringAsDefUnit() {
+	public String toStringAsCodeCompletion() {
 		return getName();
 	}
+	
+	@Override
+	public String toStringFullSignature() {
+		return getName();
+	}
+	
 
 	@Override
 	public void accept0(IASTNeoVisitor visitor) {

@@ -1,7 +1,9 @@
 package dtool.refmodel;
 
 import melnorme.miscutil.tree.IElement;
+import dtool.dom.ast.ASTNeoNode;
 import dtool.dom.ast.ASTNode;
+import dtool.dom.definitions.DefUnit;
 import dtool.dom.definitions.Module;
 import dtool.dom.definitions.DefinitionAggregate.BaseClass;
 
@@ -24,9 +26,6 @@ public class NodeUtil {
 	public static IScopeNode getOuterScope(IElement startElem) {
 			IElement elem = startElem.getParent();
 	
-	/*		while(elem != null && (elem instanceof IScope) == false)
-				elem = elem.getParent();*/
-	
 			while(elem != null) {
 				if (elem instanceof IScopeNode)
 					return (IScopeNode) elem;
@@ -39,7 +38,17 @@ public class NodeUtil {
 				
 				elem = elem.getParent();
 			}
-			return ((IScopeNode)elem);
+			return null;
 		}
+
+	public static DefUnit getOuterDefUnit(ASTNeoNode node) {
+		IElement elem = node.getParent();
+		while(elem != null) {
+			if (elem instanceof DefUnit)
+				return (DefUnit) elem;
+			elem = elem.getParent();
+		}
+		return null;
+	}
 
 }

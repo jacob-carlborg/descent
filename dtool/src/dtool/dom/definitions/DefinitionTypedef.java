@@ -5,9 +5,10 @@ import descent.internal.core.dom.TypedefDeclaration;
 import dtool.dom.ast.IASTNeoVisitor;
 import dtool.dom.expressions.Initializer;
 import dtool.dom.references.Entity;
+import dtool.dom.statements.IStatement;
 import dtool.refmodel.IScopeNode;
 
-public class DefinitionTypedef extends Definition {
+public class DefinitionTypedef extends Definition implements IStatement {
 
 	Entity type;
 	Initializer initializer;
@@ -31,12 +32,12 @@ public class DefinitionTypedef extends Definition {
 
 	@Override
 	public EArcheType getArcheType() {
-		return EArcheType.Enum;
+		return EArcheType.Typedef;
 	}
 	
 	@Override
-	public String toStringAsDefUnit() {
-		return defname + " -> " + type.toString() + " - " + getModule().md;
+	public String toStringAsCodeCompletion() {
+		return defname + " -> " + type.toString() + " - " + getModule();
 	}
 
 	@Override

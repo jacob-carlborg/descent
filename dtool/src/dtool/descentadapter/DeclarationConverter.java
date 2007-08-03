@@ -34,7 +34,6 @@ import dtool.dom.definitions.DefinitionTemplate;
 import dtool.dom.definitions.DefinitionTypedef;
 import dtool.dom.definitions.DefinitionVariable;
 import dtool.dom.definitions.EnumMember;
-import dtool.dom.definitions.FunctionParameter;
 import dtool.dom.definitions.TemplateParamAlias;
 import dtool.dom.definitions.TemplateParamTuple;
 import dtool.dom.definitions.TemplateParamType;
@@ -202,7 +201,7 @@ abstract class DeclarationConverter extends BaseConverter {
 		return endAdapt(new DefinitionFunction(elem));
 	}
 	public boolean visit(Argument elem) {
-		return endAdapt(new FunctionParameter(elem));
+		return endAdapt(DefinitionFunction.convertFunctionParameter(elem));
 	}
 	
 

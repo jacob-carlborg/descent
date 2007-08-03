@@ -27,7 +27,7 @@ public class EnumMember extends DefUnit {
 
 	@Override
 	public EArcheType getArcheType() {
-		return EArcheType.Enum;
+		return EArcheType.EnumMember;
 	}
 
 	@Override

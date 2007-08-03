@@ -6,7 +6,6 @@ import java.util.List;
 
 import melnorme.miscutil.StringUtil;
 import melnorme.miscutil.tree.TreeVisitor;
-
 import descent.internal.core.dom.Identifier;
 import descent.internal.core.dom.ModuleDeclaration;
 import descent.internal.core.dom.TOK;
@@ -16,8 +15,6 @@ import dtool.dom.ast.ASTNode;
 import dtool.dom.ast.IASTNeoVisitor;
 import dtool.dom.declarations.Declaration;
 import dtool.dom.references.EntIdentifier;
-import dtool.dom.references.EntModule;
-import dtool.refmodel.EntityResolver;
 import dtool.refmodel.IScope;
 import dtool.refmodel.IScopeNode;
 import dtool.refmodel.pluginadapters.IGenericCompilationUnit;
@@ -86,9 +83,19 @@ public class Module extends DefUnit implements IScopeNode {
 		return EArcheType.Module;
 	}
 	
-	public String toStringAsDefUnit() {
+	@Override
+	public String toString() {
+		if(defname.toString() == null)
+			return "<noname>";
+		else 
+			return md.toString();
+	}
+	
+	@Override
+	public String toStringFullSignature() {
 		return toString();
 	}
+	
 	
 	public void setCUnit(IGenericCompilationUnit cunit) {
 		this.cunit = cunit;

@@ -4,6 +4,7 @@ import melnorme.miscutil.Assert;
 import melnorme.miscutil.AssertIn;
 import melnorme.miscutil.tree.TreeNode;
 import descent.core.dom.IDescentElement;
+import descent.core.domX.AbstractElement;
 import descent.core.domX.IASTVisitor;
 
 public abstract class ASTNode extends TreeNode<ASTNode, IASTVisitor> implements IDescentElement, IASTNode {
@@ -70,16 +71,17 @@ public abstract class ASTNode extends TreeNode<ASTNode, IASTVisitor> implements 
 	
 	/** Returns a simple string representation of the node. */
 	public String toString() {
-		return "";
+		return toStringAsNode(false);
 	}
 	
-	/** => #toStringNodeExtra(node, true) */
-	public String toStringNodeExtra() {
-		return ASTPrinter.toStringNodeExtra(this,true);
-	}
-
 	/** Gets an extended String representation of given node. (for debugging) */
-	public String toStringNodeExtra(boolean printRangeInfo) {
-		return ASTPrinter.toStringNodeExtra(this, printRangeInfo);
+	public String toStringAsNode(boolean printRangeInfo) {
+		String str = toStringClassName();
+
+		if(this instanceof AbstractElement)
+			str = "#" + str;
+		if(printRangeInfo)
+			str += " ["+ startPos +"+"+ length +"]";
+		return str;
 	}
 }

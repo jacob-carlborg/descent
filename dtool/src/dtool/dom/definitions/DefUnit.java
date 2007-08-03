@@ -1,6 +1,5 @@
 package dtool.dom.definitions;
 
-import descent.internal.core.dom.AggregateDeclaration;
 import descent.internal.core.dom.Dsymbol;
 import descent.internal.core.dom.Identifier;
 import dtool.dom.ast.ASTNeoNode;
@@ -14,38 +13,31 @@ public abstract class DefUnit extends ASTNeoNode {
 
 	static public enum EArcheType {
 		Module,
+		Package,
+		Native,
+		Aggregate, 
+		Enum,
+		EnumMember, // same as var?
 		Variable,
 		Parameter,
 		Function,
 		Alias,
 		Typedef,
-		Enum,
-		Aggregate, 
 		Template,
 		Mixin,
-		Tuple,
+		Tuple,   
 		;
-		
-		public String toString(EArcheType archetype) {
-			switch(archetype) {
-			case Module: return "Module";
-			case Variable: return "Variable";
-			case Parameter: return "Parameter";
-			case Function: return "Function";
-			case Alias: return "Alias";
-			case Typedef: return "Typedef";
-			case Aggregate: return "Aggregate";
-			default: assert(false); return null;
-			}
-		}
 	}
 	
+	public String comments;
 	public Symbol defname;
 	public EArcheType archeType;
 
 	protected void convertDsymbol(Dsymbol elem) {
 		convertNode(elem);
 		convertIdentifier(elem.ident);
+		//TODO: The parser is not parsing comments
+		this.comments = elem.comments; 
 	}
 
 	protected void convertIdentifier(Identifier id) {
@@ -62,9 +54,17 @@ public abstract class DefUnit extends ASTNeoNode {
 		return getName();
 	}
 	
-	/** Returns a more detailed representation of this defunit. */
-	public String toStringAsDefUnit() {
-		return getName() + " - " + getModule().md;
+	/** Returns signature-oriented String representation. */
+	public String toStringFullSignature() {
+		String str = getArcheType().toString() 
+			+ "  " + getModule().toStringFullSignature() + "."	+ getName();
+		//if(getMembersScope() != this)str += " : " + getMembersScope();
+		return str;
+	}
+	
+	/** Returns completion proposal oriented String representation. */
+	public String toStringAsCodeCompletion() {
+		return getName() + " - " + getModule();
 	}
 
 	/** Gets the archtype (the kind) of this DefUnit. */

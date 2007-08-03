@@ -12,7 +12,7 @@ public abstract class IntrinsicDefUnit extends DefUnit implements IIntrinsicUnit
 	
 	@Override
 	public EArcheType getArcheType() {
-		return EArcheType.Aggregate;
+		return EArcheType.Native;
 	}
 
 	@Override

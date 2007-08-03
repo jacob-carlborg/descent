@@ -1,12 +1,11 @@
 package dtool.dom.definitions;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
+import melnorme.miscutil.StringUtil;
 import melnorme.miscutil.tree.TreeVisitor;
-
 import descent.internal.core.dom.AggregateDeclaration;
 import dtool.descentadapter.DescentASTConverter;
 import dtool.dom.ast.ASTNeoNode;
@@ -14,7 +13,6 @@ import dtool.dom.ast.ASTNode;
 import dtool.dom.ast.IASTNeoVisitor;
 import dtool.dom.references.Entity;
 import dtool.dom.statements.IStatement;
-import dtool.refmodel.EntityResolver;
 import dtool.refmodel.IScope;
 import dtool.refmodel.IScopeNode;
 
@@ -49,7 +47,7 @@ public class DefinitionAggregate extends Definition implements IScopeNode, IStat
 	
 	public List<ASTNode> members; 
 	public List<BaseClass> baseClasses;
-	public TemplateParameter[] templateParameters; 
+	public TemplateParameter[] templateParams; 
 	
 	
 	@SuppressWarnings("unchecked")
@@ -58,7 +56,7 @@ public class DefinitionAggregate extends Definition implements IScopeNode, IStat
 		this.members = DescentASTConverter.convertManyL(elem.members, this.members);
 		this.baseClasses = DescentASTConverter.convertManyL(elem.baseClasses, this.baseClasses);
 		if(elem.templateParameters != null)
-		this.templateParameters = TemplateParameter.convertMany(elem.templateParameters);
+		this.templateParams = TemplateParameter.convertMany(elem.templateParameters);
 	}
 	
 	public EArcheType getArcheType() {
@@ -69,7 +67,7 @@ public class DefinitionAggregate extends Definition implements IScopeNode, IStat
 		boolean children = visitor.visit(this);
 		if (children) {
 			TreeVisitor.acceptChildren(visitor, defname);
-			TreeVisitor.acceptChildren(visitor, templateParameters);
+			TreeVisitor.acceptChildren(visitor, templateParams);
 			TreeVisitor.acceptChildren(visitor, baseClasses);
 			TreeVisitor.acceptChildren(visitor, members);
 		}
@@ -101,9 +99,21 @@ public class DefinitionAggregate extends Definition implements IScopeNode, IStat
 	}
 
 	@Override
-	public String toStringAsDefUnit() {
-		return defname + " - " + getModule().md;
+	public String toStringAsCodeCompletion() {
+		return defname + " - " + getModule();
+	}
+	
+	private String toStringTemplateParams() {
+		return (templateParams == null ? "" : 
+			"("+ StringUtil.collToString(templateParams, ",") +")");
 	}
 
+	@Override
+	public String toStringFullSignature() {
+		String str = getArcheType().toString() 
+		+ "  " + getModule() +"."+ getName()
+		+ toStringTemplateParams();
+		return str;
+	}
 
 }

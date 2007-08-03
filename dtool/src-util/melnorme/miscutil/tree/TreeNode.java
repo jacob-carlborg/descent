@@ -1,10 +1,6 @@
 package melnorme.miscutil.tree;
 
 import melnorme.miscutil.AssertIn;
-import melnorme.miscutil.tree.ITreeNodeGeneric;
-import melnorme.miscutil.tree.ITreeVisitor;
-import melnorme.miscutil.tree.IVisitable;
-import melnorme.miscutil.tree.TreeNode;
 import dtool.dom.ast.ASTNode;
 
 /**

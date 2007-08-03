@@ -1,5 +1,8 @@
 package dtool.dom.ast;
 
+import melnorme.miscutil.Assert;
+import melnorme.miscutil.log.Logg;
+
 
 
 /**
@@ -22,6 +25,9 @@ public class ASTNodeFinder extends ASTNeoUpTreeVisitor {
 			return null;
 		
 		ASTNodeFinder aef = new ASTNodeFinder(offset);
+		if(root == null)
+			Logg.main.println("IMPOSSIBLE");
+		Assert.isNotNull(root);
 		root.accept(aef);
 		return aef.match;
 	}

@@ -6,12 +6,13 @@ import descent.internal.core.dom.AliasDeclaration;
 import dtool.descentadapter.DescentASTConverter;
 import dtool.dom.ast.IASTNeoVisitor;
 import dtool.dom.references.Entity;
+import dtool.dom.statements.IStatement;
 import dtool.refmodel.IScopeNode;
 
 /**
  * A definition of an alias.
  */
-public class DefinitionAlias extends Definition {
+public class DefinitionAlias extends Definition implements IStatement {
 	
 	public Entity target;
 	
@@ -21,7 +22,7 @@ public class DefinitionAlias extends Definition {
 	}
 	
 	public EArcheType getArcheType() {
-		return EArcheType.Alias; // XXX: use efective archetype?
+		return EArcheType.Alias;
 	}
 
 	public void accept0(IASTNeoVisitor visitor) {
@@ -39,9 +40,8 @@ public class DefinitionAlias extends Definition {
 	}
 	
 	@Override
-	public String toStringAsDefUnit() {
+	public String toStringAsCodeCompletion() {
 		return defname + " -> " + target.toString();
 	}
-
-
+	
 }

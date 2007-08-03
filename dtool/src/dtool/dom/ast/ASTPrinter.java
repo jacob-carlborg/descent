@@ -1,7 +1,6 @@
 package dtool.dom.ast;
 
 import melnorme.miscutil.tree.TreeDepthRecon;
-import descent.core.domX.AbstractElement;
 import dtool.dom.references.EntQualified;
 
 /**
@@ -17,12 +16,7 @@ public class ASTPrinter extends ASTNeoUpTreeVisitor {
 
 	/** Gets an extended String representation of given node. */
 	public static String toStringNodeExtra(ASTNode node, boolean printRangeInfo) {
-		String name = node.toStringClassName();
-		if(node instanceof AbstractElement)
-			name = "#" + name;
-		if(printRangeInfo)
-			name += " [" + node.startPos+"+"+node.length+"]";
-		return name += " " + node.toString();
+		return node.toStringAsNode(printRangeInfo) + " " + node.toString();
 	}
 	
 	/** #toStringAST(elem, true) */
