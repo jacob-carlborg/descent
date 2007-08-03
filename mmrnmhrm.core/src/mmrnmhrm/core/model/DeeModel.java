@@ -78,7 +78,7 @@ public class DeeModel {
 	}
 
 	/** Returns the Compilation for the given file. If the file is not part
-	 * of a source root, returns an out of model Compilation Unit. */
+	 * of the model, return null. */
 	public static CompilationUnit findCompilationUnit(IFile file) throws CoreException {
 		CompilationUnit cunit = findMember(file);
 		return cunit;
