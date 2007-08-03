@@ -205,9 +205,10 @@ public class CodeFormatterVisitor extends ASTVisitor
 		Type defaultType = node.getDefaultType();
 		if(null != defaultType)
 		{
-			scribe.space();
-			scribe.printNextToken(TOK.TOKassign);
-			scribe.space();
+			scribe.printNextToken(TOK.TOKassign,
+					prefs.insert_space_before_equals_in_default_template_arguments);
+			if(prefs.insert_space_after_equals_in_default_template_arguments)
+				scribe.space();
 			defaultType.accept(this);
 		}
 		scribe.printTrailingComment();
@@ -261,9 +262,10 @@ public class CodeFormatterVisitor extends ASTVisitor
 		Expression defaultValue = node.getDefaultValue();
 		if (null != defaultValue)
 		{
-			scribe.space();
-			scribe.printNextToken(TOK.TOKassign);
-			scribe.space();
+			scribe.printNextToken(TOK.TOKassign,
+					prefs.insert_space_before_equals_in_default_function_arguments);
+			if(prefs.insert_space_after_equals_in_default_function_arguments)
+				scribe.space();
 			defaultValue.accept(this);
 		}
 		scribe.printTrailingComment();
@@ -629,9 +631,10 @@ public class CodeFormatterVisitor extends ASTVisitor
 	{
 		formatModifiers(true);
 		scribe.printNextToken(TOK.TOKdebug);
-		scribe.space();
-		scribe.printNextToken(TOK.TOKassign);
-		scribe.space();
+		scribe.printNextToken(TOK.TOKassign,
+				prefs.insert_space_before_equals_in_version_debug_assignment);
+		if(prefs.insert_space_after_equals_in_version_debug_assignment)
+			scribe.space();
 		node.getVersion().accept(this);
 		scribe.printNextToken(TOK.TOKsemicolon, 
 				prefs.insert_space_before_semicolon);
@@ -859,9 +862,10 @@ public class CodeFormatterVisitor extends ASTVisitor
 		Expression value = node.getValue();
 		if(null != value)
 		{
-			scribe.space();
-			scribe.printNextToken(TOK.TOKassign);
-			scribe.space();
+			scribe.printNextToken(TOK.TOKassign,
+					prefs.insert_space_before_equals_in_enum_constants);
+			if(prefs.insert_space_after_equals_in_enum_constants)
+				scribe.space();
 			value.accept(this);
 		}
 		scribe.printTrailingComment();
@@ -1129,9 +1133,10 @@ public class CodeFormatterVisitor extends ASTVisitor
 		if (null != alias)
 		{
 			alias.accept(this);
-			scribe.space();
-			scribe.printNextToken(TOK.TOKassign);
-			scribe.space();
+			scribe.printNextToken(TOK.TOKassign,
+					prefs.insert_space_before_equals_in_renamed_imports);
+			if(prefs.insert_space_after_equals_in_renamed_imports)
+				scribe.space();
 		}
 		node.getName().accept(this);
 		List<SelectiveImport> imports = node.selectiveImports();
@@ -1642,9 +1647,10 @@ public class CodeFormatterVisitor extends ASTVisitor
 		if (null != alias)
 		{
 			alias.accept(this);
-			scribe.space();
-			scribe.printNextToken(TOK.TOKassign);
-			scribe.space();
+			scribe.printNextToken(TOK.TOKassign,
+					prefs.insert_space_before_equals_in_renamed_imports);
+			if(prefs.insert_space_after_equals_in_renamed_imports)
+				scribe.space();
 		}
 		
 		node.getName().accept(this);
@@ -2046,9 +2052,10 @@ public class CodeFormatterVisitor extends ASTVisitor
 		Initializer init = node.getInitializer();
 		if(null != init)
 		{
-			scribe.space();
-			scribe.printNextToken(TOK.TOKassign);
-			scribe.space();
+			scribe.printNextToken(TOK.TOKassign,
+					prefs.insert_space_before_equals_in_variable_inits);
+			if(prefs.insert_space_after_equals_in_variable_inits)
+				scribe.space();
 			init.accept(this);
 		}
 		return false;
@@ -2116,9 +2123,10 @@ public class CodeFormatterVisitor extends ASTVisitor
 		Type defaultType = node.getDefaultType();
 		if(null != defaultType)
 		{
-			scribe.space();
-			scribe.printNextToken(TOK.TOKassign);
-			scribe.space();
+			scribe.printNextToken(TOK.TOKassign,
+					prefs.insert_space_before_equals_in_default_template_arguments);
+			if(prefs.insert_space_after_equals_in_default_template_arguments)
+				scribe.space();
 			defaultType.accept(this);
 		}
 		return false;
@@ -2159,9 +2167,10 @@ public class CodeFormatterVisitor extends ASTVisitor
 		Expression defaultValue = node.getDefaultValue();
 		if(null != defaultValue)
 		{
-			scribe.space();
-			scribe.printNextToken(TOK.TOKassign);
-			scribe.space();
+			scribe.printNextToken(TOK.TOKassign,
+					prefs.insert_space_before_equals_in_default_template_arguments);
+			if(prefs.insert_space_after_equals_in_default_template_arguments)
+				scribe.space();
 			defaultValue.accept(this);
 		}
 		return false;
@@ -2197,9 +2206,10 @@ public class CodeFormatterVisitor extends ASTVisitor
 		Initializer init = node.getInitializer();
 		if(null != init)
 		{
-			scribe.space();
-			scribe.printNextToken(TOK.TOKassign);
-			scribe.space();
+			scribe.printNextToken(TOK.TOKassign,
+					prefs.insert_space_before_equals_in_variable_inits);
+			if(prefs.insert_space_after_equals_in_variable_inits)
+				scribe.space();
 			init.accept(this);
 		}
 		return false;
@@ -2215,9 +2225,10 @@ public class CodeFormatterVisitor extends ASTVisitor
 	{
 		formatModifiers(true);
 		scribe.printNextToken(TOK.TOKversion);
-		scribe.space();
-		scribe.printNextToken(TOK.TOKassign);
-		scribe.space();
+		scribe.printNextToken(TOK.TOKassign,
+				prefs.insert_space_before_equals_in_version_debug_assignment);
+		if(prefs.insert_space_after_equals_in_version_debug_assignment)
+			scribe.space();
 		node.getVersion().accept(this);
 		scribe.printNextToken(TOK.TOKsemicolon,
 				prefs.insert_space_before_semicolon);

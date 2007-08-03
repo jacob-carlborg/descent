@@ -121,6 +121,7 @@ public final class WhiteSpaceOptions
 		out_declaration.setParent(function_declaration);
 		variable_declaration.setParent(declarations);
 		version_debug.setParent(declarations);
+		version_debug_assignment.setParent(version_debug);
 		pragma.setParent(declarations);
 		mixin.setParent(declarations);
 		align_declaration.setParent(declarations);
@@ -231,8 +232,8 @@ public final class WhiteSpaceOptions
 		//roots.add(before_brace);
 		roots.add(before_operator);
 		roots.add(after_operator);
-		//roots.add(before_equals);
-		//roots.add(after_equals);
+		roots.add(before_equals);
+		roots.add(after_equals);
 		roots.add(before_dot);
 		roots.add(after_dot);
 		roots.add(before_slice_operator);
@@ -441,7 +442,7 @@ public abstract static class Node {
 		new PreviewSnippet(
 			CodeFormatter.K_COMPILATION_UNIT, 
 			"void foo()out(){}body{}" +
-		    "int bar(int x, inout long[] y ...)in{}out(result){}body{return x + y;}" +
+		    "int bar(int x, final scope long y = 12, string[] z ...)in{}out(result){}body{return x + y;}" +
 		    "void bar()() {}" +
 		    "void quux(T, U : T*)(int a, int b){}"
 		);
@@ -532,7 +533,7 @@ public abstract static class Node {
 	private final PreviewSnippet TEMPLATE_DECLARATION_PREVIEW =
 		new PreviewSnippet(
 			CodeFormatter.K_COMPILATION_UNIT, 
-			"template Foo(){} template Bar(T:int, K...){}"
+			"template Foo(){} template Bar(T:int,U=long, V...){}"
 		);
 	
 	private final PreviewSnippet VERSION_DEBUG_PREVIEW =
@@ -540,6 +541,7 @@ public abstract static class Node {
 			CodeFormatter.K_COMPILATION_UNIT, 
 			"version(_32Bit){alias int size_t;}" +
 			"else version(_64Bit){alias long size_t;}" +
+			"version=ProfessionalEdition;" +
 			"debug{}"
 		);
 	
@@ -628,7 +630,7 @@ public abstract static class Node {
 	
 	private final PreviewSnippet IMPORT_PREVIEW =
 		new PreviewSnippet(CodeFormatter.K_COMPILATION_UNIT, 
-			"public static import x.y,x.z,foo:bar,baz;"
+			"public static import x.y,x.z,x.foo=bar:a,b=c;"
 		);
 	
 	private final PreviewSnippet ALIAS_TYPEDEF_PREVIEW =

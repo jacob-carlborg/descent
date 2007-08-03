@@ -1768,19 +1768,92 @@ insert_space_after_question_mark_in_conditional_expressions
 
 
 # White Space Options - Before =
-#insert_space_before_equals_in_selective_imports
-#	type=boolean
-#	default=true
-#	wsDElem=import_declaration
-#	wsDElemEx=selective_imports
-#	wsSynElem=before_equals
-#	wsSynElemEx=before_equals_in_selective_imports
-#insert_space_before_equals_in_default_arguments
-#insert_space_before_equals_in_default_template_arguments
-#insert_space_before_equals_in_version_debug_assignment
-#insert_space_before_equals_in_enum_constants
-#insert_space_before_equals_in_typedef_inits
-#insert_space_before_equals_in_variable_inits
+insert_space_before_equals_in_renamed_imports
+	type=boolean
+	default=true
+	wsDElem=import_declaration
+	wsDElemEx=renamed_imports
+	wsSynElem=before_equals
+	wsSynElemEx=before_equals_in_renamed_imports
+	wsPreview=IMPORT_PREVIEW
+insert_space_before_equals_in_default_function_arguments
+	type=boolean
+	default=true
+	wsDElem=function_decl_params
+	wsSynElem=before_equals
+	wsSynElemEx=before_equals_for_default_values
+	wsPreview=FUNCTION_DECL_PREVIEW
+insert_space_before_equals_in_default_template_arguments
+	type=boolean
+	default=true
+	wsDElem=template_declaration
+	wsSynElem=before_equals
+	wsSynElemEx=before_equals_for_default_values
+	wsPreview=TEMPLATE_DECLARATION_PREVIEW
+insert_space_before_equals_in_version_debug_assignment
+	type=boolean
+	default=true
+	wsDElem=version_debug_assignment
+	wsSynElem=before_equals
+	wsPreview=VERSION_DEBUG_PREVIEW
+insert_space_before_equals_in_enum_constants
+	type=boolean
+	default=true
+	wsDElem=enums
+	wsSynElem=before_equals
+	wsPreview=ENUM_PREVIEW
+insert_space_before_equals_in_variable_inits
+	type=boolean
+	default=true
+	wsDElem=variable_declaration
+	wsSynElem=before_equals
+	wsPreview=MULT_LOCAL_PREVIEW
+
+
+
+
+
+# White Space Options - After =
+insert_space_after_equals_in_renamed_imports
+	type=boolean
+	default=true
+	wsDElem=import_declaration
+	wsDElemEx=renamed_imports
+	wsSynElem=after_equals
+	wsSynElemEx=after_equals_in_renamed_imports
+	wsPreview=IMPORT_PREVIEW
+insert_space_after_equals_in_default_function_arguments
+	type=boolean
+	default=true
+	wsDElem=function_decl_params
+	wsSynElem=after_equals
+	wsSynElemEx=after_equals_for_default_values
+	wsPreview=FUNCTION_DECL_PREVIEW
+insert_space_after_equals_in_default_template_arguments
+	type=boolean
+	default=true
+	wsDElem=template_declaration
+	wsSynElem=after_equals
+	wsSynElemEx=after_equals_for_default_values
+	wsPreview=TEMPLATE_DECLARATION_PREVIEW
+insert_space_after_equals_in_version_debug_assignment
+	type=boolean
+	default=true
+	wsDElem=version_debug_assignment
+	wsSynElem=after_equals
+	wsPreview=VERSION_DEBUG_PREVIEW
+insert_space_after_equals_in_enum_constants
+	type=boolean
+	default=true
+	wsDElem=enums
+	wsSynElem=after_equals
+	wsPreview=ENUM_PREVIEW
+insert_space_after_equals_in_variable_inits
+	type=boolean
+	default=true
+	wsDElem=variable_declaration
+	wsSynElem=after_equals
+	wsPreview=MULT_LOCAL_PREVIEW
 
 
 

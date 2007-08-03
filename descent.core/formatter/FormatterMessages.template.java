@@ -196,6 +196,8 @@ final class FormatterMessages extends NLS {
 	public static String WhiteSpaceOptions_enums;
 	public static String WhiteSpaceOptions_traits_expression;
 	public static String WhiteSpaceOptions_modified_type;
+	public static String WhiteSpaceOptions_version_debug_assignment;
+	public static String WhiteSpaceOptions_renamed_imports;
 	
 	// White space options - syntax elements
 	public static String WhiteSpaceOptions_before_semicolon;
@@ -269,6 +271,10 @@ final class FormatterMessages extends NLS {
 	public static String WhiteSpaceOptions_after_equals;
 	public static String WhiteSpaceOptions_before_slice_operator_in_foreach_range_statement;
 	public static String WhiteSpaceOptions_after_slice_operator_in_foreach_range_statement;
+	public static String WhiteSpaceOptions_before_equals_for_default_values;
+	public static String WhiteSpaceOptions_after_equals_for_default_values;
+	public static String WhiteSpaceOptions_before_equals_in_renamed_imports;
+	public static String WhiteSpaceOptions_after_equals_in_renamed_imports;
 	
 	// Blank lines tab page
 	public static String ModifyDialog_tabpage_blank_lines_title;

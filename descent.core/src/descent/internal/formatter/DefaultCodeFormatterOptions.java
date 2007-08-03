@@ -326,6 +326,18 @@ public class DefaultCodeFormatterOptions
 	public boolean insert_space_after_semicolon_in_for_statement;
 	public boolean insert_space_before_question_mark_in_conditional_expressions;
 	public boolean insert_space_after_question_mark_in_conditional_expressions;
+	public boolean insert_space_before_equals_in_renamed_imports;
+	public boolean insert_space_before_equals_in_default_function_arguments;
+	public boolean insert_space_before_equals_in_default_template_arguments;
+	public boolean insert_space_before_equals_in_version_debug_assignment;
+	public boolean insert_space_before_equals_in_enum_constants;
+	public boolean insert_space_before_equals_in_variable_inits;
+	public boolean insert_space_after_equals_in_renamed_imports;
+	public boolean insert_space_after_equals_in_default_function_arguments;
+	public boolean insert_space_after_equals_in_default_template_arguments;
+	public boolean insert_space_after_equals_in_version_debug_assignment;
+	public boolean insert_space_after_equals_in_enum_constants;
+	public boolean insert_space_after_equals_in_variable_inits;
 	public boolean insert_space_after_star_in_c_style_fp;
 	public AsteriskPosition asterisk_position_for_pointer_types;
 	public int blank_lines_before_module;
@@ -640,6 +652,18 @@ public class DefaultCodeFormatterOptions
 		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_AFTER_SEMICOLON_IN_FOR_STATEMENT, insert_space_after_semicolon_in_for_statement ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
 		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_QUESTION_MARK_IN_CONDITIONAL_EXPRESSIONS, insert_space_before_question_mark_in_conditional_expressions ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
 		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_AFTER_QUESTION_MARK_IN_CONDITIONAL_EXPRESSIONS, insert_space_after_question_mark_in_conditional_expressions ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
+		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_EQUALS_IN_RENAMED_IMPORTS, insert_space_before_equals_in_renamed_imports ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
+		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_EQUALS_IN_DEFAULT_FUNCTION_ARGUMENTS, insert_space_before_equals_in_default_function_arguments ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
+		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_EQUALS_IN_DEFAULT_TEMPLATE_ARGUMENTS, insert_space_before_equals_in_default_template_arguments ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
+		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_EQUALS_IN_VERSION_DEBUG_ASSIGNMENT, insert_space_before_equals_in_version_debug_assignment ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
+		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_EQUALS_IN_ENUM_CONSTANTS, insert_space_before_equals_in_enum_constants ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
+		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_EQUALS_IN_VARIABLE_INITS, insert_space_before_equals_in_variable_inits ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
+		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_AFTER_EQUALS_IN_RENAMED_IMPORTS, insert_space_after_equals_in_renamed_imports ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
+		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_AFTER_EQUALS_IN_DEFAULT_FUNCTION_ARGUMENTS, insert_space_after_equals_in_default_function_arguments ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
+		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_AFTER_EQUALS_IN_DEFAULT_TEMPLATE_ARGUMENTS, insert_space_after_equals_in_default_template_arguments ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
+		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_AFTER_EQUALS_IN_VERSION_DEBUG_ASSIGNMENT, insert_space_after_equals_in_version_debug_assignment ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
+		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_AFTER_EQUALS_IN_ENUM_CONSTANTS, insert_space_after_equals_in_enum_constants ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
+		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_AFTER_EQUALS_IN_VARIABLE_INITS, insert_space_after_equals_in_variable_inits ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
 		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_AFTER_STAR_IN_C_STYLE_FP, insert_space_after_star_in_c_style_fp ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
 		options.put(DefaultCodeFormatterConstants.FORMATTER_ASTERISK_POSITION_FOR_POINTER_TYPES, asterisk_position_for_pointer_types.toString());
 		options.put(DefaultCodeFormatterConstants.FORMATTER_BLANK_LINES_BEFORE_MODULE, Integer.toString(blank_lines_before_module));
@@ -2884,6 +2908,114 @@ public class DefaultCodeFormatterOptions
 			}
 		}
 		
+		current = settings.get(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_EQUALS_IN_RENAMED_IMPORTS);
+		if(null != current) {
+			try {
+				insert_space_before_equals_in_renamed_imports = DefaultCodeFormatterConstants.TRUE.equals(current);
+			} catch(Exception e) {
+				insert_space_before_equals_in_renamed_imports = true;
+			}
+		}
+		
+		current = settings.get(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_EQUALS_IN_DEFAULT_FUNCTION_ARGUMENTS);
+		if(null != current) {
+			try {
+				insert_space_before_equals_in_default_function_arguments = DefaultCodeFormatterConstants.TRUE.equals(current);
+			} catch(Exception e) {
+				insert_space_before_equals_in_default_function_arguments = true;
+			}
+		}
+		
+		current = settings.get(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_EQUALS_IN_DEFAULT_TEMPLATE_ARGUMENTS);
+		if(null != current) {
+			try {
+				insert_space_before_equals_in_default_template_arguments = DefaultCodeFormatterConstants.TRUE.equals(current);
+			} catch(Exception e) {
+				insert_space_before_equals_in_default_template_arguments = true;
+			}
+		}
+		
+		current = settings.get(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_EQUALS_IN_VERSION_DEBUG_ASSIGNMENT);
+		if(null != current) {
+			try {
+				insert_space_before_equals_in_version_debug_assignment = DefaultCodeFormatterConstants.TRUE.equals(current);
+			} catch(Exception e) {
+				insert_space_before_equals_in_version_debug_assignment = true;
+			}
+		}
+		
+		current = settings.get(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_EQUALS_IN_ENUM_CONSTANTS);
+		if(null != current) {
+			try {
+				insert_space_before_equals_in_enum_constants = DefaultCodeFormatterConstants.TRUE.equals(current);
+			} catch(Exception e) {
+				insert_space_before_equals_in_enum_constants = true;
+			}
+		}
+		
+		current = settings.get(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_EQUALS_IN_VARIABLE_INITS);
+		if(null != current) {
+			try {
+				insert_space_before_equals_in_variable_inits = DefaultCodeFormatterConstants.TRUE.equals(current);
+			} catch(Exception e) {
+				insert_space_before_equals_in_variable_inits = true;
+			}
+		}
+		
+		current = settings.get(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_AFTER_EQUALS_IN_RENAMED_IMPORTS);
+		if(null != current) {
+			try {
+				insert_space_after_equals_in_renamed_imports = DefaultCodeFormatterConstants.TRUE.equals(current);
+			} catch(Exception e) {
+				insert_space_after_equals_in_renamed_imports = true;
+			}
+		}
+		
+		current = settings.get(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_AFTER_EQUALS_IN_DEFAULT_FUNCTION_ARGUMENTS);
+		if(null != current) {
+			try {
+				insert_space_after_equals_in_default_function_arguments = DefaultCodeFormatterConstants.TRUE.equals(current);
+			} catch(Exception e) {
+				insert_space_after_equals_in_default_function_arguments = true;
+			}
+		}
+		
+		current = settings.get(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_AFTER_EQUALS_IN_DEFAULT_TEMPLATE_ARGUMENTS);
+		if(null != current) {
+			try {
+				insert_space_after_equals_in_default_template_arguments = DefaultCodeFormatterConstants.TRUE.equals(current);
+			} catch(Exception e) {
+				insert_space_after_equals_in_default_template_arguments = true;
+			}
+		}
+		
+		current = settings.get(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_AFTER_EQUALS_IN_VERSION_DEBUG_ASSIGNMENT);
+		if(null != current) {
+			try {
+				insert_space_after_equals_in_version_debug_assignment = DefaultCodeFormatterConstants.TRUE.equals(current);
+			} catch(Exception e) {
+				insert_space_after_equals_in_version_debug_assignment = true;
+			}
+		}
+		
+		current = settings.get(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_AFTER_EQUALS_IN_ENUM_CONSTANTS);
+		if(null != current) {
+			try {
+				insert_space_after_equals_in_enum_constants = DefaultCodeFormatterConstants.TRUE.equals(current);
+			} catch(Exception e) {
+				insert_space_after_equals_in_enum_constants = true;
+			}
+		}
+		
+		current = settings.get(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_AFTER_EQUALS_IN_VARIABLE_INITS);
+		if(null != current) {
+			try {
+				insert_space_after_equals_in_variable_inits = DefaultCodeFormatterConstants.TRUE.equals(current);
+			} catch(Exception e) {
+				insert_space_after_equals_in_variable_inits = true;
+			}
+		}
+		
 		current = settings.get(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_AFTER_STAR_IN_C_STYLE_FP);
 		if(null != current) {
 			try {
@@ -3561,6 +3693,18 @@ public class DefaultCodeFormatterOptions
 		insert_space_after_semicolon_in_for_statement = true;
 		insert_space_before_question_mark_in_conditional_expressions = true;
 		insert_space_after_question_mark_in_conditional_expressions = true;
+		insert_space_before_equals_in_renamed_imports = true;
+		insert_space_before_equals_in_default_function_arguments = true;
+		insert_space_before_equals_in_default_template_arguments = true;
+		insert_space_before_equals_in_version_debug_assignment = true;
+		insert_space_before_equals_in_enum_constants = true;
+		insert_space_before_equals_in_variable_inits = true;
+		insert_space_after_equals_in_renamed_imports = true;
+		insert_space_after_equals_in_default_function_arguments = true;
+		insert_space_after_equals_in_default_template_arguments = true;
+		insert_space_after_equals_in_version_debug_assignment = true;
+		insert_space_after_equals_in_enum_constants = true;
+		insert_space_after_equals_in_variable_inits = true;
 		insert_space_after_star_in_c_style_fp = false;
 		asterisk_position_for_pointer_types = AsteriskPosition.D_STYLE;
 		blank_lines_before_module = 0;
