@@ -59,6 +59,8 @@ public final class WhiteSpaceOptions
 		createOption(foreach_statement, workingValues, FormatterMessages.WhiteSpaceOptions_before_closing_paren, DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_CLOSING_PAREN_IN_FOREACH_LOOPS, FOR_PREVIEW);
 		createOption(foreach_statement, workingValues, FormatterMessages.WhiteSpaceOptions_before_comma, DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_COMMA_IN_FOREACH_STATEMENT, FOR_PREVIEW);
 		createOption(foreach_statement, workingValues, FormatterMessages.WhiteSpaceOptions_after_comma, DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_AFTER_COMMA_IN_FOREACH_STATEMENT, FOR_PREVIEW);
+		createOption(foreach_statement, workingValues, FormatterMessages.WhiteSpaceOptions_before_slice_operator_in_foreach_range_statement, DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_SLICE_OPERATOR_IN_FOREACH_RANGE_STATEMENT, FOR_PREVIEW);
+		createOption(foreach_statement, workingValues, FormatterMessages.WhiteSpaceOptions_after_slice_operator_in_foreach_range_statement, DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_AFTER_SLICE_OPERATOR_IN_FOREACH_RANGE_STATEMENT, FOR_PREVIEW);
 		createOption(foreach_statement, workingValues, FormatterMessages.WhiteSpaceOptions_before_semicolon, DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_SEMICOLON_IN_FOREACH_STATEMENT, FOR_PREVIEW);
 		createOption(foreach_statement, workingValues, FormatterMessages.WhiteSpaceOptions_after_semicolon, DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_AFTER_SEMICOLON_IN_FOREACH_STATEMENT, FOR_PREVIEW);
 		
@@ -193,6 +195,13 @@ public final class WhiteSpaceOptions
 		createOption(array_constructor, workingValues, FormatterMessages.WhiteSpaceOptions_after_opening_bracket, DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_AFTER_OPENING_BRACKET_IN_ARRAY_CONSTRUCTORS, ARRAY_CONSTRUCTOR_PREVIEW);
 		createOption(array_constructor, workingValues, FormatterMessages.WhiteSpaceOptions_before_closing_bracket, DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_CLOSING_BRACKET_IN_ARRAY_CONSTRUCTORS, ARRAY_CONSTRUCTOR_PREVIEW);
 		
+		final InnerNode traits_expression = new InnerNode(null, workingValues, FormatterMessages.WhiteSpaceOptions_traits_expression);
+		createOption(traits_expression, workingValues, FormatterMessages.WhiteSpaceOptions_before_opening_paren, DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_OPENING_PAREN_IN_TRAITS_EXPRESSION, TRAITS_PREVIEW);
+		createOption(traits_expression, workingValues, FormatterMessages.WhiteSpaceOptions_after_opening_paren, DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_AFTER_OPENING_PAREN_IN_TRAITS_EXPRESSION, TRAITS_PREVIEW);
+		createOption(traits_expression, workingValues, FormatterMessages.WhiteSpaceOptions_before_closing_paren, DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_CLOSING_PAREN_IN_TRAITS_EXPRESSION, TRAITS_PREVIEW);
+		createOption(traits_expression, workingValues, FormatterMessages.WhiteSpaceOptions_before_comma, DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_COMMA_IN_TRAITS_EXPRESSION, TRAITS_PREVIEW);
+		createOption(traits_expression, workingValues, FormatterMessages.WhiteSpaceOptions_after_comma, DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_AFTER_COMMA_IN_TRAITS_EXPRESSION, TRAITS_PREVIEW);
+		
 		final InnerNode statements = new InnerNode(null, workingValues, FormatterMessages.WhiteSpaceOptions_statements);
 		createOption(statements, workingValues, FormatterMessages.WhiteSpaceOptions_before_colon_in_labeled_statements, DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_COLON_IN_STATEMENT_LABELS, LABEL_PREVIEW);
 		createOption(statements, workingValues, FormatterMessages.WhiteSpaceOptions_after_colon_in_labeled_statements, DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_AFTER_COLON_IN_STATEMENT_LABELS, LABEL_PREVIEW);
@@ -312,6 +321,11 @@ public final class WhiteSpaceOptions
 		createOption(import_declaration, workingValues, FormatterMessages.WhiteSpaceOptions_before_colon_in_selective_imports, DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_COLON_IN_SELECTIVE_IMPORTS, IMPORT_PREVIEW);
 		createOption(import_declaration, workingValues, FormatterMessages.WhiteSpaceOptions_after_colon_in_selective_imports, DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_AFTER_COLON_IN_SELECTIVE_IMPORTS, IMPORT_PREVIEW);
 		
+		final InnerNode modified_type = new InnerNode(null, workingValues, FormatterMessages.WhiteSpaceOptions_modified_type);
+		createOption(modified_type, workingValues, FormatterMessages.WhiteSpaceOptions_before_opening_paren, DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_OPENING_PAREN_IN_MODIFIED_TYPE, CONST_PREVIEW);
+		createOption(modified_type, workingValues, FormatterMessages.WhiteSpaceOptions_after_opening_paren, DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_AFTER_OPENING_PAREN_IN_MODIFIED_TYPE, CONST_PREVIEW);
+		createOption(modified_type, workingValues, FormatterMessages.WhiteSpaceOptions_before_closing_paren, DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_CLOSING_PAREN_IN_MODIFIED_TYPE, CONST_PREVIEW);
+		
 		final InnerNode for_statement = new InnerNode(null, workingValues, FormatterMessages.WhiteSpaceOptions_for_statement);
 		createOption(for_statement, workingValues, FormatterMessages.WhiteSpaceOptions_before_opening_paren, DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_OPENING_PAREN_IN_FOR_LOOPS, FOR_PREVIEW);
 		createOption(for_statement, workingValues, FormatterMessages.WhiteSpaceOptions_after_opening_paren, DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_AFTER_OPENING_PAREN_IN_FOR_LOOPS, FOR_PREVIEW);
@@ -416,6 +430,8 @@ public final class WhiteSpaceOptions
 		type_dot_identifier_expression.setParent(expressions);
 		struct_initalizer.setParent(expressions);
 		conditional_expression.setParent(expressions);
+		traits_expression.setParent(expressions);
+		modified_type.setParent(expressions);
 		
 		// Arrays
 		roots.add(arrays);
@@ -476,6 +492,7 @@ public final class WhiteSpaceOptions
 		createOption(after_comma, workingValues, FormatterMessages.WhiteSpaceOptions_new_params, DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_AFTER_COMMA_IN_NEW_ARGUMENTS, CONSTRUCTOR_PREVIEW);
 		createOption(after_comma, workingValues, FormatterMessages.WhiteSpaceOptions_trailing_comma_in_array_literal, DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_AFTER_TRAILING_COMMA_IN_ARRAY_INITIALIZER, ARRAY_INITIALIZER_PREVIEW);
 		createOption(after_comma, workingValues, FormatterMessages.WhiteSpaceOptions_assert_statement, DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_AFTER_COMMA_IN_ASSERT_STATEMENTS, ASSERT_PREVIEW);
+		createOption(after_comma, workingValues, FormatterMessages.WhiteSpaceOptions_traits_expression, DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_AFTER_COMMA_IN_TRAITS_EXPRESSION, TRAITS_PREVIEW);
 		
 		final InnerNode after_dot = new InnerNode(null, workingValues, FormatterMessages.WhiteSpaceOptions_after_dot);
 		createOption(after_dot, workingValues, FormatterMessages.WhiteSpaceOptions_qualified_names, DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_AFTER_DOT_IN_QUALIFIED_NAMES, DOT_PREVIEW);
@@ -529,6 +546,8 @@ public final class WhiteSpaceOptions
 		createOption(after_opening_paren, workingValues, FormatterMessages.WhiteSpaceOptions_parenthesized_expressions, DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_AFTER_OPENING_PAREN_IN_PARENTHESIZED_EXPRESSIONS, EXPRESSION_PREVIEW);
 		createOption(after_opening_paren, workingValues, FormatterMessages.WhiteSpaceOptions_template_invocation, DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_AFTER_OPENING_PAREN_IN_TEMPLATE_INVOCATION, TEMPLATE_INVOCATION_PREVIEW);
 		createOption(after_opening_paren, workingValues, FormatterMessages.WhiteSpaceOptions_type_dot_identifier_expression_parens, DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_AFTER_OPENING_PAREN_IN_TYPE_DOT_IDENTIFIER_EXPRESSION, TYPE_DOT_IDENTIFIER_PREVIEW);
+		createOption(after_opening_paren, workingValues, FormatterMessages.WhiteSpaceOptions_traits_expression, DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_AFTER_OPENING_PAREN_IN_TRAITS_EXPRESSION, TRAITS_PREVIEW);
+		createOption(after_opening_paren, workingValues, FormatterMessages.WhiteSpaceOptions_modified_type, DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_AFTER_OPENING_PAREN_IN_MODIFIED_TYPE, CONST_PREVIEW);
 		
 		final InnerNode after_operator = new InnerNode(null, workingValues, FormatterMessages.WhiteSpaceOptions_after_operator);
 		createOption(after_operator, workingValues, FormatterMessages.WhiteSpaceOptions_assignment_operator, DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_AFTER_ASSIGNMENT_OPERATOR, OPERATOR_PREVIEW);
@@ -545,6 +564,7 @@ public final class WhiteSpaceOptions
 		
 		final InnerNode after_slice_operator = new InnerNode(null, workingValues, FormatterMessages.WhiteSpaceOptions_after_slice_operator);
 		createOption(after_slice_operator, workingValues, FormatterMessages.WhiteSpaceOptions_array_slice, DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_AFTER_SLICE_OPERATOR, ARRAY_ACCESS_PREVIEW);
+		createOption(after_slice_operator, workingValues, FormatterMessages.WhiteSpaceOptions_foreach_statement, DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_AFTER_SLICE_OPERATOR_IN_FOREACH_RANGE_STATEMENT, FOR_PREVIEW);
 		
 		final InnerNode before_closing_bracket = new InnerNode(null, workingValues, FormatterMessages.WhiteSpaceOptions_before_closing_bracket);
 		createOption(before_closing_bracket, workingValues, FormatterMessages.WhiteSpaceOptions_array_access, DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_CLOSING_BRACKET_IN_ARRAY_ACCESS, ARRAY_ACCESS_PREVIEW);
@@ -587,6 +607,8 @@ public final class WhiteSpaceOptions
 		createOption(before_closing_paren, workingValues, FormatterMessages.WhiteSpaceOptions_parenthesized_expressions, DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_CLOSING_PAREN_IN_PARENTHESIZED_EXPRESSIONS, EXPRESSION_PREVIEW);
 		createOption(before_closing_paren, workingValues, FormatterMessages.WhiteSpaceOptions_template_invocation, DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_CLOSING_PAREN_IN_TEMPLATE_INVOCATION, TEMPLATE_INVOCATION_PREVIEW);
 		createOption(before_closing_paren, workingValues, FormatterMessages.WhiteSpaceOptions_type_dot_identifier_expression_parens, DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_CLOSING_PAREN_IN_TYPE_DOT_IDENTIFIER_EXPRESSION, TYPE_DOT_IDENTIFIER_PREVIEW);
+		createOption(before_closing_paren, workingValues, FormatterMessages.WhiteSpaceOptions_traits_expression, DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_CLOSING_PAREN_IN_TRAITS_EXPRESSION, TRAITS_PREVIEW);
+		createOption(before_closing_paren, workingValues, FormatterMessages.WhiteSpaceOptions_modified_type, DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_CLOSING_PAREN_IN_MODIFIED_TYPE, CONST_PREVIEW);
 		
 		final InnerNode before_colon = new InnerNode(null, workingValues, FormatterMessages.WhiteSpaceOptions_before_colon);
 		createOption(before_colon, workingValues, FormatterMessages.WhiteSpaceOptions_base_class_lists, DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_COLON_IN_BASE_CLASS_LISTS, AGGREGATE_PREVIEW);
@@ -620,6 +642,7 @@ public final class WhiteSpaceOptions
 		createOption(before_comma, workingValues, FormatterMessages.WhiteSpaceOptions_trailing_comma_in_array_literal, DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_TRAILING_COMMA_IN_ARRAY_INITIALIZER, ARRAY_INITIALIZER_PREVIEW);
 		createOption(before_comma, workingValues, FormatterMessages.WhiteSpaceOptions_assert_statement, DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_COMMA_IN_ASSERT_STATEMENTS, ASSERT_PREVIEW);
 		createOption(before_comma, workingValues, FormatterMessages.WhiteSpaceOptions_enums, DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_COMMA_IN_ENUM_MEMBER_LISTS, ENUM_PREVIEW);
+		createOption(before_comma, workingValues, FormatterMessages.WhiteSpaceOptions_traits_expression, DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_COMMA_IN_TRAITS_EXPRESSION, TRAITS_PREVIEW);
 		
 		final InnerNode before_dot = new InnerNode(null, workingValues, FormatterMessages.WhiteSpaceOptions_before_dot);
 		createOption(before_dot, workingValues, FormatterMessages.WhiteSpaceOptions_qualified_names, DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_DOT_IN_QUALIFIED_NAMES, DOT_PREVIEW);
@@ -672,6 +695,8 @@ public final class WhiteSpaceOptions
 		createOption(before_opening_paren, workingValues, FormatterMessages.WhiteSpaceOptions_parenthesized_expressions, DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_OPENING_PAREN_IN_PARENTHESIZED_EXPRESSIONS, EXPRESSION_PREVIEW);
 		createOption(before_opening_paren, workingValues, FormatterMessages.WhiteSpaceOptions_type_dot_identifier_expression_parens, DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_OPENING_PAREN_IN_TYPE_DOT_IDENTIFIER_EXPRESSION, TYPE_DOT_IDENTIFIER_PREVIEW);
 		createOption(before_opening_paren, workingValues, FormatterMessages.WhiteSpaceOptions_class_invariants, DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_OPENING_PAREN_IN_CLASS_INVARIANTS, CLASS_INVARIANT_PREVIEW);
+		createOption(before_opening_paren, workingValues, FormatterMessages.WhiteSpaceOptions_traits_expression, DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_OPENING_PAREN_IN_TRAITS_EXPRESSION, TRAITS_PREVIEW);
+		createOption(before_opening_paren, workingValues, FormatterMessages.WhiteSpaceOptions_modified_type, DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_OPENING_PAREN_IN_MODIFIED_TYPE, CONST_PREVIEW);
 		
 		final InnerNode before_operator = new InnerNode(null, workingValues, FormatterMessages.WhiteSpaceOptions_before_operator);
 		createOption(before_operator, workingValues, FormatterMessages.WhiteSpaceOptions_assignment_operator, DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_ASSIGNMENT_OPERATOR, OPERATOR_PREVIEW);
@@ -689,6 +714,7 @@ public final class WhiteSpaceOptions
 		
 		final InnerNode before_slice_operator = new InnerNode(null, workingValues, FormatterMessages.WhiteSpaceOptions_before_slice_operator);
 		createOption(before_slice_operator, workingValues, FormatterMessages.WhiteSpaceOptions_array_slice, DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_SLICE_OPERATOR, ARRAY_ACCESS_PREVIEW);
+		createOption(before_slice_operator, workingValues, FormatterMessages.WhiteSpaceOptions_foreach_statement, DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_SLICE_OPERATOR_IN_FOREACH_RANGE_STATEMENT, FOR_PREVIEW);
 		
 		final InnerNode between_adjacent_brackets = new InnerNode(null, workingValues, FormatterMessages.WhiteSpaceOptions_between_adjacent_brackets);
 		createOption(between_adjacent_brackets, workingValues, FormatterMessages.WhiteSpaceOptions_multidimensional_arrays, DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BETWEEN_ADJACENT_BRACKETS_IN_MULTIDIMENSIONAL_ARRAYS, ARRAYS_PREVIEW);
@@ -939,7 +965,8 @@ public abstract static class Node {
 		new PreviewSnippet(
 			CodeFormatter.K_STATEMENTS, 
 		    "for (int i = 0, j = array.length; i < array.length; i++, j--){}\n\n" +
-		    "foreach(int i,string s;names){}"
+		    "foreach(int i,string s;names){}" +
+		    "foreach(i;0..100){}"
 		);
 	
 	private final PreviewSnippet FUNCTION_DECL_PREVIEW =
@@ -1205,6 +1232,16 @@ public abstract static class Node {
 		new PreviewSnippet(CodeFormatter.K_COMPILATION_UNIT, 
 				"enum Colors{RED,GREEN,BLUE,}" +
 				"enum{ACCT_ACTIVE=1,ACCT_SUSPENDED=2,ACCT_ADMIN=4}"
+			);
+	
+	private final PreviewSnippet TRAITS_PREVIEW =
+		new PreviewSnippet(CodeFormatter.K_STATEMENTS, 
+				"string[] members = __traits(allMembers, Foo);"
+			);
+	
+	private final PreviewSnippet CONST_PREVIEW =
+		new PreviewSnippet(CodeFormatter.K_STATEMENTS, 
+				"invariant(int) five = 5;"
 			);
 	
 	//private final PreviewSnippet NO_PREVIEW =

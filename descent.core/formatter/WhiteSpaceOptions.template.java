@@ -165,6 +165,8 @@ public final class WhiteSpaceOptions
 		type_dot_identifier_expression.setParent(expressions);
 		struct_initalizer.setParent(expressions);
 		conditional_expression.setParent(expressions);
+		traits_expression.setParent(expressions);
+		modified_type.setParent(expressions);
 		
 		// Arrays
 		roots.add(arrays);
@@ -431,7 +433,8 @@ public abstract static class Node {
 		new PreviewSnippet(
 			CodeFormatter.K_STATEMENTS, 
 		    "for (int i = 0, j = array.length; i < array.length; i++, j--){}\n\n" +
-		    "foreach(int i,string s;names){}"
+		    "foreach(int i,string s;names){}" +
+		    "foreach(i;0..100){}"
 		);
 	
 	private final PreviewSnippet FUNCTION_DECL_PREVIEW =
@@ -697,6 +700,16 @@ public abstract static class Node {
 		new PreviewSnippet(CodeFormatter.K_COMPILATION_UNIT, 
 				"enum Colors{RED,GREEN,BLUE,}" +
 				"enum{ACCT_ACTIVE=1,ACCT_SUSPENDED=2,ACCT_ADMIN=4}"
+			);
+	
+	private final PreviewSnippet TRAITS_PREVIEW =
+		new PreviewSnippet(CodeFormatter.K_STATEMENTS, 
+				"string[] members = __traits(allMembers, Foo);"
+			);
+	
+	private final PreviewSnippet CONST_PREVIEW =
+		new PreviewSnippet(CodeFormatter.K_STATEMENTS, 
+				"invariant(int) five = 5;"
 			);
 	
 	//private final PreviewSnippet NO_PREVIEW =

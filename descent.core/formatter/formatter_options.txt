@@ -392,6 +392,18 @@ insert_space_before_opening_paren_in_class_invariants
 	wsDElem=class_invariants
 	wsSynElem=before_opening_paren
 	wsPreview=CLASS_INVARIANT_PREVIEW
+insert_space_before_opening_paren_in_traits_expression
+	type=boolean
+	default=false
+	wsDElem=traits_expression
+	wsSynElem=before_opening_paren
+	wsPreview=TRAITS_PREVIEW
+insert_space_before_opening_paren_in_modified_type
+	type=boolean
+	default=false
+	wsDElem=modified_type
+	wsSynElem=before_opening_paren
+	wsPreview=CONST_PREVIEW
 
 
 
@@ -595,6 +607,18 @@ insert_space_after_opening_paren_in_type_dot_identifier_expression
 	wsDElemEx=type_dot_identifier_expression_parens
 	wsSynElem=after_opening_paren
 	wsPreview=TYPE_DOT_IDENTIFIER_PREVIEW
+insert_space_after_opening_paren_in_traits_expression
+	type=boolean
+	default=false
+	wsDElem=traits_expression
+	wsSynElem=after_opening_paren
+	wsPreview=TRAITS_PREVIEW
+insert_space_after_opening_paren_in_modified_type
+	type=boolean
+	default=false
+	wsDElem=modified_type
+	wsSynElem=after_opening_paren
+	wsPreview=CONST_PREVIEW
 
 
 
@@ -797,6 +821,18 @@ insert_space_before_closing_paren_in_type_dot_identifier_expression
 	wsDElemEx=type_dot_identifier_expression_parens
 	wsSynElem=before_closing_paren
 	wsPreview=TYPE_DOT_IDENTIFIER_PREVIEW
+insert_space_before_closing_paren_in_traits_expression
+	type=boolean
+	default=false
+	wsDElem=traits_expression
+	wsSynElem=before_closing_paren
+	wsPreview=TRAITS_PREVIEW
+insert_space_before_closing_paren_in_modified_type
+	type=boolean
+	default=false
+	wsDElem=modified_type
+	wsSynElem=before_closing_paren
+	wsPreview=CONST_PREVIEW
 
 
 
@@ -1050,6 +1086,12 @@ insert_space_before_comma_in_enum_member_lists
 	wsDElem=enums
 	wsSynElem=before_comma
 	wsPreview=ENUM_PREVIEW
+insert_space_before_comma_in_traits_expression
+	type=boolean
+	default=false
+	wsDElem=traits_expression
+	wsSynElem=before_comma
+	wsPreview=TRAITS_PREVIEW
 
 
 
@@ -1180,6 +1222,12 @@ insert_space_after_comma_in_assert_statements
 	wsDElem=assert_statement
 	wsSynElem=after_comma
 	wsPreview=ASSERT_PREVIEW
+insert_space_after_comma_in_traits_expression
+	type=boolean
+	default=false
+	wsDElem=traits_expression
+	wsSynElem=after_comma
+	wsPreview=TRAITS_PREVIEW
 
 
 
@@ -1331,6 +1379,20 @@ insert_space_after_slice_operator
 	wsDElem=array_slice
 	wsSynElem=after_slice_operator
 	wsPreview=ARRAY_ACCESS_PREVIEW
+insert_space_before_slice_operator_in_foreach_range_statement
+	type=boolean
+	default=true
+	wsDElem=foreach_statement
+	wsSynElem=before_slice_operator
+	wsSynElemEx=before_slice_operator_in_foreach_range_statement
+	wsPreview=FOR_PREVIEW
+insert_space_after_slice_operator_in_foreach_range_statement
+	type=boolean
+	default=true
+	wsDElem=foreach_statement
+	wsSynElem=after_slice_operator
+	wsSynElemEx=after_slice_operator_in_foreach_range_statement
+	wsPreview=FOR_PREVIEW
 
 
 

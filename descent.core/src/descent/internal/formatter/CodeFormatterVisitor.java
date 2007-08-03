@@ -1,5 +1,6 @@
 package descent.internal.formatter;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
@@ -232,40 +233,7 @@ public class CodeFormatterVisitor extends ASTVisitor
 	
 	public boolean visit(Argument node)
 	{
-		// Print the passage mode
-		switch (node.getPassageMode())
-		{
-			case IN:
-				// The "in" operator produces arguments with "in" passage mode
-				// for some reason... this conditional ensures there's
-				// actually an "in" there.
-				if(isNextToken(TOK.TOKin))
-				{
-					scribe.printNextToken(TOK.TOKin);
-					scribe.space();
-				}
-				break;
-			case OUT:
-				scribe.printNextToken(TOK.TOKout);
-				scribe.space();
-				break;
-			case INOUT:
-				scribe.printNextToken(TOK.TOKinout);
-				scribe.space();
-				break;
-			case REF:
-				scribe.printNextToken(TOK.TOKref);
-				scribe.space();
-				break;
-			case LAZY:
-				scribe.printNextToken(TOK.TOKlazy);
-				scribe.space();
-				break;
-			case DEFAULT:
-			default:
-				break;
-		}
-		
+		formatModifiers(true); // Print the passage mode(s)
 		Type type = node.getType();
 		boolean hasType = false;
 		if(null != type && !((type instanceof PrimitiveType) && 
@@ -518,6 +486,20 @@ public class CodeFormatterVisitor extends ASTVisitor
 		if(prefs.insert_space_after_opening_paren_in_casts)
 			scribe.space();
 		node.getType().accept(this);
+		scribe.printNextToken(TOK.TOKrparen, prefs.insert_space_before_closing_paren_in_casts);
+		if(prefs.insert_space_after_closing_paren_in_casts)
+			scribe.space();
+		node.getExpression().accept(this);
+		return false;
+	}
+	
+	public boolean visit(CastToModifierExpression node)
+	{
+		scribe.printNextToken(TOK.TOKcast);
+		scribe.printNextToken(TOK.TOKlparen, prefs.insert_space_before_opening_paren_in_casts);
+		if(prefs.insert_space_after_opening_paren_in_casts)
+			scribe.space();
+		node.getModifier().accept(this);
 		scribe.printNextToken(TOK.TOKrparen, prefs.insert_space_before_closing_paren_in_casts);
 		if(prefs.insert_space_after_closing_paren_in_casts)
 			scribe.space();
@@ -929,6 +911,32 @@ public class CodeFormatterVisitor extends ASTVisitor
 		return false;
 	}
 	
+	public boolean visit(ForeachRangeStatement node)
+	{
+		if(node.isReverse())
+			scribe.printNextToken(TOK.TOKforeach_reverse);
+		else
+			scribe.printNextToken(TOK.TOKforeach);
+		scribe.printNextToken(TOK.TOKlparen, prefs.insert_space_before_opening_paren_in_foreach_loops);
+		if(prefs.insert_space_after_opening_paren_in_foreach_loops)
+			scribe.space();
+		node.getArgument().accept(this);
+		scribe.printNextToken(TOK.TOKsemicolon, prefs.insert_space_before_semicolon_in_foreach_statement);
+		scribe.printTrailingComment();
+		if (prefs.insert_space_after_semicolon_in_foreach_statement) {
+			scribe.space();
+		}
+		node.getFromExpression().accept(this);
+		scribe.printNextToken(TOK.TOKslice, 
+				prefs.insert_space_before_slice_operator_in_foreach_range_statement);
+		if(prefs.insert_space_after_slice_operator_in_foreach_range_statement)
+			scribe.space();
+		node.getToExpression().accept(this);
+		scribe.printNextToken(TOK.TOKrparen, prefs.insert_space_before_closing_paren_in_foreach_loops);
+		formatSubStatement(node.getBody(), false, true, !prefs.keep_simple_loop_statement_on_same_line, prefs.brace_position_for_loop_statement);
+		return false;
+	}
+	
 	public boolean visit(ForeachStatement node)
 	{
 		if(node.isReverse())
@@ -1286,6 +1294,19 @@ public class CodeFormatterVisitor extends ASTVisitor
 			scribe.space();
 		node.getExpression().accept(this);
 		scribe.printNextToken(TOK.TOKrparen, prefs.insert_space_before_closing_paren_in_mixins);
+		return false;
+	}
+	
+	public boolean visit(ModifiedType node)
+	{
+		node.getModifier().accept(this);
+		scribe.printNextToken(TOK.TOKlparen,
+				prefs.insert_space_before_opening_paren_in_modified_type);
+		if(prefs.insert_space_after_opening_paren_in_modified_type)
+			scribe.space();
+		node.getComponentType().accept(this);
+		scribe.printNextToken(TOK.TOKrparen,
+				prefs.insert_space_before_closing_paren_in_modified_type);
 		return false;
 	}
 	
@@ -1947,6 +1968,24 @@ public class CodeFormatterVisitor extends ASTVisitor
 		return false;
 	}
 	
+	public boolean visit(TraitsExpression node)
+	{
+		scribe.printNextToken(TOK.TOKtraits);
+		scribe.printNextToken(TOK.TOKlparen,
+				prefs.insert_space_before_opening_paren_in_traits_expression);
+		if(prefs.insert_space_after_opening_paren_in_traits_expression)
+			scribe.space();
+		List<ASTNode> args = new ArrayList<ASTNode>();
+		args.add(node.getName());
+		args.addAll(node.arguments());
+		formatCSV(args,
+				prefs.insert_space_before_comma_in_traits_expression,
+				prefs.insert_space_after_comma_in_traits_expression);
+		scribe.printNextToken(TOK.TOKrparen,
+				prefs.insert_space_before_closing_paren_in_traits_expression);
+		return false;
+	}
+	
 	public boolean visit(TryStatement node)
 	{
 		scribe.printNextToken(TOK.TOKtry);
@@ -2267,7 +2306,7 @@ public class CodeFormatterVisitor extends ASTVisitor
 		scribe.printTrailingComment();
 		return false;
 	}
-	
+
 	private void formatCaseOrDefaultStatementBody(Block body)
 	{
 		if(body.statements().size() == 1 && 
@@ -2643,85 +2682,33 @@ public class CodeFormatterVisitor extends ASTVisitor
 	 */
 	private void formatModifiers(boolean spaceAtEnd)
 	{
-		boolean isFirst = true;  // Is the first modifier?
 		boolean printed = false; // Has anything been printed?
 		loop: while(true)
 		{
 			switch(nextNonCommentToken())
 			{
 				case TOKprivate:
-					scribe.printNextToken(TOK.TOKprivate, !isFirst);
-					isFirst = false;
-					printed = true;
-					break;
 				case TOKprotected:
-					scribe.printNextToken(TOK.TOKprotected, !isFirst);
-					isFirst = false;
-					printed = true;
-					break;
 				case TOKpackage:
-					scribe.printNextToken(TOK.TOKpackage, !isFirst);
-					isFirst = false;
-					printed = true;
-					break;
 				case TOKpublic:
-					scribe.printNextToken(TOK.TOKpublic, !isFirst);
-					isFirst = false;
-					printed = true;
-					break;
 				case TOKexport:
-					scribe.printNextToken(TOK.TOKexport, !isFirst);
-					isFirst = false;
-					printed = true;
-					break;
 				case TOKfinal:
-					scribe.printNextToken(TOK.TOKfinal, !isFirst);
-					isFirst = false;
-					printed = true;
-					break;
 				case TOKdeprecated:
-					scribe.printNextToken(TOK.TOKdeprecated, !isFirst);
-					isFirst = false;
-					printed = true;
-					break;
 				case TOKconst:
-					scribe.printNextToken(TOK.TOKconst, !isFirst);
-					isFirst = false;
-					printed = true;
-					break;
 				case TOKscope:
-					scribe.printNextToken(TOK.TOKscope, !isFirst);
-					isFirst = false;
-					printed = true;
-					break;
 				case TOKstatic:
-					scribe.printNextToken(TOK.TOKstatic, !isFirst);
-					isFirst = false;
-					printed = true;
-					break;
 				case TOKabstract:
-					scribe.printNextToken(TOK.TOKabstract, !isFirst);
-					isFirst = false;
-					printed = true;
-					break;
 				case TOKoverride:
-					scribe.printNextToken(TOK.TOKoverride, !isFirst);
-					isFirst = false;
-					printed = true;
-					break;
 				case TOKauto:
-					scribe.printNextToken(TOK.TOKauto, !isFirst);
-					isFirst = false;
-					printed = true;
-					break;
 				case TOKsynchronized:
-					scribe.printNextToken(TOK.TOKsynchronized, !isFirst);
-					isFirst = false;
-					printed = true;
-					break;
 				case TOKextern:
-					scribe.printNextToken(TOK.TOKextern, !isFirst);
-					isFirst = false;
+				case TOKinvariant:
+				case TOKin:
+				case TOKout:
+				case TOKinout:
+				case TOKref:
+				case TOKlazy:
+					scribe.printNextToken(modifierTokenList(), printed);
 					printed = true;
 					break;
 				default:
@@ -3224,7 +3211,7 @@ public class CodeFormatterVisitor extends ASTVisitor
 	{
 		if(null == MODIFIERS)
 		{
-			MODIFIERS = new TOK[15];
+			MODIFIERS = new TOK[21];
 			
 			MODIFIERS[0] = TOK.TOKprivate;
 			MODIFIERS[1] = TOK.TOKprotected;
@@ -3241,6 +3228,12 @@ public class CodeFormatterVisitor extends ASTVisitor
 			MODIFIERS[12] = TOK.TOKextern;
 			MODIFIERS[13] = TOK.TOKconst;
 			MODIFIERS[14] = TOK.TOKscope;
+			MODIFIERS[15] = TOK.TOKinvariant;
+			MODIFIERS[16] = TOK.TOKin;
+			MODIFIERS[17] = TOK.TOKout;
+			MODIFIERS[18] = TOK.TOKlazy;
+			MODIFIERS[19] = TOK.TOKinout;
+			MODIFIERS[20] = TOK.TOKref;
 			Arrays.sort(MODIFIERS);
 		}
 		return MODIFIERS;
