@@ -97,7 +97,7 @@ public class CodeFormatterVisitor extends ASTVisitor
 	
 	public boolean visit(AggregateDeclaration node)
 	{
-		formatModifiers(true);
+		formatModifiers(true, node.modifiers());
 		
 		switch(node.getKind())
 		{
@@ -165,7 +165,7 @@ public class CodeFormatterVisitor extends ASTVisitor
 
 	public boolean visit(AliasDeclaration node)
 	{
-		formatModifiers(true);
+		formatModifiers(true, node.modifiers());
 		scribe.printNextToken(TOK.TOKalias);
 		scribe.space();
 		node.getType().accept(this);
@@ -218,7 +218,7 @@ public class CodeFormatterVisitor extends ASTVisitor
 	
 	public boolean visit(AlignDeclaration node)
 	{
-		formatModifiers(true);
+		formatModifiers(true, node.modifiers());
 		scribe.printNextToken(TOK.TOKalign);
 		if(isNextToken(TOK.TOKlparen))
 		{
@@ -235,7 +235,19 @@ public class CodeFormatterVisitor extends ASTVisitor
 	
 	public boolean visit(Argument node)
 	{
-		formatModifiers(true); // Print the passage mode(s)
+		switch(node.getPassageMode()) {
+		case CONST: scribe.printNextToken(TOK.TOKconst); break;
+		case DEFAULT: break;
+		case FINAL: scribe.printNextToken(TOK.TOKfinal); break;
+		case IN: scribe.printNextToken(TOK.TOKin); break;
+		case INOUT: scribe.printNextToken(TOK.TOKinout); break;
+		case INVARIANT: scribe.printNextToken(TOK.TOKinvariant); break;
+		case LAZY: scribe.printNextToken(TOK.TOKlazy); break;
+		case OUT: scribe.printNextToken(TOK.TOKout); break;
+		case REF: scribe.printNextToken(TOK.TOKref); break;
+		case SCOPE: scribe.printNextToken(TOK.TOKscope); break;
+		case STATIC: scribe.printNextToken(TOK.TOKstatic); break;
+		}
 		Type type = node.getType();
 		boolean hasType = false;
 		if(null != type && !((type instanceof PrimitiveType) && 
@@ -590,7 +602,7 @@ public class CodeFormatterVisitor extends ASTVisitor
 	
 	public boolean visit(ConstructorDeclaration node)
 	{
-		formatModifiers(true);
+		formatModifiers(true, node.modifiers());
 		switch(node.getKind())
 		{
 			case CONSTRUCTOR:
@@ -630,7 +642,7 @@ public class CodeFormatterVisitor extends ASTVisitor
 	
 	public boolean visit(DebugAssignment node)
 	{
-		formatModifiers(true);
+		formatModifiers(true, node.modifiers());
 		scribe.printNextToken(TOK.TOKdebug);
 		scribe.printNextToken(TOK.TOKassign,
 				prefs.insert_space_before_equals_in_version_debug_assignment);
@@ -645,7 +657,7 @@ public class CodeFormatterVisitor extends ASTVisitor
 	
 	public boolean visit(DebugDeclaration node)
 	{
-		formatModifiers(true);
+		formatModifiers(true, node.modifiers());
 		scribe.printNextToken(TOK.TOKdebug);
 		Version version = node.getVersion();
 		if(null != version)
@@ -810,7 +822,7 @@ public class CodeFormatterVisitor extends ASTVisitor
 	
 	public boolean visit(EnumDeclaration node)
 	{
-		formatModifiers(true);
+		formatModifiers(true, node.modifiers());
 		scribe.printNextToken(TOK.TOKenum);
 		
 		Name name = node.getName();
@@ -889,7 +901,7 @@ public class CodeFormatterVisitor extends ASTVisitor
 	
 	public boolean visit(ExternDeclaration node)
 	{
-		formatModifiers(false); // Picks up the "extern"
+		formatModifiers(false, node.modifiers()); // Picks up the "extern"
 		if(isNextToken(TOK.TOKlparen))
 		{
 			scribe.printNextToken(TOK.TOKlparen, prefs.insert_space_before_opening_paren_in_extern_declarations);
@@ -1011,7 +1023,7 @@ public class CodeFormatterVisitor extends ASTVisitor
 	public boolean visit(FunctionDeclaration node)
 	{
 		boolean templated = false;
-		formatModifiers(true);
+		formatModifiers(true, node.modifiers());
 		node.getReturnType().accept(this);
 		scribe.space();
 		node.getName().accept(this);
@@ -1155,7 +1167,11 @@ public class CodeFormatterVisitor extends ASTVisitor
 	
 	public boolean visit(ImportDeclaration node)
 	{
-		formatModifiers(true);
+		formatModifiers(true, node.modifiers());
+		if (node.isStatic()) {
+			scribe.printNextToken(TOK.TOKstatic);
+			scribe.space();
+		}
 		scribe.printNextToken(TOK.TOKimport);
 		scribe.space();
 		formatCSV(node.imports(),
@@ -1189,7 +1205,8 @@ public class CodeFormatterVisitor extends ASTVisitor
 	
 	public boolean visit(InvariantDeclaration node)
 	{
-		formatModifiers(true);
+		// Exclude "invariant" as a modifier
+		formatModifiers(true, node.modifiers(), TOK.TOKinvariant);
 		scribe.printNextToken(TOK.TOKinvariant);
 		if(isNextToken(TOK.TOKlparen))
 		{
@@ -1277,7 +1294,7 @@ public class CodeFormatterVisitor extends ASTVisitor
 
 	public boolean visit(MixinDeclaration node)
 	{
-		formatModifiers(true);
+		formatModifiers(true, node.modifiers());
 		scribe.printNextToken(TOK.TOKmixin);
 		scribe.printNextToken(TOK.TOKlparen, prefs.insert_space_before_opening_paren_in_mixins);
 		if(prefs.insert_space_after_opening_paren_in_mixins)
@@ -1318,13 +1335,34 @@ public class CodeFormatterVisitor extends ASTVisitor
 	
 	public boolean visit(Modifier node)
 	{
-		scribe.printNextToken(modifierTokenList());
+		switch(node.getModifierKeyword()) {
+		case ABSTRACT_KEYWORD: scribe.printNextToken(TOK.TOKabstract); break;
+		case AUTO_KEYWORD: scribe.printNextToken(TOK.TOKauto); break;
+		case CONST_KEYWORD: scribe.printNextToken(TOK.TOKconst); break;
+		case DEPRECATED_KEYWORD: scribe.printNextToken(TOK.TOKdeprecated); break;
+		case EXPORT_KEYWORD: scribe.printNextToken(TOK.TOKexport); break;
+		case EXTERN_KEYWORD: scribe.printNextToken(TOK.TOKextern); break;
+		case FINAL_KEYWORD: scribe.printNextToken(TOK.TOKfinal); break;
+		case INVARIANT_KEYWORD: scribe.printNextToken(TOK.TOKinvariant); break;
+		case OVERRIDE_KEYWORD: scribe.printNextToken(TOK.TOKoverride); break;
+		case PACKAGE_KEYWORD: scribe.printNextToken(TOK.TOKpackage); break;
+		case PRIVATE_KEYWORD: scribe.printNextToken(TOK.TOKprivate); break;
+		case PROTECTED_KEYWORD: scribe.printNextToken(TOK.TOKprotected); break;
+		case PUBLIC_KEYWORD: scribe.printNextToken(TOK.TOKpublic); break;
+		case SCOPE_KEYWORD: scribe.printNextToken(TOK.TOKscope); break;
+		case STATIC_KEYWORD: scribe.printNextToken(TOK.TOKstatic); break;
+		case SYNCHRONIZED_KEYWORD: scribe.printNextToken(TOK.TOKsynchronized); break;
+		default: throw new IllegalStateException(); 
+		}
 		return false;
 	}
 	
 	public boolean visit(ModifierDeclaration node)
 	{
-		formatModifiers(false);
+		List<Modifier> allModifiers = new ArrayList<Modifier>();
+		allModifiers.addAll(node.modifiers());
+		allModifiers.add(node.getModifier());
+		formatModifiers(false, allModifiers);
 		if(!isNextToken(TOK.TOKcolon)) // "private:" instead of "private :"
 			scribe.space();
 		formatDeclarationBlock(node.declarations(), prefs.brace_position_for_modifiers, prefs.indent_body_declarations_compare_to_modifier_header);
@@ -1509,7 +1547,7 @@ public class CodeFormatterVisitor extends ASTVisitor
 	
 	public boolean visit(PragmaDeclaration node)
 	{
-		formatModifiers(true);
+		formatModifiers(true, node.modifiers());
 		scribe.printNextToken(TOK.TOKpragma);
 		scribe.printNextToken(TOK.TOKlparen, prefs.insert_space_before_opening_paren_in_pragmas);
 		if(prefs.insert_space_after_opening_paren_in_pragmas)
@@ -1734,7 +1772,7 @@ public class CodeFormatterVisitor extends ASTVisitor
 	
 	public boolean visit(StaticAssert node)
 	{
-		formatModifiers(true); // Picks up the "static"
+		formatModifiers(true, node.modifiers()); // Picks up the "static"
 		scribe.printNextToken(TOK.TOKassert);
 		scribe.printNextToken(TOK.TOKlparen, prefs.insert_space_before_opening_paren_in_assert_statements);
 		if(prefs.insert_space_after_opening_paren_in_assert_statements)
@@ -1766,7 +1804,9 @@ public class CodeFormatterVisitor extends ASTVisitor
 	
 	public boolean visit(StaticIfDeclaration node)
 	{
-		formatModifiers(true); //Picks up the "static"
+		formatModifiers(true, node.modifiers()); //Picks up the "static"
+		scribe.printNextToken(TOK.TOKstatic);
+		scribe.space();
 		scribe.printNextToken(TOK.TOKif);
 		scribe.printNextToken(TOK.TOKlparen, prefs.insert_space_before_opening_paren_in_if_statements);
 		if(prefs.insert_space_after_opening_paren_in_if_statements)
@@ -1896,7 +1936,7 @@ public class CodeFormatterVisitor extends ASTVisitor
 	
 	public boolean visit(TemplateDeclaration node)
 	{
-		formatModifiers(true);
+		formatModifiers(true, node.modifiers());
 		scribe.printNextToken(TOK.TOKtemplate);
 		scribe.space();
 		node.getName().accept(this);
@@ -1918,7 +1958,7 @@ public class CodeFormatterVisitor extends ASTVisitor
 	
 	public boolean visit(TemplateMixinDeclaration node)
 	{
-		formatModifiers(true);
+		formatModifiers(true, node.modifiers());
 		scribe.printNextToken(TOK.TOKmixin);
 		scribe.space();
 		node.getType().accept(this);
@@ -2032,7 +2072,7 @@ public class CodeFormatterVisitor extends ASTVisitor
 	
 	public boolean visit(TypedefDeclaration node)
 	{
-		formatModifiers(true);
+		formatModifiers(true, node.modifiers());
 		scribe.printNextToken(TOK.TOKtypedef);
 		scribe.space();
 		node.getType().accept(this);
@@ -2137,7 +2177,7 @@ public class CodeFormatterVisitor extends ASTVisitor
 	
 	public boolean visit(UnitTestDeclaration node)
 	{
-		formatModifiers(true);
+		formatModifiers(true, node.modifiers());
 		scribe.printNextToken(TOK.TOKunittest);
 		scribe.space();
 		node.getBody().accept(this);
@@ -2181,7 +2221,7 @@ public class CodeFormatterVisitor extends ASTVisitor
 
 	public boolean visit(VariableDeclaration node)
 	{
-		formatModifiers(true);
+		formatModifiers(true, node.modifiers());
 		Type type = node.getType();
 		if(null != type)
 		{
@@ -2227,7 +2267,7 @@ public class CodeFormatterVisitor extends ASTVisitor
 	
 	public boolean visit(VersionAssignment node)
 	{
-		formatModifiers(true);
+		formatModifiers(true, node.modifiers());
 		scribe.printNextToken(TOK.TOKversion);
 		scribe.printNextToken(TOK.TOKassign,
 				prefs.insert_space_before_equals_in_version_debug_assignment);
@@ -2242,7 +2282,7 @@ public class CodeFormatterVisitor extends ASTVisitor
 
 	public boolean visit(VersionDeclaration node)
 	{
-		formatModifiers(true);
+		formatModifiers(true, node.modifiers());
 		scribe.printNextToken(TOK.TOKversion);
 		Version version = node.getVersion();
 		if(null != version)
@@ -2723,12 +2763,14 @@ public class CodeFormatterVisitor extends ASTVisitor
 	 *                   no modifiers were printed, no space will be inserted,
 	 *                   regardless of the value of the parameter).
 	 */
-	private void formatModifiers(boolean spaceAtEnd)
+	private void formatModifiers(boolean spaceAtEnd, List<Modifier> modifiers, TOK ... excludedTOKs)
 	{
 		boolean printed = false; // Has anything been printed?
-		loop: while(true)
+		int modifierIndex = 0;
+		loop: while(modifierIndex < modifiers.size())
 		{
-			switch(nextNonCommentToken())
+			TOK nextNonCommentToken = nextNonCommentToken();
+			switch(nextNonCommentToken)
 			{
 				case TOKprivate:
 				case TOKprotected:
@@ -2751,12 +2793,18 @@ public class CodeFormatterVisitor extends ASTVisitor
 				case TOKinout:
 				case TOKref:
 				case TOKlazy:
+					for(TOK excluded : excludedTOKs) {
+						if (nextNonCommentToken == excluded) {
+							break loop;
+						}
+					}
 					scribe.printNextToken(modifierTokenList(), printed);
 					printed = true;
 					break;
 				default:
 					break loop;
 			}
+			modifierIndex++;
 		}
 		if(printed && spaceAtEnd)
 			scribe.space();

@@ -12,6 +12,7 @@ public class FormatWhileStatement_Test extends AbstractFormatBraceWithSingleInsi
 		Map options = super.getDefaultOptions();
 		options.put(DefaultCodeFormatterConstants.FORMATTER_BRACE_POSITION_FOR_LOOP_STATEMENT, DefaultCodeFormatterConstants.END_OF_LINE);
 		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_OPENING_PAREN_IN_WHILE_LOOPS, DefaultCodeFormatterConstants.FALSE);
+		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_AFTER_OPENING_PAREN_IN_WHILE_LOOPS, DefaultCodeFormatterConstants.FALSE);
 		return options;
 	}
 	
@@ -44,6 +45,25 @@ public class FormatWhileStatement_Test extends AbstractFormatBraceWithSingleInsi
 				
 				"while(true) { }",
 				
+				options
+				);
+	}
+	
+	public void testNotFORMATTER_INSERT_SPACE_AFTER_OPENING_PAREN_IN_WHILE_LOOPS() throws Exception {
+		assertFormat(
+				"while(true) {\r\n" +
+				"}",
+				"while(true) { }"
+				);
+	}
+	
+	public void testFORMATTER_INSERT_SPACE_AFTER_OPENING_PAREN_IN_WHILE_LOOPS() throws Exception {
+		Map options = new HashMap();
+		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_AFTER_OPENING_PAREN_IN_WHILE_LOOPS, DefaultCodeFormatterConstants.TRUE);
+		assertFormat(
+				"while( true) {\r\n" +
+				"}",
+				"while(true) { }",
 				options
 				);
 	}

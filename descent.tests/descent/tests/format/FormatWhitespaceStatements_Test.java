@@ -24,6 +24,10 @@ public class FormatWhitespaceStatements_Test extends AbstractFormatInsideFunctio
 		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_OPENING_PAREN_IN_IS_EXPRESSIONS, DefaultCodeFormatterConstants.FALSE);
 		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_OPENING_PAREN_IN_CASTS, DefaultCodeFormatterConstants.FALSE);
 		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_OPENING_PAREN_IN_PARENTHESIZED_EXPRESSIONS, DefaultCodeFormatterConstants.FALSE);
+		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_OPENING_PAREN_IN_TRAITS_EXPRESSION, DefaultCodeFormatterConstants.FALSE);
+		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_OPENING_PAREN_IN_MODIFIED_TYPE, DefaultCodeFormatterConstants.FALSE);
+		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_AFTER_COMMA_IN_TRAITS_EXPRESSION, DefaultCodeFormatterConstants.TRUE);
+		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_AFTER_OPENING_PAREN_IN_FUNCTION_INVOCATION, DefaultCodeFormatterConstants.FALSE);
 		return options;
 	}
 	
@@ -267,6 +271,57 @@ public class FormatWhitespaceStatements_Test extends AbstractFormatInsideFunctio
 		assertFormat(
 				"x = cast (int) y;",
 				"x = cast(int) y;",
+				options
+				);
+	}
+	
+	public void testNotFORMATTER_INSERT_SPACE_BEFORE_OPENING_PAREN_IN_TRAITS_EXPRESSION() throws Exception {
+		assertFormat(
+				"x = __traits(x, y);",
+				"x = __traits(x, y);"
+				);
+	}
+	
+	public void testFORMATTER_INSERT_SPACE_BEFORE_OPENING_PAREN_IN_TRAITS_EXPRESSION() throws Exception {
+		Map options = new HashMap();
+		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_OPENING_PAREN_IN_TRAITS_EXPRESSION, DefaultCodeFormatterConstants.TRUE);
+		assertFormat(
+				"x = __traits (x, y);",
+				"x = __traits(x, y);",
+				options
+				);
+	}
+	
+	public void testNotFORMATTER_INSERT_SPACE_BEFORE_OPENING_PAREN_IN_MODIFIED_TYPE() throws Exception {
+		assertFormat(
+				"invariant(int) x;",
+				"invariant(int) x;"
+				);
+	}
+	
+	public void testFORMATTER_INSERT_SPACE_BEFORE_OPENING_PAREN_IN_MODIFIED_TYPE() throws Exception {
+		Map options = new HashMap();
+		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_OPENING_PAREN_IN_MODIFIED_TYPE, DefaultCodeFormatterConstants.TRUE);
+		assertFormat(
+				"invariant (int) x;",
+				"invariant(int) x;",
+				options
+				);
+	}
+	
+	public void testNotFORMATTER_INSERT_SPACE_AFTER_OPENING_PAREN_IN_FUNCTION_INVOCATION() throws Exception {
+		assertFormat(
+				"bla(x);",
+				"bla(x);"
+				);
+	}
+	
+	public void testFORMATTER_INSERT_SPACE_AFTER_OPENING_PAREN_IN_FUNCTION_INVOCATION() throws Exception {
+		Map options = new HashMap();
+		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_AFTER_OPENING_PAREN_IN_FUNCTION_INVOCATION, DefaultCodeFormatterConstants.TRUE);
+		assertFormat(
+				"bla( x);",
+				"bla(x);",
 				options
 				);
 	}

@@ -26,6 +26,7 @@ public class FormatFunctionDeclaration_Tests extends AbstractFormatter_Test {
 		options.put(DefaultCodeFormatterConstants.FORMATTER_INDENT_STATEMENTS_COMPARE_TO_FUNCTION_OUT_HEADER, DefaultCodeFormatterConstants.TRUE);
 		options.put(DefaultCodeFormatterConstants.FORMATTER_INDENT_STATEMENTS_COMPARE_TO_FUNCTION_BODY_HEADER, DefaultCodeFormatterConstants.TRUE);
 		options.put(DefaultCodeFormatterConstants.FORMATTER_INDENT_IN_OUT_BODY_COMPARE_TO_FUNCTION_HEADER, DefaultCodeFormatterConstants.FALSE);
+		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_AFTER_OPENING_PAREN_IN_FUNCTION_TEMPLATE_ARGS, DefaultCodeFormatterConstants.FALSE);
 		return options;
 	}
 	
@@ -402,6 +403,25 @@ public class FormatFunctionDeclaration_Tests extends AbstractFormatter_Test {
 					options
 				);
 		}
+	}
+	
+	public void testNotFORMATTER_INSERT_SPACE_AFTER_OPENING_PAREN_IN_FUNCTION_TEMPLATE_ARGS() throws Exception {
+		assertFormat(
+				"void bla(T)(int x) {\r\n" +
+				"}",
+				"void bla(T)(int x) { }"
+				);
+	}
+	
+	public void testFORMATTER_INSERT_SPACE_AFTER_OPENING_PAREN_IN_FUNCTION_TEMPLATE_ARGS() throws Exception {
+		Map options = new HashMap();
+		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_AFTER_OPENING_PAREN_IN_FUNCTION_TEMPLATE_ARGS, DefaultCodeFormatterConstants.TRUE);
+		assertFormat(
+				"void bla( T)(int x) {\r\n" +
+				"}",
+				"void bla(T)(int x) { }",
+				options
+				);
 	}
 
 }

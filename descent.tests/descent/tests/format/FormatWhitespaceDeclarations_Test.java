@@ -12,6 +12,7 @@ public class FormatWhitespaceDeclarations_Test extends AbstractFormatter_Test {
 		Map options = new HashMap();
 		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_OPENING_PAREN_IN_MIXINS, DefaultCodeFormatterConstants.FALSE);
 		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_OPENING_PAREN_IN_PRAGMAS, DefaultCodeFormatterConstants.FALSE);
+		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_OPENING_PAREN_IN_CLASS_INVARIANTS, DefaultCodeFormatterConstants.FALSE);
 		return options;
 	}
 	
@@ -48,5 +49,43 @@ public class FormatWhitespaceDeclarations_Test extends AbstractFormatter_Test {
 				options
 				);
 	}
+	
+	public void testNotFORMATTER_INSERT_SPACE_BEFORE_OPENING_PAREN_IN_CLASS_INVARIANTS() throws Exception {
+		assertFormat(
+				"class X {\r\n" +
+				"\tinvariant() {\r\n" +
+				"\t}\r\n" +
+				"}",
+				"class X { invariant() { } }"
+				);
+	}
+	
+	public void testFORMATTER_INSERT_SPACE_BEFORE_OPENING_PAREN_IN_CLASS_INVARIANTS() throws Exception {
+		Map options = new HashMap();
+		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_OPENING_PAREN_IN_CLASS_INVARIANTS, DefaultCodeFormatterConstants.TRUE);
+		assertFormat(
+				"class X {\r\n" +
+				"\tinvariant () {\r\n" +
+				"\t}\r\n" +
+				"}",
+				"class X { invariant() { } }",
+				options
+				);
+	}
+	
+	/* TODO fix this test (it's not important, since noone will write such thing
+	public void testFORMATTER_INSERT_SPACE_BEFORE_OPENING_PAREN_IN_CLASS_INVARIANTS2() throws Exception {
+		Map options = new HashMap();
+		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_OPENING_PAREN_IN_CLASS_INVARIANTS, DefaultCodeFormatterConstants.TRUE);
+		assertFormat(
+				"class X {\r\n" +
+				"\tinvariant private invariant () {\r\n" +
+				"\t}\r\n" +
+				"}",
+				"class X { invariant private invariant() { } }",
+				options
+				);
+	}
+	*/
 
 }
