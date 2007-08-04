@@ -154,7 +154,7 @@ public final class MetricsBuilder extends IncrementalProjectBuilder {
 
         metricProcessor.setUpForCompilationUnit(compilationUnit);
         
-        ASTParser parser = ASTParser.newParser(AST.D1);
+        ASTParser parser = ASTParser.newParser(AST.D2);
         parser.setSource(compilationUnit);
         parser.setResolveBindings(true);
         CompilationUnit unit = (CompilationUnit) parser.createAST(null);

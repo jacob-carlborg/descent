@@ -201,7 +201,7 @@ public class DefaultCodeFormatter extends CodeFormatter {
 	}
 
 	private TextEdit formatCompilationUnit(String source, int indentationLevel, String lineSeparator, int offset, int length) {
-		ASTParser parser = ASTParser.newParser(AST.D1);
+		ASTParser parser = ASTParser.newParser(AST.D2);
 		parser.setSource(source.toCharArray());
 		parser.setKind(ASTParser.K_COMPILATION_UNIT);
 		parser.setCompilerOptions(getDefaultCompilerOptions());
@@ -220,7 +220,7 @@ public class DefaultCodeFormatter extends CodeFormatter {
 	}
 
 	private TextEdit formatExpression(String source, int indentationLevel, String lineSeparator, int offset, int length) {
-		ASTParser parser = ASTParser.newParser(AST.D1);
+		ASTParser parser = ASTParser.newParser(AST.D2);
 		parser.setSource(source.toCharArray());
 		parser.setKind(ASTParser.K_EXPRESSION);
 		parser.setCompilerOptions(getDefaultCompilerOptions());
@@ -241,7 +241,7 @@ public class DefaultCodeFormatter extends CodeFormatter {
 	}
 
 	private TextEdit formatStatements(String source, int indentationLevel, String lineSeparator, int offset, int length) {
-		ASTParser parser = ASTParser.newParser(AST.D1);
+		ASTParser parser = ASTParser.newParser(AST.D2);
 		parser.setSource(source.toCharArray());
 		parser.setKind(ASTParser.K_STATEMENTS);
 		parser.setCompilerOptions(getDefaultCompilerOptions());

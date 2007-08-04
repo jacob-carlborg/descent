@@ -3064,7 +3064,7 @@ public class CodeFormatterVisitor extends ASTVisitor
 	private void restartLexer(String source)
 	{
 		if (null == lexer)
-			lexer = new Lexer(source, true, true, false, false, AST.D1);
+			lexer = new Lexer(source, true, true, false, false, AST.D2);
 		else
 			lexer.reset(source.toCharArray(), 0, source.length(), true, true,
 					false, false);
