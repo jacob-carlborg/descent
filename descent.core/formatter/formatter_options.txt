@@ -1983,6 +1983,11 @@ keep_simple_loop_statement_on_same_line
 	default=false
 	tab=ShortSyntaxTabPage
 	uiText=Loops
+keep_simple_scope_statement_on_same_line
+	type=boolean
+	default=false
+	tab=ShortSyntaxTabPage
+	uiText='scope' Statements
 keep_simple_synchronized_statement_on_same_line
 	type=boolean
 	default=false
@@ -2090,7 +2095,11 @@ indent_statements_compare_to_case
 	default=true
 	tab=IndentationTabPage
 	uiText=Statements within 'switch'/'default'
-
+indent_body_declarations_compare_to_pragma_header
+	type=boolean
+	default=true
+	tab=IndentationTabPage
+	uiText=Declarations 'pragma'
 
 
 

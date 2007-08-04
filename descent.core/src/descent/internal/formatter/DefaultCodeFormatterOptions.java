@@ -359,6 +359,7 @@ public class DefaultCodeFormatterOptions
 	public boolean keep_simple_catch_statement_on_same_line;
 	public boolean keep_simple_finally_statement_on_same_line;
 	public boolean keep_simple_loop_statement_on_same_line;
+	public boolean keep_simple_scope_statement_on_same_line;
 	public boolean keep_simple_synchronized_statement_on_same_line;
 	public boolean keep_simple_with_statement_on_same_line;
 	public boolean keep_functions_with_no_statement_in_one_line;
@@ -379,6 +380,7 @@ public class DefaultCodeFormatterOptions
 	public boolean indent_cases_compare_to_switch;
 	public boolean indent_break_compare_to_switch;
 	public boolean indent_statements_compare_to_case;
+	public boolean indent_body_declarations_compare_to_pragma_header;
 	public TabChar tab_char;
 	public int tab_size;
 	public boolean use_tabs_only_for_leading_indentations;
@@ -685,6 +687,7 @@ public class DefaultCodeFormatterOptions
 		options.put(DefaultCodeFormatterConstants.FORMATTER_KEEP_SIMPLE_CATCH_STATEMENT_ON_SAME_LINE, keep_simple_catch_statement_on_same_line ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
 		options.put(DefaultCodeFormatterConstants.FORMATTER_KEEP_SIMPLE_FINALLY_STATEMENT_ON_SAME_LINE, keep_simple_finally_statement_on_same_line ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
 		options.put(DefaultCodeFormatterConstants.FORMATTER_KEEP_SIMPLE_LOOP_STATEMENT_ON_SAME_LINE, keep_simple_loop_statement_on_same_line ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
+		options.put(DefaultCodeFormatterConstants.FORMATTER_KEEP_SIMPLE_SCOPE_STATEMENT_ON_SAME_LINE, keep_simple_scope_statement_on_same_line ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
 		options.put(DefaultCodeFormatterConstants.FORMATTER_KEEP_SIMPLE_SYNCHRONIZED_STATEMENT_ON_SAME_LINE, keep_simple_synchronized_statement_on_same_line ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
 		options.put(DefaultCodeFormatterConstants.FORMATTER_KEEP_SIMPLE_WITH_STATEMENT_ON_SAME_LINE, keep_simple_with_statement_on_same_line ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
 		options.put(DefaultCodeFormatterConstants.FORMATTER_KEEP_FUNCTIONS_WITH_NO_STATEMENT_IN_ONE_LINE, keep_functions_with_no_statement_in_one_line ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
@@ -705,6 +708,7 @@ public class DefaultCodeFormatterOptions
 		options.put(DefaultCodeFormatterConstants.FORMATTER_INDENT_CASES_COMPARE_TO_SWITCH, indent_cases_compare_to_switch ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
 		options.put(DefaultCodeFormatterConstants.FORMATTER_INDENT_BREAK_COMPARE_TO_SWITCH, indent_break_compare_to_switch ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
 		options.put(DefaultCodeFormatterConstants.FORMATTER_INDENT_STATEMENTS_COMPARE_TO_CASE, indent_statements_compare_to_case ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
+		options.put(DefaultCodeFormatterConstants.FORMATTER_INDENT_BODY_DECLARATIONS_COMPARE_TO_PRAGMA_HEADER, indent_body_declarations_compare_to_pragma_header ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
 		options.put(DefaultCodeFormatterConstants.FORMATTER_TAB_CHAR, tab_char.toString());
 		options.put(DefaultCodeFormatterConstants.FORMATTER_TAB_SIZE, Integer.toString(tab_size));
 		options.put(DefaultCodeFormatterConstants.FORMATTER_USE_TABS_ONLY_FOR_LEADING_INDENTATIONS, use_tabs_only_for_leading_indentations ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
@@ -3205,6 +3209,15 @@ public class DefaultCodeFormatterOptions
 			}
 		}
 		
+		current = settings.get(DefaultCodeFormatterConstants.FORMATTER_KEEP_SIMPLE_SCOPE_STATEMENT_ON_SAME_LINE);
+		if(null != current) {
+			try {
+				keep_simple_scope_statement_on_same_line = DefaultCodeFormatterConstants.TRUE.equals(current);
+			} catch(Exception e) {
+				keep_simple_scope_statement_on_same_line = false;
+			}
+		}
+		
 		current = settings.get(DefaultCodeFormatterConstants.FORMATTER_KEEP_SIMPLE_SYNCHRONIZED_STATEMENT_ON_SAME_LINE);
 		if(null != current) {
 			try {
@@ -3382,6 +3395,15 @@ public class DefaultCodeFormatterOptions
 				indent_statements_compare_to_case = DefaultCodeFormatterConstants.TRUE.equals(current);
 			} catch(Exception e) {
 				indent_statements_compare_to_case = true;
+			}
+		}
+		
+		current = settings.get(DefaultCodeFormatterConstants.FORMATTER_INDENT_BODY_DECLARATIONS_COMPARE_TO_PRAGMA_HEADER);
+		if(null != current) {
+			try {
+				indent_body_declarations_compare_to_pragma_header = DefaultCodeFormatterConstants.TRUE.equals(current);
+			} catch(Exception e) {
+				indent_body_declarations_compare_to_pragma_header = true;
 			}
 		}
 		
@@ -3726,6 +3748,7 @@ public class DefaultCodeFormatterOptions
 		keep_simple_catch_statement_on_same_line = false;
 		keep_simple_finally_statement_on_same_line = false;
 		keep_simple_loop_statement_on_same_line = false;
+		keep_simple_scope_statement_on_same_line = false;
 		keep_simple_synchronized_statement_on_same_line = false;
 		keep_simple_with_statement_on_same_line = false;
 		keep_functions_with_no_statement_in_one_line = false;
@@ -3746,6 +3769,7 @@ public class DefaultCodeFormatterOptions
 		indent_cases_compare_to_switch = true;
 		indent_break_compare_to_switch = false;
 		indent_statements_compare_to_case = true;
+		indent_body_declarations_compare_to_pragma_header = true;
 		tab_char = TabChar.TAB;
 		tab_size = 4;
 		use_tabs_only_for_leading_indentations = false;

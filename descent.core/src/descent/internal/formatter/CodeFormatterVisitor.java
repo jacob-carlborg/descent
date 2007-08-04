@@ -1524,8 +1524,9 @@ public class CodeFormatterVisitor extends ASTVisitor
 					prefs.insert_space_after_comma_in_pragmas);
 		}
 		scribe.printNextToken(TOK.TOKrparen, prefs.insert_space_before_closing_paren_in_pragmas);
-		if(!node.declarations().isEmpty())
-			formatDeclarationBlock(node.declarations(), prefs.brace_position_for_pragmas, true);
+		if (isNextToken(TOK.TOKlcurly)) {
+			formatDeclarationBlock(node.declarations(), prefs.brace_position_for_pragmas, prefs.indent_body_declarations_compare_to_pragma_header);
+		}
 		if(isNextToken(TOK.TOKsemicolon))
 			scribe.printNextToken(TOK.TOKsemicolon,
 					prefs.insert_space_before_semicolon);
@@ -1636,7 +1637,7 @@ public class CodeFormatterVisitor extends ASTVisitor
 			scribe.space();
 		scribe.printNextToken(TOK.TOKidentifier);
 		scribe.printNextToken(TOK.TOKrparen, prefs.insert_space_before_closing_paren_in_scope_statements);
-		formatSubStatement(node.getBody(), false, true, true, prefs.brace_position_for_scope_statement);
+		formatSubStatement(node.getBody(), false, true, !prefs.keep_simple_scope_statement_on_same_line, prefs.brace_position_for_scope_statement);
 		scribe.printTrailingComment();
 		return false;
 	}

@@ -94,6 +94,7 @@ public class DefaultCodeFormatterConstants {
 	public static final String FORMATTER_INSERT_SPACE_BEFORE_OPENING_PAREN_IN_TYPEOF_STATEMENTS = JavaCore.PLUGIN_ID + ".formatter.insert_space_before_opening_paren_in_typeof_statements";
 	public static final String FORMATTER_INSERT_SPACE_BEFORE_OPENING_PAREN_IN_TYPEID_STATEMENTS = JavaCore.PLUGIN_ID + ".formatter.insert_space_before_opening_paren_in_typeid_statements";
 	public static final String FORMATTER_INSERT_SPACE_BEFORE_OPENING_PAREN_IN_DELEGATE = JavaCore.PLUGIN_ID + ".formatter.insert_space_before_opening_paren_in_delegate";
+	
 	public static final String FORMATTER_INSERT_SPACE_BEFORE_OPENING_PAREN_IN_C_STYLE_FP = JavaCore.PLUGIN_ID + ".formatter.insert_space_before_opening_paren_in_c_style_fp";
 	public static final String FORMATTER_INSERT_SPACE_BEFORE_OPENING_PAREN_IN_NEW_ARGUMENTS = JavaCore.PLUGIN_ID + ".formatter.insert_space_before_opening_paren_in_new_arguments";
 	public static final String FORMATTER_INSERT_SPACE_BEFORE_OPENING_PAREN_IN_EXTERN_DECLARATIONS = JavaCore.PLUGIN_ID + ".formatter.insert_space_before_opening_paren_in_extern_declarations";
@@ -331,6 +332,7 @@ public class DefaultCodeFormatterConstants {
 	public static final String FORMATTER_KEEP_SIMPLE_CATCH_STATEMENT_ON_SAME_LINE = JavaCore.PLUGIN_ID + ".formatter.keep_simple_catch_statement_on_same_line";
 	public static final String FORMATTER_KEEP_SIMPLE_FINALLY_STATEMENT_ON_SAME_LINE = JavaCore.PLUGIN_ID + ".formatter.keep_simple_finally_statement_on_same_line";
 	public static final String FORMATTER_KEEP_SIMPLE_LOOP_STATEMENT_ON_SAME_LINE = JavaCore.PLUGIN_ID + ".formatter.keep_simple_loop_statement_on_same_line";
+	public static final String FORMATTER_KEEP_SIMPLE_SCOPE_STATEMENT_ON_SAME_LINE = JavaCore.PLUGIN_ID + ".formatter.keep_simple_scope_statement_on_same_line";
 	public static final String FORMATTER_KEEP_SIMPLE_SYNCHRONIZED_STATEMENT_ON_SAME_LINE = JavaCore.PLUGIN_ID + ".formatter.keep_simple_synchronized_statement_on_same_line";
 	public static final String FORMATTER_KEEP_SIMPLE_WITH_STATEMENT_ON_SAME_LINE = JavaCore.PLUGIN_ID + ".formatter.keep_simple_with_statement_on_same_line";
 	public static final String FORMATTER_KEEP_FUNCTIONS_WITH_NO_STATEMENT_IN_ONE_LINE = JavaCore.PLUGIN_ID + ".formatter.keep_functions_with_no_statement_in_one_line";
@@ -351,6 +353,7 @@ public class DefaultCodeFormatterConstants {
 	public static final String FORMATTER_INDENT_CASES_COMPARE_TO_SWITCH = JavaCore.PLUGIN_ID + ".formatter.indent_cases_compare_to_switch";
 	public static final String FORMATTER_INDENT_BREAK_COMPARE_TO_SWITCH = JavaCore.PLUGIN_ID + ".formatter.indent_break_compare_to_switch";
 	public static final String FORMATTER_INDENT_STATEMENTS_COMPARE_TO_CASE = JavaCore.PLUGIN_ID + ".formatter.indent_statements_compare_to_case";
+	public static final String FORMATTER_INDENT_BODY_DECLARATIONS_COMPARE_TO_PRAGMA_HEADER = JavaCore.PLUGIN_ID + ".formatter.indent_body_declarations_compare_to_pragma_header";
 	public static final String FORMATTER_TAB_CHAR = JavaCore.PLUGIN_ID + ".formatter.tab_char";
 	public static final String FORMATTER_TAB_SIZE = JavaCore.PLUGIN_ID + ".formatter.tab_size";
 	public static final String FORMATTER_USE_TABS_ONLY_FOR_LEADING_INDENTATIONS = JavaCore.PLUGIN_ID + ".formatter.use_tabs_only_for_leading_indentations";

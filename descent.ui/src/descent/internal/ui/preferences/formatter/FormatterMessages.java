@@ -333,6 +333,7 @@ final class FormatterMessages extends NLS {
 	public static String ShortSyntaxTabPage_keep_simple_catch_statement_on_same_line;
 	public static String ShortSyntaxTabPage_keep_simple_finally_statement_on_same_line;
 	public static String ShortSyntaxTabPage_keep_simple_loop_statement_on_same_line;
+	public static String ShortSyntaxTabPage_keep_simple_scope_statement_on_same_line;
 	public static String ShortSyntaxTabPage_keep_simple_synchronized_statement_on_same_line;
 	public static String ShortSyntaxTabPage_keep_simple_with_statement_on_same_line;
 	public static String ShortSyntaxTabPage_keep_functions_with_no_statement_in_one_line;
@@ -352,6 +353,7 @@ final class FormatterMessages extends NLS {
 	public static String IndentationTabPage_indent_cases_compare_to_switch;
 	public static String IndentationTabPage_indent_break_compare_to_switch;
 	public static String IndentationTabPage_indent_statements_compare_to_case;
+	public static String IndentationTabPage_indent_body_declarations_compare_to_pragma_header;
 	public static String IndentationTabPage_tab_char;
 	public static String IndentationTabPage_tab_size;
 
