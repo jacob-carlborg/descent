@@ -12,7 +12,7 @@ import java.util.Set;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.ListenerList;
-import org.eclipse.debug.internal.ui.SWTUtil;
+//import org.eclipse.debug.internal.ui.SWTUtil;
 import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
@@ -522,7 +522,11 @@ public class InstalledJREsBlock implements IAddVMDialogRequestor, ISelectionProv
 	}
 	
 	protected Button createPushButton(Composite parent, String label) {
-		return SWTUtil.createPushButton(parent, label, null);
+		//return SWTUtil.createPushButton(parent, label, null);
+		Button button = new Button(parent, SWT.PUSH);
+		button.setFont(parent.getFont());
+		button.setText(label);
+		return button;
 	}	
 	
 	/**

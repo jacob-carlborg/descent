@@ -111,23 +111,24 @@ public final class WhiteSpaceOptions
 		final List<Node> roots = new ArrayList<Node>();
 		final InnerNode declarations = new InnerNode(null, workingValues, FormatterMessages.WhiteSpaceOptions_declarations);
 		final InnerNode expressions = new InnerNode(null, workingValues, FormatterMessages.WhiteSpaceOptions_expressions);
+		final InnerNode types = new InnerNode(null, workingValues, FormatterMessages.WhiteSpaceOptions_types);
 		final InnerNode arrays = new InnerNode(null, workingValues, FormatterMessages.WhiteSpaceOptions_arrays);
 		
 		// Declarations
 		roots.add(declarations);
 		function_declaration.setParent(declarations);
-		function_template_params.setParent(function_declaration);
-		function_decl_params.setParent(function_declaration);
-		out_declaration.setParent(function_declaration);
+			function_template_params.setParent(function_declaration);
+			function_decl_params.setParent(function_declaration);
+			out_declaration.setParent(function_declaration);
 		variable_declaration.setParent(declarations);
 		version_debug.setParent(declarations);
-		version_debug_assignment.setParent(version_debug);
+			version_debug_assignment.setParent(version_debug);
 		pragma.setParent(declarations);
 		mixin.setParent(declarations);
 		align_declaration.setParent(declarations);
 		aggregate_declaration.setParent(declarations);
-		aggregate_template_params.setParent(aggregate_declaration);
-		class_invariants.setParent(aggregate_declaration);
+			aggregate_template_params.setParent(aggregate_declaration);
+			class_invariants.setParent(aggregate_declaration);
 		template_declaration.setParent(declarations);
 		extern_declarations.setParent(declarations);
 		import_declaration.setParent(declarations);
@@ -154,9 +155,6 @@ public final class WhiteSpaceOptions
 		roots.add(expressions);
 		operators.setParent(expressions);
 		qualified_names.setParent(expressions);
-		function_delegate_type.setParent(expressions);
-		c_style_function_pointer.setParent(function_delegate_type);
-		typeof.setParent(expressions);
 		typeid.setParent(expressions);
 		is_expressions.setParent(expressions);
 		file_import_declarations.setParent(expressions);
@@ -167,7 +165,14 @@ public final class WhiteSpaceOptions
 		struct_initalizer.setParent(expressions);
 		conditional_expression.setParent(expressions);
 		traits_expression.setParent(expressions);
-		modified_type.setParent(expressions);
+		
+		// Types
+		roots.add(types);
+		function_delegate_type.setParent(types);
+			c_style_function_pointer.setParent(function_delegate_type);
+		typeof.setParent(types);
+		modified_type.setParent(types);
+		pointer_type.setParent(types);
 		
 		// Arrays
 		roots.add(arrays);
@@ -242,6 +247,7 @@ public final class WhiteSpaceOptions
 		roots.add(after_elipsis);
 		roots.add(before_question_mark);
 		roots.add(after_question_mark);
+		roots.add(before_asterisk);
 		roots.add(after_asterisk);
 		
 		return roots;
@@ -714,13 +720,7 @@ public abstract static class Node {
 				"invariant(int) five = 5;"
 			);
 	
-	//private final PreviewSnippet NO_PREVIEW =
-	//	new PreviewSnippet(CodeFormatter.K_STATEMENTS, 
-	//		""
-	//	);
-	
-	// This PreviewSnippet is used by WhiteSpaceTabPage, so cannot be private
-	final static PreviewSnippet ASTERISK_PREVIEW =
+	private final PreviewSnippet ASTERISK_PREVIEW =
 		new PreviewSnippet(CodeFormatter.K_COMPILATION_UNIT, 
 				"int* a, b; // Both a and b are type int*\n\n" +
 				"void alterPointer(int** x){*x = &a;}"

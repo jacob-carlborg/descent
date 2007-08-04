@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import descent.core.formatter.DefaultCodeFormatterConstants;
-import descent.internal.formatter.Alignment;
 
 public class DefaultCodeFormatterOptions
 {	
@@ -27,17 +26,6 @@ public class DefaultCodeFormatterOptions
 		
 		private final String constVal;
 		BracePosition(String $constVal) { constVal = $constVal; }
-		public String toString() { return constVal; }
-	}
-	
-	public enum AsteriskPosition
-	{
-		D_STYLE(DefaultCodeFormatterConstants.D_STYLE),
-		C_STYLE(DefaultCodeFormatterConstants.C_STYLE),
-		SPACES_ON_BOTH_SIDES(DefaultCodeFormatterConstants.SPACES_ON_BOTH_SIDES);
-		
-		private final String constVal;
-		AsteriskPosition(String $constVal) { constVal = $constVal; }
 		public String toString() { return constVal; }
 	}
 	
@@ -339,7 +327,7 @@ public class DefaultCodeFormatterOptions
 	public boolean insert_space_after_equals_in_enum_constants;
 	public boolean insert_space_after_equals_in_variable_inits;
 	public boolean insert_space_after_star_in_c_style_fp;
-	public AsteriskPosition asterisk_position_for_pointer_types;
+	public boolean insert_space_before_asterisk_for_pointer_types;
 	public int blank_lines_before_module;
 	public int blank_lines_after_module;
 	public int number_of_empty_lines_to_preserve;
@@ -380,6 +368,7 @@ public class DefaultCodeFormatterOptions
 	public boolean indent_cases_compare_to_switch;
 	public boolean indent_break_compare_to_switch;
 	public boolean indent_statements_compare_to_case;
+	public int alignment_for_multiple_variable_declarations;
 	public boolean indent_body_declarations_compare_to_pragma_header;
 	public TabChar tab_char;
 	public int tab_size;
@@ -401,10 +390,6 @@ public class DefaultCodeFormatterOptions
 		setDefaultSettings();
 		if (settings == null) return;
 		set(settings);
-	}
-
-	private String getAlignment2(int alignment) {
-		return Integer.toString(alignment);
 	}
 
 	public Map<String, String> getMap() {
@@ -667,7 +652,7 @@ public class DefaultCodeFormatterOptions
 		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_AFTER_EQUALS_IN_ENUM_CONSTANTS, insert_space_after_equals_in_enum_constants ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
 		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_AFTER_EQUALS_IN_VARIABLE_INITS, insert_space_after_equals_in_variable_inits ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
 		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_AFTER_STAR_IN_C_STYLE_FP, insert_space_after_star_in_c_style_fp ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
-		options.put(DefaultCodeFormatterConstants.FORMATTER_ASTERISK_POSITION_FOR_POINTER_TYPES, asterisk_position_for_pointer_types.toString());
+		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_ASTERISK_FOR_POINTER_TYPES, insert_space_before_asterisk_for_pointer_types ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
 		options.put(DefaultCodeFormatterConstants.FORMATTER_BLANK_LINES_BEFORE_MODULE, Integer.toString(blank_lines_before_module));
 		options.put(DefaultCodeFormatterConstants.FORMATTER_BLANK_LINES_AFTER_MODULE, Integer.toString(blank_lines_after_module));
 		options.put(DefaultCodeFormatterConstants.FORMATTER_NUMBER_OF_EMPTY_LINES_TO_PRESERVE, Integer.toString(number_of_empty_lines_to_preserve));
@@ -708,6 +693,7 @@ public class DefaultCodeFormatterOptions
 		options.put(DefaultCodeFormatterConstants.FORMATTER_INDENT_CASES_COMPARE_TO_SWITCH, indent_cases_compare_to_switch ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
 		options.put(DefaultCodeFormatterConstants.FORMATTER_INDENT_BREAK_COMPARE_TO_SWITCH, indent_break_compare_to_switch ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
 		options.put(DefaultCodeFormatterConstants.FORMATTER_INDENT_STATEMENTS_COMPARE_TO_CASE, indent_statements_compare_to_case ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
+		options.put(DefaultCodeFormatterConstants.FORMATTER_ALIGNMENT_FOR_MULTIPLE_VARIABLE_DECLARATIONS, Integer.toString(alignment_for_multiple_variable_declarations));
 		options.put(DefaultCodeFormatterConstants.FORMATTER_INDENT_BODY_DECLARATIONS_COMPARE_TO_PRAGMA_HEADER, indent_body_declarations_compare_to_pragma_header ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
 		options.put(DefaultCodeFormatterConstants.FORMATTER_TAB_CHAR, tab_char.toString());
 		options.put(DefaultCodeFormatterConstants.FORMATTER_TAB_SIZE, Integer.toString(tab_size));
@@ -3029,12 +3015,12 @@ public class DefaultCodeFormatterOptions
 			}
 		}
 		
-		current = settings.get(DefaultCodeFormatterConstants.FORMATTER_ASTERISK_POSITION_FOR_POINTER_TYPES);
+		current = settings.get(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_ASTERISK_FOR_POINTER_TYPES);
 		if(null != current) {
 			try {
-				asterisk_position_for_pointer_types = DefaultCodeFormatterConstants.D_STYLE.equals(current) ? AsteriskPosition.D_STYLE : DefaultCodeFormatterConstants.C_STYLE.equals(current) ? AsteriskPosition.C_STYLE : AsteriskPosition.SPACES_ON_BOTH_SIDES;
+				insert_space_before_asterisk_for_pointer_types = DefaultCodeFormatterConstants.TRUE.equals(current);
 			} catch(Exception e) {
-				asterisk_position_for_pointer_types = AsteriskPosition.D_STYLE;
+				insert_space_before_asterisk_for_pointer_types = false;
 			}
 		}
 		
@@ -3398,6 +3384,15 @@ public class DefaultCodeFormatterOptions
 			}
 		}
 		
+		current = settings.get(DefaultCodeFormatterConstants.FORMATTER_ALIGNMENT_FOR_MULTIPLE_VARIABLE_DECLARATIONS);
+		if(null != current) {
+			try {
+				alignment_for_multiple_variable_declarations = Integer.parseInt(current);
+			} catch(Exception e) {
+				alignment_for_multiple_variable_declarations = DefaultCodeFormatterConstants.WRAP_ONLY_WHEN_NECESSARY;
+			}
+		}
+		
 		current = settings.get(DefaultCodeFormatterConstants.FORMATTER_INDENT_BODY_DECLARATIONS_COMPARE_TO_PRAGMA_HEADER);
 		if(null != current) {
 			try {
@@ -3457,7 +3452,7 @@ public class DefaultCodeFormatterOptions
 			try {
 				line_split = Integer.parseInt(current);
 			} catch(Exception e) {
-				line_split = 9999;
+				line_split = 80;
 			}
 		}
 		
@@ -3728,7 +3723,7 @@ public class DefaultCodeFormatterOptions
 		insert_space_after_equals_in_enum_constants = true;
 		insert_space_after_equals_in_variable_inits = true;
 		insert_space_after_star_in_c_style_fp = false;
-		asterisk_position_for_pointer_types = AsteriskPosition.D_STYLE;
+		insert_space_before_asterisk_for_pointer_types = false;
 		blank_lines_before_module = 0;
 		blank_lines_after_module = 1;
 		number_of_empty_lines_to_preserve = 1;
@@ -3769,13 +3764,14 @@ public class DefaultCodeFormatterOptions
 		indent_cases_compare_to_switch = true;
 		indent_break_compare_to_switch = false;
 		indent_statements_compare_to_case = true;
+		alignment_for_multiple_variable_declarations = DefaultCodeFormatterConstants.WRAP_ONLY_WHEN_NECESSARY;
 		indent_body_declarations_compare_to_pragma_header = true;
 		tab_char = TabChar.TAB;
 		tab_size = 4;
 		use_tabs_only_for_leading_indentations = false;
 		never_indent_block_comments_on_first_column = false;
 		never_indent_line_comments_on_first_column = false;
-		line_split = 9999;
+		line_split = 80;
 		page_width = 80;
 	}
 }

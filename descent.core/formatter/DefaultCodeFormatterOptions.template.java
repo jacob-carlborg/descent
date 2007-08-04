@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import descent.core.formatter.DefaultCodeFormatterConstants;
-import descent.internal.formatter.Alignment;
 
 public class DefaultCodeFormatterOptions
 {	
@@ -27,17 +26,6 @@ public class DefaultCodeFormatterOptions
 		
 		private final String constVal;
 		BracePosition(String $constVal) { constVal = $constVal; }
-		public String toString() { return constVal; }
-	}
-	
-	public enum AsteriskPosition
-	{
-		D_STYLE(DefaultCodeFormatterConstants.D_STYLE),
-		C_STYLE(DefaultCodeFormatterConstants.C_STYLE),
-		SPACES_ON_BOTH_SIDES(DefaultCodeFormatterConstants.SPACES_ON_BOTH_SIDES);
-		
-		private final String constVal;
-		AsteriskPosition(String $constVal) { constVal = $constVal; }
 		public String toString() { return constVal; }
 	}
 	
@@ -94,10 +82,6 @@ public class DefaultCodeFormatterOptions
 		set(settings);
 	}
 
-	private String getAlignment2(int alignment) {
-		return Integer.toString(alignment);
-	}
-
 	public Map<String, String> getMap() {
 		
 		Map<String, String> options = new HashMap<String, String>();
@@ -122,10 +106,6 @@ public class DefaultCodeFormatterOptions
 		 *     $optionsMapInitializer = "$$_{'optName'}.toString()";
 		 * }
 		 * elsif($$_{'type'} eq "BracePosition")
-		 * {
-		 *     $optionsMapInitializer = "$$_{'optName'}.toString()";
-		 * }
-		 * elsif($$_{'type'} eq "AsteriskPosition")
 		 * {
 		 *     $optionsMapInitializer = "$$_{'optName'}.toString()";
 		 * }
@@ -170,12 +150,6 @@ public class DefaultCodeFormatterOptions
 		 *     $initializer = "DefaultCodeFormatterConstants.NEXT_LINE_SHIFTED.equals(current) ? " .
 		 *                    "BracePosition.NEXT_LINE_SHIFTED : DefaultCodeFormatterConstants.NEXT_LINE.equals(current) ? " .
 		 *                    "BracePosition.NEXT_LINE : BracePosition.END_OF_LINE";
-		 * }
-		 * elsif($$_{'type'} eq "AsteriskPosition")
-		 * {
-		 *     $initializer = "DefaultCodeFormatterConstants.D_STYLE.equals(current) ? " .
-		 *                    "AsteriskPosition.D_STYLE : DefaultCodeFormatterConstants.C_STYLE.equals(current) ? " .
-		 *                    "AsteriskPosition.C_STYLE : AsteriskPosition.SPACES_ON_BOTH_SIDES";
 		 * }
 		 * else
 		 * {

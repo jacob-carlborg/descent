@@ -103,9 +103,6 @@ final class FormatterMessages extends NLS {
 	public static String WhiteSpaceTabPage_insert_space;
 	public static String WhiteSpaceTabPage_sort_by_d_element;
 	public static String WhiteSpaceTabPage_sort_by_syntax_element;
-	public static String WhiteSpaceTabPage_asterisk_d_style;
-	public static String WhiteSpaceTabPage_asterisk_c_style;
-	public static String WhiteSpaceTabPage_asterisk_spaces_on_both_sides;
 	
 	// White space options - D elements
 	public static String WhiteSpaceOptions_declarations;
@@ -198,6 +195,8 @@ final class FormatterMessages extends NLS {
 	public static String WhiteSpaceOptions_modified_type;
 	public static String WhiteSpaceOptions_version_debug_assignment;
 	public static String WhiteSpaceOptions_renamed_imports;
+	public static String WhiteSpaceOptions_pointer_type;
+	public static String WhiteSpaceOptions_types;
 	
 	// White space options - syntax elements
 	public static String WhiteSpaceOptions_before_semicolon;
@@ -266,6 +265,7 @@ final class FormatterMessages extends NLS {
 	public static String WhiteSpaceOptions_after_opening_bracket;
 	public static String WhiteSpaceOptions_before_closing_bracket;
 	public static String WhiteSpaceOptions_before_opening_brace;
+	public static String WhiteSpaceOptions_before_asterisk;
 	public static String WhiteSpaceOptions_after_asterisk;
 	public static String WhiteSpaceOptions_before_equals;
 	public static String WhiteSpaceOptions_after_equals;
@@ -294,6 +294,19 @@ final class FormatterMessages extends NLS {
 	public static String ShortSyntaxTabPage_preview_header;
 	public static String ShortSyntaxTabPage_short_syntax_group_title;
 	
+	// Line wrapping tab page
+	public static String ModifyDialog_tabpage_line_wrapping_title;
+	public static String LineWrappingTabPage_preview_header;
+	public static String LineWrappingTabPage_style_do_not_wrap;
+	public static String LineWrappingTabPage_style_wrap_only_when_necessary;
+	public static String LineWrappingTabPage_style_wrap_one_fragment_per_line;
+	public static String LineWrappingTabPage_group_wrapping_style;
+	public static String LineWrappingTabPage_group_set_all_to;
+	public static String LineWrappingTabPage_button_do_not_wrap;
+	public static String LineWrappingTabPage_button_wrap_only_when_necessary;
+	public static String LineWrappingTabPage_wrap_one_fragment_per_line;
+	public static String LineWrappingTabPage_group_line_width_and_indentation;
+	
 	// Messages for various options (automatically generated)
 	public static String BracesTabPage_brace_position_for_function_declaration;
 	public static String BracesTabPage_brace_position_for_type_declaration;
@@ -313,7 +326,6 @@ final class FormatterMessages extends NLS {
 	public static String BracesTabPage_brace_position_for_with_statement;
 	public static String BracesTabPage_brace_position_for_scope_statement;
 	public static String BracesTabPage_brace_position_for_pragmas;
-	public static String WhiteSpaceTabPage_asterisk_position_for_pointer_types;
 	public static String BlankLinesTabPage_blank_lines_before_module;
 	public static String BlankLinesTabPage_blank_lines_after_module;
 	public static String BlankLinesTabPage_number_of_empty_lines_to_preserve;
@@ -339,6 +351,7 @@ final class FormatterMessages extends NLS {
 	public static String ShortSyntaxTabPage_keep_functions_with_no_statement_in_one_line;
 	public static String ShortSyntaxTabPage_keep_functions_with_one_statement_in_one_line;
 	public static String IndentationTabPage_indentation_size;
+	public static String LineWrappingTabPage_continuation_indentation;
 	public static String IndentationTabPage_indent_empty_lines;
 	public static String IndentationTabPage_indent_body_declarations_compare_to_type_header;
 	public static String IndentationTabPage_indent_body_declarations_compare_to_template_header;
@@ -353,9 +366,11 @@ final class FormatterMessages extends NLS {
 	public static String IndentationTabPage_indent_cases_compare_to_switch;
 	public static String IndentationTabPage_indent_break_compare_to_switch;
 	public static String IndentationTabPage_indent_statements_compare_to_case;
+	public static String LineWrappingTabPage_alignment_for_multiple_variable_declarations;
 	public static String IndentationTabPage_indent_body_declarations_compare_to_pragma_header;
 	public static String IndentationTabPage_tab_char;
 	public static String IndentationTabPage_tab_size;
+	public static String LineWrappingTabPage_page_width;
 
 	static {
 		NLS.initializeMessages(BUNDLE_NAME, FormatterMessages.class);

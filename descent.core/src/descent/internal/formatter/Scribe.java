@@ -551,7 +551,7 @@ public class Scribe {	private static final int INITIAL_SIZE = 100;
 
 	public void print(char[] s, boolean considerSpaceIfAny) {
 		if (checkLineWrapping && s.length + column > this.pageWidth) {
-			//handleLineTooLong();
+			handleLineTooLong();
 		}
 		this.lastNumberOfNewLines = 0;
 		printIndentationIfNecessary();

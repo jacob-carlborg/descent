@@ -28,7 +28,8 @@ public class FormatterModifyDialog extends ModifyDialog {
 		addTabPage(FormatterMessages.ModifyDialog_tabpage_white_space_title, new WhiteSpaceTabPage(this, values)); 
 		addTabPage(FormatterMessages.ModifyDialog_tabpage_blank_lines_title, new BlankLinesTabPage(this, values)); 
 		addTabPage(FormatterMessages.ModifyDialog_tabpage_new_lines_title, new NewLinesTabPage(this, values)); 
-		addTabPage(FormatterMessages.ModifyDialog_tabpage_short_syntax_title, new ShortSyntaxTabPage(this, values)); 
+		addTabPage(FormatterMessages.ModifyDialog_tabpage_short_syntax_title, new ShortSyntaxTabPage(this, values));
+		addTabPage(FormatterMessages.ModifyDialog_tabpage_line_wrapping_title, new LineWrappingTabPage(this, values));
     }
 	
 }

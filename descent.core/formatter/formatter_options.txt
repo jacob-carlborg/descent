@@ -1865,16 +1865,12 @@ insert_space_after_star_in_c_style_fp
 	wsDElem=c_style_function_pointer
 	wsSynElem=after_asterisk
 	wsPreview=DELEGATE_PREVIEW
-	
-
-
-
-# Star positioning for pointer types
-asterisk_position_for_pointer_types
-	type=AsteriskPosition
-	default=AsteriskPosition.D_STYLE
-	tab=WhiteSpaceTabPage
-	uiText=Pointer asterisk position
+insert_space_before_asterisk_for_pointer_types
+	type=boolean
+	default=false
+	wsDElem=pointer_type
+	wsSynElem=before_asterisk
+	wsPreview=ASTERISK_PREVIEW
 
 
 
@@ -2022,6 +2018,8 @@ indentation_size
 continuation_indentation
 	type=int
 	default=2
+	tab=LineWrappingTabPage
+	uiText=Default indentation for wrapped lines
 indent_empty_lines
 	type=boolean
 	default=true
@@ -2104,6 +2102,17 @@ indent_body_declarations_compare_to_pragma_header
 
 
 
+# Alignment
+alignment_for_multiple_variable_declarations
+	type=int
+	default=DefaultCodeFormatterConstants.WRAP_ONLY_WHEN_NECESSARY
+	tab=LineWrappingTabPage
+	uiText=Multiple variable declarations
+
+
+
+
+
 # Tabs
 tab_char
 	type=TabChar
@@ -2138,9 +2147,11 @@ never_indent_line_comments_on_first_column
 # Other
 line_split
 	type=int
-	default=9999
+	default=80
 page_width
 	type=int
 	default=80
+	tab=LineWrappingTabPage
+	uiText=Maximum line width
 
 
