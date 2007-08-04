@@ -84,7 +84,6 @@ public class JavaBuilder extends IncrementalProjectBuilder implements IResourceD
 	public static void build(IResource resource, IProgressMonitor monitor) throws CoreException {
 		if (resource.getType() == IResource.FILE) {
 			monitor.beginTask("", 1);
-			System.out.println(resource);
 			build((IFile) resource);
 			monitor.done();
 		} else if (resource instanceof IContainer) {

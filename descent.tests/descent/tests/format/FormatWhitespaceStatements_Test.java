@@ -18,6 +18,12 @@ public class FormatWhitespaceStatements_Test extends AbstractFormatInsideFunctio
 		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_OPENING_PAREN_IN_TYPEOF_STATEMENTS, DefaultCodeFormatterConstants.FALSE);
 		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_OPENING_PAREN_IN_TYPEID_STATEMENTS, DefaultCodeFormatterConstants.FALSE);
 		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_OPENING_PAREN_IN_DELEGATE, DefaultCodeFormatterConstants.FALSE);
+		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_OPENING_PAREN_IN_NEW_ARGUMENTS, DefaultCodeFormatterConstants.FALSE);
+		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_OPENING_PAREN_IN_FILE_IMPORTS, DefaultCodeFormatterConstants.FALSE);
+		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_OPENING_PAREN_IN_IF_STATEMENTS, DefaultCodeFormatterConstants.FALSE);
+		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_OPENING_PAREN_IN_IS_EXPRESSIONS, DefaultCodeFormatterConstants.FALSE);
+		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_OPENING_PAREN_IN_CASTS, DefaultCodeFormatterConstants.FALSE);
+		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_OPENING_PAREN_IN_PARENTHESIZED_EXPRESSIONS, DefaultCodeFormatterConstants.FALSE);
 		return options;
 	}
 	
@@ -155,6 +161,112 @@ public class FormatWhitespaceStatements_Test extends AbstractFormatInsideFunctio
 		assertFormat(
 				"int delegate (x) a;",
 				"int delegate(x) a;",
+				options
+				);
+	}
+	
+	public void testNotFORMATTER_INSERT_SPACE_BEFORE_OPENING_PAREN_IN_NEW_ARGUMENTS() throws Exception {
+		assertFormat(
+				"new(x) Type();",
+				"new (x) Type();"
+				);
+	}
+	
+	public void testFORMATTER_INSERT_SPACE_BEFORE_OPENING_PAREN_IN_NEW_ARGUMENTS() throws Exception {
+		Map options = new HashMap();
+		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_OPENING_PAREN_IN_NEW_ARGUMENTS, DefaultCodeFormatterConstants.TRUE);
+		assertFormat(
+				"new (x) Type();",
+				"new (x) Type();",
+				options
+				);
+	}
+	
+	public void testNotFORMATTER_INSERT_SPACE_BEFORE_OPENING_PAREN_IN_NEW_ARGUMENTS2() throws Exception {
+		assertFormat(
+				"new(x) class {\r\n" +
+				"}",
+				"new (x) class { }"
+				);
+	}
+	
+	public void testFORMATTER_INSERT_SPACE_BEFORE_OPENING_PAREN_IN_NEW_ARGUMENTS2() throws Exception {
+		Map options = new HashMap();
+		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_OPENING_PAREN_IN_NEW_ARGUMENTS, DefaultCodeFormatterConstants.TRUE);
+		assertFormat(
+				"new (x) class {\r\n" +
+				"}",
+				"new (x) class { }",
+				options
+				);
+	}
+	
+	public void testNotFORMATTER_INSERT_SPACE_BEFORE_OPENING_PAREN_IN_FILE_IMPORTS() throws Exception {
+		assertFormat(
+				"x = import(\"file\");",
+				"x = import(\"file\");"
+				);
+	}
+	
+	public void testFORMATTER_INSERT_SPACE_BEFORE_OPENING_PAREN_IN_FILE_IMPORTS() throws Exception {
+		Map options = new HashMap();
+		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_OPENING_PAREN_IN_FILE_IMPORTS, DefaultCodeFormatterConstants.TRUE);
+		assertFormat(
+				"x = import (\"file\");",
+				"x = import(\"file\");",
+				options
+				);
+	}
+	
+	public void testNotFORMATTER_INSERT_SPACE_BEFORE_OPENING_PAREN_IN_IF_STATEMENTS() throws Exception {
+		assertFormat(
+				"if(true) {\r\n" +
+				"}",
+				"if (true) { }"
+				);
+	}
+	
+	public void testFORMATTER_INSERT_SPACE_BEFORE_OPENING_PAREN_IN_IF_STATEMENTS() throws Exception {
+		Map options = new HashMap();
+		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_OPENING_PAREN_IN_IF_STATEMENTS, DefaultCodeFormatterConstants.TRUE);
+		assertFormat(
+				"if (true) {\r\n" +
+				"}",
+				"if (true) { }",
+				options
+				);
+	}
+	
+	public void testNotFORMATTER_INSERT_SPACE_BEFORE_OPENING_PAREN_IN_IS_EXPRESSIONS() throws Exception {
+		assertFormat(
+				"x = is(a : bool);",
+				"x = is(a : bool);"
+				);
+	}
+	
+	public void testFORMATTER_INSERT_SPACE_BEFORE_OPENING_PAREN_IN_IS_EXPRESSIONS() throws Exception {
+		Map options = new HashMap();
+		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_OPENING_PAREN_IN_IS_EXPRESSIONS, DefaultCodeFormatterConstants.TRUE);
+		assertFormat(
+				"x = is (a : bool);",
+				"x = is(a : bool);",
+				options
+				);
+	}
+	
+	public void testNotFORMATTER_INSERT_SPACE_BEFORE_OPENING_PAREN_IN_CASTS() throws Exception {
+		assertFormat(
+				"x = cast(int) y;",
+				"x = cast(int) y;"
+				);
+	}
+	
+	public void testFORMATTER_INSERT_SPACE_BEFORE_OPENING_PAREN_IN_CASTS() throws Exception {
+		Map options = new HashMap();
+		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_OPENING_PAREN_IN_CASTS, DefaultCodeFormatterConstants.TRUE);
+		assertFormat(
+				"x = cast (int) y;",
+				"x = cast(int) y;",
 				options
 				);
 	}

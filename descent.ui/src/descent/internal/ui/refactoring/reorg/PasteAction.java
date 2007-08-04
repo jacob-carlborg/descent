@@ -290,6 +290,26 @@ public class PasteAction extends SelectionDispatchAction{
 
 			public String getPackageName() {
 				parseText();
+				int index = fPackageName.lastIndexOf('.');
+				if (index == -1) {
+					return ""; //$NON-NLS-1$
+				} else {
+					return fPackageName.substring(0, fPackageName.lastIndexOf('.'));
+				}
+			}
+			
+			public String getModuleName() {
+				parseText();
+				int index = fPackageName.lastIndexOf('.');
+				if (index == -1) {
+					return fPackageName;
+				} else {
+					return fPackageName.substring(fPackageName.lastIndexOf('.') + 1);
+				}
+			}
+			
+			public String getModuleDeclarationName() {
+				parseText();
 				return fPackageName;
 			}
 
@@ -323,7 +343,7 @@ public class PasteAction extends SelectionDispatchAction{
 			String text= getClipboardText(fAvailableTypes);
 			fCuParser= new CuParser(destination.getJavaProject(), text);
 			
-			if (fCuParser.getTypeName() == null)
+			if (fCuParser.getPackageName() == null)
 				return false;
 			
 			switch (destination.getElementType()) {
@@ -386,7 +406,7 @@ public class PasteAction extends SelectionDispatchAction{
 					else
 						pm.worked(1);
 					
-					final String cuName= fCuParser.getTypeName() + JavaModelUtil.DEFAULT_CU_SUFFIX;
+					final String cuName= fCuParser.getModuleName() + JavaModelUtil.DEFAULT_CU_SUFFIX;
 					final ICompilationUnit cu= fDestinationPack.getCompilationUnit(cuName);
 					boolean alreadyExists= cu.exists();
 					if (alreadyExists) {
@@ -404,11 +424,13 @@ public class PasteAction extends SelectionDispatchAction{
 						editorPart[0]= openCu(cu);
 					}
 					if (!fDestinationPack.getElementName().equals(fCuParser.getPackageName())) {
-						if (fDestinationPack.getElementName().length() == 0) {
-							removePackageDeclaration(cu);
+						String moduleName = fDestinationPack.getElementName();
+						if (moduleName.length() == 0) {
+							moduleName = fCuParser.getModuleName();
 						} else {
-							cu.createPackageDeclaration(fDestinationPack.getElementName(), new SubProgressMonitor(pm, 1));
+							moduleName += "." + fCuParser.getModuleName(); //$NON-NLS-1$
 						}
+						cu.createPackageDeclaration(moduleName, new SubProgressMonitor(pm, 1));
 						if (!alreadyExists && editorPart[0] != null)
 							editorPart[0].doSave(new SubProgressMonitor(pm, 1)); //avoid showing error marker due to missing/wrong package declaration
 						else
