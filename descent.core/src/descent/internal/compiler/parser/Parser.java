@@ -2812,6 +2812,7 @@ public class Parser extends Lexer {
 					tempdecl.wrapper = true;
 					s = tempdecl;
 				}
+				s.modifiers = modifiers;
 				s.preDdocs = lastComments;
 				adjustLastDocComment();
 				attachLeadingComments(s);
@@ -3565,7 +3566,7 @@ public class Parser extends Lexer {
 				if (token.value == TOKidentifier) {
 					Token t2 = peek(token);
 					if (t2.value == TOKassign) {
-						arg = new Argument(InOut.None, null, newIdentifierExp(), null);
+						arg = new Argument(InOut.Auto, null, newIdentifierExp(), null);
 						arg.setSourceRange(autoTokenStart, token.ptr + token.len - autoTokenStart);
 						
 						nextToken();

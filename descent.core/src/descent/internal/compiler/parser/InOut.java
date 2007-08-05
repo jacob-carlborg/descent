@@ -12,6 +12,7 @@ public enum InOut {
 	Final,
 	Static,
 	Const,
-	Invariant
+	Invariant,
+	Auto
 
 }

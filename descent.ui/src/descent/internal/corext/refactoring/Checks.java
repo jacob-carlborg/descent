@@ -360,6 +360,7 @@ public class Checks {
 	public static boolean isEnumCase(ASTNode node) {
 		if (node instanceof SwitchCase) {
 			final SwitchCase caze= (SwitchCase) node;
+			/* TODO JDT Checks
 			final Expression expression= caze.getExpression();
 			if (expression instanceof Name) {
 				final Name name= (Name) expression;
@@ -369,6 +370,7 @@ public class Checks {
 					return variableBinding.isEnumConstant();
 				}
 			}
+			*/
 		}
 		return false;
 	}

@@ -1128,7 +1128,7 @@ public class ASTConverter {
 	public descent.core.dom.InvariantDeclaration convert(InvariantDeclaration a) {
 		descent.core.dom.InvariantDeclaration b = new descent.core.dom.InvariantDeclaration(ast);
 		if (a.fbody != null) {
-			b.setBody(convert(a.fbody));
+			b.setBody((Block) convert(a.fbody));
 		}
 		fillDeclaration(b, a);
 		b.setSourceRange(a.start, a.length);
@@ -1137,7 +1137,7 @@ public class ASTConverter {
 	
 	public descent.core.dom.UnitTestDeclaration convert(UnitTestDeclaration a) {
 		descent.core.dom.UnitTestDeclaration b = new descent.core.dom.UnitTestDeclaration(ast);
-		b.setBody(convert(a.fbody));
+		b.setBody((Block) convert(a.fbody));
 		fillDeclaration(b, a);
 		b.setSourceRange(a.start, a.length);
 		return b;
@@ -1728,7 +1728,7 @@ public class ASTConverter {
 	
 	public descent.core.dom.DefaultStatement convert(DefaultStatement a) {
 		descent.core.dom.DefaultStatement b = new descent.core.dom.DefaultStatement(ast);
-		b.setBody(convert(a.statement));
+		convertStatements(b.statements(), ((CompoundStatement) a.statement).statements);
 		b.setSourceRange(a.start, a.length);
 		return b;
 	}
@@ -1901,6 +1901,7 @@ public class ASTConverter {
 		case Invariant: b.setPassageMode(descent.core.dom.Argument.PassageMode.INVARIANT); break;
 		case Scope: b.setPassageMode(descent.core.dom.Argument.PassageMode.SCOPE); break;
 		case Static: b.setPassageMode(descent.core.dom.Argument.PassageMode.STATIC); break;
+		case Auto: b.setPassageMode(descent.core.dom.Argument.PassageMode.AUTO); break;
 		}
 		if (a.type != null) {
 			b.setType(convert(a.type));
@@ -2036,11 +2037,17 @@ public class ASTConverter {
 	
 	public descent.core.dom.SwitchCase convert(CaseStatement a) {
 		descent.core.dom.SwitchCase b = new descent.core.dom.SwitchCase(ast);
-		if (a.exp != null) {
-			b.setExpression(convert(a.exp));
+		
+		CaseStatement x = a;
+		while(x.statement instanceof CaseStatement) {
+			b.expressions().add(convert(x.exp));
+			x = (CaseStatement) x.statement;
 		}
-		if (a.statement != null) {
-			b.setBody(convert(a.statement));
+		if (x.exp != null) {
+			b.expressions().add(convert(x.exp));
+		}
+		if (x.statement != null && ((CompoundStatement) x.statement).statements.size() > 0) {
+			convertStatements(b.statements(), ((CompoundStatement) x.statement).statements);
 		}
 		b.setSourceRange(a.start, a.length);
 		return b;

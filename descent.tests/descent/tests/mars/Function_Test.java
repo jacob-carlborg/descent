@@ -5,10 +5,14 @@ import java.util.List;
 import descent.core.dom.AST;
 import descent.core.dom.ASTNode;
 import descent.core.dom.Argument;
+import descent.core.dom.CompilationUnit;
 import descent.core.dom.ConstructorDeclaration;
+import descent.core.dom.DeclarationStatement;
 import descent.core.dom.FunctionDeclaration;
 import descent.core.dom.ModifiedType;
 import descent.core.dom.NumberLiteral;
+import descent.core.dom.UnitTestDeclaration;
+import descent.core.dom.VariableDeclaration;
 import descent.core.dom.Argument.PassageMode;
 
 public class Function_Test extends Parser_Test {
@@ -296,6 +300,16 @@ public class Function_Test extends Parser_Test {
 	public void testFunctionWithOneArgumentD2_4() {
 		String s = " void func(private int a) { }";
 		getCompilationUnit(s);
+	}
+	
+	public void testFunctionWithModifierInsideUnittest() {
+		String s = " unittest { static void foo() { } }";
+		CompilationUnit unit = getCompilationUnit(s);
+		UnitTestDeclaration test = (UnitTestDeclaration) unit.declarations().get(0);
+		DeclarationStatement stm = (DeclarationStatement) test.getBody().statements().get(0);
+		FunctionDeclaration func = (FunctionDeclaration) stm.getDeclaration();
+		assertEquals(1, func.modifiers().size());
+		assertEquals("static", func.modifiers().get(0).toString());
 	}
 
 }

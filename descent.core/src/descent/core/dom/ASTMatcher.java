@@ -617,8 +617,8 @@ public class ASTMatcher {
 		}
 		SwitchCase o = (SwitchCase) other;
 		return (
-			safeSubtreeMatch(node.getExpression(), o.getExpression())
-			&& safeSubtreeMatch(node.getBody(), o.getBody())
+			safeSubtreeListMatch(node.expressions(), o.expressions())
+			&& safeSubtreeListMatch(node.statements(), o.statements())
 			);
 	}
 
@@ -642,7 +642,7 @@ public class ASTMatcher {
 		}
 		DefaultStatement o = (DefaultStatement) other;
 		return (
-			safeSubtreeMatch(node.getBody(), o.getBody())
+			safeSubtreeListMatch(node.statements(), o.statements())
 			);
 	}
 

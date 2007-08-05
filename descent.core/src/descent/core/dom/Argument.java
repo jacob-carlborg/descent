@@ -41,6 +41,8 @@ public class Argument extends ASTNode {
 		CONST,
 		/** "invariant" passage mode */
 		INVARIANT,
+		/** "auto" passage mode (only for if)*/
+		AUTO,
 	}
 
 	/**

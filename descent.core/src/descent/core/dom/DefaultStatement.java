@@ -9,16 +9,16 @@ import java.util.List;
  *
  * <pre>
  * DefaultStatement:
- *    <b>default</b> <b>:</b> Statement
+ *    <b>default</b> <b>:</b> { Statement }
  * </pre>
  */
 public class DefaultStatement extends Statement {
 
 	/**
-	 * The "body" structural property of this node type.
+	 * The "statements" structural property of this node type.
 	 */
-	public static final ChildPropertyDescriptor BODY_PROPERTY =
-		new ChildPropertyDescriptor(DefaultStatement.class, "body", Statement.class, MANDATORY, CYCLE_RISK); //$NON-NLS-1$
+	public static final ChildListPropertyDescriptor STATEMENTS_PROPERTY =
+		new ChildListPropertyDescriptor(DefaultStatement.class, "statements", Statement.class, CYCLE_RISK); //$NON-NLS-1$
 
 	/**
 	 * A list of property descriptors (element type: 
@@ -30,7 +30,7 @@ public class DefaultStatement extends Statement {
 	static {
 		List properyList = new ArrayList(1);
 		createPropertyList(DefaultStatement.class, properyList);
-		addProperty(BODY_PROPERTY, properyList);
+		addProperty(STATEMENTS_PROPERTY, properyList);
 		PROPERTY_DESCRIPTORS = reapPropertyList(properyList);
 	}
 
@@ -50,10 +50,12 @@ public class DefaultStatement extends Statement {
 	}
 
 	/**
-	 * The body.
+	 * The statements
+	 * (element type: <code>Statement</code>).
+	 * Defaults to an empty list.
 	 */
-	private Statement body;
-
+	private ASTNode.NodeList statements =
+		new ASTNode.NodeList(STATEMENTS_PROPERTY);
 
 	/**
 	 * Creates a new unparented default statement node owned by the given 
@@ -78,17 +80,12 @@ public class DefaultStatement extends Statement {
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
 	 */
-	final ASTNode internalGetSetChildProperty(ChildPropertyDescriptor property, boolean get, ASTNode child) {
-		if (property == BODY_PROPERTY) {
-			if (get) {
-				return getBody();
-			} else {
-				setBody((Statement) child);
-				return null;
-			}
+	final List internalGetChildListProperty(ChildListPropertyDescriptor property) {
+		if (property == STATEMENTS_PROPERTY) {
+			return statements();
 		}
 		// allow default implementation to flag the error
-		return super.internalGetSetChildProperty(property, get, child);
+		return super.internalGetChildListProperty(property);
 	}
 
 	/* (omit javadoc for this method)
@@ -104,7 +101,7 @@ public class DefaultStatement extends Statement {
 	ASTNode clone0(AST target) {
 		DefaultStatement result = new DefaultStatement(target);
 		result.setSourceRange(this.getStartPosition(), this.getLength());
-		result.setBody((Statement) getBody().clone(target));
+		result.statements.addAll(ASTNode.copySubtrees(target, statements()));
 		return result;
 	}
 
@@ -123,49 +120,20 @@ public class DefaultStatement extends Statement {
 		boolean visitChildren = visitor.visit(this);
 		if (visitChildren) {
 			// visit children in normal left to right reading order
-			acceptChild(visitor, getBody());
+			acceptChildren(visitor, this.statements);
 		}
 		visitor.endVisit(this);
 	}
 
 	/**
-	 * Returns the body of this default statement.
+	 * Returns the live ordered list of statements for this
+	 * default statement.
 	 * 
-	 * @return the body
+	 * @return the live list of default statement
+	 *    (element type: <code>Statement</code>)
 	 */ 
-	public Statement getBody() {
-		if (this.body == null) {
-			// lazy init must be thread-safe for readers
-			synchronized (this) {
-				if (this.body == null) {
-					preLazyInit();
-					this.body = new Block(this.ast);
-					postLazyInit(this.body, BODY_PROPERTY);
-				}
-			}
-		}
-		return this.body;
-	}
-
-	/**
-	 * Sets the body of this default statement.
-	 * 
-	 * @param body the body
-	 * @exception IllegalArgumentException if:
-	 * <ul>
-	 * <li>the node belongs to a different AST</li>
-	 * <li>the node already has a parent</li>
-	 * <li>a cycle in would be created</li>
-	 * </ul>
-	 */ 
-	public void setBody(Statement body) {
-		if (body == null) {
-			throw new IllegalArgumentException();
-		}
-		ASTNode oldChild = this.body;
-		preReplaceChild(oldChild, body, BODY_PROPERTY);
-		this.body = body;
-		postReplaceChild(oldChild, body, BODY_PROPERTY);
+	public List<Statement> statements() {
+		return this.statements;
 	}
 
 	/* (omit javadoc for this method)
@@ -181,7 +149,7 @@ public class DefaultStatement extends Statement {
 	int treeSize() {
 		return
 			memSize()
-			+ (this.body == null ? 0 : getBody().treeSize())
+			+ (this.statements.listSize())
 	;
 	}
 

@@ -327,9 +327,9 @@ public class ASTRewriteFlattener extends ASTVisitor {
 	@Override
 	public boolean visit(SwitchCase node) {
 		this.result.append("case ");
-		visitChild(node, SwitchCase.EXPRESSION_PROPERTY);
+		visitList(node, SwitchCase.EXPRESSIONS_PROPERTY, ", ");
 		this.result.append(": ");
-		visitChild(node, SwitchCase.BODY_PROPERTY);
+		visitList(node, SwitchCase.STATEMENTS_PROPERTY, " ");
 		return false;
 	}
 	
@@ -508,7 +508,7 @@ public class ASTRewriteFlattener extends ASTVisitor {
 	@Override
 	public boolean visit(DefaultStatement node) {
 		this.result.append("default: ");
-		visitChild(node, DefaultStatement.BODY_PROPERTY);
+		visitList(node, DefaultStatement.STATEMENTS_PROPERTY, " ");
 		return false;
 	}
 	

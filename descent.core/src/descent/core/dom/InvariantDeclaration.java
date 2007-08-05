@@ -30,7 +30,7 @@ public class InvariantDeclaration extends Declaration {
 	 * The "body" structural property of this node type.
 	 */
 	public static final ChildPropertyDescriptor BODY_PROPERTY =
-		new ChildPropertyDescriptor(InvariantDeclaration.class, "body", Statement.class, MANDATORY, CYCLE_RISK); //$NON-NLS-1$
+		new ChildPropertyDescriptor(InvariantDeclaration.class, "body", Block.class, MANDATORY, CYCLE_RISK); //$NON-NLS-1$
 
 	/**
 	 * The "postDDoc" structural property of this node type.
@@ -73,7 +73,7 @@ public class InvariantDeclaration extends Declaration {
 	/**
 	 * The body.
 	 */
-	private Statement body;
+	private Block body;
 
 
 	/**
@@ -104,7 +104,7 @@ public class InvariantDeclaration extends Declaration {
 			if (get) {
 				return getBody();
 			} else {
-				setBody((Statement) child);
+				setBody((Block) child);
 				return null;
 			}
 		}
@@ -164,7 +164,7 @@ public class InvariantDeclaration extends Declaration {
 		result.setSourceRange(this.getStartPosition(), this.getLength());
 		result.preDDocs.addAll(ASTNode.copySubtrees(target, preDDocs()));
 		result.modifiers.addAll(ASTNode.copySubtrees(target, modifiers()));
-		result.setBody((Statement) getBody().clone(target));
+		result.setBody((Block) getBody().clone(target));
 	result.setPostDDoc((DDocComment) ASTNode.copySubtree(target, getPostDDoc()));
 		return result;
 	}
@@ -197,7 +197,7 @@ public class InvariantDeclaration extends Declaration {
 	 * 
 	 * @return the body
 	 */ 
-	public Statement getBody() {
+	public Block getBody() {
 		if (this.body == null) {
 			// lazy init must be thread-safe for readers
 			synchronized (this) {
@@ -222,7 +222,7 @@ public class InvariantDeclaration extends Declaration {
 	 * <li>a cycle in would be created</li>
 	 * </ul>
 	 */ 
-	public void setBody(Statement body) {
+	public void setBody(Block body) {
 		if (body == null) {
 			throw new IllegalArgumentException();
 		}

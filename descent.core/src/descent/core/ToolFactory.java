@@ -86,7 +86,6 @@ public class ToolFactory {
 	 * @see descent.core.compiler.IScanner
 	 */
 	public static IScanner createScanner(boolean tokenizeComments, boolean tokenizePragmas, boolean tokenizeWhiteSpace, boolean recordLineSeparator) {
-		// TODO is this method ok to pass D2?
 		return new PublicScanner(tokenizeComments, tokenizePragmas, tokenizeWhiteSpace, recordLineSeparator, AST.D2);
 	}
 	

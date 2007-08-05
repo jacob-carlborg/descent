@@ -19,18 +19,21 @@ import descent.core.dom.CompilationUnit;
 import descent.core.dom.ContinueStatement;
 import descent.core.dom.DebugStatement;
 import descent.core.dom.DeclarationStatement;
+import descent.core.dom.DefaultStatement;
 import descent.core.dom.DoStatement;
 import descent.core.dom.EnumDeclaration;
 import descent.core.dom.ExpressionStatement;
 import descent.core.dom.ForStatement;
 import descent.core.dom.ForeachRangeStatement;
 import descent.core.dom.ForeachStatement;
+import descent.core.dom.FunctionDeclaration;
 import descent.core.dom.GotoCaseStatement;
 import descent.core.dom.GotoStatement;
 import descent.core.dom.IfStatement;
 import descent.core.dom.LabeledStatement;
 import descent.core.dom.MixinDeclaration;
 import descent.core.dom.PrimitiveType;
+import descent.core.dom.SwitchCase;
 import descent.core.dom.TemplateMixinDeclaration;
 import descent.core.dom.Modifier;
 import descent.core.dom.NumberLiteral;
@@ -798,6 +801,65 @@ public class Statement_Test extends Parser_Test {
 		
 		Statement st = block.statements().get(0);
 		assertPosition(st, 0, 12);
+	}
+	
+	public void testCase() throws Exception {
+		String s = " void foo() { switch(x) { case 1: break; } }";
+		CompilationUnit unit = getCompilationUnit(s);
+		FunctionDeclaration func = (FunctionDeclaration) unit.declarations().get(0);
+		SwitchStatement switc = (SwitchStatement) func.getBody().statements().get(0);
+		SwitchCase cas = (SwitchCase) ((Block) switc.getBody()).statements().get(0);
+		assertEquals(1, cas.expressions().size());
+		assertEquals("1", cas.expressions().get(0).toString());
+		assertEquals(1, cas.statements().size());
+		BreakStatement b = (BreakStatement) cas.statements().get(0);
+		assertNotNull(b);
+	}
+	
+	public void testCaseWithManyStatements() throws Exception {
+		String s = " void foo() { switch(x) { case 1: foo(); bar(); break; } }";
+		CompilationUnit unit = getCompilationUnit(s);
+		FunctionDeclaration func = (FunctionDeclaration) unit.declarations().get(0);
+		SwitchStatement switc = (SwitchStatement) func.getBody().statements().get(0);
+		SwitchCase cas = (SwitchCase) ((Block) switc.getBody()).statements().get(0);
+		assertEquals(1, cas.expressions().size());
+		assertEquals("1", cas.expressions().get(0).toString());
+		assertEquals(3, cas.statements().size());
+	}
+	
+	public void testDefault() throws Exception {
+		String s = " void foo() { switch(x) { default: break; } }";
+		CompilationUnit unit = getCompilationUnit(s);
+		FunctionDeclaration func = (FunctionDeclaration) unit.declarations().get(0);
+		SwitchStatement switc = (SwitchStatement) func.getBody().statements().get(0);
+		DefaultStatement cas = (DefaultStatement) ((Block) switc.getBody()).statements().get(0);
+		assertEquals(1, cas.statements().size());
+		BreakStatement b = (BreakStatement) cas.statements().get(0);
+		assertNotNull(b);
+	}
+	
+	public void testDefaultWithManyStatements() throws Exception {
+		String s = " void foo() { switch(x) { default: foo(); bar(); break; } }";
+		CompilationUnit unit = getCompilationUnit(s);
+		FunctionDeclaration func = (FunctionDeclaration) unit.declarations().get(0);
+		SwitchStatement switc = (SwitchStatement) func.getBody().statements().get(0);
+		DefaultStatement cas = (DefaultStatement) ((Block) switc.getBody()).statements().get(0);
+		assertEquals(3, cas.statements().size());
+	}
+	
+	public void testMultiCase() throws Exception {
+		String s = " void foo() { switch(x) { case 1, 2, 3: break; } }";
+		CompilationUnit unit = getCompilationUnit(s);
+		FunctionDeclaration func = (FunctionDeclaration) unit.declarations().get(0);
+		SwitchStatement switc = (SwitchStatement) func.getBody().statements().get(0);
+		SwitchCase cas = (SwitchCase) ((Block) switc.getBody()).statements().get(0);
+		assertEquals(3, cas.expressions().size());
+		assertEquals("1", cas.expressions().get(0).toString());
+		assertEquals("2", cas.expressions().get(1).toString());
+		assertEquals("3", cas.expressions().get(2).toString());
+		assertEquals(1, cas.statements().size());
+		BreakStatement b = (BreakStatement) cas.statements().get(0);
+		assertNotNull(b);
 	}
 
 }

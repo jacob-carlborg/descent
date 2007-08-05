@@ -1983,7 +1983,7 @@ public final class ASTRewriteAnalyzer extends ASTVisitor {
 			return doVisitUnchangedChildren(node);
 		}
 		
-		rewriteRequiredNode(node, DefaultStatement.BODY_PROPERTY);
+		rewriteNodeList(node, DefaultStatement.STATEMENTS_PROPERTY, node.getStartPosition(), "", " ");
 		
 		return false;
 	}

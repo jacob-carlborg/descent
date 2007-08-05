@@ -8,7 +8,7 @@ import java.util.List;
  * 
  * <pre>
  * ModifiedType:
- *    Modifier <b>(</b> Type <b>)</b>
+ *    Modifier ( <b>(</b> Type <b>)</b> | Type ) 
  * </pre>
  */
 public class ModifiedType extends Type {

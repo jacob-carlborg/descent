@@ -9,22 +9,22 @@ import java.util.List;
  *
  * <pre>
  * SwitchCase:
- *    <b>case</b> Expression <b>:</b> Statement
+ *    <b>case</b> Expression { <b>,</b> Expression } <b>:</b> { Statement }
  * </pre>
  */
 public class SwitchCase extends Statement {
 
 	/**
-	 * The "expression" structural property of this node type.
+	 * The "expressions" structural property of this node type.
 	 */
-	public static final ChildPropertyDescriptor EXPRESSION_PROPERTY =
-		new ChildPropertyDescriptor(SwitchCase.class, "expression", Expression.class, MANDATORY, CYCLE_RISK); //$NON-NLS-1$
+	public static final ChildListPropertyDescriptor EXPRESSIONS_PROPERTY =
+		new ChildListPropertyDescriptor(SwitchCase.class, "expressions", Expression.class, NO_CYCLE_RISK); //$NON-NLS-1$
 
 	/**
-	 * The "body" structural property of this node type.
+	 * The "statements" structural property of this node type.
 	 */
-	public static final ChildPropertyDescriptor BODY_PROPERTY =
-		new ChildPropertyDescriptor(SwitchCase.class, "body", Statement.class, MANDATORY, CYCLE_RISK); //$NON-NLS-1$
+	public static final ChildListPropertyDescriptor STATEMENTS_PROPERTY =
+		new ChildListPropertyDescriptor(SwitchCase.class, "statements", Statement.class, CYCLE_RISK); //$NON-NLS-1$
 
 	/**
 	 * A list of property descriptors (element type: 
@@ -36,8 +36,8 @@ public class SwitchCase extends Statement {
 	static {
 		List properyList = new ArrayList(2);
 		createPropertyList(SwitchCase.class, properyList);
-		addProperty(EXPRESSION_PROPERTY, properyList);
-		addProperty(BODY_PROPERTY, properyList);
+		addProperty(EXPRESSIONS_PROPERTY, properyList);
+		addProperty(STATEMENTS_PROPERTY, properyList);
 		PROPERTY_DESCRIPTORS = reapPropertyList(properyList);
 	}
 
@@ -57,18 +57,22 @@ public class SwitchCase extends Statement {
 	}
 
 	/**
-	 * The expression.
+	 * The expressions
+	 * (element type: <code>Expression</code>).
+	 * Defaults to an empty list.
 	 */
-	private Expression expression;
+	private ASTNode.NodeList expressions =
+		new ASTNode.NodeList(EXPRESSIONS_PROPERTY);
+	/**
+	 * The statements
+	 * (element type: <code>Statement</code>).
+	 * Defaults to an empty list.
+	 */
+	private ASTNode.NodeList statements =
+		new ASTNode.NodeList(STATEMENTS_PROPERTY);
 
 	/**
-	 * The body.
-	 */
-	private Statement body;
-
-
-	/**
-	 * Creates a new unparented case statement node owned by the given 
+	 * Creates a new unparented switch case node owned by the given 
 	 * AST.
 	 * <p>
 	 * N.B. This constructor is package-private.
@@ -90,25 +94,15 @@ public class SwitchCase extends Statement {
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
 	 */
-	final ASTNode internalGetSetChildProperty(ChildPropertyDescriptor property, boolean get, ASTNode child) {
-		if (property == EXPRESSION_PROPERTY) {
-			if (get) {
-				return getExpression();
-			} else {
-				setExpression((Expression) child);
-				return null;
-			}
+	final List internalGetChildListProperty(ChildListPropertyDescriptor property) {
+		if (property == EXPRESSIONS_PROPERTY) {
+			return expressions();
 		}
-		if (property == BODY_PROPERTY) {
-			if (get) {
-				return getBody();
-			} else {
-				setBody((Statement) child);
-				return null;
-			}
+		if (property == STATEMENTS_PROPERTY) {
+			return statements();
 		}
 		// allow default implementation to flag the error
-		return super.internalGetSetChildProperty(property, get, child);
+		return super.internalGetChildListProperty(property);
 	}
 
 	/* (omit javadoc for this method)
@@ -124,8 +118,8 @@ public class SwitchCase extends Statement {
 	ASTNode clone0(AST target) {
 		SwitchCase result = new SwitchCase(target);
 		result.setSourceRange(this.getStartPosition(), this.getLength());
-		result.setExpression((Expression) getExpression().clone(target));
-		result.setBody((Statement) getBody().clone(target));
+		result.expressions.addAll(ASTNode.copySubtrees(target, expressions()));
+		result.statements.addAll(ASTNode.copySubtrees(target, statements()));
 		return result;
 	}
 
@@ -144,90 +138,32 @@ public class SwitchCase extends Statement {
 		boolean visitChildren = visitor.visit(this);
 		if (visitChildren) {
 			// visit children in normal left to right reading order
-			acceptChild(visitor, getExpression());
-			acceptChild(visitor, getBody());
+			acceptChildren(visitor, this.expressions);
+			acceptChildren(visitor, this.statements);
 		}
 		visitor.endVisit(this);
 	}
 
 	/**
-	 * Returns the expression of this case statement.
+	 * Returns the live ordered list of expressions for this
+	 * switch case.
 	 * 
-	 * @return the expression
+	 * @return the live list of switch case
+	 *    (element type: <code>Expression</code>)
 	 */ 
-	public Expression getExpression() {
-		if (this.expression == null) {
-			// lazy init must be thread-safe for readers
-			synchronized (this) {
-				if (this.expression == null) {
-					preLazyInit();
-					this.expression = new SimpleName(this.ast);
-					postLazyInit(this.expression, EXPRESSION_PROPERTY);
-				}
-			}
-		}
-		return this.expression;
+	public List<Expression> expressions() {
+		return this.expressions;
 	}
 
 	/**
-	 * Sets the expression of this case statement.
+	 * Returns the live ordered list of statements for this
+	 * switch case.
 	 * 
-	 * @param expression the expression
-	 * @exception IllegalArgumentException if:
-	 * <ul>
-	 * <li>the node belongs to a different AST</li>
-	 * <li>the node already has a parent</li>
-	 * <li>a cycle in would be created</li>
-	 * </ul>
+	 * @return the live list of switch case
+	 *    (element type: <code>Statement</code>)
 	 */ 
-	public void setExpression(Expression expression) {
-		if (expression == null) {
-			throw new IllegalArgumentException();
-		}
-		ASTNode oldChild = this.expression;
-		preReplaceChild(oldChild, expression, EXPRESSION_PROPERTY);
-		this.expression = expression;
-		postReplaceChild(oldChild, expression, EXPRESSION_PROPERTY);
-	}
-
-	/**
-	 * Returns the body of this case statement.
-	 * 
-	 * @return the body
-	 */ 
-	public Statement getBody() {
-		if (this.body == null) {
-			// lazy init must be thread-safe for readers
-			synchronized (this) {
-				if (this.body == null) {
-					preLazyInit();
-					this.body = new Block(this.ast);
-					postLazyInit(this.body, BODY_PROPERTY);
-				}
-			}
-		}
-		return this.body;
-	}
-
-	/**
-	 * Sets the body of this case statement.
-	 * 
-	 * @param body the body
-	 * @exception IllegalArgumentException if:
-	 * <ul>
-	 * <li>the node belongs to a different AST</li>
-	 * <li>the node already has a parent</li>
-	 * <li>a cycle in would be created</li>
-	 * </ul>
-	 */ 
-	public void setBody(Statement body) {
-		if (body == null) {
-			throw new IllegalArgumentException();
-		}
-		ASTNode oldChild = this.body;
-		preReplaceChild(oldChild, body, BODY_PROPERTY);
-		this.body = body;
-		postReplaceChild(oldChild, body, BODY_PROPERTY);
+	public List<Statement> statements() {
+		return this.statements;
 	}
 
 	/* (omit javadoc for this method)
@@ -243,8 +179,8 @@ public class SwitchCase extends Statement {
 	int treeSize() {
 		return
 			memSize()
-			+ (this.expression == null ? 0 : getExpression().treeSize())
-			+ (this.body == null ? 0 : getBody().treeSize())
+			+ (this.expressions.listSize())
+			+ (this.statements.listSize())
 	;
 	}
 
