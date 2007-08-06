@@ -17,6 +17,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import descent.core.Flags;
+import descent.core.JavaCore;
 import descent.core.compiler.CharOperation;
 import descent.internal.compiler.ast.ASTNode;
 
@@ -116,9 +117,9 @@ public class CompilerOptions {
 	public static final String DO_NOT_GENERATE = "do not generate"; //$NON-NLS-1$
 	public static final String PRESERVE = "preserve"; //$NON-NLS-1$
 	public static final String OPTIMIZE_OUT = "optimize out"; //$NON-NLS-1$
-	public static final String VERSION_0_x = "0.x"; //$NON-NLS-1$
-	public static final String VERSION_1_x = "1.x"; //$NON-NLS-1$
-	public static final String VERSION_2_x = "2.x"; //$NON-NLS-1$
+	public static final String VERSION_0_x = "0"; //$NON-NLS-1$
+	public static final String VERSION_1_x = "1"; //$NON-NLS-1$
+	public static final String VERSION_2_x = "2"; //$NON-NLS-1$
 	public static final String ERROR = "error"; //$NON-NLS-1$
 	public static final String WARNING = "warning"; //$NON-NLS-1$
 	public static final String IGNORE = "ignore"; //$NON-NLS-1$
@@ -829,41 +830,11 @@ public class CompilerOptions {
 		}
 	}				
 	public static long versionToJdkLevel(Object versionID) {
-		/*
-		if (VERSION_1_1.equals(versionID)) {
-			return Flags.JDK1_1;
-		} else if (VERSION_1_2.equals(versionID)) {
-			return Flags.JDK1_2;
-		} else if (VERSION_1_3.equals(versionID)) {
-			return Flags.JDK1_3;
-		} else if (VERSION_1_4.equals(versionID) || VERSION_JSR14.equals(versionID)) {
-			return Flags.JDK1_4;
-		} else if (VERSION_1_5.equals(versionID)) {
-			return Flags.JDK1_5;
-		} else if (VERSION_1_6.equals(versionID)) {
-			return Flags.JDK1_6;
-		}
-		*/
-		return 0; // unknown
+		return Long.parseLong((String)versionID);
 	}
 
 	public static String versionFromJdkLevel(long jdkLevel) {
-		/*
-		if (jdkLevel == Flags.JDK1_1) {
-			return VERSION_1_1;
-		} else if (jdkLevel == Flags.JDK1_2) {
-			return VERSION_1_2;
-		} else if (jdkLevel == Flags.JDK1_3) {
-			return VERSION_1_3;
-		} else if (jdkLevel == Flags.JDK1_4) {
-			return VERSION_1_4;
-		} else if (jdkLevel == Flags.JDK1_5) {
-			return VERSION_1_5;
-		} else if (jdkLevel == Flags.JDK1_6) {
-			return VERSION_1_6;
-		}
-		*/
-		return ""; // unknown version //$NON-NLS-1$
+		return String.valueOf(jdkLevel);
 	}
 	
 	/**

@@ -23,6 +23,30 @@ public class FormatStress_Test extends AbstractFormatter_Test {
 				);
 	}
 	
+	public void testExternWithModifier() throws Exception {
+		assertFormat(
+				"private extern(C) {\r\n" + 
+				"}",
+				"private extern (C) { }"
+				);
+	}
+	
+	public void testStaticConstructorWithModifier() throws Exception {
+		assertFormat(
+				"private static this() {\r\n" + 
+				"}",
+				"private static this() { }"
+				);
+	}
+	
+	public void testInvariantWithModifier() throws Exception {
+		assertFormat(
+				"private invariant() {\r\n" + 
+				"}",
+				"private invariant() { }"
+				);
+	}
+	
 	public void testUnittestWithFunctionWithModifier() throws Exception {
 		assertFormat(
 				"unittest {\r\n" + 
@@ -81,6 +105,12 @@ public class FormatStress_Test extends AbstractFormatter_Test {
 				"}", 
 				"unittest { switch(x) { case 1, 2, 3: break; } }"
 				);
+	}
+	
+	public void testStaticConstWithManyInitializers() throws Exception {
+		assertFormat(
+				"static const RequestMethod Get = {\"GET\"}, Put = {\"PUT\"};", 
+				"static const RequestMethod Get = {\"GET\"}, Put = {\"PUT\"};");
 	}
 
 }

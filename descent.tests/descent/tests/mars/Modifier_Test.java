@@ -5,6 +5,7 @@ import java.util.List;
 
 import descent.core.dom.AST;
 import descent.core.dom.AliasDeclaration;
+import descent.core.dom.CompilationUnit;
 import descent.core.dom.Declaration;
 import descent.core.dom.FunctionDeclaration;
 import descent.core.dom.Modifier;
@@ -395,6 +396,15 @@ public class Modifier_Test extends Parser_Test {
 		assertEquals(ModifierKeyword.PRIVATE_KEYWORD, mod.getModifier().getModifierKeyword());
 		FunctionDeclaration func = (FunctionDeclaration) mod.declarations().get(0);
 		assertNotNull(func);
+	}
+	
+	public void testStaticConstWithManyInitializers() throws Exception {
+		String s = "static const RequestMethod Get = {\"GET\"}, Put = {\"PUT\"};";
+		CompilationUnit unit = getCompilationUnit(s);
+		Declaration decl = unit.declarations().get(0);
+		assertEquals(2, decl.modifiers().size());
+		assertEquals("static", decl.modifiers().get(0).toString());
+		assertEquals("const", decl.modifiers().get(1).toString());
 	}
 
 }

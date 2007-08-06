@@ -494,7 +494,7 @@ public class ASTConverter {
 				decl.setSourceRange(a.start, a.length);
 				return decl;
 			} else {
-				descent.core.dom.Declaration declaration = tryConvertMany(a.decl, modifier);
+				descent.core.dom.Declaration declaration = tryConvertMany(a.decl, modifier, a.modifiers);
 				if (declaration != null) {
 					return declaration;
 				}
@@ -520,7 +520,7 @@ public class ASTConverter {
 				decl.setSourceRange(a.start, a.length);
 				return decl;
 			} else {
-				descent.core.dom.Declaration declaration = tryConvertMany(a.decl, modifier);
+				descent.core.dom.Declaration declaration = tryConvertMany(a.decl, modifier, a.modifiers);
 				if (declaration != null) {
 					return declaration;
 				}
@@ -534,7 +534,7 @@ public class ASTConverter {
 		return b;
 	}
 	
-	private Declaration tryConvertMany(List<Dsymbol> decl, descent.core.dom.Modifier modifier) {
+	private Declaration tryConvertMany(List<Dsymbol> decl, descent.core.dom.Modifier modifier, List<Modifier> modifiers) {
 		Dsymbol dsymbol = decl.get(0);
 		descent.core.dom.Declaration declaration = null;
 		if (dsymbol instanceof VarDeclaration) {
@@ -546,6 +546,11 @@ public class ASTConverter {
 		}
 		
 		if (declaration != null) {
+			if (modifiers != null) {
+				for(Modifier m : modifiers) {
+					declaration.modifiers().add(convert(m));
+				}
+			}
 			declaration.modifiers().add(modifier);
 			declaration.setSourceRange(modifier.getStartPosition(), declaration.getStartPosition() + declaration.getLength() - modifier.getStartPosition());
 			return declaration;

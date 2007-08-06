@@ -43,12 +43,14 @@ public class CodeFormatterVisitor extends ASTVisitor
 	 * doesn't die).
 	 */
 	private boolean						inForInitializer = false;
+	private int apiLevel;
 	
 	public CodeFormatterVisitor(DefaultCodeFormatterOptions $preferences,
-			Map settings, int offset, int length, CompilationUnit unit)
+			Map settings, int offset, int length, CompilationUnit unit, int apiLevel)
 	{
 		prefs = $preferences;
-		scribe = new Scribe(this, 0, offset, length, unit);
+		scribe = new Scribe(this, 0, offset, length, unit, apiLevel);
+		this.apiLevel = apiLevel;
 	}
 	
 	public TextEdit format(String src, Block block)
@@ -911,7 +913,7 @@ public class CodeFormatterVisitor extends ASTVisitor
 	
 	public boolean visit(ExternDeclaration node)
 	{
-		formatModifiers(false, node.modifiers()); // Picks up the "extern"
+		formatModifiers(true, node.modifiers());
 		scribe.printNextToken(TOK.TOKextern);
 		if(isNextToken(TOK.TOKlparen))
 		{
@@ -3160,7 +3162,7 @@ public class CodeFormatterVisitor extends ASTVisitor
 	private void restartLexer(String source)
 	{
 		if (null == lexer)
-			lexer = new Lexer(source, true, true, false, false, AST.D2);
+			lexer = new Lexer(source, true, true, false, false, apiLevel);
 		else
 			lexer.reset(source.toCharArray(), 0, source.length(), true, true,
 					false, false);

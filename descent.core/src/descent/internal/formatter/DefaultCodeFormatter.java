@@ -13,9 +13,10 @@ package descent.internal.formatter;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.eclipse.text.edits.MultiTextEdit;
+import org.eclipse.text.edits.TextEdit;
+
 import descent.core.JavaCore;
-//import descent.core.compiler.ITerminalSymbols;
-//import descent.core.compiler.InvalidInputException;
 import descent.core.dom.AST;
 import descent.core.dom.ASTParser;
 import descent.core.dom.Block;
@@ -23,19 +24,7 @@ import descent.core.dom.CompilationUnit;
 import descent.core.formatter.CodeFormatter;
 import descent.core.formatter.DefaultCodeFormatterConstants;
 import descent.internal.compiler.impl.CompilerOptions;
-//import descent.internal.compiler.parser.Scanner;
 import descent.internal.compiler.util.Util;
-//import descent.internal.core.util.CodeSnippetParsingUtil;
-//import descent.internal.formatter.comment.CommentRegion;
-//import descent.internal.formatter.comment.JavaDocRegion;
-//import descent.internal.formatter.comment.MultiCommentRegion;
-
-//import org.eclipse.jface.text.Document;
-//import org.eclipse.jface.text.IDocument;
-//import org.eclipse.jface.text.Position;
-//import org.eclipse.text.edits.InsertEdit;
-import org.eclipse.text.edits.MultiTextEdit;
-import org.eclipse.text.edits.TextEdit;
 
 public class DefaultCodeFormatter extends CodeFormatter {
 
@@ -72,6 +61,7 @@ public class DefaultCodeFormatter extends CodeFormatter {
 	private Map options;
 	
 	private DefaultCodeFormatterOptions preferences;
+	private int apiLevel;
 	
 	public DefaultCodeFormatter() {
 		this(new DefaultCodeFormatterOptions(DefaultCodeFormatterConstants.getDefaultSettings()), null);
@@ -93,10 +83,26 @@ public class DefaultCodeFormatter extends CodeFormatter {
 		if (defaultCodeFormatterOptions != null) {
 			this.preferences.set(defaultCodeFormatterOptions.getMap());
 		}
+		this.apiLevel = getApiLevel(options);
 	}
 
 	public DefaultCodeFormatter(Map options) {
 		this(null, options);
+	}
+	
+	private static int getApiLevel(Map options) {
+		String source = (String) options.get(JavaCore.COMPILER_SOURCE);
+		if (source == null || source.length() == 0) {
+			return AST.D2;
+		} else if (source.equals(JavaCore.VERSION_2_x)) {
+			return AST.D2;
+		} else if (source.equals(JavaCore.VERSION_1_x)) {
+			return AST.D1;
+		} else if (source.equals(JavaCore.VERSION_0_x)) {
+			return AST.D0;
+		} else {
+			throw new IllegalStateException();
+		}
 	}
 	
 	public String createIndentationString(final int indentationLevel) {
@@ -201,7 +207,7 @@ public class DefaultCodeFormatter extends CodeFormatter {
 	}
 
 	private TextEdit formatCompilationUnit(String source, int indentationLevel, String lineSeparator, int offset, int length) {
-		ASTParser parser = ASTParser.newParser(AST.D2);
+		ASTParser parser = ASTParser.newParser(apiLevel);
 		parser.setSource(source.toCharArray());
 		parser.setKind(ASTParser.K_COMPILATION_UNIT);
 		parser.setCompilerOptions(getDefaultCompilerOptions());
@@ -215,12 +221,12 @@ public class DefaultCodeFormatter extends CodeFormatter {
 		}
 		this.preferences.initial_indentation_level = indentationLevel;
 
-		this.newCodeFormatter2 = new CodeFormatterVisitor(this.preferences, this.options, offset, length, (CompilationUnit) node.getRoot());
+		this.newCodeFormatter2 = new CodeFormatterVisitor(this.preferences, this.options, offset, length, (CompilationUnit) node.getRoot(), apiLevel);
 		return this.newCodeFormatter2.format(source, (CompilationUnit) node);
 	}
 
 	private TextEdit formatExpression(String source, int indentationLevel, String lineSeparator, int offset, int length) {
-		ASTParser parser = ASTParser.newParser(AST.D2);
+		ASTParser parser = ASTParser.newParser(apiLevel);
 		parser.setSource(source.toCharArray());
 		parser.setKind(ASTParser.K_EXPRESSION);
 		parser.setCompilerOptions(getDefaultCompilerOptions());
@@ -235,13 +241,13 @@ public class DefaultCodeFormatter extends CodeFormatter {
 		}
 		this.preferences.initial_indentation_level = indentationLevel;
 
-		this.newCodeFormatter2 = new CodeFormatterVisitor(this.preferences, this.options, offset, length, (CompilationUnit) node.getRoot());
+		this.newCodeFormatter2 = new CodeFormatterVisitor(this.preferences, this.options, offset, length, (CompilationUnit) node.getRoot(), apiLevel);
 		
 		return this.newCodeFormatter2.format(source, (descent.core.dom.Expression) node);
 	}
 
 	private TextEdit formatStatements(String source, int indentationLevel, String lineSeparator, int offset, int length) {
-		ASTParser parser = ASTParser.newParser(AST.D2);
+		ASTParser parser = ASTParser.newParser(apiLevel);
 		parser.setSource(source.toCharArray());
 		parser.setKind(ASTParser.K_STATEMENTS);
 		parser.setCompilerOptions(getDefaultCompilerOptions());
@@ -255,7 +261,7 @@ public class DefaultCodeFormatter extends CodeFormatter {
 		}
 		this.preferences.initial_indentation_level = indentationLevel;
 
-		this.newCodeFormatter2 = new CodeFormatterVisitor(this.preferences, this.options, offset, length, (CompilationUnit) node.getRoot());
+		this.newCodeFormatter2 = new CodeFormatterVisitor(this.preferences, this.options, offset, length, (CompilationUnit) node.getRoot(), apiLevel);
 			
 		return this.newCodeFormatter2.format(source, (Block) node);
 	}

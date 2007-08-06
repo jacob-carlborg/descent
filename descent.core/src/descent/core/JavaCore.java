@@ -970,19 +970,19 @@ public final class JavaCore extends AbstractUIPlugin {
 	 * Possible  configurable option value.
 	 * @see #getDefaultOptions()
 	 */
-	public static final String VERSION_0_x = "0."; //$NON-NLS-1$
+	public static final String VERSION_0_x = "0"; //$NON-NLS-1$
 	
 	/**
 	 * Possible  configurable option value.
 	 * @see #getDefaultOptions()
 	 */
-	public static final String VERSION_1_x = "1."; //$NON-NLS-1$
+	public static final String VERSION_1_x = "1"; //$NON-NLS-1$
 	
 	/**
 	 * Possible  configurable option value.
 	 * @see #getDefaultOptions()
 	 */
-	public static final String VERSION_2_x = "2."; //$NON-NLS-1$
+	public static final String VERSION_2_x = "2"; //$NON-NLS-1$
 	/**
 	 * Possible  configurable option value.
 	 * @see #getDefaultOptions()

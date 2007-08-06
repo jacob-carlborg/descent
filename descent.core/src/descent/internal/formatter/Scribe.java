@@ -60,6 +60,7 @@ public class Scribe {	private static final int INITIAL_SIZE = 100;
 	public int numberOfIndentations;
 	private boolean useTabsOnlyForLeadingIndents;
 	CompilationUnit unit;
+	private int apiLevel;
 
     /** indent empty lines*/
     private final boolean indentEmptyLines;
@@ -67,14 +68,15 @@ public class Scribe {	private static final int INITIAL_SIZE = 100;
     private void restartLexer(String source)
 	{
 		if(null == lexer)
-			lexer = new Lexer(source, true, true, true, false, AST.D2);
+			lexer = new Lexer(source, true, true, true, false, apiLevel);
 		else
 			lexer.reset(source.toCharArray(), 0, source.length(), true, true, false, false);
 	}
     
-	Scribe(CodeFormatterVisitor formatter, long sourceLevel, int offset, int length, CompilationUnit unit)
+	Scribe(CodeFormatterVisitor formatter, long sourceLevel, int offset, int length, CompilationUnit unit, int apiLevel)
 	{
 		this.lexer = null;
+		this.apiLevel = apiLevel;
 		this.formatter = formatter;
 		this.pageWidth = formatter.prefs.page_width;
 		this.tabLength = formatter.prefs.tab_size;

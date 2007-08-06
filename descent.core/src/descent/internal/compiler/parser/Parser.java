@@ -3613,7 +3613,7 @@ public class Parser extends Lexer {
 					}
 					ai = pointer2_ai[0];
 
-					arg = new Argument(InOut.In, at, ai, null);
+					arg = new Argument(InOut.None, at, ai, null);
 					arg.setSourceRange(argTokenStart, prevToken.ptr + prevToken.len - argTokenStart);
 					
 					check(TOKassign);					
@@ -3623,7 +3623,7 @@ public class Parser extends Lexer {
 				else if (token.value == TOKidentifier) {
 					Token t2 = peek(token);
 					if (t2.value == TOKcomma || t2.value == TOKsemicolon) {
-						arg = new Argument(InOut.In, null, newIdentifierExp(), null);
+						arg = new Argument(InOut.None, null, newIdentifierExp(), null);
 						arg.setSourceRange(argTokenStart, token.ptr + token.len - argTokenStart);
 						
 						nextToken();
