@@ -11,6 +11,7 @@ public class FormatTemplateDeclaration_Test extends AbstractFormatBrace_Test {
 	protected Map getDefaultOptions() {
 		Map options = super.getDefaultOptions();
 		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_OPENING_PAREN_IN_TEMPLATE_DECLARATIONS, DefaultCodeFormatterConstants.FALSE);
+		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_AFTER_OPENING_PAREN_IN_TEMPLATE_DECLARATIONS, DefaultCodeFormatterConstants.FALSE);
 		return options;
 	}
 	
@@ -49,6 +50,39 @@ public class FormatTemplateDeclaration_Test extends AbstractFormatBrace_Test {
 				"template Class () {\r\n" +
 				"}",
 				"template Class ( ) { }",
+				options
+				);
+	}
+	
+	public void testFORMATTER_INSERT_SPACE_AFTER_OPENING_PAREN_IN_TEMPLATE_DECLARATIONS() throws Exception {
+		Map options = new HashMap();
+		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_AFTER_OPENING_PAREN_IN_TEMPLATE_DECLARATIONS, DefaultCodeFormatterConstants.TRUE);
+		assertFormat(
+				"template Class( ) {\r\n" +
+				"}",
+				"template Class ( ) { }",
+				options
+				);
+	}
+	
+	public void testFORMATTER_INSERT_SPACE_BEFORE_OPENING_PAREN_IN_TEMPLATE_DECLARATIONS2() throws Exception {
+		Map options = new HashMap();
+		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_OPENING_PAREN_IN_TEMPLATE_DECLARATIONS, DefaultCodeFormatterConstants.TRUE);
+		assertFormat(
+				"template Class (T) {\r\n" +
+				"}",
+				"template Class ( T ) { }",
+				options
+				);
+	}
+	
+	public void testFORMATTER_INSERT_SPACE_AFTER_OPENING_PAREN_IN_TEMPLATE_DECLARATIONS2() throws Exception {
+		Map options = new HashMap();
+		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_AFTER_OPENING_PAREN_IN_TEMPLATE_DECLARATIONS, DefaultCodeFormatterConstants.TRUE);
+		assertFormat(
+				"template Class( T) {\r\n" +
+				"}",
+				"template Class ( T ) { }",
 				options
 				);
 	}

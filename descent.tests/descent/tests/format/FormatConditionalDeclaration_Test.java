@@ -17,6 +17,7 @@ public class FormatConditionalDeclaration_Test extends AbstractFormatter_Test {
 		options.put(DefaultCodeFormatterConstants.FORMATTER_KEEP_SIMPLE_THEN_DECLARATION_ON_SAME_LINE, DefaultCodeFormatterConstants.FALSE);
 		options.put(DefaultCodeFormatterConstants.FORMATTER_KEEP_SIMPLE_ELSE_DECLARATION_ON_SAME_LINE, DefaultCodeFormatterConstants.FALSE);
 		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_OPENING_PAREN_IN_VERSION_DEBUG, DefaultCodeFormatterConstants.FALSE);
+		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_AFTER_OPENING_PAREN_IN_VERSION_DEBUG, DefaultCodeFormatterConstants.FALSE);
 		return options;
 	}
 	
@@ -320,6 +321,22 @@ public class FormatConditionalDeclaration_Test extends AbstractFormatter_Test {
 			if (cond.equals("static if")) continue;
 			assertFormat(
 					cond + " (someVersion) {\r\n" +
+					"}", 
+					
+					cond + "    (   someVersion   )  {    }",
+					
+					options
+				);
+		}
+	}
+	
+	public void testFORMATTER_INSERT_SPACE_AFTER_OPENING_PAREN_IN_VERSION_DEBUG() throws Exception {
+		Map options = new HashMap();
+		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_AFTER_OPENING_PAREN_IN_VERSION_DEBUG, DefaultCodeFormatterConstants.TRUE);
+		for(String cond : conditionals) {
+			if (cond.equals("static if")) continue;
+			assertFormat(
+					cond + "( someVersion) {\r\n" +
 					"}", 
 					
 					cond + "    (   someVersion   )  {    }",

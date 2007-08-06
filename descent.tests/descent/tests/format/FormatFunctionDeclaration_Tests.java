@@ -27,6 +27,7 @@ public class FormatFunctionDeclaration_Tests extends AbstractFormatter_Test {
 		options.put(DefaultCodeFormatterConstants.FORMATTER_INDENT_STATEMENTS_COMPARE_TO_FUNCTION_BODY_HEADER, DefaultCodeFormatterConstants.TRUE);
 		options.put(DefaultCodeFormatterConstants.FORMATTER_INDENT_IN_OUT_BODY_COMPARE_TO_FUNCTION_HEADER, DefaultCodeFormatterConstants.FALSE);
 		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_AFTER_OPENING_PAREN_IN_FUNCTION_TEMPLATE_ARGS, DefaultCodeFormatterConstants.FALSE);
+		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_AFTER_OPENING_PAREN_IN_OUT_DECLARATION, DefaultCodeFormatterConstants.FALSE);
 		return options;
 	}
 	
@@ -420,6 +421,31 @@ public class FormatFunctionDeclaration_Tests extends AbstractFormatter_Test {
 				"void bla( T)(int x) {\r\n" +
 				"}",
 				"void bla(T)(int x) { }",
+				options
+				);
+	}
+	
+	public void testNotFORMATTER_INSERT_SPACE_AFTER_OPENING_PAREN_IN_OUT_DECLARATION() throws Exception {
+		assertFormat(
+				"void bla()\r\n" +
+				"out(x) {\r\n" +
+				"}\r\n" +
+				"body {\r\n" +
+				"}",
+				"void bla() out(x) { } body { }"
+				);
+	}
+	
+	public void testFORMATTER_INSERT_SPACE_AFTER_OPENING_PAREN_IN_OUT_DECLARATION() throws Exception {
+		Map options = new HashMap();
+		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_AFTER_OPENING_PAREN_IN_OUT_DECLARATION, DefaultCodeFormatterConstants.TRUE);
+		assertFormat(
+				"void bla()\r\n" +
+				"out( x) {\r\n" +
+				"}\r\n" +
+				"body {\r\n" +
+				"}",
+				"void bla() out(x) { } body { }",
 				options
 				);
 	}

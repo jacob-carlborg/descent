@@ -12,6 +12,7 @@ public class FormatAlignDeclaration_Test extends AbstractFormatBrace_Test {
 		Map options = new HashMap();
 		options.put(DefaultCodeFormatterConstants.FORMATTER_BRACE_POSITION_FOR_ALIGN_DECLARATION, DefaultCodeFormatterConstants.END_OF_LINE);
 		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_OPENING_PAREN_IN_ALIGN_DECLARATIONS, DefaultCodeFormatterConstants.FALSE);
+		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_AFTER_OPENING_PAREN_IN_ALIGN_DECLARATIONS, DefaultCodeFormatterConstants.FALSE);
 		return options;
 	}
 
@@ -49,6 +50,19 @@ public class FormatAlignDeclaration_Test extends AbstractFormatBrace_Test {
 		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_OPENING_PAREN_IN_ALIGN_DECLARATIONS, DefaultCodeFormatterConstants.TRUE);
 		assertFormat(
 				"align (4) {\r\n" +
+				"}",
+				
+				"align   (   4    ) { }",
+				
+				options
+				);
+	}
+	
+	public void testINSERT_SPACE_AFTER_OPENING_PAREN() throws Exception {
+		Map options = new HashMap();
+		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_AFTER_OPENING_PAREN_IN_ALIGN_DECLARATIONS, DefaultCodeFormatterConstants.TRUE);
+		assertFormat(
+				"align( 4) {\r\n" +
 				"}",
 				
 				"align   (   4    ) { }",

@@ -12,6 +12,7 @@ public class FormatClassDeclaration_Test extends AbstractFormatBrace_Test {
 		Map options = new HashMap();
 		options.put(DefaultCodeFormatterConstants.FORMATTER_BRACE_POSITION_FOR_TYPE_DECLARATION, DefaultCodeFormatterConstants.END_OF_LINE);
 		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_OPENING_PAREN_IN_CLASS_TEMPLATE_PARAMS, DefaultCodeFormatterConstants.FALSE);
+		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_AFTER_OPENING_PAREN_IN_CLASS_TEMPLATE_PARAMS, DefaultCodeFormatterConstants.FALSE);
 		return options;
 	}
 
@@ -49,6 +50,19 @@ public class FormatClassDeclaration_Test extends AbstractFormatBrace_Test {
 		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_OPENING_PAREN_IN_CLASS_TEMPLATE_PARAMS, DefaultCodeFormatterConstants.TRUE);
 		assertFormat(
 				"class Foo (T) {\r\n" +
+				"}",
+				
+				"class Foo   (   T    ) { }",
+				
+				options
+				);
+	}
+	
+	public void testINSERT_SPACE_AFTER_OPENING_PAREN_IN_CLASS_TEMPLATE_PARAMS() throws Exception {
+		Map options = new HashMap();
+		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_AFTER_OPENING_PAREN_IN_CLASS_TEMPLATE_PARAMS, DefaultCodeFormatterConstants.TRUE);
+		assertFormat(
+				"class Foo( T) {\r\n" +
 				"}",
 				
 				"class Foo   (   T    ) { }",
