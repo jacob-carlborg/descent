@@ -2108,8 +2108,46 @@ alignment_for_multiple_variable_declarations
 	default=DefaultCodeFormatterConstants.WRAP_ONLY_WHEN_NECESSARY
 	tab=LineWrappingTabPage
 	uiText=Multiple variable declarations
-
-
+alignment_for_function_declaration_parameters
+	type=int
+	default=DefaultCodeFormatterConstants.WRAP_ONLY_WHEN_NECESSARY
+	tab=LineWrappingTabPage
+	uiText=Function declaration parameters
+alignment_for_template_declaration_parameters
+	type=int
+	default=DefaultCodeFormatterConstants.WRAP_ONLY_WHEN_NECESSARY
+	tab=LineWrappingTabPage
+	uiText=Template declaration parameters
+alignment_for_function_invocation_arguments
+	type=int
+	default=DefaultCodeFormatterConstants.WRAP_ONLY_WHEN_NECESSARY
+	tab=LineWrappingTabPage
+	uiText=Function invocation parameters
+alignment_for_template_invocation_arguments
+	type=int
+	default=DefaultCodeFormatterConstants.WRAP_ONLY_WHEN_NECESSARY
+	tab=LineWrappingTabPage
+	uiText=Template invocation parameters
+alignment_for_array_literals
+	type=int
+	default=DefaultCodeFormatterConstants.WRAP_ONLY_WHEN_NECESSARY
+	tab=LineWrappingTabPage
+	uiText=Array literals
+alignment_for_base_class_lists
+	type=int
+	default=DefaultCodeFormatterConstants.WRAP_ONLY_WHEN_NECESSARY
+	tab=LineWrappingTabPage
+	uiText=Base class lists
+alignment_for_selective_imports
+	type=int
+	default=DefaultCodeFormatterConstants.WRAP_ONLY_WHEN_NECESSARY
+	tab=LineWrappingTabPage
+	uiText=Multiple/Selective imports
+alignment_for_struct_initializer
+	type=int
+	default=DefaultCodeFormatterConstants.WRAP_ONLY_WHEN_NECESSARY
+	tab=LineWrappingTabPage
+	uiText=Struct initializers
 
 
 

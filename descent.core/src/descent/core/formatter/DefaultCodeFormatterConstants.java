@@ -348,8 +348,16 @@ public class DefaultCodeFormatterConstants {
 	public static final String FORMATTER_INDENT_CASES_COMPARE_TO_SWITCH = JavaCore.PLUGIN_ID + ".formatter.indent_cases_compare_to_switch";
 	public static final String FORMATTER_INDENT_BREAK_COMPARE_TO_SWITCH = JavaCore.PLUGIN_ID + ".formatter.indent_break_compare_to_switch";
 	public static final String FORMATTER_INDENT_STATEMENTS_COMPARE_TO_CASE = JavaCore.PLUGIN_ID + ".formatter.indent_statements_compare_to_case";
-	public static final String FORMATTER_ALIGNMENT_FOR_MULTIPLE_VARIABLE_DECLARATIONS = JavaCore.PLUGIN_ID + ".formatter.alignment_for_multiple_variable_declarations";
 	public static final String FORMATTER_INDENT_BODY_DECLARATIONS_COMPARE_TO_PRAGMA_HEADER = JavaCore.PLUGIN_ID + ".formatter.indent_body_declarations_compare_to_pragma_header";
+	public static final String FORMATTER_ALIGNMENT_FOR_MULTIPLE_VARIABLE_DECLARATIONS = JavaCore.PLUGIN_ID + ".formatter.alignment_for_multiple_variable_declarations";
+	public static final String FORMATTER_ALIGNMENT_FOR_FUNCTION_DECLARATION_PARAMETERS = JavaCore.PLUGIN_ID + ".formatter.alignment_for_function_declaration_parameters";
+	public static final String FORMATTER_ALIGNMENT_FOR_TEMPLATE_DECLARATION_PARAMETERS = JavaCore.PLUGIN_ID + ".formatter.alignment_for_template_declaration_parameters";
+	public static final String FORMATTER_ALIGNMENT_FOR_FUNCTION_INVOCATION_ARGUMENTS = JavaCore.PLUGIN_ID + ".formatter.alignment_for_function_invocation_arguments";
+	public static final String FORMATTER_ALIGNMENT_FOR_TEMPLATE_INVOCATION_ARGUMENTS = JavaCore.PLUGIN_ID + ".formatter.alignment_for_template_invocation_arguments";
+	public static final String FORMATTER_ALIGNMENT_FOR_ARRAY_LITERALS = JavaCore.PLUGIN_ID + ".formatter.alignment_for_array_literals";
+	public static final String FORMATTER_ALIGNMENT_FOR_BASE_CLASS_LISTS = JavaCore.PLUGIN_ID + ".formatter.alignment_for_base_class_lists";
+	public static final String FORMATTER_ALIGNMENT_FOR_SELECTIVE_IMPORTS = JavaCore.PLUGIN_ID + ".formatter.alignment_for_selective_imports";
+	public static final String FORMATTER_ALIGNMENT_FOR_STRUCT_INITIALIZER = JavaCore.PLUGIN_ID + ".formatter.alignment_for_struct_initializer";
 	public static final String FORMATTER_TAB_CHAR = JavaCore.PLUGIN_ID + ".formatter.tab_char";
 	public static final String FORMATTER_TAB_SIZE = JavaCore.PLUGIN_ID + ".formatter.tab_size";
 	public static final String FORMATTER_USE_TABS_ONLY_FOR_LEADING_INDENTATIONS = JavaCore.PLUGIN_ID + ".formatter.use_tabs_only_for_leading_indentations";

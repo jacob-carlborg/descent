@@ -1204,7 +1204,8 @@ public abstract static class Node {
 	
 	private final PreviewSnippet IMPORT_PREVIEW =
 		new PreviewSnippet(CodeFormatter.K_COMPILATION_UNIT, 
-			"public static import x.y,x.z,x.foo=bar:a,b=c;"
+			"public static import x.y,x.z,foo=bar;" +
+			"private import baz:a,b,c;"
 		);
 	
 	private final PreviewSnippet ALIAS_TYPEDEF_PREVIEW =

@@ -306,6 +306,7 @@ final class FormatterMessages extends NLS {
 	public static String LineWrappingTabPage_button_wrap_only_when_necessary;
 	public static String LineWrappingTabPage_wrap_one_fragment_per_line;
 	public static String LineWrappingTabPage_group_line_width_and_indentation;
+	public static String LineWrappingTabPage_line_width_for_preview_label_text;
 	
 	// Messages for various options (automatically generated)
 	/* EVAL-FOR-EACH

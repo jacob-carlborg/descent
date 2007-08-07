@@ -120,10 +120,10 @@ public class IndentationTabPage extends ModifyDialogTabPage {
 		createCheckboxPref(classGroup, numColumns,
 	        		FormatterMessages.IndentationTabPage_indent_cases_compare_to_switch,
 	        		DefaultCodeFormatterConstants.FORMATTER_INDENT_CASES_COMPARE_TO_SWITCH, FALSE_TRUE); 
-		CheckboxPreference case_preference = createCheckboxPref(classGroup, numColumns,
+		final CheckboxPreference case_preference = createCheckboxPref(classGroup, numColumns,
 	        		FormatterMessages.IndentationTabPage_indent_statements_compare_to_case,
 	        		DefaultCodeFormatterConstants.FORMATTER_INDENT_STATEMENTS_COMPARE_TO_CASE, FALSE_TRUE); 
-		CheckboxPreference break_preference = createCheckboxPref(classGroup, numColumns,
+		final CheckboxPreference break_preference = createCheckboxPref(classGroup, numColumns,
 	        		FormatterMessages.IndentationTabPage_indent_break_compare_to_switch,
 	        		DefaultCodeFormatterConstants.FORMATTER_INDENT_BREAK_COMPARE_TO_SWITCH, FALSE_TRUE); 
 		createCheckboxPref(classGroup, numColumns,
@@ -131,14 +131,12 @@ public class IndentationTabPage extends ModifyDialogTabPage {
         		DefaultCodeFormatterConstants.FORMATTER_INDENT_EMPTY_LINES, FALSE_TRUE);
 		
 		case_preference.addObserver(new Observer()
+		{
+			public void update(Observable o, Object arg)
 			{
-				public void update(Observable o, Object arg)
-				{
-					/* TODO deactivate break_preference if case_preference is
-					       off, activate it if case_preference is on (no
-					       indenting breaks w/o indenting cases. */
-				}
-			});
+				break_preference.setEnabled(case_preference.getChecked());
+			}
+		});
 	}
 	
 	public void initializePage() {

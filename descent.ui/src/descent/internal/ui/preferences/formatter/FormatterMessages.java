@@ -306,6 +306,7 @@ final class FormatterMessages extends NLS {
 	public static String LineWrappingTabPage_button_wrap_only_when_necessary;
 	public static String LineWrappingTabPage_wrap_one_fragment_per_line;
 	public static String LineWrappingTabPage_group_line_width_and_indentation;
+	public static String LineWrappingTabPage_line_width_for_preview_label_text;
 	
 	// Messages for various options (automatically generated)
 	public static String BracesTabPage_brace_position_for_function_declaration;
@@ -366,8 +367,16 @@ final class FormatterMessages extends NLS {
 	public static String IndentationTabPage_indent_cases_compare_to_switch;
 	public static String IndentationTabPage_indent_break_compare_to_switch;
 	public static String IndentationTabPage_indent_statements_compare_to_case;
-	public static String LineWrappingTabPage_alignment_for_multiple_variable_declarations;
 	public static String IndentationTabPage_indent_body_declarations_compare_to_pragma_header;
+	public static String LineWrappingTabPage_alignment_for_multiple_variable_declarations;
+	public static String LineWrappingTabPage_alignment_for_function_declaration_parameters;
+	public static String LineWrappingTabPage_alignment_for_template_declaration_parameters;
+	public static String LineWrappingTabPage_alignment_for_function_invocation_arguments;
+	public static String LineWrappingTabPage_alignment_for_template_invocation_arguments;
+	public static String LineWrappingTabPage_alignment_for_array_literals;
+	public static String LineWrappingTabPage_alignment_for_base_class_lists;
+	public static String LineWrappingTabPage_alignment_for_selective_imports;
+	public static String LineWrappingTabPage_alignment_for_struct_initializer;
 	public static String IndentationTabPage_tab_char;
 	public static String IndentationTabPage_tab_size;
 	public static String LineWrappingTabPage_page_width;

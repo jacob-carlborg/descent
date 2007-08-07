@@ -368,8 +368,16 @@ public class DefaultCodeFormatterOptions
 	public boolean indent_cases_compare_to_switch;
 	public boolean indent_break_compare_to_switch;
 	public boolean indent_statements_compare_to_case;
-	public int alignment_for_multiple_variable_declarations;
 	public boolean indent_body_declarations_compare_to_pragma_header;
+	public int alignment_for_multiple_variable_declarations;
+	public int alignment_for_function_declaration_parameters;
+	public int alignment_for_template_declaration_parameters;
+	public int alignment_for_function_invocation_arguments;
+	public int alignment_for_template_invocation_arguments;
+	public int alignment_for_array_literals;
+	public int alignment_for_base_class_lists;
+	public int alignment_for_selective_imports;
+	public int alignment_for_struct_initializer;
 	public TabChar tab_char;
 	public int tab_size;
 	public boolean use_tabs_only_for_leading_indentations;
@@ -693,8 +701,16 @@ public class DefaultCodeFormatterOptions
 		options.put(DefaultCodeFormatterConstants.FORMATTER_INDENT_CASES_COMPARE_TO_SWITCH, indent_cases_compare_to_switch ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
 		options.put(DefaultCodeFormatterConstants.FORMATTER_INDENT_BREAK_COMPARE_TO_SWITCH, indent_break_compare_to_switch ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
 		options.put(DefaultCodeFormatterConstants.FORMATTER_INDENT_STATEMENTS_COMPARE_TO_CASE, indent_statements_compare_to_case ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
-		options.put(DefaultCodeFormatterConstants.FORMATTER_ALIGNMENT_FOR_MULTIPLE_VARIABLE_DECLARATIONS, Integer.toString(alignment_for_multiple_variable_declarations));
 		options.put(DefaultCodeFormatterConstants.FORMATTER_INDENT_BODY_DECLARATIONS_COMPARE_TO_PRAGMA_HEADER, indent_body_declarations_compare_to_pragma_header ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
+		options.put(DefaultCodeFormatterConstants.FORMATTER_ALIGNMENT_FOR_MULTIPLE_VARIABLE_DECLARATIONS, Integer.toString(alignment_for_multiple_variable_declarations));
+		options.put(DefaultCodeFormatterConstants.FORMATTER_ALIGNMENT_FOR_FUNCTION_DECLARATION_PARAMETERS, Integer.toString(alignment_for_function_declaration_parameters));
+		options.put(DefaultCodeFormatterConstants.FORMATTER_ALIGNMENT_FOR_TEMPLATE_DECLARATION_PARAMETERS, Integer.toString(alignment_for_template_declaration_parameters));
+		options.put(DefaultCodeFormatterConstants.FORMATTER_ALIGNMENT_FOR_FUNCTION_INVOCATION_ARGUMENTS, Integer.toString(alignment_for_function_invocation_arguments));
+		options.put(DefaultCodeFormatterConstants.FORMATTER_ALIGNMENT_FOR_TEMPLATE_INVOCATION_ARGUMENTS, Integer.toString(alignment_for_template_invocation_arguments));
+		options.put(DefaultCodeFormatterConstants.FORMATTER_ALIGNMENT_FOR_ARRAY_LITERALS, Integer.toString(alignment_for_array_literals));
+		options.put(DefaultCodeFormatterConstants.FORMATTER_ALIGNMENT_FOR_BASE_CLASS_LISTS, Integer.toString(alignment_for_base_class_lists));
+		options.put(DefaultCodeFormatterConstants.FORMATTER_ALIGNMENT_FOR_SELECTIVE_IMPORTS, Integer.toString(alignment_for_selective_imports));
+		options.put(DefaultCodeFormatterConstants.FORMATTER_ALIGNMENT_FOR_STRUCT_INITIALIZER, Integer.toString(alignment_for_struct_initializer));
 		options.put(DefaultCodeFormatterConstants.FORMATTER_TAB_CHAR, tab_char.toString());
 		options.put(DefaultCodeFormatterConstants.FORMATTER_TAB_SIZE, Integer.toString(tab_size));
 		options.put(DefaultCodeFormatterConstants.FORMATTER_USE_TABS_ONLY_FOR_LEADING_INDENTATIONS, use_tabs_only_for_leading_indentations ? DefaultCodeFormatterConstants.TRUE : DefaultCodeFormatterConstants.FALSE);
@@ -3384,6 +3400,15 @@ public class DefaultCodeFormatterOptions
 			}
 		}
 		
+		current = settings.get(DefaultCodeFormatterConstants.FORMATTER_INDENT_BODY_DECLARATIONS_COMPARE_TO_PRAGMA_HEADER);
+		if(null != current) {
+			try {
+				indent_body_declarations_compare_to_pragma_header = DefaultCodeFormatterConstants.TRUE.equals(current);
+			} catch(Exception e) {
+				indent_body_declarations_compare_to_pragma_header = true;
+			}
+		}
+		
 		current = settings.get(DefaultCodeFormatterConstants.FORMATTER_ALIGNMENT_FOR_MULTIPLE_VARIABLE_DECLARATIONS);
 		if(null != current) {
 			try {
@@ -3393,12 +3418,75 @@ public class DefaultCodeFormatterOptions
 			}
 		}
 		
-		current = settings.get(DefaultCodeFormatterConstants.FORMATTER_INDENT_BODY_DECLARATIONS_COMPARE_TO_PRAGMA_HEADER);
+		current = settings.get(DefaultCodeFormatterConstants.FORMATTER_ALIGNMENT_FOR_FUNCTION_DECLARATION_PARAMETERS);
 		if(null != current) {
 			try {
-				indent_body_declarations_compare_to_pragma_header = DefaultCodeFormatterConstants.TRUE.equals(current);
+				alignment_for_function_declaration_parameters = Integer.parseInt(current);
 			} catch(Exception e) {
-				indent_body_declarations_compare_to_pragma_header = true;
+				alignment_for_function_declaration_parameters = DefaultCodeFormatterConstants.WRAP_ONLY_WHEN_NECESSARY;
+			}
+		}
+		
+		current = settings.get(DefaultCodeFormatterConstants.FORMATTER_ALIGNMENT_FOR_TEMPLATE_DECLARATION_PARAMETERS);
+		if(null != current) {
+			try {
+				alignment_for_template_declaration_parameters = Integer.parseInt(current);
+			} catch(Exception e) {
+				alignment_for_template_declaration_parameters = DefaultCodeFormatterConstants.WRAP_ONLY_WHEN_NECESSARY;
+			}
+		}
+		
+		current = settings.get(DefaultCodeFormatterConstants.FORMATTER_ALIGNMENT_FOR_FUNCTION_INVOCATION_ARGUMENTS);
+		if(null != current) {
+			try {
+				alignment_for_function_invocation_arguments = Integer.parseInt(current);
+			} catch(Exception e) {
+				alignment_for_function_invocation_arguments = DefaultCodeFormatterConstants.WRAP_ONLY_WHEN_NECESSARY;
+			}
+		}
+		
+		current = settings.get(DefaultCodeFormatterConstants.FORMATTER_ALIGNMENT_FOR_TEMPLATE_INVOCATION_ARGUMENTS);
+		if(null != current) {
+			try {
+				alignment_for_template_invocation_arguments = Integer.parseInt(current);
+			} catch(Exception e) {
+				alignment_for_template_invocation_arguments = DefaultCodeFormatterConstants.WRAP_ONLY_WHEN_NECESSARY;
+			}
+		}
+		
+		current = settings.get(DefaultCodeFormatterConstants.FORMATTER_ALIGNMENT_FOR_ARRAY_LITERALS);
+		if(null != current) {
+			try {
+				alignment_for_array_literals = Integer.parseInt(current);
+			} catch(Exception e) {
+				alignment_for_array_literals = DefaultCodeFormatterConstants.WRAP_ONLY_WHEN_NECESSARY;
+			}
+		}
+		
+		current = settings.get(DefaultCodeFormatterConstants.FORMATTER_ALIGNMENT_FOR_BASE_CLASS_LISTS);
+		if(null != current) {
+			try {
+				alignment_for_base_class_lists = Integer.parseInt(current);
+			} catch(Exception e) {
+				alignment_for_base_class_lists = DefaultCodeFormatterConstants.WRAP_ONLY_WHEN_NECESSARY;
+			}
+		}
+		
+		current = settings.get(DefaultCodeFormatterConstants.FORMATTER_ALIGNMENT_FOR_SELECTIVE_IMPORTS);
+		if(null != current) {
+			try {
+				alignment_for_selective_imports = Integer.parseInt(current);
+			} catch(Exception e) {
+				alignment_for_selective_imports = DefaultCodeFormatterConstants.WRAP_ONLY_WHEN_NECESSARY;
+			}
+		}
+		
+		current = settings.get(DefaultCodeFormatterConstants.FORMATTER_ALIGNMENT_FOR_STRUCT_INITIALIZER);
+		if(null != current) {
+			try {
+				alignment_for_struct_initializer = Integer.parseInt(current);
+			} catch(Exception e) {
+				alignment_for_struct_initializer = DefaultCodeFormatterConstants.WRAP_ONLY_WHEN_NECESSARY;
 			}
 		}
 		
@@ -3764,8 +3852,16 @@ public class DefaultCodeFormatterOptions
 		indent_cases_compare_to_switch = true;
 		indent_break_compare_to_switch = false;
 		indent_statements_compare_to_case = true;
-		alignment_for_multiple_variable_declarations = DefaultCodeFormatterConstants.WRAP_ONLY_WHEN_NECESSARY;
 		indent_body_declarations_compare_to_pragma_header = true;
+		alignment_for_multiple_variable_declarations = DefaultCodeFormatterConstants.WRAP_ONLY_WHEN_NECESSARY;
+		alignment_for_function_declaration_parameters = DefaultCodeFormatterConstants.WRAP_ONLY_WHEN_NECESSARY;
+		alignment_for_template_declaration_parameters = DefaultCodeFormatterConstants.WRAP_ONLY_WHEN_NECESSARY;
+		alignment_for_function_invocation_arguments = DefaultCodeFormatterConstants.WRAP_ONLY_WHEN_NECESSARY;
+		alignment_for_template_invocation_arguments = DefaultCodeFormatterConstants.WRAP_ONLY_WHEN_NECESSARY;
+		alignment_for_array_literals = DefaultCodeFormatterConstants.WRAP_ONLY_WHEN_NECESSARY;
+		alignment_for_base_class_lists = DefaultCodeFormatterConstants.WRAP_ONLY_WHEN_NECESSARY;
+		alignment_for_selective_imports = DefaultCodeFormatterConstants.WRAP_ONLY_WHEN_NECESSARY;
+		alignment_for_struct_initializer = DefaultCodeFormatterConstants.WRAP_ONLY_WHEN_NECESSARY;
 		tab_char = TabChar.TAB;
 		tab_size = 4;
 		use_tabs_only_for_leading_indentations = false;
