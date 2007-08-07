@@ -1164,16 +1164,16 @@ public class CodeFormatterVisitor extends ASTVisitor
 	
 	public boolean visit(Import node)
 	{
-		node.getName().accept(this);
 		SimpleName alias = node.getAlias();
 		if (null != alias)
 		{
+			alias.accept(this);
 			scribe.printNextToken(TOK.TOKassign,
 					prefs.insert_space_before_equals_in_renamed_imports);
 			if(prefs.insert_space_after_equals_in_renamed_imports)
 				scribe.space();
-			alias.accept(this);
 		}
+		node.getName().accept(this);
 		List<SelectiveImport> imports = node.selectiveImports();
 		if(null != imports && !imports.isEmpty())
 		{

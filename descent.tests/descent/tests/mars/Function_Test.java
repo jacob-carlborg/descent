@@ -12,7 +12,6 @@ import descent.core.dom.FunctionDeclaration;
 import descent.core.dom.ModifiedType;
 import descent.core.dom.NumberLiteral;
 import descent.core.dom.UnitTestDeclaration;
-import descent.core.dom.VariableDeclaration;
 import descent.core.dom.Argument.PassageMode;
 
 public class Function_Test extends Parser_Test {
@@ -310,6 +309,14 @@ public class Function_Test extends Parser_Test {
 		FunctionDeclaration func = (FunctionDeclaration) stm.getDeclaration();
 		assertEquals(1, func.modifiers().size());
 		assertEquals("static", func.modifiers().get(0).toString());
+	}
+	
+	public void testFunctionWithManyModifiers() {
+		String s = " void func(final scope int a) { }";
+		FunctionDeclaration f = (FunctionDeclaration) getSingleDeclarationNoProblems(s, AST.D2);
+		assertEquals(1, f.arguments().size());
+		Argument argument = f.arguments().get(0);
+		System.out.println(f);
 	}
 
 }

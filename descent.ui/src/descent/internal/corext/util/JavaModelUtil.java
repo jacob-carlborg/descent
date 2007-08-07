@@ -777,10 +777,10 @@ public final class JavaModelUtil {
 
 	
 	/**
-	 * Sets all compliance settings in the given map to 5.0
+	 * Sets all compliance settings in the given map to 5.0 (latest)
 	 */
 	public static void set50CompilanceOptions(Map map) {
-		setCompilanceOptions(map, JavaCore.VERSION_1_x);
+		setCompilanceOptions(map, JavaCore.VERSION_2_x);
 	}
 	
 	public static void setCompilanceOptions(Map map, String compliance) {
