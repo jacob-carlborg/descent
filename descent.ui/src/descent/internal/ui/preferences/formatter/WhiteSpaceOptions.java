@@ -1269,8 +1269,7 @@ public abstract static class Node {
 	
 	private final PreviewSnippet CLASS_INVARIANT_PREVIEW =
 		new PreviewSnippet(CodeFormatter.K_COMPILATION_UNIT, 
-				"class A {int x;invariant(){assert(x >= 0);}}" +
-				"class B {int y;invariant(){assert(y <= 0);}}"
+				"class A {int x;invariant(){assert(x >= 0);}}"
 			);
 	
 	private final PreviewSnippet ENUM_PREVIEW =

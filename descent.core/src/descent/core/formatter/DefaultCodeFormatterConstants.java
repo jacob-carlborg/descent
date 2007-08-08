@@ -39,15 +39,23 @@ public class DefaultCodeFormatterConstants {
 	// Alignment options
 	/* TODO redo alignment options to JDT-style in a later release, these are 
 	        just the most obvious/simple ones. */ 
+	
 	// Don't wrap at all (leave long lines intact)
 	public static final int DO_NOT_WRAP = 
 		Alignment.M_NO_ALIGNMENT;
+	
 	// Wrap by the continuation indentation if there's a long line
 	public static final int WRAP_ONLY_WHEN_NECESSARY = 
+		Alignment.M_COMPACT_SPLIT;
+	
+	// Wrap to the column if there's a long line
+	public static final int WRAP_ON_COLUMN =
 		Alignment.M_INDENT_ON_COLUMN | Alignment.M_COMPACT_SPLIT;
+	
 	// Place one fragment per line
 	public static final int WRAP_ONE_FRAGMENT_PER_LINE = 
-		Alignment.M_FORCE | Alignment.M_NEXT_PER_LINE_SPLIT;
+		Alignment.M_FORCE | Alignment.M_INDENT_ON_COLUMN | 
+		Alignment.M_NEXT_PER_LINE_SPLIT;
 	
 	// Formatter value names
 	public static final String FORMATTER_BRACE_POSITION_FOR_FUNCTION_DECLARATION = JavaCore.PLUGIN_ID + ".formatter.brace_position_for_function_declaration";
@@ -132,7 +140,6 @@ public class DefaultCodeFormatterConstants {
 	public static final String FORMATTER_INSERT_SPACE_AFTER_OPENING_PAREN_IN_CASTS = JavaCore.PLUGIN_ID + ".formatter.insert_space_after_opening_paren_in_casts";
 	public static final String FORMATTER_INSERT_SPACE_AFTER_OPENING_PAREN_IN_TEMPLATE_DECLARATIONS = JavaCore.PLUGIN_ID + ".formatter.insert_space_after_opening_paren_in_template_declarations";
 	public static final String FORMATTER_INSERT_SPACE_AFTER_OPENING_PAREN_IN_PARENTHESIZED_EXPRESSIONS = JavaCore.PLUGIN_ID + ".formatter.insert_space_after_opening_paren_in_parenthesized_expressions";
-	
 	public static final String FORMATTER_INSERT_SPACE_AFTER_OPENING_PAREN_IN_TEMPLATE_INVOCATION = JavaCore.PLUGIN_ID + ".formatter.insert_space_after_opening_paren_in_template_invocation";
 	public static final String FORMATTER_INSERT_SPACE_AFTER_OPENING_PAREN_IN_TYPE_DOT_IDENTIFIER_EXPRESSION = JavaCore.PLUGIN_ID + ".formatter.insert_space_after_opening_paren_in_type_dot_identifier_expression";
 	public static final String FORMATTER_INSERT_SPACE_AFTER_OPENING_PAREN_IN_TRAITS_EXPRESSION = JavaCore.PLUGIN_ID + ".formatter.insert_space_after_opening_paren_in_traits_expression";

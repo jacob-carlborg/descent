@@ -299,11 +299,13 @@ final class FormatterMessages extends NLS {
 	public static String LineWrappingTabPage_preview_header;
 	public static String LineWrappingTabPage_style_do_not_wrap;
 	public static String LineWrappingTabPage_style_wrap_only_when_necessary;
+	public static String LineWrappingTabPage_style_wrap_on_column;
 	public static String LineWrappingTabPage_style_wrap_one_fragment_per_line;
 	public static String LineWrappingTabPage_group_wrapping_style;
 	public static String LineWrappingTabPage_group_set_all_to;
 	public static String LineWrappingTabPage_button_do_not_wrap;
 	public static String LineWrappingTabPage_button_wrap_only_when_necessary;
+	public static String LineWrappingTabPage_button_wrap_on_column;
 	public static String LineWrappingTabPage_wrap_one_fragment_per_line;
 	public static String LineWrappingTabPage_group_line_width_and_indentation;
 	public static String LineWrappingTabPage_line_width_for_preview_label_text;

@@ -2307,7 +2307,7 @@ public class DefaultCodeFormatterOptions
 			try {
 				insert_space_after_comma_in_traits_expression = DefaultCodeFormatterConstants.TRUE.equals(current);
 			} catch(Exception e) {
-				insert_space_after_comma_in_traits_expression = false;
+				insert_space_after_comma_in_traits_expression = true;
 			}
 		}
 		
@@ -3730,7 +3730,7 @@ public class DefaultCodeFormatterOptions
 		insert_space_after_comma_in_new_arguments = true;
 		insert_space_after_trailing_comma_in_array_initializer = true;
 		insert_space_after_comma_in_assert_statements = true;
-		insert_space_after_comma_in_traits_expression = false;
+		insert_space_after_comma_in_traits_expression = true;
 		insert_space_before_assignment_operator = true;
 		insert_space_before_prefix_operator = false;
 		insert_space_before_infix_operator = true;

@@ -71,12 +71,14 @@ public class LineWrappingTabPage extends ModifyDialogTabPage
 	private final String [] wrappingStyleValues = {
 	    String.valueOf(DefaultCodeFormatterConstants.DO_NOT_WRAP),
 	    String.valueOf(DefaultCodeFormatterConstants.WRAP_ONLY_WHEN_NECESSARY),
+	    String.valueOf(DefaultCodeFormatterConstants.WRAP_ON_COLUMN),
 	    String.valueOf(DefaultCodeFormatterConstants.WRAP_ONE_FRAGMENT_PER_LINE)
 	};
 	
 	private final String [] wrappingStyleLabels = {
 	    FormatterMessages.LineWrappingTabPage_style_do_not_wrap, 
 	    FormatterMessages.LineWrappingTabPage_style_wrap_only_when_necessary, 
+	    FormatterMessages.LineWrappingTabPage_style_wrap_on_column,
 	    FormatterMessages.LineWrappingTabPage_style_wrap_one_fragment_per_line
 	};
 	
@@ -134,6 +136,7 @@ public class LineWrappingTabPage extends ModifyDialogTabPage
 		final SetAllGroup setAll = createSetAllGroup(numColumns, lineWrappingGroup, FormatterMessages.LineWrappingTabPage_group_set_all_to);
 		createSetAllOption(setAll, FormatterMessages.LineWrappingTabPage_style_do_not_wrap, FormatterMessages.LineWrappingTabPage_button_do_not_wrap);
 		createSetAllOption(setAll, FormatterMessages.LineWrappingTabPage_style_wrap_only_when_necessary, FormatterMessages.LineWrappingTabPage_button_wrap_only_when_necessary);
+		createSetAllOption(setAll, FormatterMessages.LineWrappingTabPage_button_wrap_on_column, FormatterMessages.LineWrappingTabPage_style_wrap_on_column);
 		createSetAllOption(setAll, FormatterMessages.LineWrappingTabPage_style_wrap_one_fragment_per_line, FormatterMessages.LineWrappingTabPage_wrap_one_fragment_per_line);
 		setAll.addPreferences(prefs);
 	}
@@ -151,7 +154,7 @@ public class LineWrappingTabPage extends ModifyDialogTabPage
 		return createComboPref(composite, numColumns, message, key, wrappingStyleValues, wrappingStyleLabels);
 	}
 	
-protected Composite doCreatePreviewPane(Composite composite, int numColumns) {
+	protected Composite doCreatePreviewPane(Composite composite, int numColumns) {
 		
 		super.doCreatePreviewPane(composite, numColumns);
 		

@@ -1224,7 +1224,7 @@ insert_space_after_comma_in_assert_statements
 	wsPreview=ASSERT_PREVIEW
 insert_space_after_comma_in_traits_expression
 	type=boolean
-	default=false
+	default=true
 	wsDElem=traits_expression
 	wsSynElem=after_comma
 	wsPreview=TRAITS_PREVIEW

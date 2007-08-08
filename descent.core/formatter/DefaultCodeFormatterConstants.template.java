@@ -39,15 +39,23 @@ public class DefaultCodeFormatterConstants {
 	// Alignment options
 	/* TODO redo alignment options to JDT-style in a later release, these are 
 	        just the most obvious/simple ones. */ 
+	
 	// Don't wrap at all (leave long lines intact)
 	public static final int DO_NOT_WRAP = 
 		Alignment.M_NO_ALIGNMENT;
+	
 	// Wrap by the continuation indentation if there's a long line
 	public static final int WRAP_ONLY_WHEN_NECESSARY = 
+		Alignment.M_COMPACT_SPLIT;
+	
+	// Wrap to the column if there's a long line
+	public static final int WRAP_ON_COLUMN =
 		Alignment.M_INDENT_ON_COLUMN | Alignment.M_COMPACT_SPLIT;
+	
 	// Place one fragment per line
 	public static final int WRAP_ONE_FRAGMENT_PER_LINE = 
-		Alignment.M_FORCE | Alignment.M_NEXT_PER_LINE_SPLIT;
+		Alignment.M_FORCE | Alignment.M_INDENT_ON_COLUMN | 
+		Alignment.M_NEXT_PER_LINE_SPLIT;
 	
 	// Formatter value names
 	/* EVAL-FOR-EACH

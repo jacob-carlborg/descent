@@ -42,13 +42,15 @@ public class FormatterProfileManager extends ProfileManager {
     }
 	
 	private static List addBuiltinProfiles(List profiles, IProfileVersioner profileVersioner) {
+		
 		profiles.add(new BuiltInProfile(DefaultCodeFormatterConstants.PROFILE_DESCENT_DEFAULTS,
 				FormatterMessages.ProfileManager_descent_defaults_profile_name,
 				getBuiltInProfile(DefaultCodeFormatterConstants.PROFILE_DESCENT_DEFAULTS),
 				1,
 				profileVersioner.getCurrentVersion(),
 				profileVersioner.getProfileKind())); 
-		profiles.add(new BuiltInProfile(DefaultCodeFormatterConstants.PROFILE_JAVA_DEFAULTS,
+		
+		/* profiles.add(new BuiltInProfile(DefaultCodeFormatterConstants.PROFILE_JAVA_DEFAULTS,
 				FormatterMessages.ProfileManager_java_defaults_profile_name,
 				getBuiltInProfile(DefaultCodeFormatterConstants.PROFILE_JAVA_DEFAULTS),
 				2,
@@ -59,7 +61,8 @@ public class FormatterProfileManager extends ProfileManager {
 				getBuiltInProfile(DefaultCodeFormatterConstants.PROFILE_C_SHARP_DEFAULTS),
 				3,
 				profileVersioner.getCurrentVersion(),
-				profileVersioner.getProfileKind())); 
+				profileVersioner.getProfileKind())); */
+		
 		return profiles;
 	}
 	
