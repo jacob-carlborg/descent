@@ -118,7 +118,7 @@ public class FormatStress_Test extends AbstractFormatter_Test {
 		assertFormat(
 				"void foo() {\r\n" +
 				"\tint x;\r\n" +
-				"\t\r\n" +
+				"\r\n" +
 				"\tint x;\r\n" +
 				"}",
 				
@@ -133,7 +133,7 @@ public class FormatStress_Test extends AbstractFormatter_Test {
 		assertFormat(
 				"void foo() {\r\n" +
 				"\tint x;\r\n" +
-				"\t\r\n" +
+				"\r\n" +
 				"\t// Comment\r\n" +
 				"\tint x;\r\n" +
 				"}",

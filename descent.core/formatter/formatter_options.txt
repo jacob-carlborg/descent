@@ -2022,7 +2022,7 @@ continuation_indentation
 	uiText=Default indentation for wrapped lines
 indent_empty_lines
 	type=boolean
-	default=true
+	default=false
 	tab=IndentationTabPage
 	uiText=Empty Lines
 indent_body_declarations_compare_to_type_header

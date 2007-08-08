@@ -3279,7 +3279,7 @@ public class DefaultCodeFormatterOptions
 			try {
 				indent_empty_lines = DefaultCodeFormatterConstants.TRUE.equals(current);
 			} catch(Exception e) {
-				indent_empty_lines = true;
+				indent_empty_lines = false;
 			}
 		}
 		
@@ -3838,7 +3838,7 @@ public class DefaultCodeFormatterOptions
 		keep_functions_with_one_statement_in_one_line = false;
 		indentation_size = 4;
 		continuation_indentation = 2;
-		indent_empty_lines = true;
+		indent_empty_lines = false;
 		indent_body_declarations_compare_to_type_header = true;
 		indent_body_declarations_compare_to_template_header = true;
 		indent_body_declarations_compare_to_modifier_header = true;
