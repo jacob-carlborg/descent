@@ -471,7 +471,13 @@ public class ASTConverter {
 		return b;
 	}
 	
-	public descent.core.dom.Declaration convert(StorageClassDeclaration a) {
+	public Declaration convert(StorageClassDeclaration a) {
+		List<Declaration> dummy = new ArrayList<Declaration>(1);
+		convert(a, dummy);
+		return dummy.get(0);
+	}
+	
+	public void convert(StorageClassDeclaration a, List<Declaration> toAdd) {
 		descent.core.dom.Modifier modifier = convert(a.modifier);
 		
 		if (a.single && a.decl != null && a.decl.size() >= 1) {
@@ -492,11 +498,26 @@ public class ASTConverter {
 				decl.postDDoc = a.postDdoc;
 				
 				decl.setSourceRange(a.start, a.length);
-				return decl;
+				toAdd.add(decl);
+				return;
 			} else {
 				descent.core.dom.Declaration declaration = tryConvertMany(a.decl, modifier, a.modifiers);
 				if (declaration != null) {
-					return declaration;
+					toAdd.add(declaration);
+					return;
+				}
+			}
+		}
+		
+		if (a.colon && a.decl != null && a.decl.size() > 0) {
+			for(int i = 0; i < a.decl.size(); i++) {
+				Dsymbol dsymbol = a.decl.get(i);
+				if (
+					(dsymbol instanceof ProtDeclaration && ((ProtDeclaration) dsymbol).colon)
+						|| 
+					(dsymbol instanceof StorageClassDeclaration && ((StorageClassDeclaration) dsymbol).colon)) {
+					convertNestedStorageClassOrProtDeclaration(dsymbol, a, modifier, toAdd, i);
+					return;
 				}
 			}
 		}
@@ -505,24 +526,57 @@ public class ASTConverter {
 		b.setModifier(modifier);
 		convertDeclarations(b.declarations(), a.decl);
 		b.setSourceRange(a.start, a.length);
-		return b;
+		toAdd.add(b);
 	}
 	
-	
+	private void convertNestedStorageClassOrProtDeclaration(Dsymbol dsymbol, AttribDeclaration a, descent.core.dom.Modifier modifier, List<Declaration> toAdd, int i) {
+		descent.core.dom.ModifierDeclaration b = new descent.core.dom.ModifierDeclaration(ast);			
+		b.setModifier(modifier);
+		convertDeclarations(b.declarations(), a.decl.subList(0, i));
+		Declaration last = b.declarations().get(b.declarations().size() - 1);
+		b.setSourceRange(a.start, last.getStartPosition() + last.getLength() - a.start);
+		toAdd.add(b);
+		if (dsymbol instanceof ProtDeclaration) {
+			convert((ProtDeclaration) dsymbol, toAdd);
+		} else {
+			convert((StorageClassDeclaration) dsymbol, toAdd);
+		}
+	}
 
-	public descent.core.dom.Declaration convert(ProtDeclaration a) {
+	public Declaration convert(ProtDeclaration a) {
+		List<Declaration> dummy = new ArrayList<Declaration>(1);
+		convert(a, dummy);
+		return dummy.get(0);
+	}
+
+	public void convert(ProtDeclaration a, List<Declaration> toAdd) {
 		descent.core.dom.Modifier modifier = convert(a.modifier);
 		
-		if (a.single && a.decl != null && a.decl.size() >= 1) {
+		if (a.single && a.decl != null && a.decl.size() > 0) {
 			if (a.decl.size() == 1) {
 				Declaration decl = convertDeclaration(a.decl.get(0));
 				decl.modifiers().add(0, modifier);
 				decl.setSourceRange(a.start, a.length);
-				return decl;
+				toAdd.add(decl);
+				return;
 			} else {
 				descent.core.dom.Declaration declaration = tryConvertMany(a.decl, modifier, a.modifiers);
 				if (declaration != null) {
-					return declaration;
+					toAdd.add(declaration);
+					return;
+				}
+			}
+		}
+		
+		if (a.colon && a.decl != null && a.decl.size() > 0) {
+			for(int i = 0; i < a.decl.size(); i++) {
+				Dsymbol dsymbol = a.decl.get(i);
+				if (
+					(dsymbol instanceof ProtDeclaration && ((ProtDeclaration) dsymbol).colon)
+						|| 
+					(dsymbol instanceof StorageClassDeclaration && ((StorageClassDeclaration) dsymbol).colon)) {
+					convertNestedStorageClassOrProtDeclaration(dsymbol, a, modifier, toAdd, i);
+					return;
 				}
 			}
 		}
@@ -531,7 +585,7 @@ public class ASTConverter {
 		b.setModifier(modifier);
 		convertDeclarations(b.declarations(), a.decl);
 		b.setSourceRange(a.start, a.length);
-		return b;
+		toAdd.add(b);
 	}
 	
 	private Declaration tryConvertMany(List<Dsymbol> decl, descent.core.dom.Modifier modifier, List<Modifier> modifiers) {
@@ -2561,6 +2615,14 @@ public class ASTConverter {
 				}
 				b.setSourceRange(start, end - start);
 				destination.add(b);
+				break;
+			}
+			case ASTNode.PROT_DECLARATION: {
+				convert((ProtDeclaration) symbol, destination);
+				break;
+			}
+			case ASTNode.STORAGE_CLASS_DECLARATION: {
+				convert((StorageClassDeclaration) symbol, destination);
 				break;
 			}
 			default:

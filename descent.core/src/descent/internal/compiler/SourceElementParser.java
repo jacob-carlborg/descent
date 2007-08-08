@@ -215,9 +215,6 @@ public class SourceElementParser extends ASTVisitor {
 			
 			Type type = argument.getType();
 			if (type != null) {
-				if (sb.length() > 0) {
-					sb.append(" ");
-				}
 				sb.append(type.toString());
 			}
 			

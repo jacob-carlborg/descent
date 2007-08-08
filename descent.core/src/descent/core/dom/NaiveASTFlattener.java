@@ -1143,8 +1143,8 @@ class NaiveASTFlattener extends ASTVisitor {
 		this.buffer.append(" {\n");
 		this.indent++;
 		visitList(node.declarations(), LINE_END, EMPTY, LINE_END);
-		this.indent--;
 		this.buffer.append("}");
+		this.indent--;
 		if (node.getPostDDoc() != null) {
 			this.buffer.append(" ");
 			node.getPostDDoc().accept(this);

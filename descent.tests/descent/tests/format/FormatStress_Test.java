@@ -11,6 +11,7 @@ public class FormatStress_Test extends AbstractFormatter_Test {
 	protected Map getDefaultOptions() {
 		Map options = new HashMap();
 		options.put(DefaultCodeFormatterConstants.FORMATTER_INDENT_STATEMENTS_COMPARE_TO_CASE, DefaultCodeFormatterConstants.TRUE);
+		options.put(DefaultCodeFormatterConstants.FORMATTER_INDENT_BREAK_COMPARE_TO_SWITCH, DefaultCodeFormatterConstants.TRUE);
 		return options;
 	}
 	
@@ -111,6 +112,64 @@ public class FormatStress_Test extends AbstractFormatter_Test {
 		assertFormat(
 				"static const RequestMethod Get = {\"GET\"}, Put = {\"PUT\"};", 
 				"static const RequestMethod Get = {\"GET\"}, Put = {\"PUT\"};");
+	}
+	
+	public void testTwoStatements() throws Exception {
+		assertFormat(
+				"void foo() {\r\n" +
+				"\tint x;\r\n" +
+				"\t\r\n" +
+				"\tint x;\r\n" +
+				"}",
+				
+				"void foo() {\r\n" +
+				"\tint x;\r\n" +
+				"\r\n" +
+				"\tint x;\r\n" +
+				"}");
+	}
+	
+	public void testTwoStatementsWithComments() throws Exception {
+		assertFormat(
+				"void foo() {\r\n" +
+				"\tint x;\r\n" +
+				"\t\r\n" +
+				"\t// Comment\r\n" +
+				"\tint x;\r\n" +
+				"}",
+				
+				"void foo() {\r\n" +
+				"\tint x;\r\n" +
+				"\r\n" +
+				"\t// Comment\r\n" +
+				"\tint x;\r\n" +
+				"}");
+	}
+	
+	public void testTwoDeclarationsWithComments() throws Exception {
+		assertFormat(
+				"int x;\r\n" +
+				"\r\n" +
+				"// Comment\r\n" +
+				"alias int x;",
+				
+				"int x;\r\n" +
+				"\r\n" +
+				"// Comment\r\n" +
+				"alias int x;");
+	}
+	
+	public void testTwoStatementsOneLineBetween() throws Exception {
+		assertFormat(
+				"void foo() {\r\n" +
+				"\tint x;\r\n" +
+				"\tint x;\r\n" +
+				"}",
+				
+				"void foo() {\r\n" +
+				"\tint x;\r\n" +
+				"\tint x;\r\n" +
+				"}");
 	}
 
 }

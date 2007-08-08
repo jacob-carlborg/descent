@@ -2876,8 +2876,9 @@ public class CodeFormatterVisitor extends ASTVisitor
 			Statement statement = statements.get(statementsLength - 1);
 			int statementNodeType = statement.getNodeType();
 			if ((previousStatementNodeType == ASTNode.EMPTY_STATEMENT && statementNodeType != ASTNode.EMPTY_STATEMENT)
-					|| (previousStatementNodeType != ASTNode.EMPTY_STATEMENT && statementNodeType != ASTNode.EMPTY_STATEMENT))
+					|| (previousStatementNodeType != ASTNode.EMPTY_STATEMENT && statementNodeType != ASTNode.EMPTY_STATEMENT)) {
 				scribe.printNewLine();
+			}
 			if (statement instanceof BreakStatement && unIndentAtBreak)
 				scribe.unIndent();
 			statement.accept(this);

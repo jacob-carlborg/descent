@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import descent.core.dom.AST;
+import descent.core.dom.AggregateDeclaration;
 import descent.core.dom.AliasDeclaration;
 import descent.core.dom.CompilationUnit;
 import descent.core.dom.Declaration;
@@ -405,6 +406,42 @@ public class Modifier_Test extends Parser_Test {
 		assertEquals(2, decl.modifiers().size());
 		assertEquals("static", decl.modifiers().get(0).toString());
 		assertEquals("const", decl.modifiers().get(1).toString());
+	}
+	
+	public void testTwoModifierDeclarations() throws Exception {
+		String s = "class X { public: int x; private: int y; }";
+		CompilationUnit unit = getCompilationUnit(s);
+		AggregateDeclaration decl = (AggregateDeclaration) unit.declarations().get(0);
+		assertEquals(2, decl.declarations().size());
+		assertPosition(decl.declarations().get(0), 10, 14);
+		assertPosition(decl.declarations().get(1), 25, 15);
+	}
+	
+	public void testTwoModifierDeclarations2() throws Exception {
+		String s = "class X { public: int x; const: int y; }";
+		CompilationUnit unit = getCompilationUnit(s);
+		AggregateDeclaration decl = (AggregateDeclaration) unit.declarations().get(0);
+		assertEquals(2, decl.declarations().size());
+		assertPosition(decl.declarations().get(0), 10, 14);
+		assertPosition(decl.declarations().get(1), 25, 13);
+	}
+	
+	public void testTwoModifierDeclarations3() throws Exception {
+		String s = "class X { const: int x; private: int y; }";
+		CompilationUnit unit = getCompilationUnit(s);
+		AggregateDeclaration decl = (AggregateDeclaration) unit.declarations().get(0);
+		assertEquals(2, decl.declarations().size());
+		assertPosition(decl.declarations().get(0), 10, 13);
+		assertPosition(decl.declarations().get(1), 24, 15);
+	}
+	
+	public void testTwoModifierDeclarations4() throws Exception {
+		String s = "class X { const: int x; final: int y; }";
+		CompilationUnit unit = getCompilationUnit(s);
+		AggregateDeclaration decl = (AggregateDeclaration) unit.declarations().get(0);
+		assertEquals(2, decl.declarations().size());
+		assertPosition(decl.declarations().get(0), 10, 13);
+		assertPosition(decl.declarations().get(1), 24, 13);
 	}
 
 }

@@ -1144,6 +1144,7 @@ public class Scribe {	private static final int INITIAL_SIZE = 100;
 			boolean hasWhitespaces = false;
 			boolean hasComment = false;
 			boolean hasLineComment = false;
+			
 			while ((this.currentToken = lexer.nextToken()) != TOK.TOKeof) {
 				switch(this.currentToken) {
 					case TOKwhitespace :

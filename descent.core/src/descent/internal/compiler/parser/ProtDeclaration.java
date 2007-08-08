@@ -9,13 +9,15 @@ public class ProtDeclaration extends AttribDeclaration {
 	public Modifier modifier;
 	public boolean single;
 	public PROT protection;
+	public boolean colon;
 
 	public ProtDeclaration(Loc loc, PROT p, List<Dsymbol> decl, Modifier modifier,
-			boolean single) {
+			boolean single, boolean colon) {
 		super(loc, decl);
 		this.protection = p;
 		this.modifier = modifier;
 		this.single = single;
+		this.colon = colon;
 	}
 
 	@Override
@@ -50,7 +52,7 @@ public class ProtDeclaration extends AttribDeclaration {
 
 		Assert.isTrue(s == null);
 		pd = new ProtDeclaration(loc, protection, Dsymbol.arraySyntaxCopy(decl),
-				modifier, single);
+				modifier, single, colon);
 		return pd;
 	}
 

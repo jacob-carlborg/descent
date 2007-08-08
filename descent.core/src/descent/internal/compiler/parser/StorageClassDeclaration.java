@@ -31,13 +31,15 @@ public class StorageClassDeclaration extends AttribDeclaration {
 	public boolean single;
 	public int stc;
 	public Modifier modifier;
+	public boolean colon;
 
 	public StorageClassDeclaration(Loc loc, int stc, List<Dsymbol> decl,
-			Modifier modifier, boolean single) {
+			Modifier modifier, boolean single, boolean colon) {
 		super(loc, decl);
 		this.stc = stc;
 		this.single = single;
 		this.modifier = modifier;
+		this.colon = colon;
 	}
 
 	@Override
@@ -72,7 +74,7 @@ public class StorageClassDeclaration extends AttribDeclaration {
 
 		Assert.isNotNull(s);
 		scd = new StorageClassDeclaration(loc, stc, Dsymbol.arraySyntaxCopy(decl),
-				modifier, single);
+				modifier, single, colon);
 		return scd;
 	}
 

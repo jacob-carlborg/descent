@@ -498,8 +498,9 @@ public class Parser extends Lexer {
 				// goto Lprot;
 				nextToken();
 				
+				boolean isColon = token.value == TOK.TOKcolon;
 				a = parseBlock(isSingle);
-				s = new ProtDeclaration(loc, prot, a, modifier, isSingle[0]);
+				s = new ProtDeclaration(loc, prot, a, modifier, isSingle[0], isColon);
 				attachLeadingComments = prevToken.value == TOK.TOKrcurly;
 				break;
 				
@@ -768,6 +769,7 @@ public class Parser extends Lexer {
 		}
 		else
 		{  
+			boolean isColon = token.value == TOK.TOKcolon;
 			List<Dsymbol> a = parseBlock(isSingle);
 			
 			if (isSingle[0] && a.size() == 0) {
@@ -775,7 +777,7 @@ public class Parser extends Lexer {
 				return null;
 			}
 			
-			s = new StorageClassDeclaration(loc, stc, a, modifier, isSingle[0]);
+			s = new StorageClassDeclaration(loc, stc, a, modifier, isSingle[0], isColon);
 			modifiers.remove(modifier);
 			s.modifiers = modifiers;
 		}
