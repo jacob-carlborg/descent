@@ -1,10 +1,6 @@
 package mmrnmhrm.tests;
 
 
-import mmrnmhrm.ui.DeePlugin;
-
-import org.eclipse.ui.IWorkbenchPage;
-
 import junit.framework.Assert;
 
 /**
@@ -26,6 +22,9 @@ public class BasePluginTest {
 	}
 	
 	protected static void assertTrue(boolean b, String msg) {
+		if(b == false) {
+			b = false; // dummy op for breakpoint
+		}
 		Assert.assertTrue(msg, b);
 	}
 	

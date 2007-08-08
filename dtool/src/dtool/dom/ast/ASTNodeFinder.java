@@ -1,7 +1,6 @@
 package dtool.dom.ast;
 
 import melnorme.miscutil.Assert;
-import melnorme.miscutil.log.Logg;
 
 
 
@@ -13,10 +12,12 @@ import melnorme.miscutil.log.Logg;
 public class ASTNodeFinder extends ASTNeoUpTreeVisitor {
 	
 	private int offset; 
+	private boolean inclusiveEnd;
 	private ASTNode match;
 	
-	public ASTNodeFinder(int offsetCursor) {
+	public ASTNodeFinder(int offsetCursor, boolean inclusiveEnd) {
 		this.offset = offsetCursor;
+		this.inclusiveEnd = inclusiveEnd;
 		this.match = null;
 	}
 	
@@ -31,11 +32,10 @@ public class ASTNodeFinder extends ASTNeoUpTreeVisitor {
 		if(offset < root.getStartPos() || offset > root.getEndPos() ) 
 			return null;
 		
-		ASTNodeFinder aef = new ASTNodeFinder(offset);
-		if(root == null)
-			Logg.main.println("IMPOSSIBLE");
+		ASTNodeFinder aef = new ASTNodeFinder(offset, inclusiveEnd);
 		Assert.isNotNull(root);
 		root.accept(aef);
+		Assert.isNotNull(aef.match);
 		return aef.match;
 	}
 
@@ -43,7 +43,7 @@ public class ASTNodeFinder extends ASTNeoUpTreeVisitor {
 		if(elem.hasNoSourceRangeInfo()) {
 			//Assert.fail();
 			return true; // Descend and search children.
-		} else if(offset >= elem.getStartPos() && offset <= elem.getEndPos()) {
+		} else if(matchesRangeStart(elem) && matchesRangeEnd(elem)) {
 			// This node is the match, or is parent of the match.
 			match = elem;
 			return true; // Descend and search children.
@@ -53,6 +53,16 @@ public class ASTNodeFinder extends ASTNeoUpTreeVisitor {
 		}
 		
 	}
+	
+	private boolean matchesRangeStart(ASTNode elem) {
+		return offset >= elem.getStartPos();
+	}
+
+	private boolean matchesRangeEnd(ASTNode elem) {
+		return inclusiveEnd ? 
+				offset <= elem.getEndPos() : offset < elem.getEndPos();
+	}
+
 
 	public void endVisit(ASTNode elem) {
 	}

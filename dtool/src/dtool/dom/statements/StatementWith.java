@@ -8,7 +8,7 @@ import dtool.dom.expressions.Expression;
 public class StatementWith extends Statement {
 
 	public Expression exp;
-	public Statement body;
+	public IStatement body;
 
 	public StatementWith(WithStatement elem) {
 		convertNode(elem);

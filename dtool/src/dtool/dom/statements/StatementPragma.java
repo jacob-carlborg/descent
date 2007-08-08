@@ -10,7 +10,7 @@ public class StatementPragma extends Statement {
 
 	public Symbol ident;
 	public Expression[] exps;
-	public Statement body;
+	public IStatement body;
 
 	public StatementPragma(PragmaStatement elem) {
 		convertNode(elem);

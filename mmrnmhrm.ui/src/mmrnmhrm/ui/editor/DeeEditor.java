@@ -30,7 +30,7 @@ public class DeeEditor extends LangEditor {
 			DeePlugin.PLUGIN_ID+"/debug/ResultCollector"));
 	
 	private DeeDocumentProvider documentProvider;
-	private IDocument document;
+	//private IDocument document;
 	private CompilationUnit cunit;
 	private DeeContentOutlinePage outlinePage; // Instantiated lazily
 	//private DeeSourceViewerConfiguration sourceViewerConfiguration;
@@ -53,7 +53,6 @@ public class DeeEditor extends LangEditor {
 		setRulerContextMenuId("#DeeRulerContext"); 
 		//setHelpContextId(ITextEditorHelpContextIds.TEXT_EDITOR);
 		setInsertMode(INSERT);
-		
 	}
 	
 	private SourceViewerConfiguration createLangSourceViewerConfiguration() {
@@ -71,7 +70,7 @@ public class DeeEditor extends LangEditor {
 	
 
 	public IDocument getDocument() {
-		return document;
+		return getSourceViewer().getDocument();
 	}
 	
 	public CompilationUnit getCompilationUnit() {
@@ -95,7 +94,7 @@ public class DeeEditor extends LangEditor {
 	protected void doSetInput(IEditorInput input) throws CoreException {
 		super.doSetInput(input);
 		Logg.main.println("Got Editor input:" + input + " : " + input.getName());
-		document = documentProvider.getDocument(input);
+		//document = documentProvider.getDocument(input);
 		cunit = DeePlugin.getInstance().getCompilationUnit(input);
 		if(cunit.isOutOfModel()) {
 			setTitleImage(DeePluginImages.getImage(DeePluginImages.ELEM_FILEOUT));

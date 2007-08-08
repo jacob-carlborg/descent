@@ -29,9 +29,9 @@ import dtool.dom.ast.ASTPrinter;
 import dtool.dom.definitions.DefUnit;
 import dtool.dom.definitions.Module;
 import dtool.dom.definitions.Symbol;
-import dtool.dom.references.Entity;
+import dtool.dom.references.Reference;
 import dtool.refmodel.DefUnitSearch;
-import dtool.refmodel.IIntrinsicUnit;
+import dtool.refmodel.INativeDefUnit;
 import dtool.refmodel.NodeUtil;
 
 public class GoToDefinitionHandler extends AbstractHandler  {
@@ -78,7 +78,7 @@ public class GoToDefinitionHandler extends AbstractHandler  {
 		srcCUnit.reconcile();
 		
 
-		ASTNode elem = ASTNodeFinder.findElement(srcCUnit.getModule(), offset);
+		ASTNode elem = ASTNodeFinder.findElement(srcCUnit.getModule(), offset, false);
 		
 		if(elem == null) {
 			dialogWarning(window.getShell(), "No element found at pos: " + offset);
@@ -93,14 +93,14 @@ public class GoToDefinitionHandler extends AbstractHandler  {
 					+" it's already a definition: " + elem);
 			return;
 		}
-		if(!(elem instanceof Entity)) {
+		if(!(elem instanceof Reference)) {
 			dialogInfo(window.getShell(),
 					"Element is not an entity reference: "+ elem);
 			return;
 		} 
 		
 		// find the target
-		Collection<DefUnit> defunits = ((Entity)elem).findTargetDefUnits(false);
+		Collection<DefUnit> defunits = ((Reference)elem).findTargetDefUnits(false);
 		
 		if(defunits == null || defunits.size() == 0) {
 			dialogWarning(window.getShell(), 
@@ -122,12 +122,12 @@ public class GoToDefinitionHandler extends AbstractHandler  {
 		
 		if(defunit.hasNoSourceRangeInfo()) {
 			dialogError(window.getShell(),
-					"DefUnit: " +defunit+ " has no source range info!");
+					"DefUnit " +defunit+ " has no source range info!");
 			return;
 		} 
-		if(defunit instanceof IIntrinsicUnit) {
+		if(defunit instanceof INativeDefUnit) {
 			dialogInfo(window.getShell(),
-				"DefUnit: " +defunit+ " is a language native.");
+				"DefUnit " +defunit+ " is a language native.");
 			return;
 		} 
 		

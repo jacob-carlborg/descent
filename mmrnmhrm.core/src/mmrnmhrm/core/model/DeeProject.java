@@ -50,13 +50,17 @@ public class DeeProject extends LangProject implements IDeeElement {
 	/* -------------- Structure  -------------- */
 	
 	/** {@inheritDoc} */
-	public void createStructure() throws CoreException {
+	public void createElementInfo() throws CoreException {
 		opened = true;
 		loadProjectConfigFile();
 	}
 	
+	public void disposeElementInfo() {
+		setChildren(newChildrenArray(0)); // reset children
+	}
+	
 	/** {@inheritDoc} */ @Override
-	public void updateElem() throws CoreException {
+	public void updateElemLazily() throws CoreException {
 		updateErrorMarkers();
 		DeeModel.fireModelChanged();
 	}

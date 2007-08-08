@@ -10,13 +10,13 @@ import dtool.dom.ast.ASTNode;
 import dtool.dom.ast.IASTNeoVisitor;
 import dtool.dom.definitions.DefUnit;
 import dtool.dom.definitions.Module;
-import dtool.dom.references.EntModule;
+import dtool.dom.references.RefModule;
 import dtool.refmodel.IScope;
 import dtool.refmodel.IScopeNode;
 
 public class PartialPackageDefUnitOfModule extends PartialPackageDefUnit {
 
-	EntModule entModule;
+	RefModule entModule;
 	DefUnit module;
 	
 	public Iterator<? extends ASTNode> getMembersIterator() {

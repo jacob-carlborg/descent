@@ -3,14 +3,14 @@ package dtool.dom.definitions;
 import melnorme.miscutil.tree.TreeVisitor;
 import dtool.dom.ast.IASTNeoVisitor;
 import dtool.dom.expressions.Expression;
-import dtool.dom.references.Entity;
+import dtool.dom.references.Reference;
 import dtool.refmodel.IScopeNode;
 import dtool.refmodel.NodeUtil;
 
 public class FunctionParameter extends DefUnit implements IFunctionParameter {
 	
 
-	public Entity type;
+	public Reference type;
 	public descent.internal.core.dom.InOut inout;
 	public Expression defaultValue;
 	
@@ -22,7 +22,7 @@ public class FunctionParameter extends DefUnit implements IFunctionParameter {
 		convertIdentifier(elem.id);
 		setSourceRange(elem);
 		
-		this.type = Entity.convertType(elem.type);
+		this.type = Reference.convertType(elem.type);
 		this.inout = elem.inout;
 		this.defaultValue = Expression.convert(elem.defaultValue);
 			

@@ -6,7 +6,7 @@ import dtool.dom.ast.IASTNeoVisitor;
 
 public class StatementVolatile extends Statement {
 	
-	public Statement st;
+	public IStatement st;
 
 	public StatementVolatile(VolatileStatement elem) {
 		convertNode(elem);

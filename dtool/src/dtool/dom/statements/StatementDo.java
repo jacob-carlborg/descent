@@ -8,7 +8,7 @@ import dtool.dom.expressions.Expression;
 public class StatementDo extends Statement {
 
 	public Expression exp;
-	public Statement st;
+	public IStatement st;
 
 	public StatementDo(DoStatement elem) {
 		convertNode(elem);

@@ -8,7 +8,7 @@ import melnorme.miscutil.IteratorUtil;
 import dtool.dom.ast.ASTNode;
 import dtool.dom.definitions.DefUnit;
 import dtool.dom.definitions.Module;
-import dtool.dom.references.EntModule;
+import dtool.dom.references.RefModule;
 import dtool.refmodel.IScopeNode;
 
 

@@ -33,6 +33,7 @@ import descent.internal.core.dom.WithStatement;
 import dtool.dom.ast.ASTNeoNode;
 import dtool.dom.declarations.Declaration;
 import dtool.dom.declarations.DeclarationConditional;
+import dtool.dom.declarations.DeclarationStaticAssert;
 import dtool.dom.statements.BlockStatement;
 import dtool.dom.statements.StatementAsm;
 import dtool.dom.statements.StatementBreak;
@@ -51,7 +52,6 @@ import dtool.dom.statements.StatementLabel;
 import dtool.dom.statements.StatementOnScope;
 import dtool.dom.statements.StatementPragma;
 import dtool.dom.statements.StatementReturn;
-import dtool.dom.statements.StatementStaticAssert;
 import dtool.dom.statements.StatementSwitch;
 import dtool.dom.statements.StatementSynchronized;
 import dtool.dom.statements.StatementThrow;
@@ -147,7 +147,7 @@ public class StatementConverter extends ExpressionConverter {
 	}
 
 	public boolean visit(StaticAssertStatement element) {
-		return endAdapt(new StatementStaticAssert(element));
+		return endAdapt(new DeclarationStaticAssert(element));
 	}
 
 	public boolean visit(SwitchStatement element) {

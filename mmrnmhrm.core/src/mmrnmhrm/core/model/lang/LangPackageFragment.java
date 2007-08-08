@@ -39,12 +39,12 @@ public abstract class LangPackageFragment extends LangContainerElement {
 	
 	/* -------------- Structure  -------------- */
 	
-	public void createStructure() throws CoreException {
+	public void createElementInfo() throws CoreException {
 		clearChildren();
 		for(IResource resource : packageFolder.members()) {
 			if(resource.getType() == IResource.FILE) {
 				IFile myfile = (IFile) resource;
-				if(isValidCompilationUnit(myfile));
+				if(isValidCompilationUnit(myfile))
 					addChild(new CompilationUnit(this, myfile));
 			}
 		}

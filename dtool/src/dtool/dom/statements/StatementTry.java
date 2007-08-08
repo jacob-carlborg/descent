@@ -9,21 +9,20 @@ import dtool.dom.ast.ASTNeoNode;
 import dtool.dom.ast.IASTNeoVisitor;
 import dtool.dom.definitions.DefSymbol;
 import dtool.dom.definitions.FunctionParameter;
-import dtool.dom.definitions.Symbol;
-import dtool.dom.references.Entity;
+import dtool.dom.references.Reference;
 
 public class StatementTry extends Statement {
 	
 	public static class CatchClause extends ASTNeoNode {
 		
 		public FunctionParameter param;
-		public Statement body;
+		public IStatement body;
 
 		public CatchClause(Catch elem) {
 			convertNode(elem);
 			this.body = Statement.convert(elem.handler);
 			this.param = new FunctionParameter();
-			this.param.type = Entity.convertType(elem.t);
+			this.param.type = Reference.convertType(elem.t);
 			this.param.defname = new DefSymbol(elem.id, this.param);
 		}
 
@@ -38,9 +37,9 @@ public class StatementTry extends Statement {
 		}
 	}
 
-	public Statement body;
+	public IStatement body;
 	public CatchClause[] params;
-	public Statement finallybody;
+	public IStatement finallybody;
 
 
 	public StatementTry(TryCatchStatement elem) {
@@ -49,8 +48,9 @@ public class StatementTry extends Statement {
 	}
 
 	private void convertTryCatch(TryCatchStatement elem) {
-		this.params = (CatchClause[]) DescentASTConverter.convertMany(
-				elem.catches.toArray(), new CatchClause[elem.catches.size()]);
+		this.params = new CatchClause[elem.catches.size()];
+		DescentASTConverter.convertMany(
+				elem.catches.toArray(), this.params);
 		this.body = Statement.convert(elem.body);
 	}
 	

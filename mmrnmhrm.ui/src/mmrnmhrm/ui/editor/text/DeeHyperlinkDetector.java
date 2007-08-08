@@ -11,7 +11,7 @@ import org.eclipse.ui.texteditor.ITextEditor;
 
 import dtool.dom.ast.ASTNodeFinder;
 import dtool.dom.ast.ASTNode;
-import dtool.dom.references.Entity;
+import dtool.dom.references.Reference;
 
 public class DeeHyperlinkDetector extends AbstractHyperlinkDetector {
 
@@ -25,8 +25,8 @@ public class DeeHyperlinkDetector extends AbstractHyperlinkDetector {
 			return null;
 		
 		ASTNode module = ((DeeEditor) textEditor).getCompilationUnit().getModule();
-		ASTNode selNode = ASTNodeFinder.findElement(module, region.getOffset());
-		if(!(selNode instanceof Entity))
+		ASTNode selNode = ASTNodeFinder.findElement(module, region.getOffset(), false);
+		if(!(selNode instanceof Reference))
 			return null;
 		
 		IRegion elemRegion = new Region(selNode.getOffset(), selNode.getLength());

@@ -1,26 +1,16 @@
 package mmrnmhrm.core.model;
 
 import melnorme.miscutil.ExceptionAdapter;
-import melnorme.miscutil.tree.IElement;
 import mmrnmhrm.core.CorePreferenceInitializer;
 import mmrnmhrm.core.DeeCore;
-import mmrnmhrm.core.ILangModelConstants;
-import mmrnmhrm.core.LangCoreMessages;
-import mmrnmhrm.core.model.lang.ELangElementTypes;
+import mmrnmhrm.core.model.lang.ILangElement;
 import mmrnmhrm.core.model.lang.LangModuleUnit;
 import mmrnmhrm.core.model.lang.LangPackageFragment;
 
-import org.eclipse.core.filebuffers.FileBuffers;
-import org.eclipse.core.filebuffers.ITextFileBuffer;
-import org.eclipse.core.filebuffers.ITextFileBufferManager;
-import org.eclipse.core.filebuffers.LocationKind;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IPath;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
 
@@ -50,42 +40,52 @@ public class CompilationUnit extends LangModuleUnit implements IGenericCompilati
 	public CompilationUnit(LangPackageFragment parent, IFile file) {
 		super(parent);
 		this.file = file;
-		createStructure();
+		//createElementInfo();
 	}
 	
 	public CompilationUnit(IFile file) {
 		this(null, file);
 	}
+	
+	@Override
+	public ILangElement[] getLangChildren() {
+		return ILangElement.NO_LANGELEMENTS;
+	}
+	
+	public boolean hasChildren() {
+		return true;
+	}
 
 	public ASTNode[] getChildren() {
-		try {
-			getElementInfo();
-		} catch (CoreException e) {
-			ExceptionAdapter.unchecked(e); // Should not happen
-		}
+		getElementInfo();
 		return getModule().getChildren();
 	}
 	
 	public descent.internal.core.dom.Module getOldModule() {
+		getElementInfo();
 		return oldModule;
 	}
 	
 	public Module getNeoModule() {
+		getElementInfo();
 		return module;
 	}
 	
 	public ASTNode getModule() {
+		getElementInfo();
 		if(module == null || parseStatus == EModelStatus.PARSER_SYNTAX_ERRORS)
 			return oldModule;
 		return module;
 	}
 
-	public boolean hasErrors() {
-		return problems.length > 0;
-	}
-	
 	/** Updates this CompilationUnit's AST according to the underlying text. */
 	public void reconcile() {
+		openBuffer();
+		parseUnit();
+	}
+	
+	/** Parses this unit's document to produce and AST. Buffer must be open. */
+	protected void parseUnit() {
 		module = null;
 		
 		clearErrorMarkers();
@@ -107,8 +107,12 @@ public class CompilationUnit extends LangModuleUnit implements IGenericCompilati
 			throw re;
 		}
 	}
+	
+	private boolean hasErrors() {
+		return problems.length > 0;
+	}
 
-	protected void clearErrorMarkers() {
+	private void clearErrorMarkers() {
 		try {
 			file.deleteMarkers(IMarker.PROBLEM, true, IResource.DEPTH_INFINITE);
 		} catch (CoreException ce) {
@@ -116,12 +120,12 @@ public class CompilationUnit extends LangModuleUnit implements IGenericCompilati
 		}
 	}
 	
-	protected void createErrorMarkers(IDocument doc) {
+	private void createErrorMarkers(IDocument doc) {
 		boolean reportSyntaxErrors;
 		reportSyntaxErrors = DeeCore.getInstance().getPluginPreferences()
 				.getBoolean(CorePreferenceInitializer.REPORT_SYNTAX_ERRORS);
 
-		for (IProblem problem : getOldModule().getProblems()) {
+		for (IProblem problem : oldModule.getProblems()) {
 			try {
 				createMarker(doc, problem, reportSyntaxErrors);
 			} catch (CoreException e) {
@@ -155,7 +159,7 @@ public class CompilationUnit extends LangModuleUnit implements IGenericCompilati
 		this.module = null;
 		this.problems = null;
 		this.oldModule = ParserFacade.parseCompilationUnit(getSource()).mod;
-		this.problems = getOldModule().getProblems();
+		this.problems = oldModule.getProblems();
 	}
 	
 	
@@ -175,5 +179,7 @@ public class CompilationUnit extends LangModuleUnit implements IGenericCompilati
 		} else
 			return "Status OK";
 	}
+
+
 
 }

@@ -1,14 +1,11 @@
 package mmrnmhrm.core.model;
 
 import mmrnmhrm.core.model.lang.ILangElement;
-import mmrnmhrm.core.model.lang.ILangProject;
 import mmrnmhrm.core.model.lang.LangPackageFragment;
 import mmrnmhrm.core.model.lang.LangProject;
 import mmrnmhrm.core.model.lang.LangSourceFolder;
 
 import org.eclipse.core.resources.IFolder;
-import org.eclipse.core.resources.IResource;
-import org.eclipse.core.runtime.CoreException;
 
 public class DeeSourceFolder extends LangSourceFolder implements IDeeSourceRoot {
 	
@@ -31,5 +28,5 @@ public class DeeSourceFolder extends LangSourceFolder implements IDeeSourceRoot 
 	protected boolean isValidPackageFragmentFolder(IFolder folder) {
 		return DeeNameRules.isValidPackageName(folder.getName());
 	}
-	
+
 }

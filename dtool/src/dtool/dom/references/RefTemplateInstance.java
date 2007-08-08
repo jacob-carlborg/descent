@@ -10,14 +10,14 @@ import dtool.dom.ast.ASTNeoNode;
 import dtool.dom.ast.IASTNeoVisitor;
 import dtool.dom.definitions.DefUnit;
 
-public class EntTemplateInstance extends EntitySingle {
+public class RefTemplateInstance extends CommonRefSingle {
 	
 	public List<ASTNeoNode> tiargs;
 	
-	public EntTemplateInstance() {
+	public RefTemplateInstance() {
 	}
 	
-	public EntTemplateInstance(descent.internal.core.dom.TemplateInstance elem) {
+	public RefTemplateInstance(descent.internal.core.dom.TemplateInstance elem) {
 		setSourceRange(elem);
 		this.name = elem.string;
 		this.tiargs = DescentASTConverter.convertManyL(elem.tiargs, tiargs);

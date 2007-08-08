@@ -13,8 +13,6 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.jface.text.IDocument;
 
-import dtool.refmodel.pluginadapters.IGenericCompilationUnit;
-
 public abstract class LangModuleUnit extends LangElement {
 
 	protected IFile file;
@@ -55,17 +53,35 @@ public abstract class LangModuleUnit extends LangElement {
 	
 	/* -------------- Structure  -------------- */
 
+	@Override
+	protected void getElementInfo()  {
+		if(!opened) {
+			opened = true;
+			createElementInfo();
+		}
+	}
 	
-	public void createStructure() {
+	public void createElementInfo() {
 		openBuffer();
-		reconcile();
+		parseUnit();
+	}
+	
+	public void disposeElementInfo() throws CoreException {
+		closeBuffer();
 	}
 
-	public void updateElementRecursive() throws CoreException {
-		reconcile();
+	private void closeBuffer() throws CoreException {
+		if(document == null)
+			return;
+		
+		ITextFileBufferManager manager = FileBuffers.getTextFileBufferManager();
+		IPath loc = file.getFullPath();
+		LocationKind fLocationKind = LocationKind.IFILE;
+
+		manager.disconnect(loc, fLocationKind, null);
 	}
-	
-	private void openBuffer()  {
+
+	protected void openBuffer()  {
 		if(document != null)
 			return;
 		
@@ -88,13 +104,15 @@ public abstract class LangModuleUnit extends LangElement {
 	
 
 	public IDocument getDocument() {
+		openBuffer();
 		return document;
 	}
 	
 	public String getSource() {
-		return document.get();
+		return getDocument().get();
 	}
 	
 	public abstract void reconcile();
 
+	protected abstract void parseUnit();
 }

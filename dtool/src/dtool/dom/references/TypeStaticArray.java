@@ -12,19 +12,19 @@ import descent.internal.core.dom.TypeSArray;
 import dtool.dom.ast.ASTNode;
 import dtool.dom.ast.IASTNeoVisitor;
 import dtool.dom.definitions.DefUnit;
+import dtool.dom.definitions.NativeDefUnit;
 import dtool.dom.expressions.Expression;
 import dtool.refmodel.DefUnitSearch;
 import dtool.refmodel.IScope;
 import dtool.refmodel.IScopeNode;
-import dtool.refmodel.IntrinsicDefUnit;
 
-public class TypeStaticArray extends Entity {
-	public Entity elemtype;
+public class TypeStaticArray extends CommonRefNative {
+	public Reference elemtype;
 	public Expression sizeexp;
 
 	public TypeStaticArray(TypeSArray elem) {
 		setSourceRange(elem);
-		this.elemtype = Entity.convertType(elem.next);
+		this.elemtype = Reference.convertType(elem.next);
 		this.sizeexp = Expression.convert(elem.dim); 
 	}
 
@@ -41,8 +41,17 @@ public class TypeStaticArray extends Entity {
 		return DefUnitSearch.wrapResult(IntrinsicStaticArray.instance);
 	}
 	
+	@Override
+	public String toString() {
+		return elemtype + "["+sizeexp+"]";
+	}
+
 	
-	public static class IntrinsicStaticArray extends IntrinsicDefUnit {
+	public static class IntrinsicStaticArray extends NativeDefUnit {
+		public IntrinsicStaticArray() {
+			super("<static-array>");
+		}
+		
 		public static final IntrinsicStaticArray instance = new IntrinsicStaticArray();
 
 

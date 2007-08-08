@@ -8,13 +8,13 @@ import melnorme.miscutil.tree.TreeVisitor;
 import dtool.dom.ast.ASTNeoNode;
 import dtool.dom.ast.ASTNode;
 import dtool.dom.ast.IASTNeoVisitor;
-import dtool.dom.references.Entity;
+import dtool.dom.references.Reference;
 import dtool.refmodel.EntityResolver;
 import dtool.refmodel.INonScopedBlock;
 
 public class MixinContainer extends ASTNeoNode implements INonScopedBlock {
 
-	public Entity type;
+	public Reference type;
 	
 	@Override
 	public void accept0(IASTNeoVisitor visitor) {

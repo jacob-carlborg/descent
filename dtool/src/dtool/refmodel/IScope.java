@@ -4,7 +4,6 @@ import java.util.Iterator;
 import java.util.List;
 
 import dtool.dom.ast.IASTNode;
-import dtool.dom.definitions.Module;
 
 /**
  * Gives access to the scope's DefUnits, and to super scopes. 
@@ -22,6 +21,6 @@ public interface IScope {
 	List<IScope> getSuperScopes();
 	
 	/** Gets the module of scope. TODO: Define if it can be null */
-	Module getModule();
+	IScope getModuleScope();
 	
 }

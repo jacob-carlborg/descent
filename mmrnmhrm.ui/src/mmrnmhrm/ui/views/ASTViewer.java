@@ -20,9 +20,7 @@ import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
-import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
-import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
@@ -30,12 +28,12 @@ import org.eclipse.swt.widgets.Menu;
 import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.ISelectionListener;
-import org.eclipse.ui.ISelectionService;
 import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.IViewSite;
 import org.eclipse.ui.IWorkbenchActionConstants;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchPart;
+import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.DrillDownAdapter;
@@ -43,8 +41,8 @@ import org.eclipse.ui.part.ViewPart;
 import org.eclipse.ui.texteditor.AbstractTextEditor;
 import org.eclipse.ui.texteditor.ITextEditor;
 
-import dtool.dom.ast.ASTNodeFinder;
 import dtool.dom.ast.ASTNode;
+import dtool.dom.ast.ASTNodeFinder;
 
 
 /**
@@ -55,18 +53,20 @@ public class ASTViewer extends ViewPart implements ISelectionListener,
 
 	
 	public static final String VIEW_ID = "mmrnmhrm.ui.views.ASTViewer";
+	
+	private IWorkbenchWindow window;
+
 	protected TreeViewer viewer;
 	private DrillDownAdapter drillDownAdapter;
 	private Action actionExpand;
 	private Action actionCollapse;
-
+	private Action actionToggle;
 	
 	//protected MultiListener fMultiListener;
 
 	protected ITextEditor fEditor;
 	protected IDocument fDocument;
 	protected CompilationUnit fCUnit;
-	private Action actionToggle;
 	protected boolean fUseOldAst = false;
 	protected ASTNode selNode;
 
@@ -79,8 +79,8 @@ public class ASTViewer extends ViewPart implements ISelectionListener,
 	public void init(IViewSite site) throws PartInitException {
 		super.init(site);
 		
-		ISelectionService service= site.getWorkbenchWindow().getSelectionService();
-		service.addPostSelectionListener(this);
+		window = site.getWorkbenchWindow();
+		window.getSelectionService().addPostSelectionListener(this);
 		//site.getPage().addPartListener(this);
 
 		/*if (fMultiListener == null) {
@@ -92,7 +92,13 @@ public class ASTViewer extends ViewPart implements ISelectionListener,
 			//FileBuffers.getTextFileBufferManager().addFileBufferListener(fSuperListener);
 		}*/
 	}
-
+	
+	@Override
+	public void dispose() {
+		window.getSelectionService().removePostSelectionListener(this);
+		super.dispose();
+	}
+	
 	public void createPartControl(Composite parent) {
 		viewer = new TreeViewer(parent, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL);
 		drillDownAdapter = new DrillDownAdapter(viewer);
@@ -183,7 +189,8 @@ public class ASTViewer extends ViewPart implements ISelectionListener,
 		//viewer.getControl().setRedraw(false);
 		//viewer.setInput(fCUnit);
 		viewer.refresh();
-		viewer.reveal(selNode);
+		if(selNode != null)
+			viewer.reveal(selNode);
 		//viewer.getControl().setRedraw(true);
 	}
 	
@@ -280,4 +287,5 @@ public class ASTViewer extends ViewPart implements ISelectionListener,
 			return;
 		EditorUtil.selectNodeInEditor((AbstractTextEditor)fEditor, event);
 	}
+
 }

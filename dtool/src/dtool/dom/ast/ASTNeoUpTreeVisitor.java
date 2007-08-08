@@ -6,11 +6,12 @@ import dtool.dom.definitions.DefUnit;
 import dtool.dom.definitions.Definition;
 import dtool.dom.definitions.Module;
 import dtool.dom.definitions.Symbol;
-import dtool.dom.references.EntIdentifier;
-import dtool.dom.references.EntQualified;
-import dtool.dom.references.EntTemplateInstance;
-import dtool.dom.references.Entity;
-import dtool.dom.references.EntitySingle;
+import dtool.dom.references.CommonRefNative;
+import dtool.dom.references.CommonRefQualified;
+import dtool.dom.references.CommonRefSingle;
+import dtool.dom.references.RefIdentifier;
+import dtool.dom.references.RefTemplateInstance;
+import dtool.dom.references.Reference;
 
 public abstract class ASTNeoUpTreeVisitor extends ASTUpTreeVisitor implements IASTNeoVisitor {
 
@@ -31,41 +32,54 @@ public abstract class ASTNeoUpTreeVisitor extends ASTUpTreeVisitor implements IA
 	}
 
 	public boolean visit(Symbol elem) {
-		Assert.isTrue(DefUnit.class.getSuperclass().equals(ASTNeoNode.class));
+		Assert.isTrue(Symbol.class.getSuperclass().equals(ASTNeoNode.class));
 		return visit((ASTNeoNode) elem);
 	}
 	
 
-	public boolean visit(Entity elem) {
-		return visitAsSuperType(elem, Entity.class);
+	public boolean visit(Reference elem) {
+		Assert.isTrue(Reference.class.getSuperclass().equals(ASTNeoNode.class));
+		return visit((ASTNeoNode) elem);
+	}
+	
+	public boolean visit(CommonRefNative elem) {
+		Assert.isTrue(CommonRefNative.class.getSuperclass().equals(Reference.class));
+		return visit((Reference) elem);
+	}
+	
+
+	public boolean visit(CommonRefQualified elem) {
+		Assert.isTrue(CommonRefQualified.class.getSuperclass().equals(Reference.class));
+		return visit((Reference) elem);
 	}
 
-	public boolean visit(EntQualified elem) {
-		return visitAsSuperType(elem, EntQualified.class);
+	public boolean visit(CommonRefSingle elem) {
+		Assert.isTrue(CommonRefSingle.class.getSuperclass().equals(Reference.class));
+		return visit((Reference) elem);
 	}
 
-	public boolean visit(EntitySingle elem) {
-		return visitAsSuperType(elem, EntitySingle.class);
+	public boolean visit(RefIdentifier elem) {
+		Assert.isTrue(RefIdentifier.class.getSuperclass().equals(CommonRefSingle.class));
+		return visit((CommonRefSingle) elem);
 	}
 
-	public boolean visit(EntIdentifier elem) {
-		return visitAsSuperType(elem, EntIdentifier.class);
-	}
-
-	public boolean visit(EntTemplateInstance elem) {
-		return visitAsSuperType(elem, EntTemplateInstance.class);
+	public boolean visit(RefTemplateInstance elem) {
+		Assert.isTrue(RefTemplateInstance.class.getSuperclass().equals(CommonRefSingle.class));
+		return visit((CommonRefSingle) elem);
 	}
 
 	/* ---------------------------------- */
 
 	public boolean visit(Definition elem) {
-		return visitAsSuperType(elem, Definition.class);
+		Assert.isTrue(Definition.class.getSuperclass().equals(DefUnit.class));
+		return visit((DefUnit) elem);
 	}
 
 	/* ---------------------------------- */
 
 	public boolean visit(Module elem) {
-		return visitAsSuperType(elem, Module.class);
+		Assert.isTrue(Module.class.getSuperclass().equals(DefUnit.class));
+		return visit((DefUnit) elem);
 	}
 	
 	

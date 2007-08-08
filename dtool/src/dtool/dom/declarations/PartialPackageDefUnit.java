@@ -7,7 +7,7 @@ import dtool.dom.ast.IASTNeoVisitor;
 import dtool.dom.definitions.DefUnit;
 import dtool.dom.definitions.Module;
 import dtool.dom.definitions.Symbol;
-import dtool.dom.references.EntModule;
+import dtool.dom.references.RefModule;
 import dtool.refmodel.IScope;
 import dtool.refmodel.IScopeNode;
 
@@ -20,7 +20,7 @@ public abstract class PartialPackageDefUnit extends DefUnit implements IScopeNod
 
 	
 	public static PartialPackageDefUnit createPartialDefUnits(
-			String[] packages, EntModule entModule, Module module) {
+			String[] packages, RefModule entModule, Module module) {
 		if(packages.length == 1 ) {
 			PartialPackageDefUnitOfModule packageDefUnit =  new PartialPackageDefUnitOfModule();
 			packageDefUnit.defname = new Symbol(packages[0]);
@@ -58,7 +58,7 @@ public abstract class PartialPackageDefUnit extends DefUnit implements IScopeNod
 	}
 	
 	@Override
-	public Module getModule() {
+	public Module getModuleScope() {
 		return null;
 	}
 	

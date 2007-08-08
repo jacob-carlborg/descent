@@ -11,7 +11,7 @@ import dtool.descentadapter.DescentASTConverter;
 import dtool.dom.ast.ASTNeoNode;
 import dtool.dom.ast.ASTNode;
 import dtool.dom.ast.IASTNeoVisitor;
-import dtool.dom.references.Entity;
+import dtool.dom.references.Reference;
 import dtool.dom.statements.IStatement;
 import dtool.refmodel.IScope;
 import dtool.refmodel.IScopeNode;
@@ -24,7 +24,7 @@ public class DefinitionAggregate extends Definition implements IScopeNode, IStat
 	public static class BaseClass extends ASTNeoNode {
 		
 		public int prot;
-		public Entity type;
+		public Reference type;
 		
 		public BaseClass(descent.internal.core.dom.BaseClass elem) {
 			convertNode(elem);
@@ -32,7 +32,7 @@ public class DefinitionAggregate extends Definition implements IScopeNode, IStat
 				convertNode(elem.type); // Try to have some range
 				
 			this.prot = elem.prot;
-			this.type = Entity.convertType(elem.type);
+			this.type = Reference.convertType(elem.type);
 		}
 		
 		@Override
@@ -45,7 +45,7 @@ public class DefinitionAggregate extends Definition implements IScopeNode, IStat
 		}
 	}
 	
-	public List<ASTNode> members; 
+	public List<ASTNode> members; // can be null. (bodyless aggregates)
 	public List<BaseClass> baseClasses;
 	public TemplateParameter[] templateParams; 
 	
@@ -53,7 +53,8 @@ public class DefinitionAggregate extends Definition implements IScopeNode, IStat
 	@SuppressWarnings("unchecked")
 	public DefinitionAggregate(AggregateDeclaration elem) {
 		convertDsymbol(elem);
-		this.members = DescentASTConverter.convertManyL(elem.members, this.members);
+		if(elem.members != null)
+			this.members = DescentASTConverter.convertManyL(elem.members, this.members);
 		this.baseClasses = DescentASTConverter.convertManyL(elem.baseClasses, this.baseClasses);
 		if(elem.templateParameters != null)
 		this.templateParams = TemplateParameter.convertMany(elem.templateParameters);
@@ -100,7 +101,7 @@ public class DefinitionAggregate extends Definition implements IScopeNode, IStat
 
 	@Override
 	public String toStringAsCodeCompletion() {
-		return defname + " - " + getModule();
+		return defname + " - " + getModuleScope();
 	}
 	
 	private String toStringTemplateParams() {
@@ -111,7 +112,7 @@ public class DefinitionAggregate extends Definition implements IScopeNode, IStat
 	@Override
 	public String toStringFullSignature() {
 		String str = getArcheType().toString() 
-		+ "  " + getModule() +"."+ getName()
+		+ "  " + getModuleScope() +"."+ getName()
 		+ toStringTemplateParams();
 		return str;
 	}

@@ -16,7 +16,7 @@ public class DeeNameRules {
 			if(!Character.isLetterOrDigit(name.charAt(i)))
 				return false;
 		}
-		return true;
+		return false;
 	}
 
 	public static boolean isValidPackageName(String name) {

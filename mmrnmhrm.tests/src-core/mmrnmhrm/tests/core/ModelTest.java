@@ -1,26 +1,24 @@
 package mmrnmhrm.tests.core;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
-import org.eclipse.core.resources.IFolder;
-import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.IWorkspaceRoot;
-import org.eclipse.core.runtime.CoreException;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-
 import mmrnmhrm.core.DeeCore;
+import mmrnmhrm.core.model.DeeModel;
 import mmrnmhrm.core.model.DeeModelRoot;
 import mmrnmhrm.core.model.DeeProject;
 import mmrnmhrm.core.model.DeeSourceFolder;
 import mmrnmhrm.core.model.lang.ILangElement;
 import mmrnmhrm.tests.BasePluginTest;
+
+import org.eclipse.core.resources.IFolder;
+import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IWorkspaceRoot;
+import org.eclipse.core.runtime.CoreException;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
 public class ModelTest extends BasePluginTest {
 
@@ -28,7 +26,7 @@ public class ModelTest extends BasePluginTest {
 	private static DeeModelRoot droot;
 	private static Collection<DeeProject> otherProjs;	
 	
-//	@BeforeClass
+	@BeforeClass
 	public static void setUp() throws CoreException{
 		wroot = DeeCore.getWorkspaceRoot();
 		droot = DeeModelRoot.getInstance();
@@ -37,22 +35,23 @@ public class ModelTest extends BasePluginTest {
 		for (DeeProject dproj : otherProjs) {
 			dproj.getProject().close(null);
 		}
-		droot.updateElem();
+		droot.updateElemLazily();
 	}
 
-//	@AfterClass
+	@AfterClass
 	public static void setDown() throws CoreException{
 		for (IProject proj : wroot.getProjects()) {
 			if(!proj.isOpen())
 				proj.open(null);
 		}
-		droot.updateElem();
+		droot.updateElemLazily();
 	}
 
 	
 	@Test
 	public void test() throws CoreException {
-		if(true)return;
+		//if(true)return;
+		DeeModel.getRoot().updateElementRecursive();
 		
 		IProject project;
 		IFolder folder;
@@ -71,7 +70,7 @@ public class ModelTest extends BasePluginTest {
 		checkResourcesEquals(getTestSourceFolders(), "proj1", "proj2", "proj3");
 		
 		project.delete(false, null);
-		droot.updateElem();
+		droot.updateElemLazily();
 		checkResourcesEquals(getTestSourceFolders(), "proj1", "proj2");
 		
 		checkResourcesEquals(deeproj.getSourceFolders(), "src");
@@ -79,6 +78,9 @@ public class ModelTest extends BasePluginTest {
 		deeproj.addSourceRoot(new DeeSourceFolder(folder,deeproj));
 		checkResourcesEquals(deeproj.getSourceFolders(), "src", "src1");
 		checkResourcesEquals(deeproj.getSourceRoots(), "src", "src1");
+		
+		
+		DeeModel.getRoot().updateElementRecursive();
 	}
 
 	private DeeProject[] getTestSourceFolders() {

@@ -7,10 +7,10 @@ import dtool.dom.expressions.Expression;
 
 public class StatementFor extends Statement {
 
-	public Statement init;
+	public IStatement init;
 	public Expression cond;
 	public Expression inc;
-	public Statement body;
+	public IStatement body;
 
 
 	public StatementFor(ForStatement elem) {

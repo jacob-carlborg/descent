@@ -57,14 +57,14 @@ public abstract class DefUnit extends ASTNeoNode {
 	/** Returns signature-oriented String representation. */
 	public String toStringFullSignature() {
 		String str = getArcheType().toString() 
-			+ "  " + getModule().toStringFullSignature() + "."	+ getName();
+			+ "  " + getModuleScope() + "." + getName();
 		//if(getMembersScope() != this)str += " : " + getMembersScope();
 		return str;
 	}
 	
 	/** Returns completion proposal oriented String representation. */
 	public String toStringAsCodeCompletion() {
-		return getName() + " - " + getModule();
+		return getName() + " - " + getModuleScope();
 	}
 
 	/** Gets the archtype (the kind) of this DefUnit. */

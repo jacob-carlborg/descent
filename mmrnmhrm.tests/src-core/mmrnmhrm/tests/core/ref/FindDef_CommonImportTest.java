@@ -8,14 +8,13 @@ import mmrnmhrm.tests.BasePluginTest;
 import mmrnmhrm.tests.SampleMainProject;
 
 import org.eclipse.core.runtime.CoreException;
-import org.junit.AfterClass;
 import org.junit.Test;
 
 import dtool.tests.ref.FindDef_CommonTest;
 
 public abstract class FindDef_CommonImportTest extends BasePluginTest {
 
-	public static final String TESTALT_KEY = "/++/";
+	//public static final String TESTALT_KEY = "/++/";
 	public static final String TEST_SRCFOLDER = SampleMainProject.TEST_SRC3;
 
 	protected static CompilationUnit defaultCUnit;

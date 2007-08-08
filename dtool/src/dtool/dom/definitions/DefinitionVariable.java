@@ -3,7 +3,7 @@ package dtool.dom.definitions;
 import melnorme.miscutil.tree.TreeVisitor;
 import dtool.dom.ast.IASTNeoVisitor;
 import dtool.dom.expressions.Initializer;
-import dtool.dom.references.Entity;
+import dtool.dom.references.Reference;
 import dtool.dom.statements.IStatement;
 import dtool.refmodel.IScopeNode;
 import dtool.refmodel.NodeUtil;
@@ -13,12 +13,12 @@ import dtool.refmodel.NodeUtil;
  */
 public class DefinitionVariable extends Definition implements IStatement {
 	
-	public Entity type;
+	public Reference type;
 	public Initializer init;
 
 	public DefinitionVariable(descent.internal.core.dom.VarDeclaration elem) {
 		convertDsymbol(elem);
-		this.type = Entity.convertType(elem.type);
+		this.type = Reference.convertType(elem.type);
 		this.init = Initializer.convert(elem.init);
 	}
 	

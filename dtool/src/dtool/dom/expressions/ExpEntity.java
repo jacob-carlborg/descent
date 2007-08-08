@@ -10,40 +10,40 @@ import descent.internal.core.dom.TypeDotIdExp;
 import dtool.descentadapter.DescentASTConverter;
 import dtool.dom.ast.IASTNeoVisitor;
 import dtool.dom.definitions.DefUnit;
-import dtool.dom.references.EntQualified;
-import dtool.dom.references.Entity;
-import dtool.dom.references.EntitySingle;
+import dtool.dom.references.RefQualified;
+import dtool.dom.references.Reference;
+import dtool.dom.references.CommonRefSingle;
 
 public class ExpEntity extends Expression {
 	
-	public Entity entity;
+	public Reference entity;
 	
 	public ExpEntity(IdentifierExp elem) {
 		convertNode(elem);
-		this.entity = (Entity) DescentASTConverter.convertElem(elem.id);
+		this.entity = (Reference) DescentASTConverter.convertElem(elem.id);
 		//this.baseEntity = new BaseEntityRef.ValueConstraint(entity);
 	}
 	
 	public ExpEntity(TypeDotIdExp elem) {
 		convertNode(elem);
-		EntQualified qent = new EntQualified();
-		qent.root = (Entity) DescentASTConverter.convertElem(elem.t);
-		qent.subent = EntitySingle.convert(elem.ident);
-		qent.startPos = qent.getRootExp().startPos;
-		qent.setEndPos(qent.subent.getEndPos());
+		RefQualified qent = new RefQualified();
+		qent.root = (Reference) DescentASTConverter.convertElem(elem.t);
+		qent.subref = CommonRefSingle.convert(elem.ident);
+		qent.startPos = qent.getRootAsNode().startPos;
+		qent.setEndPos(qent.subref.getEndPos());
 		this.entity = qent;
 		//this.baseEntity = new BaseEntityRef.ValueConstraint(qent);
 	}
 	
 	public ExpEntity(ScopeExp elem) {
 		convertNode(elem);
-		this.entity = (Entity) DescentASTConverter.convertElem(elem.tempinst);
+		this.entity = (Reference) DescentASTConverter.convertElem(elem.tempinst);
 	}
 	
 
 	public ExpEntity(DotIdExp elem) {
 		convertNode(elem);
-		this.entity = EntQualified.convertDotIexp(elem);
+		this.entity = RefQualified.convertDotIexp(elem);
 	}
 
 	@Override

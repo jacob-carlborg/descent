@@ -4,8 +4,8 @@ import org.eclipse.jface.wizard.IWizard;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.widgets.Shell;
 
-public class Test_WizardDialog extends WizardDialog {
-    public Test_WizardDialog(Shell parentShell, IWizard newWizard) {
+public class TestAdapter_WizardDialog extends WizardDialog {
+    public TestAdapter_WizardDialog(Shell parentShell, IWizard newWizard) {
     	super(parentShell, newWizard);
     }
     

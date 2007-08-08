@@ -4,18 +4,18 @@ import melnorme.miscutil.tree.TreeVisitor;
 import descent.internal.core.dom.TypedefDeclaration;
 import dtool.dom.ast.IASTNeoVisitor;
 import dtool.dom.expressions.Initializer;
-import dtool.dom.references.Entity;
+import dtool.dom.references.Reference;
 import dtool.dom.statements.IStatement;
 import dtool.refmodel.IScopeNode;
 
 public class DefinitionTypedef extends Definition implements IStatement {
 
-	Entity type;
+	Reference type;
 	Initializer initializer;
 	
 	public DefinitionTypedef(TypedefDeclaration elem) {
 		convertDsymbol(elem);
-		this.type = Entity.convertType(elem.type);
+		this.type = Reference.convertType(elem.type);
 		this.initializer = Initializer.convert(elem.init);
 	}
 
@@ -37,7 +37,7 @@ public class DefinitionTypedef extends Definition implements IStatement {
 	
 	@Override
 	public String toStringAsCodeCompletion() {
-		return defname + " -> " + type.toString() + " - " + getModule();
+		return defname + " -> " + type.toString() + " - " + getModuleScope();
 	}
 
 	@Override

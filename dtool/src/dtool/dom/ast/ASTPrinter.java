@@ -1,7 +1,7 @@
 package dtool.dom.ast;
 
 import melnorme.miscutil.tree.TreeDepthRecon;
-import dtool.dom.references.EntQualified;
+import dtool.dom.references.RefQualified;
 
 /**
  * Simple class for printing the AST in indented tree form.
@@ -133,7 +133,7 @@ public class ASTPrinter extends ASTNeoUpTreeVisitor {
 		return visitChildren;
 	}
 	
-	public boolean visit(EntQualified elem) {
+	public boolean visit(RefQualified elem) {
 		printGenericElement(elem, toStringElementExtra(elem));
 		return visitChildren && visitQualifiedNameChildren;
 	}

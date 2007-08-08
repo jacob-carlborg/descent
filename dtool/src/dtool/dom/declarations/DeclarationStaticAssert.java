@@ -2,11 +2,13 @@ package dtool.dom.declarations;
 
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.internal.core.dom.StaticAssert;
+import descent.internal.core.dom.StaticAssertStatement;
 import dtool.dom.ast.ASTNeoNode;
 import dtool.dom.ast.IASTNeoVisitor;
 import dtool.dom.expressions.Expression;
+import dtool.dom.statements.IStatement;
 
-public class DeclarationStaticAssert extends ASTNeoNode {
+public class DeclarationStaticAssert extends ASTNeoNode implements IStatement {
 
 	public Expression pred;
 	public Expression msg;
@@ -15,6 +17,10 @@ public class DeclarationStaticAssert extends ASTNeoNode {
 		convertNode(elem);
 		this.pred = Expression.convert(elem.exp);
 		this.msg = Expression.convert(elem.msg);
+	}
+	
+	public DeclarationStaticAssert(StaticAssertStatement elem) {
+		this(elem.staticAssert);
 	}
 
 	@Override

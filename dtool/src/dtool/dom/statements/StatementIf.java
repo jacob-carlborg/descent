@@ -8,8 +8,8 @@ import dtool.dom.expressions.Expression;
 public class StatementIf extends Statement {
 
 	public Expression pred;
-	public Statement thenbody;
-	public Statement elsebody;
+	public IStatement thenbody;
+	public IStatement elsebody;
 
 	public StatementIf(IfStatement elem) {
 		convertNode(elem);

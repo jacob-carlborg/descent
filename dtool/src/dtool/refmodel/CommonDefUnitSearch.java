@@ -5,7 +5,6 @@ import java.util.Collection;
 import java.util.Collections;
 
 import dtool.dom.definitions.DefUnit;
-import dtool.dom.definitions.Module;
 
 public abstract class CommonDefUnitSearch {
 
@@ -15,24 +14,33 @@ public abstract class CommonDefUnitSearch {
 	public static Collection<DefUnit> wrapResult(DefUnit defunit) {
 		if(defunit == null)
 			return null;
-//		ArrayDeque<DefUnit> deque = new ArrayDeque<DefUnit>(1);
-//		deque.add(defunit);
 		return Collections.singletonList(defunit);
-		
 	}
 	
 	/** Convenience method for extracting a single search result. */
 	public static DefUnit getResultDefUnit(Collection<DefUnit> singletonDefunits) {
 		return singletonDefunits.iterator().next();
 	}
-	
-	protected boolean findOnlyOne;
 
-	protected Module searchRefModule; //cached value
+/* ------------------------------ */	
+	
+
+	/** Flag for stop searching when suitable matches are found. */
+	protected boolean findOnlyOne;
+	/** The scope where the reference is located. 
+	 * Used for protection access restrictions. */
+	protected IScopeNode refScope;
+
+	/** Cached value of the reference's module scope. */
+	protected IScope refModuleScope; 
+	/** The scopes that have already been searched */
 	protected ArrayDeque<IScope> searchedScopes;
 
-	public CommonDefUnitSearch() {
+
+	
+	public CommonDefUnitSearch(IScopeNode refScope) {
 		this.searchedScopes = new ArrayDeque<IScope>(4);
+		this.refScope = refScope;
 	}
 	
 	/** Return whether we have already search the given scope or not. */
@@ -49,17 +57,21 @@ public abstract class CommonDefUnitSearch {
 		searchedScopes.add(scope);
 	}
 	
+	/** Get the Module of the search's reference. */
+	public IScope getReferenceModuleScope() {
+		if(refModuleScope == null)
+			refModuleScope = refScope.getModuleScope();
+		return refModuleScope;
+	}
+	
 	/** Return whether the search has found all matches. */
 	public abstract boolean isFinished();
-
-	/** Get the Module of the search's reference. */
-	public abstract Module getReferenceModule();
 
 	/** Returns whether this search matches the given defUnit or not. */
 	public abstract boolean matches(DefUnit defUnit);
 	
-	/** */
-	public abstract void addResult(DefUnit defunit);
+	/** Adds the matched defunit. */
+	public abstract void addMatch(DefUnit defUnit);
 
 
 }

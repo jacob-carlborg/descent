@@ -8,7 +8,6 @@ import org.eclipse.core.runtime.Assert;
 import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.ITextHoverExtension;
 import org.eclipse.jface.text.ITextViewer;
-import org.eclipse.jface.text.Region;
 import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IFileEditorInput;
@@ -18,17 +17,31 @@ import dtool.dom.ast.ASTNode;
 import dtool.dom.ast.ASTNodeFinder;
 import dtool.dom.definitions.DefSymbol;
 import dtool.dom.definitions.DefUnit;
-import dtool.dom.definitions.Symbol;
-import dtool.dom.references.Entity;
+import dtool.dom.references.Reference;
 
 /** 
  *  TODO Learn more about DefaultTextHover
  */
-public class DeeDocTextHover extends AbstractTextHover implements ITextHoverExtension {
+public class DeeTextHover extends AbstractTextHover implements ITextHoverExtension {
 
+	public static class NodeRegion implements IRegion {
 
+		public ASTNode node;
+
+		public NodeRegion(ASTNode node) {
+			this.node = node;
+		}
+
+		public int getLength() {
+			return node.getLength();
+		}
+
+		public int getOffset() {
+			return node.getOffset();
+		}
+	}
 	
-	public DeeDocTextHover(ISourceViewer sourceViewer, ITextEditor textEditor) {
+	public DeeTextHover(ISourceViewer sourceViewer, ITextEditor textEditor) {
 		super(sourceViewer);
 		Assert.isNotNull(textEditor);
 		this.fEditor = textEditor;
@@ -62,30 +75,35 @@ public class DeeDocTextHover extends AbstractTextHover implements ITextHoverExte
 		if(node == null)
 			return null;
 		
-		if(!(node instanceof DefSymbol || node instanceof Entity))
+		if(!(node instanceof DefSymbol || node instanceof Reference))
 			return null;
 		
-		return new Region(node.getOffset(), node.getLength());
+		return new NodeRegion(node);
 	}
 
 
 
 	public String getHoverInfo(ITextViewer textViewer, IRegion hoverRegion) {
-		ASTNode node = getNodeAtOffset(hoverRegion.getOffset());
-		if(node == null)
+		if(!(hoverRegion instanceof NodeRegion))
 			return null;
+		ASTNode node = ((NodeRegion) hoverRegion).node;
 		
 		String info = null;
 		
 		if(node instanceof DefSymbol) {
 			DefUnit defUnit = ((DefSymbol) node).getParent();
 			info= HoverUtil.getDefUnitHoverInfoWithDeeDoc(defUnit);
-		} else if (node instanceof Entity) {
-			DefUnit defUnit = ((Entity) node).findTargetDefUnit();
-			if(defUnit != null)
-				info= HoverUtil.getDefUnitHoverInfoWithDeeDoc(defUnit);
-			else
-				info= "404 DefUnit not found";
+		} else if (node instanceof Reference) {
+			DefUnit defUnit;
+			try {
+				defUnit = ((Reference) node).findTargetDefUnit();
+				if(defUnit != null)
+					info= HoverUtil.getDefUnitHoverInfoWithDeeDoc(defUnit);
+				else
+					info= "404 DefUnit not found";
+			} catch (UnsupportedOperationException uoe) {
+				info= "UnsupportedOperationException:\n" + uoe;
+			}
 		}
 		if(info != null)
 			return HoverUtil.getCompleteHoverInfo(info, getCSSStyles());

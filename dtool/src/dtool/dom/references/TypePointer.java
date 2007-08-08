@@ -8,20 +8,33 @@ import java.util.Iterator;
 import java.util.List;
 
 import melnorme.miscutil.tree.TreeVisitor;
+import dtool.dom.ast.ASTNeoNode;
 import dtool.dom.ast.ASTNode;
 import dtool.dom.ast.IASTNeoVisitor;
 import dtool.dom.definitions.DefUnit;
+import dtool.dom.definitions.NativeDefUnit;
 import dtool.refmodel.DefUnitSearch;
 import dtool.refmodel.IScope;
 import dtool.refmodel.IScopeNode;
-import dtool.refmodel.IntrinsicDefUnit;
 
-public class TypePointer extends Entity {
-	public Entity elemtype;
+public class TypePointer extends CommonRefNative {
 	
-	public TypePointer(descent.internal.core.dom.TypePointer elem) {
+	public static ASTNeoNode convertTypePointer(descent.internal.core.dom.TypePointer elem) {
+		if(elem.next instanceof descent.internal.core.dom.TypeFunction) {
+			ASTNeoNode node= new TypeFunction((descent.internal.core.dom.TypeFunction)elem.next);
+			node.setSourceRange(elem);
+			return node;
+		}
+		else
+			return new TypePointer(elem);
+	}
+
+
+	public Reference elemtype;
+	
+	private TypePointer(descent.internal.core.dom.TypePointer elem) {
 		setSourceRange(elem);
-		this.elemtype = Entity.convertType(elem.next);
+		this.elemtype = Reference.convertType(elem.next);
 	}
 
 	public void accept0(IASTNeoVisitor visitor) {
@@ -35,9 +48,18 @@ public class TypePointer extends Entity {
 	public Collection<DefUnit> findTargetDefUnits(boolean findFirstOnly) {
 		return DefUnitSearch.wrapResult(IntrinsicPointer.instance);
 	}
+	
+	@Override
+	public String toString() {
+		return elemtype + "*";
+	}
 
 	
-	public static class IntrinsicPointer extends IntrinsicDefUnit {
+	public static class IntrinsicPointer extends NativeDefUnit {
+		public IntrinsicPointer() {
+			super("<pointer>");
+		}
+		
 		public static final IntrinsicPointer instance = new IntrinsicPointer();
 
 
@@ -56,5 +78,6 @@ public class TypePointer extends Entity {
 			// TODO Auto-generated method stub
 			return null;
 		}
+		
 	}
 }

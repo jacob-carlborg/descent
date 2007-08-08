@@ -26,18 +26,17 @@ public class DescentASTConverter {
 		return conv.ret;
 	}
 	
-	public static ASTNode[] convertMany(Object[] children) {
-		if(children == null) return null;
-		ASTNode[] rets = new ASTNode[children.length];
-		convertMany(children, rets);
-		return rets;
-	}
-	
 	public static ASTNode[] convertMany(List<? extends IDescentElement> children) {
 		if(children == null) return null;
 		ASTNode[] rets = new ASTNode[children.size()];
 		convertMany(children.toArray(), rets);
 		return rets;
+	}
+	
+	public static void convertMany(List<? extends IDescentElement> children, ASTNode[] rets) {
+		if(children == null) return;
+		convertMany(children.toArray(), rets);
+		return;
 	}
 	
 	
@@ -49,7 +48,7 @@ public class DescentASTConverter {
 			elem.accept(conv);
 			rets[i] = (T) conv.ret;
 		}
-		return rets;	
+		return rets;
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -70,8 +69,12 @@ public class DescentASTConverter {
 		List<T> rets = new ArrayList<T>(children.length);
 		for (int i = 0; i < children.length; ++i) {
 			ASTNode elem = children[i];
-			elem.accept(conv);
-			rets.add((T) conv.ret);
+			if(elem == null) {
+				rets.add(null);
+			} else {
+				elem.accept(conv);
+				rets.add((T) conv.ret);
+			}
 		}
 		return rets;
 	}

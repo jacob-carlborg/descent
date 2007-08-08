@@ -3,15 +3,15 @@ package dtool.dom.expressions;
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.internal.core.dom.TypeidExp;
 import dtool.dom.ast.IASTNeoVisitor;
-import dtool.dom.references.Entity;
+import dtool.dom.references.Reference;
 
 public class ExpTypeid extends Expression {
 
-	Entity type;
+	Reference type;
 	
 	public ExpTypeid(TypeidExp elem) {
 		convertNode(elem);
-		this.type = Entity.convertType(elem.type);
+		this.type = Reference.convertType(elem.type);
 	}
 
 	@Override

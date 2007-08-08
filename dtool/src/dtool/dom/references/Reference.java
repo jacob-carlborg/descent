@@ -18,9 +18,9 @@ import dtool.refmodel.IDefUnitReference;
 import dtool.refmodel.IScopeNode;
 
 /**
- * A qualified entity/name reference
+ * Common class for entity references.
  */
-public abstract class Entity extends ASTNeoNode implements IDefUnitReference {
+public abstract class Reference extends ASTNeoNode implements IDefUnitReference {
 	
 	public static enum EReferenceConstraint {	
 		none,
@@ -48,18 +48,18 @@ public abstract class Entity extends ASTNeoNode implements IDefUnitReference {
 	
 	/* ---------------- Conversion Funcs ---------------- */
 
-	public static Entity convertType(Type type) {
+	public static Reference convertType(Type type) {
 		if(type == null) return null;
-		Entity entity = (Entity) DescentASTConverter.convertElem(type);
+		Reference entity = (Reference) DescentASTConverter.convertElem(type);
 		return entity;
 	}
 	
-	public static Entity convertAnyEnt(Type type) {
-		Entity entity = (Entity) DescentASTConverter.convertElem(type);
+	public static Reference convertAnyEnt(Type type) {
+		Reference entity = (Reference) DescentASTConverter.convertElem(type);
 		return entity;
 	}
 	
-	private static Entity convertIdents(Entity rootent,
+	private static Reference convertIdents(Reference rootent,
 			descent.internal.core.dom.TypeQualified elem, int endix) {
 		Assert.isTrue(endix >= 0);
 
@@ -67,27 +67,27 @@ public abstract class Entity extends ASTNeoNode implements IDefUnitReference {
 			return rootent;
 		}
 		
-		Entity qentref;
+		Reference qentref;
 		if(endix == 1 && rootent == null) {
-			EntModuleQualified entroot = new EntModuleQualified(elem.idents.get(endix-1));
+			RefModuleQualified entroot = new RefModuleQualified(elem.idents.get(endix-1));
 			qentref = entroot;
 		} else {
-			EntQualified entref = new EntQualified();
+			RefQualified entref = new RefQualified();
 			entref.root = convertIdents(rootent, elem, endix-1);
-			entref.subent = EntitySingle.convert(elem.idents.get(endix-1));
+			entref.subref = CommonRefSingle.convert(elem.idents.get(endix-1));
 			if(rootent != null && rootent.startPos != -1)
 				entref.startPos = rootent.startPos;
 			else
 				entref.startPos = elem.idents.get(0).startPos;
-			entref.setEndPos(entref.subent.getEndPos());
+			entref.setEndPos(entref.subref.getEndPos());
 			qentref = entref;
 		}
 		return qentref;
 		
 	}
 	
-	public static Entity convertQualified(Entity rootent, TypeQualified elem) {
-		Entity newelem; 
+	public static Reference convertQualified(Reference rootent, TypeQualified elem) {
+		Reference newelem; 
 		if(elem.idents.size() > 0){
 			newelem = convertIdents(rootent, elem, elem.idents.size());
 		} else {
@@ -98,29 +98,29 @@ public abstract class Entity extends ASTNeoNode implements IDefUnitReference {
 
 
 
-	public static Entity convertTypeIdentifierRoot(TypeIdentifier elem) {
-		Entity rootent;
+	public static Reference convertTypeIdentifierRoot(TypeIdentifier elem) {
+		Reference rootent;
 		if(elem.ident.string.equals("")) { 
 			/*rootent = new EntModuleRoot();
 			rootent.startPos = elem.idents.get(0).startPos-1;
 			rootent.setEndPos(rootent.startPos+1);*/
 			rootent = null;
 		} else {
-			rootent = EntitySingle.convert(elem.ident);
+			rootent = CommonRefSingle.convert(elem.ident);
 		}
 		return rootent;
 	}
 
 
-	public static Entity convertTypeInstanceRoot(TypeInstance elem) {
-		Entity rootent = EntitySingle.convert(elem.tempinst);
+	public static Reference convertTypeInstanceRoot(TypeInstance elem) {
+		Reference rootent = CommonRefSingle.convert(elem.tempinst);
 		return rootent;
 	}
 
 
 
 	
-	public static Entity convertDotIexp(DotIdExp elem) {
+	public static Reference convertDotIexp(DotIdExp elem) {
 		
 		IDefUnitReference rootent;
 		Expression expTemp = Expression.convert(elem.e);
@@ -131,13 +131,13 @@ public abstract class Entity extends ASTNeoNode implements IDefUnitReference {
 		}
 		
 		if(rootent == null) {
-			return new EntModuleQualified(elem.id);
+			return new RefModuleQualified(elem.id);
 		}
 		
-		EntQualified newelem = new EntQualified();
+		RefQualified newelem = new RefQualified();
 		newelem.setSourceRange(elem);
 		newelem.root = rootent;
-		newelem.subent = EntitySingle.convert(elem.id);
+		newelem.subref = CommonRefSingle.convert(elem.id);
 
 		// fix some range discrepancies
 		/*if(newelem.root instanceof EntModuleQualified && !newelem.hasNoSourceRangeInfo()) {
@@ -149,8 +149,8 @@ public abstract class Entity extends ASTNeoNode implements IDefUnitReference {
 		// Fix some DMD missing ranges 
 		if(newelem.hasNoSourceRangeInfo()) {
 			try {
-				int newstartPos= newelem.getRootExp().startPos;
-				int newendPos= newelem.subent.getEndPos()-newelem.getRootExp().startPos;
+				int newstartPos= newelem.getRootAsNode().startPos;
+				int newendPos= newelem.subref.getEndPos()-newelem.getRootAsNode().startPos;
 				newelem.setSourceRange(newstartPos, newendPos);
 			} catch (RuntimeException re) {
 				throw new UnsupportedOperationException(re);
@@ -159,8 +159,8 @@ public abstract class Entity extends ASTNeoNode implements IDefUnitReference {
 		return newelem;
 	}
 	
-	public static Entity convertRef(IdentifierExp exp) {
-		return EntitySingle.convert(exp.id);
+	public static Reference convertRef(IdentifierExp exp) {
+		return CommonRefSingle.convert(exp.id);
 	}
 }
 

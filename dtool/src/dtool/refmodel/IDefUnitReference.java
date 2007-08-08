@@ -12,5 +12,4 @@ public interface IDefUnitReference extends IASTNode {
 	 * Result can be null if none found.
 	 * XXX: make it allways null for no results? */
 	Collection<DefUnit> findTargetDefUnits(boolean findFirstOnly);
-
 }

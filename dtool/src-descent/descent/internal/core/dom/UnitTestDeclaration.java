@@ -1,11 +1,12 @@
 package descent.internal.core.dom;
 
 import melnorme.miscutil.tree.TreeVisitor;
-import descent.core.dom.IName;
+import descent.core.dom.IDeclaration;
 import descent.core.dom.IDescentStatement;
+import descent.core.dom.IName;
 import descent.core.domX.IASTVisitor;
 
-public class UnitTestDeclaration extends Dsymbol {
+public class UnitTestDeclaration extends Dsymbol implements IDeclaration {
 
 	public Statement fbody;
 

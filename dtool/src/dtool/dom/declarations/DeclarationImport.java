@@ -16,7 +16,7 @@ import dtool.dom.ast.ASTNeoNode;
 import dtool.dom.ast.ASTNode;
 import dtool.dom.ast.IASTNeoVisitor;
 import dtool.dom.definitions.DefUnit;
-import dtool.dom.references.EntModule;
+import dtool.dom.references.RefModule;
 import dtool.refmodel.CommonDefUnitSearch;
 import dtool.refmodel.DefUnitSearch;
 import dtool.refmodel.INonScopedBlock;
@@ -84,12 +84,12 @@ public class DeclarationImport extends ASTNeoNode implements INonScopedBlock {
 	}
 	
 	public static abstract class ImportFragment extends ASTNeoNode {
-		public EntModule moduleEnt;
+		public RefModule moduleEnt;
 
 		public ImportFragment(Import elem) {
 			// Use elem.qName instead of elem to fix range
 			convertNode(elem.qName); 
-			this.moduleEnt = new EntModule(elem.qName);
+			this.moduleEnt = new RefModule(elem.qName);
 		}
 
 		public abstract void searchDefUnit(CommonDefUnitSearch options);

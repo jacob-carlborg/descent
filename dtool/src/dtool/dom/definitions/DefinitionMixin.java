@@ -5,8 +5,8 @@ import descent.internal.core.dom.TemplateMixin;
 import dtool.descentadapter.DescentASTConverter;
 import dtool.dom.ast.ASTNeoNode;
 import dtool.dom.ast.IASTNeoVisitor;
-import dtool.dom.references.EntTemplateInstance;
-import dtool.dom.references.Entity;
+import dtool.dom.references.RefTemplateInstance;
+import dtool.dom.references.Reference;
 import dtool.dom.statements.IStatement;
 import dtool.refmodel.IScopeNode;
 
@@ -15,10 +15,10 @@ import dtool.refmodel.IScopeNode;
  */
 public class DefinitionMixin extends DefUnit implements IStatement {
 	
-	public Entity type;
+	public Reference type;
 	
 	public static ASTNeoNode convertMixinInstance(TemplateMixin elem) {
-		EntTemplateInstance tplInstance = new EntTemplateInstance();
+		RefTemplateInstance tplInstance = new RefTemplateInstance();
 		tplInstance.setSourceRange(elem);
 		tplInstance.name = elem.qName.name; // FIXME should be a prof qualified ref
 		tplInstance.tiargs = DescentASTConverter.convertManyL(elem.tiargs, tplInstance.tiargs);

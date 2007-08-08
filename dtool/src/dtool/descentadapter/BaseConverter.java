@@ -20,9 +20,9 @@ import descent.internal.core.dom.TypeInstance;
 import descent.internal.core.dom.TypeQualified;
 import dtool.dom.ast.ASTNode;
 import dtool.dom.expressions.ExpSlice;
-import dtool.dom.references.EntIdentifier;
-import dtool.dom.references.EntTemplateInstance;
-import dtool.dom.references.Entity;
+import dtool.dom.references.RefIdentifier;
+import dtool.dom.references.RefTemplateInstance;
+import dtool.dom.references.Reference;
 import dtool.dom.references.TypeDelegate;
 import dtool.dom.references.TypeDynArray;
 import dtool.dom.references.TypeFunction;
@@ -119,31 +119,31 @@ abstract class BaseConverter extends ASTCommonConverter {
 			}*/
 			return endAdapt(null);
 		}
-		return endAdapt(new EntIdentifier(elem));
+		return endAdapt(new RefIdentifier(elem));
 	}
 	
 	public boolean visit(descent.internal.core.dom.TypeBasic elem) {
-		return endAdapt(new EntIdentifier(elem));
+		return endAdapt(new RefIdentifier(elem));
 	}
 	
 	public boolean visit(descent.internal.core.dom.TemplateInstance elem) {
-		return endAdapt(new EntTemplateInstance(elem));
+		return endAdapt(new RefTemplateInstance(elem));
 	}
 	
 	public boolean visit(descent.internal.core.dom.TypeIdentifier elem) {
-		Entity rootent = Entity.convertTypeIdentifierRoot(elem);
-		return endAdapt(Entity.convertQualified(rootent, elem));
+		Reference rootent = Reference.convertTypeIdentifierRoot(elem);
+		return endAdapt(Reference.convertQualified(rootent, elem));
 	}
 
 	public boolean visit(TypeInstance elem) {
-		Entity rootent = Entity.convertTypeInstanceRoot(elem);
-		return endAdapt(Entity.convertQualified(rootent, elem));
+		Reference rootent = Reference.convertTypeInstanceRoot(elem);
+		return endAdapt(Reference.convertQualified(rootent, elem));
 	}
 	
 	
 	public boolean visit(descent.internal.core.dom.TypeTypeof elem) {
-		Entity rootent = new TypeTypeof(elem);
-		return endAdapt(Entity.convertQualified(rootent, elem));
+		Reference rootent = new TypeTypeof(elem);
+		return endAdapt(Reference.convertQualified(rootent, elem));
 	}
 
 	
@@ -169,7 +169,7 @@ abstract class BaseConverter extends ASTCommonConverter {
 	}
 	
 	public boolean visit(descent.internal.core.dom.TypePointer elem) {
-		return endAdapt(new TypePointer(elem));
+		return endAdapt(TypePointer.convertTypePointer(elem));
 	}
 	
 	public boolean visit(descent.internal.core.dom.TypeSlice elem) {

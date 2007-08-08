@@ -16,7 +16,7 @@ import dtool.dom.ast.ASTNode;
 import dtool.dom.ast.ASTNodeFinder;
 import dtool.dom.ast.ASTPrinter;
 import dtool.dom.definitions.DefUnit;
-import dtool.dom.references.Entity;
+import dtool.dom.references.Reference;
 
 public class ASTViewerLabelProvider extends SimpleLabelProvider implements IColorProvider, IFontProvider {
 
@@ -67,7 +67,7 @@ public class ASTViewerLabelProvider extends SimpleLabelProvider implements IColo
 		if(element instanceof DefUnit) {
 			return cDefUnitColor;
 		}
-		if(element instanceof Entity) {
+		if(element instanceof Reference) {
 			return cEntityColor;
 		}
 		return null;

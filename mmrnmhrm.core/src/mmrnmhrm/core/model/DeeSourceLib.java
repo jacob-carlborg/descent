@@ -51,13 +51,18 @@ public class DeeSourceLib extends LangContainerElement implements IDeeSourceRoot
 
 
 
-	public void createStructure() throws CoreException {
+	public void createElementInfo() throws CoreException {
 		// TODO Auto-generated method stub
 	}
 
 	public LangPackageFragment[] getPackageFragments() {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	public void disposeElementInfo() throws CoreException {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

@@ -8,7 +8,7 @@ import dtool.dom.expressions.Expression;
 public class StatementSynchronized extends Statement {
 
 	public Expression exp;
-	public Statement body;
+	public IStatement body;
 
 	public StatementSynchronized(SynchronizedStatement elem) {
 		convertNode(elem);

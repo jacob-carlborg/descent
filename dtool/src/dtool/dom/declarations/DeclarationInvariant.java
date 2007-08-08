@@ -4,11 +4,12 @@ import melnorme.miscutil.tree.TreeVisitor;
 import descent.internal.core.dom.InvariantDeclaration;
 import dtool.dom.ast.ASTNeoNode;
 import dtool.dom.ast.IASTNeoVisitor;
+import dtool.dom.statements.IStatement;
 import dtool.dom.statements.Statement;
 
 public class DeclarationInvariant extends ASTNeoNode {
 
-	public Statement body;
+	public IStatement body;
 	
 	public DeclarationInvariant(InvariantDeclaration elem) {
 		setSourceRange(elem);

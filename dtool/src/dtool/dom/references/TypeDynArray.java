@@ -13,17 +13,17 @@ import descent.internal.core.dom.TypeDArray;
 import dtool.dom.ast.ASTNode;
 import dtool.dom.ast.IASTNeoVisitor;
 import dtool.dom.definitions.DefUnit;
+import dtool.dom.definitions.NativeDefUnit;
 import dtool.refmodel.DefUnitSearch;
 import dtool.refmodel.IScope;
 import dtool.refmodel.IScopeNode;
-import dtool.refmodel.IntrinsicDefUnit;
 
-public class TypeDynArray extends Entity {
-	public Entity elemtype;
+public class TypeDynArray extends CommonRefNative {
+	public Reference elemtype;
 
 	public TypeDynArray(TypeDArray elem) {
 		setSourceRange(elem);
-		this.elemtype = Entity.convertType(elem.next);
+		this.elemtype = Reference.convertType(elem.next);
 	}
 
 	public void accept0(IASTNeoVisitor visitor) {
@@ -43,7 +43,11 @@ public class TypeDynArray extends Entity {
 	}
 	
 	
-	public static class IntrinsicDynArray extends IntrinsicDefUnit {
+	public static class IntrinsicDynArray extends NativeDefUnit {
+		public IntrinsicDynArray() {
+			super("<dynamic-array>");
+		}
+		
 		public static final IntrinsicDynArray instance = new IntrinsicDynArray();
 
 		@Override

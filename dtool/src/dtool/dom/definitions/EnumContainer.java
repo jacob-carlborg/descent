@@ -9,13 +9,13 @@ import melnorme.miscutil.tree.TreeVisitor;
 import dtool.dom.ast.ASTNeoNode;
 import dtool.dom.ast.ASTNode;
 import dtool.dom.ast.IASTNeoVisitor;
-import dtool.dom.references.Entity;
+import dtool.dom.references.Reference;
 import dtool.refmodel.INonScopedBlock;
 
 public class EnumContainer extends ASTNeoNode implements INonScopedBlock {
 
 	public List<EnumMember> members;
-	public Entity type;
+	public Reference type;
 	
 
 	@Override

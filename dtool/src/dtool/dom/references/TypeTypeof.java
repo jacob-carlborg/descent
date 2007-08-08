@@ -10,7 +10,7 @@ import dtool.dom.ast.IASTNeoVisitor;
 import dtool.dom.definitions.DefUnit;
 import dtool.dom.expressions.Expression;
 
-public class TypeTypeof extends Entity {
+public class TypeTypeof extends CommonRefNative {
 	public Expression expression;
 
 	public TypeTypeof(descent.internal.core.dom.TypeTypeof elem) {

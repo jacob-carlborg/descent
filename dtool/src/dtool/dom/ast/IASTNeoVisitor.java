@@ -5,11 +5,12 @@ import dtool.dom.definitions.DefUnit;
 import dtool.dom.definitions.Definition;
 import dtool.dom.definitions.Module;
 import dtool.dom.definitions.Symbol;
-import dtool.dom.references.EntIdentifier;
-import dtool.dom.references.EntQualified;
-import dtool.dom.references.EntTemplateInstance;
-import dtool.dom.references.Entity;
-import dtool.dom.references.EntitySingle;
+import dtool.dom.references.CommonRefNative;
+import dtool.dom.references.CommonRefQualified;
+import dtool.dom.references.CommonRefSingle;
+import dtool.dom.references.RefIdentifier;
+import dtool.dom.references.RefTemplateInstance;
+import dtool.dom.references.Reference;
 
 public interface IASTNeoVisitor extends IASTVisitor {
 
@@ -19,15 +20,17 @@ public interface IASTNeoVisitor extends IASTVisitor {
 
 	boolean visit(Symbol elem);
 
-	boolean visit(Entity elem);
+	boolean visit(Reference elem);
+	
+	boolean visit(CommonRefNative elem);
+	
+	boolean visit(CommonRefQualified elem);
+	
+	boolean visit(CommonRefSingle elem);
 
-	boolean visit(EntQualified elem);
+	boolean visit(RefIdentifier elem);
 
-	boolean visit(EntitySingle elem);
-
-	boolean visit(EntIdentifier elem);
-
-	boolean visit(EntTemplateInstance elem);
+	boolean visit(RefTemplateInstance elem);
 
 	/* ---------------------------------- */
 	boolean visit(Definition elem);

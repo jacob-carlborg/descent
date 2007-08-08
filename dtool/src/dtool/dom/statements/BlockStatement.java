@@ -17,6 +17,7 @@ import dtool.refmodel.IScopeNode;
 public class BlockStatement extends Statement implements IScopeNode {
 	
 	public List<IStatement> statements;
+	public boolean hasCurlyBraces; // syntax-structural?
 
 	@SuppressWarnings("unchecked")
 	public BlockStatement(descent.internal.core.dom.CompoundStatement elem) {
@@ -30,13 +31,15 @@ public class BlockStatement extends Statement implements IScopeNode {
 
 	public BlockStatement(ScopeStatement elem) {
 		convertNode(elem);
-		if(elem.s instanceof descent.internal.core.dom.ScopeStatement) {
-			this.statements = DescentASTConverter.convertManyL(
-					new ASTNode[] {elem.s}, statements);		
+		if(elem.s instanceof descent.internal.core.dom.CompoundStatement) {
+			descent.internal.core.dom.CompoundStatement compoundSt = 
+				(descent.internal.core.dom.CompoundStatement) elem.s;
+			this.statements = DescentASTConverter.convertManyL(compoundSt.as, statements);
+			this.hasCurlyBraces = true;
 		} else {
-			descent.internal.core.dom.CompoundStatement compoundStat = 
-			(descent.internal.core.dom.CompoundStatement) elem.s;
-			this.statements = DescentASTConverter.convertManyL(compoundStat.as, statements);
+			this.statements = DescentASTConverter.convertManyL(
+					new ASTNode[] {elem.s}, statements);
+			setSourceRange(elem.s);
 		}
 	}
 

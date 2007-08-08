@@ -3,7 +3,7 @@ package dtool.dom.definitions;
 import melnorme.miscutil.tree.TreeVisitor;
 import dtool.dom.ast.IASTNeoVisitor;
 import dtool.dom.expressions.Expression;
-import dtool.dom.references.Entity;
+import dtool.dom.references.Reference;
 import dtool.refmodel.IScopeNode;
 
 public class EnumMember extends DefUnit {
@@ -35,7 +35,7 @@ public class EnumMember extends DefUnit {
 		return getType().getTargetScope();
 	}
 
-	private Entity getType() {
+	private Reference getType() {
 		return ((DefinitionEnum) getParent()).type;
 	}
 

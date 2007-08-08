@@ -8,7 +8,7 @@ import dtool.dom.expressions.Expression;
 public class StatementWhile extends Statement {
 
 	public Expression exp;
-	public Statement body;
+	public IStatement body;
 
 	public StatementWhile(WhileStatement elem) {
 		convertNode(elem);

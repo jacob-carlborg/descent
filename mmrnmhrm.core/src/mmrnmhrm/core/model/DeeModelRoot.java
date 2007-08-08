@@ -8,8 +8,6 @@ import mmrnmhrm.core.model.lang.LangPackageFragment;
 import mmrnmhrm.core.model.lang.LangProject;
 
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.IResource;
-import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 
 import dtool.dom.definitions.Module;
@@ -38,7 +36,7 @@ public class DeeModelRoot extends LangModelRoot implements IDeeElement, IModuleR
 	}
 	
 	/** {@inheritDoc} */
-	public void createStructure() throws CoreException {
+	public void createElementInfo() throws CoreException {
 		// Init the model with existing D projects.
 		clearChildren();
 		for(IProject proj : DeeCore.getWorkspaceRoot().getProjects()) {
@@ -50,7 +48,7 @@ public class DeeModelRoot extends LangModelRoot implements IDeeElement, IModuleR
 	/** Adds a D project from a resource project to Dee Model. */
 	public LangElement loadDeeProject(IProject project) throws CoreException {
 		DeeProject deeproj = new DeeProject(project);
-		deeproj.createStructure();
+		deeproj.createElementInfo();
 		addDeeProject(deeproj);
 		return deeproj;
 	}
@@ -104,6 +102,10 @@ public class DeeModelRoot extends LangModelRoot implements IDeeElement, IModuleR
 			}
 		}
 		return null;
+	}
+
+	public void disposeElementInfo() {
+		// Do nothing
 	}
 
 }

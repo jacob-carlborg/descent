@@ -8,6 +8,9 @@ import java.net.URL;
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.jdt.internal.ui.JavaPlugin;
+import org.eclipse.jdt.ui.PreferenceConstants;
+import org.eclipse.jface.resource.JFaceResources;
+import org.eclipse.swt.graphics.FontData;
 import org.osgi.framework.Bundle;
 
 import dtool.dom.definitions.DefUnit;
@@ -17,11 +20,23 @@ public class HoverUtil {
 	public static String getDefUnitHoverInfoWithDeeDoc(DefUnit defUnit) {
 		String sig = defUnit.toStringFullSignature();
 		String str = sig.substring(sig.indexOf(' ')+1);
+		str = convertToHTMLContent(str);
 		str = "<b>" +str+ "</b>" 
 		+"  <span style=\"color: #915F6D;\" >" +
-			"("+defUnit.getArcheType().toString()+")" +"</span>"; 
-		str = str + "<br/> <p>DeeDoc goes here.</p>" ;
+			"("+defUnit.getArcheType().toString()+")" +"</span>";
+		
+		if(defUnit.comments == null || defUnit.comments.equals(""))
+			str = str + "<br/> <p>DeeDoc goes here.</p>";
+		else 
+			str = str + "<br/>" + convertToHTMLContent(defUnit.comments);
 		return str;
+	}
+
+	@SuppressWarnings("restriction")
+	private static String convertToHTMLContent(String str) {
+		str = str.replace("\n", "<br/>");
+		return org.eclipse.jface.internal.text.html.
+			HTMLPrinter.convertToHTMLContent(str);
 	}
 
 	public static String loadStyleSheet(String cssfilepath) {
@@ -59,6 +74,17 @@ public class HoverUtil {
 			info= buffer.toString();
 		}
 		return info;
+	}
+
+	@SuppressWarnings("restriction")
+	static String setupCSS(String fgCSSStyles) {
+		String css= fgCSSStyles;
+		if (css != null) {
+			FontData fontData= JFaceResources.getFontRegistry().getFontData(PreferenceConstants.APPEARANCE_JAVADOC_FONT)[0];
+			css= org.eclipse.jface.internal.text.html.
+				HTMLPrinter.convertTopLevelFont(css, fontData);
+		}
+		return css;
 	}
 
 }

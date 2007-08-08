@@ -7,7 +7,7 @@ import mmrnmhrm.core.model.DeeModelRoot;
 import mmrnmhrm.core.model.DeeProject;
 import mmrnmhrm.tests.BaseUITest;
 import mmrnmhrm.tests.SampleMainProject;
-import mmrnmhrm.tests.adapters.Test_WizardDialog;
+import mmrnmhrm.tests.adapters.TestAdapter_WizardDialog;
 import mmrnmhrm.ui.DeePlugin;
 import mmrnmhrm.ui.wizards.projconfig.ProjectConfigBlockTest;
 
@@ -27,7 +27,7 @@ import org.junit.Test;
 public class DeeProjectWizardTest extends BaseUITest {
 
 	private DeeProjectWizard wizard;
-	private Test_WizardDialog wizDialog;
+	private TestAdapter_WizardDialog wizDialog;
 	
 	final static String NEWPROJNAME = "TestProject";
 	
@@ -40,7 +40,7 @@ public class DeeProjectWizardTest extends BaseUITest {
 		wizard.init(window.getWorkbench(), null);
 		
         Shell parent = DeePlugin.getActiveWorkbenchShell();
-        wizDialog = new Test_WizardDialog(parent, wizard);
+        wizDialog = new TestAdapter_WizardDialog(parent, wizard);
         wizDialog.setBlockOnOpen(false);
 		wizDialog.open();
 	}

@@ -77,8 +77,10 @@ public abstract class SampleMainProject {
 		IFolder folder;
 		folder = CoreTestUtils.createWorkspaceFolderFromBundle(bundleDir,
 				project, destDir);
-		if(addSrcFolder)
+		if(addSrcFolder) {
 			sampleDeeProj.addSourceRoot(new DeeSourceFolder(folder, sampleDeeProj));
+			sampleDeeProj.saveProjectConfigFile();
+		}
 		return folder;
 	}
 

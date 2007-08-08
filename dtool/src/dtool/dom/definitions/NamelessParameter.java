@@ -3,23 +3,23 @@ package dtool.dom.definitions;
 import melnorme.miscutil.tree.TreeVisitor;
 import dtool.dom.ast.ASTNeoNode;
 import dtool.dom.ast.IASTNeoVisitor;
-import dtool.dom.references.Entity;
+import dtool.dom.references.Reference;
 
 public class NamelessParameter extends ASTNeoNode implements IFunctionParameter {
 
-	public Entity type;
+	public Reference type;
 	public descent.internal.core.dom.InOut inout;
 	//public Expression defaultValue;
 
 	protected NamelessParameter(descent.internal.core.dom.Argument elem) {
 		convertNode(elem);
 		
-		this.type = Entity.convertType(elem.type);
+		this.type = Reference.convertType(elem.type);
 		this.inout = elem.inout;
 		//this.defaultValue = Expression.convert(elem.defaultValue);
 			
 	}
-	
+
 	
 	public String toStringAsParameter() {
 		return type.toString();

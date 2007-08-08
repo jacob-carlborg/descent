@@ -2,20 +2,20 @@ package dtool.dom.references;
 
 import dtool.dom.ast.IASTNeoVisitor;
 
-public class EntIdentifier extends EntitySingle {
+public class RefIdentifier extends CommonRefSingle {
 
-	public EntIdentifier() { super(); }
+	public RefIdentifier() { super(); }
 
-	public EntIdentifier(String name) {
+	public RefIdentifier(String name) {
 		this.name = name;
 	}
 	
-	public EntIdentifier(descent.internal.core.dom.Identifier elem) {
+	public RefIdentifier(descent.internal.core.dom.Identifier elem) {
 		setSourceRange(elem);
 		this.name = elem.string;
 	}
 
-	public EntIdentifier(descent.internal.core.dom.TypeBasic elem) {
+	public RefIdentifier(descent.internal.core.dom.TypeBasic elem) {
 		setSourceRange(elem);
 		this.name = elem.toString();
 	}

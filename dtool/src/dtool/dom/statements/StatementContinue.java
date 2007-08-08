@@ -11,7 +11,8 @@ public class StatementContinue extends Statement {
 
 	public StatementContinue(ContinueStatement elem) {
 		convertNode(elem);
-		this.id = new Symbol(elem.id);
+		if(elem.id != null)
+			this.id = new Symbol(elem.id);
 	}
 
 	@Override

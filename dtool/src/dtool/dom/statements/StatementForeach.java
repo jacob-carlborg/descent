@@ -4,20 +4,19 @@ import melnorme.miscutil.tree.TreeVisitor;
 import descent.internal.core.dom.ForeachStatement;
 import dtool.descentadapter.DescentASTConverter;
 import dtool.dom.ast.IASTNeoVisitor;
-import dtool.dom.definitions.FunctionParameter;
 import dtool.dom.definitions.IFunctionParameter;
 import dtool.dom.expressions.Expression;
 
 public class StatementForeach extends Statement {
 
 	public boolean reverse;
-	public FunctionParameter[] params;
+	public IFunctionParameter[] params;
 	public Expression iterable;
-	public Statement body;
+	public IStatement body;
 
 	public StatementForeach(ForeachStatement elem) {
 		convertNode(elem);
-		this.params = (FunctionParameter[]) DescentASTConverter.convertMany(
+		this.params = DescentASTConverter.convertMany(
 				elem.arguments, new IFunctionParameter[elem.arguments.length]);
 		this.iterable = Expression.convert(elem.aggr);
 		this.body = Statement.convert(elem.body);

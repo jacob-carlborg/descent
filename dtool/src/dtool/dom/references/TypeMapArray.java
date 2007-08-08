@@ -5,25 +5,23 @@ import java.util.Iterator;
 import java.util.List;
 
 import melnorme.miscutil.tree.TreeVisitor;
-
 import descent.internal.core.dom.TypeAArray;
 import dtool.dom.ast.ASTNode;
 import dtool.dom.ast.IASTNeoVisitor;
 import dtool.dom.definitions.DefUnit;
-import dtool.dom.references.TypeDynArray.IntrinsicDynArray;
+import dtool.dom.definitions.NativeDefUnit;
 import dtool.refmodel.DefUnitSearch;
 import dtool.refmodel.IScope;
 import dtool.refmodel.IScopeNode;
-import dtool.refmodel.IntrinsicDefUnit;
 
-public class TypeMapArray extends Entity {
-	public Entity keytype;
-	public Entity valuetype;
+public class TypeMapArray extends CommonRefNative {
+	public Reference keytype;
+	public Reference valuetype;
 
 	public TypeMapArray(TypeAArray elem) {
 		setSourceRange(elem);
-		this.valuetype = Entity.convertType(elem.next);
-		this.keytype = Entity.convertType(elem.index);
+		this.valuetype = Reference.convertType(elem.next);
+		this.keytype = Reference.convertType(elem.index);
 	}
 
 	public void accept0(IASTNeoVisitor visitor) {
@@ -36,10 +34,19 @@ public class TypeMapArray extends Entity {
 	}
 
 	public Collection<DefUnit> findTargetDefUnits(boolean findFirstOnly) {
-		return DefUnitSearch.wrapResult(IntrinsicDynArray.instance);
+		return DefUnitSearch.wrapResult(IntrinsicMapArray.instance);
 	}
 	
-	public static class IntrinsicMapArray extends IntrinsicDefUnit {
+	@Override
+	public String toString() {
+		return valuetype + "["+keytype+"]";
+	}
+	
+	public static class IntrinsicMapArray extends NativeDefUnit {
+		public IntrinsicMapArray() {
+			super("<map-array>");
+		}
+		
 		public static final IntrinsicMapArray instance = new IntrinsicMapArray();
 
 

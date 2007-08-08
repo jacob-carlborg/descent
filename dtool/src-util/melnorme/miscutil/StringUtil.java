@@ -72,4 +72,12 @@ public final class StringUtil {
 		}
 		return sb.toString();
 	}
+
+	/** Returns str with the given range (repOffset and repLen) substituted 
+	 * for repStr. */
+	public static String replaceStr(String str, int repOffset, int repLen,
+			String repStr) {
+		return str.substring(0, repOffset) + repStr
+				+ str.substring(repOffset + repLen, str.length());
+	}
 }

@@ -98,7 +98,7 @@ public class EntityResolver {
 			}
 			
 			if(search.matches(defUnit))
-				search.addResult(defUnit);
+				search.addMatch(defUnit);
 		}
 	}
 
@@ -153,7 +153,7 @@ public class EntityResolver {
 			if(elem instanceof DefUnit) {
 				DefUnit defunit = (DefUnit) elem;
 				if(search.matches(defunit)) {
-					search.addResult(defunit);
+					search.addMatch(defunit);
 					if(search.isFinished() && search.findOnlyOne)
 						return; // Return if we only want one match in the scope
 				}
@@ -169,14 +169,14 @@ public class EntityResolver {
 	private static void findDefUnitInSecondaryScope(IScope scope, CommonDefUnitSearch search) {
 		Iterator<IASTNode> iter = IteratorUtil.recast(scope.getMembersIterator());
 				
-		Module thisModule = scope.getModule();
+		IScope thisModule = scope.getModuleScope();
 		findSecondaryDefUnits(search, iter, thisModule);
 	}
 
 	private static void findSecondaryDefUnits(CommonDefUnitSearch search,
-			Iterator<? extends IASTNode> iter, Module thisModule) {
+			Iterator<? extends IASTNode> iter, IScope thisModule) {
 		
-		Module refsModule = search.getReferenceModule();
+		IScope refsModule = search.getReferenceModuleScope();
 		
 		while(iter.hasNext()) {
 			IASTNode elem = iter.next();
@@ -184,7 +184,7 @@ public class EntityResolver {
 			if(elem instanceof DeclarationImport) {
 				DeclarationImport declImport = (DeclarationImport) elem;
 
-				if(refsModule != thisModule && !declImport.isTransitive)
+				if(!refsModule.equals(thisModule) && !declImport.isTransitive)
 					continue; // Don't consider private imports
 				
 				for (ImportFragment impFrag : declImport.imports) {
@@ -205,7 +205,7 @@ public class EntityResolver {
 	public static void findDefUnitInStaticImport(ImportStatic importStatic, CommonDefUnitSearch search) {
 		DefUnit defunit = importStatic.getDefUnit();
 		if(defunit != null && search.matches(defunit))
-			search.addResult(defunit);
+			search.addMatch(defunit);
 	}
 
 	public static void findDefUnitInContentImport(ImportContent impContent, CommonDefUnitSearch search) {

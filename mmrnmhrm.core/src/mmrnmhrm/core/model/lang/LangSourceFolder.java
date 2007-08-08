@@ -40,13 +40,17 @@ public abstract class LangSourceFolder extends LangContainerElement implements I
 	/* -------------- Structure  -------------- */
 
 	
-	public void createStructure() throws CoreException {
+	protected void createElementInfo() throws CoreException {
 		clearChildren();
 		if(getUnderlyingResource().exists() == false)
 			return;
 		// add the empty package
 		addChild(new DeePackageFragment(this, this.folder));
 		internalCreatePackageFragments(folder);
+	}
+	
+	protected void disposeElementInfo() {
+		setChildren(newChildrenArray(0)); // reset children
 	}
 	
 	/** Create package fragments found in the given parent folder. */

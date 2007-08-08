@@ -1,5 +1,6 @@
 package descent.core.domX;
 
+import melnorme.miscutil.Assert;
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.core.dom.IDebugDeclaration;
 import descent.core.dom.IDebugStatement;
@@ -18,6 +19,7 @@ import dtool.dom.ast.ASTNode;
  * An abstract visitor class that that delegates each visit method, to the visit
  * method of the element's superclass 
  */
+// TODO: substitute visitAsSuperType with direct super overload method call
 public abstract class ASTUpTreeVisitor extends TreeVisitor implements IASTVisitor {
 
 	
@@ -43,19 +45,23 @@ public abstract class ASTUpTreeVisitor extends TreeVisitor implements IASTVisito
 	/* -----------  Abstract Classes  ----------- */
 	public boolean visit(AbstractElement elem) {
 		//ensureVisitIsNotDirectVisit(elem);
-		return visitAsSuperType(elem, AbstractElement.class);
+		Assert.isTrue(AbstractElement.class.getSuperclass().equals(ASTNode.class));
+		return visit((ASTNode) elem);
 	}
 
 	public boolean visit(Dsymbol elem) {
-		return visitAsSuperType(elem, Dsymbol.class);
+		Assert.isTrue(Dsymbol.class.getSuperclass().equals(AbstractElement.class));
+		return visit((AbstractElement) elem);
 	}
 
 	public boolean visit(Declaration elem) {
-		return visitAsSuperType(elem, Declaration.class);
+		Assert.isTrue(Declaration.class.getSuperclass().equals(Dsymbol.class));
+		return visit((Dsymbol) elem);
 	}
 
 	public boolean visit(Initializer elem) {
-		return visitAsSuperType(elem, Initializer.class);
+		Assert.isTrue(Initializer.class.getSuperclass().equals(Dsymbol.class));
+		return visit((Dsymbol) elem);
 	}
 
 	public boolean visit(TemplateParameter elem) {

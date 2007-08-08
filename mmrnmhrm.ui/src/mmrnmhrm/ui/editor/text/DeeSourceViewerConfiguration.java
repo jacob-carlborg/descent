@@ -8,9 +8,6 @@ import mmrnmhrm.ui.text.DeeCodeScanner;
 import mmrnmhrm.ui.text.IDeePartitions;
 
 import org.eclipse.jface.preference.IPreferenceStore;
-import org.eclipse.jface.text.DefaultInformationControl;
-import org.eclipse.jface.text.IInformationControl;
-import org.eclipse.jface.text.IInformationControlCreator;
 import org.eclipse.jface.text.ITextHover;
 import org.eclipse.jface.text.contentassist.ContentAssistant;
 import org.eclipse.jface.text.contentassist.IContentAssistProcessor;
@@ -25,14 +22,12 @@ import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Shell;
-import org.eclipse.ui.editors.text.TextSourceViewerConfiguration;
 import org.eclipse.ui.texteditor.ITextEditor;
 
 
 /** Dee SourceViewer Configuration
  */
-public class DeeSourceViewerConfiguration extends TextSourceViewerConfiguration {
+public class DeeSourceViewerConfiguration extends LangSourceViewerConfiguration {
 
 	private ITextEditor fTextEditor;
 
@@ -99,15 +94,14 @@ public class DeeSourceViewerConfiguration extends TextSourceViewerConfiguration 
 		ContentAssistant assistant = new ContentAssistant();
 
 		IContentAssistProcessor deeContentAssistProcessor 
-			= new DeeCodeContentAssistProcessor(fTextEditor);
-		assistant.setDocumentPartitioning(IDeePartitions.DEE_PARTITIONING);
-		assistant.setContentAssistProcessor(deeContentAssistProcessor,
-				IDeePartitions.DEE_CODE);
+			= new DeeCodeContentAssistProcessor(assistant, fTextEditor);
+		assistant.setDocumentPartitioning(getConfiguredDocumentPartitioning(sourceViewer));
 
-		assistant.setProposalPopupOrientation(
-				IContentAssistant.CONTEXT_INFO_BELOW);
-		assistant.setContextInformationPopupOrientation(
-				IContentAssistant.CONTEXT_INFO_BELOW);
+		assistant.setRestoreCompletionProposalSize(getSettings("completion_proposal_size")); //$NON-NLS-1$
+
+		assistant.setContentAssistProcessor(deeContentAssistProcessor, IDeePartitions.DEE_CODE);
+
+		//assistant.setProposalPopupOrientation(IContentAssistant.CONTEXT_INFO_BELOW);
 		assistant.enableAutoInsert(true);
 		assistant.enablePrefixCompletion(true);
 		Color colorWhite = Display.getDefault().getSystemColor(SWT.COLOR_WHITE);
@@ -122,19 +116,10 @@ public class DeeSourceViewerConfiguration extends TextSourceViewerConfiguration 
 		return assistant;
 	}
 	
-	public IInformationControlCreator getInformationControlCreator(ISourceViewer sourceViewer) {
-		return new IInformationControlCreator() {
-			@SuppressWarnings("restriction")
-			public IInformationControl createInformationControl(Shell parent) {
-				return new DefaultInformationControl(parent, SWT.NONE, 
-						new org.eclipse.jface.internal.text.html.HTMLTextPresenter(true));
-			}
-		};
-	}
 
 	@Override
 	public ITextHover getTextHover(ISourceViewer sourceViewer, String contentType) {
-		return new DeeDocTextHover(sourceViewer, fTextEditor);
+		return new DeeTextHover(sourceViewer, fTextEditor);
 	}
 
 }

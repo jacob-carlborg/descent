@@ -6,7 +6,7 @@ import dtool.dom.ast.IASTNeoVisitor;
 
 public class StatementDefault extends Statement {
 
-	public Statement st;
+	public IStatement st;
 	
 	public StatementDefault(DefaultStatement elem) {
 		convertNode(elem);

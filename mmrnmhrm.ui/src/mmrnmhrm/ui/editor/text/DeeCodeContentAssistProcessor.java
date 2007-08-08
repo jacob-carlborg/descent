@@ -1,70 +1,54 @@
 package mmrnmhrm.ui.editor.text;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 
 import mmrnmhrm.core.model.CompilationUnit;
 import mmrnmhrm.ui.DeePlugin;
 import mmrnmhrm.ui.views.DeeElementImageProvider;
 
 import org.eclipse.jface.text.ITextViewer;
-import org.eclipse.jface.text.TextPresentation;
+import org.eclipse.jface.text.contentassist.ContentAssistEvent;
+import org.eclipse.jface.text.contentassist.ContentAssistant;
 import org.eclipse.jface.text.contentassist.ContextInformation;
+import org.eclipse.jface.text.contentassist.ICompletionListener;
 import org.eclipse.jface.text.contentassist.ICompletionProposal;
 import org.eclipse.jface.text.contentassist.IContentAssistProcessor;
 import org.eclipse.jface.text.contentassist.IContextInformation;
-import org.eclipse.jface.text.contentassist.IContextInformationPresenter;
 import org.eclipse.jface.text.contentassist.IContextInformationValidator;
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.StyleRange;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.texteditor.ITextEditor;
 
-import descent.internal.core.dom.Parser;
-import descent.internal.core.dom.ParserFacade;
-import descent.internal.core.dom.TOK;
-import descent.internal.core.dom.Token;
-import dtool.descentadapter.DescentASTConverter;
 import dtool.dom.definitions.DefUnit;
-import dtool.dom.definitions.Module;
-import dtool.refmodel.CommonDefUnitSearch;
 import dtool.refmodel.PartialEntitySearch;
 import dtool.refmodel.PartialSearchOptions;
+import dtool.refmodel.PartialEntitySearch.CompletionSession;
+import dtool.refmodel.PartialEntitySearch.IDefUnitMatchAccepter;
 
 public class DeeCodeContentAssistProcessor implements IContentAssistProcessor {
 
 	private static final ICompletionProposal[] RESULTS_EMPTY_ARRAY = new ICompletionProposal[0];
 
-	/**
-	 * Simple content assist tip closer. The tip is valid in a range
-	 * of 5 characters around its popup location.
-	 */
-	protected static class Validator implements IContextInformationValidator, IContextInformationPresenter {
-
-		protected int fInstallOffset;
-
-		public boolean isContextInformationValid(int offset) {
-			return Math.abs(fInstallOffset - offset) == 0;
-		}
-
-		public void install(IContextInformation info, ITextViewer viewer, int offset) {
-			fInstallOffset= offset;
-		}
-		
-		public boolean updatePresentation(int documentPosition, TextPresentation presentation) {
-			StyleRange range = new StyleRange(0,2,null, null, SWT.BOLD);
-			presentation.replaceStyleRange(range);
-			return false;
-		}
-	}
-
 	private ITextEditor textEditor;
-	private IContextInformationValidator fValidator= new Validator();
 	private String errorMsg;
-
+	ContentAssistant assistant;
+	CompletionSession session;
 	
-	public DeeCodeContentAssistProcessor(ITextEditor textEditor) {
+	public DeeCodeContentAssistProcessor(ContentAssistant assistant, ITextEditor textEditor) {
 		this.textEditor = textEditor;
+		this.assistant = assistant;
+		this.session = new CompletionSession();
+		assistant.addCompletionListener(new ICompletionListener() {
+			public void assistSessionStarted(ContentAssistEvent event) {
+			}
+
+			public void assistSessionEnded(ContentAssistEvent event) {
+				session.errorMsg = null;
+				session.invokeNode = null;
+			}
+
+			public void selectionChanged(ICompletionProposal proposal, boolean smartToggle) {
+			}
+		});
 	}
 
 	public ICompletionProposal[] computeCompletionProposals(ITextViewer viewer,
@@ -73,83 +57,44 @@ public class DeeCodeContentAssistProcessor implements IContentAssistProcessor {
 		IEditorInput editorInput = textEditor.getEditorInput();
 		CompilationUnit cunit;
 		cunit = DeePlugin.getCompilationUnitOperation(editorInput);
-		String docstr = cunit.getDocument().get();
 		
-		Parser parser = ParserFacade.parseCompilationUnit(docstr);
+		ICompletionProposal[] proposals = computeProposals(offset, cunit, session);
+		errorMsg = session.errorMsg;
+		return proposals; 
+	}
 		
-		Token token = null;
-		for (Iterator<Token> iter = parser.tokenList.iterator(); iter.hasNext();) {
-			Token newtoken = iter.next();
-			if(newtoken.ptr < offset) {
-				token = newtoken;
-				// continue
-			} else {
-				break;
-			}
-		} // now token is the last token before offset
-		
-		// If completion request is *inside* a token
-		if(token.ptr < offset && (token.ptr + token.len) > offset) {
-			// then only allow if it's an indentifier
-			if(token.value != TOK.TOKidentifier) {
-				errorMsg = "Invalid Context:" + token;
-				return null;
-			}
-		}
-				
-		descent.internal.core.dom.Module dmdModule;
-		dmdModule = parser.mod;
-
-		if(dmdModule.getProblems().length != 0) {
-			if(token != null && token.value == TOK.TOKdot) {
-				// Let's retry parsing without the dot.
-				String newstr = docstr.substring(0, token.ptr) + " " 
-					+ docstr.substring(token.ptr+1, docstr.length());
-				
-				parser = ParserFacade.parseCompilationUnit(newstr);
-				dmdModule = parser.mod;
-				
-				if(dmdModule.getProblems().length != 0) {
-					errorMsg = "Syntax Errors, cannot complete.";
-					return null;
-				}
-			}
-		}
-		
-		Module neoModule = DescentASTConverter.convertModule(dmdModule);
-		neoModule.setCUnit(cunit);
-
-		//cunit.reconcile();
+	public static ICompletionProposal[] computeProposals(final int offset,
+			CompilationUnit cunit, CompletionSession session) {
 		
 		final ArrayList<ICompletionProposal> results;
 		results = new ArrayList<ICompletionProposal>();
-
-		PartialSearchOptions searchOptions = new PartialSearchOptions();
-		CommonDefUnitSearch search = new PartialEntitySearch(searchOptions) {
-			@Override
-			public void addResult(DefUnit defunit) {
-				String rplStr = defunit.getName().substring(searchOptions.prefixLen);
+		
+		IDefUnitMatchAccepter defUnitAccepter = new IDefUnitMatchAccepter() {
+			public void accept(DefUnit defUnit, PartialSearchOptions searchOptions) {
+				String rplStr = defUnit.getName().substring(searchOptions.prefixLen);
 				results.add(new DeeCompletionProposal(
 						rplStr,
 						offset,
 						searchOptions.rplLen, 
 						rplStr.length(),
-						DeeElementImageProvider.getNodeImage(defunit),
-						defunit.toStringAsCodeCompletion(),
-						defunit,
+						DeeElementImageProvider.getNodeImage(defUnit),
+						defUnit.toStringAsCodeCompletion(),
+						defUnit,
 						null // context information
-						)); 
-			}
+						));
+			};
+			
 		};
 		
-		errorMsg = PartialEntitySearch.doCompletionSearch(offset, 
-				neoModule, searchOptions, search);
+		session.errorMsg = PartialEntitySearch.doCompletionSearch(offset, 
+				cunit, cunit.getDocument().get(), session, defUnitAccepter);
 		
-		if(errorMsg != null)
+		if(session.errorMsg == null)
+			return results.toArray(RESULTS_EMPTY_ARRAY);
+		else
 			return null;
-		
-		return results.toArray(RESULTS_EMPTY_ARRAY);
 	}
+
 
 	public IContextInformation[] computeContextInformation(ITextViewer viewer,
 			int offset) {
@@ -166,11 +111,11 @@ public class DeeCodeContentAssistProcessor implements IContentAssistProcessor {
 	}
 
 	public char[] getContextInformationAutoActivationCharacters() {
-		return new char[] { '('};
+		return new char[] { };
 	}
 
 	public IContextInformationValidator getContextInformationValidator() {
-		return fValidator;
+		return null;
 	}
 
 	public String getErrorMessage() {

@@ -4,11 +4,12 @@ import melnorme.miscutil.tree.TreeVisitor;
 import descent.internal.core.dom.UnitTestDeclaration;
 import dtool.dom.ast.ASTNeoNode;
 import dtool.dom.ast.IASTNeoVisitor;
+import dtool.dom.statements.IStatement;
 import dtool.dom.statements.Statement;
 
 public class DeclarationUnitTest extends ASTNeoNode {
 
-	public Statement body;
+	public IStatement body;
 	
 	public DeclarationUnitTest(UnitTestDeclaration elem) {
 		convertNode(elem);

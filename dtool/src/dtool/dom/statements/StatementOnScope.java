@@ -6,7 +6,7 @@ import dtool.dom.ast.IASTNeoVisitor;
 
 public class StatementOnScope extends Statement {
 	
-	public Statement st;
+	public IStatement st;
 
 	public StatementOnScope(OnScopeStatement elem) {
 		convertNode(elem);

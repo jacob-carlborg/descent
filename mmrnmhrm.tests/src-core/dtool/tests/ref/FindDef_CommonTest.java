@@ -14,7 +14,7 @@ import dtool.dom.ast.ASTNodeFinder;
 import dtool.dom.ast.ASTNode;
 import dtool.dom.definitions.DefUnit;
 import dtool.dom.definitions.Module;
-import dtool.dom.references.Entity;
+import dtool.dom.references.Reference;
 import dtool.refmodel.NodeUtil;
 
 //@RunWith(Parameterized.class)
@@ -58,7 +58,7 @@ public abstract class FindDef_CommonTest extends BasePluginTest {
 		System.out.println(cunit.getSource().substring(offset).split("\\s")[0]);
 		
 		ASTNode node = ASTNodeFinder.findElement(cunit.getNeoModule(), offset);
-		Entity ent = (Entity) node;
+		Reference ent = (Reference) node;
 		
 		// TODO: Assert only one found
 		// Perform the find def

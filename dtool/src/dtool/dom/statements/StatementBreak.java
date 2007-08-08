@@ -11,7 +11,8 @@ public class StatementBreak extends Statement {
 	
 	public StatementBreak(BreakStatement elem) {
 		convertNode(elem);
-		this.id = new Symbol(elem.id);
+		if(elem.id != null)
+			this.id = new Symbol(elem.id);
 	}
 
 	@Override

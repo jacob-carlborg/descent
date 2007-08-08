@@ -8,7 +8,7 @@ import dtool.dom.expressions.Expression;
 public class StatementCase extends Statement {
 
 	public Expression exp;
-	public Statement st;
+	public IStatement st;
 	
 	public StatementCase(CaseStatement elem) {
 		convertNode(elem);

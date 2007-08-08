@@ -22,7 +22,7 @@ import dtool.dom.definitions.DefinitionTypedef;
 import dtool.dom.definitions.DefinitionVariable;
 import dtool.dom.definitions.Module;
 import dtool.dom.definitions.Module.DeclarationModule;
-import dtool.dom.references.Entity;
+import dtool.dom.references.Reference;
 
 public class DeeElementImageProvider {
 	
@@ -49,7 +49,7 @@ public class DeeElementImageProvider {
 			return getImage(DeePluginImages.NODE_MODULE_DEC);
 		} else if(node instanceof PartialPackageDefUnit ) {
 			return getImage(DeePluginImages.NODE_MODULE_DEC);
-		} else if (node instanceof Entity) {
+		} else if (node instanceof Reference) {
 			return getImage(DeePluginImages.NODE_REF);
 		} else if (node instanceof DefinitionAlias) {
 			return getImage(DeePluginImages.ENT_ALIAS);

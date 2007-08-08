@@ -8,7 +8,7 @@ import dtool.dom.expressions.Expression;
 public class StatementSwitch extends Statement {
 
 	public Expression exp;
-	public Statement body;
+	public IStatement body;
 
 	public StatementSwitch(SwitchStatement elem) {
 		convertNode(elem);

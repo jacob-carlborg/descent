@@ -72,7 +72,7 @@ public class DeePlugin extends LangPlugin {
 					return cunitMap.get(input);
 				
 				cunit = new CompilationUnit(file);
-				cunit.createStructure();
+				cunit.createElementInfo();
 				cunitMap.put(input, cunit);
 			}
 		}

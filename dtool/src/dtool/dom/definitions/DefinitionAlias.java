@@ -5,7 +5,7 @@ import melnorme.miscutil.tree.TreeVisitor;
 import descent.internal.core.dom.AliasDeclaration;
 import dtool.descentadapter.DescentASTConverter;
 import dtool.dom.ast.IASTNeoVisitor;
-import dtool.dom.references.Entity;
+import dtool.dom.references.Reference;
 import dtool.dom.statements.IStatement;
 import dtool.refmodel.IScopeNode;
 
@@ -14,11 +14,11 @@ import dtool.refmodel.IScopeNode;
  */
 public class DefinitionAlias extends Definition implements IStatement {
 	
-	public Entity target;
+	public Reference target;
 	
 	public DefinitionAlias(AliasDeclaration elem) {
 		convertDsymbol(elem);
-		target = (Entity) DescentASTConverter.convertElem(elem.type);
+		target = (Reference) DescentASTConverter.convertElem(elem.type);
 	}
 	
 	public EArcheType getArcheType() {

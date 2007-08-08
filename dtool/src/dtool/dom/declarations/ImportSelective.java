@@ -12,7 +12,7 @@ import dtool.dom.declarations.DeclarationImport.ImportFragment;
 import dtool.dom.definitions.DefSymbol;
 import dtool.dom.definitions.DefUnit;
 import dtool.dom.definitions.Symbol;
-import dtool.dom.references.EntIdentifier;
+import dtool.dom.references.RefIdentifier;
 import dtool.refmodel.CommonDefUnitSearch;
 import dtool.refmodel.EntityResolver;
 import dtool.refmodel.DefUnitSearch;
@@ -24,7 +24,7 @@ public class ImportSelective extends ImportFragment implements INonScopedBlock {
 	
 	public static class ImportSelectiveFragment extends DefUnit {
 
-		public EntIdentifier targetname;
+		public RefIdentifier targetname;
 
 		public ImportSelective impSel; // Non Structural Element
 		
@@ -72,7 +72,7 @@ public class ImportSelective extends ImportFragment implements INonScopedBlock {
 			impSelfrag.defname = new DefSymbol(imprt.name, impSelfrag);
 		} else {
 			impSelfrag.defname = new DefSymbol(imprt.alias,impSelfrag);
-			impSelfrag.targetname = new EntIdentifier(imprt.name);
+			impSelfrag.targetname = new RefIdentifier(imprt.name);
 		}
 		return impSelfrag;
 	}

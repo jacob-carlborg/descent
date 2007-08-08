@@ -8,7 +8,7 @@ import descent.internal.core.dom.EnumDeclaration;
 import dtool.descentadapter.DescentASTConverter;
 import dtool.dom.ast.ASTNeoNode;
 import dtool.dom.ast.IASTNeoVisitor;
-import dtool.dom.references.Entity;
+import dtool.dom.references.Reference;
 import dtool.dom.statements.IStatement;
 import dtool.refmodel.IScope;
 import dtool.refmodel.IScopeNode;
@@ -16,7 +16,7 @@ import dtool.refmodel.IScopeNode;
 public class DefinitionEnum extends Definition implements IScopeNode, IStatement {
 
 	public List<EnumMember> members;
-	public Entity type;
+	public Reference type;
 	
 	
 	public static ASTNeoNode convertEnumDecl(EnumDeclaration elem) {
@@ -24,13 +24,13 @@ public class DefinitionEnum extends Definition implements IScopeNode, IStatement
 			DefinitionEnum defEnum = new DefinitionEnum();
 			defEnum.convertDsymbol(elem);
 			defEnum.members = DescentASTConverter.convertManyL(elem.members, defEnum.members) ;
-			defEnum.type = Entity.convertType(elem.type); 
+			defEnum.type = Reference.convertType(elem.type); 
 			return defEnum;
 		} else {
 			EnumContainer enumContainer = new EnumContainer();
 			enumContainer.setSourceRange(elem);
 			enumContainer.members = DescentASTConverter.convertManyL(elem.members, enumContainer.members) ;
-			enumContainer.type = Entity.convertType(elem.type); 
+			enumContainer.type = Reference.convertType(elem.type); 
 			return enumContainer;
 		}
 	}
@@ -70,7 +70,7 @@ public class DefinitionEnum extends Definition implements IScopeNode, IStatement
 
 	@Override
 	public String toStringAsCodeCompletion() {
-		return defname + " - " + getModule().md;
+		return defname + " - " + getModuleScope();
 	}
 
 }

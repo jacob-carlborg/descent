@@ -1,9 +1,8 @@
 package mmrnmhrm.core.model.lang;
 
-import org.eclipse.core.runtime.CoreException;
-
 import melnorme.miscutil.ExceptionAdapter;
-import melnorme.miscutil.tree.IElement;
+
+import org.eclipse.core.runtime.CoreException;
 
 
 
@@ -39,6 +38,14 @@ public abstract class LangContainerElement extends LangElement {
 		return this.children;
 	}
 	
+	public boolean hasChildren() {
+		return getChildren().length > 0;
+	}
+	
+	@Override
+	public ILangElement[] getLangChildren() {
+		return getChildren();
+	}
 
 	
 	/** Creates an array with a runtime type appropriate to store this 
@@ -91,16 +98,5 @@ public abstract class LangContainerElement extends LangElement {
 			throw ExceptionAdapter.unchecked(e);
 		}
 	}
-
-	/** {@inheritDoc} */
-	public void updateElementRecursive() throws CoreException {
-		opened = false;
-		/*
-		//updateElement();
-		for(ILangElement deeproj : getChildren()) {
-			deeproj.updateElementRecursive();
-		}*/
-	}
-
 
 }

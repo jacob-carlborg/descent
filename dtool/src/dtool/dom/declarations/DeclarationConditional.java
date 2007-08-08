@@ -89,12 +89,12 @@ public class DeclarationConditional extends ASTNeoNode implements IStatement, IN
 		if(thenbody instanceof CompoundStatement) {
 			thendecls = new MultiStatement((CompoundStatement)thenbody); 
 		} else {
-			thendecls = Statement.convert(thenbody);
+			thendecls = (ASTNode) Statement.convert(thenbody);
 		}
 		if(elsebody instanceof CompoundStatement) {
 			elsedecls = new MultiStatement((CompoundStatement)elsebody); 
 		} else {
-			elsedecls = Statement.convert(elsebody);
+			elsedecls = (ASTNode) Statement.convert(elsebody);
 		}
 	}
 

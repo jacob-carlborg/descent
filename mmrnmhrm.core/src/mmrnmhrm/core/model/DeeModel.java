@@ -54,7 +54,7 @@ public class DeeModel {
 
 	/** Initializes the D model. */
 	public static void initDeeModel() throws CoreException {
-		getRoot().createStructure();
+		getRoot().createElementInfo();
 	}
 	
 	/** Gets the D Model Root */
