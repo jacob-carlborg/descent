@@ -363,17 +363,17 @@ public class Statement_Test extends Parser_Test {
 		assertEquals(3, args.size());
 		
 		assertPosition(args.get(0), 9, 7);
-		assertEquals(Argument.PassageMode.INOUT, args.get(0).getPassageMode());
+		assertEquals("inout", args.get(0).modifiers().get(0).toString());
 		assertEquals("a", args.get(0).getName().getIdentifier());
 		assertPosition(args.get(0).getName(), 15, 1);
 		
 		assertPosition(args.get(1), 18, 1);
-		assertEquals(Argument.PassageMode.DEFAULT, args.get(1).getPassageMode());
+		assertEquals(0, args.get(1).modifiers().size());
 		assertEquals("b", args.get(1).getName().getIdentifier());
 		assertPosition(args.get(1).getName(), 18, 1);
 		
 		assertPosition(args.get(2), 21, 1);
-		assertEquals(Argument.PassageMode.DEFAULT, args.get(2).getPassageMode());
+		assertEquals(0, args.get(1).modifiers().size());
 		assertEquals("c", args.get(2).getName().getIdentifier());
 		assertPosition(args.get(2).getName(), 21, 1);
 	}
@@ -417,7 +417,7 @@ public class Statement_Test extends Parser_Test {
 		assertEquals(1, args.size());
 		
 		assertPosition(args.get(0), 9, 5);
-		assertEquals(Argument.PassageMode.DEFAULT, args.get(0).getPassageMode());
+		assertEquals(0, args.get(0).modifiers().size());
 		assertEquals("x", args.get(0).getName().getIdentifier());
 		assertEquals("int", args.get(0).getType().toString());
 		assertPosition(args.get(0).getName(), 13, 1);

@@ -5,11 +5,11 @@ import descent.core.dom.DelegateType;
 import descent.core.dom.FunctionDeclaration;
 import descent.core.dom.PrimitiveType;
 import descent.core.dom.VariableDeclaration;
-import descent.core.dom.Argument.PassageMode;
 
 
 public class RewriteArgumentTest extends AbstractRewriteTest {
 	
+	/* TODO
 	public void testAddPassageMode() throws Exception {
 		begin("void bla(int x) { }");
 		
@@ -40,7 +40,6 @@ public class RewriteArgumentTest extends AbstractRewriteTest {
 		assertEqualsTokenByToken("void bla(int x) { }", end());
 	}
 	
-	/* TODO
 	public void testAddType() throws Exception {
 		
 	}

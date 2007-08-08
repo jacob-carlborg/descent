@@ -12,7 +12,6 @@ import descent.core.dom.FunctionDeclaration;
 import descent.core.dom.ModifiedType;
 import descent.core.dom.NumberLiteral;
 import descent.core.dom.UnitTestDeclaration;
-import descent.core.dom.Argument.PassageMode;
 
 public class Function_Test extends Parser_Test {
 	
@@ -122,6 +121,19 @@ public class Function_Test extends Parser_Test {
 		assertNotNull(f.getBody());
 	}
 	
+	public void testFunctionWithoutArgumentsD2() {
+		String s = " void func() { }";
+		FunctionDeclaration f = (FunctionDeclaration) getSingleDeclarationNoProblems(s, AST.D2);
+		assertEquals(ASTNode.FUNCTION_DECLARATION, f.getNodeType());
+
+		assertEquals("void", f.getReturnType().toString());
+		assertEquals("func", f.getName().getIdentifier());
+		assertPosition(f.getName(), 6, 4);
+		assertEquals(0, f.arguments().size());
+		assertPosition(f, 1, 15);
+		assertNotNull(f.getBody());
+	}
+	
 	public void testFunctionSemicolon() {
 		String s = " void func();";
 		FunctionDeclaration f = (FunctionDeclaration) getSingleDeclarationNoProblems(s);
@@ -144,31 +156,31 @@ public class Function_Test extends Parser_Test {
 		assertEquals(ASTNode.ARGUMENT, args.get(0).getNodeType());
 		assertEquals("a", arg.getName().getIdentifier());
 		assertEquals("int", arg.getType().toString());
-		assertEquals(Argument.PassageMode.DEFAULT, arg.getPassageMode());
+		assertEquals(0, arg.modifiers().size());
 		
 		arg = args.get(1);
 		assertPosition(arg, 18, 9);
 		assertEquals("b", arg.getName().getIdentifier());
 		assertEquals("char", arg.getType().toString());
-		assertEquals(Argument.PassageMode.IN, arg.getPassageMode());
+		assertEquals("in", arg.modifiers().get(0).toString());
 		
 		arg = args.get(2);
 		assertPosition(arg, 29, 10);
 		assertEquals("c", arg.getName().getIdentifier());
 		assertEquals("bool", arg.getType().toString());
-		assertEquals(Argument.PassageMode.OUT, arg.getPassageMode());
+		assertEquals("out", arg.modifiers().get(0).toString());
 		
 		arg = args.get(3);
 		assertPosition(arg, 41, 13);
 		assertEquals("d", arg.getName().getIdentifier());
 		assertEquals("float", arg.getType().toString());
-		assertEquals(Argument.PassageMode.INOUT, arg.getPassageMode());
+		assertEquals("inout", arg.modifiers().get(0).toString());
 		
 		arg = args.get(4);
 		assertPosition(arg, 56, 13);
 		assertEquals("e", arg.getName().getIdentifier());
 		assertEquals("double", arg.getType().toString());
-		assertEquals(Argument.PassageMode.LAZY, arg.getPassageMode());
+		assertEquals("lazy", arg.modifiers().get(0).toString());
 	}
 	
 	public void testFunctionWithOneArgument() {
@@ -181,8 +193,8 @@ public class Function_Test extends Parser_Test {
 		String s = " void func(ref int a) { }";
 		FunctionDeclaration f = (FunctionDeclaration) getSingleDeclarationNoProblems(s);
 		assertEquals(1, f.arguments().size());
-		Argument argument = f.arguments().get(0);
-		assertEquals(PassageMode.REF, argument.getPassageMode());
+		Argument arg = f.arguments().get(0);
+		assertEquals("ref", arg.modifiers().get(0).toString());
 	}
 	
 	public void testConstructorWithArguments() {
@@ -199,31 +211,31 @@ public class Function_Test extends Parser_Test {
 		assertPosition(arg, 11, 5);
 		assertEquals("a", arg.getName().getIdentifier());
 		assertEquals("int", arg.getType().toString());
-		assertEquals(Argument.PassageMode.DEFAULT, arg.getPassageMode());
+		assertEquals(0, arg.modifiers().size());
 		
 		arg = args.get(1);
 		assertPosition(arg, 18, 9);
 		assertEquals("b", arg.getName().getIdentifier());
 		assertEquals("char", arg.getType().toString());
-		assertEquals(Argument.PassageMode.IN, arg.getPassageMode());
+		assertEquals("in", arg.modifiers().get(0).toString());
 		
 		arg = args.get(2);
 		assertPosition(arg, 29, 10);
 		assertEquals("c", arg.getName().getIdentifier());
 		assertEquals("bool", arg.getType().toString());
-		assertEquals(Argument.PassageMode.OUT, arg.getPassageMode());
+		assertEquals("out", arg.modifiers().get(0).toString());
 		
 		arg = args.get(3);
 		assertPosition(arg, 41, 13);
 		assertEquals("d", arg.getName().getIdentifier());
 		assertEquals("float", arg.getType().toString());
-		assertEquals(Argument.PassageMode.INOUT, arg.getPassageMode());
+		assertEquals("inout", arg.modifiers().get(0).toString());
 		
 		arg = args.get(4);
 		assertPosition(arg, 56, 17);
 		assertEquals("e", arg.getName().getIdentifier());
 		assertEquals("double", arg.getType().toString());
-		assertEquals(Argument.PassageMode.LAZY, arg.getPassageMode());
+		assertEquals("lazy", arg.modifiers().get(0).toString());
 		assertEquals("2", ((NumberLiteral) arg.getDefaultValue()).getToken());
 	}
 	
@@ -312,11 +324,13 @@ public class Function_Test extends Parser_Test {
 	}
 	
 	public void testFunctionWithManyModifiers() {
-		String s = " void func(final scope int a) { }";
+		String s = " void func(final scope const(int) a) { }";
 		FunctionDeclaration f = (FunctionDeclaration) getSingleDeclarationNoProblems(s, AST.D2);
 		assertEquals(1, f.arguments().size());
 		Argument argument = f.arguments().get(0);
-		System.out.println(f);
+		assertEquals(2, argument.modifiers().size());
+		assertEquals("final", argument.modifiers().get(0).toString());
+		assertEquals("scope", argument.modifiers().get(1).toString());
 	}
 
 }

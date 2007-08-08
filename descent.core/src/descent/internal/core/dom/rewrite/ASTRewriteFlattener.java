@@ -13,7 +13,6 @@ package descent.internal.core.dom.rewrite;
 import java.util.List;
 
 import descent.core.dom.*;
-import descent.core.dom.Argument.PassageMode;
 import descent.core.dom.ExternDeclaration.Linkage;
 import descent.core.dom.FunctionLiteralDeclarationExpression.Syntax;
 import descent.core.dom.IsTypeSpecializationExpression.TypeSpecialization;
@@ -176,14 +175,7 @@ public class ASTRewriteFlattener extends ASTVisitor {
 	public boolean visit(Argument node) {
 		boolean mustAppendSpace = true;
 		
-		PassageMode passageMode = (PassageMode) getAttribute(node, Argument.PASSAGE_MODE_PROPERTY);
-		switch(passageMode) {
-		case DEFAULT: mustAppendSpace = false; break;
-		case IN: this.result.append("in"); break;
-		case INOUT: this.result.append("inout"); break;
-		case LAZY: this.result.append("lazy"); break;
-		case OUT: this.result.append("out"); break;
-		}
+		visitList(node, Argument.MODIFIERS_PROPERTY, " ");
 		
 		ASTNode type = getChildNode(node, Argument.TYPE_PROPERTY);
 		if (type != null) {

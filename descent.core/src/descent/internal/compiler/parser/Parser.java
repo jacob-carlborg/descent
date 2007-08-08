@@ -360,7 +360,7 @@ public class Parser extends Lexer {
 					} else {
 						stc = STC.STCinvariant;
 						
-						Modifier modifier = new Modifier(token.value);
+						Modifier modifier = new Modifier(token);
 						modifier.setSourceRange(token.ptr, token.len);
 						
 						// goto Lstc;
@@ -419,7 +419,7 @@ public class Parser extends Lexer {
 					
 					// goto Lstc2;
 					
-					Modifier modifier = new Modifier(TOK.TOKstatic);
+					Modifier modifier = new Modifier(prevToken);
 					modifier.setSourceRange(staticTokenStart, staticTokenLength);
 					
 					s = parseDeclDefs_Lstc2(isSingle, modifier, stc, decldefs);
@@ -435,7 +435,7 @@ public class Parser extends Lexer {
 				} else {
 					stc = STC.STCconst;
 					
-					Modifier modifier = new Modifier(token.value);
+					Modifier modifier = new Modifier(token);
 					modifier.setSourceRange(token.ptr, token.len);
 					
 					// goto Lstc;
@@ -453,7 +453,7 @@ public class Parser extends Lexer {
 			case TOKdeprecated:
 				stc = STC.fromTOK(token.value);
 				
-				Modifier modifier = new Modifier(token.value);
+				Modifier modifier = new Modifier(token);
 				modifier.setSourceRange(token.ptr, token.len);
 				
 				// goto Lstc;
@@ -466,7 +466,7 @@ public class Parser extends Lexer {
 				if (peek(token).value != TOKlparen) {
 					stc = STC.STCextern;
 					
-					modifier = new Modifier(token.value);
+					modifier = new Modifier(token);
 					modifier.setSourceRange(token.ptr, token.len);
 					
 					// goto Lstc;
@@ -492,7 +492,7 @@ public class Parser extends Lexer {
 				
 				prot = PROT.fromTOK(token.value);
 				
-				modifier = new Modifier(token.value);
+				modifier = new Modifier(token);
 				modifier.setSourceRange(token.ptr, token.len);
 				
 				// goto Lprot;
@@ -690,7 +690,7 @@ public class Parser extends Lexer {
 						} else {
 						    stc |= STC.STCinvariant;
 						}
-						modifier = new Modifier(token.value);
+						modifier = new Modifier(token);
 				    	modifier.setSourceRange(token.ptr, token.len);
 				    	modifiers.add(modifier);
 				    	nextToken();
@@ -711,7 +711,7 @@ public class Parser extends Lexer {
 			    case TOKdeprecated:
 			    	stc |= STC.fromTOK(token.value);
 			    	
-			    	modifier = new Modifier(token.value);
+			    	modifier = new Modifier(token);
 			    	modifier.setSourceRange(token.ptr, token.len);
 			    	modifiers.add(modifier);
 			    	nextToken();
@@ -1134,6 +1134,7 @@ public class Parser extends Lexer {
 			int storageClass;
 			InOut inout;
 			Expression ae;
+			List<Modifier> modifiers = new ArrayList<Modifier>(1);
 			
 			int firstTokenStart = token.ptr;
 			
@@ -1156,26 +1157,31 @@ public class Parser extends Lexer {
 					case TOKin:
 						storageClass = STC.STCin;
 						inout = InOut.In;
+						modifiers.add(new Modifier(token));
 						nextToken();
 						break;
 					case TOKout:
 						storageClass = STC.STCout;
 						inout = InOut.Out;
+						modifiers.add(new Modifier(token));
 						nextToken();
 						break;
 					case TOKinout:
 						storageClass = STC.STCref;
 						inout = InOut.InOut;
+						modifiers.add(new Modifier(token));
 						nextToken();
 						break;
 					case TOKref:
 						storageClass = STC.STCref;
 						inout = InOut.Ref;
+						modifiers.add(new Modifier(token));
 						nextToken();
 						break;
 					case TOKlazy:
 						storageClass = STC.STClazy;
 						inout = InOut.Lazy;
+						modifiers.add(new Modifier(token));
 						nextToken();
 						break;
 				}
@@ -1207,6 +1213,7 @@ public class Parser extends Lexer {
 					varargs = 2;
 					
 					a = new Argument(inout, at, ai, ae);
+					a.modifiers = modifiers;
 					a.setSourceRange(firstTokenStart, prevToken.ptr + prevToken.len - firstTokenStart);
 					arguments.add(a);
 					nextToken();
@@ -1215,6 +1222,7 @@ public class Parser extends Lexer {
 				
 				if (at != null || ai != null || ae != null) {
 					a = new Argument(inout, at, ai, ae);
+					a.modifiers = modifiers;
 					a.setSourceRange(firstTokenStart, prevToken.ptr + prevToken.len - firstTokenStart);
 					arguments.add(a);
 				}
@@ -1230,105 +1238,109 @@ public class Parser extends Lexer {
 		return arguments;
 	}
 	
-	// TODO the translation of this method is not complete
-	// (some errors are not reported)
 	private List<Argument> parseParametersD2(int[] pvarargs) {
 		List<Argument> arguments = new ArrayList<Argument>();
 		int varargs = 0;
 		boolean hasdefault = false;
 
 		check(TOKlparen);
+	loopWhile:
 		while (true) {
-			Type tb;
 			IdentifierExp ai;
 			Type at;
 			Argument a;
 			int storageClass;
-			InOut inout;
 			Expression ae;
 			
 			int firstTokenStart = token.ptr;
 			
 			ai = null;
 			storageClass = STC.STCin;
-			inout = InOut.None;
 			
-			if (token.value == TOKrparen) {
-				break;
-			} else if (token.value == TOKdotdotdot) {
-				varargs = 1;
-				nextToken();
-				break;
-			} else {
+			List<Modifier> modifiers = new ArrayList<Modifier>(2);
+			
+		loopFor:
+			for(; true; nextToken()) {
 				int inoutTokenStart = token.ptr;
 				int inoutTokenLength = token.len;
 				int inoutTokenLine = token.lineNumber;
 				
 				switch(token.value) {
-					case TOKconst:
-					    if (peek(token).value == TOKlparen) {
-					    	// TODO D2
-							// goto Ldefault;
-					    } else {
-						    storageClass = STC.STCconst;
-						    inout = InOut.Const;
-						    nextToken();
-						    break;
-					    }
-						break;
-					case TOKinvariant:
-					    if (peek(token).value == TOKlparen) {
-							// TODO D2
-					    	// goto Ldefault;
-					    } else {
-						    storageClass = STC.STCinvariant;
-						    inout = InOut.Invariant;
-						    nextToken();
-						    break;
-					    }
-						break;
-					case TOKin:
-						storageClass = STC.STCin;
-						inout = InOut.In;
-						nextToken();
-						break;
-					case TOKout:
-						storageClass = STC.STCout;
-						inout = InOut.Out;
-						nextToken();
-						break;
-					case TOKinout:
-						storageClass = STC.STCref;
-						inout = InOut.InOut;
-						nextToken();
-						break;
-					case TOKref:
-						storageClass = STC.STCref;
-						inout = InOut.Ref;
-						nextToken();
-						break;
-					case TOKlazy:
-						storageClass = STC.STClazy;
-						inout = InOut.Lazy;
-						nextToken();
-						break;
-					case TOKscope:
-						storageClass = STC.STCscope;
-						inout = InOut.Scope;
-						nextToken();
-						break;
-					case TOKfinal:
-						storageClass = STC.STCfinal;
-						inout = InOut.Final;
-						nextToken();
-						break;
-					case TOKstatic:
-						storageClass = STC.STCstatic;
-						inout = InOut.Static;
-						nextToken();
-						break;
-				}				
-				
+				case TOKrparen:
+					break loopWhile;
+				case TOKdotdotdot:
+					varargs = 1;
+					nextToken();
+					break loopWhile;
+				case TOKconst:
+				    if (peek(token).value == TOKlparen) {
+						// goto Ldefault;
+				    	break;
+				    } else {
+					    storageClass = STC.STCconst;
+					    modifiers.add(new Modifier(token));
+					    // goto L2;
+					    continue loopFor;
+				    }
+				case TOKinvariant:
+				    if (peek(token).value == TOKlparen) {
+				    	// goto Ldefault;
+				    	break;
+				    } else {
+					    storageClass = STC.STCinvariant;
+					    modifiers.add(new Modifier(token));
+					    // goto L2;
+					    continue loopFor;
+				    }
+				case TOKin:
+					storageClass = STC.STCin;
+					modifiers.add(new Modifier(token));
+					// goto L2;
+					continue loopFor;
+				case TOKout:
+					storageClass = STC.STCout;
+					modifiers.add(new Modifier(token));
+					// goto L2;
+					continue loopFor;
+				case TOKinout:
+					storageClass = STC.STCref;
+					modifiers.add(new Modifier(token));
+					// goto L2;
+					continue loopFor;
+				case TOKref:
+					storageClass = STC.STCref;
+					modifiers.add(new Modifier(token));
+					// goto L2;
+					continue loopFor;
+				case TOKlazy:
+					storageClass = STC.STClazy;
+					modifiers.add(new Modifier(token));
+					// goto L2;
+					continue loopFor;
+				case TOKscope:
+					storageClass = STC.STCscope;
+					modifiers.add(new Modifier(token));
+					// goto L2;
+					continue loopFor;
+				case TOKfinal:
+					storageClass = STC.STCfinal;
+					modifiers.add(new Modifier(token));
+					// goto L2;
+					continue loopFor;
+				case TOKstatic:
+					storageClass = STC.STCstatic;
+					modifiers.add(new Modifier(token));
+					// goto L2;
+					continue loopFor;
+					
+				// L2:
+					// TODO missing code (checking of some incompatible passing modes)
+					// continue;
+					
+				default:
+					// Ldefault:
+					break;
+				}
 				IdentifierExp[] pointer2_ai = { ai };
 				at = parseType(pointer2_ai);
 				ai = pointer2_ai[0];
@@ -1353,7 +1365,8 @@ public class Parser extends Lexer {
 					}
 					varargs = 2;
 					
-					a = new Argument(inout, at, ai, ae);
+					a = new Argument(null, at, ai, ae);
+					a.modifiers = modifiers;
 					a.setSourceRange(firstTokenStart, prevToken.ptr + prevToken.len - firstTokenStart);
 					arguments.add(a);
 					nextToken();
@@ -1361,16 +1374,21 @@ public class Parser extends Lexer {
 				}
 				
 				if (at != null || ai != null || ae != null) {
-					a = new Argument(inout, at, ai, ae);
+					a = new Argument(null, at, ai, ae);
+					a.modifiers = modifiers;
 					a.setSourceRange(firstTokenStart, prevToken.ptr + prevToken.len - firstTokenStart);
 					arguments.add(a);
 				}
 				if (token.value == TOKcomma) {
 					nextToken();
-				} else {
-					continue;
+					// goto L1;
+					continue loopWhile;
 				}
+				break;
 			}
+			break;
+			
+			// L1: ;
 		}
 		check(TOKrparen);
 		pvarargs[0] = varargs;
@@ -1593,7 +1611,7 @@ public class Parser extends Lexer {
 			case TOKpublic:
 				protection = PROT.fromTOK(token.value);
 				
-				modifier = new Modifier(token.value);
+				modifier = new Modifier(token);
 				modifier.setSourceRange(token.ptr, token.len);
 				continue;
 			default:
@@ -2601,7 +2619,7 @@ public class Parser extends Lexer {
 			case TOKdeprecated:
 				stc = STC.fromTOK(token.value);
 				
-				Modifier currentModifier = new Modifier(token.value);
+				Modifier currentModifier = new Modifier(token);
 				currentModifier.setSourceRange(token.ptr, token.len);
 				if ((storage_class & stc) != 0) {
 					error("Redundant storage class", IProblem.RedundantStorageClass, token.lineNumber, currentModifier);
@@ -2615,7 +2633,7 @@ public class Parser extends Lexer {
 				if (peek(token).value != TOKlparen) {
 					stc = STC.fromTOK(token.value);
 					
-					currentModifier = new Modifier(token.value);
+					currentModifier = new Modifier(token);
 					currentModifier.setSourceRange(token.ptr, token.len);
 					if ((storage_class & stc) != 0) {
 						error("Redundant storage class", IProblem.RedundantStorageClass, token.lineNumber, currentModifier);
@@ -3460,6 +3478,7 @@ public class Parser extends Lexer {
 				int storageClass;
 				InOut inout;
 				Argument a;
+				List<Modifier> modifiers = new ArrayList<Modifier>(1);
 				
 				int argumentStart = token.ptr;
 
@@ -3468,10 +3487,12 @@ public class Parser extends Lexer {
 				if (token.value == TOKinout) {
 					storageClass = STC.STCref;
 					inout = InOut.InOut;
+					modifiers.add(new Modifier(token));
 					nextToken();
 				} else if (token.value == TOK.TOKref) {
 					storageClass = STC.STCref;
 					inout = InOut.Ref;
+					modifiers.add(new Modifier(token));
 					nextToken();
 				}
 				if (token.value == TOKidentifier) {
@@ -3482,6 +3503,7 @@ public class Parser extends Lexer {
 						nextToken();
 						// goto Larg;
 						a = new Argument(inout, at, ai, null);
+						a.modifiers = modifiers;
 						a.setSourceRange(argumentStart, prevToken.ptr + prevToken.len - argumentStart);
 						arguments.add(a);
 						if (token.value == TOKcomma) {
@@ -3561,12 +3583,15 @@ public class Parser extends Lexer {
 
 			if (token.value == TOKauto) {
 				int autoTokenStart = token.ptr;
+				List<Modifier> modifiers = new ArrayList<Modifier>(1);
+				modifiers.add(new Modifier(token));
 				
 				nextToken();
 				if (token.value == TOKidentifier) {
 					Token t2 = peek(token);
 					if (t2.value == TOKassign) {
-						arg = new Argument(InOut.Auto, null, newIdentifierExp(), null);
+						arg = new Argument(null, null, newIdentifierExp(), null);
+						arg.modifiers = modifiers;
 						arg.setSourceRange(autoTokenStart, token.ptr + token.len - autoTokenStart);
 						
 						nextToken();

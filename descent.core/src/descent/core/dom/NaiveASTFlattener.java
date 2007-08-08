@@ -187,20 +187,9 @@ class NaiveASTFlattener extends ASTVisitor {
 	
 	@Override
 	public boolean visit(Argument node) {
-		boolean mustAppendSpace = true;
-		switch(node.getPassageMode()) {
-		case DEFAULT: mustAppendSpace = false; break;
-		case IN: this.buffer.append("in"); break;
-		case INOUT: this.buffer.append("inout"); break;
-		case LAZY: this.buffer.append("lazy"); break;
-		case OUT: this.buffer.append("out"); break;
-		case REF: this.buffer.append("ref"); break;
-		case CONST: this.buffer.append("const"); break;
-		case FINAL: this.buffer.append("final"); break;
-		case INVARIANT: this.buffer.append("invariant"); break;
-		case SCOPE: this.buffer.append("scope"); break;
-		case STATIC: this.buffer.append("static"); break;
-		}
+		visitList(node.modifiers(), " ");
+		
+		boolean mustAppendSpace = node.modifiers().size() > 0;
 		
 		if (node.getType() != null) {
 			if (mustAppendSpace) {

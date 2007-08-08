@@ -110,6 +110,39 @@ public final class Flags {
 	 * @since 2.0
 	 */
 	public static final int AccScope = 0x4000;
+	
+	// Extensions for passage modes
+	
+	/**
+	 * In property flag.
+	 * @since 2.0
+	 */
+	public static final int AccIn = 0x00010000;
+	
+	/**
+	 * Out property flag.
+	 * @since 2.0
+	 */
+	public static final int AccOut = 0x00020000;
+	
+	/**
+	 * Inout property flag.
+	 * @since 2.0
+	 */
+	public static final int AccInout = 0x00040000;
+	
+	/**
+	 * Lazy property flag.
+	 * @since 2.0
+	 */
+	public static final int AccLazy = 0x00080000;
+	
+	/**
+	 * Ref property flag.
+	 * @since 2.0
+	 */
+	public static final int AccRef = 0x00100000;
+	
 	/**
 	 * Varargs property flag.
 	 * @since 2.0

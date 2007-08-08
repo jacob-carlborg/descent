@@ -35,7 +35,6 @@ import descent.core.compiler.IScanner;
 import descent.core.compiler.ITerminalSymbols;
 import descent.core.dom.*;
 import descent.core.dom.AggregateDeclaration.Kind;
-import descent.core.dom.Argument.PassageMode;
 import descent.core.dom.ExternDeclaration.Linkage;
 import descent.core.dom.rewrite.TargetSourceRangeComputer;
 import descent.core.dom.rewrite.TargetSourceRangeComputer.SourceRange;
@@ -1526,6 +1525,7 @@ public final class ASTRewriteAnalyzer extends ASTVisitor {
 		
 		int pos = node.getStartPosition();
 		
+		/* TODO AST rewriter
 		Argument.PassageMode oldPassage = (Argument.PassageMode) getOriginalValue(node, Argument.PASSAGE_MODE_PROPERTY);
 		int passageTerminalSymbol = 0;
 		switch(oldPassage) {
@@ -1572,6 +1572,7 @@ public final class ASTRewriteAnalyzer extends ASTVisitor {
 		pos = rewriteNode(node, Argument.TYPE_PROPERTY, pos, oldPassage == PassageMode.DEFAULT ? ASTRewriteFormatter.NONE : ASTRewriteFormatter.SPACE);
 		pos = rewriteNode(node, Argument.NAME_PROPERTY, pos, ASTRewriteFormatter.SPACE);
 		pos = rewriteNode(node, Argument.DEFAULT_VALUE_PROPERTY, pos, ASTRewriteFormatter.EQUALS);
+		*/
 		
 		return false;
 	}

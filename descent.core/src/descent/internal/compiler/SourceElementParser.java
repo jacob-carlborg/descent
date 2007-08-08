@@ -208,18 +208,9 @@ public class SourceElementParser extends ASTVisitor {
 			Argument argument = arguments.get(i);
 			
 			StringBuilder sb = new StringBuilder();
-			switch(argument.getPassageMode()) {
-			case DEFAULT: break;
-			case IN: sb.append("in"); break;
-			case INOUT: sb.append("inout"); break;
-			case LAZY: sb.append("lazy"); break;
-			case OUT: sb.append("out"); break;
-			case REF: sb.append("ref"); break;
-			case CONST: sb.append("const"); break;
-			case FINAL: sb.append("final"); break;
-			case INVARIANT: sb.append("invariant"); break;
-			case SCOPE: sb.append("scope"); break;
-			case STATIC: sb.append("static"); break;
+			for(Modifier modifier : argument.modifiers()) {
+				sb.append(modifier.getModifierKeyword().toString());
+				sb.append(" ");
 			}
 			
 			Type type = argument.getType();

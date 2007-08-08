@@ -239,20 +239,8 @@ public class CodeFormatterVisitor extends ASTVisitor
 	
 	public boolean visit(Argument node)
 	{
-		switch(node.getPassageMode()) {
-		case CONST: scribe.printNextToken(TOK.TOKconst); scribe.space(); break;
-		case DEFAULT: break;
-		case FINAL: scribe.printNextToken(TOK.TOKfinal); scribe.space(); break;
-		case IN: scribe.printNextToken(TOK.TOKin); scribe.space(); break;
-		case INOUT: scribe.printNextToken(TOK.TOKinout); scribe.space(); break;
-		case INVARIANT: scribe.printNextToken(TOK.TOKinvariant); scribe.space(); break;
-		case LAZY: scribe.printNextToken(TOK.TOKlazy); scribe.space(); break;
-		case OUT: scribe.printNextToken(TOK.TOKout); scribe.space(); break;
-		case REF: scribe.printNextToken(TOK.TOKref); scribe.space(); break;
-		case SCOPE: scribe.printNextToken(TOK.TOKscope); scribe.space(); break;
-		case STATIC: scribe.printNextToken(TOK.TOKstatic); scribe.space(); break;
-		case AUTO: scribe.printNextToken(TOK.TOKauto); scribe.space(); break;
-		}
+		formatModifiers(true, node.modifiers());
+		
 		Type type = node.getType();
 		boolean hasType = false;
 		if(null != type && !((type instanceof PrimitiveType) && 
@@ -1385,6 +1373,11 @@ public class CodeFormatterVisitor extends ASTVisitor
 		case SCOPE_KEYWORD: scribe.printNextToken(TOK.TOKscope); break;
 		case STATIC_KEYWORD: scribe.printNextToken(TOK.TOKstatic); break;
 		case SYNCHRONIZED_KEYWORD: scribe.printNextToken(TOK.TOKsynchronized); break;
+		case IN_KEYWORD: scribe.printNextToken(TOK.TOKin); break;
+		case INOUT_KEYWORD: scribe.printNextToken(TOK.TOKinout); break;
+		case LAZY_KEYWORD: scribe.printNextToken(TOK.TOKlazy); break;
+		case OUT_KEYWORD: scribe.printNextToken(TOK.TOKout); break;
+		case REF_KEYWORD: scribe.printNextToken(TOK.TOKref); break;
 		default: throw new IllegalStateException(); 
 		}
 		return false;

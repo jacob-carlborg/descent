@@ -9,8 +9,8 @@ public class Argument extends ASTNode {
 	public IdentifierExp ident;
 	public Expression defaultArg;
 	public Expression sourceDefaultArg;
-    
-    public Argument(InOut inout, Type type, IdentifierExp ident, Expression defaultArg) {
+	
+	public Argument(InOut inout, Type type, IdentifierExp ident, Expression defaultArg) {
 		this.inout = inout;
 		if (type == null) {
 			this.type = Type.terror;

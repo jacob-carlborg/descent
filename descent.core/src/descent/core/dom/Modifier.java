@@ -26,6 +26,11 @@ import descent.core.Flags;
  *    <b>const</b>
  *    <b>scope</b>
  *    <b>invariant</b>
+ *    <b>in</b>
+ *    <b>out</b>
+ *    <b>inout</b>
+ *    <b>lazy</b>
+ *    <b>ref</b>
  * </pre>
  */
 public class Modifier extends ASTNode {
@@ -51,6 +56,11 @@ public class Modifier extends ASTNode {
 		CONST_KEYWORD("const", CONST),
 		SCOPE_KEYWORD("scope", SCOPE),
 		INVARIANT_KEYWORD("invariant", INVARIANT),
+		IN_KEYWORD("in", IN),
+		OUT_KEYWORD("out", OUT),
+		INOUT_KEYWORD("inout", INOUT),
+		LAZY_KEYWORD("lazy", LAZY),
+		REF_KEYWORD("ref", REF),
 		;
 		
 		private String keyword;
@@ -212,6 +222,31 @@ public class Modifier extends ASTNode {
 	 * "invariant" modifier constant (bit mask).
 	 */
 	public static final int INVARIANT = Flags.AccInvariant;
+	
+	/**
+	 * "in" modifier constant (bit mask).
+	 */
+	public static final int IN = Flags.AccIn;
+	
+	/**
+	 * "out" modifier constant (bit mask).
+	 */
+	public static final int OUT = Flags.AccOut;
+	
+	/**
+	 * "inout" modifier constant (bit mask).
+	 */
+	public static final int INOUT = Flags.AccInout;
+	
+	/**
+	 * "lazy" modifier constant (bit mask).
+	 */
+	public static final int LAZY = Flags.AccLazy;
+	
+	/**
+	 * "ref" modifier constant (bit mask).
+	 */
+	public static final int REF = Flags.AccRef;
 	
 	/**
 	 * The "modifierKeyword" structural property of this node type.

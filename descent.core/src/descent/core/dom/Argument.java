@@ -10,52 +10,22 @@ import java.util.List;
  *
  * <pre>
  * Argument:
- *    [ | <b>in</b> | <b>out</b> | <b>inout</b> | <b>lazy</b> ] [ Type ] [ SimpleName ] [ <b>=</b> Expression ]
+ *    { Modifier } [ Type ] [ SimpleName ] [ <b>=</b> Expression ]
  * </pre>
  */
 public class Argument extends ASTNode {
 	
 	/**
-	 * The passage mode of the argument.
+	 * The "modifiers" structural property of this node type.
 	 */
-	public static enum PassageMode {
-		/** Default (no token) passage mode */
-		DEFAULT,
-		/** "in" passage mode */
-		IN,
-		/** "out" passage mode */
-		OUT,
-		/** "inout" passage mode */
-		INOUT,
-		/** "lazy" passage mode */
-		LAZY,
-		/** "ref" passage mode */
-		REF,
-		/** "scope" passage mode */
-		SCOPE,
-		/** "final" passage mode */
-		FINAL,
-		/** "static" passage mode */
-		STATIC,
-		/** "const" passage mode */
-		CONST,
-		/** "invariant" passage mode */
-		INVARIANT,
-		/** "auto" passage mode (only for if)*/
-		AUTO,
-	}
-
-	/**
-	 * The "passageMode" structural property of this node type.
-	 */
-	public static final SimplePropertyDescriptor PASSAGE_MODE_PROPERTY =
-		new SimplePropertyDescriptor(Argument.class, "passageMode", PassageMode.class, MANDATORY); //$NON-NLS-1$
+	public static final ChildListPropertyDescriptor MODIFIERS_PROPERTY =
+		new ChildListPropertyDescriptor(Argument.class, "modifiers", Modifier.class, NO_CYCLE_RISK); //$NON-NLS-1$
 
 	/**
 	 * The "type" structural property of this node type.
 	 */
 	public static final ChildPropertyDescriptor TYPE_PROPERTY =
-		new ChildPropertyDescriptor(Argument.class, "type", Type.class, OPTIONAL, CYCLE_RISK); //$NON-NLS-1$
+		new ChildPropertyDescriptor(Argument.class, "type", Type.class, MANDATORY, CYCLE_RISK); //$NON-NLS-1$
 
 	/**
 	 * The "name" structural property of this node type.
@@ -79,7 +49,7 @@ public class Argument extends ASTNode {
 	static {
 		List properyList = new ArrayList(4);
 		createPropertyList(Argument.class, properyList);
-		addProperty(PASSAGE_MODE_PROPERTY, properyList);
+		addProperty(MODIFIERS_PROPERTY, properyList);
 		addProperty(TYPE_PROPERTY, properyList);
 		addProperty(NAME_PROPERTY, properyList);
 		addProperty(DEFAULT_VALUE_PROPERTY, properyList);
@@ -102,10 +72,12 @@ public class Argument extends ASTNode {
 	}
 
 	/**
-	 * The passageMode.
+	 * The modifiers
+	 * (element type: <code>Modifier</code>).
+	 * Defaults to an empty list.
 	 */
-	private PassageMode passageMode = PassageMode.DEFAULT;
-
+	private ASTNode.NodeList modifiers =
+		new ASTNode.NodeList(MODIFIERS_PROPERTY);
 	/**
 	 * The type.
 	 */
@@ -145,22 +117,6 @@ public class Argument extends ASTNode {
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
 	 */
-	final Object internalGetSetObjectProperty(SimplePropertyDescriptor property, boolean get, Object value) {
-		if (property == PASSAGE_MODE_PROPERTY) {
-			if (get) {
-				return getPassageMode();
-			} else {
-				setPassageMode((PassageMode) value);
-				return null;
-			}
-		}
-		// allow default implementation to flag the error
-		return super.internalGetSetObjectProperty(property, get, value);
-	}
-
-	/* (omit javadoc for this method)
-	 * Method declared on ASTNode.
-	 */
 	final ASTNode internalGetSetChildProperty(ChildPropertyDescriptor property, boolean get, ASTNode child) {
 		if (property == TYPE_PROPERTY) {
 			if (get) {
@@ -193,6 +149,17 @@ public class Argument extends ASTNode {
 	/* (omit javadoc for this method)
 	 * Method declared on ASTNode.
 	 */
+	final List internalGetChildListProperty(ChildListPropertyDescriptor property) {
+		if (property == MODIFIERS_PROPERTY) {
+			return modifiers();
+		}
+		// allow default implementation to flag the error
+		return super.internalGetChildListProperty(property);
+	}
+
+	/* (omit javadoc for this method)
+	 * Method declared on ASTNode.
+	 */
 	final int getNodeType0() {
 		return ARGUMENT;
 	}
@@ -203,9 +170,9 @@ public class Argument extends ASTNode {
 	ASTNode clone0(AST target) {
 		Argument result = new Argument(target);
 		result.setSourceRange(this.getStartPosition(), this.getLength());
-		result.setPassageMode(getPassageMode());
-	result.setType((Type) ASTNode.copySubtree(target, getType()));
-	result.setName((SimpleName) ASTNode.copySubtree(target, getName()));
+		result.modifiers.addAll(ASTNode.copySubtrees(target, modifiers()));
+		result.setType((Type) getType().clone(target));
+		result.setName((SimpleName) getName().clone(target));
 	result.setDefaultValue((Expression) ASTNode.copySubtree(target, getDefaultValue()));
 		return result;
 	}
@@ -225,6 +192,7 @@ public class Argument extends ASTNode {
 		boolean visitChildren = visitor.visit(this);
 		if (visitChildren) {
 			// visit children in normal left to right reading order
+			acceptChildren(visitor, this.modifiers);
 			acceptChild(visitor, getType());
 			acceptChild(visitor, getName());
 			acceptChild(visitor, getDefaultValue());
@@ -233,27 +201,14 @@ public class Argument extends ASTNode {
 	}
 
 	/**
-	 * Returns the passage mode of this argument.
+	 * Returns the live ordered list of modifiers for this
+	 * argument.
 	 * 
-	 * @return the passage mode
+	 * @return the live list of argument
+	 *    (element type: <code>Modifier</code>)
 	 */ 
-	public PassageMode getPassageMode() {
-		return this.passageMode;
-	}
-
-	/**
-	 * Sets the passage mode of this argument.
-	 * 
-	 * @param passageMode the passage mode
-	 * @exception IllegalArgumentException if the argument is incorrect
-	 */ 
-	public void setPassageMode(PassageMode passageMode) {
-		if (passageMode == null) {
-			throw new IllegalArgumentException();
-		}
-		preValueChange(PASSAGE_MODE_PROPERTY);
-		this.passageMode = passageMode;
-		postValueChange(PASSAGE_MODE_PROPERTY);
+	public List<Modifier> modifiers() {
+		return this.modifiers;
 	}
 
 	/**
@@ -262,6 +217,16 @@ public class Argument extends ASTNode {
 	 * @return the type
 	 */ 
 	public Type getType() {
+		if (this.type == null) {
+			// lazy init must be thread-safe for readers
+			synchronized (this) {
+				if (this.type == null) {
+					preLazyInit();
+					this.type = new PrimitiveType(this.ast);
+					postLazyInit(this.type, TYPE_PROPERTY);
+				}
+			}
+		}
 		return this.type;
 	}
 
@@ -277,6 +242,9 @@ public class Argument extends ASTNode {
 	 * </ul>
 	 */ 
 	public void setType(Type type) {
+		if (type == null) {
+			throw new IllegalArgumentException();
+		}
 		ASTNode oldChild = this.type;
 		preReplaceChild(oldChild, type, TYPE_PROPERTY);
 		this.type = type;
@@ -304,6 +272,9 @@ public class Argument extends ASTNode {
 	 * </ul>
 	 */ 
 	public void setName(SimpleName name) {
+		if (name == null) {
+			throw new IllegalArgumentException();
+		}
 		ASTNode oldChild = this.name;
 		preReplaceChild(oldChild, name, NAME_PROPERTY);
 		this.name = name;
@@ -350,6 +321,7 @@ public class Argument extends ASTNode {
 	int treeSize() {
 		return
 			memSize()
+			+ (this.modifiers.listSize())
 			+ (this.type == null ? 0 : getType().treeSize())
 			+ (this.name == null ? 0 : getName().treeSize())
 			+ (this.defaultValue == null ? 0 : getDefaultValue().treeSize())

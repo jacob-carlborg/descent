@@ -1894,22 +1894,14 @@ public class ASTConverter {
 	
 	public descent.core.dom.Argument convert(Argument a) {
 		descent.core.dom.Argument b = new descent.core.dom.Argument(ast);
-		switch(a.inout) {
-		case In: b.setPassageMode(descent.core.dom.Argument.PassageMode.IN); break;
-		case InOut: b.setPassageMode(descent.core.dom.Argument.PassageMode.INOUT); break;
-		case Lazy: b.setPassageMode(descent.core.dom.Argument.PassageMode.LAZY); break;
-		case None: b.setPassageMode(descent.core.dom.Argument.PassageMode.DEFAULT); break;
-		case Out: b.setPassageMode(descent.core.dom.Argument.PassageMode.OUT); break;
-		case Ref: b.setPassageMode(descent.core.dom.Argument.PassageMode.REF); break;
-		case Const: b.setPassageMode(descent.core.dom.Argument.PassageMode.CONST); break;
-		case Final: b.setPassageMode(descent.core.dom.Argument.PassageMode.FINAL); break;
-		case Invariant: b.setPassageMode(descent.core.dom.Argument.PassageMode.INVARIANT); break;
-		case Scope: b.setPassageMode(descent.core.dom.Argument.PassageMode.SCOPE); break;
-		case Static: b.setPassageMode(descent.core.dom.Argument.PassageMode.STATIC); break;
-		case Auto: b.setPassageMode(descent.core.dom.Argument.PassageMode.AUTO); break;
+		if (a.modifiers != null) {
+			convertModifiers(b.modifiers(), a.modifiers);
 		}
 		if (a.type != null) {
-			b.setType(convert(a.type));
+			descent.core.dom.Type convertedType = convert(a.type);
+			if (convertedType != null) {
+				b.setType(convertedType);
+			}
 		}
 		if (a.ident != null) {
 			b.setName(convert(a.ident));
@@ -2385,8 +2377,13 @@ public class ASTConverter {
 		case TOKconst: b.setModifierKeyword(descent.core.dom.Modifier.ModifierKeyword.CONST_KEYWORD); break;
 		case TOKscope: b.setModifierKeyword(descent.core.dom.Modifier.ModifierKeyword.SCOPE_KEYWORD); break;
 		case TOKinvariant: b.setModifierKeyword(descent.core.dom.Modifier.ModifierKeyword.INVARIANT_KEYWORD); break;
+		case TOKin: b.setModifierKeyword(descent.core.dom.Modifier.ModifierKeyword.IN_KEYWORD); break;
+		case TOKout: b.setModifierKeyword(descent.core.dom.Modifier.ModifierKeyword.OUT_KEYWORD); break;
+		case TOKinout: b.setModifierKeyword(descent.core.dom.Modifier.ModifierKeyword.INOUT_KEYWORD); break;
+		case TOKlazy: b.setModifierKeyword(descent.core.dom.Modifier.ModifierKeyword.LAZY_KEYWORD); break;
+		case TOKref: b.setModifierKeyword(descent.core.dom.Modifier.ModifierKeyword.REF_KEYWORD); break;
 		default:
-			throw new IllegalStateException();
+			throw new IllegalStateException("Invalid modifier: " + a.tok);
 		}
 		b.setSourceRange(a.start, a.length);
 		return b;

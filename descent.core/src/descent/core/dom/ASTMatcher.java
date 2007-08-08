@@ -297,7 +297,7 @@ public class ASTMatcher {
 		}
 		Argument o = (Argument) other;
 		return (
-			node.getPassageMode() == o.getPassageMode()
+			safeSubtreeListMatch(node.modifiers(), o.modifiers())
 			&& safeSubtreeMatch(node.getType(), o.getType())
 			&& safeSubtreeMatch(node.getName(), o.getName())
 			&& safeSubtreeMatch(node.getDefaultValue(), o.getDefaultValue())
