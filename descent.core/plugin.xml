@@ -59,6 +59,12 @@
             id="dSource"
             name="%javaSourceName"
             priority="high"/>
+      <content-type
+            base-type="org.eclipse.core.runtime.text"
+            file-names="trace.log"
+            id="dTraceLog"
+            name="D Trace Log"
+            priority="high"/>
    </extension>
    <extension
          point="org.eclipse.core.runtime.preferences">

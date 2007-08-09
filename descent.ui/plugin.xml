@@ -792,6 +792,14 @@
             >
          <contentTypeBinding contentTypeId="descent.core.dSource"/>
       </editor>
+      <editor
+            class="descent.internal.ui.traceeditor.TraceEditor"
+            default="true"
+            icon="$nl$/icons/full/obj16/trace_obj.gif"
+            id="descent.ui.TraceEditor"
+            name="Trace Log Viewer">
+         <contentTypeBinding contentTypeId="descent.core.dTraceLog"/>
+      </editor>
    </extension>
    <extension
          point="org.eclipse.ui.themes">
