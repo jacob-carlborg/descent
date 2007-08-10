@@ -29,7 +29,7 @@ public class AddExp extends BinExp {
 			
 			if ((tb1.ty == TY.Tarray || tb1.ty == TY.Tsarray) &&
 		        (tb2.ty == TY.Tarray || tb2.ty == TY.Tsarray) /* &&
-		            TODO (tb1.nextOf().equals(tb2.nextOf())) */)
+		            NEXTOF (tb1.nextOf().equals(tb2.nextOf())) */)
 		    {
 		            type = e1.type;
 		            e = this;

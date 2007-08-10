@@ -11,4 +11,61 @@ public class CatAssignExp extends BinExp {
 		return CAT_ASSIGN_EXP;
 	}
 
+	@Override
+	public Expression semantic(Scope sc, SemanticContext context)
+	{
+		Expression e;
+
+	    super.semantic(sc, context);
+	    e2 = resolveProperties(sc, e2, context);
+
+	    e = op_overload(sc);
+	    if (null != e)
+	    	return e;
+	    
+	    if (e1.op == TOK.TOKslice)
+	    {
+	    	SliceExp se = (SliceExp) e1;
+
+	    	if (se.e1.type.toBasetype(context).ty == TY.Tsarray)
+	    		error("cannot append to static array %s", se.e1.type.toChars());
+	    }
+
+	    e1 = e1.modifiableLvalue(sc, null, context);
+	    
+
+	    Type tb1 = e1.type.toBasetype(context);
+	    Type tb2 = e2.type.toBasetype(context);
+
+	    if ((tb1.ty == TY.Tarray) &&
+	    	(tb2.ty == TY.Tarray || tb2.ty == TY.Tsarray) &&
+	    	MATCH.MATCHnomatch != (e2.implicitConvTo(e1.type, context)) /* ||
+	    	NEXTOF tb2.nextOf().implicitConvTo(tb1.nextOf())) */)
+	    {
+	    	// Append array
+	    	e2 = e2.castTo(sc, e1.type, context);
+	    	type = e1.type;
+	    	e = this;
+	    }
+	    
+	    else if ((tb1.ty == TY.Tarray) /* && TODO e2.implicitConvTo(tb1.nextOf() */)
+	    {
+	    	// Append element
+	    	e2 = e2.castTo(sc, /* TODO tb1.nextOf() */ tb1, context);
+	    	type = e1.type;
+	    	e = this;
+	    }
+	    
+	    else
+	    {
+			error("cannot append type %s to type %s", tb2.toChars(), tb1.toChars());
+			type = Type.tint32;
+			e = this;
+	    }
+	    
+	    return e;
+	}
+	
+	
+	
 }
