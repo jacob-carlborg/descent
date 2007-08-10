@@ -1,5 +1,8 @@
 package descent.internal.core.trace;
 
+import java.text.ParseException;
+
+import descent.core.Mangling;
 import descent.core.trace.IFan;
 import descent.core.trace.ITraceNode;
 
@@ -16,6 +19,7 @@ public class TraceNode implements ITraceNode {
 	private long functionTime;
 	private long functionTimePerCall;
 	private long treeTime;
+	private String demangledName;
 
 	public TraceNode(String signature, long numberOfCalls, long ticks, long treeTicks, IFan[] fanIn) {
 		this.signature = signature;
@@ -89,6 +93,17 @@ public class TraceNode implements ITraceNode {
 	
 	public void setTreeTime(long treeTime) {
 		this.treeTime = treeTime;
+	}
+	
+	public String getDemangledName() {
+		if (demangledName == null) {
+			try {
+				demangledName = Mangling.demange(signature);
+			} catch (ParseException e) {
+				demangledName = signature;
+			}
+		}
+		return demangledName;
 	}
 
 }

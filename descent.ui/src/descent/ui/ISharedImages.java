@@ -235,6 +235,15 @@ public interface ISharedImages {
 	public static final String IMG_OBJS_DEFAULT= JavaPluginImages.IMG_MISC_DEFAULT;
 	
 	/**
+	 * Key to access the shared image or image descriptor for a fan-in.
+	 */	
+	public static final String IMG_OBJS_FAN_IN= JavaPluginImages.IMG_OBJS_FAN_IN;
+	/**
+	 * Key to access the shared image or image descriptor for a fan-in.
+	 */	
+	public static final String IMG_OBJS_FAN_OUT= JavaPluginImages.IMG_OBJS_FAN_OUT;
+	
+	/**
 	 * Key to access the shared image or image descriptor for a public field.
 	 * @since 3.0
 	 */

@@ -201,6 +201,9 @@ public class JavaPluginImages {
 	public static final String IMG_OBJS_SEARCH_OCCURRENCE= NAME_PREFIX + "occ_match.gif"; //$NON-NLS-1$
 	
 	public static final String IMG_OBJS_HELP= NAME_PREFIX + "help.gif"; //$NON-NLS-1$
+	
+	public static final String IMG_OBJS_FAN_IN= NAME_PREFIX + "fan_in_obj.gif"; //$NON-NLS-1$
+	public static final String IMG_OBJS_FAN_OUT= NAME_PREFIX + "fan_out_obj.gif"; //$NON-NLS-1$
 
 	/*
 	 * Set of predefined Image Descriptors.
@@ -426,6 +429,9 @@ public class JavaPluginImages {
     
 	public static final ImageDescriptor DESC_OBJ_OVERRIDES= createUnManaged(T_OBJ, "over_co.gif");  					//$NON-NLS-1$
 	public static final ImageDescriptor DESC_OBJ_IMPLEMENTS= createUnManaged(T_OBJ, "implm_co.gif");  				//$NON-NLS-1$
+	
+	public static final ImageDescriptor DESC_OBJS_FAN_IN= createManagedFromKey(T_OBJ, IMG_OBJS_FAN_IN);
+	public static final ImageDescriptor DESC_OBJS_FAN_OUT= createManagedFromKey(T_OBJ, IMG_OBJS_FAN_OUT);
 	
 	public static final ImageDescriptor DESC_OVR_STATIC= createUnManagedCached(T_OVR, "static_co.gif"); 						//$NON-NLS-1$
 	public static final ImageDescriptor DESC_OVR_FINAL= createUnManagedCached(T_OVR, "final_co.gif"); 						//$NON-NLS-1$

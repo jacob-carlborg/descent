@@ -18,5 +18,11 @@ public interface IFan {
 	 * @return the number of invocations
 	 */
 	long getNumberOfCalls();
+	
+	/**
+	 * Determines if this is a fan-in.
+	 * @return <code>true</code> iff this is a fan-in
+	 */
+	boolean isIn();
 
 }

@@ -7,6 +7,7 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
+import java.util.Timer;
 
 import descent.internal.core.trace.Fan;
 import descent.internal.core.trace.Trace;
@@ -63,8 +64,32 @@ public class TraceParser {
 				}
 				
 				trace.addNode(currentNode);
+				currentNode = null;
 				
 				if (first == '=') {
+					// Find number, it's ticks per second
+				loop2:
+					for(int i = 1; i < line.length(); i++) {
+					switch(line.charAt(i)) {
+						case '0': case '1': case '2': case '3': case '4': case '5':
+						case '6': case '7': case '8': case '9':
+							int j = i + 1;
+						loop3:
+							for(j = i; j < line.length(); j++) {
+								switch(line.charAt(j)) {
+								case '0': case '1': case '2': case '3': case '4': case '5':
+								case '6': case '7': case '8': case '9':
+									break;
+								default:
+									break loop3;
+								}
+							}
+							trace.setTicksPerSecond(Long.parseLong(line.substring(i, j)));
+							break loop2;
+						default:
+							break;
+						}
+					}
 					break loop;
 				}				
 				break;
@@ -81,7 +106,7 @@ public class TraceParser {
 						long time = Long.parseLong(text);
 						if (tokenizer.hasMoreTokens()) {
 							text = tokenizer.nextToken();
-							currentFans.add(new Fan(trace, text, time));
+							currentFans.add(new Fan(trace, text, time, currentNode == null));
 						}
 					} catch (NumberFormatException e) {
 						throw new ParseException("Expecting <number> <signature> in line " + lineNumber, lineNumber);

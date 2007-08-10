@@ -12,6 +12,12 @@ public interface ITraceNode {
 	String getSignature();
 	
 	/**
+	 * Returns the demangled name of this node's signature.
+	 * @returnthe demangled name of this node's signature
+	 */
+	String getDemangledName();
+	
+	/**
 	 * Returns the number of ticks spent in this function,
 	 * <i>excluding</i> the number of ticks spent in calls
 	 * made by this function.

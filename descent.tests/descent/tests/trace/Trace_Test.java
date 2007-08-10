@@ -45,6 +45,12 @@ public class Trace_Test extends TestCase {
 		assertEquals(4, trace.getNodes().length);
 	}
 	
+	public void testTicksPerSecond() throws Exception {
+		TraceParser parser = new TraceParser();
+		ITrace trace = parser.parse(new StringReader(TRACE));
+		assertEquals(3579545, trace.getTicksPerSecond());
+	}
+	
 	public void testTracesProperties() throws Exception {
 		TraceParser parser = new TraceParser();
 		ITrace trace = parser.parse(new StringReader(TRACE));
@@ -64,6 +70,7 @@ public class Trace_Test extends TestCase {
 		fans = node.getFanOut();
 		assertEquals(2, fans.length);
 		assertEquals(1, fans[0].getNumberOfCalls());
+		assertFalse(fans[0].isIn());
 		assertEquals("_D4main3fooFiZv", fans[0].getTraceNode().getSignature());
 		assertEquals(1, fans[1].getNumberOfCalls());
 		assertEquals("_D4main4foo2FiZv", fans[1].getTraceNode().getSignature());
@@ -104,6 +111,7 @@ public class Trace_Test extends TestCase {
 		
 		assertEquals(1, fans[0].getNumberOfCalls());
 		assertEquals("_D4main3fooFiZv", fans[0].getTraceNode().getSignature());
+		assertTrue(fans[0].isIn());
 		assertEquals(1, fans[1].getNumberOfCalls());
 		assertEquals("_D4main4foo2FiZv", fans[1].getTraceNode().getSignature());
 		
