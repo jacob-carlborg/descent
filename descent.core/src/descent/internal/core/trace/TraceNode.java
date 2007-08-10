@@ -2,7 +2,7 @@ package descent.internal.core.trace;
 
 import java.text.ParseException;
 
-import descent.core.Mangling;
+import descent.core.Mangler;
 import descent.core.trace.IFan;
 import descent.core.trace.ITraceNode;
 
@@ -98,7 +98,7 @@ public class TraceNode implements ITraceNode {
 	public String getDemangledName() {
 		if (demangledName == null) {
 			try {
-				demangledName = Mangling.demange(signature);
+				demangledName = Mangler.demange(signature);
 			} catch (ParseException e) {
 				demangledName = signature;
 			}

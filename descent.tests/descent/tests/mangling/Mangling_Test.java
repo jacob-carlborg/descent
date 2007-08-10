@@ -2,7 +2,7 @@ package descent.tests.mangling;
 
 import java.text.ParseException;
 
-import descent.core.Mangling;
+import descent.core.Mangler;
 import junit.framework.TestCase;
 
 public class Mangling_Test extends TestCase {
@@ -73,9 +73,13 @@ public class Mangling_Test extends TestCase {
 	public void testMangling13() throws Exception {
 		assertEqualsI(  "_D8demangle4testFLAiXi", "int demangle.test(lazy int[] ...)");
 	}
+	
+	public void testMangling14() throws Exception {
+		assertEqualsI("_D3dfl5event54__T5EventTC3dfl7control7ControlTC3dfl5event9EventArgsZ5Event50__T10addHandlerTDFC6ObjectC3dfl5event9EventArgsZvZ10addHandlerMFDFC6ObjectC3dfl5event9EventArgsZvZv", "void dfl.event.Event!(class dfl.control.Control, class dfl.event.EventArgs).Event.addHandler!(void delegate(class Object, class dfl.event.EventArgs)).addHandler(void delegate(class Object, class dfl.event.EventArgs))");
+	}
 
 	private void assertEqualsI(String string, String string2) throws Exception {
-		assertEquals(string2, Mangling.demange(string));
+		assertEquals(string2, Mangler.demange(string));
 	}
 
 }
