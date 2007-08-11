@@ -11,4 +11,27 @@ public class DotExp extends BinExp {
 		return 0;
 	}
 
+	@Override
+	public Expression semantic(Scope sc, SemanticContext context)
+	{
+	    e1 = e1.semantic(sc, context);
+	    e2 = e2.semantic(sc, context);
+	    
+	    if (e2.op == TOK.TOKimport)
+	    {
+	    	ScopeExp se = (ScopeExp) e2;
+	    	TemplateDeclaration td = se.sds.isTemplateDeclaration();
+	    	if(null != td)
+	    	{
+	    		Expression e = new DotTemplateExp(loc, e1, td);
+		    	e = e.semantic(sc, context);
+		    	return e;
+	    	}
+	    }
+	    
+	    if(null == type)
+	    	type = e2.type;
+	    
+	    return this;
+	}
 }

@@ -502,6 +502,18 @@
             id="descent.ui.preferences.DProjectProperties"
             name="D Project Properties"
             objectClass="descent.core.IJavaProject"/>
+      <page
+            class="descent.internal.ui.preferences.FileImportPropertyPage"
+            id="descent.ui.propertyPages.FileImportPropertyPage"
+            name="%fileImportPageName"
+            objectClass="org.eclipse.core.resources.IProject">
+      </page>
+      <page
+            class="descent.internal.ui.preferences.FileImportPropertyPage"
+            id="descent.ui.propertyPages.FileImportPropertyPage"
+            name="%fileImportPageName"
+            objectClass="descent.core.IJavaProject">
+      </page>
       <!--
       <page
             objectClass="descent.core.IPackageFragmentRoot"
@@ -777,6 +789,12 @@
             class="descent.internal.debug.ui.jres.JREsPreferencePage"
             id="descent.debug.ui.preferences.VMPreferencePage">
          <keywordReference id="org.eclipse.jdt.debug.ui.jres"/>
+      </page>
+      <page
+            category="descent.ui.preferences.CompliancePreferencePage"
+            class="descent.internal.ui.preferences.FileImportPreferencePage"
+            id="descent.ui.preferences.FileImportPreferencePage"
+            name="%fileImportPageName">
       </page>
    </extension>
    <extension

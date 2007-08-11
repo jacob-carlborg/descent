@@ -137,10 +137,10 @@ public class CondExp extends BinExp {
 	@Override
 	public Expression toLvalue(Scope sc, Expression e, SemanticContext context)
 	{
-		PtrExp e;
+		PtrExp pe;
 
 	    // convert (econd ? e1 : e2) to *(econd ? &e1 : &e2)
-	    e = new PtrExp(loc, this, type);
+	    pe = new PtrExp(loc, this, type);
 
 	    e1 = e1.addressOf(sc, context);
 	    e2 = e2.addressOf(sc, context);
@@ -148,7 +148,7 @@ public class CondExp extends BinExp {
 	    typeCombine(sc, context);
 	    type = e2.type;
 	    
-	    return e;
+	    return pe;
 	}
 	
 	@Override

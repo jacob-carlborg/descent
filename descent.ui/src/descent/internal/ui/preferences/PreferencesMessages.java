@@ -706,6 +706,12 @@ public final class PreferencesMessages extends NLS {
 	public static String ProjectSelectionDialog_title;
 	public static String ProjectSelectionDialog_desciption;
 	public static String ProjectSelectionDialog_filter;
+	public static String FileImportPreferencePage_title;
+	public static String FileImportPreferencePage_no_java_project_message;
+	public static String FileImportPreferencePage_closed_project_message;
+	public static String FileImportConfigurationBlock_needsbuild_title;
+	public static String FileImportConfigurationBlock_needsfullbuild_message;
+	public static String FileImportConfigurationBlock_needsprojectbuild_message;
 
 	static {
 		NLS.initializeMessages(BUNDLE_NAME, PreferencesMessages.class);
