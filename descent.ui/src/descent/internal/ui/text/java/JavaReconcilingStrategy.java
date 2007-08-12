@@ -124,7 +124,7 @@ public class JavaReconcilingStrategy implements IReconcilingStrategy, IReconcili
 						} else if (source.equals(JavaCore.VERSION_0_x)) {
 							return AST.D0;
 						} else {
-							throw new IllegalStateException();
+							return AST.D2;
 						}
 					}
 					public void handleException(Throwable ex) {

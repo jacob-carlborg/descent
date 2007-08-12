@@ -101,7 +101,7 @@ public class DefaultCodeFormatter extends CodeFormatter {
 		} else if (source.equals(JavaCore.VERSION_0_x)) {
 			return AST.D0;
 		} else {
-			throw new IllegalStateException();
+			return AST.D2;
 		}
 	}
 	

@@ -109,7 +109,7 @@ public class SourceElementParser extends ASTVisitor {
 		} else if (source.equals(CompilerOptions.VERSION_0_x)) {
 			return AST.D0;
 		} else {
-			throw new IllegalStateException();
+			return AST.D2;
 		}
 	}
 
