@@ -347,7 +347,6 @@ public class LaunchingPlugin extends Plugin implements Preferences.IPropertyChan
 	 * @see org.eclipse.core.runtime.Plugin#stop(org.osgi.framework.BundleContext)
 	 */
 	public void stop(BundleContext context) throws Exception {
-		plugin = null;
 		super.stop(context);
 		
 		try {
@@ -360,6 +359,7 @@ public class LaunchingPlugin extends Plugin implements Preferences.IPropertyChan
 			JavaRuntime.saveVMConfiguration();
 			savePluginPreferences();
 			fgXMLParser = null;
+			plugin = null;
 		} finally {
 			super.stop(context);
 		}

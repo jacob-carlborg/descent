@@ -2,7 +2,7 @@
 <feature
       id="descent.ui"
       label="Descent"
-      version="0.3.20070507">
+      version="0.4.20070812">
 
    <description url="http://dsource.org/projects/descent">
       The Descent plugin provides an IDE for writing, launching and
@@ -139,13 +139,6 @@ This Agreement is governed by the laws of the State of New York and the intellec
 
    <plugin
          id="descent.launching"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="descent.launching.ui"
          download-size="0"
          install-size="0"
          version="0.0.0"

@@ -12,21 +12,23 @@ package descent.core.dom;
  *    CaseStatement
  *    ConditionalStatement
  *    ContinueStatement
+ *    DeclarationStatement
+ *    DefaultStatement
  *    DoStatement
  *    EmptyStatement
  *    ExpressionStatement
- *    ForeachStatement
  *    ForeachRangeStatement
+ *    ForeachStatement    
  *    ForStatement
  *    GotoCaseStatement
  *    GotoDefaultStatement
  *    GotoStatement
- *    IfStatement
- *    LabelStatement
+ *    LabeledStatement
  *    PragmaStatement
  *    ReturnStatement
  *    ScopeStatement
  *    StaticAssertStatement
+ *    SwitchCase
  *    SwitchStatement
  *    SynchronizedStatement
  *    ThrowStatement

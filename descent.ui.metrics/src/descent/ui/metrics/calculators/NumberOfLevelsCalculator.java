@@ -4,6 +4,7 @@ import descent.core.dom.AsmBlock;
 import descent.core.dom.DebugStatement;
 import descent.core.dom.DoStatement;
 import descent.core.dom.ForStatement;
+import descent.core.dom.ForeachRangeStatement;
 import descent.core.dom.ForeachStatement;
 import descent.core.dom.IfStatement;
 import descent.core.dom.IftypeStatement;
@@ -118,6 +119,11 @@ public final class NumberOfLevelsCalculator extends AbstractASTVisitorCalculator
         super.endVisit(arg0);
     }
     
+    public void endVisit(ForeachRangeStatement arg0) {
+        decreaseLevels(1);
+        super.endVisit(arg0);
+    }
+    
     @Override
     public void endVisit(IftypeStatement node) {
     	decreaseLevels(1);
@@ -185,6 +191,11 @@ public final class NumberOfLevelsCalculator extends AbstractASTVisitorCalculator
     }
     
     public boolean visit(ForeachStatement arg0) {
+        increaseLevels(1);
+        return super.visit(arg0);
+    }
+    
+    public boolean visit(ForeachRangeStatement arg0) {
         increaseLevels(1);
         return super.visit(arg0);
     }

@@ -10,6 +10,7 @@ import descent.core.dom.DeclarationStatement;
 import descent.core.dom.DoStatement;
 import descent.core.dom.ExpressionStatement;
 import descent.core.dom.ForStatement;
+import descent.core.dom.ForeachRangeStatement;
 import descent.core.dom.ForeachStatement;
 import descent.core.dom.FunctionDeclaration;
 import descent.core.dom.GotoCaseStatement;
@@ -41,10 +42,6 @@ public final class NumberOfStatementsCalculator extends AbstractASTVisitorCalcul
     private int statementCount;
     private int classStatementCount;
 
-    public String[] getMetricIds() {
-        return NumberOfStatementsCalculator.METRIC_IDS;
-    }
-
     protected BaseMemento createMemento() {
         Memento memento = new Memento();
         memento.statementCount = statementCount;
@@ -53,10 +50,13 @@ public final class NumberOfStatementsCalculator extends AbstractASTVisitorCalcul
         return memento;
     }
 
-    protected void restoreState(BaseMemento memento) {
-        statementCount = ((Memento) memento).statementCount;
-        classStatementCount = ((Memento) memento).classStatementCount;
-        super.restoreState(memento);
+    public void endVisit(FunctionDeclaration arg0) {
+        noteMethodValue(NumberOfStatementsCalculator.METRIC_ID, statementCount);
+        super.endVisit(arg0);
+    }
+
+    public String[] getMetricIds() {
+        return NumberOfStatementsCalculator.METRIC_IDS;
     }
 
     protected void handleNestedClass(BaseMemento inner) {
@@ -69,16 +69,6 @@ public final class NumberOfStatementsCalculator extends AbstractASTVisitorCalcul
         super.handleStartOfType();
     }
 
-    public boolean visit(FunctionDeclaration arg0) {
-        statementCount = 0;
-        return super.visit(arg0);
-    }
-
-    public void endVisit(FunctionDeclaration arg0) {
-        noteMethodValue(NumberOfStatementsCalculator.METRIC_ID, statementCount);
-        super.endVisit(arg0);
-    }
-
     private void increaseStatementCount(int amount) {
         statementCount += amount;
         classStatementCount += amount;
@@ -86,6 +76,18 @@ public final class NumberOfStatementsCalculator extends AbstractASTVisitorCalcul
 
     private void incrementStatementCount() {
         increaseStatementCount(1);
+    }
+
+    protected void restoreState(BaseMemento memento) {
+        statementCount = ((Memento) memento).statementCount;
+        classStatementCount = ((Memento) memento).classStatementCount;
+        super.restoreState(memento);
+    }
+
+    @Override
+    public boolean visit(AsmBlock arg0) {
+    	incrementStatementCount();
+        return super.visit(arg0);
     }
     
     @Override
@@ -99,37 +101,19 @@ public final class NumberOfStatementsCalculator extends AbstractASTVisitorCalcul
         return super.visit(arg0);
     }
     
-    @Override
-    public boolean visit(DebugStatement arg0) {
-    	incrementStatementCount();
-        return super.visit(arg0);
-    }
-    
-    @Override
-    public boolean visit(StaticIfStatement arg0) {
-    	incrementStatementCount();
-        return super.visit(arg0);
-    }
-    
-    @Override
-    public boolean visit(VersionStatement arg0) {
-    	incrementStatementCount();
-        return super.visit(arg0);
-    }
-    
-    @Override
-    public boolean visit(AsmBlock arg0) {
-    	incrementStatementCount();
-        return super.visit(arg0);
-    }
-
     public boolean visit(CatchClause arg0) {
         incrementStatementCount();
         return super.visit(arg0);
     }
-
+    
     public boolean visit(ContinueStatement arg0) {
         incrementStatementCount();
+        return super.visit(arg0);
+    }
+    
+    @Override
+    public boolean visit(DebugStatement arg0) {
+    	incrementStatementCount();
         return super.visit(arg0);
     }
     
@@ -143,10 +127,20 @@ public final class NumberOfStatementsCalculator extends AbstractASTVisitorCalcul
         incrementStatementCount();
         return super.visit(arg0);
     }
-    
+
     @Override
     public boolean visit(ExpressionStatement arg0) {
     	incrementStatementCount();
+        return super.visit(arg0);
+    }
+    
+    public boolean visit(ForeachRangeStatement arg0) {
+        incrementStatementCount();
+        return super.visit(arg0);
+    }
+    
+    public boolean visit(ForeachStatement arg0) {
+        incrementStatementCount();
         return super.visit(arg0);
     }
 
@@ -160,8 +154,42 @@ public final class NumberOfStatementsCalculator extends AbstractASTVisitorCalcul
         
         return false;
     }
+    
+    public boolean visit(FunctionDeclaration arg0) {
+        statementCount = 0;
+        return super.visit(arg0);
+    }
 
-    public boolean visit(ForeachStatement arg0) {
+    @Override
+    public boolean visit(GotoCaseStatement arg0) {
+    	incrementStatementCount();
+        return super.visit(arg0);
+    }
+
+    @Override
+    public boolean visit(GotoDefaultStatement arg0) {
+    	incrementStatementCount();
+        return super.visit(arg0);
+    }
+    
+    @Override
+    public boolean visit(GotoStatement arg0) {
+    	incrementStatementCount();
+        return super.visit(arg0);
+    }
+    
+    public boolean visit(IfStatement arg0) {
+        incrementStatementCount();
+        return super.visit(arg0);
+    }
+    
+    @Override
+    public boolean visit(PragmaStatement arg0) {
+    	incrementStatementCount();
+        return super.visit(arg0);
+    }
+    
+    public boolean visit(ReturnStatement arg0) {
         incrementStatementCount();
         return super.visit(arg0);
     }
@@ -179,36 +207,8 @@ public final class NumberOfStatementsCalculator extends AbstractASTVisitorCalcul
     }
     
     @Override
-    public boolean visit(PragmaStatement arg0) {
+    public boolean visit(StaticIfStatement arg0) {
     	incrementStatementCount();
-        return super.visit(arg0);
-    }
-    
-    @Override
-    public boolean visit(GotoCaseStatement arg0) {
-    	incrementStatementCount();
-        return super.visit(arg0);
-    }
-    
-    @Override
-    public boolean visit(GotoDefaultStatement arg0) {
-    	incrementStatementCount();
-        return super.visit(arg0);
-    }
-    
-    @Override
-    public boolean visit(GotoStatement arg0) {
-    	incrementStatementCount();
-        return super.visit(arg0);
-    }
-    
-    public boolean visit(IfStatement arg0) {
-        incrementStatementCount();
-        return super.visit(arg0);
-    }
-
-    public boolean visit(ReturnStatement arg0) {
-        incrementStatementCount();
         return super.visit(arg0);
     }
 
@@ -229,15 +229,21 @@ public final class NumberOfStatementsCalculator extends AbstractASTVisitorCalcul
         }
         return super.visit(arg0);
     }
-    
+
     @Override
-    public boolean visit(WithStatement arg0) {
+    public boolean visit(VersionStatement arg0) {
     	incrementStatementCount();
         return super.visit(arg0);
     }
-
+    
     public boolean visit(WhileStatement arg0) {
         incrementStatementCount();
+        return super.visit(arg0);
+    }
+
+    @Override
+    public boolean visit(WithStatement arg0) {
+    	incrementStatementCount();
         return super.visit(arg0);
     }
 }

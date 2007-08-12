@@ -257,6 +257,7 @@
          </filter>
       </page>
 -->
+	<!--
       <page
             objectClass="org.eclipse.core.resources.IProject"
             name="%buildPathPageName"        
@@ -279,6 +280,7 @@
          </filter>
          <keywordReference id="descent.ui.buildpath"/>
       </page>
+      -->
       <page
             objectClass="org.eclipse.core.resources.IProject"
             name="%codeStylePageName"
@@ -497,11 +499,7 @@
          </filter>
          <keywordReference id="descent.ui.todo"/>
       </page>
-      <page
-            class="descent.internal.ui.preferences.DProjectProperties"
-            id="descent.ui.preferences.DProjectProperties"
-            name="D Project Properties"
-            objectClass="descent.core.IJavaProject"/>
+            <!--
       <page
             class="descent.internal.ui.preferences.FileImportPropertyPage"
             id="descent.ui.propertyPages.FileImportPropertyPage"
@@ -514,6 +512,7 @@
             name="%fileImportPageName"
             objectClass="descent.core.IJavaProject">
       </page>
+      -->
       <!--
       <page
             objectClass="descent.core.IPackageFragmentRoot"
@@ -621,6 +620,7 @@
             id="descent.ui.preferences.CodeFormatterPreferencePage">
             <keywordReference id="descent.ui.formatter"/>
       </page>
+      <!--
       <page
             name="%buildPathPrefName"
             category="descent.ui.preferences.JavaBasePreferencePage"
@@ -635,6 +635,7 @@
             id="descent.ui.preferences.ClasspathVariablesPreferencePage">
             <keywordReference id="descent.ui.cpvars"/>
       </page>
+      -->
       <!--
       <page
             name="%userLibrariesPrefName"
@@ -790,12 +791,14 @@
             id="descent.debug.ui.preferences.VMPreferencePage">
          <keywordReference id="org.eclipse.jdt.debug.ui.jres"/>
       </page>
+      <!--
       <page
             category="descent.ui.preferences.CompliancePreferencePage"
             class="descent.internal.ui.preferences.FileImportPreferencePage"
             id="descent.ui.preferences.FileImportPreferencePage"
             name="%fileImportPageName">
       </page>
+      -->
    </extension>
    <extension
          point="org.eclipse.ui.editors">
