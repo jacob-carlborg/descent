@@ -18,18 +18,16 @@ import java.util.List;
 import org.eclipse.core.runtime.CoreException;
 
 import descent.core.ICompilationUnit;
-
+import descent.internal.ui.text.javadoc.IHtmlTagConstants;
+import descent.internal.ui.text.javadoc.IJavaDocTagConstants;
+import descent.internal.ui.text.spelling.engine.ISpellCheckEngine;
+import descent.internal.ui.text.spelling.engine.ISpellChecker;
+import descent.internal.ui.text.spelling.engine.RankedWordProposal;
 import descent.ui.PreferenceConstants;
 import descent.ui.text.java.IInvocationContext;
 import descent.ui.text.java.IJavaCompletionProposal;
 import descent.ui.text.java.IProblemLocation;
 import descent.ui.text.java.IQuickFixProcessor;
-import descent.internal.ui.text.spelling.engine.ISpellCheckEngine;
-import descent.internal.ui.text.spelling.engine.ISpellChecker;
-import descent.internal.ui.text.spelling.engine.RankedWordProposal;
-
-import descent.internal.ui.text.javadoc.IHtmlTagConstants;
-import descent.internal.ui.text.javadoc.IJavaDocTagConstants;
 
 /**
  * Quick fix processor for incorrectly spelled words.
@@ -96,7 +94,7 @@ public class WordQuickFixProcessor implements IQuickFixProcessor, IHtmlTagConsta
 							}
 
 							boolean extendable= !fixed ? checker.acceptsWords() : false;
-							result= new IJavaCompletionProposal[size + (extendable ? 2 : 1)];
+							result= new IJavaCompletionProposal[size + (extendable ? 3 : 2)];
 
 							for (index= 0; index < size; index++) {
 
@@ -108,6 +106,7 @@ public class WordQuickFixProcessor implements IQuickFixProcessor, IHtmlTagConsta
 								result[index++]= new AddWordProposal(arguments[0], context);
 
 							result[index++]= new WordIgnoreProposal(arguments[0], context);
+							result[index++]= new DisableSpellCheckingProposal(context);
 						}
 						break;
 					}
