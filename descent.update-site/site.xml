@@ -1,21 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <site>
-   <feature url="features/descent.ui.metrics_feature_0.1.20070330.jar" id="descent.ui.metrics_feature" version="0.1.20070330">
-      <category name="Descent-Metrics"/>
-   </feature>
-   <feature url="features/descent.ui_0.3.20070507.jar" id="descent.ui" version="0.3.20070507">
+   <feature url="features/descent.ui_0.4.20070812.jar" id="descent.ui" version="0.4.20070812">
       <category name="Descent plugin for Eclipse"/>
    </feature>
    <category-def name="Descent plugin for Eclipse" label="Descent">
       <description>
          The Descent plugin provides an IDE for writing, launching and
 debugging code in the D programming language from Digital Mars.
-      </description>
-   </category-def>
-   <category-def name="Descent-Metrics" label="Descent-Metrics">
-      <description>
-         The Descent-Metrics plugin is a plugin for Descent that is a
-port of the Eclipse-Metrics plugin for JDT.
       </description>
    </category-def>
 </site>
