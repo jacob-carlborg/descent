@@ -1,10 +1,9 @@
 package descent.core;
 
-import java.math.BigDecimal;
 import java.text.ParseException;
 import java.util.BitSet;
 
-public class Mangling {
+public class Demangler {
 	
 	public static String demange(String name) throws ParseException {
 		if(name.length() < 3 || name.charAt(0) != '_' || name.charAt(1) != 'D' || !Character.isDigit(name.charAt(2))) {

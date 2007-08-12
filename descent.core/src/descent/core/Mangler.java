@@ -95,80 +95,80 @@ public class Mangler {
 		StringBuilder p = new StringBuilder();
 		switch(name.charAt(ni[0]++)) {
 			case 'v':
-				p.append("void");
+				set(p, "void");
 				return parseType_L1(p, isdelegate, identifier);				
 			case 'b':
-				p.append("bool");
+				set(p, "bool");
 				return parseType_L1(p, isdelegate, identifier);	
 			case 'g':
-				p.append("byte");
+				set(p, "byte");
 				return parseType_L1(p, isdelegate, identifier);	
 			case 'h':
-				p.append("ubyte");
+				set(p, "ubyte");
 				return parseType_L1(p, isdelegate, identifier);	
 			case 's':
-				p.append("short");
+				set(p, "short");
 				return parseType_L1(p, isdelegate, identifier);	
 			case 't':
-				p.append("ushort");
+				set(p, "ushort");
 				return parseType_L1(p, isdelegate, identifier);	
 			case 'i':
-				p.append("int");
+				set(p, "int");
 				return parseType_L1(p, isdelegate, identifier);	
 			case 'k':
-				p.append("uint");
+				set(p, "uint");
 				return parseType_L1(p, isdelegate, identifier);	
 			case 'l':
-				p.append("long");
+				set(p, "long");
 				return parseType_L1(p, isdelegate, identifier);	
 			case 'm':
-				p.append("ulong");
+				set(p, "ulong");
 				return parseType_L1(p, isdelegate, identifier);	
 			case 'f':
-				p.append("float");
+				set(p, "float");
 				return parseType_L1(p, isdelegate, identifier);	
 			case 'd':
-				p.append("double");
+				set(p, "double");
 				return parseType_L1(p, isdelegate, identifier);	
 			case 'e':
-				p.append("real");
+				set(p, "real");
 				return parseType_L1(p, isdelegate, identifier);	
 			case 'o':
-				p.append("ifloat");
+				set(p, "ifloat");
 				return parseType_L1(p, isdelegate, identifier);	
 			case 'p':
-				p.append("idouble");
+				set(p, "idouble");
 				return parseType_L1(p, isdelegate, identifier);	
 			case 'j':
-				p.append("ireal");
+				set(p, "ireal");
 				return parseType_L1(p, isdelegate, identifier);	
 			case 'q':
-				p.append("cfloat");
+				set(p, "cfloat");
 				return parseType_L1(p, isdelegate, identifier);	
 			case 'r':
 				p.append("cdouble");
 				return parseType_L1(p, isdelegate, identifier);	
 			case 'c':
-				p.append("creal");
+				set(p, "creal");
 				return parseType_L1(p, isdelegate, identifier);	
 			case 'a':
-				p.append("char");
+				set(p, "char");
 				return parseType_L1(p, isdelegate, identifier);	
 			case 'u':
-				p.append("wchar");
+				set(p, "wchar");
 				return parseType_L1(p, isdelegate, identifier);	
 			case 'w':
-				p.append("dchar");
+				set(p, "dchar");
 				return parseType_L1(p, isdelegate, identifier);	
 
 			case 'A':
 				// dynamic array
-				p.append(parseType(name, ni)).append("[]");
+				set(p, parseType(name, ni)).append("[]");
 				return parseType_L1(p, isdelegate, identifier);	
 
 			case 'P':
 				// pointer
-				p.append(parseType(name, ni)).append("*");
+				set(p, parseType(name, ni)).append("*");
 				return parseType_L1(p, isdelegate, identifier);
 
 			case 'G': // static array
@@ -182,8 +182,8 @@ public class Mangler {
 
 			case 'H':
 				// associative array
-				p.append(parseType(name, ni));
-				p.append(parseType(name, ni)).append("[").append(p).append("]");
+				set(p, parseType(name, ni));
+				set(p, parseType(name, ni).append("[").append(p).append("]"));
 				return parseType_L1(p, isdelegate, identifier);
 
 			case 'D':
@@ -272,42 +272,42 @@ public class Mangler {
 							p.setLength(0);
 						break; // D function
 						case 'U':
-							p.append("extern (C) ");
+							set(p, "extern (C) ");
 						break; // C function
 						case 'W':
-							p.append("extern (Windows) ");
+							set(p, "extern (Windows) ");
 						break; // Windows function
 						case 'V':
-							p.append("extern (Pascal) ");
+							set(p, "extern (Pascal) ");
 						break; // Pascal function
 						default:
 							throw new IllegalStateException();
 					}
-					p.append(parseType(name, ni)).append(" ").append(identifier).append("(").append(args).append(")");
+					set(p, parseType(name, ni)).append(" ").append(identifier).append("(").append(args).append(")");
 					return p;
 				}
-				p.append(parseType(name, ni)).append((isdelegate ? " delegate(" : " function(")).append(args).append(")");
+				set(p, parseType(name, ni)).append((isdelegate ? " delegate(" : " function(")).append(args).append(")");
 				isdelegate = false;
 				return parseType_L1(p, isdelegate, identifier);
 			}
 
 			case 'C':
-				p.append("class ");
+				set(p, "class ");
 				return parseType_L2(name, ni, p, isdelegate, identifier);
 			case 'S':
-				p.append("struct ");
+				set(p, "struct ");
 				return parseType_L2(name, ni, p, isdelegate, identifier);
 			case 'E':
-				p.append("enum ");
+				set(p, "enum ");
 				return parseType_L2(name, ni, p, isdelegate, identifier);
 			case 'T':
-				p.append("typedef ");
+				set(p, "typedef ");
 				return parseType_L2(name, ni, p, isdelegate, identifier);
 
 			default:
 				int i = ni[0] - 1;
 				ni[0] = name.length();
-				p.append(name.substring(i));
+				set(p, name.substring(i));
 				return parseType_L1(p, isdelegate, identifier);
 		}
 		}
@@ -484,6 +484,18 @@ public class Mangler {
 		
 		result.append(p);
 		ni[0] += 10 * 2;
+	}
+	
+	private static StringBuilder set(StringBuilder p, String contents) {
+		p.setLength(0);
+		p.append(contents);
+		return p;
+	}
+	
+	private static StringBuilder set(StringBuilder p, StringBuilder contents) {
+		p.setLength(0);
+		p.append(contents);
+		return p;
 	}
 
 }

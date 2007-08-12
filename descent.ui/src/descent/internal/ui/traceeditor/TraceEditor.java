@@ -14,9 +14,12 @@ import org.eclipse.jface.viewers.ViewerSorter;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Group;
@@ -176,16 +179,29 @@ public class TraceEditor extends EditorPart {
 		public int compare(Viewer viewer, Object e1, Object e2) {
 			final Tree tree = ((TreeViewer) viewer).getTree();
 			final TreeColumn sortCol = tree.getSortColumn();
+			if (sortCol == null) {
+				return super.compare(viewer, e1, e2);
+			}
+			
 			final int sortDirection = tree.getSortDirection();
-
-			if (sortCol != null && 
-					e1 instanceof ITraceNode && 
-					e2 instanceof ITraceNode) {
-				ITraceNode t1 = (ITraceNode) e1;
-				ITraceNode t2 = (ITraceNode) e2;
-				int columnIndex = tree.indexOf(sortCol);
-				int result = 0;
-				switch (columnIndex) {
+			final int columnIndex = tree.indexOf(sortCol);
+			
+			int result = 0;
+			ITraceNode t1 = null;
+			ITraceNode t2 = null;
+			IFan f1 = null;
+			IFan f2 = null;
+			if (e1 instanceof ITraceNode && e2 instanceof ITraceNode) {
+				t1 = (ITraceNode) e1;
+				t2 = (ITraceNode) e2;
+			} else if (e1 instanceof IFan && e2 instanceof IFan) {
+				f1 = (IFan) e1;
+				f2 = (IFan) e2;
+				t1 = f1.getTraceNode();
+				t2 = f2.getTraceNode();
+			}
+			
+			switch (columnIndex) {
 				case COLUMN_FUNCTION_NAME:
 					result = t1.getDemangledName().compareTo(t2.getDemangledName());
 					break;
@@ -196,7 +212,11 @@ public class TraceEditor extends EditorPart {
 					result = compareLongs(t1.getFunctionTimePerCall(), t2.getFunctionTimePerCall());
 					break;
 				case COLUMN_NUMBER_OF_CALLS:
-					result = compareLongs(t1.getNumberOfCalls(), t2.getNumberOfCalls());
+					if (f1 != null) {
+						result = compareLongs(f1.getNumberOfCalls(), f2.getNumberOfCalls());
+					} else {
+						result = compareLongs(t1.getNumberOfCalls(), t2.getNumberOfCalls());
+					}
 					break;
 				case COLUMN_TICKS:
 					result = compareLongs(t1.getTicks(), t2.getTicks());
@@ -207,14 +227,12 @@ public class TraceEditor extends EditorPart {
 				case COLUMN_TREE_TIME:
 					result = compareLongs(t1.getTreeTime(), t2.getTreeTime());
 					break;
-				}
-				if (sortDirection == SWT.DOWN) {
-					return -result;
-				} else {
-					return result;
-				}
 			}
-			return super.compare(viewer, e1, e2);
+			if (sortDirection == SWT.DOWN) {
+				return -result;
+			} else {
+				return result;
+			}
 		}
 		
 		private int compareLongs(long e1, long e2) {
@@ -227,21 +245,34 @@ public class TraceEditor extends EditorPart {
 
 		@Override
 		public boolean select(Viewer viewer, Object parentElement, Object element) {
-			if (!(parentElement instanceof ITrace) || 
-					!(element instanceof ITraceNode) ||
-					filterText == null) {
+			if (element instanceof ITraceNode) {
+				if (filterText == null) {
+					return true;
+				} else {
+					ITraceNode node = (ITraceNode) element;
+					return node.getDemangledName().contains(filterText);
+				}
+			} else if (element instanceof IFan) {
+				IFan fan = (IFan) element;
+				if (fan.isIn()) {
+					return !filterFanIn;
+				} else {
+					return !filterFanOut;
+				}
+			} else {
 				return true;
 			}
-			
-			ITraceNode node = (ITraceNode) element;
-			return node.getDemangledName().contains(filterText);
 		}
 		
 	}
 	
 	private TreeViewer viewer;
 	private ITrace trace;
+	
+	// Filter support
 	private String filterText;
+	private boolean filterFanIn;
+	private boolean filterFanOut;
 
 	@Override
 	public void init(IEditorSite site, IEditorInput input) throws PartInitException {
@@ -267,14 +298,14 @@ public class TraceEditor extends EditorPart {
 	@Override
 	public void createPartControl(Composite parent) {
 		Group group = new Group(parent, SWT.NONE);
-		group.setLayout(new GridLayout(2, false));
+		group.setLayout(new GridLayout(4, false));
 		
 		Label label = new Label(group, SWT.NONE);
 		label.setText("Filter:");
 		label.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
 		
 		final Text text = new Text(group, SWT.BORDER);
-		text.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1));
+		text.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 		text.addModifyListener(new ModifyListener() {
 			public void modifyText(ModifyEvent e) {
 				filterText = text.getText();
@@ -282,12 +313,47 @@ public class TraceEditor extends EditorPart {
 			}
 		});
 		
+		final Button buttonFanIn = new Button(group, SWT.TOGGLE);
+		buttonFanIn.setImage(JavaUI.getSharedImages().getImage(ISharedImages.IMG_OBJS_FAN_IN));
+		buttonFanIn.setSelection(true);
+		buttonFanIn.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
+		buttonFanIn.addSelectionListener(new SelectionListener() {
+			public void widgetDefaultSelected(SelectionEvent e) {
+				filterFanIn = !buttonFanIn.getSelection();
+				viewer.refresh();
+			}
+			public void widgetSelected(SelectionEvent e) {
+				filterFanIn = !buttonFanIn.getSelection();
+				viewer.refresh();
+			}
+		});
+		
+		final Button buttonFanOut = new Button(group, SWT.TOGGLE);
+		buttonFanOut.setImage(JavaUI.getSharedImages().getImage(ISharedImages.IMG_OBJS_FAN_OUT));
+		buttonFanOut.setSelection(true);
+		buttonFanOut.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
+		buttonFanOut.addSelectionListener(new SelectionListener() {
+			public void widgetDefaultSelected(SelectionEvent e) {
+				filterFanOut = !buttonFanOut.getSelection();
+				viewer.refresh();
+			}
+			public void widgetSelected(SelectionEvent e) {
+				filterFanOut = !buttonFanOut.getSelection();
+				viewer.refresh();
+			}
+		});
+		
 		Tree tree = createTreeViewer(group);
-		tree.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1));
+		tree.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 4, 1));
 		
 		label = new Label(group, SWT.NONE);
 		label.setText("Timer Is " + trace.getTicksPerSecond() + " ticks/sec, times are in microsecs");
-		label.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 2, 1));
+		label.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 4, 1));
+	}
+	
+	@Override
+	public void dispose() {
+		super.dispose();
 	}
 	
 	private Tree createTreeViewer(Composite parent) {
