@@ -9,6 +9,14 @@ import descent.core.dom.DDocComment;
 
 public class Token {
 	
+	public final static int SPECIAL__FILE__ = 1;
+	public final static int SPECIAL__LINE__ = 2;
+	public final static int SPECIAL__DATE__ = 3;
+	public final static int SPECIAL__TIME__ = 4;
+	public final static int SPECIAL__TIMESTAMP__ = 5;
+	public final static int SPECIAL__VENDOR__ = 6;
+	public final static int SPECIAL__VERSION__ = 7;
+	
 	public Token next;
 	public int ptr; // The start position of the token
 	public TOK value;
@@ -19,6 +27,7 @@ public class Token {
 	public BigDecimal floatValue;
 	public int lineNumber;
 	public DDocComment leadingComment;
+	public int special;
 	
 	//private static int instances = 0;
 	
@@ -131,3 +140,4 @@ public class Token {
 	}
 
 }
+

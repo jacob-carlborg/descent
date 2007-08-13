@@ -533,13 +533,15 @@ public class ASTConverter {
 		descent.core.dom.ModifierDeclaration b = new descent.core.dom.ModifierDeclaration(ast);			
 		b.setModifier(modifier);
 		convertDeclarations(b.declarations(), a.decl.subList(0, i));
-		Declaration last = b.declarations().get(b.declarations().size() - 1);
-		b.setSourceRange(a.start, last.getStartPosition() + last.getLength() - a.start);
-		toAdd.add(b);
-		if (dsymbol instanceof ProtDeclaration) {
-			convert((ProtDeclaration) dsymbol, toAdd);
-		} else {
-			convert((StorageClassDeclaration) dsymbol, toAdd);
+		if (b.declarations().size() > 0) {
+			Declaration last = b.declarations().get(b.declarations().size() - 1);
+			b.setSourceRange(a.start, last.getStartPosition() + last.getLength() - a.start);
+			toAdd.add(b);
+			if (dsymbol instanceof ProtDeclaration) {
+				convert((ProtDeclaration) dsymbol, toAdd);
+			} else {
+				convert((StorageClassDeclaration) dsymbol, toAdd);
+			}
 		}
 	}
 

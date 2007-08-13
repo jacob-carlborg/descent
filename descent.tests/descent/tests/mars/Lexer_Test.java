@@ -4,6 +4,7 @@ import junit.framework.TestCase;
 import descent.core.dom.AST;
 import descent.internal.compiler.parser.Lexer;
 import descent.internal.compiler.parser.TOK;
+import descent.internal.compiler.parser.Token;
 
 public class Lexer_Test extends TestCase {
 	
@@ -162,6 +163,16 @@ public class Lexer_Test extends TestCase {
 		assertComment(" /++ /+ hola +/ +/", "/++ /+ hola +/ +/", 1, 17, TOK.TOKdocpluscomment);
 	}
 	
+	public void testSpecial() {
+		assertSpecial(" __FILE__", 1, 8, TOK.TOKstring, Token.SPECIAL__FILE__);
+		assertSpecial(" __LINE__", 1, 8, TOK.TOKint64v, Token.SPECIAL__LINE__);
+		assertSpecial(" __DATE__", 1, 8, TOK.TOKstring, Token.SPECIAL__DATE__);
+		assertSpecial(" __TIME__", 1, 8, TOK.TOKstring, Token.SPECIAL__TIME__);
+		assertSpecial(" __TIMESTAMP__", 1, 13, TOK.TOKstring, Token.SPECIAL__TIMESTAMP__);
+		assertSpecial(" __VENDOR__", 1, 10, TOK.TOKstring, Token.SPECIAL__VENDOR__);
+		assertSpecial(" __VERSION__", 1, 11, TOK.TOKint64v, Token.SPECIAL__VERSION__);
+	}
+
 	private void assertToken(String s, TOK t, int start, int len) {
 		assertToken(s, t, start, len, AST.D1);
 	}
@@ -227,6 +238,16 @@ public class Lexer_Test extends TestCase {
 		assertEquals(tok, lexer.nextToken());
 		assertEquals(start, lexer.token.ptr);
 		assertEquals(len, lexer.token.len);
+		assertEquals(0, lexer.problems.size());
+	}
+	
+	private void assertSpecial(String string, int start, int len, TOK tok, int special) {
+		Lexer lexer = new Lexer(string, true, true, false, true, AST.D1);
+		assertEquals(tok, lexer.nextToken());
+		assertEquals(start, lexer.token.ptr);
+		assertEquals(len, lexer.token.len);
+		assertEquals(special, lexer.token.special);
+		assertEquals(string.trim(), lexer.token.string);
 		assertEquals(0, lexer.problems.size());
 	}
 

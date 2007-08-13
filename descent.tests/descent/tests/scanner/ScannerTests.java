@@ -157,6 +157,33 @@ public class ScannerTests extends TestCase implements ITerminalSymbols {
 		}
 	}
 	
+	public void testSpecialLiterals() throws Throwable {
+		Object[][] pairs = {
+			{ "__FILE__", TokenNameStringLiteral },
+			{ "__LINE__", TokenNameIntegerLiteral },
+			{ "__DATE__", TokenNameStringLiteral },
+			{ "__TIME__", TokenNameStringLiteral },
+			{ "__TIMESTAMP__", TokenNameStringLiteral },
+			{ "__VENDOR__", TokenNameStringLiteral },
+			{ "__VERSION__", TokenNameIntegerLiteral},
+		};
+		
+		for(Object[] pair : pairs) {
+			String value = (String) pair[0];
+			int terminalSymbol = (Integer) pair[1];
+			
+			IScanner scanner = ToolFactory.createScanner(true, true, true, true, AST.D1);
+			scanner.setSource(("$" + value).toCharArray());
+			assertNextToken(scanner, TokenNameDOLLAR, 0, 0, "$");
+			try {
+				assertNextToken(scanner, terminalSymbol, 1, value.length(), value);
+			} catch (Throwable e) {
+				fail(value);
+				throw e;
+			}
+		}
+	}
+	
 	public void testComments() throws Throwable {
 		Object[][] pairs = {
 			{ 	"/* hola */", TokenNameCOMMENT_BLOCK },

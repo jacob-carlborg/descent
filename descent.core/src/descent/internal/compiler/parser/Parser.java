@@ -2733,8 +2733,11 @@ public class Parser extends Lexer {
 			if (tfirst == null)
 				tfirst = t;
 			else if (t != tfirst) {
-				error("Multiple declarations must have the same type", IProblem.MultipleDeclarationsMustHaveTheSameType,
-						 lineNumber, ident.start, ident.length);
+				// TODO check this, should be doing this
+				if (ident != null) {
+					error("Multiple declarations must have the same type", IProblem.MultipleDeclarationsMustHaveTheSameType,
+							 lineNumber, ident.start, ident.length);
+				}
 			}
 			if (ident == null) {
 				parsingErrorInsertTokenAfter(prevToken, "Identifier");

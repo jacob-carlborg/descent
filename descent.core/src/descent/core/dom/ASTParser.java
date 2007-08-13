@@ -17,7 +17,6 @@ import org.eclipse.core.runtime.IProgressMonitor;
 
 import descent.core.IClassFile;
 import descent.core.ICompilationUnit;
-import descent.core.IInitializer;
 import descent.core.IJavaElement;
 import descent.core.IJavaProject;
 import descent.core.JavaCore;
@@ -200,6 +199,9 @@ public class ASTParser {
 	 * <code>null</code> if none. Defaults to none.
      */
 	private String unitName = null; 
+	
+	// TODO see how this can be hidden for public usage
+	private boolean surfaceDeclarations;
 
  	/**
 	 * Creates a new AST parser for the given API level.
@@ -626,6 +628,10 @@ public class ASTParser {
 			//options.remove(JavaCore.COMPILER_TASK_TAGS); // no need to parse task tags
 			this.compilerOptions = options;
 		}
+	}
+	
+	public void setSurfaceDeclarations(boolean surfaceDeclarations) {
+		this.surfaceDeclarations = surfaceDeclarations;
 	}
 	
 	/**

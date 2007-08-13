@@ -40,7 +40,6 @@ import descent.core.dom.Import;
 import descent.core.dom.ImportDeclaration;
 import descent.core.dom.InvariantDeclaration;
 import descent.core.dom.MixinDeclaration;
-import descent.core.dom.TemplateMixinDeclaration;
 import descent.core.dom.Modifier;
 import descent.core.dom.ModuleDeclaration;
 import descent.core.dom.PragmaDeclaration;
@@ -48,6 +47,7 @@ import descent.core.dom.SimpleName;
 import descent.core.dom.StaticAssert;
 import descent.core.dom.StaticIfDeclaration;
 import descent.core.dom.TemplateDeclaration;
+import descent.core.dom.TemplateMixinDeclaration;
 import descent.core.dom.TemplateParameter;
 import descent.core.dom.Type;
 import descent.core.dom.TypedefDeclaration;
@@ -90,6 +90,10 @@ public class SourceElementParser extends ASTVisitor {
 	private boolean foundType = false;
 	CompilerOptions options;
 
+	/**
+	 * @param surfaceDeclarations instruct the parser to ignore statements
+	 * and expressions, just parse declarations.
+	 */
 	public SourceElementParser(
 			ISourceElementRequestor requestor,
 			CompilerOptions options) {
@@ -112,7 +116,7 @@ public class SourceElementParser extends ASTVisitor {
 			return AST.D2;
 		}
 	}
-
+	
 	public CompilationUnit parseCompilationUnit(ICompilationUnit unit, boolean resolveBindings) {
 		ASTParser parser = ASTParser.newParser(getASTlevel());
 		parser.setSource(unit);
@@ -777,7 +781,6 @@ public class SourceElementParser extends ASTVisitor {
 	
 	@Override
 	public boolean visit(IftypeDeclaration node) {
-		// TODO JDT model iftype
 		return visitConditionalDeclaration(node, Flags.AccIftypeDeclaration, "");
 	}
 	

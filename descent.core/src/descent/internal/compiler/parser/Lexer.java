@@ -2788,11 +2788,189 @@ public class Lexer implements IProblemRequestor {
 			}
 			break;
 		case '_':
-			if (apiLevel == AST.D2) {
+			p++;
+			if (input[p] == '_') {
 				p++;
-				if (input[p] == '_') {
+				switch(input[p]) {
+				case 'D':
 					p++;
-					if (input[p] == 't') {
+					if (input[p] == 'A') {
+						p++;
+						if (input[p] == 'T') {
+							p++;
+							if (input[p] == 'E') {
+								p++;
+								if (input[p] == '_') {
+									p++;
+									if (input[p] == '_' && !Chars.isidchar(input[p+1])) {
+										t.value = TOK.TOKstring;
+										t.special = Token.SPECIAL__DATE__;
+										t.string = "__DATE__";
+										t.len = 8;
+										p++;
+										return;
+									}
+								}
+							}
+						}
+					}
+					break;
+				case 'F':
+					p++;
+					if (input[p] == 'I') {
+						p++;
+						if (input[p] == 'L') {
+							p++;
+							if (input[p] == 'E') {
+								p++;
+								if (input[p] == '_') {
+									p++;
+									if (input[p] == '_' && !Chars.isidchar(input[p+1])) {
+										t.value = TOK.TOKstring;
+										t.special = Token.SPECIAL__FILE__;
+										t.string = "__FILE__";
+										t.len = 8;
+										p++;
+										return;
+									}
+								}
+							}
+						}
+					}
+					break;
+				case 'L':
+					p++;
+					if (input[p] == 'I') {
+						p++;
+						if (input[p] == 'N') {
+							p++;
+							if (input[p] == 'E') {
+								p++;
+								if (input[p] == '_') {
+									p++;
+									if (input[p] == '_' && !Chars.isidchar(input[p+1])) {
+										t.value = TOK.TOKint64v;
+										t.special = Token.SPECIAL__LINE__;
+										t.string = "__LINE__";
+										t.len = 8;
+										p++;
+										return;
+									}
+								}
+							}
+						}
+					}
+					break;
+				case 'T':
+					p++;
+					if (input[p] == 'I') {
+						p++;
+						if (input[p] == 'M') {
+							p++;
+							if (input[p] == 'E') {
+								p++;
+								switch(input[p]) {
+								case 'S':
+									p++;
+									if (input[p] == 'T') {
+										p++;
+										if (input[p] == 'A') {
+											p++;
+											if (input[p] == 'M') {
+												p++;
+												if (input[p] == 'P') {
+													p++;
+													if (input[p] == '_') {
+														p++;
+														if (input[p] == '_' && !Chars.isidchar(input[p+1])) {
+															t.value = TOK.TOKstring;
+															t.special = Token.SPECIAL__TIMESTAMP__;
+															t.string = "__TIMESTAMP__";
+															t.len = 13;
+															p++;
+															return;
+														}
+													}
+												}
+											}
+										}
+									}
+									break;
+								case '_':
+									p++;
+									if (input[p] == '_' && !Chars.isidchar(input[p+1])) {
+										t.value = TOK.TOKstring;
+										t.special = Token.SPECIAL__TIME__;
+										t.string = "__TIME__";
+										t.len = 8;
+										p++;
+										return;
+									}
+									break;
+								}
+							}
+						}
+					}
+					break;
+				case 'V':
+					p++;
+					if (input[p] == 'E') {
+						p++;
+						switch(input[p]) {
+						case 'N':
+							p++;
+							if (input[p] == 'D') {
+								p++;
+								if (input[p] == 'O') {
+									p++;
+									if (input[p] == 'R') {
+										p++;
+										if (input[p] == '_') {
+											p++;
+											if (input[p] == '_' && !Chars.isidchar(input[p+1])) {
+												t.value = TOK.TOKstring;
+												t.special = Token.SPECIAL__VENDOR__;
+												t.string = "__VENDOR__";
+												t.len = 10;
+												p++;
+												return;
+											}
+										}
+									}
+								}
+							}
+							break;
+						case 'R':
+							p++;
+							if (input[p] == 'S') {
+								p++;
+								if (input[p] == 'I') {
+									p++;
+									if (input[p] == 'O') {
+										p++;
+										if (input[p] == 'N') {
+											p++;
+											if (input[p] == '_') {
+												p++;
+												if (input[p] == '_' && !Chars.isidchar(input[p+1])) {
+													t.value = TOK.TOKint64v;
+													t.special = Token.SPECIAL__VERSION__;
+													t.string = "__VERSION__";
+													t.len = 11;
+													p++;
+													return;
+												}
+											}
+										}
+									}
+								}
+							}
+							break;
+						}
+					}
+					break;
+				case 't':
+					if (apiLevel == AST.D2) {
 						p++;
 						if (input[p] == 'r') {
 							p++;
@@ -2812,6 +2990,7 @@ public class Lexer implements IProblemRequestor {
 								}
 							}
 						}
+						break;
 					}
 				}
 			}
