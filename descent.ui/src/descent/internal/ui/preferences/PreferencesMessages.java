@@ -130,6 +130,7 @@ public final class PreferencesMessages extends NLS {
 	public static String JavaEditorPreferencePage_pragmas;
 	public static String JavaEditorPreferencePage_others;
 	public static String JavaEditorPreferencePage_operators;
+	public static String JavaEditorPreferencePage_specialTokens;
 	public static String JavaEditorPreferencePage_javaCommentTaskTags;
 	public static String JavaEditorPreferencePage_javaDocKeywords;
 	public static String JavaEditorPreferencePage_javaDocHtmlTags;

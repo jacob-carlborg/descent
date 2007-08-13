@@ -1748,6 +1748,59 @@ public class PreferenceConstants {
 	public final static String EDITOR_JAVA_KEYWORD_RETURN_UNDERLINE= IJavaColorConstants.JAVA_KEYWORD_RETURN + EDITOR_UNDERLINE_SUFFIX;
 	
 	/**
+	 * A named preference that holds the color used to render special tokens.
+	 * <p>
+	 * Value is of type <code>String</code>. A RGB color value encoded as a string
+	 * using class <code>PreferenceConverter</code>
+	 * </p>
+	 * 
+	 * @see org.eclipse.jface.resource.StringConverter
+	 * @see org.eclipse.jface.preference.PreferenceConverter
+	 * @since 3.0
+	 */
+	public final static String EDITOR_JAVA_SPECIAL_TOKEN_COLOR= IJavaColorConstants.JAVA_SPECIAL_TOKEN;	
+
+	/**
+	 * A named preference that controls whether special tokens are rendered in bold.
+	 * <p>
+	 * Value is of type <code>Boolean</code>.
+	 * </p>
+	 * 
+	 * @since 3.0
+	 */
+	public final static String EDITOR_JAVA_SPECIAL_TOKEN_BOLD= IJavaColorConstants.JAVA_SPECIAL_TOKEN + EDITOR_BOLD_SUFFIX;
+	
+	/**
+	 * A named preference that controls whether special tokens are rendered in italic.
+	 * <p>
+	 * Value is of type <code>Boolean</code>.
+	 * </p>
+	 * 
+	 * @since 3.0
+	 */
+	public final static String EDITOR_JAVA_SPECIAL_TOKEN_ITALIC= IJavaColorConstants.JAVA_SPECIAL_TOKEN + EDITOR_ITALIC_SUFFIX;
+	
+	/**
+	 * A named preference that controls whether special tokens are rendered in strikethrough.
+	 * <p>
+	 * Value is of type <code>Boolean</code>.
+	 * </p>
+	 * 
+	 * @since 3.1
+	 */
+	public final static String EDITOR_JAVA_SPECIAL_TOKEN_STRIKETHROUGH= IJavaColorConstants.JAVA_SPECIAL_TOKEN + EDITOR_STRIKETHROUGH_SUFFIX;
+	
+	/**
+	 * A named preference that controls whether special tokens are rendered in italic.
+	 * <p>
+	 * Value is of type <code>Boolean</code>.
+	 * </p>
+	 * 
+	 * @since 3.1
+	 */
+	public final static String EDITOR_JAVA_SPECIAL_TOKEN_UNDERLINE= IJavaColorConstants.JAVA_SPECIAL_TOKEN + EDITOR_UNDERLINE_SUFFIX;
+	
+	/**
 	 * A named preference that holds the color used to render operators and brackets.
 	 * <p>
 	 * Value is of type <code>String</code>. A RGB color value encoded as a string
@@ -3705,6 +3758,10 @@ public class PreferenceConstants {
 		PreferenceConverter.setDefault(store, PreferenceConstants.EDITOR_JAVA_KEYWORD_RETURN_COLOR, new RGB(127, 0, 85));
 		store.setDefault(PreferenceConstants.EDITOR_JAVA_KEYWORD_RETURN_BOLD, true);
 		store.setDefault(PreferenceConstants.EDITOR_JAVA_KEYWORD_RETURN_ITALIC, false);
+		
+		PreferenceConverter.setDefault(store, PreferenceConstants.EDITOR_JAVA_SPECIAL_TOKEN_COLOR, new RGB(100, 100, 100));
+		store.setDefault(PreferenceConstants.EDITOR_JAVA_SPECIAL_TOKEN_BOLD, false);
+		store.setDefault(PreferenceConstants.EDITOR_JAVA_SPECIAL_TOKEN_ITALIC, true);
 
 		PreferenceConverter.setDefault(store, PreferenceConstants.EDITOR_JAVA_OPERATOR_COLOR, new RGB(0, 0, 0));
 		store.setDefault(PreferenceConstants.EDITOR_JAVA_OPERATOR_BOLD, false);

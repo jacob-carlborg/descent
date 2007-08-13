@@ -86,6 +86,13 @@ public interface IJavaColorConstants {
 	 * @since 3.0
 	 */
 	String JAVA_KEYWORD_RETURN= "java_keyword_return"; //$NON-NLS-1$
+	
+	/** The color key for special tokens in Java code
+	 * (value <code>"java_special_token"</code>).
+	 *
+	 * @since 3.0
+	 */
+	String JAVA_SPECIAL_TOKEN= "java_special_token"; //$NON-NLS-1$
 
 	/** The color key for operators and brackets in Java code
 	 * (value <code>"java_operator"</code>).

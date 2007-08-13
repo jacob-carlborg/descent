@@ -323,6 +323,7 @@ public class JavadocView extends AbstractInfoView {
 	private static void addPreferencesFontsAndColorsToStyleSheet(StringBuffer buffer) {
 		addStyle(buffer, IJavaColorConstants.JAVA_KEYWORD);
 		addStyle(buffer, IJavaColorConstants.JAVA_KEYWORD_RETURN);
+		addStyle(buffer, IJavaColorConstants.JAVA_SPECIAL_TOKEN);
 		addStyle(buffer, IJavaColorConstants.JAVA_OPERATOR);
 		addStyle(buffer, IJavaColorConstants.JAVA_DEFAULT);
 		addStyle(buffer, IJavaColorConstants.JAVA_PRAGMA);

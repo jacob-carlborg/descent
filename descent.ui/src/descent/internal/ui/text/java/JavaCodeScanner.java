@@ -179,6 +179,10 @@ public final class JavaCodeScanner extends AbstractJavaScanner {
 		"void",  //$NON-NLS-1$
 		"wchar", //$NON-NLS-1$
 		}; 
+	
+	private static String[] fgSpecialTokens= { 
+		"__FILE__", "__LINE__", "__DATE__", "__TIME__", "__TIMESTAMP__", "__VENDOR__", "__VERSION__"       //$NON-NLS-1$//$NON-NLS-2$//$NON-NLS-3$//$NON-NLS-4$//$NON-NLS-5$//$NON-NLS-6$//$NON-NLS-7$
+		}; 
 
 	private static String[] fgConstants= { "false", "null", "true" }; //$NON-NLS-3$ //$NON-NLS-2$ //$NON-NLS-1$
 
@@ -187,7 +191,8 @@ public final class JavaCodeScanner extends AbstractJavaScanner {
 		IJavaColorConstants.JAVA_STRING,
 		IJavaColorConstants.JAVA_DEFAULT,
 		IJavaColorConstants.JAVA_KEYWORD_RETURN,
-		IJavaColorConstants.JAVA_OPERATOR
+		IJavaColorConstants.JAVA_SPECIAL_TOKEN,
+		IJavaColorConstants.JAVA_OPERATOR,
 	};
 
 	private List fVersionDependentRules= new ArrayList(1);
@@ -262,8 +267,14 @@ public final class JavaCodeScanner extends AbstractJavaScanner {
 			wordRule.addWord(fgTypes[i], token);
 		for (int i=0; i<fgConstants.length; i++)
 			wordRule.addWord(fgConstants[i], token);
-
 		combinedWordRule.addWordMatcher(wordRule);
+		
+		// Add word rule for special tokens.
+		CombinedWordRule.WordMatcher stWordRule= new CombinedWordRule.WordMatcher();
+		token= getToken(IJavaColorConstants.JAVA_SPECIAL_TOKEN);
+		for (int i=0; i<fgSpecialTokens.length; i++)
+			stWordRule.addWord(fgSpecialTokens[i], token);
+		combinedWordRule.addWordMatcher(stWordRule);
 
 		rules.add(combinedWordRule);
 
