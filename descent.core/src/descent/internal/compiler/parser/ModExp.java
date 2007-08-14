@@ -11,4 +11,31 @@ public class ModExp extends BinExp {
 		return MOD_EXP;
 	}
 
+	@Override
+	public Expression semantic(Scope sc, SemanticContext context)
+	{
+		Expression e;
+
+	    if(null != type)
+		return this;
+
+	    super.semanticp(sc, context);
+	    e = op_overload(sc);
+	    if(null != e)
+	    	return e;
+
+	    typeCombine(sc, context);
+	    e1.checkArithmetic(context);
+	    e2.checkArithmetic(context);
+	    if (type.isfloating())
+	    {	type = e1.type;
+			if (e2.type.iscomplex())
+			{
+				error("cannot perform modulo complex arithmetic");
+				return new IntegerExp(Loc.ZERO, 0);
+			}
+	    }
+	    return this;
+	}
+	
 }

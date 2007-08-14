@@ -11,4 +11,10 @@ public class XorAssignExp extends BinExp {
 		return XOR_ASSIGN_EXP;
 	}
 
+	@Override
+	public Expression semantic(Scope sc, SemanticContext context)
+	{
+		return commonSemanticAssignIntegral(sc, context);
+	}
+
 }

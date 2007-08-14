@@ -47,6 +47,7 @@ public abstract class Type extends ASTNode {
 	public final static Type tboolean = tbool;
 	public final static Type tsize_t = tuns32;
 	public final static Type tptrdiff_t = tint32;
+	public final static Type tshiftcnt = tint32;
 	
 	// TODO fill this fields
 	public static boolean impcnvWarn[][];

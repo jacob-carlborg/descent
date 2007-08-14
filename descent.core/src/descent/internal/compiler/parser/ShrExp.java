@@ -11,4 +11,24 @@ public class ShrExp extends BinExp {
 		return SHR_EXP;
 	}
 
+	@Override
+	public Expression semantic(Scope sc, SemanticContext context)
+	{
+		Expression e;
+
+	    if(null == type)
+	    {
+	    	super.semanticp(sc, context);
+			e = op_overload(sc);
+			if(null != e)
+			    return e;
+			e1 = e1.checkIntegral(context);
+			e2 = e2.checkIntegral(context);
+			e1 = e1.integralPromotions(sc, context);
+			e2 = e2.castTo(sc, Type.tshiftcnt, context);
+			type = e1.type;
+	    }
+	    return this;
+	}
+
 }
