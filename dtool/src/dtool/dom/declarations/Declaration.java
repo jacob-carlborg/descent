@@ -1,16 +1,19 @@
 package dtool.dom.declarations;
 
+import java.util.Iterator;
 import java.util.List;
 
-import descent.core.dom.IDeclaration;
-import descent.internal.core.dom.Dsymbol;
+import descent.core.domX.ASTNode;
+import descent.internal.compiler.parser.Dsymbol;
+import descent.internal.compiler.parser.Modifier;
+import descent.internal.compiler.parser.TOK;
 import dtool.descentadapter.DescentASTConverter;
-import dtool.dom.ast.ASTNode;
+import dtool.refmodel.IScope;
 
 public abstract class Declaration {
 
 
-	public static ASTNode[] convertMany(IDeclaration[] declarationDefinitions) {
+	public static ASTNode[] convertMany(descent.internal.compiler.parser.Declaration[] declarationDefinitions) {
 		ASTNode[] decls = new ASTNode[declarationDefinitions.length];
 		for(int i = 0; i < declarationDefinitions.length;i++) {
 			decls[i] = convert(declarationDefinitions[i]);
@@ -18,7 +21,7 @@ public abstract class Declaration {
 		return decls;
 	}
 
-	public static ASTNode[] convertMany(List<IDeclaration> declarationDefinitions) {
+	public static ASTNode[] convertMany(List<Dsymbol> declarationDefinitions) {
 		ASTNode[] decls = new ASTNode[declarationDefinitions.size()];
 		for(int i = 0; i < declarationDefinitions.size();i++) {
 			decls[i] = convert(declarationDefinitions.get(i));
@@ -26,11 +29,37 @@ public abstract class Declaration {
 		return decls;
 	}
 
-	public static ASTNode convert(IDeclaration decl) {
-		return (ASTNode) DescentASTConverter.convertElem((ASTNode) decl);
+	public static ASTNode convert(descent.internal.compiler.parser.Declaration decl) {
+		return (ASTNode) DescentASTConverter.convertElem(decl);
 	}
 
 	public static ASTNode convert(Dsymbol decl) {
-		return (ASTNode) DescentASTConverter.convertElem((ASTNode) decl);
+		return (ASTNode) DescentASTConverter.convertElem(decl);
+	}
+
+	public static int hasModifier(List<Modifier> modifiers, TOK tok) {
+		int i = 0;
+		if(modifiers == null)
+			return -1;
+		for (Iterator iter = modifiers.iterator(); iter.hasNext(); i++) {
+			Modifier modifier = (Modifier) iter.next();
+			if(modifier.tok == tok)
+				return i;
+		}
+		return -1;
+	}
+
+	public static boolean hasInheritedProtection(ASTNode elem, TOK tok) {
+		while(elem != null && !(elem instanceof IScope)) {
+			elem = elem.getParent();
+			if(elem instanceof DeclarationProtection) {
+				DeclarationProtection pdecl = (DeclarationProtection) elem;
+				if(pdecl.modifier.tok == tok)
+					return true;
+				else
+					return false;
+			}
+		} 
+		return false;
 	}
 }

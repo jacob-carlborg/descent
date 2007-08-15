@@ -6,13 +6,8 @@ import dtool.dom.ast.IASTNeoVisitor;
 import dtool.dom.definitions.DefUnit;
 
 /**
- * XXX: what is this?
  */
 public class TypeStruct extends CommonRefNative {
-
-	public TypeStruct(descent.internal.core.dom.TypeStruct elem) {
-		throw new UnsupportedOperationException();
-	}
 
 	@Override
 	public void accept0(IASTNeoVisitor visitor) {

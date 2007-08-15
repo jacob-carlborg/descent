@@ -1,7 +1,7 @@
 package dtool.dom.statements;
 
 import melnorme.miscutil.tree.TreeVisitor;
-import descent.internal.core.dom.DefaultStatement;
+import descent.internal.compiler.parser.DefaultStatement;
 import dtool.dom.ast.IASTNeoVisitor;
 
 public class StatementDefault extends Statement {
@@ -10,7 +10,7 @@ public class StatementDefault extends Statement {
 	
 	public StatementDefault(DefaultStatement elem) {
 		convertNode(elem);
-		this.st = Statement.convert(elem.s);
+		this.st = Statement.convert(elem.statement);
 	}
 
 	@Override

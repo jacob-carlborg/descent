@@ -1,6 +1,6 @@
 package dtool.dom.declarations;
 
-import descent.internal.core.dom.Import;
+import descent.internal.compiler.parser.Import;
 import dtool.refmodel.CommonDefUnitSearch;
 import dtool.refmodel.EntityResolver;
 import dtool.refmodel.DefUnitSearch;

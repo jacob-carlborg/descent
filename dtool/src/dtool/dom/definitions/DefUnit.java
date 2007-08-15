@@ -1,7 +1,10 @@
 package dtool.dom.definitions;
 
-import descent.internal.core.dom.Dsymbol;
-import descent.internal.core.dom.Identifier;
+import java.util.List;
+
+import descent.core.dom.DDocComment;
+import descent.internal.compiler.parser.Dsymbol;
+import descent.internal.compiler.parser.IdentifierExp;
 import dtool.dom.ast.ASTNeoNode;
 import dtool.refmodel.IScopeNode;
 
@@ -29,18 +32,22 @@ public abstract class DefUnit extends ASTNeoNode {
 		;
 	}
 	
-	public String comments;
+	public List<DDocComment> preComments;
 	public Symbol defname;
 	public EArcheType archeType;
 
 	protected void convertDsymbol(Dsymbol elem) {
-		convertNode(elem);
+		convertDsymbol(elem, false);
+	}
+	
+	protected void convertDsymbol(Dsymbol elem, boolean checkRange) {
+		convertNode(elem, checkRange);
 		convertIdentifier(elem.ident);
-		//TODO: The parser is not parsing comments
-		this.comments = elem.comments; 
+		this.preComments = elem.preDdocs;
+		// TODO: post comments
 	}
 
-	protected void convertIdentifier(Identifier id) {
+	protected void convertIdentifier(IdentifierExp id) {
 		this.defname = new DefSymbol(id, this);
 	}		
 
@@ -52,6 +59,16 @@ public abstract class DefUnit extends ASTNeoNode {
 	@Override
 	public String toString() {
 		return getName();
+	}
+	
+	public String getCombinedDocComments() {
+		String str = null;
+		if(preComments != null)
+			for (DDocComment preComment : preComments) {
+				if(preComment != null)
+					str = str + "\n" + preComment.toString();
+			}
+		return str;
 	}
 	
 	/** Returns signature-oriented String representation. */
@@ -75,5 +92,7 @@ public abstract class DefUnit extends ASTNeoNode {
 	 * in the DefUnit node, but on other cases the scope is somewhere else.
 	 * May be null if the scope is not found. */
 	public abstract IScopeNode getMembersScope();
+
+
 
 }

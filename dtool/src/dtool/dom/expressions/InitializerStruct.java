@@ -1,20 +1,21 @@
 package dtool.dom.expressions;
 
 import melnorme.miscutil.tree.TreeVisitor;
-import descent.internal.core.dom.StructInitializer;
+import descent.internal.compiler.parser.StructInitializer;
+import dtool.descentadapter.DescentASTConverter;
 import dtool.dom.ast.IASTNeoVisitor;
-import dtool.dom.definitions.Symbol;
+import dtool.dom.references.RefIdentifier;
 
 public class InitializerStruct extends Initializer {
 
-	public Symbol[] indexes;
+	public RefIdentifier[] indexes;
 	public Initializer[] values;
 
 	public InitializerStruct(StructInitializer elem) {
 		convertNode(elem);
 		//TODO
-		//this.indexes = Expression.convertMany(elem.exps);
-		this.values = Initializer.convertMany(elem.values);
+		this.indexes = DescentASTConverter.convertMany(elem.field.toArray(), new RefIdentifier[elem.field.size()]);
+		this.values = Initializer.convertMany(elem.value);
 	}
 
 	@Override

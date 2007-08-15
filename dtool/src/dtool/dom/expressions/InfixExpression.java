@@ -1,7 +1,7 @@
 package dtool.dom.expressions;
 
 import melnorme.miscutil.tree.TreeVisitor;
-import descent.internal.core.dom.BinaryExpression;
+import descent.internal.compiler.parser.BinExp;
 import dtool.descentadapter.DescentASTConverter;
 import dtool.dom.ast.IASTNeoVisitor;
 
@@ -51,7 +51,7 @@ public class InfixExpression extends Expression {
 	public int kind;
 
 	
-	public InfixExpression(BinaryExpression elem, int kind) {
+	public InfixExpression(BinExp elem, int kind) {
 		convertNode(elem);
 		this.leftExp = (Expression) DescentASTConverter.convertElem(elem.e1);
 		this.rightExp = (Expression) DescentASTConverter.convertElem(elem.e2);

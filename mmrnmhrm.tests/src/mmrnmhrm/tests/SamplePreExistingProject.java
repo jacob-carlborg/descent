@@ -38,7 +38,7 @@ public abstract class SamplePreExistingProject {
 	public static IProject project;
 	
 
-	public static LangElement checkForExistanteOfPreExistingProject() {
+	public static LangElement checkForExistanceOfPreExistingProject() {
 		IWorkspaceRoot workspaceRoot = DeeCore.getWorkspaceRoot();
 		IProject project = workspaceRoot.getProject(PREEXISTINGPROJNAME);
 

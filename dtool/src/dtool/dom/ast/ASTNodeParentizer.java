@@ -1,41 +1,41 @@
 package dtool.dom.ast;
 
-import melnorme.miscutil.tree.ITreeNode;
+import descent.core.domX.ASTNode;
 
 
 /**
- * Sets parent entries in the tree nodes, using homogenous Visitor. 
+ * Sets parent entries in the tree nodes, using homogenous Visitor.
+ * Assumes a neo AST. 
  */
 public class ASTNodeParentizer extends ASTHomoVisitor {
-	
-	private static ASTNodeParentizer singleton = new ASTNodeParentizer();
+
+	public static void parentize(ASTNeoNode elem){
+		elem.accept(new ASTNodeParentizer());
+	}	
 	
 	private ASTNode parent = null;
 	private boolean firstvisit = true;
-	
-	private void initialize() {
-		parent = null;
-		firstvisit = true;
-	}
-	
-	public static void parentize(ASTNode elem){
-		singleton.initialize();
-		singleton.traverse(elem);
-	}
-
-	protected void leaveNode(ITreeNode elem) {
-		parent = (ASTNode)elem.getParent(); // Restore parent
-	}
-
-	@SuppressWarnings("unchecked")
-	protected boolean enterNode(ITreeNode elem) {
+		
+	@Override
+	public void preVisit(ASTNode elem) {
 		if (firstvisit) {
 			firstvisit = false;
 		} else {
-			((ASTNode)elem).setParent(parent); // Set parent to current parent
+			elem.setParent(parent); // Set parent to current parent
 		}
-		parent = (ASTNode)elem; // Set as new parent
-		return true; 
+		parent = elem; // Set as new parent
+	}
+	
+	@Override
+	public void postVisit(ASTNode elem) {
+		parent = elem.getParent(); // Restore previous parent
+	}
+
+	protected boolean enterNode(ASTNode elem) {
+		return true;
+	}
+
+	protected void leaveNode(ASTNode elem) {
 	}
 
 }

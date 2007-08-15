@@ -1,7 +1,7 @@
 package dtool.dom.ast;
 
-import melnorme.miscutil.tree.ITreeNode;
 import melnorme.miscutil.tree.IVisitable;
+import descent.core.domX.ASTNode;
 
 /** 
  * An abstract visitor that visits nodes in a homogeneous way, 
@@ -14,15 +14,16 @@ public abstract class ASTHomoVisitor extends ASTNeoUpTreeVisitor {
 		elem.accept(this);
 	}
 	
-	abstract boolean enterNode(ITreeNode elem);
-	abstract void leaveNode(ITreeNode elem);
-	
-	public final void preVisit(ASTNode elem) {
+	public void preVisit(ASTNode elem) {
 	}
 
-	public final void postVisit(ASTNode elem) {
+	public void postVisit(ASTNode elem) {
 	}
 	
+	abstract boolean enterNode(ASTNode elem);
+	abstract void leaveNode(ASTNode elem);
+
+
 	public final boolean visit(ASTNode elem) {
 		return enterNode(elem);
 	}
@@ -30,4 +31,5 @@ public abstract class ASTHomoVisitor extends ASTNeoUpTreeVisitor {
 	public final void endVisit(ASTNode elem) {
 		leaveNode(elem);
 	}
+
 }

@@ -1,13 +1,10 @@
 package dtool.refmodel;
 
-import java.util.Iterator;
-
-import descent.internal.core.dom.Parser;
-import descent.internal.core.dom.ParserFacade;
-import descent.internal.core.dom.TOK;
-import descent.internal.core.dom.Token;
+import descent.core.domX.ASTNode;
+import descent.core.domX.TokenUtil;
+import descent.internal.compiler.parser.TOK;
+import descent.internal.compiler.parser.Token;
 import dtool.descentadapter.DescentASTConverter;
-import dtool.dom.ast.ASTNode;
 import dtool.dom.ast.ASTNodeFinder;
 import dtool.dom.definitions.DefUnit;
 import dtool.dom.definitions.Module;
@@ -70,18 +67,17 @@ public class PartialEntitySearch extends CommonDefUnitSearch {
 				return null; // return without doing matches
 		}
 		
-		Parser parser = ParserFacade.parseCompilationUnit(docstr);
+		Token tokenList = ParserAdapter.tokenizeSource(docstr);
 		
 		// : Find last token before offset
 		Token lastToken = null;
-		for (Iterator<Token> iter = parser.tokenList.iterator(); iter.hasNext();) {
-			Token newtoken = iter.next();
-			if(newtoken.ptr < offset && !isWhiteToken(newtoken)) {
+		
+		Token newtoken = tokenList;
+		while (newtoken.ptr < offset) {
+			if(!TokenUtil.isWhiteToken(newtoken.value))
 				lastToken = newtoken;
-				continue;
-			} else {
-				break;
-			}
+			
+			newtoken = newtoken.next;
 		}
 		
 		// : Check if completion request is *inside* a token
@@ -92,13 +88,13 @@ public class PartialEntitySearch extends CommonDefUnitSearch {
 			}
 		}
 		
+		ParserAdapter parserAdapter;
+		parserAdapter = ParserAdapter.parseSource(docstr);
 
 		// : Do Syntax error recovery
-		ParserAdapter parserAdapter;
-		parserAdapter = ParserAdapter.recoverForCompletion(parser, docstr, offset, lastToken);
-		parser = parserAdapter.parser;
+		parserAdapter.recoverForCompletion(docstr, offset, lastToken);
 
-		Module neoModule = DescentASTConverter.convertModule(parser.mod);
+		Module neoModule = DescentASTConverter.convertModule(parserAdapter.mod);
 		neoModule.setCUnit(cunit);
 		
 		/* ============================================== */
@@ -148,11 +144,7 @@ public class PartialEntitySearch extends CommonDefUnitSearch {
 		return null;
 	}
 
-	/** Return whether the token is semantically ignorable (comments, whitespace).*/
-	private static boolean isWhiteToken(Token token) {
-		return token.value == TOK.TOK_whitespace || token.value == TOK.TOKcomment;
-	}
-	
+
 	private static boolean isValidReferenceToken(Token token) {
 		return token.value == TOK.TOKidentifier
 		|| token.value == TOK.TOKbool

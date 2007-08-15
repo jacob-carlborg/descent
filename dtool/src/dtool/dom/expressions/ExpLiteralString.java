@@ -1,6 +1,6 @@
 package dtool.dom.expressions;
 
-import descent.internal.core.dom.StringExp;
+import descent.internal.compiler.parser.StringExp;
 import dtool.dom.ast.IASTNeoVisitor;
 
 public class ExpLiteralString extends Expression {

@@ -13,7 +13,7 @@ import dtool.dom.expressions.Expression;
 public class TypeTypeof extends CommonRefNative {
 	public Expression expression;
 
-	public TypeTypeof(descent.internal.core.dom.TypeTypeof elem) {
+	public TypeTypeof(descent.internal.compiler.parser.TypeTypeof elem) {
 		setSourceRange(elem);
 		this.expression = Expression.convert(elem.exp);
 	}

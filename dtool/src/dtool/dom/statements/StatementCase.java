@@ -1,7 +1,7 @@
 package dtool.dom.statements;
 
 import melnorme.miscutil.tree.TreeVisitor;
-import descent.internal.core.dom.CaseStatement;
+import descent.internal.compiler.parser.CaseStatement;
 import dtool.dom.ast.IASTNeoVisitor;
 import dtool.dom.expressions.Expression;
 
@@ -13,7 +13,7 @@ public class StatementCase extends Statement {
 	public StatementCase(CaseStatement elem) {
 		convertNode(elem);
 		this.exp = Expression.convert(elem.exp);
-		this.st = Statement.convert(elem.s);
+		this.st = Statement.convert(elem.statement);
 	}
 
 	@Override

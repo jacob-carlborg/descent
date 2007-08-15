@@ -1,29 +1,40 @@
 package dtool.dom.statements;
 
+import java.util.Iterator;
+import java.util.List;
+
+import melnorme.miscutil.IteratorUtil;
 import melnorme.miscutil.tree.TreeVisitor;
-import descent.internal.core.dom.Catch;
-import descent.internal.core.dom.TryCatchStatement;
-import descent.internal.core.dom.TryFinallyStatement;
+import descent.internal.compiler.parser.Catch;
+import descent.internal.compiler.parser.TryCatchStatement;
+import descent.internal.compiler.parser.TryFinallyStatement;
 import dtool.descentadapter.DescentASTConverter;
 import dtool.dom.ast.ASTNeoNode;
 import dtool.dom.ast.IASTNeoVisitor;
-import dtool.dom.definitions.DefSymbol;
+import dtool.dom.ast.IASTNode;
 import dtool.dom.definitions.FunctionParameter;
-import dtool.dom.references.Reference;
+import dtool.dom.definitions.IFunctionParameter;
+import dtool.dom.definitions.NamelessParameter;
+import dtool.refmodel.IScope;
+import dtool.refmodel.IScopeNode;
 
 public class StatementTry extends Statement {
 	
-	public static class CatchClause extends ASTNeoNode {
+	public static class CatchClause extends ASTNeoNode implements IScopeNode {
 		
-		public FunctionParameter param;
+		public IFunctionParameter param;
 		public IStatement body;
 
 		public CatchClause(Catch elem) {
 			convertNode(elem);
 			this.body = Statement.convert(elem.handler);
-			this.param = new FunctionParameter();
-			this.param.type = Reference.convertType(elem.t);
-			this.param.defname = new DefSymbol(elem.id, this.param);
+			if(elem.type == null) {
+				this.param = null;
+			} else if(elem.id == null) {
+				this.param = new NamelessParameter(elem.type);
+			} else {
+				this.param = new FunctionParameter(elem.type, elem.id);
+			}
 		}
 
 		@Override
@@ -34,6 +45,16 @@ public class StatementTry extends Statement {
 				TreeVisitor.acceptChildren(visitor, body);
 			}
 			visitor.endVisit(this);
+		}
+
+		public Iterator<? extends IASTNode> getMembersIterator() {
+			if(param != null)
+				return IteratorUtil.singletonIterator(param);
+			return IteratorUtil.getEMPTY_ITERATOR();
+		}
+
+		public List<IScope> getSuperScopes() {
+			return null;
 		}
 	}
 
@@ -56,11 +77,11 @@ public class StatementTry extends Statement {
 	
 	public StatementTry(TryFinallyStatement elem) {
 		convertNode(elem);
-		if(elem.s instanceof TryCatchStatement){
-			convertTryCatch((TryCatchStatement)elem.s);
+		if(elem.body instanceof TryCatchStatement){
+			convertTryCatch((TryCatchStatement)elem.body);
 		} else {
 			this.params = new CatchClause[0];
-			this.body = Statement.convert(elem.s);
+			this.body = Statement.convert(elem.body);
 		}
 		this.finallybody =  Statement.convert(elem.finalbody);
 	}

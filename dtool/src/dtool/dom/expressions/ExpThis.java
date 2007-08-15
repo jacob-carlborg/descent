@@ -1,6 +1,6 @@
 package dtool.dom.expressions;
 
-import descent.internal.core.dom.ThisExp;
+import descent.internal.compiler.parser.ThisExp;
 import dtool.dom.ast.IASTNeoVisitor;
 
 public class ExpThis extends Expression {

@@ -4,7 +4,7 @@ import java.util.Collection;
 import java.util.Collections;
 
 import melnorme.miscutil.tree.TreeVisitor;
-import descent.internal.core.dom.Identifier;
+import descent.internal.compiler.parser.IdentifierExp;
 import dtool.dom.ast.IASTNeoVisitor;
 import dtool.dom.definitions.DefUnit;
 import dtool.dom.definitions.Module;
@@ -16,9 +16,9 @@ import dtool.refmodel.NodeUtil;
  */
 public class RefModuleQualified extends CommonRefQualified {
 
-	public RefModuleQualified(Identifier elem) {
+	public RefModuleQualified(IdentifierExp elem) {
 		convertNode(elem);
-		subref = CommonRefSingle.convert(elem);
+		subref = CommonRefSingle.convertToSingleRef(elem);
 	}
 
 	public void accept0(IASTNeoVisitor visitor) {

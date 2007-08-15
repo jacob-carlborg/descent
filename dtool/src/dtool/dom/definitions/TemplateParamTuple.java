@@ -1,7 +1,7 @@
 package dtool.dom.definitions;
 
 import melnorme.miscutil.tree.TreeVisitor;
-import descent.internal.core.dom.TemplateTupleParameter;
+import descent.internal.compiler.parser.TemplateTupleParameter;
 import dtool.dom.ast.IASTNeoVisitor;
 import dtool.refmodel.IScopeNode;
 

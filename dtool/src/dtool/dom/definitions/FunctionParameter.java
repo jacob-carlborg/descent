@@ -1,6 +1,8 @@
 package dtool.dom.definitions;
 
 import melnorme.miscutil.tree.TreeVisitor;
+import descent.internal.compiler.parser.IdentifierExp;
+import descent.internal.compiler.parser.Type;
 import dtool.dom.ast.IASTNeoVisitor;
 import dtool.dom.expressions.Expression;
 import dtool.dom.references.Reference;
@@ -11,23 +13,30 @@ public class FunctionParameter extends DefUnit implements IFunctionParameter {
 	
 
 	public Reference type;
-	public descent.internal.core.dom.InOut inout;
+	public descent.internal.compiler.parser.InOut inout;
 	public Expression defaultValue;
 	
 	public FunctionParameter() {
 	}
 	
-	protected FunctionParameter(descent.internal.core.dom.Argument elem) {
+	protected FunctionParameter(descent.internal.compiler.parser.Argument elem) {
 		convertNode(elem);
-		convertIdentifier(elem.id);
+		convertIdentifier(elem.ident);
 		setSourceRange(elem);
 		
 		this.type = Reference.convertType(elem.type);
 		this.inout = elem.inout;
-		this.defaultValue = Expression.convert(elem.defaultValue);
+		this.defaultValue = Expression.convert(elem.defaultArg);
 			
 	}
 	
+	public FunctionParameter(Type type, IdentifierExp id) {
+		convertIdentifier(id);
+		setSourceRange(type.getStartPos(), id.getEndPos() - type.getStartPos());
+		
+		this.type = Reference.convertType(type);
+	}
+
 	public String toStringAsParameter() {
 		return type + " " + defname;
 	}

@@ -25,10 +25,11 @@ public class HoverUtil {
 		+"  <span style=\"color: #915F6D;\" >" +
 			"("+defUnit.getArcheType().toString()+")" +"</span>";
 		
-		if(defUnit.comments == null || defUnit.comments.equals(""))
+		String docComments = defUnit.getCombinedDocComments(); 
+		if(docComments == null)
 			str = str + "<br/> <p>DeeDoc goes here.</p>";
 		else 
-			str = str + "<br/>" + convertToHTMLContent(defUnit.comments);
+			str = str + "<br/>" + convertToHTMLContent(docComments);
 		return str;
 	}
 

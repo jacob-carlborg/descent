@@ -1,7 +1,7 @@
 package dtool.dom.definitions;
 
 import melnorme.miscutil.tree.TreeVisitor;
-import descent.internal.core.dom.TypedefDeclaration;
+import descent.internal.compiler.parser.TypedefDeclaration;
 import dtool.dom.ast.IASTNeoVisitor;
 import dtool.dom.expressions.Initializer;
 import dtool.dom.references.Reference;
@@ -15,7 +15,7 @@ public class DefinitionTypedef extends Definition implements IStatement {
 	
 	public DefinitionTypedef(TypedefDeclaration elem) {
 		convertDsymbol(elem);
-		this.type = Reference.convertType(elem.type);
+		this.type = Reference.convertType(elem.sourceBasetype);
 		this.initializer = Initializer.convert(elem.init);
 	}
 

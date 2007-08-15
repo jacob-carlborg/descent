@@ -1,7 +1,7 @@
 package dtool.dom.expressions;
 
 import melnorme.miscutil.tree.TreeVisitor;
-import descent.internal.core.dom.AssertExp;
+import descent.internal.compiler.parser.AssertExp;
 import dtool.dom.ast.IASTNeoVisitor;
 
 public class ExpAssert extends Expression {
@@ -11,8 +11,8 @@ public class ExpAssert extends Expression {
 
 	public ExpAssert(AssertExp elem) {
 		convertNode(elem);
-		this.exp = Expression.convert(elem.getExpression());
-		this.msg = Expression.convert(elem.getMessage());
+		this.exp = Expression.convert(elem.e1);
+		this.msg = Expression.convert(elem.msg);
 	}
 
 	@Override

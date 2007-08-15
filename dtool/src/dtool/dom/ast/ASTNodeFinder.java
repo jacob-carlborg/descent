@@ -1,5 +1,7 @@
 package dtool.dom.ast;
 
+import descent.core.domX.ASTRangeLessNode;
+import descent.core.domX.ASTNode;
 import melnorme.miscutil.Assert;
 
 
@@ -29,14 +31,20 @@ public class ASTNodeFinder extends ASTNeoUpTreeVisitor {
 	 *  inclusiveEnd controls whether to match nodes whose end position 
 	 *  is the same as the offset.*/
 	public static ASTNode findElement(ASTNode root, int offset, boolean inclusiveEnd){
-		if(offset < root.getStartPos() || offset > root.getEndPos() ) 
+		Assert.isNotNull(root);
+		Assert.isTrue(!root.hasNoSourceRangeInfo());
+
+		if(offset < root.getStartPos() || offset > root.getEndPos()) 
 			return null;
 		
 		ASTNodeFinder aef = new ASTNodeFinder(offset, inclusiveEnd);
-		Assert.isNotNull(root);
 		root.accept(aef);
 		Assert.isNotNull(aef.match);
 		return aef.match;
+	}
+
+	public boolean visit(ASTRangeLessNode elem) {
+		return true;
 	}
 
 	public boolean visit(ASTNode elem) {
@@ -63,9 +71,8 @@ public class ASTNodeFinder extends ASTNeoUpTreeVisitor {
 				offset <= elem.getEndPos() : offset < elem.getEndPos();
 	}
 
-
-	public void endVisit(ASTNode elem) {
-	}
+	public void endVisit(ASTRangeLessNode elem) { }
+	public void endVisit(ASTNode elem) { }
 
 }
 

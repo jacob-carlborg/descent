@@ -1,7 +1,7 @@
 package dtool.dom.expressions;
 
 import melnorme.miscutil.tree.TreeVisitor;
-import descent.internal.core.dom.DeleteExp;
+import descent.internal.compiler.parser.DeleteExp;
 import dtool.dom.ast.IASTNeoVisitor;
 
 public class ExpDelete extends Expression {
@@ -10,7 +10,7 @@ public class ExpDelete extends Expression {
 	
 	public ExpDelete(DeleteExp elem) {
 		convertNode(elem);
-		this.exp = Expression.convert(elem.e); 
+		this.exp = Expression.convert(elem.e1); 
 	}
 
 	@Override

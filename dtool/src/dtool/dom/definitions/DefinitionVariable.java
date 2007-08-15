@@ -16,7 +16,7 @@ public class DefinitionVariable extends Definition implements IStatement {
 	public Reference type;
 	public Initializer init;
 
-	public DefinitionVariable(descent.internal.core.dom.VarDeclaration elem) {
+	public DefinitionVariable(descent.internal.compiler.parser.VarDeclaration elem) {
 		convertDsymbol(elem);
 		this.type = Reference.convertType(elem.type);
 		this.init = Initializer.convert(elem.init);

@@ -5,8 +5,8 @@ import java.util.Iterator;
 import java.util.List;
 
 import melnorme.miscutil.tree.TreeVisitor;
-import descent.internal.core.dom.TypeAArray;
-import dtool.dom.ast.ASTNode;
+import descent.core.domX.ASTNode;
+import descent.internal.compiler.parser.TypeAArray;
 import dtool.dom.ast.IASTNeoVisitor;
 import dtool.dom.definitions.DefUnit;
 import dtool.dom.definitions.NativeDefUnit;

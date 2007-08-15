@@ -3,7 +3,7 @@ package dtool.dom.ast;
 import java.util.ArrayList;
 import java.util.List;
 
-import melnorme.miscutil.tree.ITreeNode;
+import descent.core.domX.ASTNode;
 
 
 
@@ -26,18 +26,18 @@ public class ASTChildrenCollector extends ASTHomoVisitor {
 		return getChildrenList(elem).toArray(ASTNode.NO_ELEMENTS);
 	}	
 	
-	public boolean enterNode(ITreeNode elem) {
+	public boolean enterNode(ASTNode elem) {
 		if(visitingParent == true) {
 			visitingParent = false;
 			return true; // visit children
 		}
 
 		// visiting children
-		childrenLst.add((ASTNode)elem);
+		childrenLst.add(elem);
 		return false;
 	}
 
-	protected void leaveNode(ITreeNode elem) {
+	protected void leaveNode(ASTNode elem) {
 		// Do nothing
 	}
 }

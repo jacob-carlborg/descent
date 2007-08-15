@@ -1,6 +1,6 @@
 package dtool.dom.expressions;
 
-import descent.internal.core.dom.SuperExp;
+import descent.internal.compiler.parser.SuperExp;
 import dtool.dom.ast.IASTNeoVisitor;
 
 public class ExpSuper extends Expression {

@@ -5,9 +5,9 @@ import java.util.Iterator;
 import java.util.List;
 
 import melnorme.miscutil.tree.TreeVisitor;
-import descent.internal.core.dom.LINK;
+import descent.core.domX.ASTNode;
+import descent.internal.compiler.parser.LINK;
 import dtool.descentadapter.DescentASTConverter;
-import dtool.dom.ast.ASTNode;
 import dtool.dom.ast.IASTNeoVisitor;
 import dtool.dom.definitions.DefUnit;
 import dtool.dom.definitions.DefinitionFunction;
@@ -24,13 +24,13 @@ public class TypeFunction extends CommonRefNative {
 	
 	public Reference rettype;
 	public List<IFunctionParameter> params;
-	public boolean varargs;
+	public int varargs;
 	public LINK linkage;
 
-	public TypeFunction(descent.internal.core.dom.TypeFunction elem) {
+	public TypeFunction(descent.internal.compiler.parser.TypeFunction elem) {
 		setSourceRange(elem);
-		this.rettype = (Reference) DescentASTConverter.convertElem(elem.getReturnType());
-		this.params = DescentASTConverter.convertManyL(elem.getArguments(), this.params);
+		this.rettype = (Reference) DescentASTConverter.convertElem(elem.rto);
+		this.params = DescentASTConverter.convertManyL(elem.parameters, this.params);
 		this.varargs = DefinitionFunction.convertVarArgs(elem.varargs);
 		this.linkage = elem.linkage;
 	}

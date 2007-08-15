@@ -1,7 +1,7 @@
 package dtool.dom.statements;
 
 import melnorme.miscutil.tree.TreeVisitor;
-import descent.internal.core.dom.BreakStatement;
+import descent.internal.compiler.parser.BreakStatement;
 import dtool.dom.ast.IASTNeoVisitor;
 import dtool.dom.definitions.Symbol;
 
@@ -11,8 +11,8 @@ public class StatementBreak extends Statement {
 	
 	public StatementBreak(BreakStatement elem) {
 		convertNode(elem);
-		if(elem.id != null)
-			this.id = new Symbol(elem.id);
+		if(elem.ident != null)
+			this.id = new Symbol(elem.ident);
 	}
 
 	@Override

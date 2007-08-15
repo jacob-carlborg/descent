@@ -44,6 +44,7 @@ public abstract class CommonRefQualified extends Reference implements IDefUnitRe
 	 * the CommonRefSingle is part of a qualified referencet. */
 	public static void doSearchForPossiblyQualifiedSingleRef(CommonDefUnitSearch search,
 			CommonRefSingle refSingle) {
+		// First determine the lookup scope.
 		if(refSingle.getParent() instanceof CommonRefQualified) {
 			CommonRefQualified parent = (CommonRefQualified) refSingle.getParent();
 			// check if this single ref is the sub ref of a qualified ref

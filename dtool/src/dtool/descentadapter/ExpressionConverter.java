@@ -1,83 +1,91 @@
 package dtool.descentadapter;
 
 import melnorme.miscutil.Assert;
-import descent.core.dom.IFalseExpression;
-import descent.core.dom.IIntegerExpression;
-import descent.core.dom.ITrueExpression;
-import descent.internal.core.dom.AddAssignExp;
-import descent.internal.core.dom.AddExp;
-import descent.internal.core.dom.AddrExp;
-import descent.internal.core.dom.AndAndExp;
-import descent.internal.core.dom.AndAssignExp;
-import descent.internal.core.dom.AndExp;
-import descent.internal.core.dom.ArrayExp;
-import descent.internal.core.dom.ArrayInitializer;
-import descent.internal.core.dom.ArrayLiteralExp;
-import descent.internal.core.dom.AssertExp;
-import descent.internal.core.dom.AssignExp;
-import descent.internal.core.dom.BinaryExpression;
-import descent.internal.core.dom.CallExp;
-import descent.internal.core.dom.CastExp;
-import descent.internal.core.dom.CatAssignExp;
-import descent.internal.core.dom.CatExp;
-import descent.internal.core.dom.CmpExp;
-import descent.internal.core.dom.ComExp;
-import descent.internal.core.dom.CommaExp;
-import descent.internal.core.dom.CondExp;
-import descent.internal.core.dom.DeleteExp;
-import descent.internal.core.dom.DivAssignExp;
-import descent.internal.core.dom.DivExp;
-import descent.internal.core.dom.DollarExp;
-import descent.internal.core.dom.DotIdExp;
-import descent.internal.core.dom.DotTemplateInstanceExp;
-import descent.internal.core.dom.EqualExp;
-import descent.internal.core.dom.ExpInitializer;
-import descent.internal.core.dom.FuncExp;
-import descent.internal.core.dom.IdentifierExp;
-import descent.internal.core.dom.IdentityExp;
-import descent.internal.core.dom.IftypeExp;
-import descent.internal.core.dom.InExp;
-import descent.internal.core.dom.IntegerExp;
-import descent.internal.core.dom.MinAssignExp;
-import descent.internal.core.dom.MinExp;
-import descent.internal.core.dom.ModAssignExp;
-import descent.internal.core.dom.ModExp;
-import descent.internal.core.dom.MulAssignExp;
-import descent.internal.core.dom.MulExp;
-import descent.internal.core.dom.NegExp;
-import descent.internal.core.dom.NewAnonClassExp;
-import descent.internal.core.dom.NewExp;
-import descent.internal.core.dom.NotExp;
-import descent.internal.core.dom.NullExp;
-import descent.internal.core.dom.OrAssignExp;
-import descent.internal.core.dom.OrExp;
-import descent.internal.core.dom.OrOrExp;
-import descent.internal.core.dom.ParenthesizedExpression;
-import descent.internal.core.dom.PostDecExp;
-import descent.internal.core.dom.PostIncExp;
-import descent.internal.core.dom.PtrExp;
-import descent.internal.core.dom.RealExp;
-import descent.internal.core.dom.ScopeExp;
-import descent.internal.core.dom.ShlAssignExp;
-import descent.internal.core.dom.ShlExp;
-import descent.internal.core.dom.ShrAssignExp;
-import descent.internal.core.dom.ShrExp;
-import descent.internal.core.dom.SliceExp;
-import descent.internal.core.dom.StringExp;
-import descent.internal.core.dom.StructInitializer;
-import descent.internal.core.dom.SuperExp;
-import descent.internal.core.dom.ThisExp;
-import descent.internal.core.dom.TypeDotIdExp;
-import descent.internal.core.dom.TypeidExp;
-import descent.internal.core.dom.UAddExp;
-import descent.internal.core.dom.UnaryExpression;
-import descent.internal.core.dom.UshrAssignExp;
-import descent.internal.core.dom.UshrExp;
-import descent.internal.core.dom.VoidInitializer;
-import descent.internal.core.dom.XorAssignExp;
-import descent.internal.core.dom.XorExp;
-import descent.internal.core.dom.BinaryExpression.BinaryExpressionTypes;
-import descent.internal.core.dom.UnaryExpression.IUnaryExpression2;
+import descent.internal.compiler.parser.AddAssignExp;
+import descent.internal.compiler.parser.AddExp;
+import descent.internal.compiler.parser.AddrExp;
+import descent.internal.compiler.parser.AndAndExp;
+import descent.internal.compiler.parser.AndAssignExp;
+import descent.internal.compiler.parser.AndExp;
+import descent.internal.compiler.parser.ArrayExp;
+import descent.internal.compiler.parser.ArrayInitializer;
+import descent.internal.compiler.parser.ArrayLiteralExp;
+import descent.internal.compiler.parser.AssertExp;
+import descent.internal.compiler.parser.AssignExp;
+import descent.internal.compiler.parser.AssocArrayLiteralExp;
+import descent.internal.compiler.parser.BinExp;
+import descent.internal.compiler.parser.BoolExp;
+import descent.internal.compiler.parser.CallExp;
+import descent.internal.compiler.parser.CastExp;
+import descent.internal.compiler.parser.CatAssignExp;
+import descent.internal.compiler.parser.CatExp;
+import descent.internal.compiler.parser.CmpExp;
+import descent.internal.compiler.parser.ComExp;
+import descent.internal.compiler.parser.CommaExp;
+import descent.internal.compiler.parser.CompileDeclaration;
+import descent.internal.compiler.parser.CompileExp;
+import descent.internal.compiler.parser.CompileStatement;
+import descent.internal.compiler.parser.CondExp;
+import descent.internal.compiler.parser.DecrementExp;
+import descent.internal.compiler.parser.DeleteExp;
+import descent.internal.compiler.parser.DivAssignExp;
+import descent.internal.compiler.parser.DivExp;
+import descent.internal.compiler.parser.DollarExp;
+import descent.internal.compiler.parser.DotExp;
+import descent.internal.compiler.parser.DotIdExp;
+import descent.internal.compiler.parser.DotTemplateInstanceExp;
+import descent.internal.compiler.parser.EqualExp;
+import descent.internal.compiler.parser.ExpInitializer;
+import descent.internal.compiler.parser.FileExp;
+import descent.internal.compiler.parser.FuncExp;
+import descent.internal.compiler.parser.IdentifierExp;
+import descent.internal.compiler.parser.IdentityExp;
+import descent.internal.compiler.parser.IftypeExp;
+import descent.internal.compiler.parser.InExp;
+import descent.internal.compiler.parser.IncrementExp;
+import descent.internal.compiler.parser.IndexExp;
+import descent.internal.compiler.parser.IntegerExp;
+import descent.internal.compiler.parser.MinAssignExp;
+import descent.internal.compiler.parser.MinExp;
+import descent.internal.compiler.parser.ModAssignExp;
+import descent.internal.compiler.parser.ModExp;
+import descent.internal.compiler.parser.MulAssignExp;
+import descent.internal.compiler.parser.MulExp;
+import descent.internal.compiler.parser.MultiStringExp;
+import descent.internal.compiler.parser.NegExp;
+import descent.internal.compiler.parser.NewAnonClassExp;
+import descent.internal.compiler.parser.NewExp;
+import descent.internal.compiler.parser.NotExp;
+import descent.internal.compiler.parser.NullExp;
+import descent.internal.compiler.parser.OrAssignExp;
+import descent.internal.compiler.parser.OrExp;
+import descent.internal.compiler.parser.OrOrExp;
+import descent.internal.compiler.parser.ParenExp;
+import descent.internal.compiler.parser.PostExp;
+import descent.internal.compiler.parser.PtrExp;
+import descent.internal.compiler.parser.RealExp;
+import descent.internal.compiler.parser.ScopeExp;
+import descent.internal.compiler.parser.ShlAssignExp;
+import descent.internal.compiler.parser.ShlExp;
+import descent.internal.compiler.parser.ShrAssignExp;
+import descent.internal.compiler.parser.ShrExp;
+import descent.internal.compiler.parser.SliceExp;
+import descent.internal.compiler.parser.StringExp;
+import descent.internal.compiler.parser.StructInitializer;
+import descent.internal.compiler.parser.SuperExp;
+import descent.internal.compiler.parser.TOK;
+import descent.internal.compiler.parser.ThisExp;
+import descent.internal.compiler.parser.TraitsExp;
+import descent.internal.compiler.parser.TupleExp;
+import descent.internal.compiler.parser.TypeDotIdExp;
+import descent.internal.compiler.parser.TypeidExp;
+import descent.internal.compiler.parser.UAddExp;
+import descent.internal.compiler.parser.UnaExp;
+import descent.internal.compiler.parser.UshrAssignExp;
+import descent.internal.compiler.parser.UshrExp;
+import descent.internal.compiler.parser.VoidInitializer;
+import descent.internal.compiler.parser.XorAssignExp;
+import descent.internal.compiler.parser.XorExp;
 import dtool.dom.expressions.ExpArrayIndex;
 import dtool.dom.expressions.ExpArrayLiteral;
 import dtool.dom.expressions.ExpAssert;
@@ -87,7 +95,7 @@ import dtool.dom.expressions.ExpCond;
 import dtool.dom.expressions.ExpDelete;
 import dtool.dom.expressions.ExpDollar;
 import dtool.dom.expressions.ExpDotTemplateInstance;
-import dtool.dom.expressions.ExpEntity;
+import dtool.dom.expressions.ExpReference;
 import dtool.dom.expressions.ExpIftype;
 import dtool.dom.expressions.ExpLiteralBool;
 import dtool.dom.expressions.ExpLiteralFunc;
@@ -112,6 +120,51 @@ import dtool.dom.expressions.PostfixExpression;
 import dtool.dom.expressions.PrefixExpression;
 
 abstract class ExpressionConverter extends DeclarationConverter {
+	
+	public boolean visit(DotExp node) {
+		return assertFailFAKENODE();
+	}
+
+	public boolean visit(FileExp node) {
+		Assert.failTODO();
+		return false;
+	}
+	
+	public boolean visit(MultiStringExp node) {
+		Assert.failTODO();
+		return false;
+	}
+
+	public boolean visit(TraitsExp node) {
+		Assert.failTODO();
+		return false;
+	}
+	
+	public boolean visit(TupleExp node) {
+		Assert.failTODO();
+		return false;
+	}
+	
+	public boolean visit(AssocArrayLiteralExp node) {
+		Assert.failTODO();
+		return false;
+	}
+
+	public boolean visit(CompileDeclaration node) {
+		Assert.failTODO();
+		return false;
+	}
+
+	public boolean visit(CompileExp node) {
+		Assert.failTODO();
+		return false;
+	}
+
+	public boolean visit(CompileStatement node) {
+		Assert.failTODO();
+		return false;
+	}
+
 	
 	/* Initializers */
 	
@@ -166,7 +219,7 @@ abstract class ExpressionConverter extends DeclarationConverter {
 	}
 	
 	public boolean visit(DotIdExp element) {
-		return endAdapt(new ExpEntity(element));
+		return endAdapt(new ExpReference(element));
 	}
 	
 	public boolean visit(DotTemplateInstanceExp element) {
@@ -178,7 +231,7 @@ abstract class ExpressionConverter extends DeclarationConverter {
 	}
 	
 	public boolean visit(IdentifierExp element) {
-		return endAdapt(new ExpEntity(element));
+		return endAdapt(new ExpReference(element));
 	}
 	
 	public boolean visit(IftypeExp element) {
@@ -201,7 +254,7 @@ abstract class ExpressionConverter extends DeclarationConverter {
 		return endAdapt(new ExpLiteralNull(element));
 	}
 	
-	public boolean visit(ParenthesizedExpression element) {
+	final public boolean visit(ParenExp element) {
 		return endAdapt(new ExpParenthesized(element));
 	}
 	
@@ -210,7 +263,7 @@ abstract class ExpressionConverter extends DeclarationConverter {
 	}
 	
 	public boolean visit(ScopeExp element) {
-		return endAdapt(new ExpEntity(element));
+		return endAdapt(new ExpReference(element));
 	}
 	
 	public boolean visit(SliceExp element) {
@@ -231,45 +284,22 @@ abstract class ExpressionConverter extends DeclarationConverter {
 	}
 	
 	public boolean visit(TypeDotIdExp element) {
-		return endAdapt(new ExpEntity(element));
+		return endAdapt(new ExpReference(element));
 	}	
 	
 	public boolean visit(TypeidExp element) {
 		return endAdapt(new ExpTypeid(element));
 	}	
 	
-	
-	public boolean visit(ITrueExpression elem) {
-		return endAdapt(new ExpLiteralBool(elem));
+	public boolean visit(BoolExp node) {
+		return endAdapt(new ExpLiteralBool(node));
 	}
-
-	public boolean visit(IFalseExpression elem) {
-		return endAdapt(new ExpLiteralBool(elem));
-	}
-
-	public boolean visit(IIntegerExpression elem) {
-		return visit((IntegerExp) elem);
-	}
-
 
 	/* ===================== Unary ===================== */
 	
 
-	public boolean visit(UnaryExpression element) {
-		switch(element.getUnaryExpressionType()) {
-		
-		case IUnaryExpression2.ADDRESS: return visit((AddrExp) element);
-		case IUnaryExpression2.INVERT: return visit((ComExp) element);
-		case IUnaryExpression2.NEGATIVE: return visit((NegExp) element);
-		case IUnaryExpression2.NOT: return visit((NotExp) element);
-		case IUnaryExpression2.POINTER: return visit((PtrExp) element);
-		case IUnaryExpression2.POSITIVE: return visit((UAddExp) element);
-		case IUnaryExpression2.POST_DECREMENT: return visit((PostDecExp) element);
-		case IUnaryExpression2.POST_INCREMENT: return visit((PostIncExp) element);
-		default:
-			Assert.fail("Error visited abstract class."); return false;
-		}
-		
+	public boolean visit(UnaExp element) {
+		return assertFailABSTRACT_NODE();
 	}
 	
 	public boolean visit(AddrExp element) {
@@ -287,15 +317,16 @@ abstract class ExpressionConverter extends DeclarationConverter {
 	public boolean visit(NotExp element) {
 		return endAdapt(new PrefixExpression(element, PrefixExpression.Type.NOT));
 	}	
+
 	
-	public boolean visit(PostDecExp element) {
-		return endAdapt(new PostfixExpression(element, PostfixExpression.Type.POST_DECREMENT));
+	public boolean visit(IndexExp node) {
+		return assertFailFAKENODE();
 	}
-	
-	public boolean visit(PostIncExp element) {
-		return endAdapt(new PostfixExpression(element, PostfixExpression.Type.POST_INCREMENT));
-	}	
-	
+
+	public boolean visit(PostExp node) {
+		return endAdapt(new PostfixExpression(node));
+	}
+
 	public boolean visit(PtrExp element) {
 		return endAdapt(new PrefixExpression(element, PrefixExpression.Type.POINTER));
 	}
@@ -306,71 +337,33 @@ abstract class ExpressionConverter extends DeclarationConverter {
 
 	/* ===================== Binary ===================== */
 	
-	public boolean visit(BinaryExpression element) {
-		switch(element.getBinaryExpressionType()) {
-		
-		case BinaryExpressionTypes.ADD: return visit((AddExp) element);
-		case BinaryExpressionTypes.ADD_ASSIGN: return visit((AddAssignExp) element);
-		case BinaryExpressionTypes.AND: return visit((AndExp) element);
-		case BinaryExpressionTypes.AND_AND: return visit((AndAndExp) element);
-		case BinaryExpressionTypes.AND_ASSIGN: return visit((AndAssignExp) element);
-		case BinaryExpressionTypes.ASSIGN: return visit((AssignExp) element);
-		case BinaryExpressionTypes.CAT: return visit((CatExp) element);
-		case BinaryExpressionTypes.CAT_ASSIGN: return visit((CatAssignExp) element);
-		case BinaryExpressionTypes.CMP: return visit((CmpExp) element);
-		case BinaryExpressionTypes.COMMA: return visit((CommaExp) element);
-		case BinaryExpressionTypes.DIV: return visit((DivExp) element);
-		case BinaryExpressionTypes.DIV_ASSIGN: return visit((DivAssignExp) element);
-		case BinaryExpressionTypes.EQUAL: return visit((EqualExp) element);
-		case BinaryExpressionTypes.IDENTITY: return visit((IdentityExp) element);
-		case BinaryExpressionTypes.IN: return visit((InExp) element);
-		case BinaryExpressionTypes.MIN: return visit((MinExp) element);
-		case BinaryExpressionTypes.MIN_ASSIGN: return visit((MinAssignExp) element);
-		case BinaryExpressionTypes.MOD: return visit((ModExp) element);
-		case BinaryExpressionTypes.MOD_ASSIGN: return visit((ModAssignExp) element);
-		case BinaryExpressionTypes.MUL: return visit((MulExp) element);
-		case BinaryExpressionTypes.MUL_ASSIGN: return visit((MulAssignExp) element);
-		case BinaryExpressionTypes.NOT_IDENTITY: return visit((IdentityExp) element);
-		case BinaryExpressionTypes.OR: return visit((OrExp) element);
-		case BinaryExpressionTypes.OR_ASSIGN: return visit((OrAssignExp) element);
-		case BinaryExpressionTypes.OR_OR: return visit((OrOrExp) element);
-		case BinaryExpressionTypes.SHIFT_LEFT: return visit((ShlExp) element);
-		case BinaryExpressionTypes.SHIFT_LEFT_ASSIGN: return visit((ShlAssignExp) element);
-		case BinaryExpressionTypes.SHIFT_RIGHT: return visit((ShrExp) element);
-		case BinaryExpressionTypes.SHIFT_RIGHT_ASSIGN: return visit((ShrAssignExp) element);
-		case BinaryExpressionTypes.UNSIGNED_SHIFT_RIGHT: return visit((UshrExp) element);
-		case BinaryExpressionTypes.UNSIGNED_SHIFT_RIGHT_ASSIGN: return visit((UshrAssignExp) element);
-		case BinaryExpressionTypes.XOR: return visit((XorExp) element);
-		case BinaryExpressionTypes.XOR_ASSIGN: return visit((XorAssignExp) element);
-		default:
-			Assert.fail("Error visited abstract class."); return false;
-		}
-			
+	public boolean visit(BinExp element) {
+		Assert.fail("Error visited abstract class."); return false;
 	}
 
 	public boolean visit(AddAssignExp element) {
-		Expression newelem;
-		if(element.isUnary) {
-			newelem = new PrefixExpression(element, PrefixExpression.Type.PRE_INCREMENT);
-		} else {
-			newelem = new InfixExpression(element, InfixExpression.Type.ADD_ASSIGN);
-		}
+		Expression newelem = new InfixExpression(element, InfixExpression.Type.ADD_ASSIGN);
 		return endAdapt(newelem);
 	}
+	
+	public boolean visit(IncrementExp node) {
+		Expression newelem = new PrefixExpression(node, PrefixExpression.Type.PRE_INCREMENT);
+		return endAdapt(newelem);
+	}
+
 	
 
 	public boolean visit(MinAssignExp element) {
-		Expression newelem;
-		if(element.isUnary) {
-			newelem = new PrefixExpression(element, PrefixExpression.Type.PRE_DECREMENT);
-		} else {
-			newelem = new InfixExpression(element, InfixExpression.Type.MIN_ASSIGN);
-		}
+		Expression newelem = new InfixExpression(element, InfixExpression.Type.MIN_ASSIGN);
 		return endAdapt(newelem);
 	}
 	
+	
+	public boolean visit(DecrementExp node) {
+		return endAdapt(new PrefixExpression(node, PrefixExpression.Type.PRE_DECREMENT));
+	}
+	
 	public boolean visit(AddExp element) {
-
 		return endAdapt(new InfixExpression(element, InfixExpression.Type.ADD));
 	}
 	
@@ -423,9 +416,9 @@ abstract class ExpressionConverter extends DeclarationConverter {
 	}
 	
 	public boolean visit(IdentityExp element) {
-		if(element.getBinaryExpressionType() == BinaryExpressionTypes.IDENTITY)
+		if(element.op == TOK.TOKis)
 			return endAdapt(new InfixExpression(element, InfixExpression.Type.IDENTITY));
-		else if(element.getBinaryExpressionType() == BinaryExpressionTypes.NOT_IDENTITY)
+		else if(element.op == TOK.TOKnotis)
 			return endAdapt(new InfixExpression(element, InfixExpression.Type.NOT_IDENTITY));
 		
 		Assert.fail(); return false;
@@ -498,6 +491,4 @@ abstract class ExpressionConverter extends DeclarationConverter {
 	public boolean visit(XorExp element) {
 		return endAdapt(new InfixExpression(element, InfixExpression.Type.XOR));
 	}
-		
-		
 }

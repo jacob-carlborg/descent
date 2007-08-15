@@ -1,7 +1,7 @@
 package dtool.dom.definitions;
 
 import melnorme.miscutil.tree.TreeVisitor;
-import descent.internal.core.dom.TemplateAliasParameter;
+import descent.internal.compiler.parser.TemplateAliasParameter;
 import dtool.dom.ast.IASTNeoVisitor;
 import dtool.refmodel.IScopeNode;
 
@@ -9,7 +9,7 @@ public class TemplateParamAlias extends TemplateParameter {
 
 	public TemplateParamAlias(TemplateAliasParameter elem) {
 		convertNode(elem);
-		convertIdentifier(elem.tp_ident);
+		convertIdentifier(elem.ident);
 	}
 
 	@Override

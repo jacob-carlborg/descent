@@ -1,12 +1,10 @@
 package dtool.dom.definitions;
 
-import melnorme.miscutil.Assert;
-import descent.internal.core.dom.Identifier;
-import dtool.dom.ast.ASTNode;
+import descent.internal.compiler.parser.IdentifierExp;
 
 public class DefSymbol extends Symbol {
 
-	public DefSymbol(Identifier id, DefUnit parent) {
+	public DefSymbol(IdentifierExp id, DefUnit parent) {
 		super(id);
 		setParent(parent);
 	}

@@ -1,7 +1,7 @@
 package dtool.dom.statements;
 
 import melnorme.miscutil.tree.TreeVisitor;
-import descent.internal.core.dom.ContinueStatement;
+import descent.internal.compiler.parser.ContinueStatement;
 import dtool.dom.ast.IASTNeoVisitor;
 import dtool.dom.definitions.Symbol;
 
@@ -11,8 +11,8 @@ public class StatementContinue extends Statement {
 
 	public StatementContinue(ContinueStatement elem) {
 		convertNode(elem);
-		if(elem.id != null)
-			this.id = new Symbol(elem.id);
+		if(elem.ident != null)
+			this.id = new Symbol(elem.ident);
 	}
 
 	@Override

@@ -1,24 +1,18 @@
 package dtool.dom.declarations;
 
-import java.io.NotSerializableException;
 import java.util.Arrays;
 import java.util.Iterator;
 
-import javax.naming.OperationNotSupportedException;
-
+import melnorme.miscutil.Assert;
 import melnorme.miscutil.tree.TreeVisitor;
-import descent.core.dom.IModifier;
-import descent.internal.core.dom.Import;
-import descent.internal.core.dom.ImportDeclaration;
-import descent.internal.core.dom.STC;
-import descent.internal.core.dom.SelectiveImport;
+import descent.core.domX.ASTNode;
+import descent.internal.compiler.parser.Import;
+import descent.internal.compiler.parser.MultiImport;
 import dtool.dom.ast.ASTNeoNode;
-import dtool.dom.ast.ASTNode;
 import dtool.dom.ast.IASTNeoVisitor;
 import dtool.dom.definitions.DefUnit;
 import dtool.dom.references.RefModule;
 import dtool.refmodel.CommonDefUnitSearch;
-import dtool.refmodel.DefUnitSearch;
 import dtool.refmodel.INonScopedBlock;
 
 /**
@@ -32,37 +26,31 @@ public class DeclarationImport extends ASTNeoNode implements INonScopedBlock {
 	public boolean isStatic;
 	public boolean isTransitive; // aka public imports
 	
-	public DeclarationImport(ImportDeclaration elem) {
+	public DeclarationImport(MultiImport elem) {
 		convertNode(elem);
-		this.isStatic = elem.isStatic;
-		this.isTransitive = (elem.modifiers & IModifier.PUBLIC) != 0;
+		this.isStatic = elem.isstatic;
+		//this.isTransitive is adapted in post conversion;
+		Assert.isNull(elem.modifiers);
 
 		int importsNum = elem.imports.size(); 
 
 		// Selective import are at the end		
-		SelectiveImport[] selectiveImports; 
-		selectiveImports = elem.imports.get(importsNum-1).getSelectiveImports();
-		if(selectiveImports.length > 0) {
-			if(importsNum != 1)
-				throw new UnsupportedOperationException();
-			
-			this.imports = new ImportFragment[1];
-			this.imports[0] = new ImportSelective(elem.imports.get(0));
-			return;
-		}
-		
 		this.imports = new ImportFragment[importsNum];
 		for(int i = 0; i < importsNum; i++) {
 			Import imprt = elem.imports.get(i); 
 			ImportFragment imprtFragment = null;
-			if(elem.isStatic) {
+			if(elem.isstatic) {
 				imprtFragment = new ImportStatic(imprt);
 				//Ignore FQN aliasing for now.
 				//Assert.isTrue(imprt.alias == null);
-			} else if(imprt.alias == null) {
-				imprtFragment = new ImportContent(imprt);
-			} else {
+			} else if(imprt.aliasId != null) {
 				imprtFragment = new ImportAliasing(imprt);
+			} else if(imprt.names != null) {
+				Assert.isTrue(imprt.names.size() == imprt.aliases.size());
+				Assert.isTrue(imprt.names.size() > 0 );
+				imprtFragment = new ImportSelective(imprt);
+			} else {
+				imprtFragment = new ImportContent(imprt);
 			}
 			imports[i] = imprtFragment;
 		}
@@ -84,12 +72,11 @@ public class DeclarationImport extends ASTNeoNode implements INonScopedBlock {
 	}
 	
 	public static abstract class ImportFragment extends ASTNeoNode {
-		public RefModule moduleEnt;
+		public RefModule moduleRef;
 
 		public ImportFragment(Import elem) {
-			// Use elem.qName instead of elem to fix range
-			convertNode(elem.qName); 
-			this.moduleEnt = new RefModule(elem.qName);
+			convertNode(elem);
+			this.moduleRef = new RefModule(elem.packages, elem.id);
 		}
 
 		public abstract void searchDefUnit(CommonDefUnitSearch options);

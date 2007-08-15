@@ -1,11 +1,10 @@
 package dtool.descentadapter;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
-import descent.core.dom.IDescentElement;
-import dtool.dom.ast.ASTNode;
-import dtool.dom.ast.ASTNodeParentizer;
+import descent.core.domX.ASTNode;
 import dtool.dom.ast.IASTNode;
 import dtool.dom.definitions.Module;
 
@@ -14,8 +13,8 @@ public class DescentASTConverter {
 	public static StatementConverter converter = new StatementConverter();;
 
 	public static Module convertModule(ASTNode cumodule) {
-		Module module = new Module((descent.internal.core.dom.Module) cumodule);
-		ASTNodeParentizer.parentize(module);
+		Module module = new Module((descent.internal.compiler.parser.Module) cumodule);
+		module.accept(new PostConvertionAdapter());
 		return module;
 	}
 	
@@ -26,14 +25,14 @@ public class DescentASTConverter {
 		return conv.ret;
 	}
 	
-	public static ASTNode[] convertMany(List<? extends IDescentElement> children) {
+	public static ASTNode[] convertMany(Collection<? extends ASTNode> children) {
 		if(children == null) return null;
 		ASTNode[] rets = new ASTNode[children.size()];
 		convertMany(children.toArray(), rets);
 		return rets;
 	}
 	
-	public static void convertMany(List<? extends IDescentElement> children, ASTNode[] rets) {
+	public static void convertMany(List<? extends ASTNode> children, ASTNode[] rets) {
 		if(children == null) return;
 		convertMany(children.toArray(), rets);
 		return;
@@ -45,8 +44,12 @@ public class DescentASTConverter {
 		StatementConverter conv = new StatementConverter();
 		for(int i = 0; i < children.length; ++i) {
 			ASTNode elem = (ASTNode) children[i];
-			elem.accept(conv);
-			rets[i] = (T) conv.ret;
+			if(elem == null) {
+				rets[i] = null;
+			} else {
+				elem.accept(conv);
+				rets[i] = (T) conv.ret;
+			}
 		}
 		return rets;
 	}
@@ -54,6 +57,8 @@ public class DescentASTConverter {
 	@SuppressWarnings("unchecked")
 	public static <T extends IASTNode> List<T> convertManyL(List<? extends ASTNode> children, List<T> dummy) {
 		StatementConverter conv = new StatementConverter();
+		if(children == null)
+			return null;
 		List<T> rets = new ArrayList<T>(children.size());
 		for (int i = 0; i < children.size(); ++i) {
 			ASTNode elem = children.get(i);

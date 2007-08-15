@@ -1,7 +1,7 @@
 package dtool.dom.expressions;
 
 import melnorme.miscutil.tree.TreeVisitor;
-import descent.internal.core.dom.CastExp;
+import descent.internal.compiler.parser.CastExp;
 import dtool.dom.ast.IASTNeoVisitor;
 import dtool.dom.references.Reference;
 
@@ -12,8 +12,8 @@ public class ExpCast extends Expression {
 
 	public ExpCast(CastExp elem) {
 		convertNode(elem);
-		this.exp = Expression.convert(elem.e); 
-		this.type = Reference.convertType(elem.t);
+		this.exp = Expression.convert(elem.e1); 
+		this.type = Reference.convertType(elem.type);
 	}
 
 	@Override

@@ -1,7 +1,7 @@
 package dtool.dom.expressions;
 
 import melnorme.miscutil.tree.TreeVisitor;
-import descent.internal.core.dom.ArrayExp;
+import descent.internal.compiler.parser.ArrayExp;
 import dtool.dom.ast.IASTNeoVisitor;
 
 public class ExpArrayIndex extends Expression {
@@ -11,8 +11,8 @@ public class ExpArrayIndex extends Expression {
 	
 	public ExpArrayIndex(ArrayExp elem) {
 		convertNode(elem);
-		this.array = Expression.convert(elem.getExpression());
-		this.args = Expression.convertMany(elem.getArguments());
+		this.array = Expression.convert(elem.e1);
+		this.args = Expression.convertMany(elem.arguments);
 	}
 
 	@Override

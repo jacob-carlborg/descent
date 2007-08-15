@@ -1,19 +1,20 @@
 package dtool.dom.statements;
 
-import descent.internal.core.dom.AsmStatement;
-import dtool.dom.ast.ASTNeoNode;
+import descent.internal.compiler.parser.AsmStatement;
 import dtool.dom.ast.IASTNeoVisitor;
 
-public class StatementAsm extends ASTNeoNode {
+public class StatementAsm extends Statement {
 
-	public StatementAsm(AsmStatement element) {
-		// TODO Auto-generated constructor stub
-		throw new UnsupportedOperationException();
+	public StatementAsm(AsmStatement node) {
+		convertNode(node);
 	}
 
 	@Override
 	public void accept0(IASTNeoVisitor visitor) {
-		throw new UnsupportedOperationException();
+		boolean children = visitor.visit(this);
+		if (children) {
+		}
+		visitor.endVisit(this);
 	}
 
 }

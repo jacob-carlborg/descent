@@ -1,7 +1,7 @@
 package dtool.dom.definitions;
 
 import melnorme.miscutil.tree.TreeVisitor;
-import descent.internal.core.dom.TemplateValueParameter;
+import descent.internal.compiler.parser.TemplateValueParameter;
 import dtool.dom.ast.IASTNeoVisitor;
 import dtool.dom.expressions.Expression;
 import dtool.dom.references.Reference;
@@ -15,10 +15,10 @@ public class TemplateParamValue extends TemplateParameter {
 
 	public TemplateParamValue(TemplateValueParameter elem) {
 		convertNode(elem);
-		convertIdentifier(elem.id);
-		this.type = Reference.convertType(elem.tp_valtype);
-		this.specvalue = Expression.convert(elem.tp_specvalue);
-		this.defaultvalue = Expression.convert(elem.tp_defaultvalue);
+		convertIdentifier(elem.ident);
+		this.type = Reference.convertType(elem.valType);
+		this.specvalue = Expression.convert(elem.specValue);
+		this.defaultvalue = Expression.convert(elem.defaultValue);
 	}
 
 	@Override

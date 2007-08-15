@@ -1,7 +1,7 @@
 package dtool.dom.statements;
 
 import melnorme.miscutil.tree.TreeVisitor;
-import descent.internal.core.dom.ReturnStatement;
+import descent.internal.compiler.parser.ReturnStatement;
 import dtool.dom.ast.IASTNeoVisitor;
 import dtool.dom.expressions.Expression;
 

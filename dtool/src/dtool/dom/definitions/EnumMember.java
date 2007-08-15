@@ -10,8 +10,9 @@ public class EnumMember extends DefUnit {
 	
 	public Expression value;
 
-	public EnumMember(descent.internal.core.dom.EnumMember elem) {
-		convertDsymbol(elem);
+	public EnumMember(descent.internal.compiler.parser.EnumMember elem) {
+		convertDsymbol(elem, false);
+		convertNode(elem.ident);
 		this.value = Expression.convert(elem.value);
 	}
 

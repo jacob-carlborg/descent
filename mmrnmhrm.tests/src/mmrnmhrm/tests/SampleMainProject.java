@@ -11,7 +11,6 @@ import mmrnmhrm.core.model.DeeModel;
 import mmrnmhrm.core.model.DeeModelRoot;
 import mmrnmhrm.core.model.DeeProject;
 import mmrnmhrm.core.model.DeeSourceFolder;
-import mmrnmhrm.core.model.lang.LangElement;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
@@ -32,10 +31,12 @@ public abstract class SampleMainProject {
 	public static final String TEST_SRC1 = "src1";
 	public static final String TEST_SRC3 = "src3";
 	public static final String TEST_SRC_REFS = "OUTrefs";
-	public static final String TEST_OUT_SRC = "OUTsrc";
+	public static final String TEST_OUTSRC = "OUTsrc";
+	public static final String TEST_SRC_PHOBOSHD = "phobos-header";
+	public static final String TEST_SRC_PHOBOSIMPL = "phobos-internal";
 	
-	public static DeeProject sampleDeeProj = null;
 	public static IProject project;
+	public static DeeProject deeProj = null;
 	
 	public static IFile sampleFile1;
 	public static IFile sampleOutOfModelFile;
@@ -44,18 +45,11 @@ public abstract class SampleMainProject {
 
 	public static void createAndSetupSampleProj() {
 		try {
-			createAndFillSampleProj();
+			deeProj = createAndOpenDeeProject(SAMPLEPROJNAME);
+			fillSampleProj();
 		} catch (Exception e) {
 			throw ExceptionAdapter.unchecked(e);
 		}
-	}
-
-	public static LangElement createAndFillSampleProj() throws CoreException,
-			URISyntaxException, IOException {
-				
-		sampleDeeProj = createAndOpenDeeProject(SAMPLEPROJNAME);
-		fillSampleProj();
-		return sampleDeeProj;
 	}
 
 	public static DeeProject createAndOpenDeeProject(String name)
@@ -78,8 +72,8 @@ public abstract class SampleMainProject {
 		folder = CoreTestUtils.createWorkspaceFolderFromBundle(bundleDir,
 				project, destDir);
 		if(addSrcFolder) {
-			sampleDeeProj.addSourceRoot(new DeeSourceFolder(folder, sampleDeeProj));
-			sampleDeeProj.saveProjectConfigFile();
+			deeProj.addSourceRoot(new DeeSourceFolder(folder, deeProj));
+			deeProj.saveProjectConfigFile();
 		}
 		return folder;
 	}
@@ -87,30 +81,32 @@ public abstract class SampleMainProject {
 	public static void fillSampleProj() throws CoreException, URISyntaxException, IOException {
 		// Watch out when changing these values, tests may depend on these paths
 		
-		project = sampleDeeProj.getProject();
+		project = deeProj.getProject();
 		IFolder folder;
 		
 		sampleNonExistantFile = project.getFile(new Path("nonexistant.d"));
 
 		folder = createFolderInProject("sampleSrc1", TEST_SRC1, false);
 		sampleFile1 = folder.getFile("foo.d");
-		
 
-		folder = createFolderInProject("sampleSrcOut", TEST_OUT_SRC, false);
+		folder = createFolderInProject("sampleSrcOut", TEST_OUTSRC, false);
 		sampleOutOfModelFile = folder.getFile("outfile.d");
 		
 		folder = createFolderInProject("refs", TEST_SRC_REFS, true);
 
 		folder = createFolderInProject("sampleSrc3", TEST_SRC3, true);
-		
-		
+
+		folder = createFolderInProject(TEST_SRC_PHOBOSHD, TEST_SRC_PHOBOSHD, true);
+
+		folder = createFolderInProject(TEST_SRC_PHOBOSIMPL, TEST_SRC_PHOBOSIMPL, true);
+
 		//UITestUtils.runEventLoop(DeePlugin.getActiveWorkbenchShell());
 	}
 
 	
 	/** Gets a IFile from the sample project. */
 	public static IFile getFile(String filepath) {
-		IFile file = sampleDeeProj.getProject().getFile(filepath);
+		IFile file = deeProj.getProject().getFile(filepath);
 		BasePluginTest.assertTrue(file.exists(), "Test file not found.");
 		return file;
 	}

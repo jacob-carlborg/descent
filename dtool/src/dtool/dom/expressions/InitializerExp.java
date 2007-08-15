@@ -1,7 +1,7 @@
 package dtool.dom.expressions;
 
 import melnorme.miscutil.tree.TreeVisitor;
-import descent.internal.core.dom.ExpInitializer;
+import descent.internal.compiler.parser.ExpInitializer;
 import dtool.dom.ast.IASTNeoVisitor;
 
 public class InitializerExp extends Initializer {
@@ -10,7 +10,7 @@ public class InitializerExp extends Initializer {
 
 	public InitializerExp(ExpInitializer elem) {
 		convertNode(elem);
-		this.exp = Expression.convert(elem.e); 
+		this.exp = Expression.convert(elem.exp); 
 	}
 
 	@Override

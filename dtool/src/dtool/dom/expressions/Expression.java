@@ -24,20 +24,20 @@ public abstract class Expression extends ASTNeoNode implements IDefUnitReference
 	
 	/* ---------------- Conversion Funcs ---------------- */
 	
-	public static Expression convert(descent.internal.core.dom.Expression exp) {
+	public static Expression convert(descent.internal.compiler.parser.Expression exp) {
 		return (Expression) DescentASTConverter.convertElem(exp);
 	}
 
-	public static Expression[] convertMany(descent.internal.core.dom.Expression[] elements) {
+	public static Expression[] convertMany(descent.internal.compiler.parser.Expression[] elements) {
 		Expression[] rets = new Expression[elements.length];
 		DescentASTConverter.convertMany(elements, rets);
 		return rets;
 	}
 	
-	public static Expression[] convertMany(List<descent.internal.core.dom.Expression> elements) {
+	public static Expression[] convertMany(List<descent.internal.compiler.parser.Expression> elements) {
 		Expression[] rets = new Expression[elements.size()];
 		
-		DescentASTConverter.convertManyL(rets, elements);
+		DescentASTConverter.convertMany(elements, rets);
 		return rets;
 	}
 	

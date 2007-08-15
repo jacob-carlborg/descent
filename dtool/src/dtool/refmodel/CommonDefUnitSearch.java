@@ -1,6 +1,6 @@
 package dtool.refmodel;
 
-import java.util.ArrayDeque;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 
@@ -34,12 +34,12 @@ public abstract class CommonDefUnitSearch {
 	/** Cached value of the reference's module scope. */
 	protected IScope refModuleScope; 
 	/** The scopes that have already been searched */
-	protected ArrayDeque<IScope> searchedScopes;
+	protected ArrayList<IScope> searchedScopes;
 
 
 	
 	public CommonDefUnitSearch(IScopeNode refScope) {
-		this.searchedScopes = new ArrayDeque<IScope>(4);
+		this.searchedScopes = new ArrayList<IScope>(4);
 		this.refScope = refScope;
 	}
 	

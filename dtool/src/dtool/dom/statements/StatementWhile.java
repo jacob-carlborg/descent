@@ -1,7 +1,7 @@
 package dtool.dom.statements;
 
 import melnorme.miscutil.tree.TreeVisitor;
-import descent.internal.core.dom.WhileStatement;
+import descent.internal.compiler.parser.WhileStatement;
 import dtool.dom.ast.IASTNeoVisitor;
 import dtool.dom.expressions.Expression;
 
@@ -12,7 +12,7 @@ public class StatementWhile extends Statement {
 
 	public StatementWhile(WhileStatement elem) {
 		convertNode(elem);
-		this.exp = Expression.convert(elem.expr);
+		this.exp = Expression.convert(elem.condition);
 		this.body = Statement.convert(elem.body);
 	}
 

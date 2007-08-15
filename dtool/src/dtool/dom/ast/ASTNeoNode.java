@@ -1,6 +1,7 @@
 package dtool.dom.ast;
 
 import melnorme.miscutil.Assert;
+import descent.core.domX.ASTNode;
 import descent.core.domX.IASTVisitor;
 import dtool.refmodel.IScope;
 import dtool.refmodel.NodeUtil;
@@ -8,8 +9,15 @@ import dtool.refmodel.NodeUtil;
 public abstract class ASTNeoNode extends ASTNode  {
 
 
-	public void convertNode(ASTNode elem) {
-		setSourceRange(elem);
+	public void convertNode(ASTNode node) {
+		convertNode(node, false);
+	}
+	
+	public void convertNode(ASTNode node, boolean checkRange) {
+		setSourceRange(node);
+		if(checkRange && node.hasNoSourceRangeInfo()) {
+			Assert.fail("Has no source range Info");
+		}
 	}
 
 	public int getElementType() {
@@ -56,7 +64,7 @@ public abstract class ASTNeoNode extends ASTNode  {
 	
 	/** Sets the source range the same as the given elem. */
 	public void setSourceRange(ASTNode elem) {
-		startPos = elem.getStartPos();
+		start = elem.getStartPos();
 		length = elem.getLength();
 	}
 

@@ -1,5 +1,6 @@
 package dtool.dom.references;
 
+import melnorme.miscutil.Assert;
 import dtool.dom.ast.IASTNeoVisitor;
 
 public class RefIdentifier extends CommonRefSingle {
@@ -10,12 +11,13 @@ public class RefIdentifier extends CommonRefSingle {
 		this.name = name;
 	}
 	
-	public RefIdentifier(descent.internal.core.dom.Identifier elem) {
+	public RefIdentifier(descent.internal.compiler.parser.IdentifierExp elem) {
 		setSourceRange(elem);
-		this.name = elem.string;
+		Assert.isTrue(!elem.ident.equals(""));
+		this.name = elem.ident;
 	}
 
-	public RefIdentifier(descent.internal.core.dom.TypeBasic elem) {
+	public RefIdentifier(descent.internal.compiler.parser.TypeBasic elem) {
 		setSourceRange(elem);
 		this.name = elem.toString();
 	}

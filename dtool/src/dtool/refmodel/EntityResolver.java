@@ -4,9 +4,6 @@ import java.util.Iterator;
 
 import melnorme.miscutil.ExceptionAdapter;
 import melnorme.miscutil.IteratorUtil;
-
-import org.eclipse.core.runtime.CoreException;
-
 import dtool.dom.ast.IASTNode;
 import dtool.dom.declarations.DeclarationImport;
 import dtool.dom.declarations.ImportContent;
@@ -33,11 +30,11 @@ public class EntityResolver {
 	}
 
 	/** Convenience method to call mod resolver. */
-	public static Module findModule(Module refModule, String packageName, String moduleName) {
+	public static Module findModule(Module refSourceModule, String[] packages, String module) {
 		try {
-			return modResolver.findModule(refModule, packageName, moduleName);
-		} catch (CoreException ce) {
-			throw ExceptionAdapter.unchecked(ce);
+			return modResolver.findModule(refSourceModule, packages, module);
+		} catch (Exception e) {
+			throw ExceptionAdapter.unchecked(e);
 		}
 	}
 	
@@ -203,7 +200,7 @@ public class EntityResolver {
 	/* ====================  import lookup  ==================== */
 
 	public static void findDefUnitInStaticImport(ImportStatic importStatic, CommonDefUnitSearch search) {
-		DefUnit defunit = importStatic.getDefUnit();
+		DefUnit defunit = importStatic.getPartialDefUnit();
 		if(defunit != null && search.matches(defunit))
 			search.addMatch(defunit);
 	}
@@ -219,10 +216,10 @@ public class EntityResolver {
 	
 	private static Module findImporTargetModule(ImportFragment impSelective) {
 		Module refModule = NodeUtil.getParentModule(impSelective);
-		String packageName = impSelective.moduleEnt.packageName;
-		String moduleName = impSelective.moduleEnt.moduleName;
+		String[] packages = impSelective.moduleRef.packages;
+		String modules = impSelective.moduleRef.module;
 		Module targetModule;
-		targetModule = findModule(refModule, packageName, moduleName);
+		targetModule = findModule(refModule, packages, modules);
 		return targetModule;
 	}
 

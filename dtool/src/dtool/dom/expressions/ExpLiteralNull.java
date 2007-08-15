@@ -1,6 +1,6 @@
 package dtool.dom.expressions;
 
-import descent.internal.core.dom.NullExp;
+import descent.internal.compiler.parser.NullExp;
 import dtool.dom.ast.IASTNeoVisitor;
 
 public class ExpLiteralNull extends Expression {

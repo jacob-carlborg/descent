@@ -6,14 +6,14 @@ import java.util.List;
 
 import melnorme.miscutil.StringUtil;
 import melnorme.miscutil.tree.TreeVisitor;
-import descent.internal.core.dom.Identifier;
-import descent.internal.core.dom.ModuleDeclaration;
-import descent.internal.core.dom.TOK;
-import dtool.descentadapter.DescentASTConverter;
+import descent.core.domX.ASTNode;
+import descent.internal.compiler.parser.IdentifierExp;
+import descent.internal.compiler.parser.Loc;
+import descent.internal.compiler.parser.ModuleDeclaration;
 import dtool.dom.ast.ASTNeoNode;
-import dtool.dom.ast.ASTNode;
 import dtool.dom.ast.IASTNeoVisitor;
 import dtool.dom.declarations.Declaration;
+import dtool.dom.references.CommonRefSingle;
 import dtool.dom.references.RefIdentifier;
 import dtool.refmodel.IScope;
 import dtool.refmodel.IScopeNode;
@@ -31,7 +31,7 @@ public class Module extends DefUnit implements IScopeNode {
 		
 		public DeclarationModule(ModuleDeclaration md) {
 			setSourceRange(md);
-			this.moduleName = new Symbol(md.ident); 
+			this.moduleName = new Symbol(md.id); 
 		}
 
 		public void accept0(IASTNeoVisitor visitor) {
@@ -59,24 +59,24 @@ public class Module extends DefUnit implements IScopeNode {
 	public ASTNode[] members;
 	
 
-	public Module(descent.internal.core.dom.Module elem) {
+	public Module(descent.internal.compiler.parser.Module elem) {
 		convertNode(elem); // elem not a full formed Dsymbol
 		setSourceRange(elem);
-		convertIdentifier(new Identifier(null, TOK.TOKidentifier));
+		convertIdentifier(new IdentifierExp(new Loc(), (String) null));
 		//newelem.name = (elem.ident != null) ? elem.ident.string : null; 
 		if(elem.md != null){
 			// If there is md there is this	elem.ident
-			this.defname = new Symbol(elem.ident); 
+			this.defname = new Symbol(elem.md.id); 
 			this.md = new DeclarationModule(elem.md);
 
 			if(elem.md.packages != null) {
 				this.md.packages = new RefIdentifier[elem.md.packages.size()];
-				DescentASTConverter.convertMany(elem.md.packages.toArray(),this.md.packages);
+				CommonRefSingle.convertManyToRefIdentifier(elem.md.packages, this.md.packages);
 			} else {
 				this.md.packages = new RefIdentifier[0];
 			}
 		}
-		this.members = Declaration.convertMany(elem.getDeclarationDefinitions());
+		this.members = Declaration.convertMany(elem.members);
 	}
 
 	public EArcheType getArcheType() {

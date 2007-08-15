@@ -1,18 +1,18 @@
 package dtool.dom.expressions;
 
 import melnorme.miscutil.tree.TreeVisitor;
-import descent.internal.core.dom.NewAnonClassExp;
+import descent.core.domX.ASTNode;
+import descent.internal.compiler.parser.NewAnonClassExp;
 import dtool.descentadapter.DescentASTConverter;
-import dtool.dom.ast.ASTNode;
 import dtool.dom.ast.IASTNeoVisitor;
 import dtool.dom.declarations.Declaration;
-import dtool.dom.definitions.DefinitionAggregate;
+import dtool.dom.definitions.BaseClass;
 
 public class ExpLiteralNewAnonClass extends Expression {
 	
 	public Expression[] allocargs;
 	public Expression[] args;
-	public DefinitionAggregate.BaseClass[] baseClasses;
+	public BaseClass[] baseClasses;
 	public ASTNode[] members; 
 
 
@@ -21,8 +21,8 @@ public class ExpLiteralNewAnonClass extends Expression {
 		convertNode(elem);
 		this.allocargs = Expression.convertMany(elem.newargs); 
 		this.args = Expression.convertMany(elem.arguments); 
-		this.baseClasses = DescentASTConverter.convertMany(elem.cd.baseClasses,
-				new DefinitionAggregate.BaseClass[elem.cd.baseClasses.length]);
+		this.baseClasses = DescentASTConverter.convertMany(elem.cd.sourceBaseclasses.toArray(),
+				new BaseClass[elem.cd.sourceBaseclasses.size()]);
 		this.members = Declaration.convertMany(elem.cd.members);
 		
 	}

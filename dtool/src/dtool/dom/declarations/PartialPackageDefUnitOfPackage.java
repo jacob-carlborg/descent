@@ -2,14 +2,8 @@ package dtool.dom.declarations;
 
 import java.util.Collections;
 import java.util.Iterator;
-import java.util.List;
 
-import melnorme.miscutil.IteratorUtil;
-import dtool.dom.ast.ASTNode;
-import dtool.dom.definitions.DefUnit;
-import dtool.dom.definitions.Module;
-import dtool.dom.references.RefModule;
-import dtool.refmodel.IScopeNode;
+import descent.core.domX.ASTNode;
 
 
 public class PartialPackageDefUnitOfPackage extends PartialPackageDefUnit  {

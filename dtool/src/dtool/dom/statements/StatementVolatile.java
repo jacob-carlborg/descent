@@ -1,7 +1,7 @@
 package dtool.dom.statements;
 
 import melnorme.miscutil.tree.TreeVisitor;
-import descent.internal.core.dom.VolatileStatement;
+import descent.internal.compiler.parser.VolatileStatement;
 import dtool.dom.ast.IASTNeoVisitor;
 
 public class StatementVolatile extends Statement {
@@ -10,7 +10,7 @@ public class StatementVolatile extends Statement {
 
 	public StatementVolatile(VolatileStatement elem) {
 		convertNode(elem);
-		this.st = Statement.convert(elem.s);
+		this.st = Statement.convert(elem.statement);
 	}
 
 	@Override

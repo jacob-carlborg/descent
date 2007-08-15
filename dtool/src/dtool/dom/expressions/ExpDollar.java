@@ -1,6 +1,6 @@
 package dtool.dom.expressions;
 
-import descent.internal.core.dom.DollarExp;
+import descent.internal.compiler.parser.DollarExp;
 import dtool.dom.ast.IASTNeoVisitor;
 
 public class ExpDollar extends Expression {

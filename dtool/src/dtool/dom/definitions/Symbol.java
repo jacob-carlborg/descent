@@ -1,7 +1,7 @@
 package dtool.dom.definitions;
 
 import melnorme.miscutil.Assert;
-import descent.internal.core.dom.Identifier;
+import descent.internal.compiler.parser.IdentifierExp;
 import dtool.dom.ast.ASTNeoNode;
 import dtool.dom.ast.IASTNeoVisitor;
 
@@ -9,10 +9,10 @@ import dtool.dom.ast.IASTNeoVisitor;
 public class Symbol extends ASTNeoNode {
 	public String name;
 
-	public Symbol(Identifier id) {
-		Assert.isTrue(id.getClass() == Identifier.class);
+	public Symbol(IdentifierExp id) {
+		Assert.isTrue(id.getClass() == IdentifierExp.class);
 		setSourceRange(id);
-		this.name = id.string;
+		this.name = id.ident;
 	}
 
 	public Symbol(String name) {

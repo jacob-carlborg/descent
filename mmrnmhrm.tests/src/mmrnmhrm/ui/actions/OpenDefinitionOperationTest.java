@@ -29,7 +29,7 @@ public class OpenDefinitionOperationTest extends BaseUITest {
 	private static final String TEST_SRCFILE = SampleMainProject.TEST_SRC1 + "/testGoToDefOp.d";
 	private static final String TEST_SRC_TARGETFILE = SampleMainProject.TEST_SRC3 +"/pack/sample.d";
 
-	private static final String TEST_OUTSRCFILE = SampleMainProject.TEST_OUT_SRC
+	private static final String TEST_OUTSRCFILE = SampleMainProject.TEST_OUTSRC
 			+ "/testGoToDefOp.d";
 
 	protected IFile file; 
@@ -44,7 +44,7 @@ public class OpenDefinitionOperationTest extends BaseUITest {
 
 	@Before
 	public void setUp() throws Exception {
-		IProject project = SampleMainProject.sampleDeeProj.getProject();
+		IProject project = SampleMainProject.deeProj.getProject();
 		setupWithFile(project, TEST_SRCFILE);
 	}
 

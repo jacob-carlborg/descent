@@ -1,5 +1,7 @@
 package mmrnmhrm.core.model;
 
+import java.util.Collection;
+
 import melnorme.miscutil.ExceptionAdapter;
 import mmrnmhrm.core.CorePreferenceInitializer;
 import mmrnmhrm.core.DeeCore;
@@ -15,10 +17,10 @@ import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
 
 import descent.core.compiler.IProblem;
-import descent.internal.core.dom.ParserFacade;
+import descent.core.domX.ASTNode;
 import dtool.descentadapter.DescentASTConverter;
-import dtool.dom.ast.ASTNode;
 import dtool.dom.definitions.Module;
+import dtool.refmodel.ParserAdapter;
 import dtool.refmodel.pluginadapters.IGenericCompilationUnit;
 
 /**
@@ -29,11 +31,11 @@ import dtool.refmodel.pluginadapters.IGenericCompilationUnit;
 public class CompilationUnit extends LangModuleUnit implements IGenericCompilationUnit, IDeeElement {
 
 	
-	private descent.internal.core.dom.Module oldModule;
+	private descent.internal.compiler.parser.Module oldModule;
 	private Module module;
 	//private boolean astUpdated;
 
-	public IProblem[] problems;
+	public Collection<IProblem> problems;
 	public int parseStatus;
 	
 
@@ -61,7 +63,7 @@ public class CompilationUnit extends LangModuleUnit implements IGenericCompilati
 		return getModule().getChildren();
 	}
 	
-	public descent.internal.core.dom.Module getOldModule() {
+	public descent.internal.compiler.parser.Module getOldModule() {
 		getElementInfo();
 		return oldModule;
 	}
@@ -109,7 +111,7 @@ public class CompilationUnit extends LangModuleUnit implements IGenericCompilati
 	}
 	
 	private boolean hasErrors() {
-		return problems.length > 0;
+		return problems.size() > 0;
 	}
 
 	private void clearErrorMarkers() {
@@ -125,7 +127,7 @@ public class CompilationUnit extends LangModuleUnit implements IGenericCompilati
 		reportSyntaxErrors = DeeCore.getInstance().getPluginPreferences()
 				.getBoolean(CorePreferenceInitializer.REPORT_SYNTAX_ERRORS);
 
-		for (IProblem problem : oldModule.getProblems()) {
+		for (IProblem problem : oldModule.problems) {
 			try {
 				createMarker(doc, problem, reportSyntaxErrors);
 			} catch (CoreException e) {
@@ -140,7 +142,7 @@ public class CompilationUnit extends LangModuleUnit implements IGenericCompilati
 		
 		int lineNum = 0;
 		try {
-			lineNum = doc.getLineOfOffset(problem.getOffset());
+			lineNum = doc.getLineOfOffset(problem.getSourceStart());
 			marker.setAttribute(IMarker.LINE_NUMBER, lineNum);
 		} catch (BadLocationException e) {
 			DeeCore.log(e);
@@ -148,8 +150,8 @@ public class CompilationUnit extends LangModuleUnit implements IGenericCompilati
 		
 		if(reportSyntaxErrors) {
 			marker.setAttribute(IMarker.LOCATION, "Line "+ lineNum);
-			marker.setAttribute(IMarker.CHAR_START, problem.getOffset());
-			marker.setAttribute(IMarker.CHAR_END, problem.getOffset() + problem.getLength());
+			marker.setAttribute(IMarker.CHAR_START, problem.getSourceStart());
+			marker.setAttribute(IMarker.CHAR_END, problem.getSourceEnd());
 		}
 		marker.setAttribute(IMarker.MESSAGE, problem.getMessage());
 		marker.setAttribute(IMarker.SEVERITY, IMarker.SEVERITY_ERROR);
@@ -158,8 +160,9 @@ public class CompilationUnit extends LangModuleUnit implements IGenericCompilati
 	private void parseCompilationUnit() {
 		this.module = null;
 		this.problems = null;
-		this.oldModule = ParserFacade.parseCompilationUnit(getSource()).mod;
-		this.problems = oldModule.getProblems();
+		this.oldModule = ParserAdapter.parseSource(getSource()).mod;
+		//Logg.model.println(ASTPrinter.toStringAST(this.oldModule, true));
+		this.problems = oldModule.problems;
 	}
 	
 	

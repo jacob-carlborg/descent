@@ -1,6 +1,6 @@
 package dtool.dom.expressions;
 
-import descent.internal.core.dom.RealExp;
+import descent.internal.compiler.parser.RealExp;
 import dtool.dom.ast.IASTNeoVisitor;
 
 public class ExpLiteralReal extends Expression {

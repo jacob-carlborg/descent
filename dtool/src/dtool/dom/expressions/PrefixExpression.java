@@ -1,10 +1,9 @@
 package dtool.dom.expressions;
 
 import melnorme.miscutil.tree.TreeVisitor;
-import descent.internal.core.dom.BinaryExpression;
-import descent.internal.core.dom.UnaryExpression;
+import descent.internal.compiler.parser.BinExp;
+import descent.internal.compiler.parser.UnaExp;
 import dtool.descentadapter.DescentASTConverter;
-import dtool.dom.ast.ASTNode;
 import dtool.dom.ast.IASTNeoVisitor;
 
 public class PrefixExpression extends Expression {
@@ -26,14 +25,14 @@ public class PrefixExpression extends Expression {
 	public int kind;
 
 
-	public PrefixExpression(UnaryExpression elem, int kind) {
+	public PrefixExpression(UnaExp elem, int kind) {
 		convertNode(elem);
-		this.exp = (Expression) DescentASTConverter.convertElem(elem.exp);
+		this.exp = (Expression) DescentASTConverter.convertElem(elem.e1);
 		this.kind = kind;
 	}
 
-	public PrefixExpression(BinaryExpression elem, int kind) {
-		setSourceRange((ASTNode) elem);
+	public PrefixExpression(BinExp elem, int kind) {
+		setSourceRange(elem);
 		this.exp = (Expression) DescentASTConverter.convertElem(elem.e1);
 		this.kind = kind;
 	}

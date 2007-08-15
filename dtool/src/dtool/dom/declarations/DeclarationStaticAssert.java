@@ -1,8 +1,8 @@
 package dtool.dom.declarations;
 
 import melnorme.miscutil.tree.TreeVisitor;
-import descent.internal.core.dom.StaticAssert;
-import descent.internal.core.dom.StaticAssertStatement;
+import descent.internal.compiler.parser.StaticAssert;
+import descent.internal.compiler.parser.StaticAssertStatement;
 import dtool.dom.ast.ASTNeoNode;
 import dtool.dom.ast.IASTNeoVisitor;
 import dtool.dom.expressions.Expression;
@@ -20,7 +20,7 @@ public class DeclarationStaticAssert extends ASTNeoNode implements IStatement {
 	}
 	
 	public DeclarationStaticAssert(StaticAssertStatement elem) {
-		this(elem.staticAssert);
+		this(elem.sa);
 	}
 
 	@Override

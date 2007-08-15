@@ -1,7 +1,7 @@
 package dtool.dom.expressions;
 
 import melnorme.miscutil.tree.TreeVisitor;
-import descent.internal.core.dom.CondExp;
+import descent.internal.compiler.parser.CondExp;
 import dtool.dom.ast.IASTNeoVisitor;
 
 public class ExpCond extends Expression {
@@ -12,9 +12,9 @@ public class ExpCond extends Expression {
 
 	public ExpCond(CondExp elem) {
 		convertNode(elem);
-		this.predExp = Expression.convert(elem.cond); 
-		this.trueExp = Expression.convert(elem.t);
-		this.falseExp = Expression.convert(elem.f); 
+		this.predExp = Expression.convert(elem.econd); 
+		this.trueExp = Expression.convert(elem.e1);
+		this.falseExp = Expression.convert(elem.e2); 
 	}
 
 	@Override

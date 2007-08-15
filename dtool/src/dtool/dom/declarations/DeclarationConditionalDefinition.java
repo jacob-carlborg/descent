@@ -1,8 +1,8 @@
 package dtool.dom.declarations;
 
 import melnorme.miscutil.tree.TreeVisitor;
-import descent.internal.core.dom.DebugSymbol;
-import descent.internal.core.dom.VersionSymbol;
+import descent.internal.compiler.parser.DebugSymbol;
+import descent.internal.compiler.parser.VersionSymbol;
 import dtool.dom.ast.ASTNeoNode;
 import dtool.dom.ast.IASTNeoVisitor;
 import dtool.dom.definitions.Symbol;
@@ -20,18 +20,24 @@ public class DeclarationConditionalDefinition extends ASTNeoNode {
 	}
 
 	public Symbol identifier;
-	public int kind;
+	public int conditionalKind;
 	
 	public DeclarationConditionalDefinition(DebugSymbol elem) {
 		setSourceRange(elem);
-		this.identifier = new Symbol(elem.ident);
-		kind = Type.DEBUG;
+		if(elem.ident != null)
+			this.identifier = new Symbol(elem.ident);
+		else 
+			this.identifier = new Symbol(elem.version.value);
+		conditionalKind = Type.DEBUG;
 	}
 	
 	public DeclarationConditionalDefinition(VersionSymbol elem) {
 		setSourceRange(elem);
-		this.identifier = new Symbol(elem.ident);
-		kind = Type.VERSION;
+		if(elem.ident != null)
+			this.identifier = new Symbol(elem.ident);
+		else 
+			this.identifier = new Symbol(elem.version.value);
+		conditionalKind = Type.VERSION;
 	}
 
 	@Override

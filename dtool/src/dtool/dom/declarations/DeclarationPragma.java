@@ -1,30 +1,30 @@
 package dtool.dom.declarations;
 
-import java.util.Arrays;
-import java.util.Iterator;
 
 import melnorme.miscutil.tree.TreeVisitor;
-import descent.internal.core.dom.PragmaDeclaration;
-import dtool.dom.ast.ASTNeoNode;
-import dtool.dom.ast.ASTNode;
+import descent.internal.compiler.parser.PragmaDeclaration;
+import descent.internal.compiler.parser.PragmaStatement;
 import dtool.dom.ast.IASTNeoVisitor;
 import dtool.dom.definitions.Symbol;
 import dtool.dom.expressions.Expression;
-import dtool.refmodel.INonScopedBlock;
 
-public class DeclarationPragma extends ASTNeoNode implements INonScopedBlock {
+public class DeclarationPragma extends DeclarationAttrib  {
 
 	public Symbol ident;
 	public Expression[] expressions;
-	public ASTNode[] decls;	// can be null?
-
 	
 	public DeclarationPragma(PragmaDeclaration elem) {
-		convertNode(elem);
-		ident = new Symbol(elem.ident);
-		this.expressions = Expression.convertMany(elem.expressions);
-		this.decls = Declaration.convertMany(elem.getDeclarationDefinitions());
+		super(elem, elem.decl);
+		this.ident = new Symbol(elem.ident);
+		this.expressions = Expression.convertMany(elem.args);
 	}
+	
+	public DeclarationPragma(PragmaStatement elem) {
+		super(elem, elem.body);
+		this.ident = new Symbol(elem.ident);
+		this.expressions = Expression.convertMany(elem.args);
+	}
+
 
 	@Override
 	public void accept0(IASTNeoVisitor visitor) {
@@ -32,16 +32,8 @@ public class DeclarationPragma extends ASTNeoNode implements INonScopedBlock {
 		if (children) {
 			TreeVisitor.acceptChildren(visitor, ident);
 			TreeVisitor.acceptChildren(visitor, expressions);
-			TreeVisitor.acceptChildren(visitor, decls);
+			TreeVisitor.acceptChildren(visitor, body);
 		}
 		visitor.endVisit(this);
-	}
-
-	public ASTNode[] getMembers() {
-		return decls;
-	}
-	
-	public Iterator<ASTNode> getMembersIterator() {
-		return Arrays.asList(getMembers()).iterator();
 	}
 }

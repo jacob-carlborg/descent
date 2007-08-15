@@ -1,6 +1,5 @@
 package mmrnmhrm.ui.views;
 
-import melnorme.lang.ui.EditorUtil;
 import melnorme.util.ui.jface.SimpleLabelProvider;
 
 import org.eclipse.jface.viewers.IColorProvider;
@@ -11,9 +10,8 @@ import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Display;
 
-import descent.core.domX.AbstractElement;
-import dtool.dom.ast.ASTNode;
-import dtool.dom.ast.ASTNodeFinder;
+import descent.core.domX.ASTNode;
+import descent.internal.compiler.parser.ASTDmdNode;
 import dtool.dom.ast.ASTPrinter;
 import dtool.dom.definitions.DefUnit;
 import dtool.dom.references.Reference;
@@ -51,7 +49,7 @@ public class ASTViewerLabelProvider extends SimpleLabelProvider implements IColo
 		ASTNode node = (ASTNode) element;
 		if(node.hasNoSourceRangeInfo())
 			return cNoSourceRangeColor;
-		if(node instanceof AbstractElement)
+		if(node instanceof ASTDmdNode)
 			return cOldAstColor;
 		
 		//int offset = EditorUtil.getSelection(viewer.fEditor).getOffset();

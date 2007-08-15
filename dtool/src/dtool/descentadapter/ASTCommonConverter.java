@@ -1,9 +1,9 @@
 package dtool.descentadapter;
 
-import descent.core.dom.IDescentElement;
+import melnorme.miscutil.Assert;
+import descent.core.domX.ASTNode;
 import descent.core.domX.IASTVisitor;
 import dtool.dom.ast.ASTNeoNode;
-import dtool.dom.ast.ASTNode;
 
 /**
  * This class is a mixin. 
@@ -24,14 +24,11 @@ public abstract class ASTCommonConverter implements IASTVisitor {
 	public void preVisit(ASTNode elem) {
 	}
 
-	public void endVisit(IDescentElement elem) {
-	}
-	
 	
 	/* ---- common adaptors ---- */
 	
 	protected void rangeAdapt(ASTNeoNode newelem, ASTNode elem) {
-		newelem.startPos = elem.getStartPos();
+		newelem.start = elem.getStartPos();
 		newelem.length = elem.getLength();
 	}
 
@@ -40,10 +37,11 @@ public abstract class ASTCommonConverter implements IASTVisitor {
 		return false;
 	}
 
-
-	public boolean visit(ASTNode elem) {
-		ret = elem;
-		return false;	
+	protected boolean assertFailFAKENODE() {
+		Assert.fail("Fake Node"); return false;
+	}
+	protected boolean assertFailABSTRACT_NODE() {
+		Assert.fail("Abstract Node"); return false;
 	}
 
 }

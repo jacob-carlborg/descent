@@ -1,7 +1,7 @@
 package melnorme.miscutil.tree;
 
 import melnorme.miscutil.AssertIn;
-import dtool.dom.ast.ASTNode;
+import descent.core.domX.ASTRangeLessNode;
 
 /**
  * Generic type for a tree node. The erasure TreeNode represents a homogenous tree
@@ -10,7 +10,7 @@ import dtool.dom.ast.ASTNode;
  *
  * @param <NODE> the base node for a heterogenous tree. 
  * @param <VISITOR> a visitor for that heterogenous tree.
- * @see ASTNode
+ * @see ASTRangeLessNode
  *
  * @author BrunoM
  * XXX: This may be too much complexity for what it's worth

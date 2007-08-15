@@ -1,7 +1,7 @@
 package dtool.dom.expressions;
 
 import melnorme.miscutil.tree.TreeVisitor;
-import descent.internal.core.dom.ArrayInitializer;
+import descent.internal.compiler.parser.ArrayInitializer;
 import dtool.dom.ast.IASTNeoVisitor;
 
 public class InitializerArray extends Initializer {
@@ -12,8 +12,8 @@ public class InitializerArray extends Initializer {
 		
 	public InitializerArray(ArrayInitializer elem) {
 		convertNode(elem);
-		this.indexes = Expression.convertMany(elem.exps); 
-		this.values = Initializer.convertMany(elem.values);
+		this.indexes = Expression.convertMany(elem.index); 
+		this.values = Initializer.convertMany(elem.value);
 	}
 
 	@Override

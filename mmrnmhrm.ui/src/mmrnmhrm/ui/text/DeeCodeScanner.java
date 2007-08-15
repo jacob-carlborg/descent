@@ -1,6 +1,5 @@
 package mmrnmhrm.ui.text;
 
-import melnorme.miscutil.ArrayUtil;
 import melnorme.miscutil.AssertIn;
 import melnorme.miscutil.ExceptionAdapter;
 import melnorme.miscutil.log.Logg;
@@ -13,10 +12,11 @@ import org.eclipse.jface.text.rules.IToken;
 import org.eclipse.jface.text.rules.ITokenScanner;
 import org.eclipse.jface.util.PropertyChangeEvent;
 
-import descent.core.compiler.DeeToken;
-import descent.internal.core.dom.Lexer;
-import descent.internal.core.dom.TOK;
-import descent.internal.core.dom.Token;
+import descent.core.dom.AST;
+import descent.core.domX.TokenUtil;
+import descent.internal.compiler.parser.Lexer;
+import descent.internal.compiler.parser.TOK;
+import descent.internal.compiler.parser.Token;
 
 /**
  * D Code Scanner. Uses DMD's lexer to do the text attribute tokenization.
@@ -31,11 +31,13 @@ public class DeeCodeScanner implements ITokenScanner {
 	IDocument document;
 	private int wsoffset;
 	private int wslength;
+	private int rangeOffset;
 
 
 	public DeeCodeScanner() {
 		manager = TextAttributeRegistry.getDefault();
 		loadDeeTokens();
+		lexer = new Lexer("", 0, 0, false, false, false, false, AST.D2);
 	}
 	
 	/** Updates the color according to current preferences. */
@@ -52,16 +54,19 @@ public class DeeCodeScanner implements ITokenScanner {
 	}
 
 	public void setRange(IDocument document, int offset, int length) {
-		Logg.codeScanner.println("DeeCodeScanner#setRange: " + offset + ","+ length);
+		Logg.codeScanner.println(">> DeeCodeScanner#setRange: " + offset + ","+ length);
 		AssertIn.isTrue(offset >= 0 && length >= 1);
 		AssertIn.isTrue(offset + length <= document.get().length());
 		try {
-			Logg.codeScanner.println(" " + document.get(offset, length) );
+			Logg.codeScanner.println(document.get(offset, length) );
+			char[] srcAr = document.get(offset, length).toCharArray();
+			lexer.reset(srcAr, 0, length, true, true, true, true);
 		} catch (BadLocationException e) {
 			throw ExceptionAdapter.unchecked(e);
 		}
-		// TODO: don't allocate a new Lexer, re-use ?
-		lexer = new Lexer(document.get(), offset, offset+length, true, true);
+		//lexer = new Lexer(document.get(), offset, length, true, true, false, true, 1);
+
+		this.rangeOffset = offset;
 		this.wsoffset = offset;
 		this.document = document;
 	}
@@ -78,11 +83,13 @@ public class DeeCodeScanner implements ITokenScanner {
 		if(whitespace) {
 			return wsoffset;
 		} else {
-			return lexer.token.ptr;
+			return getRealTokenOffset(lexer.token);
 		}
 	}
-	
-	
+
+	private int getRealTokenOffset(Token token) {
+		return token.ptr + rangeOffset;
+	}
 
 	public IToken nextToken() {
 
@@ -94,28 +101,32 @@ public class DeeCodeScanner implements ITokenScanner {
 		}
 		
 		Token token = lexer.token;
+		int tokenOffset = getRealTokenOffset(token) ;
 
 		int endpos = wsoffset + wslength;
-		if(token.ptr > endpos) {
+		if(tokenOffset > endpos) {
 			whitespace = true;
 			wsoffset = endpos;
-			wslength = token.ptr - wsoffset;
+			wslength = tokenOffset - wsoffset;
 			return org.eclipse.jface.text.rules.Token.WHITESPACE;
 		}
-		Logg.codeScanner.println("Token: " +token+ "["+ token.ptr +","+ token.len +"]");
+		String offsetStr = String.format("%3d", tokenOffset);
+		String lenStr = String.format("%2d", token.len);
+		Logg.codeScanner.println("Token["+offsetStr +","+ lenStr +"]: " +token);
 		
-		wsoffset = token.ptr;
+		wsoffset = tokenOffset;
 		wslength = token.len;
 		
-		return getTextAttributeForToken(token);
-		
+		return getTextAttributeForToken(token.value);
 	}
 
-	private IToken getTextAttributeForToken(Token token) {
-		TOK tok = token.value;
+	private IToken getTextAttributeForToken(TOK tok) {
 		
 		if(tok == TOK.TOKeof)
 			return org.eclipse.jface.text.rules.Token.EOF;
+		
+		if(tok == TOK.TOKwhitespace)
+			return org.eclipse.jface.text.rules.Token.WHITESPACE;
 
 		IToken tatoken;
 		if(tok == TOK.TOKreserved) {
@@ -126,30 +137,31 @@ public class DeeCodeScanner implements ITokenScanner {
 			tatoken = manager.getToken(IDeeColorPreferences.DEE_STRING);
 			if(tatoken != null)	return tatoken;
 		}
-		if(ArrayUtil.contains(TOK.literals, tok)) {
+		if(TokenUtil.isLiteral(tok)) {
 			tatoken = manager.getToken(IDeeColorPreferences.DEE_LITERALS);
 			if(tatoken != null)	return tatoken;
 		}
-		if(ArrayUtil.contains(TOK.operators, tok)) {
-			tatoken = manager.getToken(IDeeColorPreferences.DEE_OPERATORS);
-			if(tatoken != null)	return tatoken;
-		}
-		if(ArrayUtil.contains(TOK.basicTypes, tok)) {
+		if(TokenUtil.isBasicType(tok)) {
 			tatoken = manager.getToken(IDeeColorPreferences.DEE_BASICTYPES);
 			if(tatoken != null)	return tatoken;
 		}
-		if(Lexer.keywords.containsValue(tok)) {
+		if(TokenUtil.isKeyword(tok)) {
 			tatoken = manager.getToken(IDeeColorPreferences.DEE_KEYWORD);
 			if(tatoken != null)	return tatoken;
 		}
-		if(DeeToken.isDDocComment(getTokenStr(token), token)) {
+		if(TokenUtil.isDDocComment(tok)) {
 			tatoken = manager.getToken(IDeeColorPreferences.DEE_DOCCOMMENT);
 			if(tatoken != null)	return tatoken;
 		}
-		if(DeeToken.isSimpleComment(getTokenStr(token), token)) {
+		if(TokenUtil.isSimpleComment(tok)) {
 			tatoken = manager.getToken(IDeeColorPreferences.DEE_COMMENT);
 			if(tatoken != null)	return tatoken;
 		}
+		/*if(TokenUtil.isOperator(tok)) {
+			if(true) return manager.getToken(IDeeColorPreferences.DEE_DEFAULT);
+			tatoken = manager.getToken(IDeeColorPreferences.DEE_OPERATORS);
+			if(tatoken != null)	return tatoken;
+		}*/
 		{
 			tatoken = manager.getToken(IDeeColorPreferences.DEE_DEFAULT);
 			if(tatoken != null)	return tatoken;

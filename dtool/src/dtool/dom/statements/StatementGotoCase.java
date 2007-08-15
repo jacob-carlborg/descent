@@ -1,18 +1,26 @@
 package dtool.dom.statements;
 
-import descent.internal.core.dom.GotoCaseStatement;
+import melnorme.miscutil.tree.TreeVisitor;
+import descent.internal.compiler.parser.GotoCaseStatement;
 import dtool.dom.ast.IASTNeoVisitor;
+import dtool.dom.expressions.Expression;
 
 public class StatementGotoCase extends Statement {
 
-	public StatementGotoCase(GotoCaseStatement element) {
-		// TODO Auto-generated constructor stub
-		throw new UnsupportedOperationException();
+	public Expression exp;
+	
+	public StatementGotoCase(GotoCaseStatement elem) {
+		convertNode(elem);
+		this.exp = Expression.convert(elem.exp);
 	}
 
 	@Override
 	public void accept0(IASTNeoVisitor visitor) {
-		throw new UnsupportedOperationException();
+		boolean children = visitor.visit(this);
+		if (children) {
+			TreeVisitor.acceptChildren(visitor, exp);
+		}
+		visitor.endVisit(this);
 	}
 
 }

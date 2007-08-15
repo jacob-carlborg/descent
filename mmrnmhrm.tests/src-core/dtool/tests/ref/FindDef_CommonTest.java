@@ -7,11 +7,10 @@ import mmrnmhrm.tests.BasePluginTest;
 import mmrnmhrm.tests.SampleMainProject;
 
 import org.eclipse.core.runtime.CoreException;
-import org.junit.AfterClass;
 import org.junit.Test;
 
+import descent.core.domX.ASTNode;
 import dtool.dom.ast.ASTNodeFinder;
-import dtool.dom.ast.ASTNode;
 import dtool.dom.definitions.DefUnit;
 import dtool.dom.definitions.Module;
 import dtool.dom.references.Reference;
@@ -64,19 +63,20 @@ public abstract class FindDef_CommonTest extends BasePluginTest {
 		// Perform the find def
 		DefUnit defunit = ent.findTargetDefUnit();
 		
+		
 		if(targetOffset == -1) {
-			assertTrueP(defunit == null, 
+			assertTrue(defunit == null, 
 					" Find Ref got a DefUnit when it shouldn't.");
 			return;
 		}
 		
-		assertTrueP(defunit != null, " Find Ref got no DefUnit.");
+		assertTrue(defunit != null, " Find Ref got no DefUnit.");
 
 		Module obtainedModule = NodeUtil.getParentModule(defunit);
-		assertTrueP(obtainedModule.getCUnit().equals(targetCunit),
+		assertTrue(obtainedModule.getCUnit().equals(targetCunit),
 				" Find Ref got wrong target module.");
 		
-		assertTrueP(defunit.defname.startPos == targetOffset, 
-				" Find Ref went to wrong offset: " + defunit.defname.startPos);
+		assertTrue(defunit.defname.start == targetOffset, 
+				" Find Ref went to wrong offset: " + defunit.defname.start);
 	}
 }

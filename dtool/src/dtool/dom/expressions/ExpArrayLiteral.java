@@ -1,7 +1,7 @@
 package dtool.dom.expressions;
 
 import melnorme.miscutil.tree.TreeVisitor;
-import descent.internal.core.dom.ArrayLiteralExp;
+import descent.internal.compiler.parser.ArrayLiteralExp;
 import dtool.dom.ast.IASTNeoVisitor;
 
 public class ExpArrayLiteral extends Expression {
@@ -10,7 +10,7 @@ public class ExpArrayLiteral extends Expression {
 
 	public ExpArrayLiteral(ArrayLiteralExp elem) {
 		convertNode(elem);
-		this.args = Expression.convertMany(elem.getArguments());
+		this.args = Expression.convertMany(elem.elements);
 	}
 
 	@Override

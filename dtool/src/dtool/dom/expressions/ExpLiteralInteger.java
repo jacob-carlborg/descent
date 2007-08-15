@@ -1,17 +1,18 @@
 package dtool.dom.expressions;
 
-import melnorme.miscutil.Assert;
-import descent.internal.core.dom.IntegerExp;
+import java.math.BigInteger;
+
+import descent.internal.compiler.parser.IntegerExp;
 import dtool.dom.ast.IASTNeoVisitor;
 
 public class ExpLiteralInteger extends Expression {
 	
-	long num;
+	BigInteger num;
 
 	public ExpLiteralInteger(IntegerExp elem) {
-		Assert.isTrue(elem.expressionType == ElementTypes.INTEGER_EXPRESSION);
 		convertNode(elem);
-		num = elem.number.longValue();
+		num = elem.value;
+		//elem.str;
 	}
 
 	@Override

@@ -1,25 +1,26 @@
 package dtool.dom.declarations;
 
-import java.util.Arrays;
 import java.util.Iterator;
 
+import melnorme.miscutil.Assert;
+import melnorme.miscutil.IteratorUtil;
 import melnorme.miscutil.tree.TreeVisitor;
-import descent.internal.core.dom.PROT;
-import descent.internal.core.dom.ProtDeclaration;
+import descent.internal.compiler.parser.Modifier;
+import descent.internal.compiler.parser.PROT;
+import descent.internal.compiler.parser.ProtDeclaration;
 import dtool.dom.ast.ASTNeoNode;
-import dtool.dom.ast.ASTNode;
 import dtool.dom.ast.IASTNeoVisitor;
-import dtool.refmodel.INonScopedBlock;
 
-public class DeclarationProtection extends ASTNeoNode implements INonScopedBlock {
+public class DeclarationProtection extends DeclarationAttrib {
 
+	public Modifier modifier;
 	public PROT prot;
-	public ASTNode[] decls;	// can be null?
 	
 	public DeclarationProtection(ProtDeclaration elem) {
-		convertNode(elem);
-		this.prot = elem.prot;
-		this.decls = Declaration.convertMany(elem.getDeclarationDefinitions());
+		super(elem, elem.decl);
+		this.modifier = elem.modifier;
+		this.prot = elem.protection;
+		Assert.isTrue(PROT.fromTOK(this.modifier.tok) == this.prot);
 	}
 
 	@Override
@@ -27,19 +28,13 @@ public class DeclarationProtection extends ASTNeoNode implements INonScopedBlock
 		boolean children = visitor.visit(this);
 		if (children) {
 			//TreeVisitor.acceptChildren(visitor, prot);
-			TreeVisitor.acceptChildren(visitor, decls);
+			TreeVisitor.acceptChildren(visitor, body);
 		}
 		visitor.endVisit(this);
 	}
 	
-	public ASTNode[] getMembers() {
-		return decls;
+	public Iterator<ASTNeoNode> getMembersIterator() {
+		return IteratorUtil.singletonIterator(body);
 	}
-	
-	public Iterator<ASTNode> getMembersIterator() {
-		return Arrays.asList(getMembers()).iterator();
-	}
-
-
 
 }

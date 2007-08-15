@@ -2,21 +2,16 @@ package dtool.dom.declarations;
 
 import java.util.Collections;
 import java.util.Iterator;
-import java.util.List;
 
 import melnorme.miscutil.IteratorUtil;
-
-import dtool.dom.ast.ASTNode;
-import dtool.dom.ast.IASTNeoVisitor;
+import descent.core.domX.ASTNode;
 import dtool.dom.definitions.DefUnit;
 import dtool.dom.definitions.Module;
 import dtool.dom.references.RefModule;
-import dtool.refmodel.IScope;
-import dtool.refmodel.IScopeNode;
 
 public class PartialPackageDefUnitOfModule extends PartialPackageDefUnit {
 
-	RefModule entModule;
+	RefModule moduleRef;
 	DefUnit module;
 	
 	public Iterator<? extends ASTNode> getMembersIterator() {
@@ -24,7 +19,7 @@ public class PartialPackageDefUnitOfModule extends PartialPackageDefUnit {
 			return Collections.singleton(module).iterator();
 		else {
 			// Could we cache this result?
-			Module targetModule = (Module) entModule.findTargetDefUnit();
+			Module targetModule = (Module) moduleRef.findTargetDefUnit();
 			if(targetModule != null)
 				return Collections.singleton(targetModule).iterator();
 			return IteratorUtil.getEMPTY_ITERATOR();
@@ -36,7 +31,7 @@ public class PartialPackageDefUnitOfModule extends PartialPackageDefUnit {
 		if(module != null)
 			return getName() + "." + module.toString();
 		else {
-			return getName() + "." + entModule.moduleName;
+			return getName() + "." + moduleRef.module;
 		}
 	}
 

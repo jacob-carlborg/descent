@@ -1,5 +1,6 @@
 package mmrnmhrm.core.model;
 
+import melnorme.miscutil.StringUtil;
 import mmrnmhrm.core.DeeCore;
 import mmrnmhrm.core.model.lang.ILangProject;
 import mmrnmhrm.core.model.lang.LangElement;
@@ -78,22 +79,25 @@ public class DeeModelRoot extends LangModelRoot implements IDeeElement, IModuleR
 */	
 	/** Finds the module with the given package and module name.
 	 * refModule is used to determine which project/build-path to search. */
-	public Module findModule(Module refModule, String packageName, String moduleName) throws CoreException {
-		CompilationUnit refcunit = (CompilationUnit) refModule.getCUnit();
+	public Module findModule(Module sourceRefModule, String[] packages,
+			String module) throws CoreException {
+		CompilationUnit refcunit = (CompilationUnit) sourceRefModule.getCUnit();
 		
 		DeeProject deeproj = refcunit.getProject();
 		if(deeproj == null)
 			return null;
 		
+		String fullPackageName = StringUtil.collToString(packages, ".");  
+		
 		for (IDeeSourceRoot srcRoot : deeproj.getSourceRoots()) {
 			
 			for (LangPackageFragment pkgFrag : srcRoot.getPackageFragments()) {
-				if(pkgFrag.getElementName().equals(packageName)) {
+				if(pkgFrag.getElementName().equals(fullPackageName)) {
 				
 					for (CompilationUnit cunit : pkgFrag.getCompilationUnits()) {
 						String str = cunit.getElementName();
 						str = str.substring(0, str.lastIndexOf('.'));
-						if(moduleName.equals(str))
+						if(module.equals(str))
 							return cunit.getNeoModule();
 	
 					}

@@ -1,7 +1,7 @@
 package dtool.dom.expressions;
 
 import melnorme.miscutil.tree.TreeVisitor;
-import descent.internal.core.dom.CallExp;
+import descent.internal.compiler.parser.CallExp;
 import dtool.dom.ast.IASTNeoVisitor;
 
 public class ExpCall extends Expression {
@@ -11,8 +11,8 @@ public class ExpCall extends Expression {
 	
 	public ExpCall(CallExp elem) {
 		convertNode(elem);
-		this.callee = Expression.convert(elem.e); 
-		this.args = Expression.convertMany(elem.args);
+		this.callee = Expression.convert(elem.e1); 
+		this.args = Expression.convertMany(elem.arguments);
 	}
 
 	@Override

@@ -4,7 +4,7 @@ public class DeeNameRules {
 
 	private static final String DEE_FILE_EXTENSION = ".d";
 
-	protected static boolean isValidCompilationUnitName(String name) {
+	public static boolean isValidCompilationUnitName(String name) {
 		
 		if(!(Character.isLetter(name.charAt(0)) || name.charAt(0) == '_'))
 			return false;

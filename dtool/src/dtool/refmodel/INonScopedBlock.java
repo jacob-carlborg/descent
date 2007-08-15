@@ -2,7 +2,7 @@ package dtool.refmodel;
 
 import java.util.Iterator;
 
-import dtool.dom.ast.ASTNode;
+import descent.core.domX.ASTNode;
 
 /**
  * Interface for a container node that contains nodes that are part of the same

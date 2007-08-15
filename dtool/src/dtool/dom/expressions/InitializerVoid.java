@@ -1,6 +1,6 @@
 package dtool.dom.expressions;
 
-import descent.internal.core.dom.VoidInitializer;
+import descent.internal.compiler.parser.VoidInitializer;
 import dtool.dom.ast.IASTNeoVisitor;
 
 public class InitializerVoid extends Initializer {

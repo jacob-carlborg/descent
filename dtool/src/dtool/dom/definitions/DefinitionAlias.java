@@ -2,7 +2,7 @@ package dtool.dom.definitions;
 
 
 import melnorme.miscutil.tree.TreeVisitor;
-import descent.internal.core.dom.AliasDeclaration;
+import descent.internal.compiler.parser.AliasDeclaration;
 import dtool.descentadapter.DescentASTConverter;
 import dtool.dom.ast.IASTNeoVisitor;
 import dtool.dom.references.Reference;

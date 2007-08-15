@@ -1,16 +1,16 @@
 package dtool.dom.expressions;
 
 import melnorme.miscutil.tree.TreeVisitor;
-import descent.internal.core.dom.ParenthesizedExpression;
+import descent.internal.compiler.parser.ParenExp;
 import dtool.dom.ast.IASTNeoVisitor;
 
 public class ExpParenthesized extends Expression {
 
 	public Expression exp;
 
-	public ExpParenthesized(ParenthesizedExpression elem) {
+	public ExpParenthesized(ParenExp elem) {
 		convertNode(elem);
-		this.exp = Expression.convert(elem.e); 
+		this.exp = Expression.convert(elem.e1); 
 	}
 
 	@Override

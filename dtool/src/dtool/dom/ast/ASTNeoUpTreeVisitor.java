@@ -1,7 +1,9 @@
 package dtool.dom.ast;
 
 import melnorme.miscutil.Assert;
+import descent.core.domX.ASTNode;
 import descent.core.domX.ASTUpTreeVisitor;
+import dtool.dom.declarations.DeclarationImport;
 import dtool.dom.definitions.DefUnit;
 import dtool.dom.definitions.Definition;
 import dtool.dom.definitions.Module;
@@ -16,9 +18,6 @@ import dtool.dom.references.Reference;
 public abstract class ASTNeoUpTreeVisitor extends ASTUpTreeVisitor implements IASTNeoVisitor {
 
 	
-	/** Visits the element.
-	 * @return true if children element should be visited
-	 */
 	public boolean visit(ASTNeoNode elem) {
 		Assert.isTrue(ASTNeoNode.class.getSuperclass().equals(ASTNode.class));
 		return visit((ASTNode) elem);
@@ -74,13 +73,19 @@ public abstract class ASTNeoUpTreeVisitor extends ASTUpTreeVisitor implements IA
 		Assert.isTrue(Definition.class.getSuperclass().equals(DefUnit.class));
 		return visit((DefUnit) elem);
 	}
-
-	/* ---------------------------------- */
-
+	
 	public boolean visit(Module elem) {
 		Assert.isTrue(Module.class.getSuperclass().equals(DefUnit.class));
 		return visit((DefUnit) elem);
 	}
+
+	/* ---------------------------------- */
+
+	public boolean visit(DeclarationImport elem) {
+		Assert.isTrue(DeclarationImport.class.getSuperclass().equals(ASTNeoNode.class));
+		return visit((ASTNeoNode) elem);
+	}
+
 	
 	
 	/* ============================================= */

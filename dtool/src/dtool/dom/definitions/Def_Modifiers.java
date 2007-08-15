@@ -1,6 +1,6 @@
 package dtool.dom.definitions;
 
-import descent.internal.core.dom.TOK;
+import descent.internal.compiler.parser.TOK;
 
 public final class Def_Modifiers {
 	

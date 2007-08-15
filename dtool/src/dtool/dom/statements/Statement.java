@@ -5,7 +5,7 @@ import dtool.dom.ast.ASTNeoNode;
 
 public abstract class Statement extends ASTNeoNode implements IStatement {
 
-	public static IStatement convert(descent.internal.core.dom.Statement elem) {
+	public static IStatement convert(descent.internal.compiler.parser.Statement elem) {
 		return (IStatement) DescentASTConverter.convertElem(elem);
 	}
 

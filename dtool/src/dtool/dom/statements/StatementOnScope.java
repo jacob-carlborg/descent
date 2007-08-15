@@ -1,7 +1,7 @@
 package dtool.dom.statements;
 
 import melnorme.miscutil.tree.TreeVisitor;
-import descent.internal.core.dom.OnScopeStatement;
+import descent.internal.compiler.parser.OnScopeStatement;
 import dtool.dom.ast.IASTNeoVisitor;
 
 public class StatementOnScope extends Statement {
@@ -10,7 +10,7 @@ public class StatementOnScope extends Statement {
 
 	public StatementOnScope(OnScopeStatement elem) {
 		convertNode(elem);
-		this.st = Statement.convert(elem.st);
+		this.st = Statement.convert(elem.statement);
 	}
 
 	@Override

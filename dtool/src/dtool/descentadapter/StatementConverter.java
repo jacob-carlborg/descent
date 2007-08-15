@@ -1,38 +1,42 @@
 package dtool.descentadapter;
 
-import descent.internal.core.dom.AsmStatement;
-import descent.internal.core.dom.BreakStatement;
-import descent.internal.core.dom.CaseStatement;
-import descent.internal.core.dom.Catch;
-import descent.internal.core.dom.ConditionalStatement;
-import descent.internal.core.dom.ContinueStatement;
-import descent.internal.core.dom.DeclarationStatement;
-import descent.internal.core.dom.DefaultStatement;
-import descent.internal.core.dom.DoStatement;
-import descent.internal.core.dom.ExpStatement;
-import descent.internal.core.dom.ForStatement;
-import descent.internal.core.dom.ForeachStatement;
-import descent.internal.core.dom.GotoCaseStatement;
-import descent.internal.core.dom.GotoDefaultStatement;
-import descent.internal.core.dom.GotoStatement;
-import descent.internal.core.dom.IfStatement;
-import descent.internal.core.dom.LabelStatement;
-import descent.internal.core.dom.OnScopeStatement;
-import descent.internal.core.dom.PragmaStatement;
-import descent.internal.core.dom.ReturnStatement;
-import descent.internal.core.dom.ScopeStatement;
-import descent.internal.core.dom.StaticAssertStatement;
-import descent.internal.core.dom.SwitchStatement;
-import descent.internal.core.dom.SynchronizedStatement;
-import descent.internal.core.dom.ThrowStatement;
-import descent.internal.core.dom.TryCatchStatement;
-import descent.internal.core.dom.TryFinallyStatement;
-import descent.internal.core.dom.VolatileStatement;
-import descent.internal.core.dom.WhileStatement;
-import descent.internal.core.dom.WithStatement;
+import melnorme.miscutil.Assert;
+import descent.internal.compiler.parser.AsmBlock;
+import descent.internal.compiler.parser.AsmStatement;
+import descent.internal.compiler.parser.BreakStatement;
+import descent.internal.compiler.parser.CaseStatement;
+import descent.internal.compiler.parser.Catch;
+import descent.internal.compiler.parser.ConditionalStatement;
+import descent.internal.compiler.parser.ContinueStatement;
+import descent.internal.compiler.parser.DeclarationExp;
+import descent.internal.compiler.parser.DeclarationStatement;
+import descent.internal.compiler.parser.DefaultStatement;
+import descent.internal.compiler.parser.DoStatement;
+import descent.internal.compiler.parser.ExpStatement;
+import descent.internal.compiler.parser.ForStatement;
+import descent.internal.compiler.parser.ForeachRangeStatement;
+import descent.internal.compiler.parser.ForeachStatement;
+import descent.internal.compiler.parser.GotoCaseStatement;
+import descent.internal.compiler.parser.GotoDefaultStatement;
+import descent.internal.compiler.parser.GotoStatement;
+import descent.internal.compiler.parser.IfStatement;
+import descent.internal.compiler.parser.LabelStatement;
+import descent.internal.compiler.parser.OnScopeStatement;
+import descent.internal.compiler.parser.PragmaStatement;
+import descent.internal.compiler.parser.ReturnStatement;
+import descent.internal.compiler.parser.ScopeStatement;
+import descent.internal.compiler.parser.StaticAssertStatement;
+import descent.internal.compiler.parser.SwitchStatement;
+import descent.internal.compiler.parser.SynchronizedStatement;
+import descent.internal.compiler.parser.ThrowStatement;
+import descent.internal.compiler.parser.TryCatchStatement;
+import descent.internal.compiler.parser.TryFinallyStatement;
+import descent.internal.compiler.parser.VolatileStatement;
+import descent.internal.compiler.parser.WhileStatement;
+import descent.internal.compiler.parser.WithStatement;
 import dtool.dom.ast.ASTNeoNode;
-import dtool.dom.declarations.Declaration;
 import dtool.dom.declarations.DeclarationConditional;
+import dtool.dom.declarations.DeclarationPragma;
 import dtool.dom.declarations.DeclarationStaticAssert;
 import dtool.dom.statements.BlockStatement;
 import dtool.dom.statements.StatementAsm;
@@ -50,7 +54,6 @@ import dtool.dom.statements.StatementGotoDefault;
 import dtool.dom.statements.StatementIf;
 import dtool.dom.statements.StatementLabel;
 import dtool.dom.statements.StatementOnScope;
-import dtool.dom.statements.StatementPragma;
 import dtool.dom.statements.StatementReturn;
 import dtool.dom.statements.StatementSwitch;
 import dtool.dom.statements.StatementSynchronized;
@@ -60,9 +63,18 @@ import dtool.dom.statements.StatementVolatile;
 import dtool.dom.statements.StatementWhile;
 import dtool.dom.statements.StatementWith;
 
-public class StatementConverter extends ExpressionConverter {
+public final class StatementConverter extends ExpressionConverter {
+	
+	public boolean visit(ForeachRangeStatement node) {
+		Assert.failTODO();
+		return false;
+	}
+	
+	public boolean visit(AsmBlock node) {
+		return endAdapt(new BlockStatement(node));
+	}
 
-	public boolean visit(descent.internal.core.dom.CompoundStatement elem) {
+	public boolean visit(descent.internal.compiler.parser.CompoundStatement elem) {
 		return endAdapt(new BlockStatement(elem));
 	}
 	
@@ -87,7 +99,7 @@ public class StatementConverter extends ExpressionConverter {
 	}
 
 	public boolean visit(DeclarationStatement element) {
-		return endAdapt((ASTNeoNode) Declaration.convert(element.d));
+		return visit((DeclarationExp) element.exp);
 	}
 
 	public boolean visit(DefaultStatement element) {
@@ -101,7 +113,7 @@ public class StatementConverter extends ExpressionConverter {
 	public boolean visit(ExpStatement element) {
 		return endAdapt(new StatementExp(element));
 	}
-
+	
 	public boolean visit(ForeachStatement element) {
 		return endAdapt(new StatementForeach(element));
 	}
@@ -135,7 +147,7 @@ public class StatementConverter extends ExpressionConverter {
 	}
 
 	public boolean visit(PragmaStatement element) {
-		return endAdapt(new StatementPragma(element));
+		return endAdapt(new DeclarationPragma(element));
 	}
 
 	public boolean visit(ReturnStatement element) {
@@ -184,6 +196,10 @@ public class StatementConverter extends ExpressionConverter {
 	
 	public boolean visit(Catch element) {
 		return endAdapt(new StatementTry.CatchClause(element));
+	}
+
+	public boolean visit(DeclarationExp node) {
+		return endAdapt((ASTNeoNode) dtool.dom.declarations.Declaration.convert(node.declaration));
 	}
 
 }

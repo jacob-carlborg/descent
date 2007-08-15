@@ -13,7 +13,7 @@ import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.texteditor.ITextEditor;
 
-import dtool.dom.ast.ASTNode;
+import descent.core.domX.ASTNode;
 import dtool.dom.ast.ASTNodeFinder;
 import dtool.dom.definitions.DefSymbol;
 import dtool.dom.definitions.DefUnit;

@@ -6,8 +6,9 @@ import java.util.List;
 import melnorme.miscutil.Assert;
 import melnorme.miscutil.StringUtil;
 import melnorme.miscutil.tree.TreeVisitor;
-import descent.internal.core.dom.Argument;
-import descent.internal.core.dom.FuncDeclaration;
+import descent.internal.compiler.parser.Argument;
+import descent.internal.compiler.parser.FuncDeclaration;
+import descent.internal.compiler.parser.TypeFunction;
 import dtool.descentadapter.DescentASTConverter;
 import dtool.dom.ast.ASTNeoNode;
 import dtool.dom.ast.IASTNeoVisitor;
@@ -25,17 +26,17 @@ import dtool.refmodel.NodeUtil;
 public class DefinitionFunction extends Definition implements IScopeNode, IStatement {
 
 	//public Identifier outId;
-	public descent.internal.core.dom.LINK linkage;
+	public descent.internal.compiler.parser.LINK linkage;
 	public Reference rettype;
 	public TemplateParameter[] templateParams;	
 	public List<IFunctionParameter> params;
-	public boolean varargs;
+	public int varargs;
 
 	public IStatement frequire;
 	public IStatement fbody;
 	public IStatement fensure;
 	
-	//public descent.internal.core.dom.TypeFunction type;
+	//public descent.internal.compiler.parser.TypeFunction type;
 
 
 	public DefinitionFunction(FuncDeclaration elem) {
@@ -43,46 +44,30 @@ public class DefinitionFunction extends Definition implements IScopeNode, IState
 		this.frequire = Statement.convert(elem.frequire);
 		this.fensure = Statement.convert(elem.fensure);
 		this.fbody = Statement.convert(elem.fbody);
+		
+		TypeFunction elemTypeFunc = ((TypeFunction) elem.type);
 
-		if(elem.templateParameters != null)
-			this.templateParams = TemplateParameter.convertMany(elem.templateParameters);
-		this.params = DescentASTConverter.convertManyL(elem.getArguments(), this.params); 
+		/*if(elem.templateParameters != null)
+			this.templateParams = TemplateParameter.convertMany(elem.templateParameters);*/
+		Assert.isTrue(elem.parameters == null);
+		this.params = DescentASTConverter.convertManyL(elemTypeFunc.parameters, this.params); 
 
-		if(elem.ident.string.equals("this")) {
-			//TODO
-		} else if(elem.ident.string.equals("~this")) {
-			//TODO
-		} else {
-			varargs = convertVarArgs(elem.type.varargs);
-			this.rettype = Reference.convertType(elem.getReturnType());
-		}
+		varargs = convertVarArgs(elemTypeFunc.varargs);
+		Assert.isNotNull(elemTypeFunc.next);
+		this.rettype = Reference.convertType(elemTypeFunc.next);
+		Assert.isNotNull(this.rettype);
 	}
 	
 	public static ASTNeoNode convertFunctionParameter(Argument elem) {
-		if(elem.id != null)
+		if(elem.ident != null)
 			return new FunctionParameter(elem);
 		else 
 			return new NamelessParameter(elem);
 	}
 	
-	public static boolean convertVarArgs(int varargs) {
-		if(varargs == 0)
-			return false;
-		else if(varargs == 1) 
-			return true;
-		else Assert.fail("Unknown varargs");
-		return false;
-	}
-	
-	public static String toStringParameterSig(List<IFunctionParameter> params, boolean varargs) {
-		String strParams = "(";
-		for (int i = 0; i < params.size(); i++) {
-			if(i != 0)
-				strParams += ", ";
-			strParams += params.get(i).toStringAsParameter();
-		}
-		if(varargs) strParams = strParams + (params.size()==0 ? "..." : ", ...");
-		return strParams + ")";
+	public static int convertVarArgs(int varargs) {
+		Assert.isTrue(varargs >= 0 && varargs <= 2);
+		return varargs;
 	}
 	
 	public void accept0(IASTNeoVisitor visitor) {
@@ -98,6 +83,18 @@ public class DefinitionFunction extends Definition implements IScopeNode, IState
 			TreeVisitor.acceptChild(visitor, fensure);
 		}
 		visitor.endVisit(this);
+	}
+	
+	public static String toStringParameterSig(List<IFunctionParameter> params, int varargs) {
+		String strParams = "(";
+		for (int i = 0; i < params.size(); i++) {
+			if(i != 0)
+				strParams += ", ";
+			strParams += params.get(i).toStringAsParameter();
+		}
+		if(varargs == 1) strParams += (params.size()==0 ? "..." : ", ...");
+		if(varargs == 2) strParams += "...";
+		return strParams + ")";
 	}
 	
 	@Override
@@ -152,6 +149,8 @@ public class DefinitionFunction extends Definition implements IScopeNode, IState
 	public Iterator<IFunctionParameter> getMembersIterator() {
 		return params.iterator();
 	}
+
+
 
 
 }

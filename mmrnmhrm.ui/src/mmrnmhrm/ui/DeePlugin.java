@@ -7,6 +7,7 @@ import melnorme.lang.ui.LangPlugin;
 import melnorme.miscutil.log.Logg;
 import mmrnmhrm.core.model.CompilationUnit;
 import mmrnmhrm.core.model.DeeModel;
+import mmrnmhrm.core.model.DeeNameRules;
 import mmrnmhrm.ui.text.DeeCodeScanner;
 import mmrnmhrm.ui.text.DeeDocumentProvider;
 
@@ -71,6 +72,9 @@ public class DeePlugin extends LangPlugin {
 				if(cunitMap.containsKey(input))
 					return cunitMap.get(input);
 				
+				if(!DeeNameRules.isValidCompilationUnitName(file.getName()))
+					return null;
+					
 				cunit = new CompilationUnit(file);
 				cunit.createElementInfo();
 				cunitMap.put(input, cunit);

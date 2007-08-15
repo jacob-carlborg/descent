@@ -1,7 +1,7 @@
 package dtool.dom.statements;
 
 import melnorme.miscutil.tree.TreeVisitor;
-import descent.internal.core.dom.SwitchStatement;
+import descent.internal.compiler.parser.SwitchStatement;
 import dtool.dom.ast.IASTNeoVisitor;
 import dtool.dom.expressions.Expression;
 
@@ -12,7 +12,7 @@ public class StatementSwitch extends Statement {
 
 	public StatementSwitch(SwitchStatement elem) {
 		convertNode(elem);
-		this.exp = Expression.convert(elem.expr);
+		this.exp = Expression.convert(elem.condition);
 		this.body = Statement.convert(elem.body);
 	}
 

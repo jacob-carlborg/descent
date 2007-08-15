@@ -11,26 +11,21 @@ import junit.framework.Assert;
 public class BasePluginTest {
 	
 	static {
-		SamplePreExistingProject.checkForExistanteOfPreExistingProject();
+		SamplePreExistingProject.checkForExistanceOfPreExistingProject();
 		SampleMainProject.createAndSetupSampleProj();
 		SampleNonDeeProject.createAndSetupProject();
 	}
 	
 
-	protected static void assertTrue(boolean b) {
+	public static void assertTrue(boolean b) {
 		Assert.assertTrue("Assertion failed.", b);
 	}
 	
-	protected static void assertTrue(boolean b, String msg) {
+	public static void assertTrue(boolean b, String msg) {
 		if(b == false) {
 			b = false; // dummy op for breakpoint
 		}
 		Assert.assertTrue(msg, b);
 	}
 	
-	protected static void assertTrueP(boolean b, String msg) {
-		if(b == false)
-			System.out.println(msg);
-		Assert.assertTrue(msg, b);
-	}
 }

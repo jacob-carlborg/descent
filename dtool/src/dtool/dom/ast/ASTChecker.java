@@ -1,5 +1,9 @@
 package dtool.dom.ast;
 
+import melnorme.miscutil.Assert;
+import descent.core.domX.ASTRangeLessNode;
+import descent.core.domX.ASTNode;
+
 
 /**
  * Checks for AST validity. Namely:
@@ -15,7 +19,7 @@ public class ASTChecker extends ASTNeoUpTreeVisitor {
 	}
 	
 	/** Checks an AST for errors, such as source range errors. */
-	public static void checkConsistency(ASTNode elem){
+	public static void checkConsistency(ASTNeoNode elem){
 		elem.accept(new ASTChecker(elem.getStartPos()));
 	}	
 	
@@ -46,6 +50,14 @@ public class ASTChecker extends ASTNeoUpTreeVisitor {
 	}
 	
 	/* ====================================================== */
+	
+	public boolean visit(ASTRangeLessNode elem) {
+		Assert.fail("Got an unranged node."); return false;
+	}
+	
+	public void endVisit(ASTRangeLessNode elem) {
+		Assert.fail("Got an unranged node.");
+	}
 	
 	public boolean visit(ASTNode elem) {
 		if(elem.hasNoSourceRangeInfo()) {

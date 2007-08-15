@@ -2,15 +2,15 @@ package mmrnmhrm.ui.views;
 
 import melnorme.miscutil.tree.IElement;
 import mmrnmhrm.core.model.CompilationUnit;
+import mmrnmhrm.core.model.DeePackageFragment;
 import mmrnmhrm.core.model.DeeSourceFolder;
 import mmrnmhrm.core.model.DeeSourceLib;
-import mmrnmhrm.core.model.DeePackageFragment;
 import mmrnmhrm.ui.DeePluginImages;
 
 import org.eclipse.swt.graphics.Image;
 
+import descent.core.domX.ASTNode;
 import dtool.dom.ast.ASTNeoNode;
-import dtool.dom.ast.ASTNode;
 import dtool.dom.declarations.DeclarationImport;
 import dtool.dom.declarations.PartialPackageDefUnit;
 import dtool.dom.definitions.DefinitionAggregate;

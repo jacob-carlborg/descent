@@ -1,10 +1,11 @@
 package dtool.dom.expressions;
 
+import melnorme.miscutil.Assert;
 import melnorme.miscutil.tree.TreeVisitor;
-import descent.internal.core.dom.BinaryExpression;
-import descent.internal.core.dom.UnaryExpression;
+import descent.internal.compiler.parser.BinExp;
+import descent.internal.compiler.parser.TOK;
+import descent.internal.compiler.parser.UnaExp;
 import dtool.descentadapter.DescentASTConverter;
-import dtool.dom.ast.ASTNode;
 import dtool.dom.ast.IASTNeoVisitor;
 
 public class PostfixExpression extends Expression {
@@ -19,15 +20,20 @@ public class PostfixExpression extends Expression {
 	public int kind;
 
 	
-	public PostfixExpression(UnaryExpression elem, int kind) {
+	public PostfixExpression(UnaExp elem, int kind) {
 		convertNode(elem);
-		this.exp = (Expression) DescentASTConverter.convertElem(elem.exp);
+		this.exp = (Expression) DescentASTConverter.convertElem(elem.e1);
 		this.kind = kind;
 	}
 
-	public PostfixExpression(BinaryExpression elem) {
-		setSourceRange((ASTNode) elem);
+	public PostfixExpression(BinExp elem) {
+		setSourceRange(elem);
 		this.exp = (Expression) DescentASTConverter.convertElem(elem.e1);
+		if(elem.op == TOK.TOKplusplus) {
+			this.kind = Type.POST_INCREMENT;
+		} else if(elem.op == TOK.TOKminusminus) {
+			this.kind = Type.POST_DECREMENT;
+		} else Assert.fail();
 	}
 
 	

@@ -1,6 +1,7 @@
 package dtool.dom.ast;
 
 import descent.core.domX.IASTVisitor;
+import dtool.dom.declarations.DeclarationImport;
 import dtool.dom.definitions.DefUnit;
 import dtool.dom.definitions.Definition;
 import dtool.dom.definitions.Module;
@@ -34,8 +35,9 @@ public interface IASTNeoVisitor extends IASTVisitor {
 
 	/* ---------------------------------- */
 	boolean visit(Definition elem);
+	boolean visit(Module elem);
 
 	/* ---------------------------------- */
-	boolean visit(Module elem);
+	boolean visit(DeclarationImport elem);
 
 }

@@ -5,9 +5,9 @@ import java.util.Iterator;
 import java.util.List;
 
 import melnorme.miscutil.tree.TreeVisitor;
-import descent.internal.core.dom.TypeFunction;
+import descent.core.domX.ASTNode;
+import descent.internal.compiler.parser.TypeFunction;
 import dtool.descentadapter.DescentASTConverter;
-import dtool.dom.ast.ASTNode;
 import dtool.dom.ast.IASTNeoVisitor;
 import dtool.dom.definitions.DefUnit;
 import dtool.dom.definitions.DefinitionFunction;
@@ -25,16 +25,14 @@ public class TypeDelegate extends CommonRefNative {
 
 	public Reference rettype;
 	public List<IFunctionParameter> params;
-	public boolean varargs;
-	//public LINK linkage;
+	public int varargs;
 	
-	public TypeDelegate(descent.internal.core.dom.TypeDelegate elem) {
+	public TypeDelegate(descent.internal.compiler.parser.TypeDelegate elem) {
 		setSourceRange(elem);
-		this.rettype = (Reference) DescentASTConverter.convertElem(elem.getReturnType());
-		this.varargs = DefinitionFunction
-				.convertVarArgs(((TypeFunction) elem.next).varargs);
-		this.params = DescentASTConverter.convertManyL(elem.getArguments(), this.params); 
-		//this.linkage = ((TypeFunction) elem.next).linkage;
+		this.rettype = (Reference) DescentASTConverter.convertElem(elem.rto);
+		TypeFunction typeFunction = ((TypeFunction) elem.next);
+		this.varargs = DefinitionFunction.convertVarArgs(typeFunction.varargs);
+		this.params = DescentASTConverter.convertManyL(typeFunction.parameters, this.params); 
 	}
 
 	@Override

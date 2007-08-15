@@ -1,6 +1,6 @@
 package dtool.refmodel;
 
-import java.util.ArrayDeque;
+import java.util.ArrayList;
 import java.util.Collection;
 
 import dtool.dom.declarations.PartialPackageDefUnit;
@@ -15,7 +15,7 @@ public class DefUnitSearch extends CommonDefUnitSearch {
 
 	protected String searchName;
 
-	private ArrayDeque<DefUnit> defunits;
+	private ArrayList<DefUnit> defunits;
 	protected boolean matchesArePartialDefUnits = false;
 
 	public DefUnitSearch(String name, Reference searchref) {
@@ -37,7 +37,7 @@ public class DefUnitSearch extends CommonDefUnitSearch {
 
 	public void addMatch(DefUnit defunit) {
 		if(defunits == null)
-			defunits = new ArrayDeque<DefUnit>(4);
+			defunits = new ArrayList<DefUnit>(4);
 		defunits.add(defunit);
 		if(defunit instanceof PartialPackageDefUnit)
 			matchesArePartialDefUnits = true;

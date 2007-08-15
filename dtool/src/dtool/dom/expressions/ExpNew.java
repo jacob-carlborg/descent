@@ -1,21 +1,23 @@
 package dtool.dom.expressions;
 
 import melnorme.miscutil.tree.TreeVisitor;
-import descent.internal.core.dom.NewExp;
+import descent.internal.compiler.parser.NewExp;
 import dtool.dom.ast.IASTNeoVisitor;
 import dtool.dom.references.Reference;
 
 public class ExpNew extends Expression {
 
-	Expression[] args;
 	Expression[] allocargs;
 	Reference type;
+	Expression[] args;
 
 	public ExpNew(NewExp elem) {
 		convertNode(elem);
-		this.args = Expression.convertMany(elem.arguments); 
+		if(elem.newargs != null)
+			this.allocargs = Expression.convertMany(elem.newargs); 
 		this.type = Reference.convertType(elem.type);
-		this.allocargs = null; // TODO allocargs
+		if(elem.arguments != null)
+			this.args = Expression.convertMany(elem.arguments); 
 	}
 
 	@Override

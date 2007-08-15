@@ -4,7 +4,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import melnorme.miscutil.tree.TreeVisitor;
-import descent.internal.core.dom.EnumDeclaration;
+import descent.internal.compiler.parser.EnumDeclaration;
 import dtool.descentadapter.DescentASTConverter;
 import dtool.dom.ast.ASTNeoNode;
 import dtool.dom.ast.IASTNeoVisitor;
@@ -24,13 +24,13 @@ public class DefinitionEnum extends Definition implements IScopeNode, IStatement
 			DefinitionEnum defEnum = new DefinitionEnum();
 			defEnum.convertDsymbol(elem);
 			defEnum.members = DescentASTConverter.convertManyL(elem.members, defEnum.members) ;
-			defEnum.type = Reference.convertType(elem.type); 
+			defEnum.type = Reference.convertType(elem.memtype); 
 			return defEnum;
 		} else {
 			EnumContainer enumContainer = new EnumContainer();
 			enumContainer.setSourceRange(elem);
 			enumContainer.members = DescentASTConverter.convertManyL(elem.members, enumContainer.members) ;
-			enumContainer.type = Reference.convertType(elem.type); 
+			enumContainer.type = Reference.convertType(elem.memtype); 
 			return enumContainer;
 		}
 	}

@@ -1,6 +1,10 @@
 package dtool.dom.definitions;
 
-import descent.internal.core.dom.Dsymbol;
+import java.util.List;
+
+import descent.internal.compiler.parser.Dsymbol;
+import descent.internal.compiler.parser.Modifier;
+import descent.internal.compiler.parser.PROT;
 import dtool.descentadapter.DescentASTConverter;
 
 /**
@@ -8,14 +12,15 @@ import dtool.descentadapter.DescentASTConverter;
  */
 public abstract class Definition extends DefUnit  {
 	
-	public Def_EProtection protection;
-	public int modifiers;
+	public PROT protection; // fixme, should be node
+	public List<Modifier> modifiers;
 	
 	@Override
 	protected void convertDsymbol(Dsymbol elem) {
 		super.convertDsymbol(elem);
-		this.protection = Def_EProtection.adaptFromDescent(elem.modifiers); 
-		this.modifiers = Def_Modifiers.adaptFromDescent(elem.modifiers); 
+		this.protection = Def_EProtection.adaptFromDescent(elem.prot()); 
+		this.modifiers = DescentASTConverter.convertManyL(elem.modifiers,
+				this.modifiers); 
 	}
 	
 	public static Definition convert(Dsymbol elem) {

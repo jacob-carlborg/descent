@@ -1,8 +1,8 @@
 package dtool.dom.definitions;
 
 import melnorme.miscutil.tree.TreeVisitor;
-import descent.internal.core.dom.TemplateMixin;
-import dtool.descentadapter.DescentASTConverter;
+import descent.internal.compiler.parser.TemplateMixin;
+import descent.internal.compiler.parser.TypeQualified;
 import dtool.dom.ast.ASTNeoNode;
 import dtool.dom.ast.IASTNeoVisitor;
 import dtool.dom.references.RefTemplateInstance;
@@ -18,10 +18,8 @@ public class DefinitionMixin extends DefUnit implements IStatement {
 	public Reference type;
 	
 	public static ASTNeoNode convertMixinInstance(TemplateMixin elem) {
-		RefTemplateInstance tplInstance = new RefTemplateInstance();
-		tplInstance.setSourceRange(elem);
-		tplInstance.name = elem.qName.name; // FIXME should be a prof qualified ref
-		tplInstance.tiargs = DescentASTConverter.convertManyL(elem.tiargs, tplInstance.tiargs);
+		RefTemplateInstance tplInstance = new RefTemplateInstance(elem);
+		Reference.convertTypeQualified(null, (TypeQualified) elem.tqual);
 		if(elem.ident != null) {
 			DefinitionMixin defMixin = new DefinitionMixin();
 			defMixin.convertDsymbol(elem);

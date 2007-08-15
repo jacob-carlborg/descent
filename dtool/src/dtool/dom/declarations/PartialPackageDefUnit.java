@@ -1,8 +1,8 @@
 package dtool.dom.declarations;
 
-import java.util.Arrays;
 import java.util.List;
 
+import melnorme.miscutil.ArrayUtil;
 import dtool.dom.ast.IASTNeoVisitor;
 import dtool.dom.definitions.DefUnit;
 import dtool.dom.definitions.Module;
@@ -25,12 +25,12 @@ public abstract class PartialPackageDefUnit extends DefUnit implements IScopeNod
 			PartialPackageDefUnitOfModule packageDefUnit =  new PartialPackageDefUnitOfModule();
 			packageDefUnit.defname = new Symbol(packages[0]);
 			packageDefUnit.module = module;
-			packageDefUnit.entModule = entModule;
+			packageDefUnit.moduleRef = entModule;
 			return packageDefUnit;
 		} else {
 			PartialPackageDefUnitOfPackage packageDefUnit =  new PartialPackageDefUnitOfPackage();
 			packageDefUnit.defname = new Symbol(packages[0]);
-			String[] newNames = Arrays.copyOfRange(packages, 1, packages.length);
+			String[] newNames = ArrayUtil.copyOfRange(packages, 1, packages.length);
 			packageDefUnit.child = createPartialDefUnits(newNames, entModule, null);
 			return packageDefUnit;
 		}

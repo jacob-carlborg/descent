@@ -1,7 +1,8 @@
 package dtool.dom.statements;
 
 import melnorme.miscutil.tree.TreeVisitor;
-import descent.internal.core.dom.ForeachStatement;
+import descent.internal.compiler.parser.ForeachStatement;
+import descent.internal.compiler.parser.TOK;
 import dtool.descentadapter.DescentASTConverter;
 import dtool.dom.ast.IASTNeoVisitor;
 import dtool.dom.definitions.IFunctionParameter;
@@ -17,10 +18,10 @@ public class StatementForeach extends Statement {
 	public StatementForeach(ForeachStatement elem) {
 		convertNode(elem);
 		this.params = DescentASTConverter.convertMany(
-				elem.arguments, new IFunctionParameter[elem.arguments.length]);
+				elem.arguments.toArray(), new IFunctionParameter[elem.arguments.size()]);
 		this.iterable = Expression.convert(elem.aggr);
 		this.body = Statement.convert(elem.body);
-		this.reverse = elem.reverse;
+		this.reverse = elem.op == TOK.TOKforeach_reverse;
 	}
 
 	@Override

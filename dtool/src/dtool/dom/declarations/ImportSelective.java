@@ -4,18 +4,17 @@ import java.util.Arrays;
 import java.util.Iterator;
 
 import melnorme.miscutil.tree.TreeVisitor;
-import descent.internal.core.dom.Import;
-import descent.internal.core.dom.SelectiveImport;
-import dtool.dom.ast.ASTNode;
+import descent.core.domX.ASTNode;
+import descent.internal.compiler.parser.IdentifierExp;
+import descent.internal.compiler.parser.Import;
 import dtool.dom.ast.IASTNeoVisitor;
 import dtool.dom.declarations.DeclarationImport.ImportFragment;
 import dtool.dom.definitions.DefSymbol;
 import dtool.dom.definitions.DefUnit;
-import dtool.dom.definitions.Symbol;
 import dtool.dom.references.RefIdentifier;
 import dtool.refmodel.CommonDefUnitSearch;
-import dtool.refmodel.EntityResolver;
 import dtool.refmodel.DefUnitSearch;
+import dtool.refmodel.EntityResolver;
 import dtool.refmodel.INonScopedBlock;
 import dtool.refmodel.IScope;
 import dtool.refmodel.IScopeNode;
@@ -48,10 +47,10 @@ public class ImportSelective extends ImportFragment implements INonScopedBlock {
 
 		@Override
 		public IScopeNode getMembersScope() {
-			IScope scope = impSel.moduleEnt.getTargetScope();
+			IScope scope = impSel.moduleRef.getTargetScope();
 			String name = targetname != null ? targetname.name : defname.name;
 			
-			DefUnitSearch search = new DefUnitSearch(name, impSel.moduleEnt, true);
+			DefUnitSearch search = new DefUnitSearch(name, impSel.moduleRef, true);
 			EntityResolver.findDefUnitInScope(scope, search);
 			if(search.getDefUnits() == null)
 				return null;
@@ -61,47 +60,50 @@ public class ImportSelective extends ImportFragment implements INonScopedBlock {
 		}
 	}
 	
-	public static ImportSelectiveFragment create(
-			SelectiveImport imprt, ImportSelective impSel) {
+	public static ImportSelectiveFragment create(IdentifierExp name,
+			IdentifierExp alias, ImportSelective impSel) {
 	
 		ImportSelectiveFragment impSelfrag = new ImportSelectiveFragment();
-		impSelfrag.convertNode(imprt);
 		impSelfrag.impSel = impSel;
 		
-		if(imprt.alias == null) {
-			impSelfrag.defname = new DefSymbol(imprt.name, impSelfrag);
+		if(alias == null) {
+			impSelfrag.defname = new DefSymbol(name, impSelfrag);
+			impSelfrag.setSourceRange(name);
 		} else {
-			impSelfrag.defname = new DefSymbol(imprt.alias,impSelfrag);
-			impSelfrag.targetname = new RefIdentifier(imprt.name);
+			impSelfrag.defname = new DefSymbol(alias, impSelfrag);
+			impSelfrag.targetname = new RefIdentifier(name);
+			impSelfrag.setSourceRange(alias.start, name.getEndPos());
 		}
 		return impSelfrag;
 	}
 	
-	public ImportSelectiveFragment aliases[];
+	
+	public ImportSelectiveFragment impSelFrags[];
 	
 	public ImportSelective(Import selImport) {
 		super(selImport);
 		
-		int importsSize = selImport.getSelectiveImports().length; 
-		this.aliases = new ImportSelectiveFragment[importsSize];
+		int importsSize = selImport.names.size(); 
+		this.impSelFrags = new ImportSelectiveFragment[importsSize];
 		for(int i = 0; i < importsSize; i++) {
-			SelectiveImport imprt = selImport.getSelectiveImports()[i]; 
-			this.aliases[i] = ImportSelective.create(imprt, this);
+			this.impSelFrags[i] = ImportSelective.create(selImport.names.get(i),
+					selImport.aliases.get(i), this);
 		}
 	}
+
 
 	@Override
 	public void accept0(IASTNeoVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
-			TreeVisitor.acceptChildren(visitor, moduleEnt);
-			TreeVisitor.acceptChildren(visitor, aliases);
+			TreeVisitor.acceptChildren(visitor, moduleRef);
+			TreeVisitor.acceptChildren(visitor, impSelFrags);
 		}
 		visitor.endVisit(this);
 	
 	}
 	public Iterator<? extends ASTNode> getMembersIterator() {
-		return Arrays.asList(aliases).iterator();
+		return Arrays.asList(impSelFrags).iterator();
 	}
 
 	@Override

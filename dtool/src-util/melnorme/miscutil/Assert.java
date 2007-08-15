@@ -1,5 +1,6 @@
 package melnorme.miscutil;
 
+
 /**
  * (Based on org.eclipse.core.runtime.Assert)
  * 
@@ -38,7 +39,10 @@ public abstract class Assert {
         }
     }
 
-    
+    /** Asserts that the given object is <code>null</code>. */
+	public static void isNull(Object obj) {
+		Assert.isTrue(obj == null);
+	}
 
 	/** Asserts that the given object is not <code>null</code>. If this
 	 * is not the case, some kind of unchecked exception is thrown.
@@ -87,8 +91,10 @@ public abstract class Assert {
 		throw new AssertionFailedException("ASSERT FAIL");
 	}
 
-	public static void unimplemented(String string) {
-		fail("Unimplemented: " + string);
+	@Deprecated
+	public static void failTODO() {
+		fail();
 	}
+
 	
 }

@@ -1,12 +1,15 @@
 package dtool.refmodel;
 
-import descent.internal.core.dom.Parser;
-import descent.internal.core.dom.ParserFacade;
-import descent.internal.core.dom.TOK;
-import descent.internal.core.dom.Token;
+import descent.core.dom.AST;
+import descent.internal.compiler.parser.Lexer;
+import descent.internal.compiler.parser.Module;
+import descent.internal.compiler.parser.Parser;
+import descent.internal.compiler.parser.TOK;
+import descent.internal.compiler.parser.Token;
 
 public class ParserAdapter {
 
+	public Module mod;
 	Parser parser;
 	
 	/** The error message or null if no error. */
@@ -17,30 +20,57 @@ public class ParserAdapter {
 	public ParserAdapter(Parser parser) {
 		this.parser = parser;
 	}
-
-	/** Attempt syntax recovery for the purposes of code completion. */
-	public static ParserAdapter recoverForCompletion(Parser parser, String str,
-			int offset, Token lastToken) {
-		ParserAdapter adapter = new ParserAdapter(parser);
-		adapter.internalRecover(str, offset, lastToken);
+	
+	public static Token tokenizeSource(String str) {
+		Token tokenList = null; 
+		Lexer lexer = new Lexer(str, 0, str.length(), false, false, false, false, AST.D2);
+		do {
+			lexer.nextToken();
+		    Token newtoken = new Token(lexer.token);
+			if(tokenList != null) {
+				tokenList.next = newtoken; 
+			} else {
+				tokenList = newtoken;
+			}
+			tokenList = newtoken;
+		} while(tokenList.value != TOK.TOKeof);
+		return tokenList;
+	}
+	
+	public static ParserAdapter parseSource(String str) {
+		Parser newparser = new Parser(AST.newAST(AST.D2), str);
+		ParserAdapter adapter = new ParserAdapter(newparser);
+		adapter.mod = adapter.parser.parseModuleObj();
 		return adapter;
 	}
+	
 
+	/** Attempt syntax recovery for the purposes of code completion. */
+	public void recoverForCompletion(String str, int offset, Token lastToken) {
+		internalRecover(str, offset, lastToken);
+	}
+
+	public void parseModule(String str) {
+		parser = new Parser(null, str);
+		mod = parser.parseModuleObj();
+	}
+	
 	private void internalRecover(String str, int offset, Token lastToken) {
-		if(parser.mod == null) {
-			parser = ParserFacade.parseCompilationUnit(str);
+		
+		if(mod == null) {
+			parseModule(str);
 		}
 		
-		if(parser.mod.getProblems().length != 0) {
+		if(mod.problems.size() != 0) {
 			if(lastToken != null && lastToken.value == TOK.TOKdot) {
 				
 				// Insert a dummy identifier, so the reference will parse
 				String newstr = str.substring(0, offset) + "_" 
 					+ str.substring(offset, str.length());
 				
-				parser = ParserFacade.parseCompilationUnit(newstr);
+				parseModule(newstr);
 				
-				if(parser.mod.getProblems().length == 0) {
+				if(mod.problems.size() == 0) {
 					// We succeeded, mark this for ahead
 					isQualifiedDotFixSearch = true;
 					return;
@@ -54,4 +84,7 @@ public class ParserAdapter {
 		
 	}
 
+
+
+	
 }

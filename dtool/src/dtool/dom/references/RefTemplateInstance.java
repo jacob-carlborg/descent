@@ -2,9 +2,10 @@ package dtool.dom.references;
 
 import java.util.List;
 
+import melnorme.miscutil.Assert;
 import melnorme.miscutil.StringUtil;
 import melnorme.miscutil.tree.TreeVisitor;
-
+import descent.internal.compiler.parser.TemplateInstance;
 import dtool.descentadapter.DescentASTConverter;
 import dtool.dom.ast.ASTNeoNode;
 import dtool.dom.ast.IASTNeoVisitor;
@@ -14,12 +15,17 @@ public class RefTemplateInstance extends CommonRefSingle {
 	
 	public List<ASTNeoNode> tiargs;
 	
-	public RefTemplateInstance() {
-	}
-	
-	public RefTemplateInstance(descent.internal.core.dom.TemplateInstance elem) {
+	public RefTemplateInstance(descent.internal.compiler.parser.TemplateInstance elem) {
 		setSourceRange(elem);
-		this.name = elem.string;
+		Assert.isTrue(elem.idents.size() == 1);
+		this.name = elem.idents.get(0).ident;
+		this.tiargs = DescentASTConverter.convertManyL(elem.tiargs, tiargs);
+	}
+
+	public RefTemplateInstance(TemplateInstance elem,
+			String ident) {
+		setSourceRange(elem);
+		this.name = ident;
 		this.tiargs = DescentASTConverter.convertManyL(elem.tiargs, tiargs);
 	}
 

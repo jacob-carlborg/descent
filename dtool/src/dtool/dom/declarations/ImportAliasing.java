@@ -7,16 +7,14 @@ import java.util.Iterator;
 
 import melnorme.miscutil.IteratorUtil;
 import melnorme.miscutil.tree.TreeVisitor;
-import descent.internal.core.dom.Identifier;
-import descent.internal.core.dom.Import;
-import dtool.dom.ast.ASTNode;
+import descent.core.domX.ASTNode;
+import descent.internal.compiler.parser.IdentifierExp;
+import descent.internal.compiler.parser.Import;
 import dtool.dom.ast.IASTNeoVisitor;
 import dtool.dom.declarations.DeclarationImport.ImportFragment;
 import dtool.dom.definitions.DefSymbol;
 import dtool.dom.definitions.DefUnit;
-import dtool.dom.definitions.Symbol;
 import dtool.refmodel.CommonDefUnitSearch;
-import dtool.refmodel.DefUnitSearch;
 import dtool.refmodel.INonScopedBlock;
 import dtool.refmodel.IScopeNode;
 
@@ -26,9 +24,9 @@ public class ImportAliasing extends ImportFragment implements INonScopedBlock {
 		
 		public ImportAliasing impAlias; // Non-structural Element
 
-		public ImportAliasingDefUnit(Identifier ident, ImportAliasing impAlias) {
+		public ImportAliasingDefUnit(IdentifierExp ident, ImportAliasing impAlias) {
 			convertNode(impAlias);
-			setSourceRange(ident.startPos, impAlias.getEndPos() - ident.startPos);
+			setSourceRange(ident.start, impAlias.getEndPos() - ident.start);
 			this.defname = new DefSymbol(ident, this);
 			this.impAlias = impAlias;
 		}
@@ -40,7 +38,7 @@ public class ImportAliasing extends ImportFragment implements INonScopedBlock {
 
 		@Override
 		public IScopeNode getMembersScope() {
-			return impAlias.moduleEnt.getTargetScope();
+			return impAlias.moduleRef.getTargetScope();
 		}
 
 		@Override
@@ -57,7 +55,7 @@ public class ImportAliasing extends ImportFragment implements INonScopedBlock {
 	
 	public ImportAliasing(Import elem) {
 		super(elem);
-		this.aliasDefUnit = new ImportAliasingDefUnit(elem.alias, this);
+		this.aliasDefUnit = new ImportAliasingDefUnit(elem.aliasId, this);
 		// Fix Import fragment range
 		//elem.startPos = elem.ident.getStartPos();
 		//elem.setEndPos(elem.qName.getEndPos());
@@ -68,7 +66,7 @@ public class ImportAliasing extends ImportFragment implements INonScopedBlock {
 		boolean children = visitor.visit(this);
 		if (children) {
 			TreeVisitor.acceptChildren(visitor, aliasDefUnit);
-			TreeVisitor.acceptChildren(visitor, moduleEnt);
+			TreeVisitor.acceptChildren(visitor, moduleRef);
 		}
 		visitor.endVisit(this);
 	}

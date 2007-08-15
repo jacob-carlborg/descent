@@ -2,17 +2,14 @@ package dtool.dom.definitions;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
 import melnorme.miscutil.tree.TreeVisitor;
-
-import descent.internal.core.dom.TemplateDeclaration;
-import dtool.dom.ast.ASTNode;
+import descent.core.domX.ASTNode;
+import descent.internal.compiler.parser.TemplateDeclaration;
 import dtool.dom.ast.IASTNeoVisitor;
 import dtool.dom.declarations.Declaration;
-import dtool.refmodel.EntityResolver;
 import dtool.refmodel.IScope;
 import dtool.refmodel.IScopeNode;
 
@@ -26,8 +23,8 @@ public class DefinitionTemplate extends DefUnit implements IScopeNode {
 	
 	public DefinitionTemplate(TemplateDeclaration elem) {
 		convertDsymbol(elem);
-		decls = Declaration.convertMany(elem.getDeclarationDefinitions());
-		templateParams = TemplateParameter.convertMany(elem.getTemplateParameters());
+		decls = Declaration.convertMany(elem.members);
+		templateParams = TemplateParameter.convertMany(elem.parameters);
 	}
 
 	@Override

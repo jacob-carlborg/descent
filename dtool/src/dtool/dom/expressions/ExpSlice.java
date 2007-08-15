@@ -1,28 +1,29 @@
 package dtool.dom.expressions;
 
 import melnorme.miscutil.tree.TreeVisitor;
-import descent.internal.core.dom.SliceExp;
-import descent.internal.core.dom.TypeSlice;
+import descent.internal.compiler.parser.SliceExp;
+import descent.internal.compiler.parser.TypeSlice;
 import dtool.dom.ast.IASTNeoVisitor;
+import dtool.dom.references.Reference;
+import dtool.refmodel.IDefUnitReference;
 
 public class ExpSlice extends Expression {
 
-	public Expression slicee;
+	public IDefUnitReference slicee;
 	public Expression from;
 	public Expression to;
 	
 	public ExpSlice(SliceExp elem) {
 		convertNode(elem);
-		slicee = Expression.convert(elem.e);
-		from = Expression.convert(elem.from);
-		to = Expression.convert(elem.to);
+		slicee = Expression.convert(elem.e1);
+		from = Expression.convert(elem.lwr);
+		to = Expression.convert(elem.upr);
 	}
 	
 	public ExpSlice(TypeSlice elem) {
-		//slicee = Expression.convert(elem.next);
-		from = Expression.convert(elem.from);
-		to = Expression.convert(elem.to);
-		throw new UnsupportedOperationException(); //TODO
+		slicee = Reference.convertType(elem.next);
+		from = Expression.convert(elem.lwr);
+		to = Expression.convert(elem.upr);
 	}
 	
 

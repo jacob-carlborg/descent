@@ -1,7 +1,7 @@
 package dtool.dom.expressions;
 
 import melnorme.miscutil.tree.TreeVisitor;
-import descent.internal.core.dom.TypeidExp;
+import descent.internal.compiler.parser.TypeidExp;
 import dtool.dom.ast.IASTNeoVisitor;
 import dtool.dom.references.Reference;
 

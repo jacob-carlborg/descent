@@ -4,9 +4,10 @@ import java.util.Iterator;
 import java.util.List;
 
 import melnorme.miscutil.tree.TreeVisitor;
-import descent.internal.core.dom.ScopeStatement;
+import descent.core.domX.ASTNode;
+import descent.core.domX.ASTRangeLessNode;
+import descent.internal.compiler.parser.ScopeStatement;
 import dtool.descentadapter.DescentASTConverter;
-import dtool.dom.ast.ASTNode;
 import dtool.dom.ast.IASTNeoVisitor;
 import dtool.refmodel.IScope;
 import dtool.refmodel.IScopeNode;
@@ -20,9 +21,9 @@ public class BlockStatement extends Statement implements IScopeNode {
 	public boolean hasCurlyBraces; // syntax-structural?
 
 	@SuppressWarnings("unchecked")
-	public BlockStatement(descent.internal.core.dom.CompoundStatement elem) {
+	public BlockStatement(descent.internal.compiler.parser.CompoundStatement elem) {
 		convertNode(elem);
-		this.statements = DescentASTConverter.convertManyL(elem.as, statements);
+		this.statements = DescentASTConverter.convertManyL(elem.statements, statements);
 		
 		for(@SuppressWarnings("unused")	IStatement decl : statements) {
 			// just check class cast
@@ -31,15 +32,15 @@ public class BlockStatement extends Statement implements IScopeNode {
 
 	public BlockStatement(ScopeStatement elem) {
 		convertNode(elem);
-		if(elem.s instanceof descent.internal.core.dom.CompoundStatement) {
-			descent.internal.core.dom.CompoundStatement compoundSt = 
-				(descent.internal.core.dom.CompoundStatement) elem.s;
-			this.statements = DescentASTConverter.convertManyL(compoundSt.as, statements);
+		if(elem.statement instanceof descent.internal.compiler.parser.CompoundStatement) {
+			descent.internal.compiler.parser.CompoundStatement compoundSt = 
+				(descent.internal.compiler.parser.CompoundStatement) elem.statement;
+			this.statements = DescentASTConverter.convertManyL(compoundSt.statements, statements);
 			this.hasCurlyBraces = true;
 		} else {
 			this.statements = DescentASTConverter.convertManyL(
-					new ASTNode[] {elem.s}, statements);
-			setSourceRange(elem.s);
+					new ASTNode[] {elem.statement}, statements);
+			setSourceRange(elem.statement);
 		}
 	}
 

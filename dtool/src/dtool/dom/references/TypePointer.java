@@ -8,8 +8,8 @@ import java.util.Iterator;
 import java.util.List;
 
 import melnorme.miscutil.tree.TreeVisitor;
+import descent.core.domX.ASTNode;
 import dtool.dom.ast.ASTNeoNode;
-import dtool.dom.ast.ASTNode;
 import dtool.dom.ast.IASTNeoVisitor;
 import dtool.dom.definitions.DefUnit;
 import dtool.dom.definitions.NativeDefUnit;
@@ -19,9 +19,9 @@ import dtool.refmodel.IScopeNode;
 
 public class TypePointer extends CommonRefNative {
 	
-	public static ASTNeoNode convertTypePointer(descent.internal.core.dom.TypePointer elem) {
-		if(elem.next instanceof descent.internal.core.dom.TypeFunction) {
-			ASTNeoNode node= new TypeFunction((descent.internal.core.dom.TypeFunction)elem.next);
+	public static ASTNeoNode convertTypePointer(descent.internal.compiler.parser.TypePointer elem) {
+		if(elem.next instanceof descent.internal.compiler.parser.TypeFunction) {
+			ASTNeoNode node= new TypeFunction((descent.internal.compiler.parser.TypeFunction)elem.next);
 			node.setSourceRange(elem);
 			return node;
 		}
@@ -32,7 +32,7 @@ public class TypePointer extends CommonRefNative {
 
 	public Reference elemtype;
 	
-	private TypePointer(descent.internal.core.dom.TypePointer elem) {
+	private TypePointer(descent.internal.compiler.parser.TypePointer elem) {
 		setSourceRange(elem);
 		this.elemtype = Reference.convertType(elem.next);
 	}
