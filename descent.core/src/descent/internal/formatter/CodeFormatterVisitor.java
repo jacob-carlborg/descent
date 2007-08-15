@@ -176,7 +176,7 @@ public class CodeFormatterVisitor extends ASTVisitor
 				this.prefs.insert_space_after_comma_in_multiple_field_declarations,
 				prefs.alignment_for_multiple_variable_declarations);
 		
-		printSemicolonIfNextIsSemicolonAndNotInForInitializer();
+		formatSemicolon();
 		scribe.printTrailingComment();
 		return false;
 	}
@@ -907,7 +907,7 @@ public class CodeFormatterVisitor extends ASTVisitor
 	public boolean visit(ExpressionStatement node)
 	{
 		node.getExpression().accept(this);
-		printSemicolonIfNextIsSemicolonAndNotInForInitializer();
+		formatSemicolon();
 		scribe.printTrailingComment();
 		return false;
 	}
@@ -1780,23 +1780,24 @@ public class CodeFormatterVisitor extends ASTVisitor
 		node.getExpression().accept(this);
 		scribe.printNextToken(TOK.TOKlbracket,
 				prefs.insert_space_before_opening_bracket_in_slices);
-		if(prefs.insert_space_after_opening_bracket_in_slices)
-			scribe.space();
 		// Make sure it's not a slice of the whole array, i.e. arr[]
 		Expression fromExpression = node.getFromExpression();
 		if(null != fromExpression)
 		{
+			if(prefs.insert_space_after_opening_bracket_in_slices)
+				scribe.space();
 			node.getFromExpression().accept(this);
 			scribe.printNextToken(TOK.TOKslice,
 					prefs.insert_space_before_slice_operator);
 			if(prefs.insert_space_after_slice_operator)
 				scribe.space();
 			node.getToExpression().accept(this);
+			if(prefs.insert_space_before_closing_bracket_in_slices)
+				scribe.space();
 		}
 		else if(prefs.insert_space_between_empty_brackets_in_slice)
 			scribe.space();
-		scribe.printNextToken(TOK.TOKrbracket,
-				prefs.insert_space_before_closing_bracket_in_slices);
+		scribe.printNextToken(TOK.TOKrbracket);
 		if(isNextToken(TOK.TOKlbracket) && 
 				prefs.insert_space_between_adjacent_brackets_in_multidimensional_arrays)
 			scribe.space();
@@ -2149,7 +2150,7 @@ public class CodeFormatterVisitor extends ASTVisitor
 				prefs.insert_space_before_comma_in_multiple_field_declarations,
 				prefs.insert_space_after_comma_in_multiple_field_declarations,
 				prefs.alignment_for_multiple_variable_declarations);
-		printSemicolonIfNextIsSemicolonAndNotInForInitializer();
+		formatSemicolon();
 		scribe.printTrailingComment();
 		return false;
 	}
@@ -2303,7 +2304,7 @@ public class CodeFormatterVisitor extends ASTVisitor
 				prefs.alignment_for_multiple_variable_declarations);
 		postfixes.clear();
 		
-		printSemicolonIfNextIsSemicolonAndNotInForInitializer();
+		formatSemicolon();
 		scribe.printTrailingComment();
 		return false;
 	}
@@ -3058,6 +3059,13 @@ public class CodeFormatterVisitor extends ASTVisitor
 		 * char[] var[3];
 		 */
 	}
+	
+	private void formatSemicolon() {
+		if(isNextToken(TOK.TOKsemicolon) && !inForInitializer) {
+			scribe.printNextToken(TOK.TOKsemicolon, prefs.insert_space_before_semicolon);
+		}
+		inForInitializer = false;
+	}
 
 	private void formatPostfix(DynamicArrayType node, boolean postfixed)
 	{
@@ -3199,13 +3207,6 @@ public class CodeFormatterVisitor extends ASTVisitor
 			token = lexer.nextToken();
 		while (isComment(token));
 		return token;
-	}
-	
-	private void printSemicolonIfNextIsSemicolonAndNotInForInitializer() {
-		if(isNextToken(TOK.TOKsemicolon) && !inForInitializer) {
-			scribe.printNextToken(TOK.TOKsemicolon, prefs.insert_space_before_semicolon);
-		}
-		inForInitializer = false;
 	}
 	
 	/**

@@ -8,9 +8,9 @@ public class ArrayLiteralExp extends Expression {
 
 	public List<Expression> elements;
 
-	public ArrayLiteralExp(Loc loc, List<Expression> elements) {
+	public ArrayLiteralExp(Loc loc, List<? extends Expression> elements) {
 		super(loc, TOK.TOKarrayliteral);
-		this.elements = elements;
+		this.elements = (List<Expression>) elements;
 	}
 
 	@Override

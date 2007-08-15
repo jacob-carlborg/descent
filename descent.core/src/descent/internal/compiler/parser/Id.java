@@ -160,5 +160,23 @@ public interface Id {
 	Identifier elements = new Identifier("elements");
 	Identifier outer = new Identifier("outer");
 	Identifier System = new Identifier("System");
+	Identifier isArithmetic = new Identifier("isArithmetic");
+	Identifier isFloating = new Identifier("isFloating");
+	Identifier isIntegral = new Identifier("isIntegral");
+	Identifier isScalar = new Identifier("isScalar");
+	Identifier isUnsigned = new Identifier("isUnsigned");
+	Identifier isAssociativeArray = new Identifier("isAssociativeArray");
+	Identifier isStaticArray = new Identifier("isStaticArray");
+	Identifier isAbstractClass = new Identifier("isAbstractClass");
+	Identifier isFinalClass = new Identifier("isFinalClass");
+	Identifier isAbstractFunction = new Identifier("isAbstractFunction");
+	Identifier isVirtualFunction = new Identifier("isVirtualFunction");
+	Identifier isFinalFunction = new Identifier("isFinalFunction");
+	Identifier hasMember = new Identifier("hasMember");
+	Identifier getMember = new Identifier("getMember");
+	Identifier getVirtualFunctions = new Identifier("getVirtualFunctions");
+	Identifier classInstanceSize = new Identifier("classInstanceSize");
+	Identifier allMembers = new Identifier("allMembers");
+	Identifier derivedMembers = new Identifier("derivedMembers");
 
 }
