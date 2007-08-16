@@ -37,7 +37,7 @@ public class IndentationTabPage extends ModifyDialogTabPage {
 	
 	private final String PREVIEW=
 	createPreviewHeader(FormatterMessages.IndentationTabPage_preview_header) +
-	"class ExampleType{int x;}\n\n" +
+	"class ExampleType{public:int w;int x;private:int y;int z;}\n\n" +
 	"enum ExampleEnum{ONE,TWO,THREE}\n\n" +
 	"template ExampleTemplate(T){alias T foo;}\n\n" +
 	"void simpleFunction(){doSomething();}\n\n" +
@@ -69,9 +69,29 @@ public class IndentationTabPage extends ModifyDialogTabPage {
 			FormatterMessages.IndentationTabPage_style_space, 
 			FormatterMessages.IndentationTabPage_style_mixed
 		};
+		
+		final String[] indentStyleValues = new String[] {
+			DefaultCodeFormatterConstants.NO_INDENTATION,
+			DefaultCodeFormatterConstants.INDENT_NORMAL,
+			DefaultCodeFormatterConstants.INDENT_HEADING_BACK,
+		};
+		
+		final String[] indentStyleLabels = new String[] {
+			FormatterMessages.IndentationTabPage_no_indentation,
+			FormatterMessages.IndentationTabPage_indent_normal,
+			FormatterMessages.IndentationTabPage_indent_heading_back,
+		};
+		
 		final ComboPreference tabPolicy= createComboPref(generalGroup, numColumns, FormatterMessages.IndentationTabPage_tab_char, DefaultCodeFormatterConstants.FORMATTER_TAB_CHAR, tabPolicyValues, tabPolicyLabels);
 		final NumberPreference indentSize= createNumberPref(generalGroup, numColumns, FormatterMessages.IndentationTabPage_indentation_size, DefaultCodeFormatterConstants.FORMATTER_TAB_SIZE, 0, 32); 
 		final NumberPreference tabSize= createNumberPref(generalGroup, numColumns, FormatterMessages.IndentationTabPage_tab_size, DefaultCodeFormatterConstants.FORMATTER_TAB_SIZE, 0, 32);
+		createComboPref(
+				generalGroup,
+				numColumns,
+				FormatterMessages.IndentationTabPage_indentation_style_compare_to_modifier_header,
+				DefaultCodeFormatterConstants.FORMATTER_INDENTATION_STYLE_COMPARE_TO_MODIFIER_HEADER,
+				indentStyleValues,
+				indentStyleLabels);
 		
 		String tabchar= (String) fWorkingValues.get(DefaultCodeFormatterConstants.FORMATTER_TAB_CHAR);
 		updateTabPreferences(tabchar, tabSize, indentSize);
@@ -88,17 +108,12 @@ public class IndentationTabPage extends ModifyDialogTabPage {
 		
 		final Group classGroup = createGroup(numColumns, composite, 
 				FormatterMessages.IndentationTabPage_indent_group_title); 
-		
-		
 		createCheckboxPref(classGroup, numColumns, 
 				FormatterMessages.IndentationTabPage_indent_body_declarations_compare_to_type_header,
 				DefaultCodeFormatterConstants.FORMATTER_INDENT_BODY_DECLARATIONS_COMPARE_TO_TYPE_HEADER, FALSE_TRUE); 
 		createCheckboxPref(classGroup, numColumns,
 				FormatterMessages.IndentationTabPage_indent_body_declarations_compare_to_template_header,
 				DefaultCodeFormatterConstants.FORMATTER_INDENT_BODY_DECLARATIONS_COMPARE_TO_TEMPLATE_HEADER, FALSE_TRUE);
-		createCheckboxPref(classGroup, numColumns,
-				FormatterMessages.IndentationTabPage_indent_body_declarations_compare_to_modifier_header,
-				DefaultCodeFormatterConstants.FORMATTER_INDENT_BODY_DECLARATIONS_COMPARE_TO_MODIFIER_HEADER, FALSE_TRUE); 
 		createCheckboxPref(classGroup, numColumns,
 				FormatterMessages.IndentationTabPage_indent_statements_compare_to_function_header,
 				DefaultCodeFormatterConstants.FORMATTER_INDENT_STATEMENTS_COMPARE_TO_FUNCTION_HEADER, FALSE_TRUE);

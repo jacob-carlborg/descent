@@ -97,6 +97,9 @@ final class FormatterMessages extends NLS {
 	public static String IndentationTabPage_preview_header;
 	public static String IndentationTabPage_general_group_title;
 	public static String IndentationTabPage_indent_group_title;
+	public static String IndentationTabPage_no_indentation;
+	public static String IndentationTabPage_indent_normal;
+	public static String IndentationTabPage_indent_heading_back;
 	
 	// White space tab page
 	public static String ModifyDialog_tabpage_white_space_title;

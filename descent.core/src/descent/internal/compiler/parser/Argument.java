@@ -79,4 +79,9 @@ public class Argument extends ASTNode {
 		return null;
 	}
 
+	public Argument syntaxCopy()
+	{
+		//TODO semantic
+		return null;
+	}
 }

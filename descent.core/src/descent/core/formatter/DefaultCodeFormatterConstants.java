@@ -28,8 +28,12 @@ public class DefaultCodeFormatterConstants {
 	// Brace positions
 	public static final String END_OF_LINE = "end_of_line";
 	public static final String NEXT_LINE = "next_line";
-	public static final String NEXT_LINE_ON_WRAP ="next_line_on_wrap";
 	public static final String NEXT_LINE_SHIFTED = "next_line_shifted";
+	
+	// Indentation style
+	public static final String NO_INDENTATION = "no_indentation";
+	public static final String INDENT_NORMAL = "indent_normal";
+	public static final String INDENT_HEADING_BACK = "indent_heading_back";
 	
 	// Indentation type
 	public static final String MIXED = "mixed";
@@ -263,6 +267,7 @@ public class DefaultCodeFormatterConstants {
 	public static final String FORMATTER_INSERT_SPACE_BEFORE_OPENING_BRACKET_IN_ARRAY_ACCESS = JavaCore.PLUGIN_ID + ".formatter.insert_space_before_opening_bracket_in_array_access";
 	public static final String FORMATTER_INSERT_SPACE_BEFORE_OPENING_BRACKET_IN_SLICES = JavaCore.PLUGIN_ID + ".formatter.insert_space_before_opening_bracket_in_slices";
 	public static final String FORMATTER_INSERT_SPACE_BEFORE_OPENING_BRACKET_IN_ARRAY_CONSTRUCTORS = JavaCore.PLUGIN_ID + ".formatter.insert_space_before_opening_bracket_in_array_constructors";
+	public static final String FORMATTER_INSERT_SPACE_BEFORE_OPENING_BRACKET_IN_DYNAMIC_ARRAYS = JavaCore.PLUGIN_ID + ".formatter.insert_space_before_opening_bracket_in_dynamic_arrays";
 	public static final String FORMATTER_INSERT_SPACE_BEFORE_OPENING_BRACKET_IN_ASSOCIATIVE_ARRAYS = JavaCore.PLUGIN_ID + ".formatter.insert_space_before_opening_bracket_in_associative_arrays";
 	public static final String FORMATTER_INSERT_SPACE_BEFORE_OPENING_BRACKET_IN_STATIC_ARRAYS = JavaCore.PLUGIN_ID + ".formatter.insert_space_before_opening_bracket_in_static_arrays";
 	public static final String FORMATTER_INSERT_SPACE_AFTER_OPENING_BRACKET_IN_ARRAY_ACCESS = JavaCore.PLUGIN_ID + ".formatter.insert_space_after_opening_bracket_in_array_access";
@@ -341,10 +346,10 @@ public class DefaultCodeFormatterConstants {
 	public static final String FORMATTER_KEEP_FUNCTIONS_WITH_ONE_STATEMENT_IN_ONE_LINE = JavaCore.PLUGIN_ID + ".formatter.keep_functions_with_one_statement_in_one_line";
 	public static final String FORMATTER_INDENTATION_SIZE = JavaCore.PLUGIN_ID + ".formatter.indentation_size";
 	public static final String FORMATTER_CONTINUATION_INDENTATION = JavaCore.PLUGIN_ID + ".formatter.continuation_indentation";
+	public static final String FORMATTER_INDENTATION_STYLE_COMPARE_TO_MODIFIER_HEADER = JavaCore.PLUGIN_ID + ".formatter.indentation_style_compare_to_modifier_header";
 	public static final String FORMATTER_INDENT_EMPTY_LINES = JavaCore.PLUGIN_ID + ".formatter.indent_empty_lines";
 	public static final String FORMATTER_INDENT_BODY_DECLARATIONS_COMPARE_TO_TYPE_HEADER = JavaCore.PLUGIN_ID + ".formatter.indent_body_declarations_compare_to_type_header";
 	public static final String FORMATTER_INDENT_BODY_DECLARATIONS_COMPARE_TO_TEMPLATE_HEADER = JavaCore.PLUGIN_ID + ".formatter.indent_body_declarations_compare_to_template_header";
-	public static final String FORMATTER_INDENT_BODY_DECLARATIONS_COMPARE_TO_MODIFIER_HEADER = JavaCore.PLUGIN_ID + ".formatter.indent_body_declarations_compare_to_modifier_header";
 	public static final String FORMATTER_INDENT_BODY_DECLARATIONS_COMPARE_TO_ALIGN_HEADER = JavaCore.PLUGIN_ID + ".formatter.indent_body_declarations_compare_to_align_header";
 	public static final String FORMATTER_INDENT_STATEMENTS_COMPARE_TO_FUNCTION_HEADER = JavaCore.PLUGIN_ID + ".formatter.indent_statements_compare_to_function_header";
 	public static final String FORMATTER_INDENT_IN_OUT_BODY_COMPARE_TO_FUNCTION_HEADER = JavaCore.PLUGIN_ID + ".formatter.indent_in_out_body_compare_to_function_header";

@@ -37,6 +37,7 @@ public class ShortSyntaxTabPage extends ModifyDialogTabPage {
 		"finally file.close();\n\n" +
 		"with(RatsOnYourShoulder)walkAroundLookingCool();\n\n" +
 		"while(file.canRead())Stdout(file.read());\n\n" +
+		"scope(exit) file.close();\n\n" +
 		"synchronized(collection)collection.add(item);}\n\n" +
 		"void doNothing(){}\n\n" +
 		"int addOne(in int n){return n + 1;}";
@@ -74,6 +75,9 @@ public class ShortSyntaxTabPage extends ModifyDialogTabPage {
 		createCheckboxPref(shortSyntaxGroup, numColumns,
 				FormatterMessages.ShortSyntaxTabPage_keep_simple_loop_statement_on_same_line,
 				DefaultCodeFormatterConstants.FORMATTER_KEEP_SIMPLE_LOOP_STATEMENT_ON_SAME_LINE, FALSE_TRUE); 
+		createCheckboxPref(shortSyntaxGroup, numColumns,
+				FormatterMessages.ShortSyntaxTabPage_keep_simple_scope_statement_on_same_line,
+				DefaultCodeFormatterConstants.FORMATTER_KEEP_SIMPLE_SCOPE_STATEMENT_ON_SAME_LINE, FALSE_TRUE); 
 		createCheckboxPref(shortSyntaxGroup, numColumns,
 				FormatterMessages.ShortSyntaxTabPage_keep_simple_synchronized_statement_on_same_line,
 				DefaultCodeFormatterConstants.FORMATTER_KEEP_SIMPLE_SYNCHRONIZED_STATEMENT_ON_SAME_LINE, FALSE_TRUE); 

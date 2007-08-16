@@ -29,6 +29,17 @@ public class DefaultCodeFormatterOptions
 		public String toString() { return constVal; }
 	}
 	
+	public enum IndentationType
+	{
+		NO_INDENTATION(DefaultCodeFormatterConstants.NO_INDENTATION),
+		INDENT_NORMAL(DefaultCodeFormatterConstants.INDENT_NORMAL),
+		INDENT_HEADING_BACK(DefaultCodeFormatterConstants.INDENT_HEADING_BACK);
+		
+		private final String constVal;
+		IndentationType(String $constVal) { constVal = $constVal; }
+		public String toString() { return constVal; }
+	}
+	
 	public static DefaultCodeFormatterOptions getDefaultSettings() {
 		return getBuiltInProfile(DefaultCodeFormatterConstants.DEFAULT_PROFILE);
 	}
@@ -109,6 +120,10 @@ public class DefaultCodeFormatterOptions
 		 * {
 		 *     $optionsMapInitializer = "$$_{'optName'}.toString()";
 		 * }
+		 * elsif($$_{'type'} eq "IndentationType")
+		 * {
+		 *     $optionsMapInitializer = "$$_{'optName'}.toString()";
+		 * }
 		 * else
 		 * {
 		 *     $optionsMapInitializer = "null";
@@ -150,6 +165,12 @@ public class DefaultCodeFormatterOptions
 		 *     $initializer = "DefaultCodeFormatterConstants.NEXT_LINE_SHIFTED.equals(current) ? " .
 		 *                    "BracePosition.NEXT_LINE_SHIFTED : DefaultCodeFormatterConstants.NEXT_LINE.equals(current) ? " .
 		 *                    "BracePosition.NEXT_LINE : BracePosition.END_OF_LINE";
+		 * }
+		 * elsif($$_{'type'} eq "IndentationType")
+		 * {
+		 *     $initializer = "DefaultCodeFormatterConstants.NO_INDENTATION.equals(current) ? " .
+		 *                    "IndentationType.NO_INDENTATION : DefaultCodeFormatterConstants.INDENT_NORMAL.equals(current) ? " .
+		 *                    "IndentationType.INDENT_NORMAL : IndentationType.INDENT_HEADING_BACK";
 		 * }
 		 * else
 		 * {

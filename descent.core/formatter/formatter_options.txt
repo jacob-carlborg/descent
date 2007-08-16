@@ -1482,6 +1482,12 @@ insert_space_before_opening_bracket_in_array_constructors
 	wsDElem=array_constructor
 	wsSynElem=before_opening_bracket
 	wsPreview=ARRAY_CONSTRUCTOR_PREVIEW
+insert_space_before_opening_bracket_in_dynamic_arrays
+	type=boolean
+	default=false
+	wsDElem=dynamic_arrays
+	wsSynElem=before_opening_bracket
+	wsPreview=ARRAYS_PREVIEW
 insert_space_before_opening_bracket_in_associative_arrays
 	type=boolean
 	default=false
@@ -2020,6 +2026,11 @@ continuation_indentation
 	default=2
 	tab=LineWrappingTabPage
 	uiText=Default indentation for wrapped lines
+indentation_style_compare_to_modifier_header
+	type=IndentationType
+	default=IndentationType.INDENT_NORMAL
+	tab=IndentationTabPage
+	uiText=Indentation for modifiers
 indent_empty_lines
 	type=boolean
 	default=false
@@ -2035,11 +2046,6 @@ indent_body_declarations_compare_to_template_header
 	default=true
 	tab=IndentationTabPage
 	uiText=Declarations within template
-indent_body_declarations_compare_to_modifier_header
-	type=boolean
-	default=true
-	tab=IndentationTabPage
-	uiText=Declarations within modifier
 indent_body_declarations_compare_to_align_header
 	type=boolean
 	default=true

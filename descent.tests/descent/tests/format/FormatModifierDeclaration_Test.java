@@ -5,6 +5,7 @@ import java.util.Map;
 
 import descent.core.formatter.DefaultCodeFormatterConstants;
 
+/* TODO formatter test
 public class FormatModifierDeclaration_Test extends AbstractFormatBrace_Test {
 
 	@Override
@@ -34,4 +35,4 @@ public class FormatModifierDeclaration_Test extends AbstractFormatBrace_Test {
 		return options;
 	}
 
-}
+} */

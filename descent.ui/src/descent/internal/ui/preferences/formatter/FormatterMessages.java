@@ -97,6 +97,9 @@ final class FormatterMessages extends NLS {
 	public static String IndentationTabPage_preview_header;
 	public static String IndentationTabPage_general_group_title;
 	public static String IndentationTabPage_indent_group_title;
+	public static String IndentationTabPage_no_indentation;
+	public static String IndentationTabPage_indent_normal;
+	public static String IndentationTabPage_indent_heading_back;
 	
 	// White space tab page
 	public static String ModifyDialog_tabpage_white_space_title;
@@ -355,10 +358,10 @@ final class FormatterMessages extends NLS {
 	public static String ShortSyntaxTabPage_keep_functions_with_one_statement_in_one_line;
 	public static String IndentationTabPage_indentation_size;
 	public static String LineWrappingTabPage_continuation_indentation;
+	public static String IndentationTabPage_indentation_style_compare_to_modifier_header;
 	public static String IndentationTabPage_indent_empty_lines;
 	public static String IndentationTabPage_indent_body_declarations_compare_to_type_header;
 	public static String IndentationTabPage_indent_body_declarations_compare_to_template_header;
-	public static String IndentationTabPage_indent_body_declarations_compare_to_modifier_header;
 	public static String IndentationTabPage_indent_body_declarations_compare_to_align_header;
 	public static String IndentationTabPage_indent_statements_compare_to_function_header;
 	public static String IndentationTabPage_indent_in_out_body_compare_to_function_header;

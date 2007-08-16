@@ -1393,14 +1393,28 @@ public class CodeFormatterVisitor extends ASTVisitor
 	
 	public boolean visit(ModifierDeclaration node)
 	{
+		boolean unIndent = prefs.indentation_style_compare_to_modifier_header
+			== DefaultCodeFormatterOptions.IndentationType.INDENT_HEADING_BACK
+			&& scribe.indentationLevel > 0;
+		boolean indent = prefs.indentation_style_compare_to_modifier_header
+			== DefaultCodeFormatterOptions.IndentationType.INDENT_NORMAL
+			|| unIndent;
+		
+		if(unIndent)
+			scribe.unIndent();
+		
 		List<Modifier> allModifiers = new ArrayList<Modifier>();
 		allModifiers.addAll(node.modifiers());
 		allModifiers.add(node.getModifier());
 		formatModifiers(false, allModifiers);
 		if(!isNextToken(TOK.TOKcolon)) // "private:" instead of "private :"
 			scribe.space();
-		formatDeclarationBlock(node.declarations(), prefs.brace_position_for_modifiers, prefs.indent_body_declarations_compare_to_modifier_header);
+		formatDeclarationBlock(node.declarations(), prefs.brace_position_for_modifiers, indent);
 		scribe.printTrailingComment();
+		
+		if(unIndent)
+			scribe.indent();
+		
 		return false;
 	}
 	
@@ -3069,7 +3083,8 @@ public class CodeFormatterVisitor extends ASTVisitor
 
 	private void formatPostfix(DynamicArrayType node, boolean postfixed)
 	{
-		scribe.printNextToken(TOK.TOKlbracket);
+		scribe.printNextToken(TOK.TOKlbracket,
+				prefs.insert_space_before_opening_bracket_in_dynamic_arrays);
 		scribe.printNextToken(TOK.TOKrbracket, 
 				prefs.insert_space_between_empty_brackets_in_dynamic_array_type);
 		if(isNextToken(TOK.TOKlbracket) && 
