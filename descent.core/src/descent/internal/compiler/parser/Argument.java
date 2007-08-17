@@ -2,7 +2,10 @@ package descent.internal.compiler.parser;
 
 import java.util.List;
 
-public class Argument extends ASTNode {
+import melnorme.miscutil.tree.TreeVisitor;
+import descent.internal.compiler.parser.ast.IASTVisitor;
+
+public class Argument extends ASTDmdNode {
 	
 	public InOut inout;
 	public Type type;
@@ -10,6 +13,7 @@ public class Argument extends ASTNode {
 	public Expression defaultArg;
 	public Expression sourceDefaultArg;
 	
+
 	public Argument(InOut inout, Type type, IdentifierExp ident, Expression defaultArg) {
 		this.inout = inout;
 		if (type == null) {
@@ -20,6 +24,16 @@ public class Argument extends ASTNode {
 		this.ident = ident;
 		this.defaultArg = defaultArg;
 		this.sourceDefaultArg = defaultArg;
+	}
+	
+	public void accept0(IASTVisitor visitor) {
+		boolean children = visitor.visit(this);
+		if (children) {
+			TreeVisitor.acceptChildren(visitor, type);
+			TreeVisitor.acceptChildren(visitor, ident);
+			TreeVisitor.acceptChildren(visitor, sourceDefaultArg);
+		}
+		visitor.endVisit(this);
 	}
     
     public static int dim(List<Argument> args, SemanticContext context) {

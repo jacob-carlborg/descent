@@ -11,9 +11,12 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
+import melnorme.miscutil.tree.TreeVisitor;
+
 import org.eclipse.core.runtime.Assert;
 
 import descent.core.compiler.IProblem;
+import descent.internal.compiler.parser.ast.IASTVisitor;
 
 public class VarDeclaration extends Declaration {
 
@@ -64,6 +67,16 @@ public class VarDeclaration extends Declaration {
 		this.aliassym = null;
 		this.onstack = 0;
 		this.value = null;
+	}
+	
+	public void accept0(IASTVisitor visitor) {
+		boolean children = visitor.visit(this);
+		if (children) {
+			TreeVisitor.acceptChildren(visitor, modifiers);
+			TreeVisitor.acceptChildren(visitor, type);
+			TreeVisitor.acceptChildren(visitor, ident);
+		}
+		visitor.endVisit(this);
 	}
 
 	public Expression callAutoDtor() {
@@ -466,7 +479,7 @@ public class VarDeclaration extends Declaration {
 					}
 					ei.exp = new AssignExp(loc, e1, ei.exp);
 					ei.exp = ei.exp.semantic(sc, context);
-					ei.exp.optimize(ASTNode.WANTvalue);
+					ei.exp.optimize(ASTDmdNode.WANTvalue);
 				} else {
 					init = init.semantic(sc, type, context);
 					if (fd != null && isConst() && !isStatic()) { // Make it

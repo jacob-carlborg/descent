@@ -1,19 +1,36 @@
 package descent.internal.compiler.parser;
 
+import static descent.internal.compiler.parser.InOut.InOut;
+import static descent.internal.compiler.parser.InOut.Lazy;
+import static descent.internal.compiler.parser.InOut.Out;
+import static descent.internal.compiler.parser.LINK.LINKd;
+import static descent.internal.compiler.parser.PROT.PROTpackage;
+import static descent.internal.compiler.parser.PROT.PROTprivate;
+import static descent.internal.compiler.parser.PROT.PROTprotected;
+import static descent.internal.compiler.parser.TOK.TOKarray;
+import static descent.internal.compiler.parser.TOK.TOKdelegate;
+import static descent.internal.compiler.parser.TOK.TOKforeach_reverse;
+import static descent.internal.compiler.parser.TOK.TOKsuper;
+import static descent.internal.compiler.parser.TOK.TOKtuple;
+import static descent.internal.compiler.parser.TY.Tbit;
+import static descent.internal.compiler.parser.TY.Tclass;
+import static descent.internal.compiler.parser.TY.Tdelegate;
+import static descent.internal.compiler.parser.TY.Tfunction;
+import static descent.internal.compiler.parser.TY.Tsarray;
+import static descent.internal.compiler.parser.TY.Tstruct;
+import static descent.internal.compiler.parser.TY.Ttuple;
+import static descent.internal.compiler.parser.TY.Tvoid;
+
 import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.core.runtime.Assert;
 
 import descent.core.dom.DDocComment;
-import static descent.internal.compiler.parser.TY.*;
-import static descent.internal.compiler.parser.TOK.*;
-import static descent.internal.compiler.parser.PROT.*;
-import static descent.internal.compiler.parser.InOut.*;
-import static descent.internal.compiler.parser.LINK.*;
+import descent.internal.compiler.parser.ast.ASTNode;
 
 // class Object in DMD compiler
-public abstract class ASTNode {
+public abstract class ASTDmdNode extends ASTNode {
 
 	public final static int WANTflags = 1;
 	public final static int WANTvalue = 2;
@@ -509,8 +526,6 @@ public abstract class ASTNode {
 		}
 		return null;
 	}
-	public int start;
-	public int length;
 	public int astFlags;
 	public List<DDocComment> preDdocs;
 	public List<Modifier> modifiers;
@@ -966,10 +981,6 @@ public abstract class ASTNode {
 		return r1.equals(r2);
 	}
 
-	public void setSourceRange(int startPosition, int length) {
-		this.start = startPosition;
-		this.length = length;
-	}
 
 	public String toChars() {
 		return toString();
@@ -982,6 +993,11 @@ public abstract class ASTNode {
 	public Expression op_overload(Scope sc) {
 		// TODO semantic
 		return null;
+	}
+	
+	
+	public int getElementType() {
+		return getNodeType();
 	}
 
 }

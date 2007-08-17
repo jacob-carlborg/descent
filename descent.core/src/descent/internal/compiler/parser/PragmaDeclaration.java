@@ -4,9 +4,12 @@ import static descent.internal.compiler.parser.TOK.TOKstring;
 
 import java.util.List;
 
+import melnorme.miscutil.tree.TreeVisitor;
+
 import org.eclipse.core.runtime.Assert;
 
 import descent.core.compiler.IProblem;
+import descent.internal.compiler.parser.ast.IASTVisitor;
 
 public class PragmaDeclaration extends AttribDeclaration {
 
@@ -27,6 +30,15 @@ public class PragmaDeclaration extends AttribDeclaration {
 	@Override
 	public String kind() {
 		return "pragma";
+	}
+	
+	public void accept0(IASTVisitor visitor) {
+		boolean children = visitor.visit(this);
+		if (children) {
+			TreeVisitor.acceptChildren(visitor, args);
+			TreeVisitor.acceptChildren(visitor, decl);
+		}
+		visitor.endVisit(this);
 	}
 
 	@Override

@@ -1,15 +1,35 @@
 package descent.internal.compiler.parser;
 
-import static descent.internal.compiler.parser.TY.*;
-import static descent.internal.compiler.parser.MATCH.*;
-import static descent.internal.compiler.parser.TOK.*;
+import static descent.internal.compiler.parser.MATCH.MATCHexact;
+import static descent.internal.compiler.parser.MATCH.MATCHnomatch;
+import static descent.internal.compiler.parser.TOK.TOKarray;
+import static descent.internal.compiler.parser.TOK.TOKdotvar;
+import static descent.internal.compiler.parser.TOK.TOKvar;
+import static descent.internal.compiler.parser.TY.Tbit;
+import static descent.internal.compiler.parser.TY.Tfunction;
+import static descent.internal.compiler.parser.TY.Tpointer;
+import melnorme.miscutil.tree.TreeVisitor;
+import descent.internal.compiler.parser.ast.IASTVisitor;
 
 public class AddrExp extends UnaExp {
 
 	public AddrExp(Loc loc, Expression e) {
 		super(loc, TOK.TOKaddress, e);
 	}
-
+	
+	@Override
+	public int getNodeType() {
+		return ADDR_EXP;
+	}
+	
+	public void accept0(IASTVisitor visitor) {
+		boolean children = visitor.visit(this);
+		if (children) {
+			TreeVisitor.acceptChildren(visitor, e1);
+		}
+		visitor.endVisit(this);
+	}
+	
 	@Override
 	public Expression castTo(Scope sc, Type t, SemanticContext context) {
 		Type tb;
@@ -44,11 +64,6 @@ public class AddrExp extends UnaExp {
 		}
 		e.type = t;
 		return e;
-	}
-
-	@Override
-	public int getNodeType() {
-		return ADDR_EXP;
 	}
 
 	@Override

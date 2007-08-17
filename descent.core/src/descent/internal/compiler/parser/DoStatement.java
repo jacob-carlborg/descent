@@ -1,5 +1,8 @@
 package descent.internal.compiler.parser;
 
+import melnorme.miscutil.tree.TreeVisitor;
+import descent.internal.compiler.parser.ast.IASTVisitor;
+
 
 public class DoStatement extends Statement {
 	
@@ -11,6 +14,21 @@ public class DoStatement extends Statement {
 		this.condition = c;
 		this.body = b;
 	}
+	
+	@Override
+	public int getNodeType() {
+		return DO_STATEMENT;
+	}
+	
+	public void accept0(IASTVisitor visitor) {
+		boolean children = visitor.visit(this);
+		if (children) {
+			TreeVisitor.acceptChildren(visitor, condition);
+			TreeVisitor.acceptChildren(visitor, body);
+		}
+		visitor.endVisit(this);
+	}
+
 	
 	@Override
 	public Statement semantic(Scope sc, SemanticContext context) {
@@ -25,9 +43,6 @@ public class DoStatement extends Statement {
 	    return this;
 	}
 	
-	@Override
-	public int getNodeType() {
-		return DO_STATEMENT;
-	}
+
 
 }

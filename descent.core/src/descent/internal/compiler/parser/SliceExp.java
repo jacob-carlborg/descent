@@ -1,11 +1,7 @@
 package descent.internal.compiler.parser;
 
-import static descent.internal.compiler.parser.TOK.*;
-import static descent.internal.compiler.parser.TY.*;
-
-import java.math.BigInteger;
-
-import org.eclipse.core.runtime.Assert;
+import melnorme.miscutil.tree.TreeVisitor;
+import descent.internal.compiler.parser.ast.IASTVisitor;
 
 public class SliceExp extends UnaExp {
 
@@ -18,6 +14,14 @@ public class SliceExp extends UnaExp {
 		this.lwr = lwr;
 		this.upr = upr;
 		this.lengthVar = null;
+	}
+	
+	public void accept0(IASTVisitor visitor) {
+		boolean children = visitor.visit(this);
+		if (children) {
+			TreeVisitor.acceptChildren(visitor, e1);
+		}
+		visitor.endVisit(this);
 	}
 
 	@Override

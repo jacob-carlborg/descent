@@ -1,5 +1,8 @@
 package descent.internal.compiler.parser;
 
+import melnorme.miscutil.tree.TreeVisitor;
+import descent.internal.compiler.parser.ast.IASTVisitor;
+
 public class AssertExp extends UnaExp {
 
 	public Expression msg;
@@ -12,7 +15,20 @@ public class AssertExp extends UnaExp {
 		super(loc, TOK.TOKassert, e);
 		this.msg = msg;
 	}
-
+	
+	@Override
+	public int checkSideEffect(int flag, SemanticContext context) {
+		return 1;
+	}
+	
+	public void accept0(IASTVisitor visitor) {
+		boolean children = visitor.visit(this);
+		if (children) {
+			TreeVisitor.acceptChildren(visitor, e1);
+		}
+		visitor.endVisit(this);
+	}
+	
 	@Override
 	public Expression syntaxCopy() {
 		AssertExp ae = new AssertExp(loc, e1.syntaxCopy(), msg != null ? msg
@@ -45,11 +61,6 @@ public class AssertExp extends UnaExp {
 		}
 		type = Type.tvoid;
 		return this;
-	}
-
-	@Override
-	public int checkSideEffect(int flag, SemanticContext context) {
-		return 1;
 	}
 
 	@Override

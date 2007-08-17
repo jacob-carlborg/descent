@@ -1,8 +1,11 @@
 package descent.internal.compiler.parser;
 
+import melnorme.miscutil.tree.TreeVisitor;
+
 import org.eclipse.core.runtime.Assert;
 
 import descent.core.compiler.IProblem;
+import descent.internal.compiler.parser.ast.IASTVisitor;
 
 public class TypedefDeclaration extends Declaration {
 
@@ -44,6 +47,16 @@ public class TypedefDeclaration extends Declaration {
 	@Override
 	public String kind() {
 		return "typedef";
+	}
+	
+	public void accept0(IASTVisitor visitor) {
+		boolean children = visitor.visit(this);
+		if (children) {
+			TreeVisitor.acceptChildren(visitor, sourceBasetype);
+			TreeVisitor.acceptChildren(visitor, ident);
+			TreeVisitor.acceptChildren(visitor, init);
+		}
+		visitor.endVisit(this);
 	}
 
 	@Override

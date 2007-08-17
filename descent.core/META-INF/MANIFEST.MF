@@ -23,6 +23,10 @@ Export-Package: descent.core,
  descent.core.search,
  descent.core.trace,
  descent.internal.compiler,
- descent.internal.compiler.parser
+ descent.internal.compiler.parser,
+ descent.internal.compiler.parser.ast,
+ melnorme.miscutil,
+ melnorme.miscutil.log,
+ melnorme.miscutil.tree
 Eclipse-BuddyPolicy: registered
 Bundle-ClassPath: .

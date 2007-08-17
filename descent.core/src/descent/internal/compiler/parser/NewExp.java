@@ -1,13 +1,19 @@
 package descent.internal.compiler.parser;
 
+import static descent.internal.compiler.parser.TOK.TOKint64;
+import static descent.internal.compiler.parser.TY.Tarray;
+import static descent.internal.compiler.parser.TY.Tclass;
+import static descent.internal.compiler.parser.TY.Tstruct;
+
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
+import melnorme.miscutil.tree.TreeVisitor;
+
 import org.eclipse.core.runtime.Assert;
 
-import static descent.internal.compiler.parser.TY.*;
-import static descent.internal.compiler.parser.TOK.*;
+import descent.internal.compiler.parser.ast.IASTVisitor;
 
 public class NewExp extends Expression {
 
@@ -32,14 +38,27 @@ public class NewExp extends Expression {
 	}
 
 	@Override
+	public int getNodeType() {
+		return NEW_EXP;
+	}
+	
+	public void accept0(IASTVisitor visitor) {
+		boolean children = visitor.visit(this);
+		if (children) {
+			TreeVisitor.acceptChildren(visitor, thisexp);
+			TreeVisitor.acceptChildren(visitor, newargs);
+			TreeVisitor.acceptChildren(visitor, newtype);
+			TreeVisitor.acceptChildren(visitor, arguments);
+		}
+		visitor.endVisit(this);
+	}
+
+
+	@Override
 	public int checkSideEffect(int flag, SemanticContext context) {
 		return 1;
 	}
 
-	@Override
-	public int getNodeType() {
-		return NEW_EXP;
-	}
 
 	@Override
 	public Expression semantic(Scope sc, SemanticContext context) {

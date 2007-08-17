@@ -1,5 +1,8 @@
 package descent.internal.compiler.parser;
 
+import melnorme.miscutil.Assert;
+import descent.internal.compiler.parser.ast.IASTVisitor;
+
 public class TypeTypedef extends Type {
 	
 	public TypedefDeclaration sym;
@@ -8,6 +11,10 @@ public class TypeTypedef extends Type {
 		super(TY.Ttypedef, null);
 		this.sym = sym;
 		this.synthetic = true;
+	}
+	
+	public void accept0(IASTVisitor visitor) {
+		Assert.fail("Accept0 on fake class");
 	}
 	
 	@Override

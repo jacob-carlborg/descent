@@ -2,6 +2,8 @@ package descent.internal.compiler.parser;
 
 import static descent.internal.compiler.parser.TOK.TOKeof;
 import static descent.internal.compiler.parser.TOK.TOKstring;
+import melnorme.miscutil.tree.TreeVisitor;
+import descent.internal.compiler.parser.ast.IASTVisitor;
 
 public class CompileDeclaration extends AttribDeclaration {
 
@@ -23,6 +25,15 @@ public class CompileDeclaration extends AttribDeclaration {
 	@Override
 	public int getNodeType() {
 		return COMPILE_DECLARATION;
+	}
+	
+	public void accept0(IASTVisitor visitor) {
+		boolean children = visitor.visit(this);
+		if (children) {
+			TreeVisitor.acceptChildren(visitor, exp);
+			TreeVisitor.acceptChildren(visitor, decl);
+		}
+		visitor.endVisit(this);
 	}
 
 	@Override

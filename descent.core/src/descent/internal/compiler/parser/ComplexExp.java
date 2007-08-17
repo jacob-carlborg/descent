@@ -2,6 +2,8 @@ package descent.internal.compiler.parser;
 
 import java.math.BigInteger;
 
+import descent.internal.compiler.parser.ast.IASTVisitor;
+
 public class ComplexExp extends Expression {
 
 	private Complex value;
@@ -9,6 +11,11 @@ public class ComplexExp extends Expression {
 	public ComplexExp(Loc loc, Complex value) {
 		super(loc, TOK.TOKcomplex80);
 		this.value = value;
+	}
+	
+	public void accept0(IASTVisitor visitor) {
+		boolean children = visitor.visit(this);
+		visitor.endVisit(this);
 	}
 
 	@Override

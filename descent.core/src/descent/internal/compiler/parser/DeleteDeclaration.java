@@ -2,9 +2,12 @@ package descent.internal.compiler.parser;
 
 import java.util.List;
 
+import melnorme.miscutil.tree.TreeVisitor;
+
 import org.eclipse.core.runtime.Assert;
 
 import descent.core.compiler.IProblem;
+import descent.internal.compiler.parser.ast.IASTVisitor;
 
 public class DeleteDeclaration extends FuncDeclaration {
 	
@@ -25,6 +28,22 @@ public class DeleteDeclaration extends FuncDeclaration {
 	@Override
 	public boolean isVirtual() {
 		return false;
+	}
+	
+	public void accept0(IASTVisitor visitor) {
+		boolean children = visitor.visit(this);
+		if (children) {
+			TreeVisitor.acceptChildren(visitor, modifiers);
+			TreeVisitor.acceptChildren(visitor, type);
+			TreeVisitor.acceptChildren(visitor, ident);
+			// Template args?
+			TreeVisitor.acceptChildren(visitor, arguments);
+			TreeVisitor.acceptChildren(visitor, sourceFrequire);
+			TreeVisitor.acceptChildren(visitor, sourceFbody);
+			TreeVisitor.acceptChildren(visitor, outId);
+			TreeVisitor.acceptChildren(visitor, sourceFensure);
+		}
+		visitor.endVisit(this);
 	}
 	
 	@Override

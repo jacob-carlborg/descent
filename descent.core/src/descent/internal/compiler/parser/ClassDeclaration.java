@@ -5,9 +5,12 @@ import static descent.internal.compiler.parser.PROT.PROTnone;
 import java.util.ArrayList;
 import java.util.List;
 
+import melnorme.miscutil.tree.TreeVisitor;
+
 import org.eclipse.core.runtime.Assert;
 
 import descent.core.compiler.IProblem;
+import descent.internal.compiler.parser.ast.IASTVisitor;
 
 public class ClassDeclaration extends AggregateDeclaration {
 	
@@ -58,6 +61,17 @@ public class ClassDeclaration extends AggregateDeclaration {
 		this.vtbl = new ArrayList(0);
 		this.vtblFinal = new ArrayList(0);
 		handle = type;
+	}
+	
+	public void accept0(IASTVisitor visitor) {
+		boolean children = visitor.visit(this);
+		if (children) {
+			TreeVisitor.acceptChildren(visitor, modifiers);
+			TreeVisitor.acceptChildren(visitor, ident);
+			TreeVisitor.acceptChildren(visitor, sourceBaseclasses);
+			TreeVisitor.acceptChildren(visitor, members);
+		}
+		visitor.endVisit(this);
 	}
 
 	@Override

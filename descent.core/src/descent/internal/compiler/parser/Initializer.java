@@ -1,7 +1,7 @@
 package descent.internal.compiler.parser;
 
 
-public abstract class Initializer extends ASTNode {
+public abstract class Initializer extends ASTDmdNode {
 	
 	public Loc loc;
 	

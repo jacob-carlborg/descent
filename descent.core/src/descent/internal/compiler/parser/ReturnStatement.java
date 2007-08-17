@@ -15,9 +15,12 @@ import static descent.internal.compiler.parser.TOK.TOKthis;
 import static descent.internal.compiler.parser.TOK.TOKvar;
 import static descent.internal.compiler.parser.TY.Tvoid;
 
+import melnorme.miscutil.tree.TreeVisitor;
+
 import org.eclipse.core.runtime.Assert;
 
 import descent.core.compiler.IProblem;
+import descent.internal.compiler.parser.ast.IASTVisitor;
 
 public class ReturnStatement extends Statement {
 
@@ -28,6 +31,14 @@ public class ReturnStatement extends Statement {
 		super(loc);
 		this.exp = exp;		
 		this.sourceExp = exp;
+	}
+	
+	public void accept0(IASTVisitor visitor) {
+		boolean children = visitor.visit(this);
+		if (children) {
+			TreeVisitor.acceptChildren(visitor, sourceExp);
+		}
+		visitor.endVisit(this);
 	}
 	
 	@Override
@@ -181,7 +192,7 @@ public class ReturnStatement extends Statement {
 					v2.noauto = true;
 					v2.semantic(scx, context);
 					if (scx.insert(v2) == null) {
-						org.eclipse.jface.text.Assert.isTrue(false);
+						melnorme.miscutil.Assert.isTrue(false);
 					}
 					v2.parent = fd;
 					fd.vresult = v2;

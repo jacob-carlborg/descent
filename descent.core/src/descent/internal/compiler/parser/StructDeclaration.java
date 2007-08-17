@@ -1,12 +1,16 @@
 package descent.internal.compiler.parser;
 
+import static descent.internal.compiler.parser.PROT.PROTnone;
+
 import java.util.ArrayList;
 import java.util.List;
+
+import melnorme.miscutil.tree.TreeVisitor;
 
 import org.eclipse.core.runtime.Assert;
 
 import descent.core.compiler.IProblem;
-import static descent.internal.compiler.parser.PROT.*;
+import descent.internal.compiler.parser.ast.IASTVisitor;
 
 public class StructDeclaration extends AggregateDeclaration {
 	
@@ -20,6 +24,16 @@ public class StructDeclaration extends AggregateDeclaration {
 	@Override
 	public StructDeclaration isStructDeclaration() {
 		return this;
+	}
+	
+	public void accept0(IASTVisitor visitor) {
+		boolean children = visitor.visit(this);
+		if (children) {
+			TreeVisitor.acceptChildren(visitor, modifiers);
+			TreeVisitor.acceptChildren(visitor, ident);
+			TreeVisitor.acceptChildren(visitor, members);
+		}
+		visitor.endVisit(this);
 	}
 	
 	public PROT getAccess(Dsymbol smember) {

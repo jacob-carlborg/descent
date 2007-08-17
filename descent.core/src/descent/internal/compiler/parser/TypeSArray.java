@@ -3,6 +3,9 @@ package descent.internal.compiler.parser;
 import java.util.ArrayList;
 import java.util.List;
 
+import melnorme.miscutil.tree.TreeVisitor;
+import descent.internal.compiler.parser.ast.IASTVisitor;
+
 public class TypeSArray extends Type {
 	
 	public Expression dim;
@@ -10,6 +13,15 @@ public class TypeSArray extends Type {
 	public TypeSArray(Type next, Expression dim) {
 		super(TY.Tsarray, next);
 		this.dim = dim;
+	}
+	
+	public void accept0(IASTVisitor visitor) {
+		boolean children = visitor.visit(this);
+		if (children) {
+			TreeVisitor.acceptChildren(visitor, next);
+			TreeVisitor.acceptChildren(visitor, dim);
+		}
+		visitor.endVisit(this);
 	}
 	
 	@Override

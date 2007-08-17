@@ -1,6 +1,9 @@
 package descent.internal.compiler.parser;
 
-public class Tuple extends ASTNode {
+import melnorme.miscutil.Assert;
+import descent.internal.compiler.parser.ast.IASTVisitor;
+
+public class Tuple extends ASTDmdNode {
 	
 	@Override
 	public DYNCAST dyncast() {
@@ -10,6 +13,10 @@ public class Tuple extends ASTNode {
 	@Override
 	public int getNodeType() {
 		return 0;
+	}
+	
+	public void accept0(IASTVisitor visitor) {
+		Assert.fail("Fake Node accept0");
 	}
 
 }

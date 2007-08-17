@@ -1,12 +1,28 @@
 package descent.internal.compiler.parser;
 
-import static descent.internal.compiler.parser.TY.*;
-import static descent.internal.compiler.parser.TOK.*;
+import static descent.internal.compiler.parser.TOK.TOKindex;
+import static descent.internal.compiler.parser.TY.Taarray;
+import static descent.internal.compiler.parser.TY.Tstruct;
+import melnorme.miscutil.tree.TreeVisitor;
+import descent.internal.compiler.parser.ast.IASTVisitor;
 
 public class DeleteExp extends UnaExp {
 
 	public DeleteExp(Loc loc, Expression e1) {
 		super(loc, TOK.TOKdelete, e1);
+	}
+	
+	@Override
+	public int getNodeType() {
+		return DELETE_EXP;
+	}
+	
+	public void accept0(IASTVisitor visitor) {
+		boolean children = visitor.visit(this);
+		if (children) {
+			TreeVisitor.acceptChildren(visitor, e1);
+		}
+		visitor.endVisit(this);
 	}
 	
 	@Override
@@ -18,11 +34,6 @@ public class DeleteExp extends UnaExp {
 	public Expression checkToBoolean(SemanticContext context) {
 		error("delete does not give a boolean result");
 	    return this;
-	}
-
-	@Override
-	public int getNodeType() {
-		return DELETE_EXP;
 	}
 
 	@Override

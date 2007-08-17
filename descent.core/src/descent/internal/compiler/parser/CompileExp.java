@@ -1,6 +1,9 @@
 package descent.internal.compiler.parser;
 
-import static descent.internal.compiler.parser.TOK.*;
+import static descent.internal.compiler.parser.TOK.TOKeof;
+import static descent.internal.compiler.parser.TOK.TOKstring;
+import melnorme.miscutil.tree.TreeVisitor;
+import descent.internal.compiler.parser.ast.IASTVisitor;
 
 public class CompileExp extends UnaExp {
 
@@ -11,6 +14,14 @@ public class CompileExp extends UnaExp {
 	@Override
 	public int getNodeType() {
 		return COMPILE_EXP;
+	}
+	
+	public void accept0(IASTVisitor visitor) {
+		boolean children = visitor.visit(this);
+		if (children) {
+			TreeVisitor.acceptChildren(visitor, e1);
+		}
+		visitor.endVisit(this);
 	}
 	
 	@Override

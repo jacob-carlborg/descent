@@ -1,12 +1,17 @@
 package descent.internal.compiler.parser;
 
+import static descent.internal.compiler.parser.TY.Tfunction;
+
 import java.util.ArrayList;
 import java.util.List;
-import static descent.internal.compiler.parser.TY.*;
+
+import melnorme.miscutil.tree.TreeVisitor;
 
 import org.eclipse.core.runtime.Assert;
 
-public class BaseClass extends ASTNode {
+import descent.internal.compiler.parser.ast.IASTVisitor;
+
+public class BaseClass extends ASTDmdNode {
 
 	public Modifier modifier;
 	public Type type;
@@ -45,6 +50,15 @@ public class BaseClass extends ASTNode {
 		bc.vtbl = vtbl;
 		bc.baseInterfaces = baseInterfaces;
 		return bc;
+	}
+	
+	public void accept0(IASTVisitor visitor) {
+		boolean children = visitor.visit(this);
+		if (children) {
+			TreeVisitor.acceptChildren(visitor, modifier);
+			TreeVisitor.acceptChildren(visitor, sourceType);
+		}
+		visitor.endVisit(this);
 	}
 
 	public void copyBaseInterfaces(List<BaseClass> vtblInterfaces) {

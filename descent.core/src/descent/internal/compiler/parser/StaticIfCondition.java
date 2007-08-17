@@ -1,5 +1,8 @@
 package descent.internal.compiler.parser;
 
+import melnorme.miscutil.tree.TreeVisitor;
+import descent.internal.compiler.parser.ast.IASTVisitor;
+
 public class StaticIfCondition extends Condition {
 
 	public Expression exp;
@@ -11,6 +14,14 @@ public class StaticIfCondition extends Condition {
 	@Override
 	public int getConditionType() {
 		return STATIC_IF;
+	}
+	
+	public void accept0(IASTVisitor visitor) {
+		boolean children = visitor.visit(this);
+		if (children) {
+			TreeVisitor.acceptChildren(visitor, exp);
+		}
+		visitor.endVisit(this);
 	}
 
 }

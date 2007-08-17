@@ -1,11 +1,18 @@
 package descent.internal.compiler.parser;
 
+import static descent.internal.compiler.parser.STC.STCfield;
+import static descent.internal.compiler.parser.TOK.TOKdsymbol;
+import static descent.internal.compiler.parser.TOK.TOKthis;
+import static descent.internal.compiler.parser.TY.Tpointer;
+import static descent.internal.compiler.parser.TY.Tstruct;
+
 import java.util.ArrayList;
+
+import melnorme.miscutil.tree.TreeVisitor;
+
 import org.eclipse.core.runtime.Assert;
 
-import static descent.internal.compiler.parser.TOK.*;
-import static descent.internal.compiler.parser.TY.*;
-import static descent.internal.compiler.parser.STC.*;
+import descent.internal.compiler.parser.ast.IASTVisitor;
 
 public class DotVarExp extends UnaExp {
 
@@ -19,6 +26,14 @@ public class DotVarExp extends UnaExp {
 	@Override
 	public int getNodeType() {
 		return DOT_VAR_EXP;
+	}
+	
+	public void accept0(IASTVisitor visitor) {
+		boolean children = visitor.visit(this);
+		if (children) {
+			TreeVisitor.acceptChildren(visitor, e1);
+		}
+		visitor.endVisit(this);
 	}
 
 	@Override
@@ -77,7 +92,7 @@ public class DotVarExp extends UnaExp {
 				ArrayList<Expression> exps = new ArrayList<Expression>();
 				exps.ensureCapacity(tup.objects.size());
 				for (int i = 0; i < tup.objects.size(); i++) {
-					ASTNode o = tup.objects.get(i);
+					ASTDmdNode o = tup.objects.get(i);
 					if (o.dyncast() != DYNCAST.DYNCAST_EXPRESSION) {
 						error("%s is not an expression", o.toChars());
 					} else {

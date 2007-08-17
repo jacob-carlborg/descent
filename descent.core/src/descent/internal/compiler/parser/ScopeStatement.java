@@ -2,6 +2,9 @@ package descent.internal.compiler.parser;
 
 import java.util.List;
 
+import melnorme.miscutil.tree.TreeVisitor;
+import descent.internal.compiler.parser.ast.IASTVisitor;
+
 public class ScopeStatement extends Statement {
 	
 	public Statement statement;
@@ -10,6 +13,14 @@ public class ScopeStatement extends Statement {
     	super(loc);
     	this.statement = s;
     }
+    
+	public void accept0(IASTVisitor visitor) {
+		boolean children = visitor.visit(this);
+		if (children) {
+			TreeVisitor.acceptChildren(visitor, statement);
+		}
+		visitor.endVisit(this);
+	}
     
     @Override
     public Statement semantic(Scope sc, SemanticContext context) {

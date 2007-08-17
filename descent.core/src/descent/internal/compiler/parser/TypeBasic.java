@@ -3,13 +3,15 @@ package descent.internal.compiler.parser;
 import static descent.internal.compiler.parser.MATCH.MATCHconvert;
 import static descent.internal.compiler.parser.MATCH.MATCHexact;
 import static descent.internal.compiler.parser.MATCH.MATCHnomatch;
-import static descent.internal.compiler.parser.TY.Tbool;
 import static descent.internal.compiler.parser.TY.Tbit;
+import static descent.internal.compiler.parser.TY.Tbool;
 import static descent.internal.compiler.parser.TY.Tvoid;
 
 import java.math.BigInteger;
 
 import org.eclipse.core.runtime.Assert;
+
+import descent.internal.compiler.parser.ast.IASTVisitor;
 
 public class TypeBasic extends Type {
 
@@ -30,6 +32,11 @@ public class TypeBasic extends Type {
 		OutBuffer out = new OutBuffer();
 		toDecoBuffer(out);
 		deco = out.extractData();
+	}
+	
+	public void accept0(IASTVisitor visitor) {
+		boolean children = visitor.visit(this);
+		visitor.endVisit(this);
 	}
 
 	@Override

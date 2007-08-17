@@ -1,8 +1,16 @@
 package descent.internal.compiler.parser;
 
-import static descent.internal.compiler.parser.TOK.*;
-import static descent.internal.compiler.parser.TY.*;
+import static descent.internal.compiler.parser.TOK.TOKdotexp;
+import static descent.internal.compiler.parser.TOK.TOKimport;
+import static descent.internal.compiler.parser.TOK.TOKsuper;
+import static descent.internal.compiler.parser.TOK.TOKthis;
+import static descent.internal.compiler.parser.TOK.TOKtuple;
+import static descent.internal.compiler.parser.TY.Tpointer;
+import melnorme.miscutil.tree.TreeVisitor;
+
 import org.eclipse.core.runtime.Assert;
+
+import descent.internal.compiler.parser.ast.IASTVisitor;
 
 public class DotIdExp extends UnaExp {
 
@@ -16,6 +24,14 @@ public class DotIdExp extends UnaExp {
 	@Override
 	public int getNodeType() {
 		return DOT_ID_EXP;
+	}
+	
+	public void accept0(IASTVisitor visitor) {
+		boolean children = visitor.visit(this);
+		if (children) {
+			TreeVisitor.acceptChildren(visitor, e1);
+		}
+		visitor.endVisit(this);
 	}
 	
 	@Override

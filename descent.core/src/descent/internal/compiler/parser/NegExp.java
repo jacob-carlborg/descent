@@ -1,5 +1,8 @@
 package descent.internal.compiler.parser;
 
+import melnorme.miscutil.tree.TreeVisitor;
+import descent.internal.compiler.parser.ast.IASTVisitor;
+
 public class NegExp extends UnaExp {
 
 	public NegExp(Loc loc, Expression e1) {
@@ -10,7 +13,15 @@ public class NegExp extends UnaExp {
 	public int getNodeType() {
 		return NEG_EXP;
 	}
-
+	
+	public void accept0(IASTVisitor visitor) {
+		boolean children = visitor.visit(this);
+		if (children) {
+			TreeVisitor.acceptChildren(visitor, e1);
+		}
+		visitor.endVisit(this);
+	}
+	
 	@Override
 	public Expression semantic(Scope sc, SemanticContext context) {
 		Expression e;

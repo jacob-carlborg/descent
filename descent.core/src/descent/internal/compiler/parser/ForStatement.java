@@ -2,6 +2,9 @@ package descent.internal.compiler.parser;
 
 import java.math.BigInteger;
 
+import melnorme.miscutil.tree.TreeVisitor;
+import descent.internal.compiler.parser.ast.IASTVisitor;
+
 public class ForStatement extends Statement {
 	
 	public Statement init;
@@ -16,6 +19,18 @@ public class ForStatement extends Statement {
 		this.increment = increment;
 		this.body = body;		
 	}
+	
+	public void accept0(IASTVisitor visitor) {
+		boolean children = visitor.visit(this);
+		if (children) {
+			TreeVisitor.acceptChildren(visitor, init);
+			TreeVisitor.acceptChildren(visitor, condition);
+			TreeVisitor.acceptChildren(visitor, increment);
+			TreeVisitor.acceptChildren(visitor, body);
+		}
+		visitor.endVisit(this);
+	}
+
 	
 	@Override
 	public Statement semantic(Scope sc, SemanticContext context) {

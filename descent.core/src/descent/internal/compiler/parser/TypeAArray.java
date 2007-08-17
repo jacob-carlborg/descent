@@ -1,5 +1,8 @@
 package descent.internal.compiler.parser;
 
+import melnorme.miscutil.tree.TreeVisitor;
+import descent.internal.compiler.parser.ast.IASTVisitor;
+
 public class TypeAArray extends Type {
 	
 	public Type index;
@@ -9,6 +12,15 @@ public class TypeAArray extends Type {
 		super(TY.Taarray, t);
 		this.index = index;
 		this.key = null;
+	}
+	
+	public void accept0(IASTVisitor visitor) {
+		boolean children = visitor.visit(this);
+		if (children) {
+			TreeVisitor.acceptChildren(visitor, index);
+			TreeVisitor.acceptChildren(visitor, key);
+		}
+		visitor.endVisit(this);
 	}
 	
 	@Override

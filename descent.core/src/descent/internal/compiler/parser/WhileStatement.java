@@ -1,5 +1,8 @@
 package descent.internal.compiler.parser;
 
+import melnorme.miscutil.tree.TreeVisitor;
+import descent.internal.compiler.parser.ast.IASTVisitor;
+
 
 public class WhileStatement extends Statement {
 	
@@ -34,6 +37,15 @@ public class WhileStatement extends Statement {
 	@Override
 	public int getNodeType() {
 		return WHILE_STATEMENT;
+	}
+	
+	public void accept0(IASTVisitor visitor) {
+		boolean children = visitor.visit(this);
+		if (children) {
+			TreeVisitor.acceptChildren(visitor, condition);
+			TreeVisitor.acceptChildren(visitor, body);
+		}
+		visitor.endVisit(this);
 	}
 
 }

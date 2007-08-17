@@ -1,7 +1,15 @@
 package descent.internal.compiler.parser;
 
-import static descent.internal.compiler.parser.TY.*;
-import static descent.internal.compiler.parser.MATCH.*;
+import static descent.internal.compiler.parser.MATCH.MATCHconvert;
+import static descent.internal.compiler.parser.MATCH.MATCHexact;
+import static descent.internal.compiler.parser.TY.Taarray;
+import static descent.internal.compiler.parser.TY.Tarray;
+import static descent.internal.compiler.parser.TY.Tclass;
+import static descent.internal.compiler.parser.TY.Tdelegate;
+import static descent.internal.compiler.parser.TY.Tpointer;
+import static descent.internal.compiler.parser.TY.Ttypedef;
+import static descent.internal.compiler.parser.TY.Tvoid;
+import descent.internal.compiler.parser.ast.IASTVisitor;
 
 public class NullExp extends Expression {
 	
@@ -11,6 +19,12 @@ public class NullExp extends Expression {
 		super(loc, TOK.TOKnull);
 		this.committed = false;
 	}
+	
+	public void accept0(IASTVisitor visitor) {
+		boolean children = visitor.visit(this);
+		visitor.endVisit(this);
+	}
+
 	
 	@Override
 	public Expression castTo(Scope sc, Type t, SemanticContext context) {

@@ -29,9 +29,12 @@ import static descent.internal.compiler.parser.TY.Twchar;
 import java.util.ArrayList;
 import java.util.List;
 
+import melnorme.miscutil.tree.TreeVisitor;
+
 import org.eclipse.core.runtime.Assert;
 
 import descent.core.compiler.IProblem;
+import descent.internal.compiler.parser.ast.IASTVisitor;
 
 public class ForeachStatement extends Statement {
 	
@@ -61,6 +64,17 @@ public class ForeachStatement extends Statement {
 		this.aggr = aggr;
 		this.body = body;		
 	}
+	
+	public void accept0(IASTVisitor visitor) {
+		boolean children = visitor.visit(this);
+		if (children) {
+			TreeVisitor.acceptChildren(visitor, arguments);
+			TreeVisitor.acceptChildren(visitor, aggr);
+			TreeVisitor.acceptChildren(visitor, body);
+		}
+		visitor.endVisit(this);
+	}
+
 	
 	@Override
 	public Statement semantic(Scope sc, SemanticContext context) {

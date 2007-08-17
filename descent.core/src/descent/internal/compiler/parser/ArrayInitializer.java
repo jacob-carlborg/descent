@@ -3,7 +3,10 @@ package descent.internal.compiler.parser;
 import java.util.ArrayList;
 import java.util.List;
 
+import melnorme.miscutil.tree.TreeVisitor;
+
 import descent.core.compiler.IProblem;
+import descent.internal.compiler.parser.ast.IASTVisitor;
 
 public class ArrayInitializer extends Initializer {
 	
@@ -12,6 +15,15 @@ public class ArrayInitializer extends Initializer {
 	
 	public ArrayInitializer(Loc loc) {
 		super(loc);
+	}
+	
+	public void accept0(IASTVisitor visitor) {
+		boolean children = visitor.visit(this);
+		if (children) {
+			TreeVisitor.acceptChildren(visitor, index);
+			TreeVisitor.acceptChildren(visitor, value);
+		}
+		visitor.endVisit(this);
 	}
 	
 	public void addInit(Expression index, Initializer value) {

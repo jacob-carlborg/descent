@@ -2,6 +2,9 @@ package descent.internal.compiler.parser;
 
 import java.util.List;
 
+import melnorme.miscutil.tree.TreeVisitor;
+import descent.internal.compiler.parser.ast.IASTVisitor;
+
 public class TemplateDeclaration extends ScopeDsymbol {
 	
 	// Wether this template declaration is just a wrapper for "class B(T) ..."
@@ -16,6 +19,16 @@ public class TemplateDeclaration extends ScopeDsymbol {
 		super(loc, id);
 		this.parameters = parameters;
 		this.members = decldefs;
+	}
+	
+	public void accept0(IASTVisitor visitor) {
+		boolean children = visitor.visit(this);
+		if (children) {
+			TreeVisitor.acceptChildren(visitor, ident);
+			TreeVisitor.acceptChildren(visitor, parameters);
+			TreeVisitor.acceptChildren(visitor, members);
+		}
+		visitor.endVisit(this);
 	}
 	
 	@Override

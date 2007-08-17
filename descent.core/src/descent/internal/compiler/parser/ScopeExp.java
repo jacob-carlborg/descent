@@ -1,5 +1,8 @@
 package descent.internal.compiler.parser;
 
+import melnorme.miscutil.tree.TreeVisitor;
+import descent.internal.compiler.parser.ast.IASTVisitor;
+
 public class ScopeExp extends Expression {
 
 	public ScopeDsymbol sds;
@@ -13,6 +16,15 @@ public class ScopeExp extends Expression {
 	public int getNodeType() {
 		return SCOPE_EXP;
 	}
+	
+	public void accept0(IASTVisitor visitor) {
+		boolean children = visitor.visit(this);
+		if (children) {
+			TreeVisitor.acceptChildren(visitor, sds);
+		}
+		visitor.endVisit(this);
+	}
+
 
 	@Override
 	public Expression semantic(Scope sc, SemanticContext context) {

@@ -2,6 +2,9 @@ package descent.internal.compiler.parser;
 
 import java.util.List;
 
+import melnorme.miscutil.tree.TreeVisitor;
+import descent.internal.compiler.parser.ast.IASTVisitor;
+
 public class TupleExp extends Expression {
 
 	public List<Expression> exps;
@@ -11,6 +14,15 @@ public class TupleExp extends Expression {
 		this.exps = exps;
 		this.type = null;
 	}
+	
+	public void accept0(IASTVisitor visitor) {
+		boolean children = visitor.visit(this);
+		if (children) {
+			TreeVisitor.acceptChildren(visitor, exps);
+		}
+		visitor.endVisit(this);
+	}
+
 
 	@Override
 	public Expression castTo(Scope sc, Type t, SemanticContext context) {

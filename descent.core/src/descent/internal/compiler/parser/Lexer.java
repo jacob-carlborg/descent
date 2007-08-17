@@ -87,6 +87,8 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
+import melnorme.miscutil.Assert;
+
 import descent.core.IProblemRequestor;
 import descent.core.compiler.CharOperation;
 import descent.core.compiler.IProblem;
@@ -146,7 +148,7 @@ public class Lexer implements IProblemRequestor {
 	private boolean tokenizePragmas;
 	private boolean recordLineSeparator;
 	protected final int apiLevel;
-	
+
 	/* package */ Lexer(int apiLevel) {
 		this.apiLevel = apiLevel;
 		//initId();
@@ -155,7 +157,10 @@ public class Lexer implements IProblemRequestor {
 	
 	public void reset(char[] source, int offset, int length, boolean tokenizeComments, boolean tokenizePragmas, boolean tokenizeWhiteSpace, boolean recordLineSeparator) {
 		this.problems = new ArrayList<IProblem>();
-		
+
+		// BrunoM: reset doesn't actually support otherwise
+		Assert.isTrue(source.length == length); 
+
 		// Make input larger and add zeros, to avoid comparing
 		input = new char[length - base + 5];
 		
@@ -201,7 +206,7 @@ public class Lexer implements IProblemRequestor {
 		problems.add(Problem.newSyntaxError(message, id, line, offset, length));
 	}
 	
-	public void error(String message, int id, int line, ASTNode node) {
+	public void error(String message, int id, int line, ASTDmdNode node) {
 		problems.add(Problem.newSyntaxError(message, id, line, node.start, node.length));
 	}
 	
@@ -236,7 +241,7 @@ public class Lexer implements IProblemRequestor {
 				token.value == TOK.TOKblockcomment || token.value == TOK.TOKdocblockcomment ||
 				token.value == TOK.TOKpluscomment || token.value == TOK.TOKdocpluscomment)) {
 			Token.assign(prevToken, token);
-		}
+		} 
 
 	    if (token.next != null) {
 	    	t = token.next;
@@ -246,6 +251,7 @@ public class Lexer implements IProblemRequestor {
 	    } else {
 	    	scan(token);
 	    }
+
 	    return token.value;
 	}
 	
@@ -4318,11 +4324,11 @@ public class Lexer implements IProblemRequestor {
 		}
 	}
 	
-	protected void setMalformed(ASTNode node) {
+	protected void setMalformed(ASTDmdNode node) {
 		node.astFlags |= descent.core.dom.ASTNode.MALFORMED;;
 	}
 	
-	protected void setRecovered(ASTNode node) {
+	protected void setRecovered(ASTDmdNode node) {
 		node.astFlags |= descent.core.dom.ASTNode.MALFORMED;
 	}
 	

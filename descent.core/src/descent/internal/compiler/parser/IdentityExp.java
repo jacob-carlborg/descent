@@ -1,5 +1,8 @@
 package descent.internal.compiler.parser;
 
+import melnorme.miscutil.tree.TreeVisitor;
+import descent.internal.compiler.parser.ast.IASTVisitor;
+
 
 public class IdentityExp extends BinExp {
 
@@ -10,6 +13,15 @@ public class IdentityExp extends BinExp {
 	@Override
 	public int getNodeType() {
 		return IDENTITY_EXP;
+	}
+
+	public void accept0(IASTVisitor visitor) {
+		boolean children = visitor.visit(this);
+		if (children) {
+			TreeVisitor.acceptChildren(visitor, e1);
+			TreeVisitor.acceptChildren(visitor, e2);
+		}
+		visitor.endVisit(this);
 	}
 	
 	@Override
@@ -36,5 +48,5 @@ public class IdentityExp extends BinExp {
 		}
 		return this;
 	}
-
+	
 }

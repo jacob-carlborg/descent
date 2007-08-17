@@ -1,5 +1,8 @@
 package descent.internal.compiler.parser;
 
+import melnorme.miscutil.tree.TreeVisitor;
+import descent.internal.compiler.parser.ast.IASTVisitor;
+
 public class TypeDotIdExp extends Expression {
 
 	public IdentifierExp ident;
@@ -14,6 +17,16 @@ public class TypeDotIdExp extends Expression {
 	public int getNodeType() {
 		return TYPE_DOT_ID_EXP;
 	}
+	
+	public void accept0(IASTVisitor visitor) {
+		boolean children = visitor.visit(this);
+		if (children) {
+			TreeVisitor.acceptChildren(visitor, type);
+			TreeVisitor.acceptChildren(visitor, ident);
+		}
+		visitor.endVisit(this);
+	}
+
 
 	@Override
 	public Expression semantic(Scope sc, SemanticContext context) {

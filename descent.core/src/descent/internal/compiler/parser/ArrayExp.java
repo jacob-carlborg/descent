@@ -2,6 +2,9 @@ package descent.internal.compiler.parser;
 
 import java.util.List;
 
+import melnorme.miscutil.tree.TreeVisitor;
+import descent.internal.compiler.parser.ast.IASTVisitor;
+
 public class ArrayExp extends UnaExp {
 
 	public List<Expression> arguments;
@@ -14,6 +17,14 @@ public class ArrayExp extends UnaExp {
 	@Override
 	public int getNodeType() {
 		return ARRAY_EXP;
+	}
+	
+	public void accept0(IASTVisitor visitor) {
+		boolean children = visitor.visit(this);
+		if (children) {
+			TreeVisitor.acceptChildren(visitor, e1);
+		}
+		visitor.endVisit(this);
 	}
 
 	@Override

@@ -1,5 +1,9 @@
 package descent.internal.compiler.parser;
 
+import melnorme.miscutil.tree.TreeVisitor;
+import descent.internal.compiler.parser.ast.IASTVisitor;
+
+
 public class ForeachRangeStatement extends Statement {
 
 	public TOK op;
@@ -22,6 +26,18 @@ public class ForeachRangeStatement extends Statement {
 	public int getNodeType() {
 		return FOREACH_RANGE_STATEMENT;
 	}
+	
+	public void accept0(IASTVisitor visitor) {
+		boolean children = visitor.visit(this);
+		if (children) {
+			TreeVisitor.acceptChildren(visitor, arg);
+			TreeVisitor.acceptChildren(visitor, lwr);
+			TreeVisitor.acceptChildren(visitor, upr);
+			TreeVisitor.acceptChildren(visitor, body);
+		}
+		visitor.endVisit(this);
+	}
+
 
 	@Override
 	public Statement semantic(Scope sc, SemanticContext context)

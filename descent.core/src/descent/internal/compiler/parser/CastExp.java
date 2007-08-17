@@ -1,7 +1,13 @@
 package descent.internal.compiler.parser;
 
-import static descent.internal.compiler.parser.TY.*;
-import static descent.internal.compiler.parser.TOK.*;
+import static descent.internal.compiler.parser.TOK.TOKcall;
+import static descent.internal.compiler.parser.TOK.TOKvar;
+import static descent.internal.compiler.parser.TY.Tarray;
+import static descent.internal.compiler.parser.TY.Tclass;
+import static descent.internal.compiler.parser.TY.Tsarray;
+import static descent.internal.compiler.parser.TY.Tstruct;
+import melnorme.miscutil.tree.TreeVisitor;
+import descent.internal.compiler.parser.ast.IASTVisitor;
 
 public class CastExp extends UnaExp {
 
@@ -20,6 +26,19 @@ public class CastExp extends UnaExp {
 		this.modifierStart = modifierStart;
 		this.to = null;
 		this.tok = tok;
+	}
+	
+	@Override
+	public int getNodeType() {
+		return CAST_EXP;
+	}
+	
+	public void accept0(IASTVisitor visitor) {
+		boolean children = visitor.visit(this);
+		if (children) {
+			TreeVisitor.acceptChildren(visitor, e1);
+		}
+		visitor.endVisit(this);
 	}
 
 	@Override
@@ -48,11 +67,6 @@ public class CastExp extends UnaExp {
 			return super.checkSideEffect(flag, context);
 		}
 		return 1;
-	}
-
-	@Override
-	public int getNodeType() {
-		return CAST_EXP;
 	}
 
 	@Override

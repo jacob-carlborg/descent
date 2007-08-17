@@ -2,7 +2,10 @@ package descent.internal.compiler.parser;
 
 import java.util.List;
 
+import melnorme.miscutil.tree.TreeVisitor;
+
 import descent.core.compiler.IProblem;
+import descent.internal.compiler.parser.ast.IASTVisitor;
 
 public class TypeFunction extends Type {
 	
@@ -16,6 +19,15 @@ public class TypeFunction extends Type {
 		this.parameters = parameters;
 		this.varargs = varargs;
 		this.linkage = linkage;
+	}
+	
+	public void accept0(IASTVisitor visitor) {
+		boolean children = visitor.visit(this);
+		if (children) {
+			TreeVisitor.acceptChildren(visitor, next);
+			TreeVisitor.acceptChildren(visitor, parameters);
+		}
+		visitor.endVisit(this);
 	}
 	
 	@Override

@@ -2,6 +2,9 @@ package descent.internal.compiler.parser;
 
 import java.util.List;
 
+import melnorme.miscutil.tree.TreeVisitor;
+import descent.internal.compiler.parser.ast.IASTVisitor;
+
 public class ModifierDeclaration extends Dsymbol  {
 	
 	public final Modifier modifier;
@@ -16,6 +19,15 @@ public class ModifierDeclaration extends Dsymbol  {
 	@Override
 	public int getNodeType() {
 		return MODIFIER_DECLARATION;
+	}
+	
+	public void accept0(IASTVisitor visitor) {
+		boolean children = visitor.visit(this);
+		if (children) {
+			TreeVisitor.acceptChildren(visitor, modifier);
+			TreeVisitor.acceptChildren(visitor, declarations);
+		}
+		visitor.endVisit(this);
 	}
 
 }

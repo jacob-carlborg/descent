@@ -1,9 +1,13 @@
 package descent.internal.compiler.parser;
 
-import static descent.internal.compiler.parser.TY.*;
-import static descent.internal.compiler.parser.MATCH.*;
+import static descent.internal.compiler.parser.MATCH.MATCHexact;
+import static descent.internal.compiler.parser.MATCH.MATCHnomatch;
+import static descent.internal.compiler.parser.TY.Tfunction;
+import static descent.internal.compiler.parser.TY.Tpointer;
 
 import org.eclipse.core.runtime.Assert;
+
+import descent.internal.compiler.parser.ast.IASTVisitor;
 
 public class SymOffExp extends Expression {
 
@@ -20,6 +24,11 @@ public class SymOffExp extends Expression {
 			error("need 'this' for address of %s", v.toChars());
 		}
 	}
+	
+	public void accept0(IASTVisitor visitor) {
+		melnorme.miscutil.Assert.fail("accept0 on a fake Node");
+	}
+
 
 	@Override
 	public Expression castTo(Scope sc, Type t, SemanticContext context) {

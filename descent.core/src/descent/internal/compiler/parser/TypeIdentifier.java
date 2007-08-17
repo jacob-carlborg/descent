@@ -1,6 +1,8 @@
 package descent.internal.compiler.parser;
 
+import melnorme.miscutil.tree.TreeVisitor;
 import descent.core.compiler.IProblem;
+import descent.internal.compiler.parser.ast.IASTVisitor;
 
 public class TypeIdentifier extends TypeQualified {
 
@@ -9,6 +11,14 @@ public class TypeIdentifier extends TypeQualified {
 	public TypeIdentifier(Loc loc, IdentifierExp ident) {
 		super(loc, TY.Tident);
 		this.ident = ident;
+	}
+	
+	public void accept0(IASTVisitor visitor) {
+		boolean children = visitor.visit(this);
+		if (children) {
+			TreeVisitor.acceptChildren(visitor, ident);
+		}
+		visitor.endVisit(this);
 	}
 	
 	public TypeIdentifier(Loc loc, Identifier ident) {

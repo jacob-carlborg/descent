@@ -1,10 +1,16 @@
 package descent.internal.compiler.parser;
 
-import static descent.internal.compiler.parser.TY.*;
-import static descent.internal.compiler.parser.TOK.*;
-import static descent.internal.compiler.parser.STC.*;
+import static descent.internal.compiler.parser.STC.STCfield;
+import static descent.internal.compiler.parser.STC.STClazy;
+import static descent.internal.compiler.parser.STC.STCvariadic;
+import static descent.internal.compiler.parser.TOK.TOKvar;
+import static descent.internal.compiler.parser.TY.Tarray;
+import static descent.internal.compiler.parser.TY.Tclass;
+import static descent.internal.compiler.parser.TY.Tsarray;
 
 import org.eclipse.core.runtime.Assert;
+
+import descent.internal.compiler.parser.ast.IASTVisitor;
 
 public class VarExp extends Expression {
 
@@ -15,6 +21,11 @@ public class VarExp extends Expression {
 		this.var = var;
 		this.type = var.type;
 	}
+	
+	public void accept0(IASTVisitor visitor) {
+		melnorme.miscutil.Assert.fail("accept0 on a fake Node");
+	}
+
 
 	@Override
 	public void checkEscape(SemanticContext context) {

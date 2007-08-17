@@ -1,6 +1,8 @@
 package descent.internal.compiler.parser;
 
-public class Modifier extends ASTNode {
+import descent.internal.compiler.parser.ast.IASTVisitor;
+
+public class Modifier extends ASTDmdNode {
 	
 	public TOK tok;
 
@@ -18,6 +20,11 @@ public class Modifier extends ASTNode {
 	@Override
 	public int getNodeType() {
 		return MODIFIER;
+	}
+	
+	public void accept0(IASTVisitor visitor) {
+		boolean children = visitor.visit(this);
+		visitor.endVisit(this);
 	}
 
 }

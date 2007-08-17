@@ -1,5 +1,8 @@
 package descent.internal.compiler.parser;
 
+import melnorme.miscutil.tree.TreeVisitor;
+import descent.internal.compiler.parser.ast.IASTVisitor;
+
 public class LabelDsymbol extends Dsymbol {
 	
 	public LabelStatement statement;
@@ -15,6 +18,15 @@ public class LabelDsymbol extends Dsymbol {
 	@Override
 	public int getNodeType() {
 		return LABEL_DSYMBOL;
+	}
+	
+	public void accept0(IASTVisitor visitor) {
+		boolean children = visitor.visit(this);
+		if (children) {
+			TreeVisitor.acceptChildren(visitor, ident);
+			TreeVisitor.acceptChildren(visitor, statement);
+		}
+		visitor.endVisit(this);
 	}
 
 }

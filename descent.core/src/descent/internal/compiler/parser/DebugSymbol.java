@@ -1,6 +1,10 @@
 package descent.internal.compiler.parser;
 
+import melnorme.miscutil.tree.TreeVisitor;
+
 import org.eclipse.core.runtime.Assert;
+
+import descent.internal.compiler.parser.ast.IASTVisitor;
 
 // TODO this class is not exactly like in DMD
 public class DebugSymbol extends Dsymbol {
@@ -17,6 +21,14 @@ public class DebugSymbol extends Dsymbol {
 		super(loc);
 		this.level = level;
 		this.version = version;		
+	}
+	
+	public void accept0(IASTVisitor visitor) {
+		boolean children = visitor.visit(this);
+		if (children) {
+			TreeVisitor.acceptChildren(visitor, version);
+		}
+		visitor.endVisit(this);
 	}
 	
 	@Override

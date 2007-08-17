@@ -1,6 +1,9 @@
 package descent.internal.compiler.parser;
 
-public class Catch extends ASTNode {
+import melnorme.miscutil.tree.TreeVisitor;
+import descent.internal.compiler.parser.ast.IASTVisitor;
+
+public class Catch extends ASTDmdNode {
 
 	public Loc loc;
 	public Type type;
@@ -19,4 +22,14 @@ public class Catch extends ASTNode {
     	return CATCH;
     }
 
+	public void accept0(IASTVisitor visitor) {
+		boolean children = visitor.visit(this);
+		if (children) {
+			TreeVisitor.acceptChildren(visitor, type);
+			TreeVisitor.acceptChildren(visitor, id);
+			TreeVisitor.acceptChildren(visitor, handler);
+		}
+		visitor.endVisit(this);
+	}
+	
 }

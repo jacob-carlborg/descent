@@ -6,6 +6,7 @@ import java.util.List;
 import org.eclipse.core.runtime.Assert;
 
 import descent.core.compiler.IProblem;
+import descent.internal.compiler.parser.ast.IASTVisitor;
 
 public class ScopeDsymbol extends Dsymbol {
 
@@ -28,6 +29,10 @@ public class ScopeDsymbol extends Dsymbol {
 		this.symtab = null;
 		this.imports = null;
 		this.prots = null;
+	}
+	
+	public void accept0(IASTVisitor visitor) {
+		melnorme.miscutil.Assert.fail("Abstract Class accept0");
 	}
 
 	public void addMember(Dsymbol symbol) {

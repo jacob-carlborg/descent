@@ -1,9 +1,25 @@
 package descent.internal.compiler.parser;
 
+import melnorme.miscutil.tree.TreeVisitor;
+import descent.internal.compiler.parser.ast.IASTVisitor;
+
 public class UnitTestDeclaration extends FuncDeclaration {
 	
 	public UnitTestDeclaration(Loc loc) {
 		super(loc, new IdentifierExp(Loc.ZERO, unitTestId()), STC.STCundefined, null);
+	}
+	
+	@Override
+	public int getNodeType() {
+		return UNIT_TEST_DECLARATION;
+	}
+	
+	public void accept0(IASTVisitor visitor) {
+		boolean children = visitor.visit(this);
+		if (children) {
+			TreeVisitor.acceptChildren(visitor, sourceFbody);
+		}
+		visitor.endVisit(this);
 	}
 	
 	private static int unitTestId;
@@ -50,11 +66,6 @@ public class UnitTestDeclaration extends FuncDeclaration {
 	@Override
 	public boolean addPostInvariant(SemanticContext context) {
 		return false;
-	}
-
-	@Override
-	public int getNodeType() {
-		return UNIT_TEST_DECLARATION;
 	}
 	
 }

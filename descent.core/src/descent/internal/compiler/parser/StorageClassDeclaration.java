@@ -1,10 +1,33 @@
 package descent.internal.compiler.parser;
 
+import static descent.internal.compiler.parser.STC.STCabstract;
+import static descent.internal.compiler.parser.STC.STCauto;
+import static descent.internal.compiler.parser.STC.STCconst;
+import static descent.internal.compiler.parser.STC.STCdeprecated;
+import static descent.internal.compiler.parser.STC.STCextern;
+import static descent.internal.compiler.parser.STC.STCfinal;
+import static descent.internal.compiler.parser.STC.STCoverride;
+import static descent.internal.compiler.parser.STC.STCscope;
+import static descent.internal.compiler.parser.STC.STCstatic;
+import static descent.internal.compiler.parser.STC.STCsynchronized;
+import static descent.internal.compiler.parser.TOK.TOKabstract;
+import static descent.internal.compiler.parser.TOK.TOKauto;
+import static descent.internal.compiler.parser.TOK.TOKconst;
+import static descent.internal.compiler.parser.TOK.TOKdeprecated;
+import static descent.internal.compiler.parser.TOK.TOKextern;
+import static descent.internal.compiler.parser.TOK.TOKfinal;
+import static descent.internal.compiler.parser.TOK.TOKoverride;
+import static descent.internal.compiler.parser.TOK.TOKscope;
+import static descent.internal.compiler.parser.TOK.TOKstatic;
+import static descent.internal.compiler.parser.TOK.TOKsynchronized;
+
 import java.util.List;
-import static descent.internal.compiler.parser.TOK.*;
-import static descent.internal.compiler.parser.STC.*;
+
+import melnorme.miscutil.tree.TreeVisitor;
 
 import org.eclipse.core.runtime.Assert;
+
+import descent.internal.compiler.parser.ast.IASTVisitor;
 
 public class StorageClassDeclaration extends AttribDeclaration {
 
@@ -45,6 +68,15 @@ public class StorageClassDeclaration extends AttribDeclaration {
 	@Override
 	public int getNodeType() {
 		return STORAGE_CLASS_DECLARATION;
+	}
+	
+	public void accept0(IASTVisitor visitor) {
+		boolean children = visitor.visit(this);
+		if (children) {
+			TreeVisitor.acceptChildren(visitor, modifier);
+			TreeVisitor.acceptChildren(visitor, decl);
+		}
+		visitor.endVisit(this);
 	}
 
 	@Override

@@ -2,7 +2,10 @@ package descent.internal.compiler.parser;
 
 import java.util.List;
 
-public class ModuleDeclaration extends ASTNode {
+import melnorme.miscutil.tree.TreeVisitor;
+import descent.internal.compiler.parser.ast.IASTVisitor;
+
+public class ModuleDeclaration extends ASTDmdNode {
 	
 	public IdentifierExp id;
 	public List<IdentifierExp> packages;
@@ -17,14 +20,24 @@ public class ModuleDeclaration extends ASTNode {
 		return MODULE_DECLARATION;
 	}
 	
+	public void accept0(IASTVisitor visitor) {
+		boolean children = visitor.visit(this);
+		if (children) {
+			TreeVisitor.acceptChildren(visitor, packages);
+			TreeVisitor.acceptChildren(visitor, id);
+		}
+		visitor.endVisit(this);
+	}
+	
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
 		sb.append("module ");
-		for(IdentifierExp pack : packages) {
-			sb.append(pack);
-			sb.append('.');
-		}
+		if(packages != null)
+			for(IdentifierExp pack : packages) {
+				sb.append(pack);
+				sb.append('.');
+			}
 		sb.append(id);
 		sb.append(';');
 		return sb.toString();

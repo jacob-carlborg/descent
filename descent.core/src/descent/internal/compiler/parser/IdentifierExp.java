@@ -1,6 +1,7 @@
 package descent.internal.compiler.parser;
 
 import descent.core.compiler.IProblem;
+import descent.internal.compiler.parser.ast.IASTVisitor;
 
 /*
  * Identifier + IdentifierExp
@@ -35,6 +36,11 @@ public class IdentifierExp extends Expression {
 	public IdentifierExp(Loc loc, String ident) {
 		this(loc);
 		this.ident = ident;
+	}
+	
+	public void accept0(IASTVisitor visitor) {
+		visitor.visit(this);
+		visitor.endVisit(this);
 	}
 
 	@Override

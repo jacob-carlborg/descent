@@ -10,7 +10,6 @@ import descent.core.dom.FunctionLiteralDeclarationExpression.Syntax;
 import descent.core.dom.IsTypeSpecializationExpression.TypeSpecialization;
 import descent.core.dom.Modifier.ModifierKeyword;
 import descent.internal.compiler.parser.*;
-import descent.internal.compiler.parser.ASTNode;
 import descent.internal.compiler.parser.AliasDeclaration;
 import descent.internal.compiler.parser.AlignDeclaration;
 import descent.internal.compiler.parser.Argument;
@@ -29,8 +28,8 @@ import descent.internal.compiler.parser.EnumDeclaration;
 import descent.internal.compiler.parser.EnumMember;
 import descent.internal.compiler.parser.Expression;
 import descent.internal.compiler.parser.ForStatement;
-import descent.internal.compiler.parser.ForeachStatement;
 import descent.internal.compiler.parser.ForeachRangeStatement;
+import descent.internal.compiler.parser.ForeachStatement;
 import descent.internal.compiler.parser.GotoCaseStatement;
 import descent.internal.compiler.parser.GotoDefaultStatement;
 import descent.internal.compiler.parser.GotoStatement;
@@ -102,341 +101,341 @@ public class ASTConverter {
 		return result;
 	}
 	
-	public descent.core.dom.ASTNode convert(descent.internal.compiler.parser.ASTNode symbol) {
+	public descent.core.dom.ASTNode convert(descent.internal.compiler.parser.ASTDmdNode symbol) {
 		switch(symbol.getNodeType()) {
-		case ASTNode.ADD_ASSIGN_EXP:
+		case ASTDmdNode.ADD_ASSIGN_EXP:
 			return convert((BinExp) symbol, Assignment.Operator.PLUS_ASSIGN);
-		case ASTNode.ADD_EXP:
+		case ASTDmdNode.ADD_EXP:
 			return convert((BinExp) symbol, InfixExpression.Operator.PLUS);
-		case ASTNode.ADDR_EXP:
+		case ASTDmdNode.ADDR_EXP:
 			return convert((UnaExp) symbol, PrefixExpression.Operator.ADDRESS);
-		case ASTNode.ALIAS_DECLARATION:
+		case ASTDmdNode.ALIAS_DECLARATION:
 			return convert((AliasDeclaration) symbol);
-		case ASTNode.ALIGN_DECLARATION:
+		case ASTDmdNode.ALIGN_DECLARATION:
 			return convert((AlignDeclaration) symbol);
-		case ASTNode.AND_AND_EXP:
+		case ASTDmdNode.AND_AND_EXP:
 			return convert((BinExp) symbol, InfixExpression.Operator.AND_AND);
-		case ASTNode.AND_ASSIGN_EXP:
+		case ASTDmdNode.AND_ASSIGN_EXP:
 			return convert((BinExp) symbol, Assignment.Operator.AND_ASSIGN);
-		case ASTNode.AND_EXP:
+		case ASTDmdNode.AND_EXP:
 			return convert((BinExp) symbol, InfixExpression.Operator.AND);
-		case ASTNode.ANON_DECLARATION:
+		case ASTDmdNode.ANON_DECLARATION:
 			return convert((AnonDeclaration) symbol);
-		case ASTNode.ARGUMENT:
+		case ASTDmdNode.ARGUMENT:
 			return convert((Argument) symbol);
-		case ASTNode.ARRAY_EXP:
+		case ASTDmdNode.ARRAY_EXP:
 			return convert((ArrayExp) symbol);
-		case ASTNode.ARRAY_INITIALIZER:
+		case ASTDmdNode.ARRAY_INITIALIZER:
 			return convert((ArrayInitializer) symbol);
-		case ASTNode.ARRAY_LITERAL_EXP:
+		case ASTDmdNode.ARRAY_LITERAL_EXP:
 			return convert((ArrayLiteralExp) symbol);
-		case ASTNode.ASM_BLOCK:
+		case ASTDmdNode.ASM_BLOCK:
 			return convert((AsmBlock) symbol);
-		case ASTNode.ASM_STATEMENT:
+		case ASTDmdNode.ASM_STATEMENT:
 			return convert((AsmStatement) symbol);
-		case ASTNode.ASSERT_EXP:
+		case ASTDmdNode.ASSERT_EXP:
 			return convert((AssertExp) symbol);
-		case ASTNode.ASSIGN_EXP:
+		case ASTDmdNode.ASSIGN_EXP:
 			return convert((BinExp) symbol, Assignment.Operator.ASSIGN);
-		case ASTNode.ASSOC_ARRAY_LITERAL_EXP:
+		case ASTDmdNode.ASSOC_ARRAY_LITERAL_EXP:
 			return convert((AssocArrayLiteralExp) symbol);
-		case ASTNode.BREAK_STATEMENT:
+		case ASTDmdNode.BREAK_STATEMENT:
 			return convert((BreakStatement) symbol);
-		case ASTNode.CALL_EXP:
+		case ASTDmdNode.CALL_EXP:
 			return convert((CallExp) symbol);
-		case ASTNode.CASE_STATEMENT:
+		case ASTDmdNode.CASE_STATEMENT:
 			return convert((CaseStatement) symbol);
-		case ASTNode.CAST_EXP:
+		case ASTDmdNode.CAST_EXP:
 			return convert((CastExp) symbol);
-		case ASTNode.CAT_ASSIGN_EXP:
+		case ASTDmdNode.CAT_ASSIGN_EXP:
 			return convert((BinExp) symbol, Assignment.Operator.CONCATENATE_ASSIGN);
-		case ASTNode.CAT_EXP:
+		case ASTDmdNode.CAT_EXP:
 			return convert((BinExp) symbol, InfixExpression.Operator.CONCATENATE);
-		case ASTNode.CATCH:
+		case ASTDmdNode.CATCH:
 			return convert((Catch) symbol);
-		case ASTNode.CLASS_DECLARATION:
+		case ASTDmdNode.CLASS_DECLARATION:
 			return convert((ClassDeclaration) symbol);
-		case ASTNode.CMP_EXP:
+		case ASTDmdNode.CMP_EXP:
 			return convert((CmpExp) symbol);
-		case ASTNode.COM_EXP:
+		case ASTDmdNode.COM_EXP:
 			return convert((UnaExp) symbol, PrefixExpression.Operator.INVERT);
-		case ASTNode.COMMA_EXP:
+		case ASTDmdNode.COMMA_EXP:
 			return convert((BinExp) symbol, InfixExpression.Operator.COMMA);
-		case ASTNode.COMPILE_DECLARATION:
+		case ASTDmdNode.COMPILE_DECLARATION:
 			return convert((CompileDeclaration) symbol);
-		case ASTNode.COMPILE_EXP:
+		case ASTDmdNode.COMPILE_EXP:
 			return convert((CompileExp) symbol);
-		case ASTNode.COMPILE_STATEMENT:
+		case ASTDmdNode.COMPILE_STATEMENT:
 			return convert((CompileStatement) symbol);
-		case ASTNode.COMPOUND_STATEMENT:
+		case ASTDmdNode.COMPOUND_STATEMENT:
 			return convert((CompoundStatement) symbol);
-		case ASTNode.COND_EXP:
+		case ASTDmdNode.COND_EXP:
 			return convert((CondExp) symbol);
-		case ASTNode.CONDITIONAL_DECLARATION:
+		case ASTDmdNode.CONDITIONAL_DECLARATION:
 			return convert((ConditionalDeclaration) symbol);
-		case ASTNode.CONDITIONAL_STATEMENT:
+		case ASTDmdNode.CONDITIONAL_STATEMENT:
 			return convert((ConditionalStatement) symbol);
-		case ASTNode.CONTINUE_STATEMENT:
+		case ASTDmdNode.CONTINUE_STATEMENT:
 			return convert((ContinueStatement) symbol);
-		case ASTNode.CTOR_DECLARATION:
+		case ASTDmdNode.CTOR_DECLARATION:
 			return convert((CtorDeclaration) symbol);
-		case ASTNode.DEBUG_SYMBOL:
+		case ASTDmdNode.DEBUG_SYMBOL:
 			return convert((DebugSymbol) symbol);
-		case ASTNode.DECLARATION_EXP:
+		case ASTDmdNode.DECLARATION_EXP:
 			// TODO
 			return convert((DeclarationExp) symbol);
-		case ASTNode.DECLARATION_STATEMENT:
+		case ASTDmdNode.DECLARATION_STATEMENT:
 			return convert((DeclarationStatement) symbol);
-		case ASTNode.DECREMENT_EXP:
+		case ASTDmdNode.DECREMENT_EXP:
 			return convert((DecrementExp) symbol);
-		case ASTNode.DEFAULT_STATEMENT:
+		case ASTDmdNode.DEFAULT_STATEMENT:
 			return convert((DefaultStatement) symbol);
-		case ASTNode.DELETE_DECLARATION:
+		case ASTDmdNode.DELETE_DECLARATION:
 			return convert((DeleteDeclaration) symbol);
-		case ASTNode.DELETE_EXP:
+		case ASTDmdNode.DELETE_EXP:
 			return convert((DeleteExp) symbol);
-		case ASTNode.DIV_ASSIGN_EXP:
+		case ASTDmdNode.DIV_ASSIGN_EXP:
 			return convert((BinExp) symbol, Assignment.Operator.DIVIDE_ASSIGN);
-		case ASTNode.DIV_EXP:
+		case ASTDmdNode.DIV_EXP:
 			return convert((BinExp) symbol, InfixExpression.Operator.DIVIDE);
-		case ASTNode.DO_STATEMENT:
+		case ASTDmdNode.DO_STATEMENT:
 			return convert((DoStatement) symbol);
-		case ASTNode.DOLLAR_EXP:
+		case ASTDmdNode.DOLLAR_EXP:
 			return convert((DollarExp) symbol);
-		case ASTNode.DOT_ID_EXP:
+		case ASTDmdNode.DOT_ID_EXP:
 			return convert((DotIdExp) symbol);
-		case ASTNode.DOT_TEMPLATE_INSTANCE_EXP:
+		case ASTDmdNode.DOT_TEMPLATE_INSTANCE_EXP:
 			return convert((DotTemplateInstanceExp) symbol);
 		// ->
-		case ASTNode.DTOR_DECLARATION:
+		case ASTDmdNode.DTOR_DECLARATION:
 			return convert((DtorDeclaration) symbol);
-		case ASTNode.ENUM_DECLARATION:
+		case ASTDmdNode.ENUM_DECLARATION:
 			return convert((EnumDeclaration) symbol);
-		case ASTNode.ENUM_MEMBER:
+		case ASTDmdNode.ENUM_MEMBER:
 			return convert((EnumMember) symbol);
-		case ASTNode.EQUAL_EXP:
+		case ASTDmdNode.EQUAL_EXP:
 			return convert((EqualExp) symbol);
-		case ASTNode.EXP_INITIALIZER:
+		case ASTDmdNode.EXP_INITIALIZER:
 			return convert((ExpInitializer) symbol);
-		case ASTNode.EXP_STATEMENT:
+		case ASTDmdNode.EXP_STATEMENT:
 			return convert((ExpStatement) symbol);
-		case ASTNode.FILE_EXP:
+		case ASTDmdNode.FILE_EXP:
 			return convert((FileExp) symbol);
-		case ASTNode.FOR_STATEMENT:
+		case ASTDmdNode.FOR_STATEMENT:
 			return convert((ForStatement) symbol);
-		case ASTNode.FOREACH_STATEMENT:
+		case ASTDmdNode.FOREACH_STATEMENT:
 			return convert((ForeachStatement) symbol);
-		case ASTNode.FOREACH_RANGE_STATEMENT:
+		case ASTDmdNode.FOREACH_RANGE_STATEMENT:
 			return convert((ForeachRangeStatement) symbol);
-		case ASTNode.FUNC_DECLARATION:
+		case ASTDmdNode.FUNC_DECLARATION:
 			return convert((FuncDeclaration) symbol);
-		case ASTNode.FUNC_EXP:
+		case ASTDmdNode.FUNC_EXP:
 			return convert((FuncExp) symbol);
-		case ASTNode.FUNC_LITERAL_DECLARATION:
+		case ASTDmdNode.FUNC_LITERAL_DECLARATION:
 			// should never reach this point
 			return null;
-		case ASTNode.GOTO_CASE_STATEMENT:
+		case ASTDmdNode.GOTO_CASE_STATEMENT:
 			return convert((GotoCaseStatement) symbol);
-		case ASTNode.GOTO_DEFAULT_STATEMENT:
+		case ASTDmdNode.GOTO_DEFAULT_STATEMENT:
 			return convert((GotoDefaultStatement) symbol);
-		case ASTNode.GOTO_STATEMENT:
+		case ASTDmdNode.GOTO_STATEMENT:
 			return convert((GotoStatement) symbol);
-		case ASTNode.IDENTIFIER_EXP:
+		case ASTDmdNode.IDENTIFIER_EXP:
 			return convert((IdentifierExp) symbol);
-		case ASTNode.IDENTITY_EXP:
+		case ASTDmdNode.IDENTITY_EXP:
 			return convert((IdentityExp) symbol);
-		case ASTNode.IF_STATEMENT:
+		case ASTDmdNode.IF_STATEMENT:
 			return convert((IfStatement) symbol);
-		case ASTNode.IFTYPE_EXP:
+		case ASTDmdNode.IFTYPE_EXP:
 			return convert((IftypeExp) symbol);
-		case ASTNode.IMPORT:
+		case ASTDmdNode.IMPORT:
 			return convert((Import) symbol);
-		case ASTNode.IN_EXP:
+		case ASTDmdNode.IN_EXP:
 			return convert((BinExp) symbol, InfixExpression.Operator.IN);
-		case ASTNode.INCREMENT_EXP:
+		case ASTDmdNode.INCREMENT_EXP:
 			return convert((IncrementExp) symbol);
-		case ASTNode.INTEGER_EXP:
+		case ASTDmdNode.INTEGER_EXP:
 			return convert((IntegerExp) symbol);
-		case ASTNode.INTERFACE_DECLARATION:
+		case ASTDmdNode.INTERFACE_DECLARATION:
 			return convert((InterfaceDeclaration) symbol);
-		case ASTNode.INVARIANT_DECLARATION:
+		case ASTDmdNode.INVARIANT_DECLARATION:
 			return convert((InvariantDeclaration) symbol);
-		case ASTNode.LABEL_STATEMENT:
+		case ASTDmdNode.LABEL_STATEMENT:
 			return convert((LabelStatement) symbol);
-		case ASTNode.LINK_DECLARATION:
+		case ASTDmdNode.LINK_DECLARATION:
 			return convert((LinkDeclaration) symbol);
-		case ASTNode.MIN_ASSIGN_EXP:
+		case ASTDmdNode.MIN_ASSIGN_EXP:
 			return convert((BinExp) symbol, Assignment.Operator.MINUS_ASSIGN);
-		case ASTNode.MIN_EXP:
+		case ASTDmdNode.MIN_EXP:
 			return convert((BinExp) symbol, InfixExpression.Operator.MINUS);
-		case ASTNode.PROT_DECLARATION:
+		case ASTDmdNode.PROT_DECLARATION:
 			return convert((ProtDeclaration) symbol);
-		case ASTNode.TEMPLATE_MIXIN:
+		case ASTDmdNode.TEMPLATE_MIXIN:
 			return convert((TemplateMixin) symbol);
-		case ASTNode.MOD_ASSIGN_EXP:
+		case ASTDmdNode.MOD_ASSIGN_EXP:
 			return convert((BinExp) symbol, Assignment.Operator.REMAINDER_ASSIGN);
-		case ASTNode.MOD_EXP:
+		case ASTDmdNode.MOD_EXP:
 			return convert((BinExp) symbol, InfixExpression.Operator.REMAINDER);
-		case ASTNode.MODIFIER:
+		case ASTDmdNode.MODIFIER:
 			return convert((Modifier) symbol);
-		case ASTNode.MODIFIER_DECLARATION:
+		case ASTDmdNode.MODIFIER_DECLARATION:
 			return convert((ModifierDeclaration) symbol);
-		case ASTNode.MODULE:
+		case ASTDmdNode.MODULE:
 			return convert((Module) symbol);
-		case ASTNode.MODULE_DECLARATION:
+		case ASTDmdNode.MODULE_DECLARATION:
 			return convert((ModuleDeclaration) symbol);
-		case ASTNode.MUL_ASSIGN_EXP:
+		case ASTDmdNode.MUL_ASSIGN_EXP:
 			return convert((BinExp) symbol, Assignment.Operator.TIMES_ASSIGN);
-		case ASTNode.MUL_EXP:
+		case ASTDmdNode.MUL_EXP:
 			return convert((BinExp) symbol, InfixExpression.Operator.TIMES);
-		case ASTNode.MULTI_IMPORT:
+		case ASTDmdNode.MULTI_IMPORT:
 			return convert((MultiImport) symbol);
-		case ASTNode.MULTI_STRING_EXP:
+		case ASTDmdNode.MULTI_STRING_EXP:
 			return convert((MultiStringExp) symbol);
-		case ASTNode.NEG_EXP:
+		case ASTDmdNode.NEG_EXP:
 			return convert((UnaExp) symbol, PrefixExpression.Operator.NEGATIVE);
-		case ASTNode.NEW_ANON_CLASS_EXP:
+		case ASTDmdNode.NEW_ANON_CLASS_EXP:
 			return convert((NewAnonClassExp) symbol);
-		case ASTNode.NEW_DECLARATION:
+		case ASTDmdNode.NEW_DECLARATION:
 			return convert((NewDeclaration) symbol);
-		case ASTNode.NEW_EXP:
+		case ASTDmdNode.NEW_EXP:
 			return convert((NewExp) symbol);
-		case ASTNode.NOT_EXP:
+		case ASTDmdNode.NOT_EXP:
 			return convert((UnaExp) symbol, PrefixExpression.Operator.NOT);
-		case ASTNode.NULL_EXP:
+		case ASTDmdNode.NULL_EXP:
 			return convert((NullExp) symbol);
-		case ASTNode.ON_SCOPE_STATEMENT:
+		case ASTDmdNode.ON_SCOPE_STATEMENT:
 			return convert((OnScopeStatement) symbol);
-		case ASTNode.OR_ASSIGN_EXP:
+		case ASTDmdNode.OR_ASSIGN_EXP:
 			return convert((BinExp) symbol, Assignment.Operator.OR_ASSIGN);
-		case ASTNode.OR_EXP:
+		case ASTDmdNode.OR_EXP:
 			return convert((BinExp) symbol, InfixExpression.Operator.OR);
-		case ASTNode.OR_OR_EXP:
+		case ASTDmdNode.OR_OR_EXP:
 			return convert((BinExp) symbol, InfixExpression.Operator.OR_OR);
-		case ASTNode.PAREN_EXP:
+		case ASTDmdNode.PAREN_EXP:
 			return convert((ParenExp) symbol);
-		case ASTNode.POST_EXP:
+		case ASTDmdNode.POST_EXP:
 			return convert((PostExp) symbol);
-		case ASTNode.PRAGMA_DECLARATION:
+		case ASTDmdNode.PRAGMA_DECLARATION:
 			return convert((PragmaDeclaration) symbol);
-		case ASTNode.PRAGMA_STATEMENT:
+		case ASTDmdNode.PRAGMA_STATEMENT:
 			return convert((PragmaStatement) symbol);
-		case ASTNode.PTR_EXP:
+		case ASTDmdNode.PTR_EXP:
 			return convert((UnaExp) symbol, PrefixExpression.Operator.POINTER);
-		case ASTNode.REAL_EXP:
+		case ASTDmdNode.REAL_EXP:
 			return convert((RealExp) symbol);
-		case ASTNode.RETURN_STATEMENT:
+		case ASTDmdNode.RETURN_STATEMENT:
 			return convert((ReturnStatement) symbol);
-		case ASTNode.SCOPE_EXP:
+		case ASTDmdNode.SCOPE_EXP:
 			return convert((ScopeExp) symbol);
-		case ASTNode.SHL_ASSIGN_EXP:
+		case ASTDmdNode.SHL_ASSIGN_EXP:
 			return convert((BinExp) symbol, Assignment.Operator.LEFT_SHIFT_ASSIGN);
-		case ASTNode.SHL_EXP:
+		case ASTDmdNode.SHL_EXP:
 			return convert((BinExp) symbol, InfixExpression.Operator.LEFT_SHIFT);
-		case ASTNode.SHR_ASSIGN_EXP:
+		case ASTDmdNode.SHR_ASSIGN_EXP:
 			return convert((BinExp) symbol, Assignment.Operator.RIGHT_SHIFT_SIGNED_ASSIGN);
-		case ASTNode.SHR_EXP:
+		case ASTDmdNode.SHR_EXP:
 			return convert((BinExp) symbol, InfixExpression.Operator.RIGHT_SHIFT_SIGNED);
-		case ASTNode.SLICE_EXP:
+		case ASTDmdNode.SLICE_EXP:
 			return convert((SliceExp) symbol);
-		case ASTNode.STATIC_ASSERT:
+		case ASTDmdNode.STATIC_ASSERT:
 			return convert((StaticAssert) symbol);
-		case ASTNode.STATIC_ASSERT_STATEMENT:
+		case ASTDmdNode.STATIC_ASSERT_STATEMENT:
 			return convert((StaticAssertStatement) symbol);
-		case ASTNode.STATIC_CTOR_DECLARATION:
+		case ASTDmdNode.STATIC_CTOR_DECLARATION:
 			return convert((StaticCtorDeclaration) symbol);
-		case ASTNode.STATIC_DTOR_DECLARATION:
+		case ASTDmdNode.STATIC_DTOR_DECLARATION:
 			return convert((StaticDtorDeclaration) symbol);
-		case ASTNode.STORAGE_CLASS_DECLARATION:
+		case ASTDmdNode.STORAGE_CLASS_DECLARATION:
 			return convert((StorageClassDeclaration) symbol);
-		case ASTNode.STRING_EXP:
+		case ASTDmdNode.STRING_EXP:
 			return convert((StringExp) symbol);
-		case ASTNode.STRUCT_DECLARATION:
+		case ASTDmdNode.STRUCT_DECLARATION:
 			return convert((StructDeclaration) symbol);
-		case ASTNode.STRUCT_INITIALIZER:
+		case ASTDmdNode.STRUCT_INITIALIZER:
 			return convert((StructInitializer) symbol);
-		case ASTNode.SUPER_EXP:
+		case ASTDmdNode.SUPER_EXP:
 			return convert((SuperExp) symbol);
-		case ASTNode.SYNCHRONIZED_STATEMENT:
+		case ASTDmdNode.SYNCHRONIZED_STATEMENT:
 			return convert((SynchronizedStatement) symbol);
-		case ASTNode.SWITCH_STATEMENT:
+		case ASTDmdNode.SWITCH_STATEMENT:
 			return convert((SwitchStatement) symbol);
-		case ASTNode.TEMPLATE_ALIAS_PARAMETER:
+		case ASTDmdNode.TEMPLATE_ALIAS_PARAMETER:
 			return convert((TemplateAliasParameter) symbol);
-		case ASTNode.TEMPLATE_DECLARATION:
+		case ASTDmdNode.TEMPLATE_DECLARATION:
 			return convert((TemplateDeclaration) symbol);
-		case ASTNode.TEMPLATE_INSTANCE:
+		case ASTDmdNode.TEMPLATE_INSTANCE:
 			return convert((TemplateInstance) symbol);
-		case ASTNode.TEMPLATE_TUPLE_PARAMETER:
+		case ASTDmdNode.TEMPLATE_TUPLE_PARAMETER:
 			return convert((TemplateTupleParameter) symbol);
-		case ASTNode.TEMPLATE_TYPE_PARAMETER:
+		case ASTDmdNode.TEMPLATE_TYPE_PARAMETER:
 			return convert((TemplateTypeParameter) symbol);
-		case ASTNode.TEMPLATE_VALUE_PARAMETER:
+		case ASTDmdNode.TEMPLATE_VALUE_PARAMETER:
 			return convert((TemplateValueParameter) symbol);
-		case ASTNode.THIS_EXP:
+		case ASTDmdNode.THIS_EXP:
 			return convert((ThisExp) symbol);
-		case ASTNode.THROW_STATEMENT:
+		case ASTDmdNode.THROW_STATEMENT:
 			return convert((ThrowStatement) symbol);
-		case ASTNode.TRAITS_EXP:
+		case ASTDmdNode.TRAITS_EXP:
 			return convert((TraitsExp) symbol);
-		case ASTNode.TRY_CATCH_STATEMENT:
+		case ASTDmdNode.TRY_CATCH_STATEMENT:
 			return convert((TryCatchStatement) symbol);
-		case ASTNode.TRY_FINALLY_STATEMENT:
+		case ASTDmdNode.TRY_FINALLY_STATEMENT:
 			return convert((TryFinallyStatement) symbol);
-		case ASTNode.TYPEID_EXP:
+		case ASTDmdNode.TYPEID_EXP:
 			return convert((TypeidExp) symbol);
-		case ASTNode.TYPEDEF_DECLARATION:
+		case ASTDmdNode.TYPEDEF_DECLARATION:
 			return convert((TypedefDeclaration) symbol);
-		case ASTNode.TYPE_A_ARRAY:
+		case ASTDmdNode.TYPE_A_ARRAY:
 			return convert((TypeAArray) symbol);
-		case ASTNode.TYPE_BASIC:
+		case ASTDmdNode.TYPE_BASIC:
 			return convert((TypeBasic) symbol);
-		case ASTNode.TYPE_D_ARRAY:
+		case ASTDmdNode.TYPE_D_ARRAY:
 			return convert((TypeDArray) symbol);
-		case ASTNode.TYPE_DELEGATE:
+		case ASTDmdNode.TYPE_DELEGATE:
 			return convert((TypeDelegate) symbol);
-		case ASTNode.TYPE_DOT_ID_EXP:
+		case ASTDmdNode.TYPE_DOT_ID_EXP:
 			return convert((TypeDotIdExp) symbol);
-		case ASTNode.TYPE_EXP:
+		case ASTDmdNode.TYPE_EXP:
 			return convert((TypeExp) symbol);
-		case ASTNode.TYPE_FUNCTION:
+		case ASTDmdNode.TYPE_FUNCTION:
 			// should never reach this point
 			return null;
-		case ASTNode.TYPE_IDENTIFIER:
+		case ASTDmdNode.TYPE_IDENTIFIER:
 			return convert((TypeIdentifier) symbol);
-		case ASTNode.TYPE_INSTANCE:
+		case ASTDmdNode.TYPE_INSTANCE:
 			return convert((TypeInstance) symbol);
-		case ASTNode.TYPE_POINTER:
+		case ASTDmdNode.TYPE_POINTER:
 			return convert((TypePointer) symbol);
-		case ASTNode.TYPE_S_ARRAY:
+		case ASTDmdNode.TYPE_S_ARRAY:
 			return convert((TypeSArray) symbol);
-		case ASTNode.TYPE_SLICE:
+		case ASTDmdNode.TYPE_SLICE:
 			return convert((TypeSlice) symbol);
-		case ASTNode.TYPE_TYPEOF:
+		case ASTDmdNode.TYPE_TYPEOF:
 			return convert((TypeTypeof) symbol);
-		case ASTNode.UADD_EXP:
+		case ASTDmdNode.UADD_EXP:
 			return convert((UnaExp) symbol, PrefixExpression.Operator.POSITIVE);
-		case ASTNode.UNION_DECLARATION:
+		case ASTDmdNode.UNION_DECLARATION:
 			return convert((UnionDeclaration) symbol);
-		case ASTNode.UNIT_TEST_DECLARATION:
+		case ASTDmdNode.UNIT_TEST_DECLARATION:
 			return convert((UnitTestDeclaration) symbol);
-		case ASTNode.USHR_ASSIGN_EXP:
+		case ASTDmdNode.USHR_ASSIGN_EXP:
 			return convert((BinExp) symbol, Assignment.Operator.RIGHT_SHIFT_UNSIGNED_ASSIGN);
-		case ASTNode.USHR_EXP:
+		case ASTDmdNode.USHR_EXP:
 			return convert((BinExp) symbol, InfixExpression.Operator.RIGHT_SHIFT_UNSIGNED);
-		case ASTNode.VERSION_SYMBOL:
+		case ASTDmdNode.VERSION_SYMBOL:
 			return convert((VersionSymbol) symbol);
-		case ASTNode.VOID_INITIALIZER:
+		case ASTDmdNode.VOID_INITIALIZER:
 			return convert((VoidInitializer) symbol);
-		case ASTNode.VOLATILE_STATEMENT:
+		case ASTDmdNode.VOLATILE_STATEMENT:
 			return convert((VolatileStatement) symbol);
-		case ASTNode.WHILE_STATEMENT:
+		case ASTDmdNode.WHILE_STATEMENT:
 			return convert((WhileStatement) symbol);
-		case ASTNode.WITH_STATEMENT:
+		case ASTDmdNode.WITH_STATEMENT:
 			return convert((WithStatement) symbol);
-		case ASTNode.XOR_ASSIGN_EXP:
+		case ASTDmdNode.XOR_ASSIGN_EXP:
 			return convert((BinExp) symbol, Assignment.Operator.XOR_ASSIGN);
-		case ASTNode.XOR_EXP:
+		case ASTDmdNode.XOR_EXP:
 			return convert((BinExp) symbol, InfixExpression.Operator.XOR);
 		}
 		return null;
@@ -446,7 +445,7 @@ public class ASTConverter {
 		descent.core.dom.TraitsExpression b = new descent.core.dom.TraitsExpression(ast);
 		b.setName(convert(a.ident));
 		if (a.args != null) {
-			for(ASTNode node : a.args) {
+			for(ASTDmdNode node : a.args) {
 				b.arguments().add(convert(node));
 			}
 		}
@@ -863,7 +862,7 @@ public class ASTConverter {
 		TemplateType tt = new TemplateType(ast);
 		tt.setName(convert(tempinst.idents.get(0)));
 		if (tempinst.tiargs != null) {
-			for(ASTNode node : tempinst.tiargs) {
+			for(ASTDmdNode node : tempinst.tiargs) {
 				tt.arguments().add(convert(node));
 			}
 		}
@@ -874,7 +873,7 @@ public class ASTConverter {
 	public descent.core.dom.TemplateType convert(TemplateInstance a) {
 		descent.core.dom.TemplateType b = new descent.core.dom.TemplateType(ast);
 		b.setName(convert(a.idents.get(0)));
-		for(ASTNode node : a.tiargs) {
+		for(ASTDmdNode node : a.tiargs) {
 			b.arguments().add(convert(node));
 		}
 		b.setSourceRange(a.start, a.length);
@@ -961,7 +960,7 @@ public class ASTConverter {
 	public descent.core.dom.Declaration convert(TemplateDeclaration a) {
 		if (a.wrapper) {
 			Dsymbol wrappedSymbol = a.members.get(0);
-			if (wrappedSymbol.getNodeType() == ASTNode.FUNC_DECLARATION) {
+			if (wrappedSymbol.getNodeType() == ASTDmdNode.FUNC_DECLARATION) {
 				FunctionDeclaration b = (FunctionDeclaration) convert(wrappedSymbol);
 				convertTemplateParameters(b.templateParameters(), a.parameters);
 				b.setSourceRange(a.start, a.length);
@@ -1499,7 +1498,7 @@ public class ASTConverter {
 		}
 	}
 	
-	public void fillDeclaration(descent.core.dom.Declaration b, ASTNode a) {
+	public void fillDeclaration(descent.core.dom.Declaration b, ASTDmdNode a) {
 		convertModifiers(b.modifiers(), a.modifiers);
 		if (a.preDdocs != null) {
 			b.preDDocs().addAll(a.preDdocs);
@@ -2315,7 +2314,7 @@ public class ASTConverter {
 		descent.core.dom.TemplateType b = new descent.core.dom.TemplateType(ast);
 		b.setName(convert(a.tempinst.idents.get(0)));
 		if (a.tempinst.tiargs != null) {
-			for(ASTNode node : a.tempinst.tiargs) {
+			for(ASTDmdNode node : a.tempinst.tiargs) {
 				b.arguments().add(convert(node));
 			}
 		}
@@ -2447,7 +2446,7 @@ public class ASTConverter {
 	
 	public descent.core.dom.Declaration convertDeclaration(Dsymbol symbol) {
 		switch(symbol.getNodeType()) {
-		case ASTNode.VAR_DECLARATION: {
+		case ASTDmdNode.VAR_DECLARATION: {
 			VarDeclaration a = (VarDeclaration) symbol;
 			descent.core.dom.VariableDeclaration b = new descent.core.dom.VariableDeclaration(ast);
 			if (a.sourceType != null) {
@@ -2457,7 +2456,7 @@ public class ASTConverter {
 			fillDeclaration(b, a);
 			return b;
 		}
-		case ASTNode.ALIAS_DECLARATION: {
+		case ASTDmdNode.ALIAS_DECLARATION: {
 			AliasDeclaration a = (AliasDeclaration) symbol;
 			descent.core.dom.AliasDeclaration b = new descent.core.dom.AliasDeclaration(ast);
 			if (a.type != null) {
@@ -2470,7 +2469,7 @@ public class ASTConverter {
 			fillDeclaration(b, a);
 			return b;
 		}
-		case ASTNode.TYPEDEF_DECLARATION: {
+		case ASTDmdNode.TYPEDEF_DECLARATION: {
 			TypedefDeclaration a = (TypedefDeclaration) symbol;
 			descent.core.dom.TypedefDeclaration b = new descent.core.dom.TypedefDeclaration(ast);
 			if (a.sourceBasetype != null) {
@@ -2493,12 +2492,12 @@ public class ASTConverter {
 		for(int i = 0; i < source.size(); i++) {
 			Dsymbol symbol = source.get(i);
 			switch(symbol.getNodeType()) {
-			case ASTNode.VAR_DECLARATION: {
+			case ASTDmdNode.VAR_DECLARATION: {
 				descent.core.dom.VariableDeclaration b = new descent.core.dom.VariableDeclaration(ast);
 				int start = -1;
 				int end = -1;
 				boolean first = true;
-				while(symbol.getNodeType() == ASTNode.VAR_DECLARATION) {
+				while(symbol.getNodeType() == ASTDmdNode.VAR_DECLARATION) {
 					VarDeclaration a = (VarDeclaration) symbol;
 					if (first) {
 						if (a.sourceType != null) {
@@ -2533,12 +2532,12 @@ public class ASTConverter {
 				destination.add(b);
 				break;
 			}
-			case ASTNode.ALIAS_DECLARATION: {
+			case ASTDmdNode.ALIAS_DECLARATION: {
 				descent.core.dom.AliasDeclaration b = new descent.core.dom.AliasDeclaration(ast);
 				int start = -1;
 				int end = -1;
 				boolean first = true;
-				while(symbol.getNodeType() == ASTNode.ALIAS_DECLARATION) {
+				while(symbol.getNodeType() == ASTDmdNode.ALIAS_DECLARATION) {
 					AliasDeclaration a = (AliasDeclaration) symbol;
 					if (first) {
 						if (a.type != null) {
@@ -2576,12 +2575,12 @@ public class ASTConverter {
 				destination.add(b);
 				break;
 			}
-			case ASTNode.TYPEDEF_DECLARATION: {
+			case ASTDmdNode.TYPEDEF_DECLARATION: {
 				descent.core.dom.TypedefDeclaration b = new descent.core.dom.TypedefDeclaration(ast);
 				int start = -1;
 				int end = -1;
 				boolean first = true;
-				while(symbol.getNodeType() == ASTNode.TYPEDEF_DECLARATION) {
+				while(symbol.getNodeType() == ASTDmdNode.TYPEDEF_DECLARATION) {
 					TypedefDeclaration a = (TypedefDeclaration) symbol;
 					if (first) {
 						if (a.sourceBasetype != null) {
@@ -2619,11 +2618,11 @@ public class ASTConverter {
 				destination.add(b);
 				break;
 			}
-			case ASTNode.PROT_DECLARATION: {
+			case ASTDmdNode.PROT_DECLARATION: {
 				convert((ProtDeclaration) symbol, destination);
 				break;
 			}
-			case ASTNode.STORAGE_CLASS_DECLARATION: {
+			case ASTDmdNode.STORAGE_CLASS_DECLARATION: {
 				convert((StorageClassDeclaration) symbol, destination);
 				break;
 			}
@@ -2711,7 +2710,7 @@ public class ASTConverter {
 		return b;
 	}
 	
-	public descent.core.dom.Type convertTemplateMixin(int start, int length, Type typeof, List<IdentifierExp> ids, List<ASTNode> tiargs) {
+	public descent.core.dom.Type convertTemplateMixin(int start, int length, Type typeof, List<IdentifierExp> ids, List<ASTDmdNode> tiargs) {
 		descent.core.dom.Type ret = null;
 		if (typeof != null) {
 			ret = convert(typeof);
@@ -2730,7 +2729,7 @@ public class ASTConverter {
 				} else {
 					TemplateType type = new TemplateType(ast);
 					type.setName(convert(id));
-					for(ASTNode node : tiargs) {
+					for(ASTDmdNode node : tiargs) {
 						type.arguments().add(convert(node));
 					}
 					second = type;
@@ -2797,23 +2796,23 @@ public class ASTConverter {
 	}
 	
 	public descent.core.dom.Expression convert(descent.internal.compiler.parser.Expression exp) {
-		return (descent.core.dom.Expression) convert((ASTNode) exp);
+		return (descent.core.dom.Expression) convert((ASTDmdNode) exp);
 	}
 	
 	public descent.core.dom.Initializer convert(descent.internal.compiler.parser.Initializer init) {
-		return (descent.core.dom.Initializer) convert((ASTNode) init);
+		return (descent.core.dom.Initializer) convert((ASTDmdNode) init);
 	}
 	
 	public descent.core.dom.Statement convert(descent.internal.compiler.parser.Statement stm) {
-		return (descent.core.dom.Statement) convert((ASTNode) stm);
+		return (descent.core.dom.Statement) convert((ASTDmdNode) stm);
 	}
 	
 	public descent.core.dom.Type convert(descent.internal.compiler.parser.Type type) {
-		return (descent.core.dom.Type) convert((ASTNode) type);
+		return (descent.core.dom.Type) convert((ASTDmdNode) type);
 	}
 	
 	public descent.core.dom.TemplateParameter convert(descent.internal.compiler.parser.TemplateParameter type) {
-		return (descent.core.dom.TemplateParameter) convert((ASTNode) type);
+		return (descent.core.dom.TemplateParameter) convert((ASTDmdNode) type);
 	}
 
 }

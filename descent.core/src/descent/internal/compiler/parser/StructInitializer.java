@@ -3,6 +3,9 @@ package descent.internal.compiler.parser;
 import java.util.ArrayList;
 import java.util.List;
 
+import melnorme.miscutil.tree.TreeVisitor;
+import descent.internal.compiler.parser.ast.IASTVisitor;
+
 public class StructInitializer extends Initializer {
 	
 	public List<IdentifierExp> field;
@@ -11,6 +14,16 @@ public class StructInitializer extends Initializer {
 	public StructInitializer(Loc loc) {
 		super(loc);
 	}
+	
+	public void accept0(IASTVisitor visitor) {
+		boolean children = visitor.visit(this);
+		if (children) {
+			TreeVisitor.acceptChildren(visitor, field);
+			TreeVisitor.acceptChildren(visitor, value);
+		}
+		visitor.endVisit(this);
+	}
+	
 	
 	public void addInit(IdentifierExp field, Initializer value) {
 		if (this.field == null) {

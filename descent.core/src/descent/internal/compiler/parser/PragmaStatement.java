@@ -2,7 +2,10 @@ package descent.internal.compiler.parser;
 
 import java.util.List;
 
+import melnorme.miscutil.tree.TreeVisitor;
+
 import descent.core.compiler.IProblem;
+import descent.internal.compiler.parser.ast.IASTVisitor;
 
 public class PragmaStatement extends Statement {
 
@@ -16,6 +19,17 @@ public class PragmaStatement extends Statement {
 		this.args = args;
 		this.body = body;
 	}
+	
+	public void accept0(IASTVisitor visitor) {
+		boolean children = visitor.visit(this);
+		if (children) {
+			TreeVisitor.acceptChildren(visitor, ident);
+			TreeVisitor.acceptChildren(visitor, args);
+			TreeVisitor.acceptChildren(visitor, body);
+		}
+		visitor.endVisit(this);
+	}
+
 	
 	@Override
 	public Statement semantic(Scope sc, SemanticContext context) {

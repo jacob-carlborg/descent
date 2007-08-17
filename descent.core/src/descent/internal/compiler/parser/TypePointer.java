@@ -1,9 +1,20 @@
 package descent.internal.compiler.parser;
 
+import melnorme.miscutil.tree.TreeVisitor;
+import descent.internal.compiler.parser.ast.IASTVisitor;
+
 public class TypePointer extends Type {
 	
 	public TypePointer(Type next) {
 		super(TY.Tpointer, next);
+	}
+	
+	public void accept0(IASTVisitor visitor) {
+		boolean children = visitor.visit(this);
+		if (children) {
+			TreeVisitor.acceptChildren(visitor, next);
+		}
+		visitor.endVisit(this);
 	}
 	
 	@Override

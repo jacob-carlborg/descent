@@ -2,7 +2,10 @@ package descent.internal.compiler.parser;
 
 import java.math.BigInteger;
 
+import melnorme.miscutil.tree.TreeVisitor;
+
 import descent.core.compiler.IProblem;
+import descent.internal.compiler.parser.ast.IASTVisitor;
 
 public class EnumDeclaration extends ScopeDsymbol {
 
@@ -39,12 +42,23 @@ public class EnumDeclaration extends ScopeDsymbol {
 	public Type getType() {
 		return type;
 	}
+	
+	public void accept0(IASTVisitor visitor) {
+		boolean children = visitor.visit(this);
+		if (children) {
+			TreeVisitor.acceptChildren(visitor, modifiers);
+			TreeVisitor.acceptChildren(visitor, ident);
+			TreeVisitor.acceptChildren(visitor, memtype);
+			TreeVisitor.acceptChildren(visitor, members);
+		}
+		visitor.endVisit(this);
+	}
 
 	@Override
 	public EnumDeclaration isEnumDeclaration() {
 		return this;
 	}
-
+	
 	@Override
 	public String kind() {
 		return "enum";
@@ -143,11 +157,11 @@ public class EnumDeclaration extends ScopeDsymbol {
 			e = em.value;
 			if (e != null) {
 				e = e.semantic(sce, context);
-				e = e.optimize(ASTNode.WANTvalue);
+				e = e.optimize(ASTDmdNode.WANTvalue);
 				// Need to copy it because we're going to change the type
 				e = e.copy();
 				e = e.implicitCastTo(sc, memtype, context);
-				e = e.optimize(ASTNode.WANTvalue);
+				e = e.optimize(ASTDmdNode.WANTvalue);
 				number = e.toInteger(context);
 				e.type = t;
 			} else { // Default is the previous number plus 1

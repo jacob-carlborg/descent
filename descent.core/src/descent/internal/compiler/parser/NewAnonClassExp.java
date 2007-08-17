@@ -2,6 +2,9 @@ package descent.internal.compiler.parser;
 
 import java.util.List;
 
+import melnorme.miscutil.tree.TreeVisitor;
+import descent.internal.compiler.parser.ast.IASTVisitor;
+
 public class NewAnonClassExp extends Expression {
 
 	public Expression thisexp;
@@ -19,13 +22,24 @@ public class NewAnonClassExp extends Expression {
 	}
 
 	@Override
-	public int checkSideEffect(int flag, SemanticContext context) {
-		return 1;
+	public int getNodeType() {
+		return NEW_ANON_CLASS_EXP;
+	}
+	
+	public void accept0(IASTVisitor visitor) {
+		boolean children = visitor.visit(this);
+		if (children) {
+			TreeVisitor.acceptChildren(visitor, thisexp);
+			TreeVisitor.acceptChildren(visitor, newargs);
+			TreeVisitor.acceptChildren(visitor, cd);
+			TreeVisitor.acceptChildren(visitor, arguments);
+		}
+		visitor.endVisit(this);
 	}
 
 	@Override
-	public int getNodeType() {
-		return NEW_ANON_CLASS_EXP;
+	public int checkSideEffect(int flag, SemanticContext context) {
+		return 1;
 	}
 
 	@Override

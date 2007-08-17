@@ -2,6 +2,8 @@ package descent.internal.compiler.parser;
 
 import java.math.BigInteger;
 
+import descent.internal.compiler.parser.ast.IASTVisitor;
+
 public class RealExp extends Expression {
 
 	public String str;
@@ -13,6 +15,12 @@ public class RealExp extends Expression {
 		this.value = value;
 		this.type = type;
 	}
+	
+	public void accept0(IASTVisitor visitor) {
+		boolean children = visitor.visit(this);
+		visitor.endVisit(this);
+	}
+
 
 	@Override
 	public Expression castTo(Scope sc, Type t, SemanticContext context) {

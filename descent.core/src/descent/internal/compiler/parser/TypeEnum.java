@@ -1,6 +1,8 @@
 package descent.internal.compiler.parser;
 
+import melnorme.miscutil.Assert;
 import descent.core.compiler.IProblem;
+import descent.internal.compiler.parser.ast.IASTVisitor;
 
 public class TypeEnum extends Type {
 	
@@ -9,6 +11,10 @@ public class TypeEnum extends Type {
 	public TypeEnum(EnumDeclaration sym) {
 		super(TY.Tenum, null);
 		this.sym = sym;
+	}
+	
+	public void accept0(IASTVisitor visitor) {
+		Assert.fail("Accept0 on fake class");
 	}
 	
 	@Override

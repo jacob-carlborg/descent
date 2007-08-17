@@ -1,9 +1,16 @@
 package descent.internal.compiler.parser;
 
+import melnorme.miscutil.Assert;
+import descent.internal.compiler.parser.ast.IASTVisitor;
+
 public class HaltExp extends Expression {
 
 	public HaltExp(Loc loc) {
 		super(loc, TOK.TOKhalt);
+	}
+	
+	public void accept0(IASTVisitor visitor) {
+		Assert.fail("Accept0 fake node");
 	}
 	
 	@Override

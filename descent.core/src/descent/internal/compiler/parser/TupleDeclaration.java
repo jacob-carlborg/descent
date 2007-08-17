@@ -3,15 +3,19 @@ package descent.internal.compiler.parser;
 import java.util.ArrayList;
 import java.util.List;
 
+import melnorme.miscutil.tree.TreeVisitor;
+
 import org.eclipse.core.runtime.Assert;
+
+import descent.internal.compiler.parser.ast.IASTVisitor;
 
 public class TupleDeclaration extends Declaration {
 
-	public List<ASTNode> objects;
+	public List<ASTDmdNode> objects;
 	public boolean isexp; // true: expression tuple
 	public TypeTuple tupletype; // !=NULL if this is a type tuple
 
-	public TupleDeclaration(Loc loc, IdentifierExp ident, List<ASTNode> objects) {
+	public TupleDeclaration(Loc loc, IdentifierExp ident, List<ASTDmdNode> objects) {
 		super(loc, ident);
 		this.type = null;
 		this.objects = objects;
@@ -23,7 +27,17 @@ public class TupleDeclaration extends Declaration {
 	public int getNodeType() {
 		return TUPLE_DECLARATION;
 	}
-
+	
+	public void accept0(IASTVisitor visitor) {
+		boolean children = visitor.visit(this);
+		if (children) {
+			melnorme.miscutil.Assert.failTODO(); // what is
+			TreeVisitor.acceptChildren(visitor, type);
+			TreeVisitor.acceptChildren(visitor, ident);
+			TreeVisitor.acceptChildren(visitor, objects);
+		}
+		visitor.endVisit(this);
+	}
 	@Override
 	public Type getType() {
 		/*
@@ -38,7 +52,7 @@ public class TupleDeclaration extends Declaration {
 			 * It's only a type tuple if all the Object's are types
 			 */
 			for (int i = 0; i < objects.size(); i++) {
-				ASTNode o = objects.get(i);
+				ASTDmdNode o = objects.get(i);
 
 				if (o.dyncast() != DYNCAST.DYNCAST_TYPE) {
 					return null;

@@ -16,7 +16,7 @@ import java.util.List;
 
 import descent.core.compiler.IProblem;
 
-public abstract class Expression extends ASTNode implements Cloneable {
+public abstract class Expression extends ASTDmdNode implements Cloneable {
 
 	public static List<Expression> arraySyntaxCopy(List<Expression> exps) {
 		List<Expression> a = null;

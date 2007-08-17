@@ -3,12 +3,19 @@ package descent.internal.compiler.parser;
 import java.util.ArrayList;
 import java.util.List;
 
+import melnorme.miscutil.Assert;
+import descent.internal.compiler.parser.ast.IASTVisitor;
+
 public class TypeTuple extends Type {
 
 	public List<Argument> arguments;
 
 	private TypeTuple() {
 		super(TY.Ttuple, null);
+	}
+	
+	public void accept0(IASTVisitor visitor) {
+		Assert.fail("Accept0 on fake class");
 	}
 
 	public static TypeTuple newArguments(List<Argument> arguments) {

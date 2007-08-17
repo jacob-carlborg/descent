@@ -1,9 +1,16 @@
 package descent.internal.compiler.parser;
 
-import static descent.internal.compiler.parser.TOK.*;
-import static descent.internal.compiler.parser.TY.*;
+import static descent.internal.compiler.parser.TOK.TOKdotexp;
+import static descent.internal.compiler.parser.TOK.TOKimport;
+import static descent.internal.compiler.parser.TOK.TOKtype;
+import static descent.internal.compiler.parser.TY.Tclass;
+import static descent.internal.compiler.parser.TY.Tpointer;
+import static descent.internal.compiler.parser.TY.Tstruct;
+import melnorme.miscutil.tree.TreeVisitor;
 
 import org.eclipse.core.runtime.Assert;
+
+import descent.internal.compiler.parser.ast.IASTVisitor;
 
 public class DotTemplateInstanceExp extends UnaExp {
 
@@ -12,6 +19,19 @@ public class DotTemplateInstanceExp extends UnaExp {
 	public DotTemplateInstanceExp(Loc loc, Expression e, TemplateInstance ti) {
 		super(loc, TOK.TOKdotti, e);
 		this.ti = ti;
+	}
+	
+	@Override
+	public int getNodeType() {
+		return DOT_TEMPLATE_INSTANCE_EXP;
+	}
+	
+	public void accept0(IASTVisitor visitor) {
+		boolean children = visitor.visit(this);
+		if (children) {
+			TreeVisitor.acceptChildren(visitor, e1);
+		}
+		visitor.endVisit(this);
 	}
 
 	@Override
@@ -133,11 +153,6 @@ public class DotTemplateInstanceExp extends UnaExp {
 		expToCBuffer(buf, hgs, e1, PREC.PREC_primary, context);
 	    buf.writeByte('.');
 	    ti.toCBuffer(buf, hgs, context);
-	}
-
-	@Override
-	public int getNodeType() {
-		return DOT_TEMPLATE_INSTANCE_EXP;
 	}
 
 }

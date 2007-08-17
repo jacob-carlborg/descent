@@ -7,7 +7,7 @@ import org.eclipse.core.runtime.Assert;
 
 import descent.core.compiler.IProblem;
 
-public abstract class Dsymbol extends ASTNode {
+public abstract class Dsymbol extends ASTDmdNode {
 
 	public static List<Dsymbol> arraySyntaxCopy(List<Dsymbol> a) {
 		List<Dsymbol> b = new ArrayList<Dsymbol>();
@@ -135,6 +135,8 @@ public abstract class Dsymbol extends ASTNode {
 		}
 
 		Dsymbol s = (Dsymbol) (o);
+		if(ident == null)
+			return s.ident == null;
 		return ident.equals(s.ident);
 	}
 

@@ -1,11 +1,21 @@
 package descent.internal.compiler.parser;
 
+import melnorme.miscutil.tree.TreeVisitor;
 import descent.core.compiler.IProblem;
+import descent.internal.compiler.parser.ast.IASTVisitor;
 
 public class TemplateTupleParameter extends TemplateParameter {
 	
 	public TemplateTupleParameter(Loc loc, IdentifierExp ident) {
 		super(loc, ident);
+	}
+	
+	public void accept0(IASTVisitor visitor) {
+		boolean children = visitor.visit(this);
+		if (children) {
+			TreeVisitor.acceptChildren(visitor, ident);
+		}
+		visitor.endVisit(this);
 	}
 	
 	@Override

@@ -1,6 +1,8 @@
 package descent.internal.compiler.parser;
 
 import java.math.BigInteger;
+import melnorme.miscutil.Assert;
+import descent.internal.compiler.parser.ast.IASTVisitor;
 
 public class IndexExp extends BinExp {
 	
@@ -18,6 +20,10 @@ public class IndexExp extends BinExp {
 	@Override
 	public int getNodeType() {
 		return 0;
+	}
+	
+	public void accept0(IASTVisitor visitor) {
+		Assert.fail("accept0 fake node");
 	}
 
 	@Override

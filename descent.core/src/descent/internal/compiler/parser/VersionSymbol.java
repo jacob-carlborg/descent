@@ -1,5 +1,8 @@
 package descent.internal.compiler.parser;
 
+import melnorme.miscutil.tree.TreeVisitor;
+import descent.internal.compiler.parser.ast.IASTVisitor;
+
 // TODO this class is not exactly like in DMD
 public class VersionSymbol extends Dsymbol {
 	
@@ -25,6 +28,14 @@ public class VersionSymbol extends Dsymbol {
 	@Override
 	public int getNodeType() {
 		return VERSION_SYMBOL;
+	}
+	
+	public void accept0(IASTVisitor visitor) {
+		boolean children = visitor.visit(this);
+		if (children) {
+			TreeVisitor.acceptChildren(visitor, version);
+		}
+		visitor.endVisit(this);
 	}
 
 }

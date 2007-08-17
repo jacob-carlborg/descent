@@ -1,8 +1,35 @@
 package descent.internal.compiler.parser;
 
-import static descent.internal.compiler.parser.TY.*;
-import static descent.internal.compiler.parser.TOK.*;
-import static descent.internal.compiler.parser.MATCH.*;
+import static descent.internal.compiler.parser.MATCH.MATCHnomatch;
+import static descent.internal.compiler.parser.TOK.TOKadd;
+import static descent.internal.compiler.parser.TOK.TOKaddass;
+import static descent.internal.compiler.parser.TOK.TOKandass;
+import static descent.internal.compiler.parser.TOK.TOKassign;
+import static descent.internal.compiler.parser.TOK.TOKcatass;
+import static descent.internal.compiler.parser.TOK.TOKdivass;
+import static descent.internal.compiler.parser.TOK.TOKin;
+import static descent.internal.compiler.parser.TOK.TOKmin;
+import static descent.internal.compiler.parser.TOK.TOKminass;
+import static descent.internal.compiler.parser.TOK.TOKminusminus;
+import static descent.internal.compiler.parser.TOK.TOKmodass;
+import static descent.internal.compiler.parser.TOK.TOKmulass;
+import static descent.internal.compiler.parser.TOK.TOKnull;
+import static descent.internal.compiler.parser.TOK.TOKorass;
+import static descent.internal.compiler.parser.TOK.TOKplusplus;
+import static descent.internal.compiler.parser.TOK.TOKremove;
+import static descent.internal.compiler.parser.TOK.TOKshlass;
+import static descent.internal.compiler.parser.TOK.TOKshrass;
+import static descent.internal.compiler.parser.TOK.TOKstring;
+import static descent.internal.compiler.parser.TOK.TOKushrass;
+import static descent.internal.compiler.parser.TOK.TOKxorass;
+import static descent.internal.compiler.parser.TY.Tarray;
+import static descent.internal.compiler.parser.TY.Tbool;
+import static descent.internal.compiler.parser.TY.Tclass;
+import static descent.internal.compiler.parser.TY.Terror;
+import static descent.internal.compiler.parser.TY.Tpointer;
+import static descent.internal.compiler.parser.TY.Tsarray;
+import static descent.internal.compiler.parser.TY.Tstruct;
+import static descent.internal.compiler.parser.TY.Tvoid;
 
 import java.math.BigInteger;
 
@@ -22,7 +49,7 @@ public abstract class BinExp extends Expression {
 			this.length = e2.start + e2.length - e1.start;
 		}
 	}
-
+	
 	public Expression BinExp_semantic(Scope sc, SemanticContext context) {
 		e1 = e1.semantic(sc, context);
 		if (e1.type == null) {

@@ -1,6 +1,8 @@
 package descent.internal.compiler.parser;
 
+import melnorme.miscutil.tree.TreeVisitor;
 import descent.core.compiler.IProblem;
+import descent.internal.compiler.parser.ast.IASTVisitor;
 
 
 public class StaticAssert extends Dsymbol {
@@ -17,6 +19,15 @@ public class StaticAssert extends Dsymbol {
 	@Override
 	public int addMember(Scope sc, ScopeDsymbol sd, int memnum, SemanticContext context) {
 		return 0; // we didn't add anything
+	}
+	
+	public void accept0(IASTVisitor visitor) {
+		boolean children = visitor.visit(this);
+		if (children) {
+			TreeVisitor.acceptChildren(visitor, exp);
+			TreeVisitor.acceptChildren(visitor, msg);
+		}
+		visitor.endVisit(this);
 	}
 	
 	@Override

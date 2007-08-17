@@ -1,9 +1,24 @@
 package descent.internal.compiler.parser;
 
+import melnorme.miscutil.tree.TreeVisitor;
+import descent.internal.compiler.parser.ast.IASTVisitor;
+
 public class StaticDtorDeclaration extends FuncDeclaration {
 	
 	public StaticDtorDeclaration(Loc loc) {
 		super(loc, new IdentifierExp(Loc.ZERO, Id.staticDtor), STC.STCstatic, null);
+	}
+	
+	public void accept0(IASTVisitor visitor) {
+		boolean children = visitor.visit(this);
+		if (children) {
+			TreeVisitor.acceptChildren(visitor, modifiers);
+			TreeVisitor.acceptChildren(visitor, type);
+			TreeVisitor.acceptChildren(visitor, ident);
+			// Template args?
+			TreeVisitor.acceptChildren(visitor, sourceFbody);
+		}
+		visitor.endVisit(this);
 	}
 	
 	@Override

@@ -1,6 +1,7 @@
 package descent.internal.compiler.parser;
 
 
+
 public abstract class UnaExp extends Expression {
 	
 	public Expression e1;
@@ -9,6 +10,8 @@ public abstract class UnaExp extends Expression {
 		super(loc, op);
 		this.e1 = e1;		
 	}
+
+
 	
 	@Override
 	public Expression semantic(Scope sc, SemanticContext context) {

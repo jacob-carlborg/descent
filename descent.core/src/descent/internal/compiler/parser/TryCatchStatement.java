@@ -2,6 +2,9 @@ package descent.internal.compiler.parser;
 
 import java.util.List;
 
+import melnorme.miscutil.tree.TreeVisitor;
+import descent.internal.compiler.parser.ast.IASTVisitor;
+
 public class TryCatchStatement extends Statement {
 	
 	public Statement body;
@@ -18,4 +21,13 @@ public class TryCatchStatement extends Statement {
 		return TRY_CATCH_STATEMENT;
 	}
 
+	
+	public void accept0(IASTVisitor visitor) {
+		boolean children = visitor.visit(this);
+		if (children) {
+			TreeVisitor.acceptChildren(visitor, body);
+			TreeVisitor.acceptChildren(visitor, catches);
+		}
+		visitor.endVisit(this);
+	}
 }

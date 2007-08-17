@@ -1,11 +1,21 @@
 package descent.internal.compiler.parser;
 
+import melnorme.miscutil.tree.TreeVisitor;
 import descent.core.compiler.IProblem;
+import descent.internal.compiler.parser.ast.IASTVisitor;
 
 public class InvariantDeclaration extends FuncDeclaration {
 	
 	public InvariantDeclaration(Loc loc) {
 		super(loc, new IdentifierExp(Loc.ZERO, Id.classInvariant), STC.STCundefined, null);
+	}
+	
+	public void accept0(IASTVisitor visitor) {
+		boolean children = visitor.visit(this);
+		if (children) {
+			TreeVisitor.acceptChildren(visitor, sourceFbody);
+		}
+		visitor.endVisit(this);
 	}
 	
 	@Override

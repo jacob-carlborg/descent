@@ -3,6 +3,8 @@ package descent.internal.compiler.parser;
 import java.util.ArrayList;
 import java.util.List;
 
+import melnorme.miscutil.tree.TreeVisitor;
+
 import org.eclipse.core.runtime.Assert;
 
 import descent.core.compiler.IProblem;
@@ -10,6 +12,7 @@ import descent.core.dom.AST;
 import descent.core.dom.Comment;
 import descent.core.dom.Pragma;
 import descent.core.dom.PublicScanner;
+import descent.internal.compiler.parser.ast.IASTVisitor;
 
 public class Module extends Package {
 
@@ -32,6 +35,15 @@ public class Module extends Package {
 	@Override
 	public Module isModule() {
 		return this;
+	}
+	
+	public void accept0(IASTVisitor visitor) {
+		boolean children = visitor.visit(this);
+		if (children) {
+			TreeVisitor.acceptChildren(visitor, md);
+			TreeVisitor.acceptChildren(visitor, members);
+		}
+		visitor.endVisit(this);
 	}
 
 	public void semantic(SemanticContext context) {

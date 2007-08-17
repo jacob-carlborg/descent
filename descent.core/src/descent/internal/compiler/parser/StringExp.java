@@ -1,9 +1,18 @@
 package descent.internal.compiler.parser;
 
-import static descent.internal.compiler.parser.TY.*;
-import static descent.internal.compiler.parser.MATCH.*;
+import static descent.internal.compiler.parser.MATCH.MATCHexact;
+import static descent.internal.compiler.parser.MATCH.MATCHnomatch;
+import static descent.internal.compiler.parser.TY.Tarray;
+import static descent.internal.compiler.parser.TY.Tchar;
+import static descent.internal.compiler.parser.TY.Tdchar;
+import static descent.internal.compiler.parser.TY.Tpointer;
+import static descent.internal.compiler.parser.TY.Tsarray;
+import static descent.internal.compiler.parser.TY.Tvoid;
+import static descent.internal.compiler.parser.TY.Twchar;
 
 import org.eclipse.core.runtime.Assert;
+
+import descent.internal.compiler.parser.ast.IASTVisitor;
 
 public class StringExp extends Expression {
 
@@ -28,6 +37,12 @@ public class StringExp extends Expression {
 		this.postfix = postfix;
 	}
 
+	public void accept0(IASTVisitor visitor) {
+		boolean children = visitor.visit(this);
+		visitor.endVisit(this);
+	}
+
+	
 	@Override
 	public Expression castTo(Scope sc, Type t, SemanticContext context) {
 		// TODO semantic

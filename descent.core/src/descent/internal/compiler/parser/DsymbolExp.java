@@ -1,12 +1,14 @@
 package descent.internal.compiler.parser;
 
-import static descent.internal.compiler.parser.TY.*;
-import static descent.internal.compiler.parser.TOK.*;
+import static descent.internal.compiler.parser.TOK.TOKstring;
+import static descent.internal.compiler.parser.TY.Tsarray;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import melnorme.miscutil.tree.TreeVisitor;
 import descent.core.compiler.IProblem;
+import descent.internal.compiler.parser.ast.IASTVisitor;
 
 public class DsymbolExp extends Expression {
 
@@ -20,6 +22,14 @@ public class DsymbolExp extends Expression {
 	@Override
 	public int getNodeType() {
 		return DSYMBOL_EXP;
+	}
+	
+	public void accept0(IASTVisitor visitor) {
+		boolean children = visitor.visit(this);
+		if (children) {
+			TreeVisitor.acceptChildren(visitor, s);
+		}
+		visitor.endVisit(this);
 	}
 	
 	@Override
@@ -162,7 +172,7 @@ public class DsymbolExp extends Expression {
 				List<Expression> exps = new ArrayList<Expression>(tup.objects
 						.size());
 				for (int i = 0; i < tup.objects.size(); i++) {
-					ASTNode o = tup.objects.get(i);
+					ASTDmdNode o = tup.objects.get(i);
 					if (o.dyncast() != DYNCAST.DYNCAST_EXPRESSION) {
 						error("%s is not an expression", o.toChars());
 					} else {

@@ -1,5 +1,8 @@
 package descent.internal.compiler.parser;
 
+import melnorme.miscutil.tree.TreeVisitor;
+import descent.internal.compiler.parser.ast.IASTVisitor;
+
 public class ShrAssignExp extends BinExp {
 
 	public ShrAssignExp(Loc loc, Expression e1, Expression e2) {
@@ -10,7 +13,16 @@ public class ShrAssignExp extends BinExp {
 	public int getNodeType() {
 		return SHR_ASSIGN_EXP;
 	}
-
+	
+	public void accept0(IASTVisitor visitor) {
+		boolean children = visitor.visit(this);
+		if (children) {
+			TreeVisitor.acceptChildren(visitor, e1);
+			TreeVisitor.acceptChildren(visitor, e2);
+		}
+		visitor.endVisit(this);
+	}
+	
 	@Override
 	public Expression semantic(Scope sc, SemanticContext context)
 	{
@@ -33,5 +45,5 @@ public class ShrAssignExp extends BinExp {
 	    e2 = e2.castTo(sc, Type.tshiftcnt, context);
 	    return this;
 	}
-
+	
 }

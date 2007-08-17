@@ -2,6 +2,8 @@ package descent.internal.compiler.parser;
 
 import java.math.BigInteger;
 
+import descent.internal.compiler.parser.ast.IASTVisitor;
+
 public class VoidInitializer extends Initializer {
 	
 	public Type type;
@@ -9,6 +11,12 @@ public class VoidInitializer extends Initializer {
 	public VoidInitializer(Loc loc) {
 		super(loc);
 	}
+	
+	public void accept0(IASTVisitor visitor) {
+		boolean children = visitor.visit(this);
+		visitor.endVisit(this);
+	}
+	
 	
 	@Override
 	public Expression toExpression(SemanticContext context) {

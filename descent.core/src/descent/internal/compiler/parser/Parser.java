@@ -129,7 +129,6 @@ public class Parser extends Lexer {
 				false /* don't tokenize whitespace */, 
 				true /* record line separators */,
 				ast.apiLevel());
-		
 		this.ast = ast;
 		comments = new ArrayList<Comment>();
 		pragmas = new ArrayList<Pragma>();
@@ -153,6 +152,8 @@ public class Parser extends Lexer {
 		
 		module.problems = problems;
 		module.ast = ast;
+		module.start = 0;
+		module.length = this.end;
 		return module;
 	}
 	
@@ -1848,7 +1849,7 @@ public class Parser extends Lexer {
 		TemplateMixin tm;
 		IdentifierExp id = null;
 		Type tqual;
-		List<ASTNode> tiargs;
+		List<ASTDmdNode> tiargs;
 		List<IdentifierExp> idents;
 
 		nextToken();
@@ -1939,17 +1940,17 @@ public class Parser extends Lexer {
 	}
 
 	@SuppressWarnings("unchecked")
-	private List<ASTNode> parseTemplateArgumentList() {
+	private List<ASTDmdNode> parseTemplateArgumentList() {
 	    if (token.value != TOKlparen)
 	    {   
 	    	parsingErrorInsertToComplete(prevToken, "!(TemplateArgumentList)", "TemplateType");
-	    	return new ArrayList<ASTNode>();
+	    	return new ArrayList<ASTDmdNode>();
 	    }
 	    return parseTemplateArgumentList2();
 	}
 	
-	private List<ASTNode> parseTemplateArgumentList2() {
-		List<ASTNode> tiargs = new ArrayList<ASTNode>();
+	private List<ASTDmdNode> parseTemplateArgumentList2() {
+		List<ASTDmdNode> tiargs = new ArrayList<ASTDmdNode>();
 		nextToken();
 
 		// Get TemplateArgumentList
@@ -5281,7 +5282,7 @@ public class Parser extends Lexer {
 			/* __traits(identifier, args...)
 			 */
 			IdentifierExp ident;
-			List<ASTNode> args = null;
+			List<ASTDmdNode> args = null;
 
 			nextToken();
 			check(TOKlparen);
@@ -6470,7 +6471,7 @@ public class Parser extends Lexer {
 		// not used, see if this is needed
 	}
 	
-	private void attachLeadingComments(ASTNode declaration) {
+	private void attachLeadingComments(ASTDmdNode declaration) {
 		if (prevToken.leadingComment != null) {
 			declaration.postDdoc = prevToken.leadingComment;
 		}
@@ -6492,7 +6493,7 @@ public class Parser extends Lexer {
 		return Character.toUpperCase(s.charAt(0)) + s.substring(1);
 	}
 	
-	private void adjustPossitionAccordingToComments(ASTNode node, List<DDocComment> preDDocs, DDocComment postDDoc) {
+	private void adjustPossitionAccordingToComments(ASTDmdNode node, List<DDocComment> preDDocs, DDocComment postDDoc) {
 		if ((preDDocs == null || preDDocs.isEmpty()) && postDDoc == null) {
 			return;
 		}

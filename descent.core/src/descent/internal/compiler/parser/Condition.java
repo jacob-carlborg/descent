@@ -1,6 +1,8 @@
 package descent.internal.compiler.parser;
 
-public abstract class Condition {
+import descent.internal.compiler.parser.ast.ASTRangeLessNode;
+
+public abstract class Condition extends ASTRangeLessNode {
 	
 	public final static int DEBUG = 1;
 	public final static int IFTYPE = 2;
@@ -24,4 +26,14 @@ public abstract class Condition {
 		// TODO semantic
 	}
 
+	@Override
+	public int getNodeType() {
+		return getConditionType();
+	}
+
+	/*@Override
+	protected void accept0(IASTVisitor visitor) {
+		// TODO AST CONVERT
+	}*/
+	
 }

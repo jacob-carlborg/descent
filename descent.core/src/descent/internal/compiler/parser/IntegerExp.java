@@ -12,6 +12,8 @@ import java.math.BigInteger;
 
 import org.eclipse.core.runtime.Assert;
 
+import descent.internal.compiler.parser.ast.IASTVisitor;
+
 public class IntegerExp extends Expression {
 
 	private final static BigInteger N_0x8000000000000000 = new BigInteger(
@@ -53,6 +55,11 @@ public class IntegerExp extends Expression {
 
 	public IntegerExp(Loc loc, String str, int value, Type type) {
 		this(loc, str, new BigInteger(String.valueOf(value)), type);
+	}
+	
+	public void accept0(IASTVisitor visitor) {
+		boolean children = visitor.visit(this);
+		visitor.endVisit(this);
 	}
 
 	private BigInteger cast(BigInteger num, TY ty) {

@@ -2,7 +2,7 @@ package descent.internal.compiler.parser;
 
 import java.util.List;
 
-public abstract class Statement extends ASTNode {
+public abstract class Statement extends ASTDmdNode {
 	
 	public Loc loc;
 	public boolean incontract;

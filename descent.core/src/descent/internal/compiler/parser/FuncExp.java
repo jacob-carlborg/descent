@@ -1,5 +1,8 @@
 package descent.internal.compiler.parser;
 
+import melnorme.miscutil.tree.TreeVisitor;
+import descent.internal.compiler.parser.ast.IASTVisitor;
+
 public class FuncExp extends Expression {
 
 	public FuncLiteralDeclaration fd;
@@ -12,6 +15,14 @@ public class FuncExp extends Expression {
 	@Override
 	public int getNodeType() {
 		return FUNC_EXP;
+	}
+	
+	public void accept0(IASTVisitor visitor) {
+		boolean children = visitor.visit(this);
+		if (children) {
+			TreeVisitor.acceptChildren(visitor, fd);
+		}
+		visitor.endVisit(this);
 	}
 
 	@Override

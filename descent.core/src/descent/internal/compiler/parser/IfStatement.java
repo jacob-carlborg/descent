@@ -1,6 +1,10 @@
 package descent.internal.compiler.parser;
 
+import melnorme.miscutil.tree.TreeVisitor;
+
 import org.eclipse.core.runtime.Assert;
+
+import descent.internal.compiler.parser.ast.IASTVisitor;
 
 public class IfStatement extends Statement {
 	
@@ -20,6 +24,18 @@ public class IfStatement extends Statement {
 		this.ifbody = ifbody;
 		this.elsebody = elsebody;		
 	}
+	
+	public void accept0(IASTVisitor visitor) {
+		boolean children = visitor.visit(this);
+		if (children) {
+			TreeVisitor.acceptChildren(visitor, arg);
+			TreeVisitor.acceptChildren(visitor, condition);
+			TreeVisitor.acceptChildren(visitor, ifbody);
+			TreeVisitor.acceptChildren(visitor, elsebody);
+		}
+		visitor.endVisit(this);
+	}
+
 	
 	@Override
 	public Statement semantic(Scope sc, SemanticContext context) {

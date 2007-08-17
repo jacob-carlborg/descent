@@ -3,6 +3,9 @@ package descent.internal.compiler.parser;
 import java.util.ArrayList;
 import java.util.List;
 
+import melnorme.miscutil.tree.TreeVisitor;
+import descent.internal.compiler.parser.ast.IASTVisitor;
+
 public class CompoundStatement extends Statement {
 	
 	public boolean manyVars; // if true, the block is just to group variable declarations,
@@ -26,6 +29,15 @@ public class CompoundStatement extends Statement {
 		this.statements.add(s2);
 		this.sourceStatements = new ArrayList<Statement>(statements);
 	}
+	
+	public void accept0(IASTVisitor visitor) {
+		boolean children = visitor.visit(this);
+		if (children) {
+			TreeVisitor.acceptChildren(visitor, sourceStatements);
+		}
+		visitor.endVisit(this);
+	}
+
 	
 	@Override
 	public List<Statement> flatten(Scope sc) {

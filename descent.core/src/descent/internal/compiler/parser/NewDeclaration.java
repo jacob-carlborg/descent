@@ -2,7 +2,10 @@ package descent.internal.compiler.parser;
 
 import java.util.List;
 
+import melnorme.miscutil.tree.TreeVisitor;
+
 import descent.core.compiler.IProblem;
+import descent.internal.compiler.parser.ast.IASTVisitor;
 
 public class NewDeclaration extends FuncDeclaration {
 	
@@ -13,6 +16,27 @@ public class NewDeclaration extends FuncDeclaration {
 		super(loc, new IdentifierExp(Loc.ZERO, Id.classNew), STC.STCstatic, null);
 		this.arguments = arguments;
 		this.varargs = varargs;
+	}
+	
+	@Override
+	public int getNodeType() {
+		return NEW_DECLARATION;
+	}
+	
+	public void accept0(IASTVisitor visitor) {
+		boolean children = visitor.visit(this);
+		if (children) {
+			TreeVisitor.acceptChildren(visitor, modifiers);
+			TreeVisitor.acceptChildren(visitor, type);
+			TreeVisitor.acceptChildren(visitor, ident);
+			// Template args?
+			TreeVisitor.acceptChildren(visitor, arguments);
+			TreeVisitor.acceptChildren(visitor, sourceFrequire);
+			TreeVisitor.acceptChildren(visitor, sourceFbody);
+			TreeVisitor.acceptChildren(visitor, outId);
+			TreeVisitor.acceptChildren(visitor, sourceFensure);
+		}
+		visitor.endVisit(this);
 	}
 	
 	@Override
@@ -61,10 +85,6 @@ public class NewDeclaration extends FuncDeclaration {
 	public boolean addPostInvariant(SemanticContext context) {
 		return false;
 	}
-	
-	@Override
-	public int getNodeType() {
-		return NEW_DECLARATION;
-	}
+
 
 }

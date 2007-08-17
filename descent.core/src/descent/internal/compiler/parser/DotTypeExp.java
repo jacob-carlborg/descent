@@ -1,5 +1,8 @@
 package descent.internal.compiler.parser;
 
+import melnorme.miscutil.tree.TreeVisitor;
+import descent.internal.compiler.parser.ast.IASTVisitor;
+
 public class DotTypeExp extends UnaExp {
 	
 	public Dsymbol sym;
@@ -13,6 +16,14 @@ public class DotTypeExp extends UnaExp {
 	@Override
 	public int getNodeType() {
 		return 0;
+	}
+	
+	public void accept0(IASTVisitor visitor) {
+		boolean children = visitor.visit(this);
+		if (children) {
+			TreeVisitor.acceptChildren(visitor, e1);
+		}
+		visitor.endVisit(this);
 	}
 	
 	@Override

@@ -1,5 +1,7 @@
 package descent.internal.compiler.parser;
 
+import descent.internal.compiler.parser.ast.IASTVisitor;
+
 public class Version extends Dsymbol {
 	
 	public String value;
@@ -12,6 +14,13 @@ public class Version extends Dsymbol {
 	@Override
 	public int getNodeType() {
 		return VERSION;
+	}
+	
+	public void accept0(IASTVisitor visitor) {
+		boolean children = visitor.visit(this);
+		if (children) {
+		}
+		visitor.endVisit(this);
 	}
 
 }

@@ -1,5 +1,8 @@
 package descent.internal.compiler.parser;
 
+import melnorme.miscutil.Assert;
+import descent.internal.compiler.parser.ast.IASTVisitor;
+
 public class DeclarationExp extends Expression {
 
 	public Dsymbol declaration;
@@ -7,6 +10,10 @@ public class DeclarationExp extends Expression {
 	public DeclarationExp(Loc loc, Dsymbol declaration) {
 		super(loc, TOK.TOKdeclaration);
 		this.declaration = declaration;
+	}
+	
+	public void accept0(IASTVisitor visitor) {
+		Assert.fail("Fake node");
 	}
 
 	@Override

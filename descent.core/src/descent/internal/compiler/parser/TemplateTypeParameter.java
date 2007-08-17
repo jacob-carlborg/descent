@@ -1,6 +1,8 @@
 package descent.internal.compiler.parser;
 
+import melnorme.miscutil.tree.TreeVisitor;
 import descent.core.compiler.IProblem;
+import descent.internal.compiler.parser.ast.IASTVisitor;
 
 public class TemplateTypeParameter extends TemplateParameter {
 	
@@ -11,6 +13,16 @@ public class TemplateTypeParameter extends TemplateParameter {
 		super(loc, ident);
 		this.specType = specType;
 	    this.defaultType = defaultType;
+	}
+	
+	public void accept0(IASTVisitor visitor) {
+		boolean children = visitor.visit(this);
+		if (children) {
+			TreeVisitor.acceptChildren(visitor, ident);
+			TreeVisitor.acceptChildren(visitor, specType);
+			TreeVisitor.acceptChildren(visitor, defaultType);
+		}
+		visitor.endVisit(this);
 	}
 	
 	@Override

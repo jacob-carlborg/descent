@@ -1,5 +1,8 @@
 package descent.internal.compiler.parser;
 
+import melnorme.miscutil.Assert;
+import descent.internal.compiler.parser.ast.IASTVisitor;
+
 public class TypeStruct extends Type {
 	
 	public StructDeclaration sym;
@@ -7,6 +10,10 @@ public class TypeStruct extends Type {
 	public TypeStruct(StructDeclaration sym) {
 		super(TY.Tstruct, null);
 		this.sym = sym;
+	}
+	
+	public void accept0(IASTVisitor visitor) {
+		Assert.fail("Accept0 on fake class");
 	}
 	
 	@Override

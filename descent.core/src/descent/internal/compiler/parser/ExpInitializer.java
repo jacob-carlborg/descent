@@ -1,5 +1,8 @@
 package descent.internal.compiler.parser;
 
+import melnorme.miscutil.tree.TreeVisitor;
+import descent.internal.compiler.parser.ast.IASTVisitor;
+
 public class ExpInitializer extends Initializer {
 
 	public Expression exp;
@@ -17,6 +20,15 @@ public class ExpInitializer extends Initializer {
 	public ExpInitializer isExpInitializer() {
 		return this;
 	}
+	
+	public void accept0(IASTVisitor visitor) {
+		boolean children = visitor.visit(this);
+		if (children) {
+			TreeVisitor.acceptChildren(visitor, sourceExp);
+		}
+		visitor.endVisit(this);
+	}
+	
 	
 	@Override
 	public Type inferType(Scope sc, SemanticContext context) {

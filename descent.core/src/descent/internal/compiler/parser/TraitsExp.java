@@ -3,18 +3,36 @@ package descent.internal.compiler.parser;
 import java.util.ArrayList;
 import java.util.List;
 
+import melnorme.miscutil.tree.TreeVisitor;
+import descent.internal.compiler.parser.ast.IASTVisitor;
+
 public class TraitsExp extends Expression {
 
 	public IdentifierExp ident;
-	public List<ASTNode> args;
+	public List<ASTDmdNode> args;
 
-	public TraitsExp(Loc loc, IdentifierExp ident, List<ASTNode> args) {
+	public TraitsExp(Loc loc, IdentifierExp ident, List<ASTDmdNode> args) {
 		super(loc, TOK.TOKtraits);
 		this.ident = ident;
 		this.args = args;
 	}
 	
+	public void accept0(IASTVisitor visitor) {
+		boolean children = visitor.visit(this);
+		if (children) {
+			TreeVisitor.acceptChildren(visitor, ident);
+			TreeVisitor.acceptChildren(visitor, args);
+		}
+		visitor.endVisit(this);
+	}
+
+
 	@Override
+	public int getNodeType() {
+		return TRAITS_EXP;
+	}
+	
+		@Override
 	public Expression semantic(final Scope sc,
 			final SemanticContext context)
 	{
@@ -184,7 +202,7 @@ public class TraitsExp extends Expression {
 				return new IntegerExp(loc, 0, Type.tbool);
 			}
 			
-			ASTNode o = args.get(0);
+			ASTDmdNode o = args.get(0);
 			Expression e = null; /* TODO semantic isExpression((Object) args.get(1)); */
 			if(null == e)
 			{ 
@@ -294,7 +312,7 @@ public class TraitsExp extends Expression {
 				return new IntegerExp(loc, 0, Type.tbool);
 			}
 			
-			ASTNode o = args.get(0);
+			ASTDmdNode o = args.get(0);
 			Dsymbol s = null; /* TODO semantic getDsymbol(o); */
 			if(null == s)
 			{
@@ -321,7 +339,7 @@ public class TraitsExp extends Expression {
 				return new IntegerExp(loc, 0, Type.tbool);
 			}
 			
-			ASTNode o = args.get(0);
+			ASTDmdNode o = args.get(0);
 			Dsymbol s = null;/* TODO semantic getDsymbol(o); */
 			if (null == s)
 			{
@@ -381,11 +399,6 @@ public class TraitsExp extends Expression {
 	    assert(false);
 	    return null;
 	}
-
-	@Override
-	public int getNodeType() {
-		return TRAITS_EXP;
-	}
 	
 	/*
 	 * #define ISTYPE(cond) \
@@ -422,7 +435,7 @@ public class TraitsExp extends Expression {
 		
 		return new IntegerExp(loc, 1, Type.tbool);
 	}
-	
+		
 	/*
 	 * #define ISDSYMBOL(cond) \
 	for (size_t i = 0; i < dim; i++)	\
@@ -457,5 +470,5 @@ public class TraitsExp extends Expression {
 		
 		return new IntegerExp(loc, 1, Type.tbool);
 	}
-	
+
 }

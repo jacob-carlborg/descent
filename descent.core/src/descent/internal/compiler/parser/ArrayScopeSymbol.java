@@ -1,9 +1,16 @@
 package descent.internal.compiler.parser;
 
+import static descent.internal.compiler.parser.STC.STCconst;
+import static descent.internal.compiler.parser.TOK.TOKindex;
+import static descent.internal.compiler.parser.TOK.TOKslice;
+import static descent.internal.compiler.parser.TOK.TOKstring;
+import static descent.internal.compiler.parser.TOK.TOKtuple;
+import static descent.internal.compiler.parser.TOK.TOKtype;
+import static descent.internal.compiler.parser.TY.Ttuple;
+
 import org.eclipse.core.runtime.Assert;
-import static descent.internal.compiler.parser.TOK.*;
-import static descent.internal.compiler.parser.STC.*;
-import static descent.internal.compiler.parser.TY.*;
+
+import descent.internal.compiler.parser.ast.IASTVisitor;
 
 public class ArrayScopeSymbol extends ScopeDsymbol {
 
@@ -17,6 +24,14 @@ public class ArrayScopeSymbol extends ScopeDsymbol {
 		this.exp = e;
 		this.type = null;
 		this.td = null;
+	}
+	
+	public void accept0(IASTVisitor visitor) {
+		boolean children = visitor.visit(this);
+		if (children) {
+			melnorme.miscutil.Assert.failTODO();
+		}
+		visitor.endVisit(this);
 	}
 
 	public ArrayScopeSymbol(Loc loc, TupleDeclaration s) {

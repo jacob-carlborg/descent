@@ -1,11 +1,17 @@
 package descent.internal.compiler.parser;
 
+import static descent.internal.compiler.parser.STC.STCauto;
+import static descent.internal.compiler.parser.STC.STCscope;
+import static descent.internal.compiler.parser.STC.STCstatic;
+
 import java.util.List;
-import static descent.internal.compiler.parser.STC.*;
+
+import melnorme.miscutil.tree.TreeVisitor;
 
 import org.eclipse.core.runtime.Assert;
 
 import descent.core.compiler.IProblem;
+import descent.internal.compiler.parser.ast.IASTVisitor;
 
 public class AnonDeclaration extends AttribDeclaration {
 
@@ -26,6 +32,14 @@ public class AnonDeclaration extends AttribDeclaration {
 	@Override
 	public String kind() {
 		return isunion ? "anonymous union" : "anonymous struct";
+	}
+	
+	public void accept0(IASTVisitor visitor) {
+		boolean children = visitor.visit(this);
+		if (children) {
+			TreeVisitor.acceptChildren(visitor, decl);
+		}
+		visitor.endVisit(this);
 	}
 
 	@Override

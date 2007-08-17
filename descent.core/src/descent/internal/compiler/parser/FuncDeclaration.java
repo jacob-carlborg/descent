@@ -3,9 +3,12 @@ package descent.internal.compiler.parser;
 import java.util.ArrayList;
 import java.util.List;
 
+import melnorme.miscutil.tree.TreeVisitor;
+
 import org.eclipse.core.runtime.Assert;
 
 import descent.core.compiler.IProblem;
+import descent.internal.compiler.parser.ast.IASTVisitor;
 
 public class FuncDeclaration extends Declaration {
 	
@@ -49,6 +52,22 @@ public class FuncDeclaration extends Declaration {
 		super(loc, ident);
 		this.storage_class = storage_class;
 		this.type = type;
+	}
+	
+	public void accept0(IASTVisitor visitor) {
+		boolean children = visitor.visit(this);
+		if (children) {
+			TreeVisitor.acceptChildren(visitor, modifiers);
+			TreeVisitor.acceptChildren(visitor, type);
+			TreeVisitor.acceptChildren(visitor, ident);
+			// Template args?
+			TreeVisitor.acceptChildren(visitor, parameters);
+			TreeVisitor.acceptChildren(visitor, sourceFrequire);
+			TreeVisitor.acceptChildren(visitor, sourceFbody);
+			TreeVisitor.acceptChildren(visitor, outId);
+			TreeVisitor.acceptChildren(visitor, sourceFensure);
+		}
+		visitor.endVisit(this);
 	}
 	
 	@Override

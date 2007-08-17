@@ -6,7 +6,7 @@ import java.util.List;
 
 import org.eclipse.core.runtime.Assert;
 
-public abstract class Type extends ASTNode {
+public abstract class Type extends ASTDmdNode {
 	
 	public static class Modification {
 		public int startPosition;
@@ -385,7 +385,7 @@ public abstract class Type extends ASTNode {
 		Type t = (Type) o;
 
 		// deco strings are unique and semantic() has been run
-		if (this == o || (t != null && deco.equals(t.deco)) && deco != null) {
+		if (this == o || (t != null && deco != null && deco.equals(t.deco))) {
 			return true;
 		}
 		return false;

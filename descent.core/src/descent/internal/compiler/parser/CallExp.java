@@ -28,7 +28,11 @@ import static descent.internal.compiler.parser.TY.Tstruct;
 import java.util.ArrayList;
 import java.util.List;
 
+import melnorme.miscutil.tree.TreeVisitor;
+
 import org.eclipse.core.runtime.Assert;
+
+import descent.internal.compiler.parser.ast.IASTVisitor;
 
 public class CallExp extends UnaExp {
 
@@ -56,17 +60,25 @@ public class CallExp extends UnaExp {
 		super(loc, TOK.TOKcall, e);
 		this.arguments = exps;
 	}
+	
+	@Override
+	public int getNodeType() {
+		return CALL_EXP;
+	}
+	
+	public void accept0(IASTVisitor visitor) {
+		boolean children = visitor.visit(this);
+		if (children) {
+			TreeVisitor.acceptChildren(visitor, e1);
+		}
+		visitor.endVisit(this);
+	}
+
 
 	@Override
 	public int checkSideEffect(int flag, SemanticContext context) {
 		return 1;
 	}
-
-	@Override
-	public int getNodeType() {
-		return CALL_EXP;
-	}
-
 	@Override
 	public Expression semantic(Scope sc, SemanticContext context) {
 		TypeFunction tf;

@@ -1,5 +1,8 @@
 package descent.internal.compiler.parser;
 
+import melnorme.miscutil.tree.TreeVisitor;
+import descent.internal.compiler.parser.ast.IASTVisitor;
+
 public class TypeDelegate extends Type {
 	
 	public TypeDelegate(Type next) {
@@ -13,6 +16,14 @@ public class TypeDelegate extends Type {
 	    }
 	    next = next.semantic(loc, sc, context);
 	    return merge(context);
+	}
+	
+	public void accept0(IASTVisitor visitor) {
+		boolean children = visitor.visit(this);
+		if (children) {
+			TreeVisitor.acceptChildren(visitor, next);
+		}
+		visitor.endVisit(this);
 	}
 	
 	@Override

@@ -1,8 +1,15 @@
 package descent.internal.compiler.parser;
 
+import static descent.internal.compiler.parser.MATCH.MATCHexact;
+import static descent.internal.compiler.parser.MATCH.MATCHnomatch;
+import static descent.internal.compiler.parser.TY.Tarray;
+import static descent.internal.compiler.parser.TY.Tpointer;
+import static descent.internal.compiler.parser.TY.Tsarray;
+
 import java.util.List;
-import static descent.internal.compiler.parser.TY.*;
-import static descent.internal.compiler.parser.MATCH.*;
+
+import melnorme.miscutil.tree.TreeVisitor;
+import descent.internal.compiler.parser.ast.IASTVisitor;
 
 public class ArrayLiteralExp extends Expression {
 
@@ -12,6 +19,15 @@ public class ArrayLiteralExp extends Expression {
 		super(loc, TOK.TOKarrayliteral);
 		this.elements = (List<Expression>) elements;
 	}
+	
+	public void accept0(IASTVisitor visitor) {
+		boolean children = visitor.visit(this);
+		if (children) {
+			TreeVisitor.acceptChildren(visitor, elements);
+		}
+		visitor.endVisit(this);
+	}
+	
 
 	@Override
 	public Expression castTo(Scope sc, Type t, SemanticContext context) {
