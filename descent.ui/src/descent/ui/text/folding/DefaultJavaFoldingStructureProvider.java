@@ -43,9 +43,11 @@ import descent.core.ElementChangedEvent;
 import descent.core.IClassFile;
 import descent.core.ICompilationUnit;
 import descent.core.IElementChangedListener;
+import descent.core.IInitializer;
 import descent.core.IJavaElement;
 import descent.core.IJavaElementDelta;
 import descent.core.IMember;
+import descent.core.IMethod;
 import descent.core.IParent;
 import descent.core.ISourceRange;
 import descent.core.ISourceReference;
@@ -181,8 +183,8 @@ public class DefaultJavaFoldingStructureProvider implements IJavaFoldingStructur
 		 * 
 		 * @return <code>true</code> if inner types should be collapsed
 		 */
-		public boolean collapseInnerTypes() {
-			return fAllowCollapsing && fCollapseInnerTypes;
+		public boolean collapseTypes() {
+			return fAllowCollapsing && fCollapseTypes;
 		}
 
 		/**
@@ -191,7 +193,7 @@ public class DefaultJavaFoldingStructureProvider implements IJavaFoldingStructur
 		 * @return <code>true</code> if javadoc comments should be collapsed
 		 */
 		public boolean collapseJavadoc() {
-			return fAllowCollapsing && fCollapseJavadoc;
+			return fAllowCollapsing && fCollapseDdoc;
 		}
 
 		/**
@@ -201,6 +203,33 @@ public class DefaultJavaFoldingStructureProvider implements IJavaFoldingStructur
 		 */
 		public boolean collapseMembers() {
 			return fAllowCollapsing && fCollapseMembers;
+		}
+		
+		/**
+		 * Returns <code>true</code> if debug/version should be collapsed.
+		 * 
+		 * @return <code>true</code> if debug/version should be collapsed
+		 */
+		public boolean collapseVersionDebug() {
+			return fAllowCollapsing && fCollapseVersionDebug;
+		}
+		
+		/**
+		 * Returns <code>true</code> if invariants should be collapsed.
+		 * 
+		 * @return <code>true</code> if invariants should be collapsed
+		 */
+		public boolean collapseInvariants() {
+			return fAllowCollapsing && fCollapseInvariants;
+		}
+		
+		/**
+		 * Returns <code>true</code> if unittests should be collapsed.
+		 * 
+		 * @return <code>true</code> if unittests should be collapsed
+		 */
+		public boolean collapseUnittests() {
+			return fAllowCollapsing && fCollapseUnittests;
 		}
 	}
 	
@@ -611,11 +640,14 @@ public class DefaultJavaFoldingStructureProvider implements IJavaFoldingStructur
 	private IElementChangedListener fElementListener;
 
 	/* preferences */
-	private boolean fCollapseJavadoc= false;
+	private boolean fCollapseDdoc= false;
 	private boolean fCollapseImportContainer= true;
-	private boolean fCollapseInnerTypes= true;
+	private boolean fCollapseTypes= true;
 	private boolean fCollapseMembers= false;
 	private boolean fCollapseHeaderComments= true;
+	private boolean fCollapseVersionDebug= true;
+	private boolean fCollapseInvariants= true;
+	private boolean fCollapseUnittests= true;
 
 	/* filters */
 	/** Member filter, matches nested members (but not top-level types). */
@@ -764,11 +796,14 @@ public class DefaultJavaFoldingStructureProvider implements IJavaFoldingStructur
 
 	private void initializePreferences() {
 		IPreferenceStore store= JavaPlugin.getDefault().getPreferenceStore();
-		fCollapseInnerTypes= store.getBoolean(PreferenceConstants.EDITOR_FOLDING_INNERTYPES);
+		fCollapseTypes= store.getBoolean(PreferenceConstants.EDITOR_FOLDING_TYPES);
 		fCollapseImportContainer= store.getBoolean(PreferenceConstants.EDITOR_FOLDING_IMPORTS);
-		fCollapseJavadoc= store.getBoolean(PreferenceConstants.EDITOR_FOLDING_JAVADOC);
+		fCollapseDdoc= store.getBoolean(PreferenceConstants.EDITOR_FOLDING_DDOC);
 		fCollapseMembers= store.getBoolean(PreferenceConstants.EDITOR_FOLDING_METHODS);
 		fCollapseHeaderComments= store.getBoolean(PreferenceConstants.EDITOR_FOLDING_HEADERS);
+		fCollapseVersionDebug= store.getBoolean(PreferenceConstants.EDITOR_FOLDING_VERSION_DEBUG);
+		fCollapseInvariants= store.getBoolean(PreferenceConstants.EDITOR_FOLDING_INVARIANTS);
+		fCollapseUnittests= store.getBoolean(PreferenceConstants.EDITOR_FOLDING_UNITTESTS);
 	}
 
 	private void update(FoldingStructureComputationContext ctx) {
@@ -904,13 +939,26 @@ public class DefaultJavaFoldingStructureProvider implements IJavaFoldingStructur
 				break;
 			case IJavaElement.TYPE:
 				// Changed to not only collapse inner types
-				collapseCode= /*isInnerType((IType) element) && */ !isAnonymousEnum((IType) element);
-				collapse= ctx.collapseInnerTypes() && collapseCode;
+				collapseCode= !isAnonymousEnum((IType) element);
+				collapse= ctx.collapseTypes() && collapseCode;
 				break;
 			case IJavaElement.METHOD:
 			case IJavaElement.FIELD:
-			case IJavaElement.INITIALIZER:
 				collapse= ctx.collapseMembers();
+				break;
+			case IJavaElement.INITIALIZER:
+				IInitializer init = (IInitializer) element;
+				try {
+					if (init.isInvariant()) {
+						collapse = ctx.collapseInvariants();
+					} else if (init.isUnitTest()) {
+						collapse = ctx.collapseUnittests();
+					} else {
+						collapse= ctx.collapseMembers();
+					}
+				} catch (JavaModelException e) {
+					collapse= ctx.collapseMembers();
+				}
 				break;
 			default:
 				return;

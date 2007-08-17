@@ -3261,24 +3261,24 @@ public class PreferenceConstants {
 	public static final String EDITOR_FOLDING_PROVIDER= "editor_folding_provider"; //$NON-NLS-1$
 	
 	/**
-	 * A named preference that stores the value for Javadoc folding for the default folding provider.
+	 * A named preference that stores the value for Ddoc folding for the default folding provider.
 	 * <p>
 	 * Value is of type <code>Boolean</code>.
 	 * </p>
 	 * 
 	 * @since 3.0
 	 */
-	public static final String EDITOR_FOLDING_JAVADOC= "editor_folding_default_javadoc"; //$NON-NLS-1$
+	public static final String EDITOR_FOLDING_DDOC= "editor_folding_default_javadoc"; //$NON-NLS-1$
 
 	/**
-	 * A named preference that stores the value for inner type folding for the default folding provider.
+	 * A named preference that stores the value for type folding for the default folding provider.
 	 * <p>
 	 * Value is of type <code>Boolean</code>.
 	 * </p>
 	 * 
 	 * @since 3.0
 	 */
-	public static final String EDITOR_FOLDING_INNERTYPES= "editor_folding_default_innertypes"; //$NON-NLS-1$
+	public static final String EDITOR_FOLDING_TYPES= "editor_folding_default_innertypes"; //$NON-NLS-1$
 
 	/**
 	 * A named preference that stores the value for method folding for the default folding provider.
@@ -3299,7 +3299,7 @@ public class PreferenceConstants {
 	 * @since 3.0
 	 */
 	public static final String EDITOR_FOLDING_IMPORTS= "editor_folding_default_imports"; //$NON-NLS-1$
-
+	
 	/**
 	 * A named preference that stores the value for header comment folding for the default folding provider.
 	 * <p>
@@ -3309,6 +3309,36 @@ public class PreferenceConstants {
 	 * @since 3.1
 	 */
 	public static final String EDITOR_FOLDING_HEADERS= "editor_folding_default_headers"; //$NON-NLS-1$
+	
+	/**
+	 * A named preference that stores the value for version/debug folding for the default folding provider.
+	 * <p>
+	 * Value is of type <code>Boolean</code>.
+	 * </p>
+	 * 
+	 * @since 3.0
+	 */
+	public static final String EDITOR_FOLDING_VERSION_DEBUG= "editor_folding_default_version_debug"; //$NON-NLS-1$
+	
+	/**
+	 * A named preference that stores the value for invariant folding for the default folding provider.
+	 * <p>
+	 * Value is of type <code>Boolean</code>.
+	 * </p>
+	 * 
+	 * @since 3.0
+	 */
+	public static final String EDITOR_FOLDING_INVARIANTS= "editor_folding_default_invariants"; //$NON-NLS-1$
+	
+	/**
+	 * A named preference that stores the value for unittest folding for the default folding provider.
+	 * <p>
+	 * Value is of type <code>Boolean</code>.
+	 * </p>
+	 * 
+	 * @since 3.0
+	 */
+	public static final String EDITOR_FOLDING_UNITTESTS= "editor_folding_default_unittest"; //$NON-NLS-1$
 
 
 	//---------- Properties File Editor ----------
@@ -3865,8 +3895,8 @@ public class PreferenceConstants {
 		// folding
 		store.setDefault(PreferenceConstants.EDITOR_FOLDING_ENABLED, true);
 		store.setDefault(PreferenceConstants.EDITOR_FOLDING_PROVIDER, "descent.ui.text.defaultFoldingProvider"); //$NON-NLS-1$
-		store.setDefault(PreferenceConstants.EDITOR_FOLDING_JAVADOC, false);
-		store.setDefault(PreferenceConstants.EDITOR_FOLDING_INNERTYPES, false);
+		store.setDefault(PreferenceConstants.EDITOR_FOLDING_DDOC, false);
+		store.setDefault(PreferenceConstants.EDITOR_FOLDING_TYPES, false);
 		store.setDefault(PreferenceConstants.EDITOR_FOLDING_METHODS, false);
 		store.setDefault(PreferenceConstants.EDITOR_FOLDING_IMPORTS, true);
 		store.setDefault(PreferenceConstants.EDITOR_FOLDING_HEADERS, true);		
