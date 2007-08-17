@@ -366,6 +366,7 @@ public class Lexer implements IProblemRequestor {
 		    case '5':  	case '6':   case '7':   case '8':   case '9':
 			t.value = number(t);
 			t.len = p - t.ptr;
+			t.string = new String(input, t.ptr, t.len);
 			return;
 
 	/*
@@ -677,6 +678,7 @@ public class Lexer implements IProblemRequestor {
 			    p--;
 			    t.value = inreal(t);
 			    t.len = p - t.ptr;
+			    t.string = new String(input, t.ptr, t.len);
 			}
 			else if (input[p] == '.')
 			{
@@ -2787,6 +2789,7 @@ public class Lexer implements IProblemRequestor {
 				break;
 			}
 			break;
+		// _
 		case '_':
 			p++;
 			if (input[p] == '_') {
@@ -3550,8 +3553,6 @@ public class Lexer implements IProblemRequestor {
 		int c;
 		int start;
 		TOK result;
-		
-		StringBuilder fullNumber = new StringBuilder();
 
 		state = STATE.STATE_initial;
 		base = 0;
@@ -3767,7 +3768,6 @@ public class Lexer implements IProblemRequestor {
 			if (writeToStringBuffer) {
 				stringbuffer.writeByte(c);
 			}
-			fullNumber.append((char) c);
 			p++;
 		}
 		
@@ -3826,8 +3826,7 @@ public class Lexer implements IProblemRequestor {
 							IProblem.UnrecognizedToken,
 							linnum, p - 1, 1);
 				}
-				flags = (flags | f);
-				fullNumber.append(input[p - 1]);				
+				flags = (flags | f);			
 				continue;
 
 			case 'l':
@@ -3844,7 +3843,6 @@ public class Lexer implements IProblemRequestor {
 							linnum, p - 1, 1);
 				}
 				flags = (flags | f);
-				fullNumber.append(input[p - 1]);
 				continue;
 			default:
 				break;
@@ -3922,7 +3920,6 @@ public class Lexer implements IProblemRequestor {
 		default:
 			throw new IllegalStateException("Can't happen");
 		}
-		t.string = new String(fullNumber);
 		t.intValue = n;
 		return result;
 	}
@@ -4080,8 +4077,6 @@ public class Lexer implements IProblemRequestor {
 		 * #if _WIN32 && __DMC__ __locale_decpoint = save; #endif if
 		 * (errno == ERANGE) error("number is not representable");
 		 */
-		
-		t.string = new String(fullNumber);
 		
 		return result;
 	}

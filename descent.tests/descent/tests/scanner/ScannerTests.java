@@ -74,7 +74,7 @@ public class ScannerTests extends TestCase implements ITerminalSymbols {
 				continue;
 			}
 			
-			IScanner scanner = ToolFactory.createScanner(true, true, true, true, AST.D1);
+			IScanner scanner = ToolFactory.createScanner(true, true, true, true, AST.D2);
 			scanner.setSource(("$" + tok.value).toCharArray());
 			assertNextToken(scanner, TokenNameDOLLAR, 0, 0, "$");
 			try {
@@ -160,12 +160,12 @@ public class ScannerTests extends TestCase implements ITerminalSymbols {
 	public void testSpecialLiterals() throws Throwable {
 		Object[][] pairs = {
 			{ "__FILE__", TokenNameStringLiteral },
-			{ "__LINE__", TokenNameIntegerLiteral },
+			{ "__LINE__", TokenNameLongLiteral },
 			{ "__DATE__", TokenNameStringLiteral },
 			{ "__TIME__", TokenNameStringLiteral },
 			{ "__TIMESTAMP__", TokenNameStringLiteral },
 			{ "__VENDOR__", TokenNameStringLiteral },
-			{ "__VERSION__", TokenNameIntegerLiteral},
+			{ "__VERSION__", TokenNameLongLiteral},
 		};
 		
 		for(Object[] pair : pairs) {
