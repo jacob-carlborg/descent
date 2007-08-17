@@ -4,13 +4,15 @@ import java.util.Collections;
 import java.util.Iterator;
 
 import descent.core.domX.ASTNode;
+import dtool.dom.definitions.Symbol;
 
 
 public class PartialPackageDefUnitOfPackage extends PartialPackageDefUnit  {
 	
 	PartialPackageDefUnit child;
 	
-	protected PartialPackageDefUnitOfPackage() {
+	protected PartialPackageDefUnitOfPackage(Symbol defname) {
+		super(defname);
 	}
 	
 	public Iterator<? extends ASTNode> getMembersIterator() {

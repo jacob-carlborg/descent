@@ -11,5 +11,8 @@ import descent.core.domX.ASTNode;
  */
 public interface INonScopedBlock {
 	
+	/** Gets the members of this NonScopedBlock.
+	 * Note: It is not guaranteed that the returned nodes direct parent is 
+	 * this NonScopedBlock (due to DeclarationStaticIfIsType). */
 	Iterator<? extends ASTNode> getMembersIterator();
 }

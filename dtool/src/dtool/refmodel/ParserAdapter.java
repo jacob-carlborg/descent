@@ -14,7 +14,8 @@ public class ParserAdapter {
 	
 	/** The error message or null if no error. */
 	protected String error = null;
-	/** Whether as qualified dot fix was performed */
+	/** Whether a qualified dot fix was performed. 
+	 * If it was, then a non-prefixed search should be made. */
 	protected boolean isQualifiedDotFixSearch = false;
 
 	public ParserAdapter(Parser parser) {
@@ -22,18 +23,21 @@ public class ParserAdapter {
 	}
 	
 	public static Token tokenizeSource(String str) {
-		Token tokenList = null; 
-		Lexer lexer = new Lexer(str, 0, str.length(), false, false, false, false, AST.D2);
+		Token tokenList = null;
+		Token tokenListEnd = null; 
+		Lexer lexer = new Lexer(str, 0, str.length(), true, true, false, false, AST.D2);
 		do {
 			lexer.nextToken();
 		    Token newtoken = new Token(lexer.token);
-			if(tokenList != null) {
-				tokenList.next = newtoken; 
+			if(tokenListEnd != null) {
+				tokenListEnd.next = newtoken; 
 			} else {
+				// First token
 				tokenList = newtoken;
+				tokenListEnd = newtoken;
 			}
-			tokenList = newtoken;
-		} while(tokenList.value != TOK.TOKeof);
+			tokenListEnd = newtoken;
+		} while(tokenListEnd.value != TOK.TOKeof);
 		return tokenList;
 	}
 	
@@ -51,7 +55,7 @@ public class ParserAdapter {
 	}
 
 	public void parseModule(String str) {
-		parser = new Parser(null, str);
+		parser = new Parser(AST.newAST(AST.D2), str);
 		mod = parser.parseModuleObj();
 	}
 	

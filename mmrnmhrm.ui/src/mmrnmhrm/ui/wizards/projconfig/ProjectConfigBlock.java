@@ -2,6 +2,7 @@ package mmrnmhrm.ui.wizards.projconfig;
 
 import java.util.List;
 
+import melnorme.miscutil.Assert;
 import mmrnmhrm.core.DeeCoreException;
 import mmrnmhrm.core.build.DeeCompilerOptions;
 import mmrnmhrm.core.model.DeeProject;
@@ -37,6 +38,7 @@ public class ProjectConfigBlock {
 	}
 	
 	public void init(DeeProject project) {
+		Assert.isNotNull(project);
 		fDeeProject = project;
 		fSourceFoldersPage.init(fDeeProject);
 		fSourceLibrariesPage.init(fDeeProject);
@@ -65,13 +67,13 @@ public class ProjectConfigBlock {
         item.setControl(fSourceLibrariesPage.getControl(folder));
         
 		// Compiler config
-        item = new TabItem(folder, SWT.NONE);
+        /*item = new TabItem(folder, SWT.NONE);
         item.setText("&Compiler"); 
         item.setImage(DeePluginImages.getImage(DeePluginImages.NODE_IMPORT));
 
 		item.setData(fCompilerPage);     
         item.setControl(fCompilerPage.getControl(folder));
-        
+        */
         return folder;
 	}
 	
@@ -79,7 +81,7 @@ public class ProjectConfigBlock {
 	public void applyConfig() throws CoreException {
 		try {
 			IProject project = fDeeProject.getProject();
-			IResource outputDir = project.findMember(fSourceFoldersPage.fOutputLocationPath);
+			IResource outputDir = project.getFolder("asd/"+fSourceFoldersPage.fOutputLocationPath);
 			fDeeProject.setOutputDir((IFolder) outputDir);
 			
 			List<IDeeSourceRoot> roots; 

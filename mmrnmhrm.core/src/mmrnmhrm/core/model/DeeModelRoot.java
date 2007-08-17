@@ -36,13 +36,18 @@ public class DeeModelRoot extends LangModelRoot implements IDeeElement, IModuleR
 		return new DeeProject[size];
 	}
 	
+	/** Initializes the D model root. */
+	protected void loadModel() throws CoreException {
+		getElementInfo();
+	}
+	
 	/** {@inheritDoc} */
 	public void createElementInfo() throws CoreException {
 		// Init the model with existing D projects.
 		clearChildren();
 		for(IProject proj : DeeCore.getWorkspaceRoot().getProjects()) {
 			if(proj.isOpen() && proj.hasNature(DeeNature.NATURE_ID))
-			loadDeeProject(proj);
+				loadDeeProject(proj);
 		}
 	}
 
@@ -71,12 +76,6 @@ public class DeeModelRoot extends LangModelRoot implements IDeeElement, IModuleR
 		return deeproj;
 	}
 
-	/** Adds an existing D project to the model. Refreshes the project.  */
-/*	public void addDeeProject(DeeProject deeproj) throws CoreException {
-		addChild(deeproj);
-		//deeproj.updateElementRecursive();
-	}
-*/	
 	/** Finds the module with the given package and module name.
 	 * refModule is used to determine which project/build-path to search. */
 	public Module findModule(Module sourceRefModule, String[] packages,

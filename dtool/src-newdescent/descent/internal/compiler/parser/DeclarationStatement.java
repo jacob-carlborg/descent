@@ -21,7 +21,7 @@ public class DeclarationStatement extends ExpStatement {
 	public void accept0(IASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
-			TreeVisitor.acceptChildren(visitor, exp);
+			TreeVisitor.acceptChildren(visitor, ((DeclarationExp) exp).declaration);
 		}
 		visitor.endVisit(this);
 	}

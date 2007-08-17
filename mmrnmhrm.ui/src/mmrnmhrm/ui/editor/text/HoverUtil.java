@@ -27,17 +27,18 @@ public class HoverUtil {
 		
 		String docComments = defUnit.getCombinedDocComments(); 
 		if(docComments == null)
-			str = str + "<br/> <p>DeeDoc goes here.</p>";
+			str = str + "<br/> <p>No DeeDoc present.</p>";
 		else 
-			str = str + "<br/>" + convertToHTMLContent(docComments);
+			str = str + "<br/><br/>" + convertToHTMLContent(docComments);
 		return str;
 	}
 
 	@SuppressWarnings("restriction")
 	private static String convertToHTMLContent(String str) {
-		str = str.replace("\n", "<br/>");
-		return org.eclipse.jface.internal.text.html.
+		str = org.eclipse.jface.internal.text.html.
 			HTMLPrinter.convertToHTMLContent(str);
+		str = str.replace("\n", "<br/>");
+		return str;
 	}
 
 	public static String loadStyleSheet(String cssfilepath) {

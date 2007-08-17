@@ -9,8 +9,8 @@ public class TemplateParamTuple extends TemplateParameter {
 
 	
 	public TemplateParamTuple(TemplateTupleParameter elem) {
+		super(elem.ident);
 		convertNode(elem);
-		convertIdentifier(elem.ident);
 	}
 
 	@Override
@@ -28,7 +28,7 @@ public class TemplateParamTuple extends TemplateParameter {
 	public void accept0(IASTNeoVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
-			TreeVisitor.acceptChild(visitor, defname);
+			TreeVisitor.acceptChildren(visitor, defname);
 		}
 		visitor.endVisit(this);
 	}

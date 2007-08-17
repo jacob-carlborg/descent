@@ -18,7 +18,7 @@ public class StatementReturn extends Statement {
 	public void accept0(IASTNeoVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
-			TreeVisitor.acceptChild(visitor, exp);
+			TreeVisitor.acceptChildren(visitor, exp);
 		}
 		visitor.endVisit(this);	 
 	}

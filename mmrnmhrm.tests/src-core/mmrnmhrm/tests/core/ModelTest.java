@@ -35,7 +35,7 @@ public class ModelTest extends BasePluginTest {
 		for (DeeProject dproj : otherProjs) {
 			dproj.getProject().close(null);
 		}
-		droot.updateElemLazily();
+		droot.updateElementLazily();
 	}
 
 	@AfterClass
@@ -44,14 +44,16 @@ public class ModelTest extends BasePluginTest {
 			if(!proj.isOpen())
 				proj.open(null);
 		}
-		droot.updateElemLazily();
+		droot.updateElementLazily();
 	}
 
 	
 	@Test
 	public void test() throws CoreException {
+		//XXX: todo, maybe run as a model operation
 		//if(true)return;
 		DeeModel.getRoot().updateElementRecursive();
+		DeeModel.fireModelChanged();
 		
 		IProject project;
 		IFolder folder;
@@ -70,7 +72,7 @@ public class ModelTest extends BasePluginTest {
 		checkResourcesEquals(getTestSourceFolders(), "proj1", "proj2", "proj3");
 		
 		project.delete(false, null);
-		droot.updateElemLazily();
+		droot.updateElementLazily();
 		checkResourcesEquals(getTestSourceFolders(), "proj1", "proj2");
 		
 		checkResourcesEquals(deeproj.getSourceFolders(), "src");
@@ -81,6 +83,7 @@ public class ModelTest extends BasePluginTest {
 		
 		
 		DeeModel.getRoot().updateElementRecursive();
+		DeeModel.fireModelChanged();
 	}
 
 	private DeeProject[] getTestSourceFolders() {

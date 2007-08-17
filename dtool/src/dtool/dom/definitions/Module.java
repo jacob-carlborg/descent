@@ -7,8 +7,6 @@ import java.util.List;
 import melnorme.miscutil.StringUtil;
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.core.domX.ASTNode;
-import descent.internal.compiler.parser.IdentifierExp;
-import descent.internal.compiler.parser.Loc;
 import descent.internal.compiler.parser.ModuleDeclaration;
 import dtool.dom.ast.ASTNeoNode;
 import dtool.dom.ast.IASTNeoVisitor;
@@ -38,7 +36,7 @@ public class Module extends DefUnit implements IScopeNode {
 			boolean children = visitor.visit(this);
 			if (children) {
 				TreeVisitor.acceptChildren(visitor, packages);
-				TreeVisitor.acceptChild(visitor, moduleName);
+				TreeVisitor.acceptChildren(visitor, moduleName);
 			}
 			visitor.endVisit(this);
 		}
@@ -60,9 +58,8 @@ public class Module extends DefUnit implements IScopeNode {
 	
 
 	public Module(descent.internal.compiler.parser.Module elem) {
-		convertNode(elem); // elem not a full formed Dsymbol
+		super((Symbol) null);
 		setSourceRange(elem);
-		convertIdentifier(new IdentifierExp(new Loc(), (String) null));
 		//newelem.name = (elem.ident != null) ? elem.ident.string : null; 
 		if(elem.md != null){
 			// If there is md there is this	elem.ident
@@ -75,6 +72,7 @@ public class Module extends DefUnit implements IScopeNode {
 			} else {
 				this.md.packages = new RefIdentifier[0];
 			}
+			this.preComments = elem.md.preDdocs;
 		}
 		this.members = Declaration.convertMany(elem.members);
 	}
@@ -85,7 +83,7 @@ public class Module extends DefUnit implements IScopeNode {
 	
 	@Override
 	public String toString() {
-		if(defname.toString() == null)
+		if(defname == null)
 			return "<noname>";
 		else 
 			return md.toString();
@@ -108,7 +106,7 @@ public class Module extends DefUnit implements IScopeNode {
 	public void accept0(IASTNeoVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
-			TreeVisitor.acceptChild(visitor, md);
+			TreeVisitor.acceptChildren(visitor, md);
 			TreeVisitor.acceptChildren(visitor, members);
 		}
 		visitor.endVisit(this);

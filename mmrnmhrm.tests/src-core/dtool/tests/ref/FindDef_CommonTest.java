@@ -1,6 +1,7 @@
 package dtool.tests.ref;
 
 import java.io.IOException;
+import java.util.Collection;
 
 import mmrnmhrm.core.model.CompilationUnit;
 import mmrnmhrm.tests.BasePluginTest;
@@ -59,18 +60,16 @@ public abstract class FindDef_CommonTest extends BasePluginTest {
 		ASTNode node = ASTNodeFinder.findElement(cunit.getNeoModule(), offset);
 		Reference ent = (Reference) node;
 		
-		// TODO: Assert only one found
-		// Perform the find def
-		DefUnit defunit = ent.findTargetDefUnit();
+		Collection<DefUnit> defunits = ent.findTargetDefUnits(true);
 		
-		
-		if(targetOffset == -1) {
-			assertTrue(defunit == null, 
-					" Find Ref got a DefUnit when it shouldn't.");
+		if(defunits == null || defunits.isEmpty()) {
+			assertTrue(targetOffset == -1, 
+					" Find Ref got no DefUnit.");
 			return;
 		}
+		DefUnit defunit = defunits.iterator().next();
 		
-		assertTrue(defunit != null, " Find Ref got no DefUnit.");
+		assertTrue(defunit != null, " defunit = null");
 
 		Module obtainedModule = NodeUtil.getParentModule(defunit);
 		assertTrue(obtainedModule.getCUnit().equals(targetCunit),

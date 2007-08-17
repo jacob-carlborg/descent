@@ -17,7 +17,7 @@ public class DeeSourceFolder extends LangSourceFolder implements IDeeSourceRoot 
 	
 	@Override
 	public ILangElement[] newChildrenArray(int size) {
-		return new LangPackageFragment[size]; // no children for now
+		return new LangPackageFragment[size]; 
 	}
 	
 	public String getSourceRootKindString() {

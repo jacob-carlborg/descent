@@ -8,7 +8,7 @@ import descent.core.domX.ASTNode;
 import descent.internal.compiler.parser.IdentifierExp;
 import dtool.dom.ast.IASTNeoVisitor;
 import dtool.dom.definitions.DefUnit;
-import dtool.refmodel.IDefUnitReference;
+import dtool.refmodel.IDefUnitReferenceNode;
 
 /**
  * A normal qualified reference.
@@ -16,7 +16,7 @@ import dtool.refmodel.IDefUnitReference;
 public class RefQualified extends CommonRefQualified {
 	
 
-	public IDefUnitReference root; //Entity or Expression
+	public IDefUnitReferenceNode root; //Entity or Expression
 
 	protected RefQualified() {
 	}
@@ -62,7 +62,7 @@ public class RefQualified extends CommonRefQualified {
 		return (ASTNode) this.root;
 	}
 
-	public IDefUnitReference getRoot() {
+	public IDefUnitReferenceNode getRoot() {
 		return root;
 	}
 

@@ -1,6 +1,7 @@
 package dtool.dom.expressions;
 
 import melnorme.miscutil.tree.TreeVisitor;
+import descent.internal.compiler.parser.IdentifierExp;
 import descent.internal.compiler.parser.StructInitializer;
 import dtool.descentadapter.DescentASTConverter;
 import dtool.dom.ast.IASTNeoVisitor;
@@ -13,8 +14,15 @@ public class InitializerStruct extends Initializer {
 
 	public InitializerStruct(StructInitializer elem) {
 		convertNode(elem);
-		//TODO
-		this.indexes = DescentASTConverter.convertMany(elem.field.toArray(), new RefIdentifier[elem.field.size()]);
+		this.indexes = new RefIdentifier[elem.field.size()];
+		for(int i = 0; i < elem.field.size(); ++i) {
+			IdentifierExp id = elem.field.get(i);
+			ExpReference expref = (ExpReference) DescentASTConverter.convertElem(id);
+			if(expref == null)
+				this.indexes[i] = null;
+			else
+				this.indexes[i] = (RefIdentifier) expref.ref;
+		}
 		this.values = Initializer.convertMany(elem.value);
 	}
 

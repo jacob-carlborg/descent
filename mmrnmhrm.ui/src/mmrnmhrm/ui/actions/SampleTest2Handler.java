@@ -17,8 +17,6 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.ui.IWorkbenchWindow;
-import org.eclipse.ui.handlers.HandlerUtil;
 
 
 public class SampleTest2Handler extends AbstractHandler {
@@ -60,11 +58,26 @@ public class SampleTest2Handler extends AbstractHandler {
 	}
 
 
-	public Object execute(ExecutionEvent event) throws ExecutionException {
+	/*public Object execute(ExecutionEvent event) throws ExecutionException {
 		IWorkbenchWindow window = HandlerUtil.getActiveWorkbenchWindowChecked(event);
 
 		TestDialog foo = new TestDialog(window.getShell());
 		foo.open();
+		return null;
+	}*/
+	
+	public Object execute(ExecutionEvent event) throws ExecutionException {
+		try {
+			IWorkspaceRunnable op = new IWorkspaceRunnable() {
+				public void run(IProgressMonitor monitor) throws CoreException {
+					DeeModel.getRoot().updateElementRecursive();
+					//DeeModel.getRoot().updateElementLazily();
+				}
+			};
+			DeeCore.runSimpleOp(op);
+		} catch (CoreException ce) {
+			throw new ExecutionException("RefreshModelHandler error", ce);
+		}
 		return null;
 	}
 

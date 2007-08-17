@@ -1,38 +1,40 @@
 package mmrnmhrm.ui.editor;
 
-import melnorme.miscutil.ExceptionAdapter;
+import melnorme.miscutil.log.Logg;
+import mmrnmhrm.core.model.CompilationUnit;
+import mmrnmhrm.ui.DeePlugin;
 
-import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.reconciler.DirtyRegion;
 import org.eclipse.jface.text.reconciler.IReconcilingStrategy;
+import org.eclipse.ui.texteditor.ITextEditor;
 
 public class DeeReconcilingStrategy implements IReconcilingStrategy {
 
-	private IDocument document;
+	protected IDocument document;
+	private ITextEditor textEditor;
 	
+	public DeeReconcilingStrategy(ITextEditor textEditor) {
+		this.textEditor = textEditor;
+	}
+
 	public void setDocument(IDocument document) {
 		this.document = document;
 	}
 	
 	public void reconcile(IRegion partition) {
-		if(true)
-			return; // TODO
+		Logg.model.println("Reconcile:", partition);
+		CompilationUnit cunit = 
+			DeePlugin.getCompilationUnitOperation(textEditor.getEditorInput());
 		
-		try {
-			document.get(partition.getOffset(), partition.getLength());
-		} catch (BadLocationException e) {
-			throw ExceptionAdapter.unchecked(e);
-		}
-		//Logg.model.println("Reconcile:", partition);
+		if(cunit != null)
+			cunit.reconcile();
 	}
 
 	public void reconcile(DirtyRegion dirtyRegion, IRegion subRegion) {
-		//Logg.model.println("Reconcile:", dirtyRegion, " , ", subRegion);
-
+		reconcile(subRegion);
 	}
-
 
 
 }

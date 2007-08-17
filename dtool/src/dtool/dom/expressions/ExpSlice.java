@@ -2,14 +2,12 @@ package dtool.dom.expressions;
 
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.internal.compiler.parser.SliceExp;
-import descent.internal.compiler.parser.TypeSlice;
 import dtool.dom.ast.IASTNeoVisitor;
-import dtool.dom.references.Reference;
-import dtool.refmodel.IDefUnitReference;
+import dtool.refmodel.IDefUnitReferenceNode;
 
 public class ExpSlice extends Expression {
 
-	public IDefUnitReference slicee;
+	public IDefUnitReferenceNode slicee;
 	public Expression from;
 	public Expression to;
 	
@@ -20,13 +18,6 @@ public class ExpSlice extends Expression {
 		to = Expression.convert(elem.upr);
 	}
 	
-	public ExpSlice(TypeSlice elem) {
-		slicee = Reference.convertType(elem.next);
-		from = Expression.convert(elem.lwr);
-		to = Expression.convert(elem.upr);
-	}
-	
-
 	@Override
 	public void accept0(IASTNeoVisitor visitor) {
 		boolean children = visitor.visit(this);

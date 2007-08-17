@@ -35,7 +35,7 @@ public class NamelessParameter extends ASTNeoNode implements IFunctionParameter 
 	public void accept0(IASTNeoVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
-			TreeVisitor.acceptChild(visitor, type);
+			TreeVisitor.acceptChildren(visitor, type);
 			//TreeVisitor.acceptChildren(visitor, inout);
 			//TreeVisitor.acceptChildren(visitor, defaultValue);
 		}

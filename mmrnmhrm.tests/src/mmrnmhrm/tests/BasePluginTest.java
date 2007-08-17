@@ -18,7 +18,7 @@ public class BasePluginTest {
 	
 
 	public static void assertTrue(boolean b) {
-		Assert.assertTrue("Assertion failed.", b);
+		assertTrue(b, "Assertion failed.");
 	}
 	
 	public static void assertTrue(boolean b, String msg) {

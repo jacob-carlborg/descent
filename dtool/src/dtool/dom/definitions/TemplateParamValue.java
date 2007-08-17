@@ -14,8 +14,8 @@ public class TemplateParamValue extends TemplateParameter {
 	public Expression defaultvalue;
 
 	public TemplateParamValue(TemplateValueParameter elem) {
+		super(elem.ident);
 		convertNode(elem);
-		convertIdentifier(elem.ident);
 		this.type = Reference.convertType(elem.valType);
 		this.specvalue = Expression.convert(elem.specValue);
 		this.defaultvalue = Expression.convert(elem.defaultValue);
@@ -35,10 +35,10 @@ public class TemplateParamValue extends TemplateParameter {
 	public void accept0(IASTNeoVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
-			TreeVisitor.acceptChild(visitor, type);
-			TreeVisitor.acceptChild(visitor, defname);
-			TreeVisitor.acceptChild(visitor, specvalue);
-			TreeVisitor.acceptChild(visitor, defaultvalue);
+			TreeVisitor.acceptChildren(visitor, type);
+			TreeVisitor.acceptChildren(visitor, defname);
+			TreeVisitor.acceptChildren(visitor, specvalue);
+			TreeVisitor.acceptChildren(visitor, defaultvalue);
 		}
 		visitor.endVisit(this);	
 	}

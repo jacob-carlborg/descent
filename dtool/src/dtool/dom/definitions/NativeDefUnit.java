@@ -1,5 +1,6 @@
 package dtool.dom.definitions;
 
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
@@ -7,6 +8,7 @@ import melnorme.miscutil.Assert;
 import melnorme.miscutil.IteratorUtil;
 import dtool.dom.ast.IASTNeoVisitor;
 import dtool.dom.ast.IASTNode;
+import dtool.refmodel.IDefUnitReference;
 import dtool.refmodel.INativeDefUnit;
 import dtool.refmodel.IScope;
 import dtool.refmodel.IScopeNode;
@@ -38,10 +40,22 @@ public abstract class NativeDefUnit extends DefUnit implements INativeDefUnit, I
 	}
 	
 	public static final NativesScope nativesScope = new NativesScope();
-	
+	//public static final DefUnit unknown = new NativesScope();
+	public static final IDefUnitReference nullReference = new IDefUnitReference() {
+
+		public Collection<DefUnit> findTargetDefUnits(boolean findFirstOnly) {
+			return null;
+		}
+		
+		@Override
+		public String toString() {
+			return "<unknown>";
+		}
+	};
+
 	public NativeDefUnit(String name) {
+		super(new Symbol(name));
 		setSourceRange(0, 0);
-		defname = new Symbol(name);
 	}
 	
 	@Override

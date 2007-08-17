@@ -17,7 +17,7 @@ public class DefinitionAlias extends Definition implements IStatement {
 	public Reference target;
 	
 	public DefinitionAlias(AliasDeclaration elem) {
-		convertDsymbol(elem);
+		super(elem);
 		target = (Reference) DescentASTConverter.convertElem(elem.type);
 	}
 	
@@ -28,8 +28,8 @@ public class DefinitionAlias extends Definition implements IStatement {
 	public void accept0(IASTNeoVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
-			TreeVisitor.acceptChild(visitor, target);
-			TreeVisitor.acceptChild(visitor, defname);
+			TreeVisitor.acceptChildren(visitor, target);
+			TreeVisitor.acceptChildren(visitor, defname);
 		}
 		visitor.endVisit(this);
 	}

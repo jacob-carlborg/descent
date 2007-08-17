@@ -6,6 +6,7 @@ import java.util.List;
 import melnorme.miscutil.StringUtil;
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.core.domX.ASTNode;
+import descent.internal.compiler.parser.Dsymbol;
 import dtool.dom.ast.IASTNeoVisitor;
 import dtool.dom.statements.IStatement;
 import dtool.refmodel.IScopeNode;
@@ -17,6 +18,10 @@ public abstract class DefinitionAggregate extends Definition implements IScopeNo
 
 	public TemplateParameter[] templateParams; 
 	public List<ASTNode> members; // can be null. (bodyless aggregates)
+
+	public DefinitionAggregate(Dsymbol elem) {
+		super(elem);
+	}
 	
 	public EArcheType getArcheType() {
 		return EArcheType.Aggregate;

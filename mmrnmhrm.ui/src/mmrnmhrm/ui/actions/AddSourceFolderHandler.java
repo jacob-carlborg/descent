@@ -1,5 +1,7 @@
 package mmrnmhrm.ui.actions;
 
+import java.util.Iterator;
+
 import melnorme.miscutil.Assert;
 import mmrnmhrm.core.DeeCore;
 import mmrnmhrm.core.model.DeeModel;
@@ -29,24 +31,28 @@ public class AddSourceFolderHandler extends AbstractHandler {
 		if(!(selection instanceof IStructuredSelection))
 			return null;
 		
-		IStructuredSelection sel = (IStructuredSelection) selection;
-		Assert.isTrue(sel.size() == 1);
+		final IStructuredSelection sel = (IStructuredSelection) selection;
+		Assert.isTrue(sel.size() >= 1);
+
 		
-		final IFolder folder = (IFolder) sel.getFirstElement();
+		//final IFolder folder = (IFolder) sel.getFirstElement();
 		final IWorkspaceRunnable op = new IWorkspaceRunnable() {
 			public void run(IProgressMonitor monitor) throws CoreException {
-				IProject project = folder.getProject();
-				DeeProject proj = DeeModel.getLangProject(project);
-				if(proj.getSourceRoot(folder) == null) {
-					proj.createAddSourceFolder(folder);
-					proj.saveProjectConfigFile();
+				for (Iterator iterator = sel.iterator(); iterator.hasNext();) {
+					IFolder folder = (IFolder) iterator.next();
+					IProject project = folder.getProject();
+					DeeProject proj = DeeModel.getLangProject(project);
+					if(proj.getSourceRoot(folder) == null) {
+						proj.createAddSourceFolder(folder);
+						proj.saveProjectConfigFile();
+					}
 				}
 			}
 		};
 		
 		OperationsManager.executeOperation("Add Folder To Build Path", new ISimpleRunnable() {
 			public void run() throws CoreException {
-				DeeCore.run(op, folder.getProject(), null);
+				DeeCore.run(op, null);
 			}
 		});
 

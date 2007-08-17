@@ -48,7 +48,7 @@ public class EnumDeclaration extends ScopeDsymbol {
 		if (children) {
 			TreeVisitor.acceptChildren(visitor, modifiers);
 			TreeVisitor.acceptChildren(visitor, ident);
-			TreeVisitor.acceptChildren(visitor, type);
+			TreeVisitor.acceptChildren(visitor, memtype);
 			TreeVisitor.acceptChildren(visitor, members);
 		}
 		visitor.endVisit(this);

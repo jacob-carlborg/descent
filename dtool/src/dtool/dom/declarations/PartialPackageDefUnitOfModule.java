@@ -7,6 +7,7 @@ import melnorme.miscutil.IteratorUtil;
 import descent.core.domX.ASTNode;
 import dtool.dom.definitions.DefUnit;
 import dtool.dom.definitions.Module;
+import dtool.dom.definitions.Symbol;
 import dtool.dom.references.RefModule;
 
 public class PartialPackageDefUnitOfModule extends PartialPackageDefUnit {
@@ -14,6 +15,10 @@ public class PartialPackageDefUnitOfModule extends PartialPackageDefUnit {
 	RefModule moduleRef;
 	DefUnit module;
 	
+	public PartialPackageDefUnitOfModule(Symbol name) {
+		super(name);
+	}
+
 	public Iterator<? extends ASTNode> getMembersIterator() {
 		if(module != null)
 			return Collections.singleton(module).iterator();

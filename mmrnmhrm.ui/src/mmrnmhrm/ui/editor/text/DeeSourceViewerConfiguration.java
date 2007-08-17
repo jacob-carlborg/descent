@@ -84,7 +84,8 @@ public class DeeSourceViewerConfiguration extends LangSourceViewerConfiguration 
 	@Override
 	public IReconciler getReconciler(ISourceViewer sourceViewer) {
 		MonoReconciler reconciler = new MonoReconciler(
-				new DeeReconcilingStrategy(), true);
+				new DeeReconcilingStrategy(fTextEditor), false);
+		reconciler.setDelay(500);
 		reconciler.install(sourceViewer);
 		return reconciler;
 	}

@@ -60,9 +60,9 @@ public class DeeProject extends LangProject implements IDeeElement {
 	}
 	
 	/** {@inheritDoc} */ @Override
-	public void updateElemLazily() throws CoreException {
+	public void updateElementLazily() throws CoreException {
 		updateErrorMarkers();
-		DeeModel.fireModelChanged();
+		//DeeModel.fireModelChanged();
 	}
 
 	private void updateErrorMarkers() throws CoreException {
@@ -171,7 +171,7 @@ public class DeeProject extends LangProject implements IDeeElement {
 		setChildren(newChildrenArray(0)); // reset children
 		
 		for(String key : section.keySet()) {
-			if(key.startsWith("src")) {
+			if(key.startsWith("src") || key.startsWith("lib")) {
 				IPath path = Path.fromPortableString(section.get(key));
 				IFolder folder = project.getFolder(path);
 				if (folder.exists() == false) {
@@ -180,8 +180,11 @@ public class DeeProject extends LangProject implements IDeeElement {
 					// TODO: problemize
 					continue;
 				}
-				createAddSourceFolder(folder);
-				Logg.model.println("Added srcfolder:" + folder.toString());
+				if(key.startsWith("src"))
+					addSourceRoot(new DeeSourceFolder(folder, this));
+				else
+					addSourceRoot(new DeeSourceLib(folder, this));
+				Logg.model.println("Added srcroot:" + folder.toString());
 			}
 		}
 		

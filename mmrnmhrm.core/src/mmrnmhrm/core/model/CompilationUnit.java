@@ -40,8 +40,7 @@ public class CompilationUnit extends LangModuleUnit implements IGenericCompilati
 	
 
 	public CompilationUnit(LangPackageFragment parent, IFile file) {
-		super(parent);
-		this.file = file;
+		super(parent, file);
 		//createElementInfo();
 	}
 	
@@ -63,6 +62,14 @@ public class CompilationUnit extends LangModuleUnit implements IGenericCompilati
 		return getModule().getChildren();
 	}
 	
+	public void disposeElementInfo() throws CoreException {
+		super.disposeElementInfo();
+		module = null;
+		oldModule = null;
+		problems = null;
+		parseStatus = 0;
+	}
+	
 	public descent.internal.compiler.parser.Module getOldModule() {
 		getElementInfo();
 		return oldModule;
@@ -79,6 +86,7 @@ public class CompilationUnit extends LangModuleUnit implements IGenericCompilati
 			return oldModule;
 		return module;
 	}
+	
 
 	/** Updates this CompilationUnit's AST according to the underlying text. */
 	public void reconcile() {
@@ -170,6 +178,7 @@ public class CompilationUnit extends LangModuleUnit implements IGenericCompilati
 		Module neoModule = DescentASTConverter.convertModule(oldModule);
 		neoModule.setCUnit(this);
 		module = neoModule;
+		//oldModule = null;
 	}
 	
 	public String toStringParseStatus() {

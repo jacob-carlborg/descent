@@ -167,8 +167,7 @@ public class TokenUtil {
 	} 
  	
  	public static boolean isKeyword(TOK tok) {
-		return !isLiteral(tok) && !isOperator(tok) && !isBasicType(tok)
-		&& !isWhiteToken(tok) && !(tok == TOK.TOKidentifier);
+ 		return ArrayUtil.contains(keywords, tok);
 	} 
  	
  	/** Return whether the token is semantically ignorable (comments, whitespace).*/

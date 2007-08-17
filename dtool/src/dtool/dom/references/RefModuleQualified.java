@@ -8,7 +8,7 @@ import descent.internal.compiler.parser.IdentifierExp;
 import dtool.dom.ast.IASTNeoVisitor;
 import dtool.dom.definitions.DefUnit;
 import dtool.dom.definitions.Module;
-import dtool.refmodel.IDefUnitReference;
+import dtool.refmodel.IDefUnitReferenceNode;
 import dtool.refmodel.NodeUtil;
 
 /** An entity reference starting at module scope. 
@@ -33,7 +33,7 @@ public class RefModuleQualified extends CommonRefQualified {
 		return "." + subref;
 	}
 
-	public IDefUnitReference getRoot() {
+	public IDefUnitReferenceNode getRoot() {
 		return null;
 	}
 		

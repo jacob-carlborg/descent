@@ -3,14 +3,11 @@ package mmrnmhrm.ui.wizards;
 import mmrnmhrm.core.DeeCore;
 import mmrnmhrm.core.DeeCoreException;
 import mmrnmhrm.core.model.DeeModel;
-import mmrnmhrm.core.model.DeeNature;
 import mmrnmhrm.core.model.DeeProject;
 import mmrnmhrm.core.model.lang.LangElement;
 
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspaceRoot;
-import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 
@@ -65,15 +62,10 @@ public class DeeProjectWizard extends NewElementWizard {
 			//TODO: allow creating in external location
 			throw new DeeCoreException("External location creation not supported yet", null);
 		}
-		project.create(monitor);
+		if(!project.exists())
+			project.create(monitor);
 		project.open(monitor);
-		DeeNature.addNature(project, DeeNature.NATURE_ID);
-		
-		DeeProject deeproj = new DeeProject(project);
-		deeproj.setDefaultBuildPath();
-		deeproj.saveProjectConfigFile();
-		DeeModel.getRoot().addDeeProject(deeproj);
-		deeProject = deeproj;
+		deeProject = DeeModel.getRoot().createDeeProject(project);
 	}
 	
 	

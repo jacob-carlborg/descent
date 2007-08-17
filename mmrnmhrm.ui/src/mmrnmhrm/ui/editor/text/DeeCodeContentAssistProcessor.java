@@ -19,10 +19,10 @@ import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.texteditor.ITextEditor;
 
 import dtool.dom.definitions.DefUnit;
-import dtool.refmodel.PartialEntitySearch;
-import dtool.refmodel.PartialSearchOptions;
-import dtool.refmodel.PartialEntitySearch.CompletionSession;
-import dtool.refmodel.PartialEntitySearch.IDefUnitMatchAccepter;
+import dtool.refmodel.PrefixDefUnitSearch;
+import dtool.refmodel.PrefixSearchOptions;
+import dtool.refmodel.PrefixDefUnitSearch.CompletionSession;
+import dtool.refmodel.PrefixDefUnitSearch.IDefUnitMatchAccepter;
 
 public class DeeCodeContentAssistProcessor implements IContentAssistProcessor {
 
@@ -70,7 +70,7 @@ public class DeeCodeContentAssistProcessor implements IContentAssistProcessor {
 		results = new ArrayList<ICompletionProposal>();
 		
 		IDefUnitMatchAccepter defUnitAccepter = new IDefUnitMatchAccepter() {
-			public void accept(DefUnit defUnit, PartialSearchOptions searchOptions) {
+			public void accept(DefUnit defUnit, PrefixSearchOptions searchOptions) {
 				String rplStr = defUnit.getName().substring(searchOptions.prefixLen);
 				results.add(new DeeCompletionProposal(
 						rplStr,
@@ -86,7 +86,7 @@ public class DeeCodeContentAssistProcessor implements IContentAssistProcessor {
 			
 		};
 		
-		session.errorMsg = PartialEntitySearch.doCompletionSearch(offset, 
+		session.errorMsg = PrefixDefUnitSearch.doCompletionSearch(offset, 
 				cunit, cunit.getDocument().get(), session, defUnitAccepter);
 		
 		if(session.errorMsg == null)

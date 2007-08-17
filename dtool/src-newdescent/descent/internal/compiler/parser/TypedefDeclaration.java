@@ -52,8 +52,9 @@ public class TypedefDeclaration extends Declaration {
 	public void accept0(IASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
-			TreeVisitor.acceptChildren(visitor, type);
+			TreeVisitor.acceptChildren(visitor, sourceBasetype);
 			TreeVisitor.acceptChildren(visitor, ident);
+			TreeVisitor.acceptChildren(visitor, init);
 		}
 		visitor.endVisit(this);
 	}

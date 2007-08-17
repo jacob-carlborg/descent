@@ -54,7 +54,7 @@ public class ProjConfigPropertyPage extends PropertyPage {
 		if(adaptable instanceof IProject) {
 			return (IProject) adaptable;
 		}
-		return null;
+		return (IProject) adaptable.getAdapter(IProject.class);
 	}
 
 

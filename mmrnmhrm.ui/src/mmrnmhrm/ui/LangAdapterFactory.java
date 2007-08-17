@@ -2,7 +2,6 @@ package mmrnmhrm.ui;
 
 import mmrnmhrm.core.model.lang.ELangElementTypes;
 import mmrnmhrm.core.model.lang.ILangElement;
-import mmrnmhrm.core.model.lang.LangElement;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
@@ -11,13 +10,7 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IAdapterFactory;
-import org.eclipse.ui.IContainmentAdapter;
 import org.eclipse.ui.IContributorResourceAdapter;
-import org.eclipse.ui.IPersistableElement;
-import org.eclipse.ui.ide.IContributorResourceAdapter2;
-import org.eclipse.ui.model.IWorkbenchAdapter;
-import org.eclipse.ui.views.properties.IPropertySource;
-import org.eclipse.ui.views.tasklist.ITaskListResourceAdapter;
 
 
 public class LangAdapterFactory implements IAdapterFactory, IContributorResourceAdapter {
@@ -48,7 +41,8 @@ public class LangAdapterFactory implements IAdapterFactory, IContributorResource
 		
 		case ELangElementTypes.COMPILATION_UNIT:
 			return (IFile) element.getUnderlyingResource();
-		case ELangElementTypes.SOURCEROOT:
+		case ELangElementTypes.SOURCEFOLDER:
+		case ELangElementTypes.SOURCELIB:
 		case ELangElementTypes.PACKAGE_FRAGMENT:
 			return (IFolder) element.getUnderlyingResource();
 		case ELangElementTypes.PROJECT:

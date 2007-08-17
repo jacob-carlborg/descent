@@ -9,7 +9,6 @@ import descent.internal.compiler.parser.IdentifierExp;
 import descent.internal.compiler.parser.Import;
 import dtool.dom.ast.IASTNeoVisitor;
 import dtool.dom.declarations.DeclarationImport.ImportFragment;
-import dtool.dom.definitions.DefSymbol;
 import dtool.dom.definitions.DefUnit;
 import dtool.dom.references.RefIdentifier;
 import dtool.refmodel.CommonDefUnitSearch;
@@ -27,6 +26,9 @@ public class ImportSelective extends ImportFragment implements INonScopedBlock {
 
 		public ImportSelective impSel; // Non Structural Element
 		
+		public ImportSelectiveFragment(IdentifierExp name) {
+			super(name);
+		}
 
 		@Override
 		public void accept0(IASTNeoVisitor visitor) {
@@ -63,17 +65,17 @@ public class ImportSelective extends ImportFragment implements INonScopedBlock {
 	public static ImportSelectiveFragment create(IdentifierExp name,
 			IdentifierExp alias, ImportSelective impSel) {
 	
-		ImportSelectiveFragment impSelfrag = new ImportSelectiveFragment();
-		impSelfrag.impSel = impSel;
+		ImportSelectiveFragment impSelfrag;
 		
 		if(alias == null) {
-			impSelfrag.defname = new DefSymbol(name, impSelfrag);
+			impSelfrag = new ImportSelectiveFragment(name);
 			impSelfrag.setSourceRange(name);
 		} else {
-			impSelfrag.defname = new DefSymbol(alias, impSelfrag);
+			impSelfrag = new ImportSelectiveFragment(alias);
 			impSelfrag.targetname = new RefIdentifier(name);
 			impSelfrag.setSourceRange(alias.start, name.getEndPos());
 		}
+		impSelfrag.impSel = impSel;
 		return impSelfrag;
 	}
 	

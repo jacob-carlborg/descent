@@ -19,6 +19,30 @@ public abstract class DeeColorPreferenceInitializer {
 	/** Sets the defaults for the color preferences. */ 
 	public static void initializeDefaults(IPreferenceStore store) {
 		DeeColorPreferenceInitializer.store = store;
+		
+		setIsEnabled(IDeeColorPreferences.DEE_DEFAULT, true);
+		setColor(IDeeColorPreferences.DEE_DEFAULT, getRGB(SWT.COLOR_BLACK));
+		setIsBold(IDeeColorPreferences.DEE_DEFAULT, false);
+		setIsItalic(IDeeColorPreferences.DEE_DEFAULT, false);
+		setIsUnderline(IDeeColorPreferences.DEE_DEFAULT, false);
+		
+		setIsEnabled(IDeeColorPreferences.DEE_KEYWORD, true);
+		setColor(IDeeColorPreferences.DEE_KEYWORD, new RGB(0, 0, 127));
+		setIsBold(IDeeColorPreferences.DEE_KEYWORD, true);
+		setIsItalic(IDeeColorPreferences.DEE_KEYWORD, false);
+		setIsUnderline(IDeeColorPreferences.DEE_KEYWORD, false);
+		
+		setIsEnabled(IDeeColorPreferences.DEE_BASICTYPES, true);
+		setColor(IDeeColorPreferences.DEE_BASICTYPES, new RGB(0, 0, 127));
+		setIsBold(IDeeColorPreferences.DEE_BASICTYPES, false);
+		setIsItalic(IDeeColorPreferences.DEE_BASICTYPES, false);
+		setIsUnderline(IDeeColorPreferences.DEE_BASICTYPES, false);
+		
+		setIsEnabled(IDeeColorPreferences.DEE_OPERATORS, true);
+		setColor(IDeeColorPreferences.DEE_OPERATORS, getRGB(SWT.COLOR_DARK_RED));
+		setIsBold(IDeeColorPreferences.DEE_OPERATORS, true);
+		setIsItalic(IDeeColorPreferences.DEE_OPERATORS, false);
+		setIsUnderline(IDeeColorPreferences.DEE_OPERATORS, false);
 
 		setIsEnabled(IDeeColorPreferences.DEE_STRING, true);
 		setColor(IDeeColorPreferences.DEE_STRING, getRGB(SWT.COLOR_DARK_YELLOW));
@@ -27,31 +51,16 @@ public abstract class DeeColorPreferenceInitializer {
 		setIsUnderline(IDeeColorPreferences.DEE_STRING, false);
 
 		setIsEnabled(IDeeColorPreferences.DEE_LITERALS, true);
-		setColor(IDeeColorPreferences.DEE_LITERALS, getRGB(SWT.COLOR_DARK_GREEN));
+		setColor(IDeeColorPreferences.DEE_LITERALS, new RGB(127, 64, 64));
 		setIsBold(IDeeColorPreferences.DEE_LITERALS, true);
 		setIsItalic(IDeeColorPreferences.DEE_LITERALS, false);
 		setIsUnderline(IDeeColorPreferences.DEE_LITERALS, false);
 
-		setIsEnabled(IDeeColorPreferences.DEE_OPERATORS, true);
-		setColor(IDeeColorPreferences.DEE_OPERATORS, getRGB(SWT.COLOR_DARK_RED));
-		setIsBold(IDeeColorPreferences.DEE_OPERATORS, true);
-		setIsItalic(IDeeColorPreferences.DEE_OPERATORS, false);
-		setIsUnderline(IDeeColorPreferences.DEE_OPERATORS, false);
 		
-		setIsEnabled(IDeeColorPreferences.DEE_BASICTYPES, true);
-		setColor(IDeeColorPreferences.DEE_BASICTYPES, getRGB(SWT.COLOR_DARK_BLUE));
-		setIsBold(IDeeColorPreferences.DEE_BASICTYPES, false);
-		setIsItalic(IDeeColorPreferences.DEE_BASICTYPES, false);
-		setIsUnderline(IDeeColorPreferences.DEE_BASICTYPES, false);
-
-		setIsEnabled(IDeeColorPreferences.DEE_KEYWORD, true);
-		setColor(IDeeColorPreferences.DEE_KEYWORD, getRGB(SWT.COLOR_DARK_BLUE));
-		setIsBold(IDeeColorPreferences.DEE_KEYWORD, true);
-		setIsItalic(IDeeColorPreferences.DEE_KEYWORD, false);
-		setIsUnderline(IDeeColorPreferences.DEE_KEYWORD, false);
-		
+		//RGB javaDocOthers = new RGB(63, 95, 191);
+		//RGB javaDocTag = new RGB(63, 127, 95);
 		setIsEnabled(IDeeColorPreferences.DEE_DOCCOMMENT, true);
-		setColor(IDeeColorPreferences.DEE_DOCCOMMENT, new RGB(163, 27, 95));
+		setColor(IDeeColorPreferences.DEE_DOCCOMMENT, new RGB(63, 95, 191));
 		setIsBold(IDeeColorPreferences.DEE_DOCCOMMENT, false);
 		setIsItalic(IDeeColorPreferences.DEE_DOCCOMMENT, false);
 		setIsUnderline(IDeeColorPreferences.DEE_DOCCOMMENT, false);
@@ -61,12 +70,7 @@ public abstract class DeeColorPreferenceInitializer {
 		setIsBold(IDeeColorPreferences.DEE_COMMENT, false);
 		setIsItalic(IDeeColorPreferences.DEE_COMMENT, false);
 		setIsUnderline(IDeeColorPreferences.DEE_COMMENT, false);
-		
-		setIsEnabled(IDeeColorPreferences.DEE_DEFAULT, true);
-		setColor(IDeeColorPreferences.DEE_DEFAULT, getRGB(SWT.COLOR_BLACK));
-		setIsBold(IDeeColorPreferences.DEE_DEFAULT, false);
-		setIsItalic(IDeeColorPreferences.DEE_DEFAULT, false);
-		setIsUnderline(IDeeColorPreferences.DEE_DEFAULT, false);
+
 
 		setIsEnabled(IDeeColorPreferences.DEE_SPECIAL, false);
 		setColor(IDeeColorPreferences.DEE_SPECIAL, getRGB(SWT.COLOR_CYAN));

@@ -17,7 +17,7 @@ public class DeclarationAlign extends DeclarationAttrib {
 	public void accept0(IASTNeoVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
-			TreeVisitor.acceptChildren(visitor, body);
+			TreeVisitor.acceptChildren(visitor, body.nodes);
 		}
 		visitor.endVisit(this);
 	}

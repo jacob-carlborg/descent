@@ -3,6 +3,9 @@ package descent.internal.compiler.parser;
 import java.util.ArrayList;
 import java.util.List;
 
+import melnorme.miscutil.tree.TreeVisitor;
+import descent.core.domX.IASTVisitor;
+
 public class TemplateMixin extends TemplateInstance {
 
 	public Type tqual;
@@ -22,15 +25,26 @@ public class TemplateMixin extends TemplateInstance {
 		this.typeStart = start;
 		this.typeLength = length;
 	}
-	
-	@Override
-	public TemplateMixin isTemplateMixin() {
-		return this;
-	}
+
 	
 	@Override
 	public int getNodeType() {
 		return TEMPLATE_MIXIN;
 	}
+	
+	public void accept0(IASTVisitor visitor) {
+		boolean children = visitor.visit(this);
+		if (children) {
+			TreeVisitor.acceptChildren(visitor, idents);
+			TreeVisitor.acceptChildren(visitor, tiargs);
+			TreeVisitor.acceptChildren(visitor, ident);
+		}
+		visitor.endVisit(this);
+	}
 
+	
+	@Override
+	public TemplateMixin isTemplateMixin() {
+		return this;
+	}
 }

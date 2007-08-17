@@ -8,8 +8,8 @@ import dtool.refmodel.IScopeNode;
 public class TemplateParamAlias extends TemplateParameter {
 
 	public TemplateParamAlias(TemplateAliasParameter elem) {
+		super(elem.ident);
 		convertNode(elem);
-		convertIdentifier(elem.ident);
 	}
 
 	@Override
@@ -28,7 +28,7 @@ public class TemplateParamAlias extends TemplateParameter {
 	public void accept0(IASTNeoVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
-			TreeVisitor.acceptChild(visitor, defname);
+			TreeVisitor.acceptChildren(visitor, defname);
 		}
 		visitor.endVisit(this);
 	}

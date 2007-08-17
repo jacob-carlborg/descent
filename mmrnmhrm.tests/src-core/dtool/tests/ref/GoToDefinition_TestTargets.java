@@ -24,7 +24,7 @@ public class GoToDefinition_TestTargets extends FindDef_CommonTest  {
                 {134, 127},
                 {251, 153},
                 {221, 166},
-                //{201, 189}, // TODO out(result)
+                //{201, 189}, // TODO postcondition out(result)
                 {312, 269}, 
                 {345, 288},
                 {362, 301},
@@ -51,13 +51,12 @@ public class GoToDefinition_TestTargets extends FindDef_CommonTest  {
                 {1181, 1145},
                 {1189, 1152},
                 
-                // TODO: support these reftargets
-                //{1233, 1214},
+                {1233, 1214}, 
                 
                 // agreggate templates
-                //{1272, 1267},
-                //{1277, 1267},
-                //{1312, 1306},
+                {1272, 1267},
+                {1277, 1267},
+                {1312, 1306},
                 
         });
     }

@@ -102,28 +102,25 @@ public class SourceLibrariesConfigPage extends AbstractConfigPage {
 	}
 
 	private void createExternalLibraryEntry() {
-		// TODO
+		// TODO createExternalLibraryEntry
 		MessageDialog.openInformation(getShell(), "Edit Source Folder", "TODO");
 	}
 	
 	
 	private void addEntry(IFolder container) {
-		DeeSourceLib sourceFolder = new DeeSourceLib(fDeeProject, container);
+		DeeSourceLib sourceFolder = new DeeSourceLib(container, fDeeProject);
 		fSrcLibrariesList.addElement(sourceFolder);
-		//fDeeProject.addSourceRoot(sourceFolder);
 	}
 
 	public void editElementEntry(Object element) {
-		// TODO
+		// TODO editElementEntry
 		MessageDialog.openInformation(getShell(), "Edit Entry", "TODO");
 	}
 
 	public void removeEntry(Object element) {
 		DeeSourceFolder entry = (DeeSourceFolder) element;
 		fSrcLibrariesList.removeElement(entry);
-		//fDeeProject.removeSourceRoot(entry);
 	}
-	
 
 
 	// -------- Validator --------

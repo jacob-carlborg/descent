@@ -2,8 +2,8 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Mmrnmhrm Tests
 Bundle-SymbolicName: mmrnmhrm.tests
-Bundle-Version: 0.0.3
-Fragment-Host: mmrnmhrm.ui;bundle-version="0.0.3"
+Bundle-Version: 0.1.0
+Fragment-Host: mmrnmhrm.ui;bundle-version="0.1.0"
 Require-Bundle: org.junit4
 Export-Package: dtool.tests.ast.converter
 Bundle-ClassPath: .

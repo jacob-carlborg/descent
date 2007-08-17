@@ -120,11 +120,10 @@ public class SourceFoldersConfigPage extends AbstractConfigPage {
 	protected void addEntry(IFolder container) {
 		DeeSourceFolder sourceFolder = new DeeSourceFolder(container, fDeeProject);
 		fSrcFoldersList.addElement(sourceFolder);
-		//fDeeProject.addSourceRoot(sourceFolder);
 	}
 
 	protected void editElementEntry(Object element) {
-		// TODO
+		// TODO editElementEntr
 		MessageDialog.openInformation(getShell(), "Edit Source Folder", "TODO");
 	}
 

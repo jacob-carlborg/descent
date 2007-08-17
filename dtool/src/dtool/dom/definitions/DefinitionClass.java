@@ -18,7 +18,7 @@ public class DefinitionClass extends DefinitionAggregate {
 	
 	@SuppressWarnings("unchecked")
 	public DefinitionClass(ClassDeclaration elem) {
-		convertDsymbol(elem);
+		super(elem);
 		if(elem.members != null)
 			this.members = DescentASTConverter.convertManyL(elem.members, this.members);
 		this.baseClasses = DescentASTConverter.convertManyL(elem.sourceBaseclasses, this.baseClasses);

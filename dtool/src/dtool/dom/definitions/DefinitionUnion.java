@@ -16,7 +16,7 @@ public class DefinitionUnion extends DefinitionAggregate {
 	
 	
 	public DefinitionUnion(UnionDeclaration elem) {
-		convertDsymbol(elem);
+		super(elem);
 		if(elem.members != null)
 			this.members = DescentASTConverter.convertManyL(elem.members, this.members);
 		// TODO: where did template Parameters go

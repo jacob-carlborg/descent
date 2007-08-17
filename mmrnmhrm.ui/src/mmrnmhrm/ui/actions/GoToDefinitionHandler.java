@@ -100,7 +100,14 @@ public class GoToDefinitionHandler extends AbstractHandler  {
 		} 
 		
 		// find the target
-		Collection<DefUnit> defunits = ((Reference)elem).findTargetDefUnits(false);
+		Collection<DefUnit> defunits;
+		try {
+			defunits = ((Reference)elem).findTargetDefUnits(false);
+		} catch (UnsupportedOperationException uoe) {
+			dialogError(window.getShell(), 
+					"Unsupported search:\n" + uoe);
+			return;
+		}
 		
 		if(defunits == null || defunits.size() == 0) {
 			dialogWarning(window.getShell(), 

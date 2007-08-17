@@ -4,68 +4,61 @@ import java.util.Arrays;
 import java.util.Iterator;
 
 import melnorme.miscutil.ArrayUtil;
-import melnorme.miscutil.tree.TreeVisitor;
 import descent.core.domX.ASTNode;
+import descent.internal.compiler.parser.ASTDmdNode;
 import descent.internal.compiler.parser.Condition;
 import descent.internal.compiler.parser.ConditionalDeclaration;
 import descent.internal.compiler.parser.ConditionalStatement;
+import descent.internal.compiler.parser.DVCondition;
+import descent.internal.compiler.parser.IftypeExp;
+import descent.internal.compiler.parser.StaticIfCondition;
 import dtool.dom.ast.ASTNeoNode;
-import dtool.dom.ast.IASTNeoVisitor;
 import dtool.dom.statements.IStatement;
-import dtool.dom.statements.MultiNodes;
 import dtool.refmodel.INonScopedBlock;
 
-public class DeclarationConditional extends ASTNeoNode implements IStatement, INonScopedBlock {
+public abstract class DeclarationConditional extends ASTNeoNode implements IStatement, INonScopedBlock {
 	
-	public Condition condition; // TODO convert Condition
-	public ASTNode thendecls;
-	public ASTNode elsedecls;
+	public NodeList thendecls;
+	public NodeList elsedecls;
 
-	public DeclarationConditional(ConditionalDeclaration elem) {
-		convertNode(elem);
-		this.condition = elem.condition;
-		thendecls = MultiNodes.createNodeBlock(elem, elem.decl); 
-		elsedecls = MultiNodes.createNodeBlock(elem, elem.elsedecl);
+	public static DeclarationConditional create(ConditionalDeclaration elem) {
+		NodeList thendecls = NodeList.createNodeList(elem.decl); 
+		NodeList elsedecls = NodeList.createNodeList(elem.elsedecl);
+
+		Condition condition = elem.condition;
+		return createConditional(elem, thendecls, elsedecls, condition);		
 	}
 	
+	public static DeclarationConditional create(ConditionalStatement elem) {
+		NodeList thendecls = NodeList.createNodeList(elem.ifbody); 
+		NodeList elsedecls = NodeList.createNodeList(elem.elsebody);
 
-	public DeclarationConditional(ConditionalStatement elem) {
-		convertNode(elem);
-		this.condition = elem.condition;
-		thendecls = MultiNodes.createNodeBlock(elem.ifbody); 
-		elsedecls = MultiNodes.createNodeBlock(elem.elsebody);
+		Condition condition = elem.condition;
+		return createConditional(elem, thendecls, elsedecls, condition);	
 	}
 
-	@Override
-	public void accept0(IASTNeoVisitor visitor) {
-		boolean children = visitor.visit(this);
-		if (children) {
-			//TreeVisitor.acceptChildren(visitor, condition);
-			TreeVisitor.acceptChildren(visitor, thendecls);
-			TreeVisitor.acceptChildren(visitor, elsedecls);
+	private static DeclarationConditional createConditional(
+			ASTDmdNode elem, NodeList thendecls,
+			NodeList elsedecls, Condition condition) {
+		if(condition instanceof DVCondition) {
+			return new DeclarationConditionalDV(elem, (DVCondition) condition, thendecls, elsedecls);
 		}
-		visitor.endVisit(this);
+		StaticIfCondition stIfCondition = (StaticIfCondition) condition;
+		if(stIfCondition.exp instanceof IftypeExp && ((IftypeExp) stIfCondition.exp).ident != null) {
+			return new DeclarationStaticIfIsType(elem, (IftypeExp) stIfCondition.exp, thendecls, elsedecls);
+		} else { 
+			return new DeclarationStaticIf(elem, stIfCondition, thendecls, elsedecls);
+		}
 	}
 
-	public ASTNode[] getMembers() {
-		if(thendecls == null)
-			return getElseMembers();
-		if(elsedecls == null)
-			return getThenMembers();
+
+	protected ASTNode[] getMembers() {
+		if(thendecls.nodes == null)
+			return elsedecls.nodes;
+		if(elsedecls.nodes == null)
+			return thendecls.nodes;
 		
-		return ArrayUtil.concat(getThenMembers(), getElseMembers());
-	}
-
-	private ASTNode[] getThenMembers() {
-		if(thendecls instanceof MultiNodes) 
-			return ((MultiNodes)thendecls).decls;
-		return new ASTNode[] { thendecls };
-	}
-
-	private ASTNode[] getElseMembers() {
-		if(elsedecls instanceof MultiNodes) 
-			return ((MultiNodes)elsedecls).decls;
-		return new ASTNode[] { elsedecls };
+		return ArrayUtil.concat(thendecls.nodes, elsedecls.nodes);
 	}
 
 	public Iterator<ASTNode> getMembersIterator() {

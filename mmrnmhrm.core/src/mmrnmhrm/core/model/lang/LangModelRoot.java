@@ -25,7 +25,7 @@ public abstract class LangModelRoot extends LangContainerElement {
 	}
 	
 	/** {@inheritDoc} */ @Override
-	public void updateElemLazily() throws CoreException {
+	public void updateElementLazily() throws CoreException {
 		createElementInfo();
 	}
 

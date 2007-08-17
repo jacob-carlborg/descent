@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Mmrnmhrm Core
 Bundle-SymbolicName: mmrnmhrm.core;singleton:=true
-Bundle-Version: 0.0.3
+Bundle-Version: 0.1.0
 Bundle-Activator: mmrnmhrm.core.DeeCore
 Bundle-Localization: plugin
 Require-Bundle: com.ibm.icu,

@@ -27,7 +27,7 @@ public class BaseClass extends ASTNeoNode {
 	public void accept0(IASTNeoVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
-			TreeVisitor.acceptChild(visitor, type);
+			TreeVisitor.acceptChildren(visitor, type);
 		}
 		visitor.endVisit(this);	 			
 	}

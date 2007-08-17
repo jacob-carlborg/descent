@@ -1,19 +1,16 @@
 package dtool.dom.expressions;
 
-import melnorme.miscutil.Assert;
-import descent.internal.compiler.parser.BoolExp;
+import descent.internal.compiler.parser.IntegerExp;
 import dtool.dom.ast.IASTNeoVisitor;
 
 public class ExpLiteralBool extends Expression {
 	
-	boolean value;
+	public final boolean value;
 
-	public ExpLiteralBool(BoolExp elem) {
-		convertNode(elem);
-		Assert.failTODO();
-		//this.value = elem.;
+	public ExpLiteralBool(IntegerExp node) {
+		convertNode(node);
+		this.value = node.value.intValue() != 0;
 	}
-
 
 	@Override
 	public void accept0(IASTNeoVisitor visitor) {

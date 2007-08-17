@@ -21,7 +21,7 @@ public class TypeTypeof extends CommonRefNative {
 	public void accept0(IASTNeoVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
-			TreeVisitor.acceptChild(visitor, expression);
+			TreeVisitor.acceptChildren(visitor, expression);
 		}
 		visitor.endVisit(this);
 	}

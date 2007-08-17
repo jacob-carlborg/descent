@@ -11,7 +11,7 @@ public class EnumMember extends DefUnit {
 	public Expression value;
 
 	public EnumMember(descent.internal.compiler.parser.EnumMember elem) {
-		convertDsymbol(elem, false);
+		super(elem);
 		convertNode(elem.ident);
 		this.value = Expression.convert(elem.value);
 	}
@@ -20,8 +20,8 @@ public class EnumMember extends DefUnit {
 	public void accept0(IASTNeoVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
-			TreeVisitor.acceptChild(visitor, defname);
-			TreeVisitor.acceptChild(visitor, value);
+			TreeVisitor.acceptChildren(visitor, defname);
+			TreeVisitor.acceptChildren(visitor, value);
 		}
 		visitor.endVisit(this);	 			
 	}

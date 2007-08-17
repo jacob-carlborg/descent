@@ -24,6 +24,6 @@ public interface ILangElement extends IElement, IAdaptable {
 	
 	/** Updates this element and all others beneath it. */
 	void updateElementRecursive() throws CoreException ;
-	
 
+		
 }

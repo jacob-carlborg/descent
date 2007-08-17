@@ -6,9 +6,9 @@ import java.util.List;
 import dtool.descentadapter.DescentASTConverter;
 import dtool.dom.ast.ASTNeoNode;
 import dtool.dom.definitions.DefUnit;
-import dtool.refmodel.IDefUnitReference;
+import dtool.refmodel.IDefUnitReferenceNode;
 
-public abstract class Expression extends ASTNeoNode implements IDefUnitReference {
+public abstract class Expression extends ASTNeoNode implements IDefUnitReferenceNode {
 
 	
 	// TYPE BINDING

@@ -14,14 +14,21 @@ public abstract class Definition extends DefUnit  {
 	
 	public PROT protection; // fixme, should be node
 	public List<Modifier> modifiers;
+
+	public Definition(Dsymbol elem) {
+		super(elem);
+		this.protection = Def_EProtection.adaptFromDescent(elem.prot()); 
+		this.modifiers = DescentASTConverter.convertManyL(elem.modifiers,
+				this.modifiers); 
+	}
 	
-	@Override
+	/*@Override
 	protected void convertDsymbol(Dsymbol elem) {
 		super.convertDsymbol(elem);
 		this.protection = Def_EProtection.adaptFromDescent(elem.prot()); 
 		this.modifiers = DescentASTConverter.convertManyL(elem.modifiers,
 				this.modifiers); 
-	}
+	}*/
 	
 	public static Definition convert(Dsymbol elem) {
 		return (Definition) DescentASTConverter.convertElem(elem);

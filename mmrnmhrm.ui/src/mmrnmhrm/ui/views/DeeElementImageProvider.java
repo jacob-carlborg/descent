@@ -13,12 +13,15 @@ import descent.core.domX.ASTNode;
 import dtool.dom.ast.ASTNeoNode;
 import dtool.dom.declarations.DeclarationImport;
 import dtool.dom.declarations.PartialPackageDefUnit;
-import dtool.dom.definitions.DefinitionAggregate;
 import dtool.dom.definitions.DefinitionAlias;
+import dtool.dom.definitions.DefinitionClass;
 import dtool.dom.definitions.DefinitionEnum;
 import dtool.dom.definitions.DefinitionFunction;
+import dtool.dom.definitions.DefinitionInterface;
+import dtool.dom.definitions.DefinitionStruct;
 import dtool.dom.definitions.DefinitionTemplate;
 import dtool.dom.definitions.DefinitionTypedef;
+import dtool.dom.definitions.DefinitionUnion;
 import dtool.dom.definitions.DefinitionVariable;
 import dtool.dom.definitions.Module;
 import dtool.dom.definitions.Module.DeclarationModule;
@@ -61,9 +64,13 @@ public class DeeElementImageProvider {
 			return getImage(DeePluginImages.ENT_FUNCTION);
 		} else
 			
-		if(node instanceof DefinitionAggregate) {
-			/*DefinitionAggregate aggregate = (DefinitionAggregate) node;
-			if(aggregate.getElementType() == )*/
+		if(node instanceof DefinitionInterface) {
+			return getImage(DeePluginImages.ENT_INTERFACE);
+		} else if(node instanceof DefinitionStruct) {
+			return getImage(DeePluginImages.ENT_STRUCT);
+		} else if(node instanceof DefinitionUnion) {
+			return getImage(DeePluginImages.ENT_UNION);
+		} else if(node instanceof DefinitionClass) {
 			return getImage(DeePluginImages.ENT_CLASS);
 		} else if(node instanceof DefinitionTypedef) {
 			return getImage(DeePluginImages.ENT_TYPEDEF);

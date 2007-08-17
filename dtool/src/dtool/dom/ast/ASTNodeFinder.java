@@ -34,14 +34,17 @@ public class ASTNodeFinder extends ASTNeoUpTreeVisitor {
 		Assert.isNotNull(root);
 		Assert.isTrue(!root.hasNoSourceRangeInfo());
 
-		if(offset < root.getStartPos() || offset > root.getEndPos()) 
+		ASTNodeFinder aef = new ASTNodeFinder(offset, inclusiveEnd);
+
+		if(!aef.matchesRangeStart(root) || !aef.matchesRangeEnd(root)) 
 			return null;
 		
-		ASTNodeFinder aef = new ASTNodeFinder(offset, inclusiveEnd);
 		root.accept(aef);
 		Assert.isNotNull(aef.match);
 		return aef.match;
 	}
+	
+	
 
 	public boolean visit(ASTRangeLessNode elem) {
 		return true;

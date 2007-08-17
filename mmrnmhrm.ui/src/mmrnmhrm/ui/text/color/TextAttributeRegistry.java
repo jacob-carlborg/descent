@@ -65,12 +65,14 @@ public class TextAttributeRegistry
 	}
 	
 	private Color loadColor(String key) {
-		Color color = colorManager.get(key);
+		Color color = null;
+		//color = colorManager.get(key);
 		if(color == null) { 
 			RGB rgb = LangColorPreferences.getColor(prefStore, key);
 			colorManager.put(key, rgb);
 			color = colorManager.get(key);
 		}
+				
 		return color;
 	}
 	

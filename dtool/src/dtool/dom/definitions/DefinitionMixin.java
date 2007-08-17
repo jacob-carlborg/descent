@@ -2,34 +2,31 @@ package dtool.dom.definitions;
 
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.internal.compiler.parser.TemplateMixin;
-import descent.internal.compiler.parser.TypeQualified;
 import dtool.dom.ast.ASTNeoNode;
 import dtool.dom.ast.IASTNeoVisitor;
-import dtool.dom.references.RefTemplateInstance;
 import dtool.dom.references.Reference;
 import dtool.dom.statements.IStatement;
 import dtool.refmodel.IScopeNode;
 
 /*
- * TODO mixin
  */
 public class DefinitionMixin extends DefUnit implements IStatement {
 	
 	public Reference type;
 	
+	private DefinitionMixin(TemplateMixin elem, Reference tplInstance) {
+		super(elem);
+		this.type = tplInstance;
+	}
+
 	public static ASTNeoNode convertMixinInstance(TemplateMixin elem) {
-		RefTemplateInstance tplInstance = new RefTemplateInstance(elem);
-		Reference.convertTypeQualified(null, (TypeQualified) elem.tqual);
 		if(elem.ident != null) {
-			DefinitionMixin defMixin = new DefinitionMixin();
-			defMixin.convertDsymbol(elem);
-			defMixin.type = tplInstance;
-			return defMixin;
+			Reference typeref = Reference.convertTemplateInstance(elem, elem.tiargs);
+			return new DefinitionMixin(elem, typeref);
  		} else {
-			MixinContainer contMixin = new MixinContainer();
-			contMixin.convertNode(elem);
-			contMixin.type = tplInstance;
-			return contMixin;
+ 			elem.setSourceRange(elem.typeStart, elem.typeLength);
+ 			Reference typeref = Reference.convertTemplateInstance(elem, elem.tiargs);
+			return new MixinContainer(elem, typeref);
  		}
 	}
 

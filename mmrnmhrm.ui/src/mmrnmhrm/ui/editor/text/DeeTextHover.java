@@ -91,7 +91,7 @@ public class DeeTextHover extends AbstractTextHover implements ITextHoverExtensi
 		String info = null;
 		
 		if(node instanceof DefSymbol) {
-			DefUnit defUnit = ((DefSymbol) node).getParent();
+			DefUnit defUnit = ((DefSymbol) node).getDefUnit();
 			info= HoverUtil.getDefUnitHoverInfoWithDeeDoc(defUnit);
 		} else if (node instanceof Reference) {
 			DefUnit defUnit;

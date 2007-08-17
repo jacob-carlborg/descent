@@ -1,13 +1,15 @@
 package dtool.descentadapter;
 
 import melnorme.miscutil.Assert;
+import descent.internal.compiler.parser.DotIdExp;
+import descent.internal.compiler.parser.DotTemplateInstanceExp;
 import descent.internal.compiler.parser.FuncLiteralDeclaration;
 import descent.internal.compiler.parser.TemplateInstanceWrapper;
 import descent.internal.compiler.parser.TypeExp;
 import descent.internal.compiler.parser.TypeInstance;
 import dtool.dom.expressions.ExpReference;
-import dtool.dom.expressions.ExpSlice;
 import dtool.dom.references.RefIdentifier;
+import dtool.dom.references.RefTypeSlice;
 import dtool.dom.references.Reference;
 import dtool.dom.references.TypeDelegate;
 import dtool.dom.references.TypeDynArray;
@@ -33,6 +35,14 @@ abstract class RefConverter extends CoreConverter {
 		return endAdapt(new ExpReference(node));
 	}
 	
+	
+	public boolean visit(DotIdExp node) {
+		return endAdapt(new ExpReference(node));
+	}
+		
+	public boolean visit(DotTemplateInstanceExp node) {
+		return endAdapt(new ExpReference(node));
+	}
 
 	/* ---- References & co. --- */
 	
@@ -97,7 +107,7 @@ abstract class RefConverter extends CoreConverter {
 	}
 	
 	public boolean visit(descent.internal.compiler.parser.TypeSlice elem) {
-		return endAdapt(new ExpSlice(elem));
+		return endAdapt(new RefTypeSlice(elem));
 	}
 
 

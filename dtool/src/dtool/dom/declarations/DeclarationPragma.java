@@ -32,7 +32,7 @@ public class DeclarationPragma extends DeclarationAttrib  {
 		if (children) {
 			TreeVisitor.acceptChildren(visitor, ident);
 			TreeVisitor.acceptChildren(visitor, expressions);
-			TreeVisitor.acceptChildren(visitor, body);
+			TreeVisitor.acceptChildren(visitor, body.nodes);
 		}
 		visitor.endVisit(this);
 	}

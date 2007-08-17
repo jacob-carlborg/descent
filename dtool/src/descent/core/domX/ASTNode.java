@@ -23,25 +23,25 @@ public abstract class ASTNode extends TreeNode<ASTNode, IASTVisitor> implements 
 
 	
 	/** Gets the source range start position, aka offset. */
-	public int getStartPos() {
+	public final int getStartPos() {
 		return start;
 	}
 	/** Gets the source range start position, aka offset. */
-	public int getOffset() {
+	public final int getOffset() {
 		return start;
 	}
 	/** Gets the source range length. */
-	public int getLength() {
+	public final int getLength() {
 		return length;
 	}
 	
 	/** Gets the source range end position (start position + length). */
-	public int getEndPos() {
+	public final int getEndPos() {
 		Assert.isTrue(start != -1);
 		return start+length;
 	}
 	/** Sets the source range end position (start position + length). */
-	public void setEndPos(int endPos) {
+	public final void setEndPos(int endPos) {
 		AssertIn.isTrue(endPos >= start);
 		Assert.isTrue(start != -1);
 		length = endPos - start ;
@@ -60,7 +60,7 @@ public abstract class ASTNode extends TreeNode<ASTNode, IASTVisitor> implements 
 	}
 	
 	/** Checks if the node has no defined source range info. */
-	public boolean hasNoSourceRangeInfo() {
+	public final boolean hasNoSourceRangeInfo() {
 		return start == -1;
 	}
 	

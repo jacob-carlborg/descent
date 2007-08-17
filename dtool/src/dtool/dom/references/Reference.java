@@ -4,7 +4,9 @@ import java.util.Collection;
 import java.util.List;
 
 import melnorme.miscutil.Assert;
+import descent.internal.compiler.parser.ASTDmdNode;
 import descent.internal.compiler.parser.DotIdExp;
+import descent.internal.compiler.parser.DotTemplateInstanceExp;
 import descent.internal.compiler.parser.IdentifierExp;
 import descent.internal.compiler.parser.TemplateInstance;
 import descent.internal.compiler.parser.Type;
@@ -16,13 +18,13 @@ import dtool.dom.ast.ASTNeoNode;
 import dtool.dom.definitions.DefUnit;
 import dtool.dom.expressions.ExpReference;
 import dtool.dom.expressions.Expression;
-import dtool.refmodel.IDefUnitReference;
+import dtool.refmodel.IDefUnitReferenceNode;
 import dtool.refmodel.IScopeNode;
 
 /**
  * Common class for entity references.
  */
-public abstract class Reference extends ASTNeoNode implements IDefUnitReference {
+public abstract class Reference extends ASTNeoNode implements IDefUnitReferenceNode {
 	
 	public static enum EReferenceConstraint {	
 		none,
@@ -106,10 +108,14 @@ public abstract class Reference extends ASTNeoNode implements IDefUnitReference 
 	}
 	
 	public static Reference convertTemplateInstance(TemplateInstance tplInstance) {
+		return convertTemplateInstance(tplInstance, tplInstance.tiargs);
+	}
+	
+	public static Reference convertTemplateInstance(TemplateInstance tplInstance, List<ASTDmdNode> tiargs) {
 		List<IdentifierExp> idents = tplInstance.idents;
 		int numIdents = idents.size();
-		String tplIdent = idents.get(numIdents-1).ident;
-		RefTemplateInstance refTpl = new RefTemplateInstance(tplInstance, tplIdent);
+		IdentifierExp tplIdent = idents.get(numIdents-1);
+		RefTemplateInstance refTpl = new RefTemplateInstance(tplInstance, tplIdent, tiargs);
 
 		if(numIdents == 1) {
 			return refTpl;
@@ -135,7 +141,7 @@ public abstract class Reference extends ASTNeoNode implements IDefUnitReference 
 
 	public static Reference convertDotIdexp(DotIdExp elem) {
 		
-		IDefUnitReference rootent;
+		IDefUnitReferenceNode rootent;
 		Expression expTemp = Expression.convert(elem.e1);
 		if(expTemp instanceof ExpReference) {
 			rootent = ((ExpReference) expTemp).ref;
@@ -153,13 +159,6 @@ public abstract class Reference extends ASTNeoNode implements IDefUnitReference 
 		newelem.root = rootent;
 		newelem.subref = CommonRefSingle.convertToSingleRef(elem.ident);
 
-		// fix some range discrepancies
-		/*if(newelem.root instanceof EntModuleQualified && !newelem.hasNoSourceRangeInfo()) {
-			// range error here
-			newelem.getRootExp().startPos = newelem.startPos;
-			newelem.getRootExp().setEndPos(newelem.subent.getEndPos());
-		}*/
-		
 		// Fix some DMD missing ranges 
 		if(newelem.hasNoSourceRangeInfo()) {
 			try {
@@ -172,11 +171,29 @@ public abstract class Reference extends ASTNeoNode implements IDefUnitReference 
 		}
 		return newelem;
 	}
-
-
-
-
 	
+	public static Reference convertDotTemplateIdexp(DotTemplateInstanceExp elem) {
+		
+		IDefUnitReferenceNode rootent;
+		Expression expTemp = Expression.convert(elem.e1);
+		if(expTemp instanceof ExpReference) {
+			rootent = ((ExpReference) expTemp).ref;
+
+			if(rootent == null) {
+				return new RefModuleQualified(elem.ti.ident);
+			}
+		} else {
+			rootent = expTemp;
+		}
+
+		
+		RefQualified newelem = new RefQualified();
+		newelem.setSourceRange(elem);
+		newelem.root = rootent;
+		newelem.subref = new RefTemplateInstance(elem.ti);
+
+		return newelem;
+	}
 
 }
 

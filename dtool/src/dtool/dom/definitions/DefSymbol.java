@@ -2,6 +2,10 @@ package dtool.dom.definitions;
 
 import descent.internal.compiler.parser.IdentifierExp;
 
+/**
+ * A Symbol that is the name of a DefUnit, and that knows how to get
+ * that DefUnit. Its node parent must be the DefUnit.
+ */
 public class DefSymbol extends Symbol {
 
 	public DefSymbol(IdentifierExp id, DefUnit parent) {
@@ -9,13 +13,7 @@ public class DefSymbol extends Symbol {
 		setParent(parent);
 	}
 
-	public DefSymbol(String name, DefUnit parent) {
-		super(name);
-		setParent(parent);
-	}
-	
-	@Override
-	public DefUnit getParent() {
+	public DefUnit getDefUnit() {
 		return (DefUnit) super.getParent();
 	}
 

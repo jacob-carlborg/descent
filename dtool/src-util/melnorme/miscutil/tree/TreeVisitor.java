@@ -6,11 +6,6 @@ import java.util.List;
 
 import melnorme.miscutil.ExceptionAdapter;
 
-import melnorme.miscutil.tree.ITreeNode;
-import melnorme.miscutil.tree.IVisitable;
-import melnorme.miscutil.tree.TreeNode;
-import melnorme.miscutil.tree.TreeVisitor;
-
 /** Abstract visitor for a heterogenous tree with some utility methods. */
 public abstract class TreeVisitor {
 	
@@ -73,8 +68,7 @@ public abstract class TreeVisitor {
 	}
 	
 	/** Accepts the visitor on child. If child is null, nothing happens. */
-	//@SuppressWarnings("unchecked")
-	public static <T> void acceptChild(T visitor, IVisitable<T> child) {
+	private static <T> void acceptChild(T visitor, IVisitable<T> child) {
 		if (child != null) {
 			child.accept(visitor);
 		}

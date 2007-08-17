@@ -180,13 +180,13 @@
             categoryId="mmrnmhrm.ui.commands.category1"
             defaultHandler="mmrnmhrm.ui.actions.AddSourceFolderHandler"
             id="mmrnmhrm.ui.commands.buildPathAdd"
-            name="Build Path Add">
+            name="Add as Source Folder">
       </command>
  <command
        categoryId="mmrnmhrm.ui.commands.category1"
        defaultHandler="mmrnmhrm.ui.actions.RemoveSourceFolderHandler"
        id="mmrnmhrm.ui.commands.buildPathRemove"
-       name="Build Path Remove">
+       name="Remove from Build Path">
  </command>
 	<command
        categoryId="mmrnmhrm.ui.commands.category1"

@@ -1,6 +1,7 @@
 package mmrnmhrm.core;
 
 import melnorme.miscutil.Assert;
+import mmrnmhrm.core.model.DeeModel;
 
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.IWorkspaceRoot;
@@ -82,6 +83,15 @@ public abstract class LangCore extends Plugin {
 	 * with workspace root as the rule. */
 	public static void run(IWorkspaceRunnable action, IProgressMonitor monitor) throws CoreException {
 		run(action, ResourcesPlugin.getWorkspace().getRoot(), monitor);
+	}
+	
+	/** Runs the given action as a Model operation.
+	 * Assumes it's a non-nested operation. */
+	public static void runSimpleOp(IWorkspaceRunnable action) throws CoreException {
+		IWorkspace workspace = ResourcesPlugin.getWorkspace();
+		IWorkspaceRoot rule = ResourcesPlugin.getWorkspace().getRoot();
+		workspace.run(action, rule, IWorkspace.AVOID_UPDATE, null);
+		DeeModel.fireModelChanged();
 	}
 	
 }

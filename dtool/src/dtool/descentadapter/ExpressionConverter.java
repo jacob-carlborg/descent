@@ -14,7 +14,6 @@ import descent.internal.compiler.parser.AssertExp;
 import descent.internal.compiler.parser.AssignExp;
 import descent.internal.compiler.parser.AssocArrayLiteralExp;
 import descent.internal.compiler.parser.BinExp;
-import descent.internal.compiler.parser.BoolExp;
 import descent.internal.compiler.parser.CallExp;
 import descent.internal.compiler.parser.CastExp;
 import descent.internal.compiler.parser.CatAssignExp;
@@ -31,9 +30,6 @@ import descent.internal.compiler.parser.DeleteExp;
 import descent.internal.compiler.parser.DivAssignExp;
 import descent.internal.compiler.parser.DivExp;
 import descent.internal.compiler.parser.DollarExp;
-import descent.internal.compiler.parser.DotExp;
-import descent.internal.compiler.parser.DotIdExp;
-import descent.internal.compiler.parser.DotTemplateInstanceExp;
 import descent.internal.compiler.parser.EqualExp;
 import descent.internal.compiler.parser.ExpInitializer;
 import descent.internal.compiler.parser.FileExp;
@@ -76,7 +72,6 @@ import descent.internal.compiler.parser.SuperExp;
 import descent.internal.compiler.parser.TOK;
 import descent.internal.compiler.parser.ThisExp;
 import descent.internal.compiler.parser.TraitsExp;
-import descent.internal.compiler.parser.TupleExp;
 import descent.internal.compiler.parser.TypeDotIdExp;
 import descent.internal.compiler.parser.TypeidExp;
 import descent.internal.compiler.parser.UAddExp;
@@ -86,6 +81,7 @@ import descent.internal.compiler.parser.UshrExp;
 import descent.internal.compiler.parser.VoidInitializer;
 import descent.internal.compiler.parser.XorAssignExp;
 import descent.internal.compiler.parser.XorExp;
+import dtool.dom.declarations.DeclarationStringMacro;
 import dtool.dom.expressions.ExpArrayIndex;
 import dtool.dom.expressions.ExpArrayLiteral;
 import dtool.dom.expressions.ExpAssert;
@@ -94,21 +90,23 @@ import dtool.dom.expressions.ExpCast;
 import dtool.dom.expressions.ExpCond;
 import dtool.dom.expressions.ExpDelete;
 import dtool.dom.expressions.ExpDollar;
-import dtool.dom.expressions.ExpDotTemplateInstance;
-import dtool.dom.expressions.ExpReference;
 import dtool.dom.expressions.ExpIftype;
-import dtool.dom.expressions.ExpLiteralBool;
 import dtool.dom.expressions.ExpLiteralFunc;
+import dtool.dom.expressions.ExpLiteralImportedString;
 import dtool.dom.expressions.ExpLiteralInteger;
+import dtool.dom.expressions.ExpLiteralMapArray;
 import dtool.dom.expressions.ExpLiteralNewAnonClass;
 import dtool.dom.expressions.ExpLiteralNull;
 import dtool.dom.expressions.ExpLiteralReal;
 import dtool.dom.expressions.ExpLiteralString;
 import dtool.dom.expressions.ExpNew;
 import dtool.dom.expressions.ExpParenthesized;
+import dtool.dom.expressions.ExpReference;
 import dtool.dom.expressions.ExpSlice;
+import dtool.dom.expressions.ExpStringMacro;
 import dtool.dom.expressions.ExpSuper;
 import dtool.dom.expressions.ExpThis;
+import dtool.dom.expressions.ExpTraits;
 import dtool.dom.expressions.ExpTypeid;
 import dtool.dom.expressions.Expression;
 import dtool.dom.expressions.InfixExpression;
@@ -121,48 +119,32 @@ import dtool.dom.expressions.PrefixExpression;
 
 abstract class ExpressionConverter extends DeclarationConverter {
 	
-	public boolean visit(DotExp node) {
-		return assertFailFAKENODE();
-	}
-
 	public boolean visit(FileExp node) {
-		Assert.failTODO();
-		return false;
+		return endAdapt(new ExpLiteralImportedString(node));
 	}
 	
 	public boolean visit(MultiStringExp node) {
-		Assert.failTODO();
-		return false;
+		return endAdapt(new ExpLiteralString(node));		
 	}
 
 	public boolean visit(TraitsExp node) {
-		Assert.failTODO();
-		return false;
-	}
-	
-	public boolean visit(TupleExp node) {
-		Assert.failTODO();
-		return false;
+		return endAdapt(new ExpTraits(node));
 	}
 	
 	public boolean visit(AssocArrayLiteralExp node) {
-		Assert.failTODO();
-		return false;
+		return endAdapt(new ExpLiteralMapArray(node));
 	}
 
 	public boolean visit(CompileDeclaration node) {
-		Assert.failTODO();
-		return false;
+		return endAdapt(new DeclarationStringMacro(node));
 	}
 
 	public boolean visit(CompileExp node) {
-		Assert.failTODO();
-		return false;
+		return endAdapt(new ExpStringMacro(node));
 	}
 
 	public boolean visit(CompileStatement node) {
-		Assert.failTODO();
-		return false;
+		return endAdapt(new DeclarationStringMacro(node));
 	}
 
 	
@@ -217,14 +199,7 @@ abstract class ExpressionConverter extends DeclarationConverter {
 	public boolean visit(DollarExp element) {
 		return endAdapt(new ExpDollar(element));
 	}
-	
-	public boolean visit(DotIdExp element) {
-		return endAdapt(new ExpReference(element));
-	}
-	
-	public boolean visit(DotTemplateInstanceExp element) {
-		return endAdapt(new ExpDotTemplateInstance(element));
-	}
+
 	
 	public boolean visit(FuncExp element) {
 		return endAdapt(new ExpLiteralFunc(element));
@@ -239,7 +214,7 @@ abstract class ExpressionConverter extends DeclarationConverter {
 	}
 	
 	public boolean visit(IntegerExp element) {
-		return endAdapt(new ExpLiteralInteger(element));
+		return endAdapt(ExpLiteralInteger.convertIntegerExp(element));
 	}
 	
 	public boolean visit(NewAnonClassExp element) {
@@ -290,10 +265,6 @@ abstract class ExpressionConverter extends DeclarationConverter {
 	public boolean visit(TypeidExp element) {
 		return endAdapt(new ExpTypeid(element));
 	}	
-	
-	public boolean visit(BoolExp node) {
-		return endAdapt(new ExpLiteralBool(node));
-	}
 
 	/* ===================== Unary ===================== */
 	

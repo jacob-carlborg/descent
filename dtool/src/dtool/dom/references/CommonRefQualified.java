@@ -8,7 +8,7 @@ import dtool.dom.definitions.DefUnit;
 import dtool.refmodel.CommonDefUnitSearch;
 import dtool.refmodel.DefUnitSearch;
 import dtool.refmodel.EntityResolver;
-import dtool.refmodel.IDefUnitReference;
+import dtool.refmodel.IDefUnitReferenceNode;
 import dtool.refmodel.IScopeNode;
 import dtool.refmodel.NodeUtil;
 
@@ -17,7 +17,7 @@ import dtool.refmodel.NodeUtil;
  * Common class for qualified references 
  * There are two: normal qualified references and Module qualified references.
  */
-public abstract class CommonRefQualified extends Reference implements IDefUnitReference {
+public abstract class CommonRefQualified extends Reference implements IDefUnitReferenceNode {
 
 	
 	public CommonRefSingle subref;
@@ -28,7 +28,7 @@ public abstract class CommonRefQualified extends Reference implements IDefUnitRe
 	}
 	
 	/** maybe null */
-	public abstract IDefUnitReference getRoot();
+	public abstract IDefUnitReferenceNode getRoot();
 
 	public abstract Collection<DefUnit> findRootDefUnits();
 	

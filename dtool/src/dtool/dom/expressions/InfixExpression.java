@@ -63,8 +63,8 @@ public class InfixExpression extends Expression {
 	public void accept0(IASTNeoVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
-			TreeVisitor.acceptChild(visitor, leftExp);
-			TreeVisitor.acceptChild(visitor, rightExp);
+			TreeVisitor.acceptChildren(visitor, leftExp);
+			TreeVisitor.acceptChildren(visitor, rightExp);
 		}
 		visitor.endVisit(this);
 	}

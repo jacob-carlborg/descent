@@ -40,7 +40,7 @@ public class DefinitionFunction extends Definition implements IScopeNode, IState
 
 
 	public DefinitionFunction(FuncDeclaration elem) {
-		convertDsymbol(elem);
+		super(elem);
 		this.frequire = Statement.convert(elem.frequire);
 		this.fensure = Statement.convert(elem.fensure);
 		this.fbody = Statement.convert(elem.fbody);
@@ -78,9 +78,9 @@ public class DefinitionFunction extends Definition implements IScopeNode, IState
 			TreeVisitor.acceptChildren(visitor, templateParams);
 			TreeVisitor.acceptChildren(visitor, params);
 			//TreeVisitor.acceptChildren(visitor, type);
-			TreeVisitor.acceptChild(visitor, frequire);
-			TreeVisitor.acceptChild(visitor, fbody);
-			TreeVisitor.acceptChild(visitor, fensure);
+			TreeVisitor.acceptChildren(visitor, frequire);
+			TreeVisitor.acceptChildren(visitor, fbody);
+			TreeVisitor.acceptChildren(visitor, fensure);
 		}
 		visitor.endVisit(this);
 	}

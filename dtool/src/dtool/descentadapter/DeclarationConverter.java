@@ -17,6 +17,7 @@ import descent.internal.compiler.parser.TemplateTypeParameter;
 import descent.internal.compiler.parser.TemplateValueParameter;
 import descent.internal.compiler.parser.Version;
 import descent.internal.compiler.parser.VersionCondition;
+import descent.internal.compiler.parser.VersionSymbol;
 import dtool.dom.declarations.DeclarationAlign;
 import dtool.dom.declarations.DeclarationAnonMember;
 import dtool.dom.declarations.DeclarationConditional;
@@ -55,32 +56,31 @@ import dtool.dom.definitions.TemplateParamValue;
 abstract class DeclarationConverter extends RefConverter {
 
 	public boolean visit(Version node) {
-		Assert.failTODO();
-		return false;
+		return assertFailHandledDirectly();
 	}
 	
 	public boolean visit(DebugSymbol elem) {
 		return endAdapt(new DeclarationConditionalDefinition(elem));
 	}
 	
+	public boolean visit(VersionSymbol elem) {
+		return endAdapt(new DeclarationConditionalDefinition(elem));
+	}
+	
 	public boolean visit(StaticIfCondition node) {
-		Assert.failTODO();
-		return false;
+		return assertFailHandledDirectly();
 	}
 	
 	public boolean visit(DebugCondition node) {
-		Assert.failTODO();
-		return false;
+		return assertFailHandledDirectly();
 	}
 	
 	public boolean visit(VersionCondition node) {
-		Assert.failTODO();
-		return false;
+		return assertFailHandledDirectly();
 	}
 	
 	public boolean visit(IftypeCondition node) {
-		Assert.failTODO();
-		return false;
+		return assertFailHandledDirectly();
 	}
 
 	public boolean visit(DebugStatement node) {
@@ -132,7 +132,7 @@ abstract class DeclarationConverter extends RefConverter {
 	}
 
 	public boolean visit(descent.internal.compiler.parser.ConditionalDeclaration elem) {
-		return endAdapt(new DeclarationConditional(elem));
+		return endAdapt(DeclarationConditional.create(elem));
 	}
 
 	public boolean visit(MultiImport node) {
@@ -160,7 +160,7 @@ abstract class DeclarationConverter extends RefConverter {
 	}
 
 	public boolean visit(descent.internal.compiler.parser.StaticIfDeclaration elem) {
-		return endAdapt(new DeclarationConditional(elem));
+		return endAdapt(DeclarationConditional.create(elem));
 	}
 
 	public boolean visit(descent.internal.compiler.parser.StorageClassDeclaration elem) {
@@ -171,9 +171,7 @@ abstract class DeclarationConverter extends RefConverter {
 		return endAdapt(new DeclarationUnitTest(elem));
 	}
 
-	public boolean visit(descent.internal.compiler.parser.VersionSymbol elem) {
-		return endAdapt(new DeclarationConditionalDefinition(elem));
-	}
+
 	
 	
 	/*  ---------  DEFINITIONS  --------  */

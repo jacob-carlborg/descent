@@ -17,7 +17,7 @@ public class DefinitionStruct extends DefinitionAggregate {
 	
 	@SuppressWarnings("unchecked")
 	public DefinitionStruct(StructDeclaration elem) {
-		convertDsymbol(elem);
+		super(elem);
 		if(elem.members != null)
 			this.members = DescentASTConverter.convertManyL(elem.members, this.members);
 		// TODO: where did template Parameters go

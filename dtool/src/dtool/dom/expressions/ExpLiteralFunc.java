@@ -49,9 +49,9 @@ public class ExpLiteralFunc extends Expression {
 			TreeVisitor.acceptChildren(visitor, rettype);
 			TreeVisitor.acceptChildren(visitor, params);
 			//TreeVisitor.acceptChildren(visitor, type);
-			TreeVisitor.acceptChild(visitor, frequire);
-			TreeVisitor.acceptChild(visitor, fbody);
-			TreeVisitor.acceptChild(visitor, fensure);
+			TreeVisitor.acceptChildren(visitor, frequire);
+			TreeVisitor.acceptChildren(visitor, fbody);
+			TreeVisitor.acceptChildren(visitor, fensure);
 		}
 		visitor.endVisit(this);	 
 	}

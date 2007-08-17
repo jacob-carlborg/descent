@@ -29,7 +29,7 @@ public class TypeFunction extends CommonRefNative {
 
 	public TypeFunction(descent.internal.compiler.parser.TypeFunction elem) {
 		setSourceRange(elem);
-		this.rettype = (Reference) DescentASTConverter.convertElem(elem.rto);
+		this.rettype = (Reference) DescentASTConverter.convertElem(elem.next);
 		this.params = DescentASTConverter.convertManyL(elem.parameters, this.params);
 		this.varargs = DefinitionFunction.convertVarArgs(elem.varargs);
 		this.linkage = elem.linkage;

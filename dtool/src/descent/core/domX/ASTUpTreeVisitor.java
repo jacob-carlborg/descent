@@ -229,7 +229,7 @@ public abstract class ASTUpTreeVisitor extends TreeVisitor implements IASTVisito
 		return visit((BinExp) node);
 	}
 	public boolean visit(Condition node) {
-		Assert.isTrue(Condition.class.getSuperclass().equals(String.class));
+		Assert.isTrue(Condition.class.getSuperclass().equals(ASTRangeLessNode.class));
 		return visit((ASTRangeLessNode) node);
 	}
 	public boolean visit(ConditionalDeclaration node) {

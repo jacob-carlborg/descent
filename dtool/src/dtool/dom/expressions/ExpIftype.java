@@ -1,28 +1,34 @@
 package dtool.dom.expressions;
 
+import melnorme.miscutil.Assert;
+import melnorme.miscutil.tree.TreeVisitor;
 import descent.internal.compiler.parser.IftypeExp;
-import dtool.dom.ast.ASTNeoNode;
+import descent.internal.compiler.parser.TOK;
 import dtool.dom.ast.IASTNeoVisitor;
+import dtool.dom.references.Reference;
 
 public class ExpIftype extends Expression {
 
-	public static class ArcheTypeSpecialization extends ASTNeoNode {
-
-		@Override
-		public void accept0(IASTNeoVisitor visitor) {
-			// TODO Auto-generated method stub
-			
-		}
-	}
+	public Reference arg;
+	public TOK tok;
+	public Reference specType;
 	
-	public ExpIftype(IftypeExp element) {
-		// TODO Auto-generated constructor stub
+	public ExpIftype(IftypeExp node) {
+		convertNode(node);
+		Assert.isNull(node.ident);
+		this.tok = node.tok;
+		this.arg = Reference.convertType(node.targ);
+		this.specType = Reference.convertType(node.tspec);
 	}
 
 	@Override
 	public void accept0(IASTNeoVisitor visitor) {
-		// TODO Auto-generated method stub
-
+		boolean children = visitor.visit(this);
+		if (children) {
+			TreeVisitor.acceptChildren(visitor, arg);
+			TreeVisitor.acceptChildren(visitor, specType);
+		}
+		visitor.endVisit(this);
 	}
 
 }

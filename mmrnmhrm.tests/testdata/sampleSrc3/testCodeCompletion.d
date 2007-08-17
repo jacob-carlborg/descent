@@ -46,6 +46,6 @@ class FooBar : Foo {
 }
 
 class Xpto {
-	static Foo xptofoo;
+	static Foo!(int, Foo) xptofoo;
 	static FooBar xptofoobar;
 } 

@@ -384,7 +384,7 @@ public abstract class Type extends ASTDmdNode {
 		Type t = (Type) o;
 
 		// deco strings are unique and semantic() has been run
-		if (this == o || (t != null && deco.equals(t.deco)) && deco != null) {
+		if (this == o || (t != null && deco != null && deco.equals(t.deco))) {
 			return true;
 		}
 		return false;

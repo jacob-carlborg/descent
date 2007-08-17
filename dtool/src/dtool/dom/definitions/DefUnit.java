@@ -22,7 +22,6 @@ public abstract class DefUnit extends ASTNeoNode {
 		Enum,
 		EnumMember, // same as var?
 		Variable,
-		Parameter,
 		Function,
 		Alias,
 		Typedef,
@@ -35,16 +34,25 @@ public abstract class DefUnit extends ASTNeoNode {
 	public List<DDocComment> preComments;
 	public Symbol defname;
 	public EArcheType archeType;
-
-	protected void convertDsymbol(Dsymbol elem) {
+	
+	public DefUnit(Dsymbol elem) {
 		convertDsymbol(elem, false);
+	}
+	
+	public DefUnit(IdentifierExp id) {
+		convertIdentifier(id);
+	}
+
+	public DefUnit(Symbol defname) {
+		this.defname = defname;
 	}
 	
 	protected void convertDsymbol(Dsymbol elem, boolean checkRange) {
 		convertNode(elem, checkRange);
 		convertIdentifier(elem.ident);
 		this.preComments = elem.preDdocs;
-		// TODO: post comments
+		if(elem.postDdoc != null)
+			this.preComments.add(elem.postDdoc);
 	}
 
 	protected void convertIdentifier(IdentifierExp id) {
@@ -62,12 +70,12 @@ public abstract class DefUnit extends ASTNeoNode {
 	}
 	
 	public String getCombinedDocComments() {
-		String str = null;
-		if(preComments != null)
-			for (DDocComment preComment : preComments) {
-				if(preComment != null)
-					str = str + "\n" + preComment.toString();
-			}
+		if(preComments == null || preComments.size() == 0)
+			return null;
+		String str = preComments.get(0).toString();
+		for (int i = 1; i < preComments.size(); i++) {
+			str = str + "\n" + preComments.get(i).toString();
+		}
 		return str;
 	}
 	

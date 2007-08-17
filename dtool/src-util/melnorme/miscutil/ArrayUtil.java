@@ -8,7 +8,6 @@ public class ArrayUtil {
 	 * as the given array. */
 	@SuppressWarnings("unchecked")
 	public static <T> T[] copyFrom(T[] array, int length) {
-		
         T[] copy = (T[]) Array.newInstance(array.getClass().getComponentType(), length);
     	System.arraycopy(array, 0, copy, 0, Math.min(array.length, length));
     	return copy;
@@ -36,6 +35,17 @@ public class ArrayUtil {
     	System.arraycopy(second, 0, newArray, original.length, second.length);
 		return newArray;
 	}
+	
+	/** Appends two arrays, creating a new array of given runtime type. */
+	@SuppressWarnings("unchecked")
+	public static <T> T[] concat(T[] original, T[] second, Class<?> arClass) {
+		int newSize = original.length + second.length;
+		T[] newArray = (T[]) Array.newInstance(arClass, newSize);
+		System.arraycopy(original, 0, newArray, 0, original.length);
+		System.arraycopy(second, 0, newArray, original.length, second.length);
+		return newArray;
+	}
+	
 	
 	/** Removes the element at index ix from array, creating a new array. */
 	public static <T> T[] removeAt(T[] array, int ix) {

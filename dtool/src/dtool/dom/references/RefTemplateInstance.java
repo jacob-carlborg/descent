@@ -1,52 +1,49 @@
 package dtool.dom.references;
 
+import java.util.Collections;
 import java.util.List;
 
 import melnorme.miscutil.Assert;
 import melnorme.miscutil.StringUtil;
 import melnorme.miscutil.tree.TreeVisitor;
+import descent.internal.compiler.parser.ASTDmdNode;
+import descent.internal.compiler.parser.IdentifierExp;
 import descent.internal.compiler.parser.TemplateInstance;
 import dtool.descentadapter.DescentASTConverter;
 import dtool.dom.ast.ASTNeoNode;
 import dtool.dom.ast.IASTNeoVisitor;
-import dtool.dom.definitions.DefUnit;
 
 public class RefTemplateInstance extends CommonRefSingle {
-	
+
 	public List<ASTNeoNode> tiargs;
-	
-	public RefTemplateInstance(descent.internal.compiler.parser.TemplateInstance elem) {
-		setSourceRange(elem);
+
+	public RefTemplateInstance(
+			descent.internal.compiler.parser.TemplateInstance elem) {
+		this(elem, elem.idents.get(0), elem.tiargs);
 		Assert.isTrue(elem.idents.size() == 1);
-		this.name = elem.idents.get(0).ident;
-		this.tiargs = DescentASTConverter.convertManyL(elem.tiargs, tiargs);
 	}
 
-	public RefTemplateInstance(TemplateInstance elem,
-			String ident) {
+	public RefTemplateInstance(TemplateInstance elem, IdentifierExp tplIdent,
+			List<ASTDmdNode> tiargs) {
 		setSourceRange(elem);
-		this.name = ident;
-		this.tiargs = DescentASTConverter.convertManyL(elem.tiargs, tiargs);
+		Assert.isTrue(elem.getStartPos() == tplIdent.getStartPos());
+		this.name = tplIdent.ident;
+		this.tiargs = DescentASTConverter.convertManyL(tiargs, this.tiargs);
+		if (this.tiargs == null)
+			this.tiargs = Collections.emptyList();
 	}
 
 	public void accept0(IASTNeoVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
-			//TreeVisitor.acceptChildren(visitor, name);
+			// TreeVisitor.acceptChildren(visitor, name);
 			TreeVisitor.acceptChildren(visitor, tiargs);
 		}
 		visitor.endVisit(this);
 	}
 
-	
-	@Override
-	public DefUnit findTargetDefUnit() {
-		// TODO Try to figure which homonym
-		return super.findTargetDefUnit();
-	}
-	
 	public String toString() {
-		return name + "!("+StringUtil.collToString(tiargs,",")+ ")";
+		return name + "!(" + StringUtil.collToString(tiargs, ",") + ")";
 	}
-	
+
 }

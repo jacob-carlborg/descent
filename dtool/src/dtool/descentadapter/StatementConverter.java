@@ -1,6 +1,5 @@
 package dtool.descentadapter;
 
-import melnorme.miscutil.Assert;
 import descent.internal.compiler.parser.AsmBlock;
 import descent.internal.compiler.parser.AsmStatement;
 import descent.internal.compiler.parser.BreakStatement;
@@ -48,6 +47,7 @@ import dtool.dom.statements.StatementDo;
 import dtool.dom.statements.StatementExp;
 import dtool.dom.statements.StatementFor;
 import dtool.dom.statements.StatementForeach;
+import dtool.dom.statements.StatementForeachRange;
 import dtool.dom.statements.StatementGoto;
 import dtool.dom.statements.StatementGotoCase;
 import dtool.dom.statements.StatementGotoDefault;
@@ -66,8 +66,7 @@ import dtool.dom.statements.StatementWith;
 public final class StatementConverter extends ExpressionConverter {
 	
 	public boolean visit(ForeachRangeStatement node) {
-		Assert.failTODO();
-		return false;
+		return endAdapt(new StatementForeachRange(node));
 	}
 	
 	public boolean visit(AsmBlock node) {
@@ -91,7 +90,7 @@ public final class StatementConverter extends ExpressionConverter {
 	}
 	
 	public boolean visit(ConditionalStatement element) {
-		return endAdapt(new DeclarationConditional(element));
+		return endAdapt(DeclarationConditional.create(element));
 	}
 
 	public boolean visit(ContinueStatement element) {

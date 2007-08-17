@@ -19,6 +19,7 @@ public class RefIdentifier extends CommonRefSingle {
 
 	public RefIdentifier(descent.internal.compiler.parser.TypeBasic elem) {
 		setSourceRange(elem);
+		Assert.isNotNull(elem.ty.name);
 		this.name = elem.toString();
 	}
 

@@ -4,6 +4,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import melnorme.miscutil.tree.TreeVisitor;
+import descent.internal.compiler.parser.Dsymbol;
 import descent.internal.compiler.parser.EnumDeclaration;
 import dtool.descentadapter.DescentASTConverter;
 import dtool.dom.ast.ASTNeoNode;
@@ -18,11 +19,13 @@ public class DefinitionEnum extends Definition implements IScopeNode, IStatement
 	public List<EnumMember> members;
 	public Reference type;
 	
+	public DefinitionEnum(Dsymbol elem) {
+		super(elem);
+	}
 	
 	public static ASTNeoNode convertEnumDecl(EnumDeclaration elem) {
 		if(elem.ident != null) {
-			DefinitionEnum defEnum = new DefinitionEnum();
-			defEnum.convertDsymbol(elem);
+			DefinitionEnum defEnum = new DefinitionEnum(elem);
 			defEnum.members = DescentASTConverter.convertManyL(elem.members, defEnum.members) ;
 			defEnum.type = Reference.convertType(elem.memtype); 
 			return defEnum;

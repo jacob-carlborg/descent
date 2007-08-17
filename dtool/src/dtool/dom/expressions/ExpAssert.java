@@ -19,8 +19,8 @@ public class ExpAssert extends Expression {
 	public void accept0(IASTNeoVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
-			TreeVisitor.acceptChild(visitor, exp);
-			TreeVisitor.acceptChild(visitor, msg);
+			TreeVisitor.acceptChildren(visitor, exp);
+			TreeVisitor.acceptChildren(visitor, msg);
 		}
 		visitor.endVisit(this);
 	}

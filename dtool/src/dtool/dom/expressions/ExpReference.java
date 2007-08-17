@@ -4,6 +4,7 @@ import java.util.Collection;
 
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.internal.compiler.parser.DotIdExp;
+import descent.internal.compiler.parser.DotTemplateInstanceExp;
 import descent.internal.compiler.parser.IdentifierExp;
 import descent.internal.compiler.parser.ScopeExp;
 import descent.internal.compiler.parser.TypeDotIdExp;
@@ -11,9 +12,9 @@ import descent.internal.compiler.parser.TypeExp;
 import dtool.descentadapter.DescentASTConverter;
 import dtool.dom.ast.IASTNeoVisitor;
 import dtool.dom.definitions.DefUnit;
+import dtool.dom.references.CommonRefSingle;
 import dtool.dom.references.RefQualified;
 import dtool.dom.references.Reference;
-import dtool.dom.references.CommonRefSingle;
 
 /**
  * An Expression wrapping a Reference
@@ -25,6 +26,21 @@ public class ExpReference extends Expression {
 	public ExpReference(IdentifierExp elem) {
 		convertNode(elem);
 		this.ref = CommonRefSingle.convertToSingleRef(elem);
+	}
+
+	public ExpReference(TypeExp elem) {
+		convertNode(elem);
+		this.ref = Reference.convertType(elem.type);
+	}
+	
+	public ExpReference(DotIdExp elem) {
+		convertNode(elem);
+		this.ref = RefQualified.convertDotIdexp(elem);
+	}
+	
+	public ExpReference(DotTemplateInstanceExp elem) {
+		convertNode(elem);
+		this.ref = RefQualified.convertDotTemplateIdexp(elem);
 	}
 	
 	public ExpReference(TypeDotIdExp elem) {
@@ -40,17 +56,8 @@ public class ExpReference extends Expression {
 		convertNode(elem);
 		this.ref = (Reference) DescentASTConverter.convertElem(elem.sds);
 	}
-	
 
-	public ExpReference(DotIdExp elem) {
-		convertNode(elem);
-		this.ref = RefQualified.convertDotIdexp(elem);
-	}
 
-	public ExpReference(TypeExp elem) {
-		convertNode(elem);
-		this.ref = Reference.convertType(elem.type);
-	}
 
 	@Override
 	public void accept0(IASTNeoVisitor visitor) {

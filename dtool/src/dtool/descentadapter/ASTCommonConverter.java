@@ -43,5 +43,9 @@ public abstract class ASTCommonConverter implements IASTVisitor {
 	protected boolean assertFailABSTRACT_NODE() {
 		Assert.fail("Abstract Node"); return false;
 	}
+	protected boolean assertFailHandledDirectly() {
+		Assert.fail("This class is not converted directly by the visitor. ");
+		return true;
+	}
 
 }

@@ -34,6 +34,7 @@ public abstract class SampleMainProject {
 	public static final String TEST_OUTSRC = "OUTsrc";
 	public static final String TEST_SRC_PHOBOSHD = "phobos-header";
 	public static final String TEST_SRC_PHOBOSIMPL = "phobos-internal";
+	public static final String TEST_SRC_TANGO = "tango";
 	
 	public static IProject project;
 	public static DeeProject deeProj = null;
@@ -97,8 +98,8 @@ public abstract class SampleMainProject {
 		folder = createFolderInProject("sampleSrc3", TEST_SRC3, true);
 
 		folder = createFolderInProject(TEST_SRC_PHOBOSHD, TEST_SRC_PHOBOSHD, true);
-
 		folder = createFolderInProject(TEST_SRC_PHOBOSIMPL, TEST_SRC_PHOBOSIMPL, true);
+		folder = createFolderInProject(TEST_SRC_TANGO, TEST_SRC_TANGO, true);
 
 		//UITestUtils.runEventLoop(DeePlugin.getActiveWorkbenchShell());
 	}

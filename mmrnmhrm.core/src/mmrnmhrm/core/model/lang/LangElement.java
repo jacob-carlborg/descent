@@ -3,6 +3,7 @@ package mmrnmhrm.core.model.lang;
 import java.util.ArrayList;
 
 import melnorme.miscutil.Assert;
+import melnorme.miscutil.log.Logg;
 import melnorme.miscutil.tree.IElement;
 
 import org.eclipse.core.runtime.CoreException;
@@ -72,7 +73,7 @@ public abstract class LangElement implements ILangElement {
 	/** Returns a collection of (immediate) children of this node of the
 	 * specified element type.
 	 */
-	public ArrayList<?> getChildrenOfType(int type) {
+	public final ArrayList<?> getChildrenOfType(int type) {
 		IElement[] children = getChildren();
 		int size = children.length;
 		ArrayList<ILangElement> list = new ArrayList<ILangElement>(size);
@@ -85,11 +86,11 @@ public abstract class LangElement implements ILangElement {
 		return list;
 	}
 	
-	public Object getAdapter(Class adapter) {
+	public final Object getAdapter(Class adapter) {
 		return Platform.getAdapterManager().getAdapter(this, adapter);
 	}
 	
-	protected void getElementInfo() throws CoreException {
+	public void getElementInfo() throws CoreException {
 		if(!opened) {
 			opened = true;
 			createElementInfo();
@@ -97,14 +98,18 @@ public abstract class LangElement implements ILangElement {
 	}
 	
 	/** Marks an element as needing update. (Lazy update) */
-	public void updateElemLazily() throws CoreException {
+	public void updateElementLazily() throws CoreException {
 		disposeElementInfo();
 		opened = false; 
 	}
 	
 	/** Updates the lang element according to the underlying filesystem data. */
 	public void updateElementRecursive() throws CoreException {
+		/*for(ILangElement child : getLangChildren()) {
+			updateElemLazily();
+		}*/
 		disposeElementInfo();
+		Logg.model.println("Update Element Recursive: " + this.getUnderlyingResource());
 		createElementInfo();
 		opened = true;
 		for(ILangElement child : getLangChildren()) {

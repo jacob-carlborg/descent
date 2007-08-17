@@ -12,8 +12,8 @@ public class TemplateParamType extends TemplateParameter {
 	public Reference defaultType;
 
 	public TemplateParamType(TemplateTypeParameter elem) {
+		super(elem.ident);
 		convertNode(elem);
-		convertIdentifier(elem.ident);
 		this.specType = Reference.convertType(elem.specType);
 		this.defaultType = Reference.convertType(elem.defaultType);
 	}
@@ -37,9 +37,9 @@ public class TemplateParamType extends TemplateParameter {
 	public void accept0(IASTNeoVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
-			TreeVisitor.acceptChild(visitor, defname);
-			TreeVisitor.acceptChild(visitor, specType);
-			TreeVisitor.acceptChild(visitor, defaultType);
+			TreeVisitor.acceptChildren(visitor, defname);
+			TreeVisitor.acceptChildren(visitor, specType);
+			TreeVisitor.acceptChildren(visitor, defaultType);
 		}
 		visitor.endVisit(this);
 	}

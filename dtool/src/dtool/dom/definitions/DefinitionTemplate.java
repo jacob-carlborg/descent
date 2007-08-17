@@ -1,14 +1,17 @@
 package dtool.dom.definitions;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
+import melnorme.miscutil.ArrayUtil;
+import melnorme.miscutil.Assert;
+import melnorme.miscutil.ChainedIterator;
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.core.domX.ASTNode;
 import descent.internal.compiler.parser.TemplateDeclaration;
 import dtool.dom.ast.IASTNeoVisitor;
+import dtool.dom.ast.IASTNode;
 import dtool.dom.declarations.Declaration;
 import dtool.refmodel.IScope;
 import dtool.refmodel.IScopeNode;
@@ -17,14 +20,18 @@ import dtool.refmodel.IScopeNode;
  */
 public class DefinitionTemplate extends DefUnit implements IScopeNode {
 
-	public TemplateParameter[] templateParams; 
-	public ASTNode[] decls;
+	public final TemplateParameter[] templateParams; 
+	public final ASTNode[] decls;
+	public final boolean wrapper;
 
 	
 	public DefinitionTemplate(TemplateDeclaration elem) {
-		convertDsymbol(elem);
-		decls = Declaration.convertMany(elem.members);
-		templateParams = TemplateParameter.convertMany(elem.parameters);
+		super(elem);
+		this.decls = Declaration.convertMany(elem.members);
+		this.templateParams = TemplateParameter.convertMany(elem.parameters);
+		this.wrapper = elem.wrapper;
+		if(wrapper)
+			Assert.isTrue(decls.length == 1);
 	}
 
 	@Override
@@ -54,12 +61,20 @@ public class DefinitionTemplate extends DefUnit implements IScopeNode {
 	}
 	
 
-	public Iterator<ASTNode> getMembersIterator() {
-		// TODO optimize, give a chained iterator
-		List<ASTNode> list = new ArrayList<ASTNode>(decls.length + templateParams.length);
+	public Iterator<? extends IASTNode> getMembersIterator() {
+		// TODO: check if in a template invocation
+		if(wrapper) {
+			// Go straight to decls member's members
+			IScopeNode scope = ((DefUnit)decls[0]).getMembersScope();
+			Iterator<? extends IASTNode> tplIter = Arrays.asList(templateParams).iterator();
+			return ChainedIterator.create(tplIter, scope.getMembersIterator());
+		}
+		ASTNode[] newar = ArrayUtil.concat(templateParams, decls, ASTNode.class);
+		return Arrays.asList(newar).iterator();
+/*		List<ASTNode> list = new ArrayList<ASTNode>(decls.length + templateParams.length);
 		list.addAll(Arrays.asList(decls));
 		list.addAll(Arrays.asList(templateParams));
-		return 	list.iterator();
+		return 	list.iterator();*/
 	}
 
 }

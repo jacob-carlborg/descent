@@ -7,11 +7,13 @@ import descent.internal.compiler.parser.ASTDmdNode;
 import descent.internal.compiler.parser.AggregateDeclaration;
 import descent.internal.compiler.parser.AnonymousAggregateDeclaration;
 import descent.internal.compiler.parser.ArrayScopeSymbol;
+import descent.internal.compiler.parser.BoolExp;
 import descent.internal.compiler.parser.ClassInfoDeclaration;
 import descent.internal.compiler.parser.ComplexExp;
 import descent.internal.compiler.parser.Condition;
 import descent.internal.compiler.parser.Declaration;
 import descent.internal.compiler.parser.DelegateExp;
+import descent.internal.compiler.parser.DotExp;
 import descent.internal.compiler.parser.DotTemplateExp;
 import descent.internal.compiler.parser.DotTypeExp;
 import descent.internal.compiler.parser.DotVarExp;
@@ -34,6 +36,7 @@ import descent.internal.compiler.parser.TemplateExp;
 import descent.internal.compiler.parser.ThisDeclaration;
 import descent.internal.compiler.parser.Tuple;
 import descent.internal.compiler.parser.TupleDeclaration;
+import descent.internal.compiler.parser.TupleExp;
 import descent.internal.compiler.parser.Type;
 import descent.internal.compiler.parser.TypeClass;
 import descent.internal.compiler.parser.TypeEnum;
@@ -58,16 +61,23 @@ import descent.internal.compiler.parser.VarExp;
 import descent.internal.compiler.parser.WithScopeSymbol;
 
 public abstract class CoreConverter extends ASTCommonConverter {
+
 	
+	public boolean visit(BoolExp node) {
+		return assertFailFAKENODE();
+	}
+	
+	public boolean visit(DotExp node) {
+		return assertFailFAKENODE();
+	}
 	
 	public boolean visit(ModifierDeclaration node) {
-		return assertFailFAKENODE();	// UNUSED??
+		return assertFailFAKENODE();	
 	}
 
 	public boolean visit(DotTemplateExp node) {
 		return assertFailFAKENODE();
 	}
-	
 	
 	public boolean visit(ComplexExp node) {
 		return assertFailFAKENODE();
@@ -81,7 +91,10 @@ public abstract class CoreConverter extends ASTCommonConverter {
 	public boolean visit(DsymbolExp node) {
 		return assertFailFAKENODE();
 	}
-
+	
+	public boolean visit(TupleExp node) {
+		return assertFailFAKENODE();
+	}
 	
 	public boolean visit(DotTypeExp node) {
 		return assertFailFAKENODE();

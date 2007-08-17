@@ -95,6 +95,9 @@ public class ASTViewer extends ViewPart implements ISelectionListener,
 	
 	@Override
 	public void dispose() {
+		if (fEditor != null && fDocument != null) {
+			fDocument.removeDocumentListener(this);
+		}
 		window.getSelectionService().removePostSelectionListener(this);
 		super.dispose();
 	}

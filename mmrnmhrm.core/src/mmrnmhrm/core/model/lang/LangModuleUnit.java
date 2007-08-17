@@ -15,12 +15,13 @@ import org.eclipse.jface.text.IDocument;
 
 public abstract class LangModuleUnit extends LangElement {
 
-	protected IFile file;
+	protected final IFile file;
 	protected IDocument document;
 
 	
-	public LangModuleUnit(ILangElement parent) {
+	public LangModuleUnit(ILangElement parent, IFile file) {
 		super(parent);
+		this.file = file;
 	}
 	
 	public IFile getFile() {
@@ -54,7 +55,7 @@ public abstract class LangModuleUnit extends LangElement {
 	/* -------------- Structure  -------------- */
 
 	@Override
-	protected void getElementInfo()  {
+	public void getElementInfo()  {
 		if(!opened) {
 			opened = true;
 			createElementInfo();

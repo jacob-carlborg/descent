@@ -14,7 +14,7 @@ public class DefinitionTypedef extends Definition implements IStatement {
 	Initializer initializer;
 	
 	public DefinitionTypedef(TypedefDeclaration elem) {
-		convertDsymbol(elem);
+		super(elem);
 		this.type = Reference.convertType(elem.sourceBasetype);
 		this.initializer = Initializer.convert(elem.init);
 	}
@@ -23,8 +23,8 @@ public class DefinitionTypedef extends Definition implements IStatement {
 	public void accept0(IASTNeoVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
-			TreeVisitor.acceptChild(visitor, defname);
-			TreeVisitor.acceptChild(visitor, type);
+			TreeVisitor.acceptChildren(visitor, defname);
+			TreeVisitor.acceptChildren(visitor, type);
 			TreeVisitor.acceptChildren(visitor, initializer);
 		}
 		visitor.endVisit(this);

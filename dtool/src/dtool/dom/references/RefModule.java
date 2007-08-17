@@ -30,7 +30,8 @@ public class RefModule extends Reference {
 			for (int i = 0; i < packages.size(); i++) {
 				this.packages[i] = packages.get(i).ident;
 			}
-			setSourceRange(packages.get(0).getStartPos(), id.getEndPos());
+			int startPos = packages.get(0).getStartPos();
+			setSourceRange(startPos, id.getEndPos() - startPos);
 		}
 	}
 
@@ -39,7 +40,6 @@ public class RefModule extends Reference {
 		Module targetMod = EntityResolver.findModule(originMod, packages, module);
 		return DefUnitSearch.wrapResult(targetMod);
 	}
-	
 	
 
 	@Override

@@ -20,11 +20,11 @@ public class GoToDefinition_TestDefUnitContainer3 extends FindDef_CommonTest  {
         return Arrays.asList(new Object[][]{
         		{62, 146},
         		{65, 184},
-        		//{68, 214}, TODO
-        		//{72, 234}, TODO
+        		{68, 214}, 
+        		{72, 234}, 
         		{76, 288},
         		{79, 292},
-        		//{82, 320}, TODO
+        		// {82, 320}, TODO: mixin container not supported yet 
 
         });
     }

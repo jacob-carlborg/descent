@@ -18,18 +18,20 @@ import dtool.refmodel.IScopeNode;
  */
 public abstract class PartialPackageDefUnit extends DefUnit implements IScopeNode {
 
-	
+	public PartialPackageDefUnit(Symbol name) {
+		super(name);
+	}
+
 	public static PartialPackageDefUnit createPartialDefUnits(
 			String[] packages, RefModule entModule, Module module) {
+		Symbol defname = new Symbol(packages[0]);
 		if(packages.length == 1 ) {
-			PartialPackageDefUnitOfModule packageDefUnit =  new PartialPackageDefUnitOfModule();
-			packageDefUnit.defname = new Symbol(packages[0]);
+			PartialPackageDefUnitOfModule packageDefUnit =  new PartialPackageDefUnitOfModule(defname);
 			packageDefUnit.module = module;
 			packageDefUnit.moduleRef = entModule;
 			return packageDefUnit;
 		} else {
-			PartialPackageDefUnitOfPackage packageDefUnit =  new PartialPackageDefUnitOfPackage();
-			packageDefUnit.defname = new Symbol(packages[0]);
+			PartialPackageDefUnitOfPackage packageDefUnit =  new PartialPackageDefUnitOfPackage(defname);
 			String[] newNames = ArrayUtil.copyOfRange(packages, 1, packages.length);
 			packageDefUnit.child = createPartialDefUnits(newNames, entModule, null);
 			return packageDefUnit;
