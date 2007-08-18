@@ -32,7 +32,7 @@ import descent.core.IType;
 import descent.core.JavaCore;
 import descent.core.JavaModelException;
 import descent.core.compiler.CharOperation;
-import descent.internal.compiler.ast.ASTNode;
+import descent.internal.compiler.ast.ASTNodeFromJdt;
 import descent.internal.compiler.env.AccessRestriction;
 import descent.internal.compiler.env.AccessRuleSet;
 import descent.internal.compiler.parser.ScannerHelper;
@@ -85,22 +85,22 @@ public class NameLookup implements SuffixConstants {
 	/**
 	 * Accept flag for specifying classes.
 	 */
-	public static final int ACCEPT_CLASSES = ASTNode.Bit2;
+	public static final int ACCEPT_CLASSES = ASTNodeFromJdt.Bit2;
 
 	/**
 	 * Accept flag for specifying interfaces.
 	 */
-	public static final int ACCEPT_INTERFACES = ASTNode.Bit3;
+	public static final int ACCEPT_INTERFACES = ASTNodeFromJdt.Bit3;
 	
 	/**
 	 * Accept flag for specifying enums.
 	 */
-	public static final int ACCEPT_ENUMS = ASTNode.Bit4;
+	public static final int ACCEPT_ENUMS = ASTNodeFromJdt.Bit4;
 
 	/**
 	 * Accept flag for specifying annotations.
 	 */
-	public static final int ACCEPT_ANNOTATIONS = ASTNode.Bit5;
+	public static final int ACCEPT_ANNOTATIONS = ASTNodeFromJdt.Bit5;
 	
 	/*
 	 * Accept flag for all kinds of types

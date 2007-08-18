@@ -1,6 +1,6 @@
 package descent.internal.compiler.ast;
 
-public class ASTNode {
+public class ASTNodeFromJdt {
 	
 	// storage for internal flags (32 bits)						BIT USAGE
 	public final static int Bit1 = 0x1; 						// return type (operator) | name reference kind (name ref) | add assertion (type decl) | useful empty statement (empty statement)

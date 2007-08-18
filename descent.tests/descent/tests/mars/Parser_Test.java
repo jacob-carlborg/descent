@@ -16,6 +16,7 @@ import descent.core.dom.GenericVisitor;
 import descent.core.dom.Initializer;
 import descent.core.dom.ModuleDeclaration;
 import descent.core.dom.Statement;
+import descent.core.dom.CompilationUnitResolver.ParseResult;
 import descent.internal.compiler.parser.Module;
 
 public abstract class Parser_Test extends TestCase {
@@ -111,7 +112,7 @@ public abstract class Parser_Test extends TestCase {
 	}
 	
 	protected CompilationUnit getCompilationUnit(String source, int apiLevel) {
-		Module module = getModule(source, apiLevel);
+		ParseResult result = getParseResult(source, apiLevel);
 		// For syntaxis analysis do semantic to see if this breaks
 		// something in ASTConverter while keeping only syntaxis problems
 		/*
@@ -127,17 +128,16 @@ public abstract class Parser_Test extends TestCase {
 			}
 		}, module.ast));
 		*/
-		return CompilationUnitResolver.convert(AST.newAST(apiLevel), module, null);
+		return CompilationUnitResolver.convert(AST.newAST(apiLevel), result, null);
 	}
 	
-	protected Module getModule(String source, int apiLevel) {
+	protected ParseResult getParseResult(String source, int apiLevel) {
 		return CompilationUnitResolver.parse(apiLevel, source.toCharArray(), null, true);
 	}
 	
 	protected Module getModuleSemantic(String source, int apiLevel) {
-		Module module = getModule(source, apiLevel);
-		module = CompilationUnitResolver.resolve(module);		
-		return module;
+		ParseResult result = getParseResult(source, apiLevel);
+		return CompilationUnitResolver.resolve(result.module);
 	}
 	
 	protected IProblem[] getModuleProblems(String source) {

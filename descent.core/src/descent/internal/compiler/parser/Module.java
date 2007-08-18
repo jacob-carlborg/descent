@@ -8,7 +8,6 @@ import melnorme.miscutil.tree.TreeVisitor;
 import org.eclipse.core.runtime.Assert;
 
 import descent.core.compiler.IProblem;
-import descent.core.dom.PublicScanner;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
 public class Module extends Package {
@@ -19,7 +18,6 @@ public class Module extends Package {
 	public Comment[] comments;
 	public Pragma[] pragmas;
 	public int[] lineEnds;
-	public PublicScanner scanner;
 	public int semanticstarted; // has semantic() been started?
 	public int semanticdone; // has semantic() been done?
 	public List<Dsymbol> deferred;

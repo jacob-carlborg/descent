@@ -23,7 +23,7 @@ import descent.core.JavaCore;
 import descent.core.JavaModelException;
 import descent.core.WorkingCopyOwner;
 import descent.core.compiler.CharOperation;
-import descent.internal.compiler.parser.Module;
+import descent.core.dom.CompilationUnitResolver.ParseResult;
 import descent.internal.core.BasicCompilationUnit;
 import descent.internal.core.DefaultWorkingCopyOwner;
 
@@ -817,7 +817,7 @@ public class ASTParser {
 			}
 			break;
 		case K_COMPILATION_UNIT :
-			Module result = null;
+			ParseResult result = null;
 			descent.internal.compiler.env.ICompilationUnit sourceUnit = null;
 			IJavaElement element = null;
 			if (this.compilationUnitSource != null) {

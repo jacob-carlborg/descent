@@ -32,6 +32,15 @@ import descent.internal.core.util.Util;
 
 public class CompilationUnitResolver extends descent.internal.compiler.Compiler {
 	
+	public static class ParseResult {
+		public Module module;
+		public PublicScanner scanner;
+		public ParseResult(Module module, PublicScanner scanner) {
+			this.module = module;
+			this.scanner = scanner;
+		}
+	}
+	
 	boolean hasCompilationAborted;
 	
 	//private IProgressMonitor monitor;
@@ -84,7 +93,7 @@ public class CompilationUnitResolver extends descent.internal.compiler.Compiler 
 		//this.monitor =monitor;
 	}
 	
-	public static Module parse(int apiLevel,
+	public static ParseResult parse(int apiLevel,
 			descent.internal.compiler.env.ICompilationUnit sourceUnit, 
 			Map options, 
 			boolean statementsRecovery) {
@@ -92,7 +101,7 @@ public class CompilationUnitResolver extends descent.internal.compiler.Compiler 
 		return parse(apiLevel, sourceUnit.getContents(), options, statementsRecovery);
 	}
 	
-	public static Module parse(int apiLevel,
+	public static ParseResult parse(int apiLevel,
 			char[] source, 
 			Map options, 
 			boolean statementsRecovery) {
@@ -117,13 +126,12 @@ public class CompilationUnitResolver extends descent.internal.compiler.Compiler 
 		scanner.setLexerAndSource(parser, source);
 		
 		Module module = parser.parseModuleObj();
-		module.scanner = scanner;
 		module.setSourceRange(0, source.length);
 		
-		return module;
+		return new ParseResult(module, scanner);
 	}
 	
-	public static Module resolve(int apiLevel,
+	public static ParseResult resolve(int apiLevel,
 			descent.internal.compiler.env.ICompilationUnit sourceUnit,
 			IJavaProject javaProject,
 			Map options,
@@ -131,10 +139,9 @@ public class CompilationUnitResolver extends descent.internal.compiler.Compiler 
 			boolean statementsRecovery,
 			IProgressMonitor monitor) throws JavaModelException {
 		
-		final Module module = parse(apiLevel, sourceUnit, options, statementsRecovery);
-		
-		return module;
-		//return resolve(module);
+		ParseResult result = parse(apiLevel, sourceUnit, options, statementsRecovery);
+		// return resolve(result.module);
+		return result;
 	}
 	
 	public static Module resolve(final Module module) {
@@ -153,16 +160,16 @@ public class CompilationUnitResolver extends descent.internal.compiler.Compiler 
 		return module;
 	}
 	
-	public static CompilationUnit convert(AST ast, Module module, IProgressMonitor monitor) {
+	public static CompilationUnit convert(AST ast, ParseResult parseResult, IProgressMonitor monitor) {
 		int savedDefaultNodeFlag = ast.getDefaultNodeFlag();
 		ast.setDefaultNodeFlag(ASTNode.ORIGINAL);
 		
 		ASTConverter converter = new ASTConverter(monitor);
 		converter.setAST(ast);
-		CompilationUnit result = converter.convert(module);
-		result.setLineEndTable(module.lineEnds);
-		result.problems = module.problems;
-		result.initCommentMapper(module.scanner);
+		CompilationUnit result = converter.convert(parseResult.module);
+		result.setLineEndTable(parseResult.module.lineEnds);
+		result.problems = parseResult.module.problems;
+		result.initCommentMapper(parseResult.scanner);
 		
 		ast.setOriginalModificationCount(ast.modificationCount());
 		ast.setDefaultNodeFlag(savedDefaultNodeFlag);

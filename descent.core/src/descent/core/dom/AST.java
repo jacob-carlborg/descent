@@ -33,7 +33,7 @@ import descent.internal.compiler.parser.Parser;
  * Abstract syntax trees may be hand constructed by clients, using the
  * <code>new<i>TYPE</i></code> factory methods to create new nodes, and the
  * various <code>set<i>CHILD</i></code> methods 
- * (see {@link descen.core.dom.ASTNode ASTNode} and its subclasses)
+ * (see {@link descen.core.dom.ASTNodeFromJdt ASTNode} and its subclasses)
  * to connect them together.
  * </p>
  * <p>

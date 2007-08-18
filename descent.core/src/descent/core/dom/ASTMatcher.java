@@ -40,7 +40,7 @@ import java.util.List;
  * matchers.
  * </p>
  * 
- * @see descent.dom.ASTNode#subtreeMatch(ASTMatcher, Object)
+ * @see descent.dom.ASTNodeFromJdt#subtreeMatch(ASTMatcher, Object)
  */
 public class ASTMatcher {
 	
