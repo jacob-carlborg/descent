@@ -895,9 +895,20 @@ public class ASTParser {
 				}
 			}
 			
-			CompilationUnit unit = CompilationUnitResolver.convert(result, monitor);
-			unit.setJavaElement(element);
-			return unit;
+			AST ast = AST.newAST(this.apiLevel);
+			
+			// Mark all nodes created by the parser as originals
+			int savedDefaultNodeFlag = ast.getDefaultNodeFlag();
+			ast.setDefaultNodeFlag(ASTNode.ORIGINAL);
+			ast.setBindingResolver(new BindingResolver());
+			
+			try {
+				CompilationUnit unit = CompilationUnitResolver.convert(ast, result, monitor);
+				unit.setJavaElement(element);
+				return unit;
+			} finally {
+				ast.setDefaultNodeFlag(savedDefaultNodeFlag);
+			}
 		}		
 		throw new IllegalStateException();
 	}
@@ -924,19 +935,19 @@ public class ASTParser {
 			ASTNode result = null;
 			switch(this.astKind) {
 			case K_INITIALIZER :
-				parser = new descent.internal.compiler.parser.Parser(ast, rawSource, sourceOffset, sourceLength);
+				parser = new descent.internal.compiler.parser.Parser(apiLevel, rawSource, sourceOffset, sourceLength);
 				result = CompilationUnitResolver.convert(ast, parser.parseInitializer());
 				return rootNodeToAst(ast, result);
 			case K_EXPRESSION :
-				parser = new descent.internal.compiler.parser.Parser(ast, rawSource, sourceOffset, sourceLength);
+				parser = new descent.internal.compiler.parser.Parser(apiLevel, rawSource, sourceOffset, sourceLength);
 				result = CompilationUnitResolver.convert(ast, parser.parseExpression());
 				return rootNodeToAst(ast, result);
 			case K_STATEMENT :
-				parser = new descent.internal.compiler.parser.Parser(ast, rawSource, sourceOffset, sourceLength);
+				parser = new descent.internal.compiler.parser.Parser(apiLevel, rawSource, sourceOffset, sourceLength);
 				result = CompilationUnitResolver.convert(ast, parser.parseStatement(0));
 				return rootNodeToAst(ast, result);
 			case K_STATEMENTS:
-				parser = new descent.internal.compiler.parser.Parser(ast, rawSource, sourceOffset, sourceLength);
+				parser = new descent.internal.compiler.parser.Parser(apiLevel, rawSource, sourceOffset, sourceLength);
 				result = CompilationUnitResolver.convert(ast, parser.parseStatement(0));
 				for(Statement statement : ((Block) result).statements()) {
 					statement.accept(new GenericVisitor() {

@@ -21,6 +21,7 @@ import org.eclipse.text.edits.TextEdit;
 import descent.core.JavaCore;
 import descent.core.ToolFactory;
 import descent.core.compiler.IScanner;
+import descent.internal.compiler.parser.Parser;
 
 
 /**
@@ -91,19 +92,19 @@ public final class AST {
 	 * Constant for indicating the AST API that handles D0
 	 * (D v0.x).
 	 */
-	public static final int D0 = 0;
+	public static final int D0 = Parser.D0;
 	
 	/**
 	 * Constant for indicating the AST API that handles D1
 	 * (D v1.x).
 	 */
-	public static final int D1 = 1;
+	public static final int D1 = Parser.D1;
 	
 	/**
 	 * Constant for indicating the AST API that handles D1
 	 * (D v2.x).
 	 */
-	public static final int D2 = 2;
+	public static final int D2 = Parser.D2;
 	
 	/**
 	 * The binding resolver for this AST. Initially a binding resolver that

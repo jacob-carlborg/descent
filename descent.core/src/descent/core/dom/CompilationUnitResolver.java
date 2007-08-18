@@ -97,25 +97,23 @@ public class CompilationUnitResolver extends descent.internal.compiler.Compiler 
 			Map options, 
 			boolean statementsRecovery) {
 		
-		AST ast = AST.newAST(apiLevel);
-		
 		descent.internal.compiler.parser.Parser parser;
 		if (options != null) {
 			String taskTags = (String) options.get(JavaCore.COMPILER_TASK_TAGS);
 			if (taskTags != null) {
-				parser = new Parser(ast, source, 0, source.length, 
+				parser = new Parser(apiLevel, source, 0, source.length, 
 						Util.toCharArrays(taskTags.split(",")),
 						Util.toCharArrays(((String) options.get(JavaCore.COMPILER_TASK_PRIORITIES)).split(",")),
 						JavaCore.ENABLED.equals(options.get(JavaCore.COMPILER_TASK_CASE_SENSITIVE))
 						);
 			} else {
-				parser = new Parser(ast, source, 0, source.length);
+				parser = new Parser(apiLevel, source, 0, source.length);
 			}
 		} else {
-			parser = new Parser(ast, source, 0, source.length);
+			parser = new Parser(apiLevel, source, 0, source.length);
 		}
 		
-		PublicScanner scanner = new PublicScanner(true, true, true, true, ast.apiLevel);
+		PublicScanner scanner = new PublicScanner(true, true, true, true, apiLevel);
 		scanner.setLexerAndSource(parser, source);
 		
 		Module module = parser.parseModuleObj();
@@ -151,24 +149,23 @@ public class CompilationUnitResolver extends descent.internal.compiler.Compiler 
 			public boolean isActive() {
 				return true;
 			}
-		}, module.ast));
+		}, module.apiLevel));
 		return module;
 	}
 	
-	public static CompilationUnit convert(Module module, IProgressMonitor monitor) {
-		int savedDefaultNodeFlag = module.ast.getDefaultNodeFlag();
-		module.ast.setDefaultNodeFlag(ASTNode.ORIGINAL);
+	public static CompilationUnit convert(AST ast, Module module, IProgressMonitor monitor) {
+		int savedDefaultNodeFlag = ast.getDefaultNodeFlag();
+		ast.setDefaultNodeFlag(ASTNode.ORIGINAL);
 		
 		ASTConverter converter = new ASTConverter(monitor);
-		converter.setAST(module.ast);
+		converter.setAST(ast);
 		CompilationUnit result = converter.convert(module);
-		result.setPragmaTable(module.pragmas);
 		result.setLineEndTable(module.lineEnds);
 		result.problems = module.problems;
 		result.initCommentMapper(module.scanner);
 		
-		module.ast.setOriginalModificationCount(module.ast.modificationCount());
-		module.ast.setDefaultNodeFlag(savedDefaultNodeFlag);
+		ast.setOriginalModificationCount(ast.modificationCount());
+		ast.setDefaultNodeFlag(savedDefaultNodeFlag);
 		
 		return result;
 	}

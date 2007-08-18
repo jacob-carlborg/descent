@@ -4,7 +4,6 @@ import org.eclipse.core.runtime.Assert;
 
 import descent.core.IProblemRequestor;
 import descent.core.compiler.IProblem;
-import descent.core.dom.AST;
 
 public class SemanticContext {
 	
@@ -33,11 +32,11 @@ public class SemanticContext {
 	public ClassDeclaration moduleinfo;
 	
 	public DsymbolTable st;
-	public AST ast;
+	public int apiLevel;
 	
-	public SemanticContext(IProblemRequestor problemRequestor, AST ast) {
+	public SemanticContext(IProblemRequestor problemRequestor, int apiLevel) {
 		this.problemRequestor = problemRequestor;
-		this.ast = ast;
+		this.apiLevel = apiLevel;
 		this.typeStringTable = new StringTable();
 		
 		Loc loc = Loc.ZERO;

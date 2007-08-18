@@ -87,12 +87,23 @@ public class ASTConverter {
 		moduleComments = convertComments(module.comments);
 		unit.setCommentTable(moduleComments);
 		
+		unit.setPragmaTable(convertPragmas(module.pragmas));
+		
 		if (module.md != null) {
 			unit.setModuleDeclaration(convert(module.md));
 		}
 		convertDeclarations(unit.declarations(), module.members);
 		unit.setSourceRange(module.start, module.length);		
 		return unit;
+	}
+
+	private Pragma[] convertPragmas(descent.internal.compiler.parser.Pragma[] from) {
+		Pragma[] to = new Pragma[from.length];
+		for(int i = 0; i < from.length; i++) {
+			to[i] = ast.newPragma();
+			to[i].setSourceRange(from[i].start, from[i].length);
+		}
+		return to;
 	}
 	
 	public descent.core.dom.ModuleDeclaration convert(descent.internal.compiler.parser.ModuleDeclaration md) {

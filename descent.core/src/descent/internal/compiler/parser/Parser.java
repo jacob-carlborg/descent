@@ -74,26 +74,22 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.StringTokenizer;
 
-import org.eclipse.core.runtime.Assert;
-
 import descent.core.compiler.CharOperation;
 import descent.core.compiler.IProblem;
-import descent.core.dom.AST;
-import descent.core.dom.Pragma;
 
 public class Parser extends Lexer {
 	
-	public final static boolean LTORARRAYDECL = true;
+	private final static boolean LTORARRAYDECL = true;
 	
-	public final static int PSsemi = 1;		// empty ';' statements are allowed
-	public final static int PSscope = 2;	// start a new scope
-	public final static int PScurly = 4;	// { } statement is required
-	public final static int PScurlyscope = 8;	// { } starts a new scope
+	private final static int PSsemi = 1;		// empty ';' statements are allowed
+	private final static int PSscope = 2;	// start a new scope
+	private final static int PScurly = 4;	// { } statement is required
+	private final static int PScurlyscope = 8;	// { } starts a new scope
 
 	private ModuleDeclaration md;
 	private int inBrackets;	
 	
-	AST ast;
+	int apiLevel;
 	List<Comment> comments;
 	List<Pragma> pragmas;
 	private int lastDocCommentRead = 0;
@@ -101,32 +97,32 @@ public class Parser extends Lexer {
 	
 	private LINK linkage = LINK.LINKd;
 
-	public Parser(AST ast, String source) {
-		this(ast, source, 0, source.length());
+	public Parser(int apiLevel, String source) {
+		this(apiLevel, source, 0, source.length());
 	}
 	
-	public Parser(AST ast, char[] source) {
-		this(ast, source, 0, source.length);
+	public Parser(int apiLevel, char[] source) {
+		this(apiLevel, source, 0, source.length);
 	}
 	
-	public Parser(AST ast, String source, int offset, int length) {
-		this(ast, source.toCharArray(), offset, length);
+	public Parser(int apiLevel, String source, int offset, int length) {
+		this(apiLevel, source.toCharArray(), offset, length);
 	}
 	
-	public Parser(AST ast, char[] source, int offset, 
+	public Parser(int apiLevel, char[] source, int offset, 
 			int length) {
-		this(ast, source, offset, length, null, null, false);
+		this(apiLevel, source, offset, length, null, null, false);
 	}
 	
-	public Parser(AST ast, char[] source, int offset, 
+	public Parser(int apiLevel, char[] source, int offset, 
 			int length, char[][] taskTags, char[][] taskPriorities, boolean isTaskCaseSensitive) {
 		super(source, offset, length, 
 				true /* tokenize comments */, 
 				true /* tokenize pragmas */,
 				false /* don't tokenize whitespace */, 
 				true /* record line separators */,
-				ast.apiLevel());
-		this.ast = ast;
+				apiLevel);
+		this.apiLevel = apiLevel;
 		comments = new ArrayList<Comment>();
 		pragmas = new ArrayList<Pragma>();
 		this.taskTags = taskTags;
@@ -147,8 +143,8 @@ public class Parser extends Lexer {
 			addTaskTagsToProblems();
 		}
 		
+		module.apiLevel = apiLevel;
 		module.problems = problems;
-		module.ast = ast;
 		module.start = 0;
 		module.length = this.end;
 		return module;
@@ -341,7 +337,7 @@ public class Parser extends Lexer {
 				break;
 
 			case TOKinvariant:
-				if (ast.apiLevel() == AST.D2) {
+				if (apiLevel == D2) {
 				    Token t;
 					t = peek(token);
 					if (t.value == TOKlparen) {
@@ -425,7 +421,7 @@ public class Parser extends Lexer {
 				break;
 
 			case TOKconst:
-				if (apiLevel == AST.D2 && peek(token).value == TOKlparen) {
+				if (apiLevel == D2 && peek(token).value == TOKlparen) {
 					// goto Ldeclaration
 					a = parseDeclarations(lastComments);
 					decldefs.addAll(a);
@@ -678,7 +674,7 @@ public class Parser extends Lexer {
 			{
 			    case TOKconst:
 			    case TOKinvariant:
-			    	if (apiLevel == AST.D2) {
+			    	if (apiLevel == D2) {
 						// If followed by a (, it is not a storage class
 						if (peek(token).value == TOKlparen) {
 							repeat = false;
@@ -846,7 +842,9 @@ public class Parser extends Lexer {
 		LINK link = LINKdefault;
 		nextToken();
 		
-		Assert.isTrue(token.value == TOKlparen);
+		if(token.value != TOKlparen) {
+			throw new IllegalStateException();
+		}
 		
 		nextToken();
 		if (token.value == TOKidentifier) {
@@ -1113,7 +1111,7 @@ public class Parser extends Lexer {
 	
 	@SuppressWarnings("unchecked")
 	private List<Argument> parseParameters(int[] pvarargs) {
-		if (apiLevel < AST.D2) {
+		if (apiLevel < D2) {
 			return parseParametersD1(pvarargs);
 		} else {
 			return parseParametersD2(pvarargs);
@@ -1729,7 +1727,7 @@ public class Parser extends Lexer {
 					if (token.value == TOKcolon) // : Type
 					{
 						nextToken();
-						if (apiLevel < AST.D2) {
+						if (apiLevel < D2) {
 							tp_spectype = parseBasicType();
 							tp_spectype = parseDeclarator(tp_spectype, null);	
 						} else {
@@ -1739,7 +1737,7 @@ public class Parser extends Lexer {
 					if (token.value == TOKassign) // = Type
 					{
 						nextToken();
-						if (apiLevel < AST.D2) {
+						if (apiLevel < D2) {
 							tp_defaulttype = parseBasicType();
 							tp_defaulttype = parseDeclarator(tp_defaulttype, null);
 						} else {
@@ -1761,7 +1759,7 @@ public class Parser extends Lexer {
 					if (token.value == TOKcolon) // : Type
 					{
 						nextToken();
-						if (apiLevel < AST.D2) {
+						if (apiLevel < D2) {
 							tp_spectype = parseBasicType();
 							tp_spectype = parseDeclarator(tp_spectype, null);
 						} else {
@@ -1771,7 +1769,7 @@ public class Parser extends Lexer {
 					if (token.value == TOKassign) // = Type
 					{
 						nextToken();
-						if (apiLevel < AST.D2) {
+						if (apiLevel < D2) {
 							tp_defaulttype = parseBasicType();
 							tp_defaulttype = parseDeclarator(tp_defaulttype, null);
 						} else {
@@ -1796,7 +1794,7 @@ public class Parser extends Lexer {
 					tp = new TemplateTupleParameter(loc, tp_ident);
 				} else { 
 					// ValueParameter
-					if (apiLevel < AST.D2) {
+					if (apiLevel < D2) {
 						tp_valtype = parseBasicType();
 						IdentifierExp[] pointer2_tp_ident = new IdentifierExp[] { tp_ident };
 						tp_valtype = parseDeclarator(tp_valtype, pointer2_tp_ident);
@@ -1958,7 +1956,7 @@ public class Parser extends Lexer {
 					Type ta;
 
 					// Get TemplateArgument
-					if (apiLevel < AST.D2) {
+					if (apiLevel < D2) {
 						ta = parseBasicType();
 						ta = parseDeclarator(ta, null);
 					} else {
@@ -2323,7 +2321,7 @@ public class Parser extends Lexer {
 						subType = t;
 						Type index;
 
-						if (apiLevel < AST.D2) {
+						if (apiLevel < D2) {
 							index = parseBasicType();
 							index = parseDeclarator(index, null); // [ type ]
 						} else {
@@ -2494,7 +2492,7 @@ public class Parser extends Lexer {
 			{   // It's an associative array declaration
 			    Type index;
 
-			    if (apiLevel < AST.D2) {
+			    if (apiLevel < D2) {
 				    index = parseBasicType();
 				    index = parseDeclarator(index, null, null, identStart);	// [ type ]
 			    } else {
@@ -2605,7 +2603,7 @@ public class Parser extends Lexer {
 			switch (token.value) {
 			case TOKconst:
 			case TOKinvariant:
-				if (apiLevel == AST.D2 && peek(token).value == TOK.TOKlparen) {
+				if (apiLevel == D2 && peek(token).value == TOK.TOKlparen) {
 					break;
 				}
 				// fall
@@ -2727,7 +2725,10 @@ public class Parser extends Lexer {
 			t = parseDeclarator(ts, pointer2_ident, pointer2_tpl, identStart);
 			ident = pointer2_ident[0];
 			tpl = pointer2_tpl[0];
-			Assert.isTrue(t != null);
+			
+			if(t == null) {
+				throw new IllegalStateException();
+			}
 			if (tfirst == null)
 				tfirst = t;
 			else if (t != tfirst) {
@@ -3520,7 +3521,7 @@ public class Parser extends Lexer {
 				int lineNumber = token.lineNumber;
 				
 				IdentifierExp[] pointer2_ai = { ai };
-				if (apiLevel < AST.D2) {
+				if (apiLevel < D2) {
 					tb = parseBasicType();
 					at = parseDeclarator(tb, pointer2_ai);
 				} else {
@@ -3553,7 +3554,7 @@ public class Parser extends Lexer {
 
 			aggr = parseExpression();
 			
-			if (apiLevel < AST.D2) {
+			if (apiLevel < D2) {
 				check(TOKrparen);
 				body = parseStatement(0);
 				
@@ -3633,7 +3634,7 @@ public class Parser extends Lexer {
 
 					
 					IdentifierExp[] pointer2_ai = { ai };
-					if (apiLevel < AST.D2) {
+					if (apiLevel < D2) {
 						tb = parseBasicType();
 						at = parseDeclarator(tb, pointer2_ai);
 					} else {
@@ -4020,7 +4021,7 @@ public class Parser extends Lexer {
 					check(TOKlparen);
 					id = null;
 					IdentifierExp[] pointer2_id = { id };
-					if (apiLevel < AST.D2) {
+					if (apiLevel < D2) {
 						t2 = parseBasicType();
 						t2 = parseDeclarator(t2, pointer2_id);
 					} else {
@@ -4216,7 +4217,7 @@ public class Parser extends Lexer {
 	private boolean isDeclaration(Token t, int needId, TOK endtok, Token[] pt) {
 		int haveId = 0;
 		
-		if (apiLevel == AST.D2) {
+		if (apiLevel == D2) {
 		    if ((t.value == TOK.TOKconst || t.value == TOK.TOKinvariant)
 					&& peek(t).value != TOKlparen) {
 		    /* const type
@@ -4332,7 +4333,7 @@ public class Parser extends Lexer {
 			
 		case TOKconst:
 		case TOKinvariant: {
-			if (apiLevel < AST.D2) {
+			if (apiLevel < D2) {
 				return false;
 			}
 			
@@ -4697,7 +4698,7 @@ public class Parser extends Lexer {
 	}
 	
 	private boolean isParameters(Token[] pt) {
-		if (apiLevel < AST.D2) {
+		if (apiLevel < D2) {
 			return isParametersD1(pt);
 		} else {
 			return isParametersD2(pt);
@@ -5261,7 +5262,7 @@ public class Parser extends Lexer {
 
 		    nextToken();
 		    check(TOKlparen);
-		    if (apiLevel < AST.D2) {
+		    if (apiLevel < D2) {
 			    t2 = parseBasicType();
 			    t2 = parseDeclarator(t2, null);	// ( type )
 		    } else {
@@ -5316,7 +5317,7 @@ public class Parser extends Lexer {
 				nextToken();
 
 				IdentifierExp[] pointer2_ident = { ident };
-				if (apiLevel < AST.D2) {
+				if (apiLevel < D2) {
 					targ = parseBasicType();
 					targ = parseDeclarator(targ, pointer2_ident);
 				} else {
@@ -5340,7 +5341,7 @@ public class Parser extends Lexer {
 						tok2 = token.value;
 						nextToken();
 					} else {
-						if (apiLevel < AST.D2) {
+						if (apiLevel < D2) {
 							tspec = parseBasicType();
 							tspec = parseDeclarator(tspec, null);
 						} else {
@@ -5674,7 +5675,7 @@ public class Parser extends Lexer {
 			nextToken();
 			check(TOKlparen);
 			
-			if (apiLevel < AST.D2) {
+			if (apiLevel < D2) {
 				t = parseBasicType();
 				t = parseDeclarator(t, null); // ( type )
 				check(TOKrparen);
@@ -5777,7 +5778,7 @@ public class Parser extends Lexer {
 
 					nextToken();
 					
-					if (apiLevel < AST.D2) {
+					if (apiLevel < D2) {
 						t = parseBasicType();
 						t = parseDeclarator(t, null);
 					} else {
@@ -5817,7 +5818,10 @@ public class Parser extends Lexer {
 			e = parsePrimaryExp();
 			break;
 		}
-		Assert.isTrue(e != null);
+		
+		if (e == null) {
+			throw new IllegalStateException();
+		}
 
 		e.setSourceRange(start, prevToken.ptr + prevToken.len - start);
 
@@ -6097,7 +6101,7 @@ public class Parser extends Lexer {
 		Expression e;
 		Expression e2;
 
-		if (apiLevel == AST.D0) {
+		if (apiLevel == D0) {
 			e = parseEqualExp();
 			while (token.value == TOKand) {
 				nextToken();
@@ -6559,11 +6563,11 @@ public class Parser extends Lexer {
 		while(tok == TOK.TOKPRAGMA) {
 			if (token.ptr == 0 && token.string.length > 1 && token.string[1] == '!') {
 				// Script line
-				Pragma pragma = ast.newPragma();
+				Pragma pragma = new Pragma();
 				pragma.setSourceRange(0, token.len);
 				pragmas.add(pragma);
 			} else {
-				Pragma pragma = ast.newPragma();
+				Pragma pragma = new Pragma();
 				pragma.setSourceRange(token.ptr, token.len);
 				pragmas.add(pragma);
 				

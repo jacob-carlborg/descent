@@ -47,7 +47,7 @@ public class CompileDeclaration extends AttribDeclaration {
 		}
 		StringExp se = (StringExp) exp;
 		se = se.toUTF8(sc);
-		Parser p = new Parser(context.ast, se.string);
+		Parser p = new Parser(context.apiLevel, se.string);
 		p.loc = loc;
 		decl = p.parseDeclDefs(false);
 		if (p.token.value != TOKeof) {

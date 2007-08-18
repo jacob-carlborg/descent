@@ -35,7 +35,7 @@ public class CompileExp extends UnaExp {
 		}
 		StringExp se = (StringExp) e1;
 		se = se.toUTF8(sc);
-		Parser p = new Parser(context.ast, se.string);
+		Parser p = new Parser(context.apiLevel, se.string);
 		p.loc = loc;
 		Expression e = p.parseExpression();
 		if (p.token.value != TOKeof) {

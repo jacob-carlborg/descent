@@ -226,6 +226,7 @@ public abstract class ASTDmdNode extends ASTNode {
 	public final static int FOREACH_RANGE_STATEMENT = 190;
 	public final static int TRAITS_EXP = 191;
 	public final static int COMMENT = 192;
+	public final static int PRAGMA = 193;
 
 	private static int idn;
 

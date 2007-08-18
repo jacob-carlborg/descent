@@ -8,14 +8,12 @@ import melnorme.miscutil.tree.TreeVisitor;
 import org.eclipse.core.runtime.Assert;
 
 import descent.core.compiler.IProblem;
-import descent.core.dom.AST;
-import descent.core.dom.Pragma;
 import descent.core.dom.PublicScanner;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
 public class Module extends Package {
 
-	public AST ast;
+	public int apiLevel;
 	public ModuleDeclaration md;
 	public List<IProblem> problems;
 	public Comment[] comments;

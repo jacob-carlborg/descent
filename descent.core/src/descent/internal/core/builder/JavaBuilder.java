@@ -111,7 +111,7 @@ public class JavaBuilder extends IncrementalProjectBuilder implements IResourceD
 			String source = unit.getSource();
 			
 			Parser parser = new Parser(
-					AST.newAST(getApiLevel(javaProject)), 
+					getApiLevel(javaProject), 
 					source.toCharArray(), 
 					0, 
 					source.length(),

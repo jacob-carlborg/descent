@@ -87,17 +87,18 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
-import melnorme.miscutil.Assert;
-
 import descent.core.IProblemRequestor;
 import descent.core.compiler.CharOperation;
 import descent.core.compiler.IProblem;
-import descent.core.dom.AST;
 
 /**
  * Internal lexer class.
  */
 public class Lexer implements IProblemRequestor {
+	
+	public final static int D0 = 0;
+	public final static int D1 = 1;
+	public final static int D2 = 2;
 	
 	private static final int[] EMPTY_LINE_ENDS = new int[0];
 	
@@ -159,7 +160,9 @@ public class Lexer implements IProblemRequestor {
 		this.problems = new ArrayList<IProblem>();
 
 		// BrunoM: reset doesn't actually support otherwise
-		Assert.isTrue(source.length == length); 
+		if(source.length != length) {
+			throw new IllegalStateException();
+		}
 
 		// Make input larger and add zeros, to avoid comparing
 		input = new char[length - base + 5];
@@ -861,7 +864,7 @@ public class Lexer implements IProblemRequestor {
 			p++;
 			if (input[p] == '=')
 			{   p++;
-			    if (input[p] == '=' && apiLevel == AST.D0)
+			    if (input[p] == '=' && apiLevel == D0)
 			    {	p++;
 				t.value = TOKnotidentity;	// !==
 				t.len = 3;
@@ -917,7 +920,7 @@ public class Lexer implements IProblemRequestor {
 			p++;
 			if (input[p] == '=')
 			{   p++;
-			    if (input[p] == '=' && apiLevel == AST.D0)
+			    if (input[p] == '=' && apiLevel == D0)
 			    {	p++;
 				t.value = TOKidentity;		// ===
 				t.len = 3;
@@ -1781,7 +1784,7 @@ public class Lexer implements IProblemRequestor {
 							}
 						}
 					}
-				} else if (apiLevel == AST.D0 && input[p] == 't') {
+				} else if (apiLevel == D0 && input[p] == 't') {
 					p++;
 					if (input[p] == 'y') {
 						p++;
@@ -2035,7 +2038,7 @@ public class Lexer implements IProblemRequestor {
 			p++;
 			switch(input[p]) {
 			case 'n':
-				if (apiLevel == AST.D0) {
+				if (apiLevel == D0) {
 					p++;
 					if (input[p] == '_') {
 						p++;
@@ -2977,7 +2980,7 @@ public class Lexer implements IProblemRequestor {
 					}
 					break;
 				case 't':
-					if (apiLevel == AST.D2) {
+					if (apiLevel == D2) {
 						p++;
 						if (input[p] == 'r') {
 							p++;

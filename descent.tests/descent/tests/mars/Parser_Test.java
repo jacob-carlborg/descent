@@ -127,7 +127,7 @@ public abstract class Parser_Test extends TestCase {
 			}
 		}, module.ast));
 		*/
-		return CompilationUnitResolver.convert(module, null);
+		return CompilationUnitResolver.convert(AST.newAST(apiLevel), module, null);
 	}
 	
 	protected Module getModule(String source, int apiLevel) {
