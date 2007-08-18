@@ -10,10 +10,6 @@
  *******************************************************************************/
 package descent.internal.compiler.parser;
 
-import java.io.DataInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-
 import descent.core.compiler.InvalidInputException;
 import descent.internal.compiler.ast.ASTNode;
 
@@ -33,10 +29,10 @@ public class ScannerHelper {
 		ASTNode.Bit61L, ASTNode.Bit62L, ASTNode.Bit63L, ASTNode.Bit64L,
 	};
 
-	private static final int START_INDEX = 0;
-	private static final int PART_INDEX = 1;
+//	private static final int START_INDEX = 0;
+//	private static final int PART_INDEX = 1;
 
-	private static long[][][] Tables;
+	//private static long[][][] Tables;
 
 	public final static int MAX_OBVIOUS = 128;
 	public final static int[] OBVIOUS_IDENT_CHAR_NATURES = new int[MAX_OBVIOUS];
@@ -127,126 +123,130 @@ public class ScannerHelper {
 		OBVIOUS_IDENT_CHAR_NATURES['\''] = C_SEPARATOR;
 	}
 	
-static {
-	Tables = new long[2][][];
-	Tables[START_INDEX] = new long[2][];
-	Tables[PART_INDEX] = new long[3][];
-	try {
-		DataInputStream inputStream = new DataInputStream(ScannerHelper.class.getResourceAsStream("start1.rsc")); //$NON-NLS-1$
-		long[] readValues = new long[1024];
-		for (int i = 0; i < 1024; i++) {
-			readValues[i] = inputStream.readLong();
-		}
-		inputStream.close();
-		Tables[START_INDEX][0] = readValues;
-	} catch (FileNotFoundException e) {
-		e.printStackTrace();
-	} catch (IOException e) {
-		e.printStackTrace();
-	}
-	try {
-		DataInputStream inputStream = new DataInputStream(ScannerHelper.class.getResourceAsStream("start2.rsc")); //$NON-NLS-1$
-		long[] readValues = new long[1024];
-		for (int i = 0; i < 1024; i++) {
-			readValues[i] = inputStream.readLong();
-		}
-		inputStream.close();
-		Tables[START_INDEX][1] = readValues;
-	} catch (FileNotFoundException e) {
-		e.printStackTrace();
-	} catch (IOException e) {
-		e.printStackTrace();
-	}
-	try {
-		DataInputStream inputStream = new DataInputStream(ScannerHelper.class.getResourceAsStream("part1.rsc")); //$NON-NLS-1$
-		long[] readValues = new long[1024];
-		for (int i = 0; i < 1024; i++) {
-			readValues[i] = inputStream.readLong();
-		}
-		inputStream.close();
-		Tables[PART_INDEX][0] = readValues;
-	} catch (FileNotFoundException e) {
-		e.printStackTrace();
-	} catch (IOException e) {
-		e.printStackTrace();
-	}
-	try {
-		DataInputStream inputStream = new DataInputStream(ScannerHelper.class.getResourceAsStream("part2.rsc")); //$NON-NLS-1$
-		long[] readValues = new long[1024];
-		for (int i = 0; i < 1024; i++) {
-			readValues[i] = inputStream.readLong();
-		}
-		inputStream.close();
-		Tables[PART_INDEX][1] = readValues;
-	} catch (FileNotFoundException e) {
-		e.printStackTrace();
-	} catch (IOException e) {
-		e.printStackTrace();
-	}
-	try {
-		DataInputStream inputStream = new DataInputStream(ScannerHelper.class.getResourceAsStream("part14.rsc")); //$NON-NLS-1$
-		long[] readValues = new long[1024];
-		for (int i = 0; i < 1024; i++) {
-			readValues[i] = inputStream.readLong();
-		}
-		inputStream.close();
-		Tables[PART_INDEX][2] = readValues;
-	} catch (FileNotFoundException e) {
-		e.printStackTrace();
-	} catch (IOException e) {
-		e.printStackTrace();
-	}
-}
+//static {
+//	Tables = new long[2][][];
+//	Tables[START_INDEX] = new long[2][];
+//	Tables[PART_INDEX] = new long[3][];
+//	try {
+//		DataInputStream inputStream = new DataInputStream(ScannerHelper.class.getResourceAsStream("start1.rsc")); //$NON-NLS-1$
+//		long[] readValues = new long[1024];
+//		for (int i = 0; i < 1024; i++) {
+//			try {
+//				readValues[i] = inputStream.readLong();
+//			} catch (Exception e) {
+//				e.printStackTrace();
+//			}
+//		}
+//		inputStream.close();
+//		Tables[START_INDEX][0] = readValues;
+//	} catch (FileNotFoundException e) {
+//		e.printStackTrace();
+//	} catch (IOException e) {
+//		e.printStackTrace();
+//	}
+//	try {
+//		DataInputStream inputStream = new DataInputStream(ScannerHelper.class.getResourceAsStream("start2.rsc")); //$NON-NLS-1$
+//		long[] readValues = new long[1024];
+//		for (int i = 0; i < 1024; i++) {
+//			readValues[i] = inputStream.readLong();
+//		}
+//		inputStream.close();
+//		Tables[START_INDEX][1] = readValues;
+//	} catch (FileNotFoundException e) {
+//		e.printStackTrace();
+//	} catch (IOException e) {
+//		e.printStackTrace();
+//	}
+//	try {
+//		DataInputStream inputStream = new DataInputStream(ScannerHelper.class.getResourceAsStream("part1.rsc")); //$NON-NLS-1$
+//		long[] readValues = new long[1024];
+//		for (int i = 0; i < 1024; i++) {
+//			readValues[i] = inputStream.readLong();
+//		}
+//		inputStream.close();
+//		Tables[PART_INDEX][0] = readValues;
+//	} catch (FileNotFoundException e) {
+//		e.printStackTrace();
+//	} catch (IOException e) {
+//		e.printStackTrace();
+//	}
+//	try {
+//		DataInputStream inputStream = new DataInputStream(ScannerHelper.class.getResourceAsStream("part2.rsc")); //$NON-NLS-1$
+//		long[] readValues = new long[1024];
+//		for (int i = 0; i < 1024; i++) {
+//			readValues[i] = inputStream.readLong();
+//		}
+//		inputStream.close();
+//		Tables[PART_INDEX][1] = readValues;
+//	} catch (FileNotFoundException e) {
+//		e.printStackTrace();
+//	} catch (IOException e) {
+//		e.printStackTrace();
+//	}
+//	try {
+//		DataInputStream inputStream = new DataInputStream(ScannerHelper.class.getResourceAsStream("part14.rsc")); //$NON-NLS-1$
+//		long[] readValues = new long[1024];
+//		for (int i = 0; i < 1024; i++) {
+//			readValues[i] = inputStream.readLong();
+//		}
+//		inputStream.close();
+//		Tables[PART_INDEX][2] = readValues;
+//	} catch (FileNotFoundException e) {
+//		e.printStackTrace();
+//	} catch (IOException e) {
+//		e.printStackTrace();
+//	}
+//}
 
-private final static boolean isBitSet(long[] values, int i) {
-	try {
-		return (values[i / 64] & Bits[i % 64]) != 0;
-	} catch (NullPointerException e) {
-		return false;
-	}
-}
+//private final static boolean isBitSet(long[] values, int i) {
+//	try {
+//		return (values[i / 64] & Bits[i % 64]) != 0;
+//	} catch (NullPointerException e) {
+//		return false;
+//	}
+//}
 public static boolean isJavaIdentifierPart(char c) {
 	if (c < MAX_OBVIOUS) {
 		return (ScannerHelper.OBVIOUS_IDENT_CHAR_NATURES[c] & ScannerHelper.C_IDENT_PART) != 0;
 	}
 	return Character.isJavaIdentifierPart(c);
 }
-public static boolean isJavaIdentifierPart(char high, char low) {
-	int codePoint = toCodePoint(high, low);
-	switch((codePoint & 0x1F0000) >> 16) {
-		case 0 :
-			return Character.isJavaIdentifierPart((char) codePoint);
-		case 1 :
-			return isBitSet(Tables[PART_INDEX][0], codePoint & 0xFFFF);
-		case 2 :
-			return isBitSet(Tables[PART_INDEX][1], codePoint & 0xFFFF);
-		case 14 :
-			return isBitSet(Tables[PART_INDEX][2], codePoint & 0xFFFF);
-	}
-	return false;
-}
+//public static boolean isJavaIdentifierPart(char high, char low) {
+//	int codePoint = toCodePoint(high, low);
+//	switch((codePoint & 0x1F0000) >> 16) {
+//		case 0 :
+//			return Character.isJavaIdentifierPart((char) codePoint);
+//		case 1 :
+//			return isBitSet(Tables[PART_INDEX][0], codePoint & 0xFFFF);
+//		case 2 :
+//			return isBitSet(Tables[PART_INDEX][1], codePoint & 0xFFFF);
+//		case 14 :
+//			return isBitSet(Tables[PART_INDEX][2], codePoint & 0xFFFF);
+//	}
+//	return false;
+//}
 public static boolean isJavaIdentifierStart(char c) {
 	if (c < MAX_OBVIOUS) {
 		return (ScannerHelper.OBVIOUS_IDENT_CHAR_NATURES[c] & ScannerHelper.C_IDENT_START) != 0;
 	}
 	return Character.isJavaIdentifierStart(c);
 }	
-public static boolean isJavaIdentifierStart(char high, char low) {
-	int codePoint = toCodePoint(high, low);
-	switch((codePoint & 0x1F0000) >> 16) {
-		case 0 :
-			return Character.isJavaIdentifierStart((char) codePoint);
-		case 1 :
-			return isBitSet(Tables[START_INDEX][0], codePoint & 0xFFFF);
-		case 2 :
-			return isBitSet(Tables[START_INDEX][1], codePoint & 0xFFFF);
-	}
-	return false;
-}
+//public static boolean isJavaIdentifierStart(char high, char low) {
+//	int codePoint = toCodePoint(high, low);
+//	switch((codePoint & 0x1F0000) >> 16) {
+//		case 0 :
+//			return Character.isJavaIdentifierStart((char) codePoint);
+//		case 1 :
+//			return isBitSet(Tables[START_INDEX][0], codePoint & 0xFFFF);
+//		case 2 :
+//			return isBitSet(Tables[START_INDEX][1], codePoint & 0xFFFF);
+//	}
+//	return false;
+//}
 
-private static int toCodePoint(char high, char low) {	
-	return (high - Scanner.HIGH_SURROGATE_MIN_VALUE) * 0x400 + (low - Scanner.LOW_SURROGATE_MIN_VALUE) + 0x10000;
-}
+//private static int toCodePoint(char high, char low) {	
+//	return (high - Scanner.HIGH_SURROGATE_MIN_VALUE) * 0x400 + (low - Scanner.LOW_SURROGATE_MIN_VALUE) + 0x10000;
+//}
 public static boolean isDigit(char c) throws InvalidInputException {
 	if(c < ScannerHelper.MAX_OBVIOUS) {
 		return (ScannerHelper.OBVIOUS_IDENT_CHAR_NATURES[c] & ScannerHelper.C_DIGIT) != 0;
