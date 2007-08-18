@@ -9,7 +9,6 @@ import org.eclipse.core.runtime.Assert;
 
 import descent.core.compiler.IProblem;
 import descent.core.dom.AST;
-import descent.core.dom.Comment;
 import descent.core.dom.Pragma;
 import descent.core.dom.PublicScanner;
 import descent.internal.compiler.parser.ast.IASTVisitor;

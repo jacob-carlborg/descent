@@ -38,6 +38,9 @@ import descent.internal.compiler.parser.ast.IASTVisitor;
 
 public class ForeachStatement extends Statement {
 	
+	private final static char[] _aaApply = { '_', 'a', 'a', 'A', 'p', 'p', 'l', 'y', };
+	private final static char[] _aaApply2 = { '_', 'a', 'a', 'A', 'p', 'p', 'l', 'y', '2' };
+	
 	public TOK op;
 	public List<Argument> arguments;
 	public Expression aggr;
@@ -370,7 +373,7 @@ public class ForeachStatement extends Statement {
 				// a reference.
 				VarDeclaration v;
 				Initializer ie;
-				id = new IdentifierExp(loc, new Identifier("__applyArg" + i,
+				id = new IdentifierExp(loc, new Identifier(("__applyArg" + i).toCharArray(),
 						TOK.TOKidentifier));
 
 				ie = new ExpInitializer(loc, id);
@@ -419,9 +422,9 @@ public class ForeachStatement extends Statement {
 			 * Call: _aaApply(aggr, keysize, flde)
 			 */
 			if (dim == 2)
-				fdapply = context.genCfunc(Type.tindex, "_aaApply2");
+				fdapply = context.genCfunc(Type.tindex, _aaApply2);
 			else
-				fdapply = context.genCfunc(Type.tindex, "_aaApply");
+				fdapply = context.genCfunc(Type.tindex, _aaApply);
 			ec = new VarExp(loc, fdapply);
 			List<Expression> exps = new ArrayList<Expression>();
 			exps.add(aggr);
@@ -467,7 +470,7 @@ public class ForeachStatement extends Statement {
 			String r = (op == TOKforeach_reverse) ? "R" : "";
 			String fdname = "_aApply" + r + 2 + "." + fntab[flag] + dim;
 
-			fdapply = context.genCfunc(Type.tindex, fdname);
+			fdapply = context.genCfunc(Type.tindex, fdname.toCharArray());
 
 			ec = new VarExp(loc, fdapply);
 			List<Expression> exps = new ArrayList<Expression>();

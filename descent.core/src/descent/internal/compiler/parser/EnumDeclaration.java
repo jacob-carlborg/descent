@@ -258,7 +258,7 @@ public class EnumDeclaration extends ScopeDsymbol {
 						throw new IllegalStateException();
 					}
 				}
-				e = new IntegerExp(em.loc, number.toString(), number, t);
+				e = new IntegerExp(em.loc, number, t);
 				e.synthetic = true;
 			}
 			em.value = e;

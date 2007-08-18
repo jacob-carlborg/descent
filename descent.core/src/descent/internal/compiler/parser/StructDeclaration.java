@@ -137,9 +137,9 @@ public class StructDeclaration extends AggregateDeclaration {
 			tfeq = (TypeFunction) tfeq.semantic(loc, sc, context);
 		}
 
-		Identifier id = Id.eq;
+		char[] id = Id.eq;
 		for (int j = 0; j < 2; j++) {
-			Dsymbol s = Expression.search_function(this, id.string, context);
+			Dsymbol s = Expression.search_function(this, id, context);
 			FuncDeclaration fdx = s != null ? s.isFuncDeclaration() : null;
 			if (fdx != null) {
 				FuncDeclaration fd = fdx.overloadExactMatch(tfeqptr, context);
@@ -220,9 +220,9 @@ public class StructDeclaration extends AggregateDeclaration {
 
 		/* Look for special member functions.
 		 */
-		inv = (InvariantDeclaration) search(loc, Id.classInvariant.string, 0, context);
-		aggNew = (NewDeclaration) search(loc, Id.classNew.string, 0, context);
-		aggDelete = (DeleteDeclaration) search(loc, Id.classDelete.string, 0, context);
+		inv = (InvariantDeclaration) search(loc, Id.classInvariant, 0, context);
+		aggNew = (NewDeclaration) search(loc, Id.classNew, 0, context);
+		aggDelete = (DeleteDeclaration) search(loc, Id.classDelete, 0, context);
 
 		if (sc.func != null) {
 			semantic2(sc, context);

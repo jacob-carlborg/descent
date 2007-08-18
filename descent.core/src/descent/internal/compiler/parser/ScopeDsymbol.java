@@ -118,7 +118,7 @@ public class ScopeDsymbol extends Dsymbol {
 	}
 
 	@Override
-	public Dsymbol search(Loc loc, String ident, int flags, SemanticContext context) {
+	public Dsymbol search(Loc loc, char[] ident, int flags, SemanticContext context) {
 		Dsymbol s;
 		int i;
 
@@ -168,7 +168,7 @@ public class ScopeDsymbol extends Dsymbol {
 				if (d != null && d.protection == PROT.PROTprivate
 						&& d.parent.isTemplateMixin() == null) {
 					context.acceptProblem(Problem.newSemanticTypeError(
-							d.ident.ident + " is private",
+							new String(d.ident.ident) + " is private",
 							IProblem.MemberIsPrivate, 0, start, length));
 				}
 			}

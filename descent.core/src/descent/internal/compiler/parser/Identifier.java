@@ -1,19 +1,21 @@
 package descent.internal.compiler.parser;
 
+import descent.core.compiler.CharOperation;
+
 
 public class Identifier {
 	
 	public int startPosition;
 	public int length;
 	public int lineNumber;
-	public String string;
+	public char[] string;
 	public TOK value;
 	
-	public Identifier(String string) {
+	public Identifier(char[] string) {
 		this(string, TOK.TOKidentifier);
 	}
 	
-	public Identifier(String string, TOK value) {
+	public Identifier(char[] string, TOK value) {
 		this.string = string;
 		this.value = value;
 	}
@@ -26,17 +28,17 @@ public class Identifier {
 		this.lineNumber = token.lineNumber;
 	}
 	
-	public String getIdentifier() {
+	public char[] getIdentifier() {
 		return string;
 	}
 	
 	public String toChars() {
-		return string;
+		return toString();
 	}
 	
 	@Override
 	public String toString() {
-		return string;
+		return new String(string);
 	}
 	
 	@Override
@@ -45,7 +47,7 @@ public class Identifier {
 			return false;
 		}
 		
-		return string.equals(((Identifier) o).string);
+		return CharOperation.equals(string, ((Identifier) o).string);
 	}
 
 	public String toHChars2() {

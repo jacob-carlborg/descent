@@ -36,14 +36,14 @@ public class GdbDebugger implements IDebugger {
 	
 	public List<String> getDebuggerCommandLineArguments() {
 		List<String> args = new ArrayList<String>();
-		args.add("-readnow");
-		args.add("-fullname");
+		args.add("-readnow"); //$NON-NLS-1$
+		args.add("-fullname"); //$NON-NLS-1$
 		return args;
 	}
 	
 	public List<String> getDebugeeCommandLineArguments(String[] arguments) {
 		List<String> args = new ArrayList<String>();
-		args.add("-args");
+		args.add("-args"); //$NON-NLS-1$
 		args.addAll(Arrays.asList(arguments));
 		return args;
 	}
@@ -54,13 +54,13 @@ public class GdbDebugger implements IDebugger {
 			
 			beforeWaitStateReturn();
 			
-			fProxy.write("break " + 
+			fProxy.write("break " +  //$NON-NLS-1$
 					ArgumentUtils.toStringArgument(
 					toGdbPath(filename) +
-					":" +
+					":" + //$NON-NLS-1$
 					lineNumber
 					) + 
-				"\n");
+				"\n"); //$NON-NLS-1$
 			
 			waitStateReturn();
 		} finally {
@@ -76,7 +76,7 @@ public class GdbDebugger implements IDebugger {
 			
 			beforeWaitStateReturn();
 			
-			fProxy.write("print " + expression + "\n");
+			fProxy.write("print " + expression + "\n"); //$NON-NLS-1$ //$NON-NLS-2$
 			
 			waitStateReturn();
 			
@@ -93,7 +93,7 @@ public class GdbDebugger implements IDebugger {
 	}
 
 	public String getEndCommunicationString() {
-		return "(gdb)";
+		return "(gdb)"; //$NON-NLS-1$
 	}
 
 	public byte[] getMemoryBlock(long startAddress, long length) throws IOException {
@@ -102,8 +102,8 @@ public class GdbDebugger implements IDebugger {
 			
 			beforeWaitStateReturn();
 			
-			fProxy.write("x/" + String.valueOf(length) + "b "
-					+ startAddress + "\n");
+			fProxy.write("x/" + String.valueOf(length) + "b " //$NON-NLS-1$ //$NON-NLS-2$
+					+ startAddress + "\n"); //$NON-NLS-1$
 
 			waitStateReturn();
 			
@@ -119,7 +119,7 @@ public class GdbDebugger implements IDebugger {
 			
 			beforeWaitStateReturn();
 			
-			fProxy.write("info all-registers\n");
+			fProxy.write("info all-registers\n"); //$NON-NLS-1$
 			
 			waitStateReturn();
 			
@@ -138,7 +138,7 @@ public class GdbDebugger implements IDebugger {
 			
 			beforeWaitStateReturn();
 			
-			fProxy.write("bt\n");
+			fProxy.write("bt\n"); //$NON-NLS-1$
 			
 			waitStateReturn();
 			
@@ -154,14 +154,14 @@ public class GdbDebugger implements IDebugger {
 		
 		List<GdbVariable> retVariables = new ArrayList<GdbVariable>();
 		
-		String[] args = { "args", "locals" };
+		String[] args = { "args", "locals" }; //$NON-NLS-1$ //$NON-NLS-2$
 		for(String arg : args) {
 			try {
 				setState(new ConsultingVariables(this));
 				
 				beforeWaitStateReturn();
 				
-				fProxy.write("info " + arg + "\n");
+				fProxy.write("info " + arg + "\n"); //$NON-NLS-1$ //$NON-NLS-2$
 	
 				waitStateReturn();
 				
@@ -190,6 +190,10 @@ public class GdbDebugger implements IDebugger {
 	public void interpretError(String text) throws DebugException, IOException {
 		fState.interpretError(text);
 	}
+	
+	public void addSearchPath(String path) throws DebugException, IOException {
+		// TODO
+	}
 
 	public void removeBreakpoint(String filename, int lineNumber) throws DebugException, IOException {
 		try {
@@ -197,12 +201,12 @@ public class GdbDebugger implements IDebugger {
 			
 			beforeWaitStateReturn();
 			
-			fProxy.write("clear " + ArgumentUtils.toStringArgument(
+			fProxy.write("clear " + ArgumentUtils.toStringArgument( //$NON-NLS-1$
 					toGdbPath(filename) +
-					":" +
+					":" + //$NON-NLS-1$
 					lineNumber
 					) + 
-				"\n");
+				"\n"); //$NON-NLS-1$
 			
 			waitStateReturn();
 		} finally {
@@ -212,7 +216,7 @@ public class GdbDebugger implements IDebugger {
 
 	public void resume() throws DebugException, IOException {
 		try {
-			fProxy.write("c\n");
+			fProxy.write("c\n"); //$NON-NLS-1$
 		} finally {
 			setState(fRunningState);
 		}
@@ -224,7 +228,7 @@ public class GdbDebugger implements IDebugger {
 			
 			beforeWaitStateReturn();
 			
-			fProxy.write("frame " + stackFrame + "\n");
+			fProxy.write("frame " + stackFrame + "\n"); //$NON-NLS-1$ //$NON-NLS-2$
 			
 			waitStateReturn();
 		} finally {
@@ -234,23 +238,23 @@ public class GdbDebugger implements IDebugger {
 
 	public void start() throws DebugException, IOException {
 		try {
-			fProxy.write("set print pretty on\n");
-			fProxy.write("r\n");
+			fProxy.write("set print pretty on\n"); //$NON-NLS-1$
+			fProxy.write("r\n"); //$NON-NLS-1$
 		} finally {
 			setState(fRunningState);
 		}
 	}
 
 	public void stepOver() throws IOException {
-		step("next", DebugEvent.STEP_OVER);
+		step("next", DebugEvent.STEP_OVER); //$NON-NLS-1$
 	}
 
 	public void stepInto() throws IOException {
-		step("step", DebugEvent.STEP_INTO);
+		step("step", DebugEvent.STEP_INTO); //$NON-NLS-1$
 	}
 
 	public void stepReturn() throws IOException {
-		step("finish", DebugEvent.STEP_RETURN);
+		step("finish", DebugEvent.STEP_RETURN); //$NON-NLS-1$
 	}
 	
 	private void step(String cmd, int debugEvent) throws IOException {
@@ -259,7 +263,7 @@ public class GdbDebugger implements IDebugger {
 			
 			beforeWaitStateReturn();
 			
-			fProxy.write(cmd + "\n");
+			fProxy.write(cmd + "\n"); //$NON-NLS-1$
 			
 			waitStateReturn();
 		} finally {
@@ -269,8 +273,8 @@ public class GdbDebugger implements IDebugger {
 
 	public void terminate() throws DebugException, IOException {
 		try {
-			fProxy.write("quit\n");
-			fProxy.write("y\n");
+			fProxy.write("quit\n"); //$NON-NLS-1$
+			fProxy.write("y\n"); //$NON-NLS-1$
 		} finally {
 			setState(fRunningState);
 		}
@@ -282,7 +286,7 @@ public class GdbDebugger implements IDebugger {
 			
 			beforeWaitStateReturn();
 			
-			fProxy.write("whatis " + expression + "\n");
+			fProxy.write("whatis " + expression + "\n"); //$NON-NLS-1$ //$NON-NLS-2$
 			
 			waitStateReturn();
 			
@@ -293,7 +297,7 @@ public class GdbDebugger implements IDebugger {
 	}
 	
 	private void completeTypes(List<GdbVariable> variables) throws IOException {
-		completeTypes(variables, "");
+		completeTypes(variables, ""); //$NON-NLS-1$
 	}
 	
 	private void completeTypes(List<GdbVariable> variables, String prefix) throws IOException {
@@ -303,7 +307,7 @@ public class GdbDebugger implements IDebugger {
 	}
 	
 	private void completeType(GdbVariable var) throws IOException {
-		completeType(var, "");
+		completeType(var, ""); //$NON-NLS-1$
 	}
 	
 	private void completeType(GdbVariable var, String prefix) throws IOException {
@@ -312,13 +316,13 @@ public class GdbDebugger implements IDebugger {
 				String name = prefix + var.getName();
 				var.setValue(getType(name));
 			} else if (var.isBase()) {
-				var.setValue("");
+				var.setValue(""); //$NON-NLS-1$
 			}
 		} catch (NullPointerException e) {
 			e.printStackTrace();
 		}
 		
-		prefix = var.isBase() ? prefix : prefix + var.getName() + ".";
+		prefix = var.isBase() ? prefix : prefix + var.getName() + "."; //$NON-NLS-1$
 		completeTypes(var.getChildren(), prefix);
 	}
 	

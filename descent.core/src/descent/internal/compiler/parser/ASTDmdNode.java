@@ -26,7 +26,6 @@ import java.util.List;
 
 import org.eclipse.core.runtime.Assert;
 
-import descent.core.dom.DDocComment;
 import descent.internal.compiler.parser.ast.ASTNode;
 
 // class Object in DMD compiler
@@ -226,6 +225,7 @@ public abstract class ASTDmdNode extends ASTNode {
 	public final static int ASSOC_ARRAY_LITERAL_EXP = 189;
 	public final static int FOREACH_RANGE_STATEMENT = 190;
 	public final static int TRAITS_EXP = 191;
+	public final static int COMMENT = 192;
 
 	private static int idn;
 
@@ -339,7 +339,7 @@ public abstract class ASTDmdNode extends ASTNode {
 			 * overload
 			 */
 			Dsymbol s = search_function(ad,
-					(op == TOKforeach_reverse) ? Id.applyReverse.string : Id.apply.string,
+					(op == TOKforeach_reverse) ? Id.applyReverse : Id.apply,
 					context);
 			if (s != null) {
 				fd = s.isFuncDeclaration();
@@ -358,7 +358,7 @@ public abstract class ASTDmdNode extends ASTNode {
 			 * overload
 			 */
 			Dsymbol s = search_function(ad,
-					(op == TOKforeach_reverse) ? Id.applyReverse.string : Id.apply.string,
+					(op == TOKforeach_reverse) ? Id.applyReverse : Id.apply,
 					context);
 			if (s != null) {
 				fd = s.isFuncDeclaration();
@@ -504,7 +504,7 @@ public abstract class ASTDmdNode extends ASTNode {
 	}
 
 	public static Dsymbol search_function(AggregateDeclaration ad,
-			String funcid, SemanticContext context) {
+			char[] funcid, SemanticContext context) {
 		Dsymbol s;
 		FuncDeclaration fd;
 		TemplateDeclaration td;
@@ -527,10 +527,10 @@ public abstract class ASTDmdNode extends ASTNode {
 		return null;
 	}
 	public int astFlags;
-	public List<DDocComment> preDdocs;
+	public List<Comment> preDdocs;
 	public List<Modifier> modifiers;
 
-	public DDocComment postDdoc;
+	public Comment postDdoc;
 
 	/**
 	 * Denotes a node created during the semantic pass, must be ignored by
@@ -652,6 +652,10 @@ public abstract class ASTDmdNode extends ASTNode {
 	protected void error(String s, String... s2) {
 		throw new IllegalStateException("Problem reporting not implemented");
 	}
+	
+	protected void error(String s, char[]... s2) {
+		throw new IllegalStateException("Problem reporting not implemented");
+	}
 
 	public void expandTuples(List<Expression> exps) {
 		if (exps != null) {
@@ -758,7 +762,7 @@ public abstract class ASTDmdNode extends ASTNode {
 					case Tarray: { // Create a static array variable v of type
 						// arg.type
 
-						Identifier id = new Identifier("_arrayArg" + (++idn));
+						Identifier id = new Identifier(("_arrayArg" + (++idn)).toCharArray());
 						Type t = new TypeSArray(tb2.next, new IntegerExp(loc, nargs
 								- i));
 						t = t.semantic(loc, sc, context);
@@ -996,7 +1000,7 @@ public abstract class ASTDmdNode extends ASTNode {
 	}
 	
 	
-	public int getElementType() {
+	public final int getElementType() {
 		return getNodeType();
 	}
 

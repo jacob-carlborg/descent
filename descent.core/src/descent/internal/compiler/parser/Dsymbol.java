@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.eclipse.core.runtime.Assert;
 
+import descent.core.compiler.CharOperation;
 import descent.core.compiler.IProblem;
 
 public abstract class Dsymbol extends ASTDmdNode {
@@ -78,10 +79,10 @@ public abstract class Dsymbol extends ASTDmdNode {
 			}
 			if (sd.isAggregateDeclaration() != null
 					|| sd.isEnumDeclaration() != null) {
-				if (ident.ident.equals(Id.__sizeof.string) || ident.ident.equals(Id.alignof.string)
-						|| ident.ident.equals(Id.mangleof.string)) {
+				if (CharOperation.equals(ident.ident, Id.__sizeof) || CharOperation.equals(ident.ident, Id.alignof)
+						|| CharOperation.equals(ident.ident, Id.mangleof)) {
 					context.acceptProblem(Problem.newSemanticMemberError(
-							"Property " + ident.ident
+							"Property " + new String(ident.ident)
 									+ " cannot be redefined",
 							IProblem.PropertyCanNotBeRedefined, 0, ident.start,
 							ident.length));
@@ -368,7 +369,7 @@ public abstract class Dsymbol extends ASTDmdNode {
 		return PROT.PROTpublic;
 	}
 
-	public Dsymbol search(Loc loc, String ident, int flags, SemanticContext context) {
+	public Dsymbol search(Loc loc, char[] ident, int flags, SemanticContext context) {
 		return null;
 	}
 

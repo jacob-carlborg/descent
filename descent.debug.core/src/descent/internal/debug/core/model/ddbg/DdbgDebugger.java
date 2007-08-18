@@ -40,7 +40,7 @@ public class DdbgDebugger implements IDebugger {
 	}
 	
 	public String getEndCommunicationString() {
-		return "->";
+		return "->"; //$NON-NLS-1$
 	}
 	
 	public List<String> getDebuggerCommandLineArguments() {
@@ -79,7 +79,7 @@ public class DdbgDebugger implements IDebugger {
 			
 			beforeWaitStateReturn();
 			
-			fProxy.write("er\n");
+			fProxy.write("er\n"); //$NON-NLS-1$
 			
 			waitStateReturn();
 		} finally {
@@ -92,7 +92,7 @@ public class DdbgDebugger implements IDebugger {
 			
 			beforeWaitStateReturn();
 			
-			fProxy.write("nc\n");
+			fProxy.write("nc\n"); //$NON-NLS-1$
 			
 			waitStateReturn();
 		} finally {
@@ -105,7 +105,7 @@ public class DdbgDebugger implements IDebugger {
 
 	public void resume() throws IOException {
 		try {
-			fProxy.write("r\n");
+			fProxy.write("r\n"); //$NON-NLS-1$
 		} finally {
 			setState(fRunningState);
 		}
@@ -113,7 +113,21 @@ public class DdbgDebugger implements IDebugger {
 
 	public void terminate() throws IOException {
 		try {
-			fProxy.write("q\n");
+			fProxy.write("q\n"); //$NON-NLS-1$
+		} finally {
+			setState(fRunningState);
+		}
+	}
+	
+	public void addSearchPath(String path) throws DebugException, IOException {
+		try {
+			setState(new WaitingConfirmation(this));
+			
+			beforeWaitStateReturn();
+			
+			fProxy.write("sp " + path + "\n"); //$NON-NLS-1$ //$NON-NLS-2$
+			
+			waitStateReturn();
 		} finally {
 			setState(fRunningState);
 		}
@@ -125,9 +139,9 @@ public class DdbgDebugger implements IDebugger {
 			
 			beforeWaitStateReturn();
 			
-			fProxy.write("bp " +
+			fProxy.write("bp " + //$NON-NLS-1$
 				ArgumentUtils.toStringArgument(filename) +
-				":" + lineNumber + "\n"
+				":" + lineNumber + "\n" //$NON-NLS-1$ //$NON-NLS-2$
 				);
 			
 			waitStateReturn();
@@ -142,9 +156,9 @@ public class DdbgDebugger implements IDebugger {
 			
 			beforeWaitStateReturn();
 			
-			fProxy.write("dbp " +
+			fProxy.write("dbp " + //$NON-NLS-1$
 				ArgumentUtils.toStringArgument(filename) +
-				":" +lineNumber + "\n"
+				":" +lineNumber + "\n" //$NON-NLS-1$ //$NON-NLS-2$
 				);
 			
 			waitStateReturn();
@@ -154,15 +168,15 @@ public class DdbgDebugger implements IDebugger {
 	}
 
 	public void stepOver() throws IOException {
-		step("ov", DebugEvent.STEP_OVER);
+		step("ov", DebugEvent.STEP_OVER); //$NON-NLS-1$
 	}
 
 	public void stepInto() throws IOException {
-		step("in", DebugEvent.STEP_INTO);
+		step("in", DebugEvent.STEP_INTO); //$NON-NLS-1$
 	}
 
 	public void stepReturn() throws IOException {
-		step("out", DebugEvent.STEP_RETURN);
+		step("out", DebugEvent.STEP_RETURN); //$NON-NLS-1$
 	}
 	
 	private void step(String cmd, int debugEvent) throws IOException {
@@ -171,7 +185,7 @@ public class DdbgDebugger implements IDebugger {
 			
 			beforeWaitStateReturn();
 			
-			fProxy.write(cmd + "\n");
+			fProxy.write(cmd + "\n"); //$NON-NLS-1$
 			
 			waitStateReturn();
 		} finally {
@@ -187,7 +201,7 @@ public class DdbgDebugger implements IDebugger {
 			
 			beforeWaitStateReturn();
 			
-			fProxy.write("us\n");
+			fProxy.write("us\n"); //$NON-NLS-1$
 			
 			waitStateReturn();
 			
@@ -204,7 +218,7 @@ public class DdbgDebugger implements IDebugger {
 			
 			beforeWaitStateReturn();
 			
-			fProxy.write("f " + stackFrame + "\n");
+			fProxy.write("f " + stackFrame + "\n"); //$NON-NLS-1$ //$NON-NLS-2$
 			
 			waitStateReturn();
 		} finally {
@@ -219,7 +233,7 @@ public class DdbgDebugger implements IDebugger {
 			
 			beforeWaitStateReturn();
 			
-			fProxy.write("dr cpu fpu mmx sse\n");
+			fProxy.write("dr cpu fpu mmx sse\n"); //$NON-NLS-1$
 			
 			waitStateReturn();
 			
@@ -240,7 +254,7 @@ public class DdbgDebugger implements IDebugger {
 			
 			beforeWaitStateReturn();
 			
-			fProxy.write("lsv\n");
+			fProxy.write("lsv\n"); //$NON-NLS-1$
 
 			waitStateReturn();
 			
@@ -258,9 +272,9 @@ public class DdbgDebugger implements IDebugger {
 			
 			beforeWaitStateReturn();
 			
-			fProxy.write("dm " +
+			fProxy.write("dm " + //$NON-NLS-1$
 					Long.toHexString(startAddress) +
-					" " + length + "\n");
+					" " + length + "\n"); //$NON-NLS-1$ //$NON-NLS-2$
 
 			waitStateReturn();
 			
@@ -278,7 +292,7 @@ public class DdbgDebugger implements IDebugger {
 			
 			beforeWaitStateReturn();
 			
-			fProxy.write("= " + expression + "\n");
+			fProxy.write("= " + expression + "\n"); //$NON-NLS-1$ //$NON-NLS-2$
 			
 			waitStateReturn();
 			
@@ -296,7 +310,7 @@ public class DdbgDebugger implements IDebugger {
 			
 			beforeWaitStateReturn();
 			
-			fProxy.write("t " + expression + "\n");
+			fProxy.write("t " + expression + "\n"); //$NON-NLS-1$ //$NON-NLS-2$
 			
 			waitStateReturn();
 			
@@ -307,7 +321,7 @@ public class DdbgDebugger implements IDebugger {
 	}
 	
 	private void completeTypes(List<DdbgVariable> variables) throws IOException {
-		completeTypes(variables, "");
+		completeTypes(variables, ""); //$NON-NLS-1$
 	}
 	
 	private void completeTypes(List<DdbgVariable> variables, String prefix) throws IOException {
@@ -317,7 +331,7 @@ public class DdbgDebugger implements IDebugger {
 	}
 	
 	private void completeType(DdbgVariable var) throws IOException {
-		completeType(var, "");
+		completeType(var, ""); //$NON-NLS-1$
 	}
 	
 	private void completeType(DdbgVariable var, String prefix) throws IOException {
@@ -326,13 +340,13 @@ public class DdbgDebugger implements IDebugger {
 				String name = prefix + var.getName();
 				var.setValue(getType(name));
 			} else if (var.isBase()) {
-				var.setValue("");
+				var.setValue(""); //$NON-NLS-1$
 			}
 		} catch (NullPointerException e) {
 			e.printStackTrace();
 		}
 		
-		prefix = var.isBase() ? prefix : prefix + var.getName() + ".";
+		prefix = var.isBase() ? prefix : prefix + var.getName() + "."; //$NON-NLS-1$
 		completeTypes(var.getChildren(), prefix);
 	}
 	

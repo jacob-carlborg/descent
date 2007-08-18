@@ -1,6 +1,7 @@
 package descent.internal.compiler.parser;
 
 import melnorme.miscutil.tree.TreeVisitor;
+import descent.core.compiler.CharOperation;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
@@ -21,7 +22,7 @@ public class TypeIdentifier extends TypeQualified {
 		visitor.endVisit(this);
 	}
 	
-	public TypeIdentifier(Loc loc, Identifier ident) {
+	public TypeIdentifier(Loc loc, char[] ident) {
 		this(loc, new IdentifierExp(loc, ident));
 	}
 	
@@ -62,14 +63,14 @@ public class TypeIdentifier extends TypeQualified {
 		} else {
 			if (s[0] != null) {
 				// TODO semantic remove the following if but leave the body
-				if (!s[0].ident.ident.equals(Id.Object.string)) {
+				if (!CharOperation.equals(s[0].ident.ident, Id.Object)) {
 					context.acceptProblem(Problem.newSemanticTypeError(s[0].ident
 							+ " cannot be resolved to a type", IProblem.UsedAsAType, 0,
 							s[0].ident.start, s[0].ident.length));
 				}
 			} else {
 				// TODO semantic remove the following if but leave the body
-				if (!ident.ident.equals(Id.Object.string)) {
+				if (!CharOperation.equals(ident.ident, Id.Object)) {
 					context.acceptProblem(Problem.newSemanticTypeError(this.ident
 							+ " cannot be resolved to a type", IProblem.UsedAsAType, 0,
 							this.ident.start, this.ident.length));

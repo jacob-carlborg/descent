@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.eclipse.core.runtime.Assert;
 
+import descent.core.compiler.CharOperation;
 import descent.core.compiler.IProblem;
 
 public abstract class TypeQualified extends Type {
@@ -70,7 +71,7 @@ public abstract class TypeQualified extends Type {
 					// printf("getType = '%s'\n", s.getType().toChars());
 					if (sm == null) {
 						v = s.isVarDeclaration();
-						if (v != null && id.ident.equals(Id.length.string)) {
+						if (v != null && CharOperation.equals(id.ident, Id.length)) {
 							if (v.isConst() && v.getExpInitializer(context) != null) {
 								e = v.getExpInitializer(context).exp;
 							} else

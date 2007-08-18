@@ -19,7 +19,7 @@ public class MultiStringExp extends StringExp {
 				sb.append(se.string);
 			}
 		}
-		this.string = sb.toString();
+		this.string = sb.toString().toCharArray();
 	}
 	
 	@Override

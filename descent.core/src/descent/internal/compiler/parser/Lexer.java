@@ -317,6 +317,7 @@ public class Lexer implements IProblemRequestor {
 	    int linnum = this.linnum;
 	    
 	    t.lineNumber = linnum;
+	    t.special = 0;
 	    t.leadingComment = null;
 	    
 	    while (true)
@@ -372,7 +373,7 @@ public class Lexer implements IProblemRequestor {
 		    case '5':  	case '6':   case '7':   case '8':   case '9':
 			t.value = number(t);
 			t.len = p - t.ptr;
-			t.string = new String(input, t.ptr, t.len);
+			t.setString(input, t.ptr, t.len);
 			return;
 
 	/*
@@ -412,12 +413,9 @@ public class Lexer implements IProblemRequestor {
 			}
 			p++;
 		    case '`':
-		    boolean hasR = input[p - 1] == 'r';
 			t.value = wysiwygStringConstant(t, input[p]);
-			if (hasR) {
-				t.string = "r" + t.string;
-			}
 			t.len = p - t.ptr;
+			t.setString(input, t.ptr, t.len);
 			return;
 
 		    case 'x':
@@ -427,26 +425,25 @@ public class Lexer implements IProblemRequestor {
 			}
 			p++;
 			t.value = hexStringConstant(t);
-			t.string = "x" + t.string;
 			t.len = p - t.ptr;
+			t.setString(input, t.ptr, t.len);
 			return;
 
 
 		    case '"':
-			t.value = escapeStringConstant(t,0);
+			t.value = escapeStringConstant(t, 0);
 			t.len = p - t.ptr;
+			t.setString(input, t.ptr, t.len);
 			return;
 
 		    case '\\': // escaped string literal
 			{
-				stringbuffer.reset();
-				stringbuffer.data.append(input[p]);
 				do {
 					p++;
-					escapeSequence(stringbuffer.data);
+					escapeSequence();
 				} while (input[p] == '\\');
 				t.len = p - t.ptr;
-				t.string = stringbuffer.data.toString();
+				t.setString(input, t.ptr, t.len);
 				t.postfix = 0;
 				t.value = TOKstring;
 				return;
@@ -535,7 +532,7 @@ public class Lexer implements IProblemRequestor {
 				if (tokenizeComments) {
 					t.value = (input[t.ptr + 2] == '*' && p - 4 != t.ptr) ? TOKdocblockcomment : TOKblockcomment;
 					t.len = p - t.ptr;
-					t.string = new String(input, t.ptr, t.len);
+					t.setString(input, t.ptr, t.len);
 					return;
 				} else {
 					continue;
@@ -564,7 +561,7 @@ public class Lexer implements IProblemRequestor {
 						if (tokenizeComments) {
 							t.value = input[t.ptr + 2] == '/' ? TOKdoclinecomment : TOKlinecomment;
 							t.len = p - t.ptr;
-							t.string = new String(input, t.ptr, t.len);
+							t.setString(input, t.ptr, t.len);
 							return;
 						}
 						t.value = TOKeof;
@@ -589,7 +586,7 @@ public class Lexer implements IProblemRequestor {
 					
 					t.value = input[t.ptr + 2] == '/' ? TOKdoclinecomment : TOKlinecomment;
 					t.len = p - t.ptr;
-					t.string = new String(input, t.ptr, t.len);
+					t.setString(input, t.ptr, t.len);
 					
 					newline(IN_COMMENT);
 					return;
@@ -666,7 +663,7 @@ public class Lexer implements IProblemRequestor {
 				if (tokenizeComments) {
 					t.value = (input[t.ptr + 2] == '+' && p - 4 != t.ptr) ? TOKdocpluscomment : TOKpluscomment;
 					t.len = p - t.ptr;
-					t.string = new String(input, t.ptr, t.len);
+					t.setString(input, t.ptr, t.len);
 					return;
 				} else {
 					continue;
@@ -679,12 +676,13 @@ public class Lexer implements IProblemRequestor {
 
 		    case '.':
 			p++;
-			if (Chars.isdigit(input[p]))
+			// Chars.isdigit inlined
+			if ('0' <= input[p] && input[p] <= '9')
 			{
 			    p--;
 			    t.value = inreal(t);
 			    t.len = p - t.ptr;
-			    t.string = new String(input, t.ptr, t.len);
+			    t.setString(input, t.ptr, t.len);
 			}
 			else if (input[p] == '.')
 			{
@@ -2814,7 +2812,7 @@ public class Lexer implements IProblemRequestor {
 									if (input[p] == '_' && !Chars.isidchar(input[p+1])) {
 										t.value = TOK.TOKstring;
 										t.special = Token.SPECIAL__DATE__;
-										t.string = "__DATE__";
+										t.string = Id.DATE;
 										t.len = 8;
 										p++;
 										return;
@@ -2837,7 +2835,7 @@ public class Lexer implements IProblemRequestor {
 									if (input[p] == '_' && !Chars.isidchar(input[p+1])) {
 										t.value = TOK.TOKstring;
 										t.special = Token.SPECIAL__FILE__;
-										t.string = "__FILE__";
+										t.string = Id.FILE;
 										t.len = 8;
 										p++;
 										return;
@@ -2860,7 +2858,7 @@ public class Lexer implements IProblemRequestor {
 									if (input[p] == '_' && !Chars.isidchar(input[p+1])) {
 										t.value = TOK.TOKint64v;
 										t.special = Token.SPECIAL__LINE__;
-										t.string = "__LINE__";
+										t.string = Id.LINE;
 										t.len = 8;
 										p++;
 										return;
@@ -2894,7 +2892,7 @@ public class Lexer implements IProblemRequestor {
 														if (input[p] == '_' && !Chars.isidchar(input[p+1])) {
 															t.value = TOK.TOKstring;
 															t.special = Token.SPECIAL__TIMESTAMP__;
-															t.string = "__TIMESTAMP__";
+															t.string = Id.TIMESTAMP;
 															t.len = 13;
 															p++;
 															return;
@@ -2910,7 +2908,7 @@ public class Lexer implements IProblemRequestor {
 									if (input[p] == '_' && !Chars.isidchar(input[p+1])) {
 										t.value = TOK.TOKstring;
 										t.special = Token.SPECIAL__TIME__;
-										t.string = "__TIME__";
+										t.string = Id.TIME;
 										t.len = 8;
 										p++;
 										return;
@@ -2939,7 +2937,7 @@ public class Lexer implements IProblemRequestor {
 											if (input[p] == '_' && !Chars.isidchar(input[p+1])) {
 												t.value = TOK.TOKstring;
 												t.special = Token.SPECIAL__VENDOR__;
-												t.string = "__VENDOR__";
+												t.string = Id.VENDOR;
 												t.len = 10;
 												p++;
 												return;
@@ -2964,7 +2962,7 @@ public class Lexer implements IProblemRequestor {
 												if (input[p] == '_' && !Chars.isidchar(input[p+1])) {
 													t.value = TOK.TOKint64v;
 													t.special = Token.SPECIAL__VERSION__;
-													t.string = "__VERSION__";
+													t.string = Id.VERSION;
 													t.len = 11;
 													p++;
 													return;
@@ -3021,18 +3019,17 @@ public class Lexer implements IProblemRequestor {
 		
 		t.value = TOK.TOKidentifier;
 		t.len = p - t.ptr;
-		t.string = new String(input, t.ptr, t.len);
+		t.setString(input, t.ptr, t.len);
 		return;
 	}
 	
-	private int escapeSequence(StringBuilder stringBuilder) {
+	private int escapeSequence() {
 		int c;
 		int n;
 		int ndigits = 0;
 		int startOfNumber;
 
 		c = input[p];
-		stringBuilder.append((char) c);
 		switch (c) {
 		case '\'':
 		case '"':
@@ -3082,16 +3079,17 @@ public class Lexer implements IProblemRequestor {
 			}
 			p++;
 			c = input[p];
-			stringBuilder.append((char) c);
 			if (Chars.ishex(c)) {
 				long v;
 
 				n = 0;
 				v = 0;
 				while (true) {
-					if (Chars.isdigit(c)) {
+					// Chars.isdigit inlined
+					if ('0' <= c && c <= '9') {
 						c -= '0';
-					} else if (Chars.islower(c)) {
+					// Chars.islower inlined
+					} else if ('a' <= c && c <= 'z') {
 						c -= 'a' - 10;
 					} else {
 						c -= 'A' - 10;
@@ -3101,7 +3099,6 @@ public class Lexer implements IProblemRequestor {
 					if (++n == ndigits) {
 						break;
 					}
-					stringBuilder.append((char) c);
 					if (!Chars.ishex(c)) {
 						error(
 								"Escape hex sequence has " + n
@@ -3126,7 +3123,8 @@ public class Lexer implements IProblemRequestor {
 
 		case '&': // named character entity
 			for (int idstart = ++p; true; p++) {
-				switch (input[p]) {
+				char c2 = input[p];
+				switch (c2) {
 				case ';':
 					c = Entity.HtmlNamedEntity(input, idstart, p - idstart, linnum,
 							this);
@@ -3139,8 +3137,9 @@ public class Lexer implements IProblemRequestor {
 					break;
 
 				default:
-					if (Chars.isalpha(input[p])
-							|| (p != idstart + 1 && Chars.isdigit(input[p])))
+					// Chars.isalpha, Chars.isdigit inlined
+					if ((('a' <= c2 && c2 <= 'z') || ('A' <= c2 && c2 <= 'Z'))
+							|| (p != idstart + 1 && ('0' <= c2 && c2 <= '9')))
 						continue;
 					error("Unterminated named entity",
 							IProblem.UnterminatedNamedEntity, linnum, idstart - 1, p
@@ -3157,7 +3156,8 @@ public class Lexer implements IProblemRequestor {
 			break;
 
 		default:
-			if (Chars.isoctal(c)) {
+			// Chars.isoctal inlined
+			if ('0' <= c && c <= '7') {
 				int v;
 
 				n = 0;
@@ -3165,10 +3165,8 @@ public class Lexer implements IProblemRequestor {
 				do {
 					v = v * 8 + (c - '0');
 					c = input[++p];
-					if (n + 1 < 3 && Chars.isoctal(c)) {
-						stringBuilder.append((char) c);
-					}
-				} while (++n < 3 && Chars.isoctal(c));
+					// Chars.isoctal inlined
+				} while (++n < 3 && ('0' <= c && c <= '7'));
 				c = v;
 			} else {
 				error("Undefined escape sequence", 
@@ -3181,15 +3179,11 @@ public class Lexer implements IProblemRequestor {
 	
 	private TOK wysiwygStringConstant(Token t, int tc) {
 		int c;
-		
-		stringbuffer.reset();
-		stringbuffer.data.append(input[p]);
 
 	    p++;
 	    while (true)
 	    {
 		c = input[p++];
-		stringbuffer.data.append((char) c);
 		switch (c)
 		{
 		    case '\n':
@@ -3198,7 +3192,6 @@ public class Lexer implements IProblemRequestor {
 
 		    case '\r':
 			if (input[p] == '\n') {
-				stringbuffer.data.append(input[p]);
 			    continue;	// ignore
 			}
 			c = '\n';	// treat EndOfLine as \n character
@@ -3208,7 +3201,6 @@ public class Lexer implements IProblemRequestor {
 		    case 0:
 		    case 0x1A: {
 		    	error("Unterminated string constant", IProblem.UnterminatedStringConstant, token.lineNumber, token.ptr, p - token.ptr - 1);
-				t.string = "";
 				t.len = 0;
 				t.postfix = 0;
 				return TOKstring;
@@ -3218,9 +3210,7 @@ public class Lexer implements IProblemRequestor {
 		    case '`':
 			if (c == tc)
 			{
-			    stringPostfix(t, stringbuffer.data);
-			    t.len = stringbuffer.data.length();
-			    t.string = stringbuffer.data.toString();
+				stringPostfix(t);
 			    return TOKstring;
 			}
 			break;
@@ -3232,7 +3222,6 @@ public class Lexer implements IProblemRequestor {
 			    p++;
 			    if (u == PS || u == LS)
 				newline(NOT_IN_COMMENT);
-			    stringbuffer.writeUTF8(u);
 			    continue;
 			}
 			break;
@@ -3246,12 +3235,9 @@ public class Lexer implements IProblemRequestor {
 	    int v = 0;
 
 	    p++;
-	    stringbuffer.reset();
-	    stringbuffer.data.append("\"");
 	    while (true)
 	    {
 		c = input[p++];
-		stringbuffer.data.append((char) c);
 		switch (c)
 		{
 		    case ' ':
@@ -3262,7 +3248,6 @@ public class Lexer implements IProblemRequestor {
 
 		    case '\r':
 			if (input[p] == '\n') {
-				stringbuffer.data.append(input[p]);
 			    continue;			// ignore
 			}
 			// Treat isolated '\r' as if it were a '\n'
@@ -3273,7 +3258,6 @@ public class Lexer implements IProblemRequestor {
 		    case 0:
 		    case 0x1A: {
 		    	error("Unterminated string constant", IProblem.UnterminatedStringConstant, token.lineNumber, token.ptr, p - token.ptr - 1);
-				t.string = "";
 				t.len = 0;
 				t.postfix = 0;
 				return TOKstring;
@@ -3283,11 +3267,9 @@ public class Lexer implements IProblemRequestor {
 			if ((n & 1) != 0)
 			{   
 				error("Odd number (" + n + ") of hex characters in hex string", IProblem.OddNumberOfCharactersInHexString, token.lineNumber, token.ptr, p - token.ptr);
-			    stringbuffer.writeByte(v);
 			}
-			stringPostfix(t, stringbuffer.data);
-			t.len = stringbuffer.data.length();
-			t.string = stringbuffer.data.toString();
+			stringPostfix(t);
+			t.len = p - t.ptr;
 			return TOKstring;
 
 		    default:
@@ -3325,9 +3307,6 @@ public class Lexer implements IProblemRequestor {
 	private TOK escapeStringConstant(Token t, int wide) {
 		int c;
 	    //Loc start = loc;
-
-		stringbuffer.reset();
-		stringbuffer.data.append(input[p]);
 		
 	    p++;
 	    
@@ -3342,11 +3321,11 @@ public class Lexer implements IProblemRequestor {
 			    case 'u':
 			    case 'U':
 			    case '&':
-				c = escapeSequence(stringbuffer.data);
+				c = escapeSequence();
 				continue;
 
 			    default:
-				c = escapeSequence(stringbuffer.data);
+				c = escapeSequence();
 				break;
 			}
 			break;
@@ -3364,18 +3343,14 @@ public class Lexer implements IProblemRequestor {
 			break;
 
 		    case '"':
-		    	stringbuffer.data.append("\"");
-				stringPostfix(t, stringbuffer.data);
-				t.len = stringbuffer.data.length();
-				t.string = stringbuffer.data.toString();
-			return TOKstring;
+				stringPostfix(t);
+				return TOKstring;
 
 		    case 0:
 		    case 0x1A: {
 				p--;
 				error("Unterminated string constant", IProblem.UnterminatedStringConstant, token.lineNumber, token.ptr, p - token.ptr);
-				
-				t.string = "";
+
 				t.len = 0;
 				t.postfix = 0;
 				return TOKstring;
@@ -3391,47 +3366,41 @@ public class Lexer implements IProblemRequestor {
 			    newline(NOT_IN_COMMENT);
 			    }
 			    p++;
-			    stringbuffer.writeUTF8(c);
 			    continue;
 			}
 			break;
 		}
-		stringbuffer.writeByte(c);
 	    }
 	}
 	
 	private TOK charConstant(Token t, int wide) {
 		int c;
 		TOK tk = TOKcharv;
-		
-		StringBuilder fullChar = new StringBuilder();
-		fullChar.append("'");
 
 		p++;
 		c = input[p++];
-		fullChar.append((char) c);		
 		
 		switch (c) {
 		case '\\':
 			switch (input[p]) {
 			case 'u':
-				escapeSequence(fullChar);
-				t.intValue = BigInteger.valueOf(escapeSequence(fullChar));
+				escapeSequence();
+				t.intValue = BigInteger.valueOf(escapeSequence());
 				tk = TOKwcharv;
 				p--;
 				break;
 
 			case 'U':
 			case '&':
-				t.intValue = BigInteger.valueOf(escapeSequence(fullChar));
-				escapeSequence(fullChar);
+				t.intValue = BigInteger.valueOf(escapeSequence());
+				escapeSequence();
 				tk = TOKdcharv;
 				p--;
 				break;
 
 			default:
-				t.intValue = BigInteger.valueOf(escapeSequence(fullChar));
-				escapeSequence(fullChar);
+				t.intValue = BigInteger.valueOf(escapeSequence());
+				escapeSequence();
 				p--;
 				break;
 			}
@@ -3468,13 +3437,12 @@ public class Lexer implements IProblemRequestor {
 				else
 					tk = TOKdcharv;
 			}
-			fullChar.append("'");
 			break;
 		}
 		
-		t.string = new String(fullChar);
 		t.intValue = BigInteger.valueOf(c);
 		t.len = p - t.ptr + 1;
+		t.setString(input, t.ptr, t.len);
 
 		if (input[p] != '\'') {
 			error("Unterminated character constant", 
@@ -3486,13 +3454,12 @@ public class Lexer implements IProblemRequestor {
 		return tk;
 	}
 	
-	private void stringPostfix(Token t, StringBuilder stringBuilder) {
+	private void stringPostfix(Token t) {
 		switch (input[p])
 	    {
 		case 'c':
 		case 'w':
 		case 'd':
-			stringBuilder.append(input[p]);
 		    t.postfix = input[p];
 		    p++;
 		    break;
@@ -3537,9 +3504,17 @@ public class Lexer implements IProblemRequestor {
 	*/
 	// #endif
 	
-	enum STATE { STATE_initial, STATE_0, STATE_decimal, STATE_octal, STATE_octale,
-		STATE_hex, STATE_binary, STATE_hex0, STATE_binary0,
-		STATE_hexh, STATE_error };
+	private final static int STATE_initial = 1; 
+	private final static int STATE_0 = 2;
+	private final static int STATE_decimal = 3; 
+	private final static int STATE_octal = 4;
+	private final static int STATE_octale = 5;
+	private final static int STATE_hex = 6;
+	private final static int STATE_binary = 7;
+	private final static int STATE_hex0 = 8; 
+	private final static int STATE_binary0 = 9;
+	private final static int STATE_hexh = 10; 
+	private final static int STATE_error = 11;
 		
 	private final static int FLAGS_decimal = 1;
 	private final static int FLAGS_unsigned = 2;
@@ -3548,21 +3523,21 @@ public class Lexer implements IProblemRequestor {
 	private TOK number(Token t) {
 		
 		// We use a state machine to collect numbers
-		STATE state;
-
+		int state;
 		int flags = FLAGS_decimal;
 
 		@SuppressWarnings("unused")
 		int i;
 		@SuppressWarnings("unused")
 		int base;
-		int c;
+		char c;
 		int start;
 		TOK result;
-
-		state = STATE.STATE_initial;
-		base = 0;
+		
 		stringbuffer.reset();
+
+		state = STATE_initial;
+		base = 0;
 		start = p;
 
 	goto_done: 
@@ -3572,9 +3547,9 @@ public class Lexer implements IProblemRequestor {
 			switch (state) {
 			case STATE_initial: // opening state
 				if (c == '0')
-					state = STATE.STATE_0;
+					state = STATE_0;
 				else
-					state = STATE.STATE_decimal;
+					state = STATE_decimal;
 				break;
 
 			case STATE_0:
@@ -3587,7 +3562,7 @@ public class Lexer implements IProblemRequestor {
 				// #endif
 				case 'X':
 				case 'x':
-					state = STATE.STATE_hex0;
+					state = STATE_hex0;
 					break;
 
 				case '.':
@@ -3605,7 +3580,7 @@ public class Lexer implements IProblemRequestor {
 					// #endif
 				case 'B':
 				case 'b':
-					state = STATE.STATE_binary0;
+					state = STATE_binary0;
 					break;
 
 				case '0':
@@ -3616,7 +3591,7 @@ public class Lexer implements IProblemRequestor {
 				case '5':
 				case '6':
 				case '7':
-					state = STATE.STATE_octal;
+					state = STATE_octal;
 					break;
 
 				// #if ZEROH
@@ -3627,7 +3602,7 @@ public class Lexer implements IProblemRequestor {
 				 */
 				// #endif
 				case '_':
-					state = STATE.STATE_octal;
+					state = STATE_octal;
 					writeToStringBuffer = false;
 					break;
 					
@@ -3645,7 +3620,7 @@ public class Lexer implements IProblemRequestor {
 				break;
 
 			case STATE_decimal: // reading decimal number
-				if (!Chars.isdigit(c)) {
+				if (c < '0' || c > '9') {
 					// #if ZEROH
 					/*
 					 * if (Chars.ishex(c) || c == 'H' || c == 'h' ) goto hexh;
@@ -3691,13 +3666,13 @@ public class Lexer implements IProblemRequestor {
 						p = start;
 						return inreal(t);
 					}
-					if (state == STATE.STATE_hex0) {
+					if (state == STATE_hex0) {
 						error("Hex digit expected, not " + (char) c,
 								IProblem.HexDigitExpected, linnum, p, 1);
 					}
 					break goto_done;
 				}
-				state = STATE.STATE_hex;
+				state = STATE_hex;
 				break;
 
 			// #if ZEROH
@@ -3713,7 +3688,8 @@ public class Lexer implements IProblemRequestor {
 			// #endif
 			case STATE_octal: // reading octal number
 			case STATE_octale: // reading octal number with non-octal digits
-				if (!Chars.isoctal(c)) {
+				// !Chars.isoctal inlined
+				if (c < '0' || c > '7') {
 					// #if ZEROH
 					/*
 					 * if (Chars.ishex(c) || c == 'H' || c == 'h' ) goto hexh;
@@ -3732,8 +3708,9 @@ public class Lexer implements IProblemRequestor {
 						p = start;
 						return inreal(t);
 					}
-					if (Chars.isdigit(c)) {
-						state = STATE.STATE_octale;
+					// Chars.isdigit(c) inlined
+					if ('0' <= c && c <= '9') {
+						state = STATE_octale;
 					} else
 						break goto_done;
 				}
@@ -3752,19 +3729,20 @@ public class Lexer implements IProblemRequestor {
 						writeToStringBuffer = false;
 						break;
 					}
-					if (state == STATE.STATE_binary0) {
+					if (state == STATE_binary0) {
 						error("Binary digit expected",
 								IProblem.BinaryDigitExpected, linnum, p, 1);
-						state = STATE.STATE_error;
+						state = STATE_error;
 						break;
 					} else
 						break goto_done;
 				}
-				state = STATE.STATE_binary;
+				state = STATE_binary;
 				break;
 
 			case STATE_error: // for error recovery
-				if (!Chars.isdigit(c)) // scan until non-digit
+				// !Chars.isdigit(c) inlined
+				if (c < '0' || c > '9') // scan until non-digit
 					break goto_done;
 				break;
 
@@ -3772,12 +3750,12 @@ public class Lexer implements IProblemRequestor {
 				throw new IllegalStateException("Can't happen");
 			}
 			if (writeToStringBuffer) {
-				stringbuffer.writeByte(c);
+				stringbuffer.data.append(c);
 			}
 			p++;
 		}
 		
-		if (state == STATE.STATE_octale) {
+		if (state == STATE_octale) {
 			error("Octal digit expected", 
 					IProblem.OctalDigitExpected, linnum, p - 1, 1);
 		}
@@ -3787,7 +3765,7 @@ public class Lexer implements IProblemRequestor {
 		boolean integerOverflow = false;
 
 		if (stringbuffer.data.length() == 2
-				&& (state == STATE.STATE_decimal || state == STATE.STATE_0))
+				&& (state == STATE_decimal || state == STATE_0))
 			n = new BigInteger(String.valueOf(stringbuffer.data.charAt(0) - '0'));
 		else {
 			// Convert string to integer
@@ -3802,9 +3780,13 @@ public class Lexer implements IProblemRequestor {
 				} else if (stringbuffer.data.charAt(1) == 'b' || stringbuffer.data.charAt(1) == 'B') {
 					p = 2;
 					r = 2;
-				} else if (Chars.isdigit(stringbuffer.data.charAt(1))) {
-					p = 1;
-					r = 8;
+				} else {
+					char c2 = stringbuffer.data.charAt(1);
+					// Chars.isdigit inlined
+					if ('0' <= c2 && c2 <= '9') {
+						p = 1;
+						r = 8;
+					}
 				}
 			}
 			
@@ -3935,8 +3917,6 @@ public class Lexer implements IProblemRequestor {
 		int c;
 		int hex; // is this a hexadecimal-floating-constant?
 		TOK result;
-		
-		StringBuilder fullNumber = new StringBuilder();
 
 		stringbuffer.reset();
 		dblstate = 0;
@@ -3967,7 +3947,8 @@ public class Lexer implements IProblemRequestor {
 				case 1: // digits to left of .
 				case 3: // digits to right of .
 				case 7: // continuing exponent digits
-					if (!Chars.isdigit(c) && !(hex != 0 && Chars.ishex(c))) {
+					// !Chars.isdigit inlined
+					if ((c < '0' || c > '9') && !(hex != 0 && Chars.ishex(c))) {
 						if (c == '_') {
 							writeByte = false;
 							break inner_while; // ignore embedded '_'
@@ -4000,7 +3981,8 @@ public class Lexer implements IProblemRequestor {
 					if (c == '-' || c == '+')
 						break;
 				case 6: // 1st exponent digit expected
-					if (!Chars.isdigit(c)) {
+					// !Chars.isdigit inlined
+					if (c < '0' || c > '9') {
 						error("Exponent expected",
 								IProblem.ExponentExpected, linnum, p - 1, 1);
 					}
@@ -4015,7 +3997,6 @@ public class Lexer implements IProblemRequestor {
 			if (writeByte) {
 				stringbuffer.writeByte(c);
 			}
-			fullNumber.append((char) c); 
 		}
 		p--;
 
@@ -4035,7 +4016,6 @@ public class Lexer implements IProblemRequestor {
 			 * #endif
 			 */
 			result = TOKfloat32v;
-			fullNumber.append(input[p]);
 			p++;
 			break;
 
@@ -4055,7 +4035,6 @@ public class Lexer implements IProblemRequestor {
 					linnum, p, 1);
 		case 'L':
 			result = TOKfloat80v;
-			fullNumber.append(input[p]);
 			p++;
 			break;
 		}
@@ -4065,7 +4044,6 @@ public class Lexer implements IProblemRequestor {
 						IProblem.ISuffixDeprecated,
 						linnum, p, 1);
 			}
-			fullNumber.append(input[p]);
 			p++;
 			switch (result) {
 			case TOKfloat32v:
@@ -4118,7 +4096,7 @@ public class Lexer implements IProblemRequestor {
 		} while(stay);
 		t.len = p - t.ptr - (isRN ? 2 : 1);
 		t.value = TOKPRAGMA;
-		t.string = new String(input, t.ptr, t.len);
+		t.setString(input, t.ptr, t.len);
 	}
 	
 	private void whitespace(Token t) {
@@ -4149,7 +4127,7 @@ public class Lexer implements IProblemRequestor {
 		} while(stay);
 		t.len = p - t.ptr;
 		t.value = TOKwhitespace;
-		t.string = new String(input, t.ptr, t.len);
+		t.setString(input, t.ptr, t.len);
 	}
 	
 	private int decodeUTF() {

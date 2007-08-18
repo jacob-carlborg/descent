@@ -162,7 +162,6 @@ public class CompilationUnitResolver extends descent.internal.compiler.Compiler 
 		ASTConverter converter = new ASTConverter(monitor);
 		converter.setAST(module.ast);
 		CompilationUnit result = converter.convert(module);
-		result.setCommentTable(module.comments);
 		result.setPragmaTable(module.pragmas);
 		result.setLineEndTable(module.lineEnds);
 		result.problems = module.problems;

@@ -22,7 +22,7 @@ public class ConsultingMemoryBlock implements IState {
 	}
 
 	public void interpret(String text) throws DebugException, IOException {
-		if ("->".equals(text)) {
+		if ("->".equals(text)) { //$NON-NLS-1$
 			createMemoryBlock();
 			fCli.notifyStateReturn();
 		} else {

@@ -1,5 +1,7 @@
 package descent.tests.mars;
 
+import java.math.BigInteger;
+
 import junit.framework.TestCase;
 import descent.core.dom.AST;
 import descent.internal.compiler.parser.Lexer;
@@ -188,7 +190,7 @@ public class Lexer_Test extends TestCase {
 	private void assertCharToken(String s, TOK t, int start, int len) {
 		Lexer lexer = new Lexer(s, true, true, false, true, AST.D1);
 		assertEquals(t, lexer.nextToken());
-		assertEquals(s.trim(), lexer.token.string);
+		assertEquals(s.trim(), new String(lexer.token.string));
 		assertEquals(start, lexer.token.ptr);
 		assertEquals(len, lexer.token.len);
 		assertEquals(0, lexer.problems.size());
@@ -197,7 +199,7 @@ public class Lexer_Test extends TestCase {
 	private void assertStringToken(String s, int start, int len) {
 		Lexer lexer = new Lexer(s, true, true, false, true, AST.D1);
 		assertEquals(TOK.TOKstring, lexer.nextToken());
-		assertEquals(s.trim(), lexer.token.string);
+		assertEquals(s.trim(), new String(lexer.token.string));
 		assertEquals(start, lexer.token.ptr);
 		assertEquals(len, lexer.token.len);
 		assertEquals(0, lexer.problems.size());
@@ -206,8 +208,8 @@ public class Lexer_Test extends TestCase {
 	private void assertInt32Token(String s, int value, int start, int len) {
 		Lexer lexer = new Lexer(s, true, true, false, true, AST.D1);
 		assertEquals(TOK.TOKint32v, lexer.nextToken());
-		//assertEquals(BigInteger.valueOf(value), lexer.token.numberValue);
-		assertEquals(s.trim(), lexer.token.string);
+		assertEquals(BigInteger.valueOf(value), lexer.token.intValue);
+		assertEquals(s.trim(), new String(lexer.token.string));
 		assertEquals(start, lexer.token.ptr);
 		assertEquals(len, lexer.token.len);
 		assertEquals(0, lexer.problems.size());
@@ -216,8 +218,8 @@ public class Lexer_Test extends TestCase {
 	private void assertUns32Token(String s, int value, int start, int len) {
 		Lexer lexer = new Lexer(s, true, true, false, true, AST.D1);
 		assertEquals(TOK.TOKuns32v, lexer.nextToken());
-		//assertEquals(BigInteger.valueOf(value), lexer.token.numberValue);
-		assertEquals(s.trim(), lexer.token.string);
+		assertEquals(BigInteger.valueOf(value), lexer.token.intValue);
+		assertEquals(s.trim(), new String(lexer.token.string));
 		assertEquals(start, lexer.token.ptr);
 		assertEquals(len, lexer.token.len);
 		assertEquals(0, lexer.problems.size());
@@ -227,7 +229,7 @@ public class Lexer_Test extends TestCase {
 		Lexer lexer = new Lexer(s, true, true, false, true, AST.D1);
 		assertEquals(TOK.TOKint64v, lexer.nextToken());
 		//assertEquals(BigInteger.valueOf(value), lexer.token.numberValue);
-		assertEquals(s.trim(), lexer.token.string);
+		assertEquals(s.trim(), new String(lexer.token.string));
 		assertEquals(start, lexer.token.ptr);
 		assertEquals(len, lexer.token.len);
 		assertEquals(0, lexer.problems.size());
@@ -247,7 +249,7 @@ public class Lexer_Test extends TestCase {
 		assertEquals(start, lexer.token.ptr);
 		assertEquals(len, lexer.token.len);
 		assertEquals(special, lexer.token.special);
-		assertEquals(string.trim(), lexer.token.string);
+		assertEquals(string.trim(), new String(lexer.token.string));
 		assertEquals(0, lexer.problems.size());
 	}
 

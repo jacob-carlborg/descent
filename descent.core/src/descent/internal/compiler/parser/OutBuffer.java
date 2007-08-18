@@ -15,7 +15,7 @@ public class OutBuffer {
 	}
 
 	public void reset() {
-		data.delete(0, data.length());
+		data.setLength(0);
 	}
 
 	public void writeByte(int b) {
@@ -23,7 +23,7 @@ public class OutBuffer {
 	}
 	
 	public void writeByte(char b) {
-		data.append((char) b);
+		data.append(b);
 	}
 	
 	public void printf(String s) {

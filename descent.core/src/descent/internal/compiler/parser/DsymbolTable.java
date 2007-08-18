@@ -1,11 +1,8 @@
 package descent.internal.compiler.parser;
 
-import java.util.HashMap;
-import java.util.Map;
-
 public class DsymbolTable {
 	
-	private Map<String, Dsymbol> map = new HashMap<String, Dsymbol>();
+	private HashtableOfCharArrayAndObject map = new HashtableOfCharArrayAndObject();
 	
 	public Dsymbol insert(Dsymbol dsymbol) {
 		if (map.containsKey(dsymbol.ident.ident)) {
@@ -16,11 +13,11 @@ public class DsymbolTable {
 	}
 
 	public Dsymbol lookup(IdentifierExp ident) {
-		return map.get(ident.ident);
+		return (Dsymbol) map.get(ident.ident);
 	}
 	
-	public Dsymbol lookup(String ident) {
-		return map.get(ident);
+	public Dsymbol lookup(char[] ident) {
+		return (Dsymbol) map.get(ident);
 	}
 
 }

@@ -10,6 +10,7 @@ import static descent.internal.compiler.parser.TY.Ttuple;
 
 import org.eclipse.core.runtime.Assert;
 
+import descent.core.compiler.CharOperation;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
 public class ArrayScopeSymbol extends ScopeDsymbol {
@@ -59,8 +60,8 @@ public class ArrayScopeSymbol extends ScopeDsymbol {
 	}
 
 	@Override
-	public Dsymbol search(Loc loc, String ident, int flags, SemanticContext context) {
-		if (ident.equals(Id.length.string) || ident.equals(Id.dollar.string)) {
+	public Dsymbol search(Loc loc, char[] ident, int flags, SemanticContext context) {
+		if (CharOperation.equals(ident, Id.length) || CharOperation.equals(ident, Id.dollar)) {
 			Expression pvar;
 			Expression ce;
 

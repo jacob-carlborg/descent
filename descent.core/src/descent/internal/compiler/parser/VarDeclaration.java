@@ -15,6 +15,7 @@ import melnorme.miscutil.tree.TreeVisitor;
 
 import org.eclipse.core.runtime.Assert;
 
+import descent.core.compiler.CharOperation;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
@@ -40,7 +41,7 @@ public class VarDeclaration extends Declaration {
 
 	// (NULL if value not determinable)
 
-	public VarDeclaration(Loc loc, Type type, String ident, Initializer init) {
+	public VarDeclaration(Loc loc, Type type, char[] ident, Initializer init) {
 		this(loc, type, new IdentifierExp(Loc.ZERO, ident), init);
 	}
 	
@@ -282,7 +283,7 @@ public class VarDeclaration extends Declaration {
 				buf.data.append("_").append(ident.ident).append(
 						"_field_").append(i).append("u");
 				String name = buf.extractData();
-				IdentifierExp id = new IdentifierExp(loc, name);
+				IdentifierExp id = new IdentifierExp(loc, name.toCharArray());
 
 				VarDeclaration v = new VarDeclaration(loc, arg.type, id, null);
 				v.semantic(sc, context);
@@ -368,7 +369,7 @@ public class VarDeclaration extends Declaration {
 
 			if ((storage_class & (STC.STCauto | STC.STCscope)) == 0) {
 				if ((storage_class & STC.STCparameter) == 0
-						&& ident.ident.equals(Id.withSym.string)) {
+						&& CharOperation.equals(ident.ident, Id.withSym)) {
 					error("reference to auto class must be auto");
 				}
 			}
@@ -382,7 +383,7 @@ public class VarDeclaration extends Declaration {
 				&& (storage_class & (STC.STCfield | STC.STCin | STC.STCforeach)) == 0) {
 			// Provide a default initializer
 			if (type.ty == TY.Tstruct && ((TypeStruct) type).sym.zeroInit) {
-				Expression e = new IntegerExp(loc, "0", BigInteger.ZERO, Type.tint32);
+				Expression e = new IntegerExp(loc, Id.ZERO, BigInteger.ZERO, Type.tint32);
 				Expression e1;
 				e1 = new VarExp(loc, this);
 				e = new AssignExp(loc, e1, e);
@@ -468,7 +469,7 @@ public class VarDeclaration extends Declaration {
 										.intValue();
 							}
 							e1.type = new TypeSArray(t.next, new IntegerExp(loc, 
-									"0", dim, Type.tindex));
+									Id.ZERO, dim, Type.tindex));
 						}
 						e1 = new SliceExp(loc, e1, null, null);
 					} else if (t.ty == TY.Tstruct) {

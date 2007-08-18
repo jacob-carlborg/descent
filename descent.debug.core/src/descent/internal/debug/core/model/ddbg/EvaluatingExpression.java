@@ -16,7 +16,7 @@ public class EvaluatingExpression implements IState {
 	}
 
 	public void interpret(String text) throws DebugException, IOException {
-		if (text.equals("->")) {
+		if (text.equals("->")) { //$NON-NLS-1$
 			fCli.notifyStateReturn();
 		} else {
 			parseVariable(text);
@@ -26,12 +26,12 @@ public class EvaluatingExpression implements IState {
 	private void parseVariable(String text) {
 		text = text.trim();
 		
-		if ("{".equals(text)) {
+		if ("{".equals(text)) { //$NON-NLS-1$
 			fVariable = new DdbgVariable(fExpression);
 			return;
 		}
 		
-		if ("}".equals(text) || "},".equals(text)) {
+		if ("}".equals(text) || "},".equals(text)) { //$NON-NLS-1$ //$NON-NLS-2$
 			if (fVariable.getParent() != null) {
 				fVariable = fVariable.getParent();
 			}
@@ -49,7 +49,7 @@ public class EvaluatingExpression implements IState {
 		
 		boolean nameIsBase = name.indexOf('.') != -1;
 		
-		if ("{".equals(value)) {
+		if ("{".equals(value)) { //$NON-NLS-1$
 			DdbgVariable newVariable = new DdbgVariable(name, null);
 			newVariable.setIsBase(nameIsBase);
 			if (fVariable != null) {
@@ -66,7 +66,7 @@ public class EvaluatingExpression implements IState {
 			
 			DdbgVariable newVariable;
 			
-			if ("...".equals(value)) {
+			if ("...".equals(value)) { //$NON-NLS-1$
 				newVariable = new DdbgVariable(name);
 				newVariable.setLazy(true);
 				newVariable.setIsBase(nameIsBase);

@@ -33,7 +33,7 @@ public class FileExp extends UnaExp {
 	@Override
 	public Expression semantic(Scope sc, SemanticContext context)
 	{
-		String name;
+		char[] name;
 	    StringExp se;
 	    
 	    super.semantic(sc, context);
@@ -42,7 +42,7 @@ public class FileExp extends UnaExp {
 	    if (e1.op != TOK.TOKstring)
 	    {
 	    	error("file name argument must be a string, not (%s)", e1.toChars());
-			se = new StringExp(loc, "");
+			se = new StringExp(loc, Id.empty);
 			return se.semantic(sc, context);
 	    }
 	    
@@ -86,7 +86,7 @@ public class FileExp extends UnaExp {
 	    */
 	    
 	    /* TODO file imoorts */
-	    se = new StringExp(loc, "");
+	    se = new StringExp(loc, Id.empty);
 		return se.semantic(sc, context);
 	}
 }

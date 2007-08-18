@@ -27,17 +27,18 @@ public class IntegerExp extends Expression {
 	private final static BigInteger N_0x10FFFF = new BigInteger("10FFFF", 16);
 	private final static BigInteger N_SLASH_SLASH = new BigInteger("197");
 
-	public String str;
+	public char[] str;
 	public BigInteger value;
 
 	public IntegerExp(Loc loc, BigInteger value) {
-		this(loc, value.toString(), value, Type.tint32);
+		this(loc, value.toString().toCharArray(), value, Type.tint32);
 	}
 
 	public IntegerExp(Loc loc, BigInteger value, Type type) {
 		this(loc, null, value, type);
 	}
 
+	// TODO remove this constructor
 	public IntegerExp(Loc loc, int value) {
 		this(loc, new BigInteger(String.valueOf(value)));
 	}
@@ -46,14 +47,14 @@ public class IntegerExp extends Expression {
 		this(loc, new BigInteger(String.valueOf(value)), type);
 	}
 
-	public IntegerExp(Loc loc, String str, BigInteger value, Type type) {
+	public IntegerExp(Loc loc, char[] str, BigInteger value, Type type) {
 		super(loc, TOK.TOKint64);
 		this.str = str;
 		this.value = value;
 		this.type = type;
 	}
 
-	public IntegerExp(Loc loc, String str, int value, Type type) {
+	public IntegerExp(Loc loc, char[] str, int value, Type type) {
 		this(loc, str, new BigInteger(String.valueOf(value)), type);
 	}
 	
@@ -404,7 +405,7 @@ public class IntegerExp extends Expression {
 
 	@Override
 	public String toChars() {
-		return str;
+		return new String(str).intern();
 	}
 
 	@Override

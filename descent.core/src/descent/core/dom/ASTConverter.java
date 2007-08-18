@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 
+import descent.core.compiler.CharOperation;
 import descent.core.dom.FunctionLiteralDeclarationExpression.Syntax;
 import descent.core.dom.IsTypeSpecializationExpression.TypeSpecialization;
 import descent.core.dom.Modifier.ModifierKeyword;
@@ -70,6 +71,8 @@ public class ASTConverter {
 	protected AST ast;
 	protected IProgressMonitor monitor;
 	
+	private Comment[] moduleComments;
+	
 	public ASTConverter(IProgressMonitor monitor) {
 		this.monitor = monitor;
 	}
@@ -80,11 +83,15 @@ public class ASTConverter {
 	
 	public CompilationUnit convert(Module module) {
 		CompilationUnit unit = new CompilationUnit(ast);
+		
+		moduleComments = convertComments(module.comments);
+		unit.setCommentTable(moduleComments);
+		
 		if (module.md != null) {
 			unit.setModuleDeclaration(convert(module.md));
 		}
 		convertDeclarations(unit.declarations(), module.members);
-		unit.setSourceRange(module.start, module.length);
+		unit.setSourceRange(module.start, module.length);		
 		return unit;
 	}
 	
@@ -92,10 +99,10 @@ public class ASTConverter {
 		descent.core.dom.ModuleDeclaration result = new descent.core.dom.ModuleDeclaration(ast);
 		result.setName(convert(md.packages, md.id));
 		if (md.preDdocs != null) {
-			result.preDDocs().addAll(md.preDdocs);
+			convertDdoc(result.preDDocs(), md.preDdocs);
 		}
 		if (md.postDdoc != null) {
-			result.setPostDDoc(md.postDdoc);
+			result.setPostDDoc(convertDdoc(md.postDdoc));
 		}
 		result.setSourceRange(md.start, md.length);
 		return result;
@@ -493,8 +500,12 @@ public class ASTConverter {
 					insertAt = 0;
 				}
 				decl.modifiers().add(insertAt, modifier);
-				decl.preDDocs().addAll(a.preDdocs);
-				decl.postDDoc = a.postDdoc;
+				if (a.preDdocs != null) {
+					convertDdoc(decl.preDDocs(), a.preDdocs);
+				}
+				if (a.postDdoc != null) {
+					decl.postDDoc = convertDdoc(a.postDdoc);
+				}
 				
 				decl.setSourceRange(a.start, a.length);
 				toAdd.add(decl);
@@ -1188,7 +1199,10 @@ public class ASTConverter {
 	public descent.core.dom.InvariantDeclaration convert(InvariantDeclaration a) {
 		descent.core.dom.InvariantDeclaration b = new descent.core.dom.InvariantDeclaration(ast);
 		if (a.fbody != null) {
-			b.setBody((Block) convert(a.fbody));
+			descent.core.dom.Statement convertedBody = convert(a.fbody);
+			if (convertedBody instanceof Block) {
+				b.setBody((Block) convertedBody);
+			}
 		}
 		fillDeclaration(b, a);
 		b.setSourceRange(a.start, a.length);
@@ -1501,10 +1515,10 @@ public class ASTConverter {
 	public void fillDeclaration(descent.core.dom.Declaration b, ASTDmdNode a) {
 		convertModifiers(b.modifiers(), a.modifiers);
 		if (a.preDdocs != null) {
-			b.preDDocs().addAll(a.preDdocs);
+			convertDdoc(b.preDDocs(), a.preDdocs);
 		}
 		if (a.postDdoc != null) {
-			b.setPostDDoc(a.postDdoc);
+			b.setPostDDoc(convertDdoc(a.postDdoc));
 		}
 	}
 	
@@ -1636,7 +1650,7 @@ public class ASTConverter {
 				DebugCondition cond = (DebugCondition) a.condition;
 				DebugDeclaration b = new DebugDeclaration(ast);
 				if (cond.id != null) {
-					descent.core.dom.Version version = ast.newVersion(cond.id.string);
+					descent.core.dom.Version version = ast.newVersion(new String(cond.id.string));
 					version.setSourceRange(cond.id.startPosition, cond.id.length);
 					b.setVersion(version);
 				}
@@ -1687,7 +1701,7 @@ public class ASTConverter {
 				VersionCondition cond = (VersionCondition) a.condition;
 				VersionDeclaration b = new VersionDeclaration(ast);
 				if (cond.id != null) {
-					descent.core.dom.Version version = ast.newVersion(cond.id.string);
+					descent.core.dom.Version version = ast.newVersion(new String(cond.id.string));
 					version.setSourceRange(cond.id.startPosition, cond.id.length);
 					b.setVersion(version);
 				}
@@ -1710,7 +1724,7 @@ public class ASTConverter {
 				DebugCondition cond = (DebugCondition) a.condition;
 				DebugStatement b = new DebugStatement(ast);
 				if (cond.id != null) {
-					descent.core.dom.Version version = ast.newVersion(cond.id.string);
+					descent.core.dom.Version version = ast.newVersion(new String(cond.id.string));
 					version.setSourceRange(cond.id.startPosition, cond.id.length);
 					b.setVersion(version);
 				}
@@ -1761,7 +1775,7 @@ public class ASTConverter {
 				VersionCondition cond = (VersionCondition) a.condition;
 				VersionStatement b = new VersionStatement(ast);
 				if (cond.id != null) {
-					descent.core.dom.Version version = ast.newVersion(cond.id.string);
+					descent.core.dom.Version version = ast.newVersion(new String(cond.id.string));
 					version.setSourceRange(cond.id.startPosition, cond.id.length);
 					b.setVersion(version);
 				}
@@ -1822,7 +1836,7 @@ public class ASTConverter {
 	
 	public descent.core.dom.Version convert(Version a) {
 		descent.core.dom.Version b = new descent.core.dom.Version(ast);
-		b.setValue(a.value);
+		b.setValue(new String(a.value));
 		b.setSourceRange(a.start, a.length);
 		return b;
 	}
@@ -2230,12 +2244,12 @@ public class ASTConverter {
 			return b;
 		} else if (a.type == Type.tchar || a.type == Type.twchar || a.type == Type.tdchar) {
 			CharacterLiteral b = new CharacterLiteral(ast);
-			b.internalSetEscapedValue(a.str);
+			b.internalSetEscapedValue(new String(a.str));
 			b.setSourceRange(a.start, a.length);
 			return b;
 		} else {
 			descent.core.dom.NumberLiteral b = new descent.core.dom.NumberLiteral(ast);
-			b.internalSetToken(a.str);
+			b.internalSetToken(new String(a.str));
 			b.setSourceRange(a.start, a.length);
 			return b;
 		}
@@ -2243,7 +2257,7 @@ public class ASTConverter {
 	
 	public descent.core.dom.NumberLiteral convert(RealExp a) {
 		descent.core.dom.NumberLiteral b = new descent.core.dom.NumberLiteral(ast);
-		b.internalSetToken(a.str);
+		b.internalSetToken(new String(a.str));
 		b.setSourceRange(a.start, a.length);
 		return b;
 	}
@@ -2268,7 +2282,7 @@ public class ASTConverter {
 	
 	public descent.core.dom.StringLiteral convert(StringExp a) {
 		descent.core.dom.StringLiteral b = new descent.core.dom.StringLiteral(ast);
-		b.internalSetEscapedValue(a.string);
+		b.internalSetEscapedValue(new String(a.string));
 		b.setSourceRange(a.start, a.length);
 		return b;
 	}
@@ -2284,7 +2298,7 @@ public class ASTConverter {
 	
 	public descent.core.dom.Type convert(TypeIdentifier a) {
 		descent.core.dom.SimpleType b;
-		if (a.ident != null && !a.ident.ident.equals(Id.empty.string)) {
+		if (a.ident != null && !CharOperation.equals(a.ident.ident, Id.empty)) {
 			b = new descent.core.dom.SimpleType(ast);
 			b.setName(convert(a.ident));
 			b.setSourceRange(a.ident.start, a.ident.length);
@@ -2505,7 +2519,7 @@ public class ASTConverter {
 						}
 						convertModifiers(b.modifiers(), a.modifiers);
 						if (a.postDdoc != null) {
-							b.setPostDDoc(a.postDdoc);
+							b.setPostDDoc(convertDdoc(a.postDdoc));
 						}
 						first = false;
 					}
@@ -2516,7 +2530,7 @@ public class ASTConverter {
 					b.fragments().add(convert(a));
 					if (i == source.size() - 1) {
 						if (a.preDdocs != null) {
-							b.preDDocs().addAll(a.preDdocs);
+							convertDdoc(b.preDDocs(), a.preDdocs);
 						}
 						break;
 					}
@@ -2548,7 +2562,7 @@ public class ASTConverter {
 						}
 						convertModifiers(b.modifiers(), a.modifiers);
 						if (a.postDdoc != null) {
-							b.setPostDDoc(a.postDdoc);
+							b.setPostDDoc(convertDdoc(a.postDdoc));
 						}
 						first = false;
 					}
@@ -2559,7 +2573,7 @@ public class ASTConverter {
 					b.fragments().add(convert(a));
 					if (i == source.size() - 1) {
 						if (a.preDdocs != null) {
-							b.preDDocs().addAll(a.preDdocs);
+							convertDdoc(b.preDDocs(), a.preDdocs);
 						}
 						break;
 					}
@@ -2591,7 +2605,7 @@ public class ASTConverter {
 						}
 						convertModifiers(b.modifiers(), a.modifiers);
 						if (a.postDdoc != null) {
-							b.setPostDDoc(a.postDdoc);
+							b.setPostDDoc(convertDdoc(a.postDdoc));
 						}
 						first = false;
 					}
@@ -2602,7 +2616,7 @@ public class ASTConverter {
 					b.fragments().add(convert(a));
 					if (i == source.size() - 1) {
 						if (a.preDdocs != null) {
-							b.preDDocs().addAll(a.preDdocs);
+							convertDdoc(b.preDDocs(), a.preDdocs);
 						}
 						break;
 					}
@@ -2702,10 +2716,10 @@ public class ASTConverter {
 	}
 	
 	public descent.core.dom.SimpleName convert(IdentifierExp a) {
-		if (a.ident.equals(Id.empty.string)) return null;
+		if (CharOperation.equals(a.ident, Id.empty)) return null;
 		
 		descent.core.dom.SimpleName b = new descent.core.dom.SimpleName(ast);
-		b.internalSetIdentifier(a.ident);
+		b.internalSetIdentifier(new String(a.ident));
 		b.setSourceRange(a.start, a.length);
 		return b;
 	}
@@ -2718,7 +2732,7 @@ public class ASTConverter {
 		
 		for(int i = 0; i < ids.size(); i++) {
 			IdentifierExp id = ids.get(i);
-			if (id == null || (id.ident != null && id.ident.equals(Id.empty.string))) continue;
+			if (id == null || (id.ident != null && CharOperation.equals(id.ident, Id.empty))) continue;
 			
 			descent.core.dom.Type second;
 			if (i == ids.size() - 1) {
@@ -2813,6 +2827,57 @@ public class ASTConverter {
 	
 	public descent.core.dom.TemplateParameter convert(descent.internal.compiler.parser.TemplateParameter type) {
 		return (descent.core.dom.TemplateParameter) convert((ASTDmdNode) type);
+	}
+	
+	public void convertDdoc(List<descent.core.dom.DDocComment> to,  List<descent.internal.compiler.parser.Comment> from) {
+		for(descent.internal.compiler.parser.Comment a : from) {
+			to.add(convertDdoc(a));
+		}
+	}
+	
+	public descent.core.dom.DDocComment convertDdoc(descent.internal.compiler.parser.Comment a) {
+		return (DDocComment) moduleComments[a.index];
+	}
+	
+	public descent.core.dom.Comment[] convertComments(descent.internal.compiler.parser.Comment[] from) {
+		descent.core.dom.Comment[] comments = new descent.core.dom.Comment[from.length];
+		for(int i = 0; i < from.length; i++) {
+			from[i].index = i;
+			comments[i] = convertComment(from[i]);
+		}
+		return comments;
+	}
+	
+	public descent.core.dom.Comment convertComment(descent.internal.compiler.parser.Comment a) {
+		Comment b = null;
+		switch(a.kind) {
+		case descent.internal.compiler.parser.Comment.LINE_COMMENT:
+			b = ast.newCodeComment();
+			b.setKind(Comment.Kind.LINE_COMMENT); 
+			break;
+		case descent.internal.compiler.parser.Comment.PLUS_COMMENT:
+			b = ast.newCodeComment();
+			b.setKind(Comment.Kind.PLUS_COMMENT); 
+			break;
+		case descent.internal.compiler.parser.Comment.BLOCK_COMMENT:
+			b = ast.newCodeComment();
+			b.setKind(Comment.Kind.BLOCK_COMMENT); 
+			break;
+		case descent.internal.compiler.parser.Comment.DOC_LINE_COMMENT:
+			b = ast.newDDocComment(new String(a.string));
+			b.setKind(Comment.Kind.LINE_COMMENT); 
+			break;
+		case descent.internal.compiler.parser.Comment.DOC_PLUS_COMMENT:
+			b = ast.newDDocComment(new String(a.string));
+			b.setKind(Comment.Kind.PLUS_COMMENT); 
+			break;
+		case descent.internal.compiler.parser.Comment.DOC_BLOCK_COMMENT:
+			b = ast.newDDocComment(new String(a.string));
+			b.setKind(Comment.Kind.BLOCK_COMMENT); 
+			break;
+		}
+		b.setSourceRange(a.start, a.length);
+		return b;
 	}
 
 }

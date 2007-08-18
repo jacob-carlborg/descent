@@ -41,7 +41,7 @@ public class TypeBasic extends Type {
 
 	@Override
 	public Expression defaultInit(SemanticContext context) {
-		BigInteger value = BigInteger.ZERO;
+		BigInteger value;
 
 		switch (ty) {
 		case Tchar:
@@ -62,9 +62,11 @@ public class TypeBasic extends Type {
 		case Tcomplex32:
 		case Tcomplex64:
 		case Tcomplex80:
-			return getProperty(Loc.ZERO, Id.nan.string, context);
+			return getProperty(Loc.ZERO, Id.nan, context);
+		default:
+			return new IntegerExp(Loc.ZERO, Id.ZERO, BigInteger.ZERO, this);
 		}
-		return new IntegerExp(Loc.ZERO, value.toString(), value, this);
+		return new IntegerExp(Loc.ZERO, value.toString().toCharArray(), value, this);
 	}
 
 	@Override

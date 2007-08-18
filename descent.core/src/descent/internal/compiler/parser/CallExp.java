@@ -32,6 +32,7 @@ import melnorme.miscutil.tree.TreeVisitor;
 
 import org.eclipse.core.runtime.Assert;
 
+import descent.core.compiler.CharOperation;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
 public class CallExp extends UnaExp {
@@ -112,7 +113,7 @@ public class CallExp extends UnaExp {
 			Assert.isNotNull(dotid.e1);
 			if (dotid.e1.type != null) {
 				TY e1ty = dotid.e1.type.toBasetype(context).ty;
-				if (e1ty == Taarray && dotid.ident.ident.equals(Id.remove.string)) {
+				if (e1ty == Taarray && CharOperation.equals(dotid.ident.ident, Id.remove)) {
 					if (arguments == null || arguments.size() != 1) {
 						error("expected key as argument to aa.remove()");
 						// goto Lagain;
@@ -200,7 +201,7 @@ public class CallExp extends UnaExp {
 				}
 				// L1:
 				// Rewrite as e1.call(arguments)
-				Expression e = new DotIdExp(loc, e1, new IdentifierExp(loc, Id.call.string));
+				Expression e = new DotIdExp(loc, e1, new IdentifierExp(loc, Id.call));
 				e = new CallExp(loc, e, arguments);
 				e = e.semantic(sc, context);
 				return e;

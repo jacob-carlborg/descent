@@ -8,6 +8,7 @@ import melnorme.miscutil.tree.TreeVisitor;
 
 import org.eclipse.core.runtime.Assert;
 
+import descent.core.compiler.CharOperation;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
@@ -52,7 +53,7 @@ public class PragmaDeclaration extends AttribDeclaration {
 		// merged with
 		// PragmaStatement
 
-		if (ident.ident.equals(Id.msg.string)) {
+		if (CharOperation.equals(ident.ident, Id.msg)) {
 			if (args != null) {
 				for (int i = 0; i < args.size(); i++) {
 					Expression e = args.get(i);
@@ -81,7 +82,7 @@ public class PragmaDeclaration extends AttribDeclaration {
 						"pragma".length()));
 			}
 			return;
-		} else if (ident.ident.equals(Id.lib.string)) {
+		} else if (CharOperation.equals(ident.ident, Id.lib)) {
 			if (args == null || args.size() != 1) {
 				context
 						.acceptProblem(Problem

@@ -45,7 +45,7 @@ public class AssignExp extends BinExp {
 	    	Type t1;
 			ArrayExp ae = (ArrayExp) e1;
 			AggregateDeclaration ad;
-			Identifier id = Id.index;
+			char[] id = Id.index;
 	
 			ae.e1 = ae.e1.semantic(sc, context);
 			t1 = ae.e1.type.toBasetype(context);
@@ -62,7 +62,7 @@ public class AssignExp extends BinExp {
 				}
 				
 			    // Rewrite (a[i] = value) to (a.opIndexAssign(value, i))
-			    if(null != search_function(ad, Id.indexass.string, context))
+			    if(null != search_function(ad, Id.indexass, context))
 			    {
 			    	Expression e = new DotIdExp(loc, ae.e1, 
 			    			new IdentifierExp(Loc.ZERO, Id.indexass));
@@ -77,7 +77,7 @@ public class AssignExp extends BinExp {
 			    else
 			    {
 					// Rewrite (a[i] = value) to (a.opIndex(i, value))
-					if(null != search_function(ad, id.string, context))
+					if(null != search_function(ad, id, context))
 					{
 						Expression e = new DotIdExp(loc, ae.e1, 
 								new IdentifierExp(Loc.ZERO, id));
@@ -101,7 +101,7 @@ public class AssignExp extends BinExp {
 	    	Type t1;
 			SliceExp ae = (SliceExp) e1;
 			AggregateDeclaration ad;
-			Identifier id = Id.index;
+			char[] id = Id.index;
 	
 			ae.e1 = ae.e1.semantic(sc, context);
 			ae.e1 = resolveProperties(sc, ae.e1, context);
@@ -120,7 +120,7 @@ public class AssignExp extends BinExp {
 				}
 				
 			    // Rewrite (a[i..j] = value) to (a.opIndexAssign(value, i, j))
-			    if(null != search_function(ad, Id.sliceass.string, context))
+			    if(null != search_function(ad, Id.sliceass, context))
 			    {
 			    	Expression e = new DotIdExp(loc, ae.e1, 
 			    			new IdentifierExp(Loc.ZERO, Id.sliceass));

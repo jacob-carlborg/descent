@@ -8,7 +8,7 @@ import descent.internal.compiler.parser.ast.IASTVisitor;
  */
 public class IdentifierExp extends Expression {
 
-	public String ident;
+	public char[] ident;
 
 	public IdentifierExp(Loc loc) {
 		super(loc, TOK.TOKidentifier);
@@ -24,6 +24,8 @@ public class IdentifierExp extends Expression {
 	public IdentifierExp(Loc loc, Identifier ident) {
 		this(loc);
 		this.ident = ident.string;
+		this.start = ident.startPosition;
+		this.length = ident.length;
 	}
 
 	public IdentifierExp(Loc loc, Token token) {
@@ -33,7 +35,7 @@ public class IdentifierExp extends Expression {
 		this.length = token.len;
 	}
 	
-	public IdentifierExp(Loc loc, String ident) {
+	public IdentifierExp(Loc loc, char[] ident) {
 		this(loc);
 		this.ident = ident;
 	}
@@ -127,7 +129,7 @@ public class IdentifierExp extends Expression {
 			}
 			return e.semantic(sc, context);
 		}
-		context.acceptProblem(Problem.newSemanticTypeError(ident
+		context.acceptProblem(Problem.newSemanticTypeError(new String(ident)
 				+ " cannot be resolved", IProblem.UndefinedIdentifier, 0,
 				start, length));
 		type = Type.terror;
@@ -148,7 +150,7 @@ public class IdentifierExp extends Expression {
 
 	@Override
 	public String toChars() {
-		return ident;
+		return new String(ident).intern();
 	}
 
 	@Override

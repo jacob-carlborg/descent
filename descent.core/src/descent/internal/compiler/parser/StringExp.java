@@ -16,20 +16,20 @@ import descent.internal.compiler.parser.ast.IASTVisitor;
 
 public class StringExp extends Expression {
 
-	public String string;
+	public char[] string;
 	public char postfix;
 	public char sz; // 1: char, 2: wchar, 4: dchar
 	public boolean committed; // !=0 if type is committed
 	public int len;
 
-	public StringExp(Loc loc, String string) {
+	public StringExp(Loc loc, char[] string) {
 		super(loc, TOK.TOKstring);
 		this.sz = 1;
 		this.committed = false;
 		this.postfix = 0;
 	}
 
-	public StringExp(Loc loc, String string, char postfix) {
+	public StringExp(Loc loc, char[] string, char postfix) {
 		super(loc, TOK.TOKstring);
 		this.string = string;
 		this.sz = 1;

@@ -4,7 +4,6 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 
 import descent.core.compiler.CharOperation;
-import descent.core.dom.DDocComment;
 
 
 public class Token {
@@ -20,13 +19,13 @@ public class Token {
 	public Token next;
 	public int ptr; // The start position of the token
 	public TOK value;
-	public String string; // the string value of the token, if any
+	public char[] string; // the string value of the token, if any
 	public int len; // The length of the token
 	public int postfix;
 	public BigInteger intValue;
 	public BigDecimal floatValue;
 	public int lineNumber;
-	public DDocComment leadingComment;
+	public Comment leadingComment;
 	public int special;
 	
 	//private static int instances = 0;
@@ -64,6 +63,11 @@ public class Token {
 		to.leadingComment = from.leadingComment;
 	}
 	
+	public void setString(char[] input, int start, int length) {
+		this.string = new char[length];
+		System.arraycopy(input, start, this.string, 0, length);
+	}
+	
 	@Override
 	public String toString() {
 		return getRawTokenSourceAsString();
@@ -96,9 +100,8 @@ public class Token {
 			case TOKdocpluscomment:
 			case TOKwhitespace:
 			case TOKPRAGMA:
-				return string.toCharArray();
 			case TOKidentifier:
-				return string.toCharArray();
+				return string;
 			default:
 				return value.charArrayValue;
 		}		
@@ -131,9 +134,9 @@ public class Token {
 		case TOKdocpluscomment:
 		case TOKwhitespace:
 		case TOKPRAGMA:
-			return string;
+			return new String(string);
 		case TOKidentifier:
-			return string;
+			return new String(string);
 		default:
 			return value.value;
 	}	

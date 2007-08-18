@@ -60,7 +60,7 @@ public class DescentStackFrame extends DescentDebugElement implements IStackFram
 		StringBuilder sb = new StringBuilder();
 		sb.append(fName);
 		if (fLineNumber != -1) {
-			sb.append(": line ");
+			sb.append(": line "); //$NON-NLS-1$
 			sb.append(fLineNumber);
 		}
 		return sb.toString();

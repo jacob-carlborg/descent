@@ -23,7 +23,7 @@ public class ConsultingRegisters implements IState {
 	}
 	
 	public void interpret(String text) throws DebugException, IOException {
-		if (text.equals("->")) {
+		if (text.equals("->")) { //$NON-NLS-1$
 			fRegisters.add(fCli.fFactory.newRegister(fRegisterGroup, lastName, lastValue));
 			fCli.notifyStateReturn();
 		} else {
@@ -32,7 +32,7 @@ public class ConsultingRegisters implements IState {
 	}
 	
 	private void parseRegisters(String text) {
-		String[] pieces = text.split("\t");
+		String[] pieces = text.split("\t"); //$NON-NLS-1$
 		for(String piece : pieces) {
 			int indexOfEqual = piece.indexOf('=');
 			if (indexOfEqual == -1) {
@@ -41,7 +41,7 @@ public class ConsultingRegisters implements IState {
 			String name = piece.substring(0, indexOfEqual).trim();
 			String value = piece.substring(indexOfEqual + 1).trim();
 			if (name.length() == 0) {
-				lastValue += "\n" + value;
+				lastValue += "\n" + value; //$NON-NLS-1$
 			} else {
 				if (lastName != null) {
 					fRegisters.add(fCli.fFactory.newRegister(fRegisterGroup, lastName, lastValue));
@@ -55,7 +55,7 @@ public class ConsultingRegisters implements IState {
 	
 	@Override
 	public String toString() {
-		return "consulting registers";
+		return "consulting registers"; //$NON-NLS-1$
 	}
 	
 }

@@ -8,7 +8,7 @@ import descent.internal.compiler.parser.ast.IASTVisitor;
 public class PostExp extends BinExp {
 
 	public PostExp(Loc loc, TOK op, Expression e) {
-		super(loc, op, e, new IntegerExp(Loc.ZERO, "1", BigInteger.ONE, Type.tint32));
+		super(loc, op, e, new IntegerExp(Loc.ZERO, BigInteger.ONE, Type.tint32));
 	}
 	
 	@Override

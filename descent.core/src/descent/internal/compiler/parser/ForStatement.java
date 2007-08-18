@@ -42,7 +42,7 @@ public class ForStatement extends Statement {
 		}
 		if (condition == null) {
 			// Use a default value
-			condition = new IntegerExp(loc, "1", BigInteger.ONE, Type.tboolean);
+			condition = new IntegerExp(loc, BigInteger.ONE, Type.tboolean);
 		}
 		sc.noctor++;
 		condition = condition.semantic(sc, context);

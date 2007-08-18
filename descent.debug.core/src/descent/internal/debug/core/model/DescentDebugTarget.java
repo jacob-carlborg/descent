@@ -19,6 +19,8 @@ import org.eclipse.debug.core.model.IRegister;
 import org.eclipse.debug.core.model.IRegisterGroup;
 import org.eclipse.debug.core.model.IStackFrame;
 import org.eclipse.debug.core.model.IStreamMonitor;
+import org.eclipse.debug.core.model.IStreamsProxy;
+import org.eclipse.debug.core.model.IStreamsProxy2;
 import org.eclipse.debug.core.model.IThread;
 import org.eclipse.jface.preference.IPreferenceStore;
 
@@ -278,6 +280,10 @@ public class DescentDebugTarget extends DescentDebugElement implements IDebugTar
 		}
 		
 		public void streamAppended(String text, IStreamMonitor monitor) {
+			if (this == fErrorStreamListener) {
+				System.out.println(text);
+			}
+			
 			try {
 				fStreamBuffer.append(text);
 				
@@ -290,7 +296,7 @@ public class DescentDebugTarget extends DescentDebugElement implements IDebugTar
 					fStreamBuffer.setLength(0);
 				}
 				
-				int indexOfLine = fStreamBuffer.indexOf("\n");
+				int indexOfLine = fStreamBuffer.indexOf("\n"); //$NON-NLS-1$
 				if (indexOfLine == -1) return;
 				
 				text = fStreamBuffer.toString();
@@ -306,7 +312,7 @@ public class DescentDebugTarget extends DescentDebugElement implements IDebugTar
 					}
 					
 					lastIndexOfLine = indexOfLine + 1;
-					indexOfLine = fStreamBuffer.indexOf("\n", lastIndexOfLine);
+					indexOfLine = fStreamBuffer.indexOf("\n", lastIndexOfLine); //$NON-NLS-1$
 				}
 				
 				fStreamBuffer.delete(0, lastIndexOfLine);

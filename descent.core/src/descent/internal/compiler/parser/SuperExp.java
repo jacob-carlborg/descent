@@ -55,7 +55,7 @@ public class SuperExp extends ThisExp {
 					cd2 = cd2.baseClass;
 					if (cd2 == null) {
 						context.acceptProblem(Problem.newSemanticTypeError(
-								"Class " + s2.ident.ident
+								"Class " + new String(s2.ident.ident)
 										+ " has no 'super'",
 								IProblem.ClassHasNoSuper, 0, start, length));
 						// goto Lerr;
@@ -91,7 +91,7 @@ public class SuperExp extends ThisExp {
 		}
 		if (cd.baseClass == null) {
 			context.acceptProblem(Problem.newSemanticTypeError(
-					"Class " + cd.ident.ident
+					"Class " + new String(cd.ident.ident)
 							+ " has no base class",
 					IProblem.ClassHasNoSuper, 0, start, length));
 			type = fd.vthis.type;

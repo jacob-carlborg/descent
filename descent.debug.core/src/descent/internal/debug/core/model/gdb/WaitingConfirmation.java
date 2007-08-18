@@ -13,7 +13,7 @@ public class WaitingConfirmation implements IState {
 	}
 	
 	public void interpret(String text) throws DebugException, IOException {
-		if ("(gdb)".equals(text)) {
+		if ("(gdb)".equals(text)) { //$NON-NLS-1$
 			fCli.notifyStateReturn();
 		}
 	}
@@ -24,7 +24,7 @@ public class WaitingConfirmation implements IState {
 	
 	@Override
 	public String toString() {
-		return "waiting confirmation";
+		return "waiting confirmation"; //$NON-NLS-1$
 	}
 	
 }

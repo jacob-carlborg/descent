@@ -9,6 +9,7 @@ import melnorme.miscutil.tree.TreeVisitor;
 
 import org.eclipse.core.runtime.Assert;
 
+import descent.core.compiler.CharOperation;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
@@ -35,7 +36,7 @@ public class ClassDeclaration extends AggregateDeclaration {
 	public List vtbl; // Array of FuncDeclaration's making up the vtbl[]
 	public List vtblFinal; // More FuncDeclaration's that aren't in vtbl[]
 
-	public ClassDeclaration(Loc loc, String id) {
+	public ClassDeclaration(Loc loc, char[] id) {
 		this(loc, id, null);
 	}
 	
@@ -43,7 +44,7 @@ public class ClassDeclaration extends AggregateDeclaration {
 		this(loc, id.string, null);
 	}
 
-	public ClassDeclaration(Loc loc, String id, List<BaseClass> baseclasses) {
+	public ClassDeclaration(Loc loc, char[] id, List<BaseClass> baseclasses) {
 		this(loc, new IdentifierExp(loc, id), baseclasses);
 	}
 
@@ -246,7 +247,7 @@ public class ClassDeclaration extends AggregateDeclaration {
 	}
 
 	@Override
-	public Dsymbol search(Loc loc, String ident, int flags, SemanticContext context) {
+	public Dsymbol search(Loc loc, char[] ident, int flags, SemanticContext context) {
 		Dsymbol s;
 
 		// printf("%s.ClassDeclaration::search('%s')\n", toChars(),
@@ -256,7 +257,7 @@ public class ClassDeclaration extends AggregateDeclaration {
 		}
 
 		if (members == null || symtab == null || scope != null) {
-			context.acceptProblem(Problem.newSemanticTypeError(this + " is forward reference when looking for " + ident, IProblem.ForwardReference, 0, start, length));
+			context.acceptProblem(Problem.newSemanticTypeError(this + " is forward reference when looking for " + new String(ident), IProblem.ForwardReference, 0, start, length));
 			return null;
 		}
 
@@ -463,7 +464,7 @@ public class ClassDeclaration extends AggregateDeclaration {
 		}
 
 		// If no base class, and this is not an Object, use Object as base class
-		if (baseClass == null && !ident.ident.equals(Id.Object.string)) {
+		if (baseClass == null && !CharOperation.equals(ident.ident, Id.Object)) {
 			// BUG: what if Object is redefined in an inner scope?
 			Type tbase = new TypeIdentifier(loc, Id.Object);
 			BaseClass b;
@@ -484,7 +485,7 @@ public class ClassDeclaration extends AggregateDeclaration {
 			 * baseClass;
 			 */
 			// TODO semantic remove the following line
-			baseClass = new ClassDeclaration(loc, new IdentifierExp(loc, Id.Object.string), null);
+			baseClass = new ClassDeclaration(loc, new IdentifierExp(loc, Id.Object), null);
 		}
 
 		interfaces = new ArrayList<BaseClass>(baseclasses.size());
@@ -633,7 +634,7 @@ public class ClassDeclaration extends AggregateDeclaration {
 		 * Look for special member functions. They must be in this class, not in
 		 * a base class.
 		 */
-		ctor = (CtorDeclaration) search(loc, Id.ctor.string, 0, context);
+		ctor = (CtorDeclaration) search(loc, Id.ctor, 0, context);
 		if (ctor != null && ctor.toParent() != this) {
 			ctor = null;
 		}
@@ -647,8 +648,8 @@ public class ClassDeclaration extends AggregateDeclaration {
 		// inv = NULL;
 
 		// Can be in base class
-		aggNew = (NewDeclaration) search(loc, Id.classNew.string, 0, context);
-		aggDelete = (DeleteDeclaration) search(loc, Id.classDelete.string, 0, context);
+		aggNew = (NewDeclaration) search(loc, Id.classNew, 0, context);
+		aggDelete = (DeleteDeclaration) search(loc, Id.classDelete, 0, context);
 
 		// If this class has no constructor, but base class does, create
 		// a constructor:

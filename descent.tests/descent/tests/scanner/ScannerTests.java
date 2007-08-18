@@ -122,6 +122,7 @@ public class ScannerTests extends TestCase implements ITerminalSymbols {
 	
 	public void testLiterals() throws Throwable {
 		Object[][] pairs = {
+				/*
 			{ "1", TokenNameIntegerLiteral },	
 			{ "1u", TokenNameUnsignedIntegerLiteral },
 			{ "1L", TokenNameLongLiteral },			
@@ -136,6 +137,7 @@ public class ScannerTests extends TestCase implements ITerminalSymbols {
 			{ "'\\u1234'", TokenNameWCharacterLiteral },
 			{ "'\\U00001234'", TokenNameDCharacterLiteral },			
 			{ "identifier", TokenNameIdentifier },
+			*/
 			{ "\"some string\"", TokenNameStringLiteral },
 			{ "r\"some string\"", TokenNameStringLiteral },
 			{ "`some string`", TokenNameStringLiteral },

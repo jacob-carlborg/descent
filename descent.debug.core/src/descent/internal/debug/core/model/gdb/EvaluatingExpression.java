@@ -16,7 +16,7 @@ public class EvaluatingExpression implements IState {
 	}
 
 	public void interpret(String text) throws DebugException, IOException {
-		if (text.equals("(gdb)")) {
+		if (text.equals("(gdb)")) { //$NON-NLS-1$
 			fCli.notifyStateReturn();
 		} else {
 			parseVariable(text);
@@ -30,16 +30,16 @@ public class EvaluatingExpression implements IState {
 	private void parseVariable(String text) {
 		text = text.trim();
 		
-		if (text.startsWith("members of ")) {
+		if (text.startsWith("members of ")) { //$NON-NLS-1$
 			return;
 		}
 		
-		if ("{".equals(text)) {
+		if ("{".equals(text)) { //$NON-NLS-1$
 			fVariable = new GdbVariable(fExpression);
 			return;
 		}
 		
-		if ("}".equals(text) || "},".equals(text)) {
+		if ("}".equals(text) || "},".equals(text)) { //$NON-NLS-1$ //$NON-NLS-2$
 			if (fVariable.getParent() != null) {
 				fVariable = fVariable.getParent();
 			}

@@ -21,15 +21,15 @@ public class ConsultingStackFrames  implements IState {
 	
 	public void interpret(String text) throws DebugException, IOException {
 		// Fix
-		if (text.startsWith("(gdb)#")) {
+		if (text.startsWith("(gdb)#")) { //$NON-NLS-1$
 			text = text.substring(2);
 		}
-		if (text.equals("(gdb)")) {
+		if (text.equals("(gdb)")) { //$NON-NLS-1$
 			if (fBuffer.length() > 0) {
 				fStackFrames.add(parseStackFrame(fBuffer.toString()));
 			}
 			fCli.notifyStateReturn();
-		} else if (text.startsWith("#")) {
+		} else if (text.startsWith("#")) { //$NON-NLS-1$
 			if (fBuffer.length() > 0) {
 				fStackFrames.add(parseStackFrame(fBuffer.toString()));
 				fBuffer.setLength(0);	
@@ -56,10 +56,10 @@ public class ConsultingStackFrames  implements IState {
 		
 		// Some positions in the string
 		int indexOfFirstSpace = data.indexOf(' ');
-		int indexOfFirstParen = data.indexOf("(");
-		int indexOfIn = data.indexOf(" in ");
-		int indexOfFrom = data.lastIndexOf(" from ");
-		int indexOfAt = data.lastIndexOf(" at ");
+		int indexOfFirstParen = data.indexOf("("); //$NON-NLS-1$
+		int indexOfIn = data.indexOf(" in "); //$NON-NLS-1$
+		int indexOfFrom = data.lastIndexOf(" from "); //$NON-NLS-1$
+		int indexOfAt = data.lastIndexOf(" at "); //$NON-NLS-1$
 		int lastIndexOfColon = data.lastIndexOf(':');
 		
 		// Number
@@ -68,7 +68,7 @@ public class ConsultingStackFrames  implements IState {
 		// Name
 		if (indexOfIn != -1 && indexOfFirstParen != -1 && indexOfIn < indexOfFirstParen) {
 			// in ... <name> ... from
-			name = data.substring(indexOfIn + 4, indexOfFirstParen - 1).trim() + "()";
+			name = data.substring(indexOfIn + 4, indexOfFirstParen - 1).trim() + "()"; //$NON-NLS-1$
 		} else if (indexOfIn != -1 && indexOfFrom != -1 && indexOfIn < indexOfFrom) {
 			// in ... <name> ... from
 			name = data.substring(indexOfIn + 4, indexOfFrom + 1);
@@ -77,10 +77,10 @@ public class ConsultingStackFrames  implements IState {
 			name = data.substring(indexOfIn + 4, indexOfAt + 1);
 		} else if (indexOfIn != -1 && indexOfFirstParen != -1 && indexOfIn < indexOfFirstParen) {
 			// in ... <name> ... (
-			name = data.substring(indexOfIn + 4, indexOfFirstParen - 1).trim() + "()";
+			name = data.substring(indexOfIn + 4, indexOfFirstParen - 1).trim() + "()"; //$NON-NLS-1$
 		} else if (indexOfFirstSpace != -1 && indexOfFirstParen != -1 && indexOfFirstSpace < indexOfFirstParen) {
 			// ... <name> ... (
-			name = data.substring(indexOfFirstSpace + 1, indexOfFirstParen - 1).trim() + "()";
+			name = data.substring(indexOfFirstSpace + 1, indexOfFirstParen - 1).trim() + "()"; //$NON-NLS-1$
 		} else {
 			if (indexOfFirstSpace != -1) {
 				if (indexOfAt != -1) {
@@ -97,8 +97,8 @@ public class ConsultingStackFrames  implements IState {
 		}
 		
 		name = name.trim();
-		if (name.endsWith(" ()")) {
-			name = name.substring(0, name.length() - 3) + "()";
+		if (name.endsWith(" ()")) { //$NON-NLS-1$
+			name = name.substring(0, name.length() - 3) + "()"; //$NON-NLS-1$
 		}
 		
 		
@@ -113,7 +113,7 @@ public class ConsultingStackFrames  implements IState {
 	
 	@Override
 	public String toString() {
-		return "consulting stack frame";
+		return "consulting stack frame"; //$NON-NLS-1$
 	}
 	
 }

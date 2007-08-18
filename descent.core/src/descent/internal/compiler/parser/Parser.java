@@ -79,9 +79,6 @@ import org.eclipse.core.runtime.Assert;
 import descent.core.compiler.CharOperation;
 import descent.core.compiler.IProblem;
 import descent.core.dom.AST;
-import descent.core.dom.CodeComment;
-import descent.core.dom.Comment;
-import descent.core.dom.DDocComment;
 import descent.core.dom.Pragma;
 
 public class Parser extends Lexer {
@@ -181,7 +178,7 @@ public class Parser extends Lexer {
 		if (token.value == TOKmodule) {
 			int start = token.ptr;
 			
-			List<DDocComment> moduleDocComments = getLastDocComments();
+			List<Comment> moduleDocComments = getLastDocComments();
 			
 			nextToken();
 			if (token.value != TOKidentifier) {
@@ -260,7 +257,7 @@ public class Parser extends Lexer {
 		
 		decldefs = new ArrayList<Dsymbol>();
 		do {
-			List<DDocComment> lastComments = getLastDocComments();
+			List<Comment> lastComments = getLastDocComments();
 			isSingle[0] = false;
 			attachLeadingComments = true;
 			
@@ -513,7 +510,7 @@ public class Parser extends Lexer {
 				if (token.value == TOKlparen) {
 					nextToken();
 					if (token.value == TOKint32v)
-						n = Integer.parseInt(token.string);
+						n = token.intValue.longValue();
 					else {
 						parsingErrorInsertTokenAfter(prevToken, "Integer");
 						n = 1;
@@ -853,25 +850,25 @@ public class Parser extends Lexer {
 		
 		nextToken();
 		if (token.value == TOKidentifier) {
-			String id = token.string;
+			char[] id = token.string;
 			int start = token.ptr;
 			int length = token.len;
 			int lineNumber = token.lineNumber;
 
 			nextToken();
-			if (id.equals(Id.Windows.string)) {
+			if (CharOperation.equals(id, Id.Windows)) {
 				link = LINKwindows;
-			} else if (id.equals(Id.Pascal.string)) {
+			} else if (CharOperation.equals(id, Id.Pascal)) {
 				link = LINKpascal;
-			} else if (id.equals(Id.D.string)) {
+			} else if (CharOperation.equals(id, Id.D)) {
 				link = LINKd;
-			} else if (id.equals(Id.C.string)) {
+			} else if (CharOperation.equals(id, Id.C)) {
 				link = LINKc;
 				if (token.value == TOKplusplus) {
 					link = LINKcpp;
 					nextToken();
 				}
-			} else if (id.equals(Id.System.string)) {
+			} else if (CharOperation.equals(id, Id.System)) {
 				link = LINK.LINKsystem;
 			} else {
 				error("Valid linkage identifiers are D, C, C++, Pascal, Windows", IProblem.InvalidLinkageIdentifier, lineNumber, start, length);
@@ -898,7 +895,7 @@ public class Parser extends Lexer {
 			} else if (token.value == TOKint32v) {
 				idTokenStart = token.ptr;
 				idTokenLength = token.len;
-				level = Integer.parseInt(token.string);
+				level = token.intValue.longValue();
 			} else {
 				parsingErrorInsertTokenAfter(prevToken, "Identifier or Integer");
 			}
@@ -909,7 +906,7 @@ public class Parser extends Lexer {
 			c = new DebugCondition(1, null);
 		}
 		if (id == null && idTokenStart != -1) {
-			c.id = new Identifier(String.valueOf(level), TOK.TOKint32);
+			c.id = new Identifier(String.valueOf(level).toCharArray(), TOK.TOKint32);
 			c.id.startPosition = idTokenStart;
 			c.id.length = idTokenLength;
 		}
@@ -931,7 +928,7 @@ public class Parser extends Lexer {
 			} else if (token.value == TOKint32v) {
 				idTokenStart = token.ptr;
 				idTokenLength = token.len;
-				level = Integer.parseInt(token.string);
+				level = token.intValue.longValue();
 			} else {
 				parsingErrorInsertTokenAfter(prevToken, "Identifier or Integer");
 			}
@@ -942,7 +939,7 @@ public class Parser extends Lexer {
 		}
 		c = new VersionCondition(level, id);
 		if (id == null && idTokenStart != -1) {
-			c.id = new Identifier(String.valueOf(level), TOK.TOKint32);
+			c.id = new Identifier(String.valueOf(level).toCharArray(), TOK.TOKint32);
 			c.id.startPosition = idTokenStart;
 			c.id.length = idTokenLength;
 		}
@@ -2575,7 +2572,7 @@ public class Parser extends Lexer {
 	}
 	
 	@SuppressWarnings("unchecked")
-	private List<Dsymbol> parseDeclarations(List<DDocComment> lastComments) {
+	private List<Dsymbol> parseDeclarations(List<Comment> lastComments) {
 		int storage_class;
 		int stc;
 		Type ts;
@@ -3703,13 +3700,12 @@ public class Parser extends Lexer {
 			} else {
 				TOK t2 = TOKon_scope_exit;
 
-				String id = token.string;
-				
-				if (id.equals(Id.exit.string))
+				char[] id = token.string;				
+				if (CharOperation.equals(id, Id.exit))
 					t2 = TOKon_scope_exit;
-				else if (id.equals(Id.failure.string))
+				else if (CharOperation.equals(id, Id.failure))
 					t2 = TOKon_scope_failure;
-				else if (id.equals(Id.success.string))
+				else if (CharOperation.equals(id, Id.success))
 					t2 = TOKon_scope_success;
 				else {
 					error("Valid scope identifiers are exit, failure, or success", IProblem.InvalidScopeIdentifier, token);
@@ -4184,7 +4180,7 @@ public class Parser extends Lexer {
 	private void parseStatement_Ldeclaration(Statement[] s, int flags) {
 		List a;
 
-		a = parseDeclarations(new ArrayList<DDocComment>());
+		a = parseDeclarations(new ArrayList<Comment>());
 		if (a.size() > 1) {
 			List<Statement> as = new ArrayList<Statement>(a.size());
 			for (int i = 0; i < a.size(); i++) {
@@ -5212,7 +5208,7 @@ public class Parser extends Lexer {
 			    	parsingErrorInsertTokenAfter(prevToken, "Identifier");
 			    	// goto Lerr;
 		    		// Anything for e, as long as it's not NULL
-			    	e = new IntegerExp(loc, "0", BigInteger.ZERO, Type.tint32);
+			    	e = new IntegerExp(loc, Id.ZERO, BigInteger.ZERO, Type.tint32);
 			    	e.setSourceRange(token.ptr, token.len);
 		    		nextToken();
 		    		break;
@@ -5244,7 +5240,7 @@ public class Parser extends Lexer {
 			    	parsingErrorInsertTokenAfter(prevToken, "Identifier");
 					// goto Lerr;
 			    	// Anything for e, as long as it's not NULL
-			    	e = new IntegerExp(loc, "0", BigInteger.ZERO, Type.tint32);
+			    	e = new IntegerExp(loc, Id.ZERO, BigInteger.ZERO, Type.tint32);
 			    	e.setSourceRange(token.ptr, token.len);
 			    	nextToken();
 			    	break;
@@ -5290,7 +5286,7 @@ public class Parser extends Lexer {
 				parsingErrorInsertToComplete(prevToken, "__traits(identifier, args...) expected", "traits expression");
 				//goto Lerr;
 				// Anything for e, as long as it's not NULL
-				e = new IntegerExp(loc, "0", BigInteger.ZERO, Type.tint32);
+				e = new IntegerExp(loc, Id.ZERO, BigInteger.ZERO, Type.tint32);
 		    	e.setSourceRange(token.ptr, token.len);
 				nextToken();
 				break;
@@ -5357,7 +5353,7 @@ public class Parser extends Lexer {
 				parsingErrorInsertToComplete(prevToken, "(type identifier : specialization)", "IftypeDeclaration");
 				// goto Lerr;
 				// Anything for e, as long as it's not NULL
-				e = new IntegerExp(loc, "0", BigInteger.ZERO, Type.tint32);
+				e = new IntegerExp(loc, Id.ZERO, BigInteger.ZERO, Type.tint32);
 		    	e.setSourceRange(token.ptr, token.len);
 				nextToken();
 				break;
@@ -5501,7 +5497,7 @@ public class Parser extends Lexer {
 			parsingErrorInsertTokenAfter(prevToken, "Expression");
 		// Lerr:
 		    // Anything for e, as long as it's not NULL
-			e = new IntegerExp(loc, "0", BigInteger.ZERO, Type.tint32);
+			e = new IntegerExp(loc, Id.ZERO, BigInteger.ZERO, Type.tint32);
 	    	e.setSourceRange(token.ptr, token.len);
 		    nextToken();
 		    break;
@@ -6451,12 +6447,12 @@ public class Parser extends Lexer {
 		return t;
 	}
 	
-	private List<DDocComment> getLastDocComments() {
-		LinkedList<DDocComment> toReturn = new LinkedList<DDocComment>();
+	private List<Comment> getLastDocComments() {
+		LinkedList<Comment> toReturn = new LinkedList<Comment>();
 		for(int i = comments.size() - 1; i >= lastDocCommentRead; i--) {
 			Comment comment = comments.get(i);
 			if (comment.isDDocComment()) {
-				toReturn.addFirst((DDocComment) comment);
+				toReturn.addFirst((Comment) comment);
 			} else {
 				break;
 			}
@@ -6493,7 +6489,7 @@ public class Parser extends Lexer {
 		return Character.toUpperCase(s.charAt(0)) + s.substring(1);
 	}
 	
-	private void adjustPossitionAccordingToComments(ASTDmdNode node, List<DDocComment> preDDocs, DDocComment postDDoc) {
+	private void adjustPossitionAccordingToComments(ASTDmdNode node, List<Comment> preDDocs, Comment postDDoc) {
 		if ((preDDocs == null || preDDocs.isEmpty()) && postDDoc == null) {
 			return;
 		}
@@ -6502,11 +6498,11 @@ public class Parser extends Lexer {
 		int end = start + node.length;
 		
 		if (preDDocs != null && !preDDocs.isEmpty()) {
-			start = preDDocs.get(0).getStartPosition();
+			start = preDDocs.get(0).start;
 		}
 		
 		if (postDDoc != null) {
-			end = postDDoc.getStartPosition() + postDDoc.getLength();
+			end = postDDoc.start + postDDoc.length;
 		}
 		
 		node.setSourceRange(start, end - start);
@@ -6528,28 +6524,22 @@ public class Parser extends Lexer {
 			Comment comment;
 			switch(tok) {
 			case TOKlinecomment:
-				comment = ast.newCodeComment();
-				comment.setKind(CodeComment.Kind.LINE_COMMENT);
+				comment = new Comment(Comment.LINE_COMMENT, token.string);
 				break;
 			case TOKblockcomment:
-				comment = ast.newCodeComment();
-				comment.setKind(CodeComment.Kind.BLOCK_COMMENT);
+				comment = new Comment(Comment.BLOCK_COMMENT, token.string);
 				break;
 			case TOKpluscomment:
-				comment = ast.newCodeComment();
-				comment.setKind(CodeComment.Kind.PLUS_COMMENT);
+				comment = new Comment(Comment.PLUS_COMMENT, token.string);
 				break;
 			case TOKdoclinecomment:
-				comment = ast.newDDocComment(token.string);
-				comment.setKind(CodeComment.Kind.LINE_COMMENT);
+				comment = new Comment(Comment.DOC_LINE_COMMENT, token.string);
 				break;
 			case TOKdocblockcomment:
-				comment = ast.newDDocComment(token.string);
-				comment.setKind(CodeComment.Kind.BLOCK_COMMENT);
+				comment = new Comment(Comment.DOC_BLOCK_COMMENT, token.string);
 				break;
 			case TOKdocpluscomment:
-				comment = ast.newDDocComment(token.string);
-				comment.setKind(CodeComment.Kind.PLUS_COMMENT);
+				comment = new Comment(Comment.DOC_PLUS_COMMENT, token.string);
 				break;
 			default:
 				throw new IllegalStateException("Can't happen");
@@ -6567,7 +6557,7 @@ public class Parser extends Lexer {
 		}
 		
 		while(tok == TOK.TOKPRAGMA) {
-			if (token.ptr == 0 && token.string.length() > 1 && token.string.charAt(1) == '!') {
+			if (token.ptr == 0 && token.string.length > 1 && token.string[1] == '!') {
 				// Script line
 				Pragma pragma = ast.newPragma();
 				pragma.setSourceRange(0, token.len);
@@ -6578,7 +6568,8 @@ public class Parser extends Lexer {
 				pragmas.add(pragma);
 				
 				// Let's see if it's correct
-				StringTokenizer st = new StringTokenizer(token.string.substring(1));
+				// TODO improve performance
+				StringTokenizer st = new StringTokenizer(new String(token.string).substring(1));
 				if (st.countTokens() != 3) {
 					error("#line integer [\"filespec\"]\\n expected", IProblem.InvalidPragmaSyntax, token);
 					setMalformed(pragma);
@@ -6635,7 +6626,7 @@ public class Parser extends Lexer {
 		if (prevToken.leadingComment == null) {
 			lastDocCommentRead = comments.size();	
 		}
-		prevToken.leadingComment = (DDocComment) comment;		
+		prevToken.leadingComment = (Comment) comment;		
 	}
 	
 }

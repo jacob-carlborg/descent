@@ -6,6 +6,8 @@ import java.util.List;
 
 import org.eclipse.core.runtime.Assert;
 
+import descent.core.compiler.CharOperation;
+
 public abstract class Type extends ASTDmdNode {
 	
 	public static class Modification {
@@ -204,29 +206,29 @@ public abstract class Type extends ASTDmdNode {
 		return null;
 	}
 	
-	public Expression getProperty(Loc loc, String ident, SemanticContext context) {
+	public Expression getProperty(Loc loc, char[] ident, SemanticContext context) {
 		Expression e = null;
 
-	    if (ident.equals(Id.__sizeof.string))
+	    if (CharOperation.equals(ident, Id.__sizeof))
 	    {
 	    	/* TODO semantic
 	    	e = new IntegerExp(loc, size(loc), Type.tsize_t);
 	    	*/
 	    }
-	    else if (ident.equals(Id.size.string))
+	    else if (CharOperation.equals(ident, Id.size))
 	    {
 	    	/* TODO semantic
 	    	error(loc, ".size property should be replaced with .sizeof");
 	    	e = new IntegerExp(loc, size(loc), Type.tsize_t);
 	    	*/
 	    }
-	    else if (ident.equals(Id.alignof.string))
+	    else if (CharOperation.equals(ident, Id.alignof))
 	    {
 	    	/* TODO semantic
 	    	e = new IntegerExp(loc, alignsize(), Type.tsize_t);
 	    	*/
 	    }
-	    else if (ident.equals(Id.typeinfo.string))
+	    else if (CharOperation.equals(ident, Id.typeinfo))
 	    {
 	    	/* TODO semantic
 			if (!global.params.useDeprecated)
@@ -234,18 +236,18 @@ public abstract class Type extends ASTDmdNode {
 			e = getTypeInfo(NULL);
 			*/
 	    }
-	    else if (ident.equals(Id.init.string))
+	    else if (CharOperation.equals(ident, Id.init))
 	    {
 	    	e = defaultInit(context);
 	    }
-	    else if (ident.equals(Id.mangleof.string))
+	    else if (CharOperation.equals(ident, Id.mangleof))
 	    {
 	    	Assert.isNotNull(deco);
-	    	e = new StringExp(loc, deco, 'c');
+	    	e = new StringExp(loc, deco.toCharArray(), 'c');
 			Scope sc = new Scope();
 			e = e.semantic(sc, context);
 	    }
-	    else if (ident.equals(Id.stringof.string))
+	    else if (CharOperation.equals(ident, Id.stringof))
 	    {	
 	    	/* TODO semantic
 	    	char *s = toChars();
@@ -259,7 +261,7 @@ public abstract class Type extends ASTDmdNode {
 	    	/* TODO semantic
 			error(loc, "no property '%s' for type '%s'", ident.toChars(), toChars());
 			*/
-			e = new IntegerExp(loc, "1", BigInteger.ONE, Type.tint32);
+			e = new IntegerExp(loc, Id.ONE, BigInteger.ONE, Type.tint32);
 	    }
 		return e;
 	}
@@ -296,13 +298,13 @@ public abstract class Type extends ASTDmdNode {
 			v = ve.var.isVarDeclaration();
 		}
 		if (v != null) {
-			if (ident.ident.equals(Id.offset.string)) {
+			if (CharOperation.equals(ident.ident, Id.offset)) {
 				/* TODO semantic
 				 if (!global.params.useDeprecated)
 				 error(e.loc, ".offset deprecated, use .offsetof");
 				 goto Loffset;
 				 */
-			} else if (ident.ident.equals(Id.offsetof.string)) {
+			} else if (CharOperation.equals(ident.ident, Id.offsetof)) {
 				/* TODO semantic
 				 Loffset:
 				 if (v.storage_class & STC.STCfield)
@@ -311,7 +313,7 @@ public abstract class Type extends ASTDmdNode {
 				 return e;
 				 }
 				 */
-			} else if (ident.ident.equals(Id.init.string)) {
+			} else if (CharOperation.equals(ident.ident, Id.init)) {
 				if (v.init != null) {
 					if (v.init.isVoidInitializer() != null) {
 						/* TODO semantic
@@ -337,7 +339,7 @@ public abstract class Type extends ASTDmdNode {
 				}
 			}
 		}
-		if (ident.ident.equals(Id.typeinfo.string)) {
+		if (CharOperation.equals(ident.ident, Id.typeinfo)) {
 			/* TODO semantic
 			 if (!global.params.useDeprecated) {
 			 error(e.loc, ".typeinfo deprecated, use typeid(type)");
@@ -346,7 +348,7 @@ public abstract class Type extends ASTDmdNode {
 			 return e;
 			 */
 		}
-		if (ident.ident.equals(Id.stringof.string)) {
+		if (CharOperation.equals(ident.ident, Id.stringof)) {
 			/* TODO semantic
 			 char s = e.toChars();
 			 e = new StringExp(e.loc, s, strlen(s), 'c');

@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.eclipse.core.runtime.Assert;
 
+import descent.core.compiler.CharOperation;
 import descent.core.compiler.IProblem;
 import static descent.internal.compiler.parser.TY.*;
 import static descent.internal.compiler.parser.LINK.*;
@@ -14,7 +15,7 @@ public class InterfaceDeclaration extends ClassDeclaration {
 	public InterfaceDeclaration(Loc loc, IdentifierExp id, List<BaseClass> baseclasses) {
 		super(loc, id, baseclasses);
 		com = false;
-		if (id != null && id.ident.equals(Id.IUnknown.string)) { // IUnknown is the root
+		if (id != null && CharOperation.equals(id.ident, Id.IUnknown)) { // IUnknown is the root
 														// of all COM
 			// objects
 			com = true;

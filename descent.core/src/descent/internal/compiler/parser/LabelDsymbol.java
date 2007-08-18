@@ -11,7 +11,7 @@ public class LabelDsymbol extends Dsymbol {
 		super(loc, ident);
 	}
 	
-	public LabelDsymbol(Loc loc, Identifier ident) {
+	public LabelDsymbol(Loc loc, char[] ident) {
 		super(loc, new IdentifierExp(Loc.ZERO, ident));
 	}
 

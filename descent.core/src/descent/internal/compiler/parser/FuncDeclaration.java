@@ -7,10 +7,14 @@ import melnorme.miscutil.tree.TreeVisitor;
 
 import org.eclipse.core.runtime.Assert;
 
+import descent.core.compiler.CharOperation;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
 public class FuncDeclaration extends Declaration {
+	
+	private final static char[] missing_return_expression = { 'm', 'i', 's', 's', 'i', 'n', 'g', ' ', 'r', 'e', 't', 'u', 'r', 'n', ' ', 'e', 'x', 'p', 'r', 'e', 's', 's', 'i', 'o', 'n' };
+	private final static char[] null_this = { 'n', 'u', 'l', 'l', ' ', 't', 'h', 'i', 's' };
 	
 	public Statement fensure;
 	public Statement frequire;
@@ -461,7 +465,7 @@ public class FuncDeclaration extends Declaration {
 			}
 		}
 
-		if (ident.ident.equals(Id.assign.string) && (sd != null || cd != null)) { // Disallow
+		if (CharOperation.equals(ident.ident, Id.assign) && (sd != null || cd != null)) { // Disallow
 																		// identity
 																		// assignment
 																		// operator.
@@ -674,7 +678,7 @@ public class FuncDeclaration extends Declaration {
 					Argument arg = Argument.getNth(f.parameters, i, context);
 					IdentifierExp id = arg.ident;
 					if (id == null) {
-						id = new IdentifierExp(loc, "_param_" + i + "u");
+						id = new IdentifierExp(loc, ("_param_" + i + "u").toCharArray());
 						arg.ident = id;
 					}
 					VarDeclaration v = new VarDeclaration(loc, arg.type, id, null);
@@ -993,8 +997,7 @@ public class FuncDeclaration extends Declaration {
 																			 * be.
 																			 */
 								e = new AssertExp(loc, new IntegerExp(loc, 0),
-										new StringExp(loc, 
-												"missing return expression"));
+										new StringExp(loc, missing_return_expression));
 								e.synthetic = true;
 							} else {
 								e = new HaltExp(loc);
@@ -1113,7 +1116,7 @@ public class FuncDeclaration extends Declaration {
 						ThisExp v = new ThisExp(loc);
 						v.type = vthis.type;
 						v.synthetic = true;
-						Expression se = new StringExp(loc, "null this");
+						Expression se = new StringExp(loc, null_this);
 						se.synthetic = true;
 						se = se.semantic(sc, context);
 						se.type = Type.tchar.arrayOf(context);
@@ -1215,7 +1218,7 @@ public class FuncDeclaration extends Declaration {
 	}
 	
 	public boolean isMain() {
-		return ident.ident.equals(Id.main.string) &&
+		return CharOperation.equals(ident.ident, Id.main) &&
 			linkage != LINK.LINKc && isMember() == null && !isNested();
 	}
 	

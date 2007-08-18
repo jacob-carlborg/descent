@@ -20,7 +20,7 @@ public class ConsultingRegisters implements IState {
 	}
 	
 	public void interpret(String text) throws DebugException, IOException {
-		if (text.equals("(gdb)")) {
+		if (text.equals("(gdb)")) { //$NON-NLS-1$
 			fCli.notifyStateReturn();
 		} else {
 			parseRegisters(text, fRegisterGroup);
@@ -32,7 +32,7 @@ public class ConsultingRegisters implements IState {
 	}
 	
 	private void parseRegisters(String text, IRegisterGroup group) {
-		String[] splits = text.split("\\p{Space}");
+		String[] splits = text.split("\\p{Space}"); //$NON-NLS-1$
 		
 		if (splits.length < 3) return;
 		
@@ -49,7 +49,7 @@ public class ConsultingRegisters implements IState {
 	
 	@Override
 	public String toString() {
-		return "consulting registers";
+		return "consulting registers"; //$NON-NLS-1$
 	}
 	
 }

@@ -27,9 +27,9 @@ public class Running implements IState {
 				}
 			}
 		}
-		if (text.trim().equals("Program exited normally.")) {
+		if (text.trim().equals("Program exited normally.")) { //$NON-NLS-1$
 			fCli.fListener.terminated();
-		} else if (text.startsWith("Breakpoint ")) {
+		} else if (text.startsWith("Breakpoint ")) { //$NON-NLS-1$
 			// Breakpoint n hit at file:lineNumber address
 			
 			// After a breakpoint hit comes the source, then "->". So we signal
@@ -55,7 +55,7 @@ public class Running implements IState {
 	
 	@Override
 	public String toString() {
-		return "default";
+		return "default"; //$NON-NLS-1$
 	}
 	
 }

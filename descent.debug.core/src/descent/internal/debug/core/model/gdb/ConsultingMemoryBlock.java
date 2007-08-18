@@ -22,7 +22,7 @@ public class ConsultingMemoryBlock implements IState {
 	}
 
 	public void interpret(String text) throws DebugException, IOException {
-		if ("(gdb)".equals(text)) {
+		if ("(gdb)".equals(text)) { //$NON-NLS-1$
 			createMemoryBlock();
 			fCli.notifyStateReturn();
 		} else {
@@ -44,14 +44,14 @@ public class ConsultingMemoryBlock implements IState {
 			
 			
 			for(String line : fLines) {
-				String[] blocks = line.split("\\t");
+				String[] blocks = line.split("\\t"); //$NON-NLS-1$
 				
 				// Skip the first: the address
 				for(int i = 1; i < blocks.length; i++) {
 					String block = blocks[i].trim();
 					
 					if (block.length() != 0) {
-						if (block.startsWith("0x") || block.startsWith("0X")) {
+						if (block.startsWith("0x") || block.startsWith("0X")) { //$NON-NLS-1$ //$NON-NLS-2$
 							fBytes[byteNum] = (byte) Integer.parseInt(block.substring(2), 16);
 						} else {
 							fBytes[byteNum] = (byte) Integer.parseInt(block);

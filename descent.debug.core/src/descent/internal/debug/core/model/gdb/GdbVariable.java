@@ -75,7 +75,7 @@ public class GdbVariable {
 		if (fParent == null) {
 			return fName;
 		} else {
-			return fParent.getExpression() + "." + fName;
+			return fParent.getExpression() + "." + fName; //$NON-NLS-1$
 		}
 	}	
 

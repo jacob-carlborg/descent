@@ -13,14 +13,14 @@ public class WaitingConfirmation implements IState {
 	}
 	
 	public void interpret(String text) throws DebugException, IOException {
-		if ("->".equals(text)) {
+		if ("->".equals(text)) { //$NON-NLS-1$
 			fCli.notifyStateReturn();
 		}
 	}
 	
 	@Override
 	public String toString() {
-		return "waiting confirmation";
+		return "waiting confirmation"; //$NON-NLS-1$
 	}
 	
 }

@@ -21,10 +21,10 @@ public class Stepping implements IState {
 	}
 	
 	public void interpret(String text) throws DebugException, IOException {
-		if ("Process terminated".equals(text)) {
+		if ("Process terminated".equals(text)) { //$NON-NLS-1$
 			fCli.fListener.terminated();
 			fCli.notifyStateReturn();
-		} else if ("(gdb)".equals(text)) {
+		} else if ("(gdb)".equals(text)) { //$NON-NLS-1$
 			fCli.fListener.stepEnded();
 			fCli.notifyStateReturn();
 		}
@@ -38,11 +38,11 @@ public class Stepping implements IState {
 	public String toString() {
 		switch(fDebugEvent) {
 		case DebugEvent.STEP_INTO:
-			return "stepping into";
+			return "stepping into"; //$NON-NLS-1$
 		case DebugEvent.STEP_OVER:
-			return "stepping over";
+			return "stepping over"; //$NON-NLS-1$
 		case DebugEvent.STEP_RETURN:
-			return "stepping return";
+			return "stepping return"; //$NON-NLS-1$
 		}
 		return super.toString();
 	}

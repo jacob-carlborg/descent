@@ -6,10 +6,10 @@ import descent.internal.compiler.parser.ast.IASTVisitor;
 
 public class RealExp extends Expression {
 
-	public String str;
+	public char[] str;
 	public Real value;
 
-	public RealExp(Loc loc, String str, Real value, Type type) {
+	public RealExp(Loc loc, char[] str, Real value, Type type) {
 		super(loc, TOK.TOKfloat64);
 		this.str = str;
 		this.value = value;
@@ -72,7 +72,7 @@ public class RealExp extends Expression {
 
 	@Override
 	public String toChars() {
-		return str;
+		return new String(str).intern();
 	}
 
 	@Override

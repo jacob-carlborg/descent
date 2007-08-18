@@ -2,6 +2,8 @@ package descent.internal.compiler.parser;
 
 import org.eclipse.core.runtime.Assert;
 
+import descent.core.compiler.CharOperation;
+
 
 public class Scope {
 	
@@ -107,7 +109,7 @@ public class Scope {
 		Scope sc;
 
 		//printf("Scope::search(%p, '%s')\n", this, ident.toChars());
-		if (ident.ident.equals(Id.empty.string)) {
+		if (CharOperation.equals(ident.ident, Id.empty)) {
 			// Look for module scope
 			for (sc = this; sc != null; sc = sc.enclosing) {
 				assert (sc != sc.enclosing);
@@ -131,7 +133,7 @@ public class Scope {
 				s = sc.scopesym.search(loc, ident, 0, context);
 				if (s != null) {
 					 if ((context.global.params.warnings || context.global.params.Dversion > 1)
-							&& ident.ident.equals(Id.length.string)
+							&& CharOperation.equals(ident.ident, Id.length)
 							&& sc.scopesym.isArrayScopeSymbol() != null
 							&& sc.enclosing != null
 							&& sc.enclosing.search(loc, ident, null, context) != null) {

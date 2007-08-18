@@ -69,11 +69,11 @@ public class SemanticContext {
 	private int generatedIds;	
 	public IdentifierExp generateId(String prefix) {
 		String name = prefix + ++generatedIds;
-		Identifier id = new Identifier(name, TOK.TOKidentifier);
+		Identifier id = new Identifier(name.toCharArray(), TOK.TOKidentifier);
 		return new IdentifierExp(Loc.ZERO, id);
 	}
 	
-	public FuncDeclaration genCfunc(Type treturn, String name) {
+	public FuncDeclaration genCfunc(Type treturn, char[] name) {
 		return genCfunc(treturn, new Identifier(name, TOK.TOKidentifier));
 	}
 

@@ -14,10 +14,10 @@ public class ConsultingType implements IState {
 	}
 
 	public void interpret(String text) throws DebugException, IOException {
-		if ("(gdb)".equals(text)) {
+		if ("(gdb)".equals(text)) { //$NON-NLS-1$
 			fCli.notifyStateReturn();
 		} else {			
-			int indexOf = text.indexOf("type = ");
+			int indexOf = text.indexOf("type = "); //$NON-NLS-1$
 			if (indexOf != -1 && indexOf + 7 < text.length()) {
 				fType = text.substring(indexOf + 7).trim();
 			} else {

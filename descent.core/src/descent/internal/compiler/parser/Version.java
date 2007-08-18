@@ -4,9 +4,9 @@ import descent.internal.compiler.parser.ast.IASTVisitor;
 
 public class Version extends Dsymbol {
 	
-	public String value;
+	public char[] value;
 	
-	public Version(Loc loc, String value) {
+	public Version(Loc loc, char[] value) {
 		super(loc);
 		this.value = value;
 	}

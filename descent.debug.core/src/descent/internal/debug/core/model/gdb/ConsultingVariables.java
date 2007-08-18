@@ -18,7 +18,7 @@ public class ConsultingVariables implements IState {
 	}
 
 	public void interpret(String text) throws DebugException, IOException {
-		if (text.equals("(gdb)")) {
+		if (text.equals("(gdb)")) { //$NON-NLS-1$
 			fCli.notifyStateReturn();
 		} else {
 			parseVariable(text);
@@ -47,11 +47,11 @@ public class ConsultingVariables implements IState {
 		text = text.trim();
 		
 		boolean notifyEnd = false;
-		if (text.indexOf("(gdb)") != -1) {
+		if (text.indexOf("(gdb)") != -1) { //$NON-NLS-1$
 			notifyEnd = true;
 		}
 		
-		if ("}".equals(text) || "},".equals(text)) {
+		if ("}".equals(text) || "},".equals(text)) { //$NON-NLS-1$ //$NON-NLS-2$
 			fVariable = fVariable.getParent();
 			if (notifyEnd) fCli.notifyStateReturn();
 			return;
@@ -108,7 +108,7 @@ public class ConsultingVariables implements IState {
 
 	@Override
 	public String toString() {
-		return "consulting variables";
+		return "consulting variables"; //$NON-NLS-1$
 	}
 	
 }
