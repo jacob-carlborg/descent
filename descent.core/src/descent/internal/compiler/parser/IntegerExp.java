@@ -59,7 +59,7 @@ public class IntegerExp extends Expression {
 	}
 	
 	public void accept0(IASTVisitor visitor) {
-		boolean children = visitor.visit(this);
+		visitor.visit(this);
 		visitor.endVisit(this);
 	}
 
@@ -298,7 +298,8 @@ public class IntegerExp extends Expression {
 			Type t = type;
 
 			boolean loop = true;
-			L1: while (loop) {
+			// L1: 
+				while (loop) {
 				loop = false;
 				switch (t.ty) {
 				case Tenum: {

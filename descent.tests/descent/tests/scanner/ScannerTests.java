@@ -5,6 +5,7 @@ import descent.core.ToolFactory;
 import descent.core.compiler.IScanner;
 import descent.core.compiler.ITerminalSymbols;
 import descent.core.dom.AST;
+import descent.internal.compiler.parser.Lexer;
 import descent.internal.compiler.parser.TOK;
 
 public class ScannerTests extends TestCase implements ITerminalSymbols {
@@ -122,7 +123,6 @@ public class ScannerTests extends TestCase implements ITerminalSymbols {
 	
 	public void testLiterals() throws Throwable {
 		Object[][] pairs = {
-				/*
 			{ "1", TokenNameIntegerLiteral },	
 			{ "1u", TokenNameUnsignedIntegerLiteral },
 			{ "1L", TokenNameLongLiteral },			
@@ -137,7 +137,6 @@ public class ScannerTests extends TestCase implements ITerminalSymbols {
 			{ "'\\u1234'", TokenNameWCharacterLiteral },
 			{ "'\\U00001234'", TokenNameDCharacterLiteral },			
 			{ "identifier", TokenNameIdentifier },
-			*/
 			{ "\"some string\"", TokenNameStringLiteral },
 			{ "r\"some string\"", TokenNameStringLiteral },
 			{ "`some string`", TokenNameStringLiteral },
@@ -299,6 +298,7 @@ public class ScannerTests extends TestCase implements ITerminalSymbols {
 		}
 	}
 	
+	/*
 	public void testEndLines2() throws Throwable {
 		IScanner scanner = ToolFactory.createScanner(true, true, true, true, AST.D1);
 		scanner.setSource((
@@ -331,6 +331,53 @@ public class ScannerTests extends TestCase implements ITerminalSymbols {
 			assertEquals(3, scanner.getLineNumber(i));
 		}
 	}
+	*/
+	
+//	public void testOptimizedIdentifiersLength1() throws Throwable {
+//		Object[][] pairs = {
+//				{ "a", Lexer.charArray_a },	
+//				{ "b", Lexer.charArray_b },
+//				{ "c", Lexer.charArray_c },			
+//				{ "d", Lexer.charArray_d },
+//				{ "e", Lexer.charArray_e },
+//				{ "f", Lexer.charArray_f },
+//				{ "g", Lexer.charArray_g },
+//				{ "h", Lexer.charArray_h },
+//				{ "i", Lexer.charArray_i },
+//				{ "j", Lexer.charArray_j },
+//				{ "k", Lexer.charArray_k },
+//				{ "l", Lexer.charArray_l },
+//				{ "m", Lexer.charArray_m },			
+//				{ "n", Lexer.charArray_n },
+//				{ "o", Lexer.charArray_o },
+//				{ "p", Lexer.charArray_p },
+//				{ "q", Lexer.charArray_q },
+//				{ "r", Lexer.charArray_r },
+//				{ "s", Lexer.charArray_s },
+//				{ "t", Lexer.charArray_t },
+//				{ "u", Lexer.charArray_u },
+//				{ "v", Lexer.charArray_v },
+//				{ "w", Lexer.charArray_w },
+//				{ "x", Lexer.charArray_x },
+//				{ "y", Lexer.charArray_y },
+//				{ "z", Lexer.charArray_z },
+//			};
+//		
+//		for(Object[] pair : pairs) {
+//			IScanner scanner = ToolFactory.createScanner(true, true, true, true, AST.D2);
+//			scanner.setSource(((String)pair[0]).toCharArray());
+//			int token = scanner.getNextToken();
+//			assertEquals(ITerminalSymbols.TokenNameIdentifier, token);
+//			assertEquals(0, scanner.getCurrentTokenStartPosition());
+//			assertEquals(0, scanner.getCurrentTokenEndPosition());
+//			try {
+//				assertSame(pair[1], scanner.getRawTokenSource());
+//			} catch (Throwable e) {
+//				fail((String) pair[0]);
+//				throw e;
+//			}
+//		}
+//	}
 	
 	private void assertNextToken(IScanner scanner, int terminalSymbol, int start, int end, String rawSource) throws Exception {
 		int token = scanner.getNextToken();

@@ -14,7 +14,7 @@ public class DollarExp extends Expression {
 	}
 	
 	public void accept0(IASTVisitor visitor) {
-		boolean children = visitor.visit(this);
+		visitor.visit(this);
 		visitor.endVisit(this);
 	}
 

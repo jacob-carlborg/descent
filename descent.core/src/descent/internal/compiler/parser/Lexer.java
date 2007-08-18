@@ -149,6 +149,57 @@ public class Lexer implements IProblemRequestor {
 	private boolean tokenizePragmas;
 	private boolean recordLineSeparator;
 	protected final int apiLevel;
+	
+	// ----------------optimized identifier managment------------------
+	static final char[] charArray_a = new char[] {'a'}, 
+		charArray_b = new char[] {'b'}, 
+		charArray_c = new char[] {'c'}, 
+		charArray_d = new char[] {'d'}, 
+		charArray_e = new char[] {'e'}, 
+		charArray_f = new char[] {'f'}, 
+		charArray_g = new char[] {'g'}, 
+		charArray_h = new char[] {'h'}, 
+		charArray_i = new char[] {'i'}, 
+		charArray_j = new char[] {'j'}, 
+		charArray_k = new char[] {'k'}, 
+		charArray_l = new char[] {'l'}, 
+		charArray_m = new char[] {'m'}, 
+		charArray_n = new char[] {'n'}, 
+		charArray_o = new char[] {'o'}, 
+		charArray_p = new char[] {'p'}, 
+		charArray_q = new char[] {'q'}, 
+		charArray_r = new char[] {'r'}, 
+		charArray_s = new char[] {'s'}, 
+		charArray_t = new char[] {'t'}, 
+		charArray_u = new char[] {'u'}, 
+		charArray_v = new char[] {'v'}, 
+		charArray_w = new char[] {'w'}, 
+		charArray_x = new char[] {'x'}, 
+		charArray_y = new char[] {'y'}, 
+		charArray_z = new char[] {'z'}; 
+	
+	static final char[] initCharArray = 
+		new char[] {'\u0000', '\u0000', '\u0000', '\u0000', '\u0000', '\u0000'};
+	static final int TableSize = 30, InternalTableSize = 6; //30*6 =210 entries
+	
+	public static final int OptimizedLength = 7;
+	public /*static*/ final char[][][][] charArray_length = 
+		new char[OptimizedLength][TableSize][InternalTableSize][];
+	
+	/*static*/ {
+		for (int i = 0; i < 6; i++) {
+			for (int j = 0; j < TableSize; j++) {
+				for (int k = 0; k < InternalTableSize; k++) {
+					this.charArray_length[i][j][k] = initCharArray;
+				}
+			}
+		}
+	}
+	/*static*/ int newEntry2 = 0, 
+		newEntry3 = 0, 
+		newEntry4 = 0, 
+		newEntry5 = 0, 
+		newEntry6 = 0;
 
 	/* package */ Lexer(int apiLevel) {
 		this.apiLevel = apiLevel;
@@ -1139,6 +1190,13 @@ public class Lexer implements IProblemRequestor {
 					}
 				}
 				break;
+			default:
+				if (!Chars.isidchar(input[p])) {
+					t.value = TOK.TOKidentifier;
+					t.len = 1;
+					t.string = charArray_a;
+					return;
+				}
 			}
 			break;
 		// b:
@@ -1194,6 +1252,13 @@ public class Lexer implements IProblemRequestor {
 					}
 				}
 				break;
+			default:
+				if (!Chars.isidchar(input[p])) {
+					t.value = TOK.TOKidentifier;
+					t.len = 1;
+					t.string = charArray_b;
+					return;
+				}
 			}
 			break;
 		// c:
@@ -1366,6 +1431,13 @@ public class Lexer implements IProblemRequestor {
 					}
 				}
 				break;
+			default:
+				if (!Chars.isidchar(input[p])) {
+					t.value = TOK.TOKidentifier;
+					t.len = 1;
+					t.string = charArray_c;
+					return;
+				}
 			}
 			break;
 		// d:
@@ -1506,6 +1578,13 @@ public class Lexer implements IProblemRequestor {
 					}
 				}
 				break;
+			default:
+				if (!Chars.isidchar(input[p])) {
+					t.value = TOK.TOKidentifier;
+					t.len = 1;
+					t.string = charArray_d;
+					return;
+				}
 			}
 			break;
 		// e:
@@ -1571,6 +1650,13 @@ public class Lexer implements IProblemRequestor {
 					break;
 				}
 				break;
+			default:
+				if (!Chars.isidchar(input[p])) {
+					t.value = TOK.TOKidentifier;
+					t.len = 1;
+					t.string = charArray_e;
+					return;
+				}
 			}
 			break;
 		// f:
@@ -1718,6 +1804,13 @@ public class Lexer implements IProblemRequestor {
 					}
 				}
 				break;
+			default:
+				if (!Chars.isidchar(input[p])) {
+					t.value = TOK.TOKidentifier;
+					t.len = 1;
+					t.string = charArray_f;
+					return;
+				}
 			}
 			break;
 		// g:
@@ -1734,6 +1827,21 @@ public class Lexer implements IProblemRequestor {
 						return;
 					}
 				}
+			} else if (!Chars.isidchar(input[p])) {
+				t.value = TOK.TOKidentifier;
+				t.len = 1;
+				t.string = charArray_g;
+				return;
+			}
+			break;
+		// h
+		case 'h':
+			p++;
+			if (!Chars.isidchar(input[p])) {
+				t.value = TOK.TOKidentifier;
+				t.len = 1;
+				t.string = charArray_h;
+				return;
 			}
 			break;
 		// i:
@@ -1920,6 +2028,33 @@ public class Lexer implements IProblemRequestor {
 					return;
 				}
 				break;
+			default:
+				if (!Chars.isidchar(input[p])) {
+					t.value = TOK.TOKidentifier;
+					t.len = 1;
+					t.string = charArray_i;
+					return;
+				}
+			}
+			break;
+		// j:
+		case 'j':
+			p++;
+			if (!Chars.isidchar(input[p])) {
+				t.value = TOK.TOKidentifier;
+				t.len = 1;
+				t.string = charArray_j;
+				return;
+			}
+			break;
+		// k:
+		case 'k':
+			p++;
+			if (!Chars.isidchar(input[p])) {
+				t.value = TOK.TOKidentifier;
+				t.len = 1;
+				t.string = charArray_k;
+				return;
 			}
 			break;
 		// l:
@@ -1950,6 +2085,13 @@ public class Lexer implements IProblemRequestor {
 					}
 				}
 				break;
+			default:
+				if (!Chars.isidchar(input[p])) {
+					t.value = TOK.TOKidentifier;
+					t.len = 1;
+					t.string = charArray_l;
+					return;
+				}
 			}
 			break;
 		// m:
@@ -2004,6 +2146,13 @@ public class Lexer implements IProblemRequestor {
 					}
 				}
 				break;
+			default:
+				if (!Chars.isidchar(input[p])) {
+					t.value = TOK.TOKidentifier;
+					t.len = 1;
+					t.string = charArray_m;
+					return;
+				}
 			}
 			break;
 		// n:
@@ -2031,6 +2180,13 @@ public class Lexer implements IProblemRequestor {
 					}
 				}
 				break;
+			default:
+				if (!Chars.isidchar(input[p])) {
+					t.value = TOK.TOKidentifier;
+					t.len = 1;
+					t.string = charArray_n;
+					return;
+				}
 			}
 			break;
 		// o:
@@ -2161,6 +2317,13 @@ public class Lexer implements IProblemRequestor {
 					}
 				}
 				break;
+			default:
+				if (!Chars.isidchar(input[p])) {
+					t.value = TOK.TOKidentifier;
+					t.len = 1;
+					t.string = charArray_o;
+					return;
+				}
 			}
 			break;
 		// p:
@@ -2268,6 +2431,23 @@ public class Lexer implements IProblemRequestor {
 					}
 				}
 				break;
+			default:
+				if (!Chars.isidchar(input[p])) {
+					t.value = TOK.TOKidentifier;
+					t.len = 1;
+					t.string = charArray_p;
+					return;
+				}
+			}
+			break;
+		// q:
+		case 'q':
+			p++;
+			if (!Chars.isidchar(input[p])) {
+				t.value = TOK.TOKidentifier;
+				t.len = 1;
+				t.string = charArray_q;
+				return;
 			}
 			break;
 		// r:
@@ -2309,6 +2489,11 @@ public class Lexer implements IProblemRequestor {
 					}
 					break;
 				}
+			} else if (!Chars.isidchar(input[p])) {
+				t.value = TOK.TOKidentifier;
+				t.len = 1;
+				t.string = charArray_r;
+				return;
 			}
 			break;
 		// s:
@@ -2449,6 +2634,13 @@ public class Lexer implements IProblemRequestor {
 					}
 				}
 				break;
+			default:
+				if (!Chars.isidchar(input[p])) {
+					t.value = TOK.TOKidentifier;
+					t.len = 1;
+					t.string = charArray_s;
+					return;
+				}
 			}
 			break;
 		// t:
@@ -2568,6 +2760,13 @@ public class Lexer implements IProblemRequestor {
 					}
 				}
 				break;
+			default:
+				if (!Chars.isidchar(input[p])) {
+					t.value = TOK.TOKidentifier;
+					t.len = 1;
+					t.string = charArray_t;
+					return;
+				}
 			}
 			break;
 		// u:
@@ -2684,6 +2883,13 @@ public class Lexer implements IProblemRequestor {
 					}
 				}
 				break;
+			default:
+				if (!Chars.isidchar(input[p])) {
+					t.value = TOK.TOKidentifier;
+					t.len = 1;
+					t.string = charArray_u;
+					return;
+				}
 			}
 			break;
 		// v:
@@ -2746,6 +2952,13 @@ public class Lexer implements IProblemRequestor {
 					break;
 				}
 				break;
+			default:
+				if (!Chars.isidchar(input[p])) {
+					t.value = TOK.TOKidentifier;
+					t.len = 1;
+					t.string = charArray_v;
+					return;
+				}
 			}
 			break;
 		// w:
@@ -2794,6 +3007,43 @@ public class Lexer implements IProblemRequestor {
 					}
 				}
 				break;
+			default:
+				if (!Chars.isidchar(input[p])) {
+					t.value = TOK.TOKidentifier;
+					t.len = 1;
+					t.string = charArray_w;
+					return;
+				}
+			}
+			break;
+		// 'x':
+		case 'x':
+			p++;
+			if (!Chars.isidchar(input[p])) {
+				t.value = TOK.TOKidentifier;
+				t.len = 1;
+				t.string = charArray_x;
+				return;
+			}
+			break;
+		// 'y':
+		case 'y':
+			p++;
+			if (!Chars.isidchar(input[p])) {
+				t.value = TOK.TOKidentifier;
+				t.len = 1;
+				t.string = charArray_y;
+				return;
+			}
+			break;
+		// 'z':
+		case 'z':
+			p++;
+			if (!Chars.isidchar(input[p])) {
+				t.value = TOK.TOKidentifier;
+				t.len = 1;
+				t.string = charArray_z;
+				return;
 			}
 			break;
 		// _
@@ -3022,8 +3272,203 @@ public class Lexer implements IProblemRequestor {
 		
 		t.value = TOK.TOKidentifier;
 		t.len = p - t.ptr;
-		t.setString(input, t.ptr, t.len);
+		
+		switch(t.len) {
+		case 2:
+			t.string = optimizedCurrentTokenSource2(t);
+			break;
+		case 3:
+			t.string = optimizedCurrentTokenSource3(t);
+			break;
+		case 4:
+			t.string = optimizedCurrentTokenSource4(t);
+			break;
+		case 5:
+			t.string = optimizedCurrentTokenSource5(t);
+			break;
+		case 6:
+			t.string = optimizedCurrentTokenSource6(t);
+			break;
+		default:
+			t.setString(input, t.ptr, t.len);
+			break;
+		}		
 		return;
+	}
+	
+	final char[] optimizedCurrentTokenSource2(Token t) {
+		//try to return the same char[] build only once
+
+		char[] src = this.input;
+		int start = t.ptr;
+		char c0 , c1;
+		int hash = (((c0=src[start]) << 6) + (c1=src[start+1])) % TableSize; 
+		char[][] table = this.charArray_length[0][hash];
+		int i = newEntry2;
+		while (++i < InternalTableSize) {
+			char[] charArray = table[i];
+			if ((c0 == charArray[0]) && (c1 == charArray[1]))
+				return charArray;
+		}
+		//---------other side---------
+		i = -1;
+		int max = newEntry2;
+		while (++i <= max) {
+			char[] charArray = table[i];
+			if ((c0 == charArray[0]) && (c1 == charArray[1]))
+				return charArray;
+		}
+		//--------add the entry-------
+		if (++max >= InternalTableSize) max = 0;
+		char[] r;
+		System.arraycopy(src, start, r= new char[2], 0, 2);
+		//newIdentCount++;
+		return table[newEntry2 = max] = r; //(r = new char[] {c0, c1});
+	}
+	
+	final char[] optimizedCurrentTokenSource3(Token t) {
+		//try to return the same char[] build only once
+
+		char[] src = this.input;
+		int start = t.ptr;
+		char c0, c1=src[start+1], c2;
+		int hash = (((c0=src[start])<< 6) + (c2=src[start+2])) % TableSize; 
+//		int hash = ((c0 << 12) + (c1<< 6) + c2) % TableSize; 
+		char[][] table = this.charArray_length[1][hash];
+		int i = newEntry3;
+		while (++i < InternalTableSize) {
+			char[] charArray = table[i];
+			if ((c0 == charArray[0]) && (c1 == charArray[1]) && (c2 == charArray[2]))
+				return charArray;
+		}
+		//---------other side---------
+		i = -1;
+		int max = newEntry3;
+		while (++i <= max) {
+			char[] charArray = table[i];
+			if ((c0 == charArray[0]) && (c1 == charArray[1]) && (c2 == charArray[2]))
+				return charArray;
+		}
+		//--------add the entry-------
+		if (++max >= InternalTableSize) max = 0;
+		char[] r;
+		System.arraycopy(src, start, r= new char[3], 0, 3);
+		//newIdentCount++;
+		return table[newEntry3 = max] = r; //(r = new char[] {c0, c1, c2});
+	}
+	final char[] optimizedCurrentTokenSource4(Token t) {
+		//try to return the same char[] build only once
+
+		char[] src = this.input;
+		int start = t.ptr;
+		char c0, c1 = src[start+1], c2, c3 = src[start+3];
+		int hash = (((c0=src[start]) << 6) + (c2=src[start+2])) % TableSize;
+//		int hash = (int) (((((long) c0) << 18) + (c1 << 12) + (c2 << 6) + c3) % TableSize); 
+		char[][] table = this.charArray_length[2][hash];
+		int i = newEntry4;
+		while (++i < InternalTableSize) {
+			char[] charArray = table[i];
+			if ((c0 == charArray[0])
+				&& (c1 == charArray[1])
+				&& (c2 == charArray[2])
+				&& (c3 == charArray[3]))
+				return charArray;
+		}
+		//---------other side---------
+		i = -1;
+		int max = newEntry4;
+		while (++i <= max) {
+			char[] charArray = table[i];
+			if ((c0 == charArray[0])
+				&& (c1 == charArray[1])
+				&& (c2 == charArray[2])
+				&& (c3 == charArray[3]))
+				return charArray;
+		}
+		//--------add the entry-------
+		if (++max >= InternalTableSize) max = 0;
+		char[] r;
+		System.arraycopy(src, start, r= new char[4], 0, 4);
+		//newIdentCount++;
+		return table[newEntry4 = max] = r; //(r = new char[] {c0, c1, c2, c3});
+	}
+	final char[] optimizedCurrentTokenSource5(Token t) {
+		//try to return the same char[] build only once
+
+		char[] src = this.input;
+		int start = t.ptr;
+		char c0, c1 = src[start+1], c2, c3 = src[start+3], c4;
+		int hash = (((c0=src[start]) << 12) +((c2=src[start+2]) << 6) + (c4=src[start+4])) % TableSize;
+//		int hash = (int) (((((long) c0) << 24) + (((long) c1) << 18) + (c2 << 12) + (c3 << 6) + c4) % TableSize); 
+		char[][] table = this.charArray_length[3][hash];
+		int i = newEntry5;
+		while (++i < InternalTableSize) {
+			char[] charArray = table[i];
+			if ((c0 == charArray[0])
+				&& (c1 == charArray[1])
+				&& (c2 == charArray[2])
+				&& (c3 == charArray[3])
+				&& (c4 == charArray[4]))
+				return charArray;
+		}
+		//---------other side---------
+		i = -1;
+		int max = newEntry5;
+		while (++i <= max) {
+			char[] charArray = table[i];
+			if ((c0 == charArray[0])
+				&& (c1 == charArray[1])
+				&& (c2 == charArray[2])
+				&& (c3 == charArray[3])
+				&& (c4 == charArray[4]))
+				return charArray;
+		}
+		//--------add the entry-------
+		if (++max >= InternalTableSize) max = 0;
+		char[] r;
+		System.arraycopy(src, start, r= new char[5], 0, 5);
+		//newIdentCount++;
+		return table[newEntry5 = max] = r; //(r = new char[] {c0, c1, c2, c3, c4});
+	}
+	final char[] optimizedCurrentTokenSource6(Token t) {
+		//try to return the same char[] build only once
+
+		char[] src = this.input;
+		int start = t.ptr;
+		char c0, c1 = src[start+1], c2, c3 = src[start+3], c4, c5 = src[start+5];
+		int hash = (((c0=src[start]) << 12) +((c2=src[start+2]) << 6) + (c4=src[start+4])) % TableSize;
+//		int hash = (int)(((((long) c0) << 32) + (((long) c1) << 24) + (((long) c2) << 18) + (c3 << 12) + (c4 << 6) + c5) % TableSize); 
+		char[][] table = this.charArray_length[4][hash];
+		int i = newEntry6;
+		while (++i < InternalTableSize) {
+			char[] charArray = table[i];
+			if ((c0 == charArray[0])
+				&& (c1 == charArray[1])
+				&& (c2 == charArray[2])
+				&& (c3 == charArray[3])
+				&& (c4 == charArray[4])
+				&& (c5 == charArray[5]))
+				return charArray;
+		}
+		//---------other side---------
+		i = -1;
+		int max = newEntry6;
+		while (++i <= max) {
+			char[] charArray = table[i];
+			if ((c0 == charArray[0])
+				&& (c1 == charArray[1])
+				&& (c2 == charArray[2])
+				&& (c3 == charArray[3])
+				&& (c4 == charArray[4])
+				&& (c5 == charArray[5]))
+				return charArray;
+		}
+		//--------add the entry-------
+		if (++max >= InternalTableSize) max = 0;
+		char[] r;
+		System.arraycopy(src, start, r= new char[6], 0, 6);
+		//newIdentCount++;
+		return table[newEntry6 = max] = r; //(r = new char[] {c0, c1, c2, c3, c4, c5});
 	}
 	
 	private int escapeSequence() {
@@ -3516,6 +3961,7 @@ public class Lexer implements IProblemRequestor {
 	private final static int STATE_binary = 7;
 	private final static int STATE_hex0 = 8; 
 	private final static int STATE_binary0 = 9;
+	@SuppressWarnings("unused")
 	private final static int STATE_hexh = 10; 
 	private final static int STATE_error = 11;
 		

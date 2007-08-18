@@ -20,7 +20,7 @@ public class AsmStatement extends Statement {
 	}
 	
 	public void accept0(IASTVisitor visitor) {
-		boolean children = visitor.visit(this);
+		visitor.visit(this);
 		visitor.endVisit(this);
 	}
 

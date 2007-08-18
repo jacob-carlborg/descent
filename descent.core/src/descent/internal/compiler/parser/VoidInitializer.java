@@ -13,7 +13,7 @@ public class VoidInitializer extends Initializer {
 	}
 	
 	public void accept0(IASTVisitor visitor) {
-		boolean children = visitor.visit(this);
+		visitor.visit(this);
 		visitor.endVisit(this);
 	}
 	
