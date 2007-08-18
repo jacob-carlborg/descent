@@ -14,6 +14,7 @@ import descent.core.dom.AsmStatement;
 import descent.core.dom.Block;
 import descent.core.dom.BooleanLiteral;
 import descent.core.dom.BreakStatement;
+import descent.core.dom.CallExpression;
 import descent.core.dom.CatchClause;
 import descent.core.dom.CompilationUnit;
 import descent.core.dom.ContinueStatement;
@@ -21,6 +22,7 @@ import descent.core.dom.DebugStatement;
 import descent.core.dom.DeclarationStatement;
 import descent.core.dom.DefaultStatement;
 import descent.core.dom.DoStatement;
+import descent.core.dom.DotIdentifierExpression;
 import descent.core.dom.EnumDeclaration;
 import descent.core.dom.ExpressionStatement;
 import descent.core.dom.ForStatement;
@@ -47,8 +49,11 @@ import descent.core.dom.StaticAssertStatement;
 import descent.core.dom.StaticIfStatement;
 import descent.core.dom.SwitchStatement;
 import descent.core.dom.SynchronizedStatement;
+import descent.core.dom.TemplateType;
 import descent.core.dom.ThrowStatement;
 import descent.core.dom.TryStatement;
+import descent.core.dom.Type;
+import descent.core.dom.TypeExpression;
 import descent.core.dom.TypedefDeclaration;
 import descent.core.dom.TypedefDeclarationFragment;
 import descent.core.dom.VariableDeclaration;
@@ -787,6 +792,38 @@ public class Statement_Test extends Parser_Test {
 			assertEquals(pair[1], var.modifiers().get(1).getModifierKeyword());
 			assertPosition(var.modifiers().get(1), 8, ((String) pair[0]).length());
 		}
+	}
+	
+	public void testScopeExp() throws Exception {
+		String s = "void foo() { x!(y); }";
+		CompilationUnit compilationUnit = getCompilationUnit(s, AST.D1);
+		FunctionDeclaration decl = (FunctionDeclaration) compilationUnit.declarations().get(0);
+		ExpressionStatement expStm = (ExpressionStatement) decl.getBody().statements().get(0);
+		assertPosition(expStm, 13, 6);
+		TypeExpression exp = (TypeExpression) expStm.getExpression();
+		assertPosition(exp, 13, 5);
+		TemplateType type = (TemplateType) exp.getType();
+		assertPosition(type, 13, 5);
+		assertPosition(type.getName(), 13, 1);
+		assertPosition(type.arguments().get(0), 16, 1);
+	}
+	
+	public void testScopeExp2() throws Exception {
+		String s = "void foo() { x!(y).z(); }";
+		CompilationUnit compilationUnit = getCompilationUnit(s, AST.D1);
+		FunctionDeclaration decl = (FunctionDeclaration) compilationUnit.declarations().get(0);
+		ExpressionStatement expStm = (ExpressionStatement) decl.getBody().statements().get(0);
+		assertPosition(expStm, 13, 10);
+		CallExpression callExp = (CallExpression) expStm.getExpression();
+		assertPosition(callExp, 13, 9);
+		DotIdentifierExpression dotIdExp = (DotIdentifierExpression) callExp.getExpression();;
+		assertPosition(dotIdExp, 13, 7);
+		TypeExpression exp = (TypeExpression) dotIdExp.getExpression();
+		assertPosition(exp, 13, 5);
+		TemplateType type = (TemplateType) exp.getType();
+		assertPosition(type, 13, 5);
+		assertPosition(type.getName(), 13, 1);
+		assertPosition(type.arguments().get(0), 16, 1);
 	}
 	
 	public void testParseStatements() {

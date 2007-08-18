@@ -5084,6 +5084,7 @@ public class Parser extends Lexer {
 		    	tempinst.tiargs = parseTemplateArgumentList();
 		    	tempinst.setSourceRange(id.start, prevToken.ptr + prevToken.len - id.start);
 				e = new ScopeExp(loc, tempinst);
+				e.setSourceRange(tempinst.start, tempinst.length);
 		    }
 		    else {
 		    	e = id;
