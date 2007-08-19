@@ -115,8 +115,13 @@ public class HierarchyTest extends AbstractModelTest {
 		IType type = types[0];
 		assertEquals(1, type.getSourceRange().getOffset());
 		assertEquals(40, type.getSourceRange().getLength());
+		assertEquals(2, type.getJavadocRanges().length);
+		
 		assertEquals(1, type.getJavadocRanges()[0].getOffset());
-		assertEquals(23, type.getJavadocRanges()[0].getLength());
+		assertEquals(11, type.getJavadocRanges()[0].getLength());
+		
+		assertEquals(13, type.getJavadocRanges()[1].getOffset());
+		assertEquals(11, type.getJavadocRanges()[1].getLength());
 	}
 	
 	public void testMethod() throws Exception {
@@ -435,7 +440,7 @@ public class HierarchyTest extends AbstractModelTest {
 	}
 	
 	public void testInvariant() throws Exception {
-		ICompilationUnit unit = createCompilationUnit("test.d", " class Clazz1 { /** hola */ invariant { } }");
+		ICompilationUnit unit = createCompilationUnit("test.d", " class Clazz1 { /** hola */ invariant() { } }");
 		
 		IType[] types = unit.getTypes();
 		assertEquals(1, types.length);
@@ -456,7 +461,7 @@ public class HierarchyTest extends AbstractModelTest {
 		assertFalse(init.isExtern());
 		assertFalse(init.isPragma());
 		assertEquals(16, init.getSourceRange().getOffset());
-		assertEquals(25, init.getSourceRange().getLength());
+		assertEquals(27, init.getSourceRange().getLength());
 		assertEquals(16, init.getJavadocRanges()[0].getOffset());
 		assertEquals(11, init.getJavadocRanges()[0].getLength());
 		assertEquals("", init.getElementName());

@@ -984,11 +984,23 @@ public class ASTConverter {
 			Dsymbol wrappedSymbol = a.members.get(0);
 			if (wrappedSymbol.getNodeType() == ASTDmdNode.FUNC_DECLARATION) {
 				FunctionDeclaration b = (FunctionDeclaration) convert(wrappedSymbol);
+				if (a.preDdocs != null) {
+					convertDdoc(b.preDDocs(), a.preDdocs);
+				}
+				if (a.postDdoc != null) {
+					b.setPostDDoc(convertDdoc(a.postDdoc));
+				}
 				convertTemplateParameters(b.templateParameters(), a.parameters);
 				b.setSourceRange(a.start, a.length);
 				return b;
 			} else {
 				AggregateDeclaration b = (AggregateDeclaration) convert(wrappedSymbol);
+				if (a.preDdocs != null) {
+					convertDdoc(b.preDDocs(), a.preDdocs);
+				}
+				if (a.postDdoc != null) {
+					b.setPostDDoc(convertDdoc(a.postDdoc));
+				}
 				convertTemplateParameters(b.templateParameters(), a.parameters);
 				b.setSourceRange(a.start, a.length);
 				return b;
