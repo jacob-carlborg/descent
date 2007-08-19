@@ -15,7 +15,7 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.texteditor.AbstractTextEditor;
 import org.eclipse.ui.texteditor.ITextEditor;
 
-import descent.core.domX.ASTNode;
+import descent.internal.compiler.parser.ast.ASTNode;
 
 public class EditorUtil {
 	

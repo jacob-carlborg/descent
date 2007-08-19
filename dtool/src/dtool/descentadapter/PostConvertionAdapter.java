@@ -1,7 +1,7 @@
 package dtool.descentadapter;
 
-import descent.core.domX.ASTNode;
 import descent.internal.compiler.parser.TOK;
+import descent.internal.compiler.parser.ast.ASTNode;
 import dtool.dom.ast.ASTNeoUpTreeVisitor;
 import dtool.dom.declarations.Declaration;
 import dtool.dom.declarations.DeclarationImport;

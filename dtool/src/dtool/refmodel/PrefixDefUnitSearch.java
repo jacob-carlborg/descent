@@ -1,9 +1,9 @@
 package dtool.refmodel;
 
-import descent.core.domX.ASTNode;
-import descent.core.domX.TokenUtil;
 import descent.internal.compiler.parser.TOK;
 import descent.internal.compiler.parser.Token;
+import descent.internal.compiler.parser.ast.ASTNode;
+import descent.internal.compiler.parser.ast.TokenUtil;
 import dtool.descentadapter.DescentASTConverter;
 import dtool.dom.ast.ASTNodeFinder;
 import dtool.dom.definitions.DefUnit;

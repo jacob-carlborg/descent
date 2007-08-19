@@ -20,7 +20,7 @@ public abstract class CommonRefSingle extends Reference {
 		if(elem instanceof TemplateInstanceWrapper)
 			return new RefTemplateInstance(((TemplateInstanceWrapper) elem).tempinst);
 		else
-			return elem.ident.equals("") ? null : new RefIdentifier(elem); 
+			return elem.ident.length == 0 ? null : new RefIdentifier(elem); 
 	}
 	
 	public static void convertManyToRefIdentifier(List<IdentifierExp> idents,

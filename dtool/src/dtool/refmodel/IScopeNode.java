@@ -1,7 +1,7 @@
 package dtool.refmodel;
 
 
-import dtool.dom.ast.IASTNode;
+import descent.internal.compiler.parser.ast.IASTNode;
 
 /** 
  * A scope which is an AST node. 

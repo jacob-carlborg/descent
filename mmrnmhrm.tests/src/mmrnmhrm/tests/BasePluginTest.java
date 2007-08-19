@@ -23,7 +23,7 @@ public class BasePluginTest {
 	
 	public static void assertTrue(boolean b, String msg) {
 		if(b == false) {
-			b = false; // dummy op for breakpoint
+			b = false; // dummy statement to allow breakpoint placement
 		}
 		Assert.assertTrue(msg, b);
 	}

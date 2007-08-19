@@ -1,7 +1,7 @@
 package melnorme.miscutil.tree;
 
 import melnorme.miscutil.AssertIn;
-import descent.core.domX.ASTRangeLessNode;
+import descent.internal.compiler.parser.ast.ASTRangeLessNode;
 
 /**
  * Generic type for a tree node. The erasure TreeNode represents a homogenous tree

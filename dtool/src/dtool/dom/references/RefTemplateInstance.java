@@ -27,7 +27,8 @@ public class RefTemplateInstance extends CommonRefSingle {
 			List<ASTDmdNode> tiargs) {
 		setSourceRange(elem);
 		Assert.isTrue(elem.getStartPos() == tplIdent.getStartPos());
-		this.name = tplIdent.ident;
+		Assert.isTrue(tplIdent.ident != null);
+		this.name = new String(tplIdent.ident);
 		this.tiargs = DescentASTConverter.convertManyL(tiargs, this.tiargs);
 		if (this.tiargs == null)
 			this.tiargs = Collections.emptyList();

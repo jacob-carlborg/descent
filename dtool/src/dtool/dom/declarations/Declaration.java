@@ -3,10 +3,10 @@ package dtool.dom.declarations;
 import java.util.Iterator;
 import java.util.List;
 
-import descent.core.domX.ASTNode;
 import descent.internal.compiler.parser.Dsymbol;
 import descent.internal.compiler.parser.Modifier;
 import descent.internal.compiler.parser.TOK;
+import descent.internal.compiler.parser.ast.ASTNode;
 import dtool.descentadapter.DescentASTConverter;
 import dtool.refmodel.IScope;
 

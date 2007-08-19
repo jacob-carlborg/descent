@@ -15,7 +15,7 @@ import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.swt.graphics.Image;
 
-import dtool.dom.ast.IASTNode;
+import descent.internal.compiler.parser.ast.IASTNode;
 
 public class DeeNavigatorLabelProvider implements ILabelProvider {
 

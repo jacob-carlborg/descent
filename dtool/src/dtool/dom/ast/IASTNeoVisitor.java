@@ -1,6 +1,6 @@
 package dtool.dom.ast;
 
-import descent.core.domX.IASTVisitor;
+import descent.internal.compiler.parser.ast.IASTVisitor;
 import dtool.dom.declarations.DeclarationImport;
 import dtool.dom.definitions.DefUnit;
 import dtool.dom.definitions.Definition;

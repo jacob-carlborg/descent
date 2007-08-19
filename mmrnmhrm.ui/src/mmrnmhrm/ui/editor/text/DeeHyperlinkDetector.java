@@ -9,7 +9,7 @@ import org.eclipse.jface.text.hyperlink.AbstractHyperlinkDetector;
 import org.eclipse.jface.text.hyperlink.IHyperlink;
 import org.eclipse.ui.texteditor.ITextEditor;
 
-import descent.core.domX.ASTNode;
+import descent.internal.compiler.parser.ast.ASTNode;
 import dtool.dom.ast.ASTNodeFinder;
 import dtool.dom.references.Reference;
 

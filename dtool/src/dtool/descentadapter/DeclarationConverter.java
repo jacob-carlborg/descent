@@ -5,7 +5,6 @@ import descent.internal.compiler.parser.AnonDeclaration;
 import descent.internal.compiler.parser.Argument;
 import descent.internal.compiler.parser.AttribDeclaration;
 import descent.internal.compiler.parser.DebugCondition;
-import descent.internal.compiler.parser.DebugStatement;
 import descent.internal.compiler.parser.DebugSymbol;
 import descent.internal.compiler.parser.IftypeCondition;
 import descent.internal.compiler.parser.Modifier;
@@ -83,13 +82,6 @@ abstract class DeclarationConverter extends RefConverter {
 		return assertFailHandledDirectly();
 	}
 
-	public boolean visit(DebugStatement node) {
-		Assert.fail();
-		return false;
-	}
-
-
-	
 	public boolean visit(AnonDeclaration node) {
 		return endAdapt(new DeclarationAnonMember(node));
 	}

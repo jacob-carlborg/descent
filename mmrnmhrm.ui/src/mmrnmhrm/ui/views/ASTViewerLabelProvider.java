@@ -10,8 +10,8 @@ import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Display;
 
-import descent.core.domX.ASTNode;
 import descent.internal.compiler.parser.ASTDmdNode;
+import descent.internal.compiler.parser.ast.ASTNode;
 import dtool.dom.ast.ASTPrinter;
 import dtool.dom.definitions.DefUnit;
 import dtool.dom.references.Reference;

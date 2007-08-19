@@ -10,7 +10,7 @@ import mmrnmhrm.tests.SampleMainProject;
 import org.eclipse.core.runtime.CoreException;
 import org.junit.Test;
 
-import descent.core.domX.ASTNode;
+import descent.internal.compiler.parser.ast.ASTNode;
 import dtool.dom.ast.ASTNodeFinder;
 import dtool.dom.definitions.DefUnit;
 import dtool.dom.definitions.Module;

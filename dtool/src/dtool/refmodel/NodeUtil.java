@@ -1,7 +1,7 @@
 package dtool.refmodel;
 
 import melnorme.miscutil.tree.IElement;
-import descent.core.domX.ASTNode;
+import descent.internal.compiler.parser.ast.ASTNode;
 import dtool.dom.ast.ASTNeoNode;
 import dtool.dom.definitions.BaseClass;
 import dtool.dom.definitions.DefUnit;

@@ -1,7 +1,7 @@
 package dtool.dom.ast;
 
 import melnorme.miscutil.tree.TreeDepthRecon;
-import descent.core.domX.ASTNode;
+import descent.internal.compiler.parser.ast.ASTNode;
 import dtool.dom.references.RefQualified;
 
 /**

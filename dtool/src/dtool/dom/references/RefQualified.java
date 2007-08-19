@@ -4,8 +4,8 @@ import java.util.Collection;
 import java.util.List;
 
 import melnorme.miscutil.tree.TreeVisitor;
-import descent.core.domX.ASTNode;
 import descent.internal.compiler.parser.IdentifierExp;
+import descent.internal.compiler.parser.ast.ASTNode;
 import dtool.dom.ast.IASTNeoVisitor;
 import dtool.dom.definitions.DefUnit;
 import dtool.refmodel.IDefUnitReferenceNode;

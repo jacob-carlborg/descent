@@ -1,13 +1,21 @@
 package dtool.dom.ast;
 
 import melnorme.miscutil.Assert;
-import descent.core.domX.ASTNode;
-import descent.core.domX.IASTVisitor;
+import descent.internal.compiler.parser.ast.ASTNode;
+import descent.internal.compiler.parser.ast.IASTVisitor;
 import dtool.refmodel.IScope;
 import dtool.refmodel.NodeUtil;
 
 public abstract class ASTNeoNode extends ASTNode  {
+	
+	public int getElementType() {
+		return 0; // TODO Not DMD element
+	}
 
+	@Override
+	public ASTNode[] getChildren() {
+		return (ASTNode[]) ASTNeoChildrenCollector.getChildrenArray(this);
+	}
 
 	public void convertNode(ASTNode node) {
 		convertNode(node, false);
@@ -19,11 +27,6 @@ public abstract class ASTNeoNode extends ASTNode  {
 			Assert.fail("Has no source range Info");
 		}
 	}
-
-	public int getElementType() {
-		return 0; // TODO Not DMD element
-	}
-	
 
 	/**
 	 * Same as ASTNode.accept but makes sub-elements accept0 use ASTNeoVisitor.

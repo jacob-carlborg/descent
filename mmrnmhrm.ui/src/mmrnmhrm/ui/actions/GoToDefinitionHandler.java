@@ -23,7 +23,7 @@ import org.eclipse.ui.handlers.HandlerUtil;
 import org.eclipse.ui.ide.IDE;
 import org.eclipse.ui.texteditor.ITextEditor;
 
-import descent.core.domX.ASTNode;
+import descent.internal.compiler.parser.ast.ASTNode;
 import dtool.dom.ast.ASTNodeFinder;
 import dtool.dom.ast.ASTPrinter;
 import dtool.dom.definitions.DefUnit;

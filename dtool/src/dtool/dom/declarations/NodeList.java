@@ -4,10 +4,10 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 
-import descent.core.domX.ASTNode;
 import descent.internal.compiler.parser.CompoundStatement;
 import descent.internal.compiler.parser.Dsymbol;
 import descent.internal.compiler.parser.Statement;
+import descent.internal.compiler.parser.ast.ASTNode;
 import dtool.descentadapter.DescentASTConverter;
 
 /**

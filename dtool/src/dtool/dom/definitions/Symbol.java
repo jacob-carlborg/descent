@@ -12,11 +12,15 @@ public class Symbol extends ASTNeoNode {
 	public Symbol(IdentifierExp id) {
 		Assert.isTrue(id.getClass() == IdentifierExp.class);
 		setSourceRange(id);
-		this.name = id.ident;
+		this.name = new String(id.ident);
 	}
 
 	public Symbol(String name) {
 		this.name = name;
+	}
+	
+	public Symbol(char[] name) {
+		this.name = new String(name);
 	}
 
 	@Override

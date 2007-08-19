@@ -4,7 +4,7 @@ import java.util.Iterator;
 
 import melnorme.miscutil.ExceptionAdapter;
 import melnorme.miscutil.IteratorUtil;
-import dtool.dom.ast.IASTNode;
+import descent.internal.compiler.parser.ast.IASTNode;
 import dtool.dom.declarations.DeclarationImport;
 import dtool.dom.declarations.ImportContent;
 import dtool.dom.declarations.ImportStatic;

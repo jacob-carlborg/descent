@@ -3,7 +3,7 @@ package dtool.dom.declarations;
 import java.util.Collections;
 import java.util.Iterator;
 
-import descent.core.domX.ASTNode;
+import descent.internal.compiler.parser.ast.ASTNode;
 import dtool.dom.definitions.Symbol;
 
 

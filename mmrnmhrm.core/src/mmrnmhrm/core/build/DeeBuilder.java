@@ -39,8 +39,11 @@ public class DeeBuilder extends IncrementalProjectBuilder {
 	private DeeProject deeProject;
 	
 	public DeeProject getDeeProject() {
-		deeProject = DeeModel.getLangProject(getProject());
 		return deeProject;
+	}
+	
+	protected void startupOnInitialize() {
+		deeProject = DeeModel.getLangProject(getProject());
 	}
 
 	@Override
@@ -65,10 +68,6 @@ public class DeeBuilder extends IncrementalProjectBuilder {
 		dce.compileModules(visitor.dmodules);
 		
 		return null; // No deps
-	}
-
-	protected void startupOnInitialize() {
-		// add builder init logic here
 	}
 
 	protected void clean(IProgressMonitor monitor) throws CoreException {

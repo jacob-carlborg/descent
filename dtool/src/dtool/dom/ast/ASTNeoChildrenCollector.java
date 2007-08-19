@@ -3,20 +3,20 @@ package dtool.dom.ast;
 import java.util.ArrayList;
 import java.util.List;
 
-import descent.core.domX.ASTNode;
+import descent.internal.compiler.parser.ast.ASTNode;
 
 
 
 /**
  * Uses a Visitor to collect a node's children.
  */
-public class ASTChildrenCollector extends ASTHomoVisitor {
+public class ASTNeoChildrenCollector extends ASTNeoHomoVisitor {
 	
 	private boolean visitingParent = true;
 	private List<ASTNode> childrenLst;
 	
 	public static List<ASTNode> getChildrenList(ASTNode elem){
-		ASTChildrenCollector collector = new ASTChildrenCollector();
+		ASTNeoChildrenCollector collector = new ASTNeoChildrenCollector();
 		collector.childrenLst = new ArrayList<ASTNode>();
 		collector.traverse(elem);
 		return collector.childrenLst;

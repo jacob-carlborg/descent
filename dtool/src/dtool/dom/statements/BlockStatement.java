@@ -4,9 +4,9 @@ import java.util.Iterator;
 import java.util.List;
 
 import melnorme.miscutil.tree.TreeVisitor;
-import descent.core.domX.ASTNode;
-import descent.core.domX.ASTRangeLessNode;
 import descent.internal.compiler.parser.ScopeStatement;
+import descent.internal.compiler.parser.ast.ASTNode;
+import descent.internal.compiler.parser.ast.ASTRangeLessNode;
 import dtool.descentadapter.DescentASTConverter;
 import dtool.dom.ast.IASTNeoVisitor;
 import dtool.refmodel.IScope;

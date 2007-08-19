@@ -7,7 +7,7 @@ import melnorme.util.ui.jface.ElementContentProvider;
 
 import org.eclipse.jface.viewers.Viewer;
 
-import descent.core.domX.ASTNode;
+import descent.internal.compiler.parser.ast.ASTNode;
 import dtool.dom.declarations.DeclarationImport;
 import dtool.dom.definitions.DefUnit;
 import dtool.dom.definitions.Module;

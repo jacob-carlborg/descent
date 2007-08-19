@@ -7,9 +7,9 @@ import java.util.Iterator;
 
 import melnorme.miscutil.IteratorUtil;
 import melnorme.miscutil.tree.TreeVisitor;
-import descent.core.domX.ASTNode;
 import descent.internal.compiler.parser.IdentifierExp;
 import descent.internal.compiler.parser.Import;
+import descent.internal.compiler.parser.ast.ASTNode;
 import dtool.dom.ast.IASTNeoVisitor;
 import dtool.dom.declarations.DeclarationImport.ImportFragment;
 import dtool.dom.definitions.DefUnit;

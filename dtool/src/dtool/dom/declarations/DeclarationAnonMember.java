@@ -4,8 +4,8 @@ import java.util.Arrays;
 import java.util.Iterator;
 
 import melnorme.miscutil.tree.TreeVisitor;
-import descent.core.domX.ASTNode;
 import descent.internal.compiler.parser.AnonDeclaration;
+import descent.internal.compiler.parser.ast.ASTNode;
 import dtool.dom.ast.ASTNeoNode;
 import dtool.dom.ast.IASTNeoVisitor;
 import dtool.refmodel.INonScopedBlock;

@@ -4,7 +4,7 @@ import java.util.Collections;
 import java.util.Iterator;
 
 import melnorme.miscutil.IteratorUtil;
-import descent.core.domX.ASTNode;
+import descent.internal.compiler.parser.ast.ASTNode;
 import dtool.dom.definitions.DefUnit;
 import dtool.dom.definitions.Module;
 import dtool.dom.definitions.Symbol;

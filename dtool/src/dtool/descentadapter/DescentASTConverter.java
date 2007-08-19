@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import descent.core.domX.ASTNode;
-import dtool.dom.ast.IASTNode;
+import descent.internal.compiler.parser.ast.ASTNode;
+import descent.internal.compiler.parser.ast.IASTNode;
 import dtool.dom.definitions.Module;
 
 public class DescentASTConverter {

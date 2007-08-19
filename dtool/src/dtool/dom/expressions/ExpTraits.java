@@ -1,15 +1,15 @@
 package dtool.dom.expressions;
 
 import melnorme.miscutil.tree.TreeVisitor;
-import descent.core.domX.ASTNode;
 import descent.internal.compiler.parser.TraitsExp;
+import descent.internal.compiler.parser.ast.ASTNode;
 import dtool.descentadapter.DescentASTConverter;
 import dtool.dom.ast.IASTNeoVisitor;
 
 public class ExpTraits extends Expression {
 
 	public final ASTNode[] args;
-	public final String traitsKeyword;
+	public final char[] traitsKeyword;
 	
 	public ExpTraits(TraitsExp node) {
 		convertNode(node);

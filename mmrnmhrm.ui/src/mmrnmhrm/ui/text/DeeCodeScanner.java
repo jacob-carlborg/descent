@@ -13,10 +13,10 @@ import org.eclipse.jface.text.rules.ITokenScanner;
 import org.eclipse.jface.util.PropertyChangeEvent;
 
 import descent.core.dom.AST;
-import descent.core.domX.TokenUtil;
 import descent.internal.compiler.parser.Lexer;
 import descent.internal.compiler.parser.TOK;
 import descent.internal.compiler.parser.Token;
+import descent.internal.compiler.parser.ast.TokenUtil;
 
 /**
  * D Code Scanner. Uses DMD's lexer to do the text attribute tokenization.

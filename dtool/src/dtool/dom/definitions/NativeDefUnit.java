@@ -6,8 +6,8 @@ import java.util.List;
 
 import melnorme.miscutil.Assert;
 import melnorme.miscutil.IteratorUtil;
+import descent.internal.compiler.parser.ast.IASTNode;
 import dtool.dom.ast.IASTNeoVisitor;
-import dtool.dom.ast.IASTNode;
 import dtool.refmodel.IDefUnitReference;
 import dtool.refmodel.INativeDefUnit;
 import dtool.refmodel.IScope;

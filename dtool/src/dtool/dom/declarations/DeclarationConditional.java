@@ -4,7 +4,6 @@ import java.util.Arrays;
 import java.util.Iterator;
 
 import melnorme.miscutil.ArrayUtil;
-import descent.core.domX.ASTNode;
 import descent.internal.compiler.parser.ASTDmdNode;
 import descent.internal.compiler.parser.Condition;
 import descent.internal.compiler.parser.ConditionalDeclaration;
@@ -12,6 +11,7 @@ import descent.internal.compiler.parser.ConditionalStatement;
 import descent.internal.compiler.parser.DVCondition;
 import descent.internal.compiler.parser.IftypeExp;
 import descent.internal.compiler.parser.StaticIfCondition;
+import descent.internal.compiler.parser.ast.ASTNode;
 import dtool.dom.ast.ASTNeoNode;
 import dtool.dom.statements.IStatement;
 import dtool.refmodel.INonScopedBlock;

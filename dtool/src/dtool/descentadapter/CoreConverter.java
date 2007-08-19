@@ -1,8 +1,6 @@
 package dtool.descentadapter;
 
 import descent.core.dom.SelectiveImport;
-import descent.core.domX.ASTRangeLessNode;
-import descent.core.domX.ASTNode;
 import descent.internal.compiler.parser.ASTDmdNode;
 import descent.internal.compiler.parser.AggregateDeclaration;
 import descent.internal.compiler.parser.AnonymousAggregateDeclaration;
@@ -59,6 +57,8 @@ import descent.internal.compiler.parser.TypeTypedef;
 import descent.internal.compiler.parser.UnrolledLoopStatement;
 import descent.internal.compiler.parser.VarExp;
 import descent.internal.compiler.parser.WithScopeSymbol;
+import descent.internal.compiler.parser.ast.ASTNode;
+import descent.internal.compiler.parser.ast.ASTRangeLessNode;
 
 public abstract class CoreConverter extends ASTCommonConverter {
 

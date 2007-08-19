@@ -2,7 +2,7 @@ package dtool.dom.definitions;
 
 import java.util.List;
 
-import descent.core.dom.DDocComment;
+import descent.internal.compiler.parser.Comment;
 import descent.internal.compiler.parser.Dsymbol;
 import descent.internal.compiler.parser.IdentifierExp;
 import dtool.dom.ast.ASTNeoNode;
@@ -31,7 +31,7 @@ public abstract class DefUnit extends ASTNeoNode {
 		;
 	}
 	
-	public List<DDocComment> preComments;
+	public List<Comment> preComments;
 	public Symbol defname;
 	public EArcheType archeType;
 	

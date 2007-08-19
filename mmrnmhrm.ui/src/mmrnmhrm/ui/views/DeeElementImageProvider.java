@@ -9,7 +9,7 @@ import mmrnmhrm.ui.DeePluginImages;
 
 import org.eclipse.swt.graphics.Image;
 
-import descent.core.domX.ASTNode;
+import descent.internal.compiler.parser.ast.ASTNode;
 import dtool.dom.ast.ASTNeoNode;
 import dtool.dom.declarations.DeclarationImport;
 import dtool.dom.declarations.PartialPackageDefUnit;

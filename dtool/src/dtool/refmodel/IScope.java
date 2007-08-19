@@ -3,7 +3,7 @@ package dtool.refmodel;
 import java.util.Iterator;
 import java.util.List;
 
-import dtool.dom.ast.IASTNode;
+import descent.internal.compiler.parser.ast.IASTNode;
 
 /**
  * Gives access to the scope's DefUnits, and to super scopes. 

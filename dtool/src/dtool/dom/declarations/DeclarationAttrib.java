@@ -3,10 +3,10 @@ package dtool.dom.declarations;
 import java.util.Iterator;
 import java.util.List;
 
-import descent.core.domX.ASTNode;
 import descent.internal.compiler.parser.AttribDeclaration;
 import descent.internal.compiler.parser.Dsymbol;
 import descent.internal.compiler.parser.Statement;
+import descent.internal.compiler.parser.ast.ASTNode;
 import dtool.dom.ast.ASTNeoNode;
 import dtool.dom.definitions.Definition;
 import dtool.refmodel.INonScopedBlock;

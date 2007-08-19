@@ -5,9 +5,9 @@ import java.util.Iterator;
 
 import melnorme.miscutil.Assert;
 import melnorme.miscutil.tree.TreeVisitor;
-import descent.core.domX.ASTNode;
 import descent.internal.compiler.parser.Import;
 import descent.internal.compiler.parser.MultiImport;
+import descent.internal.compiler.parser.ast.ASTNode;
 import dtool.dom.ast.ASTNeoNode;
 import dtool.dom.ast.IASTNeoVisitor;
 import dtool.dom.definitions.DefUnit;

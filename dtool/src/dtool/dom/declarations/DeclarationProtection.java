@@ -4,10 +4,10 @@ import java.util.Iterator;
 
 import melnorme.miscutil.Assert;
 import melnorme.miscutil.tree.TreeVisitor;
-import descent.core.domX.ASTNode;
 import descent.internal.compiler.parser.Modifier;
 import descent.internal.compiler.parser.PROT;
 import descent.internal.compiler.parser.ProtDeclaration;
+import descent.internal.compiler.parser.ast.ASTNode;
 import dtool.dom.ast.IASTNeoVisitor;
 
 public class DeclarationProtection extends DeclarationAttrib {

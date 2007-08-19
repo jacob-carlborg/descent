@@ -6,8 +6,8 @@ import java.util.List;
 
 import melnorme.miscutil.StringUtil;
 import melnorme.miscutil.tree.TreeVisitor;
-import descent.core.domX.ASTNode;
 import descent.internal.compiler.parser.ModuleDeclaration;
+import descent.internal.compiler.parser.ast.ASTNode;
 import dtool.dom.ast.ASTNeoNode;
 import dtool.dom.ast.IASTNeoVisitor;
 import dtool.dom.declarations.Declaration;

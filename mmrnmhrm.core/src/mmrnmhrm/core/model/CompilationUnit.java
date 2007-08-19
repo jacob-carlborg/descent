@@ -17,7 +17,7 @@ import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
 
 import descent.core.compiler.IProblem;
-import descent.core.domX.ASTNode;
+import descent.internal.compiler.parser.ast.ASTNode;
 import dtool.descentadapter.DescentASTConverter;
 import dtool.dom.definitions.Module;
 import dtool.refmodel.ParserAdapter;

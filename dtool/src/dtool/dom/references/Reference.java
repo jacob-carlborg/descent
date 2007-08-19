@@ -96,7 +96,7 @@ public abstract class Reference extends ASTNeoNode implements IDefUnitReferenceN
 
 	public static Reference convertTypeIdentifier_ToRoot(TypeIdentifier elem) {
 		Reference rootent;
-		if(elem.ident.ident.equals("")) { 
+		if(elem.ident.ident.length == 0) { 
 			/*rootent = new EntModuleRoot();
 			rootent.startPos = elem.idents.get(0).startPos-1;
 			rootent.setEndPos(rootent.startPos+1);*/

@@ -1,13 +1,13 @@
 package dtool.dom.ast;
 
-import descent.core.domX.ASTNode;
+import descent.internal.compiler.parser.ast.ASTNode;
 
 
 /**
  * Sets parent entries in the tree nodes, using homogenous Visitor.
  * Assumes a neo AST. 
  */
-public class ASTNodeParentizer extends ASTHomoVisitor {
+public class ASTNodeParentizer extends ASTNeoHomoVisitor {
 
 	public static void parentize(ASTNeoNode elem){
 		elem.accept(new ASTNodeParentizer());

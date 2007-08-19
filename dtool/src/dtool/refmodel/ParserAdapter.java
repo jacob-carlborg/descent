@@ -42,7 +42,7 @@ public class ParserAdapter {
 	}
 	
 	public static ParserAdapter parseSource(String str) {
-		Parser newparser = new Parser(AST.newAST(AST.D2), str);
+		Parser newparser = new Parser(Parser.D2, str);
 		ParserAdapter adapter = new ParserAdapter(newparser);
 		adapter.mod = adapter.parser.parseModuleObj();
 		return adapter;
@@ -55,7 +55,7 @@ public class ParserAdapter {
 	}
 
 	public void parseModule(String str) {
-		parser = new Parser(AST.newAST(AST.D2), str);
+		parser = new Parser(Parser.D2, str);
 		mod = parser.parseModuleObj();
 	}
 	

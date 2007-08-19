@@ -4,18 +4,16 @@ Bundle-Name: Mmrnmhrm Core
 Bundle-SymbolicName: mmrnmhrm.core;singleton:=true
 Bundle-Version: 0.1.0
 Bundle-Activator: mmrnmhrm.core.DeeCore
+Bundle-Vendor: Mother Ark
 Bundle-Localization: plugin
+Export-Package: mmrnmhrm.core,mmrnmhrm.core.build,mmrnmhrm.core.model,mmrnmhrm.core.model.lang
 Require-Bundle: com.ibm.icu,
  dtool;visibility:=reexport,
  org.eclipse.core.runtime,
  org.eclipse.core.resources,
  org.eclipse.core.filebuffers,
  org.eclipse.core.expressions,
- org.eclipse.jface.text
-Eclipse-LazyStart: true
-Bundle-Vendor: Mother Ark
-Export-Package: mmrnmhrm.core,
- mmrnmhrm.core.build,
- mmrnmhrm.core.model,
- mmrnmhrm.core.model.lang
+ org.eclipse.jface.text,
+ org.junit
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
+Eclipse-LazyStart: true

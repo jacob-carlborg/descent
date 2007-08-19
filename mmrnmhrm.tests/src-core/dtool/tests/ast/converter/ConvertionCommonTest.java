@@ -9,7 +9,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.junit.After;
 import org.junit.BeforeClass;
 
-import descent.core.domX.ASTNode;
+import descent.internal.compiler.parser.ast.ASTNode;
 import dtool.descentadapter.DescentASTConverter;
 import dtool.dom.ast.ASTChecker;
 import dtool.dom.definitions.Module;

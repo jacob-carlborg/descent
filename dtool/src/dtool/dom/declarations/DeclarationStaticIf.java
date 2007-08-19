@@ -1,8 +1,8 @@
 package dtool.dom.declarations;
 
 import melnorme.miscutil.tree.TreeVisitor;
-import descent.core.domX.ASTNode;
 import descent.internal.compiler.parser.StaticIfCondition;
+import descent.internal.compiler.parser.ast.ASTNode;
 import dtool.dom.ast.IASTNeoVisitor;
 import dtool.dom.expressions.Expression;
 

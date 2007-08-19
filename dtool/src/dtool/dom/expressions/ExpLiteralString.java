@@ -6,16 +6,19 @@ import dtool.dom.ast.IASTNeoVisitor;
 
 public class ExpLiteralString extends Expression {
 
-	String[] strings;
+	char[][] strings;
 	
 	public ExpLiteralString(StringExp elem) {
 		convertNode(elem);
-		this.strings = new String[] { elem.string };
+		this.strings = new char[][] { elem.string };
 	}
 	
 	public ExpLiteralString(MultiStringExp elem) {
 		convertNode(elem);
-		this.strings = elem.strings.toArray(new String[elem.length]);
+		this.strings = new char[elem.strings.size()][];
+		for (int i = 0; i < elem.strings.size(); i++) {
+			this.strings[i] = elem.strings.get(i).string;
+		}
 	}
 
 	@Override

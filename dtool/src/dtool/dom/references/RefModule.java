@@ -21,14 +21,14 @@ public class RefModule extends Reference {
 	public String module;
 
 	public RefModule(List<IdentifierExp> packages, IdentifierExp id) {
-		this.module = id.ident;
+		this.module = new String(id.ident);
 		if(packages == null) {
 			this.packages = new String[0];
 			setSourceRange(id);
 		} else {
 			this.packages = new String[packages.size()];
 			for (int i = 0; i < packages.size(); i++) {
-				this.packages[i] = packages.get(i).ident;
+				this.packages[i] = new String(packages.get(i).ident);
 			}
 			int startPos = packages.get(0).getStartPos();
 			setSourceRange(startPos, id.getEndPos() - startPos);

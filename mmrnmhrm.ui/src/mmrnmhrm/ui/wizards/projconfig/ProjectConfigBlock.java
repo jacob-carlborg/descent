@@ -81,7 +81,7 @@ public class ProjectConfigBlock {
 	public void applyConfig() throws CoreException {
 		try {
 			IProject project = fDeeProject.getProject();
-			IResource outputDir = project.getFolder("asd/"+fSourceFoldersPage.fOutputLocationPath);
+			IResource outputDir = project.getFolder(fSourceFoldersPage.fOutputLocationPath);
 			fDeeProject.setOutputDir((IFolder) outputDir);
 			
 			List<IDeeSourceRoot> roots; 

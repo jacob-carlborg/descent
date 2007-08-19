@@ -1,8 +1,8 @@
 package dtool.dom.ast;
 
 import melnorme.miscutil.Assert;
-import descent.core.domX.ASTNode;
-import descent.core.domX.ASTUpTreeVisitor;
+import descent.internal.compiler.parser.ast.ASTNode;
+import descent.internal.compiler.parser.ast.ASTUpTreeVisitor;
 import dtool.dom.declarations.DeclarationImport;
 import dtool.dom.definitions.DefUnit;
 import dtool.dom.definitions.Definition;
