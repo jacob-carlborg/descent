@@ -1,6 +1,6 @@
 package melnorme.miscutil.tree;
 
-public interface ITreeVisitor<NODE extends ITreeNode> {
+public interface ITreeVisitor<NODE extends IElement> {
 
 	/** Generic visit start. */
 	void preVisit(NODE elem);

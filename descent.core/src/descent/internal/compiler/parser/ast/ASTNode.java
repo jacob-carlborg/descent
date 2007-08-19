@@ -1,13 +1,18 @@
 package descent.internal.compiler.parser.ast;
 
-import descent.internal.compiler.parser.ASTDmdNode;
 import melnorme.miscutil.Assert;
 import melnorme.miscutil.AssertIn;
-import melnorme.miscutil.tree.TreeNode;
+import melnorme.miscutil.tree.IElement;
+import melnorme.miscutil.tree.IVisitable;
+import descent.internal.compiler.parser.ASTDmdNode;
 
-public abstract class ASTNode extends TreeNode<ASTNode, IASTVisitor> implements IASTNode {
+public abstract class ASTNode 
+	implements IASTNode, IElement, IVisitable<IASTVisitor> {
 	
 	public static final ASTNode[] NO_ELEMENTS = new ASTNode[0]; 
+	
+	/** AST node parent, null if the node is the tree root. */
+	public ASTNode parent = null;
 	
 	/** A character index into the original source string, 
 	 * or <code>-1</code> if no source position information is available
@@ -19,6 +24,15 @@ public abstract class ASTNode extends TreeNode<ASTNode, IASTVisitor> implements 
 	 */
 	public int length = 0;
 
+	/** {@inheritDoc} */
+	public ASTNode getParent() {
+		return parent;
+	}
+	
+	/** Set the parent of this node. Can be null. */
+	public void setParent(ASTNode parent) {
+		this.parent = parent;
+	}
 	
 	/** Gets the source range start position, aka offset. */
 	public final int getStartPos() {
@@ -62,16 +76,57 @@ public abstract class ASTNode extends TreeNode<ASTNode, IASTVisitor> implements 
 		return start == -1;
 	}
 	
+	/** {@inheritDoc} */
+	public boolean hasChildren() {
+		return getChildren().length > 0;
+	}
+	
 	/** Returns the node's children, ordered. */
 	public ASTNode[] getChildren() {
 		return (ASTNode[]) ASTChildrenCollector.getChildrenArray(this);
 	}
+	
+	/** {@inheritDoc} */
+	public void accept(IASTVisitor visitor) {
+		AssertIn.isNotNull(visitor);
+
+		// begin with the generic pre-visit
+		visitor.preVisit(this);
+		// dynamic dispatch to internal method for type-specific visit/endVisit
+		this.accept0(visitor);
+		// end with the generic post-visit
+		visitor.postVisit(this);
+	}
+	
+	/** Accepts the given visitor on a type-specific visit of the current node.
+	 * <p>
+	 * General template for implementation on each concrete element class:
+	 * <pre> <code>
+	 * boolean visitChildren = visitor.visit(this);
+	 * if (visitChildren) {
+	 *    // visit children in normal left to right reading order
+	 *    acceptChild(visitor, getProperty1());
+	 *    acceptChildren(visitor, rawListProperty);
+	 *    acceptChild(visitor, getProperty2());
+	 * }
+	 * visitor.endVisit(this);
+	 * </code> </pre>
+	 * </p>
+	 */
+	protected abstract void accept0(IASTVisitor visitor);
+
 
 	/** Returns a simple string representation of the node. */
 	public String toString() {
 		return toStringAsNode(false);
 	}
 
+	/** Gets the node's classname striped of package qualifier. */
+	public final String toStringClassName() {
+		String str = this.getClass().getName();
+		int lastIx = str.lastIndexOf('.');
+		return str.substring(lastIx+1);
+	}
 	
 	/** Gets an extended String representation of given node. (for debugging) */
 	public String toStringAsNode(boolean printRangeInfo) {

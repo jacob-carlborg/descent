@@ -67,8 +67,10 @@ public abstract class Assert {
 	 *    if the check fails)
 	 */
 	public static boolean isTrue(boolean expression, String message) {
-		if (!expression)
+		if (!expression) {
+			expression = false;  // dummy statement to allow breakpoint placement
 			throw new AssertionFailedException("assertion failed: " + message); //$NON-NLS-1$
+		}
 		return expression;
 	}
 	

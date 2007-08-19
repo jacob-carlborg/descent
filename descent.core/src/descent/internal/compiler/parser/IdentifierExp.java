@@ -160,7 +160,7 @@ public class IdentifierExp extends Expression {
 
 	@Override
 	public String toString() {
-		return ident.toString();
+		return new String(ident);
 	}
 
 }

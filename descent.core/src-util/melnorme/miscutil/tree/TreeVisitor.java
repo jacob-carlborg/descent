@@ -13,7 +13,7 @@ public abstract class TreeVisitor {
 	protected boolean visitingAsSuper = false;
 	
 	/** Utility method that visits an element as if it were of it's base class. */
-	public <T> boolean visitAsSuperType(ITreeNode element, Class<T> elemclass)  {
+	public <T> boolean visitAsSuperType(IElement element, Class<T> elemclass)  {
 		Class<? super T> elemsuper = elemclass.getSuperclass();
 		Method method;
 		try {
@@ -100,7 +100,6 @@ public abstract class TreeVisitor {
 			TreeVisitor.acceptChild(visitor, children.get(i));
 		}
 	}
-
 
 
 }

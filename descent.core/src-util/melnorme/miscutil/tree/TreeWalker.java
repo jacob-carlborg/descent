@@ -6,21 +6,21 @@ package melnorme.miscutil.tree;
 public abstract class TreeWalker {
 
 	/** Traverses the node. */
-	public final void traverse(ITreeNode node) {
+	public final void traverse(IElement node) {
 		if(enterNode(node)) {
 			traverseChildren(node);
 		}
 		leaveNode(node);
 	}
 	
-	private final void traverseChildren(ITreeNode node) {
-		for(ITreeNode child : node.getChildren())
+	private final void traverseChildren(IElement node) {
+		for(IElement child : node.getChildren())
 			traverse(child);
 	}
 
 	/** Performs the specific work on this node, on entry. */
-	protected abstract boolean enterNode(ITreeNode node);
+	protected abstract boolean enterNode(IElement node);
 
 	/** Performs the specific work on this node, on exit. */
-	protected abstract void leaveNode(ITreeNode node);
+	protected abstract void leaveNode(IElement node);
 }
