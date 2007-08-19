@@ -9,8 +9,8 @@ import descent.internal.compiler.parser.ast.IASTVisitor;
 
 public class AliasDeclaration extends Declaration {
 
+	public boolean first; // is this the first declaration in a multi
 	public boolean last; // is this the last declaration in a multi
-							// declaration?
 	public Type type;
 	public Type htype;
 	public Dsymbol haliassym;

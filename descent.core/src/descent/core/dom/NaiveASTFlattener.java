@@ -1051,7 +1051,7 @@ class NaiveASTFlattener extends ASTVisitor {
 		visitPreDDocss(node.preDDocs());
 		printIndent();
 		visitModifiers(node.modifiers());
-		this.buffer.append("invariant ");
+		this.buffer.append("invariant() ");
 		node.getBody().accept(this);
 		if (node.getPostDDoc() != null) {
 			this.buffer.append(" ");
@@ -1808,7 +1808,6 @@ class NaiveASTFlattener extends ASTVisitor {
 	
 	@Override
 	public boolean visit(FileImportExpression node) {
-		printIndent();
 		this.buffer.append("import(");
 		node.getExpression().accept(this);
 		this.buffer.append(");");
@@ -1826,7 +1825,6 @@ class NaiveASTFlattener extends ASTVisitor {
 	
 	@Override
 	public boolean visit(MixinExpression node) {
-		printIndent();
 		this.buffer.append("mixin(");
 		node.getExpression().accept(this);
 		this.buffer.append(");");

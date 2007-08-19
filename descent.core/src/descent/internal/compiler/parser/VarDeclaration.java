@@ -21,6 +21,7 @@ import descent.internal.compiler.parser.ast.IASTVisitor;
 
 public class VarDeclaration extends Declaration {
 
+	public boolean first; // is this the first declaration in a multi
 	public boolean last; // is this the last declaration in a multi
 	// declaration?
 	public Type sourceType;

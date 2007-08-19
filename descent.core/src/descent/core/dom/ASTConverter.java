@@ -39,7 +39,6 @@ import descent.internal.compiler.parser.Import;
 import descent.internal.compiler.parser.Initializer;
 import descent.internal.compiler.parser.InvariantDeclaration;
 import descent.internal.compiler.parser.Modifier;
-import descent.internal.compiler.parser.ModifierDeclaration;
 import descent.internal.compiler.parser.ModuleDeclaration;
 import descent.internal.compiler.parser.PragmaDeclaration;
 import descent.internal.compiler.parser.PragmaStatement;
@@ -296,8 +295,6 @@ public class ASTConverter {
 			return convert((BinExp) symbol, InfixExpression.Operator.REMAINDER);
 		case ASTDmdNode.MODIFIER:
 			return convert((Modifier) symbol);
-		case ASTDmdNode.MODIFIER_DECLARATION:
-			return convert((ModifierDeclaration) symbol);
 		case ASTDmdNode.MODULE:
 			return convert((Module) symbol);
 		case ASTDmdNode.MODULE_DECLARATION:
@@ -879,7 +876,7 @@ public class ASTConverter {
 		return b;
 	}
 	
-	public descent.core.dom.Type convert(TemplateInstanceWrapper a) {
+	public descent.core.dom.TemplateType convert(TemplateInstanceWrapper a) {
 		TemplateInstance tempinst = ((TemplateInstanceWrapper) a).tempinst;
 		TemplateType tt = new TemplateType(ast);
 		tt.setName(convert(tempinst.idents.get(0)));
@@ -1107,9 +1104,10 @@ public class ASTConverter {
 	public descent.core.dom.Type convert(TypeDelegate a) {
 		descent.core.dom.DelegateType b = new descent.core.dom.DelegateType(ast);
 		b.setFunctionPointer(false);
-		b.setReturnType(convert(((TypeFunction) a.next).next));
-		b.setVariadic(((TypeFunction) a.next).varargs != 0);
-		convertArguments(b.arguments(), ((TypeFunction) a.next).parameters);
+		TypeFunction ty = (TypeFunction) a.next;
+		b.setReturnType(convert(ty.next));
+		b.setVariadic(ty.varargs != 0);
+		convertArguments(b.arguments(), ty.parameters);
 		b.setSourceRange(a.start, a.length);
 		return convertModifiedType(a, b);
 	}
@@ -1189,15 +1187,6 @@ public class ASTConverter {
 				b.selectiveImports().add(selective);
 			}
 		}
-		b.setSourceRange(a.start, a.length);
-		return b;
-	}
-	
-	public descent.core.dom.ModifierDeclaration convert(ModifierDeclaration a) {
-		descent.core.dom.ModifierDeclaration b = new descent.core.dom.ModifierDeclaration(ast);
-		b.setModifier(convert(a.modifier));
-		convertDeclarations(b.declarations(), a.declarations);
-		fillDeclaration(b, a);
 		b.setSourceRange(a.start, a.length);
 		return b;
 	}
@@ -1667,70 +1656,68 @@ public class ASTConverter {
 	
 	public descent.core.dom.ConditionalDeclaration convert(ConditionalDeclaration a) {
 		descent.core.dom.ConditionalDeclaration ret = null;
-		switch(a.condition.getConditionType()) {
-			case Condition.DEBUG:
-			{
-				DebugCondition cond = (DebugCondition) a.condition;
-				DebugDeclaration b = new DebugDeclaration(ast);
-				if (cond.id != null) {
-					descent.core.dom.Version version = ast.newVersion(new String(cond.id.string));
-					version.setSourceRange(cond.id.startPosition, cond.id.length);
-					b.setVersion(version);
-				}
-				ret = b;
-				break;
+		switch (a.condition.getConditionType()) {
+		case Condition.DEBUG: {
+			DebugCondition cond = (DebugCondition) a.condition;
+			DebugDeclaration b = new DebugDeclaration(ast);
+			if (cond.id != null) {
+				descent.core.dom.Version version = ast.newVersion(new String(
+						cond.id.string));
+				version.setSourceRange(cond.id.startPosition, cond.id.length);
+				b.setVersion(version);
 			}
-			case Condition.IFTYPE:
-			{
-				IftypeCondition cond = (IftypeCondition) a.condition;
-				IftypeDeclaration b = new IftypeDeclaration(ast);
-				if (cond.tok != null) {
-					switch(cond.tok) {
-					case TOKreserved:
-						b.setKind(IftypeDeclaration.Kind.NONE);
-						break;
-					case TOKequal:
-						b.setKind(IftypeDeclaration.Kind.EQUALS);
-						break;
-					case TOKcolon:
-						b.setKind(IftypeDeclaration.Kind.EXTENDS);
-						break;
-					}
+			ret = b;
+			break;
+		}
+		case Condition.IFTYPE: {
+			IftypeCondition cond = (IftypeCondition) a.condition;
+			IftypeDeclaration b = new IftypeDeclaration(ast);
+			if (cond.tok != null) {
+				switch (cond.tok) {
+				case TOKreserved:
+					b.setKind(IftypeDeclaration.Kind.NONE);
+					break;
+				case TOKequal:
+					b.setKind(IftypeDeclaration.Kind.EQUALS);
+					break;
+				case TOKcolon:
+					b.setKind(IftypeDeclaration.Kind.EXTENDS);
+					break;
 				}
-				if (cond.ident != null) {
-					b.setName(convert(cond.ident));
-				}
-				if (cond.targ != null) {
-					b.setTestType(convert(cond.targ));
-				}
-				if (cond.tspec != null) {
-					b.setMatchingType(convert(cond.tspec));
-				}
-				ret = b;
-				break;
 			}
-			case Condition.STATIC_IF:
-			{
-				StaticIfCondition cond = (StaticIfCondition) a.condition;
-				StaticIfDeclaration b = new StaticIfDeclaration(ast);
-				if (cond.exp != null) {
-					b.setExpression(convert(cond.exp));
-				}
-				ret = b;
-				break;
+			if (cond.ident != null) {
+				b.setName(convert(cond.ident));
 			}
-			case Condition.VERSION:
-			{
-				VersionCondition cond = (VersionCondition) a.condition;
-				VersionDeclaration b = new VersionDeclaration(ast);
-				if (cond.id != null) {
-					descent.core.dom.Version version = ast.newVersion(new String(cond.id.string));
-					version.setSourceRange(cond.id.startPosition, cond.id.length);
-					b.setVersion(version);
-				}
-				ret = b;
-				break;
+			if (cond.targ != null) {
+				b.setTestType(convert(cond.targ));
 			}
+			if (cond.tspec != null) {
+				b.setMatchingType(convert(cond.tspec));
+			}
+			ret = b;
+			break;
+		}
+		case Condition.STATIC_IF: {
+			StaticIfCondition cond = (StaticIfCondition) a.condition;
+			StaticIfDeclaration b = new StaticIfDeclaration(ast);
+			if (cond.exp != null) {
+				b.setExpression(convert(cond.exp));
+			}
+			ret = b;
+			break;
+		}
+		case Condition.VERSION: {
+			VersionCondition cond = (VersionCondition) a.condition;
+			VersionDeclaration b = new VersionDeclaration(ast);
+			if (cond.id != null) {
+				descent.core.dom.Version version = ast.newVersion(new String(
+						cond.id.string));
+				version.setSourceRange(cond.id.startPosition, cond.id.length);
+				b.setVersion(version);
+			}
+			ret = b;
+			break;
+		}
 		}
 		convertDeclarations(ret.thenDeclarations(), a.decl);
 		convertDeclarations(ret.elseDeclarations(), a.elsedecl);

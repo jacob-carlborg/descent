@@ -723,12 +723,16 @@ public class Parser extends Lexer {
 		if (token.value == TOKidentifier &&
 		    peek(token).value == TOKassign)
 		{
+			boolean first = true;
 			while(true) {
 			    IdentifierExp ident = newIdentifierExp();
 			    nextToken();
 			    nextToken();
 			    Initializer init = parseInitializer();
 			    VarDeclaration v = new VarDeclaration(loc, null, ident, init);
+			    v.first = first;
+			    first = false;
+			    
 			    v.storage_class = stc;
 			    v.addModifiers(modifiers);
 			    
@@ -2652,6 +2656,8 @@ public class Parser extends Lexer {
 		}
 
 		a = new ArrayList();
+		
+		boolean first = true;
 
 		/*
 		 * Look for auto initializers: storage_class identifier = initializer;
@@ -2666,6 +2672,9 @@ public class Parser extends Lexer {
 			Initializer init = parseInitializer();
 
 			VarDeclaration v = new VarDeclaration(loc, null, ident, init);
+			v.first = first;
+			first = false;
+			
 			v.storage_class = storage_class;
 			v.addModifiers(modifiers);
 			a.add(v);
@@ -2716,6 +2725,7 @@ public class Parser extends Lexer {
 		
 		int[] identStart = new int[1];
 		
+		first = true;
 		while (true) {
 			List<TemplateParameter> tpl = null;
 
@@ -2759,6 +2769,7 @@ public class Parser extends Lexer {
 				AliasDeclaration ad = null;
 				if (tok == TOKtypedef) {
 					td = new TypedefDeclaration(loc, ident, t, init);
+					td.first = first;
 					v = td;
 				} else {
 					if (init != null) {
@@ -2766,8 +2777,11 @@ public class Parser extends Lexer {
 					}
 					
 					ad = new AliasDeclaration(loc, ident, t);
+					ad.first = first;
 					v = ad;
 				}
+				first = false;
+				
 				v.addModifiers(modifiers);
 				v.storage_class = storage_class;
 				
@@ -2851,6 +2865,9 @@ public class Parser extends Lexer {
 				}
 				
 				v = new VarDeclaration(loc, t, ident, init);
+				v.first = first;
+				first = false;
+				
 				v.storage_class = storage_class;
 				v.modifiers = modifiers;
 				a.add(v);
