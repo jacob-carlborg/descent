@@ -1,7 +1,5 @@
 package descent.internal.compiler.parser;
 
-import java.math.BigInteger;
-
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
 public class RealExp extends Expression {
@@ -86,8 +84,8 @@ public class RealExp extends Expression {
 	}
 
 	@Override
-	public BigInteger toInteger(SemanticContext context) {
-		return value.toBigInteger();
+	public IntegerWrapper toInteger(SemanticContext context) {
+		return value.toIntegerWrapper();
 	}
 
 	@Override
@@ -96,8 +94,13 @@ public class RealExp extends Expression {
 	}
 
 	@Override
-	public BigInteger toUInteger(SemanticContext context) {
-		return BigIntegerUtils.castToUns64(value.toBigInteger());
+	public IntegerWrapper toUInteger(SemanticContext context) {
+		return BigIntegerUtils.castToUns64(value.toIntegerWrapper());
+	}
+	
+	@Override
+	public char[] toCharArray() {
+		return str;
 	}
 
 }

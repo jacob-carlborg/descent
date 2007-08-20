@@ -1,7 +1,6 @@
 package descent.internal.compiler.parser;
 
 import java.math.BigDecimal;
-import java.math.BigInteger;
 
 import descent.core.compiler.CharOperation;
 
@@ -22,7 +21,7 @@ public class Token {
 	public char[] string; // the string value of the token, if any
 	public int len; // The length of the token
 	public int postfix;
-	public BigInteger intValue;
+	public IntegerWrapper intValue;
 	public BigDecimal floatValue;
 	public int lineNumber;
 	public Comment leadingComment;

@@ -157,5 +157,14 @@ public class TypeIdentifier extends TypeQualified {
 	public String toString() {
 		return ident.toString();
 	}
+	
+	@Override
+	public char[] toCharArray() {
+		if (idents == null || idents.isEmpty()) {
+			return ident.ident;
+		} else {
+			return super.toCharArray();
+		}
+	}
 
 }

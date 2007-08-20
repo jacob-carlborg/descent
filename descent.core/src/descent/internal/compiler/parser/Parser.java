@@ -166,7 +166,7 @@ public class Parser extends Lexer {
 	    List<Dsymbol> decldefs = new ArrayList<Dsymbol>();
 	    
 	    // Special treatment if the file starts with Ddoc
-	    if (token.value == TOK.TOKidentifier && token.string.equals("Ddoc")) {
+	    if (token.value == TOK.TOKidentifier && CharOperation.equals(token.string, Id.Ddoc)) {
 	    	return decldefs;
 	    }
 
@@ -210,7 +210,6 @@ public class Parser extends Lexer {
 				md = new ModuleDeclaration(a, id);
 				md.setSourceRange(start, token.ptr + token.len - start);
 				md.preDdocs = moduleDocComments;
-				adjustLastDocComment();
 
 				if (token.value != TOKsemicolon) {
 					setMalformed(md);
@@ -641,7 +640,6 @@ public class Parser extends Lexer {
 			if (s != null) {
 				s.setSourceRange(start, prevToken.ptr + prevToken.len - start);
 				s.preDdocs = lastComments;
-				adjustLastDocComment();
 				if (attachLeadingComments) {
 					attachLeadingComments(s);
 				}
@@ -2684,7 +2682,6 @@ public class Parser extends Lexer {
 				nextToken();
 				v.preDdocs = lastComments;
 				v.last = true;
-				adjustLastDocComment();
 				attachLeadingComments(v);
 				adjustPossitionAccordingToComments(v, v.preDdocs, v.postDdoc);
 			} else if (token.value == TOKcomma) {
@@ -2709,7 +2706,6 @@ public class Parser extends Lexer {
 			s.addModifiers(modifiers);
 			a.add(s);
 			s.preDdocs = lastComments;
-			adjustLastDocComment();
 			return a;
 		}
 		
@@ -2802,7 +2798,6 @@ public class Parser extends Lexer {
 					v.setSourceRange(nextTypdefOrAliasStart, token.ptr + token.len - nextTypdefOrAliasStart);
 					nextToken();
 					v.preDdocs = lastComments;
-					adjustLastDocComment();
 					attachLeadingComments(v);				
 					adjustPossitionAccordingToComments(v, v.preDdocs, v.postDdoc);
 					break;
@@ -2850,7 +2845,6 @@ public class Parser extends Lexer {
 				}
 				s.modifiers = modifiers;
 				s.preDdocs = lastComments;
-				adjustLastDocComment();
 				attachLeadingComments(s);
 				adjustPossitionAccordingToComments(s, s.preDdocs, s.postDdoc);
 				a.add(s);
@@ -2878,7 +2872,6 @@ public class Parser extends Lexer {
 					v.setSourceRange(nextVarStart, token.ptr + token.len - nextVarStart);
 					nextToken();
 					v.preDdocs = lastComments;
-					adjustLastDocComment();
 					attachLeadingComments(v);
 					adjustPossitionAccordingToComments(v, v.preDdocs, v.postDdoc);
 					break;
@@ -5154,11 +5147,11 @@ public class Parser extends Lexer {
 		    break;
 
 		case TOKtrue:
-			e = new IntegerExp(loc, token.string, BigInteger.ONE, Type.tbool);
+			e = new IntegerExp(loc, token.string, 1, Type.tbool);
 		    nextToken();
 		    break;
 		case TOKfalse:
-			e = new IntegerExp(loc, token.string, BigInteger.ZERO, Type.tbool);
+			e = new IntegerExp(loc, token.string, 0, Type.tbool);
 		    nextToken();
 		    break;
 
@@ -5227,7 +5220,7 @@ public class Parser extends Lexer {
 			    	parsingErrorInsertTokenAfter(prevToken, "Identifier");
 			    	// goto Lerr;
 		    		// Anything for e, as long as it's not NULL
-			    	e = new IntegerExp(loc, Id.ZERO, BigInteger.ZERO, Type.tint32);
+			    	e = new IntegerExp(loc, Id.ZERO, 0, Type.tint32);
 			    	e.setSourceRange(token.ptr, token.len);
 		    		nextToken();
 		    		break;
@@ -5259,7 +5252,7 @@ public class Parser extends Lexer {
 			    	parsingErrorInsertTokenAfter(prevToken, "Identifier");
 					// goto Lerr;
 			    	// Anything for e, as long as it's not NULL
-			    	e = new IntegerExp(loc, Id.ZERO, BigInteger.ZERO, Type.tint32);
+			    	e = new IntegerExp(loc, Id.ZERO, 0, Type.tint32);
 			    	e.setSourceRange(token.ptr, token.len);
 			    	nextToken();
 			    	break;
@@ -5305,7 +5298,7 @@ public class Parser extends Lexer {
 				parsingErrorInsertToComplete(prevToken, "__traits(identifier, args...) expected", "traits expression");
 				//goto Lerr;
 				// Anything for e, as long as it's not NULL
-				e = new IntegerExp(loc, Id.ZERO, BigInteger.ZERO, Type.tint32);
+				e = new IntegerExp(loc, Id.ZERO, 0, Type.tint32);
 		    	e.setSourceRange(token.ptr, token.len);
 				nextToken();
 				break;
@@ -5372,7 +5365,7 @@ public class Parser extends Lexer {
 				parsingErrorInsertToComplete(prevToken, "(type identifier : specialization)", "IftypeDeclaration");
 				// goto Lerr;
 				// Anything for e, as long as it's not NULL
-				e = new IntegerExp(loc, Id.ZERO, BigInteger.ZERO, Type.tint32);
+				e = new IntegerExp(loc, Id.ZERO, 0, Type.tint32);
 		    	e.setSourceRange(token.ptr, token.len);
 				nextToken();
 				break;
@@ -5516,7 +5509,7 @@ public class Parser extends Lexer {
 			parsingErrorInsertTokenAfter(prevToken, "Expression");
 		// Lerr:
 		    // Anything for e, as long as it's not NULL
-			e = new IntegerExp(loc, Id.ZERO, BigInteger.ZERO, Type.tint32);
+			e = new IntegerExp(loc, Id.ZERO, 0, Type.tint32);
 	    	e.setSourceRange(token.ptr, token.len);
 		    nextToken();
 		    break;
@@ -6483,10 +6476,6 @@ public class Parser extends Lexer {
 		lastDocCommentRead = comments.size();
 		
 		return toReturn;
-	}
-	
-	private void adjustLastDocComment() {
-		// not used, see if this is needed
 	}
 	
 	private void attachLeadingComments(ASTDmdNode declaration) {

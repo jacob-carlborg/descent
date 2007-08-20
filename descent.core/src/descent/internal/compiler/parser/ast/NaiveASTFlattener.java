@@ -42,7 +42,7 @@ public class NaiveASTFlattener implements IASTVisitor {
 	/**
 	 * Creates a new AST printer.
 	 */
-	NaiveASTFlattener() {
+	public NaiveASTFlattener() {
 		this.buffer = new StringBuffer();
 	}
 	
@@ -1143,15 +1143,17 @@ public class NaiveASTFlattener implements IASTVisitor {
 		visitPreDDocss(node.preDdocs);
 		printIndent();
 		visitModifiers(node.modifiers);
-		((TypeFunction) node.type).next.accept(this); // return type
+		
+		TypeFunction ty = (TypeFunction) node.type;
+		ty.next.accept(this); // return type
 		this.buffer.append(" ");
 		node.ident.accept(this);
 		if (templateParameters != null) {
 			visitList(templateParameters, ", ", "(", ")");
 		}
 		this.buffer.append("(");
-		visitList(((TypeFunction) node.type).parameters, ", "); // arguments
-		if (((TypeFunction) node.type).varargs != 0) { // variadic
+		visitList(ty.parameters, ", "); // arguments
+		if (ty.varargs != 0) { // variadic
 			this.buffer.append("...");
 		}
 		this.buffer.append(")");
@@ -1514,18 +1516,22 @@ public class NaiveASTFlattener implements IASTVisitor {
 		visitPreDDocss(node.preDdocs);
 		printIndent();
 		this.buffer.append("module ");
-		if (node.packages != null) {
-			visitList(node.packages, ".", "", ".");
-		}
-		if (node.id != null) {
-			node.id.accept(this);
-		}
+		visitModuleDeclarationName(node);
 		this.buffer.append(";");
 		if (node.postDdoc != null) {
 			this.buffer.append(" ");
 			node.postDdoc.accept(this);
 		}
 		return false;
+	}
+	
+	public void visitModuleDeclarationName(ModuleDeclaration node) {
+		if (node.packages != null) {
+			visitList(node.packages, ".", "", ".");
+		}
+		if (node.id != null) {
+			node.id.accept(this);
+		}
 	}
 
 	public boolean visit(ModuleInfoDeclaration node) {
@@ -2054,11 +2060,11 @@ public class NaiveASTFlattener implements IASTVisitor {
 			break;
 		case ASTDmdNode.STRUCT_DECLARATION:
 			StructDeclaration strDecl = (StructDeclaration) node;
-			visit(strDecl, "interface", parameters, null);
+			visit(strDecl, "struct", parameters, null);
 			break;
 		case ASTDmdNode.UNION_DECLARATION:
 			UnionDeclaration unDecl = (UnionDeclaration) node;
-			visit(unDecl, "interface", parameters, null);
+			visit(unDecl, "union", parameters, null);
 			break;
 		}
 		return false;
@@ -2166,24 +2172,24 @@ public class NaiveASTFlattener implements IASTVisitor {
 			} else {
 				return visit((AggregateDeclaration) wrappedSymbol, node.parameters);
 			}
-		} else {
-			visitPreDDocss(node.preDdocs);
-			printIndent();
-			visitModifiers(node.modifiers);
-			this.buffer.append("template ");
-			node.ident.accept(this);
-			visitList(node.parameters, ", ", "(", ")");
-			this.buffer.append(" {\n");
-			this.indent++;
-			visitList(node.members, LINE_END, EMPTY, LINE_END);
-			this.indent--;
-			this.buffer.append("}");
-			if (node.postDdoc != null) {
-				this.buffer.append(" ");
-				node.postDdoc.accept(this);
-			}
-			return false;
 		}
+		
+		visitPreDDocss(node.preDdocs);
+		printIndent();
+		visitModifiers(node.modifiers);
+		this.buffer.append("template ");
+		node.ident.accept(this);
+		visitList(node.parameters, ", ", "(", ")");
+		this.buffer.append(" {\n");
+		this.indent++;
+		visitList(node.members, LINE_END, EMPTY, LINE_END);
+		this.indent--;
+		this.buffer.append("}");
+		if (node.postDdoc != null) {
+			this.buffer.append(" ");
+			node.postDdoc.accept(this);
+		}
+		return false;
 	}
 
 	public boolean visit(TemplateExp node) {
@@ -2208,7 +2214,7 @@ public class NaiveASTFlattener implements IASTVisitor {
 		printIndent();
 		visitModifiers(node.modifiers);
 		this.buffer.append("mixin ");
-		visitTemplateMixin(node.tqual, node.idents, node.tiargs);
+		visitTemplateMixinType(node);
 		if (node.ident != null) {
 			this.buffer.append(" ");
 			node.ident.accept(this);
@@ -2220,8 +2226,12 @@ public class NaiveASTFlattener implements IASTVisitor {
 		}
 		return false;
 	}
+	
+	public void visitTemplateMixinType(TemplateMixin node) {
+		visitTemplateMixinType(node.tqual, node.idents, node.tiargs);
+	}
 
-	private void visitTemplateMixin(Type typeof, List<IdentifierExp> ids, List<ASTDmdNode> tiargs) {
+	private void visitTemplateMixinType(Type typeof, List<IdentifierExp> ids, List<ASTDmdNode> tiargs) {
 		boolean ret = false;
 		
 		if (typeof != null) {
@@ -2722,15 +2732,15 @@ public class NaiveASTFlattener implements IASTVisitor {
 			visitPreDDocss(node.preDdocs);
 			printIndent();
 			visitModifiers(node.modifiers);
-			if (node.type != null) {
-				node.type.accept(this);
+			if (node.sourceType != null) {
+				node.sourceType.accept(this);
 				this.buffer.append(" ");
 			}
 		}
 		node.ident.accept(this);
-		if (node.init != null) {
+		if (node.sourceInit != null) {
 			this.buffer.append(" = ");
-			node.init.accept(this);
+			node.sourceInit.accept(this);
 		}
 		if (node.last) {					
 			this.buffer.append(";");

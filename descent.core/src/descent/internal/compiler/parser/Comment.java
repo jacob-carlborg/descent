@@ -32,5 +32,10 @@ public class Comment extends ASTDmdNode {
 	public int getNodeType() {
 		return COMMENT;
 	}
+	
+	@Override
+	public String toString() {
+		return "#Comment";
+	}
 
 }

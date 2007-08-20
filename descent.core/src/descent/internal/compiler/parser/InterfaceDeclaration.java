@@ -1,14 +1,19 @@
 package descent.internal.compiler.parser;
 
+import static descent.internal.compiler.parser.LINK.LINKwindows;
+import static descent.internal.compiler.parser.TY.Tclass;
+import static descent.internal.compiler.parser.TY.Ttuple;
+
 import java.util.ArrayList;
 import java.util.List;
+
+import melnorme.miscutil.tree.TreeVisitor;
 
 import org.eclipse.core.runtime.Assert;
 
 import descent.core.compiler.CharOperation;
 import descent.core.compiler.IProblem;
-import static descent.internal.compiler.parser.TY.*;
-import static descent.internal.compiler.parser.LINK.*;
+import descent.internal.compiler.parser.ast.IASTVisitor;
 
 public class InterfaceDeclaration extends ClassDeclaration {
 
@@ -25,6 +30,18 @@ public class InterfaceDeclaration extends ClassDeclaration {
 	@Override
 	public int getNodeType() {
 		return INTERFACE_DECLARATION;
+	}
+	
+	@Override
+	public void accept0(IASTVisitor visitor) {
+		boolean children = visitor.visit(this);
+		if (children) {
+			TreeVisitor.acceptChildren(visitor, modifiers);
+			TreeVisitor.acceptChildren(visitor, ident);
+			TreeVisitor.acceptChildren(visitor, sourceBaseclasses);
+			TreeVisitor.acceptChildren(visitor, members);
+		}
+		visitor.endVisit(this);
 	}
 
 	public boolean isBaseOf(BaseClass bc, int[] poffset) {

@@ -162,5 +162,10 @@ public class IdentifierExp extends Expression {
 	public String toString() {
 		return new String(ident);
 	}
+	
+	@Override
+	public char[] toCharArray() {
+		return ident;
+	}
 
 }

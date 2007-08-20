@@ -26,9 +26,10 @@ import descent.core.JavaModelException;
 import descent.core.Signature;
 import descent.core.WorkingCopyOwner;
 import descent.core.dom.AST;
-import descent.core.dom.ASTParser;
-import descent.core.dom.DDocComment;
-import descent.core.dom.Declaration;
+import descent.internal.compiler.parser.Comment;
+import descent.internal.compiler.parser.Dsymbol;
+import descent.internal.compiler.parser.Module;
+import descent.internal.compiler.parser.Parser;
 import descent.internal.core.util.MementoTokenizer;
 
 /**
@@ -279,24 +280,21 @@ public ISourceRange[] getJavadocRanges() throws JavaModelException {
 	final int start= range.getOffset();
 	final int length= range.getLength();
 	
-	ASTParser parser = ASTParser.newParser(AST.D2);
-	parser.setSource(buf.getText(start, length).toCharArray());
-	parser.setKind(ASTParser.K_COMPILATION_UNIT);
-	descent.core.dom.CompilationUnit unit = (descent.core.dom.CompilationUnit) parser.createAST(null);
-	if (unit.declarations().size() == 0) {
+	Parser parser = new Parser(AST.D2, buf.getText(start, length));
+	Module module = parser.parseModuleObj();
+	if (module.members == null || module.members.size() == 0) {
 		return null;
 	}
-	Declaration declaration = unit.declarations().get(0);
+	Dsymbol declaration = module.members.get(0);
 	
 	List<ISourceRange> sourceRanges = new ArrayList<ISourceRange>(1);
-	for(DDocComment ddoc : declaration.preDDocs()) {
-		sourceRanges.add(new SourceRange(start + ddoc.getStartPosition(),
-					ddoc.getLength()));
+	for(Comment ddoc : declaration.preDdocs) {
+		sourceRanges.add(new SourceRange(start + ddoc.start, ddoc.length));
 	}
 	
-	if (declaration.getPostDDoc() != null) {
-		sourceRanges.add(new SourceRange(start + declaration.getPostDDoc().getStartPosition(),
-				declaration.getPostDDoc().getLength()));
+	if (declaration.postDdoc != null) {
+		sourceRanges.add(new SourceRange(start + declaration.postDdoc.start,
+				declaration.postDdoc.length));
 	}
 
 	return sourceRanges.toArray(new ISourceRange[sourceRanges.size()]);

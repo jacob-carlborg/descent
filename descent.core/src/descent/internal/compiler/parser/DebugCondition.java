@@ -1,5 +1,6 @@
 package descent.internal.compiler.parser;
 
+import descent.core.compiler.CharOperation;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
 
@@ -19,6 +20,15 @@ public class DebugCondition extends DVCondition {
 		if (children) {
 		}
 		visitor.endVisit(this);
+	}
+	
+	@Override
+	public char[] toCharArray() {
+		if (id != null) {
+			return id.string;
+		} else {
+			return String.valueOf(level).toCharArray();
+		}
 	}
 
 }

@@ -1,7 +1,5 @@
 package descent.internal.compiler.parser;
 
-import java.math.BigInteger;
-
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
@@ -42,7 +40,7 @@ public class ForStatement extends Statement {
 		}
 		if (condition == null) {
 			// Use a default value
-			condition = new IntegerExp(loc, BigInteger.ONE, Type.tboolean);
+			condition = new IntegerExp(loc, 1, Type.tboolean);
 		}
 		sc.noctor++;
 		condition = condition.semantic(sc, context);

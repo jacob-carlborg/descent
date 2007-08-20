@@ -261,7 +261,7 @@ public abstract class Type extends ASTDmdNode {
 	    	/* TODO semantic
 			error(loc, "no property '%s' for type '%s'", ident.toChars(), toChars());
 			*/
-			e = new IntegerExp(loc, Id.ONE, BigInteger.ONE, Type.tint32);
+			e = new IntegerExp(loc, Id.ONE, 1, Type.tint32);
 	    }
 		return e;
 	}

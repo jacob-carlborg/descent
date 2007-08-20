@@ -1,5 +1,7 @@
 package descent.internal.compiler.parser;
 
+import descent.core.compiler.CharOperation;
+
 public interface Id {
 	
 	char[] IUnknown = { 'I', 'u', 'n', 'k', 'n', 'o', 'w', 'n' };
@@ -36,7 +38,7 @@ public interface Id {
 	char[] returnLabel = { '_', '_', 'r', 'e', 't', 'u', 'r', 'n', 'L', 'a', 'b', 'e', 'l' };
 	char[] _delegate = { 'd', 'e', 'l', 'e', 'g', 'a', 't', 'e' };
 	char[] line = { 'l', 'i', 'n', 'e' };
-	char[] empty = { };
+	char[] empty = CharOperation.NO_CHAR;
 	char[] p = { 'p' };
 	char[] coverage = { '_', '_', 'c', 'o', 'v', 'e', 'r', 'a', 'g', 'e' };
 	char[] TypeInfo = { 'T', 'y', 'p', 'e', 'I', 'n', 'f', 'o' };
@@ -184,5 +186,7 @@ public interface Id {
 	// Others useful
 	char[] ZERO = { '0' };
 	char[] ONE = { '1' };
+	char[] Cpp = { 'C', '+', '+' };
+	char[] Ddoc = { 'D', 'd', 'o', 'c' };
 
 }

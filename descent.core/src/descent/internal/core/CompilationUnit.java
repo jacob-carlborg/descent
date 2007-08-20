@@ -54,8 +54,11 @@ import descent.core.JavaModelException;
 import descent.core.WorkingCopyOwner;
 import descent.core.compiler.CharOperation;
 import descent.core.compiler.IProblem;
+import descent.core.dom.AST;
+import descent.core.dom.ASTConverter;
 import descent.internal.compiler.SourceElementParser;
 import descent.internal.compiler.impl.CompilerOptions;
+import descent.internal.compiler.parser.Module;
 import descent.internal.compiler.util.SuffixConstants;
 import descent.internal.core.util.MementoTokenizer;
 import descent.internal.core.util.Messages;
@@ -156,7 +159,8 @@ protected boolean buildStructure(OpenableElementInfo info, final IProgressMonito
 	// 	parser.javadocParser.checkDocComment = false;
 	requestor.source = contents;
 	//requestor.parser = parser;
-	descent.core.dom.CompilationUnit unit = parser.parseCompilationUnit((ICompilationUnit) this, resolveBindings);
+	
+	Module module = parser.parseCompilationUnit((ICompilationUnit) this, resolveBindings);
 	
 	// update timestamp (might be IResource.NULL_STAMP if original does not exist)
 	if (underlyingResource == null) {
@@ -176,7 +180,7 @@ protected boolean buildStructure(OpenableElementInfo info, final IProgressMonito
 				/* TODO JDT problems
 				compilationUnitDeclaration = CompilationUnitProblemFinder.process(unit, this, contents, parser, this.owner, problems, createAST, true, pm);
 				*/
-				problems.put(new Object(), unit.getProblems());
+				problems.put(new Object(), module.problems.toArray(new IProblem[module.problems.size()]));
 				try {
 					perWorkingCopyInfo.beginReporting();
 					for (Iterator iteraror = problems.values().iterator(); iteraror.hasNext();) {
@@ -194,7 +198,7 @@ protected boolean buildStructure(OpenableElementInfo info, final IProgressMonito
 				/* TODO JDT problems
 				compilationUnitDeclaration = CompilationUnitProblemFinder.process(unit, this, contents, parser, this.owner, problems, createAST, true, pm);
 				*/
-				problems.put(new Object(), unit.getProblems());
+				problems.put(new Object(), module.problems.toArray(new IProblem[module.problems.size()]));
 			}
 		}
 		
@@ -202,7 +206,9 @@ protected boolean buildStructure(OpenableElementInfo info, final IProgressMonito
 			// int astLevel = ((ASTHolderCUInfo) info).astLevel;
 			// descent.core.dom.CompilationUnit cu = AST.convertCompilationUnit(astLevel, unit, contents, options, computeProblems, this, pm);
 			// ((ASTHolderCUInfo) info).ast = cu;
-			((ASTHolderCUInfo) info).ast = unit;
+			ASTConverter converter = new ASTConverter(pm);
+			converter.setAST(AST.newAST(AST.D2));
+			((ASTHolderCUInfo) info).ast = converter.convert(module);
 		}
 	} finally {
 		/*

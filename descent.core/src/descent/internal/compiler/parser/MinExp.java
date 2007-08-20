@@ -54,7 +54,7 @@ public class MinExp extends BinExp {
 	    		typeCombine(sc, context);		// make sure pointer types are compatible
 	    		type = Type.tptrdiff_t;
 	    		stride = BigInteger.valueOf(0); /* NEXTOF t2.nextOf().size(); */
-	    		e_ = new DivExp(loc, this, new IntegerExp(Loc.ZERO, stride, Type.tptrdiff_t));
+	    		e_ = new DivExp(loc, this, new IntegerExp(Loc.ZERO, new IntegerWrapper(stride), Type.tptrdiff_t));
 	    		e_.type = Type.tptrdiff_t;
 	    		return e_;
 	    	}

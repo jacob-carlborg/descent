@@ -10,7 +10,6 @@ import static descent.internal.compiler.parser.TY.Treference;
 import static descent.internal.compiler.parser.TY.Tsarray;
 import static descent.internal.compiler.parser.TY.Tvoid;
 
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -346,11 +345,11 @@ public abstract class Expression extends ASTDmdNode implements Cloneable {
 		return Real.ZERO;
 	}
 
-	public BigInteger toInteger(SemanticContext context) {
+	public IntegerWrapper toInteger(SemanticContext context) {
 		context.acceptProblem(Problem.newSemanticTypeError(
 				"Integer constant expression expected",
 				IProblem.IntegerConstantExpressionExpected, 0, start, length));
-		return BigInteger.ZERO;
+		return IntegerWrapper.ZERO;
 	}
 
 	public Expression toLvalue(Scope sc, Expression e, SemanticContext context) {
@@ -373,7 +372,7 @@ public abstract class Expression extends ASTDmdNode implements Cloneable {
 		return Real.ZERO;
 	}
 
-	public BigInteger toUInteger(SemanticContext context) {
+	public IntegerWrapper toUInteger(SemanticContext context) {
 		return toInteger(context);
 	}
 

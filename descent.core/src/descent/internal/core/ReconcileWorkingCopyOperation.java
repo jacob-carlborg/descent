@@ -29,7 +29,10 @@ import descent.core.compiler.CompilationParticipant;
 import descent.core.compiler.IProblem;
 import descent.core.compiler.ReconcileContext;
 import descent.core.dom.AST;
+import descent.core.dom.ASTConverter;
 import descent.core.dom.ASTParser;
+import descent.internal.compiler.parser.Module;
+import descent.internal.compiler.parser.Parser;
 import descent.internal.core.util.Messages;
 import descent.internal.core.util.Util;
 
@@ -155,11 +158,8 @@ public class ReconcileWorkingCopyOperation extends JavaModelOperation {
 				}
 				
 				// TODO JDT verify this
-				ASTParser parser = ASTParser.newParser(this.astLevel == ICompilationUnit.NO_AST ? AST.D2 : this.astLevel);
-				parser.setKind(ASTParser.K_COMPILATION_UNIT);
-				parser.setSource(workingCopy.getContents());
-				
-				descent.core.dom.CompilationUnit unit = (descent.core.dom.CompilationUnit) parser.createAST(this.progressMonitor);
+				Parser parser = new Parser(this.astLevel == ICompilationUnit.NO_AST ? AST.D2 : this.astLevel, workingCopy.getContents());
+				Module module = parser.parseModuleObj();
 				
 			    //CompilationUnitDeclaration unit = null;
 			    try {
@@ -176,14 +176,16 @@ public class ReconcileWorkingCopyOperation extends JavaModelOperation {
 							this.enableStatementsRecovery,
 							this.progressMonitor);
 					*/
-			    	problemMap.put(new Object(), unit.getProblems());
+			    	problemMap.put(new Object(), module.problems.toArray(new IProblem[module.problems.size()]));
 			    	
 					if (this.progressMonitor != null) this.progressMonitor.worked(1);
 					
 					// create AST if needed
-					if (this.astLevel != ICompilationUnit.NO_AST && unit != null) {
+					if (this.astLevel != ICompilationUnit.NO_AST && module != null) {
 						//Map options = workingCopy.getJavaProject().getOptions(true);
-						this.ast = unit;
+						ASTConverter converter = new ASTConverter(null);
+						converter.setAST(AST.newAST(this.astLevel == ICompilationUnit.NO_AST ? AST.D2 : this.astLevel));
+						this.ast = converter.convert(module);
 						if (this.ast != null) {
 							this.deltaBuilder.delta = new JavaElementDelta(workingCopy);
 							this.deltaBuilder.delta.changedAST(this.ast);

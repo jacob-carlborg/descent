@@ -132,6 +132,11 @@ public abstract class ASTNode
 		return buffer.toString();
 	}
 	
+	/** Returns a simple string representation of the node as a char array. */
+	public char[] toCharArray() {
+		return toString().toCharArray();
+	}
+	
 	/**
 	 * Appends a debug representation of this node to the given string buffer.
 	 * <p>

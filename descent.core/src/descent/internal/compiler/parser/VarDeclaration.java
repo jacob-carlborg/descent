@@ -384,7 +384,7 @@ public class VarDeclaration extends Declaration {
 				&& (storage_class & (STC.STCfield | STC.STCin | STC.STCforeach)) == 0) {
 			// Provide a default initializer
 			if (type.ty == TY.Tstruct && ((TypeStruct) type).sym.zeroInit) {
-				Expression e = new IntegerExp(loc, Id.ZERO, BigInteger.ZERO, Type.tint32);
+				Expression e = new IntegerExp(loc, Id.ZERO, 0, Type.tint32);
 				Expression e1;
 				e1 = new VarExp(loc, this);
 				e = new AssignExp(loc, e1, e);

@@ -166,7 +166,7 @@ public class Lexer implements IProblemRequestor {
 		charArray_m = new char[] {'m'}, 
 		charArray_n = new char[] {'n'}, 
 		charArray_o = new char[] {'o'}, 
-		charArray_p = new char[] {'p'}, 
+		charArray_p = Id.p, 
 		charArray_q = new char[] {'q'}, 
 		charArray_r = new char[] {'r'}, 
 		charArray_s = new char[] {'s'}, 
@@ -1671,6 +1671,7 @@ public class Lexer implements IProblemRequestor {
 						p++;
 						if (input[p] == 'e' && !Chars.isidchar(input[p+1])) {
 							t.value = TOK.TOKfalse;
+							t.string = TOK.TOKfalse.charArrayValue;
 							t.len = 5;
 							p++;
 							return;
@@ -2704,6 +2705,7 @@ public class Lexer implements IProblemRequestor {
 					p++;
 					if (input[p] == 'e' && !Chars.isidchar(input[p+1])) {
 						t.value = TOK.TOKtrue;
+						t.string = TOK.TOKtrue.charArrayValue;
 						t.len = 4;
 						p++;
 						return;
@@ -3832,24 +3834,18 @@ public class Lexer implements IProblemRequestor {
 		case '\\':
 			switch (input[p]) {
 			case 'u':
-				escapeSequence();
-				t.intValue = BigInteger.valueOf(escapeSequence());
+				t.intValue = new IntegerWrapper(escapeSequence());
 				tk = TOKwcharv;
-				p--;
 				break;
 
 			case 'U':
 			case '&':
-				t.intValue = BigInteger.valueOf(escapeSequence());
-				escapeSequence();
+				t.intValue = new IntegerWrapper(escapeSequence());
 				tk = TOKdcharv;
-				p--;
 				break;
 
 			default:
-				t.intValue = BigInteger.valueOf(escapeSequence());
-				escapeSequence();
-				p--;
+				t.intValue = new IntegerWrapper(escapeSequence());
 				break;
 			}
 			break;
@@ -3863,7 +3859,7 @@ public class Lexer implements IProblemRequestor {
 			error("Unterminated character constant", 
 					IProblem.UnterminatedCharacterConstant, token.lineNumber, token.ptr, p
 							- token.ptr);
-			t.intValue = BigInteger.ZERO;
+			t.intValue = IntegerWrapper.ZERO;
 			return tk;
 		}
 
@@ -3877,7 +3873,7 @@ public class Lexer implements IProblemRequestor {
 					error("Unterminated character constant",
 							IProblem.UnterminatedCharacterConstant,
 							token.lineNumber, token.ptr, p - token.ptr);
-					t.intValue = BigInteger.ZERO;
+					t.intValue = IntegerWrapper.ZERO;
 					return tk;
 				}
 				if (c < 0xD800 || (c >= 0xE000 && c < 0xFFFE))
@@ -3888,7 +3884,7 @@ public class Lexer implements IProblemRequestor {
 			break;
 		}
 		
-		t.intValue = BigInteger.valueOf(c);
+		t.intValue = new IntegerWrapper(c);
 		t.len = p - t.ptr + 1;
 		t.setString(input, t.ptr, t.len);
 
@@ -3974,6 +3970,7 @@ public class Lexer implements IProblemRequestor {
 		// We use a state machine to collect numbers
 		int state;
 		int flags = FLAGS_decimal;
+		int intResult = 0;
 
 		@SuppressWarnings("unused")
 		int i;
@@ -3995,10 +3992,12 @@ public class Lexer implements IProblemRequestor {
 			c = input[p];
 			switch (state) {
 			case STATE_initial: // opening state
-				if (c == '0')
+				if (c == '0') {
 					state = STATE_0;
-				else
+				} else {
 					state = STATE_decimal;
+					intResult = c - '0';
+				}
 				break;
 
 			case STATE_0:
@@ -4096,6 +4095,8 @@ public class Lexer implements IProblemRequestor {
 					}
 
 					break goto_done;
+				} else {
+					intResult = intResult * 10 + c - '0';
 				}
 				break;
 
@@ -4210,13 +4211,13 @@ public class Lexer implements IProblemRequestor {
 		}
 
 		// uinteger_t n; // unsigned >=64 bit integer type
-		BigInteger n; // unsigned >=64 bit integer type
+		IntegerWrapper n; // unsigned >=64 bit integer type
 		boolean integerOverflow = false;
 
-		if (stringbuffer.data.length() == 2
-				&& (state == STATE_decimal || state == STATE_0))
-			n = new BigInteger(String.valueOf(stringbuffer.data.charAt(0) - '0'));
-		else {
+		if (stringbuffer.data.length() == 1
+				&& (state == STATE_decimal || state == STATE_0)) {
+			n = new IntegerWrapper(intResult);
+		} else {
 			// Convert string to integer
 			// Ary sais: changed to use BigInteger 
 			int p = 0;
@@ -4239,10 +4240,14 @@ public class Lexer implements IProblemRequestor {
 				}
 			}
 			
-			try {
-				n = new BigInteger(stringbuffer.data.substring(p), r);
-			} catch (NumberFormatException ex) {
-				n = BigInteger.ZERO;
+			if (r == 10 && stringbuffer.data.length() <= 9) {
+				n = new IntegerWrapper(intResult);
+			} else {
+				try {
+					n = new IntegerWrapper(new BigInteger(stringbuffer.data.substring(p), r));
+				} catch (NumberFormatException ex) {
+					n = IntegerWrapper.ZERO;
+				}
 			}
 			if (n.compareTo(X_FFFFFFFFFFFFFFFF) > 0) {
 				integerOverflow = true;

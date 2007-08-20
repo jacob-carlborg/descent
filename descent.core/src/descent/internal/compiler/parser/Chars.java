@@ -68,6 +68,10 @@ public class Chars {
 		return 0x20 <= c && c <= 0x7E;
 	}
 	
+	public static boolean isprint(IntegerWrapper c) {
+		return N_0x20.compareTo(c.bigIntegerValue()) <= 0 && c.compareTo(N_0x7E) <= 0;
+	}
+	
 	public static boolean isprint(BigInteger c) {
 		return N_0x20.compareTo(c) <= 0 && c.compareTo(N_0x7E) <= 0;
 	}

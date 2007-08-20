@@ -1,6 +1,7 @@
 package descent.internal.compiler.parser;
 
 import java.math.BigInteger;
+
 import melnorme.miscutil.Assert;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
@@ -100,7 +101,7 @@ public class IndexExp extends BinExp {
 			{
 		    	e2 = e2.implicitCastTo(sc, Type.tsize_t, context);
 		   		e2 = e2.optimize(WANTvalue);
-		    	BigInteger index = e2.toUInteger(context);
+		    	IntegerWrapper index = e2.toUInteger(context);
 		    	BigInteger length = null;
 		    	TupleExp te = null;
 		    	TypeTuple tup = null;

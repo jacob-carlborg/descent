@@ -29,14 +29,14 @@ public class ComplexExp extends Expression {
 	}
 
 	@Override
-	public BigInteger toInteger(SemanticContext context) {
-		return toReal(context).toBigInteger();
+	public IntegerWrapper toInteger(SemanticContext context) {
+		return toReal(context).toIntegerWrapper();
 	}
 
 	@Override
-	public BigInteger toUInteger(SemanticContext context) {
+	public IntegerWrapper toUInteger(SemanticContext context) {
 		// TODO toBigUInteger ?
-		return toReal(context).toBigInteger();
+		return toReal(context).toIntegerWrapper();
 	}
 
 	@Override
@@ -63,9 +63,9 @@ public class ComplexExp extends Expression {
 	public boolean isBool(boolean result) {
 		// TODO check this
 		if (result) {
-			return !value.r.toBigInteger().equals(BigInteger.ZERO);
+			return !value.r.toIntegerWrapper().equals(BigInteger.ZERO);
 		} else {
-			return value.r.toBigInteger().equals(BigInteger.ZERO);
+			return value.r.toIntegerWrapper().equals(BigInteger.ZERO);
 		}
 	}
 

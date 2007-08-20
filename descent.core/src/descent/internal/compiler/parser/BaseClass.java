@@ -131,5 +131,14 @@ public class BaseClass extends ASTDmdNode {
 	public int getNodeType() {
 		return BASE_CLASS;
 	}
+	
+	@Override
+	public char[] toCharArray() {
+		if (modifier == null) {
+			return sourceType.toCharArray();
+		} else {
+			return super.toCharArray();
+		}
+	}
 
 }

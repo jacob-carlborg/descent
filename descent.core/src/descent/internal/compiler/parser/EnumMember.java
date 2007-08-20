@@ -10,6 +10,13 @@ public class EnumMember extends Dsymbol {
 	public EnumMember(Loc loc, IdentifierExp id, Expression value) {
 		super(loc, id);
 		this.value = value;
+		if (value == null) {
+			start = id.start;
+			length = id.length;
+		} else {
+			start = id.start;
+			length = value.start + value.length - id.start;
+		}
 	}
 
 	@Override

@@ -64,9 +64,9 @@ public class TypeBasic extends Type {
 		case Tcomplex80:
 			return getProperty(Loc.ZERO, Id.nan, context);
 		default:
-			return new IntegerExp(Loc.ZERO, Id.ZERO, BigInteger.ZERO, this);
+			return new IntegerExp(Loc.ZERO, Id.ZERO, 0, this);
 		}
-		return new IntegerExp(Loc.ZERO, value.toString().toCharArray(), value, this);
+		return new IntegerExp(Loc.ZERO, new IntegerWrapper(value), this);
 	}
 
 	@Override

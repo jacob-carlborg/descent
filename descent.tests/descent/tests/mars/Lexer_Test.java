@@ -208,7 +208,7 @@ public class Lexer_Test extends TestCase {
 	private void assertInt32Token(String s, int value, int start, int len) {
 		Lexer lexer = new Lexer(s, true, true, false, true, AST.D1);
 		assertEquals(TOK.TOKint32v, lexer.nextToken());
-		assertEquals(BigInteger.valueOf(value), lexer.token.intValue);
+		assertEquals(BigInteger.valueOf(value), lexer.token.intValue.bigIntegerValue());
 		assertEquals(s.trim(), new String(lexer.token.string));
 		assertEquals(start, lexer.token.ptr);
 		assertEquals(len, lexer.token.len);
@@ -218,7 +218,7 @@ public class Lexer_Test extends TestCase {
 	private void assertUns32Token(String s, int value, int start, int len) {
 		Lexer lexer = new Lexer(s, true, true, false, true, AST.D1);
 		assertEquals(TOK.TOKuns32v, lexer.nextToken());
-		assertEquals(BigInteger.valueOf(value), lexer.token.intValue);
+		assertEquals(BigInteger.valueOf(value), lexer.token.intValue.bigIntegerValue());
 		assertEquals(s.trim(), new String(lexer.token.string));
 		assertEquals(start, lexer.token.ptr);
 		assertEquals(len, lexer.token.len);

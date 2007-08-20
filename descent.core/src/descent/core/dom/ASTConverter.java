@@ -1002,15 +1002,15 @@ public class ASTConverter {
 				b.setSourceRange(a.start, a.length);
 				return b;
 			}
-		} else {
-			descent.core.dom.TemplateDeclaration b = new descent.core.dom.TemplateDeclaration(ast);
-			b.setName(convert(a.ident));
-			convertTemplateParameters(b.templateParameters(), a.parameters);
-			convertDeclarations(b.declarations(), a.members);
-			fillDeclaration(b, a);
-			b.setSourceRange(a.start, a.length);
-			return b;
 		}
+		
+		descent.core.dom.TemplateDeclaration b = new descent.core.dom.TemplateDeclaration(ast);
+		b.setName(convert(a.ident));
+		convertTemplateParameters(b.templateParameters(), a.parameters);
+		convertDeclarations(b.declarations(), a.members);
+		fillDeclaration(b, a);
+		b.setSourceRange(a.start, a.length);
+		return b;
 	}
 	
 	public descent.core.dom.VoidInitializer convert(VoidInitializer a) {
@@ -1406,12 +1406,10 @@ public class ASTConverter {
 	public descent.core.dom.EnumMember convert(EnumMember a) {
 		descent.core.dom.EnumMember b = new descent.core.dom.EnumMember(ast);
 		b.setName(convert(a.ident));
-		if (a.value == null || a.value.synthetic) {
-			b.setSourceRange(a.ident.start, a.ident.length);
-		} else {
+		if (a.value != null) {
 			b.setValue(convert(a.value));
-			b.setSourceRange(a.ident.start, a.value.start + a.value.length - a.ident.start);
 		}
+		b.setSourceRange(a.start, a.length);
 		return b;
 	}
 	
@@ -2249,7 +2247,7 @@ public class ASTConverter {
 	public descent.core.dom.Expression convert(IntegerExp a) {
 		if (a.type == Type.tbool) {
 			BooleanLiteral b = new BooleanLiteral(ast);
-			b.setBooleanValue(a.value == BigInteger.ONE);
+			b.setBooleanValue(a.value.equals(BigInteger.ONE));
 			b.setSourceRange(a.start, a.length);
 			return b;
 		} else if (a.type == Type.tchar || a.type == Type.twchar || a.type == Type.tdchar) {

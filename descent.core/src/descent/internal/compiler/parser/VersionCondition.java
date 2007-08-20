@@ -19,5 +19,14 @@ public class VersionCondition extends DVCondition {
 		}
 		visitor.endVisit(this);
 	}
+	
+	@Override
+	public char[] toCharArray() {
+		if (id != null) {
+			return id.string;
+		} else {
+			return String.valueOf(level).toCharArray();
+		}
+	}
 
 }

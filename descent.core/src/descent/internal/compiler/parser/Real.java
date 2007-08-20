@@ -16,6 +16,10 @@ public class Real {
 		this.value = new BigDecimal(value);
 	}
 	
+	public Real(IntegerWrapper value) {
+		this.value = new BigDecimal(value.bigIntegerValue());
+	}
+	
 	public Real(BigDecimal value) {
 		this.value = value;
 	}
@@ -25,8 +29,8 @@ public class Real {
 		this.nanOrInfinite = nanOrInfinite;
 	}
 	
-	public BigInteger toBigInteger() {
-		return value.toBigInteger();
+	public IntegerWrapper toIntegerWrapper() {
+		return new IntegerWrapper(value.toBigInteger());
 	}
 	
 	@Override

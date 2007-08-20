@@ -26,5 +26,10 @@ public class Modifier extends ASTDmdNode {
 		visitor.visit(this);
 		visitor.endVisit(this);
 	}
+	
+	@Override
+	public char[] toCharArray() {
+		return tok.charArrayValue;
+	}
 
 }
