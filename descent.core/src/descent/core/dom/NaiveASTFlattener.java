@@ -331,7 +331,6 @@ class NaiveASTFlattener extends ASTVisitor {
 	
 	@Override
 	public boolean visit(Block node) {
-		//printIndent();
 		this.buffer.append("{\n");
 		this.indent++;
 		visitList(node.statements(), LINE_END, EMPTY, LINE_END);
@@ -560,12 +559,14 @@ class NaiveASTFlattener extends ASTVisitor {
 		this.indent++;
 		visitList(node.thenDeclarations(), LINE_END, EMPTY, LINE_END);
 		this.indent--;
+		printIndent();
 		this.buffer.append("}");
 		if (!node.elseDeclarations().isEmpty()) {
 			this.buffer.append(" else {\n");
 			this.indent++;
 			visitList(node.elseDeclarations(), LINE_END, EMPTY, LINE_END);
 			this.indent--;
+			printIndent();
 			this.buffer.append("}");
 		}
 		if (node.getPostDDoc() != null) {
@@ -963,12 +964,14 @@ class NaiveASTFlattener extends ASTVisitor {
 		this.indent++;
 		visitList(node.thenDeclarations(), LINE_END, EMPTY, LINE_END);
 		this.indent--;
+		printIndent();
 		this.buffer.append("}");
 		if (!node.elseDeclarations().isEmpty()) {
 			this.buffer.append(" else {\n");
 			this.indent++;
 			visitList(node.elseDeclarations(), LINE_END, EMPTY, LINE_END);
 			this.indent--;
+			printIndent();
 			this.buffer.append("}");
 		}
 		if (node.getPostDDoc() != null) {
@@ -1423,12 +1426,14 @@ class NaiveASTFlattener extends ASTVisitor {
 		this.indent++;
 		visitList(node.thenDeclarations(), LINE_END, EMPTY, LINE_END);
 		this.indent--;
+		printIndent();
 		this.buffer.append("}");
 		if (!node.elseDeclarations().isEmpty()) {
 			this.buffer.append(" else {\n");
 			this.indent++;
 			visitList(node.elseDeclarations(), LINE_END, EMPTY, LINE_END);
 			this.indent--;
+			printIndent();
 			this.buffer.append("}");
 		}
 		if (node.getPostDDoc() != null) {
@@ -1739,12 +1744,14 @@ class NaiveASTFlattener extends ASTVisitor {
 		this.indent++;
 		visitList(node.thenDeclarations(), LINE_END, EMPTY, LINE_END);
 		this.indent--;
+		printIndent();
 		this.buffer.append("}");
 		if (!node.elseDeclarations().isEmpty()) {
 			this.buffer.append(" else {\n");
 			this.indent++;
 			visitList(node.elseDeclarations(), LINE_END, EMPTY, LINE_END);
 			this.indent--;
+			printIndent();
 			this.buffer.append("}");
 		}
 		if (node.getPostDDoc() != null) {

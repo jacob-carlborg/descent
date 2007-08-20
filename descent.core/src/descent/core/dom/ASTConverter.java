@@ -2315,7 +2315,7 @@ public class ASTConverter {
 		} else {
 			b = null;
 		}
-		if (a.idents == null || a.idents.isEmpty()) {			
+		if (a.idents == null || a.idents.isEmpty()) {
 			return convertModifiedType(a, b);
 		} else {
 			return convertModifiedType(a, convertQualifiedType(b, a, a.start));

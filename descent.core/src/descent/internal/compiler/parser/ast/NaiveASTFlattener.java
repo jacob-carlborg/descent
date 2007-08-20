@@ -3,6 +3,7 @@ package descent.internal.compiler.parser.ast;
 import java.util.ArrayList;
 import java.util.List;
 
+import descent.core.compiler.CharOperation;
 import descent.internal.compiler.parser.*;
 import descent.internal.compiler.parser.Package;
 import descent.internal.compiler.parser.Type.Modification;
@@ -144,7 +145,6 @@ public class NaiveASTFlattener implements IASTVisitor {
 				this.buffer.append(" ");
 				node.postDdoc.accept(this);
 			}
-			this.buffer.append(LINE_END);
 		} else {
 			this.buffer.append(", ");
 		}
@@ -472,26 +472,7 @@ public class NaiveASTFlattener implements IASTVisitor {
 	}
 
 	public boolean visit(ClassDeclaration node) {
-		visitPreDDocss(node.preDdocs);
-		printIndent();
-		visitModifiers(node.modifiers);
-		this.buffer.append("class");
-		this.buffer.append(" ");
-		if (node.ident != null) {
-			node.ident.accept(this);
-		}
-		//visitList(node.templateParameters(), ", ", "(", ")");
-		visitList(node.baseclasses, ", ", " : ", EMPTY);
-		this.buffer.append(" {\n");
-		this.indent++;
-		visitList(node.members, LINE_END, EMPTY, LINE_END);
-		this.indent--;
-		printIndent();
-		this.buffer.append("}");
-		if (node.postDdoc != null) {
-			this.buffer.append(" ");
-			node.postDdoc.accept(this);
-		}
+		visit(node, "class", null, node.baseclasses);
 		return false;
 	}
 
@@ -656,12 +637,14 @@ public class NaiveASTFlattener implements IASTVisitor {
 		this.indent++;
 		visitList(node.decl, LINE_END, EMPTY, LINE_END);
 		this.indent--;
+		printIndent();
 		this.buffer.append("}");
 		if (node.elsedecl != null && !node.elsedecl.isEmpty()) {
 			this.buffer.append(" else {\n");
 			this.indent++;
 			visitList(node.elsedecl, LINE_END, EMPTY, LINE_END);
 			this.indent--;
+			printIndent();
 			this.buffer.append("}");
 		}
 		if (node.postDdoc != null) {
@@ -1403,26 +1386,7 @@ public class NaiveASTFlattener implements IASTVisitor {
 	}
 
 	public boolean visit(InterfaceDeclaration node) {
-		visitPreDDocss(node.preDdocs);
-		printIndent();
-		visitModifiers(node.modifiers);
-		this.buffer.append("interface");
-		this.buffer.append(" ");
-		if (node.ident != null) {
-			node.ident.accept(this);
-		}
-		//visitList(node.templateParameters(), ", ", "(", ")");
-		visitList(node.baseclasses, ", ", " : ", EMPTY);
-		this.buffer.append(" {\n");
-		this.indent++;
-		visitList(node.members, LINE_END, EMPTY, LINE_END);
-		this.indent--;
-		printIndent();
-		this.buffer.append("}");
-		if (node.postDdoc != null) {
-			this.buffer.append(" ");
-			node.postDdoc.accept(this);
-		}
+		visit(node, "interface", null, node.baseclasses);
 		return false;
 	}
 
@@ -1542,7 +1506,7 @@ public class NaiveASTFlattener implements IASTVisitor {
 			this.buffer.append(LINE_END);
 		}
 		
-		visitList(node.members, "");
+		visitList(node.members, LINE_END);
 		return false;
 	}
 
@@ -1561,7 +1525,6 @@ public class NaiveASTFlattener implements IASTVisitor {
 			this.buffer.append(" ");
 			node.postDdoc.accept(this);
 		}
-		this.buffer.append(LINE_END);
 		return false;
 	}
 
@@ -1598,7 +1561,6 @@ public class NaiveASTFlattener implements IASTVisitor {
 			this.buffer.append(" ");
 			node.postDdoc.accept(this);
 		}
-		this.buffer.append(LINE_END);
 		return false;
 	}
 
@@ -1787,13 +1749,39 @@ public class NaiveASTFlattener implements IASTVisitor {
 	}
 
 	public boolean visit(ProtDeclaration node) {
+		printIndent();
+		
 		if (node.single) {
 			node.modifier.accept(this);
 			this.buffer.append(" ");
-			node.decl.get(0).accept(this);
-		} else {
-			// TODO
+			visitList(node.decl, LINE_END);
+			return false;
 		}
+		
+		if (node.colon && node.decl != null && node.decl.size() > 0) { 
+			for(int i = 0; i < node.decl.size(); i++) {
+				Dsymbol dsymbol = node.decl.get(i);
+				if (
+					(dsymbol instanceof ProtDeclaration && ((ProtDeclaration) dsymbol).colon)
+						|| 
+					(dsymbol instanceof StorageClassDeclaration && ((StorageClassDeclaration) dsymbol).colon)) {
+					node.modifier.accept(this);
+					this.buffer.append(":\n");
+					this.indent++;
+					visitList(node.decl.subList(0, i), "");
+					this.indent--;
+					this.buffer.append(LINE_END);
+					node.decl.get(i).accept(this);
+					return false;
+				}
+			}
+		}
+		
+		node.modifier.accept(this);
+		this.buffer.append(":\n");
+		this.indent++;
+		visitList(node.decl, LINE_END);
+		this.indent--;
 		return false;
 	}
 
@@ -2008,13 +1996,39 @@ public class NaiveASTFlattener implements IASTVisitor {
 	}
 
 	public boolean visit(StorageClassDeclaration node) {
+		printIndent();
+		
 		if (node.single) {
 			node.modifier.accept(this);
 			this.buffer.append(" ");
-			node.decl.get(0).accept(this);
-		} else {
-			// TODO
+			visitList(node.decl, LINE_END);
+			return false;
 		}
+		
+		if (node.colon && node.decl != null && node.decl.size() > 0) { 
+			for(int i = 0; i < node.decl.size(); i++) {
+				Dsymbol dsymbol = node.decl.get(i);
+				if (
+					(dsymbol instanceof ProtDeclaration && ((ProtDeclaration) dsymbol).colon)
+						|| 
+					(dsymbol instanceof StorageClassDeclaration && ((StorageClassDeclaration) dsymbol).colon)) {
+					node.modifier.accept(this);
+					this.buffer.append(":\n");
+					this.indent++;
+					visitList(node.decl.subList(0, i), "");
+					this.indent--;
+					this.buffer.append(LINE_END);
+					node.decl.get(i).accept(this);
+					return false;
+				}
+			}
+		}
+		
+		node.modifier.accept(this);
+		this.buffer.append(":\n");
+		this.indent++;
+		visitList(node.decl, LINE_END);
+		this.indent--;
 		return false;
 	}
 
@@ -2024,15 +2038,47 @@ public class NaiveASTFlattener implements IASTVisitor {
 	}
 
 	public boolean visit(StructDeclaration node) {
+		visit(node, "struct", null, null);
+		return false;
+	}
+	
+	private boolean visit(AggregateDeclaration node, List<TemplateParameter> parameters) {
+		switch(node.getNodeType()) {
+		case ASTDmdNode.CLASS_DECLARATION:
+			ClassDeclaration classDecl = (ClassDeclaration) node;
+			visit(classDecl, "class", parameters, classDecl.baseclasses);
+			break;
+		case ASTDmdNode.INTERFACE_DECLARATION:
+			InterfaceDeclaration intDecl = (InterfaceDeclaration) node;
+			visit(intDecl, "interface", parameters, intDecl.baseclasses);
+			break;
+		case ASTDmdNode.STRUCT_DECLARATION:
+			StructDeclaration strDecl = (StructDeclaration) node;
+			visit(strDecl, "interface", parameters, null);
+			break;
+		case ASTDmdNode.UNION_DECLARATION:
+			UnionDeclaration unDecl = (UnionDeclaration) node;
+			visit(unDecl, "interface", parameters, null);
+			break;
+		}
+		return false;
+	}
+	
+	private boolean visit(AggregateDeclaration node, String name, List<TemplateParameter> templateParameters, List<BaseClass> baseClasses) {
 		visitPreDDocss(node.preDdocs);
 		printIndent();
 		visitModifiers(node.modifiers);
-		this.buffer.append("struct");
+		this.buffer.append(name);
 		this.buffer.append(" ");
 		if (node.ident != null) {
 			node.ident.accept(this);
 		}
-		//visitList(node.templateParameters(), ", ", "(", ")");
+		if (templateParameters != null) {
+			visitList(templateParameters, ", ", "(", ")");
+		}
+		if (baseClasses != null) {
+			visitList(baseClasses, ", ", " : ", EMPTY);
+		}
 		this.buffer.append(" {\n");
 		this.indent++;
 		visitList(node.members, LINE_END, EMPTY, LINE_END);
@@ -2118,10 +2164,24 @@ public class NaiveASTFlattener implements IASTVisitor {
 			if (wrappedSymbol.getNodeType() == ASTDmdNode.FUNC_DECLARATION) {
 				return visit((FuncDeclaration) wrappedSymbol, node.parameters);
 			} else {
-				// AggregateDeclaration
-				return false;
+				return visit((AggregateDeclaration) wrappedSymbol, node.parameters);
 			}
 		} else {
+			visitPreDDocss(node.preDdocs);
+			printIndent();
+			visitModifiers(node.modifiers);
+			this.buffer.append("template ");
+			node.ident.accept(this);
+			visitList(node.parameters, ", ", "(", ")");
+			this.buffer.append(" {\n");
+			this.indent++;
+			visitList(node.members, LINE_END, EMPTY, LINE_END);
+			this.indent--;
+			this.buffer.append("}");
+			if (node.postDdoc != null) {
+				this.buffer.append(" ");
+				node.postDdoc.accept(this);
+			}
 			return false;
 		}
 	}
@@ -2148,7 +2208,7 @@ public class NaiveASTFlattener implements IASTVisitor {
 		printIndent();
 		visitModifiers(node.modifiers);
 		this.buffer.append("mixin ");
-		// TODO node.getType().accept(this);
+		visitTemplateMixin(node.tqual, node.idents, node.tiargs);
 		if (node.ident != null) {
 			this.buffer.append(" ");
 			node.ident.accept(this);
@@ -2159,6 +2219,43 @@ public class NaiveASTFlattener implements IASTVisitor {
 			node.postDdoc.accept(this);
 		}
 		return false;
+	}
+
+	private void visitTemplateMixin(Type typeof, List<IdentifierExp> ids, List<ASTDmdNode> tiargs) {
+		boolean ret = false;
+		
+		if (typeof != null) {
+			typeof.accept(this);
+			ret = true;
+		}
+		
+		for(int i = 0; i < ids.size(); i++) {
+			IdentifierExp id = ids.get(i);
+			if (id == null || (id.ident != null && CharOperation.equals(id.ident, Id.empty))) continue;
+			
+			if (!ret) {
+				if (i == 1) {
+					this.buffer.append(".");
+				} else {
+					
+				}
+			} else {
+				this.buffer.append(".");
+			}
+			
+			if (i == ids.size() - 1) {
+				if (tiargs == null || tiargs.isEmpty()) {
+					id.accept(this);
+				} else {
+					id.accept(this);
+					visitList(tiargs, ", ", "!(", ")");
+				}
+			} else {
+				id.accept(this);
+			}
+			
+			ret = true;
+		}
 	}
 
 	public boolean visit(TemplateParameter node) {
@@ -2359,7 +2456,6 @@ public class NaiveASTFlattener implements IASTVisitor {
 				this.buffer.append(" ");
 				node.postDdoc.accept(this);
 			}
-			this.buffer.append(LINE_END);
 		} else {
 			this.buffer.append(", ");
 		}
@@ -2405,13 +2501,28 @@ public class NaiveASTFlattener implements IASTVisitor {
 
 	public boolean visit(TypeIdentifier node) {
 		startModifiedType(node);
-		// TODO
+		if (node.ident != null && !CharOperation.equals(node.ident.ident, Id.empty)) {
+			this.buffer.append(node.ident.ident);
+		}
+		
+		if (node.idents != null && !node.idents.isEmpty()) {
+			visitQualifiedType(node);
+		}
 		endModifiedType(node);
 		return false;
 	}
+	
+	private void visitQualifiedType(TypeQualified node) {
+		for(IdentifierExp idExp : node.idents) {
+			this.buffer.append(".");
+			idExp.accept(this);
+		}
+	}
 
 	public boolean visit(TypeidExp node) {
-		// TODO
+		this.buffer.append("typeid(");
+		node.typeidType.accept(this);
+		this.buffer.append(")");
 		return false;
 	}
 
@@ -2477,35 +2588,51 @@ public class NaiveASTFlattener implements IASTVisitor {
 
 	public boolean visit(TypeInstance node) {
 		startModifiedType(node);
-		// TODO
+		IdentifierExp id = node.tempinst.idents.get(0);
+		if (!CharOperation.equals(id.ident, Id.empty)) {
+			id.accept(this);
+		}
+		visitList(node.tempinst.tiargs, ", ", "!(", ")");
+		if (node.idents != null && node.idents.size() > 0) {
+			visitQualifiedType(node);
+		}
 		endModifiedType(node);
 		return false;
 	}
 
 	public boolean visit(TypePointer node) {
 		startModifiedType(node);
-		// TODO
+		node.next.accept(this);
+		this.buffer.append("*");
 		endModifiedType(node);
 		return false;
 	}
 
 	public boolean visit(TypeQualified node) {
-		startModifiedType(node);
-		// TODO
-		endModifiedType(node);
+		// abstract node
 		return false;
 	}
 
 	public boolean visit(TypeSArray node) {
 		startModifiedType(node);
-		// TODO
+		node.next.accept(this);
+		this.buffer.append("[");
+		node.dim.accept(this);
+		this.buffer.append("]");
 		endModifiedType(node);
 		return false;
 	}
 
 	public boolean visit(TypeSlice node) {
 		startModifiedType(node);
-		// TODO
+		node.next.accept(this);
+		this.buffer.append("[");
+		if (node.lwr != null && node.upr != null) {
+			node.lwr.accept(this);
+			this.buffer.append(" .. ");
+			node.upr.accept(this);
+		}
+		this.buffer.append("]");
 		endModifiedType(node);
 		return false;
 	}
@@ -2532,7 +2659,12 @@ public class NaiveASTFlattener implements IASTVisitor {
 
 	public boolean visit(TypeTypeof node) {
 		startModifiedType(node);
-		// TODO
+		this.buffer.append("typeof(");
+		node.exp.accept(this);
+		this.buffer.append(")");
+		if (node.idents != null && node.idents.size() != 0) {
+			visitQualifiedType(node);
+		}
 		endModifiedType(node);
 		return false;
 	}
@@ -2549,25 +2681,7 @@ public class NaiveASTFlattener implements IASTVisitor {
 	}
 
 	public boolean visit(UnionDeclaration node) {
-		visitPreDDocss(node.preDdocs);
-		printIndent();
-		visitModifiers(node.modifiers);
-		this.buffer.append("union");
-		this.buffer.append(" ");
-		if (node.ident != null) {
-			node.ident.accept(this);
-		}
-		//visitList(node.templateParameters(), ", ", "(", ")");
-		this.buffer.append(" {\n");
-		this.indent++;
-		visitList(node.members, LINE_END, EMPTY, LINE_END);
-		this.indent--;
-		printIndent();
-		this.buffer.append("}");
-		if (node.postDdoc != null) {
-			this.buffer.append(" ");
-			node.postDdoc.accept(this);
-		}
+		visit(node, "union", null, null);
 		return false;
 	}
 
@@ -2624,7 +2738,6 @@ public class NaiveASTFlattener implements IASTVisitor {
 				this.buffer.append(" ");
 				node.postDdoc.accept(this);
 			}
-			this.buffer.append(LINE_END);
 		} else {
 			this.buffer.append(", ");
 		}
