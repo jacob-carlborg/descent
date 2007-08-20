@@ -1899,11 +1899,16 @@ number_of_empty_lines_to_preserve
 	uiText=Number of blank lines to preserve:
 
 # New Line Options
-insert_new_line_before_else
+insert_new_line_before_else_statement
 	type=boolean
 	default=false
 	tab=NewLinesTabPage
-	uiText=Insert new line before 'else'
+	uiText=Insert new line before 'else' in if
+insert_new_line_before_else_declaration
+	type=boolean
+	default=false
+	tab=NewLinesTabPage
+	uiText=Insert new line before 'else' in version/debug
 insert_new_line_before_catch
 	type=boolean
 	default=false
@@ -1934,6 +1939,11 @@ keep_else_conditional_on_one_line
 	default=true
 	tab=NewLinesTabPage
 	uiText=Keep 'else if' on one line
+keep_else_version_debug_on_one_line
+	type=boolean
+	default=true
+	tab=NewLinesTabPage
+	uiText=Keep 'else version/debug' on one line
 insert_new_line_at_end_of_file_if_missing
 	type=boolean
 	default=false

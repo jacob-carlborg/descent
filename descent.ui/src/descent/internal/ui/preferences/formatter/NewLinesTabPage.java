@@ -29,6 +29,9 @@ public class NewLinesTabPage extends ModifyDialogTabPage {
 	
 	private final String PREVIEW=
 	createPreviewHeader(FormatterMessages.NewLinesTabPage_preview_header) +
+		"version(Tango){alias toString toUtf8;}" +
+		"else version(Phobos){alias toUtf8 toString;}" +
+		"else{static assert(false, \"Must specify a version of Tango or Phobos.\");}\n\n" +
 		"void exampleFunction(){" +
 		"if(x==1){Stdout(\"x is one.\");}else if(x==2){Stdout(\"x is two.\")}" +
 		"else{Stdout(\"x is a number I haven't learned about yet.\")}\n\n" +
@@ -49,8 +52,11 @@ public class NewLinesTabPage extends ModifyDialogTabPage {
 		
 		final Group controlStatementsGroup = createGroup(numColumns, composite, FormatterMessages.NewLinesTabPage_control_statements_title);
 		createCheckboxPref(controlStatementsGroup, numColumns, 
-				FormatterMessages.NewLinesTabPage_insert_new_line_before_else,
-				DefaultCodeFormatterConstants.FORMATTER_INSERT_NEW_LINE_BEFORE_ELSE, FALSE_TRUE); 
+				FormatterMessages.NewLinesTabPage_insert_new_line_before_else_statement,
+				DefaultCodeFormatterConstants.FORMATTER_INSERT_NEW_LINE_BEFORE_ELSE_STATEMENT, FALSE_TRUE); 
+		createCheckboxPref(controlStatementsGroup, numColumns, 
+				FormatterMessages.NewLinesTabPage_insert_new_line_before_else_declaration,
+				DefaultCodeFormatterConstants.FORMATTER_INSERT_NEW_LINE_BEFORE_ELSE_DECLARATION, FALSE_TRUE); 
 		createCheckboxPref(controlStatementsGroup, numColumns, 
 				FormatterMessages.NewLinesTabPage_insert_new_line_before_catch,
 				DefaultCodeFormatterConstants.FORMATTER_INSERT_NEW_LINE_BEFORE_CATCH, FALSE_TRUE); 
@@ -63,6 +69,9 @@ public class NewLinesTabPage extends ModifyDialogTabPage {
 		createCheckboxPref(controlStatementsGroup, numColumns, 
 				FormatterMessages.NewLinesTabPage_keep_else_conditional_on_one_line,
 				DefaultCodeFormatterConstants.FORMATTER_KEEP_ELSE_CONDITIONAL_ON_ONE_LINE, FALSE_TRUE); 
+		createCheckboxPref(controlStatementsGroup, numColumns, 
+				FormatterMessages.NewLinesTabPage_keep_else_version_debug_on_one_line,
+				DefaultCodeFormatterConstants.FORMATTER_KEEP_ELSE_VERSION_DEBUG_ON_ONE_LINE, FALSE_TRUE); 
 		createCheckboxPref(controlStatementsGroup, numColumns, 
 				FormatterMessages.NewLinesTabPage_insert_new_line_after_case_or_default_statement,
 				DefaultCodeFormatterConstants.FORMATTER_INSERT_NEW_LINE_AFTER_CASE_OR_DEFAULT_STATEMENT, FALSE_TRUE); 

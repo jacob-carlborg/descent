@@ -25,7 +25,7 @@ public class FormatIfStatement_Test extends AbstractFormatBraceElseWithSingleIns
 	
 	@Override
 	protected String getInsertNewLineBeforeElseOptionName() {
-		return DefaultCodeFormatterConstants.FORMATTER_INSERT_NEW_LINE_BEFORE_ELSE;
+		return DefaultCodeFormatterConstants.FORMATTER_INSERT_NEW_LINE_BEFORE_ELSE_STATEMENT;
 	}
 	
 	@Override

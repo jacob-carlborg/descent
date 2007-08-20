@@ -13,7 +13,7 @@ public class FormatConditionalDeclaration_Test extends AbstractFormatter_Test {
 	protected Map getDefaultOptions() {
 		Map options = new HashMap();
 		options.put(DefaultCodeFormatterConstants.FORMATTER_BRACE_POSITION_FOR_CONDITIONAL_DECLARATION, DefaultCodeFormatterConstants.END_OF_LINE);
-		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_NEW_LINE_BEFORE_ELSE, DefaultCodeFormatterConstants.FALSE);
+		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_NEW_LINE_BEFORE_ELSE_DECLARATION, DefaultCodeFormatterConstants.FALSE);
 		options.put(DefaultCodeFormatterConstants.FORMATTER_KEEP_SIMPLE_THEN_DECLARATION_ON_SAME_LINE, DefaultCodeFormatterConstants.FALSE);
 		options.put(DefaultCodeFormatterConstants.FORMATTER_KEEP_SIMPLE_ELSE_DECLARATION_ON_SAME_LINE, DefaultCodeFormatterConstants.FALSE);
 		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_BEFORE_OPENING_PAREN_IN_VERSION_DEBUG, DefaultCodeFormatterConstants.FALSE);
@@ -181,7 +181,7 @@ public class FormatConditionalDeclaration_Test extends AbstractFormatter_Test {
 	
 	public void testDontKeepElseConditionalOnOneLine() throws Exception {
 		Map options = new HashMap();
-		options.put(DefaultCodeFormatterConstants.FORMATTER_KEEP_ELSE_CONDITIONAL_ON_ONE_LINE, DefaultCodeFormatterConstants.FALSE);
+		options.put(DefaultCodeFormatterConstants.FORMATTER_KEEP_ELSE_VERSION_DEBUG_ON_ONE_LINE, DefaultCodeFormatterConstants.FALSE);
 		for(String cond : conditionals) {
 			assertFormat(
 					cond + "(someVersion) {\r\n" +
@@ -266,7 +266,7 @@ public class FormatConditionalDeclaration_Test extends AbstractFormatter_Test {
 	
 	public void testInsertNewLineBeforeElse() throws Exception {
 		Map options = new HashMap();
-		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_NEW_LINE_BEFORE_ELSE, DefaultCodeFormatterConstants.TRUE);
+		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_NEW_LINE_BEFORE_ELSE_DECLARATION, DefaultCodeFormatterConstants.TRUE);
 		for(String cond : conditionals) {
 			assertFormat(
 					cond + "(someVersion) {\r\n" +
@@ -284,7 +284,7 @@ public class FormatConditionalDeclaration_Test extends AbstractFormatter_Test {
 	public void testKeepSimpleElseInSameLineProblem() throws Exception {
 		Map options = new HashMap();
 		options.put(DefaultCodeFormatterConstants.FORMATTER_KEEP_SIMPLE_ELSE_DECLARATION_ON_SAME_LINE, DefaultCodeFormatterConstants.TRUE);
-		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_NEW_LINE_BEFORE_ELSE, DefaultCodeFormatterConstants.TRUE);
+		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_NEW_LINE_BEFORE_ELSE_DECLARATION, DefaultCodeFormatterConstants.TRUE);
 		for(String cond : conditionals) {
 			assertFormat(
 					cond + "(someVersion)\r\n" +

@@ -2477,7 +2477,7 @@ public class CodeFormatterVisitor extends ASTVisitor
 		boolean simple = formatDeclarationBlock(node.thenDeclarations(), prefs.brace_position_for_conditional_declaration, true, !prefs.keep_simple_then_declaration_on_same_line);
 		if(isNextToken(TOK.TOKelse))
 		{
-			if (prefs.insert_new_line_before_else || simple) {
+			if (prefs.insert_new_line_before_else_declaration || simple) {
 				scribe.printNewLine();
 			} else {
 				scribe.space();
@@ -2488,7 +2488,7 @@ public class CodeFormatterVisitor extends ASTVisitor
 			if (node.elseDeclarations().size() == 1 
 					&& node.elseDeclarations().get(0).getClass().equals(node.getClass())
 					&& !isNextToken(TOK.TOKlcurly) && !isNextToken(TOK.TOKcolon)) {
-				if (prefs.keep_else_conditional_on_one_line) {
+				if (prefs.keep_else_version_debug_on_one_line) {
 					scribe.space();
 				} else {
 					scribe.printNewLine();
@@ -2505,7 +2505,7 @@ public class CodeFormatterVisitor extends ASTVisitor
 		boolean simple = formatSubStatement(node.getThenBody(), false, true, !prefs.keep_simple_then_statement_on_same_line, prefs.brace_position_for_conditional_statement);
 		if(isNextToken(TOK.TOKelse))
 		{
-			if (prefs.insert_new_line_before_else || (simple && prefs.keep_simple_then_statement_on_same_line)) {
+			if (prefs.insert_new_line_before_else_statement || (simple && prefs.keep_simple_then_statement_on_same_line)) {
 				scribe.printNewLine();
 			} else {
 				scribe.space();

@@ -323,13 +323,15 @@ public class DefaultCodeFormatterConstants {
 	public static final String FORMATTER_BLANK_LINES_BEFORE_MODULE = JavaCore.PLUGIN_ID + ".formatter.blank_lines_before_module";
 	public static final String FORMATTER_BLANK_LINES_AFTER_MODULE = JavaCore.PLUGIN_ID + ".formatter.blank_lines_after_module";
 	public static final String FORMATTER_NUMBER_OF_EMPTY_LINES_TO_PRESERVE = JavaCore.PLUGIN_ID + ".formatter.number_of_empty_lines_to_preserve";
-	public static final String FORMATTER_INSERT_NEW_LINE_BEFORE_ELSE = JavaCore.PLUGIN_ID + ".formatter.insert_new_line_before_else";
+	public static final String FORMATTER_INSERT_NEW_LINE_BEFORE_ELSE_STATEMENT = JavaCore.PLUGIN_ID + ".formatter.insert_new_line_before_else_statement";
+	public static final String FORMATTER_INSERT_NEW_LINE_BEFORE_ELSE_DECLARATION = JavaCore.PLUGIN_ID + ".formatter.insert_new_line_before_else_declaration";
 	public static final String FORMATTER_INSERT_NEW_LINE_BEFORE_CATCH = JavaCore.PLUGIN_ID + ".formatter.insert_new_line_before_catch";
 	public static final String FORMATTER_INSERT_NEW_LINE_BEFORE_FINALLY = JavaCore.PLUGIN_ID + ".formatter.insert_new_line_before_finally";
 	public static final String FORMATTER_INSERT_NEW_LINE_BEFORE_WHILE_IN_DO_STATEMENT = JavaCore.PLUGIN_ID + ".formatter.insert_new_line_before_while_in_do_statement";
 	public static final String FORMATTER_INSERT_NEW_LINE_AFTER_CASE_OR_DEFAULT_STATEMENT = JavaCore.PLUGIN_ID + ".formatter.insert_new_line_after_case_or_default_statement";
 	public static final String FORMATTER_INSERT_NEW_LINE_AFTER_LABEL = JavaCore.PLUGIN_ID + ".formatter.insert_new_line_after_label";
 	public static final String FORMATTER_KEEP_ELSE_CONDITIONAL_ON_ONE_LINE = JavaCore.PLUGIN_ID + ".formatter.keep_else_conditional_on_one_line";
+	public static final String FORMATTER_KEEP_ELSE_VERSION_DEBUG_ON_ONE_LINE = JavaCore.PLUGIN_ID + ".formatter.keep_else_version_debug_on_one_line";
 	public static final String FORMATTER_INSERT_NEW_LINE_AT_END_OF_FILE_IF_MISSING = JavaCore.PLUGIN_ID + ".formatter.insert_new_line_at_end_of_file_if_missing";
 	public static final String FORMATTER_KEEP_SIMPLE_THEN_DECLARATION_ON_SAME_LINE = JavaCore.PLUGIN_ID + ".formatter.keep_simple_then_declaration_on_same_line";
 	public static final String FORMATTER_KEEP_SIMPLE_ELSE_DECLARATION_ON_SAME_LINE = JavaCore.PLUGIN_ID + ".formatter.keep_simple_else_declaration_on_same_line";

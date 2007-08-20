@@ -58,9 +58,9 @@ public class FormatTemplateDeclaration_Test extends AbstractFormatBrace_Test {
 		Map options = new HashMap();
 		options.put(DefaultCodeFormatterConstants.FORMATTER_INSERT_SPACE_AFTER_OPENING_PAREN_IN_TEMPLATE_DECLARATIONS, DefaultCodeFormatterConstants.TRUE);
 		assertFormat(
-				"template Class( ) {\r\n" +
+				"template Class( T) {\r\n" +
 				"}",
-				"template Class ( ) { }",
+				"template Class (T) { }",
 				options
 				);
 	}

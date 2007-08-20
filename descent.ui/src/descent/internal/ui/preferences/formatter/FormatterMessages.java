@@ -335,13 +335,15 @@ final class FormatterMessages extends NLS {
 	public static String BlankLinesTabPage_blank_lines_before_module;
 	public static String BlankLinesTabPage_blank_lines_after_module;
 	public static String BlankLinesTabPage_number_of_empty_lines_to_preserve;
-	public static String NewLinesTabPage_insert_new_line_before_else;
+	public static String NewLinesTabPage_insert_new_line_before_else_statement;
+	public static String NewLinesTabPage_insert_new_line_before_else_declaration;
 	public static String NewLinesTabPage_insert_new_line_before_catch;
 	public static String NewLinesTabPage_insert_new_line_before_finally;
 	public static String NewLinesTabPage_insert_new_line_before_while_in_do_statement;
 	public static String NewLinesTabPage_insert_new_line_after_case_or_default_statement;
 	public static String NewLinesTabPage_insert_new_line_after_label;
 	public static String NewLinesTabPage_keep_else_conditional_on_one_line;
+	public static String NewLinesTabPage_keep_else_version_debug_on_one_line;
 	public static String NewLinesTabPage_insert_new_line_at_end_of_file_if_missing;
 	public static String ShortSyntaxTabPage_keep_simple_then_declaration_on_same_line;
 	public static String ShortSyntaxTabPage_keep_simple_else_declaration_on_same_line;
