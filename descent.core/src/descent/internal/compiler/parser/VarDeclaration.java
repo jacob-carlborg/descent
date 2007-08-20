@@ -7,7 +7,6 @@ import static descent.internal.compiler.parser.STC.STCfield;
 import static descent.internal.compiler.parser.STC.STCscope;
 import static descent.internal.compiler.parser.STC.STCstatic;
 
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,6 +22,8 @@ public class VarDeclaration extends Declaration {
 
 	public boolean first; // is this the first declaration in a multi
 	public boolean last; // is this the last declaration in a multi
+	public VarDeclaration next;
+	
 	// declaration?
 	public Type sourceType;
 	public Type type;

@@ -41,21 +41,25 @@ public class IntegerWrapper extends Number {
 	}
 	
 	public int compareTo(BigInteger value) {
-		if (bigIntegerValue != null) {
-			return bigIntegerValue.compareTo(value);
-		} else {
-			long otherLong = value.longValue();
-			return longValue > otherLong ? 1 : (longValue < otherLong ? - 1 : 0);
+		if (bigIntegerValue == null) {
+			bigIntegerValue = new BigInteger(String.valueOf(longValue));
 		}
+		
+		return bigIntegerValue.compareTo(value);
 	}
 	
 	public int compareTo(IntegerWrapper value) {
-		// TODO can be optimized
-		if (bigIntegerValue != null) {			
+		if (bigIntegerValue != null) {
 			return bigIntegerValue.compareTo(value.bigIntegerValue());
 		} else {
-			long otherLong = value.longValue();
-			return longValue > otherLong ? 1 : (longValue < otherLong ? - 1 : 0);
+			if (value.bigIntegerValue == null) {
+				long otherLong = value.longValue();
+				return longValue > otherLong ? 1 : (longValue < otherLong ? - 1 : 0);
+			} else {
+				bigIntegerValue = new BigInteger(String.valueOf(longValue));
+				value.bigIntegerValue = new BigInteger(String.valueOf(value.longValue));
+				return bigIntegerValue.compareTo(value.bigIntegerValue);
+			}
 		}
 	}
 	

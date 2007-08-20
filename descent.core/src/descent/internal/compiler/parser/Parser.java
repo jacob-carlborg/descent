@@ -68,7 +68,6 @@ import static descent.internal.compiler.parser.TY.Taarray;
 import static descent.internal.compiler.parser.TY.Tfunction;
 import static descent.internal.compiler.parser.TY.Tsarray;
 
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -714,6 +713,8 @@ public class Parser extends Lexer {
 					break;
 			}
 		}
+		
+		VarDeclaration previous = null;
 
 		/* Look for auto initializers:
 		 *	storage_class identifier = initializer;
@@ -738,6 +739,10 @@ public class Parser extends Lexer {
 			    adjustPossitionAccordingToComments(v, v.preDdocs, v.postDdoc);
 			    
 			    s = v;
+			    if (previous != null) {
+			    	previous.next = v;
+			    }
+			    previous = v;
 			    
 			    if (token.value == TOKsemicolon) {
 			    	v.setSourceRange(start, token.ptr + token.len - start);
@@ -2656,6 +2661,7 @@ public class Parser extends Lexer {
 		a = new ArrayList();
 		
 		boolean first = true;
+		VarDeclaration previousVar = null;
 
 		/*
 		 * Look for auto initializers: storage_class identifier = initializer;
@@ -2676,6 +2682,11 @@ public class Parser extends Lexer {
 			v.storage_class = storage_class;
 			v.addModifiers(modifiers);
 			a.add(v);
+			
+			if (previousVar != null) {
+				previousVar.next = v;
+			}
+			previousVar = v;
 			
 			if (token.value == TOKsemicolon) {
 				v.setSourceRange(start, token.ptr + token.len - start);
@@ -2721,6 +2732,8 @@ public class Parser extends Lexer {
 		
 		int[] identStart = new int[1];
 		
+		AliasDeclaration previousAlias = null;
+		TypedefDeclaration previousTypedef = null;
 		first = true;
 		while (true) {
 			List<TemplateParameter> tpl = null;
@@ -2767,6 +2780,10 @@ public class Parser extends Lexer {
 					td = new TypedefDeclaration(loc, ident, t, init);
 					td.first = first;
 					v = td;
+					if (previousTypedef != null) {
+						previousTypedef.next = td;
+					}
+					previousTypedef = td;
 				} else {
 					if (init != null) {
 						error("Alias cannot have initializer", IProblem.AliasCannotHaveInitializer, assignTokenLine, assignTokenStart,  init.start + init.length - assignTokenStart);
@@ -2775,6 +2792,10 @@ public class Parser extends Lexer {
 					ad = new AliasDeclaration(loc, ident, t);
 					ad.first = first;
 					v = ad;
+					if (previousAlias != null) {
+						previousAlias.next = ad;
+					}
+					previousAlias = ad;
 				}
 				first = false;
 				
@@ -2865,6 +2886,11 @@ public class Parser extends Lexer {
 				v.storage_class = storage_class;
 				v.modifiers = modifiers;
 				a.add(v);
+				
+				if (previousVar != null) {
+					previousVar.next = v;
+				}
+				previousVar = v;
 				
 				switch (token.value) {
 				case TOKsemicolon:

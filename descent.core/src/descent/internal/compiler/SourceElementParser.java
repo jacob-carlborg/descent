@@ -501,12 +501,15 @@ public class SourceElementParser implements IASTVisitor {
 	}
 	
 	public boolean visit(VarDeclaration node) {
-		// TODO check that my parent is not a function, foreach, etc.
+		VarDeclaration last = node;
+		while(last.next != null) {
+			last = last.next;
+		}
 		
 		FieldInfo info = new FieldInfo();
 		info.annotationPositions = NO_LONG;
 		info.categories = CharOperation.NO_CHAR_CHAR;
-		info.declarationStart = startOfDeclaration(node);
+		info.declarationStart = startOfDeclaration(last);
 		info.modifiers = getFlags(node.modifiers);
 		if (node.ident != null) {
 			info.name = node.ident.ident;
@@ -527,10 +530,15 @@ public class SourceElementParser implements IASTVisitor {
 	}
 	
 	public boolean visit(AliasDeclaration node) {
+		AliasDeclaration last = node;
+		while(last.next != null) {
+			last = last.next;
+		}
+		
 		FieldInfo info = new FieldInfo();
 		info.annotationPositions = NO_LONG;
 		info.categories = CharOperation.NO_CHAR_CHAR;
-		info.declarationStart = startOfDeclaration(node);
+		info.declarationStart = startOfDeclaration(last);
 		info.modifiers = getFlags(node.modifiers);
 		info.modifiers |= Flags.AccAlias;
 		if (node.ident != null) {
@@ -552,10 +560,15 @@ public class SourceElementParser implements IASTVisitor {
 	}
 	
 	public boolean visit(TypedefDeclaration node) {
+		TypedefDeclaration last = node;
+		while(last.next != null) {
+			last = last.next;
+		}
+		
 		FieldInfo info = new FieldInfo();
 		info.annotationPositions = NO_LONG;
 		info.categories = CharOperation.NO_CHAR_CHAR;
-		info.declarationStart = startOfDeclaration(node);
+		info.declarationStart = startOfDeclaration(last);
 		info.modifiers = getFlags(node.modifiers);
 		info.modifiers |= Flags.AccTypedef;
 		if (node.ident != null) {
@@ -883,24 +896,39 @@ public class SourceElementParser implements IASTVisitor {
 	}
 	
 	public void endVisit(VarDeclaration node) {
+		VarDeclaration last = node;
+		while(last.next != null) {
+			last = last.next;
+		}
+		
 		int initializerStart = node.sourceInit == null ? - 1 : startOf(node.sourceInit);
-		int declarationSourceEnd = endOf(node);
+		int declarationSourceEnd = endOf(last);
 		int declarationEnd = endOfDeclaration(node.ident);
 		
 		requestor.exitField(initializerStart, declarationEnd, declarationSourceEnd);
 	}
 	
 	public void endVisit(AliasDeclaration node) {
+		AliasDeclaration last = node;
+		while(last.next != null) {
+			last = last.next;
+		}
+		
 		int initializerStart = endOf(node.ident);
-		int declarationSourceEnd = endOf(node);
+		int declarationSourceEnd = endOf(last);
 		int declarationEnd = endOfDeclaration(node.ident);
 		
 		requestor.exitField(initializerStart, declarationEnd, declarationSourceEnd);
 	}
 
 	public void endVisit(TypedefDeclaration node) {
+		TypedefDeclaration last = node;
+		while(last.next != null) {
+			last = last.next;
+		}
+		
 		int initializerStart = endOf(node.ident);
-		int declarationSourceEnd = endOf(node);
+		int declarationSourceEnd = endOf(last);
 		int declarationEnd = endOfDeclaration(node.ident);
 		
 		requestor.exitField(initializerStart, declarationEnd, declarationSourceEnd);

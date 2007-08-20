@@ -26,10 +26,13 @@ import descent.core.JavaModelException;
 import descent.core.Signature;
 import descent.core.WorkingCopyOwner;
 import descent.core.dom.AST;
+import descent.internal.compiler.parser.AliasDeclaration;
 import descent.internal.compiler.parser.Comment;
 import descent.internal.compiler.parser.Dsymbol;
 import descent.internal.compiler.parser.Module;
 import descent.internal.compiler.parser.Parser;
+import descent.internal.compiler.parser.TypedefDeclaration;
+import descent.internal.compiler.parser.VarDeclaration;
 import descent.internal.core.util.MementoTokenizer;
 
 /**
@@ -288,8 +291,30 @@ public ISourceRange[] getJavadocRanges() throws JavaModelException {
 	Dsymbol declaration = module.members.get(0);
 	
 	List<ISourceRange> sourceRanges = new ArrayList<ISourceRange>(1);
-	for(Comment ddoc : declaration.preDdocs) {
-		sourceRanges.add(new SourceRange(start + ddoc.start, ddoc.length));
+	if (declaration instanceof VarDeclaration) {
+		VarDeclaration var = (VarDeclaration) declaration;
+		while(var.next != null) {
+			var = var.next;
+			declaration = var;
+		}
+	} else if (declaration instanceof AliasDeclaration) {
+		AliasDeclaration var = (AliasDeclaration) declaration;
+		while(var.next != null) {
+			var = var.next;
+			declaration = var;
+		}
+	} else if (declaration instanceof TypedefDeclaration) {
+		TypedefDeclaration var = (TypedefDeclaration) declaration;
+		while(var.next != null) {
+			var = var.next;
+			declaration = var;
+		}
+	}
+	
+	if (declaration.preDdocs != null) {
+		for(Comment ddoc : declaration.preDdocs) {
+			sourceRanges.add(new SourceRange(start + ddoc.start, ddoc.length));
+		}
 	}
 	
 	if (declaration.postDdoc != null) {

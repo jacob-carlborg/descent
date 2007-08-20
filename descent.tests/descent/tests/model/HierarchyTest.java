@@ -432,7 +432,7 @@ public class HierarchyTest extends AbstractModelTest {
 		assertFalse(field.isTypedef());
 		assertFalse(field.isTemplateMixin());
 		assertEquals(16, field.getSourceRange().getOffset());
-		assertEquals(18, field.getSourceRange().getLength());
+		assertEquals(21, field.getSourceRange().getLength());
 		assertEquals(16, field.getJavadocRanges()[0].getOffset());
 		assertEquals(11, field.getJavadocRanges()[0].getLength());
 		assertEquals("x", field.getElementName());
@@ -446,11 +446,11 @@ public class HierarchyTest extends AbstractModelTest {
 		assertFalse(field.isTypedef());
 		assertFalse(field.isTemplateMixin());
 		assertEquals(16, field.getSourceRange().getOffset());
-		assertEquals(18, field.getSourceRange().getLength());
+		assertEquals(21, field.getSourceRange().getLength());
 		assertEquals(16, field.getJavadocRanges()[0].getOffset());
 		assertEquals(11, field.getJavadocRanges()[0].getLength());
-		assertEquals("x", field.getElementName());
-		assertEquals(32, field.getNameRange().getOffset());
+		assertEquals("y", field.getElementName());
+		assertEquals(35, field.getNameRange().getOffset());
 		assertEquals(1, field.getNameRange().getLength());
 	}
 	
@@ -496,7 +496,7 @@ public class HierarchyTest extends AbstractModelTest {
 		assertFalse(field.isTypedef());
 		assertFalse(field.isTemplateMixin());
 		assertEquals(16, field.getSourceRange().getOffset());
-		assertEquals(24, field.getSourceRange().getLength());
+		assertEquals(27, field.getSourceRange().getLength());
 		assertEquals(16, field.getJavadocRanges()[0].getOffset());
 		assertEquals(11, field.getJavadocRanges()[0].getLength());
 		assertEquals("x", field.getElementName());
@@ -510,11 +510,11 @@ public class HierarchyTest extends AbstractModelTest {
 		assertFalse(field.isTypedef());
 		assertFalse(field.isTemplateMixin());
 		assertEquals(16, field.getSourceRange().getOffset());
-		assertEquals(24, field.getSourceRange().getLength());
+		assertEquals(27, field.getSourceRange().getLength());
 		assertEquals(16, field.getJavadocRanges()[0].getOffset());
 		assertEquals(11, field.getJavadocRanges()[0].getLength());
-		assertEquals("x", field.getElementName());
-		assertEquals(38, field.getNameRange().getOffset());
+		assertEquals("y", field.getElementName());
+		assertEquals(41, field.getNameRange().getOffset());
 		assertEquals(1, field.getNameRange().getLength());
 	}
 	
@@ -560,7 +560,7 @@ public class HierarchyTest extends AbstractModelTest {
 		assertTrue(field.isTypedef());
 		assertFalse(field.isTemplateMixin());
 		assertEquals(16, field.getSourceRange().getOffset());
-		assertEquals(26, field.getSourceRange().getLength());
+		assertEquals(29, field.getSourceRange().getLength());
 		assertEquals(16, field.getJavadocRanges()[0].getOffset());
 		assertEquals(11, field.getJavadocRanges()[0].getLength());
 		assertEquals("x", field.getElementName());
@@ -574,11 +574,11 @@ public class HierarchyTest extends AbstractModelTest {
 		assertTrue(field.isTypedef());
 		assertFalse(field.isTemplateMixin());
 		assertEquals(16, field.getSourceRange().getOffset());
-		assertEquals(26, field.getSourceRange().getLength());
+		assertEquals(29, field.getSourceRange().getLength());
 		assertEquals(16, field.getJavadocRanges()[0].getOffset());
 		assertEquals(11, field.getJavadocRanges()[0].getLength());
-		assertEquals("x", field.getElementName());
-		assertEquals(40, field.getNameRange().getOffset());
+		assertEquals("y", field.getElementName());
+		assertEquals(43, field.getNameRange().getOffset());
 		assertEquals(1, field.getNameRange().getLength());
 	}
 	
