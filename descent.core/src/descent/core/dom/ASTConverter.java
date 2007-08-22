@@ -119,6 +119,11 @@ public class ASTConverter {
 	}
 	
 	public descent.core.dom.ASTNode convert(descent.internal.compiler.parser.ASTDmdNode symbol) {
+		// TODO temporary fix, check null everyplace
+		if (symbol == null) {
+			return null;
+		}
+		
 		switch(symbol.getNodeType()) {
 		case ASTDmdNode.ADD_ASSIGN_EXP:
 			return convert((BinExp) symbol, Assignment.Operator.PLUS_ASSIGN);
@@ -877,7 +882,7 @@ public class ASTConverter {
 	}
 	
 	public descent.core.dom.TemplateType convert(TemplateInstanceWrapper a) {
-		TemplateInstance tempinst = ((TemplateInstanceWrapper) a).tempinst;
+		TemplateInstance tempinst = (a).tempinst;
 		TemplateType tt = new TemplateType(ast);
 		tt.setName(convert(tempinst.idents.get(0)));
 		if (tempinst.tiargs != null) {
@@ -905,7 +910,7 @@ public class ASTConverter {
 			b.setExpression(convert(a.e1));
 		}
 		if (a.ti != null) {
-			b.setTemplateType((TemplateType) convert(a.ti));
+			b.setTemplateType(convert(a.ti));
 		}
 		b.setSourceRange(a.start, a.length);
 		return b;
@@ -1234,8 +1239,12 @@ public class ASTConverter {
 		if (a.arg != null) {
 			b.setArgument(convert(a.arg));
 		}
-		b.setExpression(convert(a.sourceCondition));
-		b.setThenBody(convert(a.ifbody));
+		if (a.sourceCondition != null) {
+			b.setExpression(convert(a.sourceCondition));
+		}
+		if (a.ifbody != null) {
+			b.setThenBody(convert(a.ifbody));	
+		}
 		if (a.elsebody != null) {
 			b.setElseBody(convert(a.elsebody));
 		}
@@ -1246,13 +1255,13 @@ public class ASTConverter {
 	public descent.core.dom.Expression convert(IdentityExp a) {
 		switch(a.op) {
 		case TOKidentity:
-			return convert((BinExp) a, InfixExpression.Operator.IDENTITY);
+			return convert(a, InfixExpression.Operator.IDENTITY);
 		case TOKnotidentity:
-			return convert((BinExp) a, InfixExpression.Operator.NOT_IDENTITY);
+			return convert(a, InfixExpression.Operator.NOT_IDENTITY);
 		case TOKis:
-			return convert((BinExp) a, InfixExpression.Operator.IS);
+			return convert(a, InfixExpression.Operator.IS);
 		case TOKnotis:
-			return convert((BinExp) a, InfixExpression.Operator.NOT_IS);
+			return convert(a, InfixExpression.Operator.NOT_IS);
 		}
 		return null;
 	}
@@ -1584,7 +1593,7 @@ public class ASTConverter {
 	}
 	
 	public descent.core.dom.Expression convert(EqualExp a) {
-		return convert((BinExp) a, a.op == TOK.TOKequal ? InfixExpression.Operator.EQUALS : InfixExpression.Operator.NOT_EQUALS);
+		return convert(a, a.op == TOK.TOKequal ? InfixExpression.Operator.EQUALS : InfixExpression.Operator.NOT_EQUALS);
 	}
 	
 	public descent.core.dom.DotIdentifierExpression convert(DotIdExp a) {
