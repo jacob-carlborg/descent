@@ -41,7 +41,7 @@ public class ArrayInitializer extends Initializer {
 			for (int i = 0; i < value.size(); i++) {
 				if (index.get(i) != null) {
 					// goto Lno;
-					context.acceptProblem(Problem.newSemanticTypeError("Cannot infer type from this array initializer", IProblem.CannotInferType, 0, start, length));
+					context.acceptProblem(Problem.newSemanticTypeError(IProblem.CannotInferType, 0, start, length));
 					return Type.terror;
 				}
 			}
@@ -56,7 +56,7 @@ public class ArrayInitializer extends Initializer {
 			}
 		}
 		
-		context.acceptProblem(Problem.newSemanticTypeError("Cannot infer type from this array initializer", IProblem.CannotInferType, 0, start, length));
+		context.acceptProblem(Problem.newSemanticTypeError(IProblem.CannotInferType, 0, start, length));
 		return Type.terror;
 	}
 	

@@ -50,7 +50,7 @@ public abstract class TypeQualified extends Type {
 						id = (IdentifierExp) ti.idents.get(0);
 						sm = s.search(loc, id, 0, context);
 						if (sm == null) {
-							context.acceptProblem(Problem.newSemanticTypeError("Template identifier " + id + " is not a member of this module", IProblem.NotAMember, 0, id.start, id.length));
+							context.acceptProblem(Problem.newSemanticTypeError(IProblem.NotAMember, 0, id.start, id.length, new String[] { new String(id.ident) }));
 							return;
 						}
 						sm = sm.toAlias(context);
@@ -137,7 +137,7 @@ public abstract class TypeQualified extends Type {
 		if (s == null) {
 			// TODO semantic remove if and leave body
 			if (!toString().equals("Object")) {
-				context.acceptProblem(Problem.newSemanticTypeError("Identifier '" + this + "' is not defined", IProblem.UndefinedIdentifier, 0, start, length));
+				context.acceptProblem(Problem.newSemanticTypeError(IProblem.UndefinedIdentifier, 0, start, length, new String[] { this.toString() }));
 			}
 		}
 	}

@@ -30,7 +30,7 @@ public class TemplateTypeParameter extends TemplateParameter {
 		TypeIdentifier ti = new TypeIdentifier(loc, ident);
 		Declaration sparam = new AliasDeclaration(loc, ident, ti);
 		if (sc.insert(sparam) == null) {
-			context.acceptProblem(Problem.newSemanticTypeError("Duplicate parameter " + ident, IProblem.DuplicatedParameter, 0, ident.start, ident.length));
+			context.acceptProblem(Problem.newSemanticTypeError(IProblem.DuplicatedParameter, 0, ident.start, ident.length, new String[] { new String(ident.ident) }));
 		}
 
 		if (specType != null) {

@@ -38,8 +38,7 @@ public class TemplateInstance extends ScopeDsymbol {
 	public Dsymbol toAlias(SemanticContext context) {
 		if (inst == null) {
 			context.acceptProblem(Problem.newSemanticTypeError(
-					"Cannot resolve forward reference",
-					IProblem.ForwardReference, 0, start, length));
+					IProblem.ForwardReference, 0, start, length, new String[] { "Cannot resolve forward reference" }));
 			return this;
 		}
 

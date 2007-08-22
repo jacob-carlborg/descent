@@ -110,7 +110,6 @@ public class EnumDeclaration extends ScopeDsymbol {
 					context);
 			if (sym.memtype == null) {
 				context.acceptProblem(Problem.newSemanticTypeError(
-						"Base enum is forward reference",
 						IProblem.ForwardReference, 0, memtype.start,
 						memtype.length));
 				memtype = Type.tint32;
@@ -119,7 +118,6 @@ public class EnumDeclaration extends ScopeDsymbol {
 
 		if (!memtype.isintegral()) {
 			context.acceptProblem(Problem.newSemanticTypeError(
-					"Base type must be of integral type",
 					IProblem.EnumBaseTypeMustBeOfIntegralType, 0,
 					memtype.start, memtype.length));
 			memtype = Type.tint32;
@@ -136,7 +134,6 @@ public class EnumDeclaration extends ScopeDsymbol {
 
 		if (members.size() == 0) {
 			context.acceptProblem(Problem.newSemanticTypeError(
-					"Enum must have at least one member",
 					IProblem.EnumMustHaveAtLeastOneMember, 0, errorStart,
 					errorLength));
 		}
@@ -172,7 +169,6 @@ public class EnumDeclaration extends ScopeDsymbol {
 					case Tbool:
 						if (number.equals(N_2)) {
 							context.acceptProblem(Problem.newSemanticTypeError(
-									"Overflow of enum value",
 									IProblem.EnumValueOverflow, 0,
 									em.ident.start, em.ident.length));
 						}
@@ -181,7 +177,6 @@ public class EnumDeclaration extends ScopeDsymbol {
 					case Tint8:
 						if (number.equals(N_128)) {
 							context.acceptProblem(Problem.newSemanticTypeError(
-									"Overflow of enum value",
 									IProblem.EnumValueOverflow, 0,
 									em.ident.start, em.ident.length));
 						}
@@ -191,7 +186,6 @@ public class EnumDeclaration extends ScopeDsymbol {
 					case Tuns8:
 						if (number.equals(N_256)) {
 							context.acceptProblem(Problem.newSemanticTypeError(
-									"Overflow of enum value",
 									IProblem.EnumValueOverflow, 0,
 									em.ident.start, em.ident.length));
 						}
@@ -200,7 +194,6 @@ public class EnumDeclaration extends ScopeDsymbol {
 					case Tint16:
 						if (number.equals(N_0x8000)) {
 							context.acceptProblem(Problem.newSemanticTypeError(
-									"Overflow of enum value",
 									IProblem.EnumValueOverflow, 0,
 									em.ident.start, em.ident.length));
 						}
@@ -210,7 +203,6 @@ public class EnumDeclaration extends ScopeDsymbol {
 					case Tuns16:
 						if (number.equals(N_0x10000)) {
 							context.acceptProblem(Problem.newSemanticTypeError(
-									"Overflow of enum value",
 									IProblem.EnumValueOverflow, 0,
 									em.ident.start, em.ident.length));
 						}
@@ -219,7 +211,6 @@ public class EnumDeclaration extends ScopeDsymbol {
 					case Tint32:
 						if (number.equals(N_0x80000000)) {
 							context.acceptProblem(Problem.newSemanticTypeError(
-									"Overflow of enum value",
 									IProblem.EnumValueOverflow, 0,
 									em.ident.start, em.ident.length));
 						}
@@ -229,7 +220,6 @@ public class EnumDeclaration extends ScopeDsymbol {
 					case Tuns32:
 						if (number.equals(N_0x100000000)) {
 							context.acceptProblem(Problem.newSemanticTypeError(
-									"Overflow of enum value",
 									IProblem.EnumValueOverflow, 0,
 									em.ident.start, em.ident.length));
 						}
@@ -238,7 +228,6 @@ public class EnumDeclaration extends ScopeDsymbol {
 					case Tint64:
 						if (number.equals(N_0x8000000000000000)) {
 							context.acceptProblem(Problem.newSemanticTypeError(
-									"Overflow of enum value",
 									IProblem.EnumValueOverflow, 0,
 									em.ident.start, em.ident.length));
 						}
@@ -248,7 +237,6 @@ public class EnumDeclaration extends ScopeDsymbol {
 						// TODO incorrect comparison in Java
 						if (number.equals(BigInteger.ZERO)) {
 							context.acceptProblem(Problem.newSemanticTypeError(
-									"Overflow of enum value",
 									IProblem.EnumValueOverflow, 0,
 									em.ident.start, em.ident.length));
 						}

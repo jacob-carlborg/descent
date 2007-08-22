@@ -13,11 +13,11 @@ public class IntegerWrapper extends Number {
 	
 	private static final long serialVersionUID = 1L;
 	
-	private long longValue;
+	private int intValue;
 	private BigInteger bigIntegerValue;
 	
-	public IntegerWrapper(long longValue) {
-		this.longValue = longValue;
+	public IntegerWrapper(int intValue) {
+		this.intValue = intValue;
 	}
 	
 	public IntegerWrapper(BigInteger bigIntegerValue) {
@@ -25,24 +25,23 @@ public class IntegerWrapper extends Number {
 	}
 	
 	public IntegerWrapper and(BigInteger value) {
-		if (bigIntegerValue != null) {
-			return new IntegerWrapper(bigIntegerValue.and(value));
-		} else {
-			return new IntegerWrapper(longValue & value.longValue());
+		if (bigIntegerValue == null) {
+			bigIntegerValue = new BigInteger(String.valueOf(intValue));
 		}
+		return new IntegerWrapper(bigIntegerValue.and(value));
 	}
 	
 	public boolean equals(BigInteger value) {
 		if (bigIntegerValue != null) {
 			return bigIntegerValue.equals(value);
 		} else {
-			return longValue == value.longValue();
+			return intValue == value.longValue();
 		}
 	}
 	
 	public int compareTo(BigInteger value) {
 		if (bigIntegerValue == null) {
-			bigIntegerValue = new BigInteger(String.valueOf(longValue));
+			bigIntegerValue = new BigInteger(String.valueOf(intValue));
 		}
 		
 		return bigIntegerValue.compareTo(value);
@@ -54,10 +53,10 @@ public class IntegerWrapper extends Number {
 		} else {
 			if (value.bigIntegerValue == null) {
 				long otherLong = value.longValue();
-				return longValue > otherLong ? 1 : (longValue < otherLong ? - 1 : 0);
+				return intValue > otherLong ? 1 : (intValue < otherLong ? - 1 : 0);
 			} else {
-				bigIntegerValue = new BigInteger(String.valueOf(longValue));
-				value.bigIntegerValue = new BigInteger(String.valueOf(value.longValue));
+				bigIntegerValue = new BigInteger(String.valueOf(intValue));
+				value.bigIntegerValue = new BigInteger(String.valueOf(value.intValue));
 				return bigIntegerValue.compareTo(value.bigIntegerValue);
 			}
 		}
@@ -67,11 +66,11 @@ public class IntegerWrapper extends Number {
 		if (bigIntegerValue != null) {			
 			return new IntegerWrapper(bigIntegerValue.add(new BigInteger(String.valueOf(value))));
 		} else {
-			if (longValue > 0 && longValue + value < 0) {
-				BigInteger bin = new BigInteger(String.valueOf(longValue));
+			if (intValue > 0 && intValue + value < 0) {
+				BigInteger bin = new BigInteger(String.valueOf(intValue));
 				return new IntegerWrapper(bin.add(new BigInteger(String.valueOf(value))));
 			} else {
-				return new IntegerWrapper(longValue + value);
+				return new IntegerWrapper(intValue + value);
 			}
 		}
 	}
@@ -80,7 +79,7 @@ public class IntegerWrapper extends Number {
 		if (bigIntegerValue != null) {			
 			return new IntegerWrapper(bigIntegerValue.add(value));
 		} else {
-			BigInteger bin = new BigInteger(String.valueOf(longValue));
+			BigInteger bin = new BigInteger(String.valueOf(intValue));
 			return new IntegerWrapper(bin.add(new BigInteger(String.valueOf(value))));
 		}
 	}
@@ -90,7 +89,7 @@ public class IntegerWrapper extends Number {
 		if (bigIntegerValue != null) {
 			return bigIntegerValue.longValue();
 		} else {
-			return longValue;
+			return intValue;
 		}
 	}
 	
@@ -99,7 +98,7 @@ public class IntegerWrapper extends Number {
 		if (bigIntegerValue != null) {
 			return bigIntegerValue.intValue();
 		} else {
-			return (int) longValue;
+			return (int) intValue;
 		}
 	}
 
@@ -108,7 +107,7 @@ public class IntegerWrapper extends Number {
 		if (bigIntegerValue != null) {
 			return bigIntegerValue.doubleValue();
 		} else {
-			return (double) longValue;
+			return (double) intValue;
 		}
 	}
 
@@ -117,7 +116,7 @@ public class IntegerWrapper extends Number {
 		if (bigIntegerValue != null) {
 			return bigIntegerValue.floatValue();
 		} else {
-			return (float) longValue;
+			return (float) intValue;
 		}
 	}
 	
@@ -125,7 +124,7 @@ public class IntegerWrapper extends Number {
 		if (bigIntegerValue != null) {
 			return bigIntegerValue;
 		} else {
-			return new BigInteger(String.valueOf(longValue));
+			return new BigInteger(String.valueOf(intValue));
 		}
 	}
 	
@@ -134,7 +133,7 @@ public class IntegerWrapper extends Number {
 		if (bigIntegerValue != null) {
 			return bigIntegerValue.toString();
 		} else {
-			return String.valueOf(longValue);
+			return String.valueOf(intValue);
 		}
 	}
 

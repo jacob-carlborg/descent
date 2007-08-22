@@ -90,7 +90,7 @@ public class DsymbolExp extends Expression {
 				if (type == null) {
 					type = v.type;
 					if (v.type != null) {
-						context.acceptProblem(Problem.newSemanticTypeError("Forward reference of " + v, IProblem.ForwardReference, 0, start, length));
+						context.acceptProblem(Problem.newSemanticTypeError(IProblem.ForwardReference, 0, start, length, new String[] { "Forward reference of " + v }));
 						type = Type.terror;
 					}
 				}

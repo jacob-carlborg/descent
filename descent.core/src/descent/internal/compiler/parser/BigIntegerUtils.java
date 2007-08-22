@@ -10,7 +10,7 @@ public class BigIntegerUtils {
 	}
 
 	public static IntegerWrapper castToInt64(IntegerWrapper value) {
-		return new IntegerWrapper(value.longValue());
+		return new IntegerWrapper(value.bigIntegerValue());
 	}
 
 	private final static long INT_UPPER = 0xFFFFFFFF + 1;
@@ -25,7 +25,7 @@ public class BigIntegerUtils {
 		if (b > INT_UPPER) {
 			b %= INT_UPPER;
 		}
-		return new IntegerWrapper(b);
+		return new IntegerWrapper(new BigInteger(String.valueOf(b)));
 	}
 
 	public static  IntegerWrapper castToInt32(IntegerWrapper value) {

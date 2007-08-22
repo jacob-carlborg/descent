@@ -73,7 +73,7 @@ public class TypedefDeclaration extends Declaration {
 			}
 		} else if (sem == 1) {
 			context.acceptProblem(Problem.newSemanticTypeError(
-					"Circular definition", IProblem.CircularDefinition, 0,
+					IProblem.CircularDefinition, 0,
 					ident.start, ident.length));
 		}
 	}

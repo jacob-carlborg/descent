@@ -160,8 +160,8 @@ public class VarDeclaration extends Declaration {
 		if (parent == null
 				&& (storage_class & (STC.STCstatic | STC.STCconst)) == 0) {
 			context.acceptProblem(Problem.newSemanticTypeError(
-					"Forward referenced", IProblem.ForwardReference, 0, start,
-					length));
+					IProblem.ForwardReference, 0, start,
+					length, new String[] { "Forward referenced" }));
 			type = Type.terror;
 			return false;
 		}
@@ -210,7 +210,6 @@ public class VarDeclaration extends Declaration {
 		storage_class |= sc.stc;
 		if ((storage_class & STC.STCextern) != 0 && init != null) {
 			context.acceptProblem(Problem.newSemanticTypeError(
-					"Extern symbols cannot have initializers",
 					IProblem.ExternSymbolsCannotHaveInitializers, 0,
 					init.start, init.length));
 		}
@@ -248,7 +247,7 @@ public class VarDeclaration extends Declaration {
 		Type tb = type.toBasetype(context);
 		if (tb.ty == TY.Tvoid && (storage_class & STC.STClazy) == 0) {
 			context.acceptProblem(Problem.newSemanticTypeError(
-					"Voids have no value", IProblem.VoidsHaveNoValue, 0,
+					IProblem.VoidsHaveNoValue, 0,
 					sourceType.start, sourceType.length));
 			type = Type.terror;
 			tb = type;
@@ -263,9 +262,9 @@ public class VarDeclaration extends Declaration {
 
 			if (ts.sym.members == null) {
 				context.acceptProblem(Problem.newSemanticTypeError(
-						"No definition of struct " + ts.sym.ident,
+						// "No definition of struct " + ts.sym.ident,
 						IProblem.NoDefinition, 0, sourceType.start,
-						sourceType.length));
+						sourceType.length, new String[] { new String(ts.sym.ident.ident) }));
 			}
 		}
 
@@ -314,16 +313,13 @@ public class VarDeclaration extends Declaration {
 		} else if (isStatic()) {
 		} else if (isSynchronized()) {
 			context.acceptProblem(Problem.newSemanticTypeError(
-					"synchronized cannot be applied to variables",
-					IProblem.IllegalModifier, 0, ident.start, ident.length));
+					IProblem.IllegalModifier, 0, ident.start, ident.length, new String[] { "synchronized cannot be applied to variables" }));
 		} else if (isOverride()) {
 			context.acceptProblem(Problem.newSemanticTypeError(
-					"override cannot be applied to variables",
-					IProblem.IllegalModifier, 0, ident.start, ident.length));
+					IProblem.IllegalModifier, 0, ident.start, ident.length, new String[] { "override cannot be applied to variables" }));
 		} else if (isAbstract()) {
 			context.acceptProblem(Problem.newSemanticTypeError(
-					"abstract cannot be applied to variables",
-					IProblem.IllegalModifier, 0, ident.start, ident.length));
+					IProblem.IllegalModifier, 0, ident.start, ident.length, new String[] { "abstract cannot be applied to variables" }));
 		} else if ((storage_class & STC.STCtemplateparameter) != 0) {
 		} else {
 			AggregateDeclaration aad = sc.anonAgg;
@@ -337,7 +333,6 @@ public class VarDeclaration extends Declaration {
 			InterfaceDeclaration id = parent.isInterfaceDeclaration();
 			if (id != null) {
 				context.acceptProblem(Problem.newSemanticTypeError(
-						"Fields are not allowed in interfaces",
 						IProblem.FieldsNotAllowedInInterfaces, 0, ident.start,
 						ident.length));
 			}

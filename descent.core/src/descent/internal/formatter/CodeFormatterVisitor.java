@@ -1481,7 +1481,7 @@ public class CodeFormatterVisitor extends ASTVisitor
 			scribe.printNextToken(TOK.TOKrparen);
 		}
 		List<BaseClass> baseClasses = node.baseClasses();
-		if(null != baseClasses && !baseClasses.isEmpty());
+		if(null != baseClasses && !baseClasses.isEmpty())
 		{
 			scribe.space();
 			formatCSV(baseClasses,

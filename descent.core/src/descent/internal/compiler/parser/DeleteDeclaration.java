@@ -55,7 +55,7 @@ public class DeleteDeclaration extends FuncDeclaration {
 		cd = parent.isClassDeclaration();
 		if (cd == null && parent.isStructDeclaration() == null) {
 			// TODO semantic point out the "delete" token
-			context.acceptProblem(Problem.newSemanticTypeError("Delete deallocators only are for class or struct definitions", IProblem.DeleteDeallocatorsOnlyForClassOrStruct, 0, start, "delete".length()));
+			context.acceptProblem(Problem.newSemanticTypeError(IProblem.DeleteDeallocatorsOnlyForClassOrStruct, 0, start, "delete".length()));
 		}
 		type = new TypeFunction(arguments, Type.tvoid, 0, LINK.LINKd);
 
@@ -66,11 +66,11 @@ public class DeleteDeclaration extends FuncDeclaration {
 		TypeFunction tf = (TypeFunction) type;
 		if (Argument.dim(tf.parameters, context) != 1) {
 			// TODO semantic point out the "delete" token
-			context.acceptProblem(Problem.newSemanticTypeError("One argument of type void* expected", IProblem.IllegalParameters, 0, start, "delete".length()));
+			context.acceptProblem(Problem.newSemanticTypeError(IProblem.IllegalParameters, 0, start, "delete".length(), new String[] { "One argument of type void* expected" }));
 		} else {
 			Argument a = Argument.getNth(tf.parameters, 0, context);
 			if (!a.type.equals(Type.tvoid.pointerTo(context))) {
-				context.acceptProblem(Problem.newSemanticTypeError("One argument of type void* expected", IProblem.IllegalParameters, 0, a.type.start, a.type.length));
+				context.acceptProblem(Problem.newSemanticTypeError(IProblem.IllegalParameters, 0, a.type.start, a.type.length, new String[] { "One argument of type void* expected" }));
 			}
 		}
 

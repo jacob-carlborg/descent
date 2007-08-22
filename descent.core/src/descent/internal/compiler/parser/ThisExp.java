@@ -52,7 +52,6 @@ public class ThisExp extends Expression {
 
 				if (s == null) {
 					context.acceptProblem(Problem.newSemanticTypeError(
-							"Not in a struct or class",
 							IProblem.ThisNotInClassOrStruct, 0, start, length));
 					// goto Lerr;
 					return semantic_Lerr(sc, context);
@@ -92,7 +91,7 @@ public class ThisExp extends Expression {
 	}
 	
 	public Expression semantic_Lerr(Scope sc, SemanticContext context) {
-		context.acceptProblem(Problem.newSemanticTypeError("'this' is only allowed in non-static member functions", IProblem.ThisOnlyAllowedInNonStaticMemberFunctions, 0, start, length));
+		context.acceptProblem(Problem.newSemanticTypeError(IProblem.ThisOnlyAllowedInNonStaticMemberFunctions, 0, start, length));
     	type = Type.tint32;
 	    return this;
 	}

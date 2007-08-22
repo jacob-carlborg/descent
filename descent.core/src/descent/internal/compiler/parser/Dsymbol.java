@@ -82,10 +82,8 @@ public abstract class Dsymbol extends ASTDmdNode {
 				if (CharOperation.equals(ident.ident, Id.__sizeof) || CharOperation.equals(ident.ident, Id.alignof)
 						|| CharOperation.equals(ident.ident, Id.mangleof)) {
 					context.acceptProblem(Problem.newSemanticMemberError(
-							"Property " + new String(ident.ident)
-									+ " cannot be redefined",
 							IProblem.PropertyCanNotBeRedefined, 0, ident.start,
-							ident.length));
+							ident.length, new String[] { new String(ident.ident) }));
 				}
 			}
 			return 1;

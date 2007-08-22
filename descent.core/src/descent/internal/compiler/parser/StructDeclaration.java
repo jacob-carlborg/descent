@@ -78,9 +78,9 @@ public class StructDeclaration extends AggregateDeclaration {
 		assert (!isAnonymous());
 		if ((sc.stc & STC.STCabstract) != 0) {
 			if (isUnionDeclaration() != null) {
-				context.acceptProblem(Problem.newSemanticTypeError("Unions cannot be abstract", IProblem.IllegalModifier, 0, ident.start, ident.length));
+				context.acceptProblem(Problem.newSemanticTypeError(IProblem.IllegalModifier, 0, ident.start, ident.length));
 			} else {
-				context.acceptProblem(Problem.newSemanticTypeError("Structs cannot be abstract", IProblem.IllegalModifier, 0, ident.start, ident.length));
+				context.acceptProblem(Problem.newSemanticTypeError(IProblem.IllegalModifier, 0, ident.start, ident.length));
 			}
 		}
 

@@ -321,7 +321,7 @@ public class ForeachStatement extends Statement {
 			}
 
 		default:
-			context.acceptProblem(Problem.newSemanticTypeError(aggr.type + " is not an aggregate type", IProblem.NotAnAggregateType, 0, aggr.start, aggr.length));
+			context.acceptProblem(Problem.newSemanticTypeError(IProblem.NotAnAggregateType, 0, aggr.start, aggr.length, new String[] { aggr.type.toString() }));
 			break;
 		}
 		sc.noctor--;

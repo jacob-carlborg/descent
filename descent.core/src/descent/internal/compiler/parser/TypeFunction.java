@@ -42,7 +42,7 @@ public class TypeFunction extends Type {
 		}
 		next = next.semantic(loc, sc, context);
 		if (next.toBasetype(context).ty == TY.Tsarray) {
-			context.acceptProblem(Problem.newSemanticTypeError("Functions cannot return static arrays", IProblem.IllegalReturnType, 0, start, length));
+			context.acceptProblem(Problem.newSemanticTypeError(IProblem.IllegalReturnType, 0, start, length, new String[] { "Functions cannot return static arrays" }));
 			next = Type.terror;
 		}
 		if (next.toBasetype(context).ty == TY.Tfunction) {
@@ -80,11 +80,11 @@ public class TypeFunction extends Type {
 
 				if (arg.inout != InOut.In) {
 					if (t.ty == TY.Tsarray) {
-						context.acceptProblem(Problem.newSemanticTypeError("Cannot have out or inout parameter of type static array", IProblem.IllegalParameters, 0, t.start, t.length));
+						context.acceptProblem(Problem.newSemanticTypeError(IProblem.IllegalParameters, 0, t.start, t.length, new String[] { "Cannot have out or inout parameter of type static array" }));
 					}
 				}
 				if (arg.inout != InOut.Lazy && t.ty == TY.Tvoid) {
-					context.acceptProblem(Problem.newSemanticTypeError("Cannot have parameter of type void", IProblem.IllegalParameters, 0, t.start, t.length));
+					context.acceptProblem(Problem.newSemanticTypeError(IProblem.IllegalParameters, 0, t.start, t.length, new String[] { "Cannot have parameter of type void" }));
 				}
 
 				if (arg.defaultArg != null) {

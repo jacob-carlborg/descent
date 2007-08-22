@@ -176,7 +176,6 @@ public class InterfaceDeclaration extends ClassDeclaration {
 			}
 			if (tc == null || tc.sym.isInterfaceDeclaration() == null) {
 				context.acceptProblem(Problem.newSemanticTypeError(
-						"Base type must be interface",
 						IProblem.BaseTypeMustBeInterface, 0, b.type.start,
 						b.type.length));
 				baseclasses.remove(i);

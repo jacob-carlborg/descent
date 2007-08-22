@@ -53,7 +53,7 @@ public class DtorDeclaration extends FuncDeclaration {
 		cd = parent.isClassDeclaration();
 		if (cd == null) {
 			// TODO semantic point out the "this" token
-			context.acceptProblem(Problem.newSemanticTypeError("Destructors only are for class definitions", IProblem.DestructorsOnlyForClass, 0, start, "~this".length()));
+			context.acceptProblem(Problem.newSemanticTypeError(IProblem.DestructorsOnlyForClass, 0, start, "~this".length()));
 		} else {
 			if (cd.dtors == null) {
 				cd.dtors = new ArrayList<FuncDeclaration>();

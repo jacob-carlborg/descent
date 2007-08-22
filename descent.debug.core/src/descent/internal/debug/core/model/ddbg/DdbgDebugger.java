@@ -119,19 +119,19 @@ public class DdbgDebugger implements IDebugger {
 		}
 	}
 	
-	public void addSearchPath(String path) throws DebugException, IOException {
-		try {
-			setState(new WaitingConfirmation(this));
-			
-			beforeWaitStateReturn();
-			
-			fProxy.write("sp " + path + "\n"); //$NON-NLS-1$ //$NON-NLS-2$
-			
-			waitStateReturn();
-		} finally {
-			setState(fRunningState);
-		}
-	}
+//	public void addSearchPath(String path) throws DebugException, IOException {
+//		try {
+//			setState(new WaitingConfirmation(this));
+//			
+//			beforeWaitStateReturn();
+//			
+//			fProxy.write("sp " + path + "\n"); //$NON-NLS-1$ //$NON-NLS-2$
+//			
+//			waitStateReturn();
+//		} finally {
+//			setState(fRunningState);
+//		}
+//	}
 
 	public void addBreakpoint(String filename, int lineNumber) throws IOException {
 		try {

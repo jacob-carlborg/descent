@@ -42,7 +42,7 @@ public class StaticAssert extends Dsymbol {
 		e = exp.semantic(sc, context);
 		e = e.optimize(Expression.WANTvalue);
 		if (e.isBool(false)) {
-			context.acceptProblem(Problem.newSemanticTypeError("The expression statically evaluates to false", IProblem.StaticAssertIsFalse, 0, exp.start, exp.length));
+			context.acceptProblem(Problem.newSemanticTypeError(IProblem.StaticAssertIsFalse, 0, exp.start, exp.length));
 			/* TODO see if appear "msg" in the error
 			if (msg != null) {
 				msg = msg.semantic(sc, context);

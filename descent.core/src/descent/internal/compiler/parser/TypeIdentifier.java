@@ -55,7 +55,7 @@ public class TypeIdentifier extends TypeQualified {
 
 				if (tt.sym.sem == 1) {
 					context.acceptProblem(Problem.newSemanticTypeError(
-							"Circular reference of typedef " + tt.sym.ident,
+							//"Circular reference of typedef " + tt.sym.ident,
 							IProblem.CircularDefinition, 0, tt.sym.ident.start,
 							tt.sym.ident.length));
 				}
@@ -64,16 +64,16 @@ public class TypeIdentifier extends TypeQualified {
 			if (s[0] != null) {
 				// TODO semantic remove the following if but leave the body
 				if (!CharOperation.equals(s[0].ident.ident, Id.Object)) {
-					context.acceptProblem(Problem.newSemanticTypeError(s[0].ident
-							+ " cannot be resolved to a type", IProblem.UsedAsAType, 0,
-							s[0].ident.start, s[0].ident.length));
+					context.acceptProblem(Problem.newSemanticTypeError(
+							IProblem.UsedAsAType, 0,
+							s[0].ident.start, s[0].ident.length, new String[] { new String(s[0].ident.ident) }));
 				}
 			} else {
 				// TODO semantic remove the following if but leave the body
 				if (!CharOperation.equals(ident.ident, Id.Object)) {
-					context.acceptProblem(Problem.newSemanticTypeError(this.ident
-							+ " cannot be resolved to a type", IProblem.UsedAsAType, 0,
-							this.ident.start, this.ident.length));
+					context.acceptProblem(Problem.newSemanticTypeError(
+							IProblem.UsedAsAType, 0,
+							this.ident.start, this.ident.length, new String[] { new String(this.ident.ident) }));
 				}
 			}
 			// TODO see if this change is ok, I change it to error to get

@@ -168,8 +168,7 @@ public class ScopeDsymbol extends Dsymbol {
 				if (d != null && d.protection == PROT.PROTprivate
 						&& d.parent.isTemplateMixin() == null) {
 					context.acceptProblem(Problem.newSemanticTypeError(
-							new String(d.ident.ident) + " is private",
-							IProblem.MemberIsPrivate, 0, start, length));
+							IProblem.MemberIsPrivate, 0, start, length, new String[] { new String(d.ident.ident) }));
 				}
 			}
 		}

@@ -23,7 +23,7 @@ public class Cast_Tests extends TestCase {
 	
 	public void testCastInt32() {
 		for(long i = -1000000000000000000l; i < 1000000000000000000l; i+=1000000000000000l) {
-			assertEquals(new BigInteger(String.valueOf((int) i)), BigIntegerUtils.castToInt32(new IntegerWrapper(i)).bigIntegerValue());
+			assertEquals(new BigInteger(String.valueOf((int) i)), BigIntegerUtils.castToInt32(new IntegerWrapper(new BigInteger(String.valueOf(i)))).bigIntegerValue());
 		}		
 	}
 

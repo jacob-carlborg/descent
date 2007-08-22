@@ -140,13 +140,13 @@ public interface IDebugger {
 	 */
 	void terminate() throws DebugException, IOException;
 	
-	/**
-	 * Adds a search path to the debugger.
-	 * @param path the path
-	 * @throws DebugException
-	 * @throws IOException
-	 */
-	void addSearchPath(String path) throws DebugException, IOException;
+//	/**
+//	 * Adds a search path to the debugger.
+//	 * @param path the path
+//	 * @throws DebugException
+//	 * @throws IOException
+//	 */
+//	void addSearchPath(String path) throws DebugException, IOException;
 	
 	/**
 	 * Adds a breakpoint in the given resource at the given line. 

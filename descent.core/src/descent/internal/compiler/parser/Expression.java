@@ -222,9 +222,8 @@ public abstract class Expression extends ASTDmdNode implements Cloneable {
 		}
 
 		context.acceptProblem(Problem.newSemanticTypeError(
-				"Type mismatch: cannot implicitly convert from " + type
-						+ " to " + t, IProblem.CannotImplicitlyConvert, 0,
-				start, length));
+				IProblem.CannotImplicitlyConvert, 0,
+				start, length, new String[] { type.toString(), t.toString() }));
 
 		return castTo(sc, t, context);
 	}
@@ -347,7 +346,6 @@ public abstract class Expression extends ASTDmdNode implements Cloneable {
 
 	public IntegerWrapper toInteger(SemanticContext context) {
 		context.acceptProblem(Problem.newSemanticTypeError(
-				"Integer constant expression expected",
 				IProblem.IntegerConstantExpressionExpected, 0, start, length));
 		return IntegerWrapper.ZERO;
 	}

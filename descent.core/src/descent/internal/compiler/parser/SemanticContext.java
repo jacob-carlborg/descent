@@ -61,8 +61,8 @@ public class SemanticContext {
 	}
 	
 	public void multiplyDefined(Dsymbol s1, Dsymbol s2) {
-		acceptProblem(Problem.newSemanticMemberError("Duplicated symbol " + s2.ident, IProblem.DuplicatedSymbol, 0, s2.ident.start, s2.ident.length));
-		acceptProblem(Problem.newSemanticMemberError("Duplicated symbol " + s1.ident, IProblem.DuplicatedSymbol, 0, s1.ident.start, s1.ident.length));		
+		acceptProblem(Problem.newSemanticMemberError(IProblem.DuplicatedSymbol, 0, s2.ident.start, s2.ident.length, new String[] { new String(s2.ident.ident) }));
+		acceptProblem(Problem.newSemanticMemberError(IProblem.DuplicatedSymbol, 0, s1.ident.start, s1.ident.length, new String[] { new String(s1.ident.ident) }));		
 	}
 	
 	private int generatedIds;	

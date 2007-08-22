@@ -67,9 +67,8 @@ public class PragmaDeclaration extends AttribDeclaration {
 						 */
 					} else {
 						context.acceptProblem(Problem.newSemanticTypeError(
-								"String expected for message",
 								IProblem.IllegalParameters, 0,
-								e.start, e.length));
+								e.start, e.length, new String[] { "String expected for message" }));
 					}
 				}
 				// fprintf(stdmsg, "\n");
@@ -77,7 +76,6 @@ public class PragmaDeclaration extends AttribDeclaration {
 			// goto Lnodecl
 			if (decl != null) {
 				context.acceptProblem(Problem.newSemanticTypeError(
-						"pragma is missing closing ';'",
 						IProblem.PragmaIsMissingClosingSemicolon, 0, start,
 						"pragma".length()));
 			}
@@ -87,9 +85,8 @@ public class PragmaDeclaration extends AttribDeclaration {
 				context
 						.acceptProblem(Problem
 								.newSemanticTypeError(
-										"lib pragma must recieve a single argument of type string",
 										IProblem.IllegalParameters, 0, start,
-										"pragma".length()));
+										"pragma".length(), new String[] { "lib pragma must recieve a single argument of type string" }));
 			} else {
 				Expression e = args.get(0);
 
@@ -98,8 +95,7 @@ public class PragmaDeclaration extends AttribDeclaration {
 				args.set(0, e);
 				if (e.op != TOKstring)
 					context.acceptProblem(Problem.newSemanticTypeError(
-							"String expected for library name",
-							IProblem.IllegalParameters, 0, e.start, e.length));
+							IProblem.IllegalParameters, 0, e.start, e.length, new String[] { "String expected for library name" }));
 				else if (context.global.params.verbose) {
 					/*
 					 * TODO semantic StringExp se = (StringExp )e; char *name =
@@ -112,14 +108,13 @@ public class PragmaDeclaration extends AttribDeclaration {
 			// goto Lnodecl;
 			if (decl != null) {
 				context.acceptProblem(Problem.newSemanticTypeError(
-						"pragma is missing closing ';'",
 						IProblem.PragmaIsMissingClosingSemicolon, 0, start,
 						"pragma".length()));
 			}
 			return;
 		} else {
 			context.acceptProblem(Problem.newSemanticTypeError(
-					"Unrecognized pragma", IProblem.UnrecognizedPragma, 0,
+					IProblem.UnrecognizedPragma, 0,
 					ident.start, ident.length));
 		}
 

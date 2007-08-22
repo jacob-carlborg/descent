@@ -876,7 +876,7 @@ public class Parser extends Lexer {
 			} else if (CharOperation.equals(id, Id.System)) {
 				link = LINK.LINKsystem;
 			} else {
-				error("Valid linkage identifiers are D, C, C++, Pascal, Windows", IProblem.InvalidLinkageIdentifier, lineNumber, start, length);
+				error(IProblem.InvalidLinkageIdentifier, lineNumber, start, length);
 				link = LINKd;
 			}
 		} else {
@@ -993,7 +993,6 @@ public class Parser extends Lexer {
 		}
 
 		error(
-				"iftype(condition) is deprecated, use static if (is(condition))",
 				IProblem.IftypeDeprecated, firstTokenLine,
 				firstTokenStart, firstTokenLength);
 
@@ -1104,8 +1103,7 @@ public class Parser extends Lexer {
 		List<Argument> arguments = parseParameters(varargs);
 		
 		if (varargs[0] != 0) {
-	    	error("... not allowed in delete function parameter list", 
-	    			
+	    	error(
 	    			IProblem.VariadicNotAllowedInDelete, 
 	    			startLine, name);
 	    }
@@ -1213,7 +1211,7 @@ public class Parser extends Lexer {
 					 * This is: at ai ...
 					 */
 					if ((storageClass & (STC.STCout | STC.STCref)) != 0) {
-						error("Variadic argument cannot be out, inout or ref", IProblem.VariadicArgumentCannotBeOutInoutOrRef, inoutTokenLine, inoutTokenStart, inoutTokenLength);
+						error(IProblem.VariadicArgumentCannotBeOutInoutOrRef, inoutTokenLine, inoutTokenStart, inoutTokenLength);
 					}
 					varargs = 2;
 					
@@ -1366,7 +1364,7 @@ public class Parser extends Lexer {
 					 * This is: at ai ...
 					 */
 					if ((storageClass & (STC.STCout | STC.STCref)) != 0) {
-						error("Variadic argument cannot be out, inout or ref", IProblem.VariadicArgumentCannotBeOutInoutOrRef, inoutTokenLine, inoutTokenStart, inoutTokenLength);
+						error(IProblem.VariadicArgumentCannotBeOutInoutOrRef, inoutTokenLine, inoutTokenStart, inoutTokenLength);
 					}
 					varargs = 2;
 					
@@ -1433,7 +1431,7 @@ public class Parser extends Lexer {
 			nextToken();
 			while (token.value != TOKrcurly) {
 				if (token.value == TOKeof) {
-					error("Enum declaration is invalid", IProblem.EnumDeclarationIsInvalid, enumTokenLineNumber, enumTokenStart, enumTokenLength);
+					error(IProblem.EnumDeclarationIsInvalid, enumTokenLineNumber, enumTokenStart, enumTokenLength);
 					break;
 				}
 				
@@ -1463,7 +1461,7 @@ public class Parser extends Lexer {
 			
 			nextToken();
 		} else {
-			error("Enum declaration is invalid", IProblem.EnumDeclarationIsInvalid, enumTokenLineNumber, enumTokenStart, enumTokenLength);
+			error(IProblem.EnumDeclarationIsInvalid, enumTokenLineNumber, enumTokenStart, enumTokenLength);
 			return null;
 		}
 		
@@ -1789,7 +1787,7 @@ public class Parser extends Lexer {
 			    else if (token.value == TOKidentifier && t.value == TOKdotdotdot)
 			    {	// ident...
 			    	if (isvariadic) {
-			    		error("Variadic template parameter must be last one", IProblem.VariadicTemplateParameterMustBeTheLastOne, 
+			    		error(IProblem.VariadicTemplateParameterMustBeTheLastOne, 
 			    				t.lineNumber, token.ptr, 
 				    			t.ptr + t.len - token.ptr);
 			    	}
@@ -1813,7 +1811,7 @@ public class Parser extends Lexer {
 					}
 					
 					if (tp_ident == null) {
-						error("No identifier for template value parameter", IProblem.NoIdentifierForTemplateValueParameter, t.lineNumber, t.ptr, t.len);
+						error(IProblem.NoIdentifierForTemplateValueParameter, t.lineNumber, t.ptr, t.len);
 						// goto Lerr;
 						malformed[0] = true;
 						return tpl;
@@ -2461,7 +2459,7 @@ public class Parser extends Lexer {
 		    	pident[0] = newIdentifierExp();
 		    	if (identStart != null) identStart[0] = token.ptr;
 		    } else {
-		    	error("Unexpected identifier in declarator", IProblem.UnexpectedIdentifierInDeclarator, token.lineNumber, token.ptr, token.len);
+		    	error(IProblem.UnexpectedIdentifierInDeclarator, token.lineNumber, token.ptr, token.len);
 		    }
 		    ts = t;
 		    nextToken();
@@ -2627,7 +2625,7 @@ public class Parser extends Lexer {
 				Modifier currentModifier = new Modifier(token);
 				currentModifier.setSourceRange(token.ptr, token.len);
 				if ((storage_class & stc) != 0) {
-					error("Redundant storage class", IProblem.RedundantStorageClass, token.lineNumber, currentModifier);
+					error(IProblem.RedundantStorageClass, token.lineNumber, currentModifier);
 				}
 				storage_class = storage_class | stc;
 				modifiers.add(currentModifier);
@@ -2641,7 +2639,7 @@ public class Parser extends Lexer {
 					currentModifier = new Modifier(token);
 					currentModifier.setSourceRange(token.ptr, token.len);
 					if ((storage_class & stc) != 0) {
-						error("Redundant storage class", IProblem.RedundantStorageClass, token.lineNumber, currentModifier);
+						error(IProblem.RedundantStorageClass, token.lineNumber, currentModifier);
 					}
 					storage_class = storage_class | stc;
 					modifiers.add(currentModifier);
@@ -2753,7 +2751,7 @@ public class Parser extends Lexer {
 			else if (t != tfirst) {
 				// TODO check this, should be doing this
 				if (ident != null) {
-					error("Multiple declarations must have the same type", IProblem.MultipleDeclarationsMustHaveTheSameType,
+					error(IProblem.MultipleDeclarationsMustHaveTheSameType,
 							 lineNumber, ident.start, ident.length);
 				}
 			}
@@ -2786,7 +2784,7 @@ public class Parser extends Lexer {
 					previousTypedef = td;
 				} else {
 					if (init != null) {
-						error("Alias cannot have initializer", IProblem.AliasCannotHaveInitializer, assignTokenLine, assignTokenStart,  init.start + init.length - assignTokenStart);
+						error(IProblem.AliasCannotHaveInitializer, assignTokenLine, assignTokenStart,  init.start + init.length - assignTokenStart);
 					}
 					
 					ad = new AliasDeclaration(loc, ident, t);
@@ -2967,7 +2965,7 @@ public class Parser extends Lexer {
 
 			case TOKin:
 				if (f.frequire != null) {
-					error("Redundant 'in' statement", IProblem.RedundantInStatement,
+					error(IProblem.RedundantInStatement,
 							token);
 				}
 				nextToken();
@@ -2980,7 +2978,7 @@ public class Parser extends Lexer {
 				// parse: out (identifier) { statement }
 				
 				if (f.fensure != null) {
-					error("Redundant 'out' statement", IProblem.RedundantOutStatement,
+					error(IProblem.RedundantOutStatement,
 							token.lineNumber, token.ptr, token.len);
 				}
 				
@@ -3185,7 +3183,7 @@ public class Parser extends Lexer {
 	    Statement elsebody;
 
 		if ((flags & PScurly) != 0 && token.value != TOKlcurly) {
-			error("Statement expected to be { }",
+			error(
 					IProblem.StatementExpectedToBeCurlies, token);
 		}
 		
@@ -3432,7 +3430,7 @@ public class Parser extends Lexer {
 
 		case TOKsemicolon:
 			if ((flags & PSsemi) == 0) {
-				error("Use '{ }' for an empty statement, not a ';'", IProblem.UseBracesForAnEmptyStatement, token);
+				error(IProblem.UseBracesForAnEmptyStatement, token);
 			}
 			nextToken();
 			
@@ -3568,9 +3566,9 @@ public class Parser extends Lexer {
 				
 				if (ai == null) {
 					if (at == null) {
-						error("No identifier for declarator", IProblem.NoIdentifierForDeclarator, lineNumber, prevToken.ptr, prevToken.len);
+						error(IProblem.NoIdentifierForDeclarator, lineNumber, prevToken.ptr, prevToken.len);
 					} else {
-						error("No identifier for declarator", IProblem.NoIdentifierForDeclarator, lineNumber, at);
+						error(IProblem.NoIdentifierForDeclarator, lineNumber, at);
 					}
 				}
 				// Larg:
@@ -3695,7 +3693,7 @@ public class Parser extends Lexer {
 						nextToken();
 						
 						// if (!global.params.useDeprecated)
-						error("if (v; e) is deprecated, use if (auto v = e)", IProblem.IfAutoDeprecated, argTokenLine, argTokenStart, token.ptr + token.len - argTokenStart);
+						error(IProblem.IfAutoDeprecated, argTokenLine, argTokenStart, token.ptr + token.len - argTokenStart);
 					}
 				}
 			}
@@ -3745,7 +3743,7 @@ public class Parser extends Lexer {
 				else if (CharOperation.equals(id, Id.success))
 					t2 = TOKon_scope_success;
 				else {
-					error("Valid scope identifiers are exit, failure, or success", IProblem.InvalidScopeIdentifier, token);
+					error(IProblem.InvalidScopeIdentifier, token);
 				}
 				nextToken();
 				check(TOKrparen);
@@ -3762,7 +3760,7 @@ public class Parser extends Lexer {
 			TOK t2 = token.value;
 			
 			// if (!global.params.useDeprecated)
-			error(token.toString() + " is deprecated, use scope", IProblem.OnScopeDeprecated, token);
+			error(IProblem.OnScopeDeprecated, token, new String[] { token.toString() });
 			nextToken();
 			Statement st = parseStatement(PScurlyscope);
 			
@@ -5129,7 +5127,7 @@ public class Parser extends Lexer {
 
 		case TOKdollar:
 		    if (inBrackets == 0) {
-		    	error("'$' is valid only inside [] of index or slice", IProblem.DollarInvalidOutsideBrackets, token);
+		    	error(IProblem.DollarInvalidOutsideBrackets, token);
 		    }
 		    e = new DollarExp(loc);
 		    e.setSourceRange(token.ptr, token.len);
@@ -5204,9 +5202,10 @@ public class Parser extends Lexer {
 					moreThanOne = true;
 					if (token.postfix != 0) {
 						if (token.postfix != postfix) {
-							error("Mismatched string literal postfixes '" + (char) postfix + "' and '" + (char) token.postfix + "'",
+							error(
 									IProblem.MismatchedStringLiteralPostfixes,
-									startLine, stringExp.start, token.ptr + token.len - stringExp.start);
+									startLine, stringExp.start, token.ptr + token.len - stringExp.start,
+									new String[] { String.valueOf((char) postfix) , String.valueOf((char) token.postfix) });
 						}							
 						postfix = token.postfix;
 					}
@@ -5841,7 +5840,7 @@ public class Parser extends Lexer {
 						e = parseUnaryExp();
 						e = new CastExp(loc, e, t);
 						e.setSourceRange(start, prevToken.ptr + prevToken.len - start);
-						error("C style cast illegal, use cast(...)", IProblem.CStyleCastIllegal, firstTokenLine, firstTokenStart, prevToken.ptr + prevToken.len - firstTokenStart);
+						error(IProblem.CStyleCastIllegal, firstTokenLine, firstTokenStart, prevToken.ptr + prevToken.len - firstTokenStart);
 					}
 					return e;
 				}
@@ -6016,7 +6015,7 @@ public class Parser extends Lexer {
 				continue;
 
 		    case TOKidentity:
-		    	error("'===' is no longer legal, use 'is' instead",
+		    	error(
 		    			IProblem.ThreeEqualsIsNoLongerLegal, token.lineNumber, token.ptr, token.len);
 			//goto L1;
 			nextToken();
@@ -6025,7 +6024,7 @@ public class Parser extends Lexer {
 			continue;
 
 		    case TOKnotidentity:
-		    	error("'!==' is no longer legal, use 'is' instead",
+		    	error(
 		    			IProblem.NotTwoEqualsIsNoLongerLegal, token.lineNumber, token.ptr, token.len);
 			//goto L1;
 			nextToken();
@@ -6362,7 +6361,7 @@ public class Parser extends Lexer {
 					arguments.add(e2);				
 					t = new TypeDArray(t.next);
 				} else {
-					error("Need size of rightmost array", IProblem.NeedSizeOfRightmostArray, lineNumber, index);
+					error(IProblem.NeedSizeOfRightmostArray, lineNumber, index);
 					NullExp nullExp = new NullExp(loc);
 					nullExp.setSourceRange(token.ptr, token.len);
 					return nullExp;
@@ -6511,15 +6510,15 @@ public class Parser extends Lexer {
 	}
 	
 	private void parsingErrorInsertTokenAfter(Token targetToken, String expected) {
-		error("Syntax error on token \"" + targetToken + "\", " + expected + " expected after this token", IProblem.ParsingErrorInsertTokenAfter, targetToken.lineNumber, targetToken.ptr, targetToken.len);
+		error(IProblem.ParsingErrorInsertTokenAfter, targetToken.lineNumber, targetToken.ptr, targetToken.len, new String[] { new String(targetToken.toString()), expected });
 	}
 	
 	private void parsingErrorDeleteToken(Token targetToken) {
-		error("Syntax error on token \"" + targetToken + "\", delete this token", IProblem.ParsingErrorDeleteToken, targetToken.lineNumber, targetToken.ptr, targetToken.len);
+		error(IProblem.ParsingErrorDeleteToken, targetToken.lineNumber, targetToken.ptr, targetToken.len, new String[] { targetToken.toString() });
 	}
 	
 	private void parsingErrorInsertToComplete(Token targetToken, String insert, String toComplete) {
-		error("Syntax error, insert \"" + insert + "\" to complete " + toComplete, IProblem.ParsingErrorInsertToComplete, targetToken.lineNumber, targetToken.ptr, targetToken.len);
+		error(IProblem.ParsingErrorInsertToComplete, targetToken.lineNumber, targetToken.ptr, targetToken.len, new String[] { insert, toComplete });
 	}
 	
 	private String toWord(String s) {
@@ -6608,12 +6607,12 @@ public class Parser extends Lexer {
 				// TODO improve performance
 				StringTokenizer st = new StringTokenizer(new String(token.string).substring(1));
 				if (st.countTokens() != 3) {
-					error("#line integer [\"filespec\"]\\n expected", IProblem.InvalidPragmaSyntax, token);
+					error(IProblem.InvalidPragmaSyntax, token);
 					setMalformed(pragma);
 				} else {
 					String value = st.nextToken();
 					if (!"line".equals(value)) {
-						error("#line integer [\"filespec\"]\\n expected", IProblem.InvalidPragmaSyntax, token);
+						error(IProblem.InvalidPragmaSyntax, token);
 						setMalformed(pragma);
 					} else {
 						value = st.nextToken();
@@ -6624,12 +6623,12 @@ public class Parser extends Lexer {
 							value = st.nextToken();
 							if (!"__FILE__".equals(value)) {
 								if (value.length() < 2 || value.charAt(0) != '"' || value.charAt(value.length() - 1) != '"') {
-									error("#line integer [\"filespec\"]\\n expected", IProblem.InvalidPragmaSyntax, token);
+									error(IProblem.InvalidPragmaSyntax, token);
 									setMalformed(pragma);
 								}
 							}
 						} catch (NumberFormatException e) {
-							error("#line integer [\"filespec\"]\\n expected", IProblem.InvalidPragmaSyntax, token);
+							error(IProblem.InvalidPragmaSyntax, token);
 							setMalformed(pragma);
 						}
 					}

@@ -45,7 +45,7 @@ public class SuperExp extends ThisExp {
 
 				if (s2 == null) {
 					context.acceptProblem(Problem.newSemanticTypeError(
-							"Not in a class", IProblem.SuperNotInClass, 0,
+							IProblem.SuperNotInClass, 0,
 							start, length));
 					// goto Lerr;
 					return semantic_Lerr(sc, context);
@@ -55,9 +55,7 @@ public class SuperExp extends ThisExp {
 					cd2 = cd2.baseClass;
 					if (cd2 == null) {
 						context.acceptProblem(Problem.newSemanticTypeError(
-								"Class " + new String(s2.ident.ident)
-										+ " has no 'super'",
-								IProblem.ClassHasNoSuper, 0, start, length));
+								IProblem.ClassHasNoSuper, 0, start, length, new String[] { new String(s2.ident.ident) }));
 						// goto Lerr;
 						return semantic_Lerr(sc, context);
 					}
@@ -91,9 +89,7 @@ public class SuperExp extends ThisExp {
 		}
 		if (cd.baseClass == null) {
 			context.acceptProblem(Problem.newSemanticTypeError(
-					"Class " + new String(cd.ident.ident)
-							+ " has no base class",
-					IProblem.ClassHasNoSuper, 0, start, length));
+					IProblem.ClassHasNoSuper, 0, start, length, new String[] { new String(cd.ident.ident) }));
 			type = fd.vthis.type;
 		} else {
 			type = cd.baseClass.type;
@@ -111,7 +107,7 @@ public class SuperExp extends ThisExp {
 	
 	@Override
 	public Expression semantic_Lerr(Scope sc, SemanticContext context) {
-		context.acceptProblem(Problem.newSemanticTypeError("'super' is only allowed in non-static member functions", IProblem.SuperOnlyAllowedInNonStaticMemberFunctions, 0, start, length));
+		context.acceptProblem(Problem.newSemanticTypeError(IProblem.SuperOnlyAllowedInNonStaticMemberFunctions, 0, start, length));
     	type = Type.tint32;
 	    return this;
 	}

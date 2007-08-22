@@ -59,9 +59,9 @@ public class AnonDeclaration extends AttribDeclaration {
 		if (ad == null
 				|| (ad.isStructDeclaration() == null && ad.isClassDeclaration() == null)) {
 			if (isunion) {
-				context.acceptProblem(Problem.newSemanticTypeError("Anonymous unions can only be part of an aggregate", IProblem.AnonCanOnlyBePartOfAnAggregate, 0, start, "union".length()));
+				context.acceptProblem(Problem.newSemanticTypeError(IProblem.AnonCanOnlyBePartOfAnAggregate, 0, start, "union".length()));
 			} else {
-				context.acceptProblem(Problem.newSemanticTypeError("Anonymous structs can only be part of an aggregate", IProblem.AnonCanOnlyBePartOfAnAggregate, 0, start, "struct".length()));
+				context.acceptProblem(Problem.newSemanticTypeError(IProblem.AnonCanOnlyBePartOfAnAggregate, 0, start, "struct".length()));
 			}
 			return;
 		}

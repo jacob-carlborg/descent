@@ -29,9 +29,8 @@ public class TypeEnum extends Type {
 	    {
 			context.acceptProblem(Problem
 					.newSemanticTypeError(
-							"Enum is forward reference",
-							IProblem.EnumValueOverflow, 0,
-							sym.start, sym.length));
+							IProblem.ForwardReference, 0,
+							sym.start, sym.length, new String[] { "Enum is forward reference" }));
 			return tint32;
 	    }
 	    return sym.memtype.toBasetype(context);

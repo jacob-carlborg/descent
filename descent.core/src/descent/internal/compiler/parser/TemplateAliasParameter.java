@@ -32,13 +32,13 @@ public class TemplateAliasParameter extends TemplateParameter {
 		TypeIdentifier ti = new TypeIdentifier(loc, ident);
 		Declaration sparam = new AliasDeclaration(loc, ident, ti);
 		if (sc.insert(sparam) == null) {
-			context.acceptProblem(Problem.newSemanticTypeError("Duplicate parameter " + ident, IProblem.DuplicatedParameter, 0, ident.start, ident.length));
+			context.acceptProblem(Problem.newSemanticTypeError(IProblem.DuplicatedParameter, 0, ident.start, ident.length, new String[] { new String(ident.ident) }));
 		}
 
 		if (specAliasT != null) {
 			specAlias = specAliasT.toDsymbol(sc, context);
 			if (specAlias == null) {
-				context.acceptProblem(Problem.newSemanticTypeError("Symbol " + specAliasT.toString() + " not found", IProblem.SymbolNotFound, 0, specAliasT.start, specAliasT.length));
+				context.acceptProblem(Problem.newSemanticTypeError(IProblem.SymbolNotFound, 0, specAliasT.start, specAliasT.length, new String[] { specAliasT.toString() }));
 			}
 		}
 	}

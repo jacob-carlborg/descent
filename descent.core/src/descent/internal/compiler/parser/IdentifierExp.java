@@ -129,9 +129,8 @@ public class IdentifierExp extends Expression {
 			}
 			return e.semantic(sc, context);
 		}
-		context.acceptProblem(Problem.newSemanticTypeError(new String(ident)
-				+ " cannot be resolved", IProblem.UndefinedIdentifier, 0,
-				start, length));
+		context.acceptProblem(Problem.newSemanticTypeError(IProblem.UndefinedIdentifier, 0,
+				start, length, new String[] { new String(ident) }));
 		type = Type.terror;
 		return this;
 	}

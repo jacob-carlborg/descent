@@ -53,7 +53,7 @@ public class NewDeclaration extends FuncDeclaration {
 		Dsymbol parent = toParent();
 		cd = parent.isClassDeclaration();
 		if (cd == null && parent.isStructDeclaration() == null) {
-			context.acceptProblem(Problem.newSemanticTypeError("New allocators only are for class or struct definitions", IProblem.NewAllocatorsOnlyForClassOrStruct, 0, start, "new".length()));
+			context.acceptProblem(Problem.newSemanticTypeError(IProblem.NewAllocatorsOnlyForClassOrStruct, 0, start, "new".length()));
 		}
 		tret = Type.tvoid.pointerTo(context);
 		type = new TypeFunction(arguments, tret, varargs, LINK.LINKd);
@@ -65,11 +65,11 @@ public class NewDeclaration extends FuncDeclaration {
 		TypeFunction tf = (TypeFunction) type;
 		if (Argument.dim(tf.parameters, context) < 1) {
 			// TODO semantic point out the "new" token
-			context.acceptProblem(Problem.newSemanticTypeError("At least one argument of type unit expected", IProblem.IllegalParameters, 0, start, "new".length()));
+			context.acceptProblem(Problem.newSemanticTypeError(IProblem.IllegalParameters, 0, start, "new".length(), new String[] { "At least one argument of type unit expected" }));
 		} else {
 			Argument a = Argument.getNth(tf.parameters, 0, context);
 			if (!a.type.equals(Type.tuns32)) {
-				context.acceptProblem(Problem.newSemanticTypeError("First argument must be of type uint", IProblem.IllegalParameters, 0, a.type.start, a.type.length));
+				context.acceptProblem(Problem.newSemanticTypeError(IProblem.IllegalParameters, 0, a.type.start, a.type.length, new String[] { "First argument must be of type uint" }));
 			}
 		}
 

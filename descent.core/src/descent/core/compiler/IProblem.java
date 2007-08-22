@@ -278,7 +278,7 @@ public interface IProblem {
 	int SuperOnlyAllowedInNonStaticMemberFunctions = 312;
 	int SuperNotInClass = 313;
 	int ClassHasNoSuper = 314;
-	int ClassHasNoBaseClass = 315;
+	int BaseTypeMustBeInterface = 315;
 	int IllegalModifier = 316;
 	int MemberIsPrivate = 317;
 	int UsedAsAType = 318;
@@ -305,14 +305,14 @@ public interface IProblem {
 	int DuplicatedParameter = 339;
 	int SymbolNotFound = 340;
 	int StaticAssertIsFalse = 341;
-	int VoidFunctionsHaveNoResult = 342;
+	int VoidFunctionsHaveNoResult = 342; // TODO is this the same as VoidHaveNoValue ?
 	int ReturnStatementsCannotBeInContracts = 343;
 	int NotAnAggregateType = 344;
 	int UnrecognizedPragma = 345;
 	int AnonCanOnlyBePartOfAnAggregate = 346;
 	int PragmaIsMissingClosingSemicolon = 347;
 	int CannotImplicitlyConvert = 348;
-	int BaseTypeMustBeInterface = 349;
+	
 	
 	/* Others, needed by JDT */
 	int ForbiddenReference = 2001;

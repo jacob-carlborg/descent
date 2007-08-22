@@ -48,9 +48,8 @@ public class PragmaStatement extends Statement {
 						 */
 					} else {
 						context.acceptProblem(Problem.newSemanticTypeError(
-								"String expected for message",
 								IProblem.IllegalParameters, 0,
-								e.start, e.length));
+								e.start, e.length, new String[] { "String expected for message" }));
 					}
 				}
 				/* TODO semantic
@@ -62,9 +61,8 @@ public class PragmaStatement extends Statement {
 				context
 						.acceptProblem(Problem
 								.newSemanticTypeError(
-										"lib pragma must recieve a single argument of type string",
 										IProblem.IllegalParameters, 0, start,
-										"pragma".length()));
+										"pragma".length(), new String[] { "lib pragma must recieve a single argument of type string" }));
 			} else {
 				Expression e = (Expression) args.get(0);
 				e = e.semantic(sc, context);
@@ -72,9 +70,8 @@ public class PragmaStatement extends Statement {
 				args.set(0, e);
 				if (e.op != TOK.TOKstring) {
 					context.acceptProblem(Problem.newSemanticTypeError(
-							"String expected for library name",
 							IProblem.IllegalParameters, 0,
-							e.start, e.length));
+							e.start, e.length, new String[] { "String expected for library name" }));
 				} else if (context.global.params.verbose) {
 					/* TODO semantic
 					 StringExp se = (StringExp )e;
@@ -87,7 +84,7 @@ public class PragmaStatement extends Statement {
 				}
 			}
 		} else {
-			context.acceptProblem(Problem.newSemanticTypeError("Unrecognized pragma", IProblem.UnrecognizedPragma, 0, ident.start, ident.length));
+			context.acceptProblem(Problem.newSemanticTypeError(IProblem.UnrecognizedPragma, 0, ident.start, ident.length));
 		}
 
 		if (body != null) {

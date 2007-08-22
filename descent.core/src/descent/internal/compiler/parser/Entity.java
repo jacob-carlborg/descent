@@ -20,7 +20,6 @@ public class Entity {
 			}
 		}
 		requestor.acceptProblem(Problem.newSyntaxError(
-				"Unrecognized character entity", 
 				IProblem.UnrecognizedCharacterEntity, lineNumber, p - 1, length + 2));
 		return -1;
 	}

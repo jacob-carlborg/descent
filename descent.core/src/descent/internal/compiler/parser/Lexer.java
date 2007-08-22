@@ -256,24 +256,36 @@ public class Lexer implements IProblemRequestor {
 		reset(source, offset, length, tokenizeComments, tokenizePragmas, tokenizeWhiteSpace, recordLineSeparator);
 	}
 	
-	public void error(String message, int id, int line, int offset, int length) {
-		problems.add(Problem.newSyntaxError(message, id, line, offset, length));
+	public void error(int id, int line, int offset, int length, String[] arguments) {
+		problems.add(Problem.newSyntaxError(id, line, offset, length, arguments));
 	}
 	
-	public void error(String message, int id, int line, ASTDmdNode node) {
-		problems.add(Problem.newSyntaxError(message, id, line, node.start, node.length));
+	public void error(int id, int line, int offset, int length) {
+		problems.add(Problem.newSyntaxError(id, line, offset, length));
 	}
 	
-	public void error(String message, int id, int line, descent.core.dom.ASTNode node) {
-		problems.add(Problem.newSyntaxError(message, id, line, node.getStartPosition(), node.getLength()));
+	public void error(int id, int line, ASTDmdNode node) {
+		problems.add(Problem.newSyntaxError(id, line, node.start, node.length));
 	}
 	
-	public void error(String message, int id, Token token) {
-		problems.add(Problem.newSyntaxError(message, id, token.lineNumber, token.ptr, token.len));
+	public void error(int id, int line, descent.core.dom.ASTNode node) {
+		problems.add(Problem.newSyntaxError(id, line, node.getStartPosition(), node.getLength()));
 	}
 	
-	public void error(String message, int id, Token firstToken, Token secondToken) {
-		problems.add(Problem.newSyntaxError(message, id, firstToken.lineNumber, firstToken.ptr, secondToken.ptr + secondToken.len - firstToken.ptr));
+	public void error(int id, Token token, String[] arguments) {
+		problems.add(Problem.newSyntaxError(id, token.lineNumber, token.ptr, token.len, arguments));
+	}
+	
+	public void error(int id, Token token) {
+		problems.add(Problem.newSyntaxError(id, token.lineNumber, token.ptr, token.len));
+	}
+	
+	public void error(int id, Token firstToken, Token secondToken, String[] arguments) {
+		problems.add(Problem.newSyntaxError(id, firstToken.lineNumber, firstToken.ptr, secondToken.ptr + secondToken.len - firstToken.ptr, arguments));		
+	}
+	
+	public void error(int id, Token firstToken, Token secondToken) {
+		problems.add(Problem.newSyntaxError(id, firstToken.lineNumber, firstToken.ptr, secondToken.ptr + secondToken.len - firstToken.ptr));
 	}
 	
 	private Token newFreeListToken() {
@@ -557,7 +569,7 @@ public class Lexer implements IProblemRequestor {
 
 					    case 0:
 					    case 0x1A:
-					    	error("Unterminated block comment", IProblem.UnterminatedBlockComment, t.lineNumber, t.ptr, p - t.ptr);
+					    	error(IProblem.UnterminatedBlockComment, t.lineNumber, t.ptr, p - t.ptr);
 					    	t.value = TOKeof;
 					    	p++;
 					    	return;
@@ -694,7 +706,7 @@ public class Lexer implements IProblemRequestor {
 
 					case 0:
 					case 0x1A:
-						error("Unterminated plus block comment", IProblem.UnterminatedPlusBlockComment, t.lineNumber, t.ptr, p - t.ptr);
+						error(IProblem.UnterminatedPlusBlockComment, t.lineNumber, t.ptr, p - t.ptr);
 					    t.value = TOKeof;
 					    p++;
 					    return;
@@ -1081,11 +1093,11 @@ public class Lexer implements IProblemRequestor {
 					}
 				}
 				if (Chars.isprint(c)) {
-					error("Unsupported char: " + (char) c,
-							IProblem.UnsupportedCharacter, t.lineNumber, p, 1);
+					error(
+							IProblem.UnsupportedCharacter, t.lineNumber, p, 1, new String[] { String.valueOf((char) c) });
 				} else {
-					error("Unsupported char: 0x" + Integer.toHexString(c),
-							IProblem.UnsupportedCharacter, t.lineNumber, p, 1);
+					error(
+						IProblem.UnsupportedCharacter, t.lineNumber, p, 1, new String[] { "0x" + Integer.toHexString(c) });
 				}
 				p++;
 				continue;
@@ -3551,21 +3563,19 @@ public class Lexer implements IProblemRequestor {
 					}
 					if (!Chars.ishex(c)) {
 						error(
-								"Escape hex sequence has " + n
-										+ " digits instead of " + ndigits,
 								IProblem.IncorrectNumberOfHexDigitsInEscapeSequence,
-								linnum, startOfNumber, p - startOfNumber);
+								linnum, startOfNumber, p - startOfNumber, new String[] { String.valueOf(n), String.valueOf(ndigits) });
 						break;
 					}
 				}
 				if (ndigits != 2 && !Utf.isValidDchar(v)) {
-					error("Invalid UTF character: \\U" + Long.toHexString(v),
+					error(
 							IProblem.InvalidUtfCharacter, linnum, startOfNumber, p
-									- startOfNumber);
+									- startOfNumber, new String[] { Long.toHexString(v) });
 				}
 				c = (int) v;
 			} else {
-				error("Undefined escape hex sequence",
+				error(
 						IProblem.UndefinedEscapeHexSequence, linnum, startOfNumber,
 						p - startOfNumber + 1);
 			}
@@ -3591,7 +3601,7 @@ public class Lexer implements IProblemRequestor {
 					if ((('a' <= c2 && c2 <= 'z') || ('A' <= c2 && c2 <= 'Z'))
 							|| (p != idstart + 1 && ('0' <= c2 && c2 <= '9')))
 						continue;
-					error("Unterminated named entity",
+					error(
 							IProblem.UnterminatedNamedEntity, linnum, idstart - 1, p
 									- idstart + 1);
 					break;
@@ -3619,7 +3629,7 @@ public class Lexer implements IProblemRequestor {
 				} while (++n < 3 && ('0' <= c && c <= '7'));
 				c = v;
 			} else {
-				error("Undefined escape sequence", 
+				error( 
 						IProblem.UndefinedEscapeSequence, linnum, p - 1, 2);
 			}
 			break;
@@ -3650,7 +3660,7 @@ public class Lexer implements IProblemRequestor {
 
 		    case 0:
 		    case 0x1A: {
-		    	error("Unterminated string constant", IProblem.UnterminatedStringConstant, token.lineNumber, token.ptr, p - token.ptr - 1);
+		    	error(IProblem.UnterminatedStringConstant, token.lineNumber, token.ptr, p - token.ptr - 1);
 				t.len = 0;
 				t.postfix = 0;
 				return TOKstring;
@@ -3707,7 +3717,7 @@ public class Lexer implements IProblemRequestor {
 
 		    case 0:
 		    case 0x1A: {
-		    	error("Unterminated string constant", IProblem.UnterminatedStringConstant, token.lineNumber, token.ptr, p - token.ptr - 1);
+		    	error(IProblem.UnterminatedStringConstant, token.lineNumber, token.ptr, p - token.ptr - 1);
 				t.len = 0;
 				t.postfix = 0;
 				return TOKstring;
@@ -3716,7 +3726,7 @@ public class Lexer implements IProblemRequestor {
 		    case '"':
 			if ((n & 1) != 0)
 			{   
-				error("Odd number (" + n + ") of hex characters in hex string", IProblem.OddNumberOfCharactersInHexString, token.lineNumber, token.ptr, p - token.ptr);
+				error(IProblem.OddNumberOfCharactersInHexString, token.lineNumber, token.ptr, p - token.ptr, new String[] { String.valueOf(n) });
 			}
 			stringPostfix(t);
 			t.len = p - t.ptr;
@@ -3736,11 +3746,11 @@ public class Lexer implements IProblemRequestor {
 			    if (u == PS || u == LS)
 				newline(NOT_IN_COMMENT);
 			    else {
-			    	error("Non-hex character: " + (char) u, IProblem.NonHexCharacter, linnum, p - 1, 1);
+			    	error(IProblem.NonHexCharacter, linnum, p - 1, 1, new String[] { String.valueOf((char) u) });
 			    }
 			}
 			else {
-			    error("Non-hex character: " + (char) c, IProblem.NonHexCharacter, linnum, p - 1, 1);
+			    error(IProblem.NonHexCharacter, linnum, p - 1, 1, new String[] { String.valueOf((char) c) });
 			}
 			if ((n & 1) != 0)
 			{   v = (v << 4) | c;
@@ -3799,7 +3809,7 @@ public class Lexer implements IProblemRequestor {
 		    case 0:
 		    case 0x1A: {
 				p--;
-				error("Unterminated string constant", IProblem.UnterminatedStringConstant, token.lineNumber, token.ptr, p - token.ptr);
+				error(IProblem.UnterminatedStringConstant, token.lineNumber, token.ptr, p - token.ptr);
 
 				t.len = 0;
 				t.postfix = 0;
@@ -3856,7 +3866,7 @@ public class Lexer implements IProblemRequestor {
 		case 0:
 		case 0x1A:
 		case '\'': {
-			error("Unterminated character constant", 
+			error( 
 					IProblem.UnterminatedCharacterConstant, token.lineNumber, token.ptr, p
 							- token.ptr);
 			t.intValue = IntegerWrapper.ZERO;
@@ -3870,7 +3880,7 @@ public class Lexer implements IProblemRequestor {
 				p++;
 				if (c == LS || c == PS) {
 					newline(NOT_IN_COMMENT);
-					error("Unterminated character constant",
+					error(
 							IProblem.UnterminatedCharacterConstant,
 							token.lineNumber, token.ptr, p - token.ptr);
 					t.intValue = IntegerWrapper.ZERO;
@@ -3889,7 +3899,7 @@ public class Lexer implements IProblemRequestor {
 		t.setString(input, t.ptr, t.len);
 
 		if (input[p] != '\'') {
-			error("Unterminated character constant", 
+			error( 
 					IProblem.UnterminatedCharacterConstant, token.lineNumber, token.ptr, p
 							- token.ptr);
 			return tk;
@@ -4117,8 +4127,8 @@ public class Lexer implements IProblemRequestor {
 						return inreal(t);
 					}
 					if (state == STATE_hex0) {
-						error("Hex digit expected, not " + (char) c,
-								IProblem.HexDigitExpected, linnum, p, 1);
+						error(
+								IProblem.HexDigitExpected, linnum, p, 1, new String[] { String.valueOf((char) c) });
 					}
 					break goto_done;
 				}
@@ -4180,7 +4190,7 @@ public class Lexer implements IProblemRequestor {
 						break;
 					}
 					if (state == STATE_binary0) {
-						error("Binary digit expected",
+						error(
 								IProblem.BinaryDigitExpected, linnum, p, 1);
 						state = STATE_error;
 						break;
@@ -4206,7 +4216,7 @@ public class Lexer implements IProblemRequestor {
 		}
 		
 		if (state == STATE_octale) {
-			error("Octal digit expected", 
+			error( 
 					IProblem.OctalDigitExpected, linnum, p - 1, 1);
 		}
 
@@ -4264,7 +4274,7 @@ public class Lexer implements IProblemRequestor {
 				f = FLAGS_unsigned;
 				p++;
 				if ((flags & f) != 0) {
-					error("Unrecognized token",
+					error(
 							IProblem.UnrecognizedToken,
 							linnum, p - 1, 1);
 				}
@@ -4273,14 +4283,14 @@ public class Lexer implements IProblemRequestor {
 
 			case 'l':
 				// if (!global.params.useDeprecated)
-				error("'l' suffix is deprecated, use 'L' instead",
+				error(
 						IProblem.LSuffixDeprecated,
 						linnum, p, 1);
 			case 'L':
 				f = FLAGS_long;
 				p++;
 				if ((flags & f) != 0) {
-					error("Unrecognized token",
+					error(
 							IProblem.UnrecognizedToken,
 							linnum, p - 1, 1);
 				}
@@ -4293,7 +4303,7 @@ public class Lexer implements IProblemRequestor {
 		}
 
 		if (integerOverflow) {
-			error("Integer overflow", 
+			error( 
 					IProblem.IntegerOverflow, t.lineNumber, t.ptr, p - start);
 		}
 
@@ -4318,7 +4328,7 @@ public class Lexer implements IProblemRequestor {
 			 * First that fits: int, long, long long
 			 */
 			if (n.and(X_8000000000000000).compareTo(BigInteger.ZERO) != 0) {
-				error("Signed integer overflow",
+				error(
 						IProblem.SignedIntegerOverflow, linnum, start, p - start);
 				result = TOKuns64v;
 			} else if (n.and(X_FFFFFFFF80000000).compareTo(BigInteger.ZERO) != 0)
@@ -4340,7 +4350,7 @@ public class Lexer implements IProblemRequestor {
 
 		case FLAGS_decimal | FLAGS_long:
 			if (n.and(X_8000000000000000).compareTo(BigInteger.ZERO) != 0) {
-				error("Signed integer overflow",
+				error(
 						IProblem.SignedIntegerOverflow, linnum, start, p - start);
 				result = TOKuns64v;
 			} else
@@ -4425,7 +4435,7 @@ public class Lexer implements IProblemRequestor {
 						break;
 					}
 					if (hex != 0) {
-						error("Binary-exponent-part required",
+						error(
 								IProblem.BinaryExponentPartRequired, linnum, p - 1, 1);
 					}
 					break goto_done;
@@ -4437,7 +4447,7 @@ public class Lexer implements IProblemRequestor {
 				case 6: // 1st exponent digit expected
 					// !Chars.isdigit inlined
 					if (c < '0' || c > '9') {
-						error("Exponent expected",
+						error(
 								IProblem.ExponentExpected, linnum, p - 1, 1);
 					}
 					dblstate++;
@@ -4484,7 +4494,7 @@ public class Lexer implements IProblemRequestor {
 
 		case 'l':
 			// if (!global.params.useDeprecated)
-			error("'l' suffix is deprecated, use 'L' instead",
+			error(
 					IProblem.LSuffixDeprecated,
 					linnum, p, 1);
 		case 'L':
@@ -4494,7 +4504,7 @@ public class Lexer implements IProblemRequestor {
 		}
 		if (input[p] == 'i' || input[p] == 'I') {
 			if (input[p] == 'I') {
-				error("'I' suffix is deprecated, use 'i' instead",
+				error(
 						IProblem.ISuffixDeprecated,
 						linnum, p, 1);
 			}
@@ -4593,7 +4603,7 @@ public class Lexer implements IProblemRequestor {
 		 	return result; 
 		 } catch (Exception e) { 
 		 	// a problem while decoding the codepoint occured => invalid input 
-		 	error("invalid input sequence", IProblem.InvalidUtf8Sequence, linnum, p, 1); 
+		 	error(IProblem.InvalidUtf8Sequence, linnum, p, 1); 
 		 	return 0; 
 		 } 
 	}

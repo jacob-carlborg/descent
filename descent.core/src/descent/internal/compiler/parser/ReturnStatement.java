@@ -75,7 +75,7 @@ public class ReturnStatement extends Statement {
 		}
 
 		if (sc.incontract != 0 || scx.incontract != 0) {
-			context.acceptProblem(Problem.newSemanticTypeError("Return statements cannot be in contracts", IProblem.ReturnStatementsCannotBeInContracts, 0, start, length));
+			context.acceptProblem(Problem.newSemanticTypeError(IProblem.ReturnStatementsCannotBeInContracts, 0, start, length));
 		}
 		if (sc.tf != null || scx.tf != null) {
 			error("return statements cannot be in finally, scope(exit) or scope(success) bodies");

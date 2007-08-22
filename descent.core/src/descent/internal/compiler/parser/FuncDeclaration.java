@@ -166,11 +166,11 @@ public class FuncDeclaration extends Declaration {
 		Dsymbol parent = toParent();
 
 		if (isConst() || isAuto() || isScope()) {
-			context.acceptProblem(Problem.newSemanticTypeError("Functions cannot be const or auto", IProblem.IllegalModifier, 0, ident.start, ident.length));
+			context.acceptProblem(Problem.newSemanticTypeError(IProblem.IllegalModifier, 0, ident.start, ident.length, new String[] { "Functions cannot be const or auto" }));
 		}
 
 		if (isAbstract() && !isVirtual()) {
-			context.acceptProblem(Problem.newSemanticTypeError("Non-virtual functions cannot be abstract", IProblem.IllegalModifier, 0, ident.start, ident.length));
+			context.acceptProblem(Problem.newSemanticTypeError(IProblem.IllegalModifier, 0, ident.start, ident.length, new String[] { "Non-virtual functions cannot be abstract" }));
 		}
 
 		sd = parent.isStructDeclaration();
@@ -324,7 +324,7 @@ public class FuncDeclaration extends Declaration {
 							FuncDeclaration f2 = s.isFuncDeclaration();
 							f2 = f2.overloadExactMatch(type, context);
 							if (f2 != null && f2.isFinal()) {
-								context.acceptProblem(Problem.newSemanticTypeError("Cannot override the final function " + ident + " from " + cd.ident , IProblem.CannotOverrideFinalFunctions, 0, ident.start, ident.length));
+								context.acceptProblem(Problem.newSemanticTypeError(IProblem.CannotOverrideFinalFunctions, 0, ident.start, ident.length, new String[] { new String(ident.ident), new String(cd.ident.ident) }));
 							}
 						}
 					}
@@ -398,13 +398,13 @@ public class FuncDeclaration extends Declaration {
 
 			if (!gotoL2) {
 				if (introducing && isOverride()) {
-					context.acceptProblem(Problem.newSemanticTypeError("The function " + ident + " of type " + cd.ident + " must override a superclass method", IProblem.FunctionDoesNotOverrideAny, 0, ident.start, ident.length));
+					context.acceptProblem(Problem.newSemanticTypeError(IProblem.FunctionDoesNotOverrideAny, 0, ident.start, ident.length, new String[] { new String(ident.ident), new String(cd.ident.ident) }));
 				}
 			}
 
 			// L2:	;
 		} else if (isOverride() && parent.isTemplateInstance() == null) {
-			context.acceptProblem(Problem.newSemanticTypeError("Override only applies to class member functions", IProblem.OverrideOnlyForClassMemberFunctions, 0, ident.start, ident.length));
+			context.acceptProblem(Problem.newSemanticTypeError(IProblem.OverrideOnlyForClassMemberFunctions, 0, ident.start, ident.length));
 		}
 
 		/*
@@ -456,12 +456,12 @@ public class FuncDeclaration extends Declaration {
 
 			if (!gotoLmainerr) {
 				if (f.next.ty != TY.Tint32 && f.next.ty != TY.Tvoid) {
-					context.acceptProblem(Problem.newSemanticTypeError("Must return int or void from main function", IProblem.IllegalReturnType, 0, type.start, type.length));
+					context.acceptProblem(Problem.newSemanticTypeError(IProblem.IllegalReturnType, 0, type.start, type.length, new String[] { "Must return int or void from main function" }));
 				}
 			}
 			if (f.varargs != 0 || gotoLmainerr) {
 				// Lmainerr: 
-				context.acceptProblem(Problem.newSemanticTypeError("Parameters must be main() or main(char[][] args)", IProblem.IllegalParameters, 0, ident.start, ident.length));
+				context.acceptProblem(Problem.newSemanticTypeError(IProblem.IllegalParameters, 0, ident.start, ident.length, new String[] { "Parameters must be main() or main(char[][] args)" }));
 			}
 		}
 
@@ -774,7 +774,7 @@ public class FuncDeclaration extends Declaration {
 				Assert.isNotNull(type.next);
 				if (type.next.ty == TY.Tvoid) {
 					if (outId != null) {
-						context.acceptProblem(Problem.newSemanticTypeError("Void functions have no result", IProblem.VoidFunctionsHaveNoResult, 0, outId.start, outId.length));
+						context.acceptProblem(Problem.newSemanticTypeError(IProblem.VoidFunctionsHaveNoResult, 0, outId.start, outId.length));
 					}
 				} else {
 					if (outId == null) {
@@ -966,7 +966,7 @@ public class FuncDeclaration extends Declaration {
 					fbody.synthetic = true;
 					Assert.isTrue(returnLabel == null);
 				} else if (hasReturnExp == 0 && type.next.ty != TY.Tvoid)
-					context.acceptProblem(Problem.newSemanticTypeError("This function must return a result of type " + type.next, IProblem.IllegalReturnType, 0, ident.start, ident.length));
+					context.acceptProblem(Problem.newSemanticTypeError(IProblem.IllegalReturnType, 0, ident.start, ident.length, new String[] { type.next.toString() }));
 				else if (!inlineAsm) {
 					if (type.next.ty == TY.Tvoid) {
 						if (offend && isMain()) { // Add a return 0; statement

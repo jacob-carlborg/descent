@@ -257,7 +257,9 @@ public class ClassDeclaration extends AggregateDeclaration {
 		}
 
 		if (members == null || symtab == null || scope != null) {
-			context.acceptProblem(Problem.newSemanticTypeError(this + " is forward reference when looking for " + new String(ident), IProblem.ForwardReference, 0, start, length));
+			context.acceptProblem(Problem.newSemanticTypeError(IProblem.ForwardReference, 0, start, length, new String[] { 
+					new String(this.ident.ident)
+					+ " is forward reference when looking for " + new String(ident) }));
 			return null;
 		}
 
@@ -361,7 +363,6 @@ public class ClassDeclaration extends AggregateDeclaration {
 				// If already reported error, don't report it twice
 				if (tb.ty != TY.Terror) {
 					context.acceptProblem(Problem.newSemanticTypeError(
-							"Base type must be class or interface",
 							IProblem.BaseTypeMustBeClassOrInterface, 0,
 							b.sourceType.start, b.sourceType.length));
 				}
@@ -376,7 +377,6 @@ public class ClassDeclaration extends AggregateDeclaration {
 						if (cdb == this) {
 							BaseClass firstBaseClass = this.baseclasses.get(0);
 							context.acceptProblem(Problem.newSemanticTypeError(
-									"Circular inheritance",
 									IProblem.CircularDefinition, 0,
 									firstBaseClass.sourceType.start,
 									firstBaseClass.sourceType.length));
@@ -428,7 +428,6 @@ public class ClassDeclaration extends AggregateDeclaration {
 				// If already reported error, don't report it twice
 				if (tb.ty != TY.Terror) {
 					context.acceptProblem(Problem.newSemanticTypeError(
-							"Base type must be class or interface",
 							IProblem.BaseTypeMustBeClassOrInterface, 0,
 							b.sourceType.start, b.sourceType.length));
 				}
@@ -440,10 +439,8 @@ public class ClassDeclaration extends AggregateDeclaration {
 					BaseClass b2 = baseclasses.get(j);
 					if (b2.base == tc.sym) {
 						context.acceptProblem(Problem.newSemanticTypeError(
-								"Duplicated interface " + b.sourceType
-										+ " for the type " + this.ident,
 								IProblem.DuplicatedInterfaceInheritance, 0,
-								b.sourceType.start, b.sourceType.length));
+								b.sourceType.start, b.sourceType.length, new String[] { b.sourceType.toString(), new String(this.ident.ident) }));
 					}
 				}
 

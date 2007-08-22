@@ -52,7 +52,7 @@ public class CtorDeclaration extends FuncDeclaration {
 		cd = parent.isClassDeclaration();
 		if (cd == null) {
 			// TODO semantic point out the "this" token
-			context.acceptProblem(Problem.newSemanticTypeError("Constructors only are for class definitions", IProblem.ConstructorsOnlyForClass, 0, start, "this".length()));
+			context.acceptProblem(Problem.newSemanticTypeError(IProblem.ConstructorsOnlyForClass, 0, start, "this".length()));
 			tret = Type.tvoid;
 		} else {
 			tret = cd.type; // .referenceTo();

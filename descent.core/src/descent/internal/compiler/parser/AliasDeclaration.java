@@ -107,7 +107,6 @@ public class AliasDeclaration extends Declaration {
 				for (Modifier modifier : modifiers) {
 					if (modifier.tok == TOK.TOKconst) {
 						context.acceptProblem(Problem.newSemanticTypeError(
-								"alias cannot be const",
 								IProblem.IllegalModifier, 0, modifier.start,
 								modifier.length));
 					}
@@ -181,13 +180,13 @@ public class AliasDeclaration extends Declaration {
 		VarDeclaration v = s.isVarDeclaration();
 		if (v != null && v.linkage == LINK.LINKdefault) {
 			context.acceptProblem(Problem.newSemanticTypeError(
-					"Forward reference", IProblem.ForwardReference, 0,
+					IProblem.ForwardReference, 0,
 					tempType.start, tempType.length));
 			context.acceptProblem(Problem
-					.newSemanticTypeError(v.ident
-							+ " is being forward referenced",
+					.newSemanticTypeError(
 							IProblem.ForwardReference, 0, v.ident.start,
-							v.ident.length));
+							v.ident.length, new String[] { v.ident
+									+ " is being forward referenced" }));
 			s = null;
 		} else {
 			FuncDeclaration f = s.isFuncDeclaration();
@@ -250,8 +249,8 @@ public class AliasDeclaration extends Declaration {
 		Assert.isTrue(this != aliassym);
 		if (inSemantic != 0) {
 			context.acceptProblem(Problem.newSemanticTypeError(
-					"Circular alias declaration", IProblem.CircularDefinition,
-					0, ident.start, ident.length));
+					IProblem.CircularDefinition,
+					0, ident.start, ident.length, new String[] { "Circular alias declaration" }));
 		}
 		Dsymbol s = aliassym != null ? aliassym.toAlias(context) : this;
 		return s;
