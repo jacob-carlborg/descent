@@ -1,15 +1,15 @@
 package mmrnmhrm.core.model;
 
-import melnorme.miscutil.StringUtil;
 import mmrnmhrm.core.DeeCore;
 import mmrnmhrm.core.model.lang.ILangProject;
 import mmrnmhrm.core.model.lang.LangElement;
 import mmrnmhrm.core.model.lang.LangModelRoot;
-import mmrnmhrm.core.model.lang.LangPackageFragment;
 import mmrnmhrm.core.model.lang.LangProject;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.dltk.core.DLTKCore;
+import org.eclipse.dltk.core.IScriptProject;
 
 import dtool.dom.definitions.Module;
 import dtool.refmodel.pluginadapters.IModuleResolver;
@@ -52,8 +52,9 @@ public class DeeModelRoot extends LangModelRoot implements IDeeElement, IModuleR
 	}
 
 	/** Adds a D project from a resource project to Dee Model. */
-	public LangElement loadDeeProject(IProject project) throws CoreException {
-		DeeProject deeproj = new DeeProject(project);
+	private LangElement loadDeeProject(IProject project) throws CoreException {
+		IScriptProject dltkProj = DLTKCore.create(project);
+		DeeProject deeproj = new DeeProject(dltkProj);
 		deeproj.createElementInfo();
 		addDeeProject(deeproj);
 		return deeproj;
@@ -70,7 +71,9 @@ public class DeeModelRoot extends LangModelRoot implements IDeeElement, IModuleR
 	public DeeProject createDeeProject(IProject project) throws CoreException {
 		DeeNature.addNature(project, DeeNature.NATURE_ID);
 	
-		DeeProject deeproj = new DeeProject(project);
+		IScriptProject dltkProj = DLTKCore.create(project);
+		
+		DeeProject deeproj = new DeeProject(dltkProj);
 		deeproj.setupNewProjectConfig();
 		addDeeProject(deeproj);
 		return deeproj;
@@ -78,9 +81,11 @@ public class DeeModelRoot extends LangModelRoot implements IDeeElement, IModuleR
 
 	/** Finds the module with the given package and module name.
 	 * refModule is used to determine which project/build-path to search. */
+	@Deprecated
 	public Module findModule(Module sourceRefModule, String[] packages,
 			String module) throws CoreException {
-		CompilationUnit refcunit = (CompilationUnit) sourceRefModule.getCUnit();
+		//CompilationUnit refcunit = (CompilationUnit) sourceRefModule.getCUnit();
+		/*CompilationUnit refcunit = null;
 		
 		DeeProject deeproj = refcunit.getProject();
 		if(deeproj == null)
@@ -103,7 +108,7 @@ public class DeeModelRoot extends LangModelRoot implements IDeeElement, IModuleR
 				
 				}
 			}
-		}
+		}*/
 		return null;
 	}
 

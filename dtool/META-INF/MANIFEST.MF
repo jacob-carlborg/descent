@@ -20,4 +20,7 @@ Export-Package: dtool,
  org.ini4j.addon
 Bundle-Vendor: Mother Ark
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
-Require-Bundle: descent.core;visibility:=reexport
+Require-Bundle: descent.core;visibility:=reexport,
+ org.eclipse.dltk.core,
+ org.eclipse.core.runtime,
+ org.eclipse.core.resources

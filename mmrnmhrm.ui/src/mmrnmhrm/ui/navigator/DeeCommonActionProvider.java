@@ -3,7 +3,7 @@ package mmrnmhrm.ui.navigator;
 import mmrnmhrm.core.model.CompilationUnit;
 import mmrnmhrm.ui.actions.ISimpleRunnable;
 import mmrnmhrm.ui.actions.OperationsManager;
-import mmrnmhrm.ui.editor.DeeEditor;
+import mmrnmhrm.ui.editor.DeeEditorDLTK;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
@@ -50,7 +50,7 @@ public class DeeCommonActionProvider extends CommonActionProvider {
 		public void run() {
 			OperationsManager.executeOperation("Open Element", new ISimpleRunnable() {
 				public void run() throws CoreException {
-					IDE.openEditor(page, file, DeeEditor.EDITOR_ID);
+					IDE.openEditor(page, file, DeeEditorDLTK.EDITOR_ID);
 				}
 			});
 		}

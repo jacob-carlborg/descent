@@ -6,6 +6,5 @@ public interface IVisitable<VISITOR> {
 	void accept(VISITOR visitor);
 
 	//void acceptALT(Object visitor);
-
 	
 }

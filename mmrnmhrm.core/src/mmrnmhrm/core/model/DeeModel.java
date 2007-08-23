@@ -3,7 +3,6 @@ package mmrnmhrm.core.model;
 import java.util.ArrayList;
 
 import mmrnmhrm.core.IElementChangedListener;
-import mmrnmhrm.core.model.lang.LangElement;
 import mmrnmhrm.core.model.lang.LangPackageFragment;
 
 import org.eclipse.core.resources.IFile;
@@ -62,11 +61,6 @@ public class DeeModel {
 		return DeeModelRoot.getInstance();
 	}
 	
-	/** Adds a D project from a resource project to Dee Model. */
-	public static LangElement loadDeeProject(IProject project) throws CoreException {
-		return DeeModelRoot.getInstance().loadDeeProject(project);
-	}
-
 	/** Returns the D project with the given name, null if none. */
 	public static DeeProject getLangProject(String name) {
 		return (DeeProject) getRoot().getLangProject(name);

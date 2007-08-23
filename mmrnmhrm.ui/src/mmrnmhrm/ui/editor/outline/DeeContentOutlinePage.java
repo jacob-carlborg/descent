@@ -1,13 +1,14 @@
 package mmrnmhrm.ui.editor.outline;
 
 import melnorme.lang.ui.EditorUtil;
-import mmrnmhrm.core.model.CompilationUnit;
 import mmrnmhrm.ui.editor.DeeEditor;
 
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.views.contentoutline.ContentOutlinePage;
+
+import dtool.dom.definitions.Module;
 
 
 /**
@@ -33,10 +34,10 @@ public class DeeContentOutlinePage extends ContentOutlinePage {
 	}
 
 	public void updateView() {
-		CompilationUnit cunit = editor.getCompilationUnit();
+		Module module = EditorUtil.getNeoModuleFromEditor(editor);
 		TreeViewer viewer = getTreeViewer();
 		viewer.getControl().setRedraw(false);
-		viewer.setInput(cunit.getModule());
+		viewer.setInput(module);
 		viewer.refresh();
 		//viewer.expandAll();
 		viewer.getControl().setRedraw(true);

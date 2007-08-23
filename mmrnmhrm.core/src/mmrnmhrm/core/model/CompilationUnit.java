@@ -3,6 +3,7 @@ package mmrnmhrm.core.model;
 import java.util.Collection;
 
 import melnorme.miscutil.ExceptionAdapter;
+import melnorme.miscutil.tree.IElement;
 import mmrnmhrm.core.CorePreferenceInitializer;
 import mmrnmhrm.core.DeeCore;
 import mmrnmhrm.core.model.lang.ILangElement;
@@ -13,11 +14,12 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.dltk.core.ISourceModule;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
 
 import descent.core.compiler.IProblem;
-import descent.internal.compiler.parser.ast.ASTNode;
+import descent.internal.compiler.parser.ast.IASTNode;
 import dtool.descentadapter.DescentASTConverter;
 import dtool.dom.definitions.Module;
 import dtool.refmodel.ParserAdapter;
@@ -53,11 +55,16 @@ public class CompilationUnit extends LangModuleUnit implements IGenericCompilati
 		return ILangElement.NO_LANGELEMENTS;
 	}
 	
+	@Override
+	public ISourceModule getModuleUnit() {
+		return modUnit;
+	}
+	
 	public boolean hasChildren() {
 		return true;
 	}
 
-	public ASTNode[] getChildren() {
+	public IElement[] getChildren() {
 		getElementInfo();
 		return getModule().getChildren();
 	}
@@ -80,7 +87,7 @@ public class CompilationUnit extends LangModuleUnit implements IGenericCompilati
 		return module;
 	}
 	
-	public ASTNode getModule() {
+	public IASTNode getModule() {
 		getElementInfo();
 		if(module == null || parseStatus == EModelStatus.PARSER_SYNTAX_ERRORS)
 			return oldModule;
@@ -176,7 +183,7 @@ public class CompilationUnit extends LangModuleUnit implements IGenericCompilati
 	
 	private void convertAST() {
 		Module neoModule = DescentASTConverter.convertModule(oldModule);
-		neoModule.setCUnit(this);
+		neoModule.setModuleUnit(modUnit);
 		module = neoModule;
 		//oldModule = null;
 	}
@@ -191,7 +198,5 @@ public class CompilationUnit extends LangModuleUnit implements IGenericCompilati
 		} else
 			return "Status OK";
 	}
-
-
 
 }

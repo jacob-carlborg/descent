@@ -41,7 +41,7 @@ import org.eclipse.ui.part.ViewPart;
 import org.eclipse.ui.texteditor.AbstractTextEditor;
 import org.eclipse.ui.texteditor.ITextEditor;
 
-import descent.internal.compiler.parser.ast.ASTNode;
+import descent.internal.compiler.parser.ast.IASTNode;
 import dtool.dom.ast.ASTNodeFinder;
 
 
@@ -68,7 +68,7 @@ public class ASTViewer extends ViewPart implements ISelectionListener,
 	protected IDocument fDocument;
 	protected CompilationUnit fCUnit;
 	protected boolean fUseOldAst = false;
-	protected ASTNode selNode;
+	protected IASTNode selNode;
 
 
 	public ASTViewer() {

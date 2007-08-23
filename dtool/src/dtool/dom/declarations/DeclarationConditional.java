@@ -11,7 +11,6 @@ import descent.internal.compiler.parser.ConditionalStatement;
 import descent.internal.compiler.parser.DVCondition;
 import descent.internal.compiler.parser.IftypeExp;
 import descent.internal.compiler.parser.StaticIfCondition;
-import descent.internal.compiler.parser.ast.ASTNode;
 import dtool.dom.ast.ASTNeoNode;
 import dtool.dom.statements.IStatement;
 import dtool.refmodel.INonScopedBlock;
@@ -52,7 +51,7 @@ public abstract class DeclarationConditional extends ASTNeoNode implements IStat
 	}
 
 
-	protected ASTNode[] getMembers() {
+	protected ASTNeoNode[] getMembers() {
 		if(thendecls.nodes == null)
 			return elsedecls.nodes;
 		if(elsedecls.nodes == null)
@@ -61,7 +60,7 @@ public abstract class DeclarationConditional extends ASTNeoNode implements IStat
 		return ArrayUtil.concat(thendecls.nodes, elsedecls.nodes);
 	}
 
-	public Iterator<ASTNode> getMembersIterator() {
+	public Iterator<ASTNeoNode> getMembersIterator() {
 		return Arrays.asList(getMembers()).iterator();
 	}
 

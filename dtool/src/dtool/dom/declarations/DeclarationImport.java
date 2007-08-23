@@ -7,7 +7,6 @@ import melnorme.miscutil.Assert;
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.internal.compiler.parser.Import;
 import descent.internal.compiler.parser.MultiImport;
-import descent.internal.compiler.parser.ast.ASTNode;
 import dtool.dom.ast.ASTNeoNode;
 import dtool.dom.ast.IASTNeoVisitor;
 import dtool.dom.definitions.DefUnit;
@@ -32,7 +31,7 @@ public class DeclarationImport extends ASTNeoNode implements INonScopedBlock {
 		//this.isTransitive is adapted in post conversion;
 		Assert.isNull(elem.modifiers);
 
-		int importsNum = elem.imports.size(); 
+		int importsNum = elem.imports == null ? 0 : elem.imports.size(); 
 
 		// Selective import are at the end		
 		this.imports = new ImportFragment[importsNum];
@@ -83,11 +82,11 @@ public class DeclarationImport extends ASTNeoNode implements INonScopedBlock {
 
 	}
 	
-	public ASTNode[] getMembers() {
+	public ASTNeoNode[] getMembers() {
 		return imports;
 	}
 
-	public Iterator<? extends ASTNode> getMembersIterator() {
+	public Iterator<? extends ASTNeoNode> getMembersIterator() {
 		return Arrays.asList(getMembers()).iterator();
 	}
 

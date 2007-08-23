@@ -5,12 +5,12 @@ import mmrnmhrm.core.model.CompilationUnit;
 import mmrnmhrm.ui.DeePlugin;
 import mmrnmhrm.ui.DeePluginImages;
 import mmrnmhrm.ui.editor.outline.DeeContentOutlinePage;
-import mmrnmhrm.ui.editor.text.DeeSourceViewerConfiguration;
 import mmrnmhrm.ui.text.DeeDocumentProvider;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.dltk.ui.text.ScriptSourceViewerConfiguration;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.source.SourceViewerConfiguration;
@@ -56,7 +56,8 @@ public class DeeEditor extends LangEditor {
 	}
 	
 	private SourceViewerConfiguration createLangSourceViewerConfiguration() {
-		return new DeeSourceViewerConfiguration(this, getPreferenceStore());
+		return DeePlugin.getDefault().getTextTools()
+			.createSourceViewerConfiguraton(getPreferenceStore(), this);
 	}
 	
 	@Override
@@ -84,11 +85,9 @@ public class DeeEditor extends LangEditor {
 	
 	@Override
 	protected boolean affectsTextPresentation(PropertyChangeEvent event) {
-		return ((DeeSourceViewerConfiguration) getSourceViewerConfiguration())
-				.adaptToPreferenceChange(event)
+		return ((ScriptSourceViewerConfiguration) getSourceViewerConfiguration())
+				.affectsTextPresentation(event)
 				|| super.affectsTextPresentation(event);
-		//return true;
-		//return super.affectsTextPresentation(event);
 	}
 
 	protected void doSetInput(IEditorInput input) throws CoreException {

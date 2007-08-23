@@ -11,9 +11,9 @@ import dtool.dom.ast.ASTNeoNode;
  */
 public abstract class ASTCommonConverter implements IASTVisitor {
 	
-	ASTNode ret = null;
+	ASTNeoNode ret = null;
 	
-	ASTNode convert(ASTNode elem) {
+	ASTNeoNode convert(ASTNode elem) {
 		elem.accept(this);
 		return ret;
 	}
@@ -27,11 +27,6 @@ public abstract class ASTCommonConverter implements IASTVisitor {
 	
 	/* ---- common adaptors ---- */
 	
-	protected void rangeAdapt(ASTNeoNode newelem, ASTNode elem) {
-		newelem.start = elem.getStartPos();
-		newelem.length = elem.getLength();
-	}
-
 	protected boolean endAdapt(ASTNeoNode newelem) {
 		ret = newelem;
 		return false;

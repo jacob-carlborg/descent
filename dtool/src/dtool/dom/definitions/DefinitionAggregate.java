@@ -3,6 +3,7 @@ package dtool.dom.definitions;
 import java.util.Iterator;
 import java.util.List;
 
+import melnorme.miscutil.IteratorUtil;
 import melnorme.miscutil.StringUtil;
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.internal.compiler.parser.Dsymbol;
@@ -41,6 +42,8 @@ public abstract class DefinitionAggregate extends Definition implements IScopeNo
 	}
 	
 	public Iterator<ASTNode> getMembersIterator() {
+		if(members == null)
+			return IteratorUtil.getEMPTY_ITERATOR();
 		return members.iterator();
 	}
 

@@ -1,10 +1,12 @@
 package mmrnmhrm.core;
 
+import mmrnmhrm.core.dltk.DLTKModelResolver;
 import mmrnmhrm.core.model.DeeModel;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.dltk.internal.core.hierarchy.TypeHierarchy;
 
 import dtool.refmodel.EntityResolver;
 
@@ -29,7 +31,9 @@ public class DeeCore extends LangCore {
 	
 	@Override
 	public void initPlugin() throws CoreException {
-		EntityResolver.initializeEntityResolver(DeeModel.getRoot());
+		//EntityResolver.initializeEntityResolver(DeeModel.getRoot());
+		EntityResolver.initializeEntityResolver(DLTKModelResolver.instance);
+		TypeHierarchy.DEBUG = false;
 		DeeModel.initDeeModel();
 	}
 	

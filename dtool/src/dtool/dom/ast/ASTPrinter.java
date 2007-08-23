@@ -2,6 +2,7 @@ package dtool.dom.ast;
 
 import melnorme.miscutil.tree.TreeDepthRecon;
 import descent.internal.compiler.parser.ast.ASTNode;
+import descent.internal.compiler.parser.ast.IASTNode;
 import dtool.dom.references.RefQualified;
 
 /**
@@ -11,12 +12,12 @@ import dtool.dom.references.RefQualified;
 public class ASTPrinter extends ASTNeoUpTreeVisitor {
 
 	/** => #toStringNodeExtra(node, true) */
-	public static String toStringNodeExtra(ASTNode node) {
+	public static String toStringNodeExtra(IASTNode node) {
 		return toStringNodeExtra(node, true);
 	}
 
 	/** Gets an extended String representation of given node. */
-	public static String toStringNodeExtra(ASTNode node, boolean printRangeInfo) {
+	public static String toStringNodeExtra(IASTNode node, boolean printRangeInfo) {
 		return node.toStringAsNode(printRangeInfo) + " " + node.toString();
 	}
 	
@@ -79,11 +80,10 @@ public class ASTPrinter extends ASTNeoUpTreeVisitor {
 
 	
 	/** Gets a String representation of elem only, with extra info. */
-	private String toStringElementExtra(ASTNode elem) {
+	private String toStringElementExtra(IASTNode elem) {
 		return toStringNodeExtra(elem, printRangeInfo);
 	}
-
-
+	
 	/* ---------------------------------- */
 	protected void print(String str) {
 		strbuffer.append(str);
@@ -98,7 +98,7 @@ public class ASTPrinter extends ASTNeoUpTreeVisitor {
 		print(melnorme.miscutil.StringUtil.newFilledString(indent, "  "));
 	}
 
-	private void printGenericElement(ASTNode element, String str) {
+	private void printGenericElement(IASTNode element, String str) {
 		int maxdepth = collapseLeafs? TreeDepthRecon.findMaxDepth(element) : -1;
 
 		if(collapseLeafs && maxdepth == 1 && allSiblingsAreLeafs)

@@ -7,8 +7,10 @@ import descent.internal.compiler.parser.Package;
 public interface IASTVisitor extends ITreeVisitor<ASTNode>{
 
 	void preVisit(ASTNode node);
-
 	void postVisit(ASTNode node);
+	
+	//boolean visit(IASTNode node);
+	//void endVisit(IASTNode node);
 
 	/** Visits the node element. 
 	 * @return true if children element should be visited */

@@ -20,63 +20,62 @@ public abstract class DeeColorPreferenceInitializer {
 	public static void initializeDefaults(IPreferenceStore store) {
 		DeeColorPreferenceInitializer.store = store;
 		
-		setIsEnabled(IDeeColorPreferences.DEE_DEFAULT, true);
-		setColor(IDeeColorPreferences.DEE_DEFAULT, getRGB(SWT.COLOR_BLACK));
-		setIsBold(IDeeColorPreferences.DEE_DEFAULT, false);
-		setIsItalic(IDeeColorPreferences.DEE_DEFAULT, false);
-		setIsUnderline(IDeeColorPreferences.DEE_DEFAULT, false);
+		setIsEnabled(DeeColorConstants.DEE_DEFAULT, true);
+		setColor(DeeColorConstants.DEE_DEFAULT, getRGB(SWT.COLOR_BLACK));
+		setIsBold(DeeColorConstants.DEE_DEFAULT, false);
+		setIsItalic(DeeColorConstants.DEE_DEFAULT, false);
+		setIsUnderline(DeeColorConstants.DEE_DEFAULT, false);
 		
-		setIsEnabled(IDeeColorPreferences.DEE_KEYWORD, true);
-		setColor(IDeeColorPreferences.DEE_KEYWORD, new RGB(0, 0, 127));
-		setIsBold(IDeeColorPreferences.DEE_KEYWORD, true);
-		setIsItalic(IDeeColorPreferences.DEE_KEYWORD, false);
-		setIsUnderline(IDeeColorPreferences.DEE_KEYWORD, false);
+		setIsEnabled(DeeColorConstants.DEE_KEYWORD, true);
+		setColor(DeeColorConstants.DEE_KEYWORD, new RGB(0, 0, 127));
+		setIsBold(DeeColorConstants.DEE_KEYWORD, true);
+		setIsItalic(DeeColorConstants.DEE_KEYWORD, false);
+		setIsUnderline(DeeColorConstants.DEE_KEYWORD, false);
 		
-		setIsEnabled(IDeeColorPreferences.DEE_BASICTYPES, true);
-		setColor(IDeeColorPreferences.DEE_BASICTYPES, new RGB(0, 0, 127));
-		setIsBold(IDeeColorPreferences.DEE_BASICTYPES, false);
-		setIsItalic(IDeeColorPreferences.DEE_BASICTYPES, false);
-		setIsUnderline(IDeeColorPreferences.DEE_BASICTYPES, false);
+		setIsEnabled(DeeColorConstants.DEE_BASICTYPES, true);
+		setColor(DeeColorConstants.DEE_BASICTYPES, new RGB(0, 0, 127));
+		setIsBold(DeeColorConstants.DEE_BASICTYPES, false);
+		setIsItalic(DeeColorConstants.DEE_BASICTYPES, false);
+		setIsUnderline(DeeColorConstants.DEE_BASICTYPES, false);
 		
-		setIsEnabled(IDeeColorPreferences.DEE_OPERATORS, true);
-		setColor(IDeeColorPreferences.DEE_OPERATORS, getRGB(SWT.COLOR_DARK_RED));
-		setIsBold(IDeeColorPreferences.DEE_OPERATORS, true);
-		setIsItalic(IDeeColorPreferences.DEE_OPERATORS, false);
-		setIsUnderline(IDeeColorPreferences.DEE_OPERATORS, false);
+		setIsEnabled(DeeColorConstants.DEE_OPERATORS, true);
+		setColor(DeeColorConstants.DEE_OPERATORS, getRGB(SWT.COLOR_BLACK));
+		setIsBold(DeeColorConstants.DEE_OPERATORS, false);
+		setIsItalic(DeeColorConstants.DEE_OPERATORS, false);
+		setIsUnderline(DeeColorConstants.DEE_OPERATORS, false);
 
-		setIsEnabled(IDeeColorPreferences.DEE_STRING, true);
-		setColor(IDeeColorPreferences.DEE_STRING, getRGB(SWT.COLOR_DARK_YELLOW));
-		setIsBold(IDeeColorPreferences.DEE_STRING, false);
-		setIsItalic(IDeeColorPreferences.DEE_STRING, false);
-		setIsUnderline(IDeeColorPreferences.DEE_STRING, false);
+		setIsEnabled(DeeColorConstants.DEE_STRING, true);
+		setColor(DeeColorConstants.DEE_STRING, getRGB(SWT.COLOR_DARK_YELLOW));
+		setIsBold(DeeColorConstants.DEE_STRING, false);
+		setIsItalic(DeeColorConstants.DEE_STRING, false);
+		setIsUnderline(DeeColorConstants.DEE_STRING, false);
 
-		setIsEnabled(IDeeColorPreferences.DEE_LITERALS, true);
-		setColor(IDeeColorPreferences.DEE_LITERALS, new RGB(127, 64, 64));
-		setIsBold(IDeeColorPreferences.DEE_LITERALS, true);
-		setIsItalic(IDeeColorPreferences.DEE_LITERALS, false);
-		setIsUnderline(IDeeColorPreferences.DEE_LITERALS, false);
-
+		setIsEnabled(DeeColorConstants.DEE_LITERALS, true);
+		setColor(DeeColorConstants.DEE_LITERALS, new RGB(127, 64, 64));
+		setIsBold(DeeColorConstants.DEE_LITERALS, false);
+		setIsItalic(DeeColorConstants.DEE_LITERALS, false);
+		setIsUnderline(DeeColorConstants.DEE_LITERALS, false);
 		
 		//RGB javaDocOthers = new RGB(63, 95, 191);
 		//RGB javaDocTag = new RGB(63, 127, 95);
-		setIsEnabled(IDeeColorPreferences.DEE_DOCCOMMENT, true);
-		setColor(IDeeColorPreferences.DEE_DOCCOMMENT, new RGB(63, 95, 191));
-		setIsBold(IDeeColorPreferences.DEE_DOCCOMMENT, false);
-		setIsItalic(IDeeColorPreferences.DEE_DOCCOMMENT, false);
-		setIsUnderline(IDeeColorPreferences.DEE_DOCCOMMENT, false);
+		setIsEnabled(DeeColorConstants.DEE_DOCCOMMENT, true);
+		setColor(DeeColorConstants.DEE_DOCCOMMENT, new RGB(63, 95, 191));
+		setIsBold(DeeColorConstants.DEE_DOCCOMMENT, false);
+		setIsItalic(DeeColorConstants.DEE_DOCCOMMENT, false);
+		setIsUnderline(DeeColorConstants.DEE_DOCCOMMENT, false);
 		
-		setIsEnabled(IDeeColorPreferences.DEE_COMMENT, true);
-		setColor(IDeeColorPreferences.DEE_COMMENT, new RGB(63, 127, 95));
-		setIsBold(IDeeColorPreferences.DEE_COMMENT, false);
-		setIsItalic(IDeeColorPreferences.DEE_COMMENT, false);
-		setIsUnderline(IDeeColorPreferences.DEE_COMMENT, false);
+		setIsEnabled(DeeColorConstants.DEE_COMMENT, true);
+		setColor(DeeColorConstants.DEE_COMMENT, new RGB(63, 127, 95));
+		setIsBold(DeeColorConstants.DEE_COMMENT, false);
+		setIsItalic(DeeColorConstants.DEE_COMMENT, false);
+		setIsUnderline(DeeColorConstants.DEE_COMMENT, false);
 
 
-		setIsEnabled(IDeeColorPreferences.DEE_SPECIAL, false);
-		setColor(IDeeColorPreferences.DEE_SPECIAL, getRGB(SWT.COLOR_CYAN));
-		setIsBold(IDeeColorPreferences.DEE_SPECIAL, false);
-		setIsItalic(IDeeColorPreferences.DEE_SPECIAL, false);
-		setIsUnderline(IDeeColorPreferences.DEE_SPECIAL, true);
+		setIsEnabled(DeeColorConstants.DEE_SPECIAL, false);
+		setColor(DeeColorConstants.DEE_SPECIAL, getRGB(SWT.COLOR_CYAN));
+		setIsBold(DeeColorConstants.DEE_SPECIAL, false);
+		setIsItalic(DeeColorConstants.DEE_SPECIAL, false);
+		setIsUnderline(DeeColorConstants.DEE_SPECIAL, true);
 	}
 
 

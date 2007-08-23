@@ -3,7 +3,7 @@ package dtool.dom.ast;
 import java.util.ArrayList;
 import java.util.List;
 
-import descent.internal.compiler.parser.ast.ASTNode;
+import melnorme.miscutil.tree.IVisitable;
 
 
 
@@ -13,20 +13,22 @@ import descent.internal.compiler.parser.ast.ASTNode;
 public class ASTNeoChildrenCollector extends ASTNeoHomoVisitor {
 	
 	private boolean visitingParent = true;
-	private List<ASTNode> childrenLst;
+	private List<ASTNeoNode> childrenLst;
 	
-	public static List<ASTNode> getChildrenList(ASTNode elem){
+	public static ASTNeoNode[] getChildrenArray(ASTNeoNode elem){
+		return getChildrenList(elem).toArray(ASTNeoNode.NO_ELEMENTS);
+	}	
+	
+	public static List<ASTNeoNode> getChildrenList(IVisitable<? super IASTNeoVisitor> elem){
 		ASTNeoChildrenCollector collector = new ASTNeoChildrenCollector();
-		collector.childrenLst = new ArrayList<ASTNode>();
+		collector.childrenLst = new ArrayList<ASTNeoNode>();
 		collector.traverse(elem);
 		return collector.childrenLst;
 	}
 	
-	public static ASTNode[] getChildrenArray(ASTNode elem){
-		return getChildrenList(elem).toArray(ASTNode.NO_ELEMENTS);
-	}	
+
 	
-	public boolean enterNode(ASTNode elem) {
+	public boolean enterNode(ASTNeoNode elem) {
 		if(visitingParent == true) {
 			visitingParent = false;
 			return true; // visit children
@@ -37,7 +39,7 @@ public class ASTNeoChildrenCollector extends ASTNeoHomoVisitor {
 		return false;
 	}
 
-	protected void leaveNode(ASTNode elem) {
+	protected void leaveNode(ASTNeoNode elem) {
 		// Do nothing
 	}
 }

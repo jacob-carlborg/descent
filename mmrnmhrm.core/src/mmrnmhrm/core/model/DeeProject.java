@@ -15,11 +15,11 @@ import mmrnmhrm.core.model.lang.LangProject;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IMarker;
-import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.dltk.core.IScriptProject;
 import org.ini4j.Ini;
 import org.ini4j.InvalidIniFormatException;
 
@@ -36,8 +36,8 @@ public class DeeProject extends LangProject implements IDeeElement {
 
 	public DeeCompilerOptions compilerOptions;
 	
-	public DeeProject(IProject project) {
-		super(DeeModelRoot.getInstance(), project);
+	public DeeProject(IScriptProject dltkProj) {
+		super(DeeModelRoot.getInstance(), dltkProj);
 		this.compilerOptions = new DeeCompilerOptions();
 	}
 	

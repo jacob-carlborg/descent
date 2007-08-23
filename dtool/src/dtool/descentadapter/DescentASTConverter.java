@@ -6,6 +6,7 @@ import java.util.List;
 
 import descent.internal.compiler.parser.ast.ASTNode;
 import descent.internal.compiler.parser.ast.IASTNode;
+import dtool.dom.ast.ASTNeoNode;
 import dtool.dom.definitions.Module;
 
 public class DescentASTConverter {
@@ -18,21 +19,21 @@ public class DescentASTConverter {
 		return module;
 	}
 	
-	public static ASTNode convertElem(ASTNode elem) {
+	public static ASTNeoNode convertElem(ASTNode elem) {
 		if(elem == null) return null;
 		StatementConverter conv = new StatementConverter();
 		elem.accept(conv);
 		return conv.ret;
 	}
 	
-	public static ASTNode[] convertMany(Collection<? extends ASTNode> children) {
+	public static ASTNeoNode[] convertMany(Collection<? extends IASTNode> children) {
 		if(children == null) return null;
-		ASTNode[] rets = new ASTNode[children.size()];
+		ASTNeoNode[] rets = new ASTNeoNode[children.size()];
 		convertMany(children.toArray(), rets);
 		return rets;
 	}
 	
-	public static void convertMany(List<? extends ASTNode> children, ASTNode[] rets) {
+	public static void convertMany(List<? extends IASTNode> children, ASTNeoNode[] rets) {
 		if(children == null) return;
 		convertMany(children.toArray(), rets);
 		return;
@@ -83,7 +84,5 @@ public class DescentASTConverter {
 		}
 		return rets;
 	}
-
-
 
 }

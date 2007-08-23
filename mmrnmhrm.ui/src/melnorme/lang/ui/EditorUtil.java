@@ -2,7 +2,14 @@ package melnorme.lang.ui;
 
 
 
+import melnorme.miscutil.Assert;
+import mmrnmhrm.core.dltk.ModelUtil;
+import mmrnmhrm.ui.ActualPlugin;
+
 import org.eclipse.core.resources.IProject;
+import org.eclipse.dltk.core.IModelElement;
+import org.eclipse.dltk.core.ISourceModule;
+import org.eclipse.dltk.internal.ui.editor.EditorUtility;
 import org.eclipse.jface.text.TextSelection;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -15,7 +22,8 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.texteditor.AbstractTextEditor;
 import org.eclipse.ui.texteditor.ITextEditor;
 
-import descent.internal.compiler.parser.ast.ASTNode;
+import descent.internal.compiler.parser.ast.IASTNode;
+import dtool.dom.definitions.Module;
 
 public class EditorUtil {
 	
@@ -24,7 +32,7 @@ public class EditorUtil {
 		return (TextSelection) editor.getSelectionProvider().getSelection();
 	}
 	
-	public static void setSelection(ITextEditor textEditor, ASTNode node) {
+	public static void setSelection(ITextEditor textEditor, IASTNode node) {
 		textEditor.getSelectionProvider().setSelection(
 				new TextSelection(node.getStartPos(), node.getLength())); 
 	}
@@ -36,7 +44,7 @@ public class EditorUtil {
 
 	
 	public static IEditorPart getActiveEditor() {
-		IWorkbenchWindow window = LangPlugin.getInstance().getWorkbench().getActiveWorkbenchWindow();
+		IWorkbenchWindow window = ActualPlugin.getInstance().getWorkbench().getActiveWorkbenchWindow();
 		if (window != null) {
 			IWorkbenchPage page = window.getActivePage();
 			if (page != null) {
@@ -52,7 +60,7 @@ public class EditorUtil {
 			editor.resetHighlightRange();
 		else {
 			IStructuredSelection sel = (IStructuredSelection) selection;
-			ASTNode element = (ASTNode) sel.getFirstElement();
+			IASTNode element = (IASTNode) sel.getFirstElement();
 			
 			if(element.hasNoSourceRangeInfo())
 				return;
@@ -77,6 +85,16 @@ public class EditorUtil {
 			project = ((IFileEditorInput)input).getFile().getProject();
 		} 
 		return project;
+	}
+
+	public static Module getNeoModuleFromEditor(ITextEditor textEditor) {
+		IModelElement element = EditorUtility.getEditorInputModelElement(textEditor, false);
+		if(!(element instanceof ISourceModule))
+			return null;
+		ISourceModule sourceModule = (ISourceModule) element;
+		Module neoModule = ModelUtil.getNeoASTModule(ModelUtil.parseModule(sourceModule));
+		Assert.isNotNull(neoModule.getModuleUnit());
+		return neoModule;
 	}
 
 }

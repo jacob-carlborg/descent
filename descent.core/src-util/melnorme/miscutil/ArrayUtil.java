@@ -30,7 +30,7 @@ public class ArrayUtil {
 	}
 
 	/** Appends two arrays, creating a new array of the same runtime type as original. */
-	public static <T> T[] concat(T[] original, T[] second) {
+	public static <T> T[] concat(T[] original, T... second) {
 		T[] newArray = copyFrom(original, original.length + second.length);
     	System.arraycopy(second, 0, newArray, original.length, second.length);
 		return newArray;

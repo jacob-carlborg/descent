@@ -2,8 +2,8 @@ package dtool.dom.expressions;
 
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.internal.compiler.parser.NewAnonClassExp;
-import descent.internal.compiler.parser.ast.ASTNode;
 import dtool.descentadapter.DescentASTConverter;
+import dtool.dom.ast.ASTNeoNode;
 import dtool.dom.ast.IASTNeoVisitor;
 import dtool.dom.declarations.Declaration;
 import dtool.dom.definitions.BaseClass;
@@ -13,7 +13,7 @@ public class ExpLiteralNewAnonClass extends Expression {
 	public Expression[] allocargs;
 	public Expression[] args;
 	public BaseClass[] baseClasses;
-	public ASTNode[] members; 
+	public ASTNeoNode[] members; 
 
 
 	@SuppressWarnings("unchecked")

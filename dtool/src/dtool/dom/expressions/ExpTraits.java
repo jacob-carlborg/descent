@@ -2,19 +2,19 @@ package dtool.dom.expressions;
 
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.internal.compiler.parser.TraitsExp;
-import descent.internal.compiler.parser.ast.ASTNode;
 import dtool.descentadapter.DescentASTConverter;
+import dtool.dom.ast.ASTNeoNode;
 import dtool.dom.ast.IASTNeoVisitor;
 
 public class ExpTraits extends Expression {
 
-	public final ASTNode[] args;
+	public final ASTNeoNode[] args;
 	public final char[] traitsKeyword;
 	
 	public ExpTraits(TraitsExp node) {
 		convertNode(node);
 		this.traitsKeyword = node.ident.ident;
-		this.args = new ASTNode[node.args.size()];
+		this.args = new ASTNeoNode[node.args.size()];
 		DescentASTConverter.convertMany(node.args, this.args);
 	}
 

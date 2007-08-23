@@ -6,8 +6,10 @@ import java.util.List;
 
 import melnorme.miscutil.StringUtil;
 import melnorme.miscutil.tree.TreeVisitor;
+
+import org.eclipse.dltk.core.ISourceModule;
+
 import descent.internal.compiler.parser.ModuleDeclaration;
-import descent.internal.compiler.parser.ast.ASTNode;
 import dtool.dom.ast.ASTNeoNode;
 import dtool.dom.ast.IASTNeoVisitor;
 import dtool.dom.declarations.Declaration;
@@ -15,10 +17,10 @@ import dtool.dom.references.CommonRefSingle;
 import dtool.dom.references.RefIdentifier;
 import dtool.refmodel.IScope;
 import dtool.refmodel.IScopeNode;
-import dtool.refmodel.pluginadapters.IGenericCompilationUnit;
 
 /**
  * D Module
+ * XXX: What to do when the module name is not defined? Infer from module unit?
  */
 public class Module extends DefUnit implements IScopeNode {
 
@@ -51,10 +53,10 @@ public class Module extends DefUnit implements IScopeNode {
 		}
 	}
 
-	private IGenericCompilationUnit cunit;
+	private Object moduleUnit;
 
 	public DeclarationModule md;
-	public ASTNode[] members;
+	public ASTNeoNode[] members;
 	
 
 	public Module(descent.internal.compiler.parser.Module elem) {
@@ -73,6 +75,8 @@ public class Module extends DefUnit implements IScopeNode {
 				this.md.packages = new RefIdentifier[0];
 			}
 			this.preComments = elem.md.preDdocs;
+		} else {
+			this.defname = new Symbol((String) null); 
 		}
 		this.members = Declaration.convertMany(elem.members);
 	}
@@ -83,7 +87,7 @@ public class Module extends DefUnit implements IScopeNode {
 	
 	@Override
 	public String toString() {
-		if(defname == null)
+		if(defname == null || defname.name == null)
 			return "<noname>";
 		else 
 			return md.toString();
@@ -93,14 +97,12 @@ public class Module extends DefUnit implements IScopeNode {
 	public String toStringFullSignature() {
 		return toString();
 	}
-	
-	
-	public void setCUnit(IGenericCompilationUnit cunit) {
-		this.cunit = cunit;
-	}
 
-	public IGenericCompilationUnit getCUnit() {
-		return cunit;
+	public void setModuleUnit(ISourceModule moduleUnit) {
+		this.moduleUnit = moduleUnit;
+	}
+	public ISourceModule getModuleUnit() {
+		return (ISourceModule) moduleUnit;
 	}
 
 	public void accept0(IASTNeoVisitor visitor) {
@@ -121,8 +123,10 @@ public class Module extends DefUnit implements IScopeNode {
 		return null;
 	}
 
-	public Iterator<? extends ASTNode> getMembersIterator() {
+	public Iterator<? extends ASTNeoNode> getMembersIterator() {
 		return Arrays.asList(members).iterator();
 	}
+
+
 
 }

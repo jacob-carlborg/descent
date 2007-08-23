@@ -1,27 +1,114 @@
 package dtool.dom.ast;
 
 import melnorme.miscutil.Assert;
-import descent.internal.compiler.parser.ast.ASTNode;
+import melnorme.miscutil.AssertIn;
+import melnorme.miscutil.tree.IElement;
+import melnorme.miscutil.tree.IVisitable;
+
+import org.eclipse.dltk.ast.ASTNode;
+import org.eclipse.dltk.ast.ASTVisitor;
+import org.eclipse.dltk.core.ISourceRange;
+
+import descent.internal.compiler.parser.ast.IASTNode;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 import dtool.refmodel.IScope;
 import dtool.refmodel.NodeUtil;
 
-public abstract class ASTNeoNode extends ASTNode  {
+public abstract class ASTNeoNode extends ASTNode
+	implements IASTNode, IElement, IVisitable<IASTVisitor>{
+	
+	public static final ASTNeoNode[] NO_ELEMENTS = new ASTNeoNode[0]; 
+	
+	public ASTNeoNode() {
+		super(-1, -1);
+	}
+	
+	/** AST node parent, null if the node is the tree root. */
+	public ASTNeoNode parent = null;
+	
+	/** {@inheritDoc} */
+	public ASTNeoNode getParent() {
+		return parent;
+	}
+	
+	/** Set the parent of this node. Can be null. */
+	public void setParent(ASTNeoNode parent) {
+		this.parent = parent;
+	}
+	
+	/** Gets the source range start position, aka offset. */
+	public final int getStartPos() {
+		return sourceStart();
+	}
+	/** Gets the source range start position, aka offset. */
+	public final int getOffset() {
+		return getStartPos();
+	}
+	/** Gets the source range length. */
+	public final int getLength() {
+		Assert.isTrue(sourceStart() != -1);
+		return getEndPos() - getStartPos();
+	}
+	
+	public final int getLengthUnchecked() {
+		return getEndPos() - getStartPos();
+	}
+	
+	/** Gets the source range end position (start position + length). */
+	public final int getEndPos() {
+		return sourceEnd();
+	}
+	/** Sets the source range end position (start position + length). */
+	public final void setEndPos(int endPos) {
+		AssertIn.isTrue(endPos >= sourceStart());
+		Assert.isTrue(sourceStart() != -1);
+		setEnd(endPos);
+	}
+
+	/** Sets the source range of the original source file where the source
+	 * fragment corresponding to this node was found.
+	 */
+	public final void setSourceRange(int startPosition, int length) {
+		//AssertIn.isTrue(startPosition >= 0 && length > 0);
+		// source positions are not considered a structural property
+		// but we protect them nevertheless
+		//checkModifiable();
+		setStart(startPosition);
+		setEnd(startPosition + length);
+	}
+	
+	/** Get's an ISourceRange of this node's source range. */
+	public ISourceRange getSourceRange () {
+		return super.getSourceRange();
+	}
+	
+	/** Checks if the node has no defined source range info. */
+	public final boolean hasNoSourceRangeInfo() {
+		return sourceStart() == -1;
+	}
+	
+	/** {@inheritDoc} */
+	public boolean hasChildren() {
+		return getChildren().length > 0;
+	}
+
+
+	/******************************/
 	
 	public int getElementType() {
 		return 0; // TODO Not DMD element
 	}
 
 	@Override
-	public ASTNode[] getChildren() {
-		return (ASTNode[]) ASTNeoChildrenCollector.getChildrenArray(this);
+	public ASTNeoNode[] getChildren() {
+		return (ASTNeoNode[]) ASTNeoChildrenCollector.getChildrenArray(this);
 	}
 
-	public void convertNode(ASTNode node) {
+	public void convertNode(IASTNode node) {
 		convertNode(node, false);
 	}
 	
-	public void convertNode(ASTNode node, boolean checkRange) {
+	public void convertNode(IASTNode node, boolean checkRange) {
 		setSourceRange(node);
 		if(checkRange && node.hasNoSourceRangeInfo()) {
 			Assert.fail("Has no source range Info");
@@ -36,43 +123,71 @@ public abstract class ASTNeoNode extends ASTNode  {
 		if (visitor == null) {
 			throw new IllegalArgumentException();
 		}
+		
+		IASTNeoVisitor neovisitor = (IASTNeoVisitor) visitor;
 		// begin with the generic pre-visit
-		visitor.preVisit(this);
+		neovisitor.preVisit(this);
 		// dynamic dispatch to internal method for type-specific visit/endVisit
-		this.accept0((IASTNeoVisitor) visitor);
+		this.accept0(neovisitor);
 		// end with the generic post-visit
-		visitor.postVisit(this);
+		neovisitor.postVisit(this);
 	}
 
 	public final void accept0(IASTVisitor visitor) {
 		Assert.fail("NEO AST elements should not use IASTVisitor");
-		
 	}
-
+	
 	// Neo AST elements use ASTNeoVisitor
-	/* Template:
-	boolean children = visitor.visit(this);
-	if (children) {
-		TreeVisitor.acceptChild(visitor, md);
-		TreeVisitor.acceptChildren(visitor, members);
-	}
-	visitor.endVisit(this);
-	*/
 	public abstract void accept0(IASTNeoVisitor visitor);
 
-	 
+
+	/** DLTK visitor mechanism */
+	@Override
+	public void traverse(ASTVisitor visitor) throws Exception {
+		if (visitor.visit(this)) {
+			// Use the dtool's visitor to obtain children
+			ASTNeoNode[] children = getChildren();
+			for (int i = 0; i < children.length; i++) {
+				children[i].traverse(visitor);
+			}
+		}
+		visitor.endvisit(this);	 			
+	}
+
+	public String toString() {
+		return toStringAsNode(false);
+	}
+
+	public String toStringAsNode(boolean printRangeInfo) {
+		String str = toStringClassName();
+
+/*		if(this instanceof ASTDmdNode)
+			str = "#" + str;
+*/		if(printRangeInfo)
+			str += " ["+ getStartPos()  +"+"+ getLengthUnchecked() +"]";
+		return str;
+	}
+	
+	/** Gets the node's classname striped of package qualifier. */
+	public final String toStringClassName() {
+		String str = this.getClass().getName();
+		int lastIx = str.lastIndexOf('.');
+		return str.substring(lastIx+1);
+	}
+	
+	public IScope getModuleScope() {
+		return NodeUtil.getParentModule(this);
+	}
 
 
 	/* ===================  Convertion utils  ====================== */
 	
-	/** Sets the source range the same as the given elem. */
-	public void setSourceRange(ASTNode elem) {
-		start = elem.getStartPos();
-		length = elem.getLength();
+	/** Sets the source range the same as the given elem, 
+	 * even if the range is invalid*/
+	public final void setSourceRange(IASTNode elem) {
+		setStart(elem.getStartPos());
+		setEnd(elem.getStartPos() + elem.getLength());
 	}
 
-	public IScope getModuleScope() {
-		return NodeUtil.getParentModule(this);
-	}
 	
 }

@@ -61,6 +61,11 @@ public class Convertion_MiscTest {
 	public void testAllMixinContainer() throws IOException, CoreException {
 		ConvertionCommonTest.testConversionFromFile("mixincontainer.d");
 	}
+	
+	@Test
+	public void testRefNodes() throws IOException, CoreException {
+		ConvertionCommonTest.testConversionFromFile("refs.d");
+	}
 
 
 }

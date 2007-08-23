@@ -3,38 +3,62 @@ package mmrnmhrm.ui;
 import java.util.HashMap;
 import java.util.Map;
 
+import melnorme.lang.ui.InitializeAfterLoadJob;
 import melnorme.lang.ui.LangPlugin;
 import melnorme.miscutil.log.Logg;
 import mmrnmhrm.core.model.CompilationUnit;
 import mmrnmhrm.core.model.DeeModel;
 import mmrnmhrm.core.model.DeeNameRules;
-import mmrnmhrm.ui.text.DeeCodeScanner;
 import mmrnmhrm.ui.text.DeeDocumentProvider;
+import mmrnmhrm.ui.text.DeeTextTools;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.dltk.ui.text.ScriptTextTools;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.part.FileEditorInput;
+import org.osgi.framework.BundleContext;
 
 
 public class DeePlugin extends LangPlugin {
 
-	// Same id as the core, for now.
 	public static final String PLUGIN_ID ="mmrnmhrm.ui";
+
+	public static boolean initialized; 
+	protected static DeePlugin pluginInstance;
 
 	/** Returns the plugin instance. */
 	public static DeePlugin getInstance() {
-		return (DeePlugin) pluginInstance;
+		return getDefault();
 	}
 	
+	/** Returns the plugin instance. */
+	public static DeePlugin getDefault() {
+		return pluginInstance;
+	}
+	private static DeeDocumentProvider deeDocumentProvider;
+	
+	private DeeTextTools fTextTools;
+
 	public DeePlugin() {
 		pluginInstance = this;
 	}
 
-	private static DeeDocumentProvider deeDocumentProvider;
-	private static DeeCodeScanner defaultDeeCodeScanner;
 	
+	/** {@inheritDoc} */
+	public void start(BundleContext context) throws Exception {
+		super.start(context);
+		initPlugin();
+		(new InitializeAfterLoadJob()).schedule();
+	}
+	
+	/** {@inheritDoc} */
+	public void stop(BundleContext context) throws Exception {
+		super.stop(context);
+		pluginInstance = null;
+	}
 	
 	public void initPlugin() throws CoreException {
 		Logg.main.println(" =============  Mmrnmhrm INITIALIZING  ============= " );
@@ -48,15 +72,21 @@ public class DeePlugin extends LangPlugin {
 
 	}
 
+	public static void initializeAfterLoad(IProgressMonitor monitor) throws CoreException {
+		// nothing to do
+	}
 
 	public static DeeDocumentProvider getDeeDocumentProvider() {
 		return deeDocumentProvider;
 	}
 	
-	public static synchronized DeeCodeScanner getDefaultDeeCodeScanner() {
-		if(defaultDeeCodeScanner == null)
-			defaultDeeCodeScanner = new DeeCodeScanner();
-		return defaultDeeCodeScanner;
+	
+	public ScriptTextTools getTextTools() {
+		if (fTextTools == null) {
+			fTextTools = new DeeTextTools(true);
+		}
+
+		return fTextTools;
 	}
 
 	protected Map<IEditorInput, CompilationUnit> cunitMap;
@@ -92,5 +122,7 @@ public class DeePlugin extends LangPlugin {
 			return null;
 		}
 	}
+
+
 
 }

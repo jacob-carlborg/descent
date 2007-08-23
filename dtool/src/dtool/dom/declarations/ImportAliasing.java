@@ -9,7 +9,7 @@ import melnorme.miscutil.IteratorUtil;
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.internal.compiler.parser.IdentifierExp;
 import descent.internal.compiler.parser.Import;
-import descent.internal.compiler.parser.ast.ASTNode;
+import descent.internal.compiler.parser.ast.IASTNode;
 import dtool.dom.ast.IASTNeoVisitor;
 import dtool.dom.declarations.DeclarationImport.ImportFragment;
 import dtool.dom.definitions.DefUnit;
@@ -76,7 +76,7 @@ public class ImportAliasing extends ImportFragment implements INonScopedBlock {
 		// TODO: this is a bug in D, it's not according to spec.
 	}
 
-	public Iterator<? extends ASTNode> getMembersIterator() {
+	public Iterator<? extends IASTNode> getMembersIterator() {
 		return IteratorUtil.singletonIterator(aliasDefUnit);
 	}
 }

@@ -9,9 +9,9 @@ import org.eclipse.core.runtime.CoreException;
 import org.junit.After;
 import org.junit.BeforeClass;
 
-import descent.internal.compiler.parser.ast.ASTNode;
 import dtool.descentadapter.DescentASTConverter;
 import dtool.dom.ast.ASTChecker;
+import dtool.dom.ast.ASTNeoNode;
 import dtool.dom.definitions.Module;
 import dtool.refmodel.ParserAdapter;
 
@@ -19,7 +19,7 @@ public abstract class ConvertionCommonTest extends BasePluginTest {
 
 	protected static final String TESTFILESDIR = "astparser/";
 
-	public static ASTNode testDtoolASTConvertion(final String source) throws CoreException {
+	public static ASTNeoNode testDtoolASTConvertion(final String source) throws CoreException {
 		
 		descent.internal.compiler.parser.Module mod = ParserAdapter.parseSource(source).mod;
 		BasePluginTest.assertTrue(mod.problems.size() == 0,

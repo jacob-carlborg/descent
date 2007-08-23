@@ -2,6 +2,9 @@ package dtool.dom.definitions;
 
 import java.util.List;
 
+import org.eclipse.dltk.core.ISourceReference;
+import org.eclipse.dltk.core.ModelException;
+
 import descent.internal.compiler.parser.Comment;
 import descent.internal.compiler.parser.Dsymbol;
 import descent.internal.compiler.parser.IdentifierExp;
@@ -11,7 +14,7 @@ import dtool.refmodel.IScopeNode;
 /**
  * Abstract class for all AST elements that define a new named entity.
  */
-public abstract class DefUnit extends ASTNeoNode {
+public abstract class DefUnit extends ASTNeoNode implements ISourceReference {
 	
 
 	static public enum EArcheType {
@@ -72,7 +75,7 @@ public abstract class DefUnit extends ASTNeoNode {
 	public String getCombinedDocComments() {
 		if(preComments == null || preComments.size() == 0)
 			return null;
-		String str = preComments.get(0).toString();
+		String str = new String(preComments.get(0).string);
 		for (int i = 1; i < preComments.size(); i++) {
 			str = str + "\n" + preComments.get(i).toString();
 		}
@@ -101,6 +104,16 @@ public abstract class DefUnit extends ASTNeoNode {
 	 * May be null if the scope is not found. */
 	public abstract IScopeNode getMembersScope();
 
+
+	@Override
+	public boolean exists() {
+		return true;
+	}
+
+	@Override
+	public String getSource() throws ModelException {
+		return null;
+	}
 
 
 }

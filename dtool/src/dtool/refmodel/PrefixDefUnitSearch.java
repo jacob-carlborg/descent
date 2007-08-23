@@ -2,9 +2,9 @@ package dtool.refmodel;
 
 import descent.internal.compiler.parser.TOK;
 import descent.internal.compiler.parser.Token;
-import descent.internal.compiler.parser.ast.ASTNode;
 import descent.internal.compiler.parser.ast.TokenUtil;
 import dtool.descentadapter.DescentASTConverter;
+import dtool.dom.ast.ASTNeoNode;
 import dtool.dom.ast.ASTNodeFinder;
 import dtool.dom.definitions.DefUnit;
 import dtool.dom.definitions.Module;
@@ -26,7 +26,7 @@ public class PrefixDefUnitSearch extends CommonDefUnitSearch {
 	
 	public static class CompletionSession {
 		public String errorMsg;
-		public ASTNode invokeNode;
+		public ASTNeoNode invokeNode;
 	}
 
 	public PrefixSearchOptions searchOptions;
@@ -95,7 +95,7 @@ public class PrefixDefUnitSearch extends CommonDefUnitSearch {
 		parserAdapter.recoverForCompletion(docstr, offset, lastToken);
 
 		Module neoModule = DescentASTConverter.convertModule(parserAdapter.mod);
-		neoModule.setCUnit(cunit);
+		neoModule.setModuleUnit(cunit.getModuleUnit());
 		
 		/* ============================================== */
 		// : Do actual completion search
@@ -103,7 +103,7 @@ public class PrefixDefUnitSearch extends CommonDefUnitSearch {
 		PrefixSearchOptions searchOptions = new PrefixSearchOptions();
 		CommonDefUnitSearch search = new PrefixDefUnitSearch(searchOptions, defUnitAccepter);
 		
-		ASTNode node = ASTNodeFinder.findElement(neoModule, offset);
+		ASTNeoNode node = ASTNodeFinder.findElement(neoModule, offset);
 		session.invokeNode = node;
 		search.refScope = NodeUtil.getScopeNode(node);
 		
@@ -166,7 +166,7 @@ public class PrefixDefUnitSearch extends CommonDefUnitSearch {
 	}
 
 
-	private static IScopeNode isValidCompletionScope(ASTNode node) {
+	private static IScopeNode isValidCompletionScope(ASTNeoNode node) {
 		if(node instanceof IScopeNode) {
 			return (IScopeNode) node;
 		} else if(node instanceof Expression) {

@@ -14,7 +14,8 @@ public class TypeTypeof extends CommonRefNative {
 	public Expression expression;
 
 	public TypeTypeof(descent.internal.compiler.parser.TypeTypeof elem) {
-		setSourceRange(elem);
+		//setSourceRange(elem);
+		setSourceRange(elem.typeofStart, elem.typeofLength);
 		this.expression = Expression.convert(elem.exp);
 	}
 

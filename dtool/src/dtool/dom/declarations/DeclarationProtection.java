@@ -7,7 +7,7 @@ import melnorme.miscutil.tree.TreeVisitor;
 import descent.internal.compiler.parser.Modifier;
 import descent.internal.compiler.parser.PROT;
 import descent.internal.compiler.parser.ProtDeclaration;
-import descent.internal.compiler.parser.ast.ASTNode;
+import dtool.dom.ast.ASTNeoNode;
 import dtool.dom.ast.IASTNeoVisitor;
 
 public class DeclarationProtection extends DeclarationAttrib {
@@ -32,7 +32,7 @@ public class DeclarationProtection extends DeclarationAttrib {
 		visitor.endVisit(this);
 	}
 	
-	public Iterator<ASTNode> getMembersIterator() {
+	public Iterator<ASTNeoNode> getMembersIterator() {
 		return body.getNodeIterator();
 	}
 

@@ -2,12 +2,20 @@
 <?eclipse version="3.2"?>
 <plugin
 >
+
+<extension
+       point="org.eclipse.dltk.ui.language">
+    <language
+          class="mmrnmhrm.ui.DeeUILanguageToolkit"
+          nature="mmrnmhrm.core.deenature"
+          priority="0"/>
+ </extension>
    <extension
          id="DeeDocumentSetupParticipant"
          name="Dee Document Setup Participant"
          point="org.eclipse.core.filebuffers.documentSetup">
       <participant
-            class="mmrnmhrm.ui.text.LangDocumentSetupParticipant"
+            class="mmrnmhrm.ui.text.DeeDocumentSetupParticipant"
             contentTypeId="mmrnmhrm.core.content.dsource">
       </participant>
    </extension>
@@ -16,7 +24,7 @@
          name="Dee Document Setup Participant"
          point="org.eclipse.core.filebuffers.documentSetup">
       <participant
-            class="mmrnmhrm.ui.text.LangDocumentSetupParticipant"
+            class="mmrnmhrm.ui.text.DeeDocumentSetupParticipant"
             extensions="d, di, dh">
       </participant>
    </extension>
@@ -34,21 +42,28 @@
    <extension
          point="org.eclipse.ui.newWizards">
       <category
-            id="Mmrnmhrm.category"
+            id="mmrnmhrm.category"
             name="Dee (Mmrnmhrm)"/>
       <wizard
-            category="Mmrnmhrm.category"
+            category="mmrnmhrm.category"
             class="mmrnmhrm.ui.wizards.DeeProjectWizard"
             icon="icons/obj16/dee_project.gif"
             id="Mmrnmhrm.wizard.newProject"
             name="Dee Project"
             project="true"/>
+      <wizard
+            category="mmrnmhrm.category"
+            class="mmrnmhrm.ui.wizards.DeeProjectCreationWizard"
+            id="mmrnmhrm.ui.wizards.deeProjectWizard"
+            name="Dee Project"
+            project="true">
+      </wizard>
    </extension>
    <extension
          point="org.eclipse.ui.propertyPages">
       <page
-            class="mmrnmhrm.ui.properties.ProjConfigPropertyPage"
-            id="mmrnmhrm.ui.properties.projectConfigPage"
+            class="mmrnmhrm.ui.properties.DeeBuildPathPropertyPage"
+            id="mmrnmhrm.ui.properties.DeeBuildpathProperties"
             name="D Project Config">
          <enabledWhen>
             <reference
@@ -60,25 +75,54 @@
    <extension
          point="org.eclipse.ui.preferencePages">
       <page
-            class="mmrnmhrm.ui.preferences.DeeBasePreferencePage"
-            id="mmrnmhrm.ui.preferences.DeeBasePreferencePage"
-            name="Dee"/>
+            class="mmrnmhrm.ui.preferences.DeeRootPreferencePage"
+            id="mmrnmhrm.ui.preferences.DeeRootPreferencePage"
+            name="%LangPreferencePage.name"/>
+      	<page
+	          category="mmrnmhrm.ui.preferences.DeeRootPreferencePage"
+	          class="mmrnmhrm.ui.preferences.DeeEditorPreferencesPage"
+	          id="mmrnmhrm.ui.preferences.Editor"
+	          name="%LangEditorPreferencePage.name"/>
+	    <page
+	          category="mmrnmhrm.ui.preferences.DeeRootPreferencePage"
+	          class="mmrnmhrm.ui.preferences.DeeSourceColoringPreferencePage"
+	          id="mmrnmhrm.ui.preferences.editor.SourceColoring"
+	          name="%LangEditorSyntaxColoringPreferencePage.name"/>
+     	<page
+              category="mmrnmhrm.ui.preferences.DeeRootPreferencePage"
+              class="mmrnmhrm.ui.preferences.DeeTemplatePreferencePage"
+              id="mmrnmhrm.ui.preferences.EditorTemplates"
+              name="%LangCodeTemplatesPreferencePage.name">      
+            
+      </page>
       <page
-            category="mmrnmhrm.ui.preferences.DeeBasePreferencePage"
-            class="mmrnmhrm.ui.preferences.DeeColoringPreferencePage"
-            id="mmrnmhrm.ui.preferences.SyntaxColoring"
-            name="Syntax Coloring"/>
+            category="mmrnmhrm.ui.preferences.DeeRootPreferencePage"
+            class="mmrnmhrm.ui.preferences.DeeCompilersPreferencePage"
+            id="mmrnmhrm.ui.preferences.editor.SourceColoring"
+            name="%LangCompilersPreferencePage.name">
+      </page>
    </extension>
-   <extension
-         point="org.eclipse.ui.editors">
+   	 <extension
+	     point="org.eclipse.ui.editors">
       <editor
             class="mmrnmhrm.ui.editor.DeeEditor"
             contributorClass="mmrnmhrm.ui.editor.DeeEditorActionContributor"
             icon="icons/obj16/dee_file.gif"
             id="mmrnmhrm.ui.editors.DeeEditor"
             name="Dee Editor (Mmrnmhrm)">
-         <contentTypeBinding contentTypeId="mmrnmhrm.core.content.dsource"/>
       </editor>
+	  <editor
+         class="mmrnmhrm.ui.editor.DeeEditorDLTK"
+         contributorClass="org.eclipse.dltk.internal.ui.editor.SourceModuleEditorActionContributor"
+         default="true"
+         icon="icons/sample.gif"
+         id="mmrnmhrm.ui.editors.DeeEditorDLTK"
+         name="%LangEditor.name">
+      <contentTypeBinding
+            contentTypeId="mmrnmhrm.core.content.dsource">
+      </contentTypeBinding>
+      </editor>
+         point="org.eclipse.ui.editors">
    </extension>
    <extension
          point="org.eclipse.ui.views">
@@ -99,6 +143,12 @@
             id="mmrnmhrm.ui.contexts.DeeEditor"
             name="Editing Dee Source"
             parentId="org.eclipse.ui.textEditorScope">
+      </context>
+      <context
+            name="%LangEditContext.name"
+            description="%LangEditContext.description"
+            parentId="org.eclipse.dltk.ui.scriptEditorScope"
+            id="mmrnmhrm.ui.contexts.DeeEditorDLTK">
       </context>
    </extension>
    <extension
@@ -136,6 +186,19 @@
       
 
    </extension>
+   
+ <extension
+       point="org.eclipse.ui.editors.templates">
+    <contextType
+          class="mmrnmhrm.ui.editor.templates.DeeUniversalTemplateContextType"
+          id="DeeUniversalTemplateContextType"
+          name="%LangTemplateContext.name">
+    </contextType>
+    <!--<include
+          file="templates/templates.xml"
+          translations="templates/templates.properties">
+    </include> -->
+ </extension>   
 
    <extension
          point="org.eclipse.ui.actionSets">
@@ -143,6 +206,42 @@
             id="mmrnmhrm.ui.deeActionSet"
             label="Mmrnmhrm Dee Action Set"
             visible="true">
+
+         <menu
+               label="%SearchMenu.label"
+               path="navigate"
+               id="org.eclipse.search.menu">
+			   <groupMarker name="dialogGroup"/>
+         </menu>
+            
+         <action
+               class="mmrnmhrm.ui.actions.DeeOpenSearchPageAction"
+               definitionId="mmrnmhrm.ui.commands.openDeeSearchPage"
+               icon="icons/search_obj.gif"
+               id="deeOpenSearchPage"
+               label="%OpenLangSearchPageAction.label"
+               menubarPath="org.eclipse.search.menu/dialogGroup">
+         </action>
+ 
+           <action
+               definitionId="mmrnmhrm.ui.commands.deeOpenTypeInHierarchy"
+               label="%OpenTypeInHierarchyAction.label"
+               tooltip="%OpenTypeInHierarchyAction.tooltip"
+               class="mmrnmhrm.ui.actions.DeeOpenTypeInHierarchyAction"
+               menubarPath="navigate/open.ext2"
+               id="openTypeInHierarchy">
+         </action>
+            
+         <action
+            class="mmrnmhrm.ui.actions.DeeOpenTypeAction"
+            definitionId="mmrnmhrm.ui.commands.openDeeType"
+            icon="icons/action16e/opentype.gif"
+            id="openType"
+            label="%OpenTypeAction.label"
+            menubarPath="navigate/open.ext2"
+            toolbarPath="org.eclipse.search.searchActionSet/Search"
+            tooltip="%OpenTypeAction.tooltip">
+         </action>
       </actionSet>
    </extension>
    <extension
@@ -199,6 +298,18 @@
        id="mmrnmhrm.ui.commands.invokeContentAssist"
        name="Content Assist (Mmrnmhrm)">
  </command>
+ <command
+       categoryId="mmrnmhrm.ui.commands.category1"
+       defaultHandler="mmrnmhrm.ui.actions.DeeOpenTypeHandler"
+       id="mmrnmhrm.ui.commands.openDeeType"
+       name="%OpenTypeAction.label">
+ </command>
+ <command
+       categoryId="mmrnmhrm.ui.commands.category1"
+       defaultHandler="mmrnmhrm.ui.actions.DeeOpenSearchPageHandler"
+       id="mmrnmhrm.ui.commands.openDeeSearchPage"
+       name="%OpenLangSearchPageAction.label">
+ </command>
    </extension>
    <extension
          point="org.eclipse.ui.handlers">
@@ -228,6 +339,8 @@
          </enabledWhen>
       </handler>
    </extension>
+   
+   
    <extension
          point="org.eclipse.ui.menus">
       <menuContribution
@@ -239,6 +352,17 @@
                   icon="icons/action16e/declipse.gif"
                   label="Refresh D Model"
                   tooltip="Refresh D Model">
+               <visibleWhen>
+                  <reference
+                        definitionId="mmrnmhrm.ui.expressions.inDeeActionSet">
+                  </reference>
+               </visibleWhen>
+            </command>
+            <command
+                  commandId="mmrnmhrm.ui.commands.openDeeType"
+                  icon="icons/action16e/opentype.gif"
+                  label="%OpenTypeAction.label"
+                  tooltip="%OpenTypeAction.tooltip">
                <visibleWhen>
                   <reference
                         definitionId="mmrnmhrm.ui.expressions.inDeeActionSet">
@@ -332,13 +456,9 @@
             </command>
          </menu>
       </menuContribution>
-            <menuContribution
-                  locationURI="menu:mmrnmhrm.ui.menus.buildpath?after=additions">
-               <command
-                     commandId="mmrnmhrm.ui.commands.refreshModel"
-                     icon="icons/sample.gif">
-               </command>
-            </menuContribution>
+      
+      
+
       
    </extension>
    <extension
@@ -361,7 +481,35 @@
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
             sequence="Ctrl+Space">
       </key>
+      <key
+            commandId="mmrnmhrm.ui.commands.openDeeType"
+            contextId="mmrnmhrm.ui.contexts.DeeEditor"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="M1+M2+T">
+      </key>
+      <key
+            commandId="mmrnmhrm.ui.commands.openDeeSearchPage"
+            contextId="mmrnmhrm.ui.contexts.DeeEditor"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="M1+M2+H">
+      </key>
    </extension>
+
+ <extension
+         point="org.eclipse.search.searchPages">
+      <page
+            canSearchEnclosingProjects="true"
+            class="mmrnmhrm.ui.search.DeeSearchPage"
+            enabled="true"
+            extensions="d,di,dh:90"
+            icon="$nl$/icons/sample.gif"
+            id="mmrnmhrm.ui.DeeSearchPage"
+            label="%LangSearchPage.label"
+            showScopeSection="true"
+            sizeHint="460,160">
+      </page>
+   </extension>   
+   
    <extension
          point="org.eclipse.ui.perspectiveExtensions">
       <perspectiveExtension targetID="org.eclipse.ui.resourcePerspective">

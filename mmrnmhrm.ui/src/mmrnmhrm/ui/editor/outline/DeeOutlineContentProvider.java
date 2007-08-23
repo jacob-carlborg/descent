@@ -8,6 +8,7 @@ import melnorme.util.ui.jface.ElementContentProvider;
 import org.eclipse.jface.viewers.Viewer;
 
 import descent.internal.compiler.parser.ast.ASTNode;
+import descent.internal.compiler.parser.ast.IASTNode;
 import dtool.dom.declarations.DeclarationImport;
 import dtool.dom.definitions.DefUnit;
 import dtool.dom.definitions.Module;
@@ -38,20 +39,20 @@ public class DeeOutlineContentProvider extends ElementContentProvider {
 
 	public Object[] getChildren(Object element) {
 		if(element instanceof Module || isDeclarationWithDefUnits(element)) {
-			ASTNode node = (ASTNode) element;
+			IASTNode node = (IASTNode) element;
 			return filterElements(node.getChildren());
 		} else {
 			return ASTNode.NO_ELEMENTS;
 		}
 	}
 
-	private boolean isDeclarationWithDefUnits(Object element) {
+	public static boolean isDeclarationWithDefUnits(Object element) {
 		return (!(element instanceof DefUnit) && element instanceof INonScopedBlock);
 	}
 	
 	public boolean hasChildren(Object element) {
 		if(element instanceof Module || isDeclarationWithDefUnits(element)) {
-			ASTNode node = (ASTNode) element;
+			IASTNode node = (IASTNode) element;
 			return filterElements(node.getChildren()).length > 0;
 		} else {
 			return false;

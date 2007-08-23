@@ -4,7 +4,7 @@ import java.util.Collections;
 import java.util.Iterator;
 
 import melnorme.miscutil.IteratorUtil;
-import descent.internal.compiler.parser.ast.ASTNode;
+import dtool.dom.ast.ASTNeoNode;
 import dtool.dom.definitions.DefUnit;
 import dtool.dom.definitions.Module;
 import dtool.dom.definitions.Symbol;
@@ -19,7 +19,7 @@ public class PartialPackageDefUnitOfModule extends PartialPackageDefUnit {
 		super(name);
 	}
 
-	public Iterator<? extends ASTNode> getMembersIterator() {
+	public Iterator<? extends ASTNeoNode> getMembersIterator() {
 		if(module != null)
 			return Collections.singleton(module).iterator();
 		else {

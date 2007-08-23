@@ -1,9 +1,8 @@
 package dtool.dom.ast;
 
-import descent.internal.compiler.parser.ast.ASTNode;
-import descent.internal.compiler.parser.ast.ASTRangeLessNode;
 import melnorme.miscutil.Assert;
-
+import descent.internal.compiler.parser.ast.ASTRangeLessNode;
+import descent.internal.compiler.parser.ast.IASTNode;
 
 
 /**
@@ -15,7 +14,7 @@ public class ASTNodeFinder extends ASTNeoUpTreeVisitor {
 	
 	private int offset; 
 	private boolean inclusiveEnd;
-	private ASTNode match;
+	private IASTNode match;
 	
 	public ASTNodeFinder(int offsetCursor, boolean inclusiveEnd) {
 		this.offset = offsetCursor;
@@ -23,15 +22,24 @@ public class ASTNodeFinder extends ASTNeoUpTreeVisitor {
 		this.match = null;
 	}
 	
-	public static ASTNode findElement(ASTNode root, int offset) {
+	public static IASTNode findElement(IASTNode root, int offset) {
 		return findElement(root, offset, true);
 	}
+	
+	public static ASTNeoNode findElement(ASTNeoNode root, int offset) {
+		return (ASTNeoNode) findElement(root, offset, true);
+	}
 
+	
+	public static ASTNeoNode findNeoElement(ASTNeoNode root, int offset, boolean inclusiveEnd){
+		return (ASTNeoNode) findElement(root, offset, inclusiveEnd);
+	}
 	/** Finds the node at the given offset, starting from root.
 	 *  inclusiveEnd controls whether to match nodes whose end position 
 	 *  is the same as the offset.*/
-	public static ASTNode findElement(ASTNode root, int offset, boolean inclusiveEnd){
-		Assert.isNotNull(root);
+	public static IASTNode findElement(IASTNode root, int offset, boolean inclusiveEnd){
+		if(root == null)
+			return null;
 		Assert.isTrue(!root.hasNoSourceRangeInfo());
 
 		ASTNodeFinder aef = new ASTNodeFinder(offset, inclusiveEnd);
@@ -50,7 +58,7 @@ public class ASTNodeFinder extends ASTNeoUpTreeVisitor {
 		return true;
 	}
 
-	public boolean visit(ASTNode elem) {
+	public boolean visit(IASTNode elem) {
 		if(elem.hasNoSourceRangeInfo()) {
 			//Assert.fail();
 			return true; // Descend and search children.
@@ -65,17 +73,17 @@ public class ASTNodeFinder extends ASTNeoUpTreeVisitor {
 		
 	}
 	
-	private boolean matchesRangeStart(ASTNode elem) {
+	private boolean matchesRangeStart(IASTNode elem) {
 		return offset >= elem.getStartPos();
 	}
 
-	private boolean matchesRangeEnd(ASTNode elem) {
+	private boolean matchesRangeEnd(IASTNode elem) {
 		return inclusiveEnd ? 
 				offset <= elem.getEndPos() : offset < elem.getEndPos();
 	}
 
 	public void endVisit(ASTRangeLessNode elem) { }
-	public void endVisit(ASTNode elem) { }
+	public void endVisit(ASTNeoNode elem) { }
 
 }
 

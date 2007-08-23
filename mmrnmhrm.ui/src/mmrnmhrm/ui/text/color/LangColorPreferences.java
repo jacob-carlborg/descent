@@ -1,29 +1,36 @@
 package mmrnmhrm.ui.text.color;
 
+import org.eclipse.dltk.ui.PreferenceConstants;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.preference.PreferenceConverter;
 import org.eclipse.swt.graphics.RGB;
 
 public class LangColorPreferences {
+	
+	public static final String SUFFIX_BOLD = PreferenceConstants.EDITOR_BOLD_SUFFIX;
+	public static final String SUFFIX_COLOR = "";
+	public static final String SUFFIX_ENABLE = "_enabled";
+	public static final String SUFFIX_ITALIC = PreferenceConstants.EDITOR_ITALIC_SUFFIX;
+	public static final String SUFFIX_UNDERLINE = PreferenceConstants.EDITOR_UNDERLINE_SUFFIX;
 
 	public static String getEnabledKey(String key) {
-		return key + ILangColorPreferences.SUFFIX_ENABLE;
+		return key + SUFFIX_ENABLE;
 	}
 
 	public static String getBoldKey(String key) {
-		return key + ILangColorPreferences.SUFFIX_BOLD;
+		return key + SUFFIX_BOLD;
 	}
 
 	public static String getItalicKey(String key) {
-		return key + ILangColorPreferences.SUFFIX_ITALIC;
+		return key + SUFFIX_ITALIC;
 	}
 
 	public static String getUnderlineKey(String key) {
-		return key + ILangColorPreferences.SUFFIX_UNDERLINE;
+		return key + SUFFIX_UNDERLINE;
 	}
 
 	public static String getColorKey(String key) {
-		return key + ILangColorPreferences.SUFFIX_COLOR;
+		return key + SUFFIX_COLOR;
 	}
 
 
@@ -47,3 +54,4 @@ public class LangColorPreferences {
 		return store.getBoolean(getUnderlineKey(key));
 	}
 }
+

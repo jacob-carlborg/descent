@@ -11,17 +11,21 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.dltk.core.DLTKCore;
+import org.eclipse.dltk.core.ISourceModule;
 import org.eclipse.jface.text.IDocument;
 
 public abstract class LangModuleUnit extends LangElement {
 
 	protected final IFile file;
 	protected IDocument document;
+	public ISourceModule modUnit;
 
 	
 	public LangModuleUnit(ILangElement parent, IFile file) {
 		super(parent);
 		this.file = file;
+		this.modUnit = DLTKCore.createSourceModuleFrom(file);
 	}
 	
 	public IFile getFile() {
@@ -35,7 +39,7 @@ public abstract class LangModuleUnit extends LangElement {
 	public String getElementName() {
 		return file.getName();
 	}
-
+	
 	public int getElementType() {
 		return ELangElementTypes.COMPILATION_UNIT;
 	}

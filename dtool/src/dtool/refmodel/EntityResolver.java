@@ -74,7 +74,6 @@ public class EntityResolver {
 
 	private static void findDefUnitInModuleDec(IScopeNode scope,
 			CommonDefUnitSearch search) {
-		//Module module = NodeUtil.getParentModule((ASTNode)scope);
 		Module module = (Module) scope; 
 		DeclarationModule decMod = module.md;
 		if(decMod != null) {

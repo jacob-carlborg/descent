@@ -20,15 +20,24 @@ public abstract class ASTUpTreeVisitor extends TreeVisitor implements IASTVisito
 		// Default implementation: do nothing
 	}
 	
+	public boolean visit(IASTNode node) {
+		// Default implementation: do nothing
+		return true;
+	}
+	
+	public void endVisit(IASTNode node) {
+		// Default implementation: do nothing
+		return;
+	}
+	
 	/* ====================================================== */
+
 
 	
 
 	public boolean visit(ASTNode node) {
-		// Default implementation: do nothing
-		return true;
-		//Assert.isTrue(ASTNode.class.getSuperclass().equals(ASTRangeLessNode.class));
-		//return visit((ASTRangeLessNode) node);
+		//return true;
+		return visit((IASTNode) node);
 	}
 	
 	public void endVisit(ASTNode node) {

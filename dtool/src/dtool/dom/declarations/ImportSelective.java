@@ -6,7 +6,7 @@ import java.util.Iterator;
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.internal.compiler.parser.IdentifierExp;
 import descent.internal.compiler.parser.Import;
-import descent.internal.compiler.parser.ast.ASTNode;
+import dtool.dom.ast.ASTNeoNode;
 import dtool.dom.ast.IASTNeoVisitor;
 import dtool.dom.declarations.DeclarationImport.ImportFragment;
 import dtool.dom.definitions.DefUnit;
@@ -104,7 +104,7 @@ public class ImportSelective extends ImportFragment implements INonScopedBlock {
 		visitor.endVisit(this);
 	
 	}
-	public Iterator<? extends ASTNode> getMembersIterator() {
+	public Iterator<? extends ASTNeoNode> getMembersIterator() {
 		return Arrays.asList(impSelFrags).iterator();
 	}
 

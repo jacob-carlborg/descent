@@ -2,6 +2,7 @@ package mmrnmhrm.tests.core.ref;
 
 import mmrnmhrm.tests.SampleMainProject;
 import mmrnmhrm.tests.adapters.Mock_Document;
+import mmrnmhrm.ui.editor.DeeEditorTest;
 import mmrnmhrm.ui.editor.text.DeeCodeContentAssistProcessor;
 import mmrnmhrm.ui.editor.text.DeeCompletionProposal;
 
@@ -34,7 +35,7 @@ public class CodeCompletion_Test extends UITestWithEditor {
 	public static void commonSetUp() throws Exception {
 		setupWithFile(SampleMainProject.deeProj, TEST_SRCFILE);
 		//assist = new DeeCodeContentAssistProcessor(null, editor);
-		doc = editor.getDocument();
+		doc = DeeEditorTest.getDocument(editor);
 	}
 	
 	private static final class TestCompletion_Document extends Mock_Document {
@@ -159,11 +160,11 @@ public class CodeCompletion_Test extends UITestWithEditor {
 	@Test
 	public void test6() throws Exception {
 		// FIXUP because of syntax errors;
-		editor.getDocument().replace(541, 1, ".");
+		DeeEditorTest.getDocument(editor).replace(541, 1, ".");
 		try {
 			testComputeProposals(542, 0, "foovar", "foox", "baz");
 		} finally {
-			editor.getDocument().replace(541, 1, " ");
+			DeeEditorTest.getDocument(editor).replace(541, 1, " ");
 		}
 	}
 	@Test
@@ -176,12 +177,12 @@ public class CodeCompletion_Test extends UITestWithEditor {
 	
 	@Test
 	public void test7() throws Exception {
-		editor.getDocument().replace(615, 1, ".");
+		DeeEditorTest.getDocument(editor).replace(615, 1, ".");
 		try {
 			testComputeProposals(616, 0, "Foo", "fooOfModule", "frak",
 					"fooalias", "foo_t", "ix", "FooBar", "Xpto");
 		} finally {
-			editor.getDocument().replace(615, 1, " ");
+			DeeEditorTest.getDocument(editor).replace(615, 1, " ");
 		}
 	}
 	@Test

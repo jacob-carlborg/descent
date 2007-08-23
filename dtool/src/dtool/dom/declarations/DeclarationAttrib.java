@@ -6,7 +6,6 @@ import java.util.List;
 import descent.internal.compiler.parser.AttribDeclaration;
 import descent.internal.compiler.parser.Dsymbol;
 import descent.internal.compiler.parser.Statement;
-import descent.internal.compiler.parser.ast.ASTNode;
 import dtool.dom.ast.ASTNeoNode;
 import dtool.dom.definitions.Definition;
 import dtool.refmodel.INonScopedBlock;
@@ -24,8 +23,10 @@ public abstract class DeclarationAttrib extends ASTNeoNode implements INonScoped
 		convertNode(elem);
 		this.body = NodeList.createNodeList(bodydecls);
 		// XXX: Ugly hack (due to parser bug?)
-		if(elem.preDdocs != null && elem.preDdocs.size() > 0) {
-			ASTNode node = this.body.nodes[0];
+		if(elem.preDdocs != null && elem.preDdocs.size() > 0 
+				//&& this.body.nodes.length > 0
+				) {
+			ASTNeoNode node = this.body.nodes[0];
 			if(node instanceof Definition) {
 				Definition def = (Definition) node;
 				if(def.preComments == null || def.preComments.size() == 0)
@@ -34,7 +35,7 @@ public abstract class DeclarationAttrib extends ASTNeoNode implements INonScoped
 		}
 	}
 
-	public Iterator<ASTNode> getMembersIterator() {
+	public Iterator<ASTNeoNode> getMembersIterator() {
 		return body.getNodeIterator();
 	}
 

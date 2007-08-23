@@ -9,8 +9,8 @@ import melnorme.miscutil.Assert;
 import melnorme.miscutil.ChainedIterator;
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.internal.compiler.parser.TemplateDeclaration;
-import descent.internal.compiler.parser.ast.ASTNode;
 import descent.internal.compiler.parser.ast.IASTNode;
+import dtool.dom.ast.ASTNeoNode;
 import dtool.dom.ast.IASTNeoVisitor;
 import dtool.dom.declarations.Declaration;
 import dtool.refmodel.IScope;
@@ -21,7 +21,7 @@ import dtool.refmodel.IScopeNode;
 public class DefinitionTemplate extends DefUnit implements IScopeNode {
 
 	public final TemplateParameter[] templateParams; 
-	public final ASTNode[] decls;
+	public final ASTNeoNode[] decls;
 	public final boolean wrapper;
 
 	
@@ -41,7 +41,8 @@ public class DefinitionTemplate extends DefUnit implements IScopeNode {
 			TreeVisitor.acceptChildren(visitor, templateParams);
 			TreeVisitor.acceptChildren(visitor, decls);
 		}
-		visitor.endVisit(this);	}
+		visitor.endVisit(this);
+	}
 
 	@Override
 	public EArcheType getArcheType() {
@@ -69,7 +70,7 @@ public class DefinitionTemplate extends DefUnit implements IScopeNode {
 			Iterator<? extends IASTNode> tplIter = Arrays.asList(templateParams).iterator();
 			return ChainedIterator.create(tplIter, scope.getMembersIterator());
 		}
-		ASTNode[] newar = ArrayUtil.concat(templateParams, decls, ASTNode.class);
+		ASTNeoNode[] newar = ArrayUtil.concat(templateParams, decls, ASTNeoNode.class);
 		return Arrays.asList(newar).iterator();
 /*		List<ASTNode> list = new ArrayList<ASTNode>(decls.length + templateParams.length);
 		list.addAll(Arrays.asList(decls));

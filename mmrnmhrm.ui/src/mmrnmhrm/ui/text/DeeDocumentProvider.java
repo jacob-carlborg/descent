@@ -11,7 +11,7 @@ public class DeeDocumentProvider extends TextFileDocumentProvider {
 	public DeeDocumentProvider() {
 
 		IDocumentProvider provider= new TextFileDocumentProvider();
-		provider= new ForwardingDocumentProvider(IDeePartitions.DEE_PARTITIONING, new LangDocumentSetupParticipant(), provider);
+		provider= new ForwardingDocumentProvider(DeePartitions.DEE_PARTITIONING, new DeeDocumentSetupParticipant(), provider);
 		setParentDocumentProvider(provider);
 		
 		/*

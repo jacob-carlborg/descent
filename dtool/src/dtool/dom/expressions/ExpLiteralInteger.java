@@ -14,7 +14,11 @@ public class ExpLiteralInteger extends Expression {
 
 	public ExpLiteralInteger(IntegerExp elem) {
 		convertNode(elem);
-		num = elem.value;
+		if(elem.value != null) {
+			num = elem.value.bigIntegerValue();
+		} else {
+			// TODO special tokens __LINE__ , etc.
+		}
 	}
 
 	@Override

@@ -12,17 +12,22 @@ import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.dltk.core.IBuildpathEntry;
+import org.eclipse.dltk.core.IScriptProject;
 
 public abstract class LangProject extends LangContainerElement implements ILangProject {
 
 	protected IProject project;
+	protected IScriptProject dltkProj;
 	
 	protected IContainer outputDir; // The resource is allowed to not exist.
 
+
 	
-	public LangProject(LangContainerElement parent, IProject project) {
+	public LangProject(LangContainerElement parent, IScriptProject dltkProj) {
 		super(parent);
-		this.project = project;
+		this.dltkProj = dltkProj;
+		this.project = dltkProj.getProject();
 	}
 	
 	
@@ -59,9 +64,17 @@ public abstract class LangProject extends LangContainerElement implements ILangP
 	/** Adds a SourceRoot to this project. */
 	public void addSourceRoot(IDeeSourceRoot entry) throws CoreException {
 		getElementInfo();
+		//IFolder resource = (IFolder) entry.getUnderlyingResource();
+		//LangSourceFolder.createSrcFolderEntry(dltkProj.getProjectFragment(resource));
+		//IModelStatus status = BuildpathEntry.validateBuildpath(dltkProj, new IBuildpathEntry[0]);
+		//Assert.isTrue(status.getSeverity() == IStatus.OK);
+		dltkProj.setRawBuildpath(new IBuildpathEntry[0], null);
+		//fragment.open(null);
 		addChild(entry);
 		//entry.updateElementRecursive();
 	}
+
+
 
 	/** Removes a SourceRoot to this project. 
 	 * Does not delete underlying resource. */

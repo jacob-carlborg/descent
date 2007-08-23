@@ -5,7 +5,7 @@ import descent.internal.compiler.parser.TOK;
 
 public class TokenUtil {
 	public static final TOK[] operators = { 
-         TOK.TOKlt,      TOK.TOKgt, 
+	     TOK.TOKlt,      TOK.TOKgt, 
          TOK.TOKle,      TOK.TOKge, 
          TOK.TOKequal,   TOK.TOKnotequal, 
          TOK.TOKidentity,    TOK.TOKnotidentity, 
@@ -30,7 +30,16 @@ public class TokenUtil {
          TOK.TOKdot,         TOK.TOKcomma, 
          TOK.TOKquestion,    TOK.TOKandand,  TOK.TOKoror, 
      }; 
-    	      
+	
+	
+    public static final TOK[] specialNamedLiterals = {
+        TOK.TOKnull,     
+        TOK.TOKtrue,    TOK.TOKfalse, 
+        TOK.TOKthis,    TOK.TOKsuper,
+         
+    }; 
+    
+	
      public static final TOK[] literals = {
 
          // Other Literals 
@@ -141,7 +150,7 @@ public class TokenUtil {
      }; 
      
   	      
-     public static final TOK[] basicTypes = { 
+	public static final TOK[] basicTypes = { 
          TOK.TOKvoid, 
          TOK.TOKint8, TOK.TOKuns8, 
          TOK.TOKint16, TOK.TOKuns16, 
@@ -152,64 +161,49 @@ public class TokenUtil {
          TOK.TOKcomplex32, TOK.TOKcomplex64, TOK.TOKcomplex80, 
          TOK.TOKchar, TOK.TOKwchar, TOK.TOKdchar, TOK.TOKbit, TOK.TOKbool, 
          TOK.TOKcent, TOK.TOKucent, 
-     };   
+	};   
 
- 	public static boolean isLiteral(TOK tok) {
+
+	public static boolean isLiteral(TOK tok) {
 		return ArrayUtil.contains(literals, tok);
 	} 
- 	
- 	public static boolean isBasicType(TOK tok) {
+
+	public static boolean isBasicType(TOK tok) {
 		return ArrayUtil.contains(basicTypes, tok);
 	} 
- 	
- 	public static boolean isOperator(TOK tok) {
+
+	public static boolean isOperator(TOK tok) {
 		return ArrayUtil.contains(operators, tok);
 	} 
- 	
- 	public static boolean isKeyword(TOK tok) {
- 		return ArrayUtil.contains(keywords, tok);
-	} 
- 	
- 	/** Return whether the token is semantically ignorable (comments, whitespace).*/
- 	public static boolean isWhiteToken(TOK tok) {
-		return tok == TOK.TOKwhitespace
- 		|| tok == TOK.TOKblockcomment
- 		|| tok == TOK.TOKpluscomment
- 		|| tok == TOK.TOKlinecomment
- 		|| tok == TOK.TOKdocblockcomment
- 		|| tok == TOK.TOKdocpluscomment
- 		|| tok == TOK.TOKdoclinecomment;
- 	}
 
-	
+	public static boolean isKeyword(TOK tok) {
+		return ArrayUtil.contains(keywords, tok);
+	} 
+
+	/** Return whether the token is semantically ignorable (comments, whitespace).*/
+	public static boolean isWhiteToken(TOK tok) {
+		return tok == TOK.TOKwhitespace
+		|| tok == TOK.TOKblockcomment
+		|| tok == TOK.TOKpluscomment
+		|| tok == TOK.TOKlinecomment
+		|| tok == TOK.TOKdocblockcomment
+		|| tok == TOK.TOKdocpluscomment
+		|| tok == TOK.TOKdoclinecomment;
+	}
+
+
 	public static boolean isDDocComment(TOK tok) {
 		return tok == TOK.TOKdocblockcomment
- 			|| tok == TOK.TOKdocpluscomment
- 			|| tok == TOK.TOKdoclinecomment;
+		|| tok == TOK.TOKdocpluscomment
+		|| tok == TOK.TOKdoclinecomment;
 	}
 
 	public static boolean isSimpleComment(TOK tok) {
 		return tok == TOK.TOKblockcomment
- 			|| tok == TOK.TOKpluscomment
- 			|| tok == TOK.TOKlinecomment;
- 	}
-
-
-
-	
-	/*
-	public static boolean isComment(TOK tok) {
-		return tok == TOK.TOKcomment;
-	}
-	
-	public static boolean isDDocComment(String tokenstr, Token token) {
-		return isComment(token.value)
-				&& ((tokenstr.startsWith("///") || tokenstr.startsWith("/**")));
+		|| tok == TOK.TOKpluscomment
+		|| tok == TOK.TOKlinecomment;
 	}
 
-	public static boolean isSimpleComment(String tokenstr, Token token) {
-		return isComment(token.value)
-				&& ((!tokenstr.startsWith("///") && !tokenstr.startsWith("/**")));
-	} */
+	
 
 }

@@ -16,8 +16,10 @@ import descent.internal.compiler.parser.TypeQualified;
 import dtool.descentadapter.DescentASTConverter;
 import dtool.dom.ast.ASTNeoNode;
 import dtool.dom.definitions.DefUnit;
+import dtool.dom.definitions.NativeDefUnit;
 import dtool.dom.expressions.ExpReference;
 import dtool.dom.expressions.Expression;
+import dtool.refmodel.IDefUnitReference;
 import dtool.refmodel.IDefUnitReferenceNode;
 import dtool.refmodel.IScopeNode;
 
@@ -49,6 +51,12 @@ public abstract class Reference extends ASTNeoNode implements IDefUnitReferenceN
 		return defunits.iterator().next();
 	}
 	
+	
+	public static IDefUnitReference maybeNullReference(Reference ref) {
+		if(ref != null)
+			return ref;
+		return NativeDefUnit.nullReference;
+	}
 	
 	/* ---------------- Conversion Funcs ---------------- */
 
@@ -83,10 +91,10 @@ public abstract class Reference extends ASTNeoNode implements IDefUnitReferenceN
 			RefQualified qref = new RefQualified();
 			qref.root = createQualifiedRefFromIdents(rootRef, idents, endix-1);
 			qref.subref = CommonRefSingle.convertToSingleRef(idents.get(endix-1));
-			if(rootRef != null && rootRef.start != -1)
-				qref.start = rootRef.start;
+			if(rootRef != null && rootRef.getStartPos() != -1)
+				qref.setStart(rootRef.getStartPos());
 			else
-				qref.start = idents.get(0).start;
+				qref.setStart(idents.get(0).start);
 			qref.setEndPos(qref.subref.getEndPos());
 			ref = qref;
 		}
@@ -162,8 +170,8 @@ public abstract class Reference extends ASTNeoNode implements IDefUnitReferenceN
 		// Fix some DMD missing ranges 
 		if(newelem.hasNoSourceRangeInfo()) {
 			try {
-				int newstartPos= newelem.getRootAsNode().start;
-				int newendPos= newelem.subref.getEndPos()-newelem.getRootAsNode().start;
+				int newstartPos= newelem.getRootAsNode().getStartPos();
+				int newendPos= newelem.subref.getEndPos()-newelem.getRootAsNode().getStartPos();
 				newelem.setSourceRange(newstartPos, newendPos);
 			} catch (RuntimeException re) {
 				throw new UnsupportedOperationException(re);
@@ -180,7 +188,7 @@ public abstract class Reference extends ASTNeoNode implements IDefUnitReferenceN
 			rootent = ((ExpReference) expTemp).ref;
 
 			if(rootent == null) {
-				return new RefModuleQualified(elem.ti.ident);
+				return new RefModuleQualified(elem.ti.idents.get(0));
 			}
 		} else {
 			rootent = expTemp;

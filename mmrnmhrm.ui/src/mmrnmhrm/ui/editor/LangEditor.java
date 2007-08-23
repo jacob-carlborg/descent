@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import melnorme.lang.ui.EditorUtil;
-import melnorme.lang.ui.LangPlugin;
 import melnorme.miscutil.log.Logg;
+import mmrnmhrm.ui.ActualPlugin;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
@@ -85,7 +85,7 @@ public abstract class LangEditor extends AbstractDecoratedTextEditor {
 			//stores.add(new EclipsePreferencesAdapter(new ProjectScope(project.getProject()), ActualPlugin.PLUGIN_ID));
 		}
 	
-		stores.add(LangPlugin.getInstance().getPreferenceStore());
+		stores.add(ActualPlugin.getInstance().getPreferenceStore());
 		stores.add(EditorsUI.getPreferenceStore());
 		//stores.toArray(a)
 		return new ChainedPreferenceStore(stores.toArray(new IPreferenceStore[stores.size()]));

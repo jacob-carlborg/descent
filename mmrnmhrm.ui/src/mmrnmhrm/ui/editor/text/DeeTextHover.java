@@ -1,22 +1,19 @@
 package mmrnmhrm.ui.editor.text;
 
-import mmrnmhrm.core.model.CompilationUnit;
-import mmrnmhrm.ui.DeePlugin;
-import mmrnmhrm.ui.editor.DeeEditor;
+import melnorme.lang.ui.EditorUtil;
 
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.ITextHoverExtension;
 import org.eclipse.jface.text.ITextViewer;
 import org.eclipse.jface.text.source.ISourceViewer;
-import org.eclipse.ui.IEditorInput;
-import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.texteditor.ITextEditor;
 
-import descent.internal.compiler.parser.ast.ASTNode;
+import dtool.dom.ast.ASTNeoNode;
 import dtool.dom.ast.ASTNodeFinder;
 import dtool.dom.definitions.DefSymbol;
 import dtool.dom.definitions.DefUnit;
+import dtool.dom.definitions.Module;
 import dtool.dom.references.Reference;
 
 /** 
@@ -26,9 +23,9 @@ public class DeeTextHover extends AbstractTextHover implements ITextHoverExtensi
 
 	public static class NodeRegion implements IRegion {
 
-		public ASTNode node;
+		public ASTNeoNode node;
 
-		public NodeRegion(ASTNode node) {
+		public NodeRegion(ASTNeoNode node) {
 			this.node = node;
 		}
 
@@ -47,31 +44,18 @@ public class DeeTextHover extends AbstractTextHover implements ITextHoverExtensi
 		this.fEditor = textEditor;
 	}
 
-	private ASTNode getNodeAtOffset(int offset) {
-		CompilationUnit cunit;
+	private ASTNeoNode getNodeAtOffset(int offset) {
+		Module module = EditorUtil.getNeoModuleFromEditor(fEditor);
+		if(module == null)
+			return null;
 
-		if(fEditor instanceof DeeEditor) {
-			cunit = ((DeeEditor) fEditor).getCompilationUnit();
-		} else {
-		
-			IEditorInput input = fEditor.getEditorInput();
-			if (input instanceof IFileEditorInput) {
-				IFileEditorInput feInput = (IFileEditorInput) input;
-				cunit = DeePlugin.getCompilationUnitOperation(feInput);
-				if (cunit == null)
-					return null;
-			} else {
-				return null;
-			}
-		}
-		
-		ASTNode node;
-		node = ASTNodeFinder.findElement(cunit.getModule(), offset, false);
+		ASTNeoNode node;
+		node = ASTNodeFinder.findNeoElement(module, offset, false);
 		return node;
 	}
 	
 	public IRegion getHoverRegion(ITextViewer textViewer, int offset) {
-		ASTNode node = getNodeAtOffset(offset);
+		ASTNeoNode node = getNodeAtOffset(offset);
 		if(node == null)
 			return null;
 		
@@ -86,7 +70,7 @@ public class DeeTextHover extends AbstractTextHover implements ITextHoverExtensi
 	public String getHoverInfo(ITextViewer textViewer, IRegion hoverRegion) {
 		if(!(hoverRegion instanceof NodeRegion))
 			return null;
-		ASTNode node = ((NodeRegion) hoverRegion).node;
+		ASTNeoNode node = ((NodeRegion) hoverRegion).node;
 		
 		String info = null;
 		

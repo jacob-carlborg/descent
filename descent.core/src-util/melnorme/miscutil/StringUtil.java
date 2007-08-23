@@ -2,6 +2,8 @@ package melnorme.miscutil;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
 /**
  * Miscelleanous String utilities 
  */
@@ -59,7 +61,7 @@ public final class StringUtil {
 	}
 
 	
-	/** Prints an array with given separator String */	
+	/** Create a String from the given coll with a given separator String */	
 	public static String collToString(Object[] coll, String sep) {
 		StringBuilder sb = new StringBuilder();
 		boolean first = true;
@@ -72,6 +74,19 @@ public final class StringUtil {
 		}
 		return sb.toString();
 	}
+	
+	/** Creates a String array where each element is the to toString()
+	 * of each element of the given collection. */
+	public static String[] collToStringArray(List<?> coll) {
+		if(coll == null) 
+			return new String[0];
+		String[] strs = new String[coll.size()];
+		Iterator iter = coll.iterator();
+		for (int i = 0; i < strs.length; i++) {
+			strs[i] = iter.next().toString();
+		}
+		return strs;
+	}
 
 	/** Returns str with the given range (repOffset and repLen) substituted 
 	 * for repStr. */
@@ -80,4 +95,6 @@ public final class StringUtil {
 		return str.substring(0, repOffset) + repStr
 				+ str.substring(repOffset + repLen, str.length());
 	}
+
+
 }

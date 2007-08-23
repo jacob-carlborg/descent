@@ -49,13 +49,12 @@ public abstract class Assert {
 	 * The given message is included in that exception, to aid debugging.
 	 */
 	public static void isNotNull(Object object, String message) {
-		if (object == null)
-			throw new AssertionFailedException("null argument:" + message); //$NON-NLS-1$
+		isTrue(!(object == null), message);
 	}
 	
 	/** Like {@link #isNotNull(Object, String)} with empty message.	 */
 	public static void isNotNull(Object object) {
-		isNotNull(object, ""); //$NON-NLS-1$
+		isTrue(!(object == null), "");
 	}
 
 

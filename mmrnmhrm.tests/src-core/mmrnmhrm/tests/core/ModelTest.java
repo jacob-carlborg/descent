@@ -2,23 +2,17 @@ package mmrnmhrm.tests.core;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.List;
 
 import mmrnmhrm.core.DeeCore;
-import mmrnmhrm.core.model.DeeModel;
 import mmrnmhrm.core.model.DeeModelRoot;
 import mmrnmhrm.core.model.DeeProject;
-import mmrnmhrm.core.model.DeeSourceFolder;
-import mmrnmhrm.core.model.lang.ILangElement;
 import mmrnmhrm.tests.BasePluginTest;
 
-import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.runtime.CoreException;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
-import org.junit.Test;
 
 public class ModelTest extends BasePluginTest {
 
@@ -47,7 +41,7 @@ public class ModelTest extends BasePluginTest {
 		droot.updateElementLazily();
 	}
 
-	
+	/*
 	@Test
 	public void test() throws CoreException {
 		//XXX: todo, maybe run as a model operation
@@ -109,6 +103,6 @@ public class ModelTest extends BasePluginTest {
 						+" got:"+elems[i]);
 		}
 	}
-	
+	*/
 }
 

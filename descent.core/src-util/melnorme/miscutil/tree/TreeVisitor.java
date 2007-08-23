@@ -8,8 +8,7 @@ import melnorme.miscutil.ExceptionAdapter;
 
 /** Abstract visitor for a heterogenous tree with some utility methods. */
 public abstract class TreeVisitor {
-	
-	
+		
 	protected boolean visitingAsSuper = false;
 	
 	/** Utility method that visits an element as if it were of it's base class. */
@@ -31,41 +30,6 @@ public abstract class TreeVisitor {
 	}
 	
 
-	
-	/** Accepts the visitor on node. If node is null, nothing happens. */
-	public void acceptElement(IVisitable<TreeVisitor> node) {
-		if(node != null)
-			node.accept(this);
-	}
-	
-	/** Accepts the visitor on node. If node is null, nothing happens. */
-	public void acceptMany(IVisitable<TreeVisitor> node) {
-		if (node != null) {
-			node.accept(this);
-		}
-	}
-	
-	/** Accepts the visitor on the children. If children is null, nothing
-	 * happens. */
-	public void acceptMany(List<? extends IVisitable<TreeVisitor>> nodes) {
-		if (nodes == null)
-			return;
-		
-		for(int i = 0; i < nodes.size(); i++) {
-			this.acceptElement(nodes.get(i));
-		}
-	}
-
-	/** Accepts the visitor on the children. If children is null, nothing
-	 * happens.	*/
-	public void acceptMany(IVisitable<TreeVisitor>[] nodes) {
-		if (nodes == null)
-			return;
-		
-		for(int i = 0; i < nodes.length; i++) {
-			this.acceptElement(nodes[i]);
-		}
-	}
 	
 	/** Accepts the visitor on child. If child is null, nothing happens. */
 	private static <T> void acceptChild(T visitor, IVisitable<T> child) {
@@ -100,6 +64,5 @@ public abstract class TreeVisitor {
 			TreeVisitor.acceptChild(visitor, children.get(i));
 		}
 	}
-
 
 }

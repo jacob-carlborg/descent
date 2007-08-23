@@ -14,8 +14,12 @@ import dtool.dom.references.RefTemplateInstance;
 import dtool.dom.references.Reference;
 
 public interface IASTNeoVisitor extends IASTVisitor {
+	
+	void preVisit(ASTNeoNode node);
+	void postVisit(ASTNeoNode node);
 
-	boolean visit(ASTNeoNode elem);
+	boolean visit(ASTNeoNode node);
+	void endVisit(ASTNeoNode node);
 
 	boolean visit(DefUnit elem);
 

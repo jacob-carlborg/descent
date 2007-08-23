@@ -1,7 +1,6 @@
 package dtool.refmodel;
 
 import melnorme.miscutil.tree.IElement;
-import descent.internal.compiler.parser.ast.ASTNode;
 import dtool.dom.ast.ASTNeoNode;
 import dtool.dom.definitions.BaseClass;
 import dtool.dom.definitions.DefUnit;
@@ -10,7 +9,7 @@ import dtool.dom.definitions.Module;
 public class NodeUtil {
 
 	/** Gets the module of the given ASTNode. */
-	public static Module getParentModule(ASTNode elem) {
+	public static Module getParentModule(ASTNeoNode elem) {
 		// Search for module elem
 		while((elem instanceof Module) == false) {
 			if(elem == null)

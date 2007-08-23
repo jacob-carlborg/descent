@@ -9,6 +9,7 @@ import melnorme.miscutil.tree.IElement;
 /** 
  * Work in progress. 
  */
+//@Deprecated
 public interface ILangElement extends IElement, IAdaptable {
 	
 	ILangElement[] NO_LANGELEMENTS = new ILangElement[0];

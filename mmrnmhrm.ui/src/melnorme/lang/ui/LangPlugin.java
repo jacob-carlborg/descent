@@ -3,7 +3,6 @@ package melnorme.lang.ui;
 import mmrnmhrm.ui.ActualPlugin;
 import mmrnmhrm.ui.DeePlugin;
 
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.preference.IPreferenceStore;
@@ -11,38 +10,9 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
-import org.osgi.framework.BundleContext;
 
 
 public abstract class LangPlugin extends AbstractUIPlugin {
-
-	protected static LangPlugin pluginInstance;
-	
-	
-	/** @return the shared instance */
-	public static LangPlugin getInstance() {
-		return pluginInstance;
-	}
-
-	/** {@inheritDoc} */
-	public void start(BundleContext context) throws Exception {
-		super.start(context);
-		initPlugin();
-	}
-
-	/** {@inheritDoc} */
-	public void stop(BundleContext context) throws Exception {
-		super.stop(context);
-		pluginInstance = null;
-	}
-
-
-	
-	/* *********************************************** */
-
-	public abstract void initPlugin() throws CoreException;
-
-	//abstract void getPluginId();
 
 	public static String getPluginId() {
 		return ActualPlugin.PLUGIN_ID;
@@ -50,7 +20,7 @@ public abstract class LangPlugin extends AbstractUIPlugin {
 	
 	/** Logs the given status. */
 	public static void log(IStatus status) {
-		getInstance().getLog().log(status);
+		ActualPlugin.getInstance().getLog().log(status);
 	}
 	
 	/** Logs the given Throwable, wrapping it in a Status. */
@@ -85,6 +55,6 @@ public abstract class LangPlugin extends AbstractUIPlugin {
 
 	/** Gets the plugins preference store. */
 	public static IPreferenceStore getPrefStore() {
-		return getInstance().getPreferenceStore();
+		return ActualPlugin.getInstance().getPreferenceStore();
 	}
 }

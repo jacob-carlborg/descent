@@ -13,7 +13,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 
 public class DeeProjectWizard extends NewElementWizard {
 
-    public DeeProjectWizardFirstPage fFirstPage;
+    protected DeeProjectWizardFirstPage fFirstPage;
     protected DeeProjectWizardSecondPage fSecondPage;
     protected DeeProject deeProject;
 	

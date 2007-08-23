@@ -5,17 +5,18 @@ import java.util.Collection;
 import melnorme.lang.ui.EditorUtil;
 import melnorme.miscutil.StringUtil;
 import melnorme.miscutil.log.Logg;
-import mmrnmhrm.core.model.CompilationUnit;
+import mmrnmhrm.core.DeeCore;
 import mmrnmhrm.ui.DeePlugin;
-import mmrnmhrm.ui.editor.DeeEditor;
+import mmrnmhrm.ui.editor.DeeEditorDLTK;
 
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.dltk.core.ISourceModule;
 import org.eclipse.jface.text.TextSelection;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
@@ -23,7 +24,7 @@ import org.eclipse.ui.handlers.HandlerUtil;
 import org.eclipse.ui.ide.IDE;
 import org.eclipse.ui.texteditor.ITextEditor;
 
-import descent.internal.compiler.parser.ast.ASTNode;
+import dtool.dom.ast.ASTNeoNode;
 import dtool.dom.ast.ASTNodeFinder;
 import dtool.dom.ast.ASTPrinter;
 import dtool.dom.definitions.DefUnit;
@@ -69,16 +70,13 @@ public class GoToDefinitionHandler extends AbstractHandler  {
 
 	}
 
-	public static void executeOperation(ITextEditor srcEditor,
+	public static void executeOperation(ITextEditor editor,
 			boolean openNewEditor, int offset) throws CoreException {
-		IWorkbenchWindow window = srcEditor.getSite().getWorkbenchWindow();
+		IWorkbenchWindow window = editor.getSite().getWorkbenchWindow();
 
-		IEditorInput input = srcEditor.getEditorInput();
-		CompilationUnit srcCUnit = DeePlugin.getInstance().getCompilationUnit(input);
-		srcCUnit.reconcile();
-		
+		Module neoModule = EditorUtil.getNeoModuleFromEditor(editor);
 
-		ASTNode elem = ASTNodeFinder.findElement(srcCUnit.getModule(), offset, false);
+		ASTNeoNode elem = ASTNodeFinder.findNeoElement(neoModule, offset, false);
 		
 		if(elem == null) {
 			dialogWarning(window.getShell(), "No element found at pos: " + offset);
@@ -141,13 +139,16 @@ public class GoToDefinitionHandler extends AbstractHandler  {
 		ITextEditor targetEditor;
 
 		Module targetModule = NodeUtil.getParentModule(defunit);
-		CompilationUnit targetCUnit = (CompilationUnit) targetModule.getCUnit();
+		ISourceModule modUnit = (ISourceModule) targetModule.getModuleUnit();
 
-		if(openNewEditor || srcCUnit != targetCUnit) {
+		if(openNewEditor || neoModule != targetModule) {
 			IWorkbenchPage page = window.getActivePage();
-			targetEditor = (ITextEditor) IDE.openEditor(page, targetCUnit.getFile(), DeeEditor.EDITOR_ID);
+			// getCorrespondingResource isn't with linked folders 
+			//IFile file = (IFile) modUnit.getCorrespondingResource();
+			IFile file = (IFile) DeeCore.getWorkspaceRoot().findMember(modUnit.getPath());
+			targetEditor = (ITextEditor) IDE.openEditor(page, file, DeeEditorDLTK.EDITOR_ID);
 		} else {
-			targetEditor = srcEditor;
+			targetEditor = editor;
 		}
 		EditorUtil.setSelection(targetEditor, defunit.defname);
 	}

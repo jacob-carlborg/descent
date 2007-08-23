@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import melnorme.miscutil.Assert;
 import melnorme.miscutil.StringUtil;
 import melnorme.miscutil.log.Logg;
 import mmrnmhrm.core.model.DeeModel;
@@ -44,6 +45,7 @@ public class DeeBuilder extends IncrementalProjectBuilder {
 	
 	protected void startupOnInitialize() {
 		deeProject = DeeModel.getLangProject(getProject());
+		Assert.isTrue(deeProject != null);
 	}
 
 	@Override

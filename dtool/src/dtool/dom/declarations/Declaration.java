@@ -6,35 +6,35 @@ import java.util.List;
 import descent.internal.compiler.parser.Dsymbol;
 import descent.internal.compiler.parser.Modifier;
 import descent.internal.compiler.parser.TOK;
-import descent.internal.compiler.parser.ast.ASTNode;
 import dtool.descentadapter.DescentASTConverter;
+import dtool.dom.ast.ASTNeoNode;
 import dtool.refmodel.IScope;
 
 public abstract class Declaration {
 
 
-	public static ASTNode[] convertMany(descent.internal.compiler.parser.Declaration[] declarationDefinitions) {
-		ASTNode[] decls = new ASTNode[declarationDefinitions.length];
+	public static ASTNeoNode[] convertMany(descent.internal.compiler.parser.Declaration[] declarationDefinitions) {
+		ASTNeoNode[] decls = new ASTNeoNode[declarationDefinitions.length];
 		for(int i = 0; i < declarationDefinitions.length;i++) {
 			decls[i] = convert(declarationDefinitions[i]);
 		}
 		return decls;
 	}
 
-	public static ASTNode[] convertMany(List<Dsymbol> declarationDefinitions) {
-		ASTNode[] decls = new ASTNode[declarationDefinitions.size()];
+	public static ASTNeoNode[] convertMany(List<Dsymbol> declarationDefinitions) {
+		ASTNeoNode[] decls = new ASTNeoNode[declarationDefinitions.size()];
 		for(int i = 0; i < declarationDefinitions.size();i++) {
 			decls[i] = convert(declarationDefinitions.get(i));
 		}
 		return decls;
 	}
 
-	public static ASTNode convert(descent.internal.compiler.parser.Declaration decl) {
-		return (ASTNode) DescentASTConverter.convertElem(decl);
+	public static ASTNeoNode convert(descent.internal.compiler.parser.Declaration decl) {
+		return (ASTNeoNode) DescentASTConverter.convertElem(decl);
 	}
 
-	public static ASTNode convert(Dsymbol decl) {
-		return (ASTNode) DescentASTConverter.convertElem(decl);
+	public static ASTNeoNode convert(Dsymbol decl) {
+		return (ASTNeoNode) DescentASTConverter.convertElem(decl);
 	}
 
 	public static int hasModifier(List<Modifier> modifiers, TOK tok) {
@@ -49,7 +49,7 @@ public abstract class Declaration {
 		return -1;
 	}
 
-	public static boolean hasInheritedProtection(ASTNode elem, TOK tok) {
+	public static boolean hasInheritedProtection(ASTNeoNode elem, TOK tok) {
 		while(elem != null && !(elem instanceof IScope)) {
 			elem = elem.getParent();
 			if(elem instanceof DeclarationProtection) {

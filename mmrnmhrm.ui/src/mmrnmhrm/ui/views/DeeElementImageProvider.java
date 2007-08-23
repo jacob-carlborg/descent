@@ -9,7 +9,6 @@ import mmrnmhrm.ui.DeePluginImages;
 
 import org.eclipse.swt.graphics.Image;
 
-import descent.internal.compiler.parser.ast.ASTNode;
 import dtool.dom.ast.ASTNeoNode;
 import dtool.dom.declarations.DeclarationImport;
 import dtool.dom.declarations.PartialPackageDefUnit;
@@ -30,8 +29,8 @@ import dtool.dom.references.Reference;
 public class DeeElementImageProvider {
 	
 	public static Image getElementImage(IElement element) {
-		if (element instanceof ASTNode) {
-			return getNodeImage((ASTNode) element);
+		if (element instanceof ASTNeoNode) {
+			return getNodeImage((ASTNeoNode) element);
 		} else if(element instanceof DeePackageFragment) {
 			return getImage(DeePluginImages.ELEM_PACKAGE);
 		} else if(element instanceof CompilationUnit) {
@@ -45,7 +44,7 @@ public class DeeElementImageProvider {
 	}
 	
 	
-	public static Image getNodeImage(ASTNode node) {
+	public static Image getNodeImage(ASTNeoNode node) {
 		if(node instanceof DeclarationImport) { 
 			return getImage(DeePluginImages.NODE_IMPORT);
 		} else if(node instanceof DeclarationModule || node instanceof Module) {

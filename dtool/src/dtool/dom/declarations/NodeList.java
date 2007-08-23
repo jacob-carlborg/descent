@@ -7,8 +7,8 @@ import java.util.Iterator;
 import descent.internal.compiler.parser.CompoundStatement;
 import descent.internal.compiler.parser.Dsymbol;
 import descent.internal.compiler.parser.Statement;
-import descent.internal.compiler.parser.ast.ASTNode;
 import dtool.descentadapter.DescentASTConverter;
+import dtool.dom.ast.ASTNeoNode;
 
 /**
  * A helper class for AST nodes, 
@@ -16,7 +16,7 @@ import dtool.descentadapter.DescentASTConverter;
  */
 public class NodeList  {
 	
-	public ASTNode[] nodes;
+	public ASTNeoNode[] nodes;
 	public boolean hasCurlies; // Accurate detection not implement yet
 
 	private NodeList() {
@@ -29,7 +29,7 @@ public class NodeList  {
 			nodes.nodes = DescentASTConverter.convertMany(cst.sourceStatements);
 			nodes.hasCurlies = true; 
 		} else {
-			nodes.nodes = new ASTNode[] { DescentASTConverter.convertElem(body) };
+			nodes.nodes = new ASTNeoNode[] { DescentASTConverter.convertElem(body) };
 		}
 		return nodes;
 	}
@@ -41,7 +41,7 @@ public class NodeList  {
 		return nodes;
 	}
 
-	public Iterator<ASTNode> getNodeIterator() {
+	public Iterator<ASTNeoNode> getNodeIterator() {
 		return Arrays.asList(nodes).iterator();
 	}
 }

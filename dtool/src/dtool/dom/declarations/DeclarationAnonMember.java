@@ -5,7 +5,6 @@ import java.util.Iterator;
 
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.internal.compiler.parser.AnonDeclaration;
-import descent.internal.compiler.parser.ast.ASTNode;
 import dtool.dom.ast.ASTNeoNode;
 import dtool.dom.ast.IASTNeoVisitor;
 import dtool.refmodel.INonScopedBlock;
@@ -28,7 +27,7 @@ public class DeclarationAnonMember extends ASTNeoNode implements INonScopedBlock
 		visitor.endVisit(this);
 	}
 
-	public Iterator<ASTNode> getMembersIterator() {
+	public Iterator<ASTNeoNode> getMembersIterator() {
 		return Arrays.asList(body.nodes).iterator();
 	}
 

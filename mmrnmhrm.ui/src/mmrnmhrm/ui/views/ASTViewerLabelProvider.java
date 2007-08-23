@@ -11,7 +11,7 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Display;
 
 import descent.internal.compiler.parser.ASTDmdNode;
-import descent.internal.compiler.parser.ast.ASTNode;
+import descent.internal.compiler.parser.ast.IASTNode;
 import dtool.dom.ast.ASTPrinter;
 import dtool.dom.definitions.DefUnit;
 import dtool.dom.references.Reference;
@@ -38,15 +38,15 @@ public class ASTViewerLabelProvider extends SimpleLabelProvider implements IColo
 	}
 	
 	public Image getImage(Object element) {
-		return DeeElementImageProvider.getElementImage((ASTNode) element);
+		return DeeElementImageProvider.getElementImage((IASTNode) element);
 	}
 
 	public String getText(Object elem) {
-		return ASTPrinter.toStringNodeExtra((ASTNode) elem);
+		return ASTPrinter.toStringNodeExtra((IASTNode) elem);
 	}
 
 	public Color getBackground(Object element) {
-		ASTNode node = (ASTNode) element;
+		IASTNode node = (IASTNode) element;
 		if(node.hasNoSourceRangeInfo())
 			return cNoSourceRangeColor;
 		if(node instanceof ASTDmdNode)

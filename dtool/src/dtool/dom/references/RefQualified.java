@@ -5,7 +5,7 @@ import java.util.List;
 
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.internal.compiler.parser.IdentifierExp;
-import descent.internal.compiler.parser.ast.ASTNode;
+import descent.internal.compiler.parser.ast.IASTNode;
 import dtool.dom.ast.IASTNeoVisitor;
 import dtool.dom.definitions.DefUnit;
 import dtool.refmodel.IDefUnitReferenceNode;
@@ -39,7 +39,7 @@ public class RefQualified extends CommonRefQualified {
 	}
 
 	public RefQualified(Reference rootRef, CommonRefSingle subRef) {
-		setSourceRange(rootRef.start, subRef.getEndPos());
+		setSourceRange(rootRef.getStartPos(), subRef.getEndPos());
 		this.root = rootRef;
 		this.subref = subRef;
 	}
@@ -58,8 +58,8 @@ public class RefQualified extends CommonRefQualified {
 		return root + "." + subref;
 	}
 	
-	public ASTNode getRootAsNode() {
-		return (ASTNode) this.root;
+	public IASTNode getRootAsNode() {
+		return (IASTNode) this.root;
 	}
 
 	public IDefUnitReferenceNode getRoot() {

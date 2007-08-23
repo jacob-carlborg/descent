@@ -3,7 +3,7 @@ package dtool.dom.declarations;
 import java.util.Collections;
 import java.util.Iterator;
 
-import descent.internal.compiler.parser.ast.ASTNode;
+import dtool.dom.ast.ASTNeoNode;
 import dtool.dom.definitions.Symbol;
 
 
@@ -15,7 +15,7 @@ public class PartialPackageDefUnitOfPackage extends PartialPackageDefUnit  {
 		super(defname);
 	}
 	
-	public Iterator<? extends ASTNode> getMembersIterator() {
+	public Iterator<? extends ASTNeoNode> getMembersIterator() {
 		return Collections.singleton(child).iterator();
 	}
 	

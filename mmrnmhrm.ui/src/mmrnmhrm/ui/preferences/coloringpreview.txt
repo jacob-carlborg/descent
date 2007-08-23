@@ -1,0 +1,14 @@
+/* Blah blah doc*/
+
+int foo = "asdf<sdf";
+
+/** Dee Doc */
+void func() {
+	int a = 2; // Set to true
+	if(true)
+		return;
+}
+
+/++
+void func(a); 
++/
