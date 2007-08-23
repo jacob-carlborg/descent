@@ -2,7 +2,8 @@
 <feature
       id="descent.ui"
       label="Descent"
-      version="0.4.2.20070822">
+      version="0.4.2.20070822"
+      provider-name="Descent">
 
    <description url="http://dsource.org/projects/descent">
       The Descent plugin provides an IDE for writing, launching and
