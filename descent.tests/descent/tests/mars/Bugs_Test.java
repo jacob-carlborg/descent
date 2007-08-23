@@ -214,6 +214,16 @@ public class Bugs_Test extends Parser_Test {
 		getCompilationUnit(s, AST.D2);		
 	}
 	
+	public void testMissingIfThenBody() {
+		String s = "void foo() { if(true) }";
+		getCompilationUnit(s);	
+	}
+	
+	public void testMissingTryBody() {
+		String s = "void foo() { try finally { } }";
+		getCompilationUnit(s);	
+	}
+	
 	public void testDstress_run_t_typeof_16_A() {
 		String s = "char[] name = (typeof(o)).classinfo.name;";
 		getCompilationUnit(s);	
