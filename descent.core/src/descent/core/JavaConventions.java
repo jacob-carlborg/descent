@@ -147,7 +147,7 @@ public final class JavaConventions {
 		// JSR-175 metadata strongly recommends "package-info.java" as the
 		// file in which to store package annotations and
 		// the package-level spec (replaces package.html)
-		if (!identifier.equals(PACKAGE_INFO)) {
+		//if (!identifier.equals(PACKAGE_INFO)) {
 			// TODO Descent what to do? In tango there's a "cast.d" file, and "cast" is not a valid identifier
 			// Skip validation meanwhile...
 			/*
@@ -156,7 +156,7 @@ public final class JavaConventions {
 				return status;
 			}
 			*/
-		}
+		//}
 		IStatus status = ResourcesPlugin.getWorkspace().validateName(name, IResource.FILE);
 		if (!status.isOK()) {
 			return status;

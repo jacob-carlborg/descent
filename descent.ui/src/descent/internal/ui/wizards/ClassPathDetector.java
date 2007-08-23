@@ -315,11 +315,17 @@ public class ClassPathDetector implements IResourceProxyVisitor {
 			if (tok == ITerminalSymbols.TokenNameIdentifier) {
 				res= res.append(new String(scanner.getRawTokenSource()));
 			} else {
+				if (res.segmentCount() > 0) {
+					res = res.removeLastSegments(1);
+				}
 				return res;
 			}
 			tok= scanner.getNextToken();
 		} while (tok == ITerminalSymbols.TokenNameDOT);
 		
+		if (res.segmentCount() > 0) {
+			res = res.removeLastSegments(1);
+		}
 		return res;
 	}
 	

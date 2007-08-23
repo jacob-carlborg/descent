@@ -89,10 +89,6 @@ public class SourceElementParser implements IASTVisitor {
 		}
 	}
 	
-	public Module parseCompilationUnit(ICompilationUnit unit, boolean resolveBindings) {
-		return parseCompilationUnit((descent.internal.compiler.env.ICompilationUnit) unit, resolveBindings);
-	}
-	
 	public Module parseCompilationUnit(descent.internal.compiler.env.ICompilationUnit unit, boolean resolveBindings) {
 		module = CompilationUnitResolver.parse(getASTlevel(), (descent.internal.compiler.env.ICompilationUnit) unit, options.getMap(), true).module;
 		

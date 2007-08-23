@@ -4223,16 +4223,18 @@ public class Lexer implements IProblemRequestor {
 		// uinteger_t n; // unsigned >=64 bit integer type
 		IntegerWrapper n; // unsigned >=64 bit integer type
 		boolean integerOverflow = false;
+		
+		boolean isAnInt = false;
+		int r = 10;
 
 		if (stringbuffer.data.length() == 1
 				&& (state == STATE_decimal || state == STATE_0)) {
 			n = new IntegerWrapper(intResult);
+			isAnInt = true;
 		} else {
 			// Convert string to integer
 			// Ary sais: changed to use BigInteger 
-			int p = 0;
-			int r = 10;
-			
+			int p = 0;			
 			if (stringbuffer.data.charAt(0) == '0' && stringbuffer.data.length() > 1) {
 				if (stringbuffer.data.charAt(1) == 'x' || stringbuffer.data.charAt(1) == 'X') {
 					p = 2;
@@ -4252,6 +4254,7 @@ public class Lexer implements IProblemRequestor {
 			
 			if (r == 10 && stringbuffer.data.length() <= 9) {
 				n = new IntegerWrapper(intResult);
+				isAnInt = true;
 			} else {
 				try {
 					n = new IntegerWrapper(new BigInteger(stringbuffer.data.substring(p), r));
@@ -4313,28 +4316,40 @@ public class Lexer implements IProblemRequestor {
 			 * Octal or Hexadecimal constant. First that fits: int, uint, long,
 			 * ulong
 			 */
-			if (n.and(X_8000000000000000).compareTo(BigInteger.ZERO) != 0)
-				result = TOKuns64v;
-			else if (n.and(X_FFFFFFFF00000000).compareTo(BigInteger.ZERO) != 0)
-				result = TOKint64v;
-			else if (n.and(X_80000000).compareTo(BigInteger.ZERO) != 0)
-				result = TOKuns32v;
-			else
-				result = TOKint32v;
+			if (isAnInt) {
+				if ((intResult & 0x80000000) != 0) {
+					result = TOKuns32v;
+				} else {
+					result = TOKint32v;
+				}
+			} else {			
+				if (n.and(X_8000000000000000).compareTo(BigInteger.ZERO) != 0)
+					result = TOKuns64v;
+				else if (n.and(X_FFFFFFFF00000000).compareTo(BigInteger.ZERO) != 0)
+					result = TOKint64v;
+				else if (n.and(X_80000000).compareTo(BigInteger.ZERO) != 0)
+					result = TOKuns32v;
+				else
+					result = TOKint32v;
+			}
 			break;
 
 		case FLAGS_decimal:
 			/*
 			 * First that fits: int, long, long long
 			 */
-			if (n.and(X_8000000000000000).compareTo(BigInteger.ZERO) != 0) {
-				error(
-						IProblem.SignedIntegerOverflow, linnum, start, p - start);
-				result = TOKuns64v;
-			} else if (n.and(X_FFFFFFFF80000000).compareTo(BigInteger.ZERO) != 0)
-				result = TOKint64v;
-			else
+			if (isAnInt) {
 				result = TOKint32v;
+			} else {
+				if (n.and(X_8000000000000000).compareTo(BigInteger.ZERO) != 0) {
+					error(
+							IProblem.SignedIntegerOverflow, linnum, start, p - start);
+					result = TOKuns64v;
+				} else if (n.and(X_FFFFFFFF80000000).compareTo(BigInteger.ZERO) != 0)
+					result = TOKint64v;
+				else
+					result = TOKint32v;
+			}
 			break;
 
 		case FLAGS_unsigned:
