@@ -30,6 +30,7 @@ public class DeleteDeclaration extends FuncDeclaration {
 		return false;
 	}
 	
+	@Override
 	public void accept0(IASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
@@ -66,11 +67,11 @@ public class DeleteDeclaration extends FuncDeclaration {
 		TypeFunction tf = (TypeFunction) type;
 		if (Argument.dim(tf.parameters, context) != 1) {
 			// TODO semantic point out the "delete" token
-			context.acceptProblem(Problem.newSemanticTypeError(IProblem.IllegalParameters, 0, start, "delete".length(), new String[] { "One argument of type void* expected" }));
+			context.acceptProblem(Problem.newSemanticTypeError(IProblem.OneArgumentOfTypeExpected, 0, start, 6, new String[] { "void*" }));
 		} else {
 			Argument a = Argument.getNth(tf.parameters, 0, context);
 			if (!a.type.equals(Type.tvoid.pointerTo(context))) {
-				context.acceptProblem(Problem.newSemanticTypeError(IProblem.IllegalParameters, 0, a.type.start, a.type.length, new String[] { "One argument of type void* expected" }));
+				context.acceptProblem(Problem.newSemanticTypeError(IProblem.OneArgumentOfTypeExpected, 0, a.type.start, a.type.length, new String[] { "void*" }));
 			}
 		}
 

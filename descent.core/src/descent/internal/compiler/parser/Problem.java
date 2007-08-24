@@ -202,7 +202,15 @@ public class Problem implements IProblem {
 		case EnumBaseTypeMustBeOfIntegralType:
 			return "Base type must be of integral type";
 		case ForwardReference:
-			return arguments[0];
+			return "Forward reference of " + arguments[0];
+		case ForwardReferenceWhenLookingFor:
+			return arguments[0] + " is forward reference when looking for " + arguments[1];
+		case BaseEnumIsForwardReference:
+			return "Base enum is forward reference";
+		case CannotResolveForwardReference:
+			return "Cannot resolve forward reference";
+		case EnumIsForwardReference:
+			return "Enum is forward reference";
 		case IntegerConstantExpressionExpected:
 			return "Integer constant expression expected";
 		case ThisNotInClassOrStruct:
@@ -217,8 +225,6 @@ public class Problem implements IProblem {
 			return "Class " + arguments[0] + " has no 'super'";
 		case BaseTypeMustBeInterface:
 			return "Base type must be interface";
-		case IllegalModifier:
-			return arguments[0];
 		case MemberIsPrivate:
 			return arguments[0] + " is private";
 		case UsedAsAType:
@@ -293,6 +299,20 @@ public class Problem implements IProblem {
 			return "TODO: remove";
 		case IsClassPathCorrect:
 			return "TODO: remove";
+		case FunctionsCannotBeConstOrAuto:
+			return "Functions cannot be const or auto";
+		case NonVirtualFunctionsCannotBeAbstract:
+			return "Non-virtual functions cannot be abstract";
+		case ModifierCannotBeAppliedToVariables:
+			return arguments[0] + " cannot be applied to variables";
+		case StructsCannotBeAbstract:
+			return "structs cannot be abstract";
+		case UnionsCannotBeAbstract:
+			return "unions cannot be abstract";
+		case AliasCannotBeConst:
+			return "alias cannot be const";
+		case OneArgumentOfTypeExpected:
+			return "one argument of type " + arguments[0] + " expected";
 		default:
 			return "";
 		}

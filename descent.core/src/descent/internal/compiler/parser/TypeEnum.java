@@ -13,6 +13,7 @@ public class TypeEnum extends Type {
 		this.sym = sym;
 	}
 	
+	@Override
 	public void accept0(IASTVisitor visitor) {
 		Assert.fail("Accept0 on fake class");
 	}
@@ -29,8 +30,8 @@ public class TypeEnum extends Type {
 	    {
 			context.acceptProblem(Problem
 					.newSemanticTypeError(
-							IProblem.ForwardReference, 0,
-							sym.start, sym.length, new String[] { "Enum is forward reference" }));
+							IProblem.EnumIsForwardReference, 0,
+							sym.start, sym.length));
 			return tint32;
 	    }
 	    return sym.memtype.toBasetype(context);

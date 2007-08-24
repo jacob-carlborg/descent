@@ -279,7 +279,7 @@ public interface IProblem {
 	int SuperNotInClass = 313;
 	int ClassHasNoSuper = 314;
 	int BaseTypeMustBeInterface = 315;
-	int IllegalModifier = 316;
+	int AliasCannotBeConst = 316;
 	int MemberIsPrivate = 317;
 	int UsedAsAType = 318;
 	int ExternSymbolsCannotHaveInitializers = 319;
@@ -312,7 +312,16 @@ public interface IProblem {
 	int AnonCanOnlyBePartOfAnAggregate = 346;
 	int PragmaIsMissingClosingSemicolon = 347;
 	int CannotImplicitlyConvert = 348;
-	
+	int ForwardReferenceWhenLookingFor = 349;
+	int BaseEnumIsForwardReference = 350;
+	int CannotResolveForwardReference = 351;
+	int EnumIsForwardReference = 352;
+	int FunctionsCannotBeConstOrAuto = 353;
+	int NonVirtualFunctionsCannotBeAbstract = 354;
+	int ModifierCannotBeAppliedToVariables = 356;
+	int StructsCannotBeAbstract = 357;
+	int UnionsCannotBeAbstract = 358;
+	int OneArgumentOfTypeExpected = 359;
 	
 	/* Others, needed by JDT */
 	int ForbiddenReference = 2001;

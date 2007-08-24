@@ -25,6 +25,7 @@ public class TemplateInstance extends ScopeDsymbol {
 		this.idents.add(id);
 	}
 	
+	@Override
 	public void accept0(IASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
@@ -38,7 +39,7 @@ public class TemplateInstance extends ScopeDsymbol {
 	public Dsymbol toAlias(SemanticContext context) {
 		if (inst == null) {
 			context.acceptProblem(Problem.newSemanticTypeError(
-					IProblem.ForwardReference, 0, start, length, new String[] { "Cannot resolve forward reference" }));
+					IProblem.CannotResolveForwardReference, 0, start, length));
 			return this;
 		}
 

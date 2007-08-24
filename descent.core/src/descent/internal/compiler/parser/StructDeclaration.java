@@ -26,6 +26,7 @@ public class StructDeclaration extends AggregateDeclaration {
 		return this;
 	}
 	
+	@Override
 	public void accept0(IASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
@@ -36,6 +37,7 @@ public class StructDeclaration extends AggregateDeclaration {
 		visitor.endVisit(this);
 	}
 	
+	@Override
 	public PROT getAccess(Dsymbol smember) {
 		PROT access_ret = PROTnone;
 
@@ -78,9 +80,9 @@ public class StructDeclaration extends AggregateDeclaration {
 		assert (!isAnonymous());
 		if ((sc.stc & STC.STCabstract) != 0) {
 			if (isUnionDeclaration() != null) {
-				context.acceptProblem(Problem.newSemanticTypeError(IProblem.IllegalModifier, 0, ident.start, ident.length));
+				context.acceptProblem(Problem.newSemanticTypeError(IProblem.UnionsCannotBeAbstract, 0, ident.start, ident.length));
 			} else {
-				context.acceptProblem(Problem.newSemanticTypeError(IProblem.IllegalModifier, 0, ident.start, ident.length));
+				context.acceptProblem(Problem.newSemanticTypeError(IProblem.StructsCannotBeAbstract, 0, ident.start, ident.length));
 			}
 		}
 
@@ -102,7 +104,7 @@ public class StructDeclaration extends AggregateDeclaration {
 
 		int members_dim = members.size();
 		for (int i = 0; i < members_dim; i++) {
-			Dsymbol s = (Dsymbol) members.get(i);
+			Dsymbol s = members.get(i);
 			s.semantic(sc2, context);
 			if (isUnionDeclaration() != null)
 				sc2.offset = 0;
@@ -202,7 +204,7 @@ public class StructDeclaration extends AggregateDeclaration {
 		// Determine if struct is all zeros or not
 		zeroInit = true;
 		for (int j = 0; j < fields.size(); j++) {
-			Dsymbol s = (Dsymbol) fields.get(j);
+			Dsymbol s = fields.get(j);
 			VarDeclaration vd = s.isVarDeclaration();
 			if (vd != null && !vd.isDataseg(context)) {
 				if (vd.init != null) {

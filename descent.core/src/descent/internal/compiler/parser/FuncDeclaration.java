@@ -58,6 +58,7 @@ public class FuncDeclaration extends Declaration {
 		this.type = type;
 	}
 	
+	@Override
 	public void accept0(IASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
@@ -166,11 +167,11 @@ public class FuncDeclaration extends Declaration {
 		Dsymbol parent = toParent();
 
 		if (isConst() || isAuto() || isScope()) {
-			context.acceptProblem(Problem.newSemanticTypeError(IProblem.IllegalModifier, 0, ident.start, ident.length, new String[] { "Functions cannot be const or auto" }));
+			context.acceptProblem(Problem.newSemanticTypeError(IProblem.FunctionsCannotBeConstOrAuto, 0, ident.start, ident.length));
 		}
 
 		if (isAbstract() && !isVirtual()) {
-			context.acceptProblem(Problem.newSemanticTypeError(IProblem.IllegalModifier, 0, ident.start, ident.length, new String[] { "Non-virtual functions cannot be abstract" }));
+			context.acceptProblem(Problem.newSemanticTypeError(IProblem.NonVirtualFunctionsCannotBeAbstract, 0, ident.start, ident.length));
 		}
 
 		sd = parent.isStructDeclaration();
@@ -655,7 +656,7 @@ public class FuncDeclaration extends Declaration {
 			// sub-arguments.
 			if (f.parameters != null) {
 				for (int i = 0; i < f.parameters.size(); i++) {
-					Argument arg = (Argument) f.parameters.get(i);
+					Argument arg = f.parameters.get(i);
 
 					if (arg.type.ty == TY.Ttuple) {
 						TypeTuple t = (TypeTuple) arg.type;
@@ -719,7 +720,7 @@ public class FuncDeclaration extends Declaration {
 			// but not in parameters[].
 			if (f.parameters != null) {
 				for (int i = 0; i < f.parameters.size(); i++) {
-					Argument arg = (Argument) f.parameters.get(i);
+					Argument arg = f.parameters.get(i);
 
 					if (arg.ident == null) {
 						continue; // never used, so ignore
@@ -881,7 +882,7 @@ public class FuncDeclaration extends Declaration {
 
 				if (isCtorDeclaration() != null && cd != null) {
 					for (int i = 0; i < cd.fields.size(); i++) {
-						VarDeclaration v = (VarDeclaration) cd.fields.get(i);
+						VarDeclaration v = cd.fields.get(i);
 						v.ctorinit = false;
 					}
 				}
@@ -914,7 +915,7 @@ public class FuncDeclaration extends Declaration {
 					ScopeDsymbol ad2 = toParent().isScopeDsymbol();
 					Assert.isTrue(ad2 != null);
 					for (int i = 0; i < ad2.members.size(); i++) {
-						Dsymbol s = (Dsymbol) ad2.members.get(i);
+						Dsymbol s = ad2.members.get(i);
 
 						s.checkCtorConstInit();
 					}
@@ -925,7 +926,7 @@ public class FuncDeclaration extends Declaration {
 					// Verify that all the ctorinit fields got initialized
 					if ((sc2.callSuper & Scope.CSXthis_ctor) == 0) {
 						for (int i = 0; i < cd.fields.size(); i++) {
-							VarDeclaration v = (VarDeclaration) cd.fields
+							VarDeclaration v = cd.fields
 									.get(i);
 
 							if (!v.ctorinit && v.isCtorinit())

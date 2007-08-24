@@ -55,6 +55,7 @@ public class AliasDeclaration extends Declaration {
 		return type;
 	}
 	
+	@Override
 	public void accept0(IASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
@@ -107,7 +108,7 @@ public class AliasDeclaration extends Declaration {
 				for (Modifier modifier : modifiers) {
 					if (modifier.tok == TOK.TOKconst) {
 						context.acceptProblem(Problem.newSemanticTypeError(
-								IProblem.IllegalModifier, 0, modifier.start,
+								IProblem.AliasCannotBeConst, 0, modifier.start,
 								modifier.length));
 					}
 				}
@@ -181,12 +182,11 @@ public class AliasDeclaration extends Declaration {
 		if (v != null && v.linkage == LINK.LINKdefault) {
 			context.acceptProblem(Problem.newSemanticTypeError(
 					IProblem.ForwardReference, 0,
-					tempType.start, tempType.length));
+					tempType.start, tempType.length, new String[] { tempType.toString() }));
 			context.acceptProblem(Problem
 					.newSemanticTypeError(
 							IProblem.ForwardReference, 0, v.ident.start,
-							v.ident.length, new String[] { v.ident
-									+ " is being forward referenced" }));
+							v.ident.length, new String[] { new String(v.ident.ident) }));
 			s = null;
 		} else {
 			FuncDeclaration f = s.isFuncDeclaration();

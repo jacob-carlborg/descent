@@ -43,6 +43,7 @@ public class EnumDeclaration extends ScopeDsymbol {
 		return type;
 	}
 	
+	@Override
 	public void accept0(IASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
@@ -110,7 +111,7 @@ public class EnumDeclaration extends ScopeDsymbol {
 					context);
 			if (sym.memtype == null) {
 				context.acceptProblem(Problem.newSemanticTypeError(
-						IProblem.ForwardReference, 0, memtype.start,
+						IProblem.BaseEnumIsForwardReference, 0, memtype.start,
 						memtype.length));
 				memtype = Type.tint32;
 			}

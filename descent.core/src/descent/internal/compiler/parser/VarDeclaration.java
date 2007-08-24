@@ -72,6 +72,7 @@ public class VarDeclaration extends Declaration {
 		this.value = null;
 	}
 	
+	@Override
 	public void accept0(IASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
@@ -160,8 +161,8 @@ public class VarDeclaration extends Declaration {
 		if (parent == null
 				&& (storage_class & (STC.STCstatic | STC.STCconst)) == 0) {
 			context.acceptProblem(Problem.newSemanticTypeError(
-					IProblem.ForwardReference, 0, start,
-					length, new String[] { "Forward referenced" }));
+					IProblem.CannotResolveForwardReference, 0, start,
+					length));
 			type = Type.terror;
 			return false;
 		}
@@ -313,13 +314,13 @@ public class VarDeclaration extends Declaration {
 		} else if (isStatic()) {
 		} else if (isSynchronized()) {
 			context.acceptProblem(Problem.newSemanticTypeError(
-					IProblem.IllegalModifier, 0, ident.start, ident.length, new String[] { "synchronized cannot be applied to variables" }));
+					IProblem.ModifierCannotBeAppliedToVariables, 0, ident.start, ident.length, new String[] { "synchronized" }));
 		} else if (isOverride()) {
 			context.acceptProblem(Problem.newSemanticTypeError(
-					IProblem.IllegalModifier, 0, ident.start, ident.length, new String[] { "override cannot be applied to variables" }));
+					IProblem.ModifierCannotBeAppliedToVariables, 0, ident.start, ident.length, new String[] { "override" }));
 		} else if (isAbstract()) {
 			context.acceptProblem(Problem.newSemanticTypeError(
-					IProblem.IllegalModifier, 0, ident.start, ident.length, new String[] { "abstract cannot be applied to variables" }));
+					IProblem.ModifierCannotBeAppliedToVariables, 0, ident.start, ident.length, new String[] { "abstract" }));
 		} else if ((storage_class & STC.STCtemplateparameter) != 0) {
 		} else {
 			AggregateDeclaration aad = sc.anonAgg;

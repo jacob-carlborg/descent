@@ -133,7 +133,7 @@ public class Semantic1_Test extends Parser_Test {
 		IProblem[] p = getModuleProblems(s);
 		assertEquals(1, p.length);
 
-		assertError(p[0], IProblem.IllegalModifier, 6, 5);
+		assertError(p[0], IProblem.AliasCannotBeConst, 6, 5);
 	}
 
 	public void testAliasCircularDeclaration() {
@@ -227,7 +227,7 @@ public class Semantic1_Test extends Parser_Test {
 		IProblem[] p = getModuleProblems(s);
 		assertEquals(1, p.length);
 
-		assertError(p[0], IProblem.IllegalModifier, 18, 1);
+		assertError(p[0], IProblem.ModifierCannotBeAppliedToVariables, 18, 1);
 	}
 
 	public void testVariableCannotBeOverride() {
@@ -235,7 +235,7 @@ public class Semantic1_Test extends Parser_Test {
 		IProblem[] p = getModuleProblems(s);
 		assertEquals(1, p.length);
 
-		assertError(p[0], IProblem.IllegalModifier, 14, 1);
+		assertError(p[0], IProblem.ModifierCannotBeAppliedToVariables, 14, 1);
 	}
 
 	public void testVariableCannotBeAbstract() {
@@ -243,7 +243,7 @@ public class Semantic1_Test extends Parser_Test {
 		IProblem[] p = getModuleProblems(s);
 		assertEquals(1, p.length);
 
-		assertError(p[0], IProblem.IllegalModifier, 14, 1);
+		assertError(p[0], IProblem.ModifierCannotBeAppliedToVariables, 14, 1);
 	}
 
 	public void testNoDefinitionOfStruct() {
@@ -299,7 +299,7 @@ public class Semantic1_Test extends Parser_Test {
 		IProblem[] p = getModuleProblems(s);
 		assertEquals(1, p.length);
 
-		assertError(p[0], IProblem.IllegalModifier, 12, 3);
+		assertError(p[0], IProblem.FunctionsCannotBeConstOrAuto, 12, 3);
 	}
 
 	public void testFunctionsCannotBeAuto() {
@@ -307,7 +307,7 @@ public class Semantic1_Test extends Parser_Test {
 		IProblem[] p = getModuleProblems(s);
 		assertEquals(1, p.length);
 
-		assertError(p[0], IProblem.IllegalModifier, 11, 3);
+		assertError(p[0], IProblem.FunctionsCannotBeConstOrAuto, 11, 3);
 	}
 
 	public void testNonVirtualFunctionsCannotBeAbstract() {
@@ -315,7 +315,7 @@ public class Semantic1_Test extends Parser_Test {
 		IProblem[] p = getModuleProblems(s);
 		assertEquals(1, p.length);
 
-		assertError(p[0], IProblem.IllegalModifier, 23, 3);
+		assertError(p[0], IProblem.NonVirtualFunctionsCannotBeAbstract, 23, 3);
 	}
 
 	public void testFunctionDoesNotOverrideAny() {
@@ -493,7 +493,7 @@ public class Semantic1_Test extends Parser_Test {
 		IProblem[] p = getModuleProblems(s);
 		assertEquals(1, p.length);
 
-		assertError(p[0], IProblem.IllegalModifier, 17, 1);
+		assertError(p[0], IProblem.StructsCannotBeAbstract, 17, 1);
 	}
 	
 	public void testUnionsCannotBeAbstract() {
@@ -501,7 +501,7 @@ public class Semantic1_Test extends Parser_Test {
 		IProblem[] p = getModuleProblems(s);
 		assertEquals(1, p.length);
 
-		assertError(p[0], IProblem.IllegalModifier, 16, 1);
+		assertError(p[0], IProblem.UnionsCannotBeAbstract, 16, 1);
 	}
 	
 	public void testConstructorNotAllowedInStruct() {

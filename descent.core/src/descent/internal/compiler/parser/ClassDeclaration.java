@@ -64,6 +64,7 @@ public class ClassDeclaration extends AggregateDeclaration {
 		handle = type;
 	}
 	
+	@Override
 	public void accept0(IASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
@@ -257,9 +258,8 @@ public class ClassDeclaration extends AggregateDeclaration {
 		}
 
 		if (members == null || symtab == null || scope != null) {
-			context.acceptProblem(Problem.newSemanticTypeError(IProblem.ForwardReference, 0, start, length, new String[] { 
-					new String(this.ident.ident)
-					+ " is forward reference when looking for " + new String(ident) }));
+			context.acceptProblem(Problem.newSemanticTypeError(IProblem.ForwardReferenceWhenLookingFor, 0, start, length, 
+					new String[] { new String(this.ident.ident), new String(ident) }));
 			return null;
 		}
 

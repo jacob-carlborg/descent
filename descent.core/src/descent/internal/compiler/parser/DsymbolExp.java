@@ -24,6 +24,7 @@ public class DsymbolExp extends Expression {
 		return DSYMBOL_EXP;
 	}
 	
+	@Override
 	public void accept0(IASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
@@ -90,7 +91,7 @@ public class DsymbolExp extends Expression {
 				if (type == null) {
 					type = v.type;
 					if (v.type != null) {
-						context.acceptProblem(Problem.newSemanticTypeError(IProblem.ForwardReference, 0, start, length, new String[] { "Forward reference of " + v }));
+						context.acceptProblem(Problem.newSemanticTypeError(IProblem.ForwardReference, 0, start, length, new String[] { v.toString() }));
 						type = Type.terror;
 					}
 				}
