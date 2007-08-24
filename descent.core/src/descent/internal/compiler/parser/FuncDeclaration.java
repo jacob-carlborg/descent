@@ -457,12 +457,12 @@ public class FuncDeclaration extends Declaration {
 
 			if (!gotoLmainerr) {
 				if (f.next.ty != TY.Tint32 && f.next.ty != TY.Tvoid) {
-					context.acceptProblem(Problem.newSemanticTypeError(IProblem.IllegalReturnType, 0, type.start, type.length, new String[] { "Must return int or void from main function" }));
+					context.acceptProblem(Problem.newSemanticTypeError(IProblem.IllegalMainReturnType, 0, type.start, type.length));
 				}
 			}
 			if (f.varargs != 0 || gotoLmainerr) {
 				// Lmainerr: 
-				context.acceptProblem(Problem.newSemanticTypeError(IProblem.IllegalParameters, 0, ident.start, ident.length, new String[] { "Parameters must be main() or main(char[][] args)" }));
+				context.acceptProblem(Problem.newSemanticTypeError(IProblem.IllegalMainParameters, 0, ident.start, ident.length ));
 			}
 		}
 

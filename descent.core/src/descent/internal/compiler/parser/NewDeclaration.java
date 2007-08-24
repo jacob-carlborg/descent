@@ -23,6 +23,7 @@ public class NewDeclaration extends FuncDeclaration {
 		return NEW_DECLARATION;
 	}
 	
+	@Override
 	public void accept0(IASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
@@ -65,11 +66,11 @@ public class NewDeclaration extends FuncDeclaration {
 		TypeFunction tf = (TypeFunction) type;
 		if (Argument.dim(tf.parameters, context) < 1) {
 			// TODO semantic point out the "new" token
-			context.acceptProblem(Problem.newSemanticTypeError(IProblem.IllegalParameters, 0, start, "new".length(), new String[] { "At least one argument of type unit expected" }));
+			context.acceptProblem(Problem.newSemanticTypeError(IProblem.AtLeastOneArgumentOfTypeExpected, 0, start, "new".length(), new String[] { "unit" }));
 		} else {
 			Argument a = Argument.getNth(tf.parameters, 0, context);
 			if (!a.type.equals(Type.tuns32)) {
-				context.acceptProblem(Problem.newSemanticTypeError(IProblem.IllegalParameters, 0, a.type.start, a.type.length, new String[] { "First argument must be of type uint" }));
+				context.acceptProblem(Problem.newSemanticTypeError(IProblem.FirstArgumentMustBeOfType, 0, a.type.start, a.type.length, new String[] { "uint" }));
 			}
 		}
 

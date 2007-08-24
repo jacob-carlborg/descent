@@ -367,7 +367,7 @@ public class Semantic1_Test extends Parser_Test {
 		IProblem[] p = getModuleProblems(s);
 		assertEquals(1, p.length);
 
-		assertError(p[0], IProblem.IllegalParameters, 11, 3);
+		assertError(p[0], IProblem.AtLeastOneArgumentOfTypeExpected, 11, 3);
 	}
 	
 	public void testNewIllegalArguments2() {
@@ -375,7 +375,7 @@ public class Semantic1_Test extends Parser_Test {
 		IProblem[] p = getModuleProblems(s);
 		assertEquals(1, p.length);
 
-		assertError(p[0], IProblem.IllegalParameters, 15, 3);
+		assertError(p[0], IProblem.FirstArgumentMustBeOfType, 15, 3);
 	}
 	
 	public void testDeleteIllegalArguments1() {
@@ -383,7 +383,7 @@ public class Semantic1_Test extends Parser_Test {
 		IProblem[] p = getModuleProblems(s);
 		assertEquals(1, p.length);
 
-		assertError(p[0], IProblem.IllegalParameters, 11, 6);
+		assertError(p[0], IProblem.OneArgumentOfTypeExpected, 11, 6);
 	}
 	
 	public void testDeleteIllegalArguments2() {
@@ -391,7 +391,7 @@ public class Semantic1_Test extends Parser_Test {
 		IProblem[] p = getModuleProblems(s);
 		assertEquals(1, p.length);
 
-		assertError(p[0], IProblem.IllegalParameters, 18, 3);
+		assertError(p[0], IProblem.OneArgumentOfTypeExpected, 18, 3);
 	}
 	
 	public void testConstructorsOnlyForClass() {
@@ -453,7 +453,7 @@ public class Semantic1_Test extends Parser_Test {
 		IProblem[] p = getModuleProblems(s);
 		assertEquals(1, p.length);
 
-		assertError(p[0], IProblem.IllegalParameters, 5, 4);
+		assertError(p[0], IProblem.IllegalMainParameters, 5, 4);
 	}
 	
 	public void testFunctionsCannotReturnAStaticArray() {
@@ -469,7 +469,7 @@ public class Semantic1_Test extends Parser_Test {
 		IProblem[] p = getModuleProblems(s);
 		assertEquals(1, p.length);
 
-		assertError(p[0], IProblem.IllegalParameters, 14, 6);
+		assertError(p[0], IProblem.CannotHaveOutOrInoutParameterOfTypeStaticArray, 14, 6);
 	}
 	
 	public void testCannotHaveVoidParameter() {
@@ -477,7 +477,7 @@ public class Semantic1_Test extends Parser_Test {
 		IProblem[] p = getModuleProblems(s);
 		assertEquals(1, p.length);
 
-		assertError(p[0], IProblem.IllegalParameters, 10, 4);
+		assertError(p[0], IProblem.CannotHaveParameterOfTypeVoid, 10, 4);
 	}
 	
 	public void testMoreThanOneInvariant() {
@@ -637,7 +637,7 @@ public class Semantic1_Test extends Parser_Test {
 		IProblem[] p = getModuleProblems(s);
 		assertEquals(1, p.length);
 
-		assertError(p[0], IProblem.IllegalParameters, 26, 1);
+		assertError(p[0], IProblem.StringExpectedForPragmaMsg, 26, 1);
 	}
 	
 	public void testStringExpectedForPragmaMsg_Not() {
@@ -649,7 +649,7 @@ public class Semantic1_Test extends Parser_Test {
 		IProblem[] p = getModuleProblems(s);
 		assertEquals(1, p.length);
 
-		assertError(p[0], IProblem.IllegalParameters, 26, 1);
+		assertError(p[0], IProblem.StringExpectedForPragmaLib, 26, 1);
 	}
 	
 	public void testStringExpectedForPragmaLib_Not() {
@@ -661,7 +661,7 @@ public class Semantic1_Test extends Parser_Test {
 		IProblem[] p = getModuleProblems(s);
 		assertEquals(1, p.length);
 
-		assertError(p[0], IProblem.IllegalParameters, 14, 6);
+		assertError(p[0], IProblem.LibPragmaMustRecieveASingleArgumentOfTypeString, 14, 6);
 	}
 	
 	public void testUnrecognizedPragma() {

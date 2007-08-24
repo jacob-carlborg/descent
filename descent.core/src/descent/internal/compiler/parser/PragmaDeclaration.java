@@ -33,6 +33,7 @@ public class PragmaDeclaration extends AttribDeclaration {
 		return "pragma";
 	}
 	
+	@Override
 	public void accept0(IASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
@@ -67,8 +68,8 @@ public class PragmaDeclaration extends AttribDeclaration {
 						 */
 					} else {
 						context.acceptProblem(Problem.newSemanticTypeError(
-								IProblem.IllegalParameters, 0,
-								e.start, e.length, new String[] { "String expected for message" }));
+								IProblem.StringExpectedForPragmaMsg, 0,
+								e.start, e.length));
 					}
 				}
 				// fprintf(stdmsg, "\n");
@@ -85,8 +86,8 @@ public class PragmaDeclaration extends AttribDeclaration {
 				context
 						.acceptProblem(Problem
 								.newSemanticTypeError(
-										IProblem.IllegalParameters, 0, start,
-										"pragma".length(), new String[] { "lib pragma must recieve a single argument of type string" }));
+										IProblem.LibPragmaMustRecieveASingleArgumentOfTypeString, 0, start,
+										6));
 			} else {
 				Expression e = args.get(0);
 
@@ -95,7 +96,7 @@ public class PragmaDeclaration extends AttribDeclaration {
 				args.set(0, e);
 				if (e.op != TOKstring)
 					context.acceptProblem(Problem.newSemanticTypeError(
-							IProblem.IllegalParameters, 0, e.start, e.length, new String[] { "String expected for library name" }));
+							IProblem.StringExpectedForPragmaLib, 0, e.start, e.length));
 				else if (context.global.params.verbose) {
 					/*
 					 * TODO semantic StringExp se = (StringExp )e; char *name =

@@ -21,6 +21,7 @@ public class TypeFunction extends Type {
 		this.linkage = linkage;
 	}
 	
+	@Override
 	public void accept0(IASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
@@ -80,11 +81,11 @@ public class TypeFunction extends Type {
 
 				if (arg.inout != InOut.In) {
 					if (t.ty == TY.Tsarray) {
-						context.acceptProblem(Problem.newSemanticTypeError(IProblem.IllegalParameters, 0, t.start, t.length, new String[] { "Cannot have out or inout parameter of type static array" }));
+						context.acceptProblem(Problem.newSemanticTypeError(IProblem.CannotHaveOutOrInoutParameterOfTypeStaticArray, 0, t.start, t.length));
 					}
 				}
 				if (arg.inout != InOut.Lazy && t.ty == TY.Tvoid) {
-					context.acceptProblem(Problem.newSemanticTypeError(IProblem.IllegalParameters, 0, t.start, t.length, new String[] { "Cannot have parameter of type void" }));
+					context.acceptProblem(Problem.newSemanticTypeError(IProblem.CannotHaveParameterOfTypeVoid, 0, t.start, t.length));
 				}
 
 				if (arg.defaultArg != null) {

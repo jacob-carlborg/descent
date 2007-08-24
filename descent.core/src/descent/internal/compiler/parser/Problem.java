@@ -251,8 +251,6 @@ public class Problem implements IProblem {
 			return "New allocators only are for class or struct definitions";
 		case DeleteDeallocatorsOnlyForClassOrStruct:
 			return "Delete deallocators only are for class or struct definitions";
-		case IllegalParameters:
-			return arguments[0];
 		case ConstructorsOnlyForClass:
 			return "Constructors only are for class definitions";
 		case DestructorsOnlyForClass:
@@ -312,7 +310,27 @@ public class Problem implements IProblem {
 		case AliasCannotBeConst:
 			return "alias cannot be const";
 		case OneArgumentOfTypeExpected:
-			return "one argument of type " + arguments[0] + " expected";
+			return "One argument of type " + arguments[0] + " expected";
+		case IllegalMainParameters:
+			return "Parameters must be main() or main(char[][] args)";
+		case IllegalMainReturnType:
+			return "Must return int or void from main function";
+		case AtLeastOneArgumentOfTypeExpected:
+			return "At least one argument of type " + arguments[0] + " expected";
+		case FirstArgumentMustBeOfType:
+			return "First argument must be of type " + arguments[0];
+		case StringExpectedForPragmaMsg:
+			return "String expected for message";
+		case LibPragmaMustRecieveASingleArgumentOfTypeString:
+			return "lib pragma must recieve a single argument of type string";
+		case StringExpectedForPragmaLib:
+			return "String expected for library name";
+		case CannotHaveOutOrInoutParameterOfTypeStaticArray:
+			return "Cannot have out or inout parameter of type static array";
+		case CannotHaveParameterOfTypeVoid:
+			return "Cannot have parameter of type void";
+		case FunctionsCannotReturnStaticArrays:
+			return "Functions cannot return static arrays";
 		default:
 			return "";
 		}

@@ -21,6 +21,7 @@ public class PragmaStatement extends Statement {
 		this.body = body;
 	}
 	
+	@Override
 	public void accept0(IASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
@@ -37,7 +38,7 @@ public class PragmaStatement extends Statement {
 		if (CharOperation.equals(ident.ident, Id.msg)) {
 			if (args != null) {
 				for (int i = 0; i < args.size(); i++) {
-					Expression e = (Expression) args.get(i);
+					Expression e = args.get(i);
 
 					e = e.semantic(sc, context);
 					e = e.optimize(WANTvalue | WANTinterpret);
@@ -48,8 +49,8 @@ public class PragmaStatement extends Statement {
 						 */
 					} else {
 						context.acceptProblem(Problem.newSemanticTypeError(
-								IProblem.IllegalParameters, 0,
-								e.start, e.length, new String[] { "String expected for message" }));
+								IProblem.StringExpectedForPragmaMsg, 0,
+								e.start, e.length));
 					}
 				}
 				/* TODO semantic
@@ -61,17 +62,17 @@ public class PragmaStatement extends Statement {
 				context
 						.acceptProblem(Problem
 								.newSemanticTypeError(
-										IProblem.IllegalParameters, 0, start,
-										"pragma".length(), new String[] { "lib pragma must recieve a single argument of type string" }));
+										IProblem.LibPragmaMustRecieveASingleArgumentOfTypeString, 0, start,
+										"pragma".length()));
 			} else {
-				Expression e = (Expression) args.get(0);
+				Expression e = args.get(0);
 				e = e.semantic(sc, context);
 				e = e.optimize(WANTvalue | WANTinterpret);
 				args.set(0, e);
 				if (e.op != TOK.TOKstring) {
 					context.acceptProblem(Problem.newSemanticTypeError(
-							IProblem.IllegalParameters, 0,
-							e.start, e.length, new String[] { "String expected for library name" }));
+							IProblem.StringExpectedForPragmaLib, 0,
+							e.start, e.length));
 				} else if (context.global.params.verbose) {
 					/* TODO semantic
 					 StringExp se = (StringExp )e;
