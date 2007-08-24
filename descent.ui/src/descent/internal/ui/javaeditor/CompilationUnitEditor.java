@@ -95,6 +95,7 @@ import descent.core.JavaCore;
 import descent.core.JavaModelException;
 import descent.core.dom.CompilationUnit;
 import descent.core.formatter.DefaultCodeFormatterConstants;
+import descent.internal.corext.util.CodeFormatterUtil;
 import descent.internal.corext.util.JavaModelUtil;
 import descent.internal.ui.IJavaHelpContextIds;
 import descent.internal.ui.JavaPlugin;
@@ -1474,12 +1475,9 @@ public class CompilationUnitEditor extends JavaEditor implements IJavaReconcilin
 	}
 
 	private int getTabSize() {
-		/* TOOD JDT UI format
 		IJavaElement element= getInputJavaElement();
 		IJavaProject project= element == null ? null : element.getJavaProject();
 		return CodeFormatterUtil.getTabWidth(project);
-		*/
-		return 4;
 	}
 
 	private void startTabConversion() {

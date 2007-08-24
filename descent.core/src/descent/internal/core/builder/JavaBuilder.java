@@ -23,6 +23,7 @@ import descent.core.JavaCore;
 import descent.core.compiler.CharOperation;
 import descent.core.compiler.IProblem;
 import descent.core.dom.AST;
+import descent.core.dom.CompilationUnitResolver;
 import descent.internal.compiler.parser.Module;
 import descent.internal.compiler.parser.Parser;
 
@@ -121,6 +122,8 @@ public class JavaBuilder extends IncrementalProjectBuilder implements IResourceD
 					);
 			Module module = parser.parseModuleObj();
 			
+			CompilationUnitResolver.resolve(module);
+			
 			removeTasks(file);
 			removeProblems(file);
 			
@@ -184,7 +187,7 @@ public class JavaBuilder extends IncrementalProjectBuilder implements IResourceD
 			marker.setAttribute(IMarker.MESSAGE, problem.getMessage());
 			marker.setAttribute(IMarker.SEVERITY, problem.isError() ? IMarker.SEVERITY_ERROR : IMarker.SEVERITY_WARNING);
 			marker.setAttribute(IMarker.CHAR_START, problem.getSourceStart());
-			marker.setAttribute(IMarker.CHAR_END, problem.getSourceEnd()); // for markers it's + 1
+			marker.setAttribute(IMarker.CHAR_END, problem.getSourceEnd() + 1); // for markers it's + 1
 			marker.setAttribute(IMarker.LINE_NUMBER, problem.getSourceLineNumber());
 		}
 	}

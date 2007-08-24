@@ -176,6 +176,50 @@
       <initializer class="descent.ui.preferences.PreferenceInitializer"/>
       -->
    </extension>
+   <!-- Note: Do not change the sequence of those hover contributions -->
+   <extension
+         point="descent.ui.javaEditorTextHovers">
+      <hover
+            label="%sequentialHover"
+            description="%sequentialHoverDescription"
+            class="descent.internal.ui.text.java.hover.BestMatchHover"
+            id="descent.ui.BestMatchHover">
+      </hover>
+      <hover
+            label="%problemHover"
+            description="%problemHoverDescription"
+            class="descent.internal.ui.text.java.hover.ProblemHover"
+            id="descent.ui.ProblemHover">
+      </hover>
+      <!--
+      <hover
+            label="%nlsStringHover"
+            description="%nlsStringHoverDescription"
+            class="descent.internal.ui.text.java.hover.NLSStringHover"
+            id="descent.ui.NLStringHover">
+      </hover>
+      -->
+      <hover
+            label="%javadocHover"
+            description="%javadocHoverDescription"
+            class="descent.internal.ui.text.java.hover.JavadocHover"
+            id="descent.ui.JavadocHover">
+      </hover>
+      <!--
+      <hover
+            label="%sourceHover"
+            description="%sourceHoverDescription"
+            class="descent.internal.ui.text.java.hover.JavaSourceHover"
+            id="descent.ui.JavaSourceHover">
+      </hover>
+      <hover
+            label="%annotationHover"
+            description="%annotationHoverDescription"
+            class="descent.internal.ui.text.java.hover.AnnotationHover"
+            id="descent.ui.AnnotationHover">
+      </hover>
+      -->
+   </extension>
    <extension
          point="org.eclipse.ui.perspectives">
       <perspective
@@ -789,7 +833,7 @@
             category="descent.ui.preferences.JavaBasePreferencePage"
             class="descent.internal.debug.ui.jres.JREsPreferencePage"
             id="descent.debug.ui.preferences.VMPreferencePage">
-         <keywordReference id="org.eclipse.jdt.debug.ui.jres"/>
+         <keywordReference id="descent.debug.ui.jres"/>
       </page>
       <!--
       <page

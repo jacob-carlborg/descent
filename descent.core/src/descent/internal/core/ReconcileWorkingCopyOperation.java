@@ -31,6 +31,7 @@ import descent.core.compiler.ReconcileContext;
 import descent.core.dom.AST;
 import descent.core.dom.ASTConverter;
 import descent.core.dom.ASTParser;
+import descent.core.dom.CompilationUnitResolver;
 import descent.internal.compiler.parser.Module;
 import descent.internal.compiler.parser.Parser;
 import descent.internal.core.util.Messages;
@@ -164,6 +165,7 @@ public class ReconcileWorkingCopyOperation extends JavaModelOperation {
 			    //CompilationUnitDeclaration unit = null;
 			    try {
 			    	// find problems
+			    	CompilationUnitResolver.resolve(module);
 			    	/* TODO JDT problems
 					char[] contents = workingCopy.getContents();
 					unit = 

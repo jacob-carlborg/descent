@@ -32,6 +32,8 @@ import descent.internal.core.util.Util;
 
 public class CompilationUnitResolver extends descent.internal.compiler.Compiler {
 	
+	private final static boolean RESOLVE = true;
+	
 	public static class ParseResult {
 		public Module module;
 		public PublicScanner scanner;
@@ -140,11 +142,13 @@ public class CompilationUnitResolver extends descent.internal.compiler.Compiler 
 			IProgressMonitor monitor) throws JavaModelException {
 		
 		ParseResult result = parse(apiLevel, sourceUnit, options, statementsRecovery);
-		// return resolve(result.module);
+		resolve(result.module);
 		return result;
 	}
 	
-	public static Module resolve(final Module module) {
+	public static void resolve(final Module module) {
+		if (!RESOLVE) return;
+		
 		module.semantic(new SemanticContext(new IProblemRequestor() {
 			public void acceptProblem(IProblem problem) {
 				module.problems.add(problem);
@@ -157,7 +161,6 @@ public class CompilationUnitResolver extends descent.internal.compiler.Compiler 
 				return true;
 			}
 		}, module.apiLevel));
-		return module;
 	}
 	
 	public static CompilationUnit convert(AST ast, ParseResult parseResult, IProgressMonitor monitor) {

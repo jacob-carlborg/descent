@@ -56,6 +56,7 @@ import descent.core.compiler.CharOperation;
 import descent.core.compiler.IProblem;
 import descent.core.dom.AST;
 import descent.core.dom.ASTConverter;
+import descent.core.dom.CompilationUnitResolver;
 import descent.internal.compiler.SourceElementParser;
 import descent.internal.compiler.impl.CompilerOptions;
 import descent.internal.compiler.parser.Module;
@@ -188,6 +189,8 @@ protected boolean buildStructure(OpenableElementInfo info, final IProgressMonito
 	// CompilationUnit compilationUnitDeclaration = null;
 	try {
 		if (computeProblems) {	
+			CompilationUnitResolver.resolve(module);
+			
 			if (problems == null) {
 				// report problems to the problem requestor
 				problems = new HashMap();

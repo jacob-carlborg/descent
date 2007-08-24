@@ -30,6 +30,8 @@ import descent.internal.compiler.parser.ast.ASTNode;
 
 // class Object in DMD compiler
 public abstract class ASTDmdNode extends ASTNode {
+	
+	private final static boolean ILLEGAL_STATE_EXCEPTION_ON_UNIMPLEMENTED_SEMANTIC = false;
 
 	public final static int WANTflags = 1;
 	public final static int WANTvalue = 2;
@@ -643,19 +645,27 @@ public abstract class ASTDmdNode extends ASTNode {
 	}
 
 	protected void error(String s) {
-		throw new IllegalStateException("Problem reporting not implemented");
+		if (ILLEGAL_STATE_EXCEPTION_ON_UNIMPLEMENTED_SEMANTIC) {
+			throw new IllegalStateException("Problem reporting not implemented");
+		}
 	}
 
 	protected void error(String s, int... s2) {
-		throw new IllegalStateException("Problem reporting not implemented");
+		if (ILLEGAL_STATE_EXCEPTION_ON_UNIMPLEMENTED_SEMANTIC) {
+			throw new IllegalStateException("Problem reporting not implemented");
+		}
 	}
 
 	protected void error(String s, String... s2) {
-		throw new IllegalStateException("Problem reporting not implemented");
+		if (ILLEGAL_STATE_EXCEPTION_ON_UNIMPLEMENTED_SEMANTIC) {
+			throw new IllegalStateException("Problem reporting not implemented");
+		}
 	}
 	
 	protected void error(String s, char[]... s2) {
-		throw new IllegalStateException("Problem reporting not implemented");
+		if (ILLEGAL_STATE_EXCEPTION_ON_UNIMPLEMENTED_SEMANTIC) {
+			throw new IllegalStateException("Problem reporting not implemented");
+		}
 	}
 
 	public void expandTuples(List<Expression> exps) {
