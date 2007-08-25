@@ -1,7 +1,7 @@
 package mmrnmhrm.ui;
 
 import mmrnmhrm.core.dltk.DeeLanguageToolkit;
-import mmrnmhrm.ui.editor.DeeEditorDLTK;
+import mmrnmhrm.ui.editor.DeeEditor;
 import mmrnmhrm.ui.preferences.DeeCompilersPreferencePage;
 import mmrnmhrm.ui.text.DeeSimpleSourceViewerConfiguration;
 
@@ -37,7 +37,7 @@ public class DeeUILanguageToolkit implements IDLTKUILanguageToolkit {
 	
 	@Override
 	public String getEditorId(Object inputElement) {
-		return DeeEditorDLTK.EDITOR_ID;
+		return DeeEditor.EDITOR_ID;
 	}
 	
 	@Override

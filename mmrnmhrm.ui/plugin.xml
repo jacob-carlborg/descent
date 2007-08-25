@@ -104,19 +104,12 @@
    </extension>
    	 <extension
 	     point="org.eclipse.ui.editors">
-      <editor
-            class="mmrnmhrm.ui.editor.DeeEditor"
-            contributorClass="mmrnmhrm.ui.editor.DeeEditorActionContributor"
-            icon="icons/obj16/dee_file.gif"
-            id="mmrnmhrm.ui.editors.DeeEditor"
-            name="Dee Editor (Mmrnmhrm)">
-      </editor>
 	  <editor
-         class="mmrnmhrm.ui.editor.DeeEditorDLTK"
-         contributorClass="org.eclipse.dltk.internal.ui.editor.SourceModuleEditorActionContributor"
+         class="mmrnmhrm.ui.editor.DeeEditor"
+         contributorClass="mmrnmhrm.ui.editor.DeeEditorActionContributor"
          default="true"
-         icon="icons/sample.gif"
-         id="mmrnmhrm.ui.editors.DeeEditorDLTK"
+         icon="icons/obj16/dee_file.gif"
+         id="mmrnmhrm.ui.editors.DeeEditor"
          name="%LangEditor.name">
       <contentTypeBinding
             contentTypeId="mmrnmhrm.core.content.dsource">
@@ -139,16 +132,10 @@
    <extension
          point="org.eclipse.ui.contexts">
       <context
-            description="Editing Dee Source"
-            id="mmrnmhrm.ui.contexts.DeeEditor"
-            name="Editing Dee Source"
-            parentId="org.eclipse.ui.textEditorScope">
-      </context>
-      <context
             name="%LangEditContext.name"
             description="%LangEditContext.description"
             parentId="org.eclipse.dltk.ui.scriptEditorScope"
-            id="mmrnmhrm.ui.contexts.DeeEditorDLTK">
+            id="mmrnmhrm.ui.contexts.DeeEditor">
       </context>
    </extension>
    <extension
@@ -405,7 +392,7 @@
                               definitionId="mmrnmhrm.core.expressions.isDeeNatureContainer">
                         </reference>
                         <instanceof
-                              value="mmrnmhrm.core.model.IDeeSourceRoot">
+                              value="org.eclipse.dltk.core.IProjectFragment">
                         </instanceof>
                      </or>
                   </iterate>
@@ -443,7 +430,7 @@
                         variable="activeMenuSelection">
                      <iterate>
                         <instanceof
-                              value="mmrnmhrm.core.model.IDeeSourceRoot">
+                              value="org.eclipse.dltk.core.IProjectFragment">
                         </instanceof>
                      </iterate>
                   </with>
@@ -559,26 +546,6 @@
                id="mmrnmhrm.ui.actions.navigatorActionProvider">
          </actionProvider>
       </navigatorContent>
-   </extension>
-   <extension
-         point="org.eclipse.core.runtime.adapters">
-      <factory
-            adaptableType="mmrnmhrm.core.model.lang.ILangElement"
-            class="mmrnmhrm.ui.LangAdapterFactory">
-         <adapter
-               type="org.eclipse.core.resources.IResource">
-         </adapter>
-         <adapter
-               type="org.eclipse.ui.IContributorResourceAdapter">
-         </adapter>
-      </factory>
-      <factory
-            adaptableType="mmrnmhrm.core.model.IDeeSourceRoot"
-            class="mmrnmhrm.ui.LangAdapterFactory">
-         <adapter
-               type="org.eclipse.core.resources.IFolder">
-         </adapter>
-      </factory>
    </extension>
    <extension
          point="org.eclipse.ui.workbench.texteditor.hyperlinkDetectorTargets">

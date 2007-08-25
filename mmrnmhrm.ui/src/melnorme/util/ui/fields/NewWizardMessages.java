@@ -1,4 +1,4 @@
-package mmrnmhrm.ui.wizards;
+package melnorme.util.ui.fields;
 
 public class NewWizardMessages {
 

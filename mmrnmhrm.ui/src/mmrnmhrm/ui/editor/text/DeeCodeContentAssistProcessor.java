@@ -2,10 +2,10 @@ package mmrnmhrm.ui.editor.text;
 
 import java.util.ArrayList;
 
-import mmrnmhrm.core.model.CompilationUnit;
 import mmrnmhrm.ui.DeePlugin;
 import mmrnmhrm.ui.views.DeeElementImageProvider;
 
+import org.eclipse.dltk.core.ISourceModule;
 import org.eclipse.jface.text.ITextViewer;
 import org.eclipse.jface.text.contentassist.ContentAssistEvent;
 import org.eclipse.jface.text.contentassist.ContentAssistant;
@@ -55,16 +55,17 @@ public class DeeCodeContentAssistProcessor implements IContentAssistProcessor {
 			final int offset) {
 		
 		IEditorInput editorInput = textEditor.getEditorInput();
-		CompilationUnit cunit;
-		cunit = DeePlugin.getCompilationUnitOperation(editorInput);
+		ISourceModule moduleUnit = DeePlugin.getModuleUnit(editorInput);
+
+		String str = viewer.getDocument().get();
+		ICompletionProposal[] proposals = computeProposals(offset, moduleUnit, str, session);
 		
-		ICompletionProposal[] proposals = computeProposals(offset, cunit, session);
 		errorMsg = session.errorMsg;
 		return proposals; 
 	}
 		
 	public static ICompletionProposal[] computeProposals(final int offset,
-			CompilationUnit cunit, CompletionSession session) {
+			ISourceModule moduleUnit, String source, CompletionSession session) {
 		
 		final ArrayList<ICompletionProposal> results;
 		results = new ArrayList<ICompletionProposal>();
@@ -86,8 +87,9 @@ public class DeeCodeContentAssistProcessor implements IContentAssistProcessor {
 			
 		};
 		
+		
 		session.errorMsg = PrefixDefUnitSearch.doCompletionSearch(offset, 
-				cunit, cunit.getDocument().get(), session, defUnitAccepter);
+				moduleUnit, source, session, defUnitAccepter);
 		
 		if(session.errorMsg == null)
 			return results.toArray(RESULTS_EMPTY_ARRAY);

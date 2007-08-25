@@ -4,7 +4,6 @@ import melnorme.lang.ui.ExceptionHandler;
 import mmrnmhrm.core.DeeCore;
 import mmrnmhrm.core.model.DeeModel;
 import mmrnmhrm.core.model.DeeProject;
-import mmrnmhrm.ui.wizards.projconfig.ProjectConfigBlock;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IWorkspaceRunnable;
@@ -19,13 +18,11 @@ import org.eclipse.ui.dialogs.PropertyPage;
 
 public class ProjConfigPropertyPage extends PropertyPage {
 	
-	public static final String PAGEID = "mmrnmhrm.ui.properties.projectConfigPage";  
-
-	private ProjectConfigBlock fProjCfg;
+	//private ProjectConfigBlock fProjCfg;
 	private DeeProject fDeeProject;
 
 	public ProjConfigPropertyPage() {
-		fProjCfg = new ProjectConfigBlock();
+		//fProjCfg = new ProjectConfigBlock();
 	}
 	
 	/*** {@inheritDoc} */
@@ -40,8 +37,9 @@ public class ProjConfigPropertyPage extends PropertyPage {
 			setVisible(false);
 			return label;
 		} else {
-			fProjCfg.init(fDeeProject);
-			return fProjCfg.createControl(parent);
+			//fProjCfg.init(fDeeProject);
+			//return fProjCfg.createControl(parent);
+			return null;
 		}
 	}
 	
@@ -65,8 +63,8 @@ public class ProjConfigPropertyPage extends PropertyPage {
 		try {
 			DeeCore.run(new IWorkspaceRunnable() {
 				public void run(IProgressMonitor monitor) throws CoreException {
-					fProjCfg.applyConfig();
-					fDeeProject.saveProjectConfigFile();
+					//fProjCfg.applyConfig();
+					fDeeProject.dltkProj.save(null, false);
 				}
 			}, null);
 		} catch (CoreException e) {

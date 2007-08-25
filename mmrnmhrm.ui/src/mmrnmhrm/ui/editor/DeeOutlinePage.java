@@ -1,10 +1,10 @@
 package mmrnmhrm.ui.editor;
 
+import melnorme.miscutil.Assert;
+import melnorme.miscutil.log.Logg;
 import melnorme.miscutil.tree.IElement;
 import melnorme.util.ui.swt.SWTUtil2;
 import mmrnmhrm.core.dltk.ModelUtil;
-import mmrnmhrm.ui.editor.outline.DeeOutlineContentProvider;
-import mmrnmhrm.ui.editor.outline.DeeOutlineLabelProvider;
 
 import org.eclipse.dltk.ast.declarations.ModuleDeclaration;
 import org.eclipse.dltk.core.DLTKCore;
@@ -18,8 +18,8 @@ import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 
-import descent.internal.compiler.parser.ast.IASTNode;
-import dtool.dom.definitions.Module;
+import descent.internal.compiler.parser.ast.ASTNode;
+
 
 public class DeeOutlinePage extends ScriptOutlinePage {
 
@@ -27,29 +27,70 @@ public class DeeOutlinePage extends ScriptOutlinePage {
 		super(editor, store);
 	}
 
-	
-	private final class DeeOutlinePageContentProvider extends ChildrenProvider {
-		private final class OutlineElementChangedListener implements
-				IElementChangedListener {
+	public final class DeeOutlinePageContentProvider extends DeeOutlineContentProvider {
+
+		private final class ElementChangedListener implements IElementChangedListener {
+			
 			public void elementChanged(org.eclipse.dltk.core.ElementChangedEvent event) {
+				if(getControl() == null || fOutlineViewer == null)
+					Assert.fail();
 				SWTUtil2.runInSWTThread(new Runnable() {
 					public void run() {
-						getControl().setRedraw(false);
-						fOutlineViewer.refresh();
-						fOutlineViewer.expandAll();
-						getControl().setRedraw(true);
+						if(getControl() == null || fOutlineViewer == null)
+							return; // may have been disposed meanwhile
+						deeOutlinePage.getControl().setRedraw(false);
+						deeOutlinePage.fOutlineViewer.refresh();
+						deeOutlinePage.fOutlineViewer.expandAll();
+						deeOutlinePage.getControl().setRedraw(true);
 					}
 				});
 			}
 		}
 
+		private final DeeOutlinePage deeOutlinePage;
+
+		DeeOutlinePageContentProvider(DeeOutlinePage deeOutlinePage) {
+			this.deeOutlinePage = deeOutlinePage;
+		}
+
+		private IElementChangedListener fListener;
+
+
+		@Override
+		public void inputChanged(Viewer viewer, Object oldInput,
+				Object newInput) {
+			boolean isCU = (newInput instanceof ISourceModule);
+
+			if (isCU && fListener == null) {
+				fListener = new ElementChangedListener();
+				DLTKCore.addElementChangedListener(fListener);
+			} else if (!isCU && fListener != null) {
+				DLTKCore.removeElementChangedListener(fListener);
+				fListener = null;
+			}
+		}
+		
+		@Override
+		public void dispose() {
+			Logg.main.println("OutlinePageContentProvider disposing:" + this);
+			if (fListener != null) {
+				Logg.main.println("OutlinePageContentProvider remove listener:" + this);
+				DLTKCore.removeElementChangedListener(fListener);
+				fListener = null;
+			}
+			//super.dispose();
+			Logg.main.println("OutlinePageContentProvider disposed:" + this);
+			//ModelManager.getModelManager().deltaState.elementChangedListeners.clone();
+		}
+		
+		@Override
+		public boolean hasChildren(Object element) {
+			return super.hasChildren(element);
+		}
+
+
 		@Override
 		public Object[] getChildren(Object element) {
-			if(element instanceof Module 
-					|| DeeOutlineContentProvider.isDeclarationWithDefUnits(element)) {
-				IASTNode node = (IASTNode) element;
-				return DeeOutlineContentProvider.filterElements(node.getChildren());
-			}
 			return super.getChildren(element);
 		}
 
@@ -59,28 +100,20 @@ public class DeeOutlinePage extends ScriptOutlinePage {
 				ISourceModule sourceModule = (ISourceModule) parent;
 				ModuleDeclaration moduleDec = ModelUtil.parseModule(sourceModule);
 				if(moduleDec != null)
-					return ModelUtil.getNeoASTModule(moduleDec).getChildren();
+					return super.getElements(ModelUtil.getNeoASTModule(moduleDec));
 			}
-				
-			return super.getElements(parent);
-		}
-
-		@Override
-		public void inputChanged(Viewer viewer, Object oldInput,
-				Object newInput) {
-			boolean isCU = (newInput instanceof ISourceModule);
-
-			if (isCU && fListener == null) {
-				fListener = new OutlineElementChangedListener();
-				DLTKCore.addElementChangedListener(fListener);
-			} else if (!isCU && fListener != null) {
-				DLTKCore.removeElementChangedListener(fListener);
-				fListener = null;
-			}
+			return ASTNode.NO_ELEMENTS;
 		}
 		
-	}
+		@Override
+		public Object getParent(Object element) {
+			if(element instanceof IElement)
+				return super.getParent(element);
+			return null;
+		}
 
+	}
+	
 	public static class DeeOutlineLabelDecorator extends DeeOutlineLabelProvider
 		implements ILabelDecorator {
 
@@ -97,7 +130,6 @@ public class DeeOutlinePage extends ScriptOutlinePage {
 		}
 	}
 	
-	private IElementChangedListener fListener;
 	
 	protected ILabelDecorator getLabelDecorator() {
 		return new DeeOutlineLabelDecorator(); 
@@ -105,17 +137,18 @@ public class DeeOutlinePage extends ScriptOutlinePage {
 	
 	@Override
 	public void createControl(Composite parent) {
-		
 		super.createControl(parent);
 		fOutlineViewer.setComparator(null);
-		fOutlineViewer.setContentProvider(new DeeOutlinePageContentProvider());
+		fOutlineViewer.setContentProvider(new DeeOutlinePageContentProvider(this));
 		fOutlineViewer.setLabelProvider(new DeeOutlineLabelDecorator());
 		fOutlineViewer.expandAll();
 	}
 	
 	@Override
 	public void dispose() {
+		Logg.main.println("OutlinePage disposing:" + this);
 		super.dispose();
+		Logg.main.println("OutlinePage disposed:" + this);
 	}
 	
 	

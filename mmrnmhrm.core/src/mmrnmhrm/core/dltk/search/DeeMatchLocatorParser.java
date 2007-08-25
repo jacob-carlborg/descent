@@ -15,12 +15,10 @@ import dtool.dom.definitions.DefinitionAggregate;
 import dtool.dom.definitions.DefinitionClass;
 import dtool.dom.definitions.Module;
 
-public class RubyMatchLocatorParser extends MatchLocatorParser {
-	// private JRubySourceParser parser;
+public class DeeMatchLocatorParser extends MatchLocatorParser {
 
-	public RubyMatchLocatorParser(MatchLocator locator) {
+	public DeeMatchLocatorParser(MatchLocator locator) {
 		super(locator);
-		// parser = new JRubySourceParser(null);
 	}
 
 	public ModuleDeclaration parse(PossibleMatch possibleMatch) {

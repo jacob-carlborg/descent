@@ -5,7 +5,7 @@ import java.util.List;
 import melnorme.miscutil.ListUtil;
 import melnorme.util.ui.fields.FolderSelectionDialog;
 import melnorme.util.ui.swt.RowComposite;
-import mmrnmhrm.core.LangCore;
+import mmrnmhrm.core.DeeCore;
 import mmrnmhrm.core.model.DeeProject;
 import mmrnmhrm.ui.DeePlugin;
 
@@ -41,7 +41,7 @@ public abstract class AbstractConfigPage {
 
 	public AbstractConfigPage() {
 		super();
-		this.fWorkspaceRoot = LangCore.getWorkspaceRoot();
+		this.fWorkspaceRoot = DeeCore.getWorkspaceRoot();
 	}
 
 	public void init(DeeProject project) {

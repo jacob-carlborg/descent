@@ -15,7 +15,7 @@ public class ASTViewerContentProvider extends ElementContentProvider {
 	public Object[] getElements(Object inputElement) {
 		IElement input;
 		if(view.fUseOldAst == true)
-			input = view.fCUnit.getOldModule();
+			input = view.fCUnit.getDmdModule();
 		else
 			input = view.fCUnit.getModule();
 		if(input == null)

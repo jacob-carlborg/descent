@@ -18,7 +18,7 @@ import org.eclipse.ui.texteditor.ITextEditor;
  * This simple source viewer configuration basically provides syntax coloring
  * and disables all other features like code assist, quick outlines, hyperlinking, etc.
  */
-public class DeeSimpleSourceViewerConfiguration extends DeeSourceViewerConfigurationDLTK {
+public class DeeSimpleSourceViewerConfiguration extends DeeSourceViewerConfiguration {
 
 	private boolean fConfigureFormatter;
 	

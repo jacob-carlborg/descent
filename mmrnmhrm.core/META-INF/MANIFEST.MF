@@ -9,8 +9,7 @@ Bundle-Localization: plugin
 Export-Package: mmrnmhrm.core,
  mmrnmhrm.core.build,
  mmrnmhrm.core.dltk,
- mmrnmhrm.core.model,
- mmrnmhrm.core.model.lang
+ mmrnmhrm.core.model
 Require-Bundle: com.ibm.icu,
  dtool;visibility:=reexport,
  org.eclipse.core.runtime,

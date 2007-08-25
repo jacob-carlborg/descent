@@ -8,6 +8,7 @@ import mmrnmhrm.tests.BasePluginTest;
 import mmrnmhrm.tests.SampleMainProject;
 
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.dltk.core.ModelException;
 import org.junit.Test;
 
 import descent.internal.compiler.parser.ast.IASTNode;
@@ -46,13 +47,12 @@ public abstract class FindDef_CommonTest extends BasePluginTest {
 	}
 	
 	@Test
-	public void test() {
+	public void test() throws ModelException {
 		assertFindReF(cunit, offset, cunit, targetOffset);
 	}
-
 	
 	public static void assertFindReF(CompilationUnit cunit, int offset,
-			CompilationUnit targetCunit, int targetOffset) {
+			CompilationUnit targetCunit, int targetOffset) throws ModelException {
 		counter++;
 		System.out.print("Find ref case #"+counter+": "+offset+": ");
 		System.out.println(cunit.getSource().substring(offset).split("\\s")[0]);

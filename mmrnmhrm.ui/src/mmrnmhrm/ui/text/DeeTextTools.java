@@ -17,7 +17,7 @@ public class DeeTextTools extends ScriptTextTools {
 	public DeeTextTools(boolean autoDisposeOnDisplayDispose) {
 		super(DeePartitions.DEE_PARTITIONING, DeePartitions.LEGAL_CONTENT_TYPES,
 				autoDisposeOnDisplayDispose);
-		fPartitionScanner = new DeePartitionScannerDLTK();
+		fPartitionScanner = new DeePartitionScanner();
 	}
 
 	@Override
@@ -30,7 +30,7 @@ public class DeeTextTools extends ScriptTextTools {
 			IPreferenceStore preferenceStore, ITextEditor editor,
 			String partitioning) {
 		Assert.isTrue(partitioning.equals(DeePartitions.DEE_PARTITIONING));
-		return new DeeSourceViewerConfigurationDLTK(getColorManager(),
+		return new DeeSourceViewerConfiguration(getColorManager(),
 				preferenceStore, editor, DeePartitions.DEE_PARTITIONING);
 	}
 

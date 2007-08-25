@@ -4,32 +4,20 @@ import mmrnmhrm.ui.DeePlugin;
 import mmrnmhrm.ui.DeePluginImages;
 import mmrnmhrm.ui.actions.GoToDefinitionHandler;
 
+import org.eclipse.dltk.internal.ui.editor.SourceModuleEditorActionContributor;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.IWorkbenchActionConstants;
 import org.eclipse.ui.menus.CommandContributionItem;
-import org.eclipse.ui.texteditor.BasicTextEditorActionContributor;
 
-public class DeeEditorActionContributor extends	BasicTextEditorActionContributor {
-
-	private DeeEditorActionContributor instance;
+public class DeeEditorActionContributor extends	SourceModuleEditorActionContributor {
 
 	//private AbstractDeeEditorAction fGoToDefiniton;
 	//private CommandContributionItem fGoToDefinitonHandler;
 	//private AbstractDeeEditorAction ftestAction;
 	
 	
-	public DeeEditorActionContributor() {
-		instance = this;
-		//fGoToDefiniton = new GoToDefinitionAction(null);
-		//fGoToDefinitonHandler =	getCommand_FindDefinition();
-	}
-	
-	public DeeEditorActionContributor getInstance() {
-		return instance;
-	}
-
 	public static CommandContributionItem getCommand_FindDefinition() {
 		ImageDescriptor imgDesc = DeePluginImages.createActionImageDescriptor("gotodef.gif", true);
 		return new CommandContributionItem(DeePlugin.getActiveWorkbenchWindow(), null, 

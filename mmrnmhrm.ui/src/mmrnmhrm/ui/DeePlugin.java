@@ -9,13 +9,14 @@ import melnorme.miscutil.log.Logg;
 import mmrnmhrm.core.model.CompilationUnit;
 import mmrnmhrm.core.model.DeeModel;
 import mmrnmhrm.core.model.DeeNameRules;
-import mmrnmhrm.ui.text.DeeDocumentProvider;
 import mmrnmhrm.ui.text.DeeTextTools;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.dltk.core.DLTKCore;
+import org.eclipse.dltk.core.ISourceModule;
 import org.eclipse.dltk.ui.text.ScriptTextTools;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.part.FileEditorInput;
@@ -38,7 +39,6 @@ public class DeePlugin extends LangPlugin {
 	public static DeePlugin getDefault() {
 		return pluginInstance;
 	}
-	private static DeeDocumentProvider deeDocumentProvider;
 	
 	private DeeTextTools fTextTools;
 
@@ -65,7 +65,6 @@ public class DeePlugin extends LangPlugin {
 		Logg.main.println("Location: " + Platform.getLocation());
 		Logg.main.println("Instance Location: " + Platform.getInstanceLocation().getURL());
 
-		deeDocumentProvider = new DeeDocumentProvider();
 		//defaultDeeCodeScanner = new DeeCodeScanner();
 		
 		getInstance().cunitMap = new HashMap<IEditorInput, CompilationUnit>();
@@ -76,11 +75,6 @@ public class DeePlugin extends LangPlugin {
 		// nothing to do
 	}
 
-	public static DeeDocumentProvider getDeeDocumentProvider() {
-		return deeDocumentProvider;
-	}
-	
-	
 	public ScriptTextTools getTextTools() {
 		if (fTextTools == null) {
 			fTextTools = new DeeTextTools(true);
@@ -121,6 +115,14 @@ public class DeePlugin extends LangPlugin {
 			LangPlugin.log(ce);
 			return null;
 		}
+	}
+
+	public static ISourceModule getModuleUnit(IEditorInput editorInput) {
+		if(editorInput instanceof FileEditorInput) {
+			IFile file = ((FileEditorInput)editorInput).getFile();
+			return DLTKCore.createSourceModuleFrom(file);
+		}
+		return null;
 	}
 
 

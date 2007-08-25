@@ -1,12 +1,13 @@
 package mmrnmhrm.ui.navigator;
 
-import mmrnmhrm.core.model.CompilationUnit;
+import mmrnmhrm.core.model.DeeModel;
 import mmrnmhrm.ui.actions.ISimpleRunnable;
 import mmrnmhrm.ui.actions.OperationsManager;
-import mmrnmhrm.ui.editor.DeeEditorDLTK;
+import mmrnmhrm.ui.editor.DeeEditor;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.dltk.core.ISourceModule;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.viewers.ISelection;
@@ -39,8 +40,8 @@ public class DeeCommonActionProvider extends CommonActionProvider {
 				return false;
 			
 			IStructuredSelection sel = (IStructuredSelection) selection;
-			if(sel.size() == 1 && sel.getFirstElement() instanceof CompilationUnit) {
-				file = ((CompilationUnit) sel.getFirstElement()).getFile();
+			if(sel.size() == 1 && sel.getFirstElement() instanceof ISourceModule) {
+				file = DeeModel.getSourceModuleFile((ISourceModule) sel.getFirstElement()); 
 				return true;
 			}
 			return false;
@@ -50,7 +51,7 @@ public class DeeCommonActionProvider extends CommonActionProvider {
 		public void run() {
 			OperationsManager.executeOperation("Open Element", new ISimpleRunnable() {
 				public void run() throws CoreException {
-					IDE.openEditor(page, file, DeeEditorDLTK.EDITOR_ID);
+					IDE.openEditor(page, file, DeeEditor.EDITOR_ID);
 				}
 			});
 		}

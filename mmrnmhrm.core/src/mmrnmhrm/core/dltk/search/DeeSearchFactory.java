@@ -17,17 +17,17 @@ public class DeeSearchFactory implements ISearchFactory {
 	}
 
 	public DLTKSearchParticipant createSearchParticipant() {
-		return null;
+		return null; // XXX: ?
 	}
 
 	public MatchLocator createMatchLocator(SearchPattern pattern,
 			SearchRequestor requestor, IDLTKSearchScope scope,
 			SubProgressMonitor monitor) {
-		return new RubyMatchLocator(pattern, requestor, scope, monitor);
+		return new DeeNeoMatchLocator(pattern, requestor, scope, monitor);
 	}
 
 	public IMatchLocatorParser createMatchParser(MatchLocator locator) {
-		return new RubyMatchLocatorParser(locator);
+		return new DeeMatchLocatorParser(locator);
 	}
 
 }

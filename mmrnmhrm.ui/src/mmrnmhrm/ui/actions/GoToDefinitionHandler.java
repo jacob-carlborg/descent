@@ -7,7 +7,7 @@ import melnorme.miscutil.StringUtil;
 import melnorme.miscutil.log.Logg;
 import mmrnmhrm.core.DeeCore;
 import mmrnmhrm.ui.DeePlugin;
-import mmrnmhrm.ui.editor.DeeEditorDLTK;
+import mmrnmhrm.ui.editor.DeeEditor;
 
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
@@ -146,7 +146,7 @@ public class GoToDefinitionHandler extends AbstractHandler  {
 			// getCorrespondingResource isn't with linked folders 
 			//IFile file = (IFile) modUnit.getCorrespondingResource();
 			IFile file = (IFile) DeeCore.getWorkspaceRoot().findMember(modUnit.getPath());
-			targetEditor = (ITextEditor) IDE.openEditor(page, file, DeeEditorDLTK.EDITOR_ID);
+			targetEditor = (ITextEditor) IDE.openEditor(page, file, DeeEditor.EDITOR_ID);
 		} else {
 			targetEditor = editor;
 		}

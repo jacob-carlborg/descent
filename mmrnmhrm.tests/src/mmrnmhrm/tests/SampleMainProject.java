@@ -8,9 +8,7 @@ import melnorme.miscutil.ExceptionAdapter;
 import mmrnmhrm.core.DeeCore;
 import mmrnmhrm.core.model.CompilationUnit;
 import mmrnmhrm.core.model.DeeModel;
-import mmrnmhrm.core.model.DeeModelRoot;
 import mmrnmhrm.core.model.DeeProject;
-import mmrnmhrm.core.model.DeeSourceFolder;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
@@ -63,7 +61,7 @@ public abstract class SampleMainProject {
 			project.delete(true, null);
 		project.create(null);
 		project.open(null);
-		DeeModelRoot.getInstance().createDeeProject(project);
+		DeeModel.createDeeProject(project);
 		return DeeModel.getLangProject(name);
 	}
 	
@@ -73,8 +71,8 @@ public abstract class SampleMainProject {
 		folder = CoreTestUtils.createWorkspaceFolderFromBundle(bundleDir,
 				project, destDir);
 		if(addSrcFolder) {
-			deeProj.addSourceRoot(new DeeSourceFolder(folder, deeProj));
-			deeProj.saveProjectConfigFile();
+			DeeModel.createAddSourceFolder(deeProj.dltkProj, folder);
+			deeProj.dltkProj.save(null, false);
 		}
 		return folder;
 	}

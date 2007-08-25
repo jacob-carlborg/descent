@@ -1,14 +1,16 @@
 package mmrnmhrm.tests.core.ref;
 
-import mmrnmhrm.core.model.CompilationUnit;
+import melnorme.miscutil.Assert;
 import mmrnmhrm.core.model.DeeProject;
-import mmrnmhrm.tests.BasePluginTest;
+import mmrnmhrm.tests.BaseUITest;
 import mmrnmhrm.ui.DeePlugin;
-import mmrnmhrm.ui.editor.DeeEditorDLTK;
+import mmrnmhrm.ui.editor.DeeEditor;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.dltk.core.DLTKCore;
+import org.eclipse.dltk.core.ISourceModule;
 import org.eclipse.dltk.internal.ui.editor.ScriptEditor;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PartInitException;
@@ -19,19 +21,20 @@ import org.junit.AfterClass;
 /** 
  * Common test class for a UI test which works on a single editor.
  */
-public class UITestWithEditor extends BasePluginTest {
+public class UITestWithEditor extends BaseUITest {
 
 	protected static IFile file;
-	protected static CompilationUnit cunit;
 	protected static ScriptEditor editor;
+	protected static ISourceModule srcModule;
 
 	
 	protected static void setupWithFile(DeeProject deeProject, String path) throws PartInitException, CoreException {
 		IWorkbenchPage page = DeePlugin.getActivePage();
 		IProject project = deeProject.getProject();
 		file = project.getFile(path);
-		editor = (ScriptEditor) IDE.openEditor(page, file, DeeEditorDLTK.EDITOR_ID);
-		cunit =	DeePlugin.getInstance().getCompilationUnit(editor.getEditorInput());
+		editor = (ScriptEditor) IDE.openEditor(page, file, DeeEditor.EDITOR_ID);
+		Assert.isTrue(editor.getScriptSourceViewer() != null);
+		srcModule = DLTKCore.createSourceModuleFrom(file);
 	}
 
 	@AfterClass

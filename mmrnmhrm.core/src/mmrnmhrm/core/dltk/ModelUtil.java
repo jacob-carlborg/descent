@@ -27,4 +27,19 @@ public abstract class ModelUtil {
 		return (Module) moduleDec.getStatements().iterator().next();
 	}
 
+	public static Module getNeoASTModule(ISourceModule modUnit) {
+		return getNeoASTModule(parseModule(modUnit));
+	}
+
+	public static descent.internal.compiler.parser.Module getDmdASTModule(
+			ISourceModule modUnit) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public static int getParseStatus(ISourceModule modUnit) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
 }

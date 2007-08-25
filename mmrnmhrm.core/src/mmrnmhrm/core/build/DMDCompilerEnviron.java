@@ -12,9 +12,6 @@ import melnorme.miscutil.StringUtil;
 import melnorme.miscutil.log.Logg;
 import mmrnmhrm.core.DeeCore;
 import mmrnmhrm.core.model.DeeProject;
-import mmrnmhrm.core.model.DeeSourceFolder;
-import mmrnmhrm.core.model.IDeeSourceRoot;
-import mmrnmhrm.core.model.lang.LangSourceFolder;
 
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IResource;
@@ -43,13 +40,13 @@ public class DMDCompilerEnviron implements IDeeCompilerEnviron {
 
 		IPath outputPath = outputDir.getFullPath();
 
-		for(IDeeSourceRoot bpentry : deeProject.getSourceRoots()) {
+		/*for(IDeeSourceRoot bpentry : deeProject.getSourceRoots()) {
 			if(bpentry instanceof DeeSourceFolder) {
 				LangSourceFolder dsf = (LangSourceFolder) bpentry;
 				IResource[] resources = new IResource[]{ dsf.folder };
 				DeeCore.getWorkspace().copy(resources, outputPath, 0, null);
 			}
-		}
+		}*/
 	}
 	
 	public void compileModules(List<IResource> dmodules) throws CoreException {

@@ -1,28 +1,17 @@
 package mmrnmhrm.core.model;
 
-import java.util.Collection;
-
 import melnorme.miscutil.ExceptionAdapter;
-import melnorme.miscutil.tree.IElement;
-import mmrnmhrm.core.CorePreferenceInitializer;
-import mmrnmhrm.core.DeeCore;
-import mmrnmhrm.core.model.lang.ILangElement;
-import mmrnmhrm.core.model.lang.LangModuleUnit;
-import mmrnmhrm.core.model.lang.LangPackageFragment;
+import melnorme.miscutil.log.Logg;
+import mmrnmhrm.core.dltk.ModelUtil;
 
 import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IMarker;
-import org.eclipse.core.resources.IResource;
-import org.eclipse.core.runtime.CoreException;
+import org.eclipse.dltk.core.DLTKCore;
+import org.eclipse.dltk.core.IBuffer;
 import org.eclipse.dltk.core.ISourceModule;
-import org.eclipse.jface.text.BadLocationException;
-import org.eclipse.jface.text.IDocument;
+import org.eclipse.dltk.core.ModelException;
 
-import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTNode;
-import dtool.descentadapter.DescentASTConverter;
 import dtool.dom.definitions.Module;
-import dtool.refmodel.ParserAdapter;
 import dtool.refmodel.pluginadapters.IGenericCompilationUnit;
 
 /**
@@ -30,173 +19,95 @@ import dtool.refmodel.pluginadapters.IGenericCompilationUnit;
  * The content/structure of this element is allways created when the object
  * is instantiated.
  */
-public class CompilationUnit extends LangModuleUnit implements IGenericCompilationUnit, IDeeElement {
-
+public class CompilationUnit implements IGenericCompilationUnit {
 	
-	private descent.internal.compiler.parser.Module oldModule;
-	private Module module;
-	//private boolean astUpdated;
-
-	public Collection<IProblem> problems;
-	public int parseStatus;
-	
-
-	public CompilationUnit(LangPackageFragment parent, IFile file) {
-		super(parent, file);
-		//createElementInfo();
+	public interface EModelStatus {
+		int OK = 0;
+		int PARSER_INTERNAL_ERROR = 1;
+		int PARSER_SYNTAX_ERRORS = 2;
 	}
 	
+	protected final IFile file;
+	public ISourceModule modUnit;
+	
+
 	public CompilationUnit(IFile file) {
-		this(null, file);
+		this.file = file;
+		this.modUnit = DLTKCore.createSourceModuleFrom(file);
 	}
 	
-	@Override
-	public ILangElement[] getLangChildren() {
-		return ILangElement.NO_LANGELEMENTS;
+	public CompilationUnit(ISourceModule srcModule, IFile file) {
+		this(file);
+		this.modUnit = srcModule;
 	}
-	
+
 	@Override
 	public ISourceModule getModuleUnit() {
 		return modUnit;
 	}
 	
-	public boolean hasChildren() {
-		return true;
+	public IFile getFile() {
+		return file;
+	}
+	
+	public IBuffer getBuffer() throws ModelException {
+		return modUnit.getBuffer();
 	}
 
-	public IElement[] getChildren() {
-		getElementInfo();
-		return getModule().getChildren();
+	public String getSource() throws ModelException {
+		return getBuffer().getContents();
+	}
+
+	public int getParseStatus() {
+		return ModelUtil.getParseStatus(modUnit);
 	}
 	
-	public void disposeElementInfo() throws CoreException {
-		super.disposeElementInfo();
-		module = null;
-		oldModule = null;
-		problems = null;
-		parseStatus = 0;
-	}
-	
-	public descent.internal.compiler.parser.Module getOldModule() {
-		getElementInfo();
-		return oldModule;
+	public descent.internal.compiler.parser.Module getDmdModule() {
+		return ModelUtil.getDmdASTModule(modUnit);
 	}
 	
 	public Module getNeoModule() {
-		getElementInfo();
-		return module;
+		return ModelUtil.getNeoASTModule(modUnit);
 	}
 	
 	public IASTNode getModule() {
-		getElementInfo();
-		if(module == null || parseStatus == EModelStatus.PARSER_SYNTAX_ERRORS)
-			return oldModule;
+		Module module = ModelUtil.getNeoASTModule(modUnit);
+		if(module == null 
+				|| getParseStatus() == EModelStatus.PARSER_SYNTAX_ERRORS)
+			return getDmdModule();
 		return module;
 	}
 	
 
-	/** Updates this CompilationUnit's AST according to the underlying text. */
-	public void reconcile() {
-		openBuffer();
-		parseUnit();
-	}
-	
-	/** Parses this unit's document to produce and AST. Buffer must be open. */
-	protected void parseUnit() {
-		module = null;
-		
-		clearErrorMarkers();
-		parseCompilationUnit();
-
-		if (hasErrors()) {
-			createErrorMarkers(getDocument());
-			parseStatus = EModelStatus.PARSER_SYNTAX_ERRORS;
-			return;
-		}
-
-		try {
-			convertAST();
-			parseStatus = EModelStatus.OK;
-		} catch (UnsupportedOperationException uoe) {
-			parseStatus = EModelStatus.PARSER_AST_UNSUPPORTED_NODE;
-		} catch (RuntimeException re) {
-			parseStatus = EModelStatus.PARSER_INTERNAL_ERROR;
-			throw re;
-		}
-	}
-	
-	private boolean hasErrors() {
-		return problems.size() > 0;
+	public void parseModuleUnit() throws ModelException {
+		Logg.main.println("CUNIT: reconcile");
+		if(!modUnit.isOpen())
+			modUnit.open(null);
+		modUnit.becomeWorkingCopy(null, null);
+		modUnit.reconcile(false, null, null);
 	}
 
-	private void clearErrorMarkers() {
-		try {
-			file.deleteMarkers(IMarker.PROBLEM, true, IResource.DEPTH_INFINITE);
-		} catch (CoreException ce) {
-			throw ExceptionAdapter.unchecked(ce);
-		}
-	}
-	
-	private void createErrorMarkers(IDocument doc) {
-		boolean reportSyntaxErrors;
-		reportSyntaxErrors = DeeCore.getInstance().getPluginPreferences()
-				.getBoolean(CorePreferenceInitializer.REPORT_SYNTAX_ERRORS);
-
-		for (IProblem problem : oldModule.problems) {
-			try {
-				createMarker(doc, problem, reportSyntaxErrors);
-			} catch (CoreException e) {
-				throw ExceptionAdapter.unchecked(e);
-			}
-		}
-	}
-	
-	private void createMarker(IDocument doc, IProblem problem,
-			boolean reportSyntaxErrors) throws CoreException {
-		IMarker marker = file.createMarker(IMarker.PROBLEM);
-		
-		int lineNum = 0;
-		try {
-			lineNum = doc.getLineOfOffset(problem.getSourceStart());
-			marker.setAttribute(IMarker.LINE_NUMBER, lineNum);
-		} catch (BadLocationException e) {
-			DeeCore.log(e);
-		}
-		
-		if(reportSyntaxErrors) {
-			marker.setAttribute(IMarker.LOCATION, "Line "+ lineNum);
-			marker.setAttribute(IMarker.CHAR_START, problem.getSourceStart());
-			marker.setAttribute(IMarker.CHAR_END, problem.getSourceEnd());
-		}
-		marker.setAttribute(IMarker.MESSAGE, problem.getMessage());
-		marker.setAttribute(IMarker.SEVERITY, IMarker.SEVERITY_ERROR);
-	}
-
-	private void parseCompilationUnit() {
-		this.module = null;
-		this.problems = null;
-		this.oldModule = ParserAdapter.parseSource(getSource()).mod;
-		//Logg.model.println(ASTPrinter.toStringAST(this.oldModule, true));
-		this.problems = oldModule.problems;
-	}
-	
-	
-	private void convertAST() {
-		Module neoModule = DescentASTConverter.convertModule(oldModule);
-		neoModule.setModuleUnit(modUnit);
-		module = neoModule;
-		//oldModule = null;
-	}
-	
 	public String toStringParseStatus() {
-		if(parseStatus == EModelStatus.PARSER_INTERNAL_ERROR) {
+		if(getParseStatus() == EModelStatus.PARSER_INTERNAL_ERROR) {
 			return "Parser Internal Error";
-		} else if(parseStatus == EModelStatus.PARSER_SYNTAX_ERRORS) {
+		} else if(getParseStatus() == EModelStatus.PARSER_SYNTAX_ERRORS) {
 			return "Document Syntax Error";
-		} else if(parseStatus == EModelStatus.PARSER_AST_UNSUPPORTED_NODE) {
-			return "Unsupported AST Node configuration.";
 		} else
 			return "Status OK";
 	}
+
+
+
+	public void createElementInfo() {
+		try {
+			Logg.main.println("CUNIT: createElementInfo");
+			parseModuleUnit();
+		} catch (ModelException e) {
+			throw ExceptionAdapter.unchecked(e);
+		}
+	}
+
+
+
 
 }

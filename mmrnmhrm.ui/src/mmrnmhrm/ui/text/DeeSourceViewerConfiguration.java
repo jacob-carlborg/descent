@@ -38,7 +38,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.texteditor.ITextEditor;
 
-public class DeeSourceViewerConfigurationDLTK extends
+public class DeeSourceViewerConfiguration extends
 		ScriptSourceViewerConfiguration {
 
 	private AbstractScriptScanner fCodeScanner;
@@ -46,7 +46,7 @@ public class DeeSourceViewerConfigurationDLTK extends
 	private AbstractScriptScanner fCommentScanner;
 	private AbstractScriptScanner fDocScanner;
 	
-	public DeeSourceViewerConfigurationDLTK(IColorManager colorManager,
+	public DeeSourceViewerConfiguration(IColorManager colorManager,
 			IPreferenceStore preferenceStore, ITextEditor editor,
 			String partitioning) {
 		super(colorManager, preferenceStore, editor, partitioning);
@@ -54,7 +54,7 @@ public class DeeSourceViewerConfigurationDLTK extends
 	
 	@Override
 	protected void initializeScanners() {
-		fCodeScanner = new DeeCodeScannerWithLexer(getColorManager(), fPreferenceStore);
+		fCodeScanner = new DeeCodeScanner(getColorManager(), fPreferenceStore);
 		fStringScanner = new SingleTokenScriptScanner(getColorManager(),
 				fPreferenceStore, DeeColorConstants.DEE_STRING);
 		fCommentScanner = new SingleTokenScriptScanner(getColorManager(),

@@ -10,7 +10,6 @@
  *******************************************************************************/
 package melnorme.util.ui.fields;
 
-import mmrnmhrm.ui.wizards.NewWizardMessages;
 
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.jface.viewers.ILabelProvider;

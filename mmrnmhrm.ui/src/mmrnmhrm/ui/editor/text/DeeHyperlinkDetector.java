@@ -1,7 +1,7 @@
 package mmrnmhrm.ui.editor.text;
 
 import melnorme.lang.ui.EditorUtil;
-import mmrnmhrm.ui.editor.DeeEditorDLTK;
+import mmrnmhrm.ui.editor.DeeEditor;
 
 import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.ITextViewer;
@@ -22,7 +22,7 @@ public class DeeHyperlinkDetector extends AbstractHyperlinkDetector {
 	public IHyperlink[] detectHyperlinks(ITextViewer textViewer,
 			IRegion region, boolean canShowMultipleHyperlinks) {
 		ITextEditor textEditor= (ITextEditor)getAdapter(ITextEditor.class);
-		if (region == null || canShowMultipleHyperlinks || !(textEditor instanceof DeeEditorDLTK))
+		if (region == null || canShowMultipleHyperlinks || !(textEditor instanceof DeeEditor))
 			return null;
 		
 		ASTNeoNode module = EditorUtil.getNeoModuleFromEditor(textEditor);

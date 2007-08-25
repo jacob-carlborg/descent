@@ -1,11 +1,11 @@
 package mmrnmhrm.core.model;
 
 import mmrnmhrm.core.DeeCore;
-import mmrnmhrm.core.model.lang.LangNature;
 
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.dltk.core.ScriptNature;
 
-public class DeeNature extends LangNature  {
+public class DeeNature extends ScriptNature  {
 
 	public static final String NATURE_BASEID = "deenature";
 	public static final String NATURE_ID = DeeCore.PLUGIN_ID +"."+ NATURE_BASEID;

@@ -1,4 +1,4 @@
-package mmrnmhrm.ui.editor.outline;
+package mmrnmhrm.ui.editor;
 
 import java.util.ArrayList;
 

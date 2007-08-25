@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.Collection;
 
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.dltk.core.ModelException;
 import org.junit.BeforeClass;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -71,7 +72,7 @@ public class GoToDefinition_TestTargets extends FindDef_CommonTest  {
 	}
 	
 	@Override
-	public void test() {
+	public void test() throws ModelException {
 		super.test();
 	}
 	  

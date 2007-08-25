@@ -1,22 +1,10 @@
 package mmrnmhrm.tests.core;
 
-import java.util.Arrays;
-import java.util.Collection;
-
-import mmrnmhrm.core.DeeCore;
-import mmrnmhrm.core.model.DeeModelRoot;
-import mmrnmhrm.core.model.DeeProject;
 import mmrnmhrm.tests.BasePluginTest;
-
-import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.IWorkspaceRoot;
-import org.eclipse.core.runtime.CoreException;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
 
 public class ModelTest extends BasePluginTest {
 
-	private static IWorkspaceRoot wroot;
+	/*private static IWorkspaceRoot wroot;
 	private static DeeModelRoot droot;
 	private static Collection<DeeProject> otherProjs;	
 	
@@ -38,8 +26,8 @@ public class ModelTest extends BasePluginTest {
 			if(!proj.isOpen())
 				proj.open(null);
 		}
-		droot.updateElementLazily();
-	}
+		//droot.updateElementLazily();
+	}*/
 
 	/*
 	@Test

@@ -55,7 +55,6 @@ public class DeeSourceElementRequestor extends ASTVisitor {
 			setupAggregateTypeInfo(defClass, typeInfo);
 			typeInfo.superclasses = processClassNames(defClass);
 			requestor.enterType(typeInfo);
-			
 		} else
 		if(node instanceof DefinitionAggregate) {
 			DefinitionAggregate defAggr = (DefinitionAggregate) node;

@@ -1,74 +1,59 @@
 package mmrnmhrm.core.model;
 
-import java.util.ArrayList;
-
-import mmrnmhrm.core.IElementChangedListener;
-import mmrnmhrm.core.model.lang.LangPackageFragment;
+import melnorme.miscutil.ArrayUtil;
+import mmrnmhrm.core.DeeCore;
 
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IProjectDescription;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IPath;
+import org.eclipse.dltk.core.DLTKCore;
+import org.eclipse.dltk.core.IBuildpathEntry;
+import org.eclipse.dltk.core.IProjectFragment;
+import org.eclipse.dltk.core.IScriptProject;
+import org.eclipse.dltk.core.ISourceModule;
 
 /**
  * The Dee Model. It's elements are not handle-based, nor cached like JDT.
  */
 public class DeeModel {
 	
-	private static DeeModel deemodel = new DeeModel();
-	
-	/** @return the shared instance */
-	public static DeeModel getInstance() {
-		return deemodel;
+	@SuppressWarnings("restriction")
+	private static org.eclipse.dltk.internal.core.Model getModel() {
+		return org.eclipse.dltk.internal.core.ModelManager.
+		getModelManager().getModel();
 	}
 	
-	public static ArrayList<IElementChangedListener> elementChangedListeners 
-		= new ArrayList<IElementChangedListener>(5);
-	
-
-	
-	/** Registers an element change listener. */
-	public static synchronized void addElementChangedListener(IElementChangedListener listener) {
-		elementChangedListeners.add(listener);
-	}
-	
-	/** Unregisters an element change listener. */
-	public static synchronized void removeElementChangedListener(IElementChangedListener listener) {
-		elementChangedListeners.remove(listener);
-	}
-	
-	/** Notifies element change listener of model changes. */
-	public static void fireModelChanged() {
-		// Watch out for listener add/remove while change notification is in progress.
-		IElementChangedListener[] listeners;
-		synchronized(elementChangedListeners) {
-			listeners = new IElementChangedListener[elementChangedListeners.size()];
-			listeners = elementChangedListeners.toArray(listeners);
-		}
-		
-		for(IElementChangedListener listener : listeners) {
-			listener.elementChanged(null);
-		}
-	}
-
-	/** Initializes the D model. */
-	public static void initDeeModel() throws CoreException {
-		getRoot().loadModel();
-	}
-	
-	/** Gets the D Model Root */
-	public static DeeModelRoot getRoot() {
-		return DeeModelRoot.getInstance();
-	}
 	
 	/** Returns the D project with the given name, null if none. */
+	@SuppressWarnings("restriction")
 	public static DeeProject getLangProject(String name) {
-		return (DeeProject) getRoot().getLangProject(name);
+		return new DeeProject(getModel().getScriptProject(name));
 	}
 	
 	/** Returns the D project for given project */
 	public static DeeProject getLangProject(IProject project) {
-		return (DeeProject) getRoot().getLangProject(project);
+		return new DeeProject(DLTKCore.create(project));
+	}
+	
+	public static void createDeeProject(IProject project) throws CoreException {
+		DeeModel.addNature(project, DeeNature.NATURE_ID);
+
+		IScriptProject dltkProj = DLTKCore.create(project);
+		dltkProj.setRawBuildpath(new IBuildpathEntry[0], null);
+	}
+	
+	/** Adds a nature to the given project if it doesn't exist already.*/
+	public static void addNature(IProject project, String natureID) throws CoreException {
+		IProjectDescription description = project.getDescription();
+		String[] natures = description.getNatureIds();
+		if(ArrayUtil.contains(natures, natureID))
+			return;
+	
+		String[] newNatures = ArrayUtil.append(natures, natureID);
+		description.setNatureIds(newNatures);
+		project.setDescription(description, null); 
 	}
 
 	/** Returns the Compilation for the given file. If the file is not part
@@ -79,39 +64,34 @@ public class DeeModel {
 	}
 
 	private static CompilationUnit findMember(IFile file) throws CoreException {
-		IPath filepath = file.getProjectRelativePath();
 		DeeProject deeproj = getLangProject(file.getProject());
 		if(deeproj == null) return null;
-
-		IDeeSourceRoot srcRoot = null;
-		for (IDeeSourceRoot element : deeproj.getSourceRoots()) {
-			IPath path = element.getUnderlyingResource().getProjectRelativePath();
-			if(path.isPrefixOf(filepath)) {
-				srcRoot = element;
-				break;
-			}
-		}
-		if(srcRoot == null) return null;
-
-		LangPackageFragment pkgFrag = null;
-		for (LangPackageFragment element : srcRoot.getPackageFragments()) {
-			IPath path = element.getUnderlyingResource().getProjectRelativePath();
-			if(path.equals(filepath.removeLastSegments(1))) {
-				pkgFrag = element;
-				break;
-			}
-		}
-		if(pkgFrag == null) return null;
-
-		CompilationUnit cunit = null;
-		for (CompilationUnit element : pkgFrag.getCompilationUnits()) {
-			IPath path = element.getUnderlyingResource().getProjectRelativePath();
-			if(path.equals(filepath)) {
-				cunit = element;
-				break;
-			}
-		}
-		return cunit;
+		
+		ISourceModule srcModule = DLTKCore.createSourceModuleFrom(file);
+		return new CompilationUnit(srcModule, getSourceModuleFile(srcModule));
 	}
+
+
+	/** Get's a sourceModule's file, apparently getUnderlyingResource()
+	 * doesn't work all the time. */
+	public static IFile getSourceModuleFile(ISourceModule srcModule) {
+		//return (IFile) srcModule.getUnderlyingResource();
+		return DeeCore.getWorkspaceRoot().getFile(srcModule.getPath());
+	}
+
+
+	/** Creates a SourceFolder for the given folder, and adds it the project. */
+	public static IProjectFragment createAddSourceFolder(IScriptProject dltkProj, IFolder folder) throws CoreException {
+		IProjectFragment fragment = dltkProj.getProjectFragment(folder);
+		if(fragment == null || !fragment.exists()) {
+			IBuildpathEntry[] bpentries = dltkProj.getRawBuildpath();
+			IBuildpathEntry entry = DLTKCore.newSourceEntry(fragment.getPath());
+			dltkProj.setRawBuildpath(ArrayUtil.concat(bpentries, entry), null);
+		}
+		return fragment;
+	}
+
+
+
 
 }

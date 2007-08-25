@@ -46,7 +46,6 @@ public class DeeSourceElementParser implements ISourceElementParser {
 	public ModuleDeclaration parseSourceModule(
 			char[] contents, ISourceModuleInfo astCache, char[] filename) {
 
-		//XXX: Use DTLKCore ? 
 		IPath path = new Path(new String(filename));
 		IFile file = DeeCore.getWorkspaceRoot().getFile(path);
 		ISourceModule module = null;

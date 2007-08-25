@@ -1,27 +1,13 @@
 package mmrnmhrm.ui.actions;
 
-import melnorme.lang.ui.ExceptionHandler;
-import mmrnmhrm.core.DeeCore;
-import mmrnmhrm.core.model.DeeModel;
-import mmrnmhrm.ui.wizards.projconfig.ProjectConfigBlock;
-
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
-import org.eclipse.core.resources.IWorkspaceRunnable;
-import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.jface.dialogs.TrayDialog;
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Shell;
 
 
 public class SampleTest2Handler extends AbstractHandler {
 
-	public static class TestDialog extends TrayDialog {
+	/*public static class TestDialog extends TrayDialog {
 		private ProjectConfigBlock fProjCfg;
 		
 		protected TestDialog(Shell shell) {
@@ -55,7 +41,7 @@ public class SampleTest2Handler extends AbstractHandler {
 			return ret;
 		}
 		
-	}
+	}*/
 
 
 	/*public Object execute(ExecutionEvent event) throws ExecutionException {
@@ -67,17 +53,17 @@ public class SampleTest2Handler extends AbstractHandler {
 	}*/
 	
 	public Object execute(ExecutionEvent event) throws ExecutionException {
-		try {
+		/*try {
 			IWorkspaceRunnable op = new IWorkspaceRunnable() {
 				public void run(IProgressMonitor monitor) throws CoreException {
-					DeeModel.getRoot().updateElementRecursive();
+					//DeeModel.getRoot().updateElementRecursive();
 					//DeeModel.getRoot().updateElementLazily();
 				}
 			};
 			DeeCore.runSimpleOp(op);
 		} catch (CoreException ce) {
 			throw new ExecutionException("RefreshModelHandler error", ce);
-		}
+		}*/
 		return null;
 	}
 

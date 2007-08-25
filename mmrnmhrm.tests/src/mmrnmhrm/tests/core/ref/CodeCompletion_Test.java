@@ -1,11 +1,13 @@
 package mmrnmhrm.tests.core.ref;
 
+import melnorme.miscutil.Assert;
 import mmrnmhrm.tests.SampleMainProject;
 import mmrnmhrm.tests.adapters.Mock_Document;
 import mmrnmhrm.ui.editor.DeeEditorTest;
 import mmrnmhrm.ui.editor.text.DeeCodeContentAssistProcessor;
 import mmrnmhrm.ui.editor.text.DeeCompletionProposal;
 
+import org.eclipse.dltk.core.ModelException;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.contentassist.ICompletionProposal;
@@ -34,6 +36,7 @@ public class CodeCompletion_Test extends UITestWithEditor {
 	@BeforeClass
 	public static void commonSetUp() throws Exception {
 		setupWithFile(SampleMainProject.deeProj, TEST_SRCFILE);
+		Assert.isTrue(editor.getScriptSourceViewer() != null);
 		//assist = new DeeCodeContentAssistProcessor(null, editor);
 		doc = DeeEditorTest.getDocument(editor);
 	}
@@ -65,14 +68,14 @@ public class CodeCompletion_Test extends UITestWithEditor {
 	}
 
 	private static void testComputeProposals(int repOffset,
-			int prefixLen, String... expectedProposals) {
+			int prefixLen, String... expectedProposals) throws ModelException {
 		testComputeProposalsWithRepLen(repOffset, 0, prefixLen, expectedProposals);
 	}
 	
 	private static void testComputeProposalsWithRepLen(int repOffset, int repLen,
-			int prefixLen, String... expectedProposals) {
+			int prefixLen, String... expectedProposals) throws ModelException {
 		ICompletionProposal[] proposals = DeeCodeContentAssistProcessor
-				.computeProposals(repOffset, cunit, new CompletionSession());
+				.computeProposals(repOffset, srcModule, srcModule.getSource(), new CompletionSession());
 		checkProposals(repOffset, repLen, prefixLen, proposals, expectedProposals);
 	}
 

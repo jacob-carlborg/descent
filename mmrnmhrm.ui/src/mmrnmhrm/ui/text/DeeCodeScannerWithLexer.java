@@ -22,6 +22,7 @@ import descent.internal.compiler.parser.TOK;
 import descent.internal.compiler.parser.Token;
 import descent.internal.compiler.parser.ast.TokenUtil;
 
+@Deprecated
 public class DeeCodeScannerWithLexer extends AbstractScriptScanner {
 	
 	public static org.eclipse.jface.text.rules.Token DEFAULT_TOKEN = 

@@ -5,13 +5,8 @@ import java.util.List;
 import java.util.Map;
 
 import melnorme.miscutil.Assert;
-import melnorme.miscutil.StringUtil;
-import melnorme.miscutil.log.Logg;
 import mmrnmhrm.core.model.DeeModel;
 import mmrnmhrm.core.model.DeeProject;
-import mmrnmhrm.core.model.DeeSourceFolder;
-import mmrnmhrm.core.model.IDeeSourceRoot;
-import mmrnmhrm.core.model.lang.LangSourceFolder;
 
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
@@ -40,12 +35,13 @@ public class DeeBuilder extends IncrementalProjectBuilder {
 	private DeeProject deeProject;
 	
 	public DeeProject getDeeProject() {
+		if(deeProject == null)
+			deeProject = DeeModel.getLangProject(getProject());
 		return deeProject;
 	}
 	
 	protected void startupOnInitialize() {
-		deeProject = DeeModel.getLangProject(getProject());
-		Assert.isTrue(deeProject != null);
+		Assert.isTrue(getDeeProject() != null);
 	}
 
 	@Override
@@ -54,7 +50,7 @@ public class DeeBuilder extends IncrementalProjectBuilder {
 
 		DeeModuleCollector visitor = new DeeModuleCollector();
 
-		for(IDeeSourceRoot bpentry : getDeeProject().getSourceRoots()) {
+		/*for(IDeeSourceRoot bpentry : getDeeProject().getSourceRoots()) {
 			if(bpentry instanceof DeeSourceFolder) {
 				LangSourceFolder dsf = (LangSourceFolder) bpentry;
 				dsf.folder.accept(visitor, IResource.DEPTH_INFINITE, IResource.NONE);
@@ -63,6 +59,7 @@ public class DeeBuilder extends IncrementalProjectBuilder {
 		
 		Logg.builder.println("Got Sources:");
 		Logg.builder.println(" ", StringUtil.collToString(visitor.dmodules, ","));
+		*/
 		if(true)
 			return null; // Don't do anything since builder isn't working
 		

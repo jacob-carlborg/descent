@@ -1,10 +1,7 @@
 package mmrnmhrm.tests.core.ref;
 
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -38,9 +35,9 @@ public class FindDef_TestImportStatic2 extends FindDef_TestImportStatic  {
 
 	@Test
 	public void test() throws Exception {
-		cunit.getDocument().replace(ix1, 4, "//  ");
-		cunit.getDocument().replace(ix2, 4, "    ");
-		cunit.reconcile();
+		cunit.getBuffer().replace(ix1, 4, "//  ");
+		cunit.getBuffer().replace(ix2, 4, "    ");
+		cunit.parseModuleUnit();
 		FindDef_CommonTest.assertFindReF(cunit, offset, targetCUnit, targetOffset);
 	}
 	

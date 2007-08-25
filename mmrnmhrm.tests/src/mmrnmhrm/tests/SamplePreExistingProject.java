@@ -6,18 +6,13 @@ import java.net.URISyntaxException;
 
 import melnorme.miscutil.ExceptionAdapter;
 import mmrnmhrm.core.DeeCore;
-import mmrnmhrm.core.model.CompilationUnit;
 import mmrnmhrm.core.model.DeeModel;
 import mmrnmhrm.core.model.DeeProject;
-import mmrnmhrm.core.model.DeeSourceFolder;
-import mmrnmhrm.core.model.lang.LangElement;
 
-import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.Path;
 
 /**
  * This classes creates a sample project that should exist *before*
@@ -38,7 +33,7 @@ public abstract class SamplePreExistingProject {
 	public static IProject project;
 	
 
-	public static LangElement checkForExistanceOfPreExistingProject() {
+	public static void checkForExistanceOfPreExistingProject() {
 		IWorkspaceRoot workspaceRoot = DeeCore.getWorkspaceRoot();
 		IProject project = workspaceRoot.getProject(PREEXISTINGPROJNAME);
 
@@ -57,7 +52,7 @@ public abstract class SamplePreExistingProject {
 					+ "and make the workspace is not cleared.");
 		}
 				
-		return null;
+		return;
 	}
 
 	private static void fillPreExistingSampleProj() throws CoreException, URISyntaxException, IOException {
@@ -73,7 +68,8 @@ public abstract class SamplePreExistingProject {
 		folder = CoreTestUtils.createWorkspaceFolderFromBundle(bundleDir,
 				project, destDir);
 		if(addSrcFolder)
-			sampleDeeProj.addSourceRoot(new DeeSourceFolder(folder, sampleDeeProj));
+			DeeModel.createAddSourceFolder(sampleDeeProj.dltkProj, folder);
+
 		return folder;
 	}
 	

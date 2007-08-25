@@ -2,7 +2,7 @@ package mmrnmhrm.ui.views;
 
 import melnorme.lang.ui.EditorUtil;
 import mmrnmhrm.core.model.CompilationUnit;
-import mmrnmhrm.core.model.EModelStatus;
+import mmrnmhrm.core.model.CompilationUnit.EModelStatus;
 import mmrnmhrm.ui.DeePlugin;
 import mmrnmhrm.ui.DeePluginImages;
 import mmrnmhrm.ui.actions.GoToDefinitionHandler;
@@ -178,12 +178,12 @@ public class ASTViewer extends ViewPart implements ISelectionListener,
 			return;
 		
 		int offset = EditorUtil.getSelection(fEditor).getOffset();
-		if(fCUnit.parseStatus == EModelStatus.OK) {
+		if(fCUnit.getParseStatus() == EModelStatus.OK) {
 			setContentDescription("AST ok, sel: " + offset);
 		} else {
 			setContentDescription(fCUnit.toStringParseStatus());
 		}
-		if(fCUnit.parseStatus == EModelStatus.PARSER_INTERNAL_ERROR) {
+		if(fCUnit.getParseStatus() == CompilationUnit.EModelStatus.PARSER_INTERNAL_ERROR) {
 			viewer.getControl().setVisible(false);
 			return;
 		}

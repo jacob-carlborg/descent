@@ -24,7 +24,7 @@ public abstract class DeclarationAttrib extends ASTNeoNode implements INonScoped
 		this.body = NodeList.createNodeList(bodydecls);
 		// XXX: Ugly hack (due to parser bug?)
 		if(elem.preDdocs != null && elem.preDdocs.size() > 0 
-				//&& this.body.nodes.length > 0
+				&& this.body.nodes.length > 0
 				) {
 			ASTNeoNode node = this.body.nodes[0];
 			if(node instanceof Definition) {

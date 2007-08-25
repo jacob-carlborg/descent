@@ -1,136 +1,177 @@
 package mmrnmhrm.ui.editor;
 
-import melnorme.miscutil.log.Logg;
-import mmrnmhrm.core.model.CompilationUnit;
+import mmrnmhrm.core.dltk.DeeLanguageToolkit;
 import mmrnmhrm.ui.DeePlugin;
-import mmrnmhrm.ui.DeePluginImages;
-import mmrnmhrm.ui.editor.outline.DeeContentOutlinePage;
-import mmrnmhrm.ui.text.DeeDocumentProvider;
+import mmrnmhrm.ui.text.DeeDocumentSetupParticipant;
+import mmrnmhrm.ui.text.DeePartitions;
 
-import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.Platform;
-import org.eclipse.dltk.ui.text.ScriptSourceViewerConfiguration;
+import org.eclipse.dltk.core.IDLTKLanguageToolkit;
+import org.eclipse.dltk.internal.ui.editor.ScriptEditor;
+import org.eclipse.dltk.internal.ui.editor.ScriptOutlinePage;
+import org.eclipse.dltk.ui.text.ScriptTextTools;
+import org.eclipse.dltk.ui.text.folding.IFoldingStructureProvider;
 import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.text.IDocument;
-import org.eclipse.jface.text.source.SourceViewerConfiguration;
-import org.eclipse.jface.util.PropertyChangeEvent;
+import org.eclipse.jface.text.IDocumentExtension3;
+import org.eclipse.jface.text.ITextViewerExtension;
+import org.eclipse.jface.text.source.DefaultCharacterPairMatcher;
+import org.eclipse.jface.text.source.ICharacterPairMatcher;
+import org.eclipse.jface.text.source.ISourceViewer;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
+import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.texteditor.ITextEditorActionConstants;
-import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
+import org.eclipse.ui.texteditor.SourceViewerDecorationSupport;
 
-
-public class DeeEditor extends LangEditor {
-
+public class DeeEditor extends ScriptEditor {
+	
 	public static final String EDITOR_ID = DeePlugin.PLUGIN_ID + ".editors.DeeEditor";
 	public static final String CONTEXTS_DEE_EDITOR = DeePlugin.PLUGIN_ID + ".contexts.DeeEditor";
-	
-	protected static final boolean CODE_ASSIST_DEBUG = true ||
-	"true".equalsIgnoreCase(Platform.getDebugOption(
-			DeePlugin.PLUGIN_ID+"/debug/ResultCollector"));
-	
-	private DeeDocumentProvider documentProvider;
-	//private IDocument document;
-	private CompilationUnit cunit;
-	private DeeContentOutlinePage outlinePage; // Instantiated lazily
-	//private DeeSourceViewerConfiguration sourceViewerConfiguration;
 
+	public static final String EDITOR_CONTEXT = "#DeeEditorContext";
+	public static final String RULER_CONTEXT = "#DeeRulerContext";
 
+	private org.eclipse.dltk.internal.ui.editor.
+		BracketInserter fBracketInserter = new DeeBracketInserter(this);
+	
+	private ICharacterPairMatcher bracketMatcher = 
+		new DefaultCharacterPairMatcher("{}[]()".toCharArray());
 
-	public DeeEditor() {
-		super();
-		this.documentProvider = DeePlugin.getDeeDocumentProvider();
-		setDocumentProvider(documentProvider);
-	}
-	
-	
-	@Override
 	protected void initializeEditor() {
 		super.initializeEditor();
-		setPreferenceStore(createCombinedPreferenceStore(null));
-		setSourceViewerConfiguration(createLangSourceViewerConfiguration());
-		setEditorContextMenuId("#DeeEditorContext"); 
-		setRulerContextMenuId("#DeeRulerContext"); 
-		//setHelpContextId(ITextEditorHelpContextIds.TEXT_EDITOR);
-		setInsertMode(INSERT);
+		setEditorContextMenuId(EDITOR_CONTEXT);
+		setRulerContextMenuId(RULER_CONTEXT);
 	}
 	
-	private SourceViewerConfiguration createLangSourceViewerConfiguration() {
-		return DeePlugin.getDefault().getTextTools()
-			.createSourceViewerConfiguraton(getPreferenceStore(), this);
+	@Override
+	public String getEditorId() {
+		return EDITOR_ID;
+	}
+	
+	@Override
+	public IDLTKLanguageToolkit getLanguageToolkit() {
+		return DeeLanguageToolkit.getDefault();
+	}
+	
+	@Override
+	protected IPreferenceStore getScriptPreferenceStore() {
+		return DeePlugin.getDefault().getPreferenceStore();
+	}
+
+	@Override
+	public ScriptTextTools getTextTools() {
+		return DeePlugin.getDefault().getTextTools();
 	}
 	
 	@Override
 	protected void initializeKeyBindingScopes() {
-		setKeyBindingScopes(new String[] { CONTEXTS_DEE_EDITOR });  //$NON-NLS-1$
+		setKeyBindingScopes(new String[] { CONTEXTS_DEE_EDITOR });
 	}
 
-	public void dispose() { 
-	 	super.dispose(); 
-	}
-	
-
-	public IDocument getDocument() {
-		return getSourceViewer().getDocument();
-	}
-	
-	public CompilationUnit getCompilationUnit() {
-		return cunit;
+	@Override
+	protected ScriptOutlinePage doCreateOutlinePage() {
+		return new DeeOutlinePage(this, DeePlugin.getDefault().getPreferenceStore());
 	}
 	
 	@Override
-	protected void handlePreferenceStoreChanged(PropertyChangeEvent event) {
-		super.handlePreferenceStoreChanged(event);
-	}
-	
-	@Override
-	protected boolean affectsTextPresentation(PropertyChangeEvent event) {
-		return ((ScriptSourceViewerConfiguration) getSourceViewerConfiguration())
-				.affectsTextPresentation(event)
-				|| super.affectsTextPresentation(event);
-	}
-
-	protected void doSetInput(IEditorInput input) throws CoreException {
-		super.doSetInput(input);
-		Logg.main.println("Got Editor input:" + input + " : " + input.getName());
-		//document = documentProvider.getDocument(input);
-		cunit = DeePlugin.getInstance().getCompilationUnit(input);
-		if(cunit.isOutOfModel()) {
-			setTitleImage(DeePluginImages.getImage(DeePluginImages.ELEM_FILEOUT));
-		}
-		
-		if (outlinePage != null)
-			outlinePage.updateView();
-	}
-	
-	@Override
-	protected void performSave(boolean overwrite, IProgressMonitor progressMonitor) {
-		super.performSave(overwrite, progressMonitor);
-	}
-	
-	protected void editorSaved() {
-		super.editorSaved();
-		cunit.reconcile();
-		if (outlinePage != null)
-			outlinePage.updateView(); 
-	}
-	
-	public Object getAdapter(Class required) {
-		if (IContentOutlinePage.class.equals(required)) {
-			if (outlinePage == null) {
-				outlinePage = new DeeContentOutlinePage(this);
+	protected void doSelectionChanged(SelectionChangedEvent event) {
+		/*ISourceReference reference = null;
+		ISelection selection = event.getSelection();
+		Iterator iter = ((IStructuredSelection) selection).iterator();
+		while (iter.hasNext()) {
+			Object obj = iter.next();
+			if (obj instanceof ASTNeoNode) {
+				//reference = ((ASTNeoNode)obj).getSourceRange();
+				break;
 			}
-			return outlinePage;
-		}
-		return super.getAdapter(required);
+		}*/
+		super.doSelectionChanged(event);
 	}
+	
+	public void createPartControl(Composite parent) {
+		super.createPartControl(parent);
 
+		boolean closeBrackets = true;
+		boolean closeStrings = true;
+		boolean closeAngularBrackets = false;
+
+		fBracketInserter.setCloseBracketsEnabled(closeBrackets);
+		fBracketInserter.setCloseStringsEnabled(closeStrings);
+		fBracketInserter.setCloseAngularBracketsEnabled(closeAngularBrackets);
+
+		ISourceViewer sourceViewer = getSourceViewer();
+		if (sourceViewer instanceof ITextViewerExtension)
+			((ITextViewerExtension) sourceViewer)
+					.prependVerifyKeyListener(fBracketInserter);
+	}
+	
+	public void dispose() {
+		ISourceViewer sourceViewer = getSourceViewer();
+		if (sourceViewer instanceof ITextViewerExtension)
+			((ITextViewerExtension) sourceViewer)
+					.removeVerifyKeyListener(fBracketInserter);
+		super.dispose();
+	}
+	
 	@Override
-	protected void editorContextMenuAboutToShow(IMenuManager menu) {
+	protected void createActions() {
+		super.createActions();
+	}
+	
+	@Override
+	public void editorContextMenuAboutToShow(IMenuManager menu) {
 		super.editorContextMenuAboutToShow(menu);
 		//menu.prependToGroup(ITextEditorActionConstants.GROUP_OPEN, fActionGoToDefinition);
 		menu.prependToGroup(ITextEditorActionConstants.GROUP_OPEN,
 				DeeEditorActionContributor.getCommand_FindDefinition());
 	}
+	
+	@Override
+	protected void configureSourceViewerDecorationSupport(
+			SourceViewerDecorationSupport support) {
+		support.setCharacterPairMatcher(bracketMatcher);
+		support.setMatchingCharacterPainterPreferenceKeys(MATCHING_BRACKETS,
+				MATCHING_BRACKETS_COLOR);
+
+		super.configureSourceViewerDecorationSupport(support);
+	}
+
+
+	@Override
+	protected void connectPartitioningToElement(IEditorInput input,
+			IDocument document) {
+		if (document instanceof IDocumentExtension3) {
+			IDocumentExtension3 extension = (IDocumentExtension3) document;
+			if (extension.getDocumentPartitioner(DeePartitions.DEE_PARTITIONING) == null) {
+				DeeDocumentSetupParticipant participant = new DeeDocumentSetupParticipant();
+				participant.setup(document);
+			}
+		}
+	}
+	
+	private IFoldingStructureProvider fFoldingProvider = null;
+
+	protected IFoldingStructureProvider getFoldingStructureProvider() {
+		if (fFoldingProvider == null) {
+			fFoldingProvider = new DeeFoldingStructureProvider();
+		}
+		return fFoldingProvider;
+	}
+
+	
+	@SuppressWarnings("restriction")
+	protected org.eclipse.dltk.internal.ui.actions.
+	FoldingActionGroup createFoldingActionGroup() {
+		return new org.eclipse.dltk.internal.ui.actions.
+				FoldingActionGroup(this, getViewer(), DeePlugin.getDefault()
+				.getPreferenceStore());
+	}
+	
+	@Override
+	public String getCallHierarchyID() {
+		return "org.eclipse.dltk.callhierarchy.view";
+	}
+	
 
 }

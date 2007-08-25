@@ -2,12 +2,11 @@ package mmrnmhrm.ui.actions;
 
 import junit.framework.Assert;
 import melnorme.lang.ui.EditorUtil;
-import mmrnmhrm.core.model.CompilationUnit;
 import mmrnmhrm.tests.BaseUITest;
 import mmrnmhrm.tests.SampleMainProject;
 import mmrnmhrm.tests.SampleNonDeeProject;
 import mmrnmhrm.ui.DeePlugin;
-import mmrnmhrm.ui.editor.DeeEditorDLTK;
+import mmrnmhrm.ui.editor.DeeEditor;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
@@ -34,7 +33,6 @@ public class OpenDefinitionOperationTest extends BaseUITest {
 			+ "/testGoToDefOp.d";
 
 	protected IFile file; 
-	protected CompilationUnit cunit;
 	protected IEditorPart editor;
 	protected ITextEditor srcEditor;
 	
@@ -52,9 +50,8 @@ public class OpenDefinitionOperationTest extends BaseUITest {
 	private void setupWithFile(IProject project, String path) throws PartInitException, CoreException {
 		IWorkbenchPage page = DeePlugin.getActivePage();
 		file = project.getFile(path);
-		editor = IDE.openEditor(page, file, DeeEditorDLTK.EDITOR_ID);
+		editor = IDE.openEditor(page, file, DeeEditor.EDITOR_ID);
 		srcEditor = (ITextEditor) editor;
-		cunit =	DeePlugin.getInstance().getCompilationUnit(editor.getEditorInput());
 	}
 
 	@After
@@ -122,8 +119,8 @@ public class OpenDefinitionOperationTest extends BaseUITest {
 	}
 	
 	private void assertCurrentEditorIsEditing(IPath prjpath, String targetpath) {
-		DeeEditorDLTK deeEditor;
-		deeEditor = (DeeEditorDLTK) DeePlugin.getActivePage().getActiveEditor();
+		DeeEditor deeEditor;
+		deeEditor = (DeeEditor) DeePlugin.getActivePage().getActiveEditor();
 		IFile editorFile = ((FileEditorInput) deeEditor.getEditorInput()).getFile();
 		IPath path = editorFile.getFullPath();
 		Assert.assertEquals(path, prjpath.append(targetpath));

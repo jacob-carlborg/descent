@@ -18,10 +18,10 @@ import org.eclipse.jface.text.rules.WordRule;
 
 import descent.internal.compiler.parser.ast.TokenUtil;
 
-public class DeeCodeScannerDLTK extends AbstractScriptScanner {
+public class DeeCodeScanner extends AbstractScriptScanner {
 
 	
-	public DeeCodeScannerDLTK(IColorManager manager, IPreferenceStore store) {
+	public DeeCodeScanner(IColorManager manager, IPreferenceStore store) {
 		super(manager, store);
 		initialize();
 	}

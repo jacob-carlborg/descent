@@ -11,13 +11,13 @@ import org.eclipse.jface.text.rules.RuleBasedPartitionScanner;
 import org.eclipse.jface.text.rules.SingleLineRule;
 import org.eclipse.jface.text.rules.Token;
 
-public class DeePartitionScannerDLTK extends RuleBasedPartitionScanner {
+public class DeePartitionScanner extends RuleBasedPartitionScanner {
 
 
 	/**
 	 * Creates the partitioner and sets up the appropriate rules.
 	 */
-	public DeePartitionScannerDLTK() {
+	public DeePartitionScanner() {
 		super();
 		
 		IToken tkString = new Token(DeePartitions.DEE_STRING);

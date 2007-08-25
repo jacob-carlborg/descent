@@ -2,12 +2,8 @@ package mmrnmhrm.ui.navigator;
 
 import melnorme.miscutil.tree.IElement;
 import melnorme.util.ui.swt.SWTUtil2;
-import mmrnmhrm.core.ElementChangedEvent;
-import mmrnmhrm.core.IElementChangedListener;
 import mmrnmhrm.core.model.DeeModel;
 import mmrnmhrm.core.model.DeeProject;
-import mmrnmhrm.core.model.IDeeElement;
-import mmrnmhrm.core.model.lang.ILangElement;
 
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IProject;
@@ -17,18 +13,19 @@ import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.Viewer;
 
 
-public class DeeNavigatorContentProvider implements ITreeContentProvider, IElementChangedListener {
+public class DeeNavigatorContentProvider implements ITreeContentProvider, org.eclipse.dltk.core.IElementChangedListener {
 
 	private Viewer viewer;
 	
 	public DeeNavigatorContentProvider() {
-		DeeModel.addElementChangedListener(this);
+		//DLTKCore.addElementChangedListener(this);
 	}
 	
 	public Object[] getChildren(Object element) {
 		if(element instanceof IProject) {
 			try {
-				return DeeModel.getLangProject((IProject)element).getSourceRoots();
+				//dltkProj.open(null);
+				return DeeModel.getLangProject((IProject)element).dltkProj.getChildren();
 			} catch (CoreException e) {
 				return null;
 			}
@@ -36,16 +33,13 @@ public class DeeNavigatorContentProvider implements ITreeContentProvider, IEleme
 		
 		if(element instanceof DeeProject) {
 			try {
-				return ((DeeProject) element).getSourceFolders();
+				//dltkProj.open(null);
+				return ((DeeProject) element).dltkProj.getChildren();
 			} catch (CoreException e) {
 				return null;
 			}
 		}
 		
-		if(element instanceof IDeeElement) {
-			return ((IDeeElement) element).getChildren();
-		}
-				
 		return null;
 	}
 
@@ -60,7 +54,7 @@ public class DeeNavigatorContentProvider implements ITreeContentProvider, IEleme
 	}
 
 	public boolean hasChildren(Object element) {
-		if(element instanceof ILangElement) {
+		if(element instanceof IElement) {
 			return ((IElement) element).hasChildren();
 		}
 		if(element instanceof IContainer) {
@@ -84,7 +78,7 @@ public class DeeNavigatorContentProvider implements ITreeContentProvider, IEleme
 		this.viewer = viewer;
 	}
 
-	public void elementChanged(ElementChangedEvent event) {
+	public void elementChanged(org.eclipse.dltk.core.ElementChangedEvent event) {
 		SWTUtil2.runInSWTThread(new Runnable() {
 			public void run() {
 				viewer.refresh();

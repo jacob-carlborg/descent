@@ -1,5 +1,7 @@
 package dtool.refmodel;
 
+import org.eclipse.dltk.core.ISourceModule;
+
 import descent.internal.compiler.parser.TOK;
 import descent.internal.compiler.parser.Token;
 import descent.internal.compiler.parser.ast.TokenUtil;
@@ -15,7 +17,6 @@ import dtool.dom.references.RefIdentifier;
 import dtool.dom.references.RefQualified;
 import dtool.dom.references.RefTemplateInstance;
 import dtool.dom.references.Reference;
-import dtool.refmodel.pluginadapters.IGenericCompilationUnit;
 
 /** Class that does a scoped name lookup for matches that start with 
  * a given prefix name. 
@@ -59,10 +60,10 @@ public class PrefixDefUnitSearch extends CommonDefUnitSearch {
 	}
 
 	public static String doCompletionSearch(final int offset,
-			IGenericCompilationUnit cunit, String docstr,
+			ISourceModule moduleUnit, String docstr,
 			CompletionSession session,
 			IDefUnitMatchAccepter defUnitAccepter) {
-		
+
 		System.out.println("Do Code Assist");
 		if(session.invokeNode != null) {
 			if(offset < session.invokeNode.getOffset()) 
@@ -95,7 +96,7 @@ public class PrefixDefUnitSearch extends CommonDefUnitSearch {
 		parserAdapter.recoverForCompletion(docstr, offset, lastToken);
 
 		Module neoModule = DescentASTConverter.convertModule(parserAdapter.mod);
-		neoModule.setModuleUnit(cunit.getModuleUnit());
+		neoModule.setModuleUnit(moduleUnit);
 		
 		/* ============================================== */
 		// : Do actual completion search

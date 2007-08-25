@@ -64,6 +64,8 @@ public abstract class DefUnit extends ASTNeoNode implements ISourceReference {
 
 
 	public String getName() {
+		if(defname.name == null)
+			return "<NO-NAME>"; // TODO: put names in modules
 		return defname.name;
 	}
 	
