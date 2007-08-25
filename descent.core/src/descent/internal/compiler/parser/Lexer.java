@@ -90,6 +90,7 @@ import java.util.List;
 import descent.core.IProblemRequestor;
 import descent.core.compiler.CharOperation;
 import descent.core.compiler.IProblem;
+import descent.internal.compiler.parser.ast.IProblemReporter;
 
 /**
  * Internal lexer class.
@@ -207,6 +208,12 @@ public class Lexer implements IProblemRequestor {
 		//initKeywords();		
 	}
 	
+	protected IProblemReporter reporter;
+	
+	public void setProblemReporter(IProblemReporter reporter) {
+		this.reporter = reporter;
+	}
+	
 	public void reset(char[] source, int offset, int length, boolean tokenizeComments, boolean tokenizePragmas, boolean tokenizeWhiteSpace, boolean recordLineSeparator) {
 		this.problems = new ArrayList<IProblem>();
 
@@ -257,35 +264,35 @@ public class Lexer implements IProblemRequestor {
 	}
 	
 	public void error(int id, int line, int offset, int length, String[] arguments) {
-		problems.add(Problem.newSyntaxError(id, line, offset, length, arguments));
+		reportProblem(Problem.newSyntaxError(id, line, offset, length, arguments));
 	}
 	
 	public void error(int id, int line, int offset, int length) {
-		problems.add(Problem.newSyntaxError(id, line, offset, length));
+		reportProblem(Problem.newSyntaxError(id, line, offset, length));
 	}
 	
 	public void error(int id, int line, ASTDmdNode node) {
-		problems.add(Problem.newSyntaxError(id, line, node.start, node.length));
+		reportProblem(Problem.newSyntaxError(id, line, node.start, node.length));
 	}
 	
 	public void error(int id, int line, descent.core.dom.ASTNode node) {
-		problems.add(Problem.newSyntaxError(id, line, node.getStartPosition(), node.getLength()));
+		reportProblem(Problem.newSyntaxError(id, line, node.getStartPosition(), node.getLength()));
 	}
 	
 	public void error(int id, Token token, String[] arguments) {
-		problems.add(Problem.newSyntaxError(id, token.lineNumber, token.ptr, token.len, arguments));
+		reportProblem(Problem.newSyntaxError(id, token.lineNumber, token.ptr, token.len, arguments));
 	}
 	
 	public void error(int id, Token token) {
-		problems.add(Problem.newSyntaxError(id, token.lineNumber, token.ptr, token.len));
+		reportProblem(Problem.newSyntaxError(id, token.lineNumber, token.ptr, token.len));
 	}
 	
 	public void error(int id, Token firstToken, Token secondToken, String[] arguments) {
-		problems.add(Problem.newSyntaxError(id, firstToken.lineNumber, firstToken.ptr, secondToken.ptr + secondToken.len - firstToken.ptr, arguments));		
+		reportProblem(Problem.newSyntaxError(id, firstToken.lineNumber, firstToken.ptr, secondToken.ptr + secondToken.len - firstToken.ptr, arguments));		
 	}
 	
 	public void error(int id, Token firstToken, Token secondToken) {
-		problems.add(Problem.newSyntaxError(id, firstToken.lineNumber, firstToken.ptr, secondToken.ptr + secondToken.len - firstToken.ptr));
+		reportProblem(Problem.newSyntaxError(id, firstToken.lineNumber, firstToken.ptr, secondToken.ptr + secondToken.len - firstToken.ptr));
 	}
 	
 	private Token newFreeListToken() {
@@ -4899,6 +4906,12 @@ public class Lexer implements IProblemRequestor {
 	}
 	
 	public void endReporting() {
+	}
+	
+	public void reportProblem(IProblem problem) {
+		problems.add(problem);
+		if(reporter != null)
+			reporter.reportProblem(problem);
 	}
 	
 	// task tags

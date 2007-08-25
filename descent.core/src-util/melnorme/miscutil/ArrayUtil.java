@@ -47,6 +47,17 @@ public class ArrayUtil {
 	}
 	
 	
+	/** Removes the given array the first element that equals given obj. */
+	public static<T> T[] remove(T[] array, T obj) {
+		for (int i = 0; i < array.length; i++) {
+			T elem = array[i];
+			if(elem.equals(obj));
+				return removeAt(array, i);
+		}
+		return array;
+	}
+	
+	
 	/** Removes the element at index ix from array, creating a new array. */
 	public static <T> T[] removeAt(T[] array, int ix) {
 		T[] newArray = copyFrom(array, array.length - 1);
@@ -140,6 +151,8 @@ public class ArrayUtil {
                          Math.min(original.length - from, newLength));
         return copy;
     }
+
+
 
 
 }

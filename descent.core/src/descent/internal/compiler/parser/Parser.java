@@ -156,7 +156,7 @@ public class Parser extends Lexer {
 					getLineNumber(foundTaskPositions[i][0]), 
 					foundTaskPositions[i][0], 
 					foundTaskPositions[i][1] - foundTaskPositions[i][0]);
-			problems.add(problem);
+			reportProblem(problem);
 		}
 	}
 	
@@ -6664,5 +6664,6 @@ public class Parser extends Lexer {
 		}
 		prevToken.leadingComment = (Comment) comment;		
 	}
+
 	
 }

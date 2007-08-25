@@ -107,7 +107,7 @@ public class Token {
 	}
 	
 	public String getRawTokenSourceAsString() {
-		if (value == null) return "";
+		if (value == null || string == null) return "";
 		switch(value) {
 		case TOKeof:
 			return "";
