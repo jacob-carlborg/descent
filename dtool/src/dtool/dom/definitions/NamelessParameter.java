@@ -9,13 +9,13 @@ import dtool.dom.references.Reference;
 public class NamelessParameter extends ASTNeoNode implements IFunctionParameter {
 
 	public Reference type;
-	public descent.internal.compiler.parser.InOut inout;
+	public int storageClass;
 	//public Expression defaultValue;
 
 	protected NamelessParameter(descent.internal.compiler.parser.Argument elem) {
 		convertNode(elem);
 		this.type = Reference.convertType(elem.type);
-		this.inout = elem.inout;
+		this.storageClass = elem.storageClass;
 		//this.defaultValue = Expression.convert(elem.defaultValue);
 			
 	}

@@ -791,6 +791,20 @@ public class SourceElementParser implements IASTVisitor {
 		return true;
 	}
 	
+	public boolean visit(DeclarationStatement node) {
+		Dsymbol dsymbol = ((DeclarationExp) node.exp).declaration;
+		switch(dsymbol.getNodeType()) {
+		case ASTDmdNode.CLASS_DECLARATION:
+		case ASTDmdNode.INTERFACE_DECLARATION:
+		case ASTDmdNode.STRUCT_DECLARATION:
+		case ASTDmdNode.UNION_DECLARATION:
+		case ASTDmdNode.FUNC_DECLARATION:
+			return true;
+		default:
+			return false;
+		}
+	}
+	
 	private void pushAttribDeclaration(AttribDeclaration node) {
 		Stack<AttribDeclaration> stack = attribDeclarationStack.peek();
 		stack.push(node);
@@ -1194,20 +1208,6 @@ public class SourceElementParser implements IASTVisitor {
 
 	public boolean visit(DeclarationExp node) {
 		return false;
-	}
-
-	public boolean visit(DeclarationStatement node) {
-		Dsymbol dsymbol = ((DeclarationExp) node.exp).declaration;
-		switch(dsymbol.getNodeType()) {
-		case ASTDmdNode.CLASS_DECLARATION:
-		case ASTDmdNode.INTERFACE_DECLARATION:
-		case ASTDmdNode.STRUCT_DECLARATION:
-		case ASTDmdNode.UNION_DECLARATION:
-		case ASTDmdNode.FUNC_DECLARATION:
-			return true;
-		default:
-			return false;
-		}
 	}
 
 	public boolean visit(DecrementExp node) {
