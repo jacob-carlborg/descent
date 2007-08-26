@@ -236,36 +236,36 @@ public class SourceElementParser implements IASTVisitor {
 	
 	// ------------------------------------------------------------------------
 	
-	public void visit(AggregateDeclaration node, List<TemplateParameter> parameters, List<Comment> preDdocs) {
+	public void visit(AggregateDeclaration node, TemplateDeclaration templateDeclaration) {
 		switch(node.getNodeType()) {
 		case ASTDmdNode.CLASS_DECLARATION:
 			ClassDeclaration classDecl = (ClassDeclaration) node;
-			visit(classDecl, 0, parameters, classDecl.baseclasses, preDdocs);
+			visit(classDecl, 0, classDecl.baseclasses, templateDeclaration);
 			break;
 		case ASTDmdNode.INTERFACE_DECLARATION:
 			InterfaceDeclaration intDecl = (InterfaceDeclaration) node;
-			visit(intDecl, Flags.AccInterface, parameters, intDecl.baseclasses, preDdocs);
+			visit(intDecl, Flags.AccInterface, intDecl.baseclasses, templateDeclaration);
 			break;
 		case ASTDmdNode.STRUCT_DECLARATION:
 			StructDeclaration strDecl = (StructDeclaration) node;
-			visit(strDecl, Flags.AccStruct, parameters, null, preDdocs);
+			visit(strDecl, Flags.AccStruct, null, templateDeclaration);
 			break;
 		case ASTDmdNode.UNION_DECLARATION:
 			UnionDeclaration unDecl = (UnionDeclaration) node;
-			visit(unDecl, Flags.AccUnion, parameters, null, preDdocs);
+			visit(unDecl, Flags.AccUnion, null, templateDeclaration);
 			break;
 		}
 	}
 	
-	private void visit(AggregateDeclaration node, int flags, List<TemplateParameter> templateParameters, List<BaseClass> baseClasses, List<Comment> preDdocs) {
+	private void visit(AggregateDeclaration node, int flags, List<BaseClass> baseClasses, TemplateDeclaration templateDeclaration) {
 		// TODO Java -> D
 		// Also, since the base class notation in D dosen't distinguis between
 		// classes and interfaces, let's assume they are all interfaces for the moment
 		TypeInfo info = new TypeInfo();
 		info.annotationPositions = NO_LONG;
 		info.categories = CharOperation.NO_CHAR_CHAR;
-		if (preDdocs != null && preDdocs.size() > 0) {
-			info.declarationStart = startOfDeclaration(preDdocs.get(0));
+		if (templateDeclaration != null) {
+			info.declarationStart = startOfDeclaration(templateDeclaration);
 		} else {
 			info.declarationStart = startOfDeclaration(node);
 		}
@@ -283,8 +283,8 @@ public class SourceElementParser implements IASTVisitor {
 		if (baseClasses != null) {
 			info.superinterfaces = getTokens(baseClasses);
 		}
-		if (templateParameters != null) {
-			info.typeParameters = getTypeParameters(templateParameters);
+		if (templateDeclaration != null) {
+			info.typeParameters = getTypeParameters(templateDeclaration.parameters);
 		}
 		
 		foundType = true;		
@@ -292,13 +292,13 @@ public class SourceElementParser implements IASTVisitor {
 	}
 	
 	public boolean visit(ClassDeclaration node) {
-		visit(node, 0, null, node.baseclasses, null);
+		visit(node, 0, node.baseclasses, null);
 		pushLevelInAttribDeclarationStack();
 		return true;
 	}
 	
 	public boolean visit(InterfaceDeclaration node) {
-		visit(node, Flags.AccInterface, null, node.baseclasses, null);
+		visit(node, Flags.AccInterface, node.baseclasses, null);
 		pushLevelInAttribDeclarationStack();
 		return true;
 	}
@@ -342,13 +342,13 @@ public class SourceElementParser implements IASTVisitor {
 	}
 	
 	public boolean visit(StructDeclaration node) {
-		visit(node, Flags.AccStruct, null, null, null);
+		visit(node, Flags.AccStruct, null, null);
 		pushLevelInAttribDeclarationStack();
 		return true;
 	}
 	
 	public boolean visit(UnionDeclaration node) {
-		visit(node, Flags.AccUnion, null, null, null);
+		visit(node, Flags.AccUnion, null, null);
 		pushLevelInAttribDeclarationStack();
 		return true;
 	}
@@ -358,10 +358,10 @@ public class SourceElementParser implements IASTVisitor {
 		if (node.wrapper) {
 			Dsymbol wrappedSymbol = node.members.get(0);
 			if (wrappedSymbol.getNodeType() == ASTDmdNode.FUNC_DECLARATION) {
-				visit((FuncDeclaration) wrappedSymbol, node.parameters, node.preDdocs);
+				visit((FuncDeclaration) wrappedSymbol, node);
 				return false;
 			} else {
-				visit((AggregateDeclaration) wrappedSymbol, node.parameters, node.preDdocs);
+				visit((AggregateDeclaration) wrappedSymbol, node);
 				return false;
 			}
 		}
@@ -391,14 +391,14 @@ public class SourceElementParser implements IASTVisitor {
 		return true;
 	}
 	
-	private void visit(FuncDeclaration node, List<TemplateParameter> templateParameters, List<Comment> preDdocs) {
+	private void visit(FuncDeclaration node, TemplateDeclaration templateDeclaration) {
 		TypeFunction ty = (TypeFunction) node.type;
 		
 		MethodInfo info = new MethodInfo();
 		info.annotationPositions = NO_LONG;
 		info.categories = CharOperation.NO_CHAR_CHAR;
-		if (preDdocs != null && preDdocs.size() > 0) {
-			info.declarationStart = startOfDeclaration(preDdocs.get(0));
+		if (templateDeclaration != null) {
+			info.declarationStart = startOfDeclaration(templateDeclaration);
 		} else {
 			info.declarationStart = startOfDeclaration(node);
 		}
@@ -414,15 +414,15 @@ public class SourceElementParser implements IASTVisitor {
 		info.parameterNames = getParameterNames(ty.parameters);
 		info.parameterTypes = getParameterTypes(ty.parameters);
 		info.returnType = ty.next.toCharArray();
-		if (templateParameters != null) {
-			info.typeParameters = getTypeParameters(templateParameters);
+		if (templateDeclaration != null) {
+			info.typeParameters = getTypeParameters(templateDeclaration.parameters);
 		}
 		
 		requestor.enterMethod(info);
 	}
 	
 	public boolean visit(FuncDeclaration node) {
-		visit(node, null, null);
+		visit(node, null);
 		pushLevelInAttribDeclarationStack();
 		return true;
 	}
