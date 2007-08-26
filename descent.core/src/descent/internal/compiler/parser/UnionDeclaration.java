@@ -15,6 +15,11 @@ public class UnionDeclaration extends StructDeclaration {
 	}
 	
 	@Override
+	public UnionDeclaration isUnionDeclaration() {
+		return this;
+	}
+	
+	@Override
 	public void accept0(IASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {

@@ -13,6 +13,7 @@ package descent.internal.core.util;
 import java.io.DataInput;
 import java.io.EOFException;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -1458,6 +1459,26 @@ public class Util {
 		}
 		try {
 			return descent.internal.compiler.util.Util.getInputStreamAsCharArray(stream, (int) length, encoding);
+		} catch (IOException e) {
+			throw new JavaModelException(e, IJavaModelStatusConstants.IO_EXCEPTION);
+		} finally {
+			try {
+				stream.close();
+			} catch (IOException e) {
+				// ignore
+			}
+		}
+	}
+	
+	public static char[] getFileContentsAsCharArray(File file) throws JavaModelException {
+		InputStream stream= null;
+		try {
+			stream = new FileInputStream(file);
+		} catch (IOException e) {
+			throw new JavaModelException(e, IJavaModelStatusConstants.ELEMENT_DOES_NOT_EXIST);
+		}
+		try {
+			return descent.internal.compiler.util.Util.getInputStreamAsCharArray(stream, (int) file.length(), null);
 		} catch (IOException e) {
 			throw new JavaModelException(e, IJavaModelStatusConstants.IO_EXCEPTION);
 		} finally {

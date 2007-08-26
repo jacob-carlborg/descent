@@ -2572,21 +2572,17 @@ public class JavaProject
 	/*
 	 * Returns a new search name environment for this project. This name environment first looks in the given working copies.
 	 */
-	/* TODO JDT search
 	public SearchableEnvironment newSearchableNameEnvironment(ICompilationUnit[] workingCopies) throws JavaModelException {
 		return new SearchableEnvironment(this, workingCopies);
 	}
-	*/
 
 	/*
 	 * Returns a new search name environment for this project. This name environment first looks in the working copies
 	 * of the given owner.
 	 */
-	/* TODO JDT search
 	public SearchableEnvironment newSearchableNameEnvironment(WorkingCopyOwner owner) throws JavaModelException {
 		return new SearchableEnvironment(this, owner);
 	}
-	*/
 
 	/**
 	 * @see IJavaProject

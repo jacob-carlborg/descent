@@ -1,14 +1,15 @@
 package descent.internal.compiler.parser;
 
-import static descent.internal.compiler.parser.InOut.In;
-import static descent.internal.compiler.parser.InOut.InOut;
 import static descent.internal.compiler.parser.STC.STCconst;
 import static descent.internal.compiler.parser.STC.STCforeach;
 import static descent.internal.compiler.parser.STC.STCin;
+import static descent.internal.compiler.parser.STC.STClazy;
 import static descent.internal.compiler.parser.STC.STCout;
+import static descent.internal.compiler.parser.STC.STCref;
 import static descent.internal.compiler.parser.TOK.TOKdelegate;
 import static descent.internal.compiler.parser.TOK.TOKforeach;
 import static descent.internal.compiler.parser.TOK.TOKforeach_reverse;
+import static descent.internal.compiler.parser.TOK.TOKidentifier;
 import static descent.internal.compiler.parser.TOK.TOKstring;
 import static descent.internal.compiler.parser.TOK.TOKtuple;
 import static descent.internal.compiler.parser.TOK.TOKtype;
@@ -146,7 +147,7 @@ public class ForeachStatement extends Statement {
 				List<Statement> st = new ArrayList<Statement>();
 
 				if (dim == 2) { // Declare key
-					if (arg.inout != In)
+					if ((arg.storageClass & (STCout | STCref | STClazy)) != 0)
 						error("no storage class for %s", arg.ident.toChars());
 					TY keyty = arg.type.ty;
 					if ((keyty != Tint32 && keyty != Tuns32)
@@ -164,7 +165,7 @@ public class ForeachStatement extends Statement {
 					arg = (Argument) arguments.get(1); // value
 				}
 				// Declare value
-				if (arg.inout != In) {
+				if ((arg.storageClass & (STCout | STCref | STClazy)) != 0) {
 					error("no storage class for %s", arg.ident.toChars());
 				}
 				Dsymbol var;
@@ -225,11 +226,11 @@ public class ForeachStatement extends Statement {
 				tnv = arg.type.toBasetype(context);
 				if (tnv.ty != tn.ty
 						&& (tnv.ty == Tchar || tnv.ty == Twchar || tnv.ty == Tdchar)) {
-					if (arg.inout == InOut)
+					if ((arg.storageClass & STCref) != 0)
 						error("foreach: value of UTF conversion cannot be inout");
 					if (dim == 2) {
 						arg = (Argument) arguments.get(0);
-						if (arg.inout == InOut)
+						if ((arg.storageClass & STCref) != 0)
 							error("foreach: key cannot be inout");
 					}
 					// goto Lapply;
@@ -246,19 +247,7 @@ public class ForeachStatement extends Statement {
 
 				var = new VarDeclaration(loc, arg.type, arg.ident, null);
 				var.storage_class |= STCforeach;
-				switch (arg.inout) {
-				case In:
-					var.storage_class |= STCin;
-					break;
-				case Out:
-					var.storage_class |= STCout;
-					break;
-				case InOut:
-					var.storage_class |= STCin | STCout;
-					break;
-				default:
-					Assert.isTrue(false);
-				}
+				var.storage_class |= arg.storageClass & (STCin | STCout | STCref);
 				DeclarationExp de = new DeclarationExp(loc, var);
 				de.semantic(sc, context);
 				if (dim == 2 && i == 0)
@@ -367,21 +356,21 @@ public class ForeachStatement extends Statement {
 			Argument arg = (Argument) arguments.get(i);
 
 			arg.type = arg.type.semantic(loc, sc, context);
-			if (arg.inout == InOut)
+			if ((arg.storageClass & STCref) != 0)
 				id = arg.ident;
 			else { // Make a copy of the inout argument so it isn't
 				// a reference.
 				VarDeclaration v;
 				Initializer ie;
 				id = new IdentifierExp(loc, new Identifier(("__applyArg" + i).toCharArray(),
-						TOK.TOKidentifier));
+						TOKidentifier));
 
 				ie = new ExpInitializer(loc, id);
 				v = new VarDeclaration(loc, arg.type, arg.ident, ie);
 				s[0] = new DeclarationStatement(loc, v);
 				body = new CompoundStatement(loc, s[0], body);
 			}
-			a = new Argument(InOut, arg.type, id, null);
+			a = new Argument(STCref, arg.type, id, null);
 			args.add(a);
 		}
 		t = new TypeFunction(args, Type.tint32, 0, LINK.LINKd);
@@ -407,7 +396,7 @@ public class ForeachStatement extends Statement {
 			// Check types
 			Argument arg = (Argument) arguments.get(0);
 			if (dim == 2) {
-				if (arg.inout == InOut)
+				if ((arg.storageClass & STCref) != 0)
 					error("foreach: index cannot be inout");
 				if (!arg.type.equals(taa.index))
 					error("foreach: index must be type %s, not %s",

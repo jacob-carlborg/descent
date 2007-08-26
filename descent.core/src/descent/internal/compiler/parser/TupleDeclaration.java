@@ -1,5 +1,7 @@
 package descent.internal.compiler.parser;
 
+import static descent.internal.compiler.parser.STC.STCin;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -66,7 +68,7 @@ public class TupleDeclaration extends Declaration {
 			for (int i = 0; i < objects.size(); i++) {
 				Type t = (Type) objects.get(i);
 
-				Argument arg = new Argument(InOut.In, t, null, null);
+				Argument arg = new Argument(STCin, t, null, null);
 				args.set(i, arg);
 			}
 

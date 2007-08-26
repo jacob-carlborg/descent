@@ -246,7 +246,7 @@ public interface IProblem {
 	int AliasCannotHaveInitializer = 107;
 	int CStyleCastIllegal = 108;
 	int InvalidLinkageIdentifier = 109;
-	int VariadicArgumentCannotBeOutInoutOrRef = 110;
+	int VariadicArgumentCannotBeOutOrRef = 110;
 	int VariadicNotAllowedInDelete = 111;
 	int NoIdentifierForTemplateValueParameter = 112;
 	int UnexpectedIdentifierInDeclarator = 113;
@@ -263,6 +263,10 @@ public interface IProblem {
 	int IfAutoDeprecated = 124;
 	int VariadicTemplateParameterMustBeTheLastOne = 125;
 	int NeedSizeOfRightmostArray = 126;
+	int ConflictingStorageClass = 127;
+	int IncompatibleParameterStorageClass = 128;
+	int OutCannotBeFinal = 129;
+	int ScopeCannotBeRefOrOut = 130;
 	
 	/* Semantic problems */
 	int DuplicatedSymbol = 302;
@@ -300,7 +304,7 @@ public interface IProblem {
 	int FunctionDoesNotOverrideAny = 334;
 	int CannotOverrideFinalFunctions = 335;
 	int OverrideOnlyForClassMemberFunctions = 336;
-	int IllegalReturnType = 337;
+	int FunctionMustReturnAResultOfType = 337;
 	int MoreThanOneInvariant = 338;
 	int DuplicatedParameter = 339;
 	int SymbolNotFound = 340;
@@ -323,7 +327,7 @@ public interface IProblem {
 	int UnionsCannotBeAbstract = 358;
 	int OneArgumentOfTypeExpected = 359;
 	int IllegalMainParameters = 360;
-	int IllegalMainReturnType = 361;
+	int MustReturnIntOrVoidFromMainFunction = 361;
 	int AtLeastOneArgumentOfTypeExpected = 362;
 	int FirstArgumentMustBeOfType = 363;
 	int StringExpectedForPragmaMsg = 364;
@@ -331,7 +335,7 @@ public interface IProblem {
 	int StringExpectedForPragmaLib = 366;
 	int CannotHaveOutOrInoutParameterOfTypeStaticArray = 367;
 	int FunctionsCannotReturnStaticArrays = 368;
-	int FunctionMustReturnAResultOfType = 369;
+	int UnrecongnizedTrait = 369;
 	
 	/* Others, needed by JDT */
 	int ForbiddenReference = 2001;

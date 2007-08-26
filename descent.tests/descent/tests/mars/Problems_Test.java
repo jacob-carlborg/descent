@@ -353,7 +353,7 @@ public class Problems_Test extends Parser_Test {
 
 	public void test_VARIADIC_ARGUMENT_CANNOT_BE_OUT_OR_INOUT() {
 		IProblem p = getProblem(" void bla(out int ...) { }");
-		assertError(p, IProblem.VariadicArgumentCannotBeOutInoutOrRef, 10, 3);
+		assertError(p, IProblem.VariadicArgumentCannotBeOutOrRef, 10, 3);
 	}
 
 	public void test_DEFAULT_ARGUMENT_EXPECTED() {

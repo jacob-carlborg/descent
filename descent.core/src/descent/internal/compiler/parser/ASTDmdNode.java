@@ -1,17 +1,19 @@
 package descent.internal.compiler.parser;
 
-import static descent.internal.compiler.parser.InOut.InOut;
-import static descent.internal.compiler.parser.InOut.Lazy;
-import static descent.internal.compiler.parser.InOut.Out;
 import static descent.internal.compiler.parser.LINK.LINKd;
 import static descent.internal.compiler.parser.PROT.PROTpackage;
 import static descent.internal.compiler.parser.PROT.PROTprivate;
 import static descent.internal.compiler.parser.PROT.PROTprotected;
+import static descent.internal.compiler.parser.STC.STClazy;
+import static descent.internal.compiler.parser.STC.STCout;
+import static descent.internal.compiler.parser.STC.STCref;
 import static descent.internal.compiler.parser.TOK.TOKarray;
 import static descent.internal.compiler.parser.TOK.TOKdelegate;
+import static descent.internal.compiler.parser.TOK.TOKdotexp;
 import static descent.internal.compiler.parser.TOK.TOKforeach_reverse;
 import static descent.internal.compiler.parser.TOK.TOKsuper;
 import static descent.internal.compiler.parser.TOK.TOKtuple;
+import static descent.internal.compiler.parser.TOK.TOKvar;
 import static descent.internal.compiler.parser.TY.Tbit;
 import static descent.internal.compiler.parser.TY.Tclass;
 import static descent.internal.compiler.parser.TY.Tdelegate;
@@ -482,7 +484,7 @@ public abstract class ASTDmdNode extends ASTNode {
 		if (e.type != null) {
 			Type t = e.type.toBasetype(context);
 
-			if (t.ty == TY.Tfunction) {
+			if (t.ty == Tfunction) {
 				e = new CallExp(e.loc, e);
 				e = e.semantic(sc, context);
 			}
@@ -490,16 +492,16 @@ public abstract class ASTDmdNode extends ASTNode {
 			/*
 			 * Look for e being a lazy parameter; rewrite as delegate call
 			 */
-			else if (e.op == TOK.TOKvar) {
+			else if (e.op == TOKvar) {
 				VarExp ve = (VarExp) e;
 
-				if ((ve.var.storage_class & STC.STClazy) != 0) {
+				if ((ve.var.storage_class & STClazy) != 0) {
 					e = new CallExp(e.loc, e);
 					e = e.semantic(sc, context);
 				}
 			}
 
-			else if (e.op == TOK.TOKdotexp) {
+			else if (e.op == TOKdotexp) {
 				e.error("expression has no value");
 			}
 		}
@@ -518,7 +520,7 @@ public abstract class ASTDmdNode extends ASTNode {
 
 			s2 = s.toAlias(context);
 			fd = s2.isFuncDeclaration();
-			if (fd != null && fd.type.ty == TY.Tfunction) {
+			if (fd != null && fd.type.ty == Tfunction) {
 				return fd;
 			}
 
@@ -830,10 +832,10 @@ public abstract class ASTDmdNode extends ASTNode {
 				}
 
 				// L1: 
-				if (!(p.inout == Lazy && p.type.ty == Tvoid)) {
+				if (!((p.storageClass & STClazy) != 0 && p.type.ty == Tvoid)) {
 					arg = arg.implicitCastTo(sc, p.type, context);
 				}
-				if (p.inout == Out || p.inout == InOut) {
+				if ((p.storageClass & (STCout | STCref)) != 0) {
 					// BUG: should check that argument to inout is type
 					// 'invariant'
 					// BUG: assignments to inout should also be type 'invariant'
@@ -856,7 +858,7 @@ public abstract class ASTDmdNode extends ASTNode {
 				}
 
 				// Convert lazy argument to a delegate
-				if (p.inout == Lazy) {
+				if ((p.storageClass & STClazy) != 0) {
 					arg = arg.toDelegate(sc, p.type);
 				}
 			} else {

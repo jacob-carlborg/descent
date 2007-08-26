@@ -10,6 +10,7 @@
  *******************************************************************************/
 package descent.internal.core.search.matching;
 
+import java.io.File;
 import java.io.IOException;
 
 import org.eclipse.core.runtime.*;
@@ -57,7 +58,7 @@ public abstract class InternalSearchPattern {
 		return (SearchPattern) this;
 	}
 	String documentPath(String containerPath, String relativePath) {
-		String separator = Util.isArchiveFileName(containerPath) ? IJavaSearchScope.JAR_FILE_ENTRY_SEPARATOR : "/"; //$NON-NLS-1$
+		String separator = new File(containerPath).isAbsolute() ? File.separator : "/"; //$NON-NLS-1$
 		StringBuffer buffer = new StringBuffer(containerPath.length() + separator.length() + relativePath.length());
 		buffer.append(containerPath);
 		buffer.append(separator);

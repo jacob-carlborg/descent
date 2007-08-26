@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.zip.CRC32;
 
+import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IWorkspace;
@@ -364,15 +365,16 @@ public void indexAll(IProject project) {
  */
 public void indexLibrary(IPath path, IProject requestingProject) {
 	// requestingProject is no longer used to cancel jobs but leave it here just in case
-	if (JavaCore.getPlugin() == null) return;
-
 	/* TODO JDT index library
+	if (JavaCore.getPlugin() == null) return;
+	
 	Object target = JavaModel.getTarget(ResourcesPlugin.getWorkspace().getRoot(), path, true);
 	IndexRequest request = null;
 	if (target instanceof IFile) {
 		request = new AddJarFileToIndex((IFile) target, this);
 	} else if (target instanceof java.io.File) {
-		if (((java.io.File) target).isFile()) {
+		//if (((java.io.File) target).isFile()) {
+		if (((java.io.File) target).isDirectory()) {
 			request = new AddJarFileToIndex(path, this);
 		} else {
 			return;

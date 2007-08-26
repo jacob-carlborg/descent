@@ -7,15 +7,15 @@ import descent.internal.compiler.parser.ast.IASTVisitor;
 
 public class Argument extends ASTDmdNode {
 	
-	public InOut inout;
+	public int storageClass;
 	public Type type;
 	public IdentifierExp ident;
 	public Expression defaultArg;
 	public Expression sourceDefaultArg;
 	
 
-	public Argument(InOut inout, Type type, IdentifierExp ident, Expression defaultArg) {
-		this.inout = inout;
+	public Argument(int storageClass, Type type, IdentifierExp ident, Expression defaultArg) {
+		this.storageClass = storageClass;
 		if (type == null) {
 			this.type = Type.terror;
 		} else {

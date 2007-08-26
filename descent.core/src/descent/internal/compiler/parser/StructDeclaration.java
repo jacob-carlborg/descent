@@ -1,6 +1,7 @@
 package descent.internal.compiler.parser;
 
 import static descent.internal.compiler.parser.PROT.PROTnone;
+import static descent.internal.compiler.parser.STC.STCin;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -120,7 +121,7 @@ public class StructDeclaration extends AggregateDeclaration {
 		TypeFunction tfeqptr;
 		{
 			List<Argument> arguments = new ArrayList<Argument>();
-			Argument arg = new Argument(InOut.In, handle, new IdentifierExp(loc, 
+			Argument arg = new Argument(STCin, handle, new IdentifierExp(loc, 
 					Id.p), null);
 
 			arguments.add(arg);
@@ -132,7 +133,7 @@ public class StructDeclaration extends AggregateDeclaration {
 		TypeFunction tfeq;
 		{
 			List<Argument> arguments = new ArrayList<Argument>();
-			Argument arg = new Argument(InOut.In, type, null, null);
+			Argument arg = new Argument(STCin, type, null, null);
 
 			arguments.add(arg);
 			tfeq = new TypeFunction(arguments, Type.tint32, 0, LINK.LINKd);

@@ -5,20 +5,38 @@ import static descent.internal.compiler.parser.LINK.LINKcpp;
 import static descent.internal.compiler.parser.LINK.LINKd;
 import static descent.internal.compiler.parser.LINK.LINKdefault;
 import static descent.internal.compiler.parser.LINK.LINKpascal;
+import static descent.internal.compiler.parser.LINK.LINKsystem;
 import static descent.internal.compiler.parser.LINK.LINKwindows;
+import static descent.internal.compiler.parser.STC.STCconst;
+import static descent.internal.compiler.parser.STC.STCextern;
+import static descent.internal.compiler.parser.STC.STCfinal;
+import static descent.internal.compiler.parser.STC.STCin;
+import static descent.internal.compiler.parser.STC.STCinvariant;
+import static descent.internal.compiler.parser.STC.STClazy;
+import static descent.internal.compiler.parser.STC.STCout;
+import static descent.internal.compiler.parser.STC.STCref;
+import static descent.internal.compiler.parser.STC.STCscope;
+import static descent.internal.compiler.parser.STC.STCstatic;
+import static descent.internal.compiler.parser.STC.STCundefined;
+import static descent.internal.compiler.parser.TOK.TOKPRAGMA;
 import static descent.internal.compiler.parser.TOK.TOKalias;
 import static descent.internal.compiler.parser.TOK.TOKand;
 import static descent.internal.compiler.parser.TOK.TOKandand;
 import static descent.internal.compiler.parser.TOK.TOKassert;
 import static descent.internal.compiler.parser.TOK.TOKassign;
 import static descent.internal.compiler.parser.TOK.TOKauto;
+import static descent.internal.compiler.parser.TOK.TOKblockcomment;
 import static descent.internal.compiler.parser.TOK.TOKcase;
 import static descent.internal.compiler.parser.TOK.TOKcatch;
 import static descent.internal.compiler.parser.TOK.TOKclass;
 import static descent.internal.compiler.parser.TOK.TOKcolon;
 import static descent.internal.compiler.parser.TOK.TOKcomma;
+import static descent.internal.compiler.parser.TOK.TOKconst;
 import static descent.internal.compiler.parser.TOK.TOKdefault;
 import static descent.internal.compiler.parser.TOK.TOKdelegate;
+import static descent.internal.compiler.parser.TOK.TOKdocblockcomment;
+import static descent.internal.compiler.parser.TOK.TOKdoclinecomment;
+import static descent.internal.compiler.parser.TOK.TOKdocpluscomment;
 import static descent.internal.compiler.parser.TOK.TOKdot;
 import static descent.internal.compiler.parser.TOK.TOKdotdotdot;
 import static descent.internal.compiler.parser.TOK.TOKelse;
@@ -32,31 +50,39 @@ import static descent.internal.compiler.parser.TOK.TOKidentity;
 import static descent.internal.compiler.parser.TOK.TOKif;
 import static descent.internal.compiler.parser.TOK.TOKimport;
 import static descent.internal.compiler.parser.TOK.TOKinout;
+import static descent.internal.compiler.parser.TOK.TOKint32;
 import static descent.internal.compiler.parser.TOK.TOKint32v;
 import static descent.internal.compiler.parser.TOK.TOKinterface;
+import static descent.internal.compiler.parser.TOK.TOKinvariant;
 import static descent.internal.compiler.parser.TOK.TOKis;
 import static descent.internal.compiler.parser.TOK.TOKlbracket;
 import static descent.internal.compiler.parser.TOK.TOKlcurly;
+import static descent.internal.compiler.parser.TOK.TOKlinecomment;
 import static descent.internal.compiler.parser.TOK.TOKlparen;
 import static descent.internal.compiler.parser.TOK.TOKmodule;
 import static descent.internal.compiler.parser.TOK.TOKnew;
 import static descent.internal.compiler.parser.TOK.TOKnot;
 import static descent.internal.compiler.parser.TOK.TOKnotidentity;
+import static descent.internal.compiler.parser.TOK.TOKnotis;
 import static descent.internal.compiler.parser.TOK.TOKon_scope_exit;
 import static descent.internal.compiler.parser.TOK.TOKon_scope_failure;
 import static descent.internal.compiler.parser.TOK.TOKon_scope_success;
 import static descent.internal.compiler.parser.TOK.TOKor;
 import static descent.internal.compiler.parser.TOK.TOKoror;
+import static descent.internal.compiler.parser.TOK.TOKpluscomment;
 import static descent.internal.compiler.parser.TOK.TOKplusplus;
 import static descent.internal.compiler.parser.TOK.TOKquestion;
 import static descent.internal.compiler.parser.TOK.TOKrbracket;
 import static descent.internal.compiler.parser.TOK.TOKrcurly;
+import static descent.internal.compiler.parser.TOK.TOKref;
 import static descent.internal.compiler.parser.TOK.TOKreserved;
+import static descent.internal.compiler.parser.TOK.TOKreturn;
 import static descent.internal.compiler.parser.TOK.TOKrparen;
 import static descent.internal.compiler.parser.TOK.TOKsemicolon;
 import static descent.internal.compiler.parser.TOK.TOKslice;
 import static descent.internal.compiler.parser.TOK.TOKstring;
 import static descent.internal.compiler.parser.TOK.TOKstruct;
+import static descent.internal.compiler.parser.TOK.TOKsuper;
 import static descent.internal.compiler.parser.TOK.TOKthis;
 import static descent.internal.compiler.parser.TOK.TOKtilde;
 import static descent.internal.compiler.parser.TOK.TOKtypedef;
@@ -94,7 +120,7 @@ public class Parser extends Lexer {
 	private int lastDocCommentRead = 0;
 	private boolean appendLeadingComments = true;
 	
-	private LINK linkage = LINK.LINKd;
+	private LINK linkage = LINKd;
 
 	public Parser(int apiLevel, String source) {
 		this(apiLevel, source, 0, source.length());
@@ -165,7 +191,7 @@ public class Parser extends Lexer {
 	    List<Dsymbol> decldefs = new ArrayList<Dsymbol>();
 	    
 	    // Special treatment if the file starts with Ddoc
-	    if (token.value == TOK.TOKidentifier && CharOperation.equals(token.string, Id.Ddoc)) {
+	    if (token.value == TOKidentifier && CharOperation.equals(token.string, Id.Ddoc)) {
 	    	return decldefs;
 	    }
 
@@ -350,7 +376,7 @@ public class Parser extends Lexer {
 							continue;
 						}
 					} else {
-						stc = STC.STCinvariant;
+						stc = STCinvariant;
 						
 						Modifier modifier = new Modifier(token);
 						modifier.setSourceRange(token.ptr, token.len);
@@ -402,12 +428,12 @@ public class Parser extends Lexer {
 						aelse = parseBlock();
 					}					
 					s = new StaticIfDeclaration(loc, condition, a, aelse);
-					attachLeadingComments = prevToken.value == TOK.TOKrcurly;
+					attachLeadingComments = prevToken.value == TOKrcurly;
 					break;
 				} else if (token.value == TOKimport) {
 					s = parseImport(true);
 				} else {
-					stc = STC.STCstatic;
+					stc = STCstatic;
 					
 					// goto Lstc2;
 					
@@ -425,7 +451,7 @@ public class Parser extends Lexer {
 					decldefs.addAll(a);
 					continue;
 				} else {
-					stc = STC.STCconst;
+					stc = STCconst;
 					
 					Modifier modifier = new Modifier(token);
 					modifier.setSourceRange(token.ptr, token.len);
@@ -456,7 +482,7 @@ public class Parser extends Lexer {
 
 			case TOKextern:
 				if (peek(token).value != TOKlparen) {
-					stc = STC.STCextern;
+					stc = STCextern;
 					
 					modifier = new Modifier(token);
 					modifier.setSourceRange(token.ptr, token.len);
@@ -472,7 +498,7 @@ public class Parser extends Lexer {
 					LINK linkage = parseLinkage();
 					a = parseBlock();
 					s = new LinkDeclaration(loc, linkage, a);
-					attachLeadingComments = prevToken.value == TOK.TOKrcurly;
+					attachLeadingComments = prevToken.value == TOKrcurly;
 					linkage = linksave;
 					break;
 				}
@@ -490,10 +516,10 @@ public class Parser extends Lexer {
 				// goto Lprot;
 				nextToken();
 				
-				boolean isColon = token.value == TOK.TOKcolon;
+				boolean isColon = token.value == TOKcolon;
 				a = parseBlock(isSingle);
 				s = new ProtDeclaration(loc, prot, a, modifier, isSingle[0], isColon);
-				attachLeadingComments = prevToken.value == TOK.TOKrcurly;
+				attachLeadingComments = prevToken.value == TOKrcurly;
 				break;
 				
 			case TOKalign: {
@@ -516,7 +542,7 @@ public class Parser extends Lexer {
 				}
 				a = parseBlock();
 				s = new AlignDeclaration(loc, (int) n, a);
-				attachLeadingComments = prevToken.value == TOK.TOKrcurly;
+				attachLeadingComments = prevToken.value == TOKrcurly;
 				break;
 			}
 
@@ -547,7 +573,7 @@ public class Parser extends Lexer {
 				}
 				
 				s = new PragmaDeclaration(loc, ident, args, a);
-				attachLeadingComments = prevToken.value == TOK.TOKrcurly;
+				attachLeadingComments = prevToken.value == TOKrcurly;
 				break;
 			}
 
@@ -579,7 +605,7 @@ public class Parser extends Lexer {
 				}
 				
 				s = new ConditionalDeclaration(loc, debugCondition, a, aelse);
-				attachLeadingComments = prevToken.value == TOK.TOKrcurly;
+				attachLeadingComments = prevToken.value == TOKrcurly;
 				break;
 
 			case TOKversion:
@@ -610,7 +636,7 @@ public class Parser extends Lexer {
 				}
 				
 				s = new ConditionalDeclaration(loc, versionCondition, a, aelse);
-				attachLeadingComments = prevToken.value == TOK.TOKrcurly;
+				attachLeadingComments = prevToken.value == TOKrcurly;
 				break;
 
 			case TOKiftype:		
@@ -624,7 +650,7 @@ public class Parser extends Lexer {
 				}				
 
 				s = new ConditionalDeclaration(loc, iftypeCondition, a, aelse);
-				attachLeadingComments = prevToken.value == TOK.TOKrcurly;
+				attachLeadingComments = prevToken.value == TOKrcurly;
 				break;
 
 			case TOKsemicolon: // empty declaration
@@ -677,10 +703,10 @@ public class Parser extends Lexer {
 							repeat = false;
 						    break;
 						}
-						if (token.value == TOK.TOKconst) {
-						    stc |= STC.STCconst;
+						if (token.value == TOKconst) {
+						    stc |= STCconst;
 						} else {
-						    stc |= STC.STCinvariant;
+						    stc |= STCinvariant;
 						}
 						modifier = new Modifier(token);
 				    	modifier.setSourceRange(token.ptr, token.len);
@@ -688,7 +714,7 @@ public class Parser extends Lexer {
 				    	nextToken();
 				    	break;
 			    	} else {
-			    		if (token.value == TOK.TOKinvariant) {
+			    		if (token.value == TOKinvariant) {
 			    			repeat = false;
 			    			break;
 			    		}
@@ -760,7 +786,7 @@ public class Parser extends Lexer {
 						parsingErrorInsertTokenAfter(prevToken, "identifier");
 					}
 				} else {
-					parsingErrorInsertTokenAfter(prevToken, TOK.TOKsemicolon
+					parsingErrorInsertTokenAfter(prevToken, TOKsemicolon
 							.toString());
 					v.setSourceRange(firstToken.ptr, prevToken.ptr + prevToken.len - firstToken.ptr);
 					v.last = true;
@@ -770,7 +796,7 @@ public class Parser extends Lexer {
 		}
 		else
 		{  
-			boolean isColon = token.value == TOK.TOKcolon;
+			boolean isColon = token.value == TOKcolon;
 			List<Dsymbol> a = parseBlock(isSingle);
 			
 			if (isSingle[0] && a.size() == 0) {
@@ -874,7 +900,7 @@ public class Parser extends Lexer {
 					nextToken();
 				}
 			} else if (CharOperation.equals(id, Id.System)) {
-				link = LINK.LINKsystem;
+				link = LINKsystem;
 			} else {
 				error(IProblem.InvalidLinkageIdentifier, lineNumber, start, length);
 				link = LINKd;
@@ -911,7 +937,7 @@ public class Parser extends Lexer {
 			c = new DebugCondition(1, null);
 		}
 		if (id == null && idTokenStart != -1) {
-			c.id = new Identifier(String.valueOf(level).toCharArray(), TOK.TOKint32);
+			c.id = new Identifier(String.valueOf(level).toCharArray(), TOKint32);
 			c.id.startPosition = idTokenStart;
 			c.id.length = idTokenLength;
 		}
@@ -944,7 +970,7 @@ public class Parser extends Lexer {
 		}
 		c = new VersionCondition(level, id);
 		if (id == null && idTokenStart != -1) {
-			c.id = new Identifier(String.valueOf(level).toCharArray(), TOK.TOKint32);
+			c.id = new Identifier(String.valueOf(level).toCharArray(), TOKint32);
 			c.id.startPosition = idTokenStart;
 			c.id.length = idTokenLength;
 		}
@@ -1135,15 +1161,13 @@ public class Parser extends Lexer {
 			Type at;
 			Argument a;
 			int storageClass;
-			InOut inout;
 			Expression ae;
 			List<Modifier> modifiers = new ArrayList<Modifier>(1);
 			
 			int firstTokenStart = token.ptr;
 			
 			ai = null;
-			storageClass = STC.STCin;
-			inout = InOut.None;
+			storageClass = STCin;
 			
 			if (token.value == TOKrparen) {
 				break;
@@ -1158,32 +1182,27 @@ public class Parser extends Lexer {
 				
 				switch(token.value) {
 					case TOKin:
-						storageClass = STC.STCin;
-						inout = InOut.In;
+						storageClass = STCin;
 						modifiers.add(new Modifier(token));
 						nextToken();
 						break;
 					case TOKout:
-						storageClass = STC.STCout;
-						inout = InOut.Out;
+						storageClass = STCout;
 						modifiers.add(new Modifier(token));
 						nextToken();
 						break;
 					case TOKinout:
-						storageClass = STC.STCref;
-						inout = InOut.InOut;
+						storageClass = STCref;
 						modifiers.add(new Modifier(token));
 						nextToken();
 						break;
 					case TOKref:
-						storageClass = STC.STCref;
-						inout = InOut.Ref;
+						storageClass = STCref;
 						modifiers.add(new Modifier(token));
 						nextToken();
 						break;
 					case TOKlazy:
-						storageClass = STC.STClazy;
-						inout = InOut.Lazy;
+						storageClass = STClazy;
 						modifiers.add(new Modifier(token));
 						nextToken();
 						break;
@@ -1210,12 +1229,12 @@ public class Parser extends Lexer {
 					/*
 					 * This is: at ai ...
 					 */
-					if ((storageClass & (STC.STCout | STC.STCref)) != 0) {
-						error(IProblem.VariadicArgumentCannotBeOutInoutOrRef, inoutTokenLine, inoutTokenStart, inoutTokenLength);
+					if ((storageClass & (STCout | STCref)) != 0) {
+						error(IProblem.VariadicArgumentCannotBeOutOrRef, inoutTokenLine, inoutTokenStart, inoutTokenLength);
 					}
 					varargs = 2;
 					
-					a = new Argument(inout, at, ai, ae);
+					a = new Argument(storageClass, at, ai, ae);
 					a.modifiers = modifiers;
 					a.setSourceRange(firstTokenStart, prevToken.ptr + prevToken.len - firstTokenStart);
 					arguments.add(a);
@@ -1224,7 +1243,7 @@ public class Parser extends Lexer {
 				}
 				
 				if (at != null || ai != null || ae != null) {
-					a = new Argument(inout, at, ai, ae);
+					a = new Argument(storageClass, at, ai, ae);
 					a.modifiers = modifiers;
 					a.setSourceRange(firstTokenStart, prevToken.ptr + prevToken.len - firstTokenStart);
 					arguments.add(a);
@@ -1253,12 +1272,14 @@ public class Parser extends Lexer {
 			Type at;
 			Argument a;
 			int storageClass;
+			int stc;
 			Expression ae;
 			
 			int firstTokenStart = token.ptr;
 			
 			ai = null;
-			storageClass = STC.STCin;
+			storageClass = 0;
+			stc = 0;
 			
 			List<Modifier> modifiers = new ArrayList<Modifier>(2);
 			
@@ -1280,9 +1301,10 @@ public class Parser extends Lexer {
 						// goto Ldefault;
 				    	break;
 				    } else {
-					    storageClass = STC.STCconst;
+					    stc = STCconst;
 					    modifiers.add(new Modifier(token));
 					    // goto L2;
+					    storageClass = parseParametersD2_L2(storageClass, stc);
 					    continue loopFor;
 				    }
 				case TOKinvariant:
@@ -1290,60 +1312,79 @@ public class Parser extends Lexer {
 				    	// goto Ldefault;
 				    	break;
 				    } else {
-					    storageClass = STC.STCinvariant;
+					    stc = STCinvariant;
 					    modifiers.add(new Modifier(token));
 					    // goto L2;
+					    storageClass = parseParametersD2_L2(storageClass, stc);
 					    continue loopFor;
 				    }
 				case TOKin:
-					storageClass = STC.STCin;
+					stc = STCin;
 					modifiers.add(new Modifier(token));
 					// goto L2;
+					storageClass = parseParametersD2_L2(storageClass, stc);
 					continue loopFor;
 				case TOKout:
-					storageClass = STC.STCout;
+					stc = STCout;
 					modifiers.add(new Modifier(token));
 					// goto L2;
+					storageClass = parseParametersD2_L2(storageClass, stc);
 					continue loopFor;
 				case TOKinout:
-					storageClass = STC.STCref;
+					stc = STCref;
 					modifiers.add(new Modifier(token));
 					// goto L2;
+					storageClass = parseParametersD2_L2(storageClass, stc);
 					continue loopFor;
 				case TOKref:
-					storageClass = STC.STCref;
+					stc = STCref;
 					modifiers.add(new Modifier(token));
 					// goto L2;
+					storageClass = parseParametersD2_L2(storageClass, stc);
 					continue loopFor;
 				case TOKlazy:
-					storageClass = STC.STClazy;
+					stc = STClazy;
 					modifiers.add(new Modifier(token));
 					// goto L2;
+					storageClass = parseParametersD2_L2(storageClass, stc);
 					continue loopFor;
 				case TOKscope:
-					storageClass = STC.STCscope;
+					stc = STCscope;
 					modifiers.add(new Modifier(token));
 					// goto L2;
+					storageClass = parseParametersD2_L2(storageClass, stc);
 					continue loopFor;
 				case TOKfinal:
-					storageClass = STC.STCfinal;
+					stc = STCfinal;
 					modifiers.add(new Modifier(token));
 					// goto L2;
+					storageClass = parseParametersD2_L2(storageClass, stc);
 					continue loopFor;
 				case TOKstatic:
-					storageClass = STC.STCstatic;
+					stc = STCstatic;
 					modifiers.add(new Modifier(token));
 					// goto L2;
+					storageClass = parseParametersD2_L2(storageClass, stc);
 					continue loopFor;
-					
-				// L2:
-					// TODO missing code (checking of some incompatible passing modes)
-					// continue;
 					
 				default:
 					// Ldefault:
 					break;
 				}
+				
+				stc = storageClass
+						& (STCin | STCout | STCref | STClazy);
+				if ((stc & (stc - 1)) != 0) { // if stc is not a power of 2
+					error(IProblem.IncompatibleParameterStorageClass, token);
+				}
+				if ((storageClass & (STCfinal | STCout)) == (STCfinal | STCout)) {
+					error(IProblem.OutCannotBeFinal, token);
+				}
+				if ((storageClass & STCscope) != 0
+						&& (storageClass & (STCref | STCout)) != 0) {
+					error(IProblem.ScopeCannotBeRefOrOut, token);
+				}
+				
 				IdentifierExp[] pointer2_ai = { ai };
 				at = parseType(pointer2_ai);
 				ai = pointer2_ai[0];
@@ -1363,12 +1404,12 @@ public class Parser extends Lexer {
 					/*
 					 * This is: at ai ...
 					 */
-					if ((storageClass & (STC.STCout | STC.STCref)) != 0) {
-						error(IProblem.VariadicArgumentCannotBeOutInoutOrRef, inoutTokenLine, inoutTokenStart, inoutTokenLength);
+					if ((storageClass & (STCout | STCref)) != 0) {
+						error(IProblem.VariadicArgumentCannotBeOutOrRef, inoutTokenLine, inoutTokenStart, inoutTokenLength);
 					}
 					varargs = 2;
 					
-					a = new Argument(null, at, ai, ae);
+					a = new Argument(storageClass, at, ai, ae);
 					a.modifiers = modifiers;
 					a.setSourceRange(firstTokenStart, prevToken.ptr + prevToken.len - firstTokenStart);
 					arguments.add(a);
@@ -1377,7 +1418,7 @@ public class Parser extends Lexer {
 				}
 				
 				if (at != null || ai != null || ae != null) {
-					a = new Argument(null, at, ai, ae);
+					a = new Argument(storageClass, at, ai, ae);
 					a.modifiers = modifiers;
 					a.setSourceRange(firstTokenStart, prevToken.ptr + prevToken.len - firstTokenStart);
 					arguments.add(a);
@@ -1396,6 +1437,24 @@ public class Parser extends Lexer {
 		check(TOKrparen);
 		pvarargs[0] = varargs;
 		return arguments;
+	}
+
+	private int parseParametersD2_L2(int storageClass, int stc) {
+		if ((storageClass & stc) != 0
+				|| ((storageClass & STCin) != 0 && (stc & (STCfinal
+						| STCconst | STCscope)) != 0)
+				|| ((stc & STCin) != 0 && (storageClass & (STCfinal
+						| STCconst | STCscope)) != 0)) {			
+			error(IProblem.RedundantStorageClass, token);
+		}
+		storageClass |= stc;
+		{
+			int u = storageClass & (STCconst | STCinvariant);
+			if ((u & (u - 1)) != 0) {
+				error(IProblem.ConflictingStorageClass, token);
+			}
+		}
+		return storageClass;
 	}
 
 	private EnumDeclaration parseEnum() {
@@ -2102,7 +2161,7 @@ public class Parser extends Lexer {
 	private Type parseType(IdentifierExp[] pident, List<TemplateParameter>[] tpl) {   
 		Type t;
 
-		if (token.value == TOK.TOKconst && peek(token).value != TOKlparen) {
+		if (token.value == TOKconst && peek(token).value != TOKlparen) {
 			int start = token.ptr;
 			nextToken();
 			/* const type
@@ -2110,7 +2169,7 @@ public class Parser extends Lexer {
 			t = parseType(pident, tpl);
 			t = t.makeConst(start, prevToken.ptr + prevToken.len - start);
 			return t;
-		} else if (token.value == TOK.TOKinvariant
+		} else if (token.value == TOKinvariant
 				&& peek(token).value != TOKlparen) {
 			int start = token.ptr;
 			nextToken();
@@ -2603,12 +2662,12 @@ public class Parser extends Lexer {
 			break;
 		}
 
-		storage_class = STC.STCundefined;
+		storage_class = STCundefined;
 		while (true) {
 			switch (token.value) {
 			case TOKconst:
 			case TOKinvariant:
-				if (apiLevel == D2 && peek(token).value == TOK.TOKlparen) {
+				if (apiLevel == D2 && peek(token).value == TOKlparen) {
 					break;
 				}
 				// fall
@@ -3514,22 +3573,14 @@ public class Parser extends Lexer {
 				Type at;
 				@SuppressWarnings("unused")
 				int storageClass;
-				InOut inout;
 				Argument a;
 				List<Modifier> modifiers = new ArrayList<Modifier>(1);
 				
 				int argumentStart = token.ptr;
 
-				storageClass = STC.STCin;
-				inout = InOut.None;
-				if (token.value == TOKinout) {
-					storageClass = STC.STCref;
-					inout = InOut.InOut;
-					modifiers.add(new Modifier(token));
-					nextToken();
-				} else if (token.value == TOK.TOKref) {
-					storageClass = STC.STCref;
-					inout = InOut.Ref;
+				storageClass = STCin;
+				if (token.value == TOKinout || token.value == TOKref) {
+					storageClass = STCref;
 					modifiers.add(new Modifier(token));
 					nextToken();
 				}
@@ -3540,7 +3591,7 @@ public class Parser extends Lexer {
 						at = null; // infer argument type
 						nextToken();
 						// goto Larg;
-						a = new Argument(inout, at, ai, null);
+						a = new Argument(storageClass, at, ai, null);
 						a.modifiers = modifiers;
 						a.setSourceRange(argumentStart, prevToken.ptr + prevToken.len - argumentStart);
 						arguments.add(a);
@@ -3562,7 +3613,6 @@ public class Parser extends Lexer {
 					at = parseType(pointer2_ai);
 				}
 				ai = pointer2_ai[0];
-
 				
 				if (ai == null) {
 					if (at == null) {
@@ -3573,8 +3623,7 @@ public class Parser extends Lexer {
 				}
 				// Larg:
 				if (at != null && ai != null) {
-					// TODO: pass STCin to constructor
-					a = new Argument(inout, at, ai, null);
+					a = new Argument(storageClass, at, ai, null);
 					a.setSourceRange(argumentStart, prevToken.ptr + prevToken.len - argumentStart);
 					arguments.add(a);
 				}
@@ -3628,7 +3677,7 @@ public class Parser extends Lexer {
 				if (token.value == TOKidentifier) {
 					Token t2 = peek(token);
 					if (t2.value == TOKassign) {
-						arg = new Argument(null, null, newIdentifierExp(), null);
+						arg = new Argument(STCin, null, newIdentifierExp(), null);
 						arg.modifiers = modifiers;
 						arg.setSourceRange(autoTokenStart, token.ptr + token.len - autoTokenStart);
 						
@@ -3676,7 +3725,7 @@ public class Parser extends Lexer {
 					}
 					ai = pointer2_ai[0];
 
-					arg = new Argument(InOut.None, at, ai, null);
+					arg = new Argument(STCin, at, ai, null);
 					arg.setSourceRange(argTokenStart, prevToken.ptr + prevToken.len - argTokenStart);
 					
 					check(TOKassign);					
@@ -3686,7 +3735,7 @@ public class Parser extends Lexer {
 				else if (token.value == TOKidentifier) {
 					Token t2 = peek(token);
 					if (t2.value == TOKcomma || t2.value == TOKsemicolon) {
-						arg = new Argument(InOut.None, null, newIdentifierExp(), null);
+						arg = new Argument(STCin, null, newIdentifierExp(), null);
 						arg.setSourceRange(argTokenStart, token.ptr + token.len - argTokenStart);
 						
 						nextToken();
@@ -4252,7 +4301,7 @@ public class Parser extends Lexer {
 		int haveId = 0;
 		
 		if (apiLevel == D2) {
-		    if ((t.value == TOK.TOKconst || t.value == TOK.TOKinvariant)
+		    if ((t.value == TOKconst || t.value == TOKinvariant)
 					&& peek(t).value != TOKlparen) {
 		    /* const type
 			 * invariant type
@@ -5369,11 +5418,11 @@ public class Parser extends Lexer {
 									|| token.value == TOKstruct
 									|| token.value == TOKunion
 									|| token.value == TOKclass
-									|| token.value == TOK.TOKsuper
+									|| token.value == TOKsuper
 									|| token.value == TOKenum
 									|| token.value == TOKinterface
 									|| token.value == TOKfunction
-									|| token.value == TOKdelegate || token.value == TOK.TOKreturn)) {
+									|| token.value == TOKdelegate || token.value == TOKreturn)) {
 						tok2 = token.value;
 						nextToken();
 					} else {
@@ -5719,7 +5768,7 @@ public class Parser extends Lexer {
 				e = parseUnaryExp();
 				e = new CastExp(loc, e, t);
 			} else {
-			    if ((token.value == TOK.TOKconst || token.value == TOK.TOKinvariant)
+			    if ((token.value == TOKconst || token.value == TOKinvariant)
 						&& peek(token).value == TOKrparen) {
 			    	int modifierStart = token.ptr;
 					TOK tok = token.value;
@@ -6097,7 +6146,7 @@ public class Parser extends Lexer {
 		    if (t.value != TOKis)
 		    	break;
 		    nextToken();
-		    op = TOK.TOKnotis;
+		    op = TOKnotis;
 		    nextToken();
 		    e2 = parseShiftExp();
 		    e = new IdentityExp(loc, op, e, e2);
@@ -6553,9 +6602,9 @@ public class Parser extends Lexer {
 		// leading comment
 		boolean first = true;
 		TOK tok = super.nextToken();
-		while(tok == TOK.TOKlinecomment || tok == TOK.TOKdoclinecomment ||
-			  tok == TOK.TOKblockcomment || tok == TOK.TOKdocblockcomment ||
-			  tok == TOK.TOKpluscomment || tok == TOK.TOKdocpluscomment) {
+		while(tok == TOKlinecomment || tok == TOKdoclinecomment ||
+			  tok == TOKblockcomment || tok == TOKdocblockcomment ||
+			  tok == TOKpluscomment || tok == TOKdocpluscomment) {
 			
 			Comment comment;
 			switch(tok) {
@@ -6592,7 +6641,7 @@ public class Parser extends Lexer {
 			first = false;
 		}
 		
-		while(tok == TOK.TOKPRAGMA) {
+		while(tok == TOKPRAGMA) {
 			if (token.ptr == 0 && token.string.length > 1 && token.string[1] == '!') {
 				// Script line
 				Pragma pragma = new Pragma();

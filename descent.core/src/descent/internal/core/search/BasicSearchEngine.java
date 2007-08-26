@@ -702,6 +702,7 @@ public class BasicSearchEngine {
 							}
 						}
 					} else {
+						int a = 2;
 						/* TODO JDT search
 						ASTParser basicParser = getParser();
 						descent.internal.compiler.env.ICompilationUnit unit = (descent.internal.compiler.env.ICompilationUnit) workingCopy;

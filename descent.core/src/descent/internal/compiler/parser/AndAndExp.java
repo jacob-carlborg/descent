@@ -48,8 +48,9 @@ public class AndAndExp extends BinExp {
 		type = Type.tboolean;
 		if(e1.type.ty == TY.Tvoid)
 			type = Type.tvoid;
-		if(e2.op == TOK.TOKtype || e2.op == TOK.TOKimport)
+		if(e2.op == TOK.TOKtype || e2.op == TOK.TOKimport) {
 			error(e2.toChars() + " is not an expression.");
+		}
 		
 		return this;
 	}

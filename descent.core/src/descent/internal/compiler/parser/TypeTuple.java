@@ -1,5 +1,7 @@
 package descent.internal.compiler.parser;
 
+import static descent.internal.compiler.parser.STC.STCin;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,7 +36,7 @@ public class TypeTuple extends Type {
 				if (e.type.ty == TY.Ttuple) {
 					e.error("cannot form tuple of tuples");
 				}
-				Argument arg = new Argument(InOut.In, e.type, null, null);
+				Argument arg = new Argument(STCin, e.type, null, null);
 				arguments.set(i, arg);
 			}
 		}

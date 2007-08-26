@@ -3119,5 +3119,47 @@
             id="descent.ui.JavadocView">
       </view>
    </extension>
+   <extension
+         point="org.eclipse.ui.actionSets">
+      <actionSet
+            label="%JavaActionSet.label"
+            description="%JavaActionSet.description"
+            visible="false"
+            id="descent.ui.JavaActionSet">
+         <!--
+         <action
+               definitionId="descent.ui.navigate.open.type.in.hierarchy"
+               label="%OpenTypeInHierarchyAction.label"
+               helpContextId="descent.ui.open_type_in_hierarchy_action"
+               tooltip="%OpenTypeInHierarchyAction.tooltip"
+               class="descent.internal.ui.actions.OpenTypeInHierarchyAction"
+               menubarPath="navigate/open.ext2"
+               id="openTypeInHierarchy">
+         </action>
+         -->
+         <action
+               id="openType"
+               toolbarPath="org.eclipse.search.searchActionSet/Search"
+               class="descent.internal.ui.actions.OpenTypeAction"
+               definitionId="descent.ui.navigate.open.type"
+               icon="$nl$/icons/full/etool16/opentype.gif"
+               helpContextId="descent.ui.open_type_action"
+               label="%OpenTypeAction.label"
+               menubarPath="navigate/open.ext2"
+               tooltip="%OpenTypeAction.tooltip">
+         </action>
+         <!--
+         <action
+               definitionId="descent.ui.generate.javadoc"
+               label="%GenerateJavadocAction.label"
+               helpContextId="descent.ui.generate_javadoc_action"
+               class="descent.internal.ui.actions.GenerateJavadocAction"
+               icon="$nl$/icons/full/etool16/javadoc.gif"
+               menubarPath="project/additions"
+               id="exportJavadoc">
+         </action>
+         -->
+      </actionSet>
+   </extension>
 	
 </plugin>

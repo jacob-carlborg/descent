@@ -14,7 +14,6 @@ import java.util.List;
 import java.util.Stack;
 
 import descent.core.Flags;
-import descent.core.ICompilationUnit;
 import descent.core.compiler.CharOperation;
 import descent.core.dom.AST;
 import descent.core.dom.CompilationUnitResolver;

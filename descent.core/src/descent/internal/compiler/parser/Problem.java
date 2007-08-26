@@ -155,8 +155,8 @@ public class Problem implements IProblem {
 			return "C style cast illegal, use cast(...)";
 		case InvalidLinkageIdentifier:
 			return "Valid linkage identifiers are D, C, C++, Pascal, Windows";
-		case VariadicArgumentCannotBeOutInoutOrRef:
-			return "Variadic argument cannot be out, inout or ref";
+		case VariadicArgumentCannotBeOutOrRef:
+			return "Variadic argument cannot be out or ref";
 		case VariadicNotAllowedInDelete:
 			return "... not allowed in delete function parameter list";
 		case NoIdentifierForTemplateValueParameter:
@@ -189,6 +189,9 @@ public class Problem implements IProblem {
 			return "Variadic template parameter must be last one";
 		case NeedSizeOfRightmostArray:
 			return "Need size of rightmost array";
+		case ConflictingStorageClass:
+			return "Conflicting storage class";			
+			
 		case DuplicatedSymbol:
 			return "Duplicated symbol " + arguments[0];
 		case PropertyCanNotBeRedefined:
@@ -263,8 +266,6 @@ public class Problem implements IProblem {
 			return "Cannot override the final function " + arguments[0] + " from " + arguments[1];
 		case OverrideOnlyForClassMemberFunctions:
 			return "Override only applies to class member functions";
-		case IllegalReturnType:
-			return arguments[0];
 		case MoreThanOneInvariant:
 			return "More than one invariant for " + arguments[0];
 		case DuplicatedParameter:
@@ -313,7 +314,7 @@ public class Problem implements IProblem {
 			return "One argument of type " + arguments[0] + " expected";
 		case IllegalMainParameters:
 			return "Parameters must be main() or main(char[][] args)";
-		case IllegalMainReturnType:
+		case MustReturnIntOrVoidFromMainFunction:
 			return "Must return int or void from main function";
 		case AtLeastOneArgumentOfTypeExpected:
 			return "At least one argument of type " + arguments[0] + " expected";
@@ -331,6 +332,8 @@ public class Problem implements IProblem {
 			return "Cannot have parameter of type void";
 		case FunctionsCannotReturnStaticArrays:
 			return "Functions cannot return static arrays";
+		case UnrecongnizedTrait:
+			return "Unrecongnized trait: " + arguments[0];
 		default:
 			return "";
 		}

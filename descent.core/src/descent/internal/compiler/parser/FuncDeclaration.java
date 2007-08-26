@@ -1,5 +1,26 @@
 package descent.internal.compiler.parser;
 
+import static descent.internal.compiler.parser.STC.STCabstract;
+import static descent.internal.compiler.parser.STC.STCauto;
+import static descent.internal.compiler.parser.STC.STCdeprecated;
+import static descent.internal.compiler.parser.STC.STCin;
+import static descent.internal.compiler.parser.STC.STClazy;
+import static descent.internal.compiler.parser.STC.STCout;
+import static descent.internal.compiler.parser.STC.STCparameter;
+import static descent.internal.compiler.parser.STC.STCref;
+import static descent.internal.compiler.parser.STC.STCscope;
+import static descent.internal.compiler.parser.STC.STCstatic;
+import static descent.internal.compiler.parser.STC.STCvariadic;
+import static descent.internal.compiler.parser.TY.Tarray;
+import static descent.internal.compiler.parser.TY.Tchar;
+import static descent.internal.compiler.parser.TY.Tfunction;
+import static descent.internal.compiler.parser.TY.Tident;
+import static descent.internal.compiler.parser.TY.Tinstance;
+import static descent.internal.compiler.parser.TY.Tint32;
+import static descent.internal.compiler.parser.TY.Tpointer;
+import static descent.internal.compiler.parser.TY.Ttuple;
+import static descent.internal.compiler.parser.TY.Tvoid;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -96,7 +117,7 @@ public class FuncDeclaration extends Declaration {
 	}
 	
 	public boolean isNested() {
-		return ((storage_class & STC.STCstatic) == 0) &&
+		return ((storage_class & STCstatic) == 0) &&
 		   (toParent2().isFuncDeclaration() != null);
 	}
 	
@@ -105,7 +126,7 @@ public class FuncDeclaration extends Declaration {
 		AggregateDeclaration ad;
 
 		ad = null;
-		if ((storage_class & STC.STCstatic) == 0) {
+		if ((storage_class & STCstatic) == 0) {
 			ad = isMember2();
 		}
 		return ad;
@@ -148,7 +169,7 @@ public class FuncDeclaration extends Declaration {
 			type = type.semantic(loc, sc, context);
 		}
 
-		if (type.ty != TY.Tfunction) {
+		if (type.ty != Tfunction) {
 			error("%s must be a function", toChars());
 			return;
 		}
@@ -189,7 +210,7 @@ public class FuncDeclaration extends Declaration {
 
 		id = parent.isInterfaceDeclaration();
 		if (id != null) {
-			storage_class |= STC.STCabstract;
+			storage_class |= STCabstract;
 
 			if (isCtorDeclaration() != null || isDtorDeclaration() != null
 					|| isInvariantDeclaration() != null
@@ -215,7 +236,7 @@ public class FuncDeclaration extends Declaration {
 				return;
 			}
 
-			if ((storage_class & STC.STCabstract) != 0) {
+			if ((storage_class & STCabstract) != 0) {
 				cd.isabstract = true;
 			}
 
@@ -441,9 +462,9 @@ public class FuncDeclaration extends Declaration {
 
 			case 1: {
 				Argument arg0 = Argument.getNth(f.parameters, 0, context);
-				if (arg0.type.ty != TY.Tarray || arg0.type.next.ty != TY.Tarray
-						|| arg0.type.next.next.ty != TY.Tchar
-						|| (arg0.inout != InOut.None && arg0.inout != InOut.In)) {
+				if (arg0.type.ty != Tarray || arg0.type.next.ty != Tarray
+						|| arg0.type.next.next.ty != Tchar
+						|| ((arg0.storageClass & (STCout | STCref | STClazy)) != 0)) {
 					// goto Lmainerr;
 					gotoLmainerr = true;
 				}
@@ -456,8 +477,8 @@ public class FuncDeclaration extends Declaration {
 			}
 
 			if (!gotoLmainerr) {
-				if (f.next.ty != TY.Tint32 && f.next.ty != TY.Tvoid) {
-					context.acceptProblem(Problem.newSemanticTypeError(IProblem.IllegalMainReturnType, 0, type.start, type.length));
+				if (f.next.ty != Tint32 && f.next.ty != Tvoid) {
+					context.acceptProblem(Problem.newSemanticTypeError(IProblem.MustReturnIntOrVoidFromMainFunction, 0, type.start, type.length));
 				}
 			}
 			if (f.varargs != 0 || gotoLmainerr) {
@@ -483,7 +504,7 @@ public class FuncDeclaration extends Declaration {
 				Type t0 = arg0.type.toBasetype(context);
 				Type tb = sd != null ? sd.type : cd.type;
 				if (arg0.type.implicitConvTo(tb, context) != MATCH.MATCHnomatch
-						|| (sd != null && t0.ty == TY.Tpointer && t0.next
+						|| (sd != null && t0.ty == Tpointer && t0.next
 								.implicitConvTo(tb, context) != MATCH.MATCHnomatch)) {
 					if (nparams == 1) {
 						// goto Lassignerr;}
@@ -529,7 +550,7 @@ public class FuncDeclaration extends Declaration {
 		}
 		semanticRun = 1;
 
-		if (type == null || type.ty != TY.Tfunction) {
+		if (type == null || type.ty != Tfunction) {
 			return;
 		}
 		f = (TypeFunction) (type);
@@ -564,8 +585,8 @@ public class FuncDeclaration extends Declaration {
 			sc2.sw = null;
 			sc2.fes = fes;
 			sc2.linkage = LINK.LINKd;
-			sc2.stc &= ~(STC.STCauto | STC.STCscope | STC.STCstatic
-					| STC.STCabstract | STC.STCdeprecated);
+			sc2.stc &= ~(STCauto | STCscope | STCstatic
+					| STCabstract | STCdeprecated);
 			sc2.protection = PROT.PROTpublic;
 			sc2.explicitProtection = 0;
 			sc2.structalign = 8;
@@ -586,7 +607,7 @@ public class FuncDeclaration extends Declaration {
 					Assert.isNotNull(ad.handle);
 					v = new ThisDeclaration(loc, ad.handle);
 					v.synthetic = true;
-					v.storage_class |= STC.STCparameter | STC.STCin;
+					v.storage_class |= STCparameter | STCin;
 					v.semantic(sc2, context);
 					if (sc2.insert(v) == null) {
 						Assert.isTrue(false);
@@ -599,7 +620,7 @@ public class FuncDeclaration extends Declaration {
 
 				v = new ThisDeclaration(loc, Type.tvoid.pointerTo(context));
 				v.synthetic = true;
-				v.storage_class |= STC.STCparameter | STC.STCin;
+				v.storage_class |= STCparameter | STCin;
 				v.semantic(sc2, context);
 				if (sc2.insert(v) == null) {
 					Assert.isTrue(false);
@@ -618,8 +639,8 @@ public class FuncDeclaration extends Declaration {
 								context.typeinfotypelist.type,
 								Id._arguments_typeinfo, null);
 						v_arguments.synthetic = true;
-						v_arguments.storage_class = STC.STCparameter
-								| STC.STCin;
+						v_arguments.storage_class = STCparameter
+								| STCin;
 						v_arguments.semantic(sc2, context);
 						sc2.insert(v_arguments);
 						v_arguments.parent = this;
@@ -633,8 +654,8 @@ public class FuncDeclaration extends Declaration {
 					} else {
 						t = context.typeinfo.type.arrayOf(context);
 						v_arguments = new VarDeclaration(loc, t, Id._arguments, null);
-						v_arguments.storage_class = STC.STCparameter
-								| STC.STCin;
+						v_arguments.storage_class = STCparameter
+								| STCin;
 						v_arguments.semantic(sc2, context);
 						sc2.insert(v_arguments);
 						v_arguments.parent = this;
@@ -658,13 +679,13 @@ public class FuncDeclaration extends Declaration {
 				for (int i = 0; i < f.parameters.size(); i++) {
 					Argument arg = f.parameters.get(i);
 
-					if (arg.type.ty == TY.Ttuple) {
+					if (arg.type.ty == Ttuple) {
 						TypeTuple t = (TypeTuple) arg.type;
 						int dim = Argument.dim(t.arguments, context);
 						for (int j = 0; j < dim; j++) {
 							Argument narg = Argument.getNth(t.arguments, j,
 									context);
-							narg.inout = arg.inout;
+							narg.storageClass = arg.storageClass;
 						}
 					}
 				}
@@ -684,26 +705,10 @@ public class FuncDeclaration extends Declaration {
 					}
 					VarDeclaration v = new VarDeclaration(loc, arg.type, id, null);
 					v.synthetic = true;
-					v.storage_class |= STC.STCparameter;
+					v.storage_class |= STCparameter;
 					if (f.varargs == 2 && i + 1 == nparams)
-						v.storage_class |= STC.STCvariadic;
-					switch (arg.inout) {
-					case None:
-					case In:
-						v.storage_class |= STC.STCin;
-						break;
-					case Out:
-						v.storage_class |= STC.STCout;
-						break;
-					case InOut:
-						v.storage_class |= STC.STCin | STC.STCout;
-						break;
-					case Lazy:
-						v.storage_class |= STC.STCin | STC.STClazy;
-						break;
-					default:
-						Assert.isTrue(false);
-					}
+						v.storage_class |= STCvariadic;
+					v.storage_class |= arg.storageClass & (STCin | STCout | STCref | STClazy);
 					v.semantic(sc2, context);
 					if (sc2.insert(v) == null) {
 						error("parameter %s.%s is already defined", toChars(),
@@ -725,7 +730,7 @@ public class FuncDeclaration extends Declaration {
 					if (arg.ident == null) {
 						continue; // never used, so ignore
 					}
-					if (arg.type.ty == TY.Ttuple) {
+					if (arg.type.ty == Ttuple) {
 						TypeTuple t = (TypeTuple) arg.type;
 						int dim = Argument.dim(t.arguments, context);
 						List exps = new ArrayList(dim);
@@ -773,7 +778,7 @@ public class FuncDeclaration extends Declaration {
 				sc2 = sc2.push(sym);
 
 				Assert.isNotNull(type.next);
-				if (type.next.ty == TY.Tvoid) {
+				if (type.next.ty == Tvoid) {
 					if (outId != null) {
 						context.acceptProblem(Problem.newSemanticTypeError(IProblem.VoidFunctionsHaveNoResult, 0, outId.start, outId.length));
 					}
@@ -966,10 +971,10 @@ public class FuncDeclaration extends Declaration {
 					fbody = new CompoundStatement(loc, fbody, s);
 					fbody.synthetic = true;
 					Assert.isTrue(returnLabel == null);
-				} else if (hasReturnExp == 0 && type.next.ty != TY.Tvoid)
-					context.acceptProblem(Problem.newSemanticTypeError(IProblem.IllegalReturnType, 0, ident.start, ident.length, new String[] { type.next.toString() }));
+				} else if (hasReturnExp == 0 && type.next.ty != Tvoid)
+					context.acceptProblem(Problem.newSemanticTypeError(IProblem.FunctionMustReturnAResultOfType, 0, ident.start, ident.length, new String[] { type.next.toString() }));
 				else if (!inlineAsm) {
-					if (type.next.ty == TY.Tvoid) {
+					if (type.next.ty == Tvoid) {
 						if (offend && isMain()) { // Add a return 0; statement
 							Statement s = new ReturnStatement(loc, new IntegerExp(loc, 0));
 							s.synthetic = true;
@@ -1025,7 +1030,7 @@ public class FuncDeclaration extends Declaration {
 						VarDeclaration v;
 
 						v = (VarDeclaration) parameters.get(i);
-						if ((v.storage_class & (STC.STCout | STC.STCin)) == STC.STCout) {
+						if ((v.storage_class & (STCout | STCin)) == STCout) {
 							Assert.isNotNull(v.init);
 							ExpInitializer ie = v.init.isExpInitializer();
 							Assert.isNotNull(ie);
@@ -1138,7 +1143,7 @@ public class FuncDeclaration extends Declaration {
 				if (fensure != null) {
 					a.add(returnLabel.statement);
 
-					if (type.next.ty != TY.Tvoid) {
+					if (type.next.ty != Tvoid) {
 						// Create: return vresult;
 						Assert.isNotNull(vresult);
 						Expression e = new VarExp(loc, vresult);
@@ -1233,8 +1238,8 @@ public class FuncDeclaration extends Declaration {
 			if (overnext != null) {
 				return overnext.overloadInsert(a, context);
 			}
-			if (a.aliassym == null && a.type.ty != TY.Tident
-					&& a.type.ty != TY.Tinstance) {
+			if (a.aliassym == null && a.type.ty != Tident
+					&& a.type.ty != Tinstance) {
 				return false;
 			}
 			overnext = a;

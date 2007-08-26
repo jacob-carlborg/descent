@@ -142,12 +142,20 @@ public abstract class Parser_Test extends TestCase {
 	}
 	
 	protected IProblem[] getModuleProblems(String source) {
-		Module module = getModuleSemantic(source, AST.D1);
+		return getModuleProblems(source, AST.D1);
+	}
+	
+	protected IProblem[] getModuleProblems(String source, int apiLevel) {
+		Module module = getModuleSemantic(source, apiLevel);
 		return module.problems.toArray(new IProblem[module.problems.size()]);
 	}
 	
 	protected void assertNoSemanticErrors(String source) {
-		assertEquals(0, getModuleProblems(source).length);
+		assertEquals(0, getModuleProblems(source, AST.D1).length);
+	}
+	
+	protected void assertNoSemanticErrors(String source, int apiLevel) {
+		assertEquals(0, getModuleProblems(source, apiLevel).length);
 	}
 	
 	protected void assertOriginal(ASTNode elem) {

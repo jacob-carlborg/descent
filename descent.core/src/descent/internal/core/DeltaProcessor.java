@@ -1228,13 +1228,11 @@ public class DeltaProcessor {
 		this.javaModelDeltas = new ArrayList();
 	}
 	
-	/* TODO JDT index manager
 	private SourceElementParser getSourceElementParser(Openable element) {
 		if (this.sourceElementParserCache == null)
 			this.sourceElementParserCache = this.manager.indexManager.getSourceElementParser(element.getJavaProject(), null);
 		return this.sourceElementParserCache;
 	}
-	*/
 	
 	/*
 	 * Finds the root info this path is included in.
@@ -2471,9 +2469,7 @@ public class DeltaProcessor {
 						if ((flags & IResourceDelta.CONTENT) == 0 && (flags & IResourceDelta.ENCODING) == 0)
 							break;
 					case IResourceDelta.ADDED :
-						/* TODO JDT PRIORITY
 						indexManager.addSource(file, file.getProject().getFullPath(), getSourceElementParser(element));
-						*/
 						// Clean file from secondary types cache but do not update indexing secondary type cache as it will be updated through indexing itself
 						this.manager.secondaryTypesRemoving(file, false);
 						break;

@@ -5,6 +5,7 @@ import java.util.List;
 
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.core.compiler.CharOperation;
+import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
 public class TraitsExp extends Expression {
@@ -38,7 +39,9 @@ public class TraitsExp extends Expression {
 			final SemanticContext context)
 	{
 		
-		/* TODO semantic TemplateInstance.semanticTiargs(loc, sc, args); */
+		/* TODO semantic
+		TemplateInstance.semanticTiargs(loc, sc, args);
+		*/
 		//int dim = null != args ? args.size() : 0;
 	    char[] ident = this.ident.ident;
 		
@@ -295,7 +298,8 @@ public class TraitsExp extends Expression {
 				Pvirtuals p;
 			    p.exps = exps;
 			    p.e1 = e;
-			    overloadApply(f, fpvirtuals, &p); */
+			    overloadApply(f, fpvirtuals, &p);
+			    */
 	
 			    TupleExp tup = new TupleExp(loc, exps);
 			    return tup.semantic(sc, context);
@@ -393,7 +397,8 @@ public class TraitsExp extends Expression {
 	    
 	    else
 	    {
-	    	error("unrecognized trait %s", ident);
+	    	context.acceptProblem(Problem.newSemanticTypeError(
+	    			IProblem.UnrecongnizedTrait, 0, this.ident.start, this.ident.length, new String[] { new String(ident) }));
 	    	return new IntegerExp(loc, 0, Type.tbool);
 	    }
 	    

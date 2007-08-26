@@ -1,6 +1,7 @@
 package descent.tests.mars;
 
 import descent.core.compiler.IProblem;
+import descent.core.dom.AST;
 
 public class Semantic1_Test extends Parser_Test {
 
@@ -445,7 +446,7 @@ public class Semantic1_Test extends Parser_Test {
 		IProblem[] p = getModuleProblems(s);
 		assertEquals(1, p.length);
 
-		assertError(p[0], IProblem.IllegalReturnType, 1, 4);
+		assertError(p[0], IProblem.MustReturnIntOrVoidFromMainFunction, 1, 4);
 	}
 
 	public void testIllegalMainArguments() {
@@ -461,7 +462,7 @@ public class Semantic1_Test extends Parser_Test {
 		IProblem[] p = getModuleProblems(s);
 		assertEquals(1, p.length);
 
-		assertError(p[0], IProblem.IllegalReturnType, 1, 6);
+		assertError(p[0], IProblem.FunctionsCannotReturnStaticArrays, 1, 6);
 	}
 	
 	public void testCannotHaveOutOrInoutParameterOfStaticArray() {
@@ -577,7 +578,7 @@ public class Semantic1_Test extends Parser_Test {
 		IProblem[] p = getModuleProblems(s);
 		assertEquals(1, p.length);
 
-		assertError(p[0], IProblem.IllegalReturnType, 6, 3);
+		assertError(p[0], IProblem.FunctionMustReturnAResultOfType, 6, 3);
 	}
 	
 	public void testFunctionMustReturnLong_Not() {
@@ -702,6 +703,35 @@ public class Semantic1_Test extends Parser_Test {
 		assertEquals(1, p.length);
 
 		assertError(p[0], IProblem.PragmaIsMissingClosingSemicolon, 1, 6);
+	}
+	
+	public void testUnrecongnizedTrait() {
+		String s = " bool a = __traits(hello);";
+		IProblem[] p = getModuleProblems(s, AST.D2);
+		assertEquals(1, p.length);
+
+		assertError(p[0], IProblem.UnrecongnizedTrait, 19, 5);
+	}
+	
+	public void testUnrecongnizedTrait_Not() {
+		assertNoSemanticErrors(" bool a = __traits(isAbstractClass);", AST.D2);
+		assertNoSemanticErrors(" bool a = __traits(isArithmetic);", AST.D2);
+		assertNoSemanticErrors(" bool a = __traits(isAssociativeArray);", AST.D2);
+		assertNoSemanticErrors(" bool a = __traits(isFinalClass);", AST.D2);
+		assertNoSemanticErrors(" bool a = __traits(isFloating);", AST.D2);
+		assertNoSemanticErrors(" bool a = __traits(isIntegral);", AST.D2);
+		assertNoSemanticErrors(" bool a = __traits(isScalar);", AST.D2);
+		assertNoSemanticErrors(" bool a = __traits(isStaticArray);", AST.D2);
+		assertNoSemanticErrors(" bool a = __traits(isUnsigned);", AST.D2);
+		assertNoSemanticErrors(" bool a = __traits(isVirtualFunction);", AST.D2);
+		assertNoSemanticErrors(" bool a = __traits(isAbstractFunction);", AST.D2);
+		assertNoSemanticErrors(" bool a = __traits(isFinalFunction);", AST.D2);
+		assertNoSemanticErrors(" bool a = __traits(hasMember);", AST.D2);
+		assertNoSemanticErrors(" bool a = __traits(getMember);", AST.D2);
+		assertNoSemanticErrors(" bool a = __traits(getVirtualFunctions);", AST.D2);
+		assertNoSemanticErrors(" bool a = __traits(classInstanceSize);", AST.D2);
+		assertNoSemanticErrors(" bool a = __traits(allMembers);", AST.D2);
+		assertNoSemanticErrors(" bool a = __traits(derivedMembers);", AST.D2);
 	}
 
 }

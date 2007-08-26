@@ -2697,17 +2697,23 @@ public class ASTConverter {
 	public descent.core.dom.Expression convert(IntegerExp a) {
 		if (a.type == Type.tbool) {
 			BooleanLiteral b = new BooleanLiteral(ast);
-			b.setBooleanValue(a.value.equals(BigInteger.ONE));
+			if (a.value != null) {
+				b.setBooleanValue(a.value.equals(BigInteger.ONE));
+			}
 			b.setSourceRange(a.start, a.length);
 			return b;
 		} else if (a.type == Type.tchar || a.type == Type.twchar || a.type == Type.tdchar) {
 			CharacterLiteral b = new CharacterLiteral(ast);
-			b.internalSetEscapedValue(new String(a.str));
+			if (a.str != null) {
+				b.internalSetEscapedValue(new String(a.str));
+			}
 			b.setSourceRange(a.start, a.length);
 			return b;
 		} else {
 			descent.core.dom.NumberLiteral b = new descent.core.dom.NumberLiteral(ast);
-			b.internalSetToken(new String(a.str));
+			if (a.str != null) {
+				b.internalSetToken(new String(a.str));
+			}
 			b.setSourceRange(a.start, a.length);
 			return b;
 		}

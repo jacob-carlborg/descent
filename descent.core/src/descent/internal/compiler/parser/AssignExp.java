@@ -206,12 +206,12 @@ public class AssignExp extends BinExp {
 
 	    Type t2 = e2.type;
 	    if (e1.op == TOK.TOKslice &&
-	    		/* NEXTOF t1.nextOf() && */
-	    		MATCH.MATCHnomatch != e2.implicitConvTo(t1/* NEXTOF .nextOf() */, context)
+	    		t1.nextOf() != null && 
+	    		MATCH.MATCHnomatch != e2.implicitConvTo(t1.nextOf(), context)
 	       )
 	    {	// memset
 			/* PERHAPS ismemset = 1; */	// make it easy for back end to tell what this is
-			e2 = e2.implicitCastTo(sc, t1/* NEXTOF .nextOf() */, context);
+			e2 = e2.implicitCastTo(sc, t1.nextOf(), context);
 	    }
 	    else if (t1.ty == TY.Tsarray)
 	    {

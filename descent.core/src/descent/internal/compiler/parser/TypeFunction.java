@@ -1,9 +1,17 @@
 package descent.internal.compiler.parser;
 
+import static descent.internal.compiler.parser.STC.STClazy;
+import static descent.internal.compiler.parser.STC.STCout;
+import static descent.internal.compiler.parser.STC.STCref;
+import static descent.internal.compiler.parser.Scope.SCOPEctor;
+import static descent.internal.compiler.parser.TY.Tfunction;
+import static descent.internal.compiler.parser.TY.Tsarray;
+import static descent.internal.compiler.parser.TY.Ttuple;
+import static descent.internal.compiler.parser.TY.Tvoid;
+
 import java.util.List;
 
 import melnorme.miscutil.tree.TreeVisitor;
-
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
@@ -15,7 +23,7 @@ public class TypeFunction extends Type {
 	public int inuse;
 
 	public TypeFunction(List<Argument> parameters, Type treturn, int varargs, LINK linkage) {
-		super(TY.Tfunction, treturn);
+		super(Tfunction, treturn);
 		this.parameters = parameters;
 		this.varargs = varargs;
 		this.linkage = linkage;
@@ -42,19 +50,19 @@ public class TypeFunction extends Type {
 			next = tvoid;
 		}
 		next = next.semantic(loc, sc, context);
-		if (next.toBasetype(context).ty == TY.Tsarray) {
-			context.acceptProblem(Problem.newSemanticTypeError(IProblem.IllegalReturnType, 0, start, length, new String[] { "Functions cannot return static arrays" }));
+		if (next.toBasetype(context).ty == Tsarray) {
+			context.acceptProblem(Problem.newSemanticTypeError(IProblem.FunctionsCannotReturnStaticArrays, 0, start, length));
 			next = Type.terror;
 		}
-		if (next.toBasetype(context).ty == TY.Tfunction) {
+		if (next.toBasetype(context).ty == Tfunction) {
 			error("functions cannot return a function");
 			next = Type.terror;
 		}
-		if (next.toBasetype(context).ty == TY.Ttuple) {
+		if (next.toBasetype(context).ty == Ttuple) {
 			error("functions cannot return a tuple");
 			next = Type.terror;
 		}
-		if (next.isauto() && (sc.flags & Scope.SCOPEctor) == 0)
+		if (next.isauto() && (sc.flags & SCOPEctor) == 0)
 			error("functions cannot return auto %s", next.toChars());
 
 		if (parameters != null) {
@@ -75,16 +83,16 @@ public class TypeFunction extends Type {
 				 * If arg turns out to be a tuple, the number of parameters may
 				 * change.
 				 */
-				if (t.ty == TY.Ttuple) {
+				if (t.ty == Ttuple) {
 					dim = Argument.dim(parameters, context);
 				}
 
-				if (arg.inout != InOut.In) {
-					if (t.ty == TY.Tsarray) {
+				if ((arg.storageClass & (STCout | STCref | STClazy)) != 0) {
+					if (t.ty == Tsarray) {
 						context.acceptProblem(Problem.newSemanticTypeError(IProblem.CannotHaveOutOrInoutParameterOfTypeStaticArray, 0, t.start, t.length));
 					}
 				}
-				if (arg.inout != InOut.Lazy && t.ty == TY.Tvoid) {
+				if ((arg.storageClass & STClazy) == 0 && t.ty == Tvoid) {
 					context.acceptProblem(Problem.newSemanticTypeError(IProblem.CannotHaveParameterOfTypeVoid, 0, t.start, t.length));
 				}
 

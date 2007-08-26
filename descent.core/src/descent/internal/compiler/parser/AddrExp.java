@@ -16,12 +16,12 @@ public class AddrExp extends UnaExp {
 	public AddrExp(Loc loc, Expression e) {
 		super(loc, TOK.TOKaddress, e);
 	}
-	
+
 	@Override
 	public int getNodeType() {
 		return ADDR_EXP;
 	}
-	
+
 	public void accept0(IASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
@@ -29,7 +29,7 @@ public class AddrExp extends UnaExp {
 		}
 		visitor.endVisit(this);
 	}
-	
+
 	@Override
 	public Expression castTo(Scope sc, Type t, SemanticContext context) {
 		Type tb;

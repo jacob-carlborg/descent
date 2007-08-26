@@ -1,6 +1,5 @@
 package descent.internal.compiler.parser;
 
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -435,7 +434,7 @@ public abstract class Type extends ASTDmdNode {
 				if (!arg1.type.equals(arg2.type)) {
 					return DISTINCT;
 				}
-				if (arg1.inout != arg2.inout) {
+				if (arg1.storageClass != arg2.storageClass) {
 					inoutmismatch = true;
 				}
 			}
@@ -521,6 +520,10 @@ public abstract class Type extends ASTDmdNode {
 	public Expression getTypeInfo(Scope sc) {
 		// TODO semantic
 		return null;
+	}
+	
+	public Type nextOf() {
+		return next;
 	}
 
 	public Type makeConst(int startPosition, int length) {
