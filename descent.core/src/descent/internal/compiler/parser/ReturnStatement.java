@@ -26,6 +26,10 @@ public class ReturnStatement extends Statement {
 
 	public Expression exp;
 	public Expression sourceExp;
+	
+	public ReturnStatement(int loc, Expression exp) {
+		this(new Loc(loc), exp);
+	}
 
 	public ReturnStatement(Loc loc, Expression exp) {
 		super(loc);

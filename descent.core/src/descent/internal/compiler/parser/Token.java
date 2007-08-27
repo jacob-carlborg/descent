@@ -73,7 +73,9 @@ public class Token {
 	}
 	
 	public char[] getRawTokenSource() {
-		if (value == null) return CharOperation.NO_CHAR;
+		if (value == null) {
+			return CharOperation.NO_CHAR;
+		}
 		switch(value) {
 			case TOKeof:
 				return CharOperation.NO_CHAR;
@@ -107,7 +109,9 @@ public class Token {
 	}
 	
 	public String getRawTokenSourceAsString() {
-		if (value == null || string == null) return "";
+		if (value == null) {
+			return "";
+		}
 		switch(value) {
 		case TOKeof:
 			return "";

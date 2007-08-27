@@ -3,7 +3,6 @@ package descent.internal.compiler.parser;
 import java.util.List;
 
 import melnorme.miscutil.tree.TreeVisitor;
-
 import descent.core.compiler.CharOperation;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
@@ -35,6 +34,9 @@ public class PragmaStatement extends Statement {
 	
 	@Override
 	public Statement semantic(Scope sc, SemanticContext context) {
+		
+		// msg and lib char[] instances are reused by Lexer
+		
 		if (CharOperation.equals(ident.ident, Id.msg)) {
 			if (args != null) {
 				for (int i = 0; i < args.size(); i++) {

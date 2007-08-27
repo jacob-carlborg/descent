@@ -49,5 +49,9 @@ public abstract class Statement extends ASTDmdNode {
 	public boolean fallOffEnd() {
 		return true;
 	}
+	
+	public boolean hasBreak() {
+		return false;
+	}
 
 }

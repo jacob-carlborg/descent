@@ -4,6 +4,7 @@ import java.math.BigInteger;
 
 import junit.framework.TestCase;
 import descent.core.dom.AST;
+import descent.internal.compiler.parser.Id;
 import descent.internal.compiler.parser.Lexer;
 import descent.internal.compiler.parser.TOK;
 import descent.internal.compiler.parser.Token;
@@ -166,13 +167,31 @@ public class Lexer_Test extends TestCase {
 	}
 	
 	public void testSpecial() {
-		assertSpecial(" __FILE__", 1, 8, TOK.TOKstring, Token.SPECIAL__FILE__);
-		assertSpecial(" __LINE__", 1, 8, TOK.TOKint64v, Token.SPECIAL__LINE__);
-		assertSpecial(" __DATE__", 1, 8, TOK.TOKstring, Token.SPECIAL__DATE__);
-		assertSpecial(" __TIME__", 1, 8, TOK.TOKstring, Token.SPECIAL__TIME__);
-		assertSpecial(" __TIMESTAMP__", 1, 13, TOK.TOKstring, Token.SPECIAL__TIMESTAMP__);
-		assertSpecial(" __VENDOR__", 1, 10, TOK.TOKstring, Token.SPECIAL__VENDOR__);
-		assertSpecial(" __VERSION__", 1, 11, TOK.TOKint64v, Token.SPECIAL__VERSION__);
+		assertSpecial(" __FILE__", 1, 8, TOK.TOKstring, Token.SPECIAL__FILE__, Id.FILE);
+		assertSpecial(" __LINE__", 1, 8, TOK.TOKint64v, Token.SPECIAL__LINE__, Id.LINE);
+		assertSpecial(" __DATE__", 1, 8, TOK.TOKstring, Token.SPECIAL__DATE__, Id.DATE);
+		assertSpecial(" __TIME__", 1, 8, TOK.TOKstring, Token.SPECIAL__TIME__, Id.TIME);
+		assertSpecial(" __TIMESTAMP__", 1, 13, TOK.TOKstring, Token.SPECIAL__TIMESTAMP__, Id.TIMESTAMP);
+		assertSpecial(" __VENDOR__", 1, 10, TOK.TOKstring, Token.SPECIAL__VENDOR__, Id.VENDOR);
+		assertSpecial(" __VERSION__", 1, 11, TOK.TOKint64v, Token.SPECIAL__VERSION__, Id.VERSION);
+	}
+	
+	public void testReusedCharInstances() {
+		assertReused(" exit", 1, 4, TOK.TOKidentifier, Id.exit);
+		assertReused(" failure", 1, 7, TOK.TOKidentifier, Id.failure);
+		assertReused(" length", 1, 6, TOK.TOKidentifier, Id.length);
+		assertReused(" lib", 1, 3, TOK.TOKidentifier, Id.lib);
+		assertReused(" msg", 1, 3, TOK.TOKidentifier, Id.msg);
+		assertReused(" p", 1, 1, TOK.TOKidentifier, Id.p);
+		assertReused(" size_t", 1, 6, TOK.TOKidentifier, Id.size_t);
+		assertReused(" string", 1, 6, TOK.TOKidentifier, Id.string);
+		assertReused(" success", 1, 7, TOK.TOKidentifier, Id.success);
+		
+		assertReused(" C", 1, 1, TOK.TOKidentifier, Id.C);
+		assertReused(" D", 1, 1, TOK.TOKidentifier, Id.D);
+		assertReused(" Pascal", 1, 6, TOK.TOKidentifier, Id.Pascal);
+		assertReused(" System", 1, 6, TOK.TOKidentifier, Id.System);
+		assertReused(" Windows", 1, 7, TOK.TOKidentifier, Id.Windows);
 	}
 
 	private void assertToken(String s, TOK t, int start, int len) {
@@ -243,13 +262,24 @@ public class Lexer_Test extends TestCase {
 		assertEquals(0, lexer.problems.size());
 	}
 	
-	private void assertSpecial(String string, int start, int len, TOK tok, int special) {
+	private void assertSpecial(String string, int start, int len, TOK tok, int special, char[] id) {
 		Lexer lexer = new Lexer(string, true, true, false, true, AST.D1);
 		assertEquals(tok, lexer.nextToken());
 		assertEquals(start, lexer.token.ptr);
 		assertEquals(len, lexer.token.len);
 		assertEquals(special, lexer.token.special);
 		assertEquals(string.trim(), new String(lexer.token.string));
+		assertSame(id, lexer.token.string);
+		assertEquals(0, lexer.problems.size());
+	}
+	
+	private void assertReused(String string, int start, int len, TOK tok, char[] id) {
+		Lexer lexer = new Lexer(string, true, true, false, true, AST.D1);
+		assertEquals(tok, lexer.nextToken());
+		assertEquals(start, lexer.token.ptr);
+		assertEquals(len, lexer.token.len);
+		assertEquals(string.trim(), new String(lexer.token.string));
+		assertSame(id, lexer.token.string);
 		assertEquals(0, lexer.problems.size());
 	}
 

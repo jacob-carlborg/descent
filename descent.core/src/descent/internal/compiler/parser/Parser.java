@@ -887,19 +887,23 @@ public class Parser extends Lexer {
 			int lineNumber = token.lineNumber;
 
 			nextToken();
-			if (CharOperation.equals(id, Id.Windows)) {
+			
+			// We can compare by equality because Lexer reuses the 
+			// char[] instances for this special tokens
+			
+			if (id == Id.Windows) {
 				link = LINKwindows;
-			} else if (CharOperation.equals(id, Id.Pascal)) {
+			} else if (id == Id.Pascal) {
 				link = LINKpascal;
-			} else if (CharOperation.equals(id, Id.D)) {
+			} else if (id == Id.D) {
 				link = LINKd;
-			} else if (CharOperation.equals(id, Id.C)) {
+			} else if (id == Id.C) {
 				link = LINKc;
 				if (token.value == TOKplusplus) {
 					link = LINKcpp;
 					nextToken();
 				}
-			} else if (CharOperation.equals(id, Id.System)) {
+			} else if (id == Id.System) {
 				link = LINKsystem;
 			} else {
 				error(IProblem.InvalidLinkageIdentifier, lineNumber, start, length);
@@ -1087,7 +1091,6 @@ public class Parser extends Lexer {
 			nextToken();
 			check(TOKrparen);
 	    }
-
 
 	    InvariantDeclaration invariant = new InvariantDeclaration(loc);
 	    invariant.fbody = parseStatement(PScurly);
@@ -3784,12 +3787,13 @@ public class Parser extends Lexer {
 			} else {
 				TOK t2 = TOKon_scope_exit;
 
-				char[] id = token.string;				
-				if (CharOperation.equals(id, Id.exit))
+				// This char[] instances are reused by the Lexer
+				char[] id = token.string;			
+				if (id == Id.exit)
 					t2 = TOKon_scope_exit;
-				else if (CharOperation.equals(id, Id.failure))
+				else if (id == Id.failure)
 					t2 = TOKon_scope_failure;
-				else if (CharOperation.equals(id, Id.success))
+				else if (id == Id.success)
 					t2 = TOKon_scope_success;
 				else {
 					error(IProblem.InvalidScopeIdentifier, token);

@@ -7,6 +7,7 @@ public class LabelStatement extends Statement {
 	
 	public IdentifierExp ident;
 	public Statement statement;
+	public TryFinallyStatement tf;
 	public boolean isReturnLabel;
 
 	public LabelStatement(Loc loc, IdentifierExp ident, Statement statement) {

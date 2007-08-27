@@ -24,6 +24,7 @@ public class Scope {
 	public ScopeDsymbol sd; 			// if in static if, and declaring new symbols,
 	public FuncDeclaration func;		// function we are in
 	public Dsymbol parent; 				// parent to use
+	LabelStatement slabel;	// enclosing labelled statement
 	public int callSuper; 				// primitive flow analysis for constructors
 	public int structalign;				// alignment for struct members
 	public int offset;		// next offset to use in aggregate

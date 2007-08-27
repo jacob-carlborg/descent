@@ -1,5 +1,6 @@
 package descent.internal.compiler.parser;
 
+import descent.core.compiler.CharOperation;
 import descent.core.compiler.IProblem;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
@@ -57,7 +58,7 @@ public class IdentifierExp extends Expression {
 		}
 
 		IdentifierExp i = (IdentifierExp) o;
-		return ident.equals(i.ident);
+		return CharOperation.equals(ident, i.ident);
 	}
 
 	@Override

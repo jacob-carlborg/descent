@@ -2597,8 +2597,8 @@ public class ASTConverter {
 				b.setType(convertedType);
 			}
 		}
-		if (a.id != null) {
-			b.setName(convert(a.id));
+		if (a.ident != null) {
+			b.setName(convert(a.ident));
 		}
 		if (a.handler != null) {
 			descent.core.dom.Statement convertedHandler = convert(a.handler);

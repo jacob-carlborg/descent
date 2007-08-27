@@ -6,6 +6,7 @@ import descent.internal.compiler.parser.ast.IASTVisitor;
 public class GotoCaseStatement extends Statement {
 
 	public Expression exp;
+	public CaseStatement cs;		// case statement it resolves to
 
 	public GotoCaseStatement(Loc loc, Expression exp) {
 		super(loc);

@@ -47,6 +47,9 @@ public abstract class Dsymbol extends ASTDmdNode {
 	public IdentifierExp c_ident;
 	public Dsymbol parent;
 	public Loc loc;
+	
+	public Dsymbol() {
+	}
 
 	public Dsymbol(Loc loc) {
 		this.loc = loc;

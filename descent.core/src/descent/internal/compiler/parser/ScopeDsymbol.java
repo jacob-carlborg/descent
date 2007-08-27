@@ -14,6 +14,13 @@ public class ScopeDsymbol extends Dsymbol {
 	public DsymbolTable symtab;
 	public List<ScopeDsymbol> imports; // imported ScopeDsymbol's
 	public List<PROT> prots; // PROT for each import
+	
+	public ScopeDsymbol() {
+		this.members = null;
+		this.symtab = null;
+		this.imports = null;
+		this.prots = null;
+	}
 
 	public ScopeDsymbol(Loc loc) {
 		super(loc);

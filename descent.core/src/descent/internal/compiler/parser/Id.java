@@ -188,5 +188,7 @@ public interface Id {
 	char[] ONE = { '1' };
 	char[] Cpp = { 'C', '+', '+' };
 	char[] Ddoc = { 'D', 'd', 'o', 'c' };
+	char[] string = { 's', 't', 'r', 'i', 'n', 'g' };
+	char[] size_t = { 's', 'i', 'z', 'e', '_', 't' };
 
 }

@@ -38,8 +38,11 @@ public class IntegerExp extends Expression {
 	public IntegerExp(Loc loc, IntegerWrapper value, Type type) {
 		this(loc, null, value, type);
 	}
+	
+	public IntegerExp(int value) {
+		this(Loc.ZERO, value);
+	}
 
-	// TODO remove this constructor
 	public IntegerExp(Loc loc, int value) {
 		this(loc, new IntegerWrapper(value));
 	}

@@ -54,6 +54,8 @@ public class PragmaDeclaration extends AttribDeclaration {
 		// merged with
 		// PragmaStatement
 
+		// msg and lib char[] instances are reused by Lexer
+		
 		if (CharOperation.equals(ident.ident, Id.msg)) {
 			if (args != null) {
 				for (int i = 0; i < args.size(); i++) {
