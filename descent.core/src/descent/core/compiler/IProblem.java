@@ -336,6 +336,7 @@ public interface IProblem {
 	int CannotHaveOutOrInoutParameterOfTypeStaticArray = 367;
 	int FunctionsCannotReturnStaticArrays = 368;
 	int UnrecongnizedTrait = 369;
+	int CanOnlyConcatenateArrays = 370;
 	
 	/* Others, needed by JDT */
 	int ForbiddenReference = 2001;

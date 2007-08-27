@@ -75,7 +75,7 @@ public class IndexExp extends BinExp {
 			case Tarray:
 			{
 		    	e2 = e2.implicitCastTo(sc, Type.tsize_t, context);
-		    	/* NEXTOF e.type = ((TypeNext) t1).next; */
+		    	e.type = t1.next;
 		    	break;
 		    }
 
@@ -84,7 +84,7 @@ public class IndexExp extends BinExp {
 		    	e2 = e2.implicitCastTo(sc, Type.tsize_t, context);
 
 		    	TypeSArray tsa = (TypeSArray) t1;
-		    	/* NEXTOF e.type = t1.nextOf(); */
+		    	e.type = t1.next;
 		    	break;
 			}
 
@@ -93,6 +93,7 @@ public class IndexExp extends BinExp {
 				TypeAArray taa = (TypeAArray) t1;
 
 		    	e2 = e2.implicitCastTo(sc, taa.index, context);	// type checking
+		    	e2 = e2.implicitCastTo(sc, taa.key, context);	// actual argument type
 		    	type = taa.next;
 		    	break;
 			}
@@ -158,8 +159,6 @@ public class IndexExp extends BinExp {
 		modifiable = 1;
 	    if (e1.op == TOK.TOKstring)
 	    	error("string literals are immutable");
-	    if (null != type /* && NEXTOF !type.isMutable() */)
-	    	error("%s is not mutable", e.toChars());
 	    if (e1.type.toBasetype(context).ty == TY.Taarray)
 	    	e1 = e1.modifiableLvalue(sc, e1, context);
 	    return toLvalue(sc, e, context);

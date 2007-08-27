@@ -334,6 +334,9 @@ public class Problem implements IProblem {
 			return "Functions cannot return static arrays";
 		case UnrecongnizedTrait:
 			return "Unrecongnized trait: " + arguments[0];
+		case CanOnlyConcatenateArrays:
+			return "Can only concatenate arrays, not " + arguments[0] +
+				" and " + arguments[1];
 		default:
 			return "";
 		}

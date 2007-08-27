@@ -733,5 +733,18 @@ public class Semantic1_Test extends Parser_Test {
 		assertNoSemanticErrors(" bool a = __traits(allMembers);", AST.D2);
 		assertNoSemanticErrors(" bool a = __traits(derivedMembers);", AST.D2);
 	}
+	
+	public void testCanOnlyConcatenateArrays() {
+		String s = "auto a = 2 ~ 4;";
+		IProblem[] p = getModuleProblems(s);
+		assertEquals(1, p.length);
+
+		assertError(p[0], IProblem.CanOnlyConcatenateArrays, 9, 5);
+	}
+	
+	public void testCanOnlyConcatenateArrays_Not() {
+		// This suit is black... NOT!!!
+		assertNoSemanticErrors("auto a = \"Hello \" ~ \"World!\";");
+	}
 
 }

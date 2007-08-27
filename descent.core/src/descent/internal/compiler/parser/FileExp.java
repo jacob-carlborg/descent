@@ -33,6 +33,17 @@ public class FileExp extends UnaExp {
 	@Override
 	public Expression semantic(Scope sc, SemanticContext context)
 	{
+	    /* RETHINK file imports (there should be a separate dialog to choose
+	                             this stuff, which Descent will pass to the
+	                             compiler. In addition, this should def.
+	                             be cached somehow, so we're not reading the
+	                             whole file every time semantic is checked.
+	                             In some cases (i.e. if the file is binary),
+	                             there's really no need to resolve it at all,
+	                             so we might want to lazily resolve this
+	                             anyway.)
+	   
+	   
 		char[] name;
 	    StringExp se;
 	    
@@ -50,7 +61,6 @@ public class FileExp extends UnaExp {
 	    e1_se = e1_se.toUTF8(sc);
 	    name = e1_se.string;
 	    
-	    /* RETHINK
 	    if (!global.params.fileImppath)
 	    {
 	    	error("need -Jpath switch to import text file %s", name);
@@ -85,8 +95,7 @@ public class FileExp extends UnaExp {
 	    }
 	    */
 	    
-	    /* TODO file imoorts */
-	    se = new StringExp(loc, Id.empty);
+	    Expression se = new StringExp(loc, Id.empty);
 		return se.semantic(sc, context);
 	}
 }
