@@ -51,8 +51,7 @@ public class CatAssignExp extends BinExp {
 
 	    if ((tb1.ty == TY.Tarray) &&
 	    	(tb2.ty == TY.Tarray || tb2.ty == TY.Tsarray) &&
-	    	MATCH.MATCHnomatch != (e2.implicitConvTo(e1.type, context)) /* ||
-	    	NEXTOF tb2.nextOf().implicitConvTo(tb1.nextOf())) */)
+	    	MATCH.MATCHnomatch != (e2.implicitConvTo(e1.type, context)))
 	    {
 	    	// Append array
 	    	e2 = e2.castTo(sc, e1.type, context);
@@ -60,10 +59,11 @@ public class CatAssignExp extends BinExp {
 	    	e = this;
 	    }
 	    
-	    else if ((tb1.ty == TY.Tarray) /* && TODO e2.implicitConvTo(tb1.nextOf() */)
+	    else if ((tb1.ty == TY.Tarray) 
+	    		&& null != e2.implicitConvTo(tb1.next, context))
 	    {
 	    	// Append element
-	    	e2 = e2.castTo(sc, /* TODO tb1.nextOf() */ tb1, context);
+	    	e2 = e2.castTo(sc, tb1.next, context);
 	    	type = e1.type;
 	    	e = this;
 	    }

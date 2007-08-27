@@ -23,7 +23,7 @@ public class InExp extends BinExp {
 		visitor.endVisit(this);
 	}
 	
-		@Override
+	@Override
 	public Expression semantic(Scope sc, SemanticContext context)
 	{
 		Expression e;
@@ -50,7 +50,7 @@ public class InExp extends BinExp {
 	    	e1 = e1.implicitCastTo(sc, ta.index, context);
 
 	    	// Return type is pointer to value
-	    	/* NEXTOF type = ta.nextOf().pointerTo(); */
+	    	type = ta.next.pointerTo(context);
 	    }
 	    return this;
 	}

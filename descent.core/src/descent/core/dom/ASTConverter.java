@@ -827,8 +827,8 @@ public class ASTConverter {
 			if (convertedTarg != null) {
 				b.setType(convertedTarg);
 			}
-			if (a.ident != null) {
-				b.setName(convert(a.ident));
+			if (a.id != null) {
+				b.setName(convert(a.id));
 			}
 			if (a.tspec != null) {
 				b.setSpecialization(convert(a.tspec));
@@ -841,8 +841,8 @@ public class ASTConverter {
 			if (convertedTarg != null) {
 				b.setType(convertedTarg);
 			}
-			if (a.ident != null) {
-				b.setName(convert(a.ident));
+			if (a.id != null) {
+				b.setName(convert(a.id));
 			}
 			switch(a.tok2) {
 			case TOKtypedef: b.setSpecialization(TypeSpecialization.TYPEDEF); break;

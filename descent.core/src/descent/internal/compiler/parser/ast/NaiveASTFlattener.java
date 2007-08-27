@@ -1300,9 +1300,9 @@ public class NaiveASTFlattener implements IASTVisitor {
 	public boolean visit(IftypeExp node) {
 		this.buffer.append("is(");
 		node.targ.accept(this);
-		if (node.ident != null) {
+		if (node.id != null) {
 			this.buffer.append(" ");
-			node.ident.accept(this);
+			node.id.accept(this);
 		}
 		if (node.tok2 == TOK.TOKreserved) {			
 			if (node.tspec != null) {

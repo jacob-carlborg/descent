@@ -177,49 +177,32 @@ public class AssignExp extends BinExp {
 	    }
 
 	    e2.rvalue(context);
-
-	    /* TODO semantic:
+	    /* TODO semantic ArrayLengthExp
 	    if (e1.op == TOK.TOKarraylength)
 	    {
 			// e1 is not an lvalue, but we let code generator handle it
 			ArrayLengthExp ale = (ArrayLengthExp) e1;
 			ale.e1 = ale.e1.modifiableLvalue(sc, null);
 	    }
-	    else */
-	    
-	    /* NEXTOF
+	    else
+	    */
 	    if (e1.op == TOK.TOKslice)
-	    {
-		    Type tn = e1.type.nextOf();
-			if (tn && !tn.isMutable() && op != TOKconstruct)
-			    error("slice %s is not mutable", e1.toChars());
-	    }
-	    
-	    
-	    else */
+	    	;
+	    else
 	    {
 	    	// Try to do a decent error message with the expression
 	    	// before it got constant folded
-	    	e1 = e1.optimize(WANTvalue);
 	    	e1 = e1.modifiableLvalue(sc, e1old, context);
 	    }
 
-	    Type t2 = e2.type;
-	    if (e1.op == TOK.TOKslice &&
-	    		t1.nextOf() != null && 
-	    		MATCH.MATCHnomatch != e2.implicitConvTo(t1.nextOf(), context)
-	       )
-	    {	// memset
-			/* PERHAPS ismemset = 1; */	// make it easy for back end to tell what this is
-			e2 = e2.implicitCastTo(sc, t1.nextOf(), context);
+	    if (e1.op == TOK.TOKslice && null != t1.next &&
+	    		!(t1.next.equals(e2.type.next)))
+	    {   // memset
+	    	e2 = e2.implicitCastTo(sc, t1.next, context);
 	    }
 	    else if (t1.ty == TY.Tsarray)
 	    {
 	    	error("cannot assign to static array %s", e1.toChars());
-	    }
-	    else if (e1.op == TOK.TOKslice)
-	    {
-	    	e2 = e2.implicitCastTo(sc, e1.type/* NEXTOF .constOf() */, context);
 	    }
 	    else
 	    {

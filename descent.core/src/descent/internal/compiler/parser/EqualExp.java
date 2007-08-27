@@ -78,14 +78,11 @@ public class EqualExp extends BinExp {
 	    // Special handling for array comparisons
 	    t1 = e1.type.toBasetype(context);
 	    t2 = e2.type.toBasetype(context);
-	    if ((t1.ty == TY.Tarray || t1.ty == TY.Tsarray || t1.ty == TY.Tpointer) &&
-	    	(t2.ty == TY.Tarray || t2.ty == TY.Tsarray || t2.ty == TY.Tpointer))
+	    if ((t1.ty == TY.Tarray || t1.ty == TY.Tsarray) &&
+	    	(t2.ty == TY.Tarray || t2.ty == TY.Tsarray))
 	    {
-	    	/* NEXTOF
-	    	if (t1.nextOf().implicitConvTo(t2.nextOf()) < MATCHconst &&
-	    		t2.nextOf().implicitConvTo(t1.nextOf()) < MATCHconst &&
-	    		(t1.nextOf().ty != Tvoid && t2.nextOf().ty != Tvoid))
-		    error("array equality comparison type mismatch, %s vs %s", t1.toChars(), t2.toChars()); */
+	    	if (!t1.next.equals(t2.next))
+	    		error("array comparison type mismatch, %s vs %s", t1.next.toChars(), t2.next.toChars());
 	    }
 	    
 	    else
