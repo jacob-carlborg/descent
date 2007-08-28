@@ -52,7 +52,8 @@ public class DivAssignExp extends BinExp {
 			{
 				// x/iv = i(-x/v)
 			    // Therefore, the result is 0
-			    e2 = new CommaExp(loc, e2, /* FIXME new RealExp(loc, 0, t1) */ null);
+			    e2 = new CommaExp(loc, e2, 
+			    		new RealExp(loc, new char[0], Real.ZERO, t1));
 			    e2.type = t1;
 			    e = new AssignExp(loc, e1, e2);
 			    e.type = t1;

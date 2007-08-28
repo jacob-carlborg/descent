@@ -1,5 +1,8 @@
 package descent.internal.compiler.parser;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import melnorme.miscutil.tree.TreeVisitor;
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
@@ -40,166 +43,183 @@ public class SliceExp extends UnaExp {
 	}
 	
 	@Override
-	public Expression semantic(Scope sc, SemanticContext context) {
-		return super.semantic(sc, context);
-		/*
+	public Expression semantic(Scope sc, SemanticContext context) {	
+		
 		Expression e;
 	    AggregateDeclaration ad;
-	    //FuncDeclaration fd;
 	    ScopeDsymbol sym;
-
-	    if (type != null)
-		return this;
-
+		
+	    if(null != type)
+	    	return this;
+		
 	    super.semantic(sc, context);
 	    e1 = resolveProperties(sc, e1, context);
-
+		
 	    e = this;
-
 	    Type t = e1.type.toBasetype(context);
-	    if (t.ty == Tpointer)
+	    
+	    if (t.ty == TY.Tpointer)
 	    {
-		if (lwr == null || upr == null)
-		    error("need upper and lower bound to slice pointer");
+			if (null == lwr || null == upr)
+			    error("need upper and lower bound to slice pointer");
 	    }
-	    else if (t.ty == Tarray)
-	    {
-	    }
-	    else if (t.ty == Tsarray)
+	    else if (t.ty == TY.Tarray || t.ty == TY.Tsarray)
 	    {
 	    }
-	    else if (t.ty == Tclass)
+	    else if(t.ty == TY.Tclass || t.ty == TY.Tstruct)
 	    {
-	        ad = ((TypeClass )t).sym;
-	        // goto L1;
-	    }
-	    else if (t.ty == Tstruct)
-	    {
-	        ad = ((TypeStruct )t).sym;
-
-	    L1:
-		if (search_function(ad, Id.slice, context) != null)
+	    	if(t.ty == TY.Tclass)
+	    		ad = ((TypeClass) t).sym;
+	    	else
+	    		ad = ((TypeStruct) t).sym;
+	    	
+	    	if (null != search_function(ad, Id.slice, context))
 	        {
-	            // Rewrite as e1.slice(lwr, upr)
-		    e = new DotIdExp(loc, e1, new IdentifierExp(loc, Id.slice));
-
-		    if (lwr != null)
-		    {
-		    	Assert.isNotNull(upr);
-			e = new CallExp(loc, e, lwr, upr);
-		    }
-		    else
-		    {	
-		    	Assert.isTrue(upr == null);
-			e = new CallExp(loc, e);
-		    }
-		    e = e.semantic(sc, context);
-		    return e;
+	    		// Rewrite as e1.slice(lwr, upr)
+			    e = new DotIdExp(loc, e1, new IdentifierExp(Loc.ZERO,
+			    		Id.slice));
+			    if (null != lwr)
+			    {
+					assert(null != upr);
+					e = new CallExp(loc, e, lwr, upr);
+			    }
+			    else
+			    {
+			    	assert(null == upr);
+			    	e = new CallExp(loc, e);
+			    }
+			    
+			    e = e.semantic(sc, context);
+			    return e;
 	        }
-		// goto Lerror;
+	    	else
+	    	{
+	    		return Lerror(t, e, sc, context);
+	    	}
 	    }
-	    else if (t.ty == Ttuple)
+	    else if (t.ty == TY.Ttuple)
 	    {
-		if (lwr == null && upr == null)
-		    return e1;
-		if (lwr == null || upr == null)
-		{   error("need upper and lower bound to slice tuple");
-		    // goto Lerror;
-		}
-	    }
-	    else {
-		// goto Lerror;
-	    }
-
-	    if (t.ty == Tsarray || t.ty == Tarray || t.ty == Ttuple)
-	    {
-		sym = new ArrayScopeSymbol(this);
-		sym.parent = sc.scopesym;
-		sc = sc.push(sym);
-	    }
-
-	    if (lwr != null)
-	    {	lwr = lwr.semantic(sc, context);
-		lwr = resolveProperties(sc, lwr, context);
-		lwr = lwr.implicitCastTo(sc, Type.tsize_t, context);
-	    }
-	    if (upr != null)
-	    {	upr = upr.semantic(sc, context);
-		upr = resolveProperties(sc, upr, context);
-		upr = upr.implicitCastTo(sc, Type.tsize_t, context);
-	    }
-
-	    if (t.ty == Tsarray || t.ty == Tarray || t.ty == Ttuple)
-		sc.pop();
-
-	    if (t.ty == Ttuple)
-	    {
-		lwr = lwr.optimize(WANTvalue);
-		upr = upr.optimize(WANTvalue);
-		BigInteger i1 = lwr.toUInteger(context);
-		BigInteger i2 = upr.toUInteger(context);
-
-		int length;
-		TupleExp te;
-		TypeTuple tup;
-
-		if (e1.op == TOKtuple)		// slicing an expression tuple
-		{   te = (TupleExp )e1;
-		    length = te.exps.size();
-		}
-		else if (e1.op == TOKtype)	// slicing a type tuple
-		{   tup = (TypeTuple )t;
-		    length = Argument.dim(tup.arguments, context);
-		}
-		else {
-		    Assert.isTrue(false);
-		}
-
-		if (i1 <= i2 && i2 <= length)
-		{   size_t j1 = (size_t) i1;
-		    size_t j2 = (size_t) i2;
-
-		    if (e1.op == TOKtuple)
-		    {	Expressions exps = new Expressions;
-			exps.setDim(j2 - j1);
-			for (size_t i = 0; i < j2 - j1; i++)
-			{   Expression e = (Expression )te.exps.data[j1 + i];
-			    exps.data[i] = (void )e;
+			if (null == lwr && null == upr)
+			{
+			    return e1;
 			}
-			e = new TupleExp(loc, exps);
-		    }
-		    else
-		    {	Arguments args = new Arguments;
-			args.reserve(j2 - j1);
-			for (size_t i = j1; i < j2; i++)
-			{   Argument arg = Argument.getNth(tup.arguments, i);
-			    args.push(arg);
+			else if (null == lwr || null == upr)
+			{
+				error("need upper and lower bound to slice tuple");
+				return Lerror(t, e, sc, context);
 			}
-			e = new TypeExp(e1.loc, new TypeTuple(args));
-		    }
-		    e = e.semantic(sc);
-		}
-		else
-		{
-		    error("string slice [%ju .. %ju] is out of bounds", i1, i2);
-		    e = e1;
-		}
-		return e;
 	    }
-
-	    type = t.next.arrayOf();
-	    return e;
-
-	Lerror:
-	    char *s;
-	    if (t.ty == Tvoid)
-		s = e1.toChars();
 	    else
-		s = t.toChars();
+	    {
+	    	return Lerror(t, e, sc, context);
+	    }
+	    
+	    if (t.ty == TY.Tsarray || t.ty == TY.Tarray || t.ty == TY.Ttuple)
+	    {
+			sym = new ArrayScopeSymbol(this);
+			sym.loc = loc;
+			sym.parent = sc.scopesym;
+			sc = sc.push(sym);
+	    }
+	    
+	   
+	    if (null != lwr)
+	    {
+	    	lwr = lwr.semantic(sc, context);
+	    	lwr = resolveProperties(sc, lwr, context);
+	    	lwr = lwr.implicitCastTo(sc, Type.tsize_t, context);
+	    }
+	    if (null != upr)
+	    {
+	    	upr = upr.semantic(sc, context);
+	    	upr = resolveProperties(sc, upr, context);
+	    	upr = upr.implicitCastTo(sc, Type.tsize_t, context);
+	    }
+	    
+	    if (t.ty == TY.Tsarray || t.ty == TY.Tarray || t.ty == TY.Ttuple)
+	    	sc.pop();
+	    
+	    if (t.ty == TY.Ttuple)
+	    {
+			lwr = lwr.optimize(WANTvalue);
+			upr = upr.optimize(WANTvalue);
+			int i1 = (int) lwr.toUInteger(context).longValue();
+			int i2 = (int) upr.toUInteger(context).longValue();
+		
+			int length = 0;
+			TupleExp te = null;
+			TypeTuple tup = null;
+		
+			if (e1.op == TOK.TOKtuple)		// slicing an expression tuple
+			{
+				te = (TupleExp) e1;
+			    length = te.exps.size();
+			}
+			else if (e1.op == TOK.TOKtype)	// slicing a type tuple
+			{
+				tup = (TypeTuple) t;
+			    length = tup.arguments.size();
+			}
+			else
+			{
+			    assert(false);
+			}
+		
+			if (i1 <= i2 && i2 <= length)
+			{
+				//int j1 = (size_t) i1;
+			    //int j2 = (size_t) i2;
+		
+			    if (e1.op == TOK.TOKtuple)
+			    {
+			    	List<Expression> exps = new ArrayList<Expression>
+			    			(i2 - i1);
+					for (int i = 0; i < (i2 - i1); i++)
+					{
+						Expression tmp = (Expression) te.exps.get(i1 + i);
+					    exps.set(i, tmp);
+					}
+					e = new TupleExp(loc, exps);
+			    }
+			    else
+			    {
+			    	List<Argument> args = new ArrayList<Argument>(i2 - i1);
+					for (int i = i1; i < i2; i++)
+					{
+						Argument arg = tup.arguments.get(i);
+					    args.add(arg);
+					}
+					e = new TypeExp(e1.loc, TypeTuple.newArguments(args));
+				 }
+				 e = e.semantic(sc, context);
+			}
+			else
+			{
+			    error("string slice [%ju .. %ju] is out of bounds", i1, i2);
+			    e = e1;
+			}
+			return e;
+	    }
+	    else
+	    {
+		    type = t.next.arrayOf(context);
+		    return e;
+	    }
+	}
+	
+	// Lerror:
+	public Expression Lerror(Type t, Expression e,
+			Scope sc, SemanticContext context)
+	{
+		String s;
+	    if (t.ty == TY.Tvoid)
+	    	s = e1.toChars();
+	    else
+	    	s = t.toChars();
+	    
 	    error("%s cannot be sliced with []", s);
 	    type = Type.terror;
 	    return e;
-	    */
 	}
 
 	@Override
