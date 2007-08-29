@@ -6,6 +6,10 @@ import descent.internal.compiler.parser.ast.IASTVisitor;
 public class WithScopeSymbol extends ScopeDsymbol {
 	
 	public WithStatement withstate;
+	
+	public WithScopeSymbol(WithStatement withstate) {
+		this(Loc.ZERO, withstate);
+	}
 
 	public WithScopeSymbol(Loc loc, WithStatement withstate) {
 		super(loc);

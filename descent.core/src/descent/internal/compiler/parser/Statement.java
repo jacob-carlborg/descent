@@ -53,5 +53,9 @@ public abstract class Statement extends ASTDmdNode {
 	public boolean hasBreak() {
 		return false;
 	}
+	
+	public boolean hasContinue() {
+		return false;
+	}
 
 }

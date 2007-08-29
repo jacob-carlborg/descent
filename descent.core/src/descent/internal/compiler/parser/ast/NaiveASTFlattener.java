@@ -2791,7 +2791,7 @@ public class NaiveASTFlattener implements IASTVisitor {
 	public boolean visit(VolatileStatement node) {
 		printIndent();
 		this.buffer.append("volatile ");
-		node.statement.accept(this);
+		node.sourceStatement.accept(this);
 		return false;
 	}
 

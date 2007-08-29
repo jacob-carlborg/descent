@@ -1971,8 +1971,8 @@ public class ASTConverter {
 	
 	public descent.core.dom.VolatileStatement convert(VolatileStatement a) {
 		descent.core.dom.VolatileStatement b = new descent.core.dom.VolatileStatement(ast);
-		if (a.statement != null) {
-			descent.core.dom.Statement convertedStm = convert(a.statement);
+		if (a.sourceStatement != null) {
+			descent.core.dom.Statement convertedStm = convert(a.sourceStatement);
 			if (convertedStm != null) {
 				b.setBody(convertedStm);
 			}

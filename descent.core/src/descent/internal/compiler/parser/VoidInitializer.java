@@ -1,7 +1,5 @@
 package descent.internal.compiler.parser;
 
-import java.math.BigInteger;
-
 import descent.internal.compiler.parser.ast.IASTVisitor;
 
 public class VoidInitializer extends Initializer {
@@ -33,6 +31,11 @@ public class VoidInitializer extends Initializer {
 	public Initializer semantic(Scope sc, Type t, SemanticContext context) {
 		type = t;
 	    return this;
+	}
+	
+	@Override
+	public void toCBuffer(OutBuffer buf, HdrGenState hgs) {
+		buf.writestring("void");
 	}
 	
 	@Override
