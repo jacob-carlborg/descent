@@ -585,6 +585,18 @@ public class Semantic1_Test extends Parser_Test {
 		assertNoSemanticErrors(" long bla() { return 0; }");
 	}
 	
+	public void testCanImplicitlyConvertFromCharToInt() {
+		assertNoSemanticErrors(" int bla() { return 'a'; }");
+	}
+	
+	public void testCannotImplicitlyConvertFromLongToInt() {
+		String s = " int x() { return 234873294873294; }";
+		IProblem[] p = getModuleProblems(s);
+		assertEquals(1, p.length);
+
+		assertError(p[0], IProblem.CannotImplicitlyConvert, 18, 15);
+	}
+	
 	public void testVoidFunctionsHaveNoResult() {
 		String s = " void bla() out(id) { } body { }";
 		IProblem[] p = getModuleProblems(s);

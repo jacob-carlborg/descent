@@ -266,6 +266,8 @@ public class Problem implements IProblem {
 			return "Cannot override the final function " + arguments[0] + " from " + arguments[1];
 		case OverrideOnlyForClassMemberFunctions:
 			return "Override only applies to class member functions";
+		case FunctionMustReturnAResultOfType:
+			return "Function must return a result of type " + arguments[0];
 		case MoreThanOneInvariant:
 			return "More than one invariant for " + arguments[0];
 		case DuplicatedParameter:

@@ -31,11 +31,39 @@ public class IntegerWrapper extends Number {
 		return new IntegerWrapper(bigIntegerValue.and(value));
 	}
 	
-	public boolean equals(BigInteger value) {
-		if (bigIntegerValue != null) {
-			return bigIntegerValue.equals(value);
+	public boolean equals(Object other) {
+		if (other instanceof BigInteger) {
+			return equals((BigInteger) other);
+		} else if (other instanceof IntegerWrapper) {
+			return equals((IntegerWrapper) other);
 		} else {
-			return intValue == value.longValue();
+			return false;
+		}
+	}
+	
+	public boolean equals(BigInteger other) {
+		if (bigIntegerValue != null) {
+			return bigIntegerValue.equals(other);
+		} else {
+			return intValue == other.longValue();
+		}
+	}
+	
+	public boolean equals(IntegerWrapper other) {
+		if (bigIntegerValue == null) {
+			if (other.bigIntegerValue == null) {
+				return intValue == other.intValue;
+			} else {
+				bigIntegerValue = new BigInteger(String.valueOf(intValue));
+				return bigIntegerValue.equals(other.bigIntegerValue);
+			}
+		} else {
+			if (other.bigIntegerValue == null) {
+				other.bigIntegerValue = new BigInteger(String.valueOf(other.bigIntegerValue));
+				return bigIntegerValue.equals(other.bigIntegerValue);
+			} else {
+				return bigIntegerValue.equals(other.bigIntegerValue);
+			}
 		}
 	}
 	
