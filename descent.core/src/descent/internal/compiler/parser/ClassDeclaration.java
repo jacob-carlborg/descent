@@ -1,6 +1,8 @@
 package descent.internal.compiler.parser;
 
 import static descent.internal.compiler.parser.PROT.PROTnone;
+import static descent.internal.compiler.parser.TY.*;
+import static descent.internal.compiler.parser.STC.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,6 +24,7 @@ public class ClassDeclaration extends AggregateDeclaration {
 	public List<BaseClass> baseclasses;
 	public ClassDeclaration baseClass; // null only if this is Object
 	public CtorDeclaration ctor;
+    public CtorDeclaration defaultCtor;	// default constructor
 	public List<FuncDeclaration> dtors; // Array of destructors
 	public FuncDeclaration staticCtor;
 	public FuncDeclaration staticDtor;
@@ -62,6 +65,8 @@ public class ClassDeclaration extends AggregateDeclaration {
 		this.vtbl = new ArrayList(0);
 		this.vtblFinal = new ArrayList(0);
 		handle = type;
+		
+		// TODO missing semantic scode
 	}
 	
 	@Override
@@ -489,6 +494,10 @@ public class ClassDeclaration extends AggregateDeclaration {
 		interfaces.addAll(baseclasses);
 
 		if (baseClass != null) {
+			if ((baseClass.storage_class & STCfinal) != 0) {
+			    error("cannot inherit from final class %s", baseClass.toString());
+			}
+			
 			interfaces.remove(0);
 
 			// Copy vtbl[] from base class
@@ -574,8 +583,8 @@ public class ClassDeclaration extends AggregateDeclaration {
 		}
 
 		sc = sc.push(this);
-		sc.stc &= ~(STC.STCauto | STC.STCscope | STC.STCstatic
-				| STC.STCabstract | STC.STCdeprecated);
+	    sc.stc &= ~(STCfinal | STCauto | STCscope | STCstatic | STCabstract | STCdeprecated);
+
 		sc.parent = this;
 		sc.inunion = false;
 
@@ -612,7 +621,7 @@ public class ClassDeclaration extends AggregateDeclaration {
 			alignsize = 0;
 			structalign = 0;
 
-			sc.pop();
+			sc = sc.pop();
 
 			scope = scx != null ? scx : new Scope(sc);
 			scope.setNoFree();
@@ -660,6 +669,7 @@ public class ClassDeclaration extends AggregateDeclaration {
 			sc = scsave;
 			sc.offset = structsize;
 			ctor.semantic(sc, context);
+			defaultCtor = ctor;
 		}
 
 		/*

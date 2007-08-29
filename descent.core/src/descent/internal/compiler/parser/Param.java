@@ -27,7 +27,7 @@ public class Param {
     boolean useInline;	// inline expand functions
     boolean release;	// build release version
     boolean preservePaths;	// !=0 means don't strip path from source file
-    boolean warnings;	// enable warnings
+    boolean warnings = true;	// enable warnings
     char pic;		// generate position-independent-code for shared libs
     char cov;		// generate code coverage data
     char nofloat;	// code should not pull in floating point support

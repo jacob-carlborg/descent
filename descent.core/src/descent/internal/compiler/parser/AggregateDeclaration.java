@@ -13,6 +13,7 @@ public abstract class AggregateDeclaration extends ScopeDsymbol {
 	public int structsize; // size of struct
 	public int alignsize; // size of struct for alignment purposes
 	public int structalign; // struct member alignment in effect
+    public int hasUnions;		// set if aggregate has overlapping fields
 	public int sizeok; 	// set when structsize contains valid data
 						// 0: no size
 						// 1: size is correct

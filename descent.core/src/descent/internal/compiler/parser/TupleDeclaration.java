@@ -17,7 +17,8 @@ public class TupleDeclaration extends Declaration {
 	public boolean isexp; // true: expression tuple
 	public TypeTuple tupletype; // !=NULL if this is a type tuple
 
-	public TupleDeclaration(Loc loc, IdentifierExp ident, List<ASTDmdNode> objects) {
+	public TupleDeclaration(Loc loc, IdentifierExp ident,
+			List<ASTDmdNode> objects) {
 		super(loc, ident);
 		this.type = null;
 		this.objects = objects;
@@ -29,7 +30,7 @@ public class TupleDeclaration extends Declaration {
 	public int getNodeType() {
 		return TUPLE_DECLARATION;
 	}
-	
+
 	public void accept0(IASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
@@ -40,6 +41,7 @@ public class TupleDeclaration extends Declaration {
 		}
 		visitor.endVisit(this);
 	}
+
 	@Override
 	public Type getType() {
 		/*
@@ -92,6 +94,24 @@ public class TupleDeclaration extends Declaration {
 	public Dsymbol syntaxCopy(Dsymbol s) {
 		Assert.isTrue(false);
 		return null;
+	}
+
+	@Override
+	public boolean needThis() {
+		for (int i = 0; i < objects.size(); i++) {
+			ASTDmdNode o = (ASTDmdNode) objects.get(i);
+			if (o.dyncast() == DYNCAST.DYNCAST_EXPRESSION) {
+				Expression e = (Expression) o;
+				if (e.op == TOK.TOKdsymbol) {
+					DsymbolExp ve = (DsymbolExp) e;
+					Declaration d = ve.s.isDeclaration();
+					if (d != null && d.needThis()) {
+						return true;
+					}
+				}
+			}
+		}
+		return false;
 	}
 
 }

@@ -127,7 +127,7 @@ public abstract class AttribDeclaration extends Dsymbol {
 			}
 			buf.writeByte('}');
 		} else {
-			buf.writeByte(':');
+			buf.writeByte(';');
 		}
 		buf.writenl();
 	}
