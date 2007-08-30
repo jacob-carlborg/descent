@@ -135,10 +135,7 @@ public abstract class TypeQualified extends Type {
 			return;
 		}
 		if (s == null) {
-			// TODO semantic remove if and leave body
-			if (!toString().equals("Object")) {
-				context.acceptProblem(Problem.newSemanticTypeError(IProblem.UndefinedIdentifier, 0, start, length, new String[] { this.toString() }));
-			}
+			context.acceptProblem(Problem.newSemanticTypeError(IProblem.UndefinedIdentifier, 0, start, length, new String[] { this.toString() }));
 		}
 	}
 	

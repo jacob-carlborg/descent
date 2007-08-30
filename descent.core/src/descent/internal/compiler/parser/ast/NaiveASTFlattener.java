@@ -771,7 +771,9 @@ public class NaiveASTFlattener implements IASTVisitor {
 			this.buffer.append("body");
 		}
 		this.buffer.append(" ");
-		node.fbody.accept(this);
+		if (node.fbody != null) {
+			node.fbody.accept(this);
+		}
 		if (node.postDdoc != null) {
 			this.buffer.append(" ");
 			node.postDdoc.accept(this);
@@ -865,7 +867,9 @@ public class NaiveASTFlattener implements IASTVisitor {
 			this.buffer.append("body");
 		}
 		this.buffer.append(" ");
-		node.fbody.accept(this);
+		if (node.fbody != null) {
+			node.fbody.accept(this);
+		}
 		if (node.postDdoc != null) {
 			this.buffer.append(" ");
 			node.postDdoc.accept(this);
@@ -982,7 +986,9 @@ public class NaiveASTFlattener implements IASTVisitor {
 			this.buffer.append("body");
 		}
 		this.buffer.append(" ");
-		node.fbody.accept(this);
+		if (node.fbody != null) {
+			node.fbody.accept(this);
+		}
 		if (node.postDdoc != null) {
 			this.buffer.append(" ");
 			node.postDdoc.accept(this);
@@ -1397,7 +1403,9 @@ public class NaiveASTFlattener implements IASTVisitor {
 		printIndent();
 		visitModifiers(node.modifiers);
 		this.buffer.append("invariant() ");
-		node.fbody.accept(this);
+		if (node.fbody != null) {
+			node.fbody.accept(this);
+		}
 		if (node.postDdoc != null) {
 			this.buffer.append(" ");
 			node.postDdoc.accept(this);
@@ -1630,7 +1638,9 @@ public class NaiveASTFlattener implements IASTVisitor {
 			this.buffer.append("body");
 		}
 		this.buffer.append(" ");
-		node.fbody.accept(this);
+		if (node.fbody != null) {
+			node.fbody.accept(this);
+		}
 		if (node.postDdoc != null) {
 			this.buffer.append(" ");
 			node.postDdoc.accept(this);
@@ -1929,7 +1939,9 @@ public class NaiveASTFlattener implements IASTVisitor {
 			this.buffer.append("body");
 		}
 		this.buffer.append(" ");
-		node.fbody.accept(this);
+		if (node.fbody != null) {
+			node.fbody.accept(this);
+		}
 		if (node.postDdoc != null) {
 			this.buffer.append(" ");
 			node.postDdoc.accept(this);
@@ -1963,7 +1975,9 @@ public class NaiveASTFlattener implements IASTVisitor {
 			this.buffer.append("body");
 		}
 		this.buffer.append(" ");
-		node.fbody.accept(this);
+		if (node.fbody != null) {
+			node.fbody.accept(this);
+		}
 		if (node.postDdoc != null) {
 			this.buffer.append(" ");
 			node.postDdoc.accept(this);
@@ -2612,8 +2626,22 @@ public class NaiveASTFlattener implements IASTVisitor {
 
 	public boolean visit(TypePointer node) {
 		startModifiedType(node);
-		node.next.accept(this);
-		this.buffer.append("*");
+		if (node.next.ty == TY.Tfunction) {
+			TypeFunction ty = (TypeFunction) node.next;
+			ty.next.accept(this);
+			this.buffer.append(" function");
+			if (ty.parameters != null && ty.parameters.size() > 0) {
+				this.buffer.append("(");
+				visitList(ty.parameters, ", ");
+				if (ty.varargs != 0) {
+					this.buffer.append("...");
+				}
+				this.buffer.append(")");
+			}
+		} else {
+			node.next.accept(this);
+			this.buffer.append("*");
+		}
 		endModifiedType(node);
 		return false;
 	}
@@ -2700,7 +2728,9 @@ public class NaiveASTFlattener implements IASTVisitor {
 		printIndent();
 		visitModifiers(node.modifiers);
 		this.buffer.append("unittest ");
-		node.fbody.accept(this);
+		if (node.fbody != null) {
+			node.fbody.accept(this);
+		}
 		if (node.postDdoc != null) {
 			this.buffer.append(" ");
 			node.postDdoc.accept(this);

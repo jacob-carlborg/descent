@@ -2388,6 +2388,25 @@ public class Lexer implements IProblemRequestor {
 		case 'o':
 			p++;
 			switch(input[p]) {
+			case 'b':
+				p++;
+				if (input[p] == 'j') {
+					p++;
+					if (input[p] == 'e') {
+						p++;
+						if (input[p] == 'c') {
+							p++;
+							if (input[p] == 't' && !Chars.isidchar(input[p+1])) {
+								t.value = TOK.TOKidentifier;
+								t.len = 6;
+								t.string = Id.object;
+								p++;
+								return;
+							}
+						}
+					}
+				}
+				break;	
 			case 'n':
 				if (apiLevel == D0) {
 					p++;

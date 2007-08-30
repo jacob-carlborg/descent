@@ -182,6 +182,7 @@ public class Lexer_Test extends TestCase {
 		assertReused(" length", 1, 6, TOK.TOKidentifier, Id.length);
 		assertReused(" lib", 1, 3, TOK.TOKidentifier, Id.lib);
 		assertReused(" msg", 1, 3, TOK.TOKidentifier, Id.msg);
+		assertReused(" object", 1, 6, TOK.TOKidentifier, Id.object);
 		assertReused(" p", 1, 1, TOK.TOKidentifier, Id.p);
 		assertReused(" size_t", 1, 6, TOK.TOKidentifier, Id.size_t);
 		assertReused(" string", 1, 6, TOK.TOKidentifier, Id.string);

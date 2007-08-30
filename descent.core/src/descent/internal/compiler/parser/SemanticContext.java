@@ -39,21 +39,22 @@ public class SemanticContext {
 		this.apiLevel = apiLevel;
 		this.typeStringTable = new StringTable();
 		
-		Loc loc = Loc.ZERO;
-		this.object = new ClassDeclaration(loc, Id.Object);
-		this.typeinfo = new ClassDeclaration(loc, Id.TypeInfo);
-		this.typeinfoclass = new ClassDeclaration(loc, Id.TypeInfo_Class);
-		this.typeinfointerface = new ClassDeclaration(loc, Id.TypeInfo_Interface);
-		this.typeinfostruct = new ClassDeclaration(loc, Id.TypeInfo_Struct);
-		this.typeinfotypedef = new ClassDeclaration(loc, Id.TypeInfo_Typedef);
-		this.typeinfopointer = new ClassDeclaration(loc, Id.TypeInfo_Pointer);
-		this.typeinfoarray = new ClassDeclaration(loc, Id.TypeInfo_Array);
-		this.typeinfostaticarray = new ClassDeclaration(loc, Id.TypeInfo_StaticArray);
-		this.typeinfoassociativearray = new ClassDeclaration(loc, Id.TypeInfo_AssociativeArray);
-		this.typeinfoenum = new ClassDeclaration(loc, Id.TypeInfo_Enum);
-		this.typeinfofunction = new ClassDeclaration(loc, Id.TypeInfo_Function);
-		this.typeinfodelegate = new ClassDeclaration(loc, Id.TypeInfo_Delegate);
-		this.typeinfotypelist = new ClassDeclaration(loc, Id.TypeInfo_Tuple);
+		StandardLibraryHelper slh = StandardLibraryHelper.getInstance(apiLevel);
+		this.object = slh.Object;
+		this.classinfo = slh.ClassInfo;
+		this.typeinfo = slh.TypeInfo;
+		this.typeinfoclass = slh.TypeInfo_Class;
+		this.typeinfointerface = slh.TypeInfo_Interface;
+		this.typeinfostruct = slh.TypeInfo_Struct;
+		this.typeinfotypedef = slh.TypeInfo_Typedef;
+		this.typeinfopointer = slh.TypeInfo_Pointer;
+		this.typeinfoarray = slh.TypeInfo_Array;
+		this.typeinfostaticarray = slh.TypeInfo_StaticArray;
+		this.typeinfoassociativearray = slh.TypeInfo_AssociativeArray;
+		this.typeinfoenum = slh.TypeInfo_Enum;
+		this.typeinfofunction = slh.TypeInfo_Function;
+		this.typeinfodelegate = slh.TypeInfo_Delegate;
+		this.typeinfotypelist = slh.TypeInfo_Tuple;
 	}
 	
 	public void acceptProblem(IProblem problem) {

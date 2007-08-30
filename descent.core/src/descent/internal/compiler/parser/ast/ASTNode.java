@@ -123,6 +123,7 @@ public abstract class ASTNode
 		try {
 			appendDebugString(buffer);
 		} catch (RuntimeException e) {
+			e.printStackTrace();
 			// since debugger sometimes call toString methods, problems can easily happen when
 			// toString is called on an instance that is being initialized
 			buffer.setLength(p);

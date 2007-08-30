@@ -1,8 +1,13 @@
 package descent.internal.compiler.parser;
 
 import static descent.internal.compiler.parser.PROT.PROTnone;
-import static descent.internal.compiler.parser.TY.*;
-import static descent.internal.compiler.parser.STC.*;
+import static descent.internal.compiler.parser.STC.STCabstract;
+import static descent.internal.compiler.parser.STC.STCauto;
+import static descent.internal.compiler.parser.STC.STCdeprecated;
+import static descent.internal.compiler.parser.STC.STCfinal;
+import static descent.internal.compiler.parser.STC.STCscope;
+import static descent.internal.compiler.parser.STC.STCstatic;
+import static descent.internal.compiler.parser.TY.Tclass;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -480,14 +485,15 @@ public class ClassDeclaration extends AggregateDeclaration {
 			bt = tbase.semantic(loc, sc, context).toBasetype(context);
 			b = new BaseClass(bt, PROT.PROTpublic);
 			baseclasses.add(0, b);
-			/*
-			 * TODO semantic Assert.isTrue(b.type.ty == TY.Tclass); tc =
-			 * (TypeClass) (b.type); baseClass = tc.sym;
-			 * Assert.isTrue(baseClass.isInterfaceDeclaration() == null); b.base =
-			 * baseClass;
-			 */
-			// TODO semantic remove the following line
-			baseClass = new ClassDeclaration(loc, new IdentifierExp(loc, Id.Object), null);
+			if (b.type.ty != Tclass) {
+				throw new IllegalStateException("assert(b.type.ty == Tclass);");
+			}
+			tc = (TypeClass) (b.type);
+			baseClass = tc.sym;
+			if (baseClass.isInterfaceDeclaration() != null) {
+				throw new IllegalStateException("assert(!baseClass->isInterfaceDeclaration());");
+			}
+			b.base = baseClass;
 		}
 
 		interfaces = new ArrayList<BaseClass>(baseclasses.size());

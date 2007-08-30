@@ -64,8 +64,29 @@ public class Module extends Package {
 		 * (ident != Id::object) { Import *im = new Import(0, NULL, Id::object,
 		 * NULL, 0); members->shift(im); }
 		 */
-
+		
 		symtab = new DsymbolTable();
+		
+		// TODO This is the current replacement of Add import of "object" if this module isn't "object"
+		if (ident == null || ident.ident != Id.object) {
+			symtab.insert(context.object);
+			symtab.insert(context.classinfo);
+			symtab.insert(context.typeinfo);
+			symtab.insert(context.typeinfoclass);
+			symtab.insert(context.typeinfointerface);
+			symtab.insert(context.typeinfostruct);
+			symtab.insert(context.typeinfotypedef);
+			symtab.insert(context.typeinfopointer);
+			symtab.insert(context.typeinfoarray);
+			symtab.insert(context.typeinfostaticarray);
+			symtab.insert(context.typeinfoassociativearray);
+			symtab.insert(context.typeinfoenum);
+			symtab.insert(context.typeinfofunction);
+			symtab.insert(context.typeinfodelegate);
+			symtab.insert(context.typeinfotypelist);
+		}
+
+		
 		if (members != null) {
 
 			// Add all symbols into module's symbol table
