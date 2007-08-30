@@ -604,30 +604,22 @@ public abstract class Type extends ASTDmdNode {
 
 	    if (CharOperation.equals(ident, Id.__sizeof))
 	    {
-	    	/* TODO semantic
 	    	e = new IntegerExp(loc, size(loc), Type.tsize_t);
-	    	*/
 	    }
 	    else if (CharOperation.equals(ident, Id.size))
 	    {
-	    	/* TODO semantic
-	    	error(loc, ".size property should be replaced with .sizeof");
+	    	error(".size property should be replaced with .sizeof");
 	    	e = new IntegerExp(loc, size(loc), Type.tsize_t);
-	    	*/
 	    }
 	    else if (CharOperation.equals(ident, Id.alignof))
 	    {
-	    	/* TODO semantic
 	    	e = new IntegerExp(loc, alignsize(), Type.tsize_t);
-	    	*/
 	    }
 	    else if (CharOperation.equals(ident, Id.typeinfo))
 	    {
-	    	/* TODO semantic
-			if (!global.params.useDeprecated)
-			    error(loc, ".typeinfo deprecated, use typeid(type)");
-			e = getTypeInfo(NULL);
-			*/
+			if (!context.global.params.useDeprecated)
+			    error(".typeinfo deprecated, use typeid(type)");
+			e = getTypeInfo(null);
 	    }
 	    else if (CharOperation.equals(ident, Id.init))
 	    {
@@ -642,18 +634,15 @@ public abstract class Type extends ASTDmdNode {
 	    }
 	    else if (CharOperation.equals(ident, Id.stringof))
 	    {	
-	    	/* TODO semantic
-	    	char *s = toChars();
-			e = new StringExp(loc, s, strlen(s), 'c');
-			Scope sc;
-			e = e.semantic(&sc);
-			*/
+	    	char[] s = toChars().toCharArray();
+			e = new StringExp(loc, s, 'c');
+			Scope sc = new Scope();
+			e = e.semantic(sc, context);
 	    }
 	    else
 	    {
-	    	/* TODO semantic
-			error(loc, "no property '%s' for type '%s'", ident.toChars(), toChars());
-			*/
+			error("no property '%s' for type '%s'", 
+					new String(ident), toChars());
 			e = new IntegerExp(loc, Id.ONE, 1, Type.tint32);
 	    }
 		return e;
@@ -743,18 +732,16 @@ public abstract class Type extends ASTDmdNode {
 	}
 
 	public int size(Loc loc) {
-		// TODO semantic
-		return 0;
+		error("no size for type %s", toChars());
+	    return 1;
 	}
 	
 	public int size() {
-		// TODO semantic
 		return size(null);
 	}
 
 	public int alignsize() {
-		// TODO semantic
-		return 0;
+		return size(null);
 	}
 
 	public int memalign(int salign) {
@@ -893,7 +880,6 @@ public abstract class Type extends ASTDmdNode {
 	}
 
 	public boolean hasPointers(SemanticContext context) {
-		// TODO semantic
 		return false;
 	}
 
