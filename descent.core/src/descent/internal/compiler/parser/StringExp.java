@@ -16,6 +16,8 @@ import descent.internal.compiler.parser.ast.IASTVisitor;
 
 public class StringExp extends Expression {
 
+	// TODO the string here is the full source, it must
+	// only be what's enclosed in quotes
 	public char[] string;
 	public char postfix;
 	public char sz; // 1: char, 2: wchar, 4: dchar
@@ -27,6 +29,9 @@ public class StringExp extends Expression {
 		this.sz = 1;
 		this.committed = false;
 		this.postfix = 0;
+		if (string != null) {
+			this.len = string.length - 2;
+		}
 	}
 
 	public StringExp(Loc loc, char[] string, char postfix) {
@@ -35,6 +40,9 @@ public class StringExp extends Expression {
 		this.sz = 1;
 		this.committed = false;
 		this.postfix = postfix;
+		if (string != null) {
+			this.len = string.length - 2;
+		}
 	}
 
 	public void accept0(IASTVisitor visitor) {
@@ -42,7 +50,6 @@ public class StringExp extends Expression {
 		visitor.endVisit(this);
 	}
 
-	
 	@Override
 	public Expression castTo(Scope sc, Type t, SemanticContext context) {
 		// TODO semantic
@@ -72,7 +79,67 @@ public class StringExp extends Expression {
 
 	@Override
 	public Expression semantic(Scope sc, SemanticContext context) {
-		return super.semantic(sc, context);
+		if (type == null) {
+			OutBuffer buffer = new OutBuffer();
+			int newlen = 0;
+			String p;
+			int[] u = { 0 };
+			int[] c = { 0 };
+
+			switch (postfix) {
+			case 'd':
+				for (u[0] = 0; u[0] < len;) {
+					p = Utf.decodeChar(string, 0, len, u, c);
+					// utf_decodeChar((unsigned char )string, len, &u, &c);
+					if (p != null) {
+						error("%s", p);
+						break;
+					} else {
+						buffer.write4(c[0]);
+						newlen++;
+					}
+				}
+				buffer.write4(0);
+				string = buffer.extractData().toCharArray();
+				len = newlen;
+				sz = 4;
+				type = new TypeSArray(Type.tdchar, new IntegerExp(loc, len,
+						Type.tindex));
+				committed = true;
+				break;
+
+			case 'w':
+				for (u[0] = 0; u[0] < len;) {
+					p = Utf.decodeChar(string, 0, len, u, c);
+					if (p != null) {
+						error("%s", p);
+						break;
+					} else {
+						buffer.writeUTF16(c[0]);
+						newlen++;
+						if (c[0] >= 0x10000)
+							newlen++;
+					}
+				}
+				buffer.writeUTF16(0);
+				string = buffer.extractData().toCharArray();
+				len = newlen;
+				sz = 2;
+				type = new TypeSArray(Type.twchar, new IntegerExp(loc, len,
+						Type.tindex));
+				committed = true;
+				break;
+
+			case 'c':
+				committed = true;
+			default:
+				type = new TypeSArray(Type.tchar, new IntegerExp(loc, len,
+						Type.tindex));
+				break;
+			}
+			type = type.semantic(loc, sc, context);
+		}
+		return this;
 	}
 
 	@Override

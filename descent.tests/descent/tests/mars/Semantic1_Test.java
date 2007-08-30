@@ -593,16 +593,61 @@ public class Semantic1_Test extends Parser_Test {
 		assertNoSemanticErrors(" long bla() { return 0; }");
 	}
 	
-	public void testCanImplicitlyConvertFromCharToInt() {
+	public void testFunctionMustReturnInt_Not() {
+		assertNoSemanticErrors(" int bla() { return 0; }");
+	}
+	
+	public void testCanImplicitlyConvertFromCharToIntInReturn() {
 		assertNoSemanticErrors(" int bla() { return 'a'; }");
 	}
 	
-	public void testCannotImplicitlyConvertFromLongToInt() {
+	public void testCannotImplicitlyConvertFromLongToIntInReturn() {
 		String s = " int x() { return 234873294873294; }";
 		IProblem[] p = getModuleProblems(s);
 		assertEquals(1, p.length);
 
 		assertError(p[0], IProblem.CannotImplicitlyConvert, 18, 15);
+	}
+	
+	public void testCannotImplicitlyConvertFromIntToBoolInVarInitializer() {
+		String s = " void x() { bool y = 2; }";
+		IProblem[] p = getModuleProblems(s);
+		assertEquals(1, p.length);
+
+		assertError(p[0], IProblem.CannotImplicitlyConvert, 21, 1);
+	}
+	
+	public void testCanImplicitlyConvertFromIntToBoolInVarInitializer() {
+		assertNoSemanticErrors(" void x() { bool y = 1; }");
+	}
+	
+	public void testCanImplicitlyConvertFromIntToBoolInVarInitializerWithCast() {
+		assertNoSemanticErrors(" void x() { bool y = cast(bool) 2; }");
+	}
+	
+	public void testCannotImplicitlyConvertFromIntToBoolInAssignment() {
+		String s = " void x() { bool y; y = 2; }";
+		IProblem[] p = getModuleProblems(s);
+		assertEquals(1, p.length);
+
+		assertError(p[0], IProblem.CannotImplicitlyConvert, 24, 1);
+	}
+	
+	public void testCanImplicitlyConvertFromIntToBoolInAssignment() {
+		assertNoSemanticErrors(" void x() { bool y; y = 1; }");
+	}
+	
+	public void testCanImplicitlyConvertFromIntToBoolInAssignmentWithCast() {
+		assertNoSemanticErrors(" void x() { bool y; y = cast(bool) 2; }");
+	}
+	
+	public void testCannotImplicitlyConvertFromStringToBoolInVarInitializer() {
+		String s = " void x() { bool y = \"hey\"; }";
+		IProblem[] p = getModuleProblems(s);
+		assertEquals(1, p.length);
+
+		assertError(p[0], IProblem.CannotImplicitlyConvert, 21, 5);
+		assertEquals("Type mismatch: cannot implicitly convert from char[3] to bool", p[0].getMessage());
 	}
 	
 	public void testVoidFunctionsHaveNoResult() {

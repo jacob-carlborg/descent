@@ -95,4 +95,12 @@ public class OutBuffer {
 		return data.toString();
 	}
 
+	public void write4(int c) {
+		// TODO semantic
+	}
+
+	public void writeUTF16(int i) {
+		// TODO semantic
+	}
+
 }
