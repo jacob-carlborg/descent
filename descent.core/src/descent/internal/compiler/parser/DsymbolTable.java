@@ -19,5 +19,10 @@ public class DsymbolTable {
 	public Dsymbol lookup(char[] ident) {
 		return (Dsymbol) map.get(ident);
 	}
+	
+	@Override
+	public String toString() {
+		return map.toString();
+	}
 
 }

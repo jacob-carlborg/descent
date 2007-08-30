@@ -49,7 +49,7 @@ public final class HashtableOfCharArrayAndObject implements Cloneable {
 	}
 
 	public boolean containsKey(char[] key) {
-		int index = (key.hashCode() & 0x7FFFFFFF) % valueTable.length;
+		int index = (Arrays.hashCode(key) & 0x7FFFFFFF) % valueTable.length;
 		int keyLength = key.length;
 		char[] currentKey;
 		while ((currentKey = keyTable[index]) != null) {
@@ -61,7 +61,7 @@ public final class HashtableOfCharArrayAndObject implements Cloneable {
 	}
 
 	public Object get(char[] key) {
-		int index = (key.hashCode() & 0x7FFFFFFF) % valueTable.length;
+		int index = (Arrays.hashCode(key) & 0x7FFFFFFF) % valueTable.length;
 		int keyLength = key.length;
 		char[] currentKey;
 		while ((currentKey = keyTable[index]) != null) {
@@ -73,7 +73,7 @@ public final class HashtableOfCharArrayAndObject implements Cloneable {
 	}
 
 	public Object put(char[] key, Object value) {
-		int index = (key.hashCode() & 0x7FFFFFFF) % valueTable.length;
+		int index = (Arrays.hashCode(key) & 0x7FFFFFFF) % valueTable.length;
 		int keyLength = key.length;
 		char[] currentKey;
 		while ((currentKey = keyTable[index]) != null) {
