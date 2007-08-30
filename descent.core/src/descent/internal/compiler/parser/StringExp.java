@@ -61,7 +61,7 @@ public class StringExp extends Expression {
 		if (sz != 1) { // Convert to UTF-8 string
 			committed = false;
 			Expression e = castTo(sc, Type.tchar.arrayOf(context), context);
-			e = e.optimize(WANTvalue);
+			e = e.optimize(WANTvalue, context);
 			Assert.isTrue(e.op == TOK.TOKstring);
 			StringExp se = (StringExp) e;
 			Assert.isTrue(se.sz == 1);

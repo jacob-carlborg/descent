@@ -58,7 +58,7 @@ public class ExpInitializer extends Initializer {
 				exp = se.castTo(sc, t, context);
 				// goto L1;
 				exp = exp.optimize(Expression.WANTvalue
-						| Expression.WANTinterpret);
+						| Expression.WANTinterpret, context);
 				return this;
 			}
 		}
@@ -73,7 +73,7 @@ public class ExpInitializer extends Initializer {
 
 		exp = exp.implicitCastTo(sc, t, context);
 		// L1:
-		exp = exp.optimize(Expression.WANTvalue | Expression.WANTinterpret);
+		exp = exp.optimize(Expression.WANTvalue | Expression.WANTinterpret, context);
 		return this;
 	}
 	

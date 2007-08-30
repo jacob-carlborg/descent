@@ -7,14 +7,14 @@ import static descent.internal.compiler.parser.PROT.PROTprotected;
 import static descent.internal.compiler.parser.STC.STClazy;
 import static descent.internal.compiler.parser.STC.STCout;
 import static descent.internal.compiler.parser.STC.STCref;
-import static descent.internal.compiler.parser.TOK.TOKarray;
+import static descent.internal.compiler.parser.TOK.*;
 import static descent.internal.compiler.parser.TOK.TOKdelegate;
 import static descent.internal.compiler.parser.TOK.TOKdotexp;
 import static descent.internal.compiler.parser.TOK.TOKforeach_reverse;
 import static descent.internal.compiler.parser.TOK.TOKsuper;
 import static descent.internal.compiler.parser.TOK.TOKtuple;
 import static descent.internal.compiler.parser.TOK.TOKvar;
-import static descent.internal.compiler.parser.TY.Tbit;
+import static descent.internal.compiler.parser.TY.*;
 import static descent.internal.compiler.parser.TY.Tclass;
 import static descent.internal.compiler.parser.TY.Tdelegate;
 import static descent.internal.compiler.parser.TY.Tfunction;
@@ -29,10 +29,11 @@ import java.util.List;
 import org.eclipse.core.runtime.Assert;
 
 import descent.internal.compiler.parser.ast.ASTNode;
+import descent.internal.compiler.parser.ast.IASTVisitor;
 
 // class Object in DMD compiler
 public abstract class ASTDmdNode extends ASTNode {
-	
+
 	private final static boolean ILLEGAL_STATE_EXCEPTION_ON_UNIMPLEMENTED_SEMANTIC = false;
 
 	public final static int WANTflags = 1;
@@ -231,6 +232,62 @@ public abstract class ASTDmdNode extends ASTNode {
 	public final static int TRAITS_EXP = 191;
 	public final static int COMMENT = 192;
 	public final static int PRAGMA = 193;
+
+	public final static Expression EXP_CANT_INTERPRET = new Expression(null,
+			null) {
+		@Override
+		public int getNodeType() {
+			return 0;
+		}
+
+		@Override
+		protected void accept0(IASTVisitor visitor) {
+		}
+	};
+	public final static Expression EXP_CONTINUE_INTERPRET = new Expression(
+			null, null) {
+		@Override
+		public int getNodeType() {
+			return 0;
+		}
+
+		@Override
+		protected void accept0(IASTVisitor visitor) {
+		}
+	};
+	public final static Expression EXP_BREAK_INTERPRET = new Expression(null,
+			null) {
+		@Override
+		public int getNodeType() {
+			return 0;
+		}
+
+		@Override
+		protected void accept0(IASTVisitor visitor) {
+		}
+	};
+	public final static Expression EXP_GOTO_INTERPRET = new Expression(null,
+			null) {
+		@Override
+		public int getNodeType() {
+			return 0;
+		}
+
+		@Override
+		protected void accept0(IASTVisitor visitor) {
+		}
+	};
+	public final static Expression EXP_VOID_INTERPRET = new Expression(null,
+			null) {
+		@Override
+		public int getNodeType() {
+			return 0;
+		}
+
+		@Override
+		protected void accept0(IASTVisitor visitor) {
+		}
+	};
 
 	private static int idn;
 
@@ -549,7 +606,8 @@ public abstract class ASTDmdNode extends ASTNode {
 	 */
 	public boolean discarded;
 
-	public void accessCheck(Scope sc, Expression e, Declaration d, SemanticContext context) {
+	public void accessCheck(Scope sc, Expression e, Declaration d,
+			SemanticContext context) {
 		if (e == null) {
 			if (d.prot() == PROTprivate && d.getModule() != sc.module
 					|| d.prot() == PROTpackage && !hasPackageAccess(sc, d)) {
@@ -663,7 +721,7 @@ public abstract class ASTDmdNode extends ASTNode {
 			throw new IllegalStateException("Problem reporting not implemented");
 		}
 	}
-	
+
 	protected void error(String s, char[]... s2) {
 		if (ILLEGAL_STATE_EXCEPTION_ON_UNIMPLEMENTED_SEMANTIC) {
 			throw new IllegalStateException("Problem reporting not implemented");
@@ -775,9 +833,10 @@ public abstract class ASTDmdNode extends ASTNode {
 					case Tarray: { // Create a static array variable v of type
 						// arg.type
 
-						Identifier id = new Identifier(("_arrayArg" + (++idn)).toCharArray());
-						Type t = new TypeSArray(tb2.next, new IntegerExp(loc, nargs
-								- i));
+						Identifier id = new Identifier(("_arrayArg" + (++idn))
+								.toCharArray());
+						Type t = new TypeSArray(tb2.next, new IntegerExp(loc,
+								nargs - i));
 						t = t.semantic(loc, sc, context);
 						VarDeclaration v = new VarDeclaration(loc, t, id,
 								new VoidInitializer(loc));
@@ -794,7 +853,8 @@ public abstract class ASTDmdNode extends ASTNode {
 							}
 
 							Expression e = new VarExp(loc, v);
-							e = new IndexExp(loc, e, new IntegerExp(loc, u + 1 - nparams));
+							e = new IndexExp(loc, e, new IntegerExp(loc, u + 1
+									- nparams));
 							e = new AssignExp(loc, e, a);
 							if (c != null) {
 								c = new CommaExp(loc, c, e);
@@ -809,9 +869,9 @@ public abstract class ASTDmdNode extends ASTNode {
 						break;
 					}
 					case Tclass: { /*
-									 * Set arg to be: new Tclass(arg0, arg1,
-									 * ..., argn)
-									 */
+					 * Set arg to be: new Tclass(arg0, arg1,
+					 * ..., argn)
+					 */
 						List<Expression> args = new ArrayList<Expression>(
 								nargs - 1);
 						for (int u = i; u < nargs; u++) {
@@ -895,7 +955,7 @@ public abstract class ASTDmdNode extends ASTNode {
 
 				arg.rvalue(context);
 			}
-			arg = arg.optimize(WANTvalue);
+			arg = arg.optimize(WANTvalue, context);
 			arguments.set(i, arg);
 			if (done != 0) {
 				break;
@@ -993,11 +1053,10 @@ public abstract class ASTDmdNode extends ASTNode {
 			}
 		}
 	}
-	
+
 	public boolean RealEquals(Real r1, Real r2) {
 		return r1.equals(r2);
 	}
-
 
 	public String toChars() {
 		return toString();
@@ -1006,16 +1065,141 @@ public abstract class ASTDmdNode extends ASTNode {
 	protected String toPrettyChars() {
 		throw new IllegalStateException("Problem reporting not implemented");
 	}
-	
+
 	public Expression op_overload(Scope sc) {
 		// TODO semantic
 		return null;
 	}
-	
-	
+
 	public final int getElementType() {
 		return getNodeType();
 	}
 
-}
+	/* Also returns EXP_CANT_INTERPRET if cannot be computed.
+	 *  to:	type to cast to
+	 *  type: type to paint the result
+	 */
 
+	Expression Cast(Type type, Type to, Expression e1, SemanticContext context) {
+		Expression e = EXP_CANT_INTERPRET;
+		Loc loc = e1.loc;
+
+		//printf("Cast(type = %s, to = %s, e1 = %s)\n", type.toChars(), to.toChars(), e1.toChars());
+		//printf("e1.type = %s\n", e1.type.toChars());
+		if (type.equals(e1.type) && to.equals(type))
+			return e1;
+
+		if (!e1.isConst())
+			return EXP_CANT_INTERPRET;
+
+		Type tb = to.toBasetype(context);
+		if (tb.ty == Tbool)
+			e = new IntegerExp(loc, e1.toInteger(context).equals(0) ? 0 : 1,
+					type);
+		else if (type.isintegral()) {
+			if (e1.type.isfloating()) {
+				IntegerWrapper result;
+				Real r = e1.toReal(context);
+
+				switch (type.toBasetype(context).ty) {
+				case Tint8:
+					result = NumberUtils.castToInt8(r);
+					break;
+				case Tchar:
+				case Tuns8:
+					result = NumberUtils.castToUns8(r);
+					break;
+				case Tint16:
+					result = NumberUtils.castToInt16(r);
+					break;
+				case Twchar:
+				case Tuns16:
+					result = NumberUtils.castToUns16(r);
+					break;
+				case Tint32:
+					result = NumberUtils.castToInt32(r);
+					break;
+				case Tdchar:
+				case Tuns32:
+					result = NumberUtils.castToUns32(r);
+					break;
+				case Tint64:
+					result = NumberUtils.castToInt64(r);
+					break;
+				case Tuns64:
+					result = NumberUtils.castToUns64(r);
+					break;
+				default:
+					throw new IllegalStateException("assert(0);");
+				}
+
+				e = new IntegerExp(loc, result, type);
+			} else if (type.isunsigned())
+				e = new IntegerExp(loc, e1.toUInteger(context), type);
+			else
+				e = new IntegerExp(loc, e1.toInteger(context), type);
+		} else if (tb.isreal()) {
+			Real value = e1.toReal(context);
+
+			e = new RealExp(loc, value, type);
+		} else if (tb.isimaginary()) {
+			Real value = e1.toImaginary(context);
+
+			e = new RealExp(loc, value, type);
+		} else if (tb.iscomplex()) {
+			Complex value = e1.toComplex(context);
+
+			e = new ComplexExp(loc, value, type);
+		} else if (tb.isscalar())
+			e = new IntegerExp(loc, e1.toInteger(context), type);
+		else if (tb.ty == Tvoid)
+			e = EXP_CANT_INTERPRET;
+		else if (tb.ty == Tstruct && e1.op == TOKint64) { // Struct = 0;
+			StructDeclaration sd = tb.toDsymbol(null, context)
+					.isStructDeclaration();
+			if (sd == null) {
+				throw new IllegalStateException("assert(sd);");
+			}
+			List<Expression> elements = new ArrayList<Expression>();
+			for (int i = 0; i < sd.fields.size(); i++) {
+				Dsymbol s = (Dsymbol) sd.fields.get(i);
+				VarDeclaration v = s.isVarDeclaration();
+				if (v == null) {
+					throw new IllegalStateException("assert(v);");
+				}
+
+				Expression exp = new IntegerExp(0);
+				exp = Cast(v.type, v.type, exp, context);
+				if (exp == EXP_CANT_INTERPRET)
+					return exp;
+				elements.add(exp);
+			}
+			e = new StructLiteralExp(loc, sd, elements);
+			e.type = type;
+		} else {
+			error("cannot cast %s to %s", e1.type.toChars(), type.toChars());
+			e = new IntegerExp(loc, 0, type);
+		}
+		return e;
+	}
+
+	/*************************************
+	 * If expression is a variable with a const initializer,
+	 * return that initializer.
+	 */
+
+	public Expression fromConstInitializer(Expression e1,
+			SemanticContext context) {
+		if (e1.op == TOKvar) {
+			VarExp ve = (VarExp) e1;
+			VarDeclaration v = ve.var.isVarDeclaration();
+			if (v != null && v.isConst() && v.init != null) {
+				Expression ei = v.init.toExpression(context);
+				if (ei != null && ei.type != null)
+					e1 = ei;
+			}
+		}
+		return e1;
+	}
+
+}

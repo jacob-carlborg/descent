@@ -35,7 +35,7 @@ public class OrOrExp extends BinExp {
 		if((sc.flags & Scope.SCOPEstaticif) > 0)
 		{
 			//If in static if, don't evaluate e2 if we don't have to.
-			e1 = e1.optimize(WANTflags);
+			e1 = e1.optimize(WANTflags, context);
 			if(e1.isBool(true))
 				return new IntegerExp(loc, 1, Type.tboolean);
 		}

@@ -6,11 +6,13 @@ import descent.internal.compiler.parser.ast.IASTVisitor;
 
 public class ComplexExp extends Expression {
 
-	private Complex value;
+	public Complex value;
+	public Type type;
 
-	public ComplexExp(Loc loc, Complex value) {
+	public ComplexExp(Loc loc, Complex value, Type type) {
 		super(loc, TOK.TOKcomplex80);
 		this.value = value;
+		this.type = type;
 	}
 	
 	public void accept0(IASTVisitor visitor) {
@@ -88,6 +90,11 @@ public class ComplexExp extends Expression {
 	@Override
 	public int getNodeType() {
 		return COMPLEX_EXP;
+	}
+	
+	@Override
+	public boolean isConst() {
+		return true;
 	}
 
 }

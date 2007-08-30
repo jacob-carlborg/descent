@@ -41,12 +41,19 @@ public class IntegerWrapper extends Number {
 		}
 	}
 	
-	public boolean equals(BigInteger other) {
-		if (bigIntegerValue != null) {
-			return bigIntegerValue.equals(other);
+	public boolean equals(int other) {
+		if (bigIntegerValue == null) {
+			return intValue == other;
 		} else {
-			return intValue == other.longValue();
+			return bigIntegerValue.equals(new BigInteger(String.valueOf(other)));
 		}
+	}
+	
+	public boolean equals(BigInteger other) {
+		if (bigIntegerValue == null) {
+			bigIntegerValue = new BigInteger(String.valueOf(intValue));
+		}
+		return bigIntegerValue.equals(other);
 	}
 	
 	public boolean equals(IntegerWrapper other) {

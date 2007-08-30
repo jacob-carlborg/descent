@@ -1,8 +1,8 @@
 package descent.internal.compiler.parser;
 
-import static descent.internal.compiler.parser.TOK.TOKcall;
+import static descent.internal.compiler.parser.TOK.*;
 import static descent.internal.compiler.parser.TOK.TOKvar;
-import static descent.internal.compiler.parser.TY.Tarray;
+import static descent.internal.compiler.parser.TY.*;
 import static descent.internal.compiler.parser.TY.Tclass;
 import static descent.internal.compiler.parser.TY.Tsarray;
 import static descent.internal.compiler.parser.TY.Tstruct;
@@ -20,19 +20,19 @@ public class CastExp extends UnaExp {
 		this.to = t;
 		this.tok = null;
 	}
-	
+
 	public CastExp(Loc loc, Expression e1, TOK tok, int modifierStart) {
 		super(loc, TOK.TOKcast, e1);
 		this.modifierStart = modifierStart;
 		this.to = null;
 		this.tok = tok;
 	}
-	
+
 	@Override
 	public int getNodeType() {
 		return CAST_EXP;
 	}
-	
+
 	public void accept0(IASTVisitor visitor) {
 		boolean children = visitor.visit(this);
 		if (children) {
@@ -112,13 +112,75 @@ public class CastExp extends UnaExp {
 	public Expression syntaxCopy() {
 		return new CastExp(loc, e1.syntaxCopy(), to.syntaxCopy());
 	}
-	
+
 	@Override
-	public void toCBuffer(OutBuffer buf, HdrGenState hgs, SemanticContext context) {
+	public void toCBuffer(OutBuffer buf, HdrGenState hgs,
+			SemanticContext context) {
 		buf.writestring("cast(");
-	    to.toCBuffer(buf, null, hgs);
-	    buf.writeByte(')');
-	    expToCBuffer(buf, hgs, e1, op.precedence, context);
+		to.toCBuffer(buf, null, hgs);
+		buf.writeByte(')');
+		expToCBuffer(buf, hgs, e1, op.precedence, context);
+	}
+
+	@Override
+	public Expression optimize(int result, SemanticContext context) {
+		if (type == null) {
+			throw new IllegalStateException("assert(type);");
+		}
+		TOK op1 = e1.op;
+
+		e1 = e1.optimize(result, context);
+		if ((result & WANTinterpret) != 0)
+			e1 = fromConstInitializer(e1, context);
+
+		if ((e1.op == TOKstring || e1.op == TOKarrayliteral)
+				&& (type.ty == Tpointer || type.ty == Tarray)
+				&& type.next.equals(e1.type.next)) {
+			e1.type = type;
+			return e1;
+		}
+		/* The first test here is to prevent infinite loops
+		 */
+		if (op1 != TOKarrayliteral && e1.op == TOKarrayliteral)
+			return e1.castTo(null, to, context);
+		if (e1.op == TOKnull && (type.ty == Tpointer || type.ty == Tclass)) {
+			e1.type = type;
+			return e1;
+		}
+
+		if ((result & WANTflags) != 0 && type.ty == Tclass
+				&& e1.type.ty == Tclass) {
+			// See if we can remove an unnecessary cast
+			ClassDeclaration cdfrom;
+			ClassDeclaration cdto;
+			int[] offset = { 0 };
+
+			cdfrom = e1.type.isClassHandle();
+			cdto = type.isClassHandle();
+			if (cdto.isBaseOf(cdfrom, offset, context) && offset[0] == 0) {
+				e1.type = type;
+				return e1;
+			}
+		}
+
+		Expression e;
+
+		if (e1.isConst()) {
+			if (e1.op == TOKsymoff) {
+				if (type.size() == e1.type.size()
+						&& type.toBasetype(context).ty != Tsarray) {
+					e1.type = type;
+					return e1;
+				}
+				return this;
+			}
+			if (to.toBasetype(context).ty == Tvoid)
+				e = this;
+			else
+				e = Cast(type, to, e1, context);
+		} else
+			e = this;
+		return e;
 	}
 
 }

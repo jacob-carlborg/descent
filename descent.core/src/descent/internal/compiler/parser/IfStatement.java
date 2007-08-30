@@ -46,7 +46,7 @@ public class IfStatement extends Statement {
 		// If we can short-circuit evaluate the if statement, don't do the
 		// semantic analysis of the skipped code.
 		// This feature allows a limited form of conditional compilation.
-		condition = condition.optimize(WANTflags);
+		condition = condition.optimize(WANTflags, context);
 
 		// Evaluate at runtime
 		int cs0 = sc.callSuper;

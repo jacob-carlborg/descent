@@ -755,6 +755,11 @@ public abstract class Type extends ASTDmdNode {
 		// TODO semantic
 		return 0;
 	}
+	
+	public int size() {
+		// TODO semantic
+		return size(null);
+	}
 
 	public int alignsize() {
 		// TODO semantic

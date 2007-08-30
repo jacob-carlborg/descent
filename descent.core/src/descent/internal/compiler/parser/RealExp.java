@@ -14,6 +14,10 @@ public class RealExp extends Expression {
 		this.type = type;
 	}
 	
+	public RealExp(Loc loc, Real value, Type type) {
+		this(loc, null, value, type);
+	}
+	
 	public void accept0(IASTVisitor visitor) {
 		visitor.visit(this);
 		visitor.endVisit(this);
@@ -95,12 +99,17 @@ public class RealExp extends Expression {
 
 	@Override
 	public IntegerWrapper toUInteger(SemanticContext context) {
-		return BigIntegerUtils.castToUns64(value.toIntegerWrapper());
+		return NumberUtils.castToUns64(value.toIntegerWrapper());
 	}
 	
 	@Override
 	public char[] toCharArray() {
 		return str;
+	}
+	
+	@Override
+	public boolean isConst() {
+		return true;
 	}
 
 }

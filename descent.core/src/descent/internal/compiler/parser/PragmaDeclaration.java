@@ -62,7 +62,7 @@ public class PragmaDeclaration extends AttribDeclaration {
 					Expression e = args.get(i);
 
 					e = e.semantic(sc, context);
-					e = e.optimize(WANTvalue | WANTinterpret);
+					e = e.optimize(WANTvalue | WANTinterpret, context);
 					if (e.op == TOKstring) {
 						/*
 						 * TODO semantic StringExp se = (StringExp )e;
@@ -94,7 +94,7 @@ public class PragmaDeclaration extends AttribDeclaration {
 				Expression e = args.get(0);
 
 				e = e.semantic(sc, context);
-				e = e.optimize(WANTvalue | WANTinterpret);
+				e = e.optimize(WANTvalue | WANTinterpret, context);
 				args.set(0, e);
 				if (e.op != TOKstring)
 					context.acceptProblem(Problem.newSemanticTypeError(

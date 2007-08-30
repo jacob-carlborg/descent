@@ -40,7 +40,7 @@ public class CompileDeclaration extends AttribDeclaration {
 	public void semantic(Scope sc, SemanticContext context) {
 		exp = exp.semantic(sc, context);
 		exp = resolveProperties(sc, exp, context);
-		exp = exp.optimize(WANTvalue | WANTinterpret);
+		exp = exp.optimize(WANTvalue | WANTinterpret, context);
 		if (exp.op != TOKstring) {
 			error("argument to mixin must be a string, not (%s)", exp.toChars());
 			return;

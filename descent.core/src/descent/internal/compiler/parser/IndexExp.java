@@ -101,7 +101,7 @@ public class IndexExp extends BinExp {
 			case Ttuple:
 			{
 		    	e2 = e2.implicitCastTo(sc, Type.tsize_t, context);
-		   		e2 = e2.optimize(WANTvalue);
+		   		e2 = e2.optimize(WANTvalue, context);
 		    	IntegerWrapper index = e2.toUInteger(context);
 		    	BigInteger length = null;
 		    	TupleExp te = null;

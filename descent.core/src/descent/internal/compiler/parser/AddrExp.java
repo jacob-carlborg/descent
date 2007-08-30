@@ -132,7 +132,7 @@ public class AddrExp extends UnaExp {
 					error("cannot take address of bit in array");
 				}
 			}
-			return optimize(WANTvalue);
+			return optimize(WANTvalue, context);
 		}
 		return this;
 	}

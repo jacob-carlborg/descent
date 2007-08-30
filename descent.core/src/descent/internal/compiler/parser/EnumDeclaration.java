@@ -155,11 +155,11 @@ public class EnumDeclaration extends ScopeDsymbol {
 			e = em.value;
 			if (e != null) {
 				e = e.semantic(sce, context);
-				e = e.optimize(ASTDmdNode.WANTvalue);
+				e = e.optimize(ASTDmdNode.WANTvalue, context);
 				// Need to copy it because we're going to change the type
 				e = e.copy();
 				e = e.implicitCastTo(sc, memtype, context);
-				e = e.optimize(ASTDmdNode.WANTvalue);
+				e = e.optimize(ASTDmdNode.WANTvalue, context);
 				number = e.toInteger(context);
 				e.type = t;
 			} else { // Default is the previous number plus 1

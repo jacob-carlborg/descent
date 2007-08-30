@@ -189,7 +189,7 @@ public abstract class Expression extends ASTDmdNode implements Cloneable {
 					&& Type.impcnvWarn[type.toBasetype(context).ty.ordinal()][t
 							.toBasetype(context).ty.ordinal()]
 					&& op != TOKint64) {
-				Expression e = optimize(WANTflags | WANTvalue);
+				Expression e = optimize(WANTflags | WANTvalue, context);
 
 				if (e.op == TOKint64) {
 					return e.implicitCastTo(sc, t, context);
@@ -205,7 +205,7 @@ public abstract class Expression extends ASTDmdNode implements Cloneable {
 			return castTo(sc, t, context);
 		}
 
-		Expression e = optimize(WANTflags | WANTvalue);
+		Expression e = optimize(WANTflags | WANTvalue, context);
 		if (e != this) {
 			return e.implicitCastTo(sc, t, context);
 		}
@@ -236,7 +236,7 @@ public abstract class Expression extends ASTDmdNode implements Cloneable {
 		if (t.ty == Tbit && isBit()) {
 			return MATCHconvert;
 		}
-		Expression e = optimize(WANTvalue | WANTflags);
+		Expression e = optimize(WANTvalue | WANTflags, context);
 		if (e != this) {
 			return e.implicitConvTo(t, context);
 		}
@@ -288,7 +288,7 @@ public abstract class Expression extends ASTDmdNode implements Cloneable {
 		return toLvalue(sc, e, context);
 	}
 
-	public Expression optimize(int result) {
+	public Expression optimize(int result, SemanticContext context) {
 		return this;
 	}
 
@@ -372,6 +372,10 @@ public abstract class Expression extends ASTDmdNode implements Cloneable {
 
 	public IntegerWrapper toUInteger(SemanticContext context) {
 		return toInteger(context);
+	}
+	
+	public boolean isConst() {
+		return false;
 	}
 
 }

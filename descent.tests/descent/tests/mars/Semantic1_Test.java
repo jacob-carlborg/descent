@@ -128,6 +128,10 @@ public class Semantic1_Test extends Parser_Test {
 
 		assertError(p[0], IProblem.EnumValueOverflow, 23, 1);
 	}
+	
+	public void testEnumOverflowWithBool_NOT() {
+		assertNoSemanticErrors("enum x : bool { a = 0, b }");
+	}
 
 	public void testAliasCannotBeConst() {
 		String s = "alias const int x;";

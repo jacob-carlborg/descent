@@ -2,7 +2,8 @@ package descent.internal.compiler.parser;
 
 import java.math.BigInteger;
 
-public class BigIntegerUtils {
+// TODO methods for Real may not work
+public class NumberUtils {
 	
 	public static IntegerWrapper castToUns64(IntegerWrapper value) {
 		// TODO semantic implement
@@ -70,8 +71,44 @@ public class BigIntegerUtils {
 		return new IntegerWrapper(value.byteValue());
 	}
 	
+//---
+	
+	public static IntegerWrapper castToUns64(Real value) {
+		return castToUns64(value.toIntegerWrapper());
+	}
+
+	public static IntegerWrapper castToInt64(Real value) {
+		return castToInt64(value.toIntegerWrapper());
+	}
+
+	public static  IntegerWrapper castToUns32(Real value) {
+		return castToUns32(value.toIntegerWrapper());
+	}
+
+	public static  IntegerWrapper castToInt32(Real value) {
+		return castToInt32(value.toIntegerWrapper());
+	}
+
+	public static  IntegerWrapper castToUns16(Real value) {
+		return castToUns16(value.toIntegerWrapper());
+	}
+
+	public static  IntegerWrapper castToInt16(Real value) {
+		return castToInt16(value.toIntegerWrapper());
+	}
+
+	public static  IntegerWrapper castToUns8(Real value) {
+		return castToUns8(value.toIntegerWrapper());
+	}
+
+	public static  IntegerWrapper castToInt8(Real value) {
+		return castToInt8(value.toIntegerWrapper());
+	}
+	
+// ---
+	
 	public static boolean isTrue(IntegerWrapper value) {
 		return value.compareTo(BigInteger.ZERO) != 0;
-	}
+	}	
 
 }

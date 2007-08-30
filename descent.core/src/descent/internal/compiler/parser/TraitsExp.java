@@ -214,7 +214,7 @@ public class TraitsExp extends Expression {
 				return new IntegerExp(loc, 0, Type.tbool);
 			}
 			
-			e = e.optimize(WANTvalue | WANTinterpret);
+			e = e.optimize(WANTvalue | WANTinterpret, context);
 			if(e.op != TOK.TOKstring)
 			{
 				error("string expected as second argument");

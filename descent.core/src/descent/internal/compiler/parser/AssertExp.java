@@ -41,13 +41,13 @@ public class AssertExp extends UnaExp {
 		super.semantic(sc, context);
 		e1 = resolveProperties(sc, e1, context);
 		// BUG: see if we can do compile time elimination of the Assert
-		e1 = e1.optimize(WANTvalue);
+		e1 = e1.optimize(WANTvalue, context);
 		e1 = e1.checkToBoolean(context);
 		if (msg != null) {
 			msg = msg.semantic(sc, context);
 			msg = resolveProperties(sc, msg, context);
 			msg = msg.implicitCastTo(sc, Type.tchar.arrayOf(context), context);
-			msg = msg.optimize(WANTvalue);
+			msg = msg.optimize(WANTvalue, context);
 		}
 		if (e1.isBool(false)) {
 			FuncDeclaration fd = sc.parent.isFuncDeclaration();

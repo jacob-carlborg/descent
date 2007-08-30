@@ -87,7 +87,7 @@ public class CatExp extends BinExp {
 		
 		if (e1.op == TOK.TOKstring && e2.op == TOK.TOKstring)
 		{
-		    e = optimize(WANTvalue);
+		    e = optimize(WANTvalue, context);
 		}
 		else if (e1.type.equals(e2.type) &&
 			(e1.type.toBasetype(context).ty == TY.Tarray ||

@@ -124,5 +124,10 @@ public class SymOffExp extends Expression {
 			buf.printf("& " + var.toChars());
 		}
 	}
+	
+	@Override
+	public boolean isConst() {
+		return true;
+	}
 
 }

@@ -141,8 +141,8 @@ public class SliceExp extends UnaExp {
 	    
 	    if (t.ty == TY.Ttuple)
 	    {
-			lwr = lwr.optimize(WANTvalue);
-			upr = upr.optimize(WANTvalue);
+			lwr = lwr.optimize(WANTvalue, context);
+			upr = upr.optimize(WANTvalue, context);
 			int i1 = (int) lwr.toUInteger(context).longValue();
 			int i2 = (int) upr.toUInteger(context).longValue();
 		

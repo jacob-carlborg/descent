@@ -40,7 +40,7 @@ public class StaticAssert extends Dsymbol {
 		Expression e;
 
 		e = exp.semantic(sc, context);
-		e = e.optimize(Expression.WANTvalue);
+		e = e.optimize(Expression.WANTvalue, context);
 		if (e.isBool(false)) {
 			context.acceptProblem(Problem.newSemanticTypeError(IProblem.StaticAssertIsFalse, 0, exp.start, exp.length));
 			/* TODO see if appear "msg" in the error

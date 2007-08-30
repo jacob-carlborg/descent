@@ -114,7 +114,7 @@ public class IntegerExp extends Expression {
 			break;
 
 		case Tint8:
-			value = BigIntegerUtils.castToInt8(value);
+			value = NumberUtils.castToInt8(value);
 			ty = Tint32;
 			break;
 
@@ -125,7 +125,7 @@ public class IntegerExp extends Expression {
 			break;
 
 		case Tint16:
-			value = BigIntegerUtils.castToInt16(value);
+			value = NumberUtils.castToInt16(value);
 			ty = Tint32;
 			break;
 
@@ -136,7 +136,7 @@ public class IntegerExp extends Expression {
 			break;
 
 		case Tint32:
-			value = BigIntegerUtils.castToInt32(value);
+			value = NumberUtils.castToInt32(value);
 			break;
 
 		case Tuns32:
@@ -159,40 +159,40 @@ public class IntegerExp extends Expression {
 			return MATCHconvert;
 
 		case Tint8:
-			if (!BigIntegerUtils.castToInt8(value).equals(value)) {
+			if (!NumberUtils.castToInt8(value).equals(value)) {
 				return MATCHnomatch;
 			}
 			return MATCHconvert;
 
 		case Tchar:
 		case Tuns8:
-			if (!BigIntegerUtils.castToUns8(value).equals(value)) {
+			if (!NumberUtils.castToUns8(value).equals(value)) {
 				return MATCHnomatch;
 			}
 			return MATCHconvert;
 
 		case Tint16:
-			if (!BigIntegerUtils.castToInt16(value).equals(value)) {
+			if (!NumberUtils.castToInt16(value).equals(value)) {
 				return MATCHnomatch;
 			}
 			return MATCHconvert;
 
 		case Tuns16:
-			if (!BigIntegerUtils.castToUns16(value).equals(value)) {
+			if (!NumberUtils.castToUns16(value).equals(value)) {
 				return MATCHnomatch;
 			}
 			return MATCHconvert;
 
 		case Tint32:
 			if (ty == Tuns32) {
-			} else if (!BigIntegerUtils.castToInt32(value).equals(value)) {
+			} else if (!NumberUtils.castToInt32(value).equals(value)) {
 				return MATCHnomatch;
 			}
 			return MATCHconvert;
 
 		case Tuns32:
 			if (ty == Tint32) {
-			} else if (!BigIntegerUtils.castToUns32(value).equals(value)) {
+			} else if (!NumberUtils.castToUns32(value).equals(value)) {
 				return MATCHnomatch;
 			}
 			return MATCHconvert;
@@ -326,7 +326,7 @@ public class IntegerExp extends Expression {
 
 				case Twchar: // BUG: need to cast(wchar)
 				case Tdchar: // BUG: need to cast(dchar)
-					if (BigIntegerUtils.castToUns64(v).compareTo(N_0xFF) > 0) {
+					if (NumberUtils.castToUns64(v).compareTo(N_0xFF) > 0) {
 						/* TODO semantic
 						 buf.printf("'\\U%08x'", v);
 						 */
@@ -334,7 +334,7 @@ public class IntegerExp extends Expression {
 					}
 				case Tchar:
 					if (Chars.isprint(v) && v.compareTo(N_SLASH_SLASH) != 0) {
-						buf.printf("'" + BigIntegerUtils.castToInt32(v) + "'");
+						buf.printf("'" + NumberUtils.castToInt32(v) + "'");
 					} else {
 						/* TODO semantic
 						 buf.printf("'\\x%02x'", (int)v);
@@ -344,32 +344,32 @@ public class IntegerExp extends Expression {
 
 				case Tint8:
 					buf.writestring("cast(byte)");
-					buf.printf(BigIntegerUtils.castToInt32(v).toString());
+					buf.printf(NumberUtils.castToInt32(v).toString());
 					break;
 
 				case Tint16:
 					buf.writestring("cast(short)");
-					buf.printf(BigIntegerUtils.castToInt32(v).toString());
+					buf.printf(NumberUtils.castToInt32(v).toString());
 					break;
 
 				case Tint32:
 					// L2:
-					buf.printf(BigIntegerUtils.castToInt32(v).toString());
+					buf.printf(NumberUtils.castToInt32(v).toString());
 					break;
 
 				case Tuns8:
 					buf.writestring("cast(ubyte)");
-					buf.printf(BigIntegerUtils.castToUns32(v) + "u");
+					buf.printf(NumberUtils.castToUns32(v) + "u");
 					break;
 
 				case Tuns16:
 					buf.writestring("cast(ushort)");
-					buf.printf(BigIntegerUtils.castToUns32(v) + "u");
+					buf.printf(NumberUtils.castToUns32(v) + "u");
 					break;
 
 				case Tuns32:
 					// L3:
-					buf.printf(BigIntegerUtils.castToUns32(v) + "u");
+					buf.printf(NumberUtils.castToUns32(v) + "u");
 					break;
 
 				case Tint64:
@@ -386,7 +386,7 @@ public class IntegerExp extends Expression {
 
 				case Tbit:
 				case Tbool:
-					buf.writestring(BigIntegerUtils.isTrue(v) ? "true"
+					buf.writestring(NumberUtils.isTrue(v) ? "true"
 							: "false");
 					break;
 
@@ -394,7 +394,7 @@ public class IntegerExp extends Expression {
 					buf.writestring("cast(");
 					buf.writestring(t.toChars());
 					buf.writeByte(')');
-					buf.printf(BigIntegerUtils.castToUns32(v) + "u");
+					buf.printf(NumberUtils.castToUns32(v) + "u");
 					break;
 
 				default:
@@ -436,32 +436,32 @@ public class IntegerExp extends Expression {
 						: IntegerWrapper.ZERO;
 				break;
 			case Tint8:
-				value = BigIntegerUtils.castToInt8(value);
+				value = NumberUtils.castToInt8(value);
 				break;
 			case Tchar:
 			case Tuns8:
-				value = BigIntegerUtils.castToUns8(value);
+				value = NumberUtils.castToUns8(value);
 				break;
 			case Tint16:
-				value = BigIntegerUtils.castToInt16(value);
+				value = NumberUtils.castToInt16(value);
 				break;
 			case Twchar:
 			case Tuns16:
-				value = BigIntegerUtils.castToUns16(value);
+				value = NumberUtils.castToUns16(value);
 				break;
 			case Tint32:
-				value = BigIntegerUtils.castToInt32(value);
+				value = NumberUtils.castToInt32(value);
 				break;
 			case Tpointer:
 			case Tdchar:
 			case Tuns32:
-				value = BigIntegerUtils.castToUns32(value);
+				value = NumberUtils.castToUns32(value);
 				break;
 			case Tint64:
-				value = BigIntegerUtils.castToInt64(value);
+				value = NumberUtils.castToInt64(value);
 				break;
 			case Tuns64:
-				value = BigIntegerUtils.castToUns64(value);
+				value = NumberUtils.castToUns64(value);
 				break;
 
 			case Tenum: {
@@ -502,15 +502,20 @@ public class IntegerExp extends Expression {
 		toInteger(context);
 		t = type.toBasetype(context);
 		if (t.ty == Tuns64) {
-			return new Real(BigIntegerUtils.castToUns64(value));
+			return new Real(NumberUtils.castToUns64(value));
 		} else {
-			return new Real(BigIntegerUtils.castToInt64(value));
+			return new Real(NumberUtils.castToInt64(value));
 		}
 	}
 	
 	@Override
 	public char[] toCharArray() {
 		return str;
+	}
+	
+	@Override
+	public boolean isConst() {
+		return true;
 	}
 
 }

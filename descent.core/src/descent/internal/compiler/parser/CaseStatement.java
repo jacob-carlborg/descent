@@ -38,7 +38,7 @@ public class CaseStatement extends Statement {
 			int i;
 
 			exp = exp.implicitCastTo(sc, sw.condition.type, context);
-			exp = exp.optimize(WANTvalue | WANTinterpret);
+			exp = exp.optimize(WANTvalue | WANTinterpret, context);
 			if (exp.op != TOKstring && exp.op != TOKint64) {
 				error("case must be a string or an integral constant, not %s",
 						exp.toChars());

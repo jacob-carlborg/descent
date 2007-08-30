@@ -478,7 +478,7 @@ public class VarDeclaration extends Declaration {
 					}
 					ei.exp = new AssignExp(loc, e1, ei.exp);
 					ei.exp = ei.exp.semantic(sc, context);
-					ei.exp.optimize(ASTDmdNode.WANTvalue);
+					ei.exp.optimize(ASTDmdNode.WANTvalue, context);
 				} else {
 					init = init.semantic(sc, type, context);
 					if (fd != null && isConst() && !isStatic()) { // Make it

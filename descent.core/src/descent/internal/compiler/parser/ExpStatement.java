@@ -32,7 +32,7 @@ public class ExpStatement extends Statement {
 			exp = exp.semantic(sc, context);
 			exp = Expression.resolveProperties(sc, exp, context);
 			exp.checkSideEffect(0, context);
-			exp = exp.optimize(0);
+			exp = exp.optimize(0, context);
 		}
 		return this;
 	}

@@ -102,7 +102,7 @@ public class ReturnStatement extends Statement {
 
 				exp = exp.semantic(sc, context);
 				exp = resolveProperties(sc, exp, context);
-				exp = exp.optimize(WANTvalue);
+				exp = exp.optimize(WANTvalue, context);
 
 				if (fd.nrvo_can != 0 && exp.op == TOKvar) {
 					VarExp ve = (VarExp) exp;

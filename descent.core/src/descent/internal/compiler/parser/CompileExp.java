@@ -28,7 +28,7 @@ public class CompileExp extends UnaExp {
 	public Expression semantic(Scope sc, SemanticContext context) {
 		super.semantic(sc, context);
 		e1 = resolveProperties(sc, e1, context);
-		e1 = e1.optimize(WANTvalue | WANTinterpret);
+		e1 = e1.optimize(WANTvalue | WANTinterpret, context);
 		if (e1.op != TOKstring) {
 			error("argument to mixin must be a string, not (%s)", e1.toChars());
 			return this;
