@@ -1104,8 +1104,8 @@ public class NaiveASTFlattener implements IASTVisitor {
 		this.buffer.append("(");
 		visitList(node.arguments, ", ");
 		this.buffer.append("; ");
-		if (node.aggr != null) {
-			node.aggr.accept(this);
+		if (node.sourceAggr != null) {
+			node.sourceAggr.accept(this);
 		}
 		this.buffer.append(") ");
 		if (node.body != null) {

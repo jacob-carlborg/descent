@@ -1531,8 +1531,8 @@ public class ASTConverter {
 			b.setReverse(true);
 		}
 		convertArguments(b.arguments(), a.arguments);
-		if (a.aggr != null) {
-			descent.core.dom.Expression convertedExp = convert(a.aggr);
+		if (a.sourceAggr != null) {
+			descent.core.dom.Expression convertedExp = convert(a.sourceAggr);
 			if (convertedExp != null) {
 				b.setExpression(convertedExp);
 			}

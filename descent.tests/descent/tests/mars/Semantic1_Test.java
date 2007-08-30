@@ -198,6 +198,9 @@ public class Semantic1_Test extends Parser_Test {
 		assertError(p[0], IProblem.VoidsHaveNoValue, 1, 4);
 	}
 
+	// TODO should only report one problem (the first).
+	// Dmd reports three in this case, we are trying
+	// to make it cleaner to the user
 	public void testUsedAsAType() {
 		String s = " class X  { } Y y;";
 		IProblem[] p = getModuleProblems(s);
@@ -464,9 +467,10 @@ public class Semantic1_Test extends Parser_Test {
 	public void testFunctionsCannotReturnAStaticArray() {
 		String s = " int[3] bla() { }";
 		IProblem[] p = getModuleProblems(s);
-		assertEquals(1, p.length);
+		assertEquals(2, p.length);
 
 		assertError(p[0], IProblem.FunctionsCannotReturnStaticArrays, 1, 6);
+		assertError(p[1], IProblem.FunctionMustReturnAResultOfType, 8, 3);
 	}
 	
 	public void testCannotHaveOutOrInoutParameterOfStaticArray() {
@@ -642,7 +646,7 @@ public class Semantic1_Test extends Parser_Test {
 		IProblem[] p = getModuleProblems(s);
 		assertEquals(1, p.length);
 
-		assertError(p[0], IProblem.UndefinedIdentifier, 20, 1);
+		assertError(p[0], IProblem.NotAnAggregateType, 32, 1);
 	}
 	
 	public void testNotAnAggregateType_OK() {

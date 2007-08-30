@@ -37,5 +37,10 @@ public class FuncLiteralDeclaration extends FuncDeclaration {
 		return this;
 	}
 	
+	@Override
+	public boolean isNested() {
+		return (tok == TOK.TOKdelegate);
+	}
+	
 
 }

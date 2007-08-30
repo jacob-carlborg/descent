@@ -90,7 +90,7 @@ public class DsymbolExp extends Expression {
 			if (v != null) {
 				if (type == null) {
 					type = v.type;
-					if (v.type != null) {
+					if (v.type == null) {
 						context.acceptProblem(Problem.newSemanticTypeError(IProblem.ForwardReference, 0, start, length, new String[] { v.toString() }));
 						type = Type.terror;
 					}

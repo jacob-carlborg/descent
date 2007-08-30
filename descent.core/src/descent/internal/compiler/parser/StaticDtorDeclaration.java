@@ -52,4 +52,9 @@ public class StaticDtorDeclaration extends FuncDeclaration {
 		return STATIC_DTOR_DECLARATION;
 	}
 	
+	@Override
+	public AggregateDeclaration isThis() {
+		return null;
+	}
+	
 }

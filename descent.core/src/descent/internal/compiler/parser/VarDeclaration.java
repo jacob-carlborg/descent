@@ -26,7 +26,6 @@ public class VarDeclaration extends Declaration {
 	
 	// declaration?
 	public Type sourceType;
-	public Type type;
 	public Initializer init;
 	public Initializer sourceInit;
 	public Dsymbol aliassym; // if redone as alias to another symbol

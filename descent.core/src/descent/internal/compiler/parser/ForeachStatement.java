@@ -45,6 +45,8 @@ public class ForeachStatement extends Statement {
 	public TOK op;
 	public List<Argument> arguments;
 	public Expression aggr;
+	public Expression sourceAggr;
+	
 	public Statement body;
 	
 	public VarDeclaration key;
@@ -65,6 +67,7 @@ public class ForeachStatement extends Statement {
 		super(loc);
 		this.op = op;
 		this.arguments = arguments;
+		this.sourceAggr = aggr;
 		this.aggr = aggr;
 		this.body = body;		
 	}
@@ -310,7 +313,7 @@ public class ForeachStatement extends Statement {
 			}
 
 		default:
-			context.acceptProblem(Problem.newSemanticTypeError(IProblem.NotAnAggregateType, 0, aggr.start, aggr.length, new String[] { aggr.type.toString() }));
+			context.acceptProblem(Problem.newSemanticTypeError(IProblem.NotAnAggregateType, 0, sourceAggr.start, sourceAggr.length, new String[] { aggr.type.toString() }));
 			break;
 		}
 		sc.noctor--;
